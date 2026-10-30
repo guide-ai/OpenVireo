@@ -2,6 +2,7 @@ import {test,expect,type Page} from '@playwright/test';
 import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
 import {okWithVelocity} from './fixtures/lss-velocity';
+import {saveOffline} from './fixtures/offline-save';
 // Front T: records made in the app carry the field's frozen observatory-clock JD, so a save is a v30 wrapper around the v27 layer.
 // Front L2: v31 (native dialog record ids) wraps v30 (frozen field JDs), which wraps the v27 LSS layer.
 const lssLayer=(d:{version:number;base?:unknown;lss?:unknown}):any=>(d.version===31||d.version===30?lssLayer(d.base as {version:number}):d);// eslint-disable-line @typescript-eslint/no-explicit-any
@@ -26,7 +27,8 @@ test('E02 Save (v30 over v27) → fresh context Restore → records replayed, de
  await page.clock.install();await page.goto('/');await survey(page);await load(page,'1');
  await acquireAndRecord(page,1,'20','first galaxy');
  await page.getByLabel('Describe the structure you see (not graded)',{exact:true}).fill('A wall near 12 h?');
- const saved=await save(page),data=JSON.parse(saved.toString());
+ // Offline (Front F2): the replay reuses the verified CLEA_GLX.DAT, GLXYSP.LST, CLEA_QSO.DAT and GLIMAGES.LST.
+ const saved=await saveOffline(page,()=>save(page)),data=JSON.parse(saved.toString());
  expect(data.version).toBe(31);expect(data.lssNativeDialogIds).toEqual([1]);expect(data.base.version).toBe(30);expect(data.base.lssFieldJds).toHaveLength(1);expect(lssLayer(data).version).toBe(27);expect(lssLayer(data).lss.records).toHaveLength(1);expect(lssLayer(data).lss.journals).toHaveLength(1);expect(lssLayer(data).lss.journals[0].events).toMatch(/^s 100\*15 p$/);expect(lssLayer(data).lssDigestSHA256).toMatch(/^[a-f0-9]{64}$/);
  // Fresh browser context: nothing in memory, restore from the file.
  const context=await browser.newContext(),fresh=await context.newPage();const errors:string[]=[];fresh.on('pageerror',e=>errors.push(e.message));

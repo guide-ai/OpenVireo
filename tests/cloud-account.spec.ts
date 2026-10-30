@@ -94,6 +94,23 @@ test('sign in by emailed link, save to the cloud, restore, export and delete the
  expect(doc.investigations.map(i=>i.name)).toEqual(['First light']);
  expect(doc.investigations[0].file).toEqual(JSON.parse(local.toString('utf8')));
 
+ // Front F2 (Front A point 8): one click saves the current investigation to the cloud. Nothing is downloaded, and the cloud copy
+ // holds exactly the bytes Save investigation gives for the same state.
+ let downloads=0;const count=()=>downloads++;page.on('download',count);
+ await account.getByLabel('Name in the cloud').fill('One click');
+ await account.getByRole('button',{name:'Save current investigation to the cloud'}).click();
+ await expect(account.getByRole('status').filter({hasText:'Saved “One click” to the cloud.'})).toBeVisible();
+ await expect(page.locator('.investigation-toolbar > [role=status]').filter({hasText:'Investigation saved.'})).toBeVisible();
+ await expect(account.getByTestId('cloud-item')).toHaveCount(2);
+ expect(downloads).toBe(0);page.off('download',count);
+ const oneClick=account.getByTestId('cloud-item').filter({hasText:'One click'});
+ const cloudCopy=page.waitForEvent('download');await oneClick.getByRole('link',{name:'Download'}).click();
+ const cloudBytes=await readFile((await (await cloudCopy).path())!);
+ expect(cloudBytes).toEqual(await saveInvestigation(page));
+ page.once('dialog',dialog=>void dialog.accept());
+ await oneClick.getByRole('button',{name:'Delete',exact:true}).click();
+ await expect(account.getByTestId('cloud-item')).toHaveCount(1);
+
  // Delete the cloud copy, then the account.
  page.once('dialog',dialog=>void dialog.accept());
  await account.getByRole('button',{name:'Delete',exact:true}).click();

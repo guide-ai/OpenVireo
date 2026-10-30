@@ -2,6 +2,7 @@ import {test,expect,type Page} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
 import {readFileSync} from 'node:fs';
 import {clickHeaderTool} from './fixtures/header-tools';
+import {saveOffline} from './fixtures/offline-save';
 import {parseFitsImage} from '../src/core/fitsImage';
 import {angularSeparationArcsec,skyToPixel,tanWcsFromCards} from '../src/core/astrometryMeasure';
 import {findOrbitRecord,readOrbitRecord} from '../src/core/orbitFile';
@@ -142,9 +143,8 @@ test('hidden identity, two images of the target with asteroids, measure, answer,
  await expect(page.getByTestId('objectx-answer').getByLabel('star')).toBeDisabled();
  await page.screenshot({path:test.info().outputPath('object-x-reveal.png'),fullPage:true});
 
- // Save (v28) and restore in a fresh page.
- const download=page.waitForEvent('download');await button(page,'Save investigation').click();
- const saved=await (await download).path();const text=await readFile(saved!,'utf8'),json=JSON.parse(text);
+ // Save (v28) offline: its replay reuses the orbit file the list was built from (Front F2), then restore in a fresh page.
+ const saved=await saveOffline(page,async()=>{const download=page.waitForEvent('download');await button(page,'Save investigation').click();return (await download).path();});const text=await readFile(saved!,'utf8'),json=JSON.parse(text);
  expect(json.version).toBe(28);expect(json.objectX.target).toBe(EROS_CODE);expect(json.objectX.exposures).toHaveLength(2);expect(json.objectX.log).toHaveLength(2);
  expect(json.objectX.exposures[0].pairs).toBeGreaterThan(0);
  const fresh=await page.context().newPage();await openLab(fresh);

@@ -4,9 +4,9 @@
 // not an original contract: the original opens ORBIT\OBJX_MPC.CMO (default, exe 0x5a2dc4; settings+0x1ccc) or a file chosen in
 // its options and ObjectX.HTL from its program folder. The orbit file is fetched lazily (31 MB for ObjX_MPC.CMO) only when an
 // Object X investigation needs it; bytes are bounded to and checked for the exact recorded size and SHA-256 BEFORE parsing.
-// Nothing is cached, persisted or sent anywhere.
+// Verified bytes are kept in memory for the tab (Front F2); nothing is persisted or sent anywhere.
 import {BundledHotListError,fetchBundledHotList,type BundledHotListBytes,type BundledHotListIdentity} from './bundledHotList';
-import {BoundedResourceError,boundedResourceBody,checkResourceAbort,resourceSha256} from './boundedResource';
+import {checkResourceAbort,resourceSha256,verifiedSameOriginResource} from './boundedResource';
 
 const ARCHIVE_SHA256='58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b';
 export type BundledOrbitFileId='ObjX_MPC.CMO.sav'|'ObjX_MPC.CMO'|'ObjX_AST.CMO';
@@ -50,22 +50,12 @@ export async function verifyBundledOrbitFile(buffer:ArrayBuffer,id:BundledOrbitF
 }
 
 /** Fetches one orbit file from this origin (bounded), then verifies it. Abort rejects with the DOMException AbortError; every
- * other failure is a BundledOrbitFileError. */
+ * other failure is a BundledOrbitFileError. Verified bytes are kept in memory for the tab and re-checked on reuse
+ * (verifiedSameOriginResource, Front F2), so Save's replay of an Object X investigation needs no new download. */
 export async function fetchBundledOrbitFile(fetcher:typeof fetch,signal:AbortSignal,id:BundledOrbitFileId=DEFAULT_ORBIT_FILE):Promise<BundledOrbitFileBytes>{
  const expected=BUNDLED_ORBIT_FILES[id];
  if(!expected)throw new BundledOrbitFileError('download');
- checkResourceAbort(signal);
- let buffer:ArrayBuffer;
- try{
-  const response=await fetcher(expected.path,{signal,credentials:'same-origin'});
-  buffer=await boundedResourceBody(response,expected.bytes,signal);
- }catch(error){
-  checkResourceAbort(signal);
-  if(error instanceof BoundedResourceError)throw new BundledOrbitFileError(error.code==='size'?'size':'download');
-  throw new BundledOrbitFileError('download');
- }
- checkResourceAbort(signal);
- return verifyBundledOrbitFile(buffer,id,signal);
+ return verifiedSameOriginResource(fetcher,signal,expected.path,expected.bytes,buffer=>verifyBundledOrbitFile(buffer,id,signal),code=>new BundledOrbitFileError(code));
 }
 
 /** ObjectX.HTL through the existing hot-list adapter (size and SHA-256 before parsing). Not offered in the observatory's
