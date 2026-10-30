@@ -13,8 +13,8 @@ The Spectrometer page (`#spectrometer`) now holds VIREO's single-slit spectromet
 
 ## How it works
 
-- **Pointing.** **Point the telescope here** (RA in hours, Dec in degrees) opens the dome, switches to the telescope view and
-  tracks the pointing. **Use the telescope pointing** then reads the instrument field (0.375°) from the compact GSC tiles
+- **Pointing.** The student points the telescope in the Observatory, with its own checks (dome, Limit Slewing). This screen
+  has no pointing control of its own (G3 review 1 M2: fewer pointing paths). **Use the telescope pointing** then reads the instrument field (0.375°) from the compact GSC tiles
   (`io/fieldSpectrometer.ts` → `assembleFieldPack`).
 - **Spectrum.** `core/fieldSpectrometer.ts` (`spectrometerFieldResult`) uses the same option set as the Object X spectrometer:
   - the GLXYSP guard;

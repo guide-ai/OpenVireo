@@ -114,8 +114,12 @@ Typed reasons where no field can be built:
 There is no partial dialog. In the Finder view,
 Catalog Object is `finder-catalog-unavailable`, because the FSC finder catalogue is not bundled. The Variable Stars list works anywhere, because CLEA_VStrs.dat is whole-sky.
 
-In Edit Mode the Telescope view shows the engine's own field in an overlay (`EditModeFieldLayer`), so the click and the lists
-use the field the view shows. Its drawing style is [W].
+In Edit Mode the Telescope view shows the engine's own field in an overlay (`EditModeFieldLayer`), so the click and the Star
+Data List use the field the view shows. Its drawing style is [W].
+- **The Star Data List lists the loaded field (G2 review 1 R1).** StarList1Click 0x5404e0 → 0x534e18 writes its lines from the
+  loaded field object (0x5b5b30). The overlay publishes the field it loaded (`observatory/loadedField.ts`), and the list uses
+  it, with its own area and centre, while the pointing stays inside its cached area. Without a loaded field (Edit Mode layer
+  not shown, or past the cached area) the list builds the field at the current pointing.
 - **Keeping the loaded field (G2 review 1 M2).** As VIREO does, the loaded field is kept while the view stays inside its cached
   field: 0x53af28 keeps the 312-pixel crop origin strictly inside (0, 624) of the 936-pixel cache.
   - The field is rebuilt only once the pointing has drifted about 0.25° from the loaded centre.

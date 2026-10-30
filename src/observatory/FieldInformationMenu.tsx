@@ -15,6 +15,7 @@ import {catalogRecords} from '../core/catalogObject';
 import {FIELD_STAR_LITERALS as FL,FIELD_STAR_SAVE_NAMES,fieldStarCsvLines,fieldStarReport,type FieldStarReport} from '../core/fieldStarReport';
 import {variableStarSaveText} from '../core/variableStars';
 import {findCertifiedPopulation} from '../io/fieldInfoPacks';
+import {loadedFieldAt} from './loadedField';
 import type {FieldInfoRequestKind} from './ObservatoryFileMenu';
 import './field-info.css';
 
@@ -66,15 +67,17 @@ export default function FieldInformationMenu({info,pointing,enabled,hotList,onSl
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[request,info.editMode]);
  if(!info.editMode)return null;
- /** StarList1Click 0x5404e0 → 0x534e18: the instrument (NewGSC) field at the current pointing, in either view. */
+ /** StarList1Click 0x5404e0 → 0x534e18: the loaded instrument (NewGSC) field, in either view: the field the Edit Mode view shows
+  * while the pointing stays inside its cached area, otherwise the field built at the current pointing. */
  function openStars(){
-  setStarBox(null);const at=pointing,variableTime=frozenObservatoryTime(info.currentJd);
+  const loaded=loadedFieldAt(pointing);
+  setStarBox(null);const at=loaded?.anchor??pointing,variableTime=frozenObservatoryTime(info.currentJd);
   cancelStars();const controller=new AbortController(),{signal}=controller;starRequest.current=controller;
   const show=(w:StarWindow)=>{if(!signal.aborted&&starRequest.current===controller)setStar(w);};
   setStar({loading:true});
   objectXMasked(info.hidden??null,at).then(async masked=>{
    if(masked){show({reason:'object-x-hidden'});return;}
-   const r=await findCertifiedPopulation(at,variableTime,signal);
+   const r=loaded?{status:'ready' as const,population:loaded.population}:await findCertifiedPopulation(at,variableTime,signal);
    if(r.status!=='ready'){show('detail' in r?{reason:r.reason,detail:r.detail}:{reason:r.reason});return;}
    show({report:fieldStarReport(freshFieldArea(at),at,catalogRecords(r.population).stars)});
   }).catch(()=>{if(!signal.aborted)show({reason:'load-error'});});

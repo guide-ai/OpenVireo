@@ -4,8 +4,10 @@ import {afterAll,beforeAll,describe,expect,it} from 'vitest';
 import {preparePhotometerTiledField,setPhotometerTileSources} from './photometerTiledFields';
 import {checkGscIndex,createGscTileStore} from './gscTiles';
 import {parsePhotometerSession,prepareSessionFields,serializePhotometerSession} from './photometerSession';
-import {createPhotometer,photometerEvent,PhotometerError,type PhotometerState,type PhotometerEvent} from '../core/photometer';
-import {clearTiledPhotometerFields,isTiledPhotometerTarget,tiledPhotometerPointing} from '../core/photometerField';
+import {createPhotometer,photometerEvent,skyReplaceAsked,PhotometerError,type PhotometerState,type PhotometerEvent} from '../core/photometer';
+import {buildPhotometerTargetField,clearTiledPhotometerFields,isTiledPhotometerTarget,registerTiledPhotometerField,tiledPhotometerPointing,MAX_TILED_PHOTOMETER_FIELDS} from '../core/photometerField';
+import {PLEIADES_ADMITTED_ROWS} from '../core/pleiadesHotList';
+import {pleiadesSkyContext} from '../core/pleiadesAnalysis';
 import {tiledPhotometerReason} from '../core/photometerUbvField';
 import {GSC_INDEX_SHA256,photometerJournalVersion} from '../core/photometerJournal';
 import {pleiadesExerciseSummary} from '../core/pleiadesLab';
@@ -80,6 +82,40 @@ describe('photometer at a telescope pointing (tiled)',()=>{
   expect(()=>photometerEvent(s,{type:'start'})).toThrow(new PhotometerError('confirm'));
   s=run(s,[{type:'field',ra:BLANK.ra,dec:BLANK.dec},{type:'start'},{type:'complete'}]);expect(s.readings).toHaveLength(3);
   expect(()=>photometerEvent(s,{type:'skyConfirm'})).toThrow(new PhotometerError('confirm'));
+ },120_000);
+ it('+0x41d: moving the Object/Sky slider since activation skips the question; a move onto the star in Sky mode asks (G3 review 1 M3)',async()=>{
+  await preparePhotometerTiledField(STAR);await preparePhotometerTiledField(BLANK);
+  const field=(p:typeof STAR)=>({type:'field' as const,ra:p.ra,dec:p.dec});
+  let s=run(createPhotometer(5),[{type:'activate'},field(BLANK),{type:'start'},{type:'complete'},field(STAR),{type:'point',kind:'object'},{type:'start'},{type:'complete'}]);
+  expect(s.readingSliderMoved).toBe(true);
+  // Sky chosen again on the star: the slider moved, so VIREO does not ask, and the reading replaces this filter's sky.
+  s=run(s,[{type:'point',kind:'sky'}]);expect(skyReplaceAsked(s)).toBe(false);s=run(s,[{type:'start'},{type:'complete'}]);
+  expect(s.readings.map(r=>r.kind)).toEqual(['sky','object','sky']);
+  // [W] a move clears the flag (FormActivate on returning to the form); Sky declared before moving onto the star is asked about.
+  s=run(s,[field(BLANK),field(STAR)]);expect(s.readingSliderMoved).toBe(false);
+  expect(()=>photometerEvent(s,{type:'start'})).toThrow(new PhotometerError('confirm'));
+  // Activation clears it, and sets it again only when the activation itself moves the slider (Object → Sky).
+  const reactivated=run(s,[{type:'point',kind:'object'},{type:'deactivate'},{type:'activate'}]);
+  expect(reactivated.readingSliderMoved).toBe(true);
+  expect(run(s,[{type:'deactivate'},{type:'activate'}]).readingSliderMoved).toBe(false);
+ },120_000);
+ it('a Pleiades reading reduced with a sky taken at a tiled pointing is not an E04 count (G3 review 1 L3)',async()=>{
+  await preparePhotometerTiledField(BLANK);
+  const row=PLEIADES_ADMITTED_ROWS[0]!;
+  const tiledSky=run(createPhotometer(9),[{type:'activate'},{type:'field',ra:BLANK.ra,dec:BLANK.dec},{type:'start'},{type:'complete'},{type:'target',targetId:row.catalogId},{type:'start'},{type:'complete'}]);
+  const reading=tiledSky.current!;expect(reading.kind).toBe('object');expect(reading.targetId).toBe(row.catalogId);expect(reading.reduction?.status).toBe('available');
+  expect(pleiadesSkyContext(tiledSky,reading)).toBe(false);
+  // The same reading with the bundled sky field counts.
+  const bundled=run(createPhotometer(9),[{type:'activate'},{type:'target',targetId:row.catalogId},{type:'point',kind:'sky'},{type:'start'},{type:'complete'},{type:'point',kind:'object'},{type:'start'},{type:'complete'}]);
+  expect(pleiadesSkyContext(bundled,bundled.current!)).toBe(true);
+ },120_000);
+ it('the prepared frames are bounded, oldest out (G3 review 1 L5)',async()=>{
+  const r=await preparePhotometerTiledField(STAR);if(r.status!=='ready')throw new Error(r.reason);
+  const frame=buildPhotometerTargetField(r.targetId,'object'),ids:string[]=[];
+  for(let i=0;i<MAX_TILED_PHOTOMETER_FIELDS+3;i++)ids.push(registerTiledPhotometerField({...frame,pointing:{ra:1+i/1000,dec:10}}));
+  expect(ids.slice(0,4).map(isTiledPhotometerTarget)).toEqual([false,false,false,false].map((_,i)=>i>=3));
+  expect(isTiledPhotometerTarget(ids.at(-1))).toBe(true);
+  clearTiledPhotometerFields();
  },120_000);
  it('earlier histories keep their owner version (no field event: unchanged bytes)',()=>{
   const s=run(createPhotometer(42),[{type:'activate'},{type:'start'},{type:'complete'},{type:'deactivate'}]);

@@ -12,7 +12,7 @@ import type {PreparedFieldSpectrum} from './io/fieldSpectrometer';
 /** Front G (G4a, analysis/front-plans/front-g-gsc.md §11): VIREO's single-slit spectrometer wherever the telescope points. The
  * field is read from the compact GSC tiles; the slit takes the nearest object (0x59a0fc) and the engine's star, galaxy and QSO
  * branches give the spectrum, or a typed reason. Exercise routes and their counts are not affected. */
-export type FieldSpectrometerLink=Readonly<{active:boolean;pointing:Pointing;gate:Readonly<{tracking:boolean;moving:boolean;finder:boolean;domeOpen:boolean}>;telescope:FieldTelescope;hidden:Pointing|null;onPreparePoint:(p:Pointing)=>void}>;
+export type FieldSpectrometerLink=Readonly<{active:boolean;pointing:Pointing;gate:Readonly<{tracking:boolean;moving:boolean;finder:boolean;domeOpen:boolean}>;telescope:FieldTelescope;hidden:Pointing|null}>;
 type Ready=Extract<PreparedFieldSpectrum,{status:'ready'}>;
 const kindOf=(r:FieldResult)=>r.qsoTarget?'qso':r.starTarget?'star':r.target?'galaxy':null;
 function engineFor(prepared:Ready):ExposureEngine{
@@ -49,7 +49,6 @@ function Acquisition({prepared,fieldMatches,active}:{prepared:Ready;fieldMatches
 }
 export default function FieldSpectrometer({link}:{link:FieldSpectrometerLink}){
  const [prepared,setPrepared]=useState<PreparedFieldSpectrum|null>(null),[loading,setLoading]=useState(false),request=useRef<AbortController|null>(null);
- const [draft,setDraft]=useState<Readonly<{ra:string;dec:string}>|null>(null),[inputError,setInputError]=useState(false);
  useEffect(()=>()=>request.current?.abort(),[]);
  useEffect(()=>{if(!link.active){request.current?.abort();setLoading(false);}},[link.active]);
  async function useHere(){
@@ -58,11 +57,6 @@ export default function FieldSpectrometer({link}:{link:FieldSpectrometerLink}){
   catch{if(!controller.signal.aborted)setPrepared({status:'unavailable',reason:'field-tiles',detail:'fetch'});}
   finally{if(request.current===controller){request.current=null;setLoading(false);}}
  }
- function pointHere(){
-  const ra=Number(draft?.ra),dec=Number(draft?.dec);
-  if(!draft||!/^\s*[0-9.]+\s*$/.test(draft.ra)||!/^\s*[-+]?[0-9.]+\s*$/.test(draft.dec)||!(ra>=0&&ra<24)||!(dec>=-90&&dec<=90)){setInputError(true);return;}
-  setInputError(false);link.onPreparePoint({ra,dec});
- }
  const ready=prepared?.status==='ready'?prepared:null;
  const same=!!ready&&ready.pointing.ra===link.pointing.ra&&ready.pointing.dec===link.pointing.dec&&ready.telescope===link.telescope;
  const access=instrumentAccess({...link.gate,configurationAvailable:true,pointingMatches:same});
@@ -70,8 +64,6 @@ export default function FieldSpectrometer({link}:{link:FieldSpectrometerLink}){
  return <section className="card field-spectrometer" aria-labelledby="field-spec-title" data-testid="field-spectrometer">
   <h2 id="field-spec-title">{t('fieldSpec.title')}</h2><p>{t('fieldSpec.help')}</p>
   <p role="status" data-testid="field-spec-access" data-access={access}>{t(`instrumentAccess.${access}`)}</p>
-  <div className="photometer-tiled-point"><label htmlFor="field-spec-ra">{t('ph.tiledRa')}</label><input id="field-spec-ra" inputMode="decimal" maxLength={20} value={draft?.ra??String(link.pointing.ra)} onChange={e=>setDraft({ra:e.target.value,dec:draft?.dec??String(link.pointing.dec)})}/><label htmlFor="field-spec-dec">{t('ph.tiledDec')}</label><input id="field-spec-dec" inputMode="decimal" maxLength={20} value={draft?.dec??String(link.pointing.dec)} onChange={e=>setDraft({ra:draft?.ra??String(link.pointing.ra),dec:e.target.value})}/><button type="button" className="secondary-button" data-testid="field-spec-point" onClick={pointHere}>{t('ph.tiledPoint')}</button></div>
-  {inputError&&<p role="alert">{t('ph.tiledPointInvalid')}</p>}
   <button type="button" className="primary-button" data-testid="field-spec-use" disabled={loading||link.gate.moving} onClick={()=>void useHere()}>{t('fieldSpec.use')}</button>
   {loading&&<p role="status">{t('fieldSpec.loading')}</p>}
   {prepared?.status==='unavailable'&&<p role="status" data-testid="field-spec-status" data-reason={prepared.reason}>{prepared.reason==='object-x-hidden'?fieldInfoReasonText('object-x-hidden'):fieldInfoReasonText(prepared.reason,prepared.detail??'')}</p>}

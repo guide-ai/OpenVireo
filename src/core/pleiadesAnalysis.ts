@@ -5,7 +5,7 @@ import contractSource from '../../data/photometry/pleiades-manual-analysis.json'
 const contract=projectResource(contractSource);
 
 import type {PhotometerState} from './photometer';
-import {PLEIADES_PHOTOMETER_TARGETS} from './photometerField';
+import {PLEIADES_PHOTOMETER_TARGETS,TILED_PHOTOMETER_PREFIX} from './photometerField';
 /** Printed2008 procedure,not VIREO's executable ZAMS/isochrone implementation.
  * No catalog/acquired magnitude is consulted. Geometry is presentation only. */
 export const PLEIADES_ANALYSIS_SHA256='9b790d6dc714b9303b06d0d1db614407f46eaff5454c410d95a8f94a0b063b29';
@@ -21,6 +21,8 @@ export function pleiadesPoints(s:PhotometerState):readonly PleiadesPoint[]{
   const c=s.colors[t.catalogId];if(!c)return [];
   const br=s.readings.find(r=>r.id===c.bReadingId),vr=s.readings.find(r=>r.id===c.vReadingId),b=s.entries.find(e=>e.readingId===c.bReadingId),v=s.entries.find(e=>e.readingId===c.vReadingId);
   if(!b||!v||br?.targetId!==t.catalogId||vr?.targetId!==t.catalogId||br.filter!=='B'||vr.filter!=='V'||br.kind!=='object'||vr.kind!=='object'||(br.telescopeIndex??0)!==(vr.telescopeIndex??0)||(br.apertureSelector??10)!==(vr.apertureSelector??10))throw new PleiadesAnalysisError();
+  // G3 review 1 L3: a pair reduced with a sky taken at a tiled telescope pointing is not an E04 point.
+  if(!pleiadesSkyContext(s,br)||!pleiadesSkyContext(s,vr))return [];
   // Recompute from the learner's confirmed numbers,never the cached color.
   return [Object.freeze({targetId:t.catalogId,hotlistNumber:t.hotlistRecord+1,bReadingId:b.readingId,vReadingId:v.readingId,...(br.telescopeIndex!==undefined||vr.telescopeIndex!==undefined?{telescopeIndex:br.telescopeIndex??0}:{}),...(br.apertureSelector!==undefined||vr.apertureSelector!==undefined?{apertureSelector:br.apertureSelector??10}:{}),b:b.value,v:v.value,bMinusV:photometricBMinusV(b.value,v.value)})];
  }));
@@ -47,3 +49,11 @@ export function confirmPleiadesFit(s:PhotometerState,modulus:number):PleiadesFit
  return Object.freeze({...pleiadesDistance(modulus),points});
 }
 export function pleiadesPointVisible(p:Pick<PleiadesPoint,'bMinusV'|'v'>):boolean{return p.bMinusV>=PLEIADES_PLOT.bMinusVMin&&p.bMinusV<=PLEIADES_PLOT.bMinusVMax&&p.v>=PLEIADES_PLOT.vMin&&p.v<=PLEIADES_PLOT.vMax;}
+
+/** G3 review 1 L3 (web rule [W]): an object reading counts toward the Pleiades exercise only when it was reduced with a sky
+ * reading taken at a bundled Pleiades field. VIREO keeps one sky per filter and telescope wherever it was read, so the reading
+ * itself stays valid here; only E04's count and its cluster points leave out skies taken at a tiled telescope pointing. */
+export function pleiadesSkyContext(s:Pick<PhotometerState,'readings'>,r:PhotometerState['readings'][number]):boolean{
+ const sky=r.skyReadingId===null?undefined:s.readings.find(x=>x.id===r.skyReadingId);
+ return !!sky&&!sky.fieldTargetId.startsWith(TILED_PHOTOMETER_PREFIX);
+}

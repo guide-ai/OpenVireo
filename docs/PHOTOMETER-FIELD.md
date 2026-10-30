@@ -83,7 +83,6 @@ I01/E04 are not accepted complete; N03 remains partial. [Verification](PHOTOMETE
   - `photometer-qso`
   - `photometer-variable`: a TRUE-dispatch variable star, whose values depend on the clock.
   - `photometer-selection`: no star selected at the centre.
-  - `photometer-sky-not-empty`: a sky reading with a non-zero fraction or a neighbour, which is the bundled-field contract.
   - `photometer-population`: an engine gate.
 - **Mode independence:** the source does not depend on the reading mode (G3b). A positive central fraction gives the known
   colours of the central star and its neighbours. A zero fraction with no admitted neighbour gives the literal 30. Neighbour
@@ -91,10 +90,28 @@ I01/E04 are not accepted complete; N03 remains partial. [Verification](PHOTOMETE
 
 ## Photometer at the telescope pointing (Front G, G3b)
 
-On the Photometer screen, **Use the telescope pointing** builds the field where the telescope points, from the tiles. The
-student then chooses Sky or Object and integrates, as in VIREO. **Point the telescope here** (RA in hours, Dec in degrees)
-moves the telescope from the bench, for example to a clean patch of sky and back. Static evidence is in
-`analysis/front-g-gsc/RE-photometer-start.md`.
+The photometer measures where the telescope points, from the tiles. The student then chooses Sky or Object and integrates, as
+in VIREO. Static evidence is in `analysis/front-g-gsc/RE-photometer-start.md`.
+
+- **Activate keeps the pointing (G3 review 1 M1).** VIREO's FormActivate (0x4ff8b0) never moves the telescope: it selects the
+  nearest object where the telescope points (0x53cf94 → 0x59a0fc).
+  - When the student pointed the telescope themself (the App's `studentPointed`: a pointing that is neither the initial one
+    nor the bench's own prepared field), Activate keeps it and reads the field there from the tiles.
+  - At an admitted PLEIADES.HTL position, or from the initial pointing, Activate keeps the earlier E04 behaviour: it selects
+    that target or moves to the bench's known Pleiades field (a web orchestration).
+  - **Use the telescope pointing** reads the field again after the telescope moved; before Activate it activates here.
+- **One checked way to move from the bench (G3 review 1 M2).** Leaving the Photometer screen releases the bench, and Activate
+  starts a fresh context with empty skies, so the bench keeps **Point the telescope here** for "sky on a clean patch, then
+  back to the star". It goes through the Observatory's own checked pointing (`pointChecked`): Limit Slewing refuses a
+  position below the horizon, and a closed dome refuses the move (the bench never opens the dome). After a move the field is
+  read again at once, as FormActivate re-selects when the form becomes active again. The spectrometer screen has no such
+  control.
+- **A late field is dropped (L1).** A field that finishes loading after the telescope moved is not applied; the student is
+  told to read it again.
+- **Object X (L2).** The 2° mask includes the Object X lab's hidden target, as for Field Information.
+- **Bounded caches (L5).** Prepared frames are kept for at most 512 pointings (a journal cannot name more), oldest out; their
+  integration configurations have their own bounded cache (256, oldest out), separate from the Pleiades-sized one, and are
+  rebuilt from the frame when needed.
 
 - **Sky readings anywhere** (coordinator decision 3b).
   - The native Start (0x4ffa30) prepares the source in the same way in both modes: Sky mode is the radio item at +0x41c.
@@ -104,6 +121,17 @@ moves the telescope from the bench, for example to a clean patch of sky and back
     aperture, VIREO asks "Are you sure you want to replace a sky reading with one that may be invalid?" (caption
     "Reading Sky!", Yes/No; No cancels the Start).
   - In the journal that is a one-shot `skyConfirm` event before `start`. The first sky reading is never asked about.
+  - **The slider flag +0x41d (G3 review 1 M3).** The question also needs +0x41d = 0 (0x4ffab5). RdngSliderPositionChange
+    (0x5021cc) sets it and then runs the same source preparation (0x4ffa30), and FormActivate clears it (0x4ff9cb). The slider
+    (TiSwitchSlider RdngSlider, positions "Object, Sky", at +0x400) fires OnPositionChange (+0x378) from SetPosition 0x4f4930
+    → 0x4f4798 whenever its position changes, also when FormActivate sets it. So once the student has moved the Object/Sky
+    slider since activation, VIREO no longer asks. The journal state `readingSliderMoved` follows this: a `point` or `target`
+    event that changes the mode sets it, and `activate` clears it, setting it again only when the activation itself changes
+    the mode (the web activation always declares Sky [W]; VIREO's FormActivate chooses Sky from the slider and the aperture
+    fraction, which the web does not reproduce).
+  - A `field` event also clears it [W]: a move stands for leaving the form to point the telescope, and VIREO's FormActivate
+    clears the flag when the student comes back. So Sky declared before the move onto a star is asked about, and Sky chosen
+    again on the star is not, as in VIREO.
   - Bundled Pleiades sky fields have a zero fraction, so they are never asked about.
 - **No star within the selection radius** (0x59a0fc, 350 pixels, about 1.1′): VIREO keeps a nil selection and skips the
   magnitude preparation. The band magnitudes at +0x41f…+0x451 then keep the previous star's values, or 0 on a fresh form.
@@ -121,8 +149,14 @@ moves the telescope from the bench, for example to a clean patch of sky and back
     mean over U/B/V and apertures 5/10/15, reproduces every recorded `maximumMean` and reason of both contracts, to a relative
     1e-8 (`src/core/photometerTiledBench.test.ts`).
   - Tiled targets get the same limits as typed reasons that block Start (`tiledPhotometerReason`): `Poisson-mean-bound`,
-    `all-duration-count-domain`, and at 0.9 m and 4 m `photometer-blend` (neighbours other than the selected star).
+    `all-duration-count-domain`, and at 0.9 m and 4 m `photometer-blend` (neighbours other than the selected star). The blend
+    rule is a web validation limit [W]: the bounded 0.9 m and 4 m profiles were checked only for single stars (their Pleiades
+    contracts), not a recovered VIREO branch.
 - **Notebook and B−V** work for tiled stars. They never count toward the Pleiades exercise, whose summary reads only Pleiades
   rows.
+- **Skies and E04 (G3 review 1 L3, web rule [W]).** VIREO keeps one sky per filter and telescope bank, wherever it was read, and
+  reduces any object reading with it; the web keeps that for the reading itself. E04's count (`pleiadesExerciseSummary`) and
+  its cluster points (`pleiadesPoints`) take only Pleiades object readings whose sky was read at a bundled Pleiades field
+  (`pleiadesSkyContext`); a Pleiades reading reduced with a sky taken at a tiled pointing is shown but not counted.
 - **Tests:** `src/io/photometerTiled.test.ts` (journal, session round trip, telescopes, sky question, E04) and
   `tests/photometer-tiled.spec.ts` (browser flow, and M31 typed).

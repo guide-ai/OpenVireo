@@ -22,7 +22,7 @@ export type PhotometerReading=Readonly<{id:number;telescopeIndex?:PhotometerTele
 export type PhotometerEntry=Readonly<{readingId:number;value:number;note:string}>;
 /** In-memory transition-family marker retained for API compatibility;minimal
  * persisted owner/policy is derived from history,not this legacy state label. */
-export type PhotometerState=Readonly<{policy:typeof PHOTOMETER_POLICY|typeof TIMED_PHOTOMETER_POLICY|typeof EXPANDED_PHOTOMETER_POLICY|typeof VARIABLE_FIELD_PHOTOMETER_POLICY;telescopeIndex?:PhotometerTelescopeIndex;apertureSelector?:number;nativeClusterFit?:NativeClusterFit|null;clusterFit?:PleiadesFit|null;timing?:PhotometerTiming;work?:PhotometerIntegration|null;callbacksUsed?:number;targetId:string;colors:Readonly<Record<string,PhotometerColor>>;filter:PhotometerFilter;contextId:number;skies:Readonly<Record<PhotometerFilter,PhotometerReading|null>>;color:PhotometerColor|null;seedAtStart:number;seed:number;armed:boolean;/** One-shot answer Yes to VIREO's sky-replacement question (G3b), consumed by the next Start. */skyReplaceConfirmed?:boolean;pointing:PleiadesFieldKind;phase:'idle'|'running'|'stopped'|'complete';sky:PhotometerReading|null;current:PhotometerReading|null;readings:readonly PhotometerReading[];entries:readonly PhotometerEntry[];events:readonly PhotometerEvent[]}>;
+export type PhotometerState=Readonly<{policy:typeof PHOTOMETER_POLICY|typeof TIMED_PHOTOMETER_POLICY|typeof EXPANDED_PHOTOMETER_POLICY|typeof VARIABLE_FIELD_PHOTOMETER_POLICY;telescopeIndex?:PhotometerTelescopeIndex;apertureSelector?:number;nativeClusterFit?:NativeClusterFit|null;clusterFit?:PleiadesFit|null;timing?:PhotometerTiming;work?:PhotometerIntegration|null;callbacksUsed?:number;targetId:string;colors:Readonly<Record<string,PhotometerColor>>;filter:PhotometerFilter;contextId:number;skies:Readonly<Record<PhotometerFilter,PhotometerReading|null>>;color:PhotometerColor|null;seedAtStart:number;seed:number;armed:boolean;/** One-shot answer Yes to VIREO's sky-replacement question (G3b), consumed by the next Start. */skyReplaceConfirmed?:boolean;/** VIREO's +0x41d (G3 review 1 M3): set when the Object/Sky slider position changes (RdngSliderPositionChange 0x5021cc), cleared by FormActivate (0x4ff9cb); while set, Start skips the sky-replacement question. */readingSliderMoved?:boolean;pointing:PleiadesFieldKind;phase:'idle'|'running'|'stopped'|'complete';sky:PhotometerReading|null;current:PhotometerReading|null;readings:readonly PhotometerReading[];entries:readonly PhotometerEntry[];events:readonly PhotometerEvent[]}>;
 /** Review 4 item 8: the state label follows the widest target set selected so far (added targets: the v11 label, the sixteen
  * expanded targets: the v5 label); it never narrows. The persisted owner/policy is still derived from history. */
 function labelFor(current:PhotometerState['policy'],targetId:string):PhotometerState['policy']{
@@ -57,7 +57,9 @@ function transition(s:PhotometerState,e:PhotometerEvent,live:boolean):Photometer
  let next:PhotometerState=s;
  if(e.type==='activate'){
   if(s.armed||s.phase==='running')throw new PhotometerError('phase');
-  next={...s,armed:true,contextId:s.contextId+1,skies:emptySkies(),pointing:'sky',sky:null,current:null,phase:'idle',...(s.timing?{work:null}:{})};
+  // FormActivate clears +0x41d, then sets the slider; a position change there fires OnPositionChange (+0x378, via 0x4f4798),
+  // which sets +0x41d again. The web activation always declares Sky, so the flag is set exactly when the previous mode was Object.
+  next={...s,armed:true,contextId:s.contextId+1,skies:emptySkies(),pointing:'sky',sky:null,current:null,phase:'idle',...(s.timing?{work:null}:{}),readingSliderMoved:s.pointing!=='sky'};
  }else if(e.type==='telescope'){
   if(s.armed||s.phase==='running')throw new PhotometerError('phase');
   // A tiled target is a telescope pointing; it stays selected, and Start checks its limits for the new telescope (G3b).
@@ -73,13 +75,14 @@ function transition(s:PhotometerState,e:PhotometerEvent,live:boolean):Photometer
  else if(e.type==='target'){
   if(!s.armed||s.phase==='running')throw new PhotometerError('phase');
   if(!isPhotometerTelescopeTarget(e.targetId,s.telescopeIndex??0))throw new PhotometerError('event');
-  next={...s,policy:labelFor(s.policy,e.targetId),targetId:e.targetId,pointing:'object',current:null,phase:'idle',...(s.timing?{work:null}:{}),color:s.colors[e.targetId]??null};
+  next={...s,policy:labelFor(s.policy,e.targetId),targetId:e.targetId,pointing:'object',current:null,phase:'idle',...(s.timing?{work:null}:{}),color:s.colors[e.targetId]??null,...(s.pointing!=='object'?{readingSliderMoved:true}:{})};
  }else if(e.type==='field'){
   // Front G (G3b): the telescope now points here (VIREO's free photometer). Moving keeps the per-filter skies of this context
   // (only a telescope change needs fresh sky) and the declared Sky/Object mode; the frame must have been prepared.
   if(!s.armed||s.phase==='running')throw new PhotometerError('phase');
   const targetId=tiledPhotometerTargetId({ra:e.ra,dec:e.dec});if(!isTiledPhotometerTarget(targetId))throw new PhotometerError('field');
-  next={...s,targetId,current:null,phase:'idle',...(s.timing?{work:null}:{}),color:s.colors[targetId]??null};
+  // [W] A move stands for leaving the form to point the telescope: returning re-activates it, and FormActivate clears +0x41d.
+  next={...s,targetId,current:null,phase:'idle',...(s.timing?{work:null}:{}),color:s.colors[targetId]??null,readingSliderMoved:false};
  }else if(e.type==='skyConfirm'){
   if(!s.armed||s.phase==='running'||s.pointing!=='sky'||!skyReplaceAsked(s))throw new PhotometerError('confirm');
   next={...s,skyReplaceConfirmed:true};
@@ -96,7 +99,7 @@ function transition(s:PhotometerState,e:PhotometerEvent,live:boolean):Photometer
   next={...s,...(s.clusterFit?{clusterFit:null}:{}),...(s.nativeClusterFit?{nativeClusterFit:null}:{}),color,colors:Object.freeze({...s.colors,[color.targetId]:color})};
  }else if(e.type==='point'){
   if(!s.armed||s.phase==='running')throw new PhotometerError('phase');
-  next={...s,pointing:e.kind,current:null,phase:'idle',...(s.timing?{work:null}:{})};
+  next={...s,pointing:e.kind,current:null,phase:'idle',...(s.timing?{work:null}:{}),...(s.pointing!==e.kind?{readingSliderMoved:true}:{})};
  }else if(e.type==='start'){
   if(!s.armed||s.phase==='running')throw new PhotometerError('phase');
   if(s.pointing==='object'&&(!s.sky||s.sky.filter!==s.filter||s.sky.contextId!==s.contextId||(s.sky.telescopeIndex??0)!==(s.telescopeIndex??0)))throw new PhotometerError('sky');
@@ -144,9 +147,9 @@ function transition(s:PhotometerState,e:PhotometerEvent,live:boolean):Photometer
  return Object.freeze({...next,events:Object.freeze(events)});
 }
 /** Start 0x4ffa30: VIREO asks before a Sky reading replaces this filter's sky in the current telescope bank while the selected star
- * has light in the aperture. Bundled Pleiades sky fields have a zero fraction, so they are never asked (unchanged behaviour). */
+ * has light in the aperture, unless the Object/Sky slider has moved since the photometer was activated (+0x41d, 0x4ffab5). Bundled Pleiades sky fields have a zero fraction, so they are never asked (unchanged behaviour). */
 export function skyReplaceAsked(s:PhotometerState):boolean{
- return s.armed&&s.pointing==='sky'&&s.skies[s.filter]!==null&&photometerSelectedFraction(s.targetId,'sky',s.apertureSelector??10,s.telescopeIndex??0)>0;
+ return s.armed&&s.pointing==='sky'&&!s.readingSliderMoved&&s.skies[s.filter]!==null&&photometerSelectedFraction(s.targetId,'sky',s.apertureSelector??10,s.telescopeIndex??0)>0;
 }
 export function photometerEvent(s:PhotometerState,e:PhotometerEvent){return transition(s,e,true);}
 export function releasePhotometer(s:PhotometerState){return photometerEvent(photometerEvent(s,{type:'stop'}),{type:'deactivate'});}

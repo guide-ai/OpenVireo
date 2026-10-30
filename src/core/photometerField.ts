@@ -274,9 +274,14 @@ export function tiledPhotometerPointing(id:unknown):Pointing|null{
  try{return tiledPhotometerTargetId({ra,dec})===id?Object.freeze({ra,dec}):null;}catch{return null;}
 }
 const tiledFields=new Map<string,PinnedPleiadesField>();
+/** G3 review 1 L5: the prepared frames are bounded (least recently registered first out). A journal holds at most 512 events
+ * (MAX_PHOTOMETER_EVENTS), so it can never name more distinct pointings than this; frames are rebuilt from the tiles on demand. */
+export const MAX_TILED_PHOTOMETER_FIELDS=512;
 export function registerTiledPhotometerField(field:PinnedPleiadesField):string{
  if(field?.[brand]!==true||field.provenanceFile!=='gsc-tiles')throw new PhotometerFieldError('domain');
- const id=tiledPhotometerTargetId(field.pointing);tiledFields.set(id,Object.freeze({...field,kind:'object'}));return id;
+ const id=tiledPhotometerTargetId(field.pointing);tiledFields.delete(id);tiledFields.set(id,Object.freeze({...field,kind:'object'}));
+ while(tiledFields.size>MAX_TILED_PHOTOMETER_FIELDS)tiledFields.delete(tiledFields.keys().next().value!);
+ return id;
 }
 export const isTiledPhotometerTarget=(id:unknown):id is string=>typeof id==='string'&&tiledFields.has(id);
 /** Test seam and memory bound: forget every prepared tiled frame. */

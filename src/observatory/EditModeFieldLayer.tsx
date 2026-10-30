@@ -5,6 +5,7 @@ import type {FieldMode,Pointing} from '../core/sky';
 import {findCertifiedPopulation} from '../io/fieldInfoPacks';
 import {frozenObservatoryTime,type FieldPopulation} from '../core/fieldEngine';
 import {nativeFieldCacheHolds} from '../core/fieldCache';
+import {setLoadedField} from './loadedField';
 import CatalogObjectDialog from './CatalogObjectDialog';
 import {FIELD_INFO_MESSAGES as M,fieldInfoReasonText,type FieldInfoReason} from './FieldInfoMessages';
 import './field-info.css';
@@ -34,11 +35,11 @@ export default function EditModeFieldLayer({editMode,active,mode,pointing,hidden
   objectXMasked(hidden,at).then(async masked=>{
    if(masked){if(current)setState({status:'unavailable',reason:'object-x-hidden'});return;}
    const r=await findCertifiedPopulation(at,frozenObservatoryTime(currentJd),controller.signal);if(!current)return;
-   if(r.status==='ready')setState({status:'ready',packId:r.packId,population:r.population});
+   if(r.status==='ready'){setState({status:'ready',packId:r.packId,population:r.population});setLoadedField({anchor:at,population:r.population});}
    else setState('detail' in r?{status:'unavailable',reason:r.reason,detail:r.detail}:{status:'unavailable',reason:r.reason});
   }).catch(()=>{if(current)setState({status:'error'});});
   // A pointing or mode change stops a tiled build in progress (G1b review 1 L3).
-  return()=>{current=false;controller.abort();};
+  return()=>{current=false;controller.abort();setLoadedField(null);};
  },[editMode,active,mode,hidden?.ra,hidden?.dec,at.ra,at.dec]);// eslint-disable-line react-hooks/exhaustive-deps
  // The loaded population drawn at the current pointing (the native crop moves inside the cached field).
  const scene=useMemo<CatalogScene|null>(()=>state.status==='ready'?catalogScene(state.population,pointing,state.packId==='gsc-tiles'?'Compact GSC tiles; field built for this pointing':`Field pack ${state.packId}; certified pointing`):null,[state,pointing.ra,pointing.dec]);

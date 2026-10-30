@@ -3,9 +3,19 @@ import {readFile} from 'node:fs/promises';
 
 // Front G G4a (analysis/front-plans/front-g-gsc.md §11): the single-slit spectrometer wherever the telescope points, from the
 // compact GSC tiles. NGC 4874 (Coma – 1) is pointed exactly (no exercise route is involved); no catalogue value is asserted.
-async function open(page:Page){await page.goto('/#spectrometer');await expect(page.getByTestId('field-spectrometer')).toBeVisible({timeout:30000});}
+async function open(page:Page){
+ await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();
+ await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
+}
+// The telescope is pointed in the Observatory (its own checks apply); the spectrometer has no pointing control of its own.
 async function pointAndUse(page:Page,ra:string,dec:string){
- await page.locator('#field-spec-ra').fill(ra);await page.locator('#field-spec-dec').fill(dec);await page.getByTestId('field-spec-point').click();
+ if(!await page.locator('#point-ra').isVisible())await page.getByText('Enter coordinates',{exact:true}).click();
+ await page.locator('#point-ra').fill(ra);await page.locator('#point-dec').fill(dec);await page.getByRole('button',{name:'Point to coordinates',exact:true}).click();
+ await page.getByRole('button',{name:/^Telescope/}).click();
+ // The spectral controls need tracking on, as in the Observatory's own instrument access.
+ if(!await page.getByRole('button',{name:'Turn tracking on',exact:true}).isVisible())await page.getByText('Observatory clock & spectral tracking',{exact:true}).click();
+ if(await page.getByRole('button',{name:'Turn tracking on',exact:true}).isVisible())await page.getByRole('button',{name:'Turn tracking on',exact:true}).click();
+ await page.goto('/#spectrometer');await expect(page.getByTestId('field-spectrometer')).toBeVisible({timeout:30000});
  await expect(page.getByTestId('field-spec-use')).toBeEnabled({timeout:20000});await page.getByTestId('field-spec-use').click();
 }
 test('a galaxy at any pointing: field from the tiles, exposure, counts, session save and restore',async({page})=>{
