@@ -88,3 +88,18 @@ describe('Front P: RA-ordered placement of 0x590588 (web rule on the file-order 
   expect(raOrderedInsertIndex([],addHtlRow(e,{id:'N',remarks:'',ra:11,dec:0}).list[3])).toBe(0);
  });
 });
+
+describe('Front R2 (R1 review L5): an Edit opened before another window appends or removes rows',()=>{
+ it('the row under Edit is found by identity after an RA-ordered insert above it, and a removed row gives the index error',async()=>{
+  const {newHtlEditor,addHtlRow,editHtlRow,removeHtlRow,htlRowIndexOf,HtlError}=await import('./hotList');
+  let e=newHtlEditor();for(const [id,ra] of [['A',1],['B',5],['C',9]] as const)e=addHtlRow(e,{id,remarks:'',ra,dec:0});
+  const editing=e.list[1];// Edit opened on B (index 1)
+  const after=addHtlRowRaOrdered(e,{id:'X',remarks:'',ra:2,dec:0});// another window inserts X before B
+  expect(after.list.map(r=>r.id)).toEqual(['A','X','B','C']);
+  const at=htlRowIndexOf(after,editing);expect(at).toBe(2);
+  const applied=editHtlRow(after,at,{id:'B2',remarks:'',ra:5,dec:0});
+  expect(applied.list.map(r=>r.id)).toEqual(['A','X','B2','C']);// X, not B, would have been overwritten at the stale index 1
+  const gone=removeHtlRow(after,2);expect(htlRowIndexOf(gone,editing)).toBe(-1);
+  expect(()=>editHtlRow(gone,-1,{id:'B2',remarks:'',ra:5,dec:0})).toThrow(HtlError);
+ });
+});

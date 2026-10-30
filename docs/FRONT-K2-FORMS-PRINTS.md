@@ -57,8 +57,9 @@ OpenVireo has no log-in, so there are no student names and no table number.
 - For every line after the header: commas at columns 12, 24, 28, 31, 36, 41, 44 and 47, then one per filter (step 7 with the
   magnitudes option, 10 without), then +12 (Z) and +13 (Sp).
 - All spaces before the last comma are deleted, and the comments follow. The file is `Observations.CSV`.
-- A line shorter than that layout (an empty `Sky` line, a kind ≥ 2 line) would make VIREO write past the string; the web refuses
-  it with the line number [I].
+- A line shorter than that layout would make VIREO write past the string; the web refuses it with the line number [I]. In
+  this list only an empty first `Sky` line is that short. A kind ≥ 2 line is longer (the Dec text repeated) and is written,
+  misaligned, as VIREO writes it.
 
 **Code:**
 - `src/core/recordedResults.ts`. The time sum is exact Extended arithmetic, and FloatToStrF goes through the ported
@@ -163,6 +164,9 @@ reason (docs/CLEA-HELP.md).
   selects He I 4143.76.
 - Zoom and pan recompute the column from the stored wavelength.
 - Every click runs the reselection, so a second click on Fe I 4143.878 selects He I 4143.76 again.
+- The arrow keys run it too [I]: Delphi fires OnClick when the keyboard changes a ListBox selection, so ArrowDown from He I
+  4143.76 (row 17) lands on Fe I, which maps back to He I. The web behaves the same, and the note points keyboard users to
+  End, Home or a click.
 
 **Code:**
 - `nearestSpectralLine` in `src/help/spectralLines.ts`;

@@ -119,3 +119,44 @@ describe('IR exposure composer (C6)',()=>{
   expect(composeCameraExposure({...ir,seconds:CAMERA_MAX_SECONDS},irSelection('J')).recipe.seconds).toBe(CAMERA_MAX_SECONDS);
  });
 });
+
+describe('field-object pass 0x5228dc (Front R2)',()=>{
+ const centre={raHours:56.745/15,decDegrees:24.118},far={raHours:3,decDegrees:-40};
+ test('two draws per eligible variable on or off the detector; the tail catalog row takes the last on-detector magnitude',()=>{
+  const base=composeCameraExposure(recipe,selection());
+  const x=composeCameraExposure(recipe,selection(),[],[{...centre,magnitude:12.25},{...far,magnitude:5},{...centre,magnitude:Math.fround(11.5)}]);
+  expect(base.fieldObjects).toBeNull();
+  expect(x.fieldObjects).toEqual({eligible:3,inBounds:2,tail:'catalog',magnitude:Math.fround(11.5),tailDrawn:true,tailSaturatedAdmission:false});
+  expect(x.records).toHaveLength(base.records.length);// nothing is appended
+  expect(x.records.at(-1)).toEqual({...base.records.at(-1),magnitude:Math.fround(11.5)});// drawn at its own pixel
+  expect(x.drawsConsumed-base.drawsConsumed).toBeGreaterThanOrEqual(6);
+  expect(sha(x.plane.pixels)).not.toBe(sha(base.plane.pixels));
+ });
+ test('an empty pass list and an all-off-detector list change only the draws',()=>{
+  const base=composeCameraExposure(recipe,selection());
+  const none=composeCameraExposure(recipe,selection(),[],[]);expect(none.fieldObjects).toEqual({eligible:0,inBounds:0,tail:null,magnitude:null,tailDrawn:null,tailSaturatedAdmission:false});
+  expect(sha(none.plane.pixels)).toBe(sha(base.plane.pixels));
+  const off=composeCameraExposure(recipe,selection(),[],[{...far,magnitude:5}]);
+  expect(off.fieldObjects).toMatchObject({inBounds:0,tail:null});expect(off.records).toEqual(base.records);
+  expect(off.drawsConsumed).toBe(base.drawsConsumed+2);
+ });
+ test('no camera record: VIREO writes the observatory field star, which this page does not keep',()=>{
+  const empty={...selection(),selectedEntries:[]};
+  const x=composeCameraExposure(recipe,empty,[],[{...centre,magnitude:9}]);
+  expect(x.fieldObjects).toEqual({eligible:1,inBounds:1,tail:'none',magnitude:9,tailDrawn:null,tailSaturatedAdmission:false});expect(x.records).toEqual([]);
+  expect(()=>composeCameraExposure(recipe,selection(),[],[{...centre,magnitude:Number.NaN}])).toThrow(CameraExposureError);
+ });
+ test('closure M1: a class 1/2 magnitude (V − 30 or V − 60) on the tail catalog row is drawn as VIREO\'s saturated star',()=>{
+  const base=composeCameraExposure(recipe,selection());
+  for(const m of [-21.27,-51.27]){
+   const x=composeCameraExposure(recipe,selection(),[],[{...centre,magnitude:m}]);
+   expect(x.fieldObjects).toEqual({eligible:1,inBounds:1,tail:'catalog',magnitude:Math.fround(m),tailDrawn:true,tailSaturatedAdmission:true});
+   expect(x.records.at(-1)!.magnitude).toBe(Math.fround(m));// recorded as VIREO writes it, not clamped
+   expect(x.drawsConsumed).toBeGreaterThan(base.drawsConsumed+2);// the star consumes its draws
+   expect(x.plane.pixels.every(Number.isFinite)).toBe(true);
+   let top=-Infinity;for(const v of x.plane.pixels)if(v>top)top=v;expect(x.plane.pixels.filter(v=>v===top).length).toBeGreaterThan(1000);// clipped at the well
+  }
+  const ir=composeCameraExposure({...recipe,camera:'ir'},selection(),[],[{...centre,magnitude:-21.27}]);
+  expect(ir.fieldObjects).toMatchObject({tailDrawn:true,tailSaturatedAdmission:true});
+ });
+});

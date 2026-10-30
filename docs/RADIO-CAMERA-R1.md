@@ -107,20 +107,27 @@ The read-only boxes show the compiled states, each with one line on its effect:
 - **Key column** [D]: the keyword table 0x5b3ff8 holds String[8] entries already space-padded.
 - The standard web FITS stays the first button.
 
-## Follow-ups
-- **Results › Save Recorded Measurements, native:**
-  - the header's date and time use the host locale (ShortDateFormat/LongTimeFormat);
-  - the post-save state machine is not ported;
-  - the web save stays.
-- **Receiver sound:** it is synthesized in code (PulsarSoundObj, waveOut, 8-bit 5512 Hz), but the meanings of its noise and
-  gain parameters are only inferred. It stays silent with a note.
-- **Camera field objects:** the colour term is ready; the pass needs a field-engine population in the camera.
-- **Camera overlay:** needs the StretchBlt mode.
-- **Field-object pass 0x5228dc:** the plan's pure-function fallback (two draws per eligible variable, the tail overwrite) was
-  not delivered; only the colour term was.
-- **Hot-list appends during an observatory edit** (review L5): Add Current now refuses while the observatory editor has an
-  Add or Edit open, as radio Load does. The other appenders (optical Slew, QSO list, field information, cluster database)
-  still insert by RA under an open Edit, which shifts its row index. Fix that once, in the shared pattern.
+## Follow-ups (outcome in Front R2, 2026-10-29; research `analysis/front-r2/`)
+- **Results › Save Recorded Measurements, native: stays typed.**
+  - VIREO never sets ShortDateFormat or LongTimeFormat; TEnvironment1.FormCreate sets only DecimalSeparator '.' and
+    DateSeparator '-' [D]. So the header's date and time are the host Windows locale's and cannot be pinned without guessing.
+  - The flow, prompts, auto-name and CR LF line ending are decoded in `B-radio-save-sound.md`.
+  - Correction to dossier B: only a failed Rewrite marks the list saved; a write error raises an exception.
+  - The web save stays.
+- **Receiver sound: stays silent.**
+  - No WAV is used by the radio, and 0x408c44 is MessageBeep [D].
+  - The tone is synthesized: N = Round(7.5·(D/100)·(f/400)²) and s = (v·A·G·2.55 + Random(N))·Random [D].
+  - Its period scales with a sync factor that depends on the Windows version (0.765 or 0.92) [D/I].
+  - Its refills draw from the same global random seed as the displayed noise, asynchronously, on the sound-card callback
+    thread [D].
+  - A port would be an approximation, not the recovered sound.
+- **Camera field objects: ported** at certified fields (docs/CAMERA-EXPOSURE.md, Front R2).
+- **Camera overlay: stays typed.** The stretch mode, sizes and gate are recovered (docs/CAMERA-OVERLAY.md). The input is the
+  field engine's internal galaxies-only raster, which needs a field-engine export.
+- **Hot-list appends during an observatory edit** (review L5): fixed by Front R2 at the root. The observatory editor now
+  remembers the row under Edit by identity (`htlRowIndexOf`), so an RA-ordered insert or a removal from any other window
+  (Add Current, QSO list, field information, cluster lists) cannot make Apply overwrite a different row. Add Current no longer
+  needs its own refusal.
 
 ## Code and tests
 - **Vitest:**
