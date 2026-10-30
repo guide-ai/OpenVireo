@@ -100,7 +100,9 @@ export const OBSERVATORY_MESSAGES=Object.freeze({
   printed:'Print dialog opened for this spectrum only.',printBusy:'Another print is being prepared. Close it first.',printError:'The browser could not open printing.',
   printMeta:(ms:string,bins:string)=>`exposure ${ms} ms · ${bins} bins · normalized intensity (saved .SSP values)`,
   chartLabel:'Normalized acquired spectrum as saved',normalized:'Normalized intensity (0–1)',
-  adaptation:'Adaptation: Save is a browser download instead of the original file dialog; Print is a scoped browser print (no original printer layout).',
+  adaptation:'Adaptation: Save is a browser download instead of the original file dialog; Print is a scoped browser print that starts with VIREO\'s printed header (the rest of the original page layout is not reproduced).',
+  skySaveNote:'Save (.SSP) is not available for the sky-only exposure: VIREO writes the name and magnitude of the currently selected catalogue object into the file header, and this route has no selected object. Print and the counts CSV/JSON work.',
+  skyLabel:'Sky background',
  }),
 });
 export type ObservatoryMessages=typeof OBSERVATORY_MESSAGES;

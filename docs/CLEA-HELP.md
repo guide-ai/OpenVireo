@@ -29,7 +29,7 @@ name is an options field; OpenVireo uses its default.
 | Telescope control TObsrvtry (0x53f080) | Telescope motion card | ObsrvHlp.LST (+0x8cc) |
 | Photometer (0x502118) | Photometer | PhotoHlp.LST (+0x95c) |
 | CCD camera (0x5130fc) and IR camera (0x51512c) | Camera window | CamHlp.LST (+0x9a4, +0x9ec) |
-| Spectrometer (0x510f4c) | Star, galaxy and sky exposure windows, Object X spectroscopy, and the Spectrometer page | SpecHlp.LST (+0x914) |
+| Spectrometer (0x510f4c) | Star, galaxy and sky exposure windows, the LSS acquisition panel (Front H2), Object X spectroscopy, and the Spectrometer page | SpecHlp.LST (+0x914) |
 | Spectral classification (0x50b80c) | Classification | ClassHlp.LST (+0xa34) |
 | Spectrum measuring (0x584170) | Spectrum analyzer | MeasHlp.LST (+0xac4) |
 | HR diagram (0x544668) | Cluster HR views (Front V2) | HRAnalHlp.LST (+0xa7c) |
@@ -46,7 +46,7 @@ Notes:
 - **Viewers [W].** VIREO has one shared THelpWin and one Select Help Topic dialog for all windows, with one Back history. OpenVireo gives each window its own viewer and its own history.
 - **Pulsar analysis history.** 0x56e634 does not write THelpWin+0x56c, the "add to history" flag. In VIREO that flag is sticky on the shared window: every other Help1Click and every link sets it to 1, and Back sets it to 0, so the pulsar analysis's first topic is pushed or not depending on the previous action. OpenVireo models the fresh-window case: in pulsar analysis a topic opened from the topic list is not pushed (opening A, then B from the list, leaves Back disabled, where other windows have [A, B] and Back enabled). A followed link is pushed, but no PULSRANL.TXT topic has a related-topic link.
 - **Multi-object spectrometer.** TMSpecListForm1 and TMultSpCntrl enable Help only when their options index name is non-empty (`Length(name) > 0`, 0x525a00 / 0x529b5f). Both names are empty by default, so VIREO disables both Help items, and OpenVireo shows them disabled with that reason. MLTSPHLP.LST and SPLSTHLP.LST are also 0 bytes, but by default they are never opened.
-- **Spectrometer.** TSpectrometer is the window students expose with, so its Help is in each exposure window (star, galaxy, sky, Object X spectroscopy). The Spectrometer page keeps it too.
+- **Spectrometer.** TSpectrometer is the window students expose with, so its Help is in each exposure window (star, galaxy, sky, LSS acquisition, Object X spectroscopy). The Spectrometer page keeps it too.
 - **Accessible names [W].** Every Help button keeps VIREO's visible caption "Help" and has an accessible name for its window that starts with it (for example "Help for the telescope controls", "Help for the camera"), so the several Help buttons on one view can be told apart.
 - The variable-star Help used to be a web split of VarTypeHlp.TXT. It now opens VarTypeHlp.LST in the shared viewer.
 - The pulsar parameters window used to have a help text written for this site. It now opens PLSLSHLP.LST.
