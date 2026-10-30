@@ -74,6 +74,13 @@ export type FieldUnavailableReason=
  |'no-galaxy-selected'|'star-selected'|'slit-empty'|'spectrum-range'|'mean-bound'|'spectrum-mapping'
  /** Front F, 'merge' mode only: the slit selects a merged QSO record (type 3); a QSO observation is another branch. */
  |'qso-selected'
+ /** Star observation only: the matcher 0x50d660 returns nil for the star's spectral index (below 10 000 000, or above every
+  * JSPEC2.SPI entry); VIREO then shows "No Spectrum" / "You Cannot Record A Spectrum of This Star! Spectrum Index is Invalid!"
+  * (0x50e3ae → 0x50e457, strings 0x50e5a8, 0x50e570, caption 0x50e5d4) and records nothing. */
+ |'star-index-invalid'
+ /** Star observation only: spectral index 0 takes a random JSPEC2.SPI template (0x50e36f → 0x4035c8 Random); the random state
+  * is not reproduced, so the pick is typed (never a guessed template). No compact GSC record has index 0. */
+ |'star-template-random'
  /** Front T (variableDispatch.ts): a TRUE-dispatch star whose values are unavailable is in view, near a galaxy or QSO, or
   * selected (or, for indeterminate/fault cases, anywhere in the field). */
  |FieldVariableUnavailable;
@@ -656,8 +663,9 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
   // A TRUE-dispatch star's spectral code is +0x43 written by v2 (Front T), not the GSC record's own index.
   const st=population.stars[selection.star.index] as NativeFieldStar,variable=population.variableStars?.find(e=>e.starId===st.id);
   const spectralIndex=variable?.values.status==='computed'?variable.values.spectralCode:new DataView(Uint8Array.from(st.rawHex.match(/../g)!,x=>parseInt(x,16)).buffer).getInt32(8,true);
+  if(spectralIndex===0)return Object.freeze({...base,starTarget:st,reasons:Object.freeze(['star-template-random' as const])});
   const template=options.starObservation.templateFor(spectralIndex);
-  if(!template)return Object.freeze({...base,starTarget:st,reasons:Object.freeze(['star-selected' as const])});
+  if(!template)return Object.freeze({...base,starTarget:st,reasons:Object.freeze(['star-index-invalid' as const])});
   const fraction=nativeObjectSlitFraction({objectPresent:true,objectType:0,pixelLevel,object:{raHours:st.ra,decDegrees:st.dec},pointing:{raHours:at.ra,decDegrees:at.dec}});
   if(fraction<=0)return Object.freeze({...base,starTarget:st,reasons:Object.freeze(['slit-empty' as const])});
   const zeroPoint=telescopeZeroPoint(c.baseZeroPoint,c.telescopeCorrection);if(zeroPoint!==c.zeroPoint)throw new FieldEngineError('evidence');

@@ -1,5 +1,5 @@
 import {test,expect,type Page} from '@playwright/test';
-import {readFile} from 'node:fs/promises';
+import {readFile,writeFile} from 'node:fs/promises';
 
 // Front G G4a (analysis/front-plans/front-g-gsc.md §11): the single-slit spectrometer wherever the telescope points, from the
 // compact GSC tiles. NGC 4874 (Coma – 1) is pointed exactly (no exercise route is involved); no catalogue value is asserted.
@@ -40,7 +40,23 @@ test('a galaxy at any pointing: field from the tiles, exposure, counts, session 
   await acquisition.getByRole('button',{name:'Cancel and discard',exact:true}).click().catch(()=>{});
   await page.getByLabel('Restore exposure session (this pointing and telescope)').setInputFiles(session);
   await expect(page.getByTestId('field-spec-total')).toHaveText(total!,{timeout:30000});
+  // Closure N2: a session from the same pointing and telescope at another observatory time restores; the page adopts the
+  // session's field (its JD), as a new save shows.
+  const original=JSON.parse(await readFile(session,'utf8')),otherJd=original.policy.replace(/:JD[^:]+$/,':JD2451546.25');
+  const other=test.info().outputPath('other-time.json');await writeFile(other,JSON.stringify({...original,policy:otherJd},null,1)+'\n');
+  await page.getByLabel('Restore exposure session (this pointing and telescope)').setInputFiles(other);
+  await expect(page.getByTestId('field-spec-total')).toHaveText(total!,{timeout:30000});
+  const again=page.waitForEvent('download');await page.getByTestId('field-spec-acquisition').getByRole('button',{name:'Save exposure session',exact:true}).click();
+  expect(JSON.parse(await readFile((await (await again).path())!,'utf8')).policy).toBe(otherJd);
  }
+ expect(errors).toEqual([]);
+});
+test('a naked-eye star whose spectral index is not a whole class gets its template (closure N1, N0000.DAT@63282)',async({page})=>{
+ test.setTimeout(120000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await open(page);
+ await pointAndUse(page,'2.5125473','0.25592');
+ await expect(page.getByTestId('field-spec-object')).toContainText('N0000.DAT@63282',{timeout:90000});
+ await expect(page.getByTestId('field-spec-status')).toHaveCount(0);
+ await expect(page.getByTestId('field-spec-reasons')).not.toContainText('spectral index');
  expect(errors).toEqual([]);
 });
 test('near an Object X position the field is masked',async({page})=>{

@@ -3134,6 +3134,8 @@ export interface MessageParameters {
   "lss.reason.stamp-bound": never;
   "lss.reason.no-galaxy-selected": never;
   "lss.reason.star-selected": never;
+  "lss.reason.star-template-random": never;
+  "lss.reason.star-index-invalid": never;
   "lss.reason.slit-empty": never;
   "lss.reason.spectrum-range": never;
   "lss.reason.mean-bound": never;
@@ -3431,7 +3433,10 @@ export interface MessageParameters {
   "fieldSpec.reason.merge-boundary": never;
   "fieldSpec.reason.stamp-bound": never;
   "fieldSpec.reason.no-galaxy-selected": never;
+  "fieldSpec.internalError": never;
   "fieldSpec.reason.star-selected": never;
+  "fieldSpec.reason.star-template-random": never;
+  "fieldSpec.reason.star-index-invalid": never;
   "fieldSpec.reason.slit-empty": never;
   "fieldSpec.reason.spectrum-range": never;
   "fieldSpec.reason.mean-bound": never;

@@ -72,6 +72,16 @@ describe('the generic spectrometer',()=>{
   expect(timed.status).toBe('ready');if(timed.status!=='ready')return;
   expect(timed.result.reasons).not.toContain('variable-time-required');expect(timed.policy.endsWith(':JD2460614.8125')).toBe(true);
  });
+ it('closure N1: the naked-eye repro stars get their template (exact x87 bucket), never an exception',async()=>{
+  for(const [p,id] of [[{ra:2.5125473,dec:0.25592},'N0000.DAT@63282'],[{ra:3.2073193,dec:6.66083},'N0000.DAT@83847']] as const){
+   const r=await prepareFieldSpectrum(p,0);expect(r.status,id).toBe('ready');if(r.status!=='ready')continue;
+   expect(r.result.starTarget?.id,id).toBe(id);expect(r.result.reasons,id).not.toContain('star-index-invalid');
+   expect(r.result.calibration?.sourceFile??r.result.reasons.join(),id).toMatch(/^A\d{7}\.SP$|slit-empty|mean-bound/);
+  }
+  // An index above JSPEC2.SPI's last row: 0x50d660 is nil, so VIREO's "Spectrum Index is Invalid!" (typed, nothing recorded).
+  const tail=await prepareFieldSpectrum({ra:16.18146,dec:11.73154},0);expect(tail.status).toBe('ready');
+  if(tail.status==='ready'){expect(tail.result.starTarget?.id).toBe('N0730.DAT@570187');expect(tail.result.reasons).toEqual(['star-index-invalid']);expect(tail.result.calibration??null).toBeNull();}
+ });
  it('review 1 L5: every JSPEC2.SPI template is in the inputs; a context missing one is an input error, never another template',async()=>{
   const inputs=await spectrometerInputs();
   expect(new Set(inputs.starIndex.map(e=>e.file.toUpperCase()))).toEqual(new Set(inputs.starTemplates.keys()));

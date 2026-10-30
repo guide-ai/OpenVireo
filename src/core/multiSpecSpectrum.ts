@@ -20,8 +20,8 @@
  *  - total := signal + skySum; avg := total/400; S/N := √avg (0 when avg < 0); plot y := 170 − Round(c·(150/max)).
  *  - No sky subtraction: saved and plotted values are object + sky.
  *
- * Typed (never the native fault or message box): a nil template, a template not bundled (decision D2: only the approved templates), the
- * code-0 random pick (needs all 132 templates; no reachable star has code 0), a TRUE-dispatch star without values, a galaxy name
+ * Typed (never the native fault or message box): a nil template, the code-0 random pick (all 132 templates are bundled since
+ * 2026-10-30, but the random state is not reproduced; no compact GSC record has code 0), a TRUE-dispatch star without values, a galaxy name
  * the list does not hold (the native loop has no end guard), an own galaxy spectrum not bundled, galaxy/QSO construction errors,
  * types ≥ 5 (nil sampler), any bin mean above the 10⁶ web admission of poissonDraw (decision D3), negative means, and the
  * Poisson rejection branch's singular u = 0.5 ('precision').

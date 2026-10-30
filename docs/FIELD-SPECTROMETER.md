@@ -38,13 +38,22 @@ The Spectrometer page (`#spectrometer`) now holds VIREO's single-slit spectromet
 - **Exposure.** The ordinary bounded journal (`createFieldExposure`), with policy
   `openvireo-field-spectrum-v1:<ra>,<dec>:T<telescope>[:JD<jd>]` (exact binary64 pointing and frozen JD). The session file
   holds the policy, seed and events. Restoring prepares the field again at that pointing, telescope and time and replays the
-  journal; counts are never imported. The counts CSV quotes the policy field (RFC 4180), since the policy contains commas.
+  journal; counts are never imported. A session from the same pointing and telescope at another observatory time restores too:
+  the page then shows the session's re-prepared field and keeps its JD (G4a closure N2). The counts CSV quotes the policy field (RFC 4180), since the policy contains commas.
 - **Readout.** "Nearest object, selected by the slit": the object 0x59a0fc selects, which may give no light in the slit
   (`slit-empty`).
 - **Typed results**, shown as readable text (`fieldSpec.reason.*`):
   - the engine's reasons (slit-empty, mean-bound, variable-*, merge-boundary, photographic-image, spectrum-mapping, …);
-  - every template JSPEC2.SPI names is bundled (the 17 remaining ones were approved on 2026-10-30), so any star in a field has
-    its template; the former `star-template-not-bundled` reason is gone.
+  - every template JSPEC2.SPI names is bundled (the 17 remaining ones were approved on 2026-10-30), and the matcher's bucket
+    `Round(Frac(index / 10000) · 100)` is computed as the x87 does under Delphi's control word 0x1332 (64-bit precision, round to
+    nearest-even; G4a closure N1), so every index that 0x50d660 resolves gets its template, including the 1,176 GSC records
+    whose index is not a multiple of 100 (many naked-eye stars). The bucket agrees with an independent 80-bit witness;
+  - `star-index-invalid`: 0x50d660 returns nil (5,468 GSC records have an index above JSPEC2.SPI's last row); VIREO shows
+    "You Cannot Record A Spectrum of This Star! Spectrum Index is Invalid!" and records nothing;
+  - `star-template-random`: a computed variable whose spectral code is 0 (VIREO picks a random template; not reproduced; no
+    compact GSC record has index 0);
+  - preparation failures are typed by cause: a network failure is a missing catalogue piece (try again), a resource that does
+    not match its identity is a load error, and anything else is an internal error to report (G4a closure N1).
   - the tile reasons (field-polar, field-tiles, field-unreadable);
   - `object-x-hidden`: within 2° of an Object X position.
 - **Photographs.** Assembled packs now take their photograph matches from VIREO's kept GLIMAGES.LST rows

@@ -18,8 +18,9 @@ export type SpectrometerInputs=Readonly<{glx:Uint8Array;qsoCatalog:FieldQsoCatal
  starTemplates:ReadonlyMap<string,UniformSpectrum>;glxyspLines:readonly string[];galaxySpectra:ReadonlyMap<string,readonly Readonly<{wavelength:number;intensity:number}>[]>;photographs:FieldPhotographs}>;
 /** The spectrometer's field result at a pointing: QSO 'merge', the recovered variable dispatch, the GLXYSP guard, photographs,
  * 'start-time' continuation, star and QSO observation; a selected galaxy with its own bundled GLXYSP.LST spectrum takes the
- * matched branch (0x55e55c, factor 1). Every template JSPEC2.SPI names is bundled (approval of 2026-10-30), so a named template
- * missing from the inputs is an input error, never another template. variableTime (G4a review 1 M1): the observatory-clock JD frozen
+ * matched branch (0x55e55c, factor 1). Every template JSPEC2.SPI names is bundled (approval of 2026-10-30) and the matcher's x87
+ * bucket is exact (starTemplates.ts), so a named template missing from the inputs is an input error, never another template; a
+ * nil match is the engine's 'star-index-invalid' and a code-0 star its 'star-template-random'. variableTime (G4a review 1 M1): the observatory-clock JD frozen
  * when the field is prepared, as Field Information and LSS pass it; without it a time-dependent variable in view stays
  * variable-time-required. */
 export function spectrometerFieldResult(inputs:SpectrometerInputs,pack:FieldPack,pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope,variableTime?:FieldVariableTime):FieldResult{
