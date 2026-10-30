@@ -15,3 +15,27 @@ New support guards reject nonfinite/overflowedSingle values and the existing ana
 The browser's optional answer check is a practice draft and does not create a saved velocity record. Sessionversion1already restores the measuredzrecords, so the table recomputes afterrestoration. Draftanswers are not bundled. Rawstatic evidence and bindings are retained in research `analysis/scene-pixel-recovery/contracts.json` and`analysis/rea-ghidra-scene-results-results/`. StandalonehistoricalHubbleLab workflows, native regression/instructor configuration and originalFPU/output formatting remain pending. Separate [distance and summary helpers](HUBBLE-DISTANCE-RECIPES.md) implement explicit recipes from the distributed workbook and student manuals, with distinct method tags; they are not connected to this velocity UI or asserted as native VIREO regression.
 
 The requested native/code-review for this increment was denied beforeprocesscreation byautomaticapprovalreview and remains pending. No external result or model is claimed. Local checks and the separatelydeniedsecurity-review status are recorded independently inREVIEW-RESULT.md.
+
+## Observational Data on the Hubble record path (Front H2, 2026-10-30)
+
+**What VIREO does:** RecordZ1Click takes the observation-results path in mode 4, the Hubble exercise [D].
+- **Find or add (0x54a73c):** with Time-Dependent Data off (compiled), the first record with the same ID is reused and
+  keeps its time.
+- **Record fields:** z := Single(z), RA/Dec := the target's, and V := the catalogue magnitude when it is below 99.
+- **Dialog:** "Observational Data" (TObsRsltsDlg1) opens. The student types the velocity, and OK 0x54b02c stores it after
+  the 1 % check above. The record's velocity (+0x67) is that typed value.
+
+**In the web, a catalogue-galaxy acquisition's Record measurement opens the same dialog** (`core/hubbleObservation.ts`, K2's
+`ObservationalDataDialog` with Velocity editable).
+- **Stored:** the typed Single velocity, its hex, remarks, Sp type, first time, target RA/Dec and V go in the measurement row.
+- **Session v32** (`openvireo-hubble-observational-data-v32`, outermost) lists the records by measurement id around an
+  unchanged base. On restore, each record must pass the 1 % check against its row's Single z and match the acquisition's
+  target position and V. Older files restore and re-save byte-identically.
+- **The Hubble analysis** takes a row's typed velocity when it has one, because VIREO's results list and its files carry the
+  record's velocity. Otherwise it keeps v = c z.
+- **E01 numbers:** they change only within the 1 % rule. The guide and tests type c·z rounded to 0.01 km/s, so their
+  velocities differ from the derived ones by at most 0.005 km/s plus Single rounding.
+- **Re-recording a galaxy:** with Time-Dependent Data off, it updates its row, which keeps its id and first time.
+- **Compute Rdshft Vel.:** it pre-fills c·z when z ≠ 0.
+- **[W]:** stellar rows, imported and library spectra keep the web confirmation (no catalogue target record). Cancel records
+  nothing, and on a reused row changes nothing. The analyzer's own-results table stays the derived c·z study aid.

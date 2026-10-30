@@ -1,6 +1,7 @@
 import {test,expect,type Page} from '@playwright/test';
 import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
+import {recordMeasurement,sessionBase} from './fixtures/record-measurement';
 // Front F M1: UM-I – 3 (36805) through the original Hubble.HTL, the exact catalogue centre and the recovered cached-pan view of
 // the verified UM-I – 2 field (0.4 m only), saved in the v29 extended-target wrapper. Alignment positions, steps and seeds are
 // operator-chosen workflow inputs; the V value is typed by the operator from the workbook reference, never prefilled.
@@ -26,7 +27,7 @@ async function acquire(page:Page){
  await page.getByRole('button',{name:'Analyze acquired galaxy',exact:true}).click();await expect(page.getByTestId('z-value')).toHaveText('+0.000000');
  await expect(page.getByLabel('Galaxy acquisition provenance')).toContainText(T.id);
  await page.getByLabel('z step per tick').fill('.001');await page.getByRole('button',{name:'Apply step',exact:true}).click();await page.getByRole('slider').fill(T.position);
- await page.getByRole('button',{name:/Record measurement/}).click();await page.getByRole('button',{name:'Save measurement',exact:true}).click();
+ await recordMeasurement(page);
  return source!;
 }
 test('Hubble.HTL → UM-I – 3 cached pan → manual z → Hubble → Save (v29), fresh Restore, resume',async({page})=>{
@@ -37,7 +38,7 @@ test('Hubble.HTL → UM-I – 3 cached pan → manual z → Hubble → Save (v29
  await page.getByText('Hubble diagram & distances',{exact:true}).click();await page.getByRole('button',{name:'Add saved measurements',exact:true}).click();await page.getByLabel('Distance and summary recipe').selectOption('vireo');
  await expect(page.getByLabel('Apparent V magnitude · row 1',{exact:true})).toBeEmpty();
  await page.getByLabel('Apparent V magnitude · row 1',{exact:true}).fill(T.V);await page.getByLabel('Apparent magnitude source · row 1',{exact:true}).fill(`Hubble Data.xls · Sheet1!${T.cell}`);await page.getByLabel('VIREO target identification · row 1',{exact:true}).selectOption(T.id);
- const saved=await download(page,'Save session'),data=JSON.parse(saved.toString());
+ const saved=await download(page,'Save session'),data=sessionBase(JSON.parse(saved.toString()));
  expect(data.version).toBe(29);expect(data.extendedPolicy).toBe('openvireo-hubble-extended-targets-v29');expect(data.extendedGalaxies['0:36805'].source.kind).toBe('archive');
  expect(data.base.acquisitions).toHaveLength(1);expect(data.base.hubble.rows[0].input).toMatchObject({targetId:T.id,apparentVText:T.V,magnitudeSource:`Hubble Data.xls · Sheet1!${T.cell}`});expect(data.base.measurements.map((m:any)=>m.origin.targetId)).toEqual([T.id]);
  await page.reload();await page.getByLabel('Restore analysis session',{exact:true}).setInputFiles({name:'umi3.json',mimeType:'application/json',buffer:saved});

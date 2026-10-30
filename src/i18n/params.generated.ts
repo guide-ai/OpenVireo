@@ -102,6 +102,10 @@ export interface MessageParameters {
   "spectrum.float32Help": never;
   "spectrum.cancel": never;
   "spectrum.save": never;
+  "spectrum.observationNote": never;
+  "spectrum.observationReusedNote": never;
+  "spectrum.observationSaved": never;
+  "spectrum.observationUpdated": never;
   "spectrum.sampleCount": "count";
   "spectrum.roundsTo": never;
   "spectrum.roundsHelp": never;
