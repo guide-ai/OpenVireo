@@ -5,7 +5,7 @@ import{wedgeCsv}from'../core/wedgeExport';
 import type{WedgeRecord}from'../core/wedgeLssText';
 import{wedgeBitsHex,wedgeSingleExact}from'../core/wedgeNumeric';
 import{WEDGE_COLOUR_SCHEMES,wedgePlot,type WedgeOptions,type WedgeColourScheme,type WedgePoint}from'../core/wedgePlot';
-import{appendOwnLssRecords,removeOwnLssRecords,type WedgeOwnRecord}from'../core/wedgeWorkspace';
+import{handOverOwnLssRecords,removeOwnLssRecords,type WedgeOwnRecord}from'../core/wedgeWorkspace';
 import{EMPTY_WEDGE_WORKSPACE,addWedgePending,beginWedgeRead,cancelWedgeOptions,cancelWedgePending,cancelWedgeRead,clearWedgePending,commitWedgeOptions,completeWedgeRead,confirmWedgeDelete,dismissWedgeNotice,editWedgeOptions,failWedgeRead,openWedgeOptions,plotWedgeData,requestWedgeLoad,selectWedgeRecord,setWedgeSeparator,suspendWedgeWorkspace,type WedgeNotice,type WedgeWorkspace}from'../core/wedgeWorkspace';
 import{WedgeFileError,downloadWedgeText,readWedgeLssFile}from'../io/wedgeLssFile';
 import{wedgeMessages,wedgeStatusText,type WedgeMessageCatalog,type WedgeMessageOverrides}from'./WedgeMessages';
@@ -82,12 +82,10 @@ function WedgeLab({monochrome=false,printInColor=false,messages,idPrefix='wedge-
  useEffect(()=>{if(!restoredOptions||restoredOptions.token===appliedOptions.current)return;appliedOptions.current=restoredOptions.token;setW(c=>{try{return commitWedgeOptions(editWedgeOptions(openWedgeOptions(cancelWedgeOptions(removeOwnLssRecords(c))),restoredOptions.options));}catch{return c;}});},[restoredOptions?.token]);
  useEffect(()=>{
   if(!ownRecords||ownRecords.token===appliedOwn.current)return;appliedOwn.current=ownRecords.token;
-  const suspended=suspendWedgeWorkspace(w),base=ownRecords.replace?removeOwnLssRecords(suspended):suspended;
-  let next:WedgeWorkspace|null=null;try{next=appendOwnLssRecords(base,ownRecords.records,ownRecords);}catch{next=null;}
-  // Review 1 L3: atomic. A refused hand-over (capacity, invalid record) keeps the earlier own points; only its notice is shown.
-  const accepted=!!next&&next.receipts.length>base.receipts.length;
-  if(accepted)setW(next!);else if(next)setW(Object.freeze({...suspended,notice:next.notice}));
-  onOwnRecordsResult?.(ownRecords.token,accepted);
+  // Review 1 L3: atomic (handOverOwnLssRecords). A refused hand-over keeps the earlier own points; only its notice is shown.
+  let result:ReturnType<typeof handOverOwnLssRecords>|null=null;try{result=handOverOwnLssRecords(suspendWedgeWorkspace(w),ownRecords.records,ownRecords,!!ownRecords.replace);}catch{result=null;}
+  if(result)setW(result.workspace);
+  onOwnRecordsResult?.(ownRecords.token,!!result?.accepted);
  },[ownRecords?.token]);
  // Before paint, so a hidden prompt or dialog is never shown or clickable while disabled.
  // Host inactivity also drops a pending focus return: it never pulls focus into the panel.

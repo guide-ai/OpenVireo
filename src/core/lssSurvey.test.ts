@@ -164,7 +164,9 @@ describe('Front L3: Time-Dependent Data off (compiled) reuses the first row with
   const o=openLssRecord(s,{...withZ(.0301),jd:2451600});expect(o.draft!.target).toBe(0);
   expect(o.draft!.jd).toBe(2451545);// review 1 M1: FormActivate shows the record's first time (+0x10)
   expect(code(()=>editLssDraft(o,{object:'NGC 9999'}))).toBe('record');expect(editLssDraft(o,{object:'NGC 4555'}).draft!.object).toBe('NGC 4555');// N2
-  expect(openLssRecord(EMPTY_LSS_SURVEY,{...draft,jd:2451600}).draft!.jd).toBe(2451600);// a new row keeps the Record Z timeexpect(o.draft!.remarks).toBe('arm');expect(o.draft!.velocity).toMatch(/^6\.7\d\dE\+03$/);
+  expect(openLssRecord(EMPTY_LSS_SURVEY,{...draft,jd:2451600}).draft!.jd).toBe(2451600);
+  // A new row keeps the Record Z time.
+  expect(o.draft!.remarks).toBe('arm');expect(o.draft!.velocity).toMatch(/^6\.7\d\dE\+03$/);
   expect(confirmLssDialog(o).ok).toBe(false);
   expect(confirmLssRecord(o).records[0].zSingle).toBe(lssDialogZ(.0301));
  });
@@ -185,4 +187,21 @@ describe('Front L3: Time-Dependent Data off (compiled) reuses the first row with
   s=confirmLssRecord(openLssRecord(s,withZ(.0301)));expect(s.wedgeStale).toBe(true);expect(pendingWedgeRecords(s)).toHaveLength(2);
   s=markLssHandedToWedge(s,2);expect(s.wedgeStale).toBe(false);expect(pendingWedgeRecords(s)).toEqual([]);
  });
+});
+import {handOverOwnLssRecords} from './wedgeWorkspace';
+describe('Front L3 closure C2: the own-records hand-over is atomic at the 10 000-point workspace capacity',()=>{
+ const rec=(i:number)=>({object:`G${i}`,jd:2451545,ra:13,dec:28,zSingle:Math.fround(.01+i*1e-7),remarks:''});
+ const many=(n:number,from=0)=>Array.from({length:n},(_,i)=>rec(from+i));
+ it('a replace that does not fit keeps the earlier own points and receipt and shows only the notice; one that fits replaces them',()=>{
+  const first=handOverOwnLssRecords(EMPTY_WEDGE_WORKSPACE,many(6000),{sha256:'a'.repeat(64),bytes:1},false);
+  expect(first.accepted).toBe(true);expect(first.workspace.records).toHaveLength(6000);expect(first.workspace.receipts).toHaveLength(1);
+  const refused=handOverOwnLssRecords(first.workspace,many(10001),{sha256:'b'.repeat(64),bytes:1},true);
+  expect(refused.accepted).toBe(false);expect(refused.workspace.records).toBe(first.workspace.records);expect(refused.workspace.receipts).toBe(first.workspace.receipts);
+  expect(refused.workspace.notice).toMatchObject({kind:'not-loaded',cause:'capacity'});
+  const fits=handOverOwnLssRecords(first.workspace,many(9000,100),{sha256:'c'.repeat(64),bytes:1},true);
+  expect(fits.accepted).toBe(true);expect(fits.workspace.records).toHaveLength(9000);expect(fits.workspace.receipts.map(r=>r.sha256)).toEqual(['c'.repeat(64)]);
+  // Without replace, the same 9000 would pass the capacity on top of 6000: refused, nothing removed.
+  const added=handOverOwnLssRecords(first.workspace,many(9000,100),{sha256:'d'.repeat(64),bytes:1},false);
+  expect(added.accepted).toBe(false);expect(added.workspace.records).toBe(first.workspace.records);
+ },60000);
 });
