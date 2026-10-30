@@ -15,13 +15,13 @@ load, so they are never asserted.
 ## Scenarios and budgets
 | Scenario | What happens | Count | Budget |
 |---|---|---|---|
-| classificationLoad | open `#classification` cold, until the type field shows and commits stop | 144 | 158 |
+| classificationLoad | open `#classification` cold, until the type field shows and commits stop | 147 | 158 |
 | classificationKey | one keystroke in "Proposed spectral type" | 31 | 36 |
 | classificationFill | `fill` of that field | 31 | 36 |
 | classificationToSpectrum | header click from classification to the spectrum analyzer | 43 | 47 |
 | analyzerKey | one keystroke in the analyzer's "Object or reference" | 8 | 12 |
-| observatoryLoad | open `#observatory` cold, until its heading shows | 82 | 90 |
-| openDome | click "Open dome ↗" | 25 | 30 |
+| observatoryLoad | open `#observatory` cold, until its heading shows | 85 | 90 |
+| openDome | click "Open dome ↗" | 26 | 30 |
 | visitedKey | after visiting eight routes (they stay mounted, hidden), one classification keystroke | 31 | 36 |
 | visitedRouteChange | then the header click to the spectrum analyzer | 43 | 47 |
 
@@ -33,6 +33,12 @@ Counts are as of the commit that set them; the Front Perf commits lower them ste
   renders once more on load (SpectrumInstrument, Chart, Diagram, VelocityAnalysis, HubbleAnalysis, OwnObservationResults,
   CleaHelp, one each). analyzerKey 7 → 8 and both analyzer route changes 42 → 43: SpectrumEngineControls renders with the
   analyzer. Keystroke counts on other routes are unchanged (31).
+- Merge of main e19d7bb (Fronts C5W and A) into Front D3: C5W's ObservatorySounds and A's CloudEntry rendered on every
+  shell render (keystrokes 31 → 32 with CloudEntry; ObservatorySounds also on every clock tick). MR3 memoises both:
+  ObservatorySounds compares only motion.kind and motion.phase (all its sound state reads), CloudEntry gets a stable
+  onRestore. Keystroke and route-change counts are back to 31 and 43. On load each renders once more (classificationLoad
+  144 → 147, observatoryLoad 82 → 85, within the budgets), and openDome 25 → 26: the dome switch cues the dome sound, which
+  re-renders ObservatorySounds once.
 
 ## Changing a budget
 - `OPENVIREO_RENDER_REPORT=1 npx playwright test tests/render-budget.spec.ts` (or `=all` for every component) prints each scenario's count, commit count and
