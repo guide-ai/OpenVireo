@@ -1,5 +1,6 @@
 import {test,expect,type Page} from '@playwright/test';import {readFile} from 'node:fs/promises';import {createHash} from 'node:crypto';import reference from '../data/observatory/star-drift-vectors.json' with {type:'json'};
 import{clickHeaderTool}from'./fixtures/header-tools';
+import{guardRenderLoops}from'./fixtures/render-loop';guardRenderLoops(test);
 const restored='Investigation restored. Included tools were validated together. Exposure segments are stopped and deactivated; activate explicitly before continuing.';
 async function open(page:Page){await page.clock.install();await page.goto('/#star-exposure');await expect(page.getByRole('heading',{name:'Catalog star exposure',exact:true})).toBeVisible();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));}
 async function clock(page:Page){if(!await page.getByRole('button',{name:'Turn tracking off',exact:true}).isVisible())await page.getByText('Observatory clock & spectral tracking',{exact:true}).click();}

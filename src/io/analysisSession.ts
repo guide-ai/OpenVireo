@@ -1,11 +1,14 @@
 import{MAX_PROJECT_METADATA_GROWTH,projectBytesFit,projectTextFits}from'../core/projectMetadata';
 import{projectMetadata,projectMarker}from'../core/projectMetadata';
 import {readOpticalOptions,type OpticalOptions} from '../core/opticalOptions';
+// Front D3: the row limit and the error class live in analysisSessionLimits.ts (no session code), re-exported unchanged.
+import {MAX_SESSION_ROWS,AnalysisSessionError} from './analysisSessionLimits';
+export {MAX_SESSION_ROWS,AnalysisSessionError};
 import {portableSiteOverrides,readSiteOverrides,type SiteOverrides} from '../core/observatorySite';
 import {readMotionPreferences,TELESCOPE_MOTION_POLICY,TELESCOPE_MOTION_SHA256,type MotionPreferences} from '../core/telescopeMotion';
 import {CLUSTER_SELECTION_POLICY,CLUSTER_SELECTION_SHA256,type ClusterSelectionWorkspace} from '../core/clusterSelection';
 import {readClusterComparisonWorkspace,CLUSTER_COMPARISON_SHA256,CLUSTER_COMPARISON_POLICY,type ClusterComparisonWorkspace} from '../core/clusterComparison';
-import {NATIVE_CLUSTER_POLICY,NATIVE_CLUSTER_SHA256} from '../core/nativeCluster';
+import {NATIVE_CLUSTER_POLICY,NATIVE_CLUSTER_SHA256} from '../core/nativeClusterParameters';
 import {readClusterDatabaseWorkspace,CLUSTER_DATABASE_POLICY,CLUSTER_DATABASE_SHA256,type ClusterDatabaseWorkspace} from '../core/clusterDatabase';
 import {decodeSessionNumber,encodeSessionNumber} from '../core/sessionNumber';
 import {galaxyTelescopeIndex} from '../core/galaxyTelescope';
@@ -41,7 +44,6 @@ import umiCached from '../../data/hubble/umi-cached-provenance.json';
 
 /** New portable browser format, not the original CLEA saved-spectrum format. */
 export const SESSION_PAYLOAD_BYTES=16*1024*1024,MAX_SESSION_BYTES=SESSION_PAYLOAD_BYTES+MAX_PROJECT_METADATA_GROWTH;
-export const MAX_SESSION_ROWS=1000;
 const FORMAT='OpenVireo analysis session', POLICY='Number_x87_equivalence_unvalidated';
 const REFERENCES={galaxy:'GLXYLNS.LST',balmer:'BALMER.LST',qso:'AGN_QSO.LST'} as const;
 export type SessionObservation=(ImportedSpectrum & Readonly<{name:string;kind?:undefined}>)|AcquisitionObservation;
@@ -114,9 +116,6 @@ function checkCombinedReplayBudget(wrapper:unknown,extended=false):void{
 }
 function sessionUsesCached(session:AnalysisSession){return (session.acquisitions??[]).some(acquisitionIsCached)||!!session.observing&&(session.observing.cachedGalaxies!==undefined||observingUsesCachedGalaxies(session.observing));}
 function sessionUsesPegasus(session:AnalysisSession){return (session.acquisitions??[]).some(acquisitionIsPegasus)||!!session.observing&&(session.observing.pegasusGalaxies!==undefined||observingUsesPegasusGalaxies(session.observing));}
-export class AnalysisSessionError extends Error {
-  constructor(readonly code:'size'|'format'|'state'|'measurements'|'observation'|'resources') {super(`Analysis session: ${code}`);this.name='AnalysisSessionError';}
-}
 function fail(code:AnalysisSessionError['code']):never {throw new AnalysisSessionError(code);}
 function record(value:unknown,keys:readonly string[]):Record<string,unknown> {
   if(!value||typeof value!=='object'||Array.isArray(value))fail('format');
@@ -440,6 +439,10 @@ async function portable(session:AnalysisSession,wrapped:Wrapped={}):Promise<unkn
     adjustment:{control:session.control,stepInput:session.stepInput,reference:session.reference,wide:session.wide,object:session.object},
     measurements:session.rows.map(({id,object,file,sha256,control,reference,zFloat32Hex,origin})=>({id,object,file,sha256,control,reference,zFloat32Hex,...(origin?{origin}:{})}))};
 }
+/** Front D3 review M1: the modules that Save itself imports lazily (portable() and the re-read of what it wrote). The
+ * analyzer loads them with this module once the page is idle, so an open tab that can no longer fetch code (offline, or a
+ * newer deployment) still saves. Restore-only modules are not included. */
+export const preloadSaveModules=()=>Promise.all([import('./observingWorkspace'),import('./photometerSession'),import('./clusterSelection'),import('./objectXSpectra'),import('./hubbleEngineTargets')]);
 export async function serializeAnalysisSession(session:AnalysisSession):Promise<string> {
   const result=JSON.stringify(await portable(session),(_key,value)=>encodeSessionNumber(value),2)+'\n';
   if(!projectTextFits(result,SESSION_PAYLOAD_BYTES))fail('size');

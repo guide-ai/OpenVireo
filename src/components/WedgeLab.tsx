@@ -1,3 +1,4 @@
+import {memo} from 'react';
 import{useEffect,useLayoutEffect,useMemo,useRef,useState,type ChangeEvent,type KeyboardEvent}from'react';
 import'./Wedge.css';
 import{wedgeCsv}from'../core/wedgeExport';
@@ -53,7 +54,7 @@ const fmt=(v:number,digits:number)=>Number.isFinite(v)?v.toFixed(digits):String(
 function raCell(r:WedgeRecord,m:WedgeMessageCatalog){return r.ra.status==='value'?fmt(r.ra.hours,6)+' '+m.detail.hours:m.fieldStatus[r.ra.status];}
 function decCell(r:WedgeRecord,m:WedgeMessageCatalog){return r.dec.status==='value'?fmt(r.dec.degrees,5)+m.detail.degrees+(r.dec.signLost?' *':''):m.fieldStatus[r.dec.status];}
 
-export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWorkspaceChange,ownRecords=null,onOwnRecordsResult,restoredOptions=null}:WedgeLabProps){
+function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWorkspaceChange,ownRecords=null,onOwnRecordsResult,restoredOptions=null}:WedgeLabProps){
  const m=useMemo(()=>wedgeMessages(messages),[messages]),C=m.native;
  const[w,setW]=useState<WedgeWorkspace>(EMPTY_WEDGE_WORKSPACE);
  const[scheme,setScheme]=useState<WedgeColourScheme>(0);
@@ -250,3 +251,5 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
   {w.optionsDraft&&!disabled?<WedgeOptionsDialog draft={w.optionsDraft} idPrefix={idPrefix} captions={C} autoPlotNote={m.autoPlotUnavailable} onChange={c=>act(x=>editWedgeOptions(x,c))} onOk={()=>closeOptions(true)} onCancel={()=>closeOptions(false)}/>:null}
  </section>;
 }
+// Front Perf: re-render only when a prop changes (handlers come stable from the shell; docs/RENDER-BUDGET.md).
+export default memo(WedgeLab);

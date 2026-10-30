@@ -1,4 +1,5 @@
-import type {RefObject} from 'react';
+import {memo,type RefObject} from 'react';
+import {sameData} from './renderStability';
 import {t} from './i18n';
 import {CLASSIFICATION_LAB_COUNTED_STEPS,CLASSIFICATION_LAB_STEPS,type ClassificationLabProgress,type ClassificationLabStep} from './core/classificationLab';
 import {CLASSIFICATION_CATALOG} from './core/classification';
@@ -8,7 +9,7 @@ import './pleiades-lab.css';
 
 /** WEB-CLASSIFICATION-GUIDE-01: the Stellar classification (E03) guide, with the PleiadesLabGuide layout. Every mark is
  * recomputed from the current state by classificationLabProgress; nothing is stored. It gives no answer and grades nothing. */
-export default function ClassificationLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:ClassificationLabProgress;onNavigate:()=>void}){
+function ClassificationLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:ClassificationLabProgress;onNavigate:()=>void}){
  function go(){dialogRef.current?.close();onNavigate();}
  const doneCount=CLASSIFICATION_LAB_COUNTED_STEPS.filter(s=>progress.done[s]).length;
  const practice=CLASSIFICATION_CATALOG.practice.find(p=>p.id===progress.practiceId);
@@ -42,3 +43,5 @@ export default function ClassificationLabGuide({dialogRef,progress,onNavigate}:{
   <button className="secondary-button" onClick={()=>dialogRef.current?.close()}>{t('classLab.return')}</button>
  </dialog>;
 }
+// Front Perf: the closed guide re-renders only when its progress (plain data), ref or handler changes.
+export default memo(ClassificationLabGuide,(a,b)=>a.dialogRef===b.dialogRef&&a.onNavigate===b.onNavigate&&sameData(a.progress,b.progress));

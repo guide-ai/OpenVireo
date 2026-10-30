@@ -6,11 +6,14 @@ import {separationDegrees} from '../core/ephemeris';
 import {OBJECT_X_HIDE_DEGREES,OBJECT_X_ON_TARGET_DEGREES} from '../core/objectXLab';
 import type {Pointing} from '../core/sky';
 
-let positions:Promise<readonly Pointing[]>|null=null;
+let positions:Promise<readonly Pointing[]>|null=null,loaded:readonly Pointing[]|null=null;
 export function loadObjectXPositions():Promise<readonly Pointing[]>{
- if(!positions){positions=import('./bundledOrbitFile').then(m=>m.fetchObjectXHotList(fetch,new AbortController().signal)).then(b=>Object.freeze(parseHtl(b.bytes).map(r=>Object.freeze({ra:r.ra,dec:r.dec}))));positions.catch(()=>{positions=null;});}
+ if(!positions){positions=import('./bundledOrbitFile').then(m=>m.fetchObjectXHotList(fetch,new AbortController().signal)).then(b=>Object.freeze(parseHtl(b.bytes).map(r=>Object.freeze({ra:r.ra,dec:r.dec}))));positions.then(l=>{loaded=l;},()=>{positions=null;});}
  return positions;
 }
+/** The positions once loadObjectXPositions has resolved, else null: lets a caller whose pointing changes on every clock tick
+ * evaluate the mask during render instead of resetting state from an effect on each tick. */
+export function loadedObjectXPositions():readonly Pointing[]|null{return loaded;}
 /** True when an Object X position (or the lab's hidden target) lies within the hide radius plus `reach` degrees. */
 export function objectXNear(list:readonly Pointing[],hidden:Pointing|null,p:Pointing,reach=0):boolean{
  return [...list,...(hidden?[hidden]:[])].some(q=>separationDegrees(p.ra,p.dec,q.ra,q.dec)<=OBJECT_X_HIDE_DEGREES+reach);

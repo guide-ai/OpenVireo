@@ -2,7 +2,7 @@ import{projectResource}from'./projectMetadata';
 import contractSource from '../../data/photometry/cluster-dataset-contract.json';
 const contract=projectResource(contractSource);
 
-import {nativeClusterValues,validNativeClusterParameters,readNativeClusterDraft,nativeClusterDraftFromFit,type NativeClusterParameters,type NativeClusterDraft} from './nativeCluster';
+import {nativeClusterValues,validNativeClusterParameters,readNativeClusterDraft,nativeClusterDraftFromFit,type NativeClusterParameters,type NativeClusterDraft} from './nativeClusterParameters';
 export const CLUSTER_DATABASE_SHA256='228907286f3538ccc0b99995ca6f6f871b6e0d93aa2056b931b83cb2d120b152';
 export const CLUSTER_DATABASE_POLICY=contract.policy;
 export const M67=Object.freeze({...contract.dataset});

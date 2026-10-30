@@ -1,4 +1,4 @@
-import {useEffect,useRef,useState} from 'react';
+import {memo,useEffect,useRef,useState} from 'react';
 import './camera.css';
 import {CAMERA_MESSAGES as M} from './camera/CameraMessages';
 import {cameraRequestTransition,createCameraRequestGate,CAMERA_OBSERVE_INTERVAL_MS,type CameraGateEffect,type CameraGateEvent,type CameraRequestGate} from './core/cameraRequestGate';
@@ -54,7 +54,7 @@ function cameraQuery(camera:CameraExposureKind,telescope:OpticalIndex,filter:num
 }
 const randomSeed=()=>crypto.getRandomValues(new Uint32Array(1))[0];
 
-export default function CameraControl({active,busy,telescopeIndex,pointing,access,currentJd,extraSources,onImage,seedSource=randomSeed}:CameraControlProps){
+function CameraControl({active,busy,telescopeIndex,pointing,access,currentJd,extraSources,onImage,seedSource=randomSeed}:CameraControlProps){
  const [camera,setCamera]=useState<CameraExposureKind>('ccd'),[filter,setFilter]=useState(0),[minutes,setMinutes]=useState('0'),[seconds,setSeconds]=useState('10'),[gain,setGain]=useState(2);
  const [mode,setMode]=useState<CameraCatalogMode>('static'),[usePalette,setUsePalette]=useState(false);
  const [gate,setGate]=useState<CameraRequestGate>(createCameraRequestGate),[message,setMessage]=useState<string>(M.statusIdle),[,setWaitShown]=useState(false);
@@ -207,3 +207,5 @@ export default function CameraControl({active,busy,telescopeIndex,pointing,acces
   {showIrNotes&&<p className="observatory-note" data-testid="camera-ir-citation">{M.citationIr}</p>}
  </section>;
 }
+// Front Perf: re-render only when a prop changes (handlers come stable from the shell; docs/RENDER-BUDGET.md).
+export default memo(CameraControl);

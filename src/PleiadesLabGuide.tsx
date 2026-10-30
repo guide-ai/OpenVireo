@@ -1,4 +1,5 @@
-import type {RefObject} from 'react';
+import {memo,type RefObject} from 'react';
+import {sameData} from './renderStability';
 import {t} from './i18n';
 import {PLEIADES_LAB_COUNTED_STEPS,PLEIADES_LAB_STEPS,type PleiadesLabProgress,type PleiadesLabStep} from './core/pleiadesLab';
 import {PLEIADES_HTL} from './core/pleiadesHotList';
@@ -14,7 +15,7 @@ const STEP_DESTINATION:Readonly<Record<PleiadesLabStep,PleiadesLabDestination>>=
 /** WEB-PLEIADES-GUIDE-01: the Pleiades photometry (E04) guide, with the PulsarLabGuide layout. Every mark is recomputed from the
  * current state by pleiadesLabProgress; nothing is stored. The guide explains the paper-and-overlay procedure; it computes no
  * magnitude, color or distance itself, and it does not mark the whole E05 exercise complete. */
-export default function PleiadesLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:PleiadesLabProgress;onNavigate:(destination:PleiadesLabDestination)=>void}){
+function PleiadesLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:PleiadesLabProgress;onNavigate:(destination:PleiadesLabDestination)=>void}){
  function go(destination:PleiadesLabDestination){dialogRef.current?.close();onNavigate(destination);}
  const doneCount=PLEIADES_LAB_COUNTED_STEPS.filter(s=>progress.done[s]).length;
  const statusText=(step:PleiadesLabStep)=>step==='save'?t('pleiadesLab.status.save')
@@ -53,3 +54,5 @@ export default function PleiadesLabGuide({dialogRef,progress,onNavigate}:{dialog
   <button className="secondary-button" onClick={()=>dialogRef.current?.close()}>{t('pleiadesLab.return')}</button>
  </dialog>;
 }
+// Front Perf: the closed guide re-renders only when its progress (plain data), ref or handler changes.
+export default memo(PleiadesLabGuide,(a,b)=>a.dialogRef===b.dialogRef&&a.onNavigate===b.onNavigate&&sameData(a.progress,b.progress));

@@ -1,5 +1,5 @@
 import PhotometerPlotSettings from './PhotometerPlotSettings';
-import {useEffect,useMemo,useRef,useState} from 'react';
+import {memo,useEffect,useMemo,useRef,useState} from 'react';
 import type {ClusterReferencePoint} from './core/clusterDatabase';
 import type {PhotometerState} from './core/photometer';
 import {pleiadesPoints,pleiadesPointVisible,PLEIADES_PLOT,type PleiadesPoint} from './core/pleiadesAnalysis';
@@ -32,7 +32,7 @@ export type DatabaseHrProgress=Readonly<{validTrial:boolean;reportOpen:boolean}>
 /** variant "observation"(phase1 item1.9): the learner's own confirmed photometer pairs in the Data from Observations view,
  * drawn on the database route's native frame with its sliders and parameter report. It reads the live canonical photometer
  * state and the shared photometer fit/draft; it creates no DAT record and never consults catalog or acquired magnitudes. */
-export default function NativeClusterAnalysis({state,busy,draft,onDraft,onConfirm,referenceData,onDatabaseProgress,variant,ownIssue=null}:{state:PhotometerState|null;busy:boolean;draft:NativeClusterDraft|null;onDraft:(d:NativeClusterDraft|null)=>void;onConfirm:(p:NativeClusterParameters)=>boolean;referenceData?:ReferenceDisplay;onDatabaseProgress?:(p:DatabaseHrProgress)=>void;variant?:'observation';ownIssue?:'refused'|'limit'|'error'|null}){
+function NativeClusterAnalysis({state,busy,draft,onDraft,onConfirm,referenceData,onDatabaseProgress,variant,ownIssue=null}:{state:PhotometerState|null;busy:boolean;draft:NativeClusterDraft|null;onDraft:(d:NativeClusterDraft|null)=>void;onConfirm:(p:NativeClusterParameters)=>boolean;referenceData?:ReferenceDisplay;onDatabaseProgress?:(p:DatabaseHrProgress)=>void;variant?:'observation';ownIssue?:'refused'|'limit'|'error'|null}){
  const db=referenceData!==undefined;
  const own=!db&&variant==='observation';
  const prefix=db?'db-':own?'own-hr-':'';
@@ -80,15 +80,16 @@ export default function NativeClusterAnalysis({state,busy,draft,onDraft,onConfir
  // touch held still for 500 ms picks too [W]; the contextmenu that Android may fire afterwards is then ignored.
  const longPress=useRef<{id:number;x:number;y:number;timer:number}|null>(null),pressedAt=useRef(0);
  function pickAt(e:React.MouseEvent<SVGSVGElement>){
-  // A contextmenu (Android fires one during a long press) cancels the pending press timer; a second pick of the same press
-  // within 800 ms is ignored, whichever came first (review L6).
-  e.preventDefault();cancelPress();if(Date.now()-pressedAt.current<800)return;pressedAt.current=Date.now();pickClient(e.currentTarget,e.clientX,e.clientY);
+  // A contextmenu (Android fires one during a long press) cancels the pending press timer, so the press picks once; the
+  // contextmenu Android may fire after a long press already picked is ignored for 800 ms (review L6). Mouse right clicks are
+  // never debounced: two separate right clicks are two picks, as in VIREO.
+  e.preventDefault();cancelPress();if(Date.now()-pressedAt.current<800)return;pickClient(e.currentTarget,e.clientX,e.clientY);
  }
  function cancelPress(){if(longPress.current){window.clearTimeout(longPress.current.timer);longPress.current=null;}}
  function pressStart(e:React.PointerEvent<SVGSVGElement>){
   if(e.pointerType!=='touch'||!vBank||!referenceData?.onPick)return;cancelPress();
   const svg=e.currentTarget,x=e.clientX,y=e.clientY;
-  longPress.current={id:e.pointerId,x,y,timer:window.setTimeout(()=>{longPress.current=null;if(Date.now()-pressedAt.current<800)return;pressedAt.current=Date.now();pickClient(svg,x,y);},500)};
+  longPress.current={id:e.pointerId,x,y,timer:window.setTimeout(()=>{longPress.current=null;pressedAt.current=Date.now();pickClient(svg,x,y);},500)};
  }
  function pressMove(e:React.PointerEvent<SVGSVGElement>){const p=longPress.current;if(p&&p.id===e.pointerId&&Math.hypot(e.clientX-p.x,e.clientY-p.y)>10)cancelPress();}
  useEffect(()=>cancelPress,[]);
@@ -151,3 +152,5 @@ export default function NativeClusterAnalysis({state,busy,draft,onDraft,onConfir
  {db&&<><div className="sky-actions"><button type="button" className="secondary-button" onClick={printReport}>{t('db.print')}</button></div><p className="observatory-note">{HR.reportPrintNote}</p>{printError&&<p role="alert">{t('db.printError')}</p>}</>}</details>}
  <p className="observatory-note">{t(referenceData?'db.limits':own?'ownHr.limits':'nc.limits')}</p></section>;
 }
+// Front Perf: re-render only when a prop changes (handlers come stable from the shell; docs/RENDER-BUDGET.md).
+export default memo(NativeClusterAnalysis);
