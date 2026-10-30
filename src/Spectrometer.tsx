@@ -6,7 +6,7 @@ import { t } from './i18n';
 import { POLISH_MESSAGES as PM } from './polish/PolishMessages';
 import CleaHelp from './clusters/CleaHelp';
 import {HELP_FILES} from './help/helpFiles';
-import {lazy,Suspense,useState} from 'react';
+import {lazy,Suspense} from 'react';
 import type {FieldSpectrometerLink} from './FieldSpectrometer';
 const FieldSpectrometer=lazy(()=>import('./FieldSpectrometer'));
 
@@ -15,8 +15,7 @@ const FieldSpectrometer=lazy(()=>import('./FieldSpectrometer'));
  * so the page and saved investigations stay unchanged (the preparation seed is still saved and restored, but unused). */
 function Spectrometer({ onReturn, field }: { field?: FieldSpectrometerLink; target: SkyObject; enabled: boolean; onReturn: () => void; verifiedLibrary:Readonly<{targetId:string;name:string;sha256:string;samples:readonly Sample[]}>|null;libraryFailed:boolean;seedText:string;onSeedTextChange:(text:string)=>void }) {
   const S = PM.spectrometerIndex;
-  // The field spectrometer's chunk loads only once this screen is opened (the route stays mounted while hidden).
-  const [opened,setOpened]=useState(!!field?.active);if(field?.active&&!opened)setOpened(true);
+  // The field spectrometer's chunk loads only once this screen is opened: the page gives `field` only from then on.
   return <main className="observatory-main spectrometer-main">
     <button className="back-observatory" onClick={onReturn}>{t('sky.back')}</button>
     <section className="observatory-heading"><div className="eyebrow">{t('spectrometer.eyebrow')}</div><h1 tabIndex={-1}>{S.title}</h1>{/* TSpectrometer Help1Click 0x510f4c, FormShow 0x50da3d, options +0x914 (docs/CLEA-HELP.md) */}<CleaHelp list={HELP_FILES['SPECHLP.LST']} testId="spectrometer-index-help"/><p>{S.intro}</p></section>
@@ -26,7 +25,7 @@ function Spectrometer({ onReturn, field }: { field?: FieldSpectrometerLink; targ
       <p className="observatory-note">{S.retired}</p>
     </section>
     {/* Front G (G4a): the spectrometer wherever the telescope points, from the compact GSC tiles. */}
-    {field&&opened&&<Suspense fallback={<p>{t('sky.loading')}</p>}><FieldSpectrometer link={field}/></Suspense>}
+    {field&&<Suspense fallback={<p>{t('sky.loading')}</p>}><FieldSpectrometer link={field}/></Suspense>}
   </main>;
 }
 // Front Perf: re-render only when a prop changes (handlers come stable from the shell; docs/RENDER-BUDGET.md).

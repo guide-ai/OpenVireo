@@ -685,7 +685,12 @@ export default function OpenVireo(){
   const studentPointed=hasPointed&&!(benchPointing&&benchPointing.ra===pointing.ra&&benchPointing.dec===pointing.dec);
   const photometerTelescope=useMemo(()=>({pointing,domeOpen:open,mode,moving:observatoryClock.moving,onPreparePoint:stable.preparePhotometerField,onPoint:stable.photometerPoint,studentPointed,hidden:objectXHidden}),[pointing,open,mode,observatoryClock.moving,stable,studentPointed,objectXHidden]);
   const gateTracking=nativeGate.tracking,gateMoving=nativeGate.moving,gateFinder=nativeGate.finder,gateDome=nativeGate.domeOpen;
-  const spectrometerField=useMemo(()=>({active:view==='spectrometer',pointing,gate:{tracking:gateTracking,moving:gateMoving,finder:gateFinder,domeOpen:gateDome},telescope:optical.selectedIndex,hidden:objectXHidden}),[view,pointing,gateTracking,gateMoving,gateFinder,gateDome,optical.selectedIndex,objectXHidden]);
+  // Front G: the field spectrometer's link exists only once the Spectrometer screen has been opened (the hidden screen then
+  // ignores dome and pointing changes), keyed on the boolean route so other route changes keep it.
+  const spectrometerShown=view==='spectrometer',[spectrometerOpened,setSpectrometerOpened]=useState(false);
+  if(spectrometerShown&&!spectrometerOpened)setSpectrometerOpened(true);
+  const spectrometerField=useMemo(()=>spectrometerOpened?({active:spectrometerShown,pointing,gate:{tracking:gateTracking,moving:gateMoving,finder:gateFinder,domeOpen:gateDome},telescope:optical.selectedIndex,hidden:objectXHidden,currentJd:observatoryJd}):undefined,
+   [spectrometerOpened,spectrometerShown,pointing,gateTracking,gateMoving,gateFinder,gateDome,optical.selectedIndex,objectXHidden,observatoryJd]);
   const radioPrefill=useMemo(()=>objectXHidden?{ra:objectXHidden.ra,dec:objectXHidden.dec}:null,[objectXHidden]);
   const radioHiddenName=useMemo(()=>objectXHidden?(p:Pointing)=>objectXMasks(objectXHidden,p)?objectXHidden.label:null:undefined,[objectXHidden]);
   // Front Perf: the header and nav depend only on view, hostInert and stable handlers/refs; built again only when those change.

@@ -25,7 +25,7 @@ test('a galaxy at any pointing: field from the tiles, exposure, counts, session 
  await pointAndUse(page,'12.99311111111111','27.959722222222222');
  const field=page.getByTestId('field-spec-field');await expect(field).toBeVisible({timeout:90000});
  await expect(field).toHaveAttribute('data-kind',/galaxy|star|qso/);
- await expect(page.getByTestId('field-spec-object')).toContainText('In the slit:');
+ await expect(page.getByTestId('field-spec-object')).toContainText('Nearest object, selected by the slit:');
  const acquisition=page.getByTestId('field-spec-acquisition');
  await expect(acquisition).toBeVisible();await expect(page.getByTestId('field-spec-reasons')).toHaveCount(0);
  {
@@ -36,7 +36,7 @@ test('a galaxy at any pointing: field from the tiles, exposure, counts, session 
   await acquisition.getByRole('button',{name:'Pause exposure',exact:true}).click();
   const total=await page.getByTestId('field-spec-total').textContent();
   const d=page.waitForEvent('download');await acquisition.getByRole('button',{name:'Save exposure session',exact:true}).click();
-  const session=(await (await d).path())!;expect(JSON.parse(await readFile(session,'utf8')).policy).toMatch(/^openvireo-field-spectrum-v1:12\.99311111111111,27\.959722222222222:T[012]$/);
+  const session=(await (await d).path())!;expect(JSON.parse(await readFile(session,'utf8')).policy).toMatch(/^openvireo-field-spectrum-v1:12\.99311111111111,27\.959722222222222:T[012]:JD\d+(\.\d+)?$/);
   await acquisition.getByRole('button',{name:'Cancel and discard',exact:true}).click().catch(()=>{});
   await page.getByLabel('Restore exposure session (this pointing and telescope)').setInputFiles(session);
   await expect(page.getByTestId('field-spec-total')).toHaveText(total!,{timeout:30000});

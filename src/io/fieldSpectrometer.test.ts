@@ -2,16 +2,24 @@ import {readFileSync} from 'node:fs';
 import {createHash,webcrypto} from 'node:crypto';
 import {afterAll,beforeAll,describe,expect,it,vi} from 'vitest';
 import {prepareFieldSpectrum,readFieldSpectrumSession,serializeFieldSpectrumSession,setFieldSpectrometerFiles,spectrometerInputs} from './fieldSpectrometer';
-import {setTileSources} from './tileAssembly';
+import {setTileSources,tileSources} from './tileAssembly';
 import {checkGscIndex,createGscTileStore} from './gscTiles';
 import {assembleFieldPack} from './assembledFieldPack';
 import {loadObjectXSpectrometerInputs} from './objectXSpectrometerInputs';
 import {OBJECT_X_SPECTRUM_ROWS,objectXField,type ObjectXSpectrometerInputs} from '../core/objectXSpectrometer';
-import {spectrometerFieldResult,parseFieldSpectrumPolicy,fieldSpectrumPolicy} from '../core/fieldSpectrometer';
+import {spectrometerFieldResult,parseFieldSpectrumPolicy,fieldSpectrumPolicy,fieldSpectrumCalibration,fieldSpectrumCsv} from '../core/fieldSpectrometer';
 import {lssExposureEngine} from '../core/lssExposure';
 import {activateJournal,pauseJournal,startJournal,tickJournal} from '../core/exposureJournal';
 import type {FieldTelescope} from '../core/fieldEngine';
 vi.setConfig({testTimeout:300000});
+/** A minimal RFC 4180 reader (quoted fields, doubled quotes, CRLF rows). */
+function parseCsv(text:string):string[][]{
+ const rows:string[][]=[];let row:string[]=[],f='',q=false;
+ for(let i=0;i<text.length;i++){const c=text[i];
+  if(q){if(c==='"'&&text[i+1]==='"'){f+='"';i++;}else if(c==='"')q=false;else f+=c;continue;}
+  if(c==='"')q=true;else if(c===',' ){row.push(f);f='';}else if(c==='\r'&&text[i+1]==='\n'){row.push(f);rows.push(row);row=[];f='';i++;}else f+=c;}
+ return rows;
+}
 
 // Front G G4a (analysis/front-plans/front-g-gsc.md §11): the single-slit spectrometer at any pointing, from the compact GSC tiles.
 const pub=(p:string)=>new Uint8Array(readFileSync('public'+p)),sha=(b:Uint8Array)=>createHash('sha256').update(b).digest('hex');
@@ -39,20 +47,41 @@ describe('the generic spectrometer',()=>{
    for(const telescope of [0,1,2] as FieldTelescope[]){
     const want=objectXField(xInputs,pointing,telescope)!.result,got=spectrometerFieldResult(inputs,pack,pointing,telescope);
     expect(got.reasons,`row ${row.row} T${telescope}`).toEqual(want.reasons);
-    expect(got.calibration?.sourceMeans??null).toEqual(want.calibration?.sourceMeans??null);
+    // Review 1 L5: everything the exposure and the CSV read (source and sky means, continuation) and the wavelengths.
+    expect(fieldSpectrumCalibration(got)).toEqual(fieldSpectrumCalibration(want));
+    expect(got.calibration?.wavelengths??null).toEqual(want.calibration?.wavelengths??null);
     expect([got.target?.id,got.starTarget?.id,got.qsoTarget?.id]).toEqual([want.target?.id,want.starTarget?.id,want.qsoTarget?.id]);
     compared++;if(!want.reasons.length)available++;
    }
   }
   expect(compared).toBe(OBJECT_X_SPECTRUM_ROWS.length*3);expect(available).toBeGreaterThan(10);
  });
- it('policy codec: exact pointing and telescope round trip',()=>{
+ it('policy codec: exact pointing, telescope and frozen JD round trip',()=>{
   const p={ra:11.74525,dec:55.37861111},policy=fieldSpectrumPolicy(p,2);
   expect(policy).toBe('openvireo-field-spectrum-v1:11.74525,55.37861111:T2');expect(parseFieldSpectrumPolicy(policy)).toEqual({pointing:p,telescope:2});
-  for(const bad of ['openvireo-field-spectrum-v1:11.745250,55:T2','openvireo-field-spectrum-v1:24,0:T0','openvireo-field-spectrum-v1:1,0:T3',3])expect(parseFieldSpectrumPolicy(bad)).toBeNull();
+  const vt={jd:2460614.8125,source:'observatory-clock' as const},timed=fieldSpectrumPolicy(p,2,vt);
+  expect(timed).toBe('openvireo-field-spectrum-v1:11.74525,55.37861111:T2:JD2460614.8125');expect(parseFieldSpectrumPolicy(timed)).toEqual({pointing:p,telescope:2,variableTime:vt});
+  for(const bad of ['openvireo-field-spectrum-v1:11.745250,55:T2','openvireo-field-spectrum-v1:24,0:T0','openvireo-field-spectrum-v1:1,0:T3',3,
+   'openvireo-field-spectrum-v1:1,0:T0:JD2460614.81250','openvireo-field-spectrum-v1:1,0:T0:JD1','openvireo-field-spectrum-v1:1,0:T0:JDNaN','openvireo-field-spectrum-v1:1,0:T0:JD'])expect(parseFieldSpectrumPolicy(bad)).toBeNull();
+ });
+ it('review 1 M1: a field with a time-dependent variable needs the frozen observatory time, which then evaluates it',async()=>{
+  const p={ra:19.86185,dec:16.8324},without=await prepareFieldSpectrum(p,0);
+  expect(without.status).toBe('ready');if(without.status!=='ready')return;
+  expect(without.result.reasons).toContain('variable-time-required');
+  const vt={jd:2460614.8125,source:'observatory-clock' as const},timed=await prepareFieldSpectrum(p,0,{variableTime:vt});
+  expect(timed.status).toBe('ready');if(timed.status!=='ready')return;
+  expect(timed.result.reasons).not.toContain('variable-time-required');expect(timed.policy.endsWith(':JD2460614.8125')).toBe(true);
+ });
+ it('review 1 L5: every JSPEC2.SPI template is in the inputs; a context missing one is an input error, never another template',async()=>{
+  const inputs=await spectrometerInputs();
+  expect(new Set(inputs.starIndex.map(e=>e.file.toUpperCase()))).toEqual(new Set(inputs.starTemplates.keys()));
+  const p={ra:11+44/60+42.9/3600,dec:55+22/60+43/3600},prepared=await prepareFieldSpectrum(p,0);
+  expect(prepared.status==='ready'&&prepared.result.starTarget).toBeTruthy();if(prepared.status!=='ready')return;
+  const s=await tileSources(),pack=await assembleFieldPack(p,s.assembly);
+  expect(()=>spectrometerFieldResult({...inputs,starTemplates:new Map()},pack,p,0)).toThrow(/star template .* missing/);
  });
  it('at another pointing: a star (bundled template or typed), M31 typed, Object X masked; a session replays after re-preparing',async()=>{
-  // NGC 4486 (M87) region, far from every Object X position: a field the student can point at freely.
+  // N5230-00946 (11 h 44 m 42.9 s, +55° 22′ 43″), far from every Object X position: a field the student can point at freely.
   const star=await prepareFieldSpectrum({ra:11+44/60+42.9/3600,dec:55+22/60+43/3600},0);
   expect(star.status).toBe('ready');
   if(star.status==='ready'){
@@ -75,5 +104,10 @@ describe('the generic spectrometer',()=>{
   const text=serializeFieldSpectrumSession(s),back=await readFieldSpectrumSession(text);
   expect(back.state.exposure.counts).toEqual(s.exposure.counts);expect(back.prepared.policy).toBe(ready.policy);
   await expect(readFieldSpectrumSession(text.replace(ready.policy,ready.policy.replace(':T2',':T7')))).rejects.toThrow();
+  // Review 1 M2: the counts CSV is well formed (RFC 4180): the policy, which contains commas, is one quoted field.
+  const csv=fieldSpectrumCsv(s,ready.result.calibration!.wavelengths),rows=parseCsv(csv);
+  expect(csv.endsWith('\r\n')).toBe(true);expect(rows[0]).toHaveLength(7);expect(rows.length).toBe(s.exposure.counts.length+1);
+  for(const r of rows.slice(1)){expect(r).toHaveLength(7);expect(r[0]).toBe(ready.policy);}
+  expect(rows.slice(1).map(r=>Number(r[3]))).toEqual(s.exposure.counts);
  });
 });

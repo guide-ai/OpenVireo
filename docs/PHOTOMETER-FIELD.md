@@ -102,7 +102,7 @@ in VIREO. Static evidence is in `analysis/front-g-gsc/RE-photometer-start.md`.
     that target or moves to the bench's known Pleiades field (a web orchestration).
   - **Use the telescope pointing** reads the field again after the telescope moved; before Activate it activates here.
 - **One checked way to move from the bench (G3 review 1 M2).** Leaving the Photometer screen releases the bench, and Activate
-  starts a fresh context with empty skies, so the bench keeps **Point the telescope here** for "sky on a clean patch, then
+  starts a fresh context with empty skies, so the bench keeps **Point the telescope here** [W] for "sky on a clean patch, then
   back to the star". It goes through the Observatory's own checked pointing (`pointChecked`): Limit Slewing refuses a
   position below the horizon, and a closed dome refuses the move (the bench never opens the dome). After a move the field is
   read again at once, as FormActivate re-selects when the form becomes active again. The spectrometer screen has no such

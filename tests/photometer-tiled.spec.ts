@@ -68,3 +68,11 @@ test('the bench move follows the Observatory\'s checks: Limit Slewing refuses be
  await expect(page.getByRole('alert')).toContainText('Limit Slewing refuses a position below the horizon');
  await expect(page.getByTestId('photo-telescope-dec')).toHaveText(STAR.dec.replace(/0+$/,''));
 });
+test('a Pleiades target calibrated by a sky taken at a tiled pointing says why it will not count (G3 closure N3)',async({page})=>{
+ test.setTimeout(180000);await observatory(page);await pointObservatory(page,SKY);await photometerHere(page);await ready(page);
+ await integrate(page);await expect(page.getByTestId('photo-tiled-sky-note')).toHaveCount(0);
+ const target=page.getByLabel('Photometry target',{exact:true});
+ const pleiades=await target.locator('option').evaluateAll(o=>(o as HTMLOptionElement[]).map(x=>x.value).find(v=>v&&!v.startsWith('gsc:')));
+ await target.selectOption(pleiades!);
+ await expect(page.getByTestId('photo-tiled-sky-note')).toContainText('do not count toward the Pleiades exercise');
+});

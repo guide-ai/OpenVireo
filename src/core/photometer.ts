@@ -81,8 +81,11 @@ function transition(s:PhotometerState,e:PhotometerEvent,live:boolean):Photometer
   // (only a telescope change needs fresh sky) and the declared Sky/Object mode; the frame must have been prepared.
   if(!s.armed||s.phase==='running')throw new PhotometerError('phase');
   const targetId=tiledPhotometerTargetId({ra:e.ra,dec:e.dec});if(!isTiledPhotometerTarget(targetId))throw new PhotometerError('field');
-  // [W] A move stands for leaving the form to point the telescope: returning re-activates it, and FormActivate clears +0x41d.
-  next={...s,targetId,current:null,phase:'idle',...(s.timing?{work:null}:{}),color:s.colors[targetId]??null,readingSliderMoved:false};
+  // [W] A move stands for leaving the form to point the telescope: returning re-activates it. FormActivate (0x4ff987–0x4ff9ab)
+  // sets the slider to Sky when it was at Sky or the selected object's aperture fraction is 0, clears +0x41d (0x4ff9cb), and
+  // SetPosition sets it again only when the position changed (G3 closure N2). A registered tiled frame always has a selection.
+  const sky=s.pointing==='sky'||!(photometerSelectedFraction(targetId,'sky',s.apertureSelector??10,s.telescopeIndex??0)>0);
+  next={...s,targetId,current:null,phase:'idle',...(s.timing?{work:null}:{}),color:s.colors[targetId]??null,pointing:sky?'sky':s.pointing,readingSliderMoved:sky&&s.pointing!=='sky'};
  }else if(e.type==='skyConfirm'){
   if(!s.armed||s.phase==='running'||s.pointing!=='sky'||!skyReplaceAsked(s))throw new PhotometerError('confirm');
   next={...s,skyReplaceConfirmed:true};

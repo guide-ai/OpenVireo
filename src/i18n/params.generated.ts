@@ -1075,6 +1075,8 @@ export interface MessageParameters {
   "ph.pointedUnavailable": "label" | "number" | "reason";
   "ph.pointedOutsideTelescope": "label" | "number" | "telescope";
   "ph.pointedNone": "target";
+  "ph.tiledSkyNote": never;
+  "ph.pointedNoneHere": never;
   "ph.pointedBlocked": "label" | "number";
   "ph.activatedPointed": "label" | "number";
   "ph.pointingReleased": never;

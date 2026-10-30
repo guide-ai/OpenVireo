@@ -99,6 +99,18 @@ describe('photometer at a telescope pointing (tiled)',()=>{
   expect(reactivated.readingSliderMoved).toBe(true);
   expect(run(s,[{type:'deactivate'},{type:'activate'}]).readingSliderMoved).toBe(false);
  },120_000);
+ it('a move applies FormActivate\'s Sky rule: Object declared, a field whose selected object has no light in the aperture turns Sky (G3 closure N2)',async()=>{
+  await preparePhotometerTiledField(STAR);await preparePhotometerTiledField(BLANK);
+  const field=(p:typeof STAR)=>({type:'field' as const,ra:p.ra,dec:p.dec});
+  let s=run(createPhotometer(6),[{type:'activate'},field(STAR),{type:'point',kind:'object'}]);
+  expect([s.pointing,s.readingSliderMoved]).toEqual(['object',true]);
+  // At STAR the selected star is in the aperture: the declared Object stays and the flag is cleared.
+  s=run(s,[field(STAR)]);expect([s.pointing,s.readingSliderMoved]).toEqual(['object',false]);
+  // At BLANK its fraction is 0: Sky, and the slider moved (Object → Sky), so the flag is set again.
+  s=run(s,[field(BLANK)]);expect([s.pointing,s.readingSliderMoved]).toEqual(['sky',true]);
+  // Already at Sky: no position change, so the flag stays cleared.
+  s=run(s,[field(STAR)]);expect([s.pointing,s.readingSliderMoved]).toEqual(['sky',false]);
+ },120_000);
  it('a Pleiades reading reduced with a sky taken at a tiled pointing is not an E04 count (G3 review 1 L3)',async()=>{
   await preparePhotometerTiledField(BLANK);
   const row=PLEIADES_ADMITTED_ROWS[0]!;

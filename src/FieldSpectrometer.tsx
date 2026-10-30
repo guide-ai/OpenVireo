@@ -3,8 +3,9 @@ import {t,scientific} from './i18n';
 import {useBoundedExposure,type ExposureEngine} from './useBoundedExposure';
 import {instrumentAccess} from './core/instrumentAccess';
 import {lssExposureEngine} from './core/lssExposure';
-import {JournalError,type JournalState} from './core/exposureJournal';
-import type {FieldResult,FieldTelescope} from './core/fieldEngine';
+import {JournalError} from './core/exposureJournal';
+import {frozenObservatoryTime,type FieldResult,type FieldTelescope} from './core/fieldEngine';
+import {fieldSpectrumCsv,serializeFieldSpectrumSession} from './core/fieldSpectrometer';
 import type {Pointing} from './core/sky';
 import {fieldInfoReasonText} from './observatory/FieldInfoMessages';
 import type {PreparedFieldSpectrum} from './io/fieldSpectrometer';
@@ -12,14 +13,16 @@ import type {PreparedFieldSpectrum} from './io/fieldSpectrometer';
 /** Front G (G4a, analysis/front-plans/front-g-gsc.md §11): VIREO's single-slit spectrometer wherever the telescope points. The
  * field is read from the compact GSC tiles; the slit takes the nearest object (0x59a0fc) and the engine's star, galaxy and QSO
  * branches give the spectrum, or a typed reason. Exercise routes and their counts are not affected. */
-export type FieldSpectrometerLink=Readonly<{active:boolean;pointing:Pointing;gate:Readonly<{tracking:boolean;moving:boolean;finder:boolean;domeOpen:boolean}>;telescope:FieldTelescope;hidden:Pointing|null}>;
+/** currentJd: the observatory clock's JD reader (a stable function); it is read once, when the student presses Use (G4a review 1
+ * M1), and recorded in the policy. */
+export type FieldSpectrometerLink=Readonly<{active:boolean;pointing:Pointing;gate:Readonly<{tracking:boolean;moving:boolean;finder:boolean;domeOpen:boolean}>;telescope:FieldTelescope;hidden:Pointing|null;currentJd?:()=>number}>;
 type Ready=Extract<PreparedFieldSpectrum,{status:'ready'}>;
 const kindOf=(r:FieldResult)=>r.qsoTarget?'qso':r.starTarget?'star':r.target?'galaxy':null;
 function engineFor(prepared:Ready):ExposureEngine{
  const e=lssExposureEngine(prepared.result,prepared.policy),c=prepared.result.calibration!;
  return {...e,
-  csv:(s:JournalState)=>{if(s.exposure.phase==='running')throw new JournalError('phase');return ['policy,bin,wavelength_A,source_plus_sky_count,elapsed_ms,seed_at_reset,uniform_draws',...s.exposure.counts.map((n,i)=>[s.policy,i+1,c.wavelengths[i],n,s.exposure.elapsedMs,s.seedAtReset,s.exposure.draws].join(','))].join('\r\n')+'\r\n';},
-  serialize:(s:JournalState)=>{if(s.exposure.phase==='running')throw new JournalError('phase');return JSON.stringify({format:'OpenVireo field spectrum exposure',version:1,policy:s.policy,seedAtReset:s.seedAtReset,events:s.events},null,1)+'\n';},
+  csv:s=>fieldSpectrumCsv(s,c.wavelengths),
+  serialize:serializeFieldSpectrumSession,
   read:async(file:File)=>{
    if(file.size>2*1024*1024)throw new JournalError('session');
    const {readFieldSpectrumSession}=await import('./io/fieldSpectrometer');
@@ -53,7 +56,7 @@ export default function FieldSpectrometer({link}:{link:FieldSpectrometerLink}){
  useEffect(()=>{if(!link.active){request.current?.abort();setLoading(false);}},[link.active]);
  async function useHere(){
   request.current?.abort();const controller=new AbortController();request.current=controller;setLoading(true);
-  try{const {prepareFieldSpectrum}=await import('./io/fieldSpectrometer');const r=await prepareFieldSpectrum({ra:link.pointing.ra,dec:link.pointing.dec},link.telescope,{signal:controller.signal,hidden:link.hidden});if(!controller.signal.aborted)setPrepared(r);}
+  try{const {prepareFieldSpectrum}=await import('./io/fieldSpectrometer');const variableTime=frozenObservatoryTime(link.currentJd);const r=await prepareFieldSpectrum({ra:link.pointing.ra,dec:link.pointing.dec},link.telescope,{signal:controller.signal,hidden:link.hidden,...(variableTime?{variableTime}:{})});if(!controller.signal.aborted)setPrepared(r);}
   catch{if(!controller.signal.aborted)setPrepared({status:'unavailable',reason:'field-tiles',detail:'fetch'});}
   finally{if(request.current===controller){request.current=null;setLoading(false);}}
  }
