@@ -10,6 +10,7 @@ import type {JournalState} from './core/exposureJournal';
 import type {Pointing} from './core/sky';
 import {fieldInfoReasonText} from './observatory/FieldInfoMessages';
 import type {PreparedFieldSpectrum} from './io/fieldSpectrometer';
+import {fieldSpectrumFailure,type FieldSpectrumShown} from './io/fieldSpectrumFailure';
 
 /** Front G (G4a, analysis/front-plans/front-g-gsc.md §11): VIREO's single-slit spectrometer wherever the telescope points. The
  * field is read from the compact GSC tiles; the slit takes the nearest object (0x59a0fc) and the engine's star, galaxy and QSO
@@ -18,14 +19,8 @@ import type {PreparedFieldSpectrum} from './io/fieldSpectrometer';
  * M1), and recorded in the policy. */
 export type FieldSpectrometerLink=Readonly<{active:boolean;pointing:Pointing;gate:Readonly<{tracking:boolean;moving:boolean;finder:boolean;domeOpen:boolean}>;telescope:FieldTelescope;hidden:Pointing|null;currentJd?:()=>number}>;
 type Ready=Extract<PreparedFieldSpectrum,{status:'ready'}>;
-/** What the page shows when preparing failed outside the typed results (G4a closure N1): only a network failure is a missing
- * catalogue piece; a resource that did not match its identity is load-error; anything else is an internal error, never "fetch". */
-type Shown=PreparedFieldSpectrum|Readonly<{status:'unavailable';reason:'load-error'|'internal'}>;
-function failure(e:unknown):Shown{
- if(e instanceof TypeError&&/fetch|network|load failed/i.test(e.message))return Object.freeze({status:'unavailable',reason:'field-tiles',detail:'fetch'});
- if(e instanceof Error&&(e.name==='FieldSpectrometerError'||e.name==='GscTileError'))return Object.freeze({status:'unavailable',reason:'load-error'});
- return Object.freeze({status:'unavailable',reason:'internal'});
-}
+type Shown=FieldSpectrumShown;
+const failure=fieldSpectrumFailure;
 const kindOf=(r:FieldResult)=>r.qsoTarget?'qso':r.starTarget?'star':r.target?'galaxy':null;
 /** onAdopt: a session taken at this pointing and telescope at another observatory time re-prepares its own field (its JD); the
  * page then shows that field with the restored journal (G4a closure N2). */

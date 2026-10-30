@@ -16,9 +16,11 @@ import type {FieldTelescope} from '../core/fieldEngine';
 import type {MultiSpecFieldRequest} from '../io/multiSpec';
 import {nativeFieldCacheHolds} from '../core/fieldCache';
 
-/** Object X rule (plan §4): a field is masked when its centre lies within OBJECT_X_HIDE_DEGREES + this half-width (the ±0.375°
- * bounded field area) of an Object X position. */
-export const MULTISPEC_MASK_REACH=0.375;
+/** Object X rule (plan §4): a field is masked when its centre lies within OBJECT_X_HIDE_DEGREES + this reach of an Object X
+ * position. The reach covers the whole instrument field area, corners included (G-merge review L1): Dec ± 0.375°, RA ±
+ * 0.375/(15·cos Dec) h puts the corners 0.53° from the centre at the ObjectX.HTL declinations (multiSpecMaskReach.test.ts), and
+ * the review measured assembled populations reaching 0.53–0.61°. The camera's CAMERA_FIELD_MASK_REACH (Front O) takes the same value. */
+export const MULTISPEC_MASK_REACH=0.62;
 type Pointing=Readonly<{ra:number;dec:number}>;
 const at=(p:Pointing)=>Object.freeze({ra:p.ra,dec:p.dec});
 export function observatoryMultiSpecField(pointing:Pointing,telescope:FieldTelescope):MultiSpecFieldRequest|null{

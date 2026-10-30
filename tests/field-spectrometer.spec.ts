@@ -65,3 +65,13 @@ test('near an Object X position the field is masked',async({page})=>{
  await pointAndUse(page,'12.485194444444444','2.0522222222222224');
  await expect(page.getByTestId('field-spec-status')).toHaveAttribute('data-reason','object-x-hidden',{timeout:60000});
 });
+test('a catalogue file that does not arrive is a retryable missing piece, not an internal error (G final closure N3)',async({page})=>{
+ test.setTimeout(120000);
+ // Only the field spectrometer's own load is refused: the Observatory does not read CLEA_GLX.DAT before the slit is used.
+ await page.route('**/original/catalogs/CLEA_GLX.DAT',r=>r.abort('internetdisconnected'));
+ await open(page);
+ await pointAndUse(page,'12.99311111111111','27.959722222222222');
+ const status=page.getByTestId('field-spec-status');
+ await expect(status).toHaveAttribute('data-reason','field-tiles',{timeout:60000});
+ await expect(status).not.toContainText('trying again will not help');
+});
