@@ -18,9 +18,15 @@ export type CameraSourceCalibration=Readonly<{
 const owned=new WeakSet<object>();
 /** Shared source initializer52455c and point calibration5245ed..524640.
  * Compiled fallback references only;no live option or catalog authenticity. */
-export function compiledCameraSourceCalibration(kind:unknown,index:unknown,filterPosition:unknown,seconds:number,storedMagnitude:number):CameraSourceCalibration {
+/** The web's admission bounds for a source (not native limits). The saturated-tail admission (Front R2 closure M1) is used
+ * only for the catalog tail that the field-object pass overwrote: wide enough for VIREO's class 1/2 magnitudes (V − 30 or
+ * V − 60) and still Float32-safe (peak × exposure scale, including the cross term's 0.01 × scale², stays below 1e36). */
+export type CameraSourceAdmission=Readonly<{magnitude:number;referencePeak:number;float32Safe:boolean}>;
+export const CAMERA_SOURCE_ADMISSION:CameraSourceAdmission=Object.freeze({magnitude:50,referencePeak:1e12,float32Safe:false});
+export const CAMERA_SATURATED_TAIL_ADMISSION:CameraSourceAdmission=Object.freeze({magnitude:100,referencePeak:Number.MAX_VALUE,float32Safe:true});
+export function compiledCameraSourceCalibration(kind:unknown,index:unknown,filterPosition:unknown,seconds:number,storedMagnitude:number,admission:CameraSourceAdmission=CAMERA_SOURCE_ADMISSION):CameraSourceCalibration {
  const dimensions=compiledCameraInformation(kind),sourcePixels=compiledCameraInformation('ccd'),i=opticalIndex(index),optics=opticalProfile(i),lookup=cameraCatalogReference(dimensions.kind,filterPosition);
- if(!Number.isFinite(storedMagnitude)||Math.abs(storedMagnitude)>50||!Object.is(storedMagnitude,Math.fround(storedMagnitude)))throw new CameraSourceCalibrationError('magnitude');
+ if(!Number.isFinite(storedMagnitude)||Math.abs(storedMagnitude)>admission.magnitude||!Object.is(storedMagnitude,Math.fround(storedMagnitude)))throw new CameraSourceCalibrationError('magnitude');
  if(!Number.isInteger(seconds)||seconds<=0||seconds>0x7fffffff)throw new CameraSourceCalibrationError('duration');
  const base=recovered.compiledCCD,k=recovered.constants.pixelScaleArcsec.numberPolicyValue;
  const NFAdjustment=dimensions.kind==='ccd'&&lookup.position===0?recovered.constants.NFAdjustment.numberPolicyValue:0;
@@ -29,7 +35,7 @@ export function compiledCameraSourceCalibration(kind:unknown,index:unknown,filte
  const sigmaX=optics.seeingArcsec/pixelScaleXArcseconds,sigmaY=optics.seeingArcsec/pixelScaleYArcseconds;
  const delta=(base.baseMagnitude-effectiveMagnitude)+opticalMagnitudeFactor;
  const referencePeak=base.baseCount/Math.pow(10,-delta/recovered.constants.magnitudeDivisor.numberPolicyValue),exposureScale=seconds/base.baseSeconds;
- if(!Number.isFinite(referencePeak)||referencePeak<0||referencePeak>1e12||!Number.isFinite(exposureScale)||exposureScale>1e6||![sigmaX,sigmaY].every(s=>Number.isFinite(s)&&s>0&&s<=1024))throw new CameraSourceCalibrationError('range');
+ if(!Number.isFinite(referencePeak)||referencePeak<0||referencePeak>admission.referencePeak||admission.float32Safe&&referencePeak*exposureScale*Math.max(1,.01*exposureScale)>=1e36||!Number.isFinite(exposureScale)||exposureScale>1e6||![sigmaX,sigmaY].every(s=>Number.isFinite(s)&&s>0&&s<=1024))throw new CameraSourceCalibrationError('range');
  const reference=Object.freeze({kind:dimensions.kind,opticalIndex:i,lookup,width:dimensions.width,height:dimensions.height,storedMagnitude,effectiveMagnitude,NFAdjustment,seconds,baseMagnitude:base.baseMagnitude,baseCount:base.baseCount,baseSeconds:base.baseSeconds,opticalMagnitudeFactor,sourcePixelWidthMicrons:sourcePixels.pixelWidthMicrons,sourcePixelHeightMicrons:sourcePixels.pixelHeightMicrons,pixelScaleXArcseconds,pixelScaleYArcseconds,sigmaX,sigmaY,referencePeak,exposureScale});
  owned.add(reference);return reference;
 }

@@ -160,7 +160,7 @@ test('exposures longer than 60 min are refused in the form',async({page})=>{
  await exposure(page,'60','0');await expect(button(page,'Start exposure')).toBeEnabled();
 });
 
-test('Front R2 review 1 H1/I1: at NGC 5924 (LSS Field 8) a class 1/2 variable takes the tail catalog row; NF 1 s still makes the image',async({page})=>{
+test('Front R2 review 1 H1/I1, closure M1: at NGC 5924 (LSS Field 8) a class 1/2 variable takes the tail catalog row and is drawn saturated',async({page})=>{
  test.setTimeout(120_000);
  // The recorded answer with its rows moved onto the pointing, so a catalog row is the tail the pass overwrites.
  const ra=15.365694444444445,dec=31.221944444444443,dRa=ra*15-56.75,dDec=dec-24.12;
@@ -178,7 +178,10 @@ test('Front R2 review 1 H1/I1: at NGC 5924 (LSS Field 8) a class 1/2 variable ta
  await button(page,'Start exposure').click();await expect(page.getByTestId('camera-status')).toHaveText('Image ready.',{timeout:60_000});
  await camera(page).getByText('Exposure details').click();
  const fo=page.getByTestId('camera-detail-field-objects');
- await expect(fo).toHaveAttribute('data-status','run');await expect(fo).toContainText('this one star is not drawn here');
+ await expect(fo).toHaveAttribute('data-status','run');await expect(fo).toContainText('the star is drawn saturated');
+ // Closure M1: VIREO's saturated star is drawn and clipped at the well, so many pixels share the brightest value.
+ const peak=page.getByTestId('camera-detail-peak');await expect(peak).toContainText('65536');
+ expect(Number(await peak.getAttribute('data-count'))).toBeGreaterThan(1000);
 });
 
 test('Front R2: at a certified field with a variable star the field-object pass runs; elsewhere it says why not',async({page})=>{

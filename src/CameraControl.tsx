@@ -1,4 +1,4 @@
-import {memo,useEffect,useRef,useState} from 'react';
+import {memo,useEffect,useMemo,useRef,useState} from 'react';
 import './camera.css';
 import {CAMERA_MESSAGES as M} from './camera/CameraMessages';
 import {cameraRequestTransition,createCameraRequestGate,CAMERA_OBSERVE_INTERVAL_MS,type CameraGateEffect,type CameraGateEvent,type CameraRequestGate} from './core/cameraRequestGate';
@@ -138,10 +138,11 @@ function CameraControl({active,busy,telescopeIndex,pointing,access,currentJd,ext
  if(mode==='static'){try{const {reference,route}=cameraQuery(camera,telescopeIndex,filter,pointing,2451545);staticCovered=!!findCameraExtract({catalog:route.catalog,raHours:pointing.ra,decDegrees:pointing.dec,radiusDegrees:reference.searchRadiusDegrees});}catch{staticCovered=false;}}
  function start(){
   if(!ready||!validExposure||running)return;
+  // CCD Go 0x5126c1 stores the filter byte (form+0x405) before the preparation check 0x512244 can refuse the Go (closure L5).
+  if(camera==='ccd')setCcdFilterByte(filter);
   if(mode==='static'&&!staticCovered){setMessage(`${M.statusFailed} ${M.failure['no-extract']}`);return;}
   const jd=currentJd(),seed=seedSource()>>>0;
   attempt.current=null;
-  if(camera==='ccd')setCcdFilterByte(filter);// CCD Go 0x5126c1 stores the filter byte (form+0x405)
   const transition=cameraRequestTransition(gateRef.current,{type:'start',seconds:total});
   const ticket=transition.state.ticket!;
   attempt.current={ticket,controller:new AbortController(),camera,seconds:total,filter,gain,mode,jd,seed,pointing:{ra:pointing.ra,dec:pointing.dec},telescope:telescopeIndex,worker:null,pending:null,source:null,failure:null,prepared:null,catalogName:''};
@@ -156,7 +157,10 @@ function CameraControl({active,busy,telescopeIndex,pointing,access,currentJd,ext
   a.href=url;a.download=native?nativeCameraFitsFileName():cameraFitsFileName(image.exposure,context);document.body.append(a);a.click();a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),0);
  }
  const filterNames:readonly string[]=camera==='ir'?M.filterNamesIr:M.filterNames,gains=CAMERA_GAINS[camera];
- const shown=image?.exposure,showIrNotes=camera==='ir'||shown?.recipe.camera==='ir',filterName=(k:CameraExposureKind,i:number)=>(k==='ir'?M.filterNamesIr:M.filterNames)[i];
+ const shown=image?.exposure;
+ // The brightest final pixel value and how many pixels reach it (a clipped saturated star shows a large count).
+ const peak=useMemo(()=>{let value=-Infinity,count=0;for(const v of shown?.plane.pixels??[]){if(v>value){value=v;count=1;}else if(v===value)count++;}return {value:Number.isFinite(value)?value:0,count};},[shown]);
+ const showIrNotes=camera==='ir'||shown?.recipe.camera==='ir',filterName=(k:CameraExposureKind,i:number)=>(k==='ir'?M.filterNamesIr:M.filterNames)[i];
  /** Switching camera resets the filter and keeps the gain when the other camera offers it (gain 2 exists on both). */
  function chooseCamera(next:CameraExposureKind){if(next===camera)return;setCamera(next);setFilter(0);if(!CAMERA_GAINS[next].includes(gain))setGain(2);}
  return <section className="card camera-control" aria-labelledby="camera-control-title" data-testid="camera-control" data-phase={gate.phase} data-terminal={gate.terminal}>
@@ -197,7 +201,8 @@ function CameraControl({active,busy,telescopeIndex,pointing,access,currentJd,ext
     <dt>{M.detailJd}</dt><dd>{image.jd.toFixed(5)}</dd>
     <dt>{M.detailSeed}</dt><dd data-testid="camera-detail-seed">{shown.recipe.seed}</dd>
     <dt>{M.detailDraws}</dt><dd>{shown.drawsConsumed}</dd>
-    {image.fieldObjectsStatus&&<><dt>{M.detailFieldObjects}</dt><dd data-testid="camera-detail-field-objects" data-status={image.fieldObjectsStatus}>{image.fieldObjectsStatus==='run'&&shown.fieldObjects?M.fieldObjects.run(shown.fieldObjects.eligible,shown.fieldObjects.inBounds,shown.fieldObjects.tail,shown.fieldObjects.tailDrawn):image.fieldObjectsStatus==='run'?'':M.fieldObjects[image.fieldObjectsStatus]}</dd></>}
+    <dt>{M.detailPeak}</dt><dd data-testid="camera-detail-peak" data-count={peak.count}>{M.peakCount(peak.value,peak.count)}</dd>
+    {image.fieldObjectsStatus&&<><dt>{M.detailFieldObjects}</dt><dd data-testid="camera-detail-field-objects" data-status={image.fieldObjectsStatus}>{image.fieldObjectsStatus==='run'&&shown.fieldObjects?M.fieldObjects.run(shown.fieldObjects.eligible,shown.fieldObjects.inBounds,shown.fieldObjects.tail,shown.fieldObjects.tailDrawn,shown.fieldObjects.tailSaturatedAdmission):image.fieldObjectsStatus==='run'?'':M.fieldObjects[image.fieldObjectsStatus]}</dd></>}
     {shown.skipped.length>0&&<><dt>{M.detailSkipped}</dt><dd data-testid="camera-detail-skipped">{shown.skipped.map(k=>M.skippedReason[k.reason]).join(' ')}</dd></>}
    </dl></details>
   </figure>}

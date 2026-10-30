@@ -21,8 +21,8 @@
 import {CameraRandomCursor} from './cameraRandom';
 import {compiledCameraProjection,projectCameraSource,type CameraProjectionContext} from './cameraProjection';
 import {cameraBackgroundStage,compiledCameraBackgroundParameters} from './cameraBackground';
-import {compiledCameraSourceCalibration,cameraPointParametersFromCalibration,CameraSourceCalibrationError} from './cameraSourceCalibration';
-import {cameraPointPlan,type CameraPointPlan} from './cameraPointSource';
+import {compiledCameraSourceCalibration,cameraPointParametersFromCalibration,CameraSourceCalibrationError,CAMERA_SATURATED_TAIL_ADMISSION} from './cameraSourceCalibration';
+import {cameraPointPlan,CameraPointError,type CameraPointPlan} from './cameraPointSource';
 import {cameraExtendedPlan,CameraExtendedError,CAMERA_STREAK_VISIT_LIMIT,type CameraExtendedPlan} from './cameraExtendedSource';
 import {cameraScalarJitter} from './cameraBackground';
 import {compiledCameraFinalParameters,finalizeCameraPlane,type CameraFinalStage} from './cameraFinal';
@@ -53,9 +53,10 @@ export type CameraFieldRecord=Readonly<{
 }>;
 /** Front R2: what the field-object pass 0x5228dc did (A-camera-field-overlay.md §1). `tail` is the record it wrote: the last
  * catalog row on the detector, a moving-pair end (no visible effect), or none (VIREO then writes the observatory field star). */
-/** `tailDrawn` is false when the overwritten catalog tail's magnitude is outside the calibrated range and the star is not drawn
- * [W] (review 1 H1: VIREO draws a saturated star there); null when no tail was overwritten. */
-export type CameraFieldObjectPass=Readonly<{eligible:number;inBounds:number;tail:'catalog'|'moving-end'|'none'|null;magnitude:number|null;tailDrawn:boolean|null}>;
+/** `tailDrawn` is false only when the overwritten catalog tail cannot be drawn even with the Float32-safe saturated-tail
+ * admission [W]; null when no tail was overwritten. */
+export type CameraFieldObjectPass=Readonly<{eligible:number;inBounds:number;tail:'catalog'|'moving-end'|'none'|null;magnitude:number|null;tailDrawn:boolean|null;
+ /** True when the tail needed the wider saturated-tail admission (VIREO's saturated star) [W]. */tailSaturatedAdmission:boolean}>;
 export type CameraSkippedSource=Readonly<{extraIndex:number;reason:'moving-pair-off-detector'|'moving-pair-geometry'|'moving-pair-budget'}>;
 export type CameraExposure=Readonly<{
  recipe:CameraExposureRecipe;plane:CameraFinalStage;records:readonly CameraFieldRecord[];skipped:readonly CameraSkippedSource[];
@@ -85,7 +86,7 @@ export const CAMERA_EXPOSURE_ADAPTATIONS=Object.freeze([
  'no-ccd-overlay: the optional bitmap overlay branch (form+0x412) is not offered; its source, gate, sizes and stretch mode are recovered (Front R2), but its input, the galaxy-only field raster, is internal to the field engine',
  'field-objects-certified-field: the field-object pass 0x5228dc runs on the certified field population at the camera pointing, built at the exposure JD (VIREO uses the field of the last field load); elsewhere it is not run, and an empty camera list does not write the observatory field star',
  'ir-like-ccd: the IR window\'s exposure-time limit is not recovered; IR uses the CCD web bound (CAMERA_MAX_SECONDS). (No overlay is recovered: IR preparation 0x51e43c has no overlay branch.)',
- 'field-object-saturated: a field variable of class 1 or 2 gets colour term 30 or 60, so the pass can write about V − 30 or V − 60 into the tail catalog row; VIREO draws a saturated star there, but that magnitude is outside the calibrated source range (|m| ≤ 50, peak ≤ 1e12), so this one star is not drawn (and consumes no draws) and the details say so; the magnitude is never clamped (review 1 H1)',
+ 'field-object-saturated: a field variable of class 1 or 2 gets colour term 30 or 60, so the pass writes about V − 30 or V − 60 into the tail catalog row and VIREO draws a saturated star; that one record gets a wider, Float32-safe admission (|m| ≤ 100, peak × scale below 1e36) instead of the web bounds |m| ≤ 50 and peak ≤ 1e12, and is drawn with the same calibration, plan and draws; only a value that would still overflow is skipped with a typed reason (review 1 H1, closure M1)',
  'moving-pair-off-detector: a pair whose projected pixel position exceeds 1e6 is skipped (its four draws are still consumed); the native FISTP overflow path is not recovered',
  'moving-pair-streak-limit: streak visits are bounded by the clipped 1024^2 rectangle plus a cross pass (CAMERA_STREAK_VISIT_LIMIT); a pair that still cannot be planned (budget or coincident endpoints) is skipped alone, with no draws for its streak',
  'number-arithmetic: Number/Math with Single stores replaces x87 Extended',
@@ -171,7 +172,7 @@ export function composeCameraExposure(recipeInput:CameraExposureRecipe,selection
    tail=!last?'none':last.origin==='catalog'?'catalog':'moving-end';
    if(last){records[records.length-1]=Object.freeze({...last,magnitude});if(last.origin==='catalog')overwrittenTail=records.length-1;}
   }
-  fieldObjects=Object.freeze({eligible:fieldObjectsInput.length,inBounds,tail,magnitude,tailDrawn:overwrittenTail===null?null:true});
+  fieldObjects=Object.freeze({eligible:fieldObjectsInput.length,inBounds,tail,magnitude,tailDrawn:overwrittenTail===null?null:true,tailSaturatedAdmission:false});
  }
  // 3. Background.
  const background=compiledCameraBackgroundParameters(kind,recipe.seconds,recipe.gain);
@@ -180,13 +181,22 @@ export function composeCameraExposure(recipeInput:CameraExposureRecipe,selection
  // 5. Sources in list order.
  for(let i=0;i<records.length;i++){
   const r=records[i];
-  let calibration;
-  try{calibration=compiledCameraSourceCalibration(kind,recipe.opticalIndex,recipe.filterPosition,recipe.seconds,r.magnitude);}
-  catch(e){
-   // [W] review 1 H1: only the catalog tail that took a field variable's magnitude may be outside the calibrated range.
-   if(i!==overwrittenTail||!(e instanceof CameraSourceCalibrationError)||(e.code!=='magnitude'&&e.code!=='range'))throw e;
-   fieldObjects=Object.freeze({...fieldObjects!,tailDrawn:false});continue;
+  if(i===overwrittenTail){
+   // Front R2 closure M1: the catalog tail that took a field variable's magnitude (V − 30 or V − 60 for classes 1/2) is drawn
+   // as VIREO draws it, a saturated star, through the same calibration and point plan. Only its admission is wider [W]
+   // (CAMERA_SATURATED_TAIL_ADMISSION, Float32-safe); a value that would still overflow is skipped with a typed reason [W].
+   let plan:CameraPointPlan|null=null,saturated=false;
+   try{const c=compiledCameraSourceCalibration(kind,recipe.opticalIndex,recipe.filterPosition,recipe.seconds,r.magnitude);plan=cameraPointPlan(cameraPointParametersFromCalibration(c,r.pixelX,r.pixelY));}
+   catch(e){
+    if(!(e instanceof CameraSourceCalibrationError)||(e.code!=='magnitude'&&e.code!=='range'))throw e;
+    saturated=true;
+    try{const c=compiledCameraSourceCalibration(kind,recipe.opticalIndex,recipe.filterPosition,recipe.seconds,r.magnitude,CAMERA_SATURATED_TAIL_ADMISSION);plan=cameraPointPlan(cameraPointParametersFromCalibration(c,r.pixelX,r.pixelY),Number.MAX_VALUE);}
+    catch(f){if(!(f instanceof CameraSourceCalibrationError)&&!(f instanceof CameraPointError))throw f;plan=null;}
+   }
+   if(plan)applyPlan(plane,plan,stream);
+   fieldObjects=Object.freeze({...fieldObjects!,tailDrawn:plan!==null,tailSaturatedAdmission:saturated});continue;
   }
+  const calibration=compiledCameraSourceCalibration(kind,recipe.opticalIndex,recipe.filterPosition,recipe.seconds,r.magnitude);
   if(r.kind===2){
    const end=records[i+1];
    let plan:CameraExtendedPlan|null=null;

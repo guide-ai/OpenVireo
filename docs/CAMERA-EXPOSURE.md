@@ -37,12 +37,18 @@ The seeing jitter is on for the CCD (compiled record byte +0x5a = 1 at 0x5a2bd8)
   - A variable whose brightness is not known blocks the pass, and an empty list writes nothing [W].
   - A pointing with no certified pack says "not certified"; a pack or catalog that cannot be loaded says "could not be
     checked" (review 1 L1) [W].
-  - The CCD filter byte is set when a CCD exposure starts (CCD Go 0x5126c1) and kept for the page, as the form keeps it for
-    the process; 0 (NF) before any CCD exposure [I] (review 1 L5).
-  - **Saturated tail [W] (review 1 H1).** For a class 1 or 2 variable the colour term is 30 or 60, so VIREO writes about V − 30
-    or V − 60 into the tail catalog row and draws a saturated star. That magnitude is outside the calibrated source range
-    (|m| ≤ 50, peak ≤ 1e12), so this site does not draw that one star (it consumes no draws) and the exposure details say so.
-    The magnitude is never clamped. Among the certified pointings only LSS Field 8 near NGC 5924 has such a variable.
+  - The CCD filter byte is set when a CCD exposure starts (CCD Go 0x5126c1, before the preparation check 0x512244 and before
+    the web's static-coverage refusal) and kept for the page, as the form keeps it for the process; 0 (NF) before any CCD
+    exposure [I] (review 1 L5, closure Info).
+  - A pointing whose certified population has a blocking reason says so ("blocked"); a load failure says "could not be
+    loaded" and suggests a retry (closure Info).
+  - **Saturated tail (review 1 H1, closure M1).** For a class 1 or 2 variable the colour term is 30 or 60, so VIREO writes about
+    V − 30 or V − 60 into the tail catalog row and draws a saturated star [D]. This site draws it too, with the same
+    calibration formulas, point plan and draws; the image clips at the well (at NGC 5924, CCD NF 1 s, 2,766 pixels reach
+    65,536). Only that record gets a wider admission than the web bounds |m| ≤ 50 and peak ≤ 1e12: |m| ≤ 100 and peak ×
+    exposure scale (with the cross term's 0.01 × scale²) below 1e36, which keeps Float32 finite [W]. A value that would still
+    overflow, or exceed the visit budget, is skipped with a typed reason [W]. The magnitude is never clamped. Among the certified
+    pointings only LSS Field 8 near NGC 5924 has such a variable.
   - **Catalog "no data" gate** [I]: VIREO runs the catalog rows and this pass only when the catalog's vt+4 returns true
     (0x52246a/0x52246f → 0x522553). Which web state matches vt+4 = false is not recovered; the web runs the pass whenever an
     exposure is composed, and an empty camera list writes nothing (review 1 L3).
