@@ -52,8 +52,10 @@ These rules come from a static reading (`analysis/front-g-gsc/RE-wrap-polar-cons
   - With an RA half-width of 12–24 h the folded interval no longer matches the sky (RA 3 h at Dec 89.9 gives [12.68, 17.32]).
     VIREO's result is still deterministic, so it is ported as it is.
   - A folded bound outside 0–24 h (half-width about 24 h or more, |Dec| ≳ 89.94°), or equal bounds, is the typed `polar`
-    (FieldEngineError; G1b review 1 L1). There VIREO depends on the
-    x87 cosine near π/2 and on the low dword of its Int64 band key. This replaces the earlier |Dec| ≥ 89° and wrap rejections.
+    (FieldEngineError). This is a web limit [W].
+    - From about 89.94° to 89.994° VIREO is still deterministic: a small negative int32 band key, or a bound above 24 h.
+    - Only beyond that (|key| ≥ 2³¹) and at exactly ±90° does its result depend on the x87 cosine near π/2 and on the Int64 key.
+    - This replaces the earlier rejections of |Dec| ≥ 89° and of every wrapped field.
 - **Regions** (0x5978c0):
   - In wrap mode, a region starting below 12 h overlaps when area.max > region.min; any other region overlaps when
     area.min < region.max. Dec is strict.
@@ -80,6 +82,13 @@ These rules come from a static reading (`analysis/front-g-gsc/RE-wrap-polar-cons
 
 ## Typed unavailable reasons
 outside-pack, variable-time-required, variable-spectrum-dangling, variable-spectrum-indeterminate, variable-colour-residue, variable-model-fault (Front T), qso-merge (`'gate'` only), qso-selected (`'merge'` only), photographic-image, variable-merge, axis-fallback, merge-boundary, stamp-bound (the browser raster bound: major axis ≤ 100 px, minor axis ≥ 1 px), no-galaxy-selected, star-selected, slit-empty, spectrum-range, mean-bound (the existing per-telescope bound) and spectrum-mapping (LSS only).
+
+When a field is assembled from the compact GSC tiles (Front G), `AssembledFieldError` adds further reasons
+(docs/COMPACT-GSC-TILES.md):
+- `polar`: a web limit [W].
+- `band-end`: VIREO itself reads past the end of a declination band there, which raises an input/output error and leaves a
+  partial star list. The web shows no field [W].
+- `regions`, `budget`, `plan` and `source`.
 
 ## Numerical policy
 Arithmetic uses Number with nearest-even rounding; x87 equivalence is not claimed. The one exception is Frac(1000·RA): it is exact in the Extended significand, so it is computed exactly and rounded once.

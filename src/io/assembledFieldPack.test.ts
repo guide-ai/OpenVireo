@@ -166,7 +166,7 @@ describe('band-end at an ordinary pointing (G1b review 1 L2)',()=>{
 
 describe('typed limits',()=>{
  it('refuses wrap and polar areas with a typed reason, and a read outside the fetched tiles',async()=>{
-  // Fields across 0 h fold as 0x53be70 (G1b); only an RA half-width of 12 h or more is polar.
+  // Fields across 0 h fold as 0x53be70 (G1b); polar is only a folded bound outside 0..24 h (a web limit [W]).
   expect(fieldAreaWraps(assembledFieldArea({ra:0.001,dec:10}))).toBe(true);expect(fieldAreaWraps(assembledFieldArea({ra:23.999,dec:-10}))).toBe(true);
   expect(fieldAreaWraps(assembledFieldArea({ra:3,dec:89.5}))).toBe(false);expect(assembledFieldArea({ra:3,dec:89.88}).maximumDec).toBeGreaterThan(90);
   expect(()=>assembledFieldArea({ra:3,dec:89.95})).toThrow(new AssembledFieldError('polar'));

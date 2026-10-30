@@ -13,7 +13,7 @@ import {GLIMAGES_LST,packWithPhotographs,parseGlimagesPositions} from '../core/l
 import {nativePhotographRows} from '../core/photographicList';
 import type {LssFieldNumber} from '../core/lssFields';
 
-/** field-polar: a folded RA bound outside 0..24 h (|Dec| ≳ 89.94°, §G-RE2, G1b review 1 L1); field-tiles: a compact GSC tile could not be
+/** field-polar: a folded RA bound outside 0..24 h (|Dec| ≳ 89.94°), a web limit [W] (FieldEngineError; §G-RE2); field-tiles: a compact GSC tile could not be
  * fetched or did not match its recorded size and SHA-256 (detail: the GscTileError code); field-unreadable: the native read
  * cannot be reproduced for this pointing (detail: the AssembledFieldError code, e.g. band-end). */
 export type CertifiedPopulation=Readonly<{status:'ready';packId:string;population:FieldPopulation;reasons:readonly FieldUnavailableReason[]}|{status:'unavailable';reason:'field-polar'}|{status:'unavailable';reason:'field-tiles'|'field-unreadable';detail:string}|{status:'unavailable';reason:'population';detail:FieldUnavailableReason}>;
@@ -97,7 +97,7 @@ export async function findCertifiedPopulation(pointing:Readonly<{ra:number;dec:n
  const glx=await once('glx',r.glx);
  const options:{-readonly [K in keyof FieldOptions]:FieldOptions[K]}={variableDispatch:'recovered',...(variableTime?{variableTime}:{}),...(signal?{signal}:{})};
  // Each population build is one synchronous step (worst polar field ≈ 0.4 s); yield before it so the page can repaint.
- const step=async()=>{signal?.throwIfAborted();await new Promise(resolve=>setTimeout(resolve,0));signal?.throwIfAborted();};
+ const step=async()=>{signal?.throwIfAborted();await (await import('./yieldTask')).yieldTask();signal?.throwIfAborted();};
  await step();let built=buildFieldPopulation(pack,glx,pointing,options);
  if(built.reasons.includes('qso-merge')){options.qso='merge';options.qsoCatalog=await once('qso',r.qso);await step();built=buildFieldPopulation(pack,glx,pointing,options);}
  if(built.reasons.includes('photographic-image')){options.photographs={rows:nativePhotographRows(await once('glimages',r.glimages)),bitmaps:new Map()};await step();built=buildFieldPopulation(pack,glx,pointing,options);}

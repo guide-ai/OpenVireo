@@ -3363,7 +3363,7 @@
   "ph.tiledReady": "Field at the telescope pointing: the nearest star is {name}.",
   "ph.tiledOption": "{name} (telescope pointing)",
   "ph.tiledReason.object-x-hidden": "Not available near an unrevealed Object X target: the field would show its identity.",
-  "ph.tiledReason.field-polar": "Not available this close to the celestial pole: VIREO's field limits fall outside 0–24 hours of right ascension there.",
+  "ph.tiledReason.field-polar": "Not available within about 0.06° of the celestial pole: this site stops there [web limit]. VIREO still builds a field down to about 0.006° from the pole, but this site does not reproduce its arithmetic there exactly.",
   "ph.tiledReason.field-tiles": "The star catalogue for this field could not be loaded or did not match its recorded size and SHA-256 ({detail}). Try again; nothing was changed.",
   "ph.tiledReason.field-unreadable": "The original catalogue read cannot be reproduced for this field ({detail}).",
   "ph.tiledReason.photometer-galaxy": "Not available: this field contains a galaxy, and how VIREO's photometer treats galaxies is not reproduced.",

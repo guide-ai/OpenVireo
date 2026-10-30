@@ -6,7 +6,7 @@ export const FIELD_INFO_MESSAGES=Object.freeze({
  fileMenu:'File',
  guideTitle:'How to use (instructor)',
  guide:Object.freeze([
-  'Point the telescope at an exercise field (an LSS survey row, a Hubble target or a supported galaxy) and switch to the Telescope view: the view then shows the complete catalogue field, and a click opens Catalog Object with its catalogue values.',
+  'Point the telescope anywhere and switch to the Telescope view: the view then shows the complete catalogue field (read from the bundled exercise packs at their own pointings, and from the compact Guide Star Catalog tiles elsewhere), and a click opens Catalog Object with its catalogue values.',
   'File › Field Information › Star Data List lists every star and QSO of that field with V, B−V, U−B and spectral type; values marked * were assigned by the catalogue builders, not measured.',
   'File › Field Information › Variable Stars lists the GCVS variables of the finder or telescope field anywhere in the sky. Select a row, then use Selection to open its data and light curve, slew to it or add it to the hot list.',
   'Students do not need Edit Mode for the naked-eye sky: open the dome and right-click a bright star.',
@@ -27,9 +27,9 @@ export const FIELD_INFO_MESSAGES=Object.freeze({
  startNewAdaptation:'Web adaptation: this site does not track whether the hot list was changed, so it asks whenever the current list has rows; Yes downloads the current list as an .HTL file before it is replaced.',
  busy:'A hot-list file is being read; try again when it finishes.',
  unavailable:Object.freeze({
-  'field-polar':'Not available this close to the celestial pole (within about 0.06°): there VIREO’s field limits fall outside 0–24 hours of right ascension and its result depends on details of the original arithmetic that this site cannot reproduce.',
-  'field-tiles':'The star catalogue for this field could not be loaded or did not match its recorded size and SHA-256 (reason: {reason}). Try again; nothing was changed.',
-  'field-unreadable':'Not available: the original catalogue read cannot be reproduced for this field (reason: {reason}).',
+  'field-polar':'Not available within about 0.06° of the celestial pole: this site stops there [web limit]. VIREO still builds a field down to about 0.006° from the pole, but its result there depends on its arithmetic in ways this site does not reproduce exactly.',
+  'field-tiles':'The star catalogue for this field could not be loaded ({reason}). Try again; nothing was changed.',
+  'field-unreadable':'Not available here: {reason}',
   'finder-catalog-unavailable':'Not available in the Finder view: VIREO picks from its finder star catalogue, which is not on this site. Switch to the Telescope view.',
   'object-x-hidden':'Not available near an unrevealed Object X target: the record would show its identity before the exercise reveals it.',
   'asteroids-not-modelled':'Not available: this field may contain asteroids, which the field engine does not model.',
@@ -55,7 +55,30 @@ export const FIELD_INFO_MESSAGES=Object.freeze({
  }),
 });
 export type FieldInfoReason=keyof typeof FIELD_INFO_MESSAGES.unavailable;
-export const fieldInfoReasonText=(reason:FieldInfoReason,detail='')=>FIELD_INFO_MESSAGES.unavailable[reason].replace('{reason}',detail);
+/** Readable details for the typed tile and catalogue-read results (G2 review 1 L2): students never see a raw code. */
+export const FIELD_READ_DETAILS=Object.freeze({
+ 'field-tiles':Object.freeze({
+  fetch:'a catalogue piece did not arrive',
+  integrity:'a catalogue piece did not match its recorded size and SHA-256',
+  index:'the catalogue index could not be read or did not match this site',
+  budget:'this field needs more catalogue pieces at once than this site keeps in memory',
+  'missing-tile':'this site asked for the wrong catalogue piece (please report it)',
+ } as Record<string,string>),
+ 'field-unreadable':Object.freeze({
+  'band-end':'in VIREO this field reads past the end of a declination band of its catalogue, which raises an input/output error and leaves a partial star list. This site shows no field instead [web adaptation].',
+  regions:'VIREO would warn "Field Contains Too Many Regions!" and keep the first 100 regions; this site does not reproduce that [web adaptation].',
+  budget:'the field holds more catalogue records than this site reads in one declination band [web limit].',
+  plan:'this site read outside the catalogue pieces it had planned (please report it).',
+  source:'a bundled catalogue file does not have the expected form (please report it).',
+  input:'this pointing is not a valid sky position.',
+  evidence:'the field engine found its records inconsistent (please report it).',
+ } as Record<string,string>),
+});
+export function fieldInfoReasonText(reason:FieldInfoReason,detail=''):string{
+ const details=(FIELD_READ_DETAILS as Record<string,Record<string,string>>)[reason];
+ const text=details?(details[detail]??(reason==='field-tiles'?'unknown reason':'the original catalogue read cannot be reproduced for this field.')):detail;
+ return FIELD_INFO_MESSAGES.unavailable[reason].replace('{reason}',text);
+}
 /** Naked Eye Star (student path). */
 export const NAKED_EYE_MESSAGES=Object.freeze({
  eyebrow:'VIREO · Dome open',title:'Naked-eye sky',

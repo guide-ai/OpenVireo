@@ -52,9 +52,10 @@ import {associatePhotograph,drawNativePhotograph,nativeGalaxyName,scaleNativePho
 import type {PhotographRow} from './photographicList';
 
 export class FieldEngineError extends Error{
- /** polar: a folded RA bound outside 0..24 h (an RA half-width of about 24 h or more, |Dec| ≳ 89.94°), or equal bounds. There
-  * VIREO's band key goes negative or past the Int64 range and its result depends on the x87 cosine near π/2
-  * (analysis/front-g-gsc/RE-wrap-polar-consumers.md §G-RE2, G1b review 1 L1); nothing is approximated there. */
+ /** polar: a folded RA bound outside 0..24 h (an RA half-width of about 24 h or more, |Dec| ≳ 89.94°), or equal bounds. This is
+  * a web limit [W]: from about 89.94° to 89.994° VIREO is still deterministic (a small negative int32 band key, or a bound above
+  * 24 h), and only beyond that (|key| ≥ 2^31) and at exactly ±90° does its result depend on the x87 cosine near π/2 and the
+  * Int64 key (analysis/front-g-gsc/RE-wrap-polar-consumers.md §G-RE2; G1b review 1 R1, G2 review 1 L1). */
  constructor(readonly code:'input'|'evidence'|'polar'){super(`Field engine: ${code}`);this.name='FieldEngineError';}
 }
 export type FieldTelescope=0|1|2;
@@ -204,7 +205,8 @@ const FRAME=Object.freeze({width:936,height:936,fieldDegrees:.75,anchor:468,view
  * Dec ± 0.375° (not clamped to ±90), RA ± 0.375/(cos Dec·15) h, with min += 24 when below 0 and max −= 24 when above 24, each
  * once. A field across 0 h is then min > max (Front G, analysis/front-g-gsc/RE-wrap-polar-consumers.md §G-RE1). With an RA
  * half-width of 12–24 h the folded interval no longer matches the sky, but VIREO's result is still deterministic and is ported
- * as it is. Only a folded bound outside 0..24 (or equal bounds, where 0x5978c0 and 0x597ac8 disagree) is the typed 'polar'. */
+ * as it is. A folded bound outside 0..24 (or equal bounds, where 0x5978c0 and 0x597ac8 disagree) is the typed 'polar', a web
+ * limit [W] (see FieldEngineError). */
 /** Half-heights of the two recovered field sizes: the instrument field (15′ × 3/120 = 0.375°) and the photometer field
  * (field-size option 1′ × 3/120 = 0.025°, docs/PHOTOMETER-FIELD.md); 0x53be70 computes half = size·multiplier/120. */
 export const FIELD_HALF_DEGREES=Object.freeze({instrument:.375,photometer:.025});

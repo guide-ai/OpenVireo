@@ -15,9 +15,10 @@ import {planGscBandRead} from '../core/gscTilePlan';
 import {packWithPhotographs,parseGlimagesPositions} from '../core/lssLists';
 import {VARIABLE_RECORD_OFFSETS} from '../core/variableMerge';
 import {VSTRS_RECORD_BYTES} from '../core/variableStars';
+import {yieldTask} from './yieldTask';
 import {GscTileError,gscBandIndex,tiledBandSource,type GscIndex,type GscTileStore} from './gscTiles';
 
-/** polar: a folded RA bound outside 0..24 h (about |Dec| ≥ 89.94°; §G-RE2, review 1 L1); regions: more than 100 regions; budget: more than the visit budget in a
+/** polar: a folded RA bound outside 0..24 h (about |Dec| ≥ 89.94°), a web limit [W] (FieldEngineError explains; §G-RE2); regions: more than 100 regions; budget: more than the visit budget in a
  * band; band-end: the native search runs past a band's last record (the minimum RA key is above every record), where VIREO
  * reads past EOF and raises an I/O error (Front O RECOVERY-E §4) — nothing to approximate; plan: a read outside the planned
  * tiles (a planning bug, never a skipped record); source: a malformed bundled file. Tile fetch and integrity failures stay
@@ -39,7 +40,7 @@ export function assembledFieldArea(pointing:Readonly<{ra:number;dec:number}>,hal
 }
 /** Yield to the event loop between band reads, every 4096 recorded reads and before the whole-file scans, so the page stays
  * responsive, and stop there on an abort (G1b review 1 L3). */
-async function pause(signal?:AbortSignal){signal?.throwIfAborted();await new Promise(r=>setTimeout(r,0));signal?.throwIfAborted();}
+async function pause(signal?:AbortSignal){signal?.throwIfAborted();await yieldTask();signal?.throwIfAborted();}
 /** halfDegrees: the field's half-height (FIELD_HALF_DEGREES; default the instrument field, 0.375°). */
 export async function assembleFieldPack(pointing:Readonly<{ra:number;dec:number}>,s:AssemblySources,signal?:AbortSignal,halfDegrees?:number):Promise<FieldPack>{
  signal?.throwIfAborted();const area=assembledFieldArea(pointing,halfDegrees);

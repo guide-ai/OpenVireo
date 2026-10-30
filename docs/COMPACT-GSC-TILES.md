@@ -95,8 +95,9 @@ unchanged:
 - the GLIMAGES.LST indices inside the area (`packWithPhotographs`).
 
 `AssembledFieldError` types what is not yet supported or cannot be read:
-- `polar`: a folded RA bound outside 0–24 h, which needs an RA half-width of about 24 h or more (\|Dec\| ≳ 89.94°; G-RE2,
-  G1b review 1 L1). Beyond that bound VIREO's result depends on the x87 cosine near π/2 and on the low dword of its Int64 band
+- `polar`: a folded RA bound outside 0–24 h, which needs an RA half-width of about 24 h or more (\|Dec\| ≳ 89.94°). This is a
+  web limit [W]. From about 89.94° to 89.994° VIREO is still deterministic (a small negative int32 band key, or a bound above
+  24 h). Only beyond that (\|key\| ≥ 2³¹) and at exactly ±90° does its result depend on the x87 cosine near π/2 and the Int64
   key. Half-widths of 12–24 h are ported as VIREO computes them.
 - A field across RA 0 h/24 h is read as VIREO reads it (G1b): two reads per band, [min, 24] then [0, max]. The pack records
   both traces, and its coverage is the whole RA ring of its Dec band.
@@ -124,7 +125,7 @@ Nothing is approximated.
   (review measurement).
 - VIREO has no such budget. It is an adapter guard, and at |Dec| ≈ 88.5–89° it currently yields the typed `budget`.
 - **Decision, carried out in G1b:** both limits were raised together to 100,000 (`FIELD_SCAN_BUDGET`). That covers a whole
-  polar band (S8230: 95,441 records; N8230: 74,656), which is what the native scan reads as the RA half-width approaches 12 h.
+  polar band (S8230: 95,441 records; N8230: 74,656), which is what the native scan reads as the RA half-width grows near the pole.
 - **Worst-case cost** (Node, desktop, warm disk). "Assemble" includes the tile reads and the SHA checks.
 
 | Pointing | Band reads | Assemble | Heap | Population | Field |

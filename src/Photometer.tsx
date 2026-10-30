@@ -22,6 +22,7 @@ import type {FieldMode,Pointing} from './core/sky';
 import {formatNumber,t} from './i18n';
 import './photometer.css';
 import CleaHelp from './clusters/CleaHelp';
+import {fieldInfoReasonText} from './observatory/FieldInfoMessages';
 import {HELP_FILES} from './help/helpFiles';
 const num=(value:number)=>formatNumber(value,{maximumFractionDigits:9,useGrouping:false});
 function download(text:string){const url=URL.createObjectURL(new Blob([text],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='openvireo-pleiades-photometer.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -100,9 +101,9 @@ export default function Photometer({active,initialState=null,controllerRef,onSta
   try{
    const {preparePhotometerTiledField}=await import('./io/photometerTiledFields'),r=await preparePhotometerTiledField({ra:p.ra,dec:p.dec},{signal:controller.signal});
    if(controller.signal.aborted)return;tiledAbort.current=null;
-   if(r.status!=='ready'){setTiledStatus({status:'error',text:t(`ph.tiledReason.${r.reason}`,{detail:r.detail??''})});return;}
+   if(r.status!=='ready'){setTiledStatus({status:'error',text:r.reason==='field-tiles'||r.reason==='field-unreadable'?fieldInfoReasonText(r.reason,r.detail??''):t(`ph.tiledReason.${r.reason}`,{detail:r.detail??''})});return;}
    setTiledStatus(null);if(act({type:'field',ra:p.ra,dec:p.dec}))setNotice(t('ph.tiledReady',{name:r.selectedName}));
-  }catch(e){if(!controller.signal.aborted)setTiledStatus({status:'error',text:t('ph.tiledReason.field-tiles',{detail:e instanceof Error?e.name:''})});}
+  }catch{if(!controller.signal.aborted)setTiledStatus({status:'error',text:fieldInfoReasonText('field-tiles','fetch')});}
  }
  function freshPhotometer(){if(!configurationAvailable||!isPhotometerTelescopeIndex(telescopeIndex))throw new PhotometerError('phase');return photometerEvent(createPhotometer(parsedSeed()),{type:'telescope',index:telescopeIndex});}
  function parsedSeed(){if(!/^\d{1,10}$/.test(seed)||Number(seed)>0xffffffff)throw new Error('seed');return Number(seed);}

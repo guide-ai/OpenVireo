@@ -222,3 +222,34 @@ test('Front T: an enabled GCVS button at a TRUE variable star opens its Variable
  await expect(page.getByTestId('fi-slist-reason')).toHaveCount(0);
  await expect(list.locator('[data-testid^="fi-slist-line-"]').filter({hasText:/^EP Com /})).toHaveCount(1);
 });
+
+// G2 review 1 M1: a Star Data List closed while its tiles load stays closed, and a later request shows its own field.
+test('Star Data List: a request closed while loading never reappears; a new one shows its own field',async({page})=>{
+ test.setTimeout(120000);
+ await open(page);await tracking(page);await editMode(page,true);
+ let release!:()=>void;const gate=new Promise<void>(r=>release=r);
+ await page.route('**/original/gsc/**',async route=>{await gate;await route.continue().catch(()=>{});});
+ await fieldMenu(page,'fi-star-list');
+ await expect(page.getByTestId('fi-slist-status').getByRole('status')).toHaveAttribute('data-reason','loading');
+ await page.getByTestId('fi-slist-status').getByRole('button',{name:'Close',exact:true}).click();
+ release();await page.waitForTimeout(4000);
+ await expect(page.getByTestId('fi-slist')).toHaveCount(0);await expect(page.getByTestId('fi-slist-status')).toHaveCount(0);
+ await page.unroute('**/original/gsc/**');
+ await fieldMenu(page,'fi-star-list');
+ await expect(page.getByTestId('fi-slist').getByRole('heading',{name:'CLEA Star Field Data'})).toBeVisible({timeout:30000});
+ await expect(page.getByTestId('fi-slist-line-2')).toContainText('Center:');
+});
+// G2 review 1 M2: with tracking off the pointing drifts; the Edit layer keeps its loaded field (VIREO's cached field, 0x53af28)
+// instead of rebuilding on every tick, so it never falls back to the loading line.
+test('Edit layer keeps its field while the pointing drifts with tracking off',async({page})=>{
+ test.setTimeout(120000);
+ await open(page);await editMode(page,true);await page.getByRole('button',{name:/^Telescope/}).click();
+ await expect(page.getByTestId('em-caption')).toBeVisible({timeout:60000});
+ // Start the shared clock with tracking off: the RA then drifts (VIREO's 24-hour-per-clock-day branch).
+ if(!await page.getByRole('button',{name:'Start observatory clock',exact:true}).isVisible())await page.getByText('Observatory clock & spectral tracking',{exact:true}).click();
+ if(await page.getByRole('button',{name:'Turn tracking off',exact:true}).isVisible())await page.getByRole('button',{name:'Turn tracking off',exact:true}).click();
+ await page.getByRole('button',{name:'Start observatory clock',exact:true}).click();
+ const ra0=await page.getByTestId('pointing-ra').textContent();
+ for(let i=0;i<12;i++){await page.waitForTimeout(250);await expect(page.getByTestId('em-status')).toHaveCount(0);}
+ await expect(page.getByTestId('pointing-ra')).not.toHaveText(ra0!);
+});

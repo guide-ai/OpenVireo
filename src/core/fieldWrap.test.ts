@@ -14,7 +14,7 @@ const qso=new Uint8Array(readFileSync('public/original/catalogs/CLEA_QSO.DAT'));
 const area=(minimumRa:number,maximumRa:number,minimumDec:number,maximumDec:number)=>({minimumRa,maximumRa,minimumDec,maximumDec,limitingMagnitude:20});
 
 describe('area folding (0x53be70)',()=>{
- it('folds each RA bound once, leaves Dec unclamped, and types only a half-width of 12 h or more as polar',()=>{
+ it('folds each RA bound once, leaves Dec unclamped, and types as polar only a folded bound outside 0..24 h (a web limit)',()=>{
   const a=freshFieldArea({ra:0.01,dec:30}),hr=.375/(Math.cos(30*Math.PI/180)*15);
   expect(a.minimumRa).toBe(0.01-hr+24);expect(a.maximumRa).toBe(0.01+hr);expect(fieldAreaWraps(a)).toBe(true);
   const b=freshFieldArea({ra:23.99,dec:-30});expect(b.maximumRa).toBe(23.99+hr-24);expect(fieldAreaWraps(b)).toBe(true);
