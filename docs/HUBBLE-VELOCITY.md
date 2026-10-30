@@ -35,7 +35,7 @@ The requested native/code-review for this increment was denied beforeprocesscrea
   record's velocity. Otherwise it keeps v = c z.
 - **E01 numbers:** they change only within the 1 % rule. The guide and tests type c·z rounded to 0.01 km/s, so their
   velocities differ from the derived ones by at most 0.005 km/s plus Single rounding.
-- **Re-recording a galaxy:** with Time-Dependent Data off, it updates its row, which keeps its id and first time.
+- **Re-recording a galaxy:** with Time-Dependent Data off (the R3 option), it updates its row, which keeps its id and first time; on, it adds a row. The rule is core/recordReuse.ts, shared with LSS.
 - **Compute Rdshft Vel.:** it pre-fills c·z when z ≠ 0.
 - **[W]:** stellar rows, imported and library spectra keep the web confirmation (no catalogue target record). Cancel records
   nothing, and on a reused row changes nothing. The analyzer's own-results table stays the derived c·z study aid.

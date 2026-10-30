@@ -20,6 +20,7 @@ import {observationalDecText,observationalRaText,OBSERVATIONAL_DATA_LITERALS,typ
 import {formatObservationType,parseObservationType} from './observationResults';
 import {padLeft} from './nativeListFormat';
 import {LSS_DIALOG_TEXT} from './lssRedshiftDialog';
+import {recordReuseTarget} from './recordReuse';
 
 export const HUBBLE_OBSERVATION_POLICY='openvireo-hubble-observational-data-v32';
 export const HUBBLE_OBSERVATION_LIMITS=Object.freeze({remarks:36,spType:12,id:15});
@@ -32,11 +33,8 @@ export const fromHex32=(h:string)=>{if(!/^[0-9a-f]{8}$/.test(h))return NaN;const
 
 /** 0x54a73c / 0x57c918 [D]: with Time-Dependent Data off, the first record (here: a measurement row that has an observation
  * record) whose stored ID equals `id` exactly and case-sensitively; a longer ID than 15 never matches its own truncated copy.
- * Shared rule with the LSS survey's lssReuseTarget (Front L3). */
-export function observationReuseTarget(rows:readonly Readonly<{object:string;observation?:HubbleObservation}>[],id:string,timeDependent:boolean):number|null{
- if(timeDependent||id.length>HUBBLE_OBSERVATION_LIMITS.id)return null;
- const i=rows.findIndex(r=>r.observation!==undefined&&r.object===id);return i<0?null:i;
-}
+ * The rule is core/recordReuse.ts, shared with the LSS survey's lssReuseTarget (Front L3). */
+export function observationReuseTarget(rows:readonly Readonly<{object:string;observation?:HubbleObservation}>[],id:string,timeDependent:boolean):number|null{return recordReuseTarget(rows.map(r=>r.observation!==undefined?r.object:null),id,timeDependent);}
 /** The record the dialog opens on: a new one, or a reused one (its first time, velocity, remarks and Sp type). */
 export type HubbleObservationDraft=Readonly<{id:string;jd:number;ra:number;dec:number;zSingle:number;vMagnitude:number|null;
  velocityText:string;remarks:string;spText:string;reused:boolean}>;

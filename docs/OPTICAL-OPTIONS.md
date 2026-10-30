@@ -18,7 +18,7 @@ The dialog opens from the telescope-motion card. These controls are live:
 | Infrared Camera | on | Off, the camera card offers only the CCD camera, and the dialog hides the IR tab. | +0x27d3 = env+0x2e87; TObsrvtry FormActivate 0x537a13, InstSliderClick 0x53e194, IRBoxMouseUp 0x5a7324 |
 | Monochrome Displays | off | On, the LSS wedge plot is drawn black and white when it is next shown. | +0x27da = env+0x2e8e; TWedgePlot FormShow 0x580e1a |
 | Print in Color | off | On, Print Wedge Plot prints in colour; off, it prints black and white. | +0x27d9 = env+0x2e8d; Print1Click 0x580fba (flag = option XOR 1) |
-| Time-Dependent Data | off | Off, LSS Record Z on an already recorded object updates its row; on, every Record Z adds a row (Front L3, docs/LSS-SURVEY.md). | +0x27d8 = env+0x2e8c; 0x57c918 |
+| Time-Dependent Data | off | Off, Record Z on an already recorded object updates its row, in the LSS survey (Front L3, docs/LSS-SURVEY.md) and for Hubble galaxy measurements (Front H2, docs/HUBBLE-VELOCITY.md); on, every Record Z adds a row. | +0x27d8 = env+0x2e8c; 0x57c918, 0x54a73c (core/recordReuse.ts) |
 
 The dialog also shows the General, Photometer, Spectrometer, CCD and IR tab values **read-only**, formatted as
 FormActivate 0x5a56e0 writes them. Editing them would invalidate the certified field, photometer, spectrometer and camera
