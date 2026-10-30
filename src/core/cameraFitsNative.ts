@@ -10,6 +10,8 @@
  * [D] OBJECT and the file name use the Set Date/Time ID (Front RE5, analysis/front-re5/datetime-id.md): Save 0x522c28 names the
  *     file ID label + '-01.FIT' (0x52310c) and the header writer 0x5239f8 stores 'ObjX-'+ID, or 'UNKNOWN' when no ID was set.
  *     [W] The web's ID source is the Object X lab's ID (the web's Set Date/Time editor for it); an empty ID counts as never set.
+ *     [D] The ID is used raw, so a spaces-only ID gives 'ObjX-  -01.FIT' (the Object X lab shows its own empty-ID text; VIREO
+ *     does not trim here). [W] An ID outside printable ASCII is refused by CameraControl, because FITS cards cannot hold it.
  *     Object X is never revealed here (the ID is the student's, not the object's); DATE is the exposure time (VIREO's clock Double +0x37f2 is not recovered); DETECTOR and
  *     OBSERVER are empty (their calibration and student strings are not recovered); NAXIS1/2 are the plane's size (VIREO
  *     reads the camera's configuration record, equal for the compiled cameras [I]); OBSERVAT and TELESCOP are the site and

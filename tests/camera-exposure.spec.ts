@@ -118,6 +118,15 @@ test('Save image writes a FITS file that reopens under Saved images with the sam
  const nh=native.subarray(0,2880).toString('latin1');
  expect(nh.slice(80*5,80*8)).toMatch(/^OBJECT  = 'UNKNOWN '\s+\/\s*ORIGIN  = 'CLEA Simulation'    \/\s*DATE    = '\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d'/);
  expect(nh).toContain("FILTER  = 'V       '           /");expect(nh).toContain("INSTRUME= 'CCD Camera'");expect(nh).not.toContain('CATALOG');
+ // Front RE5 (RE5 review 1 L1, M2): with a Set Date/Time ID from the Object X lab, the file and OBJECT become ObjX-<ID> (Save 0x522c28,
+ // header 0x5239f8); an ID that FITS cannot hold (non-ASCII) is refused with a message and nothing is downloaded.
+ const objectXId=async(id:string)=>{await page.evaluate(()=>{location.hash='#object-x';});await page.getByLabel('ID # of your unknown object (from the lab sheet or instructor)').fill(id);await page.evaluate(()=>{location.hash='#observatory';});await expect(camera(page)).toBeVisible();};
+ await objectXId('42');
+ const idDownload=page.waitForEvent('download');await button(page,'Save image (VIREO header)').click();const withId=await idDownload;
+ expect(withId.suggestedFilename()).toBe('ObjX-42-01.FIT');expect((await readFile((await withId.path())!)).subarray(80*5,80*6).toString('latin1')).toMatch(/^OBJECT  = 'ObjX-42 '/);
+ await objectXId('María');let downloaded=false;page.on('download',()=>{downloaded=true;});
+ await button(page,'Save image (VIREO header)').click();await expect(page.getByTestId('camera-save-error')).toContainText('only plain ASCII');expect(downloaded).toBe(false);
+ await objectXId('');
  await page.goto('/#images');
  await page.getByLabel('Open float32 FITS image (up to 5 MiB)',{exact:true}).setInputFiles({name:d.suggestedFilename(),mimeType:'application/octet-stream',buffer:bytes});
  await expect(page.locator('.fits-lab')).toContainText('1024 × 1024 pixels');

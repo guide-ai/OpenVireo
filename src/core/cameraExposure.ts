@@ -100,7 +100,7 @@ function checkRecipe(r:CameraExposureRecipe):CameraExposureRecipe {
  if(!r||typeof r!=='object'||(r.camera!=='ccd'&&r.camera!=='ir'))throw new CameraExposureError('recipe','camera');
  const index=opticalIndex(r.opticalIndex);
  try{cameraCatalogReference(r.camera,r.filterPosition);}catch{throw new CameraExposureError('recipe','filter');}
- if(!Number.isInteger(r.seconds)||r.seconds<1||r.seconds>CAMERA_MAX_SECONDS)throw new CameraExposureError('recipe','seconds');
+ if(!Number.isInteger(r.seconds)||r.seconds<1||r.seconds>CAMERA_STORED_MAX_SECONDS)throw new CameraExposureError('recipe','seconds');
  if(!CAMERA_GAINS[r.camera].includes(r.gain))throw new CameraExposureError('recipe','gain');
  if(!finite(r.centerRaHours,24)||r.centerRaHours<0||!finite(r.centerDecDegrees,90))throw new CameraExposureError('recipe','center');
  if(!Number.isInteger(r.seed)||r.seed<0||r.seed>0xffff_ffff)throw new CameraExposureError('recipe','seed');
@@ -110,6 +110,9 @@ function checkRecipe(r:CameraExposureRecipe):CameraExposureRecipe {
  * mode, when t > 0 (TCCDCam 0x512244, TIRCam 0x514268: the same check). Then ExpClock.Minutes := Trunc(t/60), whose setter 0x4fcbc8
  * raises 'Minutes must be in the range of 0-59' (0x4fcccc) uncaught, so t ≥ 3600 never starts. The maximum is 59 min 59 s for both. */
 export const CAMERA_MAX_SECONDS=3599;
+/** RE5 review 1 M1: exposures saved before RE5 (Object X v28, saved images) could be 60:00. Stored recipes and their replay keep
+ * that 3600 s bound so those files still restore; only new exposures are held to CAMERA_MAX_SECONDS (CameraControl). */
+export const CAMERA_STORED_MAX_SECONDS=3600;
 function checkExtras(extras:readonly CameraExtraSource[]):readonly CameraExtraSource[] {
  if(!Array.isArray(extras)||extras.length>256)throw new CameraExposureError('extra','list');
  const at=(c:Readonly<{raHours:number;decDeg:number}>|undefined)=>!!c&&finite(c.raHours,24)&&c.raHours>=0&&finite(c.decDeg,90);

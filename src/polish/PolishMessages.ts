@@ -71,7 +71,7 @@ export const POLISH_MESSAGES=Object.freeze({
   help:'VIREO’s Tools › Results Editors. Observational Results opens your observational results in the spectrum analyzer; Pulsar Results opens the saved pulsar measurements in the pulsar analysis.',
  }),
  pulsarPrint:Object.freeze({
-  note:'VIREO’s Print Window (PrintScreen1Click 0x56d9d8, Front RE5) prints its own header and the data parameters, then the window picture. Web adaptation: the page is portrait, the date is the browser’s, the table and student names read “(Not Recorded)” (there is no login), and the picture is the web panels as shown, not VIREO’s print-coloured window image.',
+  note:'VIREO’s Print Window (PrintScreen1Click 0x56d9d8, Front RE5) prints its own header and the data parameters, then the window picture. Web adaptation: the page is portrait, the date is the browser’s, the table and student names read “(Not Recorded)” (there is no login), and the picture is the web panels as shown, not VIREO’s print-coloured window image (white panels, black axes and traces). VIREO’s Print Window also switches every panel to vertical-cursor mode as it opens; the web leaves the cursor mode unchanged.',
  }),
  wedgePrint:Object.freeze({
   note:'Web adaptation: VIREO’s Print sets the colour scheme to the opposite of a program setting (scheme := Env+0x2e8d XOR 1, 0x580fba–0x580fc3), so it prints in black and white when that setting is 0; the setting’s default is not recovered. This print always uses the black-and-white scheme and the browser’s printer layout. Selection highlighting is not printed.',

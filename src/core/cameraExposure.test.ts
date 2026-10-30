@@ -1,7 +1,7 @@
 import {describe,expect,test} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
-import {cameraMovingMagnitude,composeCameraExposure,CameraExposureError,CAMERA_EXPOSURE_ADAPTATIONS,CAMERA_MAX_SECONDS,type CameraExposureRecipe,type CameraExtraSource} from './cameraExposure';
+import {cameraMovingMagnitude,composeCameraExposure,CameraExposureError,CAMERA_EXPOSURE_ADAPTATIONS,CAMERA_MAX_SECONDS,CAMERA_STORED_MAX_SECONDS,type CameraExposureRecipe,type CameraExtraSource} from './cameraExposure';
 import {readVizierCatalog,selectVizierCatalog,wholeSkySelection} from './vizierNomad';
 import {CameraRandomCursor} from './cameraRandom';
 import {randomDraw} from './acquisition';
@@ -113,11 +113,15 @@ describe('IR exposure composer (C6)',()=>{
   expect(()=>composeCameraExposure({...recipe,gain:4},selection())).toThrow(CameraExposureError);
   for(const gain of [1,2,8])expect(composeCameraExposure({...ir,gain,seconds:1},irSelection('H')).plane.width).toBe(512);
  });
- test('unrecovered IR exposure limit and overlay follow the CCD web adaptation',()=>{
-  expect(CAMERA_EXPOSURE_ADAPTATIONS.some(a=>a.startsWith('ir-like-ccd:'))).toBe(false);// Front RE5: recovered, no longer an adaptation
+ test('IR exposure limit is recovered as the CCD\'s 59:59; stored recipes keep the earlier 60:00 bound',()=>{
+  // Front RE5: recovered, no longer an adaptation.
+  expect(CAMERA_EXPOSURE_ADAPTATIONS.some(a=>a.startsWith('ir-like-ccd:'))).toBe(false);
   expect(CAMERA_MAX_SECONDS).toBe(3599);
-  expect(()=>composeCameraExposure({...ir,seconds:CAMERA_MAX_SECONDS+1},irSelection('J'))).toThrow(CameraExposureError);
-  expect(composeCameraExposure({...ir,seconds:CAMERA_MAX_SECONDS},irSelection('J')).recipe.seconds).toBe(CAMERA_MAX_SECONDS);
+  // Re-pinned 2026-10-30 (RE5 review 1 M1): the composer also replays saved recipes, so it keeps 3600 s; new exposures are held to
+  // 3599 s by the camera control (camera-exposure.spec, ir-camera.spec).
+  expect(CAMERA_STORED_MAX_SECONDS).toBe(3600);
+  expect(()=>composeCameraExposure({...ir,seconds:CAMERA_STORED_MAX_SECONDS+1},irSelection('J'))).toThrow(CameraExposureError);
+  expect(composeCameraExposure({...ir,seconds:CAMERA_STORED_MAX_SECONDS},irSelection('J')).recipe.seconds).toBe(3600);
  });
 });
 

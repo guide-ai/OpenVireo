@@ -1,0 +1,128 @@
+{
+  "format": "OpenVireo analysis session",
+  "version": 28,
+  "numericalPolicy": "Number_x87_equivalence_unvalidated",
+  "base": {
+    "format": "OpenVireo analysis session",
+    "version": 2,
+    "hubble": {
+      "recipeId": "",
+      "rows": []
+    },
+    "numericalPolicy": "Number_x87_equivalence_unvalidated",
+    "observation": null,
+    "adjustment": {
+      "control": {
+        "base": 0,
+        "position": 0,
+        "factor": 1,
+        "step": 0
+      },
+      "stepInput": "",
+      "reference": "galaxy",
+      "wide": false,
+      "object": ""
+    },
+    "measurements": []
+  },
+  "objectXPolicy": "openvireo-objectx-investigation-v28",
+  "objectXDigestSHA256": "7a14eec8d5e5241e0e78b3813bf80e1600527e93603bb8dd9ef99c4e8d5034df",
+  "objectX": {
+    "policy": "openvireo-objectx-investigation-v28",
+    "orbitFile": "ObjX_MPC.CMO.sav",
+    "id": "42",
+    "target": "X-1ABCD",
+    "startUtc": "2009-06-01T04:00:00",
+    "clockSet": true,
+    "listJd": 2454983.6666666665,
+    "limit": 16,
+    "exposures": [
+      {
+        "jd": 2454983.6666666665,
+        "seconds": 3600,
+        "filter": 2,
+        "gain": 2,
+        "telescope": 0,
+        "ra": 22.722017,
+        "dec": -8.03989,
+        "seed": 12345,
+        "catalogMode": "live",
+        "catalogSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "extractId": null,
+        "listJd": 2454983.6666666665,
+        "orbitFile": "ObjX_MPC.CMO.sav",
+        "limit": 16,
+        "pairs": 1,
+        "skipped": [],
+        "fitsSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      {
+        "jd": 2454983.708333333,
+        "seconds": 120,
+        "filter": 2,
+        "gain": 2,
+        "telescope": 0,
+        "ra": 22.722017,
+        "dec": -8.03989,
+        "seed": 12345,
+        "catalogMode": "live",
+        "catalogSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "extractId": null,
+        "listJd": 2454983.6666666665,
+        "orbitFile": "ObjX_MPC.CMO.sav",
+        "limit": 16,
+        "pairs": 1,
+        "skipped": [],
+        "fitsSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      }
+    ],
+    "images": [
+      {
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "label": "ObjX-42-01",
+        "jd": 2454983.6666666665,
+        "exposure": 0
+      },
+      {
+        "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "label": "ObjX-42-02",
+        "jd": 2454983.708333333,
+        "exposure": 1
+      }
+    ],
+    "measure": {
+      "first": 0,
+      "second": 1
+    },
+    "log": [
+      {
+        "frame": 0,
+        "role": "reference",
+        "x": 10.5,
+        "y": 20.25,
+        "jd": 2454983.6666666665,
+        "catalog": {
+          "raHours": 22.7,
+          "decDeg": -8
+        }
+      },
+      {
+        "frame": 0,
+        "role": "target",
+        "x": 512.2,
+        "y": 511.9,
+        "jd": 2454983.6666666665
+      },
+      {
+        "frame": 1,
+        "role": "target",
+        "x": 512.2,
+        "y": 520.1,
+        "jd": 2454983.708333333
+      }
+    ],
+    "answer": "asteroid",
+    "description": "It moved.\nTwo images.",
+    "revealed": true
+  }
+}

@@ -141,3 +141,13 @@ describe.runIf(process.env.OBJX_SAVE_TIMING)('v28 Save timing',()=>{
   expect(ms).toBeGreaterThan(0);
  },600_000);
 });
+
+describe('RE5 review 1 M1: exposures saved before the 59:59 limit',()=>{
+ it('a v28 session file with a 60:00 exposure (written before RE5) still restores, with its Hubble base, and replays',async()=>{
+  const text=readFileSync(new URL('../../tests/fixtures/objectx-v28-60min.json',import.meta.url),'utf8');
+  expect(JSON.parse(text).objectX.exposures[0].seconds).toBe(3600);
+  const back=await read(text);expect(back.objectX?.exposures[0].seconds).toBe(3600);expect(back.objectX?.exposures[0].pairs).toBe(exposure(JD,3600).pairs);
+  expect(back.hubble).toEqual(EMPTY_HUBBLE);
+  const over=JSON.parse(text);over.objectX.exposures[0].seconds=3601;await expect(read(JSON.stringify(over))).rejects.toBeTruthy();
+ });
+});
