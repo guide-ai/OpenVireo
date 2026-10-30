@@ -121,6 +121,12 @@ test('sign in by emailed link, save to the cloud, restore, export and delete the
  await expect(page.locator('.investigation-toolbar > [role=status]').filter({hasText:'Pending investigation operation cancelled.'})).toBeVisible();
  await expect(account.getByRole('status').filter({hasText:'Save to the cloud was cancelled.'})).toBeVisible();
  await expect(account.getByTestId('cloud-item')).toHaveCount(1);await expect(account.getByTestId('cloud-item')).not.toContainText('Cancelled');
+ // Hiding the tab cancels the same way (cancelProject on visibilitychange): R3 review, F2 L3 coverage.
+ held=false;await account.getByRole('button',{name:'Save current investigation to the cloud'}).click();await expect.poll(()=>held).toBe(true);
+ await page.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,get:()=>'hidden'});document.dispatchEvent(new Event('visibilitychange'));});
+ await expect(account.getByRole('status').filter({hasText:'Save to the cloud was cancelled.'})).toBeVisible();
+ await page.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,get:()=>'visible'});document.dispatchEvent(new Event('visibilitychange'));});
+ await expect(account.getByTestId('cloud-item')).toHaveCount(1);
  await page.unroute('**/api/investigations');
 
  // Delete the cloud copy, then the account.

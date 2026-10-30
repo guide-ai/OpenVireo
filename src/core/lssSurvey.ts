@@ -32,7 +32,7 @@ export type LssRecord=Readonly<{
 export type LssJournal=Readonly<{seedAtReset:number;events:readonly JournalEvent[]}>;
 /** The open "Measured Redshift Data" dialog: values fixed from the measurement, only Remarks (and the object label) editable. */
 export type LssDraft=Readonly<{field:LssFieldNumber;row:number;telescope:0|1|2;object:string;jd:number;ra:number;dec:number;z:number;remarks:string;acquisitionPolicy:string;journal:LssJournal;control:ShiftControl;fieldJd?:number;
- /** Front L2: the Velocity (km/sec) edit text (blank on open, option +0x2e88 off). */velocity:string;
+ /** Front L2: the Velocity (km/sec) edit text: the reused row's velocity, else c·z with Compute Rdshft Vel. (R3), else blank. */velocity:string;
  /** Front L3: the index of the record this measurement reuses (0x57c918, Time-Dependent Data off), or null for a new row. */
  target:number|null}>;
 /** `wedgeStale` (Front L3): a row already handed to the wedge was reused, so the next hand-over replaces the wedge's own LSS

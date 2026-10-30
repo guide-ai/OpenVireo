@@ -12,9 +12,12 @@ Reference `CLEA_VEO.exe`, SHA-256 `781bc9704b4674038267834a9ed21d502c455378d8fc9
 - **Options** (`TWdgPltOptsForm1`): the defaults (0x5803e0) are Velocity grid, size 1, Open, Auto Plot off and a 5-minute interval. Size is 1–5 and style is Open/Filled. OK commits and Cancel discards.
 - **Colours.** Codex independently recovered the eight TColor literals at .data 0x5b4acc…0x5b4ae8 (`COORDINATOR-colors-and-results.json`, with a SHA-256 for each dword). Flag `TWedgePlot+0x394` chooses between two schemes:
   - *Display:* navy background, yellow grid and text, white own points, green group points.
-  - *Black-and-white:* white, black, black and grey. Print1Click 0x580f88 sets the scheme to Env+0x2e8d XOR 1 (0x580fba–0x580fc3) while printing, so the original prints in this scheme only when that setting is 0; its default is not recovered. The web Print Wedge Plot always uses this scheme [W].
+  - *Black-and-white:* white, black, black and grey. Print1Click 0x580f88 sets the scheme to Env+0x2e8d XOR 1 (0x580fba–0x580fc3) while printing, so the original prints in this scheme only when that setting (Print in Color) is 0, its compiled default (0x5a2a40, Front R3).
+    Print Wedge Plot follows the option (docs/OPTICAL-OPTIONS.md).
 
-  The literals are exact. The flag's value on a historical host is not known: `FormShow` copies it from Env+0x2e8e, and Print uses Env+0x2e8d. The original help says the display is normally in colour.
+  The literals are exact. `FormShow` copies the flag from Env+0x2e8e (Monochrome Displays, compiled 0 at 0x5a2a47, so the display
+  starts in colour, as the original help says), and Print uses Env+0x2e8d. Both are Optical Simulation Options in the web
+  (Front R3); the display takes Monochrome Displays when that option changes, and the scheme choice can switch it meanwhile [W].
 - **Global aliases.** These were recovered from static storage:
   - Options pointer 0x5b5c98 holds 0x5bced4, the options record.
   - Results-form global 0x5b5504 holds 0x5bcec8.
@@ -140,7 +143,7 @@ All vectors are synthetic, not CLEA observations, and the tests check this contr
   - the aliases 0x5b5c98 → 0x5bced4 and 0x5b5504 → 0x5bcec8;
   - the results owner `LSSRsltsForm1`, whose base `TInfoListForm1` DFM has an empty initial ListBox.
 - **Still unknown:**
-  - the historical host's active print/colour flag (Env+0x2e8e and Env+0x2e8d);
+  - whether a historical host's VEO_OPTS.INI changed Env+0x2e8e or Env+0x2e8d from their compiled 0 (no INI ships with VIREO);
   - GDI and font pixel equivalence;
   - the historical host FPU control word and DecimalSeparator;
   - the MJD date prefix. The raw text is kept and no value is constructed.

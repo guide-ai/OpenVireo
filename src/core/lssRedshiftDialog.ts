@@ -3,7 +3,8 @@
  * analysis/front-l2-lss/rsltsdlg-txt-findings.md §2.
  *  - FormActivate 0x57cab8 [D]: JD FloatToStrF(ffFixed, 18, 6); z FloatToStrF(ffExponent, 4, 2) of the stored Single z (blank
  *    when 0); RA split 0x486bc0 with 2 second decimals → IntToStr(h), IntToStr(m), ffFixed(sec, 2); Dec with 1 decimal, '-'
- *    from the sign; velocity blank (option +0x2e88 "compute velocity" off, its compiled default).
+ *    from the sign; velocity: the record's own velocity ffExponent 4 when nonzero (a reused row, Front L3), else c·z when
+ *    Compute Rdshft Vel. (+0x2e88, compiled off) is on (Front R3), else blank.
  *  - OKBtnClick 0x57cd80 [D]: z := StrToFloat(z text), so the stored z is re-quantised to the 4-significant-digit text (an
  *    EConvertError, i.e. the blank text of z = 0, gives 0); v := StrToFloat(velocity text), a conversion error →
  *    "Velocity is incorrect or missing!…" (caption "Velocity Error!"); |(v − c·z)/(c·z)| > 0.01, NaN included →
@@ -13,8 +14,8 @@
  *  - [W] z = 0 (a blank z text): the web refuses with "Velocity calculation is invalid!"; natively the 0/0 or v/0 division
  *    raises an x87 EInvalidOp/EZeroDivide (control word 0x1332) that reaches the VCL default box.
  * Web [W]: RA/Dec are read-only boxes (the native edits are discarded); Cancel adds nothing (natively 0x57c918 inserts the record
- * before the dialog opens and Cancel never removes it); every OK is a new record (the native reuse-by-ID option +0x2e8c is not
- * recovered). Pure. */
+ * before the dialog opens and Cancel never removes it), and on a reused row it changes nothing (Front L3). Whether OK adds a
+ * row or updates one follows Time-Dependent Data (+0x2e8c, 0x57c918; lssSurvey.ts). Pure. */
 import {floatToStrFExponent4} from './catalogObject';
 import {splitNativeSexagesimal} from './nativeListFormat';
 import {delphiFixed} from './variableStars';

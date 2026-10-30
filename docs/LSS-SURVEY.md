@@ -89,7 +89,8 @@ with SHA-256). This section supersedes the "Not recovered" list above for the it
   coordinates and that galaxy's catalogue magnitude.
 - **Measured Redshift Data** (TLSSRsltsDlg1; FormActivate 0x57cab8, OK 0x57cd80; coordinator decision of 2026-10-29). The
   dialog shows JD (6 decimals), RA h m s.ss and Dec ±d m s.s, and z as its 4-significant-digit text (`2.345E-02`). The student
-  types the velocity (blank on open: the original's "compute velocity" option is off by default). OK stores z re-read from that
+  types the velocity: it is blank on open unless the row is reused (its earlier velocity, Front L3) or Compute Rdshft Vel. is
+  on (c·z, Front R3); the option is off by default. OK stores z re-read from that
   text and the typed velocity (both Single); a velocity that does not convert shows "Velocity is incorrect or missing! You must
   supply a valid velocity for plotting." (Velocity Error!), one more than 1 % from c·z shows "Velocity calculation is
   invalid!", and the dialog stays open [D]. [W] within 1e-12 of the 1 % limit the velocity is refused, as on the Hubble route.
