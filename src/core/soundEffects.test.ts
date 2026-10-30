@@ -28,7 +28,7 @@ describe('VIREO sound effects (WAV-events.md)',()=>{
   const a=soundEffectsStep(closed,open,true);
   expect(a).toEqual([{kind:'cancel-dome-end'},{kind:'play',channel:'dome',sound:'gardoor.wav',loop:false},{kind:'dome-end-after',ms:DOME_TRAVEL_MS}]);
   expect(soundEffectsStep(open,{domeCue:2,motion:null},true)).toEqual(a);
-  expect(DOME_TRAVEL_MS).toBe(7760);// 97 ticks × 80 ms to frac 0.97 (0x58d3f0)
+  expect(DOME_TRAVEL_MS).toBe(7840);// 98 ticks × 80 ms to frac 0.97 (0x58d3f0) at VIREO's 64-bit x87 precision
   expect(domeEndActions(()=>0)).toEqual([{kind:'stop',channel:'dome'},{kind:'play',channel:'dome',sound:'chaclunk.wav',loop:false}]);
   expect(domeEndActions(()=>0.999)[1]).toMatchObject({sound:'whaading.wav'});expect(domeEndActions(()=>0.5)[1]).toMatchObject({sound:'crinkle.wav'});
  });

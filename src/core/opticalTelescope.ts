@@ -12,8 +12,8 @@ export function opticalProfile(index:OpticalIndex){return OPTICAL_PROFILES[optic
 export const acquisitionProfileSupported=(w:OpticalWorkspace)=>w.selectedIndex===0;
 export function draftOpticalTelescope(w:OpticalWorkspace,index:OpticalIndex):OpticalWorkspace{opticalIndex(index);return index===w.draftIndex?w:Object.freeze({...w,draftIndex:index});}
 export function cancelOpticalTelescope(w:OpticalWorkspace):OpticalWorkspace{return draftOpticalTelescope(w,w.selectedIndex);}
-/** Same-index Access is a recovered no-op. Apply/Cancel and retained journals /
- * closed preview dome are declared browser adaptations of the stopped switch. */
+/** Same-index Access is a recovered no-op. The closed dome after a change is the recovered default (0x58b528 closes it through DomeSw1DownClick unless FastScopeBox, compiled
+ * 0, is set); Apply/Cancel and retained journals are declared browser adaptations of the stopped switch. */
 export function applyOpticalTelescope(w:OpticalWorkspace):Readonly<{state:OpticalWorkspace;changed:boolean}>{
  opticalIndex(w.selectedIndex);opticalIndex(w.draftIndex);return w.selectedIndex===w.draftIndex?{state:w,changed:false}:{state:Object.freeze({selectedIndex:w.draftIndex,draftIndex:w.draftIndex}),changed:true};
 }

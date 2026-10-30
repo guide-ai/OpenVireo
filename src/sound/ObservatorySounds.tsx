@@ -9,10 +9,10 @@ import {SOUND_MESSAGES as M} from './SoundMessages';
  * it on prepares the motor sound (it must be decoded); any other sound is fetched only when an event needs it (same origin, size and SHA-256 checked); Emotor.wav (MS-ADPCM) is decoded in the
  * page. Every play follows the student's own click (the checkbox, the dome, a slew); the checkbox also unlocks both players
  * with a muted, silent play in the same gesture, for browsers (WebKit) that unlock media per element. The dome sound follows
- * only the dome switch (cueDomeSound), never a restored or prepared dome state. */
+ * the dome switch and a telescope change that closes the dome (cueDomeSound); a restored or prepared dome state plays nothing [W]. */
 let sessionEnabled=SOUND_EFFECTS_DEFAULT;
 const cache=new Map<SoundName,Promise<string>>(),loaded=new Set<SoundName>();
-/** Review L1: the dome switch buttons call this; nothing else plays the dome sound. */
+/** The dome switch buttons and a telescope change that closes an open dome (0x58b528 → DomeSw1DownClick) call this. */
 let domeCueCount=0;const domeListeners=new Set<()=>void>();
 export function cueDomeSound(){domeCueCount++;for(const f of domeListeners)f();}
 let silentUrl:string|null=null;

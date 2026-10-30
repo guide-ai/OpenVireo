@@ -21,7 +21,7 @@ Each play opens the program folder plus a lowercase name and plays it once, from
 
 | Event | Sound |
 |---|---|
-| Dome Up or Down click (0x58c608 / 0x58c45c) | `gardoor.wav` once |
+| Dome Up or Down click (0x58c608 / 0x58c45c), or a telescope change with the dome open (0x58b528 → 0x58b741, unless FastScopeBox) | `gardoor.wav` once |
 | The dome reaches the end of its travel (DomeTimer, 80 ms ticks of 0.01) | `gardoor.wav` stops; one of chaclunk, clunkit, crashbrn, rolling, crinkle, drag, mailbox, whaading (table 0x5b4b04) by Random(8) |
 | Reversal during travel | `gardoor.wav` restarts; no end sound at that moment |
 | Manual N/S/E/W slew held | `servostart.wav`, then `servocontin.wav` again and again (MediaPlayer1Notify 0x540350) |
@@ -49,10 +49,16 @@ Sound Device!", and turns the option off for the session.
   site has not been tested on WebKit or Safari [I]. If a play is refused there, the status line gives VIREO's message and
   Sound Effects turns off.
 - **Events:**
-  - Only the two dome switch buttons play the door sound (DomeSw1UpClick / DomeSw1DownClick). A restored investigation, a
-    telescope change or a prepared photometer field also changes the dome state, but plays nothing, as in VIREO.
-  - The web dome opens or closes at once, so the end sound comes 7.76 s later [W]. That is the native 97 ticks of 80 ms:
-    opening plays it at frac ≥ 0.97 from 0 (constant 0x58d3f0), closing at ≤ 0.03 from 1.
+  - The door sound plays for the two dome switch buttons (DomeSw1UpClick / DomeSw1DownClick). It also plays for a telescope
+    change that closes an open dome [D]: the scope-access routine 0x58b528 (Access0P4/1p0/4p0Click) calls DomeSw1DownClick
+    (0x58b741) unless FastScopeBox (env+0x2e84, compiled default 0) is set.
+  - A restored investigation, a restored star packet or a prepared photometer field also changes the dome state, but plays
+    nothing [W]. VIREO never opens the dome by itself, since DomeSw1UpClick has no code caller, so these web paths have no
+    native sound.
+  - The web dome opens or closes at once, so the end sound comes 7.84 s later [W]. That is the native 98 ticks of 80 ms:
+    opening plays it at frac ≥ 0.97 from 0 (constant 0x58d3f0), closing at ≤ 0.03 from 1. Under VIREO's own x87 control word
+    0x1332 (64-bit precision), the accumulated 0.01 steps reach either bound on tick 98; 97 would hold only at 53-bit
+    precision.
   - A second dome click before then restarts the door sound.
   - The end sound is chosen by the browser's random source; there is no Delphi Random parity [W].
 - **Status line:** "Loading the sound…" shows only while a sound that has not loaded yet is pending. It clears when that play

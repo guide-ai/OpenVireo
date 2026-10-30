@@ -11,7 +11,7 @@
  *       or Terminate. No arrival sound.
  *     - Option TOptionsDlg "Sound Effects" (+0x27d2 = env+0x2e86), compiled default 1; saved in VEO_OPTS.INI.
  * [W] Off by default and a student checkbox (user decision, 2026-10-29); the option lasts for the page session only. The web
- *     dome opens or closes at once, so the end sound comes after DOME_TRAVEL_MS (the native 97 ticks of 80 ms).
+ *     dome opens or closes at once, so the end sound comes after DOME_TRAVEL_MS (the native 98 ticks of 80 ms).
  *     The end sound is chosen by a web random source (no Delphi Random parity). */
 export const SOUND_FILES=Object.freeze({
  'chaclunk.wav':Object.freeze({file:'CHACLUNK.WAV',bytes:3588,sha256:'5dfc3dc78c3e19138c30b2497a3c54cf57509c034a52b01431a61adf8ffe19d5'}),
@@ -31,8 +31,10 @@ export type SoundName=keyof typeof SOUND_FILES;
 /** The 13-byte name table 0x5b4b04 read by DomeTimerTimer (0x58d1fc / 0x58d325), in table order. */
 export const DOME_END_SOUNDS=Object.freeze(['chaclunk.wav','clunkit.wav','crashbrn.wav','rolling.wav','crinkle.wav','drag.wav','mailbox.wav','whaading.wav'] as const satisfies readonly SoundName[]);
 /** DomeTimer (80 ms, 0.01 per tick) plays the end sound at frac ≥ 0.97 from 0 (opening; constant 0x58d3f0) or ≤ 0.03 from 1
- * (closing): 97 ticks × 80 ms [D]. [W] The web dome opens or closes at once, so the end sound comes after this delay. */
-export const DOME_TRAVEL_MS=97*80;
+ * (closing). Under VIREO's own x87 control word 0x1332 (64-bit precision) the accumulated 0.01 steps reach it on tick 98 in
+ * both directions; 97 holds only at 53-bit precision [D] (C5W closure L2). [W] The web dome opens or closes at once, so the
+ * end sound comes after this delay. */
+export const DOME_TRAVEL_MS=98*80;
 export const SOUND_EFFECTS_DEFAULT=false;// [W] native compiled default 1 (0x5a2b0b); off by the user's decision
 
 export type SoundChannel='dome'|'telescope';
@@ -41,8 +43,11 @@ export type SoundAction=
  | Readonly<{kind:'stop';channel:SoundChannel}>
  | Readonly<{kind:'dome-end-after';ms:number}>
  | Readonly<{kind:'cancel-dome-end'}>;
-/** `domeCue` counts clicks on the dome switch (DomeSw1UpClick / DomeSw1DownClick); other changes of the dome state, such as a
- * restored investigation, a telescope change or a prepared photometer field, play nothing, as in VIREO (review L1). */
+/** `domeCue` counts dome-switch events: the Up and Down clicks (DomeSw1UpClick / DomeSw1DownClick), and a telescope change that
+ * closes an open dome, because the scope-access routine 0x58b528 calls DomeSw1DownClick (0x58b741) unless FastScopeBox
+ * (env+0x2e84, compiled 0) is set [D]. A restored investigation, a restored star packet or a prepared photometer field also
+ * change the dome state but play nothing [W]: VIREO never opens the dome by itself (DomeSw1UpClick has no code caller), so
+ * these web paths have no native sound. */
 export type ObservatorySoundState=Readonly<{domeCue:number;motion:Readonly<{kind:'manual'|'programmed';moving:boolean}>|null}>;
 
 /** The actions between two observatory states. Nothing plays while the option is off, and turning it on plays nothing by itself. */

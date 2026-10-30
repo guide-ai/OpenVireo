@@ -311,7 +311,7 @@ export default function OpenVireo(){
   // The photometer prepares its own verified field like the other instruments; the selected navigation object is unchanged.
   function preparePhotometerField(next:Pointing){setOpen(true);changeFieldMode('telescope');prepareTrackedField(next);}
   function beginSpectralClock(){return observatoryClock.start(siteClock.utc,pointing);}
-  function applyOptical(next=optical){if(projectBusy)return;const result=applyOpticalTelescope(next);if(!result.changed)return;prepareObserving();preparePhotometry();setOptical(result.state);setOpen(false);setError('');setNotice(t('optical.applied',{name:opticalProfile(result.state.selectedIndex).name}));}
+  function applyOptical(next=optical){if(projectBusy)return;const result=applyOpticalTelescope(next);if(!result.changed)return;prepareObserving();preparePhotometry();setOptical(result.state);if(open)cueDomeSound();/* C5W closure L1: 0x58b528 closes an open dome through DomeSw1DownClick (0x58b741) */setOpen(false);setError('');setNotice(t('optical.applied',{name:opticalProfile(result.state.selectedIndex).name}));}
   const [sharedEditing,setSharedEditing]=useState<SharedEditingWorkspace>(()=>({preparationSeedText:'1',photometry:defaultPhotometryDraft()}));
   function restoreEditing(w:EditingWorkspace){setSharedEditing({preparationSeedText:w.preparationSeedText,photometry:w.photometry});}
   const [restoredPhotometry,setRestoredPhotometry]=useState<PhotometerState|null>(null);
