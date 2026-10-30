@@ -52,10 +52,10 @@ test('with Limit Slewing on, the immediate Point shortcuts are refused below the
 test('the Options dialog lists the other original options as text with recovered compiled states (review F8)',async({page})=>{
  await open(page);await card(page).getByTestId('ob-options').click();
  const list=page.getByTestId('ob-options-others');await expect(list.getByRole('checkbox')).toHaveCount(0);
- // Front O: Edit Mode, and Front O2: Virtual Observatory, are live (non-persisted) check boxes, so 13 of the 15 other options
- // remain listed as text.
- await expect(list).toContainText('Fast Slewing — compiled: checked');await expect(list.getByRole('listitem')).toHaveCount(13);await expect(list).not.toContainText('Edit Mode');await expect(list).not.toContainText('Virtual Observatory');
- await expect(page.getByTestId('ob-options-dialog').getByRole('checkbox')).toHaveCount(3);await expect(page.getByTestId('ob-options-edit-mode')).not.toBeChecked();await expect(page.getByTestId('ob-options-virtual-observatory')).not.toBeChecked();
+ // Front O: Edit Mode, Front O2: Virtual Observatory, and Front R3's six ported options are live (non-persisted) check boxes,
+ // so 7 of the 15 other options remain listed as text.
+ await expect(list).not.toContainText('Fast Slewing');await expect(list.getByRole('listitem')).toHaveCount(7);await expect(list).not.toContainText('Edit Mode');await expect(list).not.toContainText('Virtual Observatory');
+ await expect(page.getByTestId('ob-options-dialog').getByRole('checkbox')).toHaveCount(9);await expect(page.getByTestId('ob-options-fast-slewing')).toBeChecked();await expect(page.getByTestId('ob-options-edit-mode')).not.toBeChecked();await expect(page.getByTestId('ob-options-virtual-observatory')).not.toBeChecked();
 });
 
 test('a refused HTL Point leaves the selected target, the card and the pointing exactly as they were (review note 1)',async({page})=>{

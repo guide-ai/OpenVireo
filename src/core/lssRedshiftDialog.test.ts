@@ -27,3 +27,14 @@ describe('Front L2: TLSSRsltsDlg1 FormActivate 0x57cab8 / OKBtnClick 0x57cd80',(
   expect(lssDialogRecordValid(0.02,r.zHex,'459c4000')).toBeNull();// 5000
  });
 });
+import {lssPrefilledVelocity} from './lssRedshiftDialog';
+describe('Front R3: Compute Rdshft Vel. pre-fills the velocity (0x57cbcb)',()=>{
+ it('is Single(c·Single(z)) as ffExponent 4, and OK accepts it unchanged; z = 0 is still refused by OK',()=>{
+  for(const z of [0.0123,0.025,0.031,0.004]){
+   const text=lssPrefilledVelocity(z);expect(text).toMatch(/^\d\.\d{3}E[+-]\d{2}$/);
+   expect(lssDialogOk(z,text).ok).toBe(true);
+  }
+  expect(lssPrefilledVelocity(0.0123)).toBe('3.687E+03');
+  expect(lssDialogOk(0,lssPrefilledVelocity(0)).ok).toBe(false);
+ });
+});

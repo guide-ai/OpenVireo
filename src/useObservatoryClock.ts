@@ -36,9 +36,9 @@ export function useObservatoryClock(active:boolean,onPointing:(p:Pointing)=>void
  function start(utc:string,pointing:Pointing){if(document.visibilityState==='hidden'){release();return false;}pause();const w=current.current??createClockDrive(utc,pointing);try{advanceClockDrive(w,w.elapsedMS);}catch{setLimited(true);return false;}publish(w);anchor.current=last.current=performance.now();base.current=w.elapsedMS;live.current=true;setRunning(true);setLimited(false);return true;}
  function toggle(utc:string,pointing:Pointing){const wasRunning=live.current,w=sample()??createClockDrive(utc,pointing),canResume=live.current;release();const next=toggleClockTracking(w);replace(next);if(wasRunning&&canResume)start(utc,clockDrivePointing(next));}
  function prepareTracked(utc:string,pointing:Pointing){const w=pause();replace(w?{...repointClockDrive(w,pointing),tracking:true}:{...createClockDrive(utc,pointing),tracking:true});}
- function beginMotion(kind:MotionDirection|Pointing,rateIndex:number,mode:FieldMode,utc:string,pointing:Pointing,onAccepted?:()=>void){
+ function beginMotion(kind:MotionDirection|Pointing,rateIndex:number,mode:FieldMode,utc:string,pointing:Pointing,onAccepted?:()=>void,programRateIndex:3|4=4){
   if(motor.current)throw new Error('Motion busy');const now=performance.now(),sampled=sample(now),p=sampled?clockDrivePointing(sampled):pointing;
-  const prepared=prepareBrowserTelescopeMotion(p,kind,mode,rateIndex);
+  const prepared=prepareBrowserTelescopeMotion(p,kind,mode,rateIndex,programRateIndex);// Front R3: Fast Slewing (4) or not (3)
   if(prepared.phase==='complete'){setMotion(prepared);return prepared;}
   if(document.visibilityState==='hidden')throw new Error('Clock hidden');const drive=sampled??createClockDrive(utc,p);advanceClockDrive(drive,drive.elapsedMS);
   // Validate against the sampled point before pausing/releasing confirmed work.
