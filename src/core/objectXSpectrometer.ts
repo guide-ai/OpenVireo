@@ -12,11 +12,12 @@
  * Fields: the general field engine at the exact ObjectX.HTL coordinates (the coordinates the student is given), QSO 'merge',
  * the recovered variable dispatch, the GLXYSP guard, photographs from GLIMAGES.LST (association, rescale and draw ported; photographDraw.ts), the QSO observation through
  * QSOSpect.dat. Journals use the same bounded exposure journal as every acquisition. */
-import {evaluateField,glxyspLookup,FIELD_MULTIPLIER,type FieldOptions,type FieldResult,type FieldTelescope,type FieldUnavailableReason,type FieldQsoCatalog,type FieldPhotographs} from './fieldEngine';
+import {glxyspLookup,FIELD_MULTIPLIER,type FieldResult,type FieldTelescope,type FieldUnavailableReason,type FieldQsoCatalog,type FieldPhotographs} from './fieldEngine';
+import {spectrometerFieldResult,SPECTROMETER_INTERVAL} from './fieldSpectrometer';
 import {continuationSourcePreparer,type FieldContinuationSource} from './fieldContinuation';
 import type {FieldPack} from './fieldPack';
 import type {QsoSpectrumFile} from './qsoSpectrum';
-import {lookupStarTemplate,type StarIndexEntry} from './starTemplates';
+import {type StarIndexEntry} from './starTemplates';
 import type {UniformSpectrum} from './acquisition';
 import {activateJournal,cancelJournal,createJournalExposure,deactivateJournal,JournalError,pauseJournal,replayJournal,resetJournal,startJournal,tickJournal,type JournalEvent,type JournalState} from './exposureJournal';
 
@@ -26,7 +27,7 @@ export const OBJECT_X_SPECTRUM_POLICY_PREFIX='openvireo-objectx-spectrum-v2';
  * and 0x588980..0x588992 from the options dialogs), whose compiled default is 3700–4700 Å (0x5a2a1e/0x5a2a28). No Object X
  * specific interval exists: the QSO preparation 0x50e821..0x50e853 reads the same global range; the web uses that default
  * (adaptation: no options file or range control yet). */
-export const OBJECT_X_SPECTRAL_INTERVAL=Object.freeze({minimum:3700,maximum:4700});
+export const OBJECT_X_SPECTRAL_INTERVAL=SPECTROMETER_INTERVAL;
 /** ObjectX.HTL rows with a spectroscopic branch (QSOs 1, 10, 13; galaxies 3, 6, 8, 11; stars 4, 5, 9, 12) and their pack. */
 export const OBJECT_X_SPECTRUM_ROWS:readonly Readonly<{row:number;pack:string}>[]=Object.freeze([
  [1,'objectx-he0353'],[3,'objectx-ngc2403'],[4,'objectx-ngc2403'],[5,'objectx-ngc4262'],[6,'objectx-ngc4262'],[8,'objectx-ngc4449'],[9,'objectx-ngc4449'],
@@ -76,14 +77,8 @@ export function objectXField(inputs:ObjectXSpectrometerInputs,pointing:Readonly<
  const row=OBJECT_X_SPECTRUM_ROWS.find(r=>{const p=inputs.rowPointings.get(r.row);return !!p&&p.ra===pointing.ra&&p.dec===pointing.dec;});
  if(!row)return null;
  const pack=inputs.packs.get(row.pack),code=inputs.rowCodes.get(row.row);if(!pack||!code)throw new JournalError('proof');
- const at={ra:pointing.ra,dec:pointing.dec};
- const starObservation={templateFor:(index:number)=>{const file=lookupStarTemplate(inputs.starIndex,index);const spectrum=file?inputs.starTemplates.get(file):undefined;return file&&spectrum?{file,spectrum}:null;}};
- const options:FieldOptions={glxyspLines:inputs.glxyspLines,variableDispatch:'recovered',photographs:inputs.photographs,qso:'merge',qsoCatalog:inputs.qsoCatalog,continuation:'start-time',spectralInterval:OBJECT_X_SPECTRAL_INTERVAL,starObservation,qsoObservation:{file:inputs.qsoSpectrum,...OBJECT_X_SPECTRAL_INTERVAL}};
- let r=evaluateField(pack,inputs.glx,at,telescope,options);
- // A selected galaxy with its own GLXYSP.LST spectrum takes the matched branch (0x55e55c, factor 1), as NGC 4889 in E01; an own
- // spectrum that is not bundled keeps the engine's typed spectrum-mapping reason (no fallback template).
- const own=r.target?glxyspLookup(inputs.glxyspLines,r.target.id):null;
- if(r.target&&own&&r.reasons.includes('spectrum-mapping')&&inputs.galaxySpectra.has(own))r=evaluateField(pack,inputs.glx,at,telescope,{...options,librarySpectrum:{targetId:r.target.id,file:own,samples:inputs.galaxySpectra.get(own)!}});
+ // Front G (G4a): the shared single-slit spectrometer (core/fieldSpectrometer.ts), unchanged for Object X.
+ const r=spectrometerFieldResult(inputs,pack,pointing,telescope);
  return Object.freeze({row,code,result:r});
 }
 /** The spectrometer for a pointing and telescope. A pointing that is not exactly a spectroscopy row's coordinates has no field in
