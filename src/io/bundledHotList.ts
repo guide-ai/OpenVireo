@@ -5,7 +5,7 @@
 // The same adapter serves the original Hubble.HTL (13 entries, same approval and manifest group).
 import {PLEIADES_HTL} from '../core/pleiadesHotList';
 import {HUBBLE_HTL} from '../core/hubbleHotList';
-import {BoundedResourceError,boundedResourceBody,checkResourceAbort,resourceSha256} from './boundedResource';
+import {checkResourceAbort,resourceSha256,verifiedSameOriginResource} from './boundedResource';
 
 export type BundledHotListIdentity=Readonly<{path:string;name:string;bytes:number;sha256:string}>;
 export const BUNDLED_PLEIADES_HOT_LIST:BundledHotListIdentity=Object.freeze({path:PLEIADES_HTL.path,name:PLEIADES_HTL.name,bytes:PLEIADES_HTL.bytes,sha256:PLEIADES_HTL.sha256});
@@ -44,19 +44,9 @@ export async function verifyBundledHotList(buffer:ArrayBuffer,expected:BundledHo
 /**
  * Fetches the bundled list from this origin, bounded to the recorded size, and verifies it. An abort (cancel, hidden tab,
  * inactive editor, project operation, unmount) rejects with the DOMException AbortError, which callers ignore; every other
- * failure is a BundledHotListError. Nothing is parsed, cached, persisted or sent anywhere.
+ * failure is a BundledHotListError. Nothing is parsed, persisted or sent anywhere; verified bytes are kept in memory for the tab
+ * and re-checked on reuse (verifiedSameOriginResource, Front F2).
  */
-export async function fetchBundledHotList(fetcher:typeof fetch,signal:AbortSignal,expected:BundledHotListIdentity=BUNDLED_PLEIADES_HOT_LIST):Promise<BundledHotListBytes>{
- checkResourceAbort(signal);
- let buffer:ArrayBuffer;
- try{
-  const response=await fetcher(expected.path,{signal,credentials:'same-origin'});
-  buffer=await boundedResourceBody(response,expected.bytes,signal);
- }catch(error){
-  checkResourceAbort(signal);
-  if(error instanceof BoundedResourceError)throw new BundledHotListError(error.code==='size'?'size':'download');
-  throw new BundledHotListError('download');
- }
- checkResourceAbort(signal);
- return verifyBundledHotList(buffer,expected,signal);
+export function fetchBundledHotList(fetcher:typeof fetch,signal:AbortSignal,expected:BundledHotListIdentity=BUNDLED_PLEIADES_HOT_LIST):Promise<BundledHotListBytes>{
+ return verifiedSameOriginResource(fetcher,signal,expected.path,expected.bytes,buffer=>verifyBundledHotList(buffer,expected,signal),code=>new BundledHotListError(code));
 }

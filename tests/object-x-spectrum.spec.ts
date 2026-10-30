@@ -1,6 +1,7 @@
 import {test,expect,type Page} from '@playwright/test';
 import {readFileSync} from 'node:fs';
 import {readFile} from 'node:fs/promises';
+import {saveOffline} from './fixtures/offline-save';
 
 // E08 spectrometer branch (Front F API wired under D5) from the student path: a star, a galaxy and a QSO are observed, kept,
 // saved and restored. Before the reveal nothing names the object, its kind or a catalogue record: not the page, not the CSV
@@ -71,8 +72,8 @@ test('star, galaxy and QSO from the student path: observed, kept, downloaded, sa
  // Before the exposure the branch read identically for the three kinds.
  expect(new Set(ready).size).toBe(1);
  // The saved investigation (v29: the kept spectra) names no object, kind or record before the reveal.
- const d=page.waitForEvent('download');await button(page,'Save investigation').click();
- const text=await readFile((await (await d).path())!,'utf8'),json=JSON.parse(text);
+ // Offline (Front F2): the kept spectra's replay reuses the verified ObjectX.HTL.
+ const text=await saveOffline(page,async()=>{const d=page.waitForEvent('download');await button(page,'Save investigation').click();return readFile((await (await d).path())!,'utf8');}),json=JSON.parse(text);
  expect(json.version).toBe(29);expect(json.base.version).toBe(28);expect(json.objectXSpectra.map((s:{label:string;code:string;telescope:number})=>[s.label,s.code,s.telescope])).toEqual([['ObjX-7-S01',CODES.star,2],['ObjX-7-S02',CODES.galaxy,2],['ObjX-7-S03',CODES.qso,2]]);
  // No object name or remark anywhere in the file; nothing engine-side in the Object X parts. The rest of the session holds fixed
  // app-wide fields that are the same for every object (the empty extended Hubble banks, the observing "star" bank, the
