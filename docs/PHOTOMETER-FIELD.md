@@ -64,3 +64,26 @@ Record0x501e7c calls0x54a73c for an existing live collection record or a newly a
 Before a usable instrument is enabled, finish telescope-change/reentry sky validity, partial Stop/restart behavior, modal acceptance/close and actual observation writer/replay. The manual requires fresh sky after any telescope change, including a return; three native banks alone do not authorize automatic reuse. This replay always computes fresh sky at fixed telescope0 and does not purport to implement those transitions. Wider original fields require actual variable/QSO/galaxy merge handling and source/color/time domains; CLUSTERS.DAT still needs generated-population association. R/I, image-source, unknown-color and broader integration configurations remain excluded.
 
 I01/E04 are not accepted complete; N03 remains partial. [Verification](PHOTOMETER-FIELD-VALIDATION.md) records actual-repository results. [Provenance](../data/photometry/field-provenance.json) retains13 byte/listing captures, exact constants, aliases, nine original source/license hashes, generators and fixture hashes. Raw downloads and analysis stay outside source at `/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-field-recovery/`. Local research rights only; no original execution/microemulation, installation, Windows, Claude, push, publication or original-resource upload.
+
+## Photometer field at any pointing from the compact GSC tiles (Front G, G3a)
+
+- **How it is built:** VIREO builds the photometer's field with the same telescope load and field build as the instrument
+  field (0x53be70 → 0x597ac8), only with the photometer field size. The half-height is size·3/120: 0.025° for the 1′ option
+  instead of 0.375°.
+  - `freshFieldArea(pointing, FIELD_HALF_DEGREES.photometer)` and `buildFieldPopulation(…, {fieldHalfDegrees})` build that
+    field from a pack assembled from the published GSC tiles (`assembleFieldPack(…, halfDegrees)`).
+  - `photometerFieldFromPopulation` then applies the steps `buildCompleteField` uses: native centre selection (0x59a0fc),
+    neighbours (0x59ac54), aperture fraction, and the known-colour or attenuated magnitude.
+- **Equality:** `src/core/photometerTiled.test.ts` checks that, for all 24 PLEIADES.HTL targets in both object and sky fields
+  (48 fields), the tiled field equals the bundled field. That covers stars and their order, neighbours, the selected star and
+  its pixel distance, the aperture fraction, the source magnitude, and the means.
+- **Typed reasons** (`PhotometerTiledReason`), never approximated:
+  - `photometer-galaxy`: a galaxy in the field. The photometer's treatment of the galaxy list is not recovered; M31's core
+    gives this reason.
+  - `photometer-qso`
+  - `photometer-variable`: a TRUE-dispatch variable star, whose values depend on the clock.
+  - `photometer-selection`: no star selected at the centre.
+  - `photometer-sky-not-empty`: a sky reading with a non-zero fraction or a neighbour, which is the bundled-field contract.
+  - `photometer-population`: an engine gate.
+- **Not yet wired:** the Photometer screen still offers only the Pleiades targets. Using a tiled field at the current telescope
+  pointing is G3b (analysis/front-plans/front-g-gsc.md §10).

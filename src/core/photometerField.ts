@@ -218,3 +218,36 @@ export function simulatePinnedPleiadesVPair(domain:unknown,initialSeed:number){
 
 /** One fixed callback, explicit post-setup PRNG state; the observing adapter owns Start/Stop. */
 export function drawPinnedPleiadesCallback(domain:unknown,kind:PleiadesFieldKind,seed:number){return callback(buildPinnedPleiadesField(domain,kind),seed);}
+
+/** Front G (G3a, analysis/front-plans/front-g-gsc.md): the photometer field at any pointing, from a field population built by
+ * the general engine with the photometer's field size (FIELD_HALF_DEGREES.photometer, 0.025°; the same 0x597ac8 build as the
+ * instrument field). The steps after the population are buildCompleteField's: native selection at the centre (0x59a0fc),
+ * neighbours (0x59ac54), aperture fraction and the known-colour or attenuated magnitude. Equal to every bundled Pleiades field
+ * (src/core/photometerTiled.test.ts). What the photometer path has not recovered is typed, never approximated. */
+export type PhotometerTiledReason=
+ /** The field holds a galaxy: the photometer's treatment of the second list (field+0x35) is not recovered. */'photometer-galaxy'
+ /** A merged QSO record (type 3) is in the field: it has no catalogue colours for the photometer. */|'photometer-qso'
+ /** A TRUE-dispatch variable star is in the field: its brightness depends on the observatory clock. */|'photometer-variable'
+ /** The centre selects no star (none within the native 350-pixel sentinel), or a galaxy. */|'photometer-selection'
+ /** A sky reading needs zero aperture fraction and no neighbour (the bundled-field contract). */|'photometer-sky-not-empty'
+ /** The engine gated the population (its own typed reason). */|'photometer-population';
+export type PhotometerTiledResult=Readonly<{field:PinnedPleiadesField;reason?:undefined}|{field?:undefined;reason:PhotometerTiledReason;detail?:string}>;
+type PopulationLike=Readonly<{stars:readonly Readonly<{type:number;id:string;rawHex?:string;band?:string;recordIndex?:number}>[];galaxies:readonly unknown[];variableStars?:readonly unknown[]}>;
+export function photometerFieldFromPopulation(population:PopulationLike|null,reasons:readonly string[],pointing:Pointing,kind:PleiadesFieldKind):PhotometerTiledResult{
+ if(kind!=='object'&&kind!=='sky')throw new PhotometerFieldError('field');
+ if(!population||reasons.length)return Object.freeze({reason:'photometer-population' as const,detail:reasons.join(',')});
+ if(population.galaxies.length)return Object.freeze({reason:'photometer-galaxy' as const});
+ if(population.stars.some(s=>s.type!==0))return Object.freeze({reason:'photometer-qso' as const});
+ if(population.variableStars?.length)return Object.freeze({reason:'photometer-variable' as const});
+ const stars=Object.freeze(population.stars.map(s=>namedStar(s.rawHex!,s.band!,s.recordIndex!)));
+ const radius=10.5/(936/.05),width=(3/2)/3600,neighbors=queryPhotometerNeighbors(pointing,radius,stars,[]);
+ const scene=createNativeSelectionScene(stars,[],{width:936,height:936,fieldDegrees:.05,center:pointing,population:{coverage:'complete',provenance:'compact GSC tiles; photometer field built for this pointing'}});
+ const selection=selectCatalogObject(scene,468,468);
+ if(selection.kind!=='star')return Object.freeze({reason:'photometer-selection' as const});
+ const selected=stars.find(s=>s.id===selection.object.id)!;
+ const fraction=(s:NamedStar)=>photometerPointFraction(radius,photometerSeparation(pointing.ra,pointing.dec,s.ra,s.dec),width);
+ const centralFraction=fraction(selected),supplied=(s:NamedStar)=>({v:s.magnitude,bMinusV:s.photometry2Single,uMinusB:s.photometry3Single,fraction:fraction(s)});
+ if(kind==='sky'&&(centralFraction!==0||neighbors.length!==0))return Object.freeze({reason:'photometer-sky-not-empty' as const});
+ const sourceMagnitude=kind==='sky'?attenuatePhotometerMagnitude(selected.magnitude,centralFraction):prepareKnownColorPhotometerUbv(supplied(selected),neighbors.filter(s=>s.nativeName!==selected.nativeName).map(supplied)).v;
+ return Object.freeze({field:Object.freeze({[brand]:true as const,provenanceFile:'gsc-tiles',kind,pointing:Object.freeze({ra:pointing.ra,dec:pointing.dec}),stars,neighbors,selected,selectedDistancePixels:selection.star.distance,centralFraction,sourceMagnitude,sourceMean:1000*magnitudeAmplitude(sourceMagnitude,9),skyMean:1000*magnitudeAmplitude(16,9)})});
+}

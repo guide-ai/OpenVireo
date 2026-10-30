@@ -57,7 +57,7 @@ export function nativePhotographInArea(x:Readonly<{ra:number;dec:number}>,a:Read
 }
 /** The pack with its photographic-list gate taken from the whole original list (per listed pointing, positions inside the
  * fresh area, inclusive bounds as the other source scans). */
-export function packWithPhotographs(pack:FieldPack,positions:readonly Readonly<{index:number;ra:number;dec:number}>[]):FieldPack{
- const entries=pack.pointings.map((p,pointing)=>{const a=freshFieldArea(p);return {pointing,indices:Object.freeze(positions.filter(x=>nativePhotographInArea(x,a)).map(x=>x.index))};}).filter(e=>e.indices.length).map(e=>Object.freeze(e));
+export function packWithPhotographs(pack:FieldPack,positions:readonly Readonly<{index:number;ra:number;dec:number}>[],halfDegrees?:number):FieldPack{
+ const entries=pack.pointings.map((p,pointing)=>{const a=freshFieldArea(p,halfDegrees);return {pointing,indices:Object.freeze(positions.filter(x=>nativePhotographInArea(x,a)).map(x=>x.index))};}).filter(e=>e.indices.length).map(e=>Object.freeze(e));
  return Object.freeze({...pack,photographs:Object.freeze({sha256:GLIMAGES_LST.sha256,recordsChecked:positions.length,entries:Object.freeze(entries)})});
 }

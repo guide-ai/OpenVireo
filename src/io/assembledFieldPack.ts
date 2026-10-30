@@ -33,15 +33,16 @@ const HEX=Array.from({length:256},(_,b)=>b.toString(16).padStart(2,'0'));
 const hex=(bytes:Uint8Array)=>{let out='';for(let i=0;i<bytes.length;i++)out+=HEX[bytes[i]];return out;};
 
 /** The fresh area for a pointing, or the typed reason freshFieldArea's guard stands for. */
-export function assembledFieldArea(pointing:Readonly<{ra:number;dec:number}>){
- try{return freshFieldArea(pointing);}// identical arithmetic to every pack consumer
+export function assembledFieldArea(pointing:Readonly<{ra:number;dec:number}>,halfDegrees?:number){
+ try{return freshFieldArea(pointing,halfDegrees);}// identical arithmetic to every pack consumer
  catch(e){if(e instanceof FieldEngineError)throw new AssembledFieldError(e.code==='polar'?'polar':'input');throw e;}
 }
 /** Yield to the event loop between band reads, every 4096 recorded reads and before the whole-file scans, so the page stays
  * responsive, and stop there on an abort (G1b review 1 L3). */
 async function pause(signal?:AbortSignal){signal?.throwIfAborted();await new Promise(r=>setTimeout(r,0));signal?.throwIfAborted();}
-export async function assembleFieldPack(pointing:Readonly<{ra:number;dec:number}>,s:AssemblySources,signal?:AbortSignal):Promise<FieldPack>{
- signal?.throwIfAborted();const area=assembledFieldArea(pointing);
+/** halfDegrees: the field's half-height (FIELD_HALF_DEGREES; default the instrument field, 0.375°). */
+export async function assembleFieldPack(pointing:Readonly<{ra:number;dec:number}>,s:AssemblySources,signal?:AbortSignal,halfDegrees?:number):Promise<FieldPack>{
+ signal?.throwIfAborted();const area=assembledFieldArea(pointing,halfDegrees);
  let order:readonly string[];
  try{order=nativeCompactBandOrder(nativeRegionIds(area));}catch(e){if(e instanceof NativeFieldError)throw new AssembledFieldError('regions');throw e;}
  // Coverage: the area itself, or the whole RA ring of its Dec band for a field across 0 h (FieldPackRect needs min < max).
@@ -90,5 +91,5 @@ export async function assembleFieldPack(pointing:Readonly<{ra:number;dec:number}
   variables:{sha256:s.variablesSha256,recordsChecked:s.variables.byteLength/VSTRS_RECORD_BYTES,entries:variables},
   qso:{sha256:s.qsoSha256,recordsChecked:s.qso.byteLength/QSO_RECORD_BYTES,entries:qso},
   photographs:{sha256:null,recordsChecked:1,entries:[]}});
- return packWithPhotographs(pack,parseGlimagesPositions(s.glimages));
+ return packWithPhotographs(pack,parseGlimagesPositions(s.glimages),halfDegrees);
 }

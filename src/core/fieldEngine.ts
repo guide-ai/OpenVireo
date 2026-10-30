@@ -151,6 +151,8 @@ export type FieldOptions=Readonly<{/** GLXYSP.LST rows (review 2 finding 2): a s
  * GLXYTMPL.SP fallback). Without this option the caller vouches for the mapping (Hubble targets: recorded per target). */
  /** Front G (G1b review 1 L3): checked between population stages; an abort throws the signal's reason (AbortError). */
  signal?:AbortSignal;
+ /** Front G (G3): the photometer field's half-height (FIELD_HALF_DEGREES.photometer); default the instrument field. */
+ fieldHalfDegrees?:number;
  glxyspLines?:readonly string[];variableDispatch?:FieldVariableDispatch;photographs?:FieldPhotographs;spectralInterval?:FieldSpectralInterval;starObservation?:FieldStarObservation;continuation?:FieldContinuationMode;qso?:FieldQsoMode;qsoCatalog?:FieldQsoCatalog;librarySpectrum?:FieldLibrarySpectrum;variables?:FieldVariableMode;qsoObservation?:FieldQsoObservation;
  /** Front T: with variableDispatch 'recovered' and no `variables` option, the TRUE branch of 0x51ec48 runs (hit modifies the
   * resolved star, miss inserts at the RA cursor). 'gate' keeps the earlier variable-merge gate; 'outside-view' the RS Boo rule. */
@@ -203,9 +205,13 @@ const FRAME=Object.freeze({width:936,height:936,fieldDegrees:.75,anchor:468,view
  * once. A field across 0 h is then min > max (Front G, analysis/front-g-gsc/RE-wrap-polar-consumers.md §G-RE1). With an RA
  * half-width of 12–24 h the folded interval no longer matches the sky, but VIREO's result is still deterministic and is ported
  * as it is. Only a folded bound outside 0..24 (or equal bounds, where 0x5978c0 and 0x597ac8 disagree) is the typed 'polar'. */
-export function freshFieldArea(pointing:Readonly<{ra:number;dec:number}>):NativeCatalogRegion{
+/** Half-heights of the two recovered field sizes: the instrument field (15′ × 3/120 = 0.375°) and the photometer field
+ * (field-size option 1′ × 3/120 = 0.025°, docs/PHOTOMETER-FIELD.md); 0x53be70 computes half = size·multiplier/120. */
+export const FIELD_HALF_DEGREES=Object.freeze({instrument:.375,photometer:.025});
+export function freshFieldArea(pointing:Readonly<{ra:number;dec:number}>,halfDegrees:number=FIELD_HALF_DEGREES.instrument):NativeCatalogRegion{
+ if(halfDegrees!==FIELD_HALF_DEGREES.instrument&&halfDegrees!==FIELD_HALF_DEGREES.photometer)throw new FieldEngineError('input');
  if(!pointing||!Number.isFinite(pointing.ra)||!Number.isFinite(pointing.dec)||pointing.ra<0||pointing.ra>=24||Math.abs(pointing.dec)>90)throw new FieldEngineError('input');
- const h=.375,hr=h/(Math.cos(pointing.dec*Math.PI/180)*15);
+ const h=halfDegrees,hr=h/(Math.cos(pointing.dec*Math.PI/180)*15);
  let minimumRa=pointing.ra-hr,maximumRa=pointing.ra+hr;
  if(minimumRa<0)minimumRa+=24;
  if(maximumRa>24)maximumRa-=24;
@@ -379,7 +385,7 @@ export function cleanFieldGalaxies(stars:readonly FieldStar[],galaxies:readonly 
 export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{ra:number;dec:number}>,options:FieldOptions={}):Readonly<{population:FieldPopulation|null;reasons:FieldUnavailableReason[]}>{
  const mode=options.qso??'gate';if(mode!=='gate'&&mode!=='merge')throw new FieldEngineError('input');
  const checkpoint=()=>options.signal?.throwIfAborted();checkpoint();
- const area=freshFieldArea(pointing),reasons:FieldUnavailableReason[]=[];
+ const area=freshFieldArea(pointing,options.fieldHalfDegrees),reasons:FieldUnavailableReason[]=[];
  if(!packCovers(pack,pointing,area))return {population:null,reasons:['outside-pack']};
  const qsoCatalog=mode==='merge'?checkedQsoCatalog(pack,options):null;
  const regionIds=nativeRegionIds(area),bandOrder=nativeCompactBandOrder(regionIds);
