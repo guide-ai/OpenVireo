@@ -43,12 +43,18 @@ test('radio Slew › Hot List loads the bundled Pulsars.HTL (size and SHA-256 ch
  await expect(id(page,'antenna-hotlist-rows')).toContainText('0531+21');
 });
 
-test('File › Print Sky Image previews the sky view with the pointing and prints only the preview',async({page})=>{
+test('File › Print Sky Image previews VIREO\'s header, the inverted sky view and the footer, and prints only the preview',async({page})=>{
  await observatory(page);await coords(page,'12.5','12.4');
  await id(page,'fi-file-menu').click();await expect(id(page,'fi-field-information')).toHaveCount(0);await expect(id(page,'qso-menu')).toHaveCount(0);
  await id(page,'print-sky-menu').click();
  const preview=id(page,'print-sky');await expect(preview).toBeVisible();await expect(preview).toContainText('VIREO Optical Telescope Control Panel');
- await expect(id(page,'print-sky-header-1')).toHaveText('Pointing (J2000): RA 12 30 00.0  Dec +12 24 00.0');
+ // Front K2.3: header 0x58e860 (date + title, blank student line) and footer 0x53fe14.
+ await expect(id(page,'print-sky-native-header')).toContainText('     VIREO - The VIRtual Educational Observatory');
+ const footer=id(page,'print-sky-footer');
+ await expect(footer).toContainText('Coordinates of Field Center:');await expect(footer).toContainText('Right Ascension:  12h 30m 00.0s');
+ await expect(footer).toContainText('Declination:      12° 24\' 00"');await expect(footer).toContainText('Telescope: 0.4m (16") Telescope');
+ await expect(footer).toContainText(/Field Size: (2\.5 Degrees|15\.0 Arc Minutes)/);await expect(footer).toContainText('Instrument: ');
+ await expect(id(page,'print-sky-picture')).toHaveClass(/web-print-inverted/);
  const svg=id(page,'print-sky-picture').locator('svg');await expect(svg).toHaveCount(1);
  // The clone's clip path is renamed so it never points at the live map's defs.
  const clip=await svg.locator('clipPath').getAttribute('id');expect(clip).toMatch(/^sky-clip-print/);

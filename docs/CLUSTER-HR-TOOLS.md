@@ -160,11 +160,12 @@ the Laboratory Table Number line, review L1).
 
 ## Not done (follow-ups)
 
-- Observation-mode Display/Print Data needs the RsltsListForm1 row writer 0x5486a8 (not recovered); the own-pairs and saved-DAT
-  views show it as a disabled control with that reason (review L4).
+- Observation-mode Display/Print Data: ported for saved DAT records by Front K2 (docs/FRONT-K2-FORMS-PRINTS.md §1); the own-pairs
+  view keeps it disabled (those pairs are not native records).
 - The Cluster Data dialog and its list (TClstrDlgForm1, TClstrListForm1: centre coordinates, Use Telescope Coordinates, Type of
   Listing, Sort By, View/Select, Add Cluster to List, the hot-list rows) — plan milestone M8, not done: its finding list for an
   arbitrary centre needs GSC data that is not published, and Use Telescope Coordinates needs the observatory pointing.
-- Right-click in the saved-observation (DAT) view opens VIREO's "Observational Data" dialog; not ported.
+- Right-click in the saved-observation (DAT) view opens VIREO's "Observational Data" dialog: ported by Front K2
+  (docs/FRONT-K2-FORMS-PRINTS.md §2).
 - VIREO's report page for View/Print Parameters (0x59e4c0) and TClstrPrmForm1 (Edit Cluster Parameters, out of scope).
 - No original-runtime equivalence is claimed; fonts, GDI pixels and x87 evaluation are not reproduced.

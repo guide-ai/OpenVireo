@@ -102,3 +102,13 @@ describe('HP-15 generic formatter',()=>{
   expect(()=>hotListPrintSnapshot(HEADING,[row(0,rec('A',1,2))],()=>'Σ')).toThrow(RangeError);
  });
 });
+
+describe('K2.3 header lines (0x591098)',()=>{
+ it('prints the date with (Not Recorded) and the blank name1 line when Edit Mode is off; the bare date in Edit Mode',async()=>{
+  const {hotListPrintHeader,HOT_LIST_PRINT_LITERALS:L}=await import('./hotListPrint');
+  expect(hotListPrintHeader('10-30-2026 3:07:42 PM',false)).toEqual(['10-30-2026 3:07:42 PM     Laboratory Table Number (Not Recorded)','','','']);
+  expect(hotListPrintHeader('D',false,['Jane Doe','John Roe','',''],'12')).toEqual(['D     Laboratory Table Number 12','','Jane Doe','John Roe','']);
+  expect(hotListPrintHeader('D',true,['Jane Doe'],'12')).toEqual(['D','']);
+  expect(L.spoolTitle).toBe('CLEA "Object X" Exercise - ');
+ });
+});

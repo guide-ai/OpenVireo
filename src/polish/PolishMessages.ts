@@ -77,9 +77,8 @@ export const POLISH_MESSAGES=Object.freeze({
   note:'Web adaptation: VIREO’s Print sets the colour scheme to the opposite of a program setting (scheme := Env+0x2e8d XOR 1, 0x580fba–0x580fc3), so it prints in black and white when that setting is 0; the setting’s default is not recovered. This print always uses the black-and-white scheme and the browser’s printer layout. Selection highlighting is not printed.',
  }),
  printSky:Object.freeze({
-  note:'Web adaptation: VIREO prints a header, the sky image (scaled 1.5) and a footer on the printer; their contents are not recovered, so this prints the date, the pointing and the sky view as shown.',
-  view:(v:'finder'|'instrument'|undefined)=>v==='finder'?'View: Finder':v==='instrument'?'View: Telescope':'View: as shown',
-  pointing:(ra:string,dec:string)=>`Pointing (J2000): RA ${ra}  Dec ${dec}`,
+  note:'VIREO prints its header (the date and time, here in your browser\'s format; the laboratory table number only when one is recorded; then the student name line, blank here because OpenVireo has no log-in), the sky image colour-inverted and scaled 1.5, and the footer with the field centre, field size, telescope and instrument. Web adaptation: the browser lays out the page and prints the view as shown.',
+  noInstrument:'(no instrument chosen in OpenVireo\'s telescope view)',
  }),
  about:Object.freeze({
   nativeNote:'VIREO’s About box, with its texts as read from the original program (its logo is not included). The rest of this window describes this web reconstruction.',

@@ -95,7 +95,7 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,object
    <OpticalOptionsDialog options={options} onOptions={onOptions} disabled={!enabled} editMode={fieldInfo?.editMode} onEditMode={fieldInfo?.onEditMode} virtualObservatory={virtualObservatory} onVirtualObservatory={fieldInfo?setVirtualObservatory:undefined} sessionOptions={fieldInfo?.sessionOptions} onSessionOptions={fieldInfo?.onSessionOptions}/>
    <button type="button" className="secondary-button" disabled={!enabled} data-testid="ob-add-current" onClick={()=>{setEntryError('');setEntry(hotListEntryDraft(addCurrentPrefill(pointing,objectId)));}}>{E.open}</button>
   </div>
-  {fieldInfo&&<ObservatoryFileMenu editMode={editMode} qsoList={virtualObservatory} disabled={fieldInfo.busy??false} pointing={pointing} view={fieldInfo.view} onFieldInfo={kind=>setFieldRequest(r=>({kind,token:(r?.token??0)+1}))} onQsoList={()=>setQsoRequest(n=>n+1)} onClusterData={()=>setClusterRequest(n=>n+1)}/>}
+  {fieldInfo&&<ObservatoryFileMenu editMode={editMode} qsoList={virtualObservatory} disabled={fieldInfo.busy??false} pointing={pointing} view={fieldInfo.view} telescope={fieldInfo.telescopeName??''} onFieldInfo={kind=>setFieldRequest(r=>({kind,token:(r?.token??0)+1}))} onQsoList={()=>setQsoRequest(n=>n+1)} onClusterData={()=>setClusterRequest(n=>n+1)}/>}
   <ResearchNotes><p>{M.openHelp} {H.openHelp} {E.openHelp} {M.adaptation} {E.adaptation}</p></ResearchNotes>
   <OpticalHotListWindow caption={caption} texts={texts} state={hot} rows={rows} onSelect={i=>setHot(h=>selectOpticalHotListIndex(h,i,rows.length))} onSlew={slew} onClose={()=>setHot(closeOpticalHotList)}
    onSearch={()=>setHot(openOpticalHotListSearch)} onSearchEdit={(q,c)=>setHot(h=>editOpticalHotListSearch(h,q,c))} onSearchSubmit={mode=>setHot(h=>submitOpticalHotListSearch(h,mode,texts))} onSearchCancel={()=>setHot(cancelOpticalHotListSearch)}
@@ -108,7 +108,7 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,object
   {fieldInfo&&clusterRequest>0&&<Suspense fallback={null}><ClusterDataWindow request={clusterRequest} editMode={editMode} driveOn={!!fieldInfo.driveOn} pointing={pointing} hotList={hotList}/></Suspense>}
   {fieldInfo&&qsoRequest>0&&<Suspense fallback={null}><QsoListWindow request={qsoRequest} editMode={editMode} hotList={hotList} hidden={fieldInfo.hidden??null}/></Suspense>}
   {info&&<InfoBox caption={info.caption} text={info.text} onClose={()=>setInfo(null)}/>}
-  {print&&<HotListPrintPreview snapshot={print} onClose={()=>setPrint(null)}/>}
+  {print&&<HotListPrintPreview snapshot={print} editMode={editMode} onClose={()=>setPrint(null)}/>}
  </div>;
 }
 

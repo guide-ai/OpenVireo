@@ -35,6 +35,8 @@ export type FieldInformationProps=Readonly<{
  busy?:boolean;
  /** Telescope view slider: finder or instrument (telescope). */
  view:VariableFieldView;
+ /** Front K2.3: the selected telescope's name, for the Print Sky Image footer. */
+ telescopeName?:string;
  /** Opens the Variable stars page on a CLEA_VStrs.dat record index (Get Selection Data). */
  onOpenVariable:(index:number,riseWordDefaulted?:boolean)=>void;
  /** Front T: the observatory clock; the Star Data List freezes its JD when the field is built. */

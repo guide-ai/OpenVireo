@@ -1,6 +1,7 @@
 import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
-import {SpectralLineError,parseSpectralLineList,spectralLineHeader,spectralLineHelp} from './spectralLines';
+import {SpectralLineError,nearestSpectralLine,parseSpectralLineList,spectralLineHeader,spectralLineHelp} from './spectralLines';
+import {visibleViewportMarker} from '../core/classificationViewport';
 
 const read=(n:string)=>new Uint8Array(readFileSync(new URL(`../../public/original/help/${n}`,import.meta.url)));
 const LNL=read('SPECLNS.LNL'),TXT=read('SPECLNS.TXT');
@@ -28,5 +29,22 @@ describe('Spectral Line Table (0x505390, RECOVERY.md §6)',()=>{
   expect(spectralLineHelp(enc('*1.00 X*\r\nx\r\n'),'Zz')).toEqual({kind:'not-found',caption:'Topic Not Found',text:'Help Topic: Zz\r\n\r\nHelp on this topic is not available at this time.'});
   expect(spectralLineHelp(enc('plain\r\ntext\r\n'),'A')).toEqual({kind:'topic',rows:[' * A *',' ','  plain  ','  text  ',' ']});
   expect(()=>parseSpectralLineList(enc("abc 'X' 'y.txt'\r\n"))).toThrow(SpectralLineError);
+ });
+});
+
+describe('K2.5 Spectral Line Table click → classification cursor (0x50586c, 0x508240, 0x5058b8)',()=>{
+ const lines=parseSpectralLineList(LNL),view={minimum:3900,maximum:4500,zoom:1 as const,center:4200};
+ it('quantizes the line to the pixel column and reselects the nearest row (Fe I 4143.878 → He I 4143.76)',()=>{
+  const fe=lines.findIndex(l=>l.name==='Fe I'&&Math.abs(l.wavelength-4143.878)<1e-3),c=visibleViewportMarker(view,lines[fe].wavelength)!;
+  expect(c).toBeCloseTo(4143.6,9);
+  expect(lines[nearestSpectralLine(lines,c)].row).toMatch(/^4143\.76\s+He I/);
+  const he=lines.findIndex(l=>Math.abs(l.wavelength-4471.68)<1e-3);
+  expect(lines[nearestSpectralLine(lines,visibleViewportMarker(view,lines[he].wavelength)!)].row).toMatch(/^4471\.48\s+He I/);
+ });
+ it('draws no cursor left of the window and keeps the first row on a tie; nothing within 1000 Å selects nothing',()=>{
+  const o3=lines.find(l=>Math.abs(l.wavelength-3759.87)<1e-2)!;
+  expect(visibleViewportMarker(view,o3.wavelength)).toBeNull();
+  const twin=[lines[0],lines[0]];expect(nearestSpectralLine(twin,lines[0].wavelength)).toBe(0);
+  expect(nearestSpectralLine(lines,lines[0].wavelength+5000)).toBe(-1);
  });
 });

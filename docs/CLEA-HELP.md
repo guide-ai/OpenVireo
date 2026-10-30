@@ -101,7 +101,7 @@ Spectral Line Table (VIREO's TSpClassify › Spectral Line Table) lists the 30 S
 
 Double-click or Enter opens "Spectral Line Help" from SPECLNS.TXT. VIREO looks up the section by the line's name, not its wavelength (0x504fd0). As a result, 13 of the 30 rows show another line's section: every later He I line shows `*3819.61 He I*`, O II shows O III, Ca I shows Ca II K, and so on. That rule is kept, and the window says so.
 
-In VIREO a single click also moves the classification cursor to the line; that link is not ported. If SPECLNS.TXT cannot be loaded, only the help side reports it (a message box); the line list stays open. The help window takes focus when it opens, and Close returns focus to the line list.
+A single click (or an arrow key) moves the classification cursor to the line's pixel column, and the list then selects the line nearest that column, as VIREO does (ListBox1Click 0x50586c → 0x508240, reverse link 0x5058b8; Front K2, docs/FRONT-K2-FORMS-PRINTS.md §5). If SPECLNS.TXT cannot be loaded, only the help side reports it (a message box); the line list stays open. The help window takes focus when it opens, and Close returns focus to the line list.
 
 ## Indexes no VIREO window opens
 

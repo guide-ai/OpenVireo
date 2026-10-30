@@ -5,6 +5,7 @@ import {multiSpecClickPoint,multiSpecPick,multiSpecTargetSource,type MultiSpecFi
 import {MULTISPEC_MESSAGES as N,MultiSpecFormatError,multiSpecCaption,multiSpecFileName,multiSpecInformationLines,multiSpecListItem,multiSpecPrintLines,multiSpecSspBytes,multiSpecZip,type MultiSpecTextOptions} from '../core/multiSpecFormat';
 import {catalogRecords,galaxyTypeText} from '../core/catalogObject';
 import type {FieldView,FieldTelescope} from '../core/fieldEngine';
+import {opticalProfile} from '../core/opticalTelescope';
 import type {AccessReason} from '../core/instrumentAccess';
 import {multiSpecSpectra,multiSpecView,type MultiSpecFieldRequest} from '../io/multiSpec';
 import {t} from '../i18n';
@@ -156,7 +157,7 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
   <p role="status" data-testid="ms-access-status">{state.open?t('multispec.accessOpen'):access!=='ready'?multiSpecAccessText(access):''}</p>
   {state.open&&<div className="ms-body">
    <div className="ms-top">
-    <MultiSpecControl state={state} dispatch={dispatch} busy={!usable} masked={mask.masked} printField={ready&&field?{pointing:field.pointing,clone:()=>multiSpecFieldPicture(fieldWrap.current)}:null}/>
+    <MultiSpecControl state={state} dispatch={dispatch} busy={!usable} masked={mask.masked} printField={ready&&field?{pointing:field.pointing,telescope:opticalProfile(telescope).name,clone:()=>multiSpecFieldPicture(fieldWrap.current)}:null}/>
     <div className="ms-field-wrap">
      <p className="observatory-note" data-testid="ms-armed">{armedText}</p>
      <div ref={fieldWrap}>{ready?<MultiSpecFieldOverlay image={ready.viewport!} selections={state.selections} base={state.numberingBase} removing={removing} armed={armed&&usable&&state.selecting}

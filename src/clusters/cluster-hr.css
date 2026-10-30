@@ -57,3 +57,12 @@ html[data-print-scope=cluster-hr] .cluster-print-report{border:0!important;max-h
 .cluster-hr-listbox.cluster-hr-columns{font-family:var(--ov-font-mono);overflow:auto;max-width:100%}
 .cluster-hr-listbox.cluster-hr-columns li{overflow:visible;text-overflow:clip;min-width:max-content}
 .cluster-list-window{max-width:min(56rem,calc(100vw - 16px))}
+/* Front K2.2: Observational Data (TObsRsltsDlg1) */
+.obsd-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,9rem),1fr));gap:8px 12px}
+.obsd-field{display:flex;flex-direction:column;gap:2px;min-width:0}
+.obsd-field input{font-family:var(--ov-mono,monospace);min-width:11ch;width:100%;box-sizing:border-box}
+.obsd-field input[readonly]{background:var(--ov-surface-2,transparent)}
+.obsd-photometry{display:grid;grid-template-columns:repeat(auto-fit,minmax(12ch,1fr));gap:8px 12px;margin:10px 0;border:1px solid var(--ov-border,currentColor);border-radius:6px;padding:6px 10px}
+.obsd-photometry legend{font-weight:600}
+.obsd-remarks{margin-bottom:6px}
+.cnhr-selected{fill:none;stroke:#ff00ff;stroke-width:1.5}

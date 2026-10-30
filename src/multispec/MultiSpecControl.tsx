@@ -28,7 +28,7 @@ const clockText=(c:Readonly<{minutes:number;seconds:number}>)=>`${c.minutes}:${S
  * default, docs/CLEA-HELP.md) stays disabled with its reason. */
 export default function MultiSpecControl({state,dispatch,busy,masked,printField=null}:Readonly<{state:MultiSpecState;dispatch:(a:MultiSpecAction)=>void;busy:boolean;
  /** Front P: the shown field to print (null: no field shown, the item is disabled with a typed reason). */
- printField?:Readonly<{pointing:Pointing;clone:()=>Element|null}>|null;
+ printField?:Readonly<{pointing:Pointing;telescope:string;clone:()=>Element|null}>|null;
  /** Object X rule (plan §4): the typed S/N reason is replaced by one neutral text. */masked:boolean}>){
  const c=state.controls,menu=c.objects&&!busy,id=useId(),[printing,setPrinting]=useState(false),printButton=useRef<HTMLButtonElement>(null);
  const snr=state.displays.snr===null?t('multispec.snrIndeterminate'):state.displays.snr.toFixed(1);
@@ -43,7 +43,7 @@ export default function MultiSpecControl({state,dispatch,busy,masked,printField=
    {/* TMultSpCntrl Help1: Help1.Enabled := Length(+0xb54) > 0, empty by default (0x529b5f). */}<CleaHelp list={HELP_FILES['MLTSPHLP.LST']} label={C.help} disabledReason={t('multispec.helpEmpty')} testId="ms-control-help"/>
   </div>
   <p className="observatory-note" id={`${id}-print`} data-testid="ms-print-field-note">{printField?t('multispec.printFieldTyped'):PM.multiSpecPrint.unavailable}</p>
-  {printing&&printField&&<PrintSkyImage pointing={printField.pointing} view="instrument" clone={printField.clone} onClose={()=>{setPrinting(false);printButton.current?.focus();}}/>}
+  {printing&&printField&&<PrintSkyImage pointing={printField.pointing} view="instrument" telescope={printField.telescope} instrument={3} clone={printField.clone} onClose={()=>{setPrinting(false);printButton.current?.focus();}}/>}
   <div className="ms-displays">
    <div className="ms-display"><span>{C.objectsDisplay}</span><output data-testid="ms-objects">{state.displays.objects}</output></div>
    <div className="ms-display"><span>{C.snr}</span><output data-testid="ms-snr">{snr}</output><small>{N.snrLabel}</small></div>
