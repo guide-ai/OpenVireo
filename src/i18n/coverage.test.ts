@@ -24,6 +24,7 @@ describe('P01 complete authored presentation catalog and interpolation contract'
   for(const bad of [{...en,extra:'extra'},{...en,'sky.pointed':'{wrong}'},{...en,'sky.pointed':5}])expect(()=>createI18n(bad as typeof en,'en-US')).toThrow();const missing={...en};delete(missing as Partial<typeof en>)['sky.pointed'];expect(()=>createI18n(missing,'en-US')).toThrow();
  });
  it('keeps all remaining direct render sites confined to reviewed scientific/source-identity tokens',()=>{
+  // 127 (126 + Front G's 1): Front G adds src/FieldSpectrometer.tsx (spectrometer at the telescope pointing); its strings come from the catalog (fieldSpec.*, ph.tiled*) or FieldInfoMessages.
   // 126 (124 + Front K2's 2): Front K2 adds src/clusters/{RecordedResultsWindow,ObservationalDataDialog}.tsx (Recorded Results list, Observational Data dialog); their strings come from src/clusters/ClusterHrMessages.ts or the recovered literals in src/core/clusterNativeHrSelect.ts.
   // 124 (Front C5W's 122 + Front A's 2): Front A adds src/cloud/{CloudEntry,CloudAccount}.tsx (optional cloud account); their strings come from src/cloud/messages.ts.
   // 122 (Front S's 121 + Front C5W's 1): Front C5W adds src/sound/ObservatorySounds.tsx; its strings come from src/sound/SoundMessages.ts.
@@ -47,7 +48,7 @@ describe('P01 complete authored presentation catalog and interpolation contract'
   // 74: LssLabGuide.tsx adds the E02 guide; it renders only catalog messages and counts.
   // 73: LssSurvey.tsx, LssAcquisition.tsx and LssMeasurement.tsx add the E02 survey route; they render only catalog messages and data fields, so the receipt map is unchanged.
   // 70: Front B adds eight optical observatory views under src/observatory (their strings come from ObservatoryMessages.ts or recovered core literals). 62: OwnObservationResults.tsx adds the phase-1 own results card (61 added ClassificationLineTable.tsx and ClassificationLabGuide.tsx; 59 included PleiadesLabGuide.tsx); it renders only catalog messages, data fields and an em dash, so the reviewed literal receipt map remains unchanged.
-  const audit=auditUi(root);expect(audit.files.length).toBe(126);const actual=new Map<string,number>();for(const s of audit.sites){const key=JSON.stringify([s.file,s.kind,s.value]);actual.set(key,(actual.get(key)??0)+1);}
+  const audit=auditUi(root);expect(audit.files.length).toBe(127);const actual=new Map<string,number>();for(const s of audit.sites){const key=JSON.stringify([s.file,s.kind,s.value]);actual.set(key,(actual.get(key)??0)+1);}
   const expected=new Map(receipts.map(r=>[JSON.stringify([r.file,r.kind,r.value]),r.count]));expect(actual).toEqual(expected);expect(receipts.every(r=>r.reason.length>30)).toBe(true);
  });
  it('sources browser title/description from the same English catalog and escapes them as text',()=>{

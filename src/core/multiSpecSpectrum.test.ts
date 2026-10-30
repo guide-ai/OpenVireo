@@ -13,7 +13,7 @@ import {parseLibrarySpectrum} from './spectrum';
 import {galaxyChannelGrid} from './galaxySpectrum';
 import {catalogRecords} from './catalogObject';
 import {randomDraw,type UniformSpectrum} from './acquisition';
-import {multiSpecGrid,multiSpecK,multiSpecZeroPoint,multiSpecFluxFactor,prepareMultiSpecFibre,exposeMultiSpecFibre,multiSpecFibreSpectrum,multiSpecMeans,MULTISPEC_INTERVAL,type MultiSpecContext,type MultiSpecSelection} from './multiSpecSpectrum';
+import {multiSpecGrid,multiSpecK,multiSpecZeroPoint,multiSpecFluxFactor,prepareMultiSpecFibre,exposeMultiSpecFibre,multiSpecFibreSpectrum,multiSpecMeans,MULTISPEC_INTERVAL,MultiSpecError,type MultiSpecContext,type MultiSpecSelection} from './multiSpecSpectrum';
 import {multiSpecPick} from './multiSpecSelect';
 import {multiSpecSspBytes} from './multiSpecFormat';
 
@@ -125,11 +125,11 @@ describe('Front M: fibre contract',()=>{
   expect(e.spectrum.signal).toBe(0);expect(e.spectrum.total).toBe(e.spectrum.skySum);expect(e.spectrum.snr).toBe(Math.sqrt(e.spectrum.total/400));
   const m=e.spectrum.plotMaximum;expect(e.spectrum.plotY).toEqual(e.spectrum.counts.map(c=>170-Math.round(c*(150/m))));
  });
- it('typed reasons: nil lookup, index 0, template not bundled (D2), unknown galaxy, own spectrum not bundled, type ≥ 5, variable',()=>{
+ it('typed reasons: nil lookup, index 0, unknown galaxy, own spectrum not bundled, type ≥ 5, variable',()=>{
   expect(prepareMultiSpecFibre(star({spectralIndex:5}),ctx,1)).toEqual({status:'unavailable',reason:'star-template-none'});
   expect(prepareMultiSpecFibre(star({spectralIndex:0}),ctx,1)).toEqual({status:'unavailable',reason:'star-template-random'});
-  // A0000003.SP (index 10655000) is outside every approval: still typed (no published star requires it).
-  expect(prepareMultiSpecFibre(star({spectralIndex:10655000}),ctx,1)).toEqual({status:'unavailable',reason:'spectrum-template-unapproved'});
+  // Every template JSPEC2.SPI names is bundled since 2026-10-30; a context missing one is an input error, not a reason.
+  expect(()=>prepareMultiSpecFibre(star({spectralIndex:10655000}),{...ctx,starTemplates:new Map()},1)).toThrow(MultiSpecError);
   expect(prepareMultiSpecFibre(star({type:1,name:'no such galaxy'}),ctx,1)).toEqual({status:'unavailable',reason:'galaxy-lookup'});
   const own={...ctx,galaxySpectra:new Map()};
   expect(prepareMultiSpecFibre(star({type:1,name:'NGC 4889'}),own,1)).toEqual({status:'unavailable',reason:'spectrum-mapping'});

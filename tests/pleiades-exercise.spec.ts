@@ -90,7 +90,7 @@ test('all 24 rows: every row is admitted since 2026-10-28; each of the 24 admitt
  expect(raw.events.filter(e=>e.type==='activate')).toHaveLength(24);expect(raw.events.filter(e=>e.type==='target').map(e=>e.targetId)).toEqual(PLEIADES_ADMITTED_ROWS.map(r=>r.catalogId));
 });
 
-test('arbitrary pointing is never acquired: only explicit Activate moves to the named field, and motion releases',async({page})=>{
+test('an unpointed bench Activate moves to the named field; motion releases, and Activate after the student moves keeps that pointing (VIREO FormActivate)',async({page})=>{
  test.setTimeout(90000);await open(page,false);
  await expect(page.getByTestId('pleiades-point-card')).toHaveCount(0);
  await toPhotometer(page,false,()=>navPhotometer(page));await expect(page.getByTestId('photo-pointed-row')).toHaveAttribute('data-pointed','none');await expect(page.getByTestId('photo-telescope-access')).toHaveAttribute('data-access','finder');await expect(page.getByRole('button',{name:'Start integration',exact:true})).toBeDisabled();
@@ -98,7 +98,11 @@ test('arbitrary pointing is never acquired: only explicit Activate moves to the 
  const ra=(await page.getByTestId('photo-telescope-ra').textContent())!,dec=(await page.getByTestId('photo-telescope-dec').textContent())!;
  await navObservatory(page);await expect(page.getByTestId('pleiades-point-card')).toHaveCount(0);await page.locator('.field-controls').getByRole('button',{name:'North',exact:true}).click();
  await toPhotometer(page,false,()=>navPhotometer(page));await expect(page.getByTestId('photo-phase')).toHaveText(/Inactive/);await expect(page.getByTestId('photo-telescope-access')).toHaveAttribute('data-access','pointing');await expect(page.getByTestId('photo-telescope-dec')).not.toHaveText(dec);
- await activate(page).click();await expect(page.getByTestId('photo-telescope-ra')).toHaveText(ra);await expect(page.getByTestId('photo-telescope-dec')).toHaveText(dec);await expect(page.getByTestId('photo-telescope-access')).toHaveAttribute('data-access','ready');
+ // G3 review 1 M1: FormActivate (0x4ff8b0) never slews. The student moved the telescope, so Activate stays there and reads the
+ // field at that pointing from the tiles (a measurement there never counts toward E04).
+ const movedDec=(await page.getByTestId('photo-telescope-dec').textContent())!;
+ await activate(page).click();await expect(page.getByTestId('photo-telescope-dec')).toHaveText(movedDec);await expect(page.getByTestId('photo-telescope-ra')).toHaveText(ra);
+ await expect(async()=>{const target=await page.getByLabel('Photometry target',{exact:true}).inputValue(),status=await page.getByTestId('photo-tiled-status').count();expect(target.startsWith('gsc:')||status>0).toBe(true);}).toPass({timeout:60000});
 });
 
 test('an admitted row outside the selected telescope domain is not offered for measurement and blocks activation with no event and no fallback',async({page})=>{

@@ -2,7 +2,10 @@ import {createHash} from 'node:crypto';
 import {composeCameraExposure} from '../core/cameraExposure';
 import {readVizierCatalog,selectVizierCatalog,wholeSkySelection} from '../core/vizierNomad';
 import {readFileSync} from 'node:fs';
-import {afterEach,describe,expect,test} from 'vitest';
+import {afterAll,afterEach,beforeAll,describe,expect,test} from 'vitest';
+import {assembleFieldPack} from '../io/assembledFieldPack';
+import {checkGscIndex,createGscTileStore} from '../io/gscTiles';
+import {loadObjectXPositions} from '../io/objectXMask';
 import {setFieldInfoResources} from '../io/fieldInfoPacks';
 import {loadLssPack} from '../io/lssPack';
 import {LSS_ROWS} from '../core/lssFields';
@@ -11,7 +14,16 @@ import {cameraFieldInputs,ccdFilterByte,setCcdFilterByte} from './cameraFieldInp
 const f=(p:string)=>new Uint8Array(readFileSync(p));
 const snapFile=(id:string)=>`data/hubble/${id==='36773'?'pinned-galaxy-field':id==='pegasus'?'pinned-pegasus-field':`pinned-galaxy-${id}-field`}.json`;
 const resources=()=>({snapshot:async(id:string)=>JSON.parse(readFileSync(snapFile(id),'utf8')),engine:async(id:string)=>JSON.parse(readFileSync(`data/hubble/engine-${id}.json`,'utf8')),lss:loadLssPack,
- glx:async()=>f('public/original/catalogs/CLEA_GLX.DAT'),qso:async()=>({bytes:f('public/original/catalogs/CLEA_QSO.DAT'),sha256:'69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5'}),glimages:async()=>f('public/original/images/GLIMAGES.LST')});
+ glx:async()=>f('public/original/catalogs/CLEA_GLX.DAT'),qso:async()=>({bytes:f('public/original/catalogs/CLEA_QSO.DAT'),sha256:'69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5'}),glimages:async()=>f('public/original/images/GLIMAGES.LST'),
+ // Front G: the tiled path reads the published compact GSC tiles from disk (the browser fetches them from this origin).
+ assembled:async(p:Readonly<{ra:number;dec:number}>,signal?:AbortSignal)=>{const variables=f('public/original/variables/CLEA_VStrs.dat'),qso=f('public/original/catalogs/CLEA_QSO.DAT');
+  return assembleFieldPack(p,{index:checkGscIndex(JSON.parse(readFileSync('data/gsc/gsc-index.json','utf8'))),tiles:createGscTileStore({fetcher:diskFetch}),variables,variablesSha256:sha(variables),qso,qsoSha256:sha(qso),glimages:f('public/original/images/GLIMAGES.LST')},signal);}});
+const sha=(b:Uint8Array)=>createHash('sha256').update(b).digest('hex');
+const diskFetch=(async(u:RequestInfo|URL)=>new Response(f('public'+String(u)))) as typeof fetch;
+// The Object X mask reads the bundled, hash-checked ObjectX.HTL from this origin; serve same-origin paths from disk here.
+const realFetch=globalThis.fetch;
+beforeAll(()=>{globalThis.fetch=diskFetch;});
+afterAll(()=>{globalThis.fetch=realFetch;});
 afterEach(()=>setFieldInfoResources(null));
 
 describe('camera field inputs (Front R2 review 1)',()=>{
@@ -24,12 +36,28 @@ describe('camera field inputs (Front R2 review 1)',()=>{
   const i=await cameraFieldInputs({ra:row.ra,dec:row.dec},2455000.5,4);
   expect(i.objects!.some(o=>Math.abs(o.magnitude-(-51.27))<0.01)).toBe(true);
  });
- test('L1: no certified pack is "not-certified"; a load failure is "failed" (a blocking reason is "blocked")',async()=>{
+ test('Front G merge: a pointing with no listed pack builds a tiled field; a tile failure is "failed", a polar field "blocked"',async()=>{
   setFieldInfoResources(resources());
-  expect((await cameraFieldInputs({ra:3,dec:-40},2455000.5,0)).status).toBe('not-certified');
+  // (3 h, −40°) had no pack before Front G; it now gets a field assembled from the GSC tiles, so the pass runs or finds none.
+  expect(['run','none']).toContain((await cameraFieldInputs({ra:3,dec:-40},2455000.5,0)).status);
+  setFieldInfoResources({...resources(),assembled:async()=>{const {GscTileError}=await import('../io/gscTiles');throw new GscTileError('fetch');}});
+  expect((await cameraFieldInputs({ra:3,dec:-40},2455000.5,0)).status).toBe('failed');
+  setFieldInfoResources(resources());
+  expect((await cameraFieldInputs({ra:0,dec:89.99},2455000.5,0)).status).toBe('blocked');
   const row=LSS_ROWS.find(r=>r.id==='NGC 5924')!;
   setFieldInfoResources({...resources(),glx:async()=>{throw new Error('offline');}});
   expect(await cameraFieldInputs({ra:row.ra,dec:row.dec},2455000.5,0)).toEqual({status:'failed',objects:null});
+ });
+ test('Object X: within the mask of an ObjectX.HTL position nothing is loaded and the pass does not run',async()=>{
+  let calls=0;setFieldInfoResources({...resources(),assembled:async()=>{calls++;throw new Error('must not load');}});
+  const [x]=await loadObjectXPositions();
+  expect(await cameraFieldInputs(x,2455000.5,0)).toEqual({status:'masked',objects:null});
+  expect(await cameraFieldInputs({ra:3,dec:-40},2455000.5,0,{hidden:{ra:3,dec:-40}})).toEqual({status:'masked',objects:null});
+  expect(calls).toBe(0);
+ });
+ test('an abort rejects before any tile work',async()=>{
+  setFieldInfoResources(resources());const c=new AbortController();c.abort();
+  await expect(cameraFieldInputs({ra:3,dec:-40},2455000.5,0,{signal:c.signal})).rejects.toThrow();
  });
  test('L5: the CCD filter byte is page-wide and only takes filter positions',()=>{
   const before=ccdFilterByte();setCcdFilterByte(3);expect(ccdFilterByte()).toBe(3);setCcdFilterByte(9);expect(ccdFilterByte()).toBe(3);setCcdFilterByte(before);

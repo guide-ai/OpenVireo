@@ -40,8 +40,55 @@
 
 `lssPacks.test.ts` reproduces the independent Python witnesses for all 219 LSS pointings.
 
+## Fields across 0 h and near the poles (Front G, G1b)
+
+These rules come from a static reading (`analysis/front-g-gsc/RE-wrap-polar-consumers.md`; asm excerpts and hashes in
+`analysis/front-g-gsc/asm/`). Nothing was executed.
+
+- **Area** (`freshFieldArea`, telescope load 0x53be70):
+  - Dec is the pointing ± 0.375°, not clamped to ±90. RA is the pointing ± 0.375/(cos Dec·15) h.
+  - The minimum gets +24 h if it is below 0, and the maximum −24 h if it is above 24, each once. A field across 0 h then has
+    min > max.
+  - With an RA half-width of 12–24 h the folded interval no longer matches the sky (RA 3 h at Dec 89.9 gives [12.68, 17.32]).
+    VIREO's result is still deterministic, so it is ported as it is.
+  - A folded bound outside 0–24 h (half-width about 24 h or more, |Dec| ≳ 89.94°), or equal bounds, is the typed `polar`
+    (FieldEngineError). This is a web limit [W].
+    - From about 89.94° to 89.994° VIREO is still deterministic: a small negative int32 band key, or a bound above 24 h.
+    - Only beyond that (|key| ≥ 2³¹) and at exactly ±90° does its result depend on the x87 cosine near π/2 and on the Int64 key.
+    - This replaces the earlier rejections of |Dec| ≥ 89° and of every wrapped field.
+- **Regions** (0x5978c0):
+  - In wrap mode, a region starting below 12 h overlaps when area.max > region.min; any other region overlaps when
+    area.min < region.max. Dec is strict.
+  - This is a 12 h rule, not geometry: a region from 11.9 h to 12.5 h is not selected by an area from 12.2 h to 0.1 h.
+- **Stars** (0x597ac8): two reads per band, [min, 24.0] and then [0.0, max], over the same band order. Both append to one list.
+- **Variables** (0x5981a0 twice): the [min, 24] records, then the [0, max] records, in file order, then the cursor insert.
+- **QSOs** (0x5987e4, predicate 0x59677c): one scan from record 0 that stops at the first record below 12 h past max. In a
+  field across 0 h only the 0 h side is admitted, as long as such a record exists. CLEA_QSO.DAT is RA-ordered, and its last RA
+  below 12 h (11.995417 h, pinned) decides this (`fieldQsoMatches`).
+- **Galaxies** (0x598acc), in two passes, each with predicate 0x59677c, its stop flag and the magnitude test:
+  1. from record 0;
+  2. from the RA index entry for min.
+  - The index is CLEA_GLX.NDX. Each entry h is the first record with RA ≥ h, so it is derived from the RA-ordered CLEA_GLX.DAT
+    and not published.
+- **Photographs** (0x596b1c): in wrap mode, RA ≥ min or RA ≤ max, inclusive (`nativePhotographInArea`).
+- **Projection:** the RA difference was already wrapped (0x5949c8, `hourDifference`).
+- **Budget:** the visit budget per band is 100,000 (`FIELD_SCAN_BUDGET`), enough for a whole polar band.
+- **Pack limits:** the variable limit per pack is 1,000, because a field across 0 h covers its whole Dec ring (at most 549
+  variables).
+- **Tests:** `src/core/fieldWrap.test.ts` (rules) and `src/io/assembledFieldPack.test.ts` (tiled reads and populations at
+  wrap and polar pointings).
+- **Unchanged:** every published pack, fingerprint and count. For ordinary areas the code paths are the earlier ones, and the
+  equality proofs still pass.
+
 ## Typed unavailable reasons
 outside-pack, variable-time-required, variable-spectrum-dangling, variable-spectrum-indeterminate, variable-colour-residue, variable-model-fault (Front T), qso-merge (`'gate'` only), qso-selected (`'merge'` only), photographic-image, variable-merge, axis-fallback, merge-boundary, stamp-bound (the browser raster bound: major axis ≤ 100 px, minor axis ≥ 1 px), no-galaxy-selected, star-selected, slit-empty, spectrum-range, mean-bound (the existing per-telescope bound) and spectrum-mapping (LSS only).
+
+When a field is assembled from the compact GSC tiles (Front G), `AssembledFieldError` adds further reasons
+(docs/COMPACT-GSC-TILES.md):
+- `polar`: a web limit [W].
+- `band-end`: VIREO itself reads past the end of a declination band there, which raises an input/output error and leaves a
+  partial star list. The web shows no field [W].
+- `regions`, `budget`, `plan` and `source`.
 
 ## Numerical policy
 Arithmetic uses Number with nearest-even rounding; x87 equivalence is not claimed. The one exception is Frac(1000·RA): it is exact in the Extended significand, so it is computed exactly and rounded once.

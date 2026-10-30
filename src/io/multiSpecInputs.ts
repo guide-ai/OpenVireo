@@ -2,9 +2,9 @@
 // Runs inside the Worker io/multiSpecWorker.ts in the browser and in process under tests. It reuses the Object X spectrometer
 // inputs (io/objectXSpectrometerInputs.ts: Object X packs with their recorded digests, CLEA_GLX.DAT, CLEA_QSO.DAT, QSOSpect.dat,
 // GLIMAGES.LST photographs, JSPEC2.SPI, GLXYSP.LST), the LSS packs (io/lssPack.ts) and the Hubble engine packs (digests recorded
-// in data/hubble/engine-targets.json), and adds the 115 bundled jspect2 templates (the 48 bundled before Front M plus the 67 the
-// user approved on 2026-10-28, decision D2; a template outside this table is typed 'spectrum-template-unapproved') and, on demand,
-// the bundled own galaxy spectra GLXYSP.LST names.
+// in data/hubble/engine-targets.json), and adds all 132 jspect2 templates JSPEC2.SPI names (the 48 bundled before Front M, the 67
+// the user approved on 2026-10-28, decision D2, and the 17 approved on 2026-10-30 for Front G) and, on demand, the bundled own
+// galaxy spectra GLXYSP.LST names.
 // Every file is checked for its recorded size and SHA-256. Nothing is persisted or sent anywhere.
 import coma from '../../data/hubble/engine-coma.json';
 import bootes from '../../data/hubble/engine-bootes.json';
@@ -24,14 +24,19 @@ import {resourceSha256} from './boundedResource';
 
 export class MultiSpecInputError extends Error{constructor(readonly code:'pack'|'resource'){super(`Multi-Spec inputs: ${code}`);this.name='MultiSpecInputError';}}
 const T=(file:string,path:string,sha256:string)=>Object.freeze({file,path,bytes:55980,sha256});
-/** Every jspect2 template already bundled byte-identically (public/original/classification under the 1279-resource approval, and
- * A0000046.SP under the 2026-10-27 group-1 approval), plus the 67 jspect2 templates approved on 2026-10-28 for Multi-Spec
- * (data/multispec/template-requirements.json); SHA-256 of the jspect2 originals (template-inventory.json, Front M plan §9). */
+/** Every template JSPEC2.SPI names: those already bundled byte-identically (public/original/classification under the
+ * 1279-resource approval, and A0000046.SP under the 2026-10-27 group-1 approval), the 67 approved on 2026-10-28 for Multi-Spec
+ * (data/multispec/template-requirements.json) and the 17 approved on 2026-10-30 for stars at any pointing (Front G); SHA-256 of
+ * the jspect2 originals. */
 export const MULTISPEC_STAR_TEMPLATES=Object.freeze([
  T('A0000001.SP','/original/classification/A0000001.SP','6311f2dab943fd9a790f8be36f50900661e1ff3224528c0a6391f67c2310e6f0'),
  T('A0000002.SP','/original/spectra/jspect2/A0000002.SP','0a4c14affe07fe1a431f9bb0225b6fd9f18b1f0ef110bb136598e189d6633c57'),
+ T('A0000003.SP','/original/spectra/jspect2/A0000003.SP','aee3680ff645e59202ffa074f7d9ecbb10a37fd744a8845f4794536aa0955b96'),
  T('A0000004.SP','/original/classification/A0000004.SP','f501cd73bfc43a15aeb27eea672ac3c69bdb5830b7a48b475f05f4ec046749be'),
+ T('A0000005.SP','/original/spectra/jspect2/A0000005.SP','04672a3a196df10bb54b08153c1d69821ce1b6a3a11e7458bd2686666de47f90'),
  T('A0000006.SP','/original/classification/A0000006.SP','7265bfb181f27e8b8a8b7384725c662f2dc9f8d2c866fbb7aebb3774dd53cf97'),
+ T('A0000008.SP','/original/spectra/jspect2/A0000008.SP','16d37be7af72c5fe411e02cfbe9474f7780d35b3ff991148df2f4bef557e9f44'),
+ T('A0000010.SP','/original/spectra/jspect2/A0000010.SP','fb10edd1ee506ee10facee72b2ae36f5b558c825eb9e82a2711d13e5ced16dee'),
  T('A0000011.SP','/original/classification/A0000011.SP','0b68a7d9502bdd794c03b9bc35023143abf563d52851325898f2e522e2bca006'),
  T('A0000013.SP','/original/classification/A0000013.SP','5960f7700c327252a6215476fd62635a57b6deca7a2d40010f362f262e744298'),
  T('A0000014.SP','/original/classification/A0000014.SP','6a5ee6362deab2059d100789c4fd0c49372b2360f898c469932b2d00b0dd5328'),
@@ -53,6 +58,7 @@ export const MULTISPEC_STAR_TEMPLATES=Object.freeze([
  T('A0000035.SP','/original/spectra/jspect2/A0000035.SP','7cc4df7d47c5e61b2fb6f02c0803a976279dd078b075c5fa7d12d08d01cecf22'),
  T('A0000037.SP','/original/spectra/jspect2/A0000037.SP','cabfa61dbcc62e6d7b5c12a4473437d0b6b502b3d5ea458590b5b0b5b8d2f135'),
  T('A0000040.SP','/original/classification/A0000040.SP','108987ce781ef6cf91d49702c407fefd206a2d3f309b46bc8f15e531cf06ca25'),
+ T('A0000041.SP','/original/spectra/jspect2/A0000041.SP','0a5d5b0675d0dfc0947e7a97e8dc7e7c5cd3997383fd0d87cf69912fb97ef6fe'),
  T('A0000043.SP','/original/classification/A0000043.SP','1feab8938f6f92918ee06384f50e3aa8dd5b6b9c92d43e5bd6d084094b63a00d'),
  T('A0000044.SP','/original/classification/A0000044.SP','6d49365b7b52266afd3477df21f30c123d89f5d1cf0771f2c6264487c37800c4'),
  T('A0000045.SP','/original/classification/A0000045.SP','65d6501e6e715a86861409703d720f01bd6fe8000dc68fe252f6f5111998a5d7'),
@@ -71,11 +77,13 @@ export const MULTISPEC_STAR_TEMPLATES=Object.freeze([
  T('A0000059.SP','/original/spectra/jspect2/A0000059.SP','4e125cba48da63c8e8e2f8d46617845230f95a43ddc07eccf9d4ca4e21b07016'),
  T('A0000060.SP','/original/classification/A0000060.SP','b0370205f94133550ce41f5e86430851ad3795658610e89702c1245ea77a35ae'),
  T('A0000061.SP','/original/spectra/jspect2/A0000061.SP','f810b4d030b57adfe48f3443cd19adb3ef5296bd5455d79cd33a3abbb846f45b'),
+ T('A0000062.SP','/original/spectra/jspect2/A0000062.SP','1d6f5cea737165b25ba2033980b87d1742615443af0c46f5d3326a7459ac9a09'),
  T('A0000063.SP','/original/spectra/jspect2/A0000063.SP','fb7a5650f41c7543f8eded1dbe15e2555d2409247549b0abf4e094af3f0e7557'),
  T('A0000064.SP','/original/classification/A0000064.SP','f4ddbb2fd7cdeea1d8d658a8603c7ac66571f7fa3d86e40df09be45f536d99fe'),
  T('A0000065.SP','/original/spectra/jspect2/A0000065.SP','84fe731dddb94171d57ec93b86e588459f5f6973f3eda2484e9c7542e37448f1'),
  T('A0000066.SP','/original/spectra/jspect2/A0000066.SP','6578ce4c29cb78706a1401b1e3abecfdcb967a37f1163531ceefc1146f0c46ba'),
  T('A0000068.SP','/original/spectra/jspect2/A0000068.SP','a28bd076c30fa174aa972380c6b8cdadfafcd8297bde67b89b8b09c6bc181685'),
+ T('A0000069.SP','/original/spectra/jspect2/A0000069.SP','0f21ccf27abc8b7f598cc0d5a702aa1646ff08fa24f5f841dc84f80c974ff339'),
  T('A0000070.SP','/original/spectra/jspect2/A0000070.SP','2c2afae5975fb8dbb2f5c7af66e4624e39d16b75cfe2f654dbf5b1c908133f96'),
  T('A0000071.SP','/original/spectra/jspect2/A0000071.SP','f5761da40410198be92b543df9a51afce08ba60e68876e95802cea3574017c71'),
  T('A0000073.SP','/original/spectra/jspect2/A0000073.SP','6cc257f0bb36570a39d2fabae2cb36cfc406d426b4788d07bca59ead781e76e0'),
@@ -106,20 +114,30 @@ export const MULTISPEC_STAR_TEMPLATES=Object.freeze([
  T('A0000102.SP','/original/spectra/jspect2/A0000102.SP','2e9ae8c33e572cb1bdc0dc1a168704f78b1782828010f73892d8cb22744bb96e'),
  T('A0000103.SP','/original/classification/A0000103.SP','2dadd3939bb0066a42bd534a78149f301f1fa7c32f8797cf1c0919a0e6c29dd6'),
  T('A0000104.SP','/original/spectra/jspect2/A0000104.SP','410b7811b7776068f8af838896320cd67b0783b76a0eff1b9c68539cc3800da2'),
+ T('A0000105.SP','/original/spectra/jspect2/A0000105.SP','0b72cd5eb09556392c926db4bcdd405680b7e67613b02848beb13187b43ab917'),
+ T('A0000107.SP','/original/spectra/jspect2/A0000107.SP','12d31824d793b2a7cb3e6d11d347e908da6a56ea2388bb0b5766089892c9f669'),
  T('A0000108.SP','/original/classification/A0000108.SP','4ac005400174e9359ff1bac94b07714f2e22fe9c7a07325df0752e32cfe9ef52'),
  T('A0000109.SP','/original/spectra/jspect2/A0000109.SP','2737e2453c8b770375bfc22e63a33fac5e7e6022e5621fda946ef26fb1415872'),
  T('A0000110.SP','/original/spectra/jspect2/A0000110.SP','75634c0db759f7b78869478b47fe62bc687232cf634a1b731383b6d7317079fa'),
+ T('A0000111.SP','/original/spectra/jspect2/A0000111.SP','93cb8967620aeb17baa1917617a50609b492f94f9c178c38471906884576b265'),
  T('A0000112.SP','/original/classification/A0000112.SP','f1d44e527637c035148615020ad37586fcc04d54fab510d2d8bf92cc5a7e1134'),
+ T('A0000113.SP','/original/spectra/jspect2/A0000113.SP','9461dfd0824d70c081049856877c0432acffeb8134757c91d7b22515d509f504'),
  T('A0000114.SP','/original/spectra/jspect2/A0000114.SP','bda479718ccd73098458bc6e2d35d2b3752ca5dcc5b22a3a12cf615fa70e5c5e'),
+ T('A0000116.SP','/original/spectra/jspect2/A0000116.SP','3359bb807dd92d753103e799ba1c4802ff22c8e60ff559f02ea908f9a107cb5c'),
+ T('A0000118.SP','/original/spectra/jspect2/A0000118.SP','525fefe1728415a80bce65474b24478c0c11cd29c10f64f792b9bb8fd746326d'),
  T('A0000119.SP','/original/classification/A0000119.SP','0bff0de62c825769c6b22901ecbda6c964ebf587a5422ab07cd1269a1c73dac9'),
  T('A0000120.SP','/original/spectra/jspect2/A0000120.SP','f1c853d3e37582ea5b8416162a9d4f237d9988fca67492784d0d5539f8d1246e'),
  T('A0000121.SP','/original/spectra/jspect2/A0000121.SP','4bd3ef9e7516a1ecdc7557d58ce1546e6af3f52cfb662e77a0469ec1461abbd0'),
+ T('A0000122.SP','/original/spectra/jspect2/A0000122.SP','f88ccdbd86472bffee1ba16b3087fc9c6e6d51f587caf8b28c6a286615e05478'),
  T('A0000123.SP','/original/spectra/jspect2/A0000123.SP','cd59bdf19741bdacc195bd571a4136716c56202f913fc2ab586bbbfa1b60b2c6'),
+ T('A0000124.SP','/original/spectra/jspect2/A0000124.SP','1d8e56bdabebfe1cb3b1b78a4455b8a8a862e8fe3cdda551a04c2e17559091fd'),
  T('A0000125.SP','/original/spectra/jspect2/A0000125.SP','a1ad16623af6c8dae8b5f9b55d5757f38c5b65e5138d050557bafe3770c2435f'),
+ T('A0000127.SP','/original/spectra/jspect2/A0000127.SP','56226d4dfa411fc11e831f09fce635ba4810904930471075445d044acb1fc170'),
  T('A0000128.SP','/original/spectra/jspect2/A0000128.SP','be5ab21ff8bc882543eb3a396279fea417050ab5774f93f5a7a8bf5d9c863013'),
  T('A0000129.SP','/original/classification/A0000129.SP','e0ed186b268f634ebc7a979088584142e99732b2f358c55cf871646bbcf20694'),
  T('A0000130.SP','/original/spectra/jspect2/A0000130.SP','9576ecd7969522ac7dedc19e68696bdb8671f3042d80e76d872eb2e256eaa6c0'),
  T('A0000131.SP','/original/spectra/jspect2/A0000131.SP','f5ba63b278bce5919d8d4e7ee74d5d679cbca2b730d4d2693c7cbdebd885e673'),
+ T('A0000132.SP','/original/spectra/jspect2/A0000132.SP','7b9009ebb9eb6a4a9bb4ca528308cdfb09efa01e0648c70a74529b86df0d2f32'),
  T('A0000133.SP','/original/spectra/jspect2/A0000133.SP','4eb87c014b198891f97b53fd0f1db95a90216dbf79e2d1ecc862ec68b3f9455f'),
  T('A0000134.SP','/original/spectra/jspect2/A0000134.SP','2f9bc5a192e709ab057f4cbfff79fa257f981250f8fea1341f0dc97e90086c03'),
  T('A0000135.SP','/original/spectra/jspect2/A0000135.SP','70afca61053a4d2cc9fc898f89535e9828bcd697250ba2c81c53331a7d7d5591'),

@@ -95,12 +95,19 @@ unchanged:
 - the GLIMAGES.LST indices inside the area (`packWithPhotographs`).
 
 `AssembledFieldError` types what is not yet supported or cannot be read:
-- `ra-wrap`: the area crosses RA 0 h/24 h. VIREO splits it into two reads at 0x597ac8 (recovered in G-RE1; ported in G1b).
-- `polar`: \|Dec\| ≥ 89° (recovered in G-RE2; G1b narrows this to an RA half-width ≥ 12 h, about \|Dec\| ≥ 89.88°).
+- `polar`: a folded RA bound outside 0–24 h, which needs an RA half-width of about 24 h or more (\|Dec\| ≳ 89.94°). This is a
+  web limit [W]. From about 89.94° to 89.994° VIREO is still deterministic (a small negative int32 band key, or a bound above
+  24 h). Only beyond that (\|key\| ≥ 2³¹) and at exactly ±90° does its result depend on the x87 cosine near π/2 and the Int64
+  key. Half-widths of 12–24 h are ported as VIREO computes them.
+- A field across RA 0 h/24 h is read as VIREO reads it (G1b): two reads per band, [min, 24] then [0, max]. The pack records
+  both traces, and its coverage is the whole RA ring of its Dec band.
+- `input`: an invalid pointing (not finite, RA outside 0–24 h, or |Dec| > 90°).
 - `regions`: more than 100 regions. A ±0.375° field never exceeds 12, even at ±90°.
-- `budget`: more than 10,000 visits in one band, the same limit the field engine applies (`packStars`).
+- `budget`: more than 100,000 visits in one band, the same limit the field engine applies (`FIELD_SCAN_BUDGET`). A whole polar
+  band fits (S8230: 95,441 records), so this no longer occurs for any valid pointing.
 - `band-end`: the native search runs past a band's last record because the minimum RA key is above every record. VIREO reads
-  past EOF there and raises an I/O error.
+  past EOF there and raises an I/O error. It happens at ordinary pointings too: at (0.59788 h, −87.604°) the field wraps, and
+  its [min, 24] key is above S8230's last record (review 1 L2; tested).
 - `plan`: a read outside the planned tiles. This is a planning bug, never a skipped record.
 - `source`: a malformed bundled file.
 
@@ -117,9 +124,32 @@ Nothing is approximated.
 - The peaks are at RA 15.5–16 h in S8230 and 1–1.5 h in N8230. Dense band-edge fields elsewhere stay under about 6,000
   (review measurement).
 - VIREO has no such budget. It is an adapter guard, and at |Dec| ≈ 88.5–89° it currently yields the typed `budget`.
-- **Decision:** G1 keeps the 10,000 limit, equal to the engine's, so the engine and the assembler agree. G1b raises both
-  together to 100,000, as part of the polar port. That covers a whole polar band (S8230: 95,441 records; N8230: 74,656), which
-  is what the native scan reads when the RA half-width approaches 24 h.
+- **Decision, carried out in G1b:** both limits were raised together to 100,000 (`FIELD_SCAN_BUDGET`). That covers a whole
+  polar band (S8230: 95,441 records; N8230: 74,656), which is what the native scan reads as the RA half-width grows near the pole.
+- **Worst-case cost** (Node, desktop, warm disk). "Assemble" includes the tile reads and the SHA checks.
+
+| Pointing | Band reads | Assemble | Heap | Population | Field |
+|---|---|---|---|---|---|
+| RA 15.5, Dec −89.88 (S8230, whole band) | 95,002 | 431 ms | +38 MB | 436 ms | 586 ms |
+| RA 1.5, Dec +89.88 (N8230) | 74,400 | 368 ms | +31 MB | 362 ms | 490 ms |
+| RA 15.5, Dec −88.99 | 14,605 | 100 ms | +5 MB | 63 ms | 188 ms |
+| RA 12, Dec 20 (ordinary) | 965 | 18 ms | +1 MB | 11 ms | 74 ms |
+
+**Responsiveness and abort (G1b review 1 L3).**
+- The assembler yields to the event loop between band reads, every 4,096 recorded reads and before the whole-file scans. It
+  checks the AbortSignal at each of those points.
+- `buildFieldPopulation` checks `options.signal` between its stages.
+- `findCertifiedPopulation` takes a signal and yields before each population build. The Edit Mode field layer aborts a build
+  when the pointing or the view changes.
+- Measured under a load average of about 17, after replacing the regex hex codecs with table and loop versions:
+
+| Pointing | Longest synchronous assembler step | Population build (one synchronous step) |
+|---|---|---|
+| Dec −89.88 (whole S8230) | 133 ms | 384 ms |
+| Dec +89.93 | 66 ms | 260 ms |
+| Ordinary field | 18 ms | 21 ms |
+
+No Worker is used. The longest blocking step is the population build of a field within about 0.1° of a pole.
 
 **Behaviour:** G1 does not change any route yet. The published bounded packs stay the certified fast path. Opening other
 pointings is phased in from G2 on (analysis/front-plans/front-g-gsc.md §6, §8).
