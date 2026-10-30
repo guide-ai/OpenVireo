@@ -17,12 +17,14 @@ export function readMotionPreferences(value:unknown):MotionPreferences{if(!value
 export function manualMotionStep(mode:FieldMode,rateIndex:number){readMotionPreferences({rateIndex});if(mode!=='finder'&&mode!=='telescope')throw new TelescopeMotionError('input');return proof.native.baseRate*2**rateIndex*arc/proof.native.scale[mode];}
 function initial(pointing:Pointing,mode:FieldMode,rateIndex:number):TelescopeMotion{const p=validatePointing(pointing.ra,pointing.dec);manualMotionStep(mode,rateIndex);return freeze({kind:'manual',phase:'moving',pointing:{...p},mode,rateIndex,callbacks:0,flipped:false,direction:'N',target:null,raDone:false,decDone:false,raStep:0,decStep:0});}
 export function createManualMotion(pointing:Pointing,mode:FieldMode,rateIndex:number,direction:MotionDirection):TelescopeMotion{if(!['N','S','E','W'].includes(direction))throw new TelescopeMotionError('input');const w=initial(pointing,mode,rateIndex),delta=manualMotionStep(mode,rateIndex);return freeze({...w,direction,raStep:(direction==='E'?1:-1)*delta/15,decStep:(direction==='N'?1:-1)*delta});}
-export function createProgrammedMotion(pointing:Pointing,target:Pointing,mode:FieldMode):TelescopeMotion{
- const w=initial(pointing,mode,proof.native.programRateIndex),p=validatePointing(target.ra,target.dec);if(p.ra===w.pointing.ra&&p.dec===w.pointing.dec)return freeze({...w,kind:'programmed',phase:'complete',target:{...p},raDone:true,decDone:true});let diff=p.ra-w.pointing.ra;
+/** Front R3: `rateIndex` is the programmed rate, 4 (Fast Slewing, the compiled default: proof.native.programRateIndex) or 3. */
+export function createProgrammedMotion(pointing:Pointing,target:Pointing,mode:FieldMode,rateIndex:3|4=proof.native.programRateIndex as 4):TelescopeMotion{
+ if(rateIndex!==3&&rateIndex!==4)throw new TelescopeMotionError('input');
+ const w=initial(pointing,mode,rateIndex),p=validatePointing(target.ra,target.dec);if(p.ra===w.pointing.ra&&p.dec===w.pointing.dec)return freeze({...w,kind:'programmed',phase:'complete',target:{...p},raDone:true,decDone:true});let diff=p.ra-w.pointing.ra;
  // Retain setup guards where uncertainty changes direction or suppresses RA motion.
  const virtual=p.ra-diff,low=(p.ra-(diff+virtual))+(virtual-w.pointing.ra);
  if(diff!==0&&(near(Math.abs(diff),epsilon)||(near(Math.abs(diff),12)&&low!==0)))throw new TelescopeMotionError('precision');
- if(Math.abs(diff)>12)diff=-diff;const delta=manualMotionStep(mode,proof.native.programRateIndex)*10;
+ if(Math.abs(diff)>12)diff=-diff;const delta=manualMotionStep(mode,rateIndex)*10;
  return freeze({...w,kind:'programmed',target:{...p},direction:diff>0?'E':'W',raDone:Math.abs(diff)<=epsilon,raStep:Math.sign(diff)*delta/15,decStep:(w.pointing.dec<=p.dec?1:-1)*delta});
 }
 /** One original coordinate callback, independent of React, wall time, photon counts and RNG. */
@@ -49,7 +51,7 @@ export const MOTION_MAX_ABS_DECLINATION=proof.browser.maximumAbsDeclination;
 function checkBrowserDeclination(dec:number){if(Math.abs(dec)>MOTION_MAX_ABS_DECLINATION)throw new TelescopeMotionError('pole');}
 /** Connected preview admission is a browser policy, separate from the native pole recurrence. */
 export function validateBrowserMotionPointing(pointing:Pointing):Pointing{const p=validatePointing(pointing.ra,pointing.dec);checkBrowserDeclination(p.dec);return Object.freeze(p);}
-export function prepareBrowserTelescopeMotion(pointing:Pointing,request:MotionDirection|Pointing,mode:FieldMode,rateIndex:number):TelescopeMotion{validateBrowserMotionPointing(pointing);if(typeof request!=='string')validateBrowserMotionPointing(request);return typeof request==='string'?createManualMotion(pointing,mode,rateIndex,request):createProgrammedMotion(pointing,request,mode);}
+export function prepareBrowserTelescopeMotion(pointing:Pointing,request:MotionDirection|Pointing,mode:FieldMode,rateIndex:number,programRateIndex:3|4=proof.native.programRateIndex as 4):TelescopeMotion{validateBrowserMotionPointing(pointing);if(typeof request!=='string')validateBrowserMotionPointing(request);return typeof request==='string'?createManualMotion(pointing,mode,rateIndex,request):createProgrammedMotion(pointing,request,mode,programRateIndex);}
 function advanceMotion(w:TelescopeMotion,callbacks:number,browser:boolean):TelescopeMotion{if(!Number.isInteger(callbacks)||callbacks<0||callbacks>proof.browser.maximumBatchCallbacks)throw new TelescopeMotionError('input');if(browser)validateBrowserMotionPointing(w.pointing);let next=w;for(let i=0;i<callbacks&&next.phase==='moving';i++){next=tickTelescopeMotion(next);if(browser)checkBrowserDeclination(next.pointing.dec);}return next;}
 export function advanceTelescopeMotion(w:TelescopeMotion,callbacks:number):TelescopeMotion{return advanceMotion(w,callbacks,false);}
 export function advanceBrowserTelescopeMotion(w:TelescopeMotion,callbacks:number):TelescopeMotion{return advanceMotion(w,callbacks,true);}

@@ -4,7 +4,7 @@
 // the field engine's QSO merge (core/qsoMerge.ts) reads any record. Catalogue values only, never observations.
 import {QSO_CATALOG} from '../core/qsoMerge';
 import type {FieldQsoCatalog} from '../core/fieldEngine';
-import {BoundedResourceError,boundedResourceBody,checkResourceAbort,resourceSha256} from './boundedResource';
+import {checkResourceAbort,resourceSha256,verifiedSameOriginResource} from './boundedResource';
 
 export const BUNDLED_QSO_CATALOG=Object.freeze({path:'/original/catalogs/CLEA_QSO.DAT',name:QSO_CATALOG.name,bytes:QSO_CATALOG.bytes,sha256:QSO_CATALOG.sha256});
 export class BundledQsoCatalogError extends Error{
@@ -18,10 +18,8 @@ export async function verifyBundledQsoCatalog(buffer:ArrayBuffer,signal?:AbortSi
  return Object.freeze({bytes:new Uint8Array(buffer),sha256});
 }
 /** Fetches and verifies the bundled catalogue. An abort rejects with the DOMException AbortError; every other failure is a
- * BundledQsoCatalogError. Nothing is cached, persisted or sent anywhere. */
-export async function fetchBundledQsoCatalog(fetcher:typeof fetch,signal:AbortSignal):Promise<FieldQsoCatalog>{
- checkResourceAbort(signal);let buffer:ArrayBuffer;
- try{const response=await fetcher(BUNDLED_QSO_CATALOG.path,{signal,credentials:'same-origin'});buffer=await boundedResourceBody(response,BUNDLED_QSO_CATALOG.bytes,signal);}
- catch(error){checkResourceAbort(signal);if(error instanceof BoundedResourceError)throw new BundledQsoCatalogError(error.code==='size'?'size':'download');throw new BundledQsoCatalogError('download');}
- checkResourceAbort(signal);return verifyBundledQsoCatalog(buffer,signal);
+ * BundledQsoCatalogError. Nothing is persisted or sent anywhere; verified bytes are kept in memory for the tab and re-checked on
+ * reuse (verifiedSameOriginResource, Front F2). */
+export function fetchBundledQsoCatalog(fetcher:typeof fetch,signal:AbortSignal):Promise<FieldQsoCatalog>{
+ return verifiedSameOriginResource(fetcher,signal,BUNDLED_QSO_CATALOG.path,BUNDLED_QSO_CATALOG.bytes,buffer=>verifyBundledQsoCatalog(buffer,signal),code=>new BundledQsoCatalogError(code));
 }
