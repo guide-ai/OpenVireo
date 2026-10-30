@@ -21,7 +21,7 @@ Each play opens the program folder plus a lowercase name and plays it once, from
 
 | Event | Sound |
 |---|---|
-| Dome Up or Down click (0x58c608 / 0x58c45c) | `gardoor.wav` once |
+| Dome Up or Down click (0x58c608 / 0x58c45c), or a telescope change with the dome open (0x58b528 → 0x58b741, unless FastScopeBox) | `gardoor.wav` once |
 | The dome reaches the end of its travel (DomeTimer, 80 ms ticks of 0.01) | `gardoor.wav` stops; one of chaclunk, clunkit, crashbrn, rolling, crinkle, drag, mailbox, whaading (table 0x5b4b04) by Random(8) |
 | Reversal during travel | `gardoor.wav` restarts; no end sound at that moment |
 | Manual N/S/E/W slew held | `servostart.wav`, then `servocontin.wav` again and again (MediaPlayer1Notify 0x540350) |
@@ -43,11 +43,26 @@ Sound Device!", and turns the option off for the session.
 - **Loading:** nothing is fetched while the option is off. Turning it on prepares `Emotor.wav`, which must be decoded. Any
   other sound is fetched only when an event needs it. Every file comes from this site and is checked for size and SHA-256
   before it plays.
-- **Autoplay:** every sound follows the student's own click (the checkbox, the dome, a slew button), as browser autoplay
-  rules require.
-- **Events:** the web dome opens or closes at once, so the end sound comes about 7.5 s later [W] (0.94 of travel at 0.01 per
-  80 ms). A second dome click before then restarts the door sound. The end sound is chosen by the browser's random source;
-  there is no Delphi Random parity [W].
+- **Autoplay:** every sound follows the student's own click (the checkbox, the dome, a slew button). The checkbox also
+  unlocks both players in the same gesture, with a muted, silent play. Chromium allows the later plays (after a fetch, the end
+  timer or the loop), which the Playwright spec checks. WebKit unlocks media per element; the unlock is meant for it, but this
+  site has not been tested on WebKit or Safari [I]. If a play is refused there, the status line gives VIREO's message and
+  Sound Effects turns off.
+- **Events:**
+  - The door sound plays for the two dome switch buttons (DomeSw1UpClick / DomeSw1DownClick). It also plays for a telescope
+    change that closes an open dome [D]: the scope-access routine 0x58b528 (Access0P4/1p0/4p0Click) calls DomeSw1DownClick
+    (0x58b741) unless FastScopeBox (env+0x2e84, compiled default 0) is set.
+  - A restored investigation, a restored star packet or a prepared photometer field also changes the dome state, but plays
+    nothing [W]. VIREO never opens the dome by itself, since DomeSw1UpClick has no code caller, so these web paths have no
+    native sound.
+  - The web dome opens or closes at once, so the end sound comes 7.84 s later [W]. That is the native 98 ticks of 80 ms:
+    opening plays it at frac ≥ 0.97 from 0 (constant 0x58d3f0), closing at ≤ 0.03 from 1. Under VIREO's own x87 control word
+    0x1332 (64-bit precision), the accumulated 0.01 steps reach either bound on tick 98; 97 would hold only at 53-bit
+    precision.
+  - A second dome click before then restarts the door sound.
+  - The end sound is chosen by the browser's random source; there is no Delphi Random parity [W].
+- **Status line:** "Loading the sound…" shows only while a sound that has not loaded yet is pending. It clears when that play
+  is stopped or superseded.
 - **Emotor.wav** is Microsoft ADPCM (format tag 2), which browsers do not play. `src/core/msAdpcm.ts` decodes it in the page
   with the public Microsoft ADPCM algorithm. Its output equals FFmpeg n9.0.2 `adpcm_ms` for all 1,638,328 samples (the
   SHA-256 is pinned in Vitest). The bundled bytes are unchanged.
@@ -75,3 +90,5 @@ Sound Device!", and turns the option off for the session.
 |---|---|---|
 | Plan and recovery | Claude Opus 5.5 | high |
 | Implementation and tests | Claude Opus 5.5 | medium |
+| Review 1 (`analysis/reviews/front-c5w-review-1.md`, MERGE) | coordinator | high |
+| Follow-up (L1–L4, N2, N3, data census) | Claude Opus 5.5 | medium |

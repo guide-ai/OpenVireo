@@ -34,6 +34,18 @@ test('off by default: the dome makes no sound request; on: the door, an end soun
  await expect(scope(page)).toHaveAttribute('data-sound','servostart.wav',{timeout:15_000});
  await page.mouse.up();await expect(scope(page)).not.toHaveAttribute('data-sound');
  expect(seen).toContain('GARDOOR.WAV');expect(seen).toContain('Emotor.wav');expect(seen).toContain('servostart.wav');
+ // C5W closure L1: a telescope change with the dome open closes it through DomeSw1DownClick (0x58b528 → 0x58b741), so
+ // the door plays, as in VIREO with FastScopeBox off (its compiled default).
+ await expect(dome(page)).not.toHaveAttribute('data-sound',/GARDOOR/,{timeout:15_000});
+ await page.getByLabel('Telescope profile to inspect or select').selectOption('1');await page.getByRole('button',{name:'Use this telescope',exact:true}).click();
+ await expect(page.getByRole('button',{name:'Open dome ↗',exact:true})).toBeVisible();
+ await expect(dome(page)).toHaveAttribute('data-sound','GARDOOR.WAV');
+ // With the dome already closed, a second telescope change plays nothing new.
+ await expect(dome(page)).not.toHaveAttribute('data-sound',/GARDOOR/,{timeout:15_000});
+ await page.getByLabel('Telescope profile to inspect or select').selectOption('2');await page.getByRole('button',{name:'Use this telescope',exact:true}).click();
+ await page.waitForTimeout(500);await expect(dome(page)).not.toHaveAttribute('data-sound',/GARDOOR/);
+ await expect(page.getByTestId('sound-effects-status')).toHaveText('');// review L3: nothing stuck
+ await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await expect(dome(page)).toHaveAttribute('data-sound','GARDOOR.WAV');
  // Off again stops both players; a later dome click asks for nothing new.
  await toggle.uncheck();const before=seen.length;
  await page.getByRole('button',{name:/Close dome/}).first().click();expect(seen.length).toBe(before);await expect(dome(page)).not.toHaveAttribute('data-sound');

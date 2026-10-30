@@ -38,7 +38,7 @@ describe('camera catalog transport',()=>{
    expect(cameraExtractHostValid(bad)).toBe(false);expect(findCameraExtract(q,[bad])).toBeNull();
   }
  });
- test('live mode tries CfA only while CDS cannot answer, and names the host that did',async()=>{
+ test('with an explicit host list, the next host is tried only after a network error or a 5xx, and the host that answered is named',async()=>{
   expect(VIZIER_POLICY.liveHosts).toEqual([VIZIER_HOSTS.idia,VIZIER_HOSTS.cds]);
   const both=[VIZIER_HOSTS.cds,VIZIER_HOSTS.cfa];
   for(const down of [async()=>{throw new TypeError('Failed to fetch');},async()=>new Response('x',{status:504})]){
