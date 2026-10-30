@@ -66,10 +66,13 @@ export function openLssRecord(s:LssSurveyState,d:Omit<LssDraft,'remarks'|'veloci
  if(!d.control||!d.journal||d.z!==currentZ(d.control)||!Number.isSafeInteger(d.journal.seedAtReset)||!Array.isArray(d.journal.events)||!Number.isFinite(d.z)||Math.fround(d.z)<=-1||!Number.isFinite(d.jd)||(d.fieldJd!==undefined&&!Number.isFinite(d.fieldJd))||!Number.isFinite(d.ra)||!Number.isFinite(d.dec)||d.ra<0||d.ra>=24||Math.abs(d.dec)>90)throw new LssSurveyError('record');
  hubbleVelocity(d.z);
  const reused=target===null?null:s.records[target];
- return Object.freeze({...s,draft:Object.freeze({...d,target,object:text(d.object,LSS_LIMITS.object),remarks:reused?.remarks??'',velocity:reused?lssVelocityText(reused.velocitySingle):'',journal:Object.freeze({seedAtReset:d.journal.seedAtReset,events:Object.freeze([...d.journal.events])}),control:Object.freeze({...d.control})})});
+ // Review 1 M1: FormActivate 0x57cab8 shows the record's own time (+0x10, read at 0x57cb01), so a reused row opens with its first JD.
+ return Object.freeze({...s,draft:Object.freeze({...d,jd:reused?reused.jd:d.jd,target,object:text(d.object,LSS_LIMITS.object),remarks:reused?.remarks??'',velocity:reused?lssVelocityText(reused.velocitySingle):'',journal:Object.freeze({seedAtReset:d.journal.seedAtReset,events:Object.freeze([...d.journal.events])}),control:Object.freeze({...d.control})})});
 }
 export function editLssDraft(s:LssSurveyState,change:Readonly<{object?:string;remarks?:string;velocity?:string}>):LssSurveyState{
  if(!s.draft)throw new LssSurveyError('pending');
+ // Review 1 N2: a reused row is found by its object ID, so its draft's object cannot change.
+ if(s.draft.target!==null&&change.object!==undefined&&change.object!==s.draft.object)throw new LssSurveyError('record');
  return Object.freeze({...s,draft:Object.freeze({...s.draft,object:change.object===undefined?s.draft.object:text(change.object,LSS_LIMITS.object),remarks:change.remarks===undefined?s.draft.remarks:text(change.remarks,LSS_LIMITS.remarks),velocity:change.velocity===undefined?s.draft.velocity:text(change.velocity,LSS_LIMITS.velocity)})});
 }
 /** OK: appends exactly one record. */

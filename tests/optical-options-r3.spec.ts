@@ -22,7 +22,9 @@ test('the dialog offers the ported options with their compiled states and shows 
  await observatory(page);await card(page).getByTestId('ob-options').click();
  for(const k of ['fast-slewing','infrared-camera'])await expect(id(page,`ob-options-${k}`)).toBeChecked();
  for(const k of ['fast-scope-change','compute-redshift-velocity','monochrome-displays','print-in-color','time-dependent-data'])await expect(id(page,`ob-options-${k}`)).not.toBeChecked();
- const others=id(page,'ob-options-others');await expect(others.getByRole('listitem')).toHaveCount(6);// 7 before Front L3 added Time-Dependent Data (2026-10-30)await expect(others).not.toContainText('Fast Slewing');
+ const others=id(page,'ob-options-others');await expect(others.getByRole('listitem')).toHaveCount(6);
+ // 7 before Front L3 added Time-Dependent Data (2026-10-30).
+ await expect(others).not.toContainText('Fast Slewing');
  await expect(id(page,'ob-options-tab-general')).toContainText('Finder Field (Degs)2.50');await expect(id(page,'ob-options-tab-ccd')).toContainText('Site CH350 003B Back-Illuminated');
  await expect(id(page,'ob-options-tab-ir')).toContainText('CLEA_IR1');await expect(id(page,'ob-options-tabs')).not.toContainText(/<input/);
  await expect(id(page,'ob-options-tabs').locator('input')).toHaveCount(0);await expect(id(page,'ob-options-tabs-note')).toContainText('not editable');

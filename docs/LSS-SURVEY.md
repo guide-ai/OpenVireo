@@ -156,7 +156,11 @@ is a separate follow-up. LSS galaxy spectra can be classified through Save .SSP 
 
 **Measured 2026-10-30 (Front L3).** All 219 rows were evaluated on the three telescopes (657 evaluations), with the field
 engine's star path enabled through JSPEC2.SPI. The 18 rows that need a clock time were also evaluated at four JDs.
-- **No evaluation selects a star:** the row pointing always lands on the row's galaxy, a neighbour or a QSO.
+- **No evaluation selects a star:**
+  - 72 of the 657 evaluations end before any slit selection: photographic-image 27 and stamp-bound 45.
+  - In every other evaluation the selected object is a galaxy: the row's own galaxy or a neighbouring galaxy. This includes
+    the 18 rows that need a clock time, evaluated at four JDs.
+  - No QSO is selected either.
 - **The counts:** they stay 187/93/189, and no star template is needed (measurement:
   analysis/front-plans/front-l3-star-measure.txt).
 - **Free pointing:** VIREO reaches a star in the strip only by pointing the observatory freely. Recording such a star into the

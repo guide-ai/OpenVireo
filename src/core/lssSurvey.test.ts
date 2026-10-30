@@ -161,7 +161,10 @@ describe('Front L3: Time-Dependent Data off (compiled) reuses the first row with
  });
  it('opens the dialog with the row\'s own velocity and remarks; a changed z then fails the 1 % check until a new velocity is typed',()=>{
   const s=confirmLssRecord(editLssDraft(openLssRecord(EMPTY_LSS_SURVEY,draft),{remarks:'arm'}));
-  const o=openLssRecord(s,withZ(.0301));expect(o.draft!.target).toBe(0);expect(o.draft!.remarks).toBe('arm');expect(o.draft!.velocity).toMatch(/^6\.7\d\dE\+03$/);
+  const o=openLssRecord(s,{...withZ(.0301),jd:2451600});expect(o.draft!.target).toBe(0);
+  expect(o.draft!.jd).toBe(2451545);// review 1 M1: FormActivate shows the record's first time (+0x10)
+  expect(code(()=>editLssDraft(o,{object:'NGC 9999'}))).toBe('record');expect(editLssDraft(o,{object:'NGC 4555'}).draft!.object).toBe('NGC 4555');// N2
+  expect(openLssRecord(EMPTY_LSS_SURVEY,{...draft,jd:2451600}).draft!.jd).toBe(2451600);// a new row keeps the Record Z timeexpect(o.draft!.remarks).toBe('arm');expect(o.draft!.velocity).toMatch(/^6\.7\d\dE\+03$/);
   expect(confirmLssDialog(o).ok).toBe(false);
   expect(confirmLssRecord(o).records[0].zSingle).toBe(lssDialogZ(.0301));
  });

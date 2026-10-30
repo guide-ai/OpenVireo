@@ -30,8 +30,9 @@ describe('Front R3 session options',()=>{
   expect(value('ccd','Bias (e/Pixel)')).toBe('1000');expect(value('ir','Dark Noise (e/pixel/sec)')).toBe('0.7');expect(value('ir','AD Depth (Bits)')).toBe('32');
   expect(visibleOptionTabs(true).map(t=>t.tab)).toEqual(['general','photometer','spectrometer','ccd','ir']);
   expect(visibleOptionTabs(false).map(t=>t.tab)).toEqual(['general','photometer','spectrometer','ccd']);
-  // R3 review L2: Horizon Limit follows the selected site (FormActivate 0x5a5719, radians ×57.2958, ffFixed 1).
+  // R3 review L2: Horizon Limit follows the selected site (FormActivate 0x5a5719, radians ×180/π at 0x5a602c, ffFixed 1).
   expect(horizonLimitText(10*Math.PI/180)).toBe('10.0');
+  expect(horizonLimitText(12.44996*Math.PI/180)).toBe('12.4');// L3 review L1: 57.2958 would give 12.5
   expect(visibleOptionTabs(true,15.2*Math.PI/180)[0].values.find(x=>x.label==='Horizon Limit')!.text).toBe('15.2');
  });
 });

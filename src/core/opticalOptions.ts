@@ -47,7 +47,7 @@ export const telescopeChangeClosesDome=(options:Pick<SessionOpticalOptions,'fast
 
 /** The read-only tab values: the compiled record (defaults routine 0x5a21d0) as FormActivate 0x5a56e0 writes it into the edits,
  * FloatToStrF(ffFixed,18,d) for Singles and IntToStr for Integers (ir-gate-and-tab-values.md). Horizon Limit is the selected
- * site's (stored in radians, shown ×57.2958); the three compiled sites all hold 10°. [W] Shown, never editable: changing them
+ * site's (stored in radians, shown ×180/π); the three compiled sites all hold 10°. [W] Shown, never editable: changing them
  * would invalidate the certified field, photometer, spectrometer and camera contracts built on these values. */
 export type OptionTabValue=Readonly<{label:string;text:string}>;
 export type OptionTab=Readonly<{tab:'general'|'photometer'|'spectrometer'|'ccd'|'ir';caption:string;values:readonly OptionTabValue[]}>;
@@ -60,8 +60,8 @@ export const OPTION_TABS:readonly OptionTab[]=Object.freeze([
  Object.freeze({tab:'ir',caption:'&IR Camera',values:Object.freeze([v('Camera Name/ID','CLEA_IR1'),v('Pixel Size: Width','40.0'),v('Pixel Size: Height','40.0'),v('Image Size (Pixels): Width','512'),v('Image Size (Pixels): Height','512'),v('Read Noise (e/pixel)','53.0'),v('Dark Noise (e/pixel/sec)','0.7'),v('Bias (e/Pixel)','1000'),v('Base Magnitude','10.0'),v('Base Count','1000'),v('Base Exposure','10'),v('Chip Well Depth','250000'),v('AD Depth (Bits)','32'),v('Chip Cooling','Liquid Nitrogen'),v('Apply Position Noise','checked')])}),
 ] as const);
 /** Horizon Limit as FormActivate writes it (0x5a5719): the selected site's horizon (radians, copied from the site record at 0x53e142)
- * ×57.2958, ffFixed 1. R3 review L2: it follows a Site Parameters override, as RunningClock and Limit Slewing do. */
-export const horizonLimitText=(horizonRadians:number)=>delphiFixed(horizonRadians*57.2958,1);
+ * ×180/π (Extended constant at 0x5a602c, bytes c3bd0f1ed3e02ee50440 = 57.29577951308232), ffFixed 1. R3 review L2: it follows a Site Parameters override, as RunningClock and Limit Slewing do. */
+export const horizonLimitText=(horizonRadians:number)=>delphiFixed(horizonRadians*(180/Math.PI),1);
 /** The tabs the dialog shows: the IR tab only while Infrared Camera is checked (FormActivate 0x5a5a92, IRBoxMouseUp 0x5a7324); the
  * General tab's Horizon Limit from the selected site when given. */
 export function visibleOptionTabs(infraredCamera:boolean,horizonRadians?:number):readonly OptionTab[]{

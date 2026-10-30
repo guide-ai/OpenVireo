@@ -98,6 +98,8 @@ test('Front L3: Record Z on an already recorded galaxy updates its row (first JD
  await expect(page.getByTestId('lss-dialog-reused')).toContainText('updates that row instead of adding one');
  await expect(page.getByTestId('lss-dialog-velocity')).toHaveValue(/^\d\.\d{3}E\+0\d$/);// the row's earlier velocity
  await expect(page.getByLabel('Remarks',{exact:true})).toHaveValue('first');
+ // Review 1 M1: the dialog shows the row's first JD, as FormActivate reads the record's own time.
+ expect(Number(await page.locator('#lss-jd').inputValue())).toBeCloseTo(Number(before[1]),5);
  await page.getByLabel('Remarks',{exact:true}).fill('again');await okWithVelocity(page);
  await page.clock.resume();
  await expect(page.getByTestId('lss-record-count')).toHaveText('1 records');

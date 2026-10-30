@@ -47,6 +47,8 @@ test('E02 guide: five different galaxies complete the repeat step; repeated Reco
    await expect(page.getByTestId('lss-lab-counts')).toContainText('1 records of 1 galaxies');await closeGuide(page);}
   await page.clock.resume();
  }
- await openGuide(page);await expect(page.getByTestId('lss-lab-counts')).toContainText('5 records of 5 galaxies from 1 fields');// 9 before Front L3 (re-pinned 2026-10-30)await expect(step(page,'repeat')).toHaveAttribute('data-done','true');
+ await openGuide(page);await expect(page.getByTestId('lss-lab-counts')).toContainText('5 records of 5 galaxies from 1 fields');
+ // 9 records before Front L3 (re-pinned 2026-10-30).
+ await expect(step(page,'repeat')).toHaveAttribute('data-done','true');
  await expect(step(page,'repeat')).toContainText('a guide suggestion in this version, not an original requirement');
 });
