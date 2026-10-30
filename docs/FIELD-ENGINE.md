@@ -49,7 +49,10 @@ These rules come from a static reading (`analysis/front-g-gsc/RE-wrap-polar-cons
   - Dec is the pointing ± 0.375°, not clamped to ±90. RA is the pointing ± 0.375/(cos Dec·15) h.
   - The minimum gets +24 h if it is below 0, and the maximum −24 h if it is above 24, each once. A field across 0 h then has
     min > max.
-  - An RA half-width of 12 h or more (about |Dec| ≥ 89.88°) is the typed `polar` (FieldEngineError). There VIREO depends on the
+  - With an RA half-width of 12–24 h the folded interval no longer matches the sky (RA 3 h at Dec 89.9 gives [12.68, 17.32]).
+    VIREO's result is still deterministic, so it is ported as it is.
+  - A folded bound outside 0–24 h (half-width about 24 h or more, |Dec| ≳ 89.94°), or equal bounds, is the typed `polar`
+    (FieldEngineError; G1b review 1 L1). There VIREO depends on the
     x87 cosine near π/2 and on the low dword of its Int64 band key. This replaces the earlier |Dec| ≥ 89° and wrap rejections.
 - **Regions** (0x5978c0):
   - In wrap mode, a region starting below 12 h overlaps when area.max > region.min; any other region overlaps when

@@ -4,7 +4,7 @@
 // record when it lies inside the area and as its 8-byte position otherwise; every variable record and QSO position inside the
 // area; and the GLIMAGES.LST indices inside it (packWithPhotographs). The field engine itself is unchanged and runs on the
 // result. A field across 0 h is read as VIREO does (G1b, §G-RE1: two star reads [min, 24] and [0, max] per band, recorded in
-// that order; coverage RA 0..24 so the whole-source lists cover both sides). An RA half-width of 12 h or more is the typed
+// that order; coverage RA 0..24 so the whole-source lists cover both sides). A folded RA bound outside 0..24 h is the typed
 // 'polar' (§G-RE2); nothing is approximated. Static reading only; no equivalence with the original program is claimed.
 import {decodeFieldPack,FIELD_PACK_LIMITS,FIELD_PACK_SCHEMA,type FieldPack} from '../core/fieldPack';
 import {FIELD_SCAN_BUDGET,FieldEngineError,fieldAreaWraps,fieldSubAreas,freshFieldArea} from '../core/fieldEngine';
@@ -17,7 +17,7 @@ import {VARIABLE_RECORD_OFFSETS} from '../core/variableMerge';
 import {VSTRS_RECORD_BYTES} from '../core/variableStars';
 import {GscTileError,gscBandIndex,tiledBandSource,type GscIndex,type GscTileStore} from './gscTiles';
 
-/** polar: an RA half-width of 12 h or more (§G-RE2); regions: more than 100 regions; budget: more than the visit budget in a
+/** polar: a folded RA bound outside 0..24 h (about |Dec| ≥ 89.94°; §G-RE2, review 1 L1); regions: more than 100 regions; budget: more than the visit budget in a
  * band; band-end: the native search runs past a band's last record (the minimum RA key is above every record), where VIREO
  * reads past EOF and raises an I/O error (Front O RECOVERY-E §4) — nothing to approximate; plan: a read outside the planned
  * tiles (a planning bug, never a skipped record); source: a malformed bundled file. Tile fetch and integrity failures stay
@@ -29,15 +29,19 @@ export type AssemblySources=Readonly<{index:GscIndex;tiles:GscTileStore;variable
 /** The adapter's per-band visit budget, the same as packStars (fieldEngine.ts FIELD_SCAN_BUDGET). */
 export const ASSEMBLED_SCAN_BUDGET=FIELD_SCAN_BUDGET;
 const QSO_RECORD_BYTES=52,QSO_POSITION=18;
-const hex=(bytes:Uint8Array)=>Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
+const HEX=Array.from({length:256},(_,b)=>b.toString(16).padStart(2,'0'));
+const hex=(bytes:Uint8Array)=>{let out='';for(let i=0;i<bytes.length;i++)out+=HEX[bytes[i]];return out;};
 
 /** The fresh area for a pointing, or the typed reason freshFieldArea's guard stands for. */
 export function assembledFieldArea(pointing:Readonly<{ra:number;dec:number}>){
  try{return freshFieldArea(pointing);}// identical arithmetic to every pack consumer
  catch(e){if(e instanceof FieldEngineError)throw new AssembledFieldError(e.code==='polar'?'polar':'input');throw e;}
 }
+/** Yield to the event loop between band reads, every 4096 recorded reads and before the whole-file scans, so the page stays
+ * responsive, and stop there on an abort (G1b review 1 L3). */
+async function pause(signal?:AbortSignal){signal?.throwIfAborted();await new Promise(r=>setTimeout(r,0));signal?.throwIfAborted();}
 export async function assembleFieldPack(pointing:Readonly<{ra:number;dec:number}>,s:AssemblySources,signal?:AbortSignal):Promise<FieldPack>{
- const area=assembledFieldArea(pointing);
+ signal?.throwIfAborted();const area=assembledFieldArea(pointing);
  let order:readonly string[];
  try{order=nativeCompactBandOrder(nativeRegionIds(area));}catch(e){if(e instanceof NativeFieldError)throw new AssembledFieldError('regions');throw e;}
  // Coverage: the area itself, or the whole RA ring of its Dec band for a field across 0 h (FieldPackRect needs min < max).
@@ -48,7 +52,7 @@ export async function assembleFieldPack(pointing:Readonly<{ra:number;dec:number}
   const key=roundNearestEven(sub.minimumRa*1e7),b=gscBandIndex(s.index,name),plan=planGscBandRead(b,key,sub.maximumRa),band=reads.get(name)!;
   // A record is whole when it lies inside this read's (sub-)area, as the published packs' rule for each listed read.
   const within=(ra:number,dec:number)=>ra>=sub.minimumRa&&ra<=sub.maximumRa&&dec>=sub.minimumDec&&dec<=sub.maximumDec;
-  const source=tiledBandSource(b,await s.tiles.tiles(b,plan.tiles,signal));
+  const source=tiledBandSource(b,await s.tiles.tiles(b,plan.tiles,signal));await pause(signal);
   let trace;
   try{trace=traceCompactGscBandRead(source,key,sub.maximumRa,ASSEMBLED_SCAN_BUDGET);}
   catch(e){
@@ -56,7 +60,9 @@ export async function assembleFieldPack(pointing:Readonly<{ra:number;dec:number}
    if(e instanceof GscTileError&&e.code==='missing-tile')throw new AssembledFieldError('plan');
    throw e;
   }
+  let n=0;
   for(const r of [...trace.probes,...trace.visits]){
+   if(++n%4096===0)await pause(signal);// a whole polar band is ~95,000 reads
    if(band.get(r.recordIndex)?.length===54)continue;
    try{
     const p=new DataView(source.readPosition(r.recordIndex).buffer),ra=p.getInt32(0,true)/10_000_000,dec=p.getInt32(4,true)/100_000;
@@ -66,6 +72,7 @@ export async function assembleFieldPack(pointing:Readonly<{ra:number;dec:number}
   if(band.size>FIELD_PACK_LIMITS.readsPerBand)throw new AssembledFieldError('budget');
  }
  const bands=order.map(name=>{const b=gscBandIndex(s.index,name);return {name,recordCount:b.records,sha256:b.sha256,reads:[...reads.get(name)!].sort((x,y)=>x[0]-y[0])};});
+ await pause(signal);
  // Whole-file scans with Double positions and inclusive bounds, as the published packs' offline witnesses.
  if(s.variables.byteLength%VSTRS_RECORD_BYTES||s.qso.byteLength%QSO_RECORD_BYTES)throw new AssembledFieldError('source');
  const vv=new DataView(s.variables.buffer,s.variables.byteOffset,s.variables.byteLength),variables=[];

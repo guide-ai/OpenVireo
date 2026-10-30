@@ -1,9 +1,11 @@
 import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
-import {admitFieldGalaxies,fieldAreaWraps,fieldQsoMatches,fieldSubAreas,FieldEngineError,freshFieldArea,orderedFieldVariables,QSO_LAST_RA_BELOW_12} from './fieldEngine';
+import {admitFieldGalaxies,fieldGuardPositions,fieldAreaWraps,fieldQsoMatches,fieldSubAreas,FieldEngineError,freshFieldArea,orderedFieldVariables,QSO_LAST_RA_BELOW_12} from './fieldEngine';
 import {nativeNonwrappedRegionOverlap,nativeRegionIds,nativeRegionOverlap} from './pinnedNativeField';
 import {nativePhotographInArea} from './lssLists';
 import {GLX_CATALOG} from './glxCatalog';
+import {packCovers,type FieldPack} from './fieldPack';
+import {CATALOG_MAXIMUM_RA} from './catalogMerge';
 
 // Front G G1b (analysis/front-g-gsc/RE-wrap-polar-consumers.md §G-RE1, §G-RE2): fields across 0 h and near the poles, by the
 // recovered rules of 0x53be70, 0x5978c0, 0x597ac8, 0x5987e4/0x59677c, 0x598acc and 0x596b1c.
@@ -21,8 +23,12 @@ describe('area folding (0x53be70)',()=>{
   // field wraps. The Dec bounds pass +90 unclamped.
   const p=freshFieldArea({ra:6,dec:89.7});expect(p.maximumDec).toBeCloseTo(90.075,12);expect(fieldAreaWraps(p)).toBe(false);
   expect(fieldAreaWraps(freshFieldArea({ra:3,dec:89.7}))).toBe(true);
-  for(const dec of [89.881,90,-89.881,-90])expect(()=>freshFieldArea({ra:3,dec})).toThrow(new FieldEngineError('polar'));
-  expect(()=>freshFieldArea({ra:3,dec:89.88})).not.toThrow();
+  // Polar only when a folded bound leaves 0..24 (review 1 L1). At RA 3 h that needs a half-width above 27 h (|Dec| > 89.947°);
+  // half-widths of 12–24 h are ported (the folded interval is VIREO's, not the sky's).
+  for(const dec of [89.95,89.99,90,-89.99,-90])expect(()=>freshFieldArea({ra:3,dec}),String(dec)).toThrow(new FieldEngineError('polar'));
+  const odd=freshFieldArea({ra:3,dec:89.9});// half-width 14.32 h: [12.68, 17.32], not containing RA 3 h
+  expect(odd.minimumRa).toBeCloseTo(12.676,3);expect(odd.maximumRa).toBeCloseTo(17.324,3);expect(fieldAreaWraps(odd)).toBe(false);
+  expect(fieldAreaWraps(freshFieldArea({ra:12,dec:89.93}))).toBe(true);
   for(const p of [{ra:24,dec:0},{ra:-1,dec:0},{ra:1,dec:90.1},{ra:NaN,dec:0}])expect(()=>freshFieldArea(p)).toThrow(new FieldEngineError('input'));
  });
  it('splits a wrapped area into [min, 24] then [0, max] (0x597ac8) and leaves others whole',()=>{
@@ -69,6 +75,21 @@ describe('variables, QSOs, galaxies and photographs of a wrapped field',()=>{
   // Without a stopping record (max at or above the last RA below 12 h) the scan reaches the min..24 side too.
   expect(fieldQsoMatches(e,area(23.99,11.996,0,30))).toEqual([1,2,3]);
   expect(fieldQsoMatches(e,area(0,0.01,0,30))).toEqual([1]);
+ });
+ it('pins the largest stored galaxy RA (53 records above 24 h; review 1 M1)',()=>{
+  const v=new DataView(glx.buffer);let max=0,above=0;for(let i=0;i<GLX_CATALOG.records;i++){const ra=v.getFloat64(i*59,true);max=Math.max(max,ra);if(ra>24)above++;}
+  expect(CATALOG_MAXIMUM_RA).toBe(max);expect(above).toBe(53);
+ });
+ it('keeps the 0 h-side QSOs of a wrapped field in the Front T guard (review 1 M2)',()=>{
+  const e=[{index:1,ra:0.005,dec:20},{index:2,ra:23.995,dec:20},{index:3,ra:5,dec:20}],g=[{ra:23.99,dec:20}];
+  expect(fieldGuardPositions(g,e,a)).toEqual([g[0],e[0]]);
+  const plain=freshFieldArea({ra:5,dec:20});expect(fieldGuardPositions([],e,plain)).toEqual([e[2]]);
+ });
+ it('covers a wrapped area only with a coverage spanning RA 0..24 (review 1 L4)',()=>{
+  const pointing={ra:0.01,dec:20},pack=(c:{minimumRa:number;maximumRa:number})=>({pointings:[pointing],coverage:{...c,minimumDec:19,maximumDec:21}}) as unknown as FieldPack;
+  expect(packCovers(pack({minimumRa:0,maximumRa:24}),pointing,a)).toBe(true);
+  expect(packCovers(pack({minimumRa:0,maximumRa:23.99}),pointing,a)).toBe(false);expect(packCovers(pack({minimumRa:23.9,maximumRa:24}),pointing,a)).toBe(false);
+  const plain=freshFieldArea({ra:5,dec:20});expect(packCovers({...pack({minimumRa:4.9,maximumRa:5.1}),pointings:[{ra:5,dec:20}]} as FieldPack,{ra:5,dec:20},plain)).toBe(true);
  });
  it('reads galaxies in two passes: [0, max] from record 0, then from the RA index entry for min (0x598acc)',()=>{
   const w=area(23.8,0.3,-5,60),r=admitFieldGalaxies(glx,w),v=new DataView(glx.buffer);

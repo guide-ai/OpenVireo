@@ -111,7 +111,8 @@ export function fieldPackFromSnapshot(id:string,snapshot:Snapshot):FieldPack{
   bands:snapshot.bands.map(b=>({name:b.name,recordCount:b.recordCount,sha256:b.sha256??file(`${b.name}.DAT`),reads:b.reads.map(r=>[r.index,r.rawHex])})),variables,qso,photographs});
 }
 /** A listed pointing whose area lies inside the pack coverage (the pack's certificates speak only for its coverage). */
+/** A wrapped area (min > max: [min, 24] and [0, max], Front G G1b) is covered only by a coverage spanning RA 0..24 (review 1 L4). */
 export function packCovers(pack:FieldPack,pointing:Readonly<{ra:number;dec:number}>,area:FieldPackRect):boolean{
- const c=pack.coverage;
- return pack.pointings.some(p=>p.ra===pointing.ra&&p.dec===pointing.dec)&&area.minimumRa>=c.minimumRa&&area.maximumRa<=c.maximumRa&&area.minimumDec>=c.minimumDec&&area.maximumDec<=c.maximumDec;
+ const c=pack.coverage,ra=area.minimumRa>area.maximumRa?c.minimumRa<=0&&c.maximumRa>=24:area.minimumRa>=c.minimumRa&&area.maximumRa<=c.maximumRa;
+ return pack.pointings.some(p=>p.ra===pointing.ra&&p.dec===pointing.dec)&&ra&&area.minimumDec>=c.minimumDec&&area.maximumDec<=c.maximumDec;
 }

@@ -24,14 +24,15 @@ export default function EditModeFieldLayer({editMode,active,mode,pointing,hidden
  const svg=useRef<SVGSVGElement>(null);
  useEffect(()=>{
   if(!editMode||!active||mode!=='telescope')return;
-  let current=true;setState({status:'loading'});setRecord(null);setMarked(null);
+  let current=true;const controller=new AbortController();setState({status:'loading'});setRecord(null);setMarked(null);
   objectXMasked(hidden,pointing).then(async masked=>{
    if(masked){if(current)setState({status:'unavailable',reason:'object-x-hidden'});return;}
-   const r=await findCertifiedPopulation(pointing,frozenObservatoryTime(currentJd));if(!current)return;
+   const r=await findCertifiedPopulation(pointing,frozenObservatoryTime(currentJd),controller.signal);if(!current)return;
    if(r.status==='ready')setState({status:'ready',packId:r.packId,scene:catalogScene(r.population,pointing,r.packId==='gsc-tiles'?'Compact GSC tiles; field built for this pointing':`Field pack ${r.packId}; certified pointing`)});
    else setState('detail' in r?{status:'unavailable',reason:r.reason,detail:r.detail}:{status:'unavailable',reason:r.reason});
   }).catch(()=>{if(current)setState({status:'error'});});
-  return()=>{current=false;};
+  // A pointing or mode change stops a tiled build in progress (G1b review 1 L3).
+  return()=>{current=false;controller.abort();};
  },[editMode,active,mode,hidden?.ra,hidden?.dec,pointing.ra,pointing.dec]);// eslint-disable-line react-hooks/exhaustive-deps
  const shapes=useMemo(()=>state.status==='ready'?{
   stars:state.scene.stars.map((p,i)=>({x:toWeb(p.x),y:toWeb(p.y),r:Math.max(.9,Math.min(4.5,(17-state.scene.records.stars[i].v)*.38)),qso:state.scene.records.stars[i].type===3})),

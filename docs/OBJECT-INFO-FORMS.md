@@ -104,7 +104,7 @@ results (proved in `src/io/assembledFieldPack.test.ts`). The Edit Mode caption n
 Guide Star Catalog").
 
 Typed reasons where no field can be built:
-- `field-polar`: an RA half-width of 12 h or more (|Dec| ≳ 89.88°), where VIREO depends on the x87 cosine and its Int64 band
+- `field-polar`: a folded RA bound outside 0–24 h (|Dec| ≳ 89.94°), where VIREO depends on the x87 cosine and its Int64 band
   key.
 - `field-tiles`: a tile could not be fetched or did not match its recorded size and SHA-256. The detail is the code; nothing is
   changed.

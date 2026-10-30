@@ -64,7 +64,7 @@ describe('certified population (io/fieldInfoPacks.ts) over every bundled pack po
    const r=await findCertifiedPopulation(p);expect(r.status,`${p.ra} ${p.dec}`).toBe('ready');
    if(r.status==='ready'){expect(r.packId).toBe('gsc-tiles');expect(r.population.stars.length).toBeGreaterThan(0);}
   }
-  expect(await findCertifiedPopulation({ra:5,dec:89.9})).toEqual({status:'unavailable',reason:'field-polar'});
+  expect(await findCertifiedPopulation({ra:5,dec:89.99})).toEqual({status:'unavailable',reason:'field-polar'});
   // A tampered tile response: typed, with the GscTileError code; the next request (honest bytes) succeeds again.
   setFieldInfoResources(resources());
   tileFetch=(async()=>new Response(new Uint8Array(27)))as typeof fetch;
@@ -72,6 +72,9 @@ describe('certified population (io/fieldInfoPacks.ts) over every bundled pack po
   finally{tileFetch=diskFetch;}
   setFieldInfoResources(resources());
   expect((await findCertifiedPopulation({ra:7.7,dec:22})).status).toBe('ready');
+  // An abort stops a tiled build (G1b review 1 L3).
+  const c=new AbortController();c.abort();
+  await expect(findCertifiedPopulation({ra:7.9,dec:21},undefined,c.signal)).rejects.toMatchObject({name:'AbortError'});
  },120_000);
 });
 describe('Object X mask radius for the Variable Stars list (closure N2)',()=>{

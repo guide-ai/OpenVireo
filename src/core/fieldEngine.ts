@@ -52,8 +52,9 @@ import {associatePhotograph,drawNativePhotograph,nativeGalaxyName,scaleNativePho
 import type {PhotographRow} from './photographicList';
 
 export class FieldEngineError extends Error{
- /** polar: an RA half-width of 12 h or more (|Dec| ≳ 89.88°), where VIREO's result depends on the x87 cosine and the Int64
-  * low-dword band key (analysis/front-g-gsc/RE-wrap-polar-consumers.md §G-RE2); nothing is approximated there. */
+ /** polar: a folded RA bound outside 0..24 h (an RA half-width of about 24 h or more, |Dec| ≳ 89.94°), or equal bounds. There
+  * VIREO's band key goes negative or past the Int64 range and its result depends on the x87 cosine near π/2
+  * (analysis/front-g-gsc/RE-wrap-polar-consumers.md §G-RE2, G1b review 1 L1); nothing is approximated there. */
  constructor(readonly code:'input'|'evidence'|'polar'){super(`Field engine: ${code}`);this.name='FieldEngineError';}
 }
 export type FieldTelescope=0|1|2;
@@ -148,6 +149,8 @@ export function glxyspLookup(lines:readonly string[],id:string):string|null{cons
 export type FieldOptions=Readonly<{/** GLXYSP.LST rows (review 2 finding 2): a selected galaxy that has an own spectrum there is
  * observed only with that spectrum supplied as librarySpectrum; otherwise the typed spectrum-mapping reason (never the
  * GLXYTMPL.SP fallback). Without this option the caller vouches for the mapping (Hubble targets: recorded per target). */
+ /** Front G (G1b review 1 L3): checked between population stages; an abort throws the signal's reason (AbortError). */
+ signal?:AbortSignal;
  glxyspLines?:readonly string[];variableDispatch?:FieldVariableDispatch;photographs?:FieldPhotographs;spectralInterval?:FieldSpectralInterval;starObservation?:FieldStarObservation;continuation?:FieldContinuationMode;qso?:FieldQsoMode;qsoCatalog?:FieldQsoCatalog;librarySpectrum?:FieldLibrarySpectrum;variables?:FieldVariableMode;qsoObservation?:FieldQsoObservation;
  /** Front T: with variableDispatch 'recovered' and no `variables` option, the TRUE branch of 0x51ec48 runs (hit modifies the
   * resolved star, miss inserts at the RA cursor). 'gate' keeps the earlier variable-merge gate; 'outside-view' the RS Boo rule. */
@@ -197,18 +200,19 @@ export type FieldResult=Readonly<{
 const FRAME=Object.freeze({width:936,height:936,fieldDegrees:.75,anchor:468,viewport:312});
 /** Fresh native area for a pointing, as the telescope load 0x53be70 builds it (identical arithmetic to the pinned builders):
  * Dec ± 0.375° (not clamped to ±90), RA ± 0.375/(cos Dec·15) h, with min += 24 when below 0 and max −= 24 when above 24, each
- * once. A field across 0 h is then min > max (Front G, analysis/front-g-gsc/RE-wrap-polar-consumers.md §G-RE1). An RA
- * half-width of 12 h or more is the typed 'polar' (§G-RE2). */
+ * once. A field across 0 h is then min > max (Front G, analysis/front-g-gsc/RE-wrap-polar-consumers.md §G-RE1). With an RA
+ * half-width of 12–24 h the folded interval no longer matches the sky, but VIREO's result is still deterministic and is ported
+ * as it is. Only a folded bound outside 0..24 (or equal bounds, where 0x5978c0 and 0x597ac8 disagree) is the typed 'polar'. */
 export function freshFieldArea(pointing:Readonly<{ra:number;dec:number}>):NativeCatalogRegion{
  if(!pointing||!Number.isFinite(pointing.ra)||!Number.isFinite(pointing.dec)||pointing.ra<0||pointing.ra>=24||Math.abs(pointing.dec)>90)throw new FieldEngineError('input');
  const h=.375,hr=h/(Math.cos(pointing.dec*Math.PI/180)*15);
- if(!(hr<12))throw new FieldEngineError('polar');
  let minimumRa=pointing.ra-hr,maximumRa=pointing.ra+hr;
  if(minimumRa<0)minimumRa+=24;
  if(maximumRa>24)maximumRa-=24;
+ if(!(Number.isFinite(hr)&&hr>0&&minimumRa>=0&&maximumRa<=24&&minimumRa!==maximumRa))throw new FieldEngineError('polar');
  return Object.freeze({minimumRa,maximumRa,minimumDec:pointing.dec-h,maximumDec:pointing.dec+h,limitingMagnitude:20});
 }
-/** A field across 0 h (min > max). With the polar guard, min === max cannot occur. */
+/** A field across 0 h (min > max). The polar guard excludes min === max. */
 export const fieldAreaWraps=(a:NativeCatalogRegion)=>a.minimumRa>a.maximumRa;
 /** 0x597ac8: a wrapped area is read as [min, 24.0] and then [0.0, max] (stars and variables), each nonwrapped. */
 export function fieldSubAreas(a:NativeCatalogRegion):readonly NativeCatalogRegion[]{
@@ -217,7 +221,8 @@ export function fieldSubAreas(a:NativeCatalogRegion):readonly NativeCatalogRegio
 /** The adapter's per-band visit budget (VIREO has none). 100,000 covers a whole polar band (S8230: 95,441 records). */
 export const FIELD_SCAN_BUDGET=100_000;
 const inside=(p:Readonly<{ra:number;dec:number}>,a:NativeCatalogRegion)=>p.ra>=a.minimumRa&&p.ra<=a.maximumRa&&p.dec>=a.minimumDec&&p.dec<=a.maximumDec;
-const hexBytes=(hex:string)=>Uint8Array.from(hex.match(/../g)!,x=>parseInt(x,16));
+/** Pack hex is validated lowercase (decodeFieldPack); a direct loop is several times faster than a regex on ~95,000-read polar bands. */
+const hexBytes=(hex:string)=>{const out=new Uint8Array(hex.length>>1);for(let i=0;i<out.length;i++)out[i]=parseInt(hex.substr(i*2,2),16);return out;};
 /** Stars of one area from the pack: band order, recorded seek/read trace and admission. A read the trace needs but the pack lacks
  * is an evidence error (the pack is incomplete for this pointing), never a skipped record. */
 function packStars(pack:FieldPack,whole:NativeCatalogRegion,order:readonly string[]):NativeFieldStar[]{
@@ -291,6 +296,12 @@ export function fieldQsoMatches(entries:readonly Readonly<{index:number;ra:numbe
  if(!fieldAreaWraps(area))return entries.filter(p=>inside(p,area)).map(p=>p.index);
  const dec=(p:Readonly<{dec:number}>)=>p.dec>=area.minimumDec&&p.dec<=area.maximumDec,stops=QSO_LAST_RA_BELOW_12>area.maximumRa;
  return entries.filter(p=>dec(p)&&(p.ra<12?p.ra<=area.maximumRa:!stops&&p.ra>=area.minimumRa)).map(p=>p.index);
+}
+/** Front T guard positions: the admitted galaxies (before cleanup) and the QSO positions the loader admits for this area — the
+ * same matches as the QSO stage (fieldQsoMatches), so a field across 0 h keeps its 0 h-side QSOs (G1b review 1 M2). */
+export function fieldGuardPositions(galaxies:readonly Readonly<{ra:number;dec:number}>[],qsoEntries:readonly Readonly<{index:number;ra:number;dec:number}>[],area:NativeCatalogRegion):Readonly<{ra:number;dec:number}>[]{
+ const matched=new Set(fieldQsoMatches(qsoEntries,area));
+ return [...galaxies,...qsoEntries.filter(p=>matched.has(p.index))];
 }
 /** Galaxy start for the index walk of 0x598acc: CLEA_GLX.NDX entry h is the first record with RA ≥ h (derived from the RA-ordered
  * CLEA_GLX.DAT; the file itself is not published), and the walk from the tail stops at the first key ≤ min. */
@@ -367,11 +378,12 @@ export function cleanFieldGalaxies(stars:readonly FieldStar[],galaxies:readonly 
 }
 export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{ra:number;dec:number}>,options:FieldOptions={}):Readonly<{population:FieldPopulation|null;reasons:FieldUnavailableReason[]}>{
  const mode=options.qso??'gate';if(mode!=='gate'&&mode!=='merge')throw new FieldEngineError('input');
+ const checkpoint=()=>options.signal?.throwIfAborted();checkpoint();
  const area=freshFieldArea(pointing),reasons:FieldUnavailableReason[]=[];
  if(!packCovers(pack,pointing,area))return {population:null,reasons:['outside-pack']};
  const qsoCatalog=mode==='merge'?checkedQsoCatalog(pack,options):null;
  const regionIds=nativeRegionIds(area),bandOrder=nativeCompactBandOrder(regionIds);
- let stars:FieldStar[]=packStars(pack,area,bandOrder);const initialStarIds=Object.freeze(stars.map(s=>s.id));
+ let stars:FieldStar[]=packStars(pack,area,bandOrder);checkpoint();const initialStarIds=Object.freeze(stars.map(s=>s.id));
  const qsoMatches=fieldQsoMatches(pack.qso.entries,area),photographMatches=pack.photographs.entries.find(e=>pack.pointings[e.pointing].ra===pointing.ra&&pack.pointings[e.pointing].dec===pointing.dec)?.indices??[];
  if(qsoMatches.length&&mode==='gate')reasons.push('qso-merge');
  if(photographMatches.length&&!options.photographs)reasons.push('photographic-image');
@@ -412,6 +424,7 @@ export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Read
    }
   }catch(e){if(e instanceof VariableMergeError||e instanceof CatalogMergeError)reasons.push('variable-merge');else throw e;}
  }
+ checkpoint();
  let qsoStage:FieldPopulation['qsoStage'];
  const variableGate=reasons.some(r=>r==='variable-merge'||r==='variable-spectrum-indeterminate'||r==='variable-model-fault');
  if(qsoCatalog&&!variableGate){
@@ -422,7 +435,8 @@ export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Read
    catch(e){if(e instanceof QsoMergeError){reasons.push('merge-boundary');}else throw e;}
   }else qsoStage=Object.freeze({recordsRead:load.recordsRead,witnesses:Object.freeze([])});
  }
- const {admission,galaxies:admitted}=admitFieldGalaxies(glx,area);let galaxies=admitted;
+ checkpoint();
+ const {admission,galaxies:admitted}=admitFieldGalaxies(glx,area);let galaxies=admitted;checkpoint();
  let photographAssociations:FieldPhotographAssociation[]|undefined;
  if(options.photographs){
   // 0x598ed2..0x599128: at load, before the cursor insert; the population order does not change.
@@ -440,7 +454,7 @@ export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Read
  if(galaxies.some(g=>!axesSupported(g)))reasons.push('axis-fallback');
  const mergeWitnesses:FieldMergeWitness[]=[];
  // Front T guard: a galaxy (before cleanup) or a QSO position near a TRUE star.
- const guardPositions:Readonly<{ra:number;dec:number}>[]=[...admitted,...pack.qso.entries.filter(p=>inside(p,area))];
+ const guardPositions=fieldGuardPositions(admitted,pack.qso.entries,area);
  // Review 1 N1: entries are kept when a later QSO replacement or galaxy cleanup deletes their star. Such a star lies within the
  // merge guard of that QSO or galaxy, so with unavailable values it still gates the field (conservative: whether a time-dependent
  // miss star exists can change the cleanup's runner pruning); fieldStarVariable returns null for a star no longer present.

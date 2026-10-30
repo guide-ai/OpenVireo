@@ -27,7 +27,7 @@ export const FIELD_INFO_MESSAGES=Object.freeze({
  startNewAdaptation:'Web adaptation: this site does not track whether the hot list was changed, so it asks whenever the current list has rows; Yes downloads the current list as an .HTL file before it is replaced.',
  busy:'A hot-list file is being read; try again when it finishes.',
  unavailable:Object.freeze({
-  'field-polar':'Not available this close to the celestial pole: the field reaches 12 hours of right ascension or more, where VIREO’s result depends on details of the original arithmetic that this site cannot reproduce.',
+  'field-polar':'Not available this close to the celestial pole (within about 0.06°): there VIREO’s field limits fall outside 0–24 hours of right ascension and its result depends on details of the original arithmetic that this site cannot reproduce.',
   'field-tiles':'The star catalogue for this field could not be loaded or did not match its recorded size and SHA-256 (reason: {reason}). Try again; nothing was changed.',
   'field-unreadable':'Not available: the original catalogue read cannot be reproduced for this field (reason: {reason}).',
   'finder-catalog-unavailable':'Not available in the Finder view: VIREO picks from its finder star catalogue, which is not on this site. Switch to the Telescope view.',

@@ -1,3 +1,4 @@
+import { CATALOG_MAXIMUM_RA } from './catalogMerge';
 import { roundNearestEven } from './numericPolicy';
 import { hourDifference, type Pointing } from './sky';
 
@@ -35,7 +36,7 @@ export function createNativeSelectionScene(stars: readonly CatalogSkyPosition[],
   if (!Number.isFinite(verticalPixelsPerDegree) || verticalPixelsPerDegree<=0 || !Number.isFinite(width*15/fieldDegrees)) throw new ObjectSelectionError('overflow');
   if (stars.length>200000 || galaxies.length>200000) throw new ObjectSelectionError('scene');
   function position(row: CatalogSkyPosition): ProjectedCatalogObject {
-    if (!row || typeof row.id!=='string' || !row.id || row.id.length>200 || !Number.isFinite(row.ra) || row.ra<0 || row.ra>24 || !Number.isFinite(row.dec) || Math.abs(row.dec)>90) throw new ObjectSelectionError('scene');
+    if (!row || typeof row.id!=='string' || !row.id || row.id.length>200 || !Number.isFinite(row.ra) || row.ra<0 || row.ra>CATALOG_MAXIMUM_RA || !Number.isFinite(row.dec) || Math.abs(row.dec)>90) throw new ObjectSelectionError('scene');
     const x=width/2+hourDifference(center.ra,row.ra)*Math.cos(row.dec*Math.PI/180)*width*15/fieldDegrees;
     const y=height/2+(center.dec-row.dec)*height/fieldDegrees;
     if (!Number.isFinite(x) || !Number.isFinite(y)) throw new ObjectSelectionError('overflow');

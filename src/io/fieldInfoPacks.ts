@@ -13,7 +13,7 @@ import {GLIMAGES_LST,packWithPhotographs,parseGlimagesPositions} from '../core/l
 import {nativePhotographRows} from '../core/photographicList';
 import type {LssFieldNumber} from '../core/lssFields';
 
-/** field-polar: an RA half-width of 12 h or more (|Dec| ≳ 89.88°, §G-RE2); field-tiles: a compact GSC tile could not be
+/** field-polar: a folded RA bound outside 0..24 h (|Dec| ≳ 89.94°, §G-RE2, G1b review 1 L1); field-tiles: a compact GSC tile could not be
  * fetched or did not match its recorded size and SHA-256 (detail: the GscTileError code); field-unreadable: the native read
  * cannot be reproduced for this pointing (detail: the AssembledFieldError code, e.g. band-end). */
 export type CertifiedPopulation=Readonly<{status:'ready';packId:string;population:FieldPopulation;reasons:readonly FieldUnavailableReason[]}|{status:'unavailable';reason:'field-polar'}|{status:'unavailable';reason:'field-tiles'|'field-unreadable';detail:string}|{status:'unavailable';reason:'population';detail:FieldUnavailableReason}>;
@@ -24,7 +24,7 @@ export const POPULATION_BLOCKING:readonly FieldUnavailableReason[]=Object.freeze
 export type FieldInfoResources=Readonly<{
  snapshot:(id:SnapshotId)=>Promise<unknown>;engine:(id:'coma'|'bootes')=>Promise<unknown>;lss:(field:LssFieldNumber)=>Promise<FieldPack>;
  glx:()=>Promise<Uint8Array>;qso:()=>Promise<Readonly<{bytes:Uint8Array;sha256:string}>>;glimages:()=>Promise<Uint8Array>;
- /** Front G: a pack for any pointing from the compact GSC tiles. */assembled:(pointing:Readonly<{ra:number;dec:number}>)=>Promise<FieldPack>;
+ /** Front G: a pack for any pointing from the compact GSC tiles. */assembled:(pointing:Readonly<{ra:number;dec:number}>,signal?:AbortSignal)=>Promise<FieldPack>;
 }>;
 export type SnapshotId='36773'|'36747'|'54876'|'pegasus';
 /** Pointings of the pinned snapshot fields (their domain pointing), checked against the files when loaded. */
@@ -39,9 +39,9 @@ function browserResources():FieldInfoResources{
   glx:async()=>(await import('./bundledGlxCatalog')).fetchBundledGlxCatalog(fetch,signal),
   qso:async()=>(await import('./bundledQsoCatalog')).fetchBundledQsoCatalog(fetch,signal),
   glimages:async()=>(await (await import('./bundledHotList')).fetchBundledHotList(fetch,signal,GLIMAGES_LST)).bytes,
-  assembled:async pointing=>{
+  assembled:async(pointing,signal)=>{
    const [{assembleFieldPack},sources]=await Promise.all([import('./assembledFieldPack'),once('assembly',assemblySources)]);
-   return assembleFieldPack(pointing,sources);
+   return assembleFieldPack(pointing,sources,signal);
   },
  };
 }
@@ -80,12 +80,13 @@ async function candidatePacks(pointing:Readonly<{ra:number;dec:number}>):Promise
  * area needs them; variables use the recovered dispatch (as the exercises do). */
 /** variableTime (Front T review 1 L5): the observatory-clock JD frozen when the caller builds the field; without it TRUE-dispatch
  * variable values stay typed (variable-values-unavailable in Catalog Object and the Star Data List). */
-export async function findCertifiedPopulation(pointing:Readonly<{ra:number;dec:number}>,variableTime?:FieldVariableTime):Promise<CertifiedPopulation>{
+/** signal (G1b review 1 L3): stops a tiled build between band reads and population stages; the caller gets an AbortError. */
+export async function findCertifiedPopulation(pointing:Readonly<{ra:number;dec:number}>,variableTime?:FieldVariableTime,signal?:AbortSignal):Promise<CertifiedPopulation>{
  let area;try{area=freshFieldArea(pointing);}catch(e){if(e instanceof FieldEngineError&&e.code==='polar')return Object.freeze({status:'unavailable',reason:'field-polar'});throw e;}
  const packs=(await candidatePacks(pointing)).filter(p=>packCovers(p,pointing,area));
  const r=res();let pack=packs[0];
  if(!pack){
-  try{pack=await r.assembled(pointing);}
+  try{pack=await r.assembled(pointing,signal);}
   catch(e){
    const {GscTileError}=await import('./gscTiles'),{AssembledFieldError}=await import('./assembledFieldPack');
    if(e instanceof GscTileError)return Object.freeze({status:'unavailable',reason:'field-tiles',detail:e.code});
@@ -94,10 +95,12 @@ export async function findCertifiedPopulation(pointing:Readonly<{ra:number;dec:n
   }
  }
  const glx=await once('glx',r.glx);
- const options:{-readonly [K in keyof FieldOptions]:FieldOptions[K]}={variableDispatch:'recovered',...(variableTime?{variableTime}:{})};
- let built=buildFieldPopulation(pack,glx,pointing,options);
- if(built.reasons.includes('qso-merge')){options.qso='merge';options.qsoCatalog=await once('qso',r.qso);built=buildFieldPopulation(pack,glx,pointing,options);}
- if(built.reasons.includes('photographic-image')){options.photographs={rows:nativePhotographRows(await once('glimages',r.glimages)),bitmaps:new Map()};built=buildFieldPopulation(pack,glx,pointing,options);}
+ const options:{-readonly [K in keyof FieldOptions]:FieldOptions[K]}={variableDispatch:'recovered',...(variableTime?{variableTime}:{}),...(signal?{signal}:{})};
+ // Each population build is one synchronous step (worst polar field ≈ 0.4 s); yield before it so the page can repaint.
+ const step=async()=>{signal?.throwIfAborted();await new Promise(resolve=>setTimeout(resolve,0));signal?.throwIfAborted();};
+ await step();let built=buildFieldPopulation(pack,glx,pointing,options);
+ if(built.reasons.includes('qso-merge')){options.qso='merge';options.qsoCatalog=await once('qso',r.qso);await step();built=buildFieldPopulation(pack,glx,pointing,options);}
+ if(built.reasons.includes('photographic-image')){options.photographs={rows:nativePhotographRows(await once('glimages',r.glimages)),bitmaps:new Map()};await step();built=buildFieldPopulation(pack,glx,pointing,options);}
  const blocking=built.reasons.find(x=>POPULATION_BLOCKING.includes(x));
  if(blocking||!built.population)return Object.freeze({status:'unavailable',reason:'population',detail:blocking??'outside-pack'});
  return Object.freeze({status:'ready',packId:pack.id,population:built.population,reasons:Object.freeze([...built.reasons])});

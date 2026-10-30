@@ -95,8 +95,9 @@ unchanged:
 - the GLIMAGES.LST indices inside the area (`packWithPhotographs`).
 
 `AssembledFieldError` types what is not yet supported or cannot be read:
-- `polar`: an RA half-width of 12 h or more, about \|Dec\| ≥ 89.88° (G-RE2). There VIREO's result depends on the x87 cosine
-  near π/2 and on the low dword of its Int64 band key.
+- `polar`: a folded RA bound outside 0–24 h, which needs an RA half-width of about 24 h or more (\|Dec\| ≳ 89.94°; G-RE2,
+  G1b review 1 L1). Beyond that bound VIREO's result depends on the x87 cosine near π/2 and on the low dword of its Int64 band
+  key. Half-widths of 12–24 h are ported as VIREO computes them.
 - A field across RA 0 h/24 h is read as VIREO reads it (G1b): two reads per band, [min, 24] then [0, max]. The pack records
   both traces, and its coverage is the whole RA ring of its Dec band.
 - `input`: an invalid pointing (not finite, RA outside 0–24 h, or |Dec| > 90°).
@@ -104,7 +105,8 @@ unchanged:
 - `budget`: more than 100,000 visits in one band, the same limit the field engine applies (`FIELD_SCAN_BUDGET`). A whole polar
   band fits (S8230: 95,441 records), so this no longer occurs for any valid pointing.
 - `band-end`: the native search runs past a band's last record because the minimum RA key is above every record. VIREO reads
-  past EOF there and raises an I/O error.
+  past EOF there and raises an I/O error. It happens at ordinary pointings too: at (0.59788 h, −87.604°) the field wraps, and
+  its [min, 24] key is above S8230's last record (review 1 L2; tested).
 - `plan`: a read outside the planned tiles. This is a planning bug, never a skipped record.
 - `source`: a malformed bundled file.
 
@@ -131,6 +133,22 @@ Nothing is approximated.
 | RA 1.5, Dec +89.88 (N8230) | 74,400 | 368 ms | +31 MB | 362 ms | 490 ms |
 | RA 15.5, Dec −88.99 | 14,605 | 100 ms | +5 MB | 63 ms | 188 ms |
 | RA 12, Dec 20 (ordinary) | 965 | 18 ms | +1 MB | 11 ms | 74 ms |
+
+**Responsiveness and abort (G1b review 1 L3).**
+- The assembler yields to the event loop between band reads, every 4,096 recorded reads and before the whole-file scans. It
+  checks the AbortSignal at each of those points.
+- `buildFieldPopulation` checks `options.signal` between its stages.
+- `findCertifiedPopulation` takes a signal and yields before each population build. The Edit Mode field layer aborts a build
+  when the pointing or the view changes.
+- Measured under a load average of about 17, after replacing the regex hex codecs with table and loop versions:
+
+| Pointing | Longest synchronous assembler step | Population build (one synchronous step) |
+|---|---|---|
+| Dec −89.88 (whole S8230) | 133 ms | 384 ms |
+| Dec +89.93 | 66 ms | 260 ms |
+| Ordinary field | 18 ms | 21 ms |
+
+No Worker is used. The longest blocking step is the population build of a field within about 0.1° of a pole.
 
 **Behaviour:** G1 does not change any route yet. The published bounded packs stay the certified fast path. Opening other
 pointings is phased in from G2 on (analysis/front-plans/front-g-gsc.md §6, §8).
