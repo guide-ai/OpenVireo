@@ -3355,6 +3355,8 @@ export interface MessageParameters {
   "hubbleHtl.reason.spectrum-continuation": never;
   "galaxyExposure.catalogueReference": "value" | "workbook";
   "galaxyExposure.continuationAdaptation": never;
+  "session.saveCodeError": never;
+  "session.restoreCodeError": never;
   "session.restoreResourcesError": never;
   "hubblePoint.telescopeBound": "id" | "telescope" | "telescopes";
   "galaxyExposure.engineInvalid": never;

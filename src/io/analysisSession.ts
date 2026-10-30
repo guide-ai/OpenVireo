@@ -439,6 +439,10 @@ async function portable(session:AnalysisSession,wrapped:Wrapped={}):Promise<unkn
     adjustment:{control:session.control,stepInput:session.stepInput,reference:session.reference,wide:session.wide,object:session.object},
     measurements:session.rows.map(({id,object,file,sha256,control,reference,zFloat32Hex,origin})=>({id,object,file,sha256,control,reference,zFloat32Hex,...(origin?{origin}:{})}))};
 }
+/** Front D3 review M1: the modules that Save itself imports lazily (portable() and the re-read of what it wrote). The
+ * analyzer loads them with this module once the page is idle, so an open tab that can no longer fetch code (offline, or a
+ * newer deployment) still saves. Restore-only modules are not included. */
+export const preloadSaveModules=()=>Promise.all([import('./observingWorkspace'),import('./photometerSession'),import('./clusterSelection'),import('./objectXSpectra'),import('./hubbleEngineTargets')]);
 export async function serializeAnalysisSession(session:AnalysisSession):Promise<string> {
   const result=JSON.stringify(await portable(session),(_key,value)=>encodeSessionNumber(value),2)+'\n';
   if(!projectTextFits(result,SESSION_PAYLOAD_BYTES))fail('size');

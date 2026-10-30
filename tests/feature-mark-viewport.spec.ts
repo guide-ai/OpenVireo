@@ -17,6 +17,9 @@ test('zoomedmanualmarkscompletecalculationcancelrecordandrestorationwithoutpersi
 });
 
 test('everyviewactioncancelspendingpointercoordinatesandkeyboardcannotapplyastaleoldwindowpreview',async({page})=>{
+ // Five pointer passes, each followed by a save, plus the keyboard checks: about 13 s on an idle machine but over the default
+ // 30 s at a high load average (it failed that way on main). 90 s gives load headroom without hiding a hang.
+ test.setTimeout(90_000);
  await open(page);await numericRegion(page);await button(page,'Mark center').click();await button(page,'Zoom in ×2').click();const before=await save(page);
  for(const name of['Zoom in ×2','Pan to longer wavelengths','Pan to shorter wavelengths','Zoom out ÷2','Reset wavelength window']){
   await button(page,'Mark center').click();await hold(page,4150,.8);await button(page,name).evaluate(n=>(n as HTMLButtonElement).click());await expect(page.locator('#feature-cursor-readout')).toContainText('No cursor preview');await page.mouse.up();await page.keyboard.press('Enter');expect(await save(page)).toEqual(before);if(await button(page,'Reset wavelength window').isEnabled())await button(page,'Reset wavelength window').click();await button(page,'Zoom in ×2').click();

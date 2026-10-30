@@ -25,10 +25,19 @@ import {EMPTY_HUBBLE,type HubbleWorkspace} from './core/hubbleAnalysis';
 import {memo,useEffect,useImperativeHandle,useMemo,useRef,useState,type ChangeEvent,type Ref} from 'react';
 import { changeFactor, configureStep, createMeasurement, currentZ, INITIAL_CONTROL, MAX_FILE_BYTES, measurementCsv, moveControl, parseLines, parseSpectrum, rebase, shiftedWavelength, type Measurement, type Sample } from './core/spectrum';
 import { readImportedSpectrum } from './io/spectrumFiles';
-import type { SessionObservation, ObservatorySession } from './io/analysisSession'
-import { AnalysisSessionError, MAX_SESSION_ROWS } from './io/analysisSessionLimits'
-// Front D3: the session code (and the field data its validators need) loads at the first await of Save or Restore.
-const sessionModule=()=>import('./io/analysisSession');;
+import type { SessionObservation, ObservatorySession } from './io/analysisSession';
+import { AnalysisSessionError, MAX_SESSION_ROWS } from './io/analysisSessionLimits';
+/** Front D3: the session code (and the field data its validators need) is a separate chunk. It is preloaded once the page is
+ * idle together with the modules Save imports lazily (review M1), so a tab that later goes offline or outlives a deployment
+ * still saves; Save and Restore await the same promise. A failed load is forgotten (the next Save or Restore tries again) and reported as a loading problem (review L1). */
+class SessionCodeLoadError extends Error {}
+let sessionLoad:Promise<typeof import('./io/analysisSession')>|null=null;
+const sessionModule=()=>sessionLoad??=import('./io/analysisSession').catch(()=>{sessionLoad=null;throw new SessionCodeLoadError();});
+function preloadSessionWhenIdle():()=>void{
+  const run=()=>{void sessionModule().then(m=>m.preloadSaveModules()).catch(()=>{});};
+  if(typeof window.requestIdleCallback==='function'){const id=window.requestIdleCallback(run,{timeout:10_000});return ()=>window.cancelIdleCallback(id);}
+  const id=window.setTimeout(run,2_000);return ()=>window.clearTimeout(id);
+}
 import type {LssInvestigation} from './io/lssInvestigation';
 import {LssSessionError} from './io/lssSessionError';
 import type {ObjectXInvestigation} from './io/objectXInvestigation';
@@ -96,6 +105,7 @@ function SpectrumInstrument({onPrepareObjectX,onRestoreObjectX,onPrepareLss,onRe
   const [acquisitions,setAcquisitions]=useState<readonly AcquisitionObservation[]>([]);
   useEffect(()=>onArchivesChange?.(acquisitions),[acquisitions,onArchivesChange]);
   useEffect(()=>onSessionBusy?.(busy),[busy,onSessionBusy]);
+  useEffect(preloadSessionWhenIdle,[]);
   const isStar=observation?.kind==='catalog-star-acquisition',isGalaxy=observation?.kind==='catalog-galaxy-acquisition',isAcquired=!!observation?.kind;
   useEffect(()=>onKindChange?.(isAcquired),[isAcquired,onKindChange]);
   function acceptAcquisition(packet:AcquisitionObservation){
@@ -204,7 +214,7 @@ function SpectrumInstrument({onPrepareObjectX,onRestoreObjectX,onPrepareLss,onRe
       const saved=await serializeAnalysisSession({...(objectX?{objectX}:{}),...(lss?{lss}:{}),...(radio.kind==='ready'?{radio:{snapshot:radio.snapshot,prepared:null}}:{}),...(motion?{motion}:{}),...(observatory?{observatory}:{}),...(clusterSelection?{clusterSelection}:{}),...(clusterComparison?{clusterComparison}:{}),...(clusterDatabase?{clusterDatabase}:{}),...(optical?{optical}:{}),...(editing?{editing}:{}),...(observing?{observing}:{}),...(photometry?{photometry}:{}),observation,control,stepInput,reference,wide,object,rows,hubble,...((classification=>classificationWorkspaceUsed(classification)?{classification}:{})(onPrepareClassification?.()??EMPTY_CLASSIFICATION_WORKSPACE)),...(acquisitions.length?{acquisitions}:{})});
       if(ticket!==generation.current)return false;
       download(saved,'openvireo-session.json','application/json;charset=utf-8');if(radio.kind==='ready')radio.onSaved();setNotice(t('session.saved'));return true;
-    } catch(e) {if(ticket===generation.current)setError(e instanceof LssSessionError?t('lss.saveError'):e instanceof ObjectXSessionError?OBJECT_X_SAVE_ERROR:t('session.exportError'));return false;}
+    } catch(e) {if(ticket===generation.current)setError(e instanceof SessionCodeLoadError?t('session.saveCodeError'):e instanceof LssSessionError?t('lss.saveError'):e instanceof ObjectXSessionError?OBJECT_X_SAVE_ERROR:t('session.exportError'));return false;}
     finally {if(ticket===generation.current)setBusy(false);}
   }
   async function importSession(event:ChangeEvent<HTMLInputElement>) {
@@ -250,7 +260,7 @@ function SpectrumInstrument({onPrepareObjectX,onRestoreObjectX,onPrepareLss,onRe
       setAcquisitions(saved.acquisitions??[]);setObservation(saved.observation);setControl(saved.control);setStepInput(saved.stepInput);setReference(saved.reference);
       setObject(saved.object);setRows(saved.rows);setHubble(saved.hubble);setWide(saved.wide);nextId.current=(saved.rows.at(-1)?.id??0)+1;
       setNotice(t('session.restored'));return true;
-    } catch(e) {if(ticket===generation.current){setNotice('');setError(t(e instanceof AnalysisSessionError&&e.code==='resources'?'session.restoreResourcesError':'session.restoreError'));}return false;}
+    } catch(e) {if(ticket===generation.current){setNotice('');setError(t(e instanceof SessionCodeLoadError?'session.restoreCodeError':e instanceof AnalysisSessionError&&e.code==='resources'?'session.restoreResourcesError':'session.restoreError'));}return false;}
     finally {if(ticket===generation.current)setBusy(false);}
   }
   function cancelSessionOperation(){generation.current++;setBusy(false);setError('');setNotice(t('classLink.cancelled'));}
