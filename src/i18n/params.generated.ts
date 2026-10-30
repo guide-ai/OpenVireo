@@ -3278,7 +3278,6 @@ export interface MessageParameters {
   "multispec.fieldLoading": never;
   "multispec.fieldError": never;
   "multispec.retry": never;
-  "multispec.fieldNone": never;
   "multispec.fieldReasons": "reasons";
   "multispec.fieldNeutral": never;
   "multispec.fieldLabel": never;
