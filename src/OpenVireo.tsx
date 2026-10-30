@@ -308,9 +308,10 @@ export default function OpenVireo(){
   function releaseSpectra(){const c=liveControllers.current;for(const item of [c.sky,c.sky09,c.sky4m,c.star,c.star09,c.star4m,...Object.values(c.galaxies),...Object.values(c.galaxies09),...Object.values(c.galaxies4m),...Object.values(c.cachedGalaxies),...Object.values(c.pegasusGalaxies),...Object.values(c.extendedGalaxies)])item?.snapshot();}
   function pauseObservationClock(){releaseSpectra();observatoryClock.pause();}
   function toggleObservationTracking(){releaseSpectra();observatoryClock.toggle(siteClock.utc,pointing);}
-  function prepareTrackedField(next:Pointing){point(next);observatoryClock.prepareTracked(siteClock.utc,next);}
+  // An instrument Activate jump (photometer, sky/star/galaxy exposure) is not a pointing the student chose (G3 review 1 M1).
+  function prepareTrackedField(next:Pointing){point(next);observatoryClock.prepareTracked(siteClock.utc,next);setBenchPointing(next);}
   // The photometer prepares its own verified field like the other instruments; the selected navigation object is unchanged.
-  function preparePhotometerField(next:Pointing){setOpen(true);changeFieldMode('telescope');prepareTrackedField(next);setBenchPointing(next);}
+  function preparePhotometerField(next:Pointing){setOpen(true);changeFieldMode('telescope');prepareTrackedField(next);}
   function beginSpectralClock(){return observatoryClock.start(siteClock.utc,pointing);}
   function applyOptical(next=optical){if(projectBusy)return;const result=applyOpticalTelescope(next);if(!result.changed)return;prepareObserving();preparePhotometry();setOptical(result.state);if(open)cueDomeSound();/* C5W closure L1: 0x58b528 closes an open dome through DomeSw1DownClick (0x58b741) */setOpen(false);setError('');setNotice(t('optical.applied',{name:opticalProfile(result.state.selectedIndex).name}));}
   const [sharedEditing,setSharedEditing]=useState<SharedEditingWorkspace>(()=>({preparationSeedText:'1',photometry:defaultPhotometryDraft()}));

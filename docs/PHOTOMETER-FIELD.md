@@ -96,7 +96,7 @@ in VIREO. Static evidence is in `analysis/front-g-gsc/RE-photometer-start.md`.
 - **Activate keeps the pointing (G3 review 1 M1).** VIREO's FormActivate (0x4ff8b0) never moves the telescope: it selects the
   nearest object where the telescope points (0x53cf94 → 0x59a0fc).
   - When the student pointed the telescope themself (the App's `studentPointed`: a pointing that is neither the initial one
-    nor the bench's own prepared field), Activate keeps it and reads the field there from the tiles.
+    nor an instrument Activate jump, such as the bench's own prepared field or a sky/star/galaxy exposure field), Activate keeps it and reads the field there from the tiles.
   - At an admitted PLEIADES.HTL position, or from the initial pointing, Activate keeps the earlier E04 behaviour: it selects
     that target or moves to the bench's known Pleiades field (a web orchestration).
   - **Use the telescope pointing** reads the field again after the telescope moved; before Activate it activates here.

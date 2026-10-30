@@ -7,7 +7,7 @@ import {parsePhotometerSession,prepareSessionFields,serializePhotometerSession} 
 import {createPhotometer,photometerEvent,skyReplaceAsked,PhotometerError,type PhotometerState,type PhotometerEvent} from '../core/photometer';
 import {buildPhotometerTargetField,clearTiledPhotometerFields,isTiledPhotometerTarget,registerTiledPhotometerField,tiledPhotometerPointing,MAX_TILED_PHOTOMETER_FIELDS} from '../core/photometerField';
 import {PLEIADES_ADMITTED_ROWS} from '../core/pleiadesHotList';
-import {pleiadesSkyContext} from '../core/pleiadesAnalysis';
+import {pleiadesSkyContext} from '../core/pleiadesSkyContext';
 import {tiledPhotometerReason} from '../core/photometerUbvField';
 import {GSC_INDEX_SHA256,photometerJournalVersion} from '../core/photometerJournal';
 import {pleiadesExerciseSummary} from '../core/pleiadesLab';

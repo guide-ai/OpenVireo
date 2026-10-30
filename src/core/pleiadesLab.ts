@@ -4,7 +4,7 @@
  * value is correct. The 16-star sample step is explicit web exercise coverage of the admitted original targets, not a historical
  * classroom minimum or a grade; the existing two-pair fit minimum stays a technical guard. Pure: no React, i18n, clock or I/O. */
 import type {PhotometerState} from './photometer';
-import {pleiadesSkyContext} from './pleiadesAnalysis';
+import {pleiadesSkyContext} from './pleiadesSkyContext';
 import {PLEIADES_ADMITTED_ROWS,type PhotometerPointingAccess} from './pleiadesHotList';
 
 /** What the photometer reports (only when it changes). */

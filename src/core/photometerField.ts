@@ -261,7 +261,8 @@ export function photometerFieldFromPopulation(population:PopulationLike|null,rea
 }
 /** Front G (G3b): tiled photometer targets. A target is the exact telescope pointing (binary64 RA and Dec); its frame is prepared
  * asynchronously from the tiles (io/photometerTiledFields.ts) and registered here before the synchronous journal uses it. */
-export const TILED_PHOTOMETER_PREFIX='gsc:';
+export {TILED_PHOTOMETER_PREFIX} from './pleiadesSkyContext';
+import {TILED_PHOTOMETER_PREFIX} from './pleiadesSkyContext';
 export function tiledPhotometerTargetId(p:Pointing):string{
  if(!p||!Number.isFinite(p.ra)||!Number.isFinite(p.dec)||p.ra<0||p.ra>=24||Math.abs(p.dec)>90)throw new PhotometerFieldError('domain');
  return `${TILED_PHOTOMETER_PREFIX}${p.ra},${p.dec}`;
