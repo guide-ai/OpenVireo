@@ -106,8 +106,9 @@ export function recordedResultsLines(data:NativeObservationData,options:Recorded
  *   +0x2e7f is set and 10 otherwise (the option, not the record kind), then +12 (Z) and +13 (Sp) (0x547696..0x5476e8); every
  *   space before that last comma is deleted (0x5476ed..0x547751) and the comments follow unchanged; WriteLn (CR LF).
  * - Default name: the save name with '.CSV' (0x547390..0x5473ca).
- * [I] A line shorter than the last comma column (an empty 'Sky' line, a kind ≥ 2 line) makes VIREO write past the end of the
- *     string (nothing checks the length): an access violation or stray memory, so the web refuses with the line number. */
+ * [I] A line shorter than the last comma column makes VIREO write past the end of the string (nothing checks the length): an
+ *     access violation or stray memory, so the web refuses with the line number. In this list only an empty first 'Sky' line
+ *     is that short; a kind ≥ 2 line is longer (the Dec text repeated) and is written, misaligned, as VIREO writes it. */
 export type RecordedResultsCsv=Readonly<{kind:'ready';text:string;name:string}>|Readonly<{kind:'blocked';row:number}>;
 export function recordedResultsCsv(lines:readonly string[],options:RecordedResultsOptions=RECORDED_RESULTS_DEFAULTS):RecordedResultsCsv{
  const filters=options.fiveFilters?5:3,step=options.magnitudes?7:10;

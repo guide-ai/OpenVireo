@@ -14,7 +14,7 @@ const M=Object.freeze({
  loading:'Loading VIREO\'s spectral line list…',
  error:'VIREO\'s spectral line files (SPECLNS.LNL, SPECLNS.TXT) could not be loaded or did not match their recorded size and SHA-256.',
  retry:'Try again',ok:'OK',
- note:'VIREO\'s spectral line list (SPECLNS.LNL). Double-click a line, or press Enter, to read its help from SPECLNS.TXT. Like VIREO, the help is found by the line\'s name, so some lines (for example the later He I lines) show the section of the first line with that name. A single click (or an arrow key) moves the classification cursor to the line, at the nearest pixel column of the display; the list then selects the line nearest that column, as VIREO does (so Fe I 4143.878 selects He I 4143.76 in the full view).',
+ note:'VIREO\'s spectral line list (SPECLNS.LNL). Double-click a line, or press Enter, to read its help from SPECLNS.TXT. Like VIREO, the help is found by the line\'s name, so some lines (for example the later He I lines) show the section of the first line with that name. A single click (or an arrow key) moves the classification cursor to the line, at the nearest pixel column of the display; the list then selects the line nearest that column, as VIREO does (so Fe I 4143.878 selects He I 4143.76 in the full view). The arrow keys follow the same rule, so ArrowDown cannot pass from He I 4143.76 to Fe I 4143.88; use End or Home, or click a later line, to move past it.',
  missing:(file:string)=>`Unable to open Spectral Line Help File.\r\n\r\nFile Name: ${file}\r\n\r\nFile Not Found!`,// VIREO (0x5049f0)
  missingCaption:'Sp Line Help not Available!',// VIREO
  cursorAt:(wl:string)=>`Cursor @: ${wl} Å (VIREO shows the wavelength of the cursor's pixel column, not the line's own wavelength).`,

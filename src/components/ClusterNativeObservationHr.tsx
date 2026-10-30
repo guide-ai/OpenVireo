@@ -106,8 +106,9 @@ function ClusterNativeObservationHr({initialList=null,messages,idPrefix='cnhr-',
  const previousPhotometry=useRef<Readonly<{results:string;u:string;b:string;v:string;r:string;i:string}>>({results:OBSERVATIONAL_DATA_LITERALS.magnitudes,u:'',b:'',v:'',r:'',i:''});
  const chartRegion=useRef<HTMLDivElement>(null);
  // VIREO shows the Recorded Results window as soon as saved data are read (0x549cba Show; review 1 L5).
- const readCount=w.receipts.length,lastReadCount=useRef(readCount);
- useEffect(()=>{if(readCount>lastReadCount.current&&w.list)setResultsOpen(true);lastReadCount.current=readCount;},[readCount,w.list]);
+ // Every read (Add or Replace) makes a new receipts array, so the window opens after each one (K2 closure N3).
+ const lastReceipts=useRef(w.receipts);
+ useEffect(()=>{if(w.receipts!==lastReceipts.current&&w.receipts.length&&w.list)setResultsOpen(true);lastReceipts.current=w.receipts;},[w.receipts,w.list]);
  const cancelPress=()=>{if(longPress.current){window.clearTimeout(longPress.current.timer);longPress.current=null;}};
  useEffect(()=>cancelPress,[]);
  const plotHandlers=shownPlot?{
