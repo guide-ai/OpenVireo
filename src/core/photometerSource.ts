@@ -79,7 +79,25 @@ function bands(s:SuppliedPhotometerStar){
  // Native central fallback clones V/B; neighbors do not use the same check.
  // Withhold that domain instead of silently manufacturing known UBV colors.
  if(bv>=30||ub>=30)throw new PhotometerSourceError('missing-color');
- return {u:v+bv+ub,b:v+bv,v};
+ // Front P2 (0x4ffbed..0x4ffce2): R := V − (B−V); I := B − (U−B), with B = V + (B−V) (I uses B, not R).
+ const b=v+bv;
+ return {u:b+ub,b,v,r:v-bv,i:b-ub};
+}
+export type PhotometerBands=Readonly<{u:number;b:number;v:number;r:number;i:number;includedNeighbors:number}>;
+/** Front P2: the five-slot source preparation of Start 0x4ffa30 (U, B, V, R, I; dossier analysis/front-p2/B-photometer-r-i.md).
+ * - The central star's five magnitudes are attenuated by its aperture fraction; a fraction of 0 gives the literal 30 in every
+ *   slot (0x5953a0) and its colours are not used (0x4ffd17).
+ * - Each neighbour with a positive fraction is added in flux to U, B and V only (0x4ffdbb..0x4ffee0); R and I never take
+ *   neighbour light.
+ * Unlike prepareKnownColorPhotometerUbv, a zero central fraction is admitted: the native loop runs the same way (the sky of a
+ * large aperture can hold a neighbour while the central star is outside it; coordinator decision D2 a). */
+export function preparePhotometerBands(central:SuppliedPhotometerStar,neighbors:readonly SuppliedPhotometerStar[]):PhotometerBands{
+ fraction(central.fraction);
+ if(!Array.isArray(neighbors)||neighbors.length>10000)throw new PhotometerSourceError('neighbors');
+ let u=30,b=30,v=30,r=30,i=30,includedNeighbors=0;
+ if(central.fraction>0){const c=bands(central);u=attenuatePhotometerMagnitude(c.u,central.fraction);b=attenuatePhotometerMagnitude(c.b,central.fraction);v=attenuatePhotometerMagnitude(c.v,central.fraction);r=attenuatePhotometerMagnitude(c.r,central.fraction);i=attenuatePhotometerMagnitude(c.i,central.fraction);}
+ for(const neighbor of neighbors){fraction(neighbor.fraction);if(neighbor.fraction===0)continue;const n=bands(neighbor);u=combinePhotometerMagnitudes(attenuatePhotometerMagnitude(n.u,neighbor.fraction),u);b=combinePhotometerMagnitudes(attenuatePhotometerMagnitude(n.b,neighbor.fraction),b);v=combinePhotometerMagnitudes(attenuatePhotometerMagnitude(n.v,neighbor.fraction),v);includedNeighbors++;}
+ return Object.freeze({u,b,v,r,i,includedNeighbors});
 }
 /** Bounded0x4ffa30 UBV fold: complete ordered supplied neighbors, distinct from
  * selected source, positive central fraction and known colors required.

@@ -1,0 +1,374 @@
+{
+ "schema": "openvireo.photometer-ri.v1",
+ "policy": "OpenVireo-photometer-R-I-v14",
+ "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+ "method": "Static reading of CLEA_VEO.exe only (objdump listings, DFM parse); nothing executed or emulated. Research: analysis/front-p2/B-photometer-r-i.md; captures by analysis/front-p2/scripts/captures_p2.py.",
+ "captures": [
+  {
+   "what": "sky R/I (FormShow)",
+   "range": "0x4ff6aa..0x4ff706",
+   "bytes": 92,
+   "sha256": "fdb37e5a539e36bec5b0fa2ad9dc6ac35c4c8fedeb7e4306e510617e0c96657a"
+  },
+  {
+   "what": "filter label gate",
+   "range": "0x4ff707..0x4ff732",
+   "bytes": 43,
+   "sha256": "248a28067598ad6585247c6156e67338976098f20bcaa28fccf8a0bd8040eca0"
+  },
+  {
+   "what": "labels U, B, V",
+   "range": "0x4ff87c..0x4ff883",
+   "bytes": 7,
+   "sha256": "e7c12950b0366e6f801aa3ddaa73030f7d6685dee4e4de042e91f1f93ac3ea2d"
+  },
+  {
+   "what": "labels U, B, V, R, I",
+   "range": "0x4ff88c..0x4ff899",
+   "bytes": 13,
+   "sha256": "7fc991b6ce47333ac9b79cfb78a9230b0ba33a37dd5c6328eca42e64f4a97a11"
+  },
+  {
+   "what": "five-slot source",
+   "range": "0x4ffbc8..0x4ffd54",
+   "bytes": 396,
+   "sha256": "b498b246f0b9fcb8e33ad6ed2c0a69bf8b696cc3ad0b253b79874370b2f5bb2c"
+  },
+  {
+   "what": "neighbour U/B/V only",
+   "range": "0x4ffdbb..0x4ffee0",
+   "bytes": 293,
+   "sha256": "a6ebc4a56887f8d1fb86b75b19c84aee8656cd461a2e6f9228dac08fb5bc4d20"
+  },
+  {
+   "what": "amplitude index",
+   "range": "0x50095a..0x5009c7",
+   "bytes": 109,
+   "sha256": "54f44d3d806503373a726ba5d352e7d24cc7509c4f4935991dc1bd0e0efb99fd"
+  },
+  {
+   "what": "sky index",
+   "range": "0x500b14..0x500b4c",
+   "bytes": 56,
+   "sha256": "f7287fc8df69e2d1ff0dadec293bf94ed630d37324e2555de1ba078fb623aaf5"
+  },
+  {
+   "what": "Include R and I default",
+   "range": "0x5a2aef..0x5a2af6",
+   "bytes": 7,
+   "sha256": "244ad1abcf2b85b889f81ab503c6b443125e2bce9739a9aac2332a0a07623af5"
+  },
+  {
+   "what": "band label table",
+   "range": "0x5b3a24..0x5b3a3d",
+   "bytes": 25,
+   "sha256": "e6e26f3957b0ba6a156be947288e18f20348fee44cf86c427f49e4f29561a5f7"
+  },
+  {
+   "what": "FormCreate filter V",
+   "range": "0x4ff59a..0x4ff5a1",
+   "bytes": 7,
+   "sha256": "3909363838a2ff8578c955fd7bf5156518ff9eeb5432f31e394cdb238b953834"
+  }
+ ],
+ "filters": {
+  "order": [
+   "U",
+   "B",
+   "V",
+   "R",
+   "I"
+  ],
+  "default": "V",
+  "labels": "U, B, V, R, I",
+  "optionDefault": "Include R and I Colors on (0x5a2aef = 1); the web keeps the compiled default [W]"
+ },
+ "source": {
+  "R": "V - (B-V)",
+  "I": "(V + (B-V)) - (U-B)",
+  "missingColour": "a colour of 30 or more skips its term natively; the web keeps the earlier typed missing-colour refusal for the central star",
+  "neighbours": "neighbour light is added to U, B and V only; R and I hold the central star alone",
+  "centralFractionZero": "all five slots are the literal 30 (0x5953a0), then neighbour light on U/B/V"
+ },
+ "sky": {
+  "V": "env V sky (16, 0x5a2a10)",
+  "B": "V + 1.0",
+  "U": "B + 0.33",
+  "R": "V - 1.0",
+  "I": "R - 0.33",
+  "literals": [
+   {
+    "address": "0x4ff864",
+    "type": "Single",
+    "value": 1.0
+   },
+   {
+    "address": "0x4ff868",
+    "type": "Extended",
+    "value": 0.33
+   }
+  ]
+ },
+ "zeroPoint": "one prepared zero point for all five filters (Obsrvtry+0x6f0 + 5); no colour table, bandwidth or throughput",
+ "telescopeDomain": {
+  "decision": "Coordinator D1 (a), 2026-10-30: the bound covers every reading a student can take (U..I, apertures 5..150). The earlier contracts stay byte-unchanged.",
+  "rule": "A target excluded here and eligible in the earlier contract is refused at Start in a live session; a history recorded before this contract still replays (its target and telescope events keep the earlier admission, so every recorded history replays exactly).",
+  "domains": [
+   {
+    "telescopeIndex": 1,
+    "supersedes": {
+     "file": "kpno09-photometer-contract.json",
+     "sha256": "f5c41cbc725f9ebffa6f89814b521c6d4003192d1dc1b7c039227ddf9e536dc7",
+     "scope": "U/B/V × apertures 5/10/15"
+    },
+    "filters": [
+     "U",
+     "B",
+     "V",
+     "R",
+     "I"
+    ],
+    "apertures": {
+     "min": 5,
+     "max": 150
+    },
+    "eligibleTargetIds": [
+     "N2230.DAT@145877",
+     "N2230.DAT@144496",
+     "N2230.DAT@148460",
+     "N2230.DAT@148546",
+     "N2230.DAT@149142",
+     "N2230.DAT@149260",
+     "N2230.DAT@149656",
+     "N2230.DAT@150246",
+     "N2230.DAT@150480",
+     "N2230.DAT@150861",
+     "N2230.DAT@150975",
+     "N2230.DAT@151125",
+     "N2230.DAT@151890",
+     "N2230.DAT@152989"
+    ],
+    "excludedTargets": [
+     {
+      "targetId": "N2230.DAT@147993",
+      "reason": "all-duration-count-domain",
+      "maximumMean": 802281.6131545635,
+      "at": {
+       "aperture": 150,
+       "filter": "U"
+      }
+     },
+     {
+      "targetId": "N2230.DAT@150112",
+      "reason": "Poisson-mean-bound",
+      "maximumMean": 2679772.125131543,
+      "at": {
+       "aperture": 150,
+       "filter": "U"
+      }
+     }
+    ],
+    "changedTargets": [],
+    "maximumExpected5000CallbackTotal": 1202434007.7294838,
+    "maximumPoissonMean": 1000000,
+    "actualCountsGuard": 2147483647
+   },
+   {
+    "telescopeIndex": 2,
+    "supersedes": {
+     "file": "mayall-photometer-contract.json",
+     "sha256": "62f1d9a78c558a1bb4585add18bab6b9e7b32d664bc95e63235a34d7c0b0b0b9",
+     "scope": "U/B/V × apertures 5/10/15"
+    },
+    "filters": [
+     "U",
+     "B",
+     "V",
+     "R",
+     "I"
+    ],
+    "apertures": {
+     "min": 5,
+     "max": 150
+    },
+    "eligibleTargetIds": [
+     "N2230.DAT@145877",
+     "N2230.DAT@148460",
+     "N2230.DAT@148546",
+     "N2230.DAT@149260",
+     "N2230.DAT@150480",
+     "N2230.DAT@150861",
+     "N2230.DAT@151890"
+    ],
+    "excludedTargets": [
+     {
+      "targetId": "N2230.DAT@144496",
+      "reason": "all-duration-count-domain",
+      "maximumMean": 667926.8547632459,
+      "at": {
+       "aperture": 150,
+       "filter": "R"
+      }
+     },
+     {
+      "targetId": "N2230.DAT@147993",
+      "reason": "Poisson-mean-bound",
+      "maximumMean": 12715306.67125388,
+      "at": {
+       "aperture": 150,
+       "filter": "U"
+      }
+     },
+     {
+      "targetId": "N2230.DAT@149142",
+      "reason": "all-duration-count-domain",
+      "maximumMean": 564847.6658280309,
+      "at": {
+       "aperture": 150,
+       "filter": "R"
+      }
+     },
+     {
+      "targetId": "N2230.DAT@149656",
+      "reason": "all-duration-count-domain",
+      "maximumMean": 872543.8026567363,
+      "at": {
+       "aperture": 150,
+       "filter": "U"
+      }
+     },
+     {
+      "targetId": "N2230.DAT@150112",
+      "reason": "Poisson-mean-bound",
+      "maximumMean": 42471525.98468033,
+      "at": {
+       "aperture": 150,
+       "filter": "U"
+      }
+     },
+     {
+      "targetId": "N2230.DAT@150246",
+      "reason": "Poisson-mean-bound",
+      "maximumMean": 1100380.2766438986,
+      "at": {
+       "aperture": 150,
+       "filter": "R"
+      }
+     },
+     {
+      "targetId": "N2230.DAT@150975",
+      "reason": "Poisson-mean-bound",
+      "maximumMean": 3811458.9464683854,
+      "at": {
+       "aperture": 150,
+       "filter": "U"
+      }
+     },
+     {
+      "targetId": "N2230.DAT@151125",
+      "reason": "all-duration-count-domain",
+      "maximumMean": 826521.0079484989,
+      "at": {
+       "aperture": 150,
+       "filter": "R"
+      }
+     },
+     {
+      "targetId": "N2230.DAT@152989",
+      "reason": "all-duration-count-domain",
+      "maximumMean": 491049.4936435326,
+      "at": {
+       "aperture": 150,
+       "filter": "R"
+      }
+     }
+    ],
+    "changedTargets": [
+     {
+      "targetId": "N2230.DAT@144496",
+      "before": "eligible",
+      "after": "all-duration-count-domain",
+      "legacyMaximumMean": 119358.52628503194,
+      "maximumMean": 667926.8547632459,
+      "at": {
+       "aperture": 150,
+       "filter": "R"
+      }
+     },
+     {
+      "targetId": "N2230.DAT@150246",
+      "before": "eligible",
+      "after": "Poisson-mean-bound",
+      "legacyMaximumMean": 328134.936021112,
+      "maximumMean": 1100380.2766438986,
+      "at": {
+       "aperture": 150,
+       "filter": "R"
+      }
+     },
+     {
+      "targetId": "N2230.DAT@152989",
+      "before": "eligible",
+      "after": "all-duration-count-domain",
+      "legacyMaximumMean": 380180.44328398287,
+      "maximumMean": 491049.4936435326,
+      "at": {
+       "aperture": 150,
+       "filter": "R"
+      }
+     }
+    ],
+    "maximumExpected5000CallbackTotal": 1990083883.3101115,
+    "maximumPoissonMean": 1000000,
+    "actualCountsGuard": 2147483647
+   }
+  ]
+ },
+ "telescope0": {
+  "maximumMean": 424715.2598468033,
+  "targetId": "N2230.DAT@150112",
+  "at": {
+   "aperture": 150,
+   "filter": "U"
+  },
+  "maximumExpected5000CallbackTotal": 2123576299.2340167
+ },
+ "workedExample": {
+  "targetId": "N2230.DAT@145877",
+  "telescopeIndex": 0,
+  "aperture": 10,
+  "bands": {
+   "U": {
+    "sourceMean": "339.198128659279810",
+    "skyMean": "0.465586094"
+   },
+   "B": {
+    "sourceMean": "342.336690230712789",
+    "skyMean": "0.630957344"
+   },
+   "V": {
+    "sourceMean": "532.664119172835593",
+    "skyMean": "1.584893192"
+   },
+   "R": {
+    "sourceMean": "828.807054432162709",
+    "skyMean": "3.981071706"
+   },
+   "I": {
+    "sourceMean": "345.504292554158792",
+    "skyMean": "5.395106225"
+   }
+  }
+ },
+ "vectors": {
+  "file": "photometer-p2-vectors.json",
+  "sha256": "6a61830fdaff8345d408f0b48203125a92cb0d27615eed647fb2370d6b50d771",
+  "generator": "analysis/front-p2/scripts/independent_p2.py"
+ },
+ "webAdaptations": [
+  "The Include R and I option keeps its compiled default (on); there is no options control for it.",
+  "If the option were turned off while R or I is selected, VIREO keeps index 3 or 4 while the slider shows V; not reachable here.",
+  "Kind >= 4 objects keep the previous V slot natively (0x4ffbd2); no web target reaches it."
+ ],
+ "uncertainty": "Whether the stellar I formula (B - (U-B)) is intended or a slip cannot be known statically; it is ported as decoded."
+}

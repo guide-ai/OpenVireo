@@ -1,5 +1,7 @@
 # Bounded photometer aperture observing
 
+> **Front P2 (2026-10-30):** apertures 5–150, the R and I filters, VIREO's sky at large apertures and the superseding 0.9 m / 4 m domain are in [PHOTOMETER-P2.md](PHOTOMETER-P2.md); this page describes the earlier bounded scope, whose contract stays unchanged.
+
 19 October 2026 follow-up: [KPNO 0.9m photometry](KPNO09-PHOTOMETER.md) now adds a separate fourteen-target calibrated observing profile with telescope provenance and fresh skies. Earlier fixed-0.4m descriptions below remain the original bounded profile.
 
 Telescope0 now admits three original selector sizes5,10,15 for the existing sixteen complete Pleiades object/sky fields and U/B/V filters. Changing size changes the source aperture fraction and the background amplitude before the existing source-then-sky Poisson draws. The chart shows the corresponding radius; the notebook records the aperture of each confirmed reading. Student entries remain blank and manual. Explicit B/V color pairs require the same aperture; both chosen readings and derived diagram points retain the aperture. Mixed-aperture pairs are withheld as a browser protection because no aperture-loss correction exists. No aperture-loss, color, extinction or catalog-answer correction is supplied.

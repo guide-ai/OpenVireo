@@ -30,7 +30,7 @@ describe('UBV extension and strict legacy compatibility',()=>{
  });
  it('replays version2 skies, acquired color and manual transcriptions without trusting cached values',()=>{
   let s=observation();s=step(s,{type:'filter',filter:'B'});for(const e of [{type:'point',kind:'sky'},{type:'start'},{type:'complete'},{type:'point',kind:'object'},{type:'start'},{type:'complete'},{type:'record',readingId:4,value:10.207,note:'B manual'},{type:'color',bReadingId:4,vReadingId:2}] as const)s=step(s,e);
-  const text=save(releasePhotometer(s)),r=JSON.parse(text),restored=parse(r);expect(r.version).toBe(2);expect(r.ubvContractSHA256).toMatch(/^[a-f0-9]{64}$/);expect(restored.color?.acquired).toBeCloseTo(.559889252254527,12);expect(restored.color?.transcribed).toBeCloseTo(.56,12);expect(restored.skies).toEqual({U:null,B:null,V:null});expect(save(restored)).toBe(text);
+  const text=save(releasePhotometer(s)),r=JSON.parse(text),restored=parse(r);expect(r.version).toBe(2);expect(r.ubvContractSHA256).toMatch(/^[a-f0-9]{64}$/);expect(restored.color?.acquired).toBeCloseTo(.559889252254527,12);expect(restored.color?.transcribed).toBeCloseTo(.56,12);expect(restored.skies).toEqual({U:null,B:null,V:null,R:null,I:null});expect(save(restored)).toBe(text);
   for(const c of [{ubvContractSHA256:'a'.repeat(64)},{color:{acquired:.48}},{counts:[999]},{events:[...r.events,{type:'color',bReadingId:2,vReadingId:4}]}])expect(()=>parse({...r,...c})).toThrow();
  });
 });

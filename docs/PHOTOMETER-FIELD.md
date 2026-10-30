@@ -86,7 +86,8 @@ I01/E04 are not accepted complete; N03 remains partial. [Verification](PHOTOMETE
   - `photometer-population`: an engine gate.
 - **Mode independence:** the source does not depend on the reading mode (G3b). A positive central fraction gives the known
   colours of the central star and its neighbours. A zero fraction with no admitted neighbour gives the literal 30. Neighbour
-  light without central admission is `photometer-central-unadmitted`; a missing colour is `photometer-colour`.
+  light without central admission is added to that 30 (Front P2 ported this decoded path; it was typed
+  `photometer-central-unadmitted` before, docs/PHOTOMETER-P2.md); a missing colour is `photometer-colour`.
 
 ## Photometer at the telescope pointing (Front G, G3b)
 

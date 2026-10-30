@@ -172,11 +172,11 @@ Tests are evidence of the chosen contract, not of original-runtime equivalence.
   natively the field-list copy and the catalogue copy are separate records, so a list opened from the catalogue would show 0.00].
   Classes 0/1/2 use the CepheidTypeObj,
   LPVTypeObj (Cepheid Mag, constant colours) and VarStarObj models; the camera's own consumer (0x51ef38, Front C) is not ported.
-- **Pleiades "mixed-variable-field" stars** (PLEIADES.HTL rows 3, 5, 10, 12): every GCVS record within 12′ of those
-  pointings is class 3 (UV, BY, UV+BY, RS:) with period 0 and M−m/D 0 (e.g. V0855 Tau, V0641 Tau). The block is therefore
-  the untraced zero-period/zero-word branch of 0x51ec95, which `variableMerge.ts` rejects as `dispatch-unsupported` — not
-  Mag(t). Needed (Front F files only): trace that branch (and whether it reaches 0x51ee57); extend
-  `nativeVariableFalseMerge`; witness the four fields from CLEA_VStrs.dat (Front V's `bundledVariableStars.ts` and
-  `decodeVariableStarRecord` can be reused read-only); run them through `fieldEngine.ts`; then admit the rows. If the branch
-  calls Mag, P = 0 faults in the original too and the photometer must refuse with a typed reason. Not done here.
+- **Pleiades rows 3, 5, 10, 12** (resolved; Front P2.1, `analysis/front-p2/A-zero-period-rows.md`): every GCVS record near
+  those pointings (NZ Tau, V0443 Tau, V0855 Tau, V0447 Tau, V0641 Tau, V0453 Tau; CLEA_VStrs.dat records 2079, 2116, 2119,
+  2165, 2166, 2195) has period 0 and word 0. 0x51ec48 compares the period with 0.0 at 0x51ec9a..0x51eca7 and jumps to the
+  shared FALSE exit 0x51ee57 before any class test, so no light-curve object is built and nothing divides by the period [D].
+  A hit restores the star (0x5986c0) and a miss inserts nothing (0x5987a1); the only effect is the runner prune of 0x59a2e0.
+  `nativeVariableDispatchFalse` (recovered mode) already does this, and the four fields are admitted (PLEIADES-SAMPLE.md).
+  Truth table: `src/core/variableMerge.test.ts`.
 - Printer layout, the portrait print branch, the student/lab print strings and the CLEA help viewer; saving this page's state with the investigation (not needed: it is a browsing aid).

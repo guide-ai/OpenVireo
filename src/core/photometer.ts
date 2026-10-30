@@ -1,4 +1,4 @@
-import {photometerTelescope,isPhotometerTelescopeIndex,isPhotometerTelescopeTarget,type PhotometerTelescopeIndex} from './photometerTelescope';
+import {photometerTelescope,photometerFullDomainExclusion,isPhotometerTelescopeIndex,isPhotometerTelescopeTarget,type PhotometerTelescopeIndex} from './photometerTelescope';
 import {validPhotometerAperture} from './photometerAperture';
 import {confirmNativeCluster,validNativeClusterParameters,sameNativeCluster,type NativeClusterParameters,type NativeClusterFit} from './nativeCluster';
 import {confirmPleiadesFit,type PleiadesFit} from './pleiadesAnalysis';
@@ -31,7 +31,7 @@ function labelFor(current:PhotometerState['policy'],targetId:string):PhotometerS
 }
 export function createPhotometer(seed:number):PhotometerState {randomDraw(seed);return Object.freeze({policy:PHOTOMETER_POLICY,targetId:PINNED_PLEIADES_V_TARGET.catalogId,colors:Object.freeze({}),filter:'V',contextId:0,skies:emptySkies(),color:null,seedAtStart:seed,seed,armed:false,pointing:'sky',phase:'idle',sky:null,current:null,readings:Object.freeze([]),entries:Object.freeze([]),events:Object.freeze([])});}
 export type PhotometerColor=Readonly<{bReadingId:number;vReadingId:number;targetId:string;telescopeIndex?:PhotometerTelescopeIndex;apertureSelector?:number;acquired:number;transcribed:number}>;
-const emptySkies=()=>Object.freeze({U:null,B:null,V:null});
+const emptySkies=()=>Object.freeze({U:null,B:null,V:null,R:null,I:null});
 function eventValid(e:PhotometerEvent):boolean {
  if(!e||typeof e!=='object'||Array.isArray(e))return false;
  const keys=e.type==='telescope'?['type','index']:e.type==='aperture'?['type','selector']:e.type==='nativeClusterFit'?['type','modulusTicks','ebvTicks','ageIndex','modelIndex','offsetTicks','extinctionCorrected','interpretation']:e.type==='clusterFit'?['type','modulus']:e.type==='timing'?['type','secondsPerIntegration','integrations']:e.type==='advance'?['type','callbacks']:e.type==='target'?['type','targetId']:e.type==='field'?['type','ra','dec']:e.type==='filter'?['type','filter']:e.type==='color'?['type','bReadingId','vReadingId']:e.type==='point'?['type','kind']:e.type==='record'?['type','readingId','value','note']:['type'];
@@ -108,6 +108,7 @@ function transition(s:PhotometerState,e:PhotometerEvent,live:boolean):Photometer
   if(s.pointing==='object'&&(!s.sky||s.sky.filter!==s.filter||s.sky.contextId!==s.contextId||(s.sky.telescopeIndex??0)!==(s.telescopeIndex??0)))throw new PhotometerError('sky');
   if(skyReplaceAsked(s)&&!s.skyReplaceConfirmed)throw new PhotometerError('confirm');
   if(isTiledPhotometerTarget(s.targetId)&&tiledPhotometerReason(s.targetId,s.telescopeIndex??0,s.apertureSelector??10))throw new PhotometerError('field');
+  if(live&&!isTiledPhotometerTarget(s.targetId)&&photometerFullDomainExclusion(s.targetId,s.telescopeIndex??0))throw new PhotometerError('field');
   if(s.timing&&(s.callbacksUsed??0)+requiredPhotometerCallbacks(s.timing)>MAX_PHOTOMETER_CALLBACKS)throw new PhotometerError('limit');
   next={...s,current:null,phase:'running',...(s.timing?{work:createPhotometerIntegration(s.timing,s.pointing,s.filter,s.targetId,s.seed,s.apertureSelector??10,s.telescopeIndex??0)}:{})};
  }else if(e.type==='stop')next={...s,phase:'stopped'};
@@ -124,6 +125,7 @@ function transition(s:PhotometerState,e:PhotometerEvent,live:boolean):Photometer
   if(s.timing)throw new PhotometerError('event');
   if(!s.armed||s.phase!=='running')throw new PhotometerError('phase');
   if(isTiledPhotometerTarget(s.targetId)&&tiledPhotometerReason(s.targetId,s.telescopeIndex??0,s.apertureSelector??10))throw new PhotometerError('field');
+  if(live&&!isTiledPhotometerTarget(s.targetId)&&photometerFullDomainExclusion(s.targetId,s.telescopeIndex??0))throw new PhotometerError('field');
   if(s.pointing==='object'&&(!s.sky||s.sky.filter!==s.filter||s.sky.contextId!==s.contextId||(s.sky.telescopeIndex??0)!==(s.telescopeIndex??0)))throw new PhotometerError('sky');
   const callback=drawPinnedPleiadesUbv(s.pointing,s.filter,s.seed,s.targetId,s.apertureSelector??10,s.telescopeIndex??0);
   next=finishReading({...s,seed:callback.seed},callback);

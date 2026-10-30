@@ -21,6 +21,6 @@ describe('target-separated observation journals, colors and filter sky reference
   expect(s.readings.filter(r=>r.kind==='sky').map(r=>r.fieldTargetId)).toEqual([A,A]);expect(s.readings.filter(r=>r.kind==='object').map(r=>r.targetId)).toEqual([A,A,B,B,C,C]);
  });
  it('release invalidates all skies for all targets, while historical object entries and pairs remain intact',()=>{
-  let s=step(original(),{type:'target',targetId:C});s=releasePhotometer(s);expect(s.skies).toEqual({U:null,B:null,V:null});expect(s.colors[A]?.bReadingId).toBe(4);s=step(s,{type:'activate'});expect(s.targetId).toBe(C);s=step(s,{type:'point',kind:'object'});expect(()=>step(s,{type:'start'})).toThrow('sky');s=step(s,{type:'target',targetId:A});expect(s.color?.targetId).toBe(A);expect(()=>step(s,{type:'start'})).toThrow('sky');
+  let s=step(original(),{type:'target',targetId:C});s=releasePhotometer(s);expect(s.skies).toEqual({U:null,B:null,V:null,R:null,I:null});expect(s.colors[A]?.bReadingId).toBe(4);s=step(s,{type:'activate'});expect(s.targetId).toBe(C);s=step(s,{type:'point',kind:'object'});expect(()=>step(s,{type:'start'})).toThrow('sky');s=step(s,{type:'target',targetId:A});expect(s.color?.targetId).toBe(A);expect(()=>step(s,{type:'start'})).toThrow('sky');
  });
 });

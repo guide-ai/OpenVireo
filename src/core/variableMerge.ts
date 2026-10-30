@@ -11,8 +11,9 @@ import {nativeRaCursorInsertPosition} from './qsoMerge';
  *   any constructor, curve or evaluation;
  * - 0x5986c0: a false result restores the 95-byte hit record; a runner prune already performed is NOT rolled back;
  *   0x5987a1: a false result skips the miss insertion.
- * Everything else (classes 0/1/2, zero period or zero word48 (0x51ecb0 cmp WORD,0 / jne: any nonzero value, either sign), an unsafe saved index, a null lookup or a boundary needing more
- * precision) is rejected, never repaired. Number/Math is the declared adapter policy, not x87 equivalence. */
+ * In this default 'class-3' mode everything else (classes 0/1/2, zero period or zero word48 (0x51ecb0 cmp WORD,0 / jne: any
+ * nonzero value, either sign), an unsafe saved index, a null lookup or a boundary needing more precision) is rejected, never
+ * repaired; the 'recovered' mode (nativeVariableDispatchFalse) admits the zero-period exit 0x51eca7 (Front P2.1). Number/Math is the declared adapter policy, not x87 equivalence. */
 export class VariableMergeError extends Error{
  constructor(readonly code:'record'|'table'|'variable-model-unsupported'|'dispatch-unsupported'|'unsafe-saved-index'|'native-null-lookup'|'precision-required'){super(`Native variable merge: ${code}`);this.name='VariableMergeError';}
 }
@@ -58,7 +59,8 @@ export type VariableMergeResult=Readonly<{
  * Hit: STRICT best·3600 < 30″. Returned rows are the merge rows: the hit star keeps its record unchanged (restored), a runner
  * pruned before the hit test stays removed, nothing is inserted on a miss. */
 /** The time-update dispatch 0x51ec48..0x51ecdb as far as it returns false without any side effect (the path to 0x51ee57 only
- * builds the classification string and its class): a zero period (0x51ec9a fcomp 0 / je), a zero word with a class other
+ * builds the classification string and its class): a zero period (0x51ec9a fcomp 0 / je 0x51ee57 at 0x51eca7, before any class
+ * test, so for every class; an unordered compare exits the same way), a zero word with a class other
  * than 1 (0x51ecb0..0x51ecba), or class 3 (0x51eccb). Any other combination reaches a light-curve constructor (not modelled). */
 export function nativeVariableDispatchFalse(variable:Readonly<{classification:string;periodNonzero:boolean;word48:number;spectrum?:string}>,tables:readonly VariableClassTable[]):boolean{
  if(!variable||typeof variable!=='object'||typeof variable.periodNonzero!=='boolean'||!Number.isInteger(variable.word48)||variable.word48< -0x8000||variable.word48>0x7fff||variable.spectrum!==undefined&&typeof variable.spectrum!=='string')throw new VariableMergeError('record');
