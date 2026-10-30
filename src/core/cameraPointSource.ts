@@ -18,13 +18,14 @@ type CameraPlane=CameraBackgroundStage|CameraPointStage|CameraExtendedStage|Came
 export const CAMERA_POINT_VISIT_LIMIT=65_536;
 /** Bounded admission protects loops and unsupported zero-radius divisions.
  * nearest/even geometry and Number exp/constants are explicit web policies. */
-export function cameraPointPlan(p:CameraPointParameters):CameraPointPlan {
+/** `maxReferencePeak` is the web admission bound (1e12; the saturated tail passes its own Float32-safe bound). */
+export function cameraPointPlan(p:CameraPointParameters,maxReferencePeak=1e12):CameraPointPlan {
  if(!p||typeof p!=='object')throw new CameraPointError('parameters');
  const {width,height,x,y,sigmaX,sigmaY,referencePeak,exposureScale}=p;
  if(!Number.isInteger(width)||width<1||width>1024||!Number.isInteger(height)||height<1||height>1024||
    !Number.isFinite(x)||Math.abs(x)>1e6||!Number.isFinite(y)||Math.abs(y)>1e6||
    !Number.isFinite(sigmaX)||sigmaX<=0||sigmaX>1024||!Number.isFinite(sigmaY)||sigmaY<=0||sigmaY>1024||
-   !Number.isFinite(referencePeak)||referencePeak<0||referencePeak>1e12||!Number.isFinite(exposureScale)||exposureScale<0||exposureScale>1e6)throw new CameraPointError('parameters');
+   !Number.isFinite(referencePeak)||referencePeak<0||referencePeak>maxReferencePeak||!Number.isFinite(exposureScale)||exposureScale<0||exposureScale>1e6)throw new CameraPointError('parameters');
  let support=3;
  // Original support depends on reference peak,not exposure scale.
  while(Math.exp(-(support*support)/2)*referencePeak>1)support++;

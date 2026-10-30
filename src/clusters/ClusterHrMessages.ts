@@ -68,7 +68,7 @@ export const CLUSTER_HR_EN=Object.freeze({
  recordedResultsBlocked:(row:number,why:string)=>`Display/Print Data cannot list record ${row}: ${why} VIREO would stop with an error here.`,
  recordedResultsBlock:{value:'a stored number is not a finite value.','spectral-code':'its spectral type code cannot be formatted.',text:'its name or remarks contain control characters.'} as Readonly<Record<'value'|'spectral-code'|'text',string>>,
  recordedResultsCsvCaption:'Comma Delimit',
- recordedResultsCsvRefused:(line:number)=>`Line ${line} is shorter than VIREO's comma-delimited layout (an empty "Sky" line or a record without photometry). VIREO would write past the end of that line, so no file is made here. Save Text keeps the lines as shown.`,
+ recordedResultsCsvRefused:(line:number)=>`Line ${line} is empty: a "Sky" record listed first, which VIREO's list leaves blank. VIREO would write past the end of that line, so no file is made here. Save Text keeps the lines as shown.`,
  close:'Close',
  // Front K2.2: observation-mode right click → Observational Data (TObsRsltsDlg1)
  obsRightClickNote:'Like VIREO, right-click a plotted star (or press and hold on a touch screen) to open "Observational Data" for that record; it is marked on the plot until you choose Cancel. With the keyboard, open the records table below and choose "Observational Data…" on a row.',

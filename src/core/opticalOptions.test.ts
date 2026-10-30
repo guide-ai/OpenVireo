@@ -1,15 +1,12 @@
 import {describe,expect,it} from 'vitest';
-import {COMPILED_SESSION_OPTICAL_OPTIONS,OPTICAL_OPTIONS_CAPTIONS,OPTION_TABS,SESSION_OPTION_CAPTIONS,programmedSlewRateIndex,readSessionOpticalOptions,telescopeChangeClosesDome,visibleOptionTabs} from './opticalOptions';
+import {COMPILED_SESSION_OPTICAL_OPTIONS,OPTICAL_OPTIONS_CAPTIONS,OPTION_TABS,SESSION_OPTION_CAPTIONS,programmedSlewRateIndex,horizonLimitText,telescopeChangeClosesDome,visibleOptionTabs} from './opticalOptions';
 import {createProgrammedMotion,manualMotionStep} from './telescopeMotion';
 
 // Front R3: the ported Optical Simulation Options (analysis/front-plans/front-r3-options.md).
 describe('Front R3 session options',()=>{
  it('start from the compiled record: Fast Slewing and Infrared Camera checked, the others unchecked (0x5a21d0)',()=>{
-  expect(COMPILED_SESSION_OPTICAL_OPTIONS).toEqual({fastSlewing:true,fastScopeChange:false,computeRedshiftVelocity:false,infraredCamera:true,monochromeDisplays:false,printInColor:false});
+  expect(COMPILED_SESSION_OPTICAL_OPTIONS).toEqual({fastSlewing:true,fastScopeChange:false,computeRedshiftVelocity:false,infraredCamera:true,monochromeDisplays:false,printInColor:false,timeDependentData:false});
   for(const caption of Object.values(SESSION_OPTION_CAPTIONS))expect(OPTICAL_OPTIONS_CAPTIONS.otherOptions).toContain(caption);
-  expect(readSessionOpticalOptions({...COMPILED_SESSION_OPTICAL_OPTIONS})).toEqual(COMPILED_SESSION_OPTICAL_OPTIONS);
-  expect(()=>readSessionOpticalOptions({...COMPILED_SESSION_OPTICAL_OPTIONS,fastSlewing:1})).toThrow();
-  expect(()=>readSessionOpticalOptions({fastSlewing:true})).toThrow();
  });
  it('Fast Slewing selects programmed-slew rate index 4 or 3 (record+0x27af, RateSlider.Position at 0x539cbf)',()=>{
   expect(programmedSlewRateIndex(true)).toBe(4);expect(programmedSlewRateIndex(false)).toBe(3);
@@ -33,5 +30,9 @@ describe('Front R3 session options',()=>{
   expect(value('ccd','Bias (e/Pixel)')).toBe('1000');expect(value('ir','Dark Noise (e/pixel/sec)')).toBe('0.7');expect(value('ir','AD Depth (Bits)')).toBe('32');
   expect(visibleOptionTabs(true).map(t=>t.tab)).toEqual(['general','photometer','spectrometer','ccd','ir']);
   expect(visibleOptionTabs(false).map(t=>t.tab)).toEqual(['general','photometer','spectrometer','ccd']);
+  // R3 review L2: Horizon Limit follows the selected site (FormActivate 0x5a5719, radians ×180/π at 0x5a602c, ffFixed 1).
+  expect(horizonLimitText(10*Math.PI/180)).toBe('10.0');
+  expect(horizonLimitText(12.44996*Math.PI/180)).toBe('12.4');// L3 review L1: 57.2958 would give 12.5
+  expect(visibleOptionTabs(true,15.2*Math.PI/180)[0].values.find(x=>x.label==='Horizon Limit')!.text).toBe('15.2');
  });
 });

@@ -1,6 +1,20 @@
 # Bounded CCD post-GDI overlay stage
 
-**Front R1 (2026-10-29):** the overlay's source, gate and rectangle are now recovered (docs/RADIO-CAMERA-R1.md §Overlay). The GDI StretchBlt mode is not, so the overlay stays typed unavailable.
+**Front R1 (2026-10-29):** the overlay's source, gate and rectangle are now recovered (docs/RADIO-CAMERA-R1.md §Overlay).
+
+**Front R2 (2026-10-29), research `analysis/front-r2/A-camera-field-overlay.md` §3:**
+- **Stretch mode** [D code, I runtime]: SetStretchBltMode is called only in TBitmap.Draw 0x431714 [D]. It uses HALFTONE for a
+  destination of at most 8 bpp that has fewer bits than the source, otherwise COLORONCOLOR [D]. bmpA/bmpB are assumed to be
+  screen-compatible DDBs, so HALFTONE is unreachable and the mode is COLORONCOLOR on every display depth [I]. Every compiled
+  telescope enlarges (380, 192 or 171 px to 1023 px), so that is plain pixel replication [I]; GDI's replication phase is
+  unknown.
+- **Sizes** [D]: bmpB is 1024² and the StretchBlt destination is 1023², so column and row 1023 keep bmpB's initial content.
+  That content is white (the VCL default fill [I]): a bright L-shaped border on every overlay exposure.
+- **Display depth** [I]: at 16 bpp the DDB keeps 5 red bits, so GetPixel returns quantized red; at 24/32 bpp it is exact. A
+  port must declare its reference depth.
+- **Gate** [D]: form+0x412, set by any non-M31 galaxy in the field list; there is no option byte.
+- **Still typed:** the overlay's input is the galaxies-only field raster, which the field engine builds inside `paintField` and
+  does not export. Porting it needs that export, a field-engine change outside Front R2.
 
 `src/core/cameraOverlay.ts` now ports the numerical addition performed after the native CCD overlay bitmap has been drawn/resampled. It accepts an explicitly supplied row-major snapshot of GetPixel's low bytes and explicit calibration values. It does not read a bitmap/FITS image, reproduce GDI scaling, infer an overlay from an imported image or enable an exposure.
 

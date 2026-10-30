@@ -429,7 +429,6 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
  const onAddOk=()=>{if(!entry||!hotList)return;const r=parseHotListEntry(entry);
   if(r.status!=='ok'){setEntryError(r.status==='ra-invalid'?HOT_LIST_ENTRY_CAPTIONS.raError:r.status==='dec-invalid'?HOT_LIST_ENTRY_CAPTIONS.decError:ta('antenna.hotList.addUnsupported'));return;}
   if(hotList.current().read){setEntryError(ta('antenna.hotList.loadPending'));return;}
-  if(hotList.current().opticalDraft){setEntryError(ta('antenna.hotList.addDraft'));return;}// review L5
   try{hotList.update(d=>d.read?keepHotList(d):setHotListEditor(d,appendAddCurrentEntry(d.editor??newHtlEditor(),r.fields),d.editor?d.name:''));}catch{setEntryError(ta('antenna.hotList.addUnsupported'));return;}
   setEntry(null);setAdded(hotListEntryAddedText(r.fields.id));};
  const hotMenu:HotListMenu|null=hotList?{doc:hotList.doc,load:hotLoad,viewSelectRef,addCurrentRef,fileRef:hotFile,onAddCurrent,

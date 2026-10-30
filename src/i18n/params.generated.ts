@@ -3213,6 +3213,7 @@ export interface MessageParameters {
   "lss.limitReached": "limit";
   "lss.dialog.controlChars": never;
   "lss.dialog.note": never;
+  "lss.dialog.reused": never;
   "lss.dialog.jdTime": never;
   "lss.dialog.raGroup": never;
   "lss.dialog.raH": never;

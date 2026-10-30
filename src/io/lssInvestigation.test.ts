@@ -183,6 +183,21 @@ describe('v31: records made with the recovered Measured Redshift Data rules (Fro
   const m=JSON.parse(await serializeAnalysisSession({...base,lss:mixed}));expect(m.lssNativeDialogIds).toEqual([2]);
   expect((await read(JSON.stringify(m))).lss).toEqual(mixed);
  },120000);
+ it('Front L3: an always-append file with one object twice restores unmerged; the next Record Z reuses the first and round-trips',async()=>{
+  const first=nativeRecord('6010'),second={...nativeRecord('6000',20),id:2},inv=investigation([first,second]);
+  expect(first.object).toBe(second.object);
+  const restored=(await read(await serializeAnalysisSession({...base,lss:inv}))).lss!;expect(restored).toEqual(inv);// never merged
+  // Next Record Z of the same galaxy (Time-Dependent Data off): a new exposure and z reuse row 1; row 2 is untouched.
+  const row=lssFieldRows(1)[0],status=evaluateLssRow(pack(1),glx,row,0,spectra);if(status.kind==='unavailable')throw Error();
+  const policy=lssPolicy(1,0,0),e=lssExposureEngine(status.result,policy);let st=e.start(e.activate(e.create(9)));for(let i=0;i<10;i++)st=e.tick(st,100);st=e.pause(st);
+  const control=moveControl(configureStep(INITIAL_CONTROL,.001),25);
+  const open=openLssRecord({...EMPTY_LSS_SURVEY,records:restored.records},{field:1,row:0,telescope:0,object:status.selectedId,jd:2451600.5,ra:row.ra,dec:row.dec,z:currentZ(control),control,journal:{seedAtReset:st.seedAtReset,events:st.events},acquisitionPolicy:policy});
+  expect(open.draft!.target).toBe(0);expect(open.draft!.velocity).toBe('6.010E+03');
+  const after=nativeConfirm(open).records;
+  expect(after).toHaveLength(2);expect(after[1]).toBe(restored.records[1]);
+  expect([after[0].id,after[0].jd,after[0].journal.seedAtReset]).toEqual([1,first.jd,9]);expect(after[0].zSingle).toBe(Math.fround(.025));
+  const again=investigation(after);expect((await read(await serializeAnalysisSession({...base,lss:again}))).lss).toEqual(again);
+ },180000);
  it('a native record with a frozen field JD saves v31 over v30 over v27 and restores',async()=>{
   const JD=2451545.0,row=lssFieldRows(8)[21],status=evaluateLssRow(pack(8),glx,row,0,spectra,{jd:JD,source:'observatory-clock'});if(status.kind==='unavailable')throw Error();
   const policy=lssPolicy(8,21,0),e=lssExposureEngine(status.result,policy);let st=e.start(e.activate(e.create(11)));for(let k=0;k<10;k++)st=e.tick(st,100);st=e.pause(st);

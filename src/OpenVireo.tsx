@@ -544,7 +544,8 @@ export default function OpenVireo(){
   const [virtualObservatory,setVirtualObservatory]=useState(false);
   // Front R3: the other ported Optical Simulation Options, page-session only like Edit Mode and VO (WEB-OPT-R3).
   const [sessionOptions,setSessionOptions]=useState<SessionOpticalOptions>(COMPILED_SESSION_OPTICAL_OPTIONS),sessionOptionsCurrent=useRef(sessionOptions);sessionOptionsCurrent.current=sessionOptions;
-  const fieldInfo=useMemo(()=>({editMode,onEditMode:setEditMode,virtualObservatory,onVirtualObservatory:setVirtualObservatory,sessionOptions,onSessionOptions:setSessionOptions,view:mode==='finder'?'finder' as const:'instrument' as const,telescopeName:opticalProfile(optical.selectedIndex).name,onOpenVariable:openVariableRecord,currentJd:observatoryJd,hidden:objectXHidden,busy:projectBusy,driveOn:open&&!!observatoryClock.state?.tracking}),[optical.selectedIndex,editMode,virtualObservatory,sessionOptions,mode,openVariableRecord,observatoryJd,objectXHidden,projectBusy,open,observatoryClock.state?.tracking]);
+  const horizonRadians=effectiveObservatorySite(siteOverrides,optical.selectedIndex).horizonRadians;
+  const fieldInfo=useMemo(()=>({editMode,onEditMode:setEditMode,virtualObservatory,onVirtualObservatory:setVirtualObservatory,sessionOptions,onSessionOptions:setSessionOptions,horizonRadians,view:mode==='finder'?'finder' as const:'instrument' as const,telescopeName:opticalProfile(optical.selectedIndex).name,onOpenVariable:openVariableRecord,currentJd:observatoryJd,hidden:objectXHidden,busy:projectBusy,driveOn:open&&!!observatoryClock.state?.tracking}),[optical.selectedIndex,editMode,virtualObservatory,sessionOptions,horizonRadians,mode,openVariableRecord,observatoryJd,objectXHidden,projectBusy,open,observatoryClock.state?.tracking]);
   const nakedEyeUtc=()=>observatoryClock.state?clockDriveUTMS(observatoryClock.state):parseClockUTC(siteClock.utc);
   // App shell: header/sidebar with grouped tools, theme switch and the compact investigation toolbar (presentation only).
   // Front Perf: stable handlers for memoised children (renderStability.ts); each calls this render's closure at call time.
@@ -733,7 +734,7 @@ export default function OpenVireo(){
    
    onHiddenTarget={setObjectXHidden} /></Suspense>}</div>
   <div inert={projectBusy} ref={variableStarsView} hidden={view!=='variable-stars'}>{variableStarsVisited&&<Suspense fallback={<p>{VARIABLE_STARS_EN.loading}</p>}><VariableStarsRoute active={view==='variable-stars'&&!projectBusy} openRequest={variableOpen}/></Suspense>}</div>
-  <div inert={projectBusy} ref={lssView} hidden={view!=='lss-survey'}>{(lssVisited||view==='lss-survey')&&<Suspense fallback={<p>{t('lss.loading')}</p>}><LssSurvey computeRedshiftVelocity={sessionOptions.computeRedshiftVelocity} active={view==='lss-survey'&&!projectBusy} editMode={editMode} restored={lssRestore} {...lssHandlers} initialTelescope={optical.selectedIndex as 0|1|2} wedgeAck={wedgeAck} /></Suspense>}</div>
+  <div inert={projectBusy} ref={lssView} hidden={view!=='lss-survey'}>{(lssVisited||view==='lss-survey')&&<Suspense fallback={<p>{t('lss.loading')}</p>}><LssSurvey computeRedshiftVelocity={sessionOptions.computeRedshiftVelocity} timeDependentData={sessionOptions.timeDependentData} active={view==='lss-survey'&&!projectBusy} editMode={editMode} restored={lssRestore} {...lssHandlers} initialTelescope={optical.selectedIndex as 0|1|2} wedgeAck={wedgeAck} /></Suspense>}</div>
   <div inert={projectBusy} ref={imageView} hidden={view!=='images'}>{imageVisited&&<Suspense fallback={<p>{t('fits.loading')}</p>}><FitsImageLab active={view==='images'} busy={projectBusy}/></Suspense>}</div>
   <AboutDialog dialogRef={about}/></>;
 }

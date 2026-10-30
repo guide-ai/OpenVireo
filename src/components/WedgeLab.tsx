@@ -5,7 +5,7 @@ import{wedgeCsv}from'../core/wedgeExport';
 import type{WedgeRecord}from'../core/wedgeLssText';
 import{wedgeBitsHex,wedgeSingleExact}from'../core/wedgeNumeric';
 import{WEDGE_COLOUR_SCHEMES,wedgePlot,type WedgeOptions,type WedgeColourScheme,type WedgePoint}from'../core/wedgePlot';
-import{appendOwnLssRecords,removeOwnLssRecords,type WedgeOwnRecord}from'../core/wedgeWorkspace';
+import{handOverOwnLssRecords,removeOwnLssRecords,type WedgeOwnRecord}from'../core/wedgeWorkspace';
 import{EMPTY_WEDGE_WORKSPACE,addWedgePending,beginWedgeRead,cancelWedgeOptions,cancelWedgePending,cancelWedgeRead,clearWedgePending,commitWedgeOptions,completeWedgeRead,confirmWedgeDelete,dismissWedgeNotice,editWedgeOptions,failWedgeRead,openWedgeOptions,plotWedgeData,requestWedgeLoad,selectWedgeRecord,setWedgeSeparator,suspendWedgeWorkspace,type WedgeNotice,type WedgeWorkspace}from'../core/wedgeWorkspace';
 import{WedgeFileError,downloadWedgeText,readWedgeLssFile}from'../io/wedgeLssFile';
 import{wedgeMessages,wedgeStatusText,type WedgeMessageCatalog,type WedgeMessageOverrides}from'./WedgeMessages';
@@ -31,7 +31,8 @@ export type WedgeLabProps=Readonly<{
  /** Observe workspace changes; persistence is the host's decision. */
  onWorkspaceChange?:(w:WedgeWorkspace)=>void;
  /** The student's own E02 records handed over by the LSS survey (appendOwnLssRecords); applied once per token. */
- ownRecords?:Readonly<{token:number;records:readonly WedgeOwnRecord[];sha256:string;bytes:number}>|null;
+ ownRecords?:Readonly<{token:number;records:readonly WedgeOwnRecord[];sha256:string;bytes:number;
+  /** Front L3: replace the earlier own LSS points (a plotted row was reused) instead of adding. */replace?:true}>|null;
  /** Whether the handed-over records were added (false: refused, e.g. capacity), once per token. */
  onOwnRecordsResult?:(token:number,accepted:boolean)=>void;
  /** Investigation restore, once per token: drop own LSS points and set the committed options (the file's, or defaults). */
@@ -81,8 +82,10 @@ function WedgeLab({monochrome=false,printInColor=false,messages,idPrefix='wedge-
  useEffect(()=>{if(!restoredOptions||restoredOptions.token===appliedOptions.current)return;appliedOptions.current=restoredOptions.token;setW(c=>{try{return commitWedgeOptions(editWedgeOptions(openWedgeOptions(cancelWedgeOptions(removeOwnLssRecords(c))),restoredOptions.options));}catch{return c;}});},[restoredOptions?.token]);
  useEffect(()=>{
   if(!ownRecords||ownRecords.token===appliedOwn.current)return;appliedOwn.current=ownRecords.token;
-  let next:WedgeWorkspace|null=null;try{next=appendOwnLssRecords(suspendWedgeWorkspace(w),ownRecords.records,ownRecords);}catch{next=null;}
-  if(next)setW(next);onOwnRecordsResult?.(ownRecords.token,!!next&&next.receipts.length>w.receipts.length);
+  // Review 1 L3: atomic (handOverOwnLssRecords). A refused hand-over keeps the earlier own points; only its notice is shown.
+  let result:ReturnType<typeof handOverOwnLssRecords>|null=null;try{result=handOverOwnLssRecords(suspendWedgeWorkspace(w),ownRecords.records,ownRecords,!!ownRecords.replace);}catch{result=null;}
+  if(result)setW(result.workspace);
+  onOwnRecordsResult?.(ownRecords.token,!!result?.accepted);
  },[ownRecords?.token]);
  // Before paint, so a hidden prompt or dialog is never shown or clickable while disabled.
  // Host inactivity also drops a pending focus return: it never pulls focus into the panel.

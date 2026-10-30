@@ -1,4 +1,4 @@
-import {memo,useEffect,useRef,useState} from 'react';
+import {memo,useEffect,useMemo,useRef,useState} from 'react';
 import './camera.css';
 import {CAMERA_MESSAGES as M} from './camera/CameraMessages';
 import {cameraRequestTransition,createCameraRequestGate,CAMERA_OBSERVE_INTERVAL_MS,type CameraGateEffect,type CameraGateEvent,type CameraRequestGate} from './core/cameraRequestGate';
@@ -18,11 +18,12 @@ import type {Pointing} from './core/sky';
 import CleaHelp from './clusters/CleaHelp';
 import {HELP_FILES} from './help/helpFiles';
 import CameraFieldSize from './polish/CameraFieldSize';// Front P
+import {cameraFieldInputs,ccdFilterByte,setCcdFilterByte,type CameraFieldInputs} from './camera/cameraFieldInputs';// Front R2
 
 export type CameraExtraSourceProvider=(jd:number,seconds:number,camera:CameraExposureKind)=>readonly CameraExtraSource[];
 /** The one place the camera asks its caller for moving pairs. */
 export function cameraExtras(provider:CameraExtraSourceProvider|undefined,jd:number,seconds:number,camera:CameraExposureKind):readonly CameraExtraSource[]{return provider?.(jd,seconds,camera)??[];}
-export type CameraImage=Readonly<{exposure:CameraExposure;source:CameraCatalogSource;jd:number;catalogName:string}>;
+export type CameraImage=Readonly<{exposure:CameraExposure;source:CameraCatalogSource;jd:number;catalogName:string;fieldObjectsStatus?:CameraFieldInputs['status']}>;
 export type CameraControlProps=Readonly<{
  /** Front R3: the Infrared Camera option (IRBox, env+0x2e87, compiled on). Off: the IR camera is not offered (TObsrvtry FormActivate
   * 0x537a13 drops it from the instrument slider), and a selected IR camera returns to the CCD once no exposure is running. */
@@ -106,10 +107,13 @@ function CameraControl({infraredCamera=true,active,busy,telescopeIndex,pointing,
   if(attempt.current!==a||gateRef.current.phase!=='preparing')return;
   try{
    const extras=cameraExtras(extraSources,a.jd,a.seconds,a.camera);
-   const reply=await call(a,{type:'compose',recipe:{camera:a.camera,opticalIndex:a.telescope,filterPosition:a.filter,seconds:a.seconds,gain:a.gain,centerRaHours:a.pointing.ra,centerDecDegrees:a.pointing.dec,seed:a.seed},extras});
+   // Front R2: the field-object pass 0x5228dc reads the CCD form's filter byte, also for IR (set at CCD Start, review 1 L5).
+   const field=await cameraFieldInputs(a.pointing,a.jd,ccdFilterByte());
+   if(attempt.current!==a||gateRef.current.phase!=='preparing')return;
+   const reply=await call(a,{type:'compose',recipe:{camera:a.camera,opticalIndex:a.telescope,filterPosition:a.filter,seconds:a.seconds,gain:a.gain,centerRaHours:a.pointing.ra,centerDecDegrees:a.pointing.dec,seed:a.seed},extras,fieldObjects:field.objects});
    if(attempt.current!==a||gateRef.current.phase!=='preparing')return;
    if(reply?.type!=='composed'||!reply.ok){a.failure='preparation';dispatch({type:'prepared',ticket:a.ticket,ok:false});return;}
-   a.prepared=Object.freeze({exposure:exposureFromWorker(reply.exposure),source:a.source!,jd:a.jd,catalogName:a.catalogName});
+   a.prepared=Object.freeze({exposure:exposureFromWorker(reply.exposure),source:a.source!,jd:a.jd,catalogName:a.catalogName,fieldObjectsStatus:field.status});
    dispatch({type:'prepared',ticket:a.ticket,ok:true});
   }catch{a.failure='preparation';if(attempt.current===a&&gateRef.current.phase==='preparing')dispatch({type:'prepared',ticket:a.ticket,ok:false});}
  }
@@ -137,6 +141,8 @@ function CameraControl({infraredCamera=true,active,busy,telescopeIndex,pointing,
  if(mode==='static'){try{const {reference,route}=cameraQuery(camera,telescopeIndex,filter,pointing,2451545);staticCovered=!!findCameraExtract({catalog:route.catalog,raHours:pointing.ra,decDegrees:pointing.dec,radiusDegrees:reference.searchRadiusDegrees});}catch{staticCovered=false;}}
  function start(){
   if(!ready||!validExposure||running)return;
+  // CCD Go 0x5126c1 stores the filter byte (form+0x405) before the preparation check 0x512244 can refuse the Go (closure L5).
+  if(camera==='ccd')setCcdFilterByte(filter);
   if(mode==='static'&&!staticCovered){setMessage(`${M.statusFailed} ${M.failure['no-extract']}`);return;}
   const jd=currentJd(),seed=seedSource()>>>0;
   attempt.current=null;
@@ -154,7 +160,10 @@ function CameraControl({infraredCamera=true,active,busy,telescopeIndex,pointing,
   a.href=url;a.download=native?nativeCameraFitsFileName():cameraFitsFileName(image.exposure,context);document.body.append(a);a.click();a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),0);
  }
  const filterNames:readonly string[]=camera==='ir'?M.filterNamesIr:M.filterNames,gains=CAMERA_GAINS[camera];
- const shown=image?.exposure,showIrNotes=camera==='ir'||shown?.recipe.camera==='ir',filterName=(k:CameraExposureKind,i:number)=>(k==='ir'?M.filterNamesIr:M.filterNames)[i];
+ const shown=image?.exposure;
+ // The brightest final pixel value and how many pixels reach it (a clipped saturated star shows a large count).
+ const peak=useMemo(()=>{let value=-Infinity,count=0;for(const v of shown?.plane.pixels??[]){if(v>value){value=v;count=1;}else if(v===value)count++;}return {value:Number.isFinite(value)?value:0,count};},[shown]);
+ const showIrNotes=camera==='ir'||shown?.recipe.camera==='ir',filterName=(k:CameraExposureKind,i:number)=>(k==='ir'?M.filterNamesIr:M.filterNames)[i];
  /** Switching camera resets the filter and keeps the gain when the other camera offers it (gain 2 exists on both). */
  function chooseCamera(next:CameraExposureKind){if(next===camera)return;setCamera(next);setFilter(0);if(!CAMERA_GAINS[next].includes(gain))setGain(2);}
  useEffect(()=>{if(!infraredCamera&&camera==='ir'&&!running)chooseCamera('ccd');},[infraredCamera,camera,running]);
@@ -162,7 +171,7 @@ function CameraControl({infraredCamera=true,active,busy,telescopeIndex,pointing,
   <div className="eyebrow">{M.eyebrow}</div><h2 id="camera-control-title">{camera==='ir'?M.titleIr:M.title}</h2>{/* TCCDCam 0x5130fc / TIRCam 0x51512c Help1Click; options +0x9a4 and +0x9ec both default CamHlp.LST (docs/CLEA-HELP.md) */}<CleaHelp list={HELP_FILES['CAMHLP.LST']} testId="camera-help"/><p>{camera==='ir'?M.introIr:M.intro}</p>
   <fieldset className="camera-settings" disabled={running||busy}>
    <fieldset className="camera-kind"><legend>{M.camera}</legend>
-    {(infraredCamera?['ccd','ir'] as const:['ccd'] as const).map(k=><label key={k}><input type="radio" name="camera-kind" checked={camera===k} onChange={()=>chooseCamera(k)}/>{M.cameraNames[k]}</label>)}
+    {/* R3 review L3: a running IR exposure keeps its radio until it ends, then the effect above returns to the CCD. */(infraredCamera||camera==='ir'?['ccd','ir'] as const:['ccd'] as const).map(k=><label key={k}><input type="radio" name="camera-kind" checked={camera===k} onChange={()=>chooseCamera(k)}/>{M.cameraNames[k]}</label>)}
    </fieldset>
    <CameraFieldSize camera={camera} telescopeIndex={telescopeIndex}/>
    <label>{M.filter}<select value={filter} onChange={e=>setFilter(Number(e.target.value))}>{filterNames.map((n,i)=><option key={n} value={i}>{n}</option>)}</select></label>
@@ -196,6 +205,8 @@ function CameraControl({infraredCamera=true,active,busy,telescopeIndex,pointing,
     <dt>{M.detailJd}</dt><dd>{image.jd.toFixed(5)}</dd>
     <dt>{M.detailSeed}</dt><dd data-testid="camera-detail-seed">{shown.recipe.seed}</dd>
     <dt>{M.detailDraws}</dt><dd>{shown.drawsConsumed}</dd>
+    <dt>{M.detailPeak}</dt><dd data-testid="camera-detail-peak" data-count={peak.count}>{M.peakCount(peak.value,peak.count)}</dd>
+    {image.fieldObjectsStatus&&<><dt>{M.detailFieldObjects}</dt><dd data-testid="camera-detail-field-objects" data-status={image.fieldObjectsStatus}>{image.fieldObjectsStatus==='run'&&shown.fieldObjects?M.fieldObjects.run(shown.fieldObjects.eligible,shown.fieldObjects.inBounds,shown.fieldObjects.tail,shown.fieldObjects.tailDrawn,shown.fieldObjects.tailSaturatedAdmission):image.fieldObjectsStatus==='run'?'':M.fieldObjects[image.fieldObjectsStatus]}</dd></>}
     {shown.skipped.length>0&&<><dt>{M.detailSkipped}</dt><dd data-testid="camera-detail-skipped">{shown.skipped.map(k=>M.skippedReason[k.reason]).join(' ')}</dd></>}
    </dl></details>
   </figure>}

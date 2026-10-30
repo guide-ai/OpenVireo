@@ -55,6 +55,7 @@ test('live mode sends only RA, DEC and SR and builds an image from the recorded 
  await expect(page.getByTestId('camera-detail-catalog')).toHaveText('NOMAD');
  await expect(page.getByTestId('camera-detail-source')).toContainText('Live VizieR query answered by vizier.idia.ac.za');
  await expect(page.getByTestId('camera-detail-rows')).toHaveText('4 / 1 / 0');
+ await expect(page.getByTestId('camera-detail-field-objects')).toHaveAttribute('data-status','not-certified');// Front R2
  await page.screenshot({path:test.info().outputPath('camera-live.png'),fullPage:false});
 });
 test('Front C5W: when the IDIA mirror cannot be reached, the live query falls back to CDS and names it',async({page})=>{
@@ -157,4 +158,47 @@ test('exposures longer than 60 min are refused in the form',async({page})=>{
  await expect(button(page,'Start exposure')).toBeDisabled();
  await expect(camera(page).getByRole('alert')).toContainText('between 1 s and 60 min');
  await exposure(page,'60','0');await expect(button(page,'Start exposure')).toBeEnabled();
+});
+
+test('Front R2 review 1 H1/I1, closure M1: at NGC 5924 (LSS Field 8) a class 1/2 variable takes the tail catalog row and is drawn saturated',async({page})=>{
+ test.setTimeout(120_000);
+ // The recorded answer with its rows moved onto the pointing, so a catalog row is the tail the pass overwrites.
+ const ra=15.365694444444445,dec=31.221944444444443,dRa=ra*15-56.75,dDec=dec-24.12;
+ const body=(await recorded).toString('utf8').replace(/<TD>(0?56\.7\d+)<\/TD>/g,(_,v:string)=>`<TD>${(Number(v)+dRa).toFixed(7)}</TD>`).replace(/<TD>\+(24\.1\d+)<\/TD>/g,(_,v:string)=>`<TD>+${(Number(v)+dDec).toFixed(7)}</TD>`);
+ await page.route(CDS,route=>route.fulfill({status:200,contentType:'text/xml',body}));
+ await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();
+ await button(page,'Open dome ↗').click();
+ if(!await page.locator('#point-ra').isVisible())await page.getByText('Enter coordinates',{exact:true}).click();
+ await page.locator('#point-ra').fill(String(ra));await page.locator('#point-dec').fill(String(dec));
+ await button(page,'Point to coordinates').click();
+ await page.getByRole('group',{name:'Field of view'}).getByRole('button',{name:'Telescope · 15′',exact:true}).click();
+ if(!await button(page,'Turn tracking on').isVisible())await page.getByText('Observatory clock & spectral tracking',{exact:true}).click();
+ await button(page,'Turn tracking on').click();
+ await camera(page).getByLabel(/Ask VizieR live/).check();await exposure(page,'0','1');
+ await button(page,'Start exposure').click();await expect(page.getByTestId('camera-status')).toHaveText('Image ready.',{timeout:60_000});
+ await camera(page).getByText('Exposure details').click();
+ const fo=page.getByTestId('camera-detail-field-objects');
+ await expect(fo).toHaveAttribute('data-status','run');await expect(fo).toContainText('the star is drawn saturated');
+ // Closure M1: VIREO's saturated star is drawn and clipped at the well, so many pixels share the brightest value.
+ const peak=page.getByTestId('camera-detail-peak');await expect(peak).toContainText('65536');
+ expect(Number(await peak.getAttribute('data-count'))).toBeGreaterThan(1000);
+});
+
+test('Front R2: at a certified field with a variable star the field-object pass runs; elsewhere it says why not',async({page})=>{
+ test.setTimeout(120_000);
+ const body=await recorded;await page.route(CDS,route=>route.fulfill({status:200,contentType:'text/xml',body}));
+ await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();
+ await button(page,'Open dome ↗').click();
+ if(!await page.locator('#point-ra').isVisible())await page.getByText('Enter coordinates',{exact:true}).click();
+ // The Boötes engine pack pointing (data/hubble/engine-bootes.json), whose certified field holds one TRUE-kept variable star.
+ await page.locator('#point-ra').fill('14.545666666666667');await page.locator('#point-dec').fill('31.56361111111111');
+ await button(page,'Point to coordinates').click();
+ await page.getByRole('group',{name:'Field of view'}).getByRole('button',{name:'Telescope · 15′',exact:true}).click();
+ if(!await button(page,'Turn tracking on').isVisible())await page.getByText('Observatory clock & spectral tracking',{exact:true}).click();
+ await button(page,'Turn tracking on').click();
+ await camera(page).getByLabel(/Ask VizieR live/).check();await exposure(page,'0','1');
+ await button(page,'Start exposure').click();await expect(page.getByTestId('camera-status')).toHaveText('Image ready.',{timeout:60_000});
+ await camera(page).getByText('Exposure details').click();
+ const fo=page.getByTestId('camera-detail-field-objects');
+ await expect(fo).toHaveAttribute('data-status','run');await expect(fo).toContainText('1 in the field');
 });

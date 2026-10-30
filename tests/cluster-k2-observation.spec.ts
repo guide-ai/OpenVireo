@@ -102,3 +102,14 @@ test('review 1 L4: at 320 px the photometry boxes show their whole value',async(
  const fits=await v.evaluate(e=>(e as HTMLInputElement).scrollWidth<=(e as HTMLInputElement).clientWidth);expect(fits).toBe(true);
  const box=await page.getByTestId('cnhr-obs-data').boundingBox();expect(box!.x+box!.width).toBeLessThanOrEqual(320);
 });
+
+test('K2 closure N3: Recorded Results reopens after Replace as after Add (0x549cba after every read)',async({page})=>{
+ await open(page);
+ await expect(page.getByTestId('cnhr-results-line-1')).toHaveText(LINES[1]);
+ await page.getByTestId('cnhr-results-list-menu').click();await page.getByTestId('cnhr-results-close').click();
+ await expect(page.getByTestId('cnhr-results-line-1')).toHaveCount(0);
+ await page.getByLabel('Load saved observation results (DAT)',{exact:true}).setInputFiles({name:'again.dat',mimeType:'application/octet-stream',buffer:DAT.subarray(144)});
+ await page.getByRole('button',{name:'Replace current results…',exact:true}).click();
+ await page.getByRole('button',{name:'Confirm replacing current results',exact:true}).click();
+ await expect(page.getByTestId('cnhr-results-line-1')).toHaveText(LINES[2]);
+});

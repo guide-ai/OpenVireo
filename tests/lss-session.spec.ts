@@ -80,3 +80,31 @@ test('the description refuses pasted control characters inline and Save keeps wo
  await expect(page.getByText('The description cannot contain control characters other than line breaks and tabs.')).toBeVisible();await expect(box).toHaveValue('Line one\nline two');
  const data=JSON.parse((await save(page)).toString());expect(lssLayer(data).lss.description).toBe('Line one\nline two');
 });
+test('Front L3: Record Z on an already recorded galaxy updates its row (first JD kept), and the wedge re-plot keeps one point',async({page})=>{
+ test.setTimeout(180000);
+ await page.clock.install();await page.goto('/');await survey(page);await load(page,'1');
+ await acquireAndRecord(page,1,'20','first');
+ const results=page.getByTestId('lss-results'),cells=async()=>(await results.locator('tbody tr').first().locator('td').allInnerTexts());
+ const before=await cells();
+ await page.getByRole('button',{name:'Plot my records in the wedge',exact:true}).click();await expect(page.getByTestId('wedge-count')).toHaveText('Points Plotted: 1');
+ await survey(page);await page.clock.runFor(60_000);// the site clock moves on: a new row would get a later JD
+ await page.getByTestId('lss-row-1').getByRole('button',{name:'Point and view',exact:true}).click();
+ await page.getByRole('button',{name:'Activate spectrometer',exact:true}).click();
+ await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
+ await page.getByRole('button',{name:'Start exposure',exact:true}).click();await page.clock.runFor(1500);
+ await page.getByRole('button',{name:'Pause exposure',exact:true}).click();
+ await page.getByLabel('z step',{exact:true}).fill('.001');await page.getByRole('button',{name:'Set step',exact:true}).click();await page.getByLabel('Shift',{exact:true}).fill('25');
+ await page.getByRole('button',{name:'Record Z',exact:true}).click();
+ await expect(page.getByTestId('lss-dialog-reused')).toContainText('updates that row instead of adding one');
+ await expect(page.getByTestId('lss-dialog-velocity')).toHaveValue(/^\d\.\d{3}E\+0\d$/);// the row's earlier velocity
+ await expect(page.getByLabel('Remarks',{exact:true})).toHaveValue('first');
+ // Review 1 M1: the dialog shows the row's first JD, as FormActivate reads the record's own time.
+ expect(Number(await page.locator('#lss-jd').inputValue())).toBeCloseTo(Number(before[1]),5);
+ await page.getByLabel('Remarks',{exact:true}).fill('again');await okWithVelocity(page);
+ await page.clock.resume();
+ await expect(page.getByTestId('lss-record-count')).toHaveText('1 records');
+ const after=await cells();
+ expect(after[1]).toBe(before[1]);// JD: the first observation time
+ expect(after[4]).not.toBe(before[4]);expect(after[6]).toBe('again');
+ await page.getByRole('button',{name:'Plot my records in the wedge',exact:true}).click();await expect(page.getByTestId('wedge-count')).toHaveText('Points Plotted: 1');
+});
