@@ -66,6 +66,22 @@ export const OBSERVATORY_MESSAGES=Object.freeze({
   open:'Optical Simulation Options…',unavailable:'Not available in OpenVireo',
   othersHeading:'Other options of the original (not available in OpenVireo; each keeps its compiled state, which is not shown here except where recovered):',
   fastSlewing:'compiled: checked (programmed-slew rate index 4)',
+  /** Front R3: the ported options (hints and what each does here). */
+  session:Object.freeze({
+   fastSlewing:'Checked (as compiled): a programmed slew moves at rate index 4. Unchecked: rate index 3, half as fast.',
+   fastScopeChange:'Checked: changing telescope with the dome fully open keeps it open. Unchecked (as compiled): the change closes the dome.',
+   fastScopeChangeNote:'Adaptation: the original\'s "Accessing …" wait, its success message and the reset to the finder view are not reproduced; the change is applied at once in both cases.',
+   computeRedshiftVelocity:'Checked: the LSS Measured Redshift Data dialog opens with the velocity already filled in as c·z. Its 1 % check still applies. Unchecked (as compiled): the student types it.',
+   computeRedshiftVelocityNote:'The analyzer\'s Hubble velocity table is always derived here (a web choice), so this option changes only the LSS dialog.',
+   infraredCamera:'Checked (as compiled): the camera offers the IR camera. Unchecked: only the CCD camera is offered, and the IR tab below is hidden.',
+   monochromeDisplays:'Checked: the LSS wedge plot is drawn in black and white the next time it is shown. Unchecked (as compiled): in colour.',
+   printInColor:'Checked: Print Wedge Plot prints in colour. Unchecked (as compiled): it prints in black and white.',
+   colorNote:'These two options also apply to the original\'s light curve and HR diagram windows, which are not covered by this option yet.',
+   sessionNote:'Like Edit Mode, these options last for this page session only and are not saved in investigation files.',
+   tabsHeading:'Parameter values (shown as compiled, read-only)',
+   tabsNote:'These values are shown but not editable: the field, photometer, spectrometer and camera simulations were checked against exactly these values, and changing them would invalidate those checks.',
+   notPorted:'Show Object ID, Time-Dependent Data and Write Log File stay as compiled: Show Object ID changes the photometer, spectrometer and camera names (not ported yet); the Observational Results window has its own Time-Dependent choice ("append"); Write Log File writes a file a browser page cannot write.',
+  }),
   help:'Limit Slewing (off by default, as compiled) stops the telescope at the site horizon: programmed slews below it are refused, a manual move stops there and tracking turns off when the target sets. Natively this is an instructor option; the other controls keep their compiled behaviour.',
  }),
  hotListPrint:Object.freeze({

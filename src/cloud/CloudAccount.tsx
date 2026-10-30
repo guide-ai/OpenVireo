@@ -79,11 +79,14 @@ export default function CloudAccount({busy,onRestore,onSaveToCloud,signinToken}:
   const name=(uploadName.trim()||M.defaultName(new Date().toLocaleString())).slice(0,120);
   void run(async()=>{
    let uploaded=false as boolean,failure:unknown=null;
-   await onSaveToCloud(async text=>{
-    try{const body=new Blob([text],{type:'application/json'});if(body.size>CLOUD_MAX_BYTES)throw new CloudError('too-large',413);await client.upload(body,name);uploaded=true;}
+   await onSaveToCloud(async(text,signal)=>{
+    try{const body=new Blob([text],{type:'application/json'});if(body.size>CLOUD_MAX_BYTES)throw new CloudError('too-large',413);await client.upload(body,name,signal);uploaded=true;}
     catch(e){failure=e;throw e;}
    });
    if(uploaded){setUploadName('');setItems(await client.list());return M.savedToCloud(name);}
+   // F2 review L3: Cancel stopped the upload. Like a cancelled local Save it is not a saved investigation; the list is read again
+   // because the worker may have stored the copy just before the abort.
+   if(failure instanceof CloudError&&failure.code==='cancelled'){setItems(await client.list());return M.saveCancelled;}
    if(failure)throw failure;
    // Otherwise the investigation itself could not be saved: the toolbar says why, and nothing was sent.
   });

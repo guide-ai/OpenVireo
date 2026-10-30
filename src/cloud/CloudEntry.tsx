@@ -8,7 +8,7 @@ const pendingToken=CLOUD_ENABLED&&typeof window!=='undefined'?takeSigninToken(wi
 const CloudAccount=import.meta.env.VITE_OPENVIREO_CLOUD==='1'?lazy(()=>import('./CloudAccount')):null;
 
 /** Front F2: runs Save investigation with `deliver` in place of the download (same bytes); resolves to whether it saved. */
-export type CloudSave=(deliver:(text:string)=>Promise<void>)=>Promise<boolean>;
+export type CloudSave=(deliver:(text:string,signal:AbortSignal)=>Promise<void>)=>Promise<boolean>;
 export type CloudEntryProps=Readonly<{busy:boolean;onRestore:(file:File)=>void;onSaveToCloud:CloudSave}>;
 
 /** Optional cloud account in the investigation toolbar. Renders nothing (and loads nothing) unless the build enables it. */

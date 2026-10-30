@@ -18,6 +18,7 @@ export const CLOUD_EN={
  saveCurrent:'Save current investigation to the cloud',
  saveCurrentHelp:'Saves exactly what Save investigation would download, without making a file on this device. The name above labels it, and a file uploaded below.',
  savedToCloud:(name:string)=>`Saved “${name}” to the cloud.`,
+ saveCancelled:'Save to the cloud was cancelled. The list below shows whether the cloud had already stored a copy.',
  defaultName:(when:string)=>`Investigation ${when}`,
  uploadFile:'Saved investigation file',
  uploadButton:'Upload to cloud',

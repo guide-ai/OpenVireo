@@ -61,6 +61,10 @@ export function lssDialogRecordValid(z:number,zHex:string,velocityHex:string):Re
  if(zHex!==hex32(zSingle)||!Number.isFinite(v)||hex32(v)!==velocityHex||!lssVelocityAccepted(v,zSingle))return null;
  return Object.freeze({zSingle,velocitySingle:v});
 }
+/** Front R3, Compute Rdshft Vel. (env+0x2e88): TLSSRsltsDlg1.FormActivate 0x57cab8 stores Single(c·z) into the record's velocity
+ * (0x57cbcb, c Extended 299792.458 at 0x57cd68, no z≠0 guard) and shows it like z, FloatToStrF(ffExponent,4,2). The OK check is
+ * unchanged (it never reads the option), so z = 0 is still refused there. */
+export function lssPrefilledVelocity(z:number):string{return floatToStrFExponent4(Math.fround(HUBBLE_C_KM_S*Math.fround(z)));}
 /** Front L3: FormActivate's VelEd text for a record that already has a velocity (a reused row): FloatToStrF(v, ffExponent, 4, 2);
  * blank when v = 0 (0x57cab8). */
 export function lssVelocityText(velocitySingle:number):string{return velocitySingle===0?'':floatToStrFExponent4(Math.fround(velocitySingle));}
