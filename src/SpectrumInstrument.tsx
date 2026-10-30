@@ -27,17 +27,6 @@ import { changeFactor, configureStep, createMeasurement, currentZ, INITIAL_CONTR
 import { readImportedSpectrum } from './io/spectrumFiles';
 import type { SessionObservation, ObservatorySession } from './io/analysisSession';
 import { AnalysisSessionError, MAX_SESSION_ROWS } from './io/analysisSessionLimits';
-/** Front D3: the session code (and the field data its validators need) is a separate chunk. It is preloaded once the page is
- * idle together with the modules Save imports lazily (review M1), so a tab that later goes offline or outlives a deployment
- * still saves; Save and Restore await the same promise. A failed load is forgotten (the next Save or Restore tries again) and reported as a loading problem (review L1). */
-class SessionCodeLoadError extends Error {}
-let sessionLoad:Promise<typeof import('./io/analysisSession')>|null=null;
-const sessionModule=()=>sessionLoad??=import('./io/analysisSession').catch(()=>{sessionLoad=null;throw new SessionCodeLoadError();});
-function preloadSessionWhenIdle():()=>void{
-  const run=()=>{void sessionModule().then(m=>m.preloadSaveModules()).catch(()=>{});};
-  if(typeof window.requestIdleCallback==='function'){const id=window.requestIdleCallback(run,{timeout:10_000});return ()=>window.cancelIdleCallback(id);}
-  const id=window.setTimeout(run,2_000);return ()=>window.clearTimeout(id);
-}
 import type {LssInvestigation} from './io/lssInvestigation';
 import {LssSessionError} from './io/lssSessionError';
 import type {ObjectXInvestigation} from './io/objectXInvestigation';
@@ -56,6 +45,17 @@ import SpectrumEngineControls from './SpectrumEngineControls';
 import {ENGINE_VIEW_EN} from './SpectrumEngineMessages';
 import {applyZoomDraft,ENGINE_CURSOR_START,engineTicks,ENGINE_PLOT_HEIGHT,ENGINE_PLOT_WIDTH,engineReadout,initialEngineWindow,insideEnginePlot,moveEngineCursor,nearestComparisonLine,panEngineWindow,type EngineCursor,type EngineWindow} from './core/spectrumEngineView';
 import {HELP_FILES} from './help/helpFiles';
+/** Front D3: the session code (and the field data its validators need) is a separate chunk. It is preloaded once the page is
+ * idle together with the modules Save imports lazily (review M1), so a tab that later goes offline or outlives a deployment
+ * still saves; Save and Restore await the same promise. A failed load is forgotten (the next Save or Restore tries again) and reported as a loading problem (review L1). */
+class SessionCodeLoadError extends Error {}
+let sessionLoad:Promise<typeof import('./io/analysisSession')>|null=null;
+const sessionModule=()=>sessionLoad??=import('./io/analysisSession').catch(()=>{sessionLoad=null;throw new SessionCodeLoadError();});
+function preloadSessionWhenIdle():()=>void{
+  const run=()=>{void sessionModule().then(m=>m.preloadSaveModules()).catch(()=>{});};
+  if(typeof window.requestIdleCallback==='function'){const id=window.requestIdleCallback(run,{timeout:10_000});return ()=>window.cancelIdleCallback(id);}
+  const id=window.setTimeout(run,2_000);return ()=>window.clearTimeout(id);
+}
 
 const references = { galaxy: { title: t('spectrum.galaxy'), source: 'GLXYLNS.LST', lines: parseLines(galaxyText) }, balmer: { title: t('spectrum.balmer'), source: 'BALMER.LST', lines: parseLines(balmerText) }, qso: { title: t('spectrum.qso'), source: 'AGN_QSO.LST', lines: parseLines(qsoText) } };
 const template = parseSpectrum(templateText);

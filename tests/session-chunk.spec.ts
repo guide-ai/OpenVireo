@@ -10,7 +10,7 @@ test('Save works after the idle preload even when the session chunk can no longe
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
  let inFlight=0,last=Date.now();
  page.on('request',()=>{inFlight++;last=Date.now();});
- for(const done of ['requestfinished','requestfailed'] as const)page.on(done,()=>{inFlight--;last=Date.now();});
+ const settle=()=>{inFlight--;last=Date.now();};page.on('requestfinished',settle);page.on('requestfailed',settle);
  const preloaded=page.waitForResponse(r=>SESSION_CHUNK.test(r.url())&&r.ok());
  await page.goto('/#spectrum');
  await preloaded;// nothing was clicked: only the idle preload asks for the chunk
