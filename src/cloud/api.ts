@@ -30,7 +30,12 @@ export function cloudClient(fetchImpl:Fetch=(...args)=>fetch(...args),base=CLOUD
   signOutEverywhere:async()=>{await post('/auth/signout-all',{});},
   list:async():Promise<readonly CloudInvestigation[]>=>(await(await call('/investigations')).json() as {investigations:CloudInvestigation[]}).investigations,
   /** Uploads the exact bytes of a Save investigation file; the format is unchanged. */
-  upload:async(body:Blob,name:string):Promise<CloudInvestigation>=>(await(await call('/investigations',{method:'POST',body,headers:{'Content-Type':'application/json','X-OpenVireo-Name':encodeURIComponent(name)}})).json() as {investigation:CloudInvestigation}).investigation,
+  /** `signal` (one-click Save to cloud) aborts the request; that is CloudError 'cancelled'. A copy the worker stored before the
+   * abort may still exist, so the caller lists again. */
+  upload:async(body:Blob,name:string,signal?:AbortSignal):Promise<CloudInvestigation>=>{
+   try{return (await(await call('/investigations',{method:'POST',body,signal,headers:{'Content-Type':'application/json','X-OpenVireo-Name':encodeURIComponent(name)}})).json() as {investigation:CloudInvestigation}).investigation;}
+   catch(e){if(signal?.aborted)throw new CloudError('cancelled',0);throw e;}
+  },
   download:async(id:string):Promise<Blob>=>await(await call(`/investigations/${encodeURIComponent(id)}`)).blob(),
   remove:async(id:string)=>{await call(`/investigations/${encodeURIComponent(id)}`,{method:'DELETE'});},
   deleteAccount:async(confirmEmail:string)=>{await post('/account',{confirmEmail},'DELETE');},

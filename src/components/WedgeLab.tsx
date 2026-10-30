@@ -17,6 +17,9 @@ import WebPrintPreview from'../polish/WebPrintPreview';
 import{POLISH_MESSAGES as PM,WEDGE_PRINT_LITERALS as WP}from'../polish/PolishMessages';
 
 export type WedgeLabProps=Readonly<{
+ /** Front R3: Monochrome Displays (env+0x2e8e) and Print in Color (env+0x2e8d), both compiled off. FormShow 0x580e1a copies
+  * Monochrome into the scheme flag; Print1Click 0x580fba prints with flag = Print in Color XOR 1. */
+ monochrome?:boolean;printInColor?:boolean;
  /** Translated replacements (any subset, nested groups partial); missing keys fall back to English. */
  messages?:WedgeMessageOverrides;
  /** Prefix for DOM ids when more than one panel is mounted. */
@@ -54,10 +57,14 @@ const fmt=(v:number,digits:number)=>Number.isFinite(v)?v.toFixed(digits):String(
 function raCell(r:WedgeRecord,m:WedgeMessageCatalog){return r.ra.status==='value'?fmt(r.ra.hours,6)+' '+m.detail.hours:m.fieldStatus[r.ra.status];}
 function decCell(r:WedgeRecord,m:WedgeMessageCatalog){return r.dec.status==='value'?fmt(r.dec.degrees,5)+m.detail.degrees+(r.dec.signLost?' *':''):m.fieldStatus[r.dec.status];}
 
-function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWorkspaceChange,ownRecords=null,onOwnRecordsResult,restoredOptions=null}:WedgeLabProps){
+function WedgeLab({monochrome=false,printInColor=false,messages,idPrefix='wedge-',disabled=false,onWorkspaceChange,ownRecords=null,onOwnRecordsResult,restoredOptions=null}:WedgeLabProps){
  const m=useMemo(()=>wedgeMessages(messages),[messages]),C=m.native;
  const[w,setW]=useState<WedgeWorkspace>(EMPTY_WEDGE_WORKSPACE);
  const[scheme,setScheme]=useState<WedgeColourScheme>(0);
+ // [W] The display takes Monochrome Displays when the plot is shown, as FormShow does, but only after the option changed: the
+ // web's own scheme choice below is kept otherwise.
+ const latchedMono=useRef(false);
+ useEffect(()=>{if(!disabled&&latchedMono.current!==monochrome){latchedMono.current=monochrome;setScheme(monochrome?1:0);}},[disabled,monochrome]);
  const[printing,setPrinting]=useState(false),printButton=useRef<HTMLButtonElement>(null);// Front P: Print Wedge Plot... preview [W]
  useEffect(()=>{if(disabled)setPrinting(false);},[disabled]);
  const token=useRef(0),abort=useRef<AbortController|null>(null),optionsButton=useRef<HTMLButtonElement>(null),promptButton=useRef<HTMLButtonElement>(null),fileInput=useRef<HTMLInputElement>(null),root=useRef<HTMLElement>(null);
@@ -198,8 +205,8 @@ function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWorkspaceChange,o
     <figure className="wedge-figure">
      <WedgePlotSvg plot={plot} records={w.records} options={w.options} colours={WEDGE_COLOUR_SCHEMES[scheme]} selected={w.selected} label={m.figureLabel} onSelect={i=>select(i)} idPrefix={idPrefix}/>
      {printing&&!disabled&&<WebPrintPreview testId="wedge-print-preview" caption={C.windowCaption} note={PM.wedgePrint.note} onClose={()=>{setPrinting(false);printButton.current?.focus();}}>
-      {/* Print1Click 0x580f88 sets TWedgePlot+0x394 := Env+0x2e8d XOR 1 (0x580fba–0x580fc3); the web always prints scheme 1 [W]. */}
-      <WedgePlotSvg plot={plot} records={w.records} options={w.options} colours={WEDGE_COLOUR_SCHEMES[1]} selected={null} label={m.figureLabel} onSelect={()=>{}} idPrefix={idPrefix+'print-'}/>
+      {/* Print1Click 0x580f88 sets TWedgePlot+0x394 := Env+0x2e8d XOR 1 (0x580fba–0x580fc3): black and white unless Print in Color. */}
+      <WedgePlotSvg plot={plot} records={w.records} options={w.options} colours={WEDGE_COLOUR_SCHEMES[printInColor?0:1]} selected={null} label={m.figureLabel} onSelect={()=>{}} idPrefix={idPrefix+'print-'}/>
      </WebPrintPreview>}
      <figcaption className="wedge-note">
       {plot.excluded?<span data-testid="wedge-excluded">{m.notDrawn(plot.excluded)} </span>:null}

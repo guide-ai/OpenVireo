@@ -957,6 +957,7 @@ export interface MessageParameters {
   "optical.evidenceHelp": never;
   "optical.switchHelp": never;
   "optical.applied": "name";
+  "optical.appliedDomeOpen": "name";
   "optical.compatibility": never;
   "optical.acquisitionLimit": never;
   "optical.useSupported": "name";

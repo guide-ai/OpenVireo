@@ -8,7 +8,7 @@ import {EMPTY_LSS_SURVEY,selectLssField,markLssListLoaded,openLssRecord,editLssD
 import {evaluateLssRow,lssPolicy,type LssRowStatus,type LssSpectrumInputs} from './core/lssExposure';
 import {fetchLssSpectrumInputs} from './io/lssSpectrumInputs';
 import {LSS_RESULTS_TXT,lssResultsTxtBytes} from './core/lssResultsTxt';
-import {lssDialogFields} from './core/lssRedshiftDialog';
+import {lssDialogFields,lssPrefilledVelocity} from './core/lssRedshiftDialog';
 import type {LssConfirm} from './core/lssSurvey';
 import LssRegion from './LssRegion';
 import {lssRegionListRows,type LssRegionListRow} from './core/lssRegion';
@@ -40,7 +40,7 @@ function statusText(s:LssRowStatus):string{
  return s.kind==='available'?t('lss.status.available'):t('lss.status.neighbour',{id:s.selectedId});
 }
 /** E02 student route (#lss-survey). Web adaptations are listed in the scope note and docs/LSS-SURVEY.md. */
-function LssSurvey({active,editMode=false,currentJd,initialTelescope,onPlotWedge,wedgeAck=null,onRecordsChange,onSnapshot,onSummary,restored=null}:{editMode?:boolean;onSummary?:(s:Omit<LssLabSummary,'saved'>)=>void;restored?:Readonly<{token:number;investigation:LssInvestigation|null}>|null;onSnapshot?:(s:LssSnapshot)=>void;active:boolean;currentJd:()=>number;initialTelescope:Telescope;onPlotWedge:(h:LssWedgeHandoff)=>number;wedgeAck?:Readonly<{token:number;accepted:boolean}>|null;onRecordsChange?:(records:readonly LssRecord[])=>void}){
+function LssSurvey({computeRedshiftVelocity=false,active,editMode=false,currentJd,initialTelescope,onPlotWedge,wedgeAck=null,onRecordsChange,onSnapshot,onSummary,restored=null}:{/** Front R3: Compute Rdshft Vel. (compiled off) fills the dialog's velocity with c·z when it opens. */computeRedshiftVelocity?:boolean;editMode?:boolean;onSummary?:(s:Omit<LssLabSummary,'saved'>)=>void;restored?:Readonly<{token:number;investigation:LssInvestigation|null}>|null;onSnapshot?:(s:LssSnapshot)=>void;active:boolean;currentJd:()=>number;initialTelescope:Telescope;onPlotWedge:(h:LssWedgeHandoff)=>number;wedgeAck?:Readonly<{token:number;accepted:boolean}>|null;onRecordsChange?:(records:readonly LssRecord[])=>void}){
  const [survey,setSurveyState]=useState<LssSurveyState>(EMPTY_LSS_SURVEY),current=useRef(survey),[dialogError,setDialogError]=useState('');
  /** Every survey transition runs here, outside React's updater: a rejected transition keeps the current state and returns false. */
  function update(fn:(s:LssSurveyState)=>LssSurveyState):boolean{try{const next=fn(current.current);current.current=next;setSurveyState(next);return true;}catch{return false;}}
@@ -98,7 +98,7 @@ function LssSurvey({active,editMode=false,currentJd,initialTelescope,onPlotWedge
  function cancelLoad(){abort.current?.abort();abort.current=null;setLoading(false);setNotice(t('lss.loadCancelled'));}
  const field=survey.field,rows=loaded?lssFieldRows(loaded.field):[],row=pointed!==null&&loaded?rows[pointed]:null,status=pointed!==null&&loaded?loaded.statuses[pointed]:null;
  const live=status&&status.kind!=='unavailable'?status:null;
- function record(control:ShiftControl){if(!row||!live||!loaded||!exposure)return;const z=currentZ(control),journal={seedAtReset:exposure.seedAtReset,events:exposure.events};setError('');setDialogError('');if(lssAtLimit(current.current)){setError(t('lss.limitReached',{limit:LSS_LIMITS.records}));return;}if(lssEventTotal(current.current.records,{acquisitionPolicy:lssPolicy(loaded.field,row.index,loaded.telescope),journal})>LSS_LIMITS.events){setError(t('lss.eventLimit',{limit:LSS_LIMITS.events}));return;}if(!update(s=>openLssRecord(s,{field:loaded.field,row:row.index,telescope:loaded.telescope,object:live.selectedId,jd:currentJd(),...(loaded.fieldJd!==undefined?{fieldJd:loaded.fieldJd}:{}),ra:row.ra,dec:row.dec,z,control,journal,acquisitionPolicy:lssPolicy(loaded.field,row.index,loaded.telescope)})))setError(t('lss.recordError'));}
+ function record(control:ShiftControl){if(!row||!live||!loaded||!exposure)return;const z=currentZ(control),journal={seedAtReset:exposure.seedAtReset,events:exposure.events};setError('');setDialogError('');if(lssAtLimit(current.current)){setError(t('lss.limitReached',{limit:LSS_LIMITS.records}));return;}if(lssEventTotal(current.current.records,{acquisitionPolicy:lssPolicy(loaded.field,row.index,loaded.telescope),journal})>LSS_LIMITS.events){setError(t('lss.eventLimit',{limit:LSS_LIMITS.events}));return;}if(!update(s=>openLssRecord(s,{field:loaded.field,row:row.index,telescope:loaded.telescope,object:live.selectedId,jd:currentJd(),...(loaded.fieldJd!==undefined?{fieldJd:loaded.fieldJd}:{}),ra:row.ra,dec:row.dec,z,control,journal,acquisitionPolicy:lssPolicy(loaded.field,row.index,loaded.telescope)})))setError(t('lss.recordError'));else if(computeRedshiftVelocity)update(s=>editLssDraft(s,{velocity:lssPrefilledVelocity(z)}));}
  function confirm(){
   let r:LssConfirm;try{r=confirmLssDialog(current.current);}catch{setDialogError(t('lss.limitReached',{limit:LSS_LIMITS.records}));return;}
   // A native refusal keeps the dialog open (ModalResult 0); the message is the original box text (with its caption when it has one).
