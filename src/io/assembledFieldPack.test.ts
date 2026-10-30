@@ -4,12 +4,13 @@ import {describe,expect,it} from 'vitest';
 import {AssembledFieldError,assembleFieldPack,assembledFieldArea,type AssemblySources} from './assembledFieldPack';
 import {checkGscIndex,createGscTileStore,GscTileError,gscTilePath,tiledBandSource} from './gscTiles';
 import {decodeFieldPack,fieldPackFromSnapshot,type FieldPack} from '../core/fieldPack';
-import {buildFieldPopulation,freshFieldArea,type FieldOptions} from '../core/fieldEngine';
+import {buildFieldPopulation,evaluateField,fieldAreaWraps,fieldSubAreas,freshFieldArea,type FieldOptions} from '../core/fieldEngine';
 import {traceCompactGscBandRead} from '../core/compactGscReadOrder';
 import {roundNearestEven} from '../core/numericPolicy';
 import {nativeCompactBandOrder,nativeRegionIds} from '../core/pinnedNativeField';
 import {GSC_RECORD_BYTES,GSC_TILE_RECORDS} from '../core/gscTilePlan';
 import {packWithPhotographs,parseGlimagesPositions} from '../core/lssLists';
+import {nativePhotographRows} from '../core/photographicList';
 
 // Front G (analysis/front-plans/front-g-gsc.md §5, §7): the published bounded GSC subsets stay the certified fast path; these
 // proofs read the published tiles from disk and show that (a) every stored band read equals the tile bytes, (b) a pack assembled
@@ -64,7 +65,11 @@ describe('published GSC subsets equal the published tiles (front-g-gsc.md §5a)'
 function certified():{id:string;pack:FieldPack}[]{
  const glimagesPositions=parseGlimagesPositions(glimages),out:{id:string;pack:FieldPack}[]=[];
  for(const p of lssPacks)out.push({id:p,pack:packWithPhotographs(decodeFieldPack(json(p)),glimagesPositions)});
- for(const p of [...enginePacks,...objectXPacks])out.push({id:p,pack:decodeFieldPack(json(p))});
+ for(const p of enginePacks)out.push({id:p,pack:decodeFieldPack(json(p))});
+ // Object X packs at runtime take their photographs from VIREO's kept GLIMAGES.LST rows (objectXSpectrometerInputs.ts), as the
+ // assembler now does (G4a): a malformed row such as NGC 4449's is dropped whole.
+ const nativePositions=nativePhotographRows(glimages).map(r=>({index:r.index,ra:r.ra,dec:r.dec}));
+ for(const p of objectXPacks)out.push({id:p,pack:packWithPhotographs(decodeFieldPack(json(p)),nativePositions)});
  // All six pinned snapshots, including the fresh-Hubble fallback and the star route's field (review 1 L4).
  for(const p of snapshots)out.push({id:p,pack:fieldPackFromSnapshot(p.replace(/^.*\/|\.json$/g,''),json(p))});
  return out;
@@ -98,31 +103,79 @@ describe('a pack assembled from the tiles gives the identical population at ever
 
 describe('assembled reads equal the whole band for other pointings (§7)',()=>{
  it('200 fixed pseudo-random pointings, every native read byte-equal',async()=>{
-  const s=sources();let state=20261029,done=0,typed=0;
+  const s=sources();let state=20261029,done=0,typed=0,wrapped=0;
   const next=()=>{state=(state*1664525+1013904223)>>>0;return state/2**32;};
   while(done<200){
    const pointing={ra:next()*24,dec:Math.asin(2*next()-1)*180/Math.PI};
-   let pack;try{pack=await assembleFieldPack(pointing,s);}catch(e){if(e instanceof AssembledFieldError&&['ra-wrap','polar','regions','budget'].includes(e.code)){typed++;continue;}throw e;}
-   const area=freshFieldArea(pointing),key=roundNearestEven(area.minimumRa*1e7);
+   let pack;try{pack=await assembleFieldPack(pointing,s);}catch(e){if(e instanceof AssembledFieldError&&['polar','regions','budget','band-end'].includes(e.code)){typed++;continue;}throw e;}
+   const area=freshFieldArea(pointing);if(fieldAreaWraps(area))wrapped++;
    expect(pack.bands.map(b=>b.name)).toEqual(nativeCompactBandOrder(nativeRegionIds(area)));
    for(const b of pack.bands){
-    const whole=band(b.name),view=new DataView(whole.buffer);
-    const t=traceCompactGscBandRead({recordCount:whole.byteLength/GSC_RECORD_BYTES,readPackedRa:i=>view.getInt32(i*GSC_RECORD_BYTES,true)},key,area.maximumRa,10_000);
-    expect([...b.reads.keys()].sort((x,y)=>x-y)).toEqual([...new Set([...t.probes,...t.visits].map(r=>r.recordIndex))].sort((x,y)=>x-y));
+    const whole=band(b.name),view=new DataView(whole.buffer),indices=new Set<number>();
+    // One native read per sub-area ([min, 24] and [0, max] for a field across 0 h).
+    for(const sub of fieldSubAreas(area)){
+     const t=traceCompactGscBandRead({recordCount:whole.byteLength/GSC_RECORD_BYTES,readPackedRa:i=>view.getInt32(i*GSC_RECORD_BYTES,true)},roundNearestEven(sub.minimumRa*1e7),sub.maximumRa,100_000);
+     for(const r of [...t.probes,...t.visits])indices.add(r.recordIndex);
+    }
+    expect([...b.reads.keys()].sort((x,y)=>x-y)).toEqual([...indices].sort((x,y)=>x-y));
     for(const [i,h] of b.reads)expect(recordHex(b.name,i,h.length/2)).toBe(h);
    }
    done++;
   }
-  expect(typed).toBeLessThan(40);
+  expect(typed).toBeLessThan(10);
  },600_000);
+});
+
+describe('fields across 0 h and near the poles from the tiles (G1b, RE-wrap-polar-consumers.md)',()=>{
+ const pointings=[{ra:0.001,dec:10},{ra:0.01,dec:-35},{ra:23.995,dec:45},{ra:23.98,dec:-60},{ra:0.02,dec:75},{ra:6,dec:89.7},{ra:3,dec:89.7},
+  {ra:15.5,dec:-88.99},{ra:1.5,dec:88.99},{ra:15.5,dec:-89.85},{ra:9,dec:89.88},{ra:3,dec:89.9},{ra:12,dec:89.93},{ra:20,dec:-89.93}];
+ it.each(pointings.map(p=>[`${p.ra} ${p.dec}`,p] as const))('%s',async(_label,pointing)=>{
+  const s=sources(),pack=await assembleFieldPack(pointing,s),area=freshFieldArea(pointing),subs=fieldSubAreas(area);
+  for(const b of pack.bands){
+   const whole=band(b.name),view=new DataView(whole.buffer),indices=new Set<number>();
+   for(const sub of subs){const t=traceCompactGscBandRead({recordCount:whole.byteLength/GSC_RECORD_BYTES,readPackedRa:i=>view.getInt32(i*GSC_RECORD_BYTES,true)},roundNearestEven(sub.minimumRa*1e7),sub.maximumRa,100_000);for(const r of [...t.probes,...t.visits])indices.add(r.recordIndex);}
+   expect([...b.reads.keys()].sort((x,y)=>x-y)).toEqual([...indices].sort((x,y)=>x-y));
+   for(const [i,h] of b.reads)expect(recordHex(b.name,i,h.length/2)).toBe(h);
+  }
+  for(const [,options] of optionSets){
+   const built=buildFieldPopulation(pack,glx,pointing,options);
+   if(!built.population)continue;
+   // Stars: the [min, 24] read over all bands, then the [0, max] read (one list, appended).
+   const st=built.population.stars.filter(x=>x.type===0) as readonly Readonly<{ra:number;dec:number}>[];
+   if(subs.length===2){const firstLow=st.findIndex(x=>x.ra<=area.maximumRa);if(firstLow>=0)expect(st.slice(firstLow).every(x=>x.ra<=area.maximumRa)).toBe(true);}
+   for(const x of st)expect(subs.some(a=>x.ra>=a.minimumRa&&x.ra<=a.maximumRa&&x.dec>=a.minimumDec&&x.dec<=a.maximumDec)).toBe(true);
+  }
+ },300_000);
+});
+
+describe('galaxies stored above 24 h near 0 h (G1b review 1 M1)',()=>{
+ // CLEA_GLX.DAT keeps 53 galaxies at RA 24.0004–24.0424 h; VIREO's wrapped predicate admits them, and the merge (0x59a49c) and
+ // selection handle them. These ordinary pointings used to fail as merge-boundary.
+ it.each([[0.01,14.98],[0.02,28.39],[0.005,-36],[23.995,15],[24.00769255980602-24,7.845070727581702],[24.000425318943517-24,47.27451277465043]])('%s %s',async(ra,dec)=>{
+  const p={ra,dec},pack=await assembleFieldPack(p,sources());
+  for(const [,options] of optionSets){
+   const built=buildFieldPopulation(pack,glx,p,options);
+   expect(built.reasons).not.toContain('merge-boundary');expect(built.population!.galaxies.some(g=>g.ra>24)).toBe(true);
+   expect(()=>evaluateField(pack,glx,p,2,options)).not.toThrow();
+  }
+ },120_000);
+});
+
+describe('band-end at an ordinary pointing (G1b review 1 L2)',()=>{
+ it('a wrapped field whose [min, 24] key is above every S8230 record is typed band-end, as VIREO reads past EOF',async()=>{
+  const p={ra:0.59788,dec:-87.604},a=freshFieldArea(p);
+  expect(fieldAreaWraps(a)).toBe(true);expect(roundNearestEven(a.minimumRa*1e7)).toBeGreaterThan(index.bands.find(b=>b.name==='S8230')!.tiles.at(-1)!.lastPackedRa);
+  await expect(assembleFieldPack(p,sources())).rejects.toEqual(new AssembledFieldError('band-end'));
+ });
 });
 
 describe('typed limits',()=>{
  it('refuses wrap and polar areas with a typed reason, and a read outside the fetched tiles',async()=>{
-  expect(()=>assembledFieldArea({ra:0.001,dec:10})).toThrow(new AssembledFieldError('ra-wrap'));
-  expect(()=>assembledFieldArea({ra:23.999,dec:-10})).toThrow(new AssembledFieldError('ra-wrap'));
-  expect(()=>assembledFieldArea({ra:3,dec:89.5})).toThrow(new AssembledFieldError('polar'));
-  expect(()=>assembledFieldArea({ra:3,dec:-89})).toThrow(new AssembledFieldError('polar'));
+  // Fields across 0 h fold as 0x53be70 (G1b); polar is only a folded bound outside 0..24 h (a web limit [W]).
+  expect(fieldAreaWraps(assembledFieldArea({ra:0.001,dec:10}))).toBe(true);expect(fieldAreaWraps(assembledFieldArea({ra:23.999,dec:-10}))).toBe(true);
+  expect(fieldAreaWraps(assembledFieldArea({ra:3,dec:89.5}))).toBe(false);expect(assembledFieldArea({ra:3,dec:89.88}).maximumDec).toBeGreaterThan(90);
+  expect(()=>assembledFieldArea({ra:3,dec:89.95})).toThrow(new AssembledFieldError('polar'));
+  expect(()=>assembledFieldArea({ra:3,dec:-90})).toThrow(new AssembledFieldError('polar'));
   expect(()=>assembledFieldArea({ra:24,dec:0})).toThrow(new AssembledFieldError('input'));
   const b=index.bands[0],src=tiledBandSource(b,new Map([[0,file('public'+gscTilePath(b.name,0))]]));
   expect(src.readRecord(GSC_TILE_RECORDS-1)).toHaveLength(27);

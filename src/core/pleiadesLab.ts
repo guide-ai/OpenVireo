@@ -4,6 +4,7 @@
  * value is correct. The 16-star sample step is explicit web exercise coverage of the admitted original targets, not a historical
  * classroom minimum or a grade; the existing two-pair fit minimum stays a technical guard. Pure: no React, i18n, clock or I/O. */
 import type {PhotometerState} from './photometer';
+import {pleiadesSkyContext} from './pleiadesSkyContext';
 import {PLEIADES_ADMITTED_ROWS,type PhotometerPointingAccess} from './pleiadesHotList';
 
 /** What the photometer reports (only when it changes). */
@@ -31,12 +32,12 @@ export function pleiadesExerciseSummary(state:PhotometerState|null,access:Photom
  const entered=new Set(state.entries.map(e=>e.readingId));
  let measuredTargets=0,recordedTargets=0,colorTargets=0;
  for(const row of PLEIADES_ADMITTED_ROWS){
-  const objects=state.readings.filter(r=>r.kind==='object'&&r.targetId===row.catalogId&&r.reduction?.status==='available');
+  const objects=state.readings.filter(r=>r.kind==='object'&&r.targetId===row.catalogId&&r.reduction?.status==='available'&&pleiadesSkyContext(state,r));
   const has=(filter:'B'|'V',confirmed:boolean)=>objects.some(r=>r.filter===filter&&(!confirmed||entered.has(r.id)));
   if(has('B',false)&&has('V',false))measuredTargets++;
   if(has('B',true)&&has('V',true))recordedTargets++;
   const color=state.colors[row.catalogId];
-  if(color&&color.targetId===row.catalogId&&entered.has(color.bReadingId)&&entered.has(color.vReadingId))colorTargets++;
+  if(color&&color.targetId===row.catalogId&&entered.has(color.bReadingId)&&entered.has(color.vReadingId)&&[color.bReadingId,color.vReadingId].every(id=>objects.some(r=>r.id===id)))colorTargets++;
  }
  return Object.freeze({armed:state.armed,access,measuredTargets,recordedTargets,colorTargets,fit:!!state.clusterFit});
 }

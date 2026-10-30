@@ -10,7 +10,7 @@ const band:GscBandIndex={name:'N0000',records:65536*2+3,bytes:(65536*2+3)*GSC_RE
  tiles:[0,1,2].map(k=>({firstRecord:k*65536,records:k<2?65536:3,bytes:(k<2?65536:3)*GSC_RECORD_BYTES,sha256:'0'.repeat(64),firstPackedRa:k,lastPackedRa:k}))};
 // Small tiles stand in for the real ones; the store only checks what the index records for each tile.
 const small:GscBandIndex={...band,tiles:band.tiles.map((t,k)=>({...t,bytes:tileBytes(k).byteLength,sha256:sha(tileBytes(k))}))};
-function mock(body:(path:string)=>Response|Promise<Response>){const calls:string[]=[];return {calls,fetcher:(async(input:RequestInfo|URL,init?:RequestInit)=>{calls.push(String(input));expect(init?.credentials).toBe('same-origin');expect(init?.cache).toBe('force-cache');return body(String(input));}) as typeof fetch};}
+function mock(body:(path:string)=>Response|Promise<Response>){const calls:string[]=[],modes:(RequestCache|undefined)[]=[];return {calls,modes,fetcher:(async(input:RequestInfo|URL,init?:RequestInit)=>{calls.push(String(input));modes.push(init?.cache);expect(init?.credentials).toBe('same-origin');return body(String(input));}) as typeof fetch};}
 const byPath=(path:string)=>{const k=Number(/(\d{3})\.bin$/.exec(path)![1]);return new Response(tileBytes(k));};
 
 describe('GSC tile store',()=>{
@@ -30,6 +30,9 @@ describe('GSC tile store',()=>{
   mode='404';await expect(store.tile(small,0)).rejects.toMatchObject({code:'fetch'});
   mode='throw';await expect(store.tile(small,0)).rejects.toBeInstanceOf(GscTileError);
   mode='ok';expect(await store.tile(small,0)).toEqual(tileBytes(0));expect(m.calls).toHaveLength(5);
+  // After wrong bytes, retries bypass the HTTP cache until good bytes arrive (G2 review 1); then the cache is used again.
+  expect(m.modes).toEqual(['force-cache','reload','reload','reload','reload']);
+  await store.tile(small,1);expect(m.modes.at(-1)).toBe('force-cache');
   await expect(store.tile(small,7)).rejects.toMatchObject({code:'index'});
  });
  it('reports a missing tile behind an SPA fallback (200 with index.html) as fetch, not integrity (review L2)',async()=>{

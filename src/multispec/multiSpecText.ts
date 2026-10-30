@@ -6,7 +6,7 @@ import type {AccessReason} from '../core/instrumentAccess';
 import {t,type PlainMessageKey} from '../i18n';
 
 const REASONS:Readonly<Record<string,PlainMessageKey>>=Object.freeze({
- 'star-template-none':'multispec.reason.star-template-none','spectrum-template-unapproved':'multispec.reason.spectrum-template-unapproved',
+ 'star-template-none':'multispec.reason.star-template-none',
  'star-template-random':'multispec.reason.star-template-random','star-index-invalid':'multispec.reason.star-index-invalid',
  'galaxy-lookup':'multispec.reason.galaxy-lookup','spectrum-mapping':'multispec.reason.spectrum-mapping','galaxy-spectrum':'multispec.reason.galaxy-spectrum',
  'qso-spectrum':'multispec.reason.qso-spectrum','spectrum-range':'multispec.reason.spectrum-range','object-type':'multispec.reason.object-type',

@@ -31,9 +31,21 @@ The seeing jitter is on for the CCD (compiled record byte +0x5a = 1 at 0x5a2bd8)
     then drawn at its own position, with NF −0.25 for the CCD.
   - With an empty camera list VIREO writes the observatory field star itself.
 - **This site:**
-  - It runs the pass on the certified field population at the camera pointing, built at the exposure JD
+  - It runs the pass on the field population at the camera pointing, built at the exposure JD
     (`src/camera/cameraFieldInputs.ts`, `src/core/cameraFieldObjects.ts`, composer step 2b).
-  - At other pointings it does not run, and the exposure details say so [W].
+  - **Front G merge:** the population exists at every pointing: a bundled pack where one is listed, otherwise a field assembled
+    from the compact GSC tiles. VIREO builds the field at every pointing (G-RE3, no pointing gate), so the pass now runs
+    everywhere.
+    - **Object X:** within 2° + 0.375° (the field's reach) of an ObjectX.HTL position or of the lab's hidden target, nothing is
+      loaded and the pass does not run; the details say only that the field stays hidden near an Object X target, the same text
+      whether or not a variable is there [W]. A failed ObjectX.HTL read masks.
+    - **Statuses:** a tile that cannot be fetched or checked is "could not be loaded" (try again); a polar field, an unreadable
+      band or a population-blocking reason is "cannot build the field population" [W].
+    - **Cost:** measured in Node with tiles read from disk, the added preparation time is 19–105 ms for ordinary fields and
+      150–300 ms near a pole (first field cold, later fields reuse cached tiles). The browser adds the same-origin tile fetch.
+      It stays on the preparation path. Stop or release aborts it through the exposure's AbortSignal.
+    - **Equality:** at every pointing that had a pack, the field-input statuses (681) and the compositions (300; CCD and IR,
+      filter bytes 0/3/4, telescope 0) are byte-identical to main ab3b97b.
   - A variable whose brightness is not known blocks the pass, and an empty list writes nothing [W].
   - A pointing with no certified pack says "not certified"; a pack or catalog that cannot be loaded says "could not be
     checked" (review 1 L1) [W].

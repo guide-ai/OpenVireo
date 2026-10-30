@@ -55,7 +55,8 @@ test('live mode sends only RA, DEC and SR and builds an image from the recorded 
  await expect(page.getByTestId('camera-detail-catalog')).toHaveText('NOMAD');
  await expect(page.getByTestId('camera-detail-source')).toContainText('Live VizieR query answered by vizier.idia.ac.za');
  await expect(page.getByTestId('camera-detail-rows')).toHaveText('4 / 1 / 0');
- await expect(page.getByTestId('camera-detail-field-objects')).toHaveAttribute('data-status','not-certified');// Front R2
+ // Front G merge: every pointing now has a field population (tiled here), and this field holds no variable star.
+ await expect(page.getByTestId('camera-detail-field-objects')).toHaveAttribute('data-status','none');
  await page.screenshot({path:test.info().outputPath('camera-live.png'),fullPage:false});
 });
 test('Front C5W: when the IDIA mirror cannot be reached, the live query falls back to CDS and names it',async({page})=>{
