@@ -1,4 +1,5 @@
-import type {RefObject} from 'react';
+import {memo,type RefObject} from 'react';
+import {sameData} from './renderStability';
 import {OBJECT_X_GUIDE_EN as G} from './objectx/ObjectXMessages';
 import {OBJECT_X_LAB_STEPS,type ObjectXLabProgress,type ObjectXLabStep} from './core/objectXLab';
 import './hubble-lab.css';
@@ -6,7 +7,7 @@ export type ObjectXLabDestination='object-x'|'observatory';
 const STEP_DESTINATION:Readonly<Record<ObjectXLabStep,ObjectXLabDestination|null>>={target:'object-x',clock:'object-x',list:'object-x',image:'observatory',repeat:'observatory',measure:'object-x',classify:'object-x',describe:'object-x',reveal:'object-x',save:null};
 /** E08 guide (HubbleLabGuide layout). Check marks are recomputed from the current lab by objectXLabProgress; nothing is
  * stored, and the answer is never judged before the reveal. */
-export default function ObjectXLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:ObjectXLabProgress;onNavigate:(destination:ObjectXLabDestination)=>void}){
+function ObjectXLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:ObjectXLabProgress;onNavigate:(destination:ObjectXLabDestination)=>void}){
  function go(destination:ObjectXLabDestination){dialogRef.current?.close();onNavigate(destination);}
  const done=OBJECT_X_LAB_STEPS.filter(step=>progress.done[step]).length;
  return <dialog ref={dialogRef} className="hubble-lab-dialog" aria-labelledby="objectx-lab-heading" aria-describedby="objectx-lab-intro" data-testid="objectx-guide">
@@ -19,3 +20,5 @@ export default function ObjectXLabGuide({dialogRef,progress,onNavigate}:{dialogR
   <button className="secondary-button" onClick={()=>dialogRef.current?.close()}>{G.return}</button>
  </dialog>;
 }
+// Front Perf: the closed guide re-renders only when its progress (plain data), ref or handler changes.
+export default memo(ObjectXLabGuide,(a,b)=>a.dialogRef===b.dialogRef&&a.onNavigate===b.onNavigate&&sameData(a.progress,b.progress));

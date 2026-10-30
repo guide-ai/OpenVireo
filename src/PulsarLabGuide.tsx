@@ -1,4 +1,5 @@
-import type {RefObject} from 'react';
+import {memo,type RefObject} from 'react';
+import {sameData} from './renderStability';
 import {t} from './i18n';
 import {PULSAR_LAB_REQUIRED_STEPS,PULSAR_LAB_STEPS,type PulsarLabProgress,type PulsarLabStep} from './core/pulsarLab';
 import {PULSAR_EXERCISE_SCENARIO} from './core/pulsarExerciseStart';
@@ -14,7 +15,7 @@ const READING_STEPS:ReadonlySet<PulsarLabStep>=new Set(['period','delay']);
 
 /** WEB-PULSAR-GUIDE-01: the Pulsars (E06) guide, with the HubbleLabGuide layout. Every check mark is recomputed from the current
  * state by pulsarLabProgress; nothing is stored. The guide explains manual arithmetic; it computes no measurement itself. */
-export default function PulsarLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:PulsarLabProgress;onNavigate:(destination:PulsarLabDestination)=>void}){
+function PulsarLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:PulsarLabProgress;onNavigate:(destination:PulsarLabDestination)=>void}){
  function go(destination:PulsarLabDestination){dialogRef.current?.close();onNavigate(destination);}
  const doneCount=PULSAR_LAB_REQUIRED_STEPS.filter(s=>progress.done[s]).length;
  const statusText=(step:PulsarLabStep)=>step==='save'
@@ -61,3 +62,5 @@ export default function PulsarLabGuide({dialogRef,progress,onNavigate}:{dialogRe
   <button className="secondary-button" onClick={()=>dialogRef.current?.close()}>{t('pulsarLab.return')}</button>
  </dialog>;
 }
+// Front Perf: the closed guide re-renders only when its progress (plain data), ref or handler changes.
+export default memo(PulsarLabGuide,(a,b)=>a.dialogRef===b.dialogRef&&a.onNavigate===b.onNavigate&&sameData(a.progress,b.progress));

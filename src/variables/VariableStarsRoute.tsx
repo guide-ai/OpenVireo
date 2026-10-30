@@ -1,4 +1,4 @@
-import {useEffect,useId,useMemo,useRef,useState} from 'react';
+import {memo,useEffect,useId,useMemo,useRef,useState} from 'react';
 import {createPortal} from 'react-dom';
 import {decodeVariableStarCatalog,searchVariableStars,variableStarSaveFileName,variableStarSaveText,variableStarTypes,type VariableStarRecord} from '../core/variableStars';
 import {LightCurveError,lightCurvePlot,type LightCurvePlot,type LightCurveUnavailable} from '../core/lightCurve';
@@ -28,7 +28,7 @@ function download(bytes:Uint8Array,name:string){
  * State is a browsing aid only; it is not saved with the investigation. */
 /** `openRequest` (Front O): Field Information › Variable Stars › Get Selection Data (0x530130) opens Variable Star Data on a
  * CLEA_VStrs.dat record index; each new token opens once the catalog is loaded. */
-export default function VariableStarsRoute({active,openRequest=null}:{active:boolean;openRequest?:Readonly<{token:number;index:number;riseWordDefaulted?:boolean}>|null}){
+function VariableStarsRoute({active,openRequest=null}:{active:boolean;openRequest?:Readonly<{token:number;index:number;riseWordDefaulted?:boolean}>|null}){
  const id=useId(),[load,setLoad]=useState<LoadState>({status:'loading'}),[name,setName]=useState(''),[type,setType]=useState('');
  const [session,setSession]=useState<VariableStarSession>(INITIAL_VARIABLE_STAR_SESSION);
  const [menu,setMenu]=useState<'data'|'save'|'file'|null>(null),[notice,setNotice]=useState('');
@@ -178,3 +178,5 @@ function PrintPreview({caption,lines,plot,curve,name,onClose}:{caption:string;li
    <div className="ob-actions"><button type="button" className="primary-button" ref={button} data-testid="variable-print-print" onClick={print}>{M.printButton}</button><button type="button" className="secondary-button" data-testid="variable-print-close" onClick={onClose}>{M.printClose}</button></div></div>
  </dialog>,document.body);
 }
+// Front Perf: re-render only when a prop changes (handlers come stable from the shell; docs/RENDER-BUDGET.md).
+export default memo(VariableStarsRoute);

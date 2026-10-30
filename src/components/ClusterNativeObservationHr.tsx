@@ -1,3 +1,4 @@
+import {memo} from 'react';
 import{useEffect,useLayoutEffect,useMemo,useRef,useState,type ChangeEvent}from'react';
 import'./ClusterNativeObservationHr.css';
 import{nativeObservationBytes}from'../core/nativeObservationResults';
@@ -27,7 +28,7 @@ const show4=(v:number)=>Number.isFinite(v)?v.toFixed(4):String(v);
 const frame=clusterNativeHrFrame();
 const VIEW_W=470,VIEW_H=500;
 
-export default function ClusterNativeObservationHr({initialList=null,messages,idPrefix='cnhr-',disabled=false,onWorkspaceChange}:ClusterNativeObservationHrProps){
+function ClusterNativeObservationHr({initialList=null,messages,idPrefix='cnhr-',disabled=false,onWorkspaceChange}:ClusterNativeObservationHrProps){
  const m=useMemo(()=>({...CLUSTER_NATIVE_HR_MESSAGES,...messages}),[messages]);
  const [w,setW]=useState<ClusterNativeHrWorkspace>(()=>initialList?Object.freeze({...EMPTY_CLUSTER_NATIVE_HR,list:initialList}):EMPTY_CLUSTER_NATIVE_HR);
  const token=useRef(0),input=useRef<HTMLInputElement>(null);
@@ -136,3 +137,5 @@ export default function ClusterNativeObservationHr({initialList=null,messages,id
   <p className="cluster-native-hr-note">{m.limits}</p>
  </section>;
 }
+// Front Perf: re-render only when a prop changes (handlers come stable from the shell; docs/RENDER-BUDGET.md).
+export default memo(ClusterNativeObservationHr);

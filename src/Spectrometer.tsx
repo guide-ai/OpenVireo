@@ -1,3 +1,5 @@
+import {memo,type ComponentProps} from 'react';
+import {propsEqual} from './renderStability';
 import type { Sample } from './core/spectrum';
 import type { SkyObject } from './core/sky';
 import { t } from './i18n';
@@ -11,7 +13,7 @@ const FieldSpectrometer=lazy(()=>import('./FieldSpectrometer'));
 /** #spectrometer (Front P): an index of the routes where the single-slit spectrometer is used. The earlier source-profile
  * preview (M82/Coma1/Coma2, "Exposure acquisition is pending") predated those routes and was retired. The props are kept
  * so the page and saved investigations stay unchanged (the preparation seed is still saved and restored, but unused). */
-export default function Spectrometer({ onReturn, field }: { field?: FieldSpectrometerLink; target: SkyObject; enabled: boolean; onReturn: () => void; verifiedLibrary:Readonly<{targetId:string;name:string;sha256:string;samples:readonly Sample[]}>|null;libraryFailed:boolean;seedText:string;onSeedTextChange:(text:string)=>void }) {
+function Spectrometer({ onReturn, field }: { field?: FieldSpectrometerLink; target: SkyObject; enabled: boolean; onReturn: () => void; verifiedLibrary:Readonly<{targetId:string;name:string;sha256:string;samples:readonly Sample[]}>|null;libraryFailed:boolean;seedText:string;onSeedTextChange:(text:string)=>void }) {
   const S = PM.spectrometerIndex;
   // The field spectrometer's chunk loads only once this screen is opened (the route stays mounted while hidden).
   const [opened,setOpened]=useState(!!field?.active);if(field?.active&&!opened)setOpened(true);
@@ -27,3 +29,5 @@ export default function Spectrometer({ onReturn, field }: { field?: FieldSpectro
     {field&&opened&&<Suspense fallback={<p>{t('sky.loading')}</p>}><FieldSpectrometer link={field}/></Suspense>}
   </main>;
 }
+// Front Perf: re-render only when a prop changes (handlers come stable from the shell; docs/RENDER-BUDGET.md).
+export default memo(Spectrometer,propsEqual<ComponentProps<typeof Spectrometer>>(['target']));

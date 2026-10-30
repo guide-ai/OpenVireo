@@ -1,4 +1,4 @@
-import {useEffect,useState,type ComponentProps,type ComponentType} from 'react';
+import {memo,useEffect,useState,type ComponentProps,type ComponentType} from 'react';
 import type MultiSpecObservatory from './MultiSpecObservatory';
 import type MultiSpecObjectX from './MultiSpecObjectX';
 // Front M: Multi-Spec loads its cores (field engine, spectra, formats) only when its card is shown.
@@ -20,5 +20,6 @@ function deferred<P extends object>(load:()=>Promise<{default:ComponentType<P>}>
 }
 const Observatory=deferred<ComponentProps<typeof MultiSpecObservatory>>(()=>import('./MultiSpecObservatory'));
 const ObjectX=deferred<ComponentProps<typeof MultiSpecObjectX>>(()=>import('./MultiSpecObjectX'));
-export function MultiSpecObservatoryLazy(props:ComponentProps<typeof MultiSpecObservatory>){return <Observatory {...props}/>;}
+// Front Perf: memo; its props are state, strings and the stable observatoryJd.
+export const MultiSpecObservatoryLazy=memo(function MultiSpecObservatoryLazy(props:ComponentProps<typeof MultiSpecObservatory>){return <Observatory {...props}/>;});
 export function MultiSpecObjectXLazy(props:ComponentProps<typeof MultiSpecObjectX>){return <ObjectX {...props}/>;}

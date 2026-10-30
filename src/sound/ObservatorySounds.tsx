@@ -1,4 +1,4 @@
-import {useEffect,useId,useRef,useState} from 'react';
+import {memo,useEffect,useId,useRef,useState} from 'react';
 import {DOME_END_SOUNDS,SOUND_EFFECTS_DEFAULT,SOUND_FILES,domeEndActions,soundEffectsStep,soundFileUrl,type ObservatorySoundState,type SoundAction,type SoundChannel,type SoundName} from '../core/soundEffects';
 import {resourceSha256} from '../io/boundedResource';
 import {decodeMsAdpcm,pcm16Wav,readWavInfo} from '../core/msAdpcm';
@@ -29,7 +29,7 @@ async function loadSound(sound:SoundName):Promise<string>{
 const sound=(s:SoundName)=>{let p=cache.get(s);if(!p){p=loadSound(s);p.then(()=>loaded.add(s),()=>cache.delete(s));cache.set(s,p);}return p;};
 
 export type ObservatorySoundsProps=Readonly<{motion:Readonly<{kind:'manual'|'programmed';phase:string}>|null}>;
-export default function ObservatorySounds({motion}:ObservatorySoundsProps){
+function ObservatorySounds({motion}:ObservatorySoundsProps){
  const id=useId(),[enabled,setEnabled]=useState(sessionEnabled),[failure,setFailure]=useState(''),[domeCue,setDomeCue]=useState(domeCueCount);
  // Review L3: "Loading…" only while a not-yet-loaded sound is pending on some channel; cleared when that play is superseded.
  const pending=useRef({dome:false,telescope:false}),[loading,setLoading]=useState(false);
@@ -74,3 +74,8 @@ export default function ObservatorySounds({motion}:ObservatorySoundsProps){
   <audio ref={audio.telescope} aria-label={M.channel.telescope} data-testid="sound-telescope" preload="none"/>
  </section>;
 }
+/** Front Perf MR3: the shell re-renders on every keystroke and clock tick, and the motion record changes identity as the
+ * telescope moves. This component reads only motion.kind and motion.phase (its sound state; soundEffectsStep sees nothing
+ * else), so it re-renders only when one of those changes; its own state (checkbox, dome cue) re-renders it as before. */
+const sameMotion=(a:ObservatorySoundsProps,b:ObservatorySoundsProps)=>a.motion===b.motion||(!!a.motion&&!!b.motion&&a.motion.kind===b.motion.kind&&a.motion.phase===b.motion.phase);
+export default memo(ObservatorySounds,sameMotion);

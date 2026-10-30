@@ -1,4 +1,4 @@
-import {lazy,Suspense} from 'react';
+import {lazy,memo,Suspense} from 'react';
 import {CLOUD_ENABLED} from './config';
 import {takeSigninToken} from './signinLink';
 
@@ -10,7 +10,9 @@ const CloudAccount=import.meta.env.VITE_OPENVIREO_CLOUD==='1'?lazy(()=>import('.
 export type CloudEntryProps=Readonly<{busy:boolean;onRestore:(file:File)=>void}>;
 
 /** Optional cloud account in the investigation toolbar. Renders nothing (and loads nothing) unless the build enables it. */
-export default function CloudEntry(props:CloudEntryProps){
+function CloudEntry(props:CloudEntryProps){
  if(!CloudAccount)return null;
  return <Suspense fallback={null}><CloudAccount {...props} signinToken={pendingToken}/></Suspense>;
 }
+/** Front Perf MR3: memoised (the shell passes a stable onRestore), so a shell render does not render it again. */
+export default memo(CloudEntry);
