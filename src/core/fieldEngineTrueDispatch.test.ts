@@ -150,7 +150,8 @@ describe('Front T review 1: stage gates never certify a population (M1); colours
    const pack=withVariables(lssPack(2),[entry]);
    expect(buildFieldPopulation(pack,glx,at).reasons,reason).toContain(reason);
    setFieldInfoResources({snapshot:async id=>JSON.parse(file(`data/hubble/${id==='36773'?'pinned-galaxy-field':id==='pegasus'?'pinned-pegasus-field':`pinned-galaxy-${id}-field`}.json`).toString()),engine:async id=>JSON.parse(file(`data/hubble/engine-${id}.json`).toString()),lss:async f=>f===2?pack:lssPack(f),
-    glx:async()=>glx,qso:async()=>({bytes:new Uint8Array(file('public/original/catalogs/CLEA_QSO.DAT')),sha256:'69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5'}),glimages:async()=>new Uint8Array(file('public/original/images/GLIMAGES.LST'))});
+    glx:async()=>glx,qso:async()=>({bytes:new Uint8Array(file('public/original/catalogs/CLEA_QSO.DAT')),sha256:'69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5'}),glimages:async()=>new Uint8Array(file('public/original/images/GLIMAGES.LST')),
+    assembled:async()=>{throw new Error('an LSS pointing uses its pack, never the tiles');}});
    try{expect(await findCertifiedPopulation(at),reason).toEqual({status:'unavailable',reason:'population',detail:reason});}finally{setFieldInfoResources(null);}
   }
  });

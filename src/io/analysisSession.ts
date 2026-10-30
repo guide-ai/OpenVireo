@@ -362,7 +362,7 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
     try{const stars=acquisitions.filter(a=>a.kind==='catalog-star-acquisition');classification=readClassificationWorkspace(profileVersion===7?await restoreClassificationImportWorkspace(c.workspace):c.workspace,stars,profileVersion===4,profileVersion>=6,profileVersion===7);if(verifySources)await loadClassificationSources(currentClassification(classification),classificationExternalSources(classification,stars));}catch{fail('state');}
   }
   let photometry:PhotometerState|undefined;
-  if(version>=8&&!(version>=9&&r.photometry===null)){try{const{parsePhotometerSession,serializePhotometerSession,MAX_PHOTOMETER_SESSION_BYTES}=await import('./photometerSession');if(new TextEncoder().encode(JSON.stringify(r.photometry)).length>MAX_PHOTOMETER_SESSION_BYTES)fail('size');photometry=parsePhotometerSession(r.photometry);serializePhotometerSession(photometry);}catch{fail('state');}}
+  if(version>=8&&!(version>=9&&r.photometry===null)){try{const{parsePhotometerSession,serializePhotometerSession,prepareSessionFields,MAX_PHOTOMETER_SESSION_BYTES}=await import('./photometerSession');if(new TextEncoder().encode(JSON.stringify(r.photometry)).length>MAX_PHOTOMETER_SESSION_BYTES)fail('size');await prepareSessionFields(r.photometry);photometry=parsePhotometerSession(r.photometry);serializePhotometerSession(photometry);}catch{fail('state');}}
   let observing:ObservingWorkspace|undefined;
   if(version>=9){try{observing=(await import('./observingWorkspace')).restoreObservingWorkspace(r.observing,acquisitions);}catch{fail('state');}}
   let editing:EditingWorkspace|undefined;

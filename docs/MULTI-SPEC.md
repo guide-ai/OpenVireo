@@ -63,8 +63,8 @@ shows one neutral text (the native boxes name the kind); Show Object ID is ignor
 All entries. Lab rows whose neighbours lie within 2.375° stay masked after the reveal.
 
 ## Typed (not ported or indeterminate)
-`spectrum-template-unapproved` (a jspect2 template outside the approvals), `star-template-none` (nil lookup),
-`star-template-random` (index 0: the native random pick needs all 132 templates), `galaxy-lookup`, `spectrum-mapping` (own galaxy
+`star-template-none` (nil lookup), `star-template-random` (index 0: the native random pick; all 132 templates are bundled
+since 2026-10-30, but the pick itself is not ported), `galaxy-lookup`, `spectrum-mapping` (own galaxy
 spectrum not bundled), `galaxy-spectrum`, `qso-spectrum`, `object-type` (types ≥ 5), the Front T variable reasons,
 `multispec-mean-bound` (> 10⁶), `negative-mean`, `precision` (u = 0.5), `zero-maximum` (nothing to save), the photographic-image
 field gate, pointings without a pack; Print Selection Field and Help (0-byte help files).
@@ -72,7 +72,9 @@ field gate, pointings without a pack; Print Selection Field and Help (0-byte hel
 ## Resources
 The 67 jspect2 templates approved on 2026-10-28 (AGENTS.md) are bundled byte-exact in `public/original/spectra/jspect2/`; each
 SHA-256, JSPEC2.SPI index and the field packs whose stars need it are in `data/multispec/template-requirements.json` (Multi-Spec
-selects any star in view, so "require" covers every star of those fields). With the 48 earlier templates, 115 are available.
+selects any star in view, so "require" covers every star of those fields). The 17 remaining templates JSPEC2.SPI names were
+approved on 2026-10-30 for stars at any pointing (Front G) and are bundled in the same folder. With the 48 earlier templates,
+all 132 that JSPEC2.SPI names are available, so a named template is never missing (a context without one is an input error).
 
 ## Tests
 Vitest: multiSpecSpectrum (fibres equal the independent Python witness `data/multispec/witness.json`: LCG, Poisson incl. the

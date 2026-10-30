@@ -4,7 +4,7 @@ import starSource from '../../data/hubble/star-source.json';
 import {nativePhotographRows,nativePhotographPositions} from './photographicList';
 import {parseGlimagesPositions,packWithPhotographs} from './lssLists';
 import {decodeFieldPack} from './fieldPack';
-import {decodeStarIndexList,lookupStarTemplate,starTemplateSpectrum,compactSpectralIndex,JSPEC2_SPI} from './starTemplates';
+import {decodeStarIndexList,lookupStarTemplate,nativeTemplateBucket,StarTemplateError,starTemplateSpectrum,compactSpectralIndex,JSPEC2_SPI} from './starTemplates';
 import {createHash} from 'node:crypto';
 const file=(p:string)=>new Uint8Array(readFileSync(new URL('../../'+p,import.meta.url)));
 const gl=file('public/original/images/GLIMAGES.LST');
@@ -40,6 +40,22 @@ describe('star templates through JSPEC2.SPI (0x50d460/0x50d660, generalized from
   const synthetic=[{index:20001000,file:'a.sp',row:0},{index:20003000,file:'b.sp',row:1},{index:20101000,file:'c.sp',row:2}];
   expect(lookupStarTemplate(synthetic,20005000)).toBe('B.SP');expect(lookupStarTemplate(synthetic,20003000)).toBe('B.SP');expect(lookupStarTemplate(synthetic,20001500)).toBe('A.SP');
   expect(compactSpectralIndex('00'.repeat(8)+'48ffc102'+'00'.repeat(15))).toBe(0x02c1ff48);
+ });
+ it('G4a closure N1: the x87 bucket Round(Frac(i/10000)·100) for every index, against an independent 80-bit witness',()=>{
+  // Witness: a C program on x87 long double (64-bit significand, round to nearest-even, as Default8087CW 0x1332):
+  // q=(long double)i/10000; f=q-truncl(q); m=f*100; llrintl(m). It agreed with nativeTemplateBucket on 202 006 indices
+  // (200 000 seeded over 10^7..2^31−1, 10^7..10^7+1999 and the edges below), checked once during the fix.
+  const witness:[number,number][]=[[245318264,83],[266276721,67],[995446376,64],[825366580,66],[1215791871,19],[1482483734,37],[1797251415,14],
+   [1477396664,67],[250618980,90],[173541880,19],[1128014678,47],[2009046932,69],[2084567682,77],[2042176848,68],[1239366340,63],[1773603225,32],
+   [420110181,2],[164667053,71],[1485294208,42],[1065734717,47],[10000000,0],[10000001,0],[10000002,0],[10000050,1],[10000150,2],[2147483647,36],
+   [2147483600,36],[99999950,100],[123456750,67]];
+  for(const [i,b] of witness)expect(nativeTemplateBucket(i),String(i)).toBe(b);
+  // Multiples of 100 keep the earlier exact integer rule.
+  for(let i=10_000_000;i<10_200_000;i+=100)expect(nativeTemplateBucket(i)).toBe((i%10000)/100);
+  for(const bad of [9_999_999,2**31,1.5,Number.NaN])expect(()=>nativeTemplateBucket(bad)).toThrow(StarTemplateError);
+  // The lookup now resolves the closure's repro indices instead of throwing (N0000.DAT@63282-style codes).
+  const list=decodeStarIndexList(new Uint8Array(readFileSync(new URL('../../public/original/spectra/jspect2/JSPEC2.SPI',import.meta.url))));
+  for(const i of [30703514,10405011])expect(lookupStarTemplate(list,i)).toMatch(/^A\d{7}\.SP$/);
  });
 });
 describe('Val 0x4042e4 and the per-row drop (review 3 finding 5)',()=>{

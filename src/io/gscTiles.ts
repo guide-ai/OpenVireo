@@ -33,20 +33,22 @@ export function createGscTileStore(options:GscTileStoreOptions={}){
  const fetcher=options.fetcher??((input:RequestInfo|URL,init?:RequestInit)=>fetch(input,init)),capacity=options.capacity??24;
  if(!Number.isInteger(capacity)||capacity<1||capacity>64)throw new GscTileError('budget');
  const cache=new Map<string,Uint8Array>(),pending=new Map<string,Promise<Uint8Array>>();
+ // A tile whose bytes were wrong is fetched again past the HTTP cache (cache: 'reload'), so a retry cannot reuse the bad copy.
+ const reload=new Set<string>();
  const key=(band:string,tile:number)=>`${band}/${tile}`;
  async function download(b:GscBandIndex,tile:number):Promise<Uint8Array>{
   const t=b.tiles[tile];if(!t)throw new GscTileError('index',b.name,tile);
   let buffer:ArrayBuffer;
   // The shared request is not tied to one caller's signal; each caller can still stop waiting (see `tile`).
   try{
-   const response=await fetcher(gscTilePath(b.name,tile),{credentials:'same-origin',cache:'force-cache'});
+   const response=await fetcher(gscTilePath(b.name,tile),{credentials:'same-origin',cache:reload.has(key(b.name,tile))?'reload':'force-cache'});
    // A host with an SPA fallback answers a missing tile with 200 and index.html: that is a missing file, not changed bytes.
    if(/^\s*text\/html\b/i.test(response.headers.get('content-type')??'')){try{await response.body?.cancel();}catch{/* ignore */}throw new GscTileError('fetch',b.name,tile);}
    buffer=await boundedResourceBody(response,t.bytes);
   }
-  catch(e){if(e instanceof GscTileError)throw e;throw new GscTileError(e instanceof BoundedResourceError&&e.code==='size'?'integrity':'fetch',b.name,tile);}
-  if(buffer.byteLength!==t.bytes||await resourceSha256(buffer)!==t.sha256)throw new GscTileError('integrity',b.name,tile);
-  return new Uint8Array(buffer);
+  catch(e){if(e instanceof GscTileError)throw e;const integrity=e instanceof BoundedResourceError&&e.code==='size';if(integrity)reload.add(key(b.name,tile));throw new GscTileError(integrity?'integrity':'fetch',b.name,tile);}
+  if(buffer.byteLength!==t.bytes||await resourceSha256(buffer)!==t.sha256){reload.add(key(b.name,tile));throw new GscTileError('integrity',b.name,tile);}
+  reload.delete(key(b.name,tile));return new Uint8Array(buffer);
  }
  function remember(k:string,bytes:Uint8Array){cache.delete(k);cache.set(k,bytes);while(cache.size>capacity)cache.delete(cache.keys().next().value!);}
  async function tile(b:GscBandIndex,n:number,signal?:AbortSignal):Promise<Uint8Array>{

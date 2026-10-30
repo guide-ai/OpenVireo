@@ -74,9 +74,9 @@ export const CAMERA_MESSAGES=Object.freeze({
    ?`${eligible} in the field, none on the detector, so nothing changes (in VIREO, the last one on the detector gives its brightness to the last star drawn from the catalog list).`
    :`${eligible} in the field, ${inBounds} on the detector. As in VIREO, the last one on the detector gives its brightness to the last star drawn from the catalog list${tail==='catalog'?'':tail==='moving-end'?' (here a moving object’s end point, so nothing changes)':' (here the list is empty, so nothing changes on this site)'}.${saturated&&tailDrawn?' That brightness is very large (a class 1 or 2 variable gets a colour term of 30 or 60 magnitudes), so, as in VIREO, the star is drawn saturated; this site lets that one star past its usual brightness limits (web adaptation).':''}${tailDrawn===false?' That brightness is too large for this site to draw safely, so this one star is not drawn here; VIREO draws it saturated (web adaptation).':''}`,
   none:'No variable star in this field.',
-  'not-certified':'Not checked: this site has no certified field population at this pointing, so VIREO’s variable-star pass cannot run here.',
-  failed:'Not checked: the field population at this pointing could not be loaded, so VIREO’s variable-star pass did not run. Try the exposure again.',
-  blocked:'Not checked: this site cannot build the field population at this pointing (a recovered rule it does not port applies here), so VIREO’s variable-star pass does not run.',
+  masked:'Not run: near an Object X target the field population stays hidden until the exercise reveals it, so VIREO’s variable-star pass is not run here.',
+  failed:'Not checked: the star catalogue tiles for this pointing could not be loaded, so VIREO’s variable-star pass did not run. Try the exposure again.',
+  blocked:'Not checked: this site cannot build the field population at this pointing (too close to a celestial pole, a catalogue read it cannot reproduce, or a recovered rule it does not port), so VIREO’s variable-star pass does not run.',
   values:'Not run: the brightness of a variable star at this time is not known here.',
  },
  skippedReason:{'moving-pair-off-detector':'One moving object lies far outside the field.','moving-pair-geometry':'One moving object has no measurable motion to draw.','moving-pair-budget':'One moving object trail is too large to draw.'} as Readonly<Record<string,string>>,
