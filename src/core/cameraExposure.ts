@@ -21,7 +21,7 @@
 import {CameraRandomCursor} from './cameraRandom';
 import {compiledCameraProjection,projectCameraSource,type CameraProjectionContext} from './cameraProjection';
 import {cameraBackgroundStage,compiledCameraBackgroundParameters} from './cameraBackground';
-import {compiledCameraSourceCalibration,cameraPointParametersFromCalibration} from './cameraSourceCalibration';
+import {compiledCameraSourceCalibration,cameraPointParametersFromCalibration,CameraSourceCalibrationError} from './cameraSourceCalibration';
 import {cameraPointPlan,type CameraPointPlan} from './cameraPointSource';
 import {cameraExtendedPlan,CameraExtendedError,CAMERA_STREAK_VISIT_LIMIT,type CameraExtendedPlan} from './cameraExtendedSource';
 import {cameraScalarJitter} from './cameraBackground';
@@ -53,7 +53,9 @@ export type CameraFieldRecord=Readonly<{
 }>;
 /** Front R2: what the field-object pass 0x5228dc did (A-camera-field-overlay.md §1). `tail` is the record it wrote: the last
  * catalog row on the detector, a moving-pair end (no visible effect), or none (VIREO then writes the observatory field star). */
-export type CameraFieldObjectPass=Readonly<{eligible:number;inBounds:number;tail:'catalog'|'moving-end'|'none'|null;magnitude:number|null}>;
+/** `tailDrawn` is false when the overwritten catalog tail's magnitude is outside the calibrated range and the star is not drawn
+ * [W] (review 1 H1: VIREO draws a saturated star there); null when no tail was overwritten. */
+export type CameraFieldObjectPass=Readonly<{eligible:number;inBounds:number;tail:'catalog'|'moving-end'|'none'|null;magnitude:number|null;tailDrawn:boolean|null}>;
 export type CameraSkippedSource=Readonly<{extraIndex:number;reason:'moving-pair-off-detector'|'moving-pair-geometry'|'moving-pair-budget'}>;
 export type CameraExposure=Readonly<{
  recipe:CameraExposureRecipe;plane:CameraFinalStage;records:readonly CameraFieldRecord[];skipped:readonly CameraSkippedSource[];
@@ -83,6 +85,7 @@ export const CAMERA_EXPOSURE_ADAPTATIONS=Object.freeze([
  'no-ccd-overlay: the optional bitmap overlay branch (form+0x412) is not offered; its source, gate, sizes and stretch mode are recovered (Front R2), but its input, the galaxy-only field raster, is internal to the field engine',
  'field-objects-certified-field: the field-object pass 0x5228dc runs on the certified field population at the camera pointing, built at the exposure JD (VIREO uses the field of the last field load); elsewhere it is not run, and an empty camera list does not write the observatory field star',
  'ir-like-ccd: the IR window\'s exposure-time limit is not recovered; IR uses the CCD web bound (CAMERA_MAX_SECONDS). (No overlay is recovered: IR preparation 0x51e43c has no overlay branch.)',
+ 'field-object-saturated: a field variable of class 1 or 2 gets colour term 30 or 60, so the pass can write about V − 30 or V − 60 into the tail catalog row; VIREO draws a saturated star there, but that magnitude is outside the calibrated source range (|m| ≤ 50, peak ≤ 1e12), so this one star is not drawn (and consumes no draws) and the details say so; the magnitude is never clamped (review 1 H1)',
  'moving-pair-off-detector: a pair whose projected pixel position exceeds 1e6 is skipped (its four draws are still consumed); the native FISTP overflow path is not recovered',
  'moving-pair-streak-limit: streak visits are bounded by the clipped 1024^2 rectangle plus a cross pass (CAMERA_STREAK_VISIT_LIMIT); a pair that still cannot be planned (budget or coincident endpoints) is skipped alone, with no draws for its streak',
  'number-arithmetic: Number/Math with Single stores replaces x87 Extended',
@@ -154,7 +157,7 @@ export function composeCameraExposure(recipeInput:CameraExposureRecipe,selection
  // two draws (0x522560), on or off the detector; for one on the detector, 0x522a18 returns the TAIL of the camera list and
  // its magnitude becomes the variable's (the last eligible on-detector variable wins). The tail is then drawn at its own
  // position. With no record VIREO writes the observatory field star itself, which this page does not keep [W].
- let fieldObjects:CameraFieldObjectPass|null=null;
+ let fieldObjects:CameraFieldObjectPass|null=null,overwrittenTail:number|null=null;
  if(fieldObjectsInput){
   if(!Array.isArray(fieldObjectsInput)||fieldObjectsInput.length>10_000)throw new CameraExposureError('extra','field-objects');
   let inBounds=0,magnitude:number|null=null;
@@ -166,9 +169,9 @@ export function composeCameraExposure(recipeInput:CameraExposureRecipe,selection
   const last=records.at(-1);let tail:CameraFieldObjectPass['tail']=null;
   if(magnitude!==null){
    tail=!last?'none':last.origin==='catalog'?'catalog':'moving-end';
-   if(last)records[records.length-1]=Object.freeze({...last,magnitude});
+   if(last){records[records.length-1]=Object.freeze({...last,magnitude});if(last.origin==='catalog')overwrittenTail=records.length-1;}
   }
-  fieldObjects=Object.freeze({eligible:fieldObjectsInput.length,inBounds,tail,magnitude});
+  fieldObjects=Object.freeze({eligible:fieldObjectsInput.length,inBounds,tail,magnitude,tailDrawn:overwrittenTail===null?null:true});
  }
  // 3. Background.
  const background=compiledCameraBackgroundParameters(kind,recipe.seconds,recipe.gain);
@@ -177,7 +180,13 @@ export function composeCameraExposure(recipeInput:CameraExposureRecipe,selection
  // 5. Sources in list order.
  for(let i=0;i<records.length;i++){
   const r=records[i];
-  const calibration=compiledCameraSourceCalibration(kind,recipe.opticalIndex,recipe.filterPosition,recipe.seconds,r.magnitude);
+  let calibration;
+  try{calibration=compiledCameraSourceCalibration(kind,recipe.opticalIndex,recipe.filterPosition,recipe.seconds,r.magnitude);}
+  catch(e){
+   // [W] review 1 H1: only the catalog tail that took a field variable's magnitude may be outside the calibrated range.
+   if(i!==overwrittenTail||!(e instanceof CameraSourceCalibrationError)||(e.code!=='magnitude'&&e.code!=='range'))throw e;
+   fieldObjects=Object.freeze({...fieldObjects!,tailDrawn:false});continue;
+  }
   if(r.kind===2){
    const end=records[i+1];
    let plan:CameraExtendedPlan|null=null;

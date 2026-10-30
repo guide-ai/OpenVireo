@@ -68,9 +68,12 @@ export const CAMERA_MESSAGES=Object.freeze({
  detailSkipped:'Moving objects not drawn',
  detailFieldObjects:'Field variable stars',
  fieldObjects:{
-  run:(eligible:number,inBounds:number,tail:string|null)=>`${eligible} in the field, ${inBounds} on the detector. As in VIREO, the last one on the detector gives its brightness to the last star drawn from the catalog list${tail==='catalog'?'':tail==='moving-end'?' (here a moving object’s end point, so nothing changes)':tail==='none'?' (here the list is empty, so nothing changes on this site)':''}.`,
+  run:(eligible:number,inBounds:number,tail:string|null,tailDrawn:boolean|null)=>inBounds===0||tail===null
+   ?`${eligible} in the field, none on the detector, so nothing changes (in VIREO, the last one on the detector gives its brightness to the last star drawn from the catalog list).`
+   :`${eligible} in the field, ${inBounds} on the detector. As in VIREO, the last one on the detector gives its brightness to the last star drawn from the catalog list${tail==='catalog'?'':tail==='moving-end'?' (here a moving object’s end point, so nothing changes)':' (here the list is empty, so nothing changes on this site)'}.${tailDrawn===false?' That brightness is far beyond the calibrated range (a class 1 or 2 variable gets a colour term of 30 or 60 magnitudes), so this one star is not drawn here; VIREO draws it as a saturated star (web adaptation).':''}`,
   none:'No variable star in this field.',
   'not-certified':'Not checked: this site has no certified field population at this pointing, so VIREO’s variable-star pass cannot run here.',
+  failed:'Not checked: the field population at this pointing could not be loaded or built, so VIREO’s variable-star pass did not run. Try the exposure again.',
   values:'Not run: the brightness of a variable star at this time is not known here.',
  },
  skippedReason:{'moving-pair-off-detector':'One moving object lies far outside the field.','moving-pair-geometry':'One moving object has no measurable motion to draw.','moving-pair-budget':'One moving object trail is too large to draw.'} as Readonly<Record<string,string>>,

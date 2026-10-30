@@ -35,7 +35,17 @@ The seeing jitter is on for the CCD (compiled record byte +0x5a = 1 at 0x5a2bd8)
     (`src/camera/cameraFieldInputs.ts`, `src/core/cameraFieldObjects.ts`, composer step 2b).
   - At other pointings it does not run, and the exposure details say so [W].
   - A variable whose brightness is not known blocks the pass, and an empty list writes nothing [W].
-  - The CCD filter byte is the last CCD exposure's filter, 0 (NF) before any [I].
+  - A pointing with no certified pack says "not certified"; a pack or catalog that cannot be loaded says "could not be
+    checked" (review 1 L1) [W].
+  - The CCD filter byte is set when a CCD exposure starts (CCD Go 0x5126c1) and kept for the page, as the form keeps it for
+    the process; 0 (NF) before any CCD exposure [I] (review 1 L5).
+  - **Saturated tail [W] (review 1 H1).** For a class 1 or 2 variable the colour term is 30 or 60, so VIREO writes about V − 30
+    or V − 60 into the tail catalog row and draws a saturated star. That magnitude is outside the calibrated source range
+    (|m| ≤ 50, peak ≤ 1e12), so this site does not draw that one star (it consumes no draws) and the exposure details say so.
+    The magnitude is never clamped. Among the certified pointings only LSS Field 8 near NGC 5924 has such a variable.
+  - **Catalog "no data" gate** [I]: VIREO runs the catalog rows and this pass only when the catalog's vt+4 returns true
+    (0x52246a/0x52246f → 0x522553). Which web state matches vt+4 = false is not recovered; the web runs the pass whenever an
+    exposure is composed, and an empty camera list writes nothing (review 1 L3).
 
 Not recovered, and kept explicit: the writer of the region record `[0x5b5b30]` (the web uses whole-sky bounds, so selection keeps only the magnitude limit); the global random-stream prefix at Go; the overlay bitmap; the native image-to-screen mapping (the web display stretches the 1st–99.9th percentile; pixel values are unchanged).
 
