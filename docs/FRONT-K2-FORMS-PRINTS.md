@@ -52,14 +52,24 @@ OpenVireo has no log-in, so there are no student names and no table number.
 **Time offset.** 0x5bad48 = 1721424.5 + 693594 = 2415018.5. That is the initialiser at 0x5ac748, for any computer date before
 2173 [I].
 
+**Comma Delimit** (review 1 M1) is VIREO's own writer 0x5472e0 [D]:
+- Header: `Object ID,MJD(Days),RA,,,Dec,,,U,B,V,` + `R,I,` + `Z,Spectrum,Comments`.
+- For every line after the header: commas at columns 12, 24, 28, 31, 36, 41, 44 and 47, then one per filter (step 7 with the
+  magnitudes option, 10 without), then +12 (Z) and +13 (Sp).
+- All spaces before the last comma are deleted, and the comments follow. The file is `Observations.CSV`.
+- A line shorter than that layout (an empty `Sky` line, a kind ≥ 2 line) would make VIREO write past the string; the web refuses
+  it with the line number [I].
+
 **Code:**
 - `src/core/recordedResults.ts`. The time sum is exact Extended arithmetic, and FloatToStrF goes through the ported
   FloatToDecimal.
 - `src/clusters/RecordedResultsWindow.tsx`: the shared list window with Search, Print preview, Save Text
-  (`Observations.TXT`) and Comma Delimit (the ported TXT → CSV writer; a refusal is a typed message).
+  (`Observations.TXT`) and Comma Delimit.
 
 **[W] web adaptations:**
 - The list follows every change of the loaded records. VIREO writes it when it reads the data.
+- Like VIREO (0x549cba Show), the window opens when a file is added or replaces the list; Display/Print Data reopens it.
+- The caption assumes the exercise byte is 0, 1, 3 or 7 [I]; the cluster route has no exercise byte.
 - RA and Dec are split in binary64 (VIREO splits them in Extended).
 - A value VIREO's FPU would reject, or a spectral code the port cannot format, blocks the list with a typed reason.
 
@@ -97,8 +107,14 @@ records.
 - **A wrapped negative sum** (where VIREO's Sqrt raises) shows a typed message.
 - **Velocity is read-only.** VIREO stores a typed velocity before checking it against c·Z. With Z = 0 (every photometer record)
   it always shows "Velocity Error!".
-- **Escape** acts as Cancel.
+- **Escape** acts as Cancel. Focus returns to the chart or to the row button that opened the dialog.
 - **A touch held for 500 ms** acts as the right click.
+- **Keyboard:** each plotted row of the records table has an "Observational Data…" button that opens the same dialog and marker.
+- **While another file is read or under review** the dialog does not open.
+- **Click mapping:** the click maps to the SVG's pixel grid with Math.floor (VIREO gets integer image pixels).
+- **RA and Dec** are split in binary64 (VIREO splits them in Extended).
+- **Kind ≥ 2 records:** VIREO leaves the label and the photometry boxes from the previous activation; the web keeps them from
+  the previous dialog on this page, starting from the DFM's "Observed Magnitudes" and empty boxes.
 
 ## 3. Print headers and footers
 
@@ -146,6 +162,7 @@ reason (docs/CLEA-HELP.md).
 - The list then selects the row nearest the cursor (0x5058b8: bound 1000 Å, first on a tie). For example, Fe I 4143.878
   selects He I 4143.76.
 - Zoom and pan recompute the column from the stored wavelength.
+- Every click runs the reselection, so a second click on Fe I 4143.878 selects He I 4143.76 again.
 
 **Code:**
 - `nearestSpectralLine` in `src/help/spectralLines.ts`;

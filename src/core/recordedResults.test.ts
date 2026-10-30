@@ -57,3 +57,24 @@ describe('Recorded Results lines (0x549c4a, 0x54708c, 0x5486a8)',()=>{
   expect(recordedResultsLines(parseNativeObservationResults(code))).toEqual({kind:'blocked',reason:'spectral-code',row:1});
  });
 });
+
+describe('Comma Delimit 0x5472e0 (review 1 M1)',()=>{
+ it('writes the Pleiades-style rows: blank U, RA under 10 h, spaces removed before the comments',async()=>{
+  const {recordedResultsCsv}=await import('./recordedResults');
+  const lines=['header',
+   "Star 07     4982.000000   3h45m00.0s  24°07'30\"        10.875 10.250                                        Pleiades field A",
+   "Obs-2       4982.250000   8h50m37.5s -11°48'45\" 11.500 10.719 10.031  9.625  9.250   1.172E-02 G2V          check star"];
+  // Expected rows computed independently (Python) from the decoded column list.
+  expect(recordedResultsCsv(lines)).toEqual({kind:'ready',name:'Observations.CSV',text:'Object ID,MJD(Days),RA,,,Dec,,,U,B,V,R,I,Z,Spectrum,Comments\r\n'
+   +'Star07,4982.000000,3,45,00.0,24,07,30,,10.875,10.250,,,,,Pleiades field A\r\n'
+   +'Obs-2,4982.250000,8,50,37.5,-11,48,45,11.500,10.719,10.031,9.625,9.250,1.172E-02,G2V,check star\r\n'});
+  const r=recordedResultsLines(data(E1));
+  const csv=recordedResultsCsv(r.kind==='ready'?r.lines:[]);
+  expect(csv.kind==='ready'&&csv.text.split('\r\n')[1]).toBe('HII1234PL,4983.750000,3,47,22.2,24,07,24,,8.125,7.950,,,,,cluster star');
+ });
+ it('refuses a line shorter than the last comma column (VIREO writes past the string)',async()=>{
+  const {recordedResultsCsv}=await import('./recordedResults');
+  expect(recordedResultsCsv(['h','x'.repeat(200),''])).toEqual({kind:'blocked',row:2});
+  expect(recordedResultsCsv(['h'])).toEqual({kind:'ready',name:'Observations.CSV',text:'Object ID,MJD(Days),RA,,,Dec,,,U,B,V,R,I,Z,Spectrum,Comments\r\n'});
+ });
+});

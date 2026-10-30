@@ -64,3 +64,41 @@ test('right click opens Observational Data for the nearest record; Cancel clears
  await page.getByTestId('cnhr-display-data').click();
  await expect(page.getByTestId('cnhr-results-line-2')).toHaveText(LINES[2].replace('check star','rechecked'));
 });
+
+test('review 1: the list opens on read, Comma Delimit uses VIREO\'s writer (blank U, RA under 10 h)',async({page})=>{
+ await open(page);
+ await expect(page.getByTestId('cnhr-results-line-1')).toHaveText(LINES[1]);// opened when the file was read (0x549cba)
+ await page.getByTestId('cnhr-results-list-menu').click();await page.getByTestId('cnhr-results-save-menu').click();
+ const download=page.waitForEvent('download');await page.getByTestId('cnhr-results-save-csv').click();const d=await download;
+ expect(d.suggestedFilename()).toBe('Observations.CSV');
+ expect((await readFile(await d.path())).toString('latin1')).toBe('Object ID,MJD(Days),RA,,,Dec,,,U,B,V,R,I,Z,Spectrum,Comments\r\n'
+  +'Star07,4982.000000,3,45,00.0,24,07,30,,10.875,10.250,,,,,Pleiades field A\r\n'
+  +'Obs-2,4982.250000,8,50,37.5,-11,48,45,11.500,10.719,10.031,9.625,9.250,1.172E-02,G2V,check star\r\n');
+});
+
+test('review 1: keyboard opens Observational Data from the records table, focus returns, nothing opens while a file is under review',async({page})=>{
+ await open(page);
+ const row2=page.getByTestId('cnhr-obs-open-2');
+ if(!await row2.isVisible())await page.locator('details.cnhr-records summary').click();
+ await row2.focus();await page.keyboard.press('Enter');
+ const d=page.getByTestId('cnhr-obs-data');await expect(d.getByTestId('cnhr-obs-data-id')).toHaveValue('Obs-2');
+ await expect(page.getByTestId('cnhr-selected')).toHaveAttribute('data-record','2');
+ await page.keyboard.press('Escape');await expect(d).toHaveCount(0);await expect(row2).toBeFocused();
+ await expect(page.getByTestId('cnhr-selected')).toHaveCount(0);
+ // A second file under review: neither the row button nor a right click opens the dialog (review 1 L1).
+ await page.getByLabel('Load saved observation results (DAT)',{exact:true}).setInputFiles({name:'again.dat',mimeType:'application/octet-stream',buffer:DAT});
+ await expect(page.getByTestId('cnhr-pending')).toBeVisible();
+ await expect(row2).toBeDisabled();
+ await rightClick(page,215,246);await expect(d).toHaveCount(0);
+});
+
+test('review 1 L4: at 320 px the photometry boxes show their whole value',async({page})=>{
+ await page.setViewportSize({width:320,height:800});await page.emulateMedia({colorScheme:'dark'});
+ await open(page);
+ const row2=page.getByTestId('cnhr-obs-open-2');
+ if(!await row2.isVisible())await page.locator('details.cnhr-records summary').click();
+ await row2.click();
+ const v=page.getByTestId('cnhr-obs-data-v');await expect(v).toHaveValue('    10.031');
+ const fits=await v.evaluate(e=>(e as HTMLInputElement).scrollWidth<=(e as HTMLInputElement).clientWidth);expect(fits).toBe(true);
+ const box=await page.getByTestId('cnhr-obs-data').boundingBox();expect(box!.x+box!.width).toBeLessThanOrEqual(320);
+});

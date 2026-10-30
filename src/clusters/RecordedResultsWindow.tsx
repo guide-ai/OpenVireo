@@ -1,18 +1,14 @@
 import {useState} from 'react';
 import type {NativeObservationData} from '../core/nativeObservationResults';
-import {recordedResultsLines} from '../core/recordedResults';
-import {nativeTextBytes,parseNativeTextResults} from '../core/nativeTextResults';
-import {exportNativeCsvFromText,nativeCsvBytes} from '../core/nativeCsvResults';
+import {recordedResultsCsv,recordedResultsLines} from '../core/recordedResults';
 import FieldInfoListWindow,{type FieldInfoBox} from '../observatory/FieldInfoListWindow';
 import {CLUSTER_HR_EN as HR} from './ClusterHrMessages';
 
 const latin1=(s:string)=>Uint8Array.from(s,c=>c.charCodeAt(0));
-/** Comma Delimit (0x5472e0) of the shown lines through the ported TXT → CSV writer; a refusal is a typed box [W]. */
+/** Comma Delimit: VIREO's own writer 0x5472e0 over the shown lines (core/recordedResults.ts, review 1 M1). */
 function csvOf(lines:readonly string[]):Readonly<{bytes:Uint8Array;name:string}>|FieldInfoBox{
- try{
-  const text=parseNativeTextResults(latin1(lines.join('\r\n')+'\r\n'),'.');nativeTextBytes(text);
-  return {bytes:nativeCsvBytes(exportNativeCsvFromText(text)),name:'Observations.csv'};
- }catch{return {caption:HR.recordedResultsCsvCaption,text:HR.recordedResultsCsvRefused};}
+ const r=recordedResultsCsv(lines);
+ return r.kind==='ready'?{bytes:latin1(r.text),name:r.name}:{caption:HR.recordedResultsCsvCaption,text:HR.recordedResultsCsvRefused(r.row)};
 }
 
 /** Observation-mode File › Display/Print Data (0x542f1c → RsltsListForm1 "Recorded Results - …", Front K2.1): the lines the

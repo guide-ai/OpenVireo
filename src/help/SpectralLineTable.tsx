@@ -52,12 +52,13 @@ export default function SpectralLineTable({testId='spl',onLineSelect,cursorWavel
  }
  /** Focus the help window when it opens or changes line; back to the list when it closes (review 1 L4). */
  useEffect(()=>{if(help)helpHeading.current?.focus();},[help]);
- // The reverse link: a new cursor position selects the nearest row; an open help window follows it (ListBox1DblClick).
- const helpOpen=help!==null;
+ // The reverse link: every cursor update (each click here, as 0x508240 → 0x5096dc always runs it, review 1 L3, or a new cursor
+ // position from the display) selects the nearest row; an open help window follows it (ListBox1DblClick).
+ const helpOpen=help!==null,[clicks,setClicks]=useState(0);
  useEffect(()=>{if(!loaded||cursorWavelength===null)return;const i=nearestSpectralLine(loaded.lines,cursorWavelength);if(i<0)return;setIndex(i);if(helpOpen)void readLine(i);
  // eslint-disable-next-line react-hooks/exhaustive-deps
- },[cursorWavelength,loaded]);
- const select=(i:number)=>{setIndex(i);if(loaded&&i>=0)onLineSelect?.(loaded.lines[i].wavelength);};
+ },[cursorWavelength,loaded,clicks]);
+ const select=(i:number)=>{setIndex(i);if(loaded&&i>=0&&onLineSelect){onLineSelect(loaded.lines[i].wavelength);setClicks(c=>c+1);}};
  const closeHelp=()=>{setHelp(null);requestAnimationFrame(()=>rowsRef.current?.querySelector<HTMLElement>('[role=listbox]')?.focus());};
  return <div className="spl" data-testid={testId}>
   <div className="cluster-hr-help-bar">

@@ -11,7 +11,7 @@ import{addClusterNativeHrPending,armClusterNativeHrReplace,beginClusterNativeHrR
 import{CLUSTER_NATIVE_HR_MESSAGES,type ClusterNativeHrMessages}from'./ClusterNativeObservationHrMessages';
 import CleaHelp from '../clusters/CleaHelp';
 import HrPrint from '../clusters/HrPrint';
-import {clusterNativeHrHitTest,observationalDataFields} from '../core/clusterNativeHrSelect';
+import {clusterNativeHrHitTest,observationalDataFields,OBSERVATIONAL_DATA_LITERALS} from '../core/clusterNativeHrSelect';
 import ObservationalDataDialog from '../clusters/ObservationalDataDialog';
 import RecordedResultsWindow from '../clusters/RecordedResultsWindow';
 import {CLUSTER_HR_EN as HR} from '../clusters/ClusterHrMessages';
@@ -83,15 +83,31 @@ function ClusterNativeObservationHr({initialList=null,messages,idPrefix='cnhr-',
  const [selected,setSelected]=useState<Readonly<{index:number;pixel:Readonly<{x:number;y:number}>}>|null>(null),[dialogFor,setDialogFor]=useState<number|null>(null);
  const [obsAlert,setObsAlert]=useState<string|null>(null),[resultsOpen,setResultsOpen]=useState(false),resultsButton=useRef<HTMLButtonElement>(null);
  const longPress=useRef<{id:number;x:number;y:number;timer:number}|null>(null),pressedAt=useRef(0);
+ // Review 1 L1: nothing opens while another file is read or reviewed, or while the host is busy (OK could not store then).
+ const obsBlocked=disabled||w.pending!==null||w.reading!==null;
+ const opener=useRef<HTMLElement|null>(null);
+ function openRecord(index:number,pixel:Readonly<{x:number;y:number}>,from:HTMLElement|null){
+  if(!w.list||dialogFor!==null||obsBlocked)return;
+  const view=observationalDataFields(w.list.data,index-1);
+  if(view.kind==='blocked'){setObsAlert(HR.obsBlocked(HR.recordedResultsBlock[view.reason]));return;}
+  opener.current=from;setObsAlert(null);setSelected({index,pixel});setDialogFor(index);
+ }
+ // [W] The client point maps to the SVG's own pixel grid with Math.floor (VIREO receives integer TImage pixels; review 1 L5).
  function pickClient(svg:SVGSVGElement,clientX:number,clientY:number){
-  if(!shownPlot||!w.list||dialogFor!==null)return;const ctm=svg.getScreenCTM();if(!ctm)return;
+  if(!shownPlot||!w.list||dialogFor!==null||obsBlocked)return;const ctm=svg.getScreenCTM();if(!ctm)return;
   const pt=new DOMPoint(clientX,clientY).matrixTransform(ctm.inverse()),hit=clusterNativeHrHitTest(shownPlot,Math.floor(pt.x),Math.floor(pt.y));
   if(hit.kind==='fpu'){setObsAlert(HR.obsFpu);return;}
   if(hit.kind!=='hit')return;
-  const view=observationalDataFields(w.list.data,hit.index-1);
-  if(view.kind==='blocked'){setObsAlert(HR.obsBlocked(HR.recordedResultsBlock[view.reason]));return;}
-  setObsAlert(null);setSelected({index:hit.index,pixel:hit.pixel});setDialogFor(hit.index);
+  openRecord(hit.index,hit.pixel,chartRegion.current);
  }
+ const closeDialog=(clearMarker:boolean)=>{setDialogFor(null);if(clearMarker)setSelected(null);const o=opener.current;opener.current=null;requestAnimationFrame(()=>{if(o?.isConnected)o.focus();else chartRegion.current?.focus();});};
+ // [W] VIREO keeps a record of kind ≥ 2's label and photometry boxes from the previous activation (the dialog is created once);
+ // the web keeps them from the previous dialog on this page, starting from the DFM's 'Observed Magnitudes' and empty boxes.
+ const previousPhotometry=useRef<Readonly<{results:string;u:string;b:string;v:string;r:string;i:string}>>({results:OBSERVATIONAL_DATA_LITERALS.magnitudes,u:'',b:'',v:'',r:'',i:''});
+ const chartRegion=useRef<HTMLDivElement>(null);
+ // VIREO shows the Recorded Results window as soon as saved data are read (0x549cba Show; review 1 L5).
+ const readCount=w.receipts.length,lastReadCount=useRef(readCount);
+ useEffect(()=>{if(readCount>lastReadCount.current&&w.list)setResultsOpen(true);lastReadCount.current=readCount;},[readCount,w.list]);
  const cancelPress=()=>{if(longPress.current){window.clearTimeout(longPress.current.timer);longPress.current=null;}};
  useEffect(()=>cancelPress,[]);
  const plotHandlers=shownPlot?{
@@ -102,6 +118,13 @@ function ClusterNativeObservationHr({initialList=null,messages,idPrefix='cnhr-',
   onPointerUp:cancelPress,onPointerCancel:cancelPress,
  }:{};
  const dialogView=dialogFor!==null&&w.list?observationalDataFields(w.list.data,dialogFor-1):null;
+ const dialogFields=useMemo(()=>{
+  if(dialogView?.kind!=='ready')return null;const f=dialogView.fields;
+  if(f.results===null){const p=previousPhotometry.current;return Object.freeze({...f,...p});}
+  return f;
+ // eslint-disable-next-line react-hooks/exhaustive-deps
+ },[dialogFor,w.list]);
+ useEffect(()=>{if(dialogFields)previousPhotometry.current={results:dialogFields.results??'',u:dialogFields.u,b:dialogFields.b,v:dialogFields.v,r:dialogFields.r,i:dialogFields.i};},[dialogFields]);
  const offAxes=shownPlot?shownPlot.rows.filter(r=>r.status==='plotted'&&!r.inFrame).length:0;
  const id=(s:string)=>idPrefix+s;
  return <section className="card cluster-native-hr" aria-labelledby={id('title')}>
@@ -128,7 +151,7 @@ function ClusterNativeObservationHr({initialList=null,messages,idPrefix='cnhr-',
    {w.observationsPlotted&&plot.status==='blocked'&&<p role="alert" data-testid="cnhr-blocked">{m.blocked(plot.recordIndex,m.blockedField[plot.field])}</p>}
    {shownPlot&&shownPlot.plottedCountKind+shownPlot.plottedOtherKind>0&&<p role="note" className="cluster-native-hr-warning">{m.kindWarning(shownPlot.plottedCountKind,shownPlot.plottedOtherKind)}</p>}
    {offAxes>0&&<p>{m.offAxes(offAxes)}</p>}
-   <div className="cluster-native-hr-chart" role="region" tabIndex={0} aria-label={m.chartRegion}>
+   <div ref={chartRegion} className="cluster-native-hr-chart" role="region" tabIndex={0} aria-label={m.chartRegion}>
     <svg ref={plotSvg} {...plotHandlers} data-testid={`${idPrefix}plot`} viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} width={VIEW_W} height={VIEW_H} role="img" aria-labelledby={`${id('chart-title')} ${id('chart-desc')}`}>
      <title id={id('chart-title')}>{m.chartTitle}</title><desc id={id('chart-desc')}>{m.chartDescription(shownPlot?.count??0)}</desc>
      <defs><clipPath id={id('clip')}><rect x={G.left} y={G.top} width={G.widthPx} height={G.heightPx}/></clipPath></defs>
@@ -163,12 +186,12 @@ function ClusterNativeObservationHr({initialList=null,messages,idPrefix='cnhr-',
 
   <section aria-labelledby={id('report')}><h3 id={id('report')}>{m.reportHeading}</h3><figure className="cnhr-report"><figcaption>{report.caption}</figcaption><pre data-testid="cnhr-report">{report.lines.join('\n')}</pre></figure><p className="cluster-native-hr-note">{m.reportNote}</p></section>
 
-  {((shownPlot&&shownPlot.rows.length>0)||(w.observationsPlotted&&plot.status==='blocked'&&records>0))&&<details className="cnhr-records"><summary>{m.recordsSummary}</summary><div className="photometer-table"><table><thead><tr><th scope="col">{m.colIndex}</th><th scope="col">{m.colObject}</th><th scope="col">{m.colKind}</th><th scope="col">{m.colB}</th><th scope="col">{m.colV}</th><th scope="col">{m.colBV}</th><th scope="col">{m.colPixel}</th><th scope="col">{m.colStatus}</th></tr></thead>
-   <tbody>{tableRows.map(r=><tr key={r.index} data-testid="cnhr-row" data-blocking={r.status==='blocking'?'true':undefined}><td>{r.index}</td><td>{r.object}</td><td>{m.kind(r.kind)}</td><td title={m.encoding(r.storedB.hex)}>{r.b??m.storedNumber(r.storedB)}</td><td title={m.encoding(r.storedV.hex)}>{r.v??m.storedNumber(r.storedV)}</td><td title={r.bMinusV?.exact}>{r.bMinusV?show4(r.bMinusV.value):'—'}</td><td>{r.pixel?`${r.pixel.x}, ${r.pixel.y}`:'—'}</td><td>{r.status==='before-block'?m.beforeBlock:r.status==='blocking'?m.blockingRecord(m.blockedField[r.field]):r.status==='after-block'?m.afterBlock:m.status[r.status]}{r.status==='plotted'&&!r.inFrame?m.outside:''}</td></tr>)}</tbody></table></div></details>}
+  {((shownPlot&&shownPlot.rows.length>0)||(w.observationsPlotted&&plot.status==='blocked'&&records>0))&&<details className="cnhr-records"><summary>{m.recordsSummary}</summary><div className="photometer-table"><table><thead><tr><th scope="col">{m.colIndex}</th><th scope="col">{m.colObject}</th><th scope="col">{m.colKind}</th><th scope="col">{m.colB}</th><th scope="col">{m.colV}</th><th scope="col">{m.colBV}</th><th scope="col">{m.colPixel}</th><th scope="col">{m.colStatus}</th><th scope="col">{HR.obsDataColumn}</th></tr></thead>
+   <tbody>{tableRows.map(r=><tr key={r.index} data-testid="cnhr-row" data-blocking={r.status==='blocking'?'true':undefined}><td>{r.index}</td><td>{r.object}</td><td>{m.kind(r.kind)}</td><td title={m.encoding(r.storedB.hex)}>{r.b??m.storedNumber(r.storedB)}</td><td title={m.encoding(r.storedV.hex)}>{r.v??m.storedNumber(r.storedV)}</td><td title={r.bMinusV?.exact}>{r.bMinusV?show4(r.bMinusV.value):'—'}</td><td>{r.pixel?`${r.pixel.x}, ${r.pixel.y}`:'—'}</td><td>{r.status==='before-block'?m.beforeBlock:r.status==='blocking'?m.blockingRecord(m.blockedField[r.field]):r.status==='after-block'?m.afterBlock:m.status[r.status]}{r.status==='plotted'&&!r.inFrame?m.outside:''}</td><td>{r.status==='plotted'&&r.pixel&&<button type="button" className="secondary-button" data-testid={`${idPrefix}obs-open-${r.index}`} disabled={obsBlocked||dialogFor!==null} onClick={e=>openRecord(r.index,r.pixel!,e.currentTarget)}>{HR.obsDataOpen}</button>}</td></tr>)}</tbody></table></div></details>}
  <p className="cluster-native-hr-note">{m.limits}</p>
-  {dialogView?.kind==='ready'&&dialogFor!==null&&<ObservationalDataDialog key={dialogFor} fields={dialogView.fields} testId={`${idPrefix}obs-data`}
-   onOk={changes=>{let edited:ClusterNativeHrWorkspace;try{edited=editClusterNativeHrRecord(w,dialogFor-1,changes);}catch{return false;}setW(edited);setDialogFor(null);return true;}}
-   onCancel={()=>{setDialogFor(null);setSelected(null);}}/>}
+  {dialogFields&&dialogFor!==null&&<ObservationalDataDialog key={dialogFor} fields={dialogFields} testId={`${idPrefix}obs-data`}
+   onOk={changes=>{let edited:ClusterNativeHrWorkspace;try{edited=editClusterNativeHrRecord(w,dialogFor-1,changes);}catch{return false;}setW(edited);closeDialog(false);return true;}}
+   onCancel={()=>closeDialog(true)}/>}
  </section>;
 }
 // Front Perf: re-render only when a prop changes (handlers come stable from the shell; docs/RENDER-BUDGET.md).

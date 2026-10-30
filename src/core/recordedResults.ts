@@ -8,6 +8,8 @@
  *     Z ffExponent(4, 2) + ' ' padded to 12 or 12 blanks; 0x55d4f4 Sp padded to 13; comments. An ID 'Sky' with option
  *     +0x2e7f set leaves the output unassigned (the previous row again, '' first).
  * [I] The bias 0x5bad48 is 2415018.5 for any host date before 2173 (initialiser 0x5ac748).
+ * [I] The caption assumes the exercise byte env+0x383f is 0, 1, 3 or 7 (FormShow 0x546e1c: "Computed Magnitudes" or "Mean Counts");
+ *     exercise 2 would give "Spectral Classifications" and 4/5 "Measured Redshifts". The cluster route has no exercise byte.
  * [W] The options are VIREO's compiled defaults (magnitudes +0x2e7f = 1, R and I +0x2e82 = 1; 0x5a2ada / 0x5a2aef); the web has
  *     no options dialog for them. RA/Dec use the binary64 split of nativeListFormat (VIREO splits in Extended). A stored value
  *     VIREO's FPU would refuse (NaN, infinity, unsupported Extended) or a spectral code the port cannot format is a typed
@@ -95,4 +97,26 @@ export function recordedResultsLines(data:NativeObservationData,options:Recorded
   for(;i<data.records.length;i++){const s=row(data,i,options,filters);if(s!==null)previous=s;lines.push(previous);}
  }catch(e){if(e instanceof RecordedResultsBlocked)return Object.freeze({kind:'blocked',reason:e.reason,row:i+1});throw e;}
  return Object.freeze({kind:'ready',caption,lines:Object.freeze(lines),saveName:L.saveName+'.TXT'});
+}
+
+/** Comma Delimit of the Recorded Results list (Front K2 review 1 M1): VIREO's own writer 0x5472e0 for exercise ≠ 4 [D].
+ * - Header 0x547a40 'Object ID,MJD(Days),RA,,,Dec,,,U,B,V,' + 'R,I,' when +0x2e82 is set + 'Z,Spectrum,Comments'.
+ * - Every ListBox line after the first (the header, line 0): commas over the 1-based columns 12, 24, 28, 31, 36, 41, 44 and
+ *   47 (0x54763e..0x547692); then, from 48, one more per filter (3, or 5 with +0x2e82), stepping 7 when the magnitudes option
+ *   +0x2e7f is set and 10 otherwise (the option, not the record kind), then +12 (Z) and +13 (Sp) (0x547696..0x5476e8); every
+ *   space before that last comma is deleted (0x5476ed..0x547751) and the comments follow unchanged; WriteLn (CR LF).
+ * - Default name: the save name with '.CSV' (0x547390..0x5473ca).
+ * [I] A line shorter than the last comma column (an empty 'Sky' line, a kind ≥ 2 line) makes VIREO write past the end of the
+ *     string (nothing checks the length): an access violation or stray memory, so the web refuses with the line number. */
+export type RecordedResultsCsv=Readonly<{kind:'ready';text:string;name:string}>|Readonly<{kind:'blocked';row:number}>;
+export function recordedResultsCsv(lines:readonly string[],options:RecordedResultsOptions=RECORDED_RESULTS_DEFAULTS):RecordedResultsCsv{
+ const filters=options.fiveFilters?5:3,step=options.magnitudes?7:10;
+ const columns=[12,24,28,31,36,41,44,47];let at=48;for(let k=0;k<filters;k++){at+=step;columns.push(at);}columns.push(at+12,at+25);
+ const end=at+25,out=['Object ID,MJD(Days),RA,,,Dec,,,U,B,V,'+(options.fiveFilters?'R,I,':'')+'Z,Spectrum,Comments'];
+ for(let i=1;i<lines.length;i++){
+  const s=lines[i];if(s.length<end)return Object.freeze({kind:'blocked',row:i});
+  const c=[...s];for(const p of columns)c[p-1]=',';
+  out.push(c.slice(0,end).join('').replace(/ /g,'')+c.slice(end).join(''));
+ }
+ return Object.freeze({kind:'ready',text:out.map(l=>l+'\r\n').join(''),name:L.saveName+'.CSV'});
 }

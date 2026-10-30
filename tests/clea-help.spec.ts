@@ -149,6 +149,9 @@ test('Front K2.5: a single click on a line moves the classification cursor to it
  await expect(id(page,'spl-cursor')).toContainText('Cursor @: 4143.60 Å');
  await expect(rows.filter({hasText:'He I'}).filter({hasText:'4143.76'})).toHaveAttribute('aria-selected','true');
  await expect(page.locator('.class-marker').first()).toBeAttached();
+ // A second click on the same line reselects the nearest line again (review 1 L3).
+ await rows.filter({hasText:'4143.88'}).click();
+ await expect(rows.filter({hasText:'He I'}).filter({hasText:'4143.76'})).toHaveAttribute('aria-selected','true');
  // A line left of the view draws no cursor.
  await rows.first().click();
  await expect(id(page,'spl-cursor')).toContainText('outside the displayed range');
