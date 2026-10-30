@@ -7,7 +7,8 @@ Route `#lss-survey` (`src/LssSurvey.tsx`). Field names and centres come from the
 4. Point at a row and view the telescope field with the slit.
 5. Activate, start and pause the exposure in real time.
 6. Measure z with the analyser's shift control and the GLXYLNS.LST lines.
-7. Record Z: the "Measured Redshift Data" dialog. OK adds one record; Cancel and Escape add nothing.
+7. Record Z: the "Measured Redshift Data" dialog. OK adds one record, or updates the row of an object already recorded (see
+   "Re-measuring an object" below); Cancel and Escape change nothing.
 8. Look at the results list and save it as CSV.
 9. Plot your own records in the wedge (`#lss-wedge`).
 10. Write a free-text description (not graded).
@@ -61,7 +62,7 @@ Three rows select a coincident neighbour by the nearest rule (12550+2749 → NGC
 - The raster is the nearest-centre browser raster, not Windows pixel identity.
 - The range is fixed at 4000–5000 Å with the GLXYTMPL.SP template, except the galaxies with their own GLXYSP.LST spectrum: NGC 4670 (NGC4670.SP) and NGC 4889 (NGC4889.SP) are observed with it (Front L2). A listed spectrum that is not bundled keeps the typed `spectrum-mapping` reason (lssExposure.ts).
 - Pointing a row goes straight to its fresh field: no dome, slew, horizon/time check or tracking.
-- Measured Redshift Data (Front L2): see below. RA/Dec are read-only h m s / d m s boxes (the original discards edits to them); Cancel adds nothing (the original inserts the record before the dialog opens, 0x57c918, and Cancel never removes it); every OK is a new record (the reuse-by-ID option +0x2e8c is not recovered); JD is read when Record Z is clicked.
+- Measured Redshift Data (Front L2): see below. RA/Dec are read-only h m s / d m s boxes (the original discards edits to them); Cancel adds nothing (the original inserts the record before the dialog opens, 0x57c918, and Cancel never removes it), and on a reused row it changes nothing (the original keeps the new z, RA and Dec with the old velocity; the web keeps every row inside the 1 % rule restore checks) [W]; JD is read when Record Z is clicked.
 - Measurement uses a dedicated panel on the analyser's recovered shift-control contract.
 - Record Z follows the recovered LSS branch; 0x57c918 (find-or-add) and the dialog bodies are recovered (Front L2, below).
 - Records go to the wedge directly with their exact values. The native .TXT writer 0x57af74 is ported for Save Data (.TXT) (Front L2, below).
@@ -88,7 +89,8 @@ with SHA-256). This section supersedes the "Not recovered" list above for the it
   coordinates and that galaxy's catalogue magnitude.
 - **Measured Redshift Data** (TLSSRsltsDlg1; FormActivate 0x57cab8, OK 0x57cd80; coordinator decision of 2026-10-29). The
   dialog shows JD (6 decimals), RA h m s.ss and Dec ±d m s.s, and z as its 4-significant-digit text (`2.345E-02`). The student
-  types the velocity (blank on open: the original's "compute velocity" option is off by default). OK stores z re-read from that
+  types the velocity: it is blank on open unless the row is reused (its earlier velocity, Front L3) or Compute Rdshft Vel. is
+  on (c·z, Front R3); the option is off by default. OK stores z re-read from that
   text and the typed velocity (both Single); a velocity that does not convert shows "Velocity is incorrect or missing! You must
   supply a valid velocity for plotting." (Velocity Error!), one more than 1 % from c·z shows "Velocity calculation is
   invalid!", and the dialog stays open [D]. [W] within 1e-12 of the 1 % limit the velocity is refused, as on the Hubble route.
@@ -119,9 +121,47 @@ with SHA-256). This section supersedes the "Not recovered" list above for the it
 - Not ported: Auto Plot and the group results file 0x57c710. (Wedge Print is ported by Front P; docs/WEDGE-PLOT.md.)
 
 
+## Re-measuring an object: Time-Dependent Data (Front L3, 2026-10-30)
+
+Record Z calls the list's find-or-add 0x57c918 [D]. With the Time-Dependent Data option off (env+0x2e8c = 0, VIREO's compiled
+default 0x5a2a39), it scans the records first to last and reuses the first whose stored ID (ShortString[15]) equals the measured
+object's ID exactly and case-sensitively (LStrCmp 0x406258). A longer ID never matches its own truncated copy. The reused row
+keeps its first time (+0x10) and its list position. Record Z writes the new z, RA and Dec into it, and the dialog
+(FormActivate 0x57cab8) opens with the row's earlier velocity (ffExponent 4) and remarks. With the option on, every Record Z
+adds a row.
+
+- **Here:** the default is the same reuse.
+  - A reused row also takes the new exposure: journal, control, field, row, telescope and frozen field JD.
+  - The dialog says it updates the earlier row. OK applies the usual 1 % check, so after a changed z the student types a new
+    velocity.
+  - Cancel leaves the row unchanged [W].
+- **Wedge:** once a row that was already plotted is reused, the next "Plot my records in the wedge" replaces the wedge's own
+  points with the whole list, as OK's PlotData re-plots the whole list natively.
+- **Files:** they keep the v27–v31 format.
+  - Older files whose rows repeat an object (made when every OK appended) restore unchanged and are never merged. The next
+    Record Z reuses the first of them.
+  - The option belongs to Optical Simulation Options and lasts for the page session only, like the others ported there.
+- **Re-pinned 2026-10-30:**
+  - `tests/lss-guide.spec.ts` (five Record Z on one galaxy now give 1 record, so the totals are 5 records of 5 galaxies,
+    no longer 9);
+  - the `src/core/lssSurvey.test.ts` record-limit and event-budget cases, which fill the list with one object and now
+    run with Time-Dependent Data on.
+
 ## LSS stars are not acquired [W] (Front S, decision D5, 2026-10-29)
 
 When the nearest catalogue object in an LSS row's slit is a star, the row stays unavailable (`star-selected`): the survey
 acquires galaxy spectra only. VIREO would give that star's spectrum there (z ≈ 0), through the same star path the Object X
 and catalogue-star routes use. Turning it on would change E02's available-row counts (187/93/189) and the LSS fixtures, so it
 is a separate follow-up. LSS galaxy spectra can be classified through Save .SSP and Classify's import (docs/CLASSIFICATION-IMPORT.md).
+
+**Measured 2026-10-30 (Front L3).** All 219 rows were evaluated on the three telescopes (657 evaluations), with the field
+engine's star path enabled through JSPEC2.SPI. The 18 rows that need a clock time were also evaluated at four JDs.
+- **No evaluation selects a star:**
+  - 72 of the 657 evaluations end before any slit selection: photographic-image 27 and stamp-bound 45.
+  - In every other evaluation the selected object is a galaxy: the row's own galaxy or a neighbouring galaxy. This includes
+    the 18 rows that need a clock time, evaluated at four JDs.
+  - No QSO is selected either.
+- **The counts:** they stay 187/93/189, and no star template is needed (measurement:
+  analysis/front-plans/front-l3-star-measure.txt).
+- **Free pointing:** VIREO reaches a star in the strip only by pointing the observatory freely. Recording such a star into the
+  LSS list would take Record Z from the general spectrometer in LSS mode, a cross-front follow-up.

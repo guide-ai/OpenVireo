@@ -48,17 +48,27 @@ describe('E02 survey records (Record Z LSS branch, web adaptation)',()=>{
   const s=openLssRecord(EMPTY_LSS_SURVEY,draft);
   expect(code(()=>editLssDraft(s,{remarks:'x'.repeat(LSS_LIMITS.remarks+1)}))).toBe('record');
   expect(code(()=>editLssDraft(s,{remarks:'a\nb'}))).toBe('record');
-  let full={...EMPTY_LSS_SURVEY};for(let i=0;i<LSS_LIMITS.records;i++)full=confirmLssRecord(openLssRecord(full,draft));
+  // Re-pinned 2026-10-30 (Front L3): one object recorded 250 times fills the list only with Time-Dependent Data on; off (the
+  // compiled default) each Record Z reuses the same row (0x57c918).
+  const td={timeDependent:true};
+  let full={...EMPTY_LSS_SURVEY};for(let i=0;i<LSS_LIMITS.records;i++)full=confirmLssRecord(openLssRecord(full,draft,td));
   expect(lssAtLimit(full)).toBe(true);expect(lssAtLimit(EMPTY_LSS_SURVEY)).toBe(false);
-  expect(code(()=>confirmLssRecord(openLssRecord(full,draft)))).toBe('limit');
+  expect(code(()=>confirmLssRecord(openLssRecord(full,draft,td)))).toBe('limit');
+  // Off, the full list still takes a re-measurement of an object it holds: the row is reused, so the limit does not apply.
+  expect(confirmLssRecord(openLssRecord(full,draft)).records).toHaveLength(LSS_LIMITS.records);
  });
  it('refuses Record Z past the event budget, counting a shared exposure once',()=>{
   const big={seedAtReset:3,events:Array.from({length:12000},()=>({kind:'tick' as const,deltaMs:100}))};
-  let st=EMPTY_LSS_SURVEY;for(let i=0;i<12;i++)st=confirmLssRecord(openLssRecord(st,{...draft,journal:{...big,seedAtReset:i}}));
+  // Re-pinned 2026-10-30 (Front L3): twelve rows of one object need Time-Dependent Data on (off reuses the row).
+  const td={timeDependent:true};
+  let st=EMPTY_LSS_SURVEY;for(let i=0;i<12;i++)st=confirmLssRecord(openLssRecord(st,{...draft,journal:{...big,seedAtReset:i}},td));
   expect(lssEventTotal(st.records)).toBe(144000);
   // The same exposure again costs nothing; a new 12 000-event exposure would pass 150 000.
-  st=confirmLssRecord(openLssRecord(st,{...draft,journal:{...big,seedAtReset:0}}));expect(lssEventTotal(st.records)).toBe(144000);
-  expect(code(()=>openLssRecord(st,{...draft,journal:{...big,seedAtReset:99}}))).toBe('events');
+  st=confirmLssRecord(openLssRecord(st,{...draft,journal:{...big,seedAtReset:0}},td));expect(lssEventTotal(st.records)).toBe(144000);
+  expect(code(()=>openLssRecord(st,{...draft,journal:{...big,seedAtReset:99}},td))).toBe('events');
+  // Off, the reused row's own journal is counted out: replacing the only row of a one-row list always fits.
+  const one=confirmLssRecord(openLssRecord(EMPTY_LSS_SURVEY,{...draft,journal:{...big,seedAtReset:1}}));
+  expect(lssEventTotal(confirmLssRecord(openLssRecord(one,{...draft,journal:{...big,seedAtReset:2}})).records)).toBe(12000);
  });
  it('removes only the own LSS points from the wedge on restore',()=>{
   const own=appendOwnLssRecords(EMPTY_WEDGE_WORKSPACE,[{object:'x',jd:1,ra:13,dec:28,zSingle:Math.fround(.01),remarks:''}],{sha256:'c'.repeat(64),bytes:1});
@@ -138,4 +148,60 @@ describe('LSS row evaluation and exposure',()=>{
   if(a.status!=='value'||b.status!=='value')throw Error();
   expect([a.source,a.velocity.bits,a.z.bits]).toEqual(['velocity',b.velocity.bits,b.z.bits]);expect(txt.file.rows[0].comment).toBe('arm');
  });
+});
+
+describe('Front L3: Time-Dependent Data off (compiled) reuses the first row with the same ID (0x57c918)',()=>{
+ const other={...draft,object:'NGC 4556',row:5};
+ it('updates the row in place: same id, position and first JD; new z, RA/Dec, exposure, velocity and remarks',()=>{
+  let s=confirmLssRecord(editLssDraft(openLssRecord(EMPTY_LSS_SURVEY,draft),{remarks:'first'}));
+  s=confirmLssRecord(openLssRecord(s,{...withZ(.0251),field:3,row:7,jd:2451546,ra:13.1,dec:27.2,acquisitionPolicy:'openvireo-lss-v1:F3:R8:T0',journal:{seedAtReset:5,events:[]}}));
+  expect(s.records).toHaveLength(1);const r=s.records[0];
+  expect([r.id,r.jd]).toEqual([1,2451545]);expect([r.field,r.row,r.ra,r.dec,r.zSingle,r.journal.seedAtReset]).toEqual([3,7,13.1,27.2,lssDialogZ(.0251),5]);
+  expect(r.remarks).toBe('first');expect(r.velocitySingle).toBe(Math.fround(299792.458*lssDialogZ(.0251)));
+ });
+ it('opens the dialog with the row\'s own velocity and remarks; a changed z then fails the 1 % check until a new velocity is typed',()=>{
+  const s=confirmLssRecord(editLssDraft(openLssRecord(EMPTY_LSS_SURVEY,draft),{remarks:'arm'}));
+  const o=openLssRecord(s,{...withZ(.0301),jd:2451600});expect(o.draft!.target).toBe(0);
+  expect(o.draft!.jd).toBe(2451545);// review 1 M1: FormActivate shows the record's first time (+0x10)
+  expect(code(()=>editLssDraft(o,{object:'NGC 9999'}))).toBe('record');expect(editLssDraft(o,{object:'NGC 4555'}).draft!.object).toBe('NGC 4555');// N2
+  expect(openLssRecord(EMPTY_LSS_SURVEY,{...draft,jd:2451600}).draft!.jd).toBe(2451600);
+  // A new row keeps the Record Z time.
+  expect(o.draft!.remarks).toBe('arm');expect(o.draft!.velocity).toMatch(/^6\.7\d\dE\+03$/);
+  expect(confirmLssDialog(o).ok).toBe(false);
+  expect(confirmLssRecord(o).records[0].zSingle).toBe(lssDialogZ(.0301));
+ });
+ it('matches exactly and case-sensitively, takes the first of duplicates, never reuses an ID longer than 15, and appends with the option on',()=>{
+  let s=confirmLssRecord(openLssRecord(EMPTY_LSS_SURVEY,draft));
+  s=confirmLssRecord(openLssRecord(s,{...draft,object:'ngc 4555'}));s=confirmLssRecord(openLssRecord(s,other));expect(s.records.map(r=>r.object)).toEqual(['NGC 4555','ngc 4555','NGC 4556']);
+  s=confirmLssRecord(openLssRecord(s,draft,{timeDependent:true}));expect(s.records).toHaveLength(4);// duplicates, as an old always-append file
+  expect(openLssRecord(s,draft).draft!.target).toBe(0);
+  const long={...draft,object:'X'.repeat(16)};let l=confirmLssRecord(openLssRecord(EMPTY_LSS_SURVEY,long));l=confirmLssRecord(openLssRecord(l,long));expect(l.records).toHaveLength(2);
+ });
+ it('Cancel leaves a reused row exactly as it was [W]',()=>{
+  const s=confirmLssRecord(openLssRecord(EMPTY_LSS_SURVEY,draft));
+  expect(cancelLssRecord(openLssRecord(s,withZ(.03))).records).toBe(s.records);
+ });
+ it('a reused row that was already plotted makes the next hand-over the whole list',()=>{
+  let s=confirmLssRecord(openLssRecord(EMPTY_LSS_SURVEY,draft));s=confirmLssRecord(openLssRecord(s,other));
+  s=markLssHandedToWedge(s,2);expect(pendingWedgeRecords(s)).toEqual([]);
+  s=confirmLssRecord(openLssRecord(s,withZ(.0301)));expect(s.wedgeStale).toBe(true);expect(pendingWedgeRecords(s)).toHaveLength(2);
+  s=markLssHandedToWedge(s,2);expect(s.wedgeStale).toBe(false);expect(pendingWedgeRecords(s)).toEqual([]);
+ });
+});
+import {handOverOwnLssRecords} from './wedgeWorkspace';
+describe('Front L3 closure C2: the own-records hand-over is atomic at the 10 000-point workspace capacity',()=>{
+ const rec=(i:number)=>({object:`G${i}`,jd:2451545,ra:13,dec:28,zSingle:Math.fround(.01+i*1e-7),remarks:''});
+ const many=(n:number,from=0)=>Array.from({length:n},(_,i)=>rec(from+i));
+ it('a replace that does not fit keeps the earlier own points and receipt and shows only the notice; one that fits replaces them',()=>{
+  const first=handOverOwnLssRecords(EMPTY_WEDGE_WORKSPACE,many(6000),{sha256:'a'.repeat(64),bytes:1},false);
+  expect(first.accepted).toBe(true);expect(first.workspace.records).toHaveLength(6000);expect(first.workspace.receipts).toHaveLength(1);
+  const refused=handOverOwnLssRecords(first.workspace,many(10001),{sha256:'b'.repeat(64),bytes:1},true);
+  expect(refused.accepted).toBe(false);expect(refused.workspace.records).toBe(first.workspace.records);expect(refused.workspace.receipts).toBe(first.workspace.receipts);
+  expect(refused.workspace.notice).toMatchObject({kind:'not-loaded',cause:'capacity'});
+  const fits=handOverOwnLssRecords(first.workspace,many(9000,100),{sha256:'c'.repeat(64),bytes:1},true);
+  expect(fits.accepted).toBe(true);expect(fits.workspace.records).toHaveLength(9000);expect(fits.workspace.receipts.map(r=>r.sha256)).toEqual(['c'.repeat(64)]);
+  // Without replace, the same 9000 would pass the capacity on top of 6000: refused, nothing removed.
+  const added=handOverOwnLssRecords(first.workspace,many(9000,100),{sha256:'d'.repeat(64),bytes:1},false);
+  expect(added.accepted).toBe(false);expect(added.workspace.records).toBe(first.workspace.records);
+ },60000);
 });

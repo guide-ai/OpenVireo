@@ -1,3 +1,4 @@
+import {delphiFixed} from './variableStars';
 /** Optical Simulation Options (OB-LS-01, docs/OPTICAL-OBSERVATORY-PROVENANCE.json). CLEA_VEO.exe 781bc970…c54c, static only.
  * TOptionsDlg is the instructor options dialog. The only horizon control is SlewBox "Limit Slewing": OKBtnClick writes it to
  * record+0x27c9 → env+0x2e7d, which both enables the horizon guard 0x539290 and shows the Site Information horizon line.
@@ -11,7 +12,7 @@ export const OPTICAL_OPTIONS_CAPTIONS=Object.freeze({
  limitSlewing:'Limit Slewing',limitSlewingHint:'If checked, telescope cannot point below Horizon Limit.',
  parameterLabels:Object.freeze(['Base Slew Rate','Horizon Limit','Finder Field (Degs)','Instr. Field (Arc Min)','Field Creation Factor','Finder Mag Limit']),
  otherOptions:Object.freeze(['Edit Mode','Demonstration Mode','Fast Slewing','Show Object ID','Fast Scope Change','Restrict Scope Access','Sound Effects','Test Mode','Infrared Camera','Virtual Observatory','Write Log File','Time-Dependent Data','Print in Color','Monochrome Displays','Compute Rdshft Vel.']),
- otherTabs:Object.freeze(['Photo&meter','Spec&trometer']),ok:'&OK',cancel:'&Cancel',
+ otherTabs:Object.freeze(['Photo&meter','Spec&trometer','&CCD Camera','&IR Camera']),ok:'&OK',cancel:'&Cancel',
 });
 export function readOpticalOptions(value:unknown):OpticalOptions{
  if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).length!==1||typeof (value as OpticalOptions).limitSlewing!=='boolean')throw new Error('Invalid optical options');
@@ -33,23 +34,20 @@ export function readOpticalOptions(value:unknown):OpticalOptions{
  * - monochromeDisplays (MonoBox) +0x27da = env+0x2e8e and printInColor (ColorBox) +0x27d9 = env+0x2e8d, compiled 0
  *   (0x5a2a47/0x5a2a40): the wedge plot's FormShow copies Monochrome into its scheme flag (0x580e1a); Print1Click prints with
  *   flag = Print in Color XOR 1 (0x580fba) and restores it.
+ * - timeDependentData (TimeDepBox): +0x27d8 = env+0x2e8c, compiled 0 (0x5a2a39). Off: LSS Record Z reuses the first row with the
+ *   same object ID (0x57c918, Front L3); on: every Record Z adds a row.
  * [W] WEB-OPT-R3: like Edit Mode and Virtual Observatory these are page-session checkboxes, open to anyone and not saved. */
-export type SessionOpticalOptions=Readonly<{fastSlewing:boolean;fastScopeChange:boolean;computeRedshiftVelocity:boolean;infraredCamera:boolean;monochromeDisplays:boolean;printInColor:boolean}>;
-export const COMPILED_SESSION_OPTICAL_OPTIONS:SessionOpticalOptions=Object.freeze({fastSlewing:true,fastScopeChange:false,computeRedshiftVelocity:false,infraredCamera:true,monochromeDisplays:false,printInColor:false});
-export const SESSION_OPTION_CAPTIONS:Readonly<Record<keyof SessionOpticalOptions,string>>=Object.freeze({fastSlewing:'Fast Slewing',fastScopeChange:'Fast Scope Change',computeRedshiftVelocity:'Compute Rdshft Vel.',infraredCamera:'Infrared Camera',monochromeDisplays:'Monochrome Displays',printInColor:'Print in Color'});
+export type SessionOpticalOptions=Readonly<{fastSlewing:boolean;fastScopeChange:boolean;computeRedshiftVelocity:boolean;infraredCamera:boolean;monochromeDisplays:boolean;printInColor:boolean;timeDependentData:boolean}>;
+export const COMPILED_SESSION_OPTICAL_OPTIONS:SessionOpticalOptions=Object.freeze({fastSlewing:true,fastScopeChange:false,computeRedshiftVelocity:false,infraredCamera:true,monochromeDisplays:false,printInColor:false,timeDependentData:false});
+export const SESSION_OPTION_CAPTIONS:Readonly<Record<keyof SessionOpticalOptions,string>>=Object.freeze({fastSlewing:'Fast Slewing',fastScopeChange:'Fast Scope Change',computeRedshiftVelocity:'Compute Rdshft Vel.',infraredCamera:'Infrared Camera',monochromeDisplays:'Monochrome Displays',printInColor:'Print in Color',timeDependentData:'Time-Dependent Data'});
 /** The rate index of a programmed slew (record+0x27af through RateSlider.Position). */
 export const programmedSlewRateIndex=(fastSlewing:boolean):3|4=>fastSlewing?4:3;
 /** Telescope Apply closes an open dome unless Fast Scope Change is on (0x58b554: fast path only with the dome fully open). */
 export const telescopeChangeClosesDome=(options:Pick<SessionOpticalOptions,'fastScopeChange'>,domeOpen:boolean)=>domeOpen&&!options.fastScopeChange;
-export function readSessionOpticalOptions(value:unknown):SessionOpticalOptions{
- const keys=Object.keys(COMPILED_SESSION_OPTICAL_OPTIONS);
- if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).length!==keys.length||keys.some(k=>typeof (value as Record<string,unknown>)[k]!=='boolean'))throw new Error('Invalid session optical options');
- return Object.freeze(Object.fromEntries(keys.map(k=>[k,(value as Record<string,boolean>)[k]])) as SessionOpticalOptions);
-}
 
 /** The read-only tab values: the compiled record (defaults routine 0x5a21d0) as FormActivate 0x5a56e0 writes it into the edits,
  * FloatToStrF(ffFixed,18,d) for Singles and IntToStr for Integers (ir-gate-and-tab-values.md). Horizon Limit is the selected
- * site's (stored in radians, shown ×57.2958); the three compiled sites all hold 10°. [W] Shown, never editable: changing them
+ * site's (stored in radians, shown ×180/π); the three compiled sites all hold 10°. [W] Shown, never editable: changing them
  * would invalidate the certified field, photometer, spectrometer and camera contracts built on these values. */
 export type OptionTabValue=Readonly<{label:string;text:string}>;
 export type OptionTab=Readonly<{tab:'general'|'photometer'|'spectrometer'|'ccd'|'ir';caption:string;values:readonly OptionTabValue[]}>;
@@ -61,5 +59,11 @@ export const OPTION_TABS:readonly OptionTab[]=Object.freeze([
  Object.freeze({tab:'ccd',caption:'&CCD Camera',values:Object.freeze([v('Camera Name/ID','Site CH350 003B Back-Illuminated'),v('Pixel Size: Width','24.0'),v('Pixel Size: Height','24.0'),v('Image Size (Pixels): Width','1024'),v('Image Size (Pixels): Height','1024'),v('Read Noise (e/pixel)','5.0'),v('Dark Noise (e/pixel/sec)','2.0'),v('Bias (e/Pixel)','1000'),v('Base Magnitude','10.0'),v('Base Count','1000'),v('Base Exposure','10'),v('Chip Well Depth','320000'),v('AD Depth (Bits)','16'),v('Chip Cooling','Thermoelectric'),v('Apply Position Noise','checked')])}),
  Object.freeze({tab:'ir',caption:'&IR Camera',values:Object.freeze([v('Camera Name/ID','CLEA_IR1'),v('Pixel Size: Width','40.0'),v('Pixel Size: Height','40.0'),v('Image Size (Pixels): Width','512'),v('Image Size (Pixels): Height','512'),v('Read Noise (e/pixel)','53.0'),v('Dark Noise (e/pixel/sec)','0.7'),v('Bias (e/Pixel)','1000'),v('Base Magnitude','10.0'),v('Base Count','1000'),v('Base Exposure','10'),v('Chip Well Depth','250000'),v('AD Depth (Bits)','32'),v('Chip Cooling','Liquid Nitrogen'),v('Apply Position Noise','checked')])}),
 ] as const);
-/** The tabs the dialog shows: the IR tab only while Infrared Camera is checked (FormActivate 0x5a5a92, IRBoxMouseUp 0x5a7324). */
-export const visibleOptionTabs=(infraredCamera:boolean)=>OPTION_TABS.filter(t=>t.tab!=='ir'||infraredCamera);
+/** Horizon Limit as FormActivate writes it (0x5a5719): the selected site's horizon (radians, copied from the site record at 0x53e142)
+ * ×180/π (Extended constant at 0x5a602c, bytes c3bd0f1ed3e02ee50440 = 57.29577951308232), ffFixed 1. R3 review L2: it follows a Site Parameters override, as RunningClock and Limit Slewing do. */
+export const horizonLimitText=(horizonRadians:number)=>delphiFixed(horizonRadians*(180/Math.PI),1);
+/** The tabs the dialog shows: the IR tab only while Infrared Camera is checked (FormActivate 0x5a5a92, IRBoxMouseUp 0x5a7324); the
+ * General tab's Horizon Limit from the selected site when given. */
+export function visibleOptionTabs(infraredCamera:boolean,horizonRadians?:number):readonly OptionTab[]{
+ return OPTION_TABS.filter(t=>t.tab!=='ir'||infraredCamera).map(t=>t.tab!=='general'||horizonRadians===undefined?t:Object.freeze({...t,values:Object.freeze(t.values.map(x=>x.label==='Horizon Limit'?v(x.label,horizonLimitText(horizonRadians)):x))}));
+}

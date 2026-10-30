@@ -148,3 +148,12 @@ export function removeOwnLssRecords(w:WedgeWorkspace):WedgeWorkspace{
  const receipts=Object.freeze(w.receipts.filter((_r,i)=>!own.has(i)));
  return next(w,{records,receipts,listLoaded:receipts.length>0,selected:null,notice:null});
 }
+/** Front L3 (review 1 L3, closure C2): one hand-over of the student's own LSS records. With `replace` (a plotted row was reused),
+ * the earlier own points are replaced by these, as OK's PlotData 0x58100c re-plots the whole list. Atomic: a refused hand-over
+ * (capacity, no rows) keeps the workspace as it was, earlier own points and receipts included, and shows only its notice.
+ * An invalid record throws, as appendOwnLssRecords does. */
+export function handOverOwnLssRecords(w:WedgeWorkspace,records:readonly WedgeOwnRecord[],identity:Readonly<{sha256:string;bytes:number}>,replace:boolean):Readonly<{workspace:WedgeWorkspace;accepted:boolean}>{
+ const base=replace?removeOwnLssRecords(w):w,appended=appendOwnLssRecords(base,records,identity);
+ const accepted=appended.receipts.length>base.receipts.length;
+ return Object.freeze({workspace:accepted?appended:next(w,{notice:appended.notice}),accepted});
+}

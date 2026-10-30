@@ -171,7 +171,7 @@ function CameraControl({infraredCamera=true,active,busy,telescopeIndex,pointing,
   <div className="eyebrow">{M.eyebrow}</div><h2 id="camera-control-title">{camera==='ir'?M.titleIr:M.title}</h2>{/* TCCDCam 0x5130fc / TIRCam 0x51512c Help1Click; options +0x9a4 and +0x9ec both default CamHlp.LST (docs/CLEA-HELP.md) */}<CleaHelp list={HELP_FILES['CAMHLP.LST']} testId="camera-help"/><p>{camera==='ir'?M.introIr:M.intro}</p>
   <fieldset className="camera-settings" disabled={running||busy}>
    <fieldset className="camera-kind"><legend>{M.camera}</legend>
-    {(infraredCamera?['ccd','ir'] as const:['ccd'] as const).map(k=><label key={k}><input type="radio" name="camera-kind" checked={camera===k} onChange={()=>chooseCamera(k)}/>{M.cameraNames[k]}</label>)}
+    {/* R3 review L3: a running IR exposure keeps its radio until it ends, then the effect above returns to the CCD. */(infraredCamera||camera==='ir'?['ccd','ir'] as const:['ccd'] as const).map(k=><label key={k}><input type="radio" name="camera-kind" checked={camera===k} onChange={()=>chooseCamera(k)}/>{M.cameraNames[k]}</label>)}
    </fieldset>
    <CameraFieldSize camera={camera} telescopeIndex={telescopeIndex}/>
    <label>{M.filter}<select value={filter} onChange={e=>setFilter(Number(e.target.value))}>{filterNames.map((n,i)=><option key={n} value={i}>{n}</option>)}</select></label>

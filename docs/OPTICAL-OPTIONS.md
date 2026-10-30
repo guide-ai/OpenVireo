@@ -18,6 +18,7 @@ The dialog opens from the telescope-motion card. These controls are live:
 | Infrared Camera | on | Off, the camera card offers only the CCD camera, and the dialog hides the IR tab. | +0x27d3 = env+0x2e87; TObsrvtry FormActivate 0x537a13, InstSliderClick 0x53e194, IRBoxMouseUp 0x5a7324 |
 | Monochrome Displays | off | On, the LSS wedge plot is drawn black and white when it is next shown. | +0x27da = env+0x2e8e; TWedgePlot FormShow 0x580e1a |
 | Print in Color | off | On, Print Wedge Plot prints in colour; off, it prints black and white. | +0x27d9 = env+0x2e8d; Print1Click 0x580fba (flag = option XOR 1) |
+| Time-Dependent Data | off | Off, LSS Record Z on an already recorded object updates its row; on, every Record Z adds a row (Front L3, docs/LSS-SURVEY.md). | +0x27d8 = env+0x2e8c; 0x57c918 |
 
 The dialog also shows the General, Photometer, Spectrometer, CCD and IR tab values **read-only**, formatted as
 FormActivate 0x5a56e0 writes them. Editing them would invalidate the certified field, photometer, spectrometer and camera
@@ -36,10 +37,8 @@ contracts built on those values.
   name. Five exercise menus force it on.
   - The photometer and spectrometer belong to the instrument front.
   - The camera needs the "current object" picked in the telescope field, which the web does not keep.
-- **Time-Dependent Data** (+0x27d8, off): off, a new result reuses the row with the same object ID (0x54a73c; LSS
-  0x57c918); on, it always adds a row.
-  - The Observational Results window already offers this as its own "append" choice.
-  - The LSS survey always adds a row, which matches the option on; reusing rows there would change the saved records.
+- **Time-Dependent Data** for the photometer and classification results (0x54a73c): the Observational Results window keeps
+  its own "append" choice; the option above changes the LSS survey.
 - **Write Log File** (+0x27d6, off) appends login, component and logout records to CLEALOG.LOG. A web page cannot write
   that file.
 - **Monochrome Displays and Print in Color** also apply to the original's light curve and HR diagram windows. Those are not

@@ -9,19 +9,20 @@ import {QSO_LIST_MESSAGES} from './QsoListMessages';
 import './observatory-dialogs.css';
 const M=OBSERVATORY_MESSAGES.options,S=M.session;
 const SESSION_KEYS=Object.keys(SC) as (keyof SessionOpticalOptions)[];
-const SESSION_HINTS:Readonly<Record<keyof SessionOpticalOptions,string>>={fastSlewing:S.fastSlewing,fastScopeChange:S.fastScopeChange,computeRedshiftVelocity:S.computeRedshiftVelocity,infraredCamera:S.infraredCamera,monochromeDisplays:S.monochromeDisplays,printInColor:S.printInColor};
-const SESSION_NOTES:Partial<Record<keyof SessionOpticalOptions,string>>={fastScopeChange:S.fastScopeChangeNote,computeRedshiftVelocity:S.computeRedshiftVelocityNote,printInColor:S.colorNote};
+const SESSION_HINTS:Readonly<Record<keyof SessionOpticalOptions,string>>={fastSlewing:S.fastSlewing,fastScopeChange:S.fastScopeChange,computeRedshiftVelocity:S.computeRedshiftVelocity,infraredCamera:S.infraredCamera,monochromeDisplays:S.monochromeDisplays,printInColor:S.printInColor,timeDependentData:S.timeDependentData};
+const SESSION_NOTES:Partial<Record<keyof SessionOpticalOptions,string>>={fastScopeChange:S.fastScopeChangeNote,computeRedshiftVelocity:S.computeRedshiftVelocityNote,printInColor:S.colorNote,timeDependentData:S.timeDependentDataNote};
 const testId=(k:string)=>`ob-options-${k.replace(/[A-Z]/g,c=>'-'+c.toLowerCase())}`;
 
 /** "Optical Simulation Options" (OB-LS-01, WEB-LS-01): Limit Slewing, Edit Mode (Front O, WEB-EM-01) and Virtual Observatory
  * (Front O2) are live, and so are Front R3's ported options (`sessionOptions`, page session only, WEB-OPT-R3). The tab parameters
  * are shown read-only with their compiled values; every other control is listed with its compiled state. OK commits the drafts;
  * Cancel discards them. */
-export default function OpticalOptionsDialog({options,onOptions,disabled,editMode=false,onEditMode,virtualObservatory=false,onVirtualObservatory,sessionOptions,onSessionOptions}:{options:OpticalOptions;onOptions:(o:OpticalOptions)=>void;disabled:boolean;editMode?:boolean;onEditMode?:(on:boolean)=>void;
+export default function OpticalOptionsDialog({options,onOptions,disabled,editMode=false,onEditMode,virtualObservatory=false,onVirtualObservatory,sessionOptions,onSessionOptions,horizonRadians}:{options:OpticalOptions;onOptions:(o:OpticalOptions)=>void;disabled:boolean;editMode?:boolean;onEditMode?:(on:boolean)=>void;
  /** Front O2 (review 1 M1): VObsBox, shown when `onVirtualObservatory` is given; not persisted. */
  virtualObservatory?:boolean;onVirtualObservatory?:(on:boolean)=>void;
  /** Front R3: shown when both are given; not persisted. */
- sessionOptions?:SessionOpticalOptions;onSessionOptions?:(o:SessionOpticalOptions)=>void}){
+ sessionOptions?:SessionOpticalOptions;onSessionOptions?:(o:SessionOpticalOptions)=>void;
+ /** R3 review L2: the selected site's horizon (radians). */horizonRadians?:number}){
  const id=useId(),ref=useRef<HTMLDialogElement>(null),[draft,setDraft]=useState<OpticalOptions|null>(null),[editDraft,setEditDraft]=useState(editMode),[vobsDraft,setVobsDraft]=useState(virtualObservatory),[sessionDraft,setSessionDraft]=useState(sessionOptions);
  useEffect(()=>{const el=ref.current;if(!el)return;if(draft&&!el.open){el.showModal();el.querySelector<HTMLInputElement>('input:not([disabled])')?.focus();}else if(!draft&&el.open)el.close();},[draft!==null]);
  useEffect(()=>{if(disabled)setDraft(null);},[disabled]);
@@ -48,7 +49,7 @@ export default function OpticalOptionsDialog({options,onOptions,disabled,editMod
      {live&&<small className="ob-note" data-testid="ob-options-not-ported">{S.notPorted}</small>}
     </fieldset>
     {live?<section className="ob-group" data-testid="ob-options-tabs" aria-label={S.tabsHeading}><p className="ob-note">{S.tabsHeading}</p>
-     {visibleOptionTabs(live.infraredCamera).map(tab=><fieldset key={tab.tab} className="ob-group" data-testid={`ob-options-tab-${tab.tab}`}><legend className="ob-native">{menuCaptionText(tab.caption)}</legend>
+     {visibleOptionTabs(live.infraredCamera,horizonRadians).map(tab=><fieldset key={tab.tab} className="ob-group" data-testid={`ob-options-tab-${tab.tab}`}><legend className="ob-native">{menuCaptionText(tab.caption)}</legend>
       <dl className="ob-values">{tab.values.map(v=><div key={v.label}><dt className="ob-native">{v.label}</dt><dd>{v.text}</dd></div>)}</dl></fieldset>)}
      <small className="ob-note" data-testid="ob-options-tabs-note">{S.tabsNote}</small></section>
     :<><fieldset className="ob-group" disabled><legend className="ob-native">{menuCaptionText(C.parameters)}</legend>{C.parameterLabels.map(l=><span key={l} className="ob-check">{l} <small>— {M.unavailable}</small></span>)}</fieldset>

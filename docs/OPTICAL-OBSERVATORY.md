@@ -30,7 +30,10 @@ All of this is on the **Observatory** page, after **Open dome**.
 - An RA of exactly 24 h is refused in Add/Edit because the HTL codec stores 0 ≤ RA < 24.
 - Site Parameters is natively an instructor dialog (Options ▸ Scopes); here students may set it, and it drives only the clocks (local time, LST) and the horizon; acquisitions, profiles and journals keep the compiled site.
 - Set Date/Time is the main window's dialog (TUTTimeDlg), offered from the observatory; its Object X ID field is not shown.
-- Optical Simulation Options offers only Limit Slewing (default off); the other original options are listed as text (Fast Slewing with its compiled checked state), not available in OpenVireo; Edit Mode stays off.
+- Optical Simulation Options offers Limit Slewing (default off), Edit Mode and Virtual Observatory, and, since Fronts R3 and L3,
+  Fast Slewing, Fast Scope Change, Compute Rdshft Vel., Infrared Camera, Monochrome Displays, Print in Color and
+  Time-Dependent Data with their compiled defaults, plus the tab parameters read-only. The remaining original options are
+  listed as text. See [OPTICAL-OPTIONS.md](OPTICAL-OPTIONS.md).
 - View/Select and Add Current are disabled while the telescope moves. During a programmed slew, Set Coordinates asks "Terminate Current Slew?" (Slew Suspended, Yes/No, OB-SC-02; Front P): Yes stops the slew, No lets it continue, and the dialog never opens. VIREO suspends the slew while it asks; the web slew keeps moving (the question closes if it arrives). During manual N/S/E/W motion Set Coordinates stays disabled.
 - With Limit Slewing on, the immediate web pointing shortcuts (Point telescope, Point to coordinates, pan, HTL Point, Hubble exact centre) are refused below the horizon with the native box; instrument Activate jumps to a fixed acquisition field are not checked.
 - The list window shows rows in native RA order (OB-HL-03). The HTL editor keeps file order; since Front P, Add Current (and the QSO and variable lists' Add Selection) places the record after the last file row with RA ≤ its RA, so a list in RA order is saved in RA order (natively 0x590588 inserts into the RA-ordered list; the native tie order follows the cursor history and is not modelled). The editor's own Add still appends.
@@ -78,7 +81,7 @@ The raw report stays at `task-2/analysis/reviews/front-b-review-1.md`; this is t
 - F5 Site Information: 0x486ca0 sign slot to width 4, one decimal for aperture/focal length; exact assertions.
 - F6 Add Current no longer proposes web keys (original catalog ID or empty).
 - F7 blank ID allowed for Add Current only; label names the editor rule.
-- F8 other options listed as text with Fast Slewing's compiled state.
+- F8 other options listed as text; the ported ones are live check boxes ([OPTICAL-OPTIONS.md](OPTICAL-OPTIONS.md)).
 - F9 exact longitude/latitude/horizon bounds; crafted just-over-π files rejected.
 - F10 "Terminate Current Slew?" adaptation listed. INFO items: guide line, window comment, v26-over-v23 test.
 - Adjudication 2: data/observatory/horizon-provenance.json corrected to +0x27c9 in its own commit.
