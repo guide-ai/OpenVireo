@@ -18,7 +18,7 @@ The IR search radius (1.5 × half of the larger field side) is 0.19° on the 0.4
 - Final stage uses the IR well and A/D.
 
 ## Web adaptations
-- **ir-like-ccd**: the IR window's exposure-time limit is not recovered. The IR camera uses the CCD's 60-minute web limit. (The absence of an overlay is recovered, see above, and is not an adaptation.) The card says so under the IR camera, and `src/core/cameraExposure.test.ts` and `tests/ir-camera.spec.ts` test it.
+- **Exposure limit (recovered, Front RE5):** TIRCam's Start check (0x514268) is the CCD's (0x512244). A time ≥ 3600 s makes the ExpClock.Minutes setter (0x4fcbc8) raise "Minutes must be in the range of 0-59" uncaught, so both cameras take 1 s to 59 min 59 s. It is no longer an adaptation. (The absence of an overlay is recovered too, see above.) The card says so under the IR camera, and `src/core/cameraExposure.test.ts` and `tests/ir-camera.spec.ts` test it.
 - One card with a camera choice instead of two windows. Changing camera resets the filter to the first position; gain 2 is kept (both cameras offer it).
 - IR images are not passed to the Object X investigation (`onImage` receives CCD images only), so Object X replay and its session version are unchanged. Moving Object X asteroids are still drawn on IR images with the IR offsets, as in the original, but an IR exposure only reads the Object X list for its date: it never builds or saves a list in the Object X session (`ObjectXLab` `extraSources` with `camera: 'ir'`).
 - FITS: `INSTRUME = 'IR'`, `FILTER` J/H/K, file `OpenVireo-IR-<date>-<time>-<filter>.fit`, and two 2MASS COMMENT cards. CCD FITS cards are unchanged byte for byte.

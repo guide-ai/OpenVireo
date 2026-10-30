@@ -153,11 +153,12 @@ test('Stop during image building keeps the page responsive and makes no image',a
  expect(Date.now()-t).toBeLessThan(1500);
  await expect(page.getByTestId('camera-canvas')).toHaveCount(0);
 });
-test('exposures longer than 60 min are refused in the form',async({page})=>{
- await trackedField(page);await exposure(page,'60','30');
+test('exposures of 60 min or longer are refused in the form (VIREO: 0x512244, ExpClock.Minutes setter 0x4fcbc8)',async({page})=>{
+ // Re-pinned 2026-10-30 (Front RE5): the recovered maximum is 59 min 59 s; 60 min 0 s was accepted before.
+ await trackedField(page);await exposure(page,'60','0');
  await expect(button(page,'Start exposure')).toBeDisabled();
- await expect(camera(page).getByRole('alert')).toContainText('between 1 s and 60 min');
- await exposure(page,'60','0');await expect(button(page,'Start exposure')).toBeEnabled();
+ await expect(camera(page).getByRole('alert')).toContainText('between 1 s and 59 min 59 s');
+ await exposure(page,'59','59');await expect(button(page,'Start exposure')).toBeEnabled();
 });
 
 test('Front R2 review 1 H1/I1, closure M1: at NGC 5924 (LSS Field 8) a class 1/2 variable takes the tail catalog row and is drawn saturated',async({page})=>{

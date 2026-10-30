@@ -25,6 +25,9 @@ export type CameraExtraSourceProvider=(jd:number,seconds:number,camera:CameraExp
 export function cameraExtras(provider:CameraExtraSourceProvider|undefined,jd:number,seconds:number,camera:CameraExposureKind):readonly CameraExtraSource[]{return provider?.(jd,seconds,camera)??[];}
 export type CameraImage=Readonly<{exposure:CameraExposure;source:CameraCatalogSource;jd:number;catalogName:string;fieldObjectsStatus?:CameraFieldInputs['status']}>;
 export type CameraControlProps=Readonly<{
+ /** Front RE5: the Set Date/Time ID (the web takes the Object X lab's ID): VIREO names the native FITS file and its OBJECT card
+  * 'ObjX-'+ID, or UNKNOWN with no ID (Save 0x522c28, header 0x5239f8). */
+ vireoId?:string;
  /** Front R3: the Infrared Camera option (IRBox, env+0x2e87, compiled on). Off: the IR camera is not offered (TObsrvtry FormActivate
   * 0x537a13 drops it from the instrument slider), and a selected IR camera returns to the CCD once no exposure is running. */
  infraredCamera?:boolean;
@@ -57,7 +60,7 @@ function cameraQuery(camera:CameraExposureKind,telescope:OpticalIndex,filter:num
 }
 const randomSeed=()=>crypto.getRandomValues(new Uint32Array(1))[0];
 
-function CameraControl({infraredCamera=true,active,busy,telescopeIndex,pointing,access,currentJd,extraSources,onImage,seedSource=randomSeed}:CameraControlProps){
+function CameraControl({vireoId='',infraredCamera=true,active,busy,telescopeIndex,pointing,access,currentJd,extraSources,onImage,seedSource=randomSeed}:CameraControlProps){
  const [camera,setCamera]=useState<CameraExposureKind>('ccd'),[filter,setFilter]=useState(0),[minutes,setMinutes]=useState('0'),[seconds,setSeconds]=useState('10'),[gain,setGain]=useState(2);
  const [mode,setMode]=useState<CameraCatalogMode>('static'),[usePalette,setUsePalette]=useState(false);
  const [gate,setGate]=useState<CameraRequestGate>(createCameraRequestGate),[message,setMessage]=useState<string>(M.statusIdle),[,setWaitShown]=useState(false);
@@ -155,9 +158,9 @@ function CameraControl({infraredCamera=true,active,busy,telescopeIndex,pointing,
  function stop(){if(gate.ticket)dispatch({type:'cancel',ticket:gate.ticket});}
  function fitsContext(i:CameraImage):CameraFitsContext{return {jd:i.jd,filterName:cameraCatalogReference(i.exposure.recipe.camera,i.exposure.recipe.filterPosition).filter,catalogName:i.catalogName,source:{mode:i.source.mode,sha256:i.source.sha256,extractId:i.source.extractId,url:i.source.url}};}
  function save(native=false){
-  if(!image)return;const context=fitsContext(image),bytes=native?writeNativeCameraFits(image.exposure,image.jd):writeCameraFits(image.exposure,context);
+  if(!image)return;const context=fitsContext(image),bytes=native?writeNativeCameraFits(image.exposure,image.jd,vireoId||undefined):writeCameraFits(image.exposure,context);
   const url=URL.createObjectURL(new Blob([bytes as Uint8Array<ArrayBuffer>],{type:'application/fits'})),a=document.createElement('a');
-  a.href=url;a.download=native?nativeCameraFitsFileName():cameraFitsFileName(image.exposure,context);document.body.append(a);a.click();a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),0);
+  a.href=url;a.download=native?nativeCameraFitsFileName(vireoId||undefined):cameraFitsFileName(image.exposure,context);document.body.append(a);a.click();a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),0);
  }
  const filterNames:readonly string[]=camera==='ir'?M.filterNamesIr:M.filterNames,gains=CAMERA_GAINS[camera];
  const shown=image?.exposure;

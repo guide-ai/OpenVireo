@@ -114,7 +114,8 @@ describe('IR exposure composer (C6)',()=>{
   for(const gain of [1,2,8])expect(composeCameraExposure({...ir,gain,seconds:1},irSelection('H')).plane.width).toBe(512);
  });
  test('unrecovered IR exposure limit and overlay follow the CCD web adaptation',()=>{
-  expect(CAMERA_EXPOSURE_ADAPTATIONS.some(a=>a.startsWith('ir-like-ccd:'))).toBe(true);
+  expect(CAMERA_EXPOSURE_ADAPTATIONS.some(a=>a.startsWith('ir-like-ccd:'))).toBe(false);// Front RE5: recovered, no longer an adaptation
+  expect(CAMERA_MAX_SECONDS).toBe(3599);
   expect(()=>composeCameraExposure({...ir,seconds:CAMERA_MAX_SECONDS+1},irSelection('J'))).toThrow(CameraExposureError);
   expect(composeCameraExposure({...ir,seconds:CAMERA_MAX_SECONDS},irSelection('J')).recipe.seconds).toBe(CAMERA_MAX_SECONDS);
  });

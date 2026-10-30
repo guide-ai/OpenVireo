@@ -85,7 +85,6 @@ export const CAMERA_EXPOSURE_ADAPTATIONS=Object.freeze([
  'whole-sky-selection: the region bounds at [0x5b5b30] are not recovered; selection keeps the magnitude limit',
  'no-ccd-overlay: the optional bitmap overlay branch (form+0x412) is not offered; its source, gate, sizes and stretch mode are recovered (Front R2), but its input, the galaxy-only field raster, is internal to the field engine',
  'field-objects-certified-field: the field-object pass 0x5228dc runs on the certified field population at the camera pointing, built at the exposure JD (VIREO uses the field of the last field load); elsewhere it is not run, and an empty camera list does not write the observatory field star',
- 'ir-like-ccd: the IR window\'s exposure-time limit is not recovered; IR uses the CCD web bound (CAMERA_MAX_SECONDS). (No overlay is recovered: IR preparation 0x51e43c has no overlay branch.)',
  'field-object-saturated: a field variable of class 1 or 2 gets colour term 30 or 60, so the pass writes about V − 30 or V − 60 into the tail catalog row and VIREO draws a saturated star; that one record gets a wider, Float32-safe admission (|m| ≤ 100, peak × scale below 1e36) instead of the web bounds |m| ≤ 50 and peak ≤ 1e12, and is drawn with the same calibration, plan and draws; only a value that would still overflow is skipped with a typed reason (review 1 H1, closure M1)',
  'moving-pair-off-detector: a pair whose projected pixel position exceeds 1e6 is skipped (its four draws are still consumed); the native FISTP overflow path is not recovered',
  'moving-pair-streak-limit: streak visits are bounded by the clipped 1024^2 rectangle plus a cross pass (CAMERA_STREAK_VISIT_LIMIT); a pair that still cannot be planned (budget or coincident endpoints) is skipped alone, with no draws for its streak',
@@ -107,8 +106,10 @@ function checkRecipe(r:CameraExposureRecipe):CameraExposureRecipe {
  if(!Number.isInteger(r.seed)||r.seed<0||r.seed>0xffff_ffff)throw new CameraExposureError('recipe','seed');
  return Object.freeze({camera:r.camera,opticalIndex:index,filterPosition:r.filterPosition,seconds:r.seconds,gain:r.gain,centerRaHours:r.centerRaHours,centerDecDegrees:r.centerDecDegrees,seed:r.seed});
 }
-/** [W] Web bound on one exposure (the original editor limit is not recovered, for CCD or IR). The camera form uses the same value. */
-export const CAMERA_MAX_SECONDS=3600;
+/** Front RE5 (analysis/front-re5/ir-exposure-limit.md) [D]: both cameras accept t = Round(StrToFloat) seconds, or ×60 in minutes
+ * mode, when t > 0 (TCCDCam 0x512244, TIRCam 0x514268: the same check). Then ExpClock.Minutes := Trunc(t/60), whose setter 0x4fcbc8
+ * raises 'Minutes must be in the range of 0-59' (0x4fcccc) uncaught, so t ≥ 3600 never starts. The maximum is 59 min 59 s for both. */
+export const CAMERA_MAX_SECONDS=3599;
 function checkExtras(extras:readonly CameraExtraSource[]):readonly CameraExtraSource[] {
  if(!Array.isArray(extras)||extras.length>256)throw new CameraExposureError('extra','list');
  const at=(c:Readonly<{raHours:number;decDeg:number}>|undefined)=>!!c&&finite(c.raHours,24)&&c.raHours>=0&&finite(c.decDeg,90);
