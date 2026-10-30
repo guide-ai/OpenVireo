@@ -35,9 +35,9 @@ describe('photometer fields from the tiles',()=>{
   const any=await tiled({ra:11+44/60+42.9/3600,dec:55+22/60+43/3600},'object',s);
   expect(any.reason).toBeUndefined();expect(any.field!.selected.nativeName).toBe('N5230-00946');
   expect(any.field!.centralFraction).toBeGreaterThan(0);expect(any.field!.sourceMean).toBeGreaterThan(0);
-  // A sky reading 0.01° north of it, as the bundled fields place sky.
-  const sky=await tiled({ra:11+44/60+42.9/3600,dec:55+22/60+43/3600+.01},'sky',s);
-  expect(sky.reason===undefined||sky.reason==='photometer-sky-not-empty').toBe(true);
+  // A sky reading takes whatever the aperture holds (VIREO's way, G3b): the same frame as an object reading at that pointing.
+  const sky=await tiled({ra:11+44/60+42.9/3600,dec:55+22/60+43/3600},'sky',s);
+  expect(sky.reason).toBeUndefined();expect(sky.field!.sourceMagnitude).toBe(any.field!.sourceMagnitude);expect(sky.field!.kind).toBe('sky');
   // M31's core (CLEA_GLX.DAT galaxies in the 0.05° field): typed, not approximated.
   expect((await tiled({ra:0.7123,dec:41.2692},'object',s)).reason).toBe('photometer-galaxy');
  },120_000);

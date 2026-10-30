@@ -85,5 +85,44 @@ I01/E04 are not accepted complete; N03 remains partial. [Verification](PHOTOMETE
   - `photometer-selection`: no star selected at the centre.
   - `photometer-sky-not-empty`: a sky reading with a non-zero fraction or a neighbour, which is the bundled-field contract.
   - `photometer-population`: an engine gate.
-- **Not yet wired:** the Photometer screen still offers only the Pleiades targets. Using a tiled field at the current telescope
-  pointing is G3b (analysis/front-plans/front-g-gsc.md §10).
+- **Mode independence:** the source does not depend on the reading mode (G3b). A positive central fraction gives the known
+  colours of the central star and its neighbours. A zero fraction with no admitted neighbour gives the literal 30. Neighbour
+  light without central admission is `photometer-central-unadmitted`; a missing colour is `photometer-colour`.
+
+## Photometer at the telescope pointing (Front G, G3b)
+
+On the Photometer screen, **Use the telescope pointing** builds the field where the telescope points, from the tiles. The
+student then chooses Sky or Object and integrates, as in VIREO. **Point the telescope here** (RA in hours, Dec in degrees)
+moves the telescope from the bench, for example to a clean patch of sky and back. Static evidence is in
+`analysis/front-g-gsc/RE-photometer-start.md`.
+
+- **Sky readings anywhere** (coordinator decision 3b).
+  - The native Start (0x4ffa30) prepares the source in the same way in both modes: Sky mode is the radio item at +0x41c.
+  - A sky reading at a pointing with a star in the aperture therefore includes that star's light, which is VIREO's result.
+- **The one warning VIREO has is ported literally.**
+  - When a Sky reading would replace this filter's sky in the current telescope bank while the selected star has light in the
+    aperture, VIREO asks "Are you sure you want to replace a sky reading with one that may be invalid?" (caption
+    "Reading Sky!", Yes/No; No cancels the Start).
+  - In the journal that is a one-shot `skyConfirm` event before `start`. The first sky reading is never asked about.
+  - Bundled Pleiades sky fields have a zero fraction, so they are never asked about.
+- **No star within the selection radius** (0x59a0fc, 350 pixels, about 1.1′): VIREO keeps a nil selection and skips the
+  magnitude preparation. The band magnitudes at +0x41f…+0x451 then keep the previous star's values, or 0 on a fresh form.
+  That memory is not reproduced, so the case is typed `photometer-selection`.
+- **Journal:**
+  - A `field` event {ra, dec} selects the tiled target `gsc:<ra>,<dec>`. Moving keeps the per-filter skies of the context,
+    since only a telescope change needs fresh sky, and keeps the declared mode.
+  - Frames are prepared asynchronously (`io/photometerTiledFields.ts`, with the Object X 2° mask) and registered before the
+    synchronous journal uses them.
+  - Sessions with a `field` event are owner version 12 (`OpenVireo-photometer-compact-GSC-fields-v12`, header
+    `gscIndexSHA256`). Restoring prepares their frames first; earlier sessions are unchanged.
+- **Telescopes:** all three (point 4).
+  - The 0.9 m and 4 m constants come from the optical profile.
+  - Their per-target exclusions follow from the field and telescope alone. `photometerMaximumMean`, the largest per-callback
+    mean over U/B/V and apertures 5/10/15, reproduces every recorded `maximumMean` and reason of both contracts, to a relative
+    1e-8 (`src/core/photometerTiledBench.test.ts`).
+  - Tiled targets get the same limits as typed reasons that block Start (`tiledPhotometerReason`): `Poisson-mean-bound`,
+    `all-duration-count-domain`, and at 0.9 m and 4 m `photometer-blend` (neighbours other than the selected star).
+- **Notebook and B−V** work for tiled stars. They never count toward the Pleiades exercise, whose summary reads only Pleiades
+  rows.
+- **Tests:** `src/io/photometerTiled.test.ts` (journal, session round trip, telescopes, sky question, E04) and
+  `tests/photometer-tiled.spec.ts` (browser flow, and M31 typed).

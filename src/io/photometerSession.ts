@@ -24,7 +24,16 @@ export function parsePhotometerSession(value:unknown):PhotometerState {
  // Owner8+ rejects dropped/coalesced events;Number/JSON token spelling is not a byte-canonical input requirement.
  let s:PhotometerState;try{s=replayPhotometer(r.seedAtStart,r.events as PhotometerEvent[]);}catch{throw new PhotometerError('session');}if(s.armed||s.phase==='running'||timed!==!!s.timing||(version>=8&&events.length!==s.events.length))throw new PhotometerError('session');return s;
 }
+/** Front G (G3b): a history with 'field' events needs its tiled frames prepared before the synchronous parse/replay. Only such
+ * histories load the tile modules; earlier sessions read exactly as before. */
+export async function prepareSessionFields(parsed:unknown):Promise<void>{
+ const events=parsed&&typeof parsed==='object'&&!Array.isArray(parsed)?(parsed as {events?:unknown}).events:null;
+ if(!Array.isArray(events)||!events.some(e=>e&&typeof e==='object'&&(e as {type?:unknown}).type==='field'))return;
+ const {preparePhotometerSessionFields}=await import('./photometerTiledFields');
+ if(!await preparePhotometerSessionFields(events))throw new PhotometerError('session');
+}
 export async function readPhotometerSession(file:File):Promise<PhotometerState>{
  if(file.size>MAX_PHOTOMETER_SESSION_BYTES)throw new PhotometerError('session');const bytes=await file.arrayBuffer();if(bytes.byteLength>MAX_PHOTOMETER_SESSION_BYTES)throw new PhotometerError('session');
- let parsed:unknown;try{parsed=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));}catch{throw new PhotometerError('session');}try{if(!projectBytesFit(bytes.byteLength,parsed,PHOTOMETER_SESSION_PAYLOAD_BYTES))throw new PhotometerError('session');}catch{throw new PhotometerError('session');}return parsePhotometerSession(parsed);
+ let parsed:unknown;try{parsed=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));}catch{throw new PhotometerError('session');}try{if(!projectBytesFit(bytes.byteLength,parsed,PHOTOMETER_SESSION_PAYLOAD_BYTES))throw new PhotometerError('session');}catch{throw new PhotometerError('session');}
+ await prepareSessionFields(parsed);return parsePhotometerSession(parsed);
 }

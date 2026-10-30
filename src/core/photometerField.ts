@@ -21,7 +21,7 @@ import {nativeCatalogAdmission} from './catalogPopulation';
 import {traceCompactGscBandRead} from './compactGscReadOrder';
 import {decodeNativeCompactRecord,nativeCompactBandOrder,nativeRegionIds,type NativeFieldStar} from './pinnedNativeField';
 import {createNativeSelectionScene,selectCatalogObject} from './objectSelection';
-import {photometerSeparation,photometerPointFraction,attenuatePhotometerMagnitude,prepareKnownColorPhotometerUbv} from './photometerSource';
+import {photometerSeparation,photometerPointFraction,attenuatePhotometerMagnitude,prepareKnownColorPhotometerUbv,PhotometerSourceError} from './photometerSource';
 import {magnitudeAmplitude} from './photons';
 import {poissonDraw} from './acquisition';
 import {reducePhotometerSky,reducePhotometerObject} from './photometryReduction';
@@ -187,6 +187,7 @@ export function buildPinnedPleiadesField(domain:unknown,kind:PleiadesFieldKind):
 }
 /** Only bundled complete fields: no caller-supplied scene can attest coverage. */
 export function buildPhotometerTargetField(targetId:string,kind:PleiadesFieldKind):PinnedPleiadesField{
+ const tiled=tiledFields.get(targetId);if(tiled){if(kind!=='object'&&kind!=='sky')throw new PhotometerFieldError('field');return Object.freeze({...tiled,kind});}
  const target=photometerTarget(targetId);
  if(targetId===evidence.target.catalogId)return buildCompleteField(evidence.target,evidence.fields,kind,'pinned-pleiades-v.json');
  const legacy=additional.targets.find(p=>p.target.catalogId===targetId);
@@ -229,10 +230,14 @@ export type PhotometerTiledReason=
  /** A merged QSO record (type 3) is in the field: it has no catalogue colours for the photometer. */|'photometer-qso'
  /** A TRUE-dispatch variable star is in the field: its brightness depends on the observatory clock. */|'photometer-variable'
  /** The centre selects no star (none within the native 350-pixel sentinel), or a galaxy. */|'photometer-selection'
- /** A sky reading needs zero aperture fraction and no neighbour (the bundled-field contract). */|'photometer-sky-not-empty'
+ /** Neighbour light reaches the aperture while the central star has no admission: that native branch is not recovered. */|'photometer-central-unadmitted'
+ /** A star lacks catalogue colours (the native missing-colour branches are not recovered). */|'photometer-colour'
  /** The engine gated the population (its own typed reason). */|'photometer-population';
 export type PhotometerTiledResult=Readonly<{field:PinnedPleiadesField;reason?:undefined}|{field?:undefined;reason:PhotometerTiledReason;detail?:string}>;
 type PopulationLike=Readonly<{stars:readonly Readonly<{type:number;id:string;rawHex?:string;band?:string;recordIndex?:number}>[];galaxies:readonly unknown[];variableStars?:readonly unknown[]}>;
+/** The source preparation does not depend on the reading mode (native Start; G3b): a positive central fraction uses the known
+ * colours of the central star and its neighbours; a central fraction of 0 with no admitted neighbour gives the literal 30 (as the
+ * bundled sky fields); neighbour light without central admission is typed. `kind` labels the frame only. */
 export function photometerFieldFromPopulation(population:PopulationLike|null,reasons:readonly string[],pointing:Pointing,kind:PleiadesFieldKind):PhotometerTiledResult{
  if(kind!=='object'&&kind!=='sky')throw new PhotometerFieldError('field');
  if(!population||reasons.length)return Object.freeze({reason:'photometer-population' as const,detail:reasons.join(',')});
@@ -247,7 +252,39 @@ export function photometerFieldFromPopulation(population:PopulationLike|null,rea
  const selected=stars.find(s=>s.id===selection.object.id)!;
  const fraction=(s:NamedStar)=>photometerPointFraction(radius,photometerSeparation(pointing.ra,pointing.dec,s.ra,s.dec),width);
  const centralFraction=fraction(selected),supplied=(s:NamedStar)=>({v:s.magnitude,bMinusV:s.photometry2Single,uMinusB:s.photometry3Single,fraction:fraction(s)});
- if(kind==='sky'&&(centralFraction!==0||neighbors.length!==0))return Object.freeze({reason:'photometer-sky-not-empty' as const});
- const sourceMagnitude=kind==='sky'?attenuatePhotometerMagnitude(selected.magnitude,centralFraction):prepareKnownColorPhotometerUbv(supplied(selected),neighbors.filter(s=>s.nativeName!==selected.nativeName).map(supplied)).v;
+ const others=neighbors.filter(s=>s.nativeName!==selected.nativeName);
+ if(centralFraction===0&&others.some(s=>fraction(s)>0))return Object.freeze({reason:'photometer-central-unadmitted' as const});
+ let sourceMagnitude:number;
+ try{sourceMagnitude=centralFraction>0?prepareKnownColorPhotometerUbv(supplied(selected),others.map(supplied)).v:attenuatePhotometerMagnitude(selected.magnitude,0);}
+ catch(e){if(e instanceof PhotometerSourceError)return Object.freeze({reason:'photometer-colour' as const});throw e;}
  return Object.freeze({field:Object.freeze({[brand]:true as const,provenanceFile:'gsc-tiles',kind,pointing:Object.freeze({ra:pointing.ra,dec:pointing.dec}),stars,neighbors,selected,selectedDistancePixels:selection.star.distance,centralFraction,sourceMagnitude,sourceMean:1000*magnitudeAmplitude(sourceMagnitude,9),skyMean:1000*magnitudeAmplitude(16,9)})});
+}
+/** Front G (G3b): tiled photometer targets. A target is the exact telescope pointing (binary64 RA and Dec); its frame is prepared
+ * asynchronously from the tiles (io/photometerTiledFields.ts) and registered here before the synchronous journal uses it. */
+export const TILED_PHOTOMETER_PREFIX='gsc:';
+export function tiledPhotometerTargetId(p:Pointing):string{
+ if(!p||!Number.isFinite(p.ra)||!Number.isFinite(p.dec)||p.ra<0||p.ra>=24||Math.abs(p.dec)>90)throw new PhotometerFieldError('domain');
+ return `${TILED_PHOTOMETER_PREFIX}${p.ra},${p.dec}`;
+}
+/** The pointing a tiled target id names (exact round trip of the number spelling), or null. */
+export function tiledPhotometerPointing(id:unknown):Pointing|null{
+ if(typeof id!=='string'||!id.startsWith(TILED_PHOTOMETER_PREFIX))return null;
+ const parts=id.slice(TILED_PHOTOMETER_PREFIX.length).split(',');if(parts.length!==2)return null;
+ const ra=Number(parts[0]),dec=Number(parts[1]);
+ try{return tiledPhotometerTargetId({ra,dec})===id?Object.freeze({ra,dec}):null;}catch{return null;}
+}
+const tiledFields=new Map<string,PinnedPleiadesField>();
+export function registerTiledPhotometerField(field:PinnedPleiadesField):string{
+ if(field?.[brand]!==true||field.provenanceFile!=='gsc-tiles')throw new PhotometerFieldError('domain');
+ const id=tiledPhotometerTargetId(field.pointing);tiledFields.set(id,Object.freeze({...field,kind:'object'}));return id;
+}
+export const isTiledPhotometerTarget=(id:unknown):id is string=>typeof id==='string'&&tiledFields.has(id);
+/** Test seam and memory bound: forget every prepared tiled frame. */
+export function clearTiledPhotometerFields(){tiledFields.clear();}
+/** What the bench shows for a target: a Pleiades HTL target as before, or a tiled target by its selected star (G3b). */
+export type PhotometerTargetView=Readonly<{catalogId:string;hotlistLabel:string;hotlistRecord:number|null;nativeName:string;tiled:boolean}>;
+export function photometerTargetView(id:string):PhotometerTargetView{
+ const tiled=tiledFields.get(id);
+ if(tiled)return Object.freeze({catalogId:id,hotlistLabel:tiled.selected.nativeName,hotlistRecord:null,nativeName:tiled.selected.nativeName,tiled:true});
+ const t=photometerTarget(id);return Object.freeze({catalogId:t.catalogId,hotlistLabel:t.hotlistLabel,hotlistRecord:t.hotlistRecord,nativeName:t.nativeName,tiled:false});
 }

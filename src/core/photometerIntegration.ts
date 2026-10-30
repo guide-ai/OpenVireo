@@ -5,7 +5,7 @@ import packetSource from '../../data/photometry/integration-provenance.json';
 const packet=projectResource(packetSource);
 
 import {buildPinnedPleiadesUbvField,type PhotometerFilter} from './photometerUbvField';
-import {PLEIADES_PHOTOMETER_TARGETS,isPhotometerTarget,type PleiadesFieldKind} from './photometerField';
+import {PLEIADES_PHOTOMETER_TARGETS,isPhotometerTarget,isTiledPhotometerTarget,type PleiadesFieldKind} from './photometerField';
 import {poissonDraw,randomDraw} from './acquisition';
 import {MAX_PHOTOMETER_COUNT} from './photometryReduction';
 export const PHOTOMETER_INTEGRATION_SHA256='b11fcc556da1011dc89b0c6e66c143d0f9fae3f6de653538daa4a4e38cf2fab0';
@@ -25,7 +25,7 @@ export type PhotometerIntegration=Readonly<{[brand]:true;timing:PhotometerTiming
 // dynamic cache or an admission of arbitrary pointing/seeing/calibration.
 export const MAX_PHOTOMETER_CONFIGURATIONS=(PLEIADES_PHOTOMETER_TARGETS.length+photometerTelescopeTargets(1).length+photometerTelescopeTargets(2).length)*2*3*PHOTOMETER_APERTURES.length;
 const configurations=new Map<string,ReturnType<typeof buildPinnedPleiadesUbvField>>();
-function configuration(kind:PleiadesFieldKind,filter:PhotometerFilter,targetId:string,apertureSelector=10,telescopeIndex:PhotometerTelescopeIndex=0){if(!isPhotometerTarget(targetId))throw new PhotometerIntegrationError('settings');const key=`${kind}:${filter}:${targetId}:${apertureSelector}:${telescopeIndex}`,old=configurations.get(key);if(old)return old;const c=buildPinnedPleiadesUbvField(kind,filter,targetId,apertureSelector,telescopeIndex);if(configurations.size>=MAX_PHOTOMETER_CONFIGURATIONS)throw new PhotometerIntegrationError('limit');configurations.set(key,c);return c;}
+function configuration(kind:PleiadesFieldKind,filter:PhotometerFilter,targetId:string,apertureSelector=10,telescopeIndex:PhotometerTelescopeIndex=0){if(!isPhotometerTarget(targetId)&&!isTiledPhotometerTarget(targetId))throw new PhotometerIntegrationError('settings');const key=`${kind}:${filter}:${targetId}:${apertureSelector}:${telescopeIndex}`,old=configurations.get(key);if(old)return old;const c=buildPinnedPleiadesUbvField(kind,filter,targetId,apertureSelector,telescopeIndex);if(configurations.size>=MAX_PHOTOMETER_CONFIGURATIONS)throw new PhotometerIntegrationError('limit');configurations.set(key,c);return c;}
 export function createPhotometerIntegration(timing:PhotometerTiming,kind:PleiadesFieldKind,filter:PhotometerFilter,targetId:string,seed:number,apertureSelector=10,telescopeIndex:PhotometerTelescopeIndex=0):PhotometerIntegration{const t=photometerTiming(timing.secondsPerIntegration,timing.integrations);randomDraw(seed);configuration(kind,filter,targetId,apertureSelector,telescopeIndex);return Object.freeze({[brand]:true as const,timing:t,kind,filter,targetId,...(telescopeIndex!==0?{telescopeIndex}:{}),...(apertureSelector!==10?{apertureSelector}:{}),initialSeed:seed,seed,callbacks:0,sourceCount:0,skyCount:0,totalPhotonCount:0,draws:0,nativeBaseCountSum:0,periodCounts:Object.freeze([]),periodCount:0});}
 /** Exact executed-callback fold. No elapsed wall time is converted to photons;
  * integer nominal duration is a browser policy,not native x87 threshold proof. */
