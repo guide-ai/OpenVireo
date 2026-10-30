@@ -1,6 +1,6 @@
 # Observatory sound effects (Front C5W)
 
-**Status:** implemented on branch `claude/front-c5w` (2026-10-29).
+**Status:** merged into main from branch `claude/front-c5w` (2026-10-29).
 
 **Plan:** research root `analysis/front-plans/front-c5w.md`. **Recovery:** `analysis/front-c5w/WAV-events.md`.
 

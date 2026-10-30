@@ -74,7 +74,7 @@ export const POLISH_MESSAGES=Object.freeze({
   note:'Web adaptation: VIREO’s Print Window (PrintScreen1Click 0x56d9d8) draws the window on the printer, and that drawing is not decoded; this prints both panels with their readouts as shown, in the browser’s printer layout.',
  }),
  wedgePrint:Object.freeze({
-  note:'Web adaptation: VIREO’s Print sets the colour scheme to the opposite of a program setting (scheme := Env+0x2e8d XOR 1, 0x580fba–0x580fc3), so it prints in black and white when that setting is 0; the setting’s default is not recovered. This print always uses the black-and-white scheme and the browser’s printer layout. Selection highlighting is not printed.',
+  note:'Web adaptation: VIREO’s Print sets the colour scheme to the opposite of the Print in Color option (scheme := Env+0x2e8d XOR 1, 0x580fba–0x580fc3), so it prints in black and white unless that option is checked (compiled off; Optical Simulation Options). This print follows the option and uses the browser’s printer layout. Selection highlighting is not printed.',
  }),
  printSky:Object.freeze({
   note:'VIREO prints its header (the date and time, here in your browser\'s format; the laboratory table number only when one is recorded; then the student name line, blank here because OpenVireo has no log-in), the sky image colour-inverted and scaled 1.5, and the footer with the field centre, field size, telescope and instrument. Web adaptation: the browser lays out the page and prints the view as shown.',

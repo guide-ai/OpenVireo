@@ -1,6 +1,6 @@
 # Object and field information forms (Front O)
 
-Status: implemented on branch `claude/front-o-info-forms-eb3a61`. Independent review 1 (`analysis/reviews/front-o-review-1.md`, MERGE-AFTER-FIXES) applied: M1 Catalog Object 320 px layout, M2 galaxy z mask, the Object X mask by ObjectX.HTL positions, L1–L11 and the scripted witness reshape.
+Status: merged into main from branch `claude/front-o-info-forms-eb3a61`. Independent review 1 (`analysis/reviews/front-o-review-1.md`, MERGE-AFTER-FIXES) applied: M1 Catalog Object 320 px layout, M2 galaxy z mask, the Object X mask by ObjectX.HTL positions, L1–L11 and the scripted witness reshape.
 
 | Step | Who | Model · effort |
 |---|---|---|

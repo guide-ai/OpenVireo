@@ -1,6 +1,6 @@
 # QSO List and HST Image Archive (Front O2)
 
-**Status:** implemented on branch `claude/front-o2-qso-hst`. Review 1 (`analysis/reviews/front-o2-review-1.md`, MERGE-AFTER-FIXES) is applied: M1 Virtual Observatory gate, M2, L1–L3, I1, I3, I4, and the user's HST decision of 2026-10-28.
+**Status:** merged into main from branch `claude/front-o2-qso-hst`. Review 1 (`analysis/reviews/front-o2-review-1.md`, MERGE-AFTER-FIXES) is applied: M1 Virtual Observatory gate, M2, L1–L3, I1, I3, I4, and the user's HST decision of 2026-10-28.
 
 **Plan:** research root `analysis/front-plans/front-o2-qso-hst.md`.
 

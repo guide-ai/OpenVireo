@@ -67,7 +67,8 @@ All entries. Lab rows whose neighbours lie within 2.375° stay masked after the 
 `star-template-random` (index 0: the native random pick needs all 132 templates), `galaxy-lookup`, `spectrum-mapping` (own galaxy
 spectrum not bundled), `galaxy-spectrum`, `qso-spectrum`, `object-type` (types ≥ 5), the Front T variable reasons,
 `multispec-mean-bound` (> 10⁶), `negative-mean`, `precision` (u = 0.5), `zero-maximum` (nothing to save), the photographic-image
-field gate, pointings without a pack; Print Selection Field and Help (0-byte help files).
+field gate, pointings without a pack; Help (0-byte help files). Print Selection Field works (Front P): it runs Print Sky Image
+(header 0x58e860, footer 0x53fe14) on the Multi-Spec telescope display. The display's own Print starts with the same header (Front H2).
 
 ## Resources
 The 67 jspect2 templates approved on 2026-10-28 (AGENTS.md) are bundled byte-exact in `public/original/spectra/jspect2/`; each

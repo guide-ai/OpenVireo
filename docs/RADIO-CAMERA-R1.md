@@ -1,6 +1,6 @@
 # Radio and camera leftovers (Front R1)
 
-**Status:** implemented on branch `claude/front-r1-radio-camera` (2026-10-29); review 1 (MERGE-AFTER-FIXES) applied.
+**Status:** merged into main from branch `claude/front-r1-radio-camera` (2026-10-29); review 1 (MERGE-AFTER-FIXES) applied.
 
 **Plan:** research root `analysis/front-plans/front-r1-radio-camera.md`.
 

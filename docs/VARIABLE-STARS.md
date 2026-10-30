@@ -1,6 +1,6 @@
 # Variable stars and light curves (Front V, V1–V3)
 
-Status: implemented on branch `claude/front-v-variables-43a775`; the coordinator's high-effort review 1
+Status: merged into main from branch `claude/front-v-variables-43a775`; the coordinator's high-effort review 1
 (`analysis/reviews/front-v-review-1.md`) was applied: print page body (M1), the M−m/D note (M2), type bound 10 (L1), blank
 type filter (L2), menu focus (L3), guide wording (L4), manifest scope (L5), table amplitude (L6), no mutation without Init
 (L7), the `non-finite` test and the pinned witness hash. Implementation: Claude Code (claude-opus-5-5), medium effort. Plan: Plan subagent (claude-opus-5-5, high effort) in
@@ -172,11 +172,7 @@ Tests are evidence of the chosen contract, not of original-runtime equivalence.
   natively the field-list copy and the catalogue copy are separate records, so a list opened from the catalogue would show 0.00].
   Classes 0/1/2 use the CepheidTypeObj,
   LPVTypeObj (Cepheid Mag, constant colours) and VarStarObj models; the camera's own consumer (0x51ef38, Front C) is not ported.
-- **Pleiades "mixed-variable-field" stars** (PLEIADES.HTL rows 3, 5, 10, 12): every GCVS record within 12′ of those
-  pointings is class 3 (UV, BY, UV+BY, RS:) with period 0 and M−m/D 0 (e.g. V0855 Tau, V0641 Tau). The block is therefore
-  the untraced zero-period/zero-word branch of 0x51ec95, which `variableMerge.ts` rejects as `dispatch-unsupported` — not
-  Mag(t). Needed (Front F files only): trace that branch (and whether it reaches 0x51ee57); extend
-  `nativeVariableFalseMerge`; witness the four fields from CLEA_VStrs.dat (Front V's `bundledVariableStars.ts` and
-  `decodeVariableStarRecord` can be reused read-only); run them through `fieldEngine.ts`; then admit the rows. If the branch
-  calls Mag, P = 0 faults in the original too and the photometer must refuse with a typed reason. Not done here.
-- Printer layout, the portrait print branch, the student/lab print strings and the CLEA help viewer; saving this page's state with the investigation (not needed: it is a browsing aid).
+- **Pleiades "mixed-variable-field" stars** (PLEIADES.HTL rows 3, 5, 10, 12): done on 2026-10-28. The class-3 period-0/word-0
+  FALSE merge is applied to the photometer fields, so the 0.4 m admits all 24 positions (`data/photometry/pleiades-variable-fields.json`,
+  `core/photometerJournal.ts`, docs/PLEIADES-SAMPLE.md).
+- Printer layout, the portrait print branch and the student/lab print strings (the CLEA help viewer is done, docs/CLEA-HELP.md); saving this page's state with the investigation (not needed: it is a browsing aid).
