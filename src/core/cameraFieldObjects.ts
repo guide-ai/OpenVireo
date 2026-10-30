@@ -5,8 +5,8 @@
  *     the TRUE dispatch kept: hit or inserted). Galaxies, QSOs and moving objects never do. Its magnitude is
  *     m = Single(Single(V +0x29) − colour term 0x51ef38(star, filter)), with the filter BYTE of the CCD form [[0x5b5adc]+0x405],
  *     even during an IR exposure (0 = NF until a CCD exposure sets it [I: zero-filled form]).
- * [W] The field is the certified field population at the camera pointing (io/fieldInfoPacks.ts findCertifiedPopulation),
- *     built at the exposure's JD; the native field is the one built at the last field load. Any typed variable value blocks the
+ * [W] The field is the field population at the camera pointing (io/fieldInfoPacks.ts findCertifiedPopulation: a bundled pack
+ *     or a field assembled from the compact GSC tiles), built at the exposure's JD; the native field is the one built at the last field load. Any typed variable value blocks the
  *     pass (an unknown V cannot stand in for the native value). */
 import {cameraColourTerm,cameraVariableMagnitude,type CameraColourFilter} from './cameraColourTerm';
 import {decodeVariableStarRecord} from './variableStars';

@@ -3,7 +3,7 @@ import {frozenObservatoryTime,type FieldTelescope} from '../core/fieldEngine';
 import type {AccessReason} from '../core/instrumentAccess';
 import type {FieldMode,Pointing} from '../core/sky';
 import {loadedObjectXPositions,loadObjectXPositions,objectXNear} from '../io/objectXMask';
-import {MULTISPEC_MASK_REACH,observatoryMultiSpecField} from './multiSpecFields';
+import {multiSpecMaskReach,observatoryMultiSpecField} from './multiSpecFields';
 import {MULTISPEC_MASK_PENDING,MULTISPEC_UNMASKED,type MultiSpecMaskPolicy} from './multiSpecText';
 import MultiSpecInstrument from './MultiSpecInstrument';
 import {t} from '../i18n';
@@ -35,7 +35,7 @@ export default function MultiSpecObservatory({active,busy,access,mode,pointing,t
   loadObjectXPositions().then(l=>{if(current)setPositions(l);},()=>{if(current)setPositions('failed');});
   return()=>{current=false;};
  },[positions,retry]);
- const near=positions===null?null:positions==='failed'||objectXNear(positions,hidden,pointing,MULTISPEC_MASK_REACH);
+ const near=positions===null?null:positions==='failed'||objectXNear(positions,hidden,pointing,multiSpecMaskReach(pointing));
  const mask=useMemo<MultiSpecMaskPolicy>(()=>near===null?MULTISPEC_MASK_PENDING:near?Object.freeze({masked:true,target:hidden}):MULTISPEC_UNMASKED,
   [near,hidden?.ra,hidden?.dec,hidden?.label]);// eslint-disable-line react-hooks/exhaustive-deps
  const telescopeView=mode==='telescope',gate=editMode||virtualObservatory;

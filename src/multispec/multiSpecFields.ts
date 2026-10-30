@@ -13,9 +13,10 @@ import type {HtlList} from '../core/hotList';
 import type {FieldTelescope} from '../core/fieldEngine';
 import type {MultiSpecFieldRequest} from '../io/multiSpec';
 
-/** Object X rule (plan §4): a field is masked when its centre lies within OBJECT_X_HIDE_DEGREES + this half-width (the ±0.375°
- * bounded field area) of an Object X position. */
-export const MULTISPEC_MASK_REACH=0.375;
+/** Object X rule (plan §4): a field is masked when its centre lies within OBJECT_X_HIDE_DEGREES + the field area's farthest
+ * corner (io/objectXMask.ts fieldMaskReach, 0.53–0.66°; Front G merge review L1, which found 0.375° too short) of an Object X
+ * position. */
+export {fieldMaskReach as multiSpecMaskReach} from '../io/objectXMask';
 type Pointing=Readonly<{ra:number;dec:number}>;
 const at=(p:Pointing)=>Object.freeze({ra:p.ra,dec:p.dec});
 export function observatoryMultiSpecField(pointing:Pointing,telescope:FieldTelescope):MultiSpecFieldRequest|null{

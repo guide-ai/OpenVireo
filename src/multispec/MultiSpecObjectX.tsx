@@ -3,7 +3,7 @@ import {frozenObservatoryTime,type FieldTelescope} from '../core/fieldEngine';
 import type {HtlList} from '../core/hotList';
 import {loadObjectXPositions,objectXNear} from '../io/objectXMask';
 import {OBJECT_X_LAB_EN as XM} from '../objectx/ObjectXMessages';
-import {MULTISPEC_MASK_REACH,objectXMultiSpecField} from './multiSpecFields';
+import {multiSpecMaskReach,objectXMultiSpecField} from './multiSpecFields';
 import {MULTISPEC_MASK_PENDING,MULTISPEC_UNMASKED,type MultiSpecMaskPolicy} from './multiSpecText';
 import MultiSpecInstrument from './MultiSpecInstrument';
 import {t} from '../i18n';
@@ -29,7 +29,7 @@ export default function MultiSpecObjectX({htl,target,revealed,label,disabled,cur
   let current=true;setMask(MULTISPEC_MASK_PENDING);
   loadObjectXPositions().then(list=>{
    const others=list.filter(p=>p.ra!==target.ra||p.dec!==target.dec);
-   if(current)setMask(objectXNear(others,null,target,MULTISPEC_MASK_REACH)?Object.freeze({masked:true,target:null}):MULTISPEC_UNMASKED);
+   if(current)setMask(objectXNear(others,null,target,multiSpecMaskReach(target))?Object.freeze({masked:true,target:null}):MULTISPEC_UNMASKED);
   }).catch(()=>{if(current)setMask(MULTISPEC_MASK_PENDING);});
   return()=>{current=false;};
  },[target?.code,revealed,label]);// eslint-disable-line react-hooks/exhaustive-deps

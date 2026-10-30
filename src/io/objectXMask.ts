@@ -14,13 +14,30 @@ export function loadObjectXPositions():Promise<readonly Pointing[]>{
 /** The positions once loadObjectXPositions has resolved, else null: lets a caller whose pointing changes on every clock tick
  * evaluate the mask during render instead of resetting state from an effect on each tick. */
 export function loadedObjectXPositions():readonly Pointing[]|null{return loaded;}
+/** Front G merge review L1: how far the instrument field's population reaches from a pointing. freshFieldArea is a box
+ * (Dec ± 0.375°, RA ± 0.375°/cos Dec), so its farthest corner is 0.530° away at the equator, 0.554° at Dec 88° and up to
+ * 0.663° just before the polar limit (Dec ≈ 89.8°). Where the box is polar (no area; the population is 'blocked' anyway) the
+ * bound 0.67° is used. Pure. */
+export const FIELD_MASK_REACH_BOUND=0.67;
+export function fieldMaskReach(p:Pointing):number{
+ const h=0.375,hr=h/(Math.cos(p.dec*Math.PI/180)*15);
+ if(!(Number.isFinite(hr)&&hr>0&&hr<12))return FIELD_MASK_REACH_BOUND;
+ return Math.max(...[-h,h].map(dd=>separationDegrees(p.ra,p.dec,p.ra+hr,p.dec+dd)));
+}
 /** True when an Object X position (or the lab's hidden target) lies within the hide radius plus `reach` degrees. */
 export function objectXNear(list:readonly Pointing[],hidden:Pointing|null,p:Pointing,reach=0):boolean{
  return [...list,...(hidden?[hidden]:[])].some(q=>separationDegrees(p.ra,p.dec,q.ra,q.dec)<=OBJECT_X_HIDE_DEGREES+reach);
 }
+/** 'near', 'clear', or 'unknown' when ObjectX.HTL could not be read (the caller fails closed and says so with its own constant
+ * text; Front G merge review L3). A failed read is not cached, so the next call retries. */
+export type ObjectXMaskState='near'|'clear'|'unknown';
+export async function objectXMaskState(hidden:Pointing|null,p:Pointing,reach=0):Promise<ObjectXMaskState>{
+ let list:readonly Pointing[];try{list=await loadObjectXPositions();}catch{return 'unknown';}
+ return objectXNear(list,hidden,p,reach)?'near':'clear';
+}
 /** Resolves to true (masked) or false; a failed ObjectX.HTL read masks (fail closed). */
 export async function objectXMasked(hidden:Pointing|null,p:Pointing,reach=0):Promise<boolean>{
- try{return objectXNear(await loadObjectXPositions(),hidden,p,reach);}catch{return true;}
+ return (await objectXMaskState(hidden,p,reach))!=='clear';
 }
 /** Variable Stars list (review 1 closure N2): the risk is a listed variable that an Object X camera or spectrometer image would
  * contain, so the list is masked only when one of its rows lies within OBJECT_X_ON_TARGET_DEGREES (0.25°, about half the largest
