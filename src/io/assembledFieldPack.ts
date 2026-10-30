@@ -12,7 +12,8 @@ import {nativeCompactBandOrder,nativeRegionIds,NativeFieldError} from '../core/p
 import {CompactBandReadOrderError,traceCompactGscBandRead} from '../core/compactGscReadOrder';
 import {roundNearestEven} from '../core/numericPolicy';
 import {planGscBandRead} from '../core/gscTilePlan';
-import {packWithPhotographs,parseGlimagesPositions} from '../core/lssLists';
+import {packWithPhotographs} from '../core/lssLists';
+import {nativePhotographRows} from '../core/photographicList';
 import {VARIABLE_RECORD_OFFSETS} from '../core/variableMerge';
 import {VSTRS_RECORD_BYTES} from '../core/variableStars';
 import {yieldTask} from './yieldTask';
@@ -92,5 +93,7 @@ export async function assembleFieldPack(pointing:Readonly<{ra:number;dec:number}
   variables:{sha256:s.variablesSha256,recordsChecked:s.variables.byteLength/VSTRS_RECORD_BYTES,entries:variables},
   qso:{sha256:s.qsoSha256,recordsChecked:s.qso.byteLength/QSO_RECORD_BYTES,entries:qso},
   photographs:{sha256:null,recordsChecked:1,entries:[]}});
- return packWithPhotographs(pack,parseGlimagesPositions(s.glimages),halfDegrees);
+ // The photographic list as VIREO keeps it (0x596bd0/0x596da8: a row that fails to parse is dropped whole, e.g. NGC 4449's),
+ // so the matches are rows the 'photographs' option can resolve (G4a: the evidence check at fieldEngine's photograph stage).
+ return packWithPhotographs(pack,nativePhotographRows(s.glimages).map(r=>({index:r.index,ra:r.ra,dec:r.dec})),halfDegrees);
 }

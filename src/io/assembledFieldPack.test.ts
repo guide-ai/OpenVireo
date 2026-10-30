@@ -10,6 +10,7 @@ import {roundNearestEven} from '../core/numericPolicy';
 import {nativeCompactBandOrder,nativeRegionIds} from '../core/pinnedNativeField';
 import {GSC_RECORD_BYTES,GSC_TILE_RECORDS} from '../core/gscTilePlan';
 import {packWithPhotographs,parseGlimagesPositions} from '../core/lssLists';
+import {nativePhotographRows} from '../core/photographicList';
 
 // Front G (analysis/front-plans/front-g-gsc.md §5, §7): the published bounded GSC subsets stay the certified fast path; these
 // proofs read the published tiles from disk and show that (a) every stored band read equals the tile bytes, (b) a pack assembled
@@ -64,7 +65,11 @@ describe('published GSC subsets equal the published tiles (front-g-gsc.md §5a)'
 function certified():{id:string;pack:FieldPack}[]{
  const glimagesPositions=parseGlimagesPositions(glimages),out:{id:string;pack:FieldPack}[]=[];
  for(const p of lssPacks)out.push({id:p,pack:packWithPhotographs(decodeFieldPack(json(p)),glimagesPositions)});
- for(const p of [...enginePacks,...objectXPacks])out.push({id:p,pack:decodeFieldPack(json(p))});
+ for(const p of enginePacks)out.push({id:p,pack:decodeFieldPack(json(p))});
+ // Object X packs at runtime take their photographs from VIREO's kept GLIMAGES.LST rows (objectXSpectrometerInputs.ts), as the
+ // assembler now does (G4a): a malformed row such as NGC 4449's is dropped whole.
+ const nativePositions=nativePhotographRows(glimages).map(r=>({index:r.index,ra:r.ra,dec:r.dec}));
+ for(const p of objectXPacks)out.push({id:p,pack:packWithPhotographs(decodeFieldPack(json(p)),nativePositions)});
  // All six pinned snapshots, including the fresh-Hubble fallback and the star route's field (review 1 L4).
  for(const p of snapshots)out.push({id:p,pack:fieldPackFromSnapshot(p.replace(/^.*\/|\.json$/g,''),json(p))});
  return out;

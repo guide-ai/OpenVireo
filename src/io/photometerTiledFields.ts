@@ -7,24 +7,17 @@ import {photometerFieldFromPopulation,registerTiledPhotometerField,tiledPhotomet
 import type {PhotometerEvent} from '../core/photometer';
 import type {Pointing} from '../core/sky';
 import {AssembledFieldError,assembleFieldPack,type AssemblySources} from './assembledFieldPack';
-import {GscTileError,createGscTileStore,loadGscIndex} from './gscTiles';
+import {GscTileError} from './gscTiles';
+import {setTileSources,tileSources} from './tileAssembly';
 import {objectXMasked} from './objectXMask';
 
 export type PreparedTiledPhotometer=Readonly<{status:'ready';targetId:string;selectedName:string}|{status:'unavailable';reason:PhotometerTiledReason|'object-x-hidden'|'field-polar'|'field-tiles'|'field-unreadable';detail?:string}>;
 export type PhotometerTileSources=Readonly<{assembly:AssemblySources;glx:Uint8Array}>;
-let sourcesOverride:(()=>Promise<PhotometerTileSources>)|null=null,sourcesPromise:Promise<PhotometerTileSources>|null=null;
-/** Test seam: replace the same-origin sources (index, tile store and the whole bundled files). */
-export function setPhotometerTileSources(load:(()=>Promise<PhotometerTileSources>)|null){sourcesOverride=load;sourcesPromise=null;}
-async function browserSources():Promise<PhotometerTileSources>{
- const signal=new AbortController().signal;
- const [{fetchBundledVariableFile,BUNDLED_VARIABLE_STARS},{fetchBundledQsoCatalog},{fetchBundledHotList},{GLIMAGES_LST},{fetchBundledGlxCatalog}]=await Promise.all([import('./bundledVariableStars'),import('./bundledQsoCatalog'),import('./bundledHotList'),import('../core/lssLists'),import('./bundledGlxCatalog')]);
- const [index,variables,qso,glimages,glx]=await Promise.all([loadGscIndex(),fetchBundledVariableFile(fetch,signal,BUNDLED_VARIABLE_STARS),fetchBundledQsoCatalog(fetch,signal),fetchBundledHotList(fetch,signal,GLIMAGES_LST),fetchBundledGlxCatalog(fetch,signal)]);
- return {assembly:{index,tiles:createGscTileStore(),variables,variablesSha256:BUNDLED_VARIABLE_STARS.sha256,qso:qso.bytes,qsoSha256:qso.sha256,glimages:glimages.bytes},glx};
+/** Test seam (kept for the photometer tests): the photometer's sources; the shared loader supplies the rest. */
+export function setPhotometerTileSources(load:(()=>Promise<PhotometerTileSources>)|null){
+ setTileSources(load?async()=>{const s=await load();return {...s,qso:{bytes:s.assembly.qso,sha256:s.assembly.qsoSha256},glimages:s.assembly.glimages};}:null);
 }
-function sources(){
- sourcesPromise??=(sourcesOverride??browserSources)();sourcesPromise.catch(()=>{sourcesPromise=null;});
- return sourcesPromise;
-}
+const sources=tileSources;
 /** Builds and registers the photometer frame at a pointing (or gives the typed reason). An abort rejects with AbortError. */
 export async function preparePhotometerTiledField(pointing:Pointing,options:Readonly<{signal?:AbortSignal;hidden?:Pointing|null}>={}):Promise<PreparedTiledPhotometer>{
  const {signal}=options;signal?.throwIfAborted();
