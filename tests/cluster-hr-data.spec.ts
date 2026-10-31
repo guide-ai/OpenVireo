@@ -31,7 +31,7 @@ test('Select Cluster Data lists VIREO\'s 16 clusters with their comments; Plot l
  await expect(panel(page).getByTestId('cluster-reference-count')).toContainText('M 44 (NGC 2632) reference dataset loaded: 198');
 });
 
-test('Display/Print Data shows VIREO\'s CLEA Cluster Data listing and saves it as text and CSV',async({page})=>{
+test('Display/Print Data shows VIREO\'s CLEA Cluster Data listing and saves it as text and CSV',async({page,browserName})=>{
  await page.goto('/#cluster-database');
  await panel(page).getByLabel('Reference cluster dataset',{exact:true}).selectOption('m67');
  await panel(page).getByRole('button',{name:'Load selected dataset',exact:true}).click();
@@ -46,7 +46,7 @@ test('Display/Print Data shows VIREO\'s CLEA Cluster Data listing and saves it a
  // Save Text › As Displayed: the lines with CRLF, named after the cluster.
  await w.getByTestId('cluster-report-list-menu').click();await w.getByTestId('cluster-report-save-menu').click();
  const d=page.waitForEvent('download');await w.getByTestId('cluster-report-save-displayed').click();
- const file=await d;expect(file.suggestedFilename()).toBe(downloadedName('M 67 (NGC 2682).TXT',test.info().project.use.browserName??'chromium'));
+ const file=await d;expect(file.suggestedFilename()).toBe(downloadedName('M 67 (NGC 2682).TXT',browserName));
  const text=(await readFile((await file.path())!)).toString('latin1');
  expect(text.split('\r\n')[4]).toBe('(U-B) = -0.18 to +1.23 (426 Stars)');expect(text.split('\r\n')).toHaveLength(15+506+1);
  await expect(page.getByText('M 67 (NGC 2682).TXT',{exact:false}).first()).toBeVisible();

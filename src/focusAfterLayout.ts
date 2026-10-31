@@ -5,18 +5,14 @@
  *
  * The app has about 190 focus() calls over 64 files (every modal and dialog open path, React autoFocus included), so the fix is
  * installed once: focus() on HTML and SVG elements reads the element's layout first. Importing this module installs it
- * (idempotent); main.tsx and the components that mount their own roots for the test harnesses import it. `focusNow` is the
- * explicit form. A connected element only; the extra layout read costs a forced reflow per focus call, which only happens on
- * user-driven focus moves. */
+ * (idempotent); the entry points import it (src/main.tsx, the test harnesses under tests/harness and the test hosts under
+ * tests/fixtures). It applies to every focus() call, scripted ones included, and costs one forced layout per call.
+ *
+ * Only WebKit needs it, and only WebKit gets it (navigator.vendor 'Apple…': Safari and every WebKit browser). A synthetic
+ * same-task show-and-focus does not reproduce the bug (only the app's React render paths do), so a startup self-test cannot
+ * detect it. In Firefox the extra layout read changed when a just-disabled focused control is blurred (Front WebKit review 1,
+ * wedge-prompt-focus), so Chromium and Firefox keep their native focus(). Documented in docs/FOCUS-AFTER-LAYOUT.md. */
 const ORIGINAL=Symbol.for('openvireo.focusAfterLayout.original');
-type Focusable=Readonly<{focus:(options?:FocusOptions)=>void;getBoundingClientRect:()=>DOMRect;isConnected:boolean}>;
-
-/** Focus `el` after bringing its layout up to date (no-op for null). */
-export function focusNow(el:Focusable|null|undefined,options?:FocusOptions){
- if(!el)return;
- if(el.isConnected)void el.getBoundingClientRect();
- el.focus(options);
-}
 
 function patch(proto:object|undefined){
  if(!proto)return;
@@ -26,9 +22,20 @@ function patch(proto:object|undefined){
  Object.defineProperty(p,ORIGINAL,{value:original});
  p.focus=function(this:Element,options?:FocusOptions){if(this.isConnected)void this.getBoundingClientRect();return original.call(this,options);};
 }
-/** Installs the layout read in front of focus() on HTML and SVG elements (once). */
+/** Installs the layout read in front of focus() on HTML and SVG elements (once), in WebKit only. */
 export function installFocusAfterLayout(){
+ if(typeof navigator==='undefined'||!/^Apple/.test(navigator.vendor??''))return;
  if(typeof HTMLElement!=='undefined')patch(HTMLElement.prototype);
  if(typeof SVGElement!=='undefined')patch(SVGElement.prototype);
 }
+/** Front WebKit review L3: the root's data-input-modality is 'keyboard' after a key press and 'pointer' after a pointer press.
+ * WebKit does not match :focus-visible after arrow keys move focus within a radio group, so radio rings use :focus only in keyboard
+ * modality (base.css, ThemeSwitch.css, RadioControlPanel.css); a mouse click shows no ring in any engine. */
+export function installInputModality(){
+ if(typeof document==='undefined'||document.documentElement.dataset.inputModality!==undefined)return;
+ const root=document.documentElement;root.dataset.inputModality='pointer';
+ document.addEventListener('keydown',e=>{if(!['Shift','Control','Alt','Meta'].includes(e.key))root.dataset.inputModality='keyboard';},true);
+ document.addEventListener('pointerdown',()=>{root.dataset.inputModality='pointer';},true);
+}
 installFocusAfterLayout();
+installInputModality();

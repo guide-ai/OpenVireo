@@ -33,7 +33,7 @@ test('File › QSO List appears only with Virtual Observatory on (VObsBox, defau
  await page.getByTestId('fi-file-menu').click();await page.getByRole('button',{name:'Close dome',exact:true}).click();await expect(page.getByTestId('fi-file-menu')).toBeEnabled();await expect(page.getByTestId('ob-tools-menu')).toBeEnabled();
 });
 
-test('student path: options defaults, invalid limit, list without z or Object X rows, Search, Save Text, Print, hot list',async({page})=>{
+test('student path: options defaults, invalid limit, list without z or Object X rows, Search, Save Text, Print, hot list',async({page,browserName})=>{
  await open(page);await virtualObservatory(page,true);await qsoMenu(page);
  const dialog=page.getByTestId('qso-options');
  await expect(dialog.getByRole('heading',{name:'Options for QSO List'})).toBeVisible();
@@ -55,7 +55,7 @@ test('student path: options defaults, invalid limit, list without z or Object X 
  // Save Text (As Displayed); Comma Delimit is disabled.
  await page.getByTestId('qso-list-list-menu').click();await page.getByTestId('qso-list-save-menu').click();await expect(page.getByTestId('qso-list-save-csv')).toBeDisabled();await page.getByTestId('qso-list-list-menu').click();
  const text=await download(page,async()=>{await page.getByTestId('qso-list-list-menu').click();await page.getByTestId('qso-list-save-menu').click();await page.getByTestId('qso-list-save-displayed').click();});
- expect(text.name).toBe(downloadedName('QSO Data.TXT',test.info().project.use.browserName??'chromium'));const lines=text.bytes.toString('latin1').split('\r\n');
+ expect(text.name).toBe(downloadedName('QSO Data.TXT',browserName));const lines=text.bytes.toString('latin1').split('\r\n');
  expect(lines[0]).toBe('10 QSOs to magnitude 13.00, sorted by magnitude.');expect(lines[4].charCodeAt(32)).toBe(0xb0);expect(lines[14]).toBe('RXS J12252+3213   12 25 13.0   +32 14 01   13.00  ');
  await expect(page.getByTestId('fi-box-text')).toHaveText('Report Text Written to QSO Data.TXT.');await box(page).getByRole('button',{name:'OK'}).click();
  // Print preview: the student branch adds the table-number line.

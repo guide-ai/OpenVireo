@@ -2,6 +2,7 @@
 // has loaded; not a product route, no window hook. It mounts the real CameraControl (Worker composer) and the real ObjectXLab,
 // wired as OpenVireo wires them (extraSources -> lab controller, onImage -> lab), plus one AUTHORED extra pair 80° from the
 // pointing, which the composer must skip as moving-pair-off-detector. Not a CLEA observation.
+import '../../src/focusAfterLayout';
 import {createElement as h,useRef,useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import CameraControl from '../../src/CameraControl';

@@ -1,4 +1,3 @@
-import '../focusAfterLayout';// Front WebKit QA: focus() after layout (these components also mount their own roots)
 import {StrictMode,useEffect,useId,useLayoutEffect,useMemo,useRef,useState,useSyncExternalStore,type FocusEvent,type KeyboardEvent,type ReactNode,type RefObject} from 'react';
 import ResearchNotes from './ResearchNotes';
 import {createRoot} from 'react-dom/client';
