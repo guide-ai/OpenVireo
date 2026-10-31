@@ -17,14 +17,13 @@ self.onmessage=async(event:MessageEvent<MultiSpecWorkerRequest>)=>{
  const request=event.data;
  if(request.op==='cancel'){running.get(request.ticket)?.abort();return;}
  const post=(m:unknown)=>(self as unknown as DedicatedWorkerGlobalScope).postMessage(m),settle=workerBusy(post);
+ // G4 closure I1: the cancel handle exists before the inputs load, so a cancel during the first load stops the build too.
+ const c=request.op==='view'?new AbortController():null;if(c)running.set(request.ticket,c);
  try{
   inputs??=loadMultiSpecInputs(browserMultiSpecResources()).catch(e=>{inputs=null;throw e;});
-  const loaded=await inputs;
-  if(request.op==='view'){
-   const c=new AbortController();running.set(request.ticket,c);
-   try{post({ticket:request.ticket,ok:true,view:await evaluateMultiSpecView(loaded,request.field,c.signal)});}finally{running.delete(request.ticket);}
-  }
+  const loaded=await inputs;c?.signal.throwIfAborted();
+  if(request.op==='view')post({ticket:request.ticket,ok:true,view:await evaluateMultiSpecView(loaded,request.field,c!.signal)});
   else post({ticket:request.ticket,ok:true,exposures:await evaluateMultiSpecSpectra(loaded,request.field,request.fibres)});
  }catch(e){post({ticket:request.ticket,ok:false,kind:workerFailureKind(e)});}
- finally{settle();}
+ finally{running.delete(request.ticket);settle();}
 };

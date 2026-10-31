@@ -24,9 +24,11 @@ addresses, evidence ids and tags in `docs/MULTI-SPEC-PROVENANCE.json`. Tags: [D]
 - Bundled versus assembled (G4b review 1 L1, `multiSpecTiled.test.ts`): at every certified pointing (the 4 Hubble targets and
   the 219 LSS rows) the two give the same view, population and spectra, or the same no-view outcome (30 pointings, such as
   NGC 4278's photographic-image; the assembled population also lists its photograph associations). The exceptions are Hubble
-  Boötes 51975 and 51976: the bundled pack keeps the Hubble route's acknowledged 'outside-view' variable rule (HUBBLE-13.md) and
-  shows the field, while the assembled field uses the recovered variable dispatch and is stamp-bound (RS Boo). Both are web
-  limits; which one VIREO shows is not recovered (`MULTISPEC_TILED_EXCEPTIONS`).
+  Boötes 51975 and 51976: the bundled pack keeps the Hubble route's acknowledged 'outside-view' rule (HUBBLE-13.md) and shows
+  the field, while the assembled field is stamp-bound because of the zero-axis galaxy 14299+3148, whose not-painted exemption
+  exists only under that rule (with it the assembled pack equals the bundled one). VIREO shows a field at both (one field path,
+  no stamp limit, 0x59864d..0x59869b); how it paints that galaxy and RS Boo's class-0 update is not recovered
+  (`MULTISPEC_TILED_EXCEPTIONS`).
 - Clicks select objects only when VIREO arms them (0x53cfab..0x53cfe4) [D]: **Edit Mode**, or exercise mode **0** ("Access All
   Instruments") or **1** (Object X), in the Telescope view. Mode 0 is reachable only through the instructor **Virtual
   Observatory** option (Front O2: VObsBox, options+0x27d5, default off, not persisted; one page state shared with File › QSO
@@ -72,11 +74,11 @@ addresses, evidence ids and tags in `docs/MULTI-SPEC-PROVENANCE.json`. Tags: [D]
 - The Edit Mode galaxy "Z:" line shows "hidden (instructor value)", as Catalog Object masks the catalogue z (no instructor login).
 
 ## Hidden identity (E08)
-Before the reveal, in an Object X field or any field within 2.375° of an Object X position: Information shows `ObjX-<ID>` only for
+Before the reveal, in an Object X field or any field whose area reaches within 2° of an Object X position (centre within 2° plus the mask reach, at least 0.62°): Information shows `ObjX-<ID>` only for
 the fibre that is the target (its record is the one a click at the target's own projected position selects, i.e. within the
 native 10 px) [W], and "Name hidden during Object X" for every other non-sky fibre, Object X neighbours included; V and the Edit Mode lines are dropped; every failure
 shows one neutral text (the native boxes name the kind); Show Object ID is ignored for list items, captions, .SSP names and Save
-All entries. Lab rows whose neighbours lie within 2.375° stay masked after the reveal.
+All entries. Lab rows whose neighbours lie within that distance stay masked after the reveal.
 
 ## Typed (not ported or indeterminate)
 `star-template-none` (nil lookup), `star-template-random` (index 0: the native random pick; all 132 templates are bundled

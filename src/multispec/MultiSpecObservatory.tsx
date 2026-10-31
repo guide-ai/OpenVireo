@@ -7,6 +7,11 @@ import {fieldInfoReasonText} from '../observatory/FieldInfoMessages';
 import {MULTISPEC_MASK_REACH,anyMultiSpecField,multiSpecAnchor,multiSpecMaskReach} from './multiSpecFields';
 import {MULTISPEC_MASK_PENDING,MULTISPEC_UNMASKED,type MultiSpecMaskPolicy} from './multiSpecText';
 import MultiSpecInstrument from './MultiSpecInstrument';
+import {spectralRangeCoverage} from '../core/spectralRangeCoverage';
+import {SPECTRAL_RANGE_EN as SR} from '../SpectralRangeMessages';
+import type {SpectralRange} from '../core/spectralRange';
+/** Front S2: Multi-Spec reads the page's one range (0x526e7f); off the default it is not witnessed here [W]. */
+const rangeBlockOf=(r:SpectralRange|undefined)=>r&&spectralRangeCoverage('multispec',r)!=='covered'?SR.multiSpecRange(r.minimum.toFixed(1),r.maximum.toFixed(1)):null;
 import {t} from '../i18n';
 
 /** Front M (M3): Multi-Spec at the observatory's instrument choice (instrument position 3, Access as recovered).
@@ -14,19 +19,20 @@ import {t} from '../i18n';
  *    from the compact GSC tiles (multiSpecFields.ts), with the observatory-clock JD frozen when the field is built (as Edit Mode
  *    and Field Information). The field is loaded at an anchor and kept while VIREO's cached-field rule holds (0.25°,
  *    core/fieldCache.ts, as the Edit Mode layer); the view is the field at its anchor [W]. A new anchor or telescope is a new
- *    field. An assembled field within 2.375° of an Object X position is not built at all (fail closed while the check runs).
+ *    field. An assembled field whose centre lies within 2° plus the mask reach (multiSpecMaskReach, at least MULTISPEC_MASK_REACH) of an
+ *    Object X position is not built at all (fail closed while the check runs).
  *  - Click gate (decision D1): CRT1MouseDown arms selection when Edit Mode ∨ exercise mode ∈ {0, 1}; here `editMode` (Front O's
  *    Edit Mode) or `virtualObservatory` — exercise mode 0 "Access All Instruments", which only the instructor "Virtual Observatory
  *    (instructor, VIREO)" option of Optical Options reaches (Front O2). The page holds that option once (OpenVireo.tsx; default
  *    off, not persisted) and passes it here and to the QSO List. Mode 1 (Object X) is the lab's own Multi-Spec (MultiSpecObjectX.tsx). Elsewhere (for
  *    example LSS, mode 5) the form opens but clicks select nothing, as recovered. Selection needs the Telescope view (+0x64a = 0).
- *  - Object X rule (plan §4): masked within 2° + 0.375° of any ObjectX.HTL position or of the lab's unrevealed target
+ *  - Object X rule (plan §4): masked within 2° plus the mask reach (at least 0.62°) of any ObjectX.HTL position or of the lab's unrevealed target
  *    (io/objectXMask.ts; fail closed while the check runs or when it fails). */
-export default function MultiSpecObservatory({active,busy,access,mode,pointing,telescope,editMode,virtualObservatory=false,hidden,currentJd}:Readonly<{
+export default function MultiSpecObservatory({spectralRange,active,busy,access,mode,pointing,telescope,editMode,virtualObservatory=false,hidden,currentJd}:Readonly<{
  active:boolean;busy:boolean;access:AccessReason;mode:FieldMode;pointing:Pointing;telescope:FieldTelescope;editMode:boolean;
  /** Exercise mode 0 (instructor Virtual Observatory, Front O2). Default false. */virtualObservatory?:boolean;
- hidden:Readonly<{ra:number;dec:number;label:string}>|null;currentJd?:()=>number}>){
- // The anchor follows VIREO's cache rule; a certified pointing reached exactly always loads its own pack. Derived in render
+ hidden:Readonly<{ra:number;dec:number;label:string}>|null;currentJd?:()=>number;spectralRange?:SpectralRange}>){
+ // The anchor follows VIREO's cache rule; only a Boötes pointing reached exactly loads its own pack (MULTISPEC_TILED_EXCEPTIONS). Derived in render
  // (a state update during render, at most once per reload), never from an effect keyed on the drifting pointing.
  const [anchor,setAnchor]=useState(()=>multiSpecAnchor(null,pointing,telescope));
  const loaded=multiSpecAnchor(anchor,pointing,telescope);
@@ -53,5 +59,5 @@ export default function MultiSpecObservatory({active,busy,access,mode,pointing,t
  const telescopeView=mode==='telescope',gate=editMode||virtualObservatory;
  const armedText=!gate?t('multispec.notArmed'):!telescopeView?t('multispec.notTelescopeView'):editMode?t('multispec.armedEditMode'):t('multispec.armedVirtual');
  return <MultiSpecInstrument key={telescope} field={field} telescope={telescope} access={access} armed={gate&&telescopeView} armedText={armedText} mask={mask}
-  editMode={editMode} busy={busy} active={active} title={t('multispec.title')} help={t('multispec.help')} noFieldText={near===null?t('multispec.fieldLoading'):positions==='failed'?t('multispec.objectXListFailed'):fieldInfoReasonText('object-x-hidden')}/>;
+  rangeBlock={rangeBlockOf(spectralRange)} editMode={editMode} busy={busy} active={active} title={t('multispec.title')} help={t('multispec.help')} noFieldText={near===null?t('multispec.fieldLoading'):positions==='failed'?t('multispec.objectXListFailed'):fieldInfoReasonText('object-x-hidden')}/>;
 }
