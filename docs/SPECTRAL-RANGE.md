@@ -114,8 +114,23 @@ policies.
 
 ## Web adaptations
 
-- **Classify [W].** In VIREO, Classify shares the one range. Here it still keeps its own display range (CLASSIFICATION-RANGE.md),
-  until round 3 of Front S2.
+- **Classify (Front S2 round 3, D2).** Classify shares the one range, as in VIREO (TSpClassify FormShow 0x507814 reads the
+  active pair). Its display opens at the page's range, 3700–4700 Å by default, instead of the web's former 3900–4500 Å. A range
+  applied in Classify becomes the page's range, and a range set on a spectrometer route shows in Classify at 1×. Default means
+  3700–4700 Å. [W] Classify keeps its typed endpoints and Apply rather than VIREO's sliders; it shows no "Spectrometer Will
+  Clear!" box (0x50b898 has none) and applies on Apply only.
+  - **Saved work:** no classification file records the display range. Feature records hold absolute wavelengths, and restore
+    reads no display preference. Older sessions and investigations therefore restore and re-save byte-identically without a mark.
+  - **E03, measured:**
+    - All 26 classification lines (catalog.json) are inside both 3900–4500 and 3700–4700 Å.
+    - All 63 atlas standards and practice spectra cover 3700–4700 Å (they start at 3510 Å).
+    - The 30-line Spectral Line Table now has every line in view; at 3900–4500 Å, O III 3759.87, He I 3819.61, He II 4541 and
+      Si III 4552.62 lay outside.
+    - The exercise's counted progress (loaded, compared, inspected, recorded) does not read the view.
+    - What a student sees differently: a wider default window at 2 Å per pixel column instead of 1.2. Zoom and pan windows,
+      cursor readings and photo tick positions follow it; an imported spectrum that covers only 3900–4500 Å is shown with the
+      labelled partial-coverage fallback until the window is narrowed.
+  - 44 e2e tests in 20 spec files were re-pinned on 2026-10-31, with one dated note per file.
 - **One range for every telescope.** The star route has one instance per telescope (Kitt Peak 0.4 m, 0.9 m, Mayall 4 m). Since
   Front S2 they share the page's range, as VIREO does (Front S had kept one per telescope [W]). The page's range persists until the dialog changes it. Restoring a single
   session file, or returning to a star from the analyser, makes that exposure's range the page's range; an investigation

@@ -625,8 +625,8 @@ export interface MessageParameters {
   "classLink.provenance": never;
   "classLink.acquired": never;
   "classLink.context": "draws" | "seed" | "time";
-  "classLink.domainPartial": "maximum" | "minimum";
-  "classLink.domain": "maximum" | "minimum";
+  "classLink.domainPartial": "maximum" | "minimum" | "windowMaximum" | "windowMinimum";
+  "classLink.domain": "maximum" | "minimum" | "windowMaximum" | "windowMinimum";
   "classLink.template": never;
   "classLink.identity": never;
   "classLink.measure": never;
