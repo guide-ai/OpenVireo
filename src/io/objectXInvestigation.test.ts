@@ -45,6 +45,27 @@ describe('v28 Object X investigation',()=>{
   const restored=await read(JSON.stringify(both));expect(restored.objectX).toEqual(inv);expect(restored.lss?.description).toBe('notes');
   expect((await read(JSON.stringify(plain))).objectX).toBeUndefined();
  });
+ it('QA1 closure E1: before the reveal the file holds no pair counts or skipped reasons; restore recomputes them',async()=>{
+  const full=investigation(),inv={...full,exposures:full.exposures.map(e=>({...e,skipped:[] as const})),answer:null,revealed:false,measure:null,log:[]};
+  expect(inv.exposures[0].pairs).toBeGreaterThan(0);
+  const {objectX,digest}=await portableObjectXInvestigation(inv),o=objectX as {exposures:Record<string,unknown>[]};
+  for(const e of o.exposures){expect(e).not.toHaveProperty('pairs');expect(e).not.toHaveProperty('skipped');}
+  const back=await admitObjectXInvestigation(JSON.parse(JSON.stringify(objectX)),digest);
+  expect(back.exposures.map(e=>[e.pairs,e.skipped])).toEqual(inv.exposures.map(e=>[e.pairs,e.skipped]));
+  expect(back.exposures.some(e=>e.countsStored)).toBe(false);
+  // After the reveal they are written again.
+  const shown=await portableObjectXInvestigation({...back,answer:'asteroid',revealed:true});
+  expect((shown.objectX as {exposures:Record<string,unknown>[]}).exposures[0]).toHaveProperty('pairs',inv.exposures[0].pairs);
+ },60_000);
+ it('QA1 closure E1: an older unrevealed file with stored counts still restores and re-saves byte-identically',async()=>{
+  const full=investigation(),old={...full,exposures:full.exposures.map(e=>({...e,skipped:[] as const,countsStored:true as const})),answer:null,revealed:false,measure:null,log:[]};
+  const {objectX,digest}=await portableObjectXInvestigation(old),text=JSON.stringify(objectX);
+  expect((objectX as {exposures:Record<string,unknown>[]}).exposures[0]).toHaveProperty('pairs');
+  const back=await admitObjectXInvestigation(JSON.parse(text),digest);
+  expect(back.exposures.every(e=>e.countsStored===true)).toBe(true);
+  const again=await portableObjectXInvestigation(back);
+  expect(JSON.stringify(again.objectX)).toBe(text);expect(again.digest).toBe(digest);
+ },60_000);
  it('needs no orbit file when no exposure used an asteroid list',async()=>{
   const inv={...investigation(),exposures:[],images:[],measure:null,log:[],listJd:null,revealed:false,answer:null};
   const {objectX,digest}=await portableObjectXInvestigation(inv);
