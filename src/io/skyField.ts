@@ -2,7 +2,7 @@
 // 0x53a40c does: the telescope view loads the instrument field (0x53be70) and paints its 3 × 312 px cache (0x53b390, the field
 // engine's paintField); the finder view loads the finder field (0x53bae4, FSCFieldObj on the same compact GSC bands) and paints
 // it with 0x53b058 (fieldEngine.evaluateFinderView). The pack comes from io/fieldInfoPacks.ts (a certified pack at its listed
-// pointings, otherwise the compact GSC tiles). The 2° Object X mask uses the field's farthest corner (G merge review rule). A
+// pointings, otherwise the compact GSC tiles). The 2° Object X mask uses max(0.62°, the field's farthest corner) (G4b rule). A
 // typed reason is returned where the field cannot be drawn exactly; the caller then keeps its ≤ 12 mag preview [W]. Each build
 // yields to the page between stages and stops on the caller's abort. Same-origin files only; nothing is sent anywhere.
 import {evaluateFieldView,evaluateFinderView,frozenObservatoryTime,type FieldOptions,type FieldPopulation,type FieldTelescope,type FieldUnavailableReason,type FieldVariableTime} from '../core/fieldEngine';
@@ -23,6 +23,8 @@ export type SkyFieldRequest=Readonly<{view:SkyFieldView;anchor:Pointing;telescop
  /** The observatory clock; its JD is frozen when the field is built (frozenObservatoryTime), as the other field consumers do. */currentJd?:()=>number;variableTime?:FieldVariableTime}>;
 /** Half-heights used for the Object X reach (fieldEngine.FIELD_HALF_DEGREES). */
 const HALF={telescope:.375,finder:3.75} as const;
+/** G4b: the observatory's floor for an assembled field's Object X reach (multiSpecFields.ts MULTISPEC_MASK_REACH). */
+export const OBJECT_X_FIELD_REACH_FLOOR=0.62;
 
 /** The last few built fields, so leaving and re-entering a view or the observatory does not rebuild (a pointing change past the
  * cache or a view change builds anew, as 0x53a40c reloads). */
@@ -32,20 +34,15 @@ const keyOf=(r:SkyFieldRequest)=>[r.view,r.anchor.ra,r.anchor.dec,r.telescope,r.
 export function clearSkyFieldCache(){built.clear();}
 
 let photographBitmaps:Promise<ReadonlyMap<string,Bitmap8>>|null=null;
-/** The approved photographs (Object X four; Front F3 adds the LSS five through approvedPhotographs.ts after it merges). */
+/** Every approved photograph (core/approvedPhotographs.ts: the Object X four and the LSS five). One that cannot be loaded is left
+ * out, so only a field that draws it stays photographic-image. */
 function bitmaps():Promise<ReadonlyMap<string,Bitmap8>>{
  photographBitmaps??=(async()=>{
-  const [{OBJECT_X_PHOTOGRAPHS},{boundedResourceBody,resourceSha256}]=await Promise.all([import('./objectXSpectrometerInputs'),import('./boundedResource')]);
-  const out=new Map<string,Bitmap8>();
-  for(const p of OBJECT_X_PHOTOGRAPHS){
-   const response=await fetch(p.path);if(!response.ok)throw new Error('photograph');
-   const body=await boundedResourceBody(response,p.bytes);
-   if(body.byteLength!==p.bytes||await resourceSha256(body)!==p.sha256)throw new Error('photograph');
-   out.set(p.file,decodeBitmap8(new Uint8Array(body)));
-  }
+  const [{APPROVED_PHOTOGRAPHS},{fetchBundledHotList}]=await Promise.all([import('../core/approvedPhotographs'),import('./bundledHotList')]);
+  const signal=new AbortController().signal,out=new Map<string,Bitmap8>();
+  await Promise.all(APPROVED_PHOTOGRAPHS.map(async p=>{try{out.set(p.file,decodeBitmap8((await fetchBundledHotList(fetch,signal,{name:p.file,path:p.path,bytes:p.bytes,sha256:p.sha256})).bytes));}catch{/* left out: its field stays photographic-image */}}));
   return out;
  })();
- photographBitmaps.catch(()=>{photographBitmaps=null;});
  return photographBitmaps;
 }
 
@@ -54,7 +51,8 @@ export async function loadSkyField(request:SkyFieldRequest):Promise<SkyField>{
  const key=keyOf(r),hit=built.get(key);if(hit){built.delete(key);built.set(key,hit);return hit;}
  const {view,anchor,signal}=r,unavailable=(reason:SkyFieldReason,detail?:string):SkyField=>Object.freeze({status:'unavailable',view,anchor,reason,...(detail?{detail}:{})});
  const step=async()=>{signal?.throwIfAborted();await yieldTask();signal?.throwIfAborted();};
- if(await objectXMasked(r.hidden,anchor,fieldMaskReach(anchor,HALF[view])))return unavailable('object-x-hidden');
+ // The observatory's rule (G4b merge): max(0.62°, the field's farthest corner).
+ if(await objectXMasked(r.hidden,anchor,Math.max(OBJECT_X_FIELD_REACH_FLOOR,fieldMaskReach(anchor,HALF[view]))))return unavailable('object-x-hidden');
  await step();
  const pack=await skyFieldPack(anchor,view,signal);
  if(pack.status!=='ready')return unavailable(pack.reason,'detail' in pack?pack.detail:undefined);

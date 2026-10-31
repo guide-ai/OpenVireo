@@ -46,8 +46,8 @@ export default function EditModeFieldLayer({editMode,active,mode,pointing,hidden
    }).catch((e:unknown)=>{if(current&&!(e instanceof DOMException&&e.name==='AbortError'))setState({status:'error'});});
    return()=>{current=false;controller.abort();};
   }
-  // The 2° Object X mask with the field's farthest corner (Front G merge review rule).
-  objectXMasked(hidden,at,fieldMaskReach(at)).then(async masked=>{
+  // The 2° Object X mask with max(0.62°, the field's farthest corner) (the observatory rule since G4b).
+  objectXMasked(hidden,at,Math.max(0.62,fieldMaskReach(at))).then(async masked=>{
    if(masked){if(current)setState({status:'unavailable',reason:'object-x-hidden'});return;}
    const r=await findCertifiedPopulation(at,frozenObservatoryTime(currentJd),controller.signal);if(!current)return;
    if(r.status==='ready'){setState({status:'ready',packId:r.packId,population:r.population});setLoadedField({anchor:at,population:r.population});}

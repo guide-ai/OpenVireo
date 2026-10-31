@@ -20,10 +20,10 @@ The observatory's sky view draws VIREO's own field for the current view at any p
 - The catalogue target circles and labels stay as an overlay.
 - Where the field cannot be drawn exactly (the typed reasons of docs/OBJECT-INFO-FORMS.md, for example a photograph that is not
   published, `variable-time-required` or `field-polar`), the magnitude ≤ 12 preview is shown and the caption names the reason.
-- **Object X:** no field is drawn within 2° of an Object X position or the lab's hidden target, widened by the field's farthest
-  corner (about 0.53–0.66° for the telescope field, about 5.3° for the finder field).
+- **Object X:** no field is drawn within 2° of an Object X position or the lab's hidden target, widened by max(0.62°, the field's
+  farthest corner) (the observatory rule since G4b; about 5.3° for the finder field).
 - The Finder Mag Limit is the compiled 11.5 (the Parameters tab is read-only on this site).
-- Photographs: the four Object X ones; Front F3's five LSS photographs join when F3 merges (one-line change to the list).
+- Photographs: all nine approved ones (`core/approvedPhotographs.ts`); one that cannot be loaded leaves only its field typed.
 - The JD a field is built with is frozen at its first build and kept while the field is kept, as the other field consumers do.
 
 ## Cost (measured 2026-10-30, Node on the development machine; six pointings)

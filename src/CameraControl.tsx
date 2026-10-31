@@ -67,7 +67,7 @@ function CameraControl({objectXHidden=null,vireoId='',infraredCamera=true,active
  const [mode,setMode]=useState<CameraCatalogMode>('static'),[usePalette,setUsePalette]=useState(false);
  const [gate,setGate]=useState<CameraRequestGate>(createCameraRequestGate),[message,setMessage]=useState<string>(M.statusIdle),[,setWaitShown]=useState(false);
  const [image,setImage]=useState<CameraImage|null>(null),[saveError,setSaveError]=useState('');
- // RE5 review 1 L-c: a save alert belongs to the image and ID it was about; a new image or ID clears it.
+ // RE5 review 1 L-c: a save alert belongs to the image and ID it was about; a new image or ID clears it (and a start, below).
  useEffect(()=>{setSaveError('');},[image,vireoId]);
  const gateRef=useRef(gate),attempt=useRef<Attempt|null>(null),timers=useRef<{observe?:number;poll?:number}>({}),canvas=useRef<HTMLCanvasElement>(null);
  const mounted=useRef(true);useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;stopTimers();attempt.current?.controller.abort();stopWorker(attempt.current);};},[]);
@@ -152,6 +152,8 @@ function CameraControl({objectXHidden=null,vireoId='',infraredCamera=true,active
   // CCD Go 0x5126c1 stores the filter byte (form+0x405) before the preparation check 0x512244 can refuse the Go (closure L5).
   if(camera==='ccd')setCcdFilterByte(filter);
   if(mode==='static'&&!staticCovered){setMessage(`${M.statusFailed} ${M.failure['no-extract']}`);return;}
+  // F3 review 1 I4: a save alert belongs to the image it was about, so a new exposure clears it when it starts.
+  setSaveError('');
   const jd=currentJd(),seed=seedSource()>>>0;
   attempt.current=null;
   const transition=cameraRequestTransition(gateRef.current,{type:'start',seconds:total});
