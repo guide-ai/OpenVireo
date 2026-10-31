@@ -59,8 +59,9 @@ describe('Front G G4b: Multi-Spec at any pointing',()=>{
    if(!same)differ.push(`${pointing.ra},${pointing.dec}`);else if(!want.viewport)noView.push(`${pointing.ra},${pointing.dec}`);
   }
   expect(differ).toEqual(MULTISPEC_TILED_EXCEPTIONS.map(p=>`${p.ra},${p.dec}`));
-  // The pointings where both sides give the same no-view outcome (photographic-image, field-level reasons): 30 of 223.
-  expect([noView.length,pointings.length]).toEqual([30,223]);
+  // The pointings where both sides give the same no-view outcome (field-level reasons): 15 of 223. Front L4 (2026-10-31): 30
+  // before it; the 15 stamp-bound LSS rows now show their field on both sides.
+  expect([noView.length,pointings.length]).toEqual([15,223]);
  });
  it('at another pointing: the view is ready and a star fibre and a sky fibre give spectra',async()=>{
   const field={pack:'gsc-tiles' as const,pointing:STAR,telescope:2 as const},v=await multiSpecView(field);

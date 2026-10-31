@@ -27,6 +27,8 @@ describe('Object X frozen observations',()=>{
   const frozen={schema:1,kind:'frozen Object X spectrometer observations (regression record of this implementation; not original runtime observations)',records};
   if(process.env.OBJECTX_FREEZE_WRITE==='1'||!existsSync(FILE)){if(process.env.OBJECTX_FREEZE_WRITE!=='1')throw Error('missing frozen record');writeFileSync(FILE,JSON.stringify(frozen,null,1)+'\n');}
   expect(frozen).toEqual(JSON.parse(readFileSync(FILE,'utf8')));
-  expect(records.filter(x=>x.status==='available')).toHaveLength(17);
+  // Re-pinned 2026-10-31 (Front L4): 17 → 33. The 16 cells that were mean-bound on the 0.4/0.9 m (the former web bound 12) are
+  // available with the same crops; every cell that was available is unchanged.
+  expect(records.filter(x=>x.status==='available')).toHaveLength(33);
  });
 });

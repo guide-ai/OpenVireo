@@ -63,10 +63,8 @@
   {
    "row": 3,
    "telescope": 1,
-   "status": "unavailable",
-   "reasons": [
-    "mean-bound"
-   ],
+   "status": "available",
+   "reasons": [],
    "stars": 337,
    "galaxies": 2,
    "photographs": [
@@ -97,10 +95,8 @@
   {
    "row": 4,
    "telescope": 0,
-   "status": "unavailable",
-   "reasons": [
-    "mean-bound"
-   ],
+   "status": "available",
+   "reasons": [],
    "stars": 351,
    "galaxies": 2,
    "photographs": [
@@ -115,10 +111,8 @@
   {
    "row": 4,
    "telescope": 1,
-   "status": "unavailable",
-   "reasons": [
-    "mean-bound"
-   ],
+   "status": "available",
+   "reasons": [],
    "stars": 351,
    "galaxies": 2,
    "photographs": [
@@ -149,10 +143,8 @@
   {
    "row": 5,
    "telescope": 0,
-   "status": "unavailable",
-   "reasons": [
-    "mean-bound"
-   ],
+   "status": "available",
+   "reasons": [],
    "stars": 96,
    "galaxies": 1,
    "photographs": [
@@ -167,10 +159,8 @@
   {
    "row": 5,
    "telescope": 1,
-   "status": "unavailable",
-   "reasons": [
-    "mean-bound"
-   ],
+   "status": "available",
+   "reasons": [],
    "stars": 96,
    "galaxies": 1,
    "photographs": [
@@ -217,10 +207,8 @@
   {
    "row": 6,
    "telescope": 1,
-   "status": "unavailable",
-   "reasons": [
-    "mean-bound"
-   ],
+   "status": "available",
+   "reasons": [],
    "stars": 89,
    "galaxies": 1,
    "photographs": [
@@ -251,10 +239,8 @@
   {
    "row": 8,
    "telescope": 0,
-   "status": "unavailable",
-   "reasons": [
-    "mean-bound"
-   ],
+   "status": "available",
+   "reasons": [],
    "stars": 106,
    "galaxies": 4,
    "photographs": [],
@@ -267,10 +253,8 @@
   {
    "row": 8,
    "telescope": 1,
-   "status": "unavailable",
-   "reasons": [
-    "mean-bound"
-   ],
+   "status": "available",
+   "reasons": [],
    "stars": 106,
    "galaxies": 4,
    "photographs": [],
@@ -297,10 +281,8 @@
   {
    "row": 9,
    "telescope": 0,
-   "status": "unavailable",
-   "reasons": [
-    "mean-bound"
-   ],
+   "status": "available",
+   "reasons": [],
    "stars": 98,
    "galaxies": 5,
    "photographs": [],
@@ -313,10 +295,8 @@
   {
    "row": 9,
    "telescope": 1,
-   "status": "unavailable",
-   "reasons": [
-    "mean-bound"
-   ],
+   "status": "available",
+   "reasons": [],
    "stars": 98,
    "galaxies": 5,
    "photographs": [],
@@ -343,10 +323,8 @@
   {
    "row": 10,
    "telescope": 0,
-   "status": "unavailable",
-   "reasons": [
-    "mean-bound"
-   ],
+   "status": "available",
+   "reasons": [],
    "stars": 123,
    "galaxies": 0,
    "photographs": [],
@@ -359,10 +337,8 @@
   {
    "row": 10,
    "telescope": 1,
-   "status": "unavailable",
-   "reasons": [
-    "mean-bound"
-   ],
+   "status": "available",
+   "reasons": [],
    "stars": 123,
    "galaxies": 0,
    "photographs": [],
@@ -389,10 +365,8 @@
   {
    "row": 11,
    "telescope": 0,
-   "status": "unavailable",
-   "reasons": [
-    "mean-bound"
-   ],
+   "status": "available",
+   "reasons": [],
    "stars": 83,
    "galaxies": 2,
    "photographs": [
@@ -407,10 +381,8 @@
   {
    "row": 11,
    "telescope": 1,
-   "status": "unavailable",
-   "reasons": [
-    "mean-bound"
-   ],
+   "status": "available",
+   "reasons": [],
    "stars": 83,
    "galaxies": 2,
    "photographs": [
@@ -441,10 +413,8 @@
   {
    "row": 12,
    "telescope": 0,
-   "status": "unavailable",
-   "reasons": [
-    "mean-bound"
-   ],
+   "status": "available",
+   "reasons": [],
    "stars": 89,
    "galaxies": 1,
    "photographs": [
@@ -459,10 +429,8 @@
   {
    "row": 12,
    "telescope": 1,
-   "status": "unavailable",
-   "reasons": [
-    "mean-bound"
-   ],
+   "status": "available",
+   "reasons": [],
    "stars": 89,
    "galaxies": 1,
    "photographs": [

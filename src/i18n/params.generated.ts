@@ -3137,7 +3137,7 @@ export interface MessageParameters {
   "lss.reason.variable-model-fault": never;
   "lss.reason.axis-fallback": never;
   "lss.reason.merge-boundary": never;
-  "lss.reason.stamp-bound": never;
+  "lss.reason.ngc224-image": never;
   "lss.reason.no-galaxy-selected": never;
   "lss.reason.star-selected": never;
   "lss.reason.star-template-random": never;
@@ -3219,6 +3219,7 @@ export interface MessageParameters {
   "lss.adaptation.packs": never;
   "lss.exposure.elapsed": "ms";
   "lss.fieldsError": never;
+  "lss.fieldsError.ok": never;
   "lss.limitReached": "limit";
   "lss.dialog.controlChars": never;
   "lss.dialog.note": never;
@@ -3444,7 +3445,7 @@ export interface MessageParameters {
   "fieldSpec.reason.variable-model-fault": never;
   "fieldSpec.reason.axis-fallback": never;
   "fieldSpec.reason.merge-boundary": never;
-  "fieldSpec.reason.stamp-bound": never;
+  "fieldSpec.reason.ngc224-image": never;
   "fieldSpec.reason.no-galaxy-selected": never;
   "fieldSpec.internalError": never;
   "fieldSpec.reason.star-selected": never;

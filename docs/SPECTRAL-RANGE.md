@@ -87,7 +87,7 @@ default every policy, session and file keeps its bytes.
 
 D1 is reversed: new Hubble and LSS exposures use VIREO's 3700–4700 Å. Where the shifted template starts above 3700 Å, the blue
 bins are VIREO's start-time continuation (0x55e97c). They are drawn from the exposure's random state at each Go, and the
-mean bound [W] (VIREO has no mean bound; it is the web's existing Poisson admission) is checked against their deterministic upper bound (`core/fieldContinuation.ts` `galaxySourceValues`, shared with
+mean bound [W] (VIREO has no mean bound; it is poissonDraw's 10⁶ admission, on every record since Front L4) is checked against their deterministic upper bound (`core/fieldContinuation.ts` `galaxySourceValues`, shared with
 the field engine).
 
 **Availability [W].** A Hubble pair's 3700–4700 Å configuration is derived from its verified 4000–5000 Å one (same field, slit
@@ -103,7 +103,8 @@ field engine at each range; both gave the same outcome on every row.
 **What students see.**
 - E01: all 13 Hubble.HTL targets stay acquirable on the same telescopes. K and H are in view for every target; the two Boötes
   targets (z ≈ 0.13) lose the G band.
-- E02: 196/93/198 rows on both intervals, with no row changing outcome. K, H and G are in view on every acquirable row (at
+- E02: 196/93/198 rows on both intervals, with no row changing outcome (212/212/212 since Front L4, 2026-10-31, still equal on
+  both intervals). K, H and G are in view on every acquirable row (at
   4000–5000 Å, 70 rows lacked K and 32 had only the G band).
 - H0 does not read the range.
 - Proofs: `src/core/galaxyRange.test.ts`.
