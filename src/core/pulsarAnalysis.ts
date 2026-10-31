@@ -80,7 +80,7 @@ export type PulsarEntryFields = Readonly<{
  * a comma inside a fully quoted field alone is not evidence of ambiguity. Two readers use it: the Review
  * comment editor, through the bounded round-trip predicate of pulsarReviewEdit.ts, and the WEB results export
  * (pulsarResultsExport.ts), which copies it verbatim only when the strict saved-rows profile admits it and it
- * agrees with `fields`, and refuses it otherwise. The native CSV save 0x56feac stays gated, and number text is
+ * agrees with `fields`, and refuses it otherwise; the native Save (Front F3, pulsarNativeSave.ts) uses the same check. Number text is
  * not x87 parity.
  */
 export type PulsarMeasurementEntry = Readonly<{ sequence: number; panel: PulsarPanel; fields: PulsarEntryFields; nativeLineCandidate: string }>;
@@ -133,7 +133,7 @@ export type PulsarOutcome =
   | 'factor-changed' | 'factor-limit' | 'panned' | 'pan-bound' | 'pan-rate'
   | 'mode-changed' | 'cursor' | 'pointer-ignored' | 'pointer-released' | 'number-unsupported' | 'display-unsupported' | 'invalid-input'
   | 'record-disabled' | 'record-opened' | 'record-draft' | 'record-confirmed' | 'record-skipped' | 'record-finished' | 'comment-invalid'
-  | 'clear-unsaved' | 'clear-confirm' | 'clear-cancelled' | 'cleared'
+  | 'clear-unsaved' | 'clear-confirm' | 'clear-cancelled' | 'cleared' | 'clear-save' | 'saved' | 'save-cancelled'
   | 'review-disabled' | 'review-opened' | 'review-selected' | 'review-no-selection' | 'review-notice-closed'
   | 'review-delete-confirm' | 'review-delete-declined' | 'review-deleted' | 'review-cancelled' | 'review-confirmed'
   | 'review-edit-no-selection' | 'review-edit-notice-closed' | 'review-edit-opened' | 'review-edit-draft' | 'review-edited' | 'review-edit-cancelled'
@@ -585,16 +585,34 @@ export function pulsarCancelRecord(s: PulsarAnalysisState): PulsarTransition {
   return done(a, a.recordSession ? 'record-skipped' : 'record-finished', ['PLR-RECORD-01']);
 }
 
-/** Clear1Click 0x56f7ac. WEB: the native "save first" answer is not offered, because the CSV writer 0x56feac is gated. */
+/**
+ * Clear1Click 0x56f7ac. Unsaved (0x5db = 0): box 0x13 'Recorded Measurements Not Saved!' — Yes runs Save 0x56ef60 and stops if
+ * the list is still unsaved, No goes on to the confirmation, Cancel stops (Front F3: 'save' is that Yes; the caller runs the
+ * native save and then asks pulsarRequestClear again, which confirms when the save completed).
+ */
 export function pulsarRequestClear(s: PulsarAnalysisState): PulsarTransition {
   if (modal(s)) return keep(s, 'blocked-modal');
   return done({ ...s, clearPrompt: s.listSaved ? 'confirm' : 'unsaved' }, s.listSaved ? 'clear-confirm' : 'clear-unsaved', ['PLR-CLEAR-01']);
 }
-export function pulsarAnswerClear(s: PulsarAnalysisState, answer: 'discard' | 'yes' | 'no' | 'cancel'): PulsarTransition {
+export function pulsarAnswerClear(s: PulsarAnalysisState, answer: 'save' | 'discard' | 'yes' | 'no' | 'cancel'): PulsarTransition {
+  if (s.clearPrompt === 'unsaved' && answer === 'save') return done({ ...s, clearPrompt: null }, 'clear-save', ['PLR-CLEAR-01']);
   if (s.clearPrompt === 'unsaved' && answer === 'discard') return done({ ...s, clearPrompt: 'confirm' }, 'clear-confirm', ['PLR-CLEAR-01']);
   if (s.clearPrompt === 'confirm' && answer === 'yes') return done({ ...s, clearPrompt: null, list: Object.freeze([]), recordEnabled: false, reviewEnabled: false, saveEnabled: false }, 'cleared', ['PLR-CLEAR-01']);
   if (s.clearPrompt !== null && (answer === 'cancel' || answer === 'no')) return done({ ...s, clearPrompt: null }, 'clear-cancelled', ['PLR-CLEAR-01']);
   return keep(s, 'invalid-input');
+}
+
+/**
+ * Front F3: the state after the native Save's writer (0x56f311..0x56f388, then 0x56fe6c on success): Record and Save disabled,
+ * Review enabled, every panel recorded, the list saved, and the measurement record cleared (reference, verticals, horizontals,
+ * comments). The list, the cursors on screen and the readouts are kept.
+ */
+export function pulsarNativeSaved(s: PulsarAnalysisState): PulsarTransition {
+  return done({ ...s, recordEnabled: false, saveEnabled: false, reviewEnabled: true, pending: triple(() => false), listSaved: true, measurement: EMPTY_MEASUREMENT }, 'saved', ['PLR-CSV-01']);
+}
+/** Front F3: Verify Data Save answered Cancel: the saved byte +0x5db := 0, nothing else. */
+export function pulsarNativeSaveCancelled(s: PulsarAnalysisState): PulsarTransition {
+  return done({ ...s, listSaved: false }, 'save-cancelled', ['PLR-CSV-01']);
 }
 
 // ---------------------------------------------------------------- presentation projections

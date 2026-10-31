@@ -1,10 +1,10 @@
 import {useMemo} from 'react';
-import {galaxySpectrumBytes,lssSpectrumBytes,objectXSpectrumBytes,objectXSpectrumFileName} from '../core/exposureSpectrum';
+import {fieldSpectrumBytes,fieldSpectrumFileName,galaxySpectrumBytes,lssSpectrumBytes,objectXSpectrumBytes,objectXSpectrumFileName} from '../core/exposureSpectrum';
 import {galaxyStateDefinition,type GalaxyState} from '../core/galaxyExposure';
 import {galaxyTelescopeIndex} from '../core/galaxyTelescope';
 import {opticalProfile} from '../core/opticalTelescope';
 import type {JournalState} from '../core/exposureJournal';
-import type {FieldResult} from '../core/fieldEngine';
+import type {FieldResult,FieldTelescope} from '../core/fieldEngine';
 import type {LssRow} from '../core/lssFields';
 import {SpectrumSaveCard} from './SpectrumSavePrint';
 import {OBSERVATORY_MESSAGES} from './ObservatoryMessages';
@@ -35,4 +35,12 @@ export function ObjectXSpectrumSave({state,label,pointing,minimum,telescopeName,
  const ok=paused(state)&&!!pointing,bytes=useMemo(()=>ok&&state&&pointing?bytesOf(()=>objectXSpectrumBytes(state,label,pointing,minimum,revealed)):null,[state,ok,label,pointing,minimum,revealed]);
  if(!active||!state)return null;
  return <SpectrumSaveCard active={active} source={{bytes,usable:ok&&!busy,label,telescopeName,elapsedMs:state.exposure.elapsedMs,fileName:objectXSpectrumFileName(label),saved}}/>;
+}
+/** Front G (G4c): Save .SSP / Print for the field spectrometer at any pointing (fieldSpectrumBytes): header object = the slit's
+ * record locator, pointing = the field's (policy) pointing. */
+export function FieldSpectrumSave({state,result,pointing,telescope,active,busy}:{state:JournalState|null;result:FieldResult;pointing:Readonly<{ra:number;dec:number}>;telescope:FieldTelescope;active:boolean;busy:boolean}){
+ const ok=paused(state),bytes=useMemo(()=>ok&&state?bytesOf(()=>fieldSpectrumBytes(state,result,pointing)):null,[state,ok,result,pointing]);
+ const o=result.qsoTarget??result.starTarget??result.target;
+ if(!active||!state||!o)return null;
+ return <SpectrumSaveCard active={active} source={{bytes,usable:ok&&!busy,label:o.id,telescopeName:opticalProfile(telescope).name,elapsedMs:state.exposure.elapsedMs,fileName:fieldSpectrumFileName(o.id),saved:M.savedExposure}}/>;
 }

@@ -24,12 +24,20 @@ export function workerClient(create:()=>Worker){
   worker.onerror=drop;
   watch=setInterval(()=>{if(waiting.size===0)last=performance.now();else if(performance.now()-last>WORKER_INACTIVITY_TIMEOUT_MS)drop();},WORKER_HEARTBEAT_MS);
  }
- /** Posts one request; resolves with the Worker's reply, or a {ok:false,kind:'load'} reply when the Worker is evicted. */
- return function request<T extends object>(message:T):Promise<WorkerReply>{
+ /** Posts one request; resolves with the Worker's reply, or a {ok:false,kind:'load'} reply when the Worker is evicted. With a
+  * signal, an abort rejects with the DOMException AbortError and posts {op:'cancel',ticket} (a Worker that handles it stops
+  * the work; G4b review 1 M1); a late reply is dropped. */
+ return function request<T extends object>(message:T,signal?:AbortSignal):Promise<WorkerReply>{
+  if(signal?.aborted)return Promise.reject(new DOMException('Worker request was cancelled','AbortError'));
   if(!worker)start();
   if(waiting.size===0)last=performance.now();// the silence clock starts when the Worker becomes busy
   const mine=++ticket;
-  return new Promise(resolve=>{waiting.set(mine,resolve);worker!.postMessage({...message,ticket:mine});});
+  return new Promise((resolve,reject)=>{
+   const abort=()=>{if(!waiting.delete(mine))return;worker?.postMessage({op:'cancel',ticket:mine});reject(new DOMException('Worker request was cancelled','AbortError'));};
+   waiting.set(mine,m=>{signal?.removeEventListener('abort',abort);resolve(m);});
+   signal?.addEventListener('abort',abort,{once:true});
+   worker!.postMessage({...message,ticket:mine});
+  });
  };
 }
 /** Worker side: heartbeats while at least one request is in flight; call the returned function when a request settles. */

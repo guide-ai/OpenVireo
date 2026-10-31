@@ -8,8 +8,9 @@ import {delphiFixed} from './variableStars';
  * text/CSV handoff. It is not a native CLEA results record, file or 0x90 layout and
  * stores nothing. The c·z column is derived from the stored float32 z by hubbleVelocity,
  * with the same exclusion statuses as hubbleVelocityCsv; no value is substituted.
- * Front H2 review 1 M3: a row recorded through Observational Data also carries what VIREO's results list shows for it (mode 4,
- * 0x548a5a–0x548a95): the typed velocity (blank when 0), and the record's Sp type, remarks and JD. */
+ * Front H2 review 1 M3: a row recorded through Observational Data also carries its record: the typed velocity (blank when 0),
+ * which VIREO's mode-4 results list shows in place of the Sp type (0x548a5a–0x548a95), and the record's Sp type, remarks and JD.
+ * [W] The web shows both the velocity and the Sp type. */
 export const OWN_RESULTS_SCHEMA='openvireo-own-results-web-1';
 export const OWN_RESULTS_NUMERICAL_POLICY='Number_x87_equivalence_unvalidated';
 export const OWN_RESULTS_VELOCITY_POLICY='velocity_float32 is the derived c*z_float32 study aid; typed_velocity is the value entered in Observational Data and used by the Hubble analysis; neither is relativistic or a distance';

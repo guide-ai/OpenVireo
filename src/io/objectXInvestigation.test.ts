@@ -98,7 +98,7 @@ describe('v28 review 2 fixes',()=>{
    const o=JSON.parse(JSON.stringify(objectX));edit(o);
    await expect(admitObjectXInvestigation(o,digest)).rejects.toMatchObject({code:'digest'});
   }
- });
+ },30_000);// About 4.8 s alone: five digest re-checks of a full investigation; the 5 s default fails under any load.
  it('M3: a static-catalogue exposure is recomposed on restore and must give its FITS SHA-256',async()=>{
   // AUTHORED extract over the recorded VizieR response (tests/fixtures/vizier/nomad-56.75+24.12-r0.01.xml); not a bundled extract.
   const xml=new Uint8Array(readFileSync(new URL('../../tests/fixtures/vizier/nomad-56.75+24.12-r0.01.xml',import.meta.url)));
