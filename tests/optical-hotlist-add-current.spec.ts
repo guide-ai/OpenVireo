@@ -12,10 +12,17 @@ test('Add Current Item/Position adds the identified object or the position to th
  await page.getByTestId('ob-entry-ok').click();
  await expect(page.getByTestId('ob-info-box')).toContainText(id?`Object ${id.slice(0,24)} added to Observation List.`:'Position added to Observation List.');
  await page.getByTestId('ob-info-box').getByRole('button',{name:'OK'}).click();
- // A plain position: no object, so the ID starts empty and must be entered here.
+ // Front R4: any pointing names the nearest object within 350 px of the instrument field (0x59a0fc), here a GSC star; the remark is
+ // its kind because no exercise guide was opened (exercise code 0).
  await coords(page,'3.25','-20.5');
  await card(page).getByTestId('ob-add-current').click();
- await expect(page.getByTestId('ob-entry-id')).toHaveValue('');await expect(page.getByTestId('ob-entry-raHours')).toHaveValue('3');await expect(page.getByTestId('ob-entry-raMinutes')).toHaveValue('15');await expect(page.getByTestId('ob-entry-decDegrees')).toHaveValue('-20');await expect(page.getByTestId('ob-entry-decMinutes')).toHaveValue('30');
+ await expect(page.getByTestId('ob-entry-id')).toHaveValue('S1500-00805');await expect(page.getByTestId('ob-entry-remarks')).toHaveValue('Star');
+ await page.getByTestId('ob-entry-cancel').click();
+ // A field that cannot be loaded (its GSC tiles refused here): no object, so the ID starts empty.
+ await page.route('**/original/gsc/**',r=>r.abort());
+ await coords(page,'3.25','62.5');
+ await card(page).getByTestId('ob-add-current').click();
+ await expect(page.getByTestId('ob-entry-id')).toHaveValue('');await expect(page.getByTestId('ob-entry-remarks')).toHaveValue('');await expect(page.getByTestId('ob-entry-raHours')).toHaveValue('3');await expect(page.getByTestId('ob-entry-raMinutes')).toHaveValue('15');await expect(page.getByTestId('ob-entry-decDegrees')).toHaveValue('62');await expect(page.getByTestId('ob-entry-decMinutes')).toHaveValue('30');
  await page.getByTestId('ob-entry-raHours').fill('25');await page.getByTestId('ob-entry-ok').click();
  await expect(page.getByTestId('ob-entry-error')).toContainText('Right Ascension is Invalid!');await page.getByTestId('ob-entry-error').getByRole('button',{name:'OK'}).click();
  await page.getByTestId('ob-entry-raHours').fill('3');await page.getByTestId('ob-entry-ok').click();
@@ -40,7 +47,7 @@ test('the HTL editor accepts h/m/s and d/m/s entry through the original Add/Edit
 
 test('Add Current fits 320px',async({page})=>{
  await page.setViewportSize({width:320,height:720});await open(page);await card(page).getByTestId('ob-add-current').click();
- const box=await page.getByTestId('ob-entry').boundingBox();expect(box!.x+box!.width).toBeLessThanOrEqual(320);
+ await expect(page.getByTestId('ob-entry')).toBeVisible();const box=await page.getByTestId('ob-entry').boundingBox();expect(box!.x+box!.width).toBeLessThanOrEqual(320);
  await page.getByTestId('ob-entry-cancel').click();await expect(page.getByTestId('ob-entry')).toBeHidden();
 });
 
@@ -71,4 +78,18 @@ test('Front R2 (R1 review L5): an Edit left open while Add Current inserts a row
  await expect(page.getByText('HTL targets · 3')).toBeVisible();
  const labels=await page.locator('#htl-rows option').allTextContents();
  expect(labels.map(l=>['A','X','C-edited','C'].find(n=>new RegExp(`(^|\\s)${n}(\\s|$)`).test(l)))).toEqual(['A','X','C-edited']);
+});
+
+test('Front R4: Add Current never names a hidden Object X target, even pointed at exactly (the leak OpenVireo.tsx:625 had)',async({page})=>{
+ await page.goto('/#object-x');await expect(page.getByRole('heading',{name:'The quest for Object X'})).toBeVisible();
+ await page.getByTestId('objectx-target').selectOption({index:1});
+ await page.getByRole('button',{name:'Copy the coordinates to the observatory',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();
+ await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
+ if(!await page.locator('#point-ra').isVisible())await page.getByText('Enter coordinates',{exact:true}).click();
+ await page.getByRole('button',{name:'Point to coordinates',exact:true}).click();
+ // Show Object ID forced on by an exercise guide does not unmask it.
+ await page.getByTestId('pleiades-lab-open').click();await page.keyboard.press('Escape');
+ await card(page).getByTestId('ob-add-current').click();
+ await expect(page.getByTestId('ob-entry-id')).toHaveValue('');await expect(page.getByTestId('ob-entry-remarks')).toHaveValue('');
 });

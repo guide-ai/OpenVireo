@@ -138,6 +138,14 @@ adds a row.
   - Cancel leaves the row unchanged [W].
 - **Wedge:** once a row that was already plotted is reused, the next "Plot my records in the wedge" replaces the wedge's own
   points with the whole list, as OK's PlotData re-plots the whole list natively.
+- **Re-plot after OK (Front R4, RecordZ1Click 0x58383c) [D]:** after OK (Cancel does nothing), with the wedge visible
+  VIREO calls PlotData1Click 0x58100c, which redraws the whole current list without showing or raising the wedge; with
+  neither the wedge nor the results window visible it shows "Z Measurement Saved" (0x583b20/0x583bac) and enables the
+  "LSS Wedge Plot" menu item. The Hubble branch never touches the wedge.
+  - **Here [W]:** "visible" is "the wedge route has been mounted in this page session" (opened, or restored from an investigation that carries wedge options; only one route is visible at a time). Then
+    every OK hands the whole own list to the wedge with replace, without navigating, and says so in the status line.
+    Otherwise the status line shows the original box text verbatim (`LSS_Z_SAVED_BOX`) with a web note. The results-window
+    exception and the menu enable are not modelled: the list is on this page and the wedge route is always reachable.
 - **Files:** they keep the v27–v31 format.
   - Older files whose rows repeat an object (made when every OK appended) restore unchanged and are never merged. The next
     Record Z reuses the first of them.
