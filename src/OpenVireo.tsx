@@ -463,7 +463,7 @@ export default function OpenVireo(){
     const blocked=lastRadioBlock();
     if(ok){setProjectNotice(t(file?'project.restored':'project.saved'));setObjectXSaved(file?objectXPendingRestore.current:objectXCurrent.current);setLssSavedRecords(file?(lssPendingRestoreCount.current??-1):(lssCurrent.current?.records.length??-1));}
     else if(blocked)setProjectError(radioBlockText(blocked));
-    else if(!undelivered)setProjectError(t(file?'project.restoreError':'project.saveError'));
+    else if(!undelivered)setProjectError(t(file?(analyzerController.current?.lastRestoreResources?.()?'session.restoreResourcesError':'project.restoreError'):'project.saveError'));
     return !!ok;
   }
   useEffect(()=>{const hide=()=>{if(document.visibilityState==='hidden'&&(projectRunning.current||investigationBusy))cancelProject();};document.addEventListener('visibilitychange',hide);return()=>document.removeEventListener('visibilitychange',hide);},[investigationBusy]);
