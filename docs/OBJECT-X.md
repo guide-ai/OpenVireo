@@ -309,7 +309,9 @@ statically under decision D6; toolkit.exe was not needed and not analysed.
   by this app). Marks keep pixels only: every target position, the per-frame rms and plate scale, the per-reference residuals
   and the motion are derived from the current marks at render time, so correcting a reference star re-solves every target.
 - Cuts: the low/high cut sets both the display stretch and the centroid weights (the guide ties them to the displayed range);
-  the 5 %/50 % default of the image range is a labelled web choice.
+  the default cuts are a labelled web choice: low at the image median (the sky level), high at 50 % of the image range. Front
+  QA1 (2026-10-31) replaced the earlier 5 % low cut, which sat above Eros in 30 s 0.4 m images of the real star field, so
+  Measure refused it. The Astrometry toolkit's own default is not recovered; neither manual gives it.
 - Blink: alternate two images at 10–1000 ms (default 500), aligned on the first two reference stars marked on both images,
   paired by catalogue position within 1″ (closure N1), otherwise raw frames (labelled "same pointing assumed"). Measuring is disabled while blinking.
 - Motion: rate (″/h) and position angle (north through east) between the earliest and latest solved target marks.

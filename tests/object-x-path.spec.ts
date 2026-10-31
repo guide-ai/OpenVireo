@@ -253,3 +253,61 @@ test('a mid-exposure repoint keeps the asteroids of the Start pointing in that i
  await expect(page.getByTestId('objectx-images').locator('li')).toHaveCount(1);
  await expect(page.getByTestId('objectx-image-movers-0')).toContainText(/[1-9]\d* asteroids? in the field box/);
 });
+
+// Front QA1 (2026-10-31, E08 low cut): with the real bundled star field (not the star-free recorded fixture), two 30 s images
+// on the default 0.4 m are measured at Eros's predicted pixel with the default cut. The earlier 5 % of the range sat above the
+// asteroid (about 16 ADU over a sky of about 532) and Measure refused; the web default low cut is now the sky median.
+test('QA1: Eros is measurable with the default cut on 30 s images of the real star field',async({page})=>{
+ test.setTimeout(300_000);
+ await openLab(page);
+ await page.getByLabel('ID # of your unknown object (from the lab sheet or instructor)').fill('42');
+ await page.getByTestId('objectx-target').selectOption(EROS_CODE);
+ await button(page,'Set the observatory clock').click();
+ await expect(page.getByTestId('objectx-list-status')).toContainText('Observable asteroids on 2009-06-01 04:00:00 UT',{timeout:20_000});
+ await button(page,'Copy the coordinates to the observatory').click();
+ await button(page,'Open dome ↗').click();
+ if(!await button(page,'Point to coordinates').isVisible())await page.getByText('Enter coordinates',{exact:true}).click();
+ await button(page,'Point to coordinates').click();
+ await page.getByRole('group',{name:'Field of view'}).getByRole('button',{name:'Telescope · 15′',exact:true}).click();
+ const startClock=async()=>{if(!await button(page,'Start observatory clock').isVisible())await page.getByText('Observatory clock & spectral tracking',{exact:true}).click();await button(page,'Start observatory clock').click();};
+ const expose=async()=>{const camera=page.getByTestId('camera-control');await expect(camera.getByLabel(/Bundled extracts/)).toBeChecked();
+  await camera.getByLabel('Minutes').fill('0');await camera.getByLabel('Seconds').fill('30');
+  await camera.getByRole('button',{name:'Start exposure',exact:true}).click();
+  await expect(page.getByTestId('camera-status')).toHaveText('Image ready.',{timeout:120_000});};
+ await startClock();await button(page,'Turn tracking on').click();await expose();
+ await clickHeaderTool(page,'Object X');
+ await page.getByLabel('Observation date and time (UT)').fill('2009-06-01T04:45:00');await button(page,'Set the observatory clock').click();
+ await expect(page.getByTestId('objectx-list-status')).toContainText('Observable asteroids on 2009-06-01 04:45:00 UT',{timeout:20_000});
+ await clickHeaderTool(page,'Observatory');await startClock();await expose();
+ await clickHeaderTool(page,'Object X');
+ const fits:Buffer[]=[];
+ for(const label of ['ObjX-42-01','ObjX-42-02']){const d=page.waitForEvent('download');await button(page,`Save ${label}.FIT`).click();fits.push(await readFile((await (await d).path())!));}
+ const sav=new Uint8Array(readFileSync(new URL('../public/original/orbit/ObjX_MPC.CMO.sav',import.meta.url)));
+ const eros=elementsFromState(readOrbitRecord(sav,findOrbitRecord(sav,{number:'433'})!));
+ const predicted=fits.map(bytes=>{
+  const image=parseFitsImage(new Uint8Array(bytes)),card=(k:string)=>Number(image.cards.find(c=>c.startsWith(k.padEnd(8)+'='))!.slice(10).split('/')[0]);
+  const jd=card('MJD-OBS')+2400000.5,mid=jd+card('EXPTIME')/2/86400,p=astrometricPosition(eros,mid);
+  return {jd,sky:{raHours:p.raHours,decDeg:p.decDeg},pixel:skyToPixel(tanWcsFromCards(image.cards),{raHours:p.raHours,decDeg:p.decDeg})};
+ });
+ const rate=angularSeparationArcsec(predicted[0].sky,predicted[1].sky)/((predicted[1].jd-predicted[0].jd)*24);
+ await button(page,'Measure positions').click();
+ const viewport=page.getByTestId('objectx-measure-viewport');
+ const cursor=async()=>{const m=/x (\d+), y (\d+)/.exec((await page.getByTestId('objectx-cursor').textContent())??'')!;return {x:Number(m[1]),y:Number(m[2])};};
+ async function moveTo(x:number,y:number){
+  for(const [axis,plus,minus] of [['x','ArrowRight','ArrowLeft'],['y','ArrowDown','ArrowUp']] as const){
+   let d=Math.round(axis==='x'?x:y)-(await cursor())[axis];
+   while(Math.abs(d)>=10){await page.keyboard.press(`Shift+${d>0?plus:minus}`);d-=Math.sign(d)*10;}
+   while(d!==0){await page.keyboard.press(d>0?plus:minus);d-=Math.sign(d);}
+  }
+ }
+ for(const [k,frame] of ['Image 1: ObjX-42-01','Image 2: ObjX-42-02'].entries()){
+  await page.getByRole('button',{name:frame}).click();await viewport.focus();
+  await moveTo(predicted[k].pixel.x,predicted[k].pixel.y);await page.keyboard.press('Enter');
+  await expect(page.getByText('No source above the low cut near the cursor.')).toHaveCount(0);
+ }
+ await expect(page.getByTestId('objectx-measurements').locator('tbody tr')).toHaveCount(2);
+ const motion=/Motion: ([\d.]+)″\/h/.exec((await page.getByTestId('objectx-motion').textContent())??'');
+ expect(motion).not.toBeNull();
+ await test.info().attach('qa1-eros-motion.json',{body:JSON.stringify({measured:Number(motion![1]),predicted:rate}),contentType:'application/json'});
+ expect(Math.abs(Number(motion![1])-rate)).toBeLessThan(6);
+});

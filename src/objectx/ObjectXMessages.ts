@@ -26,7 +26,7 @@ export const OBJECT_X_MEASURE_EN:ObjectXMeasureMessages=Object.freeze({
  cursor:(x,y)=>`Cursor x ${x}, y ${y}`,measure:'Measure at cursor',viewport:'Image; arrow keys move the cursor, Enter measures',
  keyboardHelp:'Arrow keys move the cursor by one pixel (Shift: ten). Enter or Space measures.',
  rangeLow:'Low cut',rangeHigh:'High cut',
- rangeNote:'The cuts set both the display stretch and the centroid weights (web default: 5 % and 50 % of the image range).',
+ rangeNote:'The cuts set both the display stretch and the centroid weights (web default: low at the sky level, the image median; high at 50 % of the image range). If Measure finds no source above the low cut, lower the Low cut or take a longer exposure.',
  blinkAligned:'Blinking aligned on the first two reference stars of each image.',
  blinkRaw:'Blinking the raw frames (same pointing assumed); mark two reference stars on each image to align them.',
  plateTitle:'Astrometric solutions',plateFrame:(n,refs)=>`Image ${n}: ${refs} reference stars`,plateNone:(n,refs)=>`Image ${n}: ${refs} reference stars (at least 3 needed)`,
