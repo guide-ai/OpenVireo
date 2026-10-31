@@ -60,7 +60,7 @@ export type CameraFieldObjectPass=Readonly<{eligible:number;inBounds:number;tail
 export type CameraSkippedSource=Readonly<{extraIndex:number;reason:'moving-pair-off-detector'|'moving-pair-geometry'|'moving-pair-budget'}>;
 export type CameraExposure=Readonly<{
  recipe:CameraExposureRecipe;plane:CameraFinalStage;records:readonly CameraFieldRecord[];skipped:readonly CameraSkippedSource[];
- /** null when no field objects were supplied (the pass is not run: no certified field at this pointing). */
+ /** null when no field objects were supplied (the pass is not run: masked near Object X, or the field population could not be loaded or built). */
  fieldObjects:CameraFieldObjectPass|null;
  drawsConsumed:number;finalRandomState:number;
  catalog:Readonly<{rows:number;selected:number;onDetector:number}>;
@@ -84,7 +84,7 @@ export const CAMERA_EXPOSURE_ADAPTATIONS=Object.freeze([
  'fresh-field-list: the list is rebuilt per exposure (initialize -> select -> update), and moving records are projected in the same stream just before catalog rows',
  'whole-sky-selection: the region bounds at [0x5b5b30] are not recovered; selection keeps the magnitude limit',
  'no-ccd-overlay: the optional bitmap overlay branch (form+0x412) is not offered; its source, gate, sizes and stretch mode are recovered (Front R2), but its input, the galaxy-only field raster, is internal to the field engine',
- 'field-objects-certified-field: the field-object pass 0x5228dc runs on the certified field population at the camera pointing, built at the exposure JD (VIREO uses the field of the last field load); elsewhere it is not run, and an empty camera list does not write the observatory field star',
+ 'field-objects-field-population: the field-object pass 0x5228dc runs on the field population at the camera pointing (a bundled pack or a field assembled from the compact GSC tiles), built at the exposure JD (VIREO uses the field of the last field load); near an Object X target, or when that population cannot be loaded or built, it is not run, and an empty camera list does not write the observatory field star',
  'field-object-saturated: a field variable of class 1 or 2 gets colour term 30 or 60, so the pass writes about V − 30 or V − 60 into the tail catalog row and VIREO draws a saturated star; that one record gets a wider, Float32-safe admission (|m| ≤ 100, peak × scale below 1e36) instead of the web bounds |m| ≤ 50 and peak ≤ 1e12, and is drawn with the same calibration, plan and draws; only a value that would still overflow is skipped with a typed reason (review 1 H1, closure M1)',
  'moving-pair-off-detector: a pair whose projected pixel position exceeds 1e6 is skipped (its four draws are still consumed); the native FISTP overflow path is not recovered',
  'moving-pair-streak-limit: streak visits are bounded by the clipped 1024^2 rectangle plus a cross pass (CAMERA_STREAK_VISIT_LIMIT); a pair that still cannot be planned (budget or coincident endpoints) is skipped alone, with no draws for its streak',

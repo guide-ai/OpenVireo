@@ -1,5 +1,7 @@
 # Pleiades UBV observing and saved B−V
 
+> **Front P2 (2026-10-30):** apertures 5–150, the R and I filters, VIREO's sky at large apertures and the superseding 0.9 m / 4 m domain are in [PHOTOMETER-P2.md](PHOTOMETER-P2.md); this page describes the earlier bounded scope, whose contract stays unchanged.
+
 **Three-target follow-up:** [PHOTOMETER-TARGETS.md](PHOTOMETER-TARGETS.md) extends the same verified profile to three original targets with separate saved pairs. The one-target scope below records this earlier increment.
 
 The visual photometer at **http://127.0.0.1:5173/#photometer** now supports **U, B and V**, separate measured sky for each filter, manual notebook entries tagged with their acquired filter, and B−V from an explicitly selected saved B/V pair. No console is required. The same single original target, two complete fields, telescope0 and0.1s integration remain the supported domain.

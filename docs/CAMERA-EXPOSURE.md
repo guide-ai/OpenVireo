@@ -14,7 +14,7 @@ Evidence: [NATIVE-CAMERA-FRONT-C-C0-01](CAMERA-EXPOSURE-PROVENANCE.json), static
 | Select copies the region record, raises the magnitude limit to 21.5, picks NOMAD or USNO-B1 (I → mode 1) | 0x5222d4 | `vizierRouteForCamera`, `compiledCameraQueryReference` |
 | Moving (kind-2) records: projected with two draws and **no bounds test**, filter offset NF/R −0.54, B +0.65, V 0, I −0.88, appended first | 0x522718 | `CameraExtraSource` kind `pair` |
 | Catalog rows: two draws each (RA then Dec), inclusive bounds, kind 0, Single magnitude | 0x522454, 0x522698 | `composeCameraExposure` |
-| Field objects (kind 0) after the catalog | 0x5228dc, 0x51ef38, 0x522a18 | ported at certified fields (Front R2, below) |
+| Field objects (kind 0) after the catalog | 0x5228dc, 0x51ef38, 0x522a18 | ported at every pointing except near Object X (Front R2 and the Front G merge, below) |
 | Background, one draw per pixel, row-major | 0x521635 | existing `cameraBackgroundStage` |
 | Source loop: NF −0.25; kind 2 takes the next record as its endpoint (extended), others are points | 0x521a6f..0x521b35 | existing point/extended stages |
 | Well, gain, A/D | 0x521b3b.. | existing `finalizeCameraPlane` |
@@ -36,9 +36,13 @@ The seeing jitter is on for the CCD (compiled record byte +0x5a = 1 at 0x5a2bd8)
   - **Front G merge:** the population exists at every pointing: a bundled pack where one is listed, otherwise a field assembled
     from the compact GSC tiles. VIREO builds the field at every pointing (G-RE3, no pointing gate), so the pass now runs
     everywhere.
-    - **Object X:** within 2° + 0.375° (the field's reach) of an ObjectX.HTL position or of the lab's hidden target, nothing is
+    - **Object X:** within 2° plus the field's reach of an ObjectX.HTL position or of the lab's hidden target, nothing is
       loaded and the pass does not run; the details say only that the field stays hidden near an Object X target, the same text
-      whether or not a variable is there [W]. A failed ObjectX.HTL read masks.
+      whether or not a variable is there [W]. The reach is the farthest corner of the field box (Dec ± 0.375°, RA ±
+      0.375°/cos Dec): 0.53° at the equator, up to 0.663° near the pole (G merge review L1; 0.375° let variables 1.9–2.0° from
+      a target be counted from 2.38–2.45°). The Multi-Spec mask uses the same reach.
+    - **ObjectX.HTL cannot be read:** the pass fails closed at every pointing with its own constant text, "the Object X positions
+      could not be loaded… try again" (status `unchecked`, review L3); the read is retried on the next exposure.
     - **Statuses:** a tile that cannot be fetched or checked is "could not be loaded" (try again); a polar field, an unreadable
       band or a population-blocking reason is "cannot build the field population" [W].
     - **Cost:** measured in Node with tiles read from disk, the added preparation time is 19–105 ms for ordinary fields and
@@ -47,20 +51,19 @@ The seeing jitter is on for the CCD (compiled record byte +0x5a = 1 at 0x5a2bd8)
     - **Equality:** at every pointing that had a pack, the field-input statuses (681) and the compositions (300; CCD and IR,
       filter bytes 0/3/4, telescope 0) are byte-identical to main ab3b97b.
   - A variable whose brightness is not known blocks the pass, and an empty list writes nothing [W].
-  - A pointing with no certified pack says "not certified"; a pack or catalog that cannot be loaded says "could not be
-    checked" (review 1 L1) [W].
+  - A pack or catalog that cannot be loaded says "could not be checked" (review 1 L1) [W].
   - The CCD filter byte is set when a CCD exposure starts (CCD Go 0x5126c1, before the preparation check 0x512244 and before
     the web's static-coverage refusal) and kept for the page, as the form keeps it for the process; 0 (NF) before any CCD
     exposure [I] (review 1 L5, closure Info).
-  - A pointing whose certified population has a blocking reason says so ("blocked"); a load failure says "could not be
+  - A pointing whose field population has a blocking reason says so ("blocked"); a load failure says "could not be
     loaded" and suggests a retry (closure Info).
   - **Saturated tail (review 1 H1, closure M1).** For a class 1 or 2 variable the colour term is 30 or 60, so VIREO writes about
     V − 30 or V − 60 into the tail catalog row and draws a saturated star [D]. This site draws it too, with the same
     calibration formulas, point plan and draws; the image clips at the well (at NGC 5924, CCD NF 1 s, 2,766 pixels reach
     65,536). Only that record gets a wider admission than the web bounds |m| ≤ 50 and peak ≤ 1e12: |m| ≤ 100 and peak ×
     exposure scale (with the cross term's 0.01 × scale²) below 1e36, which keeps Float32 finite [W]. A value that would still
-    overflow, or exceed the visit budget, is skipped with a typed reason [W]. The magnitude is never clamped. Among the certified
-    pointings only LSS Field 8 near NGC 5924 has such a variable.
+    overflow, or exceed the visit budget, is skipped with a typed reason [W]. The magnitude is never clamped. Among the pointings
+    that had a bundled pack, only LSS Field 8 near NGC 5924 has such a variable; a tiled field elsewhere can have one too.
   - **Catalog "no data" gate** [I]: VIREO runs the catalog rows and this pass only when the catalog's vt+4 returns true
     (0x52246a/0x52246f → 0x522553). Which web state matches vt+4 = false is not recovered; the web runs the pass whenever an
     exposure is composed, and an empty camera list writes nothing (review 1 L3).

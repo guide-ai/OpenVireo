@@ -1,5 +1,7 @@
 # Mayall Pleiades photometry
 
+> **Front P2 (2026-10-30):** apertures 5–150, the R and I filters, VIREO's sky at large apertures and the superseding 0.9 m / 4 m domain are in [PHOTOMETER-P2.md](PHOTOMETER-P2.md); this page describes the earlier bounded scope, whose contract stays unchanged.
+
 **Domain clarification:** [Native versus port limits and exercise identity](PHOTOMETER-DOMAIN-LIMITS.md) explains the six exclusions and supersedes any unqualified membership wording below. The original list is an exercise/association source, not a membership classifier; all existing numerical and session contracts remain unchanged.
 
 The original compiled Mayall profile now admits ten complete Pleiades object/sky fields in U/B/V with aperture sizes 5/10/15 and the existing 0.1/1/10/100 s × 1–5 integrations. Existing 0.4m sixteen-target and KPNO 0.9m fourteen-target domains remain unchanged. Student transcriptions start blank. Colors, diagrams and fits use the pupil’s explicit entries and confirmations.

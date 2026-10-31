@@ -2,7 +2,7 @@ import {createHash} from 'node:crypto';
 import {composeCameraExposure} from '../core/cameraExposure';
 import {readVizierCatalog,selectVizierCatalog,wholeSkySelection} from '../core/vizierNomad';
 import {readFileSync} from 'node:fs';
-import {afterAll,afterEach,beforeAll,describe,expect,test} from 'vitest';
+import {afterAll,afterEach,beforeAll,describe,expect,test,vi} from 'vitest';
 import {assembleFieldPack} from '../io/assembledFieldPack';
 import {checkGscIndex,createGscTileStore} from '../io/gscTiles';
 import {loadObjectXPositions} from '../io/objectXMask';
@@ -54,6 +54,31 @@ describe('camera field inputs (Front R2 review 1)',()=>{
   expect(await cameraFieldInputs(x,2455000.5,0)).toEqual({status:'masked',objects:null});
   expect(await cameraFieldInputs({ra:3,dec:-40},2455000.5,0,{hidden:{ra:3,dec:-40}})).toEqual({status:'masked',objects:null});
   expect(calls).toBe(0);
+ });
+ test('G merge review L1: the mask reaches the field box\'s farthest corner (0.53° at the equator, up to 0.663° near the pole)',async()=>{
+  const {fieldMaskReach,FIELD_MASK_REACH_BOUND}=await import('../io/objectXMask');
+  expect(fieldMaskReach({ra:3,dec:0})).toBeCloseTo(0.5303,3);
+  expect(fieldMaskReach({ra:3,dec:88})).toBeCloseTo(0.5539,3);
+  expect(fieldMaskReach({ra:3,dec:-89.805})).toBeCloseTo(0.6630,3);
+  expect(fieldMaskReach({ra:3,dec:90})).toBe(FIELD_MASK_REACH_BOUND);
+  // A hidden target alone at (3 h, −40°): 2.45° north (inside 2° + 0.53°) is masked with nothing loaded; 2.7° is not masked.
+  let calls=0;const base=resources();setFieldInfoResources({...base,assembled:async(p,signal)=>{calls++;return base.assembled(p,signal);}});
+  const hidden={ra:3,dec:-40};
+  expect((await cameraFieldInputs({ra:3,dec:-37.55},2455000.5,0,{hidden})).status).toBe('masked');
+  expect(calls).toBe(0);
+  expect(['run','none']).toContain((await cameraFieldInputs({ra:3,dec:-37.3},2455000.5,0,{hidden})).status);
+ });
+ test('G merge review L3: when ObjectX.HTL cannot be read the pass is "unchecked" (its own text) at any pointing, then retried',async()=>{
+  vi.resetModules();
+  globalThis.fetch=(async()=>{throw new TypeError('offline');}) as typeof fetch;
+  try{
+   const fresh=await import('./cameraFieldInputs');
+   expect(await fresh.cameraFieldInputs({ra:3,dec:-40},2455000.5,0)).toEqual({status:'unchecked',objects:null});
+   globalThis.fetch=diskFetch;// retried: the hidden target alone is now checked and masked
+   expect(await fresh.cameraFieldInputs({ra:3,dec:-40},2455000.5,0,{hidden:{ra:3,dec:-40}})).toEqual({status:'masked',objects:null});
+  }finally{globalThis.fetch=diskFetch;vi.resetModules();}
+  const {CAMERA_MESSAGES}=await import('./CameraMessages');
+  expect(CAMERA_MESSAGES.fieldObjects.unchecked).not.toBe(CAMERA_MESSAGES.fieldObjects.masked);
  });
  test('an abort rejects before any tile work',async()=>{
   setFieldInfoResources(resources());const c=new AbortController();c.abort();

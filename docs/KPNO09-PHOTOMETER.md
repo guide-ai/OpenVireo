@@ -1,5 +1,7 @@
 # KPNO 0.9m photometer observing
 
+> **Front P2 (2026-10-30):** apertures 5–150, the R and I filters, VIREO's sky at large apertures and the superseding 0.9 m / 4 m domain are in [PHOTOMETER-P2.md](PHOTOMETER-P2.md); this page describes the earlier bounded scope, whose contract stays unchanged.
+
 **Follow-up,19 October2026:** [Mayall Pleiades photometry](MAYALL-PHOTOMETER.md) now adds a separately bounded ten-target profile. Earlier Mayall gates below describe the dated preceding increment; existing telescope0/1 contracts remain intact.
 
 The existing Pleiades photometer can now acquire through the compiled KPNO 0.9m telescope profile. It supports fourteen verified original targets, U/B/V, aperture sizes 5/10/15 and the existing 0.1/1/10/100 s × 1–5 choices. The 0.4m profile retains all sixteen targets and its original numerical/serialization paths. No catalog value is copied into a student entry.

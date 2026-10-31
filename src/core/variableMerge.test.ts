@@ -139,3 +139,25 @@ describe('Front T: TRUE-branch merge (hit modifies the resolved target, miss ins
   const raw=record({cls:'EA'});raw[74]=2;raw[75]=0x41;raw[76]=0x30;expect(nativeVariableSpectrum(hex(raw))).toBe('A0');
  });
 });
+
+// Front P2.1 (analysis/front-p2/A-zero-period-rows.md): 0x51ec9a..0x51eca7 compares the period with 0.0 and jumps to the shared
+// FALSE exit 0x51ee57 before any class test, so a zero period returns false for every class; a zero word with a nonzero period
+// returns false for classes 0, 2 and 3 (0x51ecb0..0x51ecba); class 3 always does (0x51eccb).
+describe('Front P2.1: the zero-period truth table of 0x51ec48 and the Pleiades rows 3, 5, 10, 12',()=>{
+ it('period 0 is false for every class and word; word 0 for classes 0, 2, 3; class 3 always',()=>{
+  const sample=[tables[0].values[0],tables[1].values[0],tables[2].values[0],'UV'];
+  for(const [c,classification] of sample.entries()){
+   expect(nativeVariableClass(classification,tables)).toBe(c);
+   for(const word48 of [0,1,-1,0x7fff,-0x8000])expect(nativeVariableDispatchFalse({classification,periodNonzero:false,word48},tables),`${classification} P=0 w=${word48}`).toBe(true);
+   expect(nativeVariableDispatchFalse({classification,periodNonzero:true,word48:0},tables),`${classification} w=0`).toBe(c!==1);
+   expect(nativeVariableDispatchFalse({classification,periodNonzero:true,word48:5},tables),`${classification} w=5`).toBe(c===3);
+  }
+ });
+ it('the GCVS records near Pleiades rows 3, 5, 10 and 12 have period 0 and word 0 in CLEA_VStrs.dat',async()=>{
+  const {readFileSync}=await import('node:fs');const bytes=readFileSync('public/original/variables/CLEA_VStrs.dat');
+  const at=(i:number)=>decodeNativeVariableRecord(Buffer.from(bytes.subarray(i*92,i*92+92)).toString('hex'),i);
+  const rows=[2079,2116,2119,2165,2166,2195].map(at);
+  expect(rows.map(r=>[r.name,r.periodNonzero,r.word48])).toEqual(['NZ Tau','V0443 Tau','V0855 Tau','V0447 Tau','V0641 Tau','V0453 Tau'].map(n=>[n,false,0]));
+  for(const r of rows)expect(nativeVariableDispatchFalse({classification:r.classification,periodNonzero:r.periodNonzero,word48:r.word48},tables)).toBe(true);
+ });
+});

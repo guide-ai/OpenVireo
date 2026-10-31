@@ -1334,6 +1334,10 @@ export interface MessageParameters {
   "ph.apertureChange": never;
   "ph.apertureHelp": never;
   "ph.apertureSelector": never;
+  "ph.apertureSlider": never;
+  "ph.apertureInvalid": "max" | "min";
+  "ph.domainLimit.Poisson-mean-bound": "telescope";
+  "ph.domainLimit.all-duration-count-domain": "telescope";
   "ph.apertureOption": "diameter" | "selector";
   "ph.apertureDefault": never;
   "ph.apertureApply": never;
@@ -1365,7 +1369,6 @@ export interface MessageParameters {
   "ph.domainNumbers": never;
   "ph.domainTable": never;
   "ph.domainEntry": never;
-  "ph.domainMeanColumn": never;
   "ph.domainTotalColumn": never;
   "ph.domainReasonColumn": never;
   "ph.domainMeanReason": never;
@@ -1374,6 +1377,10 @@ export interface MessageParameters {
   "ph.domainSummary": never;
   "ph.domainCombinedColumn": never;
   "ph.domainConfigurationColumn": never;
+  "ph.domainSinceColumn": never;
+  "ph.domainSinceEarlier": never;
+  "ph.domainSinceAdded": never;
+  "ph.domainAdded": never;
   "ph.domainSelected": never;
   "ph.domainRetained": never;
   "motion.title": never;
@@ -3390,10 +3397,8 @@ export interface MessageParameters {
   "ph.tiledReason.photometer-qso": never;
   "ph.tiledReason.photometer-variable": never;
   "ph.tiledReason.photometer-selection": never;
-  "ph.tiledReason.photometer-central-unadmitted": never;
   "ph.tiledReason.photometer-colour": never;
   "ph.tiledReason.photometer-population": "detail";
-  "ph.tiledLimit.photometer-central-unadmitted": never;
   "ph.tiledLimit.photometer-blend": "telescope";
   "ph.tiledLimit.photometer-colour": never;
   "ph.tiledLimit.Poisson-mean-bound": "telescope";

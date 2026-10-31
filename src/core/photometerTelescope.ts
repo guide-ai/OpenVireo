@@ -8,6 +8,8 @@ const mayallContract=projectResource(mayallContractSource);
 import literalProof from '../../data/photometry/mayall-photometer-literals.json';
 
 import {opticalProfile,OPTICAL_PROFILE_SHA256} from './opticalTelescope';
+import riContractSource from '../../data/photometry/ri-contract.json';
+const riContract=projectResource(riContractSource);
 import calibrationContractSource from '../../data/photometry/ubv-contract.json';
 const calibrationContract=projectResource(calibrationContractSource);
 
@@ -40,6 +42,14 @@ export function photometerTelescope(index:PhotometerTelescopeIndex){
  // Common Single base6 at0x5a2a06 and photometer Single offset5 at0x500ac0
  // are pinned by the earlier ubv-contract.json andthe new address/range proof.
  return Object.freeze({index,name:p.name,seeingArcsec:p.seeingArcsec,seeingWidthDegrees:(p.seeingArcsec/2)/3600,zeroPoint});
+}
+/** Front P2 D1 (a): the superseding domain over U..I and apertures 5..150 (data/photometry/ri-contract.json telescopeDomain).
+ * A target it excludes is refused at Start in a live session; the earlier contracts' admission still governs target and
+ * telescope events, so every recorded history replays exactly (a reading recorded before P2 still replays). */
+const fullDomain=new Map(riContract.telescopeDomain.domains.map(d=>[d.telescopeIndex,new Map(d.excludedTargets.map(x=>[x.targetId,x.reason]))]));
+export function photometerFullDomainExclusion(id:string,index:PhotometerTelescopeIndex):'Poisson-mean-bound'|'all-duration-count-domain'|null{
+ if(!isPhotometerTelescopeIndex(index))throw new PhotometerTelescopeError();if(index===0)return null;
+ const r=fullDomain.get(index)?.get(id);return r==='Poisson-mean-bound'||r==='all-duration-count-domain'?r:null;
 }
 export function isPhotometerTelescopeTarget(value:unknown,index:PhotometerTelescopeIndex):value is string{return isPhotometerTelescopeIndex(index)&&isPhotometerTarget(value)&&(index===0||profiles[index].admitted.has(value));}
 export function photometerTelescopeTargets(index:PhotometerTelescopeIndex){if(!isPhotometerTelescopeIndex(index))throw new PhotometerTelescopeError();return PLEIADES_PHOTOMETER_TARGETS.filter(t=>isPhotometerTelescopeTarget(t.catalogId,index));}

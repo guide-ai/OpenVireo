@@ -105,6 +105,13 @@ test('an unpointed bench Activate moves to the named field; motion releases, and
  await expect(async()=>{const target=await page.getByLabel('Photometry target',{exact:true}).inputValue(),status=await page.getByTestId('photo-tiled-status').count();expect(target.startsWith('gsc:')||status>0).toBe(true);}).toPass({timeout:60000});
 });
 
+test('Front P2: a target the 4 m refuses at Start (N2230.DAT@144496) is not called measurable in the hot list',async({page})=>{
+ test.setTimeout(90000);await open(page,false);await page.getByLabel('Telescope profile to inspect or select').selectOption('2');await page.getByRole('button',{name:'Use this telescope',exact:true}).click();
+ const refused=PLEIADES_ADMITTED_ROWS.find(r=>r.catalogId==='N2230.DAT@144496')!;
+ await hotList(page);await loadExercise(page);await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await pointRow(page,refused.index);
+ const card=page.getByTestId('pleiades-point-card');await expect(card).toHaveAttribute('data-status','telescope');await expect(card.getByRole('button',{name:'Measure with photometer',exact:true})).toHaveCount(0);
+ await expect(page.getByTestId('htl-exercise-row')).toContainText(`PLEIADES.HTL entry ${refused.index+1}:`);await expect(page.getByTestId('htl-exercise-row')).toContainText('outside the checked photometer domain');
+});
 test('an admitted row outside the selected telescope domain is not offered for measurement and blocks activation with no event and no fallback',async({page})=>{
  test.setTimeout(90000);await open(page,false);await page.getByLabel('Telescope profile to inspect or select').selectOption('2');await page.getByRole('button',{name:'Use this telescope',exact:true}).click();
  // With no photometer state yet the target list shows the selected Mayall domain.

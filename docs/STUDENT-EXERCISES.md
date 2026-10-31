@@ -59,7 +59,7 @@ Phase-2 B2 is technically validated and separately reviewed (2026-10-27): `tests
 5. Fit the cluster sequence manually and estimate the distance.
 6. Save and restore the investigation.
 
-**Status** — Scoped web path complete. All 24 PLEIADES.HTL positions are admitted on the 0.4 m (2026-10-28, merge `c7ba82c`), up from 16. Each field is pointed at the exact HTL coordinates, and the star is chosen by the recovered photometer selection (0x53ce8c/0x59a0fc, nearest star, offset-dependent aperture fraction 0x500568). Rows 3, 5 and 10 also need the recovered zero-period variable dispatch. The KPNO 0.9 m and Mayall domains are unchanged. A full 24-star B/V sample needs 251 photometer events; the web session bound is 512.
+**Status** — Scoped web path complete. All 24 PLEIADES.HTL positions are admitted on the 0.4 m (2026-10-28, merge `c7ba82c`), up from 16. Each field is pointed at the exact HTL coordinates, and the star is chosen by the recovered photometer selection (0x53ce8c/0x59a0fc, nearest star, offset-dependent aperture fraction 0x500568). Rows 3, 5 and 10 also need the recovered zero-period variable dispatch. Front P2 (R, I and sizes 5–150) leaves the KPNO 0.9 m domain unchanged (14 stars) and narrows Mayall from ten to seven: Start is refused for N2230.DAT@144496 (R over the 32-bit count at every size), @150246 (R over the count at every size and the 1,000,000 draw limit from size 11) and @152989 (R over the count from size 75, I from 100). Readings saved earlier still reopen. A full 24-star B/V sample needs 251 photometer events; the web session bound is 512.
 
 **Evidence** — `b1db397` plus QA3: all 16 transcribed B/V pairs, manual fit, Save and fresh-context Restore.
 

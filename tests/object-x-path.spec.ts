@@ -192,7 +192,7 @@ test('the radio and spectrometer branches, the guide, and light/dark at desktop 
 
 test('Front C5W: the default bundled-extract mode images an Object X field without asking any mirror and never names it',async({page})=>{
  test.setTimeout(180_000);
- const asked:string[]=[];page.on('request',r=>{if(CDS.test(r.url()))asked.push(r.url());});
+ const asked:string[]=[],tiles:string[]=[];page.on('request',r=>{if(CDS.test(r.url()))asked.push(r.url());if(r.url().includes('/original/gsc/'))tiles.push(r.url());});
  await openLab(page);
  await page.getByLabel('ID # of your unknown object (from the lab sheet or instructor)').fill('42');
  await page.getByTestId('objectx-target').selectOption(EROS_CODE);
@@ -213,6 +213,10 @@ test('Front C5W: the default bundled-extract mode images an Object X field witho
  await camera.getByText('Exposure details').click();
  await expect(page.getByTestId('camera-detail-source')).toContainText('Bundled extract nomad-340.8302-08.0399-r0.25 (recorded');
  await expect(page.getByTestId('camera-detail-source')).toContainText('from vizier.idia.ac.za');
+ // G merge review I1: the field-object pass is masked at the Object X target and no GSC tile is fetched for it.
+ await expect(page.getByTestId('camera-detail-field-objects')).toHaveAttribute('data-status','masked');
+ await expect(page.getByTestId('camera-detail-field-objects')).toContainText('near an Object X target');
+ expect(tiles).toEqual([]);
  expect(asked).toEqual([]);expect(await leaks(page)).toEqual([]);
 });
 
