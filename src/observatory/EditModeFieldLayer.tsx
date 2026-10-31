@@ -60,10 +60,16 @@ export default function EditModeFieldLayer({editMode,active,mode,pointing,hidden
  // G5 closure N3: the records are derived once per loaded field; each pan only re-projects them.
  const records=useMemo(()=>state.status==='ready'?catalogRecords(state.population):null,[state]);
  const scene=useMemo<CatalogScene|null>(()=>state.status==='ready'&&records?catalogScene(state.population,pointing,state.packId==='gsc-tiles'?(mode==='finder'?'Compact GSC tiles; finder field (FSC) built for this pointing':'Compact GSC tiles; field built for this pointing'):`Field pack ${state.packId}; certified pointing`,mode==='finder'?FINDER_CATALOG_FRAME:TELESCOPE_FRAME,records):null,[state,records,pointing.ra,pointing.dec,mode]);
- const shapes=useMemo(()=>state.status==='ready'&&scene?{
-  stars:scene.stars.map((p,i)=>({x:toWeb(p.x),y:toWeb(p.y),r:Math.max(.9,Math.min(4.5,(17-scene.records.stars[i].v)*.38)),qso:scene.records.stars[i].type===3})),
-  galaxies:scene.galaxies.map((p,i)=>{const g=scene.records.galaxies[i];return {x:toWeb(p.x),y:toWeb(p.y),rx:Math.max(2,(g.major||.5)*pxPerArcmin(mode)/2),ry:Math.max(1.5,(g.minor||g.major||.5)*pxPerArcmin(mode)/2)};}),
- }:null,[state,scene,mode]);
+ // G5 closure N3: only what the view shows is drawn (the loaded field is 3× the view on each axis; the click still picks from the
+ // whole loaded field, as natively), keyed by the record index so a pan reuses the same elements.
+ const shapes=useMemo(()=>{
+  if(state.status!=='ready'||!scene)return null;
+  const seen=(x:number,y:number,m:number)=>x>=-m&&y>=-m&&x<=SIZE+m&&y<=SIZE+m;
+  const stars=[],galaxies=[];
+  for(let i=0;i<scene.stars.length;i++){const p=scene.stars[i],x=toWeb(p.x),y=toWeb(p.y);if(seen(x,y,6))stars.push({i,x,y,r:Math.max(.9,Math.min(4.5,(17-scene.records.stars[i].v)*.38)),qso:scene.records.stars[i].type===3});}
+  for(let i=0;i<scene.galaxies.length;i++){const p=scene.galaxies[i],g=scene.records.galaxies[i],x=toWeb(p.x),y=toWeb(p.y),rx=Math.max(2,(g.major||.5)*pxPerArcmin(mode)/2),ry=Math.max(1.5,(g.minor||g.major||.5)*pxPerArcmin(mode)/2);if(seen(x,y,Math.max(rx,ry)+2))galaxies.push({i,x,y,rx,ry});}
+  return {stars,galaxies};
+ },[state,scene,mode]);
  if(!editMode||!active)return null;
  const reason:Readonly<{reason:FieldInfoReason;detail?:string}>|null=state.status==='unavailable'?state:state.status==='error'?{reason:'load-error'}:null;
  if(reason||state.status!=='ready'||!shapes||!scene)return <p className="em-caption" role="status" data-testid="em-status" data-reason={reason?.reason??'loading'} style={{pointerEvents:'none'}}>{reason?fieldInfoReasonText(reason.reason,reason.detail):fieldInfoReasonText('loading')}</p>;
@@ -83,8 +89,8 @@ export default function EditModeFieldLayer({editMode,active,mode,pointing,hidden
  return <div className="em-layer" data-testid="em-layer" data-pack={state.packId}>
   <svg ref={svg} viewBox={`0 0 ${SIZE} ${SIZE}`} role="application" tabIndex={0} aria-label={M.editLayerLabel} aria-describedby="em-layer-help" data-testid="em-sky" onClick={click} onKeyDown={key}>
    <rect width={SIZE} height={SIZE} fill="var(--ov-sky-bg)"/>
-   {shapes.galaxies.map((g,i)=><ellipse key={`g${i}`} cx={g.x} cy={g.y} rx={g.rx} ry={g.ry} fill="#cfd8e6" opacity=".45"/>)}
-   {shapes.stars.map((s,i)=><circle key={`s${i}`} cx={s.x} cy={s.y} r={s.r} fill={s.qso?'#bfe3ff':'#eef4fb'}/>)}
+   {shapes.galaxies.map(g=><ellipse key={`g${g.i}`} cx={g.x} cy={g.y} rx={g.rx} ry={g.ry} fill="#cfd8e6" opacity=".45"/>)}
+   {shapes.stars.map(s=><circle key={`s${s.i}`} cx={s.x} cy={s.y} r={s.r} fill={s.qso?'#bfe3ff':'#eef4fb'}/>)}
    {picked&&<rect data-testid="em-marker" x={picked.x-half} y={picked.y-half} width={2*half} height={2*half} fill="none" stroke="#00ff00" strokeWidth="2"/>}
    <g stroke="var(--ov-focus)" strokeWidth="1.5" opacity=".9" aria-hidden="true"><path d={`M${cursor.x-12} ${cursor.y}h9m6 0h9M${cursor.x} ${cursor.y-12}v9m0 6v9`}/></g>
   </svg>

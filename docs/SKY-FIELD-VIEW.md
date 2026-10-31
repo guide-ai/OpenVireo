@@ -57,7 +57,9 @@ pixels as `paintNativeStar`), which cut it from about 0.5 s to about 50 ms. `tes
 
 ## Memory and the Worker (G5 closure N3, N5)
 - With Edit Mode on, the main thread also receives the cloned finder population and Edit Mode's layer derives its Catalog Object
-  records; since closure N3 it derives them once per loaded field, so a pan only re-projects them (measured below).
+  records; since closure N3 it derives them once per loaded field, so a pan only re-projects them, and it draws only the stars
+  and galaxies inside the view. Chromium long tasks with Edit Mode on (development build, 2026-10-31): 77 and 230 ms once on
+  entering Edit Mode, 55–65 ms per finder reload and 69–81 ms per pan inside the cache (were 134–170 and 99–228 ms).
 - The Worker is a module singleton with no idle teardown. It keeps its own GSC tile store (an LRU of 24 tiles, at most about
   42 MB) and its own copies of CLEA_GLX.DAT, CLEA_QSO.DAT, GLIMAGES.LST and the photographs, beside the page's and the Multi-Spec
   Worker's. Acceptable for this increment; sharing or bounding the stores is a follow-up.
