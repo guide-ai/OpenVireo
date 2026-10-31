@@ -14,7 +14,7 @@ self.onmessage=async(event:MessageEvent<SkyFieldWorkerRequest>)=>{
  const c=new AbortController();running.set(m.ticket,c);
  try{
   const field=await buildSkyField(m.request,c.signal);
-  post({ticket:m.ticket,ok:true,field},field.status==='ready'?[field.raster.rgb.buffer as ArrayBuffer]:[]);
+  post({ticket:m.ticket,ok:true,field},field.status==='ready'?[field.raster.rgb.buffer as ArrayBuffer,...(field.galaxyRed?[field.galaxyRed.buffer as ArrayBuffer]:[])]:[]);
  }catch(e){if(!c.signal.aborted)post({ticket:m.ticket,ok:false,kind:workerFailureKind(e)});}
  finally{running.delete(m.ticket);settle();}
 };

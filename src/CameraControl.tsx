@@ -19,11 +19,16 @@ import CleaHelp from './clusters/CleaHelp';
 import {HELP_FILES} from './help/helpFiles';
 import CameraFieldSize from './polish/CameraFieldSize';// Front P
 import {cameraFieldInputs,ccdFilterByte,setCcdFilterByte,type CameraFieldInputs} from './camera/cameraFieldInputs';// Front R2
+import {cameraOverlayInputs,type CameraOverlayStatus} from './camera/cameraOverlayInputs';
+import {cameraRegionRecord,cameraRegionSelection,type CameraRegionRecord} from './core/cameraRegion';
+import {telescopeFieldLoad} from './observatory/telescopeField';
 
 export type CameraExtraSourceProvider=(jd:number,seconds:number,camera:CameraExposureKind)=>readonly CameraExtraSource[];
 /** The one place the camera asks its caller for moving pairs. */
 export function cameraExtras(provider:CameraExtraSourceProvider|undefined,jd:number,seconds:number,camera:CameraExposureKind):readonly CameraExtraSource[]{return provider?.(jd,seconds,camera)??[];}
-export type CameraImage=Readonly<{exposure:CameraExposure;source:CameraCatalogSource;jd:number;catalogName:string;fieldObjectsStatus?:CameraFieldInputs['status']}>;
+export type CameraImage=Readonly<{exposure:CameraExposure;source:CameraCatalogSource;jd:number;catalogName:string;fieldObjectsStatus?:CameraFieldInputs['status'];
+ /** Front C6: the region record the catalogue was selected with, and the overlay's outcome (CCD only). */
+ region?:CameraRegionRecord;overlayStatus?:CameraOverlayStatus}>;
 export type CameraControlProps=Readonly<{
  /** Front RE5: the Set Date/Time ID (the web takes the Object X lab's ID): VIREO names the native FITS file and its OBJECT card
   * 'ObjX-'+ID, or UNKNOWN with no ID (Save 0x522c28, header 0x5239f8). */
@@ -47,7 +52,7 @@ export type CameraControlProps=Readonly<{
  seedSource?:()=>number;
 }>;
 type Attempt={ticket:CameraGateEffect['ticket'];controller:AbortController;camera:CameraExposureKind;seconds:number;filter:number;gain:number;mode:CameraCatalogMode;jd:number;seed:number;pointing:Pointing;telescope:OpticalIndex;
- worker:Worker|null;pending:((reply:CameraWorkerReply|null)=>void)|null;source:CameraCatalogSource|null;failure:string|null;prepared:CameraImage|null;catalogName:string};
+ worker:Worker|null;pending:((reply:CameraWorkerReply|null)=>void)|null;source:CameraCatalogSource|null;failure:string|null;prepared:CameraImage|null;catalogName:string;region?:CameraRegionRecord};
 /** One Worker per attempt; parse and compose run there so Stop stays responsive (review fix H2). */
 function call(a:Attempt,request:CameraWorkerRequest,transfer:Transferable[]=[]):Promise<CameraWorkerReply|null>{
  if(!a.worker){a.worker=new Worker(new URL('./camera/cameraWorker.ts',import.meta.url),{type:'module'});
@@ -104,7 +109,10 @@ function CameraControl({objectXHidden=null,vireoId='',infraredCamera=true,active
    if(attempt.current!==a)return;
    if(!result.ok){if(result.failure!=='cancelled')fail(result.failure,result.failure==='no-extract'||result.failure==='integrity','unsupported');return;}
    a.source=result.source;
-   const reply=await call(a,{type:'parse',bytes:result.bytes,context:{catalog:route.catalog,band:route.band,epochOffsetYears:reference.epochOffsetYears,queryBrightMagnitude:reference.queryBrightMagnitude,queryFaintMagnitude:reference.queryFaintMagnitude},magnitudeLimit:reference.selectionMagnitudeLimit},[result.bytes.buffer]);
+   // Front C6: Select copies the region record of the telescope field loaded last (0x522309/0x51df28); the pointing stands in
+   // only before any telescope load was published [W].
+   const region=a.region=cameraRegionRecord(telescopeFieldLoad()?.anchor??a.pointing);
+   const reply=await call(a,{type:'parse',bytes:result.bytes,context:{catalog:route.catalog,band:route.band,epochOffsetYears:reference.epochOffsetYears,queryBrightMagnitude:reference.queryBrightMagnitude,queryFaintMagnitude:reference.queryFaintMagnitude},magnitudeLimit:reference.selectionMagnitudeLimit,bounds:cameraRegionSelection(region,reference.selectionMagnitudeLimit)},[result.bytes.buffer]);
    if(attempt.current!==a||reply===null&&a.controller.signal.aborted)return;
    if(reply?.type==='parsed'&&reply.ok){dispatch({type:'request-result',ticket:a.ticket,finished:true,transportSucceeded:true,catalog:'valid'});return;}
    fail(reply?.type==='parsed'&&!reply.ok?reply.code:'catalog',true,'invalid');
@@ -118,10 +126,13 @@ function CameraControl({objectXHidden=null,vireoId='',infraredCamera=true,active
    // Front G merge: any pointing now builds a field (tiles if no pack is listed); Stop or release aborts that work.
    const field=await cameraFieldInputs(a.pointing,a.jd,ccdFilterByte(),{signal:a.controller.signal,hidden:objectXHidden});
    if(attempt.current!==a||gateRef.current.phase!=='preparing')return;
-   const reply=await call(a,{type:'compose',recipe:{camera:a.camera,opticalIndex:a.telescope,filterPosition:a.filter,seconds:a.seconds,gain:a.gain,centerRaHours:a.pointing.ra,centerDecDegrees:a.pointing.dec,seed:a.seed},extras,fieldObjects:field.objects});
+   // Front C6: the CCD overlay (form+0x412) from the loaded telescope field; IR has none.
+   const overlay=a.camera==='ccd'?await cameraOverlayInputs(telescopeFieldLoad(),a.pointing,a.telescope,a.controller.signal):null;
+   if(attempt.current!==a||gateRef.current.phase!=='preparing')return;
+   const reply=await call(a,{type:'compose',recipe:{camera:a.camera,opticalIndex:a.telescope,filterPosition:a.filter,seconds:a.seconds,gain:a.gain,centerRaHours:a.pointing.ra,centerDecDegrees:a.pointing.dec,seed:a.seed},extras,fieldObjects:field.objects,overlay:overlay?.red?{red:overlay.red}:null},overlay?.red?[overlay.red.buffer]:[]);
    if(attempt.current!==a||gateRef.current.phase!=='preparing')return;
    if(reply?.type!=='composed'||!reply.ok){a.failure='preparation';dispatch({type:'prepared',ticket:a.ticket,ok:false});return;}
-   a.prepared=Object.freeze({exposure:exposureFromWorker(reply.exposure),source:a.source!,jd:a.jd,catalogName:a.catalogName,fieldObjectsStatus:field.status});
+   a.prepared=Object.freeze({exposure:exposureFromWorker(reply.exposure),source:a.source!,jd:a.jd,catalogName:a.catalogName,fieldObjectsStatus:field.status,...(a.region?{region:a.region}:{}),...(overlay?{overlayStatus:overlay.status}:{})});
    dispatch({type:'prepared',ticket:a.ticket,ok:true});
   }catch{a.failure='preparation';if(attempt.current===a&&gateRef.current.phase==='preparing')dispatch({type:'prepared',ticket:a.ticket,ok:false});}
  }
@@ -222,6 +233,8 @@ function CameraControl({objectXHidden=null,vireoId='',infraredCamera=true,active
     <dt>{M.detailDraws}</dt><dd>{shown.drawsConsumed}</dd>
     <dt>{M.detailPeak}</dt><dd data-testid="camera-detail-peak" data-count={peak.count}>{M.peakCount(peak.value,peak.count)}</dd>
     {image.fieldObjectsStatus&&<><dt>{M.detailFieldObjects}</dt><dd data-testid="camera-detail-field-objects" data-status={image.fieldObjectsStatus}>{image.fieldObjectsStatus==='run'&&shown.fieldObjects?M.fieldObjects.run(shown.fieldObjects.eligible,shown.fieldObjects.inBounds,shown.fieldObjects.tail,shown.fieldObjects.tailDrawn,shown.fieldObjects.tailSaturatedAdmission):image.fieldObjectsStatus==='run'?'':M.fieldObjects[image.fieldObjectsStatus]}</dd></>}
+    {image.region&&<><dt>{M.detailRegion}</dt><dd data-testid="camera-detail-region">{M.region(image.region.minimumRa,image.region.maximumRa,image.region.minimumDec,image.region.maximumDec)}</dd></>}
+    {image.overlayStatus&&<><dt>{M.detailOverlay}</dt><dd data-testid="camera-detail-overlay" data-status={image.overlayStatus}>{image.overlayStatus==='run'?M.overlayRun(shown.overlay?.draws??0):M.overlay[image.overlayStatus]}</dd></>}
     {shown.skipped.length>0&&<><dt>{M.detailSkipped}</dt><dd data-testid="camera-detail-skipped">{shown.skipped.map(k=>M.skippedReason[k.reason]).join(' ')}</dd></>}
    </dl></details>
   </figure>}

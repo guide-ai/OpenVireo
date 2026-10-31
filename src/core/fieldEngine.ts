@@ -170,7 +170,10 @@ export type FieldOptions=Readonly<{/** GLXYSP.LST rows (review 2 finding 2): a s
  glxyspLines?:readonly string[];variableDispatch?:FieldVariableDispatch;photographs?:FieldPhotographs;spectralInterval?:FieldSpectralInterval;starObservation?:FieldStarObservation;continuation?:FieldContinuationMode;qso?:FieldQsoMode;qsoCatalog?:FieldQsoCatalog;librarySpectrum?:FieldLibrarySpectrum;variables?:FieldVariableMode;qsoObservation?:FieldQsoObservation;
  /** Front T: with variableDispatch 'recovered' and no `variables` option, the TRUE branch of 0x51ec48 runs (hit modifies the
   * resolved star, miss inserts at the RA cursor). 'gate' keeps the earlier variable-merge gate; 'outside-view' the RS Boo rule. */
- variableTime?:FieldVariableTime}>;
+ variableTime?:FieldVariableTime;
+ /** Front C6: evaluateFieldView also returns `galaxyRed`, the red channel of the 936² paint after the galaxy loop and before the
+  * stars (obs+0x550 when 0x53b390 copies it to the CCD form, 0x53b63f..0x53b6c9), the source of the CCD overlay. */
+ galaxyLayer?:boolean}>;
 /** hitId: the nearest record (the merge winner); resolvedId: the record at the unrepaired saved index that the unmodelled update
  * would act on (a runner pruned below the winner shifts it onto another record); removedRunner: pruned as natively. */
 export type FieldOutsideViewVariable=Readonly<{variable:number;name:string;classification:string;hitId:string;resolvedId:string;hitArcseconds:number;removedRunner:string|null}>;
@@ -599,7 +602,7 @@ function outsideViewHolds(population:FieldPopulation,scene:NativeSelectionScene)
  }
  return true;
 }
-function paintField(population:FieldPopulation,scene:NativeSelectionScene,c:Calibration,unpainted:ReadonlySet<number>=new Set(),photographs?:Readonly<{telescope:FieldTelescope;options:FieldPhotographs}>,unpaintedStars:ReadonlySet<string>=new Set()):RgbImage{
+function paintField(population:FieldPopulation,scene:NativeSelectionScene,c:Calibration,unpainted:ReadonlySet<number>=new Set(),photographs?:Readonly<{telescope:FieldTelescope;options:FieldPhotographs}>,unpaintedStars:ReadonlySet<string>=new Set(),onGalaxies?:(raster:RgbImage)=>void):RgbImage{
  let raster:RgbImage={width:FRAME.width,height:FRAME.height,rgb:new Uint8Array(FRAME.width*FRAME.height*3)};
  const taken=new Map((population.photographAssociations??[]).map(a=>[a.recordIndex,a]));
  for(let i=0;i<population.galaxies.length;i++){if(unpainted.has(i))continue;const p=scene.galaxies[i],a=taken.get(population.galaxies[i].recordIndex);
@@ -610,6 +613,7 @@ function paintField(population:FieldPopulation,scene:NativeSelectionScene,c:Cali
    raster=drawNativePhotograph(raster,scaleNativePhotograph(bmp,photographs.telescope),p,{x:row.centreX,y:row.centreY});continue;
   }
   raster=paintAdaptedGalaxy(raster,population.galaxies[i],{x:roundNearestEven(p.x),y:roundNearestEven(p.y)},c.magnitudeShift).image;}
+ onGalaxies?.(raster);
  const profiles=new Map<number,Uint8Array>();
  for(let i=0;i<population.stars.length;i++){
   const record=population.stars[i],p=scene.stars[i];
@@ -749,6 +753,8 @@ export type FieldView=Readonly<{
  outsideViewGalaxies?:readonly Readonly<{galaxy:string;margin:number}>[];
  /** Front T stars whose values are unavailable and whose stamps miss the crop: not painted (as evaluateField). */
  unpaintedStarIds:readonly string[];
+ /** Front C6, `galaxyLayer` only: the red channel of the paint after the galaxies, row-major 936². */
+ galaxyRed?:Uint8Array;
 }>;
 export function evaluateFieldView(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope,options:FieldOptions={}):FieldView{
  if(typeof performance!=='undefined'&&typeof performance.mark==='function')performance.mark(FIELD_EVALUATION_MARK);
@@ -774,9 +780,12 @@ export function evaluateFieldView(pack:FieldPack,glx:Uint8Array,pointing:Readonl
   if(e.nearGalaxyOrQso||outsideViewMargin(p)<=0)return Object.freeze({...empty,population,scene,reasons:Object.freeze([(e.values as Extract<FieldVariableValues,{status:'unavailable'}>).reason])});
  }
  const pendingIds=new Set(pendingVariables.map(e=>e.starId));
- const raster=paintField(population,scene,c,unpainted,options.photographs?{telescope,options:options.photographs}:undefined,pendingIds);
+ // Copied at once: the star paint must not reach the galaxy layer, whether or not it paints in place.
+ let galaxyRed:Uint8Array|undefined;
+ const onGalaxies=options.galaxyLayer?(r:RgbImage)=>{galaxyRed=new Uint8Array(r.width*r.height);for(let i=0,o=0;i<galaxyRed.length;i++,o+=3)galaxyRed[i]=r.rgb[o];}:undefined;
+ const raster=paintField(population,scene,c,unpainted,options.photographs?{telescope,options:options.photographs}:undefined,pendingIds,onGalaxies);
  const viewport=cropNativeFrame(raster,freshNativeViewport(FRAME.viewport,FRAME.viewport,{x:FRAME.anchor,y:FRAME.anchor}));
- return Object.freeze({...empty,population,scene,viewport,raster,reasons:Object.freeze([]),unpaintedStarIds:Object.freeze([...pendingIds]),
+ return Object.freeze({...empty,population,scene,viewport,raster,reasons:Object.freeze([]),unpaintedStarIds:Object.freeze([...pendingIds]),...(galaxyRed?{galaxyRed}:{}),
   ...(outsideViewGalaxies.length?{outsideViewGalaxies:Object.freeze(outsideViewGalaxies.map(x=>Object.freeze(x)))}:{})});
 }
 // ---- end Front M block ----
