@@ -1,5 +1,6 @@
 import {useCallback,useEffect,useImperativeHandle,useMemo,useRef,useState,type Ref} from 'react';
 import {t,scientific} from './i18n';
+import {displayError} from './i18n/errors';
 import {useBoundedExposure,type ExposureEngine} from './useBoundedExposure';
 import {instrumentAccess} from './core/instrumentAccess';
 import {lssExposureEngine} from './core/lssExposure';
@@ -64,7 +65,9 @@ function Acquisition({prepared,fieldMatches,active,hidden,onAdopt,restored,onWor
  async function handOff(to:(source:ClassificationImport)=>void){
   setError('');try{const s=stop();if(!s)return;const o=prepared.result.qsoTarget??prepared.result.starTarget??prepared.result.target!;
    const bytes=fieldSpectrumBytes(s,prepared.result,prepared.pointing),{readClassificationImport}=await import('./io/classificationImports');
-   to(await readClassificationImport(new File([bytes.slice().buffer],fieldSpectrumFileName(o.id),{type:'text/plain'})));}
+   const source=await readClassificationImport(new File([bytes.slice().buffer],fieldSpectrumFileName(o.id),{type:'text/plain'}));
+   // G4c review 1 L3: a receiver that refuses (the analyser is busy) says so; only reading the spectrum is handOffError.
+   try{to(source);}catch(x){setError(displayError(x,'fieldSpec.handOffError'));}}
   catch{setError(t('fieldSpec.handOffError'));}
  }
  const stopped=!!state&&!running&&(state.exposure.draws>0);
@@ -104,6 +107,10 @@ export default function FieldSpectrometer({link}:{link:FieldSpectrometerLink}){
  const masked=prepared?.status==='ready'&&fieldSpectrumHiddenMasked(prepared.pointing,link.hidden);
  const shown:Shown|null=masked?Object.freeze({status:'unavailable',reason:'object-x-hidden'}):prepared;
  const ready=shown?.status==='ready'?shown:null;
+ // G4c review 1 L2: the masked field and its restored journal are dropped, so lifting the mask cannot bring back an older
+ // journal; the student uses the pointing again. (Not reachable today: the lab's hidden target is always an ObjectX.HTL row,
+ // which preparation already masks.)
+ useEffect(()=>{if(masked){request.current?.abort();setLoading(false);setPrepared(Object.freeze({status:'unavailable',reason:'object-x-hidden'}));setRestored(null);}},[masked]);
  const acquisition=useRef<AcquisitionHandle>(null),readyRef=useRef(ready);readyRef.current=ready;
  const {onRecord}=link;
  const publish=useCallback((w:ExposureWorkspace)=>{const p=readyRef.current;onRecord?.(p&&w.state?Object.freeze({prepared:p,state:w.state}):null);},[onRecord]);

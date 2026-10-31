@@ -17,7 +17,7 @@ import type {Pointing} from '../core/sky';
 import type {UniformSpectrum} from '../core/acquisition';
 import {AssembledFieldError,assembleFieldPack} from './assembledFieldPack';
 import {GscTileError} from './gscTiles';
-import {objectXMasked} from './objectXMask';
+import {loadObjectXPositions,objectXMasked} from './objectXMask';
 import {BoundedResourceError,resourceSha256,boundedResourceBody} from './boundedResource';
 import {tileSources} from './tileAssembly';
 import {yieldTask} from './yieldTask';
@@ -88,6 +88,9 @@ export async function readFieldSpectrumSession(text:string,options:Readonly<{sig
  const r=v as Record<string,unknown>;
  if(!r||typeof r!=='object'||Array.isArray(r)||Object.keys(r).length!==5||r.format!==FIELD_SPECTRUM_FORMAT||r.version!==1||typeof r.seedAtReset!=='number'||!Array.isArray(r.events)||r.events.length>MAX_JOURNAL_EVENTS)throw new JournalError('session');
  const p=parseFieldSpectrumPolicy(r.policy);if(!p)throw new JournalError('session');
+ // G4c review 1 M1: the mask fails closed when ObjectX.HTL cannot be read; read it first so a file that did not arrive is a
+ // missing resource (retryable), and a part refused as masked really lies near Object X.
+ await loadObjectXPositions();
  const prepared=await prepareFieldSpectrum(p.pointing,p.telescope,{...options,...(p.variableTime?{variableTime:p.variableTime}:{})});
  // G4c: a field whose tiles did not arrive is a missing resource (retryable), not a bad file.
  if(prepared.status==='unavailable'&&prepared.reason==='field-tiles')throw new GscTileError((prepared.detail??'fetch') as GscTileError['code']);

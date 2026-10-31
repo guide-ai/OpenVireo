@@ -3362,7 +3362,7 @@
   "galaxyExposure.continuationAdaptation": "This galaxy’s template does not cover the whole 4000–5000 Å interval at its redshift, so, as in the original, the missing part is continued from a modelled continuum with a small random factor drawn when each exposure starts.",
   "session.saveCodeError": "Could not load the part of OpenVireo that saves sessions (a loading problem, not a problem with your work). Nothing was changed and your work is still open; check the connection, then save again.",
   "session.restoreCodeError": "Could not load the part of OpenVireo that restores sessions (a loading problem, not a problem with the file). The current analysis was kept; check the connection, then restore the same file again.",
-  "session.restoreResourcesError": "Could not prepare the Hubble fields this session needs (a loading problem, not a problem with the file). The current analysis was kept; restore the same file again to retry.",
+  "session.restoreResourcesError": "Could not prepare the fields or catalogue files this session needs (a loading problem, not a problem with the file). The current analysis was kept; restore the same file again to retry.",
   "hubblePoint.telescopeBound": "{id} is acquirable on the {telescopes} telescopes in this version, not on the selected {telescope}: its field is brighter than that telescope's detector can record (the existing brightness bound). Apply one of those telescopes yourself; the telescope is never switched automatically.",
   "galaxyExposure.engineInvalid": "This galaxy field does not match its recorded evidence, so it cannot be acquired. Report this problem; trying again will not help.",
   "ph.tiledUse": "Use the telescope pointing",
