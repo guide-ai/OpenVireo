@@ -144,3 +144,8 @@ Each entry is `F<field>R<row>T<telescope>` with its kind and the source on 3700â
 - F9R22T0 available cont; F9R22T1 unavailable cont; F9R22T2 available cont; F9R23T0 available prof; F9R23T1 available prof; F9R23T2 available prof
 - F9R24T0 available cont; F9R24T1 available cont; F9R24T2 available cont; F9R25T0 available cont; F9R25T1 available cont; F9R25T2 available cont
 - F9R26T0 available cont; F9R26T1 available cont; F9R26T2 available cont; F9R27T0 available cont; F9R27T1 available cont; F9R27T2 available cont
+
+**Update (2026-10-31, Front L4).** The former web mean bound and stamp cap are lifted (docs/LSS-SURVEY.md "Mean bound and stamp
+cap"). Exactly the 152 LSS entries that were unavailable change (107 mean-bound, 45 stamp-bound), listed with before/after in the
+`updates` of `src/core/galaxyRange.fingerprints.json` and `data/hubble/existing-target-fingerprints.json`; E02 is 212/212/212
+without a clock (218/218/218 with one). The 25 existing pairs are unchanged; NGC 4874 and NGC 4889 on record 1 are added.

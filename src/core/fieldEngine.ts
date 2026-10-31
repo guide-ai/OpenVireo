@@ -32,7 +32,7 @@ import {variableDispatchAt,variableModelStatic,variableRecordFromHex,VariableDis
 import {decodeGlxRecord,GLX_CATALOG} from './glxCatalog';
 import type {NativeGalaxy} from './pinnedGalaxyField';
 import {galaxyCatalogAxes,catalogGalaxyMagnitude} from './galaxyCatalogAxes';
-import {paintAdaptedGalaxy,paintAdaptedGalaxyInPlace,galaxyStampGeometry,GALAXY_STAMP_SCALES} from './galaxyScene';
+import {paintAdaptedGalaxyInPlace,galaxyStampGeometry,GALAXY_STAMP_SCALES} from './galaxyScene';
 import {createNativeSelectionScene,selectCatalogObject,type NativeSelectionScene,type ObjectSelection} from './objectSelection';
 import {cropNativeFrame,freshNativeViewport,paintNativeStar,paintNativeStarInPlace} from './detectorRaster';
 import {prepareNativeStarProfile} from './starProfiles';
@@ -42,7 +42,7 @@ import {roundNearestEven} from './numericPolicy';
 import {createJournalExposure,type JournalState,type JournalSourcePreparer} from './exposureJournal';
 import {continuationSourcePreparer,galaxySourceValues,type FieldContinuationSource} from './fieldContinuation';
 import {galaxyChannelGrid} from './galaxySpectrum';
-import {sampleUniformSpectrum,type UniformSpectrum} from './acquisition';
+import {sampleUniformSpectrum,POISSON_MEAN_ADMISSION,type UniformSpectrum} from './acquisition';
 import {packCovers,type FieldPack} from './fieldPack';
 import {prepareQsoProfile,QsoSpectrumError,type QsoSpectrumFile} from './qsoSpectrum';
 import {loadNativeQsoList,nativeQsoMerge,qsoPositionPredicate,QsoMergeError,QSO_CATALOG,type NativeQso,type QsoMergeWitness} from './qsoMerge';
@@ -58,17 +58,22 @@ export class FieldEngineError extends Error{
 }
 export type FieldTelescope=0|1|2;
 /** Calibration per telescope record, as galaxyExposure.ts: base and sky from the verified 0.4 m definition; the 0.9 m uses
- * correction/shift 0 and the 4 m 3/3. Zero points 4/6/9. The mean bound is the existing per-record rejection guard. */
+ * correction/shift 0 and the 4 m 3/3. Zero points 4/6/9. The mean bound is poissonDraw's per-draw admission on every record
+ * (Front L4, 2026-10-31: it was 12 on the 0.4/0.9 m, the product/rejection switch of 0x55f0f4, a web guard; VIREO's routine has
+ * no mean guard and its rejection branch is ported and witnessed, Front M D3). */
 const base=galaxyProvenance.calibration;
 export const FIELD_CALIBRATIONS=Object.freeze([
- Object.freeze({baseZeroPoint:base.baseZeroPoint,telescopeCorrection:base.telescopeCorrection,skyMagnitude:base.skyMagnitude,magnitudeShift:base.magnitudeShift,zeroPoint:4,meanBound:12}),
- Object.freeze({baseZeroPoint:base.baseZeroPoint,telescopeCorrection:0,skyMagnitude:base.skyMagnitude,magnitudeShift:0,zeroPoint:6,meanBound:12}),
- Object.freeze({baseZeroPoint:base.baseZeroPoint,telescopeCorrection:3,skyMagnitude:base.skyMagnitude,magnitudeShift:3,zeroPoint:9,meanBound:1_000_000}),
+ Object.freeze({baseZeroPoint:base.baseZeroPoint,telescopeCorrection:base.telescopeCorrection,skyMagnitude:base.skyMagnitude,magnitudeShift:base.magnitudeShift,zeroPoint:4,meanBound:POISSON_MEAN_ADMISSION}),
+ Object.freeze({baseZeroPoint:base.baseZeroPoint,telescopeCorrection:0,skyMagnitude:base.skyMagnitude,magnitudeShift:0,zeroPoint:6,meanBound:POISSON_MEAN_ADMISSION}),
+ Object.freeze({baseZeroPoint:base.baseZeroPoint,telescopeCorrection:3,skyMagnitude:base.skyMagnitude,magnitudeShift:3,zeroPoint:9,meanBound:POISSON_MEAN_ADMISSION}),
 ]);
 export const FIELD_MULTIPLIER=base.multiplier;
 /** Why a pointing cannot be acquired in this version (never a fabricated substitute). */
 export type FieldUnavailableReason=
- |'outside-pack'|'qso-merge'|'photographic-image'|'variable-merge'|'axis-fallback'|'merge-boundary'|'stamp-bound'
+ |'outside-pack'|'qso-merge'|'photographic-image'|'variable-merge'|'axis-fallback'|'merge-boundary'
+ /** Front L4: NGC 224 in the telescope field. The painter 0x53b390 compares each galaxy's name with 'NGC 224' (0x53b4fc) and
+  * draws it with its own routine 0x53b848, which is not ported; never the generic stamp. */
+ |'ngc224-image'
  |'no-galaxy-selected'|'star-selected'|'slit-empty'|'spectrum-range'|'mean-bound'|'spectrum-mapping'
  /** Front F, 'merge' mode only: the slit selects a merged QSO record (type 3); a QSO observation is another branch. */
  |'qso-selected'
@@ -600,6 +605,31 @@ function outsideViewHolds(population:FieldPopulation,scene:NativeSelectionScene)
  }
  return true;
 }
+/** The telescope-cache galaxy gate (Front L4). VIREO's stamp has no size bound (0x5943d4, 0x59456c), so every galaxy is painted,
+ * in place and clipped to the cache, except:
+ *  - NGC 224, which VIREO draws with its own unported routine 0x53b848 (name test 0x53b4fc): the field is typed 'ngc224-image';
+ *  - a galaxy whose minor axis rounds to 0 px, which composes nothing (0x594488 stretches into a zero-height rect [I]) and is
+ *    not painted. Under the 'outside-view' rule (Boötes) it keeps its earlier listing with its crop margin when its footprint
+ *    misses the crop; it is the same pixels either way.
+ * A photographed galaxy is drawn from its photograph instead. */
+function telescopeGalaxyGate(population:FieldPopulation,scene:NativeSelectionScene,c:Calibration,options:FieldOptions):Readonly<{reason?:'ngc224-image';unpainted:Set<number>;outsideViewGalaxies:{galaxy:string;margin:number}[]}>{
+ const unpainted=new Set<number>(),outsideViewGalaxies:{galaxy:string;margin:number}[]=[];
+ const photographed=new Set((population.photographAssociations??[]).map(a=>a.recordIndex));
+ for(const [i,g] of population.galaxies.entries()){if(photographed.has(g.recordIndex))continue;
+  if(g.id===NGC224_ID)return {reason:'ngc224-image',unpainted,outsideViewGalaxies};
+  try{galaxyStampGeometry(g,c.magnitudeShift);}catch(e){
+   if(!(e instanceof Error&&e.message==='Outside bounded galaxy stamp.'))throw e;
+   const axes=galaxyCatalogAxes(g),r=Math.max(3,axes.major*GALAXY_STAMP_SCALES.telescope.pixelsPerArcminute/2);
+   if(roundNearestEven(r*axes.ratio)>=1)throw new FieldEngineError('evidence');// only the 0 px minor may stay unpainted
+   unpainted.add(i);
+   const margin=outsideViewMargin(scene.galaxies[i])+OUTSIDE_VIEW.stampHalf-(roundNearestEven(r)+1);
+   if(options.variables==='outside-view'&&margin>0)outsideViewGalaxies.push({galaxy:g.id,margin});
+  }
+ }
+ return {unpainted,outsideViewGalaxies};
+}
+/** The catalogue name VIREO's telescope painter tests (string at 0x53b810). */
+export const NGC224_ID='NGC 224';
 function paintField(population:FieldPopulation,scene:NativeSelectionScene,c:Calibration,unpainted:ReadonlySet<number>=new Set(),photographs?:Readonly<{telescope:FieldTelescope;options:FieldPhotographs}>,unpaintedStars:ReadonlySet<string>=new Set(),onGalaxies?:(raster:RgbImage)=>void):RgbImage{
  let raster:RgbImage={width:FRAME.width,height:FRAME.height,rgb:new Uint8Array(FRAME.width*FRAME.height*3)};
  const taken=new Map((population.photographAssociations??[]).map(a=>[a.recordIndex,a]));
@@ -610,7 +640,7 @@ function paintField(population:FieldPopulation,scene:NativeSelectionScene,c:Cali
    if(bmp.width!==row.width||bmp.height!==row.height)throw new FieldEngineError('evidence');
    raster=drawNativePhotograph(raster,scaleNativePhotograph(bmp,photographs.telescope),p,{x:row.centreX,y:row.centreY});continue;
   }
-  raster=paintAdaptedGalaxy(raster,population.galaxies[i],{x:roundNearestEven(p.x),y:roundNearestEven(p.y)},c.magnitudeShift).image;}
+  paintAdaptedGalaxyInPlace(raster,population.galaxies[i],{x:roundNearestEven(p.x),y:roundNearestEven(p.y)},c.magnitudeShift);}
  onGalaxies?.(raster);
  const profiles=new Map<number,Uint8Array>();
  for(let i=0;i<population.stars.length;i++){
@@ -636,18 +666,9 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
  const {population,reasons}=buildFieldPopulation(pack,glx,at,options);
  if(!population||reasons.length)return Object.freeze({...empty,population,reasons:Object.freeze(reasons)});
  const scene=createNativeSelectionScene(population.stars,population.galaxies,{width:FRAME.width,height:FRAME.height,fieldDegrees:FRAME.fieldDegrees,center:at,population:{coverage:'complete',provenance:`Field pack ${pack.id}; native CRT1 and field table verified`}});
- // The bounded browser stamp (galaxyScene.ts: 3 ≤ major ≤ 100 px, 1 ≤ minor ≤ major) is the only gate here; any other error throws.
- // 'outside-view' only: a galaxy outside the browser stamp bound whose largest footprint (rounded centre ± (rounded radius + 1),
- // radius ≤ 100 px) misses the 312² crop is recorded and not painted; anything else stays the typed stamp-bound reason.
- const unpainted=new Set<number>(),outsideViewGalaxies:{galaxy:string;margin:number}[]=[];
- const photographed=new Set((population.photographAssociations??[]).map(a=>a.recordIndex));
- for(const [i,g] of population.galaxies.entries()){if(photographed.has(g.recordIndex))continue;// drawn from its photograph, not the stamp
-  try{galaxyStampGeometry(g,c.magnitudeShift);}catch(e){
-  if(!(e instanceof Error&&e.message==='Outside bounded galaxy stamp.'))throw e;
-  const radius=roundNearestEven(Math.max(3,galaxyCatalogAxes(g).major*(FRAME.width/FRAME.fieldDegrees/60)/2)),margin=outsideViewMargin(scene.galaxies[i])+OUTSIDE_VIEW.stampHalf-(radius+1);
-  if(options.variables!=='outside-view'||radius>100||margin<=0)return Object.freeze({...empty,population,scene,reasons:Object.freeze(['stamp-bound' as const])});
-  unpainted.add(i);outsideViewGalaxies.push({galaxy:g.id,margin});
- }}
+ const gate=telescopeGalaxyGate(population,scene,c,options);
+ if(gate.reason)return Object.freeze({...empty,population,scene,reasons:Object.freeze([gate.reason])});
+ const {unpainted,outsideViewGalaxies}=gate;
  if(population.outsideViewVariable&&!outsideViewHolds(population,scene))return Object.freeze({...empty,population,scene,reasons:Object.freeze(['variable-merge' as const])});
  // Front T: a TRUE star whose values are unavailable gates the field only when its 99×99 stamp reaches the 312² crop or a galaxy or
  // QSO lies within the merge guard radius; otherwise it is not painted (pixel-identical: the whole stamp misses the crop).
@@ -753,15 +774,9 @@ export function evaluateFieldView(pack:FieldPack,glx:Uint8Array,pointing:Readonl
  const {population,reasons}=buildFieldPopulation(pack,glx,at,options);
  if(!population||reasons.length)return Object.freeze({...empty,population,reasons:Object.freeze(reasons)});
  const scene=createNativeSelectionScene(population.stars,population.galaxies,{width:FRAME.width,height:FRAME.height,fieldDegrees:FRAME.fieldDegrees,center:at,population:{coverage:'complete',provenance:`Field pack ${pack.id}; native CRT1 and field table verified`}});
- const unpainted=new Set<number>(),outsideViewGalaxies:{galaxy:string;margin:number}[]=[];
- const photographed=new Set((population.photographAssociations??[]).map(a=>a.recordIndex));
- for(const [i,g] of population.galaxies.entries()){if(photographed.has(g.recordIndex))continue;
-  try{galaxyStampGeometry(g,c.magnitudeShift);}catch(e){
-  if(!(e instanceof Error&&e.message==='Outside bounded galaxy stamp.'))throw e;
-  const radius=roundNearestEven(Math.max(3,galaxyCatalogAxes(g).major*(FRAME.width/FRAME.fieldDegrees/60)/2)),margin=outsideViewMargin(scene.galaxies[i])+OUTSIDE_VIEW.stampHalf-(radius+1);
-  if(options.variables!=='outside-view'||radius>100||margin<=0)return Object.freeze({...empty,population,scene,reasons:Object.freeze(['stamp-bound' as const])});
-  unpainted.add(i);outsideViewGalaxies.push({galaxy:g.id,margin});
- }}
+ const gate=telescopeGalaxyGate(population,scene,c,options);
+ if(gate.reason)return Object.freeze({...empty,population,scene,reasons:Object.freeze([gate.reason])});
+ const {unpainted,outsideViewGalaxies}=gate;
  if(population.outsideViewVariable&&!outsideViewHolds(population,scene))return Object.freeze({...empty,population,scene,reasons:Object.freeze(['variable-merge' as const])});
  const pendingVariables=(population.variableStars??[]).filter(e=>e.values.status==='unavailable');
  for(const e of pendingVariables){

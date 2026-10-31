@@ -8,6 +8,7 @@ import {buildFieldPopulation} from './fieldEngine';
 import {evaluateLssRow} from './lssExposure';
 import {parseGlimagesPositions,packWithPhotographs,hasLibrarySpectrum} from './lssLists';
 import {lssFieldRows,type LssFieldNumber} from './lssFields';
+import {DEFAULT_SPECTRAL_RANGE} from './spectralRange';
 // Published bounded packs (2026-10-27 approval) against the independent whole-source Python witnesses.
 const glx=new Uint8Array(readFileSync(new URL('../../public/original/catalogs/CLEA_GLX.DAT',import.meta.url)));
 const raw=(f:number)=>readFileSync(new URL(`../../data/lss/lss-field-0${f}.json`,import.meta.url));
@@ -30,15 +31,23 @@ describe('LSS field packs reproduce the independent witnesses for every row',()=
    expect(q.variables.map(v=>v.recordIndex)).toEqual(p.variables);expect(q.qsoMatches).toEqual(p.qso);expect(q.photographMatches).toEqual(p.photographs);
   }
  });
- it('re-derives the acquirable rows per telescope without a variable time (0.4 m 196, 0.9 m 93, 4 m 198 of 219 with the Front F3 photographs; 187/93/189 before them, with the Front L2 QSO merge; 157/86/158 under the QSO gate, 140/76/141 before the Front T TRUE dispatch, 129/69/130 before the recovered variable dispatch)',()=>{
+ it('re-derives the acquirable rows per telescope without a variable time (212 / 212 / 212 of 219 since Front L4; 0.4 m 196, 0.9 m 93, 4 m 198 with the Front F3 photographs; 187/93/189 before them, with the Front L2 QSO merge; 157/86/158 under the QSO gate, 140/76/141 before the Front T TRUE dispatch, 129/69/130 before the recovered variable dispatch)',()=>{
   const counts=[0,0,0],mapped:string[]=[],photographic:string[]=[];
   for(let f=1;f<=9;f++){const pack=packWithPhotographs(decodeFieldPack(JSON.parse(raw(f).toString())),photographs);for(const row of lssFieldRows(f as LssFieldNumber))for(const t of [0,1,2] as const){const s=evaluateLssRow(pack,glx,row,t,spectra);if(s.kind!=='unavailable')counts[t]++;else if(s.reasons.includes('spectrum-mapping')){counts[t]++;mapped.push(`${row.id}@${t}`);}else if(s.reasons.includes('photographic-image'))photographic.push(`${row.id}@${t}`);}}
   // Re-pinned 2026-10-30 (Front F3): the five approved LSS photographs make the 9 photographic-image rows available on the
   // 0.4 m and 4 m; on the 0.9 m they become mean-bound (analysis/front-f3/lss-photographs-measure.tsv).
-  expect(counts).toEqual([196,93,198]);
+  // Re-pinned 2026-10-31 (Front L4): with the former web mean bound 12 and stamp cap lifted, 196/93/198 → 212/212/212 (107 mean-bound
+  // and 45 stamp-bound evaluations; analysis/front-l4/l4-diff.txt). The remaining 7 rows per telescope: the 6 variable-time rows and
+  // F7R22 IC 4459 (slit-empty).
+  expect(counts).toEqual([212,212,212]);
   expect(photographic).toEqual([]);
   expect(mapped).toEqual([]);// NGC 4670 and NGC 4889 match GLXYSP.LST and are observed with their bundled own spectra
   expect(['NGC 4670','NGC 4889'].every(id=>hasLibrarySpectrum(spectra.names,id))).toBe(true);
+ },600000);
+ it('Front L4: with an observatory-clock time, 218 / 218 / 218; only F7R22 IC 4459 stays unavailable (0 px minor, slit-empty)',()=>{
+  const counts=[0,0,0],left:string[]=[],time={jd:2455000.5,source:'observatory-clock' as const};
+  for(let f=1;f<=9;f++){const pack=packWithPhotographs(decodeFieldPack(JSON.parse(raw(f).toString())),photographs);lssFieldRows(f as LssFieldNumber).forEach((row,i)=>{for(const t of [0,1,2] as const){const s=evaluateLssRow(pack,glx,row,t,spectra,time,DEFAULT_SPECTRAL_RANGE);if(s.kind!=='unavailable')counts[t]++;else left.push(`F${f}R${i+1}@${t}:${s.reasons.join()}`);}});}
+  expect(counts).toEqual([218,218,218]);expect(left).toEqual([0,1,2].map(t=>`F7R22@${t}:slit-empty`));
  },600000);// 657 field evaluations (as hubbleExistingTargets.test.ts). Measured in review 1 at load average ~40 on 32 cores: 126 s on
  // the QSO-gate base, 181 s with the merge (the 35 formerly gated rows now evaluate fully); about 60 s on an idle machine.
  it('Front L2: NGC 4670 (F3 row 1) and NGC 4889 (F4 row 2) are observed with their own bundled spectra; without the file the row stays typed',()=>{

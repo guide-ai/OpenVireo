@@ -69,7 +69,8 @@ describe('Front M: Multi-Spec grid, constants and flux factors (0x526e6c, 0x526f
   expect(multiSpecK(60)).toBe(3_000_000);expect(multiSpecK(0.1)).toBe(50*Math.fround(0.1)*1000);
   expect([0,1,2].map(t=>multiSpecZeroPoint(t as FieldTelescope))).toEqual([4,6,9]);
   expect(multiSpecFluxFactor(19,4)).toBe(Math.pow(10,15/-2.5));
-  expect(FIELD_CALIBRATIONS.map(c=>c.meanBound)).toEqual([12,12,1_000_000]);
+  // Front L4 (2026-10-31): the field engine's bound is poissonDraw's 10⁶ admission on every record (it was 12 on the 0.4/0.9 m).
+  expect(FIELD_CALIBRATIONS.map(c=>c.meanBound)).toEqual([1_000_000,1_000_000,1_000_000]);
  });
 });
 

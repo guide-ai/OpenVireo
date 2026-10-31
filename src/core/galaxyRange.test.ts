@@ -83,14 +83,15 @@ describe('Front S2 round 2: Hubble and LSS at VIREO 3700–4700 Å',()=>{
   // Review 2 nit: pinned to main's value before S2 (re-measured independently in review 2), not only compared with itself.
   expect(v.rows).toHaveLength(13);expect(v.value).toBe(52.50880276737093);expect(v.value).toBe(legacy.value);expect(v.rows.map(r=>r.velocityKmS)).toEqual(legacy.rows.map(r=>r.velocityKmS));
  });
- it('E02: 196 / 93 / 198 rows on the three telescopes (as at 4000–5000 Å), and every available row shows K, H and G',()=>{
+ it('E02: 212 / 212 / 212 rows on the three telescopes without a clock (as at 4000–5000 Å), and every available row shows K, H and G',()=>{
+  // Re-pinned 2026-10-31 (Front L4): 196/93/198 before the former web mean bound 12 and stamp cap were lifted.
   // As lssPacks.test.ts: a spectrum-mapping row would count (its own spectrum is the original's), and there is none (NGC 4670 and
   // NGC 4889 are observed with their bundled own spectra), so every counted row is an acquirable one (review 2 nit).
   const counts=[0,0,0],legacy=[0,0,0],lines=new Set<string>(),mapped:string[]=[];
   for(const {s,t,row} of lssStatuses())if(s.kind!=='unavailable'||s.reasons.includes('spectrum-mapping')){counts[t]++;if(s.kind!=='unavailable')lines.add(visible(s.result.target!.redshift));else mapped.push(`${row.id}@${t}`);}
   expect(mapped).toEqual([]);
   for(const {s,t} of lssStatuses(LEGACY_GALAXY_RANGE))if(s.kind!=='unavailable'||s.reasons.includes('spectrum-mapping'))legacy[t]++;
-  expect(counts).toEqual([196,93,198]);expect(legacy).toEqual(counts);expect([...lines]).toEqual(['KHG']);
+  expect(counts).toEqual([212,212,212]);expect(legacy).toEqual(counts);expect([...lines]).toEqual(['KHG']);
   const p=lssPolicy(1,0,0,V);expect(p).toBe('openvireo-lss-v1:F1:R1:T0#R3700-4700');expect(parseLssPolicy(p).range).toEqual(V);
   expect(()=>parseLssPolicy('openvireo-lss-v1:F1:R1:T0#R3600-4600')).toThrow();
  });

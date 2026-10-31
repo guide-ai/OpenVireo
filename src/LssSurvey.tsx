@@ -23,7 +23,7 @@ import {parseHtl} from './core/hotList';
 import {fetchBundledHotList} from './io/bundledHotList';
 import {fetchBundledGlxCatalog} from './io/bundledGlxCatalog';
 import {loadLssPack} from './io/lssPack';
-import {LSS_FIELDS_LST,GLIMAGES_LST,parseLssFieldsList,parseGlimagesPositions,packWithPhotographs,type LssFieldEntry} from './core/lssLists';
+import {LSS_FIELDS_LST,LSS_FIELDS_FILE_ERROR,lssFieldsFileErrorText,GLIMAGES_LST,parseLssFieldsList,parseGlimagesPositions,packWithPhotographs,type LssFieldEntry} from './core/lssLists';
 import {resourceSha256} from './io/boundedResource';
 import type {JournalState} from './core/exposureJournal';
 import type {WedgeOwnRecord} from './core/wedgeWorkspace';
@@ -53,7 +53,7 @@ function LssSurvey({spectralRange=DEFAULT_SPECTRAL_RANGE,onSpectralRange,timeDep
  useEffect(()=>{const h=handoff.current;if(!wedgeAck||!h||wedgeAck.token!==h.token)return;handoff.current=null;if(wedgeAck.accepted)update(s=>markLssHandedToWedge(s,h.upTo));else setNotice(t('lss.wedge.refused'));},[wedgeAck]);
  const [telescope,setTelescope]=useState<Telescope>(initialTelescope);
  const [region,setRegion]=useState<readonly (LssRegionListRow&{jd:number})[]>(Object.freeze([]));// Front L2: catalogue rows of LSS Galaxy Data (not saved)
- const [loaded,setLoaded]=useState<Loaded|null>(null),[loading,setLoading]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');
+ const [loaded,setLoaded]=useState<Loaded|null>(null),[loading,setLoading]=useState(false),[error,setError]=useState(''),[fieldsError,setFieldsError]=useState(''),[notice,setNotice]=useState('');
  const [pointed,setPointed]=useState<number|null>(null),[exposure,setExposure]=useState<JournalState|null>(null),[description,setDescription]=useState(''),[descriptionError,setDescriptionError]=useState('');
  const [fields,setFields]=useState<readonly LssFieldEntry[]|null>(null),lists=useRef<{photographs:ReturnType<typeof parseGlimagesPositions>;spectra:LssSpectrumInputs}|null>(null);
  const glx=useRef<Uint8Array|null>(null),abort=useRef<AbortController|null>(null),dialog=useRef<HTMLDialogElement>(null);
@@ -80,7 +80,7 @@ function LssSurvey({spectralRange=DEFAULT_SPECTRAL_RANGE,onSpectralRange,timeDep
   setNotice(i?t('lss.restored',{count:i.records.length}):'');
  },[restored?.token]);
  // LSSFields.LST (byte-exact, size and SHA-256 checked) supplies the original field names and centres.
- useEffect(()=>{if(!active||fields)return;const c=new AbortController();fetchBundledHotList(fetch,c.signal,LSS_FIELDS_LST).then(b=>setFields(parseLssFieldsList(b.bytes))).catch(e=>{if(!(e instanceof DOMException&&e.name==='AbortError'))setError(t('lss.fieldsError'));});return()=>c.abort();},[active,fields]);
+ useEffect(()=>{if(!active||fields)return;const c=new AbortController();fetchBundledHotList(fetch,c.signal,LSS_FIELDS_LST).then(b=>setFields(parseLssFieldsList(b.bytes))).catch(e=>{if(!(e instanceof DOMException&&e.name==='AbortError'))setFieldsError(lssFieldsFileErrorText(LSS_FIELDS_LST.path,t('lss.fieldsError')));});return()=>c.abort();},[active,fields]);
  useEffect(()=>{const d=dialog.current;if(!d)return;if(survey.draft&&!d.open)d.showModal();else if(!survey.draft&&d.open)d.close();},[survey.draft]);
  async function load(field:LssFieldNumber,scope:Telescope,at:SpectralRange=spectralRange){
   abort.current?.abort();
@@ -171,7 +171,8 @@ function LssSurvey({spectralRange=DEFAULT_SPECTRAL_RANGE,onSpectralRange,timeDep
     <div className="sky-actions"><button type="button" className="secondary-button" data-testid="lss-region-txt" onClick={()=>{download(lssResultsTxtBytes(region.map(g=>({object:g.object,jd:g.jd,ra:g.ra,dec:g.dec,velocitySingle:0,remarks:''}))),LSS_REGION_TXT_NAME,'text/plain;charset=windows-1252');setNotice(t('lss.results.txtSaved',{name:LSS_REGION_TXT_NAME}));}}>{t('lss.results.txt')}</button><button type="button" className="secondary-button" onClick={()=>setRegion(Object.freeze([]))}>{t('lss.region.clear')}</button></div>
     <p className="observatory-note">{t('lss.region.noWedge')}</p></>}
   </section>}
-  <div className="observatory-feedback">{notice&&<p role="status">{notice}</p>}{error&&<p role="alert">{error}</p>}</div>
+  <div className="observatory-feedback">{notice&&<p role="status">{notice}</p>}{error&&<p role="alert">{error}</p>}
+   {fieldsError&&<div role="alertdialog" aria-labelledby="lss-fields-error-caption" data-testid="lss-fields-error" className="lss-fields-error"><strong id="lss-fields-error-caption">{LSS_FIELDS_FILE_ERROR.caption}</strong><p style={{whiteSpace:'pre-line'}}>{fieldsError}</p><button type="button" onClick={()=>setFieldsError('')}>{t('lss.fieldsError.ok')}</button></div>}</div>
   <section className="scope-note"><h2>{t('lss.limitsTitle')}</h2><ul>{(['observatory','telescope','fresh','raster','range','measure','dialog','jd','wedge','csv','packs'] as const).map(k=><li key={k}>{t(`lss.adaptation.${k}`)}</li>)}</ul></section>
  </main>;
 }
