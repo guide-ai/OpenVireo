@@ -156,8 +156,9 @@ export function dialogPrefill(utMs:number):Readonly<{date:string;time:string}>{
 export type RadioDateField='id'|'date'|'time';
 export type RadioDateDialog=Readonly<{id:string;date:string;time:string;error:DialogEntryFailure|null}>;
 export type RadioDateState=Readonly<{
- /** ShortString 0x5bc1e4 for this window only ('' = never written, the zero-initialised .bss value at load; no historical
-  * or startup ID is claimed). Nothing reads it. */
+ /** The radio window's copy of ShortString 0x5bc1e4 ('' = never written, the zero-initialised .bss value at load; no
+  * historical or startup ID is claimed). Front RE6: the page's one session ID (OpenVireo) is the store every reader uses; the
+  * route passes it to `openRadioDateDialog` as the prefill and receives this value back on OK, so the copy stays in step. */
  storedId:string;
  /** WEB-DATE-01 sticky latch: the antenna activated or the panel window was shown (natively that activates the form even
   * when the web refuses activation for an unsupported option profile). Never cleared in this window. */
@@ -195,11 +196,11 @@ export function markRadioActivationReached(s:RadioDateState):RadioDateTransition
 }
 /** SetDateTime1Click 0x58b2ec creates a fresh form on every open: the prefill is taken from the scenario instant now and the
  * ID from the stored ShortString. */
-export function openRadioDateDialog(s:RadioDateState,gate:RadioDateGate):RadioDateTransition{
+export function openRadioDateDialog(s:RadioDateState,gate:RadioDateGate,sessionId?:string):RadioDateTransition{
  if(s.dialog)return keep(s,'already-open');
  if(gate.status==='refused')return keep(s,'refused',gate.reason);
- const prefill=dialogPrefill(gate.utMs);
- return next({...s,dialog:Object.freeze({id:s.storedId,date:prefill.date,time:prefill.time,error:null})},'opened');
+ const prefill=dialogPrefill(gate.utMs),id=sessionId??s.storedId;
+ return next({...s,storedId:id,dialog:Object.freeze({id,date:prefill.date,time:prefill.time,error:null})},'opened');
 }
 const PRINTABLE_ASCII=/^[\x20-\x7e]*$/;
 /** WEB-DATE-02: an edit outside printable ASCII or the field bound is refused and the field keeps its text. */

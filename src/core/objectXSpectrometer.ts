@@ -12,6 +12,7 @@
  * Fields: the general field engine at the exact ObjectX.HTL coordinates (the coordinates the student is given), QSO 'merge',
  * the recovered variable dispatch, the GLXYSP guard, photographs from GLIMAGES.LST (association, rescale and draw ported; photographDraw.ts), the QSO observation through
  * QSOSpect.dat. Journals use the same bounded exposure journal as every acquisition. */
+import {fieldSpectrumHeaderName} from './exposureSpectrum';
 import {glxyspLookup,FIELD_MULTIPLIER,type FieldResult,type FieldTelescope,type FieldUnavailableReason,type FieldQsoCatalog,type FieldPhotographs} from './fieldEngine';
 import {spectrometerFieldResult,SPECTROMETER_INTERVAL} from './fieldSpectrometer';
 import {continuationSourcePreparer,type FieldContinuationSource} from './fieldContinuation';
@@ -52,7 +53,8 @@ export type ObjectXSpectrumDisplay=
 /** reasons: the engine's typed reasons; 'not-a-target' when the pointing is not a spectroscopy row's exact coordinates. */
 /** headerMagnitude (Front S, S6): the selected record's catalog magnitude, which VIREO's .SSP header writes (0x510090); only
  * used after the reveal. */
-export type ObjectXSpectrumReveal=Readonly<{row:number|null;kind:'qso'|'galaxy'|'star'|null;recordId:string|null;headerMagnitude:number|null;reasons:readonly (FieldUnavailableReason|'not-a-target')[];pixelLevel:number|null}>;
+export type ObjectXSpectrumReveal=Readonly<{row:number|null;kind:'qso'|'galaxy'|'star'|null;recordId:string|null;
+ /** Front RE6 (U6): VIREO's header name for the record (`fieldSpectrumHeaderName`), else the locator. */headerName:string|null;headerMagnitude:number|null;reasons:readonly (FieldUnavailableReason|'not-a-target')[];pixelLevel:number|null}>;
 export type ObjectXSpectrumEvaluation=Readonly<{display:ObjectXSpectrumDisplay;reveal:ObjectXSpectrumReveal}>;
 const CODE=/^X-[0-9A-Z]{5}$/;
 /** The journal policy names the opaque target code (never the ObjectX.HTL row) and the telescope. */
@@ -86,10 +88,10 @@ export function objectXField(inputs:ObjectXSpectrometerInputs,pointing:Readonly<
 export function evaluateObjectXSpectrum(inputs:ObjectXSpectrometerInputs,pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope):ObjectXSpectrumEvaluation{
  const unavailable=Object.freeze({status:'unavailable' as const,telescope});
  const f=objectXField(inputs,pointing,telescope);
- if(!f)return Object.freeze({display:unavailable,reveal:Object.freeze({row:null,kind:null,recordId:null,headerMagnitude:null,reasons:Object.freeze(['not-a-target' as const]),pixelLevel:null})});
+ if(!f)return Object.freeze({display:unavailable,reveal:Object.freeze({row:null,kind:null,recordId:null,headerName:null,headerMagnitude:null,reasons:Object.freeze(['not-a-target' as const]),pixelLevel:null})});
  const {row,code,result:r}=f;
- const kind=r.qsoTarget?'qso' as const:r.starTarget?'star' as const:r.target?'galaxy' as const:null,recordId=r.qsoTarget?.id??r.starTarget?.id??r.target?.id??null,headerMagnitude=r.qsoTarget?.magnitude??r.starTarget?.magnitude??r.target?.magnitude??null;
- const reveal=Object.freeze({row:row.row,kind,recordId,headerMagnitude,reasons:Object.freeze([...r.reasons]),pixelLevel:r.calibration?.pixelLevel??null});
+ const kind=r.qsoTarget?'qso' as const:r.starTarget?'star' as const:r.target?'galaxy' as const:null,recordId=r.qsoTarget?.id??r.starTarget?.id??r.target?.id??null,headerName=recordId===null?null:fieldSpectrumHeaderName(r)??recordId,headerMagnitude=r.qsoTarget?.magnitude??r.starTarget?.magnitude??r.target?.magnitude??null;
+ const reveal=Object.freeze({row:row.row,kind,recordId,headerName,headerMagnitude,reasons:Object.freeze([...r.reasons]),pixelLevel:r.calibration?.pixelLevel??null});
  if(r.reasons.length||!r.calibration)return Object.freeze({display:unavailable,reveal});
  const c=r.calibration,calibration=Object.freeze({sourceMeans:c.sourceMeans,skyMean:c.amplitude.sky,multiplier:FIELD_MULTIPLIER,...(c.continuationSource?{continuationSource:c.continuationSource}:{})});
  return Object.freeze({display:Object.freeze({status:'available' as const,telescope,policy:objectXSpectrumPolicy(code,telescope),wavelengths:c.wavelengths,calibration}),reveal});

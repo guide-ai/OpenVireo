@@ -1,4 +1,4 @@
-import {fieldSpectrumBytes} from '../core/exposureSpectrum';
+import {fieldSpectrumBytes,fieldSpectrumHeaderName} from '../core/exposureSpectrum';
 import {readFileSync} from 'node:fs';
 import {createHash,webcrypto} from 'node:crypto';
 import {afterAll,beforeAll,describe,expect,it,vi} from 'vitest';
@@ -51,6 +51,10 @@ describe('the generic spectrometer',()=>{
   expect(spectrometerIdText(on,true,object,'HIDDEN')).toBe('Sky');expect(spectrometerMagText(on,true,object)).toBe('');
   expect(spectrometerPrintLines(on,true,object)).toEqual(['Reading Sky']);
   const exact=await prepareFieldSpectrum({ra:2.5125473,dec:0.25592},0);expect(exact.status==='ready'&&fieldSpectrometerSkyReading(exact.result)).toBe(false);
+ });
+ it('Front RE6 (U6): the field header names a GSC star as VIREO does (<band>-<name>), not the record locator',async()=>{
+  const r=await prepareFieldSpectrum({ra:2.5125473,dec:0.25592},0);expect(r.status).toBe('ready');if(r.status!=='ready')return;
+  expect(r.result.starTarget?.id).toBe('N0000.DAT@63282');expect(fieldSpectrumHeaderName(r.result)).toBe('N0000-01634');
  });
  it('Front R4e: the sky flag comes from the slit star\'s throughput, also where the engine returns first (star-index-invalid)',async()=>{
   // N0730.DAT@570187 (index above JSPEC2.SPI): the engine stops at star-index-invalid before 0x50f338, so its reasons say nothing

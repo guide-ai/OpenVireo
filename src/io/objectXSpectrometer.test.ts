@@ -52,8 +52,15 @@ describe('Front F: Object X spectrometer API (display and reveal parts)',()=>{
   const shown=[];for(const row of [0,7])for(const t of [0,1,2] as const)shown.push(JSON.stringify(await observeObjectXSpectrum(at(row),t)));
   expect(new Set(shown)).toEqual(new Set([0,1,2].map(t=>JSON.stringify({status:'unavailable',telescope:t}))));
   for(const row of [9,8,10]){const v=await observeObjectXSpectrum(at(row),0);expect(Object.keys(v).sort()).toEqual(['engine','status','telescope','wavelengths']);}
-  for(const row of [0,2,7,14,15,16])expect(await revealObjectXSpectrum(at(row),2)).toEqual({row:null,kind:null,recordId:null,headerMagnitude:null,reasons:['not-a-target'],pixelLevel:null});
+  for(const row of [0,2,7,14,15,16])expect(await revealObjectXSpectrum(at(row),2)).toEqual({row:null,kind:null,recordId:null,headerName:null,headerMagnitude:null,reasons:['not-a-target'],pixelLevel:null});
   expect(await observeObjectXSpectrum({ra:at(1).ra,dec:at(1).dec+1e-9},0)).toEqual({status:'unavailable',telescope:0});
+ });
+ it('Front RE6 (U6): the revealed header name is VIREO\'s record name, never the web locator',async()=>{
+  const names:Record<string,string>={};
+  for(const row of [1,3,4,5,6,8,9,10,11,12,13]){const r=await revealObjectXSpectrum(at(row),2);if(!r.kind||!r.headerName)continue;names[r.kind]=r.headerName;
+   expect(r.headerName,`row ${row}`).not.toMatch(/@/);
+   if(r.kind==='star')expect(r.headerName,`row ${row}`).toMatch(/^[NS]\d{4}-\S{1,5}$/);}
+  expect(Object.keys(names).sort()).toEqual(['galaxy','qso','star']);
  });
  it('GLXYSP guard: a galaxy whose own spectrum is not supplied is the typed spectrum-mapping reason, never the fallback template',async()=>{
   const {loadObjectXSpectrometerInputs}=await import('./objectXSpectrometerInputs');const {evaluateObjectXSpectrum}=await import('../core/objectXSpectrometer');

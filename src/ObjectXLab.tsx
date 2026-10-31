@@ -31,6 +31,8 @@ type Props=Readonly<{
  /** Edit Mode (env+0x2e7e): VIREO shows the Asteroid List during Object X only then (QA1 review 1 H3). This site's Edit Mode needs
   * no instructor login (WEB-EM-01), so the list also waits for the reveal (QA1 closure E2) [W]. */
  editMode?:boolean;
+ /** Front RE6: a Set Date/Time OK elsewhere wrote the page's one session ID; the lab's ID field follows it (a new token). */
+ sessionId?:Readonly<{token:number;id:string}>|null;
  active:boolean;busy:boolean;
  clockUtc:()=>string;onSetClock:(utc:string)=>void;
  onPrefill:(ra:number,dec:number)=>void;onOpenRadio:()=>void;
@@ -58,7 +60,7 @@ type Loaded=Readonly<{frame:MeasureFrame;bytes:Uint8Array}>;
 type ListState=Readonly<{list:ObservableList;orbitFile:BundledOrbitFileId;limit:number}>;
 
 /** E08 #object-x route: hidden-identity object, the three instrument branches, images, blink/measure, answer and reveal. */
-function ObjectXLab({editMode=false,spectralRange=DEFAULT_SPECTRAL_RANGE,onSpectralRange,onClassifySpectrum,active,busy,clockUtc,clockApplied,onSetClock,onPrefill,onOpenRadio,controllerRef,restored,onSnapshot,onSummary,onHiddenTarget}:Props){
+function ObjectXLab({sessionId=null,editMode=false,spectralRange=DEFAULT_SPECTRAL_RANGE,onSpectralRange,onClassifySpectrum,active,busy,clockUtc,clockApplied,onSetClock,onPrefill,onOpenRadio,controllerRef,restored,onSnapshot,onSummary,onHiddenTarget}:Props){
  const [inv,setInv]=useState<ObjectXInvestigation>(restored??EMPTY);
  const [htl,setHtl]=useState<HtlList|null>(null),[htlError,setHtlError]=useState(false);
  const [dateText,setDateText]=useState(inv.startUtc),[notice,setNotice]=useState('');
@@ -69,6 +71,9 @@ function ObjectXLab({editMode=false,spectralRange=DEFAULT_SPECTRAL_RANGE,onSpect
  const lastPairs=useRef<{jd:number;list:ListState|null;pairs:number}|null>(null);
  const invRef=useRef(inv);invRef.current=inv;
  const update=(f:(i:ObjectXInvestigation)=>ObjectXInvestigation)=>setInv(i=>{const n=Object.freeze(f(i));invRef.current=n;return n;});
+ // Front RE6: only a push made after this lab mounted applies (a restored investigation keeps its own ID).
+ const seenId=useRef(sessionId?.token);
+ useEffect(()=>{if(!sessionId||seenId.current===sessionId.token)return;seenId.current=sessionId.token;const id=sessionId.id.slice(0,OBJECT_X_ID_MAX);update(i=>i.id===id?i:{...i,id});},[sessionId]);// eslint-disable-line react-hooks/exhaustive-deps
 
  useEffect(()=>{const c=new AbortController();fetchObjectXHotList(fetch,c.signal).then(r=>setHtl(parseHtl(r.bytes))).catch(()=>{if(!c.signal.aborted)setHtlError(true);});return()=>c.abort();},[]);
  useEffect(()=>{onSnapshot(inv);},[inv]);

@@ -92,7 +92,7 @@ export default function ObjectXSpectrum({spectralRange=DEFAULT_SPECTRAL_RANGE,on
  const shownPointing=view.kind==='kept'?view.pointing:view.kind==='ready'&&target?{ra:target.ra,dec:target.dec}:null,shownTelescope=view.kind==='kept'||view.kind==='ready'?view.result.telescope:null;
  const identityKey=revealed&&shownPointing&&shownTelescope!==null?`${shownPointing.ra}:${shownPointing.dec}:${shownTelescope}`:null;
  useEffect(()=>{if(!identityKey||!shownPointing||shownTelescope===null){setIdentity(null);return;}let live=true;
-  revealObjectXSpectrum(shownPointing,shownTelescope).then(r=>{if(live)setIdentity({key:identityKey,value:r.recordId!==null&&r.headerMagnitude!==null?{object:r.recordId,magnitude:r.headerMagnitude}:null});},()=>{if(live)setIdentity({key:identityKey,value:null});});
+  revealObjectXSpectrum(shownPointing,shownTelescope).then(r=>{if(live)setIdentity({key:identityKey,value:r.recordId!==null&&r.headerMagnitude!==null?{object:r.headerName??r.recordId,magnitude:r.headerMagnitude}:null});},()=>{if(live)setIdentity({key:identityKey,value:null});});
   return()=>{live=false;};// eslint-disable-next-line react-hooks/exhaustive-deps
  },[identityKey]);
  const nativeHeader=identityKey&&identity?.key===identityKey?identity.value:null,identityPending=!!identityKey&&identity?.key!==identityKey;
