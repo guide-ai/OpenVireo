@@ -19,7 +19,7 @@ describe('field spectrometer failure mapping (G final closure N3)',()=>{
    expect(fieldSpectrumFailure(e),`${e.name} ${e.message}`).toEqual({status:'unavailable',reason:'load-error'});
  });
  it('anything else is internal, never fetch',()=>{
-  for(const e of [new Error('boom'),new TypeError('x is not a function'),new GscTileError('budget'),'text'])
+  for(const e of [new Error('boom'),new TypeError('x is not a function'),new GscTileError('budget'),new GscTileError('missing-tile'),'text'])
    expect(fieldSpectrumFailure(e)).toEqual({status:'unavailable',reason:'internal'});
  });
 });

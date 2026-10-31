@@ -18,7 +18,7 @@ import type {UniformSpectrum} from '../core/acquisition';
 import {AssembledFieldError,assembleFieldPack} from './assembledFieldPack';
 import {GscTileError} from './gscTiles';
 import {objectXMasked} from './objectXMask';
-import {resourceSha256,boundedResourceBody} from './boundedResource';
+import {BoundedResourceError,resourceSha256,boundedResourceBody} from './boundedResource';
 import {tileSources} from './tileAssembly';
 import {yieldTask} from './yieldTask';
 import {OBJECT_X_STAR_TEMPLATES,OBJECT_X_GALAXY_SPECTRA,OBJECT_X_PHOTOGRAPHS} from './objectXSpectrometerInputs';
@@ -33,7 +33,10 @@ let fileOverride:((path:string,bytes:number)=>Promise<Uint8Array>)|null=null,inp
 export function setFieldSpectrometerFiles(read:((path:string,bytes:number)=>Promise<Uint8Array>)|null){fileOverride=read;inputs=null;}
 async function file(path:string,bytes:number):Promise<Uint8Array>{
  if(fileOverride)return fileOverride(path,bytes);
- const res=await fetch(path,{credentials:'same-origin'});return new Uint8Array(await boundedResourceBody(res,bytes));
+ const res=await fetch(path,{credentials:'same-origin'});
+ // A host with an SPA fallback answers a missing file with 200 and index.html: a file that did not arrive (as the tile store).
+ if(/^\s*text\/html\b/i.test(res.headers.get('content-type')??'')){try{await res.body?.cancel();}catch{/* ignore */}throw new BoundedResourceError('download');}
+ return new Uint8Array(await boundedResourceBody(res,bytes));
 }
 async function checked(r:Readonly<{path:string;bytes:number;sha256:string}>){const b=await file(r.path,r.bytes);if(b.byteLength!==r.bytes||await resourceSha256(b.slice().buffer as ArrayBuffer)!==r.sha256)throw new FieldSpectrometerError('resource');return b;}
 /** Map with at most `limit` tasks in flight; results in input order. */

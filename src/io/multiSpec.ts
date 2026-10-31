@@ -17,8 +17,8 @@ let resources:MultiSpecResources|null=null,inputs:Promise<MultiSpecInputs>|null=
 export function setMultiSpecResources(r:MultiSpecResources|null){resources=r;inputs=null;}
 const ask=workerClient(()=>new Worker(new URL('./multiSpecWorker.ts',import.meta.url),{type:'module'}));
 type Request=MultiSpecWorkerRequest extends infer R?R extends unknown?Omit<R,'ticket'>:never:never;
-async function viaWorker<T>(request:Request,field:'view'|'exposures'):Promise<T>{
- const m=await ask(request);
+async function viaWorker<T>(request:Request,field:'view'|'exposures',signal?:AbortSignal):Promise<T>{
+ const m=await ask(request,signal);
  if(m.ok&&m[field]!==undefined)return m[field] as T;
  throw m.kind==='evidence'?new MultiSpecEvidenceError():new MultiSpecLoadError();
 }
@@ -27,10 +27,10 @@ async function loaded(r:MultiSpecResources){
  return inputs;
 }
 /** The Telescope view (population, scene, 312² viewport, field-level reasons) of one field; an assembled field that could not be
- * read carries `fieldRead` (Front G G4b). */
-export async function multiSpecView(field:MultiSpecFieldRequest):Promise<MultiSpecView>{
- if(!resources)return viaWorker<MultiSpecView>({op:'view',field},'view');
- const {evaluateMultiSpecView}=await import('./multiSpecEvaluate');return evaluateMultiSpecView(await loaded(resources),field);
+ * read carries `fieldRead` (Front G G4b). An abort (a newer field, or the form closed) rejects with AbortError. */
+export async function multiSpecView(field:MultiSpecFieldRequest,signal?:AbortSignal):Promise<MultiSpecView>{
+ if(!resources)return viaWorker<MultiSpecView>({op:'view',field},'view',signal);
+ const {evaluateMultiSpecView}=await import('./multiSpecEvaluate');return evaluateMultiSpecView(await loaded(resources),field,signal);
 }
 /** The spectra of the fibres, in order (each from its own seed and integrated seconds). */
 export async function multiSpecSpectra(field:MultiSpecFieldRequest,fibres:readonly MultiSpecFibreRequest[]):Promise<readonly MultiSpecExposure[]>{

@@ -70,9 +70,10 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
  useEffect(()=>{
   if(!field){setView({status:'none'});return;}
   if(!state.open)return;
-  let current=true;setView({status:'loading'});
-  multiSpecView(field).then(v=>{if(current)setView(v.fieldRead?{status:'read',read:v.fieldRead}:v.viewport&&v.population&&v.scene&&!v.reasons.length?{status:'ready',view:v}:{status:'reasons',view:v});}).catch(()=>{if(current)setView({status:'error'});});
-  return()=>{current=false;};
+  // A newer field or closing the form aborts the build in the Worker (G4b review 1 M1).
+  let current=true;const stop=new AbortController();setView({status:'loading'});
+  multiSpecView(field,stop.signal).then(v=>{if(current)setView(v.fieldRead?{status:'read',read:v.fieldRead}:v.viewport&&v.population&&v.scene&&!v.reasons.length?{status:'ready',view:v}:{status:'reasons',view:v});}).catch(()=>{if(current)setView({status:'error'});});
+  return()=>{current=false;stop.abort();};
  },[fieldKey,viewTry,state.open]);// eslint-disable-line react-hooks/exhaustive-deps
  // SpecTimer: one tick per whole second of the page clock while exposing.
  useEffect(()=>{if(!state.running)return;const h=window.setInterval(()=>dispatch({type:'tick'}),1000);return()=>window.clearInterval(h);},[state.running]);
@@ -150,7 +151,7 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
  const answer=(yes:boolean)=>{if(state.question)dispatch({type:'answer',yes});else if(state.message)dispatch({type:'dismiss'});else setNoItem(null);};
  const fieldStatus=!field?noFieldText:view.status==='loading'?t('multispec.fieldLoading'):view.status==='error'?(mask.masked?t('multispec.fieldNeutral'):t('multispec.fieldError'))
   :view.status==='reasons'?(mask.masked?t('multispec.fieldNeutral'):t('multispec.fieldReasons',{reasons:view.view.reasons.join(', ')}))
-  :view.status==='read'?(mask.masked?t('multispec.fieldNeutral'):view.read.reason==='field-polar'?fieldInfoReasonText('field-polar'):fieldInfoReasonText(view.read.reason,view.read.detail)):'';
+  :view.status==='read'?(mask.masked?t('multispec.fieldNeutral'):view.read.reason==='internal'?t('multispec.fieldInternal'):'detail' in view.read?fieldInfoReasonText(view.read.reason,view.read.detail):fieldInfoReasonText(view.read.reason)):'';
  const usable=active&&!busy;
 
  return <section className="card ms-card" aria-labelledby={`${id}-title`} data-testid="ms-card">

@@ -53,5 +53,5 @@ export default function MultiSpecObservatory({active,busy,access,mode,pointing,t
  const telescopeView=mode==='telescope',gate=editMode||virtualObservatory;
  const armedText=!gate?t('multispec.notArmed'):!telescopeView?t('multispec.notTelescopeView'):editMode?t('multispec.armedEditMode'):t('multispec.armedVirtual');
  return <MultiSpecInstrument key={telescope} field={field} telescope={telescope} access={access} armed={gate&&telescopeView} armedText={armedText} mask={mask}
-  editMode={editMode} busy={busy} active={active} title={t('multispec.title')} help={t('multispec.help')} noFieldText={near===null?t('multispec.fieldLoading'):fieldInfoReasonText('object-x-hidden')}/>;
+  editMode={editMode} busy={busy} active={active} title={t('multispec.title')} help={t('multispec.help')} noFieldText={near===null?t('multispec.fieldLoading'):positions==='failed'?t('multispec.objectXListFailed'):fieldInfoReasonText('object-x-hidden')}/>;
 }

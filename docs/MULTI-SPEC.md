@@ -13,10 +13,20 @@ addresses, evidence ids and tags in `docs/MULTI-SPEC-PROVENANCE.json`. Tags: [D]
   Coma/Boötes targets and the LSS rows) that pack is used; elsewhere the field is assembled from the compact GSC tiles in the
   Multi-Spec Worker (`gsc-tiles`, with the options of the spectrometer at the pointing: recovered variable dispatch, photographs,
   QSO merge). The field is loaded at an anchor and kept while VIREO's cached-field rule holds (0.25°, `multiSpecAnchor`), as the
-  Edit Mode layer; the view shows the field at its anchor [W]. It is built only once the form is shown. An assembled field within
-  2.375° of an Object X position is not built ("Not available near an unrevealed Object X target"); certified packs there keep
-  their masked names. Tile and catalogue-read failures are shown as the G2 readable texts (a tile failure can be retried; the
-  polar limit is a web limit). Object X fields keep their HTL rows in the Object X lab (below).
+  Edit Mode layer; the view shows the field at its anchor [W]. Reaching a certified pointing inside the cache keeps the anchor,
+  as VIREO keeps its field, except at the two Hubble Boötes pointings (below), which load their own pack [W] (G4b review 1 L2).
+  It is built only once the form is shown; a newer field or closing the form cancels a build in the Worker, so a slew does not
+  queue stale fields (G4b review 1 M1). An assembled field within 2.62° of an Object X position is not built ("Not available
+  near an unrevealed Object X target"; if ObjectX.HTL itself fails to load, a text of its own says so and nothing is built);
+  certified packs there keep their masked names. Failures use the field spectrometer's classifier: a file that did not arrive
+  can be retried, one that did not match its recorded identity is a load error, and anything else is an internal error; the
+  polar limit is a web limit. Object X fields keep their HTL rows in the Object X lab (below).
+- Bundled versus assembled (G4b review 1 L1, `multiSpecTiled.test.ts`): at every certified pointing (the 4 Hubble targets and
+  the 219 LSS rows) the two give the same view, population and spectra, or the same no-view outcome (30 pointings, such as
+  NGC 4278's photographic-image; the assembled population also lists its photograph associations). The exceptions are Hubble
+  Boötes 51975 and 51976: the bundled pack keeps the Hubble route's acknowledged 'outside-view' variable rule (HUBBLE-13.md) and
+  shows the field, while the assembled field uses the recovered variable dispatch and is stamp-bound (RS Boo). Both are web
+  limits; which one VIREO shows is not recovered (`MULTISPEC_TILED_EXCEPTIONS`).
 - Clicks select objects only when VIREO arms them (0x53cfab..0x53cfe4) [D]: **Edit Mode**, or exercise mode **0** ("Access All
   Instruments") or **1** (Object X), in the Telescope view. Mode 0 is reachable only through the instructor **Virtual
   Observatory** option (Front O2: VObsBox, options+0x27d5, default off, not persisted; one page state shared with File › QSO
@@ -87,8 +97,9 @@ Vitest: multiSpecSpectrum (fibres equal the independent Python witness `data/mul
 rejection branch and its draw order, grid, templates, QSO), multiSpec (state machine), multiSpecSelect, multiSpecFormat (.SSP
 bytes, names, Information/Print with and without the mask), io/multiSpec, fieldEngineView (the view equals evaluateField's
 population, scene and viewport for LSS (default and QSO merge), Hubble and Object X pointings), io/multiSpecTiled (G4b: the
-assembled view equals the Object X row pack's view; a star and sky fibre at another pointing; polar and retryable tile reads),
-multiSpecFields (the anchor rule). Playwright: tests/multispec-tiled.spec.ts (G4b: Edit Mode at an arbitrary pointing, the mode
+assembled view equals the Object X row pack's view and every certified pack's view except the listed Boötes pointings; a star
+and sky fibre at another pointing; an aborted build is not cached; polar and retryable tile reads), io/workerCancel (a cancelled
+Worker request), multiSpecFields (the anchor rule). Playwright: tests/multispec-tiled.spec.ts (G4b: Edit Mode at an arbitrary pointing, the mode
 gate, no field near Object X), tests/multispec.spec.ts (Edit Mode flow,
 the Virtual Observatory gate, 320 px dark), tests/multispec-objectx.spec.ts (no identity in the DOM, Information, .SSP names or
 zip entries before the reveal; only the target fibre reads ObjX-<ID>, neighbour stars read the neutral name; a galaxy target

@@ -3286,6 +3286,8 @@ export interface MessageParameters {
   "multispec.retry": never;
   "multispec.fieldReasons": "reasons";
   "multispec.fieldNeutral": never;
+  "multispec.fieldInternal": never;
+  "multispec.objectXListFailed": never;
   "multispec.fieldLabel": never;
   "multispec.fieldHelp": never;
   "multispec.fieldNotArmed": never;
