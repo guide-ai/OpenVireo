@@ -20,14 +20,14 @@ export function GalaxySpectrumSave({state,active,busy,current}:Current&{state:Ga
  const ok=paused(state),bytes=useMemo(()=>ok&&state?bytesOf(()=>galaxySpectrumBytes(state)):null,[state,ok]);
  if(!active||!state)return null;
  const target=galaxyStateDefinition(state).target;
- return <SpectrumSaveCard active={active} source={{bytes,usable:ok&&!busy,label:target.id,telescopeName:opticalProfile(galaxyTelescopeIndex(state)).name,elapsedMs:state.exposure.elapsedMs,fileName:`openvireo-galaxy-${stem(target.id)}.ssp`,saved:M.savedExposure,...withCurrent(current)}}/>;
+ return <SpectrumSaveCard active={active} source={{bytes,usable:ok&&!busy,label:target.id,telescopeName:opticalProfile(galaxyTelescopeIndex(state)).name,elapsedMs:state.exposure.elapsedMs,fileName:`openvireo-galaxy-${stem(target.id)}.ssp`,saved:M.savedExposure,...withCurrent(current),exposure:state.exposure}}/>;
 }
 /** Front L2: Save .SSP / Print on the LSS route: header object = the selected catalogue galaxy, pointing = the row's HTL
  * coordinates (lssSpectrumBytes). */
 export function LssSpectrumSave({state,result,row,active,busy,current}:Current&{state:JournalState|null;result:FieldResult;row:LssRow;active:boolean;busy:boolean}){
  const ok=paused(state),bytes=useMemo(()=>ok&&state?bytesOf(()=>lssSpectrumBytes(state,result,row)):null,[state,ok,result,row]);
  if(!active||!state||!result.target)return null;
- return <SpectrumSaveCard active={active} source={{bytes,usable:ok&&!busy,label:result.target.id,telescopeName:opticalProfile(result.telescope).name,elapsedMs:state.exposure.elapsedMs,fileName:`openvireo-lss-${stem(row.id)}.ssp`,saved:M.savedExposure,...withCurrent(current)}}/>;
+ return <SpectrumSaveCard active={active} source={{bytes,usable:ok&&!busy,label:result.target.id,telescopeName:opticalProfile(result.telescope).name,elapsedMs:state.exposure.elapsedMs,fileName:`openvireo-lss-${stem(row.id)}.ssp`,saved:M.savedExposure,...withCurrent(current),exposure:state.exposure}}/>;
 }
 /** Front S (S6): Save .SSP / Print for an Object X spectrum, identity masked (objectXSpectrumBytes). The file is named after
  * the student's label, as VIREO names it "ObjX-<ID>" when Show Object ID is off (0x50fb1c), so that Classify's file-name ID is
@@ -37,7 +37,7 @@ export function ObjectXSpectrumSave({state,label,pointing,minimum,telescopeName,
  minimum:number;telescopeName:string;active:boolean;busy:boolean;saved:(name:string)=>string}){
  const ok=paused(state)&&!!pointing,bytes=useMemo(()=>ok&&state&&pointing?bytesOf(()=>objectXSpectrumBytes(state,label,pointing,minimum,revealed)):null,[state,ok,label,pointing,minimum,revealed]);
  if(!active||!state)return null;
- return <SpectrumSaveCard active={active} source={{bytes,usable:ok&&!busy,label,telescopeName,elapsedMs:state.exposure.elapsedMs,fileName:objectXSpectrumFileName(label),saved,...withCurrent(current)}}/>;
+ return <SpectrumSaveCard active={active} source={{bytes,usable:ok&&!busy,label,telescopeName,elapsedMs:state.exposure.elapsedMs,fileName:objectXSpectrumFileName(label),saved,...withCurrent(current),exposure:state.exposure}}/>;
 }
 /** Front G (G4c): Save .SSP / Print for the field spectrometer at any pointing (fieldSpectrumBytes): header object = the slit's
  * record locator, pointing = the field's (policy) pointing. */
@@ -45,5 +45,5 @@ export function FieldSpectrumSave({state,result,pointing,telescope,active,busy,c
  const ok=paused(state),bytes=useMemo(()=>ok&&state?bytesOf(()=>fieldSpectrumBytes(state,result,pointing)):null,[state,ok,result,pointing]);
  const o=result.qsoTarget??result.starTarget??result.target;
  if(!active||!state||!o)return null;
- return <SpectrumSaveCard active={active} source={{bytes,usable:ok&&!busy,label:o.id,telescopeName:opticalProfile(telescope).name,elapsedMs:state.exposure.elapsedMs,fileName:fieldSpectrumFileName(o.id),saved:M.savedExposure,...withCurrent(current)}}/>;
+ return <SpectrumSaveCard active={active} source={{bytes,usable:ok&&!busy,label:o.id,telescopeName:opticalProfile(telescope).name,elapsedMs:state.exposure.elapsedMs,fileName:fieldSpectrumFileName(o.id),saved:M.savedExposure,...withCurrent(current),exposure:state.exposure}}/>;
 }

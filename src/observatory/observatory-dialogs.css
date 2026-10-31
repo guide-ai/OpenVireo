@@ -67,3 +67,6 @@ html[data-print-scope=hot-list] .ob-print-report{border:0!important;max-height:n
 .spec-readout dl>div{display:flex;align-items:center;gap:.5rem}
 .spec-readout dd{margin:0}
 .spec-readout-box{white-space:pre;font-weight:700;color:#0f0;background:#000;padding:.1rem .5rem;min-width:4ch;min-height:1.4em;border:1px inset #808080}
+
+/* Front RE6: VIREO's spectrometer print body 0x510294, in 0.01-in units (720 units = 7.2 in), black on white. */
+.ob-spectrum-print svg.ob-spectrum-print-body{width:7.2in;max-width:100%;background:#fff}

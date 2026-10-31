@@ -161,8 +161,8 @@ test('after the reveal Save writes the revealed header; the earlier file and the
  const after=await save(),afterText=await readFile(after.path,'latin1');
  expect(after.name).toBe(before.name);
  const [head,...rows]=afterText.split('\r\n');
- // The header object is the selected catalogue record as the engine names it (the star route writes the same form).
- expect(head).toMatch(/^\*SpHdr\* N3730\.DAT@\d+,-?\d+\.\d{6},-?\d+\.\d{5},\d+\.\d{3}$/);expect(head.endsWith(',0.000')).toBe(false);
+ // Front RE6 (U6): the header object is VIREO's name for the selected GSC record, <band>-<name> (0x59b125..0x59b196).
+ expect(head).toMatch(/^\*SpHdr\* N3730-\d{5},-?\d+\.\d{6},-?\d+\.\d{5},\d+\.\d{3}$/);expect(head.endsWith(',0.000')).toBe(false);
  expect(rows).toEqual(beforeText.split('\r\n').slice(1));
  expect(await readFile(before.path,'latin1')).toBe(beforeText);
 });
