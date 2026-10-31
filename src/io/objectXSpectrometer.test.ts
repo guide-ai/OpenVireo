@@ -25,10 +25,13 @@ describe('Front F: Object X spectrometer API (display and reveal parts)',()=>{
   expect(prepareQsoSource(decodeQsoSpectrumFile(b),2.51,1000,1200).restMinimum).toBe(302);
  });
  // Recorded outcome per row and telescope (0.4 / 0.9 / 4 m): 'A' available; otherwise the reveal-side typed reason.
+ // Re-pinned 2026-10-31 (Front L4): every spectroscopy row is available on all three telescopes (33/33). The 16 cells that were
+ // mean-bound on the 0.4/0.9 m (the former web bound 12; 0x55f0f4 has none) are available with the same crops (objectXFrozen.test.ts).
+ const A3=['A','A','A'] as const;
  const OUTCOMES:Record<number,[string,string,readonly string[]]>={
-  1:['qso','CLEA_QSO.DAT@522',['A','A','A']],10:['qso','CLEA_QSO.DAT@1356',['mean-bound','mean-bound','A']],13:['qso','CLEA_QSO.DAT@1785',['A','A','A']],
-  3:['galaxy','NGC 2403',['A','mean-bound','A']],6:['galaxy','NGC 4262',['A','mean-bound','A']],8:['galaxy','NGC 4449',['mean-bound','mean-bound','A']],11:['galaxy','NGC 4631',['mean-bound','mean-bound','A']],
-  4:['star','N6000.DAT@209199',['mean-bound','mean-bound','A']],5:['star','N0730.DAT@472049',['mean-bound','mean-bound','A']],9:['star','N3730.DAT@513845',['mean-bound','mean-bound','A']],12:['star','N3000.DAT@483032',['mean-bound','mean-bound','A']]};
+  1:['qso','CLEA_QSO.DAT@522',A3],10:['qso','CLEA_QSO.DAT@1356',A3],13:['qso','CLEA_QSO.DAT@1785',A3],
+  3:['galaxy','NGC 2403',A3],6:['galaxy','NGC 4262',A3],8:['galaxy','NGC 4449',A3],11:['galaxy','NGC 4631',A3],
+  4:['star','N6000.DAT@209199',A3],5:['star','N0730.DAT@472049',A3],9:['star','N3730.DAT@513845',A3],12:['star','N3000.DAT@483032',A3]};
  it('every spectroscopy row: the display holds only status and telescope; the separate reveal holds row, kind, record and reasons',async()=>{
   for(const [row,[kind,id,states]] of Object.entries(OUTCOMES))for(const t of [0,1,2] as const){
    const v=await observeObjectXSpectrum(at(Number(row)),t),r=await revealObjectXSpectrum(at(Number(row)),t);
@@ -43,9 +46,12 @@ describe('Front F: Object X spectrometer API (display and reveal parts)',()=>{
    }
   }
  });
- it('unavailable displays are identical for star, galaxy, QSO, pulsar and asteroid rows; only the reveal tells them apart',async()=>{
-  const shown=[];for(const row of [9,8,10,0,7])shown.push(JSON.stringify(await observeObjectXSpectrum(at(row),0)));
-  expect(new Set(shown)).toEqual(new Set([JSON.stringify({status:'unavailable',telescope:0})]));
+ it('unavailable displays are identical for pulsar, asteroid and off-target pointings; star, galaxy and QSO displays carry no identity; only the reveal tells them apart',async()=>{
+  // Front L4 (2026-10-31): no star, galaxy or QSO row is unavailable any more, so the identical-unavailable check covers the pulsar
+  // and asteroid rows and an off-target pointing; the available displays have the same keys whatever the kind.
+  const shown=[];for(const row of [0,7])for(const t of [0,1,2] as const)shown.push(JSON.stringify(await observeObjectXSpectrum(at(row),t)));
+  expect(new Set(shown)).toEqual(new Set([0,1,2].map(t=>JSON.stringify({status:'unavailable',telescope:t}))));
+  for(const row of [9,8,10]){const v=await observeObjectXSpectrum(at(row),0);expect(Object.keys(v).sort()).toEqual(['engine','status','telescope','wavelengths']);}
   for(const row of [0,2,7,14,15,16])expect(await revealObjectXSpectrum(at(row),2)).toEqual({row:null,kind:null,recordId:null,headerMagnitude:null,reasons:['not-a-target'],pixelLevel:null});
   expect(await observeObjectXSpectrum({ra:at(1).ra,dec:at(1).dec+1e-9},0)).toEqual({status:'unavailable',telescope:0});
  });

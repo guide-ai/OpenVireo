@@ -1,0 +1,95 @@
+{
+ "schema": 1,
+ "kind": "independent Python witness of the Coma - 1/2 engine fields on records 0-2 (static reads; a second implementation of the declared nearest-centre raster; not original execution)",
+ "script": "analysis/front-l4/coma_witness.py",
+ "sources": {
+  "exe": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "glx": "4c1c9c99babaae19e22834df9bfcfa375a659257c4b7dd267a9da7d8ef16f753",
+  "qso": "69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5",
+  "regions": "ef518ad68f9d27e1826e1a0319b125ad3b6c350fa458159668781e904d165e05"
+ },
+ "targets": [
+  {
+   "id": "NGC 4874",
+   "glxIndex": 15036,
+   "pointing": {
+    "ra": 12.99311111111111,
+    "dec": 27.959722222222222
+   },
+   "stars": 94,
+   "galaxies": 112,
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1443",
+     "insert",
+     169
+    ]
+   ],
+   "deletedGalaxies": [],
+   "telescopes": [
+    {
+     "telescope": 0,
+     "magnitudeShift": -2,
+     "cropSHA256": "b0403396694156425c5813cbb72995c06f4523ff6a393c32e850412edf4768e5",
+     "pixelLevel": 252,
+     "fraction": 1
+    },
+    {
+     "telescope": 1,
+     "magnitudeShift": 0,
+     "cropSHA256": "36a76fedfd4f0bbdf50a8e68416d739126f04c012b3f31487e82fa520a07adca",
+     "pixelLevel": 288,
+     "fraction": 1
+    },
+    {
+     "telescope": 2,
+     "magnitudeShift": 3,
+     "cropSHA256": "0f710b4a24dcf72c118c160bad82bc5a8ad30ea3e91947bf87714506d5cc8a2c",
+     "pixelLevel": 353,
+     "fraction": 1
+    }
+   ]
+  },
+  {
+   "id": "NGC 4889",
+   "glxIndex": 15074,
+   "pointing": {
+    "ra": 13.002305555555555,
+    "dec": 27.9775
+   },
+   "stars": 96,
+   "galaxies": 106,
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1443",
+     "insert",
+     152
+    ]
+   ],
+   "deletedGalaxies": [],
+   "telescopes": [
+    {
+     "telescope": 0,
+     "magnitudeShift": -2,
+     "cropSHA256": "ec846c251bd7250ce216ca69e44fe5b83fe2ba05b2880051417c262bbbffda57",
+     "pixelLevel": 257,
+     "fraction": 1
+    },
+    {
+     "telescope": 1,
+     "magnitudeShift": 0,
+     "cropSHA256": "e231e7f0ad65a11943dc57fbef5d62ce24671fd37c9221492bfe7c0a4ac47ffe",
+     "pixelLevel": 293,
+     "fraction": 1
+    },
+    {
+     "telescope": 2,
+     "magnitudeShift": 3,
+     "cropSHA256": "ee48f957b277b9b1019f95fed92077ff84ebe3b077badf90abf97866feae7f1c",
+     "pixelLevel": 367,
+     "fraction": 1
+    }
+   ]
+  }
+ ]
+}

@@ -1,7 +1,7 @@
 /** Byte-exact original VIREO lists used by E02 (CLEA_Vireo.zip, user approval of 2026-10-27, groups 1 and 2 in AGENTS.md):
  * LSSFields.LST (field names and centres), Images/Galaxies/GLIMAGES.LST (photographic list; positions only) and
  * Spectra/Galaxies/GLXYSP.LST (galaxy library spectrum names). The native readers are not recovered (TLSSFieldsForm1
- * FormShow, the photographic-list selection 0x596ab8 and association 0x598e3b..0x598e52 (0x5987e4 is the QSO catalogue loader,
+ * FormShow's line parser 0x52b00c; its file-error message is ported below, Front L4), the photographic-list selection 0x596ab8 and association 0x598e3b..0x598e52 (0x5987e4 is the QSO catalogue loader,
  * see qsoMerge.ts), the GLXYSP lookup): these parsers read the evident text formats
  * and reject anything else; they never repair a row. Callers verify size and SHA-256 before parsing. */
 import {freshFieldArea} from './fieldEngine';
@@ -12,6 +12,12 @@ export type OriginalListIdentity=Readonly<{name:string;path:string;bytes:number;
 export const LSS_FIELDS_LST:OriginalListIdentity=Object.freeze({name:'LSSFields.LST',path:'/original/hotlists/LSSFields.LST',bytes:460,sha256:'1c9cdcc56bd3b5cd801f519104e95bb671b2305818afb47ad8369f04af64070f'});
 export const GLIMAGES_LST:OriginalListIdentity=Object.freeze({name:'GLIMAGES.LST',path:'/original/images/GLIMAGES.LST',bytes:10103,sha256:'fd5b98163259b3b4f7e0da1185930ef393e349fbfa07bcc3b6abfd97552c0a01'});
 export const GLXYSP_LST:OriginalListIdentity=Object.freeze({name:'GLXYSP.LST',path:'/original/spectra/GLXYSP.LST',bytes:576,sha256:'0a7a352d37c5a899e2304048c660b7703646fbb616f49e5c7ddf75b84d3c166a'});
+/** Front L4: TLSSFieldsForm1 FormShow 0x52ac24 when LSSFields.LST cannot be read (IOResult ≠ 0 after Reset, 0x52acc2): MessageBox
+ * 'Cannot access LSS fields file ' + path + CRLF + CRLF + the system's text for the error (0x486594), caption 'File Error!',
+ * MB_ICONSTOP (0x10), then FormShow exits (strings 0x52afd0, 0x52aff8, 0x52affc). Static reading of CLEA_VEO.exe 781bc970…c54c.
+ * [W] The path is the bundled file's address and the system text is the web's own reason. */
+export const LSS_FIELDS_FILE_ERROR=Object.freeze({prefix:'Cannot access LSS fields file ',separator:'\r\n\r\n',caption:'File Error!',flags:0x10});
+export function lssFieldsFileErrorText(path:string,reason:string):string{return LSS_FIELDS_FILE_ERROR.prefix+path+LSS_FIELDS_FILE_ERROR.separator+reason;}
 export class OriginalListError extends Error{constructor(readonly list:string,readonly line:number){super(`${list}: line ${line}`);this.name='OriginalListError';}}
 const lines=(bytes:Uint8Array)=>{let text='';for(const b of bytes)text+=String.fromCharCode(b);return text.replace(/\x1a$/,'').split('\r\n');};
 

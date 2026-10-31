@@ -22,7 +22,7 @@ import {prepareNativeStarProfile} from './starProfiles';
 import {photonAmplitudes,slitPixelLevel,telescopeZeroPoint,type RgbImage} from './photons';
 import {nativeObjectSlitFraction} from './slitThroughput';
 import {roundNearestEven} from './numericPolicy';
-import {sampleUniformSpectrum,uniformSpectrum} from './acquisition';
+import {sampleUniformSpectrum,uniformSpectrum,POISSON_MEAN_ADMISSION} from './acquisition';
 import {activateJournal,cancelJournal,createJournalExposure,deactivateJournal,JournalError,pauseJournal,resetJournal,replayJournal,startJournal,tickJournal,type JournalState,type JournalEvent} from './exposureJournal';
 export const STAR_FIELD_SHA256=provenance.fieldSnapshotSHA256,STAR_SOURCE_SHA256=provenance.sourceSnapshotSHA256;
 export const STAR_POLICY_ID=provenance.policyId,STAR_TARGET=Object.freeze({...provenance.target}),STAR_DOMAIN=PINNED_STAR_DOMAIN;
@@ -64,7 +64,7 @@ function prepareDefault(index:StarTelescopeIndex){
  const wavelengths=spectralRangeGrid(range);
  const values=wavelengths.map(w=>{const value=sampleUniformSpectrum(uniform,w);if(!value.valid||value.value<0||!Number.isFinite(value.value))throw new JournalError('proof');return value.value;});
  const means=Object.freeze(values.map(v=>v*amplitude.source));
- if(Math.max(...means)*50*starTickLimit(index)>=(index===2?1_000_000:12))throw new JournalError('proof');
+ if(Math.max(...means)*50*starTickLimit(index)>=POISSON_MEAN_ADMISSION)throw new JournalError('proof');
  return Object.freeze({telescopeIndex:index,zeroPoint:zero,maximumTickMS:starTickLimit(index),field,scene,cachedRaster:raster,pixelLevel,fraction,amplitude,sourceMeans:means,sourceValues:Object.freeze(values),wavelengths,viewport});
 }
 function withRange(index:StarTelescopeIndex,c:StarConfiguration,range:SpectralRange):StarConfiguration{
@@ -72,7 +72,7 @@ function withRange(index:StarTelescopeIndex,c:StarConfiguration,range:SpectralRa
  const wavelengths=spectralRangeGrid(range);
  const values=wavelengths.map(w=>{const value=sampleUniformSpectrum(uniform,w);if(!value.valid)return 0;if(value.value<0||!Number.isFinite(value.value))throw new JournalError('proof');return value.value;});
  const means=Object.freeze(values.map(v=>v*c.amplitude.source));
- if(Math.max(...means)*50*starTickLimit(index)>=(index===2?1_000_000:12))throw new StarRangeUnavailableError();
+ if(Math.max(...means)*50*starTickLimit(index)>=POISSON_MEAN_ADMISSION)throw new StarRangeUnavailableError();
  return Object.freeze({...c,sourceMeans:means,sourceValues:Object.freeze(values),wavelengths});
 }
 export function verifiedStarConfiguration(index:StarTelescopeIndex=0,range:SpectralRange=DEFAULT_SPECTRAL_RANGE):StarConfiguration{const key=`${index}:${range.minimum}-${range.maximum}`;let c=prepared.get(key);if(!c){c=prepare(index,range);prepared.set(key,c);}return c;}

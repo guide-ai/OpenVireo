@@ -105,9 +105,10 @@ describe('the generic spectrometer',()=>{
   }
   // Object X positions stay masked here as in Field Information.
   expect((await prepareFieldSpectrum(xInputs.rowPointings.get(OBJECT_X_SPECTRUM_ROWS[0].row)!,0)).status).toBe('unavailable');
-  // A galaxy at the centre of M31's field (its catalogue galaxy is selected; whatever the engine says is typed, never a guess).
-  const m31=await prepareFieldSpectrum({ra:0.7123,dec:41.2692},2);
-  expect(m31.status).toBe('ready');if(m31.status==='ready')expect(m31.result.target?.id??m31.result.reasons.join()).toBeTruthy();
+  // M31's field: VIREO's telescope painter draws NGC 224 with its own routine 0x53b848 (name test 0x53b4fc), not ported, so the
+  // field is typed. Front L4 (2026-10-31): with the stamp cap lifted this must never reach composeNativeGalaxy's whole-stamp path.
+  for(const t of [0,1,2] as const){const m31=await prepareFieldSpectrum({ra:0.7123,dec:41.2692},t);
+   expect(m31.status).toBe('ready');if(m31.status==='ready')expect(m31.result.reasons).toEqual(['ngc224-image']);}
  });
  it('Front S2: off the default a star is observed on the range (#R policy, its grid, a replayable session); a galaxy is refused',async()=>{
   const r={minimum:4000,maximum:5000},at={ra:11+44/60+42.9/3600,dec:55+22/60+43/3600};

@@ -81,7 +81,9 @@ These rules come from a static reading (`analysis/front-g-gsc/RE-wrap-polar-cons
   equality proofs still pass.
 
 ## Typed unavailable reasons
-outside-pack, variable-time-required, variable-spectrum-dangling, variable-spectrum-indeterminate, variable-colour-residue, variable-model-fault (Front T), qso-merge (`'gate'` only), qso-selected (`'merge'` only), photographic-image, variable-merge, axis-fallback, merge-boundary, stamp-bound (the browser raster bound: major axis ≤ 100 px, minor axis ≥ 1 px), no-galaxy-selected, star-selected, slit-empty, spectrum-range, mean-bound (the existing per-telescope bound) and spectrum-mapping (LSS only).
+outside-pack, variable-time-required, variable-spectrum-dangling, variable-spectrum-indeterminate, variable-colour-residue, variable-model-fault (Front T), qso-merge (`'gate'` only), qso-selected (`'merge'` only), photographic-image, variable-merge, axis-fallback, merge-boundary, ngc224-image (Front L4: NGC 224 is drawn by VIREO's own routine 0x53b848, not ported), no-galaxy-selected, star-selected, slit-empty, spectrum-range, mean-bound (poissonDraw's 10⁶ per-draw admission on every record since Front L4; it was 12 on the 0.4/0.9 m) and spectrum-mapping (LSS only).
+
+Front L4 (2026-10-31): the telescope stamp has no size bound (0x5943d4, 0x59456c have none): every galaxy is painted in place, clipped to the 936² cache, and a galaxy whose minor axis rounds to 0 px composes nothing and is not painted. The former `stamp-bound` reason (major ≤ 100 px, minor ≥ 1 px) is gone. Measurement and plan: analysis/front-plans/front-l4.md; rows: docs/LSS-SURVEY.md "Mean bound and stamp cap".
 
 When a field is assembled from the compact GSC tiles (Front G), `AssembledFieldError` adds further reasons
 (docs/COMPACT-GSC-TILES.md):

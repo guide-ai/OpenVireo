@@ -21,8 +21,9 @@ Front F supplies the field-engine side of the Object X spectrometer and, since F
 
 ## Accepted D5 residual
 Before the reveal the display carries no reason, but the availability pattern across telescopes still narrows the kind: on the
-4.0 m every star, galaxy and QSO row gives a spectrum and every pulsar or asteroid row gives none, and on the 0.4 m only some QSO
-and galaxy rows do. The coordinator accepted this (2026-10-28) as a consequence of recovered behaviour: in the original a pulsar
+4.0 m every star, galaxy and QSO row gives a spectrum and every pulsar or asteroid row gives none. Since Front L4 (2026-10-31) the
+same holds on every telescope, so the pattern no longer separates stars, galaxies and QSOs from one another (before L4, on the 0.4 m
+only some QSO and galaxy rows did). The coordinator accepted this (2026-10-28) as a consequence of recovered behaviour: in the original a pulsar
 or an asteroid also puts no measurable object in the slit. The web has no approved field at those coordinates and does not invent
 a sky-only spectrum, so the neutral message says only "No measurable spectrum at this position with this telescope."
 
@@ -37,23 +38,25 @@ replaying its journal (`io/objectXSpectra.ts`); a record that does not replay re
 `resources` error. A kept spectrum's CSV (`wavelength_A,counts`, 600 rows) is rebuilt identically after a restore.
 
 ## Status per spectroscopy row
-Reveal-side outcomes (`telescope` = the existing brightness bound, `mean-bound`; the display shows only available/unavailable).
+Reveal-side outcomes (the display shows only available/unavailable). **Front L4 (2026-10-31): every row is available on all three
+telescopes, 33/33.** The 16 cells marked "was telescope" below were the former web mean bound 12 on the 0.4/0.9 m (`mean-bound`; 0x55f0f4
+has no mean guard); they are available with the same crops (`data/objectx/frozen-observations.json`, re-pinned 17 → 33 available).
 
 | Row | Kind | 0.4 m | 0.9 m | 4 m | Why |
 |---|---|---|---|---|---|
 | 1 HE 0353-3919 | QSO | available | available | available | QSO 522 selected; QSO 517 also in the field (both ordered inserts) |
-| 10 3C 273 | QSO | telescope | telescope | available | QSO 1356 **replaces** its own GSC record N0000@550801 (within 30″ and 1 mag); bright: mean bound on 0.4/0.9 m. The replacement is a 95-byte copy over the GSC record, so the stack-residue uncertainty documented in qsoMerge.ts applies to this acquirable result (review 2 finding 12) |
+| 10 3C 273 | QSO | available (L4; was telescope) | available (L4; was telescope) | available | QSO 1356 **replaces** its own GSC record N0000@550801 (within 30″ and 1 mag); bright: it was mean-bound on 0.4/0.9 m until Front L4. The replacement is a 95-byte copy over the GSC record, so the stack-residue uncertainty documented in qsoMerge.ts applies to this acquirable result (review 2 finding 12) |
 | 13 HS 1603+3820 | QSO | available | available | available | QSO 1785 inserted |
-| 8 NGC 4449 | galaxy | telescope | telescope | available | its GLIMAGES.LST row is dropped by the original parser (below), so no photograph; own NGC4449.SP (GLXYSP Pos lookup, matched branch) |
-| 9 N3730-01103 | star | telescope | telescope | available | slit selects N3730.DAT@513845 (V 9.47), spectral index 50105000 → A0000044.sp (JSPEC2.SPI) |
-| 3 NGC 2403 | galaxy | available | telescope | available | drawn from NGC2403.BMP (GLIMAGES row 40); GLXYSP fallback template |
-| 4 N6000-00685 | star | telescope | telescope | available | N6000.DAT@209199, index 30005000 (no entry) → A0000018.sp by the 0x50d660 walk-back; NGC2403.BMP in the field |
-| 5 N0730-00120 | star | telescope | telescope | available | N0730.DAT@472049, 60005000 → A0000052.sp; NGC4262.BMP in the field |
-| 6 NGC 4262 | galaxy | available | telescope | available | drawn from NGC4262.BMP (row 97); own NGC4262.SP |
-| 11 NGC 4631 | galaxy | telescope | telescope | available | drawn from NGC4631.BMP (row 131); own NGC4631.SP; variable AQ CVn (9631) takes the false-merge branch |
-| 12 N3000-01915 | star | telescope | telescope | available | N3000.DAT@483032, 50305000 → A0000046.sp (bundled); NGC4656.BMP in the field; AQ CVn as row 11 |
+| 8 NGC 4449 | galaxy | available (L4; was telescope) | available (L4; was telescope) | available | its GLIMAGES.LST row is dropped by the original parser (below), so no photograph; own NGC4449.SP (GLXYSP Pos lookup, matched branch) |
+| 9 N3730-01103 | star | available (L4; was telescope) | available (L4; was telescope) | available | slit selects N3730.DAT@513845 (V 9.47), spectral index 50105000 → A0000044.sp (JSPEC2.SPI) |
+| 3 NGC 2403 | galaxy | available | available (L4; was telescope) | available | drawn from NGC2403.BMP (GLIMAGES row 40); GLXYSP fallback template |
+| 4 N6000-00685 | star | available (L4; was telescope) | available (L4; was telescope) | available | N6000.DAT@209199, index 30005000 (no entry) → A0000018.sp by the 0x50d660 walk-back; NGC2403.BMP in the field |
+| 5 N0730-00120 | star | available (L4; was telescope) | available (L4; was telescope) | available | N0730.DAT@472049, 60005000 → A0000052.sp; NGC4262.BMP in the field |
+| 6 NGC 4262 | galaxy | available | available (L4; was telescope) | available | drawn from NGC4262.BMP (row 97); own NGC4262.SP |
+| 11 NGC 4631 | galaxy | available (L4; was telescope) | available (L4; was telescope) | available | drawn from NGC4631.BMP (row 131); own NGC4631.SP; variable AQ CVn (9631) takes the false-merge branch |
+| 12 N3000-01915 | star | available (L4; was telescope) | available (L4; was telescope) | available | N3000.DAT@483032, 50305000 → A0000046.sp (bundled); NGC4656.BMP in the field; AQ CVn as row 11 |
 
-Every spectroscopy row is now observable on at least the 4 m, so all three kinds can be investigated (the coordinator's
+Every spectroscopy row is now observable on every telescope (33/33 since Front L4), so all three kinds can be investigated (the coordinator's
 condition for wiring the API into the Object X UI). Before the reveal every unavailable case shows the same neutral message.
 
 ## Spectral interval
