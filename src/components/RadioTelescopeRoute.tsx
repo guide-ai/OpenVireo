@@ -83,6 +83,9 @@ export type RadioTelescopeRouteProps=Readonly<{
  controllerRef?:MutableRefObject<RadioRouteController|null>;
  /** E08 Object X: the label that replaces pulsar names for a pointing near an unrevealed target, or null (forwarded to the receivers). */
  hiddenName?:(pointing:RadioPointing)=>string|null;
+ /** Front QA1 (2026-10-31): the hot-list row label mask while an Object X target is unrevealed. It covers every ObjectX.HTL
+  * area alike, so which rows are renamed does not depend on what the target is. */
+ hotListMask?:(ra:number,dec:number)=>string|null;
  /** E08 Object X hand-off: coordinates the next Set Coordinates opens with (J2000), or null. */
  prefillTarget?:RadioPointing|null;
 }>;
@@ -110,7 +113,7 @@ export type RadioRouteController=Readonly<{snapshot:()=>RadioSnapshotResult<Radi
  * (projectOptions), the panel's Limit Slewing scenario is withdrawn and legacy diameter writes are shielded here. Phase 1
  * item 1.5: Save investigation reads this workspace through controllerRef, and a restore mounts it from `restored`.
  */
-function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarData,onOpenPulsarAnalysis,onExerciseProgress,restored=null,controllerRef,hiddenName,prefillTarget=null}:RadioTelescopeRouteProps){
+function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarData,onOpenPulsarAnalysis,onExerciseProgress,restored=null,controllerRef,hiddenName,hotListMask,prefillTarget=null}:RadioTelescopeRouteProps){
  const [initial]=useState(()=>restored);
  const [state,setState]=useState<RadioControlState>(()=>initial?.control??INITIAL_RADIO_CONTROL);
  // Latest accepted control state, read by Start pulsar exercise.
@@ -512,7 +515,7 @@ function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarD
       meanwhile takes over: the utility's surface, the receiver box and the configuration surfaces yield to it. A
       configuration that has yielded (open, not presented) must not make the panel, and so that antenna box, inert. */}
   <div style={{display:'contents'}} inert={dateOpen||parameters.presented||behindReceiverBox||panelBehindAccess} data-testid="radio-route-panel-wrapper">
-   <RadioControlPanel hotListMask={hiddenName?(ra,dec)=>hiddenName({ra,dec}):undefined} addCurrentHiddenLabel={hiddenName&&prefillTarget?hiddenName(prefillTarget):null} state={state} environment={environment}
+   <RadioControlPanel hotListMask={hotListMask} addCurrentHiddenLabel={hiddenName&&prefillTarget?hiddenName(prefillTarget):null} state={state} environment={environment}
     onTransition={tr=>commitControl(tr.state)} onEnvironmentChange={changeEnvironment}
     antenna={antenna} onAntennaTransition={commitAntenna} antennaOptions={options} onAntennaOptionsChange={optionsManaged?undefined:applyOptions} managedDiameter={optionsManaged}
     active={active} hostBusy={busy} onModalPresentedChange={setPanelPresented} radioClock={radioClock} hotList={hotList} receiver={receiverButton}

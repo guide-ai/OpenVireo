@@ -89,7 +89,7 @@ export default function FieldInformationMenu({info,pointing,enabled,hotList,onSl
   setVariable({mode,loading:true});
   loadFieldVariables().then(async records=>{
    const list=variableFieldList(records,at,view,'gcvs');
-   if(await objectXListedNear(info.hidden??null,list.records.map(r=>({ra:r.raHours,dec:r.decDegrees})))){setVariable(v=>v&&v.mode===mode?{mode,hidden:true}:v);return;}
+   if(await objectXListedNear(list.records.map(r=>({ra:r.raHours,dec:r.decDegrees})))){setVariable(v=>v&&v.mode===mode?{mode,hidden:true}:v);return;}
    setVariable(v=>v&&v.mode===mode?{mode,list:mode==='gcvs'?list:variableFieldList(records,at,view,mode)}:v);
   }).catch(()=>setVariable(v=>v&&v.mode===mode?{mode,error:true}:v));
  }

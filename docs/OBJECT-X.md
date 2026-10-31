@@ -274,6 +274,16 @@ and z ≈ 2.1), and the path spec now checks the 45-minute motion against the ep
   Slew ▸ Hot List shows rows within 2° under the `ObjX-<ID>` label with no remark, and its Find compares those masked texts, so
   a name search does not locate the target. Rows elsewhere keep their names and remarks (remarks are generic kind words that may
   also describe other objects).
+- **Type-independent masks (Front QA1, 2026-10-31).** Masking only around the hidden target made its own name vanish from the
+  target picker while the other Object X galaxies stayed listed, so the missing name revealed the identity. While any target is
+  unrevealed, the catalogue name mask (sky-map labels, target picker, target card, pointing notices, radio Slew ▸ Hot List)
+  now covers the 2° areas around **every** ObjectX.HTL position. Rows near the target read `ObjX-<ID>`, and other masked rows
+  read "Name hidden". Until ObjectX.HTL is read, every name is masked. The target's own coordinates are not added: for an asteroid
+  they differ from its listed row, so the extra masked names would mark it as moving. The Variable Stars list and the QSO List
+  use the ObjectX.HTL positions only, for the same reason. The "Names hidden during Object X." note shows for every target. The
+  observatory's own Hot List editor offers only the Pleiades and Hubble lists and masks nothing, as in VIREO. A hot list a
+  student opens by hand shows its rows' coordinates, which VIREO also shows. `tests/object-x-lists-type-independent.spec.ts` checks that
+  the target picker and the QSO List are identical for all five kinds.
 - **Static replay equivalence (R3-L2).** `tests/object-x-static-replay.spec.ts` routes the dev server's extract index to one
   synthetic extract over the recorded VizieR response, lets the real camera (Worker composer, static mode) take and save an
   image, and requires `replayStaticExposure` on the same recipe to give the same FITS bytes (SHA-256 and length): it does. Save

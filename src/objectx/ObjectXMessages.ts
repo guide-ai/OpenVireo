@@ -41,7 +41,7 @@ export const OBJECT_X_MEASURE_EN:ObjectXMeasureMessages=Object.freeze({
 /** #object-x route and E08 guide. No string names or describes a particular target. */
 export const OBJECT_X_LAB_EN=Object.freeze({
  nav:'Object X',guideNav:'Object X guide',
- hiddenName:'Name hidden during Object X',namesHidden:'Names hidden during Object X.',
+ hiddenName:'Name hidden during Object X',hiddenRowName:'Name hidden',namesHidden:'Names hidden during Object X.',
  title:'The quest for Object X',
  scope:'You receive only an identifier and sky coordinates. Decide with the instruments whether the object is a star, a galaxy, a quasar, a pulsar or an asteroid.',
  startTitle:'1. Your object',
