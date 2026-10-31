@@ -3318,10 +3318,7 @@ export interface MessageParameters {
   "multispec.helpEmpty": never;
   "multispec.cannotClose": never;
   "multispec.timerNote": never;
-  "multispec.options": never;
   "multispec.optionsHelp": never;
-  "multispec.showObjectId": never;
-  "multispec.showObjectMag": never;
   "multispec.optionsMasked": never;
   "multispec.itemActions": never;
   "multispec.noItemShow": never;

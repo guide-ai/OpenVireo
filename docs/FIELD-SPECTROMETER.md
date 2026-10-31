@@ -73,6 +73,9 @@ Multi-Spec at any pointing (G4b) is described in MULTI-SPEC.md.
   - Pointing: the field's pointing, as recorded in the policy.
   - Rows: 600 source-plus-sky bins from the calibration's first wavelength, step 1000/600 Å.
   - The bytes equal the Object X save after the reveal at every Object X row (galaxies, stars and QSOs).
+  - Default file name (Front R4d): `field-<locator>.ssp`, or VIREO's `Name.SSP` (the current object at the prepared pointing) when
+    Show Object ID is on; the bytes do not depend on the option. The Object / App. Mag (V) boxes and the print lines follow
+    Show Object ID / Show Object Mag (docs/FRONT-R4-OPTIONS.md, R4d).
   - File name: `field-<locator>.ssp`, using only letters, digits and '-', so the file-name ID keeps the whole locator.
 - **Print.** Uses the shared spectrum print card, so the print header (0x58e860, Front H2) applies once H2 is merged.
 - **Analyze / Classify.** Both read the exposure's own .SSP back as if the student had opened the saved file. Analyze opens it in

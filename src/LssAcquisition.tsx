@@ -7,6 +7,7 @@ import type {FieldResult} from './core/fieldEngine';
 import type {LssRow} from './core/lssFields';
 import type {RgbImage} from './core/photons';
 import {LssSpectrumSave} from './observatory/RouteSpectrumSave';
+import SpectrometerReadout,{useSpectrometerObject} from './observatory/SpectrometerReadout';
 import CleaHelp from './clusters/CleaHelp';
 import {HELP_FILES} from './help/helpFiles';
 const FORMAT='OpenVireo LSS field exposure';
@@ -34,11 +35,14 @@ export default function LssAcquisition({active,result,row,policy,onCounts}:{acti
  const heading=useRef<HTMLHeadingElement>(null),engine=useMemo(()=>engineFor(result,row,policy),[result,row,policy]);
  const {state,seed,setSeed,notice,setNotice,error,busy,running,armed,activate,start,stop,save,restore,reset,cancel,newSeed}=useBoundedExposure({engine,active,fieldMatches:true,onActivate:()=>{},heading});
  useEffect(()=>{onCounts(state);},[state]);
+ // Front R4d: VIREO's Object / App. Mag (V) boxes and Save name for the current object at the row's pointing.
+ const current=useSpectrometerObject(active?{ra:row.ra,dec:row.dec}:null,'object');
  const e=state?.exposure,c=result.calibration!,total=(e?.sourceTotal??0)+(e?.skyTotal??0),max=Math.max(1,...(e?.counts??[]));
  const points=e?.counts.map((n,i)=>`${55+i*890/599},${235-n*180/max}`).join(' ')??'';
  return <section className="card lss-acquisition" aria-labelledby="lss-acquire-heading">
   <h3 id="lss-acquire-heading" ref={heading} tabIndex={-1}>{t('lss.exposure.title',{id:row.id,selected:result.target!.id})}</h3>
   {/* Front H2: TSpectrometer Help1Click 0x510f4c, options +0x914 = SPECHLP.LST (docs/CLEA-HELP.md), as on the other spectrometer routes */}<CleaHelp list={HELP_FILES['SPECHLP.LST']} testId="lss-spectrometer-help"/>
+  {active&&<SpectrometerReadout object={current.object} options={current.options}/>}
   <p data-testid="lss-slit">{t('lss.exposure.slit',{level:c.pixelLevel,fraction:scientific(c.fraction,6,true)})}</p>
   <div className="lss-acquire-layout"><Frame image={result.viewport!}/>
    <div><div className="sky-actions"><button className="primary-button" disabled={running||busy||armed} onClick={activate}>{t('lss.exposure.activate')}</button><button className="primary-button" disabled={!armed||running||busy} onClick={start}>{t('lss.exposure.start')}</button><button className="secondary-button" disabled={!running||busy} onClick={()=>{stop();setNotice(t('skyExposure.pausedCountsAndTheRandomState'));}}>{t('lss.exposure.pause')}</button><button className="secondary-button" disabled={!state||busy} onClick={reset}>{t('skyExposure.resetCounts')}</button><button className="secondary-button" disabled={!state||busy} onClick={cancel}>{t('skyExposure.cancelAndDiscard')}</button></div>
@@ -50,6 +54,6 @@ export default function LssAcquisition({active,result,row,policy,onCounts}:{acti
    </div></div>
   <svg className="source-spectrum" viewBox="0 0 1000 290" role="img" aria-label={t('lss.exposure.chart')}><line x1="55" x2="945" y1="235" y2="235"/><line x1="55" x2="55" y1="45" y2="235"/>{e&&<polyline points={points} fill="none"/>}</svg>
   {notice&&<p role="status">{notice}</p>}{error&&<p role="alert">{error}</p>}
-  <LssSpectrumSave state={state} result={result} row={row} active={active} busy={busy}/>
+  <LssSpectrumSave state={state} result={result} row={row} active={active} busy={busy} current={current}/>
  </section>;
 }

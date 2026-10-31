@@ -77,8 +77,8 @@ export function cameraCurrentName(showObjectId:boolean,object:ShownCurrentObject
  return showObjectId&&object?.status==='object'&&/^[\x20-\x7e]*$/.test(object.name)?object.name:undefined;
 }
 
-/** Single-channel spectrometer readouts (TSpectrometer) [D]. The web spectrometer screens are on another front (G4c): these rules
- * are ready for them and tested here.
+/** Single-channel spectrometer readouts (TSpectrometer) [D], wired by Front R4d (observatory/SpectrometerReadout.tsx and
+ * observatory/SpectrumSavePrint.tsx).
  * - IDText (0x50df64): visible only with Show Object ID (FormShow 0x50d936); sky reading `Sky`; else the name left-padded with
  *   spaces until its length is ≥ 13. Off: not written (null).
  * - MagText (0x50e00b): visible with Show Object Mag OR Edit Mode; V with 2 decimals left-padded to 6; a sky reading leaves it
@@ -109,4 +109,10 @@ export function spectrometerPrintLines(o:SpectrometerReadoutOptions,skyReading:b
  if(o.showObjectId)lines.push(('Object: '+object.name).slice(0,'Object: '.length+32));
  if(spectrometerMagVisible(o))lines.push('Apparent Magnitude (V): '+delphiFixed(Math.fround(object.v),2));
  return Object.freeze(lines);
+}
+/** Front R4d [W]: the Save default name a web spectrometer route offers. With Show Object ID on and a named current object, VIREO's
+ * `Name.SSP` (0x50fb1c); otherwise the route's own web name, unchanged, so the compiled default (off) saves byte-identical names.
+ * VIREO's off form (`UNKNOWN.SSP` / `ObjX-<ID>.SSP`) is not adopted: the web names carry the Classify file-name ID. */
+export function spectrometerDefaultFileName(o:SpectrometerReadoutOptions,object:ShownCurrentObject|null,webName:string):string{
+ return o.showObjectId&&object?.status==='object'&&/^[\x20-\x7e]+$/.test(object.name.replace(/ +$/,''))?spectrometerSaveName(o,object,''):webName;
 }

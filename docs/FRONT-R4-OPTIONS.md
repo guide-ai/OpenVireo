@@ -65,11 +65,11 @@ only by Add Current's kind remark.
   result is typed `unresolved` and readers treat it as no object.
 - **No field** [W]: a field that cannot be built (refused tiles, a population reason) gives no object.
 
-**Object X:** VIREO never masks the name [D].
+**Object X:** VIREO never masks the name [D]. It is hidden only because Show Object ID starts off, and an earlier exercise in
+the same session would reveal it.
 - **[W] The mask stays on after Reveal.** It covers every ObjectX.HTL row ±2° (plus the lab's hidden target) at all times, so
   after Reveal, or in a session with no Object X activity, nothing near those rows is named. This fails closed, like Edit Mode
-  and Field Information; no LSS row or Pleiades target is inside it. It is hidden only because Show Object ID starts off, and an earlier exercise in
-the same session would reveal it.
+  and Field Information; no LSS row or Pleiades target is inside it.
 - **[W]** Never naming a hidden target is a web rule (E08). Every reader goes through `shownCurrentObject`, which needs a
   checked `clear` Object X mask state; anything else hides the name and the magnitude.
 - `io/currentObjectAt.ts` checks the mask first (the field's farthest corner), so nothing is loaded near an ObjectX.HTL
@@ -81,11 +81,58 @@ the same session would reveal it.
 | Photometer recorded name (+0x620, 0x4fffd4) | sky `Sky`; on: the name ≤15, trailing spaces removed; off: `UNKNOWN` / `ObjX-`ID | `photometerRecordedName` (waits for the native photometer Record writer) |
 | Camera native Save (0x522c28 → 0x5230dc, 0x5239f8) | on with an object: Name+`-01.FIT` (String[31]) and OBJECT Name (String[68]); otherwise the Object X label | "Save image (VIREO header)" refreshes the current object (`cameraCurrentName`). [W] At the image's centre, not at the telescope pointing when Save is pressed |
 | Add Current (0x53f0fc) | ID = the name; remark = Star/Galaxy/Asteroid/QSO only when the exercise code is 0; RA/Dec = the pointing | Slew › Observation Hot List › Add Current; the button says it is looking while the field loads, and disabling the menu aborts the lookup |
-| Spectrometer IDText, MagText, Save name, Print (0x50df64, 0x50e00b, 0x50fb1c, 0x510954) | see `core/currentObject.ts` | rules tested; **wiring waits for G4c**, whose files are frozen for this front |
-| Multi-Spec | already ported with local check boxes | binding to the global options waits for G4b/G4c |
+| Spectrometer IDText, MagText, Save name, Print (0x50df64, 0x50e00b, 0x50fb1c, 0x510954) | see `core/currentObject.ts` | wired by Front R4d (section below) |
+| Multi-Spec | its readers already ported | reads the global options since Front R4d; its two local check boxes are gone |
 
 **Fixed:** Add Current used to pass the selected target's unmasked ID when the pointing equalled it. A hidden Object X target
 pointed at exactly showed its real ID; it now prefills nothing (e2e).
+
+## R4d Spectrometer and Multi-Spec readers (2026-10-31)
+
+Plan: `analysis/front-plans/front-r4d.md`.
+
+**What VIREO does** [D] (dossier A §1, show-object-id §1b):
+- TSpectrometer.FormActivate 0x50dac4 refreshes the current object. 0x50df64 then fills:
+  - IDText, visible only with Show Object ID: `Sky`, or the name padded to 13;
+  - MagText, visible with Show Object Mag or Edit Mode: V with 2 decimals padded to 6, or '' for a sky reading.
+- Save 0x50fb1c: the default name is the name + `.SSP` with the option on.
+- Print 0x510294: `Object: ` and `Apparent Magnitude (V): ` lines.
+- The .SSP header 0x510090 is **not** an option reader: it always carries the object name and V.
+
+**Web:**
+- **`VireoOptionsContext`** carries Show Object ID, Show Object Mag, Edit Mode and the page's gated current-object reader
+  (`io/currentObjectAt.ts`).
+- **`observatory/SpectrometerReadout.tsx`** (`useSpectrometerObject` + the two boxes) is on:
+  - the star route;
+  - the galaxy/Hubble route;
+  - the sky route (`Sky`, empty magnitude);
+  - the LSS acquisition;
+  - the field spectrometer (at the prepared pointing);
+  - the Object X route (always hidden, never looked up).
+- **No lookup with the options off:** the current object is looked up only while a box is visible. With the compiled defaults
+  nothing is fetched and nothing is shown.
+- **Pending:** while the lookup runs, IDText keeps the DFM caption `Telescope` and Save waits.
+- **[W] Refresh:** on route activation and when the route's pointing changes (VIREO: FormActivate).
+  - Star, galaxy and LSS look up at the target or row position. The field spectrometer looks up at its prepared pointing.
+  - The object is 0x59a0fc's nearest object there, in the 936-px/0.75° frame, as for Add Current.
+- **[W] The routes keep their own labelled web readouts** (the field spectrometer's "nearest object, selected by the slit", the
+  route headings). The VIREO boxes are added beside them.
+- **Save default name** (`spectrometerDefaultFileName`):
+  - Show Object ID on with a named object: `Name.SSP`.
+  - Otherwise the route's web name, unchanged. So the compiled default saves byte-identical names, and the bytes never depend on
+    the options.
+  - [W] VIREO's off form (`UNKNOWN.SSP` / `ObjX-<ID>.SSP`) is not adopted, because the web names carry the Classify file-name ID.
+- **Print:** the printout adds `spectrometerPrintLines` under VIREO's header.
+- **Classify / Analyze hand-off, CSV and JSON sessions:** unchanged. [W] The hand-off keeps the web file names, so Observational
+  Data IDs do not move.
+- **Multi-Spec:** reads the context's two options. The masked rule is unchanged: Show Object ID is ignored while Object X
+  identities could be named.
+- **Object X:** every reader goes through `shownCurrentObject`. At each of the 17 ObjectX.HTL targets, with both options on (and
+  Edit Mode), nothing is named:
+  - the Object box shows "Name hidden during Object X", and the magnitude box and print lines are empty;
+  - Save keeps the label, and the header stays masked;
+  - the CSV and the Classify ID stay the label.
+  - Tests: `io/spectrometerReadoutObjectX.test.ts` and `tests/front-r4d-spectrometer.spec.ts`.
 
 ## R4.3 Wedge re-plot after Record Z OK
 
