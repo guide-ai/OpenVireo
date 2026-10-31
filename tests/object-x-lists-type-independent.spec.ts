@@ -47,6 +47,9 @@ async function skyMapAt(page:Page,code:string){
  await page.goto('/#object-x');await expect(page.getByRole('heading',{name:'The quest for Object X'})).toBeVisible({timeout:20_000});
  await page.getByTestId('objectx-target').selectOption(code);
  await button(page,'Set the observatory clock').click();
+ // As listsFor: let the lab settle (its asteroid list built) before Copy; in a fresh Firefox page an immediate Copy could land
+ // before the initial route had settled and stay on Object X.
+ await expect(page.getByTestId('objectx-list-status')).toContainText('Observable asteroids on',{timeout:30_000});
  await button(page,'Copy the coordinates to the observatory').click();
  await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible({timeout:20_000});
  await button(page,'Open dome ↗').click();
