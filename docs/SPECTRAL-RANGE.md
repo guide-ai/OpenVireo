@@ -165,8 +165,8 @@ Plan: `analysis/front-plans/front-s3.md`. Static reading of CLEA_VEO.exe only.
 the typed `spectrum-range`, and the Hubble page says the galaxy has no spectrum on that range. VIREO's own handling there (its
 unbounded probe loop) is [U]. A range whose photon mean is over the bound for that telescope gets its own message.
 
-**Object X.** A range is admitted only if every spectroscopy row × telescope has its default availability there (547 of 779
-non-default ranges on this main, with the former 0.4/0.9 m mean bound 12). The table is derived from the default evaluations with
+**Object X.** A range is admitted only if every spectroscopy row × telescope has its default availability there (768 of the 779
+non-default ranges: every cell is available at the default since Front L4, so these are the ranges on which all 33 stay available). The table is derived from the default evaluations with
 the field engine's own range step (`core/fieldRangeSource.ts`), which `src/io/objectXRanges.test.ts` checks against full
 evaluations on sampled ranges. A kept spectrum on an admitted non-default range stores `range: [min, max]`; the policy carries
 `#R<min>-<max>`. At the default both are absent, so every earlier record keeps its bytes.
