@@ -48,8 +48,11 @@ for(const [kind,id] of Object.entries(KINDS)){
   await expect(page.getByTestId('sky-map')).toBeVisible();
   expect(await leaks(),'finder').toEqual([]);
   await page.locator('.sky-view').first().screenshot({path:test.info().outputPath(`identity-${kind}-finder.png`)});
-  // The galaxy has its own catalogue entry in the field: drawn unnamed, with the one-line note.
-  if(kind==='galaxy'){expect(nearby).toContain('NGC 4631');await expect(page.getByTestId('sky-names-hidden')).toHaveText('Names hidden during Object X.');}
+  // The galaxy has its own catalogue entry in the field. QA1 review 1 H1: it is not drawn at all (a ring on the crosshair would
+  // mark a galaxy target); the one-line note shows for every kind.
+  if(kind==='galaxy')expect(nearby).toContain('NGC 4631');
+  await expect(page.getByTestId('sky-names-hidden')).toHaveText('Names hidden during Object X.');
+  await expect(page.getByTestId('sky-map').locator('.sky-object')).toHaveCount(0);
   await page.getByRole('group',{name:'Field of view'}).getByRole('button',{name:'Telescope · 15′',exact:true}).click();
   expect(await leaks(),'telescope').toEqual([]);
   // R3-L1: the target picker leaves out every catalogue entry near the hidden object.

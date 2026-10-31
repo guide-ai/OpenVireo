@@ -13,7 +13,8 @@ async function listsFor(page:Page,id:string){
  await page.getByTestId('objectx-target').selectOption(code);
  await button(page,'Set the observatory clock').click();
  await button(page,'Copy the coordinates to the observatory').click();
- await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();
+ // QA1 review 1 L6: five pages in one test; under parallel load the route switch can exceed the 5 s default.
+ await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible({timeout:20_000});
  await button(page,'Open dome ↗').click();
  if(!await button(page,'Point to coordinates').isVisible())await page.getByText('Enter coordinates',{exact:true}).click();
  await button(page,'Point to coordinates').click();
@@ -33,4 +34,38 @@ test('the lists shown during an unrevealed Object X target do not depend on its 
  expect(base.picker.length).toBeGreaterThan(10);
  expect(base.picker.join('\n')).not.toMatch(/NGC 2403|NGC 4262|NGC 4449|NGC 4631|3C 273/);
  for(const kind of Object.keys(KINDS)){expect(seen[kind].picker,`${kind} picker`).toEqual(base.picker);expect(seen[kind].qso,`${kind} QSO List`).toEqual(base.qso);}
+});
+
+/** QA1 review 1 H1: what the sky map draws in the finder and telescope views at one Object X target (catalogue rings and labels,
+ * as positions relative to the crosshair). */
+async function skyMapAt(page:Page,code:string){
+ await page.goto('/#object-x');await expect(page.getByRole('heading',{name:'The quest for Object X'})).toBeVisible({timeout:20_000});
+ await page.getByTestId('objectx-target').selectOption(code);
+ await button(page,'Set the observatory clock').click();
+ await button(page,'Copy the coordinates to the observatory').click();
+ await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible({timeout:20_000});
+ await button(page,'Open dome ↗').click();
+ if(!await button(page,'Point to coordinates').isVisible())await page.getByText('Enter coordinates',{exact:true}).click();
+ await button(page,'Point to coordinates').click();
+ await expect(page.getByTestId('sky-names-hidden')).toHaveText('Names hidden during Object X.');
+ const drawn=async()=>page.getByTestId('sky-map').evaluate(svg=>[...svg.querySelectorAll('.sky-object')].map(g=>{const c=g.querySelector('circle')!;return `${c.getAttribute('cx')},${c.getAttribute('cy')} ${g.textContent}`;}));
+ const views:Record<string,string[]>={};
+ for(const view of ['Finder · 2.5°','Telescope · 15′']){
+  await page.getByRole('group',{name:'Field of view'}).getByRole('button',{name:view,exact:true}).click();
+  await expect(page.getByTestId('sky-map')).toBeVisible();views[view]=await drawn();
+ }
+ return views;
+}
+
+test('QA1 review 1 H1: the sky map at an unrevealed target looks the same for all 17 ObjectX.HTL targets (no masked rings)',async({context})=>{
+ test.setTimeout(600_000);
+ const page0=await context.newPage();await page0.goto('/#object-x');
+ const codes=await page0.evaluate(`(async()=>{const lab=await import('/src/core/objectXLab.ts'),hl=await import('/src/core/hotList.ts');
+  const rows=hl.parseHtl(new Uint8Array(await (await fetch('/original/hotlists/ObjectX.HTL')).arrayBuffer()));return rows.map(r=>[r.id.trim(),lab.objectXCode(r.id.trim())]);})()`) as [string,string][];
+ await page0.close();
+ expect(codes).toHaveLength(17);
+ const seen=new Map<string,Record<string,string[]>>();
+ for(const [id,code] of codes){const page=await context.newPage();seen.set(id,await skyMapAt(page,code));await page.close();}
+ // Every HTL area is masked alike, so nothing catalogue-drawn may appear in either view at any target.
+ for(const [id,views] of seen)expect(views,id).toEqual({'Finder · 2.5°':[],'Telescope · 15′':[]});
 });
