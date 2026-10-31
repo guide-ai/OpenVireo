@@ -2,6 +2,7 @@ import {test,expect,type Page} from '@playwright/test';
 import {readFile,writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import baseline from './fixtures/p01-scientific-baseline.json' with {type:'json'};
+import {recordMeasurement} from './fixtures/record-measurement';
 async function save(page:Page,name:string){const w=page.waitForEvent('download');await page.getByRole('button',{name,exact:true}).click();return readFile((await(await w).path())!);}
 const sha=(b:Buffer)=>createHash('sha256').update(b).digest('hex');
 test('P01 catalogued Hubble guidance, generated statuses and metadata preserve scientific CSV and literal operator claims',async({page})=>{
@@ -14,6 +15,6 @@ test('P01 catalogued Hubble guidance, generated statuses and metadata preserve s
 });
 test('P01 mobile structured line errors and unknown-file fallback keep English guidance and confirmed work intact',async({page})=>{
  await page.setViewportSize({width:320,height:800});await page.goto('/#spectrum');await page.getByLabel('Import spectrum',{exact:true}).setInputFiles({name:'bad.csv',mimeType:'text/csv',buffer:Buffer.from('3700 .2\n4000 nope')});await expect(page.getByRole('alert')).toHaveText('Line 2: expected a decimal number with a dot.');
- await page.getByLabel('Import spectrum',{exact:true}).setInputFiles({name:'operator σ.csv',mimeType:'text/csv',buffer:Buffer.from('3700 .2\n4000 .5\n4700 .4')});await expect(page.locator('.file-identity')).toContainText('operator σ.csv');await page.getByLabel('Object or reference').fill('My {target} <b>σ</b>');await page.getByLabel('z step per tick',{exact:true}).fill('.001');await page.getByRole('button',{name:'Apply step',exact:true}).click();await page.getByRole('button',{name:/Record measurement/}).click();await page.getByRole('button',{name:'Save measurement',exact:true}).click();
+ await page.getByLabel('Import spectrum',{exact:true}).setInputFiles({name:'operator σ.csv',mimeType:'text/csv',buffer:Buffer.from('3700 .2\n4000 .5\n4700 .4')});await expect(page.locator('.file-identity')).toContainText('operator σ.csv');await page.getByLabel('Object or reference').fill('My {target} <b>σ</b>');await page.getByLabel('z step per tick',{exact:true}).fill('.001');await page.getByRole('button',{name:'Apply step',exact:true}).click();await recordMeasurement(page);
  await page.getByLabel('Import spectrum',{exact:true}).setInputFiles({name:'invalid-utf8.sp',mimeType:'text/plain',buffer:Buffer.from([255])});await expect(page.getByRole('alert')).toHaveText('The spectrum could not be read. Check the supported format and try again. Your current analysis was kept.');await expect(page.locator('.file-identity')).toContainText('operator σ.csv');await expect(page.locator('#measurement-log tbody')).toContainText('My {target} <b>σ</b>');await expect(page.locator('#measurement-log tbody b')).toHaveCount(0);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:'test-results/p01-errors-mobile.png',fullPage:true});
 });

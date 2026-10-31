@@ -38,6 +38,9 @@ test('a formerly QSO-gated row (F1 row 3) acquires; its spectrum saves as .SSP a
  await page.evaluate(()=>{(window as unknown as {printed:number}).printed=0;window.print=()=>{(window as unknown as {printed:number}).printed++;};});
  await panel.getByRole('button',{name:'Print spectrum',exact:true}).click();
  expect(await page.evaluate(()=>(window as unknown as {printed:number}).printed)).toBe(1);
+ // Front H2: the printed page starts with VIREO's header 0x58e860 (spectrometer print 0x510240), and the panel has SPECHLP Help.
+ await expect(page.getByTestId('ob-spectrum-print-header')).toContainText('     VIREO - The VIRtual Educational Observatory');
+ await expect(page.getByTestId('lss-spectrometer-help')).toBeVisible();
  await page.evaluate(()=>window.dispatchEvent(new Event('afterprint')));
  // Record Z: the velocity is typed; outside 1 % of c·z, or blank, OK keeps the dialog with the original message. Then the .TXT.
  await page.getByLabel('z step',{exact:true}).fill('.001');await page.getByRole('button',{name:'Set step',exact:true}).click();

@@ -7,6 +7,8 @@ import type {FieldResult} from './core/fieldEngine';
 import type {LssRow} from './core/lssFields';
 import type {RgbImage} from './core/photons';
 import {LssSpectrumSave} from './observatory/RouteSpectrumSave';
+import CleaHelp from './clusters/CleaHelp';
+import {HELP_FILES} from './help/helpFiles';
 const FORMAT='OpenVireo LSS field exposure';
 /** Exposure session file: policy, seed and event journal only; counts are always replayed, never imported. */
 function engineFor(result:FieldResult,row:LssRow,policy:string):ExposureEngine{
@@ -36,6 +38,7 @@ export default function LssAcquisition({active,result,row,policy,onCounts}:{acti
  const points=e?.counts.map((n,i)=>`${55+i*890/599},${235-n*180/max}`).join(' ')??'';
  return <section className="card lss-acquisition" aria-labelledby="lss-acquire-heading">
   <h3 id="lss-acquire-heading" ref={heading} tabIndex={-1}>{t('lss.exposure.title',{id:row.id,selected:result.target!.id})}</h3>
+  {/* Front H2: TSpectrometer Help1Click 0x510f4c, options +0x914 = SPECHLP.LST (docs/CLEA-HELP.md), as on the other spectrometer routes */}<CleaHelp list={HELP_FILES['SPECHLP.LST']} testId="lss-spectrometer-help"/>
   <p data-testid="lss-slit">{t('lss.exposure.slit',{level:c.pixelLevel,fraction:scientific(c.fraction,6,true)})}</p>
   <div className="lss-acquire-layout"><Frame image={result.viewport!}/>
    <div><div className="sky-actions"><button className="primary-button" disabled={running||busy||armed} onClick={activate}>{t('lss.exposure.activate')}</button><button className="primary-button" disabled={!armed||running||busy} onClick={start}>{t('lss.exposure.start')}</button><button className="secondary-button" disabled={!running||busy} onClick={()=>{stop();setNotice(t('skyExposure.pausedCountsAndTheRandomState'));}}>{t('lss.exposure.pause')}</button><button className="secondary-button" disabled={!state||busy} onClick={reset}>{t('skyExposure.resetCounts')}</button><button className="secondary-button" disabled={!state||busy} onClick={cancel}>{t('skyExposure.cancelAndDiscard')}</button></div>
