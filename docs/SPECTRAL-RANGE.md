@@ -76,8 +76,12 @@ session on another range keeps its domain's `options: 'compiled-fallback-unmodif
 default every policy, session and file keeps its bytes.
 
 **Restore [W]** (VIREO has no restore):
-- A restored session file makes its range the page's range.
-- An investigation restore takes the one range all its exposures share; otherwise it uses 3700–4700.
+- A restored session file makes its range the page's range, except an unmarked Hubble galaxy or LSS exposure: its policy carries
+  no range mark and means 4000–5000 Å, so it keeps that range itself and leaves the page as it was (review 3 H1).
+- An investigation restore takes the one range all its exposures share, unmarked galaxy and LSS exposures counting as none;
+  otherwise the page keeps 3700–4700 Å.
+- [W] 4000–5000 Å is never marked on the galaxy and LSS routes (it is their legacy base), so a 4000–5000 Å galaxy or LSS exposure
+  taken after Front S2 restores like a legacy one: it keeps its range and does not move the page.
 
 ## Hubble and LSS at VIREO's default (Front S2, round 2)
 
@@ -133,7 +137,8 @@ policies.
   - 44 e2e tests in 20 spec files were re-pinned on 2026-10-31, with one dated note per file.
 - **One range for every telescope.** The star route has one instance per telescope (Kitt Peak 0.4 m, 0.9 m, Mayall 4 m). Since
   Front S2 they share the page's range, as VIREO does (Front S had kept one per telescope [W]). The page's range persists until the dialog changes it. Restoring a single
-  session file, or returning to a star from the analyser, makes that exposure's range the page's range; an investigation
-  restore takes the one range all its sky, star and field-spectrum exposures share, otherwise 3700–4700 Å [W]
+  session file, or returning to an exposure from the analyser, makes that exposure's range the page's range, except an unmarked
+  galaxy or LSS exposure (see Restore above); an investigation restore takes the one range all its sky, star, field-spectrum and
+  marked galaxy/LSS exposures share, otherwise 3700–4700 Å [W]
   (`tests/spectral-range.spec.ts`).
 - The Options box "Allow User Change" that enables the menu item is not modelled; the item is always available.

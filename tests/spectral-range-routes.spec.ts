@@ -121,3 +121,10 @@ test('a range applied in Classify shows on the star route, and the star route\'s
  await setRange(page,'star-spectral-range-open',2,12);await expect(id(page,'star-spectral-range')).toHaveText('Spectrometer range: 3700.0–4700.0 Å (600 bins).');
  await go(page,'#classification');await expect(shown).toHaveText('3700–4700 Å · 1×');
 });
+// Front S2 closure R1: a star acquired on the default range covers Classify's default window (its own 3700–4700 Å interval).
+test('a default acquired star is reported as covering the 3700–4700 Å window',async({page})=>{
+ await page.clock.install();await page.goto('/#star-exposure');await exposeStar(page);
+ await button(page,'Classify acquired star').click();await expect(page.getByRole('button',{name:'Review classification',exact:true})).toBeEnabled({timeout:30000});
+ await expect(page.getByText('covers the displayed 3700–4700 Å comparison window',{exact:false})).toBeVisible();
+ await expect(page.getByText('does not cover the whole displayed',{exact:false})).toHaveCount(0);
+});

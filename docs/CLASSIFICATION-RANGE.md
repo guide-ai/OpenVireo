@@ -30,7 +30,7 @@ Original library files begin at3510Å. Thus3500–7400 is a valid display choice
 
 A stable memoized full-range fallback preserves viewport identity through cursor updates. Fallback trace Y is a manually selected display ordinate, even over a blank area; it is not an observation or source-flux value. Actual numerical source sampling there still rejects.
 
-A fresh page/reload starts at the page's spectrometer range, 3700–4700 Å (Front S2 round 3: Classify shares VIREO's one range; it was 3900–4500 before, SPECTRAL-RANGE.md). Restore reads no display preference from a file: the page's range follows the restored exposures' shared range when they carry one (unmarked legacy galaxy and LSS exposures do not move it), otherwise it stays as it was (SPECTRAL-RANGE.md). Source/atlas changes retain the preference while rechecking coverage. No session version or recorded scientific field is added.
+A fresh page/reload starts at the page's spectrometer range, 3700–4700 Å (Front S2 round 3: Classify shares VIREO's one range; it was 3900–4500 before, SPECTRAL-RANGE.md). Restore reads no display preference from a file: an investigation restore sets the page's range to the one range its marked exposures share, otherwise to 3700–4700 Å (unmarked legacy galaxy and LSS exposures count as none), so Classify opens at 3700–4700 Å after restoring a file saved before Front S2 (SPECTRAL-RANGE.md). Source/atlas changes retain the preference while rechecking coverage. No session version or recorded scientific field is added.
 
 ## Try it locally
 

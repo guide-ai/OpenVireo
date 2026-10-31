@@ -8,7 +8,7 @@
 
 Local entry: http://127.0.0.1:5173/#galaxy-exposure. Observatory: http://127.0.0.1:5173/#observatory. The final verification receipt records the exact tested link and build.
 
-The supported set now contains three original designated Hubble galaxies. UM-I1 adds an elliptical target in the same grouping as UM-I2; CorBor2 adds a different field/grouping. All use original GLXYTMPL.SP through the native fallback branch, with the same explicitly adapted nearest-center raster and fixed 4000–5000 Å interval. They are simulated source-plus-sky acquisitions; source generation does not supply the student's measured z.
+The supported set now contains three original designated Hubble galaxies. UM-I1 adds an elliptical target in the same grouping as UM-I2; CorBor2 adds a different field/grouping. All use original GLXYTMPL.SP through the native fallback branch, with the same explicitly adapted nearest-center raster and the page's spectrometer range (VIREO's 3700–4700 Å by default since Front S2; 4000–5000 Å before). They are simulated source-plus-sky acquisitions; source generation does not supply the student's measured z.
 
 | Acquisition galaxy | Raw catalog record | Exact supported pointing (RA h / Dec °) | Final field | Regions / compact band | Slit level / fraction | Original V reference |
 | --- | --- | --- | --- | --- | --- | --- |
