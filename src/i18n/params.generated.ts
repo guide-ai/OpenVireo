@@ -3375,6 +3375,8 @@ export interface MessageParameters {
   "session.restoreResourcesError": never;
   "hubblePoint.telescopeBound": "id" | "telescope" | "telescopes";
   "galaxyExposure.rangeNotWitnessed": never;
+  "galaxyExposure.rangeNoSpectrum": "max" | "min";
+  "galaxyExposure.rangeTooBright": "max" | "min";
   "galaxyExposure.rangeNote": "max" | "min";
   "galaxyExposure.engineInvalid": never;
   "ph.tiledUse": never;

@@ -1,26 +1,27 @@
-/** Front S2 (analysis/front-plans/front-s2-range.md §6.1): which routes and sources may observe a non-default spectrometer range
- * in this web version. VIREO has one global active range (env+0x2bd4/+0x2bd8) read by every spectrometer route and by
- * Multi-Spec; the web admits a range only where an independent witness covers that route's output [W]:
- *  - star sources: every dialog range (sampler 0x55dfe0; jspect2_range_witness.py pins every bundled template on the S1 anchor
- *    ranges, as star_range_witness.py did for the catalogue star; the mean bound is still checked per range);
- *  - the sky: every dialog range (the sky branch of the source setup 0x50df64 (0x50e20d..0x50e2de) reads no range and Go skips the per-bin source loop for the sky (0x50f4da); the function's QSO branch (0x50e7b0) does read it; one constant mean per bin);
- *  - the Hubble and LSS routes: the default and the former web range 4000–5000 Å (round 2 witnesses);
- *  - galaxies and QSOs elsewhere, and Multi-Spec: the default range only, until their witnesses are extended;
- *  - Object X: the default range only, for every target alike (before and after the reveal), so a refusal never tells the
- *    type (E08) and the kept-spectrum policies (v28) stay as they are. */
-import {DEFAULT_SPECTRAL_RANGE,LEGACY_GALAXY_RANGE,isDialogRange,sameRange,type SpectralRange} from './spectralRange';
+/** Front S2 (analysis/front-plans/front-s2-range.md §6.1), Front S3 (front-s3.md §3): which routes and sources may observe a
+ * non-default spectrometer range in this web version. VIREO has one global active range (env+0x2bd4/+0x2bd8) read by every
+ * spectrometer route and by Multi-Spec; the web admits a range only where an independent witness covers that route's output [W]:
+ *  - star sources: every dialog range (jspect2_range_witness.py; the mean bound is still checked per range);
+ *  - the sky: every dialog range (the sky branch of 0x50df64 reads no range; one constant mean per bin);
+ *  - galaxy sources: every dialog range since Front S3 (galaxy_range_all_witness.py, galaxyRangeAll.witness.json: the template,
+ *    own GLXYSP spectra and the start-time continuation). A range on which a galaxy has no spectrum (the shifted source wholly
+ *    outside it, or a negative interpolation) is not a coverage question: the engine types it 'spectrum-range' [U for VIREO];
+ *  - QSO sources: every dialog range since Front S3 (qso_range_witness.py, qsoRange.witness.json);
+ *  - so the field, Hubble and LSS routes and Multi-Spec admit every dialog range;
+ *  - Object X (and Multi-Spec while a target is masked): only the pinned admitted ranges (objectXRanges.json), on which every
+ *    spectroscopy row × telescope has the same availability as at the default. The decision reads the range only, so a refusal
+ *    never tells the type (E08); every other range keeps the one kind-free refusal. */
+import {DEFAULT_SPECTRAL_RANGE,isDialogRange,sameRange,type SpectralRange} from './spectralRange';
+import objectXRanges from './objectXRanges.json';
 
 export type RangeRoute='star'|'sky'|'field'|'objectx'|'multispec'|'hubble'|'lss';
 export type RangeSource='star'|'galaxy'|'qso'|'sky';
 export type RangeCoverage='covered'|'not-witnessed';
-export function spectralRangeCoverage(route:RangeRoute,range:SpectralRange,source:RangeSource|null=null):RangeCoverage{
+const OBJECT_X_ADMITTED=new Set((objectXRanges.admitted as readonly (readonly number[])[]).map(([a,b])=>`${a}-${b}`));
+/** Front S3: a range Object X admits (the default always). */
+export const objectXRangeAdmitted=(range:SpectralRange)=>isDialogRange(range)&&(sameRange(range,DEFAULT_SPECTRAL_RANGE)||OBJECT_X_ADMITTED.has(`${range.minimum}-${range.maximum}`));
+export function spectralRangeCoverage(route:RangeRoute,range:SpectralRange,_source:RangeSource|null=null):RangeCoverage{
  if(!isDialogRange(range))return 'not-witnessed';
  if(sameRange(range,DEFAULT_SPECTRAL_RANGE))return 'covered';
- switch(route){
-  case 'star':case 'sky':return 'covered';
-  // Round 2: the Hubble and LSS routes are witnessed at VIREO's default and at the former web range 4000–5000 Å.
-  case 'hubble':case 'lss':return sameRange(range,LEGACY_GALAXY_RANGE)?'covered':'not-witnessed';
-  case 'field':return source==='star'||source==='sky'?'covered':'not-witnessed';
-  default:return 'not-witnessed';
- }
+ return route==='objectx'?(objectXRangeAdmitted(range)?'covered':'not-witnessed'):'covered';
 }

@@ -6,6 +6,7 @@
 // row, kind, record and typed reasons, for use after the reveal only.
 import {evaluateObjectXSpectrum,objectXSpectrumEngine,type ObjectXSpectrumEngine,type ObjectXSpectrumEvaluation,type ObjectXSpectrumReveal,type ObjectXSpectrometerInputs} from '../core/objectXSpectrometer';
 import type {FieldTelescope} from '../core/fieldEngine';
+import {DEFAULT_SPECTRAL_RANGE,sameRange,type SpectralRange} from '../core/spectralRange';
 import type {ObjectXSpectrometerResources} from './objectXSpectrometerInputs';
 import type {ObjectXSpectrometerWorkerRequest} from './objectXSpectrometerWorker';
 import {workerFailureKind,type WorkerFailureKind} from './workerFailure';
@@ -29,26 +30,27 @@ export function setObjectXSpectrometerResources(r:ObjectXSpectrometerResources|n
 // A Worker silent for the inactivity timeout is evicted with every request it holds: each rejects as a retryable load failure
 // and its cache entry is removed (io/workerClient.ts).
 const ask=workerClient(()=>new Worker(new URL('./objectXSpectrometerWorker.ts',import.meta.url),{type:'module'}));
-async function viaWorker(pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope):Promise<ObjectXSpectrumEvaluation>{
- const m=await ask({pointing:{ra:pointing.ra,dec:pointing.dec},telescope} satisfies Omit<ObjectXSpectrometerWorkerRequest,'ticket'>);
+async function viaWorker(pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope,range:SpectralRange):Promise<ObjectXSpectrumEvaluation>{
+ const m=await ask({pointing:{ra:pointing.ra,dec:pointing.dec},telescope,...(sameRange(range,DEFAULT_SPECTRAL_RANGE)?{}:{range:{minimum:range.minimum,maximum:range.maximum}})} satisfies Omit<ObjectXSpectrometerWorkerRequest,'ticket'>);
  if(m.ok&&m.evaluation)return m.evaluation as ObjectXSpectrumEvaluation;
  throw m.kind==='evidence'?new ObjectXSpectrometerEvidenceError():new ObjectXSpectrometerLoadError();
 }
-async function inProcess(r:ObjectXSpectrometerResources,pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope):Promise<ObjectXSpectrumEvaluation>{
+async function inProcess(r:ObjectXSpectrometerResources,pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope,range:SpectralRange):Promise<ObjectXSpectrumEvaluation>{
  inputs??=import('./objectXSpectrometerInputs').then(m=>m.loadObjectXSpectrometerInputs(r)).catch(e=>{inputs=null;throw e;});
- return evaluateObjectXSpectrum(await inputs,pointing,telescope);
+ return evaluateObjectXSpectrum(await inputs,pointing,telescope,range);
 }
-function evaluation(pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope):Promise<ObjectXSpectrumEvaluation>{
- const k=`${pointing.ra}:${pointing.dec}:${telescope}`;let p=cache.get(k);
- if(!p){p=(resources?inProcess(resources,pointing,telescope):viaWorker(pointing,telescope));cache.set(k,p);p.catch(()=>cache.delete(k));}
+/** Front S3: cached per (pointing, telescope, range); at most 64 entries (oldest out). */
+function evaluation(pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope,range:SpectralRange):Promise<ObjectXSpectrumEvaluation>{
+ const k=`${pointing.ra}:${pointing.dec}:${telescope}:${range.minimum}-${range.maximum}`;let p=cache.get(k);
+ if(!p){p=(resources?inProcess(resources,pointing,telescope,range):viaWorker(pointing,telescope,range));cache.set(k,p);p.catch(()=>cache.delete(k));while(cache.size>64)cache.delete(cache.keys().next().value!);}
  return p;
 }
 /** What the display may show before the reveal. */
-export async function observeObjectXSpectrum(pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope):Promise<ObjectXSpectrumView>{
- const d=(await evaluation(pointing,telescope)).display;
+export async function observeObjectXSpectrum(pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope,range:SpectralRange=DEFAULT_SPECTRAL_RANGE):Promise<ObjectXSpectrumView>{
+ const d=(await evaluation(pointing,telescope,range)).display;
  return d.status==='available'?Object.freeze({status:'available',telescope:d.telescope,wavelengths:d.wavelengths,engine:objectXSpectrumEngine(d)}):Object.freeze({status:'unavailable',telescope:d.telescope});
 }
 /** After the reveal only: the row, kind, record and typed reasons of the same evaluation. */
-export async function revealObjectXSpectrum(pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope):Promise<ObjectXSpectrumReveal>{
- return (await evaluation(pointing,telescope)).reveal;
+export async function revealObjectXSpectrum(pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope,range:SpectralRange=DEFAULT_SPECTRAL_RANGE):Promise<ObjectXSpectrumReveal>{
+ return (await evaluation(pointing,telescope,range)).reveal;
 }

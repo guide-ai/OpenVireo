@@ -7,7 +7,8 @@ import {multiSpecFibreSpectrum,type MultiSpecExposure,type MultiSpecSelection} f
 import {multiSpecContext,multiSpecFieldOptions,type MultiSpecFieldRequest,type MultiSpecInputs} from './multiSpecInputs';
 import {fieldSpectrumFailure} from './fieldSpectrumFailure';
 
-export type MultiSpecFibreRequest=Readonly<{selection:MultiSpecSelection;seed:number;seconds:number}>;
+/** interval (Front S3): the spectrometer range the fibre is taken on (absent = VIREO's default 3700–4700 Å). */
+export type MultiSpecFibreRequest=Readonly<{selection:MultiSpecSelection;seed:number;seconds:number;interval?:Readonly<{minimum:number;maximum:number}>}>;
 /** Front G G4b: why an assembled field has no view (the tile and catalogue-read results of G2, shown as readable text). A file
  * that did not arrive is 'field-tiles' (retryable); one that did not match its identity is 'load-error'; anything else is
  * 'internal' (G4b review 1 L3: the same classifier as the field spectrometer, io/fieldSpectrumFailure.ts). */
@@ -51,5 +52,5 @@ export async function evaluateMultiSpecSpectra(inputs:MultiSpecInputs,request:Mu
  const view=await evaluateMultiSpecView(inputs,request);
  if(!view.population||!view.viewport)return Object.freeze([]);
  const context=await multiSpecContext(inputs,view.population,request.telescope,fibres.map(f=>f.selection));
- return Object.freeze(fibres.map(f=>multiSpecFibreSpectrum(f.selection,context,f.seed,f.seconds)));
+ return Object.freeze(fibres.map(f=>multiSpecFibreSpectrum(f.selection,f.interval?Object.freeze({...context,interval:Object.freeze({minimum:f.interval.minimum,maximum:f.interval.maximum})}):context,f.seed,f.seconds)));
 }

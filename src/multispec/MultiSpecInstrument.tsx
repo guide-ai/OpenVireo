@@ -1,4 +1,5 @@
 import {useEffect,useId,useMemo,useReducer,useRef,useState} from 'react';
+import {DEFAULT_SPECTRAL_RANGE,sameRange,type SpectralRange} from '../core/spectralRange';
 import {multiSpecFieldPicture} from '../polish/PrintSkyImage';
 import {createMultiSpecState,multiSpecReducer,type MultiSpecEntry} from '../core/multiSpec';
 import {multiSpecClickPoint,multiSpecPick,multiSpecTargetSource,type MultiSpecField} from '../core/multiSpecSelect';
@@ -34,6 +35,7 @@ export type MultiSpecInstrumentProps=Readonly<{
  field:MultiSpecFieldRequest|null;telescope:FieldTelescope;access:AccessReason;armed:boolean;armedText:string;
  mask:MultiSpecMaskPolicy;editMode:boolean;busy:boolean;active:boolean;title:string;help:string;heading?:'h2'|'h3';
  /** Text when `field` is null (no bundled field at this position). */noFieldText:string;
+ /** Front S3: the page's spectrometer range; each entry keeps the range current when its spectrum was first taken [W]. */spectralRange?:SpectralRange;
  /** Front S2: why the page's spectrometer range cannot be used here (Multi-Spec reads it, 0x526e7f); null when it can. */rangeBlock?:string|null;
 }>;
 type ViewState=Readonly<{status:'none'}|{status:'loading'}|{status:'error'}|{status:'ready';view:FieldView}|{status:'reasons';view:FieldView}|{status:'read';read:NonNullable<MultiSpecView['fieldRead']>}>;
@@ -47,7 +49,7 @@ function download(name:string,bytes:Uint8Array,type:string){
 /** A file name the browser and the zip writer accept (ASCII, no path separators) [W]. */
 const safeName=(s:string)=>s.replace(/[^\x20-\x7e]|[\\/:*?"<>|]/g,'_');
 
-export default function MultiSpecInstrument({field,telescope,access,armed,armedText,mask,editMode,busy,active,title,help,noFieldText,rangeBlock=null,heading:Heading='h2'}:MultiSpecInstrumentProps){
+export default function MultiSpecInstrument({field,telescope,access,armed,armedText,mask,editMode,busy,active,title,help,noFieldText,rangeBlock=null,heading:Heading='h2',spectralRange}:MultiSpecInstrumentProps){
  const id=useId(),fieldWrap=useRef<HTMLDivElement>(null);
  const [state,dispatch]=useReducer(multiSpecReducer,undefined,()=>createMultiSpecState(telescope,pageSeed()));
  const [view,setView]=useState<ViewState>({status:'none'}),[viewTry,setViewTry]=useState(0);
@@ -79,16 +81,19 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
  // SpecTimer: one tick per whole second of the page clock while exposing.
  useEffect(()=>{if(!state.running)return;const h=window.setInterval(()=>dispatch({type:'tick'}),1000);return()=>window.clearInterval(h);},[state.running]);
  // Spectra of new entries (AddSpectrum), from the field current when they were taken.
- const pending=useRef(new Set<string>());
+ const pending=useRef(new Set<string>()),entryRanges=useRef(new Map<string,SpectralRange>()),rangeNow=useRef(spectralRange);rangeNow.current=spectralRange;
  useEffect(()=>{
   const f=fieldRef.current,v=viewRef.current;
   const missing=state.entries.filter(e=>!results.has(entryKey(e))&&!pending.current.has(entryKey(e)));
   if(!missing.length)return;
-  for(const e of missing)pending.current.add(entryKey(e));
+  for(const e of missing){pending.current.add(entryKey(e));if(rangeNow.current&&!entryRanges.current.has(entryKey(e)))entryRanges.current.set(entryKey(e),rangeNow.current);}
   const put=(m:Map<string,Result>,e:MultiSpecEntry,r:Result)=>{pending.current.delete(entryKey(e));m.set(entryKey(e),r);};
   setResults(r=>{const m=new Map(r);for(const e of missing)m.set(entryKey(e),{status:'loading'});return m;});
   if(!f){setResults(r=>{const m=new Map(r);for(const e of missing)put(m,e,{status:'error'});return m;});return;}
-  multiSpecSpectra(f,missing.map(e=>({selection:e.selection,seed:e.seed,seconds:e.seconds}))).then(list=>{
+  // Front S3: the range is frozen per entry; VIREO's display reads the global range when it is created (0x526e7f) [W: web takes it
+  // when the spectrum is first requested]. The default leaves the request unchanged.
+  const intervalOf=(e:MultiSpecEntry)=>{const r=entryRanges.current.get(entryKey(e));return r&&!sameRange(r,DEFAULT_SPECTRAL_RANGE)?{interval:Object.freeze({minimum:r.minimum,maximum:r.maximum})}:{};};
+  multiSpecSpectra(f,missing.map(e=>({selection:e.selection,seed:e.seed,seconds:e.seconds,...intervalOf(e)}))).then(list=>{
    setResults(r=>{const m=new Map(r);missing.forEach((e,i)=>{
     let galaxyType:string|null=null;
     if(e.selection.source.kind==='galaxy'&&v?.population){try{galaxyType=galaxyTypeText(catalogRecords(v.population).galaxies[e.selection.source.index]);}catch{galaxyType=null;}}

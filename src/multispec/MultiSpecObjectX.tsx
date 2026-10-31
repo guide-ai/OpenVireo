@@ -10,7 +10,8 @@ import {spectralRangeCoverage} from '../core/spectralRangeCoverage';
 import {SPECTRAL_RANGE_EN as SR} from '../SpectralRangeMessages';
 import type {SpectralRange} from '../core/spectralRange';
 /** Front S2: Multi-Spec reads the page's one range (0x526e7f); off the default it is not witnessed here [W]. */
-const rangeBlockOf=(r:SpectralRange|undefined)=>r&&spectralRangeCoverage('multispec',r)!=='covered'?SR.multiSpecRange(r.minimum.toFixed(1),r.maximum.toFixed(1)):null;
+/** Front S3: every dialog range unmasked; while an Object X target is masked only Object X's admitted ranges (kind-free). */
+const rangeBlockOf=(r:SpectralRange|undefined,masked:boolean)=>r&&spectralRangeCoverage(masked?'objectx':'multispec',r)!=='covered'?SR.multiSpecRange(r.minimum.toFixed(1),r.maximum.toFixed(1)):null;
 import {t} from '../i18n';
 
 /** Front M (M4): Multi-Spec in the Object X lab (E08, exercise mode 1: clicks are armed, decision D1). The field is the bundled
@@ -43,6 +44,6 @@ export default function MultiSpecObjectX({spectralRange,htl,target,revealed,labe
    {XM.spectrumTelescopes.map((name,i)=><option key={name} value={i}>{name}</option>)}</select></label>
   {!target?<p data-testid="ms-objectx-status">{t('multispec.objectxNeedTarget')}</p>
    :<MultiSpecInstrument key={`${target.code}|${telescope}`} field={field} telescope={telescope} access="ready" armed armedText={t('multispec.armedObjectX')} mask={mask}
-     rangeBlock={rangeBlockOf(spectralRange)} editMode={false} busy={disabled} active heading="h3" title={t('multispec.objectxTitle')} help={t('multispec.objectxHelp')} noFieldText={t('multispec.fieldNeutral')}/>}
+     rangeBlock={rangeBlockOf(spectralRange,mask.masked)} spectralRange={spectralRange} editMode={false} busy={disabled} active heading="h3" title={t('multispec.objectxTitle')} help={t('multispec.objectxHelp')} noFieldText={t('multispec.fieldNeutral')}/>}
  </section>;
 }

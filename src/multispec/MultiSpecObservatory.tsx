@@ -11,7 +11,8 @@ import {spectralRangeCoverage} from '../core/spectralRangeCoverage';
 import {SPECTRAL_RANGE_EN as SR} from '../SpectralRangeMessages';
 import type {SpectralRange} from '../core/spectralRange';
 /** Front S2: Multi-Spec reads the page's one range (0x526e7f); off the default it is not witnessed here [W]. */
-const rangeBlockOf=(r:SpectralRange|undefined)=>r&&spectralRangeCoverage('multispec',r)!=='covered'?SR.multiSpecRange(r.minimum.toFixed(1),r.maximum.toFixed(1)):null;
+/** Front S3: every dialog range unmasked; while an Object X target is masked only Object X's admitted ranges (kind-free). */
+const rangeBlockOf=(r:SpectralRange|undefined,masked:boolean)=>r&&spectralRangeCoverage(masked?'objectx':'multispec',r)!=='covered'?SR.multiSpecRange(r.minimum.toFixed(1),r.maximum.toFixed(1)):null;
 import {t} from '../i18n';
 
 /** Front M (M3): Multi-Spec at the observatory's instrument choice (instrument position 3, Access as recovered).
@@ -59,5 +60,5 @@ export default function MultiSpecObservatory({spectralRange,active,busy,access,m
  const telescopeView=mode==='telescope',gate=editMode||virtualObservatory;
  const armedText=!gate?t('multispec.notArmed'):!telescopeView?t('multispec.notTelescopeView'):editMode?t('multispec.armedEditMode'):t('multispec.armedVirtual');
  return <MultiSpecInstrument key={telescope} field={field} telescope={telescope} access={access} armed={gate&&telescopeView} armedText={armedText} mask={mask}
-  rangeBlock={rangeBlockOf(spectralRange)} editMode={editMode} busy={busy} active={active} title={t('multispec.title')} help={t('multispec.help')} noFieldText={near===null?t('multispec.fieldLoading'):positions==='failed'?t('multispec.objectXListFailed'):fieldInfoReasonText('object-x-hidden')}/>;
+  rangeBlock={rangeBlockOf(spectralRange,mask.masked)} spectralRange={spectralRange} editMode={editMode} busy={busy} active={active} title={t('multispec.title')} help={t('multispec.help')} noFieldText={near===null?t('multispec.fieldLoading'):positions==='failed'?t('multispec.objectXListFailed'):fieldInfoReasonText('object-x-hidden')}/>;
 }

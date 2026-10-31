@@ -1,4 +1,4 @@
-import {GALAXY_WITNESSED_RANGES,LEGACY_GALAXY_RANGE,galaxyPolicyRange,galaxyPolicyWithRange,sameRange,type SpectralRange} from './spectralRange';
+import {isDialogRange,LEGACY_GALAXY_RANGE,galaxyPolicyRange,galaxyPolicyWithRange,sameRange,type SpectralRange} from './spectralRange';
 import {continuationSourcePreparer,galaxySourceValues,type FieldContinuationSource} from './fieldContinuation';
 import {kpno09,provenance,cachedSource,pegasusCached,umiCached,engineDefinitions,galaxyDefinition,galaxyStateDefinition,type Definition} from './galaxyDefinitions';
 // Front D3: the definitions live in galaxyDefinitions.ts (no pinned field data); re-exported unchanged.
@@ -112,11 +112,14 @@ export function verifiedGalaxyConfiguration(id='36773',index:0|1|2=0,range:Spect
  * range, RE §3): the shifted template where it covers the grid, else VIREO's start-time continuation (0x55e97c) drawn at each
  * Go, with its deterministic upper bound checked against the mean bound [W] (VIREO has no mean bound; it is the web's existing
  * Poisson admission, fieldContinuation.ts galaxySourceValues). The configuration is derived from the verified 4000–5000 Å one, so
- * a pair is offered at 3700–4700 Å only where it is available at 4000–5000 Å [W] (review 2 nit). */
+ * a pair is offered at 3700–4700 Å only where it is available at 4000–5000 Å [W] (review 2 nit).
+ * Front S3: every dialog range (galaxyRangeAll.witness.json). The cache keeps the most recent RANGED_CACHE_SIZE configurations
+ * (least recently used first out): every target panel stays mounted, so each page-range change would otherwise keep one per panel. */
+const RANGED_CACHE_SIZE=48;
 const ranged=new Map<string,ReturnType<typeof prepare>>();
 function rangedConfiguration(id:string,index:0|1|2,range:SpectralRange):ReturnType<typeof prepare>{
- if(!GALAXY_WITNESSED_RANGES.some(r=>sameRange(r,range)))throw new JournalError('proof');
- const key=`${id}:${index}:${range.minimum}-${range.maximum}`,hit=ranged.get(key);if(hit)return hit;
+ if(!isDialogRange(range))throw new JournalError('proof');
+ const key=`${id}:${index}:${range.minimum}-${range.maximum}`,hit=ranged.get(key);if(hit){ranged.delete(key);ranged.set(key,hit);return hit;}
  const base=verifiedGalaxyConfiguration(id,index) as ReturnType<typeof prepare>&{ownSamples?:readonly Readonly<{wavelength:number;intensity:number}>[];sourcePreparer?:JournalSourcePreparer;continuationSource?:FieldContinuationSource};
  const target=base.field.galaxies.find((g:{id:string})=>g.id===id) as {morphology:number;redshift:number}|undefined;if(!target)throw new JournalError('proof');
  const samples=base.ownSamples??source.samples.map(([wavelength,intensity])=>({wavelength,intensity})),matched=base.ownSamples?true:source.matched;
@@ -126,7 +129,19 @@ function rangedConfiguration(id:string,index:0|1|2,range:SpectralRange):ReturnTy
  if(Math.max(...means)*50*1000>=(index===2?1_000_000:12))throw new JournalError('proof');
  const {sourcePreparer:_p,continuationSource:_c,...rest}=base;void _p;void _c;
  const c=Object.freeze({...rest,sourceMeans:means,sourceValues:v.values,wavelengths:v.wavelengths,...(v.kind==='continuation'?{sourcePreparer:continuationSourcePreparer(v.continuationSource),continuationSource:v.continuationSource}:{})}) as ReturnType<typeof prepare>;
- ranged.set(key,c);return c;
+ ranged.set(key,c);while(ranged.size>RANGED_CACHE_SIZE)ranged.delete(ranged.keys().next().value!);return c;
+}
+/** Front S3: why a pair has no configuration on a range, for the page's message (the same computation as rangedConfiguration):
+ * 'spectrum-range' when the galaxy has no spectrum on it (the shifted source wholly outside, or a negative interpolation; VIREO's
+ * own handling is [U]), 'mean-bound' when a bin's mean is over the bound, else null (available, or the base itself refuses). */
+export function galaxyRangeRefusal(id:string,index:0|1|2,range:SpectralRange):'spectrum-range'|'mean-bound'|null{
+ if(sameRange(range,LEGACY_GALAXY_RANGE)||!isDialogRange(range))return null;
+ let base:ReturnType<typeof prepare>&{ownSamples?:readonly Readonly<{wavelength:number;intensity:number}>[]};try{base=verifiedGalaxyConfiguration(id,index);}catch{return null;}
+ const target=base.field.galaxies.find((g:{id:string})=>g.id===id) as {morphology:number;redshift:number}|undefined;if(!target)return null;
+ const samples=base.ownSamples??source.samples.map(([wavelength,intensity])=>({wavelength,intensity})),matched=base.ownSamples?true:source.matched;
+ const v=galaxySourceValues(samples,matched,target.morphology,target.redshift,range.minimum,range.maximum,base.amplitude.source,true);
+ if(v.kind==='range')return 'spectrum-range';
+ try{rangedConfiguration(id,index,range);return null;}catch(e){if(e instanceof JournalError)return 'mean-bound';throw e;}
 }
 /** The interval a galaxy exposure was taken on: no mark = the former web range 4000–5000 Å; "#R3700-4700" = VIREO's default. */
 export function galaxySpectralRange(s:Readonly<{policy:string}>):SpectralRange{const r=galaxyPolicyRange(s?.policy);if(!r)throw new JournalError('phase');return r.range;}

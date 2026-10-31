@@ -76,7 +76,7 @@ export const OBJECT_X_LAB_EN=Object.freeze({
  openRadio:'Open the radio telescope',
  spectrumTitle:'Spectrometer',
  spectrumHelp:'Stars, galaxies and quasars are told apart by their spectra.',
- spectrumAdaptation:'Web adaptation: the spectrometer is pointed at your object\'s catalogue coordinates (the field and slit are those of the original telescope field there); the interval is the spectrometer\'s default 3700–4700 Å.',
+ spectrumAdaptation:'Web adaptation: the spectrometer is pointed at your object\'s catalogue coordinates (the field and slit are those of the original telescope field there); the interval is the page\'s spectrometer range (default 3700–4700 Å); only ranges on which every Object X target behaves as at the default are offered, the same for every target.',
  spectrumNeedTarget:'Choose a target first.',
  spectrumTelescope:'Telescope',
  spectrumTelescopes:Object.freeze(['0.4 m','0.9 m','4.0 m']) as readonly string[],

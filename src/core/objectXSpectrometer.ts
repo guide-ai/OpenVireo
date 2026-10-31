@@ -15,6 +15,8 @@
 import {glxyspLookup,FIELD_MULTIPLIER,type FieldResult,type FieldTelescope,type FieldUnavailableReason,type FieldQsoCatalog,type FieldPhotographs} from './fieldEngine';
 import {spectrometerFieldResult,SPECTROMETER_INTERVAL} from './fieldSpectrometer';
 import {continuationSourcePreparer,type FieldContinuationSource} from './fieldContinuation';
+import {DEFAULT_SPECTRAL_RANGE,policyRange,policyWithRange,type SpectralRange} from './spectralRange';
+import {objectXRangeAdmitted} from './spectralRangeCoverage';
 import type {FieldPack} from './fieldPack';
 import type {QsoSpectrumFile} from './qsoSpectrum';
 import {type StarIndexEntry} from './starTemplates';
@@ -52,15 +54,16 @@ export type ObjectXSpectrumDisplay=
 /** reasons: the engine's typed reasons; 'not-a-target' when the pointing is not a spectroscopy row's exact coordinates. */
 /** headerMagnitude (Front S, S6): the selected record's catalog magnitude, which VIREO's .SSP header writes (0x510090); only
  * used after the reveal. */
-export type ObjectXSpectrumReveal=Readonly<{row:number|null;kind:'qso'|'galaxy'|'star'|null;recordId:string|null;headerMagnitude:number|null;reasons:readonly (FieldUnavailableReason|'not-a-target')[];pixelLevel:number|null}>;
+export type ObjectXSpectrumReveal=Readonly<{row:number|null;kind:'qso'|'galaxy'|'star'|null;recordId:string|null;headerMagnitude:number|null;reasons:readonly (FieldUnavailableReason|'not-a-target'|'range-not-admitted')[];pixelLevel:number|null}>;
 export type ObjectXSpectrumEvaluation=Readonly<{display:ObjectXSpectrumDisplay;reveal:ObjectXSpectrumReveal}>;
 const CODE=/^X-[0-9A-Z]{5}$/;
-/** The journal policy names the opaque target code (never the ObjectX.HTL row) and the telescope. */
-export function objectXSpectrumPolicy(code:string,telescope:FieldTelescope):string{if(!CODE.test(code))throw new JournalError('proof');return `${OBJECT_X_SPECTRUM_POLICY_PREFIX}:${code}:T${telescope}`;}
-export function parseObjectXSpectrumPolicy(policy:unknown):Readonly<{code:string;telescope:FieldTelescope}>{
- const m=typeof policy==='string'?/^openvireo-objectx-spectrum-v2:(X-[0-9A-Z]{5}):T([012])$/.exec(policy):null;
- if(!m)throw new JournalError('session');
- return Object.freeze({code:m[1],telescope:Number(m[2]) as FieldTelescope});
+/** The journal policy names the opaque target code (never the ObjectX.HTL row) and the telescope; Front S3: an admitted
+ * non-default range appends "#R<min>-<max>" (the default leaves the policy unchanged). */
+export function objectXSpectrumPolicy(code:string,telescope:FieldTelescope,range:SpectralRange=DEFAULT_SPECTRAL_RANGE):string{if(!CODE.test(code)||!objectXRangeAdmitted(range))throw new JournalError('proof');return policyWithRange(`${OBJECT_X_SPECTRUM_POLICY_PREFIX}:${code}:T${telescope}`,range);}
+export function parseObjectXSpectrumPolicy(policy:unknown):Readonly<{code:string;telescope:FieldTelescope;range:SpectralRange}>{
+ const p=policyRange(policy),m=p?/^openvireo-objectx-spectrum-v2:(X-[0-9A-Z]{5}):T([012])$/.exec(p.base):null;
+ if(!p||!m||!objectXRangeAdmitted(p.range))throw new JournalError('session');
+ return Object.freeze({code:m[1],telescope:Number(m[2]) as FieldTelescope,range:p.range});
 }
 export type ObjectXSpectrumEngine=Readonly<{policy:string;create:(seed:number)=>JournalState;activate:(s:JournalState)=>JournalState;start:(s:JournalState)=>JournalState;tick:(s:JournalState,d:number)=>JournalState;pause:(s:JournalState)=>JournalState;deactivate:(s:JournalState)=>JournalState;reset:(s:JournalState)=>JournalState;cancel:(s:JournalState)=>JournalState;replay:(seed:number,events:readonly JournalEvent[])=>JournalState}>;
 /** The bounded exposure journal of an available display result (same journal as every acquisition). */
@@ -73,24 +76,27 @@ export function objectXSpectrumEngine(d:Extract<ObjectXSpectrumDisplay,{status:'
   replay:(seed:number,events:readonly JournalEvent[])=>replayJournal(create,seed,events)});
 }
 /** The field behind an evaluation (also used by the frozen-record test), or null when the pointing is not a spectroscopy row. */
-export function objectXField(inputs:ObjectXSpectrometerInputs,pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope):Readonly<{row:Readonly<{row:number;pack:string}>;code:string;result:FieldResult}>|null{
+export function objectXField(inputs:ObjectXSpectrometerInputs,pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope,range:SpectralRange=DEFAULT_SPECTRAL_RANGE):Readonly<{row:Readonly<{row:number;pack:string}>;code:string;result:FieldResult}>|null{
  const row=OBJECT_X_SPECTRUM_ROWS.find(r=>{const p=inputs.rowPointings.get(r.row);return !!p&&p.ra===pointing.ra&&p.dec===pointing.dec;});
  if(!row)return null;
  const pack=inputs.packs.get(row.pack),code=inputs.rowCodes.get(row.row);if(!pack||!code)throw new JournalError('proof');
  // Front G (G4a): the shared single-slit spectrometer (core/fieldSpectrometer.ts), unchanged for Object X.
- const r=spectrometerFieldResult(inputs,pack,pointing,telescope);
+ const r=spectrometerFieldResult(inputs,pack,pointing,telescope,undefined,range);
  return Object.freeze({row,code,result:r});
 }
 /** The spectrometer for a pointing and telescope. A pointing that is not exactly a spectroscopy row's coordinates has no field in
  * this version (reveal reason 'not-a-target'; the display reads like every other unavailable case). */
-export function evaluateObjectXSpectrum(inputs:ObjectXSpectrometerInputs,pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope):ObjectXSpectrumEvaluation{
+/** Front S3: `range` is the page's range; a range Object X does not admit is the same unavailable display for every pointing
+ * (reveal reason 'range-not-admitted'), decided before any evaluation. */
+export function evaluateObjectXSpectrum(inputs:ObjectXSpectrometerInputs,pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope,range:SpectralRange=DEFAULT_SPECTRAL_RANGE):ObjectXSpectrumEvaluation{
  const unavailable=Object.freeze({status:'unavailable' as const,telescope});
- const f=objectXField(inputs,pointing,telescope);
+ if(!objectXRangeAdmitted(range))return Object.freeze({display:unavailable,reveal:Object.freeze({row:null,kind:null,recordId:null,headerMagnitude:null,reasons:Object.freeze(['range-not-admitted' as const]),pixelLevel:null})});
+ const f=objectXField(inputs,pointing,telescope,range);
  if(!f)return Object.freeze({display:unavailable,reveal:Object.freeze({row:null,kind:null,recordId:null,headerMagnitude:null,reasons:Object.freeze(['not-a-target' as const]),pixelLevel:null})});
  const {row,code,result:r}=f;
  const kind=r.qsoTarget?'qso' as const:r.starTarget?'star' as const:r.target?'galaxy' as const:null,recordId=r.qsoTarget?.id??r.starTarget?.id??r.target?.id??null,headerMagnitude=r.qsoTarget?.magnitude??r.starTarget?.magnitude??r.target?.magnitude??null;
  const reveal=Object.freeze({row:row.row,kind,recordId,headerMagnitude,reasons:Object.freeze([...r.reasons]),pixelLevel:r.calibration?.pixelLevel??null});
  if(r.reasons.length||!r.calibration)return Object.freeze({display:unavailable,reveal});
  const c=r.calibration,calibration=Object.freeze({sourceMeans:c.sourceMeans,skyMean:c.amplitude.sky,multiplier:FIELD_MULTIPLIER,...(c.continuationSource?{continuationSource:c.continuationSource}:{})});
- return Object.freeze({display:Object.freeze({status:'available' as const,telescope,policy:objectXSpectrumPolicy(code,telescope),wavelengths:c.wavelengths,calibration}),reveal});
+ return Object.freeze({display:Object.freeze({status:'available' as const,telescope,policy:objectXSpectrumPolicy(code,telescope,range),wavelengths:c.wavelengths,calibration}),reveal});
 }

@@ -60,16 +60,16 @@ range and starts that route's spectrometer again (0x5110b0). [W] Another route's
 on, and its next new exposure uses the shared range.
 
 **Where a non-default range can be observed** (`core/spectralRangeCoverage.ts`), only where an independent witness covers it
-[W]:
+[W]. Front S3 (2026-10-31) extends the witnesses to galaxies and QSOs on every dialog range (section below):
 
 | Route or source | Non-default range |
 |---|---|
 | Star sources (the catalogue star, field-spectrometer stars) | Yes. `jspect2_range_witness.py` (SHA-256 `5db1a16e…0cac`) samples every bundled jspect2 template on the six S1 anchor ranges; `src/core/jspect2Range.witness.json` must equal the TypeScript sampler byte for byte. The mean bound is still checked per range. |
 | Sky | Yes. The sky branch of the source setup 0x50df64 (0x50e20d..0x50e2de) reads no range and Go skips the per-bin source loop for the sky (0x50f4da); the function's QSO branch (0x50e7b0) does read it. The mean is one constant per bin, so the counts are the same on every range; only the bin wavelengths change. |
-| Field-spectrometer galaxies and QSOs | No: "not yet verified for this spectrum". |
-| Object X, before and after the reveal | No. The refusal is the same text for every target, so it never tells the type. |
-| Multi-Spec (reads the range, has no opener) | No. Access is refused with a note. |
-| Hubble and LSS routes | Round 2: VIREO's default 3700–4700 Å, and the former web range 4000–5000 Å. Other ranges are refused. |
+| Galaxies (field spectrometer, Hubble, LSS, Multi-Spec) | Yes, every dialog range (Front S3). A range on which a galaxy has no spectrum is typed (below). |
+| QSOs (field spectrometer, Multi-Spec) | Yes, every dialog range (Front S3). |
+| Object X, before and after the reveal | Only the admitted ranges (`src/core/objectXRanges.json`): every spectroscopy row × telescope is available there exactly as at the default. Every other range gives the same text for every target, so it never tells the type. |
+| Multi-Spec | Every dialog range; while an Object X target is masked, only the Object X admitted ranges. |
 
 **Policies.** A non-default range appends `#R<min>-<max>` to the sky and field-spectrometer policies, as for the star. A sky
 session on another range keeps its domain's `options: 'compiled-fallback-unmodified'`; its policy states the range. At the
@@ -142,3 +142,44 @@ policies.
   marked galaxy/LSS exposures share, otherwise 3700–4700 Å [W]
   (`tests/spectral-range.spec.ts`).
 - The Options box "Allow User Change" that enables the menu item is not modelled; the item is always available.
+
+## Galaxies and QSOs on every range (Front S3)
+
+Plan: `analysis/front-plans/front-s3.md`. Static reading of CLEA_VEO.exe only.
+
+**Witnesses** (second implementations of the same reading, not x87 or runtime oracles):
+- Galaxies: `analysis/front-s3-range/tools/galaxy_range_all_witness.py` (the Decimal continuum, Fraction sampler and integer LCG
+  of `generate_vectors.py`, with the range as a parameter) covers every dialog range for the S2 route contexts, every LSS
+  continuation galaxy, the bundled own spectra and z strata across the template edges. `src/core/galaxyRangeAll.witness.json`;
+  test `src/core/galaxyRangeAll.test.ts` (kind, draws and seed exact; sums and maxima within 1e-10 relative; anchor vectors bin by
+  bin).
+- QSOs: `analysis/front-s3-range/tools/qso_range_witness.py` (binary64 mirror, an x87 model and exact integers) covers the named
+  QSOs (CLEA_QSO.DAT @522, @1356, @1785, @517, @1443, @1656) on every range on the 600- and 400-bin grids, and every catalogue z
+  on the 600-bin grid. `src/core/qsoRange.witness.json`; test `src/core/qsoRange.test.ts` (digests byte for byte; every 10th z by
+  default, all with `OPENVIREO_S3_FULL=1`). Channels where Round(u) is an exact half-integer (u = i·count/600) are listed [I]: the
+  binary64 and x87 readings may pick different neighbours there, as on the default range.
+
+**Where a galaxy has no spectrum.** When the shifted template or own spectrum lies wholly outside a range (for example 3500–3600
+Å, or the red end at low z), or the interpolation turns negative near the zero tails of NGC 4472 and NGC 5866, the engine gives
+the typed `spectrum-range`, and the Hubble page says the galaxy has no spectrum on that range. VIREO's own handling there (its
+unbounded probe loop) is [U]. A range whose photon mean is over the bound for that telescope gets its own message.
+
+**Object X.** A range is admitted only if every spectroscopy row × telescope has its default availability there (547 of 779
+non-default ranges on this main, with the former 0.4/0.9 m mean bound 12). The table is derived from the default evaluations with
+the field engine's own range step (`core/fieldRangeSource.ts`), which `src/io/objectXRanges.test.ts` checks against full
+evaluations on sampled ranges. A kept spectrum on an admitted non-default range stores `range: [min, max]`; the policy carries
+`#R<min>-<max>`. At the default both are absent, so every earlier record keeps its bytes.
+
+**Multi-Spec.** The fibre request carries the range. Each entry keeps the range current when its spectrum was first requested
+[W: VIREO's display reads the global range when it is created, 0x526e7f]. Nothing is saved.
+
+**Hubble memory.** Ranged configurations are cached least-recently-used (48), and only the visible target panel computes its
+continuation note.
+
+**Allow User Change.** The Spectrometer tab's option (env+0x2e8b, compiled on) enables the Spectral Range item in TSpectrometer
+FormShow (0x50d9d5) and TSpClassify FormShow (0x507945); nothing else reads it. In the web Optical Simulation Options it is a
+live session option: unchecked, every range opener is disabled with a note, and the current range stays.
+
+**Defaults.** At 3700–4700 Å every policy, session, record and investigation keeps its bytes, and the exercise counts are
+unchanged.
+

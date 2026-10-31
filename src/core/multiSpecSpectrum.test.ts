@@ -107,6 +107,11 @@ describe('Front M: fibre spectra equal the independent Python witness (data/mult
 
 describe('Front M: fibre contract',()=>{
  const ctx=context(0),star=(over:Partial<MultiSpecSelection>):MultiSpecSelection=>({type:0,name:'s',ra:13,dec:28,v:12,z:null,spectralIndex:40305000,x:0,y:0,source:{kind:'star',index:0},...over});
+ it('Front S3: a fibre taken on another dialog range samples that range (400 bins from its minimum); the default is unchanged',()=>{
+  const def=multiSpecFibreSpectrum(star({}),ctx,7,10),same=multiSpecFibreSpectrum(star({}),{...ctx,interval:{minimum:3700,maximum:4700}},7,10),r=multiSpecFibreSpectrum(star({}),{...ctx,interval:{minimum:4000,maximum:5000}},7,10);
+  expect(same).toEqual(def);if(r.status!=='ready'||def.status!=='ready')throw Error();
+  expect([r.spectrum.minimum,r.spectrum.wavelengths.length,r.spectrum.wavelengths[0]]).toEqual([4000,400,4000]);expect(r.spectrum.counts).not.toEqual(def.spectrum.counts);
+ });
  it('each fibre has its own stream: one fibre’s draws do not depend on another’s',()=>{
   const a=multiSpecFibreSpectrum(star({}),ctx,7,10),b=multiSpecFibreSpectrum(star({v:13}),ctx,7,10),a2=multiSpecFibreSpectrum(star({}),ctx,7,10);
   expect(a).toEqual(a2);if(a.status!=='ready'||b.status!=='ready')throw Error();

@@ -62,13 +62,10 @@ export function sharedRestoredRange(policies:readonly unknown[]):SpectralRange{
  return ranges.length&&ranges.every(r=>sameRange(r,ranges[0]))?ranges[0]:DEFAULT_SPECTRAL_RANGE;
 }
 /** Front S2 round 2: the Hubble galaxy and LSS policies written before S2 carry no mark and mean the web's former 4000–5000 Å
- * (decision D1, now reversed); new exposures take VIREO's 3700–4700 Å and carry "#R3700-4700". Only these two ranges are
- * witnessed for those routes. */
+ * (decision D1, now reversed); new exposures take VIREO's 3700–4700 Å and carry "#R3700-4700". Front S3: every dialog range is
+ * witnessed for galaxy sources (galaxyRangeAll.witness.json), so any dialog mark parses; 4000–5000 stays unmarked. */
 export const LEGACY_GALAXY_RANGE:SpectralRange=Object.freeze({minimum:4000,maximum:5000});
-export const GALAXY_WITNESSED_RANGES:readonly SpectralRange[]=Object.freeze([DEFAULT_SPECTRAL_RANGE,LEGACY_GALAXY_RANGE]);
-export function galaxyPolicyRange(policy:unknown):Readonly<{base:string;range:SpectralRange}>|null{
- const r=policyRange(policy,LEGACY_GALAXY_RANGE);return r&&GALAXY_WITNESSED_RANGES.some(w=>sameRange(w,r.range))?r:null;
-}
+export function galaxyPolicyRange(policy:unknown):Readonly<{base:string;range:SpectralRange}>|null{return policyRange(policy,LEGACY_GALAXY_RANGE);}
 export const galaxyPolicyWithRange=(policy:string,range:SpectralRange)=>policyWithRange(policy,range,LEGACY_GALAXY_RANGE);
 /** Review 2 L2: the shared-range rule over ranges already read with each family's own base (galaxyPolicyRange for Hubble and
  * LSS, policyRange for the others); null entries are ignored. */

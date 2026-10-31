@@ -24,3 +24,13 @@ describe('bounded Hubble galaxy field and acquired counts',()=>{
   const saved=JSON.parse(serializeGalaxySession(s));for(const change of [(v:any)=>v.domain.minimum=3700,(v:any)=>v.policy='x',(v:any)=>v.counts=[1],(v:any)=>v.sourceSnapshotSHA256='a'.repeat(64)]){const x=structuredClone(saved);change(x);expect(()=>parseGalaxySession(x)).toThrow();}
  });
 });
+describe('Front S3: the Hubble route on every dialog range',()=>{
+ it('a range without the galaxy\'s spectrum is the typed refusal; another range gives a #R policy; the cache stays bounded',async()=>{
+  const {galaxyRangeRefusal,createGalaxyExposure,galaxySpectralRange}=await import('./galaxyExposure');
+  expect(galaxyRangeRefusal('36773',0,{minimum:3500,maximum:3600})).toBe('spectrum-range');
+  expect(galaxyRangeRefusal('36773',0,{minimum:3600,maximum:4600})).toBeNull();
+  const s=createGalaxyExposure(1,'36773',0,{minimum:3600,maximum:4600});expect(s.policy.endsWith('#R3600-4600')).toBe(true);expect(galaxySpectralRange(s)).toEqual({minimum:3600,maximum:4600});
+  for(let a=3500;a<=4500;a+=100)for(let b=a+100;b<=5600;b+=100){try{createGalaxyExposure(1,'36773',0,{minimum:a,maximum:b});}catch{/* typed elsewhere */}}
+ },300000);
+});
+

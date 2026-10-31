@@ -82,6 +82,7 @@ export const OBSERVATORY_MESSAGES=Object.freeze({
    showObjectId:'Checked: the object under the pointing is named in the photometer label and in the camera\'s VIREO-header FITS file name and OBJECT card. Unchecked (as compiled): they show "Unknown", or your Object X ID. Add Current proposes the nearest object\'s name either way, as in VIREO. The Pleiades, Cluster, Classification, Hubble and LSS guides turn it on, as VIREO\'s exercise menus do. A hidden Object X target is never named.',
    showObjectIdNote:'Not yet in the recorded photometer readings, the single spectrometer (its Object and magnitude boxes) or the Multi-Spec window, which keeps its own two check boxes for now.',
    showObjectMag:'In VIREO, checked shows the object\'s V magnitude in the spectrometer (Edit Mode shows it too); unchecked (as compiled) hides it. Not yet shown here: the spectrometer does not read this option yet. The Classification, Hubble and LSS guides turn it on.',
+   allowUserChange:'Checked (as compiled): the spectrometer routes offer Spectral Range…; unchecked, the item is disabled there, as VIREO\'s spectrometer and Classify forms disable it when they are shown. The range already set stays.',
    colorNote:'The light curve, the HR diagram and the LSS wedge plot follow these two options; the photometer route\'s own web plot does not.',
    sessionNote:'Like Edit Mode, these options last for this page session only and are not saved in investigation files.',
    tabsHeading:'Parameter values (shown as compiled, read-only)',

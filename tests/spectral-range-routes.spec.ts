@@ -1,7 +1,9 @@
 import {test,expect,type Page} from '@playwright/test';
+import {setVireoOptions} from './fixtures/vireo-options';
 
 // Front S2 (analysis/front-plans/front-s2-range.md §6.1): VIREO's one spectrometer range, shared by the star, sky and Object X
-// routes and read by Multi-Spec; off the default, Object X refuses every target alike and Multi-Spec is refused [W].
+// routes and read by Multi-Spec. Front S3: galaxies and QSOs on every dialog range; Object X only its admitted ranges, every
+// target alike [W].
 const id=(p:Page,t:string)=>p.getByTestId(t);
 const button=(p:Page,name:string)=>p.getByRole('button',{name,exact:true});
 const go=(p:Page,hash:string)=>p.evaluate(h=>{location.hash=h;},hash);
@@ -25,18 +27,26 @@ test('one range for the star and sky routes; the sky counts do not depend on it'
  await go(page,'#star-exposure');await expect(id(page,'star-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).');
  await button(page,'New seeded exposure').click();await expect(id(page,'star-spectral-range')).toHaveText('Spectrometer range: 3700.0–4700.0 Å (600 bins).');
 });
-test('off the default, Object X refuses every target with the same text and Multi-Spec is refused',async({page})=>{
+// Re-pinned 2026-10-31 (Front S3): Object X admits only the ranges on which every target behaves as at the default
+// (src/core/objectXRanges.json); 3500–3600 Å is not one of them, 4000–5000 Å is. Multi-Spec in the observatory (no masked target)
+// admits every dialog range.
+test('Object X: a range it does not admit is refused with the same text for every target; an admitted one is not; Multi-Spec takes any range',async({page})=>{
  await page.goto('/#object-x');await expect(page.getByRole('heading',{name:'The quest for Object X'})).toBeVisible();
  await expect(id(page,'objectx-target').locator('option')).toHaveCount(18);
  await page.locator('[data-testid=objectx-lab] input').first().fill('7');
- await setRange(page,'objectx-spectral-range-open',5,15);
+ await setRange(page,'objectx-spectral-range-open',0,1);
  const texts:string[]=[];
  for(const code of ['X-NTFB6','X-ZATDM','X-PRNJS']){// a star, a galaxy and a QSO row
   await id(page,'objectx-target').selectOption(code);await button(page,'Place the slit on the object').click();
   await expect(id(page,'objectx-spectrum-range')).toBeVisible();texts.push(await id(page,'objectx-spectrum-status').innerText());
  }
- expect(new Set(texts).size).toBe(1);expect(texts[0]).toContain('not yet verified');
- await go(page,'#observatory');await expect(id(page,'ms-range-block').first()).toContainText('4000.0–5000.0');
+ expect(new Set(texts).size).toBe(1);expect(texts[0]).toContain('cannot be used here');
+ await setRange(page,'objectx-spectral-range-open',5,15);
+ for(const code of ['X-NTFB6','X-ZATDM','X-PRNJS']){
+  await id(page,'objectx-target').selectOption(code);await button(page,'Place the slit on the object').click();
+  await expect(id(page,'objectx-spectrum-status')).not.toHaveText('Loading the spectrometer data…',{timeout:90_000});await expect(id(page,'objectx-spectrum-range')).toHaveCount(0);
+ }
+ await go(page,'#observatory');await expect(id(page,'ms-range-block')).toHaveCount(0);
 });
 // Review 1 closure gap (L1): the restore paths set the page's range.
 async function exposeStar(p:Page){
@@ -58,17 +68,20 @@ test('an investigation restore takes its exposures\' range; a star restored from
  // The sky route now shows its own new exposure (default); the Object X row, which has no exposure, shows the page's range.
  await go(page,'#object-x');await expect(id(page,'objectx-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).',{timeout:30000});
 });
-// Front S2 review 2 (M1, L3): the galaxy chart's axis follows the range; the galaxy and LSS routes carry the opener (witnessed only).
-test('galaxy axis follows the range; the galaxy and LSS openers accept 3700–4700 and 4000–5000 only',async({page})=>{
+// Front S2 review 2 (M1, L3): the galaxy chart's axis follows the range. Re-pinned 2026-10-31 (Front S3): every dialog range is
+// accepted; a range on which the galaxy has no spectrum (3500–3600 Å for 36773) is refused with that reason.
+test('galaxy axis follows the range; any dialog range is accepted, and a range without the galaxy\'s spectrum says so',async({page})=>{
  await page.goto('/#galaxy-exposure');
  await expect(id(page,'galaxy-axis-first')).toHaveText('3700 Å',{timeout:30000});await expect(id(page,'galaxy-axis-last')).toHaveText('4698.33 Å');
  await setRange(page,'galaxy-spectral-range-open',5,15);
  await expect(id(page,'galaxy-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).');
  await expect(id(page,'galaxy-axis-first')).toHaveText('4000 Å');await expect(id(page,'galaxy-axis-last')).toHaveText('4998.33 Å');
  await setRange(page,'galaxy-spectral-range-open',1,11);
- await expect(page.getByRole('alert').filter({hasText:'not yet verified for galaxy spectra'})).toBeVisible();
- await expect(id(page,'galaxy-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).');
- await go(page,'#lss-survey');await expect(id(page,'lss-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).',{timeout:30000});
+ await expect(id(page,'galaxy-spectral-range')).toHaveText('Spectrometer range: 3600.0–4600.0 Å (600 bins).');await expect(id(page,'galaxy-axis-first')).toHaveText('3600 Å');
+ await setRange(page,'galaxy-spectral-range-open',0,1);
+ await expect(page.getByRole('alert').filter({hasText:'has no spectrum on 3500.0–3600.0 Å'})).toBeVisible();
+ await expect(id(page,'galaxy-spectral-range')).toHaveText('Spectrometer range: 3600.0–4600.0 Å (600 bins).');
+ await go(page,'#lss-survey');await expect(id(page,'lss-spectral-range')).toHaveText('Spectrometer range: 3600.0–4600.0 Å (600 bins).',{timeout:30000});
 });
 // Front S2 review 2 closure (R1) and review 3 H1: a restored galaxy session file, and the analyser's "Restore this acquisition in
 // the telescope" for a galaxy, set the page's range only when the exposure's policy is marked (written since S2). An unmarked
@@ -128,3 +141,13 @@ test('a default acquired star is reported as covering the 3700–4700 Å window'
  await expect(page.getByText('covers the displayed 3700–4700 Å comparison window',{exact:false})).toBeVisible();
  await expect(page.getByText('does not cover the whole displayed',{exact:false})).toHaveCount(0);
 });
+// Front S3: Allow User Change (Spectrometer tab, env+0x2e8b, read at TSpectrometer FormShow 0x50d9d5) gates Spectral Range….
+test('Allow User Change unchecked disables Spectral Range… on the spectrometer routes and keeps the range',async({page})=>{
+ await page.goto('/#star-exposure');await setRange(page,'star-spectral-range-open',5,15);
+ await setVireoOptions(page,{'allow-user-change':false});
+ for(const [hash,opener] of [['#star-exposure','star-spectral-range-open'],['#sky-exposure','sky-spectral-range-open'],['#galaxy-exposure','galaxy-spectral-range-open']] as const){
+  await go(page,hash);await expect(id(page,opener)).toBeDisabled({timeout:30000});
+ }
+ await go(page,'#star-exposure');await expect(id(page,'star-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).');await expect(id(page,'star-spectral-range-locked')).toBeVisible();
+});
+

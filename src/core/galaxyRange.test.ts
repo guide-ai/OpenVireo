@@ -92,7 +92,8 @@ describe('Front S2 round 2: Hubble and LSS at VIREO 3700–4700 Å',()=>{
   for(const {s,t} of lssStatuses(LEGACY_GALAXY_RANGE))if(s.kind!=='unavailable'||s.reasons.includes('spectrum-mapping'))legacy[t]++;
   expect(counts).toEqual([196,93,198]);expect(legacy).toEqual(counts);expect([...lines]).toEqual(['KHG']);
   const p=lssPolicy(1,0,0,V);expect(p).toBe('openvireo-lss-v1:F1:R1:T0#R3700-4700');expect(parseLssPolicy(p).range).toEqual(V);
-  expect(()=>parseLssPolicy('openvireo-lss-v1:F1:R1:T0#R3600-4600')).toThrow();
+  // Front S3: every dialog mark parses (galaxyRangeAll witness); a non-dialog mark still throws.
+  expect(parseLssPolicy('openvireo-lss-v1:F1:R1:T0#R3600-4600').range).toEqual({minimum:3600,maximum:4600});expect(()=>parseLssPolicy('openvireo-lss-v1:F1:R1:T0#R3650-4600')).toThrow();
  });
  const lssContinuation=new Map<string,FieldContinuationSource>();
  it('the continuation values equal the independent Decimal witness (Hubble targets and a sample of LSS galaxies)',()=>{
