@@ -50,7 +50,7 @@ export default function WebPrintPreview({testId,caption,header=[],note,clone,chi
   window.addEventListener('afterprint',end);
   try{if(typeof window.print!=='function')throw new TypeError('print unavailable');window.print();setFailed(false);}catch{end();setFailed(true);}
  }
- return createPortal(<dialog ref={dialog} className="ob-dialog ob-wide web-print-root" aria-labelledby={`${id}-t`} data-testid={testId} onCancel={e=>{e.preventDefault();close();}}>
+ return createPortal(<dialog ref={dialog} className="ob-dialog ob-wide web-print-root" aria-labelledby={`${id}-t`} data-testid={testId} onCancel={e=>{e.preventDefault();e.stopPropagation();close();}}>
   <div className="web-print-chrome"><h2 id={`${id}-t`}>{PM.print.title}</h2>{nativeHeader&&<p className="ob-native">{caption}</p>}<p className="observatory-note">{note}</p></div>
   <section className="web-print-report" tabIndex={0} aria-label={caption}>
    {nativeHeader?<pre className="web-print-native" data-testid={`${testId}-native-header`}>{nativeHeader(printedAt).join('\n')}</pre>:<>

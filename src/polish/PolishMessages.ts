@@ -46,6 +46,9 @@ export const POLISH_MESSAGES=Object.freeze({
  }),
  clusterGuide:Object.freeze({nav:'Cluster HR guide'}),
  multiSpecPrint:Object.freeze({unavailable:'Print Selection Field is not available: no Multi-Spec field is shown here.'}),
+ infoListPrint:Object.freeze({
+  note:'Print preview of VIREO\'s list page: the date and time (here in your browser\'s format), the laboratory-table line (not recorded on this site), the student line (blank: no sign-in here), the window caption and the list lines, in Courier. Line spacing and indents follow VIREO\'s page; printer metrics are not reproduced. VIREO\'s print-job title is not printed on the page.',
+ }),
  siteInfo:Object.freeze({
   note:'In VIREO this list window hides its Search, Save Text and Edit menus for the site information, so only Print and Close are offered.',
   printNote:'Web adaptation: VIREO prints the list lines under its shared header on the printer; this prints the date, the caption and the lines.',

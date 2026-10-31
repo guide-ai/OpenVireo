@@ -56,9 +56,15 @@ test('M67 text/slider trial never invents inputs or confirms;report follows the 
  await b.getByLabel(labels.model,{exact:true}).selectOption('4');await b.getByLabel(labels.correction,{exact:true}).check();await expect(b.getByTestId('native-isochrone')).toHaveCount(1);
  await expect(b.getByTestId('native-confirmed-logage')).toHaveCount(0);await expect(b.getByTestId('cluster-reddening-source')).toContainText('Unapplied reddening source: original M 67');
  await expect(b.getByTestId('db-hr-report-kind')).toHaveText('Current trial (unconfirmed)');await expect.poll(()=>reportText(page)).toBe(m67Lines(name));
- await page.evaluate(()=>{window.print=()=>{(window as unknown as{printedWithClass:boolean}).printedWithClass=document.documentElement.classList.contains('printing-db-hr');window.dispatchEvent(new Event('afterprint'));};});
- await b.getByRole('button',{name:'Print this report',exact:true}).click();expect(await page.evaluate(()=>(window as unknown as{printedWithClass:boolean}).printedWithClass)).toBe(true);await expect(page.locator('html')).not.toHaveClass(/printing-db-hr/);
- await page.evaluate(()=>{window.print=()=>{throw new Error('blocked by test');};});await b.getByRole('button',{name:'Print this report',exact:true}).click();await expect(b.getByText('The browser could not start printing. The report above is unchanged.',{exact:true})).toBeVisible();await expect(page.locator('html')).not.toHaveClass(/printing-db-hr/);
+ // Front R4b: Print this report opens VIREO's list page (TInfoListForm1 0x59e4c0) with the report caption and lines.
+ await b.getByRole('button',{name:'Print this report',exact:true}).click();const preview=page.getByTestId('db-hr-report-print-preview');await expect(preview).toBeVisible();
+ const printed=(await preview.getByTestId('db-hr-report-print-preview-native-header').innerText()).split('\n');
+ expect(printed[0]).toMatch(/     Laboratory Table Number \(Not Recorded\)$/);expect(printed.slice(1,6)).toEqual(['','','','     Cluster Age/Distance Parameters','']);
+ expect(printed.slice(6)).toEqual(m67Lines(name).split('\n').map(l=>l?'     '+l:''));
+ await page.evaluate(()=>{window.print=()=>{(window as unknown as{printScope:string|null}).printScope=document.documentElement.getAttribute('data-print-scope');window.dispatchEvent(new Event('afterprint'));};});
+ await preview.getByTestId('db-hr-report-print-preview-print').click();expect(await page.evaluate(()=>(window as unknown as{printScope:string|null}).printScope)).toBe('web-print');await expect(page.locator('html')).not.toHaveAttribute('data-print-scope');
+ await page.evaluate(()=>{window.print=()=>{throw new Error('blocked by test');};});await preview.getByTestId('db-hr-report-print-preview-print').click();await expect(preview.getByText('Printing is not available in this browser.',{exact:true})).toBeVisible();
+ await preview.getByTestId('db-hr-report-print-preview-close').click();await expect(preview).toHaveCount(0);
  await counts(page,3);await expect(guide(page).getByTestId('cluster-lab-next')).toHaveAttribute('data-next','inspect');await closeGuide(page);
  await b.getByLabel(labels.note,{exact:true}).fill('My own M67 turnoff comparison by eye.');await b.getByRole('button',{name:'Confirm chosen model fit',exact:true}).click();await expect(b.getByTestId('native-confirmed-logage')).toHaveText('9.6');
  await expect(b.getByTestId('db-hr-report-kind')).toHaveText('Confirmed result');expect(await reportText(page)).toBe(m67Lines(name));

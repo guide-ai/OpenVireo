@@ -287,6 +287,7 @@ dialog dd{margin:0;color:var(--ov-text-muted);line-height:1.6}
 .camera-information-dialog dt{font-weight:600;margin:0;line-height:1.6}
 .camera-information-dialog dd{margin:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
 .camera-information-dialog button{min-height:44px;padding:.65rem}
+.camera-information-lines{font-family:'Courier New',Courier,monospace;white-space:pre-wrap;overflow-wrap:anywhere;margin:.8rem 0;line-height:1.5}
 .camera-information-dialog::backdrop{background:var(--ov-backdrop)}
 @media(max-width:430px){.camera-information-dialog dl{grid-template-columns:minmax(0,1fr);gap:.3rem}
  .camera-information-dialog dd{margin-bottom:.6rem}

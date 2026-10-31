@@ -16,10 +16,4 @@
 .cluster-lab-next{font-weight:600;color:var(--ov-accent-text)}
 .cluster-lab-dialog .lab-steps>li[data-next] h3{color:var(--ov-accent-text)}
 @media(max-width:620px){.cluster-database-lab .cluster-lab-dialog{width:calc(100% - 20px)}}
-@media print{
- html.printing-db-hr body *{visibility:hidden}
- html.printing-db-hr .db-hr-report-print,html.printing-db-hr .db-hr-report-print *{visibility:visible}
- html.printing-db-hr .db-hr-report-print{position:absolute;left:0;top:0;width:100%}
- html.printing-db-hr .db-hr-report pre{border:none;background:none}
-}
 

@@ -16,6 +16,7 @@ import {cameraCatalogReference} from './core/cameraCatalogReference';
 import type {OpticalIndex} from './core/opticalTelescope';
 import type {Pointing} from './core/sky';
 import CleaHelp from './clusters/CleaHelp';
+import CameraInformationButton from './CameraInformationButton';// Front R4b
 import {HELP_FILES} from './help/helpFiles';
 import CameraFieldSize from './polish/CameraFieldSize';// Front P
 import {cameraFieldInputs,ccdFilterByte,setCcdFilterByte,type CameraFieldInputs} from './camera/cameraFieldInputs';// Front R2
@@ -183,7 +184,7 @@ function CameraControl({objectXHidden=null,vireoId='',infraredCamera=true,active
  function chooseCamera(next:CameraExposureKind){if(next===camera)return;setCamera(next);setFilter(0);if(!CAMERA_GAINS[next].includes(gain))setGain(2);}
  useEffect(()=>{if(!infraredCamera&&camera==='ir'&&!running)chooseCamera('ccd');},[infraredCamera,camera,running]);
  return <section className="card camera-control" aria-labelledby="camera-control-title" data-testid="camera-control" data-phase={gate.phase} data-terminal={gate.terminal}>
-  <div className="eyebrow">{M.eyebrow}</div><h2 id="camera-control-title">{camera==='ir'?M.titleIr:M.title}</h2>{/* TCCDCam 0x5130fc / TIRCam 0x51512c Help1Click; options +0x9a4 and +0x9ec both default CamHlp.LST (docs/CLEA-HELP.md) */}<CleaHelp list={HELP_FILES['CAMHLP.LST']} testId="camera-help"/><p>{camera==='ir'?M.introIr:M.intro}</p>
+  <div className="eyebrow">{M.eyebrow}</div><h2 id="camera-control-title">{camera==='ir'?M.titleIr:M.title}</h2>{/* TCCDCam 0x5130fc / TIRCam 0x51512c Help1Click; options +0x9a4 and +0x9ec both default CamHlp.LST (docs/CLEA-HELP.md) */}<CleaHelp list={HELP_FILES['CAMHLP.LST']} testId="camera-help"/>{/* Front R4b: File › Information... (TCCDCam 0x512c80 / TIRCam 0x514cb0) */}<CameraInformationButton kind={camera} disabled={busy}/><p>{camera==='ir'?M.introIr:M.intro}</p>
   <fieldset className="camera-settings" disabled={running||busy}>
    <fieldset className="camera-kind"><legend>{M.camera}</legend>
     {/* R3 review L3: a running IR exposure keeps its radio until it ends, then the effect above returns to the CCD. */(infraredCamera||camera==='ir'?['ccd','ir'] as const:['ccd'] as const).map(k=><label key={k}><input type="radio" name="camera-kind" checked={camera===k} onChange={()=>chooseCamera(k)}/>{M.cameraNames[k]}</label>)}

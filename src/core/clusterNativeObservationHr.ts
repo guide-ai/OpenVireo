@@ -1,6 +1,7 @@
 import{appendNativeResultList,buildNativeResultList,NativeResultListError,refreshNativeResultList,type NativeResultList}from'./nativeResultList';
 import{commitNativeRecordEdit,NativeObservationError,openNativeRecordEdit,type NativeObservationData,type NativeObservationRecord,type StoredNumber}from'./nativeObservationResults';
 import{NATIVE_CLUSTER_MODELS}from'./nativeCluster';
+import{delphiFixed}from'./variableStars';
 /** Original HR "File>Load/Plot>Data from Observations" route and its
  * "Tools>View/Print Parameters" report. Evidence
  * VIREO-HR-OBSERVATION-PLOT-REPORT-STATIC-2026-10-21 against executable SHA256
@@ -130,8 +131,8 @@ const intIn=(v:unknown,min:number,max:number):v is number=>typeof v==='number'&&
 export function validClusterNativeHrTrial(t:ClusterNativeHrTrial):boolean{return typeof t.zamsShown==='boolean'&&typeof t.isochroneShown==='boolean'&&typeof t.distanceOption==='boolean'&&intIn(t.modulusTicks,0,1500)&&intIn(t.ebvTicks,0,250)&&intIn(t.modelIndex,0,5)&&intIn(t.ageIndex,0,49)&&intIn(t.offsetTicks,-100,100);}
 export const clusterNativeHrHundredths=(ticks:number)=>(ticks<0?'-':'')+Math.floor(Math.abs(ticks)/100)+'.'+String(Math.abs(ticks)%100).padStart(2,'0');
 export const clusterNativeHrLogAgeTicks=(ageIndex:number)=>780+5*ageIndex;
-/** Number/Math replaces the native Extended Power(0x42703c);FloatToStrF ffFixed0
- * decimal rounding is approximated by toFixed(0)(half-up for positive values). */
+/** Number/Math replaces the native Extended Power(0x42703c). FloatToStrF ffFixed 0 is the ported delphiFixed (18-digit
+ * decimal, half up; Front R4b, dossier C §4), replacing an earlier Number toFixed approximation. */
 export function clusterNativeHrDistance(t:ClusterNativeHrTrial):number{return 10**((t.modulusTicks/100+5-(t.ebvTicks/100)*3)/5);}
 export function clusterNativeHrAgeMyr(t:ClusterNativeHrTrial):number{return 10**(clusterNativeHrLogAgeTicks(t.ageIndex)/100-6);}
 export type ClusterNativeHrReport=Readonly<{caption:string;lines:readonly string[];clusterNameGap:true}>;
@@ -139,8 +140,8 @@ export function clusterNativeHrReport(t:ClusterNativeHrTrial):ClusterNativeHrRep
  if(!validClusterNativeHrTrial(t))throw new RangeError('trial');
  // Line1 copies the database-selection record(0x5b5c30);its observation-mode content is not recovered.
  const lines=['Cluster: '];
- if(t.zamsShown){lines.push('','From ZAMS fit:','  V-Mv = '+clusterNativeHrHundredths(t.modulusTicks),'  E(B-V) = '+clusterNativeHrHundredths(t.ebvTicks));if(t.distanceOption)lines.push('  Estimated Cluster Distance: '+clusterNativeHrDistance(t).toFixed(0)+' Parsecs');}
- if(t.isochroneShown)lines.push('','Isochrone Model Parameters:','  Metallicity: '+NATIVE_CLUSTER_MODELS[t.modelIndex]!.label,'  Log(Age/yrs): '+clusterNativeHrHundredths(clusterNativeHrLogAgeTicks(t.ageIndex)),'  Estimated Cluster Age: '+clusterNativeHrAgeMyr(t).toFixed(0)+' Million Years','  (B-V) Adjustment: '+clusterNativeHrHundredths(t.offsetTicks));
+ if(t.zamsShown){lines.push('','From ZAMS fit:','  V-Mv = '+clusterNativeHrHundredths(t.modulusTicks),'  E(B-V) = '+clusterNativeHrHundredths(t.ebvTicks));if(t.distanceOption)lines.push('  Estimated Cluster Distance: '+delphiFixed(clusterNativeHrDistance(t),0)+' Parsecs');}
+ if(t.isochroneShown)lines.push('','Isochrone Model Parameters:','  Metallicity: '+NATIVE_CLUSTER_MODELS[t.modelIndex]!.label,'  Log(Age/yrs): '+clusterNativeHrHundredths(clusterNativeHrLogAgeTicks(t.ageIndex)),'  Estimated Cluster Age: '+delphiFixed(clusterNativeHrAgeMyr(t),0)+' Million Years','  (B-V) Adjustment: '+clusterNativeHrHundredths(t.offsetTicks));
  return Object.freeze({caption:'Cluster Age/Distance Parameters',lines:Object.freeze(lines),clusterNameGap:true});
 }
 

@@ -87,7 +87,8 @@ export const CLUSTER_HR_EN=Object.freeze({
  hrPrintOrientation:'VIREO page layout',
  portrait:'Portrait',landscape:'Landscape',
  hrPrintImage:'Color-magnitude diagram, print copy',
- reportPrintNote:'Browser printing of the report lines (a web adaptation). VIREO prints this report from its list window (0x59e4c0) with the date, student lines and caption; that page layout is not reproduced here.',
+ reportPrint:'Print this report',
+ reportPrintNote:'Opens a print preview of VIREO\'s list page for this report (0x59e4c0): the date, the laboratory-table and student lines, the caption Cluster Age/Distance Parameters and the report lines. VIREO opens the report as its own window from Tools › View/Print Parameters; here it stays in this panel.',
  // Select Cluster Data (TClstrListForm2) and Display/Print Data (TClstrRptForm1)
  selectCluster:'Select Cluster Data...',// VIREO
  listMenu:'List',searchItem:'Search...',printItem:'Print...',saveList:'Save List...',closeItem:'Close',selectionMenu:'Selection',plotItem:'Plot',// VIREO

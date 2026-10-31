@@ -15,6 +15,7 @@ import {clusterNativeHrHitTest,observationalDataFields,OBSERVATIONAL_DATA_LITERA
 import ObservationalDataDialog from '../clusters/ObservationalDataDialog';
 import RecordedResultsWindow from '../clusters/RecordedResultsWindow';
 import {CLUSTER_HR_EN as HR} from '../clusters/ClusterHrMessages';
+import InfoListPrintPreview from '../polish/InfoListPrintPreview';// Front R4b review 1 L1
 
 export type ClusterNativeObservationHrProps=Readonly<{
  /** Optional handoff of an already ordered native results list(e.g. from the DAT inspector). */
@@ -39,6 +40,7 @@ function ClusterNativeObservationHr({initialList=null,messages,idPrefix='cnhr-',
  const plotSvg=useRef<SVGSVGElement>(null),addButton=useRef<HTMLButtonElement>(null),confirmButton=useRef<HTMLButtonElement>(null),cancelReadButton=useRef<HTMLButtonElement>(null);
  const focusIntent=useRef<'input'|'add'|'confirm'|'cancelRead'|null>(null),activeRead=useRef<number|null>(null);
  const [downloadErrorFor,setDownloadErrorFor]=useState<NativeResultList|null>(null);
+ const [reportPrinting,setReportPrinting]=useState(false);
  const interactionVersion=useRef(0),asyncFocus=useRef<{owner:Element;version:number}|null>(null);
  useEffect(()=>{const changed=()=>{interactionVersion.current++;};document.addEventListener('focusin',changed,true);document.addEventListener('pointerdown',changed,true);return()=>{document.removeEventListener('focusin',changed,true);document.removeEventListener('pointerdown',changed,true);};},[]);
  // Explicit local actions own focus; host navigation/restore must not steal it.
@@ -185,7 +187,10 @@ function ClusterNativeObservationHr({initialList=null,messages,idPrefix='cnhr-',
    <label className="cnhr-check"><input type="checkbox" checked={trial.distanceOption} disabled={disabled} onChange={e=>updateTrial({distanceOption:e.target.checked})}/>{m.distanceOption}</label>
   </section>
 
-  <section aria-labelledby={id('report')}><h3 id={id('report')}>{m.reportHeading}</h3><figure className="cnhr-report"><figcaption>{report.caption}</figcaption><pre data-testid="cnhr-report">{report.lines.join('\n')}</pre></figure><p className="cluster-native-hr-note">{m.reportNote}</p></section>
+  <section aria-labelledby={id('report')}><h3 id={id('report')}>{m.reportHeading}</h3><figure className="cnhr-report"><figcaption>{report.caption}</figcaption><pre data-testid="cnhr-report">{report.lines.join('\n')}</pre></figure><p className="cluster-native-hr-note">{m.reportNote}</p>
+   {/* View/Print Parameters in observation mode (+0x40d) is the same TAgeListForm1 window; its List › Print... is 0x59e4c0. */}
+   <button type="button" className="secondary-button" data-testid="cnhr-report-print" onClick={()=>setReportPrinting(true)}>{HR.reportPrint}</button><p className="cluster-native-hr-note">{HR.reportPrintNote}</p>
+   {reportPrinting&&<InfoListPrintPreview testId="cnhr-report-print-preview" caption={report.caption} lines={report.lines} onClose={()=>setReportPrinting(false)}/>}</section>
 
   {((shownPlot&&shownPlot.rows.length>0)||(w.observationsPlotted&&plot.status==='blocked'&&records>0))&&<details className="cnhr-records"><summary>{m.recordsSummary}</summary><div className="photometer-table"><table><thead><tr><th scope="col">{m.colIndex}</th><th scope="col">{m.colObject}</th><th scope="col">{m.colKind}</th><th scope="col">{m.colB}</th><th scope="col">{m.colV}</th><th scope="col">{m.colBV}</th><th scope="col">{m.colPixel}</th><th scope="col">{m.colStatus}</th><th scope="col">{HR.obsDataColumn}</th></tr></thead>
    <tbody>{tableRows.map(r=><tr key={r.index} data-testid="cnhr-row" data-blocking={r.status==='blocking'?'true':undefined}><td>{r.index}</td><td>{r.object}</td><td>{m.kind(r.kind)}</td><td title={m.encoding(r.storedB.hex)}>{r.b??m.storedNumber(r.storedB)}</td><td title={m.encoding(r.storedV.hex)}>{r.v??m.storedNumber(r.storedV)}</td><td title={r.bMinusV?.exact}>{r.bMinusV?show4(r.bMinusV.value):'—'}</td><td>{r.pixel?`${r.pixel.x}, ${r.pixel.y}`:'—'}</td><td>{r.status==='before-block'?m.beforeBlock:r.status==='blocking'?m.blockingRecord(m.blockedField[r.field]):r.status==='after-block'?m.afterBlock:m.status[r.status]}{r.status==='plotted'&&!r.inFrame?m.outside:''}</td><td>{r.status==='plotted'&&r.pixel&&<button type="button" className="secondary-button" data-testid={`${idPrefix}obs-open-${r.index}`} disabled={obsBlocked||dialogFor!==null} onClick={e=>openRecord(r.index,r.pixel!,e.currentTarget)}>{HR.obsDataOpen}</button>}</td></tr>)}</tbody></table></div></details>}
