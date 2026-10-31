@@ -1,3 +1,4 @@
+import {fieldSpectrumBytes} from '../core/exposureSpectrum';
 import {readFileSync} from 'node:fs';
 import {createHash,webcrypto} from 'node:crypto';
 import {afterAll,beforeAll,describe,expect,it,vi} from 'vitest';
@@ -58,9 +59,13 @@ describe('the generic spectrometer',()=>{
  });
  it('policy codec: exact pointing, telescope and frozen JD round trip',()=>{
   const p={ra:11.74525,dec:55.37861111},policy=fieldSpectrumPolicy(p,2);
-  expect(policy).toBe('openvireo-field-spectrum-v1:11.74525,55.37861111:T2');expect(parseFieldSpectrumPolicy(policy)).toEqual({pointing:p,telescope:2});
+  expect(policy).toBe('openvireo-field-spectrum-v1:11.74525,55.37861111:T2');expect(parseFieldSpectrumPolicy(policy)).toEqual({pointing:p,telescope:2,range:{minimum:3700,maximum:4700}});
   const vt={jd:2460614.8125,source:'observatory-clock' as const},timed=fieldSpectrumPolicy(p,2,vt);
-  expect(timed).toBe('openvireo-field-spectrum-v1:11.74525,55.37861111:T2:JD2460614.8125');expect(parseFieldSpectrumPolicy(timed)).toEqual({pointing:p,telescope:2,variableTime:vt});
+  expect(timed).toBe('openvireo-field-spectrum-v1:11.74525,55.37861111:T2:JD2460614.8125');expect(parseFieldSpectrumPolicy(timed)).toEqual({pointing:p,telescope:2,variableTime:vt,range:{minimum:3700,maximum:4700}});
+  // Front S2: a non-default range is the #R mark after the policy; the default keeps the bytes; a forged range is refused.
+  const ranged=fieldSpectrumPolicy(p,2,vt,{minimum:4000,maximum:5000});expect(ranged).toBe(`${timed}#R4000-5000`);
+  expect(parseFieldSpectrumPolicy(ranged)).toEqual({pointing:p,telescope:2,variableTime:vt,range:{minimum:4000,maximum:5000}});
+  for(const bad of [`${timed}#R4000-4050`,`${timed}#R3700-4700`,`${policy}#R`])expect(parseFieldSpectrumPolicy(bad)).toBeNull();
   for(const bad of ['openvireo-field-spectrum-v1:11.745250,55:T2','openvireo-field-spectrum-v1:24,0:T0','openvireo-field-spectrum-v1:1,0:T3',3,
    'openvireo-field-spectrum-v1:1,0:T0:JD2460614.81250','openvireo-field-spectrum-v1:1,0:T0:JD1','openvireo-field-spectrum-v1:1,0:T0:JDNaN','openvireo-field-spectrum-v1:1,0:T0:JD'])expect(parseFieldSpectrumPolicy(bad)).toBeNull();
  });
@@ -103,6 +108,30 @@ describe('the generic spectrometer',()=>{
   // A galaxy at the centre of M31's field (its catalogue galaxy is selected; whatever the engine says is typed, never a guess).
   const m31=await prepareFieldSpectrum({ra:0.7123,dec:41.2692},2);
   expect(m31.status).toBe('ready');if(m31.status==='ready')expect(m31.result.target?.id??m31.result.reasons.join()).toBeTruthy();
+ });
+ it('Front S2: off the default a star is observed on the range (#R policy, its grid, a replayable session); a galaxy is refused',async()=>{
+  const r={minimum:4000,maximum:5000},at={ra:11+44/60+42.9/3600,dec:55+22/60+43/3600};
+  const star=await prepareFieldSpectrum(at,0,{range:r});expect(star.status).toBe('ready');if(star.status!=='ready')return;
+  expect(star.result.starTarget).toBeTruthy();expect(star.policy.endsWith('#R4000-5000')).toBe(true);
+  if(!star.result.reasons.length){
+   expect(star.result.calibration!.wavelengths[0]).toBe(4000);
+   const e=lssExposureEngine(star.result,star.policy),s=pauseJournal(tickJournal(startJournal(activateJournal(e.create(3))),1000));
+   const back=await readFieldSpectrumSession(serializeFieldSpectrumSession(s));expect(back.prepared.policy).toBe(star.policy);expect(back.state.exposure.counts).toEqual(s.exposure.counts);
+  }
+  const coma=await prepareFieldSpectrum({ra:12.99311111111111,dec:27.959722222222222},2,{range:r});
+  expect(coma).toEqual({status:'unavailable',reason:'range-not-witnessed'});
+  expect((await prepareFieldSpectrum({ra:12.99311111111111,dec:27.959722222222222},2)).status).toBe('ready');
+ });
+ it('review 1 M1/M2: a field star on ranges of every width saves its .SSP from its own grid; below 3510 Å it gives no counts',async()=>{
+  const at={ra:11+44/60+42.9/3600,dec:55+22/60+43/3600};
+  for(const r of [{minimum:3600,maximum:3700},{minimum:3700,maximum:5700},{minimum:3500,maximum:7400},{minimum:3500,maximum:3600},{minimum:6400,maximum:7400}]){
+   const star=await prepareFieldSpectrum(at,0,{range:r});expect(star.status,`${r.minimum}`).toBe('ready');if(star.status!=='ready')continue;
+   expect(star.result.reasons,`${r.minimum}–${r.maximum}`).toEqual([]);const c=star.result.calibration!;
+   if(r.minimum===3500)expect(c.sourceValues.slice(0,Math.ceil((3510-3500)/((r.maximum-r.minimum)/600)))).toEqual(expect.arrayContaining([0]));
+   const e=lssExposureEngine(star.result,star.policy),s=pauseJournal(tickJournal(startJournal(activateJournal(e.create(3))),1000));
+   const lines=new TextDecoder().decode(fieldSpectrumBytes(s,star.result,at)).split('\r\n');
+   expect(lines[1].split(' ')[0]).toBe(r.minimum.toFixed(2));expect(Number(lines[600].split(' ')[0])).toBeCloseTo(r.minimum+599*(r.maximum-r.minimum)/600,1);
+  }
  });
  it('a session file replays only after the field is prepared again at its policy pointing',async()=>{
   // Search a few pointings for an available spectrum (a galaxy or a star with a bundled template).

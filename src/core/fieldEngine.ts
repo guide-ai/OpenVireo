@@ -671,7 +671,8 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
   const zeroPoint=telescopeZeroPoint(c.baseZeroPoint,c.telescopeCorrection);if(zeroPoint!==c.zeroPoint)throw new FieldEngineError('evidence');
   const amplitude=photonAmplitudes(st.magnitude,c.skyMagnitude,zeroPoint,fraction),{minimum,maximum}=options.spectralInterval??{minimum:4000,maximum:5000};
   const grid=galaxyChannelGrid(minimum,maximum),values:number[]=[];
-  for(const w of grid.wavelengths){const v=sampleUniformSpectrum(template.spectrum,w);if(!v.valid||!(v.value>=0))return Object.freeze({...base,starTarget:st,reasons:Object.freeze(['spectrum-range' as const])});values.push(v.value);}
+  // Sampler 0x55dfe0: a wavelength outside the template gives 0 with no draw (Front S2 review 1 M2, as the catalogue star route).
+  for(const w of grid.wavelengths){const v=sampleUniformSpectrum(template.spectrum,w);if(v.valid&&!(v.value>=0))return Object.freeze({...base,starTarget:st,reasons:Object.freeze(['spectrum-range' as const])});values.push(v.valid?v.value:0);}
   const sourceMeans=Object.freeze(values.map(v=>v*amplitude.source));
   const calibration=Object.freeze({sourceFile:template.file,zeroPoint,pixelLevel,fraction,amplitude,instrumentMagnitude:st.magnitude,sourceMeans,sourceValues:Object.freeze(values),wavelengths:grid.wavelengths});
   if(Math.max(...sourceMeans)*FIELD_MULTIPLIER*1000>=c.meanBound)return Object.freeze({...base,starTarget:st,calibration,reasons:Object.freeze(['mean-bound' as const])});
