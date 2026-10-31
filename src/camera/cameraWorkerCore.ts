@@ -2,11 +2,13 @@
  * what this returns. Parsing and composing a 1024^2 exposure take 0.4 s to several seconds, so they run off the main
  * thread; Stop terminates the Worker. */
 import {readVizierCatalog,selectVizierCatalog,wholeSkySelection,VizierCatalogError,type VizierRowContext,type VizierSelection} from '../core/vizierNomad';
-import {composeCameraExposure,type CameraExposure,type CameraExposureRecipe,type CameraExtraSource,type CameraFieldObjectInput} from '../core/cameraExposure';
+import type {NomadSelection} from '../core/nativeNomadRows';
+import {composeCameraExposure,type CameraExposure,type CameraExposureRecipe,type CameraExtraSource,type CameraFieldObjectInput,type CameraOverlayInput} from '../core/cameraExposure';
 
 export type CameraWorkerRequest=
- |Readonly<{type:'parse';bytes:Uint8Array;context:VizierRowContext;magnitudeLimit:number}>
- |Readonly<{type:'compose';recipe:CameraExposureRecipe;extras:readonly CameraExtraSource[];fieldObjects?:readonly CameraFieldObjectInput[]|null}>;
+ /** Front C6: `bounds` is the region record's selection (cameraRegion.ts); without it the whole sky, as exposures made before C6. */
+ |Readonly<{type:'parse';bytes:Uint8Array;context:VizierRowContext;magnitudeLimit:number;bounds?:NomadSelection}>
+ |Readonly<{type:'compose';recipe:CameraExposureRecipe;extras:readonly CameraExtraSource[];fieldObjects?:readonly CameraFieldObjectInput[]|null;overlay?:CameraOverlayInput|null}>;
 export type CameraWorkerExposure=Omit<CameraExposure,'plane'>&Readonly<{plane:Omit<CameraExposure['plane'],'pixels'>&{pixels:Float32Array}}>;
 export type CameraWorkerReply=
  |Readonly<{type:'parsed';ok:true;rows:number;selected:number}>
@@ -19,7 +21,7 @@ export function handleCameraWorkerRequest(state:CameraWorkerState,request:Camera
  if(request.type==='parse'){
   try{
    const catalog=readVizierCatalog(request.bytes,request.context);
-   state.selection=selectVizierCatalog(catalog,wholeSkySelection(request.magnitudeLimit));
+   state.selection=selectVizierCatalog(catalog,request.bounds?{...request.bounds,magnitudeLimit:Math.fround(request.magnitudeLimit)}:wholeSkySelection(request.magnitudeLimit));
    return {reply:{type:'parsed',ok:true,rows:catalog.entries.length,selected:state.selection.selectedEntries.length},transfer:[]};
   }catch(error){
    state.selection=null;
@@ -29,7 +31,7 @@ export function handleCameraWorkerRequest(state:CameraWorkerState,request:Camera
  }
  try{
   if(!state.selection)return {reply:{type:'composed',ok:false,code:'preparation'},transfer:[]};
-  const x=composeCameraExposure(request.recipe,state.selection,request.extras,request.fieldObjects??null);
+  const x=composeCameraExposure(request.recipe,state.selection,request.extras,request.fieldObjects??null,request.overlay??null);
   // Pixels are Single values, so a Float32Array carries them exactly.
   const pixels=Float32Array.from(x.plane.pixels);
   return {reply:{type:'composed',ok:true,exposure:{...x,plane:{...x.plane,pixels}}},transfer:[pixels.buffer]};

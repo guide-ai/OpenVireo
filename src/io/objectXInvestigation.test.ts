@@ -57,6 +57,21 @@ describe('v28 Object X investigation',()=>{
   const shown=await portableObjectXInvestigation({...back,answer:'asteroid',revealed:true});
   expect((shown.objectX as {exposures:Record<string,unknown>[]}).exposures[0]).toHaveProperty('pairs',inv.exposures[0].pairs);
  },60_000);
+ // QA1 closure × Front C6 (merge): every combination of stored counts (E1) and fieldAnchor (C6) restores and re-saves
+ // byte-identically, with the format's key order (pairs/skipped before fitsSha256, fieldAnchor last).
+ for(const [name,counts,anchor] of [['old file: counts, no anchor',true,false],['C6 file: anchor and counts',true,true],['new unrevealed file: anchor, no counts',false,true]] as const)
+ it(`QA1 closure × C6: ${name}`,async()=>{
+  const full=investigation();
+  const inv={...full,answer:null,revealed:false,measure:null,log:[],exposures:full.exposures.map(e=>({...e,skipped:[] as const,...(counts?{countsStored:true as const}:{}),...(anchor?{fieldAnchor:{ra:e.ra,dec:e.dec}}:{})}))};
+  const {objectX,digest}=await portableObjectXInvestigation(inv),text=JSON.stringify(objectX);
+  const keys=Object.keys((objectX as {exposures:Record<string,unknown>[]}).exposures[0]);
+  expect(keys.includes('pairs')).toBe(counts);expect(keys.includes('skipped')).toBe(counts);expect(keys.includes('fieldAnchor')).toBe(anchor);
+  expect(keys.at(-1)).toBe(anchor?'fieldAnchor':'fitsSha256');
+  const back=await admitObjectXInvestigation(JSON.parse(text),digest);
+  expect(back.exposures.map(e=>[e.pairs,e.skipped,e.fieldAnchor??null,e.countsStored===true])).toEqual(inv.exposures.map(e=>[e.pairs,e.skipped,anchor?{ra:e.ra,dec:e.dec}:null,counts]));
+  const again=await portableObjectXInvestigation(back);
+  expect(JSON.stringify(again.objectX)).toBe(text);expect(again.digest).toBe(digest);
+ },60_000);
  it('QA1 closure E1: an older unrevealed file with stored counts still restores and re-saves byte-identically',async()=>{
   const full=investigation(),old={...full,exposures:full.exposures.map(e=>({...e,skipped:[] as const,countsStored:true as const})),answer:null,revealed:false,measure:null,log:[]};
   const {objectX,digest}=await portableObjectXInvestigation(old),text=JSON.stringify(objectX);
@@ -137,6 +152,30 @@ describe('v28 review 2 fixes',()=>{
   expect(await admitObjectXInvestigation(objectX,digest)).toEqual(inv);
   const o=JSON.parse(JSON.stringify(objectX));o.exposures[0].seed=100;
   await expect(admitObjectXInvestigation(o,digest)).rejects.toMatchObject({code:'replay'});
+ },30_000);
+ it('Front C6: an exposure records its field anchor and replays with that region; records without one replay with the whole sky',async()=>{
+  const xml=new Uint8Array(readFileSync(new URL('../../tests/fixtures/vizier/nomad-56.75+24.12-r0.01.xml',import.meta.url)));
+  const sha=createHash('sha256').update(xml).digest('hex');
+  const extract:CameraExtract={id:'test-pleiades',catalog:'I/297',raDegrees:56.75,decDegrees:24.12,radiusDegrees:1,file:'test.xml',sha256:sha,bytes:xml.length,recordedAt:'2026-10-27',request:'https://vizier.cds.unistra.fr/viz-bin/conesearch/I/297/out?RA=56.75&DEC=24.12&SR=1',host:'vizier.cds.unistra.fr'};
+  const catalog={extracts:[extract],extractBase:'/',fetchImpl:(async()=>new Response(xml)) as unknown as typeof fetch};
+  setObjectXResources({orbit:async()=>sav,catalog});
+  const recipe={camera:'ccd' as const,opticalIndex:0 as const,filterPosition:0,seconds:5,gain:2,centerRaHours:56.75/15,centerDecDegrees:24.12,seed:99};
+  // NF selects the recorded row (R band). A telescope that drifted 0.38° north of the loaded field: the recorded row (Dec 24.12) is outside its region and is dropped.
+  const fieldAnchor={ra:recipe.centerRaHours,dec:24.12-.38},jd=2454983.7;
+  const whole=await replayStaticExposure(recipe,jd,[],catalog),cut=await replayStaticExposure(recipe,jd,[],catalog,fieldAnchor),same=await replayStaticExposure(recipe,jd,[],catalog,{ra:recipe.centerRaHours,dec:24.12});
+  if(!whole.ok||!cut.ok||!same.ok)throw Error('replay');
+  const h=(b:Uint8Array)=>createHash('sha256').update(b).digest('hex');
+  expect(h(cut.fits)).not.toBe(h(whole.fits));expect(h(same.fits)).toBe(h(whole.fits));
+  const e={jd,seconds:5,filter:0,gain:2,telescope:0 as const,ra:recipe.centerRaHours,dec:24.12,seed:99,catalogMode:'static' as const,catalogSha256:sha,extractId:'test-pleiades',
+   listJd:null,orbitFile:null,limit:null,pairs:0,skipped:[],fitsSha256:h(cut.fits),fieldAnchor};
+  const inv={...investigation(),exposures:[e],images:[],measure:null,log:[]};
+  const {objectX,digest}=await portableObjectXInvestigation(inv);
+  expect((objectX as {exposures:{fieldAnchor?:unknown}[]}).exposures[0].fieldAnchor).toEqual(fieldAnchor);
+  expect(await admitObjectXInvestigation(objectX,digest)).toEqual(inv);
+  const o=JSON.parse(JSON.stringify(objectX));delete o.exposures[0].fieldAnchor;
+  await expect(admitObjectXInvestigation(o,digest)).rejects.toMatchObject({code:'replay'});
+  const bad=JSON.parse(JSON.stringify(objectX));bad.exposures[0].fieldAnchor={ra:24,dec:0};
+  await expect(admitObjectXInvestigation(bad,digest)).rejects.toThrow();
  },30_000);
 });
 

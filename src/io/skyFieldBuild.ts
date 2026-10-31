@@ -14,7 +14,9 @@ import {yieldTask} from './yieldTask';
 
 export type SkyFieldView='telescope'|'finder';
 export type SkyFieldReason='object-x-hidden'|'object-x-unreadable'|SkyPackFailure['reason']|'field-reason';
-export type SkyField=Readonly<{status:'ready';view:SkyFieldView;anchor:Pointing;telescope:FieldTelescope;packId:string;raster:RgbImage;population:FieldPopulation;scene:NativeSelectionScene}>
+export type SkyField=Readonly<{status:'ready';view:SkyFieldView;anchor:Pointing;telescope:FieldTelescope;packId:string;raster:RgbImage;population:FieldPopulation;scene:NativeSelectionScene;
+ /** Front C6, telescope view: the CCD overlay's source (fieldEngine `galaxyLayer`) and the galaxies the paint left out. */
+ galaxyRed?:Uint8Array;unpaintedGalaxies?:number}>
  |Readonly<{status:'unavailable';view:SkyFieldView;anchor:Pointing;reason:SkyFieldReason;detail?:string}>;
 /** What one build needs (plain data, so it can cross to the Worker). The JD is frozen by the caller. */
 export type SkyFieldBuildRequest=Readonly<{view:SkyFieldView;anchor:Pointing;telescope:FieldTelescope;finderMagnitudeLimit:number;variableTime?:FieldVariableTime}>;
@@ -47,7 +49,7 @@ export async function buildSkyField(r:SkyFieldBuildRequest,signal?:AbortSignal):
  // G5 closure N4 (theoretical, none found in 45 pointings): evaluateFieldView leaves a TRUE variable with unavailable values
  // unpainted when its stamp misses the central 312² crop, but this view pans across the 936² cache, where such a star would be
  // missing silently; the finder applies the whole-cache rule (evaluateFinderView).
- const options:{-readonly [K in keyof FieldOptions]:FieldOptions[K]}={...base};
+ const options:{-readonly [K in keyof FieldOptions]:FieldOptions[K]}={...base,galaxyLayer:true};
  let v=evaluateFieldView(pack.pack,inputs.glx,anchor,r.telescope,options);
  const retry=async(reason:FieldUnavailableReason)=>{
   if(reason==='qso-merge'){options.qso='merge';options.qsoCatalog=inputs.qso;}
@@ -57,5 +59,6 @@ export async function buildSkyField(r:SkyFieldBuildRequest,signal?:AbortSignal):
  };
  for(let i=0;i<2&&v.reasons.length&&await retry(v.reasons[0]);i++);
  return v.reasons.length||!v.raster||!v.population||!v.scene?unavailable('field-reason',v.reasons[0]??'outside-pack')
-  :Object.freeze({status:'ready',view,anchor,telescope:r.telescope,packId:pack.pack.id,raster:v.raster,population:v.population,scene:v.scene});
+  :Object.freeze({status:'ready',view,anchor,telescope:r.telescope,packId:pack.pack.id,raster:v.raster,population:v.population,scene:v.scene,
+   ...(v.galaxyRed?{galaxyRed:v.galaxyRed}:{}),unpaintedGalaxies:v.outsideViewGalaxies?.length??0});
 }

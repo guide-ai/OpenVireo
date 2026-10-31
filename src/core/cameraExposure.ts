@@ -13,7 +13,8 @@
  *     (2 draws + inclusive bounds) and appended with kind 0 and its Single magnitude. Field objects (0x5228dc) are
  *     not ported: 0x522a18 always returns a record, so natively they only overwrite a magnitude (see doc).
  *  3. Background 0x521635: one draw per pixel, row-major (cameraBackground.ts).
- *  4. Optional CCD overlay (form+0x412): not supported here.
+ *  4. CCD overlay (form+0x412, Front C6): the post-GDI low bytes of the loaded field's galaxy layer (cameraOverlaySource.ts),
+ *     one draw per positive level after the background (0x52198e..0x521a59, cameraOverlay.ts).
  *  5. Source loop 0x521a6f..0x521b35 in list order: kind 2 consumes the next record as its endpoint (extended
  *     0x524a6c); others are points (0x5245d0). Magnitude: NF subtracts Single 0.25 (0x521a8d).
  *  6. Well/gain/A-D (cameraFinal.ts).
@@ -25,6 +26,7 @@ import {compiledCameraSourceCalibration,cameraPointParametersFromCalibration,Cam
 import {cameraPointPlan,CameraPointError,type CameraPointPlan} from './cameraPointSource';
 import {cameraExtendedPlan,CameraExtendedError,CAMERA_STREAK_VISIT_LIMIT,type CameraExtendedPlan} from './cameraExtendedSource';
 import {cameraScalarJitter} from './cameraBackground';
+import {applyCcdOverlayInPlace,ccdOverlayScale} from './cameraOverlay';
 import {compiledCameraFinalParameters,finalizeCameraPlane,type CameraFinalStage} from './cameraFinal';
 import {cameraCatalogReference} from './cameraCatalogReference';
 import {opticalIndex,type OpticalIndex} from './opticalTelescope';
@@ -57,11 +59,14 @@ export type CameraFieldRecord=Readonly<{
  * admission [W]; null when no tail was overwritten. */
 export type CameraFieldObjectPass=Readonly<{eligible:number;inBounds:number;tail:'catalog'|'moving-end'|'none'|null;magnitude:number|null;tailDrawn:boolean|null;
  /** True when the tail needed the wider saturated-tail admission (VIREO's saturated star) [W]. */tailSaturatedAdmission:boolean}>;
+export type CameraOverlayResult=Readonly<{draws:number}>;
 export type CameraSkippedSource=Readonly<{extraIndex:number;reason:'moving-pair-off-detector'|'moving-pair-geometry'|'moving-pair-budget'}>;
 export type CameraExposure=Readonly<{
  recipe:CameraExposureRecipe;plane:CameraFinalStage;records:readonly CameraFieldRecord[];skipped:readonly CameraSkippedSource[];
  /** null when no field objects were supplied (the pass is not run: masked near Object X, or the field population could not be loaded or built). */
  fieldObjects:CameraFieldObjectPass|null;
+ /** Front C6: the CCD overlay's draws, or null when no overlay was applied. */
+ overlay:CameraOverlayResult|null;
  drawsConsumed:number;finalRandomState:number;
  catalog:Readonly<{rows:number;selected:number;onDetector:number}>;
  adaptations:readonly string[];unrecovered:readonly string[];
@@ -82,8 +87,8 @@ export const CAMERA_GAINS:Readonly<Record<CameraExposureKind,readonly number[]>>
 export const CAMERA_EXPOSURE_ADAPTATIONS=Object.freeze([
  'private-seeded-stream: each exposure draws from its own uint32-seeded copy of the recovered Random step',
  'fresh-field-list: the list is rebuilt per exposure (initialize -> select -> update), and moving records are projected in the same stream just before catalog rows',
- 'whole-sky-selection: the region bounds at [0x5b5b30] are not recovered; selection keeps the magnitude limit',
- 'no-ccd-overlay: the optional bitmap overlay branch (form+0x412) is not offered; its source, gate, sizes and stretch mode are recovered (Front R2), but its input, the galaxy-only field raster, is internal to the field engine',
+ 'region-anchor: the selection bounds are the region record [0x5b5b30] of the telescope field the sky view loaded (Front C6); before any telescope load is published the camera pointing stands in',
+ 'ccd-overlay-replication: the overlay StretchBlt is nearest-centre replication (GDI\'s phase is not specified), on a 24/32-bpp display; near an Object X target, where the field cannot be built, with NGC 224 in the field (its routine 0x53b848 is not ported), or when the source rect leaves the 936² field, the exposure is made without the overlay and the details say why',
  'field-objects-field-population: the field-object pass 0x5228dc runs on the field population at the camera pointing (a bundled pack or a field assembled from the compact GSC tiles), built at the exposure JD (VIREO uses the field of the last field load); near an Object X target, or when that population cannot be loaded or built, it is not run, and an empty camera list does not write the observatory field star',
  'field-object-saturated: a field variable of class 1 or 2 gets colour term 30 or 60, so the pass writes about V − 30 or V − 60 into the tail catalog row and VIREO draws a saturated star; that one record gets a wider, Float32-safe admission (|m| ≤ 100, peak × scale below 1e36) instead of the web bounds |m| ≤ 50 and peak ≤ 1e12, and is drawn with the same calibration, plan and draws; only a value that would still overflow is skipped with a typed reason (review 1 H1, closure M1)',
  'moving-pair-off-detector: a pair whose projected pixel position exceeds 1e6 is skipped (its four draws are still consumed); the native FISTP overflow path is not recovered',
@@ -134,7 +139,9 @@ function applyPlan(plane:Float32Array,plan:CameraPointPlan|CameraExtendedPlan,st
 }
 
 export type CameraFieldObjectInput=Readonly<{raHours:number;decDegrees:number;magnitude:number}>;
-export function composeCameraExposure(recipeInput:CameraExposureRecipe,selection:VizierSelection,extrasInput:readonly CameraExtraSource[]=[],fieldObjectsInput:readonly CameraFieldObjectInput[]|null=null):CameraExposure {
+/** Front C6: the overlay's 1024² post-GDI low bytes (cameraOverlaySource.ts), CCD only. */
+export type CameraOverlayInput=Readonly<{red:Uint8Array}>;
+export function composeCameraExposure(recipeInput:CameraExposureRecipe,selection:VizierSelection,extrasInput:readonly CameraExtraSource[]=[],fieldObjectsInput:readonly CameraFieldObjectInput[]|null=null,overlayInput:CameraOverlayInput|null=null):CameraExposure {
  const recipe=checkRecipe(recipeInput),extras=checkExtras(extrasInput);
  if(!selection||!Array.isArray(selection.selectedEntries))throw new CameraExposureError('catalog');
  const stream=new CameraRandomCursor(recipe.seed);
@@ -182,6 +189,15 @@ export function composeCameraExposure(recipeInput:CameraExposureRecipe,selection
  const background=compiledCameraBackgroundParameters(kind,recipe.seconds,recipe.gain);
  const initial=cameraBackgroundStage(background,stream.take(background.width*background.height));
  const plane=Float32Array.from(initial.pixels);
+ // 4. CCD overlay (Front C6): calibration record root+0x2d99 (+0x39/+0x3d/+0x41) and the selected telescope's record +0x3c
+ // (index env+0x3818, stored with obs+0x6fc by 0x58b67d/0x58b682), the same owners the point sources read.
+ let overlay:CameraOverlayResult|null=null;
+ if(overlayInput){
+  if(kind!=='ccd'||!(overlayInput.red instanceof Uint8Array)||overlayInput.red.length!==plane.length)throw new CameraExposureError('recipe','overlay');
+  const c=compiledCameraSourceCalibration('ccd',recipe.opticalIndex,recipe.filterPosition,recipe.seconds,0);
+  const scale=ccdOverlayScale({baseMagnitude:c.baseMagnitude,baseCount:c.baseCount,baseSeconds:c.baseSeconds,seconds:recipe.seconds,opticalMagnitudeFactor:c.opticalMagnitudeFactor});
+  overlay=Object.freeze({draws:applyCcdOverlayInPlace(plane,overlayInput.red,scale,()=>stream.next())});
+ }
  // 5. Sources in list order.
  for(let i=0;i<records.length;i++){
   const r=records[i];
@@ -214,7 +230,7 @@ export function composeCameraExposure(recipeInput:CameraExposureRecipe,selection
   }else applyPlan(plane,cameraPointPlan(cameraPointParametersFromCalibration(calibration,r.pixelX,r.pixelY)),stream);
  }
  const final=finalizeCameraPlane({phase:'point-sources-before-clipping',width:initial.width,height:initial.height,localDrawsConsumed:0,pixels:Array.from(plane),histogram:initial.histogram},compiledCameraFinalParameters(kind,recipe.gain));
- return Object.freeze({recipe,plane:final,records:Object.freeze(records),skipped:Object.freeze(skipped),fieldObjects,drawsConsumed:stream.drawsConsumed,finalRandomState:stream.finalState,
+ return Object.freeze({recipe,plane:final,records:Object.freeze(records),skipped:Object.freeze(skipped),fieldObjects,overlay,drawsConsumed:stream.drawsConsumed,finalRandomState:stream.finalState,
   catalog:Object.freeze({rows:selection.catalog?.entries.length??0,selected:selection.selectedEntries.length,onDetector}),
   adaptations:CAMERA_EXPOSURE_ADAPTATIONS,unrecovered:CAMERA_EXPOSURE_UNRECOVERED});
 }

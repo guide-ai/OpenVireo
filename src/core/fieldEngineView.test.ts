@@ -45,6 +45,20 @@ describe('Front M: evaluateFieldView equals evaluateField’s population, scene 
    for(const t of [0,1,2] as FieldTelescope[])expect(same(evaluateFieldView(packs.get(rec.pack)!,glx,rec.pointing,t,options),evaluateField(packs.get(rec.pack)!,glx,rec.pointing,t,options))).toBe('view');
   }
  });
+ it('Front C6: galaxyLayer returns the paint after the galaxies (the CCD overlay source); stars are not in it, the view is unchanged',()=>{
+  const rec=engineTargets.targets[0],pack=decodeFieldPack(rec.pack==='hubble-engine-coma'?coma:bootes);
+  const options:FieldOptions={qso:'merge',qsoCatalog,...((rec as {variables?:string}).variables==='outside-view'?{variables:'outside-view' as const}:{})};
+  const plain=evaluateFieldView(pack,glx,rec.pointing,0,options),layered=evaluateFieldView(pack,glx,rec.pointing,0,{...options,galaxyLayer:true});
+  expect(plain.galaxyRed).toBeUndefined();expect(sha(layered.raster!.rgb)).toBe(sha(plain.raster!.rgb));
+  const red=layered.galaxyRed!,raster=layered.raster!;expect(red.length).toBe(936*936);
+  expect(layered.population!.galaxies.length).toBeGreaterThan(0);expect(red.some(v=>v>0)).toBe(true);
+  // Away from every star (no star stamp reaches 12 px) the layer is the final paint; at a star it is not.
+  const stars=layered.scene!.stars.map(p=>[Math.round(p.x),Math.round(p.y)]);let away=0,differs=0;
+  for(let y=0;y<936;y+=3)for(let x=0;x<936;x+=3){const near=stars.some(([sx,sy])=>Math.abs(sx-x)<12&&Math.abs(sy-y)<12);const i=y*936+x;
+   if(!near){away++;expect(red[i]).toBe(raster.rgb[i*3]);}}
+  for(const [sx,sy] of stars)if(sx>=0&&sy>=0&&sx<936&&sy<936&&red[sy*936+sx]!==raster.rgb[(sy*936+sx)*3])differs++;
+  expect(away).toBeGreaterThan(10_000);expect(differs).toBeGreaterThan(0);
+ });
  describe('the Object X spectroscopy pointings (rows only; same population options as the spectrometer)',()=>{
   let inputs:ObjectXSpectrometerInputs;
   beforeAll(async()=>{

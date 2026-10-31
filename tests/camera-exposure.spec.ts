@@ -38,8 +38,13 @@ test('static mode never contacts CDS; a field without a bundled extract makes no
  await expect(page.getByTestId('camera-canvas')).toHaveCount(0);
  expect(seen).toHaveLength(0);
 });
+/** Front C6: the recorded rows moved onto the tracked pointing (N0000.DAT@14428, RA 0.4987684 h, Dec +0.03628°). Since C6 the camera
+ * selects only rows inside the loaded telescope field (VIREO's region record [0x5b5b30]); the recorded Pleiades rows lie far
+ * outside this field and would all be dropped. */
+function onPointing(xml:string){const dRa=.4987684*15-56.75,dDec=.03628-24.12;
+ return xml.replace(/<TD>(0?56\.7\d+)<\/TD>/g,(_,v:string)=>`<TD>${(Number(v)+dRa).toFixed(7)}</TD>`).replace(/<TD>\+?(24\.1\d+)<\/TD>/g,(_,v:string)=>`<TD>+${(Number(v)+dDec).toFixed(7)}</TD>`);}
 test('live mode sends only RA, DEC and SR and builds an image from the recorded response',async({page})=>{
- const seen=watch(page);await trackedField(page);const body=await recorded;
+ const seen=watch(page);await trackedField(page);const body=onPointing((await recorded).toString('utf8'));
  await page.route(CDS,route=>route.fulfill({status:200,contentType:'text/xml',body}));
  await camera(page).getByLabel(/Ask VizieR live/).check();await exposure(page,'0','2');
  await button(page,'Start exposure').click();
@@ -54,7 +59,8 @@ test('live mode sends only RA, DEC and SR and builds an image from the recorded 
  await camera(page).getByText('Exposure details').click();
  await expect(page.getByTestId('camera-detail-catalog')).toHaveText('NOMAD');
  await expect(page.getByTestId('camera-detail-source')).toContainText('Live VizieR query answered by vizier.idia.ac.za');
- await expect(page.getByTestId('camera-detail-rows')).toHaveText('4 / 1 / 0');
+ // Front C6: the selected row, moved onto the pointing, is inside the loaded field and lands on the detector.
+ await expect(page.getByTestId('camera-detail-rows')).toHaveText('4 / 1 / 1');
  // Front G merge: every pointing now has a field population (tiled here), and this field holds no variable star.
  await expect(page.getByTestId('camera-detail-field-objects')).toHaveAttribute('data-status','none');
  await page.screenshot({path:test.info().outputPath('camera-live.png'),fullPage:false});
