@@ -8,7 +8,8 @@ import './cluster-hr.css';
 
 /** TObsRsltsDlg1 "Observational Data" (modal) for one observation record, filled by FormActivate 0x54a91c (Front K2.2). The
  * DFM order and ReadOnly flags are kept: Sp.Type (MaxLength 12) and Remarks (36) are editable; OK (0x54b02c) stores them,
- * Cancel (0x54b2dc) changes nothing and clears the plot marker. [W] Velocity is read-only (see obsVelocityNote); Escape is
+ * Cancel (0x54b2dc) only clears the plot marker
+ * (a caller that wrote the record before ShowModal, as the photometer's Record1Click does, keeps what it wrote). [W] Velocity is read-only (see obsVelocityNote); Escape is
  * Cancel. */
 export default function ObservationalDataDialog({fields,testId,onOk,onCancel,velocityEditable=false,velocityNote}:{fields:ObservationalDataFields;testId:string;
  /** Returns false (or the native refusal text) when the edit cannot be stored; the dialog stays open with the message. */

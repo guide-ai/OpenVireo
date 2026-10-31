@@ -63,7 +63,7 @@ Phase-2 B2 is technically validated and separately reviewed (2026-10-27): `tests
 
 **Evidence** — `b1db397` plus QA3: all 16 transcribed B/V pairs, manual fit, Save and fresh-context Restore.
 
-**Web adaptations** — On the 0.4 m all 24 stars are measurable (since `c7ba82c`; earlier 8 stayed unmeasurable); the KPNO 0.9 m and Mayall domains are narrower. The guide is web presentation.
+**Web adaptations** — On the 0.4 m all 24 stars are measurable (since `c7ba82c`; earlier 8 stayed unmeasurable); the KPNO 0.9 m and Mayall domains are narrower. The guide is web presentation. The guide counts the web notebook entries; VIREO's own Record/Review (Front P3, docs/PHOTOMETER-RECORD.md) is available beside them and does not change the counts.
 
 ## E05 · Cluster HR diagrams
 **Criteria**
