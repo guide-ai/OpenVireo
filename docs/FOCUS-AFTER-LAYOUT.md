@@ -16,8 +16,8 @@ Web behaviour only. It is not a CLEA feature; it makes the existing focus manage
   browser).
   - A synthetic show-then-focus in one task does not reproduce the bug (only the app's React render paths do), so a startup
     self-test cannot detect it.
-  - In Firefox the extra layout read changed when a just-disabled focused control is blurred (`wedge-prompt-focus`), so Chromium
-    and Firefox keep their native `focus()`.
+  - Chromium and Firefox never needed it (they update style and layout inside `focus()`), so they keep their native `focus()`.
+    Coordinator decision, Front WebKit review 1 closure.
 - **Cost in WebKit:** one forced layout per call on a connected element. Without the patch, the WebKit review's negative control
   fails 6 of 6.
 - **Test:** `tests/focus-after-layout.spec.ts`. In every engine, a `showModal()` field and a just-shown button take focus in the

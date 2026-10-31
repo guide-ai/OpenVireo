@@ -10,8 +10,7 @@
  *
  * Only WebKit needs it, and only WebKit gets it (navigator.vendor 'Apple…': Safari and every WebKit browser). A synthetic
  * same-task show-and-focus does not reproduce the bug (only the app's React render paths do), so a startup self-test cannot
- * detect it. In Firefox the extra layout read changed when a just-disabled focused control is blurred (Front WebKit review 1,
- * wedge-prompt-focus), so Chromium and Firefox keep their native focus(). Documented in docs/FOCUS-AFTER-LAYOUT.md. */
+ * detect it. Chromium and Firefox never needed it, so they keep their native focus(). Documented in docs/FOCUS-AFTER-LAYOUT.md. */
 const ORIGINAL=Symbol.for('openvireo.focusAfterLayout.original');
 
 function patch(proto:object|undefined){
