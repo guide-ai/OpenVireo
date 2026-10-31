@@ -19,9 +19,10 @@ export function loadedObjectXPositions():readonly Pointing[]|null{return loaded;
  * 0.663° just before the polar limit (Dec ≈ 89.8°). Where the box is polar (no area; the population is 'blocked' anyway) the
  * bound 0.67° is used. Pure. */
 export const FIELD_MASK_REACH_BOUND=0.67;
-export function fieldMaskReach(p:Pointing):number{
- const h=0.375,hr=h/(Math.cos(p.dec*Math.PI/180)*15);
- if(!(Number.isFinite(hr)&&hr>0&&hr<12))return FIELD_MASK_REACH_BOUND;
+/** Front G5: `half` is the box's half-height (the finder field's is 3.75°); a polar box then uses 2 × half as its bound. */
+export function fieldMaskReach(p:Pointing,half=0.375):number{
+ const h=half,hr=h/(Math.cos(p.dec*Math.PI/180)*15);
+ if(!(Number.isFinite(hr)&&hr>0&&hr<12))return half===0.375?FIELD_MASK_REACH_BOUND:2*half;
  return Math.max(...[-h,h].map(dd=>separationDegrees(p.ra,p.dec,p.ra+hr,p.dec+dd)));
 }
 /** True when an Object X position (or the lab's hidden target) lies within the hide radius plus `reach` degrees. */
