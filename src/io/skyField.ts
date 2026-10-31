@@ -46,7 +46,8 @@ function shared(key:string,r:SkyFieldBuildRequest):Shared{
  let e=inflight.get(key);
  if(!e){
   const controller=new AbortController(),promise=build(r,controller.signal).then(f=>{
-   if(inflight.get(key)?.promise===promise){inflight.delete(key);built.set(key,f);while(built.size>4)built.delete(built.keys().next().value!);}
+   // G5 closure N2: only drawn fields are kept; a typed reason (a tile that could not be loaded, for one) is built again next time.
+   if(inflight.get(key)?.promise===promise){inflight.delete(key);if(f.status==='ready'){built.set(key,f);while(built.size>4)built.delete(built.keys().next().value!);}}
    return f;
   },err=>{if(inflight.get(key)?.promise===promise)inflight.delete(key);throw err;});
   promise.catch(()=>{});

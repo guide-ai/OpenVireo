@@ -102,8 +102,10 @@ When a field is assembled from the compact GSC tiles (Front G), `AssembledFieldE
   Object shows their colours blank, as VIREO does (review 1 M2).
 - **Paint 0x53b058:** 936² over 7.5°; galaxies in list order with stamp set 1 at stored − +0x6f8; stars at cached level (bank
   offset 1) − +0x6f4, where +0x6f4 is the telescope record's +0x38 (finderFactorMag −6/−5/−4). No NGC 224 routine and no
-  photograph. Every galaxy is drawn, large ones included (VIREO's 0x59456c has no size bound; the web bound for the finder is the
-  468 px half-cache, so M31 at about 185 px is drawn; review 1 M1); only one whose minor axis rounds to 0 px is listed in
+  photograph. Every galaxy with a non-zero minor axis is drawn, large ones included (VIREO's 0x59456c has no size bound; the web
+  bound for the finder is 1200 px, above the largest V ≤ 12 galaxy, the LMC at about 1099 px, and the finder paints in place,
+  clipped to the cache, so such a stamp costs only its 1-byte profile; G5 review 1 M1 and closure N1). Only the four V ≤ 12
+  galaxies whose minor axis rounds to 0 px (A0341-1431, A0839-2008, A0956-3000, A1832-3759) are listed in
   `unpaintedGalaxies` [I: it composes nothing]. A TRUE-dispatch variable whose values are unavailable types the field with its
   reason when its stamp reaches the 936² cache, as the telescope view does for its crop (review 1 M3).
 - The pack decoder's variable bound is now 4,000 entries: a finder field across 0 h covers the whole RA ring of a 7.5° band,

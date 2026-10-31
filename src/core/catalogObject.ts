@@ -163,8 +163,9 @@ export const TELESCOPE_FRAME:CatalogFrame=Object.freeze({width:936,height:936,fi
 export type CatalogScene=Readonly<{stars:readonly ProjectedCatalogObject[];galaxies:readonly ProjectedGalaxy[];records:Readonly<{stars:readonly CatalogStarRecord[];galaxies:readonly CatalogGalaxyRecord[]}>}>;
 /** Front G5: the finder frame (0x53bae4/0x5949c8: 936² over 3 × Finder Field 2.50° = 7.5°, the same 312² crop). */
 export const FINDER_CATALOG_FRAME:CatalogFrame=Object.freeze({width:936,height:936,fieldDegrees:7.5,crop:312,cropOrigin:312});
-export function catalogScene(p:FieldPopulation,center:Readonly<{ra:number;dec:number}>,provenance:string,F:CatalogFrame=TELESCOPE_FRAME):CatalogScene{
- const records=catalogRecords(p);
+export function catalogScene(p:FieldPopulation,center:Readonly<{ra:number;dec:number}>,provenance:string,F:CatalogFrame=TELESCOPE_FRAME,
+ /** G5 closure N3: records already derived for this population (catalogRecords), so a pan only re-projects. */precomputed?:ReturnType<typeof catalogRecords>):CatalogScene{
+ const records=precomputed??catalogRecords(p);
  const scene=createNativeSelectionScene(records.stars.map((s,i)=>({id:`s${i}`,ra:s.ra,dec:s.dec})),records.galaxies.map((g,i)=>({id:`g${i}`,ra:g.ra,dec:g.dec,majorArcminutes:g.major})),
   {width:F.width,height:F.height,fieldDegrees:F.fieldDegrees,center,population:{coverage:'complete',provenance}});
  return Object.freeze({stars:scene.stars,galaxies:scene.galaxies,records});

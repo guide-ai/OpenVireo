@@ -44,6 +44,9 @@ export async function buildSkyField(r:SkyFieldBuildRequest,signal?:AbortSignal):
   return f.reasons.length||!f.raster||!f.population||!f.scene?unavailable('field-reason',f.reasons[0]??'outside-pack')
    :Object.freeze({status:'ready',view,anchor,telescope:r.telescope,packId:pack.pack.id,raster:f.raster,population:f.population,scene:f.scene});
  }
+ // G5 closure N4 (theoretical, none found in 45 pointings): evaluateFieldView leaves a TRUE variable with unavailable values
+ // unpainted when its stamp misses the central 312² crop, but this view pans across the 936² cache, where such a star would be
+ // missing silently; the finder applies the whole-cache rule (evaluateFinderView).
  const options:{-readonly [K in keyof FieldOptions]:FieldOptions[K]}={...base};
  let v=evaluateFieldView(pack.pack,inputs.glx,anchor,r.telescope,options);
  const retry=async(reason:FieldUnavailableReason)=>{

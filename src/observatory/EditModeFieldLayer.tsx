@@ -1,5 +1,5 @@
 import {useEffect,useMemo,useRef,useState,type KeyboardEvent,type MouseEvent} from 'react';
-import {FINDER_CATALOG_FRAME,TELESCOPE_FRAME,catalogScene,pickCatalogObject,type CatalogRecord,type CatalogScene} from '../core/catalogObject';
+import {FINDER_CATALOG_FRAME,TELESCOPE_FRAME,catalogRecords,catalogScene,pickCatalogObject,type CatalogRecord,type CatalogScene} from '../core/catalogObject';
 import {fieldMaskReach,objectXMasked} from '../io/objectXMask';
 import type {FieldMode,Pointing} from '../core/sky';
 import {findCertifiedPopulation} from '../io/fieldInfoPacks';
@@ -57,7 +57,9 @@ export default function EditModeFieldLayer({editMode,active,mode,pointing,hidden
   return()=>{current=false;controller.abort();setLoadedField(null);};
  },[editMode,active,mode,telescope,hidden?.ra,hidden?.dec,at.ra,at.dec]);// eslint-disable-line react-hooks/exhaustive-deps
  // The loaded population drawn at the current pointing (the native crop moves inside the cached field).
- const scene=useMemo<CatalogScene|null>(()=>state.status==='ready'?catalogScene(state.population,pointing,state.packId==='gsc-tiles'?(mode==='finder'?'Compact GSC tiles; finder field (FSC) built for this pointing':'Compact GSC tiles; field built for this pointing'):`Field pack ${state.packId}; certified pointing`,mode==='finder'?FINDER_CATALOG_FRAME:TELESCOPE_FRAME):null,[state,pointing.ra,pointing.dec,mode]);
+ // G5 closure N3: the records are derived once per loaded field; each pan only re-projects them.
+ const records=useMemo(()=>state.status==='ready'?catalogRecords(state.population):null,[state]);
+ const scene=useMemo<CatalogScene|null>(()=>state.status==='ready'&&records?catalogScene(state.population,pointing,state.packId==='gsc-tiles'?(mode==='finder'?'Compact GSC tiles; finder field (FSC) built for this pointing':'Compact GSC tiles; field built for this pointing'):`Field pack ${state.packId}; certified pointing`,mode==='finder'?FINDER_CATALOG_FRAME:TELESCOPE_FRAME,records):null,[state,records,pointing.ra,pointing.dec,mode]);
  const shapes=useMemo(()=>state.status==='ready'&&scene?{
   stars:scene.stars.map((p,i)=>({x:toWeb(p.x),y:toWeb(p.y),r:Math.max(.9,Math.min(4.5,(17-scene.records.stars[i].v)*.38)),qso:scene.records.stars[i].type===3})),
   galaxies:scene.galaxies.map((p,i)=>{const g=scene.records.galaxies[i];return {x:toWeb(p.x),y:toWeb(p.y),rx:Math.max(2,(g.major||.5)*pxPerArcmin(mode)/2),ry:Math.max(1.5,(g.minor||g.major||.5)*pxPerArcmin(mode)/2)};}),

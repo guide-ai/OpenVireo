@@ -43,7 +43,7 @@ The observatory's sky view draws VIREO's own field for the current view at any p
 Builds run only on a reload (above), in the Worker `src/io/skyFieldWorker.ts` (review 1 M4), and one build per field key is shared
 by the sky view and Edit Mode's layer (a caller's abort cancels only its wait; the build stops when nobody waits). While the view
 drifts inside the cache only the crop runs (a 312² copy per pointing change). Chromium long tasks after this change (development
-build, 2026-10-31): none on three finder pans, one of 67 ms over three telescope pans (before: up to 190 and 344 ms, and 329 + 249
+build, 2026-10-31), with Edit Mode off: none on three finder pans, one of 67 ms over three telescope pans (before: up to 190 and 344 ms, and 329 + 249
 ms for the duplicate Edit Mode build). The finder paint draws into one raster in place (`paintNativeStarInPlace`, the same
 pixels as `paintNativeStar`), which cut it from about 0.5 s to about 50 ms. `tests/render-budget.spec.ts` counts are unchanged.
 
@@ -54,3 +54,10 @@ pixels as `paintNativeStar`), which cut it from about 0.5 s to about 50 ms. `tes
 - Playwright: `tests/object-info-forms.spec.ts` (finder Catalog Object; the Star Data List loading test holds the tiles from the
   start because the sky view shares them), `tests/sky-field-view.spec.ts` (views, reasons, a pointing change mid-build),
   `tests/cluster-data-dialogs.spec.ts` (a far-south "No Stars Found" from the tiles).
+
+## Memory and the Worker (G5 closure N3, N5)
+- With Edit Mode on, the main thread also receives the cloned finder population and Edit Mode's layer derives its Catalog Object
+  records; since closure N3 it derives them once per loaded field, so a pan only re-projects them (measured below).
+- The Worker is a module singleton with no idle teardown. It keeps its own GSC tile store (an LRU of 24 tiles, at most about
+  42 MB) and its own copies of CLEA_GLX.DAT, CLEA_QSO.DAT, GLIMAGES.LST and the photographs, beside the page's and the Multi-Spec
+  Worker's. Acceptable for this increment; sharing or bounding the stores is a follow-up.

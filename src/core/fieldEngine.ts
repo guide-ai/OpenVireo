@@ -32,7 +32,7 @@ import {variableDispatchAt,variableModelStatic,variableRecordFromHex,VariableDis
 import {decodeGlxRecord,GLX_CATALOG} from './glxCatalog';
 import type {NativeGalaxy} from './pinnedGalaxyField';
 import {galaxyCatalogAxes,catalogGalaxyMagnitude} from './galaxyCatalogAxes';
-import {paintAdaptedGalaxy,galaxyStampGeometry,GALAXY_STAMP_SCALES} from './galaxyScene';
+import {paintAdaptedGalaxy,paintAdaptedGalaxyInPlace,galaxyStampGeometry,GALAXY_STAMP_SCALES} from './galaxyScene';
 import {createNativeSelectionScene,selectCatalogObject,type NativeSelectionScene,type ObjectSelection} from './objectSelection';
 import {cropNativeFrame,freshNativeViewport,paintNativeStar,paintNativeStarInPlace} from './detectorRaster';
 import {prepareNativeStarProfile} from './starProfiles';
@@ -813,7 +813,7 @@ export function evaluateFinderView(pack:FieldPack,glx:Uint8Array,pointing:Readon
  const unpaintedGalaxies:string[]=[];
  for(let i=0;i<population.galaxies.length;i++){
   const g=population.galaxies[i],p=scene.galaxies[i];
-  try{raster=paintAdaptedGalaxy(raster,g,{x:roundNearestEven(p.x),y:roundNearestEven(p.y)},c.magnitudeShift,GALAXY_STAMP_SCALES.finder).image;}
+  try{paintAdaptedGalaxyInPlace(raster,g,{x:roundNearestEven(p.x),y:roundNearestEven(p.y)},c.magnitudeShift,GALAXY_STAMP_SCALES.finder);}
   catch(e){
    if(!(e instanceof Error&&e.message==='Outside bounded galaxy stamp.'))throw e;
    // Only the minor-axis-0 case may stay unpainted [I]; anything else is an evidence error, never a silent drop.

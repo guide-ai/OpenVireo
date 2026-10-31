@@ -85,3 +85,33 @@ describe('Front G5 review 1: finder galaxies, variables and large stamps',()=>{
   if(pending.length)expect(timed.reasons.length).toBe(1);else expect(timed.reasons).toEqual([]);
  },120000);
 });
+
+describe('G5 closure N1: every V ≤ 12 catalogue galaxy at the finder scale',()=>{
+ it('each one is drawn (stamp within the 1200 px finder bound) or has a 0 px minor axis; the in-place paint equals the composed stamp',async()=>{
+  const {admitFieldGalaxies}=await import('../core/fieldEngine');
+  const {galaxyStampGeometry,paintAdaptedGalaxy,paintAdaptedGalaxyInPlace,GALAXY_STAMP_SCALES}=await import('../core/galaxyScene');
+  const {galaxyCatalogAxes}=await import('../core/galaxyCatalogAxes');
+  const {galaxies}=admitFieldGalaxies(glx,{minimumRa:0,maximumRa:24,minimumDec:-90,maximumDec:90,limitingMagnitude:12});
+  expect(galaxies.length).toBe(551);
+  const minorZero:string[]=[];let largest=0,largestId='';
+  for(const g of galaxies)for(const shift of [-2,0,3]){
+   try{const s=galaxyStampGeometry(g,shift,GALAXY_STAMP_SCALES.finder);if(s.major>largest){largest=s.major;largestId=g.id;}}
+   catch{const a=galaxyCatalogAxes(g),r=Math.max(3,a.major*GALAXY_STAMP_SCALES.finder.pixelsPerArcminute/2);expect(Math.round(r*a.ratio)).toBe(0);minorZero.push(g.id);}
+  }
+  // Only these four, whose minor axis rounds to 0 px at the finder scale, are left unpainted [I]; every other stamp (1010-0122
+  // included, whose catalogue axes fall back to a drawable shape) is within the bound.
+  expect([...new Set(minorZero)]).toEqual(['A0341-1431','A0839-2008','A0956-3000','A1832-3759']);
+  expect(largestId).toBe('A0524-6948');expect(largest).toBeGreaterThan(1000);expect(largest).toBeLessThanOrEqual(GALAXY_STAMP_SCALES.finder.maxMajor);
+  // In-place paint (clipped to the cache) and the full stamp composed onto the same raster give the same pixels.
+  const blank=()=>({width:936,height:936,rgb:new Uint8Array(936*936*3)});
+  for(const id of ['NGC 224','NGC 3031']){
+   const g=galaxies.find(x=>x.id===id)!,a=blank(),centre={x:468,y:300};
+   const composed=paintAdaptedGalaxy(a,g,centre,0,GALAXY_STAMP_SCALES.finder).image;
+   const b=blank();paintAdaptedGalaxyInPlace(b,g,centre,0,GALAXY_STAMP_SCALES.finder);
+   expect(Buffer.from(b.rgb).equals(Buffer.from(composed.rgb))).toBe(true);
+  }
+  // The LMC paints in place without building its full stamp.
+  const lmc=galaxies.find(x=>x.id==='A0524-6948')!,c=blank();
+  paintAdaptedGalaxyInPlace(c,lmc,{x:468,y:468},0,GALAXY_STAMP_SCALES.finder);expect(c.rgb.some(v=>v>0)).toBe(true);
+ },120000);
+});
