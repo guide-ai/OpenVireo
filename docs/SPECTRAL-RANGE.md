@@ -83,8 +83,12 @@ default every policy, session and file keeps its bytes.
 
 D1 is reversed: new Hubble and LSS exposures use VIREO's 3700–4700 Å. Where the shifted template starts above 3700 Å, the blue
 bins are VIREO's start-time continuation (0x55e97c). They are drawn from the exposure's random state at each Go, and the
-mean bound is checked against their deterministic upper bound (`core/fieldContinuation.ts` `galaxySourceValues`, shared with
+mean bound [W] (VIREO has no mean bound; it is the web's existing Poisson admission) is checked against their deterministic upper bound (`core/fieldContinuation.ts` `galaxySourceValues`, shared with
 the field engine).
+
+**Availability [W].** A Hubble pair's 3700–4700 Å configuration is derived from its verified 4000–5000 Å one (same field, slit
+and amplitudes), so a pair is offered at 3700–4700 Å only where it is available at 4000–5000 Å. The LSS rows are evaluated by the
+field engine at each range; both gave the same outcome on every row.
 
 **Policies.**
 - New exposures carry `#R3700-4700` (galaxy, cached, Pegasus, UM-I, engine and LSS policies).

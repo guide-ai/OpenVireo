@@ -10,7 +10,7 @@ export function continuationSourcePreparer(c:FieldContinuationSource):JournalSou
 }
 /** The galaxy source values on a spectrometer interval, shared by the field engine and the pinned galaxy routes (Front S2):
  * the shifted template sampled exactly where it covers the grid ('profile'); otherwise, with the start-time continuation, the
- * deterministic upper bound of 0x55e97c used for the mean bound and the continuation source the journal draws at each Go
+ * deterministic upper bound of 0x55e97c used for the mean bound [W] (VIREO has no mean bound) and the continuation source the journal draws at each Go
  * ('continuation'); 'range' when neither applies. */
 export type GalaxySourceValues=
  |Readonly<{kind:'profile';values:readonly number[];wavelengths:readonly number[]}>

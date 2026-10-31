@@ -3217,6 +3217,7 @@ export interface MessageParameters {
   "lss.adaptation.telescope": never;
   "lss.adaptation.fresh": never;
   "lss.adaptation.raster": never;
+  "lss.rangeNote": never;
   "lss.adaptation.range": never;
   "lss.adaptation.measure": never;
   "lss.adaptation.wedge": never;

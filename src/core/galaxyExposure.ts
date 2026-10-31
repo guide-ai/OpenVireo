@@ -110,7 +110,9 @@ export function verifiedGalaxyConfiguration(id='36773',index:0|1|2=0,range:Spect
  const key=id+':'+index;let c=prepared.get(key);if(!c){c=prepare(id,index);prepared.set(key,c);}return c;}
 /** Front S2 round 2: the same verified field, slit and amplitudes on another witnessed interval (only the spectrum reads the
  * range, RE §3): the shifted template where it covers the grid, else VIREO's start-time continuation (0x55e97c) drawn at each
- * Go, with its deterministic upper bound checked against the mean bound (fieldContinuation.ts galaxySourceValues). */
+ * Go, with its deterministic upper bound checked against the mean bound [W] (VIREO has no mean bound; it is the web's existing
+ * Poisson admission, fieldContinuation.ts galaxySourceValues). The configuration is derived from the verified 4000–5000 Å one, so
+ * a pair is offered at 3700–4700 Å only where it is available at 4000–5000 Å [W] (review 2 nit). */
 const ranged=new Map<string,ReturnType<typeof prepare>>();
 function rangedConfiguration(id:string,index:0|1|2,range:SpectralRange):ReturnType<typeof prepare>{
  if(!GALAXY_WITNESSED_RANGES.some(r=>sameRange(r,range)))throw new JournalError('proof');

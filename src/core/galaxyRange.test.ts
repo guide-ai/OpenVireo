@@ -17,6 +17,7 @@ import {ensureHubbleEngineTargets,setHubbleEngineResources} from '../io/hubbleEn
 import {createGalaxyObservation} from '../io/galaxyObservation';
 import {parseGalaxySession,serializeGalaxySession} from '../io/galaxySession';
 import type {JournalEvent} from './exposureJournal';
+import type {FieldContinuationSource} from './fieldContinuation';
 import {analyzeHubble} from './hubbleAnalysis';
 import {hubbleVelocity} from './hubbleVelocity';
 import {galaxyDistanceReference} from './galaxyIdentity';
@@ -79,22 +80,32 @@ describe('Front S2 round 2: Hubble and LSS at VIREO 3700–4700 Å',()=>{
    return analyzeHubble({recipeId:'vireo',rows},[]);
   };
   const v=h0(V),legacy=h0(LEGACY_GALAXY_RANGE);
-  expect(v.rows).toHaveLength(13);expect(Number.isFinite(v.value)).toBe(true);expect(v.value).toBe(legacy.value);expect(v.rows.map(r=>r.velocityKmS)).toEqual(legacy.rows.map(r=>r.velocityKmS));
+  // Review 2 nit: pinned to main's value before S2 (re-measured independently in review 2), not only compared with itself.
+  expect(v.rows).toHaveLength(13);expect(v.value).toBe(52.50880276737093);expect(v.value).toBe(legacy.value);expect(v.rows.map(r=>r.velocityKmS)).toEqual(legacy.rows.map(r=>r.velocityKmS));
  });
  it('E02: 196 / 93 / 198 rows on the three telescopes (as at 4000–5000 Å), and every available row shows K, H and G',()=>{
-  const counts=[0,0,0],legacy=[0,0,0],lines=new Set<string>();
-  for(const {s,t} of lssStatuses())if(s.kind!=='unavailable'||s.reasons.includes('spectrum-mapping')){counts[t]++;if(s.kind!=='unavailable')lines.add(visible(s.result.target!.redshift));}
+  // As lssPacks.test.ts: a spectrum-mapping row would count (its own spectrum is the original's), and there is none (NGC 4670 and
+  // NGC 4889 are observed with their bundled own spectra), so every counted row is an acquirable one (review 2 nit).
+  const counts=[0,0,0],legacy=[0,0,0],lines=new Set<string>(),mapped:string[]=[];
+  for(const {s,t,row} of lssStatuses())if(s.kind!=='unavailable'||s.reasons.includes('spectrum-mapping')){counts[t]++;if(s.kind!=='unavailable')lines.add(visible(s.result.target!.redshift));else mapped.push(`${row.id}@${t}`);}
+  expect(mapped).toEqual([]);
   for(const {s,t} of lssStatuses(LEGACY_GALAXY_RANGE))if(s.kind!=='unavailable'||s.reasons.includes('spectrum-mapping'))legacy[t]++;
   expect(counts).toEqual([196,93,198]);expect(legacy).toEqual(counts);expect([...lines]).toEqual(['KHG']);
   const p=lssPolicy(1,0,0,V);expect(p).toBe('openvireo-lss-v1:F1:R1:T0#R3700-4700');expect(parseLssPolicy(p).range).toEqual(V);
   expect(()=>parseLssPolicy('openvireo-lss-v1:F1:R1:T0#R3600-4600')).toThrow();
  });
+ const lssContinuation=new Map<string,FieldContinuationSource>();
  it('the continuation values equal the independent Decimal witness (Hubble targets and a sample of LSS galaxies)',()=>{
+  for(const {s:st,t} of lssStatuses())if(t===0&&st.kind!=='unavailable'&&st.result.calibration?.continuationSource)lssContinuation.set(st.result.target!.id,st.result.calibration.continuationSource);
   expect(witness.tool).toBe('galaxy_range_witness.py');expect(witness.targets.length).toBeGreaterThanOrEqual(13);
   for(const w of witness.targets){
    const bytes=file(w.sourcePath);expect(sha(bytes),w.id).toBe(w.sourceSha256);
    const samples=parseLibrarySpectrum(bytes.toString('latin1'));
    const p=prepareCatalogGalaxyChannels(samples,w.matched,w.morphology,w.catalogZ,3700,4700,w.initialSeed);
+   // Review 2 L4: the route's own continuation source has the witness's context, and drawing from it gives the same values.
+   const own=w.route==='hubble'?(()=>{const t=PAIRS.find(([id])=>id===w.id)![1];return (verifiedGalaxyConfiguration(w.id,t,V) as {continuationSource?:FieldContinuationSource}).continuationSource;})():lssContinuation.get(w.id);
+   if(w.id!=='NGC 4889'){expect(own,w.id).toBeDefined();expect([own!.redshift,own!.morphology,own!.matched,own!.minimum,own!.maximum]).toEqual([w.catalogZ,w.morphology,w.matched,3700,4700]);
+    const q=prepareCatalogGalaxyChannels(own!.samples,own!.matched,own!.morphology,own!.redshift,own!.minimum,own!.maximum,w.initialSeed);for(let i=0;i<600;i++)expect(q.values[i],`${w.id} route channel ${i}`).toBeCloseTo(w.values[i],9);}
    expect([p.draws,p.seed],w.id).toEqual([w.draws,w.seed]);expect(p.temperature).toBeCloseTo(w.temperature,9);
    for(let i=0;i<600;i++)expect(p.values[i],`${w.id} channel ${i}`).toBeCloseTo(w.values[i],9);
   }
@@ -110,7 +121,7 @@ describe('Front S2 round 2: Hubble and LSS at VIREO 3700–4700 Å',()=>{
  });
  it('fingerprints at 3700–4700 Å (dated v2; the legacy v1 fingerprints stay in existing-target-fingerprints.json)',()=>{
   const pairs=PAIRS.map(([id,t])=>{const c=verifiedGalaxyConfiguration(id,t,V),s=replayGalaxy(5,TRAJECTORY,id,t,V),e=s.exposure;
-   return {id,telescope:t,policy:s.policy,meansSHA256:f64(c.sourceMeans),wavelengthsSHA256:f64(c.wavelengths),continuation:!!(c as {continuationSource?:unknown}).continuationSource,countsSHA256:f64(e.counts),sourceTotal:e.sourceTotal,skyTotal:e.skyTotal,draws:e.draws,finalSeed:e.seed,csvSHA256:sha(galaxyCountsCsv(s))};});
+   return {id,telescope:t,policy:s.policy,cropSHA256:sha(c.viewport.rgb),pixelLevel:c.pixelLevel,fraction:c.fraction,zeroPoint:c.zeroPoint,instrumentMagnitude:c.instrumentMagnitude,sourceAmplitude:c.amplitude.source,skyAmplitude:c.amplitude.sky,meansSHA256:f64(c.sourceMeans),wavelengthsSHA256:f64(c.wavelengths),continuation:!!(c as {continuationSource?:unknown}).continuationSource,countsSHA256:f64(e.counts),sourceTotal:e.sourceTotal,skyTotal:e.skyTotal,draws:e.draws,finalSeed:e.seed,csvSHA256:sha(galaxyCountsCsv(s))};});
   const lss=lssStatuses().map(({f,row,t,s})=>[`F${f}R${row.index+1}T${t}`,s.kind,s.kind==='unavailable'?s.reasons.join('+'):s.selectedIndex,s.result?.calibration?`${s.result.calibration.continuationSource?'cont':'prof'}/${f64(s.result.calibration.sourceMeans)}`:'-'].join('|'));
   if(process.env.OPENVIREO_FREEZE_RANGE_FINGERPRINTS==='1'){writeFileSync(new URL('./galaxyRange.fingerprints.json',import.meta.url),JSON.stringify({schema:'openvireo-range-fingerprints-v2',date:'2026-10-31',range:'3700-4700',pairs,lssRows:lss.length,lssSHA256:sha(lss.join('\n')),lss},null,1)+'\n');return;}
   expect(pairs).toEqual(frozen.pairs);expect(lss).toEqual(frozen.lss);expect(sha(lss.join('\n'))).toBe(frozen.lssSHA256);

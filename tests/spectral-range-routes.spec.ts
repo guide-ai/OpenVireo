@@ -58,3 +58,15 @@ test('an investigation restore takes its exposures\' range; a star restored from
  // The sky route now shows its own new exposure (default); the Object X row, which has no exposure, shows the page's range.
  await go(page,'#object-x');await expect(id(page,'objectx-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).',{timeout:30000});
 });
+// Front S2 review 2 (M1, L3): the galaxy chart's axis follows the range; the galaxy and LSS routes carry the opener (witnessed only).
+test('galaxy axis follows the range; the galaxy and LSS openers accept 3700–4700 and 4000–5000 only',async({page})=>{
+ await page.goto('/#galaxy-exposure');
+ await expect(id(page,'galaxy-axis-first')).toHaveText('3700 Å',{timeout:30000});await expect(id(page,'galaxy-axis-last')).toHaveText('4698.33 Å');
+ await setRange(page,'galaxy-spectral-range-open',5,15);
+ await expect(id(page,'galaxy-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).');
+ await expect(id(page,'galaxy-axis-first')).toHaveText('4000 Å');await expect(id(page,'galaxy-axis-last')).toHaveText('4998.33 Å');
+ await setRange(page,'galaxy-spectral-range-open',1,11);
+ await expect(page.getByRole('alert').filter({hasText:'not yet verified for galaxy spectra'})).toBeVisible();
+ await expect(id(page,'galaxy-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).');
+ await go(page,'#lss-survey');await expect(id(page,'lss-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).',{timeout:30000});
+});

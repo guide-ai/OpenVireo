@@ -70,3 +70,8 @@ export function galaxyPolicyRange(policy:unknown):Readonly<{base:string;range:Sp
  const r=policyRange(policy,LEGACY_GALAXY_RANGE);return r&&GALAXY_WITNESSED_RANGES.some(w=>sameRange(w,r.range))?r:null;
 }
 export const galaxyPolicyWithRange=(policy:string,range:SpectralRange)=>policyWithRange(policy,range,LEGACY_GALAXY_RANGE);
+/** Review 2 L2: the shared-range rule over ranges already read with each family's own base (galaxyPolicyRange for Hubble and
+ * LSS, policyRange for the others); null entries are ignored. */
+export function sharedRange(ranges:readonly (SpectralRange|null|undefined)[]):SpectralRange{
+ const r=ranges.filter((x):x is SpectralRange=>!!x);return r.length&&r.every(x=>sameRange(x,r[0]))?r[0]:DEFAULT_SPECTRAL_RANGE;
+}

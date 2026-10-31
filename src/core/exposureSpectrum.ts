@@ -22,7 +22,7 @@ export function galaxySpectrumBytes(state:GalaxyState):Uint8Array {
 }
 /** Front L2: the LSS route through the same writer. Header object = the selected catalogue galaxy (24 characters, as the
  * header allows), pointing = the row's HTL coordinates (the global telescope pointing), magnitude = that galaxy's Single
- * catalogue magnitude (the field engine's selected record); 600 source-plus-sky bins from the row's 4000 Å interval [W]. */
+ * catalogue magnitude (the field engine's selected record); 600 source-plus-sky bins from the exposure's interval (VIREO's 3700 Å by default, 4000 Å for an unmarked legacy policy). */
 export function lssSpectrumBytes(state:JournalState,result:FieldResult,row:Pick<LssRow,'ra'|'dec'>):Uint8Array {
  const t=result.target,c=result.calibration;if(!t||!c)throw new RangeError('LSS spectrum');
  return serializeDotDecimalVireoSpectrum({object:t.id,pointingRa:row.ra,pointingDec:row.dec,apparentMagnitude:t.magnitude,minimum:c.wavelengths[0],step:1000/600,counts:state.exposure.counts});

@@ -3216,6 +3216,7 @@
   "lss.adaptation.telescope": "You choose among the three verified telescopes; the original survey mode's telescope setup is not recovered.",
   "lss.adaptation.fresh": "Each pointing builds a fresh field centred on the list coordinates; the original field cache is not reproduced.",
   "lss.adaptation.raster": "Galaxy images use a declared nearest-centre browser raster, not Windows pixel identity.",
+  "lss.rangeNote": "The row list and its spectra use this spectrometer range (VIREO's one setting, Default 3700–4700 Å). In this web version the LSS rows are verified at 3700–4700 Å and 4000–5000 Å only; changing the range evaluates the loaded list again [W].",
   "lss.adaptation.range": "The spectrometer range is VIREO's 3700–4700 Å by default, so the calcium K and H lines are in view for every galaxy; where the template does not reach the blue end at a galaxy's redshift, the missing part is continued as in VIREO, with a small random factor drawn when each exposure starts. 4000–5000 Å (this site's earlier range) is also verified, and investigations saved earlier keep it. Every galaxy uses the original template spectrum, except NGC 4670 and NGC 4889, which use their own original spectra as the original's spectrum list selects them.",
   "lss.adaptation.measure": "Measurement uses this dedicated panel with the analyser's recovered shift control.",
   "lss.adaptation.wedge": "Your records go to the wedge directly with their exact values, not through the original text file.",

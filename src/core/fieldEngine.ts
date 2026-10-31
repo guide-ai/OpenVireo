@@ -19,7 +19,7 @@
  *  6. scene/raster/crop/slit/calibration exactly as galaxyExposure.ts (fresh path), with the selection taken at the frame
  *     centre by the recovered nearest rule (0x59a0fc). A nonzero sub-pixel residual (rounded hot-list pointing) is allowed.
  * Every condition outside the recovered domain is reported as a typed unavailable reason; evidence inconsistencies throw.
- * Web adaptations: a fresh field per pointing (no cache pan), nearest-centre raster, fixed 4000–5000 Å, Number not x87. */
+ * Web adaptations: a fresh field per pointing (no cache pan), nearest-centre raster, the caller's interval (default 4000–5000 Å, the legacy web range; the routes pass VIREO's 3700–4700 Å since Front S2), Number not x87. */
 import galaxyProvenance from '../../data/hubble/galaxy-exposure-provenance.json';
 import galaxySource from '../../data/hubble/galaxy-source.json';
 import pegasusProvenance from '../../data/hubble/pegasus-field-provenance.json';
@@ -125,7 +125,7 @@ export type FieldVariableDispatch='class-3'|'recovered';
  * and the spectrometer interval explicitly (the active range env+0x2bd4/0x2bd8; see objectXSpectrometer.ts). Without it a QSO
  * selection stays the typed qso-selected reason. */
 export type FieldQsoObservation=Readonly<{file:QsoSpectrumFile;minimum:number;maximum:number}>;
-/** 'start-time' (Front F, Boötes): a selected galaxy whose shifted template misses the 4000–5000 Å grid is prepared with the
+/** 'start-time' (Front F, Boötes): a selected galaxy whose shifted template misses the interval's grid is prepared with the
  * recovered continuation (galaxyContinuum.ts, 0x55e97c), drawn from the exposure's own random state at each Go that follows no
  * integration (exposureJournal.ts JournalSourcePreparer). Availability uses the deterministic upper bound (every continuation
  * uniform → 1) against the existing mean bound. Without it such a galaxy stays spectrum-range. */
@@ -133,7 +133,7 @@ export type FieldContinuationMode='none'|'start-time';
 /** A selected GSC star (type 0) is observed only when the caller resolves its spectral index (record offset 8) to a template
  * (starTemplates.ts: JSPEC2.SPI exact match, no fallback); a miss stays star-selected. */
 export type FieldStarObservation=Readonly<{templateFor:(spectralIndex:number)=>Readonly<{file:string;spectrum:UniformSpectrum}>|null}>;
-/** The spectrometer interval of the galaxy, continuation and star paths. Default 4000–5000 Å: the web configuration of every existing
+/** The spectrometer interval of the galaxy, continuation and star paths. Default 4000–5000 Å: the legacy web configuration of every unmarked
  * galaxy acquisition (unchanged; 4000/5000 do not occur in CLEA_VEO.exe, GALAXY-ACQUISITION.md). The normal spectrometer's interval (3700–4700 Å) is passed explicitly by its callers. */
 export type FieldSpectralInterval=Readonly<{minimum:number;maximum:number}>;
 /** Photographic images (Front F, Object X): the kept GLIMAGES.LST rows (photographicList.ts, with the native names) and the
