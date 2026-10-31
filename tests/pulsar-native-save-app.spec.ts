@@ -105,3 +105,14 @@ test('F3: unrecorded readings and a different extension follow the native questi
  await id(page,'pulsar-clear-yes').click();
  await expect(id(page,'pulsar-count')).toHaveText('0 recorded measurements');
 });
+
+// Front QA1 (2026-10-31), finding E06-1: after the native Save, Save investigation is refused ("…cannot be stored in an investigation
+// file…"): pulsarNativeSaved clears the measurement record (0x56fe6c) but keeps the readouts, and the investigation reader
+// (radioInvestigation.ts readView) requires the reference readout to equal measurement.reference. Enable when that is fixed.
+test.fixme('F3/QA1: after Save recorded measurements, Save investigation still downloads the investigation',async({page})=>{
+ await page.goto('/#pulsar-analysis');await loadPlr(page);await recordManual(page,'kept');
+ await saveAs(page,'run');await download(page,()=>id(page,'pulsar-native-ok').click());
+ await expect(id(page,'pulsar-save')).toBeDisabled();
+ const next=page.waitForEvent('download');await page.getByRole('button',{name:'Save investigation',exact:true}).click();
+ expect((await next).suggestedFilename()).toMatch(/\.json$/);
+});

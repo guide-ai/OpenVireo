@@ -296,7 +296,7 @@ const touch=(cdp:CDPSession,type:'touchStart'|'touchMove'|'touchEnd'|'touchCance
  cdp.send('Input.dispatchTouchEvent',{type,touchPoints:points.map(p=>({x:p.x,y:p.y,id:p.id}))});
 const finger=async(page:Page,slot:number,column:number,fingerId:number):Promise<Point>=>{const p=await columnPoint(page,slot,column);return {x:p.x,y:p.y,id:fingerId};};
 
-test('touch 375 px: a second finger cannot steal, move or end the drag; Escape, touchcancel, window blur and a hidden page end it',async({browser},info)=>{
+test('touch 375 px: a second finger cannot steal, move or end the drag; Escape, touchcancel, window blur and a hidden page end it',async({browser,browserName},info)=>{test.skip(browserName!=='chromium','Uses a Chromium-only CDP stimulus (Front QA1, 2026-10-31).');
  const {context,page,cdp}=await touchPage(browser,info);
  try{
   await setup(page);await openReceiver(page);await toMobile(page);
@@ -340,7 +340,7 @@ test('touch 375 px: a second finger cannot steal, move or end the drag; Escape, 
  }finally{await context.close();}
 });
 
-test('touch 375 px: a dispatched child Close and a dispatched Mode during a drag end it; Receive resets the marks',async({browser},info)=>{
+test('touch 375 px: a dispatched child Close and a dispatched Mode during a drag end it; Receive resets the marks',async({browser,browserName},info)=>{test.skip(browserName!=='chromium','Uses a Chromium-only CDP stimulus (Front QA1, 2026-10-31).');
  const {context,page,cdp}=await touchPage(browser,info);
  try{
   await setup(page);await openReceiver(page);await applyClock(page);
