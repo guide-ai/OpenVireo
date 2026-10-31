@@ -28,8 +28,9 @@ function PlotCopy({source,monochrome}:{source:RefObject<SVGSVGElement|null>;mono
  return <div ref={host} className="cluster-print-image" data-testid="cluster-hr-print-image"/>;
 }
 
-/** File › Display/Print Data for the own photometer pairs (0x542f1c → RsltsListForm1): typed unavailable, those pairs are not
- * native records (the photometer Record writer is not ported). Saved DAT records use RecordedResultsWindow (Front K2). */
+/** File › Display/Print Data for the own photometer pairs (0x542f1c → RsltsListForm1) while the photometer's results list is
+ * empty: the transcribed pairs are not native records. With Record/Review rows (Front P3) the own view opens RecordedResultsWindow
+ * on them instead; saved DAT records use it too (Front K2). */
 export function ObservationDataUnavailable({testId}:{testId:string}){
  return <><button type="button" className="secondary-button" disabled aria-describedby={`${testId}-reason`} data-testid={testId}>{M.displayData}</button>
   <span id={`${testId}-reason`} className="cluster-hr-note" data-testid={`${testId}-reason`} data-reason="row-writer-not-recovered">{M.observationDataUnavailable}</span></>;

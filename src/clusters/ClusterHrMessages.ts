@@ -62,7 +62,7 @@ export const CLUSTER_HR_EN=Object.freeze({
  memberAlreadyRemoved:'This star is already removed from the plot.',
  rightClickNote:'Like VIREO, right-click a star on the plot (or press and hold on a touch screen) to open "Possible Cluster Member". With the keyboard, choose a record below and press "Possible Cluster Member…".',
  memberOpen:'Possible Cluster Member…',
- observationDataUnavailable:'Display/Print Data is not available for your own photometer pairs: VIREO lists recorded observation records here ("Recorded Results"), and these pairs are not such records because the photometer Record writer is not ported. Save and load the observations as a DAT file to see the list.',
+ observationDataUnavailable:'Display/Print Data lists the records the photometer\'s Record/Review added to its results list ("Recorded Results"); there are none yet. Your transcribed pairs are not such records: record a reading with Record/Review, or load saved observations as a DAT file.',
  // Front K2.1: observation-mode Display/Print Data (RsltsListForm1)
  recordedResultsNote:'VIREO\'s "Recorded Results" list for the loaded records: a header, then one line per record, each written by VIREO\'s row writer (0x5486a8) with VIREO\'s default options (magnitudes, R and I). VIREO writes this list when it reads the data; here it follows every change of the list (web).',
  recordedResultsBlocked:(row:number,why:string)=>`Display/Print Data cannot list record ${row}: ${why} VIREO would stop with an error here.`,

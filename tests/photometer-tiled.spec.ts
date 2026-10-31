@@ -62,7 +62,7 @@ test('a field VIREO\'s photometer cannot reproduce is typed: M31\'s core holds a
  test.setTimeout(120000);await observatory(page);await pointObservatory(page,{ra:'0.7123',dec:'41.2692'});await photometerHere(page);
  await expect(page.getByTestId('photo-telescope-dec')).toHaveText('41.2692');
  await expect(page.getByTestId('photo-tiled-status')).toHaveAttribute('data-status','error',{timeout:60000});
- await expect(page.getByTestId('photo-tiled-status')).toContainText('contains a galaxy');
+ await expect(page.getByTestId('photo-tiled-status')).toContainText('points at a galaxy');
 });
 test('the bench move follows the Observatory\'s checks: Limit Slewing refuses below the horizon',async({page})=>{
  test.setTimeout(120000);await observatory(page);

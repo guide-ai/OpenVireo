@@ -103,7 +103,7 @@ function Photometer({active,initialState=null,controllerRef,onStateChange,invest
  useImperativeHandle(controllerRef,()=>({snapshot,replace,confirmNativeCluster}));
  // Live pair source for the own HR view: reported only when pairs, readings, fit, phase or seed change (not per callback).
  const pairSource=useRef(onPairSource);pairSource.current=onPairSource;
- useEffect(()=>{pairSource.current?.(current.current);},[state?.colors,state?.entries,state?.readings,state?.nativeClusterFit,state?.phase,state?.seedAtStart,state===null]);
+ useEffect(()=>{pairSource.current?.(current.current);},[state?.colors,state?.entries,state?.readings,state?.nativeClusterFit,state?.native,state?.phase,state?.seedAtStart,state===null]);
  // The telescope's latest pointing: a bench move sets it at once, a move elsewhere when the App re-renders (L1).
  const latestPointing=useRef<Pointing|null>(telescope?.pointing??null);
  useEffect(()=>{if(telescope)latestPointing.current=telescope.pointing;},[telescope?.pointing.ra,telescope?.pointing.dec]);

@@ -3466,4 +3466,7 @@ export interface MessageParameters {
   "ph.nativeTitle": never;
   "ph.nativeHelp": "count";
   "ph.nativeResults": never;
+  "obsHr.ownRecords": never;
+  "obsHr.ownRecordsHelp": never;
+  "obsHr.ownRecordsError": never;
 }
