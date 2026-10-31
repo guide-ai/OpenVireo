@@ -11,12 +11,13 @@ import {pulsarPrintLines} from '../core/pulsarPrint';
 import { menuCaptionText } from '../core/radioControl';
 import { POLISH_MESSAGES as PM, PULSAR_PRINT_LITERALS as PP } from '../polish/PolishMessages';
 import { resourceSha256 } from '../io/boundedResource';
+import { buildNativeSave, folderKey, nativeSaveAnswer, nativeSaveStart, PULSAR_NATIVE_SAVE_TEXT as NS, type NativeSaveAnswer, type NativeSaveFolder, type NativeSaveSession } from '../core/pulsarNativeSave';
 import { admitPlrRecording, PLR_MAX_BYTES, type PlrRecording } from '../core/pulsarRecording';
 import {
   INITIAL_PULSAR_ANALYSIS, PULSAR_ACTIVATE_LITERALS, PULSAR_BASES, PULSAR_PANELS, PULSAR_PANEL_HEIGHTS, PULSAR_PAN_RATES, PULSAR_PLOT_WIDTH, pulsarActivateData, pulsarAnnouncement,
   pulsarAnswerClear, pulsarAnswerLoad, pulsarAnswerLoadSave, pulsarAxisTicks, pulsarBeginRecord, pulsarCancelRecord, pulsarConfirmRecord, pulsarDismissDataNotice, pulsarFactor, pulsarLoad, pulsarModalOpen,
   pulsarMode, pulsarPan, pulsarPanelRecordable, pulsarPanRate, pulsarPanTick, pulsarPointer, pulsarPointerRelease, pulsarProperties, pulsarReadouts, pulsarRecordDialog, pulsarRecordDraft,
-  pulsarRequestClear, pulsarRequestLoad, pulsarReset, pulsarTrace, pulsarZoom,
+  pulsarNativeSaveCancelled, pulsarNativeSaved, pulsarRequestClear, pulsarRequestLoad, pulsarReset, pulsarTrace, pulsarZoom,
   type PulsarAnalysisState, type PulsarOutcome, type PulsarPanel, type PulsarPointer, type PulsarTransition,
 } from '../core/pulsarAnalysis';
 import { PULSAR_DATA_NOT_WRITTEN,
@@ -169,6 +170,12 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
   // R-RX10 export dialog session (src/core/pulsarResultsExport.ts), mirrored in a ref so every guard reads the latest session.
   const [exportSession, setExportSession] = useState<ResultsExportSession | null>(null), exportRef = useRef<ResultsExportSession | null>(null);
   const setExport = (next: ResultsExportSession | null) => { exportRef.current = next; setExportSession(next); };
+  // Front F3: the native Save Recorded Measurements flow (core/pulsarNativeSave.ts), a modal session like Export. [W] The folder is
+  // the files this Save wrote while the analysis is mounted; the last name is +0x5d7.
+  const [nativeSession, setNativeSession] = useState<NativeSaveSession | null>(null), nativeRef = useRef<NativeSaveSession | null>(null);
+  const [nativeError, setNativeError] = useState('');
+  const setNative = (next: NativeSaveSession | null) => { nativeRef.current = next; setNativeSession(next); setNativeError(''); };
+  const nativeFolder = useRef<Map<string, Readonly<{ name: string; bytes: Uint8Array<ArrayBuffer> }>>>(new Map()), nativeLastName = useRef('');
   // R-RX12 append dialog session (src/core/pulsarResultsAppend.ts), mirrored in a ref like the export session.
   const [appendSession, setAppendSession] = useState<ResultsAppendSession | null>(null), appendRef = useRef<ResultsAppendSession | null>(null);
   const setAppend = (next: ResultsAppendSession | null) => { appendRef.current = next; setAppendSession(next); };
@@ -206,11 +213,11 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
   // Which outcome writes the status is the core's pulsarAnnouncement policy.
   const act: Act = fn => {
     // R-RX18: a Load question Yes flow in any phase blocks every core action, like the other sessions (also while its file is read).
-    const tr = exportRef.current || appendRef.current || rawRef.current || loadSaveRef.current ? blockedByExport(current.current) : fn(current.current);
+    const tr = exportRef.current || nativeRef.current || appendRef.current || rawRef.current || loadSaveRef.current ? blockedByExport(current.current) : fn(current.current);
     if (tr.changed) { current.current = tr.state; setS(tr.state); }
     const announced = pulsarAnnouncement(statusOutcome.current, tr);
     // R-RX18 reading: no dialog is open, so the flow's refusal names the pending read instead of a dialog (outcome unchanged).
-    const flowReading = announced === 'blocked-modal' && !exportRef.current && !appendRef.current && !rawRef.current && loadSaveRef.current?.phase === 'reading';
+    const flowReading = announced === 'blocked-modal' && !exportRef.current && !nativeRef.current && !appendRef.current && !rawRef.current && loadSaveRef.current?.phase === 'reading';
     if (announced) say(flowReading ? ls('loadSave.status.reading') : t(`pulsar.outcome.${announced}` as PulsarMessageKey), announced);
     return tr;
   };
@@ -220,7 +227,7 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
   // reported to the shared dataset, so receiver arming is refused while it is open (also on a hidden route). The append
   // dialog (R-RX12) and the raw .PLR download dialog (R-RX14) are too, and the R-RX18 Load after Save flow until its file is read
   // (its reading phase is the pending-read gate instead).
-  const rec = s.recording, modal = pulsarModalOpen(s) || exportSession !== null || appendSession !== null || rawSession !== null || (loadSave !== null && loadSave.phase !== 'reading');
+  const rec = s.recording, modal = pulsarModalOpen(s) || exportSession !== null || nativeSession !== null || appendSession !== null || rawSession !== null || (loadSave !== null && loadSave.phase !== 'reading');
   // WEB pending-read gate (the native load is synchronous): while a chosen file is being read, its contents or
   // its SHA-256, no control opens a modal (Record, Review, Clear, Export, and the Load chooser with its unsaved-data prompt).
   // A modal makes the finished read's load be refused, which would drop the chosen file. The read completes, or the learner
@@ -395,7 +402,7 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
     if (loadSaveRef.current !== null) { if (file) say(ls('loadSave.fileRefused')); return; }
     if (!file) { say(t('pulsar.status.pickerCancelled')); return; }
     // R-RX10: a change delivered while the export dialog is open is refused unread, so nothing reaches the shared dataset.
-    if (exportRef.current) { say(t('pulsar.export.fileRefused')); return; }
+    if (exportRef.current || nativeRef.current) { say(t('pulsar.export.fileRefused')); return; }
     // R-RX12: likewise while the append dialog is open (its own chooser is a separate input).
     if (appendRef.current) { say(t('pulsar.append.fileRefused')); return; }
     // R-RX14: likewise while the raw .PLR download dialog (or the R-RX15 Save dialog) is open.
@@ -452,7 +459,7 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
       let committed: PulsarDataStep;
       if (flow !== null) {
         // The flow blocks every opener, so no other session should exist; if one does, nothing is imported and the flow ends.
-        if (pulsarModalOpen(current.current) || exportRef.current || appendRef.current || rawRef.current) { fail(t('pulsar.outcome.blocked-modal')); return; }
+        if (pulsarModalOpen(current.current) || exportRef.current || nativeRef.current || appendRef.current || rawRef.current) { fail(t('pulsar.outcome.blocked-modal')); return; }
         const own = loadSaveRef.current as LoadSaveFlow;
         committed = shared.update(d => loadSaveImport(d, own, flow.flowId, flow.invocation, admission.recording));
         if (!committed.ok) { fail(t(committed.reason === 'capture-lease' ? 'pulsar.reject.capture-lease' : 'pulsar.reject.superseded')); return; }
@@ -460,7 +467,7 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
         setLoadSave(null);
       } else {
         // A modal session (the export dialog included) refuses the load as before ('blocked-modal'); the dataset is not changed then.
-        if (pulsarModalOpen(current.current) || exportRef.current || appendRef.current || rawRef.current) { act(st => pulsarLoad(st, admission.recording)); return; }
+        if (pulsarModalOpen(current.current) || exportRef.current || nativeRef.current || appendRef.current || rawRef.current) { act(st => pulsarLoad(st, admission.recording)); return; }
         committed = shared.update(d => importPulsarRecording(d, admission.recording, generation));
         if (!committed.ok) { fail(t(committed.reason === 'capture-lease' ? 'pulsar.reject.capture-lease' : 'pulsar.reject.superseded')); return; }
       }
@@ -532,7 +539,7 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
   // Front R1: the Find dialog's remembered query and case flag (one TGetSrchStrDlg instance; FormActivate 0x492aa4 shows them).
   // WEB: kept while this analysis is mounted, and separate from the saved-row viewer's.
   const [reviewFindMemory, setReviewFindMemory] = useState<SavedFindMemory>(SAVED_FIND_INITIAL);
-  const loadDialog = useRef<HTMLDialogElement>(null), exportDialog = useRef<HTMLDialogElement>(null), exportFirst = useRef<HTMLInputElement>(null), exportButton = useRef<HTMLButtonElement>(null);
+  const loadDialog = useRef<HTMLDialogElement>(null), nativeDialog = useRef<HTMLDialogElement>(null), nativeDefault = useRef<HTMLElement | null>(null), nativeSaveButton = useRef<HTMLButtonElement>(null), exportDialog = useRef<HTMLDialogElement>(null), exportFirst = useRef<HTMLInputElement>(null), exportButton = useRef<HTMLButtonElement>(null);
   const appendDialog = useRef<HTMLDialogElement>(null), appendFile = useRef<HTMLInputElement>(null), appendButton = useRef<HTMLButtonElement>(null), appendCancelRead = useRef<HTMLButtonElement>(null), appendDownload = useRef<HTMLButtonElement>(null);
   const rawDialog = useRef<HTMLDialogElement>(null), rawButton = useRef<HTMLButtonElement>(null), rawCancel = useRef<HTMLButtonElement>(null), saveButton = useRef<HTMLButtonElement>(null);
   // R-RX18 Load after Save dialog: its Cancel (the default) and the dedicated chooser input of the current invocation.
@@ -541,7 +548,7 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
   const [syncModal] = useState(() => () => {
     // The export, append and raw download dialogs never coexist with the others: each opens only when none is open, and blocks every core action.
     // The R-RX18 Load after Save dialog likewise (it exists only after its Save dialog is gone).
-    const el = recordDialog.current ?? clearDialog.current ?? reviewDialog.current ?? loadDialog.current ?? exportDialog.current ?? appendDialog.current ?? rawDialog.current
+    const el = recordDialog.current ?? clearDialog.current ?? reviewDialog.current ?? loadDialog.current ?? nativeDialog.current ?? exportDialog.current ?? appendDialog.current ?? rawDialog.current
       ?? loadSaveDialog.current;
     if (!el) return;
     if (!activeRef.current) { if (el.open) { ownClose.current.add(el); el.close(); } return; }
@@ -553,13 +560,13 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
     // Review: the open question's default button, else the editor's comment, else the selected row, else Cancel (an empty working copy).
     const review = () => reviewPromptDefault.current ?? reviewEditComment.current ?? el.querySelector<HTMLInputElement>('input[type="radio"]:checked') ?? reviewCancel.current;
     (el === recordDialog.current ? commentInput.current : el === clearDialog.current ? clearDefault.current : el === loadDialog.current ? loadDefault.current
-      : el === exportDialog.current ? exportFirst.current : el === appendDialog.current ? appendFile.current : el === rawDialog.current ? rawCancel.current
+      : el === nativeDialog.current ? nativeDefault.current : el === exportDialog.current ? exportFirst.current : el === appendDialog.current ? appendFile.current : el === rawDialog.current ? rawCancel.current
         : el === loadSaveDialog.current ? loadSaveCancel.current : review())?.focus();
   });
   useLayoutEffect(() => { syncModal(); });
   useEffect(() => {
     // Another dialog closing may leave this panel's dialog free to open. Our own closes are handled by onClose.
-    const own = [recordDialog, clearDialog, reviewDialog, loadDialog, exportDialog, appendDialog, rawDialog, loadSaveDialog];
+    const own = [recordDialog, clearDialog, reviewDialog, loadDialog, nativeDialog, exportDialog, appendDialog, rawDialog, loadSaveDialog];
     const closed = (e: Event) => { if (!own.some(d => e.target === d.current)) syncModal(); };
     if (!modal || !active) return;
     document.addEventListener('close', closed, true);
@@ -613,7 +620,7 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
     },
   });
   function download() {
-    if (!fileRec || exportRef.current || appendRef.current || loadSaveRef.current) return;
+    if (!fileRec || exportRef.current || nativeRef.current || appendRef.current || loadSaveRef.current) return;
     try {
       const url = URL.createObjectURL(new Blob([fileRec.bytes], { type: 'application/octet-stream' }));
       const a = document.createElement('a');
@@ -625,7 +632,11 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
   const openProperties = () => { if (act(st => pulsarProperties(st, true)).changed) focusProperties.current = null; else propertiesClose.current?.focus(); };
   // After the last record dialog, focus returns to Record if it is still enabled, otherwise to Clear.
   const finishRecord = (tr: PulsarTransition) => { if (tr.state.recordSession === null) focusAfterModal.current = tr.state.recordEnabled ? recordButton.current : clearButton.current; };
-  const answerClear = (a: 'discard' | 'yes' | 'no' | 'cancel') => { const tr = act(st => pulsarAnswerClear(st, a)); if (tr.state.clearPrompt === null) focusAfterModal.current = clearButton.current; };
+  const answerClear = (a: 'save' | 'discard' | 'yes' | 'no' | 'cancel') => {
+    const tr = act(st => pulsarAnswerClear(st, a));
+    if (tr.outcome === 'clear-save') { openNativeSave(true); return; }
+    if (tr.state.clearPrompt === null) focusAfterModal.current = clearButton.current;
+  };
   // Ok, Cancel or Escape that closes Review returns focus to the Review button, which stays enabled.
   const finishReview = (tr: PulsarTransition) => { if (tr.changed && tr.state.reviewSession === null) focusAfterModal.current = reviewButton.current; };
   // Review Edit. A length refusal also names the field, its stored length and the editor's capacity (pure support result).
@@ -644,7 +655,7 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
   const sessionOpenable = () => {
     const panel = root.current, doc = shared.current(), st = current.current;
     return activeRef.current && !!panel && panel.getClientRects().length > 0 && !panel.parentElement?.closest('[inert]') && document.querySelector('dialog:modal') === null
-      && readingRef.current === null && !pulsarModalOpen(st) && exportRef.current === null && appendRef.current === null && rawRef.current === null && loadSaveRef.current === null
+      && readingRef.current === null && !pulsarModalOpen(st) && exportRef.current === null && nativeRef.current === null && appendRef.current === null && rawRef.current === null && loadSaveRef.current === null
       && !st.leftDrag && !st.rightDrag
       && doc.lease === null && doc.generation === adopted.current;
   };
@@ -710,6 +721,51 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
     setExport(null);
     focusAfterModal.current = exportButton.current;
     say(t('pulsar.export.requested', { name: RESULTS_EXPORT_FILE_NAME, count: r.rowCount }));
+  };
+  // Front F3: Results › Save Recorded Measurements (Save2Click 0x56ef60). thenClear: started by Clear's "save first" answer
+  // (0x56f804), whose own dialog has just closed; a completed save then asks Clear's confirmation again.
+  function openNativeSave(thenClear = false) {
+    if (nativeRef.current) return;
+    const st = current.current;
+    if (!thenClear && !sessionOpenable()) { say(t('pulsar.nativeSave.unavailable')); return; }
+    setNative(nativeSaveStart({ list: st.list, pending: st.pending, generation: adopted.current, lastName: nativeLastName.current, thenClear }));
+  }
+  const nativeBusy = useRef(false);
+  const endNative = (text: string) => { setNative(null); focusAfterModal.current = nativeSaveButton.current?.disabled ? clearButton.current : nativeSaveButton.current; say(text); };
+  const answerNative = (a: NativeSaveAnswer, typed?: string) => {
+    const session = nativeRef.current, dialogEl = nativeDialog.current;
+    if (!session || nativeBusy.current || !dialogEl?.open) return;
+    const next = nativeSaveAnswer(session, a, nativeFolder.current as NativeSaveFolder, typed);
+    if (!next) return;
+    if (next.kind === 'step') { setNative(next.session); return; }
+    if (next.kind === 'end') {
+      endNative(t('pulsar.nativeSave.cancelled'));
+      if (next.unsaved) act(pulsarNativeSaveCancelled);
+      return;
+    }
+    // The write: the snapshot must still be the live list and dataset generation.
+    if (current.current.list !== session.list || shared.current().generation !== session.generation) { endNative(t('pulsar.nativeSave.stale')); return; }
+    const key = folderKey(next.name), existing = next.append ? nativeFolder.current.get(key)?.bytes ?? null : null;
+    const build = buildNativeSave(session.list, () => new Date(), existing, next.name);
+    if (!build.ok) { setNativeError(t('pulsar.nativeSave.refused')); return; }
+    nativeBusy.current = true;
+    let url: string | null = null, a2: HTMLAnchorElement | null = null, failed = false;
+    try {
+      url = URL.createObjectURL(new Blob([build.bytes], { type: 'text/csv' }));
+      a2 = document.createElement('a');
+      a2.href = url; a2.download = next.name; a2.rel = 'noopener';
+      dialogEl.append(a2); a2.click();
+    } catch { failed = true; } finally { a2?.remove(); nativeBusy.current = false; }
+    if (failed) { if (url !== null) { const owned = url; try { URL.revokeObjectURL(owned); } catch { /* nothing else to release */ } } setNativeError(t('pulsar.nativeSave.failure')); return; }
+    const issued = url as string;
+    setTimeout(() => URL.revokeObjectURL(issued), 1000);
+    nativeFolder.current.set(key, Object.freeze({ name: next.name, bytes: build.bytes }));
+    nativeLastName.current = next.name;
+    setNative(null);
+    act(pulsarNativeSaved);
+    focusAfterModal.current = clearButton.current;
+    say(t(build.append ? 'pulsar.nativeSave.appended' : 'pulsar.nativeSave.written', { name: next.name, count: build.rowCount }));
+    if (session.thenClear) act(st => pulsarRequestClear(st));
   };
   const exportProblemText = (p: ResultsExportFieldProblem) => t(`pulsar.export.problem.${p.code}` as PulsarMessageKey, { position: p.position ?? '', length: p.length ?? '', max: p.max ?? '' });
   const exportRefusalText = (session: ResultsExportSession): string => {
@@ -1023,7 +1079,7 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
     if (e.detail > 1) return;
     const dlg = loadDialog.current, st = current.current;
     if (!activeRef.current || !dlg?.open || [...document.querySelectorAll('dialog:modal')].some(d => d !== dlg)) return;
-    if (readingRef.current !== null || loadSaveRef.current || exportRef.current || appendRef.current || rawRef.current || exportBusy.current || st.leftDrag || st.rightDrag) return;
+    if (readingRef.current !== null || loadSaveRef.current || exportRef.current || nativeRef.current || appendRef.current || rawRef.current || exportBusy.current || st.leftDrag || st.rightDrag) return;
     const opened = loadSaveOpen(st, shared.current(), adopted.current, saveSupport, flowEpoch.current + 1);
     if (!opened.ok) { say(ls(`loadSave.refused.${opened.reason}` as LoadSaveMessageKey)); return; }
     flowEpoch.current++;
@@ -1133,7 +1189,7 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
     controllerRef.current = Object.freeze({
       snapshot: (doc: PulsarCurrentData): RadioSnapshotResult<PulsarAnalysisSnapshot> => {
         if (readingRef.current !== null || loadSaveRef.current?.phase === 'reading') return Object.freeze({ ok: false, reason: 'analysis-reading' });
-        if (exportRef.current || appendRef.current || rawRef.current || loadSaveRef.current || saveRun.current !== null || exportBusy.current) return Object.freeze({ ok: false, reason: 'analysis-dialog' });
+        if (exportRef.current || nativeRef.current || appendRef.current || rawRef.current || loadSaveRef.current || saveRun.current !== null || exportBusy.current) return Object.freeze({ ok: false, reason: 'analysis-dialog' });
         const st = current.current;
         return pulsarAnalysisSnapshot(st, adopted.current === doc.generation && st.recording !== null && st.recording === doc.data);
       },
@@ -1276,11 +1332,11 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
                 <button type="button" ref={recordButton} onClick={() => act(st => pulsarBeginRecord(st))} disabled={!s.recordEnabled || readPending} data-testid="pulsar-record">{t('pulsar.results.record')}</button>
                 <button type="button" ref={reviewButton} onClick={() => act(pulsarReviewOpen)} disabled={!s.reviewEnabled || readPending} aria-haspopup="dialog" data-testid="pulsar-review">{t('pulsar.results.review')}</button>
                 <button type="button" ref={clearButton} onClick={() => act(st => pulsarRequestClear(st))} disabled={readPending} data-testid="pulsar-clear">{t('pulsar.results.clear')}</button>
-                <button type="button" disabled aria-describedby={`${idPrefix}save-gated`} data-testid="pulsar-save">{t('pulsar.results.save')}</button>
+                <button type="button" ref={nativeSaveButton} onClick={() => openNativeSave()} disabled={!s.saveEnabled || !active || readPending || modal || s.leftDrag || s.rightDrag || leased || newer} aria-haspopup="dialog" aria-describedby={`${idPrefix}save-note`} data-testid="pulsar-save">{t('pulsar.results.save')}</button>
                 <button type="button" ref={exportButton} onClick={openExport} disabled={exportDisabled} aria-haspopup="dialog" aria-describedby={`${idPrefix}export-note`} data-testid="pulsar-export">{t('pulsar.export.open')}</button>
                 <button type="button" ref={appendButton} onClick={openAppend} disabled={exportDisabled} aria-haspopup="dialog" aria-describedby={`${idPrefix}append-note`} data-testid="pulsar-append">{t('pulsar.append.open')}</button>
               </div>
-              <p className="plr-help" id={`${idPrefix}save-gated`}>{t('pulsar.results.saveGated')}</p>
+              <p className="plr-help" id={`${idPrefix}save-note`} data-testid="pulsar-save-note">{t('pulsar.nativeSave.note')}</p>
               <p className="plr-help" id={`${idPrefix}export-note`} data-testid="pulsar-export-note">{t('pulsar.export.note')}</p>
               <p className="plr-help" id={`${idPrefix}append-note`} data-testid="pulsar-append-note">{t('pulsar.append.note')}</p>
               <p className="plr-warning" data-testid="pulsar-persistence">{t('pulsar.results.persistence')}</p>
@@ -1316,13 +1372,15 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
         <dialog ref={clearDialog} role="alertdialog" aria-labelledby={`${idPrefix}clear`} className="plr-modal" data-testid="pulsar-clear-dialog"
           {...dialogEvents(() => answerClear('cancel'))}>
           {s.clearPrompt === 'unsaved' ? (<>
-            <p id={`${idPrefix}clear`}>{t('pulsar.clear.unsaved')}</p>
+            <p id={`${idPrefix}clear`}><strong>{NS.clearUnsavedCaption}</strong></p>
+            <p style={{ whiteSpace: 'pre-line' }} data-testid="pulsar-clear-unsaved-text">{NS.clearUnsavedText}</p>
             <div className="plr-row">
+              <button type="button" onClick={() => answerClear('save')} data-testid="pulsar-clear-save">{t('pulsar.clear.save')}</button>
               <button type="button" onClick={() => answerClear('discard')} data-testid="pulsar-clear-discard">{t('pulsar.clear.discard')}</button>
               <button type="button" ref={clearDefault} onClick={() => answerClear('cancel')} data-testid="pulsar-clear-cancel">{t('pulsar.clear.cancel')}</button>
             </div>
           </>) : (<>
-            <p id={`${idPrefix}clear`}>{t('pulsar.clear.confirm')}</p>
+            <p id={`${idPrefix}clear`}>{NS.clearConfirmText}</p>
             <div className="plr-row">
               <button type="button" onClick={() => answerClear('yes')} data-testid="pulsar-clear-yes">{t('pulsar.clear.yes')}</button>
               <button type="button" ref={clearDefault} onClick={() => answerClear('no')} data-testid="pulsar-clear-no">{t('pulsar.clear.no')}</button>
@@ -1353,6 +1411,38 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
           <p role="status" className="plr-status">{status}</p>
         </dialog>
       )}
+      {nativeSession && (() => {
+        const st = nativeSession.step, ref = (el: HTMLElement | null) => { nativeDefault.current = el; };
+        const box = (caption: string, text: string, answers: readonly NativeSaveAnswer[]) => (<>
+          <h3 id={`${idPrefix}native`}>{caption}</h3>
+          <p style={{ whiteSpace: 'pre-line' }} data-testid="pulsar-native-text">{text}</p>
+          <div className="plr-row">{answers.map((a, i) => <button key={a} type="button" ref={i === 0 ? ref : undefined} onClick={() => answerNative(a)} data-testid={`pulsar-native-${a}`}>{t(`pulsar.nativeSave.${a}` as PulsarMessageKey)}</button>)}</div>
+        </>);
+        return (
+          <dialog ref={nativeDialog} role={st.kind === 'dialog' ? undefined : 'alertdialog'} aria-labelledby={`${idPrefix}native`} className="plr-modal plr-native-save" data-testid="pulsar-native-dialog" data-step={st.kind}
+            {...dialogEvents(() => answerNative('cancel'))}>
+            {st.kind === 'nothing' ? box(NS.nothingCaption, NS.nothingText, ['ok'])
+              : st.kind === 'unrecorded' ? box(NS.unrecordedCaption, NS.unrecordedText, ['yes', 'no'])
+              : st.kind === 'extension' ? box(NS.extensionCaption, NS.extensionText, ['yes', 'no', 'cancel'])
+              : st.kind === 'exists' ? box(NS.existsCaption, NS.existsText(st.name), ['yes', 'no', 'cancel'])
+              : st.kind === 'verify' ? box(NS.verifyCaption, NS.verifyText(st.name, st.append), ['ok', 'cancel'])
+              : (
+                <form key={`${st.fileName}|${st.problem ?? ''}`} onSubmit={e => { e.preventDefault(); answerNative('ok', String(new FormData(e.currentTarget).get('name') ?? '')); }}>
+                  <h3 id={`${idPrefix}native`}>{NS.dialogTitle}</h3>
+                  <label>{t('pulsar.nativeSave.fileName')}
+                    <input name="name" ref={ref} defaultValue={st.fileName} autoComplete="off" spellCheck={false} aria-describedby={`${idPrefix}native-folder`} data-testid="pulsar-native-name" />
+                  </label>
+                  <p className="plr-help">{t('pulsar.nativeSave.filter', { filter: NS.filter })}</p>
+                  <p className="plr-help" id={`${idPrefix}native-folder`} data-testid="pulsar-native-folder">{t('pulsar.nativeSave.folder', { count: nativeFolder.current.size })}</p>
+                  {st.problem && <p role="alert" className="plr-error" data-testid="pulsar-native-problem">{t(`pulsar.nativeSave.problem.${st.problem}` as PulsarMessageKey)}</p>}
+                  <div className="plr-row">
+                    <button type="submit" data-testid="pulsar-native-save">{t('pulsar.nativeSave.save')}</button>
+                    <button type="button" onClick={() => answerNative('cancel')} data-testid="pulsar-native-cancel">{t('pulsar.nativeSave.cancel')}</button>
+                  </div>
+                </form>)}
+            {nativeError && <p role="alert" className="plr-error" data-testid="pulsar-native-error">{nativeError}</p>}
+          </dialog>);
+      })()}
       {exportSession && (
         <dialog ref={exportDialog} aria-labelledby={`${idPrefix}export`} aria-describedby={`${idPrefix}export-scope`} className="plr-modal plr-export" data-testid="pulsar-export-dialog"
           {...dialogEvents(closeExport)}>

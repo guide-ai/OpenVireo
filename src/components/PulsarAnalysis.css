@@ -88,3 +88,8 @@
  .plr-panel-body{grid-template-columns:minmax(0,1fr)}
  .plr-props dl>div,.plr-modal dl>div,.plr-review-edit-readings,.plr-export-fields{grid-template-columns:minmax(0,1fr)}
 }
+/* Front F3: the native Save dialog (file name and VIREO's questions). */
+.plr-native-save { width: min(36rem, 100% - 2rem); }
+.plr-native-save p, .plr-native-save h3 { overflow-wrap: anywhere; }
+.plr-native-save label { display: grid; gap: 0.25rem; font-weight: 600; }
+.plr-native-save input { width: 100%; box-sizing: border-box; }

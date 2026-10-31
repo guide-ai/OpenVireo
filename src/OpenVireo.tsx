@@ -553,7 +553,7 @@ export default function OpenVireo(){
   // App shell: header/sidebar with grouped tools, theme switch and the compact investigation toolbar (presentation only).
   // Front Perf: stable handlers for memoised children (renderStability.ts); each calls this render's closure at call time.
   const spectrumHandlers=useStableHandlers<StableProps<ComponentProps<typeof SpectrumInstrument>,'onPrepareRadio'|'onCheckRadioRestore'|'onRestoreRadio'|'onPrepareMotion'|'onRestoreMotion'|'onPrepareLss'|'onRestoreLss'|'onPrepareObjectX'|'onRestoreObjectX'|'onPrepareObservatory'|'onRestoreObservatory'|'onPrepareClusterSelection'|'onRestoreClusterSelection'|'onPrepareClusterDatabase'|'onRestoreClusterDatabase'|'onPrepareClusterComparison'|'onRestoreClusterComparison'|'onPrepareOptical'|'onPrepareEditing'|'onRestoreEditing'|'onPrepareObserving'|'onRestoreObserving'|'onPreparePhotometry'|'onRestorePhotometry'|'onPrepareClassification'|'onClassifyAcquisition'|'onClassifyImported'|'onRestoreClassification'|'onRestoreAcquisition'|'currentJd'>>({
-   // Front H2: the Record time of an Observational Data record (observatory clock, as RecordZ1Click's time).
+   // Front H2: the Record time of an Observational Data record. [W] The observatory clock at Record; VIREO uses the loaded spectrum's own time (0x582bdb..0x582be5).
    currentJd:()=>siteClockReadingMS(observatoryClock.state?clockDriveUTMS(observatoryClock.state):parseClockUTC(siteClock.utc),optical.selectedIndex).jd,
    onPrepareRadio:prepareRadio,
    onCheckRadioRestore:checkRadioRestore,

@@ -35,7 +35,8 @@ test('E02: field list → statuses → acquire → Record Z OK/Cancel/Escape →
  await expect(page.getByTestId('lss-row-1')).toContainText('12021+3127');await expect(page.getByTestId('lss-row-1')).toContainText('Observable');
  // Front L2: row 3 was QSO-gated; with the recovered QSO merge it is observable on the 0.4 m.
  await expect(page.getByTestId('lss-row-3')).toContainText('Observable');await expect(page.getByTestId('lss-row-3').getByRole('button')).toBeEnabled();
- await expect(page.getByTestId('lss-row-9')).toContainText('photographic image');
+ // Re-pinned 2026-10-30 (Front F3): row 9 (NGC 4150) is drawn from its approved photograph and is observable on the 0.4 m.
+ await expect(page.getByTestId('lss-row-9')).toContainText('Observable');
  // Row 1: acquire, measure, Record Z → OK.
  await acquire(page,1);await measure(page,'20');
  await page.getByLabel('Remarks',{exact:true}).fill('first');await okWithVelocity(page);

@@ -410,8 +410,10 @@ test('record and clear dialogs keep Tab and Shift+Tab inside, with host controls
   await page.getByTestId('pulsar-clear').click();
   const discard = page.getByTestId('pulsar-clear-discard'), keep = page.getByTestId('pulsar-clear-cancel');
   await expect(keep).toBeFocused(); // default cancel
-  for (const next of [discard, keep]) { await page.keyboard.press('Tab'); await expect(next).toBeFocused(); }
-  for (const next of [discard, keep]) { await page.keyboard.press('Shift+Tab'); await expect(next).toBeFocused(); }
+  // Re-pinned 2026-10-30 (Front F3): VIREO's Yes (save first) is the unsaved box's first button.
+  const saveFirst = page.getByTestId('pulsar-clear-save');
+  for (const next of [saveFirst, discard, keep]) { await page.keyboard.press('Tab'); await expect(next).toBeFocused(); }
+  for (const next of [discard, saveFirst, keep]) { await page.keyboard.press('Shift+Tab'); await expect(next).toBeFocused(); }
   await page.keyboard.press('Escape');
   await expect(page.getByTestId('pulsar-clear-dialog')).toHaveCount(0);
   await expect(page.getByTestId('pulsar-clear')).toBeFocused();
@@ -1149,7 +1151,8 @@ test('Review UI-R05: Ok on an emptied list is not Clear; the pending measurement
   await expect(page.getByTestId('pulsar-vertical-value-1')).toHaveText('0.600000');
   await expect(page.getByTestId('pulsar-record')).toBeEnabled();
   await expect(page.getByTestId('pulsar-review')).toBeEnabled(); // Clear would disable Review and Record
-  await expect(page.getByTestId('pulsar-save')).toBeDisabled(); // native CSV stays gated
+  // Re-pinned 2026-10-30 (Front F3): the native Save exists; Review Ok enables it (0x56f74c) even for an empty list, whose Save says Nothing To Save.
+  await expect(page.getByTestId('pulsar-save')).toBeEnabled();
   await openReview(page);
   await expect(page.getByTestId('pulsar-review-empty')).toBeVisible();
   await expect(page.getByTestId('pulsar-review-cancel')).toBeFocused();
@@ -1168,11 +1171,12 @@ test('Review UI-R06: Ok without edits keeps every field and enables no save writ
   await page.getByTestId('pulsar-review-ok').click();
   await expect(review(page)).toHaveCount(0);
   await expect(count(page)).toHaveText('3 recorded measurements');
-  await expect(page.getByTestId('pulsar-save')).toBeDisabled();
-  await expect(page.getByTestId('pulsar-save')).toHaveAccessibleDescription(/that save is not implemented here/);
+  // Re-pinned 2026-10-30 (Front F3): Review Ok enables the native Save (0x56f74c).
+  await expect(page.getByTestId('pulsar-save')).toBeEnabled();
+  await expect(page.getByTestId('pulsar-save')).toHaveAccessibleDescription(/VIREO’s own results file/);
   // listSaved is false after Ok (the caller clears 0x5db): Clear asks about unsaved measurements first.
   await page.getByTestId('pulsar-clear').click();
-  await expect(page.getByTestId('pulsar-clear-dialog')).toContainText('have not been saved');
+  await expect(page.getByTestId('pulsar-clear-dialog')).toContainText('have not saved all your recorded measurements');
   await page.keyboard.press('Escape');
   await openReview(page);
   expect(await rowCells(page)).toEqual(before);
@@ -1666,9 +1670,10 @@ test('Review Edit E1: inner OK changes only the selected working-copy row; outer
   expect(await rowCells(page)).toEqual(edited);
   await page.getByTestId('pulsar-review-cancel').click();
   await page.getByTestId('pulsar-clear').click();
-  await expect(page.getByTestId('pulsar-clear-dialog')).toContainText('have not been saved');
+  await expect(page.getByTestId('pulsar-clear-dialog')).toContainText('have not saved all your recorded measurements');
   await page.keyboard.press('Escape');
-  await expect(page.getByTestId('pulsar-save')).toBeDisabled();
+  // Re-pinned 2026-10-30 (Front F3): the edited list is unsaved, so the native Save is enabled.
+  await expect(page.getByTestId('pulsar-save')).toBeEnabled();
   await expect(page.getByTestId('pulsar-sha')).toHaveText(sha(EDITABLE));
 });
 
