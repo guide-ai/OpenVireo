@@ -20,7 +20,7 @@ export function checkGscIndex(value:unknown):GscIndex{
  return v;
 }
 export function loadGscIndex():Promise<GscIndex>{
- indexPromise??=import('../../data/gsc/gsc-index.json').then(m=>checkGscIndex(m.default)).catch(e=>{indexPromise=null;throw e instanceof GscTileError?e:new GscTileError('index');});
+ indexPromise??=import('../../data/gsc/gsc-index.json').then(m=>checkGscIndex(m.default)).catch(e=>{indexPromise=null;throw e instanceof GscTileError?e:new GscTileError('fetch');});// the index chunk did not arrive (G4b review 1 L3)
  return indexPromise;
 }
 export const gscBandIndex=(index:GscIndex,band:string)=>{const b=index.bands.find(x=>x.name===band);if(!b)throw new GscTileError('index',band);return b;};

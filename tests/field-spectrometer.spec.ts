@@ -65,3 +65,51 @@ test('near an Object X position the field is masked',async({page})=>{
  await pointAndUse(page,'12.485194444444444','2.0522222222222224');
  await expect(page.getByTestId('field-spec-status')).toHaveAttribute('data-reason','object-x-hidden',{timeout:60000});
 });
+test('a catalogue file that does not arrive is a retryable missing piece, not an internal error (G final closure N3)',async({page})=>{
+ test.setTimeout(120000);
+ // Only the field spectrometer's own load is refused: the Observatory does not read CLEA_GLX.DAT before the slit is used.
+ await page.route('**/original/catalogs/CLEA_GLX.DAT',r=>r.abort('internetdisconnected'));
+ await open(page);
+ await pointAndUse(page,'12.99311111111111','27.959722222222222');
+ const status=page.getByTestId('field-spec-status');
+ await expect(status).toHaveAttribute('data-reason','field-tiles',{timeout:60000});
+ await expect(status).not.toContainText('trying again will not help');
+});
+// Front G G4c: the field spectrum's outputs (Save .SSP, Print, Classify, Analyze) and its part of the investigation (v33).
+test('G4c: Save .SSP, Classify and Analyze take the field spectrum; the investigation keeps and restores it byte-identically',async({page})=>{
+ test.setTimeout(240000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+ await open(page);
+ await pointAndUse(page,'12.99311111111111','27.959722222222222');
+ const acquisition=page.getByTestId('field-spec-acquisition');await expect(acquisition).toBeVisible({timeout:90000});
+ await expect(page.getByTestId('field-spec-access')).toHaveAttribute('data-access','ready',{timeout:30000});
+ await expect(page.getByTestId('ob-spectrum-save-button')).toHaveCount(0);
+ await acquisition.getByRole('button',{name:'Activate spectrometer',exact:true}).click();
+ await acquisition.getByRole('button',{name:'Start exposure',exact:true}).click();
+ await expect(async()=>expect(Number(await page.getByTestId('field-spec-total').textContent())).toBeGreaterThan(0)).toPass({timeout:20000});
+ await acquisition.getByRole('button',{name:'Pause exposure',exact:true}).click();
+ const total=await page.getByTestId('field-spec-total').textContent(),object=(await page.getByTestId('field-spec-object').textContent())!;
+ // Save .SSP: the recovered writer, header object = the slit's record, file named after it.
+ const d=page.waitForEvent('download');await page.getByTestId('ob-spectrum-save-button').click();const ssp=await d;
+ expect(ssp.suggestedFilename()).toMatch(/^field-[A-Za-z0-9-]+\.ssp$/);
+ const sspText=await readFile((await ssp.path())!,'latin1'),lines=sspText.split('\r\n');expect(lines.length).toBeGreaterThan(600);
+ expect(lines[0]).toMatch(/^\*SpHdr\* NGC 4874,/);expect(object).toContain('NGC 4874');
+ await expect(page.getByTestId('ob-spectrum-print-button')).toBeEnabled();
+ // Save investigation: the v33 part holds the exposure; restoring it brings the same field and counts back.
+ const inv=page.waitForEvent('download');await page.getByRole('button',{name:'Save investigation',exact:true}).click();
+ const investigation=await readFile((await (await inv).path())!);const v=JSON.parse(investigation.toString());
+ expect(v.version).toBe(33);expect(v.fieldSpectrum.policy).toMatch(/^openvireo-field-spectrum-v1:12\.99311111111111,27\.959722222222222:T0/);
+ // Classify takes the spectrum as an imported .SSP.
+ await page.getByTestId('field-spec-classify').click();
+ await expect(page).toHaveURL(/#classification$/);
+ await page.evaluate(()=>{location.hash='spectrometer';});await expect(page.getByTestId('field-spec-acquisition')).toBeVisible();
+ // Analyze opens it in the spectrum analyser.
+ await page.getByTestId('field-spec-analyze').click();
+ await expect(page).toHaveURL(/#spectrum$/);
+ await page.evaluate(()=>{location.hash='spectrometer';});
+ await page.getByTestId('field-spec-acquisition').getByRole('button',{name:'Cancel and discard',exact:true}).click();
+ await page.getByLabel('Restore investigation JSON',{exact:true}).setInputFiles({name:'restore.json',mimeType:'application/json',buffer:investigation});
+ await expect(page.getByTestId('field-spec-total')).toHaveText(total!,{timeout:90000});
+ const again=page.waitForEvent('download');await page.getByRole('button',{name:'Save investigation',exact:true}).click();
+ expect(await readFile((await (await again).path())!)).toEqual(investigation);
+ expect(errors).toEqual([]);
+});
