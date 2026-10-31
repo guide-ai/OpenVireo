@@ -8,6 +8,8 @@ import {STAR_TARGET,type StarState} from '../core/starExposure';
 import {starTelescopeIndex} from '../core/starTelescope';
 import {formatNumber} from '../i18n';
 import {OBSERVATORY_MESSAGES} from './ObservatoryMessages';
+import {spectrometerDefaultFileName,spectrometerPrintLines,type SpectrometerReadoutOptions} from '../core/currentObject';
+import type {SpectrometerObject} from './SpectrometerReadout';
 import './observatory-dialogs.css';
 const M=OBSERVATORY_MESSAGES.spectrumSave;
 /** Temporary print scope owned by this panel; the print CSS applies only while it is set (precedent: own results 1.12). */
@@ -22,18 +24,22 @@ export const SPECTRUM_PRINT_SCOPE='star-spectrum';
  * reproduced [W]. */
 export type SpectrumSaveSource=Readonly<{bytes:Uint8Array|null;usable:boolean;label:string;telescopeName:string;elapsedMs:number;fileName:string;saved?:(name:string)=>string;
  /** Front H2 (sky route): print these samples when there are no SSP bytes; Save stays unavailable and `saveNote` says why. */
- printSamples?:readonly Readonly<{wavelength:number;intensity:number}>[];saveNote?:string}>;
+ printSamples?:readonly Readonly<{wavelength:number;intensity:number}>[];saveNote?:string;
+ /** Front R4d: the spectrometer's current object and options (Save default name 0x50fb1c, print lines 0x510954); absent, nothing changes. */
+ current?:Readonly<{object:SpectrometerObject;options:SpectrometerReadoutOptions;sky?:boolean}>}>;
 export function SpectrumSaveCard({source,active}:{source:SpectrumSaveSource;active:boolean}){
  const [notice,setNotice]=useState(''),[error,setError]=useState(''),[printedAt,setPrintedAt]=useState(''),release=useRef<(()=>void)|null>(null);
  useEffect(()=>{if(!active)release.current?.();},[active]);
  useEffect(()=>()=>release.current?.(),[]);
- const {bytes,usable}=source;
+ const {bytes,usable,current}=source,shown=current&&current.object!=='pending'?current.object:null;
+ const fileName=current?spectrometerDefaultFileName(current.options,shown,source.fileName,!!current.sky):source.fileName;
+ const objectLines=current&&(shown||current.sky)?spectrometerPrintLines(current.options,!!current.sky,shown??{status:'none'}):[];
  const printOnly=!bytes&&!!source.printSamples?.length;
  const samples=useMemo(()=>bytes?parseSpectrum(new TextDecoder().decode(bytes).split('\r\n').slice(1).join('\r\n')):source.printSamples??[],[bytes,source.printSamples]);
  function save(){
   release.current?.();setNotice('');setError('');
   if(!bytes){setError(M.saveError);return;}
-  const name=source.fileName;
+  const name=fileName;
   const url=URL.createObjectURL(new Blob([bytes.slice().buffer],{type:'text/plain;charset=us-ascii'})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
   setNotice((source.saved??M.saved)(name));
  }
@@ -52,18 +58,18 @@ export function SpectrumSaveCard({source,active}:{source:SpectrumSaveSource;acti
  const w0=samples[0]?.wavelength??0,w1=samples.at(-1)?.wavelength??1,points=samples.map(s=>`${40+(s.wavelength-w0)/(w1-w0||1)*920},${220-Math.max(0,Math.min(1,s.intensity))*190}`).join(' ');
  return <section className="card ob-spectrum-save" aria-labelledby="ob-spectrum-save-title" data-testid="ob-spectrum-save">
   <h2 id="ob-spectrum-save-title">{M.title}</h2><p className="observatory-note">{M.help}</p>
-  <div className="ob-menu ob-print-hide"><button type="button" className="secondary-button" disabled={!usable||printOnly||!!source.saveNote} data-testid="ob-spectrum-save-button" onClick={save}>{M.save}</button><button type="button" className="secondary-button" disabled={!usable} data-testid="ob-spectrum-print-button" onClick={print}>{M.print}</button></div>
+  <div className="ob-menu ob-print-hide"><button type="button" className="secondary-button" disabled={!usable||printOnly||!!source.saveNote||(current?.object==='pending'&&current.options.showObjectId)} data-testid="ob-spectrum-save-button" onClick={save}>{M.save}</button><button type="button" className="secondary-button" disabled={!usable} data-testid="ob-spectrum-print-button" onClick={print}>{M.print}</button></div>
   <p className="observatory-note ob-print-hide">{M.adaptation}</p>{source.saveNote&&<p className="observatory-note ob-print-hide" data-testid="ob-spectrum-save-note">{source.saveNote}</p>}
   <div className="ob-print-hide" aria-live="polite">{notice&&<p role="status">{notice}</p>}{error&&<p role="alert">{error}</p>}</div>
-  {(bytes||printOnly)&&<figure className="ob-spectrum-print" data-testid="ob-spectrum-print"><pre className="ob-print-native" data-testid="ob-spectrum-print-header">{printSkyHeader(printedAt).join('\n')}</pre><figcaption><strong>{source.label}</strong> · {source.telescopeName} · {M.printMeta(formatNumber(source.elapsedMs,{useGrouping:false}),formatNumber(samples.length))}</figcaption>
+  {(bytes||printOnly)&&<figure className="ob-spectrum-print" data-testid="ob-spectrum-print"><pre className="ob-print-native" data-testid="ob-spectrum-print-header">{printSkyHeader(printedAt).join('\n')}</pre>{objectLines.length>0&&<pre className="ob-print-native" data-testid="ob-spectrum-print-object">{objectLines.join('\n')}</pre>}<figcaption><strong>{source.label}</strong> · {source.telescopeName} · {M.printMeta(formatNumber(source.elapsedMs,{useGrouping:false}),formatNumber(samples.length))}</figcaption>
    <svg viewBox="0 0 1000 260" role="img" aria-label={M.chartLabel}><line x1="40" x2="960" y1="220" y2="220" stroke="currentColor"/><line x1="40" x2="40" y1="25" y2="220" stroke="currentColor"/><text x="40" y="245" fontSize="16">{formatNumber(w0,{maximumFractionDigits:2})} Å</text><text x="860" y="245" fontSize="16">{formatNumber(w1,{maximumFractionDigits:2})} Å</text><text x="46" y="20" fontSize="16">{M.normalized}</text><polyline points={points} fill="none" stroke="currentColor" strokeWidth="1.5"/></svg>
   </figure>}
  </section>;
 }
 /** The star route (unchanged behaviour). */
-export default function SpectrumSavePrint({state,active,busy}:{state:StarState|null;active:boolean;busy:boolean}){
+export default function SpectrumSavePrint({state,active,busy,current}:{state:StarState|null;active:boolean;busy:boolean;current?:SpectrumSaveSource['current']}){
  const running=state?.exposure.phase==='running',usable=!!state&&!running&&state.exposure.draws>0&&!busy;
  const bytes=useMemo(()=>{if(!state||running)return null;try{return starSpectrumBytes(state);}catch{return null;}},[state,running]);
  const index=state?starTelescopeIndex(state):0;
- return <SpectrumSaveCard active={active} source={{bytes,usable,label:STAR_TARGET.id,telescopeName:opticalProfile(index).name,elapsedMs:state?.exposure.elapsedMs??0,fileName:starSpectrumFileName(STAR_TARGET.id)}}/>;
+ return <SpectrumSaveCard active={active} source={{bytes,usable,label:STAR_TARGET.id,telescopeName:opticalProfile(index).name,elapsedMs:state?.exposure.elapsedMs??0,fileName:starSpectrumFileName(STAR_TARGET.id),...(current?{current}:{})}}/>;
 }

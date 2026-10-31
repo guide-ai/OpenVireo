@@ -18,6 +18,8 @@ import {fieldSpectrumBytes,fieldSpectrumFileName} from './core/exposureSpectrum'
 import type {ClassificationImport} from './core/classificationImport';
 import type {ExposureWorkspace} from './core/observingWorkspace';
 import {FieldSpectrumSave} from './observatory/RouteSpectrumSave';
+import SpectrometerReadout,{useSpectrometerObject,type SpectrometerObject} from './observatory/SpectrometerReadout';
+import {fieldSpectrometerSkyReading,type SpectrometerReadoutOptions} from './core/currentObject';
 import {fieldSpectrumFailure,fieldSpectrumHiddenMasked,type FieldSpectrumShown} from './io/fieldSpectrumFailure';
 
 /** Front G (G4a, analysis/front-plans/front-g-gsc.md §11): VIREO's single-slit spectrometer wherever the telescope points. The
@@ -57,7 +59,7 @@ function engineFor(prepared:Ready,hidden:Pointing|null,onAdopt:(p:Ready,s:Journa
   basename:`openvireo-field-spectrum-${prepared.pointing.ra}_${prepared.pointing.dec}_T${prepared.telescope}`,activated:t('fieldSpec.activated'),started:t('fieldSpec.started'),restored:t('fieldSpec.restored')};
 }
 type AcquisitionHandle=Readonly<{snapshot:()=>JournalState|null}>;
-function Acquisition({prepared,fieldMatches,active,hidden,onAdopt,restored,onWorkspaceChange,handle,onClassify,onAnalyze,projectBusy,onCounts}:{prepared:Ready;fieldMatches:boolean;active:boolean;hidden:Pointing|null;onAdopt:(p:Ready,s:JournalState)=>void;restored:JournalState|null;
+function Acquisition({prepared,fieldMatches,active,hidden,onAdopt,restored,onWorkspaceChange,handle,onClassify,onAnalyze,projectBusy,onCounts,current}:{current:Readonly<{object:SpectrometerObject;options:SpectrometerReadoutOptions}>;prepared:Ready;fieldMatches:boolean;active:boolean;hidden:Pointing|null;onAdopt:(p:Ready,s:JournalState)=>void;restored:JournalState|null;
  onWorkspaceChange:(w:ExposureWorkspace)=>void;handle:Ref<AcquisitionHandle>;onClassify?:(source:ClassificationImport)=>void;onAnalyze?:(source:ClassificationImport)=>void;projectBusy:boolean;onCounts:(has:boolean)=>void}){
  const heading=useRef<HTMLHeadingElement>(null),engine=useMemo(()=>engineFor(prepared,hidden,onAdopt),[prepared,hidden,onAdopt]);
  const {state,seed,setSeed,notice,setNotice,error,setError,busy,running,armed,activate,start,stop,save,restore,reset,cancel,newSeed,snapshot}=useBoundedExposure({engine,active,fieldMatches,onActivate:()=>{},heading,onWorkspaceChange,projectBusy,
@@ -88,7 +90,7 @@ function Acquisition({prepared,fieldMatches,active,hidden,onAdopt,restored,onWor
   <svg className="source-spectrum" viewBox="0 0 1000 290" role="img" aria-label={t('fieldSpec.chart')}><line x1="55" x2="945" y1="235" y2="235"/><line x1="55" x2="55" y1="45" y2="235"/>{e&&<polyline points={points} fill="none"/>}</svg>
   {(onClassify||onAnalyze)&&<div className="sky-actions">{onAnalyze&&<button className="secondary-button" data-testid="field-spec-analyze" disabled={!stopped||busy} onClick={()=>void handOff(onAnalyze)}>{t('fieldSpec.analyze')}</button>}{onClassify&&<button className="secondary-button" data-testid="field-spec-classify" disabled={!stopped||busy} onClick={()=>void handOff(onClassify)}>{t('fieldSpec.classify')}</button>}</div>}
   {notice&&<p role="status">{notice}</p>}{error&&<p role="alert">{error}</p>}
-  <FieldSpectrumSave state={state} result={prepared.result} pointing={prepared.pointing} telescope={prepared.telescope} active={active} busy={busy}/>
+  <FieldSpectrumSave state={state} result={prepared.result} pointing={prepared.pointing} telescope={prepared.telescope} active={active} busy={busy} current={current}/>
  </section>;
 }
 export default function FieldSpectrometer({link}:{link:FieldSpectrometerLink}){
@@ -128,6 +130,10 @@ export default function FieldSpectrometer({link}:{link:FieldSpectrometerLink}){
  useImperativeHandle(link.controllerRef,()=>({snapshot:()=>{const p=readyRef.current;if(!p)return null;const s=acquisition.current?.snapshot()??null;return s?Object.freeze({prepared:p,state:s}):null;}}),[]);
  const same=!!ready&&ready.pointing.ra===link.pointing.ra&&ready.pointing.dec===link.pointing.dec&&ready.telescope===link.telescope;
  const access=instrumentAccess({...link.gate,configurationAvailable:true,pointingMatches:same});
+ // Front R4d: the current object at the prepared pointing (VIREO refreshes it at FormActivate; here at Use) for the boxes and Save.
+ // Review 1 M1: an empty slit (throughput 0x50f338 = 0) is VIREO's sky reading (0x50db1a): `Sky`, no magnitude, nothing looked up.
+ const sky=fieldSpectrometerSkyReading(ready?.result);
+ const current=useSpectrometerObject(ready&&link.active?ready.pointing:null,sky?'sky':'object');
  const r=ready?.result,kind=r?kindOf(r):null,object=r?.qsoTarget??r?.starTarget??r?.target??null;
  return <section className="card field-spectrometer" aria-labelledby="field-spec-title" data-testid="field-spectrometer">
   <h2 id="field-spec-title">{t('fieldSpec.title')}</h2><p>{t('fieldSpec.help')}</p>
@@ -141,11 +147,12 @@ export default function FieldSpectrometer({link}:{link:FieldSpectrometerLink}){
   {shown?.status==='unavailable'&&<p role="status" data-testid="field-spec-status" data-reason={shown.reason}>{shown.reason==='range-not-witnessed'?SR.notWitnessed:shown.reason==='internal'?t('fieldSpec.internalError'):shown.reason==='object-x-hidden'||shown.reason==='load-error'?fieldInfoReasonText(shown.reason):fieldInfoReasonText(shown.reason,'detail' in shown?shown.detail??'':'')}</p>}
   {ready&&<div data-testid="field-spec-field" data-kind={kind??'none'}>
    <p>{t('fieldSpec.field',{ra:ready.pointing.ra,dec:ready.pointing.dec,telescope:ready.telescope})}</p>
+   <SpectrometerReadout object={current.object} options={current.options} sky={sky}/>
    <p data-testid="field-spec-object">{object?t('fieldSpec.object',{kind:t(`fieldSpec.kind.${kind!}`),id:object.id,magnitude:scientific(object.magnitude,4,true)}):t('fieldSpec.noObject')}</p>
    {r!.calibration&&<p>{t('lss.exposure.slit',{level:r!.calibration.pixelLevel,fraction:scientific(r!.calibration.fraction,6,true)})}</p>}
    {r!.reasons.length>0&&<p role="status" data-testid="field-spec-reasons" data-reasons={r!.reasons.join(' ')}>{t('fieldSpec.reasons',{reasons:r!.reasons.map(x=>t(`fieldSpec.reason.${x}` as 'fieldSpec.reason.slit-empty')).join('; ')})}</p>}
    {!same&&<p role="status">{t('fieldSpec.moved')}</p>}
   </div>}
-  {ready&&!loading&&!r!.reasons.length&&r!.calibration&&<Acquisition key={`${ready.policy}#${restored?.policy===ready.policy?restored.token:0}#${okToken}`} handle={acquisition} prepared={ready} fieldMatches={access==='ready'} active={link.active} hidden={link.hidden} onAdopt={adopt} restored={restored?.policy===ready.policy?restored.state:null} onWorkspaceChange={publish} onClassify={link.onClassify} onAnalyze={link.onAnalyze} projectBusy={!!link.projectBusy} onCounts={setCounts}/>}
+  {ready&&!loading&&!r!.reasons.length&&r!.calibration&&<Acquisition current={current} key={`${ready.policy}#${restored?.policy===ready.policy?restored.token:0}#${okToken}`} handle={acquisition} prepared={ready} fieldMatches={access==='ready'} active={link.active} hidden={link.hidden} onAdopt={adopt} restored={restored?.policy===ready.policy?restored.state:null} onWorkspaceChange={publish} onClassify={link.onClassify} onAnalyze={link.onAnalyze} projectBusy={!!link.projectBusy} onCounts={setCounts}/>}
  </section>;
 }

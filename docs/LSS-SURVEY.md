@@ -91,7 +91,10 @@ with SHA-256). This section supersedes the "Not recovered" list above for the it
   unchanged: every row that was not QSO-gated evaluates byte-identically.
 - **Save / Print spectrum.** The LSS and galaxy routes offer Save spectrum (.SSP) and Print spectrum with the recovered writer
   (Save 0x50fb1c, header 0x510090; docs/SPECTRUM-SAVE-CONTRACT.md). LSS header: the selected catalogue galaxy, the row's HTL
-  coordinates and that galaxy's catalogue magnitude.
+  coordinates and that galaxy's catalogue magnitude. With Show Object ID on (the LSS guide turns it on, Front R4d) the default
+  file name is the current object's name + `.SSP` (0x50fb1c) instead of `openvireo-lss-….ssp`, the spectrometer shows the Object
+  and App. Mag (V) boxes and the print adds the `Object:` and `Apparent Magnitude (V):` lines; Classify then takes that name as
+  the Observational Data ID. The header is unchanged.
 - **Measured Redshift Data** (TLSSRsltsDlg1; FormActivate 0x57cab8, OK 0x57cd80; coordinator decision of 2026-10-29). The
   dialog shows JD (6 decimals), RA h m s.ss and Dec ±d m s.s, and z as its 4-significant-digit text (`2.345E-02`). The student
   types the velocity: it is blank on open unless the row is reused (its earlier velocity, Front L3) or Compute Rdshft Vel. is
