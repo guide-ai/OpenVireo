@@ -150,9 +150,12 @@ test('Front K2.5: a single click on a line moves the classification cursor to it
  await expect(id(page,'spl-cursor')).toContainText('Cursor @: 4144.00 Å');
  await expect(rows.filter({hasText:'Fe I'}).filter({hasText:'4143.88'})).toHaveAttribute('aria-selected','true');
  await expect(page.locator('.class-marker').first()).toBeAttached();
- // A second click on the same line reselects the nearest line again (review 1 L3).
- await rows.filter({hasText:'4143.88'}).click();
+ // A click on He I 4143.76 snaps to the same column (4144.00 Å) and reselects the nearest line, Fe I 4143.88 (review 1 L3;
+ // review 3 M1: the reselection now moves away from the clicked row, so it is observable).
+ await rows.filter({hasText:'He I'}).filter({hasText:'4143.76'}).click();
+ await expect(id(page,'spl-cursor')).toContainText('Cursor @: 4144.00 Å');
  await expect(rows.filter({hasText:'Fe I'}).filter({hasText:'4143.88'})).toHaveAttribute('aria-selected','true');
+ await expect(rows.filter({hasText:'He I'}).filter({hasText:'4143.76'})).toHaveAttribute('aria-selected','false');
  // A line left of the view draws no cursor. Every line of the table is inside the default 3700–4700 Å, so a 3900–4500 Å
  // window is applied first (O III 3759.87 then lies left of it).
  await page.locator('.classification-range summary').click();await page.getByLabel('Minimum display wavelength (Å)',{exact:true}).fill('3900');await page.getByLabel('Maximum display wavelength (Å)',{exact:true}).fill('4500');await page.getByRole('button',{name:'Apply display range',exact:true}).click();

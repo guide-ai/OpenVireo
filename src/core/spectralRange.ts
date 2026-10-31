@@ -75,3 +75,7 @@ export const galaxyPolicyWithRange=(policy:string,range:SpectralRange)=>policyWi
 export function sharedRange(ranges:readonly (SpectralRange|null|undefined)[]):SpectralRange{
  const r=ranges.filter((x):x is SpectralRange=>!!x);return r.length&&r.every(x=>sameRange(x,r[0]))?r[0]:DEFAULT_SPECTRAL_RANGE;
 }
+/** Review 3 H1: the range a restore may give the page from a Hubble galaxy or LSS policy: only a marked one (written since Front
+ * S2). An unmarked legacy policy (4000–5000 Å) counts as no range, so restoring a file saved before S2 keeps the page's current
+ * or default range, and Classify stays at VIREO's 3700–4700 Å; the exposure itself keeps its own range [W]. */
+export function galaxyRestoreRange(policy:unknown):SpectralRange|null{return typeof policy==='string'&&policy.includes(RANGE_MARK)?galaxyPolicyRange(policy)?.range??null:null;}

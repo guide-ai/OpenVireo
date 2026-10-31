@@ -123,7 +123,7 @@ policies.
     reads no display preference. Older sessions and investigations therefore restore and re-save byte-identically without a mark.
   - **E03, measured:**
     - All 26 classification lines (catalog.json) are inside both 3900–4500 and 3700–4700 Å.
-    - All 63 atlas standards and practice spectra cover 3700–4700 Å (they start at 3510 Å).
+    - All 63 atlas-standard and practice entries (57 unique spectrum files; some standards appear in more than one atlas) cover 3700–4700 Å (they start at 3510 Å).
     - The 30-line Spectral Line Table now has every line in view; at 3900–4500 Å, O III 3759.87, He I 3819.61, He II 4541 and
       Si III 4552.62 lay outside.
     - The exercise's counted progress (loaded, compared, inspected, recorded) does not read the view.

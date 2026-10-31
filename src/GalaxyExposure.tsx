@@ -1,6 +1,6 @@
 import SpectralRangeRow from './SpectralRangeRow';
 import {parseJournalSeed} from './core/exposureJournal';
-import {DEFAULT_SPECTRAL_RANGE,galaxyPolicyRange,type SpectralRange} from './core/spectralRange';
+import {DEFAULT_SPECTRAL_RANGE,galaxyPolicyRange,galaxyRestoreRange,type SpectralRange} from './core/spectralRange';
 import {spectralRangeCoverage} from './core/spectralRangeCoverage';
 import {SPECTRAL_RANGE_EN as SR} from './SpectralRangeMessages';
 import {galaxyTelescopeIndex,isCachedGalaxyTarget,isPegasusGalaxyTarget} from './core/galaxyTelescope';
@@ -25,7 +25,8 @@ import './sky-exposure.css';
 /** Front S2 round 2: a new exposure takes the page's range (VIREO's default 3700–4700 Å, or the witnessed 4000–5000 Å). */
 function exposureEngine(targetId:string,index:0|1|2,range:{current:SpectralRange},report:{current:((r:SpectralRange)=>void)|undefined}){return {create:(seed:number)=>{const r=range.current;if(spectralRangeCoverage('hubble',r)!=='covered')throw errorFor('galaxyExposure.rangeNotWitnessed');return createGalaxyExposure(seed,targetId,index,r);},activate:(s:Parameters<typeof activateGalaxy>[0])=>{if(galaxyTelescopeIndex(s)!==index)throw errorFor('galaxyExposure.chooseJournalTarget');return activateGalaxy(s);},start:startGalaxy,tick:tickGalaxy,pause:pauseGalaxy,deactivate:deactivateGalaxy,reset:resetGalaxy,cancel:cancelGalaxy,csv:galaxyCountsCsv,serialize:serializeGalaxySession,read:async(file:File)=>{const s=await readGalaxySession(file);if(galaxyPolicyRange(s.policy)?.base!==galaxyDefinition(targetId,index).policyId)throw errorFor('galaxyExposure.chooseJournalTarget');
  // Review 2 closure R1: a restored session file makes its range the page's range (as for the star and sky routes).
- const r=galaxySpectralRange(s);range.current=r;report.current?.(r);return s;},basename:index===2?`openvireo-galaxy-mayall-${targetId}`:index===1?`openvireo-galaxy-kpno09-${targetId}`:'openvireo-galaxy',activated:t('galaxyExposure.activated'),started:t('galaxyExposure.started'),restored:t('galaxyExposure.restored')};}
+ // Review 3 H1: only a marked range moves the page; an unmarked legacy file keeps its own 4000–5000 Å [W].
+ const r=galaxyRestoreRange(s.policy);if(r){range.current=r;report.current?.(r);}return s;},basename:index===2?`openvireo-galaxy-mayall-${targetId}`:index===1?`openvireo-galaxy-kpno09-${targetId}`:'openvireo-galaxy',activated:t('galaxyExposure.activated'),started:t('galaxyExposure.started'),restored:t('galaxyExposure.restored')};}
 function NativeFrame({image,targetId}:{image:RgbImage;targetId:string}){
  const identity=galaxyIdentity(targetId);
  const canvas=useRef<HTMLCanvasElement>(null);

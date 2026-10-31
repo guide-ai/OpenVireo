@@ -32,7 +32,7 @@ JavaScript Number interpolation/normalization and nearest-even integer conversio
 
 1. Open http://127.0.0.1:5173/#classification and select **Combined photo and trace** under **Spectrum rendering**. Check that the lower panel identifies the same unknown as the middle panel.
 2. Toggle **Reverse photographic grayscale**. Only the photos change; the lower trace stays unchanged. Enter your own type/reason and confirm that display changes do not fill or replace them.
-3. With no diagnostic line selected, press **Zoom in ×2**:4050–4350Å. Pan left:4020–4320Å. All three panels share the interval. Continue zooming to16×; the inward button disables. **Reset wavelength window** returns3900–4500Å.
+3. With no diagnostic line selected, press **Zoom in ×2**: 3950–4450Å. Pan left: 3900–4400Å. All three panels share the interval. Continue zooming to16×; the inward button disables. **Reset wavelength window** returns 3700–4700Å (the page's range; Front S2 round 3).
 4. Select a diagnostic marker, then zoom: the visible marker centers the window until a boundary requires translation. Narrow the browser to360px and scroll a panel horizontally; available sampled panels stay aligned.
 5. Acquire a supported star, choose **Classify acquired star**, use combined/zoom, then **Measure this acquired star → Download acquired SSP**. Reimport that exact SSP into classification. The loaded origin label changes, while the corresponding sampled trace stays equal under the same window.
 6. Save/restore the complete investigation. Responses, manual drafts, raw acquisitions and exact imported bytes survive. Reload defaults to trace; choose combined/zoom again. A zero spectrum or irregular grid retains explicit fallback; a malformed import leaves the prior investigation intact.

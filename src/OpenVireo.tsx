@@ -1,4 +1,4 @@
-import {DEFAULT_SPECTRAL_RANGE,galaxyPolicyRange,policyRange,sharedRange,type SpectralRange} from './core/spectralRange';
+import {DEFAULT_SPECTRAL_RANGE,galaxyRestoreRange,policyRange,sharedRange,type SpectralRange} from './core/spectralRange';
 import {hubbleExtendedTarget} from './core/hubbleEngineTargets';
 import HotListEditor from './HotListEditor';
 import {useSharedHotList} from './useSharedHotList';
@@ -296,7 +296,7 @@ export default function OpenVireo(){
   function prepareLss():LssInvestigation|null{const c=lssCurrent.current;if(!c||(!c.records.length&&!c.description&&c.field===null))return null;return Object.freeze({...c,wedgeOptions:wedgeOptionsCurrent.current});}
   const lssPendingRestoreCount=useRef<number|null>(null);
   function restoreLss(lss:LssInvestigation|null){
-   restoredRangePolicies.current.lss=(lss?.records??[]).map(r=>galaxyPolicyRange(r.acquisitionPolicy)?.range??null);applyRestoredRange();
+   restoredRangePolicies.current.lss=(lss?.records??[]).map(r=>galaxyRestoreRange(r.acquisitionPolicy));applyRestoredRange();
    lssPendingRestoreCount.current=lss?lss.records.length:null;
    const token=++lssToken.current;
    // The wedge (if open, or if the file has options) loses its own LSS points and takes the file's options or the defaults.
@@ -427,7 +427,7 @@ export default function OpenVireo(){
     const oldDrive=observatoryClock.pause();if(w.clockDrive)observatoryClock.replace(w.clockDrive);else if(oldDrive)observatoryClock.replace(w.siteClock&&w.siteClock.utc!==oldDrive.utc?{...createClockDrive(w.siteClock.utc,w.context.pointing),tracking:oldDrive.tracking}:repointClockDrive(oldDrive,w.context.pointing));
     if(w.sky09)setSkyProfilesVisited(true);liveCurrent.current={sky09:w.sky09??liveCurrent.current.sky09,sky4m:w.sky4m??liveCurrent.current.sky4m,star4m:w.star4m??liveCurrent.current.star4m,galaxies4m:w.galaxies4m?{...w.galaxies4m}:liveCurrent.current.galaxies4m,sky:w.sky,star:w.star,star09:w.star09??liveCurrent.current.star09,galaxies09:w.galaxies09?{...w.galaxies09}:liveCurrent.current.galaxies09,galaxies:{...w.galaxies},cachedGalaxies:w.cachedGalaxies?{...w.cachedGalaxies}:Object.fromEntries(CACHED_GALAXY_IDS.map(id=>[id,emptyExposureWorkspace()]))as Record<CachedGalaxyId,ExposureWorkspace>,pegasusGalaxies:w.pegasusGalaxies?{...w.pegasusGalaxies}:emptyPegasusBanks(),extendedGalaxies:w.extendedGalaxies?{...w.extendedGalaxies}:emptyExtendedBanks()};setInitialLive(liveCurrent.current);setRestoredStar(null);setRestoredGalaxy(null);
     const galaxyBanks=[w.galaxies,w.galaxies09,w.galaxies4m,w.cachedGalaxies,w.pegasusGalaxies,w.extendedGalaxies].flatMap(b=>b?Object.values(b as Record<string,ExposureWorkspace>):[]);
-    restoredRangePolicies.current.observing=[...[w.sky,w.sky09,w.sky4m,w.star,w.star09,w.star4m].map(x=>x?.state?policyRange(x.state.policy)?.range??null:null),...galaxyBanks.map(x=>x?.state?galaxyPolicyRange(x.state.policy)?.range??null:null)];applyRestoredRange();
+    restoredRangePolicies.current.observing=[...[w.sky,w.sky09,w.sky4m,w.star,w.star09,w.star4m].map(x=>x?.state?policyRange(x.state.policy)?.range??null:null),...galaxyBanks.map(x=>x?.state?galaxyRestoreRange(x.state.policy):null)];applyRestoredRange();
     liveControllers.current.sky?.replace(w.sky);if(w.sky09)liveControllers.current.sky09?.replace(w.sky09);if(w.sky4m)liveControllers.current.sky4m?.replace(w.sky4m);liveControllers.current.star?.replace(w.star);if(w.star09)liveControllers.current.star09?.replace(w.star09);for(const id of LIVE_GALAXY_IDS)liveControllers.current.galaxies[id]?.replace(w.galaxies[id]);
     if(w.galaxies09)for(const id of LIVE_GALAXY_IDS)liveControllers.current.galaxies09[id]?.replace(w.galaxies09[id]);
     if(w.star4m)liveControllers.current.star4m?.replace(w.star4m);if(w.galaxies4m)for(const id of LIVE_GALAXY_IDS)liveControllers.current.galaxies4m[id]?.replace(w.galaxies4m[id]);
@@ -647,7 +647,7 @@ export default function OpenVireo(){
    onClassifyAcquisition:classifyAcquired,
    onClassifyImported:classifyImported,
    onRestoreClassification:(w,a)=>{classificationController.current?.resetProgram();setClassificationWorkspace(w);setClassificationArchive(a);},
-   onRestoreAcquisition:observation=>{if(observation.kind==='catalog-star-acquisition'){restoreStarPacket(observation);}else{const restoredRange=galaxyPolicyRange(observation.state.policy)?.range;if(restoredRange)setSpectralRange(restoredRange);prepareObserving();preparePhotometry();const index=galaxyTelescopeIndex(observation.state);setOptical({selectedIndex:index,draftIndex:index});setOpen(false);if(index===2)setGalaxy4mVisited(true);if(index===1)setGalaxy09Visited(true);setGalaxyTargetId(observation.targetId);setGalaxyVisited(true);setRestoredGalaxy({token:++restoreToken.current,observation});navigate('galaxy-exposure');}},
+   onRestoreAcquisition:observation=>{if(observation.kind==='catalog-star-acquisition'){restoreStarPacket(observation);}else{const restoredRange=galaxyRestoreRange(observation.state.policy);if(restoredRange)setSpectralRange(restoredRange);prepareObserving();preparePhotometry();const index=galaxyTelescopeIndex(observation.state);setOptical({selectedIndex:index,draftIndex:index});setOpen(false);if(index===2)setGalaxy4mVisited(true);if(index===1)setGalaxy09Visited(true);setGalaxyTargetId(observation.targetId);setGalaxyVisited(true);setRestoredGalaxy({token:++restoreToken.current,observation});navigate('galaxy-exposure');}},
   });
   const cameraHandlers=useStableHandlers<StableProps<ComponentProps<typeof CameraControl>,'currentJd'|'onImage'>>({
    currentJd:()=>siteClockReadingMS(observatoryClock.state?clockDriveUTMS(observatoryClock.state):parseClockUTC(siteClock.utc),optical.selectedIndex).jd,
