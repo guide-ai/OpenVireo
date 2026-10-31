@@ -8,6 +8,7 @@ import {PINNED_PLEIADES_V_TARGET,isExpandedPhotometerTarget,isAddedPhotometerTar
 import {drawPinnedPleiadesUbv,isPhotometerFilter,photometerSelectedFraction,tiledPhotometerReason,type PhotometerFilter} from './photometerUbvField';
 import {reducePhotometerSky,reducePhotometerObject,photometricBMinusV} from './photometryReduction';
 import {photometerJournalFits,EXPANDED_PHOTOMETER_POLICY,PHOTOMETER_POLICY,VARIABLE_FIELD_PHOTOMETER_POLICY} from './photometerJournal';
+import {PHOTOMETER_NATIVE_EVENT_KEYS,photometerNativeApply,validPhotometerNativeInput,validPhotometerNativeOutcome,PhotometerNativeError,type PhotometerNativeRecordEvent,type PhotometerNativeState} from './photometerNativeRecord';
 export {PHOTOMETER_POLICY,UBV_PHOTOMETER_POLICY,LEGACY_PHOTOMETER_POLICY} from './photometerJournal';
 /** Journal event bound of the OpenVireo photometer session (a web format, not a native limit): integration-provenance.json
  * records it as browserPolicy.maximumEvents 256 next to the browser timer policy, and no CLEA address bounds the readings. Raised to
@@ -16,13 +17,15 @@ export {PHOTOMETER_POLICY,UBV_PHOTOMETER_POLICY,LEGACY_PHOTOMETER_POLICY} from '
  * The provenance file keeps its recorded value (its SHA-256 is part of every v4+ header). */
 export const MAX_PHOTOMETER_EVENTS=512;
 export class PhotometerError extends Error {constructor(readonly code:'phase'|'sky'|'event'|'limit'|'entry'|'session'|'color'|'field'|'confirm'){super(`Photometer: ${code}`);this.name='PhotometerError';}}
-export type PhotometerEvent=Readonly<{type:'activate'|'deactivate'|'start'|'stop'|'complete'}|{type:'telescope';index:PhotometerTelescopeIndex}|{type:'aperture';selector:number}|{type:'point';kind:PleiadesFieldKind}|{type:'record';readingId:number;value:number;note:string}|{type:'filter';filter:PhotometerFilter}|{type:'color';bReadingId:number;vReadingId:number}|{type:'target';targetId:string}|{type:'field';ra:number;dec:number}|{type:'skyConfirm'}|{type:'timing';secondsPerIntegration:number;integrations:number}|{type:'advance';callbacks:number}|{type:'clusterFit';modulus:number}|({type:'nativeClusterFit'}&NativeClusterParameters)>;
+export type PhotometerEvent=Readonly<{type:'activate'|'deactivate'|'start'|'stop'|'complete'}|{type:'telescope';index:PhotometerTelescopeIndex}|{type:'aperture';selector:number}|{type:'point';kind:PleiadesFieldKind}|{type:'record';readingId:number;value:number;note:string}|{type:'filter';filter:PhotometerFilter}|{type:'color';bReadingId:number;vReadingId:number}|{type:'target';targetId:string}|{type:'field';ra:number;dec:number}|{type:'skyConfirm'}|{type:'timing';secondsPerIntegration:number;integrations:number}|{type:'advance';callbacks:number}|{type:'clusterFit';modulus:number}|({type:'nativeClusterFit'}&NativeClusterParameters)|PhotometerNativeRecordEvent>;
 type Callback=Readonly<{sourceCount:number;skyCount:number;totalPhotonCount:number;initialSeed:number;seed:number;draws:number;nativeBaseCountSum:number;timerWaitMs:number}>;
 export type PhotometerReading=Readonly<{id:number;telescopeIndex?:PhotometerTelescopeIndex;apertureSelector?:number;integration?:PhotometerTiming&Readonly<{callbacks:number;periodCounts:readonly number[]}>;kind:PleiadesFieldKind;filter:PhotometerFilter;targetId:string|null;fieldTargetId:string;contextId:number;callback:Callback;skyReadingId:number|null;reduction:ReturnType<typeof reducePhotometerObject>|null}>;
 export type PhotometerEntry=Readonly<{readingId:number;value:number;note:string}>;
 /** In-memory transition-family marker retained for API compatibility;minimal
  * persisted owner/policy is derived from history,not this legacy state label. */
-export type PhotometerState=Readonly<{policy:typeof PHOTOMETER_POLICY|typeof TIMED_PHOTOMETER_POLICY|typeof EXPANDED_PHOTOMETER_POLICY|typeof VARIABLE_FIELD_PHOTOMETER_POLICY;telescopeIndex?:PhotometerTelescopeIndex;apertureSelector?:number;nativeClusterFit?:NativeClusterFit|null;clusterFit?:PleiadesFit|null;timing?:PhotometerTiming;work?:PhotometerIntegration|null;callbacksUsed?:number;targetId:string;colors:Readonly<Record<string,PhotometerColor>>;filter:PhotometerFilter;contextId:number;skies:Readonly<Record<PhotometerFilter,PhotometerReading|null>>;color:PhotometerColor|null;seedAtStart:number;seed:number;armed:boolean;/** One-shot answer Yes to VIREO's sky-replacement question (G3b), consumed by the next Start. */skyReplaceConfirmed?:boolean;/** VIREO's +0x41d (G3 review 1 M3): set when the Object/Sky slider position changes (RdngSliderPositionChange 0x5021cc), cleared by FormActivate (0x4ff9cb); while set, Start skips the sky-replacement question. */readingSliderMoved?:boolean;pointing:PleiadesFieldKind;phase:'idle'|'running'|'stopped'|'complete';sky:PhotometerReading|null;current:PhotometerReading|null;readings:readonly PhotometerReading[];entries:readonly PhotometerEntry[];events:readonly PhotometerEvent[]}>;
+export type PhotometerState=Readonly<{policy:typeof PHOTOMETER_POLICY|typeof TIMED_PHOTOMETER_POLICY|typeof EXPANDED_PHOTOMETER_POLICY|typeof VARIABLE_FIELD_PHOTOMETER_POLICY;telescopeIndex?:PhotometerTelescopeIndex;apertureSelector?:number;nativeClusterFit?:NativeClusterFit|null;clusterFit?:PleiadesFit|null;timing?:PhotometerTiming;work?:PhotometerIntegration|null;callbacksUsed?:number;targetId:string;colors:Readonly<Record<string,PhotometerColor>>;filter:PhotometerFilter;contextId:number;skies:Readonly<Record<PhotometerFilter,PhotometerReading|null>>;color:PhotometerColor|null;seedAtStart:number;seed:number;armed:boolean;/** One-shot answer Yes to VIREO's sky-replacement question (G3b), consumed by the next Start. */skyReplaceConfirmed?:boolean;/** VIREO's +0x41d (G3 review 1 M3): set when the Object/Sky slider position changes (RdngSliderPositionChange 0x5021cc), cleared by FormActivate (0x4ff9cb); while set, Start skips the sky-replacement question. */readingSliderMoved?:boolean;pointing:PleiadesFieldKind;phase:'idle'|'running'|'stopped'|'complete';sky:PhotometerReading|null;current:PhotometerReading|null;readings:readonly PhotometerReading[];entries:readonly PhotometerEntry[];events:readonly PhotometerEvent[];
+ /** Front P3: VIREO's reading struct (TPhotometer+0x620): the reading completed since the last Start of this activation. */structReadingId?:number;
+ /** Front P3: the photometer-owned native results list (present only after a Record/Review; owner 15). */native?:PhotometerNativeState}>;
 /** Review 4 item 8: the state label follows the widest target set selected so far (added targets: the v11 label, the sixteen
  * expanded targets: the v5 label); it never narrows. The persisted owner/policy is still derived from history. */
 function labelFor(current:PhotometerState['policy'],targetId:string):PhotometerState['policy']{
@@ -34,9 +37,9 @@ export type PhotometerColor=Readonly<{bReadingId:number;vReadingId:number;target
 const emptySkies=()=>Object.freeze({U:null,B:null,V:null,R:null,I:null});
 function eventValid(e:PhotometerEvent):boolean {
  if(!e||typeof e!=='object'||Array.isArray(e))return false;
- const keys=e.type==='telescope'?['type','index']:e.type==='aperture'?['type','selector']:e.type==='nativeClusterFit'?['type','modulusTicks','ebvTicks','ageIndex','modelIndex','offsetTicks','extinctionCorrected','interpretation']:e.type==='clusterFit'?['type','modulus']:e.type==='timing'?['type','secondsPerIntegration','integrations']:e.type==='advance'?['type','callbacks']:e.type==='target'?['type','targetId']:e.type==='field'?['type','ra','dec']:e.type==='filter'?['type','filter']:e.type==='color'?['type','bReadingId','vReadingId']:e.type==='point'?['type','kind']:e.type==='record'?['type','readingId','value','note']:['type'];
+ const keys=e.type==='telescope'?['type','index']:e.type==='aperture'?['type','selector']:e.type==='nativeClusterFit'?['type','modulusTicks','ebvTicks','ageIndex','modelIndex','offsetTicks','extinctionCorrected','interpretation']:e.type==='clusterFit'?['type','modulus']:e.type==='timing'?['type','secondsPerIntegration','integrations']:e.type==='advance'?['type','callbacks']:e.type==='target'?['type','targetId']:e.type==='field'?['type','ra','dec']:e.type==='filter'?['type','filter']:e.type==='color'?['type','bReadingId','vReadingId']:e.type==='point'?['type','kind']:e.type==='record'?['type','readingId','value','note']:e.type==='nativeRecord'?[...PHOTOMETER_NATIVE_EVENT_KEYS]:['type'];
  if(Object.keys(e).length!==keys.length||keys.some(k=>!Object.hasOwn(e,k)))return false;
- return e.type==='telescope'?isPhotometerTelescopeIndex(e.index):e.type==='aperture'?validPhotometerAperture(e.selector):e.type==='nativeClusterFit'?validNativeClusterParameters(e):e.type==='clusterFit'?(typeof e.modulus==='number'&&Number.isFinite(e.modulus)):e.type==='timing'?(PHOTOMETER_SECONDS.includes(e.secondsPerIntegration)&&PHOTOMETER_REPEATS.includes(e.integrations)):e.type==='advance'?(Number.isSafeInteger(e.callbacks)&&e.callbacks>=1&&e.callbacks<=MAX_PHOTOMETER_CALLBACKS_PER_READING):e.type==='target'?isPhotometerTarget(e.targetId):e.type==='field'?(typeof e.ra==='number'&&typeof e.dec==='number'&&Number.isFinite(e.ra)&&Number.isFinite(e.dec)&&e.ra>=0&&e.ra<24&&Math.abs(e.dec)<=90):e.type==='filter'?isPhotometerFilter(e.filter):e.type==='color'?(Number.isSafeInteger(e.bReadingId)&&Number.isSafeInteger(e.vReadingId)):e.type==='point'?(e.kind==='sky'||e.kind==='object'):e.type==='record'?(Number.isSafeInteger(e.readingId)&&e.readingId>0&&Number.isFinite(e.value)&&e.value>=-50&&e.value<=100&&typeof e.note==='string'&&e.note.length<=500):['activate','deactivate','start','stop','complete','skyConfirm'].includes(e.type);
+ return e.type==='telescope'?isPhotometerTelescopeIndex(e.index):e.type==='aperture'?validPhotometerAperture(e.selector):e.type==='nativeClusterFit'?validNativeClusterParameters(e):e.type==='clusterFit'?(typeof e.modulus==='number'&&Number.isFinite(e.modulus)):e.type==='timing'?(PHOTOMETER_SECONDS.includes(e.secondsPerIntegration)&&PHOTOMETER_REPEATS.includes(e.integrations)):e.type==='advance'?(Number.isSafeInteger(e.callbacks)&&e.callbacks>=1&&e.callbacks<=MAX_PHOTOMETER_CALLBACKS_PER_READING):e.type==='target'?isPhotometerTarget(e.targetId):e.type==='field'?(typeof e.ra==='number'&&typeof e.dec==='number'&&Number.isFinite(e.ra)&&Number.isFinite(e.dec)&&e.ra>=0&&e.ra<24&&Math.abs(e.dec)<=90):e.type==='filter'?isPhotometerFilter(e.filter):e.type==='color'?(Number.isSafeInteger(e.bReadingId)&&Number.isSafeInteger(e.vReadingId)):e.type==='point'?(e.kind==='sky'||e.kind==='object'):e.type==='record'?(Number.isSafeInteger(e.readingId)&&e.readingId>0&&Number.isFinite(e.value)&&e.value>=-50&&e.value<=100&&typeof e.note==='string'&&e.note.length<=500):e.type==='nativeRecord'?(Number.isSafeInteger(e.readingId)&&e.readingId>0&&validPhotometerNativeInput(e)&&validPhotometerNativeOutcome(e)):['activate','deactivate','start','stop','complete','skyConfirm'].includes(e.type);
 }
 /** Start reset/Stop/no-reduction match the pinned native branches. Context
  * release clears sky as a declared web boundary; admitted telescope changes require an inactive context.
@@ -51,7 +54,7 @@ function transition(s:PhotometerState,e:PhotometerEvent,live:boolean):Photometer
  if(e.type==='deactivate'&&!s.armed&&s.phase!=='running')return s;
  if(e.type==='stop'&&s.phase!=='running')return s;
  if(s.timing||e.type==='timing'){
-  const coalesce=e.type==='advance'&&s.events.at(-1)?.type==='advance',needed=e.type==='start'?4:e.type==='advance'?(coalesce?2:3):e.type==='record'||e.type==='stop'?2:e.type==='deactivate'?1:e.type==='nativeClusterFit'||e.type==='clusterFit'?(s.armed?2:1):5;
+  const coalesce=e.type==='advance'&&s.events.at(-1)?.type==='advance',needed=e.type==='start'?4:e.type==='advance'?(coalesce?2:3):e.type==='record'||e.type==='nativeRecord'||e.type==='stop'?2:e.type==='deactivate'?1:e.type==='nativeClusterFit'||e.type==='clusterFit'?(s.armed?2:1):5;
   if(s.events.length+needed>MAX_PHOTOMETER_EVENTS)throw new PhotometerError('limit');
  }else if(s.events.length>=MAX_PHOTOMETER_EVENTS||(s.events.length>=MAX_PHOTOMETER_EVENTS-3&&!['stop','deactivate','complete'].includes(e.type)))throw new PhotometerError('limit');
  let next:PhotometerState=s;
@@ -59,7 +62,7 @@ function transition(s:PhotometerState,e:PhotometerEvent,live:boolean):Photometer
   if(s.armed||s.phase==='running')throw new PhotometerError('phase');
   // FormActivate clears +0x41d, then sets the slider; a position change there fires OnPositionChange (+0x378, via 0x4f4798),
   // which sets +0x41d again. The web activation always declares Sky, so the flag is set exactly when the previous mode was Object.
-  next={...s,armed:true,contextId:s.contextId+1,skies:emptySkies(),pointing:'sky',sky:null,current:null,phase:'idle',...(s.timing?{work:null}:{}),readingSliderMoved:s.pointing!=='sky'};
+  next={...withoutStruct(s),armed:true,contextId:s.contextId+1,skies:emptySkies(),pointing:'sky',sky:null,current:null,phase:'idle',...(s.timing?{work:null}:{}),readingSliderMoved:s.pointing!=='sky'};
  }else if(e.type==='telescope'){
   if(s.armed||s.phase==='running')throw new PhotometerError('phase');
   // A tiled target is a telescope pointing; it stays selected, and Start checks its limits for the new telescope (G3b).
@@ -110,7 +113,7 @@ function transition(s:PhotometerState,e:PhotometerEvent,live:boolean):Photometer
   if(isTiledPhotometerTarget(s.targetId)&&tiledPhotometerReason(s.targetId,s.telescopeIndex??0,s.apertureSelector??10))throw new PhotometerError('field');
   if(live&&!isTiledPhotometerTarget(s.targetId)&&photometerFullDomainExclusion(s.targetId,s.telescopeIndex??0))throw new PhotometerError('field');
   if(s.timing&&(s.callbacksUsed??0)+requiredPhotometerCallbacks(s.timing)>MAX_PHOTOMETER_CALLBACKS)throw new PhotometerError('limit');
-  next={...s,current:null,phase:'running',...(s.timing?{work:createPhotometerIntegration(s.timing,s.pointing,s.filter,s.targetId,s.seed,s.apertureSelector??10,s.telescopeIndex??0)}:{})};
+  next={...withoutStruct(s),current:null,phase:'running',...(s.timing?{work:createPhotometerIntegration(s.timing,s.pointing,s.filter,s.targetId,s.seed,s.apertureSelector??10,s.telescopeIndex??0)}:{})};
  }else if(e.type==='stop')next={...s,phase:'stopped'};
  else if(e.type==='advance'){
   if(!s.timing||!s.work||!s.armed||s.phase!=='running')throw new PhotometerError('phase');
@@ -132,9 +135,15 @@ function transition(s:PhotometerState,e:PhotometerEvent,live:boolean):Photometer
  }else if(e.type==='record'){
   if(!s.armed||s.phase!=='complete'||s.pointing!=='object'||s.current?.kind!=='object'||s.current.id!==e.readingId||s.current.targetId!==s.targetId||s.current.reduction?.status!=='available'||s.entries.some(r=>r.readingId===e.readingId))throw new PhotometerError('entry');
   next={...s,entries:Object.freeze([...s.entries,Object.freeze({readingId:e.readingId,value:e.value,note:e.note})])};
+ }else if(e.type==='nativeRecord'){
+  // Front P3: Record/Review closed with OK or Cancel (Record1Click 0x501e7c, OK 0x54b02c, Cancel 0x54b2dc).
+  const r=photometerStructReading(s);
+  if(!s.armed||s.phase==='running'||!r||r.id!==e.readingId)throw new PhotometerError('entry');
+  try{next={...s,native:photometerNativeApply(s.native,r,e)};}catch(error){if(error instanceof PhotometerNativeError)throw new PhotometerError('entry');throw error;}
  }
  // The answer to the sky-replacement question applies to the very next Start only.
- if(e.type!=='skyConfirm'&&next.skyReplaceConfirmed){const {skyReplaceConfirmed:_drop,...rest}=next;void _drop;next=rest as PhotometerState;}
+ // Front P3: a Record/Review answered from Start's "Telescope has Moved!" prompt (0x4fffd4) runs after the sky question.
+ if(e.type!=='skyConfirm'&&e.type!=='nativeRecord'&&next.skyReplaceConfirmed){const {skyReplaceConfirmed:_drop,...rest}=next;void _drop;next=rest as PhotometerState;}
  const last=s.events.at(-1),events=e.type==='advance'&&last?.type==='advance'?[...s.events.slice(0,-1),Object.freeze({type:'advance' as const,callbacks:last.callbacks+e.callbacks})]:[...s.events,Object.freeze({...e})];
  // Reserve the largest possible running suffix once,at Start. Advances then
  // only change up to four digits and reuse that admitted space;no full journal
@@ -160,6 +169,12 @@ export function skyReplaceAsked(s:PhotometerState):boolean{
  return s.armed&&s.pointing==='sky'&&!s.readingSliderMoved&&s.skies[s.filter]!==null&&photometerSelectedFraction(s.targetId,'sky',s.apertureSelector??10,s.telescopeIndex??0)>0;
 }
 export function photometerEvent(s:PhotometerState,e:PhotometerEvent){return transition(s,e,true);}
+/** Front P3: Start 0x4fffd4 resets the reading struct; a web activation starts a new context [W]. */
+function withoutStruct(s:PhotometerState):PhotometerState{if(s.structReadingId===undefined)return s;const {structReadingId:_drop,...rest}=s;void _drop;return rest;}
+/** Front P3: the reading File › Data › Record/Review applies to (null when Start has reset the struct since). */
+export function photometerStructReading(s:PhotometerState|null):PhotometerReading|null{
+ return s?.structReadingId===undefined?null:s.readings.find(r=>r.id===s.structReadingId)??null;
+}
 export function releasePhotometer(s:PhotometerState){return photometerEvent(photometerEvent(s,{type:'stop'}),{type:'deactivate'});}
 export function replayPhotometer(seed:number,events:readonly PhotometerEvent[]):PhotometerState {
  if(!Array.isArray(events)||events.length>MAX_PHOTOMETER_EVENTS)throw new PhotometerError('session');
@@ -175,7 +190,7 @@ function finishReading(s:PhotometerState,callback:Callback,integration?:Photomet
  const base={...(integration??LEGACY_PHOTOMETER_TIMING),apertureSelector},skyTiming=s.sky?.integration??LEGACY_PHOTOMETER_TIMING;
  const reduction=s.pointing==='object'?reducePhotometerObject({...base,totalPhotonCount:callback.totalPhotonCount,nativeBaseCountSum:callback.nativeBaseCountSum,zeroPointMagnitude:photometerTelescope(telescopeIndex).zeroPoint,skyAtReferenceAperture:reducePhotometerSky({...skyTiming,apertureSelector:s.sky!.apertureSelector??10,totalPhotonCount:s.sky!.callback.totalPhotonCount}).skyAtReferenceAperture}):null;
  const reading=Object.freeze({id:s.readings.length+1,...(s.telescopeIndex!==undefined?{telescopeIndex}:{}),...(s.apertureSelector!==undefined?{apertureSelector}:{}),...(integration?{integration}:{}),kind:s.pointing,filter:s.filter,targetId:s.pointing==='object'?s.targetId:null,fieldTargetId:s.targetId,contextId:s.contextId,callback,skyReadingId:s.pointing==='object'?s.sky!.id:null,reduction});
- return {...s,phase:'complete',current:reading,sky:s.pointing==='sky'?reading:s.sky,skies:s.pointing==='sky'?Object.freeze({...s.skies,[s.filter]:reading}):s.skies,readings:Object.freeze([...s.readings,reading])};
+ return {...s,structReadingId:reading.id,phase:'complete',current:reading,sky:s.pointing==='sky'?reading:s.sky,skies:s.pointing==='sky'?Object.freeze({...s.skies,[s.filter]:reading}):s.skies,readings:Object.freeze([...s.readings,reading])};
 }
 
 /** Only explicit, confirmed notebook entries backed by acquired object readings
