@@ -1,3 +1,6 @@
+import {DEFAULT_SPECTRAL_RANGE,type SpectralRange} from './core/spectralRange';
+import SpectralRangeRow from './SpectralRangeRow';
+import {SPECTRAL_RANGE_EN as SR} from './SpectralRangeMessages';
 import {useCallback,useEffect,useMemo,useRef,useState} from 'react';
 import {t,scientific} from './i18n';
 import {useBoundedExposure,type ExposureEngine} from './useBoundedExposure';
@@ -16,7 +19,7 @@ import type {PreparedFieldSpectrum} from './io/fieldSpectrometer';
  * branches give the spectrum, or a typed reason. Exercise routes and their counts are not affected. */
 /** currentJd: the observatory clock's JD reader (a stable function); it is read once, when the student presses Use (G4a review 1
  * M1), and recorded in the policy. */
-export type FieldSpectrometerLink=Readonly<{active:boolean;pointing:Pointing;gate:Readonly<{tracking:boolean;moving:boolean;finder:boolean;domeOpen:boolean}>;telescope:FieldTelescope;hidden:Pointing|null;currentJd?:()=>number}>;
+export type FieldSpectrometerLink=Readonly<{/** Front S2: the page's one spectrometer range and its (stable) setter. */spectralRange?:SpectralRange;onSpectralRange?:(r:SpectralRange)=>void;active:boolean;pointing:Pointing;gate:Readonly<{tracking:boolean;moving:boolean;finder:boolean;domeOpen:boolean}>;telescope:FieldTelescope;hidden:Pointing|null;currentJd?:()=>number}>;
 type Ready=Extract<PreparedFieldSpectrum,{status:'ready'}>;
 /** What the page shows when preparing failed outside the typed results (G4a closure N1): only a network failure is a missing
  * catalogue piece; a resource that did not match its identity is load-error; anything else is an internal error, never "fetch". */
@@ -47,12 +50,13 @@ function engineFor(prepared:Ready,hidden:Pointing|null,onAdopt:(p:Ready,s:Journa
   },
   basename:`openvireo-field-spectrum-${prepared.pointing.ra}_${prepared.pointing.dec}_T${prepared.telescope}`,activated:t('fieldSpec.activated'),started:t('fieldSpec.started'),restored:t('fieldSpec.restored')};
 }
-function Acquisition({prepared,fieldMatches,active,hidden,onAdopt,restored}:{prepared:Ready;fieldMatches:boolean;active:boolean;hidden:Pointing|null;onAdopt:(p:Ready,s:JournalState)=>void;restored:JournalState|null}){
+function Acquisition({prepared,fieldMatches,active,hidden,onAdopt,restored,onCounts}:{prepared:Ready;fieldMatches:boolean;active:boolean;hidden:Pointing|null;onAdopt:(p:Ready,s:JournalState)=>void;restored:JournalState|null;onCounts:(has:boolean)=>void}){
  const heading=useRef<HTMLHeadingElement>(null),engine=useMemo(()=>engineFor(prepared,hidden,onAdopt),[prepared,hidden,onAdopt]);
  const {state,seed,setSeed,notice,setNotice,error,busy,running,armed,activate,start,stop,save,restore,reset,cancel,newSeed}=useBoundedExposure({engine,active,fieldMatches,onActivate:()=>{},heading,
   ...(restored?{initialWorkspace:{state:restored,seedText:String(restored.seedAtReset)}}:{})});
  useEffect(()=>{if(restored)setNotice(t('fieldSpec.restored'));},[]);// eslint-disable-line react-hooks/exhaustive-deps
  const e=state?.exposure,total=(e?.sourceTotal??0)+(e?.skyTotal??0),max=Math.max(1,...(e?.counts??[]));
+ const hasCounts=(e?.draws??0)>0;useEffect(()=>{onCounts(hasCounts);},[hasCounts,onCounts]);useEffect(()=>()=>onCounts(false),[onCounts]);
  const points=e?.counts.map((n,i)=>`${55+i*890/599},${235-n*180/max}`).join(' ')??'';
  return <section className="card" aria-labelledby="field-spec-acquire" data-testid="field-spec-acquisition">
   <h3 id="field-spec-acquire" ref={heading} tabIndex={-1}>{t('fieldSpec.acquireTitle')}</h3>
@@ -70,14 +74,17 @@ export default function FieldSpectrometer({link}:{link:FieldSpectrometerLink}){
  const [prepared,setPrepared]=useState<Shown|null>(null),[loading,setLoading]=useState(false),request=useRef<AbortController|null>(null);
  useEffect(()=>()=>request.current?.abort(),[]);
  useEffect(()=>{if(!link.active){request.current?.abort();setLoading(false);}},[link.active]);
- async function useHere(){
+ const range=link.spectralRange??DEFAULT_SPECTRAL_RANGE,[counts,setCounts]=useState(false);
+ async function useHere(at:SpectralRange=range){
   request.current?.abort();const controller=new AbortController();request.current=controller;setLoading(true);
-  try{const {prepareFieldSpectrum}=await import('./io/fieldSpectrometer');const variableTime=frozenObservatoryTime(link.currentJd);const r=await prepareFieldSpectrum({ra:link.pointing.ra,dec:link.pointing.dec},link.telescope,{signal:controller.signal,hidden:link.hidden,...(variableTime?{variableTime}:{})});if(!controller.signal.aborted)setPrepared(r);}
+  try{const {prepareFieldSpectrum}=await import('./io/fieldSpectrometer');const variableTime=frozenObservatoryTime(link.currentJd);const r=await prepareFieldSpectrum({ra:link.pointing.ra,dec:link.pointing.dec},link.telescope,{signal:controller.signal,hidden:link.hidden,range:at,...(variableTime?{variableTime}:{})});if(!controller.signal.aborted)setPrepared(r);}
   catch(e){if(!controller.signal.aborted)setPrepared(failure(e));}
   finally{if(request.current===controller){request.current=null;setLoading(false);}}
  }
  const [restored,setRestored]=useState<Readonly<{policy:string;state:JournalState}>|null>(null);
- const adopt=useCallback((p:Ready,s:JournalState)=>{setRestored({policy:p.policy,state:s});setPrepared(p);},[]);
+ const report=useRef(link.onSpectralRange);report.current=link.onSpectralRange;
+ // A restored session file makes its range the page's range (S1 review M1, generalised).
+ const adopt=useCallback((p:Ready,s:JournalState)=>{setRestored({policy:p.policy,state:s});setPrepared(p);const r=parseFieldSpectrumPolicy(p.policy)?.range;if(r)report.current?.(r);},[]);
  const ready=prepared?.status==='ready'?prepared:null;
  const same=!!ready&&ready.pointing.ra===link.pointing.ra&&ready.pointing.dec===link.pointing.dec&&ready.telescope===link.telescope;
  const access=instrumentAccess({...link.gate,configurationAvailable:true,pointingMatches:same});
@@ -85,9 +92,13 @@ export default function FieldSpectrometer({link}:{link:FieldSpectrometerLink}){
  return <section className="card field-spectrometer" aria-labelledby="field-spec-title" data-testid="field-spectrometer">
   <h2 id="field-spec-title">{t('fieldSpec.title')}</h2><p>{t('fieldSpec.help')}</p>
   <p role="status" data-testid="field-spec-access" data-access={access}>{t(`instrumentAccess.${access}`)}</p>
+  {link.onSpectralRange&&<SpectralRangeRow range={ready?(parseFieldSpectrumPolicy(ready.policy)?.range??range):range} disabled={loading} unsaved={counts} testId="field-spec-range" note={SR.note}
+   onApply={r=>{link.onSpectralRange!(r);setRestored(null);setCounts(false);
+    // OK reinitialises the spectrometer (0x5110b0): a prepared field is prepared again on the new range (a fresh exposure).
+    if(prepared)void useHere(r);}}/>}
   <button type="button" className="primary-button" data-testid="field-spec-use" disabled={loading||link.gate.moving} onClick={()=>void useHere()}>{t('fieldSpec.use')}</button>
   {loading&&<p role="status">{t('fieldSpec.loading')}</p>}
-  {prepared?.status==='unavailable'&&<p role="status" data-testid="field-spec-status" data-reason={prepared.reason}>{prepared.reason==='internal'?t('fieldSpec.internalError'):prepared.reason==='object-x-hidden'||prepared.reason==='load-error'?fieldInfoReasonText(prepared.reason):fieldInfoReasonText(prepared.reason,'detail' in prepared?prepared.detail??'':'')}</p>}
+  {prepared?.status==='unavailable'&&<p role="status" data-testid="field-spec-status" data-reason={prepared.reason}>{prepared.reason==='range-not-witnessed'?SR.notWitnessed:prepared.reason==='internal'?t('fieldSpec.internalError'):prepared.reason==='object-x-hidden'||prepared.reason==='load-error'?fieldInfoReasonText(prepared.reason):fieldInfoReasonText(prepared.reason,'detail' in prepared?prepared.detail??'':'')}</p>}
   {ready&&<div data-testid="field-spec-field" data-kind={kind??'none'}>
    <p>{t('fieldSpec.field',{ra:ready.pointing.ra,dec:ready.pointing.dec,telescope:ready.telescope})}</p>
    <p data-testid="field-spec-object">{object?t('fieldSpec.object',{kind:t(`fieldSpec.kind.${kind!}`),id:object.id,magnitude:scientific(object.magnitude,4,true)}):t('fieldSpec.noObject')}</p>
@@ -95,6 +106,6 @@ export default function FieldSpectrometer({link}:{link:FieldSpectrometerLink}){
    {r!.reasons.length>0&&<p role="status" data-testid="field-spec-reasons" data-reasons={r!.reasons.join(' ')}>{t('fieldSpec.reasons',{reasons:r!.reasons.map(x=>t(`fieldSpec.reason.${x}` as 'fieldSpec.reason.slit-empty')).join('; ')})}</p>}
    {!same&&<p role="status">{t('fieldSpec.moved')}</p>}
   </div>}
-  {ready&&!r!.reasons.length&&r!.calibration&&<Acquisition key={ready.policy} prepared={ready} fieldMatches={access==='ready'} active={link.active} hidden={link.hidden} onAdopt={adopt} restored={restored?.policy===ready.policy?restored.state:null}/>}
+  {ready&&!r!.reasons.length&&r!.calibration&&<Acquisition key={ready.policy} prepared={ready} fieldMatches={access==='ready'} active={link.active} hidden={link.hidden} onAdopt={adopt} restored={restored?.policy===ready.policy?restored.state:null} onCounts={setCounts}/>}
  </section>;
 }

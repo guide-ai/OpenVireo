@@ -6,6 +6,11 @@ import {loadedObjectXPositions,loadObjectXPositions,objectXNear} from '../io/obj
 import {multiSpecMaskReach,observatoryMultiSpecField} from './multiSpecFields';
 import {MULTISPEC_MASK_PENDING,MULTISPEC_UNMASKED,type MultiSpecMaskPolicy} from './multiSpecText';
 import MultiSpecInstrument from './MultiSpecInstrument';
+import {spectralRangeCoverage} from '../core/spectralRangeCoverage';
+import {SPECTRAL_RANGE_EN as SR} from '../SpectralRangeMessages';
+import type {SpectralRange} from '../core/spectralRange';
+/** Front S2: Multi-Spec reads the page's one range (0x526e7f); off the default it is not witnessed here [W]. */
+const rangeBlockOf=(r:SpectralRange|undefined)=>r&&spectralRangeCoverage('multispec',r)!=='covered'?SR.multiSpecRange(r.minimum.toFixed(1),r.maximum.toFixed(1)):null;
 import {t} from '../i18n';
 
 /** Front M (M3): Multi-Spec at the observatory's instrument choice (instrument position 3, Access as recovered).
@@ -18,10 +23,10 @@ import {t} from '../i18n';
  *    example LSS, mode 5) the form opens but clicks select nothing, as recovered. Selection needs the Telescope view (+0x64a = 0).
  *  - Object X rule (plan §4): masked within 2° + 0.375° of any ObjectX.HTL position or of the lab's unrevealed target
  *    (io/objectXMask.ts; fail closed while the check runs or when it fails). */
-export default function MultiSpecObservatory({active,busy,access,mode,pointing,telescope,editMode,virtualObservatory=false,hidden,currentJd}:Readonly<{
+export default function MultiSpecObservatory({spectralRange,active,busy,access,mode,pointing,telescope,editMode,virtualObservatory=false,hidden,currentJd}:Readonly<{
  active:boolean;busy:boolean;access:AccessReason;mode:FieldMode;pointing:Pointing;telescope:FieldTelescope;editMode:boolean;
  /** Exercise mode 0 (instructor Virtual Observatory, Front O2). Default false. */virtualObservatory?:boolean;
- hidden:Readonly<{ra:number;dec:number;label:string}>|null;currentJd?:()=>number}>){
+ hidden:Readonly<{ra:number;dec:number;label:string}>|null;currentJd?:()=>number;spectralRange?:SpectralRange}>){
  // The JD is frozen when the field (pointing, telescope) is built, not on every render.
  const field=useMemo(()=>{const f=observatoryMultiSpecField(pointing,telescope);if(!f)return null;const variableTime=frozenObservatoryTime(currentJd);return variableTime?Object.freeze({...f,variableTime}):f;},
   [pointing.ra,pointing.dec,telescope]);// eslint-disable-line react-hooks/exhaustive-deps
@@ -41,5 +46,5 @@ export default function MultiSpecObservatory({active,busy,access,mode,pointing,t
  const telescopeView=mode==='telescope',gate=editMode||virtualObservatory;
  const armedText=!gate?t('multispec.notArmed'):!telescopeView?t('multispec.notTelescopeView'):editMode?t('multispec.armedEditMode'):t('multispec.armedVirtual');
  return <MultiSpecInstrument key={telescope} field={field} telescope={telescope} access={access} armed={gate&&telescopeView} armedText={armedText} mask={mask}
-  editMode={editMode} busy={busy} active={active} title={t('multispec.title')} help={t('multispec.help')} noFieldText={t('multispec.fieldNone')}/>;
+  rangeBlock={rangeBlockOf(spectralRange)} editMode={editMode} busy={busy} active={active} title={t('multispec.title')} help={t('multispec.help')} noFieldText={t('multispec.fieldNone')}/>;
 }

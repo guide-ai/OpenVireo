@@ -33,6 +33,7 @@ export type MultiSpecInstrumentProps=Readonly<{
  field:MultiSpecFieldRequest|null;telescope:FieldTelescope;access:AccessReason;armed:boolean;armedText:string;
  mask:MultiSpecMaskPolicy;editMode:boolean;busy:boolean;active:boolean;title:string;help:string;heading?:'h2'|'h3';
  /** Text when `field` is null (no bundled field at this position). */noFieldText:string;
+ /** Front S2: why the page's spectrometer range cannot be used here (Multi-Spec reads it, 0x526e7f); null when it can. */rangeBlock?:string|null;
 }>;
 type ViewState=Readonly<{status:'none'}|{status:'loading'}|{status:'error'}|{status:'ready';view:FieldView}|{status:'reasons';view:FieldView}>;
 type Result=Readonly<{status:'loading'}|{status:'error'}|{status:'done';exposure:Awaited<ReturnType<typeof multiSpecSpectra>>[number];galaxyType:string|null}>;
@@ -45,7 +46,7 @@ function download(name:string,bytes:Uint8Array,type:string){
 /** A file name the browser and the zip writer accept (ASCII, no path separators) [W]. */
 const safeName=(s:string)=>s.replace(/[^\x20-\x7e]|[\\/:*?"<>|]/g,'_');
 
-export default function MultiSpecInstrument({field,telescope,access,armed,armedText,mask,editMode,busy,active,title,help,noFieldText,heading:Heading='h2'}:MultiSpecInstrumentProps){
+export default function MultiSpecInstrument({field,telescope,access,armed,armedText,mask,editMode,busy,active,title,help,noFieldText,rangeBlock=null,heading:Heading='h2'}:MultiSpecInstrumentProps){
  const id=useId(),fieldWrap=useRef<HTMLDivElement>(null);
  const [state,dispatch]=useReducer(multiSpecReducer,undefined,()=>createMultiSpecState(telescope,pageSeed()));
  const [view,setView]=useState<ViewState>({status:'none'}),[viewTry,setViewTry]=useState(0);
@@ -146,7 +147,7 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
  const answer=(yes:boolean)=>{if(state.question)dispatch({type:'answer',yes});else if(state.message)dispatch({type:'dismiss'});else setNoItem(null);};
  const fieldStatus=!field?noFieldText:view.status==='loading'?t('multispec.fieldLoading'):view.status==='error'?(mask.masked?t('multispec.fieldNeutral'):t('multispec.fieldError'))
   :view.status==='reasons'?(mask.masked?t('multispec.fieldNeutral'):t('multispec.fieldReasons',{reasons:view.view.reasons.join(', ')})):'';
- const usable=active&&!busy;
+ const usable=active&&!busy&&!rangeBlock;
 
  return <section className="card ms-card" aria-labelledby={`${id}-title`} data-testid="ms-card">
   <Heading id={`${id}-title`}>{title}</Heading>
@@ -154,7 +155,7 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
   <div className="button-row">
    <button type="button" className="primary-button" disabled={!usable||access!=='ready'||state.open} onClick={()=>dispatch({type:'show'})} data-testid="ms-access">{t('multispec.access')}</button>
   </div>
-  <p role="status" data-testid="ms-access-status">{state.open?t('multispec.accessOpen'):access!=='ready'?multiSpecAccessText(access):''}</p>
+  <p role="status" data-testid="ms-access-status">{state.open?t('multispec.accessOpen'):access!=='ready'?multiSpecAccessText(access):''}</p>{rangeBlock&&<p role="status" data-testid="ms-range-block">{rangeBlock}</p>}
   {state.open&&<div className="ms-body">
    <div className="ms-top">
     <MultiSpecControl state={state} dispatch={dispatch} busy={!usable} masked={mask.masked} printField={ready&&field?{pointing:field.pointing,telescope:opticalProfile(telescope).name,clone:()=>multiSpecFieldPicture(fieldWrap.current)}:null}/>
