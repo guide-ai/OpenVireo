@@ -18,3 +18,8 @@
 .objectx-measure .fits-viewport{background:var(--ov-plot-bg);border-radius:var(--ov-radius-sm);overflow:hidden}
 .objectx-measure .fits-viewport:focus-visible{outline:2px solid var(--ov-focus);outline-offset:2px}
 .objectx-measure canvas{display:block}
+/* QA1 closure (Low): the asteroid status box is as tall as its longest text in every state (a hidden sizer in the same grid
+   cell), so the Copy button below it does not move under the pointer while the list builds. */
+.objectx-list-box{display:grid}
+.objectx-list-box>*{grid-area:1/1}
+.objectx-list-sizer{visibility:hidden}

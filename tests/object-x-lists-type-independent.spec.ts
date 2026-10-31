@@ -13,7 +13,8 @@ async function listsFor(page:Page,id:string){
  const code=await page.evaluate(`import('/src/core/objectXLab.ts').then(m=>m.objectXCode(${JSON.stringify(id)}))`) as string;
  await page.getByTestId('objectx-target').selectOption(code);
  await button(page,'Set the observatory clock').click();
- // QA1 review 1 H3: VIREO keeps the Asteroid List disabled in Object X unless Edit Mode is on; the same closed note for every kind.
+ // QA1 review 1 H3 / closure E2: VIREO hides the Asteroid List in Object X unless Edit Mode is on; this site also waits for the
+ // reveal. The same closed note for every kind.
  await expect(page.getByTestId('objectx-list-status')).toContainText('Observable asteroids on',{timeout:30_000});
  const asteroidList={rows:await page.getByTestId('objectx-asteroid-list').count(),note:await page.getByTestId('objectx-asteroid-list-closed').textContent()};
  await button(page,'Copy the coordinates to the observatory').click();
@@ -24,7 +25,8 @@ async function listsFor(page:Page,id:string){
  await button(page,'Point to coordinates').click();
  await expect(page.getByTestId('sky-names-hidden')).toHaveText('Names hidden during Object X.');
  const picker=await page.locator('#target option').allTextContents();
- await page.locator('.telescope-motion').getByTestId('ob-options').click();await page.getByTestId('ob-options-virtual-observatory').check();await page.getByTestId('ob-options-ok').click();
+ // QA1 closure M1: in Object X VIREO offers File › QSO List only in Edit Mode (ObjectX1Click 0x58ad55), whatever Virtual Observatory says.
+ await page.locator('.telescope-motion').getByTestId('ob-options').click();await page.getByTestId('ob-options-edit-mode').check();await page.getByTestId('ob-options-ok').click();
  await page.getByTestId('fi-file-menu').click();await page.getByTestId('qso-menu').click();await page.getByTestId('qso-ok').click();
  const lines=page.getByTestId('qso-list-lines');await expect(lines).toBeVisible();
  return {picker,qso:await lines.innerText(),asteroidList};
@@ -37,7 +39,7 @@ test('the lists shown during an unrevealed Object X target do not depend on its 
  const base=seen.star;
  expect(base.picker.length).toBeGreaterThan(10);
  expect(base.picker.join('\n')).not.toMatch(/NGC 2403|NGC 4262|NGC 4449|NGC 4631|3C 273/);
- expect(base.asteroidList).toEqual({rows:0,note:'As in VIREO, the Asteroid List stays closed during Object X (it opens only in Edit Mode). New images still include the observable asteroids.'});
+ expect(base.asteroidList).toEqual({rows:0,note:'The Asteroid List stays closed during Object X: VIREO shows it only in Edit Mode, and this site also waits for the reveal, because its Edit Mode needs no instructor login. New images still include the observable asteroids.'});
  for(const kind of Object.keys(KINDS)){expect(seen[kind].picker,`${kind} picker`).toEqual(base.picker);expect(seen[kind].qso,`${kind} QSO List`).toEqual(base.qso);expect(seen[kind].asteroidList,`${kind} asteroid list`).toEqual(base.asteroidList);}
 });
 
@@ -78,7 +80,7 @@ test('QA1 review 1 H1: the sky map at an unrevealed target looks the same for al
  for(const [id,views] of seen)expect(views,id).toEqual({'Finder · 2.5°':[],'Telescope · 15′':[]});
 });
 
-test('QA1 review 1 H3: in Edit Mode the Asteroid List opens during Object X, as VIREO enables it (0x58b3cb..0x58b3e9)',async({page})=>{
+test('QA1 closure E2/M1: in Object X the QSO List needs Edit Mode, and the Asteroid List also waits for the reveal (WEB-EM-01)',async({page})=>{
  test.setTimeout(120_000);
  await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible({timeout:20_000});
  await button(page,'Open dome ↗').click();
@@ -88,5 +90,30 @@ test('QA1 review 1 H3: in Edit Mode the Asteroid List opens during Object X, as 
  const code=await page.evaluate(`import('/src/core/objectXLab.ts').then(m=>m.objectXCode('(433) Eros'))`) as string;
  await page.getByTestId('objectx-target').selectOption(code);await button(page,'Set the observatory clock').click();
  await expect(page.getByTestId('objectx-list-status')).toContainText('Observable asteroids on',{timeout:30_000});
+ // E2 [W]: Edit Mode alone does not open it before the reveal.
+ await expect(page.getByTestId('objectx-asteroid-list')).toHaveCount(0);await expect(page.getByTestId('objectx-asteroid-list-closed')).toBeVisible();
+ // M1 [D]: with a target, File › QSO List follows Edit Mode only: off with Virtual Observatory on, on with Edit Mode on.
+ await clickHeaderTool(page,'Observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible({timeout:20_000});
+ await page.locator('.telescope-motion').getByTestId('ob-options').click();await page.getByTestId('ob-options-edit-mode').uncheck();await page.getByTestId('ob-options-virtual-observatory').check();await page.getByTestId('ob-options-ok').click();
+ await page.getByTestId('fi-file-menu').click();await expect(page.getByTestId('qso-menu')).toHaveCount(0);await page.keyboard.press('Escape');
+ await page.locator('.telescope-motion').getByTestId('ob-options').click();await page.getByTestId('ob-options-edit-mode').check();await page.getByTestId('ob-options-virtual-observatory').uncheck();await page.getByTestId('ob-options-ok').click();
+ await page.getByTestId('fi-file-menu').click();await expect(page.getByTestId('qso-menu')).toBeVisible();await page.keyboard.press('Escape');
+ // After the reveal, in Edit Mode, the Asteroid List opens (VIREO's Edit Mode rule).
+ await clickHeaderTool(page,'Object X');
+ await page.getByTestId('objectx-answer').getByLabel('asteroid').check();
+ await button(page,'Reveal the identity').click();await button(page,'Reveal the identity').click();
  await expect(page.getByTestId('objectx-asteroid-list')).toBeVisible();await expect(page.getByTestId('objectx-asteroid-list-closed')).toHaveCount(0);
+});
+
+// QA1 closure (Low): the asteroid status box keeps its height while the list builds, so Copy does not move under the pointer.
+for(const width of [1440,320])test(`QA1 closure: Copy stays put while the asteroid list builds (${width} px)`,async({page})=>{
+ await page.setViewportSize({width,height:900});
+ await page.goto('/#object-x');await expect(page.getByRole('heading',{name:'The quest for Object X'})).toBeVisible({timeout:20_000});
+ const code=await page.evaluate(`import('/src/core/objectXLab.ts').then(m=>m.objectXCode('(433) Eros'))`) as string;
+ await page.getByTestId('objectx-target').selectOption(code);
+ const copy=button(page,'Copy the coordinates to the observatory');
+ await button(page,'Set the observatory clock').click();
+ const during=(await copy.boundingBox())!.y;
+ await expect(page.getByTestId('objectx-list-status')).toContainText('Observable asteroids on',{timeout:30_000});
+ expect((await copy.boundingBox())!.y).toBe(during);
 });
