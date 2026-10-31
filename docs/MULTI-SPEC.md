@@ -22,13 +22,14 @@ addresses, evidence ids and tags in `docs/MULTI-SPEC-PROVENANCE.json`. Tags: [D]
   can be retried, one that did not match its recorded identity is a load error, and anything else is an internal error; the
   polar limit is a web limit. Object X fields keep their HTL rows in the Object X lab (below).
 - Bundled versus assembled (G4b review 1 L1, `multiSpecTiled.test.ts`): at every certified pointing (the 4 Hubble targets and
-  the 219 LSS rows) the two give the same view, population and spectra, or the same no-view outcome (30 pointings, such as
-  NGC 4278's photographic-image; the assembled population also lists its photograph associations). The exceptions are Hubble
+  the 219 LSS rows) the two give the same view, population and spectra, or the same no-view outcome (15 pointings since Front L4;
+  the assembled population also lists its photograph associations). The exceptions are Hubble
   Boötes 51975 and 51976: the bundled pack keeps the Hubble route's acknowledged 'outside-view' rule (HUBBLE-13.md) and shows
-  the field, while the assembled field is stamp-bound because of the zero-axis galaxy 14299+3148, whose not-painted exemption
-  exists only under that rule (with it the assembled pack equals the bundled one). VIREO shows a field at both (one field path,
-  no stamp limit, 0x59864d..0x59869b); how it paints that galaxy and RS Boo's class-0 update is not recovered
-  (`MULTISPEC_TILED_EXCEPTIONS`).
+  the field, while the assembled field takes the default TRUE dispatch for RS Boo. Before Front L4 the assembled field was
+  stamp-bound because of the zero-axis galaxy 14299+3148; since L4 (2026-10-31) that galaxy composes nothing under every rule, so
+  both show a field, with RS Boo's update handled differently. VIREO shows a field at both (one field path, no stamp limit,
+  0x59864d..0x59869b); how it paints RS Boo's class-0 update is not recovered (`MULTISPEC_TILED_EXCEPTIONS`). The no-view outcomes
+  are 15 since L4 (30 before: the 15 stamp-bound LSS rows now show their field).
 - Clicks select objects only when VIREO arms them (0x53cfab..0x53cfe4) [D]: **Edit Mode**, or exercise mode **0** ("Access All
   Instruments") or **1** (Object X), in the Telescope view. Mode 0 is reachable only through the instructor **Virtual
   Observatory** option (Front O2: VObsBox, options+0x27d5, default off, not persisted; one page state shared with File › QSO
@@ -48,7 +49,8 @@ addresses, evidence ids and tags in `docs/MULTI-SPEC-PROVENANCE.json`. Tags: [D]
   surface-brightness magnitude (own GLXYSP spectra where bundled); QSOs: QSOSpect.dat.
 - Poisson: the large-mean rejection branch (0x55f0f4..0x55f324) is recovered and checked by the independent witness, so every
   telescope draws (D3); a fibre with any bin mean above 10⁶ stays typed `multispec-mean-bound`. Against the field engine's
-  spectrometer bound (12 on the 0.4/0.9 m), at 60 s, counted by the research harness
+  former spectrometer bound (12 on the 0.4/0.9 m until Front L4, 2026-10-31; since then the same 10⁶ admission on every record,
+  so the two rules agree), at 60 s, counted by the research harness
   `analysis/front-m-multispec/tools/multispec_d3_counts.test.ts.txt` (SHA-256 097a8283…0626; output
   `multispec-d3-counts.json`, 1c355fa4…d8ef; recorded in `docs/MULTI-SPEC-PROVENANCE.json` `d3Counts`). Basis: every LSS row in
   its own pack, the 4 Hubble Coma/Boötes targets and the 11 Object X spectroscopy rows (234 fields, 30 gated: 204 views per
@@ -63,7 +65,7 @@ addresses, evidence ids and tags in `docs/MULTI-SPEC-PROVENANCE.json`. Tags: [D]
   - The observatory itself builds 218 distinct pointings (188 views + 30 gated, plus the 11 lab rows): the same per-object
     totals, as the harness's 'reachable' basis shows.
 - List items "  (n)  " (left-padded) with "*" when saved; Scan (1–5 s); Save All, Clear All, Open/Close All; display
-  Information, Save, Print. Files: `MSpec_<n>.SSP` (or the object name when Show Object ID is on): 400 lines
+  Information, Save, Print. Files: `MSpec_<n>.SSP` (or the object name when VIREO's global Show Object ID is on; since Front R4d Multi-Spec reads the global Show Object ID / Show Object Mag instead of two local check boxes): 400 lines
   "wavelength(2 decimals) normalised counts(6 decimals)", CRLF, no header.
 
 ## Web choices [W]

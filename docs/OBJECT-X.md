@@ -149,8 +149,8 @@ Student path, following the original manual (identification, decision D3):
      camera then asks the lab for moving pairs at each exposure and hands it each image.
    - **Radio telescope** (pulsars): opens the radio route, which shows the object's code and coordinates; *Set Coordinates*
      opens pre-filled with them (R3-L3); the student starts the pulsar setup, confirms the slew and opens the Receiver.
-   - **Spectrometer and Multi-Spec** (stars, galaxies, quasars): take a spectrum at the object (the 4 m by default; star and
-     galaxy targets give the same neutral message on the 0.4 m and 0.9 m), keep it, save it as `.SSP` and classify it; nothing names
+   - **Spectrometer and Multi-Spec** (stars, galaxies, quasars): take a spectrum at the object (the 4 m by default; since Front L4,
+     2026-10-31, every star, galaxy and QSO target gives a spectrum on all three telescopes, 33/33), keep it, save it as `.SSP` and classify it; nothing names
      the object before the reveal (Front QA1 walk-through, 2026-10-31).
 3. **Your images**: one line per camera image (`ObjX-<ID>-NN`, UT, filter, length, asteroids in the field box and how many
    fell off the detector — the composer's `moving-pair-off-detector` reason), and **Open saved FITS images** to load images back.

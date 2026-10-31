@@ -30,10 +30,12 @@ test('field names come from LSSFields.LST; cancelled and superseded loads change
  await load(page,'4');await expect(page.getByRole('alert')).toHaveText('The field list could not be loaded or verified; nothing changed.');
  await expect(page.getByTestId('lss-rows')).toContainText('Survey Field 3');
 });
-test('the 0.9 m names its brightness limit per row; leaving mid-load does not leave a stale loading notice',async({page})=>{
+test('the 0.9 m observes the bright rows (Front L4: no web mean bound below 10⁶); leaving mid-load does not leave a stale loading notice',async({page})=>{
  await open(page);await page.getByLabel('Telescope',{exact:true}).selectOption({label:'KPNO 0.9m (36") Telescope'});await load(page,'1');
  await expect(page.locator('[data-testid^="lss-row-"]')).toHaveCount(23,{timeout:30000});
- expect(await page.locator('[data-testid^="lss-row-"]',{hasText:"too bright for this telescope's verified exposure range"}).count()).toBeGreaterThan(0);
+ // Re-pinned 2026-10-31 (Front L4): Field 1 rows that were mean-bound on the 0.9 m (the testids lss-row-0..2 among them) are observable.
+ await expect(page.getByTestId('lss-row-1')).toContainText('Observable');
+ expect(await page.locator('[data-testid^="lss-row-"]',{hasText:"per-draw bound"}).count()).toBe(0);
  await delay(page,'LSS_Field05.HTL',1500);await load(page,'5');await clickHeaderTool(page,'Observatory');
  await clickHeaderTool(page,'LSS survey');await expect(page.getByText('Loading cancelled; nothing changed.')).toBeVisible();
  await expect(page.getByText('Loading the field list, catalogue and field evidence…')).toHaveCount(0);
@@ -55,3 +57,12 @@ test('Record Z: a pasted Tab is refused inline, the app survives, Object is read
  await expect(page.getByTestId('lss-record-count')).toHaveText('1 records');
  expect(errors).toEqual([]);
 });
+test('Front L4: an unreadable LSSFields.LST shows VIREO\'s file error (FormShow 0x52ac24: caption File Error!) and OK closes it',async({page})=>{
+ await page.route('**/original/hotlists/LSSFields.LST',r=>r.abort());
+ await page.goto('/#lss-survey');await expect(page.getByRole('heading',{name:'Large-scale structure survey',exact:true})).toBeVisible();
+ const box=page.getByRole('alertdialog',{name:'File Error!'});await expect(box).toBeVisible();
+ await expect(box).toContainText('Cannot access LSS fields file /original/hotlists/LSSFields.LST');
+ await expect(box).toContainText('The original field list could not be loaded or verified.');
+ await box.getByRole('button',{name:'OK',exact:true}).click();await expect(box).toHaveCount(0);
+});
+

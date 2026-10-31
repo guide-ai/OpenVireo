@@ -19,11 +19,12 @@ const packs=new Map<number,FieldPack>();
 const lssPack=(f:number)=>{let p=packs.get(f);if(!p){p=packWithPhotographs(decodeFieldPack(JSON.parse(file(`data/lss/lss-field-0${f}.json`).toString())),photographs);packs.set(f,p);}return p;};
 const SYNTHETIC_JD=Object.freeze({jd:2451545.0,source:'observatory-clock' as const});// synthetic test time
 const status=(f:number,i:number,t:FieldTelescope,options:FieldOptions={})=>{const row=lssFieldRows(f as LssFieldNumber)[i],r=evaluateField(lssPack(f),glx,{ra:row.ra,dec:row.dec},t,options);return {r,s:r.reasons.length?r.reasons.join('+'):r.target?'OK':'no-target'};};
-// [field, row, statuses 0.4/0.9/4 m without a JD, TRUE variables]
+// [field, row, statuses 0.4/0.9/4 m without a JD, TRUE variables]. Front L4 (2026-10-31): the seven rows that were
+// OK/mean-bound/OK (F1 r17, F1 r20, F3 r17, F3 r21, F4 r0, F4 r22, F5 r18) are OK on the 0.9 m too (the former web bound 12).
 const AVAILABLE:readonly (readonly [number,number,string,string])[]=[
- [1,17,'OK/mean-bound/OK','GY Com miss'],[1,20,'OK/mean-bound/OK','HL Com miss'],[2,9,'OK/OK/OK','GS Com miss'],[2,23,'OK/OK/OK','DV Com hit'],
- [3,16,'OK/OK/OK','EP Com miss'],[3,17,'OK/mean-bound/OK','EP Com miss'],[3,21,'OK/mean-bound/OK','EP Com miss'],[4,0,'OK/mean-bound/OK','ES Com hit'],
- [4,3,'OK/OK/OK','ER Com miss'],[4,22,'OK/mean-bound/OK','EW Com hit,EX Com miss'],[5,18,'OK/mean-bound/OK','AG Boo hit'],[5,21,'OK/OK/OK','AR CVn miss'],
+ [1,17,'OK/OK/OK','GY Com miss'],[1,20,'OK/OK/OK','HL Com miss'],[2,9,'OK/OK/OK','GS Com miss'],[2,23,'OK/OK/OK','DV Com hit'],
+ [3,16,'OK/OK/OK','EP Com miss'],[3,17,'OK/OK/OK','EP Com miss'],[3,21,'OK/OK/OK','EP Com miss'],[4,0,'OK/OK/OK','ES Com hit'],
+ [4,3,'OK/OK/OK','ER Com miss'],[4,22,'OK/OK/OK','EW Com hit,EX Com miss'],[5,18,'OK/OK/OK','AG Boo hit'],[5,21,'OK/OK/OK','AR CVn miss'],
  [5,23,'OK/OK/OK','AR CVn miss'],[6,5,'OK/OK/OK','WY Boo hit,UV CVn miss'],[6,9,'OK/OK/OK','BI Boo miss'],[6,10,'OK/OK/OK','BI Boo miss'],[8,19,'OK/OK/OK','S CrB hit'],
 ];
 // In-view rows: available only with a JD. Crop SHA-256 at 0.4 m with the synthetic JD (engine regression values).

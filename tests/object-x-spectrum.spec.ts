@@ -80,7 +80,8 @@ test('star, galaxy and QSO from the student path: observed, kept, downloaded, sa
  // observatory's default selection and the analyzer's reference mode); only those may match the generic patterns.
  expect(SECRETS.filter(s=>word(s).test(text))).toEqual([]);
  expect(leaksIn(JSON.stringify([json.objectXSpectra,json.base.objectX]))).toEqual([]);
- const FIXED=/"[02]:NGC 48(74|89)"|"star": \{|"selectedId": "NGC3031"|"reference": "galaxy"/g;
+ // Front L4 (2026-10-31): the extended Hubble banks now include record 1 (Coma on the 0.9 m).
+ const FIXED=/"[012]:NGC 48(74|89)"|"star": \{|"selectedId": "NGC3031"|"reference": "galaxy"/g;
  expect(leaksIn(text.replace(FIXED,''))).toEqual([]);
  // Restore in a fresh page: the kept spectra are rebuilt from their journals.
  const fresh=await page.context().newPage();await openLab(fresh);
@@ -94,15 +95,19 @@ test('star, galaxy and QSO from the student path: observed, kept, downloaded, sa
  }
  expect(await pageLeaks(fresh)).toEqual([]);
 });
-test('unavailable results read the same for star, galaxy, QSO and pulsar; switching telescope clears the slit',async({page})=>{
+// Re-pinned 2026-10-31 (Front L4): star, galaxy and QSO rows are observable on every telescope (the former web mean bound 12 refused
+// rows 9, 8 and 10 on the 0.4 m); the neutral unavailable text is the pulsar's, and the three observable kinds read the same.
+test('star, galaxy and QSO are observable on the 0.4 m and read the same; a pulsar reads the neutral text; switching telescope clears the slit',async({page})=>{
  await openLab(page);
  const texts:string[]=[];
- for(const code of [CODES.star,CODES.galaxy,'X-3V2SL','X-Z2YY7']){// on the 0.4 m: row 9, row 8, 3C 273 (row 10), a pulsar (row 0)
+ for(const code of [CODES.star,CODES.galaxy,'X-3V2SL']){// on the 0.4 m: row 9, row 8, 3C 273 (row 10)
   await slit(page,code,'0.4 m');
-  await expect(page.getByTestId('objectx-spectrum-unavailable')).toHaveText(NEUTRAL);
+  await expect(page.getByTestId('objectx-spectrum-status')).toHaveText('ObjX-7: slit on the object with the 0.4 m telescope. Start the spectrum.');
+  await expect(page.getByTestId('objectx-spectrum-unavailable')).toHaveCount(0);
   texts.push(await branchText(page));expect(await pageLeaks(page)).toEqual([]);
  }
  expect(new Set(texts).size).toBe(1);
+ await slit(page,'X-Z2YY7','0.4 m');await expect(page.getByTestId('objectx-spectrum-unavailable')).toHaveText(NEUTRAL);// a pulsar (row 0)
  await page.getByTestId('objectx-spectrum-telescope').selectOption({label:'4.0 m'});
  await expect(page.getByTestId('objectx-spectrum-unavailable')).toHaveCount(0);
  await slit(page,'X-Z2YY7','4.0 m');await expect(page.getByTestId('objectx-spectrum-unavailable')).toHaveText(NEUTRAL);

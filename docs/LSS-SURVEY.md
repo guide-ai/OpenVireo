@@ -22,7 +22,11 @@ The header button **LSS guide** (`src/LssLabGuide.tsx`, progress in `src/core/ls
 Vitest: lssFields, lssLists, fieldEngine, lssPacks, lssSurvey, lssLab, io/lssInvestigation. Playwright: tests/lss-survey.spec.ts, lss-survey-negative.spec.ts, lss-session.spec.ts, lss-guide.spec.ts.
 
 ## Acquirable rows (0.4 m / 0.9 m / 4 m, of 219)
-196 / 93 / 198 without a clock time (Front F3, the five LSS galaxy photographs, 2026-10-30); 202 / 97 / 204 in the app, whose list is built with the observatory clock's JD (default 2451545.0; Front QA1, 2026-10-31; re-derived on the tree merged with Front S2 at VIREO's 3700–4700 Å, unchanged: `evaluateLssRow` over all 219 rows and three telescopes, per field 0.4 m 23,22,23,23,18,20,21,25,27, 0.9 m 4,6,4,2,8,17,14,18,24, 4 m 23,23,24,23,18,20,21,25,27; without a clock time 196 / 93 / 198, QA1 closure, 2026-10-31); 187 / 93 / 189 before them (Front L2,
+**218 / 218 / 218 with the observatory-clock time the list freezes (what a student sees; default JD 2451545.0), 212 / 212 / 212
+without one** (Front L4, 2026-10-31: the former web mean bound and stamp cap are lifted; see "Mean bound and stamp cap" below).
+Before L4: 196 / 93 / 198 without a clock time (Front F3, the five LSS galaxy photographs, 2026-10-30); 202 / 97 / 204 in the app,
+whose list is built with the observatory clock's JD (Front QA1, 2026-10-31: per field 0.4 m 23,22,23,23,18,20,21,25,27, 0.9 m
+4,6,4,2,8,17,14,18,24, 4 m 23,23,24,23,18,20,21,25,27); 187 / 93 / 189 before them (Front L2,
 recovered QSO merge, 2026-10-29); 157 / 86 / 158 under the earlier QSO gate
 (Front T, TRUE variable dispatch, 2026-10-28), 140 / 76 / 141 before it, 129 / 69 / 130 before the recovered FALSE dispatch.
 More rows are acquirable with the frozen observatory-clock time (below).
@@ -58,7 +62,7 @@ Own records hand over to the wedge at pixel level: the plotted pixel fields equa
 Three rows select a coincident neighbour by the nearest rule (12550+2749 → NGC 4842, 15384+2831W/S → 15384+2831E). They are shown as such.
 
 ## Adaptations (one line each)
-- The telescope is the student's choice among the three verified profiles; the exercise-mode-5 telescope entry is not recovered.
+- The telescope is the student's choice among the three verified profiles. The exercise-mode-5 entry (TEnvironment1, 0x58aab0..0x58ab1a, Front L4) sets Show Object ID and Show Object Mag, exercise code 5 and the LSS captions and chooses no telescope [D], so this matches it; Load Hot List in mode 5 opens TLSSFieldsForm1 (0x53f4ce), whose role this route plays.
 - Each pointing builds a fresh field centred on the HTL coordinates; there is no cache pan.
 - The raster is the nearest-centre browser raster, not Windows pixel identity.
 - Front S2 (2026-10-31): the range is VIREO's default 3700–4700 Å (the page's one spectrometer range), so Ca K and H are in view on every acquirable row; where the shifted template starts above 3700 Å the blue bins are VIREO's start-time continuation (0x55e97c). The acquirable rows are unchanged (196/93/198). 4000–5000 Å, the earlier web range, is also witnessed; a record saved before S2 carries no range mark and keeps it. Other ranges are refused [W]. The template is GLXYTMPL.SP, except the galaxies with their own GLXYSP.LST spectrum: NGC 4670 (NGC4670.SP) and NGC 4889 (NGC4889.SP) are observed with it (Front L2). A listed spectrum that is not bundled keeps the typed `spectrum-mapping` reason (lssExposure.ts).
@@ -71,7 +75,7 @@ Three rows select a coincident neighbour by the nearest rule (12550+2749 → NGC
 - Stars come from bounded GSC read witnesses (`data/lss`); arithmetic uses Number, not x87.
 
 ## Not recovered
-Photographic association, variable classes 0–2 whose dispatch reaches a light curve, the exercise-mode-5 entry, and TLSSFieldsForm1 FormShow and LoadSelection1Click (LSSFields.LST is parsed by its evident text format). The QSO merge, TLSSRsltsDlg1 (0x57c918, FormActivate, OK) and the .TXT writer 0x57af74 are ported by Front L2 (below).
+Variable classes 0–2 whose dispatch reaches a light curve, and TLSSFieldsForm1 FormShow's line parser 0x52b00c (LSSFields.LST is parsed by its evident text format). Recovered by Front L4: the exercise-mode-5 entry (above); LoadSelection1Click 0x52b260 (index and item, or "Please select a field to load." / "No Item Selected!"; the web list always has a selection [W]); FormShow's file error, ported: "Cannot access LSS fields file " + path + CRLF CRLF + the reason, caption "File Error!" (0x52afd0/0x52aff8/0x52affc; `lssFieldsFileErrorText`, the bundled path and the web's reason [W]). Photographic association is ported (Front F3). The QSO merge, TLSSRsltsDlg1 (0x57c918, FormActivate, OK) and the .TXT writer 0x57af74 are ported by Front L2 (below).
 
 ## Front L2 (2026-10-29; plan analysis/front-plans/front-l2-lss.md)
 Static reading of CLEA_VEO.exe only; addresses, evidence ids and SHA-256 in [LSS-L2-PROVENANCE.json](LSS-L2-PROVENANCE.json); research `analysis/front-l2-lss/` (rsltsdlg-txt-findings.md, rgndlg-findings.md, dossiers
@@ -87,7 +91,10 @@ with SHA-256). This section supersedes the "Not recovered" list above for the it
   unchanged: every row that was not QSO-gated evaluates byte-identically.
 - **Save / Print spectrum.** The LSS and galaxy routes offer Save spectrum (.SSP) and Print spectrum with the recovered writer
   (Save 0x50fb1c, header 0x510090; docs/SPECTRUM-SAVE-CONTRACT.md). LSS header: the selected catalogue galaxy, the row's HTL
-  coordinates and that galaxy's catalogue magnitude.
+  coordinates and that galaxy's catalogue magnitude. With Show Object ID on (the LSS guide turns it on, Front R4d) the default
+  file name is the current object's name + `.SSP` (0x50fb1c) instead of `openvireo-lss-….ssp`, the spectrometer shows the Object
+  and App. Mag (V) boxes and the print adds the `Object:` and `Apparent Magnitude (V):` lines; Classify then takes that name as
+  the Observational Data ID. The header is unchanged.
 - **Measured Redshift Data** (TLSSRsltsDlg1; FormActivate 0x57cab8, OK 0x57cd80; coordinator decision of 2026-10-29). The
   dialog shows JD (6 decimals), RA h m s.ss and Dec ±d m s.s, and z as its 4-significant-digit text (`2.345E-02`). The student
   types the velocity: it is blank on open unless the row is reused (its earlier velocity, Front L3) or Compute Rdshft Vel. is
@@ -162,14 +169,14 @@ NGC4278.BMP, NGC4314.BMP and NGC4793.BMP, byte-exact in `public/original/images/
 inputs pass them, with the Object X four, through the field engine's `photographs` option (association 0x598ed2..0x599128, draw
 0x597290; `photographDraw.ts`); the field engine is unchanged. The 9 rows that were `photographic-image` (F1R9 NGC 4150, F1R19
 NGC 4253, F1R22 NGC 4274, F2R1 NGC 4278, F2R2 NGC 4283, F2R4 NGC 4286, F2R5 NGC 4308, F2R7 NGC 4314, F3R8 NGC 4793) are now
-available on the 0.4 m and 4 m, each selecting its own galaxy, and `mean-bound` on the 0.9 m (the web guard in
-`FIELD_CALIBRATIONS`, which waits for the field-engine owner). Measurement: analysis/front-f3/lss-photographs-measure.tsv.
+available on the 0.4 m and 4 m, each selecting its own galaxy, and were `mean-bound` on the 0.9 m (the web guard in
+`FIELD_CALIBRATIONS`); since Front L4 they are available on all three. Measurement: analysis/front-f3/lss-photographs-measure.tsv.
 
 ## LSS stars are not acquired [W] (Front S, decision D5, 2026-10-29)
 
 When the nearest catalogue object in an LSS row's slit is a star, the row stays unavailable (`star-selected`): the survey
 acquires galaxy spectra only. VIREO would give that star's spectrum there (z ≈ 0), through the same star path the Object X
-and catalogue-star routes use. Turning it on would change E02's available-row counts (196/93/198 since Front F3) and the LSS fixtures, so it
+and catalogue-star routes use. Turning it on would change E02's available-row counts (212/212/212 without a clock since Front L4) and the LSS fixtures, so it
 is a separate follow-up. LSS galaxy spectra can be classified through Save .SSP and Classify's import (docs/CLASSIFICATION-IMPORT.md).
 
 **Measured 2026-10-30 (Front L3).** All 219 rows were evaluated on the three telescopes (657 evaluations), with the field
@@ -184,3 +191,27 @@ engine's star path enabled through JSPEC2.SPI. The 18 rows that need a clock tim
   analysis/front-plans/front-l3-star-measure.txt).
 - **Free pointing:** VIREO reaches a star in the strip only by pointing the observatory freely. Recording such a star into the
   LSS list would take Record Z from the general spectrometer in LSS mode, a cross-front follow-up.
+
+## Mean bound and stamp cap (Front L4, 2026-10-31)
+Plan and measurement: analysis/front-plans/front-l4.md, analysis/front-l4/ (harness and per-row outputs). Static reading of
+CLEA_VEO.exe 781bc970…c54c; nothing executed.
+- **Mean bound.** The field engine refused a row when the per-tick Poisson mean reached 12 on the 0.4 m and 0.9 m. That is the
+  product/rejection switch of 0x55f0f4, which has no mean guard; the rejection branch is ported and witnessed (Front M D3). Every
+  record now admits poissonDraw's 10⁶ per-draw mean (`POISSON_MEAN_ADMISSION`); the largest LSS per-tick means at 3700–4700 Å are
+  77.5 / 525.2 / 8323.8.
+- **Stamp cap.** The web refused a field whose galaxy stamp exceeded 100 px or whose minor axis rounded to 0 px. VIREO's 0x5943d4
+  and its draw 0x59456c have neither bound; the telescope cache now paints in place, clipped (as the finder), and a 0 px minor
+  composes nothing (0x594488 stretches into a zero-height rect [I]). NGC 224 stays typed `ngc224-image`: the painter routes it to its
+  own routine 0x53b848 (name test 0x53b4fc), not ported.
+- **Rows that changed** (152 evaluations, every one unavailable before; listed with their before/after fingerprints in
+  `data/hubble/existing-target-fingerprints.json` and `src/core/galaxyRange.fingerprints.json`, update of 2026-10-31):
+  - mean-bound → available: 107 without the clock (105 on the 0.9 m; F2R11 NGC 4414 and F3R1 NGC 4670 on the 0.4 m), 109 with it
+    (IC 777 and NGC 4848 on the 0.9 m);
+  - stamp-bound → available on all three: F2R21 NGC 4559 (114 px), F2R23, F3R5, F5R2, F5R3, F5R4, F5R16, F5R17, F5R18, F7R4, F7R11,
+    F7R18; → neighbour: F6R17 (IC 4395), F7R8 (NGC 5639);
+  - F7R22 IC 4459 → `slit-empty` on all three: its own galaxy has a 0 px minor, so slit level 0. VIREO's handling of a zero slit
+    fraction on a selected galaxy is [U]; it is the one row unavailable with the clock.
+- **Unchanged:** every row that was available (status, selection, crop and calibration); the 14 pinned Hubble pairs; the Boötes
+  crops; E01's H0 (52.50880276737093). Saved investigations hold only rows that were available, so they restore and re-save
+  byte-identically under their existing policy ids.
+

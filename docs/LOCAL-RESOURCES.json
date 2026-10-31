@@ -6598,8 +6598,8 @@
     },
     {
       "path": "data/hubble/existing-target-fingerprints.json",
-      "bytes": 205824,
-      "sha256": "e73f1f34cec78f626bb6c2b34ef0c7ad5b1ec9f16cf27565460e118371b8c398"
+      "bytes": 267549,
+      "sha256": "3f705500832e1fec365e3d1007bd84eecb21bc91871df2157d4e90c72cecef52"
     },
     {
       "path": "data/hubble/umi-cached-provenance.json",
@@ -6637,9 +6637,14 @@
       "sha256": "acae935c6dabe47149507b0011367dbf9f9b40d7fd8654062de9c42006ca9c26"
     },
     {
+      "path": "data/hubble/engine-coma-witness.json",
+      "bytes": 2348,
+      "sha256": "bcf6d1ff95820a9e352bd188f01f47d05f19c38098622fdf2a56e1179e6d7d6f"
+    },
+    {
       "path": "data/hubble/engine-targets.json",
-      "bytes": 12304,
-      "sha256": "07f99881b82d1e8bf84091b3d70e9820a4a4cdb913618a13e95699ccd8c952b7"
+      "bytes": 13532,
+      "sha256": "a72464ce389105945ec211d4e54da6af46b6ccd212581fe1e6a5ef862c99623d"
     },
     {
       "path": "data/hubble/engine-bootes.json",
@@ -6733,8 +6738,8 @@
     },
     {
       "path": "data/objectx/frozen-observations.json",
-      "bytes": 13792,
-      "sha256": "311c596b14d8f68e0cfeeb5ec771988294894db483bdae843c991e5011d44872"
+      "bytes": 13424,
+      "sha256": "8f3f366412d0bf18cf7affc9361a3644145d302344e24d92521c2eeca62dd85d"
     },
     {
       "path": "data/photometry/pleiades-variable-fields.json",
