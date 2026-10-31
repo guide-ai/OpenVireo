@@ -135,7 +135,7 @@ describe('measurement log (pixels only; positions derived from the current log)'
   // No common star on both frames: no alignment.
   expect(blinkAlignment([ref(0),ref(1),shifted(2),shifted(3)],0,1)).toBeNull();
  });
- it('stretches the display between the cuts and defaults them to 5 % and 50 % of the range',()=>{
+ it('stretches the display between the cuts and defaults them to the sky median (else 5 %) and 50 % of the range',()=>{
   const r=stretchRaster(image,{low:100,high:200});expect(Array.from(r.subarray(0,4))).toEqual([0,0,0,255]);
   expect(defaultDisplayRange(100,1100)).toEqual({low:150,high:600});expect(defaultDisplayRange(null,null)).toEqual({low:0,high:1});
   // Front QA1 (2026-10-31): the sky median, when inside the range and below the high cut, is the low cut.
