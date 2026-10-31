@@ -59,6 +59,11 @@ test('manual ZAMS/isochrone overlays,Tools›Clear and the View/Print Parameters
  await page.getByLabel(L.modulus).fill('550');await page.getByLabel(L.ebv).fill('4');await expect(page.getByTestId('cnhr-modulus')).toHaveText('5.50');
  await expect(page.getByTestId('cnhr-report')).toHaveText('Cluster: \n\nFrom ZAMS fit:\n  V-Mv = 5.50\n  E(B-V) = 0.04');
  await page.getByLabel(L.distance,{exact:true}).check();await expect(page.getByTestId('cnhr-report')).toContainText('  Estimated Cluster Distance: 119 Parsecs');
+ // Front R4b review 1 L1: the observation-mode report prints on VIREO's list page too.
+ await page.getByTestId('cnhr-report-print').click();
+ const printed=(await page.getByTestId('cnhr-report-print-preview-native-header').innerText()).split('\n');
+ expect(printed.slice(4,6)).toEqual(['     Cluster Age/Distance Parameters','']);expect(printed).toContain('       Estimated Cluster Distance: 119 Parsecs');
+ await page.getByTestId('cnhr-report-print-preview-close').click();await expect(page.getByTestId('cnhr-report-print-preview')).toHaveCount(0);
  await page.getByLabel(L.ebv).focus();await page.keyboard.press('ArrowRight');await expect(page.getByTestId('cnhr-ebv')).toHaveText('0.05');
  await page.route(/native-isochrones-019/,route=>route.abort());await page.getByLabel(L.iso,{exact:true}).check();await expect(page.getByText('The selected model could not load. Your observations and settings are unchanged.',{exact:true})).toBeVisible();await expect(page.getByTestId('cnhr-isochrone')).toHaveCount(0);
  await page.unroute(/native-isochrones-019/);await button(page,'Retry selected model').click();await expect(page.getByTestId('cnhr-isochrone')).toHaveCount(1);expect(fetched.every(u=>/native-isochrones-019/.test(u))).toBe(true);expect(fetched).toHaveLength(2);

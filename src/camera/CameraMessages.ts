@@ -2,6 +2,9 @@
  * en.json at merge. English default. Native captions recovered from the CCD form are marked (native). */
 export const CAMERA_MESSAGES=Object.freeze({
  title:'CCD camera',
+ // Front R4b: File › Information... (TCCDCam / TIRCam, dossier C §3).
+ information:'Information...',
+ informationNote:'VIREO\'s camera parameter list for the selected camera, as compiled; this site does not read instructor overrides.',
  titleIr:'IR camera',
  camera:'Camera',
  cameraNames:{ccd:'CCD camera',ir:'IR camera (J, H, K)'} as const,
