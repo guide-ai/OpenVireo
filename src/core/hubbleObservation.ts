@@ -15,8 +15,8 @@
  * [D] Front F3 (H2 N1): the pre-fill is a store, not only text. At 0x54aefc FormActivate writes Single(c·z) into the record's
  *     velocity (+0x67) before ShowModal, and an empty box skips OK's store at 0x54b155, so the record keeps what FormActivate left.
  *     With Compute Rdshft Vel. on and z ≠ 0, an empty box therefore keeps Single(c·z) (`prefilledVelocity`); otherwise 0.
- *     [I] Native c × z is an Extended product rounded once to Single; the web rounds the double product to Single, which can
- *     differ only on a rounding tie.
+ *     [I] Native c (0x54b020) is the Extended nearest 299792.458 and the x87 product is rounded twice (to 64 bits, then to 24);
+ *     the web rounds the double product to Single. The two can differ only for products near a Single rounding boundary.
  * [W] On a reused record with a velocity of its own, an empty box would keep that earlier velocity, which may be more than 1 % off
  *     the new z; the web stores 0 instead, because such a value could not be the row's checked Hubble velocity.
  * [D] The record ID is the measured object's catalogue ID (VIREO reads it from the loaded spectrum, LoadSavedSpectrum1Click

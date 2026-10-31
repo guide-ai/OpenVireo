@@ -9,13 +9,15 @@ import {VARIABLE_FIELD_LITERALS as VL,variableAddedText,variableNewListText} fro
 import {FIELD_STAR_LITERALS as FL,fieldStarCsvLines} from '../core/fieldStarReport';
 import {variableStarSaveText} from '../core/variableStars';
 import {fieldInfoReasonText} from '../observatory/FieldInfoMessages';
-import {CLUSTER_DIALOG_LITERALS as L,CLUSTER_STUDY_LITERALS as SL,EMPTY_CLUSTER_RECORD,addClusterStudyRecord,clusterDataReport,clusterDialogActivate,clusterDialogValidate,clusterEntireListStem,clusterStudyList,clusterUseTelescope,
+import {CLUSTER_DIALOG_LITERALS as L,CLUSTER_STUDY_LITERALS as SL,EMPTY_CLUSTER_RECORD,addClusterStudyRecord,clusterDataReport,clusterRecordsReport,clusterDialogActivate,clusterDialogValidate,clusterEntireListStem,clusterStudyList,clusterUseTelescope,
  type ClusterDataReport,type ClusterDialogField,type ClusterDialogRecord,type ClusterDialogState,type ClusterStudyRecord} from '../core/clusterDialog';
 import {CLUSTER_DATASET_IDS,type ClusterDatasetId} from '../core/clusterComparison';
 import {clusterBankOrder} from '../core/clusterHrSelect';
-import type {ClusterReferencePoint} from '../core/clusterDatabase';
 import {loadClusterDetail,type ClusterDetailIndex} from '../io/clusterDetail';
 import {loadClusterDataset} from '../io/clusterComparison';
+import {ClusterQueryError,queryClusterTiles} from '../io/clusterTileQuery';
+import {tileSources} from '../io/tileAssembly';
+import {GscTileError} from '../io/gscTiles';
 import type {Pointing} from '../core/sky';
 import type {SharedHotListHandle} from '../useSharedHotList';
 import FieldInfoListWindow,{FindDialog,MessageBox,downloadText,type FieldInfoBox} from '../observatory/FieldInfoListWindow';
@@ -43,7 +45,7 @@ function certifiedCluster(r:ClusterDialogRecord):Certified|null{
 function studyRecords(detail:ClusterDetailIndex):readonly ClusterStudyRecord[]{
  return clusterBankOrder(contract.clusters.map(c=>Object.freeze({id:c.id,name:c.name,ra:c.catalogRa,dec:c.catalogDec,diam:c.angularLimitArcmin,ebv:c.catalogEbvSingle,comment:detail.comment(c.id)??''})),(a,b)=>a.ra>b.ra);
 }
-type Report=Readonly<{report:ClusterDataReport}|{loading:true}|{reason:string}>;
+type Report=Readonly<{report:ClusterDataReport;tiles?:true}|{loading:true}|{reason:string}>;
 /** Focus back on the observatory's File menu trigger when the dialog closes (L7). */
 const focusFileMenu=()=>document.querySelector<HTMLButtonElement>('[data-testid="fi-file-menu"]')?.focus();
 
@@ -53,13 +55,28 @@ const focusFileMenu=()=>document.querySelector<HTMLButtonElement>('[data-testid=
 export default function ClusterDataWindow({request,editMode,driveOn,pointing,hotList}:{request:number;editMode:boolean;driveOn:boolean;pointing:Pointing;hotList:SharedHotListHandle}){
  const [emptyBox,setEmptyBox]=useState<string|null>(null),[dialog,setDialog]=useState(false),[report,setReport]=useState<Report|null>(null),[box,setBox]=useState<FieldInfoBox|null>(null),[confirm,setConfirm]=useState<(()=>void)|null>(null);
  const latest=useRef({editMode,driveOn,pointing});latest.current={editMode,driveOn,pointing};
+ const queryToken=useRef(0),queryAbort=useRef<AbortController|null>(null);
+ // Front G5 review 1 L5: a superseded or closed query stops reading tiles.
+ useEffect(()=>()=>queryAbort.current?.abort(),[]);
  useEffect(()=>{if(request>0)setDialog(true);},[request]);
  function ok(record:ClusterDialogRecord){
   // The modal closes on this render; focus moves after it (L7).
-  setDialog(false);requestAnimationFrame(focusFileMenu);const c=certifiedCluster(record);
-  if(!c){setReport({reason:M.unavailable});return;}
+  setDialog(false);requestAnimationFrame(focusFileMenu);const c=certifiedCluster(record),token=++queryToken.current;
+  queryAbort.current?.abort();const controller=new AbortController();queryAbort.current=controller;
   setReport({loading:true});
+  // Front G5: any other centre runs VIREO's query 0x534254 on the compact GSC tiles (io/clusterTileQuery.ts).
+  if(!c){
+   const area=record.area;if(!area){setReport({reason:M.loadError});return;}
+   tileSources().then(src=>queryClusterTiles({ra:record.ra,dec:record.dec,diam:record.diam,limit:record.limit,area},src.assembly,controller.signal)).then(q=>{
+    if(token!==queryToken.current)return;
+    // 0x53435b: the reader admitted nothing → "No Stars Found in Field!" with the rectangle.
+    if(q.readCount===0){setEmptyBox(clusterEmptyFieldText(area,record.limit));setReport({reason:M.emptyField});return;}
+    try{setReport({report:clusterRecordsReport(record.name,record.type,record.sort,record.limit,q.records),tiles:true});}catch{setReport({reason:M.loadError});}
+   },(e:unknown)=>{if(token!==queryToken.current||controller.signal.aborted)return;setReport({reason:e instanceof ClusterQueryError?M.tileReason[e.code]:e instanceof GscTileError?M.tileFetch:M.loadError});});
+   return;
+  }
   Promise.all([loadClusterDataset(c.id),loadClusterDetail()]).then(([d,detail])=>{
+   if(token!==queryToken.current)return;
    // 0x53435b–0x534452: an empty reader result answers "No Stars Found in Field!" and leaves the previous bank in place; the
    // certificate says when an empty filtered bank is exactly that case (M1).
    if(!d.points.some(p=>Math.fround(p.v)<=Math.fround(record.limit))){
@@ -69,7 +86,7 @@ export default function ClusterDataWindow({request,editMode,driveOn,pointing,hot
  }
  // Report Selection items (Front O M12/M13/M15 on the listed bank: ID, RA, Dec, no remarks).
  const shown=report&&'report' in report&&!('unavailable' in report.report)?report.report:null;
- const fields=(p:ClusterReferencePoint,id:string):HtlFields=>({id:id.slice(0,24),remarks:'',ra:p.ra,dec:p.dec});
+ const fields=(p:Readonly<{ra:number;dec:number}>,id:string):HtlFields=>({id:id.slice(0,24),remarks:'',ra:p.ra,dec:p.dec});
  const rowId=(i:number)=>shown?shown.lines[shown.first+i].slice(0,18).replace(/\s+$/,''):'';
  function addFields(f:HtlFields,fresh:boolean,name=''):boolean{
   if(hotList.current().read){setBox({caption:VL.confirmation,text:FM.busy});return false;}
@@ -82,7 +99,7 @@ export default function ClusterDataWindow({request,editMode,driveOn,pointing,hot
  return <>
   {dialog&&<ClusterDialog editMode={editMode} driveOn={driveOn} pointing={pointing} hotList={hotList} onOk={ok} onCancel={()=>{setDialog(false);requestAnimationFrame(focusFileMenu);}}/>}
   {report&&('report' in report&&'lines' in report.report?<FieldInfoListWindow testId="cluster-data" caption={report.report.caption} lines={report.report.lines} first={report.report.first} last={report.report.last}
-    notice={<p className="fi-note">{M.reportNote}</p>}
+    notice={<p className="fi-note" data-testid="cluster-data-source">{'tiles' in report&&report.tiles?M.reportNoteTiles:M.reportNote}</p>}
     selectionItems={[
      {key:'add',label:FL.menu.add,onClick:i=>{const r=shown;if(!r)return;const id=rowId(i);if(addFields(fields(r.bank[i],id),false))setBox({caption:VL.confirmation,text:variableAddedText(id)});}},
      {key:'start',label:FL.menu.start,onClick:i=>{const r=shown;if(!r)return;if(hotList.current().read){setBox({caption:VL.confirmation,text:FM.busy});return;}const id=rowId(i);startNew(()=>{if(addFields(fields(r.bank[i],id),true))setBox({caption:VL.confirmation,text:variableNewListText(id)});});}},
@@ -94,7 +111,7 @@ export default function ClusterDataWindow({request,editMode,driveOn,pointing,hot
     onClose={()=>setReport(null)} box={box} onBox={setBox}/>
    :<section className="card fi-window" data-testid="cluster-data-status"><h2 className="ob-native">{M.unavailableCaption}</h2>
     <p role="status" className={'loading' in report?'fi-note':'fi-unavailable'} data-testid="cluster-data-reason">{'loading' in report?M.loading:'reason' in report?report.reason:M.spectral}</p>
-    <button type="button" className="secondary-button" onClick={()=>setReport(null)}>{menuCaptionText(SL.close)}</button></section>)}
+    <button type="button" className="secondary-button" onClick={()=>{queryAbort.current?.abort();queryToken.current++;setReport(null);}}>{menuCaptionText(SL.close)}</button></section>)}
   {confirm&&<UnsavedHotList onAnswer={answer}/>}
   {emptyBox&&<MessageBox box={{caption:CLUSTER_EMPTY_FIELD_CAPTION,text:emptyBox}} onClose={()=>{setEmptyBox(null);requestAnimationFrame(focusFileMenu);}}/>}
  </>;

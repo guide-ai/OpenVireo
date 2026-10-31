@@ -6,6 +6,11 @@ import {OBJECT_X_LAB_EN as XM} from '../objectx/ObjectXMessages';
 import {multiSpecMaskReach,objectXMultiSpecField} from './multiSpecFields';
 import {MULTISPEC_MASK_PENDING,MULTISPEC_UNMASKED,type MultiSpecMaskPolicy} from './multiSpecText';
 import MultiSpecInstrument from './MultiSpecInstrument';
+import {spectralRangeCoverage} from '../core/spectralRangeCoverage';
+import {SPECTRAL_RANGE_EN as SR} from '../SpectralRangeMessages';
+import type {SpectralRange} from '../core/spectralRange';
+/** Front S2: Multi-Spec reads the page's one range (0x526e7f); off the default it is not witnessed here [W]. */
+const rangeBlockOf=(r:SpectralRange|undefined)=>r&&spectralRangeCoverage('multispec',r)!=='covered'?SR.multiSpecRange(r.minimum.toFixed(1),r.maximum.toFixed(1)):null;
 import {t} from '../i18n';
 
 /** Front M (M4): Multi-Spec in the Object X lab (E08, exercise mode 1: clicks are armed, decision D1). The field is the bundled
@@ -15,8 +20,8 @@ import {t} from '../i18n';
  * zip names; the target's fibres read the student's ObjX-<ID>). After the reveal names return, unless another ObjectX.HTL
  * position lies within 2° + 0.375° of the field (fail closed). A new target or telescope starts a fresh Multi-Spec, so spectra of
  * one target never fall under another target's reveal. */
-export default function MultiSpecObjectX({htl,target,revealed,label,disabled,currentJd}:Readonly<{htl:HtlList|null;target:Readonly<{ra:number;dec:number;code:string}>|null;
- revealed:boolean;label:string;disabled:boolean;currentJd:()=>number}>){
+export default function MultiSpecObjectX({spectralRange,htl,target,revealed,label,disabled,currentJd}:Readonly<{htl:HtlList|null;target:Readonly<{ra:number;dec:number;code:string}>|null;
+ revealed:boolean;label:string;disabled:boolean;currentJd:()=>number;spectralRange?:SpectralRange}>){
  const [telescope,setTelescope]=useState<FieldTelescope>(2);
  const field=useMemo(()=>{
   if(!htl||!target)return null;const f=objectXMultiSpecField(htl,target.code,telescope);if(!f)return null;
@@ -38,6 +43,6 @@ export default function MultiSpecObjectX({htl,target,revealed,label,disabled,cur
    {XM.spectrumTelescopes.map((name,i)=><option key={name} value={i}>{name}</option>)}</select></label>
   {!target?<p data-testid="ms-objectx-status">{t('multispec.objectxNeedTarget')}</p>
    :<MultiSpecInstrument key={`${target.code}|${telescope}`} field={field} telescope={telescope} access="ready" armed armedText={t('multispec.armedObjectX')} mask={mask}
-     editMode={false} busy={disabled} active heading="h3" title={t('multispec.objectxTitle')} help={t('multispec.objectxHelp')} noFieldText={t('multispec.fieldNeutral')}/>}
+     rangeBlock={rangeBlockOf(spectralRange)} editMode={false} busy={disabled} active heading="h3" title={t('multispec.objectxTitle')} help={t('multispec.objectxHelp')} noFieldText={t('multispec.fieldNeutral')}/>}
  </section>;
 }

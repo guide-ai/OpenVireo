@@ -1,3 +1,7 @@
+import {DEFAULT_SPECTRAL_RANGE,type SpectralRange} from './core/spectralRange';
+import {spectralRangeCoverage} from './core/spectralRangeCoverage';
+import SpectralRangeRow from './SpectralRangeRow';
+import {SPECTRAL_RANGE_EN as SR} from './SpectralRangeMessages';
 import {useEffect,useRef,useState} from 'react';
 import CleaHelp from './clusters/CleaHelp';
 import {HELP_FILES} from './help/helpFiles';
@@ -15,11 +19,12 @@ import {ClassificationImportLimitError,type ClassificationImport} from './core/c
  * reason; every unavailable case shows the same message; labels are the student's ObjX ID. The field is evaluated in a Worker.
  * Kept spectra are part of the investigation (saved in the v29 wrapper) and are rebuilt from their journals. */
 type Available=Extract<ObjectXSpectrumView,{status:'available'}>;
-type View=Readonly<{kind:'idle'}|{kind:'loading'}|{kind:'error'}|{kind:'invalid'}|{kind:'unavailable'}|{kind:'ready';result:Available;state:JournalState;keptAs:string|null}|{kind:'kept';result:Available;state:JournalState;label:string;pointing:Readonly<{ra:number;dec:number}>}>;
+type View=Readonly<{kind:'idle'}|{kind:'range'}|{kind:'loading'}|{kind:'error'}|{kind:'invalid'}|{kind:'unavailable'}|{kind:'ready';result:Available;state:JournalState;keptAs:string|null}|{kind:'kept';result:Available;state:JournalState;label:string;pointing:Readonly<{ra:number;dec:number}>}>;
 const TICK_MS=250;
 const seconds=(ms:number)=>(ms/1000).toFixed(1);
 const total=(s:JournalState)=>String(Math.round(s.exposure.counts.reduce((a,b)=>a+b,0)));
-export default function ObjectXSpectrum({target,label,disabled,spectra,onKeep,pointingOf,active=true,onClassify,revealed=false}:Readonly<{
+export default function ObjectXSpectrum({spectralRange=DEFAULT_SPECTRAL_RANGE,onSpectralRange,target,label,disabled,spectra,onKeep,pointingOf,active=true,onClassify,revealed=false}:Readonly<{
+ /** Front S2: the page's one spectrometer range; off the default the slit gives the same refusal for every target. */spectralRange?:SpectralRange;onSpectralRange?:(r:SpectralRange)=>void;
  /** Front S (D4): after the reveal, saved headers carry the record locator [W] and catalog magnitude. */revealed?:boolean;
  /** Front S (S2): load this spectrum's masked .SSP in Classify. */onClassify?:(source:ClassificationImport)=>void;
  /** Front S (S6): the Object X route is shown (the save card's print scope expects one card in the page). */active?:boolean;target:Readonly<{ra:number;dec:number;code:string}>|null;label:string;disabled:boolean;spectra:readonly ObjectXSpectrumRecord[];onKeep:(record:ObjectXSpectrumRecord)=>void;pointingOf:(code:string)=>Readonly<{ra:number;dec:number}>|null}>){
@@ -31,7 +36,10 @@ export default function ObjectXSpectrum({target,label,disabled,spectra,onKeep,po
  useEffect(()=>{ticket.current++;stopTimer();setView({kind:'idle'});},[target?.code,telescope]);
  useEffect(()=>()=>stopTimer(),[]);
  async function prepare(){
-  if(!target)return;const mine=++ticket.current;stopTimer();setView({kind:'loading'});
+  if(!target)return;const mine=++ticket.current;stopTimer();
+  // Front S2 [W]: only 3700–4700 Å is witnessed for Object X; the refusal is the same for every target, so it tells no type.
+  if(spectralRangeCoverage('objectx',spectralRange)!=='covered'){setView({kind:'range'});return;}
+  setView({kind:'loading'});
   try{
    const r=await observeObjectXSpectrum({ra:target.ra,dec:target.dec},telescope);if(ticket.current!==mine)return;
    if(r.status==='unavailable'){setView({kind:'unavailable'});return;}
@@ -91,9 +99,11 @@ export default function ObjectXSpectrum({target,label,disabled,spectra,onKeep,po
   <p className="observatory-note">{M.spectrumAdaptation}</p>
   <label>{M.spectrumTelescope}<select data-testid="objectx-spectrum-telescope" value={telescope} disabled={disabled||running} onChange={e=>setTelescope(Number(e.target.value) as FieldTelescope)}>
    {M.spectrumTelescopes.map((n,i)=><option key={n} value={i}>{n}</option>)}</select></label>
+  {onSpectralRange&&<SpectralRangeRow range={spectralRange} disabled={disabled||running||view.kind==='loading'} unsaved={view.kind==='ready'&&view.state.exposure.elapsedMs>0&&view.keptAs===null} testId="objectx-spectral-range" note={SR.objectXNote}
+   onApply={r=>{ticket.current++;stopTimer();onSpectralRange(r);setView({kind:'idle'});}}/>}
   <div className="button-row"><button className="secondary-button" disabled={disabled||!target||view.kind==='loading'||running} onClick={()=>void prepare()}>{M.spectrumPrepare}</button></div>
   <div role="status" data-testid="objectx-spectrum-status">
-   {!target?M.spectrumNeedTarget:view.kind==='loading'?M.spectrumLoading:view.kind==='error'?M.spectrumLoadError:view.kind==='invalid'?M.spectrumInvalid:view.kind==='unavailable'?<span data-testid="objectx-spectrum-unavailable">{M.spectrumUnavailableNeutral}</span>
+   {!target?M.spectrumNeedTarget:view.kind==='loading'?M.spectrumLoading:view.kind==='error'?M.spectrumLoadError:view.kind==='invalid'?M.spectrumInvalid:view.kind==='unavailable'?<span data-testid="objectx-spectrum-unavailable">{M.spectrumUnavailableNeutral}</span>:view.kind==='range'?<span data-testid="objectx-spectrum-range">{SR.notWitnessed}</span>
     :view.kind==='ready'?M.spectrumReady(label,M.spectrumTelescopes[view.result.telescope]):view.kind==='kept'?M.spectrumKeptRow(view.label,M.spectrumTelescopes[view.result.telescope],seconds(view.state.exposure.elapsedMs)):''}
   </div>
   {view.kind==='ready'&&<div className="button-row">

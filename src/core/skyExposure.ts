@@ -1,4 +1,5 @@
 import{projectResource}from'./projectMetadata';
+import {DEFAULT_SPECTRAL_RANGE,isDialogRange,policyRange,policyWithRange,sameRange,type SpectralRange} from './spectralRange';
 import {SKY_TELESCOPE_PROOF_SHA256,skyProfile,skyTelescopeIndex,type SkyTelescopeIndex} from './skyTelescope';
 export {skyTelescopeIndex,type SkyTelescopeIndex} from './skyTelescope';
 import provenanceSource from '../../data/hubble/sky-exposure-provenance.json';
@@ -39,7 +40,9 @@ export function verifiedSkyConfiguration(index:SkyTelescopeIndex=0):Proof {
 export type SkyEvent=JournalEvent;
 export type SkyState=JournalState;
 function checked(s:SkyState){return skyTelescopeIndex(s);}
-export function createSkyExposure(seed:number,index:SkyTelescopeIndex=0):SkyState {const config=verifiedSkyConfiguration(index);return createJournalExposure(skyProfile(index).policyId,null,config.skyMean,SKY_CALIBRATION.elapsedMultiplier,seed);}
+/** Front S2: the sky branch of the source setup 0x50df64 (0x50e20d..0x50e2de) reads no range and Go skips the per-bin source loop for the sky (0x50f4da); the function's QSO branch (0x50e7b0) does read it [D] and the mean is one constant per bin, so every dialog range is
+ * observable; a non-default range only relabels the bins and marks the policy (spectralRange.ts policyWithRange). */
+export function createSkyExposure(seed:number,index:SkyTelescopeIndex=0,range:SpectralRange=DEFAULT_SPECTRAL_RANGE):SkyState {if(!isDialogRange(range))throw new JournalError('proof');const config=verifiedSkyConfiguration(index);return createJournalExposure(policyWithRange(skyProfile(index).policyId,range),null,config.skyMean,SKY_CALIBRATION.elapsedMultiplier,seed);}
 export function activateSky(s:SkyState){verifiedSkyConfiguration(checked(s));return activateJournal(s);}
 export function startSky(s:SkyState){checked(s);return startJournal(s);}
 export function tickSky(s:SkyState,deltaMs:number){const index=checked(s);if(deltaMs>skyTickLimit(index))throw new JournalError('time-gap');return tickJournal(s,deltaMs);}
@@ -47,10 +50,13 @@ export function pauseSky(s:SkyState){checked(s);return pauseJournal(s);}
 export function deactivateSky(s:SkyState){checked(s);return deactivateJournal(s);}
 export function resetSky(s:SkyState){checked(s);return resetJournal(s);}
 export function cancelSky(s:SkyState){checked(s);return cancelJournal(s);}
-export function replaySky(seed:number,events:readonly SkyEvent[],index:SkyTelescopeIndex=0){const limit=skyTickLimit(index);if(Array.isArray(events)&&events.some(e=>e?.kind==='tick'&&e.deltaMs>limit))throw new JournalError('time-gap');return replayJournal(seed=>createSkyExposure(seed,index),seed,events);}
-export function skyWavelengths():readonly number[] {
-  const values:number[]=[];let wavelength=SKY_CALIBRATION.minimumAngstrom;
-  for(let i=0;i<600;i++){values.push(wavelength);wavelength+=SKY_CALIBRATION.stepNumber;}
+export function skySpectralRange(s:Readonly<{policy:string}>):SpectralRange{const r=policyRange(s?.policy);if(!r)throw new JournalError('phase');return r.range;}
+export function replaySky(seed:number,events:readonly SkyEvent[],index:SkyTelescopeIndex=0,range:SpectralRange=DEFAULT_SPECTRAL_RANGE){const limit=skyTickLimit(index);if(Array.isArray(events)&&events.some(e=>e?.kind==='tick'&&e.deltaMs>limit))throw new JournalError('time-gap');return replayJournal(seed=>createSkyExposure(seed,index,range),seed,events);}
+/** The default range keeps the recorded labels (3700 Å, step 1000/600 added per bin); another range starts at its minimum with
+ * step (max − min)/600, added per row as Save 0x50fb1c does. */
+export function skyWavelengths(range:SpectralRange=DEFAULT_SPECTRAL_RANGE):readonly number[] {
+  const values:number[]=[],first=sameRange(range,DEFAULT_SPECTRAL_RANGE);let wavelength=first?SKY_CALIBRATION.minimumAngstrom:range.minimum;const step=first?SKY_CALIBRATION.stepNumber:(range.maximum-range.minimum)/600;
+  for(let i=0;i<600;i++){values.push(wavelength);wavelength+=step;}
   return Object.freeze(values);
 }
 function cell(s:string|number):string {const t=String(s);return /[",\r\n]/.test(t)?'"'+t.replaceAll('"','""')+'"':t;}
@@ -58,8 +64,8 @@ function cell(s:string|number):string {const t=String(s);return /[",\r\n]/.test(
  * name/magnitude as if these sky-only counts were that object's spectrum. */
 export function skyCountsCsv(s:SkyState):string {
   const index=checked(s);if(s.exposure.phase==='running')throw new JournalError('phase');if(s.exposure.draws===0)throw new JournalError('no-data');
-  const e=s.exposure,wavelengths=skyWavelengths();
+  const e=s.exposure,range=skySpectralRange(s),wavelengths=skyWavelengths(range),policy=sameRange(range,DEFAULT_SPECTRAL_RANGE)?SKY_POLICY_ID:s.policy;
   if(index!==0)return [['schema','kind','policy','field_sha256','telescope_record','configuration_sha256','pointing_ra_h','pointing_dec_deg','bin','wavelength_A','sky_count','source_count','sky_mean','elapsed_ms','seed_at_reset','current_seed','uniform_draws','elapsed_multiplier','numerical_policy'],...e.counts.map((count,i)=>[2,'browser-sky-background-exposure',s.policy,SKY_FIELD_SHA256,index,SKY_TELESCOPE_PROOF_SHA256,.5,0,i+1,wavelengths[i],count,0,e.skyMean,e.elapsedMs,s.seedAtReset,e.seed,e.draws,e.multiplier,'Number/Math; x87/native timing and seed equivalence unvalidated'])].map(row=>row.map(cell).join(',')).join('\r\n')+'\r\n';
   const header=['schema','kind','policy','field_sha256','pointing_ra_h','pointing_dec_deg','telescope','bin','wavelength_A','sky_count','source_count','sky_mean','elapsed_multiplier','elapsed_ms','seed_at_reset','current_seed','uniform_draws','numerical_policy'];
-  return [header,...e.counts.map((count,i)=>[1,'browser-sky-background-exposure',SKY_POLICY_ID,SKY_FIELD_SHA256,.5,0,'original 0.4m fallback',i+1,wavelengths[i],count,0,e.skyMean,e.multiplier,e.elapsedMs,s.seedAtReset,e.seed,e.draws,'Number/Math; x87/native timing and seed equivalence unvalidated'])].map(row=>row.map(cell).join(',')).join('\r\n')+'\r\n';
+  return [header,...e.counts.map((count,i)=>[1,'browser-sky-background-exposure',policy,SKY_FIELD_SHA256,.5,0,'original 0.4m fallback',i+1,wavelengths[i],count,0,e.skyMean,e.multiplier,e.elapsedMs,s.seedAtReset,e.seed,e.draws,'Number/Math; x87/native timing and seed equivalence unvalidated'])].map(row=>row.map(cell).join(',')).join('\r\n')+'\r\n';
 }

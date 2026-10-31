@@ -84,7 +84,7 @@ export function clusterDialogKey(c:Readonly<{ra:number;dec:number;diam:number}>)
 
 /** Type 0/1 report (0x534680, AL = 1) over a certified published bank: the query bank by Sort By (V comparator 0x535a70, RA
  * 0x535a80, filled with 0x492728 in source order), stars with V ≤ the limit (the reader's inclusive Single compare). */
-export type ClusterDataReport=Readonly<{caption:string;stem:string;lines:readonly string[];first:number;last:number;bank:readonly ClusterReferencePoint[]}|{caption:string;stem:string;unavailable:'spectral-code-unformattable'}>;
+export type ClusterDataReport=Readonly<{caption:string;stem:string;lines:readonly string[];first:number;last:number;bank:readonly Readonly<{ra:number;dec:number}>[]}|{caption:string;stem:string;unavailable:'spectral-code-unformattable'}>;
 const plus=(x:number)=>(x>0?'+':'')+delphiFixed(x,2);
 const z2=(n:number)=>padLeft(String(n),2,'0');
 /** Row 0x5354e8 without photometry (Type 1, the student finding list): ID/18, RA, Dec and the three spaces appended at
@@ -95,9 +95,15 @@ function findingRow(r:CatalogStarRecord):string{
   +(dec.sign<0?'-':'+')+z2(dec.whole)+' '+z2(dec.minutes)+' '+padLeft(delphiFixed(dec.seconds,0),2,'0')+'   ';
 }
 export function clusterDataReport(name:string,type:0|1,sort:0|1,limit:number,points:readonly ClusterReferencePoint[],detail:(id:string)=>ClusterPointDetail|undefined):ClusterDataReport{
- const L=CLUSTER_REPORT_LITERALS,admitted=points.filter(p=>Math.fround(p.v)<=Math.fround(limit));
- const bank=sort===0?clusterBankOrder(admitted,(a,b)=>Math.fround(a.v)>Math.fround(b.v)):clusterBankOrder(admitted,(a,b)=>a.ra>b.ra);
- const records=bank.map(p=>{const d=detail(p.id);if(!d)throw new ClusterDetailError('missing');return clusterStarRecord(p,d,false);});
+ const admitted=points.filter(p=>Math.fround(p.v)<=Math.fround(limit));
+ const records=admitted.map(p=>{const d=detail(p.id);if(!d)throw new ClusterDetailError('missing');return clusterStarRecord(p,d,false);});
+ return clusterRecordsReport(name,type,sort,limit,records);
+}
+/** The report over the query's star objects in read order (Front G5: also the tile query of any centre, io/clusterTileQuery.ts):
+ * stars with V ≤ the limit, filled by Sort By (V comparator 0x535a70, RA 0x535a80) with 0x492728 in that order. */
+export function clusterRecordsReport(name:string,type:0|1,sort:0|1,limit:number,input:readonly CatalogStarRecord[]):ClusterDataReport{
+ const L=CLUSTER_REPORT_LITERALS,admitted=input.filter(r=>Math.fround(r.v)<=Math.fround(limit));
+ const records=sort===0?clusterBankOrder(admitted,(a,b)=>Math.fround(a.v)>Math.fround(b.v)):clusterBankOrder(admitted,(a,b)=>a.ra>b.ra);
  const s=clusterReportStats(records);
  const header=['Cluster Name/ID: '+name.slice(0,41),`${s.count} Stars`,
   ...(type===0?['V = '+plus(s.vMin)+' to '+plus(s.vMax),'(B-V) = '+plus(s.bvMin)+' to '+plus(s.bvMax),'(U-B) = '+plus(s.ubMin)+' to '+plus(s.ubMax)+` (${s.ubCount} Stars)`]:[]),
@@ -106,7 +112,7 @@ export function clusterDataReport(name:string,type:0|1,sort:0|1,limit:number,poi
  const rows=records.map(r=>type===0?fieldStarRow(r):findingRow(r));
  if(rows.some(r=>r===null))return Object.freeze({caption:L.caption,stem:name,unavailable:'spectral-code-unformattable' as const});
  const lines=Object.freeze([...header,...rows as string[]]);
- return Object.freeze({caption:L.caption,stem:name,lines,first:header.length,last:lines.length-1,bank});
+ return Object.freeze({caption:L.caption,stem:name,lines,first:header.length,last:lines.length-1,bank:Object.freeze(records.map(r=>Object.freeze({ra:r.ra,dec:r.dec})))});
 }
 /** 0x53435b–0x534452: the reader returned no star in the rectangle → MessageBox (MB_ICONERROR) caption `No Stars Found in
  * Field!` with the rectangle (6, 6, 5, 5 decimals) and the limit (3 decimals); the query then ends without touching the bank. */

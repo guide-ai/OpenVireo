@@ -20,7 +20,7 @@ Contracts, addresses and evidence hashes are in [PULSAR-SAVED-ROWS-PROVENANCE.js
 
 ## Recovered file layout (fresh-file branch of the writer `0x56feac`)
 
-Each line is written by `WriteLn`. Payloads are copied by exact length, with no escaping. The terminator is CR LF when TextRec+6 bit 0 is set, otherwise LF. That bit comes from global byte `0x5ae034`, which is not bound here, so either form is admitted when the whole file uses one.
+Each line is written by `WriteLn`. Payloads are copied by exact length, with no escaping. The terminator is CR LF when TextRec+6 bit 0 is set, otherwise LF. That bit comes from global byte `0x5ae034`, which Front F3 bound (2026-10-30): it is initialised 0x01 and never written, so VIREO writes CR LF (PULSAR-NATIVE-SAVE.md). The reader still admits either form when the whole file uses one, because files may have been edited elsewhere.
 
 1. `"`*A*`","`*B*`"`: two opaque values, built from `0x40d47c` and the formatter `0x40e07c`.
 2. `"Table Number: `*T*`"`: *T* is 0 to 4 bytes. The ShortString append caps the line at 19 bytes, then 20 with the closing quote.

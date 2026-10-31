@@ -25,7 +25,7 @@ export const LSS_OWN_SPECTRA=Object.freeze([
 ]);
 /** Front L2: what an LSS row evaluation needs besides its pack and CLEA_GLX.DAT. `names`: the GLXYSP.LST names; `qsoCatalog`:
  * the bundled CLEA_QSO.DAT for the recovered QSO merge (0x5987e4/0x597f90, qsoMerge.ts); `ownSpectra`: own library spectrum
- * file → samples. Front F3: `photographs`, the GLIMAGES.LST rows and the approved bitmaps (the LSS five and the Object X four), so a
+ * file → samples. Front F3: `photographs`, the GLIMAGES.LST rows and the five LSS bitmaps (none of the Object X four lies in the strip), so a
  * row whose field holds a photographed galaxy is drawn as natively (0x596bd0, 0x597290) instead of staying photographic-image. */
 export type LssSpectrumInputs=Readonly<{names:ReadonlySet<string>;qsoCatalog:FieldQsoCatalog;ownSpectra:ReadonlyMap<string,FieldLibrarySpectrum['samples']>;photographs:FieldPhotographs}>;
 /** A selected galaxy with its own library spectrum in GLXYSP.LST (native key: id without spaces + ".SP") is observed with that

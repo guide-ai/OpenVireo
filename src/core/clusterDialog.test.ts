@@ -77,7 +77,8 @@ describe('TClstrRptForm1 from the dialog (0x534680, AL = 1)',()=>{
  it('Type 0 V with a limit: V ≤ limit only, V order, ranges and notes',()=>{
   const r=clusterDataReport('Test',0,0,12,pts,detail);if('unavailable' in r)throw new Error();
   expect(r.lines.slice(0,3)).toEqual(['Cluster Name/ID: Test','2 Stars','V = +9.00 to +12.00']);expect(r.lines).toContain('List sorted by apparent magnitude (V).');
-  expect(r.bank.map(p=>p.id)).toEqual(['N1@2','N1@1']);
+  // Front G5: the bank carries the listed positions (ra 1 is N1@2, ra 3 is N1@1).
+  expect(r.bank.map(p=>p.ra)).toEqual([1,3]);
  });
  it('Entire-list stem cuts before "("',()=>{expect(clusterEntireListStem('M 34 (NGC 1039)')).toBe('M 34');expect(clusterEntireListStem('Hyades')).toBe('Hyades');});
 });

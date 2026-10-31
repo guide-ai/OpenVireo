@@ -9,6 +9,7 @@ import type {QsoSpectrumFile} from './qsoSpectrum';
 import {lookupStarTemplate,type StarIndexEntry} from './starTemplates';
 import type {UniformSpectrum} from './acquisition';
 import {JournalError,type JournalState} from './exposureJournal';
+import {DEFAULT_SPECTRAL_RANGE,isDialogRange,policyRange,policyWithRange,type SpectralRange} from './spectralRange';
 
 /** The normal spectrometer's interval: the configured range's compiled default 3700–4700 Å (0x5a2a1e/0x5a2a28); see
  * objectXSpectrometer.ts for the copy chain. */
@@ -23,10 +24,11 @@ export type SpectrometerInputs=Readonly<{glx:Uint8Array;qsoCatalog:FieldQsoCatal
  * nil match is the engine's 'star-index-invalid' and a code-0 star its 'star-template-random'. variableTime (G4a review 1 M1): the observatory-clock JD frozen
  * when the field is prepared, as Field Information and LSS pass it; without it a time-dependent variable in view stays
  * variable-time-required. */
-export function spectrometerFieldResult(inputs:SpectrometerInputs,pack:FieldPack,pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope,variableTime?:FieldVariableTime):FieldResult{
+/** range (Front S2): the page's spectrometer range (default 3700–4700 Å); only the calibration reads it. */
+export function spectrometerFieldResult(inputs:SpectrometerInputs,pack:FieldPack,pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope,variableTime?:FieldVariableTime,range:SpectralRange=SPECTROMETER_INTERVAL):FieldResult{
  const at={ra:pointing.ra,dec:pointing.dec};
  const starObservation={templateFor:(index:number)=>{const file=lookupStarTemplate(inputs.starIndex,index);if(!file)return null;const spectrum=inputs.starTemplates.get(file);if(!spectrum)throw new Error(`spectrometer inputs: star template ${file} missing`);return {file,spectrum};}};
- const options:FieldOptions={glxyspLines:inputs.glxyspLines,variableDispatch:'recovered',photographs:inputs.photographs,qso:'merge',qsoCatalog:inputs.qsoCatalog,continuation:'start-time',spectralInterval:SPECTROMETER_INTERVAL,starObservation,qsoObservation:{file:inputs.qsoSpectrum,...SPECTROMETER_INTERVAL},...(variableTime?{variableTime}:{})};
+ const options:FieldOptions={glxyspLines:inputs.glxyspLines,variableDispatch:'recovered',photographs:inputs.photographs,qso:'merge',qsoCatalog:inputs.qsoCatalog,continuation:'start-time',spectralInterval:{minimum:range.minimum,maximum:range.maximum},starObservation,qsoObservation:{file:inputs.qsoSpectrum,minimum:range.minimum,maximum:range.maximum},...(variableTime?{variableTime}:{})};
  let r=evaluateField(pack,inputs.glx,at,telescope,options);
  const own=r.target?glxyspLookup(inputs.glxyspLines,r.target.id):null;
  if(r.target&&own&&r.reasons.includes('spectrum-mapping')&&inputs.galaxySpectra.has(own))r=evaluateField(pack,inputs.glx,at,telescope,{...options,librarySpectrum:{targetId:r.target.id,file:own,samples:inputs.galaxySpectra.get(own)!}});
@@ -35,18 +37,20 @@ export function spectrometerFieldResult(inputs:SpectrometerInputs,pack:FieldPack
 /** Journal policy of the generic route: the exact binary64 pointing, the telescope and (G4a review 1 M1) the frozen observatory JD
  * when the field was prepared with one: `openvireo-field-spectrum-v1:<ra>,<dec>:T<telescope>[:JD<jd>]`. */
 export const FIELD_SPECTRUM_POLICY_PREFIX='openvireo-field-spectrum-v1';
-export type FieldSpectrumPolicy=Readonly<{pointing:Readonly<{ra:number;dec:number}>;telescope:FieldTelescope;variableTime?:FieldVariableTime}>;
-export function fieldSpectrumPolicy(pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope,variableTime?:FieldVariableTime):string{
+export type FieldSpectrumPolicy=Readonly<{pointing:Readonly<{ra:number;dec:number}>;telescope:FieldTelescope;variableTime?:FieldVariableTime;range:SpectralRange}>;
+/** Front S2: a non-default range appends `#R<min>-<max>` (spectralRange.ts); the default keeps the policy unchanged. */
+export function fieldSpectrumPolicy(pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope,variableTime?:FieldVariableTime,range:SpectralRange=DEFAULT_SPECTRAL_RANGE):string{
  if(!Number.isFinite(pointing?.ra)||!Number.isFinite(pointing?.dec)||pointing.ra<0||pointing.ra>=24||Math.abs(pointing.dec)>90||![0,1,2].includes(telescope))throw new RangeError('field spectrum policy');
  if(variableTime&&!(variableTime.source==='observatory-clock'&&Number.isFinite(variableTime.jd)&&variableTime.jd>=FIELD_VARIABLE_JD_DOMAIN.minimum&&variableTime.jd<=FIELD_VARIABLE_JD_DOMAIN.maximum))throw new RangeError('field spectrum policy');
- return `${FIELD_SPECTRUM_POLICY_PREFIX}:${pointing.ra},${pointing.dec}:T${telescope}${variableTime?`:JD${variableTime.jd}`:''}`;
+ if(!isDialogRange(range))throw new RangeError('field spectrum policy');
+ return policyWithRange(`${FIELD_SPECTRUM_POLICY_PREFIX}:${pointing.ra},${pointing.dec}:T${telescope}${variableTime?`:JD${variableTime.jd}`:''}`,range);
 }
 export function parseFieldSpectrumPolicy(policy:unknown):FieldSpectrumPolicy|null{
- if(typeof policy!=='string')return null;
- const m=/^openvireo-field-spectrum-v1:([^,:]+),([^,:]+):T([012])(?::JD([^,:]+))?$/.exec(policy);if(!m)return null;
+ const split=policyRange(policy);if(!split)return null;
+ const m=/^openvireo-field-spectrum-v1:([^,:]+),([^,:]+):T([012])(?::JD([^,:]+))?$/.exec(split.base);if(!m)return null;
  const pointing={ra:Number(m[1]),dec:Number(m[2])},telescope=Number(m[3]) as FieldTelescope;
  const variableTime=m[4]===undefined?undefined:Object.freeze({jd:Number(m[4]),source:'observatory-clock' as const});
- try{return fieldSpectrumPolicy(pointing,telescope,variableTime)===policy?Object.freeze({pointing:Object.freeze(pointing),telescope,...(variableTime?{variableTime}:{})}):null;}catch{return null;}
+ try{return fieldSpectrumPolicy(pointing,telescope,variableTime,split.range)===policy?Object.freeze({pointing:Object.freeze(pointing),telescope,range:split.range,...(variableTime?{variableTime}:{})}):null;}catch{return null;}
 }
 /** Session file of the generic route: policy, seed and event journal only; counts are always replayed, never imported. */
 export const FIELD_SPECTRUM_FORMAT='OpenVireo field spectrum exposure';

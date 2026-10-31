@@ -39,7 +39,8 @@ export type CatalogStarRecord=Readonly<{kind:'star';id:string;type:0|3;ra:number
 export type CatalogVariable=Readonly<{recordIndex:number;gcvsId:string;valuesAvailable:boolean;
  /** Cepheid Init (classes 0/1) wrote 50 into a zero M−m/D word of the field-list copy +0x5b points to (0x51f2d8). */
  riseWordDefaulted:boolean}>;
-export type CatalogGalaxyRecord=Readonly<{kind:'galaxy';id:string;ra:number;dec:number;v:number;major:number;minor:number;z:number;morphology:number;bar:string;luminosity:string;ring:string}>;
+export type CatalogGalaxyRecord=Readonly<{kind:'galaxy';id:string;ra:number;dec:number;v:number;major:number;minor:number;z:number;morphology:number;bar:string;luminosity:string;ring:string;
+ /** Front G5 review 1 M2: a finder record (0x59b894 stores B−V and U−B 30.0 at 0x59bca6/0x59bcad and code 0 at 0x59bcb6). */fsc?:true}>;
 export type CatalogRecord=CatalogStarRecord|CatalogGalaxyRecord;
 export type CatalogObjectReason='variable-values-unavailable'|'galaxy-colour-residue'|'galaxy-type-fault'|'spectral-code-unformattable'|'instructor-value-masked';
 export class CatalogObjectError extends Error{constructor(readonly code:'record'){super(`Catalog object: ${code}`);this.name='CatalogObjectError';}}
@@ -52,7 +53,7 @@ export function catalogRecordFromStar(s:NativeFieldStar):CatalogStarRecord{
  let name='';for(let i=0;i<len;i++)name+=String.fromCharCode(b[0x16+i]);
  const q=s.qualityByte;
  return Object.freeze({kind:'star',id:`${s.band}-${name}`,type:0,ra:s.ra,dec:s.dec,v:s.magnitude,bv:s.photometry2Single,ub:s.photometry3Single,aux:s.auxiliarySingle,
-  flags:Object.freeze({spectral:(q&1)!==0,luminosity:(q&2)!==0,bv:(q&4)!==0,ub:(q&8)!==0}),code:compactSpectralIndex(s.rawHex),variable:null});
+  flags:Object.freeze({spectral:(q&1)!==0,luminosity:(q&2)!==0,bv:(q&4)!==0,ub:(q&8)!==0}),code:'fsc' in s&&s.fsc===true?0:compactSpectralIndex(s.rawHex),variable:null});
 }
 /** Front T, a star the TRUE dispatch kept (0x59864d / 0x59873e, then 0x51ec48): its name is the GCVS ID (0x403c5c), V, B−V,
  * U−B and the spectral code are the model's at the field's frozen JD, the flags are the dispatch's (+0x39/+0x3a := 0 with a code,
@@ -74,7 +75,7 @@ export function catalogRecordFromQso(q:NativeQso):CatalogStarRecord{
 export function catalogRecordFromGalaxy(g:NativeGalaxy,name:string=g.id):CatalogGalaxyRecord{
  const b=bytesOf(g.rawHex);if(b.length!==59)throw new CatalogObjectError('record');
  const ch=(i:number)=>String.fromCharCode(b[i]);
- return Object.freeze({kind:'galaxy',id:name,ra:g.ra,dec:g.dec,v:g.magnitude,major:g.majorArcminutes,minor:g.minorArcminutes,z:g.redshift,morphology:g.morphology,bar:ch(35),luminosity:ch(36),ring:ch(37)});
+ return Object.freeze({kind:'galaxy',id:name,ra:g.ra,dec:g.dec,v:g.magnitude,major:g.majorArcminutes,minor:g.minorArcminutes,z:g.redshift,morphology:g.morphology,bar:ch(35),luminosity:ch(36),ring:ch(37),...('fsc' in g&&g.fsc===true?{fsc:true as const}:{})});
 }
 export function catalogRecords(p:FieldPopulation):Readonly<{stars:readonly CatalogStarRecord[];galaxies:readonly CatalogGalaxyRecord[]}>{
  const renames=new Map((p.photographAssociations??[]).map(a=>[a.recordIndex,a.name]));
@@ -139,7 +140,8 @@ const led=(active:boolean):LedView=>Object.freeze({active,colour:active?LED_COLO
 export function catalogObjectView(r:CatalogRecord,format:(v:number,d:1|2,s:readonly [string,string,string])=>string,options:Readonly<{maskGalaxyRedshift?:boolean}>={}):CatalogObjectView{
  const L=CATALOG_OBJECT_LITERALS,ra=format(r.ra,2,['h ','m ','s']),dec=format(r.dec,1,['° ',"' ",'"']),reasons:CatalogObjectReason[]=[];
  if(r.kind==='galaxy'){
-  const c=galaxyColours(r.morphology);if(!c)reasons.push('galaxy-colour-residue');
+  // A finder record holds 30.0 for both colours (blank, as VIREO shows them); the telescope loader's per-type table otherwise.
+  const c=r.fsc?{bv:30,ub:30}:galaxyColours(r.morphology);if(!c)reasons.push('galaxy-colour-residue');
   const type=galaxyTypeText(r);if(type===null)reasons.push('galaxy-type-fault');
   if(options.maskGalaxyRedshift)reasons.push('instructor-value-masked');
   return Object.freeze({type:L.galaxy,typeHighlight:false,id:r.id,ra,dec,mag:F3(r.v),bv:c?blank30(c.bv):'',ub:c?blank30(c.ub):'',spLabel:L.galaxyType,sp:type??'',
@@ -156,10 +158,14 @@ export function catalogObjectView(r:CatalogRecord,format:(v:number,d:1|2,s:reado
 }
 
 /** Fresh unpanned telescope frame (936² raster over 0.75°, crop 312² anchored at 468 ± 156: FIELD-ENGINE §6). */
-export const TELESCOPE_FRAME=Object.freeze({width:936,height:936,fieldDegrees:.75,crop:312,cropOrigin:312});
+export type CatalogFrame=Readonly<{width:number;height:number;fieldDegrees:number;crop:number;cropOrigin:number}>;
+export const TELESCOPE_FRAME:CatalogFrame=Object.freeze({width:936,height:936,fieldDegrees:.75,crop:312,cropOrigin:312});
 export type CatalogScene=Readonly<{stars:readonly ProjectedCatalogObject[];galaxies:readonly ProjectedGalaxy[];records:Readonly<{stars:readonly CatalogStarRecord[];galaxies:readonly CatalogGalaxyRecord[]}>}>;
-export function catalogScene(p:FieldPopulation,center:Readonly<{ra:number;dec:number}>,provenance:string):CatalogScene{
- const records=catalogRecords(p),F=TELESCOPE_FRAME;
+/** Front G5: the finder frame (0x53bae4/0x5949c8: 936² over 3 × Finder Field 2.50° = 7.5°, the same 312² crop). */
+export const FINDER_CATALOG_FRAME:CatalogFrame=Object.freeze({width:936,height:936,fieldDegrees:7.5,crop:312,cropOrigin:312});
+export function catalogScene(p:FieldPopulation,center:Readonly<{ra:number;dec:number}>,provenance:string,F:CatalogFrame=TELESCOPE_FRAME,
+ /** G5 closure N3: records already derived for this population (catalogRecords), so a pan only re-projects. */precomputed?:ReturnType<typeof catalogRecords>):CatalogScene{
+ const records=precomputed??catalogRecords(p);
  const scene=createNativeSelectionScene(records.stars.map((s,i)=>({id:`s${i}`,ra:s.ra,dec:s.dec})),records.galaxies.map((g,i)=>({id:`g${i}`,ra:g.ra,dec:g.dec,majorArcminutes:g.major})),
   {width:F.width,height:F.height,fieldDegrees:F.fieldDegrees,center,population:{coverage:'complete',provenance}});
  return Object.freeze({stars:scene.stars,galaxies:scene.galaxies,records});

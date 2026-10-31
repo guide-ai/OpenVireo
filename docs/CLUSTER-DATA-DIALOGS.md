@@ -53,8 +53,8 @@
   - The list is then modified, and closing it asks `Cluster List not Saved!`.
   - Save List is a typed reason, because it writes whole records including unpublished values [W].
 - **OK → CLEA Cluster Data** (TClstrRptForm1, 0x534680 with AL = 1).
-  - It lists the query's stars for the 16 published cluster fields when the dialog's centre and diameter are those of a cluster
-    (as Get Selection Data leaves them).
+  - It lists the query's stars for any centre and diameter. At the 16 published cluster keys the published banks are used; any
+    other centre runs the query on the compact GSC tiles (Front G5, below).
   - **Type 0** (Instructor): the V / B−V / U−B range lines, the notes and the photometry columns.
   - **Type 1** (Student finding list): ID, RA and Dec.
   - **Sort:** the V bank (0x535a70) or RA bank (0x535a80), filled by 0x492728.
@@ -92,8 +92,25 @@ rectangle is fainter than 25.
 - the keys, counts, booleans, band hashes and the census tool hash;
 - no GSC record and no catalogue distance or age.
 
-The web admits a dialog result only when its parsed key equals a certified key exactly; Vitest recomputes all 16 keys. A limit
-below 25 filters the certified bank by V ≤ limit.
+At a certified key the web lists the published bank (Vitest recomputes all 16 keys); a limit below 25 filters it by V ≤ limit.
+
+## Any centre (Front G5, 2026-10-30)
+
+VIREO has no cluster or pointing gate: the dialog accepts any typed centre or the telescope's. Every other centre now runs the
+query on the published compact GSC tiles (`src/io/clusterTileQuery.ts`, approval of 2026-10-29, decision 2):
+- **Rectangle** [D] (TClstrDlgForm1 OK, 0x5361f8..0x53634a): halfDec = 1.1·Diam/60 (TBYTE 1.1 at 0x536470, Single 60),
+  RA half-width halfDec/(cos(Dec·π/180)·15), each RA bound folded once by 24 h, Dec unclamped (`clusterDialogValidate`).
+- **Read** [D] (0x534254): a NewGSCFieldObj; regions by 0x5977e0 (its wrap branch included); **one** VMT+8 read (0x59ad98) per
+  selected band over the possibly wrapped area. The area is not split as a field is (0x597ac8), and nothing is merged (no QSO,
+  variable or galaxy). In a wrapped area each band's scan stops after its first visited record (deterministic; ported as is,
+  with a test).
+- **Filters** [D] (0x5344d3..0x534527): 0x59a49c(centre, star)·60 ≤ Diam, then B−V known (flag +0x3b clear); the report sorts
+  them by Sort By (`clusterRecordsReport`). An empty reader result gives "No Stars Found in Field!" (0x53435b).
+- **Check:** at each of the 16 dialog keys the tile query admits exactly the published bank's records and bands
+  (`src/io/clusterTileQuery.test.ts`), as Front K's whole-band census found.
+- **Typed reasons** [W]: a folded RA bound outside 0..24 h or equal bounds (G1b's polar rule), more than 100 regions, a band
+  visit budget, a band-end read, or a tile that could not be loaded.
+- Comments exist only for the 16 published clusters (CLUSTERS.DAT strings); another centre's report has none.
 
 ## Not in this front (follow-ups)
 

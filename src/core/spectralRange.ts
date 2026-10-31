@@ -44,3 +44,20 @@ export function spectralRangeGrid(r:SpectralRange):readonly number[]{
  if(!isDialogRange(r))throw new SpectralRangeError();
  const step=(r.maximum-r.minimum)/600;return Object.freeze(Array.from({length:600},(_,i)=>r.minimum+i*step));
 }
+/** Front S (S1) / S2: an exposure on a non-default range carries "#R<min>-<max>" after its route policy; the default range keeps
+ * the policy unchanged, so earlier states, sessions and saved files are byte-identical. */
+export const RANGE_MARK='#R';
+export function policyRange(policy:unknown):Readonly<{base:string;range:SpectralRange}>|null{
+ if(typeof policy!=='string')return null;
+ const at=policy.indexOf(RANGE_MARK);if(at<0)return Object.freeze({base:policy,range:DEFAULT_SPECTRAL_RANGE});
+ const m=/^(\d{4})-(\d{4})$/.exec(policy.slice(at+RANGE_MARK.length)),range=m?Object.freeze({minimum:Number(m[1]),maximum:Number(m[2])}):null;
+ if(!range||!isDialogRange(range)||sameRange(range,DEFAULT_SPECTRAL_RANGE))return null;
+ return Object.freeze({base:policy.slice(0,at),range});
+}
+export const policyWithRange=(policy:string,range:SpectralRange)=>sameRange(range,DEFAULT_SPECTRAL_RANGE)?policy:`${policy}${RANGE_MARK}${range.minimum}-${range.maximum}`;
+/** Front S2 [W] (VIREO has no restore): an investigation restore makes the one range every restored exposure shares the active
+ * range; exposures on different ranges, or none, leave 3700–4700. Each argument is an exposure policy (or null for none). */
+export function sharedRestoredRange(policies:readonly unknown[]):SpectralRange{
+ const ranges=policies.filter(p=>p!==null&&p!==undefined).map(p=>policyRange(p)?.range??DEFAULT_SPECTRAL_RANGE);
+ return ranges.length&&ranges.every(r=>sameRange(r,ranges[0]))?ranges[0]:DEFAULT_SPECTRAL_RANGE;
+}

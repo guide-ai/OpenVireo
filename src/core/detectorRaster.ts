@@ -49,6 +49,20 @@ export function paintNativeStar(target:RgbImage,levels:Uint8Array,center:Readonl
   }
   return Object.freeze({width:target.width,height:target.height,rgb});
 }
+/** Front G5: paintNativeStar on a raster the caller owns (no copy per star; the same pixels). The finder cache paints thousands
+ * of stars into one 936² raster, where a copy per star dominated the cost. */
+export function paintNativeStarInPlace(target:RgbImage,levels:Uint8Array,center:Readonly<{x:number;y:number}>):void {
+  image(target);integer(center.x);integer(center.y);
+  if(!(levels instanceof Uint8Array)||levels.length!==99*99)throw new DetectorRasterError('profile');
+  const rgb=target.rgb;
+  for(let x=0;x<99;x++){const dx=center.x-49+x;if(dx<0||dx>=target.width)continue;
+    for(let y=0;y<99;y++){
+      const value=levels[x*99+y],dy=center.y-49+y;
+      if(value<30||dy<0||dy>=target.height)continue;
+      const at=(dy*target.width+dx)*3;
+      if(value>rgb[at])rgb[at]=rgb[at+1]=rgb[at+2]=value;
+    }}
+}
 /**0x594808 uses INCLUSIVE source-region spans, unlike CopyRect. Require all
  * queried source pixels; out-of-source GetPixel/CLR_INVALID is not silently
  * replaced with a black pixel. Source coordinates start at0,0. */
