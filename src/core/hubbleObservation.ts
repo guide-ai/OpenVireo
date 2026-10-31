@@ -12,9 +12,13 @@
  *     becomes a Single and must be within the Extended 0.01 of the unrounded c × Single z (checkHubbleVelocity,
  *     docs/HUBBLE-VELOCITY.md); non-numeric text gives "Velocity is incorrect or missing!…" (Velocity Error!, EConvertError only,
  *     0x54b278) and a value outside 1 % "Velocity calculation is invalid!" (0x54b24c); the dialog stays open.
- * [W] An empty box stores velocity 0 (blank in the results list, as a new native record). On a reused record VIREO would keep the
- *     earlier velocity, which may be more than 1 % off the new z; the web clears it, because such a value could not be the row's
- *     checked Hubble velocity.
+ * [D] Front F3 (H2 N1): the pre-fill is a store, not only text. At 0x54aefc FormActivate writes Single(c·z) into the record's
+ *     velocity (+0x67) before ShowModal, and an empty box skips OK's store at 0x54b155, so the record keeps what FormActivate left.
+ *     With Compute Rdshft Vel. on and z ≠ 0, an empty box therefore keeps Single(c·z) (`prefilledVelocity`); otherwise 0.
+ *     [I] Native c × z is an Extended product rounded once to Single; the web rounds the double product to Single, which can
+ *     differ only on a rounding tie.
+ * [W] On a reused record with a velocity of its own, an empty box would keep that earlier velocity, which may be more than 1 % off
+ *     the new z; the web stores 0 instead, because such a value could not be the row's checked Hubble velocity.
  * [D] The record ID is the measured object's catalogue ID (VIREO reads it from the loaded spectrum, LoadSavedSpectrum1Click
  *     0x582bc3, and the student cannot edit it); the web keys reuse on the acquisition's target ID, not the analyzer's free label.
  * [W] Only catalogue-galaxy acquisitions take this path. VIREO routes every Record in mode 4 through the dialog; the web has no
@@ -48,15 +52,16 @@ export const fromHex32=(h:string)=>{if(!/^[0-9a-f]{8}$/.test(h))return NaN;const
 export function observationReuseTarget(rows:readonly Readonly<{origin?:Readonly<{kind:string;targetId?:string}>;observation?:HubbleObservation}>[],id:string,timeDependent:boolean):number|null{return recordReuseTarget(rows.map(r=>r.observation!==undefined?measurementGalaxyTarget(r.origin)??null:null),id,timeDependent);}
 /** The record the dialog opens on: a new one, or a reused one (its first time, velocity, remarks and Sp type). */
 export type HubbleObservationDraft=Readonly<{id:string;jd:number;ra:number;dec:number;zSingle:number;vMagnitude:number|null;
- velocityText:string;remarks:string;spText:string;reused:boolean}>;
+ velocityText:string;remarks:string;spText:string;reused:boolean;
+ /** The velocity FormActivate stored (0x54aefc): Single(c·z) when it pre-filled the box, else 0. An empty box keeps it. */prefilledVelocity:number}>;
 export function openHubbleObservation(p:Readonly<{id:string;jd:number;ra:number;dec:number;zSingle:number;targetMagnitude:number;computeRedshiftVelocity:boolean;reused:HubbleObservation|null}>):HubbleObservationDraft{
  if(![p.jd,p.ra,p.dec,p.zSingle,p.targetMagnitude].every(Number.isFinite)||Math.fround(p.zSingle)!==p.zSingle)throw new HubbleObservationError('record');
  const r=p.reused,vMagnitude=Math.fround(p.targetMagnitude)<99?Math.fround(p.targetMagnitude):null;
  // FormActivate: the record's own velocity first; a zero one is pre-filled only with Compute Rdshft Vel. and z ≠ 0 (0x54aedb).
- const own=r?.velocitySingle??0;
- const velocityText=own!==0?floatToStrFExponent4(own):p.computeRedshiftVelocity&&p.zSingle!==0?floatToStrFExponent4(Math.fround(299792.458*p.zSingle)):'';
+ const own=r?.velocitySingle??0,prefilledVelocity=own===0&&p.computeRedshiftVelocity&&p.zSingle!==0?Math.fround(299792.458*p.zSingle):0;
+ const velocityText=own!==0?floatToStrFExponent4(own):prefilledVelocity!==0?floatToStrFExponent4(prefilledVelocity):'';
  return Object.freeze({id:p.id.slice(0,HUBBLE_OBSERVATION_LIMITS.id),jd:r?r.jd:p.jd,ra:p.ra,dec:p.dec,zSingle:p.zSingle,vMagnitude:r&&vMagnitude===null?r.vMagnitude:vMagnitude,
-  velocityText,remarks:r?.remarks??'',spText:r?formatObservationType(r.spectralCode):'',reused:!!r});
+  velocityText,remarks:r?.remarks??'',spText:r?formatObservationType(r.spectralCode):'',reused:!!r,prefilledVelocity});
 }
 /** The dialog's boxes (K2's ObservationalDataDialog), as FormActivate writes them. */
 export function hubbleObservationFields(d:HubbleObservationDraft):ObservationalDataFields{
@@ -71,7 +76,7 @@ const VELOCITY_TEXT=/^\s*[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?\s*$/;
 export function confirmHubbleObservation(d:HubbleObservationDraft,input:Readonly<{velocityText:string;remarks:string;spText:string}>):HubbleObservationResult{
  if(input.remarks.length>HUBBLE_OBSERVATION_LIMITS.remarks||input.spText.length>HUBBLE_OBSERVATION_LIMITS.spType||/[\u0000-\u001f\u007f]/.test(input.remarks+input.spText))throw new HubbleObservationError('record');
  let spectralCode:number;try{spectralCode=parseObservationType(input.spText);}catch{return {ok:false,caption:null,message:OBSERVATIONAL_SP_ERROR};}
- if(input.velocityText==='')return Object.freeze({ok:true,observation:Object.freeze({jd:d.jd,ra:d.ra,dec:d.dec,spectralCode,velocitySingle:0,velocityHex:hex32(0),remarks:input.remarks,vMagnitude:d.vMagnitude})});
+ if(input.velocityText==='')return Object.freeze({ok:true,observation:Object.freeze({jd:d.jd,ra:d.ra,dec:d.dec,spectralCode,velocitySingle:d.prefilledVelocity,velocityHex:hex32(d.prefilledVelocity),remarks:input.remarks,vMagnitude:d.vMagnitude})});
  if(!VELOCITY_TEXT.test(input.velocityText))return {ok:false,caption:LSS_DIALOG_TEXT.velocityCaption,message:LSS_DIALOG_TEXT.velocityMissing};
  let accepted:{accepted:boolean;answerSingle:number};
  try{accepted=checkHubbleVelocity(d.zSingle,Number(input.velocityText.trim()));}

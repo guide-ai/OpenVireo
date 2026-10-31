@@ -84,8 +84,9 @@ test('RX10-13/14/15/23/25/26/27: imported 12-column rows export exactly with typ
  const cells=await reviewCells(page);expect(cells).toHaveLength(2);
  const plot=await id(page,'pulsar-plot-1').evaluate(el=>el.outerHTML),panels=await page.locator('.plr-panels').innerText();
  const storage=()=>page.evaluate(()=>[Object.keys(localStorage).sort(),Object.keys(sessionStorage).sort()]);const stored=await storage();
- await expect(id(page,'pulsar-save')).toBeDisabled();
- await expect(id(page,'pulsar-save')).toHaveAccessibleDescription(/regional format.*not known for this site.*not implemented here/);
+ // Re-pinned 2026-10-30 (Front F3): the native Save is enabled after Record; Export below stays a separate web download.
+ await expect(id(page,'pulsar-save')).toBeEnabled();
+ await expect(id(page,'pulsar-save')).toHaveAccessibleDescription(/VIREO’s own results file/);
  // Opens on the first (empty) field; nothing is filled in; Tab wraps inside the dialog.
  await openExport(page);
  for(const name of ['date','time','table','name1','name2','name3','name4'])await expect(field(page,name)).toHaveValue('');
@@ -112,8 +113,8 @@ test('RX10-13/14/15/23/25/26/27: imported 12-column rows export exactly with typ
  expect(await id(page,'pulsar-plot-1').evaluate(el=>el.outerHTML)).toBe(plot);expect(await page.locator('.plr-panels').innerText()).toBe(panels);
  expect(await reviewCells(page)).toEqual(cells);
  expect((await download(page,()=>id(page,'pulsar-download').click())).bytes.equals(Buffer.from(PLR,'latin1'))).toBe(true);
- await expect(id(page,'pulsar-save')).toBeDisabled();
- await id(page,'pulsar-clear').click();await expect(id(page,'pulsar-clear-dialog')).toContainText('have not been saved');
+ await expect(id(page,'pulsar-save')).toBeEnabled();// Export does not mark the list saved (Front F3 re-pin, 2026-10-30)
+ await id(page,'pulsar-clear').click();await expect(id(page,'pulsar-clear-dialog')).toContainText('have not saved all your recorded measurements');
  await page.keyboard.press('Escape');await expect(id(page,'pulsar-clear-dialog')).toHaveCount(0);
  expect(await storage()).toEqual(stored);
  // RX10-14: the downloaded file opens in the saved-row viewer in the same order; Find reaches the second row.

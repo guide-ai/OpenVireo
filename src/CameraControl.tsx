@@ -67,6 +67,8 @@ function CameraControl({objectXHidden=null,vireoId='',infraredCamera=true,active
  const [mode,setMode]=useState<CameraCatalogMode>('static'),[usePalette,setUsePalette]=useState(false);
  const [gate,setGate]=useState<CameraRequestGate>(createCameraRequestGate),[message,setMessage]=useState<string>(M.statusIdle),[,setWaitShown]=useState(false);
  const [image,setImage]=useState<CameraImage|null>(null),[saveError,setSaveError]=useState('');
+ // RE5 review 1 L-c: a save alert belongs to the image and ID it was about; a new image or ID clears it.
+ useEffect(()=>{setSaveError('');},[image,vireoId]);
  const gateRef=useRef(gate),attempt=useRef<Attempt|null>(null),timers=useRef<{observe?:number;poll?:number}>({}),canvas=useRef<HTMLCanvasElement>(null);
  const mounted=useRef(true);useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;stopTimers();attempt.current?.controller.abort();stopWorker(attempt.current);};},[]);
  function stopTimers(){if(timers.current.observe)clearInterval(timers.current.observe);if(timers.current.poll)clearInterval(timers.current.poll);timers.current={};}

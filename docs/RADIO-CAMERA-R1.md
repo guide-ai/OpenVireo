@@ -99,9 +99,11 @@ The read-only boxes show the compiled states, each with one line on its effect:
   `Infrared CCD Camera`; filters NONE B V R I and J H K.
 - **Layout** [D]: the header is padded to 2880 bytes. The data are not padded.
 - **OBJECT and file name** [D] (Front RE5): `ObjX-<ID>` from the Set Date/Time ID, kept raw as VIREO keeps it (a spaces-only ID
-  gives `ObjX-  -01.FIT`), or `UNKNOWN` (`UNKNOWN-01.FIT`) with no ID. The web takes the Object X lab's ID, and refuses an ID
-  that is not printable ASCII, which FITS cards cannot hold.
+  gives `ObjX-  -01.FIT`), or `UNKNOWN` (`UNKNOWN-01.FIT`) with no ID. The web takes the Object X lab's ID. VIREO writes any
+  other character as its raw code-page bytes (no range check in 0x523a78, 0x523f8c or 0x524124).
 - **Web choices** [W]:
+  - an ID that is not printable ASCII is refused with a message and nothing is saved, because FITS header cards allow only
+    ASCII (RE5 review 1 L-b);
   - DATE is the exposure time;
   - DETECTOR and OBSERVER are empty;
   - NAXIS1/2 are the plane size;

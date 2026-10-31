@@ -498,15 +498,15 @@
       "range": "0x56f7ac..0x56f884",
       "source": "GNU-56F74C",
       "observed": "If 0x5db = 0: Yes/No/Cancel (Yes → Save 0x56ef60, abort if still unsaved; Cancel → abort); then MessageDlg confirmation; mrYes → list.Clear and disable +0x464/+0x388/+0x38c.",
-      "web": "The Save answer is not offered because PLR-CSV-01 is gated"
+      "web": "Front F3: the unsaved box offers VIREO's Yes ('Yes, save first'), which runs the native Save and asks the confirmation only if the list is then saved; No continues to the confirmation; Cancel stops. The literals are 0x56f890, 0x56f938 and 0x56f968."
     },
     {
       "id": "PLR-CSV-01",
       "range": "0x56ef60.., 0x56feac..0x57033x",
       "source": "TARGET-ASM lines 536423-536694",
-      "status": "GATED",
-      "observed": "Header lines use Now() (0x40d47c) with the ShortDate/Time format globals and login names (0x5b5990), then every list line, then 0x56fe6c.",
-      "reason": "Browser-clock defaults are forbidden; there is no host date/login authority; the CSV header literals are not decoded"
+      "status": "PORTED (Front F3, web adaptations)",
+      "observed": "Save2Click 0x56ef60: 'Nothing To Save!', the unrecorded question, SaveDialog2 (DefaultExt CSV, title 'Select File Name for Data Save'), the extension and exists questions (Yes overwrite, No append, Cancel auto-name from the login prefix +0xa9 and 001..), Verify Data Save (Cancel: 0x5db := 0); writer 0x56feac: the quoted Now() date/time (ShortDateFormat/LongTimeFormat of the host locale, DateSeparator '-'), 'Table Number: ' + the login table, the login names, the 151-byte header, every list line, CR LF (0x5ae034 = 1); then Record/Save off, Review on, flags recorded, 0x5db := 1, last name kept, 0x56fe6c.",
+      "web": "core/pulsarNativeSave.ts and PulsarAnalysis.tsx (docs/PULSAR-NATIVE-SAVE.md). [W] US Windows default formats M/d/yyyy and h:mm:ss AMPM (user decision of 2026-10-30); no login, so an empty table, no names and the prefix ''; the folder is the files this Save wrote while the analysis is open, and each save downloads the whole file; a refused build or download changes nothing; the Append-then-Rewrite fallback, IOResult box and hourglass are unreachable."
     },
     {
       "id": "PLR-FMT-01",

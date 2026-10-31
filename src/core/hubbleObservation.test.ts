@@ -27,6 +27,21 @@ describe('Front H2: Hubble Observational Data',()=>{
   for(const text of [' ','abc'])expect(confirmHubbleObservation(d,{velocityText:text,remarks:'',spText:''})).toEqual({ok:false,caption:LSS_DIALOG_TEXT.velocityCaption,message:LSS_DIALOG_TEXT.velocityMissing});
   expect(confirmHubbleObservation(openHubbleObservation({...base,zSingle:0}),{velocityText:'0',remarks:'',spText:''}).ok).toBe(false);
  });
+ it('Front F3 (H2 N1): with Compute Rdshft Vel. on, FormActivate stores Single(c·z) (0x54aefc) and an empty box keeps it; off, or on a reused row with its own velocity, it stays 0',()=>{
+  const on=openHubbleObservation({...base,computeRedshiftVelocity:true});
+  expect(on.prefilledVelocity).toBe(Math.fround(cz));
+  const kept=confirmHubbleObservation(on,{velocityText:'',remarks:'',spText:''});
+  expect(kept.ok).toBe(true);if(!kept.ok)return;
+  expect(kept.observation.velocitySingle).toBe(Math.fround(cz));
+  expect(readHubbleObservation(portableHubbleObservation(kept.observation),z).velocitySingle).toBe(Math.fround(cz));
+  expect(openHubbleObservation({...base,computeRedshiftVelocity:true,zSingle:0}).prefilledVelocity).toBe(0);
+  expect(openHubbleObservation(base).prefilledVelocity).toBe(0);
+  const typed=(confirmHubbleObservation(openHubbleObservation(base),{velocityText:String(Math.round(cz)),remarks:'',spText:''}) as {observation:HubbleObservation}).observation;
+  const reused=openHubbleObservation({...base,computeRedshiftVelocity:true,reused:typed});
+  expect(reused.prefilledVelocity).toBe(0);expect(reused.velocityText).not.toBe('');
+  const cleared=confirmHubbleObservation(reused,{velocityText:'',remarks:'',spText:''});
+  expect(cleared.ok&&cleared.observation.velocitySingle).toBe(0);
+ });
  it('reuses the first row with the same ID (Time-Dependent Data off), never with it on, and opens on its first time and values',()=>{
   const obs=(confirmHubbleObservation(openHubbleObservation(base),{velocityText:String(Math.round(cz)),remarks:'first',spText:''}) as {observation:HubbleObservation}).observation;
   const g=(targetId:string)=>({kind:'catalog-galaxy-acquisition',targetId});

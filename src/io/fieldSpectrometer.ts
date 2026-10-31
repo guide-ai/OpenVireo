@@ -21,7 +21,8 @@ import {objectXMasked} from './objectXMask';
 import {resourceSha256,boundedResourceBody} from './boundedResource';
 import {tileSources} from './tileAssembly';
 import {yieldTask} from './yieldTask';
-import {OBJECT_X_STAR_TEMPLATES,OBJECT_X_GALAXY_SPECTRA,OBJECT_X_PHOTOGRAPHS} from './objectXSpectrometerInputs';
+import {OBJECT_X_STAR_TEMPLATES,OBJECT_X_GALAXY_SPECTRA} from './objectXSpectrometerInputs';
+import {APPROVED_PHOTOGRAPHS} from '../core/approvedPhotographs';
 import {MULTISPEC_STAR_TEMPLATES,MULTISPEC_GALAXY_SPECTRA} from './multiSpecInputs';
 
 type Resource=Readonly<{file:string;path:string;bytes:number;sha256:string}>;
@@ -49,7 +50,7 @@ async function loadInputs():Promise<SpectrometerInputs>{
  const [templates,spectra,photographs]=await Promise.all([
   pooled(unique([...OBJECT_X_STAR_TEMPLATES,...MULTISPEC_STAR_TEMPLATES]),async t=>[t.file,starTemplateSpectrum(latin1(await checked(t)))] as const),
   pooled(unique([...OBJECT_X_GALAXY_SPECTRA,...MULTISPEC_GALAXY_SPECTRA]),async g=>[g.file,parseLibrarySpectrum(latin1(await checked(g)))] as const),
-  pooled(OBJECT_X_PHOTOGRAPHS,async b=>[b.file,decodeBitmap8(await checked(b))] as const)]);
+  pooled(APPROVED_PHOTOGRAPHS,async b=>[b.file,decodeBitmap8(await checked(b))] as const)]);
  const starTemplates=new Map<string,UniformSpectrum>(templates),galaxySpectra=new Map(spectra),bitmaps=new Map<string,Bitmap8>(photographs);
  const glxyspLines=latin1(glxysp).replace(/\x1a$/,'').split('\r\n').filter(l=>l!=='');
  return Object.freeze({glx:s.glx,qsoCatalog:s.qso,qsoSpectrum:decodeQsoSpectrumFile(qsoBytes),starIndex:decodeStarIndexList(spi),starTemplates,glxyspLines,galaxySpectra,photographs:Object.freeze({rows:nativePhotographRows(s.glimages),bitmaps})});

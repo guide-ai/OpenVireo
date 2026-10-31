@@ -19,6 +19,7 @@ import {objectXCode} from '../core/objectXLab';
 import {packWithPhotographs,GLIMAGES_LST,GLXYSP_LST} from '../core/lssLists';
 import {nativePhotographRows} from '../core/photographicList';
 import {decodeBitmap8,type Bitmap8} from '../core/photographDraw';
+import {OBJECT_X_PHOTOGRAPHS} from '../core/approvedPhotographs';
 import {decodeStarIndexList,starTemplateSpectrum,JSPEC2_SPI} from '../core/starTemplates';
 import {parseLibrarySpectrum} from '../core/spectrum';
 import type {UniformSpectrum} from '../core/acquisition';
@@ -43,11 +44,7 @@ export const OBJECT_X_GALAXY_SPECTRA=Object.freeze([
  {file:'NGC4449.SP',path:'/original/spectra/NGC4449.SP',bytes:27617,sha256:'04bf5a4ce4c96b8069a5063a6638a1f14d96f4e93dc315f1bb684bf24bff1da9'},
  {file:'NGC4631.SP',path:'/original/spectra/NGC4631.SP',bytes:27616,sha256:'d333d4a709457869315a2dcefdf0908033c65c40ed623c2554f8f341326bcad8'}].map(x=>Object.freeze(x)));
 /** The four approved photographs that GLIMAGES.LST associates with Object X areas (user approval of 2026-10-28), byte-exact. */
-export const OBJECT_X_PHOTOGRAPHS=Object.freeze([
- {file:'NGC2403.BMP',path:'/original/images/NGC2403.BMP',bytes:75852,sha256:'d490142539a2dfaade1780d0ad73918076f15141ca6fc0f6f93ccb3f627e1394'},
- {file:'NGC4262.BMP',path:'/original/images/NGC4262.BMP',bytes:3952,sha256:'ac967f4472d20e1ff2e8ac5f5b6dc20d643fea8305f800bf7271883940559ea1'},
- {file:'NGC4631.BMP',path:'/original/images/NGC4631.BMP',bytes:53864,sha256:'0cba75c792d0aac7aa56541e958f87e3fe3e37f5893896e4fc12a84bad729d9e'},
- {file:'NGC4656.BMP',path:'/original/images/NGC4656.BMP',bytes:76016,sha256:'0c94936472f13a87e26c5156e49ae491869f47818df61c8f94b6f0249601028d'}].map(x=>Object.freeze(x)));
+export {OBJECT_X_PHOTOGRAPHS};
 /** The packs; each is checked against the file SHA-256 recorded in data/objectx/PROVENANCE.json (see packDigest). */
 const PACKS:Readonly<Record<string,unknown>>={'objectx-he0353':he0353,'objectx-ngc2403':ngc2403,'objectx-ngc4262':ngc4262,'objectx-ngc4449':ngc4449,'objectx-3c273':c3c273,'objectx-ngc4631':ngc4631,'objectx-hs1603':hs1603};
 export class ObjectXSpectrometerError extends Error{constructor(readonly code:'pack'|'resource'){super(`Object X spectrometer: ${code}`);this.name='ObjectXSpectrometerError';}}
