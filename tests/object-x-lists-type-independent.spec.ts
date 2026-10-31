@@ -104,3 +104,16 @@ test('QA1 closure E2/M1: in Object X the QSO List needs Edit Mode, and the Aster
  await button(page,'Reveal the identity').click();await button(page,'Reveal the identity').click();
  await expect(page.getByTestId('objectx-asteroid-list')).toBeVisible();await expect(page.getByTestId('objectx-asteroid-list-closed')).toHaveCount(0);
 });
+
+// QA1 closure (Low): the asteroid status box keeps its height while the list builds, so Copy does not move under the pointer.
+for(const width of [1440,320])test(`QA1 closure: Copy stays put while the asteroid list builds (${width} px)`,async({page})=>{
+ await page.setViewportSize({width,height:900});
+ await page.goto('/#object-x');await expect(page.getByRole('heading',{name:'The quest for Object X'})).toBeVisible({timeout:20_000});
+ const code=await page.evaluate(`import('/src/core/objectXLab.ts').then(m=>m.objectXCode('(433) Eros'))`) as string;
+ await page.getByTestId('objectx-target').selectOption(code);
+ const copy=button(page,'Copy the coordinates to the observatory');
+ await button(page,'Set the observatory clock').click();
+ const during=(await copy.boundingBox())!.y;
+ await expect(page.getByTestId('objectx-list-status')).toContainText('Observable asteroids on',{timeout:30_000});
+ expect((await copy.boundingBox())!.y).toBe(during);
+});

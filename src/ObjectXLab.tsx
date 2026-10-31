@@ -212,8 +212,10 @@ function ObjectXLab({editMode=false,spectralRange=DEFAULT_SPECTRAL_RANGE,onSpect
      <p className="observatory-note">{M.orbitNote}</p>
      <label>{M.limitLabel}<input type="number" step="0.5" min={-5} max={30} value={inv.limit} disabled={disabled} onChange={e=>{const v=Number(e.target.value);if(Number.isFinite(v)&&v>=-5&&v<=30)update(i=>({...i,limit:v}));}} onBlur={()=>{if(listRef.current&&listRef.current.limit!==invRef.current.limit)rebuildNow(undefined,invRef.current.limit);}}/></label>
      <div className="button-row"><button className="secondary-button" disabled={disabled||progress!==null} onClick={()=>{let jd:number;try{jd=jdOfUtc(clockUtc());}catch{return;}void buildList(jd);}}>{M.buildList}</button></div>
-     <p role="status" data-testid="objectx-list-status">{progress?M.building(progress[0],progress[1]):listError?M.listError:list?M.listBuilt(list.entries.length,list.neaCount,list.oppositionCount,utOfJd(list.jd)):M.noList}</p>
-     {list&&list.errors.length>0&&<p className="observatory-note">{M.listErrors(list.errors.length)}</p>}
+     {/* QA1 closure (Low): a hidden sizer with the longest status and note keeps this box's height, so Copy below does not move. */}
+     <div className="objectx-list-box"><div className="objectx-list-sizer" aria-hidden="true"><p>{M.listBuilt(99999,99999,99999,'2009-06-01 04:00:00')}</p><p className="observatory-note">{M.listErrors(99999)}</p></div>
+     <div><p role="status" data-testid="objectx-list-status">{progress?M.building(progress[0],progress[1]):listError?M.listError:list?M.listBuilt(list.entries.length,list.neaCount,list.oppositionCount,utOfJd(list.jd)):M.noList}</p>
+     {list&&list.errors.length>0&&<p className="observatory-note">{M.listErrors(list.errors.length)}</p>}</div></div>
      <div className="button-row"><button className="primary-button" disabled={disabled||!target} onClick={()=>target&&onPrefill(target.ra,target.dec)}>{M.pointObservatory}</button></div>
      <p className="observatory-note">{M.pointHelp}</p>
     </section>
