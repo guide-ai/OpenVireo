@@ -5,7 +5,7 @@ import profiles from '../../data/observatory/compiled-optical-profiles.json';
 import {assembleFieldPack} from './assembledFieldPack';
 import {checkGscIndex,createGscTileStore} from './gscTiles';
 import {buildFieldPopulation,evaluateFinderView,FIELD_FINDER_STAR_SHIFTS,FIELD_HALF_DEGREES,freshFieldArea,type FinderFieldStar} from '../core/fieldEngine';
-import {catalogRecordFromStar} from '../core/catalogObject';
+import {catalogObjectView,catalogRecords,catalogRecordFromStar} from '../core/catalogObject';
 import {nativeFieldCacheHolds,nativeFieldCacheOrigin,FINDER_FIELD_CACHE,FIELD_CACHE} from '../core/fieldCache';
 
 // Front G5: the finder field (0x53bae4, FSCFieldObj 0x59b374/0x59b894) on the published compact GSC tiles, read from disk.
@@ -45,7 +45,7 @@ describe('Front G5: finder field on the GSC tiles',()=>{
  it('paints a 936² finder cache with the finder star shift (+0x6f4 = the profiles\' finderFactorMag)',async()=>{
   expect([...FIELD_FINDER_STAR_SHIFTS]).toEqual(profiles.records.map(r=>r.finderFactorMag));
   const pack=await assembleFieldPack(p,sources(),undefined,FIELD_HALF_DEGREES.finder);
-  const v=evaluateFinderView(pack,glx,p,0,{finderMagnitudeLimit:11.5});
+  const v=evaluateFinderView(pack,glx,p,0,{finderMagnitudeLimit:11.5,variableTime:{jd:2455000.5,source:'observatory-clock'}});
   expect(v.reasons).toEqual([]);expect([v.raster?.width,v.raster?.height]).toEqual([936,936]);
   expect(v.raster!.rgb.some(x=>x>0)).toBe(true);
  },120000);
@@ -57,4 +57,31 @@ describe('Front G5: finder field on the GSC tiles',()=>{
   // A pointing 0.1° north appears 0.1·1248 = 124.8 px higher in the telescope cache, so the crop moves up.
   expect(nativeFieldCacheOrigin(p,{ra:p.ra,dec:p.dec+.1})).toEqual({x:312,y:187});
  });
+});
+
+describe('Front G5 review 1: finder galaxies, variables and large stamps',()=>{
+ it('M2: finder galaxy records hold 30.0 colours (shown blank, no residue reason), from 0x59b894',async()=>{
+  const at={ra:9.9258,dec:69.0653},pack=await assembleFieldPack(at,sources(),undefined,FIELD_HALF_DEGREES.finder);
+  const {population}=buildFieldPopulation(pack,glx,at,{finder:{magnitudeLimit:11.5}});if(!population)throw Error();
+  const g=catalogRecords(population).galaxies;expect(g.length).toBeGreaterThan(0);
+  for(const r of g){expect(r.fsc).toBe(true);const v=catalogObjectView(r,(x)=>String(x));expect([v.bv,v.ub]).toEqual(['','']);expect(v.reasons).not.toContain('galaxy-colour-residue');}
+  // The telescope field's galaxies keep the loader's per-type colours (no mark).
+  const tp=await assembleFieldPack(at,sources());const tel=buildFieldPopulation(tp,glx,at,{});
+  for(const r of catalogRecords(tel.population!).galaxies)expect(r.fsc).toBeUndefined();
+ },120000);
+ it('M1: M31 is drawn in its own finder field (VIREO\'s 0x53b058 has no size bound); nothing else is left unpainted',async()=>{
+  const at={ra:0.7123,dec:41.27},pack=await assembleFieldPack(at,sources(),undefined,FIELD_HALF_DEGREES.finder);
+  const v=evaluateFinderView(pack,glx,at,0,{finderMagnitudeLimit:11.5,variableTime:{jd:2455000.5,source:'observatory-clock'}});
+  expect(v.reasons).toEqual([]);expect(v.population!.galaxies.map(g=>g.id)).toContain('NGC 224');expect(v.unpaintedGalaxies).toEqual([]);
+  const i=v.population!.galaxies.findIndex(g=>g.id==='NGC 224'),p=v.scene!.galaxies[i],r=v.raster!;
+  expect(r.rgb[(Math.round(p.y)*r.width+Math.round(p.x))*3]).toBeGreaterThan(0);
+ },120000);
+ it('M3: a TRUE-dispatch variable whose values are unavailable types the finder field (as the telescope view), never painted silently',async()=>{
+  const at={ra:5.5,dec:-5},pack=await assembleFieldPack(at,sources(),undefined,FIELD_HALF_DEGREES.finder);
+  const none=evaluateFinderView(pack,glx,at,0,{finderMagnitudeLimit:11.5});
+  expect(none.reasons.length).toBe(1);expect(none.raster).toBeNull();
+  const timed=evaluateFinderView(pack,glx,at,0,{finderMagnitudeLimit:11.5,variableTime:{jd:2455000.5,source:'observatory-clock'}});
+  const pending=(timed.population?.variableStars??[]).filter(e=>e.values.status==='unavailable');
+  if(pending.length)expect(timed.reasons.length).toBe(1);else expect(timed.reasons).toEqual([]);
+ },120000);
 });

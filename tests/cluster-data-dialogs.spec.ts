@@ -96,3 +96,11 @@ test('L7: the File trigger has focus after the dialog closes by Cancel, Escape a
  await openDialog(page);await page.keyboard.press('Escape');await expect(id(page,'cd-dialog')).toHaveCount(0);await expect(id(page,'fi-file-menu')).toBeFocused();
  await openDialog(page);await id(page,'cd-diameter').fill('30');await id(page,'cd-ok').click();await expect(id(page,'cd-dialog')).toHaveCount(0);await expect(id(page,'fi-file-menu')).toBeFocused();
 });
+
+// Front G5 review 1 L6: a far-south centre outside the 16 fields with a bright limit: the tile read admits nothing (0x53435b).
+test('a far-south centre read from the GSC tiles answers "No Stars Found in Field!"',async({page})=>{
+ await observatory(page);await openDialog(page);
+ await id(page,'cd-name').fill('Far south');for(const [f,v] of [['raHours','3'],['raMinutes','0'],['raSeconds','0'],['decDegrees','-80'],['decMinutes','0'],['decSeconds','0'],['diameter','5'],['limit','3']] as const)await id(page,`cd-${f}`).fill(v);
+ await id(page,'cd-ok').click();
+ await expect(id(page,'fi-box')).toContainText('No Stars Found in Field!',{timeout:30000});await expect(id(page,'fi-box-text')).toContainText('LimitMag: 3.000');
+});

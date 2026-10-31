@@ -8,7 +8,10 @@ import {roundNearestEven as round} from './numericPolicy';
  * Supplied axes or bounded morphology0 zero-axis branch. Number/Math is an explicit browser policy. */
 /** The telescope cache's stamp scale (0x53b390: 936 px for 0.75°, galaxy bank set 6) and the finder's (0x53b058: 936 px for
  * 7.5° = Field Creation Factor × Finder Field, set 1; Front G5). */
-export const GALAXY_STAMP_SCALES=Object.freeze({telescope:Object.freeze({pixelsPerArcminute:936/.75/60,bankOffset:6}),finder:Object.freeze({pixelsPerArcminute:936/7.5/60,bankOffset:1})});
+/** maxMajor: the web's bound on the stamp's major axis [W] (VIREO's 0x59456c/StretchDraw has none): 100 px in the telescope cache
+ * (typed stamp-bound beyond it); the finder cache's half, 468 px, so every finder galaxy is drawn (M31 is about 185 px; Front G5
+ * review 1 M1). */
+export const GALAXY_STAMP_SCALES=Object.freeze({telescope:Object.freeze({pixelsPerArcminute:936/.75/60,bankOffset:6,maxMajor:100}),finder:Object.freeze({pixelsPerArcminute:936/7.5/60,bankOffset:1,maxMajor:468})});
 export type GalaxyStampScale=typeof GALAXY_STAMP_SCALES[keyof typeof GALAXY_STAMP_SCALES];
 export function galaxyStampGeometry(g:NativeGalaxy,magnitudeShift=-2,scale:GalaxyStampScale=GALAXY_STAMP_SCALES.telescope){
  if(magnitudeShift!==-2&&magnitudeShift!==0&&magnitudeShift!==3)throw Error('Unsupported telescope paint shift.');
@@ -16,7 +19,7 @@ export function galaxyStampGeometry(g:NativeGalaxy,magnitudeShift=-2,scale:Galax
  const radius=Math.max(3,axes.major*scale.pixelsPerArcminute/2),major=round(radius),minor=round(radius*axes.ratio);
  const angle=g.positionAngleDegrees!==0?g.positionAngleDegrees*(Math.PI/180)+Math.PI/2:((1000*g.dec)-Math.trunc(1000*g.dec))*(2*Math.PI);
  const level=Math.min(14,Math.max(0,Math.max(0,round(magnitude)-scale.bankOffset)-magnitudeShift));
- if(!Number.isFinite(angle)||major<3||major>100||minor<1||minor>major)throw Error('Outside bounded galaxy stamp.');
+ if(!Number.isFinite(angle)||major<3||major>scale.maxMajor||minor<1||minor>major)throw Error('Outside bounded galaxy stamp.');
  return Object.freeze({major,minor,angle,level,magnitude});
 }
 /** Declared nearest-center replacement for the unmeasured GDI StretchDraw

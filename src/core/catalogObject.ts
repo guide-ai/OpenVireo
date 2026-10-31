@@ -39,7 +39,8 @@ export type CatalogStarRecord=Readonly<{kind:'star';id:string;type:0|3;ra:number
 export type CatalogVariable=Readonly<{recordIndex:number;gcvsId:string;valuesAvailable:boolean;
  /** Cepheid Init (classes 0/1) wrote 50 into a zero M−m/D word of the field-list copy +0x5b points to (0x51f2d8). */
  riseWordDefaulted:boolean}>;
-export type CatalogGalaxyRecord=Readonly<{kind:'galaxy';id:string;ra:number;dec:number;v:number;major:number;minor:number;z:number;morphology:number;bar:string;luminosity:string;ring:string}>;
+export type CatalogGalaxyRecord=Readonly<{kind:'galaxy';id:string;ra:number;dec:number;v:number;major:number;minor:number;z:number;morphology:number;bar:string;luminosity:string;ring:string;
+ /** Front G5 review 1 M2: a finder record (0x59b894 stores B−V and U−B 30.0 at 0x59bca6/0x59bcad and code 0 at 0x59bcb6). */fsc?:true}>;
 export type CatalogRecord=CatalogStarRecord|CatalogGalaxyRecord;
 export type CatalogObjectReason='variable-values-unavailable'|'galaxy-colour-residue'|'galaxy-type-fault'|'spectral-code-unformattable'|'instructor-value-masked';
 export class CatalogObjectError extends Error{constructor(readonly code:'record'){super(`Catalog object: ${code}`);this.name='CatalogObjectError';}}
@@ -74,7 +75,7 @@ export function catalogRecordFromQso(q:NativeQso):CatalogStarRecord{
 export function catalogRecordFromGalaxy(g:NativeGalaxy,name:string=g.id):CatalogGalaxyRecord{
  const b=bytesOf(g.rawHex);if(b.length!==59)throw new CatalogObjectError('record');
  const ch=(i:number)=>String.fromCharCode(b[i]);
- return Object.freeze({kind:'galaxy',id:name,ra:g.ra,dec:g.dec,v:g.magnitude,major:g.majorArcminutes,minor:g.minorArcminutes,z:g.redshift,morphology:g.morphology,bar:ch(35),luminosity:ch(36),ring:ch(37)});
+ return Object.freeze({kind:'galaxy',id:name,ra:g.ra,dec:g.dec,v:g.magnitude,major:g.majorArcminutes,minor:g.minorArcminutes,z:g.redshift,morphology:g.morphology,bar:ch(35),luminosity:ch(36),ring:ch(37),...('fsc' in g&&g.fsc===true?{fsc:true as const}:{})});
 }
 export function catalogRecords(p:FieldPopulation):Readonly<{stars:readonly CatalogStarRecord[];galaxies:readonly CatalogGalaxyRecord[]}>{
  const renames=new Map((p.photographAssociations??[]).map(a=>[a.recordIndex,a.name]));
@@ -139,7 +140,8 @@ const led=(active:boolean):LedView=>Object.freeze({active,colour:active?LED_COLO
 export function catalogObjectView(r:CatalogRecord,format:(v:number,d:1|2,s:readonly [string,string,string])=>string,options:Readonly<{maskGalaxyRedshift?:boolean}>={}):CatalogObjectView{
  const L=CATALOG_OBJECT_LITERALS,ra=format(r.ra,2,['h ','m ','s']),dec=format(r.dec,1,['° ',"' ",'"']),reasons:CatalogObjectReason[]=[];
  if(r.kind==='galaxy'){
-  const c=galaxyColours(r.morphology);if(!c)reasons.push('galaxy-colour-residue');
+  // A finder record holds 30.0 for both colours (blank, as VIREO shows them); the telescope loader's per-type table otherwise.
+  const c=r.fsc?{bv:30,ub:30}:galaxyColours(r.morphology);if(!c)reasons.push('galaxy-colour-residue');
   const type=galaxyTypeText(r);if(type===null)reasons.push('galaxy-type-fault');
   if(options.maskGalaxyRedshift)reasons.push('instructor-value-masked');
   return Object.freeze({type:L.galaxy,typeHighlight:false,id:r.id,ra,dec,mag:F3(r.v),bv:c?blank30(c.bv):'',ub:c?blank30(c.ub):'',spLabel:L.galaxyType,sp:type??'',

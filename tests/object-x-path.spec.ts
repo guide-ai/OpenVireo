@@ -216,7 +216,10 @@ test('Front C5W: the default bundled-extract mode images an Object X field witho
  // G merge review I1: the field-object pass is masked at the Object X target and no GSC tile is fetched for it.
  await expect(page.getByTestId('camera-detail-field-objects')).toHaveAttribute('data-status','masked');
  await expect(page.getByTestId('camera-detail-field-objects')).toContainText('near an Object X target');
- expect(tiles).toEqual([]);
+ // Re-pinned 2026-10-31 (Front G5 review 1 H1): opening the dome at the start pointing (M81) lets the sky view read M81's bands
+ // (N6000/N6730) before the Point; nothing may come from the target's own bands (Dec −8.04°: S0730, and the finder's ±3.75°
+ // reaches S0000 and S1500).
+ expect(tiles.filter(u=>/\/original\/gsc\/(S0000|S0730|S1500)\//.test(u))).toEqual([]);
  expect(asked).toEqual([]);expect(await leaks(page)).toEqual([]);
 });
 

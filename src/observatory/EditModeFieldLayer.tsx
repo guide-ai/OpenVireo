@@ -42,7 +42,7 @@ export default function EditModeFieldLayer({editMode,active,mode,pointing,hidden
    import('../io/skyField').then(m=>m.loadSkyField({view:'finder',anchor:at,telescope,hidden,currentJd,finderMagnitudeLimit:FINDER_MAG_LIMIT,signal:controller.signal})).then(f=>{
     if(!current)return;
     if(f.status==='ready')setState({status:'ready',packId:f.packId,population:f.population});
-    else setState(f.reason==='field-reason'?{status:'unavailable',reason:'population',detail:f.detail??''}:'detail' in f&&f.detail!==undefined?{status:'unavailable',reason:f.reason,detail:f.detail}:{status:'unavailable',reason:f.reason});
+    else{const reason=f.reason==='field-polar'?'field-polar-finder' as const:f.reason;setState(reason==='field-reason'?{status:'unavailable',reason:'population',detail:f.detail??''}:'detail' in f&&f.detail!==undefined?{status:'unavailable',reason,detail:f.detail}:{status:'unavailable',reason});}
    }).catch((e:unknown)=>{if(current&&!(e instanceof DOMException&&e.name==='AbortError'))setState({status:'error'});});
    return()=>{current=false;controller.abort();};
   }

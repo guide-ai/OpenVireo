@@ -30,6 +30,8 @@ export const FIELD_INFO_MESSAGES=Object.freeze({
   'field-polar':'Not available within about 0.06° of the celestial pole: this site stops there [web limit]. VIREO still builds a field down to about 0.006° from the pole, but its result there depends on its arithmetic in ways this site does not reproduce exactly.',
   'field-tiles':'The star catalogue for this field could not be loaded ({reason}). Try again; nothing was changed.',
   'field-unreadable':'Not available here: {reason}',
+  'field-polar-finder':'Not available within about 0.6° of the celestial pole in the Finder view: the finder field reaches 3.75° from the centre, and this site stops where its RA bounds no longer fold into 0–24 h [web limit].',
+  'object-x-unreadable':'Not available: the list of Object X positions could not be read, so this field stays hidden in case it shows an Object X target. Reload the page to try again.',
   'object-x-hidden':'Not available near an unrevealed Object X target: the record would show its identity before the exercise reveals it.',
   'asteroids-not-modelled':'Not available: this field may contain asteroids, which the field engine does not model.',
   'population':'Not available: the field engine cannot rebuild this field exactly (reason: {reason}).',

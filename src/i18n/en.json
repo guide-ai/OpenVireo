@@ -141,7 +141,7 @@
   "sky.count": "{count} catalog points in this field",
   "sky.coverage": "Original GSC catalog · magnitude ≤ 12 · coverage is limited",
   "sky.fieldLoading": "Building VIREO’s field for this view from the compact Guide Star Catalog…",
-  "sky.fieldReady": "VIREO’s {view} field: {stars} stars and {galaxies} galaxies, drawn as VIREO draws them.",
+  "sky.fieldReady": "VIREO’s {view} view, drawn as VIREO draws it from its loaded {loaded} field ({stars} stars and {galaxies} galaxies).",
   "sky.fieldPreview": "Showing the magnitude ≤ 12 preview. VIREO’s field: {reason}",
   "sky.chartLabel": "Original VIREO catalog field, north up and east left. Objects can be selected from the target list.",
   "sky.crosshair": "Pointing center",

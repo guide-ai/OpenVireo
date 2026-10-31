@@ -31,7 +31,8 @@ describe('Front G5: Cluster Data query 0x534254 on the GSC tiles',()=>{
  },300000);
  it('a centre outside the 16 gives a report through the same builder (NGC 2244, Diam 24′, limit 12)',async()=>{
   const r=dialogRecord(6+32/60+24/3600,4+52/60,24,12),q=await queryClusterTiles(r,sources());
-  expect(q.records.length).toBeGreaterThan(0);expect(q.readCount).toBeGreaterThanOrEqual(q.records.length);
+  // Independent oracle (G5 review 1 L6: Python over the N0000 tiles): 190 admitted, 5 kept, these record indices.
+  expect(q.readCount).toBe(190);expect(q.sourceIds).toEqual(['N0000.DAT@268896','N0000.DAT@269341','N0000.DAT@269357','N0000.DAT@269679','N0000.DAT@270006']);
   for(const x of q.records){expect(x.v).toBeLessThanOrEqual(12);expect(x.flags.bv).toBe(false);}
   const report=clusterRecordsReport('NGC 2244',1,1,12,q.records);if('unavailable' in report)throw new Error();
   expect(report.lines[1]).toBe(`${q.records.length} Stars`);
@@ -41,6 +42,10 @@ describe('Front G5: Cluster Data query 0x534254 on the GSC tiles',()=>{
   const q=await queryClusterTiles(r,sources());
   expect(q.readCount).toBeLessThanOrEqual(q.bands.length);
  },120000);
+ it('an aborted query stops (review 1 L5)',async()=>{
+  const c=new AbortController();c.abort();
+  await expect(queryClusterTiles(dialogRecord(6.54,4.87,24,12),sources(),c.signal)).rejects.toThrow();
+ });
  it('a folded bound outside 0..24 h is the typed polar reason',async()=>{
   await expect(queryClusterTiles(dialogRecord(3,89.99,60,12),sources())).rejects.toBeInstanceOf(ClusterQueryError);
  });

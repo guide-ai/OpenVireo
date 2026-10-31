@@ -1,81 +1,79 @@
 // Front G5 (analysis/front-plans/front-g5.md §1): the field the observatory's sky view draws at any pointing, as VIREO's render
-// 0x53a40c does: the telescope view loads the instrument field (0x53be70) and paints its 3 × 312 px cache (0x53b390, the field
-// engine's paintField); the finder view loads the finder field (0x53bae4, FSCFieldObj on the same compact GSC bands) and paints
-// it with 0x53b058 (fieldEngine.evaluateFinderView). The pack comes from io/fieldInfoPacks.ts (a certified pack at its listed
-// pointings, otherwise the compact GSC tiles). The 2° Object X mask uses max(0.62°, the field's farthest corner) (G4b rule). A
-// typed reason is returned where the field cannot be drawn exactly; the caller then keeps its ≤ 12 mag preview [W]. Each build
-// yields to the page between stages and stops on the caller's abort. Same-origin files only; nothing is sent anywhere.
-import {evaluateFieldView,evaluateFinderView,frozenObservatoryTime,type FieldOptions,type FieldPopulation,type FieldTelescope,type FieldUnavailableReason,type FieldVariableTime} from '../core/fieldEngine';
-import type {NativeSelectionScene} from '../core/objectSelection';
-import type {RgbImage} from '../core/photons';
+// 0x53a40c does (the build itself is io/skyFieldBuild.ts). This front end applies the Object X mask (2° plus max(0.62°, the
+// field's farthest corner), the G4b rule; an unreadable ObjectX.HTL masks with its own reason), freezes the JD once per field,
+// and shares ONE build per field key between its callers (the sky view and Edit Mode's layer; review 1 M4): each caller can
+// cancel its own wait, and the build is cancelled only when no caller waits any more. In the browser the build runs in the
+// Worker io/skyFieldWorker.ts; tests run it in process. A typed reason is returned where the field cannot be drawn exactly; the
+// caller then keeps its ≤ 12 mag preview [W]. Same-origin files only; nothing is sent anywhere.
+import {frozenObservatoryTime,type FieldTelescope,type FieldVariableTime} from '../core/fieldEngine';
 import type {Pointing} from '../core/sky';
-import {nativePhotographRows} from '../core/photographicList';
-import {decodeBitmap8,type Bitmap8} from '../core/photographDraw';
-import {fieldMaskReach,objectXMasked} from './objectXMask';
-import {skyFieldPack,skyFieldInputs,type SkyPackFailure} from './fieldInfoPacks';
-import {yieldTask} from './yieldTask';
+import {fieldMaskReach,objectXMaskState} from './objectXMask';
+import {buildSkyField,type SkyField,type SkyFieldBuildRequest,type SkyFieldView} from './skyFieldBuild';
+import {workerClient} from './workerClient';
+import type {SkyFieldWorkerRequest} from './skyFieldWorker';
+export type {SkyField,SkyFieldReason,SkyFieldView} from './skyFieldBuild';
 
-export type SkyFieldView='telescope'|'finder';
-export type SkyFieldReason='object-x-hidden'|SkyPackFailure['reason']|'field-reason';
-export type SkyField=Readonly<{status:'ready';view:SkyFieldView;anchor:Pointing;telescope:FieldTelescope;packId:string;raster:RgbImage;population:FieldPopulation;scene:NativeSelectionScene}>
- |Readonly<{status:'unavailable';view:SkyFieldView;anchor:Pointing;reason:SkyFieldReason;detail?:string}>;
 export type SkyFieldRequest=Readonly<{view:SkyFieldView;anchor:Pointing;telescope:FieldTelescope;hidden:Pointing|null;finderMagnitudeLimit:number;signal?:AbortSignal;
- /** The observatory clock; its JD is frozen when the field is built (frozenObservatoryTime), as the other field consumers do. */currentJd?:()=>number;variableTime?:FieldVariableTime}>;
+ /** The observatory clock; its JD is frozen when the field is first built (frozenObservatoryTime) and kept with the field. */currentJd?:()=>number;variableTime?:FieldVariableTime}>;
 /** Half-heights used for the Object X reach (fieldEngine.FIELD_HALF_DEGREES). */
 const HALF={telescope:.375,finder:3.75} as const;
 /** G4b: the observatory's floor for an assembled field's Object X reach (multiSpecFields.ts MULTISPEC_MASK_REACH). */
 export const OBJECT_X_FIELD_REACH_FLOOR=0.62;
 
-/** The last few built fields, so leaving and re-entering a view or the observatory does not rebuild (a pointing change past the
- * cache or a view change builds anew, as 0x53a40c reloads). */
+type Builder=(r:SkyFieldBuildRequest,signal:AbortSignal)=>Promise<SkyField>;
+let builder:Builder|null=null;
+/** Test seam: the build function (default: the Worker in a browser, in process elsewhere). */
+export function setSkyFieldBuilder(b:Builder|null){builder=b;built.clear();inflight.clear();}
+const ask=typeof Worker==='undefined'?null:workerClient(()=>new Worker(new URL('./skyFieldWorker.ts',import.meta.url),{type:'module'}));
+type WorkerRequest=SkyFieldWorkerRequest extends infer R?R extends unknown?Omit<R,'ticket'>:never:never;
+async function viaWorker(r:SkyFieldBuildRequest,signal:AbortSignal):Promise<SkyField>{
+ const reply=await ask!({op:'build',request:r} satisfies WorkerRequest,signal);
+ if(!reply.ok)throw new Error(`Sky field build failed: ${reply.kind??'load'}`);
+ return reply.field as SkyField;
+}
+const build:Builder=(r,signal)=>(builder??(ask?viaWorker:buildSkyField))(r,signal);
+
+/** Built fields (a few), so leaving and re-entering a view or the observatory does not rebuild; a pointing change past the cache or
+ * a view change builds anew, as 0x53a40c reloads. The JD a field was built with stays with it (VIREO keeps a loaded field). */
 const built=new Map<string,SkyField>();
-/** The JD is frozen at the first build of a field and kept with it (VIREO keeps a loaded field until it reloads). */
-const keyOf=(r:SkyFieldRequest)=>[r.view,r.anchor.ra,r.anchor.dec,r.telescope,r.view==='finder'?Math.fround(r.finderMagnitudeLimit):'',r.hidden?`${r.hidden.ra},${r.hidden.dec}`:''].join('|');
+type Shared={promise:Promise<SkyField>;controller:AbortController;waiting:number};
+/** One in-flight build per key, shared by its waiting callers. */
+const inflight=new Map<string,Shared>();
+const keyOf=(r:SkyFieldRequest)=>[r.view,r.anchor.ra,r.anchor.dec,r.telescope,r.view==='finder'?Math.fround(r.finderMagnitudeLimit):''].join('|');
 export function clearSkyFieldCache(){built.clear();}
 
-let photographBitmaps:Promise<ReadonlyMap<string,Bitmap8>>|null=null;
-/** Every approved photograph (core/approvedPhotographs.ts: the Object X four and the LSS five). One that cannot be loaded is left
- * out, so only a field that draws it stays photographic-image. */
-function bitmaps():Promise<ReadonlyMap<string,Bitmap8>>{
- photographBitmaps??=(async()=>{
-  const [{APPROVED_PHOTOGRAPHS},{fetchBundledHotList}]=await Promise.all([import('../core/approvedPhotographs'),import('./bundledHotList')]);
-  const signal=new AbortController().signal,out=new Map<string,Bitmap8>();
-  await Promise.all(APPROVED_PHOTOGRAPHS.map(async p=>{try{out.set(p.file,decodeBitmap8((await fetchBundledHotList(fetch,signal,{name:p.file,path:p.path,bytes:p.bytes,sha256:p.sha256})).bytes));}catch{/* left out: its field stays photographic-image */}}));
-  return out;
- })();
- return photographBitmaps;
+function shared(key:string,r:SkyFieldBuildRequest):Shared{
+ let e=inflight.get(key);
+ if(!e){
+  const controller=new AbortController(),promise=build(r,controller.signal).then(f=>{
+   if(inflight.get(key)?.promise===promise){inflight.delete(key);built.set(key,f);while(built.size>4)built.delete(built.keys().next().value!);}
+   return f;
+  },err=>{if(inflight.get(key)?.promise===promise)inflight.delete(key);throw err;});
+  promise.catch(()=>{});
+  e={promise,controller,waiting:0};inflight.set(key,e);
+ }
+ return e;
+}
+/** Waits for the shared build; an abort of this caller rejects its own wait, and cancels the build when nobody else waits. */
+function wait(key:string,e:Shared,signal?:AbortSignal):Promise<SkyField>{
+ if(signal?.aborted)return Promise.reject(new DOMException('Sky field request was cancelled','AbortError'));
+ e.waiting++;
+ return new Promise<SkyField>((resolve,reject)=>{
+  let done=false;
+  const leave=()=>{done=true;signal?.removeEventListener('abort',abort);e.waiting--;};
+  const abort=()=>{if(done)return;leave();if(e.waiting===0&&inflight.get(key)===e){inflight.delete(key);e.controller.abort();}reject(new DOMException('Sky field request was cancelled','AbortError'));};
+  signal?.addEventListener('abort',abort,{once:true});
+  e.promise.then(f=>{if(!done){leave();resolve(f);}},err=>{if(!done){leave();reject(err);}});
+ });
 }
 
-export async function loadSkyField(request:SkyFieldRequest):Promise<SkyField>{
- const variableTime=request.variableTime??frozenObservatoryTime(request.currentJd),r:SkyFieldRequest={...request,...(variableTime?{variableTime}:{})};
- const key=keyOf(r),hit=built.get(key);if(hit){built.delete(key);built.set(key,hit);return hit;}
- const {view,anchor,signal}=r,unavailable=(reason:SkyFieldReason,detail?:string):SkyField=>Object.freeze({status:'unavailable',view,anchor,reason,...(detail?{detail}:{})});
- const step=async()=>{signal?.throwIfAborted();await yieldTask();signal?.throwIfAborted();};
- // The observatory's rule (G4b merge): max(0.62°, the field's farthest corner).
- if(await objectXMasked(r.hidden,anchor,Math.max(OBJECT_X_FIELD_REACH_FLOOR,fieldMaskReach(anchor,HALF[view]))))return unavailable('object-x-hidden');
- await step();
- const pack=await skyFieldPack(anchor,view,signal);
- if(pack.status!=='ready')return unavailable(pack.reason,'detail' in pack?pack.detail:undefined);
- const inputs=await skyFieldInputs();await step();
- let result:SkyField;
- if(view==='finder'){
-  const f=evaluateFinderView(pack.pack,inputs.glx,anchor,r.telescope,{variableDispatch:'recovered',finderMagnitudeLimit:r.finderMagnitudeLimit,...(r.variableTime?{variableTime:r.variableTime}:{}),...(signal?{signal}:{})});
-  result=f.reasons.length||!f.raster||!f.population||!f.scene?unavailable('field-reason',f.reasons[0]??'outside-pack')
-   :Object.freeze({status:'ready',view,anchor,telescope:r.telescope,packId:pack.pack.id,raster:f.raster,population:f.population,scene:f.scene});
- }else{
-  const options:{-readonly [K in keyof FieldOptions]:FieldOptions[K]}={variableDispatch:'recovered',...(r.variableTime?{variableTime:r.variableTime}:{}),...(signal?{signal}:{})};
-  let v=evaluateFieldView(pack.pack,inputs.glx,anchor,r.telescope,options);
-  const retry=async(reason:FieldUnavailableReason)=>{
-   if(reason==='qso-merge'){options.qso='merge';options.qsoCatalog=inputs.qso;}
-   else if(reason==='photographic-image'){options.photographs={rows:nativePhotographRows(inputs.glimages),bitmaps:await bitmaps()};}
-   else return false;
-   await step();v=evaluateFieldView(pack.pack,inputs.glx,anchor,r.telescope,options);return true;
-  };
-  for(let i=0;i<2&&v.reasons.length&&await retry(v.reasons[0]);i++);
-  result=v.reasons.length||!v.raster||!v.population||!v.scene?unavailable('field-reason',v.reasons[0]??'outside-pack')
-   :Object.freeze({status:'ready',view,anchor,telescope:r.telescope,packId:pack.pack.id,raster:v.raster,population:v.population,scene:v.scene});
- }
- signal?.throwIfAborted();
- built.set(key,result);while(built.size>4)built.delete(built.keys().next().value!);
- return result;
+export async function loadSkyField(r:SkyFieldRequest):Promise<SkyField>{
+ const {view,anchor,signal}=r,key=keyOf(r);
+ const reach=Math.max(OBJECT_X_FIELD_REACH_FLOOR,fieldMaskReach(anchor,HALF[view]));
+ const mask=await objectXMaskState(r.hidden,anchor,reach);signal?.throwIfAborted();
+ // Review 1 L2: an unreadable ObjectX.HTL masks (fail closed) with its own reason, not "near a target".
+ if(mask!=='clear')return Object.freeze({status:'unavailable',view,anchor,reason:mask==='near'?'object-x-hidden':'object-x-unreadable'});
+ const hit=built.get(key);if(hit){built.delete(key);built.set(key,hit);return hit;}
+ const variableTime=r.variableTime??frozenObservatoryTime(r.currentJd);
+ return wait(key,shared(key,{view,anchor,telescope:r.telescope,finderMagnitudeLimit:r.finderMagnitudeLimit,...(variableTime?{variableTime}:{})}),signal);
 }

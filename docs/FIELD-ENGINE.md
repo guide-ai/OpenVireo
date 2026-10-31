@@ -98,10 +98,14 @@ When a field is assembled from the compact GSC tiles (Front G), `AssembledFieldE
   - B−V and U−B are stored as 30.0 and the spectral word as 0;
   - the four flag bytes are set to 1. +0x35 and +0x5b are left unwritten [U]; the web stores 0 [W].
 - **Mode 0:** no QSO load or merge; galaxies at min(14, 12) = 12 with the loader 0x59b894, which is 0x598acc without the
-  photograph matcher (colours 30.0, code 0).
+  photograph matcher; its records hold B−V/U−B 30.0 (0x59bca6/0x59bcad) and code 0 (0x59bcb6). They are marked `fsc`, so Catalog
+  Object shows their colours blank, as VIREO does (review 1 M2).
 - **Paint 0x53b058:** 936² over 7.5°; galaxies in list order with stamp set 1 at stored − +0x6f8; stars at cached level (bank
   offset 1) − +0x6f4, where +0x6f4 is the telescope record's +0x38 (finderFactorMag −6/−5/−4). No NGC 224 routine and no
-  photograph. A galaxy whose minor axis rounds to 0 px is listed in `unpaintedGalaxies` [I: it composes nothing].
+  photograph. Every galaxy is drawn, large ones included (VIREO's 0x59456c has no size bound; the web bound for the finder is the
+  468 px half-cache, so M31 at about 185 px is drawn; review 1 M1); only one whose minor axis rounds to 0 px is listed in
+  `unpaintedGalaxies` [I: it composes nothing]. A TRUE-dispatch variable whose values are unavailable types the field with its
+  reason when its stamp reaches the 936² cache, as the telescope view does for its crop (review 1 M3).
 - The pack decoder's variable bound is now 4,000 entries: a finder field across 0 h covers the whole RA ring of a 7.5° band,
   which holds up to 3,483 CLEA_VStrs.dat records (a web bound, not a VIREO limit).
 

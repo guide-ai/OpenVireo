@@ -197,6 +197,8 @@ The original form is TFieldRptForm1 < TClstrRptForm1 < TObjctListForm1 (RECOVERY
 
 All appear in the UI with a one-line explanation (`src/observatory/FieldInfoMessages.ts`):
 - field-polar, field-tiles:<code>, field-unreadable:<code> (Front G; they replace field-not-certified)
+- field-polar-finder (the finder field's ±3.75° folds out of 0–24 h from about |Dec| 89.4°) and object-x-unreadable (ObjectX.HTL could
+  not be read, so the field stays hidden), Front G5 review 1
 - object-x-hidden
 - asteroids-not-modelled
 - population:<engine reason>
