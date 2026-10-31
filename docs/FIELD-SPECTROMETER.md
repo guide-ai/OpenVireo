@@ -76,16 +76,21 @@ Multi-Spec at any pointing (G4b) is described in MULTI-SPEC.md.
   - File name: `field-<locator>.ssp`, using only letters, digits and '-', so the file-name ID keeps the whole locator.
 - **Print.** Uses the shared spectrum print card, so the print header (0x58e860, Front H2) applies once H2 is merged.
 - **Analyze / Classify.** Both read the exposure's own .SSP back as if the student had opened the saved file. Analyze opens it in
-  the spectrum analyser; Classify opens it as an imported spectrum.
+  the spectrum analyser; Classify opens it as an imported spectrum. If the analyser is busy with a file operation, the page
+  says so instead of blaming the spectrum.
 - **Object X.** Preparation masks the field within 2° of every ObjectX.HTL position and of the lab's hidden target. A hidden
   target chosen after the field was prepared masks it from then on, by the same rule. While masked, the page withholds
   everything: the readout, the exposure, CSV/JSON, .SSP, Print, Analyze, Classify, and the field's part of the investigation.
+  The masked field and its exposure are dropped, so lifting the mask brings nothing back; the student uses the pointing again
+  (G4c review 1 L2). This late mask cannot happen today: the lab's hidden target is always an ObjectX.HTL row, which
+  preparation already masks within the same 2°.
 - **Investigation (session v33).**
   - The investigation file holds the field and its exposure in an outermost wrapper around an unchanged v1..32 base.
   - Policy: `openvireo-field-spectrum-investigation-v33`. The part is the standalone exposure-session object, plus a SHA-256 over
     what the replay derives.
   - Restore assembles the field again from the tiles at the policy's pointing, telescope and JD, applies the mask, and replays
-    the journal. An edited, nested or masked part rejects the whole file. A tile or catalogue file that does not arrive is a
-    resource failure.
+    the journal. An edited, nested or masked part rejects the whole file. A tile or catalogue file that does not arrive,
+    including ObjectX.HTL on a page that has not read it yet, is a resource failure (G4c review 1 M1), and the message names
+    no single route.
   - Saving pauses a running exposure.
   - A file without the part keeps its older version and bytes exactly, and restoring it clears the field.
