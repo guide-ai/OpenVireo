@@ -1,8 +1,9 @@
 import {test,expect,type Page} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
+// Re-pinned 2026-10-31 (Front S2 round 3, D2): Classify now opens at VIREO's 3700–4700 Å (the page's one spectrometer range) instead of 3900–4500 Å; windows, readings and tick positions follow that view.
 const surface=(p:Page)=>p.getByTestId('feature-cursor-surface');
 async function open(page:Page){await page.goto('/#classification');await expect(page.getByRole('button',{name:'Review classification',exact:true})).toBeEnabled();await page.getByText('Mark a feature on the curve',{exact:true}).click();}
-async function location(page:Page,wavelength:number,intensity:number){return surface(page).evaluate((rect,{wavelength,intensity})=>{const target=rect as SVGRectElement,q=new DOMPoint(60+(wavelength-3900)/600*860,306-intensity*250).matrixTransform(target.getScreenCTM()!);return{x:q.x,y:q.y};},{wavelength,intensity});}
+async function location(page:Page,wavelength:number,intensity:number){return surface(page).evaluate((rect,{wavelength,intensity})=>{const target=rect as SVGRectElement,q=new DOMPoint(60+(wavelength-3700)/1000*860,306-intensity*250).matrixTransform(target.getScreenCTM()!);return{x:q.x,y:q.y};},{wavelength,intensity});}
 async function mark(page:Page,wavelength:number,intensity:number){await surface(page).scrollIntoViewIfNeeded();const p=await location(page,wavelength,intensity);await page.mouse.click(p.x,p.y);}
 async function save(page:Page,name:string){const event=page.waitForEvent('download');await page.getByRole('button',{name,exact:true}).click();return readFile((await(await event).path())!);}
 async function expectNumber(page:Page,label:string,value:number,tolerance:number){await expect.poll(async()=>Math.abs(Number(await page.getByLabel(label,{exact:true}).inputValue())-value)).toBeLessThan(tolerance);}

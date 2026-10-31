@@ -1,6 +1,6 @@
 import {diagnosticError} from '../core/diagnostics';
 import template from '../../data/hubble/galaxy-source.json';
-import {galaxyTelescopeIndex,deactivateGalaxy,galaxyStateDefinition,verifiedGalaxyConfiguration,type GalaxyState} from '../core/galaxyExposure';
+import {galaxyTelescopeIndex,deactivateGalaxy,galaxyStateDefinition,galaxySpectralRange,verifiedGalaxyConfiguration,type GalaxyState} from '../core/galaxyExposure';
 import {parseGalaxySession,serializeGalaxySession,galaxySessionIdentityText} from './galaxySession';
 import {galaxySpectrumBytes} from '../core/exposureSpectrum';
 import {parseSpectrum,type Sample} from '../core/spectrum';
@@ -19,7 +19,7 @@ async function build(state:GalaxyState,journalText:string):Promise<GalaxyObserva
  // Retain the existing headerless curve identity for linked measurements and
  // sessions. Native SSP export uses the same full recovered save profile.
  const sourceText=new TextDecoder().decode(saved).split('\r\n').slice(1).join('\r\n');
- const samples=Object.freeze(parseSpectrum(sourceText).map(p=>Object.freeze(p))),sha256=await digest(sourceText);verifiedGalaxyConfiguration(GALAXY_TARGET.id,galaxyTelescopeIndex(state));
+ const samples=Object.freeze(parseSpectrum(sourceText).map(p=>Object.freeze(p))),sha256=await digest(sourceText);verifiedGalaxyConfiguration(GALAXY_TARGET.id,galaxyTelescopeIndex(state),galaxySpectralRange(state));
  return Object.freeze({kind:'catalog-galaxy-acquisition',targetId:GALAXY_TARGET.id,name:`catalog-galaxy-${GALAXY_TARGET.id==='36773'?'':GALAXY_TARGET.id+'-'}${acquisitionId.slice(0,12)}.sp`,sha256,samples,sourceText,acquisitionId,journalText,state,templateSamples:Object.freeze(template.samples.map(([wavelength,intensity])=>Object.freeze({wavelength,intensity})))});
 }
 export async function createGalaxyObservation(input:GalaxyState):Promise<GalaxyObservation>{
