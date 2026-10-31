@@ -1,3 +1,4 @@
+import '../focusAfterLayout';// Front WebKit QA: focus() after layout (these components also mount their own roots)
 import {memo,useEffect,useLayoutEffect,useMemo,useRef,useState,type ChangeEvent,type KeyboardEvent,type MouseEvent as ReactMouseEvent,type MutableRefObject,type PointerEvent as ReactPointerEvent,type RefObject,type SyntheticEvent} from 'react';
 import { pulsarAnalysisSnapshot, type PulsarAnalysisSnapshot, type RadioSnapshotResult } from '../core/radioInvestigation';
 import { flushSync } from 'react-dom';

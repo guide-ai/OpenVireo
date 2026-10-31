@@ -13,7 +13,10 @@ export function usePopupMenu(){
  const open=(e:ReactMouseEvent)=>{e.preventDefault();const r=(e.currentTarget as HTMLElement).getBoundingClientRect();
   // A keyboard-opened menu (no pointer position) opens at the list's top-left corner.
   setAt(e.clientX||e.clientY?{x:e.clientX,y:e.clientY}:{x:r.left+8,y:r.top+8});};
- return {at,open,close:()=>setAt(null)};
+ // Front WebKit QA (cause 2): WebKit treats a right-button auxclick on a <label> like a click and activates its control (for
+ // example a list row's radio), which takes focus out of the menu just opened. Hosts cancel it.
+ const auxClick=(e:ReactMouseEvent)=>{if(e.button===2)e.preventDefault();};
+ return {at,open,close:()=>setAt(null),auxClick};
 }
 export default function PopupMenu({at,items,label,onClose,returnFocus,note}:{at:PopupAt|null;items:readonly PopupMenuItem[];label:string;onClose:()=>void;returnFocus?:()=>void;note?:ReactNode}){
  const ref=useRef<HTMLDivElement>(null);

@@ -4,7 +4,7 @@ import {
  INITIAL_RADIO_LAB,NOTICE_BUTTONS,RADIO_COMPILED_ENVIRONMENT,RADIO_COMPILED_OPTIONS,RADIO_LAB_CAPTIONS,RADIO_LAB_CONSTANTS,SKY_COORDS_CAPTIONS,
  SKY_COORDS_FIELD_MAX_LENGTH,activateRadioLab,answerNotice,cancelSkyCoords,changeSlewRate,confirmSkyCoords,editSkyCoordsField,formatFixed,
  isRadioLabOptions,isSupportedRadioLabProfile,nearestBinary64,normalizeRaHours,openSetCoordinates,parseDelphiFloat,parseExactDecimal,parseSkyCoords,
- radioClockTick,radioLabProfileIssues,radioLabRateIssues,radioLabTickRefusal,roundHalfEven,selectSkyCoordsEpoch,skyCoordsDraftTarget,skyCoordsFieldsFor,skyCoordsPrefillMinusLost,slewRateFor,slewTimerTick,splitSexagesimal,toggleTracking,valueSign,
+ radioClockTick,radioLabProfileIssues,radioLabRateIssues,radioLabTickRefusal,roundHalfEven,selectSkyCoordsEpoch,skyCoordsDraftTarget,skyCoordsFieldsFor,skyCoordsPrefillMinusLost,slewRateFor,slewTimerOwns,slewTimerTick,splitSexagesimal,toggleTracking,valueSign,
  RADIO_WEB_OPTION_PROFILE,SKY_COORDS_WEB_DOMAIN,
  MANUAL_DIRECTIONS,MANUAL_DIRECTION_CODE,RADIO_LAB_POLE_CAPTIONS,RADIO_MANUAL_WEB_DOMAIN,heldManualDirection,manualButtonCaption,manualButtonEnabled,manualSlewTick,
  pressManualSlew,radioLabManualRefusal,radioLabManualTickRefusal,releaseManualSlew,releaseManualSlewThrough,
@@ -358,6 +358,15 @@ describe('RA-10/RA-11 programmed slew (independent tick counts)',()=>{
   expect(state).toMatchObject({pointing:{ra:3,dec:20},slewing:false,slewTimerEnabled:false,manualButtonsEnabled:true,rateSpinEnabled:true,status:'none',notice:{kind:'slew-complete'},rateIndex:5,phase:2});
   expect(track(slewTimerTick(state,O,state.slewRun)).outcome).toBe('slew-timer-idle');
   expect(track(answerNotice(state,O,'slew-complete','ok')).state.notice).toBeNull();
+ });
+ it('Front WebKit QA (cause 4): a callback owns the slew only while the working state keeps its run enabled; after the arrival it does not reach the idle tick',()=>{
+  const s=slewTo(at(1,10),fields('3','0','0','20','0','0'));
+  expect(slewTimerOwns(s,s.slewRun)).toBe(true);expect(slewTimerOwns(s,s.slewRun+1)).toBe(false);
+  expect(slewTimerOwns(null,s.slewRun)).toBe(false);expect(slewTimerOwns(undefined,s.slewRun)).toBe(false);
+  const {state,outcomes}=runSlew(s);expect(outcomes.at(-1)).toBe('slew-complete');
+  // The arrival disabled the timer in the working state: a further callback of that run is not delivered, so the
+  // idle outcome slewTimerTick would give cannot replace the completion.
+  expect(slewTimerOwns(state,s.slewRun)).toBe(false);expect(track(slewTimerTick(state,O,s.slewRun)).outcome).toBe('slew-timer-idle');
  });
  it('B: crosses 0 h the short way (|ΔRA| > 12 h negated) and normalizes each tick',()=>{
   const {state,outcomes}=runSlew(slewTo(at(23.9,0),fields('0','6','0','0','0','0')));
