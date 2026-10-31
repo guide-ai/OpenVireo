@@ -19,7 +19,7 @@ import type {ClassificationImport} from './core/classificationImport';
 import type {ExposureWorkspace} from './core/observingWorkspace';
 import {FieldSpectrumSave} from './observatory/RouteSpectrumSave';
 import SpectrometerReadout,{useSpectrometerObject,type SpectrometerObject} from './observatory/SpectrometerReadout';
-import type {SpectrometerReadoutOptions} from './core/currentObject';
+import {fieldSpectrometerSkyReading,type SpectrometerReadoutOptions} from './core/currentObject';
 import {fieldSpectrumFailure,fieldSpectrumHiddenMasked,type FieldSpectrumShown} from './io/fieldSpectrumFailure';
 
 /** Front G (G4a, analysis/front-plans/front-g-gsc.md §11): VIREO's single-slit spectrometer wherever the telescope points. The
@@ -131,7 +131,9 @@ export default function FieldSpectrometer({link}:{link:FieldSpectrometerLink}){
  const same=!!ready&&ready.pointing.ra===link.pointing.ra&&ready.pointing.dec===link.pointing.dec&&ready.telescope===link.telescope;
  const access=instrumentAccess({...link.gate,configurationAvailable:true,pointingMatches:same});
  // Front R4d: the current object at the prepared pointing (VIREO refreshes it at FormActivate; here at Use) for the boxes and Save.
- const current=useSpectrometerObject(ready&&link.active?ready.pointing:null,'object');
+ // Review 1 M1: an empty slit (throughput 0x50f338 = 0) is VIREO's sky reading (0x50db1a): `Sky`, no magnitude, nothing looked up.
+ const sky=fieldSpectrometerSkyReading(ready?.result);
+ const current=useSpectrometerObject(ready&&link.active?ready.pointing:null,sky?'sky':'object');
  const r=ready?.result,kind=r?kindOf(r):null,object=r?.qsoTarget??r?.starTarget??r?.target??null;
  return <section className="card field-spectrometer" aria-labelledby="field-spec-title" data-testid="field-spectrometer">
   <h2 id="field-spec-title">{t('fieldSpec.title')}</h2><p>{t('fieldSpec.help')}</p>
@@ -145,7 +147,7 @@ export default function FieldSpectrometer({link}:{link:FieldSpectrometerLink}){
   {shown?.status==='unavailable'&&<p role="status" data-testid="field-spec-status" data-reason={shown.reason}>{shown.reason==='range-not-witnessed'?SR.notWitnessed:shown.reason==='internal'?t('fieldSpec.internalError'):shown.reason==='object-x-hidden'||shown.reason==='load-error'?fieldInfoReasonText(shown.reason):fieldInfoReasonText(shown.reason,'detail' in shown?shown.detail??'':'')}</p>}
   {ready&&<div data-testid="field-spec-field" data-kind={kind??'none'}>
    <p>{t('fieldSpec.field',{ra:ready.pointing.ra,dec:ready.pointing.dec,telescope:ready.telescope})}</p>
-   <SpectrometerReadout object={current.object} options={current.options}/>
+   <SpectrometerReadout object={current.object} options={current.options} sky={sky}/>
    <p data-testid="field-spec-object">{object?t('fieldSpec.object',{kind:t(`fieldSpec.kind.${kind!}`),id:object.id,magnitude:scientific(object.magnitude,4,true)}):t('fieldSpec.noObject')}</p>
    {r!.calibration&&<p>{t('lss.exposure.slit',{level:r!.calibration.pixelLevel,fraction:scientific(r!.calibration.fraction,6,true)})}</p>}
    {r!.reasons.length>0&&<p role="status" data-testid="field-spec-reasons" data-reasons={r!.reasons.join(' ')}>{t('fieldSpec.reasons',{reasons:r!.reasons.map(x=>t(`fieldSpec.reason.${x}` as 'fieldSpec.reason.slit-empty')).join('; ')})}</p>}

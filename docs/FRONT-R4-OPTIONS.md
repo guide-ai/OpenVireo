@@ -92,11 +92,14 @@ pointed at exactly showed its real ID; it now prefills nothing (e2e).
 Plan: `analysis/front-plans/front-r4d.md`.
 
 **What VIREO does** [D] (dossier A §1, show-object-id §1b):
-- TSpectrometer.FormActivate 0x50dac4 refreshes the current object. 0x50df64 then fills:
+- TSpectrometer.FormActivate 0x50dac4 refreshes the current object and sets the sky flag +0x416 when there is no object or its
+  throughput 0x50f338 is exactly 0 (0x50db1a..0x50db2d): a star or QSO more than 0.00028 h in RA or 0.0064° in Dec from the
+  pointing, or a galaxy at slit level 0. A sky reading's object is `Sky`, kind 4. 0x50df64 then fills:
   - IDText, visible only with Show Object ID: `Sky`, or the name padded to 13;
   - MagText, visible with Show Object Mag or Edit Mode: V with 2 decimals padded to 6, or '' for a sky reading.
-- Save 0x50fb1c: the default name is the name + `.SSP` with the option on.
-- Print 0x510294: `Object: ` and `Apparent Magnitude (V): ` lines.
+- Save 0x50fb1c: the default name is the name + `.SSP` with the option on (`Sky.SSP` for a sky reading).
+- Print 0x510294: a sky reading prints `Reading Sky` whatever the options; an object reading prints the `Object: ` line
+  (_PStrNCat, at most 32 characters on the whole line) and the `Apparent Magnitude (V): ` line.
 - The .SSP header 0x510090 is **not** an option reader: it always carries the object name and V.
 
 **Web:**
@@ -115,14 +118,23 @@ Plan: `analysis/front-plans/front-r4d.md`.
 - **[W] Refresh:** on route activation and when the route's pointing changes (VIREO: FormActivate).
   - Star, galaxy and LSS look up at the target or row position. The field spectrometer looks up at its prepared pointing.
   - The object is 0x59a0fc's nearest object there, in the 936-px/0.75° frame, as for Add Current.
+- **Sky reading** (review 1 M1): the field spectrometer is a sky reading when the field engine reports `slit-empty`, which it
+  does exactly when 0x50f338 gives 0 for the slit object it selected (the same 0x59a0fc object). The boxes then show `Sky` and
+  an empty magnitude, and nothing is looked up. The sky route is always a sky reading (print `Reading Sky`). The star, galaxy
+  and LSS routes point exactly at their target, so their slit is never empty.
+- **[W] No object or an unresolved tie:** the Object box shows 13 blanks. VIREO copies the record from the nil pointer at
+  0x50df98 and faults, so it has no defined display. The tie stays unresolved because the current-object lookup has no
+  throughput; on the field route it only appears where the engine itself resolved the slit object.
+- **[W] Live visibility:** the boxes follow the options at once; VIREO sets their visibility at FormShow [I].
 - **[W] The routes keep their own labelled web readouts** (the field spectrometer's "nearest object, selected by the slit", the
   route headings). The VIREO boxes are added beside them.
 - **Save default name** (`spectrometerDefaultFileName`):
-  - Show Object ID on with a named object: `Name.SSP`.
+  - Show Object ID on with a named object: `Name.SSP` (`Sky.SSP` for a sky reading); `\ / : * ? " < > |` become `_`, as in
+    Multi-Spec, and a name outside printable ASCII keeps the web name.
   - Otherwise the route's web name, unchanged. So the compiled default saves byte-identical names, and the bytes never depend on
     the options.
   - [W] VIREO's off form (`UNKNOWN.SSP` / `ObjX-<ID>.SSP`) is not adopted, because the web names carry the Classify file-name ID.
-- **Print:** the printout adds `spectrometerPrintLines` under VIREO's header.
+- **Print:** the printout adds `spectrometerPrintLines` under VIREO's header (`Reading Sky` on a sky reading, with any options).
 - **Classify / Analyze hand-off, CSV and JSON sessions:** unchanged. [W] The hand-off keeps the web file names, so Observational
   Data IDs do not move.
 - **Multi-Spec:** reads the context's two options. The masked rule is unchanged: Show Object ID is ignored while Object X

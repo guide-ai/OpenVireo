@@ -73,7 +73,9 @@ describe('readers',()=>{
   expect(spectrometerSaveName(on,clear,'')).toBe('N2230-01732.SSP');expect(spectrometerSaveName(off,clear,'17')).toBe('ObjX-17.SSP');
   expect(spectrometerPrintLines(on,false,clear)).toEqual(['Object: N2230-01732','Apparent Magnitude (V): 7.12']);
   expect(spectrometerPrintLines(edit,false,clear)).toEqual(['Apparent Magnitude (V): 7.12']);
-  expect(spectrometerPrintLines(on,false,hidden)).toEqual([]);expect(spectrometerPrintLines(on,true,clear)).toEqual([]);
+  expect(spectrometerPrintLines(on,false,hidden)).toEqual([]);expect(spectrometerPrintLines(on,true,clear)).toEqual(['Reading Sky']);
+  // Review 1 M1: a sky reading prints `Reading Sky` whatever the options (0x5108cf → 0x510dc4).
+  expect(spectrometerPrintLines({showObjectId:false,showObjectMag:false,editMode:false},true,{status:'none'})).toEqual(['Reading Sky']);
  });
  it('Add Current (0x53f0fc): ID the name, remark the kind word only with no exercise; hidden or none prefill nothing',()=>{
   expect([addCurrentId(clear),addCurrentRemark(clear,0),addCurrentRemark(clear,4)]).toEqual(['N2230-01732','Star','']);

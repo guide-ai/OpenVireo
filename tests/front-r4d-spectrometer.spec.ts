@@ -62,6 +62,29 @@ test('sky route: the Object box reads Sky and the magnitude box is empty',async(
  await expect(page.getByTestId('spec-readout-id')).toHaveText('Sky');await expect(page.getByTestId('spec-readout-mag')).toHaveText('');
 });
 
+// Review 1 M1: VIREO reads the sky when the slit object's throughput 0x50f338 is 0 (0x50db1a). 0.001 h east of N0000.DAT@63282
+// (beyond 0.00028 h) the engine reports slit-empty for that star: the boxes read Sky and an empty magnitude, not its name and V.
+async function pointAndUse(page:Page,ra:string,dec:string){
+ if(!await page.locator('#point-ra').isVisible())await page.getByText('Enter coordinates',{exact:true}).click();
+ await page.locator('#point-ra').fill(ra);await page.locator('#point-dec').fill(dec);await page.getByRole('button',{name:'Point to coordinates',exact:true}).click();
+ await page.getByRole('button',{name:/^Telescope/}).click();
+ if(!await page.getByRole('button',{name:'Turn tracking on',exact:true}).isVisible())await page.getByText('Observatory clock & spectral tracking',{exact:true}).click();
+ if(await page.getByRole('button',{name:'Turn tracking on',exact:true}).isVisible())await page.getByRole('button',{name:'Turn tracking on',exact:true}).click();
+ await page.evaluate(()=>{location.hash='spectrometer';});await expect(page.getByTestId('field-spectrometer')).toBeVisible({timeout:30_000});
+ await expect(page.getByTestId('field-spec-use')).toBeEnabled({timeout:20_000});await page.getByTestId('field-spec-use').click();
+}
+test('field spectrometer: a star outside the slit is a sky reading (Sky, no magnitude); in the slit it is named',async({page})=>{
+ await page.goto('/#observatory');await setVireoOptions(page,{'show-object-id':true,'show-object-mag':true});
+ await pointAndUse(page,'2.5135473','0.25592');
+ await expect(page.getByTestId('field-spec-reasons')).toHaveAttribute('data-reasons','slit-empty',{timeout:90_000});
+ await expect(page.getByTestId('field-spec-object')).toContainText('N0000.DAT@63282');
+ await expect(page.getByTestId('spec-readout-id')).toHaveText('Sky');await expect(page.getByTestId('spec-readout-mag')).toHaveText('');
+ await page.evaluate(()=>{location.hash='observatory';});await expect(page.getByRole('heading',{name:'Start with the sky.',exact:true})).toBeVisible({timeout:15_000});
+ await pointAndUse(page,'2.5125473','0.25592');
+ await expect(page.getByTestId('field-spec-reasons')).not.toHaveAttribute('data-reasons',/slit-empty/,{timeout:90_000});
+ await expect(page.getByTestId('spec-readout-id')).toHaveText(/^ *N0000-01634$/,{timeout:60_000});await expect(page.getByTestId('spec-readout-mag')).toHaveText(/^ *6\.00$/);
+});
+
 test('Object X: at all 17 targets, with both options on, the boxes, Save name and header, print, CSV and Classify name nothing',async({page})=>{
  await page.goto('/#object-x');await expect(page.getByRole('heading',{name:'The quest for Object X'})).toBeVisible();
  const codes=await page.evaluate(`(async()=>{const lab=await import('/src/core/objectXLab.ts'),hl=await import('/src/core/hotList.ts');
@@ -104,7 +127,7 @@ test('Object X: at all 17 targets, with both options on, the boxes, Save name an
   await expect(async()=>{const t=await page.getByTestId('objectx-spectrum-progress').textContent();expect(Number(/total counts (\d+)/.exec(t??'')?.[1]??0)).toBeGreaterThan(0);}).toPass({timeout:20_000});
   const stop=button(page,'Stop spectrum');if(await stop.isEnabled())await stop.click();await expect(stop).toBeDisabled();
   await button(page,'Classify this spectrum').click();await expect(page).toHaveURL(/#classification$/);
-  const main=page.locator('main.classification-main');await expect(page.getByRole('button',{name:'Review classification',exact:true})).toBeEnabled();
+  const main=page.locator('main.classification-main');await expect(page.getByRole('button',{name:'Review classification',exact:true})).toBeEnabled({timeout:30_000});
   const text=await main.evaluate(n=>n.innerHTML+' '+n.textContent);expect(text).toContain('ObjX-7.ssp');
   expect(SECRETS.filter(s=>word(s).test(text))).toEqual([]);expect(text).not.toMatch(/\.DAT@/);
   await button(page,'Open observation results').click();await expect(page.getByTestId('observation-object')).toHaveText('ObjX-7');

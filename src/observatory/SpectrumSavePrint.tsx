@@ -32,8 +32,8 @@ export function SpectrumSaveCard({source,active}:{source:SpectrumSaveSource;acti
  useEffect(()=>{if(!active)release.current?.();},[active]);
  useEffect(()=>()=>release.current?.(),[]);
  const {bytes,usable,current}=source,shown=current&&current.object!=='pending'?current.object:null;
- const fileName=current?spectrometerDefaultFileName(current.options,shown,source.fileName):source.fileName;
- const objectLines=current&&shown?spectrometerPrintLines(current.options,!!current.sky,shown):[];
+ const fileName=current?spectrometerDefaultFileName(current.options,shown,source.fileName,!!current.sky):source.fileName;
+ const objectLines=current&&(shown||current.sky)?spectrometerPrintLines(current.options,!!current.sky,shown??{status:'none'}):[];
  const printOnly=!bytes&&!!source.printSamples?.length;
  const samples=useMemo(()=>bytes?parseSpectrum(new TextDecoder().decode(bytes).split('\r\n').slice(1).join('\r\n')):source.printSamples??[],[bytes,source.printSamples]);
  function save(){
