@@ -1,3 +1,4 @@
+import {DEFAULT_SPECTRAL_RANGE,type SpectralRange} from './core/spectralRange';
 import type {ClassificationImport} from './core/classificationImport';
 import {memo,useEffect,useMemo,useRef,useState,type MutableRefObject} from 'react';
 import './objectx.css';
@@ -39,6 +40,7 @@ type Props=Readonly<{
  clockApplied:string;
  /** Position of the chosen target while its identity is hidden, else null (instruments hide names near it). */
  onHiddenTarget:(target:ObjectXHiddenTarget|null)=>void;
+ /** Front S2: the page's one spectrometer range and its setter (stable). */spectralRange?:SpectralRange;onSpectralRange?:(r:SpectralRange)=>void;
 }>;
 const EMPTY:ObjectXInvestigation=Object.freeze({orbitFile:DEFAULT_ORBIT_FILE,id:'',target:null,startUtc:OBJECT_X_DEFAULT_UTC,clockSet:false,listJd:null,limit:DEFAULT_LIMITING_MAGNITUDE,
  exposures:[],images:[],measure:null,log:[],answer:null,description:'',revealed:false});
@@ -53,7 +55,7 @@ type Loaded=Readonly<{frame:MeasureFrame;bytes:Uint8Array}>;
 type ListState=Readonly<{list:ObservableList;orbitFile:BundledOrbitFileId;limit:number}>;
 
 /** E08 #object-x route: hidden-identity object, the three instrument branches, images, blink/measure, answer and reveal. */
-function ObjectXLab({onClassifySpectrum,active,busy,clockUtc,clockApplied,onSetClock,onPrefill,onOpenRadio,controllerRef,restored,onSnapshot,onSummary,onHiddenTarget}:Props){
+function ObjectXLab({spectralRange=DEFAULT_SPECTRAL_RANGE,onSpectralRange,onClassifySpectrum,active,busy,clockUtc,clockApplied,onSetClock,onPrefill,onOpenRadio,controllerRef,restored,onSnapshot,onSummary,onHiddenTarget}:Props){
  const [inv,setInv]=useState<ObjectXInvestigation>(restored??EMPTY);
  const [htl,setHtl]=useState<HtlList|null>(null),[htlError,setHtlError]=useState(false);
  const [dateText,setDateText]=useState(inv.startUtc),[notice,setNotice]=useState('');
@@ -214,8 +216,8 @@ function ObjectXLab({onClassifySpectrum,active,busy,clockUtc,clockApplied,onSetC
     </section>
     <section data-testid="objectx-branch-radio"><h3>{M.radioTitle}</h3><p>{M.radioHelp}</p>
      <div className="button-row"><button className="secondary-button" disabled={disabled} onClick={onOpenRadio}>{M.openRadio}</button></div></section>
-    <ObjectXSpectrum active={active} revealed={inv.revealed} onClassify={onClassifySpectrum} target={target} label={objectXDataLabel(inv.id)} disabled={disabled} spectra={inv.spectra??[]} pointingOf={code=>targets.find(t=>t.code===code)??null} onKeep={r=>update(i=>({...i,spectra:[...(i.spectra??[]),r]}))}/>
-    <MultiSpecObjectXLazy htl={htl} target={target} revealed={inv.revealed} label={objectXDataLabel(inv.id)} disabled={disabled} currentJd={()=>jdOfUtc(clockUtc())}/>
+    <ObjectXSpectrum spectralRange={spectralRange} onSpectralRange={onSpectralRange} active={active} revealed={inv.revealed} onClassify={onClassifySpectrum} target={target} label={objectXDataLabel(inv.id)} disabled={disabled} spectra={inv.spectra??[]} pointingOf={code=>targets.find(t=>t.code===code)??null} onKeep={r=>update(i=>({...i,spectra:[...(i.spectra??[]),r]}))}/>
+    <MultiSpecObjectXLazy spectralRange={spectralRange} htl={htl} target={target} revealed={inv.revealed} label={objectXDataLabel(inv.id)} disabled={disabled} currentJd={()=>jdOfUtc(clockUtc())}/>
    </div>
   </section>
 

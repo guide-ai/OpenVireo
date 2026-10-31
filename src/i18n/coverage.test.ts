@@ -48,7 +48,9 @@ describe('P01 complete authored presentation catalog and interpolation contract'
   // 74: LssLabGuide.tsx adds the E02 guide; it renders only catalog messages and counts.
   // 73: LssSurvey.tsx, LssAcquisition.tsx and LssMeasurement.tsx add the E02 survey route; they render only catalog messages and data fields, so the receipt map is unchanged.
   // 70: Front B adds eight optical observatory views under src/observatory (their strings come from ObservatoryMessages.ts or recovered core literals). 62: OwnObservationResults.tsx adds the phase-1 own results card (61 added ClassificationLineTable.tsx and ClassificationLabGuide.tsx; 59 included PleiadesLabGuide.tsx); it renders only catalog messages, data fields and an em dash, so the reviewed literal receipt map remains unchanged.
-  const audit=auditUi(root);expect(audit.files.length).toBe(127);const actual=new Map<string,number>();for(const s of audit.sites){const key=JSON.stringify([s.file,s.kind,s.value]);actual.set(key,(actual.get(key)??0)+1);}
+  // 128: Front S2 adds src/SpectralRangeRow.tsx (the spectrometer range row on the sky, Object X and field spectrometer routes); its strings come from src/SpectralRangeMessages.ts or the recovered TSpecRangeDlg literals (core/spectralRange.ts).
+  // 131: Front R4b adds src/CameraInformationList.tsx, src/CameraInformationButton.tsx and src/polish/InfoListPrintPreview.tsx (the TInfoListForm1 list and print page); their strings come from the recovered literals (core/cameraInformation.ts, core/variableFieldLiterals.ts), src/camera/CameraMessages.ts or src/polish/PolishMessages.ts.
+  const audit=auditUi(root);expect(audit.files.length).toBe(131);const actual=new Map<string,number>();for(const s of audit.sites){const key=JSON.stringify([s.file,s.kind,s.value]);actual.set(key,(actual.get(key)??0)+1);}
   const expected=new Map(receipts.map(r=>[JSON.stringify([r.file,r.kind,r.value]),r.count]));expect(actual).toEqual(expected);expect(receipts.every(r=>r.reason.length>30)).toBe(true);
  });
  it('sources browser title/description from the same English catalog and escapes them as text',()=>{

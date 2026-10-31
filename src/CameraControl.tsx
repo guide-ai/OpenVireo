@@ -17,6 +17,7 @@ import {cameraCatalogReference} from './core/cameraCatalogReference';
 import type {OpticalIndex} from './core/opticalTelescope';
 import type {Pointing} from './core/sky';
 import CleaHelp from './clusters/CleaHelp';
+import CameraInformationButton from './CameraInformationButton';// Front R4b
 import {HELP_FILES} from './help/helpFiles';
 import CameraFieldSize from './polish/CameraFieldSize';// Front P
 import {cameraFieldInputs,ccdFilterByte,setCcdFilterByte,type CameraFieldInputs} from './camera/cameraFieldInputs';// Front R2
@@ -72,6 +73,8 @@ function CameraControl({objectXHidden=null,vireoId='',showObjectId=false,current
  const [gate,setGate]=useState<CameraRequestGate>(createCameraRequestGate),[message,setMessage]=useState<string>(M.statusIdle),[,setWaitShown]=useState(false);
  const [image,setImage]=useState<CameraImage|null>(null),[saveError,setSaveError]=useState('');
  const imageRef=useRef(image);useEffect(()=>{imageRef.current=image;},[image]);
+ // RE5 review 1 L-c: a save alert belongs to the image and ID it was about; a new image or ID clears it (and a start, below).
+ useEffect(()=>{setSaveError('');},[image,vireoId]);
  const gateRef=useRef(gate),attempt=useRef<Attempt|null>(null),timers=useRef<{observe?:number;poll?:number}>({}),canvas=useRef<HTMLCanvasElement>(null);
  const mounted=useRef(true);useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;stopTimers();attempt.current?.controller.abort();stopWorker(attempt.current);};},[]);
  function stopTimers(){if(timers.current.observe)clearInterval(timers.current.observe);if(timers.current.poll)clearInterval(timers.current.poll);timers.current={};}
@@ -155,6 +158,8 @@ function CameraControl({objectXHidden=null,vireoId='',showObjectId=false,current
   // CCD Go 0x5126c1 stores the filter byte (form+0x405) before the preparation check 0x512244 can refuse the Go (closure L5).
   if(camera==='ccd')setCcdFilterByte(filter);
   if(mode==='static'&&!staticCovered){setMessage(`${M.statusFailed} ${M.failure['no-extract']}`);return;}
+  // F3 review 1 I4: a save alert belongs to the image it was about, so a new exposure clears it when it starts.
+  setSaveError('');
   const jd=currentJd(),seed=seedSource()>>>0;
   attempt.current=null;
   const transition=cameraRequestTransition(gateRef.current,{type:'start',seconds:total});
@@ -194,7 +199,7 @@ function CameraControl({objectXHidden=null,vireoId='',showObjectId=false,current
  function chooseCamera(next:CameraExposureKind){if(next===camera)return;setCamera(next);setFilter(0);if(!CAMERA_GAINS[next].includes(gain))setGain(2);}
  useEffect(()=>{if(!infraredCamera&&camera==='ir'&&!running)chooseCamera('ccd');},[infraredCamera,camera,running]);
  return <section className="card camera-control" aria-labelledby="camera-control-title" data-testid="camera-control" data-phase={gate.phase} data-terminal={gate.terminal}>
-  <div className="eyebrow">{M.eyebrow}</div><h2 id="camera-control-title">{camera==='ir'?M.titleIr:M.title}</h2>{/* TCCDCam 0x5130fc / TIRCam 0x51512c Help1Click; options +0x9a4 and +0x9ec both default CamHlp.LST (docs/CLEA-HELP.md) */}<CleaHelp list={HELP_FILES['CAMHLP.LST']} testId="camera-help"/><p>{camera==='ir'?M.introIr:M.intro}</p>
+  <div className="eyebrow">{M.eyebrow}</div><h2 id="camera-control-title">{camera==='ir'?M.titleIr:M.title}</h2>{/* TCCDCam 0x5130fc / TIRCam 0x51512c Help1Click; options +0x9a4 and +0x9ec both default CamHlp.LST (docs/CLEA-HELP.md) */}<CleaHelp list={HELP_FILES['CAMHLP.LST']} testId="camera-help"/>{/* Front R4b: File › Information... (TCCDCam 0x512c80 / TIRCam 0x514cb0) */}<CameraInformationButton kind={camera} disabled={busy}/><p>{camera==='ir'?M.introIr:M.intro}</p>
   <fieldset className="camera-settings" disabled={running||busy}>
    <fieldset className="camera-kind"><legend>{M.camera}</legend>
     {/* R3 review L3: a running IR exposure keeps its radio until it ends, then the effect above returns to the CCD. */(infraredCamera||camera==='ir'?['ccd','ir'] as const:['ccd'] as const).map(k=><label key={k}><input type="radio" name="camera-kind" checked={camera===k} onChange={()=>chooseCamera(k)}/>{M.cameraNames[k]}</label>)}

@@ -30,10 +30,13 @@ describe('LSS field packs reproduce the independent witnesses for every row',()=
    expect(q.variables.map(v=>v.recordIndex)).toEqual(p.variables);expect(q.qsoMatches).toEqual(p.qso);expect(q.photographMatches).toEqual(p.photographs);
   }
  });
- it('re-derives the acquirable rows per telescope without a variable time (0.4 m 187, 0.9 m 93, 4 m 189 of 219 with the Front L2 QSO merge; 157/86/158 under the QSO gate, 140/76/141 before the Front T TRUE dispatch, 129/69/130 before the recovered variable dispatch)',()=>{
-  const counts=[0,0,0],mapped:string[]=[];
-  for(let f=1;f<=9;f++){const pack=packWithPhotographs(decodeFieldPack(JSON.parse(raw(f).toString())),photographs);for(const row of lssFieldRows(f as LssFieldNumber))for(const t of [0,1,2] as const){const s=evaluateLssRow(pack,glx,row,t,spectra);if(s.kind!=='unavailable')counts[t]++;else if(s.reasons.includes('spectrum-mapping')){counts[t]++;mapped.push(`${row.id}@${t}`);}}}
-  expect(counts).toEqual([187,93,189]);
+ it('re-derives the acquirable rows per telescope without a variable time (0.4 m 196, 0.9 m 93, 4 m 198 of 219 with the Front F3 photographs; 187/93/189 before them, with the Front L2 QSO merge; 157/86/158 under the QSO gate, 140/76/141 before the Front T TRUE dispatch, 129/69/130 before the recovered variable dispatch)',()=>{
+  const counts=[0,0,0],mapped:string[]=[],photographic:string[]=[];
+  for(let f=1;f<=9;f++){const pack=packWithPhotographs(decodeFieldPack(JSON.parse(raw(f).toString())),photographs);for(const row of lssFieldRows(f as LssFieldNumber))for(const t of [0,1,2] as const){const s=evaluateLssRow(pack,glx,row,t,spectra);if(s.kind!=='unavailable')counts[t]++;else if(s.reasons.includes('spectrum-mapping')){counts[t]++;mapped.push(`${row.id}@${t}`);}else if(s.reasons.includes('photographic-image'))photographic.push(`${row.id}@${t}`);}}
+  // Re-pinned 2026-10-30 (Front F3): the five approved LSS photographs make the 9 photographic-image rows available on the
+  // 0.4 m and 4 m; on the 0.9 m they become mean-bound (analysis/front-f3/lss-photographs-measure.tsv).
+  expect(counts).toEqual([196,93,198]);
+  expect(photographic).toEqual([]);
   expect(mapped).toEqual([]);// NGC 4670 and NGC 4889 match GLXYSP.LST and are observed with their bundled own spectra
   expect(['NGC 4670','NGC 4889'].every(id=>hasLibrarySpectrum(spectra.names,id))).toBe(true);
  },600000);// 657 field evaluations (as hubbleExistingTargets.test.ts). Measured in review 1 at load average ~40 on 32 cores: 126 s on

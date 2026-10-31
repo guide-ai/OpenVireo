@@ -1,10 +1,12 @@
 import {LIGHT_CURVE_DISPLAY,type LightCurvePlot} from '../core/lightCurve';
-/** FormPaint 0x52b9cc/0x52c090 rendered from the pure plot data. Screen colours: brush navy $800000, pen and font white,
- * curve yellow $00FFFF; print: white brush, black pen, font and curve. Font size 10 with style byte 0x52c040 = [fsBold].
+import {lightCurveScheme} from '../core/lightCurveScheme';
+/** FormPaint 0x52b9cc/0x52c090 rendered from the pure plot data, in the scheme of the form's flag +0x404 (Front R4b,
+ * src/core/lightCurveScheme.ts): colour = brush navy $800000, pen and font white, curve yellow $00FFFF; monochrome = white
+ * brush, black pen, font and curve. Font size 10 with style byte 0x52c040 = [fsBold].
  * TextOut positions are top-left corners (dominant-baseline hanging). The panel keeps fixed colours in both themes. */
-export default function LightCurveSvg({plot,label,print=false,testId}:{plot:LightCurvePlot;label:string;print?:boolean;testId?:string}){
- const {left,top,right,bottom}=plot.box,ink=print?'#000000':'#ffffff',bg=print?'#ffffff':'#000080',curveInk=print?'#000000':'#ffff00';
- return <svg className="lc-svg" viewBox={`0 0 ${LIGHT_CURVE_DISPLAY.width} ${LIGHT_CURVE_DISPLAY.height}`} role="img" aria-label={label} data-testid={testId}
+export default function LightCurveSvg({plot,label,monochrome,testId}:{plot:LightCurvePlot;label:string;monochrome:boolean;testId?:string}){
+ const {left,top,right,bottom}=plot.box,{ink,background:bg,curve:curveInk}=lightCurveScheme(monochrome);
+ return <svg className="lc-svg" viewBox={`0 0 ${LIGHT_CURVE_DISPLAY.width} ${LIGHT_CURVE_DISPLAY.height}`} role="img" aria-label={label} data-testid={testId} data-scheme={monochrome?'mono':'colour'}
   data-faint-bound={plot.faintBound} data-bright-bound={plot.brightBound} data-points={'points' in plot.curve?plot.curve.points.length:0}>
   <rect x={0} y={0} width={LIGHT_CURVE_DISPLAY.width} height={LIGHT_CURVE_DISPLAY.height} fill={bg}/>
   <rect data-part="box" x={left} y={top} width={right-left} height={bottom-top} fill="none" stroke={ink} strokeWidth={1} shapeRendering="crispEdges"/>

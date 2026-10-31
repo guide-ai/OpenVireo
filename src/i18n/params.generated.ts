@@ -141,6 +141,9 @@ export interface MessageParameters {
   "sky.loading": never;
   "sky.count": "count";
   "sky.coverage": never;
+  "sky.fieldLoading": never;
+  "sky.fieldReady": "galaxies" | "loaded" | "stars" | "view";
+  "sky.fieldPreview": "reason";
   "sky.chartLabel": never;
   "sky.crosshair": never;
   "sky.north": never;
@@ -622,8 +625,8 @@ export interface MessageParameters {
   "classLink.provenance": never;
   "classLink.acquired": never;
   "classLink.context": "draws" | "seed" | "time";
-  "classLink.domainPartial": "maximum" | "minimum";
-  "classLink.domain": "maximum" | "minimum";
+  "classLink.domainPartial": "maximum" | "minimum" | "windowMaximum" | "windowMinimum";
+  "classLink.domain": "maximum" | "minimum" | "windowMaximum" | "windowMinimum";
   "classLink.template": never;
   "classLink.identity": never;
   "classLink.measure": never;
@@ -1250,7 +1253,6 @@ export interface MessageParameters {
   "db.reportNote": never;
   "db.print": never;
   "db.printNote": never;
-  "db.printError": never;
   "clusterLab.open": never;
   "clusterLab.eyebrow": never;
   "clusterLab.title": never;
@@ -2099,18 +2101,6 @@ export interface MessageParameters {
   "cameraInfo.ccdTitle": never;
   "cameraInfo.irTitle": never;
   "cameraInfo.authority": never;
-  "cameraInfo.detector": never;
-  "cameraInfo.imageSize": never;
-  "cameraInfo.pixelSize": never;
-  "cameraInfo.dimensions": "height" | "width";
-  "cameraInfo.readNoise": never;
-  "cameraInfo.darkNoise": never;
-  "cameraInfo.bias": never;
-  "cameraInfo.ad": never;
-  "cameraInfo.well": never;
-  "cameraInfo.cooling": never;
-  "cameraInfo.liquidNitrogen": never;
-  "cameraInfo.thermoelectric": never;
   "cameraInfo.close": never;
   "cameraPrepare.title": never;
   "cameraPrepare.owner": "name";
@@ -3217,6 +3207,7 @@ export interface MessageParameters {
   "lss.adaptation.telescope": never;
   "lss.adaptation.fresh": never;
   "lss.adaptation.raster": never;
+  "lss.rangeNote": never;
   "lss.adaptation.range": never;
   "lss.adaptation.measure": never;
   "lss.adaptation.wedge": never;
@@ -3298,9 +3289,10 @@ export interface MessageParameters {
   "multispec.fieldLoading": never;
   "multispec.fieldError": never;
   "multispec.retry": never;
-  "multispec.fieldNone": never;
   "multispec.fieldReasons": "reasons";
   "multispec.fieldNeutral": never;
+  "multispec.fieldInternal": never;
+  "multispec.objectXListFailed": never;
   "multispec.fieldLabel": never;
   "multispec.fieldHelp": never;
   "multispec.fieldNotArmed": never;
@@ -3378,6 +3370,8 @@ export interface MessageParameters {
   "session.restoreCodeError": never;
   "session.restoreResourcesError": never;
   "hubblePoint.telescopeBound": "id" | "telescope" | "telescopes";
+  "galaxyExposure.rangeNotWitnessed": never;
+  "galaxyExposure.rangeNote": "max" | "min";
   "galaxyExposure.engineInvalid": never;
   "ph.tiledUse": never;
   "ph.tiledHelp": never;
@@ -3455,4 +3449,7 @@ export interface MessageParameters {
   "fieldSpec.reason.mean-bound": never;
   "fieldSpec.reason.spectrum-mapping": never;
   "fieldSpec.reason.qso-selected": never;
+  "fieldSpec.analyze": never;
+  "fieldSpec.classify": never;
+  "fieldSpec.handOffError": never;
 }

@@ -8,9 +8,27 @@ addresses, evidence ids and tags in `docs/MULTI-SPEC-PROVENANCE.json`. Tags: [D]
 ## How the student reaches it
 - VIREO: instrument slider position 3 (Multi-Spec) + Access opens the control form (0x53ce0c) [D]. The web observatory has no
   instrument slider: a **Multi-Spec** card next to the camera with **Access Multi-Spec** stands for it [W], gated like the camera
-  (dome open, tracking, telescope view, pointed). The field is the bundled pack at the exact pointing (the Hubble Coma/Boötes
-  targets and the LSS rows only); elsewhere, Object X positions included, the form opens with a typed "no field" text. Object X
-  fields are reached only in the Object X lab (below).
+  (dome open, tracking, telescope view, pointed). Front G (G4b): VIREO builds the instrument field at every pointing (0x53be70)
+  and does not gate Multi-Spec by pointing, so every pointing has a field. At the exact pointing of a bundled pack (the Hubble
+  Coma/Boötes targets and the LSS rows) that pack is used; elsewhere the field is assembled from the compact GSC tiles in the
+  Multi-Spec Worker (`gsc-tiles`, with the options of the spectrometer at the pointing: recovered variable dispatch, photographs,
+  QSO merge). The field is loaded at an anchor and kept while VIREO's cached-field rule holds (0.25°, `multiSpecAnchor`), as the
+  Edit Mode layer; the view shows the field at its anchor [W]. Reaching a certified pointing inside the cache keeps the anchor,
+  as VIREO keeps its field, except at the two Hubble Boötes pointings (below), which load their own pack [W] (G4b review 1 L2).
+  It is built only once the form is shown; a newer field or closing the form cancels a build in the Worker, so a slew does not
+  queue stale fields (G4b review 1 M1). An assembled field within 2.62° of an Object X position is not built ("Not available
+  near an unrevealed Object X target"; if ObjectX.HTL itself fails to load, a text of its own says so and nothing is built);
+  certified packs there keep their masked names. Failures use the field spectrometer's classifier: a file that did not arrive
+  can be retried, one that did not match its recorded identity is a load error, and anything else is an internal error; the
+  polar limit is a web limit. Object X fields keep their HTL rows in the Object X lab (below).
+- Bundled versus assembled (G4b review 1 L1, `multiSpecTiled.test.ts`): at every certified pointing (the 4 Hubble targets and
+  the 219 LSS rows) the two give the same view, population and spectra, or the same no-view outcome (30 pointings, such as
+  NGC 4278's photographic-image; the assembled population also lists its photograph associations). The exceptions are Hubble
+  Boötes 51975 and 51976: the bundled pack keeps the Hubble route's acknowledged 'outside-view' rule (HUBBLE-13.md) and shows
+  the field, while the assembled field is stamp-bound because of the zero-axis galaxy 14299+3148, whose not-painted exemption
+  exists only under that rule (with it the assembled pack equals the bundled one). VIREO shows a field at both (one field path,
+  no stamp limit, 0x59864d..0x59869b); how it paints that galaxy and RS Boo's class-0 update is not recovered
+  (`MULTISPEC_TILED_EXCEPTIONS`).
 - Clicks select objects only when VIREO arms them (0x53cfab..0x53cfe4) [D]: **Edit Mode**, or exercise mode **0** ("Access All
   Instruments") or **1** (Object X), in the Telescope view. Mode 0 is reachable only through the instructor **Virtual
   Observatory** option (Front O2: VObsBox, options+0x27d5, default off, not persisted; one page state shared with File › QSO
@@ -56,19 +74,20 @@ addresses, evidence ids and tags in `docs/MULTI-SPEC-PROVENANCE.json`. Tags: [D]
 - The Edit Mode galaxy "Z:" line shows "hidden (instructor value)", as Catalog Object masks the catalogue z (no instructor login).
 
 ## Hidden identity (E08)
-Before the reveal, in an Object X field or any field within 2.375° of an Object X position: Information shows `ObjX-<ID>` only for
+Before the reveal, in an Object X field or any field whose area reaches within 2° of an Object X position (centre within 2° plus the mask reach, at least 0.62°): Information shows `ObjX-<ID>` only for
 the fibre that is the target (its record is the one a click at the target's own projected position selects, i.e. within the
 native 10 px) [W], and "Name hidden during Object X" for every other non-sky fibre, Object X neighbours included; V and the Edit Mode lines are dropped; every failure
 shows one neutral text (the native boxes name the kind); Show Object ID is ignored for list items, captions, .SSP names and Save
-All entries. Lab rows whose neighbours lie within 2.375° stay masked after the reveal.
+All entries. Lab rows whose neighbours lie within that distance stay masked after the reveal.
 
 ## Typed (not ported or indeterminate)
 `star-template-none` (nil lookup), `star-template-random` (index 0: the native random pick; all 132 templates are bundled
 since 2026-10-30, but the pick itself is not ported), `galaxy-lookup`, `spectrum-mapping` (own galaxy
 spectrum not bundled), `galaxy-spectrum`, `qso-spectrum`, `object-type` (types ≥ 5), the Front T variable reasons,
 `multispec-mean-bound` (> 10⁶), `negative-mean`, `precision` (u = 0.5), `zero-maximum` (nothing to save), the photographic-image
-field gate, pointings without a pack; Help (0-byte help files). Print Selection Field works (Front P): it runs Print Sky Image
-(header 0x58e860, footer 0x53fe14) on the Multi-Spec telescope display. The display's own Print starts with the same header (Front H2).
+field gate, the G2 field reads (field-polar, field-tiles, field-unreadable); Help (0-byte help files). Print Selection Field works
+(Front P): it runs Print Sky Image (header 0x58e860, footer 0x53fe14) on the Multi-Spec telescope display. The display's own Print
+starts with the same header (Front H2).
 
 ## Resources
 The 67 jspect2 templates approved on 2026-10-28 (AGENTS.md) are bundled byte-exact in `public/original/spectra/jspect2/`; each
@@ -81,7 +100,11 @@ all 132 that JSPEC2.SPI names are available, so a named template is never missin
 Vitest: multiSpecSpectrum (fibres equal the independent Python witness `data/multispec/witness.json`: LCG, Poisson incl. the
 rejection branch and its draw order, grid, templates, QSO), multiSpec (state machine), multiSpecSelect, multiSpecFormat (.SSP
 bytes, names, Information/Print with and without the mask), io/multiSpec, fieldEngineView (the view equals evaluateField's
-population, scene and viewport for LSS (default and QSO merge), Hubble and Object X pointings). Playwright: tests/multispec.spec.ts (Edit Mode flow,
+population, scene and viewport for LSS (default and QSO merge), Hubble and Object X pointings), io/multiSpecTiled (G4b: the
+assembled view equals the Object X row pack's view and every certified pack's view except the listed Boötes pointings; a star
+and sky fibre at another pointing; an aborted build is not cached; polar and retryable tile reads), io/workerCancel (a cancelled
+Worker request), multiSpecFields (the anchor rule). Playwright: tests/multispec-tiled.spec.ts (G4b: Edit Mode at an arbitrary pointing, the mode
+gate, no field near Object X), tests/multispec.spec.ts (Edit Mode flow,
 the Virtual Observatory gate, 320 px dark), tests/multispec-objectx.spec.ts (no identity in the DOM, Information, .SSP names or
 zip entries before the reveal; only the target fibre reads ObjX-<ID>, neighbour stars read the neutral name; a galaxy target
 with a photograph and an Object X neighbour, row 3/4, which stays masked after the reveal).

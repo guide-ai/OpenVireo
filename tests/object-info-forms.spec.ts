@@ -54,8 +54,10 @@ test('Edit Mode: Catalog Object at a certified field (36773), by click and by ke
  await sky.focus();for(let i=0;i<3;i++)await page.keyboard.press('Shift+ArrowLeft');await page.keyboard.press('Enter');
  await expect(dialog).toBeVisible();await expect(page.getByTestId('co-id')).toHaveValue('N5230-00237');// pinned in fieldInfoPacks.test.ts
  await page.getByTestId('co-ok').click();await expect(dialog).toHaveCount(0);await expect(sky).toBeFocused();
- // Finder view: the finder catalogue is not on this site.
- await page.getByRole('button',{name:/^Finder/}).click();await expect(page.getByTestId('em-status')).toHaveAttribute('data-reason','finder-catalog-unavailable');
+ // Re-pinned 2026-10-30 (Front G5): the Finder view picks from VIREO's finder field (FSCFieldObj on the compact GSC tiles).
+ await page.getByRole('button',{name:/^Finder/}).click();await expect(page.getByTestId('em-caption')).toContainText('finder field',{timeout:30000});
+ await sky.focus();await page.keyboard.press('Enter');await expect(dialog).toBeVisible();await expect(page.getByTestId('co-id')).not.toHaveValue('');
+ await page.getByTestId('co-ok').click();await expect(dialog).toHaveCount(0);
 });
 
 test('Star Data List at 36773: lines, Search, Save Text, Comma Delimit, Print preview; hot-list items carry the defect reason',async({page})=>{
@@ -226,9 +228,10 @@ test('Front T: an enabled GCVS button at a TRUE variable star opens its Variable
 // G2 review 1 M1: a Star Data List closed while its tiles load stays closed, and a later request shows its own field.
 test('Star Data List: a request closed while loading never reappears; a new one shows its own field',async({page})=>{
  test.setTimeout(120000);
- await open(page);await tracking(page);await editMode(page,true);
+ // Re-pinned 2026-10-30 (Front G5): the sky view now reads the same tiles (shared store), so the routes are held from the start.
  let release!:()=>void;const gate=new Promise<void>(r=>release=r);
  await page.route('**/original/gsc/**',async route=>{await gate;await route.continue().catch(()=>{});});
+ await open(page);await tracking(page);await editMode(page,true);
  await fieldMenu(page,'fi-star-list');
  await expect(page.getByTestId('fi-slist-status').getByRole('status')).toHaveAttribute('data-reason','loading');
  await page.getByTestId('fi-slist-status').getByRole('button',{name:'Close',exact:true}).click();

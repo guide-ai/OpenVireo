@@ -1,3 +1,6 @@
+import SpectralRangeRow from './SpectralRangeRow';
+import {DEFAULT_SPECTRAL_RANGE,type SpectralRange} from './core/spectralRange';
+import {spectralRangeCoverage} from './core/spectralRangeCoverage';
 import {memo,useEffect,useRef,useState} from 'react';
 import {currentZ,type ShiftControl} from './core/spectrum';
 import {t} from './i18n';
@@ -31,7 +34,7 @@ import LssMeasurement from './LssMeasurement';
 type Telescope=0|1|2;
 /** fieldJd: the observatory-clock JD frozen when this list was built (Front T: the variable stage's time); undefined when the
  * clock gave no finite JD, so rows whose field needs the time stay unavailable (variable-time-required). */
-type Loaded=Readonly<{field:LssFieldNumber;telescope:Telescope;statuses:readonly LssRowStatus[];fieldJd:number|undefined}>;
+type Loaded=Readonly<{field:LssFieldNumber;telescope:Telescope;statuses:readonly LssRowStatus[];fieldJd:number|undefined;range:SpectralRange}>;
 export type LssSnapshot=Omit<LssInvestigation,'wedgeOptions'>;
 /** `replace` (Front L3): a row already plotted was reused, so the wedge replaces its own LSS points with these (the whole list). */
 export type LssWedgeHandoff=Readonly<{records:readonly WedgeOwnRecord[];sha256:string;bytes:number;replace?:true}>;
@@ -41,7 +44,7 @@ function statusText(s:LssRowStatus):string{
  return s.kind==='available'?t('lss.status.available'):t('lss.status.neighbour',{id:s.selectedId});
 }
 /** E02 student route (#lss-survey). Web adaptations are listed in the scope note and docs/LSS-SURVEY.md. */
-function LssSurvey({timeDependentData=false,computeRedshiftVelocity=false,active,editMode=false,currentJd,initialTelescope,onPlotWedge,wedgeAck=null,onRecordsChange,onSnapshot,onSummary,restored=null}:{/** Front R3: Compute Rdshft Vel. (compiled off) fills the dialog's velocity with c·z when it opens. */computeRedshiftVelocity?:boolean;/** Front L3: Time-Dependent Data (env+0x2e8c, compiled off). Off: Record Z on an already recorded object reuses its row
+function LssSurvey({spectralRange=DEFAULT_SPECTRAL_RANGE,onSpectralRange,timeDependentData=false,computeRedshiftVelocity=false,active,editMode=false,currentJd,initialTelescope,onPlotWedge,wedgeAck=null,onRecordsChange,onSnapshot,onSummary,restored=null}:{/** Front S2: the page's spectrometer range and its setter. */spectralRange?:SpectralRange;onSpectralRange?:(r:SpectralRange)=>void;/** Front R3: Compute Rdshft Vel. (compiled off) fills the dialog's velocity with c·z when it opens. */computeRedshiftVelocity?:boolean;/** Front L3: Time-Dependent Data (env+0x2e8c, compiled off). Off: Record Z on an already recorded object reuses its row
  * (0x57c918); on: every Record Z adds a row. */timeDependentData?:boolean;editMode?:boolean;onSummary?:(s:Omit<LssLabSummary,'saved'>)=>void;restored?:Readonly<{token:number;investigation:LssInvestigation|null}>|null;onSnapshot?:(s:LssSnapshot)=>void;active:boolean;currentJd:()=>number;initialTelescope:Telescope;onPlotWedge:(h:LssWedgeHandoff)=>number;wedgeAck?:Readonly<{token:number;accepted:boolean}>|null;onRecordsChange?:(records:readonly LssRecord[])=>void}){
  const [survey,setSurveyState]=useState<LssSurveyState>(EMPTY_LSS_SURVEY),current=useRef(survey),[dialogError,setDialogError]=useState('');
  /** Every survey transition runs here, outside React's updater: a rejected transition keeps the current state and returns false. */
@@ -79,8 +82,12 @@ function LssSurvey({timeDependentData=false,computeRedshiftVelocity=false,active
  // LSSFields.LST (byte-exact, size and SHA-256 checked) supplies the original field names and centres.
  useEffect(()=>{if(!active||fields)return;const c=new AbortController();fetchBundledHotList(fetch,c.signal,LSS_FIELDS_LST).then(b=>setFields(parseLssFieldsList(b.bytes))).catch(e=>{if(!(e instanceof DOMException&&e.name==='AbortError'))setError(t('lss.fieldsError'));});return()=>c.abort();},[active,fields]);
  useEffect(()=>{const d=dialog.current;if(!d)return;if(survey.draft&&!d.open)d.showModal();else if(!survey.draft&&d.open)d.close();},[survey.draft]);
- async function load(field:LssFieldNumber,scope:Telescope){
-  abort.current?.abort();const controller=new AbortController();abort.current=controller;
+ async function load(field:LssFieldNumber,scope:Telescope,at:SpectralRange=spectralRange){
+  abort.current?.abort();
+  // Front S2 round 2: the field is evaluated on the page's spectrometer range (VIREO's 3700–4700 Å by default, with its
+  // start-time continuation; 4000–5000 Å is also witnessed); any other range is refused [W].
+  const range=at;if(spectralRangeCoverage('lss',range)!=='covered'){setError(t('galaxyExposure.rangeNotWitnessed'));return;}
+  const controller=new AbortController();abort.current=controller;
   setLoading(true);setError('');setNotice(t('lss.loading'));setPointed(null);setExposure(null);
   try{
    const identity=LSS_FIELD_FILES.find(f=>f.field===field)!;
@@ -90,9 +97,9 @@ function LssSurvey({timeDependentData=false,computeRedshiftVelocity=false,active
    if(!lists.current){const [photographs,spectra]=await Promise.all([fetchBundledHotList(fetch,controller.signal,GLIMAGES_LST),fetchLssSpectrumInputs(fetch,controller.signal)]);lists.current={photographs:parseGlimagesPositions(photographs.bytes),spectra};}
    const pack=packWithPhotographs(await loadLssPack(field),lists.current.photographs),rows=lssFieldRows(field),statuses:LssRowStatus[]=[];
    const variableTime=frozenObservatoryTime(currentJd),fieldJd=variableTime?.jd;
-   for(const row of rows){if(controller.signal.aborted)return;statuses.push(evaluateLssRow(pack,glx.current,row,scope,lists.current.spectra,variableTime));await new Promise(r=>setTimeout(r,0));}
+   for(const row of rows){if(controller.signal.aborted)return;statuses.push(evaluateLssRow(pack,glx.current,row,scope,lists.current.spectra,variableTime,range));await new Promise(r=>setTimeout(r,0));}
    if(controller.signal.aborted)return;
-   update(s=>markLssListLoaded(selectLssField(s,field),field));setLoaded(Object.freeze({field,telescope:scope,statuses:Object.freeze(statuses),fieldJd}));
+   update(s=>markLssListLoaded(selectLssField(s,field),field));setLoaded(Object.freeze({field,telescope:scope,statuses:Object.freeze(statuses),fieldJd,range}));
    setNotice(t('lss.loaded',{name:identity.name,rows:rows.length,available:statuses.filter(s=>s.kind!=='unavailable').length,telescope:opticalProfile(scope).name}));
   }catch(e){if(controller.signal.aborted||(e instanceof DOMException&&e.name==='AbortError'))return;setError(t('lss.loadError'));setNotice('');}
   finally{if(abort.current===controller){abort.current=null;setLoading(false);}}
@@ -102,7 +109,7 @@ function LssSurvey({timeDependentData=false,computeRedshiftVelocity=false,active
  const live=status&&status.kind!=='unavailable'?status:null;
  function record(control:ShiftControl){if(!row||!live||!loaded||!exposure)return;const z=currentZ(control),journal={seedAtReset:exposure.seedAtReset,events:exposure.events};setError('');setDialogError('');// Review 1 L2: a re-measurement that reuses a row adds none, and its old journal is replaced.
   const reuse=lssReuseTarget(current.current.records,live.selectedId,timeDependentData),kept=reuse===null?current.current.records:current.current.records.filter((_r,i)=>i!==reuse);
-  if(reuse===null&&lssAtLimit(current.current)){setError(t('lss.limitReached',{limit:LSS_LIMITS.records}));return;}if(lssEventTotal(kept,{acquisitionPolicy:lssPolicy(loaded.field,row.index,loaded.telescope),journal})>LSS_LIMITS.events){setError(t('lss.eventLimit',{limit:LSS_LIMITS.events}));return;}if(!update(s=>openLssRecord(s,{field:loaded.field,row:row.index,telescope:loaded.telescope,object:live.selectedId,jd:currentJd(),...(loaded.fieldJd!==undefined?{fieldJd:loaded.fieldJd}:{}),ra:row.ra,dec:row.dec,z,control,journal,acquisitionPolicy:lssPolicy(loaded.field,row.index,loaded.telescope)},{timeDependent:timeDependentData})))setError(t('lss.recordError'));else if(computeRedshiftVelocity&&current.current.draft?.velocity==='')update(s=>editLssDraft(s,{velocity:lssPrefilledVelocity(z)}));}// FormActivate 0x57cab8: a row's own velocity first, then Compute Rdshft Vel.
+  if(reuse===null&&lssAtLimit(current.current)){setError(t('lss.limitReached',{limit:LSS_LIMITS.records}));return;}if(lssEventTotal(kept,{acquisitionPolicy:lssPolicy(loaded.field,row.index,loaded.telescope,loaded.range),journal})>LSS_LIMITS.events){setError(t('lss.eventLimit',{limit:LSS_LIMITS.events}));return;}if(!update(s=>openLssRecord(s,{field:loaded.field,row:row.index,telescope:loaded.telescope,object:live.selectedId,jd:currentJd(),...(loaded.fieldJd!==undefined?{fieldJd:loaded.fieldJd}:{}),ra:row.ra,dec:row.dec,z,control,journal,acquisitionPolicy:lssPolicy(loaded.field,row.index,loaded.telescope,loaded.range)},{timeDependent:timeDependentData})))setError(t('lss.recordError'));else if(computeRedshiftVelocity&&current.current.draft?.velocity==='')update(s=>editLssDraft(s,{velocity:lssPrefilledVelocity(z)}));}// FormActivate 0x57cab8: a row's own velocity first, then Compute Rdshft Vel.
  function confirm(){
   let r:LssConfirm;try{r=confirmLssDialog(current.current);}catch{setDialogError(t('lss.limitReached',{limit:LSS_LIMITS.records}));return;}
   // A native refusal keeps the dialog open (ModalResult 0); the message is the original box text (with its caption when it has one).
@@ -124,11 +131,15 @@ function LssSurvey({timeDependentData=false,computeRedshiftVelocity=false,active
    <div className="lss-controls"><label htmlFor="lss-field">{t('lss.field')}</label><select id="lss-field" value={field??''} disabled={loading||!fields} onChange={e=>{update(s=>selectLssField(s,Number(e.target.value)));}}><option value="" disabled>{t('lss.chooseField')}</option>{(fields??[]).map(f=><option key={f.field} value={f.field}>{t('lss.fieldOption',{label:f.label,ra:f.ra,dec:f.dec,rows:LSS_FIELD_FILES[f.field-1].records})}</option>)}</select>
     <label htmlFor="lss-telescope">{t('lss.telescope')}</label><select id="lss-telescope" value={telescope} disabled={loading} onChange={e=>setTelescope(Number(e.target.value) as Telescope)}>{([0,1,2] as const).map(i=><option key={i} value={i}>{opticalProfile(i).name}</option>)}</select>
     <button className="primary-button" disabled={!field||loading} onClick={()=>field&&void load(field,telescope)}>{t('lss.load')}</button>{loading&&<button className="secondary-button" onClick={cancelLoad}>{t('lss.cancelLoad')}</button>}</div>
+   {onSpectralRange&&<SpectralRangeRow range={loaded?.range??spectralRange} disabled={loading} unsaved={!!exposure&&exposure.exposure.draws>0} testId="lss-spectral-range" note={t('lss.rangeNote')}
+    onApply={r=>{if(spectralRangeCoverage('lss',r)!=='covered'){setError(t('galaxyExposure.rangeNotWitnessed'));return;}onSpectralRange(r);
+     // Review 2 L3: OK starts the spectrometer again (0x5110b0); a loaded list is evaluated again on the new range.
+     if(loaded)void load(loaded.field,loaded.telescope,r);}}/>}
    <p className="observatory-note">{t('lss.fieldHelp')}</p>
    {loaded&&<table className="lss-rows" data-testid="lss-rows" aria-busy={loading||undefined} data-stale={loading||undefined}><caption>{t('lss.rowsCaption',{label:fields?.[loaded.field-1]?.label??'',name:`LSS_Field0${loaded.field}.HTL`,telescope:opticalProfile(loaded.telescope).name})}{loaded.fieldJd!==undefined&&!loading&&<small data-testid="lss-field-jd"> {t('lss.fieldJd',{jd:loaded.fieldJd.toFixed(5)})}</small>}</caption><thead><tr><th scope="col">#</th><th scope="col">{t('lss.col.object')}</th><th scope="col">{t('lss.col.status')}</th><th scope="col">{t('lss.col.action')}</th></tr></thead>
     <tbody>{rows.map((r,i)=>{const s=loaded.statuses[i];return <tr key={i} data-testid={`lss-row-${i+1}`} aria-current={pointed===i?'true':undefined}><td>{i+1}</td><td>{r.id}</td><td>{statusText(s)}</td><td><button className="secondary-button" disabled={s.kind==='unavailable'||survey.draft!==null} onClick={()=>{setPointed(i);setExposure(null);setNotice(t('lss.pointed',{id:r.id}));}}>{t('lss.point')}</button></td></tr>;})}</tbody></table>}
   </section>
-  {row&&live&&loaded&&<LssAcquisition key={`${lssPolicy(loaded.field,row.index,loaded.telescope)}@${loaded.fieldJd??'none'}`} active={active} result={live.result} row={row} policy={lssPolicy(loaded.field,row.index,loaded.telescope)} onCounts={setExposure}/>}
+  {row&&live&&loaded&&<LssAcquisition key={`${lssPolicy(loaded.field,row.index,loaded.telescope,loaded.range)}@${loaded.fieldJd??'none'}`} active={active} result={live.result} row={row} policy={lssPolicy(loaded.field,row.index,loaded.telescope,loaded.range)} onCounts={setExposure}/>}
   {row&&live&&exposure&&exposure.exposure.phase!=='running'&&exposure.exposure.counts.some(n=>n>0)&&<LssMeasurement key={`measure:${exposure.policy}`} counts={exposure.exposure.counts} wavelengths={live.result.calibration!.wavelengths} onRecord={record} disabled={survey.draft!==null||lssAtLimit(survey)}/>}
   <dialog ref={dialog} className="lss-dialog" aria-labelledby="lss-dialog-title" onCancel={e=>{e.preventDefault();update(cancelLssRecord);setDialogError('');}}>{draft&&<form method="dialog" onSubmit={e=>{e.preventDefault();confirm();}}>
    <h2 id="lss-dialog-title">{t('lss.dialog.title')}</h2>

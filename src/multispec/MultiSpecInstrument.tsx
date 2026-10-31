@@ -7,7 +7,8 @@ import {catalogRecords,galaxyTypeText} from '../core/catalogObject';
 import type {FieldView,FieldTelescope} from '../core/fieldEngine';
 import {opticalProfile} from '../core/opticalTelescope';
 import type {AccessReason} from '../core/instrumentAccess';
-import {multiSpecSpectra,multiSpecView,type MultiSpecFieldRequest} from '../io/multiSpec';
+import {multiSpecSpectra,multiSpecView,type MultiSpecFieldRequest,type MultiSpecView} from '../io/multiSpec';
+import {fieldInfoReasonText} from '../observatory/FieldInfoMessages';
 import {t} from '../i18n';
 import MultiSpecControl,{MultiSpecBox} from './MultiSpecControl';
 import MultiSpecFieldOverlay from './MultiSpecFieldOverlay';
@@ -33,8 +34,9 @@ export type MultiSpecInstrumentProps=Readonly<{
  field:MultiSpecFieldRequest|null;telescope:FieldTelescope;access:AccessReason;armed:boolean;armedText:string;
  mask:MultiSpecMaskPolicy;editMode:boolean;busy:boolean;active:boolean;title:string;help:string;heading?:'h2'|'h3';
  /** Text when `field` is null (no bundled field at this position). */noFieldText:string;
+ /** Front S2: why the page's spectrometer range cannot be used here (Multi-Spec reads it, 0x526e7f); null when it can. */rangeBlock?:string|null;
 }>;
-type ViewState=Readonly<{status:'none'}|{status:'loading'}|{status:'error'}|{status:'ready';view:FieldView}|{status:'reasons';view:FieldView}>;
+type ViewState=Readonly<{status:'none'}|{status:'loading'}|{status:'error'}|{status:'ready';view:FieldView}|{status:'reasons';view:FieldView}|{status:'read';read:NonNullable<MultiSpecView['fieldRead']>}>;
 type Result=Readonly<{status:'loading'}|{status:'error'}|{status:'done';exposure:Awaited<ReturnType<typeof multiSpecSpectra>>[number];galaxyType:string|null}>;
 const entryKey=(e:Pick<MultiSpecEntry,'idx'|'seed'>)=>`${e.idx}:${e.seed}`;
 const pageSeed=()=>{try{return crypto.getRandomValues(new Uint32Array(1))[0];}catch{return Math.floor(Math.random()*0x1_0000_0000)>>>0;}};
@@ -45,7 +47,7 @@ function download(name:string,bytes:Uint8Array,type:string){
 /** A file name the browser and the zip writer accept (ASCII, no path separators) [W]. */
 const safeName=(s:string)=>s.replace(/[^\x20-\x7e]|[\\/:*?"<>|]/g,'_');
 
-export default function MultiSpecInstrument({field,telescope,access,armed,armedText,mask,editMode,busy,active,title,help,noFieldText,heading:Heading='h2'}:MultiSpecInstrumentProps){
+export default function MultiSpecInstrument({field,telescope,access,armed,armedText,mask,editMode,busy,active,title,help,noFieldText,rangeBlock=null,heading:Heading='h2'}:MultiSpecInstrumentProps){
  const id=useId(),fieldWrap=useRef<HTMLDivElement>(null);
  const [state,dispatch]=useReducer(multiSpecReducer,undefined,()=>createMultiSpecState(telescope,pageSeed()));
  const [view,setView]=useState<ViewState>({status:'none'}),[viewTry,setViewTry]=useState(0);
@@ -55,21 +57,25 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
  const [scanning,setScanning]=useState(false),[rate,setRate]=useState(1),[noItem,setNoItem]=useState<'show'|'close'|null>(null),[notice,setNotice]=useState('');
  const fieldKey=multiSpecFieldKey(field),fieldRef=useRef(field);fieldRef.current=field;
  const viewRef=useRef<FieldView|null>(null);viewRef.current=view.status==='ready'?view.view:null;
- const firstKey=useRef(true);
+ const lastKey=useRef(fieldKey);
  // Object X (review M1): the record a click at the target itself selects; only that fibre carries the ObjX label.
  const targetSource=useMemo(()=>{
   if(view.status!=='ready'||!mask.target||!view.view.population||!view.view.scene)return null;
   try{return multiSpecTargetSource({population:view.view.population,scene:view.view.scene} as MultiSpecField,mask.target);}catch{return null;}
  },[view,mask.target]);
 
- // The field: built in the Worker for each new field; a new field regenerates it (Clear Objects when the selection is not empty).
+ // A new field regenerates it (Clear Objects when the selection is not empty).
+ useEffect(()=>{if(lastKey.current!==fieldKey){lastKey.current=fieldKey;dispatch({type:'field-regenerated'});}},[fieldKey]);
+ // The field is built in the Worker once the form is shown (Front G G4b: every pointing has a field, so nothing is read for a
+ // student who never opens Multi-Spec) and again for each new field while it is shown.
  useEffect(()=>{
-  if(firstKey.current)firstKey.current=false;else dispatch({type:'field-regenerated'});
   if(!field){setView({status:'none'});return;}
-  let current=true;setView({status:'loading'});
-  multiSpecView(field).then(v=>{if(current)setView(v.viewport&&v.population&&v.scene&&!v.reasons.length?{status:'ready',view:v}:{status:'reasons',view:v});}).catch(()=>{if(current)setView({status:'error'});});
-  return()=>{current=false;};
- },[fieldKey,viewTry]);// eslint-disable-line react-hooks/exhaustive-deps
+  if(!state.open)return;
+  // A newer field or closing the form aborts the build in the Worker (G4b review 1 M1).
+  let current=true;const stop=new AbortController();setView({status:'loading'});
+  multiSpecView(field,stop.signal).then(v=>{if(current)setView(v.fieldRead?{status:'read',read:v.fieldRead}:v.viewport&&v.population&&v.scene&&!v.reasons.length?{status:'ready',view:v}:{status:'reasons',view:v});}).catch(()=>{if(current)setView({status:'error'});});
+  return()=>{current=false;stop.abort();};
+ },[fieldKey,viewTry,state.open]);// eslint-disable-line react-hooks/exhaustive-deps
  // SpecTimer: one tick per whole second of the page clock while exposing.
  useEffect(()=>{if(!state.running)return;const h=window.setInterval(()=>dispatch({type:'tick'}),1000);return()=>window.clearInterval(h);},[state.running]);
  // Spectra of new entries (AddSpectrum), from the field current when they were taken.
@@ -145,8 +151,9 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
   :noItem?{caption:N.noItem.caption,text:noItem==='show'?N.noItem.show:N.noItem.close,question:false}:null;
  const answer=(yes:boolean)=>{if(state.question)dispatch({type:'answer',yes});else if(state.message)dispatch({type:'dismiss'});else setNoItem(null);};
  const fieldStatus=!field?noFieldText:view.status==='loading'?t('multispec.fieldLoading'):view.status==='error'?(mask.masked?t('multispec.fieldNeutral'):t('multispec.fieldError'))
-  :view.status==='reasons'?(mask.masked?t('multispec.fieldNeutral'):t('multispec.fieldReasons',{reasons:view.view.reasons.join(', ')})):'';
- const usable=active&&!busy;
+  :view.status==='reasons'?(mask.masked?t('multispec.fieldNeutral'):t('multispec.fieldReasons',{reasons:view.view.reasons.join(', ')}))
+  :view.status==='read'?(mask.masked?t('multispec.fieldNeutral'):view.read.reason==='internal'?t('multispec.fieldInternal'):'detail' in view.read?fieldInfoReasonText(view.read.reason,view.read.detail):fieldInfoReasonText(view.read.reason)):'';
+ const usable=active&&!busy&&!rangeBlock;
 
  return <section className="card ms-card" aria-labelledby={`${id}-title`} data-testid="ms-card">
   <Heading id={`${id}-title`}>{title}</Heading>
@@ -154,7 +161,7 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
   <div className="button-row">
    <button type="button" className="primary-button" disabled={!usable||access!=='ready'||state.open} onClick={()=>dispatch({type:'show'})} data-testid="ms-access">{t('multispec.access')}</button>
   </div>
-  <p role="status" data-testid="ms-access-status">{state.open?t('multispec.accessOpen'):access!=='ready'?multiSpecAccessText(access):''}</p>
+  <p role="status" data-testid="ms-access-status">{state.open?t('multispec.accessOpen'):access!=='ready'?multiSpecAccessText(access):''}</p>{rangeBlock&&<p role="status" data-testid="ms-range-block">{rangeBlock}</p>}
   {state.open&&<div className="ms-body">
    <div className="ms-top">
     <MultiSpecControl state={state} dispatch={dispatch} busy={!usable} masked={mask.masked} printField={ready&&field?{pointing:field.pointing,telescope:opticalProfile(telescope).name,clone:()=>multiSpecFieldPicture(fieldWrap.current)}:null}/>
@@ -164,7 +171,7 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
        onSelect={(x,y)=>{const p=multiSpecClickPoint(x,y);dispatch({type:'add',selection:multiSpecPick({population:ready.population!,scene:ready.scene!},p.x,p.y)});}}
        onRemove={(x,y)=>{const p=multiSpecClickPoint(x,y);dispatch({type:'remove-at',x:p.x,y:p.y});}}/>
       :<p role="status" data-testid="ms-field-status">{fieldStatus}</p>}</div>
-     {view.status==='error'&&!mask.masked&&<button type="button" className="secondary-button" onClick={()=>setViewTry(n=>n+1)}>{t('multispec.retry')}</button>}
+     {(view.status==='error'||view.status==='read'&&view.read.reason==='field-tiles')&&!mask.masked&&<button type="button" className="secondary-button" onClick={()=>setViewTry(n=>n+1)}>{t('multispec.retry')}</button>}
      <p className="observatory-note">{t('multispec.fieldAdaptation')}</p>
     </div>
    </div>

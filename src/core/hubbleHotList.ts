@@ -17,8 +17,8 @@ export const HUBBLE_HTL=Object.freeze({
 });
 /** Missing dependency, by the phase-2 plan's dependency table (D1..D5). */
 /** spectrum-continuation (Front F M5): the field is prepared (RS Boo outside the view, QSO merged) but at z ≈ 0.13 the shifted
- * fallback template starts above 4000 Å; the recovered blue continuation draws uniforms whose order relative to the exposure's own
- * random stream (Go 0x50f484) is not recovered, so no acquisition is offered. */
+ * fallback template starts above the interval's minimum. Historical reason (Front F M5): Front F later ported the start-time blue
+ * continuation (0x55e97c), which every Hubble route now uses at VIREO's 3700–4700 Å (Front S2), so the reason gates no target. */
 // Front L2 follow-up: 'qso-merge' and 'variable-qso-merge' were retired once the QSO merge was ported (no row carries them).
 export type HubbleUnavailableReason='photographic-image'|'variable-merge'|'spectrum-continuation';
 type Common=Readonly<{index:number;id:string;remarks:string;ra:number;dec:number;recordSha256:string;catalogIndex:number}>;

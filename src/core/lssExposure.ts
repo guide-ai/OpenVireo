@@ -2,20 +2,24 @@
  * HTL coordinates, for the selected telescope record; then the same bounded journal as the galaxy exposure. Web adaptations
  * (one line each in docs/LSS-SURVEY.md): a fresh field per pointing; the telescope is the student's choice among the three
  * verified profiles because the exercise-mode-5 telescope entry is not recovered; native timing (no speed-up). */
-import {evaluateField,createFieldExposure,type FieldLibrarySpectrum,type FieldOptions,type FieldQsoCatalog,type FieldResult,type FieldTelescope,type FieldUnavailableReason,type FieldVariableTime} from './fieldEngine';
+import {evaluateField,createFieldExposure,type FieldLibrarySpectrum,type FieldOptions,type FieldPhotographs,type FieldQsoCatalog,type FieldResult,type FieldTelescope,type FieldUnavailableReason,type FieldVariableTime} from './fieldEngine';
 import type {FieldPack} from './fieldPack';
 import {hasLibrarySpectrum} from './lssLists';
 import {lssFieldRows,type LssFieldNumber,type LssRow} from './lssFields';
+import {LEGACY_GALAXY_RANGE,galaxyPolicyRange,galaxyPolicyWithRange,sameRange,type SpectralRange} from './spectralRange';
 import {activateJournal,cancelJournal,deactivateJournal,JournalError,pauseJournal,replayJournal,resetJournal,startJournal,tickJournal,type JournalEvent,type JournalState} from './exposureJournal';
 
 export const LSS_POLICY_PREFIX='openvireo-lss-v1';
-export function lssPolicy(field:LssFieldNumber,row:number,telescope:FieldTelescope):string{return `${LSS_POLICY_PREFIX}:F${field}:R${row+1}:T${telescope}`;}
-export function parseLssPolicy(policy:unknown):Readonly<{field:LssFieldNumber;row:number;telescope:FieldTelescope}>{
- const m=typeof policy==='string'?/^openvireo-lss-v1:F([1-9]):R(\d{1,2}):T([012])$/.exec(policy):null;
- if(!m)throw new JournalError('session');
+/** Front S2 round 2: a row exposure on VIREO's 3700–4700 Å carries "#R3700-4700"; an unmarked policy is the former web range
+ * 4000–5000 Å (spectralRange.ts galaxyPolicyRange), so earlier investigations keep their bytes. */
+export function lssPolicy(field:LssFieldNumber,row:number,telescope:FieldTelescope,range:SpectralRange=LEGACY_GALAXY_RANGE):string{return galaxyPolicyWithRange(`${LSS_POLICY_PREFIX}:F${field}:R${row+1}:T${telescope}`,range);}
+export function parseLssPolicy(policy:unknown):Readonly<{field:LssFieldNumber;row:number;telescope:FieldTelescope;range:SpectralRange}>{
+ const split=galaxyPolicyRange(policy);
+ const m=split?/^openvireo-lss-v1:F([1-9]):R(\d{1,2}):T([012])$/.exec(split.base):null;
+ if(!m||!split)throw new JournalError('session');
  const field=Number(m[1]) as LssFieldNumber,row=Number(m[2])-1,telescope=Number(m[3]) as FieldTelescope;
  if(row<0||row>=lssFieldRows(field).length)throw new JournalError('session');
- return Object.freeze({field,row,telescope});
+ return Object.freeze({field,row,telescope,range:split.range});
 }
 /** The bundled own library spectra LSS rows can select (GLXYSP.LST names that are LSS catalogue galaxies). NGC4670.SP: user
  * approval of 2026-10-27 (group 1), bundled by Front L2; NGC4889.SP: bundled for the Hubble Coma target. */
@@ -25,8 +29,9 @@ export const LSS_OWN_SPECTRA=Object.freeze([
 ]);
 /** Front L2: what an LSS row evaluation needs besides its pack and CLEA_GLX.DAT. `names`: the GLXYSP.LST names; `qsoCatalog`:
  * the bundled CLEA_QSO.DAT for the recovered QSO merge (0x5987e4/0x597f90, qsoMerge.ts); `ownSpectra`: own library spectrum
- * file → samples. */
-export type LssSpectrumInputs=Readonly<{names:ReadonlySet<string>;qsoCatalog:FieldQsoCatalog;ownSpectra:ReadonlyMap<string,FieldLibrarySpectrum['samples']>}>;
+ * file → samples. Front F3: `photographs`, the GLIMAGES.LST rows and the five LSS bitmaps (none of the Object X four lies in the strip), so a
+ * row whose field holds a photographed galaxy is drawn as natively (0x596bd0, 0x597290) instead of staying photographic-image. */
+export type LssSpectrumInputs=Readonly<{names:ReadonlySet<string>;qsoCatalog:FieldQsoCatalog;ownSpectra:ReadonlyMap<string,FieldLibrarySpectrum['samples']>;photographs:FieldPhotographs}>;
 /** A selected galaxy with its own library spectrum in GLXYSP.LST (native key: id without spaces + ".SP") is observed with that
  * spectrum, as the Hubble route does (librarySpectrum); one whose file is not bundled stays unavailable (spectrum-mapping),
  * never given the GLXYTMPL.SP template. Among LSS identifiers only NGC 4670 and NGC 4889 match; both are bundled. */
@@ -35,10 +40,11 @@ export type LssSpectrumInputs=Readonly<{names:ReadonlySet<string>;qsoCatalog:Fie
 export type LssRowStatus=Readonly<{kind:'available'|'neighbour';result:FieldResult;selectedId:string;selectedIndex:number}>|Readonly<{kind:'unavailable';reasons:readonly FieldUnavailableReason[];result:FieldResult|null}>;
 /** variableTime (Front T): the observatory-clock JD frozen when the list was built; without it, a row whose field holds a
  * time-dependent variable star in view stays unavailable (variable-time-required). */
-export function evaluateLssRow(pack:FieldPack,glx:Uint8Array,row:LssRow,telescope:FieldTelescope,inputs:LssSpectrumInputs,variableTime?:FieldVariableTime):LssRowStatus{
+/** range (Front S2): VIREO's 3700–4700 Å with its start-time continuation (0x55e97c), or the former web range 4000–5000 Å. */
+export function evaluateLssRow(pack:FieldPack,glx:Uint8Array,row:LssRow,telescope:FieldTelescope,inputs:LssSpectrumInputs,variableTime?:FieldVariableTime,range:SpectralRange=LEGACY_GALAXY_RANGE):LssRowStatus{
  // Evidence inconsistencies (tampered or incomplete pack) throw to the caller; only typed gates become statuses.
  // Front L2: the recovered QSO merge replaces the earlier typed QSO gate (as the Hubble engine fields use it).
- const at={ra:row.ra,dec:row.dec},base:FieldOptions={qso:'merge',qsoCatalog:inputs.qsoCatalog,...(variableTime?{variableTime}:{})};
+ const at={ra:row.ra,dec:row.dec},base:FieldOptions={qso:'merge',qsoCatalog:inputs.qsoCatalog,photographs:inputs.photographs,...(variableTime?{variableTime}:{}),...(sameRange(range,LEGACY_GALAXY_RANGE)?{}:{spectralInterval:{minimum:range.minimum,maximum:range.maximum},continuation:'start-time' as const})};
  // The row's own galaxy is usually the selected one: when it has an own spectrum, supply it up front (one evaluation, and any
  // typed reason, mean-bound included, is then judged with that spectrum). Review 1 F8.
  const ownFor=(id:string)=>{if(!hasLibrarySpectrum(inputs.names,id))return null;const file=id.replace(/ /g,'')+'.SP',samples=inputs.ownSpectra.get(file);return samples?Object.freeze({targetId:id,file,samples}):undefined;};

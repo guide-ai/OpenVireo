@@ -121,7 +121,11 @@ test('Help opens VarTypeHlp.LST in VIREO\'s help viewer and Print opens a previe
  await expect(preview).not.toContainText('Observatory" - ');
  await expect(page.getByTestId('variable-print-date')).toHaveText(/\S.*     Laboratory Table Number \(Not Recorded\)$/);
  await expect(preview).toContainText('[student and lab text entered in VIREO: not recovered on this site]');
- await expect(preview).toContainText('(Screen Image Printed on Next Page)');
+ // Front R4b: portrait (the default here) keeps the plot on page 1; landscape adds the next-page line and page 2.
+ await expect(page.getByTestId('variable-print-page2')).toHaveCount(0);
+ await expect(page.getByTestId('variable-print-next-page')).toHaveCount(0);
+ await page.getByTestId('variable-print-orientation').getByLabel('Landscape').check();
+ await expect(page.getByTestId('variable-print-next-page')).toHaveText('(Screen Image Printed on Next Page)');
  const page2=page.getByTestId('variable-print-page2');
  await expect(page2.locator('p').first()).toHaveText('[student and lab text entered in VIREO: not recovered on this site] - Page 2');
  await expect(page2).toContainText('CLEA Exercise "VIREO - The VIRtual Educational Observatory"');

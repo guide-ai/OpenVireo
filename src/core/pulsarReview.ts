@@ -133,7 +133,7 @@ export function pulsarReviewCancel(s: PulsarAnalysisState): PulsarTransition {
  * (0x56f78a..0x56f799) then clears form byte 0x5db (listSaved) and enables +0x38c (Save) for any
  * non-Cancel result: no count check, even when nothing changed or every row was deleted. It is not
  * Clear (0x56f7ac): Record, Review, pending flags, cursors and the measurement record are untouched.
- * The native CSV writer stays gated, so saveEnabled enables no web control.
+ * saveEnabled enables the native Save (Front F3, core/pulsarNativeSave.ts).
  */
 export function pulsarReviewConfirm(s: PulsarAnalysisState): PulsarTransition {
   const r = s.reviewSession;

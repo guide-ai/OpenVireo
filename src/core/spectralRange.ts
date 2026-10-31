@@ -44,3 +44,38 @@ export function spectralRangeGrid(r:SpectralRange):readonly number[]{
  if(!isDialogRange(r))throw new SpectralRangeError();
  const step=(r.maximum-r.minimum)/600;return Object.freeze(Array.from({length:600},(_,i)=>r.minimum+i*step));
 }
+/** Front S (S1) / S2: an exposure on a non-default range carries "#R<min>-<max>" after its route policy; the default range keeps
+ * the policy unchanged, so earlier states, sessions and saved files are byte-identical. */
+export const RANGE_MARK='#R';
+export function policyRange(policy:unknown,base:SpectralRange=DEFAULT_SPECTRAL_RANGE):Readonly<{base:string;range:SpectralRange}>|null{
+ if(typeof policy!=='string')return null;
+ const at=policy.indexOf(RANGE_MARK);if(at<0)return Object.freeze({base:policy,range:base});
+ const m=/^(\d{4})-(\d{4})$/.exec(policy.slice(at+RANGE_MARK.length)),range=m?Object.freeze({minimum:Number(m[1]),maximum:Number(m[2])}):null;
+ if(!range||!isDialogRange(range)||sameRange(range,base))return null;
+ return Object.freeze({base:policy.slice(0,at),range});
+}
+export const policyWithRange=(policy:string,range:SpectralRange,base:SpectralRange=DEFAULT_SPECTRAL_RANGE)=>sameRange(range,base)?policy:`${policy}${RANGE_MARK}${range.minimum}-${range.maximum}`;
+/** Front S2 [W] (VIREO has no restore): an investigation restore makes the one range every restored exposure shares the active
+ * range; exposures on different ranges, or none, leave 3700–4700. Each argument is an exposure policy (or null for none). */
+export function sharedRestoredRange(policies:readonly unknown[]):SpectralRange{
+ const ranges=policies.filter(p=>p!==null&&p!==undefined).map(p=>policyRange(p)?.range??DEFAULT_SPECTRAL_RANGE);
+ return ranges.length&&ranges.every(r=>sameRange(r,ranges[0]))?ranges[0]:DEFAULT_SPECTRAL_RANGE;
+}
+/** Front S2 round 2: the Hubble galaxy and LSS policies written before S2 carry no mark and mean the web's former 4000–5000 Å
+ * (decision D1, now reversed); new exposures take VIREO's 3700–4700 Å and carry "#R3700-4700". Only these two ranges are
+ * witnessed for those routes. */
+export const LEGACY_GALAXY_RANGE:SpectralRange=Object.freeze({minimum:4000,maximum:5000});
+export const GALAXY_WITNESSED_RANGES:readonly SpectralRange[]=Object.freeze([DEFAULT_SPECTRAL_RANGE,LEGACY_GALAXY_RANGE]);
+export function galaxyPolicyRange(policy:unknown):Readonly<{base:string;range:SpectralRange}>|null{
+ const r=policyRange(policy,LEGACY_GALAXY_RANGE);return r&&GALAXY_WITNESSED_RANGES.some(w=>sameRange(w,r.range))?r:null;
+}
+export const galaxyPolicyWithRange=(policy:string,range:SpectralRange)=>policyWithRange(policy,range,LEGACY_GALAXY_RANGE);
+/** Review 2 L2: the shared-range rule over ranges already read with each family's own base (galaxyPolicyRange for Hubble and
+ * LSS, policyRange for the others); null entries are ignored. */
+export function sharedRange(ranges:readonly (SpectralRange|null|undefined)[]):SpectralRange{
+ const r=ranges.filter((x):x is SpectralRange=>!!x);return r.length&&r.every(x=>sameRange(x,r[0]))?r[0]:DEFAULT_SPECTRAL_RANGE;
+}
+/** Review 3 H1: the range a restore may give the page from a Hubble galaxy or LSS policy: only a marked one (written since Front
+ * S2). An unmarked legacy policy (4000–5000 Å) counts as no range, so restoring a file saved before S2 keeps the page's current
+ * or default range, and Classify stays at VIREO's 3700–4700 Å; the exposure itself keeps its own range [W]. */
+export function galaxyRestoreRange(policy:unknown):SpectralRange|null{return typeof policy==='string'&&policy.includes(RANGE_MARK)?galaxyPolicyRange(policy)?.range??null:null;}

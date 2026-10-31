@@ -19,8 +19,9 @@ export class FieldPackError extends Error{
 }
 export const FIELD_PACK_SCHEMA='openvireo-field-pack-v1';
 /** variables: a field across 0 h covers the whole RA ring of its Dec band (Front G G1b); the most CLEA_VStrs.dat records in any
- * 0.75° ring is 549. */
-export const FIELD_PACK_LIMITS=Object.freeze({pointings:500,bands:24,readsPerBand:400_000,variables:1000,qso:2000,photographs:200});
+ * 0.75° ring is 549, and in any 7.5° ring (the finder field, Front G5) 3,483 (scan at 0.1° steps, 2026-10-30). These are web
+ * decoder bounds, not VIREO limits. */
+export const FIELD_PACK_LIMITS=Object.freeze({pointings:500,bands:24,readsPerBand:400_000,variables:4000,qso:2000,photographs:200});
 const GSC_BANDS=/^([NS])(0000|0730|1500|2230|3000|3730|4500|5230|6000|6730|7500|8230)$/;
 export type FieldPackRect=Readonly<{minimumRa:number;maximumRa:number;minimumDec:number;maximumDec:number}>;
 export type FieldPackBand=Readonly<{name:string;recordCount:number;sha256:string|null;reads:ReadonlyMap<number,string>}>;
