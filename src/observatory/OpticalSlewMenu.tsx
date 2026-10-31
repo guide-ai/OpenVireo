@@ -16,6 +16,7 @@ import {hotListPrintSnapshot,type HotListPrintSnapshot} from '../core/hotListPri
 import {INITIAL_OPTICAL_HOT_LIST,cancelOpticalHotListSearch,closeOpticalHotList,dismissOpticalHotListNotice,editOpticalHotListSearch,openOpticalHotList,openOpticalHotListSearch,opticalHotListCaption,opticalHotListRowText,opticalHotListRows,reopenOpticalHotList,selectOpticalHotListIndex,slewToOpticalHotListSelection,submitOpticalHotListSearch,type OpticalHotListWindow as HotListState} from '../core/opticalHotList';
 import {INITIAL_OPTICAL_SKY_COORDS,cancelOpticalSkyCoords,confirmOpticalSkyCoords,dismissOpticalSkyCoordsNotice,editOpticalSkyCoordsField,openOpticalSkyCoords,openOpticalSkyCoordsFromHotList,selectOpticalSkyCoordsEpoch,opticalSlewConfirmText,type OpticalSkyCoordsState} from '../core/opticalSkyCoords';
 import type {Pointing} from '../core/sky';
+import {addCurrentId,addCurrentRemark,type ShownCurrentObject} from '../core/currentObject';
 import HotListPrintPreview from './HotListPrintPreview';
 import OpticalHotListWindow from './OpticalHotListWindow';
 import OpticalSkyCoordsDialog from './OpticalSkyCoordsDialog';
@@ -31,7 +32,9 @@ const M=OBSERVATORY_MESSAGES.skyCoords,H=OBSERVATORY_MESSAGES.hotList,E=OBSERVAT
 /** Optical Slew menu (Front B): Set Coordinates (OB-SC) and Hot List ▸ View/Select (OB-HL) with Search and Print. The
  * confirmed J2000 target goes to the existing programmed-slew confirmation through `request`; a disabled menu (telescope
  * moving, dome closed, other route) closes every open window without committing. */
-export default function OpticalSlewMenu({pointing,enabled,request,hotList,objectId,options,onOptions,fieldInfo}:{pointing:Pointing;enabled:boolean;request:(p:Pointing,note?:string)=>void;hotList:SharedHotListHandle;objectId:string|null;options:OpticalOptions;onOptions:(o:OpticalOptions)=>void;
+export default function OpticalSlewMenu({pointing,enabled,request,hotList,currentObject,exerciseCode=0,options,onOptions,fieldInfo}:{pointing:Pointing;enabled:boolean;request:(p:Pointing,note?:string)=>void;hotList:SharedHotListHandle;
+ /** Front R4: VIREO's current object at a pointing (0x53cf94), already behind the Object X gate; the session exercise code (0 none). */
+ currentObject:(p:Pointing)=>Promise<ShownCurrentObject>;exerciseCode?:number;options:OpticalOptions;onOptions:(o:OpticalOptions)=>void;
  /** Front O: Edit Mode (not persisted) and File › Field Information. Absent: the menu is exactly as before. */
  fieldInfo?:FieldInformationProps&Readonly<{onEditMode:(on:boolean)=>void;
   /** Front M: the Virtual Observatory state lifted to the page (also gates Multi-Spec mode 0); absent: kept here. */
@@ -45,13 +48,20 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,object
  const [localVirtualObservatory,setLocalVirtualObservatory]=useState(false);
  const virtualObservatory=fieldInfo?.virtualObservatory??localVirtualObservatory,setVirtualObservatory=fieldInfo?.onVirtualObservatory??setLocalVirtualObservatory;
  const editMode=fieldInfo?.editMode??false;
+ const addCurrentTicket=useRef(0);
  // A request made in an earlier Edit Mode session must not reopen windows when Edit Mode is switched on again.
  useEffect(()=>{if(!editMode)setFieldRequest(null);},[editMode]);
  const list=hotList.doc.editor?.list??null,fileName=hotList.doc.name;
  const rows=useMemo(()=>opticalHotListRows(list),[list]),texts=useMemo(()=>rows.map((r,i)=>opticalHotListRowText(r.record,i+1)),[rows]),caption=opticalHotListCaption(fileName);
- useEffect(()=>{if(!enabled){setSky(s=>s.dialog?{...s,dialog:null,notice:null}:s);setHot(h=>h.shown||h.notice?{...INITIAL_OPTICAL_HOT_LIST,index:h.index}:h);setPrint(null);setEntry(null);setEntryError('');}},[enabled]);
+ useEffect(()=>{if(!enabled){addCurrentTicket.current++;setSky(s=>s.dialog?{...s,dialog:null,notice:null}:s);setHot(h=>h.shown||h.notice?{...INITIAL_OPTICAL_HOT_LIST,index:h.index}:h);setPrint(null);setEntry(null);setEntryError('');}},[enabled]);
  // A list replaced while the window is hidden keeps the remembered index only when it is still a row.
  useEffect(()=>{setHot(h=>h.index>=rows.length?{...h,index:-1}:h);},[rows]);
+ // Add Current (0x53f0fc): refresh the current object (0x53cf94), then prefill ID (its name), the kind remark (exercise code 0 only)
+ // and the pointing. A lookup that resolves after the menu was disabled or a newer click is dropped.
+ async function addCurrent(){const ticket=++addCurrentTicket.current,at=pointing;setEntryError('');
+  let object:ShownCurrentObject;try{object=await currentObject(at);}catch{object=Object.freeze({status:'none'});}
+  if(ticket!==addCurrentTicket.current)return;
+  setEntry(hotListEntryDraft(addCurrentPrefill(at,addCurrentId(object)||null,addCurrentRemark(object,exerciseCode))));}
  function ok(){const step=confirmOpticalSkyCoords(sky);setSky(step.state);if(step.slew){const {target,conversion}=step.slew;request(target,opticalSlewConfirmText(target,conversion!==null));}}
  function cancel(){const fromList=sky.dialog?.origin==='hot-list';setSky(cancelOpticalSkyCoords);if(fromList)setHot(reopenOpticalHotList);}
  function addEntry(){if(!entry)return;const r=parseHotListEntry(entry);if(r.status!=='ok'){setEntryError(r.status==='ra-invalid'?HOT_LIST_ENTRY_CAPTIONS.raError:r.status==='dec-invalid'?HOT_LIST_ENTRY_CAPTIONS.decError:E.raUnsupported);return;}
@@ -94,7 +104,7 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,object
    {terminate&&programmed?.moving&&<TerminateSlewBox onYes={()=>{endTerminate();programmed.terminate();}} onNo={endTerminate}/>}
    <button type="button" className="secondary-button" disabled={!enabled} data-testid="ob-view-select" onClick={()=>setHot(h=>openOpticalHotList(h,rows.length))}>{H.open}</button>
    <OpticalOptionsDialog options={options} onOptions={onOptions} disabled={!enabled} editMode={fieldInfo?.editMode} onEditMode={fieldInfo?.onEditMode} virtualObservatory={virtualObservatory} onVirtualObservatory={fieldInfo?setVirtualObservatory:undefined} sessionOptions={fieldInfo?.sessionOptions} onSessionOptions={fieldInfo?.onSessionOptions} horizonRadians={fieldInfo?.horizonRadians}/>
-   <button type="button" className="secondary-button" disabled={!enabled} data-testid="ob-add-current" onClick={()=>{setEntryError('');setEntry(hotListEntryDraft(addCurrentPrefill(pointing,objectId)));}}>{E.open}</button>
+   <button type="button" className="secondary-button" disabled={!enabled} data-testid="ob-add-current" onClick={()=>void addCurrent()}>{E.open}</button>
   </div>
   {fieldInfo&&<ObservatoryFileMenu editMode={editMode} qsoList={virtualObservatory} disabled={fieldInfo.busy??false} pointing={pointing} view={fieldInfo.view} telescope={fieldInfo.telescopeName??''} onFieldInfo={kind=>setFieldRequest(r=>({kind,token:(r?.token??0)+1}))} onQsoList={()=>setQsoRequest(n=>n+1)} onClusterData={()=>setClusterRequest(n=>n+1)}/>}
   <ResearchNotes><p>{M.openHelp} {H.openHelp} {E.openHelp} {M.adaptation} {E.adaptation}</p></ResearchNotes>

@@ -36,10 +36,25 @@ export function readOpticalOptions(value:unknown):OpticalOptions{
  *   flag = Print in Color XOR 1 (0x580fba) and restores it.
  * - timeDependentData (TimeDepBox): +0x27d8 = env+0x2e8c, compiled 0 (0x5a2a39). Off: LSS Record Z reuses the first row with the
  *   same object ID (0x57c918, Front L3); on: every Record Z adds a row.
+ * - showObjectId (ObjIDBox) +0x27cd = env+0x2e81 and showObjectMag (spMagBox) +0x27cc = env+0x2e80, compiled 0 (0x5a2ae8/0x5a2ae1).
+ *   ID names the current object in the photometer label and recorded name, the spectrometer Object box and Save/Print names, and
+ *   the camera's default FITS name and OBJECT card; Mag shows the spectrometer's V (with Edit Mode too). Front R4,
+ *   docs/FRONT-R4-OPTIONS.md. Nothing turns them off within a session except Options OK/Reset.
  * [W] WEB-OPT-R3: like Edit Mode and Virtual Observatory these are page-session checkboxes, open to anyone and not saved. */
-export type SessionOpticalOptions=Readonly<{fastSlewing:boolean;fastScopeChange:boolean;computeRedshiftVelocity:boolean;infraredCamera:boolean;monochromeDisplays:boolean;printInColor:boolean;timeDependentData:boolean}>;
-export const COMPILED_SESSION_OPTICAL_OPTIONS:SessionOpticalOptions=Object.freeze({fastSlewing:true,fastScopeChange:false,computeRedshiftVelocity:false,infraredCamera:true,monochromeDisplays:false,printInColor:false,timeDependentData:false});
-export const SESSION_OPTION_CAPTIONS:Readonly<Record<keyof SessionOpticalOptions,string>>=Object.freeze({fastSlewing:'Fast Slewing',fastScopeChange:'Fast Scope Change',computeRedshiftVelocity:'Compute Rdshft Vel.',infraredCamera:'Infrared Camera',monochromeDisplays:'Monochrome Displays',printInColor:'Print in Color',timeDependentData:'Time-Dependent Data'});
+export type SessionOpticalOptions=Readonly<{fastSlewing:boolean;fastScopeChange:boolean;computeRedshiftVelocity:boolean;infraredCamera:boolean;monochromeDisplays:boolean;printInColor:boolean;timeDependentData:boolean;showObjectId:boolean;showObjectMag:boolean}>;
+export const COMPILED_SESSION_OPTICAL_OPTIONS:SessionOpticalOptions=Object.freeze({fastSlewing:true,fastScopeChange:false,computeRedshiftVelocity:false,infraredCamera:true,monochromeDisplays:false,printInColor:false,timeDependentData:false,showObjectId:false,showObjectMag:false});
+export const SESSION_OPTION_CAPTIONS:Readonly<Record<keyof SessionOpticalOptions,string>>=Object.freeze({fastSlewing:'Fast Slewing',fastScopeChange:'Fast Scope Change',computeRedshiftVelocity:'Compute Rdshft Vel.',infraredCamera:'Infrared Camera',monochromeDisplays:'Monochrome Displays',printInColor:'Print in Color',timeDependentData:'Time-Dependent Data',showObjectId:'Show Object ID',showObjectMag:'Show Object Mag.'});
+/** VIREO's exercise byte env+0x383f as the TEnvironment1 exercise menus write it: Object X 1, Stellar Spectra 2, Photometry 3,
+ * Hubble 4, LSS 5, Pulsars 6, HR Diagrams 7; 0 before any (A-object-id-mag-nearest.md §4, show-object-id.md §4). */
+export type ExerciseCode=0|1|2|3|4|5|6|7;
+/** The options an exercise menu forces on [D]: Show Object ID for Photometry 0x58a3a2, HR Diagrams 0x58a54c, Stellar Spectra
+ * 0x58a70e, Hubble 0x58a8d8 and LSS 0x58aabe; Show Object Mag. for the last three. Object X and Pulsars write neither. Options
+ * already on stay on (no menu writes 0). */
+export function exerciseForcedOptions(options:SessionOpticalOptions,code:ExerciseCode):SessionOpticalOptions{
+ const id=code===2||code===3||code===4||code===5||code===7,mag=code===2||code===4||code===5;
+ if((!id||options.showObjectId)&&(!mag||options.showObjectMag))return options;
+ return Object.freeze({...options,showObjectId:options.showObjectId||id,showObjectMag:options.showObjectMag||mag});
+}
 /** The rate index of a programmed slew (record+0x27af through RateSlider.Position). */
 export const programmedSlewRateIndex=(fastSlewing:boolean):3|4=>fastSlewing?4:3;
 /** Telescope Apply closes an open dome unless Fast Scope Change is on (0x58b554: fast path only with the dome fully open). */
@@ -55,7 +70,7 @@ const v=(label:string,text:string):OptionTabValue=>Object.freeze({label,text});
 export const OPTION_TABS:readonly OptionTab[]=Object.freeze([
  Object.freeze({tab:'general',caption:'&Parameters',values:Object.freeze([v('Base Slew Rate','5.0'),v('Horizon Limit','10.0'),v('Finder Field (Degs)','2.50'),v('Instr. Field (Arc Min)','15.0'),v('Field Creation Factor','3'),v('Finder Mag Limit','11.5')])}),
  Object.freeze({tab:'photometer',caption:'Photo&meter',values:Object.freeze([v('Base Magnitude (V)','6.0'),v('Sky Magnitude (V)','16.00'),v('Base Photon Count','1000'),v('Timer Wait (ms)','100'),v('Compute Magnitudes','checked'),v('Include R and I Colors','checked'),v('Detect Sky','unchecked'),v('Plot HR Diagram','checked'),v('Set E(B-V)','checked')])}),
- Object.freeze({tab:'spectrometer',caption:'Spec&trometer',values:Object.freeze([v('Sky Magnitude (V)','19.00'),v('Base Photon Count','50'),v('Timer Wait (ms)','1'),v('Default Spectral Range: Minimum','3700.0'),v('Default Spectral Range: Maximum','4700.0'),v('Allow User Change','checked'),v('Show Object Mag.','unchecked')])}),
+ Object.freeze({tab:'spectrometer',caption:'Spec&trometer',values:Object.freeze([v('Sky Magnitude (V)','19.00'),v('Base Photon Count','50'),v('Timer Wait (ms)','1'),v('Default Spectral Range: Minimum','3700.0'),v('Default Spectral Range: Maximum','4700.0'),v('Allow User Change','checked')])}),
  Object.freeze({tab:'ccd',caption:'&CCD Camera',values:Object.freeze([v('Camera Name/ID','Site CH350 003B Back-Illuminated'),v('Pixel Size: Width','24.0'),v('Pixel Size: Height','24.0'),v('Image Size (Pixels): Width','1024'),v('Image Size (Pixels): Height','1024'),v('Read Noise (e/pixel)','5.0'),v('Dark Noise (e/pixel/sec)','2.0'),v('Bias (e/Pixel)','1000'),v('Base Magnitude','10.0'),v('Base Count','1000'),v('Base Exposure','10'),v('Chip Well Depth','320000'),v('AD Depth (Bits)','16'),v('Chip Cooling','Thermoelectric'),v('Apply Position Noise','checked')])}),
  Object.freeze({tab:'ir',caption:'&IR Camera',values:Object.freeze([v('Camera Name/ID','CLEA_IR1'),v('Pixel Size: Width','40.0'),v('Pixel Size: Height','40.0'),v('Image Size (Pixels): Width','512'),v('Image Size (Pixels): Height','512'),v('Read Noise (e/pixel)','53.0'),v('Dark Noise (e/pixel/sec)','0.7'),v('Bias (e/Pixel)','1000'),v('Base Magnitude','10.0'),v('Base Count','1000'),v('Base Exposure','10'),v('Chip Well Depth','250000'),v('AD Depth (Bits)','32'),v('Chip Cooling','Liquid Nitrogen'),v('Apply Position Noise','checked')])}),
 ] as const);

@@ -12,6 +12,7 @@ import {CAMERA_EXTRACTS,findCameraExtract,loadCameraCatalog,type CameraCatalogMo
 import type {AccessReason} from './core/instrumentAccess';
 import {writeCameraFits,cameraFitsFileName,type CameraFitsContext} from './core/fitsWriter';
 import {writeNativeCameraFits,nativeCameraFitsFileName} from './core/cameraFitsNative';// Front R1
+import type {ShownCurrentObject} from './core/currentObject';
 import {cameraCatalogReference} from './core/cameraCatalogReference';
 import type {OpticalIndex} from './core/opticalTelescope';
 import type {Pointing} from './core/sky';
@@ -28,6 +29,9 @@ export type CameraControlProps=Readonly<{
  /** Front RE5: the Set Date/Time ID (the web takes the Object X lab's ID): VIREO names the native FITS file and its OBJECT card
   * 'ObjX-'+ID, or UNKNOWN with no ID (Save 0x522c28, header 0x5239f8). */
  vireoId?:string;
+ /** Front R4: Show Object ID (env+0x2e81, compiled off) and VIREO's current object at a pointing (0x53cf94, refreshed at Save
+  * 0x522c28), already behind the Object X gate. With the option on and an object, the native file and OBJECT carry its name. */
+ showObjectId?:boolean;currentObject?:(p:Readonly<{ra:number;dec:number}>)=>Promise<ShownCurrentObject>;
  /** Front G merge: the Object X lab's hidden target (or null); the field-object pass is masked near it and near every ObjectX.HTL position. */
  objectXHidden?:Readonly<{ra:number;dec:number}>|null;
  /** Front R3: the Infrared Camera option (IRBox, env+0x2e87, compiled on). Off: the IR camera is not offered (TObsrvtry FormActivate
@@ -62,11 +66,12 @@ function cameraQuery(camera:CameraExposureKind,telescope:OpticalIndex,filter:num
 }
 const randomSeed=()=>crypto.getRandomValues(new Uint32Array(1))[0];
 
-function CameraControl({objectXHidden=null,vireoId='',infraredCamera=true,active,busy,telescopeIndex,pointing,access,currentJd,extraSources,onImage,seedSource=randomSeed}:CameraControlProps){
+function CameraControl({objectXHidden=null,vireoId='',showObjectId=false,currentObject,infraredCamera=true,active,busy,telescopeIndex,pointing,access,currentJd,extraSources,onImage,seedSource=randomSeed}:CameraControlProps){
  const [camera,setCamera]=useState<CameraExposureKind>('ccd'),[filter,setFilter]=useState(0),[minutes,setMinutes]=useState('0'),[seconds,setSeconds]=useState('10'),[gain,setGain]=useState(2);
  const [mode,setMode]=useState<CameraCatalogMode>('static'),[usePalette,setUsePalette]=useState(false);
  const [gate,setGate]=useState<CameraRequestGate>(createCameraRequestGate),[message,setMessage]=useState<string>(M.statusIdle),[,setWaitShown]=useState(false);
  const [image,setImage]=useState<CameraImage|null>(null),[saveError,setSaveError]=useState('');
+ const imageRef=useRef(image);useEffect(()=>{imageRef.current=image;},[image]);
  const gateRef=useRef(gate),attempt=useRef<Attempt|null>(null),timers=useRef<{observe?:number;poll?:number}>({}),canvas=useRef<HTMLCanvasElement>(null);
  const mounted=useRef(true);useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;stopTimers();attempt.current?.controller.abort();stopWorker(attempt.current);};},[]);
  function stopTimers(){if(timers.current.observe)clearInterval(timers.current.observe);if(timers.current.poll)clearInterval(timers.current.poll);timers.current={};}
@@ -160,15 +165,25 @@ function CameraControl({objectXHidden=null,vireoId='',infraredCamera=true,active
  }
  function stop(){if(gate.ticket)dispatch({type:'cancel',ticket:gate.ticket});}
  function fitsContext(i:CameraImage):CameraFitsContext{return {jd:i.jd,filterName:cameraCatalogReference(i.exposure.recipe.camera,i.exposure.recipe.filterPosition).filter,catalogName:i.catalogName,source:{mode:i.source.mode,sha256:i.source.sha256,extractId:i.source.extractId,url:i.source.url}};}
- function save(native=false){
+ // Front R4: the native save refreshes the current object at the image's pointing first (0x522c28 → 0x53cf94).
+ const saveTicket=useRef(0);
+ async function save(native=false){
   if(!image)return;setSaveError('');
+  let currentName:string|undefined;
+  if(native&&showObjectId&&currentObject){
+   const ticket=++saveTicket.current,shot=image;
+   const object=await currentObject({ra:shot.exposure.recipe.centerRaHours,dec:shot.exposure.recipe.centerDecDegrees}).catch(()=>null);
+   if(ticket!==saveTicket.current||imageRef.current!==shot)return;
+   if(object?.status==='object')currentName=object.name;
+   if(currentName!==undefined&&!/^[\x20-\x7e]*$/.test(currentName))currentName=undefined;
+  }
   // RE5 review 1 M2: FITS header cards allow only printable ASCII, so an ID outside it is refused with a message; any other writer
   // error is shown too, and nothing is downloaded.
   if(native&&!/^[\x20-\x7e]*$/.test(vireoId)){setSaveError(M.saveIdNotAscii);return;}
   let bytes:Uint8Array;const context=fitsContext(image);
-  try{bytes=native?writeNativeCameraFits(image.exposure,image.jd,vireoId||undefined):writeCameraFits(image.exposure,context);}catch{setSaveError(M.saveFailed);return;}
+  try{bytes=native?writeNativeCameraFits(image.exposure,image.jd,vireoId||undefined,currentName):writeCameraFits(image.exposure,context);}catch{setSaveError(M.saveFailed);return;}
   const url=URL.createObjectURL(new Blob([bytes as Uint8Array<ArrayBuffer>],{type:'application/fits'})),a=document.createElement('a');
-  a.href=url;a.download=native?nativeCameraFitsFileName(vireoId||undefined):cameraFitsFileName(image.exposure,context);document.body.append(a);a.click();a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),0);
+  a.href=url;a.download=native?nativeCameraFitsFileName(vireoId||undefined,currentName):cameraFitsFileName(image.exposure,context);document.body.append(a);a.click();a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),0);
  }
  const filterNames:readonly string[]=camera==='ir'?M.filterNamesIr:M.filterNames,gains=CAMERA_GAINS[camera];
  const shown=image?.exposure;
@@ -207,7 +222,7 @@ function CameraControl({objectXHidden=null,vireoId='',infraredCamera=true,active
   {shown&&image&&<figure className="camera-image">
    <canvas ref={canvas} role="img" aria-label={M.imageAlt(filterName(shown.recipe.camera,shown.recipe.filterPosition),shown.recipe.seconds,shown.recipe.camera)} data-testid="camera-canvas"/>
    <figcaption>{M.displayNote}</figcaption>
-   <div className="button-row"><button className="secondary-button" disabled={running} onClick={()=>save()}>{M.save}</button><button className="secondary-button" disabled={running} onClick={()=>save(true)} data-testid="camera-save-native" aria-describedby="camera-save-native-note">{M.saveNative}</button></div><p className="observatory-note">{M.saveNote}</p>{saveError&&<p role="alert" className="error" data-testid="camera-save-error">{saveError}</p>}<p className="observatory-note" id="camera-save-native-note">{M.saveNativeNote}</p>
+   <div className="button-row"><button className="secondary-button" disabled={running} onClick={()=>void save()}>{M.save}</button><button className="secondary-button" disabled={running} onClick={()=>void save(true)} data-testid="camera-save-native" aria-describedby="camera-save-native-note">{M.saveNative}</button></div><p className="observatory-note">{M.saveNote}</p>{saveError&&<p role="alert" className="error" data-testid="camera-save-error">{saveError}</p>}<p className="observatory-note" id="camera-save-native-note">{M.saveNativeNote}</p>
    <label className="camera-palette"><input type="checkbox" checked={usePalette} onChange={e=>setUsePalette(e.target.checked)}/>{M.palette}</label>
    <details><summary>{M.details}</summary><dl className="camera-details">
     <dt>{M.detailCatalog}</dt><dd data-testid="camera-detail-catalog">{image.catalogName}</dd>
