@@ -32,18 +32,21 @@ function download(bytes:Uint8Array,name:string){
  * CLEA_VStrs.dat record index; each new token opens once the catalog is loaded. */
 /** `monochromeDisplays` / `printInColor` (Front R4b): the session options. The light-curve window reads them only at Print
  * (TLtCrvDsplyForm1 Print1Click 0x52c1cc; src/core/lightCurveScheme.ts): it stays in colour until the first print, prints
- * in colour only with Print in Color, then keeps Monochrome Displays as of that print. The route stays mounted once
+ * in colour only with Print in Color, then keeps Monochrome Displays as of that print. The preview is VIREO's print dialog:
+ * closing it without Print… changes nothing. The route stays mounted once
  * visited, so the flag lives for the page session like VIREO's single form. */
 function VariableStarsRoute({active,openRequest=null,monochromeDisplays=false,printInColor=false}:{active:boolean;openRequest?:Readonly<{token:number;index:number;riseWordDefaulted?:boolean}>|null;monochromeDisplays?:boolean;printInColor?:boolean}){
  const id=useId(),[load,setLoad]=useState<LoadState>({status:'loading'}),[name,setName]=useState(''),[type,setType]=useState('');
  const [session,setSession]=useState<VariableStarSession>(INITIAL_VARIABLE_STAR_SESSION);
  const [menu,setMenu]=useState<'data'|'save'|'file'|null>(null),[notice,setNotice]=useState('');
  const [printing,setPrinting]=useState<'list'|'curve'|null>(null);
- const [curveMonochrome,setCurveMonochrome]=useState(INITIAL_LIGHT_CURVE_MONOCHROME),[printMonochrome,setPrintMonochrome]=useState(true);
- function printCurve(){
-  const flags=lightCurvePrintFlags({monochromeDisplays,printInColor});
-  setMenu(null);setPrintMonochrome(flags.printMonochrome);setCurveMonochrome(flags.displayMonochromeAfter);setPrinting('curve');
- }
+ const [curveMonochrome,setCurveMonochrome]=useState(INITIAL_LIGHT_CURVE_MONOCHROME);
+ const [printFlags,setPrintFlags]=useState<ReturnType<typeof lightCurvePrintFlags>>(()=>lightCurvePrintFlags({monochromeDisplays,printInColor}));
+ // Review 1 M1: the preview stands for PrintDialog1 (0x52c1cc runs Execute first and returns at 0x52c1dc on Cancel), so
+ // opening it writes nothing; only its Print… (the dialog's OK) sets the window's flag, to Monochrome Displays as of then.
+ function printCurve(){setMenu(null);setPrintFlags(lightCurvePrintFlags({monochromeDisplays,printInColor}));setPrinting('curve');}
+ // Review 1 L4: closing a preview returns focus to the menu that opened it.
+ function closePrint(trigger:React.RefObject<HTMLButtonElement|null>){setPrinting(null);requestAnimationFrame(()=>trigger.current?.focus());}
  const listHeading=useRef<HTMLHeadingElement>(null),curveHeading=useRef<HTMLHeadingElement>(null);
  const dataTrigger=useRef<HTMLButtonElement>(null),fileTrigger=useRef<HTMLButtonElement>(null);
  // Menus are plain disclosure buttons (no ARIA menu roles, so no arrow-key contract). Escape closes and refocuses the trigger.
@@ -149,14 +152,14 @@ function VariableStarsRoute({active,openRequest=null,monochromeDisplays=false,pr
    <p className="variable-note">{M.curveAdaptation}</p>
   </section>}
 
-  {printing==='list'&&list&&<PrintPreview caption={M.listCaption} lines={list.lines} onClose={()=>setPrinting(null)}/>}
-  {printing==='curve'&&list&&<CurvePrintPreview lines={list.lines} plot={plot} monochrome={printMonochrome} name={curve?.name??list.record.name} onClose={()=>setPrinting(null)}/>}
+  {printing==='list'&&list&&<PrintPreview caption={M.listCaption} lines={list.lines} onClose={()=>closePrint(dataTrigger)}/>}
+  {printing==='curve'&&list&&<CurvePrintPreview lines={list.lines} plot={plot} monochrome={printFlags.printMonochrome} name={curve?.name??list.record.name} onPrinted={()=>setCurveMonochrome(printFlags.displayMonochromeAfter)} onClose={()=>closePrint(fileTrigger)}/>}
  </main>;
 }
 
 /** Shared print shell: a modal preview whose Print… scopes the browser print to it. `orientation` adds an @page size while
  * the preview is open [W: VIREO takes the orientation from the printer settings]. */
-function PrintShell({caption,note,orientation,controls,children,onClose}:{caption:string;note?:string;orientation?:PrintOrientation;controls?:React.ReactNode;children:React.ReactNode;onClose:()=>void}){
+function PrintShell({caption,note,orientation,controls,children,onClose,onPrinted}:{caption:string;note?:string;orientation?:PrintOrientation;controls?:React.ReactNode;children:React.ReactNode;onClose:()=>void;onPrinted?:()=>void}){
  const id=useId(),dialog=useRef<HTMLDialogElement>(null),button=useRef<HTMLButtonElement>(null),[failed,setFailed]=useState(false);
  useEffect(()=>{const el=dialog.current;if(el&&!el.open){el.showModal();button.current?.focus();}
   return ()=>{const root=document.documentElement;if(root.getAttribute('data-print-scope')===VARIABLE_PRINT_SCOPE)root.removeAttribute('data-print-scope');};},[]);
@@ -166,14 +169,16 @@ function PrintShell({caption,note,orientation,controls,children,onClose}:{captio
   root.setAttribute('data-print-scope',VARIABLE_PRINT_SCOPE);
   const end=()=>{window.removeEventListener('afterprint',end);if(root.getAttribute('data-print-scope')===VARIABLE_PRINT_SCOPE)root.removeAttribute('data-print-scope');};
   window.addEventListener('afterprint',end);
-  try{if(typeof window.print!=='function')throw new TypeError('print unavailable');window.print();setFailed(false);}catch{end();setFailed(true);}
+  try{if(typeof window.print!=='function')throw new TypeError('print unavailable');window.print();setFailed(false);onPrinted?.();}catch{end();setFailed(true);}
  }
- return createPortal(<dialog ref={dialog} className="ob-dialog ob-wide variable-print-root" aria-labelledby={`${id}-t`} data-testid="variable-print-preview" data-orientation={orientation} onCancel={e=>{e.preventDefault();onClose();}}>
+ /** Closes the modal first, so the page is no longer inert when the caller returns focus (review 1 L4). */
+ const close=()=>{dialog.current?.close();onClose();};
+ return createPortal(<dialog ref={dialog} className="ob-dialog ob-wide variable-print-root" aria-labelledby={`${id}-t`} data-testid="variable-print-preview" data-orientation={orientation} onCancel={e=>{e.preventDefault();e.stopPropagation();close();}}>
   {orientation&&<style>{printPageSizeCss(orientation)}</style>}
   <div className="variable-print-chrome"><h2 id={`${id}-t`}>{M.printTitle(caption)}</h2><p className="variable-note">{M.printHelp}</p>{note&&<p className="variable-note">{note}</p>}{controls}</div>
   <section className="variable-print-report" tabIndex={0} aria-label={caption}>{children}</section>
   <div className="variable-print-chrome"><p role="alert">{failed?M.printError:''}</p>
-   <div className="ob-actions"><button type="button" className="primary-button" ref={button} data-testid="variable-print-print" onClick={print}>{M.printButton}</button><button type="button" className="secondary-button" data-testid="variable-print-close" onClick={onClose}>{M.printClose}</button></div></div>
+   <div className="ob-actions"><button type="button" className="primary-button" ref={button} data-testid="variable-print-print" onClick={print}>{M.printButton}</button><button type="button" className="secondary-button" data-testid="variable-print-close" onClick={close}>{M.printClose}</button></div></div>
  </dialog>,document.body);
 }
 
@@ -194,7 +199,7 @@ function PrintPreview({caption,lines,onClose}:{caption:string;lines:readonly str
 /** File › Print… of the light curve (Print1Click 0x52c1cc, body 0x52c250): the pure page of src/core/lightCurvePrint.ts in
  * the chosen orientation, with the window image in the print scheme (Print in Color off → black on white). Vertical gaps
  * follow the page's text-height steps; x 50 and x 700 become indents [W: no printer metrics]. */
-function CurvePrintPreview({lines,plot,monochrome,name,onClose}:{lines:readonly string[];plot:LightCurvePlot|null;monochrome:boolean;name:string;onClose:()=>void}){
+function CurvePrintPreview({lines,plot,monochrome,name,onClose,onPrinted}:{lines:readonly string[];plot:LightCurvePlot|null;monochrome:boolean;name:string;onClose:()=>void;onPrinted:()=>void}){
  const id=useId(),[printedAt]=useState(()=>new Date().toLocaleString()),[orientation,setOrientation]=useState<PrintOrientation>('portrait');
  const items=lightCurvePrintPage({orientation,dateText:printedAt,listLines:lines});
  const listItems=items.filter(i=>i.kind==='text'&&i.role==='line'),head=items.filter(i=>i.kind==='text'&&(i.role==='date'||i.role==='name'));
@@ -211,7 +216,7 @@ function CurvePrintPreview({lines,plot,monochrome,name,onClose}:{lines:readonly 
  const page2=rest.findIndex(i=>i.page===2),page1Rest=page2<0?rest:rest.slice(0,page2),page2Items=page2<0?[]:rest.slice(page2);
  const controls=<fieldset className="variable-print-orientation" data-testid="variable-print-orientation"><legend>{M.printOrientation}</legend>
   {(['portrait','landscape'] as const).map(o=><label key={o}><input type="radio" name={`${id}-orientation`} value={o} checked={orientation===o} onChange={()=>setOrientation(o)}/> {o==='portrait'?M.portrait:M.landscape}</label>)}</fieldset>;
- return <PrintShell caption={M.curveCaption} note={M.printCurveLayout(monochrome)} orientation={orientation} controls={controls} onClose={onClose}>
+ return <PrintShell caption={M.curveCaption} note={M.printCurveLayout(monochrome)} orientation={orientation} controls={controls} onClose={onClose} onPrinted={onPrinted}>
   {body(head,undefined)}
   <pre className="variable-lines variable-print-indent" style={gap(head.at(-1),listItems[0]??head.at(-1)!)} data-testid="variable-print-lines">{lines.join('\n')}</pre>
   {body(page1Rest,listItems.at(-1)??head.at(-1))}

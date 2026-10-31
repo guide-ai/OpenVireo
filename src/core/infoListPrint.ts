@@ -13,7 +13,8 @@ export const INFO_LIST_PRINT_LITERALS=Object.freeze({font:'Courier',fontSize:10,
  spoolTitle:'CLEA Exercise "VIREO - The VIRtual Educational Observatory" - '});
 export type InfoListPrintLine=Readonly<{x:0|50;text:string}>;
 export function infoListPrintPage(input:Readonly<{dateText:string;caption:string;lines:readonly string[];names?:readonly string[];table?:string}>):readonly InfoListPrintLine[]{
- // hotListPrintHeader is the same Q7–Q8 header (0x591098 and 0x59e51c share it) and ends with the +2H blank before the caption.
+ // hotListPrintHeader gives the same Q7–Q8 layout (0x591098 and 0x59e51c are separate bodies that draw it alike) and ends
+ // with the +2H blank before the caption.
  const out:InfoListPrintLine[]=hotListPrintHeader(input.dateText,false,input.names??[],input.table??'').map(text=>({x:0,text}));
  out.push({x:50,text:input.caption},{x:0,text:''});
  for(const text of input.lines)out.push({x:50,text});

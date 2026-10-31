@@ -30,10 +30,19 @@ test('the light curve stays in colour until the first Print, then keeps Monochro
  // Monochrome Displays is on, but the form has not printed yet: colour (flag +0x404 starts 0).
  expect(await scheme(page,'light-curve-svg')).toBe('colour');
  await expect(id(page,'light-curve-svg').locator('rect').first()).toHaveAttribute('fill','#000080');
+ // Review 1 M1: the preview is VIREO's print dialog; cancelling it (Escape, Close preview) writes nothing.
+ await page.evaluate(()=>{window.print=()=>{window.dispatchEvent(new Event('afterprint'));};});
+ await printCurve(page);await page.keyboard.press('Escape');await expect(id(page,'variable-print-preview')).toHaveCount(0);
+ // Review 1 L4: focus returns to the File menu.
+ await expect(id(page,'curve-file-menu')).toBeFocused();
+ expect(await scheme(page,'light-curve-svg')).toBe('colour');
+ await printCurve(page);await id(page,'variable-print-close').click();expect(await scheme(page,'light-curve-svg')).toBe('colour');
  await printCurve(page);
  // Print in Color off: the page prints in black on white.
  expect(await scheme(page,'variable-print-svg')).toBe('mono');
  await expect(id(page,'variable-print-svg').locator('polyline')).toHaveAttribute('stroke','#000000');
+ expect(await scheme(page,'light-curve-svg')).toBe('colour');
+ await id(page,'variable-print-print').click();
  await id(page,'variable-print-close').click();
  expect(await scheme(page,'light-curve-svg')).toBe('mono');
  // Exit and reopen: the single form keeps its flag.
@@ -47,7 +56,7 @@ test('the light curve stays in colour until the first Print, then keeps Monochro
  await printCurve(page);
  expect(await scheme(page,'variable-print-svg')).toBe('colour');
  await expect(id(page,'variable-print-svg').locator('polyline')).toHaveAttribute('stroke','#ffff00');
- await id(page,'variable-print-close').click();
+ await id(page,'variable-print-print').click();await id(page,'variable-print-close').click();
  expect(await scheme(page,'light-curve-svg')).toBe('colour');
 });
 

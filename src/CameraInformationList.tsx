@@ -12,7 +12,7 @@ import {blockRepeatedEnter} from './dialogKeyboard';
 export default function CameraInformationList({kind,testId,onClose,closeLabel}:{kind:CameraKind;testId:string;onClose:()=>void;closeLabel?:string}){
  const [printing,setPrinting]=useState(false),caption=CAMERA_INFORMATION_CAPTIONS[kind],lines=cameraInformationLines(kind);
  return <>
-  <pre className="ob-native camera-information-lines" data-testid={`${testId}-lines`} tabIndex={0} aria-label={caption}>{lines.join('\n')}</pre>
+  <pre className="ob-native camera-information-lines" data-testid={`${testId}-lines`} tabIndex={0} role="region" aria-label={caption}>{lines.join('\n')}</pre>
   <div className="button-row camera-information-list" role="group" aria-label={menuCaptionText(VL.listMenu.list)} data-testid={`${testId}-list-menu`}>
    <button type="button" onKeyDown={blockRepeatedEnter} data-testid={`${testId}-print`} onClick={()=>setPrinting(true)}>{menuCaptionText(VL.listMenu.print)}</button>
    <button type="button" onKeyDown={blockRepeatedEnter} data-testid={`${testId}-close`} aria-label={closeLabel} onClick={onClose}>{menuCaptionText(VL.listMenu.close)}</button>

@@ -101,7 +101,7 @@ so the preview does not show it. The page body, in order:
    orientation from the printer settings. VIREO draws the plot at the title's height, so it covers the title; the preview
    places the plot one line below it [W].
 6. Colours: the plot prints black on white unless **Print in Color** is checked, then in the screen colours (navy, white,
-   yellow). Printing also sets the window's own scheme to **Monochrome Displays** as read at that print, kept for the page
+   yellow). Pressing Print… in the preview (VIREO's print dialog OK; Cancel returns at 0x52c1dc) also sets the window's own scheme to **Monochrome Displays** as read at that print, kept for the page
    session; before the first print the window is always in colour (one form per run, flag +0x404, dossier §1).
 
 Not reproduced: printer metrics and fonts (gaps are text lines and indents) [W]. The first reading (and plan finding 8)

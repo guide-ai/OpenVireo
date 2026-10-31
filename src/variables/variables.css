@@ -47,7 +47,7 @@ html[data-print-scope=variable-stars] .variable-lines{background:#fff!important;
 /* GCVS IDs keep their catalog case (global table header styles uppercase th). */
 .variable-table tbody th{text-transform:none;letter-spacing:normal;font-size:inherit;font-weight:600;color:var(--ov-text)}
 /* Front R4b: the monochrome light-curve scheme and the print page's x 50 / x 700 indents. */
-.lc-panel.lc-panel-mono{background:#ffffff}
+.lc-panel.lc-panel-mono{background:#ffffff;box-shadow:inset 0 0 0 2px #000080}/* Panel1 stays clNavy (DFM): a navy bevel around the white image */
 .variable-print-indent{padding-inline-start:5ch}
 .variable-print-far{padding-inline-start:40%}
 .variable-print-orientation{border:0;padding:0;margin:8px 0;display:flex;gap:16px;flex-wrap:wrap}

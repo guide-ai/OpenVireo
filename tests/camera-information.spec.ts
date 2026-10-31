@@ -23,7 +23,11 @@ test('Front R4b: List › Print... prints the shared list page; the live camera 
  expect(lines.slice(1)).toEqual(['','','','     CCD Camera Parameters','',...CCD.map(l=>'     '+l)]);
  await expect(preview).not.toContainText('Observatory" - ');
  await preview.getByTestId('camera-information-print-preview-close').click();await expect(preview).toHaveCount(0);
- await expect(d).toBeVisible();await page.getByTestId('camera-information-close').click();await expect(d).not.toBeVisible();
+ await expect(d).toBeVisible();
+ // Review 1 M2: Escape in the nested print preview closes only the preview.
+ await page.getByTestId('camera-information-print').click();await expect(preview).toBeVisible();
+ await page.keyboard.press('Escape');await expect(preview).toHaveCount(0);await expect(d).toBeVisible();
+ expect(await page.locator('dialog[open]').count()).toBe(1);await expect(page.getByTestId('camera-information-print')).toBeFocused();await page.getByTestId('camera-information-close').click();await expect(d).not.toBeVisible();
  // The live camera window (observatory, dome open) offers File › Information... for its own camera.
  await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible({timeout:15000});
  await button(page,'Open dome ↗').click();await page.getByLabel('Target',{exact:true}).selectOption('N0000.DAT@14428');
@@ -39,5 +43,6 @@ test('Front R4b: List › Print... prints the shared list page; the live camera 
  await w.getByTestId('camera-live-information-print').click();
  await expect(page.getByTestId('camera-live-information-print-preview-native-header')).toContainText('     IR Camera Parameters');
  await page.keyboard.press('Escape');await expect(page.getByTestId('camera-live-information-print-preview')).toHaveCount(0);
+ await expect(w).toBeVisible();expect(await page.locator('dialog[open]').count()).toBe(1);
  await page.keyboard.press('Escape');await expect(w).toHaveCount(0);
 });

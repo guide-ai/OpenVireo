@@ -78,7 +78,7 @@ export const OBSERVATORY_MESSAGES=Object.freeze({
    printInColor:'Checked: Print Wedge Plot and the light curve\'s Print print in colour. Unchecked (as compiled): they print in black and white.',
    timeDependentData:'Unchecked (as compiled): Record Z on an object you already recorded updates its row (it keeps its first time), in the LSS survey and for Hubble galaxy measurements. Checked: every Record Z adds a new row, so one object can have several.',
    timeDependentDataNote:'The Observational Results window keeps its own choice for this ("append"); this option changes the LSS survey and the Hubble Observational Data records.',
-   colorNote:'These two options also apply to the original\'s light curve and HR diagram windows, which are not covered by this option yet.',
+   colorNote:'In the original these two options also apply to the HR diagram windows, which are not covered yet.',
    sessionNote:'Like Edit Mode, these options last for this page session only and are not saved in investigation files.',
    tabsHeading:'Parameter values (shown as compiled, read-only)',
    tabsNote:'These values are shown but not editable: the field, photometer, spectrometer and camera simulations were checked against exactly these values, and changing them would invalidate those checks.',

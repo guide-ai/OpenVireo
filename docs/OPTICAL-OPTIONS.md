@@ -45,6 +45,8 @@ contracts built on those values.
   the light-curve window once per run and writes its colour flag only in Print (0x52c1cc). So the light curve is drawn in
   colour until its first print whatever Monochrome Displays says; the print uses black on white unless Print in Color is
   checked; afterwards the window keeps the Monochrome Displays value read at that print, also after closing and reopening it,
-  until the next print. OpenVireo does the same for the page session. The HR diagram windows are not covered yet.
+  until the next print. Cancelling VIREO's print dialog writes nothing (0x52c1dc); here the print preview plays that dialog,
+  so only its Print… sets the flag, and closing it without printing changes nothing. OpenVireo does the same for the page
+  session. The HR diagram windows are not covered yet.
 - Demonstration, Test, Restrict Scope Access, Administrator and the photometer/spectrometer check boxes keep their
   compiled state and are listed as text.

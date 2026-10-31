@@ -65,8 +65,8 @@ Corrected labels:
   The core comment wrongly called it the extinction option; OpenVireo keeps printing it with the extinction-corrected distance,
   with a note.
 - **View/Print Parameters print** (Front R4b, `src/core/infoListPrint.ts`, dossier
-  `analysis/front-r4/C-parameters-camera-list.md` §1–§2): **Print this report**, on both the database and the own-pairs
-  routes, opens a preview of VIREO's list page (TInfoListForm1 Print1Click 0x59e4c0): the date + `     Laboratory Table Number
+  `analysis/front-r4/C-parameters-camera-list.md` §1–§2): **Print this report**, on the database, own-pairs and
+  native-DAT observation routes (the last added in review 1 L1), opens a preview of VIREO's list page (TInfoListForm1 Print1Click 0x59e4c0): the date + `     Laboratory Table Number
   (Not Recorded)`, two lines down the student line (blank: no sign-in), two lines down the caption `Cluster Age/Distance
   Parameters` indented as at x 50, two lines down the report lines, indented, in Courier. The 0-decimal distance and age use
   the ported FloatToStrF (`delphiFixed`) instead of `toFixed(0)`. [W] kept: the report stays a panel of the HR page instead of
