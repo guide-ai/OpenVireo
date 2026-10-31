@@ -2,6 +2,7 @@ import {test,expect,type Page} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
 import{clickHeaderTool}from'./fixtures/header-tools';
 import {okWithVelocity} from './fixtures/lss-velocity';
+// Re-pinned 2026-10-31 (Front S2 round 2): new Hubble/LSS exposures use VIREO's 3700–4700 Å with the start-time continuation (docs/RANGE-FINGERPRINTS-2026-10-31.md).
 // Front L2 (docs/LSS-SURVEY.md): a formerly QSO-gated row acquires with the recovered QSO merge; .SSP Save / Print on the LSS
 // and galaxy routes (recovered writer); the native LSS results .TXT; LSS Galaxy Data only with Edit Mode.
 const WEDGE_HEADER='Object ID    MJD(Days)      RA           Dec     V(km/sec)  Comments';
@@ -34,7 +35,7 @@ test('a formerly QSO-gated row (F1 row 3) acquires; its spectrum saves as .SSP a
  const ssp=await download(page,()=>panel.getByRole('button',{name:'Save spectrum (.SSP)',exact:true}).click());
  expect(ssp.name).toMatch(/^openvireo-lss-.*\.ssp$/);
  const lines=ssp.bytes.toString('latin1').split('\r\n');
- expect(lines[0]).toMatch(/^\*SpHdr\* [^,]{1,24},/);expect(lines.filter(Boolean)).toHaveLength(601);expect(lines[1]).toMatch(/^4000\.00 /);
+ expect(lines[0]).toMatch(/^\*SpHdr\* [^,]{1,24},/);expect(lines.filter(Boolean)).toHaveLength(601);expect(lines[1]).toMatch(/^3700\.00 /);
  await page.evaluate(()=>{(window as unknown as {printed:number}).printed=0;window.print=()=>{(window as unknown as {printed:number}).printed++;};});
  await panel.getByRole('button',{name:'Print spectrum',exact:true}).click();
  expect(await page.evaluate(()=>(window as unknown as {printed:number}).printed)).toBe(1);

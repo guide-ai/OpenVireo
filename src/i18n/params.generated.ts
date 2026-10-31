@@ -625,8 +625,8 @@ export interface MessageParameters {
   "classLink.provenance": never;
   "classLink.acquired": never;
   "classLink.context": "draws" | "seed" | "time";
-  "classLink.domainPartial": "maximum" | "minimum";
-  "classLink.domain": "maximum" | "minimum";
+  "classLink.domainPartial": "maximum" | "minimum" | "windowMaximum" | "windowMinimum";
+  "classLink.domain": "maximum" | "minimum" | "windowMaximum" | "windowMinimum";
   "classLink.template": never;
   "classLink.identity": never;
   "classLink.measure": never;
@@ -3220,6 +3220,7 @@ export interface MessageParameters {
   "lss.adaptation.telescope": never;
   "lss.adaptation.fresh": never;
   "lss.adaptation.raster": never;
+  "lss.rangeNote": never;
   "lss.adaptation.range": never;
   "lss.adaptation.measure": never;
   "lss.adaptation.wedge": never;
@@ -3382,6 +3383,8 @@ export interface MessageParameters {
   "session.restoreCodeError": never;
   "session.restoreResourcesError": never;
   "hubblePoint.telescopeBound": "id" | "telescope" | "telescopes";
+  "galaxyExposure.rangeNotWitnessed": never;
+  "galaxyExposure.rangeNote": "max" | "min";
   "galaxyExposure.engineInvalid": never;
   "ph.tiledUse": never;
   "ph.tiledHelp": never;

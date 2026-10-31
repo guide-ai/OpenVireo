@@ -38,3 +38,93 @@ test('off the default, Object X refuses every target with the same text and Mult
  expect(new Set(texts).size).toBe(1);expect(texts[0]).toContain('not yet verified');
  await go(page,'#observatory');await expect(id(page,'ms-range-block').first()).toContainText('4000.0–5000.0');
 });
+// Review 1 closure gap (L1): the restore paths set the page's range.
+async function exposeStar(p:Page){
+ await button(p,'Activate supported star field').click();await button(p,'Start star exposure').click();
+ await p.clock.runFor(1000);await button(p,'Pause exposure').click();
+}
+test('an investigation restore takes its exposures\' range; a star restored from the analyser sets it too',async({page})=>{
+ await page.clock.install();await page.goto('/#star-exposure');
+ await setRange(page,'star-spectral-range-open',5,15);await exposeStar(page);
+ const d=page.waitForEvent('download');await page.getByRole('button',{name:'Save investigation',exact:true}).click();
+ const saved=await (await d).path();
+ await page.reload();await go(page,'#sky-exposure');await expect(id(page,'sky-spectral-range')).toHaveText('Spectrometer range: 3700.0–4700.0 Å (600 bins).');
+ await page.getByLabel('Restore investigation JSON',{exact:true}).setInputFiles(saved!);
+ await go(page,'#sky-exposure');await expect(id(page,'sky-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).',{timeout:30000});
+ // Back to the default from the sky route, then the analyser's "restore this acquisition" brings the star's range back.
+ await setRange(page,'sky-spectral-range-open',2,12);await expect(id(page,'sky-spectral-range')).toHaveText('Spectrometer range: 3700.0–4700.0 Å (600 bins).');
+ await go(page,'#star-exposure');await button(page,'Analyze acquired star').click();await expect(page).toHaveURL(/#spectrum$/);
+ await button(page,'Restore this acquisition in the telescope').click();await expect(page).toHaveURL(/#star-exposure$/);
+ // The sky route now shows its own new exposure (default); the Object X row, which has no exposure, shows the page's range.
+ await go(page,'#object-x');await expect(id(page,'objectx-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).',{timeout:30000});
+});
+// Front S2 review 2 (M1, L3): the galaxy chart's axis follows the range; the galaxy and LSS routes carry the opener (witnessed only).
+test('galaxy axis follows the range; the galaxy and LSS openers accept 3700–4700 and 4000–5000 only',async({page})=>{
+ await page.goto('/#galaxy-exposure');
+ await expect(id(page,'galaxy-axis-first')).toHaveText('3700 Å',{timeout:30000});await expect(id(page,'galaxy-axis-last')).toHaveText('4698.33 Å');
+ await setRange(page,'galaxy-spectral-range-open',5,15);
+ await expect(id(page,'galaxy-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).');
+ await expect(id(page,'galaxy-axis-first')).toHaveText('4000 Å');await expect(id(page,'galaxy-axis-last')).toHaveText('4998.33 Å');
+ await setRange(page,'galaxy-spectral-range-open',1,11);
+ await expect(page.getByRole('alert').filter({hasText:'not yet verified for galaxy spectra'})).toBeVisible();
+ await expect(id(page,'galaxy-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).');
+ await go(page,'#lss-survey');await expect(id(page,'lss-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).',{timeout:30000});
+});
+// Front S2 review 2 closure (R1) and review 3 H1: a restored galaxy session file, and the analyser's "Restore this acquisition in
+// the telescope" for a galaxy, set the page's range only when the exposure's policy is marked (written since S2). An unmarked
+// legacy 4000–5000 Å file keeps its own range and leaves the page (and Classify) where it was.
+async function exposeGalaxy(p:Page){
+ await button(p,'Activate supported galaxy field').click();await p.clock.pauseAt(await p.evaluate(()=>Date.now()+1000));
+ await button(p,'Start galaxy exposure').click();await p.clock.runFor(1000);await button(p,'Pause exposure').click();
+}
+async function download(p:Page,name:string){const d=p.waitForEvent('download');await button(p,name).click();return (await (await d).path())!;}
+const RESTORED='Investigation restored.';
+const lssRange=async(p:Page,text:string)=>{await go(p,'#lss-survey');await expect(id(p,'lss-spectral-range')).toHaveText(`Spectrometer range: ${text} Å (600 bins).`,{timeout:30000});};
+test('galaxy restores move the page only from a marked range; an old Hubble-only investigation keeps Classify at 3700–4700',async({page})=>{
+ test.setTimeout(120000);await page.clock.install();await page.goto('/#galaxy-exposure');
+ await expect(id(page,'galaxy-spectral-range')).toHaveText('Spectrometer range: 3700.0–4700.0 Å (600 bins).',{timeout:30000});
+ // A marked (3700–4700) exposure, saved as a session file.
+ await exposeGalaxy(page);const marked=await download(page,'Save galaxy session JSON');
+ // An unmarked legacy (4000–5000) exposure, saved as a session file and inside an investigation.
+ await setRange(page,'galaxy-spectral-range-open',5,15);await exposeGalaxy(page);
+ const legacy=await download(page,'Save galaxy session JSON');
+ const saved=JSON.parse(await (await import('node:fs/promises')).readFile(legacy,'utf8'));expect(saved.policy).not.toContain('#R');expect(saved.domain.minimum).toBe(4000);
+ const investigation=await download(page,'Save investigation');
+ await page.clock.resume();await page.reload();await expect(id(page,'galaxy-spectral-range')).toHaveText('Spectrometer range: 3700.0–4700.0 Å (600 bins).',{timeout:30000});
+ // Legacy file: the exposure shows its own 4000–5000; the page stays at the default, so New seeded exposure starts at 3700.
+ await page.getByLabel('Restore galaxy session JSON (up to 2 MiB)',{exact:true}).setInputFiles(legacy);
+ await expect(id(page,'galaxy-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).');
+ await button(page,'New seeded exposure').click();await expect(id(page,'galaxy-axis-first')).toHaveText('3700 Å');
+ // Marked file: with the page at 4000–5000, restoring it brings the page back to 3700–4700.
+ await go(page,'#lss-survey');await setRange(page,'lss-spectral-range-open',5,15);await lssRange(page,'4000.0–5000.0');
+ await go(page,'#galaxy-exposure');await page.getByLabel('Restore galaxy session JSON (up to 2 MiB)',{exact:true}).setInputFiles(marked);
+ await expect(id(page,'galaxy-spectral-range')).toHaveText('Spectrometer range: 3700.0–4700.0 Å (600 bins).');await lssRange(page,'3700.0–4700.0');
+ // The analyser path, marked: page set to 4000–5000 again, then "Restore this acquisition" brings 3700–4700 back.
+ await go(page,'#galaxy-exposure');await button(page,'Analyze acquired galaxy').click();await expect(page).toHaveURL(/#spectrum$/);
+ await go(page,'#lss-survey');await setRange(page,'lss-spectral-range-open',5,15);await lssRange(page,'4000.0–5000.0');
+ await go(page,'#spectrum');await button(page,'Restore this acquisition in the telescope').click();await expect(page).toHaveURL(/#galaxy-exposure$/);
+ await lssRange(page,'3700.0–4700.0');
+ // H1: the investigation whose only exposure is a legacy galaxy restores with Classify at 3700–4700.
+ await page.clock.resume();await page.reload();await page.getByLabel('Restore investigation JSON',{exact:true}).setInputFiles(investigation);
+ await expect(page.getByText(RESTORED,{exact:false}).first()).toBeVisible({timeout:30000});
+ await go(page,'#classification');await expect(page.getByLabel('Displayed wavelength range',{exact:true})).toHaveText('3700–4700 Å · 1×',{timeout:30000});
+ await lssRange(page,'3700.0–4700.0');
+});
+// Front S2 round 3 (D2) review M3: Classify and the spectrometer routes share the one range, both ways, at 1×.
+test('a range applied in Classify shows on the star route, and the star route\'s range shows in Classify at 1×',async({page})=>{
+ await page.goto('/#classification');await expect(page.getByRole('button',{name:'Review classification',exact:true})).toBeEnabled({timeout:30000});
+ const shown=page.getByLabel('Displayed wavelength range',{exact:true});await expect(shown).toHaveText('3700–4700 Å · 1×');
+ await page.getByRole('button',{name:'Zoom in ×2',exact:true}).click();await expect(shown).toHaveText('3950–4450 Å · 2×');
+ await page.locator('.classification-range summary').click();await page.getByLabel('Minimum display wavelength (Å)',{exact:true}).fill('4000');await page.getByLabel('Maximum display wavelength (Å)',{exact:true}).fill('5000');await page.getByRole('button',{name:'Apply display range',exact:true}).click();
+ await expect(shown).toHaveText('4000–5000 Å · 1×');
+ await go(page,'#star-exposure');await expect(id(page,'star-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).',{timeout:30000});
+ await setRange(page,'star-spectral-range-open',2,12);await expect(id(page,'star-spectral-range')).toHaveText('Spectrometer range: 3700.0–4700.0 Å (600 bins).');
+ await go(page,'#classification');await expect(shown).toHaveText('3700–4700 Å · 1×');
+});
+// Front S2 closure R1: a star acquired on the default range covers Classify's default window (its own 3700–4700 Å interval).
+test('a default acquired star is reported as covering the 3700–4700 Å window',async({page})=>{
+ await page.clock.install();await page.goto('/#star-exposure');await exposeStar(page);
+ await button(page,'Classify acquired star').click();await expect(page.getByRole('button',{name:'Review classification',exact:true})).toBeEnabled({timeout:30000});
+ await expect(page.getByText('covers the displayed 3700–4700 Å comparison window',{exact:false})).toBeVisible();
+ await expect(page.getByText('does not cover the whole displayed',{exact:false})).toHaveCount(0);
+});
