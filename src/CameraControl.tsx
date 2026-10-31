@@ -25,6 +25,9 @@ export type CameraExtraSourceProvider=(jd:number,seconds:number,camera:CameraExp
 export function cameraExtras(provider:CameraExtraSourceProvider|undefined,jd:number,seconds:number,camera:CameraExposureKind):readonly CameraExtraSource[]{return provider?.(jd,seconds,camera)??[];}
 export type CameraImage=Readonly<{exposure:CameraExposure;source:CameraCatalogSource;jd:number;catalogName:string;fieldObjectsStatus?:CameraFieldInputs['status']}>;
 export type CameraControlProps=Readonly<{
+ /** Front RE5: the Set Date/Time ID (the web takes the Object X lab's ID): VIREO names the native FITS file and its OBJECT card
+  * 'ObjX-'+ID, or UNKNOWN with no ID (Save 0x522c28, header 0x5239f8). */
+ vireoId?:string;
  /** Front G merge: the Object X lab's hidden target (or null); the field-object pass is masked near it and near every ObjectX.HTL position. */
  objectXHidden?:Readonly<{ra:number;dec:number}>|null;
  /** Front R3: the Infrared Camera option (IRBox, env+0x2e87, compiled on). Off: the IR camera is not offered (TObsrvtry FormActivate
@@ -59,11 +62,11 @@ function cameraQuery(camera:CameraExposureKind,telescope:OpticalIndex,filter:num
 }
 const randomSeed=()=>crypto.getRandomValues(new Uint32Array(1))[0];
 
-function CameraControl({objectXHidden=null,infraredCamera=true,active,busy,telescopeIndex,pointing,access,currentJd,extraSources,onImage,seedSource=randomSeed}:CameraControlProps){
+function CameraControl({objectXHidden=null,vireoId='',infraredCamera=true,active,busy,telescopeIndex,pointing,access,currentJd,extraSources,onImage,seedSource=randomSeed}:CameraControlProps){
  const [camera,setCamera]=useState<CameraExposureKind>('ccd'),[filter,setFilter]=useState(0),[minutes,setMinutes]=useState('0'),[seconds,setSeconds]=useState('10'),[gain,setGain]=useState(2);
  const [mode,setMode]=useState<CameraCatalogMode>('static'),[usePalette,setUsePalette]=useState(false);
  const [gate,setGate]=useState<CameraRequestGate>(createCameraRequestGate),[message,setMessage]=useState<string>(M.statusIdle),[,setWaitShown]=useState(false);
- const [image,setImage]=useState<CameraImage|null>(null);
+ const [image,setImage]=useState<CameraImage|null>(null),[saveError,setSaveError]=useState('');
  const gateRef=useRef(gate),attempt=useRef<Attempt|null>(null),timers=useRef<{observe?:number;poll?:number}>({}),canvas=useRef<HTMLCanvasElement>(null);
  const mounted=useRef(true);useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;stopTimers();attempt.current?.controller.abort();stopWorker(attempt.current);};},[]);
  function stopTimers(){if(timers.current.observe)clearInterval(timers.current.observe);if(timers.current.poll)clearInterval(timers.current.poll);timers.current={};}
@@ -158,9 +161,14 @@ function CameraControl({objectXHidden=null,infraredCamera=true,active,busy,teles
  function stop(){if(gate.ticket)dispatch({type:'cancel',ticket:gate.ticket});}
  function fitsContext(i:CameraImage):CameraFitsContext{return {jd:i.jd,filterName:cameraCatalogReference(i.exposure.recipe.camera,i.exposure.recipe.filterPosition).filter,catalogName:i.catalogName,source:{mode:i.source.mode,sha256:i.source.sha256,extractId:i.source.extractId,url:i.source.url}};}
  function save(native=false){
-  if(!image)return;const context=fitsContext(image),bytes=native?writeNativeCameraFits(image.exposure,image.jd):writeCameraFits(image.exposure,context);
+  if(!image)return;setSaveError('');
+  // RE5 review 1 M2: FITS header cards allow only printable ASCII, so an ID outside it is refused with a message; any other writer
+  // error is shown too, and nothing is downloaded.
+  if(native&&!/^[\x20-\x7e]*$/.test(vireoId)){setSaveError(M.saveIdNotAscii);return;}
+  let bytes:Uint8Array;const context=fitsContext(image);
+  try{bytes=native?writeNativeCameraFits(image.exposure,image.jd,vireoId||undefined):writeCameraFits(image.exposure,context);}catch{setSaveError(M.saveFailed);return;}
   const url=URL.createObjectURL(new Blob([bytes as Uint8Array<ArrayBuffer>],{type:'application/fits'})),a=document.createElement('a');
-  a.href=url;a.download=native?nativeCameraFitsFileName():cameraFitsFileName(image.exposure,context);document.body.append(a);a.click();a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),0);
+  a.href=url;a.download=native?nativeCameraFitsFileName(vireoId||undefined):cameraFitsFileName(image.exposure,context);document.body.append(a);a.click();a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),0);
  }
  const filterNames:readonly string[]=camera==='ir'?M.filterNamesIr:M.filterNames,gains=CAMERA_GAINS[camera];
  const shown=image?.exposure;
@@ -199,7 +207,7 @@ function CameraControl({objectXHidden=null,infraredCamera=true,active,busy,teles
   {shown&&image&&<figure className="camera-image">
    <canvas ref={canvas} role="img" aria-label={M.imageAlt(filterName(shown.recipe.camera,shown.recipe.filterPosition),shown.recipe.seconds,shown.recipe.camera)} data-testid="camera-canvas"/>
    <figcaption>{M.displayNote}</figcaption>
-   <div className="button-row"><button className="secondary-button" disabled={running} onClick={()=>save()}>{M.save}</button><button className="secondary-button" disabled={running} onClick={()=>save(true)} data-testid="camera-save-native" aria-describedby="camera-save-native-note">{M.saveNative}</button></div><p className="observatory-note">{M.saveNote}</p><p className="observatory-note" id="camera-save-native-note">{M.saveNativeNote}</p>
+   <div className="button-row"><button className="secondary-button" disabled={running} onClick={()=>save()}>{M.save}</button><button className="secondary-button" disabled={running} onClick={()=>save(true)} data-testid="camera-save-native" aria-describedby="camera-save-native-note">{M.saveNative}</button></div><p className="observatory-note">{M.saveNote}</p>{saveError&&<p role="alert" className="error" data-testid="camera-save-error">{saveError}</p>}<p className="observatory-note" id="camera-save-native-note">{M.saveNativeNote}</p>
    <label className="camera-palette"><input type="checkbox" checked={usePalette} onChange={e=>setUsePalette(e.target.checked)}/>{M.palette}</label>
    <details><summary>{M.details}</summary><dl className="camera-details">
     <dt>{M.detailCatalog}</dt><dd data-testid="camera-detail-catalog">{image.catalogName}</dd>

@@ -28,10 +28,10 @@ test('the IR camera offers J/H/K and gains 1/2/4/8, credits 2MASS, and static mo
  expect(await options(page,'Filter')).toEqual(['J','H','K']);
  expect(await options(page,'Gain (e⁻/ADU)')).toEqual(['1','2','4','8']);
  await expect(camera(page).getByTestId('camera-ir-citation')).toContainText('Two Micron All Sky Survey (2MASS; Skrutskie et al. 2006)');
- await expect(camera(page).getByTestId('camera-ir-adaptation')).toContainText('same 60-minute limit as the CCD');
- // The unrecovered IR exposure limit follows the CCD web bound.
- await camera(page).getByLabel('Minutes').fill('60');await camera(page).getByLabel('Seconds').fill('1');
- await expect(camera(page).getByRole('alert')).toContainText('between 1 s and 60 min');await expect(button(page,'Start exposure')).toBeDisabled();
+ await expect(camera(page).getByTestId('camera-ir-adaptation')).toContainText('up to 59 min 59 s');
+ // Re-pinned 2026-10-30 (Front RE5): the IR camera has the CCD's recovered limit, 59 min 59 s (0x514268, 0x4fcbc8); 60 min is refused.
+ await camera(page).getByLabel('Minutes').fill('60');await camera(page).getByLabel('Seconds').fill('0');
+ await expect(camera(page).getByRole('alert')).toContainText('between 1 s and 59 min 59 s');await expect(button(page,'Start exposure')).toBeDisabled();
  await camera(page).getByLabel('Minutes').fill('0');await camera(page).getByLabel('Seconds').fill('5');
  await expect(page.getByTestId('camera-static-hint')).toBeVisible();
  await button(page,'Start exposure').click();

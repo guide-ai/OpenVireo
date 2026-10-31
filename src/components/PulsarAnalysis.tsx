@@ -7,6 +7,7 @@ import { ReviewFindDialog, ReviewFindNotice } from './PulsarSavedRows';
 import { SAVED_FIND_INITIAL, savedFindOpen, savedFindRun, type SavedFindAction, type SavedFindDraft, type SavedFindMemory } from '../core/pulsarSavedRows';
 import { RADIO_R1_MESSAGES as R1 } from './RadioR1Messages';
 import WebPrintPreview from '../polish/WebPrintPreview';
+import {pulsarPrintLines} from '../core/pulsarPrint';
 import { menuCaptionText } from '../core/radioControl';
 import { POLISH_MESSAGES as PM, PULSAR_PRINT_LITERALS as PP } from '../polish/PolishMessages';
 import { resourceSha256 } from '../io/boundedResource';
@@ -18,7 +19,7 @@ import {
   pulsarRequestClear, pulsarRequestLoad, pulsarReset, pulsarTrace, pulsarZoom,
   type PulsarAnalysisState, type PulsarOutcome, type PulsarPanel, type PulsarPointer, type PulsarTransition,
 } from '../core/pulsarAnalysis';
-import {
+import { PULSAR_DATA_NOT_WRITTEN,
   claimPulsarOutput, importPulsarRecording, isFileData, isMemoryData, pulsarClaimBytes, pulsarClaimReadback, pulsarCurrentSaved, pulsarDataHighest, pulsarDataProperties, pulsarDataRows,
   pulsarFrequencyText, pulsarOutputClaim, pulsarWrittenCopy, recordPulsarWrittenCopy, releasePulsarOutput, setPulsarAnalysisActivity,
   type PulsarCurrentData, type PulsarData, type PulsarDataStep, type PulsarWriteClaim,
@@ -1249,7 +1250,7 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
               </fieldset>
             </section>
 
-            {printing && <WebPrintPreview testId="pulsar-print-preview" caption={PP.caption} note={PM.pulsarPrint.note} clone={() => panelsRef.current} onClose={() => { setPrinting(false); printButton.current?.focus(); }} />}
+            {printing && <WebPrintPreview testId="pulsar-print-preview" caption={PP.caption} note={PM.pulsarPrint.note} nativeHeader={date => pulsarPrintLines(date, props, props && props.fields.file !== PULSAR_DATA_NOT_WRITTEN ? props.fields.file : null)} clone={() => panelsRef.current} onClose={() => { setPrinting(false); printButton.current?.focus(); }} />}
             <div className="plr-panels" ref={panelsRef}>
               {PULSAR_PANELS.map(ch => <Panel key={ch} ch={ch} s={s} t={t} act={act} idPrefix={idPrefix} primaryAs={primaryAs} owner={pointerOwner} />)}
             </div>

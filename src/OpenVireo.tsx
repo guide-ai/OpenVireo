@@ -230,6 +230,8 @@ export default function OpenVireo(){
   const [variableStarsVisited,setVariableStarsVisited]=useState(location.hash==='#variable-stars'),variableStarsView=useRef<HTMLDivElement>(null);
   useEffect(()=>{if(view==='variable-stars')setVariableStarsVisited(true);},[view]);
   const objectXView=useRef<HTMLDivElement>(null),objectXGuide=useRef<HTMLDialogElement>(null),objectXController=useRef<ObjectXController|null>(null);
+  // Front RE5: the Set Date/Time ID that the camera's native FITS name and OBJECT read (the Object X lab's ID field).
+  const [objectXId,setObjectXId]=useState('');
   const objectXCurrent=useRef<ObjectXInvestigation|null>(null),objectXToken=useRef(0),[objectXRestore,setObjectXRestore]=useState<{token:number;investigation:ObjectXInvestigation|null}|null>(null);
   const [objectXSummary,setObjectXSummary]=useState<Omit<ObjectXLabSummary,'saved'>>(INITIAL_OBJECT_X_LAB_SUMMARY),[objectXAnswer,setObjectXAnswer]=useState<ObjectXKind|null>(null);
   const [objectXSaved,setObjectXSaved]=useState<ObjectXInvestigation|null>(null),objectXPendingRestore=useRef<ObjectXInvestigation|null>(null);
@@ -244,7 +246,7 @@ export default function OpenVireo(){
    objectXPendingRestore.current=investigation;
    if(!investigation&&!objectXCurrent.current)return;
    if(investigation)setObjectXVisited(true);
-   objectXCurrent.current=investigation;setObjectXRestore({token:++objectXToken.current,investigation});
+   objectXCurrent.current=investigation;setObjectXId(investigation?.id??'');setObjectXRestore({token:++objectXToken.current,investigation});
   }
   const [lssVisited,setLssVisited]=useState(location.hash==='#lss-survey');
   useEffect(()=>{if(view==='lss-survey')setLssVisited(true);},[view]);
@@ -667,7 +669,7 @@ export default function OpenVireo(){
    onSetClock:utc=>applyClockUTC({utc,draftUTC:utc}),
    onPrefill:(nextRa,nextDec)=>{setRa(nextRa.toString());setDec(nextDec.toString());navigate('observatory');},
    onOpenRadio:()=>navigate('radio-control'),
-   onSnapshot:i=>{objectXCurrent.current=i;},
+   onSnapshot:i=>{objectXCurrent.current=i;setObjectXId(i?.id??'');},
    onSummary:(s,answer)=>{setObjectXSummary(c=>sameObjectXLabSummary({...c,saved:false},{...s,saved:false})?c:s);setObjectXAnswer(answer);},
   });
   const lssHandlers=useStableHandlers<StableProps<ComponentProps<typeof LssSurvey>,'onSnapshot'|'onSummary'|'currentJd'|'onPlotWedge'>>({
@@ -716,7 +718,7 @@ export default function OpenVireo(){
   {((view==='star-exposure'&&!compatibleStar)||(view==='galaxy-exposure'&&!compatibleGalaxy)||(view==='sky-exposure'&&!compatibleSky)||(view==='photometer'&&!compatiblePhotometer))&&<OpticalCompatibility workspace={optical} busy={projectBusy} onUseSupported={()=>applyOptical({...optical,draftIndex:0})}/>}
   {['observatory','sky-exposure','star-exposure','galaxy-exposure'].includes(view)&&<div inert={projectBusy}><RunningClock limitSlewing={opticalOptions.limitSlewing} site={siteOverrides[optical.selectedIndex]} utc={siteClock.utc} pointing={pointing} statusOnly={view!=='observatory'} access={currentAccess} state={observatoryClock.state} running={observatoryClock.running} limited={observatoryClock.limited} index={optical.selectedIndex} {...runningClockHandlers} /></div>}
   <div inert={projectBusy} ref={observatoryView} hidden={view!=='observatory'}><main className="observatory-main"><section className="observatory-heading"><div className="eyebrow">{t('sky.eyebrow')}</div><h1 tabIndex={-1}>{t('sky.title')}</h1><p>{t('sky.subtitle')}</p><button className="text-button" onClick={()=>about.current?.showModal()}>{t('sky.about')} ↗</button></section>
-  <OpticalTelescope workspace={optical} busy={projectBusy} {...opticalHandlers} /><CameraControl objectXHidden={objectXHidden} infraredCamera={sessionOptions.infraredCamera} active={view==='observatory'} busy={projectBusy} telescopeIndex={optical.selectedIndex} pointing={pointing} access={instrumentAccess({...nativeGate,configurationAvailable:true,pointingMatches:hasPointed})} {...cameraHandlers} extraSources={cameraExtraSources} />
+  <OpticalTelescope workspace={optical} busy={projectBusy} {...opticalHandlers} /><CameraControl objectXHidden={objectXHidden} vireoId={objectXId} infraredCamera={sessionOptions.infraredCamera} active={view==='observatory'} busy={projectBusy} telescopeIndex={optical.selectedIndex} pointing={pointing} access={instrumentAccess({...nativeGate,configurationAvailable:true,pointingMatches:hasPointed})} {...cameraHandlers} extraSources={cameraExtraSources} />
   {/* Front M (Multi-Spec, instrument position 3 + Access, as recovered). virtualObservatory: exercise mode 0 "Access All Instruments" (D1); gated on Front O2's instructor Virtual Observatory option (the page's virtualObservatory state). */}
   <MultiSpecObservatoryLazy active={view==='observatory'} busy={projectBusy} access={instrumentAccess({...nativeGate,configurationAvailable:true,pointingMatches:hasPointed})} mode={mode} pointing={pointing} telescope={optical.selectedIndex} editMode={editMode} virtualObservatory={virtualObservatory} hidden={objectXHidden} currentJd={observatoryJd}/>
   <ol className="first-steps"><li className={!open?'current':''}><strong>{t('sky.step1')}</strong><span>{t('sky.step1Help')}</span></li><li className={open&&(!hasPointed||!centered)?'current':''}><strong>{t('sky.step2')}</strong><span>{t('sky.step2Help')}</span></li><li className={open&&hasPointed&&centered?'current':''}><strong>{t('sky.step3')}</strong><span>{t('sky.step3Help')}</span></li></ol>
