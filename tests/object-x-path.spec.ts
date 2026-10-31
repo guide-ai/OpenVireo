@@ -29,7 +29,7 @@ const EROS_CODE='X-UZOBN';
 async function leaks(page:Page){
  const texts=await page.evaluate(()=>['objectx-lab','objectx-guide','camera-control'].map(id=>{
   const n=document.querySelector(`[data-testid=${id}]`);if(!n)return '';const c=n.cloneNode(true) as HTMLElement;
-  c.querySelectorAll('[data-testid=objectx-asteroid-list]').forEach(x=>x.remove());return c.innerHTML+' '+c.textContent;}));
+  c.querySelectorAll('[data-testid=objectx-asteroid-list], [data-testid=objectx-asteroid-list-closed]').forEach(x=>x.remove());return c.innerHTML+' '+c.textContent;}));
  const word=(s:string)=>new RegExp(`(^|[^\\w])${s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}($|[^\\w])`);
  // The camera's shared text may use a kind word ("Star positions…"); only identifiers count there.
  return [...SECRETS.filter(s=>word(s).test(texts[0]+' '+texts[1])),...IDS.filter(s=>word(s).test(texts[2]))];
@@ -86,8 +86,9 @@ test('hidden identity, two images of the target with asteroids, measure, answer,
  const images=page.getByTestId('objectx-images').locator('li');
  await expect(images).toHaveCount(2);
  await expect(images.first()).toContainText('ObjX-42-01');await expect(images.nth(1)).toContainText('ObjX-42-02');
- await expect(page.getByTestId('objectx-image-movers-0')).toContainText(/[1-9]\d* asteroids? in the field box/);
- await expect(page.getByTestId('objectx-image-movers-1')).toContainText(/[1-9]\d* asteroids? in the field box/);
+ // QA1 review 1 H2: no asteroid count before the reveal (it named an asteroid target after one image); the same words for every target.
+ await expect(page.getByTestId('objectx-image-movers-0')).toHaveText('asteroids of the current list included (the count shows after the reveal)');
+ await expect(page.getByTestId('objectx-image-movers-1')).toHaveText('asteroids of the current list included (the count shows after the reveal)');
  // Save both images as the original names them (review 2 L4) and read their headers in Node.
  const fits:Buffer[]=[];
  for(const label of ['ObjX-42-01','ObjX-42-02']){
@@ -139,6 +140,8 @@ test('hidden identity, two images of the target with asteroids, measure, answer,
  await button(page,'Reveal the identity').click();await button(page,'Reveal the identity').click();
  await expect(page.getByTestId('objectx-reveal')).toContainText('Object: (433) Eros — Asteroid');
  await expect(page.getByTestId('objectx-reveal')).toContainText('Your answer is right: it is an asteroid.');
+ // After the reveal the count shows.
+ await expect(page.getByTestId('objectx-image-movers-0')).toContainText(/[1-9]\d* asteroids? in the field box/);
  // The answer is frozen at the reveal (review 2 M2).
  await expect(page.getByTestId('objectx-answer').getByLabel('star')).toBeDisabled();
  await page.screenshot({path:test.info().outputPath('object-x-reveal.png'),fullPage:true});
@@ -251,7 +254,7 @@ test('a mid-exposure repoint keeps the asteroids of the Start pointing in that i
  await expect(page.getByTestId('camera-status')).toHaveText('Image ready.',{timeout:120_000});
  await clickHeaderTool(page,'Object X');
  await expect(page.getByTestId('objectx-images').locator('li')).toHaveCount(1);
- await expect(page.getByTestId('objectx-image-movers-0')).toContainText(/[1-9]\d* asteroids? in the field box/);
+ await expect(page.getByTestId('objectx-image-movers-0')).toHaveText('asteroids of the current list included (the count shows after the reveal)');
 });
 
 // Front QA1 (2026-10-31, E08 low cut): with the real bundled star field (not the star-free recorded fixture), two 30 s images

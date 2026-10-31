@@ -13,7 +13,7 @@ const word=(s:string)=>new RegExp(`(^|[^\\w])${s.replace(/[.*+?^${}()|[\]\\]/g,'
 async function shownText(page:Page){
  return page.evaluate(()=>{
   const roots=[...document.querySelectorAll('main, .portal-header, .investigation-toolbar, dialog[open]')].filter(e=>(e as HTMLElement).offsetParent!==null||e.tagName==='DIALOG');
-  return roots.map(r=>{const c=r.cloneNode(true) as HTMLElement;c.querySelectorAll('select, [data-testid=objectx-asteroid-list]').forEach(n=>n.remove());return c.textContent??'';}).join('\n')
+  return roots.map(r=>{const c=r.cloneNode(true) as HTMLElement;c.querySelectorAll('select, [data-testid=objectx-asteroid-list], [data-testid=objectx-asteroid-list-closed]').forEach(n=>n.remove());return c.textContent??'';}).join('\n')
    +'\n'+[...document.querySelectorAll('[data-testid=sky-map] text')].map(t=>t.textContent).join('\n');
  });
 }

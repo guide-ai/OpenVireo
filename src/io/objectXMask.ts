@@ -58,8 +58,8 @@ export function objectXOnTarget(list:readonly Pointing[],hidden:Pointing|null):(
 /** Front QA1 (2026-10-31, E08 identity hint): the name mask for catalogue lists while the Object X lab holds an unrevealed
  * target. Masking only the objects near that target made its own name vanish from the observatory's target list while the
  * other Object X galaxies stayed, so the absence named it. The mask therefore covers every ObjectX.HTL position, the same
- * set whatever the target is. The target's own coordinates are not added: for a moving target they differ from its listed
- * row, so the extra masked names would mark it as an asteroid. Before ObjectX.HTL is read (`list` null) the mask covers
+ * set whatever the target is. The target's own coordinates are not added; they are always its ObjectX.HTL row
+ * (ObjectXLab's objectXTargets), already in `list`, so adding them would change nothing. Before ObjectX.HTL is read (`list` null) the mask covers
  * everything (fail closed). Without a target nothing is masked. Pure. */
 export function objectXCatalogMask(list:readonly Pointing[]|null,hidden:Pointing|null):(p:Pointing)=>boolean{
  if(!hidden)return ()=>false;

@@ -10,7 +10,9 @@ describe('objectXCatalogMask',()=>{
  const list=rows.map(r=>({ra:r.ra,dec:r.dec}));
  const {catalog}=buildTargetCatalog({star:'',galaxy:(_i,l)=>l});
  const masked=(hidden:{ra:number;dec:number}|null,l=list as typeof list|null)=>{const m=objectXCatalogMask(l,hidden);return catalog.filter(o=>m(o)).map(o=>o.id);};
- it('masks the same catalogue entries for every target, including a moved asteroid position',()=>{
+ // QA1 review 1 L3: the hidden target is always its own ObjectX.HTL row (ObjectXLab's objectXTargets), so the mask is the
+ // list's alone; a position off the list (not something the app passes) changes nothing either.
+ it('masks the same catalogue entries for every ObjectX.HTL target',()=>{
   const base=masked(list[0]);
   expect(base.length).toBeGreaterThan(0);
   for(const r of list)expect(masked(r)).toEqual(base);

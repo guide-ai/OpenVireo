@@ -1,4 +1,5 @@
 import {test,expect,type Page} from '@playwright/test';
+import {clickHeaderTool} from './fixtures/header-tools';
 
 // Front QA1 (2026-10-31, E08 identity hint): VIREO gives the student only an identifier and coordinates. Masking only the
 // catalogue entries near the hidden target made its own name vanish from the observatory's target list (target NGC 4631 →
@@ -12,6 +13,9 @@ async function listsFor(page:Page,id:string){
  const code=await page.evaluate(`import('/src/core/objectXLab.ts').then(m=>m.objectXCode(${JSON.stringify(id)}))`) as string;
  await page.getByTestId('objectx-target').selectOption(code);
  await button(page,'Set the observatory clock').click();
+ // QA1 review 1 H3: VIREO keeps the Asteroid List disabled in Object X unless Edit Mode is on; the same closed note for every kind.
+ await expect(page.getByTestId('objectx-list-status')).toContainText('Observable asteroids on',{timeout:30_000});
+ const asteroidList={rows:await page.getByTestId('objectx-asteroid-list').count(),note:await page.getByTestId('objectx-asteroid-list-closed').textContent()};
  await button(page,'Copy the coordinates to the observatory').click();
  // QA1 review 1 L6: five pages in one test; under parallel load the route switch can exceed the 5 s default.
  await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible({timeout:20_000});
@@ -23,7 +27,7 @@ async function listsFor(page:Page,id:string){
  await page.locator('.telescope-motion').getByTestId('ob-options').click();await page.getByTestId('ob-options-virtual-observatory').check();await page.getByTestId('ob-options-ok').click();
  await page.getByTestId('fi-file-menu').click();await page.getByTestId('qso-menu').click();await page.getByTestId('qso-ok').click();
  const lines=page.getByTestId('qso-list-lines');await expect(lines).toBeVisible();
- return {picker,qso:await lines.innerText()};
+ return {picker,qso:await lines.innerText(),asteroidList};
 }
 
 test('the lists shown during an unrevealed Object X target do not depend on its kind',async({context})=>{
@@ -33,7 +37,8 @@ test('the lists shown during an unrevealed Object X target do not depend on its 
  const base=seen.star;
  expect(base.picker.length).toBeGreaterThan(10);
  expect(base.picker.join('\n')).not.toMatch(/NGC 2403|NGC 4262|NGC 4449|NGC 4631|3C 273/);
- for(const kind of Object.keys(KINDS)){expect(seen[kind].picker,`${kind} picker`).toEqual(base.picker);expect(seen[kind].qso,`${kind} QSO List`).toEqual(base.qso);}
+ expect(base.asteroidList).toEqual({rows:0,note:'As in VIREO, the Asteroid List stays closed during Object X (it opens only in Edit Mode). New images still include the observable asteroids.'});
+ for(const kind of Object.keys(KINDS)){expect(seen[kind].picker,`${kind} picker`).toEqual(base.picker);expect(seen[kind].qso,`${kind} QSO List`).toEqual(base.qso);expect(seen[kind].asteroidList,`${kind} asteroid list`).toEqual(base.asteroidList);}
 });
 
 /** QA1 review 1 H1: what the sky map draws in the finder and telescope views at one Object X target (catalogue rings and labels,
@@ -68,4 +73,17 @@ test('QA1 review 1 H1: the sky map at an unrevealed target looks the same for al
  for(const [id,code] of codes){const page=await context.newPage();seen.set(id,await skyMapAt(page,code));await page.close();}
  // Every HTL area is masked alike, so nothing catalogue-drawn may appear in either view at any target.
  for(const [id,views] of seen)expect(views,id).toEqual({'Finder · 2.5°':[],'Telescope · 15′':[]});
+});
+
+test('QA1 review 1 H3: in Edit Mode the Asteroid List opens during Object X, as VIREO enables it (0x58b3cb..0x58b3e9)',async({page})=>{
+ test.setTimeout(120_000);
+ await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible({timeout:20_000});
+ await button(page,'Open dome ↗').click();
+ await page.locator('.telescope-motion').getByTestId('ob-options').click();await page.getByTestId('ob-options-edit-mode').check();await page.getByTestId('ob-options-ok').click();
+ // In-app navigation: Edit Mode is page state (Front O, not saved), so a reload would lose it.
+ await clickHeaderTool(page,'Object X');await expect(page.getByRole('heading',{name:'The quest for Object X'})).toBeVisible({timeout:20_000});
+ const code=await page.evaluate(`import('/src/core/objectXLab.ts').then(m=>m.objectXCode('(433) Eros'))`) as string;
+ await page.getByTestId('objectx-target').selectOption(code);await button(page,'Set the observatory clock').click();
+ await expect(page.getByTestId('objectx-list-status')).toContainText('Observable asteroids on',{timeout:30_000});
+ await expect(page.getByTestId('objectx-asteroid-list')).toBeVisible();await expect(page.getByTestId('objectx-asteroid-list-closed')).toHaveCount(0);
 });

@@ -278,12 +278,26 @@ and z ≈ 2.1), and the path spec now checks the 45-minute motion against the ep
   target picker while the other Object X galaxies stayed listed, so the missing name revealed the identity. While any target is
   unrevealed, the catalogue name mask (sky-map labels, target picker, target card, pointing notices, radio Slew ▸ Hot List)
   now covers the 2° areas around **every** ObjectX.HTL position. Rows near the target read `ObjX-<ID>`, and other masked rows
-  read "Name hidden". Until ObjectX.HTL is read, every name is masked. The target's own coordinates are not added: for an asteroid
-  they differ from its listed row, so the extra masked names would mark it as moving. The Variable Stars list and the QSO List
-  use the ObjectX.HTL positions only, for the same reason. The "Names hidden during Object X." note shows for every target. The
-  observatory's own Hot List editor offers only the Pleiades and Hubble lists and masks nothing, as in VIREO. A hot list a
+  read "Name hidden". Until ObjectX.HTL is read, every name is masked. The target's position is its ObjectX.HTL row, so the
+  mask needs nothing beyond the list. The Variable Stars list and the QSO List use the ObjectX.HTL positions only. The "Names hidden during Object X." note shows for every target. The
+  observatory's own Hot List editor offers only the Pleiades and Hubble lists and masks nothing [W]. **This is not as in VIREO**:
+  ObjectX1Click 0x58ad38 sets exercise byte +0x383f := 1 and calls 0x58b098, whose case 1 takes "ObjectX.HTL" (default string
+  0x5a3105) and loads it into the hot list through 0x5903d8 (86-byte records). VIREO therefore lists all 17 identifiers during
+  Object X. The web does not offer ObjectX.HTL there, under the user's E08 decision (2026-10-27). A hot list a
   student opens by hand shows its rows' coordinates, which VIREO also shows. `tests/object-x-lists-type-independent.spec.ts` checks that
-  the target picker and the QSO List are identical for all five kinds.
+  the target picker, the QSO List and the asteroid-list note are identical for all five kinds, and that the sky map draws
+  nothing in either view at all 17 targets.
+- **QA1 review 1 (2026-10-31), three more channels:**
+  - **Sky-map rings (H1)** [W]. Masked catalogue objects were drawn as unnamed rings, which put a ring on the crosshair for a
+    galaxy target and nearby for a star target. They are no longer drawn. The mask is the same for every HTL area, so nothing
+    is drawn in any of them.
+  - **Asteroid count (H2)** [W]. "N asteroids in the field box" is web text (ComputeMovers 0x59940c inserts the pairs silently).
+    It named an asteroid target after one image. Until the reveal, every image reads "asteroids of the current list
+    included", and the lab's "not drawn" reasons wait for the reveal too.
+  - **Asteroid List (H3)** [D]. ObjectX1Click 0x58ad38 disables AsteroidList1 (field +0x458, setter 0x4549c8), and the
+    exercise setup 0x58b3cb..0x58b3e9 leaves it disabled in Object X unless Edit Mode (env+0x2e7e) is on. The web follows:
+    during Object X the list shows only in Edit Mode, and otherwise a note says so. The same byte also gates the QSO List in
+    ObjectX1Click (field +0x4b0); the web's QSO List is not gated yet (follow-up).
 - **Static replay equivalence (R3-L2).** `tests/object-x-static-replay.spec.ts` routes the dev server's extract index to one
   synthetic extract over the recorded VizieR response, lets the real camera (Worker composer, static mode) take and save an
   image, and requires `replayStaticExposure` on the same recipe to give the same FITS bytes (SHA-256 and length): it does. Save
