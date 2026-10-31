@@ -7,7 +7,7 @@
 // used read-only through its public functions; tiles and files are fetched only from this origin.
 import type {FieldPack} from '../core/fieldPack';
 import {decodeFieldPack,fieldPackFromSnapshot,packCovers} from '../core/fieldPack';
-import {FIELD_VARIABLE_STAGE_GATES,FieldEngineError,buildFieldPopulation,freshFieldArea,type FieldOptions,type FieldPopulation,type FieldUnavailableReason,type FieldVariableTime} from '../core/fieldEngine';
+import {FIELD_HALF_DEGREES,FIELD_VARIABLE_STAGE_GATES,FieldEngineError,buildFieldPopulation,freshFieldArea,type FieldOptions,type FieldPopulation,type FieldUnavailableReason,type FieldVariableTime} from '../core/fieldEngine';
 import {LSS_ROWS} from '../core/lssFields';
 import {GLIMAGES_LST,packWithPhotographs,parseGlimagesPositions} from '../core/lssLists';
 import {nativePhotographRows} from '../core/photographicList';
@@ -24,7 +24,7 @@ export const POPULATION_BLOCKING:readonly FieldUnavailableReason[]=Object.freeze
 export type FieldInfoResources=Readonly<{
  snapshot:(id:SnapshotId)=>Promise<unknown>;engine:(id:'coma'|'bootes')=>Promise<unknown>;lss:(field:LssFieldNumber)=>Promise<FieldPack>;
  glx:()=>Promise<Uint8Array>;qso:()=>Promise<Readonly<{bytes:Uint8Array;sha256:string}>>;glimages:()=>Promise<Uint8Array>;
- /** Front G: a pack for any pointing from the compact GSC tiles. */assembled:(pointing:Readonly<{ra:number;dec:number}>,signal?:AbortSignal)=>Promise<FieldPack>;
+ /** Front G: a pack for any pointing from the compact GSC tiles (Front G5: halfDegrees 3.75 for the finder field). */assembled:(pointing:Readonly<{ra:number;dec:number}>,signal?:AbortSignal,halfDegrees?:number)=>Promise<FieldPack>;
 }>;
 export type SnapshotId='36773'|'36747'|'54876'|'pegasus';
 /** Pointings of the pinned snapshot fields (their domain pointing), checked against the files when loaded. */
@@ -39,9 +39,9 @@ function browserResources():FieldInfoResources{
   glx:async()=>(await import('./bundledGlxCatalog')).fetchBundledGlxCatalog(fetch,signal),
   qso:async()=>(await import('./bundledQsoCatalog')).fetchBundledQsoCatalog(fetch,signal),
   glimages:async()=>(await (await import('./bundledHotList')).fetchBundledHotList(fetch,signal,GLIMAGES_LST)).bytes,
-  assembled:async(pointing,signal)=>{
+  assembled:async(pointing,signal,halfDegrees)=>{
    const [{assembleFieldPack},sources]=await Promise.all([import('./assembledFieldPack'),once('assembly',assemblySources)]);
-   return assembleFieldPack(pointing,sources,signal);
+   return assembleFieldPack(pointing,sources,signal,halfDegrees);
   },
  };
 }
@@ -104,4 +104,26 @@ export async function findCertifiedPopulation(pointing:Readonly<{ra:number;dec:n
  const blocking=built.reasons.find(x=>POPULATION_BLOCKING.includes(x));
  if(blocking||!built.population)return Object.freeze({status:'unavailable',reason:'population',detail:blocking??'outside-pack'});
  return Object.freeze({status:'ready',packId:pack.id,population:built.population,reasons:Object.freeze([...built.reasons])});
+}
+
+/** Front G5: the pack the observatory's sky view draws (io/skyField.ts). The telescope view uses the field the field-information
+ * forms use (a certified pack at its listed pointing, otherwise the tiles); the finder view always reads the tiles, with the
+ * finder field's half-height (FIELD_HALF_DEGREES.finder). */
+export type SkyPackFailure=Readonly<{status:'unavailable';reason:'field-polar'}|{status:'unavailable';reason:'field-tiles'|'field-unreadable';detail:string}>;
+export async function skyFieldPack(pointing:Readonly<{ra:number;dec:number}>,view:'telescope'|'finder',signal?:AbortSignal):Promise<Readonly<{status:'ready';pack:FieldPack}>|SkyPackFailure>{
+ const half=view==='finder'?FIELD_HALF_DEGREES.finder:FIELD_HALF_DEGREES.instrument;
+ let area;try{area=freshFieldArea(pointing,half);}catch(e){if(e instanceof FieldEngineError&&e.code==='polar')return Object.freeze({status:'unavailable',reason:'field-polar'});throw e;}
+ if(view==='telescope'){const certified=(await candidatePacks(pointing)).find(p=>packCovers(p,pointing,area));if(certified)return Object.freeze({status:'ready',pack:certified});}
+ try{return Object.freeze({status:'ready',pack:await res().assembled(pointing,signal,half)});}
+ catch(e){
+  const {GscTileError}=await import('./gscTiles'),{AssembledFieldError}=await import('./assembledFieldPack');
+  if(e instanceof GscTileError)return Object.freeze({status:'unavailable',reason:'field-tiles',detail:e.code});
+  if(e instanceof AssembledFieldError)return e.code==='polar'?Object.freeze({status:'unavailable',reason:'field-polar'}):Object.freeze({status:'unavailable',reason:'field-unreadable',detail:e.code});
+  throw e;
+ }
+}
+/** Front G5: CLEA_GLX.DAT, CLEA_QSO.DAT and GLIMAGES.LST, loaded once and shared with the field-information forms. */
+export async function skyFieldInputs(){
+ const r=res();const [glx,qso,glimages]=await Promise.all([once('glx',r.glx),once('qso',r.qso),once('glimages',r.glimages)]);
+ return Object.freeze({glx,qso,glimages});
 }

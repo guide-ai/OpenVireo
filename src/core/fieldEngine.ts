@@ -32,9 +32,9 @@ import {variableDispatchAt,variableModelStatic,variableRecordFromHex,VariableDis
 import {decodeGlxRecord,GLX_CATALOG} from './glxCatalog';
 import type {NativeGalaxy} from './pinnedGalaxyField';
 import {galaxyCatalogAxes,catalogGalaxyMagnitude} from './galaxyCatalogAxes';
-import {paintAdaptedGalaxy,galaxyStampGeometry} from './galaxyScene';
+import {paintAdaptedGalaxy,paintAdaptedGalaxyInPlace,galaxyStampGeometry,GALAXY_STAMP_SCALES} from './galaxyScene';
 import {createNativeSelectionScene,selectCatalogObject,type NativeSelectionScene,type ObjectSelection} from './objectSelection';
-import {cropNativeFrame,freshNativeViewport,paintNativeStar} from './detectorRaster';
+import {cropNativeFrame,freshNativeViewport,paintNativeStar,paintNativeStarInPlace} from './detectorRaster';
 import {prepareNativeStarProfile} from './starProfiles';
 import {photonAmplitudes,slitPixelLevel,telescopeZeroPoint,type PhotonAmplitudes,type RgbImage} from './photons';
 import {nativeObjectSlitFraction} from './slitThroughput';
@@ -159,6 +159,12 @@ export type FieldOptions=Readonly<{/** GLXYSP.LST rows (review 2 finding 2): a s
  signal?:AbortSignal;
  /** Front G (G3): the photometer field's half-height (FIELD_HALF_DEGREES.photometer); default the instrument field. */
  fieldHalfDegrees?:number;
+ /** Front G5: the finder field (FSCFieldObj, VMT 0x594e20): area FIELD_HALF_DEGREES.finder with limit 14; reader 0x59b374 skips a
+  * record whose Single magnitude is above the Finder Mag Limit (env+0x2bb8, compiled 11.5) before admission 0x599e08 and stores
+  * B−V and U−B as 30.0, the four flag bytes as 1 and the spectral word as 0; mode 0 (no QSO load or merge; galaxies at
+  * min(14, 12) = 12); the galaxy loader 0x59b894 is 0x598acc's index/scan without the photograph matcher and with colours 30.0
+  * and code 0. Any qso, photographs or fieldHalfDegrees option is then ignored. */
+ finder?:Readonly<{magnitudeLimit:number}>;
  glxyspLines?:readonly string[];variableDispatch?:FieldVariableDispatch;photographs?:FieldPhotographs;spectralInterval?:FieldSpectralInterval;starObservation?:FieldStarObservation;continuation?:FieldContinuationMode;qso?:FieldQsoMode;qsoCatalog?:FieldQsoCatalog;librarySpectrum?:FieldLibrarySpectrum;variables?:FieldVariableMode;qsoObservation?:FieldQsoObservation;
  /** Front T: with variableDispatch 'recovered' and no `variables` option, the TRUE branch of 0x51ec48 runs (hit modifies the
   * resolved star, miss inserts at the RA cursor). 'gate' keeps the earlier variable-merge gate; 'outside-view' the RS Boo rule. */
@@ -214,16 +220,20 @@ const FRAME=Object.freeze({width:936,height:936,fieldDegrees:.75,anchor:468,view
  * limit [W] (see FieldEngineError). */
 /** Half-heights of the two recovered field sizes: the instrument field (15′ × 3/120 = 0.375°) and the photometer field
  * (field-size option 1′ × 3/120 = 0.025°, docs/PHOTOMETER-FIELD.md); 0x53be70 computes half = size·multiplier/120. */
-export const FIELD_HALF_DEGREES=Object.freeze({instrument:.375,photometer:.025});
-export function freshFieldArea(pointing:Readonly<{ra:number;dec:number}>,halfDegrees:number=FIELD_HALF_DEGREES.instrument):NativeCatalogRegion{
- if(halfDegrees!==FIELD_HALF_DEGREES.instrument&&halfDegrees!==FIELD_HALF_DEGREES.photometer)throw new FieldEngineError('input');
+export const FIELD_HALF_DEGREES=Object.freeze({instrument:.375,photometer:.025,
+ /** Front G5: the finder field 0x53bae4, half = Field Creation Factor 3 × Finder Field 2.50° / 2 (env+0x2e4f, +0x2bb4). */finder:3.75});
+/** Front G5: the area limit each load requests: telescope 0x53befe 20, finder 0x53bcc1 14. */
+export const FIELD_AREA_LIMITS=Object.freeze({telescope:20,finder:14});
+export function freshFieldArea(pointing:Readonly<{ra:number;dec:number}>,halfDegrees:number=FIELD_HALF_DEGREES.instrument,limitingMagnitude:number=FIELD_AREA_LIMITS.telescope):NativeCatalogRegion{
+ if(halfDegrees!==FIELD_HALF_DEGREES.instrument&&halfDegrees!==FIELD_HALF_DEGREES.photometer&&halfDegrees!==FIELD_HALF_DEGREES.finder)throw new FieldEngineError('input');
+ if(limitingMagnitude!==FIELD_AREA_LIMITS.telescope&&limitingMagnitude!==FIELD_AREA_LIMITS.finder)throw new FieldEngineError('input');
  if(!pointing||!Number.isFinite(pointing.ra)||!Number.isFinite(pointing.dec)||pointing.ra<0||pointing.ra>=24||Math.abs(pointing.dec)>90)throw new FieldEngineError('input');
  const h=halfDegrees,hr=h/(Math.cos(pointing.dec*Math.PI/180)*15);
  let minimumRa=pointing.ra-hr,maximumRa=pointing.ra+hr;
  if(minimumRa<0)minimumRa+=24;
  if(maximumRa>24)maximumRa-=24;
  if(!(Number.isFinite(hr)&&hr>0&&minimumRa>=0&&maximumRa<=24&&minimumRa!==maximumRa))throw new FieldEngineError('polar');
- return Object.freeze({minimumRa,maximumRa,minimumDec:pointing.dec-h,maximumDec:pointing.dec+h,limitingMagnitude:20});
+ return Object.freeze({minimumRa,maximumRa,minimumDec:pointing.dec-h,maximumDec:pointing.dec+h,limitingMagnitude});
 }
 /** A field across 0 h (min > max). The polar guard excludes min === max. */
 export const fieldAreaWraps=(a:NativeCatalogRegion)=>a.minimumRa>a.maximumRa;
@@ -238,7 +248,7 @@ const inside=(p:Readonly<{ra:number;dec:number}>,a:NativeCatalogRegion)=>p.ra>=a
 const hexBytes=(hex:string)=>{const out=new Uint8Array(hex.length>>1);for(let i=0;i<out.length;i++)out[i]=parseInt(hex.substr(i*2,2),16);return out;};
 /** Stars of one area from the pack: band order, recorded seek/read trace and admission. A read the trace needs but the pack lacks
  * is an evidence error (the pack is incomplete for this pointing), never a skipped record. */
-function packStars(pack:FieldPack,whole:NativeCatalogRegion,order:readonly string[]):NativeFieldStar[]{
+function packStars(pack:FieldPack,whole:NativeCatalogRegion,order:readonly string[],finderLimit?:number):NativeFieldStar[]{
  const stars:NativeFieldStar[]=[];
  // 0x597ac8: one star read per (sub-)area, each over every band in band order, all appended to the same list (+5).
  for(const area of fieldSubAreas(whole)){
@@ -259,12 +269,20 @@ function packStars(pack:FieldPack,whole:NativeCatalogRegion,order:readonly strin
     if(ra>=area.minimumRa&&ra<=area.maximumRa&&dec>=area.minimumDec&&dec<=area.maximumDec)throw new FieldEngineError('evidence');
     continue;
    }
-   const r=full(visit.recordIndex);if(nativeCatalogAdmission(r,area))stars.push(r);
+   const r=full(visit.recordIndex);
+   // Front G5 (0x59b68b..0x59b69c): the finder reader skips a record above the Finder Mag Limit before admission.
+   if(finderLimit!==undefined&&Math.fround(r.magnitude)>Math.fround(finderLimit))continue;
+   if(nativeCatalogAdmission(r,area))stars.push(finderLimit===undefined?r:fscStar(r));
   }
  }
  }
  return stars;
 }
+/** Front G5: the 95-byte star object the finder reader 0x59b374 writes (0x59b5f9..0x59b6a4): position and V decoded as the
+ * NewGSC reader does, B−V and U−B := 30.0 (0x41f00000), the spectral word +0x43 := 0, flag bytes +0x39..+0x3c := 1. It leaves
+ * +0x35 (aux) and +0x5b unwritten in its reused stack buffer [U]; the web stores 0 for both [W]. */
+export type FinderFieldStar=NativeFieldStar&Readonly<{fsc:true}>;
+function fscStar(r:NativeFieldStar):FinderFieldStar{return Object.freeze({...r,photometry2Single:30,photometry3Single:30,auxiliarySingle:0,qualityByte:15,fsc:true as const});}
 /** 0x492728, a sorted insert into a doubly linked list relative to its cursor (helpers 0x492708 empty, 0x492710/0x49271c
  * cursor at head/tail, 0x492634 next, 0x492668 prev, 0x492574 insert after cursor, 0x492528 prepend). Every insert leaves the
  * cursor on the new node; the list starts empty with no cursor (0x4924d4/0x4924fc). If the new key is greater than the cursor,
@@ -390,16 +408,19 @@ export function cleanFieldGalaxies(stars:readonly FieldStar[],galaxies:readonly 
  return {stars:current,galaxies:kept.length===galaxies.length?galaxies:Object.freeze(kept),witnesses,boundary:false};
 }
 export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{ra:number;dec:number}>,options:FieldOptions={}):Readonly<{population:FieldPopulation|null;reasons:FieldUnavailableReason[]}>{
- const mode=options.qso??'gate';if(mode!=='gate'&&mode!=='merge')throw new FieldEngineError('input');
+ const finder=options.finder;
+ if(finder&&!(Number.isFinite(finder.magnitudeLimit)&&Number.isFinite(Math.fround(finder.magnitudeLimit))))throw new FieldEngineError('input');
+ const mode=finder?'gate':options.qso??'gate';if(mode!=='gate'&&mode!=='merge')throw new FieldEngineError('input');
  const checkpoint=()=>options.signal?.throwIfAborted();checkpoint();
- const area=freshFieldArea(pointing,options.fieldHalfDegrees),reasons:FieldUnavailableReason[]=[];
+ const area=finder?freshFieldArea(pointing,FIELD_HALF_DEGREES.finder,FIELD_AREA_LIMITS.finder):freshFieldArea(pointing,options.fieldHalfDegrees),reasons:FieldUnavailableReason[]=[];
  if(!packCovers(pack,pointing,area))return {population:null,reasons:['outside-pack']};
  const qsoCatalog=mode==='merge'?checkedQsoCatalog(pack,options):null;
  const regionIds=nativeRegionIds(area),bandOrder=nativeCompactBandOrder(regionIds);
- let stars:FieldStar[]=packStars(pack,area,bandOrder);checkpoint();const initialStarIds=Object.freeze(stars.map(s=>s.id));
+ let stars:FieldStar[]=packStars(pack,area,bandOrder,finder?.magnitudeLimit);checkpoint();const initialStarIds=Object.freeze(stars.map(s=>s.id));
  const qsoMatches=fieldQsoMatches(pack.qso.entries,area),photographMatches=pack.photographs.entries.find(e=>pack.pointings[e.pointing].ra===pointing.ra&&pack.pointings[e.pointing].dec===pointing.dec)?.indices??[];
- if(qsoMatches.length&&mode==='gate')reasons.push('qso-merge');
- if(photographMatches.length&&!options.photographs)reasons.push('photographic-image');
+ // Mode 0 (the finder): no QSO load, so no QSO gate; no photograph matcher in 0x59b894.
+ if(qsoMatches.length&&mode==='gate'&&!finder)reasons.push('qso-merge');
+ if(photographMatches.length&&!options.photographs&&!finder)reasons.push('photographic-image');
  let variables:NativeVariable[];
  // Variable loader: a record is kept when it lies inside the area and its magnitude is within the limiting magnitude (0x598572
  // setbe: Single magnitude <= limit); kept records are inserted with the cursor insert 0x492728 under the strict RA-then-Dec
@@ -449,9 +470,12 @@ export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Read
   }else qsoStage=Object.freeze({recordsRead:load.recordsRead,witnesses:Object.freeze([])});
  }
  checkpoint();
- const {admission,galaxies:admitted}=admitFieldGalaxies(glx,area);let galaxies=admitted;checkpoint();
+ // 0x597dba..0x597e07: the galaxy copy's limit, mode 0 min(limit, 12) (the finder), mode 1 max(limit, 16) (= 20 here).
+ const {admission,galaxies:loaded}=admitFieldGalaxies(glx,finder?{...area,limitingMagnitude:Math.min(area.limitingMagnitude,12)}:area);checkpoint();
+ // Front G5 review 1 M2: the finder loader 0x59b894 marks its records (colours 30.0, code 0; catalogObject.ts reads the mark).
+ const admitted:readonly NativeGalaxy[]=finder?Object.freeze(loaded.map(g=>Object.freeze({...g,fsc:true as const}))):loaded;let galaxies=admitted;
  let photographAssociations:FieldPhotographAssociation[]|undefined;
- if(options.photographs){
+ if(options.photographs&&!finder){
   // 0x598ed2..0x599128: at load, before the cursor insert; the population order does not change.
   const byIndex=new Map(options.photographs.rows.map(r=>[r.index,r])),sublist=photographMatches.map(i=>byIndex.get(i));
   if(sublist.some(r=>!r))throw new FieldEngineError('evidence');// the pack's matches must be kept rows
@@ -708,6 +732,8 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
 export type FieldView=Readonly<{
  pointing:Readonly<{ra:number;dec:number}>;telescope:FieldTelescope;reasons:readonly FieldUnavailableReason[];
  population:FieldPopulation|null;scene:NativeSelectionScene|null;viewport:RgbImage|null;
+ /** Front G5: the whole 936² cache paint (0x53b390) the viewport is cropped from, for the sky view's drift re-crop (0x53a40c). */
+ raster?:RgbImage;
  /** 'outside-view' only (as evaluateField). */
  outsideViewGalaxies?:readonly Readonly<{galaxy:string;margin:number}>[];
  /** Front T stars whose values are unavailable and whose stamps miss the crop: not painted (as evaluateField). */
@@ -739,10 +765,62 @@ export function evaluateFieldView(pack:FieldPack,glx:Uint8Array,pointing:Readonl
  const pendingIds=new Set(pendingVariables.map(e=>e.starId));
  const raster=paintField(population,scene,c,unpainted,options.photographs?{telescope,options:options.photographs}:undefined,pendingIds);
  const viewport=cropNativeFrame(raster,freshNativeViewport(FRAME.viewport,FRAME.viewport,{x:FRAME.anchor,y:FRAME.anchor}));
- return Object.freeze({...empty,population,scene,viewport,reasons:Object.freeze([]),unpaintedStarIds:Object.freeze([...pendingIds]),
+ return Object.freeze({...empty,population,scene,viewport,raster,reasons:Object.freeze([]),unpaintedStarIds:Object.freeze([...pendingIds]),
   ...(outsideViewGalaxies.length?{outsideViewGalaxies:Object.freeze(outsideViewGalaxies.map(x=>Object.freeze(x)))}:{})});
 }
 // ---- end Front M block ----
+/** Front G5: the finder star shift +0x6f4 per telescope record (record +0x38, Round at 0x53df62; compiled profiles'
+ * finderFactorMag, data/observatory/compiled-optical-profiles.json). The galaxy shift stays +0x6f8 (magnitudeShift). */
+export const FIELD_FINDER_STAR_SHIFTS=Object.freeze([-6,-5,-4] as const);
+export const FINDER_FRAME=Object.freeze({width:936,height:936,fieldDegrees:7.5,anchor:468,viewport:312});
+export type FinderView=Readonly<{pointing:Readonly<{ra:number;dec:number}>;telescope:FieldTelescope;reasons:readonly FieldUnavailableReason[];
+ population:FieldPopulation|null;scene:NativeSelectionScene|null;raster:RgbImage|null;
+ /** Galaxies whose minor axis rounds to 0 px at the finder scale (no visible pixels natively, [I]); listed, not painted. */unpaintedGalaxies:readonly string[];
+ /** TRUE-dispatch variables whose values are unavailable and whose stamp misses the cache: not painted (as the telescope view). */unpaintedStarIds:readonly string[]}>;
+/** Front G5: the finder field (0x53bae4 load with FSCFieldObj, see FieldOptions.finder) and its cache paint 0x53b058: 936² for
+ * 7.5°; galaxies in list order with stamp set 1 (bank offset 1) at bucket stored − +0x6f8, no NGC 224 routine and no
+ * photograph; then stars of types 0/2/3 at cached level (bank offset 1, as the setup 0x53c198 → 0x53ca7c stores it) − +0x6f4.
+ * A galaxy whose minor axis rounds to 0 px at this scale is not painted [I: an empty 0-row stretch composes nothing by red
+ * maximum]; every other galaxy is drawn, large ones included (GALAXY_STAMP_SCALES.finder.maxMajor, review 1 M1). A TRUE-dispatch
+ * variable whose values are unavailable types the field with its reason when its stamp (or a galaxy/QSO guard) reaches the 936²
+ * cache, as evaluateFieldView does for its crop; otherwise it is not painted (review 1 M3). */
+export function evaluateFinderView(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope,options:Omit<FieldOptions,'finder'>&Readonly<{finderMagnitudeLimit:number}>):FinderView{
+ if(telescope!==0&&telescope!==1&&telescope!==2)throw new FieldEngineError('input');
+ const c=FIELD_CALIBRATIONS[telescope],at=Object.freeze({ra:pointing.ra,dec:pointing.dec});
+ const {population,reasons}=buildFieldPopulation(pack,glx,at,{...options,finder:{magnitudeLimit:options.finderMagnitudeLimit}});
+ const none=Object.freeze([]) as readonly string[];
+ if(!population||reasons.length)return Object.freeze({pointing:at,telescope,reasons:Object.freeze(reasons),population,scene:null,raster:null,unpaintedGalaxies:none,unpaintedStarIds:none});
+ const scene=createNativeSelectionScene(population.stars,population.galaxies,{width:FINDER_FRAME.width,height:FINDER_FRAME.height,fieldDegrees:FINDER_FRAME.fieldDegrees,center:at,population:{coverage:'complete',provenance:`Finder field ${pack.id}; FSCFieldObj on the compact GSC`}});
+ // Variables whose values are unavailable (Front T): the telescope rule over the whole finder cache.
+ const pendingIds=new Set<string>();
+ for(const e of (population.variableStars??[]).filter(e=>e.values.status==='unavailable')){
+  const q=createNativeSelectionScene([{id:'variable',ra:e.ra,dec:e.dec}],[],scene.frame).stars[0],x=roundNearestEven(q.x),y=roundNearestEven(q.y),h=OUTSIDE_VIEW.stampHalf;
+  const reaches=x+h>=0&&x-h<FINDER_FRAME.width&&y+h>=0&&y-h<FINDER_FRAME.height;
+  if(e.nearGalaxyOrQso||reaches)return Object.freeze({pointing:at,telescope,reasons:Object.freeze([(e.values as Extract<FieldVariableValues,{status:'unavailable'}>).reason]),population,scene,raster:null,unpaintedGalaxies:none,unpaintedStarIds:none});
+  pendingIds.add(e.starId);
+ }
+ let raster:RgbImage={width:FINDER_FRAME.width,height:FINDER_FRAME.height,rgb:new Uint8Array(FINDER_FRAME.width*FINDER_FRAME.height*3)};
+ const unpaintedGalaxies:string[]=[];
+ for(let i=0;i<population.galaxies.length;i++){
+  const g=population.galaxies[i],p=scene.galaxies[i];
+  try{paintAdaptedGalaxyInPlace(raster,g,{x:roundNearestEven(p.x),y:roundNearestEven(p.y)},c.magnitudeShift,GALAXY_STAMP_SCALES.finder);}
+  catch(e){
+   if(!(e instanceof Error&&e.message==='Outside bounded galaxy stamp.'))throw e;
+   // Only the minor-axis-0 case may stay unpainted [I]; anything else is an evidence error, never a silent drop.
+   const axes=galaxyCatalogAxes(g),r=Math.max(3,axes.major*GALAXY_STAMP_SCALES.finder.pixelsPerArcminute/2);
+   if(roundNearestEven(r*axes.ratio)>=1)throw new FieldEngineError('evidence');
+   unpaintedGalaxies.push(g.id);
+  }
+ }
+ const profiles=new Map<number,Uint8Array>(),shift=FIELD_FINDER_STAR_SHIFTS[telescope];
+ for(let i=0;i<population.stars.length;i++){
+  const record=population.stars[i],p=scene.stars[i];if(pendingIds.has(record.id))continue;
+  const level=nativeStellarPaintLevel(record.type,nativeStoredStellarLevel(record.magnitude,1,'round'),shift);if(level===null)continue;
+  if(!profiles.has(level))profiles.set(level,prepareNativeStarProfile(level));
+  paintNativeStarInPlace(raster,profiles.get(level)!,{x:roundNearestEven(p.x),y:roundNearestEven(p.y)});
+ }
+ return Object.freeze({pointing:at,telescope,reasons:Object.freeze([]),population,scene,raster,unpaintedGalaxies:Object.freeze(unpaintedGalaxies),unpaintedStarIds:Object.freeze([...pendingIds])});
+}
 /** Journal factory for an available field result (same journal as the galaxy exposure; policy chosen by the caller). */
 export function createFieldExposure(result:FieldResult,policy:string,seed:number):JournalState{
  if(!result||result.reasons.length||!result.calibration)throw new FieldEngineError('input');
