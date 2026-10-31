@@ -1,9 +1,16 @@
 /* Database-route HR presentation (phase1 item1.8): fixed native frame 470×500 scrolls inside its region;
    the Pleiades paper chart keeps .pleiades-chart-scroll svg{min-width:600px}. */
 .pleiades-chart-scroll.db-hr-scroll svg{width:470px;min-width:470px;max-width:none;height:auto;margin:0;font-size:12px}
-.db-hr-axis{fill:none;stroke:#264e44;stroke-width:1.5}
-.db-hr-tick{stroke:#264e44;stroke-width:1}
-.db-hr-label{fill:#203b46;font-size:12px;dominant-baseline:hanging}
+.db-hr-axis{fill:none;stroke:var(--hr-axis,#264e44);stroke-width:1}
+.db-hr-tick{stroke:var(--hr-axis,#264e44);stroke-width:1}
+.db-hr-label{fill:var(--hr-text,#203b46);font-size:12px;dominant-baseline:hanging}
+/* Front R4c: VIREO's HR scheme (core/hrScheme.ts) */
+.hr-point{fill:var(--hr-point-fill);stroke:var(--hr-point-outline);stroke-width:1}
+.hr-zams{fill:none;stroke:var(--hr-zams);stroke-width:var(--hr-curve-width)}
+.hr-isochrone{fill:none;stroke:var(--hr-isochrone);stroke-width:var(--hr-curve-width)}
+.hr-marker{fill:none;stroke:var(--hr-marker);stroke-width:2}
+.hr-count{fill:var(--hr-count-text)}
+.hr-background{fill:var(--hr-background)}
 .db-hr-slider{margin:.2rem 0 .6rem}
 .db-hr-slider label{margin:.4rem 0 .2rem!important;font-size:.85rem}
 .db-hr-slider input[type=range]{width:100%;max-width:100%;accent-color:var(--ov-accent)}

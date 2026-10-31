@@ -1,6 +1,6 @@
 # Selected observation rows across practice comparisons
 
-The observation notebook can now edit or delete a stored row while another admitted original practice is displayed. The selected row keeps its object,source,stable ID and position;the comparison spectrum,its free-form response and manual width work remain separate. Generic **Open observation results** retains its current-object reuse/append behavior. No catalog type,measurement,numerical metadata or grade is supplied.
+The observation notebook can now edit or delete a stored row while another admitted original practice is displayed. The selected row keeps its object,source,stable ID and position;the comparison spectrum,its free-form response and manual width work remain separate. Generic **Open observation results** retains its current-object reuse/append behavior; since Front R4c the Time-Dependent Data option (Options dialog), not a checkbox here, chooses between them (off reuses, on appends; docs/OPTICAL-OPTIONS.md). No catalog type,measurement,numerical metadata or grade is supplied.
 
 ## Try locally
 

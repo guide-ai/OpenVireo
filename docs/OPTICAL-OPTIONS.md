@@ -16,9 +16,9 @@ The dialog opens from the telescope-motion card. These controls are live:
 | Fast Scope Change | off | On, a telescope change with the dome open keeps it open, with no dome sound. | +0x27d0 = env+0x2e84; 0x58b554 needs the option on and the dome open (+0x552 = 1) |
 | Compute Rdshft Vel. | off | The LSS Measured Redshift Data dialog and, since Front H2, the Hubble Observational Data dialog open with the velocity filled in: Single(c·z), ffExponent 4. The Hubble dialog fills it only when z ≠ 0. OK still applies the 1 % check. | +0x27d4 = env+0x2e88; TLSSRsltsDlg1.FormActivate 0x57cbcb; TObsRsltsDlg1.FormActivate 0x54aedb |
 | Infrared Camera | on | Off, the camera card offers only the CCD camera, and the dialog hides the IR tab. | +0x27d3 = env+0x2e87; TObsrvtry FormActivate 0x537a13, InstSliderClick 0x53e194, IRBoxMouseUp 0x5a7324 |
-| Monochrome Displays | off | On, the LSS wedge plot is drawn black and white when it is next shown. | +0x27da = env+0x2e8e; TWedgePlot FormShow 0x580e1a |
+| Monochrome Displays | off | On, the LSS wedge plot and the HR diagram are drawn black and white when they are next shown; the light curve follows it from its next print. | +0x27da = env+0x2e8e; TWedgePlot FormShow 0x580e1a |
 | Print in Color | off | On, Print Wedge Plot prints in colour; off, it prints black and white. | +0x27d9 = env+0x2e8d; Print1Click 0x580fba (flag = option XOR 1) |
-| Time-Dependent Data | off | Off, Record Z on an already recorded object updates its row, in the LSS survey (Front L3, docs/LSS-SURVEY.md) and for Hubble galaxy measurements (Front H2, docs/HUBBLE-VELOCITY.md); on, every Record Z adds a row. | +0x27d8 = env+0x2e8c; 0x57c918, 0x54a73c (core/recordReuse.ts) |
+| Time-Dependent Data | off | Off, Record Z on an already recorded object updates its row, in the LSS survey (Front L3, docs/LSS-SURVEY.md) and for Hubble galaxy measurements (Front H2, docs/HUBBLE-VELOCITY.md), and re-classifying an object edits its result (Front R4c); on, every Record Z or classification adds a row. | +0x27d8 = env+0x2e8c; 0x57c918, 0x54a73c (core/recordReuse.ts) |
 
 The dialog also shows the General, Photometer, Spectrometer, CCD and IR tab values **read-only**, formatted as
 FormActivate 0x5a56e0 writes them. Editing them would invalidate the certified field, photometer, spectrometer and camera
@@ -37,8 +37,19 @@ contracts built on those values.
   name. Five exercise menus force it on.
   - The photometer and spectrometer belong to the instrument front.
   - The camera needs the "current object" picked in the telescope field, which the web does not keep.
-- **Time-Dependent Data** for the photometer and classification results (0x54a73c): the Observational Results window keeps
-  its own "append" choice; the option above changes the LSS survey.
+- **Time-Dependent Data** for the classification results (Front R4c, 0x50b1dc → 0x54a73c): the option replaces the
+  Observation Results window's own "append" checkbox. Off (compiled), Open reuses the current object's first result; on, each
+  confirmation adds a row.
+  - [W] "The same object" stays the same retained spectrum (practice star, loaded file or acquisition) rather than VIREO's
+    exact ID.
+  - The notebook's `mode` field is kept as read and is written only when the option changes, so restored notebooks re-export
+    unchanged.
+- **Time-Dependent Data for the photometer** (Record 0x501e7c): the rule is ported as pure `src/core/photometerRecord.ts`:
+  - off: a band slot changes only for a nonzero reading, RA/Dec are filled only when zero, and the first time is kept;
+  - on: a new row each time.
+
+  It is not wired. The web photometer keeps one notebook entry per reading, not VIREO's per-star record with five band slots,
+  and VIREO's review dialog and its Cancel are not recovered. So the photometer is not affected by the option yet.
 - **Write Log File** (+0x27d6, off) appends login, component and logout records to CLEALOG.LOG. A web page cannot write
   that file.
 - **Monochrome Displays and Print in Color** for the light curve (Front R4b, `src/core/lightCurveScheme.ts`): VIREO creates
@@ -47,6 +58,16 @@ contracts built on those values.
   checked; afterwards the window keeps the Monochrome Displays value read at that print, also after closing and reopening it,
   until the next print. Cancelling VIREO's print dialog writes nothing (0x52c1dc); here the print preview plays that dialog,
   so only its Print… sets the flag, and closing it without printing changes nothing. OpenVireo does the same for the page
-  session. The HR diagram windows are not covered yet.
+  session.
+- **Monochrome Displays and Print in Color** for the HR diagram (Front R4c, `src/core/hrScheme.ts`), on the database, own-pairs
+  and native-DAT routes:
+  - The form reads Monochrome Displays every time it is shown (FormShow 0x542175). Here that is when its route or disclosure is
+    shown again.
+  - The schemes:
+    - colour: navy background, yellow axes and labels, white point outlines, lime ZAMS, fuchsia isochrone and marker;
+    - B&W: white background, black axes, labels, outlines and curves, grey marker.
+  - Print (0x542f44) prints in colour only with Print in Color, then the window takes Monochrome Displays again. Cancelling
+    the print preview writes nothing (0x542fc5).
+  - The photometer route's own web plot is not VIREO's form and keeps its colours.
 - Demonstration, Test, Restrict Scope Access, Administrator and the photometer/spectrometer check boxes keep their
   compiled state and are listed as text.

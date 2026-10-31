@@ -1657,7 +1657,8 @@ export interface MessageParameters {
   "obs.help": never;
   "obs.temporary": never;
   "obs.unsupported": never;
-  "obs.append": never;
+  "obs.timeDependentOff": never;
+  "obs.timeDependentOn": never;
   "obs.reuse": never;
   "obs.open": never;
   "obs.recorded": "object";

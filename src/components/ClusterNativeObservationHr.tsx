@@ -16,6 +16,8 @@ import ObservationalDataDialog from '../clusters/ObservationalDataDialog';
 import RecordedResultsWindow from '../clusters/RecordedResultsWindow';
 import {CLUSTER_HR_EN as HR} from '../clusters/ClusterHrMessages';
 import InfoListPrintPreview from '../polish/InfoListPrintPreview';// Front R4b review 1 L1
+import {useHrScheme} from '../clusters/useHrScheme';// Front R4c
+import {HR_SCHEMES,hrSchemeStyle} from '../core/hrScheme';
 
 export type ClusterNativeObservationHrProps=Readonly<{
  /** Optional handoff of an already ordered native results list(e.g. from the DAT inspector). */
@@ -41,6 +43,8 @@ function ClusterNativeObservationHr({initialList=null,messages,idPrefix='cnhr-',
  const focusIntent=useRef<'input'|'add'|'confirm'|'cancelRead'|null>(null),activeRead=useRef<number|null>(null);
  const [downloadErrorFor,setDownloadErrorFor]=useState<NativeResultList|null>(null);
  const [reportPrinting,setReportPrinting]=useState(false);
+ // Front R4c: VIREO's HR scheme, read when the view is shown (FormShow) and at Print (core/hrScheme.ts).
+ const {scheme:hrPlotScheme,printMonochrome,printed}=useHrScheme(!disabled);
  const interactionVersion=useRef(0),asyncFocus=useRef<{owner:Element;version:number}|null>(null);
  useEffect(()=>{const changed=()=>{interactionVersion.current++;};document.addEventListener('focusin',changed,true);document.addEventListener('pointerdown',changed,true);return()=>{document.removeEventListener('focusin',changed,true);document.removeEventListener('pointerdown',changed,true);};},[]);
  // Explicit local actions own focus; host navigation/restore must not steal it.
@@ -147,7 +151,7 @@ function ClusterNativeObservationHr({initialList=null,messages,idPrefix='cnhr-',
    {w.list&&<><button type="button" className="secondary-button" disabled={busy} onClick={download}>{m.download}</button><p className="cluster-native-hr-note">{m.downloadNote}</p></>}
   </section>
 
-  <section aria-labelledby={id('plot')}><h3 id={id('plot')}>{m.plotHeading}</h3><button type="button" className="primary-button" disabled={busy} onClick={()=>setW(plotClusterNativeHrObservations)}>{m.plotButton}</button> <HrPrint trial={w.trial} plot={plotSvg} testId={`${idPrefix}print`} disabled={!w.observationsPlotted}/> <button type="button" ref={resultsButton} className="secondary-button" data-testid={`${idPrefix}display-data`} disabled={!w.observationsPlotted||!w.list} onClick={()=>setResultsOpen(true)}>{HR.displayData}</button><p className="cluster-native-hr-note">{m.plotHelp}</p><p className="cluster-native-hr-note">{HR.obsRightClickNote}</p>
+  <section aria-labelledby={id('plot')}><h3 id={id('plot')}>{m.plotHeading}</h3><button type="button" className="primary-button" disabled={busy} onClick={()=>setW(plotClusterNativeHrObservations)}>{m.plotButton}</button> <HrPrint trial={w.trial} plot={plotSvg} testId={`${idPrefix}print`} disabled={!w.observationsPlotted} printMonochrome={printMonochrome} onPrinted={printed}/> <button type="button" ref={resultsButton} className="secondary-button" data-testid={`${idPrefix}display-data`} disabled={!w.observationsPlotted||!w.list} onClick={()=>setResultsOpen(true)}>{HR.displayData}</button><p className="cluster-native-hr-note">{m.plotHelp}</p><p className="cluster-native-hr-note">{HR.obsRightClickNote}</p>
    {obsAlert&&<p role="alert" data-testid="cnhr-obs-alert">{obsAlert}</p>}
    {resultsOpen&&w.list&&<RecordedResultsWindow data={w.list.data} testId={`${idPrefix}results`} onClose={()=>{setResultsOpen(false);resultsButton.current?.focus();}}/>}
    {!w.observationsPlotted&&<p>{m.notPlotted}</p>}
@@ -155,16 +159,16 @@ function ClusterNativeObservationHr({initialList=null,messages,idPrefix='cnhr-',
    {shownPlot&&shownPlot.plottedCountKind+shownPlot.plottedOtherKind>0&&<p role="note" className="cluster-native-hr-warning">{m.kindWarning(shownPlot.plottedCountKind,shownPlot.plottedOtherKind)}</p>}
    {offAxes>0&&<p>{m.offAxes(offAxes)}</p>}
    <div ref={chartRegion} className="cluster-native-hr-chart" role="region" tabIndex={0} aria-label={m.chartRegion}>
-    <svg ref={plotSvg} {...plotHandlers} data-testid={`${idPrefix}plot`} viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} width={VIEW_W} height={VIEW_H} role="img" aria-labelledby={`${id('chart-title')} ${id('chart-desc')}`}>
+    <svg ref={plotSvg} {...plotHandlers} data-testid={`${idPrefix}plot`} style={hrSchemeStyle(hrPlotScheme) as React.CSSProperties} data-scheme={hrPlotScheme===HR_SCHEMES.mono?'mono':'colour'} viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} width={VIEW_W} height={VIEW_H} role="img" aria-labelledby={`${id('chart-title')} ${id('chart-desc')}`}>
      <title id={id('chart-title')}>{m.chartTitle}</title><desc id={id('chart-desc')}>{m.chartDescription(shownPlot?.count??0)}</desc>
-     <defs><clipPath id={id('clip')}><rect x={G.left} y={G.top} width={G.widthPx} height={G.heightPx}/></clipPath></defs>
+     <defs><clipPath id={id('clip')}><rect x={G.left} y={G.top} width={G.widthPx} height={G.heightPx}/></clipPath></defs><rect className="hr-background" x={0} y={0} width={VIEW_W} height={VIEW_H}/>
      <polyline points={frame.axis.map(p=>p.join(',')).join(' ')} className="cnhr-axis"/>
      {frame.ticks.map((t,i)=><line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} className="cnhr-tick"/>)}
      {frame.texts.map((t,i)=><text key={i} x={t.x} y={t.y} className="cnhr-label">{t.text}</text>)}
      <g clipPath={`url(#${id('clip')})`}>{zamsPath&&<polyline data-testid="cnhr-zams" points={zamsPath} className="cnhr-zams"/>}{isoPath&&<polyline data-testid="cnhr-isochrone" points={isoPath} className="cnhr-isochrone"/>}</g>
      {shownPlot&&shownPlot.rows.map(r=>r.pixel&&<circle key={r.index} data-testid="cnhr-point" data-record={r.index} cx={r.pixel.x} cy={r.pixel.y} r={G.marker} className="cnhr-point"/>)}
      {shownPlot&&selected&&<ellipse data-testid="cnhr-selected" data-record={selected.index} cx={selected.pixel.x} cy={selected.pixel.y} rx={G.marker} ry={G.marker} className="cnhr-selected"/>}
-     {shownPlot&&<text data-testid="cnhr-count" x={G.right} y={G.top} textAnchor="end" className="cnhr-label">{shownPlot.countLabel}</text>}
+     {shownPlot&&<text data-testid="cnhr-count" x={G.right} y={G.top} textAnchor="end" className="cnhr-label hr-count">{shownPlot.countLabel}</text>}
     </svg>
    </div>
   </section>
