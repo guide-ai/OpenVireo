@@ -775,7 +775,7 @@ export default function OpenVireo(){
   // Front Perf: derived props of memoised routes, rebuilt only when their inputs change.
   const classificationAcquisitions=useMemo(()=>classificationArchive.filter(a=>a.kind==='catalog-star-acquisition'),[classificationArchive]);
   const studentPointed=hasPointed&&!(benchPointing&&benchPointing.ra===pointing.ra&&benchPointing.dec===pointing.dec);
-  const photometerTelescope=useMemo(()=>({pointing,domeOpen:open,mode,moving:observatoryClock.moving,onPreparePoint:stable.preparePhotometerField,onPoint:stable.photometerPoint,studentPointed,hidden:objectXHidden,showObjectId:sessionOptions.showObjectId,objectXId}),[pointing,open,mode,observatoryClock.moving,stable,studentPointed,objectXHidden,sessionOptions.showObjectId,objectXId]);
+  const photometerTelescope=useMemo(()=>({pointing,domeOpen:open,mode,moving:observatoryClock.moving,onPreparePoint:stable.preparePhotometerField,onPoint:stable.photometerPoint,studentPointed,hidden:objectXHidden,showObjectId:sessionOptions.showObjectId,objectXId,timeDependentData:sessionOptions.timeDependentData,currentJd:observatoryJd}),[pointing,open,mode,observatoryClock.moving,stable,studentPointed,objectXHidden,sessionOptions.showObjectId,objectXId,sessionOptions.timeDependentData,observatoryJd]);
   const gateTracking=nativeGate.tracking,gateMoving=nativeGate.moving,gateFinder=nativeGate.finder,gateDome=nativeGate.domeOpen;
   // Front G: the field spectrometer's link exists only once the Spectrometer screen has been opened (the hidden screen then
   // ignores dome and pointing changes), keyed on the boolean route so other route changes keep it.

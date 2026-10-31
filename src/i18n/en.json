@@ -3454,5 +3454,15 @@
   "fieldSpec.reason.qso-selected": "the slit selects a quasar record whose spectrum this route cannot reproduce here",
   "fieldSpec.analyze": "Analyze this spectrum",
   "fieldSpec.classify": "Classify this spectrum",
-  "fieldSpec.handOffError": "This spectrum could not be opened (it needs a stopped exposure with a positive bin; Classify also needs wavelengths that overlap 3500–7400 Å by at least 100 Å, and room for another imported file)."
+  "fieldSpec.handOffError": "This spectrum could not be opened (it needs a stopped exposure with a positive bin; Classify also needs wavelengths that overlap 3500–7400 Å by at least 100 Å, and room for another imported file).",
+  "ph.nativeRecordHelp": "Record/Review is VIREO's own File › Data command: it adds this reading to the photometer's results list (one row per star; B and V of the same star share the row unless Time-Dependent Data is on) and opens the Observational Data window. OK keeps your remarks and spectral type; Cancel keeps the measured value in the list, as in VIREO, but not what you typed, and Record/Review stays available. The notebook entry beside it is the web's own transcription that the Pleiades guide counts.",
+  "ph.nativeRecorded": "The reading was added to the photometer results list.",
+  "ph.nativeCancelled": "Cancelled. As in VIREO, the measured value stays in the results list; your remarks and spectral type were not stored, and the reading still counts as not recorded.",
+  "ph.nativeBlocked": "This record cannot be shown in the Observational Data window.",
+  "ph.nativeSpError": "Sp.Type is not a spectral type the results list can store, or a box holds a character the list cannot store.",
+  "ph.nativeVelocityNote": "Velocity stays empty for a photometer reading (it has no redshift). Adaptation: the record time is the observatory clock when the reading finished (VIREO uses the computer's clock), and these records are kept in the photometer's own list rather than one list shared with classifications and Hubble records.",
+  "ph.nativeOk": "OK",
+  "ph.nativeTitle": "Photometer results list (VIREO Record/Review)",
+  "ph.nativeHelp": "Rows recorded with Record/Review: {count}. They are saved with the photometer session and can be shown as VIREO's Recorded Results list (Search, Print, Save Text, Comma Delimit).",
+  "ph.nativeResults": "Display/Print Data"
 }

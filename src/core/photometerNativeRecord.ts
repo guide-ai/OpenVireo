@@ -30,7 +30,7 @@
  *   path, [I]), which is not modelled.
  * - [U] Whether [0x5b5d98] in the off-mode name is the Object X ID or the login name (both default to UNKNOWN). */
 import {photometerRecord,PHOTOMETER_BANDS,type PhotometerResultRecord} from './photometerRecord';
-import {observationText,formatObservationType,ObservationResultError} from './observationResults';
+import {observationText,formatObservationType,parseObservationType,ObservationResultError} from './observationResults';
 import {encodeHtlExtended} from './hotList';
 import {encodeNativeText,parseNativeObservationResults,NATIVE_RESULT_BYTES,type NativeObservationData} from './nativeObservationResults';
 import {NATIVE_TIME_BIAS} from './recordedResults';
@@ -121,4 +121,21 @@ export function photometerNativeData(rows:readonly PhotometerNativeRow[]):Native
   bytes[at+107]=remarks.length;bytes.set(remarks,at+108);
  });
  return parseNativeObservationResults(bytes);
+}
+
+/** The native texts of the Record/Review path [D]: menu caption (DFM Record1), the Start prompt 0x4fffd4 (0x50032c..0x5003c4),
+ * its follow-up (0x5003dc/0x5003ec) and the first-OK message of Record1Click (0x502080/0x50210c). Lines end in CR LF natively. */
+export const PHOTOMETER_RECORD_LITERALS=Object.freeze({
+ menu:'&Record/Review',
+ movedCaption:'Telescope has Moved!',
+ movedText:(id:string)=>[`You have not recorded your current readings for "${id}".`,'If you do not record them now, you cannot access them later.','Record current readings?'] as const,
+ notSavedCaption:'Data Not Saved!',notSavedText:'Current Readings Cleared!',
+ savedCaption:'Data Saved',
+ savedText:'Current readings added to results list.  View/Print/Save list under "Tools" -> "Results Editors" -> "Observational Results" on main Window.',
+});
+/** OK 0x54b02c for a photometer record: the remarks and the parsed Sp type. [W] A Sp text the native parser would not accept
+ * (natively an unchecked path) or text outside printable Windows-1252 is refused and the dialog stays open, as for Hubble. */
+export function photometerNativeOk(input:Readonly<{remarks:string;typeText:string}>):Readonly<{ok:true;remarks:string;spectralCode:number}>|Readonly<{ok:false}>{
+ try{observationText(input.remarks,PHOTOMETER_NATIVE_LIMITS.remarks);const spectralCode=parseObservationType(input.typeText);formatObservationType(spectralCode);return Object.freeze({ok:true,remarks:input.remarks,spectralCode});}
+ catch(e){if(e instanceof ObservationResultError)return Object.freeze({ok:false});throw e;}
 }

@@ -42,7 +42,11 @@ test('Observatory pointing, then Activate: the photometer measures there; sky on
  await page.getByLabel('Photometer pointing',{exact:true}).selectOption('object');await integrate(page);
  await expect(page.getByRole('button',{name:'Add notebook entry',exact:true})).toBeEnabled();
  // M3: Sky chosen again on the star moved the slider since activation (+0x41d), so VIREO does not ask.
- await page.getByLabel('Photometer pointing',{exact:true}).selectOption('sky');await integrate(page);
+ // Front P3: the star reading was not recorded, so Start first asks VIREO's "Telescope has Moved!" (0x4fffd4); No clears it.
+ await page.getByLabel('Photometer pointing',{exact:true}).selectOption('sky');await page.getByRole('button',{name:'Start integration',exact:true}).click();
+ await expect(page.getByTestId('photo-moved').getByRole('heading',{name:'Telescope has Moved!'})).toBeVisible();await page.getByTestId('photo-moved-no').click();
+ await expect(page.getByTestId('photo-not-saved')).toContainText('Current Readings Cleared!');await page.getByTestId('photo-not-saved-ok').click();
+ await expect(page.getByRole('button',{name:'Start integration',exact:true})).toBeEnabled({timeout:30000});
  await expect(page.getByTestId('photo-sky-replace')).not.toBeVisible();
  // Sky declared before moving onto the star: the move stands for returning to the form, which clears the flag, so VIREO asks.
  await benchPoint(page,SKY);await ready(page);await benchPoint(page,STAR);await ready(page);
