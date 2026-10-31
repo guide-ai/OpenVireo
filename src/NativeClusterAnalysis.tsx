@@ -16,6 +16,7 @@ import {CLUSTER_HR_IMAGE,clusterHrIsochronePolyline,clusterHrPixel,clusterHrPlot
 import {clusterHrHitTest,clusterVBank} from './core/clusterHrSelect';
 import {CLUSTER_HR_EN as HR} from './clusters/ClusterHrMessages';
 import HrPrint,{ObservationDataUnavailable} from './clusters/HrPrint';
+import InfoListPrintPreview from './polish/InfoListPrintPreview';// Front R4b
 const num=(v:number)=>formatNumber(v,{maximumFractionDigits:6,useGrouping:false});
 // Learner-typed binary64 notebook values are shown like the photometer notebook(no x87 or native DAT identity).
 const typed=(v:number)=>formatNumber(v,{maximumFractionDigits:9,useGrouping:false});
@@ -99,19 +100,13 @@ function NativeClusterAnalysis({state,busy,draft,onDraft,onConfirm,referenceData
  const reportLabel=own?t('ownHr.reportLabel'):referenceData?.label??'';
  const report=useMemo(()=>hrTrial?clusterDatabaseHrReport(reportLabel,hrTrial):null,[hrTrial,reportLabel]);
  const reportKind=draft?'db.reportTrial':fit?'db.reportConfirmed':'db.reportNone';
- const [reportOpen,setReportOpen]=useState(false),[printError,setPrintError]=useState(false);
+ const [reportOpen,setReportOpen]=useState(false),[printing,setPrinting]=useState(false);
  const validTrial=hrTrial?.isochroneShown??false;
  const progress=useRef(onDatabaseProgress);progress.current=onDatabaseProgress;
  useEffect(()=>{progress.current?.({validTrial,reportOpen});},[validTrial,reportOpen]);
  useEffect(()=>()=>{progress.current?.({validTrial:false,reportOpen:false});},[]);
- const printCleanup=useRef<(()=>void)|null>(null);
- useEffect(()=>()=>{printCleanup.current?.();},[]);
- function printReport(){
-  printCleanup.current?.();setPrintError(false);const root=document.documentElement;
-  const done=()=>{root.classList.remove('printing-db-hr');window.removeEventListener('afterprint',done);if(printCleanup.current===done)printCleanup.current=null;};
-  root.classList.add('printing-db-hr');window.addEventListener('afterprint',done);printCleanup.current=done;
-  try{window.print();}catch{done();setPrintError(true);}
- }
+ // Front R4b: the report's List › Print... is the shared TInfoListForm1 page (0x59e4c0) on both native routes.
+ useEffect(()=>{if(busy)setPrinting(false);},[busy]);
  // An unset slider rests at its minimum,where the browser sees no change;an explicit unmodified minimum key or a completed
  // primary press released there sets that minimum. Focus,render,cancelled or modified actions and set sliders stay native.
  const press=useRef<{field:ClusterDatabaseHrSliderField;pointerId:number}|null>(null);
@@ -147,9 +142,10 @@ function NativeClusterAnalysis({state,busy,draft,onDraft,onConfirm,referenceData
  {own&&ownIssue==='refused'&&<p role="alert" data-testid="own-hr-refused">{t('ownHr.refused')}</p>}{own&&(ownIssue==='limit'||ownIssue==='error')&&<p role="alert" data-testid="own-hr-confirm-error" data-reason={ownIssue}>{t(ownIssue==='limit'?'ph.seriesLimit':'nc.error')}</p>}
  {fit?<section aria-label={t('nc.confirmed')}><h3>{t('nc.confirmed')}</h3><dl className="pleiades-results"><dt>{t('nc.model')}</dt><dd data-testid={tid('native-confirmed-model')}>{NATIVE_CLUSTER_MODELS[fit.modelIndex]!.label}</dd><dt>{t('nc.confirmedLogAge')}</dt><dd data-testid={tid('native-confirmed-logage')}>{num(fit.logAge)}</dd><dt>{t('nc.ageMyr')}</dt><dd data-testid={tid('native-confirmed-age')}>{num(fit.ageMyr)}</dd><dt>{t('nc.modulus')}</dt><dd data-testid={tid('native-confirmed-modulus')}>{num(fit.modulus)}</dd><dt>{t('nc.ebv')}</dt><dd data-testid={tid('native-confirmed-ebv')}>{num(fit.ebv)}</dd><dt>{t('nc.offset')}</dt><dd>{num(fit.offset)}</dd><dt>{t('nc.appliedExtinction')}</dt><dd data-testid={tid('native-confirmed-av')}>{num(fit.extinctionMagnitude)}</dd><dt>{t('pa.parsecs')}</dt><dd data-testid={tid('native-confirmed-distance')}>{num(fit.distancePc)}</dd></dl><p>{t(referenceData?'db.fitSource':own?'ownHr.fitSource':'nc.fitSource',{count:fit.points.length})}</p><p data-testid={tid('native-confirmed-interpretation')}>{fit.interpretation||t('nc.noInterpretation')}</p></section>:<p>{t('nc.unconfirmed')}</p>}
  <details onToggle={e=>setTableOpen(e.currentTarget.open)}><summary>{t('nc.curveValues')}</summary><p>{t('nc.curveHelp')}</p><div className="photometer-table"><table><thead><tr><th>{t('nc.curve')}</th><th>{t('nc.modelColor')}</th><th>{t('nc.modelV')}</th></tr></thead><tbody>{tableRows}</tbody></table></div></details>
- {frame&&report&&hrTrial&&<details className={own?'own-hr-report':'db-hr-report'} onToggle={e=>setReportOpen(e.currentTarget.open)}><summary id={prefix+'native-report'}>{t('db.reportSummary')}</summary><div className={own?undefined:'db-hr-report-print'}><p data-testid={rid('hr-report-kind')}><strong>{t(reportKind)}</strong></p><figure className={own?undefined:'db-hr-report-figure'}><figcaption>{report.caption}</figcaption><pre data-testid={rid('hr-report')}>{report.lines.join('\n')}</pre></figure>{(referenceData||own)&&<p className="observatory-note" data-testid={rid('hr-test-mode-note')}>{HR.testModeNote}</p>}</div>
+ {frame&&report&&hrTrial&&<details className={own?'own-hr-report':'db-hr-report'} onToggle={e=>setReportOpen(e.currentTarget.open)}><summary id={prefix+'native-report'}>{t('db.reportSummary')}</summary><div><p data-testid={rid('hr-report-kind')}><strong>{t(reportKind)}</strong></p><figure className="db-hr-report-figure"><figcaption>{report.caption}</figcaption><pre data-testid={rid('hr-report')}>{report.lines.join('\n')}</pre></figure>{(referenceData||own)&&<p className="observatory-note" data-testid={rid('hr-test-mode-note')}>{HR.testModeNote}</p>}</div>
  {!hrTrial.zamsShown&&<p data-testid={rid('hr-report-empty')}>{t(own?'ownHr.reportEmpty':'db.reportEmpty')}</p>}{hrTrial.zamsShown&&!hrTrial.isochroneShown&&<p data-testid={rid('hr-report-no-isochrone')}>{t('db.reportNoIsochrone')}</p>}<p className="observatory-note">{t('db.reportNote')}</p>
- {db&&<><div className="sky-actions"><button type="button" className="secondary-button" onClick={printReport}>{t('db.print')}</button></div><p className="observatory-note">{HR.reportPrintNote}</p>{printError&&<p role="alert">{t('db.printError')}</p>}</>}</details>}
+ <div className="sky-actions"><button type="button" className="secondary-button" data-testid={rid('hr-report-print')} onClick={()=>setPrinting(true)}>{t('db.print')}</button></div><p className="observatory-note">{HR.reportPrintNote}</p>
+  {printing&&<InfoListPrintPreview testId={rid('hr-report-print-preview')} caption={report.caption} lines={report.lines} onClose={()=>setPrinting(false)}/>}</details>}
  <p className="observatory-note">{t(referenceData?'db.limits':own?'ownHr.limits':'nc.limits')}</p></section>;
 }
 // Front Perf: re-render only when a prop changes (handlers come stable from the shell; docs/RENDER-BUDGET.md).

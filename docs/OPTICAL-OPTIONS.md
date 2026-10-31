@@ -41,7 +41,10 @@ contracts built on those values.
   its own "append" choice; the option above changes the LSS survey.
 - **Write Log File** (+0x27d6, off) appends login, component and logout records to CLEALOG.LOG. A web page cannot write
   that file.
-- **Monochrome Displays and Print in Color** also apply to the original's light curve and HR diagram windows. Those are not
-  covered yet.
+- **Monochrome Displays and Print in Color** for the light curve (Front R4b, `src/core/lightCurveScheme.ts`): VIREO creates
+  the light-curve window once per run and writes its colour flag only in Print (0x52c1cc). So the light curve is drawn in
+  colour until its first print whatever Monochrome Displays says; the print uses black on white unless Print in Color is
+  checked; afterwards the window keeps the Monochrome Displays value read at that print, also after closing and reopening it,
+  until the next print. OpenVireo does the same for the page session. The HR diagram windows are not covered yet.
 - Demonstration, Test, Restrict Scope Access, Administrator and the photometer/spectrometer check boxes keep their
   compiled state and are listed as text.

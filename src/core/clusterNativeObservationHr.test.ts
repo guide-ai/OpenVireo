@@ -2,6 +2,7 @@ import{describe,expect,it}from'vitest';
 import controls from'./clusterNativeObservationHr.controls.json';
 import{parseNativeObservationResults,nativeObservationBytes,NativeObservationError,type NativeObservationData}from'./nativeObservationResults';
 import{buildNativeResultList}from'./nativeResultList';
+import{clusterNativeHrReport as report0,CLUSTER_NATIVE_HR_INITIAL_TRIAL as initial0}from'./clusterNativeObservationHr';
 import{addClusterNativeHrPending,armClusterNativeHrReplace,beginClusterNativeHrRead,cancelClusterNativeHrPending,cancelClusterNativeHrRead,clearClusterNativeHrOverlays,clusterNativeHrBlockedRows,clusterNativeHrFrame,clusterNativeHrPlot,clusterNativeHrRecords,clusterNativeHrReport,completeClusterNativeHrRead,confirmClusterNativeHrReplace,disarmClusterNativeHrReplace,dismissClusterNativeHrError,dyadicDecimal,EMPTY_CLUSTER_NATIVE_HR,failClusterNativeHrRead,fistpInt64,plotClusterNativeHrObservations,roundExtended,setClusterNativeHrTrial,ClusterNativeFpuGate,ClusterNativeHrStateError,type ClusterNativeHrTrial,type ClusterNativeHrWorkspace}from'./clusterNativeObservationHr';
 
 // ---- synthetic DAT encoder(test-only;not an original writer)
@@ -136,5 +137,15 @@ describe('workspace transitions',()=>{
   const plotted=plotClusterNativeHrObservations(EMPTY_CLUSTER_NATIVE_HR);expect(plotted.observationsPlotted).toBe(true);expect(plotClusterNativeHrObservations(plotted)).toBe(plotted);
   let w=setClusterNativeHrTrial(plotted,{zamsShown:true,isochroneShown:true,modulusTicks:950});expect(()=>setClusterNativeHrTrial(w,{ebvTicks:251})).toThrow(ClusterNativeHrStateError);
   w=clearClusterNativeHrOverlays(w);expect(w.trial).toMatchObject({zamsShown:false,isochroneShown:false,modulusTicks:950});expect(cancelClusterNativeHrRead(w)).toBe(w);expect(cancelClusterNativeHrPending(w)).toBe(w);
+ });
+});
+
+// Front R4b (dossier C §1.2 lines 6 and 11, §4): ffFixed 0 through the ported FloatToStrF (delphiFixed).
+describe('View/Print Parameters ffFixed 0',()=>{
+ it('distance and age lines',()=>{
+  const r=report0({...initial0,zamsShown:true,isochroneShown:true,distanceOption:true,modulusTicks:950,ebvTicks:3,ageIndex:36});
+  expect(r.caption).toBe('Cluster Age/Distance Parameters');
+  expect(r.lines).toContain('  Estimated Cluster Distance: 762 Parsecs');
+  expect(r.lines).toContain('  Estimated Cluster Age: 3981 Million Years');
  });
 });

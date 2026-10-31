@@ -1,6 +1,8 @@
 # Original camera Information fields
 
-**Saved images → Compiled camera defaults** now opens the recovered CCD or IR **Information** view. It shows nine read-only rows and returns focus to the corresponding opener on Close/Escape. It works without loading an image.
+**Saved images → Compiled camera defaults** opens the recovered CCD or IR **Information** view, and the live camera window offers the same list as **Information...** (VIREO's File › Information... of TCCDCam / TIRCam). It shows VIREO's nine list lines and returns focus to the corresponding opener on Close/Escape. It works without loading an image.
+
+Front R4b (dossier `analysis/front-r4/C-parameters-camera-list.md` §3): the lines are VIREO's own text (C5), for example `Pixel Size (microns): 24.0 x 24.0` and `Dark Noise (electrons/pixel/sec): 2.0`, with FloatToStrF ffFixed 1 through `delphiFixed`. The window's List menu keeps only **Print...** and **Close**, as in VIREO (Edit, Search and Save Text are hidden). Print... opens a preview of VIREO's list page (0x59e4c0, `src/core/infoListPrint.ts`): date and laboratory-table line, the student line (blank: no sign-in), the caption `CCD Camera Parameters` or `IR Camera Parameters`, then the lines. Nothing about a target is listed, so nothing is hidden for Object X.
 
 This view describes the original compiled fallback settings. It does not read an instructor's option file, select an active camera, identify a supplied image or create acquisition/calibration metadata. The FITS image, selected pixel, notebook and investigation remain independent.
 

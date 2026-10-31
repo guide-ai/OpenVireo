@@ -1253,7 +1253,6 @@ export interface MessageParameters {
   "db.reportNote": never;
   "db.print": never;
   "db.printNote": never;
-  "db.printError": never;
   "clusterLab.open": never;
   "clusterLab.eyebrow": never;
   "clusterLab.title": never;
@@ -2102,18 +2101,6 @@ export interface MessageParameters {
   "cameraInfo.ccdTitle": never;
   "cameraInfo.irTitle": never;
   "cameraInfo.authority": never;
-  "cameraInfo.detector": never;
-  "cameraInfo.imageSize": never;
-  "cameraInfo.pixelSize": never;
-  "cameraInfo.dimensions": "height" | "width";
-  "cameraInfo.readNoise": never;
-  "cameraInfo.darkNoise": never;
-  "cameraInfo.bias": never;
-  "cameraInfo.ad": never;
-  "cameraInfo.well": never;
-  "cameraInfo.cooling": never;
-  "cameraInfo.liquidNitrogen": never;
-  "cameraInfo.thermoelectric": never;
   "cameraInfo.close": never;
   "cameraPrepare.title": never;
   "cameraPrepare.owner": "name";

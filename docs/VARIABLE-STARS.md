@@ -24,7 +24,7 @@ witness scripts are outside the repository: `/home/dobleuber/Documents/Codex/202
 | 3 | Data › **Display Light Curve...** | same | original |
 | 4 | **Simulated Light Curve**: 1.5 cycles from the epoch, VIREO layout and colours | TLtCrvDsplyForm1 | original (fonts differ) |
 | 5 | Data › Save Text › **As Displayed...** downloads `<GCVS ID>.TXT` | Save dialog, empty default name, `.TXT` | adaptation (file name, browser download) |
-| 6 | Data/File › **Print...** opens a print preview of the page body (see Print) | printer pages | adaptation (date format, placeholder for the student/lab text, landscape layout, no fonts) |
+| 6 | Data/File › **Print...** opens a print preview of the page body (see Print) | printer pages | adaptation (date format, placeholder for the student/lab text, orientation chosen in the preview, no fonts) |
 | 7 | **Help** opens VarTypeHlp.LST in the shared help viewer (Front H, docs/CLEA-HELP.md) | CLEA help viewer via VarTypeHlp.LST | port |
 
 One-line labels shown in the app: the entry adaptation (`variable-adaptation`), "The plot keeps VIREO's layout, colours and
@@ -88,12 +88,23 @@ so the preview does not show it. The page body, in order:
    options byte that gates TVarFldLstForm1, so its default is unknown; the preview shows the clear-flag branch [W].
 3. List print only: the window caption `Variable Star Data`.
 4. The eleven list lines.
-5. Light curve only, VIREO's landscape branch (0x52c4fd..0x52c571): `(Screen Image Printed on Next Page)`, a page break,
-   then `<first student/lab string> - Page 2` (placeholder + ` - Page 2`). Then, in both orientations, the literal
-   `CLEA Exercise "VIREO - The VIRtual Educational Observatory"` (0x52c848, no dash) and the plot in black on white.
+5. Light curve only (Front R4b, `src/core/lightCurvePrint.ts`, body 0x52c250, dossier
+   `analysis/front-r4/B-mono-color-portrait.md` §4a): the list lines start 4 lines below the last name, at x 50; after them
+   one more line, then
+   - portrait: 3 more lines, the title and the plot on the same page;
+   - landscape: 300 printer units, `(Screen Image Printed on Next Page)` at x 700, a page break, then
+     `<first student/lab string> - Page 2` (placeholder + ` - Page 2`, at most 49 characters) and, one line down, the title
+     and the plot.
 
-Not reproduced: the portrait branch (plot on the same page), page layout and fonts, and the option (options +0x2e8d) that
-lets VIREO print in screen colours; the preview always prints black on white [W]. The first reading (and plan finding 8)
+   The title is the literal `CLEA Exercise "VIREO - The VIRtual Educational Observatory"` (0x52c848, no dash). The preview
+   offers Portrait and Landscape (default portrait) and sets the browser page orientation to match [W]: VIREO takes the
+   orientation from the printer settings. VIREO draws the plot at the title's height, so it covers the title; the preview
+   places the plot one line below it [W].
+6. Colours: the plot prints black on white unless **Print in Color** is checked, then in the screen colours (navy, white,
+   yellow). Printing also sets the window's own scheme to **Monochrome Displays** as read at that print, kept for the page
+   session; before the first print the window is always in colour (one form per run, flag +0x404, dossier §1).
+
+Not reproduced: printer metrics and fonts (gaps are text lines and indents) [W]. The first reading (and plan finding 8)
 put the job title on the page; review 1 corrected it, and the closure check (N1) added the list-print exception.
 
 ## Light-curve model (0x51f0f8, 0x51f298, 0x51f33c)

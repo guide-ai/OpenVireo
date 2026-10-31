@@ -90,7 +90,10 @@ test('row 1 and all 24 own pairs reach Data from Observations: own (0.25, 9.875)
  await o.getByLabel(labels.age,{exact:true}).fill('8.00');await o.getByLabel(labels.model,{exact:true}).selectOption('4');await o.getByLabel(labels.correction,{exact:true}).check();await expect(o.getByTestId('own-hr-native-isochrone')).toHaveCount(1);
  await expect(o.getByTestId('own-hr-native-preview')).toContainText('100 Myr · 119.124201 pc · applied A_V=0.12 mag');
  await o.getByText('View/Print Parameters',{exact:true}).click();await expect(o.getByTestId('own-hr-hr-report-kind')).toHaveText('Current trial (unconfirmed)');await expect.poll(()=>o.getByTestId('own-hr-hr-report').textContent()).toBe(ownLines);
- await expect(o.getByRole('button',{name:'Print this report',exact:true})).toHaveCount(0);
+ // Front R4b: the own route prints the report too, on VIREO's list page with the same caption.
+ await o.getByRole('button',{name:'Print this report',exact:true}).click();
+ await expect(page.getByTestId('own-hr-hr-report-print-preview-native-header')).toContainText('     Cluster Age/Distance Parameters');
+ await page.getByTestId('own-hr-hr-report-print-preview-close').click();await expect(page.getByTestId('own-hr-hr-report-print-preview')).toHaveCount(0);
  await o.getByLabel(labels.note,{exact:true}).fill(NOTE);await o.getByRole('button',{name:'Confirm chosen model fit',exact:true}).click();
  await expect(o.getByTestId('own-hr-native-confirmed-logage')).toHaveText('8');await expect(o.getByTestId('own-hr-native-confirmed-distance')).toHaveText('119.124201');await expect(o.getByTestId('own-hr-native-confirmed-interpretation')).toHaveText(NOTE);await expect(o.getByTestId('own-hr-refused')).toHaveCount(0);
  await expect(o.getByTestId('own-hr-hr-report-kind')).toHaveText('Confirmed result');expect(await o.getByTestId('own-hr-hr-report').textContent()).toBe(ownLines);await expect(o.getByText('Confirmed against 24 of your confirmed B/V pairs',{exact:false})).toBeVisible();

@@ -9,6 +9,8 @@ import CleaHelp from '../clusters/CleaHelp';
 import {HELP_FILES} from '../help/helpFiles';
 import {VARIABLE_STARS_EN as M} from './VariableStarMessages';
 import LightCurveSvg from './LightCurveSvg';
+import {INITIAL_LIGHT_CURVE_MONOCHROME,lightCurvePrintFlags} from '../core/lightCurveScheme';
+import {lightCurvePrintPage,printPageSizeCss,type LightCurvePrintItem,type PrintOrientation} from '../core/lightCurvePrint';
 import '../observatory/observatory-dialogs.css';
 import './variables.css';
 
@@ -28,11 +30,20 @@ function download(bytes:Uint8Array,name:string){
  * State is a browsing aid only; it is not saved with the investigation. */
 /** `openRequest` (Front O): Field Information › Variable Stars › Get Selection Data (0x530130) opens Variable Star Data on a
  * CLEA_VStrs.dat record index; each new token opens once the catalog is loaded. */
-function VariableStarsRoute({active,openRequest=null}:{active:boolean;openRequest?:Readonly<{token:number;index:number;riseWordDefaulted?:boolean}>|null}){
+/** `monochromeDisplays` / `printInColor` (Front R4b): the session options. The light-curve window reads them only at Print
+ * (TLtCrvDsplyForm1 Print1Click 0x52c1cc; src/core/lightCurveScheme.ts): it stays in colour until the first print, prints
+ * in colour only with Print in Color, then keeps Monochrome Displays as of that print. The route stays mounted once
+ * visited, so the flag lives for the page session like VIREO's single form. */
+function VariableStarsRoute({active,openRequest=null,monochromeDisplays=false,printInColor=false}:{active:boolean;openRequest?:Readonly<{token:number;index:number;riseWordDefaulted?:boolean}>|null;monochromeDisplays?:boolean;printInColor?:boolean}){
  const id=useId(),[load,setLoad]=useState<LoadState>({status:'loading'}),[name,setName]=useState(''),[type,setType]=useState('');
  const [session,setSession]=useState<VariableStarSession>(INITIAL_VARIABLE_STAR_SESSION);
  const [menu,setMenu]=useState<'data'|'save'|'file'|null>(null),[notice,setNotice]=useState('');
  const [printing,setPrinting]=useState<'list'|'curve'|null>(null);
+ const [curveMonochrome,setCurveMonochrome]=useState(INITIAL_LIGHT_CURVE_MONOCHROME),[printMonochrome,setPrintMonochrome]=useState(true);
+ function printCurve(){
+  const flags=lightCurvePrintFlags({monochromeDisplays,printInColor});
+  setMenu(null);setPrintMonochrome(flags.printMonochrome);setCurveMonochrome(flags.displayMonochromeAfter);setPrinting('curve');
+ }
  const listHeading=useRef<HTMLHeadingElement>(null),curveHeading=useRef<HTMLHeadingElement>(null);
  const dataTrigger=useRef<HTMLButtonElement>(null),fileTrigger=useRef<HTMLButtonElement>(null);
  // Menus are plain disclosure buttons (no ARIA menu roles, so no arrow-key contract). Escape closes and refocuses the trigger.
@@ -128,32 +139,25 @@ function VariableStarsRoute({active,openRequest=null}:{active:boolean;openReques
    <div className="variable-menubar">
     <div className="variable-menu" onKeyDown={e=>escapeMenu(e,fileTrigger)}><button type="button" ref={fileTrigger} aria-expanded={menu==='file'} aria-controls={`${id}-file`} data-testid="curve-file-menu" onClick={()=>setMenu(m=>m==='file'?null:'file')}>{M.fileMenu}</button>
      {menu==='file'&&<div id={`${id}-file`} role="group" aria-label={M.fileMenu} className="variable-menu-list">
-      <button type="button" data-testid="curve-print" onClick={()=>{setMenu(null);setPrinting('curve');}}>{M.print}</button><hr/>
+      <button type="button" data-testid="curve-print" onClick={printCurve}>{M.print}</button><hr/>
       <button type="button" data-testid="curve-exit" onClick={()=>{setMenu(null);setSession(exitLightCurve);}}>{M.exit}</button>
      </div>}</div>
    </div>
-   {plot&&<div className="lc-panel"><LightCurveSvg plot={plot} label={M.curveLabel(curve.name)} testId="light-curve-svg"/></div>}
+   {plot&&<div className={`lc-panel${curveMonochrome?' lc-panel-mono':''}`}><LightCurveSvg plot={plot} label={M.curveLabel(curve.name)} monochrome={curveMonochrome} testId="light-curve-svg"/></div>}
    {(()=>{const reason='unavailable' in drawn?drawn.unavailable:plot&&'unavailable' in plot.curve?plot.curve.unavailable:null;
     return reason&&<p role="status" className="variable-unavailable" data-testid="light-curve-unavailable" data-reason={reason}>{M.unavailable[reason]}</p>;})()}
    <p className="variable-note">{M.curveAdaptation}</p>
   </section>}
 
-  {printing&&list&&<PrintPreview caption={printing==='list'?M.listCaption:M.curveCaption} lines={list.lines} plot={printing==='curve'?plot:null} curve={printing==='curve'} name={curve?.name??list.record.name} onClose={()=>setPrinting(null)}/>}
+  {printing==='list'&&list&&<PrintPreview caption={M.listCaption} lines={list.lines} onClose={()=>setPrinting(null)}/>}
+  {printing==='curve'&&list&&<CurvePrintPreview lines={list.lines} plot={plot} monochrome={printMonochrome} name={curve?.name??list.record.name} onClose={()=>setPrinting(null)}/>}
  </main>;
 }
 
-/** Print… (list 0x52d58c → 0x52d5e8, light curve 0x52c1cc) as a browser print preview of what the original draws on paper:
- * - DateTimeToStr(Now) + "     Laboratory Table Number " + "(Not Recorded)" (no lab table on this site); date format [W];
- * - the global+0x5fa student/lab ShortStrings (+0 always, +0x29/+0x52/+0x7b only when set): not recovered → placeholder;
- * - list print only: the form caption (GetText 0x45df24);
- * - the ListBox lines;
- * - light curve, landscape branch (Orientation = 1, 0x52c4fd..0x52c571): "(Screen Image Printed on Next Page)", NewPage,
- *   "<global+0x5fa> - Page 2"; then (both orientations) the 0x52c848 literal and the plot in print colours.
- * The 'CLEA Exercise "VIREO …" - ' text goes to Printer.Title (+0x18, read by BeginDoc 0x4430cc): the spooler job name,
- * never drawn on the page, so it is not shown. The portrait branch (plot on the same page) is not reproduced. */
-function PrintPreview({caption,lines,plot,curve,name,onClose}:{caption:string;lines:readonly string[];plot:LightCurvePlot|null;curve:boolean;name:string;onClose:()=>void}){
+/** Shared print shell: a modal preview whose Print… scopes the browser print to it. `orientation` adds an @page size while
+ * the preview is open [W: VIREO takes the orientation from the printer settings]. */
+function PrintShell({caption,note,orientation,controls,children,onClose}:{caption:string;note?:string;orientation?:PrintOrientation;controls?:React.ReactNode;children:React.ReactNode;onClose:()=>void}){
  const id=useId(),dialog=useRef<HTMLDialogElement>(null),button=useRef<HTMLButtonElement>(null),[failed,setFailed]=useState(false);
- const [printedAt]=useState(()=>new Date().toLocaleString());// DateTimeToStr(Now) at Print; browser format [W]
  useEffect(()=>{const el=dialog.current;if(el&&!el.open){el.showModal();button.current?.focus();}
   return ()=>{const root=document.documentElement;if(root.getAttribute('data-print-scope')===VARIABLE_PRINT_SCOPE)root.removeAttribute('data-print-scope');};},[]);
  function print(){
@@ -164,19 +168,55 @@ function PrintPreview({caption,lines,plot,curve,name,onClose}:{caption:string;li
   window.addEventListener('afterprint',end);
   try{if(typeof window.print!=='function')throw new TypeError('print unavailable');window.print();setFailed(false);}catch{end();setFailed(true);}
  }
- return createPortal(<dialog ref={dialog} className="ob-dialog ob-wide variable-print-root" aria-labelledby={`${id}-t`} data-testid="variable-print-preview" onCancel={e=>{e.preventDefault();onClose();}}>
-  <div className="variable-print-chrome"><h2 id={`${id}-t`}>{M.printTitle(caption)}</h2><p className="variable-note">{M.printHelp}</p>{curve&&<p className="variable-note">{M.printCurveLayout}</p>}</div>
-  <section className="variable-print-report" tabIndex={0} aria-label={caption}>
-   <p className="variable-print-header" data-testid="variable-print-date">{printedAt}{M.printTable}</p>
-   <p className="variable-print-header variable-print-placeholder">{M.printStudentPlaceholder}</p>
-   {!curve&&<p className="variable-print-header">{caption}</p>}
-   <pre className="variable-lines" data-testid="variable-print-lines">{lines.join('\n')}</pre>
-   {curve&&<><p>{M.printNextPage}</p><div className="variable-print-page" data-testid="variable-print-page2"><p className="variable-print-header"><span className="variable-print-placeholder">{M.printStudentPlaceholder}</span>{M.printPage2}</p>
-    <p className="variable-print-header">{M.printPageLiteral}</p>{plot&&<LightCurveSvg plot={plot} label={M.curveLabel(name)} print testId="variable-print-svg"/>}</div></>}
-  </section>
+ return createPortal(<dialog ref={dialog} className="ob-dialog ob-wide variable-print-root" aria-labelledby={`${id}-t`} data-testid="variable-print-preview" data-orientation={orientation} onCancel={e=>{e.preventDefault();onClose();}}>
+  {orientation&&<style>{printPageSizeCss(orientation)}</style>}
+  <div className="variable-print-chrome"><h2 id={`${id}-t`}>{M.printTitle(caption)}</h2><p className="variable-note">{M.printHelp}</p>{note&&<p className="variable-note">{note}</p>}{controls}</div>
+  <section className="variable-print-report" tabIndex={0} aria-label={caption}>{children}</section>
   <div className="variable-print-chrome"><p role="alert">{failed?M.printError:''}</p>
    <div className="ob-actions"><button type="button" className="primary-button" ref={button} data-testid="variable-print-print" onClick={print}>{M.printButton}</button><button type="button" className="secondary-button" data-testid="variable-print-close" onClick={onClose}>{M.printClose}</button></div></div>
  </dialog>,document.body);
+}
+
+/** Data › Print… (0x52d58c → 0x52d5e8): DateTimeToStr(Now) + "     Laboratory Table Number " + "(Not Recorded)" (no lab
+ * table on this site; date format [W]); the global+0x5fa student/lab ShortStrings (+0 always, +0x29/+0x52/+0x7b when set):
+ * not recovered → placeholder; the form caption (GetText 0x45df24); the ListBox lines. The 'CLEA Exercise "VIREO …" - ' text
+ * goes to Printer.Title (+0x18, read by BeginDoc 0x4430cc): the spooler job name, never drawn on the page. */
+function PrintPreview({caption,lines,onClose}:{caption:string;lines:readonly string[];onClose:()=>void}){
+ const [printedAt]=useState(()=>new Date().toLocaleString());// DateTimeToStr(Now) at Print; browser format [W]
+ return <PrintShell caption={caption} onClose={onClose}>
+  <p className="variable-print-header" data-testid="variable-print-date">{printedAt}{M.printTable}</p>
+  <p className="variable-print-header variable-print-placeholder">{M.printStudentPlaceholder}</p>
+  <p className="variable-print-header">{caption}</p>
+  <pre className="variable-lines" data-testid="variable-print-lines">{lines.join('\n')}</pre>
+ </PrintShell>;
+}
+
+/** File › Print… of the light curve (Print1Click 0x52c1cc, body 0x52c250): the pure page of src/core/lightCurvePrint.ts in
+ * the chosen orientation, with the window image in the print scheme (Print in Color off → black on white). Vertical gaps
+ * follow the page's text-height steps; x 50 and x 700 become indents [W: no printer metrics]. */
+function CurvePrintPreview({lines,plot,monochrome,name,onClose}:{lines:readonly string[];plot:LightCurvePlot|null;monochrome:boolean;name:string;onClose:()=>void}){
+ const id=useId(),[printedAt]=useState(()=>new Date().toLocaleString()),[orientation,setOrientation]=useState<PrintOrientation>('portrait');
+ const items=lightCurvePrintPage({orientation,dateText:printedAt,listLines:lines});
+ const listItems=items.filter(i=>i.kind==='text'&&i.role==='line'),head=items.filter(i=>i.kind==='text'&&(i.role==='date'||i.role==='name'));
+ const rest=items.filter(i=>!(i.kind==='text'&&(i.role==='date'||i.role==='name'||i.role==='line')));
+ const gap=(from:LightCurvePrintItem|undefined,to:LightCurvePrintItem)=>({marginTop:`${from&&from.page===to.page?Math.max(0,to.yH-from.yH-1)*1.2+(to.yUnits>0?1.2:0):0}em`});
+ const text=(i:LightCurvePrintItem&{kind:'text'},prev:LightCurvePrintItem|undefined)=>{
+  const testId=i.role==='date'?'variable-print-date':i.role==='next-page'?'variable-print-next-page':i.role==='title'?'variable-print-title':undefined;
+  const placeholder=(i.role==='name'||i.role==='page2')&&i.text===''||i.role==='page2';
+  return <p className={`variable-print-header${i.x===700?' variable-print-far':''}`} style={gap(prev,i)} data-testid={testId} data-role={i.role}>
+   {i.role==='date'?i.text:placeholder?<><span className="variable-print-placeholder">{M.printStudentPlaceholder}</span>{i.role==='page2'?M.printPage2:''}</>:i.text}</p>;
+ };
+ const body=(group:readonly LightCurvePrintItem[],first:LightCurvePrintItem|undefined)=>group.map((i,k)=>{const prev=k===0?first:group[k-1];
+  return i.kind==='image'?<div key={k} style={gap(prev,i)}>{plot&&<LightCurveSvg plot={plot} label={M.curveLabel(name)} monochrome={monochrome} testId="variable-print-svg"/>}</div>:<div key={k}>{text(i,prev)}</div>;});
+ const page2=rest.findIndex(i=>i.page===2),page1Rest=page2<0?rest:rest.slice(0,page2),page2Items=page2<0?[]:rest.slice(page2);
+ const controls=<fieldset className="variable-print-orientation" data-testid="variable-print-orientation"><legend>{M.printOrientation}</legend>
+  {(['portrait','landscape'] as const).map(o=><label key={o}><input type="radio" name={`${id}-orientation`} value={o} checked={orientation===o} onChange={()=>setOrientation(o)}/> {o==='portrait'?M.portrait:M.landscape}</label>)}</fieldset>;
+ return <PrintShell caption={M.curveCaption} note={M.printCurveLayout(monochrome)} orientation={orientation} controls={controls} onClose={onClose}>
+  {body(head,undefined)}
+  <pre className="variable-lines variable-print-indent" style={gap(head.at(-1),listItems[0]??head.at(-1)!)} data-testid="variable-print-lines">{lines.join('\n')}</pre>
+  {body(page1Rest,listItems.at(-1)??head.at(-1))}
+  {page2Items.length>0&&<div className="variable-print-page" data-testid="variable-print-page2">{body(page2Items,undefined)}</div>}
+ </PrintShell>;
 }
 // Front Perf: re-render only when a prop changes (handlers come stable from the shell; docs/RENDER-BUDGET.md).
 export default memo(VariableStarsRoute);
