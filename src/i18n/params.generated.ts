@@ -1364,7 +1364,6 @@ export interface MessageParameters {
   "ph.domainNumbers": never;
   "ph.domainTable": never;
   "ph.domainEntry": never;
-  "ph.domainMeanColumn": never;
   "ph.domainTotalColumn": never;
   "ph.domainReasonColumn": never;
   "ph.domainMeanReason": never;
@@ -1373,6 +1372,10 @@ export interface MessageParameters {
   "ph.domainSummary": never;
   "ph.domainCombinedColumn": never;
   "ph.domainConfigurationColumn": never;
+  "ph.domainSinceColumn": never;
+  "ph.domainSinceEarlier": never;
+  "ph.domainSinceAdded": never;
+  "ph.domainAdded": never;
   "ph.domainSelected": never;
   "ph.domainRetained": never;
   "motion.title": never;

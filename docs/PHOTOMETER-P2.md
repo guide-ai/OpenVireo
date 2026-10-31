@@ -62,6 +62,9 @@ The zero-period exit 0x51eca7 is documented in docs/VARIABLE-STARS.md. The truth
 | 148 | the other 20 targets (the target star's own wing) |
 
 - No sky aperture holds light at sizes up to 24, so every earlier reading is unchanged.
+- **VIREO's sky-replace question** (Start 0x4ffa30) depends on the selected star's light in the sky aperture. It now appears from
+  the size where that light first enters. With the 0.4 m that is the sizes above. With the 0.9 m and 4 m it is 41, 56, 106 or
+  144 for the same four targets and never for the other 20.
   `src/core/photometerP2.test.ts` checks this: all 864 earlier configurations, E04's included, are byte-identical in means,
   magnitudes and seeded draws.
 - **The zero-central path, now ported (no longer a typed reason).** With no light from the selected star, VIREO starts every
@@ -117,6 +120,21 @@ contracts. The superseding domain is in `ri-contract.json`.
 - **[W] Saved files.** Target and telescope events keep the earlier admission, so every recorded history replays exactly. A
   live Start of one of the three targets with the 4 m is refused, and the bench says why. A history saved before P2 that read
   them still reopens with the same counts.
+- **First size over each limit, per filter** (checked in `photometerP2.test.ts`; every other filter stays within both limits):
+
+| Target | Over the 32-bit count (×5,000 callbacks) | Over the 1,000,000 draw limit |
+|---|---|---|
+| N2230.DAT@144496 | R at every size | never |
+| N2230.DAT@150246 | R at every size | R from size 11 |
+| N2230.DAT@152989 | R from size 75, I from size 100 | never |
+
+- **What the student sees.** These texts give the 4 m as seven targets and nine exclusions, and name the three new ones with these reasons:
+  - Supported observing limits (`ph.limits`);
+  - the domain evidence: title, hint, numbers, an "Excluded since" column, and the table built from `ri-contract.json`;
+  - the Pleiades guide;
+  - `docs/STUDENT-EXERCISES.md`.
+  The hot list no longer calls the three targets measurable on the 4 m. Its admission is the earlier one minus
+  `photometerFullDomainExclusion`.
 
 ## Journal
 

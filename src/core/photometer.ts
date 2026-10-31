@@ -152,7 +152,10 @@ function transition(s:PhotometerState,e:PhotometerEvent,live:boolean):Photometer
  return Object.freeze({...next,events:Object.freeze(events)});
 }
 /** Start 0x4ffa30: VIREO asks before a Sky reading replaces this filter's sky in the current telescope bank while the selected star
- * has light in the aperture, unless the Object/Sky slider has moved since the photometer was activated (+0x41d, 0x4ffab5). Bundled Pleiades sky fields have a zero fraction, so they are never asked (unchanged behaviour). */
+ * has light in the aperture, unless the Object/Sky slider has moved since the photometer was activated (+0x41d, 0x4ffab5). Bundled Pleiades sky fields have no
+ * selected-star light at sizes 5/10/15 (unchanged). Front P2: at larger sizes they are asked like any field. With the 0.4 m that
+ * starts at size 25, 41, 91 or 128 for four targets (a nearer star in their sky field) and 148 for the other 20; with the 0.9 m and
+ * 4 m at 41, 56, 106 or 144 for those four and never for the rest (photometerP2.test.ts). */
 export function skyReplaceAsked(s:PhotometerState):boolean{
  return s.armed&&s.pointing==='sky'&&!s.readingSliderMoved&&s.skies[s.filter]!==null&&photometerSelectedFraction(s.targetId,'sky',s.apertureSelector??10,s.telescopeIndex??0)>0;
 }

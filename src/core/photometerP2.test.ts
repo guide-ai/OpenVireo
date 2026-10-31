@@ -3,7 +3,7 @@ import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
 import {buildPhotometerTargetField,PLEIADES_PHOTOMETER_TARGETS} from './photometerField';
 import {photometerFullDomainExclusion,isPhotometerTelescopeTarget,type PhotometerTelescopeIndex} from './photometerTelescope';
-import {buildPinnedPleiadesUbvField,drawPinnedPleiadesUbv,photometerMaximumMean,PHOTOMETER_FILTERS,PINNED_UBV_SKY,type PhotometerFilter} from './photometerUbvField';
+import {buildPinnedPleiadesUbvField,drawPinnedPleiadesUbv,photometerMaximumMean,photometerSelectedFraction,PHOTOMETER_FILTERS,PINNED_UBV_SKY,type PhotometerFilter} from './photometerUbvField';
 import {preparePhotometerBands,attenuatePhotometerMagnitude,combinePhotometerMagnitudes} from './photometerSource';
 import {photometerApertureDomain,photometerApertureGeometry,validPhotometerAperture,PHOTOMETER_APERTURE_RANGE} from './photometerAperture';
 import {APERTURE_DOMAIN_CONTRACT_SHA256,RI_CONTRACT_SHA256,photometerJournalHeader,photometerJournalVersion} from './photometerJournal';
@@ -75,9 +75,19 @@ describe('P2.3 aperture domain 5..150',()=>{
  });
  it('the 0.4 m maximum over the whole domain stays under the int32 count guard (η Tau, size 150)',()=>{
   expect(ri.telescope0.targetId).toBe('N2230.DAT@150112');expect(ri.telescope0.maximumExpected5000CallbackTotal).toBeLessThan(2147483647);
-  const max=photometerMaximumMean(buildPhotometerTargetField('N2230.DAT@150112','object'),0);
+  // The maximum over all 24 targets, so the recorded target is checked rather than assumed.
+  const means=PLEIADES_PHOTOMETER_TARGETS.map(t=>photometerMaximumMean(buildPhotometerTargetField(t.catalogId,'object'),0)),max=Math.max(...means);
+  expect(means).toHaveLength(24);expect(PLEIADES_PHOTOMETER_TARGETS[means.indexOf(max)]!.catalogId).toBe(ri.telescope0.targetId);
   expect(rel(max,ri.telescope0.maximumMean)).toBeLessThan(2e-7);expect(max*5000).toBeLessThan(2147483647);
  });
+ it('bundled sky fields hold no selected-star light at sizes 5/10/15; VIREO\'s sky-replace question appears from these sizes',()=>{
+  // First size with selected-star light in the sky aperture (0: never). Four targets have a nearer star in their sky field.
+  const early:Record<string,readonly [number,number]>={'N2230.DAT@146960':[25,41],'N2230.DAT@152292':[41,56],'N2230.DAT@149698':[91,106],'N2230.DAT@148468':[128,144]};
+  for(const tel of [0,1,2] as const)for(const t of PLEIADES_PHOTOMETER_TARGETS){
+   const first=photometerApertureDomain().find(a=>photometerSelectedFraction(t.catalogId,'sky',a,tel)>0)??0,e=early[t.catalogId];
+   expect(first,`${t.catalogId} telescope ${tel}`).toBe(e?e[tel===0?0:1]:tel===0?148:0);
+  }
+ },60000);
 });
 
 describe('P2.2 R and I',()=>{
@@ -109,6 +119,15 @@ describe('P2 D1 (a): the 0.9 m and 4 m domain over U..I and apertures 5..150',()
   expect(k.changedTargets).toEqual([]);
   expect(m.changedTargets.map((c:{targetId:string;after:string})=>[c.targetId,c.after])).toEqual([['N2230.DAT@144496','all-duration-count-domain'],['N2230.DAT@150246','Poisson-mean-bound'],['N2230.DAT@152989','all-duration-count-domain']]);
  });
+ it('the student-facing reasons for the three new 4 m exclusions match the field: first size per filter over each limit',()=>{
+  // Text in ph.limits and ph.domainAdded: 144496 R over the count at every size; 150246 R over the count at every size and the draw
+  // limit from 11; 152989 R over the count from 75 and I from 100. Every other filter stays within both limits.
+  const first=(id:string)=>Object.fromEntries(PHOTOMETER_FILTERS.map(f=>{let count=0,draw=0;for(const a of photometerApertureDomain()){const o=buildPinnedPleiadesUbvField('object',f,id,a,2),mean=o.sourceMean+o.skyMean;if(!count&&mean*5000>2147483647)count=a;if(!draw&&mean>1e6)draw=a;}return [f,[count,draw]];}));
+  const none=[0,0];
+  expect(first('N2230.DAT@144496')).toEqual({U:none,B:none,V:none,R:[5,0],I:none});
+  expect(first('N2230.DAT@150246')).toEqual({U:none,B:none,V:none,R:[5,11],I:none});
+  expect(first('N2230.DAT@152989')).toEqual({U:none,B:none,V:none,R:[75,0],I:[100,0]});
+ },60000);
  it('every recorded maximum follows from photometerMaximumMean over the full domain',()=>{
   for(const d of ri.telescopeDomain.domains){
    for(const x of d.excludedTargets){

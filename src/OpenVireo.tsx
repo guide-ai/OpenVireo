@@ -523,12 +523,13 @@ export default function OpenVireo(){
   }
   const activeLibrary=canAccess&&library?.targetId===selected.id?library:null;
   const pointedPleiades=pleiadesStarAt(pointing);
-  // The selected telescope's checked photometer domain (the existing isPhotometerTelescopeTarget). It is loaded with the lazy
+  // The selected telescope's checked photometer domain: the earlier admission (isPhotometerTelescopeTarget) less the targets Front
+  // P2's superseding domain refuses at Start (photometerFullDomainExclusion), so the hot list never calls those measurable. It is loaded with the lazy
   // photometer modules once a PLEIADES.HTL row is pointed or listed, so the photometer field JSON stays out of the App bundle.
   const [photometerDomain,setPhotometerDomain]=useState<typeof PhotometerDomain|null>(null);
   const needsPhotometerDomain=pointedPleiades!==null||!!hotList.doc.editor?.list.some(row=>pleiadesRowIdentity(row)!==null);
   useEffect(()=>{if(!needsPhotometerDomain||photometerDomain)return;let current=true;import('./core/photometerTelescope').then(m=>{if(current)setPhotometerDomain(m);},()=>{});return()=>{current=false;};},[needsPhotometerDomain,photometerDomain]);
-  const admitsPhotometerTarget=useMemo(()=>{const domain=photometerDomain,index=optical.selectedIndex;return domain?(id:string)=>domain.isPhotometerTelescopeIndex(index)&&domain.isPhotometerTelescopeTarget(id,index):null;},[photometerDomain,optical.selectedIndex]);
+  const admitsPhotometerTarget=useMemo(()=>{const domain=photometerDomain,index=optical.selectedIndex;return domain?(id:string)=>domain.isPhotometerTelescopeIndex(index)&&domain.isPhotometerTelescopeTarget(id,index)&&!domain.photometerFullDomainExclusion(id,index):null;},[photometerDomain,optical.selectedIndex]);
   const pointedMeasure=pointedPleiades?pleiadesRowMeasure(pointedPleiades,admitsPhotometerTarget):null,telescopeName=opticalProfile(optical.selectedIndex).name;
   const pleiadesProgress=useMemo(()=>pleiadesLabProgress({list:isPleiadesExerciseList(hotList.doc.editor?.list),pointed:pointedMeasure==='measurable',photometer:pleiadesSummary}),[hotList.doc.editor,pointedMeasure,pleiadesSummary]);
   const hostInert=(wedgeOptionsOpen&&view==='lss-wedge'&&!projectBusy)||radioModalPresented;

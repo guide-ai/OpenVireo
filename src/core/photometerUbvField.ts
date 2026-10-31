@@ -59,7 +59,7 @@ function ubvFromFrame(frame:ReturnType<typeof buildPhotometerTargetField>,kind:P
  return Object.freeze({...frame,...(telescopeIndex!==0?{telescopeIndex,telescopeContractSHA256:photometerTelescopeContractSHA256(telescopeIndex),preparedZeroPoint:zero,seeingWidthDegrees:telescope.seeingWidthDegrees}:{}),neighbors,centralFraction,includedNeighbors:bands.includedNeighbors,filter,sourceMagnitude,skyMagnitude,sourceMean:1000*magnitudeAmplitude(sourceMagnitude,zero),skyMean:1000*magnitudeAmplitude(skyMagnitude,zero)});
 }
 /** The bounded-profile limits the 0.9 m and 4 m contracts apply per target (kpno09/mayall-photometer-contract.json
- * domain.excludedTargets, superseded by data/photometry/photometer-domain-contract.json): the largest per-callback mean over the
+ * domain.excludedTargets, superseded for every selectable filter and size by data/photometry/ri-contract.json telescopeDomain): the largest per-callback mean over the
  * selectable filters and apertures (object reading) must stay within the adapter's Poisson bound (1e6), and 5000 callbacks of
  * it within the int32 count guard. They are functions of the field and telescope only (Front G G3b point 4).
  * Front P2 D1 (a): the bound covers every reading a student can take, U to I and apertures 5 to 150. The `legacy` scope
