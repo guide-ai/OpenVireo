@@ -1,3 +1,4 @@
+import {downloadedName} from './fixtures/download-name';
 import{test,expect,type Page,type Locator}from'@playwright/test';
 import{readFileSync}from'node:fs';
 import{readFile}from'node:fs/promises';
@@ -90,7 +91,7 @@ test('Object X: before the reveal nothing names the target or its neighbours; af
  await expect(page.getByTestId('ms-item-0')).toHaveText(new RegExp(`^  \\(1\\)  ${names[0].replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}`));
  // None of these catalogue names was shown before the reveal.
  for(const name of names)expect(beforeText.includes(name),name).toBe(false);
- const named=await download(page,()=>page.getByTestId('ms-spectrum').first().getByTestId('ms-save').click());expect(named.name).toBe(`${names[0]}.SSP`.replace(/[^\x20-\x7e]|[\\/:*?"<>|]/g,'_'));
+ const named=await download(page,()=>page.getByTestId('ms-spectrum').first().getByTestId('ms-save').click());expect(named.name).toBe(downloadedName(`${names[0]}.SSP`.replace(/[^\x20-\x7e]|[\\/:*?"<>|]/g,'_'),test.info().project.use.browserName??'chromium'));
 });
 
 // Review M1/L4: a galaxy target with a photograph (ObjectX.HTL row 3) whose Object X neighbour (row 4, a star 0.11° away, at

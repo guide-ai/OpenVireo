@@ -1,3 +1,4 @@
+import {downloadedName} from './fixtures/download-name';
 import{test,expect,type Page}from'@playwright/test';
 import{readFile}from'node:fs/promises';
 import{paceDownload}from'./fixtures/download-pacing';
@@ -54,7 +55,7 @@ test('student path: options defaults, invalid limit, list without z or Object X 
  // Save Text (As Displayed); Comma Delimit is disabled.
  await page.getByTestId('qso-list-list-menu').click();await page.getByTestId('qso-list-save-menu').click();await expect(page.getByTestId('qso-list-save-csv')).toBeDisabled();await page.getByTestId('qso-list-list-menu').click();
  const text=await download(page,async()=>{await page.getByTestId('qso-list-list-menu').click();await page.getByTestId('qso-list-save-menu').click();await page.getByTestId('qso-list-save-displayed').click();});
- expect(text.name).toBe('QSO Data.TXT');const lines=text.bytes.toString('latin1').split('\r\n');
+ expect(text.name).toBe(downloadedName('QSO Data.TXT',test.info().project.use.browserName??'chromium'));const lines=text.bytes.toString('latin1').split('\r\n');
  expect(lines[0]).toBe('10 QSOs to magnitude 13.00, sorted by magnitude.');expect(lines[4].charCodeAt(32)).toBe(0xb0);expect(lines[14]).toBe('RXS J12252+3213   12 25 13.0   +32 14 01   13.00  ');
  await expect(page.getByTestId('fi-box-text')).toHaveText('Report Text Written to QSO Data.TXT.');await box(page).getByRole('button',{name:'OK'}).click();
  // Print preview: the student branch adds the table-number line.

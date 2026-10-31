@@ -1,3 +1,4 @@
+import {downloadedName} from './fixtures/download-name';
 import {test,expect,type Page} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
 import witness from '../src/core/clusterHr.witness.json' with {type:'json'};
@@ -45,7 +46,7 @@ test('Display/Print Data shows VIREO\'s CLEA Cluster Data listing and saves it a
  // Save Text › As Displayed: the lines with CRLF, named after the cluster.
  await w.getByTestId('cluster-report-list-menu').click();await w.getByTestId('cluster-report-save-menu').click();
  const d=page.waitForEvent('download');await w.getByTestId('cluster-report-save-displayed').click();
- const file=await d;expect(file.suggestedFilename()).toBe('M 67 (NGC 2682).TXT');
+ const file=await d;expect(file.suggestedFilename()).toBe(downloadedName('M 67 (NGC 2682).TXT',test.info().project.use.browserName??'chromium'));
  const text=(await readFile((await file.path())!)).toString('latin1');
  expect(text.split('\r\n')[4]).toBe('(U-B) = -0.18 to +1.23 (426 Stars)');expect(text.split('\r\n')).toHaveLength(15+506+1);
  await expect(page.getByText('M 67 (NGC 2682).TXT',{exact:false}).first()).toBeVisible();

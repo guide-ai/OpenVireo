@@ -1,3 +1,4 @@
+import {skipWithoutOpfs} from './fixtures/opfs';
 import {test,expect,type Locator,type Page} from '@playwright/test';
 import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
@@ -39,7 +40,9 @@ type Plan={name:string;truncate?:boolean;reject?:'AbortError'|'SecurityError';th
 type Shim={synthetic:true;calls:number;events:(string|null)[];options:string[];plans:Plan[];log:string[];holds:Set<string>;waiting:Map<string,()=>void>;fails:Set<string>;
  tamper:Set<string>;rawGetFile:(this:FileSystemFileHandle)=>Promise<File>;raw:Map<string,(data:unknown)=>Promise<void>>};
 type Stream={write:(data:unknown)=>Promise<void>;close:()=>Promise<void>;abort:(reason?:unknown)=>Promise<void>};
-const installShim=(page:Page,remove=false)=>page.addInitScript(removePicker=>{
+/** `needsOpfs` false: the test never calls the synthetic picker, so it runs where no origin-private file system exists. */
+const installShim=async(page:Page,remove=false,needsOpfs=!remove)=>{if(needsOpfs)await skipWithoutOpfs(page);await installShimScript(page,remove);};
+const installShimScript=(page:Page,remove=false)=>page.addInitScript(removePicker=>{
  const w=window as unknown as {__saveShim:Shim};
  const proto=FileSystemFileHandle.prototype as unknown as {createWritable:(this:FileSystemFileHandle,...a:unknown[])=>Promise<Stream>;getFile:(this:FileSystemFileHandle)=>Promise<File>};
  const create=proto.createWritable,getFile=proto.getFile;
@@ -402,7 +405,7 @@ test('no deadlock: an Analysis dialog kept on its hidden route does not block th
 });
 
 test('a dataset change after the Record press makes Yes superseded: Record off, nothing erased, no dialog',async({page})=>{
- await installShim(page);
+ await installShim(page,false,false);
  await captureToAnalysis(page);
  await toRadio(page);
  await id(page,'receiver-record').click();await expect(prompt(page)).toHaveAttribute('data-kind','unsaved');
@@ -615,7 +618,7 @@ test('unsupported browser API: Yes is disabled with its reason; No and Cancel st
 });
 
 test('since R-RX17 the finish Save question offers Yes and since R-RX18 E9, the analysis Load Yes, follows the save capability (neither pressed here)',async({page})=>{
- await installShim(page);
+ await installShim(page,false,false);
  await startApp(page);await setupReceiver(page);
  await id(page,'receiver-record').click();await id(page,'receiver-mode').click();await flush(page);await advance(page,400);await id(page,'receiver-mode').click();await flush(page);
  await untilFinished(page);await id(page,'receiver-record-identify-ok').click();await id(page,'receiver-record-properties-ok').click();
