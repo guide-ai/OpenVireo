@@ -1071,6 +1071,7 @@ export interface MessageParameters {
   "ph.seriesPrecision": never;
   "ph.noteLimit": never;
   "ph.sampleCoverage": "available" | "excluded" | "total";
+  "ph.targetStartRefused": "label" | "number";
   "ph.targetUnavailable": "label" | "number" | "reason";
   "ph.unavailableMixed": never;
   "ph.unavailableAssociation": never;
