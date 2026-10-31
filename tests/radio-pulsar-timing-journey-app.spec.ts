@@ -376,7 +376,7 @@ async function journey(page:Page,info:TestInfo,input:Input){
  const recorded=await guide(page);
  expect(recorded).toEqual({next:'investigation',done:{setup:'true',catalog:'true',point:'true',channels:'true',capture:'true',period:'true',delay:'true',investigation:'false',save:'false'}});
  await openHeaderTools(page);await id(page,'pulsar-lab-open').click();
- await expect(id(page,'pulsar-lab-counts')).toHaveText('7 of 8 pulsar steps done.');
+ await expect(id(page,'pulsar-lab-counts')).toHaveText('7 of 8 required pulsar steps done (the optional last step is not counted).');
  await expect(id(page,'pulsar-lab-status-period')).toHaveText('Reading recorded (not checked for correctness)');
  await expect(id(page,'pulsar-lab-status-investigation')).toHaveText('Not yet for this capture and these rows.');
  await expect(id(page,'pulsar-lab-status-save')).toHaveText('No verified copy (optional step).');

@@ -242,7 +242,7 @@ test('Receive, Stop and Record: Align and moves while capturing and finishing le
  await align(page).click();await pressed(page,true);await expectOrder(page,'0,1');
 });
 
-test('close box and Record prompt refuse Align and Move; a touch drag ended by a dispatched input releases its capture; hidden route and a project operation change nothing',async({browser},info)=>{
+test('close box and Record prompt refuse Align and Move; a touch drag ended by a dispatched input releases its capture; hidden route and a project operation change nothing',async({browser,browserName},info)=>{test.skip(browserName!=='chromium','Uses a Chromium-only CDP stimulus (Front QA1, 2026-10-31).');
  const context=await newContext(browser,info,true);
  try{
   const page=await context.newPage(),cdp=await context.newCDPSession(page);

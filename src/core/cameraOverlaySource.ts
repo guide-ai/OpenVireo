@@ -19,7 +19,7 @@ export const OVERLAY_VIEW_WIDTH=312,OVERLAY_SCALE_DIVISOR=15;
 export const OVERLAY_SIZE=1024,OVERLAY_STRETCH=1023,OVERLAY_BORDER_RED=255;
 export const M31_ID='NGC 224';
 
-export type CameraOverlayReason='object-x'|'field'|'no-load'|'m31'|'outside'|'unpainted';
+export type CameraOverlayReason='object-x'|'field'|'no-load'|'telescope'|'m31'|'outside'|'unpainted';
 /** What the loaded telescope field gives the overlay. */
 export type OverlayField=Readonly<{anchor:Pointing;galaxyIds:readonly string[];galaxyRed:Uint8Array|null;unpaintedGalaxies:number}>;
 export type CameraOverlayRect=Readonly<{left:number;top:number;width:number;height:number;exactWidth:number;exactHeight:number}>;

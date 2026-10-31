@@ -36,11 +36,11 @@ export default function QsoListWindow({request,editMode,hotList,hidden}:{request
  const latest=useRef({editMode,hidden});latest.current={editMode,hidden};
  useEffect(()=>{if(request>0)setDialog(true);},[request]);
  function build(options:QsoListOptions){
-  sessionOptions=options;setDialog(false);const {editMode:edit,hidden:target}=latest.current;
+  sessionOptions=options;setDialog(false);const {editMode:edit}=latest.current;
   setShown(s=>s&&'list' in s?s:{loading:true});
   Promise.all([loadQsoCatalog(),loadObjectXPositions().then(l=>({ok:true as const,l}),()=>({ok:false as const}))]).then(([records,positions])=>{
    if(!positions.ok){setShown({reason:'object-x'});return;}
-   const near=objectXOnTarget(positions.l,target);
+   const near=objectXOnTarget(positions.l,null);
    setBox(null);setShown({list:buildQsoList(records,options,edit,q=>near({ra:q.ra,dec:q.dec})),editMode:edit});
   }).catch(e=>{
    setShown(s=>s&&'list' in s?s:null);

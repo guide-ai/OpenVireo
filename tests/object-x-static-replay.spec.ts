@@ -9,6 +9,9 @@ const xmlPromise=readFile(new URL('./fixtures/vizier/nomad-56.75+24.12-r0.01.xml
 const CDS=/vizier\.cds\.unistra\.fr|vizier\.cfa\.harvard\.edu|vizier\.idia\.ac\.za|cdsarc|unistra\.fr/;// every VizieR mirror the camera may ask
 
 test('replayStaticExposure gives the camera static path\'s FITS bytes for the same recipe',async({page})=>{
+ // A real 5 s exposure, the Worker composition and a second 1024² composition in the page: about 15 s idle, over 40 s at load
+ // average ~45 (QA1 × C6 merge, 2026-10-31), so the 30 s default is too tight.
+ test.setTimeout(120_000);
  const xml=await xmlPromise,sha=createHash('sha256').update(xml).digest('hex');
  const extract={id:'synthetic-pleiades-test',catalog:'I/297',raDegrees:56.75,decDegrees:24.12,radiusDegrees:1,file:'synthetic-pleiades-test.xml',sha256:sha,bytes:xml.length,recordedAt:'2026-10-27',request:'https://vizier.cds.unistra.fr/viz-bin/conesearch/I/297/out?RA=56.75&DEC=24.12&SR=1',host:'vizier.cds.unistra.fr'};
  await page.route('**/data/camera/extracts.json?import*',route=>route.fulfill({status:200,contentType:'application/javascript',body:`export const extracts=${JSON.stringify([extract])};export default {about:'synthetic test index',extracts};`}));

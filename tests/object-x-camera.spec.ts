@@ -20,7 +20,8 @@ test('the camera passes (jd, seconds) and a skipped moving pair shows in the Obj
  await camera.getByText('Exposure details').click();
  await expect(camera.getByTestId('camera-detail-skipped')).toContainText('far outside the field');
  const images=host.getByTestId('objectx-images').locator('li');await expect(images).toHaveCount(1);
- await expect(host.getByTestId('objectx-image-skipped-0')).toHaveText('Not drawn: 1 far outside the detector.');
+ // QA1 review 1 H2: the lab's own skipped-pair line waits for the reveal (it only appears when asteroids are present).
+ await expect(host.getByTestId('objectx-image-skipped-0')).toHaveCount(0);
 });
 test('an IR exposure draws through the same hook but adds nothing to the Object X session',async({page})=>{
  const jhk=await readFile(new URL('./fixtures/vizier/authored-nomad-jhk-control.xml',import.meta.url));

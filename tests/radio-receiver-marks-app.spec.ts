@@ -296,7 +296,7 @@ const touch=(cdp:CDPSession,type:'touchStart'|'touchMove'|'touchEnd'|'touchCance
  cdp.send('Input.dispatchTouchEvent',{type,touchPoints:points.map(p=>({x:p.x,y:p.y,id:p.id}))});
 const finger=async(page:Page,slot:number,column:number,fingerId:number):Promise<Point>=>{const p=await columnPoint(page,slot,column);return {x:p.x,y:p.y,id:fingerId};};
 
-test('touch 375 px: a second finger cannot steal, move or end the drag; Escape, touchcancel, window blur and a hidden page end it',async({browser},info)=>{
+test('touch 375 px: a second finger cannot steal, move or end the drag; Escape, touchcancel, window blur and a hidden page end it',async({browser,browserName},info)=>{test.skip(browserName!=='chromium','Uses a Chromium-only CDP stimulus (Front QA1, 2026-10-31).');
  const {context,page,cdp}=await touchPage(browser,info);
  try{
   await setup(page);await openReceiver(page);await toMobile(page);
@@ -340,7 +340,7 @@ test('touch 375 px: a second finger cannot steal, move or end the drag; Escape, 
  }finally{await context.close();}
 });
 
-test('touch 375 px: a dispatched child Close and a dispatched Mode during a drag end it; Receive resets the marks',async({browser},info)=>{
+test('touch 375 px: a dispatched child Close and a dispatched Mode during a drag end it; Receive resets the marks',async({browser,browserName},info)=>{test.skip(browserName!=='chromium','Uses a Chromium-only CDP stimulus (Front QA1, 2026-10-31).');
  const {context,page,cdp}=await touchPage(browser,info);
  try{
   await setup(page);await openReceiver(page);await applyClock(page);
@@ -361,8 +361,17 @@ test('viewports 1440/390/375/320: no overflow; edge presses reach columns 0 and 
  for(const width of [1440,390,375,320]){
   await page.setViewportSize({width,height:width>500?1050:844});await flush(page);await noOverflow(page);
   const {box}=await columnPoint(page,0,0);
-  await page.mouse.click(box.x+0.2,box.y+box.height/2);await expectMarks(page,0,0,-1);
-  await page.mouse.click(box.x+box.width-0.2,box.y+box.height/2);await expectMarks(page,0,400,-1);
+  // Front QA1 (2026-10-31): Firefox delivers a mouse press at a whole pixel of the rounded scroll position (client = x − (scrollX −
+  // visualViewport.pageLeft)), Chromium at the exact point. Below 401 CSS px a column is narrower than a pixel, so an edge column
+  // may hold no whole pixel. The press at the first and last whole pixel inside the overlay must give the column of
+  // receiverMarkColumn at the delivered point, and a drag released beyond either edge must reach column 0 or 400.
+  const dx=await page.evaluate(()=>scrollX-visualViewport!.pageLeft),mid=box.y+box.height/2,column=(x:number)=>Math.floor((x-dx-box.x)*401/box.width);
+  const left=Math.ceil(box.x+dx),right=Math.ceil(box.x+box.width+dx)-1;
+  const drag=async(from:number,to:number)=>{await page.mouse.move(from,mid);await page.mouse.down();await page.mouse.move(to,mid);await page.mouse.up();};
+  await page.mouse.click(left,mid);await expectMarks(page,0,column(left),-1);expect(column(left)).toBeLessThanOrEqual(1);
+  await drag(left,left-10);await expectMarks(page,0,0,-1);
+  await page.mouse.click(right,mid);await expectMarks(page,0,column(right),-1);expect(column(right)).toBeGreaterThanOrEqual(399);
+  await drag(right,right+10);await expectMarks(page,0,400,-1);
   await expect(readout(page)).toHaveAttribute('data-label-first','4.00 Sec');
   await id(page,'receiver-card-0').screenshot({path:info.outputPath(`receiver-marks-card-${width}.png`)});
   if(width!==390)await info.attach(`receiver-marks-${width}.png`,{body:await page.screenshot({path:info.outputPath(`receiver-marks-${width}.png`),fullPage:true}),contentType:'image/png'});

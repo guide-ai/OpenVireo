@@ -22,9 +22,11 @@ The header button **LSS guide** (`src/LssLabGuide.tsx`, progress in `src/core/ls
 Vitest: lssFields, lssLists, fieldEngine, lssPacks, lssSurvey, lssLab, io/lssInvestigation. Playwright: tests/lss-survey.spec.ts, lss-survey-negative.spec.ts, lss-session.spec.ts, lss-guide.spec.ts.
 
 ## Acquirable rows (0.4 m / 0.9 m / 4 m, of 219)
-**218 / 218 / 218 with the observatory-clock time the list freezes (what a student sees), 212 / 212 / 212 without one** (Front L4,
-2026-10-31: the former web mean bound and stamp cap are lifted; see "Mean bound and stamp cap" below). Before L4: 202 / 97 / 204 with
-the clock and 196 / 93 / 198 without it (Front F3, the five LSS galaxy photographs, 2026-10-30); 187 / 93 / 189 before them (Front L2,
+**218 / 218 / 218 with the observatory-clock time the list freezes (what a student sees; default JD 2451545.0), 212 / 212 / 212
+without one** (Front L4, 2026-10-31: the former web mean bound and stamp cap are lifted; see "Mean bound and stamp cap" below).
+Before L4: 196 / 93 / 198 without a clock time (Front F3, the five LSS galaxy photographs, 2026-10-30); 202 / 97 / 204 in the app,
+whose list is built with the observatory clock's JD (Front QA1, 2026-10-31: per field 0.4 m 23,22,23,23,18,20,21,25,27, 0.9 m
+4,6,4,2,8,17,14,18,24, 4 m 23,23,24,23,18,20,21,25,27); 187 / 93 / 189 before them (Front L2,
 recovered QSO merge, 2026-10-29); 157 / 86 / 158 under the earlier QSO gate
 (Front T, TRUE variable dispatch, 2026-10-28), 140 / 76 / 141 before it, 129 / 69 / 130 before the recovered FALSE dispatch.
 More rows are acquirable with the frozen observatory-clock time (below).

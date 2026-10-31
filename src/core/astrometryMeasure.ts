@@ -268,10 +268,23 @@ export function stretchRaster(image:MeasureImage,range:DisplayRange):Uint8Clampe
  }
  return out;
 }
-/** Web default centroid cuts: 5 % and 50 % of the image's finite range. */
-export function defaultDisplayRange(minimum:number|null,maximum:number|null):DisplayRange{
+/** Web default centroid cuts: low at `sky` (the image's median, when given and inside the range), else 5 % of the image's
+ * finite range; high at 50 % of the range. Front QA1 (2026-10-31): 5 % of the range sat above a faint asteroid (Eros about
+ * 16 ADU over a sky of about 532 in 30 s on the 0.4 m), so Measure refused it; the sky median keeps every source above the sky.
+ * The Astrometry toolkit's own default is not recovered; this is a labelled web choice. */
+export function defaultDisplayRange(minimum:number|null,maximum:number|null,sky:number|null=null):DisplayRange{
  if(minimum===null||maximum===null||!(maximum>minimum))return Object.freeze({low:0,high:1});
- return Object.freeze({low:minimum+(maximum-minimum)*0.05,high:minimum+(maximum-minimum)*0.5});
+ const high=minimum+(maximum-minimum)*0.5;
+ const low=sky!==null&&Number.isFinite(sky)&&sky>=minimum&&sky<high?sky:minimum+(maximum-minimum)*0.05;
+ return Object.freeze({low,high});
+}
+/** Median of the image's finite pixels, or null when it has none. */
+export function imageMedian(image:MeasureImage):number|null{
+ const v:number[]=[];
+ for(let y=1;y<=image.height;y++)for(let x=1;x<=image.width;x++){const p=image.value(x,y);if(p!==null&&Number.isFinite(p))v.push(p);}
+ if(!v.length)return null;
+ const a=Float64Array.from(v).sort(),m=a.length>>1;
+ return a.length%2?a[m]:(a[m-1]+a[m])/2;
 }
 
 /** "h m s" / "± d m s" (spaces or colons) → decimal hours/degrees; null when malformed or out of range. */

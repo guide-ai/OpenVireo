@@ -45,7 +45,7 @@ describe('LSS field packs reproduce the independent witnesses for every row',()=
   expect(['NGC 4670','NGC 4889'].every(id=>hasLibrarySpectrum(spectra.names,id))).toBe(true);
  },600000);
  it('Front L4: with an observatory-clock time, 218 / 218 / 218; only F7R22 IC 4459 stays unavailable (0 px minor, slit-empty)',()=>{
-  const counts=[0,0,0],left:string[]=[],time={jd:2455000.5,source:'observatory-clock' as const};
+  const counts=[0,0,0],left:string[]=[],time={jd:2451545.0,source:'observatory-clock' as const};
   for(let f=1;f<=9;f++){const pack=packWithPhotographs(decodeFieldPack(JSON.parse(raw(f).toString())),photographs);lssFieldRows(f as LssFieldNumber).forEach((row,i)=>{for(const t of [0,1,2] as const){const s=evaluateLssRow(pack,glx,row,t,spectra,time,DEFAULT_SPECTRAL_RANGE);if(s.kind!=='unavailable')counts[t]++;else left.push(`F${f}R${i+1}@${t}:${s.reasons.join()}`);}});}
   expect(counts).toEqual([218,218,218]);expect(left).toEqual([0,1,2].map(t=>`F7R22@${t}:slit-empty`));
  },600000);// 657 field evaluations (as hubbleExistingTargets.test.ts). Measured in review 1 at load average ~40 on 32 cores: 126 s on

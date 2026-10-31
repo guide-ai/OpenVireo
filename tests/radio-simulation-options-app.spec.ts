@@ -159,7 +159,11 @@ test('keyboard opt-in: a refusal keeps the focused button; an applied opt-in mov
  await expect(id(page,'radio-access-numeric-optin-true')).toBeFocused();await expect(sectionHeading).not.toBeFocused();
  // Applied: the focused button is removed; focus goes to the heading (visible ring), not to the document body.
  await id(page,'radio-env-compiled').click();await expect(id(page,'radio-env-diameter-current')).toHaveText('100');
- await id(page,'radio-access-numeric-optin-true').focus();await page.keyboard.press('Enter');
+ // Front QA1 (2026-10-31): after that mouse click, Firefox keeps a script-focused button out of :focus-visible, and the heading that
+ // inherits focus from it then has no ring either; Chromium counts the later Enter as keyboard use. A keyboard user reaches the
+ // button with Tab, so the test leaves it and comes back with Shift+Tab, Tab (keyboard focus in both engines) before Enter.
+ await id(page,'radio-access-numeric-optin-true').focus();await page.keyboard.press('Shift+Tab');await page.keyboard.press('Tab');
+ await expect(id(page,'radio-access-numeric-optin-true')).toBeFocused();await page.keyboard.press('Enter');
  await expect(id(page,'radio-access-numeric-status')).toHaveAttribute('data-outcome','authority-applied');await expect(numeric(page)).toHaveAttribute('data-authority','compiled-branch');
  await expect(sectionHeading).toBeFocused();
  expect(await sectionHeading.evaluate(el=>el.matches(':focus-visible'))).toBe(true);

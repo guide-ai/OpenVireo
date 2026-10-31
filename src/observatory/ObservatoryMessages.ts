@@ -98,7 +98,7 @@ export const OBSERVATORY_MESSAGES=Object.freeze({
  }),
  spectrumSave:Object.freeze({
   title:'Save or print your spectrum',
-  help:'Save writes the acquired spectrum as a VIREO .SSP text file with the recovered save routine (object, pointing, catalog magnitude and 600 normalized source-plus-sky bins). Print prints only this spectrum. Pause the exposure first.',
+  help:'Save writes the acquired spectrum as a VIREO .SSP text file with the recovered save routine (object, pointing, catalog magnitude and 600 normalized source-plus-sky bins). Print prints only this spectrum. Pause or stop the exposure first.',
   save:'Save spectrum (.SSP)',print:'Print spectrum',
   saved:(name:string)=>`Spectrum saved as ${name}. Keep the star JSON to preserve raw counts, timing and RNG.`,
   savedExposure:(name:string)=>`Spectrum saved as ${name}. Keep the exposure JSON to preserve raw counts, timing and RNG.`,

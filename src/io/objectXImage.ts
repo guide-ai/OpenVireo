@@ -7,7 +7,9 @@ import {compiledCameraQueryReference} from '../core/cameraQueryReference';
 import {vizierRouteForCamera} from '../core/vizierNomad';
 import {cameraCatalogReference} from '../core/cameraCatalogReference';
 import {writeCameraFits,type CameraFitsContext} from '../core/fitsWriter';
-import type {CameraExposure,CameraExposureRecipe,CameraExtraSource} from '../core/cameraExposure';
+import {composeCameraExposure,type CameraExposure,type CameraExposureRecipe,type CameraExtraSource} from '../core/cameraExposure';
+import type {VizierSelection} from '../core/vizierNomad';
+import type {ObjectXSkipReason} from './objectXInvestigation';
 import {exposureFromWorker,handleCameraWorkerRequest,type CameraWorkerState} from '../camera/cameraWorkerCore';
 import {loadCameraCatalog,type CameraCatalogOptions,type CameraCatalogSource} from './cameraCatalog';
 import {cameraRegionRecord,cameraRegionSelection} from '../core/cameraRegion';
@@ -16,6 +18,14 @@ export function objectXFitsBytes(exposure:CameraExposure,jd:number,catalogName:s
  const context:CameraFitsContext={jd,filterName:cameraCatalogReference(exposure.recipe.camera,exposure.recipe.filterPosition).filter,catalogName,
   source:{mode:source.mode,sha256:source.sha256,extractId:source.extractId,url:source.url}};
  return writeCameraFits(exposure,context);
+}
+/** QA1 closure E1: the moving-pair skip reasons of an exposure, recomputed from its recipe and pairs. The composer projects the
+ * moving pairs first in its private stream and decides their skips without the catalogue, so an empty selection gives the
+ * reasons the exposure had. */
+export async function movingPairSkips(e:Readonly<{telescope:0|1|2;filter:number;seconds:number;gain:number;ra:number;dec:number;seed:number}>,extras:readonly CameraExtraSource[]):Promise<readonly ObjectXSkipReason[]>{
+ const empty={catalog:null,bounds:null,selectedEntries:[],nativeMinimumMagnitude:25,nativeMaximumMagnitude:-2} as unknown as VizierSelection;
+ const x=composeCameraExposure({camera:'ccd',opticalIndex:e.telescope,filterPosition:e.filter,seconds:e.seconds,gain:e.gain,centerRaHours:e.ra,centerDecDegrees:e.dec,seed:e.seed},empty,extras);
+ return Object.freeze(x.skipped.map(k=>k.reason));
 }
 export type StaticReplay=Readonly<{ok:true;fits:Uint8Array;catalogSha256:string;extractId:string|null}>|Readonly<{ok:false;reason:string}>;
 /** Recomposes a static-catalogue exposure and returns the FITS bytes the lab would have written. */

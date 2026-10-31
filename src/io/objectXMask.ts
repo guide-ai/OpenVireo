@@ -42,10 +42,11 @@ export async function objectXMasked(hidden:Pointing|null,p:Pointing,reach=0):Pro
 }
 /** Variable Stars list (review 1 closure N2): the risk is a listed variable that an Object X camera or spectrometer image would
  * contain, so the list is masked only when one of its rows lies within OBJECT_X_ON_TARGET_DEGREES (0.25°, about half the largest
- * camera field diagonal; the spectrometer field is smaller) of an Object X position or of the lab's hidden target. Fail closed. */
-export async function objectXListedNear(hidden:Pointing|null,rows:readonly Pointing[]):Promise<boolean>{
+ * camera field diagonal; the spectrometer field is smaller) of an Object X position. Fail closed. Front QA1 (2026-10-31): the
+ * lab's hidden target is no longer added; a moving target's current position would mask extra rows only for asteroids. */
+export async function objectXListedNear(rows:readonly Pointing[]):Promise<boolean>{
  let list:readonly Pointing[];try{list=await loadObjectXPositions();}catch{return true;}
- const on=objectXOnTarget(list,hidden);
+ const on=objectXOnTarget(list,null);
  return rows.some(on);
 }
 /** Front O2 (QSO List): a per-row test, true when the row lies within OBJECT_X_ON_TARGET_DEGREES of an Object X position or of
@@ -53,4 +54,15 @@ export async function objectXListedNear(hidden:Pointing|null,rows:readonly Point
 export function objectXOnTarget(list:readonly Pointing[],hidden:Pointing|null):(r:Pointing)=>boolean{
  const targets=[...list,...(hidden?[hidden]:[])];
  return r=>targets.some(q=>separationDegrees(r.ra,r.dec,q.ra,q.dec)<=OBJECT_X_ON_TARGET_DEGREES);
+}
+/** Front QA1 (2026-10-31, E08 identity hint): the name mask for catalogue lists while the Object X lab holds an unrevealed
+ * target. Masking only the objects near that target made its own name vanish from the observatory's target list while the
+ * other Object X galaxies stayed, so the absence named it. The mask therefore covers every ObjectX.HTL position, the same
+ * set whatever the target is. The target's own coordinates are not added; they are always its ObjectX.HTL row
+ * (ObjectXLab's objectXTargets), already in `list`, so adding them would change nothing. Before ObjectX.HTL is read (`list` null) the mask covers
+ * everything (fail closed). Without a target nothing is masked. Pure. */
+export function objectXCatalogMask(list:readonly Pointing[]|null,hidden:Pointing|null):(p:Pointing)=>boolean{
+ if(!hidden)return ()=>false;
+ if(!list)return ()=>true;
+ return p=>objectXNear(list,null,p);
 }

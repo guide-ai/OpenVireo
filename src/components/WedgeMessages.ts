@@ -61,7 +61,7 @@ export const WEDGE_NATIVE_CAPTIONS:WedgeNativeCaptions=Object.freeze({
 export const WEDGE_MESSAGES:WedgeMessageCatalog=Object.freeze({
  native:WEDGE_NATIVE_CAPTIONS,
  intro:'Load redshift data that the VIREO Large-Scale Structure exercise saved as a text file, then plot it on the original wedge diagram. The data stay exactly as saved: nothing is measured, estimated or filled in here.',
- persistenceNote:'This workspace exists only in this open window. Loaded files, the plot, options and selection are not included in Save investigation, and they are discarded when the page is reloaded or closed. Your saved .TXT files are not changed and can be loaded again.',
+ persistenceNote:'Save investigation keeps the options of the records you plotted from the LSS survey; after Restore, plot your records again from the survey. Files you load here, the plot itself and the selection are not included in Save investigation; they are discarded when the page is reloaded or closed. Your saved .TXT files are not changed and can be loaded again.',
  loadLabel:'Load saved LSS data (.TXT)…',
  loadHelp:'Choose a .TXT file saved from the VIREO LSS exercise (header begins “Object ID”). Files from other exercises are not compatible.',
  separatorLabel:'Decimal separator used in the file',

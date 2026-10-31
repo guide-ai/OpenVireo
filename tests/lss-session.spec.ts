@@ -76,7 +76,11 @@ test('wedge options restore with the survey; restore drops the wedge’s own LSS
 });
 test('the description refuses pasted control characters inline and Save keeps working',async({page})=>{
  await page.goto('/#lss-survey');const box=page.getByLabel('Describe the structure you see (not graded)',{exact:true});
- await box.fill('Line one\nline two');await box.fill('bad\u0001text');
+ await box.fill('Line one\nline two');
+ // Front QA1 (2026-10-31): Firefox's text editor removes C0 control characters from inserted or pasted text before any input event
+ // (beforeinput data is already "badtext"), so fill() never delivers U+0001 there. The value is set through the native setter and
+ // an input event instead, which reaches the app's own refusal in both engines.
+ await box.evaluate((n:HTMLTextAreaElement)=>{Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value')!.set!.call(n,'bad\u0001text');n.dispatchEvent(new Event('input',{bubbles:true}));});
  await expect(page.getByText('The description cannot contain control characters other than line breaks and tabs.')).toBeVisible();await expect(box).toHaveValue('Line one\nline two');
  const data=JSON.parse((await save(page)).toString());expect(lssLayer(data).lss.description).toBe('Line one\nline two');
 });

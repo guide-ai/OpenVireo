@@ -29,7 +29,7 @@
     - on the 0.4 m at the loaded centre, 380² from (278, 278).
   - **Stretch:** to 1023², with the last column and row white (255 → level 870, 2047 draws).
 - **Calibration:**
-  - **Index** [D]: the telescope handler stores the selected index in obs+0x6fc (0x58b67d → 0x53df24) and then env+0x3818
+  - **Index** [D]: the telescope handler stores the selected index in obs+0x6fc (0x58b67d → 0x53df24) and then root+0x3818 (root = [0x5b59a4])
     (0x58b682).
   - **Values:** the overlay's factor is therefore the selected telescope's record +0x3c (`scopeFactorMag`). Base magnitude,
     count and seconds come from the CCD record root+0x2d99, the same owners `compiledCameraSourceCalibration` reads for the
@@ -46,6 +46,7 @@
   - near an Object X target (the field stays masked);
   - a field that cannot be built;
   - no telescope load;
+  - a telescope change the sky view has not yet loaded a field for (C6 review L3);
   - NGC 224 in the field (its routine 0x53b848 is not ported);
   - a source rect beyond the 936² field (a drift of about 278 px or more; GDI's out-of-bitmap copy is not recovered);
   - an unpainted galaxy.
