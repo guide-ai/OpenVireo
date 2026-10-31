@@ -52,6 +52,19 @@ describe('the generic spectrometer',()=>{
   expect(spectrometerPrintLines(on,true,object)).toEqual(['Reading Sky']);
   const exact=await prepareFieldSpectrum({ra:2.5125473,dec:0.25592},0);expect(exact.status==='ready'&&fieldSpectrometerSkyReading(exact.result)).toBe(false);
  });
+ it('Front R4e: the sky flag comes from the slit star\'s throughput, also where the engine returns first (star-index-invalid)',async()=>{
+  // N0730.DAT@570187 (index above JSPEC2.SPI): the engine stops at star-index-invalid before 0x50f338, so its reasons say nothing
+  // about the slit. Off its position by more than 0.00028 h the star is still the slit object and still the current object.
+  const own=await prepareFieldSpectrum({ra:16.18146,dec:11.73154},0);expect(own.status).toBe('ready');if(own.status!=='ready')return;
+  expect(own.result.reasons).toEqual(['star-index-invalid']);expect(fieldSpectrometerSkyReading(own.result)).toBe(false);
+  for(const d of [0.0005,0.001,0.003]){
+   const at={ra:16.18146+d,dec:11.73154},r=await prepareFieldSpectrum(at,0);expect(r.status,`${d}`).toBe('ready');if(r.status!=='ready')continue;
+   expect(r.result.starTarget?.id,`${d}`).toBe('N0730.DAT@570187');expect(r.result.reasons,`${d}`).toEqual(['star-index-invalid']);
+   expect(fieldSpectrometerSkyReading(r.result),`${d}`).toBe(true);
+   const object=await currentObjectAt(at);expect(object,`${d}`).toMatchObject({status:'object',name:'N0730-00812'});
+   expect(spectrometerIdText({showObjectId:true,showObjectMag:true,editMode:false},true,object,'HIDDEN')).toBe('Sky');
+  }
+ });
  it('equals the Object X spectrometer at every Object X spectroscopy row and telescope (tiled pack vs bundled pack)',async()=>{
   const inputs=await spectrometerInputs(),s={index:checkGscIndex(JSON.parse(readFileSync('data/gsc/gsc-index.json','utf8'))),tiles:createGscTileStore({fetcher:(async(u:RequestInfo|URL)=>new Response(pub(String(u)))) as typeof fetch,capacity:64})};
   const v=pub('/original/variables/CLEA_VStrs.dat'),q=pub('/original/catalogs/CLEA_QSO.DAT'),g=pub('/original/images/GLIMAGES.LST');

@@ -118,9 +118,13 @@ Plan: `analysis/front-plans/front-r4d.md`.
 - **[W] Refresh:** on route activation and when the route's pointing changes (VIREO: FormActivate).
   - Star, galaxy and LSS look up at the target or row position. The field spectrometer looks up at its prepared pointing.
   - The object is 0x59a0fc's nearest object there, in the 936-px/0.75° frame, as for Add Current.
-- **Sky reading** (review 1 M1): the field spectrometer is a sky reading when the field engine reports `slit-empty`, which it
-  does exactly when 0x50f338 gives 0 for the slit object it selected (the same 0x59a0fc object). The boxes then show `Sky` and
-  an empty magnitude, and nothing is looked up. The sky route is always a sky reading (print `Reading Sky`). The star, galaxy
+- **Sky reading** (review 1 M1, Front R4e): the field spectrometer is a sky reading when 0x50f338 gives 0 for the slit object
+  the field engine selected (the same 0x59a0fc object). `fieldSpectrometerSkyReading` computes that throughput itself from the
+  selection, the frame's slit level and the pointing, because the engine reports `slit-empty` only on the branches that reach
+  its own throughput: an invalid or random spectral index, a variable whose values are unavailable and a galaxy spectrum
+  mapping return first. Probe: N0730.DAT@570187 (`star-index-invalid`) 0.0005–0.003 h east reads `Sky`, not `N0730-00812`.
+  [W] With no selection or no viewport it is not a sky reading, and a throughput at the precision limit falls back to the
+  engine's `slit-empty`. The boxes then show `Sky` and an empty magnitude, and nothing is looked up. The sky route is always a sky reading (print `Reading Sky`). The star, galaxy
   and LSS routes point exactly at their target, so their slit is never empty.
 - **[W] No object or an unresolved tie:** the Object box shows 13 blanks. VIREO copies the record from the nil pointer at
   0x50df98 and faults, so it has no defined display. The tie stays unresolved because the current-object lookup has no

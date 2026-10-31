@@ -15,7 +15,9 @@ import {catalogRecords,type CatalogRecord,TELESCOPE_FRAME} from './catalogObject
 import {createNativeSelectionScene,selectCatalogObject} from './objectSelection';
 import {objectXDataLabel} from './objectXLab';
 import {delphiFixed} from './variableStars';
-import type {FieldPopulation} from './fieldEngine';
+import type {FieldPopulation,FieldResult} from './fieldEngine';
+import {slitPixelLevel} from './photons';
+import {nativeObjectSlitFraction,SlitThroughputError} from './slitThroughput';
 
 export type CurrentObjectKind=0|1|2|3;
 export type CurrentObject=Readonly<{status:'object';name:string;kind:CurrentObjectKind;v:number;ra:number;dec:number}>|Readonly<{status:'none'}>|Readonly<{status:'unresolved'}>;
@@ -81,8 +83,8 @@ export function cameraCurrentName(showObjectId:boolean,object:ShownCurrentObject
  * observatory/SpectrumSavePrint.tsx).
  * - Sky reading (FormActivate 0x50db1a..0x50db2d): set when there is no current object or its throughput 0x50f338 is exactly 0
  *   (a star or QSO outside 0.00028 h RA × 0.0064° Dec of the pointing, or a galaxy at slit level 0); the object then becomes
- *   `Sky`, kind 4. The web takes it from the engine that computed the throughput: `fieldSpectrometerSkyReading` on the field
- *   route, the sky route always; the star, galaxy and LSS routes point exactly at their target.
+ *   `Sky`, kind 4. The web computes it on the field route from the engine's slit object (`fieldSpectrometerSkyReading`), the
+ *   sky route always; the star, galaxy and LSS routes point exactly at their target.
  * - IDText (0x50df64): visible only with Show Object ID (FormShow 0x50d936); sky reading `Sky`; else the name left-padded with
  *   spaces until its length is ≥ 13. Off: not written (null). [W] No object, or the unresolved tie: 13 blanks (VIREO copies the
  *   95-byte record from the nil pointer at 0x50df98 and faults; it has no defined display).
@@ -130,6 +132,19 @@ export function spectrometerDefaultFileName(o:SpectrometerReadoutOptions,object:
  if(object?.status!=='object'||!/^[\x20-\x7e]+$/.test(object.name.replace(/ +$/,'')))return webName;
  return spectrometerSaveName(o,object,'').replace(/[\\/:*?"<>|]/g,'_');
 }
-/** Front R4d review 1 M1: the field route's sky reading. The engine computes 0x50f338 for the slit object it selects (the same
- * 0x59a0fc nearest object) and reports `slit-empty` exactly when that throughput is 0, so VIREO's +0x416 sky flag is set. */
-export const fieldSpectrometerSkyReading=(result:Readonly<{reasons:readonly string[]}>|null|undefined)=>!!result?.reasons.includes('slit-empty');
+/** Front R4d review 1 M1 / R4e: the field route's sky reading (VIREO's +0x416, 0x50db1a): throughput 0x50f338 of the slit object
+ * the engine selected (the same 0x59a0fc nearest object) is 0. It is computed here from that selection, the frame's slit level and
+ * the pointing, so it holds also where the engine returns before its own throughput (an invalid or random spectral index, a variable
+ * whose values are unavailable, a galaxy spectrum mapping). No selection, or a field with no viewport, is not a sky reading [W]
+ * (the readers then show no object); a throughput at the precision limit falls back to the engine's `slit-empty` reason [W]. */
+export function fieldSpectrometerSkyReading(result:FieldResult|null|undefined):boolean{
+ if(!result)return false;
+ const engine=result.reasons.includes('slit-empty'),sel=result.selection;
+ if(!sel||!result.viewport||!result.population||(sel.kind!=='star'&&sel.kind!=='galaxy'))return engine;
+ try{
+  const pixelLevel=slitPixelLevel(result.viewport);
+  if(sel.kind==='galaxy')return nativeObjectSlitFraction({objectPresent:true,objectType:1,pixelLevel})<=0;
+  const star=result.population.stars[sel.star.index];if(!star)return engine;
+  return nativeObjectSlitFraction({objectPresent:true,objectType:star.type,pixelLevel,object:{raHours:star.ra,decDegrees:star.dec},pointing:{raHours:result.pointing.ra,decDegrees:result.pointing.dec}})<=0;
+ }catch(e){if(e instanceof SlitThroughputError)return engine;throw e;}
+}
