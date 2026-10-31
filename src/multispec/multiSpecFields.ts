@@ -38,9 +38,8 @@ export function observatoryMultiSpecField(pointing:Pointing,telescope:FieldTeles
  * Hubble target gives the same view and spectra both ways (multiSpecTiled.test.ts; nine LSS rows such as NGC 4278 give the
  * same photographic-image outcome, the assembled population also listing its photograph associations). At Hubble Boötes
  * (51975, 51976) the bundled pack keeps the Hubble route's acknowledged 'outside-view' rule (HUBBLE-13.md) and shows the
- * field; the assembled field, under the spectrometer-at-any-pointing options (G4a), is stamp-bound because of the zero-axis
- * galaxy 14299+3148, whose not-painted exemption exists only under the outside-view rule (with it the assembled pack equals
- * the bundled one). VIREO shows a field at both (one field path, no stamp limit, 0x59864d..0x59869b); how it paints that
+ * field; the assembled field, under the spectrometer-at-any-pointing options (G4a), takes the default TRUE dispatch for RS Boo
+ * (before Front L4 it was stamp-bound because of the zero-axis galaxy 14299+3148, which now composes nothing under every rule). VIREO shows a field at both (one field path, no stamp limit, 0x59864d..0x59869b); how it paints that
  * galaxy and RS Boo's class-0 update is not recovered (G4 closure N1). */
 export const MULTISPEC_TILED_EXCEPTIONS:readonly Pointing[]=Object.freeze(engineTargets.targets.filter(t=>t.pack==='hubble-engine-bootes').map(t=>at(t.pointing)));
 const isException=(p:Pointing)=>MULTISPEC_TILED_EXCEPTIONS.some(x=>x.ra===p.ra&&x.dec===p.dec);

@@ -10,6 +10,8 @@ import {loadObjectXSpectrometerInputs} from './objectXSpectrometerInputs';
 import {OBJECT_X_SPECTRUM_ROWS,objectXField,type ObjectXSpectrometerInputs} from '../core/objectXSpectrometer';
 import {spectrometerFieldResult,parseFieldSpectrumPolicy,fieldSpectrumPolicy,fieldSpectrumCalibration,fieldSpectrumCsv} from '../core/fieldSpectrometer';
 import {lssExposureEngine} from '../core/lssExposure';
+import {fieldSpectrometerSkyReading,spectrometerIdText,spectrometerMagText,spectrometerPrintLines} from '../core/currentObject';
+import {currentObjectAt} from './currentObjectAt';
 import {activateJournal,pauseJournal,startJournal,tickJournal} from '../core/exposureJournal';
 import type {FieldTelescope} from '../core/fieldEngine';
 vi.setConfig({testTimeout:300000});
@@ -39,6 +41,17 @@ beforeAll(async()=>{
 afterAll(()=>{globalThis.fetch=realFetch;setTileSources(null);setFieldSpectrometerFiles(null);vi.unstubAllGlobals();});
 
 describe('the generic spectrometer',()=>{
+ it('Front R4d review 1 M1: a star outside the slit is VIREO\'s sky reading, although the current object names it',async()=>{
+  // 0.001 h east of N0000.DAT@63282 (beyond 0x50f338's 0.00028 h): the engine reports slit-empty for that same star.
+  const at={ra:2.5135473,dec:0.25592},r=await prepareFieldSpectrum(at,0);
+  expect(r.status).toBe('ready');if(r.status!=='ready')return;
+  expect(r.result.starTarget?.id).toBe('N0000.DAT@63282');expect(r.result.reasons).toEqual(['slit-empty']);expect(fieldSpectrometerSkyReading(r.result)).toBe(true);
+  const object=await currentObjectAt(at),on={showObjectId:true,showObjectMag:true,editMode:false};
+  expect(object).toMatchObject({status:'object',name:'N0000-01634'});
+  expect(spectrometerIdText(on,true,object,'HIDDEN')).toBe('Sky');expect(spectrometerMagText(on,true,object)).toBe('');
+  expect(spectrometerPrintLines(on,true,object)).toEqual(['Reading Sky']);
+  const exact=await prepareFieldSpectrum({ra:2.5125473,dec:0.25592},0);expect(exact.status==='ready'&&fieldSpectrometerSkyReading(exact.result)).toBe(false);
+ });
  it('equals the Object X spectrometer at every Object X spectroscopy row and telescope (tiled pack vs bundled pack)',async()=>{
   const inputs=await spectrometerInputs(),s={index:checkGscIndex(JSON.parse(readFileSync('data/gsc/gsc-index.json','utf8'))),tiles:createGscTileStore({fetcher:(async(u:RequestInfo|URL)=>new Response(pub(String(u)))) as typeof fetch,capacity:64})};
   const v=pub('/original/variables/CLEA_VStrs.dat'),q=pub('/original/catalogs/CLEA_QSO.DAT'),g=pub('/original/images/GLIMAGES.LST');
@@ -105,9 +118,10 @@ describe('the generic spectrometer',()=>{
   }
   // Object X positions stay masked here as in Field Information.
   expect((await prepareFieldSpectrum(xInputs.rowPointings.get(OBJECT_X_SPECTRUM_ROWS[0].row)!,0)).status).toBe('unavailable');
-  // A galaxy at the centre of M31's field (its catalogue galaxy is selected; whatever the engine says is typed, never a guess).
-  const m31=await prepareFieldSpectrum({ra:0.7123,dec:41.2692},2);
-  expect(m31.status).toBe('ready');if(m31.status==='ready')expect(m31.result.target?.id??m31.result.reasons.join()).toBeTruthy();
+  // M31's field: VIREO's telescope painter draws NGC 224 with its own routine 0x53b848 (name test 0x53b4fc), not ported, so the
+  // field is typed. Front L4 (2026-10-31): with the stamp cap lifted this must never reach composeNativeGalaxy's whole-stamp path.
+  for(const t of [0,1,2] as const){const m31=await prepareFieldSpectrum({ra:0.7123,dec:41.2692},t);
+   expect(m31.status).toBe('ready');if(m31.status==='ready')expect(m31.result.reasons).toEqual(['ngc224-image']);}
  });
  it('Front S2: off the default a star is observed on the range (#R policy, its grid, a replayable session); a galaxy is refused',async()=>{
   const r={minimum:4000,maximum:5000},at={ra:11+44/60+42.9/3600,dec:55+22/60+43/3600};

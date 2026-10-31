@@ -56,11 +56,23 @@
     },
     {
      "telescope": 1,
-     "status": "unavailable",
-     "reasons": [
-      "mean-bound"
+     "status": "available",
+     "policyId": "openvireo-engine-galaxy-NGC4874-r1-v1",
+     "cropSHA256": "36a76fedfd4f0bbdf50a8e68416d739126f04c012b3f31487e82fa520a07adca",
+     "pixelLevel": 288,
+     "fraction": 1,
+     "stars": 94,
+     "galaxies": 112,
+     "sourceFile": "GLXYTMPL.SP",
+     "maxSourcePoissonMean": 17.774734932343716,
+     "qsoOperations": [
+      [
+       "CLEA_QSO.DAT@1443",
+       "insert",
+       169
+      ]
      ],
-     "maxSourcePoissonMean": 17.774734932343716
+     "evidence": "Front L4 (2026-10-31): crop, slit level and fraction from the independent witness analysis/front-l4/coma_witness.py (coma-witness.json), whose 0.4 m and 4 m outputs equal the recorded crops; the mean bound was a web guard (0x55f0f4 has none)"
     },
     {
      "telescope": 2,
@@ -128,11 +140,23 @@
     },
     {
      "telescope": 1,
-     "status": "unavailable",
-     "reasons": [
-      "mean-bound"
+     "status": "available",
+     "policyId": "openvireo-engine-galaxy-NGC4889-r1-v1",
+     "cropSHA256": "e231e7f0ad65a11943dc57fbef5d62ce24671fd37c9221492bfe7c0a4ac47ffe",
+     "pixelLevel": 293,
+     "fraction": 1,
+     "stars": 96,
+     "galaxies": 106,
+     "sourceFile": "NGC4889.SP",
+     "maxSourcePoissonMean": 29.07124167862541,
+     "qsoOperations": [
+      [
+       "CLEA_QSO.DAT@1443",
+       "insert",
+       152
+      ]
      ],
-     "maxSourcePoissonMean": 29.07124167862541
+     "evidence": "Front L4 (2026-10-31): crop, slit level and fraction from the independent witness analysis/front-l4/coma_witness.py (coma-witness.json), whose 0.4 m and 4 m outputs equal the recorded crops; the mean bound was a web guard (0x55f0f4 has none)"
     },
     {
      "telescope": 2,
@@ -472,7 +496,7 @@
  ],
  "adaptations": [
   "Fresh field at the exact catalogue centre (not the rounded HTL coordinates); no cache pan from these fields",
-  "Telescope availability follows the existing per-record mean bound (unchanged policy)",
+  "Telescope availability: every record admits poissonDraw's 10^6 per-draw mean (Front L4, 2026-10-31; the 0.9 m was refused by the former web bound 12)",
   "Number arithmetic and the nearest-centre raster are declared browser policies; no x87/GDI equivalence"
  ]
 }

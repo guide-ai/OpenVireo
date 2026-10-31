@@ -2,7 +2,7 @@ import {describe,it,expect} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import manifest from '../../docs/LOCAL-RESOURCES.json';
-import {LSS_FIELDS_LST,GLIMAGES_LST,GLXYSP_LST,parseLssFieldsList,parseGlimagesPositions,parseGlxyspNames,hasLibrarySpectrum,OriginalListError} from './lssLists';
+import {LSS_FIELDS_LST,GLIMAGES_LST,GLXYSP_LST,parseLssFieldsList,parseGlimagesPositions,parseGlxyspNames,hasLibrarySpectrum,OriginalListError,LSS_FIELDS_FILE_ERROR,lssFieldsFileErrorText} from './lssLists';
 const read=(path:string)=>new Uint8Array(readFileSync(new URL('../../public'+path,import.meta.url)));
 const code=(f:()=>unknown)=>{try{f();return 'ok';}catch(e){return e instanceof OriginalListError?'list':'other';}};
 describe('byte-exact LSSFields.LST, GLIMAGES.LST and GLXYSP.LST (approval of 2026-10-27)',()=>{
@@ -19,5 +19,11 @@ describe('byte-exact LSSFields.LST, GLIMAGES.LST and GLXYSP.LST (approval of 202
   const p=parseGlimagesPositions(read(GLIMAGES_LST.path));expect(p).toHaveLength(183);expect(p[0]).toEqual({index:0,ra:.16483,dec:25.9241});
   const s=parseGlxyspNames(read(GLXYSP_LST.path));expect(s.size).toBe(48);expect(hasLibrarySpectrum(s,'NGC 4670')).toBe(true);expect(hasLibrarySpectrum(s,'NGC 4080')).toBe(false);
   expect(code(()=>parseGlxyspNames(new TextEncoder().encode('x y\r\n')))).toBe('list');
+ });
+});
+describe('Front L4: TLSSFieldsForm1 FormShow file error (0x52ac24, strings 0x52afd0/0x52aff8/0x52affc)',()=>{
+ it('prefix + path + CRLF CRLF + reason, caption File Error!, MB_ICONSTOP',()=>{
+  expect(LSS_FIELDS_FILE_ERROR).toEqual({prefix:'Cannot access LSS fields file ',separator:'\r\n\r\n',caption:'File Error!',flags:0x10});
+  expect(lssFieldsFileErrorText('/original/hotlists/LSSFields.LST','why')).toBe('Cannot access LSS fields file /original/hotlists/LSSFields.LST\r\n\r\nwhy');
  });
 });

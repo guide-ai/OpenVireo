@@ -77,15 +77,23 @@ export function cameraCurrentName(showObjectId:boolean,object:ShownCurrentObject
  return showObjectId&&object?.status==='object'&&/^[\x20-\x7e]*$/.test(object.name)?object.name:undefined;
 }
 
-/** Single-channel spectrometer readouts (TSpectrometer) [D]. The web spectrometer screens are on another front (G4c): these rules
- * are ready for them and tested here.
+/** Single-channel spectrometer readouts (TSpectrometer) [D], wired by Front R4d (observatory/SpectrometerReadout.tsx and
+ * observatory/SpectrumSavePrint.tsx).
+ * - Sky reading (FormActivate 0x50db1a..0x50db2d): set when there is no current object or its throughput 0x50f338 is exactly 0
+ *   (a star or QSO outside 0.00028 h RA × 0.0064° Dec of the pointing, or a galaxy at slit level 0); the object then becomes
+ *   `Sky`, kind 4. The web takes it from the engine that computed the throughput: `fieldSpectrometerSkyReading` on the field
+ *   route, the sky route always; the star, galaxy and LSS routes point exactly at their target.
  * - IDText (0x50df64): visible only with Show Object ID (FormShow 0x50d936); sky reading `Sky`; else the name left-padded with
- *   spaces until its length is ≥ 13. Off: not written (null).
+ *   spaces until its length is ≥ 13. Off: not written (null). [W] No object, or the unresolved tie: 13 blanks (VIREO copies the
+ *   95-byte record from the nil pointer at 0x50df98 and faults; it has no defined display).
  * - MagText (0x50e00b): visible with Show Object Mag OR Edit Mode; V with 2 decimals left-padded to 6; a sky reading leaves it
  *   empty; no check for the 30 "no magnitude" value.
- * - Save default name (0x50fb1c): (on: name, trailing spaces removed; off: Object X label) + the extension (`.SSP`); no sky check.
- * - Print (0x510294, 0x510954): an object reading with the option on prints `Object: ` + name (String[32]); the magnitude line
- *   `Apparent Magnitude (V): ` (2 decimals) with Show Object Mag OR Edit Mode [I: object readings only].
+ * - Save default name (0x50fb1c): (on: name, trailing spaces removed — `Sky` for a sky reading; off: Object X label) + the
+ *   extension (`.SSP`); no sky check of its own.
+ * - Print (0x510294): a sky reading prints `Reading Sky` (0x5108cf → 0x510dc4) whatever the options; an object reading with the
+ *   option on prints `Object: ` + name (0x510910: _PStrNCat, at most 32 characters on the whole line); the magnitude line
+ *   `Apparent Magnitude (V): ` (2 decimals) with Show Object Mag OR Edit Mode (0x510954/0x51095d).
+ * - [W] Visibility follows the options at once (VIREO sets it at FormShow and rewrites MagText only when the name changes [I]).
  * [W] hidden: IDText shows the hidden-name text, MagText and the magnitude line are suppressed with it, names take the off form. */
 export type SpectrometerReadoutOptions=Readonly<{showObjectId:boolean;showObjectMag:boolean;editMode:boolean}>;
 export function spectrometerIdText(o:SpectrometerReadoutOptions,skyReading:boolean,object:ShownCurrentObject,hiddenText:string):string|null{
@@ -103,10 +111,25 @@ export function spectrometerMagText(o:SpectrometerReadoutOptions,skyReading:bool
 export function spectrometerSaveName(o:SpectrometerReadoutOptions,object:ShownCurrentObject,objectXId:string,extension='.SSP'):string{
  return (o.showObjectId&&object.status==='object'?object.name.replace(/ +$/,''):objxLabel(objectXId))+extension;
 }
+export const SPECTROMETER_SKY_PRINT_LINE='Reading Sky';
 export function spectrometerPrintLines(o:SpectrometerReadoutOptions,skyReading:boolean,object:ShownCurrentObject):readonly string[]{
- if(skyReading||object.status!=='object')return Object.freeze([]);
+ if(skyReading)return Object.freeze([SPECTROMETER_SKY_PRINT_LINE]);
+ if(object.status!=='object')return Object.freeze([]);
  const lines:string[]=[];
- if(o.showObjectId)lines.push(('Object: '+object.name).slice(0,'Object: '.length+32));
+ if(o.showObjectId)lines.push(('Object: '+object.name).slice(0,32));
  if(spectrometerMagVisible(o))lines.push('Apparent Magnitude (V): '+delphiFixed(Math.fround(object.v),2));
  return Object.freeze(lines);
 }
+/** Front R4d [W]: the Save default name a web spectrometer route offers. With Show Object ID on and a named current object, VIREO's
+ * `Name.SSP` (0x50fb1c), or `Sky.SSP` for a sky reading; otherwise the route's own web name, unchanged, so the compiled default
+ * (off) saves byte-identical names. VIREO's off form (`UNKNOWN.SSP` / `ObjX-<ID>.SSP`) is not adopted: the web names carry the
+ * Classify file-name ID. A name outside printable ASCII keeps the web name; `\ / : * ? " < > |` become `_`, as Multi-Spec's. */
+export function spectrometerDefaultFileName(o:SpectrometerReadoutOptions,object:ShownCurrentObject|null,webName:string,skyReading=false):string{
+ if(!o.showObjectId)return webName;
+ if(skyReading)return 'Sky.SSP';
+ if(object?.status!=='object'||!/^[\x20-\x7e]+$/.test(object.name.replace(/ +$/,'')))return webName;
+ return spectrometerSaveName(o,object,'').replace(/[\\/:*?"<>|]/g,'_');
+}
+/** Front R4d review 1 M1: the field route's sky reading. The engine computes 0x50f338 for the slit object it selects (the same
+ * 0x59a0fc nearest object) and reports `slit-empty` exactly when that throughput is 0, so VIREO's +0x416 sky flag is set. */
+export const fieldSpectrometerSkyReading=(result:Readonly<{reasons:readonly string[]}>|null|undefined)=>!!result?.reasons.includes('slit-empty');

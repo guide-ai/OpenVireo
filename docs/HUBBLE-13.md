@@ -14,8 +14,8 @@ selected record, crop digest and calibration. Regeneration needs `OPENVIREO_FREE
 | HTL row | Target | Route | Telescopes | Status |
 |---|---|---|---|---|
 | 3 | 36805 UM-I – 3 | cached pan of the verified 36773 field (M1) | 0.4 m | available |
-| 4 | NGC 4874 Coma – 1 | engine, QSO merge (M3) | 0.4 m, 4 m (0.9 m: mean bound) | available |
-| 5 | NGC 4889 Coma – 2 | engine, QSO merge, own NGC4889.SP (M4) | 0.4 m, 4 m (0.9 m: mean bound) | available |
+| 4 | NGC 4874 Coma – 1 | engine, QSO merge (M3) | 0.4 m, 0.9 m (since Front L4), 4 m | available |
+| 5 | NGC 4889 Coma – 2 | engine, QSO merge, own NGC4889.SP (M4) | 0.4 m, 0.9 m (since Front L4), 4 m | available |
 | 6 | 51976 Boo – 1 | engine, QSO merge, RS Boo outside view, start-time continuation (M5) | 0.4 m, 0.9 m, 4 m | available |
 | 7 | 51975 Boo – 2 | engine, QSO merge, RS Boo outside view, start-time continuation (M5) | 0.4 m, 0.9 m, 4 m | available |
 
@@ -52,8 +52,12 @@ See docs/FIELD-ENGINE.md (stage 3). The engine targets below use `qso: 'merge'`;
   in RA order (positions 169 and 152), as the independent Python witness gives; it lies outside the 312² crop.
 - `data/hubble/engine-targets.json` records, per telescope, the policy, crop SHA-256, slit level and fraction, star/galaxy counts,
   source file and QSO operations; the loader (`io/hubbleEngineTargets.ts`) re-derives them, checks the crop digest and only then
-  registers the definitions. Telescope availability follows the existing mean bound: 0.4 m and 4 m available, KPNO 0.9 m
-  `mean-bound` (max Poisson mean 17.8 and 29.1 against the bound 12). This differs from the plan's guess ("likely 4 m only").
+  registers the definitions. Until Front L4 the KPNO 0.9 m was `mean-bound` (max Poisson mean 17.8 and 29.1 against the former web
+  bound 12). Front L4 (2026-10-31) lifts that guard (0x55f0f4 has none): the 0.9 m is available, policies
+  `openvireo-engine-galaxy-NGC4874-r1-v1` and `…NGC4889-r1-v1`. Its recorded crop, slit level (288, 293) and fraction (1) come from
+  the independent witness analysis/front-l4/coma_witness.py (`data/hubble/engine-coma-witness.json`): a second implementation of the
+  static reads, QSO merge, cleanup and nearest-centre paint, whose 0.4 m and 4 m outputs equal the recorded crops; the test checks
+  the engine against it on all three records. H0 is unchanged (52.50880276737093): it comes from the catalogue z and workbook V.
 - NGC 4889 own spectrum: the GLXYSP lookup 0x55eb64 keeps only the text inside any parentheses (Delete up to '(' at 0x55ec7a, from ')' at
   0x55eca8; a name without them is unchanged), removes its spaces and takes the first
   GLXYSP.LST line that contains it (Pos 0x40640c) → `NGC4889.SP` (27616 bytes, SHA-256 d48f7964…1e39). The matched branch of
@@ -77,8 +81,8 @@ See docs/FIELD-ENGINE.md (stage 3). The engine targets below use `qso: 'merge'`;
   both. Real data: QSO 1656 is 14.2–19.3′ from RS Boo, 513122 and 513131, and no CLEA_GLX galaxy is near them. The rule is used
   for Boo – 1/2 only (Object X uses the recovered zero-period dispatch instead, docs/OBJECT-X-SPECTRA.md).
 - Adaptation (acknowledged by the coordinator, 2026-10-27): neighbour 14299+3148 (zero-axis, morphology 4) has a minor axis that rounds to
-  0 px (browser stamp bound). Under the same rule, a galaxy outside the stamp bound whose largest footprint misses the crop is
-  recorded and not painted; otherwise `stamp-bound` stays.
+  0 px. Since Front L4 (2026-10-31) such a galaxy composes nothing under every rule (VIREO's zero-height stretch, 0x594488 [I]) and
+  the stamp has no size bound; under the outside-view rule it is still listed with its crop margin. The crops are unchanged.
 - QSO 1656 (HS 1431+3144, V 17.3) is an ordered insert (position 65) and lies inside both crops: it is painted as a type-3 point.
 - Independent Python witness `data/hubble/bootes-witnesses.json` (winner, resolved record, runner, QSO operation, final star order,
   galaxy order) is reproduced exactly.

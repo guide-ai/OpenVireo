@@ -37,9 +37,11 @@ describe('Front F M5: Boötes – 1/2 fields (RS Boo outside the view, QSO 1656 
   expect(full.reasons).toEqual([]);expect(full.target!.recordIndex).toBe(w.glxIndex);
   const rec=record.targets.find(t=>t.glxIndex===w.glxIndex)!.telescopes[0] as {cropSHA256:string;pixelLevel:number};expect(sha(full.viewport!.rgb)).toBe(rec.cropSHA256);expect(full.calibration!.pixelLevel).toBe(rec.pixelLevel);
   // With the earlier gate the field stays the typed variable gate. Under the default Front T TRUE branch RS Boo no longer gates
-  // (outside the view); the galaxy 14299+3148 beyond the browser stamp bound does, since only the outside-view rule exempts it.
+  // (outside the view). Since Front L4 (2026-10-31) the 0 px-minor galaxy 14299+3148 composes nothing under every rule, so the
+  // field reaches the spectrum stage (here the missing start-time continuation), with the same crop.
   expect(evaluateField(pack,glx,w.pointing,0,{qso:'merge',qsoCatalog,variables:'gate'}).reasons).toEqual(['variable-merge']);
-  expect(evaluateField(pack,glx,w.pointing,0,{qso:'merge',qsoCatalog}).reasons).toEqual(['stamp-bound']);
+  const plain=evaluateField(pack,glx,w.pointing,0,{qso:'merge',qsoCatalog,continuation:'start-time'});expect(plain.reasons).toEqual([]);expect(sha(plain.viewport!.rgb)).toBe(rec.cropSHA256);
+  expect(evaluateField(pack,glx,w.pointing,0,{qso:'merge',qsoCatalog}).reasons).toEqual(['spectrum-range']);
  });
  it('recorded available on every telescope; the hot-list rows are engine targets',()=>{
   for(const id of ['51976','51975']){const t=record.targets.find(t=>t.id===id)!;expect(t.telescopes.map(x=>x.status)).toEqual(['available','available','available']);expect(isHubbleExtendedId(id)).toBe(true);}

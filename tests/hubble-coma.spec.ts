@@ -53,20 +53,20 @@ test('Hubble.HTL → Coma – 1/2 engine fields → manual z → Hubble → Save
  await expect(page.getByLabel('Acquisition galaxy')).toHaveValue('NGC 4889');await expect(page.getByTestId('galaxy-source-total')).toHaveText(sources[1]);
  expect(errors).toEqual([]);
 });
-test('Coma – 1 on the 4 m is acquirable; on the KPNO 0.9 m it is reported (mean bound), never acquired',async({page})=>{T=TS[0];
- test.setTimeout(120000);
+// Re-pinned 2026-10-31 (Front L4): the KPNO 0.9 m was refused by the former web mean bound 12; Coma – 1 is now acquirable on it,
+// with the recorded crop from the independent witness (data/hubble/engine-coma-witness.json).
+test('Coma – 1 is acquirable on the KPNO 0.9 m (Front L4) and on the 4 m',async({page})=>{T=TS[0];
+ test.setTimeout(180000);
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();await page.goto('/');
- await page.getByLabel('Telescope profile to inspect or select').selectOption('1');await page.getByRole('button',{name:'Use this telescope',exact:true}).click();
- await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await loadHubble(page);await pointRow(page,3);
- await expect(page.getByTestId('hubble-point-card')).toHaveAttribute('data-status','telescope');
- await page.clock.resume();await clickHeaderTool(page,'Galaxy exposure');await page.getByLabel('Acquisition galaxy').selectOption('NGC 4874');
- await expect(page.locator('[data-galaxy-telescope="1"]').getByTestId('galaxy-telescope-unsupported-NGC 4874')).toBeVisible();
- // Review 2 finding 5: the note names the recorded telescopes and the brightness bound, not "0.4m only".
- await expect(page.locator('[data-galaxy-telescope="1"]').getByTestId('galaxy-telescope-unsupported-NGC 4874')).toContainText('the existing brightness bound');
- await expect(page.locator('[data-galaxy-telescope="1"]').getByTestId('galaxy-telescope-unsupported-NGC 4874')).not.toContainText('0.4m telescope only');
- await clickHeaderTool(page,'Observatory');await page.getByLabel('Telescope profile to inspect or select').selectOption('2');await page.getByRole('button',{name:'Use this telescope',exact:true}).click();
- await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await openHotList(page);await pointRow(page,3);await expect(page.getByTestId('hubble-point-card')).toHaveAttribute('data-status','available');
- await toGalaxyFromCard(page);await acquire(page);await expect(page.getByLabel('Galaxy acquisition provenance')).toContainText('NGC 4874');
+ for(const scope of ['1','2']){
+  if(scope==='2')await clickHeaderTool(page,'Observatory');
+  await page.getByLabel('Telescope profile to inspect or select').selectOption(scope);await page.getByRole('button',{name:'Use this telescope',exact:true}).click();
+  await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
+  if(scope==='1')await loadHubble(page);else await openHotList(page);
+  await pointRow(page,3);await expect(page.getByTestId('hubble-point-card')).toHaveAttribute('data-status','available');
+  await toGalaxyFromCard(page);await acquire(page);await expect(page.getByLabel('Galaxy acquisition provenance')).toContainText('NGC 4874');
+  if(scope==='1')await page.clock.resume();
+ }
  expect(errors).toEqual([]);
 });
 test('a failing catalogue load is an explicit, retryable notice, never a substitute field',async({page})=>{

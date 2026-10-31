@@ -2,6 +2,7 @@ import{test,expect,type Page,type Locator}from'@playwright/test';
 import{readFileSync}from'node:fs';
 import{readFile}from'node:fs/promises';
 import{paceDownload}from'./fixtures/download-pacing';
+import{setVireoOptions}from'./fixtures/vireo-options';
 
 // Front M (M4): Multi-Spec in the Object X lab (exercise mode 1: clicks armed). Before the reveal no ObjectX.HTL identifier or
 // remark and no catalogue name of the field reaches the DOM (Information included), the .SSP names (Show Object ID on) or the
@@ -36,6 +37,8 @@ async function informations(page:Page,count:number){
 
 test('Object X: before the reveal nothing names the target or its neighbours; after the reveal names return',async({page})=>{
  await page.goto('/#object-x');await expect(page.getByRole('heading',{name:'The quest for Object X'})).toBeVisible();
+ // Front R4d: Show Object ID and Show Object Mag are VIREO's global options now (set in the Options dialog).
+ await setVireoOptions(page,{'show-object-id':true,'show-object-mag':true});await expect(page.getByRole('heading',{name:'The quest for Object X'})).toBeVisible();
  await expect(page.getByTestId('objectx-target').locator('option')).toHaveCount(18);
  await page.locator('[data-testid=objectx-lab] input').first().fill('7');
  await expect(branch(page).getByTestId('ms-objectx-status')).toHaveText('Choose a target first.');
@@ -43,8 +46,7 @@ test('Object X: before the reveal nothing names the target or its neighbours; af
  await branch(page).getByTestId('ms-access').click();await ok(page);
  await expect(page.getByTestId('ms-armed')).toHaveText('Object selection is on (Object X).');
  const field=branch(page).getByTestId('ms-field');await expect(field).toBeVisible({timeout:90_000});await expect(field).toHaveAttribute('data-armed','true');
- // Show Object ID on: names must still stay out of list items, captions, file names and the zip.
- await page.getByTestId('ms-show-id').check();await page.getByTestId('ms-show-mag').check();
+ // Show Object ID on (set above): names must still stay out of list items, captions, file names and the zip.
  await expect(page.getByTestId('ms-masked-note')).toBeVisible();
  // The target at the centre, three neighbour stars (review M1: control pixels of stars of this field), one sky fibre.
  for(const [x,y] of [[156,156],[100,158],[264,174],[7,221],[300,4]])await at(field,x,y);
@@ -100,11 +102,11 @@ test('Object X: before the reveal nothing names the target or its neighbours; af
 test('Object X: a galaxy target labels only itself; its Object X neighbour stays hidden, also after the reveal',async({page})=>{
  const GALAXY='X-IAVA2',NEIGHBOUR=[short(4*86),short(4*86+45)];
  await page.goto('/#object-x');await expect(page.getByRole('heading',{name:'The quest for Object X'})).toBeVisible();
+ await setVireoOptions(page,{'show-object-id':true});await expect(page.getByRole('heading',{name:'The quest for Object X'})).toBeVisible();
  await page.locator('[data-testid=objectx-lab] input').first().fill('7');
  await page.getByTestId('objectx-target').selectOption(GALAXY);
  await branch(page).getByTestId('ms-access').click();await ok(page);
  const field=branch(page).getByTestId('ms-field');await expect(field).toBeVisible({timeout:90_000});
- await page.getByTestId('ms-show-id').check();
  for(const [x,y] of [[156,156],[128,289],[300,4]])await at(field,x,y);
  const n=await page.locator('[data-testid^=ms-marker-]').count();expect(n).toBe(3);
  await page.getByTestId('ms-minutes').fill('0.05');await page.getByTestId('ms-init').click();await page.getByTestId('ms-go').click();

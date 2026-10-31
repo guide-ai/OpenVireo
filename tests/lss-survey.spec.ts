@@ -72,6 +72,7 @@ test('E02 at 320 px: the route has no horizontal page scroll and the list stays 
  await page.getByLabel('Survey field',{exact:true}).focus();await page.keyboard.press('ArrowDown');
  await page.getByLabel('Survey field',{exact:true}).selectOption('7');await page.getByRole('button',{name:'Load selected list',exact:true}).focus();await page.keyboard.press('Enter');
  await expect(page.locator('[data-testid^="lss-row-"]')).toHaveCount(26,{timeout:30000});
- await expect(page.getByTestId('lss-row-4')).toContainText('bounded raster');
+ // Re-pinned 2026-10-31 (Front L4): row 4 (IC 1012, formerly stamp-bound) is observable; F7R22 IC 4459 (0 px minor) is the field's typed row.
+ await expect(page.getByTestId('lss-row-4')).toContainText('Observable');await expect(page.getByTestId('lss-row-22')).toContainText('no light in the slit');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth)).toBe(true);
 });
