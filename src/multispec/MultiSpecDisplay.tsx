@@ -3,6 +3,8 @@ import {createPortal} from 'react-dom';
 import type {MultiSpecSpectrum} from '../core/multiSpecSpectrum';
 import {MULTISPEC_MESSAGES as N} from '../core/multiSpecFormat';
 import {t} from '../i18n';
+import {printSkyHeader} from '../core/printSkyText';
+import '../observatory/observatory-dialogs.css';
 
 const D=N.display;
 export const MULTISPEC_PRINT_SCOPE='multispec';
@@ -36,9 +38,11 @@ function InformationDialog({lines,onClose}:Readonly<{lines:readonly string[];onC
  </dialog>;
 }
 /** Print 0x528454 as a print preview (the HotListPrintPreview pattern): a portalled modal whose scoped print stylesheet prints
- * only the report (plot and the core print lines). The shared printer header 0x58e860 (decoded by Front K2, docs/FRONT-K2-FORMS-PRINTS.md §3) is not added to this print [W]. */
+ * only the report: VIREO's shared header 0x58e860 (called at 0x5284cd; Front H2, decoded by K2 in docs/FRONT-K2-FORMS-PRINTS.md §3),
+ * then the plot and the core print lines. The header is dated when the preview opens. */
 function PrintPreview({caption,spectrum,lines,onClose}:Readonly<{caption:string;spectrum:MultiSpecSpectrum;lines:readonly string[];onClose:()=>void}>){
  const id=useId(),dialog=useRef<HTMLDialogElement>(null),button=useRef<HTMLButtonElement>(null),[failed,setFailed]=useState(false);
+ const [printedAt]=useState(()=>new Date().toLocaleString());
  useEffect(()=>{const d=dialog.current;if(d&&!d.open){d.showModal();button.current?.focus();}
   return()=>{const root=document.documentElement;if(root.getAttribute('data-print-scope')===MULTISPEC_PRINT_SCOPE)root.removeAttribute('data-print-scope');if(d?.open)d.close();};},[]);
  function print(){
@@ -52,6 +56,7 @@ function PrintPreview({caption,spectrum,lines,onClose}:Readonly<{caption:string;
  return createPortal(<dialog ref={dialog} className="ob-dialog ob-wide ms-print-root" aria-labelledby={`${id}-t`} data-testid="ms-print-preview" onCancel={e=>{e.preventDefault();onClose();}}>
   <div className="ms-print-chrome"><h2 id={`${id}-t`}>{t('multispec.printTitle')}</h2><p className="ob-note">{t('multispec.printHelp')}</p></div>
   <section className="ms-print-report" tabIndex={0} aria-label={t('multispec.printReport')}>
+   <pre className="ob-print-native" data-testid="ms-print-header">{printSkyHeader(printedAt).join('\n')}</pre>
    <h3 className="ob-native">{caption}</h3><MultiSpecPlot spectrum={spectrum} label={t('multispec.plotLabel',{caption})}/>
    <ul className="ms-lines">{lines.map((l,i)=><li key={i} data-testid={`ms-print-line-${i}`}>{l}</li>)}</ul>
   </section>

@@ -130,7 +130,7 @@
   "Window: menu handler 0x53f850 shows form 0x5b5f08 without a telescope condition (CCD twin 0x53f834); a telescope change refreshes a visible IR window (0x53e31b -> 0x514260)."
  ],
  "unrecovered": [
-  "IR exposure-time limit and controls beyond filter and gain: web uses CAMERA_MAX_SECONDS (adaptation ir-like-ccd).",
+  "Controls beyond filter, gain and exposure time (the exposure limit, 1 s to 59 min 59 s, is recovered: Front RE5, TIRCam Start check 0x514268, ExpClock.Minutes setter 0x4fcbc8).",
   "Region writer [0x5b5b30] and global random prefix, as for the CCD."
  ]
 }

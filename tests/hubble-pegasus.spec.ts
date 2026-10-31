@@ -1,6 +1,7 @@
 import {test,expect,type Page} from '@playwright/test';
 import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
+import {recordMeasurement,sessionBase} from './fixtures/record-measurement';
 // Phase 2 B2: NGC 7499 / 7501 / 7503 (Pegasus) through the original Hubble.HTL, the exact catalogue centre, the fresh NGC 7501
 // field and its cached-pan views (0.4 m only), then all eight supported targets in one investigation. Alignment positions,
 // steps and seeds are operator-chosen workflow inputs, not expected redshifts; V values are typed by the operator from the
@@ -33,7 +34,7 @@ async function measure(page:Page,t:Target){
  await press(page,'Analyze acquired galaxy');await expect(page.getByTestId('z-value')).toHaveText('+0.000000');await expect(page.getByRole('slider')).toBeDisabled();
  await expect(page.getByLabel('Galaxy acquisition provenance')).toContainText(t.id);
  await page.getByLabel('z step per tick').fill('.001');await page.getByRole('button',{name:'Apply step',exact:true}).click();await page.getByRole('slider').fill(t.position);
- await page.getByRole('button',{name:/Record measurement/}).click();await page.getByRole('button',{name:'Save measurement',exact:true}).click();
+ await recordMeasurement(page);
 }
 async function acquire(page:Page,t:Target,keyboard=false){
  if(keyboard)await press(page,'Activate supported galaxy field');else await page.getByRole('button',{name:'Activate supported galaxy field',exact:true}).click();
@@ -56,7 +57,7 @@ test('Hubble.HTL → exact centre → Pegasus acquisitions, then all eight targe
  for(const [i,t] of all.entries()){const n=i+1;await expect(page.getByLabel(`Apparent V magnitude · row ${n}`,{exact:true})).toBeEmpty();await expect(page.getByLabel(`Apparent magnitude source · row ${n}`,{exact:true})).toBeEmpty();
   await page.getByLabel(`Apparent V magnitude · row ${n}`,{exact:true}).fill(t.V);await page.getByLabel(`Apparent magnitude source · row ${n}`,{exact:true}).fill(`Hubble Data.xls · Sheet1!${t.cell}`);await page.getByLabel(`VIREO target identification · row ${n}`,{exact:true}).selectOption(t.id);}
  await expect(page.getByTestId('hubble-value')).toBeVisible();await expect(page.getByTestId('hubble-fit')).toBeVisible();await expect(page.locator('.hubble-point')).toHaveCount(8);const value=await page.getByTestId('hubble-value').textContent();
- const saved=await download(page,'Save session'),data=JSON.parse(saved.toString());
+ const saved=await download(page,'Save session'),data=sessionBase(JSON.parse(saved.toString()));
  expect(data.version).toBe(25);expect(Object.keys(data.pegasusGalaxies)).toEqual(['NGC 7499','NGC 7501','NGC 7503']);expect(data.base.version).toBe(24);
  let inner=data.base.base;while(!inner.acquisitions)inner=inner.base;expect(inner.acquisitions).toHaveLength(8);expect(inner.measurements.map((m:any)=>m.origin.targetId)).toEqual(all.map(t=>t.id));
  await page.reload();await page.getByLabel('Restore analysis session',{exact:true}).setInputFiles({name:'pegasus.json',mimeType:'application/json',buffer:saved});

@@ -1,4 +1,5 @@
 import { test,expect } from '@playwright/test';
+import {recordMeasurement} from './fixtures/record-measurement';
 test('saved redshift reaches the original velocity convention, answer check and separate CSV',async({page})=>{
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/#spectrum');
   await page.getByText('Velocity analysis',{exact:true}).click();await expect(page.getByText('Import a spectrum and save a redshift measurement to begin.',{exact:true})).toBeVisible();
@@ -7,7 +8,7 @@ test('saved redshift reaches the original velocity convention, answer check and 
   await page.getByLabel('Object or reference').fill('Velocity validation vector');
   await page.getByLabel('z step per tick').fill('0.015625');await page.getByRole('button',{name:'Apply step',exact:true}).click();
   await page.getByRole('slider').focus();await page.getByRole('slider').press('ArrowRight');
-  await page.getByRole('button',{name:/Record measurement/}).click();await page.getByRole('button',{name:'Save measurement',exact:true}).click();
+  await recordMeasurement(page);
   const analysis=page.locator('.velocity-card');await expect(analysis.getByRole('cell',{name:'4684.25732',exact:true})).toBeVisible();
   await page.getByLabel('Your velocity · km/s',{exact:true}).fill('5000');await page.getByRole('button',{name:'Check velocity',exact:true}).click();
   await expect(analysis.getByRole('status')).toContainText('Outside the original 1% tolerance');
@@ -28,7 +29,7 @@ test('saved redshift reaches the original velocity convention, answer check and 
 test('zero stored z has a visible unsupported check instead of a fabricated passing grade',async({page})=>{
   await page.goto('/#spectrum');await page.getByLabel('Import spectrum',{exact:true}).setInputFiles({name:'zero-vector.csv',mimeType:'text/csv',buffer:Buffer.from('3700,.2\n4000,.5\n4700,.9')});
   await expect(page.getByRole('heading',{name:'File ready'})).toBeVisible();await page.getByLabel('z step per tick').fill('.001');await page.getByRole('button',{name:'Apply step',exact:true}).click();
-  await page.getByRole('button',{name:/Record measurement/}).click();await page.getByRole('button',{name:'Save measurement',exact:true}).click();
+  await recordMeasurement(page);
   await page.getByText('Velocity analysis',{exact:true}).click();await page.getByLabel('Your velocity · km/s',{exact:true}).fill('0');await page.getByRole('button',{name:'Check velocity',exact:true}).click();
   await expect(page.locator('.velocity-card').getByRole('alert')).toContainText('original relative-error check divides by zero');
   await page.screenshot({path:'test-results/velocity-desktop.png',fullPage:true});

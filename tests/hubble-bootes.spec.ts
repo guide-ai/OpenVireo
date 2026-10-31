@@ -1,6 +1,7 @@
 import {test,expect,type Page} from '@playwright/test';
 import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
+import {recordMeasurement,sessionBase} from './fixtures/record-measurement';
 // Front F M5: Boötes – 1 (51976) and Boötes – 2 (51975), RS Boo outside the view, start-time continuation, through the original Hubble.HTL, the exact catalogue
 // centre and a fresh general-field-engine field with the recovered QSO merge (0.4 m and 4 m), saved in the v29 wrapper.
 // operator-chosen workflow inputs; the V value is typed by the operator from the workbook reference, never prefilled.
@@ -26,7 +27,7 @@ async function acquire(page:Page){
  await page.getByRole('button',{name:'Analyze acquired galaxy',exact:true}).click();await expect(page.getByTestId('z-value')).toHaveText('+0.000000');
  await expect(page.getByLabel('Galaxy acquisition provenance')).toContainText(T.id);
  await page.getByLabel('z step per tick').fill('.001');await page.getByRole('button',{name:'Apply step',exact:true}).click();await page.getByRole('slider').fill(T.position);
- await page.getByRole('button',{name:/Record measurement/}).click();await page.getByRole('button',{name:'Save measurement',exact:true}).click();
+ await recordMeasurement(page);
  return source!;
 }
 test('Hubble.HTL → Boötes – 1/2 engine fields (start-time continuation) → manual z → Hubble → Save (v29), fresh Restore, resume',async({page})=>{
@@ -39,7 +40,7 @@ test('Hubble.HTL → Boötes – 1/2 engine fields (start-time continuation) →
  await page.getByText('Hubble diagram & distances',{exact:true}).click();await page.getByRole('button',{name:'Add saved measurements',exact:true}).click();await page.getByLabel('Distance and summary recipe').selectOption('vireo');
  for(const [i,t] of TS.entries()){const n=i+1;await expect(page.getByLabel(`Apparent V magnitude · row ${n}`,{exact:true})).toBeEmpty();await page.getByLabel(`Apparent V magnitude · row ${n}`,{exact:true}).fill(t.V);await page.getByLabel(`Apparent magnitude source · row ${n}`,{exact:true}).fill(`Hubble Data.xls · Sheet1!${t.cell}`);await page.getByLabel(`VIREO target identification · row ${n}`,{exact:true}).selectOption(t.id);}
  await expect(page.getByTestId('hubble-value')).toBeVisible();const value=await page.getByTestId('hubble-value').textContent();
- const saved=await download(page,'Save session'),data=JSON.parse(saved.toString());
+ const saved=await download(page,'Save session'),data=sessionBase(JSON.parse(saved.toString()));
  expect(data.version).toBe(29);expect(data.extendedGalaxies['0:51976'].source.kind).toBe('archive');expect(data.extendedGalaxies['0:51975'].source.kind).toBe('archive');
  expect(data.base.acquisitions.map((a:any)=>a.journal.policy)).toEqual(['openvireo-engine-galaxy-51976-r0-v1','openvireo-engine-galaxy-51975-r0-v1']);
  await page.reload();await page.getByLabel('Restore analysis session',{exact:true}).setInputFiles({name:'bootes.json',mimeType:'application/json',buffer:saved});

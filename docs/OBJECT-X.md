@@ -1,7 +1,7 @@
 # E08 Object X — the quest for Object X (Front X, X0–X5)
 
 Status: X0–X3 merged at 121c835 after review 1 and the closure check. X4 (route, camera asteroids, asteroid list) and X5
-(v28 investigation, guide) are implemented on branch `claude/serene-dubinsky-8d1244`; review 2 (no-go on H1, H2) and its fixes
+(v28 investigation, guide) are merged into main from branch `claude/serene-dubinsky-8d1244`; review 2 (no-go on H1, H2) and its fixes
 are recorded in the section "Review 2 fixes" below. E08 is
 **not** closed: the star, galaxy and quasar branches need the spectrometer at arbitrary coordinates, which is typed "not
 available yet" until the field-engine front lands.

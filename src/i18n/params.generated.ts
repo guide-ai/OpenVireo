@@ -102,6 +102,11 @@ export interface MessageParameters {
   "spectrum.float32Help": never;
   "spectrum.cancel": never;
   "spectrum.save": never;
+  "spectrum.observationNote": never;
+  "spectrum.observationReusedNote": never;
+  "spectrum.observationSaved": never;
+  "spectrum.observationTime": never;
+  "spectrum.observationUpdated": never;
   "spectrum.sampleCount": "count";
   "spectrum.roundsTo": never;
   "spectrum.roundsHelp": never;
@@ -3057,6 +3062,7 @@ export interface MessageParameters {
   "ownResults.sourceColumn": never;
   "ownResults.velocityColumn": never;
   "ownResults.statusColumn": never;
+  "ownResults.recordColumn": never;
   "ownResults.kind.galaxy": "id";
   "ownResults.kind.star": never;
   "ownResults.kind.imported": never;
@@ -3065,6 +3071,7 @@ export interface MessageParameters {
   "ownResults.binding.notApplicable": never;
   "ownResults.sha": "sha256";
   "ownResults.bits": "hex";
+  "ownResults.recordDetails": "jd" | "sp";
   "ownResults.status.derived": never;
   "ownResults.status.stellar-excluded": never;
   "ownResults.status.redshift": never;

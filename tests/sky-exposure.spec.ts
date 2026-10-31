@@ -29,3 +29,16 @@ test('a delayed foreground callback pauses atomically and new seeded repeats are
  await page.getByLabel('Browser random seed (uint32)',{exact:true}).fill('4294967296');await page.getByRole('button',{name:'New seeded exposure',exact:true}).click();await expect(page.getByRole('alert')).toContainText('whole-number seed');
  await page.getByLabel('Browser random seed (uint32)',{exact:true}).fill('1');await page.getByRole('button',{name:'New seeded exposure',exact:true}).click();await activate(page);await start(page);await page.clock.runFor(1000);const first=await save(page,'Save sky counts CSV');await page.getByRole('button',{name:'New seeded exposure',exact:true}).click();await activate(page);await start(page);await page.clock.runFor(1000);expect(await save(page,'Save sky counts CSV')).toBe(first);
 });
+
+test('Front H2: the sky exposure prints with VIREO\'s header; Save (.SSP) stays unavailable and says why',async({page})=>{
+ await page.clock.install();await page.goto('/#spectrometer');await page.getByRole('link',{name:'Open supported sky exposure'}).click();
+ await activate(page);await start(page);await page.clock.runFor(1000);await page.getByRole('button',{name:'Pause exposure',exact:true}).click();
+ const panel=page.getByTestId('ob-spectrum-save');
+ await expect(panel.getByRole('button',{name:'Save spectrum (.SSP)',exact:true})).toBeDisabled();
+ await expect(page.getByTestId('ob-spectrum-save-note')).toContainText('selected catalogue object');
+ await page.evaluate(()=>{(window as unknown as {printed:number}).printed=0;window.print=()=>{(window as unknown as {printed:number}).printed++;};});
+ await panel.getByRole('button',{name:'Print spectrum',exact:true}).click();
+ expect(await page.evaluate(()=>(window as unknown as {printed:number}).printed)).toBe(1);
+ await expect(page.getByTestId('ob-spectrum-print-header')).toContainText('     VIREO - The VIRtual Educational Observatory');
+ await expect(page.getByTestId('ob-spectrum-print').locator('svg polyline')).toHaveCount(1);
+});

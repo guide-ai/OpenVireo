@@ -1,6 +1,6 @@
 # Variable stars and light curves (Front V, V1–V3)
 
-Status: implemented on branch `claude/front-v-variables-43a775`; the coordinator's high-effort review 1
+Status: merged into main from branch `claude/front-v-variables-43a775`; the coordinator's high-effort review 1
 (`analysis/reviews/front-v-review-1.md`) was applied: print page body (M1), the M−m/D note (M2), type bound 10 (L1), blank
 type filter (L2), menu focus (L3), guide wording (L4), manifest scope (L5), table amplitude (L6), no mutation without Init
 (L7), the `non-finite` test and the pinned witness hash. Implementation: Claude Code (claude-opus-5-5), medium effort. Plan: Plan subagent (claude-opus-5-5, high effort) in
@@ -179,4 +179,4 @@ Tests are evidence of the chosen contract, not of original-runtime equivalence.
   A hit restores the star (0x5986c0) and a miss inserts nothing (0x5987a1); the only effect is the runner prune of 0x59a2e0.
   `nativeVariableDispatchFalse` (recovered mode) already does this, and the four fields are admitted (PLEIADES-SAMPLE.md).
   Truth table: `src/core/variableMerge.test.ts`.
-- Printer layout, the portrait print branch, the student/lab print strings and the CLEA help viewer; saving this page's state with the investigation (not needed: it is a browsing aid).
+- Printer layout, the portrait print branch and the student/lab print strings (the CLEA help viewer is done, docs/CLEA-HELP.md); saving this page's state with the investigation (not needed: it is a browsing aid).
