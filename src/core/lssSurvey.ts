@@ -12,6 +12,10 @@ import {lssDialogOk,lssVelocityText} from './lssRedshiftDialog';
 import {currentZ,type ShiftControl} from './spectrum';
 import type {JournalEvent} from './exposureJournal';
 import {LSS_FIELD_FILES,type LssFieldNumber} from './lssFields';
+/** Front R4 (R4.3) [D]: TSpectrumEngine.RecordZ1Click 0x58383c, LSS branch, after OK (0x58391a): with neither the wedge nor the
+ * LSS results window visible VIREO shows this box (text 0x583b20, caption 0x583bac, MB flags 0x40) and enables the main-menu
+ * "LSS Wedge Plot" item (env+0x52c, 0x4548ac). Verbatim CLEA_VEO.exe literals (SHA-256 781bc970…c52c54c), never translated. */
+export const LSS_Z_SAVED_BOX=Object.freeze({caption:'Z Measurement Saved',text:'Z Measurement added to results list.\r\n\r\nSave, plot, view list under "Tools"->\r\n"Results Editors"->"Observational \r\nResults" on main Window.'});
 
 /** events: total journal events over the DISTINCT exposures behind the records (records from one exposure share it). */
 export const LSS_LIMITS=Object.freeze({records:250,object:24,remarks:40,velocity:24,events:150_000,description:4000});

@@ -746,7 +746,7 @@ export default function OpenVireo(){
    onSnapshot:s=>{lssCurrent.current=s;},
    onSummary:s=>setLssSummary(c=>sameLssLabSummary({...c,saved:false},{...s,saved:false})?c:s),
    currentJd:()=>siteClockReadingMS(observatoryClock.state?clockDriveUTMS(observatoryClock.state):parseClockUTC(siteClock.utc),0).jd,
-   onPlotWedge:h=>{const token=++lssToken.current;setWedgeOwn({...h,token});navigate('lss-wedge');return token;},
+   onPlotWedge:(h,silent)=>{const token=++lssToken.current;setWedgeOwn({...h,token});if(!silent)navigate('lss-wedge');return token;},// Front R4 (R4.3): silent = re-plot after Record Z OK, without showing the wedge (0x58394e)
   });
   // Front Perf review 1 L1: ObjectXLab hands clockUtc to MultiSpecObjectX, which calls it during render; like observatoryJd
   // it is a stable reader of a ref assigned in this render, so children rendered in the same pass read this render's clock.
@@ -816,7 +816,7 @@ export default function OpenVireo(){
    
    onHiddenTarget={setObjectXHidden} /></Suspense>}</div>
   <div inert={projectBusy} ref={variableStarsView} hidden={view!=='variable-stars'}>{variableStarsVisited&&<Suspense fallback={<p>{VARIABLE_STARS_EN.loading}</p>}><VariableStarsRoute active={view==='variable-stars'&&!projectBusy} openRequest={variableOpen} monochromeDisplays={sessionOptions.monochromeDisplays} printInColor={sessionOptions.printInColor}/></Suspense>}</div>
-  <div inert={projectBusy} ref={lssView} hidden={view!=='lss-survey'}>{(lssVisited||view==='lss-survey')&&<Suspense fallback={<p>{t('lss.loading')}</p>}><LssSurvey spectralRange={spectralRange} onSpectralRange={setSpectralRange} computeRedshiftVelocity={sessionOptions.computeRedshiftVelocity} timeDependentData={sessionOptions.timeDependentData} active={view==='lss-survey'&&!projectBusy} editMode={editMode} restored={lssRestore} {...lssHandlers} initialTelescope={optical.selectedIndex as 0|1|2} wedgeAck={wedgeAck} /></Suspense>}</div>
+  <div inert={projectBusy} ref={lssView} hidden={view!=='lss-survey'}>{(lssVisited||view==='lss-survey')&&<Suspense fallback={<p>{t('lss.loading')}</p>}><LssSurvey wedgeShown={wedgeVisited} spectralRange={spectralRange} onSpectralRange={setSpectralRange} computeRedshiftVelocity={sessionOptions.computeRedshiftVelocity} timeDependentData={sessionOptions.timeDependentData} active={view==='lss-survey'&&!projectBusy} editMode={editMode} restored={lssRestore} {...lssHandlers} initialTelescope={optical.selectedIndex as 0|1|2} wedgeAck={wedgeAck} /></Suspense>}</div>
   <div inert={projectBusy} ref={imageView} hidden={view!=='images'}>{imageVisited&&<Suspense fallback={<p>{t('fits.loading')}</p>}><FitsImageLab active={view==='images'} busy={projectBusy}/></Suspense>}</div>
   <AboutDialog dialogRef={about}/></>;
 }

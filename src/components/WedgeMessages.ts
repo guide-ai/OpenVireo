@@ -100,7 +100,7 @@ export const WEDGE_MESSAGES:WedgeMessageCatalog=Object.freeze({
  about:Object.freeze([
   'Recovered statically from CLEA_VEO.exe (SHA-256 781bc970…c52c54c); the original program was never run.',
   'Covered: the LSS “Load Saved Data” text reader, the wedge grid (Velocity, Red Shift (Z), No Grid), point size 1–5, open/filled points, “Plot Data” and the add/clear prompts.',
-  'Not available: group Auto Plot (needs a shared instructor file), live plotting while measuring spectra, and the original save format. Print Wedge Plot is a web print; like VIREO it prints in black and white unless the Print in Color option is checked (Optical Simulation Options, compiled off).',
+  'Not available: group Auto Plot (needs a shared instructor file) and the original save format. Live plotting while measuring (Front R4): after Record Z OK in the LSS survey, a wedge already opened in this session is redrawn with all your records, without being brought forward, as VIREO does when the wedge is visible. Print Wedge Plot is a web print; like VIREO it prints in black and white unless the Print in Color option is checked (Optical Simulation Options, compiled off).',
   'The MJD column is kept exactly as saved. The original completes it with a prefix from the date of the session that loaded it, which cannot be known here, so no MJD value is computed.',
   'V and Z are stored as single-precision numbers and derived with the program’s c = 299792.458 km/s; angle and pixel rounding use this browser’s arithmetic, and rare ties are flagged rather than claimed.',
  ]),

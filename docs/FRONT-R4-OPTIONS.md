@@ -1,6 +1,8 @@
 # Front R4: option follow-ups
 
-**Status:** implemented on branch `claude/front-r4` (2026-10-30).
+**Status:** R4.1 and R4.3 implemented on branch `claude/front-r4` (2026-10-31). The other items were split off:
+- R4.4 and the light-curve half of R4.5 are Front R4b (merged; `docs/` notes there);
+- R4.2 and the HR half of R4.5 are Front R4c (`analysis/front-plans/front-r4c.md`).
 
 **Method:** static reading of CLEA_VEO.exe (SHA-256 `781bc970…c54c`) only; nothing was executed, emulated or sent. No new
 resource and no new approval.
@@ -76,3 +78,21 @@ the same session would reveal it.
 
 **Fixed:** Add Current used to pass the selected target's unmasked ID when the pointing equalled it. A hidden Object X target
 pointed at exactly showed its real ID; it now prefills nothing (e2e).
+
+## R4.3 Wedge re-plot after Record Z OK
+
+**What VIREO does** (TSpectrumEngine.RecordZ1Click 0x58383c, LSS branch) [D]. After TLSSRsltsDlg1 OK:
+- **Wedge visible** (+0x57, 0x583921): PlotData1Click 0x58100c redraws the whole own list. It does not Show or BringToFront
+  the wedge.
+- **Neither the wedge nor LSSRsltsForm1 visible:** it shows the "Z Measurement Saved" box (text 0x583b20, caption 0x583bac)
+  and enables the LSS Wedge Plot menu item.
+- Cancel and the Hubble branch never touch the wedge.
+
+**Web** [W]:
+- "Visible" is "the wedge route has been mounted in this page session" (opened, or restored with wedge options).
+- Then every OK hands the whole own list to the wedge with replace, without navigating, and the status line says so.
+- Otherwise the status line shows the box text verbatim (`LSS_Z_SAVED_BOX`, length byte 0x8b checked) with a web note.
+- The results-window exception and the menu enable are not modelled: the results list is on the survey page and the wedge
+  route is always reachable.
+
+See docs/LSS-SURVEY.md, docs/WEDGE-PLOT.md and `liveReplotAfterRecordZ` in docs/WEDGE-PLOT-PROVENANCE.json.

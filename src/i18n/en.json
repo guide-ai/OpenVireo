@@ -3171,6 +3171,8 @@
   "lss.measure.record": "Record Z",
   "lss.recordError": "This measurement cannot be recorded.",
   "lss.recorded": "Redshift recorded.",
+  "lss.recordedWedge": "Redshift recorded. As in VIREO, the LSS wedge plot was redrawn with all your records; it stays where it is until you open it.",
+  "lss.zSavedWeb": "(Original VIREO message. In this web version your results list is on this page, and LSS wedge plot is in the Tools menu; once you have opened the wedge, each Record Z OK redraws it with all your records.)",
   "lss.dialog.title": "Measured Redshift Data",
   "lss.dialog.object": "Object",
   "lss.dialog.jd": "JD",
