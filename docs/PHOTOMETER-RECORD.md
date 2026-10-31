@@ -70,11 +70,13 @@ Observational Data window. Static reading of CLEA_VEO.exe (SHA-256 781bc970…c5
 - Not ported:
   - the allotment counter (Obs+0x41c5dd);
   - AnalyzeHRDiagram1 enabling in exercise 3 (the web has no such menu gate).
-- [U] Whether [0x5b5d98] in the off-mode name is the Object X ID or the login name (both default to `UNKNOWN`).
+- [D] [0x5b5d98] is the Object X ID: only TUTTimeDlg.OKBtnClick 0x4fdf0c writes it, from the IDEd box (+0x388, "ID # of Unknown Object (From Lab Sheet or Instructor)"); an empty box gives `UNKNOWN` (0x4fe078). The off-mode name is therefore `UNKNOWN`, or `ObjX-`+that ID (Front P3 review 1 M2).
+- With Show Object ID off, every photometer reading has that one name, so with Time-Dependent Data off they all merge into one
+  `UNKNOWN`/`ObjX-` row, as in VIREO (reuse by ID, 0x54a73c). Turn Show Object ID on for one row per star (review 1 M1).
 - Still typed: `photometer-variable` (field engine / clock), `photometer-selection` (stale light; Show ID on dereferences nil),
   `photometer-qso`.
 
 ## Model and effort
 - Plan: Claude Opus 5.5, high.
 - Implementation: Claude Opus 5.5 (subagent).
-- Review: pending (coordinator).
+- Review: the coordinator, review 1 (analysis/reviews/front-p3-review-1.md), Claude Opus 5.5 high; fixes at medium.

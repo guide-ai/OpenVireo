@@ -257,11 +257,14 @@ export function photometerFieldFromPopulation(population:PopulationLike|null,rea
  const radius=10.5/(936/.05),width=(3/2)/3600,neighbors=queryPhotometerNeighbors(pointing,radius,stars,[]);
  const galaxies=population.galaxies.map((g,i)=>({id:`g${i}`,ra:g.ra,dec:g.dec,majorArcminutes:g.majorArcminutes}));
  const scene=createNativeSelectionScene(stars,galaxies,{width:936,height:936,fieldDegrees:.05,center:pointing,population:{coverage:'complete',provenance:'compact GSC tiles; photometer field built for this pointing'}});
- const selection=selectCatalogObject(scene,468,468);
+ const fraction=(s:NamedStar)=>photometerPointFraction(radius,photometerSeparation(pointing.ra,pointing.dec,s.ra,s.dec),width);
+ let selection=selectCatalogObject(scene,468,468);
+ // Front P3 review 1 L3 [D]: a star/galaxy tie in 0x59a0fc is decided by the star's throughput, which for the photometer is its
+ // aperture fraction at this pointing (0x500568): a nonzero fraction keeps the star, zero takes the galaxy.
+ if(selection.kind==='throughput-required'){const tied=selection.star?stars.find(s=>s.id===selection.star!.object.id):undefined;if(tied)selection=selectCatalogObject(scene,468,468,fraction(tied));}
  if(selection.kind==='galaxy'||selection.kind==='throughput-required')return Object.freeze({reason:'photometer-galaxy' as const});
  if(selection.kind!=='star')return Object.freeze({reason:'photometer-selection' as const});
  const selected=stars.find(s=>s.id===selection.object.id)!;
- const fraction=(s:NamedStar)=>photometerPointFraction(radius,photometerSeparation(pointing.ra,pointing.dec,s.ra,s.dec),width);
  const centralFraction=fraction(selected),supplied=(s:NamedStar)=>({v:s.magnitude,bMinusV:s.photometry2Single,uMinusB:s.photometry3Single,fraction:fraction(s)});
  const others=neighbors.filter(s=>s.nativeName!==selected.nativeName);
  let sourceMagnitude:number;

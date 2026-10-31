@@ -1,6 +1,6 @@
 import {describe,expect,it} from 'vitest';
 import {createPhotometer,photometerEvent as step,photometerStructReading,releasePhotometer,replayPhotometer,type PhotometerEvent,type PhotometerState} from './photometer';
-import {photometerNativeData,photometerNativeMerge,photometerStructRecordable,photometerStructUnrecorded,type PhotometerNativeRecordEvent} from './photometerNativeRecord';
+import {photometerNativeApply,photometerNativeData,photometerNativeMerge,photometerStructRecordable,photometerStructUnrecorded,type PhotometerNativeRecordEvent} from './photometerNativeRecord';
 import {photometerJournalVersion} from './photometerJournal';
 import {pleiadesExerciseSummary} from './pleiadesLab';
 import {observationalDataFields} from './clusterNativeHrSelect';
@@ -39,6 +39,15 @@ describe('Record/Review with Time-Dependent Data off and on (0x54a76f)',()=>{
   expect(row).toMatchObject({id:'HII 1234',time:2455000.25,ra:3.75,dec:24.1,kind:1,remarks:'second',spectralCode:0});
   expect(row.bands[1]).toBe(s.readings.find(r=>r.filter==='B'&&r.kind==='object')!.reduction!.magnitude);
   expect(row.bands[2]).toBe(s.readings.find(r=>r.filter==='V'&&r.kind==='object')!.reduction!.magnitude);
+ });
+ it('review 1 L1: a zero-magnitude reading is not unrecorded until its Record/Review is cancelled (0x501fab sets the flag regardless of the slot)',()=>{
+  const zero={id:7,kind:'object' as const,filter:'V' as const,reduction:{status:'unavailable'}};
+  const input={id:'UNKNOWN',jd:2451545,ra:3.79,dec:24.1,timeDependent:false};
+  expect(photometerStructUnrecorded(zero,undefined)).toBe(false);
+  const cancelled=photometerNativeApply(undefined,zero,{type:'nativeRecord',readingId:7,...input,ok:false,remarks:'',spectralCode:0} as PhotometerNativeRecordEvent);
+  expect(cancelled.cancelled).toEqual([7]);expect(photometerStructUnrecorded(zero,cancelled)).toBe(true);
+  const ok=photometerNativeApply(undefined,zero,{type:'nativeRecord',readingId:7,...input,ok:true,remarks:'',spectralCode:0} as PhotometerNativeRecordEvent);
+  expect(ok).not.toHaveProperty('cancelled');expect(photometerStructUnrecorded(zero,ok)).toBe(false);
  });
  it('Cancel follows VIREO: the band stays, remarks and Sp are dropped, Record stays enabled; a re-Record with the option on duplicates the row',()=>{
   let s=band(step(createPhotometer(42),{type:'activate'}),'V');

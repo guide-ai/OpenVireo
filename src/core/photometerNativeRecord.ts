@@ -28,7 +28,7 @@
  *   Hubble Record Z (0x5839e6), so cross-instrument merges by the same ID are not reproduced.
  * - [W] The velocity box stays read-only for a photometer record: a typed velocity would divide by c·0 natively (x87 exception
  *   path, [I]), which is not modelled.
- * - [U] Whether [0x5b5d98] in the off-mode name is the Object X ID or the login name (both default to UNKNOWN). */
+ * - [D] [0x5b5d98] is the Object X ID: only TUTTimeDlg.OKBtnClick 0x4fdf0c writes it, from the IDEd box (+0x388, "ID # of Unknown Object (From Lab Sheet or Instructor)"); an empty box gives UNKNOWN (0x4fe078) (Front P3 review 1 M2). */
 import {photometerRecord,PHOTOMETER_BANDS,type PhotometerResultRecord} from './photometerRecord';
 import {observationText,formatObservationType,parseObservationType,ObservationResultError} from './observationResults';
 import {encodeHtlExtended} from './hotList';
@@ -46,7 +46,8 @@ const JD_MIN=2415020.5,JD_MAX=2488069.5;
 /** One record of the photometer-owned results list. `time` is the JD (the stored Double is JD − 2415018.5). */
 export type PhotometerNativeRow=PhotometerResultRecord&Readonly<{spectralCode:number;remarks:string}>;
 export type PhotometerNativeState=Readonly<{rows:readonly PhotometerNativeRow[];
- /** Readings whose Record/Review ended with OK (VIREO's +0x6b0 after the dialog). */recorded:readonly number[]}>;
+ /** Readings whose Record/Review ended with OK (VIREO's +0x6b0 after the dialog). */recorded:readonly number[];
+ /** Front P3 review 1 L1: readings whose Record/Review ended with Cancel (absent until the first Cancel). */cancelled?:readonly number[]}>;
 /** What Record/Review takes from outside the photometer core: the recorded name fixed at Start, the completion time, the telescope
  * pointing at Record (Obs+0x65f/+0x669) and Time-Dependent Data (env+0x2e8c, read by 0x54a76f during Record). */
 export type PhotometerNativeInput=Readonly<{id:string;jd:number;ra:number;dec:number;timeDependent:boolean}>;
@@ -70,9 +71,10 @@ export function photometerStructBands(r:PhotometerStructReading):readonly number
 export function photometerStructRecordable(r:PhotometerStructReading|null,native:PhotometerNativeState|undefined):boolean{
  return !!r&&r.kind==='object'&&!(native?.recorded.includes(r.id)??false);
 }
-/** +0x6b0 = 0: the reading has a nonzero value that was not recorded with OK. Start then asks "Telescope has Moved!" (0x4fffd4). */
+/** +0x6b0 = 0: the reading has a nonzero value that was not recorded with OK, or its Record/Review was cancelled (Cancel at
+ * 0x501fab sets the flag whatever the slot holds; Front P3 review 1 L1). Start then asks "Telescope has Moved!" (0x4fffd4). */
 export function photometerStructUnrecorded(r:PhotometerStructReading|null,native:PhotometerNativeState|undefined):boolean{
- return photometerStructRecordable(r,native)&&photometerStructSlot(r!)!==0;
+ return photometerStructRecordable(r,native)&&(photometerStructSlot(r!)!==0||(native?.cancelled?.includes(r!.id)??false));
 }
 
 export function validPhotometerNativeInput(p:PhotometerNativeInput):boolean{
@@ -102,7 +104,8 @@ export function photometerNativeApply(native:PhotometerNativeState|undefined,rea
  if(!photometerStructRecordable(reading,native)||!validPhotometerNativeOutcome(e))throw new PhotometerNativeError('reading');
  const m=photometerNativeMerge(native,reading,e);
  const rows=e.ok?m.rows.map((r,i)=>i===m.index?Object.freeze({...r,remarks:e.remarks,spectralCode:e.spectralCode}):r):m.rows;
- return Object.freeze({rows:Object.freeze(rows),recorded:Object.freeze(e.ok?[...(native?.recorded??[]),reading.id]:[...(native?.recorded??[])])});
+ const cancelled=e.ok?native?.cancelled:[...(native?.cancelled??[]),reading.id];
+ return Object.freeze({rows:Object.freeze(rows),recorded:Object.freeze(e.ok?[...(native?.recorded??[]),reading.id]:[...(native?.recorded??[])]),...(cancelled?{cancelled:Object.freeze(cancelled)}:{})});
 }
 
 /** The rows as the 144-byte records VIREO's results list holds (layout: nativeObservationResults.ts), so the shared dialog
