@@ -150,7 +150,7 @@ for(const [label,viewport] of [['desktop 1440',{width:1440,height:1050}],['mobil
    await openHeaderTools(page);await id(page,'pulsar-lab-open').focus();await page.keyboard.press('Enter');
    await expect(id(page,'pulsar-lab-dialog')).toBeVisible();await expect(id(page,'pulsar-lab-close')).toBeFocused();
    // Phase 1 item 1.5: the backup is available (no "not complete" claim) and the counts have eight required steps.
-   await expect(id(page,'pulsar-lab-backup')).toHaveAttribute('data-backup','available');await expect(id(page,'pulsar-lab-counts')).toHaveText('2 of 8 pulsar steps done.');
+   await expect(id(page,'pulsar-lab-backup')).toHaveAttribute('data-backup','available');await expect(id(page,'pulsar-lab-counts')).toHaveText('2 of 8 required pulsar steps done (the optional last step is not counted).');
    await expect(id(page,'pulsar-lab-delay-formula')).toHaveText('delay [s] = 4150 × DM × (1/f_low² − 1/f_high²), with f in MHz and DM in pc/cm³');
    await expect(id(page,'pulsar-lab-add-disarms')).toBeVisible();await noVisibleOffsets(id(page,'pulsar-lab-dialog'));
    await shot(page,info,`guide-${viewport.width}`);
@@ -433,7 +433,7 @@ test.describe('desktop 1440 (mouse), original catalog',()=>{
   const g=await guide(page);
   expect(g).toEqual({next:'investigation',done:{setup:'true',catalog:'true',point:'true',channels:'true',capture:'true',period:'true',delay:'true',investigation:'false',save:'false'}});
   await openHeaderTools(page);await id(page,'pulsar-lab-open').click();await expect(id(page,'pulsar-lab-status-delay')).toHaveText('Reading recorded (not checked for correctness)');
-  await expect(id(page,'pulsar-lab-counts')).toHaveText('7 of 8 pulsar steps done.');
+  await expect(id(page,'pulsar-lab-counts')).toHaveText('7 of 8 required pulsar steps done (the optional last step is not counted).');
   await expect(id(page,'pulsar-lab-investigation-note')).toHaveAttribute('data-investigation','none');
   await expect(id(page,'pulsar-lab-status-investigation')).toHaveText('Not yet for this capture and these rows.');
   await shot(page,info,'original-guide');await id(page,'pulsar-lab-close').click();

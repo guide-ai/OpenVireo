@@ -195,7 +195,7 @@ test('Tracking off: the clock call follows the released key: E held → N releas
  await keyUp(page,'n');await advance(page,2);expect(await dec(page)).toBe(d0+n);
 });
 
-test('keypad digits (CDP numeric stimulus): 4 E, 6 W, 8/decimal N, 2 S hold; keypad 5, the digit row, arrows, F4/F8 and NumLock-off keypad do nothing and are not consumed',async({page})=>{
+test('keypad digits (CDP numeric stimulus): 4 E, 6 W, 8/decimal N, 2 S hold; keypad 5, the digit row, arrows, F4/F8 and NumLock-off keypad do nothing and are not consumed',async({page,browserName})=>{test.skip(browserName!=='chromium','Uses a Chromium-only CDP stimulus (Front QA1, 2026-10-31).');
  await openRadio(page);await setupRadio(page);await trackingOn(page);await controlledClock(page);await recordKeys(page);
  const cdp=await page.context().newCDPSession(page);
  const n=500*K,e=500*K/15,d0=await dec(page),r0=await ra(page);
@@ -235,7 +235,7 @@ test('keypad digits (CDP numeric stimulus): 4 E, 6 W, 8/decimal N, 2 S hold; key
  expect(await dec(page)).toBe(d0+n);
 });
 
-test('modifiers: Ctrl/Alt/Meta+N start nothing and are not consumed; Shift+N holds; a modifier pressed during the hold never blocks the release; the physical key releases after a mapping change',async({page})=>{
+test('modifiers: Ctrl/Alt/Meta+N start nothing and are not consumed; Shift+N holds; a modifier pressed during the hold never blocks the release; the physical key releases after a mapping change',async({page,browserName})=>{test.skip(browserName!=='chromium','Uses a Chromium-only CDP stimulus (Front QA1, 2026-10-31).');
  await openRadio(page);await setupRadio(page);await trackingOn(page);await controlledClock(page);await recordKeys(page);
  const n=500*K,d0=await dec(page);
  for(const modifier of ['Control','Alt','Meta']){

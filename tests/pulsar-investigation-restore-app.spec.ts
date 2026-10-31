@@ -163,7 +163,7 @@ test.describe('desktop 1440, original catalog',()=>{
   await expect(id(page,'pulsar-count')).toHaveText('3 recorded measurements');
   const cells=await reviewCells(page),readouts=await analysisReadouts(page);
   // Guide before Save: seven of eight; the investigation step is the next one (no arbitrary checkmark).
-  expect(await guide(page)).toMatchObject({next:'investigation',counts:'7 of 8 pulsar steps done.',done:{investigation:'false',save:'false'},
+  expect(await guide(page)).toMatchObject({next:'investigation',counts:'7 of 8 required pulsar steps done (the optional last step is not counted).',done:{investigation:'false',save:'false'},
    investigation:'Not yet for this capture and these rows.'});
   await clickHeaderTool(page,'Radio telescope');await expect(heading(page,'Radio telescope control')).toBeFocused();
   const radio=await radioSnapshot(page);await clickHeaderTool(page,'Radio data');
@@ -182,7 +182,7 @@ test.describe('desktop 1440, original catalog',()=>{
   expect(file.radio.workspace.receivers.windows.map((w:Json)=>w?.frequencyMHz??null)).toEqual([400,500,null]);
   const keys=keysOf(file);for(const k of FORBIDDEN_KEYS)expect(keys.has(k),`no ${k} key`).toBe(false);
   // The guide marks the prepared file for exactly this capture and these rows; a download is not a confirmed write.
-  expect(await guide(page)).toMatchObject({counts:'8 of 8 pulsar steps done.',done:{investigation:'true'},
+  expect(await guide(page)).toMatchObject({counts:'8 of 8 required pulsar steps done (the optional last step is not counted).',done:{investigation:'true'},
    investigation:'File prepared and download started for this capture and these confirmed rows (not a confirmed write).'});
   expect(await storage(page)).toEqual(storageBefore);expect(errors).toEqual([]);
 

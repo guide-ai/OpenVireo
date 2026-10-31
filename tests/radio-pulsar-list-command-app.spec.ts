@@ -160,10 +160,13 @@ const menuState=async(page:Page)=>{
  return [await m.getAttribute('data-availability'),await m.getAttribute('data-enabled'),await m.getAttribute('data-visible'),await m.getAttribute('data-activation-seen'),
   await id(page,'radio-access-menu-event').getAttribute('data-event')];
 };
+// Front QA1 (2026-10-31): Firefox's PNG encoder writes a private "deBG" chunk with a per-session id, so toDataURL() differs between
+// two contexts with identical pixels. The receiver canvas is compared by the SHA-256 of its RGBA pixels instead.
+const canvasPixels=(c:Element)=>{const k=document.createElement('canvas'),s=c as HTMLCanvasElement;k.width=s.width;k.height=s.height;const g=k.getContext('2d')!;g.drawImage(s,0,0);return crypto.subtle.digest('SHA-256',g.getImageData(0,0,k.width,k.height).data).then(h=>`${k.width}x${k.height}:`+[...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,'0')).join(''));};
 /** Everything a receiver shows at a frozen clock (C11). */
 const receiverState=async(page:Page)=>({
  heading:await exactText(page,'receiver-heading-0'),source:await exactText(page,'receiver-source'),sweep:await id(page,'receiver-sweep-0').getAttribute('data-position'),
- canvas:await id(page,'receiver-canvas-0').evaluate(c=>(c as HTMLCanvasElement).toDataURL()),seed:await exactText(page,'receiver-seed-next'),
+ canvas:await id(page,'receiver-canvas-0').evaluate(canvasPixels),seed:await exactText(page,'receiver-seed-next'),
  order:await id(page,'receiver-workspace').getAttribute('data-order'),timer:await id(page,'receiver-workspace').getAttribute('data-timer'),record:await exactText(page,'receiver-record-disp'),
 });
 

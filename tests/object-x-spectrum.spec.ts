@@ -27,7 +27,7 @@ async function openLab(page:Page){
  await page.locator('[data-testid=objectx-lab] input').first().fill('7');
 }
 async function branchText(page:Page){return page.getByTestId('objectx-branch-spectrum').evaluate(n=>n.innerHTML+' '+n.textContent);}
-async function labText(page:Page){return page.getByTestId('objectx-lab').evaluate(n=>{const c=n.cloneNode(true) as HTMLElement;c.querySelectorAll('[data-testid=objectx-asteroid-list]').forEach(x=>x.remove());return c.innerHTML+' '+(c.textContent??'');});}
+async function labText(page:Page){return page.getByTestId('objectx-lab').evaluate(n=>{const c=n.cloneNode(true) as HTMLElement;c.querySelectorAll('[data-testid=objectx-asteroid-list], [data-testid=objectx-asteroid-list-closed]').forEach(x=>x.remove());return c.innerHTML+' '+(c.textContent??'');});}
 async function pageLeaks(page:Page){
  // The lab's answer choices list the five kinds for the student to pick from; the branch must not name them.
  const lab=await labText(page);

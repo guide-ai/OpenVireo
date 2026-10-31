@@ -1,6 +1,6 @@
 import {describe,expect,it} from 'vitest';
 import {parseFitsImage} from './fitsImage';
-import {BLINK_INTERVAL,MeasureError,alignFromTwoStars,angularSeparationArcsec,applyPlate,centroid,centroidWeight,clampBlinkInterval,fromStandardCoordinates,measureImageFromFits,motionBetween,pixelToSky,plateSolution,skyToPixel,standardCoordinates,tanWcsFromCards,addMeasurement,blinkAlignment,defaultDisplayRange,deriveTargets,formatSexagesimal,framePlate,parseSexagesimal,removeMeasurement,solveTarget,stretchRaster,targetMotion,MEASUREMENT_LIMIT,type MeasurementLog,type TanWcs} from './astrometryMeasure';
+import {BLINK_INTERVAL,MeasureError,alignFromTwoStars,angularSeparationArcsec,applyPlate,centroid,centroidWeight,clampBlinkInterval,fromStandardCoordinates,imageMedian,measureImageFromFits,motionBetween,pixelToSky,plateSolution,skyToPixel,standardCoordinates,tanWcsFromCards,addMeasurement,blinkAlignment,defaultDisplayRange,deriveTargets,formatSexagesimal,framePlate,parseSexagesimal,removeMeasurement,solveTarget,stretchRaster,targetMotion,MEASUREMENT_LIMIT,type MeasurementLog,type TanWcs} from './astrometryMeasure';
 
 // Authored synthetic FITS fixture (not a CLEA image): 96×80 float32, sky 100 counts, Gaussian stars (σ 1.4 px) at exact
 // sub-pixel positions placed by a TAN WCS centred on Eros' 2009-06-01 position, 1.2″/px, rotated 3°.
@@ -135,9 +135,13 @@ describe('measurement log (pixels only; positions derived from the current log)'
   // No common star on both frames: no alignment.
   expect(blinkAlignment([ref(0),ref(1),shifted(2),shifted(3)],0,1)).toBeNull();
  });
- it('stretches the display between the cuts and defaults them to 5 % and 50 % of the range',()=>{
+ it('stretches the display between the cuts and defaults them to the sky median (else 5 %) and 50 % of the range',()=>{
   const r=stretchRaster(image,{low:100,high:200});expect(Array.from(r.subarray(0,4))).toEqual([0,0,0,255]);
   expect(defaultDisplayRange(100,1100)).toEqual({low:150,high:600});expect(defaultDisplayRange(null,null)).toEqual({low:0,high:1});
+  // Front QA1 (2026-10-31): the sky median, when inside the range and below the high cut, is the low cut.
+  expect(defaultDisplayRange(100,1100,532)).toEqual({low:532,high:600});expect(defaultDisplayRange(100,1100,700)).toEqual({low:150,high:600});
+  const img=(vals:(number|null)[])=>({width:vals.length,height:1,value:(x:number)=>vals[x-1]});
+  expect(imageMedian(img([5,1,null,3]))).toBe(3);expect(imageMedian(img([4,1,3,2]))).toBe(2.5);expect(imageMedian(img([null]))).toBeNull();
  });
  it('parses and formats sexagesimal coordinates',()=>{
   expect(parseSexagesimal('22 43 19.3','ra')).toBeCloseTo(22.722027777,8);expect(parseSexagesimal('-08:02:23','dec')).toBeCloseTo(-8.039722,6);

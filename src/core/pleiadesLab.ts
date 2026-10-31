@@ -1,7 +1,7 @@
 /** WEB-PLEIADES-GUIDE-01: progress of the Pleiades photometry (E04) student guide, recomputed from the current state on every
  * render. Nothing is stored: a page reload loses the list/pointing marks, and a Restore derives the measurement marks again from
  * the replayed photometer state. "Done" means the learner acquired, transcribed or confirmed something; it never judges whether a
- * value is correct. The 16-star sample step is explicit web exercise coverage of the admitted original targets, not a historical
+ * value is correct. The sample step (all 24 admitted stars since 2026-10-28; 16 before) is explicit web exercise coverage of the admitted original targets, not a historical
  * classroom minimum or a grade; the existing two-pair fit minimum stays a technical guard. Pure: no React, i18n, clock or I/O. */
 import type {PhotometerState} from './photometer';
 import {pleiadesSkyContext} from './pleiadesSkyContext';

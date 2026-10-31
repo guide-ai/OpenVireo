@@ -28,6 +28,8 @@ import {objectXFitsBytes} from './io/objectXImage';
 export type ObjectXHiddenTarget=Readonly<{ra:number;dec:number;code:string;label:string}>;
 export type ObjectXController=Readonly<{extraSources:(jd:number,pointing:Readonly<{ra:number;dec:number}>,seconds:number,camera:CameraExposureKind)=>readonly CameraExtraSource[];acceptImage:(image:CameraImage)=>void}>;
 type Props=Readonly<{
+ /** Edit Mode (env+0x2e7e): VIREO enables the Asteroid List during Object X only then (QA1 review 1 H3). */
+ editMode?:boolean;
  active:boolean;busy:boolean;
  clockUtc:()=>string;onSetClock:(utc:string)=>void;
  onPrefill:(ra:number,dec:number)=>void;onOpenRadio:()=>void;
@@ -55,7 +57,7 @@ type Loaded=Readonly<{frame:MeasureFrame;bytes:Uint8Array}>;
 type ListState=Readonly<{list:ObservableList;orbitFile:BundledOrbitFileId;limit:number}>;
 
 /** E08 #object-x route: hidden-identity object, the three instrument branches, images, blink/measure, answer and reveal. */
-function ObjectXLab({spectralRange=DEFAULT_SPECTRAL_RANGE,onSpectralRange,onClassifySpectrum,active,busy,clockUtc,clockApplied,onSetClock,onPrefill,onOpenRadio,controllerRef,restored,onSnapshot,onSummary,onHiddenTarget}:Props){
+function ObjectXLab({editMode=false,spectralRange=DEFAULT_SPECTRAL_RANGE,onSpectralRange,onClassifySpectrum,active,busy,clockUtc,clockApplied,onSetClock,onPrefill,onOpenRadio,controllerRef,restored,onSnapshot,onSummary,onHiddenTarget}:Props){
  const [inv,setInv]=useState<ObjectXInvestigation>(restored??EMPTY);
  const [htl,setHtl]=useState<HtlList|null>(null),[htlError,setHtlError]=useState(false);
  const [dateText,setDateText]=useState(inv.startUtc),[notice,setNotice]=useState('');
@@ -225,9 +227,9 @@ function ObjectXLab({spectralRange=DEFAULT_SPECTRAL_RANGE,onSpectralRange,onClas
    {!inv.images.length?<p>{M.noImages}</p>:<ol data-testid="objectx-images">{inv.images.map((m,k)=>{const e=m.exposure!==null?inv.exposures[m.exposure]:null;return <li key={m.sha256}>
     {e?M.imageRow(m.label,utOfJd(m.jd),cameraCatalogReference('ccd',e.filter).filter,e.seconds):M.imageRowPlain(m.label,utOfJd(m.jd))}
     {e&&!onTarget(e)&&<> {M.imageOffTarget}</>}
-    {e&&<> — <span data-testid={`objectx-image-movers-${k}`}>{e.listJd!==null?M.imageMovers(e.pairs):M.imageNoAsteroids}</span></>}
+    {e&&<> — <span data-testid={`objectx-image-movers-${k}`}>{e.listJd===null?M.imageNoAsteroids:inv.revealed?M.imageMovers(e.pairs):M.imageMoversHidden}</span></>}
     {e&&e.catalogMode==='live'&&<> <span className="observatory-note">{M.imageLive}</span></>}
-    {e&&e.skipped.length>0&&<> <span data-testid={`objectx-image-skipped-${k}`}>{M.imageSkipped(e.skipped)}</span></>}
+    {e&&inv.revealed&&e.skipped.length>0&&<> <span data-testid={`objectx-image-skipped-${k}`}>{M.imageSkipped(e.skipped)}</span></>}
     {!loaded.has(m.sha256)?<> — <em>{M.imageNotLoaded}</em></>:<> <button className="secondary-button" disabled={disabled} onClick={()=>save(m,loaded.get(m.sha256)!.bytes)}>{M.saveFits(m.label)}</button></>}
    </li>;})}</ol>}
    <label className="secondary-button">{M.loadFits}<input type="file" accept=".fit,.fits,application/fits" multiple hidden disabled={disabled} onChange={e=>{void openFits(e.target.files);e.target.value='';}} data-testid="objectx-open-fits"/></label>
@@ -243,7 +245,8 @@ function ObjectXLab({spectralRange=DEFAULT_SPECTRAL_RANGE,onSpectralRange,onClas
     </div>
     {inv.measure&&(frames?<ObjectXMeasure frames={frames} log={inv.log} active={active&&!busy} onLogChange={(log:MeasurementLog)=>update(i=>({...i,log}))}/>:<p>{M.measureNotLoaded}</p>)}
    </>}
-   {list&&<details data-testid="objectx-asteroid-list" onToggle={e=>setListOpen(e.currentTarget.open)}><summary>{M.listTitle} ({list.entries.length})</summary>
+   {list&&!editMode&&<p className="observatory-note" data-testid="objectx-asteroid-list-closed">{M.listClosed}</p>}
+   {list&&editMode&&<details data-testid="objectx-asteroid-list" onToggle={e=>setListOpen(e.currentTarget.open)}><summary>{M.listTitle} ({list.entries.length})</summary>
     <p className="observatory-note">{list.fileType===0?M.listNotesAst:M.listNotesMpc}</p><p className="observatory-note">{M.listSorted}</p>
     {listOpen&&<div className="objectx-table"><table><thead><tr>{M.listColumns.map(c=><th key={c}>{c}</th>)}</tr></thead><tbody>
      {list.entries.slice(0,LIST_ROWS).map(e=><tr key={e.index}><td>{e.label}</td><td>{formatSexagesimal(e.raHours,'ra')}</td><td>{formatSexagesimal(e.decDeg,'dec')}</td><td>{e.magnitude?e.magnitude.toFixed(1):''}</td><td>{e.deltaAu.toPrecision(5)}</td>{e.notes.map((n,i)=><td key={i}>{n||''}</td>)}</tr>)}

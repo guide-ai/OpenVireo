@@ -1,6 +1,6 @@
 import {useEffect,useLayoutEffect,useMemo,useRef,useState,type KeyboardEvent} from 'react';
 import type {FitsImage} from './core/fitsImage';
-import {BLINK_INTERVAL,MeasureError,addMeasurement,blinkAlignment,centroid,clampBlinkInterval,defaultDisplayRange,deriveTargets,formatSexagesimal,framePlate,measureImageFromFits,parseSexagesimal,removeMeasurement,stretchRaster,targetMotion,type MeasurementLog,type TanWcs} from './core/astrometryMeasure';
+import {BLINK_INTERVAL,MeasureError,addMeasurement,blinkAlignment,centroid,clampBlinkInterval,defaultDisplayRange,deriveTargets,imageMedian,formatSexagesimal,framePlate,measureImageFromFits,parseSexagesimal,removeMeasurement,stretchRaster,targetMotion,type MeasurementLog,type TanWcs} from './core/astrometryMeasure';
 import {OBJECT_X_MEASURE_EN,type ObjectXMeasureMessages} from './objectx/ObjectXMessages';
 
 /** One image offered for measurement: a saved camera FITS, its observation JD and its header WCS when present. */
@@ -30,7 +30,8 @@ export function ObjectXMeasure({frames,log,onLogChange,active=true,messages=OBJE
  const [ranges,setRanges]=useState<Record<number,{low:number;high:number}>>({});
  const canvas=useRef<HTMLCanvasElement>(null);
  const index=Math.min(shown,frames.length-1),frame=frames[index];
- const cut=ranges[index]??(frame?defaultDisplayRange(frame.image.minimum,frame.image.maximum):{low:0,high:1});
+ const sky=useMemo(()=>frame?imageMedian(measureImageFromFits(frame.image)):null,[frame]);
+ const cut=ranges[index]??(frame?defaultDisplayRange(frame.image.minimum,frame.image.maximum,sky):{low:0,high:1});
  const wcsOf=(f:number)=>frames[f]?.wcs??null;
  const alignment=useMemo(()=>frames.length>1?blinkAlignment(log,0,1):null,[log,frames.length]);
  useEffect(()=>{if(!blinking||frames.length<2||!active)return;const id=window.setInterval(()=>setShown(s=>s===0?1:0),interval);return()=>window.clearInterval(id);},[blinking,interval,frames.length,active]);
