@@ -40,7 +40,7 @@ export function verifiedSkyConfiguration(index:SkyTelescopeIndex=0):Proof {
 export type SkyEvent=JournalEvent;
 export type SkyState=JournalState;
 function checked(s:SkyState){return skyTelescopeIndex(s);}
-/** Front S2: the sky source setup 0x50df64 reads no range [D] and the mean is one constant per bin, so every dialog range is
+/** Front S2: the sky branch of the source setup 0x50df64 (0x50e20d..0x50e2de) reads no range and Go skips the per-bin source loop for the sky (0x50f4da); the function's QSO branch (0x50e7b0) does read it [D] and the mean is one constant per bin, so every dialog range is
  * observable; a non-default range only relabels the bins and marks the policy (spectralRange.ts policyWithRange). */
 export function createSkyExposure(seed:number,index:SkyTelescopeIndex=0,range:SpectralRange=DEFAULT_SPECTRAL_RANGE):SkyState {if(!isDialogRange(range))throw new JournalError('proof');const config=verifiedSkyConfiguration(index);return createJournalExposure(policyWithRange(skyProfile(index).policyId,range),null,config.skyMean,SKY_CALIBRATION.elapsedMultiplier,seed);}
 export function activateSky(s:SkyState){verifiedSkyConfiguration(checked(s));return activateJournal(s);}

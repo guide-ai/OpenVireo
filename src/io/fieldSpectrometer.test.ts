@@ -1,3 +1,4 @@
+import {fieldSpectrumBytes} from '../core/exposureSpectrum';
 import {readFileSync} from 'node:fs';
 import {createHash,webcrypto} from 'node:crypto';
 import {afterAll,beforeAll,describe,expect,it,vi} from 'vitest';
@@ -120,6 +121,17 @@ describe('the generic spectrometer',()=>{
   const coma=await prepareFieldSpectrum({ra:12.99311111111111,dec:27.959722222222222},2,{range:r});
   expect(coma).toEqual({status:'unavailable',reason:'range-not-witnessed'});
   expect((await prepareFieldSpectrum({ra:12.99311111111111,dec:27.959722222222222},2)).status).toBe('ready');
+ });
+ it('review 1 M1/M2: a field star on ranges of every width saves its .SSP from its own grid; below 3510 Å it gives no counts',async()=>{
+  const at={ra:11+44/60+42.9/3600,dec:55+22/60+43/3600};
+  for(const r of [{minimum:3600,maximum:3700},{minimum:3700,maximum:5700},{minimum:3500,maximum:7400},{minimum:3500,maximum:3600},{minimum:6400,maximum:7400}]){
+   const star=await prepareFieldSpectrum(at,0,{range:r});expect(star.status,`${r.minimum}`).toBe('ready');if(star.status!=='ready')continue;
+   expect(star.result.reasons,`${r.minimum}–${r.maximum}`).toEqual([]);const c=star.result.calibration!;
+   if(r.minimum===3500)expect(c.sourceValues.slice(0,Math.ceil((3510-3500)/((r.maximum-r.minimum)/600)))).toEqual(expect.arrayContaining([0]));
+   const e=lssExposureEngine(star.result,star.policy),s=pauseJournal(tickJournal(startJournal(activateJournal(e.create(3))),1000));
+   const lines=new TextDecoder().decode(fieldSpectrumBytes(s,star.result,at)).split('\r\n');
+   expect(lines[1].split(' ')[0]).toBe(r.minimum.toFixed(2));expect(Number(lines[600].split(' ')[0])).toBeCloseTo(r.minimum+599*(r.maximum-r.minimum)/600,1);
+  }
  });
  it('a session file replays only after the field is prepared again at its policy pointing',async()=>{
   // Search a few pointings for an available spectrum (a galaxy or a star with a bundled template).

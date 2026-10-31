@@ -56,7 +56,7 @@ exercise mode does. No VEO_OPTS.INI ships, so a fresh VIREO acquires at 3700–4
 
 The web now keeps that one range for the page (`OpenVireo`, not saved). The opener is on the catalogue star route, the sky
 route, the Object X spectrometer and the field spectrometer (`SpectralRangeRow.tsx`). OK on any of them changes the shared
-range and starts that route's spectrometer again (0x5110b0). Another route's existing exposure keeps the range it was taken
+range and starts that route's spectrometer again (0x5110b0). [W] Another route's existing exposure keeps the range it was taken
 on, and its next new exposure uses the shared range.
 
 **Where a non-default range can be observed** (`core/spectralRangeCoverage.ts`), only where an independent witness covers it
@@ -65,13 +65,14 @@ on, and its next new exposure uses the shared range.
 | Route or source | Non-default range |
 |---|---|
 | Star sources (the catalogue star, field-spectrometer stars) | Yes. `jspect2_range_witness.py` (SHA-256 `5db1a16e…0cac`) samples every bundled jspect2 template on the six S1 anchor ranges; `src/core/jspect2Range.witness.json` must equal the TypeScript sampler byte for byte. The mean bound is still checked per range. |
-| Sky | Yes. The sky source setup 0x50df64 reads no range and the mean is one constant per bin, so the counts are the same on every range; only the bin wavelengths change. |
+| Sky | Yes. The sky branch of the source setup 0x50df64 (0x50e20d..0x50e2de) reads no range and Go skips the per-bin source loop for the sky (0x50f4da); the function's QSO branch (0x50e7b0) does read it. The mean is one constant per bin, so the counts are the same on every range; only the bin wavelengths change. |
 | Field-spectrometer galaxies and QSOs | No: "not yet verified for this spectrum". |
 | Object X, before and after the reveal | No. The refusal is the same text for every target, so it never tells the type. |
 | Multi-Spec (reads the range, has no opener) | No. Access is refused with a note. |
 | Hubble and LSS routes | Unchanged in round 1 (4000–5000 Å, D1). |
 
-**Policies.** A non-default range appends `#R<min>-<max>` to the sky and field-spectrometer policies, as for the star. At the
+**Policies.** A non-default range appends `#R<min>-<max>` to the sky and field-spectrometer policies, as for the star. A sky
+session on another range keeps its domain's `options: 'compiled-fallback-unmodified'`; its policy states the range. At the
 default every policy, session and file keeps its bytes.
 
 **Restore [W]** (VIREO has no restore):
@@ -83,7 +84,8 @@ default every policy, session and file keeps its bytes.
 - **Classify [W].** In VIREO, Classify shares the one range. Here it still keeps its own display range (CLASSIFICATION-RANGE.md),
   until round 3 of Front S2.
 - **One range for every telescope.** The star route has one instance per telescope (Kitt Peak 0.4 m, 0.9 m, Mayall 4 m). Since
-  Front S2 they share the page's range, as VIREO does (Front S had kept one per telescope [W]). The active range persists until the dialog changes it: restoring a star session or a project
-  whose exposure was on a non-default range makes that range the one **New seeded exposure** (and Activate without an
-  exposure) starts on (`tests/spectral-range.spec.ts`).
+  Front S2 they share the page's range, as VIREO does (Front S had kept one per telescope [W]). The page's range persists until the dialog changes it. Restoring a single
+  session file, or returning to a star from the analyser, makes that exposure's range the page's range; an investigation
+  restore takes the one range all its sky, star and field-spectrum exposures share, otherwise 3700–4700 Å [W]
+  (`tests/spectral-range.spec.ts`).
 - The Options box "Allow User Change" that enables the menu item is not modelled; the item is always available.

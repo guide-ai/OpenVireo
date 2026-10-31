@@ -32,7 +32,7 @@ import SiteClock from './SiteClock';
 import {INITIAL_SITE_CLOCK,parseClockUTC,siteClockReadingMS,type SiteClockWorkspace} from './core/siteClock';
 import {galaxyTelescopeIndex,galaxyTargetTelescopeSupported} from './core/galaxyTelescope';
 import {hubblePointing,hubbleRowIdentity,hubbleRowStatus,type HubbleHotListRow} from './core/hubbleHotList';
-import {starTelescopeIndex} from './core/starTelescope';
+import {starSpectralRange,starTelescopeIndex} from './core/starTelescope';
 import OpticalTelescope,{OpticalCompatibility} from './OpticalTelescope';
 import CameraControl from './CameraControl';
 import {INITIAL_OPTICAL,opticalProfile,draftOpticalTelescope,cancelOpticalTelescope,applyOpticalTelescope,type OpticalWorkspace} from './core/opticalTelescope';
@@ -368,6 +368,9 @@ export default function OpenVireo(){
   const [initialLive,setInitialLive]=useState(liveCurrent.current);
   // Front S2: VIREO's one active spectrometer range (env+0x2bd4/+0x2bd8), shared by every spectrometer route; not saved.
   const [spectralRange,setSpectralRange]=useState<SpectralRange>(DEFAULT_SPECTRAL_RANGE);
+  // Review 1 L1: an investigation restore takes the one range shared by every restored exposure (sky, star, field spectrum).
+  const restoredRangePolicies=useRef<{observing:readonly unknown[];field:unknown}>({observing:[],field:null});
+  const applyRestoredRange=()=>setSpectralRange(sharedRestoredRange([...restoredRangePolicies.current.observing,restoredRangePolicies.current.field]));
   function prepareObserving():ObservingWorkspace{
     const clockDrive=observatoryClock.pause()??(skyProfilesVisited?createClockDrive(siteClock.utc,pointing):null);
     setProjectNotice('');setProjectError('');classificationController.current?.prepareInvestigation();
@@ -386,7 +389,7 @@ export default function OpenVireo(){
   function restoreObserving(w:ObservingWorkspace){
     const oldDrive=observatoryClock.pause();if(w.clockDrive)observatoryClock.replace(w.clockDrive);else if(oldDrive)observatoryClock.replace(w.siteClock&&w.siteClock.utc!==oldDrive.utc?{...createClockDrive(w.siteClock.utc,w.context.pointing),tracking:oldDrive.tracking}:repointClockDrive(oldDrive,w.context.pointing));
     if(w.sky09)setSkyProfilesVisited(true);liveCurrent.current={sky09:w.sky09??liveCurrent.current.sky09,sky4m:w.sky4m??liveCurrent.current.sky4m,star4m:w.star4m??liveCurrent.current.star4m,galaxies4m:w.galaxies4m?{...w.galaxies4m}:liveCurrent.current.galaxies4m,sky:w.sky,star:w.star,star09:w.star09??liveCurrent.current.star09,galaxies09:w.galaxies09?{...w.galaxies09}:liveCurrent.current.galaxies09,galaxies:{...w.galaxies},cachedGalaxies:w.cachedGalaxies?{...w.cachedGalaxies}:Object.fromEntries(CACHED_GALAXY_IDS.map(id=>[id,emptyExposureWorkspace()]))as Record<CachedGalaxyId,ExposureWorkspace>,pegasusGalaxies:w.pegasusGalaxies?{...w.pegasusGalaxies}:emptyPegasusBanks(),extendedGalaxies:w.extendedGalaxies?{...w.extendedGalaxies}:emptyExtendedBanks()};setInitialLive(liveCurrent.current);setRestoredStar(null);setRestoredGalaxy(null);
-    setSpectralRange(sharedRestoredRange([w.sky,w.sky09,w.sky4m,w.star,w.star09,w.star4m].map(x=>x?.state?.policy??null)));
+    restoredRangePolicies.current.observing=[w.sky,w.sky09,w.sky4m,w.star,w.star09,w.star4m].map(x=>x?.state?.policy??null);applyRestoredRange();
     liveControllers.current.sky?.replace(w.sky);if(w.sky09)liveControllers.current.sky09?.replace(w.sky09);if(w.sky4m)liveControllers.current.sky4m?.replace(w.sky4m);liveControllers.current.star?.replace(w.star);if(w.star09)liveControllers.current.star09?.replace(w.star09);for(const id of LIVE_GALAXY_IDS)liveControllers.current.galaxies[id]?.replace(w.galaxies[id]);
     if(w.galaxies09)for(const id of LIVE_GALAXY_IDS)liveControllers.current.galaxies09[id]?.replace(w.galaxies09[id]);
     if(w.star4m)liveControllers.current.star4m?.replace(w.star4m);if(w.galaxies4m)for(const id of LIVE_GALAXY_IDS)liveControllers.current.galaxies4m[id]?.replace(w.galaxies4m[id]);
@@ -501,7 +504,7 @@ export default function OpenVireo(){
   function pointHubbleCentre(){if(!hubbleTarget||projectBusy||!open)return;const next={ra:hubbleTarget.ra,dec:hubbleTarget.dec};if(limitRefuses(next))return;setSelected(hubbleTarget);point(next,hubbleTarget.label);}
   const currentAccess=view==='sky-exposure'?skyAccess:view==='galaxy-exposure'?requestedGalaxyAccess:view==='star-exposure'?starAccess:selected.id===supportedStar.id?starAccess:galaxyAccess;
   function openGalaxy(){if(selectedGalaxy)setGalaxyTargetId(selectedGalaxy.id.replace('-acquisition',''));navigate('galaxy-exposure');}
-  function restoreStarPacket(observation:StarObservation){prepareObserving();preparePhotometry();const index=starTelescopeIndex(observation.state);setOptical({selectedIndex:index,draftIndex:index});setOpen(false);if(index===2)setStar4mVisited(true);if(index===1)setStar09Visited(true);setStarVisited(true);setRestoredStar({token:++restoreToken.current,observation});navigate('star-exposure');}
+  function restoreStarPacket(observation:StarObservation){setSpectralRange(starSpectralRange(observation.state));prepareObserving();preparePhotometry();const index=starTelescopeIndex(observation.state);setOptical({selectedIndex:index,draftIndex:index});setOpen(false);if(index===2)setStar4mVisited(true);if(index===1)setStar09Visited(true);setStarVisited(true);setRestoredStar({token:++restoreToken.current,observation});navigate('star-exposure');}
   function classifyAcquired(packet:StarObservation){if(!analyzerController.current)throw errorFor('continuity.busy');analyzerController.current.acceptAcquisition(packet);setClassificationArchive(a=>a.some(p=>p.acquisitionId===packet.acquisitionId)?a:[...a,packet]);setClassificationWorkspace(w=>openAcquiredClassification(w,packet));setClassificationVisited(true);navigate('classification');}
   function classifyImported(source:ClassificationImport){const next=openImportedClassification(classificationWorkspace,source);setClassificationWorkspace(next);setClassificationVisited(true);navigate('classification');}
   const canAccess=!observatoryClock.moving&&open&&mode==='telescope'&&hasPointed&&centered;
@@ -567,7 +570,7 @@ export default function OpenVireo(){
     const r=fieldSpectrumController.current?.snapshot()??fieldSpectrumCurrent.current;
     return r&&!fieldSpectrumHiddenMasked(r.prepared.pointing,objectXHidden)?r:null;
   }
-  function restoreFieldSpectrum(r:FieldSpectrumRecord|null){fieldSpectrumCurrent.current=r;setFieldSpectrumRestore({token:++restoreToken.current,record:r});if(r)setSpectrometerOpened(true);}
+  function restoreFieldSpectrum(r:FieldSpectrumRecord|null){fieldSpectrumCurrent.current=r;restoredRangePolicies.current.field=r?.prepared.policy??null;applyRestoredRange();setFieldSpectrumRestore({token:++restoreToken.current,record:r});if(r)setSpectrometerOpened(true);}
   const fieldSpectrumHandlers=useStableHandlers({
    onClassify:classifyImported,
    onAnalyze:(source:ClassificationImport)=>{if(!analyzerController.current)throw errorFor('continuity.busy');analyzerController.current.acceptImported(source);navigate('spectrum');},

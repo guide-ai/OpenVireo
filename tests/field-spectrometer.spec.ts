@@ -125,3 +125,34 @@ test('G4c: Save .SSP, Classify and Analyze take the field spectrum; the investig
  expect(await readFile((await (await again).path())!)).toEqual(investigation);
  expect(errors).toEqual([]);
 });
+test('Front S2 review 1 L2: OK on an unchanged range restarts the exposure, after the recovered warning',async({page})=>{
+ test.setTimeout(180000);await open(page);
+ await pointAndUse(page,'12.99311111111111','27.959722222222222');
+ const acquisition=page.getByTestId('field-spec-acquisition');await expect(acquisition).toBeVisible({timeout:90000});
+ await expect(page.getByTestId('field-spec-access')).toHaveAttribute('data-access','ready',{timeout:30000});
+ await acquisition.getByRole('button',{name:'Activate spectrometer',exact:true}).click();
+ await acquisition.getByRole('button',{name:'Start exposure',exact:true}).click();
+ await expect(async()=>expect(Number(await page.getByTestId('field-spec-total').textContent())).toBeGreaterThan(0)).toPass({timeout:20000});
+ await acquisition.getByRole('button',{name:'Pause exposure',exact:true}).click();
+ await page.getByTestId('field-spec-range-open').click();
+ await expect(page.getByTestId('spectral-range-warning')).toBeVisible();await page.getByTestId('spectral-range-warning-ok').click();
+ await page.getByTestId('spectral-range-ok').click();
+ await expect(page.getByTestId('field-spec-acquisition')).toBeVisible({timeout:90000});await expect(page.getByTestId('field-spec-total')).toHaveText('0');
+});
+test('Front S2 review 1 M1: a field star on 3600–3700 Å saves its .SSP from its own grid',async({page})=>{
+ test.setTimeout(180000);await open(page);
+ await pointAndUse(page,String(11+44/60+42.9/3600),String(55+22/60+43/3600));
+ await expect(page.getByTestId('field-spec-field')).toHaveAttribute('data-kind','star',{timeout:90000});
+ await page.getByTestId('field-spec-range-open').click();
+ await page.getByTestId('spectral-range-min').fill('1');await page.getByTestId('spectral-range-max').fill('2');await page.getByTestId('spectral-range-ok').click();
+ await expect(page.getByTestId('field-spec-range')).toHaveText('Spectrometer range: 3600.0–3700.0 Å (600 bins).',{timeout:90000});
+ const acquisition=page.getByTestId('field-spec-acquisition');await expect(acquisition).toBeVisible({timeout:90000});
+ await expect(page.getByTestId('field-spec-access')).toHaveAttribute('data-access','ready',{timeout:30000});
+ await acquisition.getByRole('button',{name:'Activate spectrometer',exact:true}).click();
+ await acquisition.getByRole('button',{name:'Start exposure',exact:true}).click();
+ await expect(async()=>expect(Number(await page.getByTestId('field-spec-total').textContent())).toBeGreaterThan(0)).toPass({timeout:20000});
+ await acquisition.getByRole('button',{name:'Pause exposure',exact:true}).click();
+ const d=page.waitForEvent('download');await page.getByTestId('ob-spectrum-save-button').click();
+ const lines=(await readFile((await (await d).path())!,'latin1')).split('\r\n');
+ expect(lines[1]).toMatch(/^3600\.00 /);expect(lines[600]).toMatch(/^3699\.83 /);
+});

@@ -54,7 +54,8 @@ export function objectXSpectrumBytes(state:JournalState,label:string,pointing:Re
 export function fieldSpectrumBytes(state:JournalState,result:FieldResult,pointing:Readonly<{ra:number;dec:number}>):Uint8Array {
  const o=result.qsoTarget??result.starTarget??result.target,c=result.calibration;
  if(!o||!c||result.reasons.length||c.wavelengths.length!==600||state.exposure.phase==='running')throw new RangeError('field spectrum');
- const w=c.wavelengths,step=1000/600;
+ // Front S2 review 1 M1: (minimum, step) from the exposure's grid; dialog ranges are 100 Å multiples, step = width/600.
+ const w=c.wavelengths,step=Math.round((w[599]-w[0])*600/599/100)*100/600;if(!(step>0))throw new RangeError('field spectrum');
  for(let i=1;i<w.length;i++)if(Math.abs(w[i]-w[i-1]-step)>1e-6)throw new RangeError('field spectrum');
  return serializeDotDecimalVireoSpectrum({object:fieldSpectrumHeaderObject(o.id),pointingRa:pointing.ra,pointingDec:pointing.dec,apparentMagnitude:o.magnitude,minimum:w[0],step,counts:state.exposure.counts});
 }

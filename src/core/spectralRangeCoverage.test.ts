@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest';
-import {readFileSync} from 'node:fs';
+import {readFileSync,readdirSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import witness from './jspect2Range.witness.json';
 import {spectralRangeCoverage} from './spectralRangeCoverage';
@@ -21,7 +21,7 @@ describe('Front S2: spectral range coverage',()=>{
   expect(spectralRangeCoverage('star',{minimum:4050,maximum:5000})).toBe('not-witnessed');
  });
  it('every bundled jspect2 template samples on the S1 anchor ranges exactly as the pinned independent witness',()=>{
-  expect(TOOL_SHA256).toHaveLength(64);expect(witness.templates.length).toBeGreaterThan(80);
+  expect(TOOL_SHA256).toHaveLength(64);expect(witness.templates.map(t=>t.file)).toEqual(readdirSync('public/original/spectra/jspect2').filter(f=>/\.SP$/i.test(f)).sort());expect(witness.templates).toHaveLength(85);
   for(const t of witness.templates){
    const bytes=readFileSync(`public/original/spectra/jspect2/${t.file}`);expect(createHash('sha256').update(bytes).digest('hex'),t.file).toBe(t.sha256);
    const spectrum=starTemplateSpectrum(bytes.toString('latin1'));

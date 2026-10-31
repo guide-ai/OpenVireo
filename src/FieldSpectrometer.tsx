@@ -95,7 +95,8 @@ export default function FieldSpectrometer({link}:{link:FieldSpectrometerLink}){
  const [prepared,setPrepared]=useState<Shown|null>(null),[loading,setLoading]=useState(false),request=useRef<AbortController|null>(null);
  useEffect(()=>()=>request.current?.abort(),[]);
  useEffect(()=>{if(!link.active){request.current?.abort();setLoading(false);}},[link.active]);
- const range=link.spectralRange??DEFAULT_SPECTRAL_RANGE,[counts,setCounts]=useState(false);
+ // Review 1 L2: every OK restarts the exposure (0x5110b0), even on an unchanged range: okToken is part of the Acquisition key.
+ const range=link.spectralRange??DEFAULT_SPECTRAL_RANGE,[counts,setCounts]=useState(false),[okToken,setOkToken]=useState(0);
  async function useHere(at:SpectralRange=range){
   request.current?.abort();const controller=new AbortController();request.current=controller;setLoading(true);
   try{const {prepareFieldSpectrum}=await import('./io/fieldSpectrometer');const variableTime=frozenObservatoryTime(link.currentJd);const r=await prepareFieldSpectrum({ra:link.pointing.ra,dec:link.pointing.dec},link.telescope,{signal:controller.signal,hidden:link.hidden,range:at,...(variableTime?{variableTime}:{})});if(!controller.signal.aborted)setPrepared(r);}
@@ -132,7 +133,7 @@ export default function FieldSpectrometer({link}:{link:FieldSpectrometerLink}){
   <h2 id="field-spec-title">{t('fieldSpec.title')}</h2><p>{t('fieldSpec.help')}</p>
   <p role="status" data-testid="field-spec-access" data-access={access}>{t(`instrumentAccess.${access}`)}</p>
   {link.onSpectralRange&&<SpectralRangeRow range={ready?(parseFieldSpectrumPolicy(ready.policy)?.range??range):range} disabled={loading} unsaved={counts} testId="field-spec-range" note={SR.note}
-   onApply={r=>{link.onSpectralRange!(r);setRestored(null);setCounts(false);
+   onApply={r=>{link.onSpectralRange!(r);setRestored(null);setOkToken(n=>n+1);
     // OK reinitialises the spectrometer (0x5110b0): a prepared field is prepared again on the new range (a fresh exposure).
     if(prepared)void useHere(r);}}/>}
   <button type="button" className="primary-button" data-testid="field-spec-use" disabled={loading||link.gate.moving} onClick={()=>void useHere()}>{t('fieldSpec.use')}</button>
@@ -145,6 +146,6 @@ export default function FieldSpectrometer({link}:{link:FieldSpectrometerLink}){
    {r!.reasons.length>0&&<p role="status" data-testid="field-spec-reasons" data-reasons={r!.reasons.join(' ')}>{t('fieldSpec.reasons',{reasons:r!.reasons.map(x=>t(`fieldSpec.reason.${x}` as 'fieldSpec.reason.slit-empty')).join('; ')})}</p>}
    {!same&&<p role="status">{t('fieldSpec.moved')}</p>}
   </div>}
-  {ready&&!r!.reasons.length&&r!.calibration&&<Acquisition key={`${ready.policy}#${restored?.policy===ready.policy?restored.token:0}`} handle={acquisition} prepared={ready} fieldMatches={access==='ready'} active={link.active} hidden={link.hidden} onAdopt={adopt} restored={restored?.policy===ready.policy?restored.state:null} onWorkspaceChange={publish} onClassify={link.onClassify} onAnalyze={link.onAnalyze} projectBusy={!!link.projectBusy} onCounts={setCounts}/>}
+  {ready&&!loading&&!r!.reasons.length&&r!.calibration&&<Acquisition key={`${ready.policy}#${restored?.policy===ready.policy?restored.token:0}#${okToken}`} handle={acquisition} prepared={ready} fieldMatches={access==='ready'} active={link.active} hidden={link.hidden} onAdopt={adopt} restored={restored?.policy===ready.policy?restored.state:null} onWorkspaceChange={publish} onClassify={link.onClassify} onAnalyze={link.onAnalyze} projectBusy={!!link.projectBusy} onCounts={setCounts}/>}
  </section>;
 }
