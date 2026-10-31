@@ -38,6 +38,9 @@ export type ObjectXExposure=Readonly<{
  listJd:number|null;orbitFile:BundledOrbitFileId|null;limit:number|null;pairs:number;
  /** Moving pairs the camera skipped, by typed reason (CameraSkippedSource.reason; its extra list holds only the lab's pairs). */
  skipped:readonly ObjectXSkipReason[];fitsSha256:string;
+ /** Front C6: the centre of the region record the catalogue was selected with (the telescope field loaded last, cameraRegion.ts).
+  * Absent in exposures made before C6, which selected the whole sky and replay that way. */
+ fieldAnchor?:Readonly<{ra:number;dec:number}>;
 }>;
 export const OBJECT_X_SKIP_REASONS=['moving-pair-off-detector','moving-pair-geometry','moving-pair-budget'] as const;
 export type ObjectXSkipReason=(typeof OBJECT_X_SKIP_REASONS)[number];
@@ -81,7 +84,10 @@ function readSkipped(v:unknown,pairs:number):readonly ObjectXSkipReason[]{
  return Object.freeze(v.map(r=>OBJECT_X_SKIP_REASONS.includes(r as ObjectXSkipReason)?r as ObjectXSkipReason:fail('record')));
 }
 function readExposure(v:unknown):ObjectXExposure{
- const r=exact(v,['jd','seconds','filter','gain','telescope','ra','dec','seed','catalogMode','catalogSha256','extractId','listJd','orbitFile','limit','pairs','skipped','fitsSha256']);
+ const keys=['jd','seconds','filter','gain','telescope','ra','dec','seed','catalogMode','catalogSha256','extractId','listJd','orbitFile','limit','pairs','skipped','fitsSha256'];
+ const r=exact(v,isObject(v)&&Object.hasOwn(v,'fieldAnchor')?[...keys,'fieldAnchor']:keys);
+ const anchor=r.fieldAnchor===undefined?undefined:(()=>{const a=exact(r.fieldAnchor,['ra','dec']);return Object.freeze({ra:num(a.ra,0,24),dec:num(a.dec,-90,90)});})();
+ if(anchor&&anchor.ra>=24)fail('record');
  // A list is all three of date, orbit file and limit, or none of them.
  if((r.listJd===null)!==(r.orbitFile===null)||(r.listJd===null)!==(r.limit===null))fail('record');
  if(r.orbitFile!==null&&!SELECTABLE_ORBIT_FILES.includes(r.orbitFile as BundledOrbitFileId))fail('record');
@@ -90,7 +96,7 @@ function readExposure(v:unknown):ObjectXExposure{
  const pairs=int(r.pairs,0,256);
  return Object.freeze({jd:jd(r.jd),seconds:int(r.seconds,1,CAMERA_STORED_MAX_SECONDS),filter:int(r.filter,0,4),gain:r.gain as number,telescope:int(r.telescope,0,2) as 0|1|2,
   ra:num(r.ra,0,24),dec:num(r.dec,-90,90),seed:int(r.seed,0,0xffff_ffff),catalogMode:r.catalogMode as 'static'|'live',catalogSha256:hex64(r.catalogSha256),
-  extractId:r.extractId===null?null:str(r.extractId,80),listJd:r.listJd===null?null:jd(r.listJd),orbitFile:r.orbitFile as BundledOrbitFileId|null,limit:r.limit===null?null:num(r.limit,-5,30),pairs,skipped:readSkipped(r.skipped,pairs),fitsSha256:hex64(r.fitsSha256)});
+  extractId:r.extractId===null?null:str(r.extractId,80),listJd:r.listJd===null?null:jd(r.listJd),orbitFile:r.orbitFile as BundledOrbitFileId|null,limit:r.limit===null?null:num(r.limit,-5,30),pairs,skipped:readSkipped(r.skipped,pairs),fitsSha256:hex64(r.fitsSha256),...(anchor?{fieldAnchor:anchor}:{})});
 }
 function readImage(v:unknown,exposures:number):ObjectXImageRef{
  const r=exact(v,['sha256','label','jd','exposure']);
@@ -112,7 +118,7 @@ function readLog(v:unknown,frames:number):MeasurementLog{
 const portableLog=(log:MeasurementLog)=>log.map(m=>({frame:m.frame,role:m.role,x:m.x,y:m.y,jd:m.jd,...(m.catalog?{catalog:{raHours:m.catalog.raHours,decDeg:m.catalog.decDeg}}:{})}));
 function portablePayload(i:ObjectXInvestigation){
  return {policy:OBJECT_X_INVESTIGATION_POLICY,orbitFile:i.orbitFile,id:i.id,target:i.target,startUtc:i.startUtc,clockSet:i.clockSet,listJd:i.listJd,limit:i.limit,
-  exposures:i.exposures.map(e=>({...e,skipped:[...e.skipped]})),images:i.images.map(m=>({...m})),measure:i.measure?{...i.measure}:null,
+  exposures:i.exposures.map(e=>({...e,skipped:[...e.skipped],...(e.fieldAnchor?{fieldAnchor:{ra:e.fieldAnchor.ra,dec:e.fieldAnchor.dec}}:{})})),images:i.images.map(m=>({...m})),measure:i.measure?{...i.measure}:null,
   log:portableLog(i.log),
   answer:i.answer,description:i.description,revealed:i.revealed};
 }
@@ -162,7 +168,7 @@ async function derive(value:unknown):Promise<Derived>{
   }else if(e.pairs)fail('replay');
   let image='live-not-replayable';
   if(e.catalogMode==='static'){
-   const r=await replayStaticExposure({camera:'ccd',opticalIndex:e.telescope,filterPosition:e.filter,seconds:e.seconds,gain:e.gain,centerRaHours:e.ra,centerDecDegrees:e.dec,seed:e.seed},e.jd,extras,src.catalog);
+   const r=await replayStaticExposure({camera:'ccd',opticalIndex:e.telescope,filterPosition:e.filter,seconds:e.seconds,gain:e.gain,centerRaHours:e.ra,centerDecDegrees:e.dec,seed:e.seed},e.jd,extras,src.catalog,e.fieldAnchor??null);
    if(!r.ok||r.catalogSha256!==e.catalogSha256||r.extractId!==e.extractId||await resourceSha256(r.fits.slice().buffer)!==e.fitsSha256)return fail('replay');
    image='static-replayed';await yieldToPage();
   }

@@ -189,9 +189,9 @@ export function selectVizierCatalog(catalog:VizierCatalog,bounds:NomadSelection)
  for(const e of selectedEntries){const m=e.result.row.selectedMagnitude;if(m<nativeMinimumMagnitude)nativeMinimumMagnitude=m;if(m>nativeMaximumMagnitude)nativeMaximumMagnitude=m;}
  return Object.freeze({catalog,bounds:ownedBounds,selectedEntries,nativeMinimumMagnitude,nativeMaximumMagnitude});
 }
-/** [W] The camera selection bounds come from the shared region record at [0x5b5b30] (four Doubles + Single), whose
- * writer is not recovered. The web uses the whole sky, so selection reduces to the recovered magnitude limit;
- * the projection bounds 0x522698 still decide which sources land on the detector. */
+/** The whole sky: the selection bounds of exposures made before Front C6, which replay them with these. Since C6 the camera
+ * selects with the region record [0x5b5b30] (cameraRegion.ts, writer 0x53be70); the projection bounds 0x522698 still decide which
+ * sources land on the detector. */
 export function wholeSkySelection(magnitudeLimit:number):NomadSelection {
  return Object.freeze({minRAHours:0,maxRAHours:24,minDecDegrees:-90,maxDecDegrees:90,magnitudeLimit:Math.fround(magnitudeLimit)});
 }

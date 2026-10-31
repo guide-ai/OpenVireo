@@ -88,6 +88,7 @@ import type {GalaxyObservation} from './io/galaxyObservation';
 import Spectrometer from './Spectrometer';
 import { decodeGsc, FIELDS, pan, project, requiredSkyTiles, targetCentered, validatePointing, type CatalogStar, type FieldMode, type Pointing, type SkyObject } from './core/sky';
 import { FIELD_CACHE, FINDER_FIELD_CACHE, nativeFieldCacheHolds, nativeFieldCacheOrigin } from './core/fieldCache';
+import { setTelescopeFieldLoad } from './observatory/telescopeField';
 import type { SkyField as LoadedSkyField } from './io/skyField';
 import { fieldInfoReasonText, type FieldInfoReason } from './observatory/FieldInfoMessages';
 import type { Sample } from './core/spectrum';
@@ -150,14 +151,18 @@ const SkyField=memo(function SkyField({center,mode,active,selected,onSelect,hidd
   // Front G5: VIREO's own field for this view at any pointing (render 0x53a40c; io/skyField.ts). The loaded field is kept while the
   // view stays inside its 3 × 312 px cache (0x53af28) and re-cropped as the pointing moves; past it, or on a view or telescope
   // change, it is built anew. The ≤ 12 mag preview stays while it loads or where it cannot be drawn [W].
+  // Front C6: a view change reloads at the current pointing [D]: the render 0x53a40c reloads when its scale +0x674 changes, and
+  // the telescope and finder scales differ. The anchor is therefore kept per view; the telescope's is VIREO's region record.
   const cacheSpec=mode==='finder'?FINDER_FIELD_CACHE:FIELD_CACHE;
-  const [anchor,setAnchor]=useState<Pointing>(center);
-  useEffect(()=>{if(!nativeFieldCacheHolds(anchor,center,cacheSpec))setAnchor(center);},[center.ra,center.dec,cacheSpec]);// eslint-disable-line react-hooks/exhaustive-deps
-  const at=nativeFieldCacheHolds(anchor,center,cacheSpec)?anchor:center;
+  const [loadedAt,setLoadedAt]=useState<Readonly<{mode:FieldMode;anchor:Pointing}>>({mode,anchor:center});
+  const held=loadedAt.mode===mode&&nativeFieldCacheHolds(loadedAt.anchor,center,cacheSpec);
+  useEffect(()=>{if(!held)setLoadedAt({mode,anchor:center});},[center.ra,center.dec,mode,held]);// eslint-disable-line react-hooks/exhaustive-deps
+  const at=held?loadedAt.anchor:center;
   const [field,setField]=useState<LoadedSkyField|{status:'error'}|null>(null);
   useEffect(()=>{
     if(!active)return;
     let current=true;const controller=new AbortController();setField(null);
+    if(mode==='telescope')setTelescopeFieldLoad({anchor:at,telescope,hidden,currentJd});
     import('./io/skyField').then(m=>m.loadSkyField({view:mode,anchor:at,telescope,hidden,currentJd,finderMagnitudeLimit:SKY_FINDER_MAG_LIMIT,signal:controller.signal}))
       .then(f=>{if(current)setField(f);},(e:unknown)=>{if(current&&!(e instanceof DOMException&&e.name==='AbortError'))setField({status:'error'});});
     return()=>{current=false;controller.abort();};

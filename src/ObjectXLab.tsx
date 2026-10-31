@@ -108,7 +108,7 @@ function ObjectXLab({spectralRange=DEFAULT_SPECTRAL_RANGE,onSpectralRange,onClas
   const sha256=await resourceSha256(bytes.slice().buffer);
   const used=lastPairs.current&&lastPairs.current.jd===image.jd?lastPairs.current:{jd:image.jd,list:null,pairs:0};
   const exposure:ObjectXExposure={jd:image.jd,seconds:r.seconds,filter:r.filterPosition,gain:r.gain,telescope:r.opticalIndex as 0|1|2,ra:r.centerRaHours,dec:r.centerDecDegrees,seed:r.seed,
-   catalogMode:image.source.mode,catalogSha256:image.source.sha256,extractId:image.source.extractId,listJd:used.list?.list.jd??null,orbitFile:used.list?.orbitFile??null,limit:used.list?.limit??null,pairs:used.pairs,skipped:e.skipped.map(k=>k.reason),fitsSha256:sha256};
+   catalogMode:image.source.mode,catalogSha256:image.source.sha256,extractId:image.source.extractId,listJd:used.list?.list.jd??null,orbitFile:used.list?.orbitFile??null,limit:used.list?.limit??null,pairs:used.pairs,skipped:e.skipped.map(k=>k.reason),fitsSha256:sha256,...(image.region?{fieldAnchor:{ra:image.region.centreRa,dec:image.region.centreDec}}:{})};
   const fits=parseFitsImage(bytes);
   const cur=invRef.current;
   if(cur.exposures.length>=OBJECT_X_SESSION_LIMITS.exposures||cur.images.length>=OBJECT_X_SESSION_LIMITS.images){setNotice(M.imagesFull(OBJECT_X_SESSION_LIMITS.images,OBJECT_X_SESSION_LIMITS.exposures));return;}

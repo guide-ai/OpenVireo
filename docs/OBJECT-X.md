@@ -199,7 +199,7 @@ description and the reveal flag. **Images are not stored**; the student keeps th
 Restore replays: each orbit file an exposure used is fetched and checked (size and SHA-256); each distinct (orbit file, date,
 limit) list is rebuilt in slices that yield to the page; every exposure's pairs are re-derived with its own list and must match
 the stored count; an exposure whose catalogue came from a bundled static extract is recomposed (camera Worker core, same query,
-reader and composer) and must give its stored FITS SHA-256. **Live-catalogue exposures cannot be replayed offline** (the VizieR
+reader and composer) and must give its stored FITS SHA-256. Front C6: an exposure also records `fieldAnchor`, the centre of the region record its catalogue was selected with (the telescope field loaded last), and replays with those bounds. Records without one (made before C6) replay with the whole sky they were made with. Static extracts lie at ObjectX.HTL positions, where the field is masked, so these images have no galaxy overlay. **Live-catalogue exposures cannot be replayed offline** (the VizieR
 response is not stored): their pairs are replayed, their images are not, and the image list labels them so. A SHA-256 over those
 derivatives and over the student's own state (ID, object code, answer, reveal flag, description, measuring pair and marks) must
 equal the stored digest, so an edited file is rejected. Bounds: 64 exposures, 16 images, 8 lists, 64 marks, 4000-character
