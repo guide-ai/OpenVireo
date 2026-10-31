@@ -41,8 +41,13 @@ test('the IR camera offers J/H/K and gains 1/2/4/8, credits 2MASS, and static mo
  await camera(page).getByLabel('CCD camera',{exact:true}).check();
  expect(await options(page,'Filter')).toEqual(['NF (no filter)','B','V','R','I']);expect(await options(page,'Gain (e⁻/ADU)')).toEqual(['1','2','5']);
 });
+/** Front C6: the recorded rows moved onto the tracked pointing (N0000.DAT@14428, RA 0.4987684 h, Dec +0.03628°). Since C6 the camera
+ * selects only rows inside the loaded telescope field (VIREO's region record [0x5b5b30]); the recorded Pleiades rows lie far
+ * outside this field and would all be dropped. */
+function onPointing(xml:string){const dRa=.4987684*15-56.75,dDec=.03628-24.12;
+ return xml.replace(/<TD>(0?5[67]\.\d{4,})<\/TD>/g,(_,v:string)=>`<TD>${(Number(v)+dRa).toFixed(7)}</TD>`).replace(/<TD>\+?(24\.1\d+)<\/TD>/g,(_,v:string)=>`<TD>+${(Number(v)+dDec).toFixed(7)}</TD>`);}
 test('a live K exposure asks NOMAD with the IR radius, makes a 512² image and saves an IR FITS file',async({page})=>{
- const seen=watch(page);await trackedField(page);const body=await jhk;
+ const seen=watch(page);await trackedField(page);const body=onPointing((await jhk).toString('utf8'));
  await page.route(CDS,route=>route.fulfill({status:200,contentType:'text/xml',body}));
  await camera(page).getByLabel('IR camera (J, H, K)').check();
  await camera(page).getByLabel(/Ask VizieR live/).check();
@@ -58,8 +63,9 @@ test('a live K exposure asks NOMAD with the IR radius, makes a 512² image and s
  expect(await page.getByTestId('camera-canvas').evaluate(c=>[(c as HTMLCanvasElement).width,(c as HTMLCanvasElement).height])).toEqual([512,512]);
  await camera(page).getByText('Exposure details').click();
  await expect(page.getByTestId('camera-detail-catalog')).toHaveText('NOMAD');
- // Four rows received, three with a K magnitude.
- await expect(page.getByTestId('camera-detail-rows')).toContainText('4 / 3 /');
+ // Four rows received, three with a K magnitude; Front C6: the third (1141-0000104) lies 0.5° east, outside the loaded field's
+ // ±0.375° region, so VIREO's selection keeps two, both on the detector.
+ await expect(page.getByTestId('camera-detail-rows')).toHaveText('4 / 2 / 2');
  const download=page.waitForEvent('download');await button(page,'Save image (FITS)').click();const d=await download;
  expect(d.suggestedFilename()).toMatch(/^OpenVireo-IR-\d{8}-\d{6}-K\.fit$/);
  const bytes=await readFile((await d.path())!);expect(bytes.length%2880).toBe(0);
