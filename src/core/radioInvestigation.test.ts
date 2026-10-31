@@ -162,10 +162,25 @@ describe('Phase 1 item 1.5 radio investigation codec (strict, canonical, binary6
   const cleared=(v:any)=>{v.analysis.view.measurement={reference:0,vertical:[0,0,0],horizontal:[0,0,0],comments:['','','']};};
   const saved=structuredClone(good);saved.analysis.listSaved=true;cleared(saved);
   expect(readRadioInvestigation(saved).analysis!.view!.referenceText).toBe(good.analysis.view.referenceText);
-  const unsaved=structuredClone(good);unsaved.analysis.listSaved=false;cleared(unsaved);
-  expect(()=>readRadioInvestigation(unsaved)).toThrow();
   const partial=structuredClone(saved);partial.analysis.view.measurement.vertical[0]=0.5;
   expect(()=>readRadioInvestigation(partial)).toThrow();
+ });
+ it('QA1 review 1 H4: after the native Save each field is checked alone: re-placed reference, a new cursor, a Record',()=>{
+  const good=asFile(investigation()) as any,view=good.analysis.view,m=view.measurement;
+  const after=(edit:(v:any)=>void,listSaved:boolean)=>{const x=structuredClone(good);x.analysis.listSaved=listSaved;
+   x.analysis.view.measurement={reference:0,vertical:[0,0,0],horizontal:[0,0,0],comments:['','','']};edit(x.analysis.view.measurement);return x;};
+  // B: the reference placed again (the guide's delay step): its value matches its readout again, the rest stays cleared.
+  expect(readRadioInvestigation(after(n=>{n.reference=m.reference;},true)).analysis!.view!.measurement.reference).toBe(m.reference);
+  // C: a new vertical cursor on panel 1 (its readout text is the cursor's).
+  const ch=[0,1,2].find(i=>view.cursors[i].verticalText!=='')!;
+  expect(ch).toBeDefined();
+  expect(readRadioInvestigation(after(n=>{n.vertical[ch]=m.vertical[ch];},true)).analysis!.view!.measurement.vertical[ch]).toBe(m.vertical[ch]);
+  // D: then Record: the list is no longer saved, the cleared fields stay accepted.
+  expect(()=>readRadioInvestigation(after(n=>{n.vertical[ch]=m.vertical[ch];n.reference=m.reference;},false))).not.toThrow();
+  // A value that matches neither its readout nor 0 is still refused, and an empty readout still needs 0.
+  expect(()=>readRadioInvestigation(after(n=>{n.reference=m.reference+1;},true))).toThrow();
+  const empty=structuredClone(good);empty.analysis.view.referenceText='';
+  expect(()=>readRadioInvestigation(empty)).toThrow();
  });
  it('rejects malformed, out-of-range, inconsistent or unreachable content as a whole',()=>{
   const good=asFile(investigation());
