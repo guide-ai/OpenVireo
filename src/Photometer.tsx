@@ -25,7 +25,8 @@ import CleaHelp from './clusters/CleaHelp';
 import {fieldInfoReasonText} from './observatory/FieldInfoMessages';
 import {TILED_PHOTOMETER_PREFIX} from './core/pleiadesSkyContext';
 import {HELP_FILES} from './help/helpFiles';
-import {PHOTOMETER_ID_LITERALS,photometerIdText,shownCurrentObject,type ObjectXMaskState} from './core/currentObject';
+import {PHOTOMETER_ID_LITERALS,photometerIdText,shownCurrentObject} from './core/currentObject';
+import {loadedObjectXPositions,objectXMaskState,objectXNear,type ObjectXMaskState} from './io/objectXMask';
 import {OBJECT_X_LAB_EN} from './objectx/ObjectXMessages';
 const OBJECT_X_HIDDEN_NAME=OBJECT_X_LAB_EN.hiddenName;
 const num=(value:number)=>formatNumber(value,{maximumFractionDigits:9,useGrouping:false});
@@ -143,7 +144,7 @@ function Photometer({active,initialState=null,controllerRef,onStateChange,invest
   if(access.current!=='ready'){setError(t(`ph.access.${access.current}`));return;}
   // Start 0x4ffa30: replacing this filter's sky while a star has light in the aperture asks first ("Reading Sky!", Yes/No).
   if(skyReplaceAsked(current.current)&&!current.current.skyReplaceConfirmed){skyDialog.current?.showModal();return;}
-  commit(photometerEvent(current.current,{type:'start'}));noteIdSource(current.current.pointing==='sky');stopClock();const id=epoch.current;let last=Math.floor(performance.now());
+  commit(photometerEvent(current.current,{type:'start'}));setIdShown(true);stopClock();const id=epoch.current;let last=Math.floor(performance.now());
   const step=()=>{if(id!==epoch.current||!available.current||!current.current)return;clock.current=null;
    // Browser guard before any draw: a telescope off this field releases the context instead of integrating.
    if(access.current!=='ready'){release();setNotice(t('ph.pointingReleased'));return;}
@@ -166,15 +167,24 @@ function Photometer({active,initialState=null,controllerRef,onStateChange,invest
  const readingFor=(id:number)=>state?.readings.find(r=>r.id===id);
  const entriesForTarget=state?.entries.filter(e=>readingFor(e.readingId)?.targetId===target.catalogId)??[];
  const kind=state?.pointing??'sky',field=useMemo(()=>buildPhotometerTargetField(target.catalogId,kind),[kind,target.catalogId]);
- // Front R4: IDText (0x4ffa30), updated at Start and when the Object/Sky slider moves; `Telescope` until then (DFM). The object is
- // the star this bench selected (0x59a0fc in its own field); a star inside the Object X mask is never named [W].
- const [idSource,setIdSource]=useState<Readonly<{sky:boolean;name:string;ra:number;dec:number}>|null>(null),[idMask,setIdMask]=useState<ObjectXMaskState>('unknown');
- const noteIdSource=(sky:boolean)=>setIdSource({sky,name:field.selected.nativeName,ra:field.selected.ra,dec:field.selected.dec});
+ // Front R4: IDText (0x4ffa30), updated at Start and when the Object/Sky slider moves (RdngSliderPositionChange 0x5021d3);
+ // `Telescope` until then (DFM). The object is VIREO's current object, refreshed at FormActivate (0x4ff909): 0x59a0fc's pick in
+ // the bench target's object field. [W] The web reads it from the target's object field whenever the label is drawn; the bench
+ // target changes only at Activate, so this is the star picked at activation (never the sky field's pick, review 1 M1).
+ // The Object X mask [W, E08] is keyed to the star it was computed for: until that key's result is known the name is not shown
+ // (fail closed), and once ObjectX.HTL is loaded it is evaluated synchronously, so no other text flashes (review 1 M2).
+ const objectPick=useMemo(()=>(kind==='object'?field:buildPhotometerTargetField(target.catalogId,'object')).selected,[field,kind,target.catalogId]);
+ const [idShown,setIdShown]=useState(false);
  const hiddenTarget=telescope?.hidden??null;
- useEffect(()=>{if(!idSource||idSource.sky)return;let live=true;setIdMask('unknown');
-  import('./io/objectXMask').then(m=>m.objectXMaskState(hiddenTarget,{ra:idSource.ra,dec:idSource.dec},0)).then(r=>{if(live)setIdMask(r==='clear'?'clear':r==='near'?'near':'unknown');},()=>{if(live)setIdMask('unknown');});
-  return()=>{live=false;};},[idSource,hiddenTarget]);
- const idText=!idSource?PHOTOMETER_ID_LITERALS.initial:photometerIdText(!!telescope?.showObjectId,idSource.sky,shownCurrentObject({status:'object',name:idSource.name,kind:0,v:0,ra:idSource.ra,dec:idSource.dec},idMask),OBJECT_X_HIDDEN_NAME);
+ const idKey=`${objectPick.ra}|${objectPick.dec}|${hiddenTarget?`${hiddenTarget.ra}|${hiddenTarget.dec}`:'-'}`;
+ const [asyncMask,setAsyncMask]=useState<Readonly<{key:string;state:ObjectXMaskState}>|null>(null);
+ const loadedPositions=loadedObjectXPositions();
+ const idMask:ObjectXMaskState|'pending'=loadedPositions?(objectXNear(loadedPositions,hiddenTarget,{ra:objectPick.ra,dec:objectPick.dec},0)?'near':'clear'):asyncMask?.key===idKey?asyncMask.state:'pending';
+ useEffect(()=>{if(loadedPositions||asyncMask?.key===idKey)return;let live=true;
+  objectXMaskState(hiddenTarget,{ra:objectPick.ra,dec:objectPick.dec},0).then(r=>{if(live)setAsyncMask({key:idKey,state:r});},()=>{if(live)setAsyncMask({key:idKey,state:'unknown'});});
+  return()=>{live=false;};},[idKey,loadedPositions]);
+ const idSky=kind==='sky',idObject=shownCurrentObject({status:'object',name:objectPick.nativeName,kind:0,v:0,ra:objectPick.ra,dec:objectPick.dec},idMask==='pending'?'unknown':idMask);
+ const idText=!idShown?PHOTOMETER_ID_LITERALS.initial:idMask==='pending'&&!!telescope?.showObjectId&&!idSky?PHOTOMETER_ID_LITERALS.initial:photometerIdText(!!telescope?.showObjectId,idSky,idObject,OBJECT_X_HIDDEN_NAME);
  const apertureNeighbors=useMemo(()=>queryPhotometerNeighbors(field.pointing,geometry.radiusDegrees,field.stars,[]),[field,aperture]);
  const scene=useMemo(()=>createNativeSelectionScene(field.stars,[],{width:936,height:936,fieldDegrees:.05,center:field.pointing,population:{coverage:'complete',provenance:field.provenanceFile}}),[field]);
  const running=state?.phase==='running',armed=state?.armed===true,reading=state?.current;
@@ -189,7 +199,7 @@ function Photometer({active,initialState=null,controllerRef,onStateChange,invest
  {(telescopeIndex===2||benchIndex===2)&&<PhotometerDomainExplanation context={telescopeIndex===2?'selected':'retained'}/>}<div className="photometer-grid"><section className="card"><div className="card-heading"><h2>{t('ph.field')}</h2><span className="photometer-badge">{t('ph.fixed',{telescope:bench.name})}</span></div><label htmlFor="photo-target">{t('ph.target')}</label><select id="photo-target" value={target.catalogId} disabled={!armed||running||busy} onChange={e=>act({type:'target',targetId:e.target.value})}>{target.tiled&&<option value={target.catalogId}>{t('ph.tiledOption',{name:target.nativeName})}</option>}{PLEIADES_PHOTOMETER_CHOICES.map(o=><option key={o.hotlistRecord} value={o.targetId??`unavailable:${o.hotlistRecord}`} disabled={!o.targetId||!isPhotometerTelescopeTarget(o.targetId,benchIndex)}>{o.targetId?(isPhotometerTelescopeTarget(o.targetId,benchIndex)?t('ph.targetOption',{label:o.hotlistLabel,number:o.hotlistRecord+1}):t('ph.targetUnavailable',{label:o.hotlistLabel,number:o.hotlistRecord+1,reason:t(photometerTargetUnavailableReason(o.targetId,benchIndex)==='Poisson-mean-bound'?'ph.unavailableMean':photometerTargetUnavailableReason(o.targetId,benchIndex)==='all-duration-count-domain'?'ph.unavailableSeries':'ph.unavailablePhotonDomain')})):t('ph.targetUnavailable',{label:o.hotlistLabel,number:o.hotlistRecord+1,reason:t(o.reason==='mixed-variable-field'?'ph.unavailableMixed':'ph.unavailableAssociation')})}</option>)}</select>{!target.tiled&&<p className="observatory-note">{t('ph.sampleCoverage',{available:targetCount,total:PLEIADES_PHOTOMETER_CHOICES.length,excluded:PLEIADES_PHOTOMETER_CHOICES.length-targetCount})}</p>}<p>{target.hotlistLabel}{target.tiled?null:<> · {target.nativeName}</>}</p><p className="observatory-note">{target.hotlistRecord===null?t('ph.tiledProvenance',{record:field.selected.id,ra:num(field.pointing.ra),dec:num(field.pointing.dec)}):t('ph.targetProvenance',{number:target.hotlistRecord+1,record:target.catalogId})}</p><p className="observatory-note">{t(target.tiled?'ph.tiledTargetHelp':'ph.targetHelp')}</p>
  <svg className="photometer-field" viewBox="0 0 936 936" role="img" aria-label={t('ph.chart')}><rect width="936" height="936" fill="#092532"/>{[234,468,702].map(n=><g key={n} stroke="#23434f"><line x1={n} y1="0" x2={n} y2="936"/><line x1="0" y1={n} x2="936" y2={n}/></g>)}{scene.stars.map(s=><g key={s.id}><circle cx={s.x} cy={s.y} r={s.id===(target.tiled?field.selected.id:target.catalogId)?6:4} fill="#e2dbc7"/><text x={Math.min(700,Math.max(20,s.x+14))} y={Math.min(900,Math.max(30,s.y-12))} fill="#c3d3d5" fontSize="23">{field.stars.find(r=>r.id===s.id)?.nativeName}</text></g>)}<g stroke="#e7b873" fill="none"><circle cx="468" cy="468" r={aperture+.5} strokeWidth="3"/><path d="M435 468h18m30 0h18M468 435v18m0 30v18" strokeWidth="2"/></g><text x="468" y="37" textAnchor="middle" fill="#bcd0d5" fontSize="25">N</text></svg>
  <p className="observatory-note">{t('ph.chartHelp',{radius:aperture+.5})}</p><div className="pointing-readout"><span><small>{t('sky.ra')}</small><output>{num(field.pointing.ra)} h</output></span><span><small>{t('sky.dec')}</small><output>{num(field.pointing.dec)}°</output></span></div>
- <p className="photometer-id"><span>{PHOTOMETER_ID_LITERALS.caption}</span> <output data-testid="photo-id-text">{idText}</output></p><label htmlFor="photo-pointing">{t('ph.pointing')}</label><select id="photo-pointing" disabled={!armed||running||busy} value={kind} onChange={e=>{const k=e.target.value as 'sky'|'object';act({type:'point',kind:k});if(idSource)setIdSource({...idSource,sky:k==='sky'});}}><option value="sky">{t(target.tiled?'ph.tiledSky':'ph.skyPosition')}</option><option value="object">{t('ph.objectPosition',{target:target.hotlistLabel})}</option></select>
+ <p className="photometer-id"><span>{PHOTOMETER_ID_LITERALS.caption}</span> <output data-testid="photo-id-text">{idText}</output></p><label htmlFor="photo-pointing">{t('ph.pointing')}</label><select id="photo-pointing" disabled={!armed||running||busy} value={kind} onChange={e=>{const k=e.target.value as 'sky'|'object';act({type:'point',kind:k});setIdShown(true);}}><option value="sky">{t(target.tiled?'ph.tiledSky':'ph.skyPosition')}</option><option value="object">{t('ph.objectPosition',{target:target.hotlistLabel})}</option></select>
  <p>{t(target.tiled?'ph.tiledCoverage':'ph.coverage',{count:field.stars.length,neighbors:apertureNeighbors.filter(s=>s.id!==target.catalogId).length})}</p></section>
  <section className="card"><h2>{t('ph.controls')}</h2><p>{state?.timing?t('ph.seriesProfile',{filter,telescope:bench.name,seconds:timing.secondsPerIntegration,repeats:timing.integrations}):t('ph.profile',{filter,telescope:bench.name})}</p><div className="sky-actions"><button className="primary-button" disabled={armed||busy||!configurationAvailable||pointedBlocked} onClick={()=>activate()}>{t('ph.activate')}</button><button className="secondary-button" disabled={!armed||busy} onClick={()=>{if(!release())setNotice(t('ph.released'));}}>{t('ph.release')}</button></div>
  {telescope&&<section className="photometer-telescope" aria-labelledby="photo-telescope-title"><h3 id="photo-telescope-title">{t('ph.telescopeTitle')}</h3><div className="photometer-readout"><span>{t('sky.ra')}<output data-testid="photo-telescope-ra">{num(telescope.pointing.ra)}</output></span><span>{t('sky.dec')}<output data-testid="photo-telescope-dec">{num(telescope.pointing.dec)}</output></span></div>

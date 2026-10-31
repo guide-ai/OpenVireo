@@ -12,7 +12,7 @@ import {CAMERA_EXTRACTS,findCameraExtract,loadCameraCatalog,type CameraCatalogMo
 import type {AccessReason} from './core/instrumentAccess';
 import {writeCameraFits,cameraFitsFileName,type CameraFitsContext} from './core/fitsWriter';
 import {writeNativeCameraFits,nativeCameraFitsFileName} from './core/cameraFitsNative';// Front R1
-import type {ShownCurrentObject} from './core/currentObject';
+import {cameraCurrentName,type ShownCurrentObject} from './core/currentObject';
 import {cameraCatalogReference} from './core/cameraCatalogReference';
 import type {OpticalIndex} from './core/opticalTelescope';
 import type {Pointing} from './core/sky';
@@ -170,7 +170,8 @@ function CameraControl({objectXHidden=null,vireoId='',showObjectId=false,current
  }
  function stop(){if(gate.ticket)dispatch({type:'cancel',ticket:gate.ticket});}
  function fitsContext(i:CameraImage):CameraFitsContext{return {jd:i.jd,filterName:cameraCatalogReference(i.exposure.recipe.camera,i.exposure.recipe.filterPosition).filter,catalogName:i.catalogName,source:{mode:i.source.mode,sha256:i.source.sha256,extractId:i.source.extractId,url:i.source.url}};}
- // Front R4: the native save refreshes the current object at the image's pointing first (0x522c28 → 0x53cf94).
+ // Front R4: the native save refreshes the current object first (0x522c28 → 0x53cf94). [W] It is looked up at the image's centre,
+ // not at the telescope pointing when Save is pressed: the saved image may come from an earlier pointing.
  const saveTicket=useRef(0);
  async function save(native=false){
   if(!image)return;setSaveError('');
@@ -179,8 +180,7 @@ function CameraControl({objectXHidden=null,vireoId='',showObjectId=false,current
    const ticket=++saveTicket.current,shot=image;
    const object=await currentObject({ra:shot.exposure.recipe.centerRaHours,dec:shot.exposure.recipe.centerDecDegrees}).catch(()=>null);
    if(ticket!==saveTicket.current||imageRef.current!==shot)return;
-   if(object?.status==='object')currentName=object.name;
-   if(currentName!==undefined&&!/^[\x20-\x7e]*$/.test(currentName))currentName=undefined;
+   currentName=cameraCurrentName(true,object);
   }
   // RE5 review 1 M2: FITS header cards allow only printable ASCII, so an ID outside it is refused with a message; any other writer
   // error is shown too, and nothing is downloaded.

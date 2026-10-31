@@ -1,7 +1,7 @@
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {afterAll,beforeAll,describe,expect,it} from 'vitest';
-import {addCurrentId,addCurrentRemark,cameraFitsObject,currentObjectInPopulation,photometerIdText,photometerRecordedName,shownCurrentObject,
+import {addCurrentId,addCurrentRemark,cameraCurrentName,currentObjectInPopulation,photometerIdText,photometerRecordedName,shownCurrentObject,
  spectrometerIdText,spectrometerMagText,spectrometerPrintLines,spectrometerSaveName,type CurrentObject} from './currentObject';
 import {catalogRecords} from './catalogObject';
 import {exerciseForcedOptions,COMPILED_SESSION_OPTICAL_OPTIONS,OPTION_TABS} from './opticalOptions';
@@ -50,10 +50,11 @@ describe('readers',()=>{
   expect(photometerRecordedName(true,false,hidden,'17')).toBe('ObjX-17');
  });
  it('camera FITS (0x5230dc, 0x5239f8): Name-01.FIT (≤31) and OBJECT Name with the option and an object; else the label',()=>{
-  expect(cameraFitsObject(true,clear,'')).toEqual({object:'N2230-01732',fileName:'N2230-01732-01.FIT'});
-  expect(cameraFitsObject(false,clear,'17')).toEqual({object:'ObjX-17',fileName:'ObjX-17-01.FIT'});
-  expect(cameraFitsObject(true,hidden,'')).toEqual({object:'UNKNOWN',fileName:'UNKNOWN-01.FIT'});
-  expect(cameraFitsObject(true,shownCurrentObject({...star,name:'X'.repeat(24)} as CurrentObject,'clear'),'').fileName).toHaveLength(31);
+  const name=(on:boolean,o:Parameters<typeof cameraCurrentName>[1],id?:string)=>nativeCameraFitsFileName(id,cameraCurrentName(on,o));
+  expect(name(true,clear)).toBe('N2230-01732-01.FIT');expect(name(false,clear,'17')).toBe('ObjX-17-01.FIT');
+  expect(name(true,hidden)).toBe('UNKNOWN-01.FIT');expect(name(true,none,'17')).toBe('ObjX-17-01.FIT');
+  expect(name(true,shownCurrentObject({...star,name:'X'.repeat(24)} as CurrentObject,'clear'))).toHaveLength(31);
+  expect(cameraCurrentName(true,shownCurrentObject({...star,name:'NGC 4\u00e9'} as CurrentObject,'clear'))).toBeUndefined();
  });
  it('the native FITS writer takes the name only when given; the earlier label path is unchanged',()=>{
   expect(nativeCameraFitsFileName()).toBe('UNKNOWN-01.FIT');expect(nativeCameraFitsFileName('17')).toBe('ObjX-17-01.FIT');

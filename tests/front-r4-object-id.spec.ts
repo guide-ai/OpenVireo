@@ -12,9 +12,22 @@ test('the photometer IDText reads Telescope, then Unknown with the option off, t
  // Header › Guides › Pleiades photometry stands in for VIREO's Photometry menu (0x58a3a2: Show Object ID := 1).
  await page.getByTestId('pleiades-lab-open').click();await page.keyboard.press('Escape');
  await run(page);await expect(page.getByTestId('photo-id-text')).toHaveText('Sky');
- await page.getByLabel('Photometer pointing',{exact:true}).selectOption('object');await expect(page.getByTestId('photo-id-text')).toHaveText(/^N2230-\d{5}$/);
- await run(page);await expect(page.getByTestId('photo-id-text')).toHaveText(/^N2230-\d{5}$/);
+ await page.getByLabel('Photometer pointing',{exact:true}).selectOption('object');await expect(page.getByTestId('photo-id-text')).toHaveText('N2230-00478');
+ await run(page);await expect(page.getByTestId('photo-id-text')).toHaveText('N2230-00478');
  expect(errors).toEqual([]);
+});
+
+test('review 1 M1/M2: after a Start at Sky the label names the measured star, not the sky field\'s pick, and never flashes the Object X text',async({page})=>{
+ await photometer(page);await page.getByTestId('pleiades-lab-open').click();await page.keyboard.press('Escape');
+ await page.getByLabel('Photometry target',{exact:true}).selectOption('N2230.DAT@146960');
+ await page.getByTestId('photo-id-text').evaluate(el=>{const w=window as unknown as {__ids:string[]};w.__ids=[];new MutationObserver(()=>w.__ids.push(el.textContent??'')).observe(el,{childList:true,characterData:true,subtree:true});});
+ await page.getByLabel('Photometer pointing',{exact:true}).selectOption('sky');
+ await run(page);await expect(page.getByTestId('photo-id-text')).toHaveText('Sky');
+ // The sky field's 0x59a0fc pick here is N2230-00002; VIREO's current object is the star picked at activation.
+ await page.getByLabel('Photometer pointing',{exact:true}).selectOption('object');await expect(page.getByTestId('photo-id-text')).toHaveText('N2230-00526');
+ await run(page);await expect(page.getByTestId('photo-id-text')).toHaveText('N2230-00526');
+ const seen=await page.evaluate(()=>(window as unknown as {__ids:string[]}).__ids);
+ expect(seen.filter(t=>t!=='Sky'&&t!=='N2230-00526')).toEqual([]);
 });
 
 test('the Options dialog shows the forced options checked; Show Object Mag only after a spectra, Hubble or LSS guide',async({page})=>{

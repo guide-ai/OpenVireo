@@ -69,12 +69,12 @@ export function photometerRecordedName(showObjectId:boolean,skyReading:boolean,o
  const named=showObjectId&&object.status==='object'?object.name.replace(/ +$/,''):objxLabel(objectXId);
  return named.slice(0,15);
 }
-/** Camera default FITS name and OBJECT card (0x5230dc, 0x5239f8 via 0x522c28, which refreshes the current object first) [D]:
- * option on with an object, Name + `-01.FIT` (String[31]) and OBJECT Name (String[68]); otherwise the Object X label. [W] a hidden
- * object takes the label form. */
-export function cameraFitsObject(showObjectId:boolean,object:ShownCurrentObject,objectXId:string):Readonly<{object:string;fileName:string}>{
- const text=showObjectId&&object.status==='object'?object.name:objxLabel(objectXId);
- return Object.freeze({object:text.slice(0,68),fileName:(text+'-01.FIT').slice(0,31)});
+/** Camera native Save (0x522c28 refreshes the current object, then 0x5230dc/0x5239f8) [D]: the current object's name when Show
+ * Object ID is on and there is an object, else undefined, so cameraFitsNative writes the Object X label (ObjX-ID / UNKNOWN). The
+ * writer slices it to String[68] for OBJECT and String[31] for the file name. [W] a hidden object, and a name outside printable
+ * ASCII (FITS cards), take the label form. */
+export function cameraCurrentName(showObjectId:boolean,object:ShownCurrentObject|null):string|undefined{
+ return showObjectId&&object?.status==='object'&&/^[\x20-\x7e]*$/.test(object.name)?object.name:undefined;
 }
 
 /** Single-channel spectrometer readouts (TSpectrometer) [D]. The web spectrometer screens are on another front (G4c): these rules

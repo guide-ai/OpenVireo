@@ -27,7 +27,8 @@ resource and no new approval.
 | Show Object Mag. (spMagBox, Spectrometer tab) | +0x27cc = env+0x2e80 | off |
 
 - Both are live check boxes in Optical Simulation Options and last for the page session (WEB-OPT-R3).
-- Nothing turns them off within a session except the student's Options OK [D].
+- Nothing turns them off within a session except the student's Options OK or the dialog's Reset, which restores the compiled
+  defaults (0x5a21d0 via ResetBtnClick 0x5a6db7) [D].
 
 **Exercise forcing:** VIREO's exercise menus write the exercise byte env+0x383f and force the options on [D]:
 
@@ -42,7 +43,8 @@ resource and no new approval.
 | Pulsars | — | 6 | — | — |
 
 **[W]** The web has no exercise menu. Header › Guides stands in for it: opening the Pleiades photometry, Cluster HR,
-Classification, Hubble, LSS, Object X or Pulsar guide applies that row and sets the session exercise code. The code is read
+Classification, Hubble, LSS, Object X or Pulsar guide applies that row and sets the session exercise code. The cluster
+database's own guide button counts as the Cluster HR guide (code 7). Each forcing guide says what it turns on. The code is read
 only by Add Current's kind remark.
 
 **The current object (0x53cf94 ← 0x53ce8c ← 0x59a0fc)** [D]:
@@ -56,11 +58,17 @@ only by Add Current's kind remark.
 `core/currentObject.ts` reuses `core/objectSelection.ts` on the certified field population at the pointing, in the 936-px /
 0.75° instrument frame:
 - **Point used** [W]: the frame centre. VIREO searches the field of the last field load, which may be off-centre.
+- **Search radius** [W]: always the 936-px / 0.75° frame, so 350 px ≈ 16.8′. VIREO scales by the selected instrument's field
+  (Obs+0x41c4b7); with the photometer as the instrument 350 px is about 1.1′ (dossier A §2.2 [I]). Add Current can therefore
+  name an object farther away than VIREO would.
 - **Tie case** [U]: the tie needs the star's throughput, which depends on the instrument. When it cannot be computed, the
   result is typed `unresolved` and readers treat it as no object.
 - **No field** [W]: a field that cannot be built (refused tiles, a population reason) gives no object.
 
-**Object X:** VIREO never masks the name [D]. It is hidden only because Show Object ID starts off, and an earlier exercise in
+**Object X:** VIREO never masks the name [D].
+- **[W] The mask stays on after Reveal.** It covers every ObjectX.HTL row ±2° (plus the lab's hidden target) at all times, so
+  after Reveal, or in a session with no Object X activity, nothing near those rows is named. This fails closed, like Edit Mode
+  and Field Information; no LSS row or Pleiades target is inside it. It is hidden only because Show Object ID starts off, and an earlier exercise in
 the same session would reveal it.
 - **[W]** Never naming a hidden target is a web rule (E08). Every reader goes through `shownCurrentObject`, which needs a
   checked `clear` Object X mask state; anything else hides the name and the magnitude.
@@ -69,10 +77,10 @@ the same session would reveal it.
 
 | Reader | VIREO rule [D] | Web |
 |---|---|---|
-| Photometer IDText (0x4ffa30, at Start and Object/Sky changes) | `Telescope` until the first update; option off `Unknown`; on and sky or no object `Sky`; on: the name | Photometer bench, `photo-id-text`, clLime on black |
+| Photometer IDText (0x4ffa30, at Start and Object/Sky changes; the object refreshed at FormActivate 0x4ff909) | `Telescope` until the first update; option off `Unknown`; on and sky or no object `Sky`; on: the name | Photometer bench, `photo-id-text`, clLime on black. [W] The object is 0x59a0fc's pick in the bench target's object field (never the sky field's pick), taken whenever the label is drawn; the target changes only at Activate or with the web's target list. The Object X mask is keyed to that star and fails closed while unknown (`Telescope` is shown then) |
 | Photometer recorded name (+0x620, 0x4fffd4) | sky `Sky`; on: the name ≤15, trailing spaces removed; off: `UNKNOWN` / `ObjX-`ID | `photometerRecordedName` (waits for the native photometer Record writer) |
-| Camera native Save (0x522c28 → 0x5230dc, 0x5239f8) | on with an object: Name+`-01.FIT` (String[31]) and OBJECT Name (String[68]); otherwise the Object X label | "Save as VIREO FITS" refreshes the current object at the image's pointing |
-| Add Current (0x53f0fc) | ID = the name; remark = Star/Galaxy/Asteroid/QSO only when the exercise code is 0; RA/Dec = the pointing | Slew › Observation Hot List › Add Current |
+| Camera native Save (0x522c28 → 0x5230dc, 0x5239f8) | on with an object: Name+`-01.FIT` (String[31]) and OBJECT Name (String[68]); otherwise the Object X label | "Save image (VIREO header)" refreshes the current object (`cameraCurrentName`). [W] At the image's centre, not at the telescope pointing when Save is pressed |
+| Add Current (0x53f0fc) | ID = the name; remark = Star/Galaxy/Asteroid/QSO only when the exercise code is 0; RA/Dec = the pointing | Slew › Observation Hot List › Add Current; the button says it is looking while the field loads, and disabling the menu aborts the lookup |
 | Spectrometer IDText, MagText, Save name, Print (0x50df64, 0x50e00b, 0x50fb1c, 0x510954) | see `core/currentObject.ts` | rules tested; **wiring waits for G4c**, whose files are frozen for this front |
 | Multi-Spec | already ported with local check boxes | binding to the global options waits for G4b/G4c |
 
@@ -96,3 +104,13 @@ pointed at exactly showed its real ID; it now prefills nothing (e2e).
   route is always reachable.
 
 See docs/LSS-SURVEY.md, docs/WEDGE-PLOT.md and `liveReplotAfterRecordZ` in docs/WEDGE-PLOT-PROVENANCE.json.
+
+## Review 1 fixes (2026-10-31)
+
+- **M1:** the photometer label named the sky field's pick after a Start at Sky (4 of 24 Pleiades targets). It now uses the
+  object field's pick; the e2e asserts `N2230-00526` for `N2230.DAT@146960`.
+- **M2:** the Object X mask result is keyed to its star and evaluated synchronously once ObjectX.HTL is loaded, so no
+  "Name hidden during Object X" flash, and no name under another star's result.
+- **M3:** two option-count specs re-pinned (6 → 5 other options, 10 → 12 check boxes).
+- **L1–L6:** hint texts, the [W] labels above, guide texts, the cluster database guide button, Add Current feedback, the camera
+  rule wired through `cameraCurrentName` (the unwired `cameraFitsObject` copy was dropped).
