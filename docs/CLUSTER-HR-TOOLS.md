@@ -18,7 +18,8 @@ Static analysis only: GNU objdump on exact address ranges of CLEA_VEO.exe (SHA-2
 | ZAMS drawn only through nodes inside the axes; isochrone not tested | Same | [D] |
 | Right-click a plotted star → **Possible Cluster Member** | Right-click (or press and hold) the database plot → Possible Cluster Member with RA, Dec, V, B−V in VIREO's formats and the magenta marker; the record chooser stays as the keyboard path | [D]; marker size [W] |
 | Possible Cluster Member › Remove from HR Diagram (Edit Mode only), with VIREO's question | Kept as the pupil's own exclusion, with VIREO's question; labelled as an Edit-Mode tool in VIREO | [D] text; availability [W] |
-| File › **Print** | Print preview of the recovered page body, portrait or landscape, then a black-on-white copy of the diagram | [D] page body; image [W] |
+| File › **Print** | Print preview of the recovered page body, portrait or landscape, then a copy of the diagram in VIREO's print scheme: black on white, or the screen colours with Print in Color (Front R4c) | [D] page body and scheme; image [W] |
+| Diagram colours (FormPaint 0x54235c) | VIREO's colour scheme (navy, yellow axes, white points, lime ZAMS, fuchsia isochrone, 3-px curves), or B&W with Monochrome Displays read when the view is shown (Front R4c, `src/core/hrScheme.ts`, docs/OPTICAL-OPTIONS.md) | [D] |
 | File › Load/Plot › **Select Cluster Data…** → "Clusters for Study" | Same window: VIREO's 16 rows with comments, Selection › Plot / double-click, Print; Search does nothing and Save List is disabled, as in VIREO | [D] |
 | File › **Display/Print Data** → "CLEA Cluster Data" | Same listing for the loaded cluster (V bank, removed stars starred) with Search, Print, Save Text and Comma Delimit | [D]; downloads [W] |
 

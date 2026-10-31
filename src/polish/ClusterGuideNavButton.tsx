@@ -7,9 +7,10 @@ let pending:(()=>void)|null=null;
 /** Header › Exercise guides › Cluster HR guide (Front P): the E05 guide lives inside the lazily loaded cluster database
  * (ClusterLabGuide in #cluster-database). This goes there and opens the guide as soon as the database has loaded, however
  * long that takes; leaving the route (or a newer click) cancels the wait. */
-function ClusterGuideNavButton({navigate}:{navigate:(route:'cluster-database')=>void}){
+function ClusterGuideNavButton({navigate,onOpen}:{navigate:(route:'cluster-database')=>void;
+ /** Front R4: VIREO's HR Diagrams menu (exercise code 7) forcing Show Object ID; a stable callback. */onOpen?:(code:7)=>void}){
  function open(){
-  pending?.();navigate('cluster-database');
+  onOpen?.(7);pending?.();navigate('cluster-database');
   const now=guideButton();if(now){now.click();return;}
   const observer=new MutationObserver(()=>{const b=guideButton();if(b){stop();b.click();}});
   const leave=()=>{if(location.hash!=='#cluster-database')stop();};

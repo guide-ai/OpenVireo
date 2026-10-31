@@ -205,3 +205,8 @@ describe('Front L3 closure C2: the own-records hand-over is atomic at the 10 000
   expect(added.accepted).toBe(false);expect(added.workspace.records).toBe(first.workspace.records);
  },60000);
 });
+describe('Record Z OK message (Front R4, 0x583b20)',()=>{
+ it('keeps the verbatim box text and caption; the AnsiString literal’s 32-bit length (0x583b1c) is 0x8b',async()=>{
+  const {LSS_Z_SAVED_BOX}=await import('./lssSurvey');expect(LSS_Z_SAVED_BOX.text).toHaveLength(0x8b);expect(LSS_Z_SAVED_BOX.caption).toBe('Z Measurement Saved');
+ });
+});

@@ -83,7 +83,7 @@ export const CLUSTER_HR_EN=Object.freeze({
  // HR Print (0x542f44)
  hrPrint:'Print',// VIREO (File › Print)
  hrPrintCaption:'Color-Magnitude Diagram',// VIREO
- hrPrintNote:'Print preview of VIREO\'s HR printout: the date and time (here in your browser\'s format), the laboratory-table line, the student lines entered in VIREO (a placeholder here), the ZAMS fit values when the ZAMS is shown, the caption, then the diagram. VIREO prints a picture of its whole window; OpenVireo prints its own diagram, in black on white as VIREO does by default. Fonts and page layout are not reproduced.',
+ hrPrintNote:'Print preview of VIREO\'s HR printout: the date and time (here in your browser\'s format), the laboratory-table line, the student lines entered in VIREO (a placeholder here), the ZAMS fit values when the ZAMS is shown, the caption, then the diagram. VIREO prints a picture of its whole window; OpenVireo prints its own diagram, in black on white unless Print in Color is checked (Options), as VIREO does; closing this preview without printing changes nothing. Fonts and page layout are not reproduced.',
  hrPrintOrientation:'VIREO page layout',
  portrait:'Portrait',landscape:'Landscape',
  hrPrintImage:'Color-magnitude diagram, print copy',

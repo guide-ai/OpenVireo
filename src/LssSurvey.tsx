@@ -7,7 +7,7 @@ import {t} from './i18n';
 import './sky-exposure.css';
 import './lss.css';
 import {LSS_FIELD_FILES,lssFieldRows,isLssFieldList,type LssFieldNumber} from './core/lssFields';
-import {EMPTY_LSS_SURVEY,selectLssField,markLssListLoaded,openLssRecord,editLssDraft,confirmLssDialog,cancelLssRecord,lssResultsCsv,pendingWedgeRecords,markLssHandedToWedge,lssAtLimit,lssEventTotal,lssReuseTarget,restoredLssSurvey,LSS_LIMITS,type LssRecord,type LssSurveyState} from './core/lssSurvey';
+import {EMPTY_LSS_SURVEY,selectLssField,markLssListLoaded,openLssRecord,editLssDraft,confirmLssDialog,cancelLssRecord,lssResultsCsv,pendingWedgeRecords,markLssHandedToWedge,lssAtLimit,lssEventTotal,lssReuseTarget,restoredLssSurvey,LSS_LIMITS,LSS_Z_SAVED_BOX,type LssRecord,type LssSurveyState} from './core/lssSurvey';
 import {evaluateLssRow,lssPolicy,type LssRowStatus,type LssSpectrumInputs} from './core/lssExposure';
 import {fetchLssSpectrumInputs} from './io/lssSpectrumInputs';
 import {LSS_RESULTS_TXT,lssResultsTxtBytes} from './core/lssResultsTxt';
@@ -44,8 +44,8 @@ function statusText(s:LssRowStatus):string{
  return s.kind==='available'?t('lss.status.available'):t('lss.status.neighbour',{id:s.selectedId});
 }
 /** E02 student route (#lss-survey). Web adaptations are listed in the scope note and docs/LSS-SURVEY.md. */
-function LssSurvey({spectralRange=DEFAULT_SPECTRAL_RANGE,onSpectralRange,timeDependentData=false,computeRedshiftVelocity=false,active,editMode=false,currentJd,initialTelescope,onPlotWedge,wedgeAck=null,onRecordsChange,onSnapshot,onSummary,restored=null}:{/** Front S2: the page's spectrometer range and its setter. */spectralRange?:SpectralRange;onSpectralRange?:(r:SpectralRange)=>void;/** Front R3: Compute Rdshft Vel. (compiled off) fills the dialog's velocity with c·z when it opens. */computeRedshiftVelocity?:boolean;/** Front L3: Time-Dependent Data (env+0x2e8c, compiled off). Off: Record Z on an already recorded object reuses its row
- * (0x57c918); on: every Record Z adds a row. */timeDependentData?:boolean;editMode?:boolean;onSummary?:(s:Omit<LssLabSummary,'saved'>)=>void;restored?:Readonly<{token:number;investigation:LssInvestigation|null}>|null;onSnapshot?:(s:LssSnapshot)=>void;active:boolean;currentJd:()=>number;initialTelescope:Telescope;onPlotWedge:(h:LssWedgeHandoff)=>number;wedgeAck?:Readonly<{token:number;accepted:boolean}>|null;onRecordsChange?:(records:readonly LssRecord[])=>void}){
+function LssSurvey({wedgeShown=false,spectralRange=DEFAULT_SPECTRAL_RANGE,onSpectralRange,timeDependentData=false,computeRedshiftVelocity=false,active,editMode=false,currentJd,initialTelescope,onPlotWedge,wedgeAck=null,onRecordsChange,onSnapshot,onSummary,restored=null}:{/** Front R4 (R4.3): the wedge has been shown in this page session (web stand-in for VIREO's "wedge visible" test 0x583921). */wedgeShown?:boolean;/** Front S2: the page's spectrometer range and its setter. */spectralRange?:SpectralRange;onSpectralRange?:(r:SpectralRange)=>void;/** Front R3: Compute Rdshft Vel. (compiled off) fills the dialog's velocity with c·z when it opens. */computeRedshiftVelocity?:boolean;/** Front L3: Time-Dependent Data (env+0x2e8c, compiled off). Off: Record Z on an already recorded object reuses its row
+ * (0x57c918); on: every Record Z adds a row. */timeDependentData?:boolean;editMode?:boolean;onSummary?:(s:Omit<LssLabSummary,'saved'>)=>void;restored?:Readonly<{token:number;investigation:LssInvestigation|null}>|null;onSnapshot?:(s:LssSnapshot)=>void;active:boolean;currentJd:()=>number;initialTelescope:Telescope;onPlotWedge:(h:LssWedgeHandoff,silent?:boolean)=>number;wedgeAck?:Readonly<{token:number;accepted:boolean}>|null;onRecordsChange?:(records:readonly LssRecord[])=>void}){
  const [survey,setSurveyState]=useState<LssSurveyState>(EMPTY_LSS_SURVEY),current=useRef(survey),[dialogError,setDialogError]=useState('');
  /** Every survey transition runs here, outside React's updater: a rejected transition keeps the current state and returns false. */
  function update(fn:(s:LssSurveyState)=>LssSurveyState):boolean{try{const next=fn(current.current);current.current=next;setSurveyState(next);return true;}catch{return false;}}
@@ -114,17 +114,24 @@ function LssSurvey({spectralRange=DEFAULT_SPECTRAL_RANGE,onSpectralRange,timeDep
   let r:LssConfirm;try{r=confirmLssDialog(current.current);}catch{setDialogError(t('lss.limitReached',{limit:LSS_LIMITS.records}));return;}
   // A native refusal keeps the dialog open (ModalResult 0); the message is the original box text (with its caption when it has one).
   if(!r.ok){setDialogError(r.caption?`${r.caption} ${r.message.replace(/\r\n/g,' ')}`:r.message);return;}
-  current.current=r.state;setSurveyState(r.state);setDialogError('');setNotice(t('lss.recorded'));
+  current.current=r.state;setSurveyState(r.state);setDialogError('');
+  // Front R4 (R4.3), RecordZ1Click 0x58383c after OK [D]: with the wedge visible, PlotData1Click 0x58100c redraws the whole
+  // current list without showing the wedge (no Show/BringToFront); otherwise the 0x583b20 box. Web [W]: "visible" is "shown in
+  // this page session", the whole own list replaces the wedge's own points without navigating, and the box text is a status line
+  // (the web's results list is part of this page, so VIREO's "results window visible" exception is not modelled).
+  if(wedgeShown){setNotice(t('lss.recordedWedge'));void handOver(r.state,true,true);}
+  else setNotice(`${LSS_Z_SAVED_BOX.caption}: ${LSS_Z_SAVED_BOX.text.replace(/\s*\r\n\s*/g,' ')} ${t('lss.zSavedWeb')}`);
  }
  function velocity(text:string){if(!update(s=>editLssDraft(s,{velocity:text})))setDialogError(t('lss.dialog.velocityChars'));else setDialogError('');}
  function remarks(text:string){if(!update(s=>editLssDraft(s,{remarks:text})))setDialogError(t('lss.dialog.controlChars'));else setDialogError('');}
- async function plot(){
-  const pending=pendingWedgeRecords(survey);if(!pending.length){setNotice(t('lss.wedge.nothing'));return;}
+ async function handOver(s:LssSurveyState,all:boolean,silent:boolean){
+  const pending=all?s.records:pendingWedgeRecords(s);if(!pending.length){if(!silent)setNotice(t('lss.wedge.nothing'));return;}
   const records=pending.map(r=>Object.freeze({object:r.object,jd:r.jd,ra:r.ra,dec:r.dec,zSingle:r.zSingle,remarks:r.remarks,...(r.nativeDialog?{velocitySingle:r.velocitySingle}:{})})),text=JSON.stringify(records),bytes=new TextEncoder().encode(text);
-  const replace=current.current.wedgeStale,upTo=replace?current.current.records.length:current.current.handedToWedge+pending.length,sha256=await resourceSha256(bytes.slice().buffer);
+  const replace=all||s.wedgeStale,upTo=replace?s.records.length:s.handedToWedge+pending.length,sha256=await resourceSha256(bytes.slice().buffer);
   // Marked as handed only when the wedge reports that it added them (wedgeAck); otherwise they can be plotted again.
-  handoff.current={token:onPlotWedge(Object.freeze({records:Object.freeze(records),sha256,bytes:bytes.byteLength,...(replace?{replace:true as const}:{})})),upTo};
+  handoff.current={token:onPlotWedge(Object.freeze({records:Object.freeze(records),sha256,bytes:bytes.byteLength,...(replace?{replace:true as const}:{})}),silent),upTo};
  }
+ function plot(){void handOver(current.current,false,false);}
  const draft=survey.draft;
  return <main className="observatory-main lss-main"><section className="observatory-heading"><div className="eyebrow">{t('lss.eyebrow')}</div><h1 ref={heading} tabIndex={-1}>{t('lss.title')}</h1><p>{t('lss.intro')}</p></section>
   <section className="card" aria-labelledby="lss-field-heading"><h2 id="lss-field-heading">{t('lss.fieldTitle')}</h2>
@@ -160,7 +167,7 @@ function LssSurvey({spectralRange=DEFAULT_SPECTRAL_RANGE,onSpectralRange,timeDep
   </form>}</dialog>
   <section className="card" aria-labelledby="lss-results-heading"><h2 id="lss-results-heading">{t('lss.results.title')}</h2><p data-testid="lss-record-count" role="status">{t('lss.results.count',{count:survey.records.length})}</p>
    {survey.records.length>0&&<table className="lss-rows" data-testid="lss-results"><thead><tr><th scope="col">{t('lss.col.object')}</th><th scope="col">{t('lss.dialog.jd')}</th><th scope="col">{t('lss.dialog.ra')}</th><th scope="col">{t('lss.dialog.dec')}</th><th scope="col">{t('lss.dialog.z')}</th><th scope="col">{t('lss.col.velocity')}</th><th scope="col">{t('lss.dialog.remarks')}</th></tr></thead><tbody>{survey.records.map(r=><tr key={r.id}><td>{r.object}</td><td>{r.jd.toFixed(5)}</td><td>{r.ra}</td><td>{r.dec}</td><td>{r.zSingle}</td><td>{r.velocitySingle}</td><td>{r.remarks}</td></tr>)}</tbody></table>}
-   <div className="sky-actions"><button className="secondary-button" disabled={!survey.records.length} onClick={()=>download(lssResultsCsv(survey.records),'openvireo-lss-results.csv')}>{t('lss.results.csv')}</button><button className="secondary-button" disabled={!survey.records.length} data-testid="lss-results-txt" title={LSS_RESULTS_TXT.title} onClick={()=>{download(lssResultsTxtBytes(survey.records),LSS_RESULTS_TXT.defaultName,'text/plain;charset=windows-1252');setNotice(t('lss.results.txtSaved',{name:LSS_RESULTS_TXT.defaultName}));}}>{t('lss.results.txt')}</button><button className="primary-button" disabled={!pendingWedgeRecords(survey).length} onClick={()=>void plot()}>{t('lss.results.plot')}</button></div>
+   <div className="sky-actions"><button className="secondary-button" disabled={!survey.records.length} onClick={()=>download(lssResultsCsv(survey.records),'openvireo-lss-results.csv')}>{t('lss.results.csv')}</button><button className="secondary-button" disabled={!survey.records.length} data-testid="lss-results-txt" title={LSS_RESULTS_TXT.title} onClick={()=>{download(lssResultsTxtBytes(survey.records),LSS_RESULTS_TXT.defaultName,'text/plain;charset=windows-1252');setNotice(t('lss.results.txtSaved',{name:LSS_RESULTS_TXT.defaultName}));}}>{t('lss.results.txt')}</button><button className="primary-button" disabled={!pendingWedgeRecords(survey).length} onClick={plot}>{t('lss.results.plot')}</button></div>
    <label htmlFor="lss-description">{t('lss.results.description')}</label><textarea id="lss-description" maxLength={LSS_LIMITS.description} rows={4} value={description} aria-invalid={descriptionError?true:undefined} aria-describedby={descriptionError?'lss-description-error':undefined} onChange={e=>{const v=e.target.value;if(/[\u0000-\u0008\u000b-\u001f\u007f]/.test(v)){setDescriptionError(t('lss.descriptionInvalid'));return;}setDescriptionError('');setDescription(v);}}/>{descriptionError&&<p id="lss-description-error" role="alert">{descriptionError}</p>}<p className="observatory-note">{t('lss.results.descriptionHelp')}</p>
   </section>
   {editMode&&<section className="card" aria-labelledby="lss-region-heading" data-testid="lss-region-card"><h2 id="lss-region-heading">{t('lss.region.title')}</h2>

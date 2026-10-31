@@ -106,5 +106,7 @@ test('Front L3: Record Z on an already recorded galaxy updates its row (first JD
  const after=await cells();
  expect(after[1]).toBe(before[1]);// JD: the first observation time
  expect(after[4]).not.toBe(before[4]);expect(after[6]).toBe('again');
- await page.getByRole('button',{name:'Plot my records in the wedge',exact:true}).click();await expect(page.getByTestId('wedge-count')).toHaveText('Points Plotted: 1');
+ // Front R4 (R4.3): the wedge was already shown, so OK re-plotted the whole list itself (0x58383c → 0x58100c), without navigating.
+ await expect(page.getByRole('button',{name:'Plot my records in the wedge',exact:true})).toBeDisabled();
+ await page.evaluate(()=>{location.hash='#lss-wedge';});await expect(page.getByTestId('wedge-count')).toHaveText('Points Plotted: 1');
 });

@@ -1657,7 +1657,8 @@ export interface MessageParameters {
   "obs.help": never;
   "obs.temporary": never;
   "obs.unsupported": never;
-  "obs.append": never;
+  "obs.timeDependentOff": never;
+  "obs.timeDependentOn": never;
   "obs.reuse": never;
   "obs.open": never;
   "obs.recorded": "object";
@@ -3172,6 +3173,8 @@ export interface MessageParameters {
   "lss.measure.record": never;
   "lss.recordError": never;
   "lss.recorded": never;
+  "lss.recordedWedge": never;
+  "lss.zSavedWeb": never;
   "lss.dialog.title": never;
   "lss.dialog.object": never;
   "lss.dialog.jd": never;

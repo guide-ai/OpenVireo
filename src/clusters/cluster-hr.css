@@ -46,12 +46,8 @@ html[data-print-scope=cluster-hr] .cluster-print-report{border:0!important;max-h
 .cluster-member-field output[data-missing]{white-space:normal}
 .cluster-print-orientation{display:flex;flex-wrap:wrap;gap:var(--ov-space-3);border:0;padding:0;margin:0 0 var(--ov-space-2)}
 .cluster-print-body{font-family:"MS Sans Serif",Arial,sans-serif}
-.cluster-print-image{max-width:520px;background:#fff;margin-top:var(--ov-space-2)}
-.cluster-print-image svg{display:block;width:100%;height:auto;background:#fff}
-.cluster-print-image circle,.cluster-print-image ellipse{fill:#000;stroke:#000}
-.cluster-print-image text,.cluster-print-image line,.cluster-print-image polyline{color:#000;stroke:#000}
-.cluster-print-image text{fill:#000;stroke:none}
-.cluster-print-image polyline[fill=none]{fill:none}
+.cluster-print-image{max-width:520px;margin-top:var(--ov-space-2)}
+.cluster-print-image svg{display:block;width:100%;height:auto;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .cluster-print-body .cluster-print-line{font-family:"MS Sans Serif",Arial,sans-serif;font-weight:700}
 .db-hr-pickable{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 .cluster-hr-listbox.cluster-hr-columns{font-family:var(--ov-font-mono);overflow:auto;max-width:100%}
@@ -65,4 +61,4 @@ html[data-print-scope=cluster-hr] .cluster-print-report{border:0!important;max-h
 .obsd-photometry{display:grid;grid-template-columns:repeat(auto-fit,minmax(12ch,1fr));gap:8px 12px;margin:10px 0;border:1px solid var(--ov-border,currentColor);border-radius:6px;padding:6px 10px}
 .obsd-photometry legend{font-weight:600}
 .obsd-remarks{margin-bottom:6px}
-.cnhr-selected{fill:none;stroke:#ff00ff;stroke-width:1.5}
+.cnhr-selected{fill:var(--hr-background,none);stroke:var(--hr-marker,#ff00ff);stroke-width:1.5}
