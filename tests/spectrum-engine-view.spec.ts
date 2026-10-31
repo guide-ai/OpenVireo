@@ -4,7 +4,13 @@ import {test,expect,type Page} from '@playwright/test';
 // readout, recovered statically (analysis/front-s-spectroscopy/RE-difference-and-engine-zoom.md Part 2).
 const id=(p:Page,t:string)=>p.getByTestId(t);
 async function open(page:Page){await page.goto('/#spectrum');await expect(page.getByRole('heading',{name:'Measure redshift.'})).toBeVisible();}
-async function at(page:Page,fx:number,fy:number){const b=(await id(page,'engine-plot').boundingBox())!;return {x:b.x+b.width*(60+860*fx)/960,y:b.y+b.height*(56+250*fy)/360};}
+// Front QA1 (2026-10-31): Firefox delivers mouse presses at whole pixels and Chromium keeps the fraction, so the expected readout
+// is the engine's own mapping (SpectrumInstrument native(), engineReadout) of the release point the page actually received, in the
+// default 3700–4700 Å window.
+async function released(page:Page){return id(page,'engine-plot').evaluate(n=>{const[x,y]=(window as unknown as{__up:[number,number]}).__up,r=n.getBoundingClientRect(),nx=((x-r.left)/r.width*960-60)/860*600,ny=((y-r.top)/r.height*360-56)/250*200;return{nx,wavelength:3700+nx*1000/600,intensity:(200-ny)/200};});}
+// Presses go to the first whole pixel at or after the point (Firefox's client point is that pixel minus the scroll fraction), so
+// the release is never short of 3950 Å and the one-pixel keyboard step stays nearer H than K in both engines.
+async function at(page:Page,fx:number,fy:number){const b=(await id(page,'engine-plot').boundingBox())!,d=await page.evaluate(()=>({x:scrollX-visualViewport!.pageLeft,y:scrollY-visualViewport!.pageTop}));return {x:Math.ceil(b.x+b.width*(60+860*fx)/960+d.x),y:Math.ceil(b.y+b.height*(56+250*fy)/360+d.y)};}
 
 test('Zoom chooses a 100 Å window from the start of the spectrum; the arrows move it 100 Å',async({page})=>{
  await open(page);
@@ -28,12 +34,14 @@ test('Zoom chooses a 100 Å window from the start of the spectrum; the arrows mo
 
 test('the readout shows the observed wavelength and the cursor height; right-click or N finds the nearest comparison line',async({page})=>{
  await open(page);
+ await page.evaluate(()=>addEventListener('pointerup',(e:PointerEvent)=>{(window as unknown as{__up:[number,number]}).__up=[e.clientX,e.clientY];},true));
  const p=await at(page,0.5,0.5);await page.mouse.move(p.x,p.y);await page.mouse.down();
  const q=await at(page,0.25,0.25);await page.mouse.move(q.x,q.y);await page.mouse.up();
- await expect(id(page,'engine-readout-wavelength')).toHaveText('3950.0');await expect(id(page,'engine-readout-intensity')).toHaveText('0.750');
+ const got=await released(page);expect(got.wavelength).toBeGreaterThanOrEqual(3950-1e-9);expect(got.wavelength).toBeLessThan(3950+1000/600);
+ await expect(id(page,'engine-readout-wavelength')).toHaveText(got.wavelength.toFixed(1));await expect(id(page,'engine-readout-intensity')).toHaveText(got.intensity.toFixed(3));
  await expect(id(page,'engine-cursor')).toHaveCount(1);
  await id(page,'engine-plot').focus();await page.keyboard.press('ArrowRight');
- await expect(id(page,'engine-readout-wavelength')).toHaveText('3951.7');
+ await expect(id(page,'engine-readout-wavelength')).toHaveText((got.wavelength+1000/600).toFixed(1));
  // H (3968.49 Å, 16.8 Å away) is nearer 3951.7 Å than K (3933.68 Å, 18.0 Å away).
  await page.keyboard.press('n');await expect(id(page,'engine-nearest-result')).toHaveText('Nearest comparison line: H Line (Ca II + H) at 3968.49 Å.');
  await expect(page.locator('tr.engine-selected')).toContainText('H Line');

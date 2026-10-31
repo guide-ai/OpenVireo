@@ -39,14 +39,19 @@ async function load(page:Page,name:string,text:string){
 }
 const closeProperties=async(page:Page)=>{await id(page,'pulsar-properties-close').click();await expect(id(page,'pulsar-properties')).toHaveCount(0);};
 /**
- * One mouse click at the centre of native pixel (px, row) of panel n. The plot is scrolled into view first, because the
+ * One mouse click inside native pixel (px, row) of panel n. The plot is scrolled into view first, because the
  * mouse uses viewport coordinates. The viewBox starts at −0.5, so pixel i covers client offsets [i, i + 1)·width/400.
  */
 async function clickPixel(page:Page,n:number,px:number,row:number,button:'left'|'right'){
  const plot=id(page,`pulsar-plot-${n}`);await plot.scrollIntoViewIfNeeded();
  const box=(await plot.boundingBox())!;
  const height=Number((await plot.getAttribute('viewBox'))!.split(' ')[3]);
- await page.mouse.move(box.x+(px+.5)*box.width/400,box.y+(row+.5)*box.height/height);
+ // Front QA1 (2026-10-31): Firefox delivers a mouse press at a whole pixel of the rounded scroll position (client = x − (scrollY −
+ // visualViewport.pageTop)), Chromium at the exact point. Pressing at the first such whole pixel inside the native pixel keeps
+ // the press in that pixel in both engines (the centre is used only if the pixel holds no whole client pixel).
+ const d=await page.evaluate(()=>({x:scrollX-visualViewport!.pageLeft,y:scrollY-visualViewport!.pageTop}));
+ const inside=(start:number,size:number,shift:number)=>{const n=Math.ceil(start+shift);return n-shift<start+size?n:start+size/2;};
+ await page.mouse.move(inside(box.x+px*box.width/400,box.width/400,d.x),inside(box.y+row*box.height/height,box.height/height,d.y));
  await page.mouse.down({button});await page.mouse.up({button});
 }
 /** Touch tap at the centre of native pixel (px, row) of panel n (scrolled into view first). */

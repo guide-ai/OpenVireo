@@ -473,7 +473,9 @@ async function scenario(browser:Browser,info:TestInfo,withConfiguration:boolean)
   await id(page,'receiver-record-properties-ok').click();await expect(finish).toHaveAttribute('data-stage','save');
   await id(page,'receiver-record-save-cancel').click();await expect(finish).toHaveCount(0);
   await step(async()=>{await configure(page,true,'ok');});
-  const canvas=await id(page,'receiver-canvas-0').evaluate(c=>(c as HTMLCanvasElement).toDataURL());
+  // Front QA1 (2026-10-31): Firefox's PNG encoder writes a private "deBG" chunk with a per-session id, so toDataURL() differs between
+  // two contexts with identical pixels. The receiver canvas is compared by the SHA-256 of its RGBA pixels instead.
+  const canvas=await id(page,'receiver-canvas-0').evaluate(c=>{const k=document.createElement('canvas'),s=c as HTMLCanvasElement;k.width=s.width;k.height=s.height;const g=k.getContext('2d')!;g.drawImage(s,0,0);return crypto.subtle.digest('SHA-256',g.getImageData(0,0,k.width,k.height).data).then(h=>`${k.width}x${k.height}:`+[...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,'0')).join(''));});
   const observed={
    source:await id(page,'receiver-source').innerText(),title:await id(page,'receiver-heading-0').innerText(),
    sweep:await id(page,'receiver-sweep-0').getAttribute('data-position'),seed:await id(page,'receiver-seed-next').innerText(),identify,properties,canvas,
