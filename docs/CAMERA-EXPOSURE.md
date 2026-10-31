@@ -2,7 +2,7 @@
 
 The observatory now has a working **CCD camera**. With the dome open, the telescope pointed, the telescope view selected and tracking on, choose a filter (NF, B, V, R, I), an exposure time (1 s to 59 min 59 s, as VIREO: from 60 min its ExpClock.Minutes setter 0x4fcbc8 raises an uncaught error, Front RE5; investigations saved earlier with 60:00 still restore) and a gain (1, 2 or 5 e⁻/ADU), then **Start exposure**. The camera counts down in 1 s steps, waits for the catalog and builds a 1024×1024 image. **Stop** cancels the exposure and the catalog request. Leaving the observatory, losing tracking or moving the telescope also stops it.
 
-Adaptation, in one line: the original asked the USNO NOFS server for NOMAD/USNO-B1 rows; that server no longer answers, so the web reads the same catalogs from CDS/VizieR (a bundled extract or a live query that sends only RA, Dec and radius), uses a private seeded random stream per exposure, and does not offer the bitmap overlay.
+Adaptation, in one line: the original asked the USNO NOFS server for NOMAD/USNO-B1 rows; that server no longer answers, so the web reads the same catalogs from CDS/VizieR (a bundled extract or a live query that sends only RA, Dec and radius), uses a private seeded random stream per exposure, and enlarges the galaxy overlay with nearest-pixel replication (Front C6).
 
 Evidence: [NATIVE-CAMERA-FRONT-C-C0-01](CAMERA-EXPOSURE-PROVENANCE.json), static reading of `CLEA_VEO.exe` SHA-256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c` with objdump. Nothing was executed or emulated, and no binary bytes are in the repository. Listings, the capture script and the independent control live in `/home/dobleuber/Documents/Codex/2026-10-18/task-3/native-camera-front-c/`.
 
@@ -68,7 +68,38 @@ The seeing jitter is on for the CCD (compiled record byte +0x5a = 1 at 0x5a2bd8)
     (0x52246a/0x52246f → 0x522553). Which web state matches vt+4 = false is not recovered; the web runs the pass whenever an
     exposure is composed, and an empty camera list writes nothing (review 1 L3).
 
-Not recovered, and kept explicit: the writer of the region record `[0x5b5b30]` (the web uses whole-sky bounds, so selection keeps only the magnitude limit); the global random-stream prefix at Go; the overlay bitmap; the native image-to-screen mapping (the web display stretches the 1st–99.9th percentile; pixel values are unchanged).
+Not recovered, and kept explicit: the global random-stream prefix at Go; the native image-to-screen mapping (the web display stretches the 1st–99.9th percentile; pixel values are unchanged).
+
+### Region record and overlay (Front C6, 2026-10-31; analysis/front-plans/front-c6.md)
+
+**Region record `[0x5b5b30]`** [D]:
+- **Writer:** the telescope field load 0x53be70. It writes the record before it reads the catalogue, so every telescope load
+  writes it:
+  - centre := telescope RA/Dec;
+  - Dec ∓ 0.375°;
+  - RA ∓ 0.375/(cos δ · 15) h, with one fold across 0 h and one across 24 h;
+  - limit 20.0.
+- **Use:** CCD Select 0x522309 and IR Select 0x51df28 copy its four bounds (and the limit, which Select then raises to 21.5) into
+  the catalogue request. Selection keeps only rows inside them (0x59cf58).
+- **Web** (`core/cameraRegion.ts`):
+  - The sky view publishes each telescope load (`observatory/telescopeField.ts`), and the camera selects with that record. The
+    camera pointing stands in only before any telescope load [W].
+  - Near the pole VIREO's record keeps RA bounds beyond 0–24 h, and every RA then passes. The web keeps that rather than
+    refusing.
+- **Effect:**
+  - The cone (at most 0.228°) lies inside the record while the telescope sits on the loaded centre.
+  - Rows are dropped only after the telescope drifts inside the cached field, past about 0.15° (the cache allows 0.25°), as in
+    VIREO.
+  - The details show the area.
+- **View change:** the render reloads when its scale changes (telescope ↔ finder), so a view change now reloads the field and
+  the record at the current pointing [D]. The web previously kept the old anchor.
+- **Object X:** exposures record `fieldAnchor` and replay with it. Older records have none, and replay with the whole sky they
+  were made with.
+
+**CCD overlay (form+0x412):** ported at the loaded telescope field (docs/CAMERA-OVERLAY.md).
+
+Not ported: the data merge into the loaded field (0x54e84e..0x54ec07, "Data limits exceed size of loaded field - some data cannot
+be merged."), which also reads the record. The web has no such feature.
 
 Front R1 (2026-10-29): the colour term 0x51ef38 is recovered and ported as a pure function, `src/core/cameraColourTerm.ts` (docs/RADIO-CAMERA-R1.md). It is not wired, because the camera has no field-engine population of field variable stars; the field-object pass stays typed.
 

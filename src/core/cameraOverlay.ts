@@ -19,13 +19,25 @@ export function ccdOverlayScale(p:CameraOverlayCalibration):CameraOverlayScale {
  if(!Number.isFinite(referenceScale)||referenceScale>1e12||exposureScale>1e6)throw new CameraOverlayError('scale');
  return Object.freeze({referenceScale,exposureScale});
 }
+/** 0x5219c4..0x5219f4: level = r · Single 4 − Single 150; only a strict positive level is drawn. */
+export const ccdOverlayLevel=(red:number)=>red*4-150;
+/** 0x521a09..: mean = (exposureScale · referenceScale) · level. */
+export const ccdOverlayMean=(scale:CameraOverlayScale,level:number)=>(scale.exposureScale*scale.referenceScale)*level;
+/** Front C6: the same stage applied in place to the composer's Single plane (a Float32Array store rounds like Math.fround), one
+ * draw per positive level in row-major order. Returns the number of draws. */
+export function applyCcdOverlayInPlace(plane:Float32Array,redBytes:Uint8Array,scale:CameraOverlayScale,next:()=>number):number{
+ if(redBytes.length!==plane.length)throw new CameraOverlayError('raster');
+ let draws=0;
+ for(let i=0;i<redBytes.length;i++){const level=ccdOverlayLevel(redBytes[i]);if(level<=0)continue;plane[i]=plane[i]+cameraScalarJitter(ccdOverlayMean(scale,level),next());draws++;}
+ return draws;
+}
 /** Row-major exact post-GDI GetPixel low bytes. Threshold controls draws,
  * including one draw for positive level when the resulting mean is zero. */
 export function ccdOverlayPlan(width:number,height:number,redBytes:readonly number[],scale:CameraOverlayScale):CameraOverlayPlan {
  if(!Number.isInteger(width)||width<1||width>1024||!Number.isInteger(height)||height<1||height>1024||!Array.isArray(redBytes)||redBytes.length!==width*height)throw new CameraOverlayError('raster');
  if(!scale||!Number.isFinite(scale.referenceScale)||scale.referenceScale<0||scale.referenceScale>1e12||!Number.isFinite(scale.exposureScale)||scale.exposureScale<0||scale.exposureScale>1e6)throw new CameraOverlayError('scale');
  const owned=Array.from(redBytes);if(owned.some(b=>!Number.isInteger(b)||b<0||b>255))throw new CameraOverlayError('raster');
- const indices:number[]=[],means:number[]=[];for(let i=0;i<owned.length;i++){const level=owned[i]*4-150;if(level<=0)continue;indices.push(i);means.push((scale.exposureScale*scale.referenceScale)*level);}
+ const indices:number[]=[],means:number[]=[];for(let i=0;i<owned.length;i++){const level=ccdOverlayLevel(owned[i]);if(level<=0)continue;indices.push(i);means.push(ccdOverlayMean(scale,level));}
  const plan=Object.freeze({[brand]:true as const,width,height,redBytes:Object.freeze(owned),indices:Object.freeze(indices),means:Object.freeze(means),scale:Object.freeze({referenceScale:scale.referenceScale,exposureScale:scale.exposureScale})});plans.add(plan);return plan;
 }
 /** The original overlay occurs once after background statistics,before sources.

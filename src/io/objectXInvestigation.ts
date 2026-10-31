@@ -42,6 +42,9 @@ export type ObjectXExposure=Readonly<{
   * and recomputed on restore. True when the file this exposure came from carried them (written before QA1 closure, or after a
   * reveal), so a re-save keeps them and stays byte-identical. Not itself written. */
  countsStored?:true;
+ /** Front C6: the centre of the region record the catalogue was selected with (the telescope field loaded last, cameraRegion.ts).
+  * Absent in exposures made before C6, which selected the whole sky and replay that way. */
+ fieldAnchor?:Readonly<{ra:number;dec:number}>;
 }>;
 export const OBJECT_X_SKIP_REASONS=['moving-pair-off-detector','moving-pair-geometry','moving-pair-budget'] as const;
 export type ObjectXSkipReason=(typeof OBJECT_X_SKIP_REASONS)[number];
@@ -85,9 +88,11 @@ function readSkipped(v:unknown,pairs:number):readonly ObjectXSkipReason[]{
  return Object.freeze(v.map(r=>OBJECT_X_SKIP_REASONS.includes(r as ObjectXSkipReason)?r as ObjectXSkipReason:fail('record')));
 }
 function readExposure(v:unknown):ObjectXExposure{
- const counted=isObject(v)&&Object.hasOwn(v,'pairs');
- const r=exact(v,counted?['jd','seconds','filter','gain','telescope','ra','dec','seed','catalogMode','catalogSha256','extractId','listJd','orbitFile','limit','pairs','skipped','fitsSha256']
-  :['jd','seconds','filter','gain','telescope','ra','dec','seed','catalogMode','catalogSha256','extractId','listJd','orbitFile','limit','fitsSha256']);
+ const counted=isObject(v)&&Object.hasOwn(v,'pairs'),anchored=isObject(v)&&Object.hasOwn(v,'fieldAnchor');
+ const keys=['jd','seconds','filter','gain','telescope','ra','dec','seed','catalogMode','catalogSha256','extractId','listJd','orbitFile','limit',...(counted?['pairs','skipped']:[]),'fitsSha256',...(anchored?['fieldAnchor']:[])];
+ const r=exact(v,keys);
+ const anchor=r.fieldAnchor===undefined?undefined:(()=>{const a=exact(r.fieldAnchor,['ra','dec']);return Object.freeze({ra:num(a.ra,0,24),dec:num(a.dec,-90,90)});})();
+ if(anchor&&anchor.ra>=24)fail('record');
  // A list is all three of date, orbit file and limit, or none of them.
  if((r.listJd===null)!==(r.orbitFile===null)||(r.listJd===null)!==(r.limit===null))fail('record');
  if(r.orbitFile!==null&&!SELECTABLE_ORBIT_FILES.includes(r.orbitFile as BundledOrbitFileId))fail('record');
@@ -97,7 +102,7 @@ function readExposure(v:unknown):ObjectXExposure{
  const pairs=counted?int(r.pairs,0,256):0;
  return Object.freeze({jd:jd(r.jd),seconds:int(r.seconds,1,CAMERA_STORED_MAX_SECONDS),filter:int(r.filter,0,4),gain:r.gain as number,telescope:int(r.telescope,0,2) as 0|1|2,
   ra:num(r.ra,0,24),dec:num(r.dec,-90,90),seed:int(r.seed,0,0xffff_ffff),catalogMode:r.catalogMode as 'static'|'live',catalogSha256:hex64(r.catalogSha256),
-  extractId:r.extractId===null?null:str(r.extractId,80),listJd:r.listJd===null?null:jd(r.listJd),orbitFile:r.orbitFile as BundledOrbitFileId|null,limit:r.limit===null?null:num(r.limit,-5,30),pairs,skipped:counted?readSkipped(r.skipped,pairs):Object.freeze([]),fitsSha256:hex64(r.fitsSha256),...(counted?{countsStored:true as const}:{})});
+  extractId:r.extractId===null?null:str(r.extractId,80),listJd:r.listJd===null?null:jd(r.listJd),orbitFile:r.orbitFile as BundledOrbitFileId|null,limit:r.limit===null?null:num(r.limit,-5,30),pairs,skipped:counted?readSkipped(r.skipped,pairs):Object.freeze([]),fitsSha256:hex64(r.fitsSha256),...(counted?{countsStored:true as const}:{}),...(anchor?{fieldAnchor:anchor}:{})});
 }
 function readImage(v:unknown,exposures:number):ObjectXImageRef{
  const r=exact(v,['sha256','label','jd','exposure']);
@@ -121,7 +126,8 @@ const portableLog=(log:MeasurementLog)=>log.map(m=>({frame:m.frame,role:m.role,x
 function portableExposure(e:ObjectXExposure,revealed:boolean){
  const counts=revealed||e.countsStored===true;
  return {jd:e.jd,seconds:e.seconds,filter:e.filter,gain:e.gain,telescope:e.telescope,ra:e.ra,dec:e.dec,seed:e.seed,catalogMode:e.catalogMode,catalogSha256:e.catalogSha256,
-  extractId:e.extractId,listJd:e.listJd,orbitFile:e.orbitFile,limit:e.limit,...(counts?{pairs:e.pairs,skipped:[...e.skipped]}:{}),fitsSha256:e.fitsSha256};
+  extractId:e.extractId,listJd:e.listJd,orbitFile:e.orbitFile,limit:e.limit,...(counts?{pairs:e.pairs,skipped:[...e.skipped]}:{}),fitsSha256:e.fitsSha256,
+  ...(e.fieldAnchor?{fieldAnchor:{ra:e.fieldAnchor.ra,dec:e.fieldAnchor.dec}}:{})};
 }
 function portablePayload(i:ObjectXInvestigation){
  return {policy:OBJECT_X_INVESTIGATION_POLICY,orbitFile:i.orbitFile,id:i.id,target:i.target,startUtc:i.startUtc,clockSet:i.clockSet,listJd:i.listJd,limit:i.limit,
@@ -181,7 +187,7 @@ async function derive(value:unknown):Promise<Derived>{
   else restored.push(Object.freeze({...e,pairs:extras.length,skipped:extras.length?await movingPairSkips(e,extras):Object.freeze([])}));
   let image='live-not-replayable';
   if(e.catalogMode==='static'){
-   const r=await replayStaticExposure({camera:'ccd',opticalIndex:e.telescope,filterPosition:e.filter,seconds:e.seconds,gain:e.gain,centerRaHours:e.ra,centerDecDegrees:e.dec,seed:e.seed},e.jd,extras,src.catalog);
+   const r=await replayStaticExposure({camera:'ccd',opticalIndex:e.telescope,filterPosition:e.filter,seconds:e.seconds,gain:e.gain,centerRaHours:e.ra,centerDecDegrees:e.dec,seed:e.seed},e.jd,extras,src.catalog,e.fieldAnchor??null);
    if(!r.ok||r.catalogSha256!==e.catalogSha256||r.extractId!==e.extractId||await resourceSha256(r.fits.slice().buffer)!==e.fitsSha256)return fail('replay');
    image='static-replayed';await yieldToPage();
   }

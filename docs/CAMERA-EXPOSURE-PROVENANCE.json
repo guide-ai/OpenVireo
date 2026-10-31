@@ -187,6 +187,6 @@
   "seeing": "CCD compiled record byte +0x5a = 1 (0x5a2bd8); initialize 0x5221be enables the seeing jitter width when it is non-zero.",
   "usnoB1Labels": "Catalog initialize 0x59c45c: mode 0 NOMAD (labels B,V,R,J,H,K), mode 1 USNO-B1 (B slot 'B2', R slot 'R2', I slot 'I2'), mode 2 USNO-A2 (B, R). String table 0x59c5e8.",
   "xena": "Options default 0x5a26ee copies http://xena.harvard.edu/software/catalogs/tmpsc.html to options+0x20cd; main form +0x2781 (= options base +0x6b4 +0x20cd) is opened by N2MASSCatalog1Click 0x58ec84 via 0x58ebe0. It is the Help > Websites > 2MASS Catalog link, not a camera data source. IR J/H/K come from NOMAD.",
-  "regionWriter": "The writer of the region record [0x5b5b30] was not located; the web uses whole-sky bounds (selection = magnitude limit)."
+  "regionWriter": "Front C6: the telescope field load 0x53be70 writes the region record [0x5b5b30] (global 0x61fd44) before it reads the catalogue: +0x24/+0x2c Double centre := telescope RA/Dec, +0x34 Single env+0x2508/120, +0x20 Single 20.0, +0x10/+0x18 Dec -/+ 0.375, +0/+8 RA -/+ 0.375/(Cos(Dec*pi/180)*15) with one fold each. CCD Select 0x522309 and IR Select 0x51df28 copy its first 9 dwords into the request; the web selects with it (core/cameraRegion.ts). Exposures made before Front C6 used whole-sky bounds and replay with them."
  }
 }

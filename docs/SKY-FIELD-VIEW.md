@@ -32,6 +32,13 @@ The observatory's sky view draws VIREO's own field for the current view at any p
   telescope change, it builds again at the current pointing with a new JD, so the field's edges and the next reload point can
   differ from VIREO's.
 - **Unreadable ObjectX.HTL:** the field stays hidden with its own reason (`object-x-unreadable`), not "near a target".
+- **Front C6: a view change reloads** [D]. The telescope scale +0x674 and the finder scale differ, so the render reloads at the
+  current pointing whenever the view changes. Before C6 the web kept the previous anchor across a view change while the new view's
+  cache rule still held. The anchor is now kept per view.
+- **Front C6: published telescope loads.** Each telescope (re)load is published to `observatory/telescopeField.ts` (anchor,
+  telescope, mask, clock). The camera reads it for VIREO's region record [0x5b5b30], which 0x53be70 writes at every telescope load,
+  and for the CCD overlay. Telescope builds also carry `galaxyRed`, the paint after the galaxies (fieldEngine `galaxyLayer`): one
+  876 KB copy, made in the Worker and transferred.
 
 ## Cost (measured 2026-10-30, Node on the development machine; six pointings)
 | Step | Telescope view | Finder view |
