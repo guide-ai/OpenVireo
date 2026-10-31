@@ -294,10 +294,17 @@ and z ≈ 2.1), and the path spec now checks the 45-minute motion against the ep
   - **Asteroid count (H2)** [W]. "N asteroids in the field box" is web text (ComputeMovers 0x59940c inserts the pairs silently).
     It named an asteroid target after one image. Until the reveal, every image reads "asteroids of the current list
     included", and the lab's "not drawn" reasons wait for the reveal too.
-  - **Asteroid List (H3)** [D]. ObjectX1Click 0x58ad38 disables AsteroidList1 (field +0x458, setter 0x4549c8), and the
-    exercise setup 0x58b3cb..0x58b3e9 leaves it disabled in Object X unless Edit Mode (env+0x2e7e) is on. The web follows:
-    during Object X the list shows only in Edit Mode, and otherwise a note says so. The same byte also gates the QSO List in
-    ObjectX1Click (field +0x4b0); the web's QSO List is not gated yet (follow-up).
+  - **Asteroid List (H3; closure E2)** [D + W]. ObjectX1Click 0x58ad38 hides AsteroidList1 (field +0x458; 0x4549c8 is
+    TMenuItem.SetVisible), and the exercise setup 0x58b3cb..0x58b3e9 keeps it hidden in Object X unless Edit Mode (env+0x2e7e)
+    is on. In VIREO Edit Mode sits behind the instructor login; this site's Edit Mode is a plain checkbox (WEB-EM-01), and the
+    list puts Eros and 1994 CC at the student's exact coordinates. So during Object X the list also waits for the reveal [W]:
+    before it a note says so, after it the list opens in Edit Mode as in VIREO.
+  - **QSO List (closure M1)** [D]. ObjectX1Click at 0x58ad55 sets QSOList1 (+0x4b0) Visible := Edit Mode. While the Object X
+    lab holds a target, File › QSO List therefore follows Edit Mode only, whatever Virtual Observatory says (the same for every
+    kind).
+  - **Session file (closure E1)** [W]. Before the reveal, exposures are saved without `pairs` and `skipped` (they named
+    asteroid targets); restore recomputes them from the recipe. Files that carry them (older, or revealed) restore as before,
+    and an older unrevealed file re-saves byte-identically.
 - **Static replay equivalence (R3-L2).** `tests/object-x-static-replay.spec.ts` routes the dev server's extract index to one
   synthetic extract over the recorded VizieR response, lets the real camera (Worker composer, static mode) take and save an
   image, and requires `replayStaticExposure` on the same recipe to give the same FITS bytes (SHA-256 and length): it does. Save

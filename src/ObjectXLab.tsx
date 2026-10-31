@@ -28,7 +28,8 @@ import {objectXFitsBytes} from './io/objectXImage';
 export type ObjectXHiddenTarget=Readonly<{ra:number;dec:number;code:string;label:string}>;
 export type ObjectXController=Readonly<{extraSources:(jd:number,pointing:Readonly<{ra:number;dec:number}>,seconds:number,camera:CameraExposureKind)=>readonly CameraExtraSource[];acceptImage:(image:CameraImage)=>void}>;
 type Props=Readonly<{
- /** Edit Mode (env+0x2e7e): VIREO enables the Asteroid List during Object X only then (QA1 review 1 H3). */
+ /** Edit Mode (env+0x2e7e): VIREO shows the Asteroid List during Object X only then (QA1 review 1 H3). This site's Edit Mode needs
+  * no instructor login (WEB-EM-01), so the list also waits for the reveal (QA1 closure E2) [W]. */
  editMode?:boolean;
  active:boolean;busy:boolean;
  clockUtc:()=>string;onSetClock:(utc:string)=>void;
@@ -245,8 +246,8 @@ function ObjectXLab({editMode=false,spectralRange=DEFAULT_SPECTRAL_RANGE,onSpect
     </div>
     {inv.measure&&(frames?<ObjectXMeasure frames={frames} log={inv.log} active={active&&!busy} onLogChange={(log:MeasurementLog)=>update(i=>({...i,log}))}/>:<p>{M.measureNotLoaded}</p>)}
    </>}
-   {list&&!editMode&&<p className="observatory-note" data-testid="objectx-asteroid-list-closed">{M.listClosed}</p>}
-   {list&&editMode&&<details data-testid="objectx-asteroid-list" onToggle={e=>setListOpen(e.currentTarget.open)}><summary>{M.listTitle} ({list.entries.length})</summary>
+   {list&&!(editMode&&inv.revealed)&&<p className="observatory-note" data-testid="objectx-asteroid-list-closed">{M.listClosed}</p>}
+   {list&&editMode&&inv.revealed&&<details data-testid="objectx-asteroid-list" onToggle={e=>setListOpen(e.currentTarget.open)}><summary>{M.listTitle} ({list.entries.length})</summary>
     <p className="observatory-note">{list.fileType===0?M.listNotesAst:M.listNotesMpc}</p><p className="observatory-note">{M.listSorted}</p>
     {listOpen&&<div className="objectx-table"><table><thead><tr>{M.listColumns.map(c=><th key={c}>{c}</th>)}</tr></thead><tbody>
      {list.entries.slice(0,LIST_ROWS).map(e=><tr key={e.index}><td>{e.label}</td><td>{formatSexagesimal(e.raHours,'ra')}</td><td>{formatSexagesimal(e.decDeg,'dec')}</td><td>{e.magnitude?e.magnitude.toFixed(1):''}</td><td>{e.deltaAu.toPrecision(5)}</td>{e.notes.map((n,i)=><td key={i}>{n||''}</td>)}</tr>)}

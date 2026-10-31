@@ -127,9 +127,10 @@ export const OBJECT_X_LAB_EN=Object.freeze({
  loadFits:'Open saved FITS images',loadFitsError:(name:string)=>`${name} could not be opened as a camera image.`,
  measureTitle:'4. Compare and measure',measureFirst:'First image',measureSecond:'Second image',measureNeedTwo:'Take or open two images to blink and measure them.',
  measureNotLoaded:'Open the saved FITS files of both images to measure them.',
- /** QA1 review 1 H3 [D]: ObjectX1Click 0x58ad38 disables AsteroidList1 (+0x458) and the exercise setup 0x58b3cb..0x58b3e9 keeps it
-  * disabled in Object X unless Edit Mode (env+0x2e7e) is on. */
- listClosed:'As in VIREO, the Asteroid List stays closed during Object X (it opens only in Edit Mode). New images still include the observable asteroids.',
+ /** QA1 review 1 H3 [D]: ObjectX1Click 0x58ad38 hides AsteroidList1 (+0x458, Visible setter 0x4549c8) and the exercise setup
+  * 0x58b3cb..0x58b3e9 keeps it hidden in Object X unless Edit Mode (env+0x2e7e) is on. QA1 closure E2 [W]: this site's Edit Mode
+  * is a plain checkbox with no instructor login (WEB-EM-01), so the list also waits for the reveal. */
+ listClosed:'The Asteroid List stays closed during Object X: VIREO shows it only in Edit Mode, and this site also waits for the reveal, because its Edit Mode needs no instructor login. New images still include the observable asteroids.',
  listTitle:'Current observable asteroids',listColumns:Object.freeze(['Name','RA','Dec','V','Δ (AU)','(1)','(2)','(3)','(4)']),
  listNotesAst:'Notes (Lowell file): (1) planet-crossing code, (2) orbit computation code, (3) critical-list code, (4) importance of observations.',
  listNotesMpc:'Notes (MPC file): (1) orbit type (2 Aten, 3 Apollo, 4 Amor, …), (2) eccentricity/H assumed, (3) flags (128 = potentially hazardous), (4) uncertainty U.',
