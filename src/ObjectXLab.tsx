@@ -71,8 +71,8 @@ function ObjectXLab({sessionId=null,editMode=false,spectralRange=DEFAULT_SPECTRA
  const lastPairs=useRef<{jd:number;list:ListState|null;pairs:number}|null>(null);
  const invRef=useRef(inv);invRef.current=inv;
  const update=(f:(i:ObjectXInvestigation)=>ObjectXInvestigation)=>setInv(i=>{const n=Object.freeze(f(i));invRef.current=n;return n;});
- // Front RE6: only a push made after this lab mounted applies (a restored investigation keeps its own ID).
- const seenId=useRef(sessionId?.token);
+ // Front RE6: a fresh lab takes the session ID at once; a restored investigation keeps its own ID until the next push.
+ const seenId=useRef(restored?sessionId?.token:undefined);
  useEffect(()=>{if(!sessionId||seenId.current===sessionId.token)return;seenId.current=sessionId.token;const id=sessionId.id.slice(0,OBJECT_X_ID_MAX);update(i=>i.id===id?i:{...i,id});},[sessionId]);// eslint-disable-line react-hooks/exhaustive-deps
 
  useEffect(()=>{const c=new AbortController();fetchObjectXHotList(fetch,c.signal).then(r=>setHtl(parseHtl(r.bytes))).catch(()=>{if(!c.signal.aborted)setHtlError(true);});return()=>c.abort();},[]);

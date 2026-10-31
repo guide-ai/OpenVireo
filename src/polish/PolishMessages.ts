@@ -74,7 +74,8 @@ export const POLISH_MESSAGES=Object.freeze({
   help:'VIREO’s Tools › Results Editors. Observational Results opens your observational results in the spectrum analyzer; Pulsar Results opens the saved pulsar measurements in the pulsar analysis.',
  }),
  pulsarPrint:Object.freeze({
-  note:'VIREO’s Print Window (PrintScreen1Click 0x56d9d8, Front RE5) prints its own header and the data parameters, then the window picture. Web adaptation: the page is portrait, the date is the browser’s, the table and student names read “(Not Recorded)” (there is no login), and the picture is the web panels as shown, not VIREO’s print-coloured window image (white panels, black axes and traces). VIREO’s Print Window also switches every panel to vertical-cursor mode as it opens; the web leaves the cursor mode unchanged.',
+  note:'VIREO’s Print Window (PrintScreen1Click 0x56d9d8, Front RE5) prints its own header and the data parameters, then the window picture. Like VIREO, opening it switches every panel to vertical-cursor mode, and the panels print in VIREO’s print colours (white background, black axes, labels and traces; the cursors keep their colours). Landscape prints “(Screen Image Printed on Next Page)” and puts the picture on page 2. Web adaptation: the orientation is chosen here (VIREO takes the printer’s), the date is the browser’s, the table and student names read “(Not Recorded)” (there is no login), and the picture is the web panels, not VIREO’s window image.',
+  orientation:'Page orientation',portrait:'Portrait',landscape:'Landscape',
  }),
  wedgePrint:Object.freeze({
   note:'Web adaptation: VIREO’s Print sets the colour scheme to the opposite of the Print in Color option (scheme := Env+0x2e8d XOR 1, 0x580fba–0x580fc3), so it prints in black and white unless that option is checked (compiled off; Optical Simulation Options). This print follows the option and uses the browser’s printer layout. Selection highlighting is not printed.',

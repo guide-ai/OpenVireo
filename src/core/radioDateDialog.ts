@@ -200,7 +200,7 @@ export function openRadioDateDialog(s:RadioDateState,gate:RadioDateGate,sessionI
  if(s.dialog)return keep(s,'already-open');
  if(gate.status==='refused')return keep(s,'refused',gate.reason);
  const prefill=dialogPrefill(gate.utMs),id=sessionId??s.storedId;
- return next({...s,storedId:id,dialog:Object.freeze({id,date:prefill.date,time:prefill.time,error:null})},'opened');
+ return next({...s,dialog:Object.freeze({id,date:prefill.date,time:prefill.time,error:null})},'opened');
 }
 const PRINTABLE_ASCII=/^[\x20-\x7e]*$/;
 /** WEB-DATE-02: an edit outside printable ASCII or the field bound is refused and the field keeps its text. */
