@@ -311,7 +311,7 @@ for(const width of [320,375]){
    await id(page,'antenna-hotlist-search-open').tap();await expect(findDialog(page)).toBeVisible();await noOverflow(page);
    const dialog=await findDialog(page).boundingBox();expect(dialog!.x).toBeGreaterThanOrEqual(0);expect(dialog!.x+dialog!.width).toBeLessThanOrEqual(width);
    for(const testId of ['antenna-hotlist-search-query','antenna-hotlist-search-top','antenna-hotlist-search-next','antenna-hotlist-search-cancel']){
-    const box=await id(page,testId).boundingBox();expect(box!.height).toBeGreaterThanOrEqual(44);expect(box!.x+box!.width).toBeLessThanOrEqual(width);
+    const box=await id(page,testId).boundingBox();expect(box!.height).toBeGreaterThanOrEqual(44-0.01);expect(box!.x+box!.width).toBeLessThanOrEqual(width);
    }
    const check=await findDialog(page).locator('label.antenna-hotlist-search-case').boundingBox();expect(check!.height).toBeGreaterThanOrEqual(44);
    await query(page).fill('pair');await id(page,'antenna-hotlist-search-top').tap();

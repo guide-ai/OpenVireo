@@ -165,7 +165,7 @@ test('LSS Options: actual pointer clicks on header and toolbar hit the existing 
  await page.getByTestId('wedge-options-cancel').click();await expect(page.getByTestId('wedge-options')).toHaveCount(0);await hostReleased(page);await expect(page.getByTestId('wedge-point-0')).toHaveAttribute('r','1');
 });
 
-test('LSS Options makes only the App header and investigation toolbar inert; Escape releases them and keeps committed options',async({page},info)=>{
+test('LSS Options makes only the App header and investigation toolbar inert; Escape releases them and keeps committed options',async({page,browserName},info)=>{test.skip(browserName!=='chromium','Uses a Chromium-only CDP stimulus (Front QA1, 2026-10-31).');
  await draftOptions(page);
  // Behaviour first. Base 0066e30 accepted programmatic focus on toolbar Save, and Enter then saved and dropped the draft.
  // Programmatic focus (as an assistive tool or script would request) cannot land on host controls.

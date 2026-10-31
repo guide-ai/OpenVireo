@@ -29,7 +29,7 @@ const EROS_CODE='X-UZOBN';
 async function leaks(page:Page){
  const texts=await page.evaluate(()=>['objectx-lab','objectx-guide','camera-control'].map(id=>{
   const n=document.querySelector(`[data-testid=${id}]`);if(!n)return '';const c=n.cloneNode(true) as HTMLElement;
-  c.querySelectorAll('[data-testid=objectx-asteroid-list]').forEach(x=>x.remove());return c.innerHTML+' '+c.textContent;}));
+  c.querySelectorAll('[data-testid=objectx-asteroid-list], [data-testid=objectx-asteroid-list-closed]').forEach(x=>x.remove());return c.innerHTML+' '+c.textContent;}));
  const word=(s:string)=>new RegExp(`(^|[^\\w])${s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}($|[^\\w])`);
  // The camera's shared text may use a kind word ("Star positions…"); only identifiers count there.
  return [...SECRETS.filter(s=>word(s).test(texts[0]+' '+texts[1])),...IDS.filter(s=>word(s).test(texts[2]))];
@@ -86,8 +86,9 @@ test('hidden identity, two images of the target with asteroids, measure, answer,
  const images=page.getByTestId('objectx-images').locator('li');
  await expect(images).toHaveCount(2);
  await expect(images.first()).toContainText('ObjX-42-01');await expect(images.nth(1)).toContainText('ObjX-42-02');
- await expect(page.getByTestId('objectx-image-movers-0')).toContainText(/[1-9]\d* asteroids? in the field box/);
- await expect(page.getByTestId('objectx-image-movers-1')).toContainText(/[1-9]\d* asteroids? in the field box/);
+ // QA1 review 1 H2: no asteroid count before the reveal (it named an asteroid target after one image); the same words for every target.
+ await expect(page.getByTestId('objectx-image-movers-0')).toHaveText('asteroids of the current list included (the count shows after the reveal)');
+ await expect(page.getByTestId('objectx-image-movers-1')).toHaveText('asteroids of the current list included (the count shows after the reveal)');
  // Save both images as the original names them (review 2 L4) and read their headers in Node.
  const fits:Buffer[]=[];
  for(const label of ['ObjX-42-01','ObjX-42-02']){
@@ -127,7 +128,9 @@ test('hidden identity, two images of the target with asteroids, measure, answer,
  await expect(rows).toHaveCount(2);await expect(rows.first()).toContainText('header WCS');
  const motion=/Motion: ([\d.]+)″\/h toward position angle ([\d.]+)°/.exec((await page.getByTestId('objectx-motion').textContent())??'');
  expect(motion).not.toBeNull();
- // Tolerance: a centroid within about 1 px (1.07″) on each image over 0.75 h is about ±3″/h; allowed ±6″/h and ±8°.
+ // Tolerance (QA1 review 1 L5): each centroid within about 1 px (1.07″, the 0.4 m pixel) of the predicted pixel moves the
+ // rate by up to 2 × 1.07″ / 0.75 h ≈ ±2.9″/h; ±6″/h (11 % of ≈ 54.7″/h) allows twice that for the WCS and the keyboard
+ // cursor's whole-pixel steps. Measured: 53.96″/h (walk-through, low cut 0). Position angle ±8°.
  expect(Math.abs(Number(motion![1])-rate)).toBeLessThan(6);
  const dpa=Math.abs(((Number(motion![2])-pa)+540)%360-180);expect(dpa).toBeLessThan(8);
  await page.screenshot({path:test.info().outputPath('object-x-measure.png'),fullPage:true});
@@ -136,9 +139,14 @@ test('hidden identity, two images of the target with asteroids, measure, answer,
  await page.getByTestId('objectx-answer').getByLabel('asteroid').check();
  await page.getByLabel('Describe your evidence').fill('A source near the centre moved about 55″ per hour between the two images.');
  expect(await leaks(page)).toEqual([]);
+ // QA1 closure E1: a save before the reveal holds no pair counts or skipped reasons (they named asteroid targets).
+ const early=await saveOffline(page,async()=>{const download=page.waitForEvent('download');await button(page,'Save investigation').click();return (await download).path();});
+ for(const e of JSON.parse(await readFile(early!,'utf8')).objectX.exposures){expect(e).not.toHaveProperty('pairs');expect(e).not.toHaveProperty('skipped');}
  await button(page,'Reveal the identity').click();await button(page,'Reveal the identity').click();
  await expect(page.getByTestId('objectx-reveal')).toContainText('Object: (433) Eros — Asteroid');
  await expect(page.getByTestId('objectx-reveal')).toContainText('Your answer is right: it is an asteroid.');
+ // After the reveal the count shows.
+ await expect(page.getByTestId('objectx-image-movers-0')).toContainText(/[1-9]\d* asteroids? in the field box/);
  // The answer is frozen at the reveal (review 2 M2).
  await expect(page.getByTestId('objectx-answer').getByLabel('star')).toBeDisabled();
  await page.screenshot({path:test.info().outputPath('object-x-reveal.png'),fullPage:true});
@@ -251,5 +259,64 @@ test('a mid-exposure repoint keeps the asteroids of the Start pointing in that i
  await expect(page.getByTestId('camera-status')).toHaveText('Image ready.',{timeout:120_000});
  await clickHeaderTool(page,'Object X');
  await expect(page.getByTestId('objectx-images').locator('li')).toHaveCount(1);
- await expect(page.getByTestId('objectx-image-movers-0')).toContainText(/[1-9]\d* asteroids? in the field box/);
+ await expect(page.getByTestId('objectx-image-movers-0')).toHaveText('asteroids of the current list included (the count shows after the reveal)');
+});
+
+// Front QA1 (2026-10-31, E08 low cut): with the real bundled star field (not the star-free recorded fixture), two 30 s images
+// on the default 0.4 m are measured at Eros's predicted pixel with the default cut. The earlier 5 % of the range sat above the
+// asteroid (about 16 ADU over a sky of about 532) and Measure refused; the web default low cut is now the sky median.
+test('QA1: Eros is measurable with the default cut on 30 s images of the real star field',async({page})=>{
+ test.setTimeout(300_000);
+ await openLab(page);
+ await page.getByLabel('ID # of your unknown object (from the lab sheet or instructor)').fill('42');
+ await page.getByTestId('objectx-target').selectOption(EROS_CODE);
+ await button(page,'Set the observatory clock').click();
+ await expect(page.getByTestId('objectx-list-status')).toContainText('Observable asteroids on 2009-06-01 04:00:00 UT',{timeout:20_000});
+ await button(page,'Copy the coordinates to the observatory').click();
+ await button(page,'Open dome ↗').click();
+ if(!await button(page,'Point to coordinates').isVisible())await page.getByText('Enter coordinates',{exact:true}).click();
+ await button(page,'Point to coordinates').click();
+ await page.getByRole('group',{name:'Field of view'}).getByRole('button',{name:'Telescope · 15′',exact:true}).click();
+ const startClock=async()=>{if(!await button(page,'Start observatory clock').isVisible())await page.getByText('Observatory clock & spectral tracking',{exact:true}).click();await button(page,'Start observatory clock').click();};
+ const expose=async()=>{const camera=page.getByTestId('camera-control');await expect(camera.getByLabel(/Bundled extracts/)).toBeChecked();
+  await camera.getByLabel('Minutes').fill('0');await camera.getByLabel('Seconds').fill('30');
+  await camera.getByRole('button',{name:'Start exposure',exact:true}).click();
+  await expect(page.getByTestId('camera-status')).toHaveText('Image ready.',{timeout:120_000});};
+ await startClock();await button(page,'Turn tracking on').click();await expose();
+ await clickHeaderTool(page,'Object X');
+ await page.getByLabel('Observation date and time (UT)').fill('2009-06-01T04:45:00');await button(page,'Set the observatory clock').click();
+ await expect(page.getByTestId('objectx-list-status')).toContainText('Observable asteroids on 2009-06-01 04:45:00 UT',{timeout:20_000});
+ await clickHeaderTool(page,'Observatory');await startClock();await expose();
+ await clickHeaderTool(page,'Object X');
+ const fits:Buffer[]=[];
+ for(const label of ['ObjX-42-01','ObjX-42-02']){const d=page.waitForEvent('download');await button(page,`Save ${label}.FIT`).click();fits.push(await readFile((await (await d).path())!));}
+ const sav=new Uint8Array(readFileSync(new URL('../public/original/orbit/ObjX_MPC.CMO.sav',import.meta.url)));
+ const eros=elementsFromState(readOrbitRecord(sav,findOrbitRecord(sav,{number:'433'})!));
+ const predicted=fits.map(bytes=>{
+  const image=parseFitsImage(new Uint8Array(bytes)),card=(k:string)=>Number(image.cards.find(c=>c.startsWith(k.padEnd(8)+'='))!.slice(10).split('/')[0]);
+  const jd=card('MJD-OBS')+2400000.5,mid=jd+card('EXPTIME')/2/86400,p=astrometricPosition(eros,mid);
+  return {jd,sky:{raHours:p.raHours,decDeg:p.decDeg},pixel:skyToPixel(tanWcsFromCards(image.cards),{raHours:p.raHours,decDeg:p.decDeg})};
+ });
+ const rate=angularSeparationArcsec(predicted[0].sky,predicted[1].sky)/((predicted[1].jd-predicted[0].jd)*24);
+ await button(page,'Measure positions').click();
+ const viewport=page.getByTestId('objectx-measure-viewport');
+ const cursor=async()=>{const m=/x (\d+), y (\d+)/.exec((await page.getByTestId('objectx-cursor').textContent())??'')!;return {x:Number(m[1]),y:Number(m[2])};};
+ async function moveTo(x:number,y:number){
+  for(const [axis,plus,minus] of [['x','ArrowRight','ArrowLeft'],['y','ArrowDown','ArrowUp']] as const){
+   let d=Math.round(axis==='x'?x:y)-(await cursor())[axis];
+   while(Math.abs(d)>=10){await page.keyboard.press(`Shift+${d>0?plus:minus}`);d-=Math.sign(d)*10;}
+   while(d!==0){await page.keyboard.press(d>0?plus:minus);d-=Math.sign(d);}
+  }
+ }
+ for(const [k,frame] of ['Image 1: ObjX-42-01','Image 2: ObjX-42-02'].entries()){
+  await page.getByRole('button',{name:frame}).click();await viewport.focus();
+  await moveTo(predicted[k].pixel.x,predicted[k].pixel.y);await page.keyboard.press('Enter');
+  await expect(page.getByText('No source above the low cut near the cursor.')).toHaveCount(0);
+ }
+ await expect(page.getByTestId('objectx-measurements').locator('tbody tr')).toHaveCount(2);
+ const motion=/Motion: ([\d.]+)″\/h/.exec((await page.getByTestId('objectx-motion').textContent())??'');
+ expect(motion).not.toBeNull();
+ await test.info().attach('qa1-eros-motion.json',{body:JSON.stringify({measured:Number(motion![1]),predicted:rate}),contentType:'application/json'});
+ // Same ±6″/h bound as above (two whole-pixel centroids over 0.75 h); the attachment records the measured and predicted rates.
+ expect(Math.abs(Number(motion![1])-rate)).toBeLessThan(6);
 });

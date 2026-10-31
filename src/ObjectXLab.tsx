@@ -28,6 +28,9 @@ import {objectXFitsBytes} from './io/objectXImage';
 export type ObjectXHiddenTarget=Readonly<{ra:number;dec:number;code:string;label:string}>;
 export type ObjectXController=Readonly<{extraSources:(jd:number,pointing:Readonly<{ra:number;dec:number}>,seconds:number,camera:CameraExposureKind)=>readonly CameraExtraSource[];acceptImage:(image:CameraImage)=>void}>;
 type Props=Readonly<{
+ /** Edit Mode (env+0x2e7e): VIREO shows the Asteroid List during Object X only then (QA1 review 1 H3). This site's Edit Mode needs
+  * no instructor login (WEB-EM-01), so the list also waits for the reveal (QA1 closure E2) [W]. */
+ editMode?:boolean;
  active:boolean;busy:boolean;
  clockUtc:()=>string;onSetClock:(utc:string)=>void;
  onPrefill:(ra:number,dec:number)=>void;onOpenRadio:()=>void;
@@ -55,7 +58,7 @@ type Loaded=Readonly<{frame:MeasureFrame;bytes:Uint8Array}>;
 type ListState=Readonly<{list:ObservableList;orbitFile:BundledOrbitFileId;limit:number}>;
 
 /** E08 #object-x route: hidden-identity object, the three instrument branches, images, blink/measure, answer and reveal. */
-function ObjectXLab({spectralRange=DEFAULT_SPECTRAL_RANGE,onSpectralRange,onClassifySpectrum,active,busy,clockUtc,clockApplied,onSetClock,onPrefill,onOpenRadio,controllerRef,restored,onSnapshot,onSummary,onHiddenTarget}:Props){
+function ObjectXLab({editMode=false,spectralRange=DEFAULT_SPECTRAL_RANGE,onSpectralRange,onClassifySpectrum,active,busy,clockUtc,clockApplied,onSetClock,onPrefill,onOpenRadio,controllerRef,restored,onSnapshot,onSummary,onHiddenTarget}:Props){
  const [inv,setInv]=useState<ObjectXInvestigation>(restored??EMPTY);
  const [htl,setHtl]=useState<HtlList|null>(null),[htlError,setHtlError]=useState(false);
  const [dateText,setDateText]=useState(inv.startUtc),[notice,setNotice]=useState('');
@@ -209,8 +212,10 @@ function ObjectXLab({spectralRange=DEFAULT_SPECTRAL_RANGE,onSpectralRange,onClas
      <p className="observatory-note">{M.orbitNote}</p>
      <label>{M.limitLabel}<input type="number" step="0.5" min={-5} max={30} value={inv.limit} disabled={disabled} onChange={e=>{const v=Number(e.target.value);if(Number.isFinite(v)&&v>=-5&&v<=30)update(i=>({...i,limit:v}));}} onBlur={()=>{if(listRef.current&&listRef.current.limit!==invRef.current.limit)rebuildNow(undefined,invRef.current.limit);}}/></label>
      <div className="button-row"><button className="secondary-button" disabled={disabled||progress!==null} onClick={()=>{let jd:number;try{jd=jdOfUtc(clockUtc());}catch{return;}void buildList(jd);}}>{M.buildList}</button></div>
-     <p role="status" data-testid="objectx-list-status">{progress?M.building(progress[0],progress[1]):listError?M.listError:list?M.listBuilt(list.entries.length,list.neaCount,list.oppositionCount,utOfJd(list.jd)):M.noList}</p>
-     {list&&list.errors.length>0&&<p className="observatory-note">{M.listErrors(list.errors.length)}</p>}
+     {/* QA1 closure (Low): a hidden sizer with the longest status and note keeps this box's height, so Copy below does not move. */}
+     <div className="objectx-list-box"><div className="objectx-list-sizer" aria-hidden="true"><p>{M.listBuilt(99999,99999,99999,'2009-06-01 04:00:00')}</p><p className="observatory-note">{M.listErrors(99999)}</p></div>
+     <div><p role="status" data-testid="objectx-list-status">{progress?M.building(progress[0],progress[1]):listError?M.listError:list?M.listBuilt(list.entries.length,list.neaCount,list.oppositionCount,utOfJd(list.jd)):M.noList}</p>
+     {list&&list.errors.length>0&&<p className="observatory-note">{M.listErrors(list.errors.length)}</p>}</div></div>
      <div className="button-row"><button className="primary-button" disabled={disabled||!target} onClick={()=>target&&onPrefill(target.ra,target.dec)}>{M.pointObservatory}</button></div>
      <p className="observatory-note">{M.pointHelp}</p>
     </section>
@@ -225,9 +230,9 @@ function ObjectXLab({spectralRange=DEFAULT_SPECTRAL_RANGE,onSpectralRange,onClas
    {!inv.images.length?<p>{M.noImages}</p>:<ol data-testid="objectx-images">{inv.images.map((m,k)=>{const e=m.exposure!==null?inv.exposures[m.exposure]:null;return <li key={m.sha256}>
     {e?M.imageRow(m.label,utOfJd(m.jd),cameraCatalogReference('ccd',e.filter).filter,e.seconds):M.imageRowPlain(m.label,utOfJd(m.jd))}
     {e&&!onTarget(e)&&<> {M.imageOffTarget}</>}
-    {e&&<> — <span data-testid={`objectx-image-movers-${k}`}>{e.listJd!==null?M.imageMovers(e.pairs):M.imageNoAsteroids}</span></>}
+    {e&&<> — <span data-testid={`objectx-image-movers-${k}`}>{e.listJd===null?M.imageNoAsteroids:inv.revealed?M.imageMovers(e.pairs):M.imageMoversHidden}</span></>}
     {e&&e.catalogMode==='live'&&<> <span className="observatory-note">{M.imageLive}</span></>}
-    {e&&e.skipped.length>0&&<> <span data-testid={`objectx-image-skipped-${k}`}>{M.imageSkipped(e.skipped)}</span></>}
+    {e&&inv.revealed&&e.skipped.length>0&&<> <span data-testid={`objectx-image-skipped-${k}`}>{M.imageSkipped(e.skipped)}</span></>}
     {!loaded.has(m.sha256)?<> — <em>{M.imageNotLoaded}</em></>:<> <button className="secondary-button" disabled={disabled} onClick={()=>save(m,loaded.get(m.sha256)!.bytes)}>{M.saveFits(m.label)}</button></>}
    </li>;})}</ol>}
    <label className="secondary-button">{M.loadFits}<input type="file" accept=".fit,.fits,application/fits" multiple hidden disabled={disabled} onChange={e=>{void openFits(e.target.files);e.target.value='';}} data-testid="objectx-open-fits"/></label>
@@ -243,7 +248,8 @@ function ObjectXLab({spectralRange=DEFAULT_SPECTRAL_RANGE,onSpectralRange,onClas
     </div>
     {inv.measure&&(frames?<ObjectXMeasure frames={frames} log={inv.log} active={active&&!busy} onLogChange={(log:MeasurementLog)=>update(i=>({...i,log}))}/>:<p>{M.measureNotLoaded}</p>)}
    </>}
-   {list&&<details data-testid="objectx-asteroid-list" onToggle={e=>setListOpen(e.currentTarget.open)}><summary>{M.listTitle} ({list.entries.length})</summary>
+   {list&&!(editMode&&inv.revealed)&&<p className="observatory-note" data-testid="objectx-asteroid-list-closed">{M.listClosed}</p>}
+   {list&&editMode&&inv.revealed&&<details data-testid="objectx-asteroid-list" onToggle={e=>setListOpen(e.currentTarget.open)}><summary>{M.listTitle} ({list.entries.length})</summary>
     <p className="observatory-note">{list.fileType===0?M.listNotesAst:M.listNotesMpc}</p><p className="observatory-note">{M.listSorted}</p>
     {listOpen&&<div className="objectx-table"><table><thead><tr>{M.listColumns.map(c=><th key={c}>{c}</th>)}</tr></thead><tbody>
      {list.entries.slice(0,LIST_ROWS).map(e=><tr key={e.index}><td>{e.label}</td><td>{formatSexagesimal(e.raHours,'ra')}</td><td>{formatSexagesimal(e.decDeg,'dec')}</td><td>{e.magnitude?e.magnitude.toFixed(1):''}</td><td>{e.deltaAu.toPrecision(5)}</td>{e.notes.map((n,i)=><td key={i}>{n||''}</td>)}</tr>)}

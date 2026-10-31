@@ -18,7 +18,7 @@ export {ObjectXSessionError};
 import {orbitRecordCount} from '../core/orbitFile';
 import type {CameraCatalogOptions} from './cameraCatalog';
 import type {CameraExtraSource} from '../core/cameraExposure';
-import {replayStaticExposure} from './objectXImage';
+import {movingPairSkips,replayStaticExposure} from './objectXImage';
 import {MEASUREMENT_LIMIT,addMeasurement,type Measurement,type MeasurementLog} from '../core/astrometryMeasure';
 import {OBJECT_X_ID_MAX,OBJECT_X_KINDS,type ObjectXKind} from '../core/objectXLab';
 import {parseClockUTC} from '../core/siteClock';
@@ -38,6 +38,10 @@ export type ObjectXExposure=Readonly<{
  listJd:number|null;orbitFile:BundledOrbitFileId|null;limit:number|null;pairs:number;
  /** Moving pairs the camera skipped, by typed reason (CameraSkippedSource.reason; its extra list holds only the lab's pairs). */
  skipped:readonly ObjectXSkipReason[];fitsSha256:string;
+ /** QA1 closure E1: `pairs` and `skipped` are written to the file only after the reveal (they named asteroid targets before it)
+  * and recomputed on restore. True when the file this exposure came from carried them (written before QA1 closure, or after a
+  * reveal), so a re-save keeps them and stays byte-identical. Not itself written. */
+ countsStored?:true;
  /** Front C6: the centre of the region record the catalogue was selected with (the telescope field loaded last, cameraRegion.ts).
   * Absent in exposures made before C6, which selected the whole sky and replay that way. */
  fieldAnchor?:Readonly<{ra:number;dec:number}>;
@@ -84,8 +88,9 @@ function readSkipped(v:unknown,pairs:number):readonly ObjectXSkipReason[]{
  return Object.freeze(v.map(r=>OBJECT_X_SKIP_REASONS.includes(r as ObjectXSkipReason)?r as ObjectXSkipReason:fail('record')));
 }
 function readExposure(v:unknown):ObjectXExposure{
- const keys=['jd','seconds','filter','gain','telescope','ra','dec','seed','catalogMode','catalogSha256','extractId','listJd','orbitFile','limit','pairs','skipped','fitsSha256'];
- const r=exact(v,isObject(v)&&Object.hasOwn(v,'fieldAnchor')?[...keys,'fieldAnchor']:keys);
+ const counted=isObject(v)&&Object.hasOwn(v,'pairs'),anchored=isObject(v)&&Object.hasOwn(v,'fieldAnchor');
+ const keys=['jd','seconds','filter','gain','telescope','ra','dec','seed','catalogMode','catalogSha256','extractId','listJd','orbitFile','limit',...(counted?['pairs','skipped']:[]),'fitsSha256',...(anchored?['fieldAnchor']:[])];
+ const r=exact(v,keys);
  const anchor=r.fieldAnchor===undefined?undefined:(()=>{const a=exact(r.fieldAnchor,['ra','dec']);return Object.freeze({ra:num(a.ra,0,24),dec:num(a.dec,-90,90)});})();
  if(anchor&&anchor.ra>=24)fail('record');
  // A list is all three of date, orbit file and limit, or none of them.
@@ -93,10 +98,11 @@ function readExposure(v:unknown):ObjectXExposure{
  if(r.orbitFile!==null&&!SELECTABLE_ORBIT_FILES.includes(r.orbitFile as BundledOrbitFileId))fail('record');
  if(r.catalogMode!=='static'&&r.catalogMode!=='live')fail('record');
  if(![1,2,5].includes(r.gain as number))fail('record');
- const pairs=int(r.pairs,0,256);
+ // Without stored counts, pairs and skipped are placeholders until the replay recomputes them (derive).
+ const pairs=counted?int(r.pairs,0,256):0;
  return Object.freeze({jd:jd(r.jd),seconds:int(r.seconds,1,CAMERA_STORED_MAX_SECONDS),filter:int(r.filter,0,4),gain:r.gain as number,telescope:int(r.telescope,0,2) as 0|1|2,
   ra:num(r.ra,0,24),dec:num(r.dec,-90,90),seed:int(r.seed,0,0xffff_ffff),catalogMode:r.catalogMode as 'static'|'live',catalogSha256:hex64(r.catalogSha256),
-  extractId:r.extractId===null?null:str(r.extractId,80),listJd:r.listJd===null?null:jd(r.listJd),orbitFile:r.orbitFile as BundledOrbitFileId|null,limit:r.limit===null?null:num(r.limit,-5,30),pairs,skipped:readSkipped(r.skipped,pairs),fitsSha256:hex64(r.fitsSha256),...(anchor?{fieldAnchor:anchor}:{})});
+  extractId:r.extractId===null?null:str(r.extractId,80),listJd:r.listJd===null?null:jd(r.listJd),orbitFile:r.orbitFile as BundledOrbitFileId|null,limit:r.limit===null?null:num(r.limit,-5,30),pairs,skipped:counted?readSkipped(r.skipped,pairs):Object.freeze([]),fitsSha256:hex64(r.fitsSha256),...(counted?{countsStored:true as const}:{}),...(anchor?{fieldAnchor:anchor}:{})});
 }
 function readImage(v:unknown,exposures:number):ObjectXImageRef{
  const r=exact(v,['sha256','label','jd','exposure']);
@@ -116,9 +122,16 @@ function readLog(v:unknown,frames:number):MeasurementLog{
  return log;
 }
 const portableLog=(log:MeasurementLog)=>log.map(m=>({frame:m.frame,role:m.role,x:m.x,y:m.y,jd:m.jd,...(m.catalog?{catalog:{raHours:m.catalog.raHours,decDeg:m.catalog.decDeg}}:{})}));
+/** QA1 closure E1: before the reveal a new exposure is written without `pairs` and `skipped`; the key order is the format's. */
+function portableExposure(e:ObjectXExposure,revealed:boolean){
+ const counts=revealed||e.countsStored===true;
+ return {jd:e.jd,seconds:e.seconds,filter:e.filter,gain:e.gain,telescope:e.telescope,ra:e.ra,dec:e.dec,seed:e.seed,catalogMode:e.catalogMode,catalogSha256:e.catalogSha256,
+  extractId:e.extractId,listJd:e.listJd,orbitFile:e.orbitFile,limit:e.limit,...(counts?{pairs:e.pairs,skipped:[...e.skipped]}:{}),fitsSha256:e.fitsSha256,
+  ...(e.fieldAnchor?{fieldAnchor:{ra:e.fieldAnchor.ra,dec:e.fieldAnchor.dec}}:{})};
+}
 function portablePayload(i:ObjectXInvestigation){
  return {policy:OBJECT_X_INVESTIGATION_POLICY,orbitFile:i.orbitFile,id:i.id,target:i.target,startUtc:i.startUtc,clockSet:i.clockSet,listJd:i.listJd,limit:i.limit,
-  exposures:i.exposures.map(e=>({...e,skipped:[...e.skipped],...(e.fieldAnchor?{fieldAnchor:{ra:e.fieldAnchor.ra,dec:e.fieldAnchor.dec}}:{})})),images:i.images.map(m=>({...m})),measure:i.measure?{...i.measure}:null,
+  exposures:i.exposures.map(e=>portableExposure(e,i.revealed)),images:i.images.map(m=>({...m})),measure:i.measure?{...i.measure}:null,
   log:portableLog(i.log),
   answer:i.answer,description:i.description,revealed:i.revealed};
 }
@@ -159,13 +172,19 @@ async function derive(value:unknown):Promise<Derived>{
   const l=await buildObservableListInSlices(files.get(file)!,BUNDLED_ORBIT_FILES[file].id,e.listJd!,e.limit!);if(!l)return fail('replay');
   lists.set(key(e),l);
  }
+ const restored:ObjectXExposure[]=[];
  for(const [i,e] of exposures.entries()){
   let extras:readonly CameraExtraSource[]=[],pairs:unknown[]=[];
   if(e.listJd!==null){
    const l=lists.get(key(e))!,r=movingPairs(files.get(e.orbitFile!)!,l,{ra:e.ra,dec:e.dec},e.jd,e.seconds);
-   if(r.pairs.length!==e.pairs)fail('replay');
+   if(e.countsStored&&r.pairs.length!==e.pairs)fail('replay');
    extras=r.pairs.map(p=>p.source);pairs=r.pairs.map(p=>[p.index,p.source.raHours,p.source.decDeg,p.source.storedMag,p.source.end.raHours,p.source.end.decDeg]);
   }else if(e.pairs)fail('replay');
+  // E1: counts not in the file are recomputed: the pair count from the replayed list, the skipped reasons by composing the
+  // recipe (moving pairs draw first and their skips do not depend on the catalogue rows).
+  // A revealed file always writes its counts, so the flag only matters (and is only kept) before the reveal.
+  if(e.countsStored){if(v.revealed){const {countsStored:_,...rest}=e;restored.push(Object.freeze(rest));}else restored.push(e);}
+  else restored.push(Object.freeze({...e,pairs:extras.length,skipped:extras.length?await movingPairSkips(e,extras):Object.freeze([])}));
   let image='live-not-replayable';
   if(e.catalogMode==='static'){
    const r=await replayStaticExposure({camera:'ccd',opticalIndex:e.telescope,filterPosition:e.filter,seconds:e.seconds,gain:e.gain,centerRaHours:e.ra,centerDecDegrees:e.dec,seed:e.seed},e.jd,extras,src.catalog,e.fieldAnchor??null);
@@ -177,7 +196,7 @@ async function derive(value:unknown):Promise<Derived>{
  // The student's own state is in the digest too, so editing the answer, the reveal or the marks is detected.
  derivatives.push({state:{id,target,answer,revealed:v.revealed,description,log:portableLog(log),measure}});
  const digest=await resourceSha256(new TextEncoder().encode(JSON.stringify({policy:OBJECT_X_INVESTIGATION_POLICY,derivatives})));
- const result=Object.freeze({investigation:Object.freeze({orbitFile,id,target,startUtc,clockSet:v.clockSet as boolean,listJd,limit,exposures,images,measure,log,answer,description,revealed:v.revealed as boolean}),digest});
+ const result=Object.freeze({investigation:Object.freeze({orbitFile,id,target,startUtc,clockSet:v.clockSet as boolean,listJd,limit,exposures:Object.freeze(restored),images,measure,log,answer,description,revealed:v.revealed as boolean}),digest});
  lastVerified={text,result};return result;
 }
 /** Save: the portable payload plus its derivative digest. */

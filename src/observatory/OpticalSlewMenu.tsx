@@ -39,6 +39,9 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,curren
  fieldInfo?:FieldInformationProps&Readonly<{onEditMode:(on:boolean)=>void;
   /** Front M: the Virtual Observatory state lifted to the page (also gates Multi-Spec mode 0); absent: kept here. */
   virtualObservatory?:boolean;onVirtualObservatory?:(on:boolean)=>void;
+  /** QA1 closure M1 [D]: the Object X lab holds a target. ObjectX1Click 0x58ad55 sets QSOList1 (+0x4b0) Visible := Edit Mode
+   * (env+0x2e7e), so in Object X VIREO offers File › QSO List only in Edit Mode, whatever Virtual Observatory says. */
+  objectXMode?:boolean;
   /** Front R3: the other ported options (page session); absent: the dialog lists them with their compiled state. */
   sessionOptions?:SessionOpticalOptions;onSessionOptions?:(o:SessionOpticalOptions)=>void;
   /** R3 review L2: the selected site's horizon (radians), shown read-only as Horizon Limit. */horizonRadians?:number}>}){
@@ -109,7 +112,7 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,curren
    <OpticalOptionsDialog options={options} onOptions={onOptions} disabled={!enabled} editMode={fieldInfo?.editMode} onEditMode={fieldInfo?.onEditMode} virtualObservatory={virtualObservatory} onVirtualObservatory={fieldInfo?setVirtualObservatory:undefined} sessionOptions={fieldInfo?.sessionOptions} onSessionOptions={fieldInfo?.onSessionOptions} horizonRadians={fieldInfo?.horizonRadians}/>
    <button type="button" className="secondary-button" disabled={!enabled||looking} aria-busy={looking||undefined} data-testid="ob-add-current" onClick={()=>void addCurrent()}>{E.open}</button>{looking&&<p role="status" className="observatory-note" data-testid="ob-add-current-looking">{E.looking}</p>}
   </div>
-  {fieldInfo&&<ObservatoryFileMenu editMode={editMode} qsoList={virtualObservatory} disabled={fieldInfo.busy??false} pointing={pointing} view={fieldInfo.view} telescope={fieldInfo.telescopeName??''} onFieldInfo={kind=>setFieldRequest(r=>({kind,token:(r?.token??0)+1}))} onQsoList={()=>setQsoRequest(n=>n+1)} onClusterData={()=>setClusterRequest(n=>n+1)}/>}
+  {fieldInfo&&<ObservatoryFileMenu editMode={editMode} qsoList={fieldInfo.objectXMode?editMode:virtualObservatory} disabled={fieldInfo.busy??false} pointing={pointing} view={fieldInfo.view} telescope={fieldInfo.telescopeName??''} onFieldInfo={kind=>setFieldRequest(r=>({kind,token:(r?.token??0)+1}))} onQsoList={()=>setQsoRequest(n=>n+1)} onClusterData={()=>setClusterRequest(n=>n+1)}/>}
   <ResearchNotes><p>{M.openHelp} {H.openHelp} {E.openHelp} {M.adaptation} {E.adaptation}</p></ResearchNotes>
   <OpticalHotListWindow caption={caption} texts={texts} state={hot} rows={rows} onSelect={i=>setHot(h=>selectOpticalHotListIndex(h,i,rows.length))} onSlew={slew} onClose={()=>setHot(closeOpticalHotList)}
    onSearch={()=>setHot(openOpticalHotListSearch)} onSearchEdit={(q,c)=>setHot(h=>editOpticalHotListSearch(h,q,c))} onSearchSubmit={mode=>setHot(h=>submitOpticalHotListSearch(h,mode,texts))} onSearchCancel={()=>setHot(cancelOpticalHotListSearch)}

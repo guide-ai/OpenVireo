@@ -22,8 +22,14 @@ async function pixel(page: Page, panel: number, x: number, y: number) {
   const plot = page.getByTestId(`pulsar-plot-${panel}`);
   await plot.scrollIntoViewIfNeeded();
   const box = (await plot.boundingBox())!;
-  return { x: box.x + (x + 0.5) * box.width / 400, y: box.y + (y + 0.5) * box.height / HEIGHT[panel] };
+  // Front QA1 (2026-10-31): Firefox delivers mouse coordinates truncated to whole CSS pixels (Chromium keeps fractions), so use a
+  // whole client coordinate inside the native pixel when one exists; Chromium then lands in the same native pixel as before.
+  const inside = (start: number, size: number) => { const n = Math.ceil(start); return n < start + size ? n : start + size / 2; };
+  return { x: inside(box.x + x * box.width / 400, box.width / 400), y: inside(box.y + y * box.height / HEIGHT[panel], box.height / HEIGHT[panel]) };
 }
+/** Front QA1: the real mouse's pointer id (Chromium 1, Firefox 0), recorded by a capture listener at its next press. */
+const recordMousePointerId = (page: Page) => page.evaluate(() => { addEventListener('pointerdown', (e: PointerEvent) => { if (e.pointerType === 'mouse') (window as unknown as { __mouseId: number }).__mouseId = e.pointerId; }, true); });
+const mousePointerId = (page: Page) => page.evaluate(() => (window as unknown as { __mouseId: number }).__mouseId);
 /** Clicks native pixel (x, y) of a panel. */
 async function at(page: Page, panel: number, x: number, y: number, button: 'left' | 'right' = 'left') {
   const p = await pixel(page, panel, x, y);
@@ -451,9 +457,11 @@ test('a cancelled or lost pointer capture clears the drag without confirming a m
   await load(page);
   await page.getByTestId('pulsar-properties-close').click();
   const plot = page.getByTestId('pulsar-plot-1'), value = page.getByTestId('pulsar-vertical-value-1');
+  await recordMousePointerId(page);
+  let mouseId = 1;
   const move = async (x: number) => {
     const p = await pixel(page, 1, x, 10);
-    await plot.dispatchEvent('pointermove', { pointerId: 1, pointerType: 'mouse', isPrimary: true, button: -1, buttons: 1, clientX: p.x, clientY: p.y });
+    await plot.dispatchEvent('pointermove', { pointerId: mouseId, pointerType: 'mouse', isPrimary: true, button: -1, buttons: 1, clientX: p.x, clientY: p.y });
   };
   for (const event of ['pointercancel', 'lostpointercapture']) {
     // The real mouse.up below still reaches the plot (a real cancel would not send one) and marks the panel pending.
@@ -461,10 +469,11 @@ test('a cancelled or lost pointer capture clears the drag without confirming a m
     const p = await pixel(page, 1, 50, 10);
     await page.mouse.move(p.x, p.y);
     await page.mouse.down();
+    mouseId = await mousePointerId(page);
     await expect(value).toHaveText('0.500000');
     await move(60);
     await expect(value).toHaveText('0.600000'); // a held drag still moves the cursor
-    await plot.dispatchEvent(event, { pointerId: 1, pointerType: 'mouse', isPrimary: true });
+    await plot.dispatchEvent(event, { pointerId: mouseId, pointerType: 'mouse', isPrimary: true });
     await expect(page.getByTestId('pulsar-pending-1')).toHaveCount(0); // no MouseUp was invented
     await move(80);
     await expect(value).toHaveText('0.600000');
@@ -736,8 +745,10 @@ test('cancelling a secondary pointer does not end the primary drag; the owner\'s
   await page.getByTestId('pulsar-properties-close').click();
   const plot1 = page.getByTestId('pulsar-plot-1'), plot2 = page.getByTestId('pulsar-plot-2'), value = page.getByTestId('pulsar-vertical-value-1');
   const b = await pixel(page, 2, 200, 10), a = await pixel(page, 1, 50, 10), c = await pixel(page, 1, 70, 10);
+  await recordMousePointerId(page);
   await page.mouse.move(a.x, a.y);
   await page.mouse.down();
+  const mouseId = await mousePointerId(page);
   await expect(value).toHaveText('0.500000');
   // A second, non-primary touch on panel 2 is ignored, and so is its cancellation.
   await plot2.dispatchEvent('pointerdown', { pointerId: 12, pointerType: 'touch', isPrimary: false, button: 0, buttons: 1, clientX: b.x, clientY: b.y });
@@ -753,7 +764,7 @@ test('cancelling a secondary pointer does not end the primary drag; the owner\'s
   await expect(page.getByTestId('pulsar-pending-1')).toBeVisible();
   await expect(page.getByTestId('pulsar-pending-2')).toHaveCount(0);
 
-  // The owner (the mouse, pointer id 1 in Chromium) ends its own gesture by cancel, then by lost capture. A moved
+  // The owner (the mouse: pointer id 1 in Chromium, 0 in Firefox) ends its own gesture by cancel, then by lost capture. A moved
   // cursor stays, nothing new is confirmed, and the next press is a new gesture of a free owner.
   for (const event of ['pointercancel', 'lostpointercapture']) {
     await page.getByTestId('pulsar-reset').click();
@@ -764,7 +775,7 @@ test('cancelling a secondary pointer does not end the primary drag; the owner\'s
     await page.mouse.down();
     await page.mouse.move(c.x, c.y);
     await expect(value).toHaveText('0.700000');
-    await plot1.dispatchEvent(event, { pointerId: 1, pointerType: 'mouse', isPrimary: true });
+    await plot1.dispatchEvent(event, { pointerId: mouseId, pointerType: 'mouse', isPrimary: true });
     await page.mouse.move(d.x, d.y); // still physically held, but the latch is gone
     await expect(value).toHaveText('0.700000');
     await expect(page.getByTestId('pulsar-pending-1')).toHaveCount(0);

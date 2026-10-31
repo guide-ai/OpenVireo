@@ -26,7 +26,7 @@ export const OBJECT_X_MEASURE_EN:ObjectXMeasureMessages=Object.freeze({
  cursor:(x,y)=>`Cursor x ${x}, y ${y}`,measure:'Measure at cursor',viewport:'Image; arrow keys move the cursor, Enter measures',
  keyboardHelp:'Arrow keys move the cursor by one pixel (Shift: ten). Enter or Space measures.',
  rangeLow:'Low cut',rangeHigh:'High cut',
- rangeNote:'The cuts set both the display stretch and the centroid weights (web default: 5 % and 50 % of the image range).',
+ rangeNote:'The cuts set both the display stretch and the centroid weights (web default: low at the sky level, the image median; high at 50 % of the image range). If Measure finds no source above the low cut, lower the Low cut or take a longer exposure.',
  blinkAligned:'Blinking aligned on the first two reference stars of each image.',
  blinkRaw:'Blinking the raw frames (same pointing assumed); mark two reference stars on each image to align them.',
  plateTitle:'Astrometric solutions',plateFrame:(n,refs)=>`Image ${n}: ${refs} reference stars`,plateNone:(n,refs)=>`Image ${n}: ${refs} reference stars (at least 3 needed)`,
@@ -41,7 +41,7 @@ export const OBJECT_X_MEASURE_EN:ObjectXMeasureMessages=Object.freeze({
 /** #object-x route and E08 guide. No string names or describes a particular target. */
 export const OBJECT_X_LAB_EN=Object.freeze({
  nav:'Object X',guideNav:'Object X guide',
- hiddenName:'Name hidden during Object X',namesHidden:'Names hidden during Object X.',
+ hiddenName:'Name hidden during Object X',hiddenRowName:'Name hidden',namesHidden:'Names hidden during Object X.',
  title:'The quest for Object X',
  scope:'You receive only an identifier and sky coordinates. Decide with the instruments whether the object is a star, a galaxy, a quasar, a pulsar or an asteroid.',
  startTitle:'1. Your object',
@@ -99,7 +99,7 @@ export const OBJECT_X_LAB_EN=Object.freeze({
  spectrumShow:(label:string)=>`Show ${label}`,
  spectrumSaveCsv:(label:string)=>`Save ${label} spectrum (CSV)`,
  // Front S (S6)
- spectrumSaveNote:'The .SSP file is named after your ObjX label. Until the reveal its header holds that label, the coordinates you were given and magnitude 0.000, so that the file never names the object [W]; after the reveal it holds the catalog magnitude, as VIREO writes, and this web version\'s catalogue record reference as the object [W] (VIREO\'s own name for it is not recovered). Load the file in Classify (Import SP or SSP) to classify it.',
+ spectrumSaveNote:'The .SSP file is named after your ObjX label. Until the reveal its header holds that label, the coordinates you were given and magnitude 0.000, so that the file never names the object; after the reveal it holds the catalog magnitude, as VIREO writes, and this web version\'s catalogue record reference as the object (VIREO\'s own name for it is not recovered). Load the file in Classify (Import SP or SSP) to classify it.',
  spectrumSaved:(name:string)=>`Spectrum saved as ${name}. Your saved investigation keeps the exposure itself.`,
  spectrumClassify:'Classify this spectrum',
  spectrumClassifyError:'This spectrum could not be opened in Classify (it needs a positive bin, a stopped exposure and wavelengths that overlap 3500–7400 Å by at least 100 Å).',
@@ -113,6 +113,9 @@ export const OBJECT_X_LAB_EN=Object.freeze({
  imagesFull:(images:number,exposures:number)=>`Image limit reached (${images} images, ${exposures} exposures per investigation): new images are not added.`,
  confirmClearMarks:'Changing the images removes your marks on them. Continue?',
  imageMovers:(pairs:number)=>`${pairs} ${pairs===1?'asteroid':'asteroids'} in the field box.`,
+ /** QA1 review 1 H2: before the reveal the count is not shown (it would name an asteroid target after one image; VIREO's
+  * ComputeMovers 0x59940c inserts the pairs silently). The same words for every target. */
+ imageMoversHidden:'asteroids of the current list included (the count shows after the reveal)',
  /** Moving pairs the camera did not draw, by the composer's typed reason (no names: they could reveal the object). */
  imageSkipped:(reasons:readonly string[])=>{
   const text:Readonly<Record<string,string>>={'moving-pair-off-detector':'far outside the detector','moving-pair-geometry':'no measurable motion to draw','moving-pair-budget':'trail too large to draw'};
@@ -124,6 +127,10 @@ export const OBJECT_X_LAB_EN=Object.freeze({
  loadFits:'Open saved FITS images',loadFitsError:(name:string)=>`${name} could not be opened as a camera image.`,
  measureTitle:'4. Compare and measure',measureFirst:'First image',measureSecond:'Second image',measureNeedTwo:'Take or open two images to blink and measure them.',
  measureNotLoaded:'Open the saved FITS files of both images to measure them.',
+ /** QA1 review 1 H3 [D]: ObjectX1Click 0x58ad38 hides AsteroidList1 (+0x458, Visible setter 0x4549c8) and the exercise setup
+  * 0x58b3cb..0x58b3e9 keeps it hidden in Object X unless Edit Mode (env+0x2e7e) is on. QA1 closure E2 [W]: this site's Edit Mode
+  * is a plain checkbox with no instructor login (WEB-EM-01), so the list also waits for the reveal. */
+ listClosed:'The Asteroid List stays closed during Object X: VIREO shows it only in Edit Mode, and this site also waits for the reveal, because its Edit Mode needs no instructor login. New images still include the observable asteroids.',
  listTitle:'Current observable asteroids',listColumns:Object.freeze(['Name','RA','Dec','V','Δ (AU)','(1)','(2)','(3)','(4)']),
  listNotesAst:'Notes (Lowell file): (1) planet-crossing code, (2) orbit computation code, (3) critical-list code, (4) importance of observations.',
  listNotesMpc:'Notes (MPC file): (1) orbit type (2 Aten, 3 Apollo, 4 Amor, …), (2) eccentricity/H assumed, (3) flags (128 = potentially hazardous), (4) uncertainty U.',
@@ -147,11 +154,11 @@ export const OBJECT_X_GUIDE_EN=Object.freeze({
  steps:Object.freeze({
   target:['Get your object','On the Object X page, enter your ID and choose or receive an object code.'],
   clock:['Set the date and time','Set the observatory clock; the original exercise starts on 2009-06-01 at 04:00 UT.'],
-  list:['Build the asteroid list','Build the list of observable asteroids for that date so your images include them.'],
-  image:['Image the field','Copy the coordinates to the observatory, open the dome, track, point and take a CCD image (no filter and 2 minutes make a faint object easier to see).'],
-  repeat:['Image it again later','Take a second image of the same field 30–60 minutes later; a fast object leaves a short trail during a long exposure. On a later night the asteroid list is rebuilt for the new date when you set the clock, and a fast near-Earth asteroid (more than 2° a day) will have left the field: look for it around its first position.'],
+  list:['Build the asteroid list','The list of observable asteroids for that date is built when you set the clock, so your images include them; rebuild it only after changing the orbit file or the limiting magnitude.'],
+  image:['Image the field','Copy the coordinates to the observatory, open the dome, open Enter coordinates and click Point to coordinates (not Slew to selected object), choose Field of view › Telescope · 15′, turn tracking on and take a CCD image (no filter and 2 minutes make a faint object easier to see).'],
+  repeat:['Image it again later','Take a second image of the same field 30–60 minutes later: enter the later time on the Object X page and click Set the observatory clock, then return to the observatory. A fast object leaves a short trail during a long exposure. On a later night the asteroid list is rebuilt for the new date when you set the clock, and a fast near-Earth asteroid (more than 2° a day) will have left the field: look for it around its first position.'],
   measure:['Blink and measure','Blink the two images. If something moved, measure it on both to get its rate and direction. Objects outside the Solar System do not move.'],
-  classify:['Decide what it is','If nothing moved, try the radio telescope for pulses; stars, galaxies and quasars need the spectrometer (not available yet).'],
+  classify:['Decide what it is','If nothing moved, listen for pulses with the radio telescope, and take a spectrum (Spectrometer or Multi-Spec on the Object X page) to tell a star, a galaxy and a quasar apart; you can save it as .SSP and classify it.'],
   describe:['Describe your evidence','Write what you saw with each instrument.'],
   reveal:['Reveal the identity','Reveal the object and compare it with your answer.'],
   save:['Save your investigation','Use Save investigation in the toolbar; keep the FITS files of your images too.'],

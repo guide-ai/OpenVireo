@@ -105,3 +105,52 @@ test('F3: unrecorded readings and a different extension follow the native questi
  await id(page,'pulsar-clear-yes').click();
  await expect(id(page,'pulsar-count')).toHaveText('0 recorded measurements');
 });
+
+// Front QA1 (2026-10-31, E06-1): the native Save clears the measurement record (0x56fe6c) but keeps the readouts, as in VIREO;
+// Save investigation must still write that state, and Restore must bring it back with the list saved and Save disabled.
+test('F3/QA1: after Save recorded measurements, Save investigation downloads the investigation and Restore brings it back',async({page,browser})=>{
+ await page.goto('/#pulsar-analysis');await loadPlr(page);await recordManual(page,'kept');
+ const before=await id(page,'pulsar-plot-1').locator('..').locator('..').innerText();
+ await saveAs(page,'run');await download(page,()=>id(page,'pulsar-native-ok').click());
+ await expect(id(page,'pulsar-save')).toBeDisabled();
+ const next=page.waitForEvent('download');await page.getByRole('button',{name:'Save investigation',exact:true}).click();
+ const saved=await next;expect(saved.suggestedFilename()).toMatch(/\.json$/);
+ const bytes=await readFile((await saved.path())!);
+ const json=JSON.parse(bytes.toString('utf8'));
+ const analysis=JSON.stringify(json).match(/"listSaved":(true|false)/);expect(analysis?.[1]).toBe('true');
+ const fresh=await browser.newContext();const other=await fresh.newPage();
+ await other.goto('/#pulsar-analysis');
+ await other.getByLabel('Restore investigation JSON',{exact:true}).setInputFiles({name:'openvireo-session.json',mimeType:'application/json',buffer:bytes});
+ await expect(other.getByText('Investigation restored.',{exact:false})).toBeVisible({timeout:30_000});
+ await expect(id(other,'pulsar-save')).toBeDisabled();
+ expect(await id(other,'pulsar-plot-1').locator('..').locator('..').innerText()).toBe(before);
+ await fresh.close();
+});
+
+// QA1 review 1 H4: after the native Save the student goes on measuring (the guide's delay step re-places the reference). Each of
+// B (reference again), C (a new vertical) and D (then Record) must still save and restore: each field is checked alone.
+test('QA1 review 1 H4: after Save recorded measurements, re-placing the reference, a new vertical and a Record still save',async({page,browser})=>{
+ await page.goto('/#pulsar-analysis');await loadPlr(page);await recordManual(page,'kept');
+ await saveAs(page,'run');await download(page,()=>id(page,'pulsar-native-ok').click());
+ const saveInvestigation=async()=>{const next=page.waitForEvent('download',{timeout:15_000});await page.getByRole('button',{name:'Save investigation',exact:true}).click();
+  const d=await next;expect(d.suggestedFilename()).toMatch(/\.json$/);return readFile((await d.path())!);};
+ // B: the reference placed again with the right button.
+ const plot=id(page,'pulsar-plot-1');await plot.scrollIntoViewIfNeeded();const box=(await plot.boundingBox())!;
+ await page.mouse.move(Math.round(box.x+box.width*.3),Math.round(box.y+box.height*.3));await page.mouse.down({button:'right'});await page.mouse.up({button:'right'});
+ await expect(id(page,'pulsar-reference')).not.toHaveText('');
+ await saveInvestigation();
+ // C: a new vertical cursor on panel 1.
+ await plot.focus();await page.keyboard.press('ArrowRight');await expect(id(page,'pulsar-pending-1')).toBeVisible();
+ await saveInvestigation();
+ // D: then Record.
+ await id(page,'pulsar-record').click();await id(page,'pulsar-comment').fill('after save');await id(page,'pulsar-record-ok').click();
+ await expect(id(page,'pulsar-record-dialog')).toHaveCount(0);
+ const bytes=await saveInvestigation();
+ const before=await plot.locator('..').locator('..').innerText();
+ const fresh=await browser.newContext();const other=await fresh.newPage();
+ await other.goto('/#pulsar-analysis');
+ await other.getByLabel('Restore investigation JSON',{exact:true}).setInputFiles({name:'openvireo-session.json',mimeType:'application/json',buffer:bytes});
+ await expect(other.getByText('Investigation restored.',{exact:false})).toBeVisible({timeout:30_000});
+ expect(await id(other,'pulsar-plot-1').locator('..').locator('..').innerText()).toBe(before);
+ await fresh.close();
+});

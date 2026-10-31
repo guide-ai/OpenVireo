@@ -430,9 +430,13 @@ test('a real lost pointer capture cancels the hold (browser stimulus: releasePoi
  const n=500*K,d0=await dec(page);
  await holdMouse(page,pad(page,'north'));const pid=await downId(page,'antenna-manual-north');await advance(page,1);
  expect(await pad(page,'north').evaluate((el,p)=>el.hasPointerCapture(p),pid)).toBe(true);
+ // Front QA1 (2026-10-31): Chromium makes the capture active right after pointerdown, Firefox only at the next pointer event, and
+ // releasing a capture that is still pending fires no lostpointercapture (Pointer Events "process pending pointer capture"). A
+ // 1 px move first makes the capture active in both engines; the move back then processes the release.
+ const box=(await pad(page,'north').boundingBox())!;await page.mouse.move(box.x+box.width/2+1,box.y+box.height/2);await flushTasks(page);
  await pad(page,'north').evaluate((el,p)=>el.releasePointerCapture(p),pid);
  // A 1 px move lets the browser process the pending capture change (a drag pointermove, button -1, not logged).
- const box=(await pad(page,'north').boundingBox())!;await page.mouse.move(box.x+box.width/2+1,box.y+box.height/2);await flushTasks(page);
+ await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await flushTasks(page);
  await expect(id(page,'antenna-manual-cancelled')).toHaveAttribute('data-reason','pointer-cancel');
  const d1=await dec(page);expect(d1).toBe(d0+n);await advance(page,3);expect(await dec(page)).toBe(d1);
  await page.mouse.up();await flushTasks(page);await advance(page,2);expect(await dec(page)).toBe(d1);

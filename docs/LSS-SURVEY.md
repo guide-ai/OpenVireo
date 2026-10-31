@@ -22,7 +22,7 @@ The header button **LSS guide** (`src/LssLabGuide.tsx`, progress in `src/core/ls
 Vitest: lssFields, lssLists, fieldEngine, lssPacks, lssSurvey, lssLab, io/lssInvestigation. Playwright: tests/lss-survey.spec.ts, lss-survey-negative.spec.ts, lss-session.spec.ts, lss-guide.spec.ts.
 
 ## Acquirable rows (0.4 m / 0.9 m / 4 m, of 219)
-196 / 93 / 198 without a clock time (Front F3, the five LSS galaxy photographs, 2026-10-30); 187 / 93 / 189 before them (Front L2,
+196 / 93 / 198 without a clock time (Front F3, the five LSS galaxy photographs, 2026-10-30); 202 / 97 / 204 in the app, whose list is built with the observatory clock's JD (default 2451545.0; Front QA1, 2026-10-31; re-derived on the tree merged with Front S2 at VIREO's 3700–4700 Å, unchanged: `evaluateLssRow` over all 219 rows and three telescopes, per field 0.4 m 23,22,23,23,18,20,21,25,27, 0.9 m 4,6,4,2,8,17,14,18,24, 4 m 23,23,24,23,18,20,21,25,27; without a clock time 196 / 93 / 198, QA1 closure, 2026-10-31); 187 / 93 / 189 before them (Front L2,
 recovered QSO merge, 2026-10-29); 157 / 86 / 158 under the earlier QSO gate
 (Front T, TRUE variable dispatch, 2026-10-28), 140 / 76 / 141 before it, 129 / 69 / 130 before the recovered FALSE dispatch.
 More rows are acquirable with the frozen observatory-clock time (below).
