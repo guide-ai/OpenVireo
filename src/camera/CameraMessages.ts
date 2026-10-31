@@ -86,14 +86,21 @@ export const CAMERA_MESSAGES=Object.freeze({
   values:'Not run: the brightness of a variable star at this time is not known here.',
  },
  detailRegion:'Catalog area (loaded field)',
- region:(minRa:number,maxRa:number,minDec:number,maxDec:number)=>`RA ${minRa.toFixed(4)}–${maxRa.toFixed(4)} h, Dec ${minDec.toFixed(4)}° to ${maxDec.toFixed(4)}°. As in VIREO, only catalog stars inside the telescope field loaded last are drawn.`,
+ /** Front C6 review N3: near the pole the record's RA bounds are VIREO's raw values after one fold each; they are named as such. */
+ region:(r:Readonly<{minimumRa:number;maximumRa:number;minimumDec:number;maximumDec:number;centreDec:number}>)=>{
+  const half=0.375/(Math.cos(r.centreDec*Math.PI/180)*15);
+  const ra=r.minimumRa<0||r.maximumRa>24?'every RA (near the pole)':`RA ${r.minimumRa.toFixed(4)}–${r.maximumRa.toFixed(4)} h${half>=12?' (VIREO’s single fold near the pole)':''}`;
+  const dec=r.maximumDec>90?`${r.minimumDec.toFixed(4)}° to the north pole`:r.minimumDec< -90?`the south pole to ${r.maximumDec.toFixed(4)}°`:`${r.minimumDec.toFixed(4)}° to ${r.maximumDec.toFixed(4)}°`;
+  return `${ra}, Dec ${dec}. As in VIREO, only catalog stars inside the telescope field loaded last are drawn.`;
+ },
  detailOverlay:'Galaxy overlay',
- overlayRun:(draws:number)=>`Added as in VIREO: the galaxies of the loaded telescope field, ${draws} pixels (including VIREO’s bright last row and column).`,
+ overlayRun:(draws:number)=>`Added as in VIREO: the galaxies of the loaded telescope field, ${draws} pixels (including a bright last row and column: VIREO enlarges to 1023 pixels inside a 1024-pixel bitmap whose untouched edge is, by inference, white).`,
  overlay:{
   off:'No galaxy in the loaded field, so VIREO adds nothing.',
   'object-x':'Not added: near an Object X target the field stays hidden until the exercise reveals it.',
   field:'Not added: the loaded telescope field could not be built here (a catalogue tile could not be loaded, or the field needs a rule this site does not reproduce). Try the exposure again.',
   'no-load':'Not added: no telescope field has been loaded yet.',
+  telescope:'Not added: the loaded telescope field belongs to the previous telescope; the sky view loads the new one.',
   m31:'Not added: the field contains M31 (NGC 224), which VIREO paints with its own routine that this site does not reproduce.',
   outside:'Not added: the telescope has moved so far from the loaded field’s centre that the camera window leaves it, and VIREO’s copy outside the field is not known.',
   unpainted:'Not added: a galaxy of the loaded field was not drawn.',
