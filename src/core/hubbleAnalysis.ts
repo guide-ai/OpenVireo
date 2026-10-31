@@ -100,6 +100,10 @@ export function analyzeHubble(workspace:HubbleWorkspace,measurements:readonly Me
           if(acquiredTargetId&&workspace.rows.filter(r=>r.input.kind==='measurement'&&measurementGalaxyTarget(measurements.find(m=>m.id===(r.input as {measurementId:number}).measurementId)?.origin)===acquiredTargetId).length>1)issues.push('Repeated acquisitions of the same galaxy are not independent Hubble targets. Keep one measurement per acquired target.');
           object=m.object;file=m.file;sha256=m.sha256;z=String(m.zFloat32);zBits=m.zFloat32Hex;
           if(stellar){velocitySource=`Stellar alignment measurement ${m.id}`;velocityPolicy='Excluded from galaxy velocity and distance';}
+          // Front H2: VIREO's observation record holds the velocity the student typed in Observational Data (checked within 1 % of
+          // c·z, 0x54b02c), and its results list shows that value (mode 4, 0x548a5a–0x548a95), so a row with a typed velocity uses it.
+          // [W] An empty box stores 0 (blank in VIREO's list); the web then keeps v = c z for that row, as for rows without a record.
+          else if(m.observation&&m.observation.velocitySingle!==0){velocitySource=`Saved measurement ${m.id} · typed in Observational Data`;velocityPolicy='Typed Single velocity, accepted within 1 % of c × stored Single z (0x54b02c)';velocityKmS=m.observation.velocitySingle;velocityInputText=String(velocityKmS);}
           else{velocitySource=`Saved measurement ${m.id} · v = c z`;velocityPolicy='Number c × stored Single z → Single velocity; x87 equivalence unvalidated';try{velocityKmS=hubbleVelocity(m.zFloat32).storedKmS;velocityInputText=String(velocityKmS);}catch{issues.push('Velocity is outside the supported Single range.');}}
         }
       }else{

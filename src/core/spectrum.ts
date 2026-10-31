@@ -93,7 +93,10 @@ export function moveControl(s: ShiftControl, position: number): ShiftControl {
 }
 
 export type MeasurementOrigin=Readonly<{kind:'catalog-star-acquisition';acquisitionId:string}|{kind:'catalog-galaxy-acquisition';acquisitionId:string;targetId?:string}>;
-export type Measurement = Readonly<{ id: number; object: string; file: string; sha256: string; zNumber: number; zFloat32: number; zFloat32Hex: string; control: ShiftControl; reference: string; origin?:MeasurementOrigin }>;
+export type Measurement = Readonly<{ id: number; object: string; file: string; sha256: string; zNumber: number; zFloat32: number; zFloat32Hex: string; control: ShiftControl; reference: string; origin?:MeasurementOrigin;
+  /** Front H2: the "Observational Data" record of a catalogue-galaxy measurement (typed velocity, remarks, Sp type, first time,
+   * target position and V; core/hubbleObservation.ts), carried by session v32. Absent for every other row and for older files. */
+  observation?:import('./hubbleObservation').HubbleObservation }>;
 export function createMeasurement(id: number, object: string, file: string, sha256: string, control: ShiftControl, reference: string, origin?:MeasurementOrigin): Measurement {
   if(origin&&(!['catalog-star-acquisition','catalog-galaxy-acquisition'].includes(origin.kind)||!/^[a-f0-9]{64}$/.test(origin.acquisitionId)))throw diagnosticError('error.identity');
   if(origin&&Object.hasOwn(origin,'targetId')&&(origin.kind!=='catalog-galaxy-acquisition'||!knownGalaxyTarget(origin.targetId)))throw diagnosticError('error.identity');

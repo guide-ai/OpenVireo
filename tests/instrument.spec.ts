@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { createHash } from 'node:crypto';
+import {recordMeasurement} from './fixtures/record-measurement';
 
 test('import, recovered control transitions, cancelled record and CSV export', async ({ page }) => {
   await page.goto('/#spectrum');
@@ -20,7 +21,7 @@ test('import, recovered control transitions, cancelled record and CSV export', a
   await page.getByRole('button', { name: 'Recenter control' }).click(); await expect(page.getByTestId('z-value')).toHaveText(before!);
   await page.getByRole('button', { name: /Record measurement/ }).click(); await page.getByRole('button', { name: 'Cancel', exact: true }).click();
   await expect(page.getByRole('button', { name: /Export CSV/ })).toBeDisabled();
-  await page.getByRole('button', { name: /Record measurement/ }).click(); await page.getByRole('button', { name: 'Save measurement', exact: true }).click();
+  await recordMeasurement(page);
   await expect(page.getByRole('cell', { name: 'Validation vector', exact: true })).toBeVisible();
   const downloadEvent = page.waitForEvent('download'); await page.getByRole('button', { name: /Export CSV/ }).click();
   const download = await downloadEvent; expect(download.suggestedFilename()).toBe('openvireo-measurements.csv');

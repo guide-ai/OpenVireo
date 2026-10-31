@@ -42,6 +42,8 @@ import {HUBBLE_EXTENDED_BANKS,HUBBLE_EXTENDED_TARGETS,isHubbleExtendedId} from '
 import {EXTENDED_MAX_ACQUISITION_ARCHIVE} from '../core/acquisitionArchive';
 import {observingUsesExtendedGalaxies} from '../core/observingWorkspace';
 import umiCached from '../../data/hubble/umi-cached-provenance.json';
+import {HUBBLE_OBSERVATION_POLICY,portableHubbleObservation,readHubbleObservation,type HubbleObservation} from '../core/hubbleObservation';
+import {hubbleObservationTarget} from './hubbleObservationTarget';
 
 /** New portable browser format, not the original CLEA saved-spectrum format. */
 export const SESSION_PAYLOAD_BYTES=16*1024*1024,MAX_SESSION_BYTES=SESSION_PAYLOAD_BYTES+MAX_PROJECT_METADATA_GROWTH;
@@ -220,6 +222,30 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
     }
     const base=await restore(r.base,verifySources,false,false,false,false,false,false,hooks);
     return Object.freeze({...base,...(fieldSpectrum?{fieldSpectrum}:{})});
+  }
+  if(version===32){
+    // Front H2: outermost only; each record must be one Observational Data OK could have stored for its row (1 % of c·z, the
+    // row's catalogue galaxy target position and V).
+    if(migrated||hooks.variableTime||hooks.nativeDialog)fail('format');
+    const r=record(value,['format','version','numericalPolicy','base','hubbleObservationPolicy','observations']);
+    const baseVersion=r.base&&typeof r.base==='object'?(r.base as {version?:unknown}).version:null;
+    if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.hubbleObservationPolicy!==HUBBLE_OBSERVATION_POLICY||!Number.isInteger(baseVersion)||Number(baseVersion)<1||Number(baseVersion)>31)fail('format');
+    if(!Array.isArray(r.observations)||r.observations.length<1||r.observations.length>MAX_SESSION_ROWS)fail('format');
+    const base=await restore(r.base,verifySources,false,false,false,false,false,false,hooks);
+    const byId=new Map<number,unknown>();let last=0;
+    for(const e of r.observations as unknown[]){if(!Array.isArray(e)||e.length!==2||!Number.isSafeInteger(e[0])||e[0]<=last)fail('format');byId.set(e[0],e[1]);last=e[0];}
+    const acquisitions=base.acquisitions??[];
+    const rows=base.rows.map(row=>{
+      if(!byId.has(row.id))return row;
+      const acquisition=row.origin?.kind==='catalog-galaxy-acquisition'?acquisitions.find(a=>a.acquisitionId===row.origin!.acquisitionId&&a.kind==='catalog-galaxy-acquisition'):undefined;
+      if(!acquisition||acquisition.kind!=='catalog-galaxy-acquisition')fail('state');
+      let observation:HubbleObservation;try{observation=readHubbleObservation(byId.get(row.id),row.zFloat32);}catch{fail('state');}
+      const target=hubbleObservationTarget(acquisition);
+      if(observation.ra!==target.ra||observation.dec!==target.dec||observation.vMagnitude!==target.vMagnitude)fail('state');
+      byId.delete(row.id);return Object.freeze({...row,observation});
+    });
+    if(byId.size)fail('state');// every record names a measurement row of this file
+    return Object.freeze({...base,rows:Object.freeze(rows)});
   }
   if(version===31){
     if(migrated||hooks.variableTime||hooks.nativeDialog)fail('format');
@@ -420,7 +446,7 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
   return Object.freeze({...(optical?{optical}:{}),...(editing?{editing}:{}),...(observing?{observing}:{}),...(photometry?{photometry}:{}),...(classification?{classification}:{}),observation,control:s,stepInput,reference:a.reference as keyof typeof REFERENCES,wide:a.wide,object,rows:Object.freeze(rows),hubble,...(version>=3?{acquisitions:Object.freeze(acquisitions)}:{})});
 }
 /** wrapped: the wrapper levels already emitted above this call (v25 Pegasus outermost, then v24 cached). */
-type Wrapped=Readonly<{cached?:true;pegasus?:true;extended?:true;variableTime?:true;nativeDialog?:true;field?:true}>;
+type Wrapped=Readonly<{cached?:true;pegasus?:true;extended?:true;variableTime?:true;nativeDialog?:true;observational?:true;field?:true}>;
 async function portable(session:AnalysisSession,wrapped:Wrapped={}):Promise<unknown> {
   // Front G G4c (v33, outermost): the field spectrometer's part around an unchanged base. A session without it keeps its older
   // version and bytes exactly.
@@ -428,6 +454,12 @@ async function portable(session:AnalysisSession,wrapped:Wrapped={}):Promise<unkn
     const {serializeFieldSpectrumSession}=await import('../core/fieldSpectrometer');const f=session.fieldSpectrum;
     let part:unknown;try{if(f.prepared.policy!==f.state.policy)throw Error();part=JSON.parse(serializeFieldSpectrumSession(f.state));}catch{fail('state');}
     return {format:FORMAT,version:33,numericalPolicy:POLICY,base:await portable({...session,fieldSpectrum:undefined},{...wrapped,field:true}),fieldSpectrumPolicy:FIELD_SPECTRUM_SESSION_POLICY,fieldSpectrumDigestSHA256:await fieldSpectrumDigest(f.state),fieldSpectrum:part};
+  }
+  // Front H2 (v32, outermost): the Observational Data records of catalogue-galaxy measurements, by measurement id, around an
+  // unchanged base (the measurement list below never carries them). A session without one keeps its older version exactly.
+  if(!wrapped.observational&&session.rows.some(r=>r.observation)){
+    return {format:FORMAT,version:32,numericalPolicy:POLICY,base:await portable(session,{...wrapped,observational:true}),hubbleObservationPolicy:HUBBLE_OBSERVATION_POLICY,
+      observations:session.rows.flatMap(r=>r.observation?[[r.id,portableHubbleObservation(r.observation)]]:[])};
   }
   if(!wrapped.nativeDialog&&!wrapped.variableTime&&session.lss!==undefined){
     const ids=lssNativeDialogIdsOf(session.lss);

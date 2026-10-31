@@ -74,7 +74,9 @@ test('Edit Mode at Coma – 2: Access, select 2 stars + 1 galaxy + 1 sky, remove
  await info.getByRole('button',{name:'OK',exact:true}).click();await expect(info).toHaveCount(0);
  // Print preview reuses the scoped print-preview pattern.
  await spectrum.getByTestId('ms-print').click();const preview=page.getByTestId('ms-print-preview');await expect(preview).toBeVisible();
- await expect(page.getByTestId('ms-print-line-0')).toHaveText('Object: (1) ');await page.getByTestId('ms-print-close').click();await expect(preview).toHaveCount(0);
+ await expect(page.getByTestId('ms-print-line-0')).toHaveText('Object: (1) ');
+ // Front H2: header 0x58e860 (called at 0x5284cd).
+ await expect(page.getByTestId('ms-print-header')).toContainText('     VIREO - The VIRtual Educational Observatory');await page.getByTestId('ms-print-close').click();await expect(preview).toHaveCount(0);
  // Save: MSpec_1.SSP, 400 headerless lines; the list item gets its "*".
  const ssp=await download(page,()=>spectrum.getByTestId('ms-save').click());
  expect(ssp.name).toBe('MSpec_1.SSP');const lines=ssp.bytes.toString('latin1').split('\r\n');expect(lines).toHaveLength(401);expect(lines[400]).toBe('');

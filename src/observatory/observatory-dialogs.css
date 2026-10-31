@@ -28,6 +28,7 @@
 .ob-spectrum-save{padding:1.25rem;margin:1.5rem 0}
 .ob-spectrum-print{display:none;margin:0}
 .ob-spectrum-print svg{width:100%;height:auto}
+.ob-print-native{font-family:'Courier New',Courier,monospace;font-size:10pt;margin:0 0 8px;white-space:pre}
 /* Print CSS exists only while the panel owns html[data-print-scope=star-spectrum]; an ordinary print is unchanged. */
 @media print{
 html[data-print-scope=star-spectrum] body :not(:has(.ob-spectrum-save),.ob-spectrum-save,.ob-spectrum-save *){display:none!important}

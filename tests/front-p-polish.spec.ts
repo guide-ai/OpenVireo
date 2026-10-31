@@ -71,6 +71,8 @@ test('LSS Wedge Print uses the black-and-white scheme; Pulsar Print Window clone
  const lines=[`'SYNTHETIC PRINT',40,1`,'400.00,600.00,0','1.000,1.000,0','60000.50000000,0.01000',...Array.from({length:60},(_,r)=>`${r===20?'50.000':'0.000'},${r===30?'50.000':'0.000'},0.000`)].join('\r\n')+'\r\n';
  await page.goto('/#pulsar-analysis');await id(page,'pulsar-file').setInputFiles({name:'synthetic-print.plr',mimeType:'application/octet-stream',buffer:Buffer.from(lines,'latin1')});
  await id(page,'pulsar-print-window').click();const pp=id(page,'pulsar-print-preview');await expect(pp).toContainText('Analyze Pulsar Data');
+ // Front RE5: VIREO's own Print Window header and data parameters (0x56da60).
+ await expect(id(page,'pulsar-print-preview-native-header')).toContainText('Laboratory Table Number (Not Recorded)');await expect(id(page,'pulsar-print-preview-native-header')).toContainText('Data Parameters:');await expect(id(page,'pulsar-print-preview-native-header')).toContainText('File Name: ');
  const copy=id(page,'pulsar-print-preview-picture').locator('.plr-panels');await expect(copy).toHaveAttribute('inert','');await expect(copy.locator('svg.plr-plot')).toHaveCount(await page.locator('.plr-panels:not([inert]) svg.plr-plot').count());
  await stubPrint(page);await id(page,'pulsar-print-preview-print').click();expect(await printed(page)).toEqual(['web-print']);
  await page.keyboard.press('Escape');await expect(pp).toHaveCount(0);await expect(id(page,'pulsar-print-window')).toBeFocused();

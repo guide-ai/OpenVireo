@@ -1,6 +1,6 @@
 # Front K2: remaining forms and prints
 
-**Status:** implemented on branch `claude/front-k2` (2026-10-30).
+**Status:** merged into main from branch `claude/front-k2` (2026-10-30).
 
 **Plan:** research root `analysis/front-plans/front-k2.md`. **Recovery dossiers** (`analysis/front-k2/`):
 - A: `A-recorded-results-rows.md`;

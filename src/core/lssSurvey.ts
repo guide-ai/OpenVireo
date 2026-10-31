@@ -7,6 +7,7 @@
  * telescope pointing (the HTL row coordinates) and JD comes from the shared site clock. Records are in-memory student
  * observations (persistence is M6); nothing here invents a measurement. */
 import {hubbleVelocity} from './hubbleVelocity';
+import {recordReuseTarget} from './recordReuse';
 import {lssDialogOk,lssVelocityText} from './lssRedshiftDialog';
 import {currentZ,type ShiftControl} from './spectrum';
 import type {JournalEvent} from './exposureJournal';
@@ -43,10 +44,7 @@ export const EMPTY_LSS_SURVEY:LssSurveyState=Object.freeze({field:null,loaded:nu
  * record whose stored ShortString[15] ID equals the engine's ID (LStrCmp 0x406258, exact and case-sensitive) is reused, its time
  * unchanged. The stored ID is the full ID truncated to 15, so a longer ID never matches its own row. On, or on a miss: a new
  * row. */
-export function lssReuseTarget(records:readonly Pick<LssRecord,'object'>[],id:string,timeDependent:boolean):number|null{
- if(timeDependent||id.length>15)return null;
- const i=records.findIndex(r=>r.object===id);return i<0?null:i;
-}
+export function lssReuseTarget(records:readonly Pick<LssRecord,'object'>[],id:string,timeDependent:boolean):number|null{return recordReuseTarget(records.map(r=>r.object),id,timeDependent);}
 const text=(s:unknown,max:number)=>{if(typeof s!=='string'||s.length>max||/[\u0000-\u001f\u007f]/.test(s))throw new LssSurveyError('record');return s;};
 export function selectLssField(s:LssSurveyState,field:number):LssSurveyState{
  if(!LSS_FIELD_FILES.some(f=>f.field===field))throw new LssSurveyError('field');

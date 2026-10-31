@@ -1,6 +1,6 @@
 # Cluster Data dialogs (Front K)
 
-**Status:** implemented on branch `claude/front-k-cluster-dialogs` (2026-10-29); review 1 (`analysis/reviews/front-k-review-1.md`, MERGE-AFTER-FIXES) applied.
+**Status:** merged into main from branch `claude/front-k-cluster-dialogs` (2026-10-29); review 1 (`analysis/reviews/front-k-review-1.md`, MERGE-AFTER-FIXES) applied.
 
 **Plan:** research root `analysis/front-plans/front-k-cluster-dialogs.md`.
 

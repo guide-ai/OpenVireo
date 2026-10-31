@@ -22,7 +22,7 @@ import {replayStaticExposure} from './objectXImage';
 import {MEASUREMENT_LIMIT,addMeasurement,type Measurement,type MeasurementLog} from '../core/astrometryMeasure';
 import {OBJECT_X_ID_MAX,OBJECT_X_KINDS,type ObjectXKind} from '../core/objectXLab';
 import {parseClockUTC} from '../core/siteClock';
-import {CAMERA_MAX_SECONDS} from '../core/cameraExposure';
+import {CAMERA_STORED_MAX_SECONDS} from '../core/cameraExposure';
 import {BUNDLED_ORBIT_FILES,SELECTABLE_ORBIT_FILES,fetchBundledOrbitFile,type BundledOrbitFileId} from './bundledOrbitFile';
 import {resourceSha256} from './boundedResource';
 
@@ -88,7 +88,7 @@ function readExposure(v:unknown):ObjectXExposure{
  if(r.catalogMode!=='static'&&r.catalogMode!=='live')fail('record');
  if(![1,2,5].includes(r.gain as number))fail('record');
  const pairs=int(r.pairs,0,256);
- return Object.freeze({jd:jd(r.jd),seconds:int(r.seconds,1,CAMERA_MAX_SECONDS),filter:int(r.filter,0,4),gain:r.gain as number,telescope:int(r.telescope,0,2) as 0|1|2,
+ return Object.freeze({jd:jd(r.jd),seconds:int(r.seconds,1,CAMERA_STORED_MAX_SECONDS),filter:int(r.filter,0,4),gain:r.gain as number,telescope:int(r.telescope,0,2) as 0|1|2,
   ra:num(r.ra,0,24),dec:num(r.dec,-90,90),seed:int(r.seed,0,0xffff_ffff),catalogMode:r.catalogMode as 'static'|'live',catalogSha256:hex64(r.catalogSha256),
   extractId:r.extractId===null?null:str(r.extractId,80),listJd:r.listJd===null?null:jd(r.listJd),orbitFile:r.orbitFile as BundledOrbitFileId|null,limit:r.limit===null?null:num(r.limit,-5,30),pairs,skipped:readSkipped(r.skipped,pairs),fitsSha256:hex64(r.fitsSha256)});
 }

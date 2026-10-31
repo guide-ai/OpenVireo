@@ -78,13 +78,25 @@ describe('own Observational Results projection (phase 1 item 1.12 web adaptation
   });
   it('writes a deterministic CSV with exact header, CRLF, quoted neutralized text and empty unsupported cells',()=>{
     const rows=mixedRows(),view=ownObservationResults(rows,archive),csv=ownResultsCsv(view);
-    expect(csv.split('\r\n')[0]).toBe('schema,id,object,file,sha256,source_kind,acquisition_id,acquired_target_id,archive_binding,reference,analyst_step,base,position,factor,z_number,z_float32,z_float32_hex,c_km_s,reference_cz_km_s,velocity_float32_km_s,velocity_float32_hex,velocity_status,numerical_policy,velocity_policy');
+    // Re-pinned 2026-10-30 (H2 review 1 M3): the Observational Data record columns are appended and the policy text names both velocities.
+    expect(csv.split('\r\n')[0]).toBe('schema,id,object,file,sha256,source_kind,acquisition_id,acquired_target_id,archive_binding,reference,analyst_step,base,position,factor,z_number,z_float32,z_float32_hex,c_km_s,reference_cz_km_s,velocity_float32_km_s,velocity_float32_hex,velocity_status,numerical_policy,velocity_policy,typed_velocity_float32_km_s,typed_velocity_float32_hex,sp_type,remarks,record_jd');
     expect(csv.endsWith('\r\n')).toBe(true);expect(csv.replaceAll('\r\n','')).not.toMatch(/\n|\r/);expect(csv).toBe(ownResultsCsv(ownObservationResults(rows,archive)));
     expect(csv).toContain('"\'=HYPERLINK(""x"")","\'+cmd,""q"".csv"');expect(csv).toContain(',imported-spectrum,,,not-applicable,');
-    expect(csv).toContain(',299792.458,4684.25715625,4684.25732421875,4592620f,derived,Number_x87_equivalence_unvalidated,"derived v=c*z_float32; not entered; not relativistic or a distance"\r\n');
+    expect(csv).toContain(',299792.458,4684.25715625,4684.25732421875,4592620f,derived,Number_x87_equivalence_unvalidated,"velocity_float32 is the derived c*z_float32 study aid; typed_velocity is the value entered in Observational Data and used by the Hubble analysis; neither is relativistic or a distance",,,,,\r\n');
     expect(csv).toContain(',299792.458,,,,overflow,');expect(csv).toContain(',299792.458,,,,stellar-excluded,');
     const parsed=parseCsv(csv);expect(parsed).toHaveLength(rows.length+1);for(const line of parsed.slice(1)){expect(line).toHaveLength(parsed[0].length);expect(line[0]).toBe(OWN_RESULTS_SCHEMA);}
     expect(ownResultsCsv([])).toBe(csv.split('\r\n')[0]+'\r\n');
+  });
+  it('H2 review 1 M3: a row recorded through Observational Data carries its typed velocity, Sp type, remarks and JD; an empty box shows none',()=>{
+    const [row]=mixedRows(),typed=Math.fround(5050),hex='459dd000';
+    const record={jd:2455000.25,ra:12.5,dec:27.25,spectralCode:0,velocityHex:hex,velocitySingle:typed,remarks:'=arm',vMagnitude:null};
+    const [r]=ownObservationResults([{...row,observation:record}],archive);
+    expect(r.record).toEqual({velocityKmS:typed,velocityHex:hex,spType:'',remarks:'=arm',jd:'2455000.250000'});expect(r.velocityStatus).toBe('derived');
+    const parsed=parseCsv(ownResultsCsv([r])),h=parsed[0];
+    expect(parsed[1][h.indexOf('typed_velocity_float32_km_s')]).toBe('5050');expect(parsed[1][h.indexOf('typed_velocity_float32_hex')]).toBe(hex);expect(parsed[1][h.indexOf('remarks')]).toBe("'=arm");expect(parsed[1][h.indexOf('record_jd')]).toBe('2455000.250000');
+    expect(ownResultsText([r])).toContain('typed_velocity_float32_km_s: 5050 (hex 459dd000)\nsp_type: ""\nremarks: "=arm"\nrecord_jd: 2455000.250000');
+    const [blank]=ownObservationResults([{...row,observation:{...record,velocitySingle:0,velocityHex:'00000000'}}],archive);
+    expect(blank.record?.velocityKmS).toBeUndefined();expect(ownResultsText([blank])).toContain('typed_velocity_float32_km_s: none');
   });
   it('neutralizes leading formula, tab and line-break text and keeps quotes, commas, newlines and Unicode inside one cell',()=>{
     const files=['\t=x.csv','\r\n@x.csv','-1.csv','@sum.csv',' +x.csv','a"b,c\nd.csv','α 😀.csv'];

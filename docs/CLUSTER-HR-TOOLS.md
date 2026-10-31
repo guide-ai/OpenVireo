@@ -1,6 +1,6 @@
 # Cluster HR tools closer to VIREO (Front V2, E05)
 
-Status: implemented on branch `claude/front-v2-cluster-hr` (milestones M1–M7 of the plan; M8 deferred by the coordinator); the coordinator's independent
+Status: merged into main from branch `claude/front-v2-cluster-hr` (milestones M1–M7 of the plan; M8 deferred by the coordinator); the coordinator's independent
 high-effort review is pending. Plan (high effort, planner subagent, no code in that pass):
 `analysis/front-plans/front-v2-cluster-hr.md` in the research root. Recovery notes: `analysis/front-v2-cluster-hr/RECOVERY.md`,
 `RECOVERY-help.md`, `RECOVERY-dialogs.md`. Implementation: Claude Code (claude-opus-5-5), medium effort.

@@ -1,6 +1,7 @@
 import { test,expect } from '@playwright/test';
 import { createHash } from 'node:crypto';
 import type { Download } from '@playwright/test';
+import {recordMeasurement} from './fixtures/record-measurement';
 async function bytes(download:Download):Promise<Buffer>{const stream=await download.createReadStream(),parts:Buffer[]=[];for await(const part of stream!)parts.push(part);return Buffer.concat(parts);}
 test('portable session survives a page reload and exports the exact imported bytes',async({page})=>{
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
@@ -12,7 +13,7 @@ test('portable session survives a page reload and exports the exact imported byt
   await page.getByLabel('z step per tick').fill('0.0009765625');await page.getByRole('button',{name:'Apply step',exact:true}).click();
   await page.getByRole('slider').focus();for(let i=0;i<3;i++)await page.getByRole('slider').press('ArrowRight');
   await page.getByRole('button',{name:'Coarse ×10'}).click();
-  await page.getByRole('button',{name:/Record measurement/}).click();await page.getByRole('button',{name:'Save measurement',exact:true}).click();
+  await recordMeasurement(page);
   const z=await page.getByTestId('z-value').textContent();
   const waiting=page.waitForEvent('download');await page.getByRole('button',{name:'Save session',exact:true}).click();
   const file=await waiting;expect(file.suggestedFilename()).toBe('openvireo-session.json');const saved=await bytes(file);
@@ -25,7 +26,7 @@ test('portable session survives a page reload and exports the exact imported byt
   const sourceWaiting=page.waitForEvent('download');await page.getByRole('button',{name:'Download imported spectrum',exact:true}).click();
   const restoredBytes=await bytes(await sourceWaiting);expect(restoredBytes.equals(original)).toBe(true);
   expect(createHash('sha256').update(restoredBytes).digest('hex')).toBe(JSON.parse(saved.toString()).observation.sha256);
-  await page.getByRole('button',{name:/Record measurement/}).click();await page.getByRole('button',{name:'Save measurement',exact:true}).click();
+  await recordMeasurement(page);
   const logWaiting=page.waitForEvent('download');await page.getByRole('button',{name:/Export CSV/}).click();
   const log=(await bytes(await logWaiting)).toString();expect(log).toContain('\r\n2,2,');expect(log.split('\r\n')).toHaveLength(4);
   await page.locator('.session-card').scrollIntoViewIfNeeded();await page.screenshot({path:'test-results/session-desktop.png',fullPage:true});

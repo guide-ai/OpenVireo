@@ -1,6 +1,7 @@
 import {test,expect,type Page} from '@playwright/test';
 import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
+import {recordMeasurement,sessionBase} from './fixtures/record-measurement';
 // Phase 2 B1: CorBor – 1 (54875) and CorBor – 3 (54891) through the original Hubble.HTL, the exact catalogue centre and the
 // recovered cached-pan view (0.4 m only). Alignment positions, steps and seeds are operator-chosen workflow inputs, not expected
 // redshifts; V values are typed by the operator from the workbook references, never prefilled.
@@ -33,7 +34,7 @@ async function acquire(page:Page,t:typeof targets[number],keyboard=false){
  await press(page,'Analyze acquired galaxy');await expect(page.getByTestId('z-value')).toHaveText('+0.000000');await expect(page.getByRole('slider')).toBeDisabled();
  await expect(page.getByLabel('Galaxy acquisition provenance')).toContainText(t.id);if(t.id==='54891')await expect(page.getByLabel('Galaxy acquisition provenance')).not.toContainText('54890');
  await page.getByLabel('z step per tick').fill('.001');await page.getByRole('button',{name:'Apply step',exact:true}).click();await page.getByRole('slider').fill(t.position);
- await page.getByRole('button',{name:/Record measurement/}).click();await page.getByRole('button',{name:'Save measurement',exact:true}).click();
+ await recordMeasurement(page);
  return source!;
 }
 test('Hubble.HTL → exact centre → cached-pan acquisition of CorBor – 1 and – 3 → manual z → Hubble → Save, fresh Restore, resume',async({page})=>{
@@ -48,7 +49,7 @@ test('Hubble.HTL → exact centre → cached-pan acquisition of CorBor – 1 and
  for(const [i,t] of targets.entries()){const n=i+1;await expect(page.getByLabel(`Apparent V magnitude · row ${n}`,{exact:true})).toBeEmpty();await expect(page.getByLabel(`Apparent magnitude source · row ${n}`,{exact:true})).toBeEmpty();
   await page.getByLabel(`Apparent V magnitude · row ${n}`,{exact:true}).fill(t.V);await page.getByLabel(`Apparent magnitude source · row ${n}`,{exact:true}).fill(`Hubble Data.xls · Sheet1!${t.cell}`);await page.getByLabel(`VIREO target identification · row ${n}`,{exact:true}).selectOption(t.id);}
  await expect(page.getByTestId('hubble-value')).toBeVisible();await expect(page.getByTestId('hubble-fit')).toBeVisible();await expect(page.locator('.hubble-point')).toHaveCount(2);const value=await page.getByTestId('hubble-value').textContent();
- const saved=await download(page,'Save session'),data=JSON.parse(saved.toString());expect(data.version).toBe(24);expect(data.cachedGalaxies).toHaveProperty('54875');expect(data.base.acquisitions).toHaveLength(2);expect(data.base.measurements.map((m:any)=>m.origin.targetId)).toEqual(['54875','54891']);
+ const saved=await download(page,'Save session'),data=sessionBase(JSON.parse(saved.toString()));expect(data.version).toBe(24);expect(data.cachedGalaxies).toHaveProperty('54875');expect(data.base.acquisitions).toHaveLength(2);expect(data.base.measurements.map((m:any)=>m.origin.targetId)).toEqual(['54875','54891']);
  await page.reload();await page.getByLabel('Restore analysis session',{exact:true}).setInputFiles({name:'corbor.json',mimeType:'application/json',buffer:saved});
  await expect(page.locator('#measurement-log tbody tr')).toHaveCount(2);await page.getByText('Hubble diagram & distances',{exact:true}).click();await expect(page.getByTestId('hubble-value')).toHaveText(value!);
  await page.getByRole('button',{name:'Inspect acquisition for measurement 2',exact:true}).click();await expect(page.getByLabel('Galaxy acquisition provenance')).toContainText('54891');await page.getByRole('button',{name:'Restore this acquisition in the telescope',exact:true}).click();

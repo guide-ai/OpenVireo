@@ -1,4 +1,6 @@
 import {useEffect,useMemo,useRef,useState} from 'react';
+import {flushSync} from 'react-dom';
+import {printSkyHeader} from '../core/printSkyText';
 import {starSpectrumBytes,starSpectrumFileName} from '../core/exposureSpectrum';
 import {opticalProfile} from '../core/opticalTelescope';
 import {parseSpectrum} from '../core/spectrum';
@@ -15,14 +17,19 @@ export const SPECTRUM_PRINT_SCOPE='star-spectrum';
  * docs/SPECTRUM-SAVE-CONTRACT.md: bytes unchanged) and a scoped browser Print of it. Disabled while the exposure runs; a spectrum
  * without a positive bin is refused by the codec before any bytes are returned. Front L2: the same card serves the star, galaxy
  * and LSS routes; the caller supplies the writer's bytes (null while running or unsavable) and the print caption. Mount it only
- * while its route is active (the print scope shows the one card in the page). */
-export type SpectrumSaveSource=Readonly<{bytes:Uint8Array|null;usable:boolean;label:string;telescopeName:string;elapsedMs:number;fileName:string;saved?:(name:string)=>string}>;
+ * while its route is active (the print scope shows the one card in the page). Front H2: the printed page starts with VIREO's
+ * shared header 0x58e860 (called by the spectrometer print 0x510240 at 0x510265); the rest of 0x510240's layout is not
+ * reproduced [W]. */
+export type SpectrumSaveSource=Readonly<{bytes:Uint8Array|null;usable:boolean;label:string;telescopeName:string;elapsedMs:number;fileName:string;saved?:(name:string)=>string;
+ /** Front H2 (sky route): print these samples when there are no SSP bytes; Save stays unavailable and `saveNote` says why. */
+ printSamples?:readonly Readonly<{wavelength:number;intensity:number}>[];saveNote?:string}>;
 export function SpectrumSaveCard({source,active}:{source:SpectrumSaveSource;active:boolean}){
- const [notice,setNotice]=useState(''),[error,setError]=useState(''),release=useRef<(()=>void)|null>(null);
+ const [notice,setNotice]=useState(''),[error,setError]=useState(''),[printedAt,setPrintedAt]=useState(''),release=useRef<(()=>void)|null>(null);
  useEffect(()=>{if(!active)release.current?.();},[active]);
  useEffect(()=>()=>release.current?.(),[]);
  const {bytes,usable}=source;
- const samples=useMemo(()=>bytes?parseSpectrum(new TextDecoder().decode(bytes).split('\r\n').slice(1).join('\r\n')):[],[bytes]);
+ const printOnly=!bytes&&!!source.printSamples?.length;
+ const samples=useMemo(()=>bytes?parseSpectrum(new TextDecoder().decode(bytes).split('\r\n').slice(1).join('\r\n')):source.printSamples??[],[bytes,source.printSamples]);
  function save(){
   release.current?.();setNotice('');setError('');
   if(!bytes){setError(M.saveError);return;}
@@ -32,9 +39,11 @@ export function SpectrumSaveCard({source,active}:{source:SpectrumSaveSource;acti
  }
  function print(){
   release.current?.();setNotice('');setError('');
-  if(!bytes){setError(M.saveError);return;}
+  if(!bytes&&!printOnly){setError(M.saveError);return;}
   const root=document.documentElement;
   if(root.hasAttribute('data-print-scope')){setError(M.printBusy);return;}
+  // Front H2: the spectrometer print 0x510240 starts with the shared header 0x58e860 (printSkyHeader, K2), dated when printed.
+  flushSync(()=>setPrintedAt(new Date().toLocaleString()));
   root.setAttribute('data-print-scope',SPECTRUM_PRINT_SCOPE);
   const end=()=>{window.removeEventListener('afterprint',end);document.removeEventListener('pointerdown',end,true);document.removeEventListener('keydown',end,true);if(root.getAttribute('data-print-scope')===SPECTRUM_PRINT_SCOPE)root.removeAttribute('data-print-scope');if(release.current===end)release.current=null;};
   release.current=end;window.addEventListener('afterprint',end);document.addEventListener('pointerdown',end,true);document.addEventListener('keydown',end,true);
@@ -43,10 +52,10 @@ export function SpectrumSaveCard({source,active}:{source:SpectrumSaveSource;acti
  const w0=samples[0]?.wavelength??0,w1=samples.at(-1)?.wavelength??1,points=samples.map(s=>`${40+(s.wavelength-w0)/(w1-w0||1)*920},${220-Math.max(0,Math.min(1,s.intensity))*190}`).join(' ');
  return <section className="card ob-spectrum-save" aria-labelledby="ob-spectrum-save-title" data-testid="ob-spectrum-save">
   <h2 id="ob-spectrum-save-title">{M.title}</h2><p className="observatory-note">{M.help}</p>
-  <div className="ob-menu ob-print-hide"><button type="button" className="secondary-button" disabled={!usable} data-testid="ob-spectrum-save-button" onClick={save}>{M.save}</button><button type="button" className="secondary-button" disabled={!usable} data-testid="ob-spectrum-print-button" onClick={print}>{M.print}</button></div>
-  <p className="observatory-note ob-print-hide">{M.adaptation}</p>
+  <div className="ob-menu ob-print-hide"><button type="button" className="secondary-button" disabled={!usable||printOnly||!!source.saveNote} data-testid="ob-spectrum-save-button" onClick={save}>{M.save}</button><button type="button" className="secondary-button" disabled={!usable} data-testid="ob-spectrum-print-button" onClick={print}>{M.print}</button></div>
+  <p className="observatory-note ob-print-hide">{M.adaptation}</p>{source.saveNote&&<p className="observatory-note ob-print-hide" data-testid="ob-spectrum-save-note">{source.saveNote}</p>}
   <div className="ob-print-hide" aria-live="polite">{notice&&<p role="status">{notice}</p>}{error&&<p role="alert">{error}</p>}</div>
-  {bytes&&<figure className="ob-spectrum-print" data-testid="ob-spectrum-print"><figcaption><strong>{source.label}</strong> · {source.telescopeName} · {M.printMeta(formatNumber(source.elapsedMs,{useGrouping:false}),formatNumber(samples.length))}</figcaption>
+  {(bytes||printOnly)&&<figure className="ob-spectrum-print" data-testid="ob-spectrum-print"><pre className="ob-print-native" data-testid="ob-spectrum-print-header">{printSkyHeader(printedAt).join('\n')}</pre><figcaption><strong>{source.label}</strong> · {source.telescopeName} · {M.printMeta(formatNumber(source.elapsedMs,{useGrouping:false}),formatNumber(samples.length))}</figcaption>
    <svg viewBox="0 0 1000 260" role="img" aria-label={M.chartLabel}><line x1="40" x2="960" y1="220" y2="220" stroke="currentColor"/><line x1="40" x2="40" y1="25" y2="220" stroke="currentColor"/><text x="40" y="245" fontSize="16">{formatNumber(w0,{maximumFractionDigits:2})} Å</text><text x="860" y="245" fontSize="16">{formatNumber(w1,{maximumFractionDigits:2})} Å</text><text x="46" y="20" fontSize="16">{M.normalized}</text><polyline points={points} fill="none" stroke="currentColor" strokeWidth="1.5"/></svg>
   </figure>}
  </section>;
