@@ -16,7 +16,10 @@ const UNUSED_FINDER_LIMIT=11.5;
 export async function cameraOverlayInputs(load:TelescopeFieldLoad|null,pointing:Pointing,opticalIndex:OpticalIndex,signal?:AbortSignal):Promise<CameraOverlayInputs>{
  const no=(status:CameraOverlayStatus)=>Object.freeze({status,red:null});
  signal?.throwIfAborted();
- if(!load||load.telescope!==opticalIndex)return no('no-load');
+ if(!load)return no('no-load');
+ // Front C6 review L3: the sky view loads the new telescope's field after a telescope change; until it has, the loaded field
+ // belongs to the previous telescope.
+ if(load.telescope!==opticalIndex)return no('telescope');
  let field;
  try{
   const {loadSkyField}=await import('../io/skyField');

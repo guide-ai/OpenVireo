@@ -3,13 +3,14 @@ import {clusterHrPrintPage,type ClusterHrPrintLine,type ClusterHrPrintOrientatio
 import {CLUSTER_HR_EN as M} from './ClusterHrMessages';
 import ClusterPrintPreview from './ClusterPrintPreview';
 import './cluster-hr.css';
+import {hrScheme,hrSchemeStyle} from '../core/hrScheme';
 
 type Trial=Readonly<{zamsShown:boolean;modulusTicks:number;ebvTicks:number}>;
 const gapStyle=(g:ClusterHrPrintLine['gap'])=>'h' in g?{marginTop:`${Math.max(0,g.h-1)*1.2}em`}:{marginTop:g.px>0?'2.4em':0};
 
 /** A print-colour copy of the HR plot on screen (WEB: VIREO prints a capture of the whole window, GetFormImage). Element ids
  * are suffixed so the copy never duplicates the page's ids; url(#id) references follow. */
-function PlotCopy({source}:{source:RefObject<SVGSVGElement|null>}){
+function PlotCopy({source,monochrome}:{source:RefObject<SVGSVGElement|null>;monochrome:boolean}){
  const host=useRef<HTMLDivElement>(null);
  useEffect(()=>{
   const svg=source.current,el=host.current;if(!svg||!el)return;
@@ -18,9 +19,12 @@ function PlotCopy({source}:{source:RefObject<SVGSVGElement|null>}){
   copy.querySelectorAll('[clip-path]').forEach(n=>n.setAttribute('clip-path',(n.getAttribute('clip-path')??'').replace(/url\(#([^)]+)\)/,'url(#$1-print)')));
   copy.removeAttribute('aria-labelledby');copy.removeAttribute('data-testid');copy.setAttribute('aria-label',M.hrPrintImage);
   copy.querySelectorAll('[data-testid]').forEach(n=>n.removeAttribute('data-testid'));
+  // Front R4c: the copy is drawn in the print scheme (Print in Color xor 1, 0x542f7f), whatever the screen shows.
+  for(const [k,v] of Object.entries(hrSchemeStyle(hrScheme(monochrome))))copy.style.setProperty(k,v);
+  copy.setAttribute('data-scheme',monochrome?'mono':'colour');copy.setAttribute('data-testid','cluster-hr-print-svg');
   el.replaceChildren(copy);
   return ()=>{el.replaceChildren();};
- },[source]);
+ },[source,monochrome]);
  return <div ref={host} className="cluster-print-image" data-testid="cluster-hr-print-image"/>;
 }
 
@@ -32,8 +36,9 @@ export function ObservationDataUnavailable({testId}:{testId:string}){
 }
 
 /** File › Print (0x542f44): the recovered page body in either orientation, then the plot. */
-export default function HrPrint({trial,plot,testId,disabled=false}:{trial:Trial|null;plot:RefObject<SVGSVGElement|null>;testId:string;disabled?:boolean}){
- const [open,setOpen]=useState(false),[orientation,setOrientation]=useState<ClusterHrPrintOrientation>('portrait'),[date]=useState(()=>new Date().toLocaleString());
+/** Front R4c: `printMonochrome` is read when the preview opens (the print dialog); `onPrinted` runs on its Print… only. */
+export default function HrPrint({trial,plot,testId,disabled=false,printMonochrome,onPrinted}:{trial:Trial|null;plot:RefObject<SVGSVGElement|null>;testId:string;disabled?:boolean;printMonochrome?:()=>boolean;onPrinted?:()=>void}){
+ const [printMono,setPrintMono]=useState(true),[open,setOpen]=useState(false),[orientation,setOrientation]=useState<ClusterHrPrintOrientation>('portrait'),[date]=useState(()=>new Date().toLocaleString());
  const button=useRef<HTMLButtonElement>(null);
  const page=clusterHrPrintPage({dateText:date,zamsShown:trial?.zamsShown??false,modulusTicks:trial?.modulusTicks??0,ebvTicks:trial?.ebvTicks??0,orientation});
  const line=(l:ClusterHrPrintLine,i:number)=>{
@@ -42,12 +47,12 @@ export default function HrPrint({trial,plot,testId,disabled=false}:{trial:Trial|
   return <p key={i} style={style} className={`cluster-print-line${l.text===null?' cluster-print-placeholder':''}`} data-kind={l.kind}>{l.text??M.printPlaceholder}</p>;
  };
  return <>
-  <button type="button" ref={button} className="secondary-button" data-testid={`${testId}-open`} disabled={disabled} onClick={()=>setOpen(true)}>{M.hrPrint}</button>
-  {open&&<ClusterPrintPreview caption={M.hrPrintCaption} note={M.hrPrintNote} onClose={()=>{setOpen(false);requestAnimationFrame(()=>button.current?.focus());}} testId={testId}>
+  <button type="button" ref={button} className="secondary-button" data-testid={`${testId}-open`} disabled={disabled} onClick={()=>{setPrintMono(printMonochrome?.()??true);setOpen(true);}}>{M.hrPrint}</button>
+  {open&&<ClusterPrintPreview caption={M.hrPrintCaption} note={M.hrPrintNote} onClose={()=>{setOpen(false);requestAnimationFrame(()=>button.current?.focus());}} onPrinted={onPrinted} testId={testId}>
    <fieldset className="cluster-print-chrome cluster-print-orientation"><legend>{M.hrPrintOrientation}</legend>
     {(['portrait','landscape'] as const).map(o=><label key={o}><input type="radio" name={`${testId}-orientation`} value={o} checked={orientation===o} onChange={()=>setOrientation(o)}/> {o==='portrait'?M.portrait:M.landscape}</label>)}
    </fieldset>
-   <div className="cluster-print-body" data-testid={`${testId}-body`}>{page.lines.map(line)}<div style={gapStyle('h' in page.imageGap?page.imageGap:{px:0})}/><PlotCopy source={plot}/></div>
+   <div className="cluster-print-body" data-testid={`${testId}-body`}>{page.lines.map(line)}<div style={gapStyle('h' in page.imageGap?page.imageGap:{px:0})}/><PlotCopy source={plot} monochrome={printMono}/></div>
   </ClusterPrintPreview>}
  </>;
 }

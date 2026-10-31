@@ -19,12 +19,15 @@
 .cluster-native-hr .cnhr-actions{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
 .cluster-native-hr-chart{overflow:auto;max-width:100%;border:1px solid var(--ov-border);border-radius:8px;background:#fff;margin:.8rem 0}
 .cluster-native-hr-chart svg{display:block;font-family:ui-sans-serif,system-ui,sans-serif}
-.cluster-native-hr .cnhr-axis{fill:none;stroke:#203b43;stroke-width:1}
-.cluster-native-hr .cnhr-tick{stroke:#203b43;stroke-width:1}
-.cluster-native-hr .cnhr-label{font-size:11px;fill:#203b43;dominant-baseline:hanging}
-.cluster-native-hr .cnhr-point{fill:#206252;stroke:#0d3a2f;stroke-width:1}
-.cluster-native-hr .cnhr-zams{fill:none;stroke:#8d641d;stroke-width:2}
-.cluster-native-hr .cnhr-isochrone{fill:none;stroke:#8c4591;stroke-width:2}
+.cnhr-axis{fill:none;stroke:var(--hr-axis,#203b43);stroke-width:1}
+.cnhr-tick{stroke:var(--hr-axis,#203b43);stroke-width:1}
+.cnhr-label{font-size:11px;fill:var(--hr-text,#203b43);dominant-baseline:hanging}
+.cnhr-label.hr-count{fill:var(--hr-count-text,#203b43)}
+.cnhr-point{fill:var(--hr-point-fill,#206252);stroke:var(--hr-point-outline,#0d3a2f);stroke-width:1}
+/* Front R4c: plot classes are unscoped so the print copy (outside .cluster-native-hr) keeps them. */
+.cnhr-zams{fill:none;stroke:var(--hr-zams,#8d641d);stroke-width:var(--hr-curve-width,2)}
+.cnhr-isochrone{fill:none;stroke:var(--hr-isochrone,#8c4591);stroke-width:var(--hr-curve-width,2)}
+.hr-background{fill:var(--hr-background)}
 .cluster-native-hr .cnhr-check{display:flex;gap:.5rem;align-items:flex-start}
 .cluster-native-hr .cnhr-check input{margin-top:.2rem;flex-shrink:0;width:1.1rem;height:1.1rem}
 .cluster-native-hr .cnhr-sliders{display:grid;grid-template-columns:minmax(0,14rem) minmax(0,1fr);gap:.2rem 1rem;align-items:center}

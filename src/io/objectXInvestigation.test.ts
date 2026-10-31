@@ -61,6 +61,21 @@ describe('v28 Object X investigation',()=>{
   const shown=await portableObjectXInvestigation({...back,answer:'asteroid',revealed:true});
   expect((shown.objectX as {exposures:Record<string,unknown>[]}).exposures[0]).toHaveProperty('pairs',inv.exposures[0].pairs);
  },60_000);
+ // QA1 closure × Front C6 (merge): every combination of stored counts (E1) and fieldAnchor (C6) restores and re-saves
+ // byte-identically, with the format's key order (pairs/skipped before fitsSha256, fieldAnchor last).
+ for(const [name,counts,anchor] of [['old file: counts, no anchor',true,false],['C6 file: anchor and counts',true,true],['new unrevealed file: anchor, no counts',false,true]] as const)
+ it(`QA1 closure × C6: ${name}`,async()=>{
+  const full=investigation();
+  const inv={...full,answer:null,revealed:false,measure:null,log:[],exposures:full.exposures.map(e=>({...e,skipped:[] as const,...(counts?{countsStored:true as const}:{}),...(anchor?{fieldAnchor:{ra:e.ra,dec:e.dec}}:{})}))};
+  const {objectX,digest}=await portableObjectXInvestigation(inv),text=JSON.stringify(objectX);
+  const keys=Object.keys((objectX as {exposures:Record<string,unknown>[]}).exposures[0]);
+  expect(keys.includes('pairs')).toBe(counts);expect(keys.includes('skipped')).toBe(counts);expect(keys.includes('fieldAnchor')).toBe(anchor);
+  expect(keys.at(-1)).toBe(anchor?'fieldAnchor':'fitsSha256');
+  const back=await admitObjectXInvestigation(JSON.parse(text),digest);
+  expect(back.exposures.map(e=>[e.pairs,e.skipped,e.fieldAnchor??null,e.countsStored===true])).toEqual(inv.exposures.map(e=>[e.pairs,e.skipped,anchor?{ra:e.ra,dec:e.dec}:null,counts]));
+  const again=await portableObjectXInvestigation(back);
+  expect(JSON.stringify(again.objectX)).toBe(text);expect(again.digest).toBe(digest);
+ },60_000);
  it('QA1 closure E1: an older unrevealed file with stored counts still restores and re-saves byte-identically',async()=>{
   const full=investigation(),old={...full,exposures:full.exposures.map(e=>({...e,skipped:[] as const,countsStored:true as const})),answer:null,revealed:false,measure:null,log:[]};
   const {objectX,digest}=await portableObjectXInvestigation(old),text=JSON.stringify(objectX);

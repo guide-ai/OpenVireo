@@ -9,8 +9,8 @@ import {QSO_LIST_MESSAGES} from './QsoListMessages';
 import './observatory-dialogs.css';
 const M=OBSERVATORY_MESSAGES.options,S=M.session;
 const SESSION_KEYS=Object.keys(SC) as (keyof SessionOpticalOptions)[];
-const SESSION_HINTS:Readonly<Record<keyof SessionOpticalOptions,string>>={fastSlewing:S.fastSlewing,fastScopeChange:S.fastScopeChange,computeRedshiftVelocity:S.computeRedshiftVelocity,infraredCamera:S.infraredCamera,monochromeDisplays:S.monochromeDisplays,printInColor:S.printInColor,timeDependentData:S.timeDependentData};
-const SESSION_NOTES:Partial<Record<keyof SessionOpticalOptions,string>>={fastScopeChange:S.fastScopeChangeNote,computeRedshiftVelocity:S.computeRedshiftVelocityNote,printInColor:S.colorNote,timeDependentData:S.timeDependentDataNote};
+const SESSION_HINTS:Readonly<Record<keyof SessionOpticalOptions,string>>={fastSlewing:S.fastSlewing,fastScopeChange:S.fastScopeChange,computeRedshiftVelocity:S.computeRedshiftVelocity,infraredCamera:S.infraredCamera,monochromeDisplays:S.monochromeDisplays,printInColor:S.printInColor,timeDependentData:S.timeDependentData,showObjectId:S.showObjectId,showObjectMag:S.showObjectMag};
+const SESSION_NOTES:Partial<Record<keyof SessionOpticalOptions,string>>={fastScopeChange:S.fastScopeChangeNote,computeRedshiftVelocity:S.computeRedshiftVelocityNote,printInColor:S.colorNote,timeDependentData:S.timeDependentDataNote,showObjectId:S.showObjectIdNote};
 const testId=(k:string)=>`ob-options-${k.replace(/[A-Z]/g,c=>'-'+c.toLowerCase())}`;
 
 /** "Optical Simulation Options" (OB-LS-01, WEB-LS-01): Limit Slewing, Edit Mode (Front O, WEB-EM-01) and Virtual Observatory
