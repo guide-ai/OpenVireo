@@ -190,7 +190,7 @@ export function composeCameraExposure(recipeInput:CameraExposureRecipe,selection
  const initial=cameraBackgroundStage(background,stream.take(background.width*background.height));
  const plane=Float32Array.from(initial.pixels);
  // 4. CCD overlay (Front C6): calibration record root+0x2d99 (+0x39/+0x3d/+0x41) and the selected telescope's record +0x3c
- // (index env+0x3818, stored with obs+0x6fc by 0x58b67d/0x58b682), the same owners the point sources read.
+ // (index root+0x3818, root = [0x5b59a4], stored with obs+0x6fc by 0x58b67d/0x58b682), the same owners the point sources read.
  let overlay:CameraOverlayResult|null=null;
  if(overlayInput){
   if(kind!=='ccd'||!(overlayInput.red instanceof Uint8Array)||overlayInput.red.length!==plane.length)throw new CameraExposureError('recipe','overlay');

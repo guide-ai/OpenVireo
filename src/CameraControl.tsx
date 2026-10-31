@@ -23,7 +23,7 @@ import CameraFieldSize from './polish/CameraFieldSize';// Front P
 import {cameraFieldInputs,ccdFilterByte,setCcdFilterByte,type CameraFieldInputs} from './camera/cameraFieldInputs';// Front R2
 import {cameraOverlayInputs,type CameraOverlayStatus} from './camera/cameraOverlayInputs';
 import {cameraRegionRecord,cameraRegionSelection,type CameraRegionRecord} from './core/cameraRegion';
-import {telescopeFieldLoad} from './observatory/telescopeField';
+import {telescopeFieldLoad,type TelescopeFieldLoad} from './observatory/telescopeField';
 
 export type CameraExtraSourceProvider=(jd:number,seconds:number,camera:CameraExposureKind)=>readonly CameraExtraSource[];
 /** The one place the camera asks its caller for moving pairs. */
@@ -57,7 +57,9 @@ export type CameraControlProps=Readonly<{
  seedSource?:()=>number;
 }>;
 type Attempt={ticket:CameraGateEffect['ticket'];controller:AbortController;camera:CameraExposureKind;seconds:number;filter:number;gain:number;mode:CameraCatalogMode;jd:number;seed:number;pointing:Pointing;telescope:OpticalIndex;
- worker:Worker|null;pending:((reply:CameraWorkerReply|null)=>void)|null;source:CameraCatalogSource|null;failure:string|null;prepared:CameraImage|null;catalogName:string;region?:CameraRegionRecord};
+ worker:Worker|null;pending:((reply:CameraWorkerReply|null)=>void)|null;source:CameraCatalogSource|null;failure:string|null;prepared:CameraImage|null;catalogName:string;region?:CameraRegionRecord;
+ /** Front C6 review L2: the telescope field load at Go, read once for both the region and the overlay. */
+ load:TelescopeFieldLoad|null};
 /** One Worker per attempt; parse and compose run there so Stop stays responsive (review fix H2). */
 function call(a:Attempt,request:CameraWorkerRequest,transfer:Transferable[]=[]):Promise<CameraWorkerReply|null>{
  if(!a.worker){a.worker=new Worker(new URL('./camera/cameraWorker.ts',import.meta.url),{type:'module'});
@@ -117,7 +119,7 @@ function CameraControl({objectXHidden=null,vireoId='',showObjectId=false,current
    a.source=result.source;
    // Front C6: Select copies the region record of the telescope field loaded last (0x522309/0x51df28); the pointing stands in
    // only before any telescope load was published [W].
-   const region=a.region=cameraRegionRecord(telescopeFieldLoad()?.anchor??a.pointing);
+   const region=a.region=cameraRegionRecord(a.load?.anchor??a.pointing);
    const reply=await call(a,{type:'parse',bytes:result.bytes,context:{catalog:route.catalog,band:route.band,epochOffsetYears:reference.epochOffsetYears,queryBrightMagnitude:reference.queryBrightMagnitude,queryFaintMagnitude:reference.queryFaintMagnitude},magnitudeLimit:reference.selectionMagnitudeLimit,bounds:cameraRegionSelection(region,reference.selectionMagnitudeLimit)},[result.bytes.buffer]);
    if(attempt.current!==a||reply===null&&a.controller.signal.aborted)return;
    if(reply?.type==='parsed'&&reply.ok){dispatch({type:'request-result',ticket:a.ticket,finished:true,transportSucceeded:true,catalog:'valid'});return;}
@@ -133,7 +135,7 @@ function CameraControl({objectXHidden=null,vireoId='',showObjectId=false,current
    const field=await cameraFieldInputs(a.pointing,a.jd,ccdFilterByte(),{signal:a.controller.signal,hidden:objectXHidden});
    if(attempt.current!==a||gateRef.current.phase!=='preparing')return;
    // Front C6: the CCD overlay (form+0x412) from the loaded telescope field; IR has none.
-   const overlay=a.camera==='ccd'?await cameraOverlayInputs(telescopeFieldLoad(),a.pointing,a.telescope,a.controller.signal):null;
+   const overlay=a.camera==='ccd'?await cameraOverlayInputs(a.load,a.pointing,a.telescope,a.controller.signal):null;
    if(attempt.current!==a||gateRef.current.phase!=='preparing')return;
    const reply=await call(a,{type:'compose',recipe:{camera:a.camera,opticalIndex:a.telescope,filterPosition:a.filter,seconds:a.seconds,gain:a.gain,centerRaHours:a.pointing.ra,centerDecDegrees:a.pointing.dec,seed:a.seed},extras,fieldObjects:field.objects,overlay:overlay?.red?{red:overlay.red}:null},overlay?.red?[overlay.red.buffer]:[]);
    if(attempt.current!==a||gateRef.current.phase!=='preparing')return;
@@ -175,7 +177,7 @@ function CameraControl({objectXHidden=null,vireoId='',showObjectId=false,current
   attempt.current=null;
   const transition=cameraRequestTransition(gateRef.current,{type:'start',seconds:total});
   const ticket=transition.state.ticket!;
-  attempt.current={ticket,controller:new AbortController(),camera,seconds:total,filter,gain,mode,jd,seed,pointing:{ra:pointing.ra,dec:pointing.dec},telescope:telescopeIndex,worker:null,pending:null,source:null,failure:null,prepared:null,catalogName:''};
+  attempt.current={ticket,controller:new AbortController(),camera,seconds:total,filter,gain,mode,jd,seed,pointing:{ra:pointing.ra,dec:pointing.dec},telescope:telescopeIndex,worker:null,pending:null,source:null,failure:null,prepared:null,catalogName:'',load:telescopeFieldLoad()};
   gateRef.current=transition.state;setGate(transition.state);setWaitShown(false);
   for(const effect of transition.effects)apply(effect);
  }
@@ -249,7 +251,7 @@ function CameraControl({objectXHidden=null,vireoId='',showObjectId=false,current
     <dt>{M.detailDraws}</dt><dd>{shown.drawsConsumed}</dd>
     <dt>{M.detailPeak}</dt><dd data-testid="camera-detail-peak" data-count={peak.count}>{M.peakCount(peak.value,peak.count)}</dd>
     {image.fieldObjectsStatus&&<><dt>{M.detailFieldObjects}</dt><dd data-testid="camera-detail-field-objects" data-status={image.fieldObjectsStatus}>{image.fieldObjectsStatus==='run'&&shown.fieldObjects?M.fieldObjects.run(shown.fieldObjects.eligible,shown.fieldObjects.inBounds,shown.fieldObjects.tail,shown.fieldObjects.tailDrawn,shown.fieldObjects.tailSaturatedAdmission):image.fieldObjectsStatus==='run'?'':M.fieldObjects[image.fieldObjectsStatus]}</dd></>}
-    {image.region&&<><dt>{M.detailRegion}</dt><dd data-testid="camera-detail-region">{M.region(image.region.minimumRa,image.region.maximumRa,image.region.minimumDec,image.region.maximumDec)}</dd></>}
+    {image.region&&<><dt>{M.detailRegion}</dt><dd data-testid="camera-detail-region">{M.region(image.region)}</dd></>}
     {image.overlayStatus&&<><dt>{M.detailOverlay}</dt><dd data-testid="camera-detail-overlay" data-status={image.overlayStatus}>{image.overlayStatus==='run'?M.overlayRun(shown.overlay?.draws??0):M.overlay[image.overlayStatus]}</dd></>}
     {shown.skipped.length>0&&<><dt>{M.detailSkipped}</dt><dd data-testid="camera-detail-skipped">{shown.skipped.map(k=>M.skippedReason[k.reason]).join(' ')}</dd></>}
    </dl></details>
