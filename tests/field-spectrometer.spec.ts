@@ -56,7 +56,8 @@ test('a naked-eye star whose spectral index is not a whole class gets its templa
  await pointAndUse(page,'2.5125473','0.25592');
  await expect(page.getByTestId('field-spec-object')).toContainText('N0000.DAT@63282',{timeout:90000});
  await expect(page.getByTestId('field-spec-status')).toHaveCount(0);
- await expect(page.getByTestId('field-spec-reasons')).not.toContainText('spectral index');
+ // Re-pinned 2026-10-31 (Front L4): this naked-eye star was mean-bound on the 0.4 m (the former web bound 12); it is acquirable now.
+ await expect(page.getByTestId('field-spec-reasons')).toHaveCount(0);await expect(page.getByTestId('field-spec-acquisition')).toBeVisible();
  expect(errors).toEqual([]);
 });
 test('near an Object X position the field is masked',async({page})=>{
