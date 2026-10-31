@@ -25,12 +25,16 @@ test('student path: list → Get Selection Data → OK gives the RA-sorted findi
  await expect(id(page,'fi-box')).toContainText('Added to Current Hot List.');
 });
 
-test('arbitrary centres are refused with a typed reason; validation literals; Edit Mode unlocks Type and Sort',async({page})=>{
+test('any centre is queried on the GSC tiles (Front G5); validation literals; Edit Mode unlocks Type and Sort',async({page})=>{
  await observatory(page);await openDialog(page);
  await id(page,'cd-diameter').fill('x');await id(page,'cd-ok').click();await expect(id(page,'fi-box')).toContainText('Diameter is Invalid!');await id(page,'fi-box').getByRole('button').click();
  await id(page,'cd-diameter').fill('0');await id(page,'cd-ok').click();await expect(id(page,'fi-box')).toContainText('Cluster Diameter is Zero!');await id(page,'fi-box').getByRole('button').click();
- await id(page,'cd-diameter').fill('30');await id(page,'cd-ok').click();
- await expect(id(page,'cluster-data-reason')).toContainText('only the 16 published cluster fields');
+ // Re-pinned 2026-10-30 (Front G5): a centre outside the 16 published fields runs VIREO's query 0x534254 on the GSC tiles
+ // (NGC 2244, Diam 24′, limit 12) instead of a typed refusal.
+ await id(page,'cd-name').fill('NGC 2244');for(const [f,v] of [['raHours','6'],['raMinutes','32'],['raSeconds','24'],['decDegrees','4'],['decMinutes','52'],['decSeconds','0'],['diameter','24'],['limit','12']] as const)await id(page,`cd-${f}`).fill(v);
+ await id(page,'cd-ok').click();
+ await expect(id(page,'cluster-data-line-0')).toHaveText('Cluster Name/ID: NGC 2244',{timeout:30000});await expect(id(page,'cluster-data-line-1')).toHaveText(/^[1-9]\d* Stars$/);
+ await expect(id(page,'cluster-data-source')).toContainText('full Guide Star Catalog');
  await page.locator('.telescope-motion').getByTestId('ob-options').click();await id(page,'ob-options-edit-mode').check();await id(page,'ob-options-ok').click();
  await openDialog(page);await expect(id(page,'cd-type-0')).toBeEnabled();
  await id(page,'cd-file').click();await id(page,'cd-view-select').click();

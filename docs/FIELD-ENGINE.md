@@ -90,5 +90,20 @@ When a field is assembled from the compact GSC tiles (Front G), `AssembledFieldE
   partial star list. The web shows no field [W].
 - `regions`, `budget`, `plan` and `source`.
 
+## The finder field (Front G5)
+`FieldOptions.finder` builds the finder field 0x53bae4 on the same packs (`evaluateFinderView`; docs/SKY-FIELD-VIEW.md):
+- **Area:** half 3.75° (Field Creation Factor 3 × Finder Field 2.50°), limit 14 (0x53bcc1), folded as the instrument field.
+- **Stars:** FSCFieldObj's reader 0x59b374 is the NewGSC reader 0x59ad98 with three differences [D, instruction diff]:
+  - a record above the Finder Mag Limit (env+0x2bb8, 11.5) is skipped before admission 0x599e08;
+  - B−V and U−B are stored as 30.0 and the spectral word as 0;
+  - the four flag bytes are set to 1. +0x35 and +0x5b are left unwritten [U]; the web stores 0 [W].
+- **Mode 0:** no QSO load or merge; galaxies at min(14, 12) = 12 with the loader 0x59b894, which is 0x598acc without the
+  photograph matcher (colours 30.0, code 0).
+- **Paint 0x53b058:** 936² over 7.5°; galaxies in list order with stamp set 1 at stored − +0x6f8; stars at cached level (bank
+  offset 1) − +0x6f4, where +0x6f4 is the telescope record's +0x38 (finderFactorMag −6/−5/−4). No NGC 224 routine and no
+  photograph. A galaxy whose minor axis rounds to 0 px is listed in `unpaintedGalaxies` [I: it composes nothing].
+- The pack decoder's variable bound is now 4,000 entries: a finder field across 0 h covers the whole RA ring of a 7.5° band,
+  which holds up to 3,483 CLEA_VStrs.dat records (a web bound, not a VIREO limit).
+
 ## Numerical policy
 Arithmetic uses Number with nearest-even rounding; x87 equivalence is not claimed. The one exception is Frac(1000·RA): it is exact in the Extended significand, so it is computed exactly and rounded once.

@@ -141,6 +141,9 @@ export interface MessageParameters {
   "sky.loading": never;
   "sky.count": "count";
   "sky.coverage": never;
+  "sky.fieldLoading": never;
+  "sky.fieldReady": "galaxies" | "stars" | "view";
+  "sky.fieldPreview": "reason";
   "sky.chartLabel": never;
   "sky.crosshair": never;
   "sky.north": never;

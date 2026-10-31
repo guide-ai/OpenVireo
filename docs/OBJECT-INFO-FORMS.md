@@ -111,8 +111,9 @@ Typed reasons where no field can be built:
 - `field-unreadable`: the native read cannot be reproduced (for example `band-end`, where VIREO reads past the end of a band).
 - `population`: as before, when the field engine's own stages gate the field.
 
-There is no partial dialog. In the Finder view,
-Catalog Object is `finder-catalog-unavailable`, because the FSC finder catalogue is not bundled. The Variable Stars list works anywhere, because CLEA_VStrs.dat is whole-sky.
+There is no partial dialog. In the Finder view Catalog Object picks from VIREO's finder field (Front G5): FSCFieldObj on the same
+compact GSC bands (0x59b374, Finder Mag Limit 11.5; docs/SKY-FIELD-VIEW.md). Its star records carry B−V and U−B 30.0, every
+flag set and spectral code 0, as the finder reader writes them. The Variable Stars list works anywhere, because CLEA_VStrs.dat is whole-sky.
 
 In Edit Mode the Telescope view shows the engine's own field in an overlay (`EditModeFieldLayer`), so the click and the Star
 Data List use the field the view shows. Its drawing style is [W].
@@ -196,7 +197,6 @@ The original form is TFieldRptForm1 < TClstrRptForm1 < TObjctListForm1 (RECOVERY
 
 All appear in the UI with a one-line explanation (`src/observatory/FieldInfoMessages.ts`):
 - field-polar, field-tiles:<code>, field-unreadable:<code> (Front G; they replace field-not-certified)
-- finder-catalog-unavailable
 - object-x-hidden
 - asteroids-not-modelled
 - population:<engine reason>
