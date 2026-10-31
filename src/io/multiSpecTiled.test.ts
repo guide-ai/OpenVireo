@@ -7,7 +7,8 @@ import {OBJECT_X_GALAXY_SPECTRA,OBJECT_X_PHOTOGRAPHS} from './objectXSpectromete
 import {setTileSources} from './tileAssembly';
 import {checkGscIndex,createGscTileStore} from './gscTiles';
 import {multiSpecPick} from '../core/multiSpecSelect';
-import {anyMultiSpecField,observatoryMultiSpecField} from '../multispec/multiSpecFields';
+import {MULTISPEC_TILED_EXCEPTIONS,anyMultiSpecField,observatoryMultiSpecField} from '../multispec/multiSpecFields';
+import {LSS_ROWS} from '../core/lssFields';
 import engineTargets from '../../data/hubble/engine-targets.json';
 vi.setConfig({testTimeout:300000});
 
@@ -43,6 +44,24 @@ describe('Front G G4b: Multi-Spec at any pointing',()=>{
    expect(sha(got.viewport!.rgb as Uint8Array)).toBe(sha(want.viewport!.rgb as Uint8Array));
   }
  });
+ // G4b review 1 L1: every certified pointing (the four Hubble targets and every LSS row), telescope 1 (the review measured all
+ // three; the outcome did not depend on the telescope). Equal view and population, or the same no-view outcome, except at
+ // MULTISPEC_TILED_EXCEPTIONS.
+ it('at every certified pointing the bundled pack and the assembled field agree, except at the listed Boötes pointings',async()=>{
+  const pointings=[...engineTargets.targets.map(t=>t.pointing),...LSS_ROWS.map(r=>({ra:r.ra,dec:r.dec}))];
+  const differ:string[]=[],noView:string[]=[];
+  const strip=(p:unknown)=>JSON.stringify(p,(k,v)=>k==='photographAssociations'?undefined:v);
+  for(const pointing of pointings){
+   const bundled=observatoryMultiSpecField(pointing,1)!,want=await multiSpecView(bundled),got=await multiSpecView({pack:'gsc-tiles',pointing,telescope:1});
+   const same=JSON.stringify(got.reasons)===JSON.stringify(want.reasons)&&!got.fieldRead&&(want.viewport
+    ?!!got.viewport&&sha(got.viewport.rgb as Uint8Array)===sha(want.viewport.rgb as Uint8Array)&&strip(got.population)===strip(want.population)
+    :!got.viewport);
+   if(!same)differ.push(`${pointing.ra},${pointing.dec}`);else if(!want.viewport)noView.push(`${pointing.ra},${pointing.dec}`);
+  }
+  expect(differ).toEqual(MULTISPEC_TILED_EXCEPTIONS.map(p=>`${p.ra},${p.dec}`));
+  // The pointings where both sides give the same no-view outcome (photographic-image, field-level reasons): 30 of 223.
+  expect([noView.length,pointings.length]).toEqual([30,223]);
+ });
  it('at another pointing: the view is ready and a star fibre and a sky fibre give spectra',async()=>{
   const field={pack:'gsc-tiles' as const,pointing:STAR,telescope:2 as const},v=await multiSpecView(field);
   expect([v.fieldRead,v.reasons,v.viewport?.width]).toEqual([undefined,[],312]);
@@ -50,6 +69,14 @@ describe('Front G G4b: Multi-Spec at any pointing',()=>{
   expect([star.type,sky.type]).toEqual([0,4]);
   const e=await multiSpecSpectra(field,[{selection:star,seed:1,seconds:30},{selection:sky,seed:2,seconds:30}]);
   expect(e.map(x=>x.status)).toEqual(['ready','ready']);expect(structuredClone(e)).toEqual(e);
+ });
+ it('an aborted build rejects with AbortError and is not cached (G4b review 1 M1)',async()=>{
+  const field={pack:'gsc-tiles' as const,pointing:{ra:7.25,dec:-12.5},telescope:1 as const},stop=new AbortController();
+  tiles();const before=tileFetches,p=multiSpecView(field,stop.signal);stop.abort();
+  await expect(p).rejects.toMatchObject({name:'AbortError'});
+  const ok=await multiSpecView(field);expect(ok.fieldRead).toBeUndefined();expect(ok.viewport?.width).toBe(312);
+  expect(tileFetches).toBeGreaterThan(before);
+  expect(await multiSpecView(field)).toBe(ok);// the finished build is cached
  });
  it('typed field reads: the polar web limit; a tile failure is retryable and not cached',async()=>{
   const polar=await multiSpecView({pack:'gsc-tiles',pointing:{ra:3,dec:89.99},telescope:0});

@@ -32,17 +32,27 @@ export function observatoryMultiSpecField(pointing:Pointing,telescope:FieldTeles
  if(lss)return Object.freeze({pack:`lss-field-0${lss.field}` as MultiSpecFieldRequest['pack'],pointing:at(pointing),telescope});
  return null;
 }
-/** Front G G4b: the field at any pointing, the certified pack first (its populations equal the assembled ones where both exist). */
+/** G4b review 1 L1: the certified pointings whose bundled pack and assembled field differ for a student. Every other LSS row and
+ * Hubble target gives the same view and spectra both ways (multiSpecTiled.test.ts; nine LSS rows such as NGC 4278 give the
+ * same photographic-image outcome, the assembled population also listing its photograph associations). At Hubble Boötes
+ * (51975, 51976) the bundled pack keeps the Hubble route's acknowledged 'outside-view' variable rule (HUBBLE-13.md), so it
+ * shows the field, while the assembled field uses the recovered variable dispatch of the spectrometer at any pointing (G4a)
+ * and is stamp-bound (RS Boo). Both are web limits; which one VIREO shows is not recovered. */
+export const MULTISPEC_TILED_EXCEPTIONS:readonly Pointing[]=Object.freeze(engineTargets.targets.filter(t=>t.pack==='hubble-engine-bootes').map(t=>at(t.pointing)));
+const isException=(p:Pointing)=>MULTISPEC_TILED_EXCEPTIONS.some(x=>x.ra===p.ra&&x.dec===p.dec);
+/** Front G G4b: the field at any pointing, the certified pack first (the same field as the assembled one except at
+ * MULTISPEC_TILED_EXCEPTIONS). */
 export function anyMultiSpecField(pointing:Pointing,telescope:FieldTelescope):MultiSpecFieldRequest{
  return observatoryMultiSpecField(pointing,telescope)??Object.freeze({pack:'gsc-tiles',pointing:at(pointing),telescope});
 }
 /** Front G G4b: where the observatory's Multi-Spec field is loaded. The previous anchor is kept while VIREO's cached-field rule
- * holds for the current pointing (0.25°, core/fieldCache.ts) and the telescope is unchanged; a certified pointing reached exactly
- * always loads its own pack. Returns the same object when nothing changes. */
+ * holds for the current pointing (0.25°, core/fieldCache.ts) and the telescope is unchanged, as VIREO and the Edit Mode layer
+ * keep their field (G4b review 1 L2). [W] The one exception: reaching a MULTISPEC_TILED_EXCEPTIONS pointing exactly loads its
+ * own bundled pack, so the Hubble Boötes view stays reachable. Returns the same object when nothing changes. */
 export type MultiSpecAnchor=Readonly<{pointing:Pointing;telescope:FieldTelescope}>;
 export function multiSpecAnchor(previous:MultiSpecAnchor|null,pointing:Pointing,telescope:FieldTelescope):MultiSpecAnchor{
  const keep=previous&&previous.telescope===telescope&&nativeFieldCacheHolds(previous.pointing,pointing)
-  &&!(observatoryMultiSpecField(pointing,telescope)!==null&&(previous.pointing.ra!==pointing.ra||previous.pointing.dec!==pointing.dec));
+  &&!(isException(pointing)&&(previous.pointing.ra!==pointing.ra||previous.pointing.dec!==pointing.dec));
  return keep?previous:Object.freeze({pointing:at(pointing),telescope});
 }
 export function objectXMultiSpecField(list:HtlList,code:string,telescope:FieldTelescope):MultiSpecFieldRequest|null{

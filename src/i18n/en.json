@@ -3285,6 +3285,8 @@
   "multispec.retry": "Try again",
   "multispec.fieldReasons": "This field cannot be shown in this version ({reasons}).",
   "multispec.fieldNeutral": "Multi-Spec cannot observe this position in this version.",
+  "multispec.fieldInternal": "This field could not be prepared: Multi-Spec met a case this site does not handle. Please report the pointing; trying again will not help.",
+  "multispec.objectXListFailed": "The Object X position list (ObjectX.HTL) could not be loaded or did not match its recorded size and SHA-256, so no assembled field is shown. Move the telescope to try again.",
   "multispec.fieldLabel": "Telescope display: click an object to select it for Multi-Spec",
   "multispec.fieldHelp": "Click (or move the cursor with the arrow keys and press Enter) to select the nearest object; far from every object the fibre reads the sky. Right-click a selection (or press Delete) to remove it.",
   "multispec.fieldNotArmed": "Clicks select nothing here.",
