@@ -434,7 +434,7 @@ describe('record and clear (PLR-RECORD-01, PLR-CLEAR-01)', () => {
     const s = st(pulsarConfirmRecord(st(pulsarBeginRecord(click(loaded(a.recording), 0, 5)))));
     expect([s.list[0].fields.object, s.list[0].fields.file]).toEqual(['AB"C,D', 'quote"file,a.plr']);
     // Unescaped, as the decoded literals suggest: a naive split no longer yields the 12 fields, so the
-    // candidate is not a parseable or exportable CSV line (CSV save is gated and only the bounded Review comment editor reads it).
+    // candidate is not a parseable or exportable CSV line (the strict saved-rows check of Export and the native Save refuses it; the bounded Review comment editor reads it).
     expect(s.list[0].nativeLineCandidate).toBe('"AB"C,D",430.00,1.000,"",0.050000,"",50000.00000000,"",1,10.00,25,"quote"file,a.plr"');
     expect(s.list[0].nativeLineCandidate.split(',')).not.toHaveLength(12);
   });

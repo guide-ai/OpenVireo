@@ -179,8 +179,9 @@ export const MULTISPEC_GALAXY_SPECTRA=Object.freeze([
  G('NGC6181.SP',27616,'675f7df102251ea07dfbbbed6e560e25d004f2033cc8fc58751fada6e820c899'),G('NGC6643.SP',27616,'0c3b5029702407f51aec0a70a8d9e0f42c9c6af432af693923c12d7c69f3bb83'),
 ]);
 
-/** The bundled fields a Multi-Spec view can be built from. Object X packs are named by their ObjectX.HTL row (never by target). */
-export type MultiSpecPackId=`lss-field-0${LssFieldNumber}`|'hubble-engine-coma'|'hubble-engine-bootes'|`objectx-row-${number}`;
+/** The fields a Multi-Spec view can be built from: the certified bundled packs, and (Front G G4b) 'gsc-tiles', a pack assembled
+ * from the compact GSC tiles at the request's pointing. Object X packs are named by their ObjectX.HTL row (never by target). */
+export type MultiSpecPackId=`lss-field-0${LssFieldNumber}`|'hubble-engine-coma'|'hubble-engine-bootes'|`objectx-row-${number}`|'gsc-tiles';
 export type MultiSpecFieldRequest=Readonly<{pack:MultiSpecPackId;pointing:Readonly<{ra:number;dec:number}>;telescope:FieldTelescope;variableTime?:FieldVariableTime}>;
 export type MultiSpecResources=ObjectXSpectrometerResources;
 export type MultiSpecInputs=Readonly<{objectX:ObjectXSpectrometerInputs;starTemplates:ReadonlyMap<string,UniformSpectrum>;galaxyTemplate:MultiSpecContext['galaxyTemplate'];
@@ -203,6 +204,7 @@ export async function loadMultiSpecInputs(r:MultiSpecResources):Promise<MultiSpe
  };
  const packs=new Map<string,Promise<FieldPack>>();
  const pack=(id:MultiSpecPackId):Promise<FieldPack>=>{
+  if(id==='gsc-tiles')return Promise.reject(new MultiSpecInputError('pack'));// assembled per pointing (multiSpecEvaluate.ts)
   let p=packs.get(id);if(p)return p;
   p=(async()=>{
    const lss=/^lss-field-0([1-9])$/.exec(id);
@@ -223,7 +225,9 @@ export function multiSpecFieldOptions(inputs:MultiSpecInputs,request:MultiSpecFi
  // LSS fields: the recovered QSO merge on the bundled catalogue, as Field Information certifies them (Multi-Spec reaches LSS
  // pointings only in Edit Mode or mode 0; the LSS route's own 'gate' mode concerns its slit spectrometer).
  if(request.pack.startsWith('lss-field-'))return {qso:'merge',qsoCatalog:inputs.objectX.qsoCatalog,...vt};
- if(request.pack.startsWith('objectx-row-'))return {variableDispatch:'recovered',photographs:inputs.objectX.photographs,qso:'merge',qsoCatalog:inputs.objectX.qsoCatalog,...vt};
+ // Front G G4b: an assembled field takes the options of VIREO's instrument field at any pointing, as the single-slit
+ // spectrometer at the pointing does (core/fieldSpectrometer.ts) and the Object X fields.
+ if(request.pack.startsWith('objectx-row-')||request.pack==='gsc-tiles')return {variableDispatch:'recovered',photographs:inputs.objectX.photographs,qso:'merge',qsoCatalog:inputs.objectX.qsoCatalog,...vt};
  const rec=engineTargets.targets.find(t=>t.pack===request.pack&&t.pointing.ra===request.pointing.ra&&t.pointing.dec===request.pointing.dec) as {variables?:string}|undefined;
  return {qso:'merge',qsoCatalog:inputs.objectX.qsoCatalog,...(rec?.variables==='outside-view'?{variables:'outside-view' as const}:{}),...vt};
 }

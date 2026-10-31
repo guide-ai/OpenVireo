@@ -50,7 +50,9 @@ The requested native/code-review for this increment was denied beforeprocesscrea
     H0 moves by 1.2e-6).
   - With finer steps, the 4-digit z drifts by up to about 0.15 km/s.
 - **Re-recording a galaxy:** with Time-Dependent Data off (the R3 option), it updates its row, which keeps its id and first time; on, it adds a row. The rule is core/recordReuse.ts, shared with LSS.
-- **Compute Rdshft Vel.:** it pre-fills c·z when z ≠ 0.
+- **Compute Rdshft Vel.:** it pre-fills c·z when z ≠ 0, and the pre-fill is a store [D] (Front F3, H2 review N1): FormActivate
+  writes Single(c·z) into the record's velocity (0x54aefc) before the dialog opens, and an empty box skips OK's store
+  (0x54b155), so clearing the box keeps c·z. With the option off, an empty box keeps 0.
 - **[W] Stellar rows and spectra:** stellar rows, imported and library spectra keep the web confirmation. VIREO sends every
   mode-4 Record through the dialog, but the web has no exercise mode, and stellar rows are alignment practice excluded from
   Hubble.

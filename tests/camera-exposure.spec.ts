@@ -126,7 +126,8 @@ test('Save image writes a FITS file that reopens under Saved images with the sam
  expect(withId.suggestedFilename()).toBe('ObjX-42-01.FIT');expect((await readFile((await withId.path())!)).subarray(80*5,80*6).toString('latin1')).toMatch(/^OBJECT  = 'ObjX-42 '/);
  await objectXId('María');let downloaded=false;page.on('download',()=>{downloaded=true;});
  await button(page,'Save image (VIREO header)').click();await expect(page.getByTestId('camera-save-error')).toContainText('only plain ASCII');expect(downloaded).toBe(false);
- await objectXId('');
+ // RE5 review 1 L-c (Front F3): the alert belongs to the ID it was about; changing the ID clears it.
+ await objectXId('');await expect(page.getByTestId('camera-save-error')).toHaveCount(0);
  await page.goto('/#images');
  await page.getByLabel('Open float32 FITS image (up to 5 MiB)',{exact:true}).setInputFiles({name:d.suggestedFilename(),mimeType:'application/octet-stream',buffer:bytes});
  await expect(page.locator('.fits-lab')).toContainText('1024 × 1024 pixels');

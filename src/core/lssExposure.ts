@@ -2,7 +2,7 @@
  * HTL coordinates, for the selected telescope record; then the same bounded journal as the galaxy exposure. Web adaptations
  * (one line each in docs/LSS-SURVEY.md): a fresh field per pointing; the telescope is the student's choice among the three
  * verified profiles because the exercise-mode-5 telescope entry is not recovered; native timing (no speed-up). */
-import {evaluateField,createFieldExposure,type FieldLibrarySpectrum,type FieldOptions,type FieldQsoCatalog,type FieldResult,type FieldTelescope,type FieldUnavailableReason,type FieldVariableTime} from './fieldEngine';
+import {evaluateField,createFieldExposure,type FieldLibrarySpectrum,type FieldOptions,type FieldPhotographs,type FieldQsoCatalog,type FieldResult,type FieldTelescope,type FieldUnavailableReason,type FieldVariableTime} from './fieldEngine';
 import type {FieldPack} from './fieldPack';
 import {hasLibrarySpectrum} from './lssLists';
 import {lssFieldRows,type LssFieldNumber,type LssRow} from './lssFields';
@@ -25,8 +25,9 @@ export const LSS_OWN_SPECTRA=Object.freeze([
 ]);
 /** Front L2: what an LSS row evaluation needs besides its pack and CLEA_GLX.DAT. `names`: the GLXYSP.LST names; `qsoCatalog`:
  * the bundled CLEA_QSO.DAT for the recovered QSO merge (0x5987e4/0x597f90, qsoMerge.ts); `ownSpectra`: own library spectrum
- * file → samples. */
-export type LssSpectrumInputs=Readonly<{names:ReadonlySet<string>;qsoCatalog:FieldQsoCatalog;ownSpectra:ReadonlyMap<string,FieldLibrarySpectrum['samples']>}>;
+ * file → samples. Front F3: `photographs`, the GLIMAGES.LST rows and the approved bitmaps (the LSS five and the Object X four), so a
+ * row whose field holds a photographed galaxy is drawn as natively (0x596bd0, 0x597290) instead of staying photographic-image. */
+export type LssSpectrumInputs=Readonly<{names:ReadonlySet<string>;qsoCatalog:FieldQsoCatalog;ownSpectra:ReadonlyMap<string,FieldLibrarySpectrum['samples']>;photographs:FieldPhotographs}>;
 /** A selected galaxy with its own library spectrum in GLXYSP.LST (native key: id without spaces + ".SP") is observed with that
  * spectrum, as the Hubble route does (librarySpectrum); one whose file is not bundled stays unavailable (spectrum-mapping),
  * never given the GLXYTMPL.SP template. Among LSS identifiers only NGC 4670 and NGC 4889 match; both are bundled. */
@@ -38,7 +39,7 @@ export type LssRowStatus=Readonly<{kind:'available'|'neighbour';result:FieldResu
 export function evaluateLssRow(pack:FieldPack,glx:Uint8Array,row:LssRow,telescope:FieldTelescope,inputs:LssSpectrumInputs,variableTime?:FieldVariableTime):LssRowStatus{
  // Evidence inconsistencies (tampered or incomplete pack) throw to the caller; only typed gates become statuses.
  // Front L2: the recovered QSO merge replaces the earlier typed QSO gate (as the Hubble engine fields use it).
- const at={ra:row.ra,dec:row.dec},base:FieldOptions={qso:'merge',qsoCatalog:inputs.qsoCatalog,...(variableTime?{variableTime}:{})};
+ const at={ra:row.ra,dec:row.dec},base:FieldOptions={qso:'merge',qsoCatalog:inputs.qsoCatalog,photographs:inputs.photographs,...(variableTime?{variableTime}:{})};
  // The row's own galaxy is usually the selected one: when it has an own spectrum, supply it up front (one evaluation, and any
  // typed reason, mean-bound included, is then judged with that spectrum). Review 1 F8.
  const ownFor=(id:string)=>{if(!hasLibrarySpectrum(inputs.names,id))return null;const file=id.replace(/ /g,'')+'.SP',samples=inputs.ownSpectra.get(file);return samples?Object.freeze({targetId:id,file,samples}):undefined;};

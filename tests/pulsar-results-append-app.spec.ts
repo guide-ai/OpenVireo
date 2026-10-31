@@ -125,7 +125,7 @@ test('AP-01/18/31/32/33: LF golden target prefix kept byte for byte, rows in its
  await expect(id(page,'pulsar-sha')).toHaveText(sha(PLR));expect(await id(page,'pulsar-plot-1').evaluate(el=>el.outerHTML)).toBe(plot);
  expect(await reviewCells(page)).toEqual(cells);
  expect((await download(page,()=>id(page,'pulsar-download').click())).bytes.equals(Buffer.from(PLR,'latin1'))).toBe(true);
- await id(page,'pulsar-clear').click();await expect(id(page,'pulsar-clear-dialog')).toContainText('have not been saved');
+ await id(page,'pulsar-clear').click();await expect(id(page,'pulsar-clear-dialog')).toContainText('have not saved all your recorded measurements');
  await page.keyboard.press('Escape');await expect(id(page,'pulsar-clear-dialog')).toHaveCount(0);
  expect(await storage()).toEqual(stored);
  await expect(id(page,'saved-rows-identity-name')).toHaveText('control.csv');await expect(id(page,'saved-rows-selected-text')).toHaveText(viewerText!);

@@ -3298,9 +3298,10 @@ export interface MessageParameters {
   "multispec.fieldLoading": never;
   "multispec.fieldError": never;
   "multispec.retry": never;
-  "multispec.fieldNone": never;
   "multispec.fieldReasons": "reasons";
   "multispec.fieldNeutral": never;
+  "multispec.fieldInternal": never;
+  "multispec.objectXListFailed": never;
   "multispec.fieldLabel": never;
   "multispec.fieldHelp": never;
   "multispec.fieldNotArmed": never;
@@ -3455,4 +3456,7 @@ export interface MessageParameters {
   "fieldSpec.reason.mean-bound": never;
   "fieldSpec.reason.spectrum-mapping": never;
   "fieldSpec.reason.qso-selected": never;
+  "fieldSpec.analyze": never;
+  "fieldSpec.classify": never;
+  "fieldSpec.handOffError": never;
 }

@@ -132,7 +132,8 @@ describe('pulsar provenance', () => {
   it('records the artifact hash, the REA evidence and the gated contracts', () => {
     expect(provenance.artifact.sha256).toBe('781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c');
     expect(provenance.rea.evidenceId).toMatch(/^ev_[0-9a-f]{64}$/);
-    expect(provenance.contracts.filter(c => 'status' in c && String(c.status).startsWith('GATED')).map(c => c.id)).toEqual(['PLR-CSV-01']); // Front R1: PLR-REVIEW-01 is no longer gated (Find is a web adaptation)
+    // Front R1: PLR-REVIEW-01 is no longer gated (Find is a web adaptation). Re-pinned 2026-10-30 (Front F3): PLR-CSV-01 is ported.
+    expect(provenance.contracts.filter(c => 'status' in c && String(c.status).startsWith('GATED')).map(c => c.id)).toEqual([]);
     expect(provenance.acceptanceClaim).toMatch(/^none/);
   });
   it('pins the recovered DFM geometry and PanTimer interval and drops superseded claims', () => {

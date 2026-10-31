@@ -22,7 +22,8 @@ The header button **LSS guide** (`src/LssLabGuide.tsx`, progress in `src/core/ls
 Vitest: lssFields, lssLists, fieldEngine, lssPacks, lssSurvey, lssLab, io/lssInvestigation. Playwright: tests/lss-survey.spec.ts, lss-survey-negative.spec.ts, lss-session.spec.ts, lss-guide.spec.ts.
 
 ## Acquirable rows (0.4 m / 0.9 m / 4 m, of 219)
-187 / 93 / 189 without a clock time (Front L2, recovered QSO merge, 2026-10-29); 157 / 86 / 158 under the earlier QSO gate
+196 / 93 / 198 without a clock time (Front F3, the five LSS galaxy photographs, 2026-10-30); 187 / 93 / 189 before them (Front L2,
+recovered QSO merge, 2026-10-29); 157 / 86 / 158 under the earlier QSO gate
 (Front T, TRUE variable dispatch, 2026-10-28), 140 / 76 / 141 before it, 129 / 69 / 130 before the recovered FALSE dispatch.
 More rows are acquirable with the frozen observatory-clock time (below).
 
@@ -147,21 +148,31 @@ adds a row.
   - the `src/core/lssSurvey.test.ts` record-limit and event-budget cases, which fill the list with one object and now
     run with Time-Dependent Data on.
 
+## Photographed galaxies (Front F3, 2026-10-30)
+The user approved on 2026-10-30 the five galaxy photographs GLIMAGES.LST associates with LSS rows: NGC4150.BMP, NGC4274.BMP,
+NGC4278.BMP, NGC4314.BMP and NGC4793.BMP, byte-exact in `public/original/images/` (`src/core/approvedPhotographs.ts`). The LSS
+inputs pass them, with the Object X four, through the field engine's `photographs` option (association 0x598ed2..0x599128, draw
+0x597290; `photographDraw.ts`); the field engine is unchanged. The 9 rows that were `photographic-image` (F1R9 NGC 4150, F1R19
+NGC 4253, F1R22 NGC 4274, F2R1 NGC 4278, F2R2 NGC 4283, F2R4 NGC 4286, F2R5 NGC 4308, F2R7 NGC 4314, F3R8 NGC 4793) are now
+available on the 0.4 m and 4 m, each selecting its own galaxy, and `mean-bound` on the 0.9 m (the web guard in
+`FIELD_CALIBRATIONS`, which waits for the field-engine owner). Measurement: analysis/front-f3/lss-photographs-measure.tsv.
+
 ## LSS stars are not acquired [W] (Front S, decision D5, 2026-10-29)
 
 When the nearest catalogue object in an LSS row's slit is a star, the row stays unavailable (`star-selected`): the survey
 acquires galaxy spectra only. VIREO would give that star's spectrum there (z ≈ 0), through the same star path the Object X
-and catalogue-star routes use. Turning it on would change E02's available-row counts (187/93/189) and the LSS fixtures, so it
+and catalogue-star routes use. Turning it on would change E02's available-row counts (196/93/198 since Front F3) and the LSS fixtures, so it
 is a separate follow-up. LSS galaxy spectra can be classified through Save .SSP and Classify's import (docs/CLASSIFICATION-IMPORT.md).
 
 **Measured 2026-10-30 (Front L3).** All 219 rows were evaluated on the three telescopes (657 evaluations), with the field
 engine's star path enabled through JSPEC2.SPI. The 18 rows that need a clock time were also evaluated at four JDs.
 - **No evaluation selects a star:**
-  - 72 of the 657 evaluations end before any slit selection: photographic-image 27 and stamp-bound 45.
+  - 72 of the 657 evaluations end before any slit selection: photographic-image 27 and stamp-bound 45 (before Front F3; the 27 photographic-image evaluations
+    now select their own galaxy or are mean-bound).
   - In every other evaluation the selected object is a galaxy: the row's own galaxy or a neighbouring galaxy. This includes
     the 18 rows that need a clock time, evaluated at four JDs.
   - No QSO is selected either.
-- **The counts:** they stay 187/93/189, and no star template is needed (measurement:
+- **The counts:** they stayed 187/93/189 (196/93/198 after Front F3), and no star template is needed (measurement:
   analysis/front-plans/front-l3-star-measure.txt).
 - **Free pointing:** VIREO reaches a star in the strip only by pointing the observatory freely. Recording such a star into the
   LSS list would take Record Z from the general spectrometer in LSS mode, a cross-front follow-up.

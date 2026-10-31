@@ -15,7 +15,8 @@ import {SECTION_EXERCISES,investigationShape} from '../../worker/src/progress';
 afterEach(()=>vi.unstubAllGlobals());
 const analysisSource=readFileSync(new URL('../io/analysisSession.ts',import.meta.url),'utf8');
 /** Wrapper sections that are settings, not exercise work. */
-const NOT_EXERCISE_WRAPPERS=new Set(['motion','observatory']);
+// Front G G4c: the field spectrometer at any pointing (v33) never counts toward an exercise.
+const NOT_EXERCISE_WRAPPERS=new Set(['motion','observatory','fieldSpectrum']);
 
 /** What the app's own reader says the file holds, mapped to exercises independently of the worker's sniffing. */
 function expectedExercises(s:AnalysisSession):string[]{
@@ -31,6 +32,10 @@ describe('Front A progress sniffing against analysisSession.ts',()=>{
   expect(wrappers.size).toBeGreaterThan(5);
   for(const key of wrappers)expect(NOT_EXERCISE_WRAPPERS.has(key)||key in SECTION_EXERCISES,`unmapped session section "${key}"`).toBe(true);
   for(const key of Object.keys(SECTION_EXERCISES).filter(k=>!['classification','photometry'].includes(k)))expect(wrappers.has(key),`worker section "${key}" no longer emitted`).toBe(true);
+ });
+ it('a v33 field-spectrum wrapper is no exercise and still lets the sniffer reach the sections below it',()=>{
+  const v={format:'OpenVireo analysis session',version:33,base:{format:'OpenVireo analysis session',version:28,objectX:{},base:{version:2,measurements:[{id:1}]}},fieldSpectrum:{}};
+  expect(investigationShape(v)?.exercises).toEqual(['E01','E08']);
  });
  it('reads the innermost keys the plain session record still uses',()=>{
   const record=analysisSource.split('\n').find(line=>/record\(value,\[/.test(line)&&line.includes("'adjustment'"))??'';
