@@ -128,7 +128,9 @@ test('hidden identity, two images of the target with asteroids, measure, answer,
  await expect(rows).toHaveCount(2);await expect(rows.first()).toContainText('header WCS');
  const motion=/Motion: ([\d.]+)″\/h toward position angle ([\d.]+)°/.exec((await page.getByTestId('objectx-motion').textContent())??'');
  expect(motion).not.toBeNull();
- // Tolerance: a centroid within about 1 px (1.07″) on each image over 0.75 h is about ±3″/h; allowed ±6″/h and ±8°.
+ // Tolerance (QA1 review 1 L5): each centroid within about 1 px (1.07″, the 0.4 m pixel) of the predicted pixel moves the
+ // rate by up to 2 × 1.07″ / 0.75 h ≈ ±2.9″/h; ±6″/h (11 % of ≈ 54.7″/h) allows twice that for the WCS and the keyboard
+ // cursor's whole-pixel steps. Measured: 53.96″/h (walk-through, low cut 0). Position angle ±8°.
  expect(Math.abs(Number(motion![1])-rate)).toBeLessThan(6);
  const dpa=Math.abs(((Number(motion![2])-pa)+540)%360-180);expect(dpa).toBeLessThan(8);
  await page.screenshot({path:test.info().outputPath('object-x-measure.png'),fullPage:true});
@@ -312,5 +314,6 @@ test('QA1: Eros is measurable with the default cut on 30 s images of the real st
  const motion=/Motion: ([\d.]+)″\/h/.exec((await page.getByTestId('objectx-motion').textContent())??'');
  expect(motion).not.toBeNull();
  await test.info().attach('qa1-eros-motion.json',{body:JSON.stringify({measured:Number(motion![1]),predicted:rate}),contentType:'application/json'});
+ // Same ±6″/h bound as above (two whole-pixel centroids over 0.75 h); the attachment records the measured and predicted rates.
  expect(Math.abs(Number(motion![1])-rate)).toBeLessThan(6);
 });
