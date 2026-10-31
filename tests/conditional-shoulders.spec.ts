@@ -1,4 +1,5 @@
 import{test,expect,type Page}from'@playwright/test';import{readFile}from'node:fs/promises';
+// Re-pinned 2026-10-31 (Front S2 round 3, D2): Classify now opens at VIREO's 3700–4700 Å (the page's one spectrometer range) instead of 3900–4500 Å; windows, readings and tick positions follow that view.
 const surface=(p:Page)=>p.getByTestId('feature-cursor-surface'),ready=async(p:Page)=>expect(p.getByRole('button',{name:'Review classification',exact:true})).toBeEnabled();
 async function open(p:Page){await p.goto('/#classification');await ready(p);await p.getByText('Mark a feature on the curve',{exact:true}).click();await p.getByRole('button',{name:'Mark center',exact:true}).click();}
 // Front QA1 (2026-10-31): Firefox delivers a mouse press at a whole pixel of the rounded scroll position (client = x − (scrollY −
@@ -6,7 +7,7 @@ async function open(p:Page){await p.goto('/#classification');await ready(p);awai
 // inverse mapping at the client point both engines then deliver. The Chromium-only CDP touch taps keep the exact point (exact).
 const delivered=new Map<string,number>();
 test.beforeEach(()=>delivered.clear());
-async function position(p:Page,wavelength:number,intensity:number,exact=false){const q=await surface(p).evaluate((node,{wavelength,intensity})=>{const m=(node as SVGRectElement).getScreenCTM()!,s=new DOMPoint(60+(wavelength-3900)/600*860,306-intensity*250).matrixTransform(m),dx=scrollX-visualViewport!.pageLeft,dy=scrollY-visualViewport!.pageTop,x=Math.round(s.x+dx),y=Math.round(s.y+dy),l=new DOMPoint(x-dx,y-dy).matrixTransform(m.inverse());return{x,y,w:3900+(l.x-60)/860*600,i:(306-l.y)/250,sx:s.x,sy:s.y};},{wavelength,intensity});if(exact)return{x:q.sx,y:q.sy};delivered.set('w'+wavelength,q.w);delivered.set('i'+intensity,q.i);return q;}
+async function position(p:Page,wavelength:number,intensity:number,exact=false){const q=await surface(p).evaluate((node,{wavelength,intensity})=>{const m=(node as SVGRectElement).getScreenCTM()!,s=new DOMPoint(60+(wavelength-3700)/1000*860,306-intensity*250).matrixTransform(m),dx=scrollX-visualViewport!.pageLeft,dy=scrollY-visualViewport!.pageTop,x=Math.round(s.x+dx),y=Math.round(s.y+dy),l=new DOMPoint(x-dx,y-dy).matrixTransform(m.inverse());return{x,y,w:3700+(l.x-60)/860*1000,i:(306-l.y)/250,sx:s.x,sy:s.y};},{wavelength,intensity});if(exact)return{x:q.sx,y:q.sy};delivered.set('w'+wavelength,q.w);delivered.set('i'+intensity,q.i);return q;}
 const expected=(label:string,value:number)=>delivered.get((label.includes('(Å)')?'w':'i')+value)??value;
 async function hold(p:Page,w:number,i:number,button:'left'|'right'='left'){await surface(p).evaluate(n=>n.scrollIntoView({block:'center'}));const q=await position(p,w,i);await p.mouse.move(q.x,q.y);await p.mouse.down({button});return q;}
 async function mark(p:Page,w:number,i:number,button:'left'|'right'='left'){await hold(p,w,i,button);await p.mouse.up({button});}

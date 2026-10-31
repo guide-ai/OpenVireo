@@ -1,5 +1,6 @@
 import {test,expect,type Page} from '@playwright/test';
 import witness from '../src/help/helpAll.witness.json' with {type:'json'};
+// Re-pinned 2026-10-31 (Front S2 round 3, D2): Classify now opens at VIREO's 3700–4700 Å (the page's one spectrometer range) instead of 3900–4500 Å; windows, readings and tick positions follow that view.
 
 // Front H (docs/CLEA-HELP.md): VIREO's Help in every window that has one, the main and radio Help menus, Websites, About,
 // the Exit Observatory reminder and the Spectral Line Table. Expected rows and texts are copied from the bundled original
@@ -144,15 +145,20 @@ test('Front K2.5: a single click on a line moves the classification cursor to it
  await page.goto('/#classification');
  await id(page,'spl-open').click();
  const rows=id(page,'spl-rows').getByRole('option');await expect(rows).toHaveCount(30);
- // Fe I 4143.878 lands on column 203 of the 3900–4500 Å view (4143.60 Å), whose nearest line is He I 4143.76.
+ // Fe I 4143.878 lands on column 222 of the default 3700–4700 Å view (4144.00 Å), whose nearest line is Fe I 4143.878 itself.
  await rows.filter({hasText:'4143.88'}).click();
- await expect(id(page,'spl-cursor')).toContainText('Cursor @: 4143.60 Å');
- await expect(rows.filter({hasText:'He I'}).filter({hasText:'4143.76'})).toHaveAttribute('aria-selected','true');
+ await expect(id(page,'spl-cursor')).toContainText('Cursor @: 4144.00 Å');
+ await expect(rows.filter({hasText:'Fe I'}).filter({hasText:'4143.88'})).toHaveAttribute('aria-selected','true');
  await expect(page.locator('.class-marker').first()).toBeAttached();
- // A second click on the same line reselects the nearest line again (review 1 L3).
- await rows.filter({hasText:'4143.88'}).click();
- await expect(rows.filter({hasText:'He I'}).filter({hasText:'4143.76'})).toHaveAttribute('aria-selected','true');
- // A line left of the view draws no cursor.
+ // A click on He I 4143.76 snaps to the same column (4144.00 Å) and reselects the nearest line, Fe I 4143.88 (review 1 L3;
+ // review 3 M1: the reselection now moves away from the clicked row, so it is observable).
+ await rows.filter({hasText:'He I'}).filter({hasText:'4143.76'}).click();
+ await expect(id(page,'spl-cursor')).toContainText('Cursor @: 4144.00 Å');
+ await expect(rows.filter({hasText:'Fe I'}).filter({hasText:'4143.88'})).toHaveAttribute('aria-selected','true');
+ await expect(rows.filter({hasText:'He I'}).filter({hasText:'4143.76'})).toHaveAttribute('aria-selected','false');
+ // A line left of the view draws no cursor. Every line of the table is inside the default 3700–4700 Å, so a 3900–4500 Å
+ // window is applied first (O III 3759.87 then lies left of it).
+ await page.locator('.classification-range summary').click();await page.getByLabel('Minimum display wavelength (Å)',{exact:true}).fill('3900');await page.getByLabel('Maximum display wavelength (Å)',{exact:true}).fill('4500');await page.getByRole('button',{name:'Apply display range',exact:true}).click();
  await rows.first().click();
  await expect(id(page,'spl-cursor')).toContainText('outside the displayed range');
 });

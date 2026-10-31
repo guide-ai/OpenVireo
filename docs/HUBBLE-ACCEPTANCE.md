@@ -7,7 +7,7 @@ Hubble/HubLab mode or all phase-1 prerequisites.
 
 | Acceptance outcome | Status before the integrated-guide increment | Evidence / boundary |
 | --- | --- | --- |
-| Reach a supported galaxy from the observatory | Implemented for 36747, 36773, 54876 | Exact catalog centers, explicit activation, fixed 4000–5000 Å. `tests/multi-galaxy.spec.ts`; broader targets unavailable. |
+| Reach a supported galaxy from the observatory | Implemented for 36747, 36773, 54876 | Exact catalog centers, explicit activation; the page's spectrometer range, VIREO's 3700–4700 Å by default since Front S2 (4000–5000 Å before, still witnessed). `tests/multi-galaxy.spec.ts`; broader targets unavailable. |
 | Form calibrated source-plus-sky counts and pause/revisit each target | Implemented bounded simulation | Original catalog/GLXYTMPL fallback, recovered calibration/Poisson, independent vectors, separate journals. `docs/MULTI-GALAXY-HUBBLE.md`; native raster/RNG/timing fidelity unverified. |
 | Inspect an acquired curve and measure redshift manually | Implemented | Zero/unconfigured controls on each distinct snapshot; student aligns and confirms. `tests/galaxy-analysis.spec.ts`, `multi-galaxy.spec.ts`; no catalog z supplied as measurement. |
 | Record and trace distinct targets | Implemented | Bound acquisition ID/target, immutable archive, editable labels do not change identity; stars excluded, repeats cannot masquerade as independent targets. |

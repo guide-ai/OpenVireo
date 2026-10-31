@@ -69,23 +69,76 @@ on, and its next new exposure uses the shared range.
 | Field-spectrometer galaxies and QSOs | No: "not yet verified for this spectrum". |
 | Object X, before and after the reveal | No. The refusal is the same text for every target, so it never tells the type. |
 | Multi-Spec (reads the range, has no opener) | No. Access is refused with a note. |
-| Hubble and LSS routes | Unchanged in round 1 (4000–5000 Å, D1). |
+| Hubble and LSS routes | Round 2: VIREO's default 3700–4700 Å, and the former web range 4000–5000 Å. Other ranges are refused. |
 
 **Policies.** A non-default range appends `#R<min>-<max>` to the sky and field-spectrometer policies, as for the star. A sky
 session on another range keeps its domain's `options: 'compiled-fallback-unmodified'`; its policy states the range. At the
 default every policy, session and file keeps its bytes.
 
 **Restore [W]** (VIREO has no restore):
-- A restored session file makes its range the page's range.
-- An investigation restore takes the one range all its exposures share; otherwise it uses 3700–4700.
+- A restored session file makes its range the page's range, except an unmarked Hubble galaxy or LSS exposure: its policy carries
+  no range mark and means 4000–5000 Å, so it keeps that range itself and leaves the page as it was (review 3 H1).
+- An investigation restore takes the one range all its exposures share, unmarked galaxy and LSS exposures counting as none;
+  otherwise the page keeps 3700–4700 Å.
+- [W] 4000–5000 Å is never marked on the galaxy and LSS routes (it is their legacy base), so a 4000–5000 Å galaxy or LSS exposure
+  taken after Front S2 restores like a legacy one: it keeps its range and does not move the page.
+
+## Hubble and LSS at VIREO's default (Front S2, round 2)
+
+D1 is reversed: new Hubble and LSS exposures use VIREO's 3700–4700 Å. Where the shifted template starts above 3700 Å, the blue
+bins are VIREO's start-time continuation (0x55e97c). They are drawn from the exposure's random state at each Go, and the
+mean bound [W] (VIREO has no mean bound; it is the web's existing Poisson admission) is checked against their deterministic upper bound (`core/fieldContinuation.ts` `galaxySourceValues`, shared with
+the field engine).
+
+**Availability [W].** A Hubble pair's 3700–4700 Å configuration is derived from its verified 4000–5000 Å one (same field, slit
+and amplitudes), so a pair is offered at 3700–4700 Å only where it is available at 4000–5000 Å. The LSS rows are evaluated by the
+field engine at each range; both gave the same outcome on every row.
+
+**Policies.**
+- New exposures carry `#R3700-4700` (galaxy, cached, Pegasus, UM-I, engine and LSS policies).
+- A policy without a mark means 4000–5000 Å, so every older session, investigation and record restores and re-saves
+  byte-identically.
+- The galaxy session's domain records the exposure's interval. The galaxy and LSS .SSP rows start at the interval's minimum.
+
+**What students see.**
+- E01: all 13 Hubble.HTL targets stay acquirable on the same telescopes. K and H are in view for every target; the two Boötes
+  targets (z ≈ 0.13) lose the G band.
+- E02: 196/93/198 rows on both intervals, with no row changing outcome. K, H and G are in view on every acquirable row (at
+  4000–5000 Å, 70 rows lacked K and 32 had only the G band).
+- H0 does not read the range.
+- Proofs: `src/core/galaxyRange.test.ts`.
+
+**Witness.** `analysis/front-s2-range/tools/galaxy_range_witness.py` reuses the Decimal continuum, Fraction sampler and integer
+LCG of `analysis/continuum-recovery/generate_vectors.py`. It covers the 13 Hubble targets and 24 LSS galaxies sampled across z
+(`src/core/galaxyRange.witness.json`); the TypeScript continuation values must equal it to 1e-9.
+
+**Fingerprints.** v2 fingerprints are in `src/core/galaxyRange.fingerprints.json`, and the dated change log in
+`docs/RANGE-FINGERPRINTS-2026-10-31.md` lists every changed entry. The v1 fingerprints stay as the anchor for unmarked
+policies.
 
 ## Web adaptations
 
-- **Classify [W].** In VIREO, Classify shares the one range. Here it still keeps its own display range (CLASSIFICATION-RANGE.md),
-  until round 3 of Front S2.
+- **Classify (Front S2 round 3, D2).** Classify shares the one range, as in VIREO (TSpClassify FormShow 0x507814 reads the
+  active pair). Its display opens at the page's range, 3700–4700 Å by default, instead of the web's former 3900–4500 Å. A range
+  applied in Classify becomes the page's range, and a range set on a spectrometer route shows in Classify at 1×. Default means
+  3700–4700 Å. [W] Classify keeps its typed endpoints and Apply rather than VIREO's sliders; it shows no "Spectrometer Will
+  Clear!" box (0x50b898 has none) and applies on Apply only.
+  - **Saved work:** no classification file records the display range. Feature records hold absolute wavelengths, and restore
+    reads no display preference. Older sessions and investigations therefore restore and re-save byte-identically without a mark.
+  - **E03, measured:**
+    - All 26 classification lines (catalog.json) are inside both 3900–4500 and 3700–4700 Å.
+    - All 63 atlas-standard and practice entries (57 unique spectrum files; some standards appear in more than one atlas) cover 3700–4700 Å (they start at 3510 Å).
+    - The 30-line Spectral Line Table now has every line in view; at 3900–4500 Å, O III 3759.87, He I 3819.61, He II 4541 and
+      Si III 4552.62 lay outside.
+    - The exercise's counted progress (loaded, compared, inspected, recorded) does not read the view.
+    - What a student sees differently: a wider default window at 2 Å per pixel column instead of 1.2. Zoom and pan windows,
+      cursor readings and photo tick positions follow it; an imported spectrum that covers only 3900–4500 Å is shown with the
+      labelled partial-coverage fallback until the window is narrowed.
+  - 44 e2e tests in 20 spec files were re-pinned on 2026-10-31, with one dated note per file.
 - **One range for every telescope.** The star route has one instance per telescope (Kitt Peak 0.4 m, 0.9 m, Mayall 4 m). Since
   Front S2 they share the page's range, as VIREO does (Front S had kept one per telescope [W]). The page's range persists until the dialog changes it. Restoring a single
-  session file, or returning to a star from the analyser, makes that exposure's range the page's range; an investigation
-  restore takes the one range all its sky, star and field-spectrum exposures share, otherwise 3700–4700 Å [W]
+  session file, or returning to an exposure from the analyser, makes that exposure's range the page's range, except an unmarked
+  galaxy or LSS exposure (see Restore above); an investigation restore takes the one range all its sky, star, field-spectrum and
+  marked galaxy/LSS exposures share, otherwise 3700–4700 Å [W]
   (`tests/spectral-range.spec.ts`).
 - The Options box "Allow User Change" that enables the menu item is not modelled; the item is always available.

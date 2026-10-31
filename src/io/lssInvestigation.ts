@@ -7,7 +7,8 @@ import {FIELD_VARIABLE_JD_DOMAIN} from '../core/fieldEngine';
 // Front D3: the error class lives in lssSessionError.ts (no session code), re-exported unchanged.
 import {LssSessionError} from './lssSessionError';
 export {LssSessionError};
-import {evaluateLssRow,lssExposureEngine,lssPolicy} from '../core/lssExposure';
+import {evaluateLssRow,lssExposureEngine,lssPolicy,parseLssPolicy} from '../core/lssExposure';
+import type {SpectralRange} from '../core/spectralRange';
 import {lssFieldRows,type LssFieldNumber} from '../core/lssFields';
 import {LSS_LIMITS,decodeLssEvents,encodeLssEvents,lssJournalKey,type LssRecord} from '../core/lssSurvey';
 import {hubbleVelocity} from '../core/hubbleVelocity';
@@ -110,7 +111,8 @@ async function derive(value:unknown,fieldJds:LssFieldJds=NO_FIELD_JDS,nativeIds:
   const f=Number.isInteger(r.field)&&(r.field as number)>=1&&(r.field as number)<=9?r.field as LssFieldNumber:fail('record');
   const rows=lssFieldRows(f),rowIndex=Number.isInteger(r.row)&&(r.row as number)>=0&&(r.row as number)<rows.length?r.row as number:fail('record'),row=rows[rowIndex];
   const t=r.telescope===0||r.telescope===1||r.telescope===2?r.telescope:fail('record');
-  if(r.acquisitionPolicy!==lssPolicy(f,rowIndex,t)||r.ra!==row.ra||r.dec!==row.dec)fail('record');
+  let range:SpectralRange;try{range=parseLssPolicy(r.acquisitionPolicy).range;}catch{return fail('record');}
+  if(r.acquisitionPolicy!==lssPolicy(f,rowIndex,t,range)||r.ra!==row.ra||r.dec!==row.dec)fail('record');
   const ji=Number.isInteger(r.journal)&&(r.journal as number)>=0&&(r.journal as number)<journals.length?r.journal as number:fail('record'),journal=journals[ji];
   if(journal.policy!==r.acquisitionPolicy)fail('record');used.add(ji);
   const jd=finite(r.jd);if(jd<2415020.5||jd>2488069.5)fail('record');
@@ -120,10 +122,10 @@ async function derive(value:unknown,fieldJds:LssFieldJds=NO_FIELD_JDS,nativeIds:
   else{zSingle=Math.fround(z);velocity=hubbleVelocity(z);if(r.zHex!==hex32(zSingle)||r.velocityHex!==velocity.storedHex)fail('record');}
   const fieldJd=fieldJds.get(i+1);
   if(fieldJd!==undefined&&(!Number.isFinite(fieldJd)||fieldJd<FIELD_VARIABLE_JD_DOMAIN.minimum||fieldJd>FIELD_VARIABLE_JD_DOMAIN.maximum))fail('record');
-  const key=`${f}:${rowIndex}:${t}:${fieldJd??'none'}`;
+  const key=`${f}:${rowIndex}:${t}:${fieldJd??'none'}:${range.minimum}-${range.maximum}`;
   if(!statuses.has(key)){
    if(!packs.has(f))packs.set(f,await src.pack(f));
-   let evaluated:LssRowStatus|null=null;try{evaluated=evaluateLssRow(packs.get(f)!,glx!,row,t,spectra!,fieldJd===undefined?undefined:{jd:fieldJd,source:'observatory-clock'});}catch{evaluated=null;}
+   let evaluated:LssRowStatus|null=null;try{evaluated=evaluateLssRow(packs.get(f)!,glx!,row,t,spectra!,fieldJd===undefined?undefined:{jd:fieldJd,source:'observatory-clock'},range);}catch{evaluated=null;}
    if(!evaluated)return fail('replay');statuses.set(key,evaluated);
   }
   const status=statuses.get(key)!;

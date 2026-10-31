@@ -2,6 +2,7 @@ import {test,expect,type Page} from '@playwright/test';
 import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
 import {recordMeasurement,sessionBase} from './fixtures/record-measurement';
+// Re-pinned 2026-10-31 (Front S2 round 2): new Hubble/LSS exposures use VIREO's 3700–4700 Å with the start-time continuation (docs/RANGE-FINGERPRINTS-2026-10-31.md).
 // Front F M5: Boötes – 1 (51976) and Boötes – 2 (51975), RS Boo outside the view, start-time continuation, through the original Hubble.HTL, the exact catalogue
 // centre and a fresh general-field-engine field with the recovered QSO merge (0.4 m and 4 m), saved in the v29 wrapper.
 // operator-chosen workflow inputs; the V value is typed by the operator from the workbook reference, never prefilled.
@@ -42,7 +43,7 @@ test('Hubble.HTL → Boötes – 1/2 engine fields (start-time continuation) →
  await expect(page.getByTestId('hubble-value')).toBeVisible();const value=await page.getByTestId('hubble-value').textContent();
  const saved=await download(page,'Save session'),data=sessionBase(JSON.parse(saved.toString()));
  expect(data.version).toBe(29);expect(data.extendedGalaxies['0:51976'].source.kind).toBe('archive');expect(data.extendedGalaxies['0:51975'].source.kind).toBe('archive');
- expect(data.base.acquisitions.map((a:any)=>a.journal.policy)).toEqual(['openvireo-engine-galaxy-51976-r0-v1','openvireo-engine-galaxy-51975-r0-v1']);
+ expect(data.base.acquisitions.map((a:any)=>a.journal.policy)).toEqual(['openvireo-engine-galaxy-51976-r0-v1#R3700-4700','openvireo-engine-galaxy-51975-r0-v1#R3700-4700']);
  await page.reload();await page.getByLabel('Restore analysis session',{exact:true}).setInputFiles({name:'bootes.json',mimeType:'application/json',buffer:saved});
  // Restoring prepares the engine fields first (catalogue and evidence checks), so validation takes a few seconds.
  await expect(page.locator('#measurement-log tbody tr')).toHaveCount(2,{timeout:60000});await page.getByText('Hubble diagram & distances',{exact:true}).click();await expect(page.getByTestId('hubble-value')).toHaveText(value!);

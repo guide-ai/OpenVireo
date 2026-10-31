@@ -17,7 +17,8 @@ describe('Front S2: spectral range coverage',()=>{
   expect(['star','sky'].map(r=>spectralRangeCoverage(r as 'star',W))).toEqual(['covered','covered']);
   expect((['star','sky','galaxy','qso'] as const).map(s=>spectralRangeCoverage('field',W,s))).toEqual(['covered','covered','not-witnessed','not-witnessed']);
   for(const s of ['star','galaxy','qso',null] as const)expect(spectralRangeCoverage('objectx',W,s)).toBe('not-witnessed');
-  for(const r of ['multispec','hubble','lss'] as const)expect(spectralRangeCoverage(r,W,'star')).toBe('not-witnessed');
+  expect(spectralRangeCoverage('multispec',W,'star')).toBe('not-witnessed');
+  for(const r of ['hubble','lss'] as const){expect(spectralRangeCoverage(r,W)).toBe('covered');expect(spectralRangeCoverage(r,{minimum:3600,maximum:4600})).toBe('not-witnessed');}
   expect(spectralRangeCoverage('star',{minimum:4050,maximum:5000})).toBe('not-witnessed');
  });
  it('every bundled jspect2 template samples on the S1 anchor ranges exactly as the pinned independent witness',()=>{

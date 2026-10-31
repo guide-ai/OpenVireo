@@ -295,7 +295,7 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
     // Engine targets need their asynchronous, hash-checked field preparation before any of their journals can replay.
     // Only the (target, telescope) fields whose policies the file names are prepared (review 2 findings 1 and 9): a transient
     // preparation failure is the retryable 'resources' error, never an invalid-session verdict.
-    const text=JSON.stringify(value),needed=HUBBLE_EXTENDED_TARGETS.filter(t=>t.route==='engine').flatMap(t=>t.telescopes.filter(i=>{const p=t.policies[i];return p!==undefined&&text.includes(JSON.stringify(p));}).map(i=>[t.id,i] as const));
+    const text=JSON.stringify(value),needed=HUBBLE_EXTENDED_TARGETS.filter(t=>t.route==='engine').flatMap(t=>t.telescopes.filter(i=>{const p=t.policies[i];return p!==undefined&&(text.includes(JSON.stringify(p))||text.includes(JSON.stringify(p).slice(0,-1)+'#R'));}).map(i=>[t.id,i] as const));
     if(needed.length||keptSpectra)hooks.onPreparingFields?.();
     if(needed.length){const io=await import('./hubbleEngineTargets');try{await io.ensureHubbleEngineTargets(needed);}catch(e){if(e instanceof io.HubbleEngineLoadError)fail('resources');fail('state');}}
     const base=await withObjectXSpectra(await restore(r.base,verifySources,true,false,false,true,true,true,{variableTime:hooks.variableTime,nativeDialog:hooks.nativeDialog}),keptSpectra);

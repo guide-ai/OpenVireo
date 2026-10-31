@@ -16,7 +16,7 @@ The [remaining contract map](CLASSIFICATION-REMAINING-CONTRACTS.md) records open
 | VIREO-CLASS-RANGE-03, `0x50ccb8..0x50cf78` | Scroll handlers enforce100Å separation, update labels/current fields and redraw. Constants3500/100 have exact hashes. |
 | VIREO-CLASS-RANGE-04/05, `0x507a08` / `0x507814` | Full bounds/geometry establish500-position sampling; zoom/pan use selected bounds and nearest-even integer endpoints. |
 
-The browser uses explicit **Apply display range** rather than live global writes while moving sliders. **Default display range** fills3900–4500 in the draft; Apply confirms. **Cancel range changes** or Escape within the draft restores applied endpoints. Invalid/reversed/non100-step input rejects instead of automatically moving the other slider. Instructor defaults/options, native callback ordering, x87 and GDI fidelity remain open.
+The browser uses explicit **Apply display range** rather than live global writes while moving sliders. **Default display range** fills 3700–4700 in the draft (VIREO's configured range; 3900–4500 before Front S2 round 3); Apply confirms. **Cancel range changes** or Escape within the draft restores applied endpoints. Invalid/reversed/non100-step input rejects instead of automatically moving the other slider. Instructor defaults/options, native callback ordering, x87 and GDI fidelity remain open.
 
 Apply starts at1× and clears cursor preview/retained readings rather than relabelling them. Zoom goes to16×; pan uses rounded10% endpoints; **Reset wavelength window** returns to the applied full range. Numeric flux entry uses that full range even while zoomed, with actual source/authority checks. Default read-only core APIs still use3900–4500 unless explicitly supplied a range. Manual equivalent width remains original-practice-only within3900–4500Å.
 
@@ -30,7 +30,7 @@ Original library files begin at3510Å. Thus3500–7400 is a valid display choice
 
 A stable memoized full-range fallback preserves viewport identity through cursor updates. Fallback trace Y is a manually selected display ordinate, even over a blank area; it is not an observation or source-flux value. Actual numerical source sampling there still rejects.
 
-A fresh page/reload starts3900–4500. Restore does not read display preferences from a file and can retain the current page's range. Source/atlas changes retain the preference while rechecking coverage. No session version or recorded scientific field is added.
+A fresh page/reload starts at the page's spectrometer range, 3700–4700 Å (Front S2 round 3: Classify shares VIREO's one range; it was 3900–4500 before, SPECTRAL-RANGE.md). Restore reads no display preference from a file: an investigation restore sets the page's range to the one range its marked exposures share, otherwise to 3700–4700 Å (unmarked legacy galaxy and LSS exposures count as none), so Classify opens at 3700–4700 Å after restoring a file saved before Front S2 (SPECTRAL-RANGE.md). Source/atlas changes retain the preference while rechecking coverage. No session version or recorded scientific field is added.
 
 ## Try it locally
 
@@ -38,7 +38,7 @@ A fresh page/reload starts3900–4500. Restore does not read display preferences
 2. Open **Set classification wavelength range** below zoom. Enter minimum4000, maximum7000 and **Apply display range**. Output shows4000–7000Å at1×.
 3. Read6563 in **Read wavelength (Å)** using **Read sampled flux**; inspect its actual source. Choose **Sampled intensity traces** and optionally **Show normalized sampled difference preview**. No answer is filled.
 4. Without a marker, **Zoom in ×2** shows4750–6250Å. Pan/reset: reset returns4000–7000. Source inspection uses the displayed window; trace Y remains a manually chosen ordinate.
-5. Edit the range and Cancel/Escape: the view stays intact. Try4001/7000 and Apply for rejection. **Default display range** changes the draft only; Apply returns3900–4500.
+5. Edit the range and Cancel/Escape: the view stays intact. Try4001/7000 and Apply for rejection. **Default display range** changes the draft only (to 3700–4700); Apply returns 3700–4700.
 6. In Photo mode apply3500/7400: expect labelled retained-point fallbacks. Numeric3500 rejects. Apply3600/7400 to recover original-library photos. Limited imported/acquired sources can need independent fallbacks.
 7. On mobile inspect wrapped controls/shared horizontal scrolling. Save again: display changes preserve JSON bytes. Reload/restore returns manual work/exact imported bytes with fresh default display preferences.
 

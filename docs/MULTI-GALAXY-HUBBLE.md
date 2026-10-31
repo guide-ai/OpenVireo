@@ -8,7 +8,7 @@
 
 Local entry: http://127.0.0.1:5173/#galaxy-exposure. Observatory: http://127.0.0.1:5173/#observatory. The final verification receipt records the exact tested link and build.
 
-The supported set now contains three original designated Hubble galaxies. UM-I1 adds an elliptical target in the same grouping as UM-I2; CorBor2 adds a different field/grouping. All use original GLXYTMPL.SP through the native fallback branch, with the same explicitly adapted nearest-center raster and fixed 4000–5000 Å interval. They are simulated source-plus-sky acquisitions; source generation does not supply the student's measured z.
+The supported set now contains three original designated Hubble galaxies. UM-I1 adds an elliptical target in the same grouping as UM-I2; CorBor2 adds a different field/grouping. All use original GLXYTMPL.SP through the native fallback branch, with the same explicitly adapted nearest-center raster and the page's spectrometer range (VIREO's 3700–4700 Å by default since Front S2; 4000–5000 Å before). They are simulated source-plus-sky acquisitions; source generation does not supply the student's measured z.
 
 | Acquisition galaxy | Raw catalog record | Exact supported pointing (RA h / Dec °) | Final field | Regions / compact band | Slit level / fraction | Original V reference |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -63,7 +63,7 @@ Raw 54890/54891 records share identical Double coordinates. Comparator0x5969e0 a
 
 Not enabled: UM-I3's photographic field; Coma's broader QSO/zero-axis composition; Boötes's variable/QSO fields; Pegasus variable-star phase/context; unregistered Corona Borealis targets. CorBor1 shares the recovered field but is intentionally outside this small enabled set. The incomplete paths are not filled with invented images, spectra, amplitudes or measured results.
 
-All targets retain the explicit nearest-center image scaling, Number/Math nearest-even, browser seed/timing policy and 4000–5000 Å domain. Native GDI device/palette/kernel behavior, x87 equality and original runtime trajectories remain unverified. No original execution, emulator, installation, Claude, Windows, public upload or push was used. External reviews remain pending under the existing restriction.
+All targets retain the explicit nearest-center image scaling, Number/Math nearest-even, browser seed/timing policy and 4000–5000 Å domain. Since Front S2 (2026-10-31) new exposures use VIREO's default 3700–4700 Å with the start-time continuation (0x55e97c); exposures saved earlier carry no range mark and keep 4000–5000 Å (SPECTRAL-RANGE.md, RANGE-FINGERPRINTS-2026-10-31.md). Native GDI device/palette/kernel behavior, x87 equality and original runtime trajectories remain unverified. No original execution, emulator, installation, Claude, Windows, public upload or push was used. External reviews remain pending under the existing restriction.
 
 ## Phase 2 B1: CorBor – 1 (54875) and CorBor – 3 (54891), 0.4m only
 
@@ -77,7 +77,7 @@ Spectrum: GLXYSP.LST (0a7a35…166a, 48 NGC####.SP names) has no entry for eithe
 
 Hubble.HTL: **Load original Hubble.HTL** checks 1118 bytes and SHA-256 02cab4…7986 before parsing; each row reports its status or unavailable reason (`hubbleHotList.ts`). Rounded HTL coordinates cannot activate acquisition; **Use exact catalogue centre** points at the catalogue centre. The KPNO 0.9m and Mayall 4m show an explicit unavailable notice for these targets and the telescope is never switched automatically. Sessions with these targets use the v24 wrapper (unchanged v1..23 base plus the 0.4m banks); their journals are rejected in any earlier version.
 
-Adaptation: CorBor – 1/3 reuse CorBor – 2's nearest-centre raster, Number/Math nearest-even, the fixed 4000–5000 Å interval and browser seed/timing through the recovered cached view, 0.4m only. No native GDI/x87/runtime identity is claimed.
+Adaptation: CorBor – 1/3 reuse CorBor – 2's nearest-centre raster, Number/Math nearest-even, the page's spectrometer range (VIREO's 3700–4700 Å by default since Front S2; 4000–5000 Å before) and browser seed/timing through the recovered cached view, 0.4m only. No native GDI/x87/runtime identity is claimed.
 
 ## Phase 2 B2: Pegasus – NGC 7499, NGC 7501, NGC 7503 (0.4m only)
 

@@ -36,3 +36,6 @@ export function panClassification(v:ClassificationViewport,direction:'left'|'rig
  return range(minimum,minimum+width,v.zoom,minimum+width/2,v);
 }
 export function viewportTicks(v:ClassificationViewport){check(v);return Array.from({length:7},(_,i)=>v.minimum+(v.maximum-v.minimum)*i/6);}
+/** Front S2 round 3 (D2): Classify shows VIREO's one active range (TSpClassify FormShow 0x507814 reads env+0x2bd4/+0x2bd8),
+ * the page's spectrometer range, at 1×. */
+export function classificationViewOfRange(r:ClassificationRange):ClassificationViewport{return classificationRangeView(String(r.minimum),String(r.maximum));}

@@ -1,5 +1,6 @@
 import {test,expect,type Page} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
+// Re-pinned 2026-10-31 (Front S2 round 3, D2): Classify now opens at VIREO's 3700–4700 Å (the page's one spectrometer range) instead of 3900–4500 Å; windows, readings and tick positions follow that view.
 const surface=(p:Page)=>p.getByTestId('feature-cursor-surface');
 async function open(page:Page){await page.addInitScript(()=>addEventListener('pointerdown',(e:PointerEvent)=>{if(e.pointerType==='mouse')(window as unknown as{__mouseId:number}).__mouseId=e.pointerId;},true));await page.goto('/#classification');await expect(page.getByRole('button',{name:'Review classification',exact:true})).toBeEnabled();await page.getByText('Mark a feature on the curve',{exact:true}).click();}
 // Front QA1 (2026-10-31): Firefox delivers a mouse press at a whole pixel of the rounded scroll position (client = x − (scrollY −
@@ -7,7 +8,7 @@ async function open(page:Page){await page.addInitScript(()=>addEventListener('po
 // inverse mapping at the client point both engines then deliver.
 const delivered=new Map<string,number>();
 test.beforeEach(()=>delivered.clear());
-async function location(page:Page,wavelength:number,intensity:number){const q=await surface(page).evaluate((rect,{wavelength,intensity})=>{const m=(rect as SVGRectElement).getScreenCTM()!,s=new DOMPoint(60+(wavelength-3900)/600*860,306-intensity*250).matrixTransform(m),dx=scrollX-visualViewport!.pageLeft,dy=scrollY-visualViewport!.pageTop,x=Math.round(s.x+dx),y=Math.round(s.y+dy),l=new DOMPoint(x-dx,y-dy).matrixTransform(m.inverse());return{x,y,w:3900+(l.x-60)/860*600,i:(306-l.y)/250};},{wavelength,intensity});delivered.set('w'+wavelength,q.w);delivered.set('i'+intensity,q.i);return q;}
+async function location(page:Page,wavelength:number,intensity:number){const q=await surface(page).evaluate((rect,{wavelength,intensity})=>{const m=(rect as SVGRectElement).getScreenCTM()!,s=new DOMPoint(60+(wavelength-3700)/1000*860,306-intensity*250).matrixTransform(m),dx=scrollX-visualViewport!.pageLeft,dy=scrollY-visualViewport!.pageTop,x=Math.round(s.x+dx),y=Math.round(s.y+dy),l=new DOMPoint(x-dx,y-dy).matrixTransform(m.inverse());return{x,y,w:3700+(l.x-60)/860*1000,i:(306-l.y)/250};},{wavelength,intensity});delivered.set('w'+wavelength,q.w);delivered.set('i'+intensity,q.i);return q;}
 const expected=(label:string,value:number)=>delivered.get((label.includes('(Å)')?'w':'i')+value)??value;
 // The browser's own mouse pointerId (1 in Chromium, 0 in Firefox), recorded by open() at the first mouse press.
 const mouseId=(page:Page)=>page.evaluate(()=>(window as unknown as{__mouseId?:number}).__mouseId??-1);

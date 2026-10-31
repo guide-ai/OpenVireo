@@ -136,7 +136,7 @@ describe('LSS row evaluation and exposure',()=>{
   // Front L2: the LSS .SSP is the recovered writer on the same counts; on this stand-in field it equals the galaxy route's file.
   const g=pauseGalaxy(tickGalaxy(startGalaxy(activateGalaxy(createGalaxyExposure(7,'36773',0))),500));
   expect(new TextDecoder().decode(lssSpectrumBytes(paused,st.result,row))).toBe(new TextDecoder().decode(galaxySpectrumBytes(g)));
-  expect(parseLssPolicy(policy)).toEqual({field:1,row:0,telescope:0});expect(()=>parseLssPolicy('openvireo-lss-v1:F1:R99:T0')).toThrow();
+  expect(parseLssPolicy(policy)).toEqual({field:1,row:0,telescope:0,range:{minimum:4000,maximum:5000}});expect(()=>parseLssPolicy('openvireo-lss-v1:F1:R99:T0')).toThrow();
  });
  it('Front L2 (review 1 F4): a typed velocity reaches the wedge by hand-over exactly as by the native .TXT route',()=>{
   const draft0={field:1 as const,row:0,telescope:0 as const,object:'SYNTH-1',jd:2451545.25,ra:12.5,dec:27.25,z:0.02,acquisitionPolicy:'p',journal:{seedAtReset:1,events:[]},control:{base:0,position:20,factor:1 as const,step:.001}};

@@ -33,7 +33,7 @@ This increment admits only the trace/manual-input path for original unknown prac
 
 ## Browser adaptations
 
-The new pure `core/featureCursor.ts` maps the existing SVG plot frame (x 60–920, y 56–306) to 3900–4500 Å and trace levels 0–1. The DOM layer uses the current SVG screen transform, including scrolling and resize. Narrow screens use a taller plot and readable labels while retaining every plotted sample. Focusing a pointer gesture does not scroll the graph beneath it. Pointer capture is checked again before committing; stale or cancelled gestures cannot update another practice.
+The new pure `core/featureCursor.ts` maps the existing SVG plot frame (x 60–920, y 56–306) to the displayed window (3700–4700 Å by default since Front S2 round 3; 3900–4500 Å before) and trace levels 0–1. The DOM layer uses the current SVG screen transform, including scrolling and resize. Narrow screens use a taller plot and readable labels while retaining every plotted sample. Focusing a pointer gesture does not scroll the graph beneath it. Pointer capture is checked again before committing; stale or cancelled gestures cannot update another practice.
 
 Explicit tool buttons, touch/keyboard support, six-decimal draft text and the existing web domain guards are authored policies. Conditional retention now uses the recovered ordered predicate in that logical wavelength adapter; native Win32 integer pixel/sentinel/zoom behavior, event ordering, Extended/x87 arithmetic and formatting are not claimed equivalent. Browser input/layout quantization can give slightly different decimal coordinates for an apparently identical pixel. Graphical test tolerances validate this adapter; they are not physical measurement uncertainty.
 

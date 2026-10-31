@@ -1,6 +1,6 @@
 import {serializeDotDecimalVireoSpectrum} from './legacySpectrumFile';
 import {STAR_TARGET,starSpectralRange,type StarState} from './starExposure';
-import {galaxyStateDefinition,type GalaxyState} from './galaxyExposure';
+import {galaxyStateDefinition,galaxySpectralRange,type GalaxyState} from './galaxyExposure';
 import type {JournalState} from './exposureJournal';
 import type {FieldResult} from './fieldEngine';
 import type {LssRow} from './lssFields';
@@ -16,12 +16,13 @@ export function starSpectrumBytes(state:StarState):Uint8Array {
  return serializeDotDecimalVireoSpectrum({object:STAR_TARGET.id,pointingRa:STAR_TARGET.ra,pointingDec:STAR_TARGET.dec,apparentMagnitude:STAR_TARGET.magnitudeSingle,minimum:range.minimum,step:(range.maximum-range.minimum)/600,counts:state.exposure.counts});
 }
 export function galaxySpectrumBytes(state:GalaxyState):Uint8Array {
- const target=galaxyStateDefinition(state).target;
- return serializeDotDecimalVireoSpectrum({object:target.id,pointingRa:target.ra,pointingDec:target.dec,apparentMagnitude:target.magnitude,minimum:4000,step:1000/600,counts:state.exposure.counts});
+ // Front S2: rows from the exposure's interval (legacy 4000 Å, or VIREO's 3700 Å with step 1000/600).
+ const target=galaxyStateDefinition(state).target,range=galaxySpectralRange(state);
+ return serializeDotDecimalVireoSpectrum({object:target.id,pointingRa:target.ra,pointingDec:target.dec,apparentMagnitude:target.magnitude,minimum:range.minimum,step:(range.maximum-range.minimum)/600,counts:state.exposure.counts});
 }
 /** Front L2: the LSS route through the same writer. Header object = the selected catalogue galaxy (24 characters, as the
  * header allows), pointing = the row's HTL coordinates (the global telescope pointing), magnitude = that galaxy's Single
- * catalogue magnitude (the field engine's selected record); 600 source-plus-sky bins from the row's 4000 Å interval [W]. */
+ * catalogue magnitude (the field engine's selected record); 600 source-plus-sky bins from the exposure's interval (VIREO's 3700 Å by default, 4000 Å for an unmarked legacy policy). */
 export function lssSpectrumBytes(state:JournalState,result:FieldResult,row:Pick<LssRow,'ra'|'dec'>):Uint8Array {
  const t=result.target,c=result.calibration;if(!t||!c)throw new RangeError('LSS spectrum');
  return serializeDotDecimalVireoSpectrum({object:t.id,pointingRa:row.ra,pointingDec:row.dec,apparentMagnitude:t.magnitude,minimum:c.wavelengths[0],step:1000/600,counts:state.exposure.counts});
