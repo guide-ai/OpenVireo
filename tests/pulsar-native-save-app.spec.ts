@@ -109,10 +109,23 @@ test('F3: unrecorded readings and a different extension follow the native questi
 // Front QA1 (2026-10-31), finding E06-1: after the native Save, Save investigation is refused ("…cannot be stored in an investigation
 // file…"): pulsarNativeSaved clears the measurement record (0x56fe6c) but keeps the readouts, and the investigation reader
 // (radioInvestigation.ts readView) requires the reference readout to equal measurement.reference. Enable when that is fixed.
-test.fixme('F3/QA1: after Save recorded measurements, Save investigation still downloads the investigation',async({page})=>{
+// Front QA1 (2026-10-31, E06-1): the native Save clears the measurement record (0x56fe6c) but keeps the readouts, as in VIREO;
+// Save investigation must still write that state, and Restore must bring it back with the list saved and Save disabled.
+test('F3/QA1: after Save recorded measurements, Save investigation downloads the investigation and Restore brings it back',async({page,browser})=>{
  await page.goto('/#pulsar-analysis');await loadPlr(page);await recordManual(page,'kept');
+ const before=await id(page,'pulsar-plot-1').locator('..').locator('..').innerText();
  await saveAs(page,'run');await download(page,()=>id(page,'pulsar-native-ok').click());
  await expect(id(page,'pulsar-save')).toBeDisabled();
  const next=page.waitForEvent('download');await page.getByRole('button',{name:'Save investigation',exact:true}).click();
- expect((await next).suggestedFilename()).toMatch(/\.json$/);
+ const saved=await next;expect(saved.suggestedFilename()).toMatch(/\.json$/);
+ const bytes=await readFile((await saved.path())!);
+ const json=JSON.parse(bytes.toString('utf8'));
+ const analysis=JSON.stringify(json).match(/"listSaved":(true|false)/);expect(analysis?.[1]).toBe('true');
+ const fresh=await browser.newContext();const other=await fresh.newPage();
+ await other.goto('/#pulsar-analysis');
+ await other.getByLabel('Restore investigation JSON',{exact:true}).setInputFiles({name:'openvireo-session.json',mimeType:'application/json',buffer:bytes});
+ await expect(other.getByText('Investigation restored.',{exact:false})).toBeVisible({timeout:30_000});
+ await expect(id(other,'pulsar-save')).toBeDisabled();
+ expect(await id(other,'pulsar-plot-1').locator('..').locator('..').innerText()).toBe(before);
+ await fresh.close();
 });

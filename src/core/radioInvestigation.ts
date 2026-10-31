@@ -396,7 +396,10 @@ function readCursor(v:unknown,ch:PlrReceiverIndex):PulsarPanelCursor{
  if((c.verticalVisible&&c.verticalX<0)||(c.referenceVisible&&c.referenceX<0)||(c.horizontalVisible&&c.horizontalY<0))fail('view');
  return c;
 }
-function readView(v:unknown):PulsarViewSnapshot{
+/** `listSaved`: Front QA1 (2026-10-31, E06-1). After the native Save Recorded Measurements, VIREO clears the measurement record
+ * (0x56fe6c) but keeps the readouts on screen (pulsarAnalysis.ts pulsarNativeSaved), so a saved list may pair readouts with an
+ * entirely empty measurement; any other mismatch is still refused. */
+function readView(v:unknown,listSaved:boolean):PulsarViewSnapshot{
  const r=rec(v,['zoom','windowStart','windowEnd','panRate','factors','modes','cursors','referenceText','measurement','pending'],'view');
  const zoom=num(r.zoom,'view');if(!powerOfTwoIn(zoom,PULSAR_ZOOM_MIN,PULSAR_ZOOM_MAX))fail('view-zoom');
  const factors=triple(r.factors,x=>{const f=num(x,'view');if(!powerOfTwoIn(f,PULSAR_FACTOR_MIN,PULSAR_FACTOR_MAX))fail('view-factor');return f;},'view');
@@ -409,8 +412,9 @@ function readView(v:unknown):PulsarViewSnapshot{
  const measurement=Object.freeze({reference:num(m.reference,'view'),vertical:triple(m.vertical,x=>num(x,'view'),'view'),horizontal:triple(m.horizontal,x=>num(x,'view'),'view'),
   comments:triple(m.comments,x=>{const s=str(x,256,'view');if(!pulsarCommentValid(s))fail('view');return s;},'view')});
  const referenceText=str(r.referenceText,64,'view');
- if(referenceText===''?measurement.reference!==0:referenceText!==formatFixed(measurement.reference,6))fail('view-text');
- for(const ch of [0,1,2] as const){
+ const cleared=listSaved&&measurement.reference===0&&[0,1,2].every(ch=>measurement.vertical[ch]===0&&measurement.horizontal[ch]===0&&measurement.comments[ch]==='');
+ if(!cleared&&(referenceText===''?measurement.reference!==0:referenceText!==formatFixed(measurement.reference,6)))fail('view-text');
+ if(!cleared)for(const ch of [0,1,2] as const){
   const c=cursors[ch];
   if(c.verticalText===''?measurement.vertical[ch]!==0:measurement.vertical[ch]!==c.verticalTime)fail('view-measurement');
   if(c.horizontalText===''?measurement.horizontal[ch]!==0:measurement.horizontal[ch]!==c.horizontalValue)fail('view-measurement');
@@ -426,7 +430,7 @@ export function readPulsarAnalysis(v:unknown):PulsarAnalysisSnapshot{
   return Object.freeze({sequence,panel:int(e.panel,0,2,'analysis') as PlrReceiverIndex,fields:readFields(e.fields)});
  }));
  const nextSequence=int(r.nextSequence,1,Number.MAX_SAFE_INTEGER,'analysis');if(nextSequence<=last)fail('analysis-order');
- return Object.freeze({list,nextSequence,listSaved:bool(r.listSaved,'analysis'),view:r.view===null?null:readView(r.view)});
+ return Object.freeze({list,nextSequence,listSaved:bool(r.listSaved,'analysis'),view:r.view===null?null:readView(r.view,r.listSaved===true)});
 }
 
 /** The strict reader of the whole `radio` part. Throws RadioInvestigationError. */

@@ -156,6 +156,17 @@ describe('Phase 1 item 1.5 radio investigation codec (strict, canonical, binary6
   const tooMany={...INITIAL_PULSAR_ANALYSIS,list:Array(RADIO_INVESTIGATION_LIMITS.rows+1).fill(null)} as unknown as PulsarAnalysisState;
   expect(pulsarAnalysisSnapshot(tooMany,false)).toEqual({ok:false,reason:'size'});
  });
+ it('accepts the native-save state: list saved, readouts kept and the measurement record cleared (QA1 E06-1)',()=>{
+  const good=asFile(investigation()) as any;
+  expect(good.analysis.view.referenceText).not.toBe('');
+  const cleared=(v:any)=>{v.analysis.view.measurement={reference:0,vertical:[0,0,0],horizontal:[0,0,0],comments:['','','']};};
+  const saved=structuredClone(good);saved.analysis.listSaved=true;cleared(saved);
+  expect(readRadioInvestigation(saved).analysis!.view!.referenceText).toBe(good.analysis.view.referenceText);
+  const unsaved=structuredClone(good);unsaved.analysis.listSaved=false;cleared(unsaved);
+  expect(()=>readRadioInvestigation(unsaved)).toThrow();
+  const partial=structuredClone(saved);partial.analysis.view.measurement.vertical[0]=0.5;
+  expect(()=>readRadioInvestigation(partial)).toThrow();
+ });
  it('rejects malformed, out-of-range, inconsistent or unreachable content as a whole',()=>{
   const good=asFile(investigation());
   const mutate:((v:any)=>void)[]=[
