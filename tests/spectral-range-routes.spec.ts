@@ -38,3 +38,23 @@ test('off the default, Object X refuses every target with the same text and Mult
  expect(new Set(texts).size).toBe(1);expect(texts[0]).toContain('not yet verified');
  await go(page,'#observatory');await expect(id(page,'ms-range-block').first()).toContainText('4000.0–5000.0');
 });
+// Review 1 closure gap (L1): the restore paths set the page's range.
+async function exposeStar(p:Page){
+ await button(p,'Activate supported star field').click();await button(p,'Start star exposure').click();
+ await p.clock.runFor(1000);await button(p,'Pause exposure').click();
+}
+test('an investigation restore takes its exposures\' range; a star restored from the analyser sets it too',async({page})=>{
+ await page.clock.install();await page.goto('/#star-exposure');
+ await setRange(page,'star-spectral-range-open',5,15);await exposeStar(page);
+ const d=page.waitForEvent('download');await page.getByRole('button',{name:'Save investigation',exact:true}).click();
+ const saved=await (await d).path();
+ await page.reload();await go(page,'#sky-exposure');await expect(id(page,'sky-spectral-range')).toHaveText('Spectrometer range: 3700.0–4700.0 Å (600 bins).');
+ await page.getByLabel('Restore investigation JSON',{exact:true}).setInputFiles(saved!);
+ await go(page,'#sky-exposure');await expect(id(page,'sky-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).',{timeout:30000});
+ // Back to the default from the sky route, then the analyser's "restore this acquisition" brings the star's range back.
+ await setRange(page,'sky-spectral-range-open',2,12);await expect(id(page,'sky-spectral-range')).toHaveText('Spectrometer range: 3700.0–4700.0 Å (600 bins).');
+ await go(page,'#star-exposure');await button(page,'Analyze acquired star').click();await expect(page).toHaveURL(/#spectrum$/);
+ await button(page,'Restore this acquisition in the telescope').click();await expect(page).toHaveURL(/#star-exposure$/);
+ // The sky route now shows its own new exposure (default); the Object X row, which has no exposure, shows the page's range.
+ await go(page,'#object-x');await expect(id(page,'objectx-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).',{timeout:30000});
+});

@@ -1,4 +1,5 @@
 import{projectResource}from'./projectMetadata';
+import {galaxyPolicyRange} from './spectralRange';
 import mayallSource from '../../data/hubble/mayall-provenance.json';
 const mayall=projectResource(mayallSource);
 
@@ -20,7 +21,8 @@ export const PEGASUS_GALAXY_TARGET_IDS:readonly string[]=Object.freeze(pegasusTa
 export function isPegasusGalaxyTarget(id:unknown):boolean{return typeof id==='string'&&PEGASUS_GALAXY_TARGET_IDS.includes(id);}
 /** Whether a supported acquisition target has a verified definition on this telescope. No telescope is switched to enable it. */
 export function galaxyTargetTelescopeSupported(id:string,index:number):boolean{const extended=hubbleExtendedTarget(id);if(extended)return extended.telescopes.includes(index as 0|1|2);return isCachedGalaxyTarget(id)||isPegasusGalaxyTarget(id)?index===0:index===0||index===1||index===2;}
-export function galaxyTelescopeIndex(s:JournalState):0|1|2{
+export function galaxyTelescopeIndex(state:JournalState):0|1|2{
+ const s={policy:galaxyPolicyRange(state?.policy)?.base};
  if(mayall.galaxies.some(r=>s?.policy===r.policyId))return 2;
  if(proof.records.some(r=>s?.policy===r.policyId))return 1;
  if(proof.records.some(r=>s?.policy===`openvireo-pinned-galaxy-${r.id}-v1`))return 0;

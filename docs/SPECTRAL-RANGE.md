@@ -69,7 +69,7 @@ on, and its next new exposure uses the shared range.
 | Field-spectrometer galaxies and QSOs | No: "not yet verified for this spectrum". |
 | Object X, before and after the reveal | No. The refusal is the same text for every target, so it never tells the type. |
 | Multi-Spec (reads the range, has no opener) | No. Access is refused with a note. |
-| Hubble and LSS routes | Unchanged in round 1 (4000–5000 Å, D1). |
+| Hubble and LSS routes | Round 2: VIREO's default 3700–4700 Å, and the former web range 4000–5000 Å. Other ranges are refused. |
 
 **Policies.** A non-default range appends `#R<min>-<max>` to the sky and field-spectrometer policies, as for the star. A sky
 session on another range keeps its domain's `options: 'compiled-fallback-unmodified'`; its policy states the range. At the
@@ -78,6 +78,35 @@ default every policy, session and file keeps its bytes.
 **Restore [W]** (VIREO has no restore):
 - A restored session file makes its range the page's range.
 - An investigation restore takes the one range all its exposures share; otherwise it uses 3700–4700.
+
+## Hubble and LSS at VIREO's default (Front S2, round 2)
+
+D1 is reversed: new Hubble and LSS exposures use VIREO's 3700–4700 Å. Where the shifted template starts above 3700 Å, the blue
+bins are VIREO's start-time continuation (0x55e97c). They are drawn from the exposure's random state at each Go, and the
+mean bound is checked against their deterministic upper bound (`core/fieldContinuation.ts` `galaxySourceValues`, shared with
+the field engine).
+
+**Policies.**
+- New exposures carry `#R3700-4700` (galaxy, cached, Pegasus, UM-I, engine and LSS policies).
+- A policy without a mark means 4000–5000 Å, so every older session, investigation and record restores and re-saves
+  byte-identically.
+- The galaxy session's domain records the exposure's interval. The galaxy and LSS .SSP rows start at the interval's minimum.
+
+**What students see.**
+- E01: all 13 Hubble.HTL targets stay acquirable on the same telescopes. K and H are in view for every target; the two Boötes
+  targets (z ≈ 0.13) lose the G band.
+- E02: 196/93/198 rows on both intervals, with no row changing outcome. K, H and G are in view on every acquirable row (at
+  4000–5000 Å, 70 rows lacked K and 32 had only the G band).
+- H0 does not read the range.
+- Proofs: `src/core/galaxyRange.test.ts`.
+
+**Witness.** `analysis/front-s2-range/tools/galaxy_range_witness.py` reuses the Decimal continuum, Fraction sampler and integer
+LCG of `analysis/continuum-recovery/generate_vectors.py`. It covers the 13 Hubble targets and 24 LSS galaxies sampled across z
+(`src/core/galaxyRange.witness.json`); the TypeScript continuation values must equal it to 1e-9.
+
+**Fingerprints.** v2 fingerprints are in `src/core/galaxyRange.fingerprints.json`, and the dated change log in
+`docs/RANGE-FINGERPRINTS-2026-10-31.md` lists every changed entry. The v1 fingerprints stay as the anchor for unmarked
+policies.
 
 ## Web adaptations
 

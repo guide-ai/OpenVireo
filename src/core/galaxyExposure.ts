@@ -1,3 +1,5 @@
+import {GALAXY_WITNESSED_RANGES,LEGACY_GALAXY_RANGE,galaxyPolicyRange,galaxyPolicyWithRange,sameRange,type SpectralRange} from './spectralRange';
+import {continuationSourcePreparer,galaxySourceValues,type FieldContinuationSource} from './fieldContinuation';
 import {kpno09,provenance,cachedSource,pegasusCached,umiCached,engineDefinitions,galaxyDefinition,galaxyStateDefinition,type Definition} from './galaxyDefinitions';
 // Front D3: the definitions live in galaxyDefinitions.ts (no pinned field data); re-exported unchanged.
 export {galaxyDefinition,galaxyPolicyDefinition,galaxyStateDefinition,engineGalaxyRegistered} from './galaxyDefinitions';
@@ -103,18 +105,40 @@ function prepareCached(id:string,index:0|1|2){
  return Object.freeze({telescopeIndex:index,field,scene,...calibration,viewport,view:Object.freeze({pan,selection:selected,targetIndex})});
 }
 function prepare(id:string,index:0|1|2){if(isHubbleEngineId(id))throw new JournalError('proof');return galaxyFieldDescriptor(id).kind==='cached'?prepareCached(id,index):prepareFresh(id,index);}
-export function verifiedGalaxyConfiguration(id='36773',index:0|1|2=0){const key=id+':'+index;let c=prepared.get(key);if(!c){c=prepare(id,index);prepared.set(key,c);}return c;}
+export function verifiedGalaxyConfiguration(id='36773',index:0|1|2=0,range:SpectralRange=LEGACY_GALAXY_RANGE){
+ if(!sameRange(range,LEGACY_GALAXY_RANGE))return rangedConfiguration(id,index,range);
+ const key=id+':'+index;let c=prepared.get(key);if(!c){c=prepare(id,index);prepared.set(key,c);}return c;}
+/** Front S2 round 2: the same verified field, slit and amplitudes on another witnessed interval (only the spectrum reads the
+ * range, RE §3): the shifted template where it covers the grid, else VIREO's start-time continuation (0x55e97c) drawn at each
+ * Go, with its deterministic upper bound checked against the mean bound (fieldContinuation.ts galaxySourceValues). */
+const ranged=new Map<string,ReturnType<typeof prepare>>();
+function rangedConfiguration(id:string,index:0|1|2,range:SpectralRange):ReturnType<typeof prepare>{
+ if(!GALAXY_WITNESSED_RANGES.some(r=>sameRange(r,range)))throw new JournalError('proof');
+ const key=`${id}:${index}:${range.minimum}-${range.maximum}`,hit=ranged.get(key);if(hit)return hit;
+ const base=verifiedGalaxyConfiguration(id,index) as ReturnType<typeof prepare>&{ownSamples?:readonly Readonly<{wavelength:number;intensity:number}>[];sourcePreparer?:JournalSourcePreparer;continuationSource?:FieldContinuationSource};
+ const target=base.field.galaxies.find((g:{id:string})=>g.id===id) as {morphology:number;redshift:number}|undefined;if(!target)throw new JournalError('proof');
+ const samples=base.ownSamples??source.samples.map(([wavelength,intensity])=>({wavelength,intensity})),matched=base.ownSamples?true:source.matched;
+ const v=galaxySourceValues(samples,matched,target.morphology,target.redshift,range.minimum,range.maximum,base.amplitude.source,true);
+ if(v.kind==='range')throw new JournalError('proof');
+ const means=Object.freeze(v.values.map(x=>x*base.amplitude.source));
+ if(Math.max(...means)*50*1000>=(index===2?1_000_000:12))throw new JournalError('proof');
+ const {sourcePreparer:_p,continuationSource:_c,...rest}=base;void _p;void _c;
+ const c=Object.freeze({...rest,sourceMeans:means,sourceValues:v.values,wavelengths:v.wavelengths,...(v.kind==='continuation'?{sourcePreparer:continuationSourcePreparer(v.continuationSource),continuationSource:v.continuationSource}:{})}) as ReturnType<typeof prepare>;
+ ranged.set(key,c);return c;
+}
+/** The interval a galaxy exposure was taken on: no mark = the former web range 4000–5000 Å; "#R3700-4700" = VIREO's default. */
+export function galaxySpectralRange(s:Readonly<{policy:string}>):SpectralRange{const r=galaxyPolicyRange(s?.policy);if(!r)throw new JournalError('phase');return r.range;}
 function checked(s:GalaxyState){galaxyStateDefinition(s);}
-export function createGalaxyExposure(seed:number,id='36773',index:0|1|2=0){const c=verifiedGalaxyConfiguration(id,index);return createJournalExposure(galaxyDefinition(id,index).policyId,c.sourceMeans,c.amplitude.sky,50,seed,(c as {sourcePreparer?:JournalSourcePreparer}).sourcePreparer);}
-export function activateGalaxy(s:GalaxyState){checked(s);verifiedGalaxyConfiguration(galaxyStateDefinition(s).target.id,galaxyTelescopeIndex(s));return activateJournal(s);}
+export function createGalaxyExposure(seed:number,id='36773',index:0|1|2=0,range:SpectralRange=LEGACY_GALAXY_RANGE){const c=verifiedGalaxyConfiguration(id,index,range);return createJournalExposure(galaxyPolicyWithRange(galaxyDefinition(id,index).policyId,range),c.sourceMeans,c.amplitude.sky,50,seed,(c as {sourcePreparer?:JournalSourcePreparer}).sourcePreparer);}
+export function activateGalaxy(s:GalaxyState){checked(s);verifiedGalaxyConfiguration(galaxyStateDefinition(s).target.id,galaxyTelescopeIndex(s),galaxySpectralRange(s));return activateJournal(s);}
 export function startGalaxy(s:GalaxyState){checked(s);return startJournal(s);}
 export function tickGalaxy(s:GalaxyState,delta:number){checked(s);return tickJournal(s,delta);}
 export function pauseGalaxy(s:GalaxyState){checked(s);return pauseJournal(s);}
 export function deactivateGalaxy(s:GalaxyState){checked(s);return deactivateJournal(s);}
 export function resetGalaxy(s:GalaxyState){checked(s);return resetJournal(s);}
 export function cancelGalaxy(s:GalaxyState){checked(s);return cancelJournal(s);}
-export function replayGalaxy(seed:number,events:readonly JournalEvent[],id='36773',index:0|1|2=0){return replayJournal(seed=>createGalaxyExposure(seed,id,index),seed,events);}
+export function replayGalaxy(seed:number,events:readonly JournalEvent[],id='36773',index:0|1|2=0,range:SpectralRange=LEGACY_GALAXY_RANGE){return replayJournal(seed=>createGalaxyExposure(seed,id,index,range),seed,events);}
 function cell(s:string|number){const t=String(s);return /[",\r\n]/.test(t)?'"'+t.replaceAll('"','""')+'"':t;}
-export function galaxyCountsCsv(s:GalaxyState){checked(s);if(s.exposure.phase==='running')throw new JournalError('phase');if(!s.exposure.draws)throw new JournalError('no-data');const provenance=galaxyStateDefinition(s),GALAXY_TARGET=provenance.target,GALAXY_DOMAIN=provenance.domain,index=galaxyTelescopeIndex(s),c=verifiedGalaxyConfiguration(GALAXY_TARGET.id,index),e=s.exposure;
+export function galaxyCountsCsv(s:GalaxyState){checked(s);if(s.exposure.phase==='running')throw new JournalError('phase');if(!s.exposure.draws)throw new JournalError('no-data');const provenance=galaxyStateDefinition(s),GALAXY_TARGET=provenance.target,GALAXY_DOMAIN=provenance.domain,index=galaxyTelescopeIndex(s),c=verifiedGalaxyConfiguration(GALAXY_TARGET.id,index,galaxySpectralRange(s)),e=s.exposure;
  return [['kind','policy','object_id','source_file','source_sha256','field_sha256','ra_h','dec_deg','magnitude_single','slit_level','slit_fraction','bin','wavelength_A','source_plus_sky_count','source_total','sky_total','elapsed_ms','seed_at_reset','current_seed','uniform_draws','raster_policy','instrument_magnitude','source_amplitude','sky_amplitude','numerical_policy',...(index!==0?['telescope_record','telescope_zero_point','optical_profile_sha256','configuration_sha256']:[])],...e.counts.map((count,i)=>['browser-catalog-galaxy-exposure',s.policy,GALAXY_TARGET.id,(provenance as {sourceFile?:string}).sourceFile??source.file,(provenance as {sourceFile?:string}).sourceFile?provenance.sourceSnapshotSHA256:source.sha256,provenance.fieldSnapshotSHA256,GALAXY_TARGET.ra,GALAXY_TARGET.dec,GALAXY_TARGET.magnitude,c.pixelLevel,c.fraction,i+1,c.wavelengths[i],count,e.sourceTotal,e.skyTotal,e.elapsedMs,s.seedAtReset,e.seed,e.draws,GALAXY_DOMAIN.rasterPolicy,c.instrumentMagnitude,c.amplitude.source,c.amplitude.sky,'Number/Math nearest-even; explicit browser seed/timing; not native x87/GDI oracle',...(index!==0?[index,c.zeroPoint,kpno09.opticalProfileSHA256,index===2?MAYALL_PROOF_SHA256:KPNO09_GALAXY_PROOF_SHA256]:[])])].map(row=>row.map(cell).join(',')).join('\r\n')+'\r\n';
 }

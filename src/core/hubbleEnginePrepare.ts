@@ -11,9 +11,9 @@ export type HubbleEngineDefinition=Readonly<{policyId:string;fieldSnapshotSHA256
  target:Readonly<{id:string;recordIndex:number;ra:number;dec:number;magnitude:number;rawHex:string}>;
  domain:Readonly<{exercise:'hubble';engine:string;packId:string;qso:'merge';telescopeRecord:ExtendedTelescope;pointing:Readonly<{ra:number;dec:number}>;fieldArcminutes:15;fieldMultiplier:3;minimum:4000;maximum:5000;rasterPolicy:string}>}>;
 export type HubbleEngineConfiguration=ReturnType<typeof configurationOf>;
-function configurationOf(r:FieldResult,telescope:ExtendedTelescope){
+function configurationOf(r:FieldResult,telescope:ExtendedTelescope,ownSamples?:FieldLibrarySpectrum['samples']){
  const c=r.calibration!,p=r.population!;
- return Object.freeze({...(c.sourcePreparer?{sourcePreparer:c.sourcePreparer,continuationSource:c.continuationSource!}:{}),telescopeIndex:telescope,field:Object.freeze({stars:p.stars,galaxies:p.galaxies}),scene:r.scene!,zeroPoint:c.zeroPoint,pixelLevel:c.pixelLevel,fraction:c.fraction,amplitude:c.amplitude,instrumentMagnitude:c.instrumentMagnitude,sourceMeans:c.sourceMeans,sourceValues:c.sourceValues,wavelengths:c.wavelengths,viewport:r.viewport!,view:null});
+ return Object.freeze({...(ownSamples?{ownSamples}:{}),...(c.sourcePreparer?{sourcePreparer:c.sourcePreparer,continuationSource:c.continuationSource!}:{}),telescopeIndex:telescope,field:Object.freeze({stars:p.stars,galaxies:p.galaxies}),scene:r.scene!,zeroPoint:c.zeroPoint,pixelLevel:c.pixelLevel,fraction:c.fraction,amplitude:c.amplitude,instrumentMagnitude:c.instrumentMagnitude,sourceMeans:c.sourceMeans,sourceValues:c.sourceValues,wavelengths:c.wavelengths,viewport:r.viewport!,view:null});
 }
 export type HubbleEngineInputs=Readonly<{packs:ReadonlyMap<string,FieldPack>;glx:Uint8Array;qsoCatalog:FieldQsoCatalog;librarySpectra:ReadonlyMap<string,FieldLibrarySpectrum['samples']>}>;
 export type PreparedEngineTarget=Readonly<{id:string;entries:readonly Readonly<{definition:HubbleEngineDefinition;configuration:HubbleEngineConfiguration}>[]}>;
@@ -41,7 +41,7 @@ export function prepareHubbleEngineTarget(id:string,inputs:HubbleEngineInputs,on
    calibration:Object.freeze({baseZeroPoint:c.baseZeroPoint,telescopeCorrection:c.telescopeCorrection,skyMagnitude:c.skyMagnitude,magnitudeShift:c.magnitudeShift}),
    target:Object.freeze({id,recordIndex:r.target.recordIndex,ra:r.target.ra,dec:r.target.dec,magnitude:r.target.magnitude,rawHex:r.target.rawHex}),
    domain:Object.freeze({exercise:'hubble' as const,engine:engineTargets.engine,packId:pack.id,qso:'merge' as const,telescopeRecord:telescope,pointing,fieldArcminutes:15 as const,fieldMultiplier:3 as const,minimum:4000 as const,maximum:5000 as const,rasterPolicy:galaxyProvenance.domain.rasterPolicy})});
-  entries.push(Object.freeze({definition,configuration:configurationOf(r,telescope)}));
+  entries.push(Object.freeze({definition,configuration:configurationOf(r,telescope,librarySpectrum?.samples)}));
  }
  return Object.freeze({id,entries:Object.freeze(entries)});
 }

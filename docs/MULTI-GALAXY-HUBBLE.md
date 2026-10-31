@@ -63,7 +63,7 @@ Raw 54890/54891 records share identical Double coordinates. Comparator0x5969e0 a
 
 Not enabled: UM-I3's photographic field; Coma's broader QSO/zero-axis composition; Boötes's variable/QSO fields; Pegasus variable-star phase/context; unregistered Corona Borealis targets. CorBor1 shares the recovered field but is intentionally outside this small enabled set. The incomplete paths are not filled with invented images, spectra, amplitudes or measured results.
 
-All targets retain the explicit nearest-center image scaling, Number/Math nearest-even, browser seed/timing policy and 4000–5000 Å domain. Native GDI device/palette/kernel behavior, x87 equality and original runtime trajectories remain unverified. No original execution, emulator, installation, Claude, Windows, public upload or push was used. External reviews remain pending under the existing restriction.
+All targets retain the explicit nearest-center image scaling, Number/Math nearest-even, browser seed/timing policy and 4000–5000 Å domain. Since Front S2 (2026-10-31) new exposures use VIREO's default 3700–4700 Å with the start-time continuation (0x55e97c); exposures saved earlier carry no range mark and keep 4000–5000 Å (SPECTRAL-RANGE.md, RANGE-FINGERPRINTS-2026-10-31.md). Native GDI device/palette/kernel behavior, x87 equality and original runtime trajectories remain unverified. No original execution, emulator, installation, Claude, Windows, public upload or push was used. External reviews remain pending under the existing restriction.
 
 ## Phase 2 B1: CorBor – 1 (54875) and CorBor – 3 (54891), 0.4m only
 

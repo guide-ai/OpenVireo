@@ -38,12 +38,10 @@ import {cropNativeFrame,freshNativeViewport,paintNativeStar} from './detectorRas
 import {prepareNativeStarProfile} from './starProfiles';
 import {photonAmplitudes,slitPixelLevel,telescopeZeroPoint,type PhotonAmplitudes,type RgbImage} from './photons';
 import {nativeObjectSlitFraction} from './slitThroughput';
-import {prepareGalaxyProfile} from './galaxySpectrum';
 import {roundNearestEven} from './numericPolicy';
 import {createJournalExposure,type JournalState,type JournalSourcePreparer} from './exposureJournal';
-import {prepareCatalogGalaxyChannels,prepareCatalogGalaxyExtension} from './galaxyContinuum';
-import {continuationSourcePreparer,type FieldContinuationSource} from './fieldContinuation';
-import {galaxyLibrarySpectrum,galaxyChannelGrid} from './galaxySpectrum';
+import {continuationSourcePreparer,galaxySourceValues,type FieldContinuationSource} from './fieldContinuation';
+import {galaxyChannelGrid} from './galaxySpectrum';
 import {sampleUniformSpectrum,type UniformSpectrum} from './acquisition';
 import {packCovers,type FieldPack} from './fieldPack';
 import {prepareQsoProfile,QsoSpectrumError,type QsoSpectrumFile} from './qsoSpectrum';
@@ -686,28 +684,19 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
  const instrumentMagnitude=catalogGalaxyMagnitude(target).magnitude,zeroPoint=telescopeZeroPoint(c.baseZeroPoint,c.telescopeCorrection);
  if(zeroPoint!==c.zeroPoint)throw new FieldEngineError('evidence');
  const amplitude=photonAmplitudes(instrumentMagnitude,c.skyMagnitude,zeroPoint,fraction);
- let profile;
  const own=options.librarySpectrum?.targetId===target.id?options.librarySpectrum:null,{minimum:lo,maximum:hi}=options.spectralInterval??{minimum:4000,maximum:5000};
- try{profile=own?prepareGalaxyProfile(own.samples,true,target.redshift,lo,hi):prepareGalaxyProfile(galaxySource.samples.map(([wavelength,intensity])=>({wavelength,intensity})),galaxySource.matched,target.redshift,lo,hi);}
- catch{
-  if(options.continuation!=='start-time')return Object.freeze({...base,target,reasons:Object.freeze(['spectrum-range' as const])});
-  const samples=own?own.samples:galaxySource.samples.map(([wavelength,intensity])=>({wavelength,intensity})),matched=own?true:galaxySource.matched;
-  let bound:number[],wavelengths:readonly number[];
-  try{
-   const {source}=galaxyLibrarySpectrum(samples,matched,target.redshift),ext=prepareCatalogGalaxyExtension(source,target.morphology,target.redshift,lo,hi);
-   const grid=prepareCatalogGalaxyChannels(samples,matched,target.morphology,target.redshift,lo,hi,1);wavelengths=grid.wavelengths;
-   // Upper bound of 0x55e97c: blue (U·0.16+0.92)·C·corr ≤ 1.08·C·corr, red (U·0.08+0.96)·C·corr ≤ 1.04·C·corr; in-template exact.
-   bound=grid.wavelengths.map(w=>{if(w>=ext.source.minimum&&w<=ext.source.maximum)return sampleUniformSpectrum(ext.source,w).value;const blue=w<ext.source.minimum,c=sampleUniformSpectrum(ext.continuum,w).value;return (blue?1.08:1.04)*c*(blue?ext.blueCorrection:ext.redCorrection);});
-  }catch{return Object.freeze({...base,target,reasons:Object.freeze(['spectrum-range' as const])});}
-  const boundMeans=Object.freeze(bound.map(v=>v*amplitude.source));
-  const continuationSource:FieldContinuationSource=Object.freeze({samples,matched,morphology:target.morphology,redshift:target.redshift,minimum:lo,maximum:hi,amplitudeSource:amplitude.source});
+ const samples=own?own.samples:galaxySource.samples.map(([wavelength,intensity])=>({wavelength,intensity})),matched=own?true:galaxySource.matched;
+ const v=galaxySourceValues(samples,matched,target.morphology,target.redshift,lo,hi,amplitude.source,options.continuation==='start-time');
+ if(v.kind==='range')return Object.freeze({...base,target,reasons:Object.freeze(['spectrum-range' as const])});
+ if(v.kind==='continuation'){
+  const boundMeans=Object.freeze(v.values.map(x=>x*amplitude.source)),continuationSource:FieldContinuationSource=v.continuationSource;
   const sourcePreparer:JournalSourcePreparer=continuationSourcePreparer(continuationSource);
-  const calibration=Object.freeze({sourcePreparer,continuationSource,continuationDraws:'start-time' as const,sourceFile:own?own.file:galaxySource.file,zeroPoint,pixelLevel,fraction,amplitude,instrumentMagnitude,sourceMeans:boundMeans,sourceValues:Object.freeze(bound),wavelengths});
+  const calibration=Object.freeze({sourcePreparer,continuationSource,continuationDraws:'start-time' as const,sourceFile:own?own.file:galaxySource.file,zeroPoint,pixelLevel,fraction,amplitude,instrumentMagnitude,sourceMeans:boundMeans,sourceValues:v.values,wavelengths:v.wavelengths});
   if(Math.max(...boundMeans)*FIELD_MULTIPLIER*1000>=c.meanBound)return Object.freeze({...base,target,calibration,reasons:Object.freeze(['mean-bound' as const])});
   return Object.freeze({...base,target,calibration,reasons:Object.freeze([])});
  }
- const sourceMeans=Object.freeze(profile.values.map(v=>v*amplitude.source));
- const calibration=Object.freeze({sourceFile:own?own.file:galaxySource.file,zeroPoint,pixelLevel,fraction,amplitude,instrumentMagnitude,sourceMeans,sourceValues:profile.values,wavelengths:profile.wavelengths});
+ const sourceMeans=Object.freeze(v.values.map(x=>x*amplitude.source));
+ const calibration=Object.freeze({sourceFile:own?own.file:galaxySource.file,zeroPoint,pixelLevel,fraction,amplitude,instrumentMagnitude,sourceMeans,sourceValues:v.values,wavelengths:v.wavelengths});
  if(Math.max(...sourceMeans)*FIELD_MULTIPLIER*1000>=c.meanBound)return Object.freeze({...base,target,calibration,reasons:Object.freeze(['mean-bound' as const])});
  return Object.freeze({...base,target,calibration,reasons:Object.freeze([])});
 }

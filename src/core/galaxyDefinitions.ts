@@ -2,6 +2,7 @@
  * core/galaxyExposure so that looking up a definition (the analyzer's acquired-galaxy note) does not load the pinned field
  * data; core/galaxyExposure imports and re-exports these same objects. */
 import{projectResource}from'./projectMetadata';
+import {galaxyPolicyRange} from './spectralRange';
 import mayallSource from '../../data/hubble/mayall-provenance.json';
 const mayall=projectResource(mayallSource);
 import kpno09Source from '../../data/hubble/kpno09-galaxy-provenance.json';
@@ -45,6 +46,7 @@ export type Definition=(typeof definitions)[number];
 export const engineDefinitions:Definition[]=[];
 export function engineGalaxyRegistered(id:string,index:0|1|2):boolean{return engineDefinitions.some(d=>d.target.id===id&&d.domain.telescopeRecord===index);}
 export function galaxyDefinition(id='36773',index:0|1|2=0){galaxyIdentity(id);const d=definitions.find(d=>d.target.id===id&&d.domain.telescopeRecord===index)??engineDefinitions.find(d=>d.target.id===id&&d.domain.telescopeRecord===index);if(!d)throw new JournalError('proof');return d;}
-export function galaxyPolicyDefinition(policy:unknown){const d=definitions.find(d=>d.policyId===policy)??engineDefinitions.find(d=>d.policyId===policy);if(!d)throw new JournalError('session');return d;}
+/** Front S2: the definition of a policy with or without its range mark (galaxyPolicyRange). */
+export function galaxyPolicyDefinition(policy:unknown){const base=galaxyPolicyRange(policy)?.base,d=definitions.find(d=>d.policyId===base)??engineDefinitions.find(d=>d.policyId===base);if(!d)throw new JournalError('session');return d;}
 export function galaxyStateDefinition(s:JournalState){return galaxyPolicyDefinition(s?.policy);}
 export {mayall,kpno09,provenance,cachedSource,pegasusProvenance,pegasusCached,umiCached};
