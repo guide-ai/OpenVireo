@@ -48,7 +48,8 @@ test('an investigation restore takes its exposures\' range; a star restored from
  await setRange(page,'star-spectral-range-open',5,15);await exposeStar(page);
  const d=page.waitForEvent('download');await page.getByRole('button',{name:'Save investigation',exact:true}).click();
  const saved=await (await d).path();
- await page.reload();await go(page,'#sky-exposure');await expect(id(page,'sky-spectral-range')).toHaveText('Spectrometer range: 3700.0–4700.0 Å (600 bins).');
+ // The app's hashchange listener is attached after its first render; change the hash only once the reloaded route is shown.
+ await page.reload();await expect(page.getByRole('heading',{name:'Catalog star exposure'})).toBeVisible();await go(page,'#sky-exposure');await expect(id(page,'sky-spectral-range')).toHaveText('Spectrometer range: 3700.0–4700.0 Å (600 bins).');
  await page.getByLabel('Restore investigation JSON',{exact:true}).setInputFiles(saved!);
  await go(page,'#sky-exposure');await expect(id(page,'sky-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).',{timeout:30000});
  // Back to the default from the sky route, then the analyser's "restore this acquisition" brings the star's range back.
