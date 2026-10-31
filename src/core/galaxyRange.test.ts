@@ -56,7 +56,7 @@ beforeAll(async()=>{
 afterAll(()=>{setHubbleEngineResources(null);vi.unstubAllGlobals();});
 
 describe('Front S2 round 2: Hubble and LSS at VIREO 3700–4700 Å',()=>{
- it('E01: all 13 Hubble.HTL targets stay acquirable on the same telescopes, observable in the analyser, with K and H in range',async()=>{
+ it('E01: all 13 Hubble.HTL targets stay acquirable on their recorded telescopes (Coma 1/2 on the 0.9 m too since Front L4), observable in the analyser, with K and H in range',async()=>{
   const ids=new Set<string>();
   for(const [id,t] of PAIRS){
    const s=replayGalaxy(5,TRAJECTORY,id,t,V);

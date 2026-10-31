@@ -60,7 +60,7 @@ test('Record Z: a pasted Tab is refused inline, the app survives, Object is read
 test('Front L4: an unreadable LSSFields.LST shows VIREO\'s file error (FormShow 0x52ac24: caption File Error!) and OK closes it',async({page})=>{
  await page.route('**/original/hotlists/LSSFields.LST',r=>r.abort());
  await page.goto('/#lss-survey');await expect(page.getByRole('heading',{name:'Large-scale structure survey',exact:true})).toBeVisible();
- const box=page.getByRole('alertdialog',{name:'File Error!'});await expect(box).toBeVisible();
+ const box=page.getByRole('alertdialog',{name:'File Error!'});await expect(box).toBeVisible();await expect(box).toBeFocused();
  await expect(box).toContainText('Cannot access LSS fields file /original/hotlists/LSSFields.LST');
  await expect(box).toContainText('The original field list could not be loaded or verified.');
  await box.getByRole('button',{name:'OK',exact:true}).click();await expect(box).toHaveCount(0);
