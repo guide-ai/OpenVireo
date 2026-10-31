@@ -77,7 +77,7 @@ Spectrum: GLXYSP.LST (0a7a35…166a, 48 NGC####.SP names) has no entry for eithe
 
 Hubble.HTL: **Load original Hubble.HTL** checks 1118 bytes and SHA-256 02cab4…7986 before parsing; each row reports its status or unavailable reason (`hubbleHotList.ts`). Rounded HTL coordinates cannot activate acquisition; **Use exact catalogue centre** points at the catalogue centre. The KPNO 0.9m and Mayall 4m show an explicit unavailable notice for these targets and the telescope is never switched automatically. Sessions with these targets use the v24 wrapper (unchanged v1..23 base plus the 0.4m banks); their journals are rejected in any earlier version.
 
-Adaptation: CorBor – 1/3 reuse CorBor – 2's nearest-centre raster, Number/Math nearest-even, the fixed 4000–5000 Å interval and browser seed/timing through the recovered cached view, 0.4m only. No native GDI/x87/runtime identity is claimed.
+Adaptation: CorBor – 1/3 reuse CorBor – 2's nearest-centre raster, Number/Math nearest-even, the page's spectrometer range (VIREO's 3700–4700 Å by default since Front S2; 4000–5000 Å before) and browser seed/timing through the recovered cached view, 0.4m only. No native GDI/x87/runtime identity is claimed.
 
 ## Phase 2 B2: Pegasus – NGC 7499, NGC 7501, NGC 7503 (0.4m only)
 

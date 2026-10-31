@@ -9,7 +9,7 @@ import {hubbleEngineRecord,HubbleEngineError,type ExtendedTelescope,type Recorde
 export type HubbleEngineDefinition=Readonly<{policyId:string;fieldSnapshotSHA256:string;sourceSnapshotSHA256:string;sourceFile:string;
  calibration:Readonly<{baseZeroPoint:number;telescopeCorrection:number;skyMagnitude:number;magnitudeShift:number}>;
  target:Readonly<{id:string;recordIndex:number;ra:number;dec:number;magnitude:number;rawHex:string}>;
- domain:Readonly<{exercise:'hubble';engine:string;packId:string;qso:'merge';telescopeRecord:ExtendedTelescope;pointing:Readonly<{ra:number;dec:number}>;fieldArcminutes:15;fieldMultiplier:3;minimum:4000;maximum:5000;rasterPolicy:string}>}>;
+ domain:Readonly<{exercise:'hubble';engine:string;packId:string;qso:'merge';telescopeRecord:ExtendedTelescope;pointing:Readonly<{ra:number;dec:number}>;fieldArcminutes:15;fieldMultiplier:3;/** The definition's legacy interval (an unmarked policy); a marked exposure's session domain carries its own (Front S2). */minimum:number;maximum:number;rasterPolicy:string}>}>;
 export type HubbleEngineConfiguration=ReturnType<typeof configurationOf>;
 function configurationOf(r:FieldResult,telescope:ExtendedTelescope,ownSamples?:FieldLibrarySpectrum['samples']){
  const c=r.calibration!,p=r.population!;

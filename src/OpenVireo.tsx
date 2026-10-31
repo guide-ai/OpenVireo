@@ -647,7 +647,7 @@ export default function OpenVireo(){
    onClassifyAcquisition:classifyAcquired,
    onClassifyImported:classifyImported,
    onRestoreClassification:(w,a)=>{classificationController.current?.resetProgram();setClassificationWorkspace(w);setClassificationArchive(a);},
-   onRestoreAcquisition:observation=>{if(observation.kind==='catalog-star-acquisition'){restoreStarPacket(observation);}else{prepareObserving();preparePhotometry();const index=galaxyTelescopeIndex(observation.state);setOptical({selectedIndex:index,draftIndex:index});setOpen(false);if(index===2)setGalaxy4mVisited(true);if(index===1)setGalaxy09Visited(true);setGalaxyTargetId(observation.targetId);setGalaxyVisited(true);setRestoredGalaxy({token:++restoreToken.current,observation});navigate('galaxy-exposure');}},
+   onRestoreAcquisition:observation=>{if(observation.kind==='catalog-star-acquisition'){restoreStarPacket(observation);}else{const restoredRange=galaxyPolicyRange(observation.state.policy)?.range;if(restoredRange)setSpectralRange(restoredRange);prepareObserving();preparePhotometry();const index=galaxyTelescopeIndex(observation.state);setOptical({selectedIndex:index,draftIndex:index});setOpen(false);if(index===2)setGalaxy4mVisited(true);if(index===1)setGalaxy09Visited(true);setGalaxyTargetId(observation.targetId);setGalaxyVisited(true);setRestoredGalaxy({token:++restoreToken.current,observation});navigate('galaxy-exposure');}},
   });
   const cameraHandlers=useStableHandlers<StableProps<ComponentProps<typeof CameraControl>,'currentJd'|'onImage'>>({
    currentJd:()=>siteClockReadingMS(observatoryClock.state?clockDriveUTMS(observatoryClock.state):parseClockUTC(siteClock.utc),optical.selectedIndex).jd,

@@ -70,3 +70,26 @@ test('galaxy axis follows the range; the galaxy and LSS openers accept 3700–47
  await expect(id(page,'galaxy-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).');
  await go(page,'#lss-survey');await expect(id(page,'lss-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).',{timeout:30000});
 });
+// Front S2 review 2 closure (R1): a restored galaxy session file, and the analyser's "Restore this acquisition in the telescope"
+// for a galaxy, set the page's range; New seeded exposure then starts on it.
+test('a restored legacy 4000–5000 galaxy session sets the page range, and so does the analyser restore',async({page})=>{
+ await page.clock.install();await page.goto('/#galaxy-exposure');
+ await expect(id(page,'galaxy-spectral-range')).toHaveText('Spectrometer range: 3700.0–4700.0 Å (600 bins).',{timeout:30000});
+ await setRange(page,'galaxy-spectral-range-open',5,15);// 4000–5000: the unmarked legacy policy
+ await button(page,'Activate supported galaxy field').click();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
+ await button(page,'Start galaxy exposure').click();await page.clock.runFor(1000);await button(page,'Pause exposure').click();
+ const d=page.waitForEvent('download');await button(page,'Save galaxy session JSON').click();const file=(await (await d).path())!;
+ const saved=JSON.parse(await (await import('node:fs/promises')).readFile(file,'utf8'));expect(saved.policy).not.toContain('#R');expect(saved.domain.minimum).toBe(4000);
+ await page.clock.resume();await page.reload();await expect(id(page,'galaxy-spectral-range')).toHaveText('Spectrometer range: 3700.0–4700.0 Å (600 bins).',{timeout:30000});
+ await page.getByLabel('Restore galaxy session JSON (up to 2 MiB)',{exact:true}).setInputFiles(file);
+ await expect(id(page,'galaxy-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).');
+ await button(page,'New seeded exposure').click();
+ await expect(id(page,'galaxy-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).');await expect(id(page,'galaxy-axis-first')).toHaveText('4000 Å');
+ // The analyser path: expose, analyse, set the page back to the default elsewhere, then restore the acquisition.
+ await button(page,'Activate supported galaxy field').click();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
+ await button(page,'Start galaxy exposure').click();await page.clock.runFor(1000);await button(page,'Pause exposure').click();
+ await button(page,'Analyze acquired galaxy').click();await expect(page).toHaveURL(/#spectrum$/);
+ await page.clock.resume();await go(page,'#lss-survey');await setRange(page,'lss-spectral-range-open',2,12);await expect(id(page,'lss-spectral-range')).toHaveText('Spectrometer range: 3700.0–4700.0 Å (600 bins).',{timeout:30000});
+ await go(page,'#spectrum');await button(page,'Restore this acquisition in the telescope').click();await expect(page).toHaveURL(/#galaxy-exposure$/);
+ await go(page,'#lss-survey');await expect(id(page,'lss-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).');
+});
