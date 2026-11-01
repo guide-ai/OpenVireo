@@ -3388,7 +3388,7 @@
   "ph.tiledOption": "{name} (telescope pointing)",
   "ph.tiledReason.object-x-hidden": "Not available near an unrevealed Object X target: the field would show its identity.",
   "ph.tiledReason.field-polar": "Not available within about 0.06° of the celestial pole: this site stops there [web limit]. VIREO still builds a field down to about 0.006° from the pole, but this site does not reproduce its arithmetic there exactly.",
-  "ph.tiledReason.photometer-galaxy": "Not available: this field contains a galaxy, and how VIREO's photometer treats galaxies is not reproduced.",
+  "ph.tiledReason.photometer-galaxy": "Not available: the telescope points at a galaxy (VIREO selects it as the object here), and how VIREO's photometer measures a selected galaxy is not reproduced. A galaxy elsewhere in the field does not block a reading, as in VIREO.",
   "ph.tiledReason.photometer-qso": "Not available: this field contains a quasar record, which has no catalogue colours for the photometer.",
   "ph.tiledReason.photometer-variable": "Not available: a variable star in this field changes with the observatory clock, which the photometer does not model here.",
   "ph.tiledReason.photometer-selection": "No star lies within VIREO's selection radius (about 1.1′) of this pointing. VIREO would then reuse the previous star's light, which cannot be reproduced; point a little closer to a star, keeping it outside the aperture.",
@@ -3452,5 +3452,18 @@
   "fieldSpec.reason.qso-selected": "the slit selects a quasar record whose spectrum this route cannot reproduce here",
   "fieldSpec.analyze": "Analyze this spectrum",
   "fieldSpec.classify": "Classify this spectrum",
-  "fieldSpec.handOffError": "This spectrum could not be opened (it needs a stopped exposure with a positive bin; Classify also needs wavelengths that overlap 3500–7400 Å by at least 100 Å, and room for another imported file)."
+  "fieldSpec.handOffError": "This spectrum could not be opened (it needs a stopped exposure with a positive bin; Classify also needs wavelengths that overlap 3500–7400 Å by at least 100 Å, and room for another imported file).",
+  "ph.nativeRecordHelp": "Record/Review is VIREO's own File › Data command: it adds this reading to the photometer's results list. Rows are merged by the recorded name: with Show Object ID on, B and V of the same star share one row unless Time-Dependent Data is on; with it off (as compiled) every reading is named UNKNOWN or your ObjX label, so they all share that one row, as in VIREO. Record/Review then opens the Observational Data window. OK keeps your remarks and spectral type; Cancel keeps the measured value in the list, as in VIREO, but not what you typed, and Record/Review stays available. The notebook entry beside it is the web's own transcription that the Pleiades guide counts.",
+  "ph.nativeRecorded": "The reading was added to the photometer results list.",
+  "ph.nativeCancelled": "Cancelled. As in VIREO, the measured value stays in the results list; your remarks and spectral type were not stored, and the reading still counts as not recorded.",
+  "ph.nativeBlocked": "This record cannot be shown in the Observational Data window.",
+  "ph.nativeSpError": "Sp.Type is not a spectral type the results list can store, or a box holds a character the list cannot store.",
+  "ph.nativeVelocityNote": "Velocity stays empty for a photometer reading (it has no redshift). Adaptation: the record time is the observatory clock when the reading finished (VIREO uses the computer's clock), and these records are kept in the photometer's own list rather than one list shared with classifications and Hubble records.",
+  "ph.nativeOk": "OK",
+  "ph.nativeTitle": "Photometer results list (VIREO Record/Review)",
+  "ph.nativeHelp": "Rows recorded with Record/Review: {count}. They are saved with the photometer session and can be shown as VIREO's Recorded Results list (Search, Print, Save Text, Comma Delimit).",
+  "ph.nativeResults": "Display/Print Data",
+  "obsHr.ownRecords": "Plot my photometer records",
+  "obsHr.ownRecordsHelp": "Replaces this workspace's list with the rows the photometer's Record/Review added (as VIREO's Data from Observations reads its results list: rows without both B and V are skipped). They enter in time order, as when saved observations are read. Your transcribed pairs above are unchanged.",
+  "obsHr.ownRecordsError": "The photometer records could not be prepared for the plot."
 }

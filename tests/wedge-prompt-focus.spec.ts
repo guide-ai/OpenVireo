@@ -17,7 +17,8 @@ test('second-read consent respects deliberate panel focus',async({page})=>{await
 test('second-read consent respects deliberate host focus',async({page})=>{await second(page);await page.evaluate(()=>{const x=document.createElement('button');x.id='host-focus';x.textContent='Host';document.body.prepend(x);x.focus();});await release(page);await expect(page.getByTestId('wedge-prompt')).toBeVisible();await expect(page.locator('#host-focus')).toBeFocused();await expect(page.getByTestId('wedge-status')).toContainText('Retain Current Data?');});
 // Controlled boundary pair for the disabled-focus exemption. The host case passes only if the question's focus effect
 // still saw the disabled host button as activeElement (were it already blurred to body, the question would take focus).
-test('a host control disabled by the host while the question commits is not treated as lost panel focus',async({page})=>{
+test('a host control disabled by the host while the question commits is not treated as lost panel focus',async({page,browserName})=>{
+ test.skip(browserName!=='chromium','The premise is Chromium\'s focus-fixup timing (the disabled host button is still activeElement when the question\'s focus effect runs); it fails the same way on main in Firefox and WebKit (Front WebKit review 1).');
  await second(page);await page.evaluate(()=>{const x=document.createElement('button');x.id='host-focus';x.textContent='Host';document.body.prepend(x);x.focus();});
  await disableOnPrompt(page,'#host-focus');await release(page);await expect(page.getByTestId('wedge-prompt')).toBeVisible();await frames(page);
  await expect(page.locator('#host-focus')).toBeDisabled();await expect(page.getByTestId('wedge-prompt-yes')).not.toBeFocused();

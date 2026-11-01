@@ -1,3 +1,4 @@
+import {skipWithoutOpfs} from './fixtures/opfs';
 import {test,expect,type Locator,type Page} from '@playwright/test';
 import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
@@ -40,7 +41,9 @@ type Plan={name:string;truncate?:boolean;reject?:'AbortError'|'SecurityError';th
 type Shim={synthetic:true;calls:number;events:(string|null)[];options:string[];plans:Plan[];log:string[];holds:Set<string>;waiting:Map<string,()=>void>;fails:Set<string>;
  tamper:Set<string>;rawGetFile:(this:FileSystemFileHandle)=>Promise<File>;raw:Map<string,(data:unknown)=>Promise<void>>};
 type Stream={write:(data:unknown)=>Promise<void>;close:()=>Promise<void>;abort:(reason?:unknown)=>Promise<void>};
-const installShim=(page:Page,remove=false)=>page.addInitScript(removePicker=>{
+/** `needsOpfs` false: the test never calls the synthetic picker, so it runs where no origin-private file system exists. */
+const installShim=async(page:Page,remove=false,needsOpfs=!remove)=>{if(needsOpfs)await skipWithoutOpfs(page);await installShimScript(page,remove);};
+const installShimScript=(page:Page,remove=false)=>page.addInitScript(removePicker=>{
  const w=window as unknown as {__saveShim:Shim};
  const proto=FileSystemFileHandle.prototype as unknown as {createWritable:(this:FileSystemFileHandle,...a:unknown[])=>Promise<Stream>;getFile:(this:FileSystemFileHandle)=>Promise<File>};
  const create=proto.createWritable,getFile=proto.getFile;
@@ -537,7 +540,7 @@ test('keyboard and gestures: double-click Yes calls no picker; Tab wraps; Escape
 });
 
 test('a capture of 0 rows: the dialog shows the build problem with Choose disabled; Back → No opens Analysis with Load enabled',async({page})=>{
- await installShim(page);
+ await installShim(page,false,false);
  const points=await captureToQuestion(page,undefined,0);
  expect(points).toBe('0');
  await openFinishSave(page);

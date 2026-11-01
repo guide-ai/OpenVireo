@@ -51,6 +51,10 @@ describe('v28 Object X investigation',()=>{
   const {objectX,digest}=await portableObjectXInvestigation(inv),o=objectX as {exposures:Record<string,unknown>[]};
   for(const e of o.exposures){expect(e).not.toHaveProperty('pairs');expect(e).not.toHaveProperty('skipped');}
   const back=await admitObjectXInvestigation(JSON.parse(JSON.stringify(objectX)),digest);
+  // With Front C6's fieldAnchor too, the anchor stays (written last) while the counts wait for the reveal.
+  const anchored={...inv,exposures:inv.exposures.map(e=>({...e,fieldAnchor:{ra:e.ra,dec:e.dec}}))},both=await portableObjectXInvestigation(anchored);
+  const keys=Object.keys((both.objectX as {exposures:Record<string,unknown>[]}).exposures[0]);expect(keys.at(-1)).toBe('fieldAnchor');expect(keys).not.toContain('pairs');
+  expect((await admitObjectXInvestigation(JSON.parse(JSON.stringify(both.objectX)),both.digest)).exposures.map(e=>e.fieldAnchor)).toEqual(anchored.exposures.map(e=>e.fieldAnchor));
   expect(back.exposures.map(e=>[e.pairs,e.skipped])).toEqual(inv.exposures.map(e=>[e.pairs,e.skipped]));
   expect(back.exposures.some(e=>e.countsStored)).toBe(false);
   // After the reveal they are written again.

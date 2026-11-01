@@ -1,3 +1,4 @@
+import './focusAfterLayout';
 import './theme/tokens.css';
 import './theme/base.css';
 import { StrictMode } from 'react';

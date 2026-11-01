@@ -78,7 +78,7 @@ the same session would reveal it.
 | Reader | VIREO rule [D] | Web |
 |---|---|---|
 | Photometer IDText (0x4ffa30, at Start and Object/Sky changes; the object refreshed at FormActivate 0x4ff909) | `Telescope` until the first update; option off `Unknown`; on and sky or no object `Sky`; on: the name | Photometer bench, `photo-id-text`, clLime on black. [W] The object is 0x59a0fc's pick in the bench target's object field (never the sky field's pick), taken whenever the label is drawn; the target changes only at Activate or with the web's target list. The Object X mask is keyed to that star and fails closed while unknown (`Telescope` is shown then) |
-| Photometer recorded name (+0x620, 0x4fffd4) | sky `Sky`; on: the name ≤15, trailing spaces removed; off: `UNKNOWN` / `ObjX-`ID | `photometerRecordedName` (waits for the native photometer Record writer) |
+| Photometer recorded name (+0x620, 0x4fffd4) | sky `Sky`; on: the name ≤15, trailing spaces removed; off: `UNKNOWN` / `ObjX-`ID | `photometerRecordedName`, fixed at Start and used as the ID of the photometer's Record/Review row (Front P3, docs/PHOTOMETER-RECORD.md) |
 | Camera native Save (0x522c28 → 0x5230dc, 0x5239f8) | on with an object: Name+`-01.FIT` (String[31]) and OBJECT Name (String[68]); otherwise the Object X label | "Save image (VIREO header)" refreshes the current object (`cameraCurrentName`). [W] At the image's centre, not at the telescope pointing when Save is pressed |
 | Add Current (0x53f0fc) | ID = the name; remark = Star/Galaxy/Asteroid/QSO only when the exercise code is 0; RA/Dec = the pointing | Slew › Observation Hot List › Add Current; the button says it is looking while the field loads, and disabling the menu aborts the lookup |
 | Spectrometer IDText, MagText, Save name, Print (0x50df64, 0x50e00b, 0x50fb1c, 0x510954) | see `core/currentObject.ts` | wired by Front R4d (section below) |
@@ -126,7 +126,9 @@ Plan: `analysis/front-plans/front-r4d.md`.
   A field blocked before the slit selection (`photographic-image`, `ngc224-image`, the pending-variable stamp gate) has no
   selection or viewport; there the current object decides (R4e review 1 L1): a star or QSO outside 0x50f338's strict cut
   (|ΔRA| < 0.00028 h, |ΔDec| < 0.0064°) reads `Sky`, as in VIREO, whose field is always painted. Probes: N3730.DAT@36659 + 0.001 h
-  near M31, NGC 4476 + 0.08°. [W] A galaxy there stays named (its (level/200)² rule needs the unpainted slit level), and a
+  near M31, NGC 4476 + 0.08°. [W] A galaxy there stays named (its (level/200)² rule needs the unpainted slit level). [W] A star or QSO inside the cut also stays named: VIREO's `level > 0`
+  condition (0x50f404) needs the slit level of the unpainted field, so a faint star off the slit column that VIREO would read as
+  `Sky` is named here. A
   throughput at the precision limit falls back to the engine's `slit-empty`. The boxes then show `Sky` and an empty magnitude, and nothing is looked up. The sky route is always a sky reading (print `Reading Sky`). The star, galaxy
   and LSS routes point exactly at their target, so their slit is never empty.
 - **[W] No object or an unresolved tie:** the Object box shows 13 blanks. VIREO copies the record from the nil pointer at

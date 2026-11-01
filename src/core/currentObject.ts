@@ -143,7 +143,8 @@ export function spectrometerDefaultFileName(o:SpectrometerReadoutOptions,object:
  * gate) has no selection or viewport; then the current object (`object`, from the same 0x59a0fc lookup) decides: a star or QSO
  * outside the strict cut of 0x50f338 (|ΔRA| < 0.00028 h, |ΔDec| < 0.0064°, `nativeStellarAngularAdmission`) is a sky reading [D
  * for the cut]. [W] A galaxy there is not a sky reading: its (level/200)² rule needs the slit level of a field that was not
- * painted. A hidden or missing object is not a sky reading (the hidden text or the no-object text stays). */
+ * painted. [W] A star or QSO inside the cut also stays named: VIREO's `level > 0` condition (0x50f404) needs the slit level of the
+ * unpainted field, so a faint star off the slit column that VIREO would read as `Sky` is named here. A hidden or missing object is not a sky reading (the hidden text or the no-object text stays). */
 export function fieldSpectrometerSkyReading(result:FieldResult|null|undefined,object:ShownCurrentObject|null=null):boolean{
  if(!result)return false;
  const engine=result.reasons.includes('slit-empty'),sel=result.selection;

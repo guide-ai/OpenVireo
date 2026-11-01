@@ -6,6 +6,7 @@
 // which the App never does (the App keeps its panel mounted). The seeded capture is SYNTHETIC: built with the public pure
 // constructors (pulsarMemoryRecording, the lease steps and commitPulsarCapture), not a receiver simulation run and not CLEA data.
 // The outputs are read-only monitors of the owner's document; each one handles empty (null) data.
+import '../../src/focusAfterLayout';
 import { createElement as h, useRef, useState, type ReactElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import PulsarAnalysis from '../../src/components/PulsarAnalysis';

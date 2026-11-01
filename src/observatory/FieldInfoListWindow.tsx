@@ -102,7 +102,7 @@ export default function FieldInfoListWindow({testId,caption,lines,first,last,not
     </div>}
    </div>}
   </div>
-  <div ref={listRef} className="fi-lines" role="listbox" tabIndex={0} aria-label={caption} aria-activedescendant={itemIndex>=0?`${id}-l${itemIndex}`:undefined} data-testid={`${testId}-lines`} onKeyDown={onKey} onContextMenu={openPopup}>
+  <div ref={listRef} className="fi-lines" role="listbox" tabIndex={0} aria-label={caption} aria-activedescendant={itemIndex>=0?`${id}-l${itemIndex}`:undefined} data-testid={`${testId}-lines`} onKeyDown={onKey} onContextMenu={openPopup} onAuxClick={popup.auxClick}>
    {lines.map((line,i)=><div key={i} id={`${id}-l${i}`} role="option" aria-selected={i===itemIndex} data-line={i} data-testid={`${testId}-line-${i}`} className="fi-line" onClick={()=>choose(i)} onDoubleClick={()=>{const s=listSelection(i,first,last);if(s>=0&&onActivate)onActivate(s);}}>{line||' '}</div>)}
   </div>
   {notice}

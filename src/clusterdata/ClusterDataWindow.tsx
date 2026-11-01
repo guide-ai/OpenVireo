@@ -209,7 +209,7 @@ function StudyList({editMode,hotList,onClose,onData}:{editMode:boolean;hotList:S
      <button type="button" data-testid="cd-study-start" disabled={selection<0} onClick={()=>hot(true)}>{menuCaptionText(SL.start)}</button>
     </div>}</div>
   </div>
-  {list?<div onContextMenu={e=>{e.preventDefault();if(selection>=0)popup.open(e);}}>
+  {list?<div onContextMenu={e=>{e.preventDefault();if(selection>=0)popup.open(e);}} onAuxClick={popup.auxClick}>
     <HelpListBox rows={list.lines} selected={index} onSelect={choose} onActivate={i=>{if(list&&i>=list.first&&i<=list.last)copy(i-list.first);}} label={SL.caption} testId="cd-study-lines" columns/></div>
    :<p role="status" className="fi-note">{M.loading}</p>}
   <PopupMenu at={popup.at} label={menuCaptionText(SL.selection)} onClose={popup.close} items={[{key:'cd-add',label:SL.add,onSelect:()=>hot(false)},{key:'cd-start',label:SL.start,onSelect:()=>hot(true)}]}/>

@@ -41,12 +41,12 @@ contracts built on those values.
     exact ID.
   - The notebook's `mode` field is kept as read and is written only when the option changes, so restored notebooks re-export
     unchanged.
-- **Time-Dependent Data for the photometer** (Record 0x501e7c): the rule is ported as pure `src/core/photometerRecord.ts`:
+- **Time-Dependent Data for the photometer** (Record 0x501e7c): the rule is pure `src/core/photometerRecord.ts`:
   - off: a band slot changes only for a nonzero reading, RA/Dec are filled only when zero, and the first time is kept;
   - on: a new row each time.
 
-  It is not wired. The web photometer keeps one notebook entry per reading, not VIREO's per-star record with five band slots,
-  and VIREO's review dialog and its Cancel are not recovered. So the photometer is not affected by the option yet.
+  Front P3 wires it: the photometer's **Record/Review** reads the option at Record and writes the photometer results list
+  (docs/PHOTOMETER-RECORD.md). The web notebook entry beside it keeps one entry per reading and does not read the option.
 - **Write Log File** (+0x27d6, off) appends login, component and logout records to CLEALOG.LOG. A web page cannot write
   that file.
 - **Monochrome Displays and Print in Color** for the light curve (Front R4b, `src/core/lightCurveScheme.ts`): VIREO creates

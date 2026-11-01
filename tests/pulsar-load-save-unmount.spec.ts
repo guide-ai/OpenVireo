@@ -1,3 +1,4 @@
+import {skipWithoutOpfs} from './fixtures/opfs';
 import {test,expect,type FileChooser,type Locator,type Page} from '@playwright/test';
 // R-RX18 WEB-RX18-08 (docs/PULSAR-LOAD-SAVE.md): a REAL unmount of the Pulsar Analysis panel while a Load after Save flow read or
 // a Save attempt is pending. The App keeps its panel mounted, so the unmount is driven by a TEST-ONLY host
@@ -19,7 +20,8 @@ type Plan={name:string};
 type Shim={synthetic:true;calls:number;plans:Plan[];log:string[];holds:Set<string>;waiting:Map<string,()=>void>};
 type Stream={write:(data:unknown)=>Promise<void>;close:()=>Promise<void>;abort:(reason?:unknown)=>Promise<void>};
 type Holds={held:Map<string,()=>void>;settled:number;digestHold:boolean;digestWaiting:(()=>void)|null;digests:number;digestSettled:number};
-const installShim=(page:Page)=>page.addInitScript(()=>{
+const installShim=async(page:Page)=>{await skipWithoutOpfs(page);await installShimScript(page);};
+const installShimScript=(page:Page)=>page.addInitScript(()=>{
  const w=window as unknown as {__saveShim:Shim;__holds:Holds};
  const proto=FileSystemFileHandle.prototype as unknown as {createWritable:(this:FileSystemFileHandle,...a:unknown[])=>Promise<Stream>;getFile:(this:FileSystemFileHandle)=>Promise<File>};
  const create=proto.createWritable,getFile=proto.getFile;

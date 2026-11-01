@@ -3454,4 +3454,17 @@ export interface MessageParameters {
   "fieldSpec.analyze": never;
   "fieldSpec.classify": never;
   "fieldSpec.handOffError": never;
+  "ph.nativeRecordHelp": never;
+  "ph.nativeRecorded": never;
+  "ph.nativeCancelled": never;
+  "ph.nativeBlocked": never;
+  "ph.nativeSpError": never;
+  "ph.nativeVelocityNote": never;
+  "ph.nativeOk": never;
+  "ph.nativeTitle": never;
+  "ph.nativeHelp": "count";
+  "ph.nativeResults": never;
+  "obsHr.ownRecords": never;
+  "obsHr.ownRecordsHelp": never;
+  "obsHr.ownRecordsError": never;
 }

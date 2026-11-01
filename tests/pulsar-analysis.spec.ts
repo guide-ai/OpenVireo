@@ -386,7 +386,7 @@ test('mobile layout keeps the analysis reachable without horizontal overflow; to
   await page.screenshot({ path: test.info().outputPath('mobile-analysis.png'), fullPage: true });
 });
 
-test('record and clear dialogs keep Tab and Shift+Tab inside, with host controls outside the panel', async ({ page }) => {
+test('record and clear dialogs keep Tab and Shift+Tab inside, with host controls outside the panel', async ({ page, browserName }) => {
   await open(page);
   await hostControls(page);
   await load(page);
@@ -403,7 +403,11 @@ test('record and clear dialogs keep Tab and Shift+Tab inside, with host controls
   // sequential-navigation starting point at a blurred control (OK), so Tab continues to the next one.
   await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
   await page.keyboard.press('Tab');
-  await expect(cancel).toBeFocused();
+  // Front WebKit QA: WebKit does not keep the starting point at a blurred control; its Tab focuses the modal <dialog> itself
+  // and the next Tab its first control. In every engine focus stays in the dialog; where the starting point is kept it is the
+  // next control.
+  expect(await page.getByTestId('pulsar-record-dialog').evaluate(d => d.contains(document.activeElement))).toBe(true);
+  if (browserName !== 'webkit') await expect(cancel).toBeFocused();
   // Clicking the dialog's text focuses the dialog itself; the next Tab reaches its first control.
   await page.getByTestId('pulsar-record-dialog').locator('h3').click();
   await page.keyboard.press('Tab');

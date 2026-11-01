@@ -1,6 +1,7 @@
 // TEST-ONLY host for tests/object-x-measure.spec.ts. Imported only by that spec through the Vite dev server after the real App
 // has loaded; not a product route, no window hook. The two images are AUTHORED synthetic FITS (Gaussian stars on a flat sky with
 // a TAN WCS), not CLEA observations: image 2 is the same field shifted by (+3, −2) px and its "asteroid" moved 6 px north.
+import '../../src/focusAfterLayout';
 import {createElement as h,useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {parseFitsImage} from '../../src/core/fitsImage';

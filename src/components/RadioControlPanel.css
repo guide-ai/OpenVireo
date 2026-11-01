@@ -87,6 +87,9 @@
 .antenna-hotlist-row[data-found]{border-style:dashed;border-color:var(--ov-warning);box-shadow:inset 0 0 0 1px var(--ov-warning)}
 .antenna-hotlist-row[data-found]:not([data-checked]){background:var(--ov-warning-soft)}
 .antenna-hotlist-row[data-found] input:focus{outline:3px solid var(--ov-focus);outline-offset:2px}
+/* Front WebKit QA (cause 3; review L3): in keyboard modality the same 3 px ring on every row's radio on :focus, which WebKit
+   keeps after arrow keys while it drops :focus-visible. */
+:root[data-input-modality=keyboard] .antenna-hotlist-row input:focus{outline:3px solid var(--ov-focus);outline-offset:2px}
 .antenna-hotlist-found-mark{flex:0 0 auto;padding:0 6px;border:1px solid var(--ov-warning);border-radius:4px;color:var(--ov-warning);font-size:12px;font-weight:600}
 .antenna-dialog.antenna-hotlist-search{width:min(100%,28rem)}
 .antenna-hotlist-search .antenna-field input{min-height:44px}

@@ -53,7 +53,8 @@ export function openNativeRecordEdit(data:NativeObservationData,index:number):Na
  if(!Number.isInteger(index)||index<0||index>=data.records.length)throw new NativeRecordEditError('index');
  const edit=Object.freeze({base:data,index});recordEdits.add(edit);return edit;
 }
-function encodeNativeText(text:string,maximum:number):Uint8Array{
+/** Printable Windows-1252 text as the stored ShortString bytes (also the photometer records, Front P3). */
+export function encodeNativeText(text:string,maximum:number):Uint8Array{
  observationText(text,maximum);return Uint8Array.from(text,c=>{const n=c.codePointAt(0)!;return n<256?n:128+cp1252.indexOf(c);});
 }
 /** Patch explicit manual fields of an owned row only. Other bytes,including
