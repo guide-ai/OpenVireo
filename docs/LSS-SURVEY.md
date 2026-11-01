@@ -1,6 +1,6 @@
 # E02 Large-scale structure survey
 
-Route `#lss-survey` (`src/LssSurvey.tsx`). Field names and centres come from the byte-exact LSSFields.LST; the photographic-image gate reads the byte-exact GLIMAGES.LST; the spectrum-mapping gate reads the byte-exact GLXYSP.LST. The student path:
+Route `#lss-survey` (`src/LssSurvey.tsx`). Field names and centres come from the byte-exact LSSFields.LST; the photographic list (GLIMAGES.LST, byte-exact) associates the five approved photographs, which are drawn (Front F3); the spectrum-mapping gate reads the byte-exact GLXYSP.LST. The student path:
 1. Choose a field and a telescope.
 2. Load the original LSS_Field0N.HTL. The app checks its size and SHA-256 before parsing it.
 3. Read the status of each row.
@@ -9,7 +9,7 @@ Route `#lss-survey` (`src/LssSurvey.tsx`). Field names and centres come from the
 6. Measure z with the analyser's shift control and the GLXYLNS.LST lines.
 7. Record Z: the "Measured Redshift Data" dialog. OK adds one record, or updates the row of an object already recorded (see
    "Re-measuring an object" below); Cancel and Escape change nothing.
-8. Look at the results list and save it as CSV.
+8. Look at the results list and save it as CSV, or as VIREO's own .TXT (Save Data, 0x57af74).
 9. Plot your own records in the wedge (`#lss-wedge`).
 10. Write a free-text description (not graded).
 
