@@ -65,7 +65,7 @@
     windows. Type 1 rows end with VIREO's three spaces (0x53575f).
   - Create New Hot List of Entire List needs a selected row here, like the window's other Selection items [W]; VIREO enables
     it without one.
-  - Any other centre or diameter gets a typed reason: VIREO searches its full Guide Star Catalog, which is not published.
+  - Any other centre or diameter runs the query on the compact GSC tiles (Front G5, "Any centre" below).
   - A limit brighter than every star of the field: VIREO's reader returns nothing, it answers `No Stars Found in Field!` with
     `Possible Error in Field Parameters:` and the rectangle and limit (0x53435b–0x534452). The query ends without clearing
     the bank, so VIREO then opens its report with "0 Stars" (the statistics were reset) and the rows of its previous query. The web
