@@ -56,17 +56,35 @@ describe('the generic spectrometer',()=>{
   const r=await prepareFieldSpectrum({ra:2.5125473,dec:0.25592},0);expect(r.status).toBe('ready');if(r.status!=='ready')return;
   expect(r.result.starTarget?.id).toBe('N0000.DAT@63282');expect(fieldSpectrumHeaderName(r.result)).toBe('N0000-01634');
  });
- it('Front C7: M31\'s telescope field is built without NGC 224; other galaxies are painted and give the overlay',async()=>{
+ it('Front C7: M31\'s field equals the same field without NGC 224, whole raster and galaxy layer; M31 alone gives no overlay',async()=>{
   const {evaluateFieldView}=await import('../core/fieldEngine'),{cameraOverlaySource}=await import('../core/cameraOverlaySource');
   const glx=pub('/original/catalogs/CLEA_GLX.DAT'),at={ra:0.7123,dec:41.2692},pack=await assembleFieldPack(at,(await tileSources()).assembly);
   const v=evaluateFieldView(pack,glx,at,0,{galaxyLayer:true});
-  expect(v.reasons).toEqual([]);expect(v.m31Notice).toBe(true);expect(v.raster).toBeTruthy();
-  const ids=v.population!.galaxies.map(g=>g.id);expect(ids).toContain('NGC 224');
-  const others=ids.filter(id=>id!=='NGC 224');
-  // M31's centre (the anchor) has nothing painted in the galaxy layer.
-  expect(v.galaxyRed![468*936+468]).toBe(0);
+  expect(v.reasons).toEqual([]);expect(v.m31Notice).toBe(true);expect(v.population!.galaxies.map(g=>g.id)).toEqual(['NGC 224']);
+  // The same field with record 897 renamed and given a 0-px minor axis: an ordinary galaxy that composes nothing (Front L4).
+  const other=glx.slice(),r=897*59,name=other.subarray(r+40,r+40+other[r+39]),k=name.lastIndexOf(0x34);name[k]=0x35;
+  new DataView(other.buffer,r+20,4).setFloat32(0,0.001,true);
+  const w=evaluateFieldView(pack,other,at,0,{galaxyLayer:true});
+  expect(w.reasons).toEqual([]);expect(w.m31Notice).toBeUndefined();expect(w.population!.galaxies.map(g=>g.id)).toEqual(['NGC 225']);
+  expect(Buffer.from(v.raster!.rgb).equals(Buffer.from(w.raster!.rgb))).toBe(true);
+  expect(Buffer.from(v.galaxyRed!).equals(Buffer.from(w.galaxyRed!))).toBe(true);
+  const overlay=cameraOverlaySource({anchor:at,galaxyIds:['NGC 224'],galaxyRed:v.galaxyRed!,unpaintedGalaxies:0},at,15,15);
+  expect(overlay.status).toBe('off');
+ });
+ it('Front C7: M31 with M32 paints only M32, whose layer gives a ready overlay',async()=>{
+  const {evaluateFieldView}=await import('../core/fieldEngine'),{cameraOverlaySource}=await import('../core/cameraOverlaySource');
+  const glx=pub('/original/catalogs/CLEA_GLX.DAT'),at={ra:0.712,dec:41.05},pack=await assembleFieldPack(at,(await tileSources()).assembly);
+  const v=evaluateFieldView(pack,glx,at,0,{galaxyLayer:true}),ids=v.population!.galaxies.map(g=>g.id);
+  expect(v.reasons).toEqual([]);expect(v.m31Notice).toBe(true);expect(ids).toContain('NGC 224');expect(ids).toContain('NGC 221');
+  expect(v.galaxyRed!.some(x=>x>0)).toBe(true);
   const overlay=cameraOverlaySource({anchor:at,galaxyIds:ids,galaxyRed:v.galaxyRed!,unpaintedGalaxies:v.outsideViewGalaxies?.length??0},at,15,15);
-  expect(overlay.status).toBe(others.length?'ready':'off');
+  expect(overlay.status).toBe('ready');
+ });
+ it('Front C7 [I]: a slit on M31 where other paint lies under it takes the generic galaxy path (level 82, fraction 0.168)',async()=>{
+  const r=await prepareFieldSpectrum({ra:0.6916107,dec:41.37777},0);expect(r.status).toBe('ready');if(r.status!=='ready')return;
+  expect(r.result.m31Notice).toBe(true);expect(r.result.target?.id).toBe('NGC 224');expect(r.result.reasons).toEqual([]);
+  expect(r.result.calibration?.pixelLevel).toBe(82);expect(r.result.calibration?.fraction).toBeCloseTo(0.1681,4);
+  expect(r.result.calibration?.sourceFile).toBe('GLXYTMPL.SP');
  });
  it('R4e review 1 L1: a field blocked before the slit selection (M31, a Virgo photograph) reads Sky for a star outside the strict cut',async()=>{
   const on={showObjectId:true,showObjectMag:true,editMode:false};

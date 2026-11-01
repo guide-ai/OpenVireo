@@ -613,8 +613,13 @@ function outsideViewHolds(population:FieldPopulation,scene:NativeSelectionScene)
  *    not painted. Under the 'outside-view' rule (Boötes) it keeps its earlier listing with its crop margin when its footprint
  *    misses the crop; it is the same pixels either way.
  * A photographed galaxy is drawn from its photograph instead.
- * The name test is VIREO's substring match and runs before the photograph check (0x53b4fc, then 0x53b513), as here; on the
- * bundled CLEA_GLX.DAT only record 897 matches (fieldEngineC7.test.ts). */
+ * The name test is VIREO's substring match and runs before the photograph check (0x53b4fc, then 0x53b513), as here. [I] On the
+ * bundled CLEA_GLX.DAT only record 897 matches; that rests on the web's name composition (decodeGlxRecord), and GLIMAGES.LST and
+ * GLXYSP.LST hold no 'NGC 224' (fieldEngineC7.test.ts).
+ * [I] (C7 review 1 M1) A selection on M31 then follows the generic galaxy path like any galaxy without a GLXYSP.LST spectrum:
+ * the spectrometer throughput 0x50f338 reads the 0x53e338 level of what else is painted under the slit (0 → sky reading; above 0
+ * a GLXYTMPL.SP spectrum at V 4.3), and a Multi-Spec fibre (0x527b38) is catalogue-driven. VIREO has no other M31 test (one
+ * 'NGC 224' string in the executable), so this is very probably its outcome, not a traced one. */
 function telescopeGalaxyGate(population:FieldPopulation,scene:NativeSelectionScene,c:Calibration,options:FieldOptions):Readonly<{m31:boolean;unpainted:Set<number>;outsideViewGalaxies:{galaxy:string;margin:number}[]}>{
  const unpainted=new Set<number>(),outsideViewGalaxies:{galaxy:string;margin:number}[]=[];
  const photographed=new Set((population.photographAssociations??[]).map(a=>a.recordIndex));
