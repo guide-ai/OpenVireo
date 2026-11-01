@@ -1,11 +1,12 @@
 import {test,expect,type Page} from '@playwright/test';import {readFile} from 'node:fs/promises';
+import {headingWait} from './fixtures/lazy-route';
 import{clickHeaderTool}from'./fixtures/header-tools';
 import {recordMeasurement} from './fixtures/record-measurement';
 // Re-pinned 2026-10-31 (Front S2 round 2): new Hubble/LSS exposures use VIREO's 3700–4700 Å with the start-time continuation (docs/RANGE-FINGERPRINTS-2026-10-31.md).
 const restored='Investigation restored. Included tools were validated together. Exposure segments are stopped and deactivated; activate explicitly before continuing.';
 async function open(page:Page){await page.clock.install();await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));}
 async function controls(page:Page){if(!await page.getByRole('button',{name:'Start observatory clock',exact:true}).isVisible())await page.getByText('Observatory clock & spectral tracking',{exact:true}).click();}
-async function view(page:Page,name:string,heading:string){await page.clock.resume();await clickHeaderTool(page,name);await expect(page.getByRole('heading',{name:heading,exact:true})).toBeVisible();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));}
+async function view(page:Page,name:string,heading:string){await page.clock.resume();await clickHeaderTool(page,name);await expect(page.getByRole('heading',{name:heading,exact:true})).toBeVisible(headingWait(heading));await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));}
 async function save(page:Page){const d=page.waitForEvent('download');await page.getByRole('button',{name:'Save investigation',exact:true}).click();return readFile((await(await d).path())!);}
 async function restore(page:Page,b:Buffer,name='control.json'){await page.getByLabel('Restore investigation JSON',{exact:true}).setInputFiles({name,mimeType:'application/json',buffer:b});}
 async function record(page:Page,label:string){await page.getByLabel('z step per tick').fill('.001');await page.getByRole('button',{name:'Apply step',exact:true}).click();await page.getByRole('slider').fill('12');await page.getByLabel('Object or reference',{exact:true}).fill(label);await recordMeasurement(page);}

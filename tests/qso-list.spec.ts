@@ -71,6 +71,7 @@ test('student path: options defaults, invalid limit, list without z or Object X 
 });
 
 test('Edit Mode: Sort Options enabled, Z and colour columns; leaving Edit Mode resets the sort',async({page})=>{
+ test.slow(true,'The QSO list over the whole catalogue takes about 40 s in WebKit under load, on main too (Front QA2).');
  await open(page);await virtualObservatory(page,true);await editMode(page,true);await qsoMenu(page);
  await expect(page.getByTestId('qso-sort-1')).toBeEnabled();await page.getByTestId('qso-sort-2').check();await page.getByTestId('qso-ok').click();
  await expect(page.getByTestId('qso-list-line-0')).toHaveText('2266 QSOs to magnitude 17.50, sorted by Z(descending).',{timeout:20000});

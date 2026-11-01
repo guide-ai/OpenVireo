@@ -1,4 +1,5 @@
 import {test,expect,type Page} from '@playwright/test';
+import {LAZY_ROUTE_TIMEOUT} from './fixtures/lazy-route';
 import {readFile} from 'node:fs/promises';
 import{clickHeaderTool}from'./fixtures/header-tools';
 import {okWithVelocity} from './fixtures/lss-velocity';
@@ -98,7 +99,7 @@ test('LSS Galaxy Data appears only with Edit Mode; validation boxes; extraction 
 
 test('the galaxy route saves its acquired spectrum as .SSP',async({page})=>{
  await page.clock.install();await page.goto('/');await clickHeaderTool(page,'Galaxy exposure');
- await expect(page.getByRole('heading',{name:'Acquire a Hubble galaxy.',exact:true})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'Acquire a Hubble galaxy.',exact:true})).toBeVisible({timeout:LAZY_ROUTE_TIMEOUT});
  await page.getByRole('button',{name:'Activate supported galaxy field',exact:true}).click();
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
  await page.getByRole('button',{name:'Start galaxy exposure',exact:true}).click();await page.clock.runFor(1000);await page.getByRole('button',{name:'Pause exposure',exact:true}).click();
