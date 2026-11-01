@@ -78,7 +78,8 @@ I01/E04 are not accepted complete; N03 remains partial. [Verification](PHOTOMETE
   (48 fields), the tiled field equals the bundled field. That covers stars and their order, neighbours, the selected star and
   its pixel distance, the aperture fraction, the source magnitude, and the means.
 - **Typed reasons** (`PhotometerTiledReason`), never approximated:
-  - `photometer-galaxy`: a galaxy in the field. The photometer's treatment of the galaxy list is not recovered; M31's core
+  - `photometer-galaxy`: a galaxy in the field (unchanged by Front C7: the photometer builds its own population, so M31's core
+    stays typed here although its telescope field is now drawn). The photometer's treatment of the galaxy list is not recovered; M31's core
     gives this reason.
   - `photometer-qso`
   - `photometer-variable`: a TRUE-dispatch variable star, whose values depend on the clock.

@@ -71,10 +71,6 @@ export const FIELD_MULTIPLIER=base.multiplier;
 /** Why a pointing cannot be acquired in this version (never a fabricated substitute). */
 export type FieldUnavailableReason=
  |'outside-pack'|'qso-merge'|'photographic-image'|'variable-merge'|'axis-fallback'|'merge-boundary'
- /** Front L4: NGC 224 in the telescope field. The painter 0x53b390 compares each galaxy's name with 'NGC 224' (0x53b4fc) and
-  * hands it to 0x53b848, which paints nothing and only shows a MessageBox ("Image Too Large!" / "M31 Image Too Large to Load!",
-  * Front RE6); never the generic stamp. The web still types the field until C7 ports that. */
- |'ngc224-image'
  |'no-galaxy-selected'|'star-selected'|'slit-empty'|'spectrum-range'|'mean-bound'|'spectrum-mapping'
  /** Front F, 'merge' mode only: the slit selects a merged QSO record (type 3); a QSO observation is another branch. */
  |'qso-selected'
@@ -213,6 +209,8 @@ export type FieldCalibration=Readonly<{sourcePreparer?:JournalSourcePreparer;con
 export type FieldResult=Readonly<{
  /** 'outside-view' only: galaxies outside the browser stamp bound that were not painted because they miss the crop. */
  outsideViewGalaxies?:readonly Readonly<{galaxy:string;margin:number}>[];
+ /** Front C7: the telescope painter met NGC 224 (0x53b848): not painted; show M31_NOTICE. */
+ m31Notice?:true;
  pointing:Readonly<{ra:number;dec:number}>;telescope:FieldTelescope;reasons:readonly FieldUnavailableReason[];population:FieldPopulation|null;
  /** The selected QSO record when a QSO observation was prepared (qsoObservation option). */
  qsoTarget?:NativeQso;
@@ -608,20 +606,27 @@ function outsideViewHolds(population:FieldPopulation,scene:NativeSelectionScene)
 }
 /** The telescope-cache galaxy gate (Front L4). VIREO's stamp has no size bound (0x5943d4, 0x59456c), so every galaxy is painted,
  * in place and clipped to the cache, except:
- *  - NGC 224, which VIREO hands to 0x53b848 (name test 0x53b4fc), a stub that paints nothing and shows "M31 Image Too Large to
- *    Load!" (Front RE6): the field is still typed 'ngc224-image' until C7;
+ *  - NGC 224 (Front C7 [D]): the name test Pos('NGC 224', name) at 0x53b4fc sends it to 0x53b848, which paints nothing and only
+ *    shows the "Image Too Large!" MessageBox, then the loop goes on at 0x53b62f (0x53b50e): no stamp, no photograph and no
+ *    overlay-gate store (0x53b628). It stays in the population (catalogue, slit lookup 0x59a0fc); the field reports `m31Notice`;
  *  - a galaxy whose minor axis rounds to 0 px, which composes nothing (0x594488 stretches into a zero-height rect [I]) and is
  *    not painted. Under the 'outside-view' rule (Boötes) it keeps its earlier listing with its crop margin when its footprint
  *    misses the crop; it is the same pixels either way.
  * A photographed galaxy is drawn from its photograph instead.
- * (L4 review L2) VIREO's test is Pos('NGC 224', name), a substring match, and it runs before the photograph check (0x53b4fc, then
- * 0x53b513); the web uses equality after the photograph check. The two agree on the bundled data: no other CLEA_GLX.DAT name
- * contains 'NGC 224' and NGC 224 has no GLIMAGES.LST photograph. */
-function telescopeGalaxyGate(population:FieldPopulation,scene:NativeSelectionScene,c:Calibration,options:FieldOptions):Readonly<{reason?:'ngc224-image';unpainted:Set<number>;outsideViewGalaxies:{galaxy:string;margin:number}[]}>{
+ * The name test is VIREO's substring match and runs before the photograph check (0x53b4fc, then 0x53b513), as here. [I] On the
+ * bundled CLEA_GLX.DAT only record 897 matches; that rests on the web's name composition (decodeGlxRecord), and GLIMAGES.LST and
+ * GLXYSP.LST hold no 'NGC 224' (fieldEngineC7.test.ts).
+ * [I] (C7 review 1 M1) A selection on M31 then follows the generic galaxy path like any galaxy without a GLXYSP.LST spectrum:
+ * the spectrometer throughput 0x50f338 reads the 0x53e338 level of what else is painted under the slit (0 → sky reading; above 0
+ * a GLXYTMPL.SP spectrum at V 4.3), and a Multi-Spec fibre (0x527b38) is catalogue-driven. VIREO has no other M31 test (one
+ * 'NGC 224' string in the executable), so this is very probably its outcome, not a traced one. */
+function telescopeGalaxyGate(population:FieldPopulation,scene:NativeSelectionScene,c:Calibration,options:FieldOptions):Readonly<{m31:boolean;unpainted:Set<number>;outsideViewGalaxies:{galaxy:string;margin:number}[]}>{
  const unpainted=new Set<number>(),outsideViewGalaxies:{galaxy:string;margin:number}[]=[];
  const photographed=new Set((population.photographAssociations??[]).map(a=>a.recordIndex));
- for(const [i,g] of population.galaxies.entries()){if(photographed.has(g.recordIndex))continue;
-  if(g.id===NGC224_ID)return {reason:'ngc224-image',unpainted,outsideViewGalaxies};
+ let m31=false;
+ for(const [i,g] of population.galaxies.entries()){
+  if(isNgc224Name(g.id)){m31=true;unpainted.add(i);continue;}
+  if(photographed.has(g.recordIndex))continue;
   try{galaxyStampGeometry(g,c.magnitudeShift);}catch(e){
    if(!(e instanceof Error&&e.message==='Outside bounded galaxy stamp.'))throw e;
    const axes=galaxyCatalogAxes(g),r=Math.max(3,axes.major*GALAXY_STAMP_SCALES.telescope.pixelsPerArcminute/2);
@@ -631,10 +636,13 @@ function telescopeGalaxyGate(population:FieldPopulation,scene:NativeSelectionSce
    if(options.variables==='outside-view'&&margin>0)outsideViewGalaxies.push({galaxy:g.id,margin});
   }
  }
- return {unpainted,outsideViewGalaxies};
+ return {m31,unpainted,outsideViewGalaxies};
 }
 /** The catalogue name VIREO's telescope painter tests (string at 0x53b810). */
 export const NGC224_ID='NGC 224';
+/** Pos(0x53b810, name) ≠ 0 at 0x53b4fc: a substring test. */
+export const isNgc224Name=(name:string)=>name.includes(NGC224_ID);
+export {M31_NOTICE} from './m31Notice';
 function paintField(population:FieldPopulation,scene:NativeSelectionScene,c:Calibration,unpainted:ReadonlySet<number>=new Set(),photographs?:Readonly<{telescope:FieldTelescope;options:FieldPhotographs}>,unpaintedStars:ReadonlySet<string>=new Set(),onGalaxies?:(raster:RgbImage)=>void):RgbImage{
  let raster:RgbImage={width:FRAME.width,height:FRAME.height,rgb:new Uint8Array(FRAME.width*FRAME.height*3)};
  const taken=new Map((population.photographAssociations??[]).map(a=>[a.recordIndex,a]));
@@ -672,8 +680,7 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
  if(!population||reasons.length)return Object.freeze({...empty,population,reasons:Object.freeze(reasons)});
  const scene=createNativeSelectionScene(population.stars,population.galaxies,{width:FRAME.width,height:FRAME.height,fieldDegrees:FRAME.fieldDegrees,center:at,population:{coverage:'complete',provenance:`Field pack ${pack.id}; native CRT1 and field table verified`}});
  const gate=telescopeGalaxyGate(population,scene,c,options);
- if(gate.reason)return Object.freeze({...empty,population,scene,reasons:Object.freeze([gate.reason])});
- const {unpainted,outsideViewGalaxies}=gate;
+ const {unpainted,outsideViewGalaxies}=gate,m31Notice=gate.m31?{m31Notice:true as const}:{};
  if(population.outsideViewVariable&&!outsideViewHolds(population,scene))return Object.freeze({...empty,population,scene,reasons:Object.freeze(['variable-merge' as const])});
  // Front T: a TRUE star whose values are unavailable gates the field only when its 99×99 stamp reaches the 312² crop or a galaxy or
  // QSO lies within the merge guard radius; otherwise it is not painted (pixel-identical: the whole stamp misses the crop).
@@ -691,7 +698,7 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
   const star=population.stars[selection.star.index];
   selection=selectCatalogObject(scene,FRAME.anchor,FRAME.anchor,nativeObjectSlitFraction({objectPresent:true,objectType:star.type,pixelLevel,object:{raHours:star.ra,decDegrees:star.dec},pointing:{raHours:at.ra,decDegrees:at.dec}}));
  }
- const base={...empty,population,scene,viewport,selection,...(outsideViewGalaxies.length?{outsideViewGalaxies:Object.freeze(outsideViewGalaxies.map(x=>Object.freeze(x)))}:{})};
+ const base={...empty,population,scene,viewport,selection,...m31Notice,...(outsideViewGalaxies.length?{outsideViewGalaxies:Object.freeze(outsideViewGalaxies.map(x=>Object.freeze(x)))}:{})};
  if(selection.kind==='star'&&pendingIds.has(population.stars[selection.star.index].id)){
   const e=pendingVariables.find(x=>x.starId===population.stars[selection.star.index].id)!;
   return Object.freeze({...base,reasons:Object.freeze([(e.values as Extract<FieldVariableValues,{status:'unavailable'}>).reason])});
@@ -766,6 +773,8 @@ export type FieldView=Readonly<{
  raster?:RgbImage;
  /** 'outside-view' only (as evaluateField). */
  outsideViewGalaxies?:readonly Readonly<{galaxy:string;margin:number}>[];
+ /** Front C7: the telescope painter met NGC 224 (0x53b848): not painted; show M31_NOTICE. */
+ m31Notice?:true;
  /** Front T stars whose values are unavailable and whose stamps miss the crop: not painted (as evaluateField). */
  unpaintedStarIds:readonly string[];
  /** Front C6, `galaxyLayer` only: the red channel of the paint after the galaxies, row-major 936². */
@@ -780,8 +789,7 @@ export function evaluateFieldView(pack:FieldPack,glx:Uint8Array,pointing:Readonl
  if(!population||reasons.length)return Object.freeze({...empty,population,reasons:Object.freeze(reasons)});
  const scene=createNativeSelectionScene(population.stars,population.galaxies,{width:FRAME.width,height:FRAME.height,fieldDegrees:FRAME.fieldDegrees,center:at,population:{coverage:'complete',provenance:`Field pack ${pack.id}; native CRT1 and field table verified`}});
  const gate=telescopeGalaxyGate(population,scene,c,options);
- if(gate.reason)return Object.freeze({...empty,population,scene,reasons:Object.freeze([gate.reason])});
- const {unpainted,outsideViewGalaxies}=gate;
+ const {unpainted,outsideViewGalaxies}=gate,m31Notice=gate.m31?{m31Notice:true as const}:{};
  if(population.outsideViewVariable&&!outsideViewHolds(population,scene))return Object.freeze({...empty,population,scene,reasons:Object.freeze(['variable-merge' as const])});
  const pendingVariables=(population.variableStars??[]).filter(e=>e.values.status==='unavailable');
  for(const e of pendingVariables){
@@ -794,7 +802,7 @@ export function evaluateFieldView(pack:FieldPack,glx:Uint8Array,pointing:Readonl
  const onGalaxies=options.galaxyLayer?(r:RgbImage)=>{galaxyRed=new Uint8Array(r.width*r.height);for(let i=0,o=0;i<galaxyRed.length;i++,o+=3)galaxyRed[i]=r.rgb[o];}:undefined;
  const raster=paintField(population,scene,c,unpainted,options.photographs?{telescope,options:options.photographs}:undefined,pendingIds,onGalaxies);
  const viewport=cropNativeFrame(raster,freshNativeViewport(FRAME.viewport,FRAME.viewport,{x:FRAME.anchor,y:FRAME.anchor}));
- return Object.freeze({...empty,population,scene,viewport,raster,reasons:Object.freeze([]),unpaintedStarIds:Object.freeze([...pendingIds]),...(galaxyRed?{galaxyRed}:{}),
+ return Object.freeze({...empty,population,scene,viewport,raster,reasons:Object.freeze([]),unpaintedStarIds:Object.freeze([...pendingIds]),...m31Notice,...(galaxyRed?{galaxyRed}:{}),
   ...(outsideViewGalaxies.length?{outsideViewGalaxies:Object.freeze(outsideViewGalaxies.map(x=>Object.freeze(x)))}:{})});
 }
 // ---- end Front M block ----

@@ -16,7 +16,9 @@ export type SkyFieldView='telescope'|'finder';
 export type SkyFieldReason='object-x-hidden'|'object-x-unreadable'|SkyPackFailure['reason']|'field-reason';
 export type SkyField=Readonly<{status:'ready';view:SkyFieldView;anchor:Pointing;telescope:FieldTelescope;packId:string;raster:RgbImage;population:FieldPopulation;scene:NativeSelectionScene;
  /** Front C6, telescope view: the CCD overlay's source (fieldEngine `galaxyLayer`) and the galaxies the paint left out. */
- galaxyRed?:Uint8Array;unpaintedGalaxies?:number}>
+ galaxyRed?:Uint8Array;unpaintedGalaxies?:number;
+ /** Front C7: the telescope paint met NGC 224 (fieldEngine M31_NOTICE). */
+ m31Notice?:true}>
  |Readonly<{status:'unavailable';view:SkyFieldView;anchor:Pointing;reason:SkyFieldReason;detail?:string}>;
 /** What one build needs (plain data, so it can cross to the Worker). The JD is frozen by the caller. */
 export type SkyFieldBuildRequest=Readonly<{view:SkyFieldView;anchor:Pointing;telescope:FieldTelescope;finderMagnitudeLimit:number;variableTime?:FieldVariableTime}>;
@@ -60,5 +62,5 @@ export async function buildSkyField(r:SkyFieldBuildRequest,signal?:AbortSignal):
  for(let i=0;i<2&&v.reasons.length&&await retry(v.reasons[0]);i++);
  return v.reasons.length||!v.raster||!v.population||!v.scene?unavailable('field-reason',v.reasons[0]??'outside-pack')
   :Object.freeze({status:'ready',view,anchor,telescope:r.telescope,packId:pack.pack.id,raster:v.raster,population:v.population,scene:v.scene,
-   ...(v.galaxyRed?{galaxyRed:v.galaxyRed}:{}),unpaintedGalaxies:v.outsideViewGalaxies?.length??0});
+   ...(v.galaxyRed?{galaxyRed:v.galaxyRed}:{}),...(v.m31Notice?{m31Notice:true as const}:{}),unpaintedGalaxies:v.outsideViewGalaxies?.length??0});
 }

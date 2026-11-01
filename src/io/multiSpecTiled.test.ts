@@ -71,6 +71,15 @@ describe('Front G G4b: Multi-Spec at any pointing',()=>{
   const e=await multiSpecSpectra(field,[{selection:star,seed:1,seconds:30},{selection:sky,seed:2,seconds:30}]);
   expect(e.map(x=>x.status)).toEqual(['ready','ready']);expect(structuredClone(e)).toEqual(e);
  });
+ it('Front C7 [I]: at M31 the view is built and a fibre on NGC 224 gives the generic galaxy spectrum on every telescope',async()=>{
+  for(const telescope of [0,1,2] as const){
+   const field={pack:'gsc-tiles' as const,pointing:{ra:0.7123,dec:41.2692},telescope},v=await multiSpecView(field);
+   expect([v.fieldRead,v.reasons]).toEqual([undefined,[]]);
+   const pick=multiSpecPick({population:v.population!,scene:v.scene!},468,468);expect(pick.type).toBe(1);
+   expect(pick.name).toBe('NGC 224');
+   const e=await multiSpecSpectra(field,[{selection:pick,seed:1,seconds:30}]);expect(e.map(x=>x.status)).toEqual(['ready']);
+  }
+ });
  it('an aborted build rejects with AbortError and is not cached (G4b review 1 M1)',async()=>{
   const field={pack:'gsc-tiles' as const,pointing:{ra:7.25,dec:-12.5},telescope:1 as const},stop=new AbortController();
   tiles();const before=tileFetches,p=multiSpecView(field,stop.signal);stop.abort();

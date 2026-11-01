@@ -89,6 +89,7 @@ import Spectrometer from './Spectrometer';
 import { decodeGsc, FIELDS, pan, project, requiredSkyTiles, targetCentered, validatePointing, type CatalogStar, type FieldMode, type Pointing, type SkyObject } from './core/sky';
 import { FIELD_CACHE, FINDER_FIELD_CACHE, nativeFieldCacheHolds, nativeFieldCacheOrigin } from './core/fieldCache';
 import { setTelescopeFieldLoad } from './observatory/telescopeField';
+import {M31_NOTICE} from './core/m31Notice';
 import type { SkyField as LoadedSkyField } from './io/skyField';
 import { fieldInfoReasonText, type FieldInfoReason } from './observatory/FieldInfoMessages';
 import type { Sample } from './core/spectrum';
@@ -190,8 +191,13 @@ const SkyField=memo(function SkyField({center,mode,active,selected,onSelect,hidd
     <g className="sky-grid">{[175,350,525].map(n=><g key={n}><line x1={n} x2={n} y1="0" y2="700"/><line x1="0" x2="700" y1={n} y2={n}/></g>)}</g>
     {active&&<g clipPath="url(#sky-clip)">{points.map(p=><circle key={p.index} cx={p.x} cy={p.y} r={Math.max(.7,Math.min(2.8,(13-p.magnitude)*.22))} fill="#d8eafa" opacity=".8"/>)}{/* QA1 review 1 H1: a masked catalogue object is not drawn at all; a ring would mark a galaxy target on the crosshair and a star target nearby. The mask covers every ObjectX.HTL area alike, so every target's area looks the same. */}{objects.map(({object,masked,x,y})=>masked?null:<g key={object.id} className="sky-object" onClick={()=>onSelect(object)}><circle cx={x} cy={y} r="9" fill="transparent" stroke={object.id===selected.id?'#e4bb75':'#81c8b8'} strokeWidth="1.5"/><text x={x+13} y={y+4}>{object.label}</text></g>)}</g>}
     <g className="sky-crosshair"><path d="M333 350h12m10 0h12M350 333v12m0 10v12"/><circle cx="350" cy="350" r="3"/></g><text className="sky-cardinal" x="350" y="25" textAnchor="middle">N</text><text className="sky-cardinal" x="18" y="350">E</text></svg>
-    <div className="sky-caption" aria-live="polite">{error?<span role="alert">{error}</span>:loading&&!drawn?t('sky.loading'):drawn?null:t('sky.count',{count:formatNumber(points.length)})}{fieldNote&&<span data-testid="sky-field-note">{fieldNote}</span>}{!drawn&&<span>{t('sky.coverage')}</span>}</div></div>;
+    <div className="sky-caption" aria-live="polite">{error?<span role="alert">{error}</span>:loading&&!drawn?t('sky.loading'):drawn?null:t('sky.count',{count:formatNumber(points.length)})}{fieldNote&&<span data-testid="sky-field-note">{fieldNote}</span>}{drawn&&ready?.m31Notice&&<M31NoticeView/>}{!drawn&&<span>{t('sky.coverage')}</span>}</div></div>;
 });
+
+/** Front C7: VIREO's "Image Too Large!" box for a telescope field with M31, as a notice. */
+function M31NoticeView(){
+  return <span role="status" className="sky-m31-notice" data-testid="sky-m31-notice"><strong>{M31_NOTICE.caption}</strong> <span style={{whiteSpace:'pre-line'}}>{M31_NOTICE.text}</span> <small>{M31_NOTICE.adaptation}</small></span>;
+}
 
 export default function OpenVireo(){
   const route=()=>location.hash==='#variable-stars'?'variable-stars' as const:location.hash==='#object-x'?'object-x' as const:location.hash==='#lss-survey'?'lss-survey' as const:location.hash==='#lss-wedge'?'lss-wedge' as const:location.hash==='#pulsar-analysis'?'pulsar-analysis' as const:location.hash==='#radio-control'?'radio-control' as const:location.hash==='#images'?'images' as const:location.hash==='#cluster-database'?'cluster-database' as const:location.hash==='#photometer'?'photometer' as const:location.hash==='#classification'?'classification' as const:location.hash==='#galaxy-exposure'?'galaxy-exposure' as const:location.hash==='#star-exposure'?'star-exposure' as const:location.hash==='#sky-exposure'?'sky-exposure' as const:location.hash==='#spectrometer'?'spectrometer' as const:['#spectrum','#measurement-log'].includes(location.hash)?'spectrum' as const:'observatory' as const;

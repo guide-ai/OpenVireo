@@ -123,10 +123,9 @@ Plan: `analysis/front-plans/front-r4d.md`.
   selection, the frame's slit level and the pointing, because the engine reports `slit-empty` only on the branches that reach
   its own throughput: an invalid or random spectral index, a variable whose values are unavailable and a galaxy spectrum
   mapping return first. Probe: N0730.DAT@570187 (`star-index-invalid`) 0.0005–0.003 h east reads `Sky`, not `N0730-00812`.
-  A field blocked before the slit selection (`photographic-image`, `ngc224-image`, the pending-variable stamp gate) has no
+  A field blocked before the slit selection (`photographic-image`, the pending-variable stamp gate; M31's field is built since Front C7) has no
   selection or viewport; there the current object decides (R4e review 1 L1): a star or QSO outside 0x50f338's strict cut
-  (|ΔRA| < 0.00028 h, |ΔDec| < 0.0064°) reads `Sky`, as in VIREO, whose field is always painted. Probes: N3730.DAT@36659 + 0.001 h
-  near M31, NGC 4476 + 0.08°. [W] A galaxy there stays named (its (level/200)² rule needs the unpainted slit level). [W] A star or QSO inside the cut also stays named: VIREO's `level > 0`
+  (|ΔRA| < 0.00028 h, |ΔDec| < 0.0064°) reads `Sky`, as in VIREO, whose field is always painted. Probe: NGC 4476 + 0.08° (N3730.DAT@36659 + 0.001 h near M31 now reads `Sky` from the engine's own slit selection). [W] A galaxy there stays named (its (level/200)² rule needs the unpainted slit level). [W] A star or QSO inside the cut also stays named: VIREO's `level > 0`
   condition (0x50f404) needs the slit level of the unpainted field, so a faint star off the slit column that VIREO would read as
   `Sky` is named here. A
   throughput at the precision limit falls back to the engine's `slit-empty`. The boxes then show `Sky` and an empty magnitude, and nothing is looked up. The sky route is always a sky reading (print `Reading Sky`). The star, galaxy
