@@ -44,7 +44,8 @@ describe('Front C6: overlay source (0x53b628 gate, 0x5216a4 rect, 0x5218d4 Stret
   expect(overlayGate([])).toBe(false);expect(overlayGate([M31_ID])).toBe(false);expect(overlayGate(['NGC 5924'])).toBe(true);
   const at={ra:15,dec:31};
   expect(cameraOverlaySource({anchor:at,galaxyIds:[M31_ID],galaxyRed:red(),unpaintedGalaxies:0},at,ccd.widthArcminutes,ccd.heightArcminutes)).toEqual({status:'off'});
-  expect(cameraOverlaySource({anchor:at,galaxyIds:[M31_ID,'NGC 205'],galaxyRed:red(),unpaintedGalaxies:0},at,ccd.widthArcminutes,ccd.heightArcminutes)).toEqual({status:'unavailable',reason:'m31'});
+  // Front C7: with M31 and another galaxy the overlay is the other galaxies' layer (the engine leaves M31 out of the paint).
+  expect(cameraOverlaySource({anchor:at,galaxyIds:[M31_ID,'NGC 205'],galaxyRed:red(),unpaintedGalaxies:0},at,ccd.widthArcminutes,ccd.heightArcminutes).status).toBe('ready');
   expect(cameraOverlaySource({anchor:at,galaxyIds:['NGC 5924'],galaxyRed:red(),unpaintedGalaxies:1},at,ccd.widthArcminutes,ccd.heightArcminutes)).toEqual({status:'unavailable',reason:'unpainted'});
   expect(cameraOverlaySource({anchor:at,galaxyIds:['NGC 5924'],galaxyRed:null,unpaintedGalaxies:0},at,ccd.widthArcminutes,ccd.heightArcminutes)).toEqual({status:'unavailable',reason:'field'});
  });

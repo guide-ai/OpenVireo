@@ -56,21 +56,36 @@ describe('the generic spectrometer',()=>{
   const r=await prepareFieldSpectrum({ra:2.5125473,dec:0.25592},0);expect(r.status).toBe('ready');if(r.status!=='ready')return;
   expect(r.result.starTarget?.id).toBe('N0000.DAT@63282');expect(fieldSpectrumHeaderName(r.result)).toBe('N0000-01634');
  });
+ it('Front C7: M31\'s telescope field is built without NGC 224; other galaxies are painted and give the overlay',async()=>{
+  const {evaluateFieldView}=await import('../core/fieldEngine'),{cameraOverlaySource}=await import('../core/cameraOverlaySource');
+  const glx=pub('/original/catalogs/CLEA_GLX.DAT'),at={ra:0.7123,dec:41.2692},pack=await assembleFieldPack(at,(await tileSources()).assembly);
+  const v=evaluateFieldView(pack,glx,at,0,{galaxyLayer:true});
+  expect(v.reasons).toEqual([]);expect(v.m31Notice).toBe(true);expect(v.raster).toBeTruthy();
+  const ids=v.population!.galaxies.map(g=>g.id);expect(ids).toContain('NGC 224');
+  const others=ids.filter(id=>id!=='NGC 224');
+  // M31's centre (the anchor) has nothing painted in the galaxy layer.
+  expect(v.galaxyRed![468*936+468]).toBe(0);
+  const overlay=cameraOverlaySource({anchor:at,galaxyIds:ids,galaxyRed:v.galaxyRed!,unpaintedGalaxies:v.outsideViewGalaxies?.length??0},at,15,15);
+  expect(overlay.status).toBe(others.length?'ready':'off');
+ });
  it('R4e review 1 L1: a field blocked before the slit selection (M31, a Virgo photograph) reads Sky for a star outside the strict cut',async()=>{
   const on={showObjectId:true,showObjectMag:true,editMode:false};
-  // ngc224-image: N3730.DAT@36659 (0.6819933 h, 40.96142°) is the current object; 0.001 h east it is outside 0x50f338's cut.
-  for(const [at,reason,sky] of [[{ra:0.6819933+0.001,dec:40.96142},'ngc224-image',true],[{ra:0.6819933,dec:40.96142+0.0065},'ngc224-image',true],[{ra:0.6819933,dec:40.96142},'ngc224-image',false],
+  // M31's field: N3730.DAT@36659 (0.6819933 h, 40.96142°) is the current object; 0.001 h east it is outside 0x50f338's cut.
+  for(const [at,reason,sky] of [[{ra:0.6819933+0.001,dec:40.96142},'m31',true],[{ra:0.6819933,dec:40.96142+0.0065},'m31',true],[{ra:0.6819933,dec:40.96142},'m31',false],
    // photographic-image: NGC 4476 + 0.08° names a GSC star outside the cut.
    [{ra:12.499611111111111,dec:12.348055555555556+0.08},'photographic-image',true]] as const){
    const r=await prepareFieldSpectrum(at,0);expect(r.status).toBe('ready');if(r.status!=='ready')continue;
+   // Front C7: M31's field is built now; the engine's own slit selection decides, and agrees with the looked-up current object.
+   if(reason==='m31'){expect(r.result.m31Notice).toBe(true);const object=await currentObjectAt(at);expect(fieldSpectrometerSkyReading(r.result),JSON.stringify(at)).toBe(sky);expect(fieldSpectrometerSkyReading(r.result,object),JSON.stringify(at)).toBe(sky);continue;}
    expect(r.result.reasons).toEqual([reason]);expect(r.result.selection).toBeNull();expect(fieldSpectrometerSkyReading(r.result)).toBe(false);
    const object=await currentObjectAt(at);expect(object.status,JSON.stringify(at)).toBe('object');
    expect(fieldSpectrometerSkyReading(r.result,object),JSON.stringify(at)).toBe(sky);
    if(sky)expect(spectrometerIdText(on,true,object,'HIDDEN')).toBe('Sky');
   }
   // A galaxy current object with no selection stays named [W]; a hidden object stays hidden.
-  const g=await prepareFieldSpectrum({ra:0.6819933+0.001,dec:40.96142},0);if(g.status!=='ready')throw new Error();
-  expect(fieldSpectrometerSkyReading(g.result,{status:'object',name:'NGC 224',kind:1,v:4.4,ra:0.7123,dec:41.2689})).toBe(false);
+  // Front C7: M31's field is no longer blocked, so the blocked Virgo photograph field carries this case.
+  const g=await prepareFieldSpectrum({ra:12.499611111111111,dec:12.348055555555556+0.08},0);if(g.status!=='ready')throw new Error();expect(g.result.reasons).toEqual(['photographic-image']);
+  expect(fieldSpectrometerSkyReading(g.result,{status:'object',name:'NGC 4476',kind:1,v:12.2,ra:12.499611111111111,dec:12.348055555555556})).toBe(false);
   expect(fieldSpectrometerSkyReading(g.result,{status:'hidden'})).toBe(false);
  });
  it('Front R4e: the sky flag comes from the slit star\'s throughput, also where the engine returns first (star-index-invalid)',async()=>{
@@ -152,10 +167,11 @@ describe('the generic spectrometer',()=>{
   }
   // Object X positions stay masked here as in Field Information.
   expect((await prepareFieldSpectrum(xInputs.rowPointings.get(OBJECT_X_SPECTRUM_ROWS[0].row)!,0)).status).toBe('unavailable');
-  // M31's field: VIREO's telescope painter draws NGC 224 with its own routine 0x53b848 (name test 0x53b4fc), not ported, so the
-  // field is typed. Front L4 (2026-10-31): with the stamp cap lifted this must never reach composeNativeGalaxy's whole-stamp path.
+  // M31's field (Front C7 [D]): the painter sends NGC 224 to 0x53b848, which paints nothing, so the field is built without it. The slit
+  // still selects M31 (0x59a0fc), but the 0x53e338 level under it is 0, so the throughput 0x50f338 is 0: VIREO's sky reading.
   for(const t of [0,1,2] as const){const m31=await prepareFieldSpectrum({ra:0.7123,dec:41.2692},t);
-   expect(m31.status).toBe('ready');if(m31.status==='ready')expect(m31.result.reasons).toEqual(['ngc224-image']);}
+   expect(m31.status).toBe('ready');if(m31.status!=='ready')continue;
+   expect(m31.result.m31Notice).toBe(true);expect(m31.result.target?.id).toBe('NGC 224');expect(m31.result.reasons).toEqual(['slit-empty']);expect(fieldSpectrometerSkyReading(m31.result)).toBe(true);}
  });
  it('Front S2: off the default a star is observed on the range (#R policy, its grid, a replayable session); Front S3: a galaxy too',async()=>{
   const r={minimum:4000,maximum:5000},at={ra:11+44/60+42.9/3600,dec:55+22/60+43/3600};

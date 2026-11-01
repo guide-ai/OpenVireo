@@ -19,7 +19,7 @@ export const OVERLAY_VIEW_WIDTH=312,OVERLAY_SCALE_DIVISOR=15;
 export const OVERLAY_SIZE=1024,OVERLAY_STRETCH=1023,OVERLAY_BORDER_RED=255;
 export const M31_ID='NGC 224';
 
-export type CameraOverlayReason='object-x'|'field'|'no-load'|'telescope'|'m31'|'outside'|'unpainted';
+export type CameraOverlayReason='object-x'|'field'|'no-load'|'telescope'|'outside'|'unpainted';
 /** What the loaded telescope field gives the overlay. */
 export type OverlayField=Readonly<{anchor:Pointing;galaxyIds:readonly string[];galaxyRed:Uint8Array|null;unpaintedGalaxies:number}>;
 export type CameraOverlayRect=Readonly<{left:number;top:number;width:number;height:number;exactWidth:number;exactHeight:number}>;
@@ -28,8 +28,9 @@ export type CameraOverlaySource=
  |Readonly<{status:'ready';rect:CameraOverlayRect;red:Uint8Array}>
  |Readonly<{status:'unavailable';reason:CameraOverlayReason}>;
 
-/** Gate 0x53b628: any galaxy other than NGC 224. */
-export const overlayGate=(galaxyIds:readonly string[])=>galaxyIds.some(id=>id!==M31_ID);
+/** Gate 0x53b628: any galaxy other than NGC 224 (Front C7: the field engine leaves NGC 224 out of the paint, so the overlay of a
+ * field with M31 and other galaxies is their layer, as in VIREO; M31 alone gives no overlay). */
+export const overlayGate=(galaxyIds:readonly string[])=>galaxyIds.some(id=>!id.includes(M31_ID));
 
 export function overlayRect(anchor:Pointing,pointing:Pointing,widthArcminutes:number,heightArcminutes:number):CameraOverlayRect{
  const {width:W,height:H,fieldDegrees:F}=OVERLAY_FRAME;
@@ -51,7 +52,6 @@ export function overlayStretch(red:Uint8Array,rect:CameraOverlayRect):Uint8Array
 export function cameraOverlaySource(field:OverlayField,pointing:Pointing,widthArcminutes:number,heightArcminutes:number):CameraOverlaySource{
  const unavailable=(reason:CameraOverlayReason)=>Object.freeze({status:'unavailable' as const,reason});
  if(!overlayGate(field.galaxyIds))return Object.freeze({status:'off' as const});
- if(field.galaxyIds.includes(M31_ID))return unavailable('m31');
  if(field.unpaintedGalaxies>0)return unavailable('unpainted');
  const {width:W,height:H}=OVERLAY_FRAME;
  if(!field.galaxyRed||field.galaxyRed.length!==W*H)return unavailable('field');

@@ -139,7 +139,7 @@ export function spectrometerDefaultFileName(o:SpectrometerReadoutOptions,object:
  * the pointing, so it holds also where the engine returns before its own throughput (an invalid or random spectral index, a variable
  * whose values are unavailable, a galaxy spectrum mapping). A throughput at the precision limit falls back to the engine's
  * `slit-empty` reason [W].
- * R4e review 1 L1: a field blocked before the slit object is chosen (photographic-image, ngc224-image, the pending-variable stamp
+ * R4e review 1 L1: a field blocked before the slit object is chosen (photographic-image, the pending-variable stamp
  * gate) has no selection or viewport; then the current object (`object`, from the same 0x59a0fc lookup) decides: a star or QSO
  * outside the strict cut of 0x50f338 (|ΔRA| < 0.00028 h, |ΔDec| < 0.0064°, `nativeStellarAngularAdmission`) is a sky reading [D
  * for the cut]. [W] A galaxy there is not a sky reading: its (level/200)² rule needs the slit level of a field that was not
