@@ -12,6 +12,7 @@ import {OBJECT_X_SPECTRA_LIMITS,type ObjectXSpectrumRecord} from './io/objectXSp
 import type {FieldTelescope} from './core/fieldEngine';
 import type {JournalState} from './core/exposureJournal';
 import {ObjectXSpectrumSave} from './observatory/RouteSpectrumSave';
+import SpectrometerReadout,{useSpectrometerObject} from './observatory/SpectrometerReadout';
 import {objectXSpectrumBytes,objectXSpectrumFileName} from './core/exposureSpectrum';
 import {readClassificationImport} from './io/classificationImports';
 import {ClassificationImportLimitError,type ClassificationImport} from './core/classificationImport';
@@ -58,6 +59,9 @@ export default function ObjectXSpectrum({spectralRange=DEFAULT_SPECTRAL_RANGE,on
   }catch(e){if(ticket.current===mine)setView({kind:objectXSpectrometerFailure(e)==='evidence'?'invalid':'error'});}
  }
  // A transition the journal refuses leaves the state unchanged (the buttons already exclude them).
+ // Front R4d [W]: on the Object X route the current object is always hidden (never looked up): IDText shows the hidden-name text,
+ // MagText stays empty, and Save keeps the student's label as its name.
+ const current=useSpectrometerObject(null,'masked');
  const update=(f:(r:Available,s:JournalState)=>JournalState)=>setView(v=>{if(v.kind!=='ready')return v;try{return {...v,state:f(v.result,v.state),keptAs:null};}catch{return v;}});
  function start(){
   update((r,s)=>r.engine.start(s));last.current=performance.now();stopTimer();
@@ -100,6 +104,7 @@ export default function ObjectXSpectrum({spectralRange=DEFAULT_SPECTRAL_RANGE,on
  const shown=view.kind==='ready'||view.kind==='kept'?view:null,shownName=view.kind==='kept'?view.label:view.kind==='ready'?view.keptAs??label:label;
  return <section data-testid="objectx-branch-spectrum"><h3>{M.spectrumTitle}</h3>{/* TSpectrometer Help1Click 0x510f4c, options +0x914 (docs/CLEA-HELP.md) */}<CleaHelp list={HELP_FILES['SPECHLP.LST']} testId="objectx-spectrometer-help"/><p>{M.spectrumHelp}</p>
   <p className="observatory-note">{M.spectrumAdaptation}</p>
+  {active&&<SpectrometerReadout object={current.object} options={current.options} testId="objectx-spec-readout"/>}
   <label>{M.spectrumTelescope}<select data-testid="objectx-spectrum-telescope" value={telescope} disabled={disabled||running} onChange={e=>setTelescope(Number(e.target.value) as FieldTelescope)}>
    {M.spectrumTelescopes.map((n,i)=><option key={n} value={i}>{n}</option>)}</select></label>
   {onSpectralRange&&<SpectralRangeRow range={spectralRange} disabled={disabled||running||view.kind==='loading'} unsaved={view.kind==='ready'&&view.state.exposure.elapsedMs>0&&view.keptAs===null} testId="objectx-spectral-range" note={SR.objectXNote}
@@ -121,7 +126,7 @@ export default function ObjectXSpectrum({spectralRange=DEFAULT_SPECTRAL_RANGE,on
    <p data-testid="objectx-spectrum-progress">{M.spectrumStatus(seconds(shown.state.exposure.elapsedMs),total(shown.state))}</p>
    <SpectrumPlot wavelengths={shown.result.wavelengths} counts={shown.state.exposure.counts} label={M.spectrumChart(shownName)}/>
    <div className="button-row"><button className="secondary-button" disabled={disabled||running||shown.state.exposure.elapsedMs===0} onClick={()=>saveCsv(shownName,shown.result,shown.state)}>{M.spectrumSaveCsv(shownName)}</button></div>
-   {!running&&<><ObjectXSpectrumSave revealed={nativeHeader} active={active} busy={disabled||identityPending} state={shown.state} label={shownName} pointing={view.kind==='kept'?view.pointing:target?{ra:target.ra,dec:target.dec}:null} minimum={shown.result.wavelengths[0]} telescopeName={M.spectrumTelescopes[shown.result.telescope]} saved={M.spectrumSaved}/>
+   {!running&&<><ObjectXSpectrumSave revealed={nativeHeader} active={active} busy={disabled||identityPending} state={shown.state} label={shownName} pointing={view.kind==='kept'?view.pointing:target?{ra:target.ra,dec:target.dec}:null} minimum={shown.result.wavelengths[0]} telescopeName={M.spectrumTelescopes[shown.result.telescope]} saved={M.spectrumSaved} current={current}/>
     {active&&<p className="observatory-note" data-testid="objectx-spectrum-save-note">{M.spectrumSaveNote}</p>}
     {active&&onClassify&&<div className="button-row"><button className="secondary-button" data-testid="objectx-spectrum-classify" disabled={disabled||identityPending||shown.state.exposure.elapsedMs===0} onClick={()=>void classify(shownName,shown.result,shown.state,view.kind==='kept'?view.pointing:target)}>{M.spectrumClassify}</button></div>}
     {classifyError&&<p role="alert">{classifyError==='limit'?M.spectrumClassifyLimit:M.spectrumClassifyError}</p>}</>}

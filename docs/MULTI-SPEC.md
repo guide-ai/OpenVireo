@@ -65,7 +65,7 @@ addresses, evidence ids and tags in `docs/MULTI-SPEC-PROVENANCE.json`. Tags: [D]
   - The observatory itself builds 218 distinct pointings (188 views + 30 gated, plus the 11 lab rows): the same per-object
     totals, as the harness's 'reachable' basis shows.
 - List items "  (n)  " (left-padded) with "*" when saved; Scan (1–5 s); Save All, Clear All, Open/Close All; display
-  Information, Save, Print. Files: `MSpec_<n>.SSP` (or the object name when Show Object ID is on): 400 lines
+  Information, Save, Print. Files: `MSpec_<n>.SSP` (or the object name when VIREO's global Show Object ID is on; since Front R4d Multi-Spec reads the global Show Object ID / Show Object Mag instead of two local check boxes): 400 lines
   "wavelength(2 decimals) normalised counts(6 decimals)", CRLF, no header.
 
 ## Web choices [W]

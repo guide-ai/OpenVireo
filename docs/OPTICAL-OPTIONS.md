@@ -18,8 +18,8 @@ The dialog opens from the telescope-motion card. These controls are live:
 | Infrared Camera | on | Off, the camera card offers only the CCD camera, and the dialog hides the IR tab. | +0x27d3 = env+0x2e87; TObsrvtry FormActivate 0x537a13, InstSliderClick 0x53e194, IRBoxMouseUp 0x5a7324 |
 | Monochrome Displays | off | On, the LSS wedge plot and the HR diagram are drawn black and white when they are next shown; the light curve follows it from its next print. | +0x27da = env+0x2e8e; TWedgePlot FormShow 0x580e1a |
 | Print in Color | off | On, Print Wedge Plot prints in colour; off, it prints black and white. | +0x27d9 = env+0x2e8d; Print1Click 0x580fba (flag = option XOR 1) |
-| Show Object ID | off | On, the object under the pointing is named in the photometer label (IDText), in the camera's native FITS file name and OBJECT card. Off: `Unknown` and the Object X label. The Pleiades, Cluster HR, Classification, Hubble and LSS guides turn it on. Add Current proposes the nearest object's name whether it is on or off ([D] 0x53f145). Front R4, docs/FRONT-R4-OPTIONS.md. | +0x27cd = env+0x2e81; 0x4ffa30, 0x5230dc, 0x5239f8; forcing 0x58a3a2, 0x58a54c, 0x58a70e, 0x58a8d8, 0x58aabe |
-| Show Object Mag. | off | On (or Edit Mode), the spectrometer shows the object's V; the Classification, Hubble and LSS guides turn it on. Its spectrometer display waits for the spectrometer front (below). | +0x27cc = env+0x2e80; 0x50e00b, 0x510954 |
+| Show Object ID | off | On, the object under the pointing is named in the photometer label (IDText), the spectrometer's Object box, Save default name (`Name.SSP`) and printout, the Multi-Spec list items, captions and file names, and the camera's native FITS file name and OBJECT card. Off: `Unknown` and the Object X label; the spectrometer hides its Object box and keeps its web file names [W] (Front R4d). An empty slit (throughput 0x50f338 = 0) is a sky reading: `Sky`, no magnitude, print `Reading Sky`. The Pleiades, Cluster HR, Classification, Hubble and LSS guides turn it on. Add Current proposes the nearest object's name whether it is on or off ([D] 0x53f145). Front R4, docs/FRONT-R4-OPTIONS.md. | +0x27cd = env+0x2e81; 0x4ffa30, 0x5230dc, 0x5239f8; forcing 0x58a3a2, 0x58a54c, 0x58a70e, 0x58a8d8, 0x58aabe |
+| Show Object Mag. | off | On (or Edit Mode), the spectrometer shows the object's V in its App. Mag (V) box and printout, and Multi-Spec in Information and Print; the Classification, Hubble and LSS guides turn it on (Front R4d). | +0x27cc = env+0x2e80; 0x50e00b, 0x510954, 0x528032, 0x528bb8 |
 | Time-Dependent Data | off | Off, Record Z on an already recorded object updates its row, in the LSS survey (Front L3, docs/LSS-SURVEY.md) and for Hubble galaxy measurements (Front H2, docs/HUBBLE-VELOCITY.md), and re-classifying an object edits its result (Front R4c); on, every Record Z or classification adds a row. | +0x27d8 = env+0x2e8c; 0x57c918, 0x54a73c (core/recordReuse.ts) |
 | Allow User Change (Spectrometer tab) | on | Checked, Spectral Range… is offered on every spectrometer route; unchecked, it is disabled with a note and the current range stays (Front S3). [W] the openers follow the option at once (the dialog is on another page, so the next show reads it). | +0x27d7 = env+0x2e8b; compiled 0x5a2a32; read by TSpectrometer FormShow 0x50d9d5 and TSpClassify FormShow 0x507945 |
 
@@ -35,9 +35,6 @@ contracts built on those values.
   is applied at once.
 
 ## Not ported, with the reason
-- **Show Object ID / Show Object Mag in the single spectrometer and Multi-Spec** (Front R4): the spectrometer's Object and
-  magnitude boxes, its Save/Print names and Multi-Spec's binding to the global options wait until the spectrometer front
-  (G4b/G4c) is merged. The rules are ready and tested in `core/currentObject.ts`; Multi-Spec keeps its own two check boxes.
 - **Time-Dependent Data** for the classification results (Front R4c, 0x50b1dc → 0x54a73c): the option replaces the
   Observation Results window's own "append" checkbox. Off (compiled), Open reuses the current object's first result; on, each
   confirmation adds a row.

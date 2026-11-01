@@ -1,4 +1,5 @@
-import {useEffect,useId,useMemo,useReducer,useRef,useState} from 'react';
+import {useEffect,useId,useMemo,useReducer,useRef,useState,useContext} from 'react';
+import {VireoOptionsContext} from '../vireoOptionsContext';
 import {DEFAULT_SPECTRAL_RANGE,sameRange,type SpectralRange} from '../core/spectralRange';
 import {multiSpecFieldPicture} from '../polish/PrintSkyImage';
 import {createMultiSpecState,multiSpecReducer,type MultiSpecEntry} from '../core/multiSpec';
@@ -27,7 +28,7 @@ import './multispec.css';
  *  - `armed` is the caller's CRT1MouseDown gate (plan §1, decision D1): Edit Mode ∨ exercise mode ∈ {0, 1}, in the Telescope view.
  *  - `mask` is the Object X rule (plan §4): names, V, Edit Mode lines and typed reasons are replaced while it masks.
  *  - Web [W]: Save is a browser download (no folder / file-name-base dialogs); Save All is one STORE .zip of the byte-exact .SSP
- *    files (decision D4); Show Object ID / Show Object Mag are offered as two web options (compiled default off); no Test Mode
+ *    files (decision D4); Show Object ID / Show Object Mag are VIREO's global options (Front R4d; compiled default off); no Test Mode
  *    (D5); nothing is saved with the investigation (D6). A new field (pointing or telescope) is the native field regeneration
  *    (0x53a741 → Clear Objects). The native FormShow disables tracking and the Telescope menu; here a telescope change remounts
  *    the instrument (the caller keys it by telescope). */
@@ -54,7 +55,8 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
  const [state,dispatch]=useReducer(multiSpecReducer,undefined,()=>createMultiSpecState(telescope,pageSeed()));
  const [view,setView]=useState<ViewState>({status:'none'}),[viewTry,setViewTry]=useState(0);
  const [results,setResults]=useState<ReadonlyMap<string,Result>>(new Map());
- const [showObjectId,setShowObjectId]=useState(false),[showObjectMag,setShowObjectMag]=useState(false);
+ // Front R4d: VIREO's global Show Object ID / Show Object Mag (env+0x2e81 / +0x2e80), no longer two local check boxes.
+ const {showObjectId,showObjectMag}=useContext(VireoOptionsContext);
  const [selected,setSelected]=useState<number|null>(null),[shown,setShown]=useState<readonly string[]>([]);
  const [scanning,setScanning]=useState(false),[rate,setRate]=useState(1),[noItem,setNoItem]=useState<'show'|'close'|null>(null),[notice,setNotice]=useState('');
  const fieldKey=multiSpecFieldKey(field),fieldRef=useRef(field);fieldRef.current=field;
@@ -180,12 +182,8 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
      <p className="observatory-note">{t('multispec.fieldAdaptation')}</p>
     </div>
    </div>
-   <fieldset className="ms-options"><legend>{t('multispec.options')}</legend>
-    <p className="observatory-note">{t('multispec.optionsHelp')}</p>
-    <label className="ob-check"><input type="checkbox" checked={showObjectId} onChange={e=>setShowObjectId(e.target.checked)} data-testid="ms-show-id"/>{t('multispec.showObjectId')}</label>
-    <label className="ob-check"><input type="checkbox" checked={showObjectMag} onChange={e=>setShowObjectMag(e.target.checked)} data-testid="ms-show-mag"/>{t('multispec.showObjectMag')}</label>
-    {mask.masked&&<p className="observatory-note" data-testid="ms-masked-note">{t('multispec.optionsMasked')}</p>}
-   </fieldset>
+   <div className="ms-options"><p className="observatory-note" data-testid="ms-options-note">{t('multispec.optionsHelp')}</p>
+    {mask.masked&&<p className="observatory-note" data-testid="ms-masked-note">{t('multispec.optionsMasked')}</p>}</div>
    {state.listShown&&<MultiSpecList items={items} selected={selected} onSelected={setSelected} busy={!usable}
      onShow={()=>{if(selected===null||!state.entries[selected]){setNoItem('show');return;}show(entryKey(state.entries[selected]));}}
      onHide={()=>{if(selected===null||!state.entries[selected]){setNoItem('close');return;}const k=entryKey(state.entries[selected]);setShown(s=>s.filter(x=>x!==k));}}
