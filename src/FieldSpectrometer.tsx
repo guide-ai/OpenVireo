@@ -132,8 +132,10 @@ export default function FieldSpectrometer({link}:{link:FieldSpectrometerLink}){
  const access=instrumentAccess({...link.gate,configurationAvailable:true,pointingMatches:same});
  // Front R4d: the current object at the prepared pointing (VIREO refreshes it at FormActivate; here at Use) for the boxes and Save.
  // Review 1 M1: an empty slit (throughput 0x50f338 = 0) is VIREO's sky reading (0x50db1a): `Sky`, no magnitude, nothing looked up.
- const sky=fieldSpectrometerSkyReading(ready?.result);
- const current=useSpectrometerObject(ready&&link.active?ready.pointing:null,sky?'sky':'object');
+ const engineSky=fieldSpectrometerSkyReading(ready?.result);
+ const current=useSpectrometerObject(ready&&link.active?ready.pointing:null,engineSky?'sky':'object');
+ // R4e review 1 L1: with no slit selection (a field blocked before it), the looked-up current object decides (strict cut).
+ const sky=engineSky||(current.object!=='pending'&&fieldSpectrometerSkyReading(ready?.result,current.object));
  const r=ready?.result,kind=r?kindOf(r):null,object=r?.qsoTarget??r?.starTarget??r?.target??null;
  return <section className="card field-spectrometer" aria-labelledby="field-spec-title" data-testid="field-spectrometer">
   <h2 id="field-spec-title">{t('fieldSpec.title')}</h2><p>{t('fieldSpec.help')}</p>

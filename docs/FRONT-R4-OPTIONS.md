@@ -123,8 +123,11 @@ Plan: `analysis/front-plans/front-r4d.md`.
   selection, the frame's slit level and the pointing, because the engine reports `slit-empty` only on the branches that reach
   its own throughput: an invalid or random spectral index, a variable whose values are unavailable and a galaxy spectrum
   mapping return first. Probe: N0730.DAT@570187 (`star-index-invalid`) 0.0005–0.003 h east reads `Sky`, not `N0730-00812`.
-  [W] With no selection or no viewport it is not a sky reading, and a throughput at the precision limit falls back to the
-  engine's `slit-empty`. The boxes then show `Sky` and an empty magnitude, and nothing is looked up. The sky route is always a sky reading (print `Reading Sky`). The star, galaxy
+  A field blocked before the slit selection (`photographic-image`, `ngc224-image`, the pending-variable stamp gate) has no
+  selection or viewport; there the current object decides (R4e review 1 L1): a star or QSO outside 0x50f338's strict cut
+  (|ΔRA| < 0.00028 h, |ΔDec| < 0.0064°) reads `Sky`, as in VIREO, whose field is always painted. Probes: N3730.DAT@36659 + 0.001 h
+  near M31, NGC 4476 + 0.08°. [W] A galaxy there stays named (its (level/200)² rule needs the unpainted slit level), and a
+  throughput at the precision limit falls back to the engine's `slit-empty`. The boxes then show `Sky` and an empty magnitude, and nothing is looked up. The sky route is always a sky reading (print `Reading Sky`). The star, galaxy
   and LSS routes point exactly at their target, so their slit is never empty.
 - **[W] No object or an unresolved tie:** the Object box shows 13 blanks. VIREO copies the record from the nil pointer at
   0x50df98 and faults, so it has no defined display. The tie stays unresolved because the current-object lookup has no
