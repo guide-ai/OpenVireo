@@ -9,13 +9,18 @@ import {MAX_JOURNAL_EVENTS} from '../core/exposureJournal';
 import {parseHtl,type HtlList} from '../core/hotList';
 import {objectXCode} from '../core/objectXLab';
 import type {FieldTelescope} from '../core/fieldEngine';
+import {DEFAULT_SPECTRAL_RANGE,sameRange,type SpectralRange} from '../core/spectralRange';
+import {objectXRangeAdmitted} from '../core/spectralRangeCoverage';
 import {workerFailureKind} from './workerFailure';
 
 export const OBJECT_X_SPECTRA_POLICY='openvireo-objectx-spectra-v29';
 /** Own bounds: 8 kept spectra, 40-character labels, each journal within the exposure journal's own event limit, and at most
  * 24000 events over all kept spectra (the same combined replay budget as the observing banks), checked before any replay. */
 export const OBJECT_X_SPECTRA_LIMITS=Object.freeze({spectra:8,label:40,events:24000});
-export type ObjectXSpectrumRecord=Readonly<{label:string;code:string;telescope:FieldTelescope;seedAtReset:number;events:readonly JournalEvent[]}>;
+/** range (Front S3): present only for a spectrum kept on an admitted non-default range, [min, max] in Å; absent = 3700–4700 Å,
+ * so every record written before S3 keeps its bytes. */
+export type ObjectXSpectrumRecord=Readonly<{label:string;code:string;telescope:FieldTelescope;seedAtReset:number;events:readonly JournalEvent[];range?:SpectralRange}>;
+const rangeOf=(r:ObjectXSpectrumRecord)=>r.range??DEFAULT_SPECTRAL_RANGE;
 export class ObjectXSpectraError extends Error{constructor(readonly code:'format'|'replay'|'resources'){super(`Object X spectra: ${code}`);this.name='ObjectXSpectraError';}}
 const fail=(code:ObjectXSpectraError['code']):never=>{throw new ObjectXSpectraError(code);};
 const isObject=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
@@ -35,14 +40,17 @@ export function readObjectXSpectra(value:unknown):readonly ObjectXSpectrumRecord
  let events=0;for(const r of value){const e=isObject(r)?r.events:null;if(!Array.isArray(e))return fail('format');events+=e.length;}
  if(events>OBJECT_X_SPECTRA_LIMITS.events)return fail('format');
  return Object.freeze(value.map(r=>{
-  if(!isObject(r)||Object.keys(r).length!==5)return fail('format');
-  const {label,code,telescope,seedAtReset,events}=r;
+  if(!isObject(r))return fail('format');
+  const keys=Object.keys(r).sort().join(),{label,code,telescope,seedAtReset,events}=r;
+  if(keys!=='code,events,label,seedAtReset,telescope'&&keys!=='code,events,label,range,seedAtReset,telescope')return fail('format');
+  let range:SpectralRange|undefined;
+  if('range' in r){const v=r.range;if(!Array.isArray(v)||v.length!==2||!Number.isInteger(v[0])||!Number.isInteger(v[1]))return fail('format');range=Object.freeze({minimum:v[0] as number,maximum:v[1] as number});if(sameRange(range,DEFAULT_SPECTRAL_RANGE)||!objectXRangeAdmitted(range))return fail('format');}
   if(typeof label!=='string'||!LABEL.test(label)||typeof code!=='string'||!/^X-[0-9A-Z]{5}$/.test(code)||(telescope!==0&&telescope!==1&&telescope!==2)||!Number.isInteger(seedAtReset)||(seedAtReset as number)<0||(seedAtReset as number)>0xffff_ffff)return fail('format');
-  return Object.freeze({label,code,telescope:telescope as FieldTelescope,seedAtReset:seedAtReset as number,events:readEvents(events)});
+  return Object.freeze({label,code,telescope:telescope as FieldTelescope,seedAtReset:seedAtReset as number,events:readEvents(events),...(range?{range}:{})});
  }));
 }
 export function portableObjectXSpectra(list:readonly ObjectXSpectrumRecord[]):unknown{
- return list.map(r=>({label:r.label,code:r.code,telescope:r.telescope,seedAtReset:r.seedAtReset,events:r.events.map(e=>({...e}))}));
+ return list.map(r=>({label:r.label,code:r.code,telescope:r.telescope,seedAtReset:r.seedAtReset,events:r.events.map(e=>({...e})),...(r.range&&!sameRange(r.range,DEFAULT_SPECTRAL_RANGE)?{range:[r.range.minimum,r.range.maximum]}:{})}));
 }
 /** Where admission gets ObjectX.HTL and the spectrometer (browser: bundled file and the Worker; tests: a seam). */
 export type ObjectXSpectraSources=Readonly<{hotList:()=>Promise<HtlList>;observe:typeof import('./objectXSpectrometer').observeObjectXSpectrum}>;
@@ -61,7 +69,7 @@ export async function admitObjectXSpectra(value:unknown,sources?:ObjectXSpectraS
  for(const r of list){
   const row=rows.find(x=>objectXCode(x.id)===r.code);if(!row)fail('replay');
   // A deterministic evidence failure cannot be retried: the file is rejected; transport or resource problems are retryable.
-  let view;try{view=await s.observe({ra:row!.ra,dec:row!.dec},r.telescope);}catch(e){return fail(e instanceof Error&&(e.name==='ObjectXSpectrometerEvidenceError'||workerFailureKind(e)==='evidence')?'replay':'resources');}
+  let view;try{view=await s.observe({ra:row!.ra,dec:row!.dec},r.telescope,rangeOf(r));}catch(e){return fail(e instanceof Error&&(e.name==='ObjectXSpectrometerEvidenceError'||workerFailureKind(e)==='evidence')?'replay':'resources');}
   if(view.status!=='available')fail('replay');
   try{const replayed=view.status==='available'?view.engine.replay(r.seedAtReset,r.events):null;if(!replayed||replayed.exposure.elapsedMs<=0)fail('replay');}catch(e){if(e instanceof ObjectXSpectraError)throw e;fail('replay');}
  }

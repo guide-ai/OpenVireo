@@ -40,7 +40,7 @@ describe('Front F: Object X spectrometer API (display and reveal parts)',()=>{
    expect([row,t,v.status==='available'?'A':r.reasons.join()]).toEqual([row,t,states[t]]);
    expect(r).toMatchObject({row:Number(row),kind,recordId:id});
    if(v.status==='available'){
-    expect(v.wavelengths[0]).toBe(3700);const p=parseObjectXSpectrumPolicy(v.engine.policy);expect(p).toEqual({code:objectXCode(htl[Number(row)].id),telescope:t});
+    expect(v.wavelengths[0]).toBe(3700);const p=parseObjectXSpectrumPolicy(v.engine.policy);expect(p).toEqual({code:objectXCode(htl[Number(row)].id),telescope:t,range:{minimum:3700,maximum:4700}});
     expect(v.engine.policy).not.toMatch(/R\d/);// never the ObjectX.HTL row
     const s=v.engine.replay(11,[{kind:'start'},{kind:'tick',deltaMs:1000},{kind:'pause'}]);expect(s.exposure.sourceTotal).toBeGreaterThan(0);expect(()=>v.engine.start({...s,policy:'other'} as typeof s)).toThrow();
    }

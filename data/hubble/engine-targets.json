@@ -72,7 +72,7 @@
        169
       ]
      ],
-     "evidence": "Front L4 (2026-10-31): crop, slit level and fraction from the independent witness analysis/front-l4/coma_witness.py (coma-witness.json), whose 0.4 m and 4 m outputs equal the recorded crops; the mean bound was a web guard (0x55f0f4 has none)"
+     "evidence": "Front L4 (2026-10-31): crop, slit level and fraction from the independent witness analysis/front-l4/coma_witness.py (data/hubble/engine-coma-witness.json), whose 0.4 m and 4 m outputs equal the recorded crops; the mean bound was a web guard (0x55f0f4 has none)"
     },
     {
      "telescope": 2,
@@ -156,7 +156,7 @@
        152
       ]
      ],
-     "evidence": "Front L4 (2026-10-31): crop, slit level and fraction from the independent witness analysis/front-l4/coma_witness.py (coma-witness.json), whose 0.4 m and 4 m outputs equal the recorded crops; the mean bound was a web guard (0x55f0f4 has none)"
+     "evidence": "Front L4 (2026-10-31): crop, slit level and fraction from the independent witness analysis/front-l4/coma_witness.py (data/hubble/engine-coma-witness.json), whose 0.4 m and 4 m outputs equal the recorded crops; the mean bound was a web guard (0x55f0f4 has none)"
     },
     {
      "telescope": 2,

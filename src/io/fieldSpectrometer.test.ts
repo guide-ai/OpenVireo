@@ -157,7 +157,7 @@ describe('the generic spectrometer',()=>{
   for(const t of [0,1,2] as const){const m31=await prepareFieldSpectrum({ra:0.7123,dec:41.2692},t);
    expect(m31.status).toBe('ready');if(m31.status==='ready')expect(m31.result.reasons).toEqual(['ngc224-image']);}
  });
- it('Front S2: off the default a star is observed on the range (#R policy, its grid, a replayable session); a galaxy is refused',async()=>{
+ it('Front S2: off the default a star is observed on the range (#R policy, its grid, a replayable session); Front S3: a galaxy too',async()=>{
   const r={minimum:4000,maximum:5000},at={ra:11+44/60+42.9/3600,dec:55+22/60+43/3600};
   const star=await prepareFieldSpectrum(at,0,{range:r});expect(star.status).toBe('ready');if(star.status!=='ready')return;
   expect(star.result.starTarget).toBeTruthy();expect(star.policy.endsWith('#R4000-5000')).toBe(true);
@@ -166,8 +166,10 @@ describe('the generic spectrometer',()=>{
    const e=lssExposureEngine(star.result,star.policy),s=pauseJournal(tickJournal(startJournal(activateJournal(e.create(3))),1000));
    const back=await readFieldSpectrumSession(serializeFieldSpectrumSession(s));expect(back.prepared.policy).toBe(star.policy);expect(back.state.exposure.counts).toEqual(s.exposure.counts);
   }
+  // Re-pinned 2026-10-31 (Front S3): a galaxy is observed on any dialog range (galaxyRangeAll witness), with a #R policy that replays.
   const coma=await prepareFieldSpectrum({ra:12.99311111111111,dec:27.959722222222222},2,{range:r});
-  expect(coma).toEqual({status:'unavailable',reason:'range-not-witnessed'});
+  expect(coma.status).toBe('ready');if(coma.status!=='ready')return;expect(coma.policy.endsWith('#R4000-5000')).toBe(true);expect(coma.result.target).toBeTruthy();expect(coma.result.calibration!.wavelengths[0]).toBe(4000);
+  {const e=lssExposureEngine(coma.result,coma.policy),s=pauseJournal(tickJournal(startJournal(activateJournal(e.create(3))),1000));const back=await readFieldSpectrumSession(serializeFieldSpectrumSession(s));expect(back.prepared.policy).toBe(coma.policy);expect(back.state.exposure.counts).toEqual(s.exposure.counts);}
   expect((await prepareFieldSpectrum({ra:12.99311111111111,dec:27.959722222222222},2)).status).toBe('ready');
  });
  it('review 1 M1/M2: a field star on ranges of every width saves its .SSP from its own grid; below 3510 Å it gives no counts',async()=>{

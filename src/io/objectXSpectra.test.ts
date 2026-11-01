@@ -43,6 +43,19 @@ describe('kept Object X spectra (v29)',()=>{
   // A session without kept spectra stays v28.
   expect(JSON.parse(await serializeAnalysisSession({...base,objectX:inv(spectra[0].code)})).version).toBe(28);
  });
+ it('Front S3: a spectrum kept on an admitted non-default range stores its range and replays on it; a non-admitted range is refused',async()=>{
+  const R={minimum:4000,maximum:5000};
+  const v=await observeObjectXSpectrum({ra:htl[9].ra,dec:htl[9].dec},2,R);if(v.status!=='available')throw Error();
+  expect(v.wavelengths[0]).toBe(4000);expect(v.engine.policy.endsWith('#R4000-5000')).toBe(true);
+  let st=v.engine.activate(v.engine.create(99));st=v.engine.start(st);st=v.engine.tick(st,1000);st=v.engine.pause(st);
+  const rec:ObjectXSpectrumRecord={label:'ObjX-7-S01',code:objectXCode(htl[9].id),telescope:2,seedAtReset:st.seedAtReset,events:st.events,range:R};
+  const portable=portableObjectXSpectra([rec]) as Record<string,unknown>[];expect(portable[0].range).toEqual([4000,5000]);
+  expect(await admitObjectXSpectra(portable)).toEqual([rec]);
+  // The default writes no range key (records before S3 keep their bytes); a non-admitted or default range key is malformed.
+  const def=await kept(9,2,'ObjX-7-S02');expect(Object.keys((portableObjectXSpectra([def]) as Record<string,unknown>[])[0])).not.toContain('range');
+  for(const range of [[3500,3600],[3700,4700],[4000,4050]])expect(()=>readObjectXSpectra([{...portable[0],range}])).toThrow();
+  expect((await observeObjectXSpectrum({ra:htl[9].ra,dec:htl[9].dec},2,{minimum:3500,maximum:3600})).status).toBe('unavailable');
+ });
  it('a restore that prepares fields says so once (review 4 item 8); a session without them does not',async()=>{
   const spectra=[await kept(9,2,'ObjX-7-S01')];
   const withFields=await serializeAnalysisSession({...base,objectX:inv(spectra[0].code,spectra)}),without=await serializeAnalysisSession({...base,objectX:inv(spectra[0].code)});

@@ -1,4 +1,5 @@
 import {test,expect,type Download,type Locator,type Page} from '@playwright/test';
+import {LAZY_ROUTE_TIMEOUT,headingWait} from './fixtures/lazy-route';
 import{clickHeaderTool}from'./fixtures/header-tools';
 import{paceDownload}from'./fixtures/download-pacing';
 import {recordMeasurement,sessionBase} from './fixtures/record-measurement';
@@ -18,7 +19,7 @@ const printCalls=(p:Page)=>p.evaluate(()=>(window as unknown as {printCalls:(str
 const scope=(p:Page)=>p.evaluate(()=>document.documentElement.getAttribute('data-print-scope'));
 async function openResults(p:Page){await p.getByRole('button',{name:'View in Observational Results',exact:true}).click();await expect(card(p)).toHaveAttribute('open','');}
 async function acquireGalaxy(page:Page,id:string){await page.getByLabel('Acquisition galaxy',{exact:true}).selectOption(id);await page.getByRole('button',{name:'Activate supported galaxy field',exact:true}).click();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));await page.getByRole('button',{name:'Start galaxy exposure',exact:true}).click();await page.clock.runFor(1000);await page.getByRole('button',{name:'Analyze acquired galaxy',exact:true}).click();await expect(page.getByTestId('z-value')).toHaveText('+0.000000');}
-async function view(page:Page,name:string,heading:string){await clickHeaderTool(page,name);await page.clock.resume();await expect(page.getByRole('heading',{name:heading,exact:true})).toBeVisible();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));}
+async function view(page:Page,name:string,heading:string){await clickHeaderTool(page,name);await page.clock.resume();await expect(page.getByRole('heading',{name:heading,exact:true})).toBeVisible(headingWait(heading));await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));}
 async function align(page:Page,position:string,label:string){await page.getByLabel('z step per tick').fill('.001');await page.getByRole('button',{name:'Apply step',exact:true}).click();await page.getByRole('slider').fill(position);await page.getByLabel('Object or reference',{exact:true}).fill(label);}
 async function saveRecord(page:Page){await recordMeasurement(page);}
 async function importSynthetic(page:Page,name:string,object:string){await page.getByLabel('Import spectrum',{exact:true}).setInputFiles({name,mimeType:'text/csv',buffer:Buffer.from('3700,.2\n4000,.5\n4700,.9')});await expect(page.getByRole('heading',{name:'File ready'})).toBeVisible();await page.getByLabel('Object or reference').fill(object);await page.getByLabel('z step per tick').fill('0.015625');await page.getByRole('button',{name:'Apply step',exact:true}).click();await page.getByRole('slider').focus();await page.getByRole('slider').press('ArrowRight');}
@@ -105,7 +106,7 @@ test.describe.serial('own confirmed results in Observational Results',()=>{
     // Nothing above changed the analysis, session, Hubble work, velocity draft, log or browser storage.
     const after=await snapshot(page);expect(after.session).toEqual(before.session);expect(after.measurements).toEqual(before.measurements);expect(after.velocities).toEqual(before.velocities);expect(after.hubble).toEqual(before.hubble);expect(after).toEqual(before);
     // A hidden route releases the owned scope without any pointer or key interaction.
-    await results.getByRole('button',{name:'Print results',exact:true}).click();expect(await scope(page)).toBe('own-results');await page.evaluate(()=>{location.hash='#galaxy-exposure';});await page.clock.resume();await expect(page.getByRole('heading',{name:'Acquire a Hubble galaxy.',exact:true})).toBeVisible();expect(await scope(page)).toBeNull();
+    await results.getByRole('button',{name:'Print results',exact:true}).click();expect(await scope(page)).toBe('own-results');await page.evaluate(()=>{location.hash='#galaxy-exposure';});await page.clock.resume();await expect(page.getByRole('heading',{name:'Acquire a Hubble galaxy.',exact:true})).toBeVisible({timeout:LAZY_ROUTE_TIMEOUT});expect(await scope(page)).toBeNull();
     expect(errors).toEqual([]);
   });
   test('fresh context restores byte-identical results and appends the next confirmed id',async({page})=>{

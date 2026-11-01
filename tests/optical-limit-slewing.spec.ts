@@ -58,7 +58,8 @@ test('the Options dialog lists the other original options as text with recovered
  // Front L3 (2026-10-30): Time-Dependent Data is live too. Front R4 (2026-10-31): Show Object ID too (6 → 5), and Show Object
  // Mag. left the Spectrometer tab values; both are check boxes (10 → 12).
  await expect(list).not.toContainText('Edit Mode');await expect(list).not.toContainText('Virtual Observatory');
- await expect(page.getByTestId('ob-options-dialog').getByRole('checkbox')).toHaveCount(12);await expect(page.getByTestId('ob-options-fast-slewing')).toBeChecked();await expect(page.getByTestId('ob-options-edit-mode')).not.toBeChecked();await expect(page.getByTestId('ob-options-virtual-observatory')).not.toBeChecked();
+ // Front S3 (2026-10-31): Allow User Change is a live check box too (12 → 13; it was a Spectrometer-tab value).
+ await expect(page.getByTestId('ob-options-dialog').getByRole('checkbox')).toHaveCount(13);await expect(page.getByTestId('ob-options-allow-user-change')).toBeChecked();await expect(page.getByTestId('ob-options-fast-slewing')).toBeChecked();await expect(page.getByTestId('ob-options-edit-mode')).not.toBeChecked();await expect(page.getByTestId('ob-options-virtual-observatory')).not.toBeChecked();
 });
 
 test('a refused HTL Point leaves the selected target, the card and the pointing exactly as they were (review note 1)',async({page})=>{

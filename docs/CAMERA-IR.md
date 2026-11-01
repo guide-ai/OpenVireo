@@ -34,7 +34,8 @@ The raw report stays in the research root; these are the changes made in respons
 - **M1:** the IR catalog update is now cited as the inherited CCD update 0x522454. The loop 0x51e035..0x51e0d4 is described as inert, and that is marked as an inference (composer comment, this doc, provenance).
 - **L1:** the IR note and 2MASS credit show while the selected camera or the image on screen is IR. An e2e check covers it.
 - **L2:** "no overlay" is recorded as recovered: PLAUSIBLE for the IR form, recovered for IR preparation. Only the exposure-time limit remains a web adaptation.
-- **L3:** the control is no longer called independent, and an H case is pinned. A recorded J/H/K response waits on C5.
+- **L3:** the control is no longer called independent, and an H case is pinned. A recorded J/H/K response waited on C5; it is
+  recorded since (docs/CAMERA-EXPOSURE.md).
 - **L4:** the FITS file name takes its camera from `exposure.recipe.camera`. Object X uses the recipe's camera for the filter name. 45 CCD recipes give FITS files, names and draw counts identical to 81c0d5c, and one CCD file hash is now pinned.
 - **Info:**
   - The notices say the IR camera reads only NOMAD.

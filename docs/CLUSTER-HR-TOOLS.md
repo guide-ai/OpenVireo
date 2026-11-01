@@ -1,7 +1,7 @@
 # Cluster HR tools closer to VIREO (Front V2, E05)
 
 Status: merged into main from branch `claude/front-v2-cluster-hr` (milestones M1–M7 of the plan; M8 deferred by the coordinator); the coordinator's independent
-high-effort review is pending. Plan (high effort, planner subagent, no code in that pass):
+high-effort review and its closure are in the research root (`analysis/reviews/front-v2-review-1.md`, `front-v2-review-1-closure.md`). Plan (high effort, planner subagent, no code in that pass):
 `analysis/front-plans/front-v2-cluster-hr.md` in the research root. Recovery notes: `analysis/front-v2-cluster-hr/RECOVERY.md`,
 `RECOVERY-help.md`, `RECOVERY-dialogs.md`. Implementation: Claude Code (claude-opus-5-5), medium effort.
 
@@ -112,8 +112,8 @@ page text. Page body: date + `     Laboratory Table Number (Not Recorded)`; stud
 V−Mv ≠ 0, `Fit of Zero-Age Main Sequence:`, `V - Mv = ` F2 and `E(B-V) = ` F2 at x0+150; `Color-Magnitude Diagram`; then
 portrait: the image; landscape: `(Screen Image Printed on Next Page)` at x 700, a page break, `<student 1> - Page 2`, the image.
 VIREO prints a capture of its whole window (GetFormImage); the preview prints a black-on-white copy of OpenVireo's diagram [W].
-The existing "Print this report" (View/Print Parameters) is unchanged; its note now says that VIREO's own report page
-(TInfoListForm1 0x59e4c0) is not reproduced.
+The existing "Print this report" (View/Print Parameters) was unchanged here; VIREO's own report page (TInfoListForm1
+0x59e4c0) was ported later by Front R4b (View/Print Parameters, above).
 
 ## Derived cluster data (approval of 2026-10-28)
 
@@ -171,10 +171,10 @@ the Laboratory Table Number line, review L1).
 
 - Observation-mode Display/Print Data: ported for saved DAT records by Front K2 (docs/FRONT-K2-FORMS-PRINTS.md §1); the own-pairs
   view keeps it disabled (those pairs are not native records).
-- The Cluster Data dialog and its list (TClstrDlgForm1, TClstrListForm1: centre coordinates, Use Telescope Coordinates, Type of
-  Listing, Sort By, View/Select, Add Cluster to List, the hot-list rows) — plan milestone M8, not done: its finding list for an
-  arbitrary centre needs GSC data that is not published, and Use Telescope Coordinates needs the observatory pointing.
+- The Cluster Data dialog and its list (TClstrDlgForm1, TClstrListForm1; plan milestone M8): done since by Front K, and at any
+  centre on the compact GSC tiles by Front G5 (docs/CLUSTER-DATA-DIALOGS.md).
 - Right-click in the saved-observation (DAT) view opens VIREO's "Observational Data" dialog: ported by Front K2
   (docs/FRONT-K2-FORMS-PRINTS.md §2).
-- VIREO's report page for View/Print Parameters (0x59e4c0) and TClstrPrmForm1 (Edit Cluster Parameters, out of scope).
+- TClstrPrmForm1 (Edit Cluster Parameters, out of scope). VIREO's report page for View/Print Parameters (0x59e4c0) is done
+  since Front R4b.
 - No original-runtime equivalence is claimed; fonts, GDI pixels and x87 evaluation are not reproduced.
