@@ -5,7 +5,7 @@ import {menuCaptionText} from '../core/radioControl';
 import {RADIO_OPTIONS_CAPTIONS,type RadioLabOptions,type RadioLabTransition} from '../core/radioAntenna';
 import type {RadioReceiverOptions} from '../core/radioReceiver';
 import {
- INITIAL_RADIO_ACCESS,RADIO_ACCESS_DFM,RADIO_ACCESS_LITERALS,applyCompiledOptionsBranch,applyDemonstrationGate,cancelRadioOptions,closePreferences,dismissRadioOptionsFailure,
+ INITIAL_RADIO_ACCESS,RADIO_ACCESS_DFM,RADIO_ACCESS_LITERALS,applyCompiledOptionsBranch,applyDemonstrationGate,applyEditModeGate,cancelRadioOptions,closePreferences,dismissRadioOptionsFailure,
  dismissUserOptions,editAccessPulsarList,editRadioOptionsFlag,editRadioOptionsText,okRadioOptions,okRadioSimulationOptions,openPreferences,openRadioOptions,pulsarListAvailability,
  radioLabFirstActivation,receiverCloseMessage,receiverOpened,setCloseRecipient,
  type RadioAccessHostRefusal,type RadioAccessOutcome,type RadioAccessState,type RadioAccessTransition,type RadioCloseRecipient,type RadioOptionsAuthority,
@@ -74,6 +74,8 @@ export type RadioAccessHostInput=Readonly<{
  numeric:RadioAccessNumericHost;
  /** Phase 1 item 1.5: the applied configuration restored from an investigation file (read once, at mount; no box or dialog). */
  initial?:RadioAccessState|null;
+ /** Front R5: the page's Edit Mode has been committed on in this page session (applyEditModeGate). */
+ editModeSeen?:boolean;
 }>;
 export type RadioAccessNumericHost=Readonly<{
  /** Handler-time opt-in check on the latest consumer values against the chosen compiled branch (empty: compatible). */
@@ -125,7 +127,7 @@ const canTakeFocus=(el:HTMLElement|null):el is HTMLElement=>
  * runs the route's runPulsarList, which alone writes the shared source buffer and activates Pulsar Parameters. This host
  * never touches the receivers, source buffer, cursor, records, clocks or RNG, and the command never writes the menu flags.
  */
-export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,surfaceNow,runPulsarList,numeric,initial}:RadioAccessHostInput):RadioAccessHost{
+export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,surfaceNow,runPulsarList,numeric,initial,editModeSeen=false}:RadioAccessHostInput):RadioAccessHost{
  const id=useId();
  const [state,setState]=useState<RadioAccessState>(()=>initial&&initial.refusal===null&&initial.parent===null?initial:INITIAL_RADIO_ACCESS);
  const stateRef=useRef(state);
@@ -142,6 +144,8 @@ export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,
  const step=(fn:(s:RadioAccessState)=>RadioAccessTransition)=>{
   const r=fn(stateRef.current);if(r.changed){stateRef.current=r.state;setState(r.state);}return r;
  };
+ // Front R5 [D] 0x5887f0 / 0x587f70: Edit Mode opens the gate for the rest of the session; only the byte is written.
+ useEffect(()=>{if(editModeSeen)step(applyEditModeGate);},[editModeSeen]);// eslint-disable-line react-hooks/exhaustive-deps
  const admitted=()=>latest.current.active&&!latest.current.busy;
  /** A surface that takes priority over this host exists now (latest antenna state, receiver close box/Record dialog, date
   * dialog or Pulsar Parameters, through surfaceNow), or a foreign native <dialog>. */
@@ -253,7 +257,7 @@ export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,
   <ResearchNotes><p className="radio-control-note">{t('radioAccess.intro')}</p></ResearchNotes>
   <p className="radio-control-note" data-testid="radio-access-persistence">{t('radioAccess.persistence')}</p>
   <h3 className="radio-access-subheading">{t('radioAccess.gate.heading')}</h3>
-  <p data-testid="radio-access-gate" data-source={state.gate.source} style={{overflowWrap:'anywhere'}}>{state.gate.open?t('radioAccess.gate.open'):t('radioAccess.gate.closed')}</p>
+  <p data-testid="radio-access-gate" data-source={state.gate.source} style={{overflowWrap:'anywhere'}}>{state.gate.open?t(state.gate.source==='edit-mode'?'radioAccess.gate.editMode':'radioAccess.gate.open'):t('radioAccess.gate.closed')}</p>
   <div className="button-row">
    <button type="button" className="secondary-button" data-testid="radio-access-demo" disabled={state.gate.open} aria-describedby={`${id}-demo-note`}
     onKeyDown={ignoreHeldKey} onClick={applyGate}>{t('radioAccess.gate.apply')}</button>

@@ -32,6 +32,34 @@ export function opticalHotListRowText(record:HtlFields,position:number,format:Op
  if(!Number.isInteger(position)||position<1)throw new RangeError('Invalid hot list position');
  return String(position).padStart(4,' ')+formatHotListRa(record.ra)+formatHotListDec(record.dec);
 }
+/** Front R5 [D]: the format for the web observatory (exercise 0): the full row in Edit Mode, else the ordinal row. The fill
+ * 0x5905e8 (0x59067b) and the edited row of EditSelectedLine1Click 0x591488 (0x5915e8) test the same byte, and Search and Print
+ * read the same ListBox1 items. */
+export const opticalHotListRowFormat=(editMode:boolean):OpticalHotListRowFormat=>editMode?'full':'ordinal';
+
+/** Front R5 [D], THotListForm1 List › Save (SaveList1, +0x3ac). Enabled := Edit Mode at FormShow (0x590a54..0x590a68); := 1
+ * after Edit (0x591652) or Delete (0x59181b); Undo leaves it (0x591993..0x5919a8 touch only the Undo items); after a save :=
+ * Edit Mode (0x591bd8). SaveList1Click 0x5919b4 saves only in Edit Mode (0x5919f7); otherwise it shows the Edit Mode Required
+ * box (0x591ad2, flag 0x40). A save writes every record (86 bytes each, Rewrite 0x56 at 0x591b12) and then shows the saved box
+ * (0x591c30..0x591c5b, flag 0x40). */
+export const OPTICAL_HOT_LIST_SAVE_LITERALS=Object.freeze({
+ item:'&Save List',dialogTitle:'Save Hot List File',filter:'*.HTL',
+ editModeRequiredCaption:'Edit Mode Required!',
+ editModeRequiredText:'You must be in Edit Mode to save a new or modified Hot List.\r\nFor information on setting Edit Mode, see the VIREO manual.',
+ savedCaption:'Observation List File Saved',savedText:'Observation list saved in ',
+ failedText:'Unable to save Observation List to file!\r\n\r\nFile Name: ',
+});
+export type OpticalHotListSaveEvent='show'|'edit'|'delete'|'undo'|'saved';
+export function opticalHotListSaveEnabled(event:OpticalHotListSaveEvent,editMode:boolean,enabled:boolean):boolean{
+ switch(event){
+  case 'show':case 'saved':return editMode;
+  case 'edit':case 'delete':return true;
+  case 'undo':return enabled;
+ }
+}
+export const opticalHotListSaveOutcome=(editMode:boolean):'save'|'edit-mode-required'=>editMode?'save':'edit-mode-required';
+export const opticalHotListSavedText=(fileName:string)=>OPTICAL_HOT_LIST_SAVE_LITERALS.savedText+fileName;
+
 /** OB-HL-02 FormShow caption for exercise 0 (the web observatory has no exercise mode): "Hot List File: " + file name, or
  * "New Hot List File" without a file. The " (Modified)" suffix (+0x587) is not tracked by the shared list (adaptation). */
 export const OPTICAL_HOT_LIST_CAPTIONS=Object.freeze({file:'Hot List File: ',modified:' (Modified)',none:'New Hot List File'});

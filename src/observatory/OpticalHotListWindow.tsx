@@ -1,6 +1,6 @@
 import {useEffect,useId,useRef,type RefObject} from 'react';
 import {htlNumberDraft} from '../core/hotList';
-import {OPTICAL_HOT_LIST_EMPTY,opticalHotListMissText,type OpticalHotListWindow as WindowState} from '../core/opticalHotList';
+import {OPTICAL_HOT_LIST_EMPTY,OPTICAL_HOT_LIST_SAVE_LITERALS as SL,opticalHotListMissText,type OpticalHotListWindow as WindowState} from '../core/opticalHotList';
 import {RADIO_HOT_LIST_FORM_CAPTIONS as C} from '../core/radioAntenna';
 import {menuCaptionText} from '../core/radioControl';
 import type {RadioHotListRow} from '../core/radioHotList';
@@ -18,9 +18,11 @@ function useModal(ref:RefObject<HTMLDialogElement|null>,open:boolean,focus?:()=>
  * are shown as buttons; rows are radio options (touch and exact indices) showing the row text the caller formats (the recovered ordinal 0x590248 for the optical
  * observatory, OB-HL-03) above the
  * decimal values. Search highlights a row without selecting it. Native <dialog> modals; presentation only. */
-export default function OpticalHotListWindow({caption,texts,state,rows,onSelect,onSlew,onClose,onSearch,onSearchEdit,onSearchSubmit,onSearchCancel,onDismiss,onPrint,onEdit,onDelete,onUndo,undoEnabled=false,editBlocked=false}:{caption:string;texts:readonly string[];state:WindowState;rows:readonly RadioHotListRow[];onSelect:(i:number)=>void;onSlew:()=>void;onClose:()=>void;onSearch:()=>void;onSearchEdit:(q:string,c:boolean)=>void;onSearchSubmit:(m:RadioHotListSearchMode)=>void;onSearchCancel:()=>void;onDismiss:()=>void;onPrint:()=>void;
+export default function OpticalHotListWindow({caption,texts,state,rows,onSelect,onSlew,onClose,onSearch,onSearchEdit,onSearchSubmit,onSearchCancel,onDismiss,onPrint,onEdit,onDelete,onUndo,undoEnabled=false,editBlocked=false,onSave,saveEnabled=false}:{caption:string;texts:readonly string[];state:WindowState;rows:readonly RadioHotListRow[];onSelect:(i:number)=>void;onSlew:()=>void;onClose:()=>void;onSearch:()=>void;onSearchEdit:(q:string,c:boolean)=>void;onSearchSubmit:(m:RadioHotListSearchMode)=>void;onSearchCancel:()=>void;onDismiss:()=>void;onPrint:()=>void;
  /** Front P: THotListForm1 Edit Selection.../Delete Selection/Undo Edit/Delete (one level). */
- onEdit?:()=>void;onDelete?:()=>void;onUndo?:()=>void;undoEnabled?:boolean;editBlocked?:boolean}){
+ onEdit?:()=>void;onDelete?:()=>void;onUndo?:()=>void;undoEnabled?:boolean;editBlocked?:boolean;
+ /** Front R5: List › Save (SaveList1); absent, no Save item. */
+ onSave?:()=>void;saveEnabled?:boolean}){
  const id=useId(),win=useRef<HTMLDialogElement>(null),find=useRef<HTMLDialogElement>(null),box=useRef<HTMLDialogElement>(null),query=useRef<HTMLInputElement>(null),radios=useRef<(HTMLInputElement|null)[]>([]);
  const found=radioHotListFoundIndex(state.search.found,texts),popup=usePopupMenu();
  useEffect(()=>{if(!state.shown)popup.close();},[state.shown]);// eslint-disable-line react-hooks/exhaustive-deps
@@ -37,6 +39,7 @@ export default function OpticalHotListWindow({caption,texts,state,rows,onSelect,
    <div className="ob-menu" role="group" aria-label={M.menu}>
     <button type="button" className="secondary-button" data-testid="ob-hotlist-search" onClick={onSearch}>{M.search}</button>
     <button type="button" className="secondary-button" data-testid="ob-hotlist-print" onClick={onPrint}>{M.print}</button>
+    {onSave&&<button type="button" className="secondary-button" data-testid="ob-hotlist-save" disabled={!saveEnabled||editBlocked} onClick={onSave}>{menuCaptionText(SL.item)}</button>}
     <button type="button" className="primary-button" data-testid="ob-hotlist-slew" onClick={onSlew}>{menuCaptionText(C.slew)}</button>
     {onEdit&&<><button type="button" className="secondary-button" data-testid="ob-hotlist-edit" disabled={editBlocked} onClick={onEdit}>{menuCaptionText(P.edit)}</button>
      <button type="button" className="secondary-button" data-testid="ob-hotlist-delete" disabled={editBlocked} onClick={onDelete}>{menuCaptionText(P.delete)}</button>

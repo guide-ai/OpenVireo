@@ -37,7 +37,9 @@ export const OBSERVATORY_MESSAGES=Object.freeze({
   noSelectionTitle:'No selection',noSelection:'No hot-list row is selected. Choose a row, then Slew to Selection; the list stays open.',
   row:(position:number,id:string,remarks:string,ra:string,dec:string)=>`${position}. ${id}${remarks?` · ${remarks}`:''} · RA ${ra} h · Dec ${dec}°`,
   unnamed:'Unnamed entry',foundMark:'◀ found',found:(position:number)=>`Search found row ${position}. Select it to use it.`,
-  adaptation:'Adaptation: the native List/Selection menus are shown as buttons (and as the right-click menu); Save List remains in the “Original hot lists” editor.',
+  adaptation:'Adaptation: the native List/Selection menus are shown as buttons (and as the right-click menu). Save List saves only in Edit Mode, as in VIREO; it downloads the HTL file, and the “Original hot lists” editor below keeps its own Save.',
+  /** Front R5 [W]: the browser download stands for SaveDialog1; the name is the list's file name, or this one for a new list. */
+  saveDefaultName:'openvireo-targets.htl',
  }),
  entry:Object.freeze({
   open:'Add Current Item/Position to List…',
@@ -89,6 +91,10 @@ export const OBSERVATORY_MESSAGES=Object.freeze({
    tabsNote:'These values are shown but not editable: the field, photometer, spectrometer and camera simulations were checked against exactly these values, and changing them would invalidate those checks.',
    notPorted:'Write Log File stays as compiled: it writes a file a browser page cannot write.',
   }),
+  /** Front R5: Reset and Edit Mode's hold on Limit Slewing. */
+  resetNote:'Reset sets every option shown here back to its compiled value; nothing changes until OK, and Cancel keeps the values from before this dialog opened. Adaptation: the original Reset also restores the radio simulation options, which OpenVireo keeps in the radio telescope route; they are not reset here.',
+  teacherDeferred:'Instructor options not ported yet (kept for a later teacher version; each keeps its compiled behaviour):',
+  limitSlewingEditMode:'In Edit Mode Limit Slewing is unavailable and off, as in VIREO.',
   help:'Limit Slewing (off by default, as compiled) stops the telescope at the site horizon: programmed slews below it are refused, a manual move stops there and tracking turns off when the target sets. Natively this is an instructor option; the other controls keep their compiled behaviour.',
  }),
  hotListPrint:Object.freeze({
