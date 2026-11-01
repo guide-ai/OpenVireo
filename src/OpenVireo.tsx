@@ -275,7 +275,8 @@ export default function OpenVireo(){
   // and observatory Set Date/Time OK (0x4fdf0c); read by the camera, photometer, spectrometer and Object X labels. A dialog write is
   // pushed into the lab (a new token) so its labels follow.
   const [objectXId,setObjectXId]=useState(''),[labIdPush,setLabIdPush]=useState<Readonly<{token:number;id:string}>|null>(null);
-  const applySessionId=useCallback((id:string)=>{setObjectXId(id);setLabIdPush(p=>Object.freeze({token:(p?.token??0)+1,id}));},[]);
+  const objectXIdRef=useRef(objectXId);objectXIdRef.current=objectXId;
+  const applySessionId=useCallback((id:string)=>{objectXIdRef.current=id;setObjectXId(id);setLabIdPush(p=>Object.freeze({token:(p?.token??0)+1,id}));},[]);
   const objectXCurrent=useRef<ObjectXInvestigation|null>(null),objectXToken=useRef(0),[objectXRestore,setObjectXRestore]=useState<{token:number;investigation:ObjectXInvestigation|null}|null>(null);
   const [objectXSummary,setObjectXSummary]=useState<Omit<ObjectXLabSummary,'saved'>>(INITIAL_OBJECT_X_LAB_SUMMARY),[objectXAnswer,setObjectXAnswer]=useState<ObjectXKind|null>(null);
   const [objectXSaved,setObjectXSaved]=useState<ObjectXInvestigation|null>(null),objectXPendingRestore=useRef<ObjectXInvestigation|null>(null);
@@ -289,11 +290,19 @@ export default function OpenVireo(){
   const pickerHidden=objectXHidden?catalogMask:undefined;
   const shownSelected:SkyObject=selectedMasked?{...selected,label:OBJECT_X_LAB_EN.hiddenName,image:null}:selected;
   function prepareObjectX():ObjectXInvestigation|null{const c=objectXCurrent.current;if(!c||(c.target===null&&!c.exposures.length&&!c.description&&!c.id&&c.answer===null))return null;return c;}
-  function restoreObjectX(investigation:ObjectXInvestigation|null){
+  // RE6 review 1 L3 / closure N1: a project restore runs restoreRadio, then restoreObjectX. The radio file's stored ID seeds the one
+  // session ID only when the file restores no Object X ID; a restored Object X ID always wins.
+  const restoredRadioId=useRef('');
+  function restoreObjectX(restored:ObjectXInvestigation|null){
+   const radioId=restoredRadioId.current;restoredRadioId.current='';
+   const investigation=restored&&!restored.id&&radioId?Object.freeze({...restored,id:radioId}):restored;
    objectXPendingRestore.current=investigation;
-   if(!investigation&&!objectXCurrent.current)return;
+   if(!investigation&&!objectXCurrent.current){if(radioId)applySessionId(radioId);return;}
    if(investigation)setObjectXVisited(true);
-   objectXCurrent.current=investigation;setObjectXId(investigation?.id??'');setLabIdPush(null);setObjectXRestore({token:++objectXToken.current,investigation});// RE6 review 1 L2: a restore drops the pending push, so the remounted lab keeps the restored (or empty) ID.
+   const id=investigation?.id||radioId;
+   // RE6 review 1 L2: a restore drops the pending push, so the remounted lab keeps the restored (or empty) ID; a radio-seeded ID is
+   // pushed into the fresh lab instead.
+   objectXCurrent.current=investigation;objectXIdRef.current=id;setObjectXId(id);setLabIdPush(!investigation&&id?Object.freeze({token:++objectXToken.current,id}):null);setObjectXRestore({token:++objectXToken.current,investigation});
   }
   const [lssVisited,setLssVisited]=useState(location.hash==='#lss-survey');
   useEffect(()=>{if(view==='lss-survey')setLssVisited(true);},[view]);
@@ -487,6 +496,7 @@ export default function OpenVireo(){
     const stamp=pulsarListStamp(p.analysis.state.list);
     setPulsarRestore({token,restore,snapshot:record.snapshot.analysis});setPulsarListKey(stamp);
     setPulsarMark(Object.freeze({kind:'restored',data:step.doc.data,generation,listStamp:stamp}));setPulsarVisited(true);
+    restoredRadioId.current=p.workspace?.date.storedId??'';
     if(p.workspace!==null&&record.snapshot.workspace!==null){setRadioRestore({token,workspace:p.workspace,snapshot:record.snapshot.workspace});setRadioVisited(true);}
     return true;
   }

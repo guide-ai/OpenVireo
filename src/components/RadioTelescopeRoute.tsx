@@ -141,8 +141,6 @@ function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarD
  // ---- File ▸ Set Observation Date/Time, ID before activation (RC-12…RC-17, WEB-DATE-01…04). Steps run on the latest
  // accepted date state (dateRef), so two actions in one task chain instead of reading the not yet committed state.
  const [dateState,setDateState]=useState<RadioDateState>(()=>initial?.date??INITIAL_RADIO_DATE);
- // RE6 review 1 L3: a restored (or legacy) radio investigation's stored ID seeds the page's one session ID.
- useEffect(()=>{const id=initial?.date?.storedId;if(id)onSessionId?.(id);},[]);// eslint-disable-line react-hooks/exhaustive-deps
  const dateRef=useRef(dateState);
  const [dateOutcome,setDateOutcome]=useState<RadioDateTransition|null>(null);
  const [fieldRefusal,setFieldRefusal]=useState<DateFieldRefusal|null>(null);

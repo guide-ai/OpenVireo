@@ -60,4 +60,7 @@ export function writeNativeCameraFits(exposure:CameraExposure,jd:number,objectNa
  for(let i=0;i<plane.pixels.length;i++){const v=plane.pixels[i];if(!Object.is(v,Math.fround(v)))throw new FitsWriterError('plane');view.setFloat32(headerBytes+i*4,v,false);}
  return out;// no pad after the data (native flush)
 }
+/** The camera's own guard before a VIREO-header Save: the Set Date/Time ID must be printable ASCII (FITS cards and file names);
+ * the ID inputs already refuse anything else (RE6), so this stays as a defence. */
+export const nativeCameraIdSavable=(id:string)=>/^[\x20-\x7e]*$/.test(id);
 export function nativeCameraFitsFileName(objectName=NATIVE_FITS_UNKNOWN_OBJECT,currentName?:string):string{return currentName!==undefined?`${currentName}-01.FIT`.slice(0,31):`${objectName===NATIVE_FITS_UNKNOWN_OBJECT?objectName:'ObjX-'+objectName}-01.FIT`;}
