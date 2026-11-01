@@ -63,6 +63,8 @@ const LIST_PREPARE_FAILED:PulsarListCommandResult=Object.freeze({ok:false,reason
 type DateFieldRefusal=Readonly<{field:RadioDateField;outcome:'field-too-long'|'field-not-ascii'}>;
 
 export type RadioTelescopeRouteProps=Readonly<{
+ /** Front R5: the page's Edit Mode has been committed on (it opens the Preferences gate, applyEditModeGate). */
+ editModeSeen?:boolean;
  /** The route is shown. While false the panel presents no dialog or box; its timers keep running. */
  active:boolean;
  /** A project operation runs: presentation is suppressed, the panel timers pause without catch-up and the radio clock
@@ -115,7 +117,7 @@ export type RadioRouteController=Readonly<{snapshot:()=>RadioSnapshotResult<Radi
  * (projectOptions), the panel's Limit Slewing scenario is withdrawn and legacy diameter writes are shielded here. Phase 1
  * item 1.5: Save investigation reads this workspace through controllerRef, and a restore mounts it from `restored`.
  */
-function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarData,onOpenPulsarAnalysis,onExerciseProgress,restored=null,controllerRef,hiddenName,hotListMask,prefillTarget=null,sessionId,onSessionId}:RadioTelescopeRouteProps){
+function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarData,onOpenPulsarAnalysis,onExerciseProgress,restored=null,controllerRef,hiddenName,hotListMask,prefillTarget=null,sessionId,onSessionId,editModeSeen=false}:RadioTelescopeRouteProps){
  const [initial]=useState(()=>restored);
  const [state,setState]=useState<RadioControlState>(()=>initial?.control??INITIAL_RADIO_CONTROL);
  // Latest accepted control state, read by Start pulsar exercise.
@@ -270,7 +272,7 @@ function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarD
    :receiverApiRef.current?.boxRefusal()?'receiver-box':null,
   runPulsarList:()=>listRunner.current(),
   numeric:{mismatchesFor:optionsMismatches,onEnvironmentCopied:projectOptions,view:{antenna:options,receiver:liveReceiverOptions,panelDiameter:environment.dishDiameterMeters}},
-  initial:initial?.access??null});
+  initial:initial?.access??null,editModeSeen});
  const optionsManaged=access.authority.kind!=='absent';
  // R-RX6: Open and Find read the receiver session's shared +0x5f7 buffer live and write nothing; the receiver close box and
  // Record dialogs refuse Open (WEB-PP-LIST-01..03); the receivers' picker runs move the window's shared list cursor (WEB-PP-CUR-01).

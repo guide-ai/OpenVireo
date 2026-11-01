@@ -2658,6 +2658,7 @@ export interface MessageParameters {
   "radioAccess.gate.heading": never;
   "radioAccess.gate.closed": never;
   "radioAccess.gate.open": never;
+  "radioAccess.gate.editMode": never;
   "radioAccess.gate.apply": never;
   "radioAccess.gate.note": never;
   "radioAccess.preferences.button": never;

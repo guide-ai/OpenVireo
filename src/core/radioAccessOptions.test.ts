@@ -71,7 +71,8 @@ describe('T1–T3 gate',()=>{
   const parent=run(INITIAL_RADIO_ACCESS,demo,prefs);expect(applyDemonstrationGate(parent)).toMatchObject({outcome:'refused-surface-open',changed:false});
   // Every full path ends with the gate still open.
   for(const end of [accessOn(parentOk),accessOn(parentCancel),run(accessOn(),activate,open,close)])expect(end.gate.open).toBe(true);
-  expect(Object.keys(access).filter(k=>/gate/i.test(k))).toEqual(['applyDemonstrationGate']);
+  // Front R5 adds the Edit Mode writer (0x5887f0); both only open the gate.
+  expect(Object.keys(access).filter(k=>/gate/i.test(k)).sort()).toEqual(['applyDemonstrationGate','applyEditModeGate']);
  });
  it('opens the parent with the gate open and refuses a second parent',()=>{
   const r=openPreferences(run(INITIAL_RADIO_ACCESS,demo),null);

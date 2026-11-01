@@ -94,7 +94,7 @@ export function radioOptionsCompiledRecord(hostPredicate:boolean):RadioOptionsFu
  * createRadioAccessState with explicit admission (tests only). */
 export type RadioOptionsAuthority=Readonly<{kind:'absent'}|{kind:'compiled-branch';hostPredicate:boolean}|{kind:'supplied'}>;
 
-export type RadioAccessGate=Readonly<{open:boolean;source:'not-supplied'|'demonstration'}>;
+export type RadioAccessGate=Readonly<{open:boolean;source:'not-supplied'|'demonstration'|'edit-mode'}>;
 /** The failure of a numeric OK: the field, its position in the OK order (0..8), the web failure and the text. */
 export type RadioOptionsNumericFailure=Readonly<{field:RadioOptionsNumberField;position:number;text:string}>&RadioOptionsParseFailure;
 /** The numeric part of the child under an authority: the nine edit texts, the two editable check boxes and the open
@@ -208,6 +208,18 @@ export function applyDemonstrationGate(s:RadioAccessState):RadioAccessTransition
  if(surfaceOpen(s))return keep(s,'refused-surface-open');
  if(s.gate.open)return keep(s,'gate-already-open');
  return next(s,{gate:Object.freeze({open:true,source:'demonstration'})},'gate-opened');
+}
+
+/** Front R5 [I]/[W] (review 1 L1): upholds VIREO's invariant "Edit Mode on ⇒ Preferences gate open". The gate writes under Edit
+ * Mode (Preferences OK 0x5887f0, the options apply 0x587f70) are reached with the gate already open, except Login1Click with Edit
+ * Mode on (0x588468 skips the question, 0x588527 → 0x587f70). In the web, Edit Mode is turned on without the gate (WEB-EM-01), so
+ * this write becomes observable; it is applied once the page's Edit Mode has been committed on. No ported path closes the gate
+ * (Login answered No with Edit Mode off writes 0 at 0x5884a1; Login is not ported). Only the byte is written: no surface is opened
+ * or closed. Side effect (review 1 L2): the card's "Apply the Demonstration Mode gate" button is then disabled, and since a file
+ * keeps an Edit Mode gate closed, a Demonstration gate cannot be saved in that page session. */
+export function applyEditModeGate(s:RadioAccessState):RadioAccessTransition{
+ if(s.gate.open)return keep(s,'gate-already-open');
+ return next(s,{gate:Object.freeze({open:true,source:'edit-mode'})},'gate-opened');
 }
 
 /** T2 Preferences1Click 0x5886ac. Web guards first (no native step runs); then the gate test at 0x5886c9: closed shows the
@@ -388,9 +400,13 @@ export function setCloseRecipient(s:RadioAccessState,recipient:RadioCloseRecipie
  * either the Access-only record ({accessPulsarList}) with no authority, or the complete 19-key typed record under a
  * compiled-branch authority (isRadioOptionsFullRecord, no other key). A record supplied for tests is not a saved profile. */
 export type RadioAccessSnapshot=Readonly<{
- gate:RadioAccessGate;authority:Readonly<{kind:'absent'}|{kind:'compiled-branch';hostPredicate:boolean}>;
+ gate:SavedRadioAccessGate;authority:Readonly<{kind:'absent'}|{kind:'compiled-branch';hostPredicate:boolean}>;
  root:RadioOptionsRecord;env:RadioOptionsRecord;lastChildOk:boolean|null;menu:RadioPulsarListMenu;closeRecipient:RadioCloseRecipient;
 }>;
+/** Front R5: a gate opened by Edit Mode is page-session state, like Edit Mode itself, so a file keeps it closed and the page
+ * opens it again on restore (the file format is unchanged). */
+export type SavedRadioAccessGate=Readonly<{open:boolean;source:'not-supplied'|'demonstration'}>;
+const savedGate=(g:RadioAccessGate):SavedRadioAccessGate=>g.source==='edit-mode'?Object.freeze({open:false,source:'not-supplied'}):g as SavedRadioAccessGate;
 const exactKeys=(r:object,keys:readonly string[])=>{const k=Object.keys(r);return k.length===keys.length&&keys.every(x=>Object.hasOwn(r,x));};
 function recordIssue(r:unknown,authority:RadioAccessSnapshot['authority']):string|null{
  if(r===null||typeof r!=='object'||Array.isArray(r)||!isPlain(r))return 'record';
@@ -414,7 +430,7 @@ export function radioAccessSnapshotIssue(s:RadioAccessSnapshot):string|null{
 export function radioAccessSnapshot(s:RadioAccessState):Readonly<{ok:true;snapshot:RadioAccessSnapshot}|{ok:false;reason:'dialog'|'profile'}>{
  if(s.refusal!==null||s.parent!==null)return Object.freeze({ok:false,reason:'dialog'});
  if(s.origin!=='compiled-fallback'||s.authority.kind==='supplied')return Object.freeze({ok:false,reason:'profile'});
- const snapshot:RadioAccessSnapshot=Object.freeze({gate:s.gate,authority:s.authority as RadioAccessSnapshot['authority'],root:s.root,env:s.env,lastChildOk:s.lastChildOk,menu:s.menu,
+ const snapshot:RadioAccessSnapshot=Object.freeze({gate:savedGate(s.gate),authority:s.authority as RadioAccessSnapshot['authority'],root:s.root,env:s.env,lastChildOk:s.lastChildOk,menu:s.menu,
   closeRecipient:s.closeRecipient});
  return radioAccessSnapshotIssue(snapshot)===null?Object.freeze({ok:true,snapshot}):Object.freeze({ok:false,reason:'profile'});
 }

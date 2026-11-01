@@ -16,10 +16,8 @@ export type FieldInfoSelectionItem=Readonly<{key:string;label:string;onClick:(se
  unavailable?:string|null}>;
 export type FieldInfoBox=Readonly<{caption:string;text:string}>;
 
-export function downloadText(bytes:Uint8Array,name:string){
- const url=URL.createObjectURL(new Blob([bytes.slice()],{type:'text/plain'})),a=document.createElement('a');
- a.href=url;a.download=name;a.rel='noopener';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
-}
+import {downloadText} from './downloadText';
+export {downloadText};
 
 /** A modeless Field Information list window (TFieldRptForm1 / TVarFldLstForm1, docs/OBJECT-INFO-FORMS.md). ListBox lines with
  * the recovered selection rule (MouseUp/KeyUp: data rows first..last only), List › Search (shared Find dialog TGetSrchStrDlg,
