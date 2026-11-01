@@ -31,7 +31,7 @@ describe('options and exercise forcing (0x58a3a2, 0x58a54c, 0x58a70e, 0x58a8d8, 
 
 describe('the Object X gate fails closed',()=>{
  it('names only with a checked clear mask; near or unknown hide; none stays none',()=>{
-  expect(clear).toEqual({status:'object',name:'N2230-01732',kind:0,v:7.123});
+  expect(clear).toEqual({status:'object',name:'N2230-01732',kind:0,v:7.123,ra:3.79,dec:24.1});
   expect(hidden).toEqual({status:'hidden'});expect(shownCurrentObject(star,'unknown')).toEqual({status:'hidden'});
   expect(shownCurrentObject({status:'unresolved'},'clear')).toEqual({status:'none'});expect(none).toEqual({status:'none'});
  });

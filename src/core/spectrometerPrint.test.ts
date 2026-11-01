@@ -4,7 +4,7 @@ import {spectrometerPrintAxis,spectrometerPrintPage,type SpectrometerPrintInput}
 // Front RE6: research analysis/front-re5/spectrometer-print.md §3–§5 (0x510294).
 const OFF={showObjectId:false,showObjectMag:false,editMode:false},ON={showObjectId:true,showObjectMag:true,editMode:false};
 const counts=Array.from({length:600},(_,i)=>i===0?-20:i===99?400:100);
-const base:SpectrometerPrintInput={counts,minimum:3900,maximum:4500,elapsedMs:61_250,total:60_520.4,pointing:{ra:12.5,dec:-5.25},sky:false,object:{status:'object',name:'N0000-01634',kind:0,v:6},options:OFF};
+const base:SpectrometerPrintInput={counts,minimum:3900,maximum:4500,elapsedMs:61_250,total:60_520.4,pointing:{ra:12.5,dec:-5.25},sky:false,object:{status:'object',name:'N0000-01634',kind:0,v:6,ra:12.5,dec:-5.25},options:OFF};
 describe('spectrometer print body',()=>{
  it('default 3900–4500: n 6, M 100, 60 bottom ticks (majors every 100 units), labels 3900…4500 at x 9…609, 50 left ticks',()=>{
   expect(spectrometerPrintAxis(3900,4500)).toMatchObject({start:3900,end:4500,n:6,major:100,minor:10,perChannel:1});
@@ -30,6 +30,6 @@ describe('spectrometer print body',()=>{
   expect(txt({...base,options:ON,sky:true})).toMatchObject({object:'16,260 Reading Sky'});expect(txt({...base,options:ON,sky:true}).magnitude).toBeUndefined();
   expect(txt({...base,options:{...OFF,editMode:true}})).toMatchObject({magnitude:'16,280 Apparent Magnitude (V): 6.00'});
   expect(txt({...base,options:ON,object:{status:'hidden'}}).object).toBeUndefined();
-  expect(txt({...base,options:ON,object:{status:'object',name:'X'.repeat(30),kind:0,v:1}}).object).toBe(`16,260 Object: ${'X'.repeat(24)}`);
+  expect(txt({...base,options:ON,object:{status:'object',name:'X'.repeat(30),kind:0,v:1,ra:0,dec:0}}).object).toBe(`16,260 Object: ${'X'.repeat(24)}`);
  });
 });

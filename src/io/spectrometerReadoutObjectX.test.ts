@@ -36,7 +36,7 @@ describe('spectrometer outputs at the 17 Object X targets',()=>{
 });
 
 describe('spectrometerDefaultFileName',()=>{
- const star:ShownCurrentObject={status:'object',name:'N0000-00123',kind:0,v:13.92},web=starSpectrumFileName('N0000.DAT@14428');
+ const star:ShownCurrentObject={status:'object',name:'N0000-00123',kind:0,v:13.92,ra:1,dec:1},web=starSpectrumFileName('N0000.DAT@14428');
  it('keeps the web name with the compiled defaults (byte-identical), for any object',()=>{
   for(const o of [star,{status:'none'},{status:'hidden'}] as ShownCurrentObject[])expect(spectrometerDefaultFileName(OFF,o,web)).toBe(web);
   expect(spectrometerDefaultFileName({...OFF,showObjectMag:true,editMode:true},star,web)).toBe(web);

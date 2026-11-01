@@ -17,7 +17,7 @@ import {objectXDataLabel} from './objectXLab';
 import {delphiFixed} from './variableStars';
 import type {FieldPopulation,FieldResult} from './fieldEngine';
 import {slitPixelLevel} from './photons';
-import {nativeObjectSlitFraction,SlitThroughputError} from './slitThroughput';
+import {nativeObjectSlitFraction,nativeStellarAngularAdmission,SlitThroughputError} from './slitThroughput';
 
 export type CurrentObjectKind=0|1|2|3;
 export type CurrentObject=Readonly<{status:'object';name:string;kind:CurrentObjectKind;v:number;ra:number;dec:number}>|Readonly<{status:'none'}>|Readonly<{status:'unresolved'}>;
@@ -38,13 +38,14 @@ export function currentObjectInPopulation(population:FieldPopulation,pointing:Re
 }
 
 /** What a reader may show. `hidden`: the object lies inside the Object X mask, or the mask could not be checked (fail closed). */
-export type ShownCurrentObject=Readonly<{status:'object';name:string;kind:CurrentObjectKind;v:number}>|Readonly<{status:'none'}>|Readonly<{status:'hidden'}>;
+export type ShownCurrentObject=Readonly<{status:'object';name:string;kind:CurrentObjectKind;v:number;
+ /** The record's catalogue position (R4e review 1 L1: the strict slit cut when the field engine has no selection). */ra:number;dec:number}>|Readonly<{status:'none'}>|Readonly<{status:'hidden'}>;
 export type ObjectXMaskState='clear'|'near'|'unknown';
 /** [W] The single Object X gate every Front R4 reader goes through: anything but a checked 'clear' hides the name and the magnitude. */
 export function shownCurrentObject(object:CurrentObject|null,mask:ObjectXMaskState):ShownCurrentObject{
  if(!object||object.status!=='object')return Object.freeze({status:'none'});
  if(mask!=='clear')return Object.freeze({status:'hidden'});
- return Object.freeze({status:'object',name:object.name,kind:object.kind,v:object.v});
+ return Object.freeze({status:'object',name:object.name,kind:object.kind,v:object.v,ra:object.ra,dec:object.dec});
 }
 
 /** Add Current's remark (0x53f17e..): the kind word, only when the exercise byte is 0 [D]; ≥4 gives '' (unreachable here). */
@@ -136,12 +137,22 @@ export function spectrometerDefaultFileName(o:SpectrometerReadoutOptions,object:
 /** Front R4d review 1 M1 / R4e: the field route's sky reading (VIREO's +0x416, 0x50db1a): throughput 0x50f338 of the slit object
  * the engine selected (the same 0x59a0fc nearest object) is 0. It is computed here from that selection, the frame's slit level and
  * the pointing, so it holds also where the engine returns before its own throughput (an invalid or random spectral index, a variable
- * whose values are unavailable, a galaxy spectrum mapping). No selection, or a field with no viewport, is not a sky reading [W]
- * (the readers then show no object); a throughput at the precision limit falls back to the engine's `slit-empty` reason [W]. */
-export function fieldSpectrometerSkyReading(result:FieldResult|null|undefined):boolean{
+ * whose values are unavailable, a galaxy spectrum mapping). A throughput at the precision limit falls back to the engine's
+ * `slit-empty` reason [W].
+ * R4e review 1 L1: a field blocked before the slit object is chosen (photographic-image, ngc224-image, the pending-variable stamp
+ * gate) has no selection or viewport; then the current object (`object`, from the same 0x59a0fc lookup) decides: a star or QSO
+ * outside the strict cut of 0x50f338 (|ΔRA| < 0.00028 h, |ΔDec| < 0.0064°, `nativeStellarAngularAdmission`) is a sky reading [D
+ * for the cut]. [W] A galaxy there is not a sky reading: its (level/200)² rule needs the slit level of a field that was not
+ * painted. A hidden or missing object is not a sky reading (the hidden text or the no-object text stays). */
+export function fieldSpectrometerSkyReading(result:FieldResult|null|undefined,object:ShownCurrentObject|null=null):boolean{
  if(!result)return false;
  const engine=result.reasons.includes('slit-empty'),sel=result.selection;
- if(!sel||!result.viewport||!result.population||(sel.kind!=='star'&&sel.kind!=='galaxy'))return engine;
+ if(!sel||!result.viewport||!result.population){
+  if(engine||object?.status!=='object'||(object.kind!==0&&object.kind!==3))return engine;
+  try{return !nativeStellarAngularAdmission({raHours:object.ra,decDegrees:object.dec},{raHours:result.pointing.ra,decDegrees:result.pointing.dec});}
+  catch(e){if(e instanceof SlitThroughputError)return false;throw e;}
+ }
+ if(sel.kind!=='star'&&sel.kind!=='galaxy')return engine;
  try{
   const pixelLevel=slitPixelLevel(result.viewport);
   if(sel.kind==='galaxy')return nativeObjectSlitFraction({objectPresent:true,objectType:1,pixelLevel})<=0;
