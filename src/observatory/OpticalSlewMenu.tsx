@@ -4,7 +4,8 @@ import TerminateSlewBox from '../polish/TerminateSlewBox';
 import QuestionBox from '../polish/QuestionBox';
 import {HOT_LIST_EDIT_LITERALS as HE,POLISH_MESSAGES as PM} from '../polish/PolishMessages';
 import ResearchNotes from '../components/ResearchNotes';
-import {HtlError,editHtlRow,newHtlEditor,removeHtlRow,undoHtl,type HtlList} from '../core/hotList';
+import {HtlError,editHtlRow,newHtlEditor,removeHtlRow,serializeHtl,undoHtl,type HtlList,type HtlRecord} from '../core/hotList';
+import {downloadText} from './downloadText';
 import {appendAddCurrentEntry,HOT_LIST_ENTRY_CAPTIONS,addCurrentPrefill,hotListEntryAddedText,hotListEntryDraft,parseHotListEntry,type HotListEntryDraft} from '../core/hotListEntry';
 import {keepHotList,setHotListEditor} from '../core/sharedHotList';
 import type {SharedHotListHandle} from '../useSharedHotList';
@@ -13,7 +14,7 @@ import HotListEntryDialog from './HotListEntryDialog';
 import OpticalOptionsDialog from './OpticalOptionsDialog';
 import type {OpticalOptions,SessionOpticalOptions} from '../core/opticalOptions';
 import {hotListPrintSnapshot,type HotListPrintSnapshot} from '../core/hotListPrint';
-import {INITIAL_OPTICAL_HOT_LIST,cancelOpticalHotListSearch,closeOpticalHotList,dismissOpticalHotListNotice,editOpticalHotListSearch,openOpticalHotList,openOpticalHotListSearch,opticalHotListCaption,opticalHotListRowText,opticalHotListRows,reopenOpticalHotList,selectOpticalHotListIndex,slewToOpticalHotListSelection,submitOpticalHotListSearch,type OpticalHotListWindow as HotListState} from '../core/opticalHotList';
+import {INITIAL_OPTICAL_HOT_LIST,cancelOpticalHotListSearch,closeOpticalHotList,dismissOpticalHotListNotice,editOpticalHotListSearch,openOpticalHotList,openOpticalHotListSearch,opticalHotListCaption,opticalHotListEditEnabled,opticalHotListEditedRowFormat,opticalHotListRowFormat,opticalHotListSaveRecords,opticalHotListRowText,opticalHotListSaveEnabled,opticalHotListSaveOutcome,opticalHotListSavedText,OPTICAL_HOT_LIST_SAVE_LITERALS,opticalHotListRows,reopenOpticalHotList,selectOpticalHotListIndex,slewToOpticalHotListSelection,submitOpticalHotListSearch,type OpticalHotListWindow as HotListState} from '../core/opticalHotList';
 import {INITIAL_OPTICAL_SKY_COORDS,cancelOpticalSkyCoords,confirmOpticalSkyCoords,dismissOpticalSkyCoordsNotice,editOpticalSkyCoordsField,openOpticalSkyCoords,openOpticalSkyCoordsFromHotList,selectOpticalSkyCoordsEpoch,opticalSlewConfirmText,type OpticalSkyCoordsState} from '../core/opticalSkyCoords';
 import type {Pointing} from '../core/sky';
 import {addCurrentId,addCurrentRemark,type ShownCurrentObject} from '../core/currentObject';
@@ -55,7 +56,8 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,curren
  // A request made in an earlier Edit Mode session must not reopen windows when Edit Mode is switched on again.
  useEffect(()=>{if(!editMode)setFieldRequest(null);},[editMode]);
  const list=hotList.doc.editor?.list??null,fileName=hotList.doc.name;
- const rows=useMemo(()=>opticalHotListRows(list),[list]),texts=useMemo(()=>rows.map((r,i)=>opticalHotListRowText(r.record,i+1)),[rows]),caption=opticalHotListCaption(fileName);
+ const rows=useMemo(()=>opticalHotListRows(list),[list]),rowFormat=opticalHotListRowFormat(editMode,exerciseCode),editedFormat=opticalHotListEditedRowFormat(editMode,exerciseCode),[editedRecords,setEditedRecords]=useState<ReadonlySet<HtlRecord>>(()=>new Set()),
+  texts=useMemo(()=>rows.map((r,i)=>opticalHotListRowText(r.record,i+1,editedRecords.has(r.record)?editedFormat:rowFormat)),[rows,rowFormat,editedFormat,editedRecords]),caption=opticalHotListCaption(fileName);
  useEffect(()=>{if(!enabled){addCurrentTicket.current++;addCurrentAbort.current?.abort();addCurrentAbort.current=null;setLooking(false);setSky(s=>s.dialog?{...s,dialog:null,notice:null}:s);setHot(h=>h.shown||h.notice?{...INITIAL_OPTICAL_HOT_LIST,index:h.index}:h);setPrint(null);setEntry(null);setEntryError('');}},[enabled]);
  // A list replaced while the window is hidden keeps the remembered index only when it is still a row.
  useEffect(()=>{setHot(h=>h.index>=rows.length?{...h,index:-1}:h);},[rows]);
@@ -74,7 +76,9 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,curren
   if(hotList.current().read){setEntryError(E.busy);return;}
   if(editing!==null){const at=editing;let after:HtlList|null=null;
    try{hotList.update(d=>{if(d.read||!d.editor)return keepHotList(d);const e=editHtlRow(d.editor,at,r.fields);after=e.list;return setHotListEditor(d,e,d.name);});}catch(e){setEntryError(e instanceof HtlError?t(`htl.error.${e.code}`):E.busy);return;}
-   setEditing(null);setEntry(null);setUndoList(after);return;}
+   setEditing(null);setEntry(null);setUndoList(after);setSaveEnabled(v=>opticalHotListSaveEnabled('edit',editMode,v));
+   // The replaced row keeps the edited-row format until the next show (0x5915d1).
+   const edited=(after as HtlList|null)?.[at];if(edited)setEditedRecords(s=>new Set(s).add(edited));return;}
   try{hotList.update(d=>d.read?keepHotList(d):setHotListEditor(d,appendAddCurrentEntry(d.editor??newHtlEditor(),r.fields),d.editor?d.name:''));}catch(e){setEntryError(e instanceof HtlError?t(`htl.error.${e.code}`):E.busy);return;}
   setEntry(null);setInfo({caption:HOT_LIST_ENTRY_CAPTIONS.addedCaption,text:hotListEntryAddedText(r.fields.id)});}
  const programmed=useContext(ProgrammedSlewContext),[terminate,setTerminate]=useState(false),setCoordinates=useRef<HTMLButtonElement>(null);
@@ -97,9 +101,18 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,curren
  function deleteRow(){const r=shownRow();if(!r){noSelection();return;}setDeleting(r.sourceIndex);}
  function confirmDelete(yes:boolean){const at=deleting;setDeleting(null);if(!yes||at===null)return;let after:HtlList|null=null;const shown=hot.index;
   try{hotList.update(d=>{if(d.read||!d.editor)return keepHotList(d);const e=removeHtlRow(d.editor,at);after=e.list;return setHotListEditor(d,e,d.name);});}catch{return;}
-  setUndoList(after);setHot(h=>({...h,index:after&&(after as HtlList).length?Math.max(0,shown-1):-1}));}
+  setUndoList(after);setSaveEnabled(v=>opticalHotListSaveEnabled('delete',editMode,v));setHot(h=>({...h,index:after&&(after as HtlList).length?Math.max(0,shown-1):-1}));}
  function undoRow(){if(!undoList)return;try{hotList.update(d=>d.editor&&d.editor.list===undoList&&!d.read?setHotListEditor(d,undoHtl(d.editor),d.name):keepHotList(d));}catch{}setUndoList(null);}
  const undoEnabled=undoList!==null&&hotList.doc.editor?.list===undoList;
+ // Front R5, List › Save (SaveList1): FormShow sets it from Edit Mode each time the window is shown; Edit/Delete enable it.
+ const [saveEnabled,setSaveEnabled]=useState(false);
+ useEffect(()=>{if(hot.shown){setSaveEnabled(opticalHotListSaveEnabled('show',editMode,false));setEditedRecords(new Set());}},[hot.shown]);// eslint-disable-line react-hooks/exhaustive-deps
+ function saveList(){
+  if(opticalHotListSaveOutcome(editMode)==='edit-mode-required'){setInfo({caption:OPTICAL_HOT_LIST_SAVE_LITERALS.editModeRequiredCaption,text:OPTICAL_HOT_LIST_SAVE_LITERALS.editModeRequiredText});return;}
+  const d=hotList.current();if(d.read||!d.editor)return;
+  const name=d.name||'HotList.HTL';
+  try{downloadText(serializeHtl(opticalHotListSaveRecords(opticalHotListRows(d.editor.list))),name);}catch(e){if(e instanceof HtlError){setInfo({caption:OPTICAL_HOT_LIST_SAVE_LITERALS.failedCaption,text:OPTICAL_HOT_LIST_SAVE_LITERALS.failedText+name+'\r\n'+e.message});return;}throw e;}
+  setSaveEnabled(opticalHotListSaveEnabled('saved',editMode,true));setInfo({caption:OPTICAL_HOT_LIST_SAVE_LITERALS.savedCaption,text:opticalHotListSavedText(name)});}
  // The question goes away with the slew (it ended, or was stopped elsewhere).
  useEffect(()=>{if(!programmed?.moving)setTerminate(false);},[programmed?.moving]);
  function slew(){const step=slewToOpticalHotListSelection(hot,rows);setHot(step.window);if(step.row)setSky(s=>openOpticalSkyCoordsFromHotList(s,step.row!));}
@@ -116,8 +129,8 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,curren
   <ResearchNotes><p>{M.openHelp} {H.openHelp} {E.openHelp} {M.adaptation} {E.adaptation}</p></ResearchNotes>
   <OpticalHotListWindow caption={caption} texts={texts} state={hot} rows={rows} onSelect={i=>setHot(h=>selectOpticalHotListIndex(h,i,rows.length))} onSlew={slew} onClose={()=>setHot(closeOpticalHotList)}
    onSearch={()=>setHot(openOpticalHotListSearch)} onSearchEdit={(q,c)=>setHot(h=>editOpticalHotListSearch(h,q,c))} onSearchSubmit={mode=>setHot(h=>submitOpticalHotListSearch(h,mode,texts))} onSearchCancel={()=>setHot(cancelOpticalHotListSearch)}
-   onDismiss={()=>setHot(dismissOpticalHotListNotice)} onPrint={()=>setPrint(hotListPrintSnapshot(caption,rows,(r,i)=>opticalHotListRowText(r,i+1)))}
-   onEdit={editRow} onDelete={deleteRow} onUndo={undoRow} undoEnabled={undoEnabled} editBlocked={!!hotList.doc.read}/>
+   onDismiss={()=>setHot(dismissOpticalHotListNotice)} onPrint={()=>setPrint(hotListPrintSnapshot(caption,rows,(_r,i)=>texts[i]))}
+   onEdit={editRow} onDelete={deleteRow} onUndo={undoRow} undoEnabled={undoEnabled} editBlocked={!!hotList.doc.read} editEnabled={opticalHotListEditEnabled(editMode,exerciseCode)} onSave={saveList} saveEnabled={saveEnabled}/>
   {deleting!==null&&<QuestionBox caption={HE.deleteCaption} text={HE.deleteText} note={PM.hotListEdit.deleteNote} testId="ob-hotlist-delete-box" onAnswer={confirmDelete}/>}
   <OpticalSkyCoordsDialog state={sky} onEdit={(f,text)=>setSky(s=>editOpticalSkyCoordsField(s,f,text))} onEpoch={i=>setSky(s=>selectOpticalSkyCoordsEpoch(s,i))} onOk={ok} onCancel={cancel} onDismiss={()=>setSky(dismissOpticalSkyCoordsNotice)}/>
   <HotListEntryDialog draft={entry} error={entryError} onEdit={(f,v)=>setEntry(e=>e&&{...e,[f]:v})} onOk={addEntry} onCancel={()=>{setEntry(null);setEditing(null);}} onDismiss={()=>setEntryError('')}/>
@@ -134,6 +147,6 @@ function InfoBox({caption,text,onClose}:{caption:string;text:string;onClose:()=>
  const ref=useRef<HTMLDialogElement>(null);
  useEffect(()=>{const el=ref.current;if(el&&!el.open)el.showModal();},[]);
  return <dialog ref={ref} className="ob-dialog ob-box" role="alertdialog" aria-label={caption} data-testid="ob-info-box" onCancel={e=>{e.preventDefault();onClose();}}>
-  <h2 className="ob-native">{caption}</h2><p className="ob-native">{text}</p><div className="ob-actions"><button type="button" className="primary-button" onClick={onClose}>{OBSERVATORY_MESSAGES.common.ok}</button></div>
+  <h2 className="ob-native">{caption}</h2><p className="ob-native" style={{whiteSpace:'pre-line'}}>{text}</p><div className="ob-actions"><button type="button" className="primary-button" onClick={onClose}>{OBSERVATORY_MESSAGES.common.ok}</button></div>
  </dialog>;
 }

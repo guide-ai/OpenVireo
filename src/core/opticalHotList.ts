@@ -32,7 +32,47 @@ export function opticalHotListRowText(record:HtlFields,position:number,format:Op
  if(!Number.isInteger(position)||position<1)throw new RangeError('Invalid hot list position');
  return String(position).padStart(4,' ')+formatHotListRa(record.ra)+formatHotListDec(record.dec);
 }
-/** OB-HL-02 FormShow caption for exercise 0 (the web observatory has no exercise mode): "Hot List File: " + file name, or
+/** Front R5 [D] (review 1 M2): the row format follows Edit Mode and the exercise byte env+0x383f (the web's `exerciseCode`).
+ * - The fill 0x5905e8 (FormShow): the full row for exercise 6 (0x59065b) or 5 (0x59066b) or in Edit Mode (0x59067b).
+ * - A row replaced by EditSelectedLine1Click 0x591488: the full row for exercise 6 or in Edit Mode only (0x5915d1..0x5915e8);
+ *   it keeps that text until the next show refills the list.
+ * Search and Print read the same ListBox1 items. */
+export const opticalHotListRowFormat=(editMode:boolean,exerciseCode=0):OpticalHotListRowFormat=>editMode||exerciseCode===5||exerciseCode===6?'full':'ordinal';
+export const opticalHotListEditedRowFormat=(editMode:boolean,exerciseCode=0):OpticalHotListRowFormat=>editMode||exerciseCode===6?'full':'ordinal';
+/** Front R5 [D] (review 1 M2): FormShow 0x5908d1..0x590917 enables Edit1/Edit2/Delete1 from Edit Mode; only the exercise-0 case
+ * of the jump table 0x59093a (0x590956 → 0x5909be..0x5909e0) forces them on. */
+export const opticalHotListEditEnabled=(editMode:boolean,exerciseCode=0)=>editMode||exerciseCode===0;
+/** Front R5 [D] (review 1 M1): SaveList1Click writes the in-memory list +0x58d head to tail (0x591b7f..0x591bb8), the list the
+ * reader built by RA cursor insertion (0x5904bf → 0x492728) and the window shows; so the file follows the shown order. Tied rows
+ * therefore swap as in the window (Hubble.HTL rows 7 and 8, LSS_Field08 and LSS_Field09). [I] Native Edit replaces a node in
+ * place without re-sorting; the web's shown order re-sorts after an RA edit. */
+export const opticalHotListSaveRecords=(rows:readonly RadioHotListRow[]):HtlList=>Object.freeze(rows.map(r=>r.record));
+
+/** Front R5 [D], THotListForm1 List › Save (SaveList1, +0x3ac). Enabled := Edit Mode at FormShow (0x590a54..0x590a68); := 1
+ * after Edit (0x591652) or Delete (0x59181b); Undo leaves it (0x591993..0x5919a8 touch only the Undo items); after a save :=
+ * Edit Mode (0x591bd8). SaveList1Click 0x5919b4 saves only in Edit Mode (0x5919f7); otherwise it shows the Edit Mode Required
+ * box (0x591ad2, flag 0x40). A save writes every record (86 bytes each, Rewrite 0x56 at 0x591b12) and then shows the saved box
+ * (0x591c30..0x591c5b, flag 0x40). */
+export const OPTICAL_HOT_LIST_SAVE_LITERALS=Object.freeze({
+ item:'&Save List',dialogTitle:'Save Hot List File',filter:'*.HTL',
+ editModeRequiredCaption:'Edit Mode Required!',
+ editModeRequiredText:'You must be in Edit Mode to save a new or modified Hot List.\r\nFor information on setting Edit Mode, see the VIREO manual.',
+ savedCaption:'Observation List File Saved',savedText:'Observation list saved in ',
+ failedCaption:'Observation List File Error!',// 0x591dc4, error icon 0x10 (R5 closure N1)
+ failedText:'Unable to save Observation List to file!\r\n\r\nFile Name: ',
+});
+export type OpticalHotListSaveEvent='show'|'edit'|'delete'|'undo'|'saved';
+export function opticalHotListSaveEnabled(event:OpticalHotListSaveEvent,editMode:boolean,enabled:boolean):boolean{
+ switch(event){
+  case 'show':case 'saved':return editMode;
+  case 'edit':case 'delete':return true;
+  case 'undo':return enabled;
+ }
+}
+export const opticalHotListSaveOutcome=(editMode:boolean):'save'|'edit-mode-required'=>editMode?'save':'edit-mode-required';
+export const opticalHotListSavedText=(fileName:string)=>OPTICAL_HOT_LIST_SAVE_LITERALS.savedText+fileName;
+
+/** OB-HL-02 FormShow caption for exercise 0 (the exercise cases 1–6 only change the caption, 0x5909e7..0x590a4f; not ported): "Hot List File: " + file name, or
  * "New Hot List File" without a file. The " (Modified)" suffix (+0x587) is not tracked by the shared list (adaptation). */
 export const OPTICAL_HOT_LIST_CAPTIONS=Object.freeze({file:'Hot List File: ',modified:' (Modified)',none:'New Hot List File'});
 export function opticalHotListCaption(fileName:string):string{return fileName?OPTICAL_HOT_LIST_CAPTIONS.file+fileName:OPTICAL_HOT_LIST_CAPTIONS.none;}
