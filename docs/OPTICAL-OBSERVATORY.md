@@ -58,7 +58,8 @@ All of this is on the **Observatory** page, after **Open dome**.
 | B8 Spectrum Save/Print | OB-SR-01; docs/SPECTRUM-SAVE-CONTRACT.md | src/observatory/SpectrumSavePrint.tsx (mounted in StarExposure.tsx) |
 | B10 Persistence, guide | — | src/io/analysisSession.ts (v26), SpectrumInstrument.tsx (prepare/restore hooks), this document |
 
-B9 (applying the spectral range to new acquisitions) is out of this round.
+B9 (applying the spectral range to new acquisitions) was out of this round; it is done since Fronts S1–S3
+(docs/SPECTRAL-RANGE.md).
 
 ## Tests
 
