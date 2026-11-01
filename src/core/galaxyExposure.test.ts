@@ -24,3 +24,18 @@ describe('bounded Hubble galaxy field and acquired counts',()=>{
   const saved=JSON.parse(serializeGalaxySession(s));for(const change of [(v:any)=>v.domain.minimum=3700,(v:any)=>v.policy='x',(v:any)=>v.counts=[1],(v:any)=>v.sourceSnapshotSHA256='a'.repeat(64)]){const x=structuredClone(saved);change(x);expect(()=>parseGalaxySession(x)).toThrow();}
  });
 });
+describe('Front S3: the Hubble route on every dialog range',()=>{
+ it('a range without the galaxy\'s spectrum is the typed refusal; another range gives a #R policy; the cache stays bounded',async()=>{
+  const {galaxyRangeRefusal,createGalaxyExposure,galaxySpectralRange,galaxyRangedCacheKeys,RANGED_CACHE_SIZE}=await import('./galaxyExposure');
+  expect(galaxyRangeRefusal('36773',0,{minimum:3500,maximum:3600})).toBe('spectrum-range');
+  expect(galaxyRangeRefusal('36773',0,{minimum:3600,maximum:4600})).toBeNull();
+  const s=createGalaxyExposure(1,'36773',0,{minimum:3600,maximum:4600});expect(s.policy.endsWith('#R3600-4600')).toBe(true);expect(galaxySpectralRange(s)).toEqual({minimum:3600,maximum:4600});
+  let built=0;for(let a=3600;a<=4500;a+=100)for(let b=a+100;b<=5600;b+=100){const r={minimum:a,maximum:b};if(galaxyRangeRefusal('36773',0,r))continue;createGalaxyExposure(1,'36773',0,r);built++;}
+  // S3 review 1 L2: the cache holds the most recent RANGED_CACHE_SIZE configurations; the oldest are evicted first.
+  const keys=galaxyRangedCacheKeys();expect(built).toBeGreaterThan(RANGED_CACHE_SIZE);expect(keys).toHaveLength(RANGED_CACHE_SIZE);
+  expect(keys.at(-1)).toBe('36773:0:4500-5600');expect(keys.some(k=>k.startsWith('36773:0:3600-'))).toBe(false);
+  // A hit moves its entry to the newest end.
+  const oldest=keys[0];createGalaxyExposure(1,'36773',0,{minimum:Number(oldest.split(':')[2].split('-')[0]),maximum:Number(oldest.split('-').at(-1))});expect(galaxyRangedCacheKeys().at(-1)).toBe(oldest);
+ },300000);
+});
+

@@ -53,7 +53,7 @@ function LssSurvey({wedgeShown=false,spectralRange=DEFAULT_SPECTRAL_RANGE,onSpec
  useEffect(()=>{const h=handoff.current;if(!wedgeAck||!h||wedgeAck.token!==h.token)return;handoff.current=null;if(wedgeAck.accepted)update(s=>markLssHandedToWedge(s,h.upTo));else setNotice(t('lss.wedge.refused'));},[wedgeAck]);
  const [telescope,setTelescope]=useState<Telescope>(initialTelescope);
  const [region,setRegion]=useState<readonly (LssRegionListRow&{jd:number})[]>(Object.freeze([]));// Front L2: catalogue rows of LSS Galaxy Data (not saved)
- const [loaded,setLoaded]=useState<Loaded|null>(null),[loading,setLoading]=useState(false),[error,setError]=useState(''),[fieldsError,setFieldsError]=useState(''),[notice,setNotice]=useState('');
+ const [loaded,setLoaded]=useState<Loaded|null>(null),[loading,setLoading]=useState(false),[error,setError]=useState(''),[fieldsError,setFieldsError]=useState(''),fieldsErrorBox=useRef<HTMLDivElement>(null),[notice,setNotice]=useState('');
  const [pointed,setPointed]=useState<number|null>(null),[exposure,setExposure]=useState<JournalState|null>(null),[description,setDescription]=useState(''),[descriptionError,setDescriptionError]=useState('');
  const [fields,setFields]=useState<readonly LssFieldEntry[]|null>(null),lists=useRef<{photographs:ReturnType<typeof parseGlimagesPositions>;spectra:LssSpectrumInputs}|null>(null);
  const glx=useRef<Uint8Array|null>(null),abort=useRef<AbortController|null>(null),dialog=useRef<HTMLDialogElement>(null);
@@ -79,6 +79,8 @@ function LssSurvey({wedgeShown=false,spectralRange=DEFAULT_SPECTRAL_RANGE,onSpec
   update(()=>i?restoredLssSurvey(i.field,i.records):EMPTY_LSS_SURVEY);setTelescope(i?.telescope??initialTelescope);setDescription(i?.description??'');
   setNotice(i?t('lss.restored',{count:i.records.length}):'');
  },[restored?.token]);
+ // L4 review nit: the file-error box takes focus when it appears, as VIREO's message box does.
+ useEffect(()=>{if(fieldsError)fieldsErrorBox.current?.focus();},[fieldsError]);
  // LSSFields.LST (byte-exact, size and SHA-256 checked) supplies the original field names and centres.
  useEffect(()=>{if(!active||fields)return;const c=new AbortController();fetchBundledHotList(fetch,c.signal,LSS_FIELDS_LST).then(b=>setFields(parseLssFieldsList(b.bytes))).catch(e=>{if(!(e instanceof DOMException&&e.name==='AbortError'))setFieldsError(lssFieldsFileErrorText(LSS_FIELDS_LST.path,t('lss.fieldsError')));});return()=>c.abort();},[active,fields]);
  useEffect(()=>{const d=dialog.current;if(!d)return;if(survey.draft&&!d.open)d.showModal();else if(!survey.draft&&d.open)d.close();},[survey.draft]);
@@ -179,7 +181,7 @@ function LssSurvey({wedgeShown=false,spectralRange=DEFAULT_SPECTRAL_RANGE,onSpec
     <p className="observatory-note">{t('lss.region.noWedge')}</p></>}
   </section>}
   <div className="observatory-feedback">{notice&&<p role="status">{notice}</p>}{error&&<p role="alert">{error}</p>}
-   {fieldsError&&<div role="alertdialog" aria-labelledby="lss-fields-error-caption" data-testid="lss-fields-error" className="lss-fields-error"><strong id="lss-fields-error-caption">{LSS_FIELDS_FILE_ERROR.caption}</strong><p style={{whiteSpace:'pre-line'}}>{fieldsError}</p><button type="button" onClick={()=>setFieldsError('')}>{t('lss.fieldsError.ok')}</button></div>}</div>
+   {fieldsError&&<div role="alertdialog" aria-labelledby="lss-fields-error-caption" data-testid="lss-fields-error" className="lss-fields-error" tabIndex={-1} ref={fieldsErrorBox}><strong id="lss-fields-error-caption">{LSS_FIELDS_FILE_ERROR.caption}</strong><p style={{whiteSpace:'pre-line'}}>{fieldsError}</p><button type="button" onClick={()=>setFieldsError('')}>{t('lss.fieldsError.ok')}</button></div>}</div>
   <section className="scope-note"><h2>{t('lss.limitsTitle')}</h2><ul>{(['observatory','telescope','fresh','raster','range','measure','dialog','jd','wedge','csv','packs'] as const).map(k=><li key={k}>{t(`lss.adaptation.${k}`)}</li>)}</ul></section>
  </main>;
 }

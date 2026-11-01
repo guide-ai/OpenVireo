@@ -611,7 +611,10 @@ function outsideViewHolds(population:FieldPopulation,scene:NativeSelectionScene)
  *  - a galaxy whose minor axis rounds to 0 px, which composes nothing (0x594488 stretches into a zero-height rect [I]) and is
  *    not painted. Under the 'outside-view' rule (Boötes) it keeps its earlier listing with its crop margin when its footprint
  *    misses the crop; it is the same pixels either way.
- * A photographed galaxy is drawn from its photograph instead. */
+ * A photographed galaxy is drawn from its photograph instead.
+ * (L4 review L2) VIREO's test is Pos('NGC 224', name), a substring match, and it runs before the photograph check (0x53b4fc, then
+ * 0x53b513); the web uses equality after the photograph check. The two agree on the bundled data: no other CLEA_GLX.DAT name
+ * contains 'NGC 224' and NGC 224 has no GLIMAGES.LST photograph. */
 function telescopeGalaxyGate(population:FieldPopulation,scene:NativeSelectionScene,c:Calibration,options:FieldOptions):Readonly<{reason?:'ngc224-image';unpainted:Set<number>;outsideViewGalaxies:{galaxy:string;margin:number}[]}>{
  const unpainted=new Set<number>(),outsideViewGalaxies:{galaxy:string;margin:number}[]=[];
  const photographed=new Set((population.photographAssociations??[]).map(a=>a.recordIndex));

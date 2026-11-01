@@ -16,7 +16,7 @@ import {galaxyIdentity,galaxyDistanceReference} from './core/galaxyIdentity';
 import {useEffect,useRef,useState,useMemo,useImperativeHandle,useSyncExternalStore,type Ref} from 'react';
 import {t,fixed} from './i18n';
 import {useBoundedExposure} from './useBoundedExposure';
-import {activateGalaxy,cancelGalaxy,createGalaxyExposure,deactivateGalaxy,pauseGalaxy,resetGalaxy,galaxyCountsCsv,startGalaxy,tickGalaxy,galaxyDefinition,galaxySpectralRange,verifiedGalaxyConfiguration} from './core/galaxyExposure';
+import {activateGalaxy,cancelGalaxy,createGalaxyExposure,deactivateGalaxy,pauseGalaxy,resetGalaxy,galaxyCountsCsv,startGalaxy,tickGalaxy,galaxyDefinition,galaxySpectralRange,verifiedGalaxyConfiguration,galaxyRangeRefusal} from './core/galaxyExposure';
 import {readGalaxySession,serializeGalaxySession} from './io/galaxySession';
 import {createGalaxyObservation,type GalaxyObservation} from './io/galaxyObservation';
 import type {RgbImage} from './core/photons';
@@ -24,8 +24,12 @@ import {GalaxySpectrumSave} from './observatory/RouteSpectrumSave';
 import SpectrometerReadout,{useSpectrometerObject} from './observatory/SpectrometerReadout';
 
 import './sky-exposure.css';
-/** Front S2 round 2: a new exposure takes the page's range (VIREO's default 3700–4700 Å, or the witnessed 4000–5000 Å). */
-function exposureEngine(targetId:string,index:0|1|2,range:{current:SpectralRange},report:{current:((r:SpectralRange)=>void)|undefined}){return {create:(seed:number)=>{const r=range.current;if(spectralRangeCoverage('hubble',r)!=='covered')throw errorFor('galaxyExposure.rangeNotWitnessed');return createGalaxyExposure(seed,targetId,index,r);},activate:(s:Parameters<typeof activateGalaxy>[0])=>{if(galaxyTelescopeIndex(s)!==index)throw errorFor('galaxyExposure.chooseJournalTarget');return activateGalaxy(s);},start:startGalaxy,tick:tickGalaxy,pause:pauseGalaxy,deactivate:deactivateGalaxy,reset:resetGalaxy,cancel:cancelGalaxy,csv:galaxyCountsCsv,serialize:serializeGalaxySession,read:async(file:File)=>{const s=await readGalaxySession(file);if(galaxyPolicyRange(s.policy)?.base!==galaxyDefinition(targetId,index).policyId)throw errorFor('galaxyExposure.chooseJournalTarget');
+/** Front S2 round 2: a new exposure takes the page's range (VIREO's default 3700–4700 Å). Front S3: any dialog range; a range on
+ * which this galaxy has no spectrum, or whose mean is over the bound, is refused with its own message. */
+// S3 review 1 L4: 'too bright' (mean-bound) is a web refusal that no Hubble pair reaches on any dialog range (0 of 21,060 pair × range
+// cells); it stays as a guard.
+function rangeRefusalKey(targetId:string,index:0|1|2,r:SpectralRange){if(spectralRangeCoverage('hubble',r)!=='covered')return 'galaxyExposure.rangeNotWitnessed' as const;const why=galaxyRangeRefusal(targetId,index,r);return why==='spectrum-range'?'galaxyExposure.rangeNoSpectrum' as const:why==='mean-bound'?'galaxyExposure.rangeTooBright' as const:null;}
+function exposureEngine(targetId:string,index:0|1|2,range:{current:SpectralRange},report:{current:((r:SpectralRange)=>void)|undefined}){return {create:(seed:number)=>{const r=range.current,why=rangeRefusalKey(targetId,index,r);if(why)throw errorFor(why,{min:r.minimum.toFixed(1),max:r.maximum.toFixed(1)});return createGalaxyExposure(seed,targetId,index,r);},activate:(s:Parameters<typeof activateGalaxy>[0])=>{if(galaxyTelescopeIndex(s)!==index)throw errorFor('galaxyExposure.chooseJournalTarget');return activateGalaxy(s);},start:startGalaxy,tick:tickGalaxy,pause:pauseGalaxy,deactivate:deactivateGalaxy,reset:resetGalaxy,cancel:cancelGalaxy,csv:galaxyCountsCsv,serialize:serializeGalaxySession,read:async(file:File)=>{const s=await readGalaxySession(file);if(galaxyPolicyRange(s.policy)?.base!==galaxyDefinition(targetId,index).policyId)throw errorFor('galaxyExposure.chooseJournalTarget');
  // Review 2 closure R1: a restored session file makes its range the page's range (as for the star and sky routes).
  // Review 3 H1: only a marked range moves the page; an unmarked legacy file keeps its own 4000–5000 Å [W].
  const r=galaxyRestoreRange(s.policy);if(r){range.current=r;report.current?.(r);}return s;},basename:index===2?`openvireo-galaxy-mayall-${targetId}`:index===1?`openvireo-galaxy-kpno09-${targetId}`:'openvireo-galaxy',activated:t('galaxyExposure.activated'),started:t('galaxyExposure.started'),restored:t('galaxyExposure.restored')};}
@@ -48,12 +52,13 @@ function GalaxyExposurePanel({spectralRange=DEFAULT_SPECTRAL_RANGE,onSpectralRan
  // HTML ids cannot contain spaces ("NGC 7501"); earlier identifiers are unchanged.
  const domId=`${targetId.replace(/ /g,'-')}${telescopeIndex===2?'-mayall':telescopeIndex===1?'-kpno09':''}`;
  // Front S2: the continuation note follows the configuration in use (the exposure's interval, else the page's range).
- const continued=(()=>{try{return !!(verifiedGalaxyConfiguration(targetId,telescopeIndex,state?galaxySpectralRange(state):spectralRange) as {continuationSource?:unknown}).continuationSource;}catch{return false;}})();
+// Front S3: only the visible panel computes it (every panel stays mounted; each would otherwise build a configuration per range).
+ const continued=active&&(()=>{try{return !!(verifiedGalaxyConfiguration(targetId,telescopeIndex,state?galaxySpectralRange(state):spectralRange) as {continuationSource?:unknown}).continuationSource;}catch{return false;}})();
  // Review 2 M1: the axis labels follow the exposure's interval (else the page's range), as the grid 0x50ec98 does.
  // Review 2 L3: VIREO's dialog on this route (TSpectrometer 0x510fc8); only the witnessed ranges are accepted here [W]. OK starts a
  // fresh exposure on the new range (0x5110b0).
  function applyRange(r:SpectralRange){
-  if(spectralRangeCoverage('hubble',r)!=='covered'){setError(t('galaxyExposure.rangeNotWitnessed'));return;}
+  const why=rangeRefusalKey(targetId,telescopeIndex,r);if(why){setError(t(why,{min:r.minimum.toFixed(1),max:r.maximum.toFixed(1)}));return;}
   let v=1;try{v=parseJournalSeed(seed);}catch{/* default seed */}
   try{const fresh=createGalaxyExposure(v,targetId,telescopeIndex,r);rangeRef.current=r;onSpectralRange?.(r);restoreSnapshot(fresh);setNotice(SR.current(r.minimum.toFixed(1),r.maximum.toFixed(1)));}catch{setError(t('galaxyExposure.rangeNotWitnessed'));}
  }

@@ -13,7 +13,8 @@ import {roundNearestEven as round} from './numericPolicy';
  * is therefore unbounded since Front L4 and paints in place, clipped to the cache (paintAdaptedGalaxyInPlace). The finder keeps
  * 1200 px [W], which covers every V ≤ 12 catalogue galaxy (the LMC, A0524-6948, ≈1099 px; G5 closure N1). A galaxy whose minor
  * axis rounds to 0 px (1010-0122, 900′ × 0) is still outside the stamp: 0x594488 stretches into a zero-height rect, so it
- * composes nothing [I]; callers list it as unpainted. */
+ * composes nothing [I]; callers list it as unpainted.
+ * (L4 review L1) That is the code: VIREO's draw also allocates two (2a+1)² bitmaps per galaxy (0x5945b2, 0x594643), about 4.8×10⁸ px each for the LMC (and the SMC is of the same order), which Win32 would very likely fail to allocate [I]; the web's acquiring of fields that hold them is therefore [W]/[I], not a recovered VIREO outcome. */
 export const GALAXY_STAMP_SCALES=Object.freeze({telescope:Object.freeze({pixelsPerArcminute:936/.75/60,bankOffset:6,maxMajor:Number.POSITIVE_INFINITY}),finder:Object.freeze({pixelsPerArcminute:936/7.5/60,bankOffset:1,maxMajor:1200})});
 export type GalaxyStampScale=typeof GALAXY_STAMP_SCALES[keyof typeof GALAXY_STAMP_SCALES];
 export function galaxyStampGeometry(g:NativeGalaxy,magnitudeShift=-2,scale:GalaxyStampScale=GALAXY_STAMP_SCALES.telescope){

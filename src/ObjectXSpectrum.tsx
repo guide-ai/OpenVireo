@@ -1,4 +1,5 @@
-import {DEFAULT_SPECTRAL_RANGE,type SpectralRange} from './core/spectralRange';
+import {DEFAULT_SPECTRAL_RANGE,sameRange,type SpectralRange} from './core/spectralRange';
+import {parseObjectXSpectrumPolicy} from './core/objectXSpectrometer';
 import {spectralRangeCoverage} from './core/spectralRangeCoverage';
 import SpectralRangeRow from './SpectralRangeRow';
 import {SPECTRAL_RANGE_EN as SR} from './SpectralRangeMessages';
@@ -42,7 +43,7 @@ export default function ObjectXSpectrum({spectralRange=DEFAULT_SPECTRAL_RANGE,on
   if(spectralRangeCoverage('objectx',spectralRange)!=='covered'){setView({kind:'range'});return;}
   setView({kind:'loading'});
   try{
-   const r=await observeObjectXSpectrum({ra:target.ra,dec:target.dec},telescope);if(ticket.current!==mine)return;
+   const r=await observeObjectXSpectrum({ra:target.ra,dec:target.dec},telescope,spectralRange);if(ticket.current!==mine)return;
    if(r.status==='unavailable'){setView({kind:'unavailable'});return;}
    const seed=crypto.getRandomValues(new Uint32Array(1))[0]>>>0;
    setView({kind:'ready',result:r,state:r.engine.activate(r.engine.create(seed)),keptAs:null});
@@ -52,7 +53,7 @@ export default function ObjectXSpectrum({spectralRange=DEFAULT_SPECTRAL_RANGE,on
  async function show(rec:ObjectXSpectrumRecord,pointing:Readonly<{ra:number;dec:number}>){
   const mine=++ticket.current;stopTimer();setView({kind:'loading'});
   try{
-   const r=await observeObjectXSpectrum(pointing,rec.telescope);if(ticket.current!==mine)return;
+   const r=await observeObjectXSpectrum(pointing,rec.telescope,rec.range??DEFAULT_SPECTRAL_RANGE);if(ticket.current!==mine)return;
    if(r.status!=='available'){setView({kind:'error'});return;}
    setView({kind:'kept',result:r,state:r.engine.replay(rec.seedAtReset,rec.events),label:rec.label,pointing});
   }catch(e){if(ticket.current===mine)setView({kind:objectXSpectrometerFailure(e)==='evidence'?'invalid':'error'});}
@@ -73,7 +74,9 @@ export default function ObjectXSpectrum({spectralRange=DEFAULT_SPECTRAL_RANGE,on
  function keep(){
   if(view.kind!=='ready'||!target)return;
   const name=`${label}-S${String(spectra.length+1).padStart(2,'0')}`;
-  onKeep(Object.freeze({label:name,code:target.code,telescope:view.result.telescope,seedAtReset:view.state.seedAtReset,events:view.state.events}));
+  // Front S3: a spectrum taken on an admitted non-default range keeps that range (absent at the default: the record's bytes are unchanged).
+  const taken=parseObjectXSpectrumPolicy(view.state.policy).range;
+  onKeep(Object.freeze({label:name,code:target.code,telescope:view.result.telescope,seedAtReset:view.state.seedAtReset,events:view.state.events,...(sameRange(taken,DEFAULT_SPECTRAL_RANGE)?{}:{range:taken})}));
   setView({...view,keptAs:name});
  }
  function saveCsv(name:string,r:Available,s:JournalState){

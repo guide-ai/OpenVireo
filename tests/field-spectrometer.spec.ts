@@ -66,15 +66,16 @@ test('near an Object X position the field is masked',async({page})=>{
  await pointAndUse(page,'12.485194444444444','2.0522222222222224');
  await expect(page.getByTestId('field-spec-status')).toHaveAttribute('data-reason','object-x-hidden',{timeout:60000});
 });
-test('Front S2: the range opener on the field spectrometer; a galaxy is refused off the default and observed again at Default',async({page})=>{
+// Re-pinned 2026-10-31 (Front S3): the galaxy is observed off the default (galaxyRangeAll witness), with its grid on the range.
+test('Front S2/S3: the range opener on the field spectrometer; a galaxy is observed off the default and again at Default',async({page})=>{
  test.setTimeout(180000);await open(page);
  await pointAndUse(page,'12.99311111111111','27.959722222222222');
  await expect(page.getByTestId('field-spec-field')).toBeVisible({timeout:90000});
  await page.getByTestId('field-spec-range-open').click();
  await page.getByTestId('spectral-range-min').fill('5');await page.getByTestId('spectral-range-max').fill('15');await page.getByTestId('spectral-range-ok').click();
  await expect(page.getByTestId('field-spec-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).');
- await expect(page.getByTestId('field-spec-status')).toHaveAttribute('data-reason','range-not-witnessed',{timeout:90000});
- await expect(page.getByTestId('field-spec-status')).toContainText('not yet verified');
+ await expect(page.getByTestId('field-spec-field')).toBeVisible({timeout:90000});await expect(page.getByTestId('field-spec-status')).toHaveCount(0);
+ await expect(page.getByTestId('field-spec-acquisition')).toBeVisible();
  await page.getByTestId('field-spec-range-open').click();await page.getByTestId('spectral-range-default').click();await page.getByTestId('spectral-range-ok').click();
  await expect(page.getByTestId('field-spec-field')).toBeVisible({timeout:90000});await expect(page.getByTestId('field-spec-acquisition')).toBeVisible();
 });

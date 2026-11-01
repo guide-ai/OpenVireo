@@ -40,10 +40,14 @@ export function readOpticalOptions(value:unknown):OpticalOptions{
  *   ID names the current object in the photometer label and recorded name, the spectrometer Object box and Save/Print names, and
  *   the camera's default FITS name and OBJECT card; Mag shows the spectrometer's V (with Edit Mode too). Front R4,
  *   docs/FRONT-R4-OPTIONS.md. Nothing turns them off within a session except Options OK/Reset.
+ * - allowUserChange (RngChngBox, Spectrometer tab "Allow User Change"): +0x27d7 = env+0x2e8b, compiled 1 (0x5a2a32); the
+ *   options file 0x5a4370/0x5a53df and options apply 0x5a623c write it. TSpectrometer FormShow (0x50d9d5 → [+0x3dc].Enabled) and
+ *   TSpClassify FormShow (0x507945 → [+0x440].Enabled) enable their Spectral Range menu item from it; nothing else reads it
+ *   (Front S3); the options dialog's FormActivate also reads it at 0x5a5ae3 to set the check box (S3 review 1 nit). [W] the web's openers follow it at once (the options dialog is on another page, so the next show reads it).
  * [W] WEB-OPT-R3: like Edit Mode and Virtual Observatory these are page-session checkboxes, open to anyone and not saved. */
-export type SessionOpticalOptions=Readonly<{fastSlewing:boolean;fastScopeChange:boolean;computeRedshiftVelocity:boolean;infraredCamera:boolean;monochromeDisplays:boolean;printInColor:boolean;timeDependentData:boolean;showObjectId:boolean;showObjectMag:boolean}>;
-export const COMPILED_SESSION_OPTICAL_OPTIONS:SessionOpticalOptions=Object.freeze({fastSlewing:true,fastScopeChange:false,computeRedshiftVelocity:false,infraredCamera:true,monochromeDisplays:false,printInColor:false,timeDependentData:false,showObjectId:false,showObjectMag:false});
-export const SESSION_OPTION_CAPTIONS:Readonly<Record<keyof SessionOpticalOptions,string>>=Object.freeze({fastSlewing:'Fast Slewing',fastScopeChange:'Fast Scope Change',computeRedshiftVelocity:'Compute Rdshft Vel.',infraredCamera:'Infrared Camera',monochromeDisplays:'Monochrome Displays',printInColor:'Print in Color',timeDependentData:'Time-Dependent Data',showObjectId:'Show Object ID',showObjectMag:'Show Object Mag.'});
+export type SessionOpticalOptions=Readonly<{fastSlewing:boolean;fastScopeChange:boolean;computeRedshiftVelocity:boolean;infraredCamera:boolean;monochromeDisplays:boolean;printInColor:boolean;timeDependentData:boolean;showObjectId:boolean;showObjectMag:boolean;allowUserChange:boolean}>;
+export const COMPILED_SESSION_OPTICAL_OPTIONS:SessionOpticalOptions=Object.freeze({fastSlewing:true,fastScopeChange:false,computeRedshiftVelocity:false,infraredCamera:true,monochromeDisplays:false,printInColor:false,timeDependentData:false,showObjectId:false,showObjectMag:false,allowUserChange:true});
+export const SESSION_OPTION_CAPTIONS:Readonly<Record<keyof SessionOpticalOptions,string>>=Object.freeze({fastSlewing:'Fast Slewing',fastScopeChange:'Fast Scope Change',computeRedshiftVelocity:'Compute Rdshft Vel.',infraredCamera:'Infrared Camera',monochromeDisplays:'Monochrome Displays',printInColor:'Print in Color',timeDependentData:'Time-Dependent Data',showObjectId:'Show Object ID',showObjectMag:'Show Object Mag.',allowUserChange:'Allow User Change'});
 /** VIREO's exercise byte env+0x383f as the TEnvironment1 exercise menus write it: Object X 1, Stellar Spectra 2, Photometry 3,
  * Hubble 4, LSS 5, Pulsars 6, HR Diagrams 7; 0 before any (A-object-id-mag-nearest.md §4, show-object-id.md §4). */
 export type ExerciseCode=0|1|2|3|4|5|6|7;
