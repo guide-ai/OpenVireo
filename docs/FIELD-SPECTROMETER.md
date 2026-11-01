@@ -82,7 +82,8 @@ Multi-Spec at any pointing (G4b) is described in MULTI-SPEC.md.
     Show Object ID is on; the bytes do not depend on the option. The Object / App. Mag (V) boxes and the print lines follow
     Show Object ID / Show Object Mag (docs/FRONT-R4-OPTIONS.md, R4d).
   - File name: `field-<locator>.ssp`, using only letters, digits and '-', so the file-name ID keeps the whole locator.
-- **Print.** Uses the shared spectrum print card, so the print header (0x58e860, Front H2) applies once H2 is merged.
+- **Print.** Uses the shared spectrum print card, so it carries VIREO's print header (0x58e860, Front H2) and, since Front
+  RE6, the print body 0x510240.
 - **Analyze / Classify.** Both read the exposure's own .SSP back as if the student had opened the saved file. Analyze opens it in
   the spectrum analyser; Classify opens it as an imported spectrum. If the analyser is busy with a file operation, the page
   says so instead of blaming the spectrum.
