@@ -2,7 +2,7 @@ import {useEffect,useId,useRef,useState,type ReactNode} from 'react';
 import WebPrintPreview from '../polish/WebPrintPreview';
 import {POLISH_MESSAGES as PM} from '../polish/PolishMessages';
 import {VARIABLE_FIELD_LITERALS as VL} from '../core/variableFieldLiterals';
-import {OBSERVATORY_DATE_CAPTIONS as DC,observatoryDateEntry,observatoryDatePrefill} from '../core/observatoryDateTime';
+import {OBSERVATORY_DATE_CAPTIONS as DC,OBSERVATORY_ID_MAX_LENGTH,observatoryDateEntry,observatoryDatePrefill,observatoryIdEditable,observatoryIdEntry} from '../core/observatoryDateTime';
 import {SITE_INFORMATION_LITERALS,STATION_DIALOG_CAPTIONS as SC,parseStationDraft,siteInformationLines,stationDraft,type ObservatorySite,type StationDraft,type StationField} from '../core/observatorySite';
 import type {OpticalIndex} from '../core/opticalTelescope';
 import {menuCaptionText} from '../core/radioControl';
@@ -24,14 +24,16 @@ function ErrorBox({caption,text,onClose,testId}:{caption:string;text:string;onCl
 
 /** Observatory site & time menu (Front B, B6): Set Date/Time (OB-DT-01, applies the site clock UT), Site Parameters
  * (OB-ST-02/03, WEB-ST-01: clocks and horizon only) and Site Information (OB-ST-01, read-only). */
-export default function SiteDialogs({utc,site,overridden,index,limitSlewing,onApplyUTC,onSite}:{utc:string;site:ObservatorySite;overridden:boolean;index:OpticalIndex;limitSlewing:boolean;onApplyUTC:(utc:string)=>void;onSite:(site:ObservatorySite|null)=>void}){
- const id=useId(),[date,setDate]=useState<{date:string;time:string}|null>(null),[dateError,setDateError]=useState(''),[station,setStation]=useState<StationDraft|null>(null),[stationError,setStationError]=useState(''),[info,setInfo]=useState(false),[infoPrint,setInfoPrint]=useState(false);
- const dateOk=()=>{if(!date)return;const r=observatoryDateEntry(date.date,date.time);if(r.status!=='ok'){setDateError(r.failure.field==='date'?M.dateError:r.failure.field==='time'?M.timeError:M.rangeError);return;}setDate(null);onApplyUTC(r.utc);};
+export default function SiteDialogs({utc,site,overridden,index,limitSlewing,onApplyUTC,onSite,sessionId='',onApplyId}:{utc:string;site:ObservatorySite;overridden:boolean;index:OpticalIndex;limitSlewing:boolean;onApplyUTC:(utc:string)=>void;onSite:(site:ObservatorySite|null)=>void;
+ /** Front RE6: the page's one Set Date/Time ID (ShortString 0x5bc1e4); OK writes it first (0x4fdf0c), empty → UNKNOWN. */
+ sessionId?:string;onApplyId?:(id:string)=>void}){
+ const id=useId(),[date,setDate]=useState<{date:string;time:string;id:string}|null>(null),[dateError,setDateError]=useState(''),[station,setStation]=useState<StationDraft|null>(null),[stationError,setStationError]=useState(''),[info,setInfo]=useState(false),[infoPrint,setInfoPrint]=useState(false);
+ const dateOk=()=>{if(!date)return;onApplyId?.(observatoryIdEntry(date.id));const r=observatoryDateEntry(date.date,date.time);if(r.status!=='ok'){setDateError(r.failure.field==='date'?M.dateError:r.failure.field==='time'?M.timeError:M.rangeError);return;}setDate(null);onApplyUTC(r.utc);};
  const stationOk=()=>{if(!station)return;const r=parseStationDraft(station);if(r.status==='error'){setStationError(r.message);return;}if(r.status==='unsupported'){setStationError(r.field==='name'?M.nameUnsupported:M.horizonUnsupported);return;}setStation(null);onSite(r.site);};
  const sf=(name:StationField,label:string,maxLength?:number)=><label className="ob-field"><span>{label}</span><input type="text" autoComplete="off" spellCheck={false} maxLength={maxLength??32} title={SC.hints[name]} data-testid={`ob-station-${name}`} value={station?.[name]??''} onChange={e=>setStation(s=>s&&{...s,[name]:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();stationOk();}}}/></label>;
  return <div className="ob-site-dialogs">
   <div className="ob-menu">
-   <button type="button" className="secondary-button" data-testid="ob-set-date" onClick={()=>{setDateError('');setDate(observatoryDatePrefill(utc));}}>{M.dateOpen}</button>
+   <button type="button" className="secondary-button" data-testid="ob-set-date" onClick={()=>{setDateError('');setDate({...observatoryDatePrefill(utc),id:sessionId});}}>{M.dateOpen}</button>
    <button type="button" className="secondary-button" data-testid="ob-site-parameters" onClick={()=>{setStationError('');setStation(stationDraft(site));}}>{M.siteOpen}</button>
    <button type="button" className="secondary-button" data-testid="ob-site-information" onClick={()=>setInfo(true)}>{M.infoOpen}</button>
    {overridden&&<button type="button" className="secondary-button" data-testid="ob-site-reset" onClick={()=>onSite(null)}>{M.reset}</button>}
@@ -39,6 +41,7 @@ export default function SiteDialogs({utc,site,overridden,index,limitSlewing,onAp
   <p className="observatory-note" data-testid="ob-site-status">{overridden?M.overridden(site.name):M.compiled} {M.adaptation}</p>
   <Modal open={date!==null} label={DC.form} testId="ob-date-dialog" onCancel={()=>setDate(null)}>
    <h2 className="ob-native">{DC.form}</h2>
+   {onApplyId&&<div className="ob-group"><label className="ob-field"><span>{DC.id} {DC.idSource}</span><input type="text" autoComplete="off" spellCheck={false} maxLength={OBSERVATORY_ID_MAX_LENGTH} title={DC.idHint} data-testid="ob-date-id" value={date?.id??''} onChange={e=>{const v=e.target.value;if(observatoryIdEditable(v))setDate(d=>d&&{...d,id:v});}} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();dateOk();}}}/></label></div>}
    <div className="ob-group"><label className="ob-field"><span>{DC.date} ({DC.dateFormat})</span><input type="text" maxLength={RADIO_DATE_WEB_LIMITS.fieldMaxLength} title={DC.dateHint} data-testid="ob-date-date" value={date?.date??''} onChange={e=>setDate(d=>d&&{...d,date:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();dateOk();}}}/></label>
     <label className="ob-field"><span>{DC.time} ({DC.timeFormat})</span><input type="text" maxLength={RADIO_DATE_WEB_LIMITS.fieldMaxLength} title={DC.timeHint} data-testid="ob-date-time" value={date?.time??''} onChange={e=>setDate(d=>d&&{...d,time:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();dateOk();}}}/></label></div>
    <p className="ob-note">{M.dateHelp}</p>

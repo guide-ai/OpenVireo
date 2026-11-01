@@ -49,7 +49,10 @@ test('star route: off shows no boxes and keeps the web file name; on shows the n
  const on=await saveSsp(page);expect(on.name).toBe(`${name.trim()}.SSP`);
  // The header is not an option reader: the .SSP starts with the same header as the one saved with the options off.
  expect(on.bytes.toString('latin1').split('\r\n')[0]).toBe(off.bytes.toString('latin1').split('\r\n')[0]);
- await expect(page.getByTestId('ob-spectrum-print-object')).toHaveText(new RegExp(`^Object: ${name.trim()}\\nApparent Magnitude \\(V\\): ${(await mag.textContent())!.trim().replace('.','\\.')}$`));
+ // Front RE6: the object lines are part of VIREO's print body 0x510294 (rows 260/280 at x 16).
+ const body=page.getByTestId('ob-spectrum-print-body');
+ await expect(body.locator('text[data-role=object]')).toHaveText(`Object: ${name.trim()}`);
+ await expect(body.locator('text[data-role=magnitude]')).toHaveText(`Apparent Magnitude (V): ${(await mag.textContent())!.trim()}`);
  // Show Object Mag alone: the magnitude box stays, the Object box goes, Save is the web name again.
  await setVireoOptions(page,{'show-object-id':false});
  await expect(page.getByTestId('spec-readout-id')).toHaveCount(0);await expect(page.getByTestId('spec-readout-mag')).toHaveText(/\d+\.\d\d$/,{timeout:60_000});
@@ -112,6 +115,7 @@ test('Object X: at all 17 targets, with both options on, the boxes, Save name an
   const s=await saveSsp(page);expect(s.name,code).toBe('ObjX-7.ssp');
   const text=s.bytes.toString('latin1');expect(text.split('\r\n')[0],code).toMatch(/^\*SpHdr\* ObjX-7,-?\d+\.\d{6},-?\d+\.\d{5},0\.000$/);expect(leaksIn(text),code).toEqual([]);
   await expect(page.getByTestId('ob-spectrum-print-object')).toHaveCount(0);
+  await expect(page.getByTestId('ob-spectrum-print-body').locator('text[data-role=object], text[data-role=magnitude]')).toHaveCount(0);
   if(exposed===1){
    await button(page,'Keep this spectrum').click();
    const d=page.waitForEvent('download');await button(page,'Save ObjX-7-S01 spectrum (CSV)').click();const dl=await d;

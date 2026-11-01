@@ -34,7 +34,7 @@ contracts built on those values.
   for Random(8000) ms, then the "Telescope Successfully Accessed" message, then resets to the finder view. Here the change
   is applied at once.
 
-## Not ported, with the reason
+## Ported in later fronts, and not ported (with the reason)
 - **Time-Dependent Data** for the classification results (Front R4c, 0x50b1dc → 0x54a73c): the option replaces the
   Observation Results window's own "append" checkbox. Off (compiled), Open reuses the current object's first result; on, each
   confirmation adds a row.
@@ -48,7 +48,7 @@ contracts built on those values.
 
   Front P3 wires it: the photometer's **Record/Review** reads the option at Record and writes the photometer results list
   (docs/PHOTOMETER-RECORD.md). The web notebook entry beside it keeps one entry per reading and does not read the option.
-- **Write Log File** (+0x27d6, off) appends login, component and logout records to CLEALOG.LOG. A web page cannot write
+- **Write Log File** — not ported (+0x27d6, off): it appends login, component and logout records to CLEALOG.LOG. A web page cannot write
   that file.
 - **Monochrome Displays and Print in Color** for the light curve (Front R4b, `src/core/lightCurveScheme.ts`): VIREO creates
   the light-curve window once per run and writes its colour flag only in Print (0x52c1cc). So the light curve is drawn in
@@ -67,5 +67,5 @@ contracts built on those values.
   - Print (0x542f44) prints in colour only with Print in Color, then the window takes Monochrome Displays again. Cancelling
     the print preview writes nothing (0x542fc5).
   - The photometer route's own web plot is not VIREO's form and keeps its colours.
-- Demonstration, Test, Restrict Scope Access, Administrator and the photometer/spectrometer check boxes keep their
+- Not ported: Demonstration, Test, Restrict Scope Access, Administrator and the remaining photometer check boxes keep their
   compiled state and are listed as text.

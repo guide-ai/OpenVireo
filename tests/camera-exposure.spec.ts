@@ -130,9 +130,10 @@ test('Save image writes a FITS file that reopens under Saved images with the sam
  await objectXId('42');
  const idDownload=page.waitForEvent('download');await button(page,'Save image (VIREO header)').click();const withId=await idDownload;
  expect(withId.suggestedFilename()).toBe('ObjX-42-01.FIT');expect((await readFile((await withId.path())!)).subarray(80*5,80*6).toString('latin1')).toMatch(/^OBJECT  = 'ObjX-42 '/);
- await objectXId('María');let downloaded=false;page.on('download',()=>{downloaded=true;});
- await button(page,'Save image (VIREO header)').click();await expect(page.getByTestId('camera-save-error')).toContainText('only plain ASCII');expect(downloaded).toBe(false);
- // RE5 review 1 L-c (Front F3): the alert belongs to the ID it was about; changing the ID clears it.
+ // Front RE6 review 1: the lab's ID field follows the Set Date/Time dialogs' printable-ASCII rule, so 'María' is refused there and the
+ // ID stays 42 (the camera's own ASCII guard stays as a defence).
+ await page.evaluate(()=>{location.hash='#object-x';});const idField=page.getByLabel('ID # of your unknown object (from the lab sheet or instructor)');
+ await idField.fill('María');await expect(idField).toHaveValue('42');
  await objectXId('');await expect(page.getByTestId('camera-save-error')).toHaveCount(0);
  await page.goto('/#images');
  await page.getByLabel('Open float32 FITS image (up to 5 MiB)',{exact:true}).setInputFiles({name:d.suggestedFilename(),mimeType:'application/octet-stream',buffer:bytes});

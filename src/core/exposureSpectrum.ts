@@ -3,6 +3,7 @@ import {STAR_TARGET,starSpectralRange,type StarState} from './starExposure';
 import {galaxyStateDefinition,galaxySpectralRange,type GalaxyState} from './galaxyExposure';
 import type {JournalState} from './exposureJournal';
 import type {FieldResult} from './fieldEngine';
+import {catalogRecords} from './catalogObject';
 import type {LssRow} from './lssFields';
 
 /** Recovered save profile, supplied by the bound acquisition configuration.
@@ -10,10 +11,17 @@ import type {LssRow} from './lssFields';
  * Source PLUS sky counts are passed unchanged; no measured z is serialized.
  * Numerical/byte policy: docs/SPECTRUM-SAVE-CONTRACT.md.
  */
+/** Front RE6 review 1 L4: VIREO's name for a compact-GSC record, `<band>-<name>` (0x59b125..0x59b196: Copy(s,5,5) + '-' + the record's
+ * name, at most 5 characters at +0x15), from the record's locator (`N0000.DAT@14428`) and raw bytes. The star route's target is
+ * `N0000-00008`. */
+export function gscStarHeaderName(id:string,rawHex:string):string{
+ const b=(rawHex.match(/../g)??[]).map(h=>parseInt(h,16)),len=b[0x15]??0;if(len>5||b.length<0x16+len)throw new RangeError('GSC record');
+ return `${id.split('.')[0]}-${String.fromCharCode(...b.slice(0x16,0x16+len))}`;
+}
 export function starSpectrumBytes(state:StarState):Uint8Array {
  // Front S (S1): rows from the exposure's spectrometer range (Save 0x50fb1c: λ from env+0x2bd4, step (max − min)/600).
  const range=starSpectralRange(state);
- return serializeDotDecimalVireoSpectrum({object:STAR_TARGET.id,pointingRa:STAR_TARGET.ra,pointingDec:STAR_TARGET.dec,apparentMagnitude:STAR_TARGET.magnitudeSingle,minimum:range.minimum,step:(range.maximum-range.minimum)/600,counts:state.exposure.counts});
+ return serializeDotDecimalVireoSpectrum({object:gscStarHeaderName(STAR_TARGET.id,STAR_TARGET.rawHex),pointingRa:STAR_TARGET.ra,pointingDec:STAR_TARGET.dec,apparentMagnitude:STAR_TARGET.magnitudeSingle,minimum:range.minimum,step:(range.maximum-range.minimum)/600,counts:state.exposure.counts});
 }
 export function galaxySpectrumBytes(state:GalaxyState):Uint8Array {
  // Front S2: rows from the exposure's interval (legacy 4000 Å, or VIREO's 3700 Å with step 1000/600).
@@ -31,9 +39,8 @@ export function lssSpectrumBytes(state:JournalState,result:FieldResult,row:Pick<
 /** Front S (S6, docs/OBJECT-X-SPECTRA.md): an Object X spectrum through the same writer. VIREO's header (0x510090) always holds
  * the selected catalog object's name and catalog magnitude. While the identity is hidden OpenVireo writes the student's ObjX
  * label as the object (ASCII, commas and other characters replaced by '_', ≤24) and magnitude 0.000 [W]; after the reveal
- * (`revealed`, coordinator decision D4, 2026-10-29) it writes the selected record's catalog magnitude and, as the object, the
- * web field engine's record locator (e.g. `N3730.DAT@513845`, `CLEA_QSO.DAT@522`, `NGC 2403`) [W]: which name VIREO writes
- * for each Object X type is not recovered (research RE-observational-data-metadata.md U6). The pointing is the target's
+ * (`revealed`, coordinator decision D4, 2026-10-29) it writes the selected record's catalog magnitude and, as the object, VIREO's
+ * name for that record (Front RE6 U6: `fieldSpectrumHeaderName`, e.g. `N3730-00412`, the QSO name, `NGC 2403`). The pointing is the target's
  * coordinates, which the student was given. */
 export const OBJECT_X_HEADER_MAGNITUDE=0;
 /** The .SSP file name for an Object X label (review L5): characters other than letters, digits and '-' become '-', never '_',
@@ -47,9 +54,17 @@ export function objectXSpectrumBytes(state:JournalState,label:string,pointing:Re
  return serializeDotDecimalVireoSpectrum({object:revealed?revealed.object.slice(0,24):objectXHeaderObject(label),pointingRa:pointing.ra,pointingDec:pointing.dec,apparentMagnitude:revealed?revealed.magnitude:OBJECT_X_HEADER_MAGNITUDE,minimum,step:1000/600,counts:state.exposure.counts});
 }
 
-/** Front G (G4c): the field spectrometer at any pointing, through the same writer. Header object = the slit's record locator
- * (`NGC 4874`, `N0000.DAT@63282`, `CLEA_QSO.DAT@522`; printable ASCII, commas → '_', ≤24) [W]: which name VIREO writes for a GSC
- * star or a QSO is not recovered (research RE-observational-data-metadata.md U6). Magnitude = that record's catalogue magnitude;
+/** Front RE6 (U6, research front-re6/U6-ssp-header-name.md): the name VIREO's header 0x510090 writes for the slit object, which
+ * is the current-object record's ShortString (P+0) [D]: a GSC star `<band>-<name>` (0x59b125..0x59b196), a kept variable its GCVS
+ * ID, a QSO its CLEA_QSO.DAT name (0x5987e4), a galaxy its catalogue or photograph name — the names `catalogRecords` builds for
+ * the same field. null when the result has no star or galaxy selection, or the record cannot be built (callers keep the locator). */
+export function fieldSpectrumHeaderName(result:FieldResult):string|null{
+ const p=result.population,sel=result.selection;if(!p||!sel||(sel.kind!=='star'&&sel.kind!=='galaxy'))return null;
+ try{const r=catalogRecords(p);return (sel.kind==='star'?r.stars[sel.star.index]?.id:r.galaxies[sel.galaxy.index]?.id)??null;}catch{return null;}
+}
+/** Front G (G4c): the field spectrometer at any pointing, through the same writer. Header object = VIREO's name for the slit object
+ * (`fieldSpectrumHeaderName`, Front RE6 U6: `N0000-01634`, the QSO name, `NGC 4874`; printable ASCII, commas → '_', ≤24); the record
+ * locator (`N0000.DAT@63282`) only where that name is unavailable [W]. Magnitude = that record's catalogue magnitude;
  * pointing = the field's pointing (frozen at Use, recorded in the policy); 600 source-plus-sky bins from the calibration's first
  * wavelength with the spectrometer's 1000/600 Å step (the calibration grid must have that spacing). */
 export function fieldSpectrumBytes(state:JournalState,result:FieldResult,pointing:Readonly<{ra:number;dec:number}>):Uint8Array {
@@ -58,7 +73,7 @@ export function fieldSpectrumBytes(state:JournalState,result:FieldResult,pointin
  // Front S2 review 1 M1: (minimum, step) from the exposure's grid; dialog ranges are 100 Å multiples, step = width/600.
  const w=c.wavelengths,step=Math.round((w[599]-w[0])*600/599/100)*100/600;if(!(step>0))throw new RangeError('field spectrum');
  for(let i=1;i<w.length;i++)if(Math.abs(w[i]-w[i-1]-step)>1e-6)throw new RangeError('field spectrum');
- return serializeDotDecimalVireoSpectrum({object:fieldSpectrumHeaderObject(o.id),pointingRa:pointing.ra,pointingDec:pointing.dec,apparentMagnitude:o.magnitude,minimum:w[0],step,counts:state.exposure.counts});
+ return serializeDotDecimalVireoSpectrum({object:fieldSpectrumHeaderObject(fieldSpectrumHeaderName(result)??o.id),pointingRa:pointing.ra,pointingDec:pointing.dec,apparentMagnitude:o.magnitude,minimum:w[0],step,counts:state.exposure.counts});
 }
 export function fieldSpectrumHeaderObject(id:string):string{return id.replace(/[^\x20-\x7e]|,/g,'_').trim().slice(0,24)||'UNKNOWN';}
 /** The field route's .SSP file name: only letters, digits and '-' (others → '-'), so VIREO's file-name ID rule (drop through the

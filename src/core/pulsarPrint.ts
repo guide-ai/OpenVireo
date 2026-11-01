@@ -6,9 +6,14 @@
  *     ' (Meters)', Number of Data Points ' (per Receiver)', Time Interval ×1000 F2 ' (MilliSeconds)'; 'Receiver Frequency
  *     (MHz):' then three receivers at x0+100 (F2, or '(Receiver Not Recorded)'); 'Receiver Gain (Relative):' then three (F3);
  *     'File Name: ' + the written name or '(Data Not Written To File)'. Courier 10. Portrait: 4H, then the whole window image.
+ * [D] Landscape (orientation 1, 0x56db1f..0x56db35, 0x56e08e..0x56e10d): x0 = 50 for every text line; after the text +300 units,
+ *     '(Screen Image Printed on Next Page)' at x 700; NewPage; name1 + ' - Page 2' (cap 49) at (x0, 0); the image at y 50.
+ * [D] The printed panels use the print palette (+0x5c6 = 1): white background, black axes, labels, trace and baseline; the
+ *     cursor colours are unchanged (Front RE6, `pulsar-print-palette` CSS on the preview copy).
  * [W] The web has no login, so the table line reads '(Not Recorded)' and name 1 is a blank line, as VIREO prints with nobody
- *     logged in; the page is portrait; printer-pixel x offsets become indents (+50 → 2 spaces, +100 → 4); the date is the
- *     browser's. The picture is the web panels, not the native 632×439 window image. */
+ *     logged in; the orientation is chosen in the preview (VIREO takes the printer's); printer-pixel x offsets become indents
+ *     (25 units per space: +50 → 2 spaces, +100 → 4, x 700 → 28) and +300 units three blank lines; the date is the browser's.
+ *     The picture is the web panels, not the native 632×439 window image. */
 import type {PlrProperties} from './pulsarRecording';
 
 export const PULSAR_PRINT_LITERALS=Object.freeze({
@@ -33,4 +38,15 @@ export function pulsarPrintLines(dateText:string,p:PlrProperties|null,written:st
  for(let k=0;k<3;k++){const r=receivers[k];out.push(IN2+L.receiver(k+1)+(k===0||r?.recorded?(r?.gain??''):L.receiverMissing));}
  out.push(IN1+L.file+(written??L.notWritten),'','','','');
  return Object.freeze(out);
+}
+
+export type PulsarPrintOrientation='portrait'|'landscape';
+export const PULSAR_PRINT_PAGE_LITERALS=Object.freeze({nextPage:'(Screen Image Printed on Next Page)',page2:' - Page 2'});
+/** The page for an orientation: the text lines above the image, and for landscape the page-2 line printed before the image. */
+export function pulsarPrintPage(dateText:string,p:PlrProperties|null,written:string|null,orientation:PulsarPrintOrientation):Readonly<{lines:readonly string[];page2:readonly string[]|null}>{
+ const portrait=pulsarPrintLines(dateText,p,written);
+ if(orientation==='portrait')return Object.freeze({lines:portrait,page2:null});
+ const x0='  ',name1='';
+ const lines=[...portrait.slice(0,-4).map(l=>l===''?'':x0+l),'','',' '.repeat(28)+PULSAR_PRINT_PAGE_LITERALS.nextPage];
+ return Object.freeze({lines:Object.freeze(lines),page2:Object.freeze([x0+(name1+PULSAR_PRINT_PAGE_LITERALS.page2).slice(0,49)])});
 }

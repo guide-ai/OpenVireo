@@ -91,7 +91,8 @@ export function cameraCurrentName(showObjectId:boolean,object:ShownCurrentObject
  *   95-byte record from the nil pointer at 0x50df98 and faults; it has no defined display).
  * - MagText (0x50e00b): visible with Show Object Mag OR Edit Mode; V with 2 decimals left-padded to 6; a sky reading leaves it
  *   empty; no check for the 30 "no magnitude" value.
- * - Save default name (0x50fb1c): (on: name, trailing spaces removed — `Sky` for a sky reading; off: Object X label) + the
+ * - Save default name (0x50fb1c): (on: name, trailing spaces removed — the nearest object's, also after a sky reading: `Sky` goes only to +0x315d
+ *   behind IDText, 0x50db37, never to the +0x318b copy Save reads; off: Object X label) + the
  *   extension (`.SSP`); no sky check of its own.
  * - Print (0x510294): a sky reading prints `Reading Sky` (0x5108cf → 0x510dc4) whatever the options; an object reading with the
  *   option on prints `Object: ` + name (0x510910: _PStrNCat, at most 32 characters on the whole line); the magnitude line
@@ -124,12 +125,12 @@ export function spectrometerPrintLines(o:SpectrometerReadoutOptions,skyReading:b
  return Object.freeze(lines);
 }
 /** Front R4d [W]: the Save default name a web spectrometer route offers. With Show Object ID on and a named current object, VIREO's
- * `Name.SSP` (0x50fb1c), or `Sky.SSP` for a sky reading; otherwise the route's own web name, unchanged, so the compiled default
+ * `Name.SSP` (0x50fb1c) — also after a sky reading: Save reads the 0x5f-byte copy +0x318b (0x50fb72), which never holds `Sky`
+ * (FormActivate writes `Sky` only to +0x315d, 0x50db37; Front RE6 U6) — otherwise the route's own web name, unchanged, so the compiled default
  * (off) saves byte-identical names. VIREO's off form (`UNKNOWN.SSP` / `ObjX-<ID>.SSP`) is not adopted: the web names carry the
  * Classify file-name ID. A name outside printable ASCII keeps the web name; `\ / : * ? " < > |` become `_`, as Multi-Spec's. */
-export function spectrometerDefaultFileName(o:SpectrometerReadoutOptions,object:ShownCurrentObject|null,webName:string,skyReading=false):string{
+export function spectrometerDefaultFileName(o:SpectrometerReadoutOptions,object:ShownCurrentObject|null,webName:string):string{
  if(!o.showObjectId)return webName;
- if(skyReading)return 'Sky.SSP';
  if(object?.status!=='object'||!/^[\x20-\x7e]+$/.test(object.name.replace(/ +$/,'')))return webName;
  return spectrometerSaveName(o,object,'').replace(/[\\/:*?"<>|]/g,'_');
 }

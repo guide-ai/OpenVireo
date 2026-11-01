@@ -1,6 +1,6 @@
 # E02 Large-scale structure survey
 
-Route `#lss-survey` (`src/LssSurvey.tsx`). Field names and centres come from the byte-exact LSSFields.LST; the photographic-image gate reads the byte-exact GLIMAGES.LST; the spectrum-mapping gate reads the byte-exact GLXYSP.LST. The student path:
+Route `#lss-survey` (`src/LssSurvey.tsx`). Field names and centres come from the byte-exact LSSFields.LST; the photographic list (GLIMAGES.LST, byte-exact) associates the five approved photographs, which are drawn (Front F3); the spectrum-mapping gate reads the byte-exact GLXYSP.LST. The student path:
 1. Choose a field and a telescope.
 2. Load the original LSS_Field0N.HTL. The app checks its size and SHA-256 before parsing it.
 3. Read the status of each row.
@@ -9,7 +9,7 @@ Route `#lss-survey` (`src/LssSurvey.tsx`). Field names and centres come from the
 6. Measure z with the analyser's shift control and the GLXYLNS.LST lines.
 7. Record Z: the "Measured Redshift Data" dialog. OK adds one record, or updates the row of an object already recorded (see
    "Re-measuring an object" below); Cancel and Escape change nothing.
-8. Look at the results list and save it as CSV.
+8. Look at the results list and save it as CSV, or as VIREO's own .TXT (Save Data, 0x57af74).
 9. Plot your own records in the wedge (`#lss-wedge`).
 10. Write a free-text description (not graded).
 
@@ -202,7 +202,7 @@ CLEA_VEO.exe 781bc970…c54c; nothing executed.
 - **Stamp cap.** The web refused a field whose galaxy stamp exceeded 100 px or whose minor axis rounded to 0 px. VIREO's 0x5943d4
   and its draw 0x59456c have neither bound; the telescope cache now paints in place, clipped (as the finder), and a 0 px minor
   composes nothing (0x594488 stretches into a zero-height rect [I]). NGC 224 stays typed `ngc224-image`: the painter routes it to its
-  own routine 0x53b848 (name test 0x53b4fc), not ported.
+  own routine 0x53b848 (name test 0x53b4fc), which paints nothing and only shows an "M31 Image Too Large to Load!" box (Front RE6).
   The LSS stamps are small (the largest is NGC 4559's 114 px). (L4 review L1) That is the code: VIREO's draw also allocates two (2a+1)² bitmaps per galaxy (0x5945b2, 0x594643), about 4.8×10⁸ px each for the LMC (and the SMC is of the same order), which Win32 would very likely fail to allocate [I]; the web's acquiring of fields that hold them is therefore [W]/[I], not a recovered VIREO outcome.
 - **Rows that changed** (152 evaluations, every one unavailable before; listed with their before/after fingerprints in
   `data/hubble/existing-target-fingerprints.json` and `src/core/galaxyRange.fingerprints.json`, update of 2026-10-31):

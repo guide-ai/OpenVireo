@@ -70,7 +70,8 @@ addresses, evidence ids and tags in `docs/MULTI-SPEC-PROVENANCE.json`. Tags: [D]
 
 ## Web choices [W]
 - D4 Save All: one uncompressed (STORE) .zip of the byte-exact .SSP files. D5: no Test Mode. D6: no new session version (the
-  selection and spectra are browsing state). D7: 3700–4700 Å as recovered. D8: Sky fibres show RA/Dec/V "not recorded".
+  selection and spectra are browsing state). D7: the active spectrometer range, 3700–4700 Å by default as recovered; since Front S3 every dialog range, frozen per entry
+  (docs/SPECTRAL-RANGE.md). D8: Sky fibres show RA/Dec/V "not recorded".
 - Save is a browser download; the native folder, base-name and overwrite dialogs are not ported. A telescope change remounts the
   instrument (VIREO disables the Telescope menu while the form is open).
 - The Edit Mode galaxy "Z:" line shows "hidden (instructor value)", as Catalog Object masks the catalogue z (no instructor login).

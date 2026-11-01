@@ -47,7 +47,7 @@
   - a field that cannot be built;
   - no telescope load;
   - a telescope change the sky view has not yet loaded a field for (C6 review L3);
-  - NGC 224 in the field (its routine 0x53b848 is not ported);
+  - NGC 224 in the field: the field engine still types it `ngc224-image` (VIREO's 0x53b848 paints nothing: it only shows MessageBox "Image Too Large!" / "M31 Image Too Large to Load! Sorry about that. (We're working on it.)" (MB_ICONEXCLAMATION, 0x53b8ec/0x53b938), and the painter skips the overlay gate store for it (Front RE6, research front-re6/M31-0x53b848.md); lifting the reason is C7);
   - a source rect beyond the 936² field (a drift of about 278 px or more; GDI's out-of-bitmap copy is not recovered);
   - an unpainted galaxy.
 

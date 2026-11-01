@@ -37,3 +37,12 @@ describe('VIREO keyword writer 0x523218',()=>{
   expect(nativeCameraFitsFileName()).toBe('UNKNOWN-01.FIT');expect(nativeCameraFitsFileName('17')).toBe('ObjX-17-01.FIT');
  });
 });
+
+// RE6 closure I2: the camera's own ASCII guard (the ID inputs refuse non-ASCII first, so the e2e no longer reaches it).
+import {nativeCameraIdSavable} from './cameraFitsNative';
+describe('camera Save ID guard',()=>{
+ test('accepts printable ASCII and the empty ID; refuses accents and control characters',()=>{
+  for(const ok of ['','42','UNKNOWN','A b-~'])expect(nativeCameraIdSavable(ok),ok).toBe(true);
+  for(const bad of ['María','Ω1','tab\t','new\nline'])expect(nativeCameraIdSavable(bad),bad).toBe(false);
+ });
+});

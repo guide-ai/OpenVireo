@@ -397,6 +397,15 @@ export function pulsarMode(s: PulsarAnalysisState, ch: PulsarPanel, mode: Pulsar
   if (s.modes[ch] === mode) return keep(s, 'mode-changed');
   return done({ ...s, modes: with3(s.modes, ch, mode) }, 'mode-changed', ['PLR-MODE-01']);
 }
+/** Front RE6: File › Print Window 0x56d9d8, after the print dialog's OK, calls Crsr1EdClick 0x56d898, Crsr2EdClick 0x56d918 and
+ * Crsr3EdClick 0x56d998 (0x56d9f1..0x56da03): every panel is left in vertical-cursor mode (mode bytes +0x57c..+0x57e := 0) and
+ * stays so after printing [D]. Those handlers test nothing, so this does not need a recording. The web applies it when the print
+ * preview opens [W: the browser's print dialog comes later]; closing the preview does not undo it, as in VIREO. */
+export function pulsarPrintWindow(s: PulsarAnalysisState): PulsarTransition {
+  if (modal(s)) return keep(s, 'blocked-modal');
+  if (s.modes.every(m => m === 'vertical')) return keep(s, 'mode-changed');
+  return done({ ...s, modes: Object.freeze(['vertical', 'vertical', 'vertical'] as const) }, 'mode-changed', ['PLR-MODE-01']);
+}
 
 export type PulsarPointer = Readonly<{ phase: 'down' | 'move' | 'up'; button: 'left' | 'right' | 'other'; leftHeld: boolean; rightHeld: boolean; x: number; y: number }>;
 const intIn = (v: number, lo: number, hi: number) => Number.isInteger(v) && v >= lo && v <= hi;

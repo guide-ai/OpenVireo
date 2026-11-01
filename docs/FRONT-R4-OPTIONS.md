@@ -97,7 +97,7 @@ Plan: `analysis/front-plans/front-r4d.md`.
   pointing, or a galaxy at slit level 0. A sky reading's object is `Sky`, kind 4. 0x50df64 then fills:
   - IDText, visible only with Show Object ID: `Sky`, or the name padded to 13;
   - MagText, visible with Show Object Mag or Edit Mode: V with 2 decimals padded to 6, or '' for a sky reading.
-- Save 0x50fb1c: the default name is the name + `.SSP` with the option on (`Sky.SSP` for a sky reading).
+- Save 0x50fb1c: the default name is the name + `.SSP` with the option on; after a sky reading it is still the nearest object's name, because `Sky` goes only to +0x315d (0x50db37) and Save reads the +0x318b copy (0x50fb72) (Front RE6 U6).
 - Print 0x510294: a sky reading prints `Reading Sky` whatever the options; an object reading prints the `Object: ` line
   (_PStrNCat, at most 32 characters on the whole line) and the `Apparent Magnitude (V): ` line.
 - The .SSP header 0x510090 is **not** an option reader: it always carries the object name and V.
@@ -138,7 +138,7 @@ Plan: `analysis/front-plans/front-r4d.md`.
 - **[W] The routes keep their own labelled web readouts** (the field spectrometer's "nearest object, selected by the slit", the
   route headings). The VIREO boxes are added beside them.
 - **Save default name** (`spectrometerDefaultFileName`):
-  - Show Object ID on with a named object: `Name.SSP` (`Sky.SSP` for a sky reading); `\ / : * ? " < > |` become `_`, as in
+  - Show Object ID on with a named object: `Name.SSP` (also after a sky reading: Front RE6 U6); `\ / : * ? " < > |` become `_`, as in
     Multi-Spec, and a name outside printable ASCII keeps the web name.
   - Otherwise the route's web name, unchanged. So the compiled default saves byte-identical names, and the bytes never depend on
     the options.
