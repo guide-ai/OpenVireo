@@ -190,4 +190,4 @@ Tests are evidence of the chosen contract, not of original-runtime equivalence.
   A hit restores the star (0x5986c0) and a miss inserts nothing (0x5987a1); the only effect is the runner prune of 0x59a2e0.
   `nativeVariableDispatchFalse` (recovered mode) already does this, and the four fields are admitted (PLEIADES-SAMPLE.md).
   Truth table: `src/core/variableMerge.test.ts`.
-- Printer layout, the portrait print branch and the student/lab print strings (the CLEA help viewer is done, docs/CLEA-HELP.md); saving this page's state with the investigation (not needed: it is a browsing aid).
+- Printer layout and the student/lab print strings (the portrait print branch is done since Front R4b, above) (the CLEA help viewer is done, docs/CLEA-HELP.md); saving this page's state with the investigation (not needed: it is a browsing aid).

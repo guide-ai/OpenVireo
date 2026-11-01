@@ -112,7 +112,8 @@ The read-only boxes show the compiled states, each with one line on its effect:
 - The standard web FITS stays the first button.
 
 ## Follow-ups (outcome in Front R2, 2026-10-29; research `analysis/front-r2/`)
-- **Results › Save Recorded Measurements, native: stays typed.**
+- **Results › Save Recorded Measurements, native: stayed typed in R2; ported since by Front F3** (US date format by user
+  decision, docs/PULSAR-NATIVE-SAVE.md).
   - VIREO never sets ShortDateFormat or LongTimeFormat; TEnvironment1.FormCreate sets only DecimalSeparator '.' and
     DateSeparator '-' [D]. So the header's date and time are the host Windows locale's and cannot be pinned without guessing.
   - The flow, prompts, auto-name and CR LF line ending are decoded in `B-radio-save-sound.md`.
@@ -126,8 +127,8 @@ The read-only boxes show the compiled states, each with one line on its effect:
     thread [D].
   - A port would be an approximation, not the recovered sound.
 - **Camera field objects: ported** at certified fields (docs/CAMERA-EXPOSURE.md, Front R2).
-- **Camera overlay: stays typed.** The stretch mode, sizes and gate are recovered (docs/CAMERA-OVERLAY.md). The input is the
-  field engine's internal galaxies-only raster, which needs a field-engine export.
+- **Camera overlay: stayed typed in R2; ported since by Front C6** (the field engine's galaxy layer and the region record,
+  docs/CAMERA-OVERLAY.md). The stretch mode, sizes and gate are recovered.
 - **Hot-list appends during an observatory edit** (review L5): fixed by Front R2 at the root. The observatory editor now
   remembers the row under Edit by identity (`htlRowIndexOf`), so an RA-ordered insert or a removal from any other window
   (Add Current, QSO list, field information, cluster lists) cannot make Apply overwrite a different row. Add Current no longer
