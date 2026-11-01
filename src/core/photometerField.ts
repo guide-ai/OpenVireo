@@ -259,8 +259,10 @@ export function photometerFieldFromPopulation(population:PopulationLike|null,rea
  const scene=createNativeSelectionScene(stars,galaxies,{width:936,height:936,fieldDegrees:.05,center:pointing,population:{coverage:'complete',provenance:'compact GSC tiles; photometer field built for this pointing'}});
  const fraction=(s:NamedStar)=>photometerPointFraction(radius,photometerSeparation(pointing.ra,pointing.dec,s.ra,s.dec),width);
  let selection=selectCatalogObject(scene,468,468);
- // Front P3 review 1 L3 [D]: a star/galaxy tie in 0x59a0fc is decided by the star's throughput, which for the photometer is its
- // aperture fraction at this pointing (0x500568): a nonzero fraction keeps the star, zero takes the galaxy.
+ // Front P3 review 1 L3 [I]: a star/galaxy tie in 0x59a0fc is decided by the star's throughput, which for the photometer is its
+ // aperture fraction at this pointing (0x500568): a nonzero fraction keeps the star, zero takes the galaxy. This assumes a current
+ // object already exists; 0x500568 returns 0 when [Obs+0x41c4c1] is nil (0x50057d), and then the tie takes the galaxy. The same
+ // assumption as the field engine's objectPresent:true (closure decision, option b).
  if(selection.kind==='throughput-required'){const tied=selection.star?stars.find(s=>s.id===selection.star!.object.id):undefined;if(tied)selection=selectCatalogObject(scene,468,468,fraction(tied));}
  if(selection.kind==='galaxy'||selection.kind==='throughput-required')return Object.freeze({reason:'photometer-galaxy' as const});
  if(selection.kind!=='star')return Object.freeze({reason:'photometer-selection' as const});

@@ -76,6 +76,12 @@ Observational Data window. Static reading of CLEA_VEO.exe (SHA-256 781bc970…c5
 - Still typed: `photometer-variable` (field engine / clock), `photometer-selection` (stale light; Show ID on dereferences nil),
   `photometer-qso`.
 
+- L3 [I]: a star/galaxy tie in 0x59a0fc takes the star when its aperture fraction (0x500568) is nonzero. This assumes a current
+  object already exists: 0x500568 returns 0 when [Obs+0x41c4c1] is nil (0x50057d), and neither caller of 0x53ce8c clears it
+  first (stores at 0x53cf9e and 0x585be5), so VIREO's first selection would take the galaxy. Same assumption as the field
+  engine's `objectPresent:true` (closure decision, option b). In the reviewer's scan it changes one pointing: A0204-7121
+  (2.09651 h, −71.11552°) is now a star field on S6730-01712.
+
 ## Model and effort
 - Plan: Claude Opus 5.5, high.
 - Implementation: Claude Opus 5.5 (subagent).
