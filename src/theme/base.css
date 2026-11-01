@@ -9,6 +9,10 @@ body{margin:0;background:var(--ov-bg);color:var(--ov-text);font-family:var(--ov-
 :where(a){color:var(--ov-accent-text);text-underline-offset:3px}
 :where(code,kbd,samp){font-family:var(--ov-font-mono);font-size:.92em}
 :where(:focus-visible){outline:2px solid var(--ov-focus);outline-offset:2px}
+/* Front WebKit QA (cause 3; review L3): arrow keys move focus between the radios of a group and WebKit does not match
+   :focus-visible there, so in keyboard modality (src/focusAfterLayout.ts) a focused radio is outlined on :focus as well; a mouse
+   click shows no ring in any engine. */
+:where(:root[data-input-modality=keyboard] input[type=radio]:focus){outline:2px solid var(--ov-focus);outline-offset:2px}
 :where(hr){border:0;border-top:1px solid var(--ov-border)}
 
 /* Controls */

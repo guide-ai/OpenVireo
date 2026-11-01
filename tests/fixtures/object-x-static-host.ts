@@ -2,6 +2,7 @@
 // real App has loaded and been detached; not a product route, no window hook. It mounts the real CameraControl (Worker
 // composer, static catalogue mode) on the field of the recorded VizieR fixture and writes each finished image's recipe and
 // JD as text, so the spec can replay it with replayStaticExposure and compare FITS bytes with the camera's own Save image.
+import '../../src/focusAfterLayout';
 import {createElement as h,useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import CameraControl from '../../src/CameraControl';

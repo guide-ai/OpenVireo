@@ -9,7 +9,7 @@ import {
 import {
  INITIAL_RADIO_LAB,NOTICE_BUTTONS,RADIO_COMPILED_ENVIRONMENT,RADIO_COMPILED_OPTIONS,RADIO_LAB_CAPTIONS,RADIO_LAB_CONSTANTS,RADIO_WEB_OPTION_PROFILE,SKY_COORDS_CAPTIONS,
  SKY_COORDS_FIELD_MAX_LENGTH,SKY_COORDS_WEB_DOMAIN,activateRadioLab,answerNotice,cancelSkyCoords,changeSlewRate,confirmSkyCoords,editSkyCoordsField,formatFixed,
- isRadioLabModal,isRadioLabOptions,isSupportedRadioLabProfile,openSetCoordinates,radioClockTick,radioLabProfileIssues,radioLabRateIssues,radioLabTickRefusal,selectSkyCoordsEpoch,slewTimerTick,splitSexagesimal,toggleTracking,
+ isRadioLabModal,isRadioLabOptions,isSupportedRadioLabProfile,openSetCoordinates,radioClockTick,radioLabProfileIssues,radioLabRateIssues,radioLabTickRefusal,selectSkyCoordsEpoch,slewTimerTick,splitSexagesimal,slewTimerOwns,toggleTracking,
  MANUAL_DIRECTIONS,RADIO_MANUAL_WEB_DOMAIN,RADIO_OPTIONS_CAPTIONS,heldManualDirection,manualButtonCaption,manualButtonEnabled,manualSlewTick,pressManualSlew,radioLabManualRefusal,radioLabManualTickRefusal,releaseManualSlew,
  releaseManualSlewThrough,RADIO_HOT_LIST_LITERALS,closeRadioHotList,openRadioHotList,selectRadioHotListIndex,slewToHotListSelection,skyCoordsDraftTarget,skyCoordsPrefillMinusLost,
  cancelRadioHotListSearch,editRadioHotListSearch,openRadioHotListSearch,submitRadioHotListSearch,
@@ -460,6 +460,9 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
   return startRadioTimer(BROWSER_TIMER,RADIO_LAB_CONSTANTS.slewTimerIntervalMs,()=>latest.current.antenna,lab=>{
    const current=latest.current;
    if(!current.slewActive||current.slewRun!==slewRun)return;
+   // Front WebKit QA (cause 4): the working state, updated at once by applyAntenna, decides; the rendered slewActive above can
+   // still be true for a callback queued between an accepted arrival and React's commit.
+   if(!slewTimerOwns(lab,slewRun))return;
    const {antennaOptions:options,onAntennaTransition:handler}=current;
    if(lab&&handler)applyAntenna(attempt(()=>slewTimerTick(lab,options,slewRun)),handler);
   }).cancel;

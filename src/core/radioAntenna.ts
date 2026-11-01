@@ -992,6 +992,11 @@ export function answerNotice(s:RadioLabState,options:RadioLabOptions,kind:RadioL
  * slew that takes its RA step from a stored rate outside the profile ('rate-unsupported'; the rate is kept, as the
  * original recomputes it only in RateSpin and the start loop). A switch within the RA tolerance completes without
  * adding that step, and Dec and RA callbacks add the fixed step +0x525, so none of them is refused for the rate. */
+/** Front WebKit QA (cause 4): whether a SlewTimer2 callback of `run` still owns the slew, judged on the working state the panel
+ * updates synchronously with every accepted transition (not on a rendered prop). After the arrival callback disables the timer,
+ * a further callback queued before React's commit (WebKit runs a queued setTimeout(0) before React's MessageChannel commit)
+ * must not reach slewTimerTick, whose idle outcome would replace "Slew complete." */
+export function slewTimerOwns(s:RadioLabState|null|undefined,run:number):boolean{return !!s&&s.slewTimerEnabled&&s.slewRun===run;}
 export function slewTimerTick(s:RadioLabState,options:RadioLabOptions,run:number):RadioLabTransition{
  checkOptions(options);
  if(!s.slewTimerEnabled||run!==s.slewRun)return same(s,'slew-timer-idle');

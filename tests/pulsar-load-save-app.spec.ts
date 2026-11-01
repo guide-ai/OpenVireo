@@ -1,3 +1,4 @@
+import {skipWithoutOpfs} from './fixtures/opfs';
 import {test,expect,type FileChooser,type Page} from '@playwright/test';
 import{clickHeaderTool}from'./fixtures/header-tools';
 import {createHash} from 'node:crypto';
@@ -32,7 +33,9 @@ type Plan={name:string;truncate?:boolean;reject?:'AbortError'|'SecurityError';th
 type Shim={synthetic:true;calls:number;events:(string|null)[];plans:Plan[];log:string[];holds:Set<string>;waiting:Map<string,()=>void>;fails:Set<string>};
 type Stream={write:(data:unknown)=>Promise<void>;close:()=>Promise<void>;abort:(reason?:unknown)=>Promise<void>};
 type Holds={held:Map<string,(fail?:boolean)=>void>;digestHold:boolean;digestWaiting:(()=>void)|null;digests:number};
-const installShim=(page:Page,remove=false)=>page.addInitScript(removePicker=>{
+/** `needsOpfs` false: the test never calls the synthetic picker, so it runs where no origin-private file system exists. */
+const installShim=async(page:Page,remove=false,needsOpfs=!remove)=>{if(needsOpfs)await skipWithoutOpfs(page);await installShimScript(page,remove);};
+const installShimScript=(page:Page,remove=false)=>page.addInitScript(removePicker=>{
  const w=window as unknown as {__saveShim:Shim;__holds:Holds};
  const proto=FileSystemFileHandle.prototype as unknown as {createWritable:(this:FileSystemFileHandle,...a:unknown[])=>Promise<Stream>;getFile:(this:FileSystemFileHandle)=>Promise<File>};
  const create=proto.createWritable,getFile=proto.getFile;
@@ -238,7 +241,7 @@ test('unsupported Save API: Yes is disabled with its reason and does nothing; No
 });
 
 test('a canonical preview refusal keeps the data: Choose is disabled and Save Cancel ends the flow',async({page})=>{
- await installShim(page);const seen=choosers(page);
+ await installShim(page,false,false);const seen=choosers(page);
  await captureToAnalysis(page,"O'Neil");
  await yesToSave(page,seen);
  await expect(id(page,'pulsar-raw-export-problem')).toHaveAttribute('data-code','name-apostrophe');
@@ -251,7 +254,7 @@ test('a canonical preview refusal keeps the data: Choose is disabled and Save Ca
 });
 
 test('a "No Data" capture is not presented: Yes refuses with a reason and keeps the question',async({page})=>{
- await installShim(page);
+ await installShim(page,false,false);
  await captureToAnalysis(page,'No Data');
  await expect(id(page,'pulsar-data-notice')).toHaveAttribute('data-kind','reserved-name');
  await id(page,'pulsar-file').click();await expect(id(page,'pulsar-load-dialog')).toBeVisible();

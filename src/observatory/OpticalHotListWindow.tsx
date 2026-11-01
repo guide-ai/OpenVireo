@@ -44,7 +44,7 @@ export default function OpticalHotListWindow({caption,texts,state,rows,onSelect,
     <button type="button" className="secondary-button" data-testid="ob-hotlist-close" onClick={onClose}>{menuCaptionText(C.close)}</button>
    </div>
    {/* THotListForm1 PopupMenu (Front P): right-click or the context-menu key on the list; acts on the current selection. */}
-   <div className="ob-list" role="radiogroup" aria-label={M.rows} data-testid="ob-hotlist-rows" onContextMenu={popup.open}>
+   <div className="ob-list" role="radiogroup" aria-label={M.rows} data-testid="ob-hotlist-rows" onContextMenu={popup.open} onAuxClick={popup.auxClick}>
     {rows.map((row,i)=><label key={row.sourceIndex} className="ob-row" data-testid={`ob-hotlist-row-${i+1}`} data-checked={state.index===i||undefined} data-found={found===i||undefined} onDoubleClick={()=>{onSelect(i);onSlew();}}>
      <input ref={el=>{radios.current[i]=el;}} type="radio" name={`${id}-row`} checked={state.index===i} onChange={()=>onSelect(i)} onClick={()=>onSelect(i)}/>
      <span className="ob-row-text"><span className="ob-row-native" aria-hidden="true" data-testid={`ob-hotlist-native-${i+1}`}>{texts[i]}</span>

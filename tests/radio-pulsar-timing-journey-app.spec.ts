@@ -1,3 +1,4 @@
+import {skipWithoutOpfs} from './fixtures/opfs';
 import {test,expect,type FileChooser,type Locator,type Page,type TestInfo} from '@playwright/test';
 import{clickHeaderTool,openHeaderTools}from'./fixtures/header-tools';
 import {createHash} from 'node:crypto';
@@ -33,7 +34,8 @@ async function advance(page:Page,ms:number){for(let t=0;t<ms;t+=200){await page.
 type Plan={name:string};
 type Shim={synthetic:true;calls:number;events:(string|null)[];plans:Plan[];log:string[];fails:Set<string>;rawGetFile:(this:FileSystemFileHandle)=>Promise<File>};
 type Stream={write:(data:unknown)=>Promise<void>;close:()=>Promise<void>;abort:(reason?:unknown)=>Promise<void>};
-const installShim=(page:Page)=>page.addInitScript(()=>{
+const installShim=async(page:Page)=>{await skipWithoutOpfs(page);await installShimScript(page);};
+const installShimScript=(page:Page)=>page.addInitScript(()=>{
  const w=window as unknown as {__saveShim:Shim};
  const proto=FileSystemFileHandle.prototype as unknown as {createWritable:(this:FileSystemFileHandle,...a:unknown[])=>Promise<Stream>;getFile:(this:FileSystemFileHandle)=>Promise<File>};
  const create=proto.createWritable,getFile=proto.getFile;

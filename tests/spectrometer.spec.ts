@@ -25,6 +25,6 @@ test('the spectrometer index fits a phone and returns to the observatory',async(
   await expect(page.getByRole('heading',{name:'Where to take a spectrum'})).toBeVisible();
   await expect(page.getByRole('link',{name:'Open supported sky exposure'})).toBeVisible();await expect(page.getByRole('link',{name:'Open supported star exposure'})).toBeVisible();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
-  await page.screenshot({path:'.local/qa/openvireo-spectrometer-index-mobile.png',fullPage:true});
+  await page.screenshot({path:test.info().outputPath('openvireo-spectrometer-index-mobile.png'),fullPage:true});
   await page.getByRole('button',{name:'← Return to observatory',exact:true}).click();await expect.poll(()=>new URL(page.url()).hash).toBe('#observatory');
 });
