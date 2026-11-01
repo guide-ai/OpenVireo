@@ -1,4 +1,5 @@
 import {useEffect,useId,useLayoutEffect,useRef,useState,type ReactNode} from 'react';
+import {printPageSizeCss} from '../core/lightCurvePrint';
 import {createPortal} from 'react-dom';
 import {POLISH_MESSAGES as PM} from './PolishMessages';
 import './polish.css';
@@ -54,7 +55,7 @@ export default function WebPrintPreview({testId,caption,header=[],note,clone,chi
   try{if(typeof window.print!=='function')throw new TypeError('print unavailable');window.print();setFailed(false);}catch{end();setFailed(true);}
  }
  return createPortal(<dialog ref={dialog} className="ob-dialog ob-wide web-print-root" aria-labelledby={`${id}-t`} data-testid={testId} onCancel={e=>{e.preventDefault();e.stopPropagation();close();}}>
-  {orientation&&<style>{`@page{size:${orientation}}`}</style>}
+  {orientation&&<style>{printPageSizeCss(orientation)}</style>}
   <div className="web-print-chrome"><h2 id={`${id}-t`}>{PM.print.title}</h2>{nativeHeader&&<p className="ob-native">{caption}</p>}<p className="observatory-note">{note}</p>{controls}</div>
   <section className="web-print-report" tabIndex={0} aria-label={caption}>
    {nativeHeader?<pre className="web-print-native" data-testid={`${testId}-native-header`}>{nativeHeader(printedAt).join('\n')}</pre>:<>
