@@ -234,30 +234,39 @@ export function drawPinnedPleiadesCallback(domain:unknown,kind:PleiadesFieldKind
  * neighbours (0x59ac54), aperture fraction and the known-colour or attenuated magnitude. Equal to every bundled Pleiades field
  * (src/core/photometerTiled.test.ts). What the photometer path has not recovered is typed, never approximated. */
 export type PhotometerTiledReason=
- /** The field holds a galaxy: the photometer's treatment of the second list (field+0x35) is not recovered. */'photometer-galaxy'
+ /** Front P3: the centre selects a galaxy (0x59a0fc over the stars and the galaxy list field+0x1b), or the star/galaxy overlap
+  * tie, which needs the star's throughput, is unresolved [W fail closed]. The selected-galaxy branch (σ from the axes and
+  * 0x53b94c, Sky readings gated by the image level 0x53e338 ≥ 80) is not ported [U]. A galaxy that is not selected has no effect
+  * natively, because the neighbour producer 0x59ac54 walks only field+0x5 (stars) and field+0x35 (QSOs) [D], so it is ignored. */'photometer-galaxy'
  /** A merged QSO record (type 3) is in the field: it has no catalogue colours for the photometer. */|'photometer-qso'
  /** A TRUE-dispatch variable star is in the field: its brightness depends on the observatory clock. */|'photometer-variable'
- /** The centre selects no star (none within the native 350-pixel sentinel), or a galaxy. */|'photometer-selection'
+ /** The centre selects no object (none within the native 350-pixel sentinel). */|'photometer-selection'
  /** A star lacks catalogue colours (the native missing-colour branches are not recovered). */|'photometer-colour'
  /** The engine gated the population (its own typed reason). */|'photometer-population';
 export type PhotometerTiledResult=Readonly<{field:PinnedPleiadesField;reason?:undefined}|{field?:undefined;reason:PhotometerTiledReason;detail?:string}>;
-type PopulationLike=Readonly<{stars:readonly Readonly<{type:number;id:string;rawHex?:string;band?:string;recordIndex?:number}>[];galaxies:readonly unknown[];variableStars?:readonly unknown[]}>;
+type PopulationLike=Readonly<{stars:readonly Readonly<{type:number;id:string;rawHex?:string;band?:string;recordIndex?:number}>[];galaxies:readonly Readonly<{ra:number;dec:number;majorArcminutes:number}>[];variableStars?:readonly unknown[]}>;
 /** The source preparation does not depend on the reading mode (native Start; G3b): a positive central fraction uses the known
  * colours of the central star and its neighbours; a central fraction of 0 gives the literal 30 (as the bundled sky fields), to
  * which any neighbour light is added (Front P2: the decoded native path, preparePhotometerBands). `kind` labels the frame only. */
 export function photometerFieldFromPopulation(population:PopulationLike|null,reasons:readonly string[],pointing:Pointing,kind:PleiadesFieldKind):PhotometerTiledResult{
  if(kind!=='object'&&kind!=='sky')throw new PhotometerFieldError('field');
  if(!population||reasons.length)return Object.freeze({reason:'photometer-population' as const,detail:reasons.join(',')});
- if(population.galaxies.length)return Object.freeze({reason:'photometer-galaxy' as const});
  if(population.stars.some(s=>s.type!==0))return Object.freeze({reason:'photometer-qso' as const});
  if(population.variableStars?.length)return Object.freeze({reason:'photometer-variable' as const});
  const stars=Object.freeze(population.stars.map(s=>namedStar(s.rawHex!,s.band!,s.recordIndex!)));
  const radius=10.5/(936/.05),width=(3/2)/3600,neighbors=queryPhotometerNeighbors(pointing,radius,stars,[]);
- const scene=createNativeSelectionScene(stars,[],{width:936,height:936,fieldDegrees:.05,center:pointing,population:{coverage:'complete',provenance:'compact GSC tiles; photometer field built for this pointing'}});
- const selection=selectCatalogObject(scene,468,468);
+ const galaxies=population.galaxies.map((g,i)=>({id:`g${i}`,ra:g.ra,dec:g.dec,majorArcminutes:g.majorArcminutes}));
+ const scene=createNativeSelectionScene(stars,galaxies,{width:936,height:936,fieldDegrees:.05,center:pointing,population:{coverage:'complete',provenance:'compact GSC tiles; photometer field built for this pointing'}});
+ const fraction=(s:NamedStar)=>photometerPointFraction(radius,photometerSeparation(pointing.ra,pointing.dec,s.ra,s.dec),width);
+ let selection=selectCatalogObject(scene,468,468);
+ // Front P3 review 1 L3 [I]: a star/galaxy tie in 0x59a0fc is decided by the star's throughput, which for the photometer is its
+ // aperture fraction at this pointing (0x500568): a nonzero fraction keeps the star, zero takes the galaxy. This assumes a current
+ // object already exists; 0x500568 returns 0 when [Obs+0x41c4c1] is nil (0x50057d), and then the tie takes the galaxy. The same
+ // assumption as the field engine's objectPresent:true (closure decision, option b).
+ if(selection.kind==='throughput-required'){const tied=selection.star?stars.find(s=>s.id===selection.star!.object.id):undefined;if(tied)selection=selectCatalogObject(scene,468,468,fraction(tied));}
+ if(selection.kind==='galaxy'||selection.kind==='throughput-required')return Object.freeze({reason:'photometer-galaxy' as const});
  if(selection.kind!=='star')return Object.freeze({reason:'photometer-selection' as const});
  const selected=stars.find(s=>s.id===selection.object.id)!;
- const fraction=(s:NamedStar)=>photometerPointFraction(radius,photometerSeparation(pointing.ra,pointing.dec,s.ra,s.dec),width);
  const centralFraction=fraction(selected),supplied=(s:NamedStar)=>({v:s.magnitude,bMinusV:s.photometry2Single,uMinusB:s.photometry3Single,fraction:fraction(s)});
  const others=neighbors.filter(s=>s.nativeName!==selected.nativeName);
  let sourceMagnitude:number;

@@ -4,6 +4,8 @@ This panel implements the original VIREO route described in `HRAnalHlp.TXT` ("Lo
 
 Status: the bounded subflow is integrated under Cluster database → HR diagram from saved observations and has separate Claude review plus independent validation. See [the validation receipt](CLUSTER-NATIVE-OBSERVATION-HR-VALIDATION.json) for exact snapshot coverage;full N04/E05 remain partial. It adds no investigation session fields;Save investigation does not include this independent HR workspace. Download DAT before reload;manual overlays reset on reload.
 
+Front P3 (2026-10-31): **Plot my photometer records** replaces this workspace's list with the rows the photometer's Record/Review wrote (VIREO's plot 0x542990 walks that same list, owner+0x480). They pass through the same 144-byte layout and the DAT reader's ordering (by time, then RA) [W: VIREO plots the list in its own insertion order]; rows without both V and B are skipped as for any record. See docs/PHOTOMETER-RECORD.md.
+
 ## Recovered contract
 
 Evidence `VIREO-HR-OBSERVATION-PLOT-REPORT-STATIC-2026-10-21` ([provenance](CLUSTER-NATIVE-OBSERVATION-HR-PROVENANCE.json)) is bound to executable SHA256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c`.

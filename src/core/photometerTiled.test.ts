@@ -41,4 +41,15 @@ describe('photometer fields from the tiles',()=>{
   // M31's core (CLEA_GLX.DAT galaxies in the 0.05° field): typed, not approximated.
   expect((await tiled({ra:0.7123,dec:41.2692},'object',s)).reason).toBe('photometer-galaxy');
  },120_000);
+ it('Front P3: a galaxy matters only when the centre selects it (0x59a0fc); the neighbour producer 0x59ac54 never walks it',async()=>{
+  const s=sources(),pointing={ra:11+44/60+42.9/3600,dec:55+22/60+43/3600};
+  const pack=await assembleFieldPack(pointing,s,undefined,FIELD_HALF_DEGREES.photometer);
+  const built=buildFieldPopulation(pack,glx,pointing,{fieldHalfDegrees:FIELD_HALF_DEGREES.photometer,variableDispatch:'recovered'});
+  const plain=photometerFieldFromPopulation(built.population,built.reasons,pointing,'object');expect(plain.reason).toBeUndefined();
+  // Synthetic galaxy records (not catalogue data): one 0.02° away and small, one on the centre and large.
+  const g=(dDec:number,major:number)=>({...(built.population!.galaxies[0]??{}),ra:pointing.ra,dec:pointing.dec+dDec,majorArcminutes:major});
+  const away=photometerFieldFromPopulation({...built.population!,galaxies:[g(.02,.1) as never]},[],pointing,'object');
+  expect(away.reason).toBeUndefined();expect(away.field!.selected.nativeName).toBe('N5230-00946');expect(away.field!.sourceMagnitude).toBe(plain.field!.sourceMagnitude);
+  expect(photometerFieldFromPopulation({...built.population!,galaxies:[g(0,5) as never]},[],pointing,'object').reason).toBe('photometer-galaxy');
+ },120_000);
 });
