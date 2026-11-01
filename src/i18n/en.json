@@ -1597,7 +1597,7 @@
   "sampledDiff.method": "Normalized difference method and display limits",
   "sampledDiff.limits": "The recovered path samples 500 positions and subtracts unrounded normalized intensities before the 100-pixel integer-height conversion. Zero is at 75 pixels in this pane. The top corresponds to +0.75 and the bottom to −0.5. Runs at the top boundary are interrupted by the native draw/move rule; lower overflow is clipped by this browser pane. These are display bounds, not missing observations or a measurement uncertainty. Native x87/GDI matching remains unverified.",
   "range.title": "Set classification wavelength range",
-  "range.help": "Choose display endpoints from 3500 to 7400 Å in steps of 100 Å, at least 100 Å apart. Apply starts at 1×; zoom and pan stay within the applied range. As in VIREO, this is the spectrometer's one range: Apply also changes it for every spectrometer route. Away from 3700–4700 Å, Object X, field-spectrometer galaxies and QSOs, and Multi-Spec refuse to take spectra, and the Hubble and LSS routes accept only 4000–5000 Å [W].",
+  "range.help": "Choose display endpoints from 3500 to 7400 Å in steps of 100 Å, at least 100 Å apart. Apply starts at 1×; zoom and pan stay within the applied range. As in VIREO, this is the spectrometer's one range: Apply also changes it for every spectrometer route. Every range can be used for stars, galaxies, QSOs and the sky; Object X accepts only the ranges on which every target behaves as at 3700–4700 Å [W].",
   "range.applied": "Applied display range: {minimum}–{maximum} Å.",
   "range.draft": "Range draft",
   "range.minimum": "Minimum display wavelength (Å)",

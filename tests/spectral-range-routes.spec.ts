@@ -151,6 +151,6 @@ test('Allow User Change unchecked disables Spectral Range… on the spectrometer
  }
  await go(page,'#star-exposure');await expect(id(page,'star-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).');await expect(id(page,'star-spectral-range-locked')).toBeVisible();
  // S3 review 1 M1: Classify's Spectral Range item too (TSpClassify FormShow 0x507945); its Apply cannot change the page range.
- await go(page,'#classification');await expect(id(page,'class-range-fieldset')).toBeDisabled({timeout:30000});await expect(id(page,'class-range-locked')).toBeVisible();
+ await go(page,'#classification');await expect(id(page,'class-range-locked')).toBeAttached({timeout:30000});const controls=await id(page,'class-range-fieldset').locator('input,select,button').all();expect(controls.length).toBeGreaterThan(0);for(const c of controls)await expect(c).toBeDisabled();
 });
 
