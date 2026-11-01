@@ -2657,7 +2657,7 @@
   "radioAccess.gate.heading": "Main configuration source",
   "radioAccess.gate.closed": "Not supplied. The Preferences gate is closed, as the main window leaves it when it starts. The original answers Preferences with its instructor message.",
   "radioAccess.gate.open": "Demonstration Mode gate applied: the Preferences gate is open, as the main window sets it when it starts in Demonstration Mode.",
-  "radioAccess.gate.editMode": "Edit Mode gate: the Preferences gate is open because Edit Mode was turned on in Optical Simulation Options, as VIREO opens it when Edit Mode is set. It stays open for this page session; investigation files do not keep it.",
+  "radioAccess.gate.editMode": "Edit Mode gate: the Preferences gate is open because Edit Mode was turned on in Optical Simulation Options; in VIREO Edit Mode is only reached with the gate open. It stays open for this page session (VIREO's Login could close it; Login is not part of OpenVireo). Investigation files do not keep it, and the Demonstration Mode gate can no longer be applied in this session.",
   "radioAccess.gate.apply": "Apply the Demonstration Mode gate for this session",
   "radioAccess.gate.note": "Web scenario: only the recovered gate write is applied. This is not the original Demonstration Mode (its other effects are not ported); no Edit Mode, login or classroom configuration is used. Reloading the page is the only way back.",
   "radioAccess.preferences.button": "Open the options dialog (Preferences)",

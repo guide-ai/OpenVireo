@@ -210,10 +210,13 @@ export function applyDemonstrationGate(s:RadioAccessState):RadioAccessTransition
  return next(s,{gate:Object.freeze({open:true,source:'demonstration'})},'gate-opened');
 }
 
-/** Front R5 [D]: Edit Mode opens the gate. Preferences OK (0x5887e7..0x58880c) and the options apply 0x587dbc (0x587f67..0x587f8c,
- * from FormCreate and Login1Click) write env+0x37d8 := 1 when Edit Mode (+0x27ca) is on, and nothing writes 0 after FormCreate,
- * so the gate stays open when Edit Mode is turned off. [W] Called once the page's Edit Mode has been committed on (the web's
- * Optical Simulation Options OK stands for Preferences OK, WEB-EM-01). Only the byte is written: no surface is opened or closed. */
+/** Front R5 [I]/[W] (review 1 L1): upholds VIREO's invariant "Edit Mode on ⇒ Preferences gate open". The gate writes under Edit
+ * Mode (Preferences OK 0x5887f0, the options apply 0x587f70) are reached with the gate already open, except Login1Click with Edit
+ * Mode on (0x588468 skips the question, 0x588527 → 0x587f70). In the web, Edit Mode is turned on without the gate (WEB-EM-01), so
+ * this write becomes observable; it is applied once the page's Edit Mode has been committed on. No ported path closes the gate
+ * (Login answered No with Edit Mode off writes 0 at 0x5884a1; Login is not ported). Only the byte is written: no surface is opened
+ * or closed. Side effect (review 1 L2): the card's "Apply the Demonstration Mode gate" button is then disabled, and since a file
+ * keeps an Edit Mode gate closed, a Demonstration gate cannot be saved in that page session. */
 export function applyEditModeGate(s:RadioAccessState):RadioAccessTransition{
  if(s.gate.open)return keep(s,'gate-already-open');
  return next(s,{gate:Object.freeze({open:true,source:'edit-mode'})},'gate-opened');

@@ -1,6 +1,6 @@
 /** Front R5 (analysis/front-plans/front-r5.md): the instructor options of VIREO that stay unported until a later teacher front,
- * each with its typed reason. CLEA_VEO.exe 781bc970…c54c, static only; the offsets are the DFM entries of the controls (file
- * offsets in the executable). Nothing here is applied: every item keeps its compiled behaviour. Pure. */
+ * each with its typed reason. CLEA_VEO.exe 781bc970…c54c, static only; the offsets are the file offsets of each
+ * control's caption (or hint) string in its DFM. Nothing here is applied: every item keeps its compiled behaviour. Pure. */
 export type TeacherDeferredReason='teacher-front';
 export type TeacherDeferredItem=Readonly<{key:string;caption:string;control:string;dfm:string;reason:TeacherDeferredReason}>;
 const item=(key:string,caption:string,control:string,dfm:string):TeacherDeferredItem=>Object.freeze({key,caption,control,dfm,reason:'teacher-front'});

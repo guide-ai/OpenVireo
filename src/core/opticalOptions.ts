@@ -17,14 +17,16 @@ export const OPTICAL_OPTIONS_CAPTIONS=Object.freeze({
 /** Front R5 [D]: TOptionsDlg ResetBtn (DFM 0x20e35e in the TOptionsDlg DFM at 0x209290) and ResetBtnClick 0x5a6d24: the question
  * 0x5a6e28 / 0x5a6e88 (MB_YESNO|MB_ICONQUESTION 0x24); No (7) does nothing; Yes keeps the Cancel snapshot (dlg+0x5a0,
  * 0x5a6d99 and 0x5a6dd3), resets the options object to the compiled defaults 0x5a21d0 (0x5a6db7) and the radio options object
- * to 0x5a8ec4 (0x5a6dc5), then FormActivate reloads the controls. Cancel still restores the values from before the dialog. */
+ * to 0x5a8ec4 (0x5a6dc5), then FormActivate reloads the controls. Cancel (0x5a6d04) restores only the optical record dlg+0x5a0,
+ * so in VIREO the radio-options reset survives a Cancel (review 1 L4). */
 export const OPTIONS_RESET_LITERALS=Object.freeze({
  caption:'&Reset',hint:'Restore All Options to Default Values',questionCaption:'Are You Sure?',
  questionText:'Resetting all options to default values\r\nwill remove any changes you have made.\r\n\r\nContinue?',
 });
 /** The compiled defaults (0x5a21d0) of the controls the web dialog makes live: Limit Slewing +0x27c9 := 0 (0x5a2acc), Edit Mode
  * +0x27ca := 0 (0x5a2ad3), Virtual Observatory +0x27d5 := 0 (0x5a2b59) and the R3 session options. [W] The radio options object
- * belongs to the radio route here and is not reset by this dialog (non-default radio options are a later teacher front). */
+ * belongs to the radio route here and is not reset by this dialog (non-default radio options are a later teacher front). [W] 0x5a21d0
+ * also sets Sound Effects (+0x27d2 := 1); the web's Sound Effects switch is outside this dialog and is left as it is. */
 export const OPTIONS_RESET_DEFAULTS=Object.freeze({options:COMPILED_OPTICAL_OPTIONS,editMode:false,virtualObservatory:false});
 export const OPTIONS_RESET_NOT_PORTED='radio-options-object' as const;
 export function readOpticalOptions(value:unknown):OpticalOptions{

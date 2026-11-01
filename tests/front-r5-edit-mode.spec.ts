@@ -38,9 +38,9 @@ test('Edit Mode shows full hot-list rows in View/Select, Search and Print; Save 
  await page.keyboard.press('Escape');await expect(id(page,'ob-hotlist-print-preview')).toHaveCount(0);
  await expect(id(page,'ob-hotlist-save')).toBeEnabled();
  const download=page.waitForEvent('download');await id(page,'ob-hotlist-save').click();const file=await download;
- expect(file.suggestedFilename()).toBe('openvireo-targets.htl');
+ expect(file.suggestedFilename()).toBe('HotList.HTL');
  const bytes=readFileSync(await file.path());expect(bytes.length).toBe(2*86);expect(bytes.subarray(1,4).toString('latin1')).toBe('RA1');
- await expect(box).toContainText('Observation List File Saved');await expect(box).toContainText('Observation list saved in openvireo-targets.htl');
+ await expect(box).toContainText('Observation List File Saved');await expect(box).toContainText('Observation list saved in HotList.HTL');
  await box.getByRole('button',{name:'OK'}).click();await expect(id(page,'ob-hotlist-save')).toBeEnabled();
  await id(page,'ob-hotlist-close').click();
  // Edit Mode off again: the ordinal rows, and Save disabled at the next show.
@@ -82,4 +82,20 @@ test('Edit Mode set in the options opens the radio Preferences gate for the page
  await id(page,'radio-access-parent-cancel').click();await expect(id(page,'radio-access-parent')).toHaveCount(0);
  await clickHeaderTool(page,'Observatory');await setEditMode(page,false);
  await clickHeaderTool(page,'Radio telescope');await expect(gate).toHaveAttribute('data-source','edit-mode');
+});
+
+test('review 1 M2: an exercise guide sets VIREO\'s exercise byte: LSS shows full rows, and Edit/Delete need Edit Mode outside exercise 0',async({page})=>{
+ await observatory(page);await addRows(page);
+ const guide=async(testId:string)=>{const {openHeaderTools}=await import('./fixtures/header-tools');await openHeaderTools(page);await id(page,testId).click();await page.keyboard.press('Escape');await expect(page.locator('dialog[open]')).toHaveCount(0);};
+ // No guide (exercise 0): numbered rows, Edit and Delete enabled.
+ await card(page).getByTestId('ob-view-select').click();await expect(id(page,'ob-hotlist-native-1')).toHaveText(/^ {3}1 /);await expect(id(page,'ob-hotlist-edit')).toBeEnabled();await id(page,'ob-hotlist-close').click();
+ // LSS (exercise 5): full rows (fill 0x59066b); Edit/Delete follow Edit Mode (off).
+ await guide('lss-lab-open');
+ await card(page).getByTestId('ob-view-select').click();await expect(id(page,'ob-hotlist-native-1')).toHaveText(/^RA1 {21}/);
+ await expect(id(page,'ob-hotlist-edit')).toBeDisabled();await expect(id(page,'ob-hotlist-delete')).toBeDisabled();await id(page,'ob-hotlist-close').click();
+ // Object X (exercise 1): numbered rows, Edit/Delete disabled; Edit Mode enables them and shows full rows.
+ await guide('objectx-lab-open');
+ await card(page).getByTestId('ob-view-select').click();await expect(id(page,'ob-hotlist-native-1')).toHaveText(/^ {3}1 /);await expect(id(page,'ob-hotlist-edit')).toBeDisabled();await id(page,'ob-hotlist-close').click();
+ await setEditMode(page,true);
+ await card(page).getByTestId('ob-view-select').click();await expect(id(page,'ob-hotlist-native-1')).toHaveText(/^RA1 {21}/);await expect(id(page,'ob-hotlist-edit')).toBeEnabled();
 });

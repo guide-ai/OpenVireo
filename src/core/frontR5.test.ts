@@ -1,7 +1,7 @@
 import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
-import {parseHtl,serializeHtl} from './hotList';
-import {OPTICAL_HOT_LIST_SAVE_LITERALS as S,opticalHotListRowFormat,opticalHotListRowText,opticalHotListRows,opticalHotListSaveEnabled,opticalHotListSaveOutcome,opticalHotListSavedText} from './opticalHotList';
+import {addHtlRow,newHtlEditor,parseHtl,serializeHtl} from './hotList';
+import {OPTICAL_HOT_LIST_SAVE_LITERALS as S,opticalHotListEditEnabled,opticalHotListEditedRowFormat,opticalHotListSaveRecords,opticalHotListRowFormat,opticalHotListRowText,opticalHotListRows,opticalHotListSaveEnabled,opticalHotListSaveOutcome,opticalHotListSavedText} from './opticalHotList';
 import {INITIAL_RADIO_ACCESS,applyDemonstrationGate,applyEditModeGate,openPreferences,radioAccessSnapshot,restoredRadioAccessState} from './radioAccessOptions';
 import {COMPILED_EDIT_MODE,limitSlewingBox} from './editMode';
 import {COMPILED_OPTICAL_OPTIONS,OPTICAL_OPTIONS_CAPTIONS,OPTIONS_RESET_DEFAULTS,OPTIONS_RESET_LITERALS,OPTIONS_RESET_NOT_PORTED} from './opticalOptions';
@@ -24,7 +24,27 @@ describe('R5 hot-list rows follow Edit Mode (fill 0x5905e8, edited row 0x591488)
  });
 });
 
+describe('R5 review 1 M2: rows and Edit/Delete follow the exercise byte',()=>{
+ it('fill: full for exercise 5 or 6 or Edit Mode; edited row: 6 or Edit Mode; Edit/Delete: Edit Mode or exercise 0',()=>{
+  for(const code of [0,1,2,3,4,5,6,7]){
+   expect(opticalHotListRowFormat(false,code)).toBe(code===5||code===6?'full':'ordinal');expect(opticalHotListRowFormat(true,code)).toBe('full');
+   expect(opticalHotListEditedRowFormat(false,code)).toBe(code===6?'full':'ordinal');expect(opticalHotListEditedRowFormat(true,code)).toBe('full');
+   expect(opticalHotListEditEnabled(false,code)).toBe(code===0);expect(opticalHotListEditEnabled(true,code)).toBe(true);
+  }
+ });
+});
+
 describe('R5 List › Save (SaveList1Click 0x5919b4)',()=>{
+ it('review 1 M1: writes the shown (RA cursor insertion) order: a new low-RA row in RA position, Hubble.HTL rows 7 and 8 swapped',()=>{
+  const list=hubble(),rows=opticalHotListRows(list),out=parseHtl(serializeHtl(opticalHotListSaveRecords(rows)));
+  expect(out.map(r=>r.id)).toEqual(rows.map(r=>r.record.id));
+  expect(rows.map(r=>r.sourceIndex).slice(7,9)).toEqual([8,7]);
+  const bytes=new Uint8Array(readFileSync(new URL('../../public/original/hotlists/Hubble.HTL',import.meta.url))),saved=serializeHtl(opticalHotListSaveRecords(rows));
+  expect(Buffer.from(saved.subarray(7*86,8*86)).equals(Buffer.from(bytes.subarray(8*86,9*86)))).toBe(true);
+  const added=addHtlRow({...newHtlEditor(),list},{id:'LOW',remarks:'',ra:0.01,dec:5}).list;
+  expect(added[added.length-1].id).toBe('LOW');
+  expect(parseHtl(serializeHtl(opticalHotListSaveRecords(opticalHotListRows(added))))[0].id).toBe('LOW');
+ });
  it('is enabled from Edit Mode at each show, by Edit/Delete, kept by Undo and reset from Edit Mode after a save',()=>{
   for(const em of [false,true]){
    let on=opticalHotListSaveEnabled('show',em,true);expect(on).toBe(em);

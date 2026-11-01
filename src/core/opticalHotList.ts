@@ -32,10 +32,21 @@ export function opticalHotListRowText(record:HtlFields,position:number,format:Op
  if(!Number.isInteger(position)||position<1)throw new RangeError('Invalid hot list position');
  return String(position).padStart(4,' ')+formatHotListRa(record.ra)+formatHotListDec(record.dec);
 }
-/** Front R5 [D]: the format for the web observatory (exercise 0): the full row in Edit Mode, else the ordinal row. The fill
- * 0x5905e8 (0x59067b) and the edited row of EditSelectedLine1Click 0x591488 (0x5915e8) test the same byte, and Search and Print
- * read the same ListBox1 items. */
-export const opticalHotListRowFormat=(editMode:boolean):OpticalHotListRowFormat=>editMode?'full':'ordinal';
+/** Front R5 [D] (review 1 M2): the row format follows Edit Mode and the exercise byte env+0x383f (the web's `exerciseCode`).
+ * - The fill 0x5905e8 (FormShow): the full row for exercise 6 (0x59065b) or 5 (0x59066b) or in Edit Mode (0x59067b).
+ * - A row replaced by EditSelectedLine1Click 0x591488: the full row for exercise 6 or in Edit Mode only (0x5915d1..0x5915e8);
+ *   it keeps that text until the next show refills the list.
+ * Search and Print read the same ListBox1 items. */
+export const opticalHotListRowFormat=(editMode:boolean,exerciseCode=0):OpticalHotListRowFormat=>editMode||exerciseCode===5||exerciseCode===6?'full':'ordinal';
+export const opticalHotListEditedRowFormat=(editMode:boolean,exerciseCode=0):OpticalHotListRowFormat=>editMode||exerciseCode===6?'full':'ordinal';
+/** Front R5 [D] (review 1 M2): FormShow 0x5908d1..0x590917 enables Edit1/Edit2/Delete1 from Edit Mode; only the exercise-0 case
+ * of the jump table 0x59093a (0x590956 → 0x5909be..0x5909e0) forces them on. */
+export const opticalHotListEditEnabled=(editMode:boolean,exerciseCode=0)=>editMode||exerciseCode===0;
+/** Front R5 [D] (review 1 M1): SaveList1Click writes the in-memory list +0x58d head to tail (0x591b7f..0x591bb8), the list the
+ * reader built by RA cursor insertion (0x5904bf → 0x492728) and the window shows; so the file follows the shown order. Tied rows
+ * therefore swap as in the window (Hubble.HTL rows 7 and 8, LSS_Field08 and LSS_Field09). [I] Native Edit replaces a node in
+ * place without re-sorting; the web's shown order re-sorts after an RA edit. */
+export const opticalHotListSaveRecords=(rows:readonly RadioHotListRow[]):HtlList=>Object.freeze(rows.map(r=>r.record));
 
 /** Front R5 [D], THotListForm1 List › Save (SaveList1, +0x3ac). Enabled := Edit Mode at FormShow (0x590a54..0x590a68); := 1
  * after Edit (0x591652) or Delete (0x59181b); Undo leaves it (0x591993..0x5919a8 touch only the Undo items); after a save :=
@@ -60,7 +71,7 @@ export function opticalHotListSaveEnabled(event:OpticalHotListSaveEvent,editMode
 export const opticalHotListSaveOutcome=(editMode:boolean):'save'|'edit-mode-required'=>editMode?'save':'edit-mode-required';
 export const opticalHotListSavedText=(fileName:string)=>OPTICAL_HOT_LIST_SAVE_LITERALS.savedText+fileName;
 
-/** OB-HL-02 FormShow caption for exercise 0 (the web observatory has no exercise mode): "Hot List File: " + file name, or
+/** OB-HL-02 FormShow caption for exercise 0 (the exercise cases 1–6 only change the caption, 0x5909e7..0x590a4f; not ported): "Hot List File: " + file name, or
  * "New Hot List File" without a file. The " (Modified)" suffix (+0x587) is not tracked by the shared list (adaptation). */
 export const OPTICAL_HOT_LIST_CAPTIONS=Object.freeze({file:'Hot List File: ',modified:' (Modified)',none:'New Hot List File'});
 export function opticalHotListCaption(fileName:string):string{return fileName?OPTICAL_HOT_LIST_CAPTIONS.file+fileName:OPTICAL_HOT_LIST_CAPTIONS.none;}

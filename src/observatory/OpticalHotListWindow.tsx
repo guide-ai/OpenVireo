@@ -18,9 +18,10 @@ function useModal(ref:RefObject<HTMLDialogElement|null>,open:boolean,focus?:()=>
  * are shown as buttons; rows are radio options (touch and exact indices) showing the row text the caller formats (the recovered ordinal 0x590248 for the optical
  * observatory, OB-HL-03) above the
  * decimal values. Search highlights a row without selecting it. Native <dialog> modals; presentation only. */
-export default function OpticalHotListWindow({caption,texts,state,rows,onSelect,onSlew,onClose,onSearch,onSearchEdit,onSearchSubmit,onSearchCancel,onDismiss,onPrint,onEdit,onDelete,onUndo,undoEnabled=false,editBlocked=false,onSave,saveEnabled=false}:{caption:string;texts:readonly string[];state:WindowState;rows:readonly RadioHotListRow[];onSelect:(i:number)=>void;onSlew:()=>void;onClose:()=>void;onSearch:()=>void;onSearchEdit:(q:string,c:boolean)=>void;onSearchSubmit:(m:RadioHotListSearchMode)=>void;onSearchCancel:()=>void;onDismiss:()=>void;onPrint:()=>void;
+export default function OpticalHotListWindow({caption,texts,state,rows,onSelect,onSlew,onClose,onSearch,onSearchEdit,onSearchSubmit,onSearchCancel,onDismiss,onPrint,onEdit,onDelete,onUndo,undoEnabled=false,editBlocked=false,editEnabled=true,onSave,saveEnabled=false}:{caption:string;texts:readonly string[];state:WindowState;rows:readonly RadioHotListRow[];onSelect:(i:number)=>void;onSlew:()=>void;onClose:()=>void;onSearch:()=>void;onSearchEdit:(q:string,c:boolean)=>void;onSearchSubmit:(m:RadioHotListSearchMode)=>void;onSearchCancel:()=>void;onDismiss:()=>void;onPrint:()=>void;
  /** Front P: THotListForm1 Edit Selection.../Delete Selection/Undo Edit/Delete (one level). */
  onEdit?:()=>void;onDelete?:()=>void;onUndo?:()=>void;undoEnabled?:boolean;editBlocked?:boolean;
+ /** Front R5 review 1 M2: Edit1/Edit2/Delete1 Enabled (Edit Mode, or exercise 0). */editEnabled?:boolean;
  /** Front R5: List › Save (SaveList1); absent, no Save item. */
  onSave?:()=>void;saveEnabled?:boolean}){
  const id=useId(),win=useRef<HTMLDialogElement>(null),find=useRef<HTMLDialogElement>(null),box=useRef<HTMLDialogElement>(null),query=useRef<HTMLInputElement>(null),radios=useRef<(HTMLInputElement|null)[]>([]);
@@ -41,8 +42,8 @@ export default function OpticalHotListWindow({caption,texts,state,rows,onSelect,
     <button type="button" className="secondary-button" data-testid="ob-hotlist-print" onClick={onPrint}>{M.print}</button>
     {onSave&&<button type="button" className="secondary-button" data-testid="ob-hotlist-save" disabled={!saveEnabled||editBlocked} onClick={onSave}>{menuCaptionText(SL.item)}</button>}
     <button type="button" className="primary-button" data-testid="ob-hotlist-slew" onClick={onSlew}>{menuCaptionText(C.slew)}</button>
-    {onEdit&&<><button type="button" className="secondary-button" data-testid="ob-hotlist-edit" disabled={editBlocked} onClick={onEdit}>{menuCaptionText(P.edit)}</button>
-     <button type="button" className="secondary-button" data-testid="ob-hotlist-delete" disabled={editBlocked} onClick={onDelete}>{menuCaptionText(P.delete)}</button>
+    {onEdit&&<><button type="button" className="secondary-button" data-testid="ob-hotlist-edit" disabled={editBlocked||!editEnabled} onClick={onEdit}>{menuCaptionText(P.edit)}</button>
+     <button type="button" className="secondary-button" data-testid="ob-hotlist-delete" disabled={editBlocked||!editEnabled} onClick={onDelete}>{menuCaptionText(P.delete)}</button>
      <button type="button" className="secondary-button" data-testid="ob-hotlist-undo" disabled={!undoEnabled||editBlocked} onClick={onUndo}>{menuCaptionText(P.undo)}</button></>}
     <button type="button" className="secondary-button" data-testid="ob-hotlist-close" onClick={onClose}>{menuCaptionText(C.close)}</button>
    </div>
@@ -56,7 +57,7 @@ export default function OpticalHotListWindow({caption,texts,state,rows,onSelect,
     </label>)}
    </div>
    <PopupMenu at={popup.at} label={P.label} onClose={popup.close} returnFocus={()=>radios.current[state.index>=0?state.index:0]?.focus()} note={onEdit?PM.hotListEdit.note:PM.hotListPopup.note}
-    items={[{key:'slew',label:C.slew,onSelect:onSlew},{key:'edit',label:P.editPopup,onSelect:()=>onEdit?.(),disabled:!onEdit||editBlocked},{key:'delete',label:P.delete,onSelect:()=>onDelete?.(),disabled:!onDelete||editBlocked},{key:'undo',label:P.undo,onSelect:()=>onUndo?.(),disabled:!undoEnabled||editBlocked}]}/>
+    items={[{key:'slew',label:C.slew,onSelect:onSlew},{key:'edit',label:P.editPopup,onSelect:()=>onEdit?.(),disabled:!onEdit||editBlocked||!editEnabled},{key:'delete',label:P.delete,onSelect:()=>onDelete?.(),disabled:!onDelete||editBlocked||!editEnabled},{key:'undo',label:P.undo,onSelect:()=>onUndo?.(),disabled:!undoEnabled||editBlocked}]}/>
    <p className="ob-note" role="status" aria-live="polite" data-testid="ob-hotlist-found">{found===null?'':M.found(found+1)}</p>
    <p className="ob-note">{M.adaptation}</p>
    <dialog ref={find} className="ob-dialog" aria-labelledby={`${id}-find`} data-testid="ob-hotlist-find" onCancel={e=>{e.preventDefault();onSearchCancel();}}>
