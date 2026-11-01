@@ -30,7 +30,9 @@ export type SpectrumSaveSource=Readonly<{bytes:Uint8Array|null;usable:boolean;la
  /** Front R4d: the spectrometer's current object and options (Save default name 0x50fb1c, print lines 0x510954); absent, nothing changes. */
  current?:Readonly<{object:SpectrometerObject;options:SpectrometerReadoutOptions;sky?:boolean}>;
  /** Front RE6: the exposure behind the bytes (source-plus-sky bins and totals) for VIREO's print body 0x510294. */
- exposure?:Readonly<{counts:readonly number[];sourceTotal:number;skyTotal:number}>}>;
+ exposure?:Readonly<{counts:readonly number[];sourceTotal:number;skyTotal:number}>;
+ /** Front RE6 review 1 L7: the telescope pointing the print's RA/Dec lines show (0x510a08, Obs+0x65f/+0x669), not the rounded header. */
+ pointing?:Readonly<{ra:number;dec:number}>}>;
 export function SpectrumSaveCard({source,active}:{source:SpectrumSaveSource;active:boolean}){
  const [notice,setNotice]=useState(''),[error,setError]=useState(''),[printedAt,setPrintedAt]=useState(''),release=useRef<(()=>void)|null>(null);
  useEffect(()=>{if(!active)release.current?.();},[active]);
@@ -40,12 +42,13 @@ export function SpectrumSaveCard({source,active}:{source:SpectrumSaveSource;acti
  const objectLines=current&&(shown||current.sky)?spectrometerPrintLines(current.options,!!current.sky,shown??{status:'none'}):[];
  const printOnly=!bytes&&!!source.printSamples?.length;
  const body=useMemo(()=>{
-  const e=source.exposure;if(!bytes||!e)return null;
-  const text=new TextDecoder().decode(bytes),head=text.split('\r\n')[0]!.split(','),ra=Number(head.at(-3)),dec=Number(head.at(-2));
-  const rows=parseSpectrum(text.split('\r\n').slice(1).join('\r\n'));if(rows.length<2||!Number.isFinite(ra)||!Number.isFinite(dec))return null;
-  const r3=(x:number)=>Math.round(x*1000)/1000,minimum=r3(rows[0]!.wavelength),maximum=r3(minimum+600*(rows.at(-1)!.wavelength-rows[0]!.wavelength)/(rows.length-1));
-  return {minimum,maximum,ra,dec,counts:e.counts,total:e.sourceTotal+e.skyTotal};
- },[bytes,source.exposure]);
+  const e=source.exposure,p=source.pointing;if(!bytes||!e||!p)return null;
+  const rows=parseSpectrum(new TextDecoder().decode(bytes).split('\r\n').slice(1).join('\r\n'));if(rows.length<2)return null;
+  // Review 1 M2 [W]: the configured range read back from the saved rows (2 decimals) and snapped to the dialog's 100-Å grid, so
+  // the last label (λ ≤ λmax, 0x51055e) is VIREO's: 3700–4700 prints 4700.
+  const grid=(x:number)=>Math.round(x/100)*100,minimum=grid(rows[0]!.wavelength),maximum=grid(rows[0]!.wavelength+600*(rows.at(-1)!.wavelength-rows[0]!.wavelength)/(rows.length-1));
+  return {minimum,maximum,ra:p.ra,dec:p.dec,counts:e.counts,total:e.sourceTotal+e.skyTotal};
+ },[bytes,source.exposure,source.pointing]);
  const page=body?spectrometerPrintPage({...body,pointing:{ra:body.ra,dec:body.dec},elapsedMs:source.elapsedMs,sky:!!current?.sky,object:shown,options:current?.options??{showObjectId:false,showObjectMag:false,editMode:false}}):null;
  const samples=useMemo(()=>bytes?parseSpectrum(new TextDecoder().decode(bytes).split('\r\n').slice(1).join('\r\n')):source.printSamples??[],[bytes,source.printSamples]);
  function save(){
@@ -86,5 +89,5 @@ export default function SpectrumSavePrint({state,active,busy,current}:{state:Sta
  const running=state?.exposure.phase==='running',usable=!!state&&!running&&state.exposure.draws>0&&!busy;
  const bytes=useMemo(()=>{if(!state||running)return null;try{return starSpectrumBytes(state);}catch{return null;}},[state,running]);
  const index=state?starTelescopeIndex(state):0;
- return <SpectrumSaveCard active={active} source={{bytes,usable,label:STAR_TARGET.id,telescopeName:opticalProfile(index).name,elapsedMs:state?.exposure.elapsedMs??0,fileName:starSpectrumFileName(STAR_TARGET.id),...(current?{current}:{}),...(state?{exposure:state.exposure}:{})}}/>;
+ return <SpectrumSaveCard active={active} source={{bytes,usable,label:STAR_TARGET.id,telescopeName:opticalProfile(index).name,elapsedMs:state?.exposure.elapsedMs??0,fileName:starSpectrumFileName(STAR_TARGET.id),...(current?{current}:{}),...(state?{exposure:state.exposure}:{}),pointing:STAR_TARGET}}/>;
 }

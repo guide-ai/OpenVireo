@@ -10,7 +10,7 @@ describe('shared Set Date/Time ID',()=>{
  });
  it('the radio dialog opens with the session ID when given, without writing it; else with its own copy',()=>{
   const gate={status:'available',utMs:1_243_829_106_000} as const;
-  const t=openRadioDateDialog(INITIAL_RADIO_DATE,gate,'C9');expect(t.state.dialog?.id).toBe('C9');expect(t.state.storedId).toBe('');
+  const t=openRadioDateDialog(INITIAL_RADIO_DATE,gate,'C9');expect(openRadioDateDialog({...INITIAL_RADIO_DATE,storedId:'R1'},gate,'').state.dialog?.id).toBe('R1');expect(t.state.dialog?.id).toBe('C9');expect(t.state.storedId).toBe('');
   expect(openRadioDateDialog({...INITIAL_RADIO_DATE,storedId:'Z'},gate).state.dialog?.id).toBe('Z');
  });
 });

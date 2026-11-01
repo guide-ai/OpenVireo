@@ -168,6 +168,7 @@ Identity masking (research `analysis/front-s-spectroscopy/RE-observational-data-
 - **Header after the reveal** (coordinator decision D4, 2026-10-29): the selected record's catalog magnitude, as VIREO
   writes it, and as the object VIREO's own record name (Front RE6, U6 resolved in research front-re6/U6-ssp-header-name.md)
   [D]: `<band>-<name>` for a GSC star (e.g. `N3730-01103`), the CLEA_QSO.DAT name for a QSO, the catalogue name for a galaxy.
+  Files saved after the reveal by earlier builds (before Front RE6) keep the locator header; their rows are unchanged.
   The 600 data rows are the same; a file saved before the reveal is never rewritten.
 - The body is VIREO's: 600 rows from 3700 Å, step 1000/600 Å, normalized source-plus-sky counts.
 

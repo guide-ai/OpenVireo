@@ -1,4 +1,5 @@
 import {describe,expect,it} from 'vitest';
+import {roundNearestEven} from './numericPolicy';
 import {spectrometerPrintAxis,spectrometerPrintPage,type SpectrometerPrintInput} from './spectrometerPrint';
 
 // Front RE6: research analysis/front-re5/spectrometer-print.md §3–§5 (0x510294).
@@ -31,5 +32,20 @@ describe('spectrometer print body',()=>{
   expect(txt({...base,options:{...OFF,editMode:true}})).toMatchObject({magnitude:'16,280 Apparent Magnitude (V): 6.00'});
   expect(txt({...base,options:ON,object:{status:'hidden'}}).object).toBeUndefined();
   expect(txt({...base,options:ON,object:{status:'object',name:'X'.repeat(30),kind:0,v:1,ra:0,dec:0}}).object).toBe(`16,260 Object: ${'X'.repeat(24)}`);
+ });
+ it('review 1 M1: ticks follow VIREO\'s Extended arithmetic; 157 of the 780 dialog ranges differ from binary64',()=>{
+  const lengths=(min:number,max:number)=>spectrometerPrintPage({...base,minimum:min,maximum:max}).ticks.filter(t=>t.y1===220).map(t=>[t.x1,220-t.y2]);
+  const major=(min:number,max:number)=>new Map(lengths(min,max).map(([x,l])=>[x,l]));
+  // 3500–4600 (n 11): k = 50, 70, 100 are minor in Extended (Frac = 0.99999…), at t 273, 382, 545 (x = t + 26).
+  const a=major(3500,4600);for(const x of [273,382,545])expect(a.get(x+26),`${x}`).toBe(5);
+  // 3500–4800 (n 13): the reverse.
+  const b=major(3500,4800);for(const x of [46,92,185,231])expect(b.get(x+26),`${x}`).toBe(10);
+  // The binary64 rule, for the count: every dialog range 3500–7400 Å in 100-Å steps.
+  const binary=(min:number,max:number)=>{const n=Math.round((max-min)/100),M=600/n,m=M/10,out:number[][]=[];
+   for(let k=1;;k++){const t=roundNearestEven(k*m);if(t+26>626)break;const f=k*m/M;out.push([t+26,f-Math.floor(f)<1e-5?10:5]);}return out;};
+  let ranges=0,differ=0;
+  for(let lo=3500;lo<=7400;lo+=100)for(let hi=lo+100;hi<=7400;hi+=100){ranges++;if(JSON.stringify(lengths(lo,hi))!==JSON.stringify(binary(lo,hi)))differ++;}
+  expect(ranges).toBe(780);expect(differ).toBe(157);
+  for(const [lo,hi] of [[3700,4700],[3900,4500],[4000,5000]])expect(lengths(lo,hi)).toEqual(binary(lo,hi));
  });
 });

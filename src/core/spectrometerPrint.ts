@@ -2,7 +2,7 @@
  * Static reading of CLEA_VEO.exe 781bc970…c54c, research analysis/front-re5/spectrometer-print.md §1–§5. Nothing is executed.
  * Pure: the page in VIREO's layout units (0.01 in, the screen chart's own pixels), relative to the 1-inch left margin and the
  * header's last line + 10 lines [D]. Black 1-pixel pen, Courier 10, no colour, no bitmap: the plot is redrawn as vectors [D].
- * - Frame (26,20)–(26,220)–(626,220); bottom ticks at Round(k·m)+26 while ≤ 626, length 10 on majors (m = M or
+ * - Frame (26,20)–(26,220)–(626,220); bottom ticks (Extended arithmetic, see `ext`) at Round(k·m)+26 while ≤ 626, length 10 on majors (m = M or
  *   Frac(k·m/M) < 1e-5), else 5; left ticks every 4 units, 15/10/5 long; labels from the configured λmin (not the truncated axis
  *   start) every s·M units, s the smallest with n div s ≤ 15; `Angstroms` (291,245); `Intensity` one letter per line at
  *   (6, 40+17i); `1.0` and `0.0` centred on the top and bottom of the axis at x −4 [D].
@@ -32,22 +32,49 @@ export const SPECTROMETER_PRINT_LITERALS=Object.freeze({
 export const SPECTROMETER_PRINT_TEXT_HEIGHT=14;
 const L=SPECTROMETER_PRINT_LITERALS,round=roundNearestEven;
 
-/** The axis setup 0x50ec98: start = Trunc(λmin/100)·100, end = the first start + 100k ≥ λmax, n = Round(span/100), M = 600/n, m = M/10. */
+/** Front RE6 review 1 M1: VIREO keeps the axis values in TBYTE (Extended) fields (0x50ed88, 0x50edb5, 0x50edc8) and runs the tick
+ * and label arithmetic on the x87 (Frac test 0x5104a1..0x5104c6) [D]. The web emulates each stored or compared Extended value
+ * exactly: rationals rounded to a 64-bit significand, round half to even (the Delphi 8087 control word, precision 64 bits [I]). */
+type Ext=Readonly<{n:bigint;d:bigint}>;
+const bitLength=(x:bigint)=>x.toString(2).length;
+function ext(n:bigint,d:bigint):Ext{
+ if(d<0n){n=-n;d=-d;}if(n===0n)return {n:0n,d:1n};
+ const neg=n<0n,a=neg?-n:n;let e=63-(bitLength(a)-bitLength(d));
+ for(;;){
+  const num=e>=0?a<<BigInt(e):a,den=e>=0?d:d<<BigInt(-e);
+  let q=num/den;const r=num%den;
+  if(q>=1n<<64n){e--;continue;}if(q<1n<<63n){e++;continue;}
+  if(2n*r>den||(2n*r===den&&(q&1n)===1n))q++;
+  if(q===1n<<64n){q>>=1n;e--;}
+  const v=neg?-q:q;return e>=0?{n:v,d:1n<<BigInt(e)}:{n:v<<BigInt(-e),d:1n};
+ }
+}
+function exact(x:number):Ext{if(!Number.isFinite(x))throw new RangeError('extended');let d=1n,v=x;while(!Number.isInteger(v)){v*=2;d*=2n;}return {n:BigInt(v),d};}
+const xmul=(a:Ext,b:Ext)=>ext(a.n*b.n,a.d*b.d),xdiv=(a:Ext,b:Ext)=>ext(a.n*b.d,a.d*b.n),xadd=(a:Ext,b:Ext)=>ext(a.n*b.d+b.n*a.d,a.d*b.d);
+const xint=(k:number):Ext=>({n:BigInt(k),d:1n}),xle=(a:Ext,b:Ext)=>a.n*b.d<=b.n*a.d,xlt=(a:Ext,b:Ext)=>a.n*b.d<b.n*a.d;
+const xeq=(a:Ext,b:Ext)=>a.n*b.d===b.n*a.d;
+/** FISTP with round-to-nearest (half to even). */
+function xround(a:Ext):number{const f=a.n>=0n?a.n/a.d:-((-a.n+a.d-1n)/a.d),r=a.n-f*a.d,twice=2n*r;return Number(twice>a.d||(twice===a.d&&(f&1n)===1n)?f+1n:f);}
+/** Frac (x − Int(x), exact for an Extended value). */
+const xfrac=(a:Ext):Ext=>{const t=a.n/a.d;return {n:a.n-t*a.d,d:a.d};};
+const toNumber=(a:Ext)=>Number(a.n)/Number(a.d);
+const EXT_1E5=ext(1n,100000n);
+
+/** The axis setup 0x50ec98: start = Trunc(λmin/100)·100, end = the first start + 100k ≥ λmax, n = Round(span/100), M = 600/n, m = M/10
+ * (M, m and Å per channel as Extended values). */
 export function spectrometerPrintAxis(minimum:number,maximum:number){
  const start=Math.trunc(minimum/100)*100;let end=start;while(end<maximum)end+=100;
- const span=end-start,n=round(span/100),M=600/n;
- return Object.freeze({start,end,span,n,major:M,minor:M/10,perChannel:span/600});
+ const span=end-start,n=round(span/100),M=ext(600n,BigInt(n)),m=xdiv(M,xint(10)),perChannel=ext(BigInt(span),600n);
+ return Object.freeze({start,end,span,n,major:toNumber(M),minor:toNumber(m),perChannel:toNumber(perChannel),extended:Object.freeze({M,m,perChannel})});
 }
 export function spectrometerPrintPage(input:SpectrometerPrintInput):SpectrometerPrintPage{
- const a=spectrometerPrintAxis(input.minimum,input.maximum),ticks:{x1:number;y1:number;x2:number;y2:number}[]=[],texts:SpectrometerPrintText[]=[];
- // Bottom ticks (0x51043c..0x510543).
- for(let k=1;;k++){const t=round(k*a.minor);if(t+26>626)break;const f=k*a.minor/a.major,major=a.minor===a.major||f-Math.floor(f)<1e-5;ticks.push({x1:t+26,y1:220,x2:t+26,y2:220-(major?10:5)});}
- // Labels (0x510549..0x510625): from the raw λmin, step s.
+ const a=spectrometerPrintAxis(input.minimum,input.maximum),{M,m,perChannel}=a.extended,ticks:{x1:number;y1:number;x2:number;y2:number}[]=[],texts:SpectrometerPrintText[]=[];
+ // Bottom ticks (0x51043c..0x510543): t = Round(k·m); major when m = M or Frac(k·m/M) < 1e-5, all in Extended.
+ for(let k=1;;k++){const km=xmul(xint(k),m),t=xround(km);if(t+26>626)break;const major=xeq(m,M)||xlt(xfrac(xdiv(km,M)),EXT_1E5);ticks.push({x1:t+26,y1:220,x2:t+26,y2:220-(major?10:5)});}
+ // Labels (0x510549..0x510625): λ from the Single λmin, x = Round(j·M)+9, λ += (s·M)·(Å/channel) in Extended, while λ ≤ Single λmax.
  let s=1;while(Math.trunc(a.n/s)>15)s++;
- // [I] The step s·M·(Å/channel) is s·100 Å; VIREO accumulates it in Extended, the web rounds it to 1e-9 Å so that binary64 drift
- // (1000/600·60 = 100.000…01) does not drop the last label of a 100-Å-bounded range.
- const step=Math.round(s*a.major*a.perChannel*1e9)/1e9;
- for(let j=0,l=Math.fround(input.minimum);l<=Math.fround(input.maximum);j+=s,l+=step)texts.push({x:round(j*a.major)+9,y:225,text:delphiFixed(l,0),role:'label'});
+ const step=xmul(xmul(xint(s),M),perChannel),last=exact(Math.fround(input.maximum));
+ for(let j=0,l=exact(Math.fround(input.minimum));xle(l,last);j+=s,l=xadd(l,step))texts.push({x:xround(xmul(xint(j),M))+9,y:225,text:delphiFixed(toNumber(l),0),role:'label'});
  texts.push({x:291,y:245,text:L.angstroms,role:'axis'});
  // Left ticks (0x51065d..0x51072a).
  for(let e=4;e<=200;e+=4)ticks.push({x1:26,y1:220-e,x2:26+(e%100===0?15:e%20===0?10:5),y2:220-e});

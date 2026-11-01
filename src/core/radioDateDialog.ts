@@ -158,7 +158,8 @@ export type RadioDateDialog=Readonly<{id:string;date:string;time:string;error:Di
 export type RadioDateState=Readonly<{
  /** The radio window's copy of ShortString 0x5bc1e4 ('' = never written, the zero-initialised .bss value at load; no
   * historical or startup ID is claimed). Front RE6: the page's one session ID (OpenVireo) is the store every reader uses; the
-  * route passes it to `openRadioDateDialog` as the prefill and receives this value back on OK, so the copy stays in step. */
+  * route passes it to `openRadioDateDialog` as the prefill (this copy when the session ID is empty) and receives this value back on OK;
+  * a restored radio investigation's ID seeds the session ID (RE6 review 1 L3). */
  storedId:string;
  /** WEB-DATE-01 sticky latch: the antenna activated or the panel window was shown (natively that activates the form even
   * when the web refuses activation for an unsupported option profile). Never cleared in this window. */
@@ -199,7 +200,7 @@ export function markRadioActivationReached(s:RadioDateState):RadioDateTransition
 export function openRadioDateDialog(s:RadioDateState,gate:RadioDateGate,sessionId?:string):RadioDateTransition{
  if(s.dialog)return keep(s,'already-open');
  if(gate.status==='refused')return keep(s,'refused',gate.reason);
- const prefill=dialogPrefill(gate.utMs),id=sessionId??s.storedId;
+ const prefill=dialogPrefill(gate.utMs),id=sessionId||s.storedId;
  return next({...s,dialog:Object.freeze({id,date:prefill.date,time:prefill.time,error:null})},'opened');
 }
 const PRINTABLE_ASCII=/^[\x20-\x7e]*$/;

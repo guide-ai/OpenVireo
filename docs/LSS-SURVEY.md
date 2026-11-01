@@ -202,7 +202,7 @@ CLEA_VEO.exe 781bc970…c54c; nothing executed.
 - **Stamp cap.** The web refused a field whose galaxy stamp exceeded 100 px or whose minor axis rounded to 0 px. VIREO's 0x5943d4
   and its draw 0x59456c have neither bound; the telescope cache now paints in place, clipped (as the finder), and a 0 px minor
   composes nothing (0x594488 stretches into a zero-height rect [I]). NGC 224 stays typed `ngc224-image`: the painter routes it to its
-  own routine 0x53b848 (name test 0x53b4fc), not ported.
+  own routine 0x53b848 (name test 0x53b4fc), which paints nothing and only shows an "M31 Image Too Large to Load!" box (Front RE6).
 - **Rows that changed** (152 evaluations, every one unavailable before; listed with their before/after fingerprints in
   `data/hubble/existing-target-fingerprints.json` and `src/core/galaxyRange.fingerprints.json`, update of 2026-10-31):
   - mean-bound → available: 107 without the clock (105 on the 0.9 m; F2R11 NGC 4414 and F3R1 NGC 4670 on the 0.4 m), 109 with it

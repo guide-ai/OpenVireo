@@ -11,10 +11,17 @@ import type {LssRow} from './lssFields';
  * Source PLUS sky counts are passed unchanged; no measured z is serialized.
  * Numerical/byte policy: docs/SPECTRUM-SAVE-CONTRACT.md.
  */
+/** Front RE6 review 1 L4: VIREO's name for a compact-GSC record, `<band>-<name>` (0x59b125..0x59b196: Copy(s,5,5) + '-' + the record's
+ * name, at most 5 characters at +0x15), from the record's locator (`N0000.DAT@14428`) and raw bytes. The star route's target is
+ * `N0000-00008`. */
+export function gscStarHeaderName(id:string,rawHex:string):string{
+ const b=(rawHex.match(/../g)??[]).map(h=>parseInt(h,16)),len=b[0x15]??0;if(len>5||b.length<0x16+len)throw new RangeError('GSC record');
+ return `${id.split('.')[0]}-${String.fromCharCode(...b.slice(0x16,0x16+len))}`;
+}
 export function starSpectrumBytes(state:StarState):Uint8Array {
  // Front S (S1): rows from the exposure's spectrometer range (Save 0x50fb1c: λ from env+0x2bd4, step (max − min)/600).
  const range=starSpectralRange(state);
- return serializeDotDecimalVireoSpectrum({object:STAR_TARGET.id,pointingRa:STAR_TARGET.ra,pointingDec:STAR_TARGET.dec,apparentMagnitude:STAR_TARGET.magnitudeSingle,minimum:range.minimum,step:(range.maximum-range.minimum)/600,counts:state.exposure.counts});
+ return serializeDotDecimalVireoSpectrum({object:gscStarHeaderName(STAR_TARGET.id,STAR_TARGET.rawHex),pointingRa:STAR_TARGET.ra,pointingDec:STAR_TARGET.dec,apparentMagnitude:STAR_TARGET.magnitudeSingle,minimum:range.minimum,step:(range.maximum-range.minimum)/600,counts:state.exposure.counts});
 }
 export function galaxySpectrumBytes(state:GalaxyState):Uint8Array {
  // Front S2: rows from the exposure's interval (legacy 4000 Å, or VIREO's 3700 Å with step 1000/600).

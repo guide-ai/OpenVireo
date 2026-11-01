@@ -72,7 +72,8 @@ export const FIELD_MULTIPLIER=base.multiplier;
 export type FieldUnavailableReason=
  |'outside-pack'|'qso-merge'|'photographic-image'|'variable-merge'|'axis-fallback'|'merge-boundary'
  /** Front L4: NGC 224 in the telescope field. The painter 0x53b390 compares each galaxy's name with 'NGC 224' (0x53b4fc) and
-  * draws it with its own routine 0x53b848, which is not ported; never the generic stamp. */
+  * hands it to 0x53b848, which paints nothing and only shows a MessageBox ("Image Too Large!" / "M31 Image Too Large to Load!",
+  * Front RE6); never the generic stamp. The web still types the field until C7 ports that. */
  |'ngc224-image'
  |'no-galaxy-selected'|'star-selected'|'slit-empty'|'spectrum-range'|'mean-bound'|'spectrum-mapping'
  /** Front F, 'merge' mode only: the slit selects a merged QSO record (type 3); a QSO observation is another branch. */
@@ -607,7 +608,8 @@ function outsideViewHolds(population:FieldPopulation,scene:NativeSelectionScene)
 }
 /** The telescope-cache galaxy gate (Front L4). VIREO's stamp has no size bound (0x5943d4, 0x59456c), so every galaxy is painted,
  * in place and clipped to the cache, except:
- *  - NGC 224, which VIREO draws with its own unported routine 0x53b848 (name test 0x53b4fc): the field is typed 'ngc224-image';
+ *  - NGC 224, which VIREO hands to 0x53b848 (name test 0x53b4fc), a stub that paints nothing and shows "M31 Image Too Large to
+ *    Load!" (Front RE6): the field is still typed 'ngc224-image' until C7;
  *  - a galaxy whose minor axis rounds to 0 px, which composes nothing (0x594488 stretches into a zero-height rect [I]) and is
  *    not painted. Under the 'outside-view' rule (Boötes) it keeps its earlier listing with its crop margin when its footprint
  *    misses the crop; it is the same pixels either way.

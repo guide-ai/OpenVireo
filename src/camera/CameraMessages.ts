@@ -101,7 +101,7 @@ export const CAMERA_MESSAGES=Object.freeze({
   field:'Not added: the loaded telescope field could not be built here (a catalogue tile could not be loaded, or the field needs a rule this site does not reproduce). Try the exposure again.',
   'no-load':'Not added: no telescope field has been loaded yet.',
   telescope:'Not added: the loaded telescope field belongs to the previous telescope; the sky view loads the new one.',
-  m31:'Not added: the field contains M31 (NGC 224), which VIREO paints with its own routine that this site does not reproduce.',
+  m31:'Not added: the field contains M31 (NGC 224). VIREO paints nothing for it and only says “M31 Image Too Large to Load!”; this site does not build such a field yet.',
   outside:'Not added: the telescope has moved so far from the loaded field’s centre that the camera window leaves it, and VIREO’s copy outside the field is not known.',
   unpainted:'Not added: a galaxy of the loaded field was not drawn.',
  } as Readonly<Record<string,string>>,

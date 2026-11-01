@@ -299,7 +299,7 @@ export default function OpenVireo(){
    objectXPendingRestore.current=investigation;
    if(!investigation&&!objectXCurrent.current)return;
    if(investigation)setObjectXVisited(true);
-   objectXCurrent.current=investigation;setObjectXId(investigation?.id??'');setObjectXRestore({token:++objectXToken.current,investigation});
+   objectXCurrent.current=investigation;setObjectXId(investigation?.id??'');setLabIdPush(null);setObjectXRestore({token:++objectXToken.current,investigation});// RE6 review 1 L2: a restore drops the pending push, so the remounted lab keeps the restored (or empty) ID.
   }
   const [lssVisited,setLssVisited]=useState(location.hash==='#lss-survey');
   useEffect(()=>{if(view==='lss-survey')setLssVisited(true);},[view]);

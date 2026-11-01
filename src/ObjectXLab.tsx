@@ -1,4 +1,5 @@
 import {DEFAULT_SPECTRAL_RANGE,type SpectralRange} from './core/spectralRange';
+import {observatoryIdEditable} from './core/observatoryDateTime';
 import type {ClassificationImport} from './core/classificationImport';
 import {memo,useEffect,useMemo,useRef,useState,type MutableRefObject} from 'react';
 import './objectx.css';
@@ -193,7 +194,7 @@ function ObjectXLab({sessionId=null,editMode=false,spectralRange=DEFAULT_SPECTRA
  return <main className="observatory-main objectx-lab" data-testid="objectx-lab">
   <div className="observatory-heading"><h1 tabIndex={-1}>{M.title}</h1><p>{M.scope}</p></div>
   <fieldset className="card" disabled={disabled}><legend><h2>{M.startTitle}</h2></legend>
-   <label>{M.idLabel}<input value={inv.id} maxLength={OBJECT_X_ID_MAX} onChange={e=>{const id=e.target.value;update(i=>({...i,id}));}}/></label>
+   <label>{M.idLabel}<input value={inv.id} maxLength={OBJECT_X_ID_MAX} onChange={e=>{const id=e.target.value;if(observatoryIdEditable(id))update(i=>({...i,id}));}}/></label>
    <p className="observatory-note">{M.idHelp}</p>
    {htlError?<p role="alert">{M.targetsError}</p>:!htl?<p>{M.loadingTargets}</p>:<>
     <label>{M.targetLabel}<select data-testid="objectx-target" value={inv.target??''} onChange={e=>{const code=e.target.value||null;update(i=>i.revealed?i:{...i,target:code});}}>

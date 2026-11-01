@@ -42,6 +42,8 @@ export function revealObjectX(list:HtlList,code:string):ObjectXReveal|null{
  return Object.freeze({id,remarks:row.remarks,kind:OBJECT_X_ROW_KINDS[id]??null});
 }
 /** "ObjX-<ID>" label of saved data, or "UNKNOWN" when the ID is empty (0x4fe079 and every "ObjX-" use). */
+/** [W] VIREO's readers (e.g. 0x500246) write 'ObjX-' + the stored ID untrimmed and compare it with 'UNKNOWN' case-sensitively; the
+ * web trims it and maps '' to 'UNKNOWN', so the E08 labels and file names stay as they are (RE6 review 1). */
 export function objectXDataLabel(id:string):string{
  const v=id.trim().slice(0,OBJECT_X_ID_MAX);return v&&v!=='UNKNOWN'?`ObjX-${v}`:'UNKNOWN';
 }
