@@ -142,7 +142,8 @@ policies.
   galaxy or LSS exposure (see Restore above); an investigation restore takes the one range all its sky, star, field-spectrum and
   marked galaxy/LSS exposures share, otherwise 3700–4700 Å [W]
   (`tests/spectral-range.spec.ts`).
-- The Options box "Allow User Change" that enables the menu item is not modelled; the item is always available.
+- The Options box "Allow User Change" that enables the menu item is modelled since Front S3 (section below): unchecked, the
+  openers on the spectrometer routes and in Classify are disabled.
 
 ## Galaxies and QSOs on every range (Front S3)
 
@@ -151,14 +152,17 @@ Plan: `analysis/front-plans/front-s3.md`. Static reading of CLEA_VEO.exe only.
 **Witnesses** (second implementations of the same reading, not x87 or runtime oracles):
 - Galaxies: `analysis/front-s3-range/tools/galaxy_range_all_witness.py` (the Decimal continuum, Fraction sampler and integer LCG
   of `generate_vectors.py`, with the range as a parameter) covers every dialog range for the S2 route contexts, every LSS
-  continuation galaxy, the bundled own spectra and z strata across the template edges. `src/core/galaxyRangeAll.witness.json`;
+  continuation galaxy, the bundled own spectra and z strata across the template edges. `src/core/galaxyRangeAll.witness.json.gz`;
   test `src/core/galaxyRangeAll.test.ts` (kind, draws and seed exact; sums and maxima within 1e-10 relative; anchor vectors bin by
-  bin).
+  bin). The witness records the LSS outcomes (v2 range fingerprints) its contexts were exported from, so a default-suite test
+  fails when they change and the witness must be regenerated.
 - QSOs: `analysis/front-s3-range/tools/qso_range_witness.py` (binary64 mirror, an x87 model and exact integers) covers the named
   QSOs (CLEA_QSO.DAT @522, @1356, @1785, @517, @1443, @1656) on every range on the 600- and 400-bin grids, and every catalogue z
   on the 600-bin grid. `src/core/qsoRange.witness.json`; test `src/core/qsoRange.test.ts` (digests byte for byte; every 10th z by
   default, all with `OPENVIREO_S3_FULL=1`). Channels where Round(u) is an exact half-integer (u = i·count/600) are listed [I]: the
-  binary64 and x87 readings may pick different neighbours there, as on the default range.
+  binary64 and x87 readings may pick different neighbours there, as on the default range. VIREO's Go loop (0x50f4f9) ignores the
+  sampler's valid flag, so an out-of-window channel would be mean 0; no catalogue QSO has such a channel on any dialog range, and
+  the web types a window the file cannot cover as `spectrum-range` (S3 review 1 nit).
 
 **Where a galaxy has no spectrum.** When the shifted template or own spectrum lies wholly outside a range (for example 3500–3600
 Å, or the red end at low z), or the interpolation turns negative near the zero tails of NGC 4472 and NGC 5866, the engine gives
@@ -178,7 +182,7 @@ evaluations on sampled ranges. A kept spectrum on an admitted non-default range 
 continuation note.
 
 **Allow User Change.** The Spectrometer tab's option (env+0x2e8b, compiled on) enables the Spectral Range item in TSpectrometer
-FormShow (0x50d9d5) and TSpClassify FormShow (0x507945); nothing else reads it. In the web Optical Simulation Options it is a
+FormShow (0x50d9d5) and TSpClassify FormShow (0x507945); the options dialog reads it at 0x5a5ae3 for its own check box (S3 review 1 nit); nothing else reads it. In the web Optical Simulation Options it is a
 live session option: unchecked, every range opener is disabled with a note, and the current range stays.
 
 **Defaults.** At 3700–4700 Å every policy, session, record and investigation keeps its bytes, and the exercise counts are

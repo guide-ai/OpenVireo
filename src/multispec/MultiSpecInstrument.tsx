@@ -86,6 +86,8 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
  const pending=useRef(new Set<string>()),entryRanges=useRef(new Map<string,SpectralRange>()),rangeNow=useRef(spectralRange);rangeNow.current=spectralRange;
  useEffect(()=>{
   const f=fieldRef.current,v=viewRef.current;
+  // S3 review 1 L3: a removed or cleared entry drops its frozen range with it.
+  {const live=new Set(state.entries.map(entryKey));for(const k of [...entryRanges.current.keys()])if(!live.has(k))entryRanges.current.delete(k);}
   const missing=state.entries.filter(e=>!results.has(entryKey(e))&&!pending.current.has(entryKey(e)));
   if(!missing.length)return;
   for(const e of missing){pending.current.add(entryKey(e));if(rangeNow.current&&!entryRanges.current.has(entryKey(e)))entryRanges.current.set(entryKey(e),rangeNow.current);}

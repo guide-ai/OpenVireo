@@ -116,8 +116,10 @@ export function verifiedGalaxyConfiguration(id='36773',index:0|1|2=0,range:Spect
  * a pair is offered at 3700–4700 Å only where it is available at 4000–5000 Å [W] (review 2 nit).
  * Front S3: every dialog range (galaxyRangeAll.witness.json). The cache keeps the most recent RANGED_CACHE_SIZE configurations
  * (least recently used first out): every target panel stays mounted, so each page-range change would otherwise keep one per panel. */
-const RANGED_CACHE_SIZE=48;
+export const RANGED_CACHE_SIZE=48;
 const ranged=new Map<string,ReturnType<typeof prepare>>();
+/** Test seam: the ranged cache's keys, oldest first. */
+export const galaxyRangedCacheKeys=()=>[...ranged.keys()];
 function rangedConfiguration(id:string,index:0|1|2,range:SpectralRange):ReturnType<typeof prepare>{
  if(!isDialogRange(range))throw new JournalError('proof');
  const key=`${id}:${index}:${range.minimum}-${range.maximum}`,hit=ranged.get(key);if(hit){ranged.delete(key);ranged.set(key,hit);return hit;}

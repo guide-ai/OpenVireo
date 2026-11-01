@@ -19,7 +19,7 @@ import {repositoryLssSpectrumInputs} from '../io/lssSpectrumInputs.node';
 // galaxyRange.test.ts) and of the deterministic upper bound within 1e-10 relative; anchors bin by bin within 1e-9.
 // By default every 11th row is compared (a deterministic stride; 780 mod 11 ≠ 0, so it walks every range); OPENVIREO_S3_FULL=1 compares every row.
 type Num=number|null;
-type Witness=Readonly<{tool:string;toolSha256:string;seed:number;counts:Readonly<Record<string,number>>;ranges:readonly (readonly [number,number])[];
+type Witness=Readonly<{tool:string;toolSha256:string;seed:number;inputs:Readonly<{lssContexts:Readonly<{count:number;lssFingerprintsSha256:string}>}>;counts:Readonly<Record<string,number>>;ranges:readonly (readonly [number,number])[];
  contexts:readonly Readonly<{key:string;labels:readonly string[];source:string;sourceSha256:string;matched:boolean;catalogZ:number;morphology:number}>[];
  /** Per row (context-major, 780 ranges each): an index into kinds. sum/moment/max: one entry per profile or continuation row, in
   * row order; draws/seed/bound*: one entry per continuation row. */
@@ -91,6 +91,14 @@ describe('Front S3: galaxy source on all 780 dialog ranges',()=>{
   const strata=witness.contexts.filter(c=>c.labels.some(l=>l.startsWith('stratum:')));
   expect(strata.length).toBeGreaterThanOrEqual(50);expect(new Set(strata.map(c=>c.morphology)).size).toBe(8);
   expect(witness.kinds.map((_,i)=>witness.rows.code.filter(x=>x===i).length)).toEqual(witness.kinds.map(k=>witness.counts[k]));
+ });
+ // S3 review 1 M2: a witness made before the LSS outcomes changed (as before Front L4) fails here, without the full mode: it
+ // records the v2 range fingerprints its LSS contexts were exported from, and the number of LSS contexts it holds.
+ it('was made from the current LSS outcomes: its fingerprint hash and LSS context count are the branch\'s',()=>{
+  const fingerprints=JSON.parse(file('src/core/galaxyRange.fingerprints.json').toString()) as {lssSHA256:string};
+  expect(witness.inputs.lssContexts.lssFingerprintsSha256).toBe(fingerprints.lssSHA256);
+  const lss=new Set(witness.contexts.filter(c=>c.labels.some(l=>l.startsWith('lss:'))).map(c=>c.key));
+  expect(lss.size).toBe(witness.inputs.lssContexts.count);
  });
  it(`TS galaxySourceValues equals the witness per (context, range) (${FULL?'every row':'every 11th row; OPENVIREO_S3_FULL=1 for all'})`,()=>{
   const parsed=new Map<string,ReturnType<typeof parseLibrarySpectrum>>();

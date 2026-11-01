@@ -43,7 +43,7 @@ export function readOpticalOptions(value:unknown):OpticalOptions{
  * - allowUserChange (RngChngBox, Spectrometer tab "Allow User Change"): +0x27d7 = env+0x2e8b, compiled 1 (0x5a2a32); the
  *   options file 0x5a4370/0x5a53df and options apply 0x5a623c write it. TSpectrometer FormShow (0x50d9d5 → [+0x3dc].Enabled) and
  *   TSpClassify FormShow (0x507945 → [+0x440].Enabled) enable their Spectral Range menu item from it; nothing else reads it
- *   (Front S3). [W] the web's openers follow it at once (the options dialog is on another page, so the next show reads it).
+ *   (Front S3); the options dialog's FormActivate also reads it at 0x5a5ae3 to set the check box (S3 review 1 nit). [W] the web's openers follow it at once (the options dialog is on another page, so the next show reads it).
  * [W] WEB-OPT-R3: like Edit Mode and Virtual Observatory these are page-session checkboxes, open to anyone and not saved. */
 export type SessionOpticalOptions=Readonly<{fastSlewing:boolean;fastScopeChange:boolean;computeRedshiftVelocity:boolean;infraredCamera:boolean;monochromeDisplays:boolean;printInColor:boolean;timeDependentData:boolean;showObjectId:boolean;showObjectMag:boolean;allowUserChange:boolean}>;
 export const COMPILED_SESSION_OPTICAL_OPTIONS:SessionOpticalOptions=Object.freeze({fastSlewing:true,fastScopeChange:false,computeRedshiftVelocity:false,infraredCamera:true,monochromeDisplays:false,printInColor:false,timeDependentData:false,showObjectId:false,showObjectMag:false,allowUserChange:true});

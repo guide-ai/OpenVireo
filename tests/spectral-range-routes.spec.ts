@@ -141,7 +141,8 @@ test('a default acquired star is reported as covering the 3700–4700 Å window'
  await expect(page.getByText('covers the displayed 3700–4700 Å comparison window',{exact:false})).toBeVisible();
  await expect(page.getByText('does not cover the whole displayed',{exact:false})).toHaveCount(0);
 });
-// Front S3: Allow User Change (Spectrometer tab, env+0x2e8b, read at TSpectrometer FormShow 0x50d9d5) gates Spectral Range….
+// Front S3: Allow User Change (Spectrometer tab, env+0x2e8b, read at TSpectrometer FormShow 0x50d9d5 and TSpClassify FormShow
+// 0x507945) gates Spectral Range… on the spectrometer routes and in Classify.
 test('Allow User Change unchecked disables Spectral Range… on the spectrometer routes and keeps the range',async({page})=>{
  await page.goto('/#star-exposure');await setRange(page,'star-spectral-range-open',5,15);
  await setVireoOptions(page,{'allow-user-change':false});
@@ -149,5 +150,7 @@ test('Allow User Change unchecked disables Spectral Range… on the spectrometer
   await go(page,hash);await expect(id(page,opener)).toBeDisabled({timeout:30000});
  }
  await go(page,'#star-exposure');await expect(id(page,'star-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).');await expect(id(page,'star-spectral-range-locked')).toBeVisible();
+ // S3 review 1 M1: Classify's Spectral Range item too (TSpClassify FormShow 0x507945); its Apply cannot change the page range.
+ await go(page,'#classification');await expect(id(page,'class-range-fieldset')).toBeDisabled({timeout:30000});await expect(id(page,'class-range-locked')).toBeVisible();
 });
 
