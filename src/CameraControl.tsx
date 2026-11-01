@@ -11,7 +11,7 @@ import {INITIAL_CAMERA_PALETTE} from './core/cameraPalette';
 import {CAMERA_EXTRACTS,findCameraExtract,loadCameraCatalog,type CameraCatalogMode,type CameraCatalogSource} from './io/cameraCatalog';
 import type {AccessReason} from './core/instrumentAccess';
 import {writeCameraFits,cameraFitsFileName,type CameraFitsContext} from './core/fitsWriter';
-import {writeNativeCameraFits,nativeCameraFitsFileName} from './core/cameraFitsNative';// Front R1
+import {writeNativeCameraFits,nativeCameraFitsFileName,nativeCameraIdSavable} from './core/cameraFitsNative';// Front R1
 import {cameraCurrentName,type ShownCurrentObject} from './core/currentObject';
 import {cameraCatalogReference} from './core/cameraCatalogReference';
 import type {OpticalIndex} from './core/opticalTelescope';
@@ -197,7 +197,7 @@ function CameraControl({objectXHidden=null,vireoId='',showObjectId=false,current
   }
   // RE5 review 1 M2: FITS header cards allow only printable ASCII, so an ID outside it is refused with a message; any other writer
   // error is shown too, and nothing is downloaded.
-  if(native&&!/^[\x20-\x7e]*$/.test(vireoId)){setSaveError(M.saveIdNotAscii);return;}
+  if(native&&!nativeCameraIdSavable(vireoId)){setSaveError(M.saveIdNotAscii);return;}
   let bytes:Uint8Array;const context=fitsContext(image);
   try{bytes=native?writeNativeCameraFits(image.exposure,image.jd,vireoId||undefined,currentName):writeCameraFits(image.exposure,context);}catch{setSaveError(M.saveFailed);return;}
   const url=URL.createObjectURL(new Blob([bytes as Uint8Array<ArrayBuffer>],{type:'application/fits'})),a=document.createElement('a');

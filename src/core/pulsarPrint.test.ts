@@ -17,3 +17,21 @@ describe('Pulsar Print Window text (0x56da60)',()=>{
   expect(pulsarPrintLines('d',props(2),'pulsar.plr')).toContain('  File Name: pulsar.plr');
  });
 });
+
+// Front RE6: the landscape branch (0x56db1f..0x56db35, 0x56e08e..0x56e10d) and the vertical-cursor switch (0x56d9f1..0x56da03).
+import {pulsarPrintPage,PULSAR_PRINT_PAGE_LITERALS as P} from './pulsarPrint';
+import {INITIAL_PULSAR_ANALYSIS,pulsarPrintWindow} from './pulsarAnalysis';
+describe('Print Window page and cursor switch',()=>{
+ it('portrait is the RE5 page with no page 2; landscape shifts every text line by x0 = 50, ends with the next-page line at x 700 and prints " - Page 2"',()=>{
+  const portrait=pulsarPrintPage('D',null,null,'portrait');expect(portrait.page2).toBeNull();expect(portrait.lines).toEqual(pulsarPrintLines('D',null,null));
+  const land=pulsarPrintPage('D',null,null,'landscape'),base=pulsarPrintLines('D',null,null).slice(0,-4);
+  expect(land.lines.slice(0,base.length)).toEqual(base.map(l=>l===''?'':'  '+l));
+  expect(land.lines.slice(base.length)).toEqual(['','',' '.repeat(28)+P.nextPage]);
+  expect(land.page2).toEqual(['   - Page 2']);
+ });
+ it('leaves every panel in vertical-cursor mode, without a recording, and is idempotent',()=>{
+  const s={...INITIAL_PULSAR_ANALYSIS,modes:Object.freeze(['horizontal','vertical','horizontal'] as const)};
+  const t=pulsarPrintWindow(s);expect(t.changed).toBe(true);expect(t.state.modes).toEqual(['vertical','vertical','vertical']);
+  expect(pulsarPrintWindow(t.state).changed).toBe(false);
+ });
+});

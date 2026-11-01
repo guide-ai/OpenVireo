@@ -83,6 +83,8 @@ export type RadioTelescopeRouteProps=Readonly<{
  controllerRef?:MutableRefObject<RadioRouteController|null>;
  /** E08 Object X: the label that replaces pulsar names for a pointing near an unrevealed target, or null (forwarded to the receivers). */
  hiddenName?:(pointing:RadioPointing)=>string|null;
+ /** Front RE6: the page's one Set Date/Time ID (ShortString 0x5bc1e4): the dialog's prefill, and written back on OK. */
+ sessionId?:string;onSessionId?:(id:string)=>void;
  /** Front QA1 (2026-10-31): the hot-list row label mask while an Object X target is unrevealed. It covers every ObjectX.HTL
   * area alike, so which rows are renamed does not depend on what the target is. */
  hotListMask?:(ra:number,dec:number)=>string|null;
@@ -113,7 +115,7 @@ export type RadioRouteController=Readonly<{snapshot:()=>RadioSnapshotResult<Radi
  * (projectOptions), the panel's Limit Slewing scenario is withdrawn and legacy diameter writes are shielded here. Phase 1
  * item 1.5: Save investigation reads this workspace through controllerRef, and a restore mounts it from `restored`.
  */
-function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarData,onOpenPulsarAnalysis,onExerciseProgress,restored=null,controllerRef,hiddenName,hotListMask,prefillTarget=null}:RadioTelescopeRouteProps){
+function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarData,onOpenPulsarAnalysis,onExerciseProgress,restored=null,controllerRef,hiddenName,hotListMask,prefillTarget=null,sessionId,onSessionId}:RadioTelescopeRouteProps){
  const [initial]=useState(()=>restored);
  const [state,setState]=useState<RadioControlState>(()=>initial?.control??INITIAL_RADIO_CONTROL);
  // Latest accepted control state, read by Start pulsar exercise.
@@ -314,7 +316,7 @@ function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarD
  useLayoutEffect(()=>{reportTo.current=onModalPresentedChange;});
  useLayoutEffect(()=>{if(reported.current!==modalPresented){reported.current=modalPresented;reportTo.current(modalPresented);}},[modalPresented]);
  useLayoutEffect(()=>()=>{if(reported.current){reported.current=false;reportTo.current(false);}},[]);
- const openDate=()=>{setFieldRefusal(null);const result=stepDate(s=>openRadioDateDialog(s,dateGateFor(s,perfNow())));setDateOutcome(result.outcome==='opened'?null:result);};
+ const openDate=()=>{setFieldRefusal(null);const result=stepDate(s=>openRadioDateDialog(s,dateGateFor(s,perfNow()),sessionId));setDateOutcome(result.outcome==='opened'?null:result);};
  const editDate=(field:RadioDateField,text:string)=>{
   const result=stepDate(s=>editRadioDateField(s,field,text));
   if(result.outcome==='field-too-long'||result.outcome==='field-not-ascii')setFieldRefusal({field,outcome:result.outcome});
@@ -322,6 +324,8 @@ function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarD
  };
  const confirmDate=()=>{
   const result=stepDate(s=>confirmRadioDateDialog(s,dateGateFor(s,perfNow())));
+  // Front RE6: OK wrote the ID (before the date check, 0x4fdf0c) into the page's one session ID.
+  if(result.outcome==='applied'||result.outcome==='entry-failed')onSessionId?.(result.state.storedId);
   if(result.outcome==='applied'&&result.utMs!==undefined){
    const utMs=result.utMs,perf=perfNow();
    setScenario(s=>applyRadioClockDialogUT(s,utMs,perf).scenario);setClockOutcome('utc-dialog-applied');

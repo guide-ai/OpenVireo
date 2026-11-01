@@ -50,8 +50,10 @@ The Spectrometer page (`#spectrometer`) now holds VIREO's single-slit spectromet
     whose index is not a multiple of 100 (many naked-eye stars). The bucket agrees with an independent 80-bit witness;
   - `star-index-invalid`: 0x50d660 returns nil (5,468 GSC records have an index above JSPEC2.SPI's last row); VIREO shows
     "You Cannot Record A Spectrum of This Star! Spectrum Index is Invalid!" and records nothing;
-  - `star-template-random`: a computed variable whose spectral code is 0 (VIREO picks a random template; not reproduced; no
-    compact GSC record has index 0);
+  - `star-template-random`: a star whose spectral code is 0. VIREO draws Random(131) over the sorted JSPEC2.SPI list (0x50e38a,
+    RandSeed 0x5ae008 after Randomize, so not reproducible). It is unreachable with the published data: none of the 18,841,240
+    compact GSC records has code 0, a code-0 variable makes the dispatch FALSE, and QSOs are type 3 (Front RE6,
+    research front-re6/random-template-code0.md). It stays typed;
   - preparation failures are typed by cause: a network failure is a missing catalogue piece (try again), a resource that does
     not match its identity is a load error, and anything else is an internal error to report (G4a closure N1).
   - the tile reasons (field-polar, field-tiles, field-unreadable);
@@ -66,9 +68,12 @@ Multi-Spec at any pointing (G4b) is described in MULTI-SPEC.md.
 
 - **Save .SSP.** A stopped exposure is saved through the recovered dot-decimal writer, as the star, galaxy, LSS and Object X routes
   save theirs.
-  - Header object: the slit's record locator, for example `NGC 4874`, `N0000.DAT@63282` or `CLEA_QSO.DAT@522` (printable ASCII,
-    at most 24 characters) [W]. Which name VIREO writes for a GSC star or a QSO is not recovered; the same gap is open for
-    Object X (research RE-observational-data-metadata.md U6).
+  - Header object: VIREO's name for the slit object, the current-object record's ShortString (header 0x510090) [D]: a GSC star
+    `<band>-<name>` (for example `N0000-01634`, built at 0x59b125..0x59b196), a kept variable its GCVS ID, a QSO its CLEA_QSO.DAT
+    name (0x5987e4), a galaxy its catalogue or photograph name (Front RE6, research front-re6/U6-ssp-header-name.md). Printable
+    ASCII, commas → `_`, at most 24 characters. The record locator (`N0000.DAT@63282`) only where that name cannot be built [W].
+    Files saved by earlier builds (before Front RE6) keep the locator in their header; they still import, and their data rows
+    and file names are unchanged. The star route's header names its target `N0000-00008` the same way.
   - Magnitude: that record's catalogue magnitude.
   - Pointing: the field's pointing, as recorded in the policy.
   - Rows: 600 source-plus-sky bins from the calibration's first wavelength, step 1000/600 Å.

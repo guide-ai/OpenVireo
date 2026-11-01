@@ -7,7 +7,7 @@ import { ReviewFindDialog, ReviewFindNotice } from './PulsarSavedRows';
 import { SAVED_FIND_INITIAL, savedFindOpen, savedFindRun, type SavedFindAction, type SavedFindDraft, type SavedFindMemory } from '../core/pulsarSavedRows';
 import { RADIO_R1_MESSAGES as R1 } from './RadioR1Messages';
 import WebPrintPreview from '../polish/WebPrintPreview';
-import {pulsarPrintLines} from '../core/pulsarPrint';
+import {pulsarPrintPage, type PulsarPrintOrientation} from '../core/pulsarPrint';
 import { menuCaptionText } from '../core/radioControl';
 import { POLISH_MESSAGES as PM, PULSAR_PRINT_LITERALS as PP } from '../polish/PolishMessages';
 import { resourceSha256 } from '../io/boundedResource';
@@ -16,7 +16,7 @@ import { admitPlrRecording, PLR_MAX_BYTES, type PlrRecording } from '../core/pul
 import {
   INITIAL_PULSAR_ANALYSIS, PULSAR_ACTIVATE_LITERALS, PULSAR_BASES, PULSAR_PANELS, PULSAR_PANEL_HEIGHTS, PULSAR_PAN_RATES, PULSAR_PLOT_WIDTH, pulsarActivateData, pulsarAnnouncement,
   pulsarAnswerClear, pulsarAnswerLoad, pulsarAnswerLoadSave, pulsarAxisTicks, pulsarBeginRecord, pulsarCancelRecord, pulsarConfirmRecord, pulsarDismissDataNotice, pulsarFactor, pulsarLoad, pulsarModalOpen,
-  pulsarMode, pulsarPan, pulsarPanelRecordable, pulsarPanRate, pulsarPanTick, pulsarPointer, pulsarPointerRelease, pulsarProperties, pulsarReadouts, pulsarRecordDialog, pulsarRecordDraft,
+  pulsarMode, pulsarPrintWindow, pulsarPan, pulsarPanelRecordable, pulsarPanRate, pulsarPanTick, pulsarPointer, pulsarPointerRelease, pulsarProperties, pulsarReadouts, pulsarRecordDialog, pulsarRecordDraft,
   pulsarNativeSaveCancelled, pulsarNativeSaved, pulsarRequestClear, pulsarRequestLoad, pulsarReset, pulsarTrace, pulsarZoom,
   type PulsarAnalysisState, type PulsarOutcome, type PulsarPanel, type PulsarPointer, type PulsarTransition,
 } from '../core/pulsarAnalysis';
@@ -201,7 +201,7 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
   const epoch = useRef(0);
   const propertiesButton = useRef<HTMLButtonElement>(null), propertiesClose = useRef<HTMLButtonElement>(null);
   // Front P: File › Print Window... [W], a print preview of both panels as shown.
-  const panelsRef = useRef<HTMLDivElement>(null), printButton = useRef<HTMLButtonElement>(null), [printing, setPrinting] = useState(false);
+  const panelsRef = useRef<HTMLDivElement>(null), printButton = useRef<HTMLButtonElement>(null), [printing, setPrinting] = useState(false), [printOrientation, setPrintOrientation] = useState<PulsarPrintOrientation>('portrait');
   const commentInput = useRef<HTMLInputElement>(null), clearDefault = useRef<HTMLButtonElement>(null), clearButton = useRef<HTMLButtonElement>(null), recordButton = useRef<HTMLButtonElement>(null);
   const reviewButton = useRef<HTMLButtonElement>(null), reviewDelete = useRef<HTMLButtonElement>(null), reviewCancel = useRef<HTMLButtonElement>(null), reviewPromptDefault = useRef<HTMLButtonElement>(null);
   const reviewEdit = useRef<HTMLButtonElement>(null), reviewEditComment = useRef<HTMLInputElement>(null);
@@ -1283,7 +1283,7 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
               <h3 id={`${idPrefix}tools`}>{t('pulsar.toolbar.heading')}</h3>
               <div className="plr-row">
                 <button type="button" ref={propertiesButton} onClick={openProperties} data-testid="pulsar-properties-open">{t('pulsar.toolbar.properties')}</button>
-                <button type="button" ref={printButton} onClick={() => setPrinting(true)} data-testid="pulsar-print-window">{menuCaptionText(PP.menu)}</button>
+                <button type="button" ref={printButton} onClick={() => { act(pulsarPrintWindow); setPrinting(true); }} data-testid="pulsar-print-window">{menuCaptionText(PP.menu)}</button>
                 <button type="button" onClick={() => act(st => pulsarReset(st))} data-testid="pulsar-reset">{t('pulsar.toolbar.reset')}</button>
                 <button type="button" onClick={() => act(st => pulsarZoom(st, 'out'))} disabled={!s.zoomOutEnabled} data-testid="pulsar-zoom-out">{t('pulsar.toolbar.zoomOut')}</button>
                 <span>{t('pulsar.toolbar.zoom')} <output data-testid="pulsar-zoom">{readouts.zoom}</output></span>
@@ -1306,7 +1306,11 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
               </fieldset>
             </section>
 
-            {printing && <WebPrintPreview testId="pulsar-print-preview" caption={PP.caption} note={PM.pulsarPrint.note} nativeHeader={date => pulsarPrintLines(date, props, props && props.fields.file !== PULSAR_DATA_NOT_WRITTEN ? props.fields.file : null)} clone={() => panelsRef.current} onClose={() => { setPrinting(false); printButton.current?.focus(); }} />}
+            {printing && <WebPrintPreview testId="pulsar-print-preview" caption={PP.caption} note={PM.pulsarPrint.note} orientation={printOrientation} pictureClass="pulsar-print-palette"
+              nextPage={pulsarPrintPage('', props, null, printOrientation).page2}
+              controls={<fieldset className="variable-print-orientation" data-testid="pulsar-print-orientation"><legend>{PM.pulsarPrint.orientation}</legend>
+                {(['portrait', 'landscape'] as const).map(o => <label key={o}><input type="radio" name={`${idPrefix}print-orientation`} checked={printOrientation === o} onChange={() => setPrintOrientation(o)} data-testid={`pulsar-print-${o}`} /> {PM.pulsarPrint[o]}</label>)}</fieldset>}
+              nativeHeader={date => pulsarPrintPage(date, props, props && props.fields.file !== PULSAR_DATA_NOT_WRITTEN ? props.fields.file : null, printOrientation).lines} clone={() => panelsRef.current} onClose={() => { setPrinting(false); printButton.current?.focus(); }} />}
             <div className="plr-panels" ref={panelsRef}>
               {PULSAR_PANELS.map(ch => <Panel key={ch} ch={ch} s={s} t={t} act={act} idPrefix={idPrefix} primaryAs={primaryAs} owner={pointerOwner} />)}
             </div>

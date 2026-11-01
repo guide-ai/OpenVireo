@@ -13,7 +13,7 @@ import {OBJECT_X_SPECTRUM_ROWS,evaluateObjectXSpectrum,type ObjectXSpectrometerI
 import {spectrometerFieldResult} from '../core/fieldSpectrometer';
 import {lssExposureEngine} from '../core/lssExposure';
 import {activateJournal,pauseJournal,startJournal,tickJournal} from '../core/exposureJournal';
-import {fieldSpectrumBytes,fieldSpectrumFileName,objectXSpectrumBytes} from '../core/exposureSpectrum';
+import {fieldSpectrumBytes,fieldSpectrumHeaderName,fieldSpectrumFileName,objectXSpectrumBytes} from '../core/exposureSpectrum';
 import type {FieldTelescope} from '../core/fieldEngine';
 vi.setConfig({testTimeout:300000});
 
@@ -46,14 +46,15 @@ describe('field spectrometer Save .SSP (G4c)',()=>{
     const o=r.qsoTarget??r.starTarget??r.target!;kinds.add(r.qsoTarget?'qso':r.starTarget?'star':'galaxy');
     const e=lssExposureEngine(r,'p'),st=pauseJournal(tickJournal(tickJournal(startJournal(activateJournal(e.create(11))),1000),1000));
     const bytes=fieldSpectrumBytes(st,r,pointing),text=new TextDecoder().decode(bytes),lines=text.split('\r\n');
-    expect(lines[0],o.id).toContain(o.id.slice(0,24));
+    // Front RE6 (U6): the header names VIREO's record (<band>-<name>, the QSO name, the galaxy name), not the locator.
+    expect(lines[0],o.id).toContain((fieldSpectrumHeaderName(r)??o.id).slice(0,24));expect(lines[0],o.id).not.toMatch(/@/);
     // G4c review 1 L4: the witness is the Object X route's own reveal (revealObjectXSpectrum's recordId/headerMagnitude) and
     // its display wavelengths, not the generic result's target.
     const x=evaluateObjectXSpectrum(xInputs,pointing,telescope);
     expect(x.display.status,`${row.row}/${telescope}`).toBe('available');
     if(x.display.status!=='available')continue;
     expect([x.reveal.recordId,x.reveal.headerMagnitude]).toEqual([o.id,o.magnitude]);
-    expect(bytes).toEqual(objectXSpectrumBytes(st,'unused',pointing,x.display.wavelengths[0],{object:x.reveal.recordId!,magnitude:x.reveal.headerMagnitude!}));
+    expect(bytes).toEqual(objectXSpectrumBytes(st,'unused',pointing,x.display.wavelengths[0],{object:x.reveal.headerName!,magnitude:x.reveal.headerMagnitude!}));
     expect(()=>fieldSpectrumBytes(e.start(e.activate(e.create(1))),r,pointing)).toThrow();
    }
   }

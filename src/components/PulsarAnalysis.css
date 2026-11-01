@@ -93,3 +93,13 @@
 .plr-native-save p, .plr-native-save h3 { overflow-wrap: anywhere; }
 .plr-native-save label { display: grid; gap: 0.25rem; font-weight: 600; }
 .plr-native-save input { width: 100%; box-sizing: border-box; }
+
+/* Front RE6: Print Window palette (+0x5c6 = 1: 0x56bb21 white background, 0x56bb67/0x56bb96/0x56c147/0x56c2e5 black axes, labels,
+   trace and baseline; cursor pens unchanged) and the readouts Crsr{n}EdClick leaves (V black, H silver). CSS beats the SVG attributes. */
+.pulsar-print-palette .plr-plot>rect:first-of-type{fill:#fff}
+.pulsar-print-palette [data-testid^="pulsar-axis-"]{stroke:#000}
+.pulsar-print-palette .plr-plot text{fill:#000}
+.pulsar-print-palette [data-testid^="pulsar-trace-"]{stroke:#000}
+.pulsar-print-palette .plr-readout{background:#fff}
+.pulsar-print-palette .plr-readout-v{color:#000}
+.pulsar-print-palette .plr-readout-h{color:#c0c0c0}

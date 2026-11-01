@@ -1,4 +1,5 @@
 import {beforeEach,afterEach,describe,it,expect,vi} from 'vitest';
+import {gscStarHeaderName} from '../core/exposureSpectrum';
 import {webcrypto,createHash} from 'node:crypto';
 import {createGalaxyExposure,activateGalaxy,startGalaxy,tickGalaxy,pauseGalaxy,galaxyDefinition} from '../core/galaxyExposure';
 import {createStarExposure,activateStar,startStar,tickStar,pauseStar,STAR_TARGET} from '../core/starExposure';
@@ -19,7 +20,8 @@ describe('acquired SSP interchange',()=>{
   const packet=id==='star'?await createStarObservation(pauseStar(tickStar(startStar(activateStar(createStarExposure(1))),1000))):await createGalaxyObservation(pauseGalaxy(tickGalaxy(startGalaxy(activateGalaxy(createGalaxyExposure(1,id))),1000)));
   const before=JSON.stringify(packet.state),bytes=await acquiredSpectrumBytes(packet),text=new TextDecoder().decode(bytes),parsed=parseLegacySpectrumFile(bytes);
   const target=id==='star'?STAR_TARGET:galaxyDefinition(id).target;
-  expect(parsed.header?.object).toBe(target.id);expect(parsed.header?.pointingRa).toBeCloseTo(target.ra,6);expect(parsed.header?.pointingDec).toBeCloseTo(target.dec,5);expect(parsed.header?.apparentMagnitude).toBeCloseTo(id==='star'?STAR_TARGET.magnitudeSingle:galaxyDefinition(id).target.magnitude,3);
+  // Front RE6 review 1 L4: the star header names the GSC record as VIREO does (N0000-00008).
+  expect(parsed.header?.object).toBe(id==='star'?gscStarHeaderName(STAR_TARGET.id,STAR_TARGET.rawHex):target.id);expect(parsed.header?.pointingRa).toBeCloseTo(target.ra,6);expect(parsed.header?.pointingDec).toBeCloseTo(target.dec,5);expect(parsed.header?.apparentMagnitude).toBeCloseTo(id==='star'?STAR_TARGET.magnitudeSingle:galaxyDefinition(id).target.magnitude,3);
   expect(text.split('\r\n').slice(1).join('\r\n')).toBe(packet.sourceText);
   expect(parsed.samples).toEqual(packet.samples);expect(parsed.samples).toHaveLength(600);expect(Math.max(...parsed.samples.map(p=>p.intensity))).toBe(1);
   const e=packet.state.exposure;expect(e.counts.reduce((a,b)=>a+b,0)).toBe(e.sourceTotal+e.skyTotal);expect(e.sourceTotal).toBeGreaterThan(0);expect(e.skyTotal).toBeGreaterThan(0);

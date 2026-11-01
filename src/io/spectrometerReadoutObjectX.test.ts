@@ -48,8 +48,8 @@ describe('spectrometerDefaultFileName',()=>{
   expect(spectrometerDefaultFileName(ALL,null,web)).toBe(web);
   expect(spectrometerDefaultFileName(ALL,{...star,name:'Ü-1'},web)).toBe(web);
  });
- it('review 1: a sky reading gives Sky.SSP with the option on (the web name off); unsafe characters become _',()=>{
-  expect(spectrometerDefaultFileName(ALL,star,web,true)).toBe('Sky.SSP');expect(spectrometerDefaultFileName(OFF,star,web,true)).toBe(web);
+ it('review 1: unsafe characters become _',()=>{
+  // Front RE6 (U6): Save reads +0x318b, which never holds `Sky`; a sky reading's Save name is the nearest object's.
   expect(spectrometerDefaultFileName(ALL,{...star,name:'A/B:C*?"<>|\\'},web)).toBe('A_B_C_______.SSP');
  });
 });
