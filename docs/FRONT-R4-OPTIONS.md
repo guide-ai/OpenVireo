@@ -118,9 +118,18 @@ Plan: `analysis/front-plans/front-r4d.md`.
 - **[W] Refresh:** on route activation and when the route's pointing changes (VIREO: FormActivate).
   - Star, galaxy and LSS look up at the target or row position. The field spectrometer looks up at its prepared pointing.
   - The object is 0x59a0fc's nearest object there, in the 936-px/0.75° frame, as for Add Current.
-- **Sky reading** (review 1 M1): the field spectrometer is a sky reading when the field engine reports `slit-empty`, which it
-  does exactly when 0x50f338 gives 0 for the slit object it selected (the same 0x59a0fc object). The boxes then show `Sky` and
-  an empty magnitude, and nothing is looked up. The sky route is always a sky reading (print `Reading Sky`). The star, galaxy
+- **Sky reading** (review 1 M1, Front R4e): the field spectrometer is a sky reading when 0x50f338 gives 0 for the slit object
+  the field engine selected (the same 0x59a0fc object). `fieldSpectrometerSkyReading` computes that throughput itself from the
+  selection, the frame's slit level and the pointing, because the engine reports `slit-empty` only on the branches that reach
+  its own throughput: an invalid or random spectral index, a variable whose values are unavailable and a galaxy spectrum
+  mapping return first. Probe: N0730.DAT@570187 (`star-index-invalid`) 0.0005–0.003 h east reads `Sky`, not `N0730-00812`.
+  A field blocked before the slit selection (`photographic-image`, `ngc224-image`, the pending-variable stamp gate) has no
+  selection or viewport; there the current object decides (R4e review 1 L1): a star or QSO outside 0x50f338's strict cut
+  (|ΔRA| < 0.00028 h, |ΔDec| < 0.0064°) reads `Sky`, as in VIREO, whose field is always painted. Probes: N3730.DAT@36659 + 0.001 h
+  near M31, NGC 4476 + 0.08°. [W] A galaxy there stays named (its (level/200)² rule needs the unpainted slit level). [W] A star or QSO inside the cut also stays named: VIREO's `level > 0`
+  condition (0x50f404) needs the slit level of the unpainted field, so a faint star off the slit column that VIREO would read as
+  `Sky` is named here. A
+  throughput at the precision limit falls back to the engine's `slit-empty`. The boxes then show `Sky` and an empty magnitude, and nothing is looked up. The sky route is always a sky reading (print `Reading Sky`). The star, galaxy
   and LSS routes point exactly at their target, so their slit is never empty.
 - **[W] No object or an unresolved tie:** the Object box shows 13 blanks. VIREO copies the record from the nil pointer at
   0x50df98 and faults, so it has no defined display. The tie stays unresolved because the current-object lookup has no
