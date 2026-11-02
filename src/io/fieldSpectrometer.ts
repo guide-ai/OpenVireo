@@ -12,7 +12,7 @@ import {nativePhotographRows} from '../core/photographicList';
 import {decodeStarIndexList,starTemplateSpectrum,JSPEC2_SPI} from '../core/starTemplates';
 import {decodeQsoSpectrumFile,QSO_SPECTRUM_FILE} from '../core/qsoSpectrum';
 import {parseLibrarySpectrum} from '../core/spectrum';
-import {decodeBitmap8,type Bitmap8} from '../core/photographDraw';
+import type {FieldPack} from '../core/fieldPack';
 import {JournalError,MAX_JOURNAL_EVENTS,type JournalEvent,type JournalState} from '../core/exposureJournal';
 import {lssExposureEngine} from '../core/lssExposure';
 import type {Pointing} from '../core/sky';
@@ -24,7 +24,7 @@ import {BoundedResourceError,resourceSha256,boundedResourceBody} from './bounded
 import {tileSources} from './tileAssembly';
 import {yieldTask} from './yieldTask';
 import {OBJECT_X_STAR_TEMPLATES,OBJECT_X_GALAXY_SPECTRA} from './objectXSpectrometerInputs';
-import {APPROVED_PHOTOGRAPHS} from '../core/approvedPhotographs';
+import {packPhotographLoader,type PackPhotographs} from './photographBitmaps';
 import {MULTISPEC_STAR_TEMPLATES,MULTISPEC_GALAXY_SPECTRA} from './multiSpecInputs';
 
 type Resource=Readonly<{file:string;path:string;bytes:number;sha256:string}>;
@@ -33,7 +33,7 @@ const latin1=(b:Uint8Array)=>{let t='';for(const x of b)t+=String.fromCharCode(x
 export class FieldSpectrometerError extends Error{constructor(readonly code:'resource'|'session'){super(`Field spectrometer: ${code}`);this.name='FieldSpectrometerError';}}
 let fileOverride:((path:string,bytes:number)=>Promise<Uint8Array>)|null=null,inputs:Promise<SpectrometerInputs>|null=null;
 /** Test seam: read same-origin files from elsewhere (the tile sources have their own seam, tileAssembly.ts). */
-export function setFieldSpectrometerFiles(read:((path:string,bytes:number)=>Promise<Uint8Array>)|null){fileOverride=read;inputs=null;}
+export function setFieldSpectrometerFiles(read:((path:string,bytes:number)=>Promise<Uint8Array>)|null){fileOverride=read;inputs=null;photographs=null;}
 async function file(path:string,bytes:number):Promise<Uint8Array>{
  if(fileOverride)return fileOverride(path,bytes);
  const res=await fetch(path,{credentials:'same-origin'});
@@ -52,13 +52,21 @@ async function loadInputs():Promise<SpectrometerInputs>{
  const s=await tileSources();
  const [qsoBytes,spi,glxysp]=await Promise.all([checked(QSO_SPECTRUM_FILE),checked(JSPEC2_SPI),checked(GLXYSP_LST)]);
  // G4a review 1 L4: the independent files are fetched and checked a few at a time, not one after another.
- const [templates,spectra,photographs]=await Promise.all([
+ const [templates,spectra]=await Promise.all([
   pooled(unique([...OBJECT_X_STAR_TEMPLATES,...MULTISPEC_STAR_TEMPLATES]),async t=>[t.file,starTemplateSpectrum(latin1(await checked(t)))] as const),
-  pooled(unique([...OBJECT_X_GALAXY_SPECTRA,...MULTISPEC_GALAXY_SPECTRA]),async g=>[g.file,parseLibrarySpectrum(latin1(await checked(g)))] as const),
-  pooled(APPROVED_PHOTOGRAPHS,async b=>[b.file,decodeBitmap8(await checked(b))] as const)]);
- const starTemplates=new Map<string,UniformSpectrum>(templates),galaxySpectra=new Map(spectra),bitmaps=new Map<string,Bitmap8>(photographs);
+  pooled(unique([...OBJECT_X_GALAXY_SPECTRA,...MULTISPEC_GALAXY_SPECTRA]),async g=>[g.file,parseLibrarySpectrum(latin1(await checked(g)))] as const)]);
+ const starTemplates=new Map<string,UniformSpectrum>(templates),galaxySpectra=new Map(spectra);
  const glxyspLines=latin1(glxysp).replace(/\x1a$/,'').split('\r\n').filter(l=>l!=='');
- return Object.freeze({glx:s.glx,qsoCatalog:s.qso,qsoSpectrum:decodeQsoSpectrumFile(qsoBytes),starIndex:decodeStarIndexList(spi),starTemplates,glxyspLines,galaxySpectra,photographs:Object.freeze({rows:nativePhotographRows(s.glimages),bitmaps})});
+ return Object.freeze({glx:s.glx,qsoCatalog:s.qso,qsoSpectrum:decodeQsoSpectrumFile(qsoBytes),starIndex:decodeStarIndexList(spi),starTemplates,glxyspLines,galaxySpectra,photographs:Object.freeze({rows:nativePhotographRows(s.glimages),bitmaps:new Map()})});
+}
+let photographs:PackPhotographs|null=null;
+/** The shared inputs with the photographs a pack names (Front F4: the shared inputs carry none; each approved photograph is
+ * fetched, checked and decoded the first time a field's pack names it, io/photographBitmaps.ts). */
+export async function spectrometerInputsFor(pack:FieldPack,signal?:AbortSignal):Promise<SpectrometerInputs>{
+ const inp=await spectrometerInputs();
+ photographs??=packPhotographLoader(checked,'throw');
+ const p=photographs;
+ return Object.freeze({...inp,photographs:await p(pack,inp.photographs.rows,signal)});
 }
 /** The shared inputs, loaded once (exported for tests and for future routes). */
 export function spectrometerInputs(){inputs??=loadInputs();inputs.catch(()=>{inputs=null;});return inputs;}
@@ -72,7 +80,7 @@ export type FieldSpectrumRecord=Readonly<{prepared:Extract<PreparedFieldSpectrum
 export async function prepareFieldSpectrum(pointing:Pointing,telescope:FieldTelescope,options:Readonly<{signal?:AbortSignal;hidden?:Pointing|null;variableTime?:FieldVariableTime;range?:SpectralRange}>={}):Promise<PreparedFieldSpectrum>{
  const {signal}=options;signal?.throwIfAborted();
  if(await objectXMasked(options.hidden??null,pointing))return Object.freeze({status:'unavailable',reason:'object-x-hidden'});
- const [s,inp]=await Promise.all([tileSources(),spectrometerInputs()]);signal?.throwIfAborted();
+ const [s]=await Promise.all([tileSources(),spectrometerInputs()]);signal?.throwIfAborted();
  let pack;
  try{pack=await assembleFieldPack(pointing,s.assembly,signal);}
  catch(e){
@@ -80,6 +88,7 @@ export async function prepareFieldSpectrum(pointing:Pointing,telescope:FieldTele
   if(e instanceof AssembledFieldError)return Object.freeze(e.code==='polar'?{status:'unavailable',reason:'field-polar'}:{status:'unavailable',reason:'field-unreadable',detail:e.code});
   throw e;
  }
+ const inp=await spectrometerInputsFor(pack,signal);
  await yieldTask();signal?.throwIfAborted();
  const range=options.range??DEFAULT_SPECTRAL_RANGE,result=spectrometerFieldResult(inp,pack,pointing,telescope,options.variableTime,range);
  // Front S2 [W]: off the default only star sources are witnessed (spectralRangeCoverage.ts); galaxies and QSOs are refused.

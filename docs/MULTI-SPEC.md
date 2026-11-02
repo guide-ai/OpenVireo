@@ -12,7 +12,8 @@ addresses, evidence ids and tags in `docs/MULTI-SPEC-PROVENANCE.json`. Tags: [D]
   and does not gate Multi-Spec by pointing, so every pointing has a field. At the exact pointing of a bundled pack (the Hubble
   Coma/Boötes targets and the LSS rows) that pack is used; elsewhere the field is assembled from the compact GSC tiles in the
   Multi-Spec Worker (`gsc-tiles`, with the options of the spectrometer at the pointing: recovered variable dispatch, photographs,
-  QSO merge). The field is loaded at an anchor and kept while VIREO's cached-field rule holds (0.25°, `multiSpecAnchor`), as the
+  QSO merge). Since Front F4 the photographs are every approved one (175), each fetched only when the field's pack names it
+  (`io/photographBitmaps.ts`). The field is loaded at an anchor and kept while VIREO's cached-field rule holds (0.25°, `multiSpecAnchor`), as the
   Edit Mode layer; the view shows the field at its anchor [W]. Reaching a certified pointing inside the cache keeps the anchor,
   as VIREO keeps its field, except at the two Hubble Boötes pointings (below), which load their own pack [W] (G4b review 1 L2).
   It is built only once the form is shown; a newer field or closing the form cancels a build in the Worker, so a slew does not
@@ -22,8 +23,9 @@ addresses, evidence ids and tags in `docs/MULTI-SPEC-PROVENANCE.json`. Tags: [D]
   can be retried, one that did not match its recorded identity is a load error, and anything else is an internal error; the
   polar limit is a web limit. Object X fields keep their HTL rows in the Object X lab (below).
 - Bundled versus assembled (G4b review 1 L1, `multiSpecTiled.test.ts`): at every certified pointing (the 4 Hubble targets and
-  the 219 LSS rows) the two give the same view, population and spectra, or the same no-view outcome (15 pointings since Front L4;
-  the assembled population also lists its photograph associations). The exceptions are Hubble
+  the 219 LSS rows) the two give the same view, population and spectra, or the same no-view outcome (15 pointings since Front L4,
+  6 since Front F4: the bundled LSS packs now take the photographs option too, so the nine photographed LSS rows such as
+  NGC 4278 show their field on both sides, as on the LSS route since Front F3). The exceptions are Hubble
   Boötes 51975 and 51976: the bundled pack keeps the Hubble route's acknowledged 'outside-view' rule (HUBBLE-13.md) and shows
   the field, while the assembled field takes the default TRUE dispatch for RS Boo. Before Front L4 the assembled field was
   stamp-bound because of the zero-axis galaxy 14299+3148; since L4 (2026-10-31) that galaxy composes nothing under every rule, so

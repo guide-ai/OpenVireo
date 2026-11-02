@@ -18,7 +18,7 @@ const pub=(p:string)=>new Uint8Array(readFileSync('public'+p)),sha=(b:Uint8Array
 const qb=pub('/original/catalogs/CLEA_QSO.DAT');
 const paths=['/original/spectra/QSOSpect.dat','/original/images/GLIMAGES.LST','/original/spectra/jspect2/JSPEC2.SPI','/original/spectra/GLXYSP.LST',...[...MULTISPEC_STAR_TEMPLATES,...MULTISPEC_GALAXY_SPECTRA,...OBJECT_X_GALAXY_SPECTRA,...OBJECT_X_PHOTOGRAPHS].map(x=>x.path)];
 const byPath:Record<string,Uint8Array>=Object.fromEntries(paths.map(p=>[p,pub(p)]));
-const resources:MultiSpecResources={glx:async()=>pub('/original/catalogs/CLEA_GLX.DAT'),qsoCatalog:async()=>({bytes:qb,sha256:sha(qb)}),file:async p=>byPath[p],objectXHotList:async()=>pub('/original/hotlists/ObjectX.HTL')};
+const resources:MultiSpecResources={glx:async()=>pub('/original/catalogs/CLEA_GLX.DAT'),qsoCatalog:async()=>({bytes:qb,sha256:sha(qb)}),file:async p=>byPath[p]??pub(p),objectXHotList:async()=>pub('/original/hotlists/ObjectX.HTL')};
 let tileFetches=0,failTiles=false;
 function tiles(){
  const v=pub('/original/variables/CLEA_VStrs.dat'),g=pub('/original/images/GLIMAGES.LST');
@@ -59,9 +59,10 @@ describe('Front G G4b: Multi-Spec at any pointing',()=>{
    if(!same)differ.push(`${pointing.ra},${pointing.dec}`);else if(!want.viewport)noView.push(`${pointing.ra},${pointing.dec}`);
   }
   expect(differ).toEqual(MULTISPEC_TILED_EXCEPTIONS.map(p=>`${p.ra},${p.dec}`));
-  // The pointings where both sides give the same no-view outcome (field-level reasons): 15 of 223. Front L4 (2026-10-31): 30
-  // before it; the 15 stamp-bound LSS rows now show their field on both sides.
-  expect([noView.length,pointings.length]).toEqual([15,223]);
+  // The pointings where both sides give the same no-view outcome (field-level reasons): 6 of 223. Front L4 (2026-10-31): 30
+  // before it; the 15 stamp-bound LSS rows now show their field on both sides. Re-pinned 2026-11-02 (Front F4): 15 → 6, the
+  // nine photographed LSS rows draw their photographs on both sides (the bundled LSS packs take the photographs option too).
+  expect([noView.length,pointings.length]).toEqual([6,223]);
  });
  it('at another pointing: the view is ready and a star fibre and a sky fibre give spectra',async()=>{
   const field={pack:'gsc-tiles' as const,pointing:STAR,telescope:2 as const},v=await multiSpecView(field);

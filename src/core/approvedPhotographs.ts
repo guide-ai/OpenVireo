@@ -3,10 +3,18 @@
  * - Object X (user approval of 2026-10-28): the four GLIMAGES.LST associates with Object X target areas.
  * - LSS (user approval of 2026-10-30, Front F3): the five GLIMAGES.LST associates with LSS rows otherwise photographic-image;
  *   NGC4274.BMP and NGC4278.BMP are both drawn in the F1R22/F2R1/F2R2/F2R4 fields (analysis/front-re5/lss-unacquirable.md).
- * GLIMAGES.LST also names NGC4449.BMP, which is absent from the zip; the original parser drops its row. Pure data. */
+ * - Front F4 (user approval of 2026-11-02): every remaining photograph GLIMAGES.LST names and the zip contains, 166 files,
+ *   6594708 bytes, listed in the research file analysis/photos-2026-11-02/glimages-remaining.txt (SHA-256 e31489b4…b81a). None
+ *   lies in an LSS or Object X target area (approvedPhotographs.test.ts); they are drawn in fields at other pointings.
+ * `file` is the name in GLIMAGES.LST column 6, the key the field engine associates (0x598ed2); `path` keeps the zip's own case
+ * (37 zip names are lower case, such as m33.bmp for M33.BMP; Windows resolves them case-insensitively).
+ * GLIMAGES.LST also names NGC205, NGC404, NGC750, NGC751, NGC4215, NGC4449 and NGC7331.BMP, which are absent from the zip; the
+ * original parser drops each of their rows (empty integer columns, photographicList.ts), so no association names them. Pure data. */
+import type {FieldPack} from './fieldPack';
+import type {PhotographRow} from './photographicList';
 export type ApprovedPhotograph=Readonly<{file:string;path:string;bytes:number;sha256:string}>;
-const list=(rows:readonly (readonly [string,number,string])[]):readonly ApprovedPhotograph[]=>
- Object.freeze(rows.map(([file,bytes,sha256])=>Object.freeze({file,path:`/original/images/${file}`,bytes,sha256})));
+const list=(rows:readonly (readonly [string,number,string,string?])[]):readonly ApprovedPhotograph[]=>
+ Object.freeze(rows.map(([file,bytes,sha256,zipName])=>Object.freeze({file,path:`/original/images/${zipName??file}`,bytes,sha256})));
 export const OBJECT_X_PHOTOGRAPHS=list([
  ['NGC2403.BMP',75852,'d490142539a2dfaade1780d0ad73918076f15141ca6fc0f6f93ccb3f627e1394'],
  ['NGC4262.BMP',3952,'ac967f4472d20e1ff2e8ac5f5b6dc20d643fea8305f800bf7271883940559ea1'],
@@ -18,5 +26,194 @@ export const LSS_PHOTOGRAPHS=list([
  ['NGC4278.BMP',12340,'4ff9a09d907c878b81ddec8832f0a116f19a3e7b8ad83ee9f9e828654fdc2e7f'],
  ['NGC4314.BMP',24372,'4c0e0e4b086147029a838a8cbee29c448f4d29d58a553f09dcc9680a05646bc2'],
  ['NGC4793.BMP',6716,'6808ef6abbcf01b16e243f3c85c8ee20681b7e9080cb3d347d52cd2413b27d37']]);
-/** Every approved photograph: the bitmaps a field at any pointing may draw. */
-export const APPROVED_PHOTOGRAPHS:readonly ApprovedPhotograph[]=Object.freeze([...OBJECT_X_PHOTOGRAPHS,...LSS_PHOTOGRAPHS]);
+/** Front F4 (user approval of 2026-11-02): the 166 remaining photographs, in the research list's order (GLIMAGES.LST order). */
+export const REMAINING_PHOTOGRAPHS=list([
+ ['NGC23.BMP',8680,'b8e84799f33a3a9b47b58972151127266f489ee39b9254d1d83d3d0907418a67'],
+ ['NGC45.BMP',83120,'4a7600c5ba7e20dec831dfe2f700361d5e0a929d4617b750fa699e11375d6372'],
+ ['NGC128.BMP',16284,'a065875597e17f5a4f13efda15a48b316e661b6fbdee451d3085d233cbf6b13e'],
+ ['NGC157.BMP',23312,'1f0e5ead9ca61bc0f3d4a136fec172956ca6d28f2fcbcbb3aa794340d7acfd25'],
+ ['NGC175.BMP',12496,'0064ebed7bf1071f2e5506d27b2d9225a8d646e9ac179e27d51e010e4f773b78'],
+ ['NGC185.BMP',28176,'ea4538229df7ff5c553aa88237206350a0fcdce3a27943758efc4908a1c8d652'],
+ ['NGC210.BMP',31056,'5abfdcfefca9c718bdfd093342916cfb83eed7f294af72d1db2e98ac48c57e8a'],
+ ['NGC253.BMP',283040,'fbf056a1c86bd74a7645e7f228381950219f4614ae66d3d1178f52ca5fb6b2ff'],
+ ['NGC309.BMP',19300,'647529e0e0f12e237c83f90089e773960e3cbe7ed7fffec9e2829f50978dbd3e'],
+ ['NGC488.BMP',14932,'33e955fc58e0f237811a723a61a8c76b28d1774e2564ea02814096ae1fd7c876'],
+ ['NGC520.BMP',10376,'881be68769fcfbc07f91f132eb4246d9db24777da58c3a9cd7361b4fc10330d9'],
+ ['NGC524.BMP',9880,'8082630ee958dbf1edff5158512b400a90f2408b2f360b57e22313260ce2aaf6'],
+ ['M33.BMP',282920,'d9d842d372095683b09c53f99032b42da183e58c57f24c48b5cc3bcd3faf3685','m33.bmp'],
+ ['NGC615.BMP',12480,'3fb65358c405c449f7e96bd8d9106783879b63c6e02b2a6cd2ee965f03548b32'],
+ ['M74.BMP',67864,'a953ae133a1763db2ef894898b307cceab62caa8c6acdeebfe23acf939c40a5a','m74.bmp'],
+ ['NGC718.BMP',6192,'7a801fedc4a2e9a66e739564476927f1584d51166c607fecd351a2d4cf8942a4'],
+ ['NGC891.BMP',154584,'fd01c90751d07d67bce5212f16fe9c0122259b9d70f350bda2ed93c83320ccd2'],
+ ['NGC925.BMP',24264,'cbb0930fdb5d2f95e6d43e597ac8c00b4beb5ae1ab2d96a335edc896deaab85c'],
+ ['NGC972.BMP',7008,'d46cfaecd687de4b5eecc67ef75bda905c02ba58881684d54822013eaaa1a995'],
+ ['M77.BMP',61972,'111ab6bff7b1972153518ac7af516acdd6d81561a02e81f414fd07482fa3d022','m77.bmp'],
+ ['NGC1073.BMP',38992,'a9c871d04e8597202068a6e441b43375b55537de189f9de1cf13ac8c5b1f82f0'],
+ ['NGC1084.BMP',14876,'bb5e396c7af3447ceef270f231d270dec79260e09d1550766a41f20e7351a887'],
+ ['NGC1097.BMP',107036,'b1f239fa27ce87be1558f25125199692239efd6fcfde1ec6f58eac9c3b588792'],
+ ['NGC1087.BMP',15328,'77e4bb99a37e150280073e8463aea86e27e2bd92c1ce364cb0109b2ab3629899'],
+ ['NGC1156.BMP',10792,'7db1b961b606214f405d3a4faf6fcf9440d57bdfef9799c843d0e6158af5736c'],
+ ['NGC1201.BMP',19776,'5c3e42acb4e7c4b378c8c88b0a6909b7de417d0d6b75c30a8bed71454ea35248'],
+ ['NGC1232.BMP',67544,'5548e8672b9f3852252a1f04c962c397e0d6fdeb781c6d74cb26f2c0ee03ac22'],
+ ['NGC1302.BMP',30532,'37f7a6fad747a907f5312b70fd475c97d17a2ca36f4ef9596dae9215fb74f6e4'],
+ ['NGC1300.BMP',45036,'66d94a66349d4f1263f0c4787680205408e0cd6bf80c9dd522023b8a72dd4e0a'],
+ ['NGC1398.BMP',58972,'a12c5010c927c4d4f2785da19d605832a7863aeaa33b3478474c5b0c3da18c08'],
+ ['NGC1637.BMP',18676,'11e670b459c2f9de48b170d78078c2c59b1eccd8c083d9bd3a52fa51f63271fd'],
+ ['NGC1832.BMP',11488,'1ee94e62c9a5a07b8c2c6cc8baac03b92b3d7220decf1f0ca58559ec5e09e9ec'],
+ ['NGC1964.BMP',30712,'5b6662e0aed5133f87619a8584d50024d16f507bcbacdf1463aaf64ce88f0c0f'],
+ ['NGC2217.BMP',28400,'707717db7167517a564ee74f6a4409e2559a681bb6f3479cf26062a9fea86c6e'],
+ ['NGC2366.BMP',22104,'ca0a7db4e204153029183facc3c1d01624ce851d217a66e2b8643a02ec972992'],
+ ['NGC2525.BMP',10264,'94cd9bf9e838d3b5cadc5a1640ca5ffa1b8bbad7a1e7014d2d09bd9f65602095'],
+ ['NGC2523.BMP',10560,'35ded18334a4f5070de241bb421837284f485a13fdf5ed66a5b271b3b3cd38a6'],
+ ['NGC2681.BMP',18396,'cefa2181093d6fcaa36d7a1899f8fe4db6cef0139f58de6a4da37bde76251d61'],
+ ['NGC2685.BMP',12648,'a10ed3b5f8a4bb871dde76c0a64b9f321bd832d5466de4337385d89e11c359a0'],
+ ['NGC2775.BMP',18660,'82bcb331deeecbba4d0d8b756ad9a4f9ccb29081916054a49ef6193c8e46e28e'],
+ ['NGC2811.BMP',9508,'11fd1d0e139a6a6b3910ae8a4f7938221e0feb25ec99c607d0cfeea901cef96a'],
+ ['NGC2855.BMP',9812,'2b89aa2e6ccabcd71f937fd4ff64b6f2bad538e82b9b7ec34f83e7c3bc5328e2'],
+ ['NGC2841.BMP',48596,'f4f38988235bf90fb0a817ef89a2421d5a9bf05b609e46d2e472ec108fa9adf6'],
+ ['NGC2859.BMP',7396,'9003e33f99c0008d1f7a51522441ef11750dd30c41d2eea20a0cd5c8b8d57a99'],
+ ['NGC2903.BMP',84044,'c387daf39f581744164b361d260609acd2bd84de97e549fc6f0e6f7817d61798'],
+ ['NGC2950.BMP',11540,'15fba23f46151d044f1b9f6d812f83b00f121f048e79465447d343c5a1fcc159'],
+ ['NGC3032.BMP',4116,'10a8b07ae5fbaeeb600864957cc9bb5b9fa2db3e96b26334d5e03e061dee30c3'],
+ ['M81.BMP',236900,'3b9410688fee6df8648c5983dc0bc6a01011f643448e9dfe3e5f78c0747667c6','m81.bmp'],
+ ['M82.BMP',78000,'d7546c01ee84e788bbecdf15dc3f73568a5427143ccef488063536c48c7bc23a','m82.bmp'],
+ ['NGC3081.BMP',8804,'0c69e25e414a76db4b5e033a13d5c1aaf6ca1c31af9590da29a0798b92ffb969'],
+ ['NGC3065.BMP',4660,'380968733832857fa886dcd3e1e1a9fb8dcf5c83552999acb562f4b3f6bae0b4'],
+ ['NGC3109.BMP',84772,'65abef53fc6e1c8226620d3553ddddbc24746a9b6feff4ffe346df30e17e1d94'],
+ ['NGC3077.BMP',22200,'7aaedf2b02bb2efe85838c126c17dfd88260d919984629966da6c0ff63fb2210'],
+ ['NGC3115.BMP',64284,'7eb5c3aaf64fd9bce45dbe2234e66cafbe922549407607cca3f600d0bbb53391'],
+ ['NGC3145.BMP',8500,'366511fde067fa9ffe244c8dfb358b52c0847f8e5323749afe51bfbc7afb2525'],
+ ['NGC3147.BMP',17380,'b97f31789f39a868d9ac077e514c736e0cad11694cb76c0ef044d800ed12a03f'],
+ ['NGC3185.BMP',6436,'f68977b58db52c1c50d8cfcab16adb07d6b0701c8b58e4763d5d40bfa87de3f7'],
+ ['NGC3245.BMP',10508,'6e5395906f1e14cc5312047325dcfc817d5e40d8e6423d718ae307a667be5ded'],
+ ['M95.BMP',59040,'8266b34358bacb16c056e70f237f323e5e3eb189872f7cb49450162ab6b5896a','m95.bmp'],
+ ['NGC3329.BMP',4952,'91e7c3e045c1d65cef146f017ba4cd39a8236f9bfdfd40bb9610b7df7ae0dba2'],
+ ['NGC3367.BMP',14916,'5b17322744f5d365c0dc2fadbbdfcabc92a0fe87ed52701132ab2235ed2f7778'],
+ ['NGC3359.BMP',36732,'cdc0e127f47beae98eed0bf5f7e62b8fc76f511313e8368a567cd23fa71a1b4c'],
+ ['M96.BMP',79484,'79ffd985640bd116def978edfeb6dbec744cd1fa217aa727895fa76c9126816b','m96.bmp'],
+ ['NGC3377.BMP',27068,'75c597a861aabe067f600afeb21286de00136aee6523cc455de192ae9ce7f83c'],
+ ['M105.BMP',38248,'69c18d82685356dff077da878450612ef7a396d9e90f1fda1ad5257ad415440b','m105.bmp'],
+ ['NGC3504.BMP',15232,'064be50e14653f85de142cfbfdca67452f8894c5a39f4dc71667b3b4a35ce226'],
+ ['NGC3511.BMP',42496,'fd935a4581ccb516d02e62e7a360363d0eec939643b640fddb8fa33c7b0443b9'],
+ ['NGC3521.BMP',62656,'16dca559cd6ab72532ee433521fcb3b996a199cec0713e836425aaf7ac138706'],
+ ['M108.BMP',56616,'1270548bd175a654e9949b36f232e0af36ac7d1806ef42b2a7011e8fd09f2792','m108.bmp'],
+ ['NGC3556.BMP',45024,'c715760f86552a8d912789706f6bae5ffd4f6f332dc6d97841bf183e14473bb5'],
+ ['M65.BMP',66804,'5d8cd4b9383cb6750fbd28304f07b24f3581a2364ed86910cb607585138f5de4','m65.bmp'],
+ ['M66.BMP',82288,'fac764663d322a986a181050cd180800f1fb9f1b37f1f2f6ed82696915481bca','m66.bmp'],
+ ['NGC3672.BMP',28120,'95a863f736e18d24605e3ade446346086f69157916b28a7d0a751690ba22e281'],
+ ['NGC3705.BMP',23640,'6e9da9020e229b49c741f88559f676bf7ad7c06b717895d9b8f29ecfe286817a'],
+ ['NGC3718.BMP',32860,'69f026cc71769bfa5e7f253344e431446e4ef2f36f493d05e545cf0fb4c4b712'],
+ ['NGC3810.BMP',21724,'5c875cef8ed004aca2ad52a4d86e08f77678916fb32cb0fe89c012a2ed1d1dea'],
+ ['NGC3898.BMP',17540,'01f38ae9ca2d091169fcfe02e34f25335e15385f91f0c6baea3a807a7a150d0b'],
+ ['M109.BMP',76300,'2296073ba9580b4ce1efb546c3acba1cfa861d800ce2c6a25b8ac62434b353cb','m109.bmp'],
+ ['NGC4062.BMP',23996,'890471c9205024b11f98e9572903b2ca4aad932ec52c78accb0d31463c6c85bf'],
+ ['NGC4088.BMP',31084,'d350909bb68aafe5f444daa87099f9f7b2744858aa12cf7ce8330273b93708b9'],
+ ['NGC4111.BMP',25816,'79802e94ca721df433ce02a889ab314d2382e0231fb25f421c4df8b5352cc140'],
+ ['M98.BMP',66172,'a1317343b2dbe792f88e572274aa3f811df8c42703d8e94fc7ba84c175f49367','m98.bmp'],
+ ['NGC4214.BMP',30580,'7ebe684c8ed77aa7ec7e23de9a4273e87c21bdfe71626b353f2aba06c086ef60'],
+ ['NGC4216.BMP',69576,'3360b1c5deed7ebba69057444cb149d59a78047d8ae9175698a935b258761d9e'],
+ ['NGC4237.BMP',7912,'d9a123ac082e605bde0517dd4277bac3aefbec9752af3764b97d6fe192df23fb'],
+ ['NGC4244.BMP',134432,'897a1bccf268287828b97bb12cb7326e210157af7dc812c2ad522544fa0456f0'],
+ ['M99.BMP',41104,'1ddb4022a86b5943c630b3c2d1cf7b23b5f066b1cda348cd483d016844e5fa42','m99.bmp'],
+ ['NGC4258.BMP',82836,'2b9ef21c124b56680aeab23416c7737f07b27c180e80ac86ce013983728ba7a4'],
+ ['M106.BMP',139084,'7b9cebdc096d903806ee17087af965a757713289a00e5ba3ea1fb8966ec521aa','m106.bmp'],
+ ['NGC4293.BMP',22728,'1850cf9b96c56de78def7c7c7f81fc69ce3e545d07941252fc2b858ccd1fe1a6'],
+ ['M61.BMP',47260,'2615bfe56a119b81cbf174940af917e58875477a940d19ce2cfbfb073f938826','m61.bmp'],
+ ['M100.BMP',68060,'79184e1936b1fc7bd67a158ba19a6d99e807ec72a5b2c6f9a5c501055678d5da','m100.bmp'],
+ ['M84.BMP',34180,'474afcb569982cb2d009a381a388db59080c678b3ab6e9aa5cf46488fc65cdaf','m84.bmp'],
+ ['NGC4378.BMP',14120,'29992358b75e9b89a8d921159642cf4277f91d5a0a278a5d68c0462857904ef5'],
+ ['M85.BMP',45644,'5b15707e4f727bb348b3ca21dbc984c45c24ce926f3ccd1c1f33dd0650daa09a','m85.bmp'],
+ ['NGC4395.BMP',60308,'9f3cd8a78a88b1ab48909cf8d4bb90695332732a906fbf6a4df0ec26be19bb80'],
+ ['NGC4394.BMP',16896,'77efb019a7c435f9c5d1723b2dbaff2b0f71a248abb47e8ff285b4931261e59c'],
+ ['M86.BMP',41928,'88487f265680a80755a568557c65f04d6987f33cca8b646b8b003c05ae6722d1','m86.bmp'],
+ ['NGC4406.BMP',32532,'f2f6af62d63f4e00951ff8299894cf2ca99289550ca8e4c893c216bd2fff6720'],
+ ['NGC4433.BMP',8044,'d6ab2a8432c68069ee0bbbb7f2db85100de021acc5a85dda6314a5deb37cf147'],
+ ['NGC4450.BMP',26108,'cee40e0464f95ecd039752a7e90b0073992db9c8b0857744e9ce4ace05223194'],
+ ['NGC4457.BMP',13012,'9bb658ab34299604aa5238d3a4aa8fd6af7bfdc75c4c6fe051d1d6166b1faadc'],
+ ['NGC4459.BMP',12300,'45eb825f6399ece619b6c1172c5b159b3027168fbf5431e24e9cd293e023e192'],
+ ['M49.BMP',57528,'159623d3fb5b7f94723d52b22b0dd2681ecadd9e1103db0bbae3d8dbcbccaea0','m49.bmp'],
+ ['M87.BMP',50664,'63fc6699fc880e01e28837a4c52393898fe6dcac295d0edd702c564fb74ebd6b','m87.bmp'],
+ ['M88.BMP',49368,'2da47d067d41aaa077c0b98868a386e4f36c15cd0b59d7b035c466c6e88537fb','m88.bmp'],
+ ['NGC4526.BMP',47136,'ecfe39756e91ef1ed8d8ffce16ebd085f222f21dbe8ca8dc3e6fbbc6d5b485ed'],
+ ['M91.BMP',35724,'312e85bdb01526ce201121def4c266304dac091be7e2f0b503af93b23b61fcf2','m91.bmp'],
+ ['NGC4548.BMP',33024,'f52d43797ef29189cee39bd1ca9455f1a3b4f7559938623a1a80427136cf4818'],
+ ['M89.BMP',21996,'c0c105d3d166a8431f9c9e396153c2e9025051771e0964fb8946a6c563b7c2e4','m89.bmp'],
+ ['NGC4565.BMP',136768,'ca9e73bc3b7b985003e17249981e3e3bf591e3aedfa7e162afcfe6caf60889c9'],
+ ['M90.BMP',68508,'c6cfa85d38e2e2372c4a65b78b655211417ff8e354de91805d73ff002f77c87d','m90.bmp'],
+ ['M58.BMP',37612,'f04f175e329ffac0073a88b5fb85d1c0a9e420b8e143be72de02a026cd885bb6','m58.bmp'],
+ ['NGC4580.BMP',7088,'39471039fe5bd45435599db32608a1129974ed1d4fb4daeeae89950dca787e3c'],
+ ['NGC4593.BMP',22536,'b4e568304381430bc2495eb741f51d159d6df979e127772062ea8310a3044d5e'],
+ ['M104.BMP',72468,'db4b788bd523d40ebf289e9ddfe6357fe1db173c7cbfbd3986701bfdf6135897','m104.bmp'],
+ ['NGC4612.BMP',6736,'09f423fa88e1cb3271a731724e9b33c094bc1440fad0e42517763b395f5f2442'],
+ ['M59.BMP',24524,'7f1979371edae2948a8a2d962949e2ef0d3e789aa13dd8017f3cba3e28163220','m59.bmp'],
+ ['NGC4636.BMP',18480,'33e348c21cbdbd0c9057606af24baf302c30dddcb0597e27f1b5ef0b2d11771a'],
+ ['NGC4643.BMP',19756,'eb659c5a76f3bf8dec2f2694e6f575b09de3ffff3a68b1153d3ec8015e0f6211'],
+ ['M60.BMP',74464,'9ddf2393b20313752c431118a988ddeff3541f57263a21dab8d3bf63723ff305','m60.bmp'],
+ ['NGC4684.BMP',8224,'20fe016bbaa4e620e555e4d44a3918e370869eb00d7b87f6036aafed392818eb'],
+ ['NGC4691.BMP',11316,'e4dbdb89c49b72b87c711abfe8eddea536e318566120cf43b810bd8c706cd11a'],
+ ['NGC4697.BMP',18152,'b754a1d10202a467fe3d6c01cc32e658e5de4be75878691dd71706d4d1b08d02'],
+ ['NGC4699.BMP',21680,'01741c17098a1077f128e185247364e8d0bbccf66de542c1e05cb9a541bb021e'],
+ ['NGC4710.BMP',21972,'980305cb83f53a6e5b4fa3e0319b3d6b416ba60ebf2b335774655b5ebdf271e9'],
+ ['NGC4750.BMP',6732,'997f8e6786c87fa838635a490ab86d10f428937745304ef62ee5bad5bd1b9215'],
+ ['NGC4725.BMP',44568,'42282421339b2251a982dc3633fa1a9af572836d42cb157a70ba20c56203631f'],
+ ['M94.BMP',65372,'ac92f15f61077975311fe0f6c52cbe33c6270e6013598da431ca4fda94e3f47e','m94.bmp'],
+ ['NGC4753.BMP',18732,'902c3b1fd3531e001f9d3e03c480fa929bfe8af7e9f6c01da5fa4417b601ffcc'],
+ ['NGC4762.BMP',40228,'3afcc11d3892e58aea21aeb9d301f67c03b1cb8d03e42f70cc3eaf6c0fddc745'],
+ ['NGC4800.BMP',4936,'c84192904d9fc84d61260705990628b9d54d43a980a1778b04e747d4f2f8fdc4'],
+ ['M64.BMP',65696,'87da9142de9c17fae941568651fd7b3e7599f39721c758b3a4032e708dc6142a','m64.bmp'],
+ ['NGC4866.BMP',12076,'73352b3c380d8be09584e6ceab5f557b093f58d858e4648b81c7f82e5a205daa'],
+ ['NGC4941.BMP',11200,'743a9d98b8ec677d4888c578121dfd0b51e626f931cb2fb695e908101e1950e7'],
+ ['NGC5005.BMP',23960,'9f7a96b12ee8b092799655bfa2d26769d0afaccceed1981a6ec7608dc18ee0a9'],
+ ['M63.BMP',72384,'45ab9b6933ecec81a78096e89f9c4211b94dc76107ba75e15ebc5b970a198ea7','m63.bmp'],
+ ['NGC5101.BMP',12240,'b235df040ac01199bbb2b3f84af3e281051bd19b9bfb00015912af5a9e5f9ce2'],
+ ['NGC5128.BMP',167544,'bacdcb0196114260848a67a443a56114b01fa9841a66fd847d04f6552e102aea'],
+ ['NGC5204.BMP',15696,'5a76066d8fc4e8e4cd6f4cbdc8ae8a812c5da111cb8a02676d8761ac80112c50'],
+ ['M51.BMP',25270,'e8ae38a0f255c5c13da1f17289457a42ba340fd598714b0bedb70f9ce1fcc8ae','m51.bmp'],
+ ['NGC5195.BMP',10654,'d2ebba108f37bc5dd68618b1cacf7885117ab2516f5a550de12312f9cb325a38','ngc5195.bmp'],
+ ['M83.BMP',153080,'150d6b8a6e38093312969b47e62fbc69d23ee25db3d0c049efb72e317b0500bb','m83.bmp'],
+ ['NGC5248.BMP',19580,'b4f38425ca8386561d3b06b6a3c60dc2d8708b0388a5718715a580b5ec11883b'],
+ ['NGC5273.BMP',9528,'b224a366a40b136fc254843917eea486af4096d3765164be71eb0b1da52b56ec'],
+ ['NGC5364.BMP',30648,'ab8e08a1085beb89b82a7edcbbf44ca5d37156318389bca80b705019f35ce516'],
+ ['NGC5383.BMP',10800,'d89e70947f7fe7c057808349c308b2ef67b2c10583d00f1c27d181a0d56beea9'],
+ ['M101.BMP',225928,'517e96f987201216504b2a865849674eee06b9ad1b30a8c33a7517f09a8bbf5e','m101.bmp'],
+ ['NGC5566.BMP',15996,'c334227ddbe4d82248ead54bc9f70961360f195edcba3bbf6972b1be6a489a02'],
+ ['NGC5614.BMP',5880,'c23eb3fe52f99a9bf983e07875cac15bbe9c98c0d9d075192c4c617c737e3a61'],
+ ['NGC5866.BMP',18792,'fc4b8c9db2aae239e93d7f9a69f989735593b02b2072c0784f16f4f40db10243'],
+ ['NGC5907.BMP',64632,'d14cf1aa797473571c4787aba8e1295f0495dcbd8a84467d79c097d3d83cda6b'],
+ ['NGC5962.BMP',10032,'ee4f2783cda224661b384a9ede11cacf92e9253b1dcf4a9cf320a2999c91e334'],
+ ['NGC6181.BMP',10296,'d9e9075d01b5cc88f80220eca13a491f02334d7210c1ca8427c178b295005ef1'],
+ ['NGC6384.BMP',11064,'1591b3a9c56195f94df8fa09e48ea31ea9b33cae5418ddd8846524442663ad8b'],
+ ['NGC6643.BMP',16040,'1d4f473795246c3f4ed27512f49cb78c3627157cc12e62567f2c1e917d26f9ad'],
+ ['NGC6814.BMP',5564,'ee6822a5f521242f5c871d16e7d9c9987efb7dbfa37b4b9f14ae3b6b2ccf85a5'],
+ ['NGC6951.BMP',11056,'baa983713d43e587a22af34eebb62809f2a85c6307bf2d7865517daed17fdc33'],
+ ['NGC7217.BMP',19020,'31695fa6454c7e485c40d312ddd8a72b43f080e16657219064dc363e662daa7d'],
+ ['NGC7314.BMP',17976,'9f875cae1bdcaa141ac536714d9b722552de87513be98035545a315d2c7cd603'],
+ ['NGC7332.BMP',11476,'57b67408c38b0ba1546b763820f6f1fdf7dc259d510f030d953b6378cb01a654'],
+ ['NGC7392.BMP',5880,'6cf5aa69653edc9a7dcf58f0714f1f004381051b99678a3c2bea43b7f8af30c6'],
+ ['NGC7457.BMP',8256,'0157978c89607b5f07440bbdc6317b756e61f47a0b05c7d40652026c5fec7449'],
+ ['NGC7640.BMP',37428,'e1cb782abaa4f7b874677e346a9efef78d16a396f09c5a2b7f882a4c86e88352'],
+ ['NGC7741.BMP',11496,'ae3c5e2f128965fcf4b347c7a38cdf67ceb5e1cb1b66d9081fe91bd0308cf2ea'],
+ ['NGC7743.BMP',7612,'81913c902a6e554c94bd7080ff443b79c47d66b87357ddb9eb52408ed36869ad']
+]);
+/** Every approved photograph: the bitmaps a field at any pointing may draw. Loaders fetch only those a field's pack names
+ * (photographsInPack), never the whole list. */
+export const APPROVED_PHOTOGRAPHS:readonly ApprovedPhotograph[]=Object.freeze([...OBJECT_X_PHOTOGRAPHS,...LSS_PHOTOGRAPHS,...REMAINING_PHOTOGRAPHS]);
+/** Front F4 [W]: bundled photographs the web port does not draw, because VIREO's handling is not recovered; a field that
+ * associates one keeps the typed photographic-image reason, and the file is never fetched.
+ * - Bitmap size differs from the width and height GLIMAGES.LST lists for it (record +0x7f/+0x81): NGC4643.BMP is 142 × 130
+ *   against a listed 112 × 130, M83.BMP 390 × 388 against a listed 152 × 50. How the draw (0x597290/0x597470) uses the listed
+ *   size for such a bitmap is not recovered (the field engine refuses a size mismatch as evidence).
+ * - M108.BMP (m108.bmp) has pixel indices beyond its 122-entry colour table, which decodeBitmap8 refuses; what VIREO's bitmap
+ *   loader paints for them is not recovered.
+ * approvedPhotographs.test.ts checks that exactly these three fail. NGC253.BMP is bundled too, but its GLIMAGES.LST row has
+ * empty integer columns, so the original parser drops it and no field associates it. */
+export const UNDRAWN_PHOTOGRAPHS:ReadonlySet<string>=new Set(['NGC4643.BMP','M83.BMP','M108.BMP']);
+const BY_FILE=new Map(APPROVED_PHOTOGRAPHS.filter(p=>!UNDRAWN_PHOTOGRAPHS.has(p.file)).map(p=>[p.file,p]));
+/** The approved photographs a pack's photographic-list matches name (every pointing of the pack): what its fields can draw. A
+ * match whose file is not approved (or is in UNDRAWN_PHOTOGRAPHS) is left out, so that field keeps the typed photographic-image
+ * reason. */
+export function photographsInPack(pack:FieldPack,rows:readonly PhotographRow[]):readonly ApprovedPhotograph[]{
+ const byIndex=new Map(rows.map(r=>[r.index,r])),out=new Map<string,ApprovedPhotograph>();
+ for(const e of pack.photographs.entries)for(const i of e.indices){const f=byIndex.get(i)?.file,p=f===undefined?undefined:BY_FILE.get(f);if(p)out.set(p.file,p);}
+ return Object.freeze([...out.values()]);
+}

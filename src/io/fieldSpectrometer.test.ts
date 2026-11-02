@@ -2,7 +2,7 @@ import {fieldSpectrumBytes,fieldSpectrumHeaderName} from '../core/exposureSpectr
 import {readFileSync} from 'node:fs';
 import {createHash,webcrypto} from 'node:crypto';
 import {afterAll,beforeAll,describe,expect,it,vi} from 'vitest';
-import {prepareFieldSpectrum,readFieldSpectrumSession,serializeFieldSpectrumSession,setFieldSpectrometerFiles,spectrometerInputs} from './fieldSpectrometer';
+import {prepareFieldSpectrum,readFieldSpectrumSession,serializeFieldSpectrumSession,setFieldSpectrometerFiles,spectrometerInputs,spectrometerInputsFor} from './fieldSpectrometer';
 import {setTileSources,tileSources} from './tileAssembly';
 import {checkGscIndex,createGscTileStore} from './gscTiles';
 import {assembleFieldPack} from './assembledFieldPack';
@@ -86,12 +86,14 @@ describe('the generic spectrometer',()=>{
   expect(r.result.calibration?.pixelLevel).toBe(82);expect(r.result.calibration?.fraction).toBeCloseTo(0.1681,4);
   expect(r.result.calibration?.sourceFile).toBe('GLXYTMPL.SP');
  });
- it('R4e review 1 L1: a field blocked before the slit selection (M31, a Virgo photograph) reads Sky for a star outside the strict cut',async()=>{
+ it('R4e review 1 L1: a field blocked before the slit selection (M31, an undrawn photograph) reads Sky for a star outside the strict cut',async()=>{
   const on={showObjectId:true,showObjectMag:true,editMode:false};
   // M31's field: N3730.DAT@36659 (0.6819933 h, 40.96142°) is the current object; 0.001 h east it is outside 0x50f338's cut.
   for(const [at,reason,sky] of [[{ra:0.6819933+0.001,dec:40.96142},'m31',true],[{ra:0.6819933,dec:40.96142+0.0065},'m31',true],[{ra:0.6819933,dec:40.96142},'m31',false],
-   // photographic-image: NGC 4476 + 0.08° names a GSC star outside the cut.
-   [{ra:12.499611111111111,dec:12.348055555555556+0.08},'photographic-image',true]] as const){
+   // photographic-image: NGC 4643 + 0.08° names a GSC star outside the cut. Re-pinned 2026-11-02 (Front F4): the earlier NGC 4476
+   // + 0.08° field now draws the bundled M87.BMP and stops at variable-time-required; NGC4643.BMP is bundled but not drawn
+   // (UNDRAWN_PHOTOGRAPHS, its bitmap size differs from GLIMAGES.LST's), so its field stays photographic-image.
+   [{ra:12.72230556,dec:1.977555556+0.08},'photographic-image',true]] as const){
    const r=await prepareFieldSpectrum(at,0);expect(r.status).toBe('ready');if(r.status!=='ready')continue;
    // Front C7: M31's field is built now; the engine's own slit selection decides, and agrees with the looked-up current object.
    if(reason==='m31'){expect(r.result.m31Notice).toBe(true);const object=await currentObjectAt(at);expect(fieldSpectrometerSkyReading(r.result),JSON.stringify(at)).toBe(sky);expect(fieldSpectrometerSkyReading(r.result,object),JSON.stringify(at)).toBe(sky);continue;}
@@ -101,9 +103,9 @@ describe('the generic spectrometer',()=>{
    if(sky)expect(spectrometerIdText(on,true,object,'HIDDEN')).toBe('Sky');
   }
   // A galaxy current object with no selection stays named [W]; a hidden object stays hidden.
-  // Front C7: M31's field is no longer blocked, so the blocked Virgo photograph field carries this case.
-  const g=await prepareFieldSpectrum({ra:12.499611111111111,dec:12.348055555555556+0.08},0);if(g.status!=='ready')throw new Error();expect(g.result.reasons).toEqual(['photographic-image']);
-  expect(fieldSpectrometerSkyReading(g.result,{status:'object',name:'NGC 4476',kind:1,v:12.2,ra:12.499611111111111,dec:12.348055555555556})).toBe(false);
+  // Front C7: M31's field is no longer blocked, so a blocked photograph field carries this case (NGC 4643 since Front F4).
+  const g=await prepareFieldSpectrum({ra:12.72230556,dec:1.977555556+0.08},0);if(g.status!=='ready')throw new Error();expect(g.result.reasons).toEqual(['photographic-image']);
+  expect(fieldSpectrometerSkyReading(g.result,{status:'object',name:'NGC 4643',kind:1,v:11.7,ra:12.72230556,dec:1.977555556})).toBe(false);
   expect(fieldSpectrometerSkyReading(g.result,{status:'hidden'})).toBe(false);
  });
  it('Front R4e: the sky flag comes from the slit star\'s throughput, also where the engine returns first (star-index-invalid)',async()=>{
@@ -120,13 +122,13 @@ describe('the generic spectrometer',()=>{
   }
  });
  it('equals the Object X spectrometer at every Object X spectroscopy row and telescope (tiled pack vs bundled pack)',async()=>{
-  const inputs=await spectrometerInputs(),s={index:checkGscIndex(JSON.parse(readFileSync('data/gsc/gsc-index.json','utf8'))),tiles:createGscTileStore({fetcher:(async(u:RequestInfo|URL)=>new Response(pub(String(u)))) as typeof fetch,capacity:64})};
+  const s={index:checkGscIndex(JSON.parse(readFileSync('data/gsc/gsc-index.json','utf8'))),tiles:createGscTileStore({fetcher:(async(u:RequestInfo|URL)=>new Response(pub(String(u)))) as typeof fetch,capacity:64})};
   const v=pub('/original/variables/CLEA_VStrs.dat'),q=pub('/original/catalogs/CLEA_QSO.DAT'),g=pub('/original/images/GLIMAGES.LST');
   let compared=0,available=0;
   for(const row of OBJECT_X_SPECTRUM_ROWS){
    const pointing=xInputs.rowPointings.get(row.row)!,pack=await assembleFieldPack(pointing,{...s,variables:v,variablesSha256:sha(v),qso:q,qsoSha256:sha(q),glimages:g});
    for(const telescope of [0,1,2] as FieldTelescope[]){
-    const want=objectXField(xInputs,pointing,telescope)!.result,got=spectrometerFieldResult(inputs,pack,pointing,telescope);
+    const want=objectXField(xInputs,pointing,telescope)!.result,got=spectrometerFieldResult(await spectrometerInputsFor(pack),pack,pointing,telescope);
     expect(got.reasons,`row ${row.row} T${telescope}`).toEqual(want.reasons);
     // Review 1 L5: everything the exposure and the CSV read (source and sky means, continuation) and the wavelengths.
     expect(fieldSpectrumCalibration(got)).toEqual(fieldSpectrumCalibration(want));

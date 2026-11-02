@@ -15,7 +15,7 @@ const sha=(b:Uint8Array)=>createHash('sha256').update(b).digest('hex');
 const qb=file('catalogs/CLEA_QSO.DAT');
 const paths=['spectra/QSOSpect.dat','images/GLIMAGES.LST','spectra/jspect2/JSPEC2.SPI','spectra/GLXYSP.LST',...[...MULTISPEC_STAR_TEMPLATES,...MULTISPEC_GALAXY_SPECTRA,...OBJECT_X_GALAXY_SPECTRA,...OBJECT_X_PHOTOGRAPHS].map(x=>x.path.replace('/original/',''))];
 const byPath:Record<string,Uint8Array>=Object.fromEntries(paths.map(p=>['/original/'+p,file(p)]));
-const resources=(over:Record<string,Uint8Array>={}):MultiSpecResources=>({glx:async()=>file('catalogs/CLEA_GLX.DAT'),qsoCatalog:async()=>({bytes:qb,sha256:sha(qb)}),file:async p=>over[p]??byPath[p],objectXHotList:async()=>file('hotlists/ObjectX.HTL')});
+const resources=(over:Record<string,Uint8Array>={}):MultiSpecResources=>({glx:async()=>file('catalogs/CLEA_GLX.DAT'),qsoCatalog:async()=>({bytes:qb,sha256:sha(qb)}),file:async p=>over[p]??byPath[p]??file(p.replace('/original/','')),objectXHotList:async()=>file('hotlists/ObjectX.HTL')});
 const coma=engineTargets.targets.find(t=>t.id==='NGC 4889')!;
 describe('Front M: Multi-Spec inputs, view and spectra (in-process seam of the Worker path)',()=>{
  beforeAll(()=>{vi.stubGlobal('crypto',webcrypto);setMultiSpecResources(resources());});

@@ -41,8 +41,11 @@ export async function evaluateMultiSpecView(inputs:MultiSpecInputs,request:Multi
  // A file that did not arrive or did not match is not cached (the next request fetches again, past the HTTP cache for a bad
  // tile); a field the native read cannot reproduce is.
  if('reason' in pack){const v=unread(request,pack);if(pack.reason!=='field-tiles'&&pack.reason!=='load-error')put(m,k,v);return v;}
+ // Front F4: a field that draws photographs takes the bitmaps its pack names, fetched when first needed.
+ let options=multiSpecFieldOptions(inputs,request);
+ if(options.photographs)options={...options,photographs:await inputs.photographs(pack,options.photographs.rows,signal)};
  let v:MultiSpecView;
- try{v=evaluateFieldView(pack,inputs.objectX.glx,{ra:request.pointing.ra,dec:request.pointing.dec},request.telescope,multiSpecFieldOptions(inputs,request));}
+ try{v=evaluateFieldView(pack,inputs.objectX.glx,{ra:request.pointing.ra,dec:request.pointing.dec},request.telescope,options);}
  catch(e){if(request.pack==='gsc-tiles'&&e instanceof FieldEngineError&&e.code==='polar')v=unread(request,{reason:'field-polar'});else throw e;}
  put(m,k,v);return v;
 }

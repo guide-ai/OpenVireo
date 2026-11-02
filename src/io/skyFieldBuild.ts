@@ -8,7 +8,7 @@ import type {NativeSelectionScene} from '../core/objectSelection';
 import type {RgbImage} from '../core/photons';
 import type {Pointing} from '../core/sky';
 import {nativePhotographRows} from '../core/photographicList';
-import {decodeBitmap8,type Bitmap8} from '../core/photographDraw';
+import type {PackPhotographs} from './photographBitmaps';
 import {skyFieldPack,skyFieldInputs,type SkyPackFailure} from './fieldInfoPacks';
 import {yieldTask} from './yieldTask';
 
@@ -23,17 +23,15 @@ export type SkyField=Readonly<{status:'ready';view:SkyFieldView;anchor:Pointing;
 /** What one build needs (plain data, so it can cross to the Worker). The JD is frozen by the caller. */
 export type SkyFieldBuildRequest=Readonly<{view:SkyFieldView;anchor:Pointing;telescope:FieldTelescope;finderMagnitudeLimit:number;variableTime?:FieldVariableTime}>;
 
-let photographBitmaps:Promise<ReadonlyMap<string,Bitmap8>>|null=null;
-/** Every approved photograph (core/approvedPhotographs.ts: the Object X four and the LSS five). One that cannot be loaded is left
- * out, so only a field that draws it stays photographic-image. */
-function bitmaps():Promise<ReadonlyMap<string,Bitmap8>>{
- photographBitmaps??=(async()=>{
-  const [{APPROVED_PHOTOGRAPHS},{fetchBundledHotList}]=await Promise.all([import('../core/approvedPhotographs'),import('./bundledHotList')]);
-  const signal=new AbortController().signal,out=new Map<string,Bitmap8>();
-  await Promise.all(APPROVED_PHOTOGRAPHS.map(async p=>{try{out.set(p.file,decodeBitmap8((await fetchBundledHotList(fetch,signal,{name:p.file,path:p.path,bytes:p.bytes,sha256:p.sha256})).bytes));}catch{/* left out: its field stays photographic-image */}}));
-  return out;
- })();
- return photographBitmaps;
+let photographs:PackPhotographs|null=null;
+/** Front F4: only the approved photographs the field's pack names (io/photographBitmaps.ts), fetched when a field first needs
+ * them. One that cannot be loaded is left out, so only a field that draws it stays photographic-image. */
+async function packPhotographs():Promise<PackPhotographs>{
+ if(photographs)return photographs;
+ const [{packPhotographLoader},{fetchBundledHotList}]=await Promise.all([import('./photographBitmaps'),import('./bundledHotList')]);
+ const signal=new AbortController().signal;
+ photographs??=packPhotographLoader(async p=>(await fetchBundledHotList(fetch,signal,{name:p.file,path:p.path,bytes:p.bytes,sha256:p.sha256})).bytes,'omit');
+ return photographs;
 }
 
 export async function buildSkyField(r:SkyFieldBuildRequest,signal?:AbortSignal):Promise<SkyField>{
@@ -55,7 +53,7 @@ export async function buildSkyField(r:SkyFieldBuildRequest,signal?:AbortSignal):
  let v=evaluateFieldView(pack.pack,inputs.glx,anchor,r.telescope,options);
  const retry=async(reason:FieldUnavailableReason)=>{
   if(reason==='qso-merge'){options.qso='merge';options.qsoCatalog=inputs.qso;}
-  else if(reason==='photographic-image'){options.photographs={rows:nativePhotographRows(inputs.glimages),bitmaps:await bitmaps()};}
+  else if(reason==='photographic-image'){options.photographs=await (await packPhotographs())(pack.pack,nativePhotographRows(inputs.glimages),signal);}
   else return false;
   await step();v=evaluateFieldView(pack.pack,inputs.glx,anchor,r.telescope,options);return true;
  };

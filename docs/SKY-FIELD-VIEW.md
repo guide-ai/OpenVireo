@@ -23,7 +23,8 @@ The observatory's sky view draws VIREO's own field for the current view at any p
 - **Object X:** no field is drawn within 2° of an Object X position or the lab's hidden target, widened by max(0.62°, the field's
   farthest corner) (the observatory rule since G4b; about 5.3° for the finder field).
 - The Finder Mag Limit is the compiled 11.5 (the Parameters tab is read-only on this site).
-- Photographs: all nine approved ones (`core/approvedPhotographs.ts`); one that cannot be loaded leaves only its field typed.
+- Photographs: every approved one (`core/approvedPhotographs.ts`; 175 since Front F4, user approval of 2026-11-02), each fetched
+  only when the field's pack names it (`io/photographBitmaps.ts`); one that cannot be loaded leaves only its field typed.
 - The JD a field is built with is frozen at its first build and kept while the field is kept, as the other field consumers do.
 - **Finder fast path not ported** [W] (review 1 L1): VIREO's finder load 0x53bae4 first asks 0x53afb0 whether the finder viewport
   (±Finder/2, RA scaled by cos) still fits in the last finder area (0x5b581c); if so it re-projects about that area's centre and
