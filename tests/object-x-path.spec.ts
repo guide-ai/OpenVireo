@@ -280,7 +280,10 @@ test('QA1: Eros is measurable with the default cut on 30 s images of the real st
  const startClock=async()=>{if(!await button(page,'Start observatory clock').isVisible())await page.getByText('Observatory clock & spectral tracking',{exact:true}).click();await button(page,'Start observatory clock').click();};
  const expose=async()=>{const camera=page.getByTestId('camera-control');await expect(camera.getByLabel(/Bundled extracts/)).toBeChecked();
   await camera.getByLabel('Minutes').fill('0');await camera.getByLabel('Seconds').fill('30');
+  // Front Eros: the status still reads "Image ready." from the first image when the second starts, so wait for this exposure
+  // to begin before waiting for its end (as exposeHere does); otherwise Object X is opened mid-exposure, which stops it.
   await camera.getByRole('button',{name:'Start exposure',exact:true}).click();
+  await expect(page.getByTestId('camera-status')).toHaveText('Exposing…');
   await expect(page.getByTestId('camera-status')).toHaveText('Image ready.',{timeout:120_000});};
  await startClock();await button(page,'Turn tracking on').click();await expose();
  await clickHeaderTool(page,'Object X');

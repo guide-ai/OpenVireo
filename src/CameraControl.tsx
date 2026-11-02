@@ -178,7 +178,9 @@ function CameraControl({objectXHidden=null,vireoId='',showObjectId=false,current
   const transition=cameraRequestTransition(gateRef.current,{type:'start',seconds:total});
   const ticket=transition.state.ticket!;
   attempt.current={ticket,controller:new AbortController(),camera,seconds:total,filter,gain,mode,jd,seed,pointing:{ra:pointing.ra,dec:pointing.dec},telescope:telescopeIndex,worker:null,pending:null,source:null,failure:null,prepared:null,catalogName:'',load:telescopeFieldLoad()};
-  gateRef.current=transition.state;setGate(transition.state);setWaitShown(false);
+  // Front Eros: the status changes in the same update as the gate. Left to the phase effect below, the previous terminal
+  // message ("Image ready.") stayed on screen for one more scheduler task after Start under load.
+  gateRef.current=transition.state;setGate(transition.state);setWaitShown(false);if(transition.state.phase==='exposing')setMessage(M.statusExposing);
   for(const effect of transition.effects)apply(effect);
  }
  function stop(){if(gate.ticket)dispatch({type:'cancel',ticket:gate.ticket});}
