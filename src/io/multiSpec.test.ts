@@ -51,10 +51,15 @@ describe('Front M: Multi-Spec inputs, view and spectra (in-process seam of the W
   expect(reads.slice(after)).toEqual([]);expect(photographed).toBeGreaterThan(0);
  });
  it('F4 review 1 L2: a photograph that does not load leaves only its LSS field photographic-image, not a load error',async()=>{
-  const failing:MultiSpecResources={...resources(),file:async p=>{if(p==='/original/images/NGC4150.BMP')throw new TypeError('fetch failed');return byPath[p]??file(p.replace('/original/',''));}};
+  let fail=true;
+  const failing:MultiSpecResources={...resources(),file:async p=>{if(fail&&p==='/original/images/NGC4150.BMP')throw new TypeError('fetch failed');return byPath[p]??file(p.replace('/original/',''));}};
   const inputs=await loadMultiSpecInputs(failing),row=lssFieldRows(1).find(r=>r.id==='NGC 4150')!;
-  const v=await evaluateMultiSpecView(inputs,{pack:'lss-field-01',pointing:{ra:row.ra,dec:row.dec},telescope:0});
+  const request={pack:'lss-field-01',pointing:{ra:row.ra,dec:row.dec},telescope:0} as const;
+  const v=await evaluateMultiSpecView(inputs,request);
   expect(v.reasons).toEqual(['photographic-image']);
+  // Closure L3: that view is not cached; once the photograph loads, the same inputs draw it.
+  fail=false;const retried=await evaluateMultiSpecView(inputs,request);
+  expect(retried.reasons).toEqual([]);expect(retried.population?.photographAssociations?.map(a=>a.file)).toContain('NGC4150.BMP');
   const ok=await evaluateMultiSpecView(await loadMultiSpecInputs(resources()),{pack:'lss-field-01',pointing:{ra:row.ra,dec:row.dec},telescope:0});
   expect(ok.reasons).toEqual([]);expect(ok.population?.photographAssociations?.map(a=>a.file)).toContain('NGC4150.BMP');
  });

@@ -45,11 +45,14 @@ export async function evaluateMultiSpecView(inputs:MultiSpecInputs,request:Multi
  // four photographs preloaded with the Object X inputs (review 1 H1): a per-row read would show in the network panel which
  // hidden target is a galaxy before Reveal (approvedPhotographs.test: their packs name only those four).
  let options=multiSpecFieldOptions(inputs,request);
- if(options.photographs&&!request.pack.startsWith('objectx-row-'))options={...options,photographs:await inputs.photographs(pack,options.photographs.rows,signal)};
+ const lazy=!!options.photographs&&!request.pack.startsWith('objectx-row-');
+ if(lazy)options={...options,photographs:await inputs.photographs(pack,options.photographs!.rows,signal)};
  let v:MultiSpecView;
  try{v=evaluateFieldView(pack,inputs.objectX.glx,{ra:request.pointing.ra,dec:request.pointing.dec},request.telescope,options);}
  catch(e){if(request.pack==='gsc-tiles'&&e instanceof FieldEngineError&&e.code==='polar')v=unread(request,{reason:'field-polar'});else throw e;}
- put(m,k,v);return v;
+ // Closure L3: a field whose fetched photograph was omitted is not cached, so a photograph that failed to load is fetched again
+ // on the next request (the loader evicts failures), as the sky view caches only ready fields.
+ if(!(lazy&&v.reasons.includes('photographic-image')))put(m,k,v);return v;
 }
 function put(m:Map<string,MultiSpecView>,k:string,v:MultiSpecView){if(m.size>=16)m.delete(m.keys().next().value!);m.set(k,v);}
 /** Spectra of the fibres in order; a field without a view (field-level reasons) yields no spectra (empty list). */
