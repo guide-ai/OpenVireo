@@ -22,7 +22,8 @@ The Spectrometer page (`#spectrometer`) now holds VIREO's single-slit spectromet
   - the approved photographs;
   - QSO 'merge';
   - 'start-time' continuation;
-  - 3700–4700 Å;
+  - the page's spectrometer range (Front S2/S3: any range the Spectral Range dialog gives, 3500–7400 Å in 100 Å steps;
+    default 3700–4700 Å);
   - star and QSO observation;
   - a galaxy's own bundled spectrum;
   - the observatory-clock JD, frozen when the student presses **Use the telescope pointing** (G4a review 1 M1), so a
@@ -76,12 +77,19 @@ Multi-Spec at any pointing (G4b) is described in MULTI-SPEC.md.
     and file names are unchanged. The star route's header names its target `N0000-00008` the same way.
   - Magnitude: that record's catalogue magnitude.
   - Pointing: the field's pointing, as recorded in the policy.
-  - Rows: 600 source-plus-sky bins from the calibration's first wavelength, step 1000/600 Å.
+  - Rows: 600 source-plus-sky bins from the calibration's first wavelength, step (maximum − minimum)/600 Å (1000/600 Å at the default range).
   - The bytes equal the Object X save after the reveal at every Object X row (galaxies, stars and QSOs).
-  - Default file name (Front R4d): `field-<locator>.ssp`, or VIREO's `Name.SSP` (the current object at the prepared pointing) when
-    Show Object ID is on; the bytes do not depend on the option. The Object / App. Mag (V) boxes and the print lines follow
-    Show Object ID / Show Object Mag (docs/FRONT-R4-OPTIONS.md, R4d).
-  - File name: `field-<locator>.ssp`, using only letters, digits and '-', so the file-name ID keeps the whole locator.
+  - Default file name (Front R4d): with Show Object ID off (the compiled default), `field-<locator>.ssp`, using only letters,
+    digits and '-', so the file-name ID keeps the whole locator; with it on, VIREO's `Name.SSP` (the current object at the
+    prepared pointing; `\ / : * ? " < > |` become `_`, and a name outside printable ASCII keeps the web name). The bytes do not
+    depend on the option. The Object / App. Mag (V) boxes and the print lines follow Show Object ID / Show Object Mag
+    (docs/FRONT-R4-OPTIONS.md, R4d).
+  - **Sky reading** (Front R4e, `fieldSpectrometerSkyReading` in `core/currentObject.ts`): the reading is a sky reading when
+    VIREO's throughput 0x50f338 is 0 for the slit object the field engine selected (the same 0x59a0fc nearest object), computed
+    from that selection, the frame's slit level and the pointing, also where the engine returns before its own throughput. A
+    field blocked before the slit selection uses the current object instead: a star or QSO outside 0x50f338's strict cut reads
+    `Sky`; [W] a galaxy, and a star or QSO inside the cut, stay named. A sky reading shows `Sky` and an empty magnitude in the
+    Object / App. Mag (V) boxes and prints `Reading Sky`. Details and probes: docs/FRONT-R4-OPTIONS.md (Sky reading).
 - **Print.** Uses the shared spectrum print card, so it carries VIREO's print header (0x58e860, Front H2) and, since Front
   RE6, the print body 0x510240.
 - **Analyze / Classify.** Both read the exposure's own .SSP back as if the student had opened the saved file. Analyze opens it in
