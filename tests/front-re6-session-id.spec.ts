@@ -31,12 +31,22 @@ test('observatory dialog writes the shared ID (empty → UNKNOWN, kept when the 
  // Radio Set Date/Time opens with the shared ID, and its OK writes it back.
  await labId(page).fill('C9');
  await clickHeaderTool(page,'Radio telescope');await expect(page.getByTestId('radio-control')).toBeVisible();
+ // Front QA3: the radio date panel shows the shared page ID (typed in the lab), not a radio-only copy.
+ const panelId=page.getByTestId('radio-date-stored');
+ await expect(page.getByTestId('radio-route-date')).toContainText('Set Date/Time ID (one ID for this page)');
+ await expect(page.getByTestId('radio-route-date')).not.toContainText('Nothing reads this ID here');
+ await expect(panelId).toHaveText('“C9”');await expect(panelId).toHaveAttribute('data-stored-id','C9');
  await page.getByTestId('radio-exercise').click();await page.getByTestId('radio-clock-utc').fill('2009-06-01T04:05:06');await page.getByTestId('radio-clock-apply').click();
  await page.getByTestId('radio-date-menu').click();await expect(page.getByTestId('radio-date-field-id')).toHaveValue('C9');
  await page.getByTestId('radio-date-field-id').fill('D2');await page.getByTestId('radio-date-dialog').getByRole('button',{name:'OK'}).click();
- await expect(page.getByTestId('radio-date-stored')).toHaveAttribute('data-stored-id','D2');
+ await expect(panelId).toHaveAttribute('data-stored-id','D2');await expect(panelId).toHaveText('“D2”');
  await lab(page);await expect(labId(page)).toHaveValue('D2');
  await observatoryDate(page);await expect(page.getByTestId('ob-date-id')).toHaveValue('D2');
+ // The observatory dialog's OK and a later lab edit reach the radio panel too.
+ await page.getByTestId('ob-date-id').fill('E4');await page.getByTestId('ob-date-ok').click();await expect(page.getByTestId('ob-date-dialog')).toBeHidden();
+ await clickHeaderTool(page,'Radio telescope');await expect(panelId).toHaveText('“E4”');
+ await lab(page);await labId(page).fill('F6');
+ await clickHeaderTool(page,'Radio telescope');await expect(panelId).toHaveText('“F6”');await expect(panelId).toHaveAttribute('data-stored-id','F6');
 });
 
 // RE6 closure N1: a restored radio ID never overwrites a restored Object X ID; it only seeds an empty store.
@@ -58,6 +68,8 @@ test('restore: the Object X lab keeps its own ID although the radio file holds a
  await lab(page);await expect(labId(page)).toHaveValue('RA');await labId(page).fill('LB');
  const both=await saveInvestigation(page);
  await restoreInvestigation(page,both);await lab(page);await expect(labId(page)).toHaveValue('LB');
+ // Front QA3: the radio panel shows the restored shared ID (the Object X ID wins over the radio file's own copy).
+ await clickHeaderTool(page,'Radio telescope');await expect(page.getByTestId('radio-date-stored')).toHaveText('“LB”');
  await observatoryDate(page);await expect(page.getByTestId('ob-date-id')).toHaveValue('LB');
  // Reverse: a file with the radio ID and no Object X investigation.
  await page.goto('/#observatory');await page.reload();await expect(page.getByRole('heading',{name:'Start with the sky.',exact:true})).toBeVisible({timeout:15_000});
@@ -67,4 +79,5 @@ test('restore: the Object X lab keeps its own ID although the radio file holds a
  await observatoryDate(page);await expect(page.getByTestId('ob-date-id')).toHaveValue('RC');
  await page.getByTestId('ob-date-dialog').getByRole('button',{name:'Cancel'}).click();
  await lab(page);await expect(labId(page)).toHaveValue('RC');
+ await clickHeaderTool(page,'Radio telescope');await expect(page.getByTestId('radio-date-stored')).toHaveText('“RC”');
 });

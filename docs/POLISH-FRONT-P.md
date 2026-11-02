@@ -61,8 +61,8 @@ docs/RESOURCE-PROVENANCE.json and THIRD_PARTY_NOTICES.txt).
 ## Not in this front
 
 - NGC4670.SP: Front L2; the Compute Rdshft Vel. option: Front R.
-- Not decoded (b): the Pulsar PrintScreen1Click drawing. The Print Sky header and footer are ported by Front K2
-  (docs/FRONT-K2-FORMS-PRINTS.md §3).
+- The Pulsar PrintScreen1Click drawing, listed here as not decoded, was decoded later by Fronts RE5 and RE6 (see Print Window...
+  above). The Print Sky header and footer are ported by Front K2 (docs/FRONT-K2-FORMS-PRINTS.md §3).
 - TInfoListForm1 line editing: abstract in the base class and hidden for Site Information, so nothing to port.
 
 ## Model and effort

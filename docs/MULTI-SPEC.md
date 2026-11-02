@@ -84,8 +84,10 @@ shows one neutral text (the native boxes name the kind); Show Object ID is ignor
 All entries. Lab rows whose neighbours lie within that distance stay masked after the reveal.
 
 ## Typed (not ported or indeterminate)
-`star-template-none` (nil lookup), `star-template-random` (index 0: the native random pick; all 132 templates are bundled
-since 2026-10-30, but the pick itself is not ported), `galaxy-lookup`, `spectrum-mapping` (own galaxy
+`star-template-none` (nil lookup), `star-template-random` (index 0: the native random pick, Random(131) over JSPEC2.SPI after Randomize, so not
+reproducible; all 132 templates are bundled since 2026-10-30. It is unreachable with the published data: none of the compact
+GSC records has code 0, a code-0 variable makes the dispatch FALSE, and QSOs are type 3; Front RE6, research
+front-re6/random-template-code0.md, as in docs/FIELD-SPECTROMETER.md. It stays typed), `galaxy-lookup`, `spectrum-mapping` (own galaxy
 spectrum not bundled), `galaxy-spectrum`, `qso-spectrum`, `object-type` (types ≥ 5), the Front T variable reasons,
 `multispec-mean-bound` (> 10⁶), `negative-mean`, `precision` (u = 0.5), `zero-maximum` (nothing to save), the photographic-image
 field gate, the G2 field reads (field-polar, field-tiles, field-unreadable); Help (0-byte help files). Print Selection Field works

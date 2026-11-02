@@ -102,8 +102,8 @@ export type RadioRouteController=Readonly<{snapshot:()=>RadioSnapshotResult<Radi
  * file, the observatory dome or clock, the host clock or a random source: the radio UT and longitude are applied
  * explicitly (RA-13, WEB-CLOCK-01). The only option the learner may change is the recovered Limit Slewing flag, through
  * the panel's explicit radio options scenario (WEB-ALT-03); the horizon limit stays compiled. Before activation, File ▸
- * Set Observation Date/Time, ID (RC-12…RC-17, WEB-DATE-01…04) sets the applied UT from the dialog and stores the typed ID
- * for this window only; nothing reads that ID. The Pulsar Parameters utility (docs/RADIO-PULSAR-PARAMETERS.md) reads a
+ * Set Observation Date/Time, ID (RC-12…RC-17, WEB-DATE-01…04) sets the applied UT from the dialog and writes the typed ID into
+ * the page's one Set Date/Time ID (Front RE6), which the panel shows (Front QA3); nothing on the radio side reads it. The Pulsar Parameters utility (docs/RADIO-PULSAR-PARAMETERS.md) reads a
  * learner-loaded reference catalog, the radio clock scenario at Open/Reset and, at Open and Find, the receiver session's
  * shared source buffer; it writes none of them. The panel's Receiver button opens the silent receiver monitor (docs/RADIO-RECEIVER-MONITOR.md), which reads the
  * same catalog (locked while receivers exist), the pointing, the radio clock JD and perfNow; it writes none of them. The
@@ -340,7 +340,10 @@ function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarD
  const dateStatusText=dateOutcome?.outcome==='applied'&&dateOutcome.utMs!==undefined
   ?t('radioRoute.date.outcome.applied',{ut:t('radioRoute.clock.utcValue',{ut:new Date(dateOutcome.utMs).toISOString().slice(0,19)})})
   :dateOutcome?.outcome==='cancelled'?t('radioRoute.date.outcome.cancelled'):dateOutcome?.outcome==='gate-closed'?t('radioRoute.date.outcome.gate-closed'):'';
- const storedIdText=dateState.storedId===''?t('radioRoute.date.storedNone'):t('radioRoute.date.storedValue',{id:dateState.storedId});
+ // Front QA3: the panel shows the page's one Set Date/Time ID (RE6; VIREO's single store written by OKBtnClick 0x4fdf0c), not a
+ // radio-only copy. Without a page store (the route on its own) it falls back to the route's own copy.
+ const sharedId=sessionId??dateState.storedId;
+ const storedIdText=sharedId===''?t('radioRoute.date.storedNone'):t('radioRoute.date.storedValue',{id:sharedId});
  // Receiver button (Rcvr1Btn) gates, first failing one named: activation, Tracking (RA-04/RA-05 Receiver.Enabled), the
  // learner-loaded catalog and its pending read (WEB-RX-CAT-01), the seed of a new main, an open surface, the route state.
  const receiverReason:RadioReceiverButtonReason=!antenna.activated?'not-activated':!antenna.receiverEnabled?'receiver-disabled'
@@ -509,7 +512,7 @@ function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarD
    </div>
    <p id={`${id}-date-reason`} className="radio-control-note" data-testid="radio-date-reason" data-reason={dateGate.status==='refused'?dateGate.reason:undefined}>{dateGateText}</p>
    <dl className="radio-control-state">
-    <dt>{t('radioRoute.date.storedLabel')}</dt><dd data-testid="radio-date-stored" data-stored-id={dateState.storedId} style={{whiteSpace:'pre-wrap',overflowWrap:'anywhere'}}>{storedIdText}</dd>
+    <dt>{t('radioRoute.date.storedLabel')}</dt><dd data-testid="radio-date-stored" data-stored-id={sharedId} style={{whiteSpace:'pre-wrap',overflowWrap:'anywhere'}}>{storedIdText}</dd>
    </dl>
    <p className="radio-control-note">{t('radioRoute.date.storedNote')}</p>
    <p className="radio-control-status" role="status" aria-live="polite" data-testid="radio-date-status">{dateStatusText}</p>

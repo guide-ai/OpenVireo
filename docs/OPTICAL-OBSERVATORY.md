@@ -11,7 +11,7 @@ All of this is on the **Observatory** page, after **Open dome**.
 1. **Set the night.** Open *Site clock*, choose **Set Date/Time…**, enter the date (YYYY/MM/DD) and the time in **UT** (HH:MM:SS). Optional: **Site Parameters…** to use your own site for the clocks and horizon; **Site Information…** lists the site in use.
 2. **Choose a target from a list.** In *Original hot lists* open an `.HTL` file or load an exercise list. In *Move the telescope* choose **View/Select from List…**, pick a row (Search… helps), then **Slew to Selection**. The coordinate dialog opens with the row's J2000 coordinates; **OK** shows the original confirmation, then **Start programmed slew**.
 3. **Or type coordinates.** **Set Coordinates…** takes hours/minutes/seconds and degrees/′/″, J2000.0 or B1950.0 (B1950 is precessed to J2000 before the slew).
-4. **Keep a list of your own.** **Add Current Item/Position to List…** adds where the telescope points; save the list from *Original hot lists* (Save HTL). **Print…** in the list window prints the list.
+4. **Keep a list of your own.** **Add Current Item/Position to List…** adds where the telescope points; save the list with the list window's List › Save in Edit Mode, or from *Original hot lists* (Save HTL). **Print…** in the list window prints the list.
 5. **Respect the horizon (optional).** **Optical Simulation Options…** ▸ *Limit Slewing* refuses slews and Point shortcuts below the horizon, stops manual moves there and turns tracking off when the target sets. With it on, your site override (latitude, horizon) decides when that happens, so it can stop tracking during an exposure.
 6. **Keep your spectrum.** On *Catalog star exposure*, after pausing, **Save spectrum (.SSP)** or **Print spectrum**.
 7. **Save investigation** keeps the options and your site (session v26); **Restore** brings them back.
@@ -21,15 +21,15 @@ All of this is on the **Observatory** page, after **Open dome**.
 - Set Coordinates is a web modal; the immediate **Point** button and the decimal RA/Dec boxes remain as labelled web shortcuts.
 - The B1950 flag and the stored target are local to the optical observatory (natively shared with the radio lab through one dialog instance).
 - The programmed-slew confirmation is the existing web dialog; it shows the decoded native text "Slew Telescope to Target Coordinates?…" and, after a B1950 entry, "(Input B1950.0 Coordinates Precessed to J2000.0.)".
-- The hot-list window's List/Selection menus are buttons. Edit Selection, Delete Selection and Undo Edit/Delete (Front P, THotListForm1 0x591488 / 0x59172c / 0x5918d0) change the shared list: Edit with no row shows "Please select an entry, using the left mouse button." (No Selection!), Delete asks "Delete Highlighted Entry from List?", Undo reverses the window's last Edit or Delete (one level; a deleted row returns to its file position, natively it is re-inserted by RA). Save List stays in the *Original hot lists* editor.
+- The hot-list window's List/Selection menus are buttons. Edit Selection, Delete Selection and Undo Edit/Delete (Front P, THotListForm1 0x591488 / 0x59172c / 0x5918d0) change the shared list: Edit with no row shows "Please select an entry, using the left mouse button." (No Selection!), Delete asks "Delete Highlighted Entry from List?", Undo reverses the window's last Edit or Delete (one level; a deleted row returns to its file position, natively it is re-inserted by RA). List › Save writes the shown list as 86-byte HTL records in Edit Mode and shows `Edit Mode Required!` outside it (Front R5, SaveList1Click 0x5919b4; docs/FRONT-R5-EDIT-MODE.md); the *Original hot lists* editor keeps its own Save.
 - List rows use the recovered ordinal formatter 0x590248 (number + RA + Dec, as natively for no exercise/Hubble/Pleiades); the ID and remarks are shown in a second decimal line, and Search matches the native row text only.
 - The window caption is the exercise-0 caption ("Hot List File: …" / "New Hot List File"); " (Modified)" is not tracked.
 - Hot-list Print is a scoped browser print of VIREO's header lines (date, "Laboratory Table Number (Not Recorded)" and the blank student line outside Edit Mode; Front K2), the caption and the rows.
-- Add Current proposes the selected target's original catalog ID only when the telescope points exactly at it (the nearest-object rule 0x59a0fc is recovered in src/core/objectSelection.ts and used by the instruments, but Add Current does not run it: that needs the field objects at an arbitrary pointing; web keys such as FILE@offset are not proposed); its kind (Star/Galaxy…) is not known, so Comments start empty.
+- Add Current (0x53f0fc) refreshes the current object with the nearest-object rule 0x59a0fc at any pointing (Front R4, `currentObject` in src/observatory/OpticalSlewMenu.tsx) and proposes its catalogue name as the ID; with exercise code 0 the Comments start with its kind word (Star, Galaxy, Asteroid or QSO, 0x53f17e; `addCurrentRemark`), otherwise empty. [W] An object hidden by Object X, or none, leaves the ID blank; the button says the field is loading while the GSC tiles load.
 - A blank Object ID is allowed for Add Current ("Position added…", as natively); the list editor's Add/Edit keeps OpenVireo's non-blank ID rule (docs/HTL-CONTRACT.md §4).
 - An RA of exactly 24 h is refused in Add/Edit because the HTL codec stores 0 ≤ RA < 24.
 - Site Parameters is natively an instructor dialog (Options ▸ Scopes); here students may set it, and it drives only the clocks (local time, LST) and the horizon; acquisitions, profiles and journals keep the compiled site.
-- Set Date/Time is the main window's dialog (TUTTimeDlg), offered from the observatory; its Object X ID field is not shown.
+- Set Date/Time is the main window's dialog (TUTTimeDlg), offered from the observatory. Since Front RE6 it shows the ID field (`ob-date-id`); its OK writes the page's one Set Date/Time ID (0x4fdf0c; empty → UNKNOWN), shared with the radio dialog and the Object X lab.
 - Optical Simulation Options offers Limit Slewing (default off), Edit Mode and Virtual Observatory, and, since Fronts R3 and L3,
   Fast Slewing, Fast Scope Change, Compute Rdshft Vel., Infrared Camera, Monochrome Displays, Print in Color and
   Time-Dependent Data with their compiled defaults, plus the tab parameters read-only. The remaining original options are
@@ -67,7 +67,7 @@ Vitest: opticalSkyCoords (11), opticalHotList (9), hotListPrint (9), hotListEntr
 
 ## Not recovered / open
 
-- Add Current's use of the object lookup 0x59a0fc at arbitrary pointings (the rule itself is recovered), spectrometer flag +0x3172.
+- Spectrometer flag +0x3172.
 - Whether TStationDlg/TOptionsDlg edits reach a running observatory before the next telescope setup (OB-ST-04).
 - Native x87/Extended arithmetic, FloatToStrF and GDI printing are not reproduced (binary64, toFixed, browser print).
 

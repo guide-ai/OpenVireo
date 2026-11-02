@@ -169,8 +169,9 @@ the Laboratory Table Number line, review L1).
 
 ## Not done (follow-ups)
 
-- Observation-mode Display/Print Data: ported for saved DAT records by Front K2 (docs/FRONT-K2-FORMS-PRINTS.md §1); the own-pairs
-  view keeps it disabled (those pairs are not native records).
+- Observation-mode Display/Print Data: ported for saved DAT records by Front K2 (docs/FRONT-K2-FORMS-PRINTS.md §1). In the own-pairs
+  view it is enabled since Front P3 when the photometer's Record/Review has written native rows, and lists those rows
+  (0x542f2d; docs/PHOTOMETER-RECORD.md); without such rows it is shown as unavailable.
 - The Cluster Data dialog and its list (TClstrDlgForm1, TClstrListForm1; plan milestone M8): done since by Front K, and at any
   centre on the compact GSC tiles by Front G5 (docs/CLUSTER-DATA-DIALOGS.md).
 - Right-click in the saved-observation (DAT) view opens VIREO's "Observational Data" dialog: ported by Front K2
