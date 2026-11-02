@@ -179,9 +179,11 @@ function CameraControl({objectXHidden=null,vireoId='',showObjectId=false,current
   const ticket=transition.state.ticket!;
   attempt.current={ticket,controller:new AbortController(),camera,seconds:total,filter,gain,mode,jd,seed,pointing:{ra:pointing.ra,dec:pointing.dec},telescope:telescopeIndex,worker:null,pending:null,source:null,failure:null,prepared:null,catalogName:'',load:telescopeFieldLoad()};
   // Front Eros: the status changes in the same update as the gate. Left to the phase effect below, the previous terminal
-  // message ("Image ready.") stayed on screen for one more scheduler task after Start under load.
-  gateRef.current=transition.state;setGate(transition.state);setWaitShown(false);if(transition.state.phase==='exposing')setMessage(M.statusExposing);
+  // message ("Image ready.") stayed on screen for one scheduler task after every Start (a test poll could land in it). Set after
+  // the effects, so a request that fails while initializing (gate already releasing) never shows "Exposing…".
+  gateRef.current=transition.state;setGate(transition.state);setWaitShown(false);
   for(const effect of transition.effects)apply(effect);
+  if(gateRef.current.phase==='exposing')setMessage(M.statusExposing);
  }
  function stop(){if(gate.ticket)dispatch({type:'cancel',ticket:gate.ticket});}
  function fitsContext(i:CameraImage):CameraFitsContext{return {jd:i.jd,filterName:cameraCatalogReference(i.exposure.recipe.camera,i.exposure.recipe.filterPosition).filter,catalogName:i.catalogName,source:{mode:i.source.mode,sha256:i.source.sha256,extractId:i.source.extractId,url:i.source.url}};}
