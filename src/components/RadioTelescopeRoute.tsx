@@ -103,7 +103,8 @@ export type RadioRouteController=Readonly<{snapshot:()=>RadioSnapshotResult<Radi
  * explicitly (RA-13, WEB-CLOCK-01). The only option the learner may change is the recovered Limit Slewing flag, through
  * the panel's explicit radio options scenario (WEB-ALT-03); the horizon limit stays compiled. Before activation, File ▸
  * Set Observation Date/Time, ID (RC-12…RC-17, WEB-DATE-01…04) sets the applied UT from the dialog and writes the typed ID into
- * the page's one Set Date/Time ID (Front RE6), which the panel shows (Front QA3); nothing on the radio side reads it. The Pulsar Parameters utility (docs/RADIO-PULSAR-PARAMETERS.md) reads a
+ * the page's one Set Date/Time ID (Front RE6), which the panel shows (Front QA3). On the radio only Object X before Reveal reads it
+ * (the hidden-target label `ObjX-<ID>` for the receivers, recorded pulsar names and Add Current); otherwise nothing on the radio does. The Pulsar Parameters utility (docs/RADIO-PULSAR-PARAMETERS.md) reads a
  * learner-loaded reference catalog, the radio clock scenario at Open/Reset and, at Open and Find, the receiver session's
  * shared source buffer; it writes none of them. The panel's Receiver button opens the silent receiver monitor (docs/RADIO-RECEIVER-MONITOR.md), which reads the
  * same catalog (locked while receivers exist), the pointing, the radio clock JD and perfNow; it writes none of them. The
