@@ -9,13 +9,15 @@ import {multiSpecPick} from '../core/multiSpecSelect';
 import {workerFailureKind} from './workerFailure';
 import {lssFieldRows} from '../core/lssFields';
 import {decodeStarIndexList} from '../core/starTemplates';
+import {evaluateMultiSpecView} from './multiSpecEvaluate';
+import {OBJECT_X_SPECTRUM_ROWS} from '../core/objectXSpectrometer';
 vi.setConfig({testTimeout:120000});
 const file=(p:string)=>new Uint8Array(readFileSync(new URL('../../public/original/'+p,import.meta.url)));
 const sha=(b:Uint8Array)=>createHash('sha256').update(b).digest('hex');
 const qb=file('catalogs/CLEA_QSO.DAT');
 const paths=['spectra/QSOSpect.dat','images/GLIMAGES.LST','spectra/jspect2/JSPEC2.SPI','spectra/GLXYSP.LST',...[...MULTISPEC_STAR_TEMPLATES,...MULTISPEC_GALAXY_SPECTRA,...OBJECT_X_GALAXY_SPECTRA,...OBJECT_X_PHOTOGRAPHS].map(x=>x.path.replace('/original/',''))];
 const byPath:Record<string,Uint8Array>=Object.fromEntries(paths.map(p=>['/original/'+p,file(p)]));
-const resources=(over:Record<string,Uint8Array>={}):MultiSpecResources=>({glx:async()=>file('catalogs/CLEA_GLX.DAT'),qsoCatalog:async()=>({bytes:qb,sha256:sha(qb)}),file:async p=>over[p]??byPath[p],objectXHotList:async()=>file('hotlists/ObjectX.HTL')});
+const resources=(over:Record<string,Uint8Array>={}):MultiSpecResources=>({glx:async()=>file('catalogs/CLEA_GLX.DAT'),qsoCatalog:async()=>({bytes:qb,sha256:sha(qb)}),file:async p=>over[p]??byPath[p]??file(p.replace('/original/','')),objectXHotList:async()=>file('hotlists/ObjectX.HTL')});
 const coma=engineTargets.targets.find(t=>t.id==='NGC 4889')!;
 describe('Front M: Multi-Spec inputs, view and spectra (in-process seam of the Worker path)',()=>{
  beforeAll(()=>{vi.stubGlobal('crypto',webcrypto);setMultiSpecResources(resources());});
@@ -36,6 +38,30 @@ describe('Front M: Multi-Spec inputs, view and spectra (in-process seam of the W
   expect(e.map(x=>x.status)).toEqual(['ready','ready','ready','ready']);// A0000061.SP (index 50505000) is bundled since the 2026-10-28 approval
   // Plain, cloneable data (what the Worker posts).
   expect(structuredClone(e)).toEqual(e);
+ });
+ it('F4 review 1 H1: once the inputs are loaded, no Object X row field reads an image (no per-row network hint before Reveal)',async()=>{
+  const reads:string[]=[],counting:MultiSpecResources={...resources(),file:async p=>{reads.push(p);return byPath[p]??file(p.replace('/original/',''));}};
+  const inputs=await loadMultiSpecInputs(counting);
+  expect(reads.filter(p=>p.startsWith('/original/images/')&&/\.bmp$/i.test(p)).sort()).toEqual(OBJECT_X_PHOTOGRAPHS.map(p=>p.path).sort());
+  const after=reads.length;let photographed=0;
+  for(const {row} of OBJECT_X_SPECTRUM_ROWS)for(const telescope of [0,1,2] as const){
+   const v=await evaluateMultiSpecView(inputs,{pack:`objectx-row-${row}`,pointing:inputs.objectX.rowPointings.get(row)!,telescope});
+   if(v.population?.photographAssociations?.length)photographed++;
+  }
+  expect(reads.slice(after)).toEqual([]);expect(photographed).toBeGreaterThan(0);
+ });
+ it('F4 review 1 L2: a photograph that does not load leaves only its LSS field photographic-image, not a load error',async()=>{
+  let fail=true;
+  const failing:MultiSpecResources={...resources(),file:async p=>{if(fail&&p==='/original/images/NGC4150.BMP')throw new TypeError('fetch failed');return byPath[p]??file(p.replace('/original/',''));}};
+  const inputs=await loadMultiSpecInputs(failing),row=lssFieldRows(1).find(r=>r.id==='NGC 4150')!;
+  const request={pack:'lss-field-01',pointing:{ra:row.ra,dec:row.dec},telescope:0} as const;
+  const v=await evaluateMultiSpecView(inputs,request);
+  expect(v.reasons).toEqual(['photographic-image']);
+  // Closure L3: that view is not cached; once the photograph loads, the same inputs draw it.
+  fail=false;const retried=await evaluateMultiSpecView(inputs,request);
+  expect(retried.reasons).toEqual([]);expect(retried.population?.photographAssociations?.map(a=>a.file)).toContain('NGC4150.BMP');
+  const ok=await evaluateMultiSpecView(await loadMultiSpecInputs(resources()),{pack:'lss-field-01',pointing:{ra:row.ra,dec:row.dec},telescope:0});
+  expect(ok.reasons).toEqual([]);expect(ok.population?.photographAssociations?.map(a=>a.file)).toContain('NGC4150.BMP');
  });
  it('an LSS field and an Object X row field build views with their routes’ options',async()=>{
   const row=lssFieldRows(1)[0],lss=await multiSpecView({pack:'lss-field-01',pointing:{ra:row.ra,dec:row.dec},telescope:0});

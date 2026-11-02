@@ -650,7 +650,12 @@ function paintField(population:FieldPopulation,scene:NativeSelectionScene,c:Cali
   if(a&&photographs){
    // 0x53b5d5..0x53b61c → 0x597470: the rescaled bitmap, its listed centre on the rounded projected position (overwrite).
    const row=photographs.options.rows.find(r=>r.index===a.photograph)!,bmp=photographs.options.bitmaps.get(a.file);if(!bmp)throw new FieldEngineError('evidence');
-   if(bmp.width!==row.width||bmp.height!==row.height)throw new FieldEngineError('evidence');
+   // F4 review 1 M1 [I]: the bitmap is drawn at its own size. The parser stores the listed width/height at record +0x7f/+0x81
+   // (0x5970e7/0x597125), but no recovered routine reads them: the rescale 0x597290 loops over the bitmap's GetWidth/GetHeight
+   // and the draw 0x597470 reads only the centre (+0x83/+0x85) before TCanvas.Draw 0x42c868, which draws at the bitmap's size
+   // (a whole-disassembly search finds no other word read of +0x7f/+0x81; 0x55a0a3 reads another structure). GLIMAGES.LST
+   // lists sizes that differ for NGC4643.BMP (142 × 130 vs 112 × 130) and M83.BMP (390 × 388 vs 152 × 50, whose listed
+   // centre 196,200 fits the bitmap, not the listed size: a list data error, not a different image).
    raster=drawNativePhotograph(raster,scaleNativePhotograph(bmp,photographs.telescope),p,{x:row.centreX,y:row.centreY});continue;
   }
   paintAdaptedGalaxyInPlace(raster,population.galaxies[i],{x:roundNearestEven(p.x),y:roundNearestEven(p.y)},c.magnitudeShift);}

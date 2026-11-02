@@ -11,14 +11,22 @@ async function pointTo(page:Page,ra:string,dec:string){
  await page.locator('#point-ra').fill(ra);await page.locator('#point-dec').fill(dec);await page.getByRole('button',{name:'Point to coordinates',exact:true}).click();
 }
 test('finder and telescope views draw VIREO\'s field at an uncertified pointing; a missing photograph and an Object X neighbourhood keep the preview',async({page})=>{
- test.setTimeout(90000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+ test.setTimeout(90000);const errors:string[]=[],photographs:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+ page.on('request',r=>{const m=/\/original\/images\/([^/?]+\.bmp)$/i.exec(new URL(r.url()).pathname);if(m)photographs.push(m[1]);});
  await open(page);
  // The start (M81, finder view): VIREO's finder field from the tiles.
  await expect(id(page,'sky-map')).toHaveAttribute('data-field','native',{timeout:30000});
  await expect(id(page,'sky-field-note')).toContainText(/VIREO’s Finder · 2\.5° view, drawn as VIREO draws it from its loaded 7\.5° field \([\d,]+ stars and \d+ galaxies\)/);
  await expect(id(page,'sky-field-canvas')).toBeVisible();
- // Telescope view at M81: its field holds NGC 3031's photograph, which is not published, so the preview stays with the reason.
+ // Telescope view at M81: re-pinned 2026-11-02 (Front F4). Its field holds NGC 3031's photograph, bundled since the user approval
+ // of 2026-11-02, so the field is drawn; the page fetches only that photograph (m81.bmp), not the other 174.
  await page.getByRole('button',{name:/Switch to telescope view/}).click();
+ await expect(id(page,'sky-map')).toHaveAttribute('data-field','native',{timeout:30000});
+ await expect(id(page,'sky-field-note')).toContainText(/VIREO’s Telescope · 15′ view/);
+ expect([...new Set(photographs)]).toEqual(['m81.bmp']);
+ // M108 (NGC 3556): its photograph is bundled but not drawn (UNDRAWN_PHOTOGRAPHS: it does not decode), so the preview stays
+ // with the reason.
+ await pointTo(page,'11.19166667','55.66666667');
  await expect(id(page,'sky-field-note')).toContainText('photographic-image',{timeout:30000});await expect(id(page,'sky-map')).toHaveAttribute('data-field','preview');
  // An ordinary field (RA 5.5 h, Dec −5°): drawn.
  await pointTo(page,'5.5','-5');

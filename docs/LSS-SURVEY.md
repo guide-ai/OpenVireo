@@ -172,6 +172,10 @@ NGC 4253, F1R22 NGC 4274, F2R1 NGC 4278, F2R2 NGC 4283, F2R4 NGC 4286, F2R5 NGC 
 available on the 0.4 m and 4 m, each selecting its own galaxy, and were `mean-bound` on the 0.9 m (the web guard in
 `FIELD_CALIBRATIONS`); since Front L4 they are available on all three. Measurement: analysis/front-f3/lss-photographs-measure.tsv.
 
+**Front F4 (2026-11-02).** The user approved every remaining photograph GLIMAGES.LST names and the zip contains (166 files). None
+lies in an LSS row's field: the nine LSS packs name only the five above (`src/core/approvedPhotographs.test.ts`), so the LSS
+inputs still load those five and no LSS row, count or fingerprint changes.
+
 ## LSS stars are not acquired [W] (Front S, decision D5, 2026-10-29)
 
 When the nearest catalogue object in an LSS row's slit is a star, the row stays unavailable (`star-selected`): the survey

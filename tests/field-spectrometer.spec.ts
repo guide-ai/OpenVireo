@@ -60,6 +60,19 @@ test('a naked-eye star whose spectral index is not a whole class gets its templa
  await expect(page.getByTestId('field-spec-reasons')).toHaveCount(0);await expect(page.getByTestId('field-spec-acquisition')).toBeVisible();
  expect(errors).toEqual([]);
 });
+test('Front F4: a newly bundled photograph is drawn, and the page fetches only the photograph its field names (NGC 891)',async({page})=>{
+ test.setTimeout(180000);const errors:string[]=[],photographs:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+ page.on('request',r=>{const m=/\/original\/images\/([^/?]+\.bmp)$/i.exec(new URL(r.url()).pathname);if(m)photographs.push(m[1]);});
+ await open(page);
+ // GLIMAGES.LST row 22: NGC 891 at 2.37581 h, +42.3461°; before Front F4 (user approval of 2026-11-02) this field stopped at
+ // photographic-image.
+ await pointAndUse(page,'2.37581','42.3461');
+ await expect(page.getByTestId('field-spec-field')).toBeVisible({timeout:90000});
+ await expect(page.getByTestId('field-spec-object')).toContainText('NGC 891');
+ await expect(page.getByTestId('field-spec-reasons')).toHaveCount(0);await expect(page.getByTestId('field-spec-acquisition')).toBeVisible();
+ expect([...new Set(photographs)]).toEqual(['NGC891.BMP']);
+ expect(errors).toEqual([]);
+});
 test('near an Object X position the field is masked',async({page})=>{
  test.setTimeout(120000);await open(page);
  // 3C 273 (an ObjectX.HTL QSO): the field would reveal the hidden identity.

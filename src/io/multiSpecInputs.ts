@@ -6,6 +6,7 @@
 // the user approved on 2026-10-28, decision D2, and the 17 approved on 2026-10-30 for Front G) and, on demand, the bundled own
 // galaxy spectra GLXYSP.LST names.
 // Every file is checked for its recorded size and SHA-256. Nothing is persisted or sent anywhere.
+import {packPhotographLoader,type PackPhotographs} from './photographBitmaps';
 import coma from '../../data/hubble/engine-coma.json';
 import bootes from '../../data/hubble/engine-bootes.json';
 import engineTargets from '../../data/hubble/engine-targets.json';
@@ -187,7 +188,9 @@ export type MultiSpecResources=ObjectXSpectrometerResources;
 export type MultiSpecInputs=Readonly<{objectX:ObjectXSpectrometerInputs;starTemplates:ReadonlyMap<string,UniformSpectrum>;galaxyTemplate:MultiSpecContext['galaxyTemplate'];
  /** Hash-checked on demand (file → samples). */
  galaxySpectrum:(file:string)=>Promise<readonly Readonly<{wavelength:number;intensity:number}>[]|null>;
- pack:(id:MultiSpecPackId)=>Promise<FieldPack>}>;
+ pack:(id:MultiSpecPackId)=>Promise<FieldPack>;
+ /** Front F4: the photographs a pack names, each hash-checked and decoded the first time it is needed (io/photographBitmaps.ts). */
+ photographs:PackPhotographs}>;
 const latin1=(b:Uint8Array)=>{let t='';for(const x of b)t+=String.fromCharCode(x);return t;};
 const HUBBLE_PACKS:Readonly<Record<string,unknown>>={'hubble-engine-coma':coma,'hubble-engine-bootes':bootes};
 export async function loadMultiSpecInputs(r:MultiSpecResources):Promise<MultiSpecInputs>{
@@ -217,14 +220,19 @@ export async function loadMultiSpecInputs(r:MultiSpecResources):Promise<MultiSpe
   })();
   packs.set(id,p);p.catch(()=>packs.delete(id));return p;
  };
- return Object.freeze({objectX,starTemplates,galaxySpectrum,pack,galaxyTemplate:Object.freeze({file:galaxySource.file,samples:galaxySource.samples.map(([wavelength,intensity])=>Object.freeze({wavelength,intensity}))})});
+ // Review 1 L2: a photograph that cannot be loaded is left out, so only its field stays photographic-image (as the LSS route and
+ // the sky view); the field is not a load error.
+ const photographs=packPhotographLoader(p=>checked(p.path,p.bytes,p.sha256),'omit');
+ return Object.freeze({objectX,starTemplates,galaxySpectrum,pack,photographs,galaxyTemplate:Object.freeze({file:galaxySource.file,samples:galaxySource.samples.map(([wavelength,intensity])=>Object.freeze({wavelength,intensity}))})});
 }
 /** The field options each family's certified population uses (only the population-affecting ones matter for the view). */
 export function multiSpecFieldOptions(inputs:MultiSpecInputs,request:MultiSpecFieldRequest):FieldOptions{
  const vt=request.variableTime?{variableTime:request.variableTime}:{};
  // LSS fields: the recovered QSO merge on the bundled catalogue, as Field Information certifies them (Multi-Spec reaches LSS
  // pointings only in Edit Mode or mode 0; the LSS route's own 'gate' mode concerns its slit spectrometer).
- if(request.pack.startsWith('lss-field-'))return {qso:'merge',qsoCatalog:inputs.objectX.qsoCatalog,...vt};
+ // Front F4: with the photographs, as the LSS route (Front F3) and the assembled field at the same pointing draw them; the nine
+ // LSS rows whose field holds NGC4150/4274/4278/4314/4793.BMP are no longer photographic-image here.
+ if(request.pack.startsWith('lss-field-'))return {qso:'merge',qsoCatalog:inputs.objectX.qsoCatalog,photographs:inputs.objectX.photographs,...vt};
  // Front G G4b: an assembled field takes the options of VIREO's instrument field at any pointing, as the single-slit
  // spectrometer at the pointing does (core/fieldSpectrometer.ts) and the Object X fields.
  if(request.pack.startsWith('objectx-row-')||request.pack==='gsc-tiles')return {variableDispatch:'recovered',photographs:inputs.objectX.photographs,qso:'merge',qsoCatalog:inputs.objectX.qsoCatalog,...vt};

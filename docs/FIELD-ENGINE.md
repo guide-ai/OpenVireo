@@ -13,6 +13,28 @@
    - The engine trusts the caller's `qsoCatalog.sha256`: hashing is asynchronous, so the io adapter (`io/bundledQsoCatalog.ts`) checks size and SHA-256 before the bytes reach the engine (tested); the engine then cross-checks the bytes against the pack's own QSO positions.
    - Photographic association: by default any photograph inside the area is a typed `unavailable` reason. With the `photographs`
      option (Object X) the association 0x5990a3, rescale 0x597290 and draw 0x597470 are ported (docs/OBJECT-X-SPECTRA.md).
+     Bundled photographs (`core/approvedPhotographs.ts`): the Object X four (2026-10-28), the LSS five (Front F3, 2026-10-30) and
+     since Front F4 (user approval of 2026-11-02; research file analysis/photos-2026-11-02/glimages-remaining.txt, SHA-256
+     e31489b4…b81a) the 166 remaining files GLIMAGES.LST names and the zip contains, 175 in all.
+     Callers fetch only the photographs a pack names (`photographsInPack`, `io/photographBitmaps.ts`), never the whole list.
+     GLIMAGES.LST also names NGC205, NGC404, NGC750, NGC751, NGC4215, NGC4449 and NGC7331.BMP, absent from the zip; their rows
+     (and NGC253.BMP's) have empty integer columns and the original parser drops them, so no field associates them (recovered
+     missing-file behaviour). One bundled photograph is not drawn [W] (`UNDRAWN_PHOTOGRAPHS`; its fields keep
+     `photographic-image`): M108.BMP has pixel indices beyond its 122-entry colour table, which the web decoder refuses, and
+     what VIREO's bitmap loader paints for them is not recovered.
+     **Listed size [I] (F4 review 1 M1).** A photograph is drawn at the bitmap's own size, its listed centre on the projected
+     galaxy. The parser stores the listed width/height at record +0x7f/+0x81 (0x5970e7/0x597125), but no recovered routine reads
+     them: the rescale 0x597290 loops over the bitmap's GetWidth/GetHeight, and the draw 0x597470 reads only the centre
+     (+0x83/+0x85) before TCanvas.Draw 0x42c868 (analysis/hubble-acquisition/dossiers/galaxy-bitmap-draw.asm); a search of
+     the whole disassembly finds no other word read of +0x7f/+0x81 (0x55a0a3 formats a ten-byte real of another structure). Before
+     this, a web guard refused a size mismatch, which left NGC4643.BMP (142 × 130, listed 112 × 130) and M83.BMP (390 × 388,
+     listed 152 × 50) undrawn; M83's listed centre (196, 200) lies inside its bitmap but outside the listed size, so the list's
+     size is a data error. Both are drawn now.
+     Measured at the 165 kept rows of the new files on the three telescopes (assembled tiles,
+     analysis/front-f4/new-photograph-fields.tsv and review1-m1-fields.tsv): 477 of 495 evaluations change from
+     `photographic-image` to a drawn field, 6 (M87, NGC 6181) now stop at `variable-time-required` (they need the observatory
+     clock), 6 (NGC 1302, NGC 4691: no galaxy takes the photograph) were already drawn, and 6 (M108/NGC 3556) stay
+     `photographic-image`.
    - Variables (default `variableDispatch: 'recovered'`, coordinator decision of 2026-10-28): every variable whose dispatch
      0x51ec48 returns false without side effects (zero period, zero word unless class 1, or class 3) takes the HI Peg
      false-merge branch, one after another in the variable stage's order (kept variables are inserted with 0x492728 under comparator 0x4bc950: RA, then Dec); a TRUE dispatch (classes 0/1/2, period ≠ 0, word ≠ 0 or class 1;

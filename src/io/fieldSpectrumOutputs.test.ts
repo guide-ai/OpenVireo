@@ -1,7 +1,7 @@
 import {readFileSync} from 'node:fs';
 import {createHash,webcrypto} from 'node:crypto';
 import {afterAll,beforeAll,describe,expect,it,vi} from 'vitest';
-import {prepareFieldSpectrum,setFieldSpectrometerFiles,spectrometerInputs} from './fieldSpectrometer';
+import {prepareFieldSpectrum,setFieldSpectrometerFiles,spectrometerInputsFor} from './fieldSpectrometer';
 import {AnalysisSessionError,readAnalysisSession,serializeAnalysisSession,type AnalysisSession} from './analysisSession';
 import {INITIAL_CONTROL} from '../core/spectrum';
 import {EMPTY_HUBBLE} from '../core/hubbleAnalysis';
@@ -36,13 +36,13 @@ afterAll(()=>{globalThis.fetch=realFetch;setTileSources(null);setFieldSpectromet
 
 describe('field spectrometer Save .SSP (G4c)',()=>{
  it('writes the recovered SSP; at every Object X row it equals the Object X save after the reveal, for galaxies, stars and QSOs',async()=>{
-  const inputs=await spectrometerInputs(),s={index:checkGscIndex(JSON.parse(readFileSync('data/gsc/gsc-index.json','utf8'))),tiles:createGscTileStore({fetcher:(async(u:RequestInfo|URL)=>new Response(pub(String(u)))) as typeof fetch,capacity:64})};
+  const s={index:checkGscIndex(JSON.parse(readFileSync('data/gsc/gsc-index.json','utf8'))),tiles:createGscTileStore({fetcher:(async(u:RequestInfo|URL)=>new Response(pub(String(u)))) as typeof fetch,capacity:64})};
   const v=pub('/original/variables/CLEA_VStrs.dat'),q=pub('/original/catalogs/CLEA_QSO.DAT'),g=pub('/original/images/GLIMAGES.LST');
   const kinds=new Set<string>();
   for(const row of OBJECT_X_SPECTRUM_ROWS){
    const pointing=xInputs.rowPointings.get(row.row)!,pack=await assembleFieldPack(pointing,{...s,variables:v,variablesSha256:sha(v),qso:q,qsoSha256:sha(q),glimages:g});
    for(const telescope of [0,1,2] as FieldTelescope[]){
-    const r=spectrometerFieldResult(inputs,pack,pointing,telescope);if(r.reasons.length||!r.calibration)continue;
+    const r=spectrometerFieldResult(await spectrometerInputsFor(pack),pack,pointing,telescope);if(r.reasons.length||!r.calibration)continue;
     const o=r.qsoTarget??r.starTarget??r.target!;kinds.add(r.qsoTarget?'qso':r.starTarget?'star':'galaxy');
     const e=lssExposureEngine(r,'p'),st=pauseJournal(tickJournal(tickJournal(startJournal(activateJournal(e.create(11))),1000),1000));
     const bytes=fieldSpectrumBytes(st,r,pointing),text=new TextDecoder().decode(bytes),lines=text.split('\r\n');
