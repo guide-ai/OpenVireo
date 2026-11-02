@@ -90,10 +90,10 @@ describe('the generic spectrometer',()=>{
   const on={showObjectId:true,showObjectMag:true,editMode:false};
   // M31's field: N3730.DAT@36659 (0.6819933 h, 40.96142°) is the current object; 0.001 h east it is outside 0x50f338's cut.
   for(const [at,reason,sky] of [[{ra:0.6819933+0.001,dec:40.96142},'m31',true],[{ra:0.6819933,dec:40.96142+0.0065},'m31',true],[{ra:0.6819933,dec:40.96142},'m31',false],
-   // photographic-image: NGC 4643 + 0.08° names a GSC star outside the cut. Re-pinned 2026-11-02 (Front F4): the earlier NGC 4476
-   // + 0.08° field now draws the bundled M87.BMP and stops at variable-time-required; NGC4643.BMP is bundled but not drawn
-   // (UNDRAWN_PHOTOGRAPHS, its bitmap size differs from GLIMAGES.LST's), so its field stays photographic-image.
-   [{ra:12.72230556,dec:1.977555556+0.08},'photographic-image',true]] as const){
+   // photographic-image: M108 (NGC 3556) + 0.08° names a GSC star outside the cut. Re-pinned 2026-11-02 (Front F4): the earlier
+   // NGC 4476 + 0.08° field now draws the bundled M87.BMP and stops at variable-time-required; M108.BMP is bundled but not drawn
+   // (UNDRAWN_PHOTOGRAPHS: it does not decode), so its field stays photographic-image.
+   [{ra:11.19166667,dec:55.66666667+0.08},'photographic-image',true]] as const){
    const r=await prepareFieldSpectrum(at,0);expect(r.status).toBe('ready');if(r.status!=='ready')continue;
    // Front C7: M31's field is built now; the engine's own slit selection decides, and agrees with the looked-up current object.
    if(reason==='m31'){expect(r.result.m31Notice).toBe(true);const object=await currentObjectAt(at);expect(fieldSpectrometerSkyReading(r.result),JSON.stringify(at)).toBe(sky);expect(fieldSpectrometerSkyReading(r.result,object),JSON.stringify(at)).toBe(sky);continue;}
@@ -103,9 +103,9 @@ describe('the generic spectrometer',()=>{
    if(sky)expect(spectrometerIdText(on,true,object,'HIDDEN')).toBe('Sky');
   }
   // A galaxy current object with no selection stays named [W]; a hidden object stays hidden.
-  // Front C7: M31's field is no longer blocked, so a blocked photograph field carries this case (NGC 4643 since Front F4).
-  const g=await prepareFieldSpectrum({ra:12.72230556,dec:1.977555556+0.08},0);if(g.status!=='ready')throw new Error();expect(g.result.reasons).toEqual(['photographic-image']);
-  expect(fieldSpectrometerSkyReading(g.result,{status:'object',name:'NGC 4643',kind:1,v:11.7,ra:12.72230556,dec:1.977555556})).toBe(false);
+  // Front C7: M31's field is no longer blocked, so a blocked photograph field carries this case (M108 since Front F4).
+  const g=await prepareFieldSpectrum({ra:11.19166667,dec:55.66666667+0.08},0);if(g.status!=='ready')throw new Error();expect(g.result.reasons).toEqual(['photographic-image']);
+  expect(fieldSpectrometerSkyReading(g.result,{status:'object',name:'NGC 3556',kind:1,v:10.7,ra:11.192025,dec:55.67527778})).toBe(false);
   expect(fieldSpectrometerSkyReading(g.result,{status:'hidden'})).toBe(false);
  });
  it('Front R4e: the sky flag comes from the slit star\'s throughput, also where the engine returns first (star-index-invalid)',async()=>{

@@ -220,7 +220,9 @@ export async function loadMultiSpecInputs(r:MultiSpecResources):Promise<MultiSpe
   })();
   packs.set(id,p);p.catch(()=>packs.delete(id));return p;
  };
- const photographs=packPhotographLoader(p=>checked(p.path,p.bytes,p.sha256),'throw');
+ // Review 1 L2: a photograph that cannot be loaded is left out, so only its field stays photographic-image (as the LSS route and
+ // the sky view); the field is not a load error.
+ const photographs=packPhotographLoader(p=>checked(p.path,p.bytes,p.sha256),'omit');
  return Object.freeze({objectX,starTemplates,galaxySpectrum,pack,photographs,galaxyTemplate:Object.freeze({file:galaxySource.file,samples:galaxySource.samples.map(([wavelength,intensity])=>Object.freeze({wavelength,intensity}))})});
 }
 /** The field options each family's certified population uses (only the population-affecting ones matter for the view). */

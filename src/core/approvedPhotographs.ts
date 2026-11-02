@@ -200,14 +200,13 @@ export const REMAINING_PHOTOGRAPHS=list([
 export const APPROVED_PHOTOGRAPHS:readonly ApprovedPhotograph[]=Object.freeze([...OBJECT_X_PHOTOGRAPHS,...LSS_PHOTOGRAPHS,...REMAINING_PHOTOGRAPHS]);
 /** Front F4 [W]: bundled photographs the web port does not draw, because VIREO's handling is not recovered; a field that
  * associates one keeps the typed photographic-image reason, and the file is never fetched.
- * - Bitmap size differs from the width and height GLIMAGES.LST lists for it (record +0x7f/+0x81): NGC4643.BMP is 142 × 130
- *   against a listed 112 × 130, M83.BMP 390 × 388 against a listed 152 × 50. How the draw (0x597290/0x597470) uses the listed
- *   size for such a bitmap is not recovered (the field engine refuses a size mismatch as evidence).
  * - M108.BMP (m108.bmp) has pixel indices beyond its 122-entry colour table, which decodeBitmap8 refuses; what VIREO's bitmap
  *   loader paints for them is not recovered.
- * approvedPhotographs.test.ts checks that exactly these three fail. NGC253.BMP is bundled too, but its GLIMAGES.LST row has
+ * approvedPhotographs.test.ts checks that it is the only photograph that does not decode. NGC4643.BMP (142 × 130, listed
+ * 112 × 130) and M83.BMP (390 × 388, listed 152 × 50) differ from the size GLIMAGES.LST lists, but they are drawn [I]: no
+ * recovered routine reads the listed size (fieldEngine.ts paintField). NGC253.BMP is bundled too, but its GLIMAGES.LST row has
  * empty integer columns, so the original parser drops it and no field associates it. */
-export const UNDRAWN_PHOTOGRAPHS:ReadonlySet<string>=new Set(['NGC4643.BMP','M83.BMP','M108.BMP']);
+export const UNDRAWN_PHOTOGRAPHS:ReadonlySet<string>=new Set(['M108.BMP']);
 const BY_FILE=new Map(APPROVED_PHOTOGRAPHS.filter(p=>!UNDRAWN_PHOTOGRAPHS.has(p.file)).map(p=>[p.file,p]));
 /** The approved photographs a pack's photographic-list matches name (every pointing of the pack): what its fields can draw. A
  * match whose file is not approved (or is in UNDRAWN_PHOTOGRAPHS) is left out, so that field keeps the typed photographic-image

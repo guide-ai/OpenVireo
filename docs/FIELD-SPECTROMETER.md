@@ -33,7 +33,7 @@ The Spectrometer page (`#spectrometer`) now holds VIREO's single-slit spectromet
   time. Photographs (Front F4, user approval of 2026-11-02: all 175 that GLIMAGES.LST names and the zip contains) are not
   loaded up front: `spectrometerInputsFor` fetches, checks and decodes only those the pointing's assembled pack names
   (`io/photographBitmaps.ts`), once each per page. A field at a photographed galaxy now draws it instead of stopping at
-  `photographic-image`; NGC4643.BMP, M83.BMP and M108.BMP stay typed [W] (`UNDRAWN_PHOTOGRAPHS`, see docs/FIELD-ENGINE.md).
+  `photographic-image`; M108.BMP stays typed [W] (`UNDRAWN_PHOTOGRAPHS`, see docs/FIELD-ENGINE.md).
 
   Object X now calls the same function. At every Object X spectroscopy row and telescope, the generic result from the tiles
   equals the Object X result from its bundled pack (`src/io/fieldSpectrometer.test.ts`).

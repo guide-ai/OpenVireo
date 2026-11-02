@@ -28,13 +28,17 @@ describe('approved galaxy photographs (Front F4, user approval of 2026-11-02)',(
    const at=text.findIndex(l=>l.split(',')[5]===absent);expect(at,absent).toBeGreaterThanOrEqual(0);expect(kept.has(at),absent).toBe(false);expect(approved.has(absent)).toBe(false);
   }
  });
- it('every photograph decodes at its listed size except exactly the three undrawn ones, which no pack ever loads',()=>{
-  const failing:string[]=[];
+ it('every photograph decodes except M108.BMP, which no pack ever loads; two differ from their listed size and are drawn [I]',()=>{
+  const failing:string[]=[],resized:string[]=[];
   for(const p of APPROVED_PHOTOGRAPHS){
    const listed=rows.filter(r=>r.file===p.file);
-   try{const b=decodeBitmap8(pub(p.path));if(listed.some(r=>r.width!==b.width||r.height!==b.height))failing.push(p.file);}catch{failing.push(p.file);}
+   try{const b=decodeBitmap8(pub(p.path));if(listed.some(r=>r.width!==b.width||r.height!==b.height))resized.push(`${p.file} ${b.width}x${b.height}`);
+    // The listed centre lies inside the bitmap for every kept row (M83's 196,200 fits 390 × 388, not its listed 152 × 50).
+    for(const r of listed)expect(r.centreX>=0&&r.centreX<b.width&&r.centreY>=0&&r.centreY<b.height,p.file).toBe(true);}
+   catch{failing.push(p.file);}
   }
   expect(failing.sort()).toEqual([...UNDRAWN_PHOTOGRAPHS].sort());
+  expect(resized.sort()).toEqual(['M83.BMP 390x388','NGC4643.BMP 142x130']);
   const all=Object.freeze({...decodeFieldPack(JSON.parse(readFileSync('data/lss/lss-field-01.json','utf8'))),photographs:{sha256:null,recordsChecked:rows.length,entries:[{pointing:0,indices:rows.map(r=>r.index)}]}});
   const named=files(photographsInPack(all,rows));
   expect(named).toHaveLength(175-1-UNDRAWN_PHOTOGRAPHS.size);// NGC253.BMP's row is dropped by the parser
