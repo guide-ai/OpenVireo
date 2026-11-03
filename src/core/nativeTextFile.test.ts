@@ -1,6 +1,6 @@
 import {describe,it,expect} from 'vitest';
 import {nativeTextFileLines,takeQuotedToken,cutFloatToken,nativeFloatSpelling,strToFloatErrorText,NATIVE_TEXT_BUFFER_BYTES} from './nativeTextFile';
-import {formatNativeUnits,NATIVE_UNITS_LITERALS} from './nativeUnitsText';
+import {formatNativeUnits,NATIVE_UNITS_LITERALS,NativeUnitsRangeError} from './nativeUnitsText';
 import {formatReceiverBeam,RECEIVER_DISPLAY_LITERALS} from './radioReceiverDisplay';
 // Contracts of the chosen ports (Front LSSPARSE, static reading of CLEA_VEO.exe 781bc970…c54c); they are not an oracle.
 const bytes=(s:string)=>Uint8Array.from(s,c=>c.charCodeAt(0));
@@ -61,6 +61,9 @@ describe('StrToFloat 0x40cf60 / TextToFloat 0x40cdb4 lexical acceptance ([W] sep
  });
  it('rejects empty, sign-only, other characters, another separator and exponent digits left over at 500',()=>{
   for(const t of ['','-','+',' ','12a','1,5','1.2.3','e5','0x10','1e5000','\t1'])expect(nativeFloatSpelling(t),t).toBeNull();
+  // The marker test is (byte and 0xdf) = 0x45 on 8-bit AL: 0xc5 'Å' and 0xe5 'å' keep bit 7 (→ 0xc5), so they are not markers.
+  for(const t of ['1\u00e55','1\u00c55'])expect(nativeFloatSpelling(t),t).toBeNull();
+  expect(Number(nativeFloatSpelling('1e5'))).toBe(1e5);expect(Number(nativeFloatSpelling('1E5'))).toBe(1e5);
   expect(Number(nativeFloatSpelling('1e1000'))).toBe(Infinity);// accepted lexically; the range is the caller's
  });
  it('SInvalidFloat (resource 0xfff1) names the whole text',()=>{
@@ -79,5 +82,13 @@ describe('0x486f4c shared formatter',()=>{
   expect(formatNativeUnits(Math.fround(12.33333),0,'Hr ','Min')).toBe('  12Hr 20Min');
   expect(formatNativeUnits(1.9999,0,'Hr ','Min')).toBe('   2Hr 0Min');// prefix tested on the pre-carry 60 (quirk kept)
   expect(formatNativeUnits(-3.1,0,'° ',"'")).toBe("  -3° 06'");
+ });
+ it('[W] range: the whole part must stay a positive signed dword after the carry; in range, mod 360 equals the loop',()=>{
+  for(const v of [Infinity,-Infinity,NaN,2**53,-(2**31),0x7fffffff,0x7fffffff+0.5])expect(()=>formatNativeUnits(v,1,' Deg ',"'"),String(v)).toThrow(NativeUnitsRangeError);
+  const loop=(w:number)=>{while(w>=360)w-=360;return w;};
+  for(const w of [0,359,360,719,720,123456,0x7ffffffe,0x7fffffff])expect(w%360).toBe(loop(w));
+  expect(formatNativeUnits(0x7ffffffe,0,'° ',"'")).toBe(` ${0x7ffffffe%360}° 00'`);
+  expect(formatNativeUnits(-0x7ffffffe-0.9999,1,' Deg ',"'")).toBe(`-${0x7fffffff%360} Deg 0.0'`);// carry to 2^31 − 1, then mod 360
+  expect(formatReceiverBeam(12345.5)).toBe(" 105 Deg 30.0'");
  });
 });

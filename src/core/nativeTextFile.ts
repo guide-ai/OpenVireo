@@ -15,8 +15,12 @@ const CR=0x0d,LF=0x0a,EOF_MARK=0x1a;
  *     a refilled buffer (read through 0x403f80).
  * [D] ReadLn 0x4040f0: skips through the next LF (also CR LF), stopping without consuming at a ^Z or at the end.
  * [I] The buffer is refilled with whole 128-byte blocks (ReadFile on a disk file), so "first byte of a refilled buffer" is
- *     an offset that is a multiple of 128. A CR that is the last byte of a buffer peeks past it (0x40403a); either outcome
- *     gives the same line text, so it is not modelled. */
+ *     an offset that is a multiple of 128.
+ * [D] A CR that is the last byte of a buffer peeks one byte past the data (0x40403a). After a full 128-byte block that byte
+ *     is FormShow's [ebp-0x20] (TTextRec at ebp-0x1ec, 0x1cc bytes long): zeroed by the prologue loop 0x52ac27..0x52ac31 and
+ *     written only after the read loop (0x52ae1e/0x52aecb), so it is not LF and the CR is dropped like any lone CR. After a
+ *     short final block the peek reads stale buffer bytes, but the CR is then the last byte of the data and both outcomes
+ *     reach the end with the same text. So the in-file next byte decides, as modelled. */
 export function nativeTextFileLines(bytes:Uint8Array):string[]{
  const n=bytes.length,lines:string[]=[];let p=0;
  while(p<n&&bytes[p]!==EOF_MARK){
@@ -61,7 +65,9 @@ export function cutFloatToken(line:string,delimiter:string):[token:string,rest:s
 
 /** StrToFloat 0x40cf60 → TextToFloat 0x40cdb4 lexical acceptance, as a decimal spelling for the web's conversion.
  * [D] The text ends at the first NUL (PChar); leading ' ' skipped; optional '+'/'-'; digits; optionally the DecimalSeparator
- *     (byte 0x5b880f) and digits; at least one digit or the separator must have been read; optionally 'E'/'e', an optional
+ *     (byte 0x5b880f) and digits; at least one digit or the separator must have been read; optionally an exponent marker,
+ *     a byte b with (b and 0xdf) = 0x45 (0x40ce0f..0x40ce13: 8-bit AL, so only 'E' and 'e'; bit 7 survives the mask, so
+ *     0xc5 'Å' and 0xe5 'å' give 0xc5 and are not markers), an optional
  *     sign and digits, read while the exponent stays below 500 (0x1f4), so digits can be left over; trailing ' ' skipped;
  *     then the text must have ended. TextToFloat also fails when the Extended result sets the invalid or overflow flag
  *     (FPU status & 9); StrToFloat then raises EConvertError with resource 0xfff1 (`STR_TO_FLOAT_ERROR`).
@@ -76,7 +82,7 @@ export function nativeFloatSpelling(text:string,decimalSeparator='.'):string|nul
  if(s[i]===decimalSeparator){i++;while(i<s.length&&s[i]>='0'&&s[i]<='9')fraction+=s[i++];}
  if(i===start)return null;
  let exponent=0;
- if(s[i]==='E'||s[i]==='e'){
+ if(((s.charCodeAt(i)|0)&0xdf)===0x45){
   i++;let negative=false;if(s[i]==='+'||s[i]==='-')negative=s[i++]==='-';
   while(i<s.length&&s[i]>='0'&&s[i]<='9'){exponent=exponent*10+Number(s[i++]);if(exponent>=500)break;}
   if(negative)exponent=-exponent;

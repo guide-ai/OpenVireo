@@ -2,6 +2,8 @@
 .lss-main .card h2{margin:0 0 12px}
 .lss-controls{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
 .lss-controls fieldset{display:flex;gap:.75rem;border:0;padding:0;margin:0}
+/* [W] TLSSFieldsForm1 ListBox1 is Courier New bold (DFM, exe offset 0x1fcd16); the item text pads with U+00A0 so its columns align where the browser applies the font. */
+#lss-field{font-family:'Courier New',Courier,monospace;font-weight:700}
 .lss-rows{width:100%;border-collapse:collapse;font-size:.9rem}
 .lss-rows th,.lss-rows td{border-bottom:1px solid var(--line,var(--ov-border));padding:.3rem .4rem;text-align:left;vertical-align:top}
 .lss-rows tr[aria-current="true"]{background:var(--highlight,var(--ov-info-soft))}

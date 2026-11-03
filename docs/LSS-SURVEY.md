@@ -287,11 +287,15 @@ Research note: analysis/front-lssparse/RECOVERY.md. Static reading of CLEA_VEO.e
   RA and Dec are now VIREO's Single values (12.33333 → 12.333330154418945). The field list shows VIREO's item text.
 - **[W] kept.**
   - The decimal separator is '.' (VIREO uses the host locale's [U]).
+  - `formatNativeUnits` throws NativeUnitsRangeError for non-finite values and whole parts above 0x7ffffffe, where VIREO's
+    signed dword (0x486b4e, 0x48701a) would behave differently; in range, mod 360 replaces the loop.
   - Values are Number() then Math.fround, not x87 accumulation. They agree away from a binary32 rounding boundary; the
     bundled values are far from one (tested).
   - `parseLssFieldsList` still requires exactly LSS_Field01..09.HTL in order, because only those nine are bundled. Any failure,
     including a native partial read, refuses the whole list.
   - Bytes are hash-checked first, so a parse failure cannot reach the student. It would show the existing File Error box with
     the web's reason.
-  - The field option appends the web's galaxy count, and the browser collapses the item's runs of spaces.
+  - The field option appends the web's galaxy count. VIREO's ListBox1 is Courier New bold (TLSSFieldsForm1 DFM, exe
+    offset 0x1fcd16) [D], so the 17-character padding aligned its columns. The web pads with U+00A0 at render and gives
+    `#lss-field` a bold monospace font; native mobile pickers may ignore the font.
 - **Counts.** Field centres are not used to acquire rows, so E02 stays 218 / 218 / 218 (212 without the clock).

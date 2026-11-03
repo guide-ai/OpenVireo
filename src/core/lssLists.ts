@@ -44,7 +44,7 @@ function singleToken(line:string,lineNumber:number,field:'ra'|'dec'):[value:numb
  if(spelling===null)return Object.freeze({line:lineNumber,field,token,kind:'convert',message:strToFloatErrorText(token)});
  const value=Math.fround(Number(spelling));
  if(!Number.isFinite(value))return Object.freeze({line:lineNumber,field,token,kind:'range',message:null});
- return [value===0?0:value,rest];
+ return [value,rest];// −0 kept: TextToFloat negates after scaling (fchs 0x40ce44), so '-0' stores Single −0.0
 }
 /** [D] 0x52b00c over one line: file := 0x4867fc(' ') cut to 71 characters; RA := 0x48690c(' ') stored as Single; Dec the
  * same; label := 0x4867fc(' ') cut to 24 characters; whatever follows is ignored. Nothing is trimmed, skipped or checked:

@@ -61,7 +61,8 @@ describe('Front LSSPARSE: TLSSFieldsForm1 FormShow read loop 0x52ad25, line pars
   expect(parseLssFieldsLine(`'A.HTL' 1 2`,1)).toEqual({file:'A.HTL',ra:1,dec:2,label:''});
   expect(parseLssFieldsLine(`LSS_Field01.HTL 12 29 'X'`,1)).toEqual({file:'SS_Field01.HT',ra:12,dec:29,label:'X'});
   expect(parseLssFieldsLine(`'${'f'.repeat(80)}' 1 2 '${'L'.repeat(30)}'`,1)).toEqual({file:'f'.repeat(71),ra:1,dec:2,label:'L'.repeat(24)});
-  expect(parseLssFieldsLine(`'A' 1e1 -0 'B'`,1)).toEqual({file:'A',ra:10,dec:0,label:'B'});
+  expect(parseLssFieldsLine(`'A' 1e1 -0 'B'`,1)).toEqual({file:'A',ra:10,dec:-0,label:'B'});// fchs 0x40ce44: Single −0.0
+  expect(Object.is((parseLssFieldsLine(`'A' 1 -0.0 'B'`,1) as {dec:number}).dec,-0)).toBe(true);
  });
  it('blank, short and comment-like lines are not skipped: StrToFloat fails with SInvalidFloat',()=>{
   expect(parseLssFieldsLine('',3)).toEqual({line:3,field:'ra',token:'',kind:'convert',message:"'' is not a valid floating point value"});
