@@ -1,7 +1,11 @@
-/** Microsoft ADPCM (WAVE format tag 2) to 16-bit PCM, for VIREO's Emotor.wav (Front C5W), whose bytes stay unchanged; browsers
- * do not decode this format. This is the public Microsoft ADPCM algorithm (RIFF WAVE, "Multimedia Standards Update" 1994):
- * per block and channel a predictor index, an initial delta and two initial samples, then 4-bit codes, high nibble first.
- * Not a recovered CLEA routine: VIREO played the file through Windows MCI, whose decoder is the system's. Pure. */
+/** WAV helpers for VIREO's sound effects, whose bundled bytes stay unchanged. Pure.
+ * - readWavInfo: the RIFF WAVE fmt/fact/data reader.
+ * - decodeMsAdpcm (Front C5W): Microsoft ADPCM (WAVE format tag 2) to 16-bit PCM, for Emotor.wav; browsers do not decode this
+ *   format. This is the public Microsoft ADPCM algorithm (RIFF WAVE, "Multimedia Standards Update" 1994): per block and
+ *   channel a predictor index, an initial delta and two initial samples, then 4-bit codes, high nibble first. Not a recovered
+ *   CLEA routine: VIREO played the file through Windows MCI, whose decoder is the system's.
+ * - widenPcm8 (Front WKSound): exact 8-bit to 16-bit PCM widening, for CRINKLE.WAV.
+ * - pcm16Wav: a canonical 16-bit PCM WAV around samples, for both. */
 export class WavError extends Error {constructor(readonly code:'riff'|'format'|'data'){super(`WAV: ${code}`);this.name='WavError';}}
 export type WavInfo=Readonly<{formatTag:number;channels:number;sampleRate:number;bitsPerSample:number;blockAlign:number;
  samplesPerBlock:number|null;coefficients:readonly (readonly [number,number])[]|null;factSamples:number|null;dataOffset:number;dataBytes:number}>;
@@ -63,6 +67,17 @@ export function decodeMsAdpcm(bytes:Uint8Array):Readonly<{info:WavInfo;samples:I
  }
  const frames=Math.floor(out.length/ch),keep=info.factSamples!==null?Math.min(frames,info.factSamples):frames;
  return Object.freeze({info,samples:Int16Array.from(out.slice(0,keep*ch))});
+}
+/** Front WKSound [W]: the 8-bit PCM samples of a WAV, widened exactly to 16 bits ((u − 128) × 256, so every sample keeps its
+ * value and position). For a WAV whose 8-bit data chunk has an odd byte count (CRINKLE.WAV: 17751 bytes plus the RIFF pad
+ * byte), which Linux WebKit (GStreamer) never loads; Safari is untested [I] (docs/SOUND-EFFECTS.md, WebKit check). pcm16Wav
+ * rewraps the result. Pure. */
+export function widenPcm8(bytes:Uint8Array):Readonly<{info:WavInfo;samples:Int16Array}>{
+ const info=readWavInfo(bytes);
+ if(info.formatTag!==1||info.bitsPerSample!==8||info.blockAlign!==info.channels)throw new WavError('format');
+ const frames=Math.floor(info.dataBytes/info.channels),samples=new Int16Array(frames*info.channels);
+ for(let i=0;i<samples.length;i++)samples[i]=(bytes[info.dataOffset+i]-128)*256;
+ return Object.freeze({info,samples});
 }
 /** A canonical 16-bit PCM RIFF WAVE around interleaved samples. */
 export function pcm16Wav(samples:Int16Array,channels:number,sampleRate:number):Uint8Array{

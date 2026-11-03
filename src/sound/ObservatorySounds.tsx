@@ -1,15 +1,17 @@
 import {memo,useEffect,useId,useRef,useState} from 'react';
 import {DOME_END_SOUNDS,SOUND_EFFECTS_DEFAULT,SOUND_FILES,domeEndActions,soundEffectsStep,soundFileUrl,type ObservatorySoundState,type SoundAction,type SoundChannel,type SoundName} from '../core/soundEffects';
 import {resourceSha256} from '../io/boundedResource';
-import {decodeMsAdpcm,pcm16Wav,readWavInfo} from '../core/msAdpcm';
+import {decodeMsAdpcm,pcm16Wav,readWavInfo,widenPcm8} from '../core/msAdpcm';
 import {SOUND_MESSAGES as M} from './SoundMessages';
 
 /** Observatory Sound Effects (Front C5W; src/core/soundEffects.ts, docs/SOUND-EFFECTS.md). Two <audio> channels stand for
  * VIREO's two TMediaPlayers. [W] Off by default; the choice lasts for this page session (module memory, no storage). Turning
- * it on prepares the motor sound (it must be decoded); any other sound is fetched only when an event needs it (same origin, size and SHA-256 checked); Emotor.wav (MS-ADPCM) is decoded in the
- * page. Every play follows the student's own click (the checkbox, the dome, a slew); the checkbox also unlocks both players
- * with a muted, silent play in the same gesture, for browsers (WebKit) that unlock media per element. The dome sound follows
- * the dome switch and a telescope change that closes the dome (cueDomeSound); a restored or prepared dome state plays nothing [W]. */
+ * it on prepares the motor sound (it must be decoded); any other sound is fetched only when an event needs it (same origin,
+ * size and SHA-256 checked). Emotor.wav (MS-ADPCM) is decoded in the page, and the odd-length 8-bit CRINKLE.WAV is rewrapped
+ * as exact 16-bit PCM because Linux WebKit (GStreamer) never loads it; Safari is untested [I] (Front WKSound). Every play follows the student's own click (the
+ * checkbox, the dome, a slew); the checkbox also unlocks both players with a muted, silent play in the same gesture, for
+ * browsers (WebKit) that unlock media per element. The dome sound follows the dome switch and a telescope change that closes
+ * the dome (cueDomeSound); a restored or prepared dome state plays nothing [W]. */
 let sessionEnabled=SOUND_EFFECTS_DEFAULT;
 const cache=new Map<SoundName,Promise<string>>(),loaded=new Set<SoundName>();
 /** The dome switch buttons and a telescope change that closes an open dome (0x58b528 → DomeSw1DownClick) call this. */
@@ -23,7 +25,11 @@ async function loadSound(sound:SoundName):Promise<string>{
  const bytes=new Uint8Array(await response.arrayBuffer());
  if(bytes.length!==f.bytes||await resourceSha256(bytes)!==f.sha256)throw new Error('integrity');
  let play:Uint8Array=bytes;
- if(readWavInfo(bytes).formatTag===2){const d=decodeMsAdpcm(bytes);play=pcm16Wav(d.samples,d.info.channels,d.info.sampleRate);}
+ const info=readWavInfo(bytes);
+ if(info.formatTag===2){const d=decodeMsAdpcm(bytes);play=pcm16Wav(d.samples,d.info.channels,d.info.sampleRate);}
+ // Front WKSound: an odd-length 8-bit data chunk (CRINKLE.WAV) never loads in Linux WebKit (GStreamer; Safari untested [I]);
+ // it plays as exact 16-bit PCM instead (docs/SOUND-EFFECTS.md, WebKit check).
+ else if(info.formatTag===1&&info.bitsPerSample===8&&info.dataBytes%2===1){const d=widenPcm8(bytes);play=pcm16Wav(d.samples,d.info.channels,d.info.sampleRate);}
  return URL.createObjectURL(new Blob([play as Uint8Array<ArrayBuffer>],{type:'audio/wav'}));
 }
 const sound=(s:SoundName)=>{let p=cache.get(s);if(!p){p=loadSound(s);p.then(()=>loaded.add(s),()=>cache.delete(s));cache.set(s,p);}return p;};
