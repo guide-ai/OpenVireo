@@ -39,6 +39,7 @@ import {prepareNativeStarProfile} from './starProfiles';
 import {photonAmplitudes,slitPixelLevel,telescopeZeroPoint,type PhotonAmplitudes,type RgbImage} from './photons';
 import {nativeObjectSlitFraction} from './slitThroughput';
 import {roundNearestEven} from './numericPolicy';
+import {isDialogRange,policyWithRange,type SpectralRange} from './spectralRange';
 import {createJournalExposure,type JournalState,type JournalSourcePreparer} from './exposureJournal';
 import {continuationSourcePreparer,galaxySourceValues,type FieldContinuationSource} from './fieldContinuation';
 import {galaxyChannelGrid} from './galaxySpectrum';
@@ -216,29 +217,9 @@ export type FieldResult=Readonly<{
  qsoTarget?:NativeQso;
  /** The selected GSC star when a star observation was attempted (starObservation option). */
  starTarget?:NativeFieldStar;
- /** Front IC4459: present exactly when the reason is `slit-empty` (see FieldSkyReading). */
- skyReading?:FieldSkyReading;
  scene:NativeSelectionScene|null;viewport:RgbImage|null;selection:ObjectSelection|null;target:NativeGalaxy|null;calibration:FieldCalibration|null;
 }>;
 const FRAME=Object.freeze({width:936,height:936,fieldDegrees:.75,anchor:468,viewport:312});
-/** Front IC4459 (research analysis/front-ic4459/): VIREO's reading when the slit object's throughput 0x50f338 is exactly 0.
- * TSpectrometer.FormActivate 0x50dac4 refreshes the current object (0x53cf94), stores 0x50f338's Extended result at +0x317d
- * (0x50dafc) and compares it with Single 0.0 at 0x50dbd4 (0x50db1a..0x50db2d, `sete`) into the sky flag +0x416, the only writer
- * of +0x416. A galaxy at slit level 0 takes 0x50f42c's branch: fild 0 / Single 200.0 (0x50f480), squared, is exactly +0.0, so
- * the flag is set [D]. Then the name becomes `Sky`, kind 4 (0x50db37/0x50db41); Reset 0x50df64 skips every source set-up
- * (0x50e0d7 → 0x50e20d: source amplitude +0x30fa := 0, no 0x50e328/0x50e5e0/0x50e7b0, so no template or galaxy spectrum is
- * read) and still computes the sky amplitude 10^((sky − zero)/−2.5) (0x50e233..0x50e26a); Go 0x50f4da skips the source
- * profile and the timer 0x50f7c3 draws the 600 sky channels only [D]. The same flag decides for stars and QSOs. The reading
- * is object-independent: the same sky-only exposure as the sky route (skyExposure.ts) for this telescope record. [W] Only the
- * branches that reach the engine's own throughput attach it (the reasons returned before it are unchanged, docs/FRONT-R4-OPTIONS.md
- * R4e); no web route acquires it yet (createFieldSkyExposure is the core contract). */
-export type FieldSkyReading=Readonly<{zeroPoint:number;skyMagnitude:number;sky:number;pixelLevel:number;fraction:0;wavelengths:readonly number[]}>;
-function fieldSkyReading(c:typeof FIELD_CALIBRATIONS[number],pixelLevel:number,options:FieldOptions):FieldSkyReading{
- const zeroPoint=telescopeZeroPoint(c.baseZeroPoint,c.telescopeCorrection);if(zeroPoint!==c.zeroPoint)throw new FieldEngineError('evidence');
- const {sky}=photonAmplitudes(null,c.skyMagnitude,zeroPoint,0),{minimum,maximum}=options.spectralInterval??{minimum:4000,maximum:5000};
- if(!(sky*FIELD_MULTIPLIER*1000<c.meanBound))throw new FieldEngineError('evidence');
- return Object.freeze({zeroPoint,skyMagnitude:c.skyMagnitude,sky,pixelLevel,fraction:0 as const,wavelengths:galaxyChannelGrid(minimum,maximum).wavelengths});
-}
 /** Fresh native area for a pointing, as the telescope load 0x53be70 builds it (identical arithmetic to the pinned builders):
  * Dec ± 0.375° (not clamped to ±90), RA ± 0.375/(cos Dec·15) h, with min += 24 when below 0 and max −= 24 when above 24, each
  * once. A field across 0 h is then min > max (Front G, analysis/front-g-gsc/RE-wrap-polar-consumers.md §G-RE1). With an RA
@@ -732,7 +713,7 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
   // 0x50e7b0/0x55e330/0x55e52c: QSOSpect.dat at the QSO's own Single z; point-source throughput as the star path (type 3).
   const q=population.stars[selection.star.index] as NativeQso;
   const fraction=nativeObjectSlitFraction({objectPresent:true,objectType:3,pixelLevel,object:{raHours:q.ra,decDegrees:q.dec},pointing:{raHours:at.ra,decDegrees:at.dec}});
-  if(fraction<=0)return Object.freeze({...base,qsoTarget:q,skyReading:fieldSkyReading(c,pixelLevel,options),reasons:Object.freeze(['slit-empty' as const])});
+  if(fraction<=0)return Object.freeze({...base,qsoTarget:q,reasons:Object.freeze(['slit-empty' as const])});
   const zeroPoint=telescopeZeroPoint(c.baseZeroPoint,c.telescopeCorrection);if(zeroPoint!==c.zeroPoint)throw new FieldEngineError('evidence');
   const amplitude=photonAmplitudes(q.magnitude,c.skyMagnitude,zeroPoint,fraction);
   let profile;try{profile=prepareQsoProfile(options.qsoObservation.file,q.redshift,options.qsoObservation.minimum,options.qsoObservation.maximum);}
@@ -751,7 +732,7 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
   const template=options.starObservation.templateFor(spectralIndex);
   if(!template)return Object.freeze({...base,starTarget:st,reasons:Object.freeze(['star-index-invalid' as const])});
   const fraction=nativeObjectSlitFraction({objectPresent:true,objectType:0,pixelLevel,object:{raHours:st.ra,decDegrees:st.dec},pointing:{raHours:at.ra,decDegrees:at.dec}});
-  if(fraction<=0)return Object.freeze({...base,starTarget:st,skyReading:fieldSkyReading(c,pixelLevel,options),reasons:Object.freeze(['slit-empty' as const])});
+  if(fraction<=0)return Object.freeze({...base,starTarget:st,reasons:Object.freeze(['slit-empty' as const])});
   const zeroPoint=telescopeZeroPoint(c.baseZeroPoint,c.telescopeCorrection);if(zeroPoint!==c.zeroPoint)throw new FieldEngineError('evidence');
   const amplitude=photonAmplitudes(st.magnitude,c.skyMagnitude,zeroPoint,fraction),{minimum,maximum}=options.spectralInterval??{minimum:4000,maximum:5000};
   const grid=galaxyChannelGrid(minimum,maximum),values:number[]=[];
@@ -766,8 +747,8 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
  const target=population.galaxies[selection.galaxy.index];
  if(options.glxyspLines){const file=glxyspLookup(options.glxyspLines,target.id);if(file&&!(options.librarySpectrum?.targetId===target.id&&options.librarySpectrum.file===file))return Object.freeze({...base,target,reasons:Object.freeze(['spectrum-mapping' as const])});}
  const fraction=nativeObjectSlitFraction({objectPresent:true,objectType:1,pixelLevel});
- // Front IC4459: e.g. LSS F7R22 IC 4459, whose own stamp has a 0 px minor (slit level 0): VIREO takes a sky reading [D].
- if(fraction<=0)return Object.freeze({...base,target,skyReading:fieldSkyReading(c,pixelLevel,options),reasons:Object.freeze(['slit-empty' as const])});
+ // e.g. LSS F7R22 IC 4459, whose own stamp has a 0 px minor (slit level 0): VIREO reads sky there (Front IC4459, createFieldSkyExposure).
+ if(fraction<=0)return Object.freeze({...base,target,reasons:Object.freeze(['slit-empty' as const])});
  const instrumentMagnitude=catalogGalaxyMagnitude(target).magnitude,zeroPoint=telescopeZeroPoint(c.baseZeroPoint,c.telescopeCorrection);
  if(zeroPoint!==c.zeroPoint)throw new FieldEngineError('evidence');
  const amplitude=photonAmplitudes(instrumentMagnitude,c.skyMagnitude,zeroPoint,fraction);
@@ -885,11 +866,27 @@ export function evaluateFinderView(pack:FieldPack,glx:Uint8Array,pointing:Readon
  return Object.freeze({pointing:at,telescope,reasons:Object.freeze([]),population,scene,raster,unpaintedGalaxies:Object.freeze(unpaintedGalaxies),unpaintedStarIds:Object.freeze([...pendingIds])});
 }
 /** Journal factory for an available field result (same journal as the galaxy exposure; policy chosen by the caller). */
-/** Front IC4459: the sky-only exposure of a `slit-empty` result (FieldSkyReading): no source means and no source draws, the sky
- * mean of its telescope record and the field multiplier, as the sky route's journal. */
-export function createFieldSkyExposure(result:FieldResult,policy:string,seed:number):JournalState{
- if(!result?.skyReading||result.reasons.length!==1||result.reasons[0]!=='slit-empty'||result.calibration)throw new FieldEngineError('input');
- return createJournalExposure(policy,null,result.skyReading.sky,FIELD_MULTIPLIER,seed);
+/** Front IC4459 (research analysis/front-ic4459/): the sky-only journal VIREO acquires when it reads sky at a field pointing.
+ * Whether it reads sky is decided by `fieldSpectrometerSkyReading` (currentObject.ts: the slit object's throughput 0x50f338 is 0,
+ * including the branches the engine returns from before its own throughput); this function only builds the journal.
+ * Evidence [D]: TSpectrometer.FormActivate 0x50dac4 stores 0x50f338's Extended result at +0x317d (0x50dafc), compares it with
+ * Single 0.0 at 0x50dbd4 (0x50db1a..0x50db2d, `sete`) into the sky flag +0x416 (its only writer) and names the object `Sky`, kind
+ * 4 (0x50db37/0x50db41). A galaxy at slit level 0 (0x50f42c: fild 0 / Single 200.0 at 0x50f480, squared) gives exactly +0.0.
+ * FormActivate then calls Reset 0x50df64 only when the name or kind changed (0x50db8c, 0x50db9a) and the unsaved-data check
+ * 0x50dbd8 allows it; when that check returns false the flag stays set but Reset is skipped. 0x5110b0 also calls 0x50dac4 and
+ * then Reset. Reset skips every source set-up (0x50e0d7 → 0x50e20d: source amplitude +0x30fa := 0, no 0x50e328/0x50e5e0/
+ * 0x50e7b0) and computes the sky amplitude 10^((sky − zero)/−2.5) (0x50e233..0x50e26a); Go 0x50f4da skips the source profile and
+ * the timer 0x50f7c3 draws the 600 sky channels only. There is no sky-specific message box (0x50dbd8's generic unsaved-data
+ * prompt and "Current Spectrum Cleared!" box can still appear). The journal is object-independent: null source means, the
+ * telescope record's sky mean (magnitude 19) and the field multiplier, with the policy range-marked as the sky route's
+ * (createSkyExposure); for the same seed and ticks its counts equal the sky route's. Bin labels: skyWavelengths(range).
+ * [W] No web route acquires it yet. */
+export function createFieldSkyExposure(telescope:FieldTelescope,range:SpectralRange,policy:string,seed:number):JournalState{
+ if(telescope!==0&&telescope!==1&&telescope!==2)throw new FieldEngineError('input');
+ if(!isDialogRange(range)||typeof policy!=='string'||!policy)throw new FieldEngineError('input');
+ const c=FIELD_CALIBRATIONS[telescope],zeroPoint=telescopeZeroPoint(c.baseZeroPoint,c.telescopeCorrection);if(zeroPoint!==c.zeroPoint)throw new FieldEngineError('evidence');
+ const {sky}=photonAmplitudes(null,c.skyMagnitude,zeroPoint,0);if(!(sky*FIELD_MULTIPLIER*1000<c.meanBound))throw new FieldEngineError('evidence');
+ return createJournalExposure(policyWithRange(policy,range),null,sky,FIELD_MULTIPLIER,seed);
 }
 export function createFieldExposure(result:FieldResult,policy:string,seed:number):JournalState{
  if(!result||result.reasons.length||!result.calibration)throw new FieldEngineError('input');

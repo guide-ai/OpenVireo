@@ -232,14 +232,22 @@ Research note: analysis/front-ic4459/ic4459-zero-slit.md. Static reading of CLEA
   - FormActivate 0x50dac4 refreshes the current object (0x53cf94); IC 4459 is selected.
   - 0x50f338's galaxy branch (0x50f42c) gives (0 / 200)² = +0.0.
   - 0x50db1a..0x50db2d compares it with Single 0.0 and sets the sky flag +0x416. That is its only writer.
-  - The object becomes `Sky`, kind 4. Reset 0x50df64 skips every source set-up (0x50e0d7 → 0x50e20d), so no galaxy spectrum is read.
+  - The object becomes `Sky`, kind 4.
+  - FormActivate calls Reset 0x50df64 only when the name or kind changed (0x50db8c, 0x50db9a) and the unsaved-data check 0x50dbd8
+    allows it. If that check returns false, the flag stays set but Reset is skipped. 0x5110b0 also calls 0x50dac4 and then Reset.
+  - Reset skips every source set-up (0x50e0d7 → 0x50e20d), so no galaxy spectrum is read.
   - Go 0x50f4da and the timer 0x50f7c3 draw the 600 sky channels only, with the magnitude-19 sky.
   - Print shows `Reading Sky`; Save's header still names IC 4459 (it reads the +0x318b copy).
   - A sky reading does not use up the observation allotment (0x50dcd3).
-  - No message box, division by zero, uninitialised value or other object is involved.
-- **Port.** `evaluateField` attaches `skyReading` (zero point, sky amplitude, slit level, fraction 0, channel grid) to every
-  `slit-empty` result. `createFieldSkyExposure` gives its sky-only journal; for the same seed and ticks it equals the sky route's
-  (fieldSkyReading.test.ts). The row text says VIREO takes a sky reading.
+  - No sky-specific message box, division by zero, uninitialised value or other object is involved. 0x50dbd8's generic
+    unsaved-data prompt and its "Current Spectrum Cleared!" box can still appear.
+- **Port.**
+  - `fieldSpectrometerSkyReading` (currentObject.ts, Front R4e) already decides VIREO's sky flag, including the reasons the engine
+    returns before its own throughput. It is true for F7R22 on all three telescopes, and on exactly the `slit-empty` LSS
+    evaluations.
+  - `createFieldSkyExposure(telescope, range, policy, seed)` (fieldEngine.ts) builds only the sky-only journal. For the same seed
+    and ticks it equals the sky route's (fieldSkyReading.test.ts). Bin labels would be `skyWavelengths(range)`.
+  - The row text explains that the galaxy draws no pixel in the slit and that VIREO records only sky there.
 - **Counts.** A sky reading has no galaxy light, so IC 4459's redshift cannot be measured: E02 stays 218 / 218 / 218 (212 without the
   clock). Fingerprints are unchanged (`F7R22T0..2|unavailable|slit-empty|-`).
 - [W] The LSS list does not offer the sky-only exposure for this row: it would show only sky noise. The sky route gives the same

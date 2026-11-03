@@ -45,8 +45,9 @@ The Spectrometer page (`#spectrometer`) now holds VIREO's single-slit spectromet
   journal; counts are never imported. A session from the same pointing and telescope at another observatory time restores too:
   the page then shows the session's re-prepared field and keeps its JD (G4a closure N2). The counts CSV quotes the policy field (RFC 4180), since the policy contains commas.
 - **Readout.** "Nearest object, selected by the slit": the object 0x59a0fc selects, which may give no light in the slit
-  (`slit-empty`). There VIREO takes a sky reading [D] (FormActivate 0x50dac4 → +0x416; Front IC4459, docs/LSS-SURVEY.md): the
-  result carries `skyReading` and `createFieldSkyExposure` gives its sky-only journal. [W] This route does not acquire it yet.
+  (`slit-empty`). There VIREO records sky only [D] (FormActivate 0x50dac4 → +0x416; Front IC4459, docs/LSS-SURVEY.md);
+  `fieldSpectrometerSkyReading` decides it and `createFieldSkyExposure` builds the sky-only journal. [W] This route does not take
+  that reading at a field pointing; the reason text says so, and the Sky route gives the same sky-only counts.
 - **Typed results**, shown as readable text (`fieldSpec.reason.*`):
   - the engine's reasons (slit-empty, mean-bound, variable-*, merge-boundary, photographic-image, spectrum-mapping, …);
   - every template JSPEC2.SPI names is bundled (the 17 remaining ones were approved on 2026-10-30), and the matcher's bucket
