@@ -80,6 +80,20 @@ describe('odd-length 8-bit PCM (Front WKSound, CRINKLE.WAV)',()=>{
   expect(createHash('sha256').update(bytes).digest('hex')).toBe(before);
   expect(before).toBe(SOUND_FILES['crinkle.wav'].sha256);
  });
+ test('a synthetic stereo 8-bit vector: interleaving kept, a trailing half frame dropped, blockAlign must equal channels',()=>{
+  const wav8=(channels:number,blockAlign:number,data:readonly number[])=>{const b=new Uint8Array(44+data.length+(data.length&1)),v=new DataView(b.buffer);
+   const put=(at:number,s:string)=>{for(let i=0;i<4;i++)b[at+i]=s.charCodeAt(i);};
+   put(0,'RIFF');v.setUint32(4,b.length-8,true);put(8,'WAVE');put(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,channels,true);
+   v.setUint32(24,8000,true);v.setUint32(28,8000*blockAlign,true);v.setUint16(32,blockAlign,true);v.setUint16(34,8,true);put(36,'data');v.setUint32(40,data.length,true);
+   b.set(data,44);return b;};
+  const {info,samples}=widenPcm8(wav8(2,2,[0x00,0xff,0x80,0x81,0x7f]));// L R L R + half a frame
+  expect([info.channels,info.dataBytes]).toEqual([2,5]);
+  expect(Array.from(samples)).toEqual([-32768,32512,0,256]);
+  const w=readWavInfo(pcm16Wav(samples,2,8000));
+  expect([w.channels,w.bitsPerSample,w.blockAlign,w.dataBytes]).toEqual([2,16,4,8]);
+  expect(()=>widenPcm8(wav8(2,4,[0x80,0x80,0x80,0x80]))).toThrow('WAV: format');
+  expect(()=>widenPcm8(wav8(1,2,[0x80,0x80]))).toThrow('WAV: format');
+ });
  test('only 8-bit PCM is widened',()=>{
   expect(()=>widenPcm8(file('GARDOOR.WAV'))).toThrow('WAV: format');
   expect(()=>widenPcm8(file('Emotor.wav'))).toThrow('WAV: format');

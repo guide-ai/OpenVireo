@@ -67,8 +67,10 @@ test('the slew motor (decoded MS-ADPCM) and the servo start and loop sounds load
  await coords(page,'.5','0');await tracking(page);await coords(page,'14','-50',false);
  await card(page).getByRole('button',{name:'Slew to coordinate draft',exact:true}).click();await page.getByRole('button',{name:'Start programmed slew',exact:true}).click();
  await played(page,'emotor.wav');
- await card(page).getByRole('button',{name:'Stop telescope motion',exact:true}).click({timeout:3000}).catch(()=>{});
- await expect(page.getByTestId('sound-telescope')).not.toHaveAttribute('data-sound',{timeout:60_000});
+ // The motor plays only while the programmed slew moves (SlewTimer2Timer 0x5396f5), so Stop must be offered now; Stop ends it.
+ const stopButton=card(page).getByRole('button',{name:'Stop telescope motion',exact:true});
+ await expect(page.getByTestId('sound-telescope')).toHaveAttribute('data-sound','Emotor.wav');await expect(stopButton).toBeEnabled();
+ await stopButton.click();await expect(page.getByTestId('sound-telescope')).not.toHaveAttribute('data-sound',{timeout:5_000});
  // A held manual slew: servostart.wav, then servocontin.wav when it ends (MediaPlayer1Notify 0x540350).
  const north=card(page).getByRole('button',{name:'Hold North',exact:true});const box=(await north.boundingBox())!;
  await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.down();

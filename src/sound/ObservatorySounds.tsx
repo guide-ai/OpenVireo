@@ -8,7 +8,7 @@ import {SOUND_MESSAGES as M} from './SoundMessages';
  * VIREO's two TMediaPlayers. [W] Off by default; the choice lasts for this page session (module memory, no storage). Turning
  * it on prepares the motor sound (it must be decoded); any other sound is fetched only when an event needs it (same origin,
  * size and SHA-256 checked). Emotor.wav (MS-ADPCM) is decoded in the page, and the odd-length 8-bit CRINKLE.WAV is rewrapped
- * as exact 16-bit PCM because WebKit never loads it (Front WKSound). Every play follows the student's own click (the
+ * as exact 16-bit PCM because Linux WebKit (GStreamer) never loads it; Safari is untested [I] (Front WKSound). Every play follows the student's own click (the
  * checkbox, the dome, a slew); the checkbox also unlocks both players with a muted, silent play in the same gesture, for
  * browsers (WebKit) that unlock media per element. The dome sound follows the dome switch and a telescope change that closes
  * the dome (cueDomeSound); a restored or prepared dome state plays nothing [W]. */
@@ -27,7 +27,8 @@ async function loadSound(sound:SoundName):Promise<string>{
  let play:Uint8Array=bytes;
  const info=readWavInfo(bytes);
  if(info.formatTag===2){const d=decodeMsAdpcm(bytes);play=pcm16Wav(d.samples,d.info.channels,d.info.sampleRate);}
- // Front WKSound: an odd-length 8-bit data chunk (CRINKLE.WAV) never loads in WebKit; it plays as exact 16-bit PCM instead.
+ // Front WKSound: an odd-length 8-bit data chunk (CRINKLE.WAV) never loads in Linux WebKit (GStreamer; Safari untested [I]);
+ // it plays as exact 16-bit PCM instead (docs/SOUND-EFFECTS.md, WebKit check).
  else if(info.formatTag===1&&info.bitsPerSample===8&&info.dataBytes%2===1){const d=widenPcm8(bytes);play=pcm16Wav(d.samples,d.info.channels,d.info.sampleRate);}
  return URL.createObjectURL(new Blob([play as Uint8Array<ArrayBuffer>],{type:'audio/wav'}));
 }

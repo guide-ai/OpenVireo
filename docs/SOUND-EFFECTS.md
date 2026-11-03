@@ -68,7 +68,8 @@ Sound Device!", and turns the option off for the session.
   with the public Microsoft ADPCM algorithm. Its output equals FFmpeg n9.0.2 `adpcm_ms` for all 1,638,328 samples (the
   SHA-256 is pinned in Vitest). The bundled bytes are unchanged.
 - **CRINKLE.WAV** [W]: its data chunk is 17751 bytes of 8-bit PCM, an odd count followed by the RIFF pad byte; it is the only
-  bundled sound with an odd data chunk. WebKit (Front WKSound, below) never loads it, so the page plays it as 16-bit PCM:
+  bundled sound with an odd data chunk. Linux WebKit with GStreamer never loads it; Safari is untested [I] (see the WebKit
+  check below). So the page plays it as 16-bit PCM:
   - `widenPcm8` in `src/core/msAdpcm.ts` widens each sample exactly, (u − 128) × 256, keeping every sample and the 1.610068 s;
   - `pcm16Wav` rewraps the samples, as for Emotor.wav;
   - the bundled bytes are unchanged, and every engine gets the same rewrapped copy.
@@ -86,12 +87,20 @@ Sound Device!", and turns the option off for the session.
   `decodeAudioData`. The probe was not kept.
   - 19 files load with their header duration and play in WebKit.
   - CRINKLE.WAV never fires `loadedmetadata` or `error`, and `play()` neither resolves nor rejects within 20 s. Before the fix,
-    the end sound was silent one time in eight, with no message. The element recovers for the next sound.
-  - `decodeAudioData` decodes CRINKLE.WAV to 0 s.
+    the end sound was silent one time in eight, with no message.
+  - Seen once in this front's probe and not rechecked by the review [I]:
+    - after the hang, the same element loaded and played CHACLUNK.WAV;
+    - `decodeAudioData` decoded CRINKLE.WAV to 0 s.
   - Chromium and Firefox load and play all 19 PCM files, CRINKLE.WAV included. They refuse the raw Emotor.wav (MS-ADPCM),
     which the page decodes for every engine.
   - Rewrapped in the page, CRINKLE.WAV plays in WebKit with its exact duration. That held for two forms: the same data with
     the pad byte dropped, and the 16-bit widening above. The widening was chosen because it keeps a canonical RIFF file.
+  - Review 1's probe, in the same Docker WebKit, narrowed the trigger:
+    - odd-length 8-bit data followed by the RIFF pad byte hangs, whether the pad is 0x00 or 0xFF;
+    - the same odd data without the pad loads;
+    - so does a cut to an even length.
+
+    The page's condition (any 8-bit data chunk of odd length) is a safe superset of that trigger.
 - **Spec:** `tests/sound-effects-playback.spec.ts` runs in every engine. It shows:
   - nothing is requested while the option is off;
   - the door and all eight end sounds, each chosen through `Math.random` at the end timer, load with their own duration and
