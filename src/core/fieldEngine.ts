@@ -865,7 +865,6 @@ export function evaluateFinderView(pack:FieldPack,glx:Uint8Array,pointing:Readon
  }
  return Object.freeze({pointing:at,telescope,reasons:Object.freeze([]),population,scene,raster,unpaintedGalaxies:Object.freeze(unpaintedGalaxies),unpaintedStarIds:Object.freeze([...pendingIds])});
 }
-/** Journal factory for an available field result (same journal as the galaxy exposure; policy chosen by the caller). */
 /** Front IC4459 (research analysis/front-ic4459/): the sky-only journal VIREO acquires when it reads sky at a field pointing.
  * Whether it reads sky is decided by `fieldSpectrometerSkyReading` (currentObject.ts: the slit object's throughput 0x50f338 is 0,
  * including the branches the engine returns from before its own throughput); this function only builds the journal.
@@ -888,6 +887,7 @@ export function createFieldSkyExposure(telescope:FieldTelescope,range:SpectralRa
  const {sky}=photonAmplitudes(null,c.skyMagnitude,zeroPoint,0);if(!(sky*FIELD_MULTIPLIER*1000<c.meanBound))throw new FieldEngineError('evidence');
  return createJournalExposure(policyWithRange(policy,range),null,sky,FIELD_MULTIPLIER,seed);
 }
+/** Journal factory for an available field result (same journal as the galaxy exposure; policy chosen by the caller). */
 export function createFieldExposure(result:FieldResult,policy:string,seed:number):JournalState{
  if(!result||result.reasons.length||!result.calibration)throw new FieldEngineError('input');
  return createJournalExposure(policy,result.calibration.sourceMeans,result.calibration.amplitude.sky,FIELD_MULTIPLIER,seed,result.calibration.sourcePreparer);
