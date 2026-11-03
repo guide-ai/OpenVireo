@@ -19,7 +19,7 @@ Save/Restore (session v27, `src/io/lssInvestigation.ts`): the investigation file
 The header button **LSS guide** (`src/LssLabGuide.tsx`, progress in `src/core/lssLab.ts`) lists seven steps: load a list, take a spectrum, record a redshift, repeat (5 different galaxies — distinct selected catalogue galaxies — a guide threshold chosen here and labelled so in the UI, not an original requirement), plot in the wedge, describe, save. Each check is recomputed from the current state; nothing is stored and no redshift is judged. "Save" is checked when the current records were saved or restored.
 
 ## Tests
-Vitest: lssFields, lssLists, fieldEngine, lssPacks, lssSurvey, lssLab, io/lssInvestigation. Playwright: tests/lss-survey.spec.ts, lss-survey-negative.spec.ts, lss-session.spec.ts, lss-guide.spec.ts.
+Vitest: lssFields, lssLists, fieldEngine, fieldSkyReading, lssPacks, lssSurvey, lssLab, io/lssInvestigation. Playwright: tests/lss-survey.spec.ts, lss-survey-negative.spec.ts, lss-session.spec.ts, lss-guide.spec.ts.
 
 ## Acquirable rows (0.4 m / 0.9 m / 4 m, of 219)
 **218 / 218 / 218 with the observatory-clock time the list freezes (what a student sees; default JD 2451545.0), 212 / 212 / 212
@@ -214,9 +214,34 @@ CLEA_VEO.exe 781bc970…c54c; nothing executed.
     (IC 777 and NGC 4848 on the 0.9 m);
   - stamp-bound → available on all three: F2R21 NGC 4559 (114 px), F2R23, F3R5, F5R2, F5R3, F5R4, F5R16, F5R17, F5R18, F7R4, F7R11,
     F7R18; → neighbour: F6R17 (IC 4395), F7R8 (NGC 5639);
-  - F7R22 IC 4459 → `slit-empty` on all three: its own galaxy has a 0 px minor, so slit level 0. VIREO's handling of a zero slit
-    fraction on a selected galaxy is [U]; it is the one row unavailable with the clock.
+  - F7R22 IC 4459 → `slit-empty` on all three: its own galaxy has a 0 px minor, so slit level 0. VIREO then takes a sky reading
+    (Front IC4459, below); it is the one row unavailable with the clock.
 - **Unchanged:** every row that was available (status, selection, crop and calibration); the 14 pinned Hubble pairs; the Boötes
   crops; E01's H0 (52.50880276737093). Saved investigations hold only rows that were available, so they restore and re-save
   byte-identically under their existing policy ids.
+
+## IC 4459: a sky reading (Front IC4459, 2026-11-03)
+Research note: analysis/front-ic4459/ic4459-zero-slit.md. Static reading of CLEA_VEO.exe 781bc970…c54c; nothing executed.
+- **Why the fraction is 0.** CLEA_GLX.DAT record 17686 (IC 4459) has both axes 0.0 and morphology 3. The axis fallback 0x53b94c
+  then gives the ratio Frac(1000·RA) = 0.09606, a digit of the RA, not the galaxy's shape. 0x5943d4 replaces the zero major with
+  0.5′: the radius is max(3, 0.5 × 20.8 / 2) = 5.2 px. Major = Round(5.2) = 5 (0x594452). Minor = Round(5.2 × 0.09606) =
+  Round(0.49951) = 0 (0x594465), 4.9×10⁻⁴ below the tie, so 0 in any precision. The position angle (0, so the Frac(1000·Dec)
+  angle) plays no part. A zero-height stretch draws nothing (0x594488) [I, GDI not measured]; nothing else lies in the 3 × 19
+  slit, so the level is 0 on all three telescopes.
+- **What VIREO does [D].**
+  - FormActivate 0x50dac4 refreshes the current object (0x53cf94); IC 4459 is selected.
+  - 0x50f338's galaxy branch (0x50f42c) gives (0 / 200)² = +0.0.
+  - 0x50db1a..0x50db2d compares it with Single 0.0 and sets the sky flag +0x416. That is its only writer.
+  - The object becomes `Sky`, kind 4. Reset 0x50df64 skips every source set-up (0x50e0d7 → 0x50e20d), so no galaxy spectrum is read.
+  - Go 0x50f4da and the timer 0x50f7c3 draw the 600 sky channels only, with the magnitude-19 sky.
+  - Print shows `Reading Sky`; Save's header still names IC 4459 (it reads the +0x318b copy).
+  - A sky reading does not use up the observation allotment (0x50dcd3).
+  - No message box, division by zero, uninitialised value or other object is involved.
+- **Port.** `evaluateField` attaches `skyReading` (zero point, sky amplitude, slit level, fraction 0, channel grid) to every
+  `slit-empty` result. `createFieldSkyExposure` gives its sky-only journal; for the same seed and ticks it equals the sky route's
+  (fieldSkyReading.test.ts). The row text says VIREO takes a sky reading.
+- **Counts.** A sky reading has no galaxy light, so IC 4459's redshift cannot be measured: E02 stays 218 / 218 / 218 (212 without the
+  clock). Fingerprints are unchanged (`F7R22T0..2|unavailable|slit-empty|-`).
+- [W] The LSS list does not offer the sky-only exposure for this row: it would show only sky noise. The sky route gives the same
+  sky-only counts for the same seed.
 
