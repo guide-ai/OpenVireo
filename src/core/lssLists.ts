@@ -1,12 +1,15 @@
 /** Byte-exact original VIREO lists used by E02 (CLEA_Vireo.zip, user approval of 2026-10-27, groups 1 and 2 in AGENTS.md):
  * LSSFields.LST (field names and centres), Images/Galaxies/GLIMAGES.LST (photographic list; positions only) and
- * Spectra/Galaxies/GLXYSP.LST (galaxy library spectrum names). The native readers are not recovered (TLSSFieldsForm1
- * FormShow's line parser 0x52b00c; its file-error message is ported below, Front L4), the photographic-list selection 0x596ab8 and association 0x598e3b..0x598e52 (0x5987e4 is the QSO catalogue loader,
- * see qsoMerge.ts), the GLXYSP lookup): these parsers read the evident text formats
- * and reject anything else; they never repair a row. Callers verify size and SHA-256 before parsing. */
+ * Spectra/Galaxies/GLXYSP.LST (galaxy library spectrum names). LSSFields.LST follows TLSSFieldsForm1 FormShow 0x52ac24, its
+ * line parser 0x52b00c and list item 0x52b10c (Front LSSPARSE, below; its file-error message, Front L4). The photographic-list
+ * selection 0x596ab8 and association 0x598e3b..0x598e52 (0x5987e4 is the QSO catalogue loader, see qsoMerge.ts) and the
+ * GLXYSP lookup are not recovered: those two parsers read the evident text formats and reject anything else; they never
+ * repair a row. Callers verify size and SHA-256 before parsing. */
 import {freshFieldArea} from './fieldEngine';
 import type {FieldPack} from './fieldPack';
 import {LSS_FIELD_FILES,type LssFieldNumber} from './lssFields';
+import {cutFloatToken,nativeFloatSpelling,nativeTextFileLines,strToFloatErrorText,takeQuotedToken} from './nativeTextFile';
+import {formatNativeUnits} from './nativeUnitsText';
 
 export type OriginalListIdentity=Readonly<{name:string;path:string;bytes:number;sha256:string}>;
 export const LSS_FIELDS_LST:OriginalListIdentity=Object.freeze({name:'LSSFields.LST',path:'/original/hotlists/LSSFields.LST',bytes:460,sha256:'1c9cdcc56bd3b5cd801f519104e95bb671b2305818afb47ad8369f04af64070f'});
@@ -21,15 +24,70 @@ export function lssFieldsFileErrorText(path:string,reason:string):string{return 
 export class OriginalListError extends Error{constructor(readonly list:string,readonly line:number){super(`${list}: line ${line}`);this.name='OriginalListError';}}
 const lines=(bytes:Uint8Array)=>{let text='';for(const b of bytes)text+=String.fromCharCode(b);return text.replace(/\x1a$/,'').split('\r\n');};
 
-export type LssFieldEntry=Readonly<{field:LssFieldNumber;file:string;ra:number;dec:number;label:string}>;
-/** LSSFields.LST: one line per field, `'FILE' RA DEC 'LABEL'`, CRLF, DOS EOF. Must name LSS_Field01..09.HTL in order. */
+/** Front LSSPARSE: one TLSSFieldsForm1 list record as 0x52b00c builds it (105 bytes, copied by `rep movs` 0x1a dwords + 1).
+ * [D] +0x00 ShortString[71] file name (0x52b070 cl=0x47), +0x48 Single RA (0x52b081), +0x4c Single Dec (0x52b08f),
+ *     +0x50 ShortString[24] label (0x52b0c2 cl=0x18). */
+export const LSS_FIELDS_RECORD=Object.freeze({file:71,label:24});
+export type LssFieldsRecord=Readonly<{file:string;ra:number;dec:number;label:string}>;
+/** Why a line stops the native read. `convert`: StrToFloat raises EConvertError (`message`, [D] text). `range`: the value
+ * overflows Extended inside TextToFloat (EConvertError) or the Single store (fstp + fwait under the caller's control word,
+ * EOverflow [I]); the web does not tell the two apart, so no message is claimed. */
+export type LssFieldsLineFailure=Readonly<{line:number;field:'ra'|'dec';token:string;kind:'convert'|'range';message:string|null}>;
+/** The native read: the records appended before the first failing line, and that failure (null when every line parsed). */
+export type LssFieldsRead=Readonly<{records:readonly LssFieldsRecord[];failure:LssFieldsLineFailure|null}>;
+
+/** 0x48690c with ' ' then the Single store: [W] the value is Number() of TextToFloat's accepted spelling rounded with
+ * Math.fround (binary64 then binary32), not the x87 Extended accumulation of 0x40cdb4; they can differ only for a decimal
+ * within that accumulation's error of a binary32 rounding boundary (the nine bundled values are far from one). */
+function singleToken(line:string,lineNumber:number,field:'ra'|'dec'):[value:number,rest:string]|LssFieldsLineFailure{
+ const [token,rest]=cutFloatToken(line,' '),spelling=nativeFloatSpelling(token);
+ if(spelling===null)return Object.freeze({line:lineNumber,field,token,kind:'convert',message:strToFloatErrorText(token)});
+ const value=Math.fround(Number(spelling));
+ if(!Number.isFinite(value))return Object.freeze({line:lineNumber,field,token,kind:'range',message:null});
+ return [value,rest];// −0 kept: TextToFloat negates after scaling (fchs 0x40ce44), so '-0' stores Single −0.0
+}
+/** [D] 0x52b00c over one line: file := 0x4867fc(' ') cut to 71 characters; RA := 0x48690c(' ') stored as Single; Dec the
+ * same; label := 0x4867fc(' ') cut to 24 characters; whatever follows is ignored. Nothing is trimmed, skipped or checked:
+ * a blank or short line reaches StrToFloat with '' and fails; a missing label is ''. The first character of each quoted
+ * token is its quote, whatever it is (an unquoted name loses its first character). */
+export function parseLssFieldsLine(line:string,lineNumber:number):LssFieldsRecord|LssFieldsLineFailure{
+ const [file,afterFile]=takeQuotedToken(line,' ');
+ const ra=singleToken(afterFile,lineNumber,'ra');if(!Array.isArray(ra))return ra;
+ const dec=singleToken(ra[1],lineNumber,'dec');if(!Array.isArray(dec))return dec;
+ const [label]=takeQuotedToken(dec[1],' ');
+ return Object.freeze({file:file.slice(0,LSS_FIELDS_RECORD.file),ra:ra[0],dec:dec[0],label:label.slice(0,LSS_FIELDS_RECORD.label)});
+}
+/** [D] FormShow 0x52ac24 read loop 0x52ad25..0x52ad76: Assign/Reset, `while not Eof do begin Readln(S); parse 0x52b00c;
+ * append 0x492574 end; Close` (only when the list is empty, 0x492708). There is no count limit, no comment syntax and no
+ * blank-line skip. A raised conversion leaves FormShow through its try…finally (0x52afb8 → 0x4056e4), which only frees
+ * strings: the records already appended stay, the file is not closed and the list box is not filled on that show. */
+export function readLssFieldsList(bytes:Uint8Array):LssFieldsRead{
+ const records:LssFieldsRecord[]=[];
+ for(const [i,line] of nativeTextFileLines(bytes).entries()){
+  const r=parseLssFieldsLine(line,i+1);
+  if(!('file' in r))return Object.freeze({records:Object.freeze(records),failure:r});
+  records.push(r);
+ }
+ return Object.freeze({records:Object.freeze(records),failure:null});
+}
+/** [D] List item 0x52b10c: the label padded with ' ' (0x52b1ec) to 17 characters, then 0x486f4c(RA, 0 decimals, 'Hr ',
+ * 'Min') (0x52b204/0x52b1f8), ' ', 0x486f4c(Dec, 0 decimals, '° ', "'") (0x52b21c/0x52b210). */
+export const LSS_FIELDS_ITEM=Object.freeze({width:17,raUnit:'Hr ',raMinutes:'Min',decUnit:'\u00b0 ',decMinutes:"'"});
+export function lssFieldsItemText(r:Pick<LssFieldsRecord,'label'|'ra'|'dec'>):string{
+ const I=LSS_FIELDS_ITEM;return r.label.padEnd(I.width,' ')+formatNativeUnits(r.ra,0,I.raUnit,I.raMinutes)+' '+formatNativeUnits(r.dec,0,I.decUnit,I.decMinutes);
+}
+
+export type LssFieldEntry=Readonly<{field:LssFieldNumber}>&LssFieldsRecord;
+/** LSSFields.LST as VIREO reads it (`readLssFieldsList`), then [W] the web's own guard: every line must parse and the
+ * records must name LSS_Field01..09.HTL in order, because the web only bundles those nine lists (VIREO opens whatever
+ * file a record names and has no count limit). Any failure is OriginalListError with the line (0 for a wrong count). */
 export function parseLssFieldsList(bytes:Uint8Array):readonly LssFieldEntry[]{
- const rows=lines(bytes);if(rows[rows.length-1]==='')rows.pop();
- if(rows.length!==LSS_FIELD_FILES.length)throw new OriginalListError(LSS_FIELDS_LST.name,rows.length);
- return Object.freeze(rows.map((row,i)=>{
-  const m=/^'([^']{1,40})' +(\d{1,2}\.\d+) +(\d{1,2}\.\d+) +'([^']{1,40})'$/.exec(row);
-  if(!m||m[1]!==LSS_FIELD_FILES[i].name)throw new OriginalListError(LSS_FIELDS_LST.name,i+1);
-  return Object.freeze({field:LSS_FIELD_FILES[i].field,file:m[1],ra:Number(m[2]),dec:Number(m[3]),label:m[4]});
+ const read=readLssFieldsList(bytes);
+ if(read.failure)throw new OriginalListError(LSS_FIELDS_LST.name,read.failure.line);
+ if(read.records.length!==LSS_FIELD_FILES.length)throw new OriginalListError(LSS_FIELDS_LST.name,0);
+ return Object.freeze(read.records.map((r,i)=>{
+  if(r.file!==LSS_FIELD_FILES[i].name)throw new OriginalListError(LSS_FIELDS_LST.name,i+1);
+  return Object.freeze({field:LSS_FIELD_FILES[i].field,...r});
  }));
 }
 /** GLIMAGES.LST: CSV rows with RA hours in column 4 and Dec degrees in column 5 (1-based); only positions are read. As natively

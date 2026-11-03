@@ -3109,7 +3109,7 @@ export interface MessageParameters {
   "lss.fieldTitle": never;
   "lss.field": never;
   "lss.chooseField": never;
-  "lss.fieldOption": "dec" | "label" | "ra" | "rows";
+  "lss.fieldOption": "item" | "rows";
   "lss.telescope": never;
   "lss.load": never;
   "lss.cancelLoad": never;

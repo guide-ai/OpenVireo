@@ -6,6 +6,7 @@
 // docs/RADIO-RECEIVER-MONITOR.md and RADIO-RECEIVER-MONITOR-PROVENANCE.json.
 import {roundNearestEven} from './numericPolicy';
 import {formatFixed} from './radioAntenna';
+import {formatNativeUnits} from './nativeUnitsText';
 import type {RadioReceiver} from './radioReceiver';
 
 /** Native texts (typed cells; RADIO-TYPED-CELLS.json and RECEIVER-DISPLAY-LITERALS-VERIFIED.json). Not translated. */
@@ -61,26 +62,11 @@ export function receiverFovText(base:string,w92c:number):string{
  const L=RECEIVER_DISPLAY_LITERALS;return cap(cap(base+L.fov,75)+formatFixed(w92c,2)+L.fovDeg,60);
 }
 
-/** 0x486b20 decomposition: sign, |Trunc v|, minutes and seconds, without the 0x486bc0 carry (that carry lives in
- * radioAntenna.splitSexagesimal). */
-function splitBeam(v:number){
- const sign=v>0?1:v<0?-1:0,whole=Math.abs(Math.trunc(v)),f=Math.abs(v-Math.trunc(v))*60,minutes=Math.trunc(f);
- return {sign,whole,minutes,seconds:(f-minutes)*60};
-}
-/** Beam formatter 0x486f4c with one decimal, separators ' Deg ' and "'": decimal minutes after a 60-minute carry, whole
- * degrees wrapped below 360, a four-character sign-padded head and a '0' prefix for minutes below ten. The prefix test
- * uses the pre-carry rounded value (quirk kept). Binary64 (WEB-RX-NUM-01), not x87. */
+/** Beam formatter 0x486f4c with one decimal, separators ' Deg ' and "'" (the shared port `formatNativeUnits`): decimal
+ * minutes after a 60-minute carry, whole degrees wrapped below 360, a four-character sign-padded head and a '0' prefix for
+ * minutes below ten. The prefix test uses the pre-carry rounded value (quirk kept). Binary64 (WEB-RX-NUM-01), not x87. */
 export function formatReceiverBeam(v:number):string{
- const L=RECEIVER_DISPLAY_LITERALS,p=splitBeam(v),scale=10;
- let whole=p.whole,m=p.minutes+p.seconds/60;
- const r=roundNearestEven(scale*m);
- if(r===60*scale){m=0;whole++;}
- while(whole>=360)whole-=360;
- let head=cap((p.sign<0?'-':' ')+String(whole),4);
- while(head.length<4)head=cap(cap(L.beamPad+head,5),4);
- let mins=formatFixed(m,1);
- if(Math.trunc(r/scale)<10)mins=L.beamZero+mins;
- return head+L.deg+mins+L.arcmin;
+ const L=RECEIVER_DISPLAY_LITERALS;return formatNativeUnits(v,1,L.deg,L.arcmin);
 }
 /** Non-positive +0x92c: base + 'Beam (HPBW): ' (ShortString[73]) + the beam text without leading spaces (ShortString[15]),
  * ShortString[88], stored in ShortString[60]. */
