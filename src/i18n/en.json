@@ -3108,7 +3108,7 @@
   "lss.fieldTitle": "Survey field and telescope",
   "lss.field": "Survey field",
   "lss.chooseField": "Choose a field…",
-  "lss.fieldOption": "{label} — centre RA {ra} h, Dec {dec}° ({rows} galaxies)",
+  "lss.fieldOption": "{item} ({rows} galaxies)",
   "lss.telescope": "Telescope",
   "lss.load": "Load selected list",
   "lss.cancelLoad": "Cancel loading",

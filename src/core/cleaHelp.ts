@@ -9,6 +9,7 @@
  *   `helpPrintPage`; Search Text 0x59f9fc reuses `searchRadioHotListRows` (the same TGetSrchStrDlg algorithm).
  * Text is Latin-1 (the help files are ASCII); case folding is ASCII A–Z only (LowerCase/UpperCase). */
 import {foldAsciiCase} from './radioHotListSearch';
+import {takeQuotedToken} from './nativeTextFile';
 
 export type HelpRowKind='heading'|'topic'|'separator';
 /** One HelpList record: the displayed title (indent included) and token 2 (`begin` for a heading, the topic file name for
@@ -30,14 +31,8 @@ function textLines(bytes:Uint8Array):string[]{
  if(lines.length>0&&lines[lines.length-1]==='')lines.pop();
  return lines;
 }
-/** 0x4867fc: skip leading spaces; the first remaining character is the quote; the token runs to the next occurrence of
- * that character (or to the end); the token, the closing quote and one more character are removed from the line. */
-function quotedToken(line:string):[token:string,rest:string]{
- let i=0;while(i<line.length&&line.charCodeAt(i)===0x20)i++;
- if(i>=line.length)return ['',''];
- const quote=line[i],end=line.indexOf(quote,i+1);
- return end<0?[line.slice(i+1),'']:[line.slice(i+1,end),line.slice(end+2)];
-}
+/** 0x4867fc with the delimiter ' ' (0x493192, 0x4931c7): the shared port. */
+const quotedToken=(line:string)=>takeQuotedToken(line,' ');
 /** HelpList load (0x493264) for an LST file. Rows follow the native order: `begin` adds a separator unless the previous
  * row is one, then the heading `indent + '-' + title + '-'` and two more indent spaces; `end` removes two indent spaces
  * and adds a separator unless the previous row is one; any other token 2 is a topic `indent + title` in that file.

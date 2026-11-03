@@ -19,7 +19,7 @@ Save/Restore (session v27, `src/io/lssInvestigation.ts`): the investigation file
 The header button **LSS guide** (`src/LssLabGuide.tsx`, progress in `src/core/lssLab.ts`) lists seven steps: load a list, take a spectrum, record a redshift, repeat (5 different galaxies — distinct selected catalogue galaxies — a guide threshold chosen here and labelled so in the UI, not an original requirement), plot in the wedge, describe, save. Each check is recomputed from the current state; nothing is stored and no redshift is judged. "Save" is checked when the current records were saved or restored.
 
 ## Tests
-Vitest: lssFields, lssLists, fieldEngine, fieldSkyReading, lssPacks, lssSurvey, lssLab, io/lssInvestigation. Playwright: tests/lss-survey.spec.ts, lss-survey-negative.spec.ts, lss-session.spec.ts, lss-guide.spec.ts.
+Vitest: lssFields, lssLists, nativeTextFile, fieldEngine, fieldSkyReading, lssPacks, lssSurvey, lssLab, io/lssInvestigation. Playwright: tests/lss-survey.spec.ts, lss-survey-negative.spec.ts, lss-session.spec.ts, lss-guide.spec.ts.
 
 ## Acquirable rows (0.4 m / 0.9 m / 4 m, of 219)
 **218 / 218 / 218 with the observatory-clock time the list freezes (what a student sees; default JD 2451545.0), 212 / 212 / 212
@@ -75,7 +75,7 @@ Three rows select a coincident neighbour by the nearest rule (12550+2749 → NGC
 - Stars come from bounded GSC read witnesses (`data/lss`); arithmetic uses Number, not x87.
 
 ## Not recovered
-Variable classes 0–2 whose dispatch reaches a light curve, and TLSSFieldsForm1 FormShow's line parser 0x52b00c (LSSFields.LST is parsed by its evident text format). Recovered by Front L4: the exercise-mode-5 entry (above); LoadSelection1Click 0x52b260 (index and item, or "Please select a field to load." / "No Item Selected!"; the web list always has a selection [W]); FormShow's file error, ported: "Cannot access LSS fields file " + path + CRLF CRLF + the reason, caption "File Error!" (0x52afd0/0x52aff8/0x52affc; `lssFieldsFileErrorText`, the bundled path and the web's reason [W]). Photographic association is ported (Front F3). The QSO merge, TLSSRsltsDlg1 (0x57c918, FormActivate, OK) and the .TXT writer 0x57af74 are ported by Front L2 (below).
+Variable classes 0–2 whose dispatch reaches a light curve. TLSSFieldsForm1 FormShow's line parser 0x52b00c and list item 0x52b10c are recovered and ported (Front LSSPARSE, below). Recovered by Front L4: the exercise-mode-5 entry (above); LoadSelection1Click 0x52b260 (index and item, or "Please select a field to load." / "No Item Selected!"; the web list always has a selection [W]); FormShow's file error, ported: "Cannot access LSS fields file " + path + CRLF CRLF + the reason, caption "File Error!" (0x52afd0/0x52aff8/0x52affc; `lssFieldsFileErrorText`, the bundled path and the web's reason [W]). Photographic association is ported (Front F3). The QSO merge, TLSSRsltsDlg1 (0x57c918, FormActivate, OK) and the .TXT writer 0x57af74 are ported by Front L2 (below).
 
 ## Front L2 (2026-10-29; plan analysis/front-plans/front-l2-lss.md)
 Static reading of CLEA_VEO.exe only; addresses, evidence ids and SHA-256 in [LSS-L2-PROVENANCE.json](LSS-L2-PROVENANCE.json); research `analysis/front-l2-lss/` (rsltsdlg-txt-findings.md, rgndlg-findings.md, dossiers
@@ -253,3 +253,45 @@ Research note: analysis/front-ic4459/ic4459-zero-slit.md. Static reading of CLEA
 - [W] The LSS list does not offer the sky-only exposure for this row: it would show only sky noise. The sky route gives the same
   sky-only counts for the same seed.
 
+## LSSFields.LST as VIREO reads it (Front LSSPARSE, 2026-11-03)
+Research note: analysis/front-lssparse/RECOVERY.md. Static reading of CLEA_VEO.exe 781bc970…c54c; nothing executed.
+- **Read loop [D].** FormShow 0x52ac24 reads the file only while its list is empty (0x492708). The loop is Assign 0x403a20,
+  Reset, then `while not Eof do Readln` (0x52ad25..0x52ad76). Each line goes to 0x52b00c and the record is appended (0x492574).
+  Then the file is closed. There is no count limit, no comment syntax and no blank-line skip.
+- **Lines [D].** tfCRLF is set (byte 0x5ae034 = 1). CR LF or LF ends a line, and a CR not followed by LF is dropped. A ^Z
+  (0x1a) at the start of a line ends the file. A ^Z inside a line ends that line and the rest of it is skipped; it ends the
+  file only when it is the first byte of a 128-byte buffer [I: whole-block reads]. Lines have no length limit.
+- **Fields [D].**
+  - 0x52b00c fills a 105-byte record with the quoted file name (0x4867fc, ShortString[71]), RA and Dec (0x48690c → StrToFloat,
+    stored as Single at +0x48/+0x4c), and the quoted label (ShortString[24]). Anything after the label is ignored.
+  - Each quoted token takes its first character as the quote, whatever it is. An unquoted name loses its first character.
+  - A missing label is ''. A blank or short line gives StrToFloat '' and fails.
+- **Failure [D].** StrToFloat raises EConvertError "'<token>' is not a valid floating point value" (resource 0xfff1). An overflow
+  fails as EConvertError or, on the Single store, EOverflow [I].
+  - FormShow has only a try…finally, so the error leaves it. The records already read stay, the file stays open and the list box
+    is not filled on that show.
+  - Delphi's default handler would show the message [I].
+- **List item [D].** 0x52b10c pads the label with spaces to 17 characters, then shows RA and Dec through 0x486f4c with no
+  decimal: `Survey Field 2     12Hr 20Min   29° 00'`.
+- **Port.**
+  - `nativeTextFileLines`, `takeQuotedToken`, `cutFloatToken` and `nativeFloatSpelling` (nativeTextFile.ts) port the RTL reading
+    and the token helpers. cleaHelp now uses the shared 0x4867fc port.
+  - `readLssFieldsList` and `parseLssFieldsLine` (lssLists.ts) port the loop and the parser, keeping the native partial result.
+  - `lssFieldsItemText` ports the list item. `formatNativeUnits` (nativeUnitsText.ts) is the shared 0x486f4c port; the receiver
+    beam text now delegates to it.
+- **Differences fixed.** The web previously parsed the bundled file with a regular expression. That parser:
+  - split lines only at CR LF;
+  - required single quotes, one space between fields and `d.ddd` numbers;
+  - allowed 40-character labels without truncation;
+  - kept RA and Dec in binary64.
+  RA and Dec are now VIREO's Single values (12.33333 → 12.333330154418945). The field list shows VIREO's item text.
+- **[W] kept.**
+  - The decimal separator is '.' (VIREO uses the host locale's [U]).
+  - Values are Number() then Math.fround, not x87 accumulation. They agree away from a binary32 rounding boundary; the
+    bundled values are far from one (tested).
+  - `parseLssFieldsList` still requires exactly LSS_Field01..09.HTL in order, because only those nine are bundled. Any failure,
+    including a native partial read, refuses the whole list.
+  - Bytes are hash-checked first, so a parse failure cannot reach the student. It would show the existing File Error box with
+    the web's reason.
+  - The field option appends the web's galaxy count, and the browser collapses the item's runs of spaces.
+- **Counts.** Field centres are not used to acquire rows, so E02 stays 218 / 218 / 218 (212 without the clock).

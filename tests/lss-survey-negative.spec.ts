@@ -16,7 +16,7 @@ async function toDialog(page:Page,clock=true){
 }
 test('field names come from LSSFields.LST; cancelled and superseded loads change nothing; a tampered list is refused',async({page})=>{
  await open(page);
- await expect(page.getByLabel('Survey field',{exact:true}).locator('option[value="3"]')).toHaveText('Survey Field 3 — centre RA 12.75 h, Dec 29° (25 galaxies)');
+ await expect(page.getByLabel('Survey field',{exact:true}).locator('option[value="3"]')).toHaveText("Survey Field 3     12Hr 45Min   29° 00' (25 galaxies)");// list item 0x52b10c + [W] row count
  await delay(page,'LSS_Field02.HTL',1500);await load(page,'2');
  await page.getByRole('button',{name:'Cancel loading',exact:true}).click();await expect(page.getByText('Loading cancelled; nothing changed.')).toBeVisible();
  await expect(page.getByTestId('lss-rows')).toHaveCount(0);
