@@ -2,8 +2,9 @@ import {test,expect,type Page,type Request} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 
-// C6 IR camera. Every VizieR request is intercepted with the AUTHORED J/H/K table
-// tests/fixtures/vizier/authored-nomad-jhk-control.xml (not VizieR output, not an observation).
+// C6 IR camera. In the live-mode tests every VizieR request is intercepted with the AUTHORED J/H/K table
+// tests/fixtures/vizier/authored-nomad-jhk-control.xml (not VizieR output, not an observation). The last test (Front IRJHK)
+// uses a recorded bundled extract in static mode instead.
 const CDS=/vizier\.cds\.unistra\.fr|vizier\.cfa\.harvard\.edu|vizier\.idia\.ac\.za|cdsarc|unistra\.fr/;// every VizieR mirror the camera may ask
 const jhk=readFile(new URL('./fixtures/vizier/authored-nomad-jhk-control.xml',import.meta.url));
 const button=(p:Page,name:string)=>p.getByRole('button',{name,exact:true});
@@ -96,4 +97,65 @@ test('at 320 px the camera choice works from the keyboard without horizontal scr
  await expect(camera(page).getByRole('heading',{name:'IR camera'})).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
  const box=await camera(page).boundingBox();expect(box!.x+box!.width).toBeLessThanOrEqual(320);
+});
+
+// Front IRJHK: a static-mode IR exposure on a RECORDED response with real 2MASS J/H/K (via NOMAD): the bundled C5W extract
+// public/camera/vizier/nomad-184.7070+14.7974-r0.25.xml (I/297, SR 0.25°, vizier.idia.ac.za, 2026-10-29, SHA-256 7fbca015…4662).
+// The expected counts are read here from the recorded bytes, not from the app: rows, and the rows whose J, H, K (or, for the CCD
+// V contrast, V) cell is non-blank. With the pointing at the cone centre the loaded field's ±0.375° region holds the whole
+// 0.25° cone, so every such row is selected. Limitation: in this extract J, H and K are present for the same 224 rows and the
+// page shows no per-band magnitude, so these counts cannot tell J, H and K apart; the per-band values are checked in
+// src/core/cameraIrRecorded.test.ts. The V contrast shows that the IR filters do not read V.
+const EXTRACT='nomad-184.7070+14.7974-r0.25',EXTRACT_RA_HOURS=184.707/15,EXTRACT_DEC=14.797389;
+const extractBytes=readFile(new URL(`../public/camera/vizier/${EXTRACT}.xml`,import.meta.url));
+/** Counts from the hash-pinned bytes only: this split reader relies on them having no CDATA, no NaN cells and no <TD/>
+ * (as src/core/cameraIrRecorded.test.ts checks); it is not a general VOTable reader. */
+async function nonBlank(column:string){
+ const text=(await extractBytes).toString('utf8');
+ const fields=text.split('<FIELD ').slice(1).map(f=>f.slice(f.indexOf('name="')+6).split('"')[0]),at=fields.indexOf(column);
+ const rows=text.split('<TR>').slice(1).map(tr=>tr.split('</TR>')[0].split('<TD').slice(1).map(td=>td.startsWith('/>')?'':td.slice(1).split('</TD>')[0].trim()));
+ return {rows:rows.length,nonBlank:rows.filter(r=>r[at]!=='').length};
+}
+test('static IR J/H/K exposures on a recorded extract select exactly its non-blank J/H/K rows; CCD V selects its V rows',async({page,baseURL})=>{
+ test.setTimeout(240_000);
+ const seen=watch(page),offOrigin:string[]=[];
+ const origin=new URL(baseURL!).origin;
+ // Static mode: nothing leaves the local origin (data: and blob: URLs are in-page).
+ page.on('request',r=>{const u=r.url();if(!/^(data|blob):/.test(u)&&new URL(u).origin!==origin)offOrigin.push(u);});
+ expect(createHash('sha256').update(await extractBytes).digest('hex')).toBe('7fbca0159228e5bd3f9b47113d6a1e9210a8e74ea1c5c9fa4ccbd27e73184662');
+ await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();
+ await button(page,'Open dome ↗').click();
+ if(!await page.locator('#point-ra').isVisible())await page.getByText('Enter coordinates',{exact:true}).click();
+ await page.locator('#point-ra').fill(String(EXTRACT_RA_HOURS));await page.locator('#point-dec').fill(String(EXTRACT_DEC));
+ await button(page,'Point to coordinates').click();
+ await page.getByRole('group',{name:'Field of view'}).getByRole('button',{name:'Telescope · 15′',exact:true}).click();
+ if(!await button(page,'Turn tracking on').isVisible())await page.getByText('Observatory clock & spectral tracking',{exact:true}).click();
+ await button(page,'Turn tracking on').click();
+ await expect(camera(page).getByLabel(/Bundled extracts/)).toBeChecked();
+ await camera(page).getByLabel('Minutes').fill('0');await camera(page).getByLabel('Seconds').fill('5');
+ const expose=async(cameraName:string,filter:string,column:string)=>{
+  await camera(page).getByLabel(cameraName,{exact:true}).check();await camera(page).getByRole('combobox',{name:'Filter'}).selectOption({label:filter});
+  await button(page,'Start exposure').click();
+  await expect(page.getByTestId('camera-status')).toHaveText('Exposing…');
+  await expect(page.getByTestId('camera-status')).toHaveText('Image ready.',{timeout:120_000});
+  await expect(page.getByTestId('camera-canvas')).toHaveAttribute('aria-label',`${cameraName==='CCD camera'?'CCD':'IR'} image, filter ${filter}, 5 s.`);
+  if(!await page.getByTestId('camera-detail-rows').isVisible())await camera(page).getByText('Exposure details',{exact:true}).click();
+  await expect(page.getByTestId('camera-detail-catalog')).toHaveText('NOMAD');
+  await expect(page.getByTestId('camera-detail-source')).toContainText(`Bundled extract ${EXTRACT} (recorded`);
+  await expect(page.getByTestId('camera-detail-source')).toContainText('SHA-256 7fbca0159228e5bd');
+  const want=await nonBlank(column);
+  const [rows,selected,onDetector]=(await page.getByTestId('camera-detail-rows').textContent())!.split(' / ').map(Number);
+  expect([rows,selected],`${cameraName} ${filter}`).toEqual([want.rows,want.nonBlank]);
+  expect(onDetector,`${cameraName} ${filter}`).toBeGreaterThan(0);expect(onDetector).toBeLessThanOrEqual(selected);
+  return selected;
+ };
+ const ir='IR camera (J, H, K)';
+ for(const [filter,column] of [['J','Jmag'],['H','Hmag'],['K','Kmag']] as const){
+  expect(await expose(ir,filter,column)).toBe(224);
+  await expect(camera(page).getByTestId('camera-ir-citation')).toContainText('Two Micron All Sky Survey');
+  await camera(page).screenshot({path:test.info().outputPath(`ir-recorded-${filter}.png`)});
+ }
+ // Contrast: the CCD V filter reads NOMAD V from the same bytes and selects a different set (250 rows).
+ expect(await expose('CCD camera','V','Vmag')).toBe(250);
+ expect(seen).toHaveLength(0);expect(offOrigin).toEqual([]);
 });
