@@ -129,7 +129,8 @@ Plan: `analysis/front-plans/front-r4d.md`.
   condition (0x50f404) needs the slit level of the unpainted field, so a faint star off the slit column that VIREO would read as
   `Sky` is named here. A
   throughput at the precision limit falls back to the engine's `slit-empty`. The boxes then show `Sky` and an empty magnitude, and nothing is looked up. The sky route is always a sky reading (print `Reading Sky`). The star, galaxy
-  and LSS routes point exactly at their target, so their slit is never empty.
+  and LSS routes point exactly at their target, so their slit is never empty on a row they acquire. The one exception, LSS F7R22
+  IC 4459 (slit level 0, a VIREO sky reading; Front IC4459), is not acquirable, so no readout is shown for it.
 - **[W] No object or an unresolved tie:** the Object box shows 13 blanks. VIREO copies the record from the nil pointer at
   0x50df98 and faults, so it has no defined display. The tie stays unresolved because the current-object lookup has no
   throughput; on the field route it only appears where the engine itself resolved the slit object.

@@ -6,6 +6,7 @@ import witnesses from '../../data/lss/lss-witnesses.json';
 import {decodeFieldPack} from './fieldPack';
 import {buildFieldPopulation} from './fieldEngine';
 import {evaluateLssRow} from './lssExposure';
+import {fieldSpectrometerSkyReading} from './currentObject';
 import {parseGlimagesPositions,packWithPhotographs,hasLibrarySpectrum} from './lssLists';
 import {lssFieldRows,type LssFieldNumber} from './lssFields';
 import {DEFAULT_SPECTRAL_RANGE} from './spectralRange';
@@ -44,10 +45,12 @@ describe('LSS field packs reproduce the independent witnesses for every row',()=
   expect(mapped).toEqual([]);// NGC 4670 and NGC 4889 match GLXYSP.LST and are observed with their bundled own spectra
   expect(['NGC 4670','NGC 4889'].every(id=>hasLibrarySpectrum(spectra.names,id))).toBe(true);
  },600000);
- it('Front L4: with an observatory-clock time, 218 / 218 / 218; only F7R22 IC 4459 stays unavailable (0 px minor, slit-empty)',()=>{
-  const counts=[0,0,0],left:string[]=[],time={jd:2451545.0,source:'observatory-clock' as const};
-  for(let f=1;f<=9;f++){const pack=packWithPhotographs(decodeFieldPack(JSON.parse(raw(f).toString())),photographs);lssFieldRows(f as LssFieldNumber).forEach((row,i)=>{for(const t of [0,1,2] as const){const s=evaluateLssRow(pack,glx,row,t,spectra,time,DEFAULT_SPECTRAL_RANGE);if(s.kind!=='unavailable')counts[t]++;else left.push(`F${f}R${i+1}@${t}:${s.reasons.join()}`);}});}
-  expect(counts).toEqual([218,218,218]);expect(left).toEqual([0,1,2].map(t=>`F7R22@${t}:slit-empty`));
+ it('Front L4: with an observatory-clock time, 218 / 218 / 218; only F7R22 IC 4459 stays unavailable (0 px minor, slit-empty: a VIREO sky reading, Front IC4459)',()=>{
+  const counts=[0,0,0],left:string[]=[],sky:string[]=[],time={jd:2451545.0,source:'observatory-clock' as const};
+  for(let f=1;f<=9;f++){const pack=packWithPhotographs(decodeFieldPack(JSON.parse(raw(f).toString())),photographs);lssFieldRows(f as LssFieldNumber).forEach((row,i)=>{for(const t of [0,1,2] as const){const s=evaluateLssRow(pack,glx,row,t,spectra,time,DEFAULT_SPECTRAL_RANGE);if(s.kind!=='unavailable')counts[t]++;else left.push(`F${f}R${i+1}@${t}:${s.reasons.join()}`);
+   // Front IC4459: VIREO reads sky (+0x416, fieldSpectrometerSkyReading) exactly on the slit-empty evaluations.
+   if(fieldSpectrometerSkyReading(s.result)!==(s.kind==='unavailable'&&s.reasons.join()==='slit-empty'))sky.push(`F${f}R${i+1}@${t}`);}});}
+  expect(counts).toEqual([218,218,218]);expect(left).toEqual([0,1,2].map(t=>`F7R22@${t}:slit-empty`));expect(sky).toEqual([]);
  },600000);// 657 field evaluations (as hubbleExistingTargets.test.ts). Measured in review 1 at load average ~40 on 32 cores: 126 s on
  // the QSO-gate base, 181 s with the merge (the 35 formerly gated rows now evaluate fully); about 60 s on an idle machine.
  it('Front L2: NGC 4670 (F3 row 1) and NGC 4889 (F4 row 2) are observed with their own bundled spectra; without the file the row stays typed',()=>{

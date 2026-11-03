@@ -39,6 +39,7 @@ import {prepareNativeStarProfile} from './starProfiles';
 import {photonAmplitudes,slitPixelLevel,telescopeZeroPoint,type PhotonAmplitudes,type RgbImage} from './photons';
 import {nativeObjectSlitFraction} from './slitThroughput';
 import {roundNearestEven} from './numericPolicy';
+import {isDialogRange,policyWithRange,type SpectralRange} from './spectralRange';
 import {createJournalExposure,type JournalState,type JournalSourcePreparer} from './exposureJournal';
 import {continuationSourcePreparer,galaxySourceValues,type FieldContinuationSource} from './fieldContinuation';
 import {galaxyChannelGrid} from './galaxySpectrum';
@@ -746,6 +747,7 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
  const target=population.galaxies[selection.galaxy.index];
  if(options.glxyspLines){const file=glxyspLookup(options.glxyspLines,target.id);if(file&&!(options.librarySpectrum?.targetId===target.id&&options.librarySpectrum.file===file))return Object.freeze({...base,target,reasons:Object.freeze(['spectrum-mapping' as const])});}
  const fraction=nativeObjectSlitFraction({objectPresent:true,objectType:1,pixelLevel});
+ // e.g. LSS F7R22 IC 4459, whose own stamp has a 0 px minor (slit level 0): VIREO reads sky there (Front IC4459, createFieldSkyExposure).
  if(fraction<=0)return Object.freeze({...base,target,reasons:Object.freeze(['slit-empty' as const])});
  const instrumentMagnitude=catalogGalaxyMagnitude(target).magnitude,zeroPoint=telescopeZeroPoint(c.baseZeroPoint,c.telescopeCorrection);
  if(zeroPoint!==c.zeroPoint)throw new FieldEngineError('evidence');
@@ -862,6 +864,28 @@ export function evaluateFinderView(pack:FieldPack,glx:Uint8Array,pointing:Readon
   paintNativeStarInPlace(raster,profiles.get(level)!,{x:roundNearestEven(p.x),y:roundNearestEven(p.y)});
  }
  return Object.freeze({pointing:at,telescope,reasons:Object.freeze([]),population,scene,raster,unpaintedGalaxies:Object.freeze(unpaintedGalaxies),unpaintedStarIds:Object.freeze([...pendingIds])});
+}
+/** Front IC4459 (research analysis/front-ic4459/): the sky-only journal VIREO acquires when it reads sky at a field pointing.
+ * Whether it reads sky is decided by `fieldSpectrometerSkyReading` (currentObject.ts: the slit object's throughput 0x50f338 is 0,
+ * including the branches the engine returns from before its own throughput); this function only builds the journal.
+ * Evidence [D]: TSpectrometer.FormActivate 0x50dac4 stores 0x50f338's Extended result at +0x317d (0x50dafc), compares it with
+ * Single 0.0 at 0x50dbd4 (0x50db1a..0x50db2d, `sete`) into the sky flag +0x416 (its only writer) and names the object `Sky`, kind
+ * 4 (0x50db37/0x50db41). A galaxy at slit level 0 (0x50f42c: fild 0 / Single 200.0 at 0x50f480, squared) gives exactly +0.0.
+ * FormActivate then calls Reset 0x50df64 only when the name or kind changed (0x50db8c, 0x50db9a) and the unsaved-data check
+ * 0x50dbd8 allows it; when that check returns false the flag stays set but Reset is skipped. 0x5110b0 also calls 0x50dac4 and
+ * then Reset. Reset skips every source set-up (0x50e0d7 → 0x50e20d: source amplitude +0x30fa := 0, no 0x50e328/0x50e5e0/
+ * 0x50e7b0) and computes the sky amplitude 10^((sky − zero)/−2.5) (0x50e233..0x50e26a); Go 0x50f4da skips the source profile and
+ * the timer 0x50f7c3 draws the 600 sky channels only. There is no sky-specific message box (0x50dbd8's generic unsaved-data
+ * prompt and "Current Spectrum Cleared!" box can still appear). The journal is object-independent: null source means, the
+ * telescope record's sky mean (magnitude 19) and the field multiplier, with the policy range-marked as the sky route's
+ * (createSkyExposure); for the same seed and ticks its counts equal the sky route's. Bin labels: skyWavelengths(range).
+ * [W] No web route acquires it yet. */
+export function createFieldSkyExposure(telescope:FieldTelescope,range:SpectralRange,policy:string,seed:number):JournalState{
+ if(telescope!==0&&telescope!==1&&telescope!==2)throw new FieldEngineError('input');
+ if(!isDialogRange(range)||typeof policy!=='string'||!policy)throw new FieldEngineError('input');
+ const c=FIELD_CALIBRATIONS[telescope],zeroPoint=telescopeZeroPoint(c.baseZeroPoint,c.telescopeCorrection);if(zeroPoint!==c.zeroPoint)throw new FieldEngineError('evidence');
+ const {sky}=photonAmplitudes(null,c.skyMagnitude,zeroPoint,0);if(!(sky*FIELD_MULTIPLIER*1000<c.meanBound))throw new FieldEngineError('evidence');
+ return createJournalExposure(policyWithRange(policy,range),null,sky,FIELD_MULTIPLIER,seed);
 }
 /** Journal factory for an available field result (same journal as the galaxy exposure; policy chosen by the caller). */
 export function createFieldExposure(result:FieldResult,policy:string,seed:number):JournalState{
