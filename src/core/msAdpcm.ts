@@ -64,6 +64,16 @@ export function decodeMsAdpcm(bytes:Uint8Array):Readonly<{info:WavInfo;samples:I
  const frames=Math.floor(out.length/ch),keep=info.factSamples!==null?Math.min(frames,info.factSamples):frames;
  return Object.freeze({info,samples:Int16Array.from(out.slice(0,keep*ch))});
 }
+/** Front WKSound [W]: the 8-bit PCM samples of a WAV, widened exactly to 16 bits ((u − 128) × 256, so every sample keeps its
+ * value and position). For a WAV whose 8-bit data chunk has an odd byte count (CRINKLE.WAV: 17751 bytes plus the RIFF pad
+ * byte), which WebKit's media pipeline never loads (docs/SOUND-EFFECTS.md); pcm16Wav rewraps the result. Pure. */
+export function widenPcm8(bytes:Uint8Array):Readonly<{info:WavInfo;samples:Int16Array}>{
+ const info=readWavInfo(bytes);
+ if(info.formatTag!==1||info.bitsPerSample!==8||info.blockAlign!==info.channels)throw new WavError('format');
+ const frames=Math.floor(info.dataBytes/info.channels),samples=new Int16Array(frames*info.channels);
+ for(let i=0;i<samples.length;i++)samples[i]=(bytes[info.dataOffset+i]-128)*256;
+ return Object.freeze({info,samples});
+}
 /** A canonical 16-bit PCM RIFF WAVE around interleaved samples. */
 export function pcm16Wav(samples:Int16Array,channels:number,sampleRate:number):Uint8Array{
  const data=samples.length*2,out=new Uint8Array(44+data),v=new DataView(out.buffer);
