@@ -26,7 +26,9 @@
  *     spectra keep the web's confirmation. Cancel records nothing (natively the record is inserted before ShowModal), and on a
  *     reused row it changes nothing, as in the LSS survey (Front L3).
  * [W] The record time is the observatory clock at Record; VIREO's is the loaded spectrum's own time (0x582bdb..0x582be5), which
- *     the web's galaxy acquisitions do not carry. */
+ *     the web's galaxy acquisitions do not carry
+ * Front ONERESULTS: the record also goes to VIREO's one Observational Results list (core/sharedObservationList.ts); the dialog
+ *     opens on that list's record, which a photometer or classifier Record of the same name may have made first. */
 import {checkHubbleVelocity,HubbleVelocityError} from './hubbleVelocity';
 import {floatToStrFExponent4} from './catalogObject';
 import {delphiFixed,floatToStrFFixed,exactFromNumber} from './variableStars';

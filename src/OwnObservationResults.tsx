@@ -1,4 +1,7 @@
-import {useEffect,useMemo,useRef,useState,type Ref} from 'react';
+import {useContext,useEffect,useMemo,useRef,useState,type Ref} from 'react';
+import {ObservationListValue} from './observationListContext';
+import {observationListData} from './core/sharedObservationList';
+import RecordedResultsWindow from './clusters/RecordedResultsWindow';
 import {ownObservationResults,ownResultsCsv,ownResultsText,type OwnResultsArchiveEntry} from './core/ownObservationResults';
 import type {Measurement} from './core/spectrum';
 import {formatFloat32} from './view/spectrum';
@@ -11,6 +14,8 @@ export const OWN_RESULTS_PRINT_SCOPE='own-results';
 export default function OwnObservationResults({detailsRef,rows,archive,busy,active,onDownload}:{detailsRef?:Ref<HTMLDetailsElement>;rows:readonly Measurement[];archive:readonly OwnResultsArchiveEntry[];busy:boolean;active:boolean;onDownload:(text:BlobPart,name:string,type:string)=>void}) {
   const view=useMemo(()=>ownObservationResults(rows,archive),[rows,archive]);
   const [notice,setNotice]=useState(''),[error,setError]=useState('');
+  // Front ONERESULTS: Tools › Results Editors › Observational Results is VIREO's one list (photometer, classifier, Hubble Record).
+  const shared=useContext(ObservationListValue),[sharedOpen,setSharedOpen]=useState(false);
   const releasePrint=useRef<(()=>void)|null>(null);
   useEffect(()=>{if(!active)releasePrint.current?.();},[active]);
   useEffect(()=>()=>releasePrint.current?.(),[]);
@@ -43,6 +48,9 @@ export default function OwnObservationResults({detailsRef,rows,archive,busy,acti
         <td data-testid={`own-record-${r.id}`}>{r.record?<><span data-testid={`own-typed-v-${r.id}`}>{r.record.velocityKmS===undefined?'—':formatFloat32(r.record.velocityKmS)}</span>{r.record.velocityHex!==undefined&&<small>{t('ownResults.bits',{hex:r.record.velocityHex})}</small>}<small>{t('ownResults.recordDetails',{sp:r.record.spType||'—',jd:r.record.jd})}</small>{r.record.remarks&&<small>{r.record.remarks}</small>}</>:'—'}</td></tr>)}</tbody></table></div>:<p>{t('ownResults.empty')}</p>}
     <div className="own-results-actions"><button className="secondary-button" disabled={disabled} onClick={()=>save('text')}>{t('ownResults.downloadText')}</button><button className="secondary-button" disabled={disabled} onClick={()=>save('csv')}>{t('ownResults.downloadCsv')}</button><button className="secondary-button" disabled={disabled} onClick={print}>{t('ownResults.print')}</button></div>
     {error&&<p role="alert" className="error">{error}</p>}<p className="own-results-notice" role="status">{notice}</p>
+    <section className="own-results-shared" aria-labelledby="own-shared-title" data-testid="own-shared-list"><h3 id="own-shared-title">{t('ownResults.sharedTitle')}</h3><p data-testid="own-shared-count">{t('ownResults.sharedHelp',{count:shared.records.length})}</p>
+      <button type="button" className="secondary-button" data-testid="own-shared-results" disabled={busy||!shared.records.length} onClick={()=>setSharedOpen(true)}>{t('ownResults.sharedShow')}</button>
+      {sharedOpen&&shared.records.length>0&&<RecordedResultsWindow data={observationListData(shared)} testId="own-shared-window" onClose={()=>setSharedOpen(false)}/>}</section>
     <details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('ownResults.adaptation')}</p></details>
   </div></details>;
 }

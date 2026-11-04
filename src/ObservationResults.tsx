@@ -9,6 +9,8 @@ import{observationSource,openObservation,confirmObservation,type ObservationSour
 import{serializeObservationSnapshot,type ObservationSnapshot}from'./core/observationNotebook';
 import{loadObservationCache,saveObservationCache,readObservationNotebookFile,OBSERVATION_STORAGE_KEY,type CacheStatus}from'./io/observationNotebook';
 import{t}from'./i18n';
+import{observationListActivate,observationListClassifier,observationListFind,observationListFindOrAdd,observationListJd,observationListOk,ObservationListError}from'./core/sharedObservationList';
+import{ObservationListContext}from'./observationListContext';
 export type ObservationResultsController=Readonly<{cancel:()=>void}>;
 type Pending=Readonly<{edit:ObservationEdit;context:string;selectedRow:boolean}>;
 type Restore=Readonly<{snapshot:ObservationSnapshot;name:string;base:ObservationNotebook;mode:ObservationMode;context:string;raw:string|null;available:boolean}>;
@@ -24,6 +26,8 @@ export default function ObservationResults({sourceId,external=null,active,disabl
  // Front R4c: Time-Dependent Data (Options, env+0x2e8c) is VIREO's only append-or-reuse control for these results (0x50b1dc →
  // 0x54a73c): off reuses, on appends. The notebook's `mode` field stays stored data, written when the option changes and
  // otherwise kept as read, so restored notebooks re-export unchanged; behaviour follows the option.
+ // Front ONERESULTS: Record also writes VIREO's one results list (0x50b1dc → 0x54a73c, shared with the photometer and Hubble).
+ const results=useContext(ObservationListContext);
  const options=useContext(VireoOptionsContext),behaviour:ObservationMode=options.timeDependentData?'append':'reuse';
  const[initial]=useState(()=>loadObservationCache(storage)),[book,setBook]=useState<ObservationNotebook>(initial.snapshot.book),[mode,setMode]=useState<ObservationMode>(initial.snapshot.mode),[cacheStatus,setCacheStatus]=useState<CacheStatus>(initial.status),[pending,setPending]=useState<Pending|null>(null),[fields,setFields]=useState({typeText:'',remarks:''}),[error,setError]=useState<ObservationResultError['code']|null>(null),[notice,setNotice]=useState(''),[restore,setRestore]=useState<Restore|null>(null),[reading,setReading]=useState(false),[transferError,setTransferError]=useState('');
  const dialog=useRef<HTMLDialogElement>(null),restoreDialog=useRef<HTMLDialogElement>(null),fileInput=useRef<HTMLInputElement>(null),typeInput=useRef<HTMLInputElement>(null),pendingRef=useRef<Pending|null>(null),restoreRef=useRef<Restore|null>(null),readTicket=useRef(0),fieldsRef=useRef(fields),cache=useRef({raw:initial.raw,status:initial.status}),latest=useRef({book,mode,behaviour,sourceId,active,disabled,external});fieldsRef.current=fields;latest.current={book,mode,behaviour,sourceId,active,disabled,external};
@@ -43,8 +47,11 @@ export default function ObservationResults({sourceId,external=null,active,disabl
  function rememberRecovery(recovery:ObservationRecovery){const known:StoredRecovery=Object.freeze({status:'present',raw:serializeObservationRecovery(recovery),recovery});deletionRef.current=known;setDeleted(known);}
  function clearRecovery(){deletionRef.current=EMPTY_RECOVERY;setDeleted(EMPTY_RECOVERY);}
  function persist(next:ObservationSnapshot){if(cache.current.status==='invalid'||cache.current.status==='unavailable'||cache.current.status==='conflict')return;const result=saveObservationCache(storage,next,cache.current.raw);cache.current=result;setCacheStatus(result.status);}
- function open(recordId?:number){const l=latest.current;if(!l.active||l.disabled||!source||deletionRef.current.raw!==null||recordId!==undefined&&cache.current.status!=='saved')return;try{const edit=openObservation(l.book,l.sourceId,l.behaviour,recordId,l.external),p=Object.freeze({edit,context,selectedRow:recordId!==undefined});cancel();onOpen();fieldsRef.current={typeText:edit.typeText,remarks:edit.remarks};setFields(fieldsRef.current);pendingRef.current=p;setPending(p);setNotice('');}catch(e){setError(e instanceof ObservationResultError?e.code:'record');}}
+ function open(recordId?:number){const l=latest.current;if(!l.active||l.disabled||!source||deletionRef.current.raw!==null||recordId!==undefined&&cache.current.status!=='saved')return;try{const edit=openObservation(l.book,l.sourceId,l.behaviour,recordId,l.external),p=Object.freeze({edit,context,selectedRow:recordId!==undefined});cancel();onOpen();const shared=recordId===undefined&&results?observationListFind(results.get(),edit.source.objectId,l.behaviour==='append'):null;fieldsRef.current=shared?{typeText:formatObservationType(shared.spectralCode),remarks:shared.remarks}:{typeText:edit.typeText,remarks:edit.remarks};setFields(fieldsRef.current);pendingRef.current=p;setPending(p);setNotice('');}catch(e){setError(e instanceof ObservationResultError?e.code:'record');}}
  function confirm(p:Pending){const l=latest.current;if(pendingRef.current!==p||deletionRef.current.raw!==null)return;if(!dialog.current?.open){cancel();return;}if(!l.active||l.disabled||p.context!==l.sourceId+'|'+l.active+'|'+l.disabled){cancel();return;}try{let next=confirmObservation(l.book,p.edit,l.sourceId,l.behaviour,fieldsRef.current,l.external);
+ // The shared record: find-or-add by the object ID, RA/Dec := the spectrum's (always), FormActivate's c·z store, then OK's
+ // remarks and Sp. Computed before anything is stored, so a full list changes nothing.
+ let shared=null;if(!p.selectedRow&&results){const src=p.edit.source,m=src.metadata,o=results.options();try{const pos=observationListFindOrAdd(results.get(),src.objectId,observationListJd(m?.jd),l.behaviour==='append');shared=observationListOk(observationListActivate(observationListClassifier(pos.list,pos.index,{ra:m?.ra??0,dec:m?.dec??0}),pos.index,o.computeRedshiftVelocity),pos.index,{remarks:fieldsRef.current.remarks,spectralCode:parseObservationType(fieldsRef.current.typeText)});}catch(e){if(e instanceof ObservationListError){setError(e.code==='limit'?'limit':'record');return;}throw e;}}
  if(p.selectedRow&&p.edit.target){
   const before={book:l.book,mode:l.mode},after={book:next,mode:l.mode};
   if(sameObservationSnapshot(before,after)){cancel();setNotice(t('obs.edit.unchanged'));return;}
@@ -52,7 +59,7 @@ export default function ObservationResults({sourceId,external=null,active,disabl
   const recovery=stageObservationEdit(before,after,p.edit.target.id),result=storeObservationRecovery(storage,recovery,cache.current.raw);
   if(result.status!=='saved'){cache.current.status=result.status==='conflict'?'conflict':'unavailable';setCacheStatus(cache.current.status);refreshRecovery(true);setTransferError(t('obs.edit.failed'));return;}
   next=recovery.after.book;cache.current={status:'saved',raw:result.mainRaw!};setCacheStatus('saved');rememberRecovery(recovery);
- }else persist({book:next,mode:l.mode});
+ }else{persist({book:next,mode:l.mode});if(shared)results?.commit(shared);}
  latest.current={...l,book:next};setBook(next);cancel();setNotice(p.selectedRow?t('obs.edit.done'):t('obs.recorded',{object:p.edit.source.objectId}));}catch(e){setError(e instanceof ObservationResultError?e.code:'record');}}
  function download(text:string,name:string){try{const url=URL.createObjectURL(new Blob([text],{type:'application/json;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch{setTransferError(t('obs.file.downloadError'));}}
  function exportBook(){cancel();try{download(serializeObservationSnapshot({book:latest.current.book,mode:latest.current.mode}),'openvireo-observation-notebook.json');}catch{setTransferError(t('obs.file.invalid'));}}

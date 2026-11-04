@@ -16,7 +16,8 @@ afterEach(()=>vi.unstubAllGlobals());
 const analysisSource=readFileSync(new URL('../io/analysisSession.ts',import.meta.url),'utf8');
 /** Wrapper sections that are settings, not exercise work. */
 // Front G G4c: the field spectrometer at any pointing (v33) never counts toward an exercise.
-const NOT_EXERCISE_WRAPPERS=new Set(['motion','observatory','fieldSpectrum']);
+// Front ONERESULTS: the shared Observational Results list (v35) is a results list, not an exercise; its routes' own sections are.
+const NOT_EXERCISE_WRAPPERS=new Set(['motion','observatory','fieldSpectrum','observationList']);
 
 /** What the app's own reader says the file holds, mapped to exercises independently of the worker's sniffing. */
 function expectedExercises(s:AnalysisSession):string[]{

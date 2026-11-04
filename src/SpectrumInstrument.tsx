@@ -22,7 +22,7 @@ import HubbleAnalysis from './HubbleAnalysis';
 import OwnObservationResults from './OwnObservationResults';
 import { POLISH_MESSAGES as PM } from './polish/PolishMessages';
 import {EMPTY_HUBBLE,type HubbleWorkspace} from './core/hubbleAnalysis';
-import {memo,useEffect,useImperativeHandle,useMemo,useRef,useState,type ChangeEvent,type Ref} from 'react';
+import {memo,useContext,useEffect,useImperativeHandle,useMemo,useRef,useState,type ChangeEvent,type Ref} from 'react';
 import { changeFactor, configureStep, createMeasurement, currentZ, INITIAL_CONTROL, MAX_FILE_BYTES, measurementCsv, moveControl, parseLines, parseSpectrum, rebase, shiftedWavelength, type Measurement, type Sample, type ShiftControl } from './core/spectrum';
 import { readImportedSpectrum } from './io/spectrumFiles';
 import type { SessionObservation, ObservatorySession } from './io/analysisSession';
@@ -49,6 +49,9 @@ import {HELP_FILES} from './help/helpFiles';
 import ObservationalDataDialog from './clusters/ObservationalDataDialog';
 import {confirmHubbleObservation,hubbleObservationFields,observationReuseTarget,openHubbleObservation,OBSERVATIONAL_SP_ERROR,type HubbleObservationDraft} from './core/hubbleObservation';
 import {hubbleObservationTarget} from './io/hubbleObservationTarget';
+import {observationListActivate,observationListData,observationListFindOrAdd,observationListHubble,observationListOk,ObservationListError,type ObservationList} from './core/sharedObservationList';
+import {observationalDataFields} from './core/clusterNativeHrSelect';
+import {ObservationListContext,EMPTY_SHARED_OBSERVATION_LIST} from './observationListContext';
 /** Front D3: the session code (and the field data its validators need) is a separate chunk. It is preloaded once the page is
  * idle together with the modules Save imports lazily (review M1), so a tab that later goes offline or outlives a deployment
  * still saves; Save and Restore await the same promise. A failed load is forgotten (the next Save or Restore tries again) and reported as a loading problem (review L1). */
@@ -82,6 +85,8 @@ function preloadSessionWhenIdle():()=>void{
  * (or hiding the tab) aborts `signal`, as it stops a local Save before its download: a cancelled Save is never a saved one. */
 export type SessionDelivery=(text:string,signal:AbortSignal)=>Promise<void>;
 
+/** Front ONERESULTS: why the shared Observational Results list refused a record (full, or a record the dialog cannot show). */
+const listMessage=(e:ObservationListError|null)=>t(e?.code==='limit'?'ph.nativeListFull':'ph.nativeBlocked');
 const references = { galaxy: { title: t('spectrum.galaxy'), source: 'GLXYLNS.LST', lines: parseLines(galaxyText) }, balmer: { title: t('spectrum.balmer'), source: 'BALMER.LST', lines: parseLines(balmerText) }, qso: { title: t('spectrum.qso'), source: 'AGN_QSO.LST', lines: parseLines(qsoText) } };
 const template = parseSpectrum(templateText);
 type Imported = SessionObservation;
@@ -131,7 +136,15 @@ function SpectrumInstrument({onRecordLss,lssMode=false,onPrepareFieldSpectrum,on
   const [observation, setObservation] = useState<Imported | null>(null), [object, setObject] = useState(''), [rows, setRows] = useState<readonly Measurement[]>([]);
   const [error, setError] = useState(''), [notice, setNotice] = useState(''), [busy, setBusy] = useState(false), [wide, setWide] = useState(false), [confirm, setConfirm] = useState(false), [draft, setDraft] = useState<Measurement | null>(null);
   // Front H2: an open "Observational Data" record (catalogue-galaxy acquisitions, VIREO's Hubble mode 4).
-  const [observationDraft,setObservationDraft]=useState<Readonly<{measurement:Measurement;draft:HubbleObservationDraft;target:number|null}>|null>(null);
+  const [observationDraft,setObservationDraft]=useState<Readonly<{measurement:Measurement;draft:HubbleObservationDraft;target:number|null;fields:ReturnType<typeof hubbleObservationFields>}>|null>(null);
+  // Front ONERESULTS: Hubble Record writes VIREO's one results list (shared with the photometer's Record/Review and Classification
+  // Results): find-or-add 0x54a73c across routes, RecordZ1Click's writes (0x5839eb–0x583a6b) and FormActivate's c·z store.
+  const results=useContext(ObservationListContext);
+  function sharedHubble(list:ObservationList,m:Measurement,t:ReturnType<typeof hubbleObservationTarget>,jd:number){
+    const pos=observationListFindOrAdd(list,t.id,jd,timeDependentData);
+    const written=observationListHubble(pos.list,pos.index,{z:m.zFloat32,ra:t.ra,dec:t.dec,vMagnitude:t.vMagnitude});
+    return {list:observationListActivate(written,pos.index,computeRedshiftVelocity),index:pos.index,before:pos.created?null:pos.list.records[pos.index]!};
+  }
   const [acquisitions,setAcquisitions]=useState<readonly AcquisitionObservation[]>([]);
   useEffect(()=>onArchivesChange?.(acquisitions),[acquisitions,onArchivesChange]);
   useEffect(()=>onSessionBusy?.(busy),[busy,onSessionBusy]);
@@ -214,7 +227,13 @@ function SpectrumInstrument({onRecordLss,lssMode=false,onPrepareFieldSpectrum,on
         const t=hubbleObservationTarget(observation),target=observationReuseTarget(rows,t.id,timeDependentData),jd=currentJd?.()??NaN;
         if(target===null&&(rows.length>=MAX_SESSION_ROWS||nextId.current>=Number.MAX_SAFE_INTEGER))throw errorFor('session.logLimit');
         if(!Number.isFinite(jd))throw errorFor('spectrum.observationTime');
-        setObservationDraft(Object.freeze({measurement,target,draft:openHubbleObservation({id:t.id,jd,ra:t.ra,dec:t.dec,zSingle:measurement.zFloat32,targetMagnitude:t.magnitude,computeRedshiftVelocity,reused:target===null?null:rows[target].observation??null})}));
+        let shared;try{shared=sharedHubble(results?.get()??EMPTY_SHARED_OBSERVATION_LIST,measurement,t,jd);}catch(e){if(e instanceof ObservationListError){setError(listMessage(e));return;}throw e;}
+        // The dialog opens on the shared record: a reused one (of any route) keeps its first time, remarks, Sp and velocity.
+        const b=shared.before,reused=b?{jd:b.jd??jd,ra:b.ra,dec:b.dec,spectralCode:b.spectralCode,velocitySingle:b.velocity,velocityHex:'',remarks:b.remarks,vMagnitude:t.vMagnitude}:null;
+        const draft=openHubbleObservation({id:t.id,jd,ra:t.ra,dec:t.dec,zSingle:measurement.zFloat32,targetMagnitude:t.magnitude,computeRedshiftVelocity,reused});
+        const view=observationalDataFields(observationListData(shared.list),shared.index);
+        if(view.kind!=='ready'){setError(listMessage(null));return;}
+        setObservationDraft(Object.freeze({measurement,target,draft,fields:Object.freeze({...view.fields,vel:hubbleObservationFields(draft).vel})}));
         return;
       }
       if(rows.length>=MAX_SESSION_ROWS||nextId.current>=Number.MAX_SAFE_INTEGER)throw errorFor('session.logLimit'); setDraft(measurement);
@@ -228,6 +247,13 @@ function SpectrumInstrument({onRecordLss,lssMode=false,onPrepareFieldSpectrum,on
     let r;try{r=confirmHubbleObservation(o.draft,{velocityText:changes.velocityText,remarks:changes.remarks,spText:changes.typeText});}catch{return OBSERVATIONAL_SP_ERROR;}
     if(!r.ok)return r.caption?`${r.caption} ${r.message.replace(/\r\n/g,' ')}`:r.message;
     const reused=o.target===null?null:rows[o.target];
+    if(results&&o.measurement.origin?.kind==='catalog-galaxy-acquisition'){
+      const acquisition=acquisitions.find(a=>a.acquisitionId===o.measurement.origin!.acquisitionId);
+      if(acquisition?.kind==='catalog-galaxy-acquisition'){
+        try{const shared=sharedHubble(results.get(),o.measurement,hubbleObservationTarget(acquisition),o.draft.jd);results.commit(observationListOk(shared.list,shared.index,{remarks:r.observation.remarks,spectralCode:r.observation.spectralCode,velocity:r.observation.velocitySingle}));}
+        catch(e){if(e instanceof ObservationListError)return listMessage(e);throw e;}
+      }
+    }
     const nextRows=reused?rows.map((x,i)=>i===o.target?Object.freeze({...o.measurement,id:reused.id,observation:r.observation}):x):[...rows,Object.freeze({...o.measurement,observation:r.observation})];
     setRows(nextRows);setVelocityDraft(defaultVelocityDraft(nextRows));if(!reused)nextId.current++;setObservationDraft(null);setNotice(t(reused?'spectrum.observationUpdated':'spectrum.observationSaved'));
     return true;
@@ -268,7 +294,7 @@ function SpectrumInstrument({onRecordLss,lssMode=false,onPrepareFieldSpectrum,on
       const editing=sharedEditing?{...sharedEditing,velocity:velocityDraft}:undefined;
       const clusterDatabase=onPrepareClusterDatabase?.(),clusterComparison=onPrepareClusterComparison?.(),clusterSelection=onPrepareClusterSelection?.();
       const {serializeAnalysisSession}=await saveModules();
-      const saved=await serializeAnalysisSession({...(fieldSpectrum?{fieldSpectrum}:{}),...(objectX?{objectX}:{}),...(lss?{lss}:{}),...(radio.kind==='ready'?{radio:{snapshot:radio.snapshot,prepared:null}}:{}),...(motion?{motion}:{}),...(observatory?{observatory}:{}),...(clusterSelection?{clusterSelection}:{}),...(clusterComparison?{clusterComparison}:{}),...(clusterDatabase?{clusterDatabase}:{}),...(optical?{optical}:{}),...(editing?{editing}:{}),...(observing?{observing}:{}),...(photometry?{photometry}:{}),observation,control,stepInput,reference,wide,object,rows,hubble,...((classification=>classificationWorkspaceUsed(classification)?{classification}:{})(onPrepareClassification?.()??EMPTY_CLASSIFICATION_WORKSPACE)),...(acquisitions.length?{acquisitions}:{})});
+      const saved=await serializeAnalysisSession({...(results?{observationList:results.get()}:{}),...(fieldSpectrum?{fieldSpectrum}:{}),...(objectX?{objectX}:{}),...(lss?{lss}:{}),...(radio.kind==='ready'?{radio:{snapshot:radio.snapshot,prepared:null}}:{}),...(motion?{motion}:{}),...(observatory?{observatory}:{}),...(clusterSelection?{clusterSelection}:{}),...(clusterComparison?{clusterComparison}:{}),...(clusterDatabase?{clusterDatabase}:{}),...(optical?{optical}:{}),...(editing?{editing}:{}),...(observing?{observing}:{}),...(photometry?{photometry}:{}),observation,control,stepInput,reference,wide,object,rows,hubble,...((classification=>classificationWorkspaceUsed(classification)?{classification}:{})(onPrepareClassification?.()??EMPTY_CLASSIFICATION_WORKSPACE)),...(acquisitions.length?{acquisitions}:{})});
       if(ticket!==generation.current)return false;
       if(deliver){const delivery=new AbortController();deliveryAbort.current=delivery;try{await deliver(saved,delivery.signal);}catch{return false;}finally{if(deliveryAbort.current===delivery)deliveryAbort.current=null;}if(ticket!==generation.current)return false;}
       else download(saved,'openvireo-session.json','application/json;charset=utf-8');
@@ -318,6 +344,7 @@ function SpectrumInstrument({onRecordLss,lssMode=false,onPrepareFieldSpectrum,on
       onRestoreLss?.(saved.lss??null);
       onRestoreObjectX?.(saved.objectX??null);
       onRestoreFieldSpectrum?.(saved.fieldSpectrum??null);
+      results?.commit(saved.observationList??EMPTY_SHARED_OBSERVATION_LIST);// Front ONERESULTS (v35, or migrated)
       if(saved.optical)onRestoreOptical?.(saved.optical);else if(saved.observing)onRestoreOptical?.(INITIAL_OPTICAL);
       setVelocityDraft(saved.editing?.velocity??defaultVelocityDraft(saved.rows));if(saved.editing)onRestoreEditing?.(saved.editing);
       setAcquisitions(saved.acquisitions??[]);setObservation(saved.observation);setControl(saved.control);setStepInput(saved.stepInput);setReference(saved.reference);
@@ -350,7 +377,7 @@ function SpectrumInstrument({onRecordLss,lssMode=false,onPrepareFieldSpectrum,on
     <div aria-live="polite" className="feedback">{error && <p role="alert" className="error">{error}</p>}{notice && <p className="notice">{notice}</p>}</div>
     <footer><span>{t('spectrum.attribution')}</span><span>{t(isStar?'continuity.footer':isGalaxy?'galaxyExposure.footer':'spectrum.pending')}</span></footer></main>
     <dialog ref={evidence} aria-labelledby="evidence-heading"><button className="dialog-close" aria-label={t('spectrum.closeEvidence')} onClick={() => evidence.current?.close()}>×</button><div className="eyebrow">{t('spectrum.scope')}</div><h2 id="evidence-heading">{t('spectrum.evidenceTitle')}</h2><p>{t('spectrum.originalHelp')}</p><dl><dt>{t('spectrum.lineShift')}</dt><dd>VIREO 0x58499c: λ′ = (1 + z) λ.</dd><dt>{t('spectrum.controlState')}</dt><dd>{t('spectrum.controlEvidence')}</dd><dt>{t('spectrum.log')}</dt><dd>{t('spectrum.recordEvidence')}</dd><dt>{t('spectrum.precisionTitle')}</dt><dd>{t('spectrum.precisionHelp')}</dd><dt>{t('spectrum.adaptationsTitle')}</dt><dd>{t('spectrum.adaptationsHelp')}</dd></dl><p className="file-help">{t('spectrum.licenseHelp')}</p><button className="primary-button" onClick={() => evidence.current?.close()}>{t('spectrum.return')}</button></dialog>
-    {observationDraft&&<ObservationalDataDialog key={observationDraft.measurement.zFloat32Hex+':'+observationDraft.draft.jd} fields={hubbleObservationFields(observationDraft.draft)} testId="hubble-obsdata" velocityEditable velocityNote={t(observationDraft.draft.reused?'spectrum.observationReusedNote':'spectrum.observationNote')} onOk={confirmObservation} onCancel={()=>setObservationDraft(null)}/>}
+    {observationDraft&&<ObservationalDataDialog key={observationDraft.measurement.zFloat32Hex+':'+observationDraft.draft.jd} fields={observationDraft.fields} testId="hubble-obsdata" velocityEditable velocityNote={t(observationDraft.draft.reused?'spectrum.observationReusedNote':'spectrum.observationNote')} onOk={confirmObservation} onCancel={()=>setObservationDraft(null)}/>}
     <dialog ref={recordDialog} aria-labelledby="record-heading" onCancel={() => { setConfirm(false); setDraft(null); }}><div className="eyebrow">{t('spectrum.localRecord')}</div><h2 id="record-heading">{t('spectrum.confirmTitle')}</h2>{confirm && draft && <><p>{draft.object} · {draft.file}</p><div className="confirm-value">z = {formatFloat32(draft.zFloat32)}</div><p>{t('spectrum.float32Help')}</p>{draft.zNumber !== 0 && draft.zFloat32 === 0 && <p role="status" className="quantization-note">{t('spectrum.roundsTo')} {Object.is(draft.zFloat32, -0) ? '−0' : '0'} {t('spectrum.roundsHelp')} {formatZ(draft.zNumber)}. {t('spectrum.bits')}: {draft.zFloat32Hex}.</p>}<div className="dialog-actions"><button className="secondary-button" onClick={() => { recordDialog.current?.close(); setConfirm(false); setDraft(null); }}>{t('spectrum.cancel')}</button><button className="primary-button" onClick={saveRecord}>{t('spectrum.save')}</button></div></>}</dialog>
   </div>;
 }

@@ -62,11 +62,15 @@ Observational Data window. Static reading of CLEA_VEO.exe (SHA-256 781bc970…c5
 - [W] The reading lives within one activation. Leaving the bench drops an unrecorded reading. FormCloseQuery's "Data Not
   Recorded!" (0x501b84) is not reproduced. A Record/Review dialog closed by leaving the bench records nothing.
 - [W] A reading already entered in the web notebook does not trigger "Telescope has Moved!": its value is kept there.
-- [W] Photometer rows live in a photometer-owned list. VIREO shares one list and ID space with the classifier and Hubble Record Z,
-  so cross-instrument same-ID merges are not reproduced.
+- ~~[W] Photometer rows live in a photometer-owned list.~~ Retired by Front ONERESULTS (2026-11-04): Record/Review writes VIREO's
+  one Observational Results list, shared with Classification Results and Hubble Record (one ID space, list order of 0x54a814;
+  [OBSERVATIONAL-RESULTS-LIST.md](OBSERVATIONAL-RESULTS-LIST.md)). The journal event and owner 15 are unchanged; the bench's
+  Display/Print Data and the own-HR view show the shared list. [W] Restoring a photometer session file adds its rows only to an
+  empty list.
 - [W] The velocity box stays read-only (a typed velocity divides by c·0 natively, [I]). A Sp text the parser cannot store is
   refused.
-- [W] Later OKs show a status line instead of VIREO's MessageBeep [I]. The HR handoff orders rows by time, then RA.
+- [W] Later OKs show a status line instead of VIREO's MessageBeep [I]. The HR handoff (now "Plot my observation records") takes the
+  shared list in its own order (Front ONERESULTS).
 - Not ported:
   - the allotment counter (Obs+0x41c5dd);
   - AnalyzeHRDiagram1 enabling in exercise 3 (the web has no such menu gate).

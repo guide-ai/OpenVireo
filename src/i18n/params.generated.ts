@@ -3054,6 +3054,9 @@ export interface MessageParameters {
   "ownResults.empty": never;
   "ownResults.tableRegion": never;
   "ownResults.caption": "count";
+  "ownResults.sharedTitle": never;
+  "ownResults.sharedHelp": "count";
+  "ownResults.sharedShow": never;
   "ownResults.sourceColumn": never;
   "ownResults.velocityColumn": never;
   "ownResults.statusColumn": never;
@@ -3472,4 +3475,5 @@ export interface MessageParameters {
   "obsHr.ownRecords": never;
   "obsHr.ownRecordsHelp": never;
   "obsHr.ownRecordsError": never;
+  "ph.nativeListFull": never;
 }
