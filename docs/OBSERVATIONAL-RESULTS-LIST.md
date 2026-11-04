@@ -3,7 +3,7 @@
 VIREO keeps **one** Observational Results list. The photometer's **File › Data › Record/Review**, the classifier's
 **Classification Results** and Hubble **Record Measurements** (Record Z) all write it, with one ID space, and HR **Data from
 Observations** plots it. Static reading of CLEA_VEO.exe (SHA-256 781bc970…c54c) only; nothing executed or emulated. Research:
-`analysis/front-oneresults/RECOVERY.md` (excerpts SHA-256 96ec517e…7560); plan `analysis/front-plans/front-oneresults.md`.
+`analysis/front-oneresults/RECOVERY.md` (excerpts SHA-256 16be1b8e…fe74); plan `analysis/front-plans/front-oneresults.md`.
 Tags: [D] decoded, [I] inferred, [W] web choice, [U] unknown. Code: `src/core/sharedObservationList.ts` (pure),
 `src/observationListContext.ts` (the shell's list), the three routes (`Photometer.tsx`, `ObservationResults.tsx`,
 `SpectrumInstrument.tsx`), `src/io/analysisSession.ts` (v35).
@@ -43,11 +43,25 @@ RAs written after earlier insertions. The earlier docs and the gap inventory sai
 ## Web adaptations ([W], one line each)
 - Older investigation files migrate by a fixed rule: their photometer rows, then their Hubble records, each inserted by its own
   time; cross-route merges are not applied retroactively.
+- An older Hubble record's remarks keep every character in its own row; only the migrated list copy maps characters VIREO's ANSI
+  edit box could not hold to '?' (new remarks must be printable Windows-1252, and the dialog says so).
+- An older file whose photometer rows and Hubble records together exceed 1000 is refused with its own message (at most 170
+  photometer rows fit a 512-event journal, so that needs over 830 Hubble records).
+- Only catalogue-galaxy measurements reach the list from the analyzer (imported and other spectra keep the web's own
+  confirmation), whereas VIREO's Record Z in exercises 3/4/7 writes it for any loaded spectrum.
+- Saved DAT or text results read in the web (the classifier's DAT inspector, the cluster HR workspace) are not merged into the
+  list, unlike VIREO's readers 0x549aa8 and 0x549e18; the cluster HR workspace replaces its own list.
 - Classifications keep the browser notebook (its own reuse by retained spectrum, Edit, Delete and backup); Record also writes
   the shared list, and its dialog starts from the shared record when one has the same name.
+- Cancel keeps the shared record on all three routes, as VIREO (0x54b2dc rolls nothing back); the Hubble measurement log and
+  the classifier notebook still record nothing on Cancel.
 - The shared list has no web Edit, Delete or Clear; Save investigation keeps it. A photometer session file adds its rows only to
-  an empty list.
-- Hubble and classifier Cancel still record nothing (natively the record stays); photometer Cancel keeps it, as VIREO.
+  an empty list, and says so when it does not.
+- A dialog whose list changed while it was open (an investigation restored meanwhile) records nothing and says so.
+- A Hubble Record that reuses a record without a time keeps it without one, as VIREO; the measurement log row takes the
+  observatory JD of that Record and the dialog says so.
+- VIREO appends Record Z's text row at the end of a visible results form (0x547264); the web's views always show the whole list
+  in its order.
 - A classifier source without a known JD in 1900–2099 is stored with no time (shown blank; the text list prints 5018.500000 for
   a zero time, as VIREO's row writer does).
 - The file loader 0x584d0c (another writer of this list) is not ported [U].

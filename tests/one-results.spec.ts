@@ -1,6 +1,5 @@
 import {test,expect,type Page} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
-import {recordMeasurement} from './fixtures/record-measurement';
 // Front ONERESULTS (analysis/front-oneresults/RECOVERY.md): VIREO keeps one Observational Results list ([[0x5b5bd4]]+0x480) that
 // the photometer's Record/Review (0x501eb6), Classification Results (0x50b20b) and Hubble Record Z (0x5839e6) all write through
 // find-or-add 0x54a73c; Data from Observations (0x542990) walks it head to tail.
@@ -20,7 +19,15 @@ test('photometer Record/Review, Classification Results and Hubble Record write o
  await page.clock.install();await page.goto('/#galaxy-exposure');await expect(page.getByRole('heading',{name:'Acquire a Hubble galaxy.',exact:true})).toBeVisible({timeout:30000});
  // Hubble Record (RecordZ1Click mode 4): a catalogue galaxy through Observational Data.
  await acquireGalaxy(page,'36747');await align(page,'10','My 36747 alignment');
- expect(await recordMeasurement(page,{remarks:'from Hubble'})).toBe('observational-data');
+ // Cancel (0x54b2dc rolls nothing back): the list keeps the record with this z; the measurement log stays empty (review 1 M1).
+ await page.getByRole('button',{name:/Record measurement/}).click();await page.getByTestId('hubble-obsdata-cancel').click();
+ await expect(page.locator('#measurement-log tbody tr')).toHaveCount(0);
+ // Remarks the list cannot store are refused with their own message (review 1 H2); OK then reuses the cancelled record.
+ await page.getByRole('button',{name:/Record measurement/}).click();const z=Number(await page.getByTestId('hubble-obsdata-z').inputValue());
+ await page.getByTestId('hubble-obsdata-vel').fill(String(Math.round(299792.458*z*100)/100));await page.getByTestId('hubble-obsdata-remarks').fill('Hα line');
+ await page.getByTestId('hubble-obsdata-ok').click();await expect(page.getByTestId('hubble-obsdata-error')).toContainText('Windows-1252');
+ await page.getByTestId('hubble-obsdata-remarks').fill('from Hubble');await page.getByTestId('hubble-obsdata-ok').click();await expect(page.getByTestId('hubble-obsdata')).toHaveCount(0);
+ await expect(page.locator('#measurement-log tbody tr')).toHaveCount(1);
  // Photometer Record/Review: V then B of one star share one record (Time-Dependent Data off).
  await route(page,'#photometer','Measure a listed star.');
  await page.getByRole('button',{name:'Activate Pleiades photometer',exact:true}).click();await band(page,'V');
@@ -32,7 +39,12 @@ test('photometer Record/Review, Classification Results and Hubble Record write o
  // Classification Results: a practice spectrum.
  await page.clock.resume();await page.evaluate(()=>{location.hash='#classification';});
  await expect(page.getByRole('button',{name:'Review classification',exact:true})).toBeEnabled({timeout:30000});
+ // Cancel keeps the shared record (review 1 M1): the list has three records before the classification is recorded.
  await page.getByRole('button',{name:'Open observation results',exact:true}).click();const object=(await page.getByTestId('observation-object').textContent())!.trim();
+ await page.getByRole('button',{name:'Cancel observation changes',exact:true}).click();
+ const before=await sharedList(page);await expect(before.getByTestId('own-shared-count')).toContainText("Observational Results list: 3.");
+ await page.clock.resume();await page.evaluate(()=>{location.hash='#classification';});await expect(page.getByRole('button',{name:'Review classification',exact:true})).toBeEnabled({timeout:30000});
+ await page.getByRole('button',{name:'Open observation results',exact:true}).click();
  await page.getByLabel('Observation spectral type (up to 12 bytes)',{exact:true}).fill('G2V');await page.getByLabel('Observation remarks (up to 36 bytes)',{exact:true}).fill('from classifier');
  await page.getByRole('button',{name:'Record observation result',exact:true}).click();
  // Tools › Results Editors › Observational Results: the one list, three records.

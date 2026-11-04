@@ -2,5 +2,5 @@
  * analyzer can check them without loading the session code (re-exported by io/analysisSession). */
 export const MAX_SESSION_ROWS=1000;
 export class AnalysisSessionError extends Error {
-  constructor(readonly code:'size'|'format'|'state'|'measurements'|'observation'|'resources') {super(`Analysis session: ${code}`);this.name='AnalysisSessionError';}
+  constructor(readonly code:'size'|'format'|'state'|'measurements'|'observation'|'resources'|'observation-list') {super(`Analysis session: ${code}`);this.name='AnalysisSessionError';}
 }

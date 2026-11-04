@@ -44,7 +44,7 @@ import {observingUsesExtendedGalaxies} from '../core/observingWorkspace';
 import umiCached from '../../data/hubble/umi-cached-provenance.json';
 import {HUBBLE_OBSERVATION_POLICY,portableHubbleObservation,readHubbleObservation,type HubbleObservation} from '../core/hubbleObservation';
 import {hubbleObservationTarget} from './hubbleObservationTarget';
-import {OBSERVATION_LIST_POLICY,migrateObservationList,portableObservationList,readObservationList,sameObservationList,type ObservationList,type ObservationListSources} from '../core/sharedObservationList';
+import {OBSERVATION_LIST_POLICY,ObservationListError,migrateObservationList,portableObservationList,readObservationList,sameObservationList,type ObservationList,type ObservationListSources} from '../core/sharedObservationList';
 
 /** New portable browser format, not the original CLEA saved-spectrum format. */
 export const SESSION_PAYLOAD_BYTES=16*1024*1024,MAX_SESSION_BYTES=SESSION_PAYLOAD_BYTES+MAX_PROJECT_METADATA_GROWTH;
@@ -78,7 +78,12 @@ function observationListSources(s:AnalysisSession):ObservationListSources{
     return [{id:hubbleObservationTarget(a).id,jd:o.jd,ra:o.ra,dec:o.dec,zSingle:r.zFloat32,velocitySingle:o.velocitySingle,spectralCode:o.spectralCode,remarks:o.remarks,vMagnitude:o.vMagnitude}];
   })};
 }
-function migratedObservationList(s:AnalysisSession):ObservationList{try{return migrateObservationList(observationListSources(s));}catch(e){if(e instanceof AnalysisSessionError)throw e;fail('state');}}
+/** Review 1 L3: an older file whose photometer rows and Hubble records together exceed the list's 1000 records fails with its
+ * own code ('observation-list'), which the page names. */
+function migratedObservationList(s:AnalysisSession):ObservationList{try{return migrateObservationList(observationListSources(s));}catch(e){if(e instanceof AnalysisSessionError)throw e;if(e instanceof ObservationListError&&e.code==='limit')fail('observation-list');fail('state');}}
+/** The migration, or null when it would exceed the list (then no list of at most 1000 records can equal it). */
+function migratedOrNull(s:AnalysisSession):ObservationList|null{try{return migratedObservationList(s);}catch(e){if(e instanceof AnalysisSessionError&&e.code==='observation-list')return null;throw e;}}
+const sameAsMigration=(list:ObservationList,s:AnalysisSession)=>{const m=migratedOrNull(s);return m!==null&&sameObservationList(list,m);};
 /** A restored session carries the shared list when it has records (an older file: the migration); none means an empty list. */
 function withObservationList(s:AnalysisSession):AnalysisSession{if(s.observationList)return s;const list=migratedObservationList(s);return list.records.length?Object.freeze({...s,observationList:list}):s;}
 /** Front ONERESULTS (v35): the shared list around an unchanged v1..34 base, outermost and never nested. A list equal to what the
@@ -232,7 +237,7 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.observationListPolicy!==OBSERVATION_LIST_POLICY||!Number.isInteger(baseVersion)||Number(baseVersion)<1||Number(baseVersion)>34)fail('format');
     let list:ObservationList;try{list=readObservationList(r.observationList);}catch{fail('format');}
     const base=await restore(r.base,verifySources,false,false,false,false,false,false,hooks);
-    if(sameObservationList(list!,migratedObservationList(base)))fail('format');// canonical: such a list is written as its base
+    if(sameAsMigration(list!,base))fail('format');// canonical: such a list is written as its base
     return Object.freeze({...base,observationList:list!});
   }
   if(version===34){
@@ -502,7 +507,7 @@ async function portable(session:AnalysisSession,wrapped:Wrapped={}):Promise<unkn
   // Front ONERESULTS (v35, outermost): the shared Observational Results list when it differs from the migration of its base.
   if(!wrapped.list&&session.observationList!==undefined){
     const {observationList,...rest}=session,base=rest as AnalysisSession;
-    if(!sameObservationList(observationList,migratedObservationList(base)))
+    if(!sameAsMigration(observationList,base))
       return {format:FORMAT,version:35,numericalPolicy:POLICY,base:await portable(base,{...wrapped,list:true}),observationListPolicy:OBSERVATION_LIST_POLICY,observationList:portableObservationList(observationList)};
     session=base;
   }

@@ -3476,4 +3476,10 @@ export interface MessageParameters {
   "obsHr.ownRecordsHelp": never;
   "obsHr.ownRecordsError": never;
   "ph.nativeListFull": never;
+  "session.observationListLimit": never;
+  "spectrum.observationRemarksError": never;
+  "spectrum.observationStale": never;
+  "spectrum.observationNoTimeNote": never;
+  "ph.nativeStale": never;
+  "ph.nativeRestoreSkipped": never;
 }

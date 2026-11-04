@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest';
-import {EMPTY_OBSERVATION_LIST,OBSERVATION_LIST_MAX,ObservationListError,migrateObservationList,observationListActivate,observationListClassifier,observationListData,observationListFind,observationListFindOrAdd,observationListHubble,observationListInsertionIndex,observationListJd,observationListOk,observationListPhotometer,portableObservationList,readObservationList,sameObservationList,type ObservationList,type ObservationListRecord} from './sharedObservationList';
+import {EMPTY_OBSERVATION_LIST,OBSERVATION_LIST_MAX,observationListAnsi,ObservationListError,migrateObservationList,observationListActivate,observationListClassifier,observationListData,observationListFind,observationListFindOrAdd,observationListHubble,observationListInsertionIndex,observationListJd,observationListOk,observationListPhotometer,portableObservationList,readObservationList,sameObservationList,type ObservationList,type ObservationListRecord} from './sharedObservationList';
 import {observationalDataFields} from './clusterNativeHrSelect';
 import {clusterNativeHrPlot} from './clusterNativeObservationHr';
 import {listOrderNativeResultList,appendNativeResultList,buildNativeResultList,refreshNativeResultList} from './nativeResultList';
@@ -119,6 +119,24 @@ describe('one list, one ID space across the photometer, the classifier and Hubbl
   expect(bad(r=>{r.remarks='\u0001';})).toThrow();expect(bad(r=>{(r.bands as number[]).pop();})).toThrow();expect(bad(r=>{r.spectralCode=-1;})).toThrow();
   expect(()=>readObservationList(Array(OBSERVATION_LIST_MAX+1).fill(JSON.parse(text)[0]))).toThrow();
   expect(observationListJd(1)).toBeNull();expect(observationListJd(null)).toBeNull();expect(observationListJd(JD)).toBe(JD);
+ });
+ it('review 1: −0 is stored as +0 on every route; Cancel keeps the pre-dialog record; ANSI copy; shared Dec bound; migration limit',()=>{
+  // H1: a Single z of −0 (reachable in the analyzer), −0 bands and pointing.
+  let l=hubble(EMPTY_OBSERVATION_LIST,'G',JD,false,{z:-0,ra:-0,dec:-0,vMagnitude:-0}).list;
+  const r=l.records[0]!;expect([r.z,r.ra,r.dec,r.bands[2]].every(v=>Object.is(v,0))).toBe(true);
+  l=photometer(l,'G',JD,false,{ra:1,dec:-0,bands:[-0,-0,-0,-0,-0]}).list;expect(l.records[0]!.bands.every(v=>Object.is(v,0))).toBe(true);
+  expect(sameObservationList(readObservationList(JSON.parse(JSON.stringify(portableObservationList(l)))),l)).toBe(true);
+  expect(migrateObservationList({photometer:[],hubble:[{id:'G',jd:JD,ra:1,dec:-0,zSingle:-0,velocitySingle:-0,spectralCode:0,remarks:'',vMagnitude:null}]}).records[0]!.z).toBe(0);
+  // M1: Cancel commits what 0x54a73c and the route wrote before ShowModal, without OK's remarks or Sp.
+  const p=observationListFindOrAdd(EMPTY_OBSERVATION_LIST,'HD 1',null,false),cancelled=observationListClassifier(p.list,p.index,{ra:4,dec:5});
+  expect(cancelled.records[0]).toMatchObject({id:'HD 1',jd:null,ra:4,dec:5,remarks:'',spectralCode:0});
+  // H2: the migrated copy of remarks; L4: the classifier metadata's Dec bound.
+  expect(observationListAnsi('Hα line 😀 é')).toBe('H? line ? é');
+  expect(observationListClassifier(p.list,p.index,{ra:4,dec:90.00000005}).records[0]!.dec).toBe(90.00000005);
+  expect(()=>observationListClassifier(p.list,p.index,{ra:4,dec:90.0000001})).toThrow(ObservationListError);
+  // L3: more records than the list holds.
+  const many=Array.from({length:OBSERVATION_LIST_MAX+1},(_,i)=>({id:'H'+i,jd:JD+i/10000,ra:1,dec:1,zSingle:0,velocitySingle:0,spectralCode:0,remarks:'',vMagnitude:null}));
+  expect(()=>migrateObservationList({photometer:[],hubble:many})).toThrow(ObservationListError);
  });
  it('a full list refuses a new record but still reuses one',()=>{
   const records=Array.from({length:OBSERVATION_LIST_MAX},(_,i)=>Object.freeze({...EMPTY_REC,id:'s'+i,jd:JD+i/1000}));

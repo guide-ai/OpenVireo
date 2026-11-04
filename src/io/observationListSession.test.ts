@@ -14,11 +14,11 @@ import {migrateObservationList,observationListClassifier,observationListFindOrAd
 beforeEach(()=>vi.stubGlobal('crypto',webcrypto));afterEach(()=>vi.unstubAllGlobals());
 const read=(s:string)=>readAnalysisSession(new File([s],'observation-list.json'));
 const acquire=(id:string)=>createGalaxyObservation(pauseGalaxy(tickGalaxy(startGalaxy(activateGalaxy(createGalaxyExposure(1,id))),1000)));
-async function hubbleSession():Promise<AnalysisSession>{
- const a=await acquire('36773'),control={...INITIAL_CONTROL,step:.001,position:17};
+async function hubbleSession(o:Readonly<{control?:typeof INITIAL_CONTROL;remarks?:string}>={}):Promise<AnalysisSession>{
+ const a=await acquire('36773'),control=o.control??{...INITIAL_CONTROL,step:.001,position:17};
  const m=createMeasurement(1,'36773',a.name,a.sha256,control,'GLXYLNS.LST',{kind:a.kind,acquisitionId:a.acquisitionId,targetId:a.targetId});
  const t=hubbleObservationTarget(a),d=openHubbleObservation({id:t.id,jd:2455000.5,ra:t.ra,dec:t.dec,zSingle:m.zFloat32,targetMagnitude:t.magnitude,computeRedshiftVelocity:false,reused:null});
- const r=confirmHubbleObservation(d,{velocityText:'',remarks:'galaxy',spText:''});if(!r.ok)throw Error(r.message);const observation:HubbleObservation=r.observation;
+ const r=confirmHubbleObservation(d,{velocityText:'',remarks:o.remarks??'galaxy',spText:''});if(!r.ok)throw Error(r.message);const observation:HubbleObservation=r.observation;
  const hubble={recipeId:'vireo' as const,rows:[{id:1,input:{kind:'measurement' as const,measurementId:1,apparentVText:'15.8',magnitudeSource:'Hubble Data.xls · Sheet1!C3',targetId:'36773'}}]};
  return {observation:a,acquisitions:[a],rows:[{...m,observation}],control,stepInput:'.001',reference:'galaxy',wide:false,object:'36773',hubble};
 }
@@ -35,6 +35,19 @@ function withClassification(list:ObservationList,id:string):ObservationList{
 }
 
 describe('Front ONERESULTS session v35 (one Observational Results list)',()=>{
+ it('review 1 H1/H2: a v32 file with z = −0 or remarks outside Windows-1252 loads and re-saves byte for byte; its list copy is +0 and ANSI',async()=>{
+  const zero=await hubbleSession({control:{...INITIAL_CONTROL,step:1e-300,position:-1}});
+  expect(Object.is(zero.rows[0]!.zFloat32,-0)).toBe(true);
+  const text=await serializeAnalysisSession(zero),back=await read(text);
+  expect(JSON.parse(text).version).toBe(32);expect(Object.is(back.observationList!.records[0]!.z,0)).toBe(true);
+  expect(await serializeAnalysisSession(back)).toBe(text);
+  const greek=await hubbleSession({remarks:'Hα line 😀'}),greekText=await serializeAnalysisSession(greek),g=await read(greekText);
+  expect(g.rows[0]!.observation!.remarks).toBe('Hα line 😀');expect(g.observationList!.records[0]!.remarks).toBe('H? line ?');
+  expect(await serializeAnalysisSession(g)).toBe(greekText);
+  // A v35 over such a base stays readable and canonical.
+  const v35=await serializeAnalysisSession({...g,observationList:withClassification(g.observationList!,'36773')});
+  expect(JSON.parse(v35).version).toBe(35);expect(await serializeAnalysisSession(await read(v35))).toBe(v35);
+ },60000);
  it('older files load with the migrated list and re-save byte for byte (Hubble v32 records, photometer owner 15 rows)',async()=>{
   const h=await hubbleSession(),hubbleText=await serializeAnalysisSession(h);expect(JSON.parse(hubbleText).version).toBe(32);
   const restored=await read(hubbleText);

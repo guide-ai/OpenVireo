@@ -18,7 +18,7 @@
  * [W] Compute Magnitudes is compiled on and read-only in the web (opticalOptions.ts), so a new record's kind is 1.
  * [W] The record JD is kept as a number in the admitted range or null (the stored Double 0, shown blank); the stored time is
  *     JD − 2415018.5, exact in that range. */
-import {observationText,formatObservationType,ObservationResultError} from './observationResults';
+import {observationText,formatObservationType,ObservationResultError,OBSERVATION_DEC_RANGE} from './observationResults';
 import {recordReuseTarget,RECORD_ID_LENGTH} from './recordReuse';
 import {encodeHtlExtended} from './hotList';
 import {encodeNativeText,parseNativeObservationResults,NATIVE_RESULT_BYTES,NATIVE_RESULT_MAX_RECORDS,type NativeObservationData} from './nativeObservationResults';
@@ -38,9 +38,19 @@ export type ObservationListRecord=Readonly<{id:string;jd:number|null;ra:number;d
  /** Single (+0x63). */z:number;/** Single (+0x67). */velocity:number;remarks:string}>;
 export type ObservationList=Readonly<{records:readonly ObservationListRecord[]}>;
 export const EMPTY_OBSERVATION_LIST:ObservationList=Object.freeze({records:Object.freeze([])});
-export class ObservationListError extends Error{constructor(readonly code:'limit'|'input'|'format'){super(`Observation list: ${code}`);this.name='ObservationListError';}}
+export class ObservationListError extends Error{constructor(readonly code:'limit'|'input'|'format'|'stale'){super(`Observation list: ${code}`);this.name='ObservationListError';}}
 
 const plus=(v:number)=>v===0?0:v;// −0 is stored as +0 (the zero tests treat both alike; one JSON form).
+/** Review 1 H1: every numeric field of a record with −0 stored as +0, on every write and in the migration (a Single z of −0 is
+ * reachable in the analyzer). VIREO's zero tests (FormActivate, the row writer, the HR plot) treat ±0 alike. */
+function normalized(r:ObservationListRecord):ObservationListRecord{
+ return Object.freeze({...r,ra:plus(r.ra),dec:plus(r.dec),z:plus(r.z),velocity:plus(r.velocity),bands:Object.freeze(r.bands.map(plus))});
+}
+/** [W] Review 1 H2: text an older file kept that VIREO's ANSI edit box could not hold: each character outside printable
+ * Windows-1252 becomes '?'. Used only for the migrated copy of an older Hubble record's remarks; the record itself is unchanged. */
+export function observationListAnsi(text:string):string{
+ let out='';for(const c of text){try{observationText(c,2);out+=c;}catch(e){if(!(e instanceof ObservationResultError))throw e;out+='?';}}return out;
+}
 const finite=(v:unknown):v is number=>typeof v==='number'&&Number.isFinite(v);
 const single=(v:unknown):v is number=>finite(v)&&Math.fround(v)===v;
 function validJd(jd:unknown):jd is number|null{return jd===null||finite(jd)&&jd>=OBSERVATION_LIST_JD.min&&jd<=OBSERVATION_LIST_JD.max;}
@@ -54,7 +64,7 @@ function validCode(code:unknown):code is number{
 }
 /** Every field of a record within what the list can hold. */
 export function validObservationListRecord(r:ObservationListRecord):boolean{
- return validText(r.id,RECORD_ID_LENGTH,1)&&validJd(r.jd)&&finite(r.ra)&&r.ra>=0&&r.ra<24&&finite(r.dec)&&Math.abs(r.dec)<=90
+ return validText(r.id,RECORD_ID_LENGTH,1)&&validJd(r.jd)&&finite(r.ra)&&r.ra>=0&&r.ra<24&&finite(r.dec)&&r.dec>=OBSERVATION_DEC_RANGE.min&&r.dec<OBSERVATION_DEC_RANGE.max
   &&Array.isArray(r.bands)&&r.bands.length===5&&r.bands.every(finite)&&(r.kind===0||r.kind===1)&&validCode(r.spectralCode)
   &&single(r.z)&&single(r.velocity)&&validText(r.remarks,OBSERVATION_LIST_LIMITS.remarks)
   &&[r.ra,r.dec,r.z,r.velocity,...r.bands].every(v=>!Object.is(v,-0))&&(r.jd===null||!Object.is(r.jd,-0));
@@ -96,7 +106,7 @@ export function observationListFindOrAdd(list:ObservationList,id:string,jd:numbe
 }
 function replace(list:ObservationList,index:number,change:(r:ObservationListRecord)=>ObservationListRecord):ObservationList{
  const r=list.records[index];if(!r)throw new ObservationListError('input');
- const next=Object.freeze(change(r));if(!validObservationListRecord(next))throw new ObservationListError('input');
+ const next=normalized(change(r));if(!validObservationListRecord(next))throw new ObservationListError('input');
  return Object.freeze({records:Object.freeze(list.records.map((x,i)=>i===index?next:x))});
 }
 /** Record1Click 0x501e7c after 0x54a73c [D]: RA/Dec := the pointing only when the stored RA or Dec is 0; kind := the reading's;
@@ -170,17 +180,19 @@ export type ObservationListSources=Readonly<{
 /** [W] Migration of a file saved before the shared list: those files kept the photometer's and Hubble's records in separate
  * lists and did not record the order between routes. Each photometer row (its list order), then each Hubble record (measurement
  * row order) becomes one record created through 0x54a814's insertion with its own time; no cross-route reuse is applied
- * retroactively. Classifications are kept in the browser notebook, not in the file, so none are migrated. */
+ * retroactively. Classifications are kept in the browser notebook, not in the file, so none are migrated. A Hubble record's remarks
+ * pass through observationListAnsi (the record in its row keeps them). More than OBSERVATION_LIST_MAX records together is refused
+ * ('limit'): at most 170 photometer rows fit a 512-event journal, so that needs over 830 Hubble records (MAX_SESSION_ROWS 1000). */
 export function migrateObservationList(s:ObservationListSources):ObservationList{
  let list=EMPTY_OBSERVATION_LIST;
  const add=(r:ObservationListRecord)=>{
   if(list.records.length>=OBSERVATION_LIST_MAX)throw new ObservationListError('limit');
-  const record=Object.freeze({...r,bands:Object.freeze(r.bands.map(plus)),ra:plus(r.ra),dec:plus(r.dec)});
+  const record=normalized(r);
   if(!validObservationListRecord(record))throw new ObservationListError('input');
   const at=observationListInsertionIndex(list.records,record.jd),records=[...list.records];records.splice(at,0,record);
   list=Object.freeze({records:Object.freeze(records)});
  };
  for(const p of s.photometer)add({id:p.id.slice(0,RECORD_ID_LENGTH),jd:p.time,ra:p.ra,dec:p.dec,bands:p.bands,kind:p.kind===0?0:1,spectralCode:p.spectralCode,z:0,velocity:0,remarks:p.remarks});
- for(const h of s.hubble)add({id:h.id.slice(0,RECORD_ID_LENGTH),jd:h.jd,ra:h.ra,dec:h.dec,bands:[0,0,h.vMagnitude??0,0,0],kind:1,spectralCode:h.spectralCode,z:h.zSingle,velocity:h.velocitySingle,remarks:h.remarks});
+ for(const h of s.hubble)add({id:h.id.slice(0,RECORD_ID_LENGTH),jd:h.jd,ra:h.ra,dec:h.dec,bands:[0,0,h.vMagnitude??0,0,0],kind:1,spectralCode:h.spectralCode,z:h.zSingle,velocity:h.velocitySingle,remarks:observationListAnsi(h.remarks)});
  return list;
 }

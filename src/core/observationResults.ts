@@ -46,6 +46,9 @@ export type ObservationMetadata=Readonly<{kind:'imported'|'acquired';jd:number|n
 export type ObservationSource=Readonly<{id:string;sha256:string;objectId:string;metadata?:ObservationMetadata}>;
 const sources:readonly ObservationSource[]=Object.freeze(CLASSIFICATION_CATALOG.practice.map(p=>Object.freeze({id:p.id,sha256:p.sha256,objectId:observationText(p.label,15)})));
 const externals=new Map<string,ObservationSource>();
+/** The declination an Observational Data record may hold: [−90, 90.0000001) as the *SpHdr* metadata admits it (Front S); the
+ * shared Observational Results list (sharedObservationList.ts) uses the same bound (Front ONERESULTS review 1 L4). */
+export const OBSERVATION_DEC_RANGE=Object.freeze({min:-90,max:90.0000001});
 const optional=(v:unknown,lo:number,hi:number)=>v===null||typeof v==='number'&&Number.isFinite(v)&&v>=lo&&v<hi&&!Object.is(v,-0);
 /** One frozen object per distinct external source, so that records keep comparing sources by identity. */
 export function externalObservationSource(input:ObservationSource):ObservationSource{
@@ -53,7 +56,7 @@ export function externalObservationSource(input:ObservationSource):ObservationSo
  if(!m||typeof input.id!=='string'||typeof input.sha256!=='string'||!/^[a-f0-9]{64}$/.test(input.sha256)||typeof input.objectId!=='string')throw new ObservationResultError('source');
  const expected=m.kind==='imported'?/^imported:[a-f0-9]{64}$/:m.kind==='acquired'?/^acquired:[a-f0-9]{64}$/:null;
  if(!expected||!expected.test(input.id)||m.kind==='imported'&&input.id!=='imported:'+input.sha256)throw new ObservationResultError('source');
- if(!optional(m.jd,0,1e7)||!optional(m.ra,0,24)||!optional(m.dec,-90,90.0000001))throw new ObservationResultError('source');
+ if(!optional(m.jd,0,1e7)||!optional(m.ra,0,24)||!optional(m.dec,OBSERVATION_DEC_RANGE.min,OBSERVATION_DEC_RANGE.max))throw new ObservationResultError('source');
  const objectId=observationText(input.objectId,15),key=JSON.stringify([input.id,input.sha256,objectId,m.kind,m.jd,m.ra,m.dec]);
  let source=externals.get(key);
  if(!source){source=Object.freeze({id:input.id,sha256:input.sha256,objectId,metadata:Object.freeze({kind:m.kind,jd:m.jd,ra:m.ra,dec:m.dec})});externals.set(key,source);}
