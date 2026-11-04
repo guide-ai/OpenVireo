@@ -24,8 +24,9 @@
  * - [W] The struct lives within one photometer activation: a web activation starts a new context (it also clears the sky bank),
  *   so an unrecorded reading is dropped when the bench is left; VIREO's FormCloseQuery "Data Not Recorded!" prompt (0x501b84) is
  *   not reproduced, because the web releases the bench on its own (hidden page, another view).
- * - [W] Photometer records live in a photometer-owned list. VIREO shares one list and ID space with the classifier (0x50b1dc) and
- *   Hubble Record Z (0x5839e6), so cross-instrument merges by the same ID are not reproduced.
+ * - Front ONERESULTS: the list the student sees is VIREO's one Observational Results list (core/sharedObservationList.ts),
+ *   shared with the classifier (0x50b1dc) and Hubble Record Z (0x5839e6). The rows below stay the journal's own replay (owner 15
+ *   unchanged) and are what an older investigation migrates from.
  * - [W] The velocity box stays read-only for a photometer record: a typed velocity would divide by c·0 natively (x87 exception
  *   path, [I]), which is not modelled.
  * - [D] [0x5b5d98] is the Object X ID: only TUTTimeDlg.OKBtnClick 0x4fdf0c writes it, from the IDEd box (+0x388, "ID # of Unknown Object (From Lab Sheet or Instructor)"); an empty box gives UNKNOWN (0x4fe078) (Front P3 review 1 M2). */

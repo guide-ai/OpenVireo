@@ -10,9 +10,11 @@ import PleiadesAnalysis from './PleiadesAnalysis';
 import {AcquisitionError} from './core/acquisition';
 import {PHOTOMETER_SECONDS,PHOTOMETER_REPEATS,LEGACY_PHOTOMETER_TIMING,requiredPhotometerCallbacks,admitPhotometerCallback,MAX_PHOTOMETER_GAP_MS,PHOTOMETER_CALLBACK_MS,PhotometerIntegrationError} from './core/photometerIntegration';
 import {reconcilePhotometryDraft,defaultPhotometryDraft,type PhotometryDraft} from './core/editingWorkspace';
-import {memo,useEffect,useMemo,useRef,useState,useImperativeHandle,type Ref} from 'react';
+import {memo,useContext,useEffect,useMemo,useRef,useState,useImperativeHandle,type Ref} from 'react';
 import {createPhotometer,photometerEvent,photometerStructReading,releasePhotometer,skyReplaceAsked,PhotometerError,type PhotometerState,type PhotometerEvent} from './core/photometer';
-import {photometerNativeData,photometerNativeMerge,photometerNativeOk,photometerStructRecordable,photometerStructUnrecorded,PHOTOMETER_RECORD_LITERALS as RL,type PhotometerNativeInput} from './core/photometerNativeRecord';
+import {photometerNativeOk,photometerStructBands,photometerStructRecordable,photometerStructUnrecorded,validPhotometerNativeInput,PHOTOMETER_NATIVE_KIND,PHOTOMETER_RECORD_LITERALS as RL,type PhotometerNativeInput,type PhotometerStructReading} from './core/photometerNativeRecord';
+import {migrateObservationList,observationListActivate,observationListData,observationListFindOrAdd,observationListOk,observationListPhotometer,ObservationListError,type ObservationList} from './core/sharedObservationList';
+import {ObservationListContext,ObservationListValue} from './observationListContext';
 import {observationalDataFields,type ObservationalDataFields} from './core/clusterNativeHrSelect';
 import ObservationalDataDialog from './clusters/ObservationalDataDialog';
 import RecordedResultsWindow from './clusters/RecordedResultsWindow';
@@ -42,7 +44,8 @@ function NativeMessage({caption,lines,testId,buttons}:{caption:string;lines:read
  return <dialog ref={ref} className="photometer-sky-dialog" aria-labelledby={`${testId}-title`} data-testid={testId} onCancel={e=>{e.preventDefault();buttons.at(-1)?.onClick();}}><h3 id={`${testId}-title`}>{caption}</h3>{lines.map((l,i)=><p key={i}>{l}</p>)}<div className="button-row">{buttons.map((b,i)=><button key={b.testId} ref={i===0?first:undefined} type="button" className={i===0?'primary-button':'secondary-button'} data-testid={b.testId} onClick={b.onClick}>{b.label}</button>)}</div></dialog>;
 }
 type NativeBox=Readonly<{kind:'moved';id:string}|{kind:'notSaved'}|{kind:'saved';then:'start'|null}>;
-type NativeReview=Readonly<{fields:ObservationalDataFields;readingId:number;input:PhotometerNativeInput;from:'menu'|'start'}>;
+type NativeReview=Readonly<{fields:ObservationalDataFields;readingId:number;input:PhotometerNativeInput;from:'menu'|'start';
+ /** Front ONERESULTS review 1 L2: the shared list the dialog opened on and that list with Record1Click's writes. */base:ObservationList;shared:Readonly<{list:ObservationList;index:number}>}>;
 /** [W] Without an observatory clock (a bench-only embedding) the record time is the host clock, as VIREO's Now. */
 const hostJd=()=>Date.now()/86400000+2440587.5;
 function download(text:string){const url=URL.createObjectURL(new Blob([text],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='openvireo-pleiades-photometer.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -79,6 +82,8 @@ function Photometer({active,initialState=null,controllerRef,onStateChange,invest
  const [draft,setDraft]=useState<{readingId:number;value:string;note:string}|null>(null),[entryError,setEntryError]=useState('');
  // Front P3: the recorded name fixed at Start (0x4fffd4) and the completion time of each reading of this activation; the
  // Record/Review dialog, the native message boxes and the results list window.
+ // Front ONERESULTS: Record/Review writes VIREO's one results list (shared with Classification Results and Hubble Record).
+ const results=useContext(ObservationListContext),shownList=useContext(ObservationListValue);
  const structMeta=useRef(new Map<number,Readonly<{name:string;jd:number}>>()),startName=useRef<string|null>(null),firstOk=useRef(true);
  const [review,setReview]=useState<NativeReview|null>(null),[nativeBox,setNativeBox]=useState<NativeBox|null>(null),[resultsOpen,setResultsOpen]=useState(false);
  useEffect(()=>{if(draft&&dialog.current?.open)manualInput.current?.focus();},[draft?.readingId]);
@@ -185,7 +190,12 @@ function Photometer({active,initialState=null,controllerRef,onStateChange,invest
  }catch(e){failure(e);}}
 
  function save(){setError('');try{release();if(current.current){download(serializePhotometerSession(current.current));setNotice(t('ph.saved'));}}catch(e){failure(e);}}
- async function restore(file:File){if(busy)return;setError('');release();const ticket=++loadEpoch.current;pendingLoad.current=true;setBusy(true);try{const s=await readPhotometerSession(file);if(ticket!==loadEpoch.current||!available.current)return;structMeta.current.clear();commit(s);onDraftsChange(defaultPhotometryDraft(s));setNotice(t('ph.restored'));}catch(e){if(ticket===loadEpoch.current)failure(e);}finally{if(ticket===loadEpoch.current){pendingLoad.current=false;setBusy(false);}}}
+ async function restore(file:File){if(busy)return;setError('');release();const ticket=++loadEpoch.current;pendingLoad.current=true;setBusy(true);try{const s=await readPhotometerSession(file);if(ticket!==loadEpoch.current||!available.current)return;structMeta.current.clear();commit(s);onDraftsChange(defaultPhotometryDraft(s));
+  // Front ONERESULTS [W]: a photometer session file fills an empty Observational Results list with its Record/Review rows (as an
+  // older investigation migrates); a list that already holds records is left as it is.
+  let skipped=false;
+  if(results&&s.native?.rows.length){if(results.get().records.length)skipped=true;else try{results.commit(migrateObservationList({photometer:s.native.rows,hubble:[]}));}catch(e){if(!(e instanceof ObservationListError))throw e;}}
+  setNotice(skipped?t('ph.restored')+' '+t('ph.nativeRestoreSkipped'):t('ph.restored'));}catch(e){if(ticket===loadEpoch.current)failure(e);}finally{if(ticket===loadEpoch.current){pendingLoad.current=false;setBusy(false);}}}
  const timing=state?.timing??LEGACY_PHOTOMETER_TIMING;
  const filter=state?.filter??'V',target=photometerTargetView(state?.targetId??defaultTarget.catalogId),tiledLimit=target.tiled&&state?tiledPhotometerReason(target.catalogId,benchIndex,aperture):null;
  const domainLimit=!target.tiled&&state?photometerFullDomainExclusion(target.catalogId,benchIndex):null;
@@ -221,20 +231,36 @@ function Photometer({active,initialState=null,controllerRef,onStateChange,invest
  // Front P3: File › Data › Record/Review (Record1Click 0x501e7c). The merge happens before the dialog natively; the web commits
  // one event when the dialog closes, which is equivalent because the dialog is modal and nothing else changes in between.
  const struct=photometerStructReading(state),canNative=armed&&!busy&&!running&&!!struct&&structMeta.current.has(struct.id)&&photometerStructRecordable(struct,state?.native);
- const nativeRows=state?.native?.rows??[];
+ const nativeRows=shownList.records;
+ /** Record1Click 0x501e7c up to ShowModal on the shared list: find-or-add 0x54a73c across routes, the photometer's writes, then
+  * FormActivate's c·z store (0x54aefc). */
+ function sharedMerge(list:ObservationList,r:PhotometerStructReading,input:PhotometerNativeInput){
+  const pos=observationListFindOrAdd(list,input.id,input.jd,input.timeDependent);
+  const written=observationListPhotometer(pos.list,pos.index,{ra:input.ra,dec:input.dec,kind:PHOTOMETER_NATIVE_KIND,bands:photometerStructBands(r)});
+  return {list:observationListActivate(written,pos.index,results?.options().computeRedshiftVelocity??false),index:pos.index};
+ }
  function openReview(from:'menu'|'start'):boolean{
   const s=current.current,r=photometerStructReading(s),meta=r?structMeta.current.get(r.id):undefined;
   if(!s||!r||!meta||!photometerStructRecordable(r,s.native))return false;
   const p=link.current?.pointing??field.pointing,input:PhotometerNativeInput={id:meta.name,jd:meta.jd,ra:p.ra,dec:p.dec,timeDependent:!!link.current?.timeDependentData};
-  try{const m=photometerNativeMerge(s.native,r,input),view=observationalDataFields(photometerNativeData(m.rows),m.index);
+  if(!results||!validPhotometerNativeInput(input)){setError(t('ph.nativeBlocked'));return false;}
+  try{const base=results.get(),m=sharedMerge(base,r,input),view=observationalDataFields(observationListData(m.list),m.index);
    if(view.kind!=='ready'){setError(t('ph.nativeBlocked'));return false;}
-   setError('');setReview({fields:view.fields,readingId:r.id,input,from});return true;
-  }catch(e){failure(e);return false;}
+   setError('');setReview({fields:view.fields,readingId:r.id,input,from,base,shared:{list:m.list,index:m.index}});return true;
+  }catch(e){if(e instanceof ObservationListError){setError(t(e.code==='limit'?'ph.nativeListFull':'ph.nativeBlocked'));return false;}failure(e);return false;}
  }
  /** OK (0x54b02c) or Cancel (0x54b2dc), then Record1Click's tail (0x501f9a–0x502043) and, from Start, 0x4fffd4's follow-up. */
  function finishReview(result:Readonly<{ok:true;remarks:string;spectralCode:number}>|Readonly<{ok:false}>){
   const r=review;if(!r||!current.current)return;let done=false;
+  // The shared list keeps the merged record on OK and on Cancel alike (Cancel 0x54b2dc rolls nothing back, [D]); OK adds the
+  // remarks and the Sp code. Review 1 L2: the next list is prepared first and the journal event is committed only when it can be
+  // stored, so the two never disagree; a list changed while the dialog was open refuses both.
+  if(!results||results.get()!==r.base){setReview(null);setError(t('ph.nativeStale'));return;}
+  let next:ObservationList;
+  try{next=result.ok?observationListOk(r.shared.list,r.shared.index,{remarks:result.remarks,spectralCode:result.spectralCode}):r.shared.list;}
+  catch(e){if(e instanceof ObservationListError){setReview(null);setError(t('ph.nativeBlocked'));return;}throw e;}
   try{commit(photometerEvent(current.current,{type:'nativeRecord',readingId:r.readingId,...r.input,ok:result.ok,remarks:result.ok?result.remarks:'',spectralCode:result.ok?result.spectralCode:0}));done=true;}catch(e){failure(e);}
+  if(done)results.commit(next);
   setReview(null);
   if(done&&result.ok){
    if(firstOk.current){firstOk.current=false;setNativeBox({kind:'saved',then:r.from==='start'?'start':null});return;}
@@ -274,7 +300,7 @@ function Photometer({active,initialState=null,controllerRef,onStateChange,invest
  <details><summary>{t('ph.raw')}</summary><p>{t('ph.sourceCounts')}: <output data-testid="photo-source">{reading?.callback.sourceCount??'—'}</output> · {t('ph.skyCounts')}: <output data-testid="photo-background">{reading?.callback.skyCount??'—'}</output></p><p>{t('ph.currentSeed')}: <output data-testid="photo-seed">{state?.seed??'—'}</output> · {t('ph.readings')}: {state?.readings.length??0}</p><label htmlFor="photo-seed-input">{t('ph.seed')}</label><input id="photo-seed-input" inputMode="numeric" value={seed} maxLength={80} disabled={armed||busy} onChange={e=>setSeed(e.target.value)}/><button className="secondary-button" disabled={armed||busy||!configurationAvailable||!isPhotometerTelescopeIndex(telescopeIndex)} onClick={()=>{setError('');try{structMeta.current.clear();commit(freshPhotometer());const next=defaultPhotometryDraft(current.current??undefined);latestDrafts.current=next;onDraftsChange(next);setNotice(t('ph.newHelp'));}catch(e){failure(e);}}}>{t('ph.new')}</button><p>{t('ph.newHelp')}</p></details></section></div>
  <div className="observatory-feedback">{notice&&<p role="status">{notice}</p>}{error&&<p role="alert">{error}</p>}</div>
  <section className="card photometer-notebook"><h2>{t('ph.notebook')}</h2><p>{t('ph.notebookHelp')}</p><div className="photometer-table"><table><thead><tr><th>{t('ph.readingId')}</th><th>{t('ph.targetColumn')}</th><th>{t('ph.band')}</th><th>{t('ph.telescopeColumn')}</th><th>{t('ph.apertureColumn')}</th><th>{t('ph.manualMagnitude')}</th><th>{t('ph.note')}</th></tr></thead><tbody>{state?.entries.map(e=><tr key={e.readingId}><td>{e.readingId}</td><td>{PLEIADES_PHOTOMETER_TARGETS.find(t=>t.catalogId===readingFor(e.readingId)?.targetId)?.hotlistLabel??'—'}</td><td>{readingFor(e.readingId)?.filter}</td><td>{opticalProfile(readingFor(e.readingId)?.telescopeIndex??0).name}</td><td>{readingFor(e.readingId)?.apertureSelector??10}</td><td>{num(e.value)}</td><td>{e.note}</td></tr>)}</tbody></table></div>{!state?.entries.length&&<p>{t('ph.empty')}</p>}
- <section className="photometer-native" aria-labelledby="photo-native-title"><h3 id="photo-native-title">{t('ph.nativeTitle')}</h3><p>{t('ph.nativeHelp',{count:nativeRows.length})}</p><button type="button" className="secondary-button" data-testid="photo-native-results" disabled={!nativeRows.length||busy} onClick={()=>setResultsOpen(true)}>{t('ph.nativeResults')}</button>{resultsOpen&&nativeRows.length>0&&<RecordedResultsWindow data={photometerNativeData(nativeRows)} testId="photo-native-list" onClose={()=>setResultsOpen(false)}/>}</section>
+ <section className="photometer-native" aria-labelledby="photo-native-title"><h3 id="photo-native-title">{t('ph.nativeTitle')}</h3><p>{t('ph.nativeHelp',{count:nativeRows.length})}</p><button type="button" className="secondary-button" data-testid="photo-native-results" disabled={!nativeRows.length||busy} onClick={()=>setResultsOpen(true)}>{t('ph.nativeResults')}</button>{resultsOpen&&nativeRows.length>0&&<RecordedResultsWindow data={observationListData(shownList)} testId="photo-native-list" onClose={()=>setResultsOpen(false)}/>}</section>
  <section className="photometer-color" aria-labelledby="photo-color-title"><h3 id="photo-color-title">{t('ph.colorTitle')}</h3><p>{t('ph.colorHelp',{target:target.hotlistLabel})}</p>
  <label htmlFor="photo-b-reading">{t('ph.bReading')}</label><select id="photo-b-reading" value={bReading} disabled={running||busy} onChange={e=>onDraftsChange({...drafts,bReadingId:e.target.value?Number(e.target.value):null})}><option value="">{t('ph.chooseReading')}</option>{entriesForTarget.filter(e=>readingFor(e.readingId)?.filter==='B').map(e=><option key={e.readingId} value={e.readingId}>{t('ph.telescopeReadingOption',{id:e.readingId,value:num(e.value),selector:readingFor(e.readingId)?.apertureSelector??10,telescope:opticalProfile(readingFor(e.readingId)?.telescopeIndex??0).name})}</option>)}</select>
  <label htmlFor="photo-v-reading">{t('ph.vReading')}</label><select id="photo-v-reading" value={vReading} disabled={running||busy} onChange={e=>onDraftsChange({...drafts,vReadingId:e.target.value?Number(e.target.value):null})}><option value="">{t('ph.chooseReading')}</option>{entriesForTarget.filter(e=>readingFor(e.readingId)?.filter==='V').map(e=><option key={e.readingId} value={e.readingId}>{t('ph.telescopeReadingOption',{id:e.readingId,value:num(e.value),selector:readingFor(e.readingId)?.apertureSelector??10,telescope:opticalProfile(readingFor(e.readingId)?.telescopeIndex??0).name})}</option>)}</select>

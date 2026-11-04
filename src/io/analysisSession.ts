@@ -44,6 +44,7 @@ import {observingUsesExtendedGalaxies} from '../core/observingWorkspace';
 import umiCached from '../../data/hubble/umi-cached-provenance.json';
 import {HUBBLE_OBSERVATION_POLICY,portableHubbleObservation,readHubbleObservation,type HubbleObservation} from '../core/hubbleObservation';
 import {hubbleObservationTarget} from './hubbleObservationTarget';
+import {OBSERVATION_LIST_POLICY,ObservationListError,migrateObservationList,portableObservationList,readObservationList,sameObservationList,type ObservationList,type ObservationListSources} from '../core/sharedObservationList';
 
 /** New portable browser format, not the original CLEA saved-spectrum format. */
 export const SESSION_PAYLOAD_BYTES=16*1024*1024,MAX_SESSION_BYTES=SESSION_PAYLOAD_BYTES+MAX_PROJECT_METADATA_GROWTH;
@@ -63,7 +64,31 @@ export type AnalysisSession=Readonly<{
   objectX?:ObjectXInvestigation;
   /** Front G G4c (v33): the field spectrometer's field and exposure at any pointing. Absent in v1..32 files. */
   fieldSpectrum?:FieldSpectrumRecord;
+  /** Front ONERESULTS (v35): VIREO's one Observational Results list (core/sharedObservationList.ts). A restored session has it
+   * when it has records: from a v35 file, or migrated from the photometer rows and Hubble records of an older one. */
+  observationList?:ObservationList;
 }>;
+/** Front ONERESULTS: what an investigation kept before the shared list (photometer owner 15 rows; Hubble v32 records, keyed by
+ * their acquisition's catalogue target as Record keys them). */
+function observationListSources(s:AnalysisSession):ObservationListSources{
+  const acquisitions=s.acquisitions??[];
+  return {photometer:s.photometry?.native?.rows??[],hubble:s.rows.flatMap(r=>{
+    const o=r.observation;if(!o)return [];
+    const a=acquisitions.find(x=>x.acquisitionId===r.origin?.acquisitionId);if(a?.kind!=='catalog-galaxy-acquisition')fail('state');
+    return [{id:hubbleObservationTarget(a).id,jd:o.jd,ra:o.ra,dec:o.dec,zSingle:r.zFloat32,velocitySingle:o.velocitySingle,spectralCode:o.spectralCode,remarks:o.remarks,vMagnitude:o.vMagnitude}];
+  })};
+}
+/** Review 1 L3: an older file whose photometer rows and Hubble records together exceed the list's 1000 records fails with its
+ * own code ('observation-list'), which the page names. */
+function migratedObservationList(s:AnalysisSession):ObservationList{try{return migrateObservationList(observationListSources(s));}catch(e){if(e instanceof AnalysisSessionError)throw e;if(e instanceof ObservationListError&&e.code==='limit')fail('observation-list');fail('state');}}
+/** The migration, or null when it would exceed the list (then no list of at most 1000 records can equal it). */
+function migratedOrNull(s:AnalysisSession):ObservationList|null{try{return migratedObservationList(s);}catch(e){if(e instanceof AnalysisSessionError&&e.code==='observation-list')return null;throw e;}}
+const sameAsMigration=(list:ObservationList,s:AnalysisSession)=>{const m=migratedOrNull(s);return m!==null&&sameObservationList(list,m);};
+/** A restored session carries the shared list when it has records (an older file: the migration); none means an empty list. */
+function withObservationList(s:AnalysisSession):AnalysisSession{if(s.observationList)return s;const list=migratedObservationList(s);return list.records.length?Object.freeze({...s,observationList:list}):s;}
+/** Front ONERESULTS (v35): the shared list around an unchanged v1..34 base, outermost and never nested. A list equal to what the
+ * migration derives from its base is written as the base alone, byte for byte, and a v35 holding such a list is refused. */
+export {OBSERVATION_LIST_POLICY};
 /** Front F (v29): the extended Hubble.HTL targets (hubbleEngineTargets.ts). A v29 file wraps an unchanged v1..28 base,
  * outermost, and carries the extended-target policy, the binary hash and the banks of every (telescope, target) key in table
  * order (observing.extendedGalaxies). Only inside a v29 may the base archive hold more than 12 (up to 16) acquisitions, and
@@ -205,6 +230,16 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
  if(!migrated&&!hooks.variableTime&&!hooks.nativeDialog){try{value=projectMetadata(value);}catch{fail('format');}}
   if(!value||typeof value!=='object')fail('format');
   const version=(value as {version:unknown}).version;
+  if(version===35){
+    if(migrated||hooks.variableTime||hooks.nativeDialog)fail('format');
+    const r=record(value,['format','version','numericalPolicy','base','observationListPolicy','observationList']);
+    const baseVersion=r.base&&typeof r.base==='object'?(r.base as {version?:unknown}).version:null;
+    if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.observationListPolicy!==OBSERVATION_LIST_POLICY||!Number.isInteger(baseVersion)||Number(baseVersion)<1||Number(baseVersion)>34)fail('format');
+    let list:ObservationList;try{list=readObservationList(r.observationList);}catch{fail('format');}
+    const base=await restore(r.base,verifySources,false,false,false,false,false,false,hooks);
+    if(sameAsMigration(list!,base))fail('format');// canonical: such a list is written as its base
+    return Object.freeze({...base,observationList:list!});
+  }
   if(version===34){
     if(migrated||hooks.variableTime||hooks.nativeDialog)fail('format');
     const r=record(value,['format','version','numericalPolicy','base','lssFreePolicy','lssFreeDigestSHA256','lssFree']);
@@ -467,8 +502,15 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
   return Object.freeze({...(optical?{optical}:{}),...(editing?{editing}:{}),...(observing?{observing}:{}),...(photometry?{photometry}:{}),...(classification?{classification}:{}),observation,control:s,stepInput,reference:a.reference as keyof typeof REFERENCES,wide:a.wide,object,rows:Object.freeze(rows),hubble,...(version>=3?{acquisitions:Object.freeze(acquisitions)}:{})});
 }
 /** wrapped: the wrapper levels already emitted above this call (v25 Pegasus outermost, then v24 cached). */
-type Wrapped=Readonly<{cached?:true;pegasus?:true;extended?:true;variableTime?:true;nativeDialog?:true;observational?:true;field?:true;free?:true}>;
+type Wrapped=Readonly<{cached?:true;pegasus?:true;extended?:true;variableTime?:true;nativeDialog?:true;observational?:true;field?:true;free?:true;list?:true}>;
 async function portable(session:AnalysisSession,wrapped:Wrapped={}):Promise<unknown> {
+  // Front ONERESULTS (v35, outermost): the shared Observational Results list when it differs from the migration of its base.
+  if(!wrapped.list&&session.observationList!==undefined){
+    const {observationList,...rest}=session,base=rest as AnalysisSession;
+    if(!sameAsMigration(observationList,base))
+      return {format:FORMAT,version:35,numericalPolicy:POLICY,base:await portable(base,{...wrapped,list:true}),observationListPolicy:OBSERVATION_LIST_POLICY,observationList:portableObservationList(observationList)};
+    session=base;
+  }
   // Front LSSFREE (v34, outermost): the LSS list's free-pointing records around an unchanged base whose v27 layer keeps the
   // hot-list records. A list without them keeps its older version and bytes exactly.
   if(!wrapped.free&&session.lss?.records.some(r=>r.free)){
@@ -562,7 +604,7 @@ export async function readAnalysisSession(file:File):Promise<AnalysisSession> {
   const bytes=await file.arrayBuffer();if(bytes.byteLength>MAX_SESSION_BYTES)fail('size');
   let value:unknown;
   try{value=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));}catch{fail('format');}
-  try{if(!projectBytesFit(bytes.byteLength,value,SESSION_PAYLOAD_BYTES))fail('size');}catch{fail('size');}return restore(value);
+  try{if(!projectBytesFit(bytes.byteLength,value,SESSION_PAYLOAD_BYTES))fail('size');}catch{fail('size');}return withObservationList(await restore(value));
 }
 
 /** One UI entry can restore a complete analysis or merge a supported legacy
@@ -575,5 +617,5 @@ export async function readInvestigationSession(file:File,hooks:RestoreHooks={}):
  if(value&&typeof value==='object'&&projectMarker((value as {format:unknown}).format)==='OpenVireo stellar classification session'){
   if(bytes.byteLength>MAX_CLASSIFICATION_BYTES)fail('size');try{if(!projectBytesFit(bytes.byteLength,value,CLASSIFICATION_PAYLOAD_BYTES))fail('size');}catch{fail('size');}return {kind:'practice',state:parseClassificationSession(value)};
  }
- return {kind:'analysis',session:await restore(value,true,false,false,false,false,false,false,hooks)};
+ return {kind:'analysis',session:withObservationList(await restore(value,true,false,false,false,false,false,false,hooks))};
 }
