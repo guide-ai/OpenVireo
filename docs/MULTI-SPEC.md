@@ -90,9 +90,12 @@ All entries. Lab rows whose neighbours lie within that distance stay masked afte
 `star-template-none` (nil lookup 0x50d660; Front MSTNONE, research front-mstnone/RECOVERY.md: VIREO shows the single
 spectrometer's "No Spectrum" box, "Spectrum Index is Invalid!" / "Spectrum Index: n" / "You Cannot Record A Spectrum of This
 Star!" (0x5279cb..0x527a26) [D], returns without a template, and the flux loop then reads through the nil template (0x55dfe0 at
-0x55dff0): an access violation [D read, I handling] that stops AddSpectrum's loop at that fibre, so that fibre and the later ones
-get no spectrum and the list form is not shown. [W] The crash and the partial list are not reproduced: the fibre stays typed, its
-text quotes the box, and the other fibres keep their spectra), `star-template-random` (index 0: the native random pick, Random(131) over JSPEC2.SPI after Randomize, so not
+0x55dff0): an access violation [D read, I handling] that stops the selection loop 0x52a79c at that fibre, so that fibre and the
+later ones get no spectrum and this Stop does not show the list form (0x52a80e skipped; the earlier fibres' items were already
+added, and the form may already be visible). [W] The crash and the partial list are not reproduced: the fibre stays typed, its
+text quotes the box, and the other fibres keep their spectra. Reach: 2 stars on the D3 field bases (above); at arbitrary pointings
+('gsc-tiles', Front G) every compact GSC star whose index is above JSPEC2.SPI's last index 70702000, 5468 of the 18 841 240
+published records (research front-mstnone/gsc-index-scan.json; most often 70995000, 70993000, 73990000, 73995000)), `star-template-random` (index 0: the native random pick, Random(131) over JSPEC2.SPI after Randomize, so not
 reproducible; all 132 templates are bundled since 2026-10-30. It is unreachable with the published data: none of the compact
 GSC records has code 0, a code-0 variable makes the dispatch FALSE, and QSOs are type 3; Front RE6, research
 front-re6/random-template-code0.md, as in docs/FIELD-SPECTROMETER.md. It stays typed), `galaxy-lookup`, `spectrum-mapping` (own galaxy

@@ -145,7 +145,7 @@ describe('Front M: fibre contract',()=>{
  it('Front MSTNONE: a nil JSPEC2.SPI match (0x50d660: below 10 000 000 or past the last index) is typed star-template-none, nothing else',()=>{
   const last=Math.max(...ctx.starIndex.map(e=>e.index));expect(last).toBe(70702000);
   expect(prepareMultiSpecFibre(star({spectralIndex:last}),ctx,1)).toMatchObject({status:'ready',sourceFile:'A0000113.SP'});
-  // The two published stars (N2230-01637, N3000-02231) and the edges of the nil ranges.
+  // The two D3-basis stars (N2230-01637, N3000-02231) and the edges of the nil ranges.
   for(const spectralIndex of [70993000,81990000,last+1,9_999_999,1])
    expect(prepareMultiSpecFibre(star({spectralIndex}),ctx,1),String(spectralIndex)).toEqual({status:'unavailable',reason:'star-template-none'});
   expect(prepareMultiSpecFibre(star({type:2,spectralIndex:70993000}),ctx,1)).toEqual({status:'unavailable',reason:'star-template-none'});

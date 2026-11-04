@@ -55,7 +55,7 @@ The Spectrometer page (`#spectrometer`) now holds VIREO's single-slit spectromet
     nearest-even; G4a closure N1), so every index that 0x50d660 resolves gets its template, including the 1,176 GSC records
     whose index is not a multiple of 100 (many naked-eye stars). The bucket agrees with an independent 80-bit witness;
   - `star-index-invalid`: 0x50d660 returns nil (5,468 GSC records have an index above JSPEC2.SPI's last row); VIREO shows
-    "You Cannot Record A Spectrum of This Star! Spectrum Index is Invalid!" and records nothing;
+    "Spectrum Index is Invalid!" / "Spectrum Index: n", then "You Cannot Record A Spectrum of This Star!" and records nothing;
   - `star-template-random`: a star whose spectral code is 0. VIREO draws Random(131) over the sorted JSPEC2.SPI list (0x50e38a,
     RandSeed 0x5ae008 after Randomize, so not reproducible). It is unreachable with the published data: none of the 18,841,240
     compact GSC records has code 0, a code-0 variable makes the dispatch FALSE, and QSOs are type 3 (Front RE6,

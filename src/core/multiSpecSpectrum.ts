@@ -25,9 +25,10 @@
  * Index is Invalid!" CRLF "Spectrum Index: n" CRLF CRLF "You Cannot Record A Spectrum of This Star!" (0x5279cb..0x527a26, MB_OK |
  * MB_ICONSTOP), and returns without storing the template (0x527a2b skips 0x527a30) [D]. The flux loop then calls 0x55dfe0 on the
  * nil template (0x52720b..0x52721f), whose first read is [nil+6] (0x55dff0): an access violation that ends the fibre's setup and
- * the rest of AddSpectrum's loop 0x52a79c [D read; I the RTL/VCL handling]. Web [W]: the crash and its partial list are not
- * reproduced; the fibre stays typed 'star-template-none' (two published stars, N2230-01637 and N3000-02231) and the other fibres
- * are unaffected.
+ * the rest of the selection loop 0x52a79c [D read; I the RTL/VCL handling]. Web [W]: the crash and its partial list are not
+ * reproduced; the fibre stays typed 'star-template-none' and the other fibres are unaffected. On the certified D3 field bases (LSS
+ * rows, Hubble Coma/Boötes, Object X) that is two stars, N2230-01637 and N3000-02231; at arbitrary pointings ('gsc-tiles') every
+ * compact GSC star above index 70702000 (5468 of the 18 841 240 published records, analysis/front-mstnone/gsc-index-scan.json).
  *
  * Typed (never the native fault or message box): a nil template, the code-0 random pick (all 132 templates are bundled since
  * 2026-10-30, but the random state is not reproduced; no compact GSC record has code 0), a TRUE-dispatch star without values, a galaxy name
