@@ -139,10 +139,16 @@ export function markLssHandedToWedge(s:LssSurveyState,upTo=s.records.length):Lss
  if(!Number.isInteger(upTo)||upTo<(s.wedgeStale?0:s.handedToWedge)||upTo>s.records.length)throw new LssSurveyError('record');
  return Object.freeze({...s,handedToWedge:upTo,wedgeStale:false});
 }
-/** The guide's galaxy and field counts [W] (review 1 L1): hot-list records, and free-pointing records whose ID is a hot-list galaxy
- * (counted in the field of its first hot-list row), so re-measuring a listed galaxy from a free pointing, which reuses and
- * replaces its row (0x57c918), still counts. Other free records (stars, unlisted galaxies, QSOs) count as records only. */
-const LISTED_FIELD=new Map<string,LssFieldNumber>();for(const r of LSS_ROWS)if(!LISTED_FIELD.has(r.id))LISTED_FIELD.set(r.id,r.field);
+/** Hot-list rows whose slit selects another catalogue galaxy (`neighbour`): row label → the selected ID, which is what a hot-list
+ * record of that row stores. The same on all three telescopes, without and with the default clock JD; pinned against the frozen
+ * row fingerprints and the row evaluation (lssFreeRecord.test.ts). */
+export const LSS_NEIGHBOUR_SELECTIONS:ReadonlyMap<string,string>=new Map([['12550+2749','NGC 4842'],['IC 4395A','IC 4395'],['NGC 5639A','NGC 5639'],['14520+3025W','14520+3025E'],['15384+2831W','15384+2831E'],['15384+2831S','15384+2831E']]);
+/** The guide's galaxy and field counts [W] (review 1 L1, closure 1): hot-list records, and free-pointing records whose ID is a
+ * hot-list galaxy, a row's label or the galaxy its slit selects (counted in the field of its first row), so re-measuring a listed
+ * galaxy from a free pointing, which reuses and replaces its row (0x57c918), still counts. Other free records (stars, unlisted
+ * galaxies, QSOs) count as records only. */
+const LISTED_FIELD=new Map<string,LssFieldNumber>();
+for(const r of LSS_ROWS)for(const id of [r.id,LSS_NEIGHBOUR_SELECTIONS.get(r.id)])if(id!==undefined&&!LISTED_FIELD.has(id))LISTED_FIELD.set(id,r.field);
 export function lssGuideCounts(records:readonly LssRecord[]):Readonly<{galaxies:number;fields:number}>{
  const galaxies=new Set<string>(),fields=new Set<LssFieldNumber>();
  for(const r of records){const field=r.free?LISTED_FIELD.get(r.object):r.field;if(field===undefined)continue;galaxies.add(r.object);fields.add(field);}

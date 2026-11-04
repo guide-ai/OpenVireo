@@ -1,7 +1,15 @@
 import {describe,expect,it} from 'vitest';
+import {readFileSync} from 'node:fs';
+import fingerprints from './galaxyRange.fingerprints.json';
+import {glxRecordAt} from './glxCatalog';
+import {LSS_ROWS,lssFieldRows,type LssFieldNumber} from './lssFields';
+import {decodeFieldPack} from './fieldPack';
+import {GLIMAGES_LST,packWithPhotographs,parseGlimagesPositions} from './lssLists';
+import {evaluateLssRow} from './lssExposure';
+import {repositoryLssSpectrumInputs} from '../io/lssSpectrumInputs.node';
 import {loadedSpectrumId,observationStem} from './observationMetadata';
 import {lssFreeDraft,type LssFreeSource} from './lssFreeRecord';
-import {EMPTY_LSS_SURVEY,cancelLssRecord,confirmLssDialog,editLssDraft,lssGuideCounts,lssResultsCsv,openLssRecord,type LssSurveyState} from './lssSurvey';
+import {EMPTY_LSS_SURVEY,LSS_NEIGHBOUR_SELECTIONS,cancelLssRecord,confirmLssDialog,editLssDraft,lssGuideCounts,lssResultsCsv,openLssRecord,type LssSurveyState} from './lssSurvey';
 import {lssPrefilledVelocity} from './lssRedshiftDialog';
 import {lssResultsTxtBytes} from './lssResultsTxt';
 import {lssPolicy} from './lssExposure';
@@ -65,5 +73,41 @@ describe('a free-pointing Record Z in the LSS list',()=>{
  it('refuses a free draft that claims a field, a row or a list JD',()=>{
   const d=lssFreeDraft(source('X'),moveControl(step,3),2451545);
   for(const bad of [{...d,field:1},{...d,row:0},{...d,fieldJd:2451545},{...d,countsSha256:'x'}])expect(()=>openLssRecord(EMPTY_LSS_SURVEY,bad as typeof d)).toThrow();
+ });
+});
+
+describe('guide counts for hot-list galaxies measured from a free pointing (closure 1)',()=>{
+ const glx=new Uint8Array(readFileSync('public/original/catalogs/CLEA_GLX.DAT'));
+ it('the neighbour table equals every frozen row fingerprint that selects another galaxy, on all three telescopes',()=>{
+  const neighbours=new Map<string,string>();
+  for(const entry of fingerprints.lss){
+   const [key,status,index]=entry.split('|'),m=/^F(\d)R(\d+)T([012])$/.exec(key)!;
+   if(status!=='neighbour')continue;
+   const row=lssFieldRows(Number(m[1]) as LssFieldNumber)[Number(m[2])-1],id=glxRecordAt(glx,Number(index)).id;
+   expect(neighbours.get(row.id)??id).toBe(id);neighbours.set(row.id,id);
+  }
+  expect(neighbours).toEqual(LSS_NEIGHBOUR_SELECTIONS);
+ });
+ it('rows that need the clock time select their own galaxy or a tabled neighbour at the default JD, on all three telescopes',()=>{
+  const photos=parseGlimagesPositions(new Uint8Array(readFileSync('public'+GLIMAGES_LST.path))),spectra=repositoryLssSpectrumInputs();
+  const pack=(f:LssFieldNumber)=>packWithPhotographs(decodeFieldPack(JSON.parse(readFileSync(`data/lss/lss-field-0${f}.json`,'utf8'))),photos);
+  let checked=0;
+  for(const entry of fingerprints.lss){
+   const [key,status,reason]=entry.split('|'),m=/^F(\d)R(\d+)T([012])$/.exec(key)!;
+   if(status!=='unavailable'||reason!=='variable-time-required')continue;
+   const field=Number(m[1]) as LssFieldNumber,row=lssFieldRows(field)[Number(m[2])-1];
+   const s=evaluateLssRow(pack(field),glx,row,Number(m[3]) as 0|1|2,spectra,{jd:2451545,source:'observatory-clock'},{minimum:3700,maximum:4700});
+   if(s.kind==='unavailable')continue;checked++;
+   expect(s.selectedId).toBe(LSS_NEIGHBOUR_SELECTIONS.get(row.id)??row.id);
+  }
+  expect(checked).toBeGreaterThan(0);
+ },120000);
+ it('a free record of NGC 4842 (selected by row 12550+2749) counts, alone or reusing that row',()=>{
+  expect(LSS_ROWS.some(r=>r.id==='NGC 4842')).toBe(false);
+  const alone=ok(openLssRecord(EMPTY_LSS_SURVEY,lssFreeDraft(source('NGC 4842'),moveControl(step,9),2451545)));
+  expect(lssGuideCounts(alone.records)).toEqual({galaxies:1,fields:1});
+  let s=row(EMPTY_LSS_SURVEY,'NGC 4842',9);expect(lssGuideCounts(s.records)).toEqual({galaxies:1,fields:1});
+  s=ok(openLssRecord(s,lssFreeDraft(source('NGC 4842'),moveControl(step,10),2451546)));
+  expect(s.records).toHaveLength(1);expect(s.records[0].free).toBe(true);expect(lssGuideCounts(s.records)).toEqual({galaxies:1,fields:1});
  });
 });

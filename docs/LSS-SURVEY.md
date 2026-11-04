@@ -303,7 +303,7 @@ Research note: analysis/front-lssparse/RECOVERY.md. Static reading of CLEA_VEO.e
 - **Counts.** Field centres are not used to acquire rows, so E02 stays 218 / 218 / 218 (212 without the clock).
 
 ## Free pointing: any object into the LSS list (Front LSSFREE, 2026-11-04)
-Research note: analysis/front-lssfree/RECOVERY.md (excerpts.asm SHA-256 24e41e10…a18b); plan
+Research note: analysis/front-lssfree/RECOVERY.md (excerpts.asm SHA-256 d1b1b065…56e1); plan
 analysis/front-plans/front-lssfree.md. Static reading of CLEA_VEO.exe 781bc970…c54c; nothing executed.
 - **What VIREO does [D].**
   - The spectrometer has no Record item; its File › Data menu only saves the spectrum. The only Record Z is the measuring
@@ -322,7 +322,7 @@ analysis/front-plans/front-lssfree.md. Static reading of CLEA_VEO.exe 781bc970�
     - the default instrument is the spectrometer (table at 0x538064);
     - InstSlider is hidden (0x53a296);
     - click selection in the field is armed only with Edit Mode or in modes 0/1 (0x53cfa8);
-    - the results tables at 0x546e43 and 0x590923.
+    - two jump tables on the exercise byte, at 0x546e43 and 0x590923 (their cases not traced).
   - None restricts free pointing [I: none of the 15 literal compares with 5 is in a slew or pointing path]. Load Hot List
     (visible in mode 5, 0x5378b1) only slews.
 - **Here.**
@@ -344,8 +344,8 @@ analysis/front-plans/front-lssfree.md. Static reading of CLEA_VEO.exe 781bc970�
   - Each free record is stored with its list position, ID, JD, RA/Dec, z/velocity bits, remarks, shift control and the
     field-spectrometer exposure (policy, seed, compact events), plus a SHA-256 over what the replay derives.
   - Save only serializes (review 1 M2). The digest uses each record's counts digest, taken when Analyze handed the exposure over,
-    so no tile is read. An open tab saves offline or after a redeploy (Front D3 M1); the module is preloaded with the other Save
-    modules.
+    so no tile is read. An open tab saves offline or after a redeploy (Front D3 M1); `lssFreeRecords` is statically re-exported
+    by `analysisSession.ts`, so it ships with the Save module itself.
   - Restore first checks every record and decodes every journal against the event budget shared with the v27 layer (review 1 M1).
     Only then does it assemble each field again from the compact GSC tiles at the policy's pointing, telescope, JD and range, with the
     Object X mask. It then replays the journal, rebuilds the .SSP and compares the ID and pointing. It re-derives z from the
@@ -362,8 +362,9 @@ analysis/front-plans/front-lssfree.md. Static reading of CLEA_VEO.exe 781bc970�
   - Only spectra handed over by Analyze, whose exposure the file can replay. A .SSP opened from disk stays in the analyser's log.
   - The ID uses the object's name even when Show Object ID is off. VIREO's Save would then propose `UNKNOWN.SSP` or `ObjX-<student>.SSP`.
   - A free measurement of a galaxy already on the list reuses its row (0x57c918) and replaces its hot-list exposure with the free
-    one. The guide's galaxy and field counts take hot-list records and free records whose ID is a hot-list galaxy (counted in its
-    first row's field), so such a re-measurement still counts (`lssGuideCounts`). Stars, unlisted galaxies and QSOs count as
+    one. The guide's galaxy and field counts take hot-list records and free records whose ID is a hot-list galaxy (a row's label,
+    or the galaxy a `neighbour` row's slit selects, `LSS_NEIGHBOUR_SELECTIONS`: 12550+2749 → NGC 4842, IC 4395A → IC 4395,
+    NGC 5639A → NGC 5639), counted in its first row's field, so such a re-measurement still counts (`lssGuideCounts`). Stars, unlisted galaxies and QSOs count as
     records only.
   - An Analyze'd spectrum whose header or ID cannot be built is refused with a one-line reason; it is not silently logged.
 - **Unchanged.** Hot-list rows stay galaxy-only (D5 above): E02 218 / 218 / 218 (212 without the clock), the LSS fingerprints,
