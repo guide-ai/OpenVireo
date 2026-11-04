@@ -165,6 +165,13 @@
    "sha256": "120ca5ba74e2cff534ec0fcc8328b286c9c9f4b99bf1ae9c4779a0ae0cd1f162",
    "addresses": "0x55f0d0..0x55f12c",
    "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VM-L-mstnone-excerpts",
+   "path": "analysis/front-mstnone/excerpts.asm",
+   "sha256": "5e2b532c15c3f8057bf2fd94aaa1a129ff77f3ed01aaa933785e9c25fb5b56f4",
+   "addresses": "0x526fb4..0x52724c, 0x527411..0x527449, 0x52789c..0x527a6c, 0x55dfe0..0x55e01d, 0x50d660..0x50d749, 0x4924d4..0x4924fc, 0x526cf0..0x526d09, 0x526d3c..0x526e4d, 0x5258c4..0x525bbe, 0x52a2d4..0x52a3d2, 0x52a79c..0x52a81d, 0x47e00c..0x47e2b5",
+   "kind": "objdump -d -M intel excerpts of CLEA_VEO.exe (static), with the message strings (Front MSTNONE)"
   }
  ],
  "contracts": [
@@ -292,6 +299,22 @@
     "VM-L-optionsdlg-ok-excerpt-5a6090",
     "VM-L-data-reads"
    ]
+  },
+  {
+   "id": "VM-10",
+   "tag": "D",
+   "title": "Nil star template (star-template-none): 0x52789c shows \"No Spectrum\" / \"Spectrum Index is Invalid!\" CRLF \"Spectrum Index: n\" CRLF CRLF \"You Cannot Record A Spectrum of This Star!\" (MB_ICONSTOP) and stores no template; the flux loop then reads [nil+6] in 0x55dfe0 (an access violation; its handling is inferred), ending the selection loop 0x52a79c at that fibre. Web: typed, the crash not reproduced (VM-W6).",
+   "ranges": [
+    "0x5278e3..0x527a36",
+    "0x52720b..0x52721f",
+    "0x55dfe0..0x55dff0",
+    "0x5258c4..0x525949",
+    "0x52a79c..0x52a81c"
+   ],
+   "evidence": [
+    "VM-L-mstnone-excerpts",
+    "VM-L-mspecdsply-526cf0-5299a0"
+   ]
   }
  ],
  "webPolicies": [
@@ -324,13 +347,20 @@
    "tag": "W",
    "title": "Numeric policy",
    "rule": "binary64 Number/Math for x87 Extended; Singles via Math.fround; the Poisson rejection branch [D] reproduced and checked by the independent witness."
+  },
+  {
+   "id": "VM-W6",
+   "tag": "W",
+   "title": "Nil star template",
+   "rule": "VIREO's access violation after the \"No Spectrum\" box (VM-10) is not reproduced: the fibre stays typed star-template-none with the box's text in its reason, it stays in the list, and the other fibres of the exposure keep their spectra. Affected on the certified D3 field bases (LSS rows, Hubble Coma/Boötes, Object X): N2230-01637 (index 70993000) and N3000-02231 (81990000) (mstnoneScan.fields). At arbitrary pointings ('gsc-tiles', Front G G4b): every compact GSC star whose index is above JSPEC2.SPI's last index 70702000, 5468 of the 18 841 240 published records (mstnoneScan.gsc)."
   }
  ],
  "uncertainty": [
   "Print Selection Field and Help (0-byte help files) are not ported (typed).",
   "Sky fibres: RA/Dec/V are uninitialised natively (\"not recorded\", D8); the S/N estimate is indeterminate with a sky fibre.",
   "Star index 0 (native random template pick) is typed star-template-random; templates outside the approvals stayed spectrum-template-unapproved until the 2026-10-30 approval bundled all 132 templates JSPEC2.SPI names, which removed that reason.",
-  "Native save dialogs (folder, base name, overwrite confirm) are not ported: a browser download."
+  "Native save dialogs (folder, base name, overwrite confirm) are not ported: a browser download.",
+  "Nil star template (VM-10): the access-violation text and dialog title follow the Delphi RTL/VCL defaults (Application.HandleException 0x47e00c → ShowException 0x47e218); no DFM assigns OnException, but a run-time assignment was not searched exhaustively."
  ],
  "witnesses": [
   "data/multispec/witness.json (multispec_witness.py: LCG, Poisson incl. rejection branch, grid, templates, QSO; 11 fibres × 2 telescopes)",
@@ -346,5 +376,29 @@
    "sha256": "1c355fa40fa49b32b7a9eb164e18a7f45b7a1d8c46d034f5624679c18544d8ef"
   },
   "note": "Counts behind the D3 sentence of docs/MULTI-SPEC.md (review 1 L1); the harness header states the field bases, fibre rules and outcome classes."
+ },
+ "mstnoneScan": {
+  "fields": {
+   "harness": {
+    "path": "analysis/front-mstnone/mstnone_hits.test.ts.txt",
+    "sha256": "85a2a397d6f175ebcc5b5c0badeeaef9a1c2442b05a052bc58dbc51cb37021ec"
+   },
+   "output": {
+    "path": "analysis/front-mstnone/mstnone-hits.json",
+    "sha256": "fad04a587fbc3feae4ce514611be13be07446d7c5db612c25035ae0ef35b6c23"
+   },
+   "note": "Multi-Spec star fibres typed star-template-none on the D3 field bases (0.4 m; the lookup does not depend on the telescope): N2230-01637 (lss-field-03, two pointings) and N3000-02231 (lss-field-04)."
+  },
+  "gsc": {
+   "harness": {
+    "path": "analysis/front-mstnone/gsc_index_scan.py",
+    "sha256": "987be162f8df1e5ab11eaaa3cfe03778ffb3d2c8a249df82bcba736a4b72881f"
+   },
+   "output": {
+    "path": "analysis/front-mstnone/gsc-index-scan.json",
+    "sha256": "6ffd259297e1fd8f19de1a884cc894fb0fe3bded5f3b4048232d90cbabbe5ada"
+   },
+   "note": "Read-only scan of the 24 published compact-GSC bands (18 841 240 records, Int32 at +8): 5468 above 70702000 (166 distinct indices), none 0, none in 1..9 999 999."
+  }
  }
 }

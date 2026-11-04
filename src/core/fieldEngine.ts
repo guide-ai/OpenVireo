@@ -76,7 +76,7 @@ export type FieldUnavailableReason=
  /** Front F, 'merge' mode only: the slit selects a merged QSO record (type 3); a QSO observation is another branch. */
  |'qso-selected'
  /** Star observation only: the matcher 0x50d660 returns nil for the star's spectral index (below 10 000 000, or above every
-  * JSPEC2.SPI entry); VIREO then shows "No Spectrum" / "You Cannot Record A Spectrum of This Star! Spectrum Index is Invalid!"
+  * JSPEC2.SPI entry); VIREO then shows "No Spectrum" / "Spectrum Index is Invalid!" … "You Cannot Record A Spectrum of This Star!"
   * (0x50e3ae → 0x50e457, strings 0x50e5a8, 0x50e570, caption 0x50e5d4) and records nothing. */
  |'star-index-invalid'
  /** Star observation only: spectral index 0 takes a random JSPEC2.SPI template (0x50e36f → 0x4035c8 Random); the random state

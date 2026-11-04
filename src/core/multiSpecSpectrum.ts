@@ -20,6 +20,16 @@
  *  - total := signal + skySum; avg := total/400; S/N := √avg (0 when avg < 0); plot y := 170 − Round(c·(150/max)).
  *  - No sky subtraction: saved and plotted values are object + sky.
  *
+ * Nil template (Front MSTNONE, research analysis/front-mstnone/RECOVERY.md): when 0x50d660 returns nil (index below 10 000 000 or
+ * past the last JSPEC2.SPI entry), 0x52789c shows the single spectrometer's box, caption "No Spectrum" (0x527b2c), text "Spectrum
+ * Index is Invalid!" CRLF "Spectrum Index: n" CRLF CRLF "You Cannot Record A Spectrum of This Star!" (0x5279cb..0x527a26, MB_OK |
+ * MB_ICONSTOP), and returns without storing the template (0x527a2b skips 0x527a30) [D]. The flux loop then calls 0x55dfe0 on the
+ * nil template (0x52720b..0x52721f), whose first read is [nil+6] (0x55dff0): an access violation that ends the fibre's setup and
+ * the rest of the selection loop 0x52a79c [D read; I the RTL/VCL handling]. Web [W]: the crash and its partial list are not
+ * reproduced; the fibre stays typed 'star-template-none' and the other fibres are unaffected. On the certified D3 field bases (LSS
+ * rows, Hubble Coma/Boötes, Object X) that is two stars, N2230-01637 and N3000-02231; at arbitrary pointings ('gsc-tiles') every
+ * compact GSC star above index 70702000 (5468 of the 18 841 240 published records, analysis/front-mstnone/gsc-index-scan.json).
+ *
  * Typed (never the native fault or message box): a nil template, the code-0 random pick (all 132 templates are bundled since
  * 2026-10-30, but the random state is not reproduced; no compact GSC record has code 0), a TRUE-dispatch star without values, a galaxy name
  * the list does not hold (the native loop has no end guard), an own galaxy spectrum not bundled, galaxy/QSO construction errors,
@@ -153,7 +163,7 @@ export function prepareMultiSpecFibre(selection:MultiSpecSelection,context:Multi
   if(code===0)return unavailable('star-template-random');
   let file:string|null;
   try{file=lookupStarTemplate(context.starIndex,code);}catch{return unavailable('star-index-invalid');}
-  if(!file)return unavailable('star-template-none');
+  if(!file)return unavailable('star-template-none');// 0x5279cb: "No Spectrum" box, then the nil read at 0x55dff0 (not reproduced)
   const spectrum=context.starTemplates.get(file);if(!spectrum)throw new MultiSpecError('input');
   if(selection.v===null)throw new MultiSpecError('input');
   const F=multiSpecFluxFactor(Math.fround(selection.v),zeroPoint);
