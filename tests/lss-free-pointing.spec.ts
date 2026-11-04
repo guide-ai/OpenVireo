@@ -41,12 +41,17 @@ test('E02 free pointing: a star from the Spectrometer page is recorded in the LS
  // The analyser says where Record measurement goes in the LSS exercise (one-line web adaptation).
  await expect(page.getByTestId('spectrum-lss-free-note')).toBeVisible();
  await page.getByLabel('z step per tick').fill('0.0001');await page.getByRole('button',{name:'Apply step',exact:true}).click();
+ // At z = 0 the dialog explains why OK cannot pass (VIREO divides by c·z); Cancel adds nothing.
+ await page.getByRole('button',{name:/Record measurement/}).click();await expect(page).toHaveURL(/#lss-survey$/);
+ await expect(page.getByTestId('lss-dialog-zero')).toBeVisible();
+ await page.getByRole('button',{name:'Cancel',exact:true}).click();await expect(page.getByTestId('lss-record-count')).toHaveText('0 records');
+ await page.evaluate(()=>{location.hash='spectrum';});await expect(page.getByTestId('spectrum-lss-free-note')).toBeVisible();
  const slider=page.getByRole('slider');await slider.focus();await slider.press('ArrowRight');
  await page.getByRole('button',{name:/Record measurement/}).click();
  // The LSS page opens VIREO's Measured Redshift Data dialog for the star (ID as VIREO's proposed file name gives it back).
  await expect(page).toHaveURL(/#lss-survey$/);
  const dialog=page.getByRole('dialog',{name:'Measured Redshift Data'});await expect(dialog).toBeVisible();
- await expect(page.getByTestId('lss-dialog-free')).toBeVisible();await expect(page.locator('#lss-object')).toHaveValue('N0000-01634');
+ await expect(page.getByTestId('lss-dialog-free')).toBeVisible();await expect(page.getByTestId('lss-dialog-zero')).toHaveCount(0);await expect(page.locator('#lss-object')).toHaveValue('N0000-01634');
  const z=Number(await page.getByTestId('lss-dialog-z').inputValue());expect(z).toBeGreaterThan(0);expect(z).toBeLessThan(.001);
  await page.getByTestId('lss-dialog-velocity').fill((299792.458*z).toFixed(2));await page.getByLabel('Remarks',{exact:true}).fill('free star');
  await page.getByRole('button',{name:'OK',exact:true}).click();await expect(dialog).toBeHidden();

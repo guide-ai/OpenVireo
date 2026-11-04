@@ -7,7 +7,7 @@ import {t} from './i18n';
 import './sky-exposure.css';
 import './lss.css';
 import {LSS_FIELD_FILES,lssFieldRows,isLssFieldList,type LssFieldNumber} from './core/lssFields';
-import {EMPTY_LSS_SURVEY,selectLssField,markLssListLoaded,openLssRecord,editLssDraft,confirmLssDialog,cancelLssRecord,lssResultsCsv,pendingWedgeRecords,markLssHandedToWedge,lssAtLimit,lssEventTotal,lssReuseTarget,restoredLssSurvey,LSS_LIMITS,LSS_Z_SAVED_BOX,type LssRecord,type LssSurveyState} from './core/lssSurvey';
+import {EMPTY_LSS_SURVEY,selectLssField,markLssListLoaded,openLssRecord,editLssDraft,confirmLssDialog,cancelLssRecord,lssResultsCsv,pendingWedgeRecords,markLssHandedToWedge,lssAtLimit,lssEventTotal,lssReuseTarget,restoredLssSurvey,lssGuideCounts,LSS_LIMITS,LSS_Z_SAVED_BOX,type LssRecord,type LssSurveyState} from './core/lssSurvey';
 import {evaluateLssRow,lssPolicy,type LssRowStatus,type LssSpectrumInputs} from './core/lssExposure';
 import {fetchLssSpectrumInputs} from './io/lssSpectrumInputs';
 import {LSS_RESULTS_TXT,lssResultsTxtBytes} from './core/lssResultsTxt';
@@ -68,7 +68,7 @@ function LssSurvey({freeRecord=null,wedgeShown=false,spectralRange=DEFAULT_SPECT
  useEffect(()=>{onRecordsChange?.(survey.records);},[survey.records]);
  const [observed,setObserved]=useState(false);
  useEffect(()=>{if(exposure?.exposure.counts.some(n=>n>0))setObserved(true);},[exposure]);
- useEffect(()=>{onSummary?.(Object.freeze({listLoaded:loaded!==null,observed,records:survey.records.length,galaxies:new Set(survey.records.filter(r=>!r.free).map(r=>r.object)).size,fields:new Set(survey.records.filter(r=>!r.free).map(r=>r.field)).size,plotted:survey.handedToWedge,described:description.trim()!==''}));},[loaded,observed,survey.records,survey.handedToWedge,description]);
+ useEffect(()=>{onSummary?.(Object.freeze({listLoaded:loaded!==null,observed,records:survey.records.length,...lssGuideCounts(survey.records),plotted:survey.handedToWedge,described:description.trim()!==''}));},[loaded,observed,survey.records,survey.handedToWedge,description]);
  // Save reads this snapshot; the open dialog and the current (unrecorded) exposure are not part of it.
  useEffect(()=>{onSnapshot?.(Object.freeze({field:survey.field,telescope,records:survey.records,description}));},[survey.field,survey.records,telescope,description]);
  // Restore (v27): records were validated and replayed by the session reader; the list must be loaded again to point.
@@ -164,7 +164,7 @@ function LssSurvey({freeRecord=null,wedgeShown=false,spectralRange=DEFAULT_SPECT
   {row&&live&&exposure&&exposure.exposure.phase!=='running'&&exposure.exposure.counts.some(n=>n>0)&&<LssMeasurement key={`measure:${exposure.policy}`} counts={exposure.exposure.counts} wavelengths={live.result.calibration!.wavelengths} onRecord={record} disabled={survey.draft!==null||lssAtLimit(survey)}/>}
   <dialog ref={dialog} className="lss-dialog" aria-labelledby="lss-dialog-title" onCancel={e=>{e.preventDefault();update(cancelLssRecord);setDialogError('');}}>{draft&&<form method="dialog" onSubmit={e=>{e.preventDefault();confirm();}}>
    <h2 id="lss-dialog-title">{t('lss.dialog.title')}</h2>
-   <label htmlFor="lss-object">{t('lss.dialog.object')}</label><input id="lss-object" value={draft.object} readOnly aria-describedby="lss-dialog-note"/>
+   <label htmlFor="lss-object">{t('lss.dialog.object')}</label><input id="lss-object" value={draft.object} readOnly aria-describedby={draft.free?'lss-dialog-note lss-dialog-free':'lss-dialog-note'}/>
    {(()=>{const f=lssDialogFields(draft);return <>
     <label htmlFor="lss-jd">{t('lss.dialog.jdTime')}</label><input id="lss-jd" value={f.jd} readOnly/>
     <fieldset className="lss-dialog-angles"><legend>{t('lss.dialog.raGroup')}</legend>
@@ -173,8 +173,8 @@ function LssSurvey({freeRecord=null,wedgeShown=false,spectralRange=DEFAULT_SPECT
      <input aria-label={t('lss.dialog.decD')} value={f.decD} readOnly data-testid="lss-dialog-dec-d"/><input aria-label={t('lss.dialog.decM')} value={f.decM} readOnly/><input aria-label={t('lss.dialog.decS')} value={f.decS} readOnly/></fieldset>
     <label htmlFor="lss-z">{t('lss.dialog.zLabel')}</label><input id="lss-z" value={f.z} readOnly data-testid="lss-dialog-z"/>
    </>;})()}
-   <p id="lss-dialog-note" className="observatory-note">{t('lss.dialog.note')}</p>{draft.free&&<p className="observatory-note" data-testid="lss-dialog-free">{t('lss.dialog.free')}</p>}{draft.target!==null&&<p className="observatory-note" role="status" data-testid="lss-dialog-reused">{t('lss.dialog.reused')}</p>}
-   <label htmlFor="lss-velocity">{t('lss.dialog.velocity')}</label><input id="lss-velocity" value={draft.velocity} maxLength={LSS_LIMITS.velocity} inputMode="decimal" autoFocus aria-invalid={dialogError?true:undefined} aria-describedby={dialogError?'lss-dialog-error':'lss-velocity-help'} onChange={e=>velocity(e.target.value)} data-testid="lss-dialog-velocity"/>
+   <p id="lss-dialog-note" className="observatory-note">{t('lss.dialog.note')}</p>{draft.free&&<p id="lss-dialog-free" className="observatory-note" data-testid="lss-dialog-free">{t('lss.dialog.free')}</p>}{draft.z===0&&<p id="lss-dialog-zero" className="observatory-note" role="status" data-testid="lss-dialog-zero">{t('lss.dialog.zeroZ')}</p>}{draft.target!==null&&<p className="observatory-note" role="status" data-testid="lss-dialog-reused">{t('lss.dialog.reused')}</p>}
+   <label htmlFor="lss-velocity">{t('lss.dialog.velocity')}</label><input id="lss-velocity" value={draft.velocity} maxLength={LSS_LIMITS.velocity} inputMode="decimal" autoFocus aria-invalid={dialogError?true:undefined} aria-describedby={[dialogError?'lss-dialog-error':'lss-velocity-help',draft.z===0?'lss-dialog-zero':''].join(' ').trim()} onChange={e=>velocity(e.target.value)} data-testid="lss-dialog-velocity"/>
    <p id="lss-velocity-help" className="observatory-note">{t('lss.dialog.velocityHelp')}</p>
    <label htmlFor="lss-remarks">{t('lss.dialog.remarks')}</label><input id="lss-remarks" value={draft.remarks} maxLength={LSS_LIMITS.remarks} aria-describedby={dialogError?'lss-dialog-error':undefined} onChange={e=>remarks(e.target.value)}/>{dialogError&&<p id="lss-dialog-error" role="alert" className="lss-dialog-error">{dialogError}</p>}
    <div className="sky-actions"><button type="submit" className="primary-button" disabled={lssAtLimit(survey)}>{t('lss.dialog.ok')}</button><button type="button" className="secondary-button" onClick={()=>{update(cancelLssRecord);setDialogError('');}}>{t('lss.dialog.cancel')}</button></div>

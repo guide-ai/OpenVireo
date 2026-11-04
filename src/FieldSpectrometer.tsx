@@ -22,7 +22,8 @@ import {FieldSpectrumSave} from './observatory/RouteSpectrumSave';
 import SpectrometerReadout,{useSpectrometerObject,type SpectrometerObject} from './observatory/SpectrometerReadout';
 import {fieldSpectrometerSkyReading,type SpectrometerReadoutOptions} from './core/currentObject';
 import {fieldSpectrumFailure,fieldSpectrumHiddenMasked,type FieldSpectrumShown} from './io/fieldSpectrumFailure';
-import {lssFreeSource,type LssFreeSource} from './core/lssFreeRecord';
+import {lssFreeCountsText,lssFreeSource,type LssFreeSource} from './core/lssFreeRecord';
+import {resourceSha256} from './io/boundedResource';
 
 /** Front G (G4a, analysis/front-plans/front-g-gsc.md §11): VIREO's single-slit spectrometer wherever the telescope points. The
  * field is read from the compact GSC tiles; the slit takes the nearest object (0x59a0fc) and the engine's star, galaxy and QSO
@@ -34,7 +35,7 @@ import {lssFreeSource,type LssFreeSource} from './core/lssFreeRecord';
  * paused snapshot; restore (a new token) replaces the field with an investigation's record, or clears it. All stable. */
 export type FieldSpectrometerController=Readonly<{snapshot:()=>FieldSpectrumRecord|null}>;
 export type FieldSpectrometerLink=Readonly<{/** Front S2: the page's one spectrometer range and its (stable) setter. */spectralRange?:SpectralRange;onSpectralRange?:(r:SpectralRange)=>void;active:boolean;pointing:Pointing;gate:Readonly<{tracking:boolean;moving:boolean;finder:boolean;domeOpen:boolean}>;telescope:FieldTelescope;hidden:Pointing|null;currentJd?:()=>number;
- onClassify?:(source:ClassificationImport)=>void;/** Front LSSFREE: `origin` is what the LSS list's Record Z needs from this exposure (core/lssFreeRecord.ts). */onAnalyze?:(source:ClassificationImport,origin?:LssFreeSource)=>void;onRecord?:(record:FieldSpectrumRecord|null)=>void;
+ onClassify?:(source:ClassificationImport)=>void;/** Front LSSFREE: `origin` is what the LSS list's Record Z needs from this exposure (core/lssFreeRecord.ts). */onAnalyze?:(source:ClassificationImport,origin?:LssFreeSource|null)=>void;onRecord?:(record:FieldSpectrumRecord|null)=>void;
  controllerRef?:Ref<FieldSpectrometerController>;restore?:Readonly<{token:number;record:FieldSpectrumRecord|null}>|null;projectBusy?:boolean}>;
 type Ready=Extract<PreparedFieldSpectrum,{status:'ready'}>;
 type Shown=FieldSpectrumShown;
@@ -62,20 +63,21 @@ function engineFor(prepared:Ready,hidden:Pointing|null,onAdopt:(p:Ready,s:Journa
 }
 type AcquisitionHandle=Readonly<{snapshot:()=>JournalState|null}>;
 function Acquisition({prepared,fieldMatches,active,hidden,onAdopt,restored,onWorkspaceChange,handle,onClassify,onAnalyze,projectBusy,onCounts,current}:{current:Readonly<{object:SpectrometerObject;options:SpectrometerReadoutOptions}>;prepared:Ready;fieldMatches:boolean;active:boolean;hidden:Pointing|null;onAdopt:(p:Ready,s:JournalState)=>void;restored:JournalState|null;
- onWorkspaceChange:(w:ExposureWorkspace)=>void;handle:Ref<AcquisitionHandle>;onClassify?:(source:ClassificationImport)=>void;onAnalyze?:(source:ClassificationImport,origin?:LssFreeSource)=>void;projectBusy:boolean;onCounts:(has:boolean)=>void}){
+ onWorkspaceChange:(w:ExposureWorkspace)=>void;handle:Ref<AcquisitionHandle>;onClassify?:(source:ClassificationImport)=>void;onAnalyze?:(source:ClassificationImport,origin?:LssFreeSource|null)=>void;projectBusy:boolean;onCounts:(has:boolean)=>void}){
  const heading=useRef<HTMLHeadingElement>(null),engine=useMemo(()=>engineFor(prepared,hidden,onAdopt),[prepared,hidden,onAdopt]);
  const {state,seed,setSeed,notice,setNotice,error,setError,busy,running,armed,activate,start,stop,save,restore,reset,cancel,newSeed,snapshot}=useBoundedExposure({engine,active,fieldMatches,onActivate:()=>{},heading,onWorkspaceChange,projectBusy,
   ...(restored?{initialWorkspace:{state:restored,seedText:String(restored.seedAtReset)}}:{})});
  useEffect(()=>{if(restored)setNotice(t('fieldSpec.restored'));},[]);// eslint-disable-line react-hooks/exhaustive-deps
  useImperativeHandle(handle,()=>({snapshot:()=>snapshot().state}));
  // G4c: Classify and Analyze read the exposure's own .SSP back, as if the student had opened the saved file.
- async function handOff(to:(source:ClassificationImport,origin?:LssFreeSource)=>void){
+ async function handOff(to:(source:ClassificationImport,origin?:LssFreeSource|null)=>void){
   setError('');try{const s=stop();if(!s)return;const o=prepared.result.qsoTarget??prepared.result.starTarget??prepared.result.target!;
    const bytes=fieldSpectrumBytes(s,prepared.result,prepared.pointing),{readClassificationImport}=await import('./io/classificationImports');
    const source=await readClassificationImport(new File([bytes.slice().buffer],fieldSpectrumFileName(o.id),{type:'text/plain'}));
    // G4c review 1 L3: a receiver that refuses (the analyser is busy) says so; only reading the spectrum is handOffError.
-   // Front LSSFREE: the ID, header pointing and journal a Record Z in the LSS exercise takes (none if they cannot be derived).
-   let origin:LssFreeSource|undefined;try{origin=lssFreeSource(s,prepared.result,prepared.pointing);}catch{origin=undefined;}
+   // Front LSSFREE: the ID, header pointing, journal and counts digest a Record Z in the LSS exercise takes; null if they cannot be
+   // derived (review 1 L2: the analyser then says why instead of silently keeping its own log).
+   let origin:LssFreeSource|null;try{origin=lssFreeSource(s,prepared.result,prepared.pointing,await resourceSha256(new TextEncoder().encode(lssFreeCountsText(s.exposure.counts))));}catch{origin=null;}
    try{to(source,origin);}catch(x){setError(displayError(x,'fieldSpec.handOffError'));}}
   catch{setError(t('fieldSpec.handOffError'));}
  }

@@ -81,6 +81,7 @@ export interface MessageParameters {
   "spectrum.objectPlaceholder": never;
   "spectrum.record": never;
   "spectrum.lssFreeNote": never;
+  "spectrum.lssFreeRefused": never;
   "spectrum.referenceNotObservation": never;
   "spectrum.attribution": never;
   "spectrum.pending": never;
@@ -3225,6 +3226,7 @@ export interface MessageParameters {
   "lss.dialog.controlChars": never;
   "lss.dialog.note": never;
   "lss.dialog.free": never;
+  "lss.dialog.zeroZ": never;
   "lss.dialog.reused": never;
   "lss.dialog.jdTime": never;
   "lss.dialog.raGroup": never;

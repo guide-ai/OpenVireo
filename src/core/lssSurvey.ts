@@ -11,7 +11,7 @@ import {recordReuseTarget} from './recordReuse';
 import {lssDialogOk,lssVelocityText} from './lssRedshiftDialog';
 import {currentZ,type ShiftControl} from './spectrum';
 import type {JournalEvent} from './exposureJournal';
-import {LSS_FIELD_FILES,type LssFieldNumber} from './lssFields';
+import {LSS_FIELD_FILES,LSS_ROWS,type LssFieldNumber} from './lssFields';
 /** Front R4 (R4.3) [D]: TSpectrumEngine.RecordZ1Click 0x58383c, LSS branch, after OK (0x58391a): with neither the wedge nor the
  * LSS results window visible VIREO shows this box (text 0x583b20, caption 0x583bac, MB flags 0x40) and enables the main-menu
  * "LSS Wedge Plot" item (env+0x52c, 0x4548ac). Verbatim CLEA_VEO.exe literals (SHA-256 781bc970…c52c54c), never translated. */
@@ -23,8 +23,10 @@ export class LssSurveyError extends Error{
  constructor(readonly code:'field'|'record'|'limit'|'events'|'pending'){super(`LSS survey: ${code}`);this.name='LssSurveyError';}
 }
 /** Front LSSFREE: a record is a hot-list row's (field, row) or a free-pointing one (`free`, no field or row; its exposure is the
- * field spectrometer's, its policy a field-spectrum policy, its RA/Dec the .SSP header's pointing; core/lssFreeRecord.ts). */
-export type LssRecordPlace=Readonly<{field:LssFieldNumber;row:number;free?:undefined}>|Readonly<{field:null;row:null;free:true}>;
+ * field spectrometer's, its policy a field-spectrum policy, its RA/Dec the .SSP header's pointing; core/lssFreeRecord.ts).
+ * `countsSha256` (review 1 M2): SHA-256 of that exposure's counts as the field spectrometer computed them when Analyze handed it
+ * over; the v34 digest is built from it, so Save needs no tiles (Restore recomputes it by replay). */
+export type LssRecordPlace=Readonly<{field:LssFieldNumber;row:number;free?:undefined}>|Readonly<{field:null;row:null;free:true;countsSha256:string}>;
 export type LssRecord=LssRecordPlace&Readonly<{
  id:number;telescope:0|1|2;object:string;jd:number;ra:number;dec:number;
  zSingle:number;zHex:string;velocitySingle:number;velocityHex:string;remarks:string;acquisitionPolicy:string;
@@ -70,7 +72,7 @@ export function openLssRecord(s:LssSurveyState,d:LssDraftInput,options:Readonly<
  const others=target===null?s.records:s.records.filter((_r,i)=>i!==target);
  if(d.journal&&Array.isArray(d.journal.events)&&lssEventTotal(others,d)>LSS_LIMITS.events)throw new LssSurveyError('events');
  // Front LSSFREE: a free-pointing draft has neither field nor row, and no list JD (its field-spectrum policy carries its own).
- if(d.free?(d.field!==null||d.row!==null||d.fieldJd!==undefined):!(Number.isInteger(d.field)&&Number.isInteger(d.row)))throw new LssSurveyError('record');
+ if(d.free?(d.field!==null||d.row!==null||d.fieldJd!==undefined||typeof d.countsSha256!=='string'||!/^[0-9a-f]{64}$/.test(d.countsSha256)):!(Number.isInteger(d.field)&&Number.isInteger(d.row)))throw new LssSurveyError('record');
  if(!d.control||!d.journal||d.z!==currentZ(d.control)||!Number.isSafeInteger(d.journal.seedAtReset)||!Array.isArray(d.journal.events)||!Number.isFinite(d.z)||Math.fround(d.z)<=-1||!Number.isFinite(d.jd)||(d.fieldJd!==undefined&&!Number.isFinite(d.fieldJd))||!Number.isFinite(d.ra)||!Number.isFinite(d.dec)||d.ra<0||d.ra>=24||Math.abs(d.dec)>90)throw new LssSurveyError('record');
  hubbleVelocity(d.z);
  const reused=target===null?null:s.records[target];
@@ -121,7 +123,7 @@ export function confirmLssDialog(s:LssSurveyState):LssConfirm{
  if(lssEventTotal(target===null?s.records:s.records.filter((_r,i)=>i!==target),d)>LSS_LIMITS.events)throw new LssSurveyError('events');
  const r=lssDialogOk(d.z,d.velocity);if(!r.ok)return r;
  // A reused row keeps its id, list position and first time (0x57c918 never rewrites +0x10); everything else is the new measurement.
- const place:LssRecordPlace=d.free?{field:null,row:null,free:true}:{field:d.field,row:d.row};
+ const place:LssRecordPlace=d.free?{field:null,row:null,free:true,countsSha256:d.countsSha256}:{field:d.field,row:d.row};
  const record:LssRecord=Object.freeze({id:reused?reused.id:s.records.length+1,...place,telescope:d.telescope,object:d.object.trim()||'—',jd:reused?reused.jd:d.jd,ra:d.ra,dec:d.dec,zSingle:r.zSingle,zHex:r.zHex,velocitySingle:r.velocitySingle,velocityHex:r.velocityHex,remarks:d.remarks,acquisitionPolicy:d.acquisitionPolicy,journal:d.journal,control:d.control,...(d.fieldJd!==undefined?{fieldJd:d.fieldJd}:{}),nativeDialog:true as const});
  if(target!==null){const records=Object.freeze(s.records.map((x,i)=>i===target?record:x));return {ok:true,state:Object.freeze({...s,draft:null,records,wedgeStale:s.wedgeStale||target<s.handedToWedge})};}
  return {ok:true,state:Object.freeze({...s,draft:null,records:Object.freeze([...s.records,record])})};
@@ -136,6 +138,15 @@ export function pendingWedgeRecords(s:LssSurveyState):readonly LssRecord[]{retur
 export function markLssHandedToWedge(s:LssSurveyState,upTo=s.records.length):LssSurveyState{
  if(!Number.isInteger(upTo)||upTo<(s.wedgeStale?0:s.handedToWedge)||upTo>s.records.length)throw new LssSurveyError('record');
  return Object.freeze({...s,handedToWedge:upTo,wedgeStale:false});
+}
+/** The guide's galaxy and field counts [W] (review 1 L1): hot-list records, and free-pointing records whose ID is a hot-list galaxy
+ * (counted in the field of its first hot-list row), so re-measuring a listed galaxy from a free pointing, which reuses and
+ * replaces its row (0x57c918), still counts. Other free records (stars, unlisted galaxies, QSOs) count as records only. */
+const LISTED_FIELD=new Map<string,LssFieldNumber>();for(const r of LSS_ROWS)if(!LISTED_FIELD.has(r.id))LISTED_FIELD.set(r.id,r.field);
+export function lssGuideCounts(records:readonly LssRecord[]):Readonly<{galaxies:number;fields:number}>{
+ const galaxies=new Set<string>(),fields=new Set<LssFieldNumber>();
+ for(const r of records){const field=r.free?LISTED_FIELD.get(r.object):r.field;if(field===undefined)continue;galaxies.add(r.object);fields.add(field);}
+ return Object.freeze({galaxies:galaxies.size,fields:fields.size});
 }
 export const lssAtLimit=(s:LssSurveyState)=>s.records.length>=LSS_LIMITS.records;
 const cell=(value:string)=>'"'+(/^[\s]*[=+\-@]/.test(value)||/^[\t\r\n]/.test(value)?"'"+value:value).replaceAll('"','""')+'"';

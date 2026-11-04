@@ -303,7 +303,7 @@ Research note: analysis/front-lssparse/RECOVERY.md. Static reading of CLEA_VEO.e
 - **Counts.** Field centres are not used to acquire rows, so E02 stays 218 / 218 / 218 (212 without the clock).
 
 ## Free pointing: any object into the LSS list (Front LSSFREE, 2026-11-04)
-Research note: analysis/front-lssfree/RECOVERY.md (excerpts.asm SHA-256 d6946af2…ec08); plan
+Research note: analysis/front-lssfree/RECOVERY.md (excerpts.asm SHA-256 24e41e10…a18b); plan
 analysis/front-plans/front-lssfree.md. Static reading of CLEA_VEO.exe 781bc970…c54c; nothing executed.
 - **What VIREO does [D].**
   - The spectrometer has no Record item; its File › Data menu only saves the spectrum. The only Record Z is the measuring
@@ -315,9 +315,15 @@ analysis/front-plans/front-lssfree.md. Static reading of CLEA_VEO.exe 781bc970�
   - In every exercise except 3, 4 and 7, Record Z calls the LSS find-or-add 0x57c918 with them and the measured z.
   - Nothing tests the object's kind, the pointing or a hot list. A star (z ≈ 0), a galaxy on no hot-list row or a QSO reaches
     the list exactly as a hot-list galaxy does.
-  - In the LSS exercise Show Object ID is on (0x58aabe), so Save proposes the current object's name (0x50fb1c). Keeping that
-    name gives it back as the ID.
-  - Mode 5 sets no limit on free pointing [I: none of the 15 tests of exercise 5 is in a slew or pointing path]. Load Hot List
+  - Entering the LSS exercise sets Show Object ID on (0x58aabe), so Save proposes the current object's name (0x50fb1c), and
+    keeping that name gives it back as the ID. Preferences OK or Cancel (Preferences1Click, 0x588737..0x58874c) copies the stored
+    options record back, so the option can be off again; Save then proposes `UNKNOWN.SSP` or `ObjX-<student>.SSP`.
+  - Other mode-5 effects:
+    - the default instrument is the spectrometer (table at 0x538064);
+    - InstSlider is hidden (0x53a296);
+    - click selection in the field is armed only with Edit Mode or in modes 0/1 (0x53cfa8);
+    - the results tables at 0x546e43 and 0x590923.
+  - None restricts free pointing [I: none of the 15 literal compares with 5 is in a slew or pointing path]. Load Hot List
     (visible in mode 5, 0x5378b1) only slews.
 - **Here.**
   1. Start the LSS guide (the web's exercise 5).
@@ -328,13 +334,20 @@ analysis/front-plans/front-lssfree.md. Static reading of CLEA_VEO.exe 781bc970�
     through the proposed name `Name.SSP` and the load rule (`loadedSpectrumId`, `core/observationMetadata.ts`). At a hot-list
     row's coordinates it is the ID the row route records, so the two join one row.
   - RA/Dec: the .SSP header's pointing (6 / 5 decimals), read back from the bytes.
-  - A star at exactly z = 0 cannot be recorded: OK refuses it, as the recovered dialog does.
+  - A star at exactly z = 0: natively 0x57c918 has already inserted the record before the dialog opens, and OK's 1 % check
+    divides by c·z = 0, so the program's default error box appears [I] (Front L2 §2.4). Here this is the two existing [W]s
+    (adaptations above): the dialog shows "Velocity calculation is invalid!", with a line saying to move the shift control one
+    step, and Cancel adds nothing.
 - **Investigation (session v34).**
   - The v34 wrapper (`openvireo-lss-free-records-v34`, `src/io/lssFreeRecords.ts`) is outermost around an unchanged v27–v33 base.
     The base's v27 layer holds the hot-list records, renumbered 1..m in list order.
   - Each free record is stored with its list position, ID, JD, RA/Dec, z/velocity bits, remarks, shift control and the
     field-spectrometer exposure (policy, seed, compact events), plus a SHA-256 over what the replay derives.
-  - Restore assembles each field again from the compact GSC tiles at the policy's pointing, telescope, JD and range, with the
+  - Save only serializes (review 1 M2). The digest uses each record's counts digest, taken when Analyze handed the exposure over,
+    so no tile is read. An open tab saves offline or after a redeploy (Front D3 M1); the module is preloaded with the other Save
+    modules.
+  - Restore first checks every record and decodes every journal against the event budget shared with the v27 layer (review 1 M1).
+    Only then does it assemble each field again from the compact GSC tiles at the policy's pointing, telescope, JD and range, with the
     Object X mask. It then replays the journal, rebuilds the .SSP and compares the ID and pointing. It re-derives z from the
     control and checks the dialog rule and the digest, merges the positions and renumbers the ids.
   - Any mismatch rejects the whole file. A tile that does not arrive is a missing resource.
@@ -347,7 +360,12 @@ analysis/front-plans/front-lssfree.md. Static reading of CLEA_VEO.exe 781bc970�
   - The JD is the observatory clock at Record Z, as for hot-list rows, not a file time.
   - Only in the LSS exercise. VIREO's branch also covers modes 0, 1, 2 and 6, where the web analyser keeps its own log.
   - Only spectra handed over by Analyze, whose exposure the file can replay. A .SSP opened from disk stays in the analyser's log.
-  - The guide's galaxy and field counts use hot-list records only; the record count uses all.
+  - The ID uses the object's name even when Show Object ID is off. VIREO's Save would then propose `UNKNOWN.SSP` or `ObjX-<student>.SSP`.
+  - A free measurement of a galaxy already on the list reuses its row (0x57c918) and replaces its hot-list exposure with the free
+    one. The guide's galaxy and field counts take hot-list records and free records whose ID is a hot-list galaxy (counted in its
+    first row's field), so such a re-measurement still counts (`lssGuideCounts`). Stars, unlisted galaxies and QSOs count as
+    records only.
+  - An Analyze'd spectrum whose header or ID cannot be built is refused with a one-line reason; it is not silently logged.
 - **Unchanged.** Hot-list rows stay galaxy-only (D5 above): E02 218 / 218 / 218 (212 without the clock), the LSS fingerprints,
   E01's H0 and E08.
 

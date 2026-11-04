@@ -9,7 +9,8 @@ import {setLssResources,type LssInvestigation} from './lssInvestigation';
 import {LSS_FREE_SESSION_POLICY,splitLssInvestigation} from './lssFreeRecords';
 import {AnalysisSessionError} from './analysisSessionLimits';
 import {readAnalysisSession,serializeAnalysisSession,type AnalysisSession} from './analysisSession';
-import {lssFreeSource,lssFreeDraft,type LssFreeSource} from '../core/lssFreeRecord';
+import {lssFreeCountsText,lssFreeSource,lssFreeDraft,type LssFreeSource} from '../core/lssFreeRecord';
+import type {FieldSpectrumRecord} from './fieldSpectrometer';
 import {lssExposureEngine,evaluateLssRow,lssPolicy} from '../core/lssExposure';
 import {EMPTY_LSS_SURVEY,confirmLssDialog,editLssDraft,openLssRecord,type LssRecord,type LssSurveyState} from '../core/lssSurvey';
 import {lssPrefilledVelocity} from '../core/lssRedshiftDialog';
@@ -41,7 +42,7 @@ afterEach(()=>{vi.unstubAllGlobals();setLssResources(null);});
 async function freeSource(ra:number,dec:number,telescope:FieldTelescope=0,seed=11):Promise<LssFreeSource>{
  const p=await prepareFieldSpectrum({ra,dec},telescope);if(p.status!=='ready'||p.result.reasons.length)throw Error('field');
  const e=lssExposureEngine(p.result,p.policy);let s=e.start(e.activate(e.create(seed)));for(let i=0;i<20;i++)s=e.tick(s,100);s=e.pause(s);
- return lssFreeSource(s,p.result,p.pointing);
+ return lssFreeSource(s,p.result,p.pointing,sha(new TextEncoder().encode(lssFreeCountsText(s.exposure.counts))));
 }
 function ok(s:LssSurveyState,velocity?:string):LssSurveyState{const r=confirmLssDialog(editLssDraft(s,{velocity:velocity??lssPrefilledVelocity(s.draft!.z),remarks:'r'+s.records.length}));if(!r.ok)throw Error(r.message);return r.state;}
 const step=(size:number,position:number):ShiftControl=>moveControl(configureStep(INITIAL_CONTROL,size),position);
@@ -117,6 +118,29 @@ describe('v34 investigation wrapper',()=>{
    x=>{x.base.version=26;},
   ];
   for(const edit of edits){const c=structuredClone(v);edit(c);await expect(read(JSON.stringify(c))).rejects.toBeInstanceOf(AnalysisSessionError);}
+ });
+ it('review 1 M1: an over-budget part is refused before any field is prepared',async()=>{
+  const v=JSON.parse(await serializeAnalysisSession({...base,lss:await mixed()}));
+  // 14 distinct free journals of 12 000 events each (each within the per-journal cap, 168 000 together over the 150 000 budget).
+  // With every tile failing, replaying the first one would surface as a missing resource; the budget check refuses the file
+  // first, as a bad file.
+  const first=v.lssFree.records[0];
+  v.lssFree.records=Array.from({length:14},(_,i)=>({...structuredClone(first),at:i+2,exposure:{...first.exposure,seedAtReset:100+i,events:'s 100*11998 p'}}));
+  tiles(true);
+  try{await expect(read(JSON.stringify(v))).rejects.toMatchObject({code:'state'});}finally{tiles();}
+ });
+ it('review 1 M2: Save needs no tile (an open tab saves offline); the same bytes as with the tiles',async()=>{
+  const inv=await mixed(),online=await serializeAnalysisSession({...base,lss:inv});
+  tiles(true);
+  try{expect(await serializeAnalysisSession({...base,lss:inv})).toBe(online);}finally{tiles();}
+ });
+ it('nests with the field spectrometer\'s own part: v34 { v33 { … } }',async()=>{
+  const p=await prepareFieldSpectrum({ra:12.20525,dec:29.18027777777778},0);if(p.status!=='ready')throw Error('field');
+  const e=lssExposureEngine(p.result,p.policy);let j=e.start(e.activate(e.create(9)));for(let i=0;i<10;i++)j=e.tick(j,100);j=e.pause(j);
+  const fieldSpectrum:FieldSpectrumRecord={prepared:p,state:j},inv=await mixed(),text=await serializeAnalysisSession({...base,lss:inv,fieldSpectrum}),v=JSON.parse(text);
+  expect([v.version,v.base.version,v.base.base.version]).toEqual([34,33,31]);
+  const back=await read(text);expect(back.lss).toEqual(inv);expect(back.fieldSpectrum?.state.exposure.counts).toEqual(j.exposure.counts);
+  expect(await serializeAnalysisSession(back)).toBe(text);
  });
  it('a tile that does not arrive is a missing resource, not a bad file',async()=>{
   const text=await serializeAnalysisSession({...base,lss:await mixed()});

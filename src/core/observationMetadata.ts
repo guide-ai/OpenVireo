@@ -4,11 +4,12 @@
  * with the original program is claimed. */
 
 /** The ID a loaded .SSP gets (Front LSSFREE, TSpectrumEngine.LoadSavedSpectrum1Click 0x582a70 [D]; the classifier's file route
- * 0x50829c is the same): ExtractFileName, cut at the first '.', drop everything through the first '_', trim trailing spaces. The
- * engine keeps the whole string (0x582bc3); the header's object name is not used. */
+ * 0x50829c is the same): ExtractFileName (0x40b654: after the last '\\' or ':', LastDelimiter at 0x40b688), cut at the first '.',
+ * drop everything through the first '_', trim trailing spaces. The engine keeps the whole string (0x582bc3); the header's object
+ * name is not used. */
 export function loadedSpectrumId(fileName:string):string{
  if(typeof fileName!=='string')throw new TypeError('file name');
- let name=fileName.slice(Math.max(fileName.lastIndexOf('/'),fileName.lastIndexOf('\\'))+1);
+ let name=fileName.slice(Math.max(fileName.lastIndexOf('\\'),fileName.lastIndexOf(':'))+1);
  const dot=name.indexOf('.');if(dot>=0)name=name.slice(0,dot);
  const underscore=name.indexOf('_');if(underscore>=0)name=name.slice(underscore+1);
  return name.replace(/ +$/,'');

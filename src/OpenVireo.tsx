@@ -316,7 +316,7 @@ export default function OpenVireo(){
   const lssView=useRef<HTMLDivElement>(null),lssToken=useRef(0);
   // Front LSSFREE: the last spectrum the Spectrometer page handed to the analyser (its SHA-256 and what the LSS list's Record Z
   // takes from it), and the Record Z request the LSS page opens its dialog for.
-  const lssFreeOrigin=useRef<Readonly<{sha256:string;source:LssFreeSource}>|null>(null),[lssFreeRequest,setLssFreeRequest]=useState<Readonly<{token:number;source:LssFreeSource;control:ShiftControl}>|null>(null);
+  const lssFreeOrigin=useRef<Readonly<{sha256:string;source:LssFreeSource|null}>|null>(null),[lssFreeRequest,setLssFreeRequest]=useState<Readonly<{token:number;source:LssFreeSource;control:ShiftControl}>|null>(null);
   // M6 (v27): the latest E02 state for Save, and explicit restore tokens for the survey and the wedge options.
   const lssCurrent=useRef<LssSnapshot|null>(null),[lssRestore,setLssRestore]=useState<{token:number;investigation:LssInvestigation|null}|null>(null),[wedgeOptionsRestore,setWedgeOptionsRestore]=useState<{token:number;options:WedgeWorkspace['options']}|null>(null);
   function prepareLss():LssInvestigation|null{const c=lssCurrent.current;if(!c||(!c.records.length&&!c.description&&c.field===null))return null;return Object.freeze({...c,wedgeOptions:wedgeOptionsCurrent.current});}
@@ -647,14 +647,15 @@ export default function OpenVireo(){
   function restoreFieldSpectrum(r:FieldSpectrumRecord|null){fieldSpectrumCurrent.current=r;restoredRangePolicies.current.field=r?policyRange(r.prepared.policy)?.range??null:null;applyRestoredRange();setFieldSpectrumRestore({token:++restoreToken.current,record:r});if(r)setSpectrometerOpened(true);}
   const fieldSpectrumHandlers=useStableHandlers({
    onClassify:classifyImported,
-   onAnalyze:(source:ClassificationImport,origin?:LssFreeSource)=>{if(!analyzerController.current)throw errorFor('continuity.busy');analyzerController.current.acceptImported(source);lssFreeOrigin.current=origin?Object.freeze({sha256:source.sha256,source:origin}):null;navigate('spectrum');},
+   onAnalyze:(source:ClassificationImport,origin?:LssFreeSource|null)=>{if(!analyzerController.current)throw errorFor('continuity.busy');analyzerController.current.acceptImported(source);lssFreeOrigin.current=origin===undefined?null:Object.freeze({sha256:source.sha256,source:origin});navigate('spectrum');},
    onRecord:(r:FieldSpectrumRecord|null)=>{fieldSpectrumCurrent.current=r;},
   });
   const spectrumHandlers=useStableHandlers<StableProps<ComponentProps<typeof SpectrumInstrument>,'onPrepareRadio'|'onCheckRadioRestore'|'onRestoreRadio'|'onPrepareMotion'|'onRestoreMotion'|'onPrepareLss'|'onRestoreLss'|'onPrepareFieldSpectrum'|'onRestoreFieldSpectrum'|'onPrepareObjectX'|'onRestoreObjectX'|'onPrepareObservatory'|'onRestoreObservatory'|'onPrepareClusterSelection'|'onRestoreClusterSelection'|'onPrepareClusterDatabase'|'onRestoreClusterDatabase'|'onPrepareClusterComparison'|'onRestoreClusterComparison'|'onPrepareOptical'|'onPrepareEditing'|'onRestoreEditing'|'onPrepareObserving'|'onRestoreObserving'|'onPreparePhotometry'|'onRestorePhotometry'|'onPrepareClassification'|'onClassifyAcquisition'|'onClassifyImported'|'onRestoreClassification'|'onRestoreAcquisition'|'currentJd'|'onRecordLss'>>({
    // Front LSSFREE: RecordZ1Click 0x58383c takes the LSS branch in the LSS exercise; here only for the spectrum the Spectrometer
    // page handed over (same SHA-256), whose exposure the investigation can replay [W]. The LSS page opens the dialog.
-   onRecordLss:(observation,control)=>{const o=lssFreeOrigin.current;if(exerciseCode!==5||!o||o.sha256!==observation.sha256)return false;
-    setLssFreeRequest(Object.freeze({token:++lssToken.current,source:o.source,control}));setLssVisited(true);navigate('lss-survey');return true;},
+   onRecordLss:(observation,control)=>{const o=lssFreeOrigin.current;if(exerciseCode!==5||!o||o.sha256!==observation.sha256)return null;
+    if(!o.source)return 'refused';// review 1 L2: an Analyze'd spectrum whose ID or .SSP could not be derived
+    setLssFreeRequest(Object.freeze({token:++lssToken.current,source:o.source,control}));setLssVisited(true);navigate('lss-survey');return 'lss';},
    // Front H2: the Record time of an Observational Data record. [W] The observatory clock at Record; VIREO uses the loaded spectrum's own time (0x582bdb..0x582be5).
    currentJd:()=>siteClockReadingMS(observatoryClock.state?clockDriveUTMS(observatoryClock.state):parseClockUTC(siteClock.utc),optical.selectedIndex).jd,
    onPrepareRadio:prepareRadio,

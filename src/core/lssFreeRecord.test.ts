@@ -1,7 +1,7 @@
 import {describe,expect,it} from 'vitest';
 import {loadedSpectrumId,observationStem} from './observationMetadata';
 import {lssFreeDraft,type LssFreeSource} from './lssFreeRecord';
-import {EMPTY_LSS_SURVEY,cancelLssRecord,confirmLssDialog,editLssDraft,lssResultsCsv,openLssRecord,type LssSurveyState} from './lssSurvey';
+import {EMPTY_LSS_SURVEY,cancelLssRecord,confirmLssDialog,editLssDraft,lssGuideCounts,lssResultsCsv,openLssRecord,type LssSurveyState} from './lssSurvey';
 import {lssPrefilledVelocity} from './lssRedshiftDialog';
 import {lssResultsTxtBytes} from './lssResultsTxt';
 import {lssPolicy} from './lssExposure';
@@ -25,7 +25,7 @@ describe('the engine load rule (0x582a70)',()=>{
 });
 
 const step=configureStep(INITIAL_CONTROL,.001);
-const source=(object:string,ra=12.5,dec=29.5):LssFreeSource=>Object.freeze({object,ra,dec,telescope:0,acquisitionPolicy:`openvireo-field-spectrum-v1:${ra},${dec}:T0`,journal:Object.freeze({seedAtReset:3,events:Object.freeze([{kind:'start' as const},{kind:'tick' as const,deltaMs:100},{kind:'pause' as const}])})});
+const source=(object:string,ra=12.5,dec=29.5):LssFreeSource=>Object.freeze({object,ra,dec,telescope:0,acquisitionPolicy:`openvireo-field-spectrum-v1:${ra},${dec}:T0`,journal:Object.freeze({seedAtReset:3,events:Object.freeze([{kind:'start' as const},{kind:'tick' as const,deltaMs:100},{kind:'pause' as const}])}),countsSha256:'ab'.repeat(32)});
 function ok(s:LssSurveyState,velocity?:string):LssSurveyState{
  const d=s.draft!;const r=confirmLssDialog(editLssDraft(s,{velocity:velocity??lssPrefilledVelocity(d.z)}));if(!r.ok)throw Error(r.message);return r.state;
 }
@@ -41,6 +41,8 @@ describe('a free-pointing Record Z in the LSS list',()=>{
   s=ok(openLssRecord(s,lssFreeDraft(source('NGC 4169',12.20525,29.18028),moveControl(step,7),2451545.6)));
   expect(s.records.map(r=>[r.id,r.object,r.free,r.field,r.row,r.jd])).toEqual([[1,'N0000-01634',true,null,null,2451545.5],[2,'NGC 4169',true,null,null,2451545.6]]);
   expect(s.records[0].zSingle).toBe(Math.fround(1e-4));
+  // Neither a star nor an unlisted galaxy counts as a survey galaxy in the guide (records only).
+  expect(lssGuideCounts(s.records)).toEqual({galaxies:0,fields:0});
   // Zero z: the dialog stays open with VIREO's refusal, nothing is added.
   const zero=openLssRecord(s,lssFreeDraft(source('N0000-01635'),INITIAL_CONTROL,2451545.7));
   const refused=confirmLssDialog(editLssDraft(zero,{velocity:'10'}));expect(refused.ok).toBe(false);expect(cancelLssRecord(zero).records).toHaveLength(2);
@@ -54,12 +56,14 @@ describe('a free-pointing Record Z in the LSS list',()=>{
   expect(s.records).toHaveLength(1);expect(s.records[0]).toMatchObject({id:1,object:'NGC 4080',free:true,field:null,row:null,jd:2451545.25});
   // ... and a row measurement reuses a free record the same way (back to a hot-list place).
   s=row(s,'NGC 4080',11);expect(s.records).toHaveLength(1);expect(s.records[0]).toMatchObject({id:1,field:1,row:1,jd:2451545.25});expect(s.records[0].free).toBeUndefined();
+  // Review 1 L1 [W]: the guide still counts a listed galaxy re-measured from a free pointing (NGC 4080 is a field 1 row).
+  expect(lssGuideCounts(ok(openLssRecord(s,lssFreeDraft(source('NGC 4080'),moveControl(step,12),2451546))).records)).toEqual({galaxies:1,fields:1});
   // Time-Dependent Data on: every Record Z adds a row.
   const added=ok(openLssRecord(s,lssFreeDraft(source('NGC 4080'),moveControl(step,12),2451546),{timeDependent:true}));
   expect(added.records.map(r=>r.free??false)).toEqual([false,true]);
  });
  it('refuses a free draft that claims a field, a row or a list JD',()=>{
   const d=lssFreeDraft(source('X'),moveControl(step,3),2451545);
-  for(const bad of [{...d,field:1},{...d,row:0},{...d,fieldJd:2451545}])expect(()=>openLssRecord(EMPTY_LSS_SURVEY,bad as typeof d)).toThrow();
+  for(const bad of [{...d,field:1},{...d,row:0},{...d,fieldJd:2451545},{...d,countsSha256:'x'}])expect(()=>openLssRecord(EMPTY_LSS_SURVEY,bad as typeof d)).toThrow();
  });
 });
