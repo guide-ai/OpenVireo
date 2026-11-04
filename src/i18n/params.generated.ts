@@ -80,6 +80,7 @@ export interface MessageParameters {
   "spectrum.objectLabel": never;
   "spectrum.objectPlaceholder": never;
   "spectrum.record": never;
+  "spectrum.lssFreeNote": never;
   "spectrum.referenceNotObservation": never;
   "spectrum.attribution": never;
   "spectrum.pending": never;
@@ -3223,6 +3224,7 @@ export interface MessageParameters {
   "lss.limitReached": "limit";
   "lss.dialog.controlChars": never;
   "lss.dialog.note": never;
+  "lss.dialog.free": never;
   "lss.dialog.reused": never;
   "lss.dialog.jdTime": never;
   "lss.dialog.raGroup": never;
@@ -3241,6 +3243,7 @@ export interface MessageParameters {
   "lss.adaptation.observatory": never;
   "lss.adaptation.dialog": never;
   "lss.adaptation.jd": never;
+  "lss.adaptation.free": never;
   "lss.restored": "count";
   "lssLab.nav": never;
   "lssLab.eyebrow": never;
