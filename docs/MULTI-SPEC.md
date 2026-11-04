@@ -63,7 +63,8 @@ addresses, evidence ids and tags in `docs/MULTI-SPEC-PROVENANCE.json`. Tags: [D]
   - 0.9 m: newly drawn 348 galaxies, 7 QSOs, 1689 stars and all 204 sky fibres; 4 stars stay typed `multispec-mean-bound`
     (N2230-01732, N2230-01473, N2230-01405, N3000-00556; 5 star–pack pairs, N2230-01732 being in lss-field-03 and Coma).
   - 4 m: unchanged (its field bound is already 10⁶; 45 distinct stars are typed).
-  - Typed on every telescope, unrelated to D3: 2 stars `star-template-none`, 1 galaxy `spectrum-mapping`.
+  - Typed on every telescope, unrelated to D3: 2 stars `star-template-none` (N2230-01637, index 70993000, lss-field-03 at two
+    pointings; N3000-02231, index 81990000, lss-field-04; both past JSPEC2.SPI's last index 70702000), 1 galaxy `spectrum-mapping`.
   - The observatory itself builds 218 distinct pointings (188 views + 30 gated, plus the 11 lab rows): the same per-object
     totals, as the harness's 'reachable' basis shows.
 - List items "  (n)  " (left-padded) with "*" when saved; Scan (1–5 s); Save All, Clear All, Open/Close All; display
@@ -86,7 +87,12 @@ shows one neutral text (the native boxes name the kind); Show Object ID is ignor
 All entries. Lab rows whose neighbours lie within that distance stay masked after the reveal.
 
 ## Typed (not ported or indeterminate)
-`star-template-none` (nil lookup), `star-template-random` (index 0: the native random pick, Random(131) over JSPEC2.SPI after Randomize, so not
+`star-template-none` (nil lookup 0x50d660; Front MSTNONE, research front-mstnone/RECOVERY.md: VIREO shows the single
+spectrometer's "No Spectrum" box, "Spectrum Index is Invalid!" / "Spectrum Index: n" / "You Cannot Record A Spectrum of This
+Star!" (0x5279cb..0x527a26) [D], returns without a template, and the flux loop then reads through the nil template (0x55dfe0 at
+0x55dff0): an access violation [D read, I handling] that stops AddSpectrum's loop at that fibre, so that fibre and the later ones
+get no spectrum and the list form is not shown. [W] The crash and the partial list are not reproduced: the fibre stays typed, its
+text quotes the box, and the other fibres keep their spectra), `star-template-random` (index 0: the native random pick, Random(131) over JSPEC2.SPI after Randomize, so not
 reproducible; all 132 templates are bundled since 2026-10-30. It is unreachable with the published data: none of the compact
 GSC records has code 0, a code-0 variable makes the dispatch FALSE, and QSOs are type 3; Front RE6, research
 front-re6/random-template-code0.md, as in docs/FIELD-SPECTROMETER.md. It stays typed), `galaxy-lookup`, `spectrum-mapping` (own galaxy

@@ -69,6 +69,30 @@ describe('Front M: Multi-Spec inputs, view and spectra (in-process seam of the W
   const r=await loadMultiSpecInputs(resources()),p=r.objectX.rowPointings.get(10)!;
   const x=await multiSpecView({pack:'objectx-row-10',pointing:p,telescope:2});expect([x.reasons,!!x.viewport]).toEqual([[],true]);
  });
+ it('Front MSTNONE: the two published stars past JSPEC2.SPI stay typed star-template-none; the other fibres of the exposure keep their spectra',async()=>{
+  // analysis/front-mstnone/mstnone-hits.json: N2230-01637 (lss-field-03, two pointings) and N3000-02231 (lss-field-04). Natively
+  // 0x52789c shows the "No Spectrum" box and the flux loop then reads through the nil template (an access violation that ends
+  // AddSpectrum's loop); the web keeps the fibre typed and does not abort the others [W].
+  const cases=[{field:3,ra:12.754694444444445,dec:27.12611111111111,x:375,y:465,v:8.5,index:70993000},
+   {field:3,ra:12.759638888888889,dec:27.06111111111111,x:457,y:383,v:8.5,index:70993000},
+   {field:4,ra:13.19425,dec:31.50138888888889,x:589,y:615,v:16.790000915527344,index:81990000}] as const;
+  for(const c of cases){
+   const row=lssFieldRows(c.field).find(r=>r.ra===c.ra&&r.dec===c.dec)!;expect(row).toBeDefined();
+   const field={pack:`lss-field-0${c.field}` as const,pointing:{ra:row.ra,dec:row.dec},telescope:0 as const};
+   const v=await multiSpecView(field);expect(v.reasons).toEqual([]);
+   const f={population:v.population!,scene:v.scene!},star=multiSpecPick(f,c.x,c.y);
+   expect([star.type,star.v,star.spectralIndex]).toEqual([0,c.v,c.index]);
+   // Every other star of the 312² crop that a click selects, in its own fibre.
+   const others=v.scene!.stars.map((p,i)=>({p,i})).filter(({p,i})=>{const x=Math.round(p.x),y=Math.round(p.y);if(x<312||x>623||y<312||y>623)return false;
+    const s=multiSpecPick(f,x,y);return s.source.kind==='star'&&(s.source as {index:number}).index===i&&s.spectralIndex!==c.index;}).map(({p})=>multiSpecPick(f,Math.round(p.x),Math.round(p.y)));
+   expect(others.length).toBeGreaterThan(0);
+   const fibres=[star,...others].map((selection,i)=>({selection,seed:i+1,seconds:60}));
+   const together=await multiSpecSpectra(field,fibres),alone=await multiSpecSpectra(field,fibres.slice(1));
+   expect(together[0]).toEqual({status:'unavailable',reason:'star-template-none'});
+   expect(together.slice(1)).toEqual(alone);
+   expect(alone.every(e=>e.status==='ready'||e.status==='unavailable'&&e.reason!=='star-template-none')).toBe(true);
+  }
+ });
  it('a tampered template fails its hash check as a retryable load failure; an unknown pack is evidence',async()=>{
   const t=MULTISPEC_STAR_TEMPLATES[0],bad=byPath[t.path].slice();bad[100]^=1;
   const e=await loadMultiSpecInputs(resources({[t.path]:bad})).catch(x=>x);

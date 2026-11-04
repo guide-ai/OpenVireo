@@ -165,6 +165,13 @@
    "sha256": "120ca5ba74e2cff534ec0fcc8328b286c9c9f4b99bf1ae9c4779a0ae0cd1f162",
    "addresses": "0x55f0d0..0x55f12c",
    "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VM-L-mstnone-excerpts",
+   "path": "analysis/front-mstnone/excerpts.asm",
+   "sha256": "c4de7416eae7efc439f153db9f99bd318745ec032c350489fc5ea4983bac7d1f",
+   "addresses": "0x526fb4..0x52724c, 0x52789c..0x527a6c, 0x55dfe0..0x55e01d, 0x50d660..0x50d749, 0x5258c4..0x525bbe, 0x52a2d4..0x52a3d2, 0x52a79c..0x52a81d, 0x47e00c..0x47e2b5",
+   "kind": "objdump -d -M intel excerpts of CLEA_VEO.exe (static), with the message strings (Front MSTNONE)"
   }
  ],
  "contracts": [
@@ -292,6 +299,22 @@
     "VM-L-optionsdlg-ok-excerpt-5a6090",
     "VM-L-data-reads"
    ]
+  },
+  {
+   "id": "VM-10",
+   "tag": "D",
+   "title": "Nil star template (star-template-none): 0x52789c shows \"No Spectrum\" / \"Spectrum Index is Invalid!\" CRLF \"Spectrum Index: n\" CRLF CRLF \"You Cannot Record A Spectrum of This Star!\" (MB_ICONSTOP) and stores no template; the flux loop then reads [nil+6] in 0x55dfe0 (an access violation; its handling is inferred), ending AddSpectrum's loop at that fibre. Web: typed, the crash not reproduced (VM-W6).",
+   "ranges": [
+    "0x5278e3..0x527a36",
+    "0x52720b..0x52721f",
+    "0x55dfe0..0x55dff0",
+    "0x5258c4..0x525949",
+    "0x52a79c..0x52a81c"
+   ],
+   "evidence": [
+    "VM-L-mstnone-excerpts",
+    "VM-L-mspecdsply-526cf0-5299a0"
+   ]
   }
  ],
  "webPolicies": [
@@ -324,13 +347,20 @@
    "tag": "W",
    "title": "Numeric policy",
    "rule": "binary64 Number/Math for x87 Extended; Singles via Math.fround; the Poisson rejection branch [D] reproduced and checked by the independent witness."
+  },
+  {
+   "id": "VM-W6",
+   "tag": "W",
+   "title": "Nil star template",
+   "rule": "VIREO's access violation after the \"No Spectrum\" box (VM-10) is not reproduced: the fibre stays typed star-template-none with the box's text in its reason, it stays in the list, and the other fibres of the exposure keep their spectra. Affected in the published data: N2230-01637 (index 70993000) and N3000-02231 (81990000) (analysis/front-mstnone/mstnone-hits.json)."
   }
  ],
  "uncertainty": [
   "Print Selection Field and Help (0-byte help files) are not ported (typed).",
   "Sky fibres: RA/Dec/V are uninitialised natively (\"not recorded\", D8); the S/N estimate is indeterminate with a sky fibre.",
   "Star index 0 (native random template pick) is typed star-template-random; templates outside the approvals stayed spectrum-template-unapproved until the 2026-10-30 approval bundled all 132 templates JSPEC2.SPI names, which removed that reason.",
-  "Native save dialogs (folder, base name, overwrite confirm) are not ported: a browser download."
+  "Native save dialogs (folder, base name, overwrite confirm) are not ported: a browser download.",
+  "Nil star template (VM-10): the access-violation text and dialog title follow the Delphi RTL/VCL defaults (Application.HandleException 0x47e00c → ShowException 0x47e218); no DFM assigns OnException, but a run-time assignment was not searched exhaustively."
  ],
  "witnesses": [
   "data/multispec/witness.json (multispec_witness.py: LCG, Poisson incl. rejection branch, grid, templates, QSO; 11 fibres × 2 telescopes)",

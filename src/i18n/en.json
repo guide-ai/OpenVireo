@@ -3330,7 +3330,7 @@
   "multispec.spectrumLoading": "Computing this spectrum…",
   "multispec.spectrumError": "This spectrum could not be computed (a resource did not load or did not match its recorded identity).",
   "multispec.neutral": "No measurable spectrum for this fibre.",
-  "multispec.reason.star-template-none": "no spectrum template is listed for this star's spectral type",
+  "multispec.reason.star-template-none": "this star's spectral index has no spectrum template in JSPEC2.SPI; VIREO shows “Spectrum Index is Invalid!” and “You Cannot Record A Spectrum of This Star!” (No Spectrum) and then stops with an access violation, so it never records this fibre",
   "multispec.reason.star-template-random": "this star's spectral code asks for a random template; the original’s pick is not reproducible, and no star in the published catalogue has this code",
   "multispec.reason.star-index-invalid": "this star's spectral index is not valid",
   "multispec.reason.galaxy-lookup": "the galaxy record is not in the field's galaxy list",
