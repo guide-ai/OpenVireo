@@ -53,8 +53,14 @@ function control(v:unknown):ShiftControl{
  if(!Number.isInteger(position)||position<-100||position>100||(c.factor!==1&&c.factor!==10)||step<=0||step>1)fail('record');
  return Object.freeze({base,position,factor:c.factor as 1|10,step});
 }
+/** Front LSSFREE: the same control rule for the free-pointing records of the v34 wrapper. */
+export const readLssSessionControl=control;
+/** Front LSSFREE: the serialized length of this v27 payload (the v34 part shares its 4 MiB budget). */
+export function lssPayloadLength(i:LssInvestigation):number{return JSON.stringify(portablePayload(i)).length;}
 /** Plain JSON form (what the file stores): a table of distinct journals and records pointing at them. */
 function portablePayload(i:LssInvestigation){
+ // Front LSSFREE: free-pointing records never enter this v27 payload; the v34 wrapper (lssFreeRecords.ts) carries them.
+ if(i.records.some(r=>r.free))fail('record');
  const keys=new Map<string,number>(),journals:{policy:string;seedAtReset:number;events:string}[]=[];
  const records=i.records.map(r=>{
   const key=lssJournalKey(r.acquisitionPolicy,r.journal);let at=keys.get(key);

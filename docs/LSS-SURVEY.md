@@ -13,13 +13,13 @@ Route `#lss-survey` (`src/LssSurvey.tsx`). Field names and centres come from the
 9. Plot your own records in the wedge (`#lss-wedge`).
 10. Write a free-text description (not graded).
 
-Save/Restore (session v27, `src/io/lssInvestigation.ts`): the investigation file wraps an unchanged v1–v26 base and stores the field, telescope, every record with its exposure journal (seed + events) and shift control, the description and the committed wedge options. Records that come from the same exposure share one stored journal, and each journal's events are one compact string (`s` start, `p` pause, a tick as its milliseconds, `100*600` for repeated ticks; about 4–9 bytes per event even when every tick differs). Bounds: 250 records; 150 000 events over the distinct exposures, refused at Record Z with an inline message; a 4000-character description, validated inline; and the serialized E02 part is capped at 4 MiB, so it leaves at least 12 MiB of the 16 MiB file to the other exercises. An E02 save failure has its own message. Restore replays every journal on its bundled pack, re-derives z and velocity from the control, checks a SHA-256 over those derivatives and rejects the whole file on any mismatch. Not saved: an open Record Z dialog, the current unrecorded exposure and the wedge's plotted points. Restore removes the wedge's own LSS points and sets its options to the file's (or the defaults), so a re-plot never duplicates points. Any Restore, including an older v1–v26 file, replaces the wedge state this way: wedge options are saved only inside the E02 part, so a student who used the wedge with supplied `.TXT` files alone gets the default options back (loaded `.TXT` files are kept). Save and Restore evaluate each (field, row, telescope) once and replay each journal once; Save's self-check reuses the verification of the identical payload.
+Save/Restore (session v27, `src/io/lssInvestigation.ts`; free-pointing records in the v34 wrapper, see "Free pointing" below): the investigation file wraps an unchanged v1–v26 base and stores the field, telescope, every record with its exposure journal (seed + events) and shift control, the description and the committed wedge options. Records that come from the same exposure share one stored journal, and each journal's events are one compact string (`s` start, `p` pause, a tick as its milliseconds, `100*600` for repeated ticks; about 4–9 bytes per event even when every tick differs). Bounds: 250 records; 150 000 events over the distinct exposures, refused at Record Z with an inline message; a 4000-character description, validated inline; and the serialized E02 part is capped at 4 MiB, so it leaves at least 12 MiB of the 16 MiB file to the other exercises. An E02 save failure has its own message. Restore replays every journal on its bundled pack, re-derives z and velocity from the control, checks a SHA-256 over those derivatives and rejects the whole file on any mismatch. Not saved: an open Record Z dialog, the current unrecorded exposure and the wedge's plotted points. Restore removes the wedge's own LSS points and sets its options to the file's (or the defaults), so a re-plot never duplicates points. Any Restore, including an older v1–v26 file, replaces the wedge state this way: wedge options are saved only inside the E02 part, so a student who used the wedge with supplied `.TXT` files alone gets the default options back (loaded `.TXT` files are kept). Save and Restore evaluate each (field, row, telescope) once and replay each journal once; Save's self-check reuses the verification of the identical payload.
 
 ## Guide
 The header button **LSS guide** (`src/LssLabGuide.tsx`, progress in `src/core/lssLab.ts`) lists seven steps: load a list, take a spectrum, record a redshift, repeat (5 different galaxies — distinct selected catalogue galaxies — a guide threshold chosen here and labelled so in the UI, not an original requirement), plot in the wedge, describe, save. Each check is recomputed from the current state; nothing is stored and no redshift is judged. "Save" is checked when the current records were saved or restored.
 
 ## Tests
-Vitest: lssFields, lssLists, nativeTextFile, fieldEngine, fieldSkyReading, lssPacks, lssSurvey, lssLab, io/lssInvestigation. Playwright: tests/lss-survey.spec.ts, lss-survey-negative.spec.ts, lss-session.spec.ts, lss-guide.spec.ts.
+Vitest: lssFields, lssLists, nativeTextFile, fieldEngine, fieldSkyReading, lssPacks, lssSurvey, lssLab, lssFreeRecord, io/lssInvestigation, io/lssFreeRecords. Playwright: tests/lss-survey.spec.ts, lss-survey-negative.spec.ts, lss-session.spec.ts, lss-guide.spec.ts, lss-free-pointing.spec.ts.
 
 ## Acquirable rows (0.4 m / 0.9 m / 4 m, of 219)
 **218 / 218 / 218 with the observatory-clock time the list freezes (what a student sees; default JD 2451545.0), 212 / 212 / 212
@@ -70,6 +70,7 @@ Three rows select a coincident neighbour by the nearest rule (12550+2749 → NGC
 - Measured Redshift Data (Front L2): see below. RA/Dec are read-only h m s / d m s boxes (the original discards edits to them); Cancel adds nothing (the original inserts the record before the dialog opens, 0x57c918, and Cancel never removes it), and on a reused row it changes nothing (the original keeps the new z, RA and Dec with the old velocity; the web keeps every row inside the 1 % rule restore checks) [W]; JD is read when Record Z is clicked.
 - Measurement uses a dedicated panel on the analyser's recovered shift-control contract.
 - Record Z follows the recovered LSS branch; 0x57c918 (find-or-add) and the dialog bodies are recovered (Front L2, below).
+- Free pointing (Front LSSFREE): in the LSS exercise a spectrum from the Spectrometer page's Analyze, recorded in the analyser, joins this list with the ID VIREO's proposed save name gives; no save-and-load step, JD from the site clock (see "Free pointing" below).
 - Records go to the wedge directly with their exact values. The native .TXT writer 0x57af74 is ported for Save Data (.TXT) (Front L2, below).
 - Results are saved in an OpenVireo CSV format.
 - Stars come from bounded GSC read witnesses (`data/lss`); arithmetic uses Number, not x87.
@@ -193,8 +194,9 @@ engine's star path enabled through JSPEC2.SPI. The 18 rows that need a clock tim
   - No QSO is selected either.
 - **The counts:** they stayed 187/93/189 (196/93/198 after Front F3), and no star template is needed (measurement:
   analysis/front-plans/front-l3-star-measure.txt).
-- **Free pointing:** VIREO reaches a star in the strip only by pointing the observatory freely. Recording such a star into the
-  LSS list would take Record Z from the general spectrometer in LSS mode, a cross-front follow-up.
+- **Free pointing:** VIREO reaches a star in the strip only by pointing the observatory freely. Since Front LSSFREE such a star
+  (or any other object at any pointing) can be recorded into the LSS list from the Spectrometer page (see "Free pointing" below).
+  The hot-list rows above stay galaxy-only and their counts are unchanged.
 
 ## Mean bound and stamp cap (Front L4, 2026-10-31)
 Plan and measurement: analysis/front-plans/front-l4.md, analysis/front-l4/ (harness and per-row outputs). Static reading of
@@ -299,3 +301,72 @@ Research note: analysis/front-lssparse/RECOVERY.md. Static reading of CLEA_VEO.e
     offset 0x1fcd16) [D], so the 17-character padding aligned its columns. The web pads with U+00A0 at render and gives
     `#lss-field` a bold monospace font; native mobile pickers may ignore the font.
 - **Counts.** Field centres are not used to acquire rows, so E02 stays 218 / 218 / 218 (212 without the clock).
+
+## Free pointing: any object into the LSS list (Front LSSFREE, 2026-11-04)
+Research note: analysis/front-lssfree/RECOVERY.md (excerpts.asm SHA-256 d1b1b065…56e1); plan
+analysis/front-plans/front-lssfree.md. Static reading of CLEA_VEO.exe 781bc970…c54c; nothing executed.
+- **What VIREO does [D].**
+  - The spectrometer has no Record item; its File › Data menu only saves the spectrum. The only Record Z is the measuring
+    engine's "Record Measurements…" (RecordZ1Click 0x58383c, DFM `Enabled = False`).
+  - Load Saved Spectrum (0x582a70) is what enables it (0x582c96). That handler is the only writer of the engine's ID and time:
+    - ID: the file name, cut at the first '.', dropped through the first '_', trailing spaces trimmed (0x582bc3..0x582c74);
+    - time: the file's last-write time (0x582be5);
+    - RA/Dec: the file header's pointing (+0x31/+0x3b).
+  - In every exercise except 3, 4 and 7, Record Z calls the LSS find-or-add 0x57c918 with them and the measured z.
+  - Nothing tests the object's kind, the pointing or a hot list. A star (z ≈ 0), a galaxy on no hot-list row or a QSO reaches
+    the list exactly as a hot-list galaxy does.
+  - Entering the LSS exercise sets Show Object ID on (0x58aabe), so Save proposes the current object's name (0x50fb1c), and
+    keeping that name gives it back as the ID. Preferences OK or Cancel (Preferences1Click, 0x588737..0x58874c) copies the stored
+    options record back, so the option can be off again; Save then proposes `UNKNOWN.SSP` or `ObjX-<student>.SSP`.
+  - Other mode-5 effects:
+    - the default instrument is the spectrometer (table at 0x538064);
+    - InstSlider is hidden (0x53a296);
+    - click selection in the field is armed only with Edit Mode or in modes 0/1 (0x53cfa8);
+    - two jump tables on the exercise byte, at 0x546e43 and 0x590923 (their cases not traced).
+  - None restricts free pointing [I: none of the 15 literal compares with 5 is in a slew or pointing path]. Load Hot List
+    (visible in mode 5, 0x5378b1) only slews.
+- **Here.**
+  1. Start the LSS guide (the web's exercise 5).
+  2. Point the telescope anywhere in the Observatory, take a spectrum on the Spectrometer page, then **Analyze this spectrum**.
+  3. In the analyser, measure z and click **Record measurement**. The LSS page opens Measured Redshift Data for that object.
+     Find-or-add, the typed velocity, the 1 % rule, OK/Cancel, the .TXT writer and the wedge are the same as for hot-list rows.
+  - ID: `lssFreeObjectId` (`core/lssFreeRecord.ts`), the slit object's VIREO name (`fieldSpectrumHeaderName`, Front RE6)
+    through the proposed name `Name.SSP` and the load rule (`loadedSpectrumId`, `core/observationMetadata.ts`). At a hot-list
+    row's coordinates it is the ID the row route records, so the two join one row.
+  - RA/Dec: the .SSP header's pointing (6 / 5 decimals), read back from the bytes.
+  - A star at exactly z = 0: natively 0x57c918 has already inserted the record before the dialog opens, and OK's 1 % check
+    divides by c·z = 0, so the program's default error box appears [I] (Front L2 §2.4). Here this is the two existing [W]s
+    (adaptations above): the dialog shows "Velocity calculation is invalid!", with a line saying to move the shift control one
+    step, and Cancel adds nothing.
+- **Investigation (session v34).**
+  - The v34 wrapper (`openvireo-lss-free-records-v34`, `src/io/lssFreeRecords.ts`) is outermost around an unchanged v27–v33 base.
+    The base's v27 layer holds the hot-list records, renumbered 1..m in list order.
+  - Each free record is stored with its list position, ID, JD, RA/Dec, z/velocity bits, remarks, shift control and the
+    field-spectrometer exposure (policy, seed, compact events), plus a SHA-256 over what the replay derives.
+  - Save only serializes (review 1 M2). The digest uses each record's counts digest, taken when Analyze handed the exposure over,
+    so no tile is read. An open tab saves offline or after a redeploy (Front D3 M1); `lssFreeRecords` is statically re-exported
+    by `analysisSession.ts`, so it ships with the Save module itself.
+  - Restore first checks every record and decodes every journal against the event budget shared with the v27 layer (review 1 M1).
+    Only then does it assemble each field again from the compact GSC tiles at the policy's pointing, telescope, JD and range, with the
+    Object X mask. It then replays the journal, rebuilds the .SSP and compares the ID and pointing. It re-derives z from the
+    control and checks the dialog rule and the digest, merges the positions and renumbers the ids.
+  - Any mismatch rejects the whole file. A tile that does not arrive is a missing resource.
+  - Bounds: 250 records and 150 000 events over both layers. The free part shares the 4 MiB E02 budget with the v27 payload.
+  - A list without free records writes exactly the older format. Older files (v1–v33) restore unchanged. Builds before this
+    front refuse a v34 file with the generic format error.
+- **Adaptations [W].**
+  - There is no save-and-load step: Analyze hands the exposure's own .SSP to the analyser, so the ID is that of the proposed
+    name. VIREO's student could rename the file [U].
+  - The JD is the observatory clock at Record Z, as for hot-list rows, not a file time.
+  - Only in the LSS exercise. VIREO's branch also covers modes 0, 1, 2 and 6, where the web analyser keeps its own log.
+  - Only spectra handed over by Analyze, whose exposure the file can replay. A .SSP opened from disk stays in the analyser's log.
+  - The ID uses the object's name even when Show Object ID is off. VIREO's Save would then propose `UNKNOWN.SSP` or `ObjX-<student>.SSP`.
+  - A free measurement of a galaxy already on the list reuses its row (0x57c918) and replaces its hot-list exposure with the free
+    one. The guide's galaxy and field counts take hot-list records and free records whose ID is a hot-list galaxy (a row's label,
+    or the galaxy a `neighbour` row's slit selects, `LSS_NEIGHBOUR_SELECTIONS`: 12550+2749 → NGC 4842, IC 4395A → IC 4395,
+    NGC 5639A → NGC 5639), counted in its first row's field, so such a re-measurement still counts (`lssGuideCounts`). Stars, unlisted galaxies and QSOs count as
+    records only.
+  - An Analyze'd spectrum whose header or ID cannot be built is refused with a one-line reason; it is not silently logged.
+- **Unchanged.** Hot-list rows stay galaxy-only (D5 above): E02 218 / 218 / 218 (212 without the clock), the LSS fingerprints,
+  E01's H0 and E08.
+

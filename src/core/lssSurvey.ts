@@ -11,7 +11,7 @@ import {recordReuseTarget} from './recordReuse';
 import {lssDialogOk,lssVelocityText} from './lssRedshiftDialog';
 import {currentZ,type ShiftControl} from './spectrum';
 import type {JournalEvent} from './exposureJournal';
-import {LSS_FIELD_FILES,type LssFieldNumber} from './lssFields';
+import {LSS_FIELD_FILES,LSS_ROWS,type LssFieldNumber} from './lssFields';
 /** Front R4 (R4.3) [D]: TSpectrumEngine.RecordZ1Click 0x58383c, LSS branch, after OK (0x58391a): with neither the wedge nor the
  * LSS results window visible VIREO shows this box (text 0x583b20, caption 0x583bac, MB flags 0x40) and enables the main-menu
  * "LSS Wedge Plot" item (env+0x52c, 0x4548ac). Verbatim CLEA_VEO.exe literals (SHA-256 781bc970…c52c54c), never translated. */
@@ -22,8 +22,13 @@ export const LSS_LIMITS=Object.freeze({records:250,object:24,remarks:40,velocity
 export class LssSurveyError extends Error{
  constructor(readonly code:'field'|'record'|'limit'|'events'|'pending'){super(`LSS survey: ${code}`);this.name='LssSurveyError';}
 }
-export type LssRecord=Readonly<{
- id:number;field:LssFieldNumber;row:number;telescope:0|1|2;object:string;jd:number;ra:number;dec:number;
+/** Front LSSFREE: a record is a hot-list row's (field, row) or a free-pointing one (`free`, no field or row; its exposure is the
+ * field spectrometer's, its policy a field-spectrum policy, its RA/Dec the .SSP header's pointing; core/lssFreeRecord.ts).
+ * `countsSha256` (review 1 M2): SHA-256 of that exposure's counts as the field spectrometer computed them when Analyze handed it
+ * over; the v34 digest is built from it, so Save needs no tiles (Restore recomputes it by replay). */
+export type LssRecordPlace=Readonly<{field:LssFieldNumber;row:number;free?:undefined}>|Readonly<{field:null;row:null;free:true;countsSha256:string}>;
+export type LssRecord=LssRecordPlace&Readonly<{
+ id:number;telescope:0|1|2;object:string;jd:number;ra:number;dec:number;
  zSingle:number;zHex:string;velocitySingle:number;velocityHex:string;remarks:string;acquisitionPolicy:string;
  /** The exposure behind the measurement (replayed on restore) and the shift control that gave z. */
  journal:LssJournal;control:ShiftControl;
@@ -36,7 +41,7 @@ export type LssRecord=Readonly<{
 }>;
 export type LssJournal=Readonly<{seedAtReset:number;events:readonly JournalEvent[]}>;
 /** The open "Measured Redshift Data" dialog: values fixed from the measurement, only Remarks (and the object label) editable. */
-export type LssDraft=Readonly<{field:LssFieldNumber;row:number;telescope:0|1|2;object:string;jd:number;ra:number;dec:number;z:number;remarks:string;acquisitionPolicy:string;journal:LssJournal;control:ShiftControl;fieldJd?:number;
+export type LssDraft=LssRecordPlace&Readonly<{telescope:0|1|2;object:string;jd:number;ra:number;dec:number;z:number;remarks:string;acquisitionPolicy:string;journal:LssJournal;control:ShiftControl;fieldJd?:number;
  /** Front L2: the Velocity (km/sec) edit text: the reused row's velocity, else c·z with Compute Rdshft Vel. (R3), else blank. */velocity:string;
  /** Front L3: the index of the record this measurement reuses (0x57c918, Time-Dependent Data off), or null for a new row. */
  target:number|null}>;
@@ -60,11 +65,14 @@ export function markLssListLoaded(s:LssSurveyState,field:LssFieldNumber):LssSurv
 }
 /** Record Z (RecordZ1Click 0x58383c, LSS branch): opens the dialog with the measured z. One dialog at a time. A reused row (Front
  * L3) opens with its own velocity (ffExponent 4) and remarks, as FormActivate 0x57cab8 shows the record's fields. */
-export function openLssRecord(s:LssSurveyState,d:Omit<LssDraft,'remarks'|'velocity'|'target'>,options:Readonly<{timeDependent?:boolean}>={}):LssSurveyState{
+export type LssDraftInput=LssDraft extends infer D?D extends LssDraft?Omit<D,'remarks'|'velocity'|'target'>:never:never;
+export function openLssRecord(s:LssSurveyState,d:LssDraftInput,options:Readonly<{timeDependent?:boolean}>={}):LssSurveyState{
  if(s.draft)throw new LssSurveyError('pending');
  const target=typeof d.object==='string'?lssReuseTarget(s.records,d.object,options.timeDependent??false):null;
  const others=target===null?s.records:s.records.filter((_r,i)=>i!==target);
  if(d.journal&&Array.isArray(d.journal.events)&&lssEventTotal(others,d)>LSS_LIMITS.events)throw new LssSurveyError('events');
+ // Front LSSFREE: a free-pointing draft has neither field nor row, and no list JD (its field-spectrum policy carries its own).
+ if(d.free?(d.field!==null||d.row!==null||d.fieldJd!==undefined||typeof d.countsSha256!=='string'||!/^[0-9a-f]{64}$/.test(d.countsSha256)):!(Number.isInteger(d.field)&&Number.isInteger(d.row)))throw new LssSurveyError('record');
  if(!d.control||!d.journal||d.z!==currentZ(d.control)||!Number.isSafeInteger(d.journal.seedAtReset)||!Array.isArray(d.journal.events)||!Number.isFinite(d.z)||Math.fround(d.z)<=-1||!Number.isFinite(d.jd)||(d.fieldJd!==undefined&&!Number.isFinite(d.fieldJd))||!Number.isFinite(d.ra)||!Number.isFinite(d.dec)||d.ra<0||d.ra>=24||Math.abs(d.dec)>90)throw new LssSurveyError('record');
  hubbleVelocity(d.z);
  const reused=target===null?null:s.records[target];
@@ -115,7 +123,8 @@ export function confirmLssDialog(s:LssSurveyState):LssConfirm{
  if(lssEventTotal(target===null?s.records:s.records.filter((_r,i)=>i!==target),d)>LSS_LIMITS.events)throw new LssSurveyError('events');
  const r=lssDialogOk(d.z,d.velocity);if(!r.ok)return r;
  // A reused row keeps its id, list position and first time (0x57c918 never rewrites +0x10); everything else is the new measurement.
- const record:LssRecord=Object.freeze({id:reused?reused.id:s.records.length+1,field:d.field,row:d.row,telescope:d.telescope,object:d.object.trim()||'—',jd:reused?reused.jd:d.jd,ra:d.ra,dec:d.dec,zSingle:r.zSingle,zHex:r.zHex,velocitySingle:r.velocitySingle,velocityHex:r.velocityHex,remarks:d.remarks,acquisitionPolicy:d.acquisitionPolicy,journal:d.journal,control:d.control,...(d.fieldJd!==undefined?{fieldJd:d.fieldJd}:{}),nativeDialog:true as const});
+ const place:LssRecordPlace=d.free?{field:null,row:null,free:true,countsSha256:d.countsSha256}:{field:d.field,row:d.row};
+ const record:LssRecord=Object.freeze({id:reused?reused.id:s.records.length+1,...place,telescope:d.telescope,object:d.object.trim()||'—',jd:reused?reused.jd:d.jd,ra:d.ra,dec:d.dec,zSingle:r.zSingle,zHex:r.zHex,velocitySingle:r.velocitySingle,velocityHex:r.velocityHex,remarks:d.remarks,acquisitionPolicy:d.acquisitionPolicy,journal:d.journal,control:d.control,...(d.fieldJd!==undefined?{fieldJd:d.fieldJd}:{}),nativeDialog:true as const});
  if(target!==null){const records=Object.freeze(s.records.map((x,i)=>i===target?record:x));return {ok:true,state:Object.freeze({...s,draft:null,records,wedgeStale:s.wedgeStale||target<s.handedToWedge})};}
  return {ok:true,state:Object.freeze({...s,draft:null,records:Object.freeze([...s.records,record])})};
 }
@@ -130,12 +139,27 @@ export function markLssHandedToWedge(s:LssSurveyState,upTo=s.records.length):Lss
  if(!Number.isInteger(upTo)||upTo<(s.wedgeStale?0:s.handedToWedge)||upTo>s.records.length)throw new LssSurveyError('record');
  return Object.freeze({...s,handedToWedge:upTo,wedgeStale:false});
 }
+/** Hot-list rows whose slit selects another catalogue galaxy (`neighbour`): row label → the selected ID, which is what a hot-list
+ * record of that row stores. The same on all three telescopes, without and with the default clock JD; pinned against the frozen
+ * row fingerprints and the row evaluation (lssFreeRecord.test.ts). */
+export const LSS_NEIGHBOUR_SELECTIONS:ReadonlyMap<string,string>=new Map([['12550+2749','NGC 4842'],['IC 4395A','IC 4395'],['NGC 5639A','NGC 5639'],['14520+3025W','14520+3025E'],['15384+2831W','15384+2831E'],['15384+2831S','15384+2831E']]);
+/** The guide's galaxy and field counts [W] (review 1 L1, closure 1): hot-list records, and free-pointing records whose ID is a
+ * hot-list galaxy, a row's label or the galaxy its slit selects (counted in the field of its first row), so re-measuring a listed
+ * galaxy from a free pointing, which reuses and replaces its row (0x57c918), still counts. Other free records (stars, unlisted
+ * galaxies, QSOs) count as records only. */
+const LISTED_FIELD=new Map<string,LssFieldNumber>();
+for(const r of LSS_ROWS)for(const id of [r.id,LSS_NEIGHBOUR_SELECTIONS.get(r.id)])if(id!==undefined&&!LISTED_FIELD.has(id))LISTED_FIELD.set(id,r.field);
+export function lssGuideCounts(records:readonly LssRecord[]):Readonly<{galaxies:number;fields:number}>{
+ const galaxies=new Set<string>(),fields=new Set<LssFieldNumber>();
+ for(const r of records){const field=r.free?LISTED_FIELD.get(r.object):r.field;if(field===undefined)continue;galaxies.add(r.object);fields.add(field);}
+ return Object.freeze({galaxies:galaxies.size,fields:fields.size});
+}
 export const lssAtLimit=(s:LssSurveyState)=>s.records.length>=LSS_LIMITS.records;
 const cell=(value:string)=>'"'+(/^[\s]*[=+\-@]/.test(value)||/^[\t\r\n]/.test(value)?"'"+value:value).replaceAll('"','""')+'"';
 /** OpenVireo results CSV (a web schema, not the native LSS .TXT writer 0x57af74). Text cells are formula-neutralised. */
 export function lssResultsCsv(records:readonly LssRecord[]):string{
  const header='schema,id,field,row,telescope_record,object,jd,ra_hours,dec_degrees,z_float32,z_float32_hex,velocity_float32_km_s,velocity_float32_hex,remarks,acquisition_policy,numerical_policy';
- return header+'\r\n'+records.map(r=>[1,r.id,r.field,r.row+1,r.telescope,cell(r.object),r.jd,r.ra,r.dec,r.zSingle,r.zHex,r.velocitySingle,r.velocityHex,cell(r.remarks),cell(r.acquisitionPolicy),'Number_x87_equivalence_unvalidated'].join(',')).join('\r\n')+'\r\n';
+ return header+'\r\n'+records.map(r=>[1,r.id,r.field??'',r.row===null?'':r.row+1,r.telescope,cell(r.object),r.jd,r.ra,r.dec,r.zSingle,r.zHex,r.velocitySingle,r.velocityHex,cell(r.remarks),cell(r.acquisitionPolicy),'Number_x87_equivalence_unvalidated'].join(',')).join('\r\n')+'\r\n';
 }
 /** A restored survey: records already validated and replayed by the session reader; nothing is handed to the wedge yet. */
 export function restoredLssSurvey(field:LssFieldNumber|null,records:readonly LssRecord[]):LssSurveyState{

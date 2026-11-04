@@ -66,7 +66,9 @@ The Spectrometer page (`#spectrometer`) now holds VIREO's single-slit spectromet
   - `object-x-hidden`: within 2° of an Object X position.
 - **Photographs.** Assembled packs now take their photograph matches from VIREO's kept GLIMAGES.LST rows
   (`nativePhotographRows`). A row that fails to parse, such as NGC 4449's, is dropped whole, as the Object X runtime already did.
-- **Exercises.** Exercise routes, packs, policies and counts are unchanged. These exposures never count toward an exercise.
+- **Exercises.** Exercise routes, packs, policies and counts are unchanged. These exposures count toward no exercise, with one
+  exception: in the LSS exercise, Record measurement in the analyser sends an Analyze'd spectrum to the LSS list (Front LSSFREE,
+  below).
 
 Multi-Spec at any pointing (G4b) is described in MULTI-SPEC.md.
 
@@ -100,6 +102,13 @@ Multi-Spec at any pointing (G4b) is described in MULTI-SPEC.md.
 - **Analyze / Classify.** Both read the exposure's own .SSP back as if the student had opened the saved file. Analyze opens it in
   the spectrum analyser; Classify opens it as an imported spectrum. If the analyser is busy with a file operation, the page
   says so instead of blaming the spectrum.
+- **LSS Record Z (Front LSSFREE).** VIREO's Record Z is the measuring engine's, after Load Saved Spectrum (0x582a70). Outside
+  exercises 3, 4 and 7 it puts any loaded spectrum into the LSS list (0x58383c → 0x57c918), whatever the object or pointing.
+  - Analyze also hands the analyser what that Record Z needs (`lssFreeSource`, `core/lssFreeRecord.ts`): the ID, the header's
+    pointing and the exposure.
+  - With the LSS guide started, Record measurement on that spectrum (same SHA-256) opens Measured Redshift Data on the LSS page.
+  - The record is saved in the v34 wrapper and replayed from the tiles on restore.
+  - Details and adaptations: docs/LSS-SURVEY.md, "Free pointing".
 - **Object X.** Preparation masks the field within 2° of every ObjectX.HTL position and of the lab's hidden target. A hidden
   target chosen after the field was prepared masks it from then on, by the same rule. While masked, the page withholds
   everything: the readout, the exposure, CSV/JSON, .SSP, Print, Analyze, Classify, and the field's part of the investigation.

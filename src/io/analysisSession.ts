@@ -189,6 +189,11 @@ export const LSS_DIALOG_SESSION_POLICY='openvireo-lss-dialog-v31';
  * mask and replays the journal; a file that did not arrive or did not match its identity is 'resources', anything else 'state'.
  * The part never counts toward an exercise. */
 export const FIELD_SPECTRUM_SESSION_POLICY='openvireo-field-spectrum-investigation-v33';
+/** Front LSSFREE (v34): the LSS list's free-pointing records (io/lssFreeRecords.ts). A v34 file wraps an unchanged v1..33 base,
+ * outermost and never nested, whose v27 layer holds the hot-list records renumbered 1..m; the part holds each free record with
+ * its list position and its field-spectrometer exposure, replayed from the compact GSC tiles on restore. A list without free
+ * records writes the older format exactly. */
+export {LSS_FREE_SESSION_POLICY} from './lssFreeRecords';
 const FIELD_SPECTRUM_PART_BYTES=2*1024*1024;
 /** The digest an edited part must fail: SHA-256 over what the replay derives (policy, seed, committed time and counts), as the
  * LSS and Object X parts carry theirs. */
@@ -200,6 +205,22 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
  if(!migrated&&!hooks.variableTime&&!hooks.nativeDialog){try{value=projectMetadata(value);}catch{fail('format');}}
   if(!value||typeof value!=='object')fail('format');
   const version=(value as {version:unknown}).version;
+  if(version===34){
+    if(migrated||hooks.variableTime||hooks.nativeDialog)fail('format');
+    const r=record(value,['format','version','numericalPolicy','base','lssFreePolicy','lssFreeDigestSHA256','lssFree']);
+    const baseVersion=r.base&&typeof r.base==='object'?(r.base as {version?:unknown}).version:null;
+    const {LSS_FREE_SESSION_POLICY:freePolicy,admitLssFreeRecords,checkLssFreeShape}=await import('./lssFreeRecords');
+    if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.lssFreePolicy!==freePolicy||!Number.isInteger(baseVersion)||Number(baseVersion)<27||Number(baseVersion)>33)fail('format');
+    if(typeof r.lssFreeDigestSHA256!=='string'||!/^[0-9a-f]{64}$/.test(r.lssFreeDigestSHA256))fail('format');
+    try{checkLssFreeShape(r.lssFree);}catch{fail('format');}
+    const base=await restore(r.base,verifySources,false,false,false,false,false,false,hooks);
+    if(!base.lss)fail('state');
+    if(!verifySources)return base;// Save's own re-read: the part was replayed when it was written.
+    let lss:LssInvestigation;
+    try{lss=await admitLssFreeRecords(r.lssFree,r.lssFreeDigestSHA256,base.lss!);}
+    catch(e){if(e instanceof LssSessionError)fail('state');const {fieldSpectrumFailure}=await import('./fieldSpectrumFailure'),shown=fieldSpectrumFailure(e);fail(shown.status==='unavailable'&&(shown.reason==='field-tiles'||shown.reason==='load-error')?'resources':'state');}
+    return Object.freeze({...base,lss:lss!});
+  }
   if(version===33){
     if(migrated||hooks.variableTime||hooks.nativeDialog)fail('format');
     const r=record(value,['format','version','numericalPolicy','base','fieldSpectrumPolicy','fieldSpectrumDigestSHA256','fieldSpectrum']);
@@ -446,8 +467,16 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
   return Object.freeze({...(optical?{optical}:{}),...(editing?{editing}:{}),...(observing?{observing}:{}),...(photometry?{photometry}:{}),...(classification?{classification}:{}),observation,control:s,stepInput,reference:a.reference as keyof typeof REFERENCES,wide:a.wide,object,rows:Object.freeze(rows),hubble,...(version>=3?{acquisitions:Object.freeze(acquisitions)}:{})});
 }
 /** wrapped: the wrapper levels already emitted above this call (v25 Pegasus outermost, then v24 cached). */
-type Wrapped=Readonly<{cached?:true;pegasus?:true;extended?:true;variableTime?:true;nativeDialog?:true;observational?:true;field?:true}>;
+type Wrapped=Readonly<{cached?:true;pegasus?:true;extended?:true;variableTime?:true;nativeDialog?:true;observational?:true;field?:true;free?:true}>;
 async function portable(session:AnalysisSession,wrapped:Wrapped={}):Promise<unknown> {
+  // Front LSSFREE (v34, outermost): the LSS list's free-pointing records around an unchanged base whose v27 layer keeps the
+  // hot-list records. A list without them keeps its older version and bytes exactly.
+  if(!wrapped.free&&session.lss?.records.some(r=>r.free)){
+    const {portableLssFreeRecords,LSS_FREE_SESSION_POLICY:freePolicy}=await import('./lssFreeRecords');
+    let rows:LssInvestigation,part:unknown,digest:string;
+    try{({rows,part,digest}=await portableLssFreeRecords(session.lss));}catch(e){if(e instanceof LssSessionError)throw e;fail('state');}
+    return {format:FORMAT,version:34,numericalPolicy:POLICY,base:await portable({...session,lss:rows!},{...wrapped,free:true}),lssFreePolicy:freePolicy,lssFreeDigestSHA256:digest!,lssFree:part!};
+  }
   // Front G G4c (v33, outermost): the field spectrometer's part around an unchanged base. A session without it keeps its older
   // version and bytes exactly.
   if(!wrapped.field&&session.fieldSpectrum!==undefined){

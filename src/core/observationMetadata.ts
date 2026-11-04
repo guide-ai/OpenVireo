@@ -3,15 +3,20 @@
  * research analysis/front-s-spectroscopy/RE-observational-data-metadata.md; nothing executed or emulated; no equivalence
  * with the original program is claimed. */
 
-/** Object ID of a loaded .SSP (classifier loader, RE §2): ExtractFileName, cut at the first '.', drop everything through the
- * first '_', trim trailing spaces, at most 15 characters (ShortString[15]). The header's object name is not used. */
-export function observationStem(fileName:string):string{
+/** The ID a loaded .SSP gets (Front LSSFREE, TSpectrumEngine.LoadSavedSpectrum1Click 0x582a70 [D]; the classifier's file route
+ * 0x50829c is the same): ExtractFileName (0x40b654: after the last '\\' or ':', LastDelimiter at 0x40b688), cut at the first '.',
+ * drop everything through the first '_', trim trailing spaces. The engine keeps the whole string (0x582bc3); the header's object
+ * name is not used. */
+export function loadedSpectrumId(fileName:string):string{
  if(typeof fileName!=='string')throw new TypeError('file name');
- let name=fileName.slice(Math.max(fileName.lastIndexOf('/'),fileName.lastIndexOf('\\'))+1);
+ let name=fileName.slice(Math.max(fileName.lastIndexOf('\\'),fileName.lastIndexOf(':'))+1);
  const dot=name.indexOf('.');if(dot>=0)name=name.slice(0,dot);
  const underscore=name.indexOf('_');if(underscore>=0)name=name.slice(underscore+1);
- return name.replace(/ +$/,'').slice(0,15);
+ return name.replace(/ +$/,'');
 }
+/** Object ID of a loaded .SSP in Observational Data (classifier loader, RE §2): `loadedSpectrumId`, at most 15 characters
+ * (ShortString[15]). */
+export function observationStem(fileName:string):string{return loadedSpectrumId(fileName).slice(0,15);}
 
 /** Julian Date from a browser time in milliseconds since 1970-01-01 UTC. VIREO converts the file's last-write time, a local
  * Delphi date, with its own offset; the web uses UTC [W]. */
