@@ -17,8 +17,8 @@ export function galaxyInstrumentMagnitude(input:GalaxyMagnitudeInput):GalaxyMagn
   if(!Number.isFinite(magnitude)||!Number.isFinite(major)||!Number.isFinite(minor)||major<0||minor<0)throw new GalaxyCalibrationError('catalog');
   // Underflow of a new Number input is a domain error, not an original zero.
   if((major===0&&input.majorArcminutes!==0)||(minor===0&&input.minorArcminutes!==0))throw new GalaxyCalibrationError('catalog');
-  // Zero-major substitution is explicit in0x55eabd..0x55eacb. Zero-minor
-  // morphology/Frac(1000*DoubleRA) remains outside this contract.
+  // Zero-major substitution is explicit in0x55eabd..0x55eacb. A zero minor
+  // takes the 0x53b94c ratio, ported in galaxyCatalogAxes.ts (catalogGalaxyMagnitude).
   if(minor===0)throw new GalaxyCalibrationError('axis-fallback-required');
   const preparedMajor=major===0?.5:major;
   const area=((RECOVERED_PI*preparedMajor)*minor)/4;

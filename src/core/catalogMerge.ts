@@ -2,9 +2,25 @@
  * source hashes: data/hubble/catalog-merge-provenance.json. No navigation data,
  * missing catalog state, amplitudes, detector image or observation is inferred. */
 export class CatalogMergeError extends Error {
-  constructor(readonly code:'record'|'distance'|'magnitude'|'precision-required'|'native-null-lookup') {
+  constructor(readonly code:'record'|'distance'|'magnitude'|'precision-required'|'native-null-lookup',readonly fault?:NativeAccessViolation) {
     super(`Native catalog merge: ${code}`);this.name='CatalogMergeError';
   }
+}
+/** Front AXISMERGE (analysis/front-axismerge/RECOVERY.md): where VIREO dereferences the nil that List.GetAt 0x492688 returns for a
+ * saved winner index past the list's last index (index > [list+4], 0x49268e). The faulting instruction and the address it touches
+ * are read from the code [D]; the message text is the Delphi RTL's EAccessViolation format [I]. */
+export type NativeAccessViolation=Readonly<{address:number;access:'read'|'write';target:number}>;
+/** 0x59814e `cmp byte [ebp+0x3d],3` in the galaxy cleanup 0x5980cc, ebp = GetAt(saved) = nil. */
+export const GALAXY_CLEANUP_NULL_LOOKUP:NativeAccessViolation=Object.freeze({address:0x59814e,access:'read',target:0x3d});
+/** 0x598033 `rep movsd` of the QSO merge 0x597f90 replace branch (best × 3600 < 30), edi = GetAt(saved) = nil. */
+export const QSO_REPLACE_NULL_LOOKUP:NativeAccessViolation=Object.freeze({address:0x598033,access:'write',target:0});
+/** 0x598066 `fld qword [esi+0x19]` of the QSO merge's RA walk (best × 3600 ≥ 30), esi = GetAt(saved) = nil. */
+export const QSO_WALK_NULL_LOOKUP:NativeAccessViolation=Object.freeze({address:0x598066,access:'read',target:0x19});
+const hex8=(n:number)=>n.toString(16).toUpperCase().padStart(8,'0');
+/** The text the Delphi RTL would format for this fault (resource "Access violation at address %p in module '%s'. %s of address
+ * %p", Front MSTNONE excerpts) [I: RTL formatting, module name as loaded; not traced]. */
+export function accessViolationText(f:NativeAccessViolation):string{
+  return `Access violation at address ${hex8(f.address)} in module 'CLEA_VEO.exe'. ${f.access==='read'?'Read':'Write'} of address ${hex8(f.target)}`;
 }
 export type MergeRecord=Readonly<{id:string;type:number;magnitude:number}>;
 export type MergeCandidate=Readonly<{record:MergeRecord;distanceDegrees:number}>;
@@ -86,15 +102,16 @@ export type GalaxyCleanup=Readonly<{
 /** 0x5980cc..0x598191, one galaxy in its existing iteration order. Reference
  * magnitude0, nearest pruning first, then STRICT distance*3600<30. The caller
  * re-fetches the OLD saved POSITION and acts on that record, not winner pointer.
- * A null lookup is an explicit unsupported native dereference path: throw
- * atomically, never silently preserve/repair/claim a native crash or hang.
+ * A null lookup (the saved index is past the last index after the runner
+ * deletion) is VIREO's access violation at 0x59814e, read of 0x3d [D]: it is
+ * thrown atomically with that fault, never repaired or continued.
  * Returned rows are NOT a certified complete telescope/selection population. */
 export function cleanNativeGalaxy(candidates:readonly MergeCandidate[],galaxyMagnitude:number):GalaxyCleanup {
   const galaxy=single(galaxyMagnitude),trace=nativeMergeNearest(candidates,0);
   const arcseconds=trace.bestDistanceDegrees*3600;awayFromBoundary(arcseconds,30);
   if(arcseconds>=30)return Object.freeze({rows:trace.rows,galaxyKept:true,trace,operation:'keep',callerTarget:null});
   const target=trace.resolvedSavedIndex;
-  if(!target)throw new CatalogMergeError('native-null-lookup');
+  if(!target)throw new CatalogMergeError('native-null-lookup',GALAXY_CLEANUP_NULL_LOOKUP);
   if(target.type!==3){
     const rows=[...trace.rows];rows.splice(trace.savedWinnerIndex,1);
     return Object.freeze({rows:Object.freeze(rows),galaxyKept:true,trace,operation:'delete-star-at-saved-index',callerTarget:target});

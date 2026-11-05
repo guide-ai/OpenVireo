@@ -3141,8 +3141,9 @@ export interface MessageParameters {
   "lss.reason.variable-spectrum-indeterminate": never;
   "lss.reason.variable-colour-residue": never;
   "lss.reason.variable-model-fault": never;
-  "lss.reason.axis-fallback": never;
   "lss.reason.merge-boundary": never;
+  "lss.reason.merge-access-violation": never;
+  "lss.reason.empty-field": never;
   "lss.reason.no-galaxy-selected": never;
   "lss.reason.star-selected": never;
   "lss.reason.star-template-random": never;
@@ -3403,6 +3404,7 @@ export interface MessageParameters {
   "ph.tiledReason.photometer-variable": never;
   "ph.tiledReason.photometer-selection": never;
   "ph.tiledReason.photometer-colour": never;
+  "ph.tiledReason.photometer-empty": never;
   "ph.tiledReason.photometer-population": "detail";
   "ph.tiledLimit.photometer-blend": "telescope";
   "ph.tiledLimit.photometer-colour": never;
@@ -3447,8 +3449,9 @@ export interface MessageParameters {
   "fieldSpec.reason.variable-spectrum-indeterminate": never;
   "fieldSpec.reason.variable-colour-residue": never;
   "fieldSpec.reason.variable-model-fault": never;
-  "fieldSpec.reason.axis-fallback": never;
   "fieldSpec.reason.merge-boundary": never;
+  "fieldSpec.reason.merge-access-violation": never;
+  "fieldSpec.reason.empty-field": never;
   "fieldSpec.reason.no-galaxy-selected": never;
   "fieldSpec.internalError": never;
   "fieldSpec.reason.star-selected": never;

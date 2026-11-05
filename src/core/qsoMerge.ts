@@ -23,12 +23,16 @@
  * +0x47..+0x5e hold stack residue; the replace branch (0x598026..0x598037) copies all 95 bytes into the star record, and native
  * code reads +0x3e (for example 0x596858, a classification/label byte). This port models only the fields the merge, cleanup,
  * paint and selection read (name, RA, Dec, V, B−V, U−B, z, flags, type 3); what the residue bytes would do downstream is unknown.
- * Unsupported native paths are typed errors, never repaired: an empty star list or a null GetAt (both dereference null natively)
- * and distances too close to the 30″ boundary for the declared Number policy. */
-import {catalogMergeDistance,nativeMergeNearest,CatalogMergeError} from './catalogMerge';
+ * Unsupported native paths are typed errors, never repaired (Front AXISMERGE, analysis/front-axismerge/RECOVERY.md):
+ *  - a nil GetAt (saved winner index past the last index after the runner deletion): VIREO's access violation at 0x598033 (write
+ *    of 0, replace branch) or 0x598066 (read of 0x19, walk), carried as `fault`;
+ *  - an empty star list: VIREO never calls 0x597f90 with one (the assembler 0x597ac8 stops at 0x597c8a first, see fieldEngine.ts
+ *    'empty-field'); this function refuses it as an input it cannot be given natively;
+ *  - distances too close to the 30″ boundary for the declared Number policy (the x87 FCOS of 0x59a49c is not reproduced). */
+import {catalogMergeDistance,nativeMergeNearest,CatalogMergeError,QSO_REPLACE_NULL_LOOKUP,QSO_WALK_NULL_LOOKUP,type NativeAccessViolation} from './catalogMerge';
 
 export class QsoMergeError extends Error{
- constructor(readonly code:'input'|'record'|'empty-star-list'|'native-null-lookup'|'precision-required'){super(`QSO merge: ${code}`);this.name='QsoMergeError';}
+ constructor(readonly code:'input'|'record'|'empty-star-list'|'native-null-lookup'|'precision-required',readonly fault?:NativeAccessViolation){super(`QSO merge: ${code}`);this.name='QsoMergeError';}
 }
 export const QSO_CATALOG=Object.freeze({name:'CLEA_QSO.DAT',recordBytes:52,records:2269,bytes:117988,sha256:'69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5'});
 export type NativeQso=Readonly<{id:string;name:string;recordIndex:number;ra:number;dec:number;magnitude:number;colorBV:number;colorUB:number;redshift:number;flags:readonly [number,number];type:3;rawHex:string}>;
@@ -88,8 +92,9 @@ export function nativeQsoMerge<T extends QsoMergeable>(stars:readonly T[],qsos:r
   const byId=new Map(rows.map(r=>[r.id,r]));rows=trace.rows.map(r=>byId.get(r.id)!);
   const arcseconds=trace.bestDistanceDegrees*3600;let cursor:number,replacedId:string|null=null;
   if(trace.winner){
-   cursor=trace.savedWinnerIndex;if(cursor<0||cursor>=rows.length)throw new QsoMergeError('native-null-lookup');
-   awayFromBoundary(arcseconds,30);
+   cursor=trace.savedWinnerIndex;awayFromBoundary(arcseconds,30);
+   // GetAt 0x492688 returns nil past the last index; VIREO then faults in the replace copy or in the RA walk (Front AXISMERGE).
+   if(cursor<0||cursor>=rows.length)throw new QsoMergeError('native-null-lookup',arcseconds<30?QSO_REPLACE_NULL_LOOKUP:QSO_WALK_NULL_LOOKUP);
    if(arcseconds<30){replacedId=rows[cursor].id;rows[cursor]=q;witnesses.push(Object.freeze({qso:q.id,winnerId:trace.winner.id,savedWinnerIndex:trace.savedWinnerIndex,removedRunner:trace.removedRunner?.id??null,bestArcseconds:arcseconds,operation:'replace',replacedId,position:cursor}));continue;}
   }else{if(!rows.length)throw new QsoMergeError('empty-star-list');cursor=0;}
   const position=nativeRaCursorInsertPosition(rows.map(r=>r.ra),cursor,q.ra);

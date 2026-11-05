@@ -58,11 +58,13 @@ test('Observatory pointing, then Activate: the photometer measures there; sky on
  await expect(page.getByRole('button',{name:'Start integration',exact:true})).toBeEnabled({timeout:30000});
  expect(errors).toEqual([]);
 });
-test('a field VIREO\'s photometer cannot reproduce is typed: M31\'s core holds a galaxy',async({page})=>{
+// Re-pinned 2026-11-05 (Front AXISMERGE): M31's core holds no GSC star in the photometer field, so VIREO's field build stops at
+// 0x597c8a ("No Stars Found in Field!") before loading any galaxy; it was typed photometer-galaxy before.
+test('a field VIREO\'s photometer cannot reproduce is typed: M31\'s core holds no catalogue star',async({page})=>{
  test.setTimeout(120000);await observatory(page);await pointObservatory(page,{ra:'0.7123',dec:'41.2692'});await photometerHere(page);
  await expect(page.getByTestId('photo-telescope-dec')).toHaveText('41.2692');
  await expect(page.getByTestId('photo-tiled-status')).toHaveAttribute('data-status','error',{timeout:60000});
- await expect(page.getByTestId('photo-tiled-status')).toContainText('points at a galaxy');
+ await expect(page.getByTestId('photo-tiled-status')).toContainText('No Stars Found in Field!');
 });
 test('the bench move follows the Observatory\'s checks: Limit Slewing refuses below the horizon',async({page})=>{
  test.setTimeout(120000);await observatory(page);

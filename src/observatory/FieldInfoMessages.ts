@@ -74,10 +74,16 @@ export const FIELD_READ_DETAILS=Object.freeze({
   input:'this pointing is not a valid sky position.',
   evidence:'the field engine found its records inconsistent (please report it).',
  } as Record<string,string>),
+ /** Front AXISMERGE: the recovered merge outcomes; other population codes are shown as before. */
+ population:Object.freeze({
+  'merge-access-violation':'VIREO’s catalogue merge stops here with an access violation (a galaxy’s or quasar’s nearest star was removed from the end of the list), so VIREO shows no field',
+  'merge-boundary':'a catalogue merge distance lies too close to one of VIREO’s limits to decide without its exact hardware arithmetic',
+  'empty-field':'no catalogue star in this field; VIREO says “No Stars Found in Field!” and loads no galaxy or quasar',
+ } as Record<string,string>),
 });
 export function fieldInfoReasonText(reason:FieldInfoReason,detail=''):string{
  const details=(FIELD_READ_DETAILS as Record<string,Record<string,string>>)[reason];
- const text=details?(details[detail]??(reason==='field-tiles'?'unknown reason':'the original catalogue read cannot be reproduced for this field.')):detail;
+ const text=details?(details[detail]??(reason==='population'?detail:reason==='field-tiles'?'unknown reason':'the original catalogue read cannot be reproduced for this field.')):detail;
  return FIELD_INFO_MESSAGES.unavailable[reason].replace('{reason}',text);
 }
 /** Naked Eye Star (student path). */

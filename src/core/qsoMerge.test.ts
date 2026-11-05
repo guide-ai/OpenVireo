@@ -4,6 +4,7 @@ import {createHash} from 'node:crypto';
 import witnesses from '../../data/hubble/qso-merge-witnesses.json';
 import {decodeQsoRecord,loadNativeQsoList,nativeQsoMerge,qsoPositionPredicate,QsoMergeError,QSO_CATALOG,type NativeQso} from './qsoMerge';
 import {decodeFieldPack} from './fieldPack';
+import {accessViolationText} from './catalogMerge';
 import {buildFieldPopulation,evaluateField,FieldEngineError,cleanFieldGalaxies} from './fieldEngine';
 import {packWithPhotographs,parseGlimagesPositions} from './lssLists';
 const file=(p:string)=>new Uint8Array(readFileSync(new URL('../../public/original/'+p,import.meta.url)));
@@ -59,8 +60,19 @@ describe('QSO merge 0x597f90',()=>{
   const m=nativeQsoMerge([s('a',1,0,10),s('c',1+50*D/15,0,17),s('d',1+45*D/15,0,17),s('e',3,0,10)],[q('Q',1,0,17)]);
   expect(m.witnesses[0]).toMatchObject({removedRunner:'c',winnerId:'d',operation:'insert'});expect(m.rows.map(r=>r.id)).not.toContain('c');
  });
- it('unsupported native paths are typed: empty star list',()=>{
+ it('unsupported native paths are typed: empty star list (the assembler never calls the merge with one, 0x597c8a)',()=>{
   expect(()=>nativeQsoMerge([],[q('Q',1,0,17)])).toThrow(QsoMergeError);
+ });
+ it('a nil GetAt after the runner deletion is the access violation of the branch VIREO takes (Front AXISMERGE)',()=>{
+  // Winner last in the list, runner before it within 0.006°: the runner is deleted and the saved index equals the new length.
+  const fault=(winner:number,runner:number)=>{try{nativeQsoMerge([s('a',.5,0,17),s('r',1+runner*D/15,0,17),s('w',1+winner*D/15,0,17)],[q('Q',1,0,17)]);}catch(e){return e;}return null;};
+  const replace=fault(10,20) as QsoMergeError;// best 10″ < 30″: the replace copy rep movsd writes through nil
+  expect(replace).toBeInstanceOf(QsoMergeError);expect(replace.code).toBe('native-null-lookup');expect(replace.fault).toEqual({address:0x598033,access:'write',target:0});
+  expect(accessViolationText(replace.fault!)).toBe("Access violation at address 00598033 in module 'CLEA_VEO.exe'. Write of address 00000000");
+  const walk=fault(40,50) as QsoMergeError;// best 40″ ≥ 30″: the RA walk reads [nil+0x19]
+  expect(walk.fault).toEqual({address:0x598066,access:'read',target:0x19});
+  // The same geometry with the winner not last resolves normally (no fault).
+  expect(()=>nativeQsoMerge([s('r',1+20*D/15,0,17),s('w',1+10*D/15,0,17),s('z',2,0,17)],[q('Q',1,0,17)])).not.toThrow();
  });
 });
 describe('field engine qso option',()=>{
@@ -79,7 +91,7 @@ describe('field engine qso option',()=>{
    const {population,reasons}=buildFieldPopulation(p,glx,w.pointing,{qso:'merge',qsoCatalog});
    expect(population!.qsoMatches.map(i=>`CLEA_QSO.DAT@${i}`)).toEqual(w.qso);
    if(!w.modelled)continue;// a variable in the area: its stage is covered by the existing witnesses
-   expect(reasons.filter(r=>r!=='axis-fallback'&&r!=='photographic-image')).toEqual([]);
+   expect(reasons.filter(r=>r!=='photographic-image')).toEqual([]);
    expect(population!.qsoStage!.recordsRead).toBe(w.qsoRecordsRead);
    expect(population!.qsoStage!.witnesses.map(x=>[x.qso,x.operation,x.operation==='replace'?x.replacedId:x.position])).toEqual(w.qsoOperations);
    expect(population!.stars).toHaveLength(w.finalStars!);expect(sha(population!.stars.map(x=>x.id).join(','))).toBe(w.finalStarIdsSHA256);
@@ -96,6 +108,13 @@ describe('galaxy cleanup with type-3 records (cleanFieldGalaxies)',()=>{
   expect(r.galaxies.map(x=>x.id)).toEqual(['G2']);expect(r.witnesses.map(w=>[w.galaxy,!!w.galaxyDeleted])).toEqual([['G1',true],['G2',false]]);expect(r.boundary).toBe(false);
   // Outside 1 mag both are kept.
   expect(cleanFieldGalaxies([q('Q',1,0,15)],[g('G1',1,5/3600,16.5)],'merge').galaxies.map(x=>x.id)).toEqual(['G1']);
+ });
+ it('a nil GetAt in the cleanup is the access violation at 0x59814e; the stage stops there (Front AXISMERGE)',()=>{
+  const gs=[g('G1',2,0,15),g('G2',1,0,15),g('G3',3,0,15)];
+  // For G2: the winner S2 (5″) is last, the runner S1 (10″) is deleted, so GetAt(2) on two records is nil.
+  const r=cleanFieldGalaxies([s('S0',.5,0,12),s('S1',1+10/3600/15,0,12),s('S2',1+5/3600/15,0,12)] as unknown as NativeQso[],gs,'merge');
+  expect(r.boundary).toBe(false);expect(r.galaxies).toBe(gs);expect(r.witnesses.map(w=>w.galaxy)).toEqual(['G1']);
+  expect(r.fault).toMatchObject({stage:'galaxy-cleanup',objectId:'G2',address:0x59814e,access:'read',target:0x3d,savedWinnerIndex:2,rows:2});
  });
  it('a precision boundary stops the stage and leaves the galaxy list untouched (review 1, item 4)',()=>{
   const gs=[g('G1',1,5/3600,15.5),g('G2',2,0,15)];

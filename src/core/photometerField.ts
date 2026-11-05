@@ -242,6 +242,8 @@ export type PhotometerTiledReason=
  /** A TRUE-dispatch variable star is in the field: its brightness depends on the observatory clock. */|'photometer-variable'
  /** The centre selects no object (none within the native 350-pixel sentinel). */|'photometer-selection'
  /** A star lacks catalogue colours (the native missing-colour branches are not recovered). */|'photometer-colour'
+ /** Front AXISMERGE: no catalogue star in the photometer field. The field build 0x597ac8 shows "No Stars Found in Field!" and
+  * loads no QSO and no galaxy (0x597c8a) [D]; the selection then finds nothing, as in 'photometer-selection' [I]. */|'photometer-empty'
  /** The engine gated the population (its own typed reason). */|'photometer-population';
 export type PhotometerTiledResult=Readonly<{field:PinnedPleiadesField;reason?:undefined}|{field?:undefined;reason:PhotometerTiledReason;detail?:string}>;
 type PopulationLike=Readonly<{stars:readonly Readonly<{type:number;id:string;rawHex?:string;band?:string;recordIndex?:number}>[];galaxies:readonly Readonly<{ra:number;dec:number;majorArcminutes:number}>[];variableStars?:readonly unknown[]}>;
@@ -250,6 +252,7 @@ type PopulationLike=Readonly<{stars:readonly Readonly<{type:number;id:string;raw
  * which any neighbour light is added (Front P2: the decoded native path, preparePhotometerBands). `kind` labels the frame only. */
 export function photometerFieldFromPopulation(population:PopulationLike|null,reasons:readonly string[],pointing:Pointing,kind:PleiadesFieldKind):PhotometerTiledResult{
  if(kind!=='object'&&kind!=='sky')throw new PhotometerFieldError('field');
+ if(population&&reasons.length===1&&reasons[0]==='empty-field')return Object.freeze({reason:'photometer-empty' as const});
  if(!population||reasons.length)return Object.freeze({reason:'photometer-population' as const,detail:reasons.join(',')});
  if(population.stars.some(s=>s.type!==0))return Object.freeze({reason:'photometer-qso' as const});
  if(population.variableStars?.length)return Object.freeze({reason:'photometer-variable' as const});
