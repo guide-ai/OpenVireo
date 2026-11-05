@@ -65,25 +65,40 @@
 
 Static reading of 0x597ac8, 0x597f90, 0x5980cc, 0x59a2e0, 0x59a49c and the list helpers (analysis/front-axismerge/RECOVERY.md,
 excerpts.asm). Nothing was executed.
-- **Nil GetAt [D].** The nearest search 0x59a2e0 saves the winner's list index and may then delete the runner (0x59a46a..0x59a478)
-  without repairing it. When the winner was the last record, the saved index equals the new count and GetAt 0x492688 returns nil
-  (index > Count − 1, 0x49268e). The cleanup then reads `[nil+0x3d]` at 0x59814e (only when best × 3600 < 30); the QSO merge
-  writes through nil in its replace copy at 0x598033 (< 30″) or reads `[nil+0x19]` in its RA walk at 0x598066 (≥ 30″). The
-  frames up to the render 0x53a40c are try/finally only, so the field load is abandoned [D for the frames; I that the VCL handler
-  shows "Access violation at address 0059814E in module 'CLEA_VEO.exe'. Read of address 0000003D"]. The web types the field
-  `merge-access-violation` and records `population.mergeFault` (stage, object, address, access, saved index, list length).
+- **Nil GetAt [D].** The nearest search 0x59a2e0 saves the winner's list index and may then delete the runner (the second
+  nearest, when within 0.006°; 0x59a46a..0x59a478) without repairing it. When the winner was the last record, the saved index
+  points one past the end and GetAt 0x492688 returns nil (index > Count − 1, 0x49268e). The cleanup then reads `[nil+0x3d]` at
+  0x59814e (only when best × 3600 < 30); the QSO merge calls GetAt first (0x59800f) and then writes through nil in its replace copy
+  at 0x598033 (< 30″) or reads `[nil+0x19]` in its RA walk at 0x598066 (≥ 30″), so for a QSO the fault is certain even near 30″
+  (only its address is then undecided; both are recorded). The frames up to the render 0x53a40c are try/finally only, so the load
+  is abandoned [D for the frames]: the paint 0x53c500 is skipped (the previous image stays [I]), the telescope ClockTimer disabled
+  at 0x597b34 stays off (re-enabled only at 0x597e9e or on first activation 0x538275), and the hourglass cursor set at 0x53be89
+  is not reset (0x53c08b) [D]; [I] the VCL handler shows "Access violation at address 0059814E in module 'CLEA_VEO.exe'. Read of
+  address 0000003D." The web types the field `merge-access-violation` and records `population.mergeFault` (stage, object,
+  address, access, saved index, list length, message).
 - **Measured:** no exercise pointing (HTL rows of Hubble, Object X, Pleiades, Pulsars and the nine LSS fields, the Hubble engine
   targets, the Multi-Spec bases) is affected. Over all 24069 galaxy and 2269 QSO positions, 9 galaxy pointings meet the cleanup
   fault (`src/io/fieldMergeFault.test.ts`), and 14 of 164838 pointings of a whole-sky 0.5° grid; no QSO-merge fault, no
-  precision boundary and no empty GSC list occurs (analysis/front-axismerge/axismerge-measure.tsv, SHA-256 9cdcf966…256e).
-- **Precision band [U].** 0x59a49c computes the distance in x87 Extended with FCOS (0x4036ac) and FSQRT, and the comparisons
-  (2′ initial, 0.006° runner gap, best × 3600 < 30) are Extended. FCOS's last bits are implementation-defined, so a distance
-  within the declared Number guard of a limit is not decided; it stays `merge-boundary`. None was met in the measurement.
+  precision boundary and no empty GSC list occurs, before and after the review 1 guard extension (analysis/front-axismerge/
+  axismerge-measure.tsv and axismerge-measure-v2.tsv). Not counted: pointings that a variable gate stops before the merges (59
+  galaxy and 3 QSO positions; 1666 grid pointings with a clock JD, 1665 without).
+- **Precision band [U].** 0x59a49c computes the distance in x87 Extended with FCOS (0x4036ac) and FSQRT, and every comparison is
+  Extended: each candidate against the 2′ initial and the current best (0x59a39b..0x59a3a2) and, when not nearer, against the
+  current second (0x59a3e3..0x59a3ef), the runner gap against 0.006°, best × 3600 < 30. FCOS's last bits are
+  implementation-defined, so a value within the declared Number guard of what it is compared with is not decided; it stays
+  `merge-boundary`. Since review 1 the candidate-vs-best and candidate-vs-second ties are guarded too (they decide the saved index
+  and the runner, hence a nil GetAt); an exact tie between two records at the same stored position is decided (same inputs, same
+  operations; the earlier stays). None was met in the measurement, and no exercise result changed.
 - **Empty field [D].** After the variable stage the assembler tests the star list (0x597c8a). If it is empty it shows
   "No Stars Found in Field!" / "Possible Error in Field Parameters: MinRA … LimitMag …" (MB_ICONSTOP) and jumps to 0x597ea3:
-  no QSO load, no QSO merge, no galaxy load, no cleanup; 0x53be70 then skips 0x53c500/0x53caec/0x53cb40. The engine returns that
-  empty population with the typed `empty-field` (not population-blocking) [W: a reason instead of the box], and drops the
-  `qso-merge` and `photographic-image` gates, whose stages VIREO then never runs. No instrument field measured is empty; the
+  no QSO load, no QSO merge, no galaxy load, no cleanup. The assembler clears only the star list (0x597b66..0x597b87); the galaxy
+  list is cleared inside the skipped loaders (0x598d74, finder 0x59bb35) and the QSO list inside 0x5987e4 (0x5988fd), and the field
+  object [0x5b56ac] persists, so **the galaxies and QSOs of the previously loaded field remain**. 0x53be70 then skips the paint
+  0x53c500 (the previous image stays [I]), 0x53caec/0x53cb40 and the +0x655 stamp, and the ClockTimer disabled at 0x597b34 stays
+  off: the UT/LST/JD labels, drift and the western-limit check (ClockTimerTimer 0x5384b0) freeze until the next non-empty field
+  [I for the appearance]. VIREO's result therefore depends on the earlier field, which is not reproduced: the engine types
+  `empty-field`, which is population-blocking (review 1 M1), and drops the `qso-merge` and `photographic-image` gates, whose stages
+  are not run. The web population (empty star list, no galaxy or QSO) is not VIREO's. No instrument field measured is empty; the
   finder can be (a Finder Mag Limit below every star, no variable in the box), and photometer fields often are (2705 of 24069
   galaxy positions; `photometer-empty`, docs/PHOTOMETER-FIELD.md; M31's core was `photometer-galaxy` before).
 
@@ -133,7 +148,7 @@ These rules come from a static reading (`analysis/front-g-gsc/RE-wrap-polar-cons
   equality proofs still pass.
 
 ## NGC 224 (Front C7)
-VIREO's telescope painter sends any galaxy whose name contains `NGC 224` (Pos at 0x53b4fc; only CLEA_GLX.DAT record 897) to 0x53b848, which paints nothing and only shows MessageBox "Image Too Large!" / "M31 Image Too Large to Load! Sorry about that. (We're working on it.)" (0x53b8ec/0x53b938); the loop then goes on at 0x53b62f, skipping the stamp, the photograph and the overlay gate store 0x53b628. The engine does the same: M31 stays in the population (catalogue, slit lookup) and is not painted, and the field result carries `m31Notice`, which the sky view and the field spectrometer show as a notice [W: not a modal box]. A slit on M31 reads the 0x53e338 level of what else is painted there; at its centre that is 0, so the spectrometer gives the sky reading (0x50f338 → 0x50db1a). [I] Where other paint lies under the slit (level above 0, for example 0.6916107 h, +41.37777°: level 82), and for a Multi-Spec fibre (0x527b38, no throughput), M31 follows the generic galaxy path like any galaxy without its own spectrum (GLXYTMPL.SP at V 4.3): those paths are driven by the catalogue alone, and VIREO has no other M31 test (one `NGC 224` string in the executable). [I] "Only record 897" rests on the web's name composition; GLIMAGES.LST and GLXYSP.LST hold no `NGC 224`. The box appears in VIREO once per telescope field reload (0x53a40c → 0x53b390), never on a repaint, a camera exposure or in the finder (0x53b058 paints M31 normally); the web's notice stays while the field is shown [W]. The photometer is unchanged: it builds its own population and still types a selected galaxy `photometer-galaxy` (in VIREO's Object mode it measures M31 from the catalogue; its galaxy gate 0x50066d..0x5006b3 gives 0 below level 80 in Sky mode only).
+VIREO's telescope painter sends any galaxy whose name contains `NGC 224` (Pos at 0x53b4fc; only CLEA_GLX.DAT record 897) to 0x53b848, which paints nothing and only shows MessageBox "Image Too Large!" / "M31 Image Too Large to Load! Sorry about that. (We're working on it.)" (0x53b8ec/0x53b938); the loop then goes on at 0x53b62f, skipping the stamp, the photograph and the overlay gate store 0x53b628. The engine does the same: M31 stays in the population (catalogue, slit lookup) and is not painted, and the field result carries `m31Notice`, which the sky view and the field spectrometer show as a notice [W: not a modal box]. A slit on M31 reads the 0x53e338 level of what else is painted there; at its centre that is 0, so the spectrometer gives the sky reading (0x50f338 → 0x50db1a). [I] Where other paint lies under the slit (level above 0, for example 0.6916107 h, +41.37777°: level 82), and for a Multi-Spec fibre (0x527b38, no throughput), M31 follows the generic galaxy path like any galaxy without its own spectrum (GLXYTMPL.SP at V 4.3): those paths are driven by the catalogue alone, and VIREO has no other M31 test (one `NGC 224` string in the executable). [I] "Only record 897" rests on the web's name composition; GLIMAGES.LST and GLXYSP.LST hold no `NGC 224`. The box appears in VIREO once per telescope field reload (0x53a40c → 0x53b390), never on a repaint, a camera exposure or in the finder (0x53b058 paints M31 normally); the web's notice stays while the field is shown [W]. The photometer builds its own population and types a selected galaxy `photometer-galaxy` (in VIREO's Object mode it measures M31 from the catalogue; its galaxy gate 0x50066d..0x5006b3 gives 0 below level 80 in Sky mode only). At M31's core itself its 3′ field holds no GSC star, so since Front AXISMERGE that field is `photometer-empty`: VIREO's load stops at "No Stars Found in Field!" and keeps the previous field's galaxies.
 
 ## Typed unavailable reasons
 outside-pack, variable-time-required, variable-spectrum-dangling, variable-spectrum-indeterminate, variable-colour-residue, variable-model-fault (Front T), qso-merge (`'gate'` only), qso-selected (`'merge'` only), photographic-image, variable-merge, merge-boundary, merge-access-violation, empty-field (Front AXISMERGE), no-galaxy-selected, star-selected, slit-empty, spectrum-range, mean-bound (poissonDraw's 10⁶ per-draw admission on every record since Front L4; it was 12 on the 0.4/0.9 m) and spectrum-mapping (LSS only).

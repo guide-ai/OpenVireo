@@ -82,9 +82,11 @@ I01/E04 are not accepted complete; N03 remains partial. [Verification](PHOTOMETE
     stays typed here although its telescope field is now drawn). The photometer's treatment of the galaxy list is not recovered.
     M31's core gave this reason until Front AXISMERGE; it is now `photometer-empty` (below).
   - `photometer-empty` (Front AXISMERGE, 2026-11-05): no GSC star in the photometer field. The field build 0x597ac8 then shows
-    "No Stars Found in Field!" / "Possible Error in Field Parameters" and loads no QSO and no galaxy (0x597c8a) [D], so the
-    selection finds nothing, as for `photometer-selection` [I]. M31's core (0.7123 h, +41.2692°) is such a field: the galaxies the
-    web used to load there are never loaded by VIREO.
+    "No Stars Found in Field!" / "Possible Error in Field Parameters" and jumps past the QSO and galaxy loads (0x597c8a) [D]; those
+    lists are cleared only inside the skipped loaders, so the galaxies and QSOs of the previously loaded field remain, the paint
+    is skipped and the telescope clock stays stopped (docs/FIELD-ENGINE.md). What the photometer then selects and measures depends
+    on that earlier field and is not reproduced. M31's core (0.7123 h, +41.2692°) is such a field: this field's own galaxies, which
+    the web used to load and type `photometer-galaxy`, are not reached by VIREO's load.
   - `photometer-qso`
   - `photometer-variable`: a TRUE-dispatch variable star, whose values depend on the clock.
   - `photometer-selection`: no star selected at the centre.

@@ -25,7 +25,8 @@
  * paint and selection read (name, RA, Dec, V, B−V, U−B, z, flags, type 3); what the residue bytes would do downstream is unknown.
  * Unsupported native paths are typed errors, never repaired (Front AXISMERGE, analysis/front-axismerge/RECOVERY.md):
  *  - a nil GetAt (saved winner index past the last index after the runner deletion): VIREO's access violation at 0x598033 (write
- *    of 0, replace branch) or 0x598066 (read of 0x19, walk), carried as `fault`;
+ *    of 0, replace branch) or 0x598066 (read of 0x19, walk), carried as `fault`; checked before the 30″ test, since GetAt comes
+ *    first natively; within the precision guard of 30″ both addresses are given (`alternative`);
  *  - an empty star list: VIREO never calls 0x597f90 with one (the assembler 0x597ac8 stops at 0x597c8a first, see fieldEngine.ts
  *    'empty-field'); this function refuses it as an input it cannot be given natively;
  *  - distances too close to the 30″ boundary for the declared Number policy (the x87 FCOS of 0x59a49c is not reproduced). */
@@ -87,14 +88,20 @@ export function nativeQsoMerge<T extends QsoMergeable>(stars:readonly T[],qsos:r
  let rows:(T|NativeQso)[]=[...stars];const witnesses:QsoMergeWitness[]=[];
  for(const q of qsos){
   let trace;
-  try{trace=nativeMergeNearest(rows.map(r=>({record:{id:r.id,type:r.type,magnitude:r.magnitude},distanceDegrees:catalogMergeDistance(q,r)})),q.magnitude);}
+  try{trace=nativeMergeNearest(rows.map(r=>({record:{id:r.id,type:r.type,magnitude:r.magnitude},distanceDegrees:catalogMergeDistance(q,r),source:r})),q.magnitude);}
   catch(e){if(e instanceof CatalogMergeError)throw new QsoMergeError(e.code==='precision-required'?'precision-required':'input');throw e;}
   const byId=new Map(rows.map(r=>[r.id,r]));rows=trace.rows.map(r=>byId.get(r.id)!);
   const arcseconds=trace.bestDistanceDegrees*3600;let cursor:number,replacedId:string|null=null;
   if(trace.winner){
-   cursor=trace.savedWinnerIndex;awayFromBoundary(arcseconds,30);
-   // GetAt 0x492688 returns nil past the last index; VIREO then faults in the replace copy or in the RA walk (Front AXISMERGE).
-   if(cursor<0||cursor>=rows.length)throw new QsoMergeError('native-null-lookup',arcseconds<30?QSO_REPLACE_NULL_LOOKUP:QSO_WALK_NULL_LOOKUP);
+   cursor=trace.savedWinnerIndex;
+   // GetAt(saved) 0x59800f comes before the 30″ test and both branches dereference its result, so a nil (index past the end) is
+   // an access violation either way: in the replace copy (< 30″) or the RA walk (≥ 30″). Near 30″ only the address is undecided
+   // (Front AXISMERGE, review 1 L2).
+   if(cursor<0||cursor>=rows.length){
+    const near=Math.abs(arcseconds-30)<=8*Number.EPSILON*Math.max(1,Math.abs(arcseconds),30);
+    throw new QsoMergeError('native-null-lookup',near?Object.freeze({...QSO_REPLACE_NULL_LOOKUP,alternative:QSO_WALK_NULL_LOOKUP}):arcseconds<30?QSO_REPLACE_NULL_LOOKUP:QSO_WALK_NULL_LOOKUP);
+   }
+   awayFromBoundary(arcseconds,30);
    if(arcseconds<30){replacedId=rows[cursor].id;rows[cursor]=q;witnesses.push(Object.freeze({qso:q.id,winnerId:trace.winner.id,savedWinnerIndex:trace.savedWinnerIndex,removedRunner:trace.removedRunner?.id??null,bestArcseconds:arcseconds,operation:'replace',replacedId,position:cursor}));continue;}
   }else{if(!rows.length)throw new QsoMergeError('empty-star-list');cursor=0;}
   const position=nativeRaCursorInsertPosition(rows.map(r=>r.ra),cursor,q.ra);

@@ -25,9 +25,9 @@ test('finder and telescope views draw VIREO\'s field at an uncertified pointing;
  await expect(id(page,'sky-field-note')).toContainText(/VIREO’s Telescope · 15′ view/);
  expect([...new Set(photographs)]).toEqual(['m81.bmp']);
  // M108 (NGC 3556): its photograph is bundled but not drawn (UNDRAWN_PHOTOGRAPHS: it does not decode), so the preview stays
- // with the reason.
+ // with the reason, shown in words since Front AXISMERGE review 1 (it was the raw code photographic-image).
  await pointTo(page,'11.19166667','55.66666667');
- await expect(id(page,'sky-field-note')).toContainText('photographic-image',{timeout:30000});await expect(id(page,'sky-map')).toHaveAttribute('data-field','preview');
+ await expect(id(page,'sky-field-note')).toContainText('cannot be read faithfully (M108)',{timeout:30000});await expect(id(page,'sky-map')).toHaveAttribute('data-field','preview');
  // An ordinary field (RA 5.5 h, Dec −5°): drawn.
  await pointTo(page,'5.5','-5');
  await expect(id(page,'sky-map')).toHaveAttribute('data-field','native',{timeout:30000});

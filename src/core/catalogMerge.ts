@@ -9,7 +9,10 @@ export class CatalogMergeError extends Error {
 /** Front AXISMERGE (analysis/front-axismerge/RECOVERY.md): where VIREO dereferences the nil that List.GetAt 0x492688 returns for a
  * saved winner index past the list's last index (index > [list+4], 0x49268e). The faulting instruction and the address it touches
  * are read from the code [D]; the message text is the Delphi RTL's EAccessViolation format [I]. */
-export type NativeAccessViolation=Readonly<{address:number;access:'read'|'write';target:number}>;
+export type NativeAccessViolation=Readonly<{address:number;access:'read'|'write';target:number;
+ /** QSO merge only: the other faulting instruction, when the 30″ test that chooses between them is within the precision guard
+  * (the access violation is certain, its address is not decided; Front AXISMERGE review 1 L2). */
+ alternative?:Readonly<{address:number;access:'read'|'write';target:number}>}>;
 /** 0x59814e `cmp byte [ebp+0x3d],3` in the galaxy cleanup 0x5980cc, ebp = GetAt(saved) = nil. */
 export const GALAXY_CLEANUP_NULL_LOOKUP:NativeAccessViolation=Object.freeze({address:0x59814e,access:'read',target:0x3d});
 /** 0x598033 `rep movsd` of the QSO merge 0x597f90 replace branch (best × 3600 < 30), edi = GetAt(saved) = nil. */
@@ -17,13 +20,17 @@ export const QSO_REPLACE_NULL_LOOKUP:NativeAccessViolation=Object.freeze({addres
 /** 0x598066 `fld qword [esi+0x19]` of the QSO merge's RA walk (best × 3600 ≥ 30), esi = GetAt(saved) = nil. */
 export const QSO_WALK_NULL_LOOKUP:NativeAccessViolation=Object.freeze({address:0x598066,access:'read',target:0x19});
 const hex8=(n:number)=>n.toString(16).toUpperCase().padStart(8,'0');
-/** The text the Delphi RTL would format for this fault (resource "Access violation at address %p in module '%s'. %s of address
- * %p", Front MSTNONE excerpts) [I: RTL formatting, module name as loaded; not traced]. */
+const one=(f:Readonly<{address:number;access:'read'|'write';target:number}>)=>`Access violation at address ${hex8(f.address)} in module 'CLEA_VEO.exe'. ${f.access==='read'?'Read':'Write'} of address ${hex8(f.target)}.`;
+/** The text VIREO's ShowException would display for this fault: the Delphi RTL resource "Access violation at address %p in module
+ * '%s'. %s of address %p" (Front MSTNONE excerpts) with the '.' ShowException 0x47e218 appends [I: RTL formatting, module name as
+ * loaded; not traced]. An undecided address gives both texts. */
 export function accessViolationText(f:NativeAccessViolation):string{
-  return `Access violation at address ${hex8(f.address)} in module 'CLEA_VEO.exe'. ${f.access==='read'?'Read':'Write'} of address ${hex8(f.target)}`;
+  return f.alternative?`${one(f)} Or, on the other side of the 30″ test: ${one(f.alternative)}`:one(f);
 }
 export type MergeRecord=Readonly<{id:string;type:number;magnitude:number}>;
-export type MergeCandidate=Readonly<{record:MergeRecord;distanceDegrees:number}>;
+/** source (optional): the candidate's stored position. Two candidates with the same stored position and the same query have the
+ * same Extended distance (same inputs, same operations), so their exact tie is decided (Front AXISMERGE review 1 L5). */
+export type MergeCandidate=Readonly<{record:MergeRecord;distanceDegrees:number;source?:Readonly<{ra:number;dec:number}>}>;
 export type MergeTrace=Readonly<{
   rows:readonly MergeRecord[];winner:MergeRecord|null;savedWinnerIndex:number;
   resolvedSavedIndex:MergeRecord|null;removedRunner:MergeRecord|null;
@@ -78,15 +85,20 @@ export function nativeMergeNearest(candidates:readonly MergeCandidate[],referenc
     if(!c)throw new CatalogMergeError('record');const r=record(c.record);
     if(ids.has(r.id))throw new CatalogMergeError('record');ids.add(r.id);
     if(!Number.isFinite(c.distanceDegrees)||c.distanceDegrees<0)throw new CatalogMergeError('distance');
-    return {record:r,distanceDegrees:c.distanceDegrees};
+    return {record:r,distanceDegrees:c.distanceDegrees,source:c.source};
   });
   let best=INITIAL,second=1,winner:MergeRecord|null=null,wi=-1,ri=-1;
+  const sameSource=(i:number,j:number)=>{if(j<0)return false;const a=values[i],b=values[j];return a.distanceDegrees===b.distanceDegrees&&(a.distanceDegrees===0||!!a.source&&!!b.source&&a.source.ra===b.source.ra&&a.source.dec===b.source.dec);};
   for(let i=0;i<values.length;i++){
     const {record:r,distanceDegrees:d}=values[i];
     if(reference!==0&&Math.abs(reference-r.magnitude)>=1)continue;
-    awayFromBoundary(d,INITIAL);
+    // Front AXISMERGE review 1 L5: every Extended comparison of the scan is guarded, candidate vs 2′ and vs the current best
+    // (0x59a39b..0x59a3a2) and, when not nearer, vs the current second (0x59a3e3..0x59a3ef); their near-ties decide the saved
+    // winner index and the runner, hence the runner deletion and a nil GetAt.
+    // An exact tie with a candidate at the same stored position is decided (equal Extended values; strict tests keep the earlier).
+    awayFromBoundary(d,INITIAL);if(!sameSource(i,wi))awayFromBoundary(d,best);
     if(d<best){second=best;ri=wi;best=d;wi=i;winner=r;}
-    else if(d<second){second=d;ri=i;}
+    else{if(!sameSource(i,ri))awayFromBoundary(d,second);if(d<second){second=d;ri=i;}}
   }
   const rows=values.map(v=>v.record),gap=Math.abs(second-best);
   awayFromBoundary(gap,PRUNE_GAP);

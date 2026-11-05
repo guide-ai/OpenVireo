@@ -27,6 +27,8 @@ export function createI18n(messages:Readonly<Record<MessageKey,string>>,language
 }
 const english=createI18n(en,locale);
 export const t:Translate=english.t;
+/** A field engine reason code in words (the field spectrometer's `fieldSpec.reason.*` text), or the code itself when it has none. */
+export function fieldReasonText(code:string):string{const key=`fieldSpec.reason.${code}`;return Object.hasOwn(en,key)?english.t(key as 'fieldSpec.reason.slit-empty'):code;}
 export const formatNumber=english.formatNumber;
 export const fixed=english.fixed;
 export const scientific=english.scientific;

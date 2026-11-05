@@ -76,12 +76,18 @@ export type FieldUnavailableReason=
   * or the 0.006° runner gap). VIREO decides it in x87 Extended after FCOS (0x4036ac), whose last bits are not reproduced. */
  |'merge-boundary'
  /** Front AXISMERGE: VIREO's QSO merge 0x597f90 or galaxy cleanup 0x5980cc dereferences the nil that GetAt 0x492688 returns for
-  * a saved winner index past the list's end (the runner deletion of 0x59a2e0 shortened the list); the access violation leaves the
-  * field load (population.mergeFault). */
+  * a saved winner index past the list's end: the nearest star was the last record and the runner (second nearest, within 0.006°)
+  * was deleted by 0x59a2e0, which does not repair the saved index (population.mergeFault). The access violation abandons the load
+  * (try/finally frames only): the paint 0x53c500 is skipped (the previous image stays [I]), the telescope ClockTimer disabled at
+  * 0x597b34 stays off (re-enabled only at 0x597e9e or 0x538275), and the hourglass cursor set at 0x53be89 is not reset (0x53c08b). */
  |'merge-access-violation'
  /** Front AXISMERGE: no star is left after the variable stage; VIREO's assembler 0x597ac8 shows the box "No Stars Found in
-  * Field!" / "Possible Error in Field Parameters: …" (0x597ca7..0x597d8a, MB_ICONSTOP) and loads no QSO and no galaxy. The
-  * population is that empty field [D]; the web types it instead of painting it under a box [W]. */
+  * Field!" / "Possible Error in Field Parameters: …" (0x597ca7..0x597d8a, MB_ICONSTOP) and jumps to 0x597ea3 past the QSO and
+  * galaxy loads [D]. Those lists are cleared only inside their loaders (0x5988fd, 0x598d74, 0x59bb35), so the galaxies and QSOs of
+  * the previously loaded field remain [D]; 0x53be70 skips the paint 0x53c500 (the previous image stays [I]), 0x53caec/0x53cb40 and
+  * the +0x655 stamp, and the ClockTimer disabled at 0x597b34 stays off (clock labels, drift and the western-limit check freeze until
+  * the next non-empty field [I for the appearance]). VIREO's result depends on the earlier field, so this is population-blocking;
+  * the web's population holds the empty star list and no galaxy or QSO, which is not VIREO's. */
  |'empty-field'
  |'no-galaxy-selected'|'star-selected'|'slit-empty'|'spectrum-range'|'mean-bound'|'spectrum-mapping'
  /** Front F, 'merge' mode only: the slit selects a merged QSO record (type 3); a QSO observation is another branch. */
@@ -425,19 +431,43 @@ export function cleanFieldGalaxies(stars:readonly FieldStar[],galaxies:readonly 
  let current=[...stars];const kept:NativeGalaxy[]=[],witnesses:FieldMergeWitness[]=[];
  for(const g of galaxies){
   try{
-   const before=current,result=cleanNativeGalaxy(before.map(s=>({record:s,distanceDegrees:catalogMergeDistance(g,s)})),g.magnitude);
+   const before=current,result=cleanNativeGalaxy(before.map(s=>({record:s,distanceDegrees:catalogMergeDistance(g,s),source:s})),g.magnitude);
    if(!result.galaxyKept&&mode==='gate')throw new FieldEngineError('evidence');// GSC stars are type 0; a type-3 hit needs 'merge'
    const ids=new Set(result.rows.map(s=>s.id));current=before.filter(s=>ids.has(s.id));
    if(result.galaxyKept)kept.push(g);
    witnesses.push(Object.freeze({galaxy:g.id,removed:Object.freeze(before.filter(s=>!ids.has(s.id)).map(s=>s.id)),savedWinnerIndex:result.trace.savedWinnerIndex,runnerIndex:result.trace.runnerIndex,winnerId:result.trace.winner?.id??null,...(result.galaxyKept?{}:{galaxyDeleted:true as const})}));
   }catch(e){
    if(e instanceof CatalogMergeError&&e.code==='native-null-lookup'&&e.fault){
-    const trace=nativeMergeNearest(current.map(s=>({record:{id:s.id,type:s.type,magnitude:s.magnitude},distanceDegrees:catalogMergeDistance(g,s)})),0);
+    const trace=nativeMergeNearest(current.map(s=>({record:{id:s.id,type:s.type,magnitude:s.magnitude},distanceDegrees:catalogMergeDistance(g,s),source:s})),0);
     return {stars:current,galaxies,witnesses,boundary:false,fault:mergeFault('galaxy-cleanup',g.id,trace.savedWinnerIndex,trace.rows.length,e.fault)};
    }
-   if(e instanceof CatalogMergeError)return {stars:current,galaxies,witnesses,boundary:true};throw e;}
+   if(e instanceof CatalogMergeError&&e.code==='precision-required')return {stars:current,galaxies,witnesses,boundary:true};
+   if(e instanceof CatalogMergeError)throw new FieldEngineError('evidence');// same rule as fieldQsoStage
+   throw e;}
  }
  return {stars:current,galaxies:kept.length===galaxies.length?galaxies:Object.freeze(kept),witnesses,boundary:false};
+}
+/** Front AXISMERGE: the QSO merge 0x597f90 of a field, with the engine's error rule (shared with cleanFieldGalaxies): a precision
+ * boundary is merge-boundary; a nil GetAt is merge-access-violation, naming the faulting QSO (the merge is applied one QSO at a
+ * time again up to the first that throws; it is pure, so that QSO is the faulting one); anything else is an evidence error (an empty
+ * star list cannot reach the merge: buildFieldPopulation stops at the empty field first). */
+export function fieldQsoStage(stars:readonly FieldStar[],qsos:readonly NativeQso[]):Readonly<{rows:readonly FieldStar[];witnesses:readonly QsoMergeWitness[]}>|Readonly<{reason:'merge-boundary'|'merge-access-violation';fault?:FieldMergeFault}>{
+ try{return nativeQsoMerge(stars,qsos);}
+ catch(e){
+  if(!(e instanceof QsoMergeError))throw e;
+  if(e.code==='precision-required')return Object.freeze({reason:'merge-boundary' as const});
+  if(e.code!=='native-null-lookup'||!e.fault)throw new FieldEngineError('evidence');
+  let rows:FieldStar[]=[...stars];
+  for(const q of qsos){
+   try{rows=[...nativeQsoMerge(rows,[q]).rows];}
+   catch(x){
+    if(!(x instanceof QsoMergeError)||x.code!=='native-null-lookup'||!x.fault)throw new FieldEngineError('evidence');
+    const t=nativeMergeNearest(rows.map(r=>({record:{id:r.id,type:r.type,magnitude:r.magnitude},distanceDegrees:catalogMergeDistance(q,r),source:r})),q.magnitude);
+    return Object.freeze({reason:'merge-access-violation' as const,fault:mergeFault('qso-merge',q.id,t.savedWinnerIndex,t.rows.length,x.fault)});
+   }
+  }
+  throw new FieldEngineError('evidence');
+ }
 }
 function mergeFault(stage:FieldMergeFault['stage'],objectId:string,savedWinnerIndex:number,rows:number,f:NativeAccessViolation):FieldMergeFault{
  return Object.freeze({stage,objectId,savedWinnerIndex,rows,address:f.address,access:f.access,target:f.target,message:accessViolationText(f)});
@@ -469,7 +499,7 @@ export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Read
  if(variables.length===1&&options.variables==='outside-view'&&!falseDispatch(variables[0])){
   const v=variables[0];
   try{
-   const trace=nativeMergeNearest(stars.map(s=>({record:{id:s.id,type:s.type,magnitude:s.magnitude},distanceDegrees:catalogMergeDistance(v,s)})),0),arcseconds=trace.bestDistanceDegrees*3600;
+   const trace=nativeMergeNearest(stars.map(s=>({record:{id:s.id,type:s.type,magnitude:s.magnitude},distanceDegrees:catalogMergeDistance(v,s),source:s})),0),arcseconds=trace.bestDistanceDegrees*3600;
    const target=trace.resolvedSavedIndex;
    if(arcseconds>=30||!target||!trace.winner)reasons.push('variable-merge');
    else{const kept=new Set(trace.rows.map(r=>r.id));variableRemoved=stars.filter(s=>!kept.has(s.id)).map(s=>s.id);stars=stars.filter(s=>kept.has(s.id));
@@ -488,7 +518,7 @@ export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Read
   // boundary) gates the whole field with variable-merge, so the partly merged list is never used and needs no rollback.
   try{
    for(const v of variables){
-    const merged=nativeVariableFalseMerge((stars as NativeFieldStar[]).map(s=>({record:s,distanceDegrees:catalogMergeDistance(v,s)})),v,VARIABLE_TABLES,dispatch);
+    const merged=nativeVariableFalseMerge((stars as NativeFieldStar[]).map(s=>({record:s,distanceDegrees:catalogMergeDistance(v,s),source:s})),v,VARIABLE_TABLES,dispatch);
     const kept=new Set(merged.rows.map(r=>r.id));variableRemoved.push(...stars.filter(s=>!kept.has(s.id)).map(s=>s.id));stars=stars.filter(s=>kept.has(s.id));
    }
   }catch(e){if(e instanceof VariableMergeError||e instanceof CatalogMergeError)reasons.push('variable-merge');else throw e;}
@@ -505,19 +535,9 @@ export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Read
   const load=loadNativeQsoList(qsoCatalog,area);
   if(load.qsos.map(q=>q.recordIndex).join()!==qsoMatches.join())throw new FieldEngineError('evidence');// the scan and the pack agree
   if(load.qsos.length){
-   try{const merged=nativeQsoMerge(stars,load.qsos);stars=[...merged.rows];qsoStage=Object.freeze({recordsRead:load.recordsRead,witnesses:merged.witnesses});}
-   catch(e){
-    if(!(e instanceof QsoMergeError))throw e;
-    if(e.code==='precision-required')reasons.push('merge-boundary');
-    else if(e.code==='native-null-lookup'&&e.fault){
-     // Re-run up to the faulting QSO to name it (the merge is pure; the first throwing QSO is the faulting one).
-     let rows:FieldStar[]=[...stars],fault:FieldMergeFault|undefined;
-     for(const q of load.qsos){try{rows=[...nativeQsoMerge(rows,[q]).rows];}catch{const t=nativeMergeNearest(rows.map(r=>({record:{id:r.id,type:r.type,magnitude:r.magnitude},distanceDegrees:catalogMergeDistance(q,r)})),q.magnitude);fault=mergeFault('qso-merge',q.id,t.savedWinnerIndex,t.rows.length,e.fault);break;}}
-     if(!fault)throw new FieldEngineError('evidence');
-     mergeFaultWitness=fault;reasons.push('merge-access-violation');
-    }
-    else throw new FieldEngineError('evidence');// an empty star list cannot reach the merge (emptyField above)
-   }
+   const merged=fieldQsoStage(stars,load.qsos);
+   if('reason' in merged){reasons.push(merged.reason);if(merged.fault)mergeFaultWitness=merged.fault;}
+   else{stars=[...merged.rows];qsoStage=Object.freeze({recordsRead:load.recordsRead,witnesses:merged.witnesses});}
   }else qsoStage=Object.freeze({recordsRead:load.recordsRead,witnesses:Object.freeze([])});
  }
  checkpoint();
@@ -594,9 +614,9 @@ function runTrueVariableStage(initial:readonly FieldStar[],variables:readonly Na
   for(const v of variables){
    const spectrum=nativeVariableSpectrum(v.rawHex),withSpectrum={...v,spectrum};
    if(nativeVariableDispatchFalse(withSpectrum,VARIABLE_TABLES)){
-    prune(nativeVariableFalseMerge(stars.map(s=>({record:s,distanceDegrees:catalogMergeDistance(v,s)})),withSpectrum,VARIABLE_TABLES,'recovered').rows);continue;
+    prune(nativeVariableFalseMerge(stars.map(s=>({record:s,distanceDegrees:catalogMergeDistance(v,s),source:s})),withSpectrum,VARIABLE_TABLES,'recovered').rows);continue;
    }
-   const merge=nativeVariableTrueMerge(stars.map(s=>({record:{id:s.id,type:s.type,magnitude:s.magnitude},distanceDegrees:catalogMergeDistance(v,s),ra:s.ra})),v);
+   const merge=nativeVariableTrueMerge(stars.map(s=>({record:{id:s.id,type:s.type,magnitude:s.magnitude},distanceDegrees:catalogMergeDistance(v,s),source:s,ra:s.ra})),v);
    prune(merge.rows);
    const target=merge.path==='hit'?stars[merge.targetIndex] as NativeFieldStar|FieldVariableInsertedStar:null;
    if(merge.path==='hit'&&target!.id!==merge.target.id)throw new FieldEngineError('evidence');

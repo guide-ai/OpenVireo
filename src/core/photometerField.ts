@@ -123,7 +123,7 @@ function mergeNoEffectVariables(stars:readonly NamedStar[],fixture:VariableFixtu
  for(const [i,stored] of fixture.variables.entries()){
   let v;try{v=decodeNativeVariableRecord(stored.rawHex,stored.recordIndex);}catch{throw new PhotometerFieldError('evidence');}
   if(!nativeVariableDispatchFalse(v,tables))throw new PhotometerFieldError('evidence');
-  let merged;try{merged=nativeVariableFalseMerge(current.map(s=>({record:s,distanceDegrees:catalogMergeDistance(v,s)})),v,tables,'recovered');}catch{throw new PhotometerFieldError('evidence');}
+  let merged;try{merged=nativeVariableFalseMerge(current.map(s=>({record:s,distanceDegrees:catalogMergeDistance(v,s),source:s})),v,tables,'recovered');}catch{throw new PhotometerFieldError('evidence');}
   const kept=new Set(merged.rows.map(r=>r.id)),removed=current.filter(s=>!kept.has(s.id)).map(s=>s.id),w=fixture.variableMerges[i];
   if(w.variable!==v.recordIndex||w.hit!==merged.hit||(merged.trace.winner?.id??null)!==w.winnerId||!equal(removed,w.removed))throw new PhotometerFieldError('evidence');
   current=current.filter(s=>kept.has(s.id));
@@ -243,7 +243,8 @@ export type PhotometerTiledReason=
  /** The centre selects no object (none within the native 350-pixel sentinel). */|'photometer-selection'
  /** A star lacks catalogue colours (the native missing-colour branches are not recovered). */|'photometer-colour'
  /** Front AXISMERGE: no catalogue star in the photometer field. The field build 0x597ac8 shows "No Stars Found in Field!" and
-  * loads no QSO and no galaxy (0x597c8a) [D]; the selection then finds nothing, as in 'photometer-selection' [I]. */|'photometer-empty'
+  * jumps past the QSO and galaxy loads (0x597c8a) [D], so the galaxies and QSOs of the previously loaded field remain [D]; what the
+  * photometer then selects and measures depends on that earlier field and is not reproduced. */|'photometer-empty'
  /** The engine gated the population (its own typed reason). */|'photometer-population';
 export type PhotometerTiledResult=Readonly<{field:PinnedPleiadesField;reason?:undefined}|{field?:undefined;reason:PhotometerTiledReason;detail?:string}>;
 type PopulationLike=Readonly<{stars:readonly Readonly<{type:number;id:string;rawHex?:string;band?:string;recordIndex?:number}>[];galaxies:readonly Readonly<{ra:number;dec:number;majorArcminutes:number}>[];variableStars?:readonly unknown[]}>;

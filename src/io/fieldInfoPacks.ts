@@ -19,6 +19,7 @@ import type {LssFieldNumber} from '../core/lssFields';
 export type CertifiedPopulation=Readonly<{status:'ready';packId:string;population:FieldPopulation;reasons:readonly FieldUnavailableReason[]}|{status:'unavailable';reason:'field-polar'}|{status:'unavailable';reason:'field-tiles'|'field-unreadable';detail:string}|{status:'unavailable';reason:'population';detail:FieldUnavailableReason}>;
 /** Reasons that leave no exact population (the others concern only the raster or the drawing). */
 export const POPULATION_BLOCKING:readonly FieldUnavailableReason[]=Object.freeze(['outside-pack','qso-merge','variable-merge','merge-boundary','merge-access-violation',
+ /* Front AXISMERGE review 1 M1: after "No Stars Found in Field!" VIREO keeps the previous field's galaxies and QSOs. */'empty-field',
  /* Front T review 1 M1: a variable stage gate leaves the pre-variable star list (no QSO merge, no cleanup): never certified. */
  ...FIELD_VARIABLE_STAGE_GATES]);
 export type FieldInfoResources=Readonly<{

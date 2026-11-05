@@ -11,7 +11,7 @@ import {opticalProfile} from '../core/opticalTelescope';
 import type {AccessReason} from '../core/instrumentAccess';
 import {multiSpecSpectra,multiSpecView,type MultiSpecFieldRequest,type MultiSpecView} from '../io/multiSpec';
 import {fieldInfoReasonText} from '../observatory/FieldInfoMessages';
-import {t} from '../i18n';
+import {fieldReasonText,t} from '../i18n';
 import MultiSpecControl,{MultiSpecBox} from './MultiSpecControl';
 import MultiSpecFieldOverlay from './MultiSpecFieldOverlay';
 import MultiSpecList from './MultiSpecList';
@@ -160,7 +160,7 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
   :noItem?{caption:N.noItem.caption,text:noItem==='show'?N.noItem.show:N.noItem.close,question:false}:null;
  const answer=(yes:boolean)=>{if(state.question)dispatch({type:'answer',yes});else if(state.message)dispatch({type:'dismiss'});else setNoItem(null);};
  const fieldStatus=!field?noFieldText:view.status==='loading'?t('multispec.fieldLoading'):view.status==='error'?(mask.masked?t('multispec.fieldNeutral'):t('multispec.fieldError'))
-  :view.status==='reasons'?(mask.masked?t('multispec.fieldNeutral'):t('multispec.fieldReasons',{reasons:view.view.reasons.join(', ')}))
+  :view.status==='reasons'?(mask.masked?t('multispec.fieldNeutral'):t('multispec.fieldReasons',{reasons:view.view.reasons.map(fieldReasonText).join('; ')}))
   :view.status==='read'?(mask.masked?t('multispec.fieldNeutral'):view.read.reason==='internal'?t('multispec.fieldInternal'):'detail' in view.read?fieldInfoReasonText(view.read.reason,view.read.detail):fieldInfoReasonText(view.read.reason)):'';
  const usable=active&&!busy&&!rangeBlock;
 

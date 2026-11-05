@@ -52,7 +52,9 @@ The Spectrometer page (`#spectrometer`) now holds VIREO's single-slit spectromet
   - the engine's reasons (slit-empty, mean-bound, variable-*, merge-boundary, merge-access-violation, empty-field,
     photographic-image, spectrum-mapping, …); since Front AXISMERGE (2026-11-05) `axis-fallback` is gone (the recovered axis rules
     cover the whole catalogue), a nil GetAt in the merges is the recovered access violation (`merge-access-violation`, 9 of 24069
-    galaxy pointings, no exercise pointing) and only an undecidable x87 comparison stays `merge-boundary` (docs/FIELD-ENGINE.md);
+    galaxy pointings, no exercise pointing; pointings a variable gate stops first, 59 galaxy and 3 QSO positions, are not
+    counted), `empty-field` blocks (VIREO keeps the previous field's galaxies), and only an undecidable x87 comparison stays
+    `merge-boundary` (docs/FIELD-ENGINE.md);
   - every template JSPEC2.SPI names is bundled (the 17 remaining ones were approved on 2026-10-30), and the matcher's bucket
     `Round(Frac(index / 10000) · 100)` is computed as the x87 does under Delphi's control word 0x1332 (64-bit precision, round to
     nearest-even; G4a closure N1), so every index that 0x50d660 resolves gets its template, including the 1,176 GSC records
