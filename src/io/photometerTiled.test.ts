@@ -55,8 +55,9 @@ describe('photometer at a telescope pointing (tiled)',()=>{
  it('a field event needs a prepared frame; a typed field cannot start',async()=>{
   clearTiledPhotometerFields();
   expect(()=>run(createPhotometer(1),[{type:'activate'},{type:'field',ra:STAR.ra,dec:STAR.dec}])).toThrow(new PhotometerError('field'));
-  // M31's core: a galaxy in the field, typed before anything is registered.
-  expect(await preparePhotometerTiledField({ra:0.7123,dec:41.2692})).toEqual({status:'unavailable',reason:'photometer-galaxy'});
+  // M31's core: no GSC star in the photometer field (VIREO: "No Stars Found in Field!", the previous field's galaxies kept; Front AXISMERGE
+  // re-pin of 2026-11-05, it was photometer-galaxy), typed before anything is registered.
+  expect(await preparePhotometerTiledField({ra:0.7123,dec:41.2692})).toEqual({status:'unavailable',reason:'photometer-empty'});
   expect(tiledPhotometerPointing('gsc:11.5,55')).toEqual({ra:11.5,dec:55});expect(tiledPhotometerPointing('gsc:11.50,55')).toBeNull();
  },120_000);
  it('all three telescopes follow the generic limits: a reason blocks Start, none lets it run',async()=>{

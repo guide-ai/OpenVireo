@@ -1,3 +1,4 @@
+import {fieldReasonText} from '../i18n';
 /** Web texts of the Front O forms (docs/OBJECT-INFO-FORMS.md). Original literals stay in the core modules and are never
  * translated; these are the labelled web adaptations, notices and typed reasons. */
 export const FIELD_INFO_MESSAGES=Object.freeze({
@@ -77,7 +78,8 @@ export const FIELD_READ_DETAILS=Object.freeze({
 });
 export function fieldInfoReasonText(reason:FieldInfoReason,detail=''):string{
  const details=(FIELD_READ_DETAILS as Record<string,Record<string,string>>)[reason];
- const text=details?(details[detail]??(reason==='field-tiles'?'unknown reason':'the original catalogue read cannot be reproduced for this field.')):detail;
+ // Front AXISMERGE review 1: a population code is shown in words (the field spectrometer's reason text) when it has one.
+ const text=reason==='population'?fieldReasonText(detail):details?(details[detail]??(reason==='field-tiles'?'unknown reason':'the original catalogue read cannot be reproduced for this field.')):detail;
  return FIELD_INFO_MESSAGES.unavailable[reason].replace('{reason}',text);
 }
 /** Naked Eye Star (student path). */

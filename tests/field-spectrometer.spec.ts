@@ -73,6 +73,17 @@ test('Front F4: a newly bundled photograph is drawn, and the page fetches only t
  expect([...new Set(photographs)]).toEqual(['NGC891.BMP']);
  expect(errors).toEqual([]);
 });
+test('Front AXISMERGE: a field whose galaxy cleanup VIREO cannot finish names the access violation (NGC 4907, CLEA_GLX.DAT record 15000)',async({page})=>{
+ test.setTimeout(180000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await open(page);
+ // analysis/front-axismerge/RECOVERY.md: pointed at CLEA_GLX.DAT record 15000, the cleanup 0x5980cc of NGC 4907 meets a nil GetAt
+ // (its nearest star was the runner-pruned list's last record); VIREO faults at 0x59814e. The web types the field.
+ await pointAndUse(page,'12.985416666666667','27.85361111111111');
+ const reasons=page.getByTestId('field-spec-reasons');
+ await expect(reasons).toHaveAttribute('data-reasons',/merge-access-violation/,{timeout:90000});
+ await expect(reasons).toContainText('Access violation');await expect(reasons).not.toContainText('precision boundary');
+ await expect(page.getByTestId('field-spec-acquisition')).toHaveCount(0);
+ expect(errors).toEqual([]);
+});
 test('near an Object X position the field is masked',async({page})=>{
  test.setTimeout(120000);await open(page);
  // 3C 273 (an ObjectX.HTL QSO): the field would reveal the hidden identity.

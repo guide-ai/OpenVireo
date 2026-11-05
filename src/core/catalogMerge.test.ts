@@ -95,3 +95,21 @@ describe('native merge pruning and galaxy caller saved-position semantics',()=>{
     expect(()=>catalogMergeDistance({ra:0,dec:0},{ra:1e-200,dec:0})).toThrow(expect.objectContaining({code:'precision-required'}));
   });
 });
+describe('every Extended comparison of the nearest scan is guarded (Front AXISMERGE review 1 L5)',()=>{
+  const at=(id:string,d:number,ra:number,dec:number):MergeCandidate=>({record:{id,type:0,magnitude:10},distanceDegrees:d,source:{ra,dec}});
+  const d=.001;
+  it('a candidate within the precision guard of the current best is typed (it decides the saved winner index)',()=>{
+    expect(()=>nativeMergeNearest([c('a',d),c('b',d*(1+Number.EPSILON))],0)).toThrow(new CatalogMergeError('precision-required'));
+    // An exact tie between different stored positions is not decided either: the Extended distances may differ.
+    expect(()=>nativeMergeNearest([at('a',d,1,0),at('b',d,2,0)],0)).toThrow(new CatalogMergeError('precision-required'));
+  });
+  it('a candidate within the guard of the current second is typed (it decides the runner)',()=>{
+    expect(()=>nativeMergeNearest([c('a',d),c('b',2*d),c('c',2*d*(1+Number.EPSILON))],0)).toThrow(new CatalogMergeError('precision-required'));
+  });
+  it('an exact tie with the same stored position is decided (same inputs, same Extended operations): the earlier record stays',()=>{
+    const r=nativeMergeNearest([at('a',d,1,0),at('b',d,1,0),at('c',.02,3,0)],0);
+    expect(r.winner!.id).toBe('a');expect(r.removedRunner!.id).toBe('b');
+    const second=nativeMergeNearest([at('w',d/2,5,0),at('a',d,1,0),at('b',d,1,0)],0);
+    expect(second.winner!.id).toBe('w');expect(second.runnerIndex).toBe(1);
+  });
+});

@@ -38,8 +38,10 @@ describe('photometer fields from the tiles',()=>{
   // A sky reading takes whatever the aperture holds (VIREO's way, G3b): the same frame as an object reading at that pointing.
   const sky=await tiled({ra:11+44/60+42.9/3600,dec:55+22/60+43/3600},'sky',s);
   expect(sky.reason).toBeUndefined();expect(sky.field!.sourceMagnitude).toBe(any.field!.sourceMagnitude);expect(sky.field!.kind).toBe('sky');
-  // M31's core (CLEA_GLX.DAT galaxies in the 0.05° field): typed, not approximated.
-  expect((await tiled({ra:0.7123,dec:41.2692},'object',s)).reason).toBe('photometer-galaxy');
+  // M31's core: no GSC star in the 0.05° field, so the field build stops at 0x597c8a ("No Stars Found in Field!") before the galaxy
+  // load and keeps the previous field's galaxies; re-pinned 2026-11-05 (Front AXISMERGE): it was photometer-galaxy, from galaxies
+  // this field's load never reaches.
+  expect((await tiled({ra:0.7123,dec:41.2692},'object',s)).reason).toBe('photometer-empty');
  },120_000);
  it('Front P3: a galaxy matters only when the centre selects it (0x59a0fc); the neighbour producer 0x59ac54 never walks it',async()=>{
   const s=sources(),pointing={ra:11+44/60+42.9/3600,dec:55+22/60+43/3600};

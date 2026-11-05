@@ -2,12 +2,35 @@
  * source hashes: data/hubble/catalog-merge-provenance.json. No navigation data,
  * missing catalog state, amplitudes, detector image or observation is inferred. */
 export class CatalogMergeError extends Error {
-  constructor(readonly code:'record'|'distance'|'magnitude'|'precision-required'|'native-null-lookup') {
+  constructor(readonly code:'record'|'distance'|'magnitude'|'precision-required'|'native-null-lookup',readonly fault?:NativeAccessViolation) {
     super(`Native catalog merge: ${code}`);this.name='CatalogMergeError';
   }
 }
+/** Front AXISMERGE (analysis/front-axismerge/RECOVERY.md): where VIREO dereferences the nil that List.GetAt 0x492688 returns for a
+ * saved winner index past the list's last index (index > [list+4], 0x49268e). The faulting instruction and the address it touches
+ * are read from the code [D]; the message text is the Delphi RTL's EAccessViolation format [I]. */
+export type NativeAccessViolation=Readonly<{address:number;access:'read'|'write';target:number;
+ /** QSO merge only: the other faulting instruction, when the 30″ test that chooses between them is within the precision guard
+  * (the access violation is certain, its address is not decided; Front AXISMERGE review 1 L2). */
+ alternative?:Readonly<{address:number;access:'read'|'write';target:number}>}>;
+/** 0x59814e `cmp byte [ebp+0x3d],3` in the galaxy cleanup 0x5980cc, ebp = GetAt(saved) = nil. */
+export const GALAXY_CLEANUP_NULL_LOOKUP:NativeAccessViolation=Object.freeze({address:0x59814e,access:'read',target:0x3d});
+/** 0x598033 `rep movsd` of the QSO merge 0x597f90 replace branch (best × 3600 < 30), edi = GetAt(saved) = nil. */
+export const QSO_REPLACE_NULL_LOOKUP:NativeAccessViolation=Object.freeze({address:0x598033,access:'write',target:0});
+/** 0x598066 `fld qword [esi+0x19]` of the QSO merge's RA walk (best × 3600 ≥ 30), esi = GetAt(saved) = nil. */
+export const QSO_WALK_NULL_LOOKUP:NativeAccessViolation=Object.freeze({address:0x598066,access:'read',target:0x19});
+const hex8=(n:number)=>n.toString(16).toUpperCase().padStart(8,'0');
+const one=(f:Readonly<{address:number;access:'read'|'write';target:number}>)=>`Access violation at address ${hex8(f.address)} in module 'CLEA_VEO.exe'. ${f.access==='read'?'Read':'Write'} of address ${hex8(f.target)}.`;
+/** The text VIREO's ShowException would display for this fault: the Delphi RTL resource "Access violation at address %p in module
+ * '%s'. %s of address %p" (Front MSTNONE excerpts) with the '.' ShowException 0x47e218 appends [I: RTL formatting, module name as
+ * loaded; not traced]. An undecided address gives both texts. */
+export function accessViolationText(f:NativeAccessViolation):string{
+  return f.alternative?`${one(f)} Or, on the other side of the 30″ test: ${one(f.alternative)}`:one(f);
+}
 export type MergeRecord=Readonly<{id:string;type:number;magnitude:number}>;
-export type MergeCandidate=Readonly<{record:MergeRecord;distanceDegrees:number}>;
+/** source (optional): the candidate's stored position. Two candidates with the same stored position and the same query have the
+ * same Extended distance (same inputs, same operations), so their exact tie is decided (Front AXISMERGE review 1 L5). */
+export type MergeCandidate=Readonly<{record:MergeRecord;distanceDegrees:number;source?:Readonly<{ra:number;dec:number}>}>;
 export type MergeTrace=Readonly<{
   rows:readonly MergeRecord[];winner:MergeRecord|null;savedWinnerIndex:number;
   resolvedSavedIndex:MergeRecord|null;removedRunner:MergeRecord|null;
@@ -62,15 +85,20 @@ export function nativeMergeNearest(candidates:readonly MergeCandidate[],referenc
     if(!c)throw new CatalogMergeError('record');const r=record(c.record);
     if(ids.has(r.id))throw new CatalogMergeError('record');ids.add(r.id);
     if(!Number.isFinite(c.distanceDegrees)||c.distanceDegrees<0)throw new CatalogMergeError('distance');
-    return {record:r,distanceDegrees:c.distanceDegrees};
+    return {record:r,distanceDegrees:c.distanceDegrees,source:c.source};
   });
   let best=INITIAL,second=1,winner:MergeRecord|null=null,wi=-1,ri=-1;
+  const sameSource=(i:number,j:number)=>{if(j<0)return false;const a=values[i],b=values[j];return a.distanceDegrees===b.distanceDegrees&&(a.distanceDegrees===0||!!a.source&&!!b.source&&a.source.ra===b.source.ra&&a.source.dec===b.source.dec);};
   for(let i=0;i<values.length;i++){
     const {record:r,distanceDegrees:d}=values[i];
     if(reference!==0&&Math.abs(reference-r.magnitude)>=1)continue;
-    awayFromBoundary(d,INITIAL);
+    // Front AXISMERGE review 1 L5: every Extended comparison of the scan is guarded, candidate vs 2′ and vs the current best
+    // (0x59a39b..0x59a3a2) and, when not nearer, vs the current second (0x59a3e3..0x59a3ef); their near-ties decide the saved
+    // winner index and the runner, hence the runner deletion and a nil GetAt.
+    // An exact tie with a candidate at the same stored position is decided (equal Extended values; strict tests keep the earlier).
+    awayFromBoundary(d,INITIAL);if(!sameSource(i,wi))awayFromBoundary(d,best);
     if(d<best){second=best;ri=wi;best=d;wi=i;winner=r;}
-    else if(d<second){second=d;ri=i;}
+    else{if(!sameSource(i,ri))awayFromBoundary(d,second);if(d<second){second=d;ri=i;}}
   }
   const rows=values.map(v=>v.record),gap=Math.abs(second-best);
   awayFromBoundary(gap,PRUNE_GAP);
@@ -86,15 +114,16 @@ export type GalaxyCleanup=Readonly<{
 /** 0x5980cc..0x598191, one galaxy in its existing iteration order. Reference
  * magnitude0, nearest pruning first, then STRICT distance*3600<30. The caller
  * re-fetches the OLD saved POSITION and acts on that record, not winner pointer.
- * A null lookup is an explicit unsupported native dereference path: throw
- * atomically, never silently preserve/repair/claim a native crash or hang.
+ * A null lookup (the saved index is past the last index after the runner
+ * deletion) is VIREO's access violation at 0x59814e, read of 0x3d [D]: it is
+ * thrown atomically with that fault, never repaired or continued.
  * Returned rows are NOT a certified complete telescope/selection population. */
 export function cleanNativeGalaxy(candidates:readonly MergeCandidate[],galaxyMagnitude:number):GalaxyCleanup {
   const galaxy=single(galaxyMagnitude),trace=nativeMergeNearest(candidates,0);
   const arcseconds=trace.bestDistanceDegrees*3600;awayFromBoundary(arcseconds,30);
   if(arcseconds>=30)return Object.freeze({rows:trace.rows,galaxyKept:true,trace,operation:'keep',callerTarget:null});
   const target=trace.resolvedSavedIndex;
-  if(!target)throw new CatalogMergeError('native-null-lookup');
+  if(!target)throw new CatalogMergeError('native-null-lookup',GALAXY_CLEANUP_NULL_LOOKUP);
   if(target.type!==3){
     const rows=[...trace.rows];rows.splice(trace.savedWinnerIndex,1);
     return Object.freeze({rows:Object.freeze(rows),galaxyKept:true,trace,operation:'delete-star-at-saved-index',callerTarget:target});

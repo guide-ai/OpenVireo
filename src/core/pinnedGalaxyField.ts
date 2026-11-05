@@ -62,7 +62,7 @@ export function buildPinnedGalaxyPopulation(domain:unknown){
   return Object.freeze(decoded);
  });
  for(let i=0;i<galaxies.length;i++){
-  const g=galaxies[i],before=stars,result=cleanNativeGalaxy(before.map(s=>({record:s,distanceDegrees:catalogMergeDistance(g,s)})),g.magnitude);
+  const g=galaxies[i],before=stars,result=cleanNativeGalaxy(before.map(s=>({record:s,distanceDegrees:catalogMergeDistance(g,s),source:s})),g.magnitude);
   if(!result.galaxyKept)throw new NativeFieldError('evidence');
   const ids=new Set(result.rows.map(s=>s.id));stars=before.filter(s=>ids.has(s.id));
   const removed=before.filter(s=>!ids.has(s.id)).map(s=>s.id),w=snapshot.mergeWitnesses[i];

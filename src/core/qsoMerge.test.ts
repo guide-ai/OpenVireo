@@ -4,7 +4,8 @@ import {createHash} from 'node:crypto';
 import witnesses from '../../data/hubble/qso-merge-witnesses.json';
 import {decodeQsoRecord,loadNativeQsoList,nativeQsoMerge,qsoPositionPredicate,QsoMergeError,QSO_CATALOG,type NativeQso} from './qsoMerge';
 import {decodeFieldPack} from './fieldPack';
-import {buildFieldPopulation,evaluateField,FieldEngineError,cleanFieldGalaxies} from './fieldEngine';
+import {accessViolationText} from './catalogMerge';
+import {buildFieldPopulation,evaluateField,FieldEngineError,cleanFieldGalaxies,fieldQsoStage} from './fieldEngine';
 import {packWithPhotographs,parseGlimagesPositions} from './lssLists';
 const file=(p:string)=>new Uint8Array(readFileSync(new URL('../../public/original/'+p,import.meta.url)));
 const qsoBytes=file('catalogs/CLEA_QSO.DAT'),glx=file('catalogs/CLEA_GLX.DAT'),photos=parseGlimagesPositions(file('images/GLIMAGES.LST'));
@@ -59,8 +60,25 @@ describe('QSO merge 0x597f90',()=>{
   const m=nativeQsoMerge([s('a',1,0,10),s('c',1+50*D/15,0,17),s('d',1+45*D/15,0,17),s('e',3,0,10)],[q('Q',1,0,17)]);
   expect(m.witnesses[0]).toMatchObject({removedRunner:'c',winnerId:'d',operation:'insert'});expect(m.rows.map(r=>r.id)).not.toContain('c');
  });
- it('unsupported native paths are typed: empty star list',()=>{
+ it('unsupported native paths are typed: empty star list (the assembler never calls the merge with one, 0x597c8a)',()=>{
   expect(()=>nativeQsoMerge([],[q('Q',1,0,17)])).toThrow(QsoMergeError);
+ });
+ it('a nil GetAt after the runner deletion is the access violation of the branch VIREO takes (Front AXISMERGE)',()=>{
+  // Winner last in the list, runner before it within 0.006°: the runner is deleted and the saved index equals the new length.
+  const fault=(winner:number,runner:number)=>{try{nativeQsoMerge([s('a',.5,0,17),s('r',1+runner*D/15,0,17),s('w',1+winner*D/15,0,17)],[q('Q',1,0,17)]);}catch(e){return e;}return null;};
+  const replace=fault(10,20) as QsoMergeError;// best 10″ < 30″: the replace copy rep movsd writes through nil
+  expect(replace).toBeInstanceOf(QsoMergeError);expect(replace.code).toBe('native-null-lookup');expect(replace.fault).toEqual({address:0x598033,access:'write',target:0});
+  expect(accessViolationText(replace.fault!)).toBe("Access violation at address 00598033 in module 'CLEA_VEO.exe'. Write of address 00000000.");
+  const walk=fault(40,50) as QsoMergeError;// best 40″ ≥ 30″: the RA walk reads [nil+0x19]
+  expect(walk.fault).toEqual({address:0x598066,access:'read',target:0x19});
+  // Review 1 L2: GetAt comes before the 30″ test natively, so a nil cursor at a best distance within the guard of 30″ is still an
+  // access violation; only the address is undecided (both are given).
+  const T=30*(1+2*Number.EPSILON);let near:QsoMergeError|null=null;
+  try{nativeQsoMerge([s('a',.5,0,17),s('r',1,(T+10)/3600,17),s('w',1,T/3600,17)],[q('Q',1,0,17)]);}catch(e){near=e as QsoMergeError;}
+  expect(near?.code).toBe('native-null-lookup');expect(near?.fault).toEqual({address:0x598033,access:'write',target:0,alternative:{address:0x598066,access:'read',target:0x19}});
+  expect(accessViolationText(near!.fault!)).toContain('Or, on the other side of the 30″ test: Access violation at address 00598066');
+  // The same geometry with the winner not last resolves normally (no fault).
+  expect(()=>nativeQsoMerge([s('r',1+20*D/15,0,17),s('w',1+10*D/15,0,17),s('z',2,0,17)],[q('Q',1,0,17)])).not.toThrow();
  });
 });
 describe('field engine qso option',()=>{
@@ -79,7 +97,7 @@ describe('field engine qso option',()=>{
    const {population,reasons}=buildFieldPopulation(p,glx,w.pointing,{qso:'merge',qsoCatalog});
    expect(population!.qsoMatches.map(i=>`CLEA_QSO.DAT@${i}`)).toEqual(w.qso);
    if(!w.modelled)continue;// a variable in the area: its stage is covered by the existing witnesses
-   expect(reasons.filter(r=>r!=='axis-fallback'&&r!=='photographic-image')).toEqual([]);
+   expect(reasons.filter(r=>r!=='photographic-image')).toEqual([]);
    expect(population!.qsoStage!.recordsRead).toBe(w.qsoRecordsRead);
    expect(population!.qsoStage!.witnesses.map(x=>[x.qso,x.operation,x.operation==='replace'?x.replacedId:x.position])).toEqual(w.qsoOperations);
    expect(population!.stars).toHaveLength(w.finalStars!);expect(sha(population!.stars.map(x=>x.id).join(','))).toBe(w.finalStarIdsSHA256);
@@ -97,9 +115,31 @@ describe('galaxy cleanup with type-3 records (cleanFieldGalaxies)',()=>{
   // Outside 1 mag both are kept.
   expect(cleanFieldGalaxies([q('Q',1,0,15)],[g('G1',1,5/3600,16.5)],'merge').galaxies.map(x=>x.id)).toEqual(['G1']);
  });
+ it('a nil GetAt in the cleanup is the access violation at 0x59814e; the stage stops there (Front AXISMERGE)',()=>{
+  const gs=[g('G1',2,0,15),g('G2',1,0,15),g('G3',3,0,15)];
+  // For G2: the winner S2 (5″) is last, the runner S1 (10″) is deleted, so GetAt(2) on two records is nil.
+  const r=cleanFieldGalaxies([s('S0',.5,0,12),s('S1',1+10/3600/15,0,12),s('S2',1+5/3600/15,0,12)] as unknown as NativeQso[],gs,'merge');
+  expect(r.boundary).toBe(false);expect(r.galaxies).toBe(gs);expect(r.witnesses.map(w=>w.galaxy)).toEqual(['G1']);
+  expect(r.fault).toMatchObject({stage:'galaxy-cleanup',objectId:'G2',address:0x59814e,access:'read',target:0x3d,savedWinnerIndex:2,rows:2});
+ });
  it('a precision boundary stops the stage and leaves the galaxy list untouched (review 1, item 4)',()=>{
   const gs=[g('G1',1,5/3600,15.5),g('G2',2,0,15)];
   const r=cleanFieldGalaxies([q('Q',1,0,15),s('S',2,30/3600,12) as unknown as NativeQso],gs,'merge');
   expect(r.boundary).toBe(true);expect(r.galaxies).toBe(gs);expect(r.witnesses.map(w=>w.galaxy)).toEqual(['G1']);
+ });
+});
+describe('fieldQsoStage: the engine names the faulting QSO (Front AXISMERGE review 1 L4)',()=>{
+ const D=1/3600;
+ it('the first QSO merges, the second faults on a nil GetAt and is named with the list at that moment',()=>{
+  // Q1 (far from every star) is inserted; for Q2 the winner w is last and the runner r within 0.006° is deleted.
+  const stars=[s('a',.5,0,17),s('r',1+20*D/15,0,17),s('w',1+10*D/15,0,17)];
+  const out=fieldQsoStage(stars as never,[q('Q1',.2,1,17),q('Q2',1,0,17)]);
+  expect(out).toMatchObject({reason:'merge-access-violation',fault:{stage:'qso-merge',objectId:'Q2',address:0x598033,access:'write',target:0,savedWinnerIndex:3,rows:3}});
+  // Without the faulting QSO the stage completes.
+  expect('rows' in fieldQsoStage(stars as never,[q('Q1',.2,1,17)])).toBe(true);
+ });
+ it('a precision boundary is merge-boundary; other merge errors are evidence errors (the same rule as the cleanup)',()=>{
+  expect(fieldQsoStage([s('a',1,(120+1e-13)/3600,17)] as never,[q('Q',1,0,17)])).toEqual({reason:'merge-boundary'});
+  expect(()=>fieldQsoStage([s('a',1,0,17)] as never,[q('Q',99,0,17)])).toThrow(FieldEngineError);
  });
 });
