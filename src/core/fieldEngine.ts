@@ -470,7 +470,7 @@ export function fieldQsoStage(stars:readonly FieldStar[],qsos:readonly NativeQso
  }
 }
 function mergeFault(stage:FieldMergeFault['stage'],objectId:string,savedWinnerIndex:number,rows:number,f:NativeAccessViolation):FieldMergeFault{
- return Object.freeze({stage,objectId,savedWinnerIndex,rows,address:f.address,access:f.access,target:f.target,message:accessViolationText(f)});
+ return Object.freeze({stage,objectId,savedWinnerIndex,rows,address:f.address,access:f.access,target:f.target,...(f.alternative?{alternative:f.alternative}:{}),message:accessViolationText(f)});
 }
 export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{ra:number;dec:number}>,options:FieldOptions={}):Readonly<{population:FieldPopulation|null;reasons:FieldUnavailableReason[]}>{
  const finder=options.finder;

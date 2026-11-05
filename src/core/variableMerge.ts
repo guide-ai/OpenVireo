@@ -104,7 +104,7 @@ export type VariableTrueMergeResult=
  * saved-index semantics (no unsafe-saved-index rejection: the native update acts on that record); a miss returns the cursor-walk
  * insertion index. The caller runs the dispatch and applies or discards the result (FALSE restores the hit / skips the insert).
  * Candidates carry their RA for the walk; null lookups and the 30″ precision boundary are typed. */
-export function nativeVariableTrueMerge(candidates:readonly Readonly<{record:MergeRecord;distanceDegrees:number;ra:number}>[],variable:Readonly<{ra:number}>):VariableTrueMergeResult{
+export function nativeVariableTrueMerge(candidates:readonly Readonly<{record:MergeRecord;distanceDegrees:number;ra:number;source?:Readonly<{ra:number;dec:number}>}>[],variable:Readonly<{ra:number}>):VariableTrueMergeResult{
  if(!Array.isArray(candidates)||!variable||!Number.isFinite(variable.ra)||candidates.some(c=>!c||!Number.isFinite(c.ra)))throw new VariableMergeError('record');
  const trace=nativeMergeNearest(candidates,0),arcseconds=trace.bestDistanceDegrees*3600,ra=new Map(candidates.map(c=>[c.record.id,c.ra]));
  if(trace.winner){
