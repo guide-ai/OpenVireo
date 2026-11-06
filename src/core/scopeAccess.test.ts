@@ -34,7 +34,7 @@ describe('Front T5: the exercise menus and the menu updater 0x589bd8',()=>{
   for(const option of [true,false]){
    expect([2,3,7].map(c=>exerciseRestriction(c as ExerciseCode,option))).toEqual([option,option,option]);
    expect([1,4,5].map(c=>exerciseRestriction(c as ExerciseCode,option))).toEqual([false,false,false]);
-   expect(exerciseRestriction(6,option)).toBeNull();expect(exerciseRestriction(0,option)).toBeNull();
+   expect(exerciseRestriction(6,option)).toBeNull();expect(exerciseRestriction(0,option)).toBe(false);// review 1 L1: Access All Instruments 0x58afdd
   }
   expect(()=>exerciseRestriction(8 as ExerciseCode,true)).toThrow(TypeError);
  });
@@ -66,6 +66,8 @@ describe('Front T5: the request 0x58ba88',()=>{
  it('uses VIREO\'s generator: Random = state·2⁻³², Random(N) = high32(N·state)',()=>{
   expect(scopeRandomFloat(0)).toEqual({state:1,value:1/0x1_0000_0000});
   expect(scopeRandomFloat(1).state).toBe(0x08088406);
+  // Review 1 nit: high32 of the 64-bit MUL is exact even for a wrapped range (max < min, reachable only with T8).
+  {const st=seedBefore(0xffff_ffff),range=0xffff_fffc;expect(scopeRandomInt(st,range).value).toBe(Number((BigInt(range)*0xffff_ffffn)>>32n));expect(scopeRandomInt(st,range).value).toBe(0xffff_fffb);}
   expect(scopeRandomInt(0,12)).toEqual({state:1,value:0});expect(scopeRandomInt(seedBefore(0xffff_ffff),12).value).toBe(11);
   expect(scopeRandomInt(seedBefore(0x8000_0000),8).value).toBe(4);
   expect(()=>scopeRandomFloat(-1)).toThrow(TypeError);expect(()=>scopeRandomInt(0,-1)).toThrow(TypeError);
@@ -155,6 +157,22 @@ describe('Front T5: the allotment (RdngBtnClick 0x53cce4 and the four use sites)
   const used=scopeInstrumentUse(grant(restricted(),1),'ccd',1,P).state;expect(used.open).toEqual(['ccd']);
   expect(scopeTelescopeChanged(used).open).toEqual([]);const idle=scopeTelescopeChanged(used);expect(scopeTelescopeChanged(idle)).toBe(idle);
   const again=exerciseScopeAccess(used,3,true,P);expect(again).toMatchObject({access:[true,false,false],request:[true,true],uses:used.uses});
+ });
+ it('review 1 M1: an exercise menu closes the open instruments, so the next use re-runs the check under the new restriction',()=>{
+  // Free observatory, 4.0 m in use: the photometer is open and free. Opening E04 must not leave it free.
+  const free=scopeInstrumentUse(initialScopeAccess(P),'photometer',2,P);expect(free).toMatchObject({outcome:'free'});expect(free.state.open).toEqual(['photometer']);
+  const e04=exerciseScopeAccess(free.state,3,true,P);expect(e04).toMatchObject({open:[],counted:0,restricted:true,restrictedBy:3});
+  expect(scopeInstrumentUse(e04,'photometer',2,P).outcome).toBe('access-denied');
+  // E04 grant, spectrometer counting; Hubble must not keep counting it.
+  let s=grant(restricted(),1);for(let k=0;k<3;k++)s=scopeInstrumentUse(s,'spectrometer',1,P).state;expect(s.counted).toBe(1);
+  const hubble=exerciseScopeAccess(s,4,true,P);expect(hubble).toMatchObject({open:[],counted:0,restricted:false,restrictedBy:null});
+  const left=hubble.uses[0];for(let k=0;k<40;k++){const r=scopeInstrumentUse(hubble,'spectrometer',1,P);expect(r.outcome).toBe('free');expect(r.state.uses[0]).toBe(left);}
+ });
+ it('review 1 M2/L2: the restricting guide is kept (Pulsars keeps it), and an Access check runs without counting',()=>{
+  expect(restricted(7).restrictedBy).toBe(7);expect(exerciseScopeAccess(restricted(2),6,false,P).restrictedBy).toBe(2);
+  expect(exerciseScopeAccess(restricted(3),3,false,P)).toMatchObject({restricted:false,restrictedBy:null});
+  const spent=scopeInstrumentUse(scopeInstrumentUse(restricted(),'spectrometer',1,P).state,'spectrometer',1,P).state;// 1 use, then closed
+  expect(scopeInstrumentUse(scopeTelescopeChanged(spent),'spectrometer',1,P,false).outcome).toBe('access-denied');
  });
  it('validates its inputs',()=>{
   expect(()=>scopeInstrumentUse(restricted(),'radio' as never,1,P)).toThrow(TypeError);

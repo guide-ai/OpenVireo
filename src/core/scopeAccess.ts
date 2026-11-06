@@ -38,8 +38,9 @@
  * stream with VIREO's generator, seeded once per page by the caller; VIREO's global RandSeed (also drawn by sounds, the switch
  * delay and the science) is not modelled, and no other web stream is touched. [W] Nothing here is saved with investigations.
  * [W] The web has no separate instrument Access: an instrument is "open" from its first use at the current telescope until the
- * telescope changes or its allotment closes it, and the Access check runs at that first use. Pure: no React, clock, storage or
- * network. */
+ * telescope changes, an exercise menu runs (review 1 M1 [W]: VIREO re-runs RdngBtnClick at every instrument Access, so state from
+ * an earlier exercise must not carry over) or its allotment closes it, and the Access check runs at that first use. Pure: no React,
+ * clock, storage or network. */
 import type {OpticalIndex} from './opticalTelescope';
 import type {ExerciseCode} from './opticalOptions';
 
@@ -66,6 +67,7 @@ export type ScopeBox=Readonly<{kind:ScopeBoxKind;caption:string;text:string;flag
 
 export type ScopeAccessState=Readonly<{
  /** env+0x3840. */restricted:boolean;
+ /** [W] The exercise menu that set the restriction (2, 3 or 7), for the student's status line; null when unrestricted. */restrictedBy:ExerciseCode|null;
  /** Access0p4 / Access1p0 / Access4p0 Enabled. */access:readonly [boolean,boolean,boolean];
  /** Request1p0 / Request4p0 Enabled. */request:readonly [boolean,boolean];
  /** RequestTime1 Enabled. */requestTime:boolean;
@@ -92,7 +94,7 @@ const single=(p:ScopeProfile)=>Math.fround(p.availability);
 /** 0x589bd8. */
 export function scopeMenuUpdate(s:ScopeAccessState,profiles:ScopeProfiles):ScopeAccessState{
  checkProfiles(profiles);
- if(!s.restricted)return freeze({...s,access:freeze([s.access[0],true,true]) as ScopeAccessState['access'],requestTime:false});
+ if(!s.restricted)return freeze({...s,restrictedBy:null,access:freeze([s.access[0],true,true]) as ScopeAccessState['access'],requestTime:false});
  const a1=single(profiles[1])===1,a4=single(profiles[2])===1,r1=!a1&&single(profiles[1])>0,r4=!a4&&single(profiles[2])>0;
  return freeze({...s,access:freeze([s.access[0],a1,a4]) as ScopeAccessState['access'],request:freeze([r1,r4]) as ScopeAccessState['request'],requestTime:r1||r4});
 }
@@ -100,7 +102,7 @@ export function scopeMenuUpdate(s:ScopeAccessState,profiles:ScopeProfiles):Scope
 /** The state at page load: env+0x3840 = 0, the menu as 0x589bd8 leaves it unrestricted [I: VIREO runs it at Run1Click], the
  * 1.0 m counter 1 (0x537bdc) and the 4.0 m counter 0. */
 export function initialScopeAccess(profiles:ScopeProfiles):ScopeAccessState{
- return scopeMenuUpdate(freeze({restricted:false,access:freeze([true,true,true]) as ScopeAccessState['access'],request:freeze([true,true]) as ScopeAccessState['request'],requestTime:true,
+ return scopeMenuUpdate(freeze({restricted:false,restrictedBy:null,access:freeze([true,true,true]) as ScopeAccessState['access'],request:freeze([true,true]) as ScopeAccessState['request'],requestTime:true,
   waiting:freeze([false,false]) as ScopeAccessState['waiting'],uses:freeze([1,0]) as ScopeAccessState['uses'],pending:null,counted:0,open:freeze([]),random:null}),profiles);
 }
 
@@ -109,13 +111,16 @@ export function exerciseRestriction(code:ExerciseCode,option:boolean):boolean|nu
  if(typeof option!=='boolean')throw new TypeError('Invalid Restrict Scope Access value');
  if(code===2||code===3||code===7)return option;// Stellar Spectra, Photometry, HR Diagrams
  if(code===1||code===4||code===5)return false;// Object X, Hubble, LSS
- if(code===6||code===0)return null;// Pulsars writes nothing; 0 is no menu
+ if(code===0)return false;// Access All Instruments 0x58afdd (review 1 L1; the web has no route for this menu)
+ if(code===6)return null;// Pulsars writes nothing
  throw new TypeError('Invalid exercise code');
 }
-/** An exercise menu: the restriction byte, then the menu updater. */
+/** An exercise menu: the restriction byte, then the menu updater. Review 1 M1 [W]: the web's open instruments and use pointer are
+ * reset too, so the next use re-runs RdngBtnClick's check under the new restriction, as VIREO's next instrument Access would. */
 export function exerciseScopeAccess(s:ScopeAccessState,code:ExerciseCode,option:boolean,profiles:ScopeProfiles):ScopeAccessState{
- const r=exerciseRestriction(code,option);
- return scopeMenuUpdate(r===null||r===s.restricted?s:freeze({...s,restricted:r}),profiles);
+ const r=exerciseRestriction(code,option),restricted=r??s.restricted;
+ const restrictedBy=!restricted?null:r===true?code:s.restrictedBy;
+ return scopeMenuUpdate(freeze({...s,restricted,restrictedBy,open:freeze([]),counted:0}),profiles);
 }
 
 /** Whether Access to a telescope is offered (the menu item's Enabled; 0.4 m always). */
@@ -127,7 +132,7 @@ const step=(state:number)=>(Math.imul(state,0x08088405)+1)>>>0;
 export function scopeRandomFloat(state:number):Readonly<{state:number;value:number}>{if(!isSeed(state))throw new TypeError('Invalid random state');const n=step(state);return freeze({state:n,value:n/0x1_0000_0000});}
 export function scopeRandomInt(state:number,range:number):Readonly<{state:number;value:number}>{
  if(!isSeed(state)||!Number.isInteger(range)||range<0||range>0xffff_ffff)throw new TypeError('Invalid random input');
- const n=step(state);return freeze({state:n,value:Math.floor(range*n/0x1_0000_0000)});
+ const n=step(state);return freeze({state:n,value:Number((BigInt(range)*BigInt(n))>>32n)});// exact high32 of the 64-bit MUL
 }
 
 /** ShortString concatenation with VIREO's limits (PStrNCat 0x403c20 with the `cl` of each call) [I semantics: the total is cut at

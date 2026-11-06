@@ -30,8 +30,9 @@ test('E04 context: the 1.0 m needs Request Time; a granted request gives Access;
  await expect(card(page)).toHaveAttribute('data-restricted','false');await expect(id(page,'scope-request-time')).toHaveCount(0);
  await guide(page,'pleiades');
  await expect(card(page)).toHaveAttribute('data-restricted','true');await expect(card(page)).toHaveAttribute('data-access','100');
- await expect(id(page,'scope-access-status')).toContainText('the 1.0 m and 4.0 m telescopes need Request Time');
- await choose(page,'1');await expect(use(page)).toBeDisabled();await expect(id(page,'scope-access-locked')).toContainText('Access 1.0 Meter is not offered in this exercise');
+ await expect(id(page,'scope-access-status')).toContainText('set by the Pleiades lab guide: the 1.0 m and 4.0 m telescopes need Request Time');
+ await expect(id(page,'scope-access-status')).toContainText('opening the Hubble, LSS or Object X guide lifts it');// review 1 M2
+ await choose(page,'1');await expect(use(page)).toBeDisabled();await expect(id(page,'scope-access-locked')).toContainText('Access 1.0 Meter is not offered here');
  await expect(id(page,'scope-request-1')).toHaveText('Request 1.0 Meter Telescope');await expect(id(page,'scope-request-2')).toBeEnabled();
  await card(page).screenshot({path:test.info().outputPath('scope-request-time.png')});
  // Granted: OK writes the uses and offers Access; the request item goes off.
@@ -39,6 +40,8 @@ test('E04 context: the 1.0 m needs Request Time; a granted request gives Access;
  await box(page,'time-awarded','Observing Time Awarded','Your request for observing time on the\nKPNO 0.9m (36") Telescope\nhas been granted.\n\nYou may use the telescope to obtain and record\ndata for 12 stars or other objects.');
  await page.screenshot({path:test.info().outputPath('scope-awarded.png')});
  await id(page,'scope-box-ok').click();await expect(id(page,'scope-box')).toHaveCount(0);
+ // Review 1 L4: the granted item is now off, so focus returns to the card's heading instead of the page body.
+ await expect(page.locator('#optical-heading')).toBeFocused();
  await expect(card(page)).toHaveAttribute('data-access','110');await expect(card(page)).toHaveAttribute('data-uses','12,0');await expect(id(page,'scope-request-1')).toBeDisabled();
  await expect(use(page)).toBeEnabled();await use(page).click();await expect(page.locator('.optical-current')).toContainText('KPNO 0.9m');
  // Refused: the 0x10 box, the item off, and Timer4m's 15 minutes on the host clock bring it back.
@@ -52,6 +55,7 @@ test('E04 context: the 1.0 m needs Request Time; a granted request gives Access;
  // Granted, then Cancel: nothing is committed and the request stays offered.
  await id(page,'scope-request-2').click();await box(page,'time-awarded','Observing Time Awarded',/has been granted\.[\s\S]*data for \d+ stars or other objects\./);
  await id(page,'scope-box-cancel').click();await expect(card(page)).toHaveAttribute('data-access','110');await expect(id(page,'scope-request-2')).toBeEnabled();
+ await expect(id(page,'scope-request-2')).toBeFocused();// review 1 L4: back on the control that opened the box
  // A new exercise menu runs 0x589bd8 again: Access 1.0 m goes off (the uses stay), Request comes back.
  await guide(page,'pleiades');await expect(card(page)).toHaveAttribute('data-access','100');await expect(card(page)).toHaveAttribute('data-uses','12,0');await expect(id(page,'scope-request-1')).toBeEnabled();
  expect(errors).toEqual([]);

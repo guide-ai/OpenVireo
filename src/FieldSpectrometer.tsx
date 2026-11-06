@@ -37,7 +37,7 @@ export type FieldSpectrometerController=Readonly<{snapshot:()=>FieldSpectrumReco
 export type FieldSpectrometerLink=Readonly<{/** Front S2: the page's one spectrometer range and its (stable) setter. */spectralRange?:SpectralRange;onSpectralRange?:(r:SpectralRange)=>void;active:boolean;pointing:Pointing;gate:Readonly<{tracking:boolean;moving:boolean;finder:boolean;domeOpen:boolean}>;telescope:FieldTelescope;hidden:Pointing|null;currentJd?:()=>number;
  onClassify?:(source:ClassificationImport)=>void;/** Front LSSFREE: `origin` is what the LSS list's Record Z needs from this exposure (core/lssFreeRecord.ts). */onAnalyze?:(source:ClassificationImport,origin?:LssFreeSource|null)=>void;onRecord?:(record:FieldSpectrumRecord|null)=>void;
  controllerRef?:Ref<FieldSpectrometerController>;restore?:Readonly<{token:number;record:FieldSpectrumRecord|null}>|null;projectBusy?:boolean;
- /** Front T5: the telescope's Request Time allotment on a new object (core/scopeAccess.ts); false refuses the field. */scopeUse?:(instrument:'spectrometer')=>boolean}>;
+ /** Front T5: the telescope's Request Time allotment on a new object (core/scopeAccess.ts); false refuses the field. */scopeUse?:(instrument:'spectrometer',consumes?:boolean)=>boolean}>;
 type Ready=Extract<PreparedFieldSpectrum,{status:'ready'}>;
 type Shown=FieldSpectrumShown;
 const failure=fieldSpectrumFailure;
@@ -106,6 +106,8 @@ export default function FieldSpectrometer({link}:{link:FieldSpectrometerLink}){
  useEffect(()=>{if(!link.active){request.current?.abort();setLoading(false);}},[link.active]);
  // Review 1 L2: every OK restarts the exposure (0x5110b0), even on an unchanged range: okToken is part of the Acquisition key.
  const range=link.spectralRange??DEFAULT_SPECTRAL_RANGE,[counts,setCounts]=useState(false),[okToken,setOkToken]=useState(0),[scopeRefused,setScopeRefused]=useState(false),lastObject=useRef<string|null>(null);
+ // Review 1 L2: another telescope is a new spectrometer Access, so the same object counts again there.
+ useEffect(()=>{lastObject.current=null;},[link.telescope]);
  async function useHere(at:SpectralRange=range){
   request.current?.abort();const controller=new AbortController();request.current=controller;setLoading(true);
   setScopeRefused(false);
@@ -114,7 +116,8 @@ export default function FieldSpectrometer({link}:{link:FieldSpectrometerLink}){
     // Front T5: FormActivate 0x50dac4 → 0x50dbd8 uses the allotment when the slit's object (name and type) changes and has light
     // (+0x416 = 0, 0x50dcdc). [W] Use stands in for the activation; the object's id stands in for the name and type.
     if(r.status==='ready'&&link.scopeUse){const o=r.result.qsoTarget??r.result.starTarget??r.result.target??null,key=o&&!fieldSpectrometerSkyReading(r.result)?`${kindOf(r.result)}:${o.id}`:'Sky';
-     if(key!=='Sky'&&key!==lastObject.current&&!link.scopeUse('spectrometer')){setPrepared(null);setScopeRefused(true);return;}lastObject.current=key;}
+     // Review 1 L2: the check runs at every Use (it is RdngBtnClick's only when the instrument is not open); only a new lit object counts.
+     if(!link.scopeUse('spectrometer',key!=='Sky'&&key!==lastObject.current)){setPrepared(null);setScopeRefused(true);return;}lastObject.current=key;}
     setPrepared(r);}}
   catch(e){if(!controller.signal.aborted)setPrepared(failure(e));}
   finally{if(request.current===controller){request.current=null;setLoading(false);}}

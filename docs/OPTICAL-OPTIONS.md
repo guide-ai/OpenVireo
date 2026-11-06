@@ -123,7 +123,7 @@ Recovery and excerpts: `analysis/front-teacher/t4/RECOVERY.md` in the research r
 OKBtnClick writes record+0x27d1 (0x5a61b2) = env+0x2e85, FormActivate reads it (0x5a5a53), the defaults routine writes **1**
 (0x5a2b04) [D]. Its only readers are three exercise menus, which copy it into the live restriction byte env+0x3840:
 Photometry 0x58a38e, HR Diagrams 0x58a538 and Stellar Spectra 0x58a6fa. Hubble 0x58a8ca, LSS 0x58aab0, Object X 0x58ae37 and
-Access All Instruments 0x58afdd write 0; Pulsars writes nothing; the byte is 0 before the first menu. The menu updater 0x589bd8
+Access All Instruments 0x58afdd write 0; Pulsars writes nothing; the byte is 0 before the first menu. The web has no Access All Instruments menu route (Virtual Observatory is an option there, not that menu), so only the core maps exercise code 0 to "unrestricted" (review 1 L1). The menu updater 0x589bd8
 (run by every menu and by Run1Click) then sets Telescopes › Optical:
 
 | State | VIREO [D] | OpenVireo |
@@ -136,7 +136,8 @@ Access All Instruments 0x58afdd write 0; Pulsars writes nothing; the byte is 0 b
 
 In OpenVireo (`src/core/scopeAccess.ts`) the check box is live in instructor mode for the page session; Reset returns it to on
 and **Leave keeps it** (as T4's options). Since VIREO copies it at the exercise menu, a change takes effect when an exercise guide
-is next opened. Save Updates writes it and Load applies it; a web file written before T5 keeps it under `notApplied` and is read
+is next opened. The status line names the guide that set the restriction and says how to lift it (review 1 M2). Opening a guide
+also closes the web's open instruments, so the next use re-runs VIREO's Access check under the new restriction (review 1 M1 [W]). Save Updates writes it and Load applies it; a web file written before T5 keeps it under `notApplied` and is read
 from there. Grants, uses and timers are never saved with investigations, and the saved optical policy tag is unchanged, so older
 investigations replay identically. Scopes… (TScopeDataDlg; OK 0x593754 writes the availability Single +0x29 and the bytes
 +0x2f, +0x2d, +0x2e of the 1.0 m and 4.0 m) stays read-only for Front T8, with the optics fields it shares.

@@ -3510,7 +3510,7 @@ export interface MessageParameters {
   "photometerTab.setEBmVNote": never;
   "photometerTab.detectSkyNote": never;
   "scopeAccess.optionNote": never;
-  "scopeAccess.restricted": never;
+  "scopeAccess.restricted": "guide";
   "scopeAccess.unrestricted": never;
   "scopeAccess.accessLocked": "access" | "name";
   "scopeAccess.applyRefused": "name";
