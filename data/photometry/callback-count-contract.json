@@ -1,0 +1,223 @@
+{
+  "schema": 1,
+  "policy": "VIREO-photometer-x87-elapsed-callback-count-v1",
+  "front": "PHCALLBACK (2026-11-06)",
+  "editionSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "method": "Static reading only (GNU objdump, guarded Python byte reads); CLEA_VEO.exe was not executed or emulated. Research: analysis/front-phcallback/RECOVERY.md.",
+  "loop": [
+    "[D] Duration handler 0x501e20 copies the chosen Extended seconds from the table 0x5b3a40 (10 bytes per entry) to TPhotometer+0x57b; repeat handler 0x501e60 stores slider+1 at +0x585.",
+    "[D] Start 0x500a01..0x500a0d: fild Timer (env+0x2e57), fdiv Single 1000.0 (0x500ac8), fstp TBYTE +0x498: the increment is Timer/1000 rounded once to the precision-control mantissa.",
+    "[D] 0x500bcc (Start) and 0x501911 (each later period) zero the elapsed Extended +0x48e (dwords +0x48e/+0x492, word +0x496).",
+    "[D] Callback 0x5014ea..0x5014f8: fld +0x48e, fld +0x498, faddp, fstp TBYTE +0x48e: elapsed is rounded to the mantissa at every add and stored exactly (80-bit).",
+    "[D] The same callback then draws source and sky (0x501506..0x501561), adds BaseCount to the Integer base-count sum +0x4de (0x501588) and only then compares: 0x5015cb..0x5015dd fld +0x48e, fld +0x57b, fcompp, ja 0x50196c continues while seconds > elapsed. So the period ends at the first callback with elapsed >= seconds, and that callback's photons and base count are counted.",
+    "[D] Reduction 0x501687..0x5016ba divides the aggregate count +0x4fa and the base-count sum +0x4de by repeats x table seconds (+0x585 x +0x57b), never by the callback count.",
+    "[D] Display 0x500d80 (called at 0x500a2a and 0x501982) shows the period's elapsed Extended through 0x486268 (ffFixed, 1 digit, padded to 5 characters) and the completed-period index; after a non-final period 0x501911 has already zeroed elapsed."
+  ],
+  "numerics": {
+    "controlWord": "0x1332",
+    "address": "0x5ae024",
+    "bytes": "3213",
+    "precisionBits": 64,
+    "rounding": "nearest-even",
+    "status": "[D] Default8087CW, loaded by the RTL FPU init (0x404dcc/Set8087CW 0x403618); its only other caller 0x408e74 restores the saved word after a library load, and the other fldcw sites save and restore their own word (analysis/front-g-gsc/RE-template-bucket.md, analysis/front-meanbound/RECOVERY.md). [I] No DLL or the OS leaves another precision or rounding control in force at run time."
+  },
+  "secondsTable": [
+    {
+      "address": "0x5b3a40",
+      "bytes": "cdccccccccccccccfb3f",
+      "nominalSeconds": 0.1
+    },
+    {
+      "address": "0x5b3a4a",
+      "bytes": "0000000000000080ff3f",
+      "nominalSeconds": 1
+    },
+    {
+      "address": "0x5b3a54",
+      "bytes": "00000000000000a00240",
+      "nominalSeconds": 10
+    },
+    {
+      "address": "0x5b3a5e",
+      "bytes": "00000000000000c80540",
+      "nominalSeconds": 100
+    }
+  ],
+  "single1000": {
+    "address": "0x500ac8",
+    "bytes": "00007a44"
+  },
+  "domain": {
+    "seconds": [
+      0.1,
+      1,
+      10,
+      100
+    ],
+    "minimumTimerMs": 1,
+    "maximumTimerMs": 10000,
+    "note": "[W] WEB-T6-02: the web measures Timer Wait 1..10000 ms."
+  },
+  "rule": "Over the whole domain the count equals ceil(1000 * seconds / Timer) except at the 18 pairs below, all exact multiples (ties), where it is one more. No non-tie pair differs.",
+  "tieUndercounts": [
+    {
+      "seconds": 0.1,
+      "timerMs": 10,
+      "callbacks": 11,
+      "nominal": 10
+    },
+    {
+      "seconds": 0.1,
+      "timerMs": 20,
+      "callbacks": 6,
+      "nominal": 5
+    },
+    {
+      "seconds": 1,
+      "timerMs": 2,
+      "callbacks": 501,
+      "nominal": 500
+    },
+    {
+      "seconds": 1,
+      "timerMs": 4,
+      "callbacks": 251,
+      "nominal": 250
+    },
+    {
+      "seconds": 1,
+      "timerMs": 5,
+      "callbacks": 201,
+      "nominal": 200
+    },
+    {
+      "seconds": 1,
+      "timerMs": 10,
+      "callbacks": 101,
+      "nominal": 100
+    },
+    {
+      "seconds": 1,
+      "timerMs": 20,
+      "callbacks": 51,
+      "nominal": 50
+    },
+    {
+      "seconds": 1,
+      "timerMs": 25,
+      "callbacks": 41,
+      "nominal": 40
+    },
+    {
+      "seconds": 10,
+      "timerMs": 25,
+      "callbacks": 401,
+      "nominal": 400
+    },
+    {
+      "seconds": 10,
+      "timerMs": 40,
+      "callbacks": 251,
+      "nominal": 250
+    },
+    {
+      "seconds": 10,
+      "timerMs": 80,
+      "callbacks": 126,
+      "nominal": 125
+    },
+    {
+      "seconds": 10,
+      "timerMs": 200,
+      "callbacks": 51,
+      "nominal": 50
+    },
+    {
+      "seconds": 10,
+      "timerMs": 400,
+      "callbacks": 26,
+      "nominal": 25
+    },
+    {
+      "seconds": 100,
+      "timerMs": 4,
+      "callbacks": 25001,
+      "nominal": 25000
+    },
+    {
+      "seconds": 100,
+      "timerMs": 5,
+      "callbacks": 20001,
+      "nominal": 20000
+    },
+    {
+      "seconds": 100,
+      "timerMs": 20,
+      "callbacks": 5001,
+      "nominal": 5000
+    },
+    {
+      "seconds": 100,
+      "timerMs": 100,
+      "callbacks": 1001,
+      "nominal": 1000
+    },
+    {
+      "seconds": 100,
+      "timerMs": 200,
+      "callbacks": 501,
+      "nominal": 500
+    }
+  ],
+  "compiled": {
+    "timerMs": 100,
+    "callbacks": {
+      "0.1": 1,
+      "1": 10,
+      "10": 100,
+      "100": 1001
+    },
+    "finalElapsedAt100s": "7212965163196586331/72057594037927936",
+    "note": "At the compiled 100 ms only 100 s changes. The increment 14757395258967641293/2^67 is above 0.1 and the sums after 10 and 100 adds are still at or above 1 and 10, but the rounding of the larger partial sums leaves the sum of 1000 adds 125/2^57 (8.7e-16) below 100, so the 1001st callback ends the period at elapsed 100.0999999999999991 (VIREO displays 100.1)."
+  },
+  "witnesses": {
+    "fullTableRows": 40000,
+    "fullTableFormat": "seconds,timerMs,callbacks with LF line ends, seconds spelled 0.1/1/10/100, Timer 1..10000, header line seconds,timerMs,callbacks",
+    "fullTableSHA256": "2a62281e75061ea72c4bd9cdf33d65ac4975a5877742627a2ec4e8e5b0cf2520",
+    "tools": [
+      {
+        "file": "analysis/front-phcallback/callback_witness.py",
+        "sha256": "303d91ebe72949c89862f0a9c6b684fd9656defbb1764b91c4115a8f7c9e8727",
+        "method": "Exact Python Fraction model of fdiv/faddp with 64-bit-mantissa round-to-nearest-even; reads the table, the Single and the control word from the executable."
+      },
+      {
+        "file": "analysis/front-phcallback/callback_witness_x87.c",
+        "sha256": "77e243d21d975b5b134c73e3af3fca97bbe27c01507267d99f1ab36bb226a63c",
+        "method": "gcc long double on x86-64 Linux (hardware x87, control word set to 0x1332); a numeric model, not VIREO."
+      }
+    ],
+    "agreement": "Both tools produce the same 40000-row table byte for byte; the production BigInt model (src/core/photometerCallbackCount.ts) reproduces it in photometerCallbackCount.test.ts."
+  },
+  "sensitivity": "[I] With precision control 53 bits (0x1232) 26 of the 40000 pairs would differ, among them 1 s at 100 ms (11 callbacks) and 10 s at 100 ms (101): the count depends on the control word, hence the [I] above.",
+  "browserPolicy": {
+    "owner": 18,
+    "ownerPolicy": "OpenVireo-photometer-x87-callback-count-v18",
+    "event": "callbackCount",
+    "rule": "[W] A live Start whose count or full-domain count guard differs between the nominal and the exact rule first records one callbackCount event; from it on every Start of the session uses the exact count. Histories without it (owners 4-17) keep the nominal count, ceil(1000 * seconds / Timer), and replay byte-identically. Elsewhere the two rules agree, so no event is recorded and the owner is unchanged.",
+    "guard": "[W] The all-duration 32-bit count guard (photometerMaximumCallbacks) uses 5 x the exact 100 s count (5005 at 100 ms) under the exact rule; no bundled target's decision changes (closest ratio 0.9899 on the 0.4 m)."
+  },
+  "uncertainty": [
+    "[I] The precision/rounding control stays 0x1332 at run time.",
+    "[W] The browser still schedules one admitted callback per timer tick with no catch-up; VCL message-queue coalescing of WM_TIMER is not modelled (integration-provenance.json browserPolicy).",
+    "[W] The web series time is the cumulative callbacks x Timer of the whole series; VIREO shows the current period's elapsed."
+  ],
+  "rights": "Derived from already-approved resources and the static reading of CLEA_VEO.exe; no original bytes beyond the 46 recorded constant bytes.",
+  "seriesReference": {
+    "file": "data/photometry/callback-count-reference.json",
+    "sha256": "a8bd8dfb786a4bfc141436f95552b9857f5fac062361c417250546b65255dbbe",
+    "tool": "analysis/front-phcallback/exact_series_reference.py",
+    "sha256Tool": "8fe5ac5d677bc48e3fe042bac30c6e5d0ab211b1365190a9b54902040c446f02",
+    "method": "The earlier independent generator (Poisson by AST from analytic-vectors.py, Decimal90 finite quadrature, Decimal70 reduction) with the period length taken from the witness table; each pair computed nominal and exact. The nominal U 100 s x 5 pair reproduces integration-vectors.json pair 12.",
+    "effect": "At 100 s the object counts rise by about 0.1 % (ratio 1.00098 to 1.00101) and so does the base-count sum, which the reduction divides by the same 100 s; the magnitudes move by 3e-6 to 2.2e-5 mag in the four reference pairs (seeded draws, not a bias)."
+  }
+}

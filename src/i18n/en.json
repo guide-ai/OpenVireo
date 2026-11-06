@@ -1060,6 +1060,7 @@
   "ph.seriesCallbacks": "Committed 100 ms callbacks:",
   "ph.seriesPeriods": "Completed integrations:",
   "ph.seriesTime": "Committed nominal time:",
+  "ph.legacyCallbackCount": "Earlier-session series: counted with the nominal {nominal} callbacks. VIREO's own timer arithmetic takes {exact} for this setting, and new readings use that count.",
   "ph.seriesCommittedCounts": "Committed series photons:",
   "ph.seriesUnfinished": "This unfinished series is not a completed reading and cannot enter the notebook. Stop retains committed counts and random state; Start resets series counters and continues that state.",
   "ph.seriesPeriodCount": "Integration {index}: {count} photons",

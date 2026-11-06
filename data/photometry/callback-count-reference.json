@@ -1,0 +1,437 @@
+{
+ "tool": "exact_series_reference.py",
+ "poissonSource": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-targets-recovery/analytic-vectors.py",
+ "poissonSHA256": "344712a12222056dd084548b98df7ca518fd324b41735ec4028fc70c5e718b49",
+ "witnessTableSHA256": "2a62281e75061ea72c4bd9cdf33d65ac4975a5877742627a2ec4e8e5b0cf2520",
+ "nominalReproducesIntegrationVectorsPair12": true,
+ "results": [
+  {
+   "case": {
+    "targetId": "N2230.DAT@147993",
+    "filter": "U",
+    "seed": 42,
+    "sky": [
+     100,
+     5
+    ],
+    "object": [
+     100,
+     5
+    ]
+   },
+   "nominal": {
+    "targetId": "N2230.DAT@147993",
+    "filter": "U",
+    "skySettings": {
+     "secondsPerIntegration": 100,
+     "integrations": 5
+    },
+    "objectSettings": {
+     "secondsPerIntegration": 100,
+     "integrations": 5
+    },
+    "exact": false,
+    "sky": {
+     "kind": "sky",
+     "initialSeed": 42,
+     "callbacks": 5000,
+     "sourceCount": 0,
+     "skyCount": 2295,
+     "totalPhotonCount": 2295,
+     "seed": 1399339437,
+     "draws": 12295,
+     "nativeBaseCountSum": 5000000,
+     "periodCounts": [
+      466,
+      472,
+      460,
+      468,
+      429
+     ]
+    },
+    "object": {
+     "kind": "object",
+     "initialSeed": 1399339437,
+     "callbacks": 5000,
+     "sourceCount": 521708064,
+     "skyCount": 2320,
+     "totalPhotonCount": 521710384,
+     "seed": 2274715834,
+     "draws": 27113,
+     "nativeBaseCountSum": 5000000,
+     "periodCounts": [
+      104327886,
+      104350092,
+      104357118,
+      104340802,
+      104334486
+     ]
+    },
+    "magnitudeDecimal": "3.953856084738395455839191116473540016259923393571638310305011090099732"
+   },
+   "exact": {
+    "targetId": "N2230.DAT@147993",
+    "filter": "U",
+    "skySettings": {
+     "secondsPerIntegration": 100,
+     "integrations": 5
+    },
+    "objectSettings": {
+     "secondsPerIntegration": 100,
+     "integrations": 5
+    },
+    "exact": true,
+    "sky": {
+     "kind": "sky",
+     "initialSeed": 42,
+     "callbacks": 5005,
+     "sourceCount": 0,
+     "skyCount": 2297,
+     "totalPhotonCount": 2297,
+     "seed": 211946577,
+     "draws": 12307,
+     "nativeBaseCountSum": 5005000,
+     "periodCounts": [
+      467,
+      471,
+      461,
+      469,
+      429
+     ]
+    },
+    "object": {
+     "kind": "object",
+     "initialSeed": 211946577,
+     "callbacks": 5005,
+     "sourceCount": 522228148,
+     "skyCount": 2321,
+     "totalPhotonCount": 522230469,
+     "seed": 1777917194,
+     "draws": 27149,
+     "nativeBaseCountSum": 5005000,
+     "periodCounts": [
+      104431914,
+      104454475,
+      104462596,
+      104443322,
+      104438162
+     ]
+    },
+    "magnitudeDecimal": "3.953859463367340753797556500014492762269475529040763081190977432285038"
+   },
+   "deltaMagnitude": "0.000003378628945297958365383540953",
+   "countRatio": "1.000996884509011421171942784"
+  },
+  {
+   "case": {
+    "targetId": "N2230.DAT@145877",
+    "filter": "V",
+    "seed": 42,
+    "sky": [
+     100,
+     1
+    ],
+    "object": [
+     100,
+     1
+    ]
+   },
+   "nominal": {
+    "targetId": "N2230.DAT@145877",
+    "filter": "V",
+    "skySettings": {
+     "secondsPerIntegration": 100,
+     "integrations": 1
+    },
+    "objectSettings": {
+     "secondsPerIntegration": 100,
+     "integrations": 1
+    },
+    "exact": false,
+    "sky": {
+     "kind": "sky",
+     "initialSeed": 42,
+     "callbacks": 1000,
+     "sourceCount": 0,
+     "skyCount": 1557,
+     "totalPhotonCount": 1557,
+     "seed": 993198431,
+     "draws": 3557,
+     "nativeBaseCountSum": 1000000,
+     "periodCounts": [
+      1557
+     ]
+    },
+    "object": {
+     "kind": "object",
+     "initialSeed": 993198431,
+     "callbacks": 1000,
+     "sourceCount": 533265,
+     "skyCount": 1552,
+     "totalPhotonCount": 534817,
+     "seed": 2693051247,
+     "draws": 6320,
+     "nativeBaseCountSum": 1000000,
+     "periodCounts": [
+      534817
+     ]
+    },
+    "magnitudeDecimal": "9.682652479152039371559452940345902543553570599876296500615043030529269"
+   },
+   "exact": {
+    "targetId": "N2230.DAT@145877",
+    "filter": "V",
+    "skySettings": {
+     "secondsPerIntegration": 100,
+     "integrations": 1
+    },
+    "objectSettings": {
+     "secondsPerIntegration": 100,
+     "integrations": 1
+    },
+    "exact": true,
+    "sky": {
+     "kind": "sky",
+     "initialSeed": 42,
+     "callbacks": 1001,
+     "sourceCount": 0,
+     "skyCount": 1561,
+     "totalPhotonCount": 1561,
+     "seed": 1809924761,
+     "draws": 3563,
+     "nativeBaseCountSum": 1001000,
+     "periodCounts": [
+      1561
+     ]
+    },
+    "object": {
+     "kind": "object",
+     "initialSeed": 1809924761,
+     "callbacks": 1001,
+     "sourceCount": 533805,
+     "skyCount": 1554,
+     "totalPhotonCount": 535359,
+     "seed": 3129363918,
+     "draws": 6321,
+     "nativeBaseCountSum": 1001000,
+     "periodCounts": [
+      535359
+     ]
+    },
+    "magnitudeDecimal": "9.682642838028505656323507514306281754271091861867143097261220401541338"
+   },
+   "deltaMagnitude": "-0.000009641123533715235945426039621",
+   "countRatio": "1.001013430762298131884364184"
+  },
+  {
+   "case": {
+    "targetId": "N2230.DAT@145877",
+    "filter": "V",
+    "seed": 42,
+    "sky": [
+     1,
+     3
+    ],
+    "object": [
+     100,
+     1
+    ]
+   },
+   "nominal": {
+    "targetId": "N2230.DAT@145877",
+    "filter": "V",
+    "skySettings": {
+     "secondsPerIntegration": 1,
+     "integrations": 3
+    },
+    "objectSettings": {
+     "secondsPerIntegration": 100,
+     "integrations": 1
+    },
+    "exact": false,
+    "sky": {
+     "kind": "sky",
+     "initialSeed": 42,
+     "callbacks": 30,
+     "sourceCount": 0,
+     "skyCount": 48,
+     "totalPhotonCount": 48,
+     "seed": 255844990,
+     "draws": 108,
+     "nativeBaseCountSum": 30000,
+     "periodCounts": [
+      17,
+      11,
+      20
+     ]
+    },
+    "object": {
+     "kind": "object",
+     "initialSeed": 255844990,
+     "callbacks": 1000,
+     "sourceCount": 532796,
+     "skyCount": 1589,
+     "totalPhotonCount": 534385,
+     "seed": 294344974,
+     "draws": 6384,
+     "nativeBaseCountSum": 1000000,
+     "periodCounts": [
+      534385
+     ]
+    },
+    "magnitudeDecimal": "9.683620026922330199754367850291091664215011567215151684677711278660753"
+   },
+   "exact": {
+    "targetId": "N2230.DAT@145877",
+    "filter": "V",
+    "skySettings": {
+     "secondsPerIntegration": 1,
+     "integrations": 3
+    },
+    "objectSettings": {
+     "secondsPerIntegration": 100,
+     "integrations": 1
+    },
+    "exact": true,
+    "sky": {
+     "kind": "sky",
+     "initialSeed": 42,
+     "callbacks": 30,
+     "sourceCount": 0,
+     "skyCount": 48,
+     "totalPhotonCount": 48,
+     "seed": 255844990,
+     "draws": 108,
+     "nativeBaseCountSum": 30000,
+     "periodCounts": [
+      17,
+      11,
+      20
+     ]
+    },
+    "object": {
+     "kind": "object",
+     "initialSeed": 255844990,
+     "callbacks": 1001,
+     "sourceCount": 533336,
+     "skyCount": 1590,
+     "totalPhotonCount": 534926,
+     "seed": 910136000,
+     "draws": 6390,
+     "nativeBaseCountSum": 1001000,
+     "periodCounts": [
+      534926
+     ]
+    },
+    "magnitudeDecimal": "9.683603302833093108499809695269360736607844582986948021313747029765327"
+   },
+   "deltaMagnitude": "-0.00001672408923709125455815502173",
+   "countRatio": "1.001012378715719939743817660"
+  },
+  {
+   "case": {
+    "targetId": "N2230.DAT@145877",
+    "filter": "B",
+    "seed": 7,
+    "sky": [
+     100,
+     2
+    ],
+    "object": [
+     100,
+     2
+    ]
+   },
+   "nominal": {
+    "targetId": "N2230.DAT@145877",
+    "filter": "B",
+    "skySettings": {
+     "secondsPerIntegration": 100,
+     "integrations": 2
+    },
+    "objectSettings": {
+     "secondsPerIntegration": 100,
+     "integrations": 2
+    },
+    "exact": false,
+    "sky": {
+     "kind": "sky",
+     "initialSeed": 7,
+     "callbacks": 2000,
+     "sourceCount": 0,
+     "skyCount": 1279,
+     "totalPhotonCount": 1279,
+     "seed": 655698222,
+     "draws": 5279,
+     "nativeBaseCountSum": 2000000,
+     "periodCounts": [
+      606,
+      673
+     ]
+    },
+    "object": {
+     "kind": "object",
+     "initialSeed": 655698222,
+     "callbacks": 2000,
+     "sourceCount": 684809,
+     "skyCount": 1228,
+     "totalPhotonCount": 686037,
+     "seed": 21011595,
+     "draws": 10925,
+     "nativeBaseCountSum": 2000000,
+     "periodCounts": [
+      343049,
+      342988
+     ]
+    },
+    "magnitudeDecimal": "10.16373220215872050554744273682121705613890703909503488170352099493620"
+   },
+   "exact": {
+    "targetId": "N2230.DAT@145877",
+    "filter": "B",
+    "skySettings": {
+     "secondsPerIntegration": 100,
+     "integrations": 2
+    },
+    "objectSettings": {
+     "secondsPerIntegration": 100,
+     "integrations": 2
+    },
+    "exact": true,
+    "sky": {
+     "kind": "sky",
+     "initialSeed": 7,
+     "callbacks": 2002,
+     "sourceCount": 0,
+     "skyCount": 1279,
+     "totalPhotonCount": 1279,
+     "seed": 891896298,
+     "draws": 5283,
+     "nativeBaseCountSum": 2002000,
+     "periodCounts": [
+      607,
+      672
+     ]
+    },
+    "object": {
+     "kind": "object",
+     "initialSeed": 891896298,
+     "callbacks": 2002,
+     "sourceCount": 685479,
+     "skyCount": 1229,
+     "totalPhotonCount": 686708,
+     "seed": 1759258098,
+     "draws": 10936,
+     "nativeBaseCountSum": 2002000,
+     "periodCounts": [
+      343379,
+      343329
+     ]
+    },
+    "magnitudeDecimal": "10.16375399494658471341403299881226548528108096544696684163297625508908"
+   },
+   "deltaMagnitude": "0.00002179278786420786659026199105",
+   "countRatio": "1.000978081357127968316577677"
+  }
+ ]
+}

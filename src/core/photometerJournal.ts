@@ -31,6 +31,11 @@ export const VARIABLE_TIME_PHOTOMETER_POLICY='OpenVireo-photometer-variable-time
  * Magnitude, Base Photon Count and Timer Wait (core/instrumentParameters.ts). Its readings are typed uncertified-parameter. The
  * header adds no contract file: the event carries the values. */
 export const INSTRUCTOR_PARAMETERS_PHOTOMETER_POLICY='OpenVireo-photometer-instructor-parameters-v17';
+/** Owner 18 (Front PHCALLBACK, 2026-11-06): a history with a 'callbackCount' event; the Starts after it count VIREO's exact
+ * Extended elapsed period (the compiled 100 s takes 1001 callbacks; data/photometry/callback-count-contract.json, pinned in the
+ * header). Owners 4–17 keep the legacy nominal count. */
+export const CALLBACK_COUNT_PHOTOMETER_POLICY='OpenVireo-photometer-x87-callback-count-v18';
+export const CALLBACK_COUNT_CONTRACT_SHA256='0e16cf8bff3d13e48243c4f8af587397edfe07fb45ca72f2eb3baa8f04485a44';
 export const RI_CONTRACT_SHA256='d23f83d21d6cb1de21b6ab4f5fb6439df58f4350f2204d5df9bdfc4a53de3b30';
 export const PHOTOMETER_POLICY='OpenVireo-Pleiades-three-targets-v3';
 export const UBV_PHOTOMETER_POLICY='OpenVireo-Pleiades-UBV-observing-v2';
@@ -40,10 +45,11 @@ export const PHOTOMETER_FIELD_SHA256='143ddf5cb0f4fed671135f1dbc105022f5627588d7
 export const PHOTOMETER_UBV_SHA256='27ff130438aa41e6ee92bb8103ad8f749442d981bca207193e305fb01c466abf';
 export const PHOTOMETER_TARGETS_SHA256='5f1a9c4feb879fa004cec1b739551866e347c078a652c875f9fd8746dbdbd356';
 export const PHOTOMETER_FORMAT='OpenVireo Pleiades photometer session',PHOTOMETER_NUMERICAL='Number_Math_native_x87_equivalence_unvalidated';
-export type PhotometerOwnerVersion=1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17;
-const OWNER_POLICIES=Object.freeze({1:LEGACY_PHOTOMETER_POLICY,2:UBV_PHOTOMETER_POLICY,3:PHOTOMETER_POLICY,4:TIMED_PHOTOMETER_POLICY,5:EXPANDED_PHOTOMETER_POLICY,6:PLEIADES_ANALYSIS_POLICY,7:NATIVE_CLUSTER_POLICY,8:APERTURE_PHOTOMETER_POLICY,9:KP09_PHOTOMETER_POLICY,10:MAYALL_PHOTOMETER_POLICY,11:VARIABLE_FIELD_PHOTOMETER_POLICY,12:GSC_FIELD_PHOTOMETER_POLICY,13:APERTURE_DOMAIN_PHOTOMETER_POLICY,14:RI_PHOTOMETER_POLICY,15:NATIVE_RECORD_PHOTOMETER_POLICY,16:VARIABLE_TIME_PHOTOMETER_POLICY,17:INSTRUCTOR_PARAMETERS_PHOTOMETER_POLICY});
+export type PhotometerOwnerVersion=1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18;
+const OWNER_POLICIES=Object.freeze({1:LEGACY_PHOTOMETER_POLICY,2:UBV_PHOTOMETER_POLICY,3:PHOTOMETER_POLICY,4:TIMED_PHOTOMETER_POLICY,5:EXPANDED_PHOTOMETER_POLICY,6:PLEIADES_ANALYSIS_POLICY,7:NATIVE_CLUSTER_POLICY,8:APERTURE_PHOTOMETER_POLICY,9:KP09_PHOTOMETER_POLICY,10:MAYALL_PHOTOMETER_POLICY,11:VARIABLE_FIELD_PHOTOMETER_POLICY,12:GSC_FIELD_PHOTOMETER_POLICY,13:APERTURE_DOMAIN_PHOTOMETER_POLICY,14:RI_PHOTOMETER_POLICY,15:NATIVE_RECORD_PHOTOMETER_POLICY,16:VARIABLE_TIME_PHOTOMETER_POLICY,17:INSTRUCTOR_PARAMETERS_PHOTOMETER_POLICY,18:CALLBACK_COUNT_PHOTOMETER_POLICY});
 /** Minimal canonical owner follows recorded capabilities,not a mutable label. */
 export function photometerJournalVersion(events:readonly PhotometerEvent[]):PhotometerOwnerVersion{
+ if(events.some(e=>e?.type==='callbackCount'))return 18;
  if(events.some(e=>e?.type==='parameters'))return 17;
  if(events.some(e=>e?.type==='field'&&Object.hasOwn(e,'jd')))return 16;
  if(events.some(e=>e?.type==='nativeRecord'))return 15;
@@ -63,6 +69,6 @@ export function photometerJournalVersion(events:readonly PhotometerEvent[]):Phot
  return 1;
 }
 /** One ordered header/proof schema for both admission and the canonical writer. */
-export function photometerJournalHeader(version:PhotometerOwnerVersion){return Object.freeze({format:PHOTOMETER_FORMAT,version,policy:OWNER_POLICIES[version],numericalPolicy:PHOTOMETER_NUMERICAL,fieldSnapshotSHA256:PHOTOMETER_FIELD_SHA256,...(version>=2?{ubvContractSHA256:PHOTOMETER_UBV_SHA256}:{}),...(version>=3?{targetFieldsSHA256:PHOTOMETER_TARGETS_SHA256}:{}),...(version>=4?{integrationContractSHA256:PHOTOMETER_INTEGRATION_SHA256}:{}),...(version>=5?{expandedTargetFieldsSHA256:EXPANDED_PHOTOMETER_FIELDS_SHA256}:{}),...(version>=6?{manualAnalysisSHA256:PLEIADES_ANALYSIS_SHA256}:{}),...(version>=7?{nativeClusterContractSHA256:NATIVE_CLUSTER_SHA256}:{}),...(version>=8?{apertureContractSHA256:PHOTOMETER_APERTURE_SHA256}:{}),...(version>=9?{photometerTelescopeContractSHA256:KP09_PHOTOMETER_SHA256}:{}),...(version>=10?{mayallPhotometerContractSHA256:MAYALL_PHOTOMETER_SHA256}:{}),...(version>=11?{variableTargetFieldsSHA256:VARIABLE_PHOTOMETER_FIELDS_SHA256,pointingTargetFieldsSHA256:POINTING_PHOTOMETER_FIELDS_SHA256}:{}),...(version>=12?{gscIndexSHA256:GSC_INDEX_SHA256}:{}),...(version>=13?{apertureDomainContractSHA256:APERTURE_DOMAIN_CONTRACT_SHA256}:{}),...(version>=14?{riContractSHA256:RI_CONTRACT_SHA256}:{})});}
+export function photometerJournalHeader(version:PhotometerOwnerVersion){return Object.freeze({format:PHOTOMETER_FORMAT,version,policy:OWNER_POLICIES[version],numericalPolicy:PHOTOMETER_NUMERICAL,fieldSnapshotSHA256:PHOTOMETER_FIELD_SHA256,...(version>=2?{ubvContractSHA256:PHOTOMETER_UBV_SHA256}:{}),...(version>=3?{targetFieldsSHA256:PHOTOMETER_TARGETS_SHA256}:{}),...(version>=4?{integrationContractSHA256:PHOTOMETER_INTEGRATION_SHA256}:{}),...(version>=5?{expandedTargetFieldsSHA256:EXPANDED_PHOTOMETER_FIELDS_SHA256}:{}),...(version>=6?{manualAnalysisSHA256:PLEIADES_ANALYSIS_SHA256}:{}),...(version>=7?{nativeClusterContractSHA256:NATIVE_CLUSTER_SHA256}:{}),...(version>=8?{apertureContractSHA256:PHOTOMETER_APERTURE_SHA256}:{}),...(version>=9?{photometerTelescopeContractSHA256:KP09_PHOTOMETER_SHA256}:{}),...(version>=10?{mayallPhotometerContractSHA256:MAYALL_PHOTOMETER_SHA256}:{}),...(version>=11?{variableTargetFieldsSHA256:VARIABLE_PHOTOMETER_FIELDS_SHA256,pointingTargetFieldsSHA256:POINTING_PHOTOMETER_FIELDS_SHA256}:{}),...(version>=12?{gscIndexSHA256:GSC_INDEX_SHA256}:{}),...(version>=13?{apertureDomainContractSHA256:APERTURE_DOMAIN_CONTRACT_SHA256}:{}),...(version>=14?{riContractSHA256:RI_CONTRACT_SHA256}:{}),...(version>=18?{callbackCountContractSHA256:CALLBACK_COUNT_CONTRACT_SHA256}:{})});}
 export function photometerJournalText(seedAtStart:number,events:readonly PhotometerEvent[]){return JSON.stringify({...photometerJournalHeader(photometerJournalVersion(events)),seedAtStart,events},null,2)+'\n';}
 export const photometerJournalFits=(seed:number,events:readonly PhotometerEvent[])=>new TextEncoder().encode(photometerJournalText(seed,events)).length<=PHOTOMETER_SESSION_PAYLOAD_BYTES+projectMetadataGrowth(photometerJournalHeader(photometerJournalVersion(events)));

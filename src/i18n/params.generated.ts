@@ -1061,6 +1061,7 @@ export interface MessageParameters {
   "ph.seriesCallbacks": never;
   "ph.seriesPeriods": never;
   "ph.seriesTime": never;
+  "ph.legacyCallbackCount": "exact" | "nominal";
   "ph.seriesCommittedCounts": never;
   "ph.seriesUnfinished": never;
   "ph.seriesPeriodCount": "count" | "index";
