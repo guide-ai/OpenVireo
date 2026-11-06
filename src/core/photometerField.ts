@@ -21,7 +21,11 @@ import {nativeCatalogAdmission} from './catalogPopulation';
 import {traceCompactGscBandRead} from './compactGscReadOrder';
 import {decodeNativeCompactRecord,nativeCompactBandOrder,nativeRegionIds,type NativeFieldStar} from './pinnedNativeField';
 import {createNativeSelectionScene,selectCatalogObject} from './objectSelection';
-import {photometerSeparation,photometerPointFraction,attenuatePhotometerMagnitude,prepareKnownColorPhotometerUbv,preparePhotometerBands,PhotometerSourceError} from './photometerSource';
+import {photometerSeparation,photometerPointFraction,attenuatePhotometerMagnitude,prepareKnownColorPhotometerUbv,preparePhotometerBands} from './photometerSource';
+import {loadNativeQsoList,type NativeQso} from './qsoMerge';
+import {galaxyColours} from './catalogObject';
+import {morphologyAxisRatio} from './galaxyCatalogAxes';
+import {nativeGalaxyName} from './photographDraw';
 import {magnitudeAmplitude} from './photons';
 import {poissonDraw} from './acquisition';
 import {reducePhotometerSky,reducePhotometerObject} from './photometryReduction';
@@ -97,9 +101,16 @@ function namedStar(rawHex:string,band:string,index:number):NamedStar{
  // 0x59b125..0x59b196: band prefix, dash, Pascal compact identifier.
  return Object.freeze({...star,nativeName:`${band}-${String.fromCharCode(...bytes.slice(22,22+length))}`});
 }
+/** The object record fields the photometer reads (TObject: name, RA +0x19, Dec +0x21, V +0x29, B−V +0x2d, U−B +0x31, kind
+ * +0x3d: 0 star, 1 the galaxy copy of 0x53ce8c, 3 QSO). A bundled field's records are compact GSC stars (NamedStar). */
+export type PhotometerFieldObject=Readonly<{id:string;nativeName:string;ra:number;dec:number;magnitude:number;photometry2Single:number;photometry3Single:number;type:0|1|3}>;
 export type PinnedPleiadesField=Readonly<{
- [brand]:true;provenanceFile:string;kind:PleiadesFieldKind;pointing:Pointing;stars:readonly NamedStar[];neighbors:readonly NamedStar[];
- selected:NamedStar;selectedDistancePixels:number;centralFraction:number;sourceMagnitude:number;sourceMean:number;skyMean:number;
+ [brand]:true;provenanceFile:string;kind:PleiadesFieldKind;pointing:Pointing;stars:readonly PhotometerFieldObject[];neighbors:readonly PhotometerFieldObject[];
+ selected:PhotometerFieldObject;selectedDistancePixels:number;centralFraction:number;sourceMagnitude:number;sourceMean:number;skyMean:number;
+ /** Front PHTILED, tiled frames only: the QSO list field+0x35 (present when not empty), walked after the stars by 0x59ac54. */
+ qsos?:readonly PhotometerFieldObject[];
+ /** Front PHTILED, tiled frames only: the centre selects this galaxy (selected.type 1); its photometer width (0x500700..0x5007af). */
+ selectedGalaxy?:Readonly<{widthDegrees:number;majorArcminutes:number}>;
 }>;
 /** Structural completeness layout only;this does not attest arbitrary rows. */
 export function assertPhotometerCoverageLayout(value:unknown):void{
@@ -234,49 +245,107 @@ export function drawPinnedPleiadesCallback(domain:unknown,kind:PleiadesFieldKind
  * neighbours (0x59ac54), aperture fraction and the known-colour or attenuated magnitude. Equal to every bundled Pleiades field
  * (src/core/photometerTiled.test.ts). What the photometer path has not recovered is typed, never approximated. */
 export type PhotometerTiledReason=
- /** Front P3: the centre selects a galaxy (0x59a0fc over the stars and the galaxy list field+0x1b), or the star/galaxy overlap
-  * tie, which needs the star's throughput, is unresolved [W fail closed]. The selected-galaxy branch (σ from the axes and
-  * 0x53b94c, Sky readings gated by the image level 0x53e338 ≥ 80) is not ported [U]. A galaxy that is not selected has no effect
-  * natively, because the neighbour producer 0x59ac54 walks only field+0x5 (stars) and field+0x35 (QSOs) [D], so it is ignored. */'photometer-galaxy'
- /** A merged QSO record (type 3) is in the field: it has no catalogue colours for the photometer. */|'photometer-qso'
+ /** Front PHTILED: the centre selects a galaxy whose catalogue name another CLEA_GLX.DAT record also has. The photometer finds the
+  * galaxy record by name (0x5006b8..0x5006fe): a record cached from an earlier lookup ([TPhotometer+0x577]) when its name matches,
+  * otherwise the first record of that name in the field's galaxy list; with two records of one name, which one gives the width and
+  * the offset depends on earlier lookups [U]. */'photometer-galaxy-name'
  /** A TRUE-dispatch variable star is in the field: its brightness depends on the observatory clock. */|'photometer-variable'
- /** The centre selects no object (none within the native 350-pixel sentinel). */|'photometer-selection'
- /** A star lacks catalogue colours (the native missing-colour branches are not recovered). */|'photometer-colour'
+ /** The centre selects no object (none within the native 350-pixel sentinel): Start then integrates the band magnitudes left by
+  * the previous source preparation (0x4ffbba → 0x4fff04 writes none), which this port does not keep. */|'photometer-selection'
  /** Front AXISMERGE: no catalogue star in the photometer field. The field build 0x597ac8 shows "No Stars Found in Field!" and
   * jumps past the QSO and galaxy loads (0x597c8a) [D], so the galaxies and QSOs of the previously loaded field remain [D]; what the
   * photometer then selects and measures depends on that earlier field and is not reproduced. */|'photometer-empty'
  /** The engine gated the population (its own typed reason). */|'photometer-population';
 export type PhotometerTiledResult=Readonly<{field:PinnedPleiadesField;reason?:undefined}|{field?:undefined;reason:PhotometerTiledReason;detail?:string}>;
-type PopulationLike=Readonly<{stars:readonly Readonly<{type:number;id:string;rawHex?:string;band?:string;recordIndex?:number}>[];galaxies:readonly Readonly<{ra:number;dec:number;majorArcminutes:number}>[];variableStars?:readonly unknown[]}>;
-/** The source preparation does not depend on the reading mode (native Start; G3b): a positive central fraction uses the known
- * colours of the central star and its neighbours; a central fraction of 0 gives the literal 30 (as the bundled sky fields), to
- * which any neighbour light is added (Front P2: the decoded native path, preparePhotometerBands). `kind` labels the frame only. */
-export function photometerFieldFromPopulation(population:PopulationLike|null,reasons:readonly string[],pointing:Pointing,kind:PleiadesFieldKind):PhotometerTiledResult{
+type PopulationLike=Readonly<{area?:Readonly<{minimumRa:number;maximumRa:number;minimumDec:number;maximumDec:number}>;stars:readonly Readonly<{type:number;id:string;rawHex?:string;band?:string;recordIndex?:number}>[];galaxies:readonly Readonly<{ra:number;dec:number;majorArcminutes:number;minorArcminutes?:number;morphology?:number;magnitude?:number;recordIndex?:number;rawHex?:string}>[];variableStars?:readonly unknown[];qsoStage?:unknown;qsoMatches?:readonly number[];photographAssociations?:readonly unknown[]}>;
+/** Front PHTILED: the catalogue inputs a tiled frame needs beyond the population: the bundled CLEA_QSO.DAT bytes (the QSO list
+ * field+0x35 that 0x59ac54 walks after the stars) and CLEA_GLX.DAT bytes (galaxy names). */
+export type PhotometerTiledCatalogs=Readonly<{qso?:Uint8Array;glx?:Uint8Array}>;
+/** 0x5987e4: a QSO object as the photometer reads it: the 17-character stored name (untrimmed, as 0x403cfc compares it), V +0x29,
+ * B−V +0x2d, U−B +0x31 (the record's Singles), kind +0x3d = 3. */
+function qsoObject(q:NativeQso):PhotometerFieldObject{
+ const raw=Uint8Array.from(q.rawHex.match(/../g)!,v=>parseInt(v,16));
+ return Object.freeze({id:q.id,nativeName:String.fromCharCode(...raw.subarray(1,1+raw[0])),ra:q.ra,dec:q.dec,magnitude:q.magnitude,photometry2Single:q.colorBV,photometry3Single:q.colorUB,type:3 as const});
+}
+const duplicateGalaxyNames=new WeakMap<Uint8Array,ReadonlySet<string>>();
+/** Native names (photographDraw.nativeGalaxyName, 0x598e58..0x598ecd) that more than one CLEA_GLX.DAT record carries. */
+function sharedGalaxyNames(glx:Uint8Array):ReadonlySet<string>{
+ const known=duplicateGalaxyNames.get(glx);if(known)return known;
+ if(glx.byteLength%59)throw new PhotometerFieldError('evidence');
+ const seen=new Set<string>(),shared=new Set<string>();
+ for(let i=0;i<glx.byteLength/59;i++){const n=nativeGalaxyName(glx.subarray(i*59,i*59+59));if(seen.has(n))shared.add(n);seen.add(n);}
+ const frozen=Object.freeze(shared);duplicateGalaxyNames.set(glx,frozen);return frozen;
+}
+/** Front PHTILED, TPhotometer 0x500568 galaxy branch (kind 1, 0x500700..0x5007af): a = major/60 (Single ÷ Single 60, kept
+ * Extended), 1/120 (Extended 0x3ff8 8888888888888889) when 0; b = minor/60, or the 0x53b94c ratio × a when 0; width
+ * w = 0.6 × (a + b)/4 (Extended 0.6 at 0x5008a8). The fraction is then I((r − d)/w) − I(−(r + d)/w) (0x55fa24) with d the 0x59a49c
+ * distance from the named galaxy record (+0x13/+0x1b) to the selected object, a copy of that record (0x53cf1f..0x53cf84: RA +0x19,
+ * Dec +0x21), so d = 0. Number arithmetic (declared policy), not x87. */
+export function photometerGalaxyWidthDegrees(g:Readonly<{majorArcminutes:number;minorArcminutes:number;morphology:number;ra:number}>):number{
+ let a=Math.fround(g.majorArcminutes)/60;if(a===0)a=1/120;
+ let b=Math.fround(g.minorArcminutes)/60;if(b===0)b=morphologyAxisRatio(g.morphology,g.ra)*a;
+ const w=.6*((a+b)/4);if(!Number.isFinite(w)||!(w>0))throw new PhotometerFieldError('evidence');return w;
+}
+/** The source preparation does not depend on the reading mode (native Start; G3b), except for a selected galaxy: a positive
+ * central fraction uses the known colours of the central object and its neighbours; a central fraction of 0 gives the literal 30
+ * (as the bundled sky fields), to which any neighbour light is added (Front P2: the decoded native path, preparePhotometerBands).
+ * `kind` labels the frame only.
+ * Front PHTILED (analysis/front-phtiled/RECOVERY.md):
+ * - QSOs: the field is the telescope field object [0x5b56ac] that 0x53be70 builds (0x53c010, the only call of 0x597ac8 besides the
+ *   finder's), whose mode byte +0x4 = 1 loads and merges the QSOs (0x597db0..0x597df3) [D]; the caller builds it with qso 'merge'.
+ *   A merged QSO (kind 3) is selected like a star and prepared from its own V, B−V and U−B (0x4ffbc8, point branch 0x50059f);
+ *   the neighbour producer 0x59ac54 walks the star list field+0x5 and then the QSO list field+0x35, so a QSO in the aperture that
+ *   is not selected adds its light twice (once per list) [D].
+ * - A selected galaxy (0x53ce8c copies it into the object at Obs+0x41c4ed with kind 1): V and colours from the galaxy record
+ *   (+0x23, and +0x27/+0x2b from the morphology table of 0x598f35..0x599066, catalogObject.galaxyColours); the fraction from
+ *   its width (photometerGalaxyWidthDegrees), independent of the telescope; Sky readings are refused later (tiledPhotometerReason).
+ */
+export function photometerFieldFromPopulation(population:PopulationLike|null,reasons:readonly string[],pointing:Pointing,kind:PleiadesFieldKind,catalogs:PhotometerTiledCatalogs={}):PhotometerTiledResult{
  if(kind!=='object'&&kind!=='sky')throw new PhotometerFieldError('field');
  if(population&&reasons.length===1&&reasons[0]==='empty-field')return Object.freeze({reason:'photometer-empty' as const});
  if(!population||reasons.length)return Object.freeze({reason:'photometer-population' as const,detail:reasons.join(',')});
- if(population.stars.some(s=>s.type!==0))return Object.freeze({reason:'photometer-qso' as const});
  if(population.variableStars?.length)return Object.freeze({reason:'photometer-variable' as const});
- const stars=Object.freeze(population.stars.map(s=>namedStar(s.rawHex!,s.band!,s.recordIndex!)));
- const radius=10.5/(936/.05),width=(3/2)/3600,neighbors=queryPhotometerNeighbors(pointing,radius,stars,[]);
+ const merged=population.stars.some(s=>s.type===3);
+ if(population.stars.some(s=>s.type!==0&&s.type!==3)||(merged||population.qsoStage)&&!catalogs.qso)throw new PhotometerFieldError('evidence');
+ const stars:readonly PhotometerFieldObject[]=Object.freeze(population.stars.map(s=>s.type===3?qsoObject(s as unknown as NativeQso):namedStar(s.rawHex!,s.band!,s.recordIndex!)));
+ // 0x59ac54 walks field+0x5, then field+0x35: the QSO list as the loader 0x5987e4 read it (read order), kept by the merge.
+ let qsos:readonly PhotometerFieldObject[]=Object.freeze([]);
+ if(population.qsoStage){
+  if(!population.area||!population.qsoMatches)throw new PhotometerFieldError('evidence');
+  const load=loadNativeQsoList(catalogs.qso!,population.area);
+  if(load.qsos.map(q=>q.recordIndex).join()!==population.qsoMatches.join())throw new PhotometerFieldError('evidence');
+  qsos=Object.freeze(load.qsos.map(qsoObject));
+ }
+ const radius=10.5/(936/.05),width=(3/2)/3600,neighbors=queryPhotometerNeighbors(pointing,radius,stars,qsos);
  const galaxies=population.galaxies.map((g,i)=>({id:`g${i}`,ra:g.ra,dec:g.dec,majorArcminutes:g.majorArcminutes}));
  const scene=createNativeSelectionScene(stars,galaxies,{width:936,height:936,fieldDegrees:.05,center:pointing,population:{coverage:'complete',provenance:'compact GSC tiles; photometer field built for this pointing'}});
- const fraction=(s:NamedStar)=>photometerPointFraction(radius,photometerSeparation(pointing.ra,pointing.dec,s.ra,s.dec),width);
+ const fraction=(s:PhotometerFieldObject)=>photometerPointFraction(radius,photometerSeparation(pointing.ra,pointing.dec,s.ra,s.dec),width);
  let selection=selectCatalogObject(scene,468,468);
  // Front P3 review 1 L3 [I]: a star/galaxy tie in 0x59a0fc is decided by the star's throughput, which for the photometer is its
  // aperture fraction at this pointing (0x500568): a nonzero fraction keeps the star, zero takes the galaxy. This assumes a current
  // object already exists; 0x500568 returns 0 when [Obs+0x41c4c1] is nil (0x50057d), and then the tie takes the galaxy. The same
  // assumption as the field engine's objectPresent:true (closure decision, option b).
  if(selection.kind==='throughput-required'){const tied=selection.star?stars.find(s=>s.id===selection.star!.object.id):undefined;if(tied)selection=selectCatalogObject(scene,468,468,fraction(tied));}
- if(selection.kind==='galaxy'||selection.kind==='throughput-required')return Object.freeze({reason:'photometer-galaxy' as const});
- if(selection.kind!=='star')return Object.freeze({reason:'photometer-selection' as const});
- const selected=stars.find(s=>s.id===selection.object.id)!;
- const centralFraction=fraction(selected),supplied=(s:NamedStar)=>({v:s.magnitude,bMinusV:s.photometry2Single,uMinusB:s.photometry3Single,fraction:fraction(s)});
+ if(selection.kind==='throughput-required')throw new PhotometerFieldError('selection');
+ if(selection.kind==='none')return Object.freeze({reason:'photometer-selection' as const});
+ let selected:PhotometerFieldObject,selectedGalaxy:PinnedPleiadesField['selectedGalaxy'],centralFraction:number,distance:number;
+ if(selection.kind==='galaxy'){
+  const g=population.galaxies[Number(selection.object.id.slice(1))];
+  if(!g||!catalogs.glx||g.rawHex===undefined||g.recordIndex===undefined||g.morphology===undefined||g.minorArcminutes===undefined||g.magnitude===undefined||population.photographAssociations?.length)throw new PhotometerFieldError('evidence');
+  const name=nativeGalaxyName(Uint8Array.from(g.rawHex.match(/../g)!,v=>parseInt(v,16)));
+  if(sharedGalaxyNames(catalogs.glx).has(name))return Object.freeze({reason:'photometer-galaxy-name' as const});
+  // CLEA_GLX.DAT holds no morphology outside the table (RECOVERY.md §5), so the colours always exist here.
+  const colours=galaxyColours(g.morphology);if(!colours)throw new PhotometerFieldError('evidence');
+  selected=Object.freeze({id:`CLEA_GLX.DAT@${g.recordIndex}`,nativeName:name,ra:g.ra,dec:g.dec,magnitude:Math.fround(g.magnitude),photometry2Single:colours.bv,photometry3Single:colours.ub,type:1 as const});
+  selectedGalaxy=Object.freeze({widthDegrees:photometerGalaxyWidthDegrees({majorArcminutes:g.majorArcminutes,minorArcminutes:g.minorArcminutes,morphology:g.morphology,ra:g.ra}),majorArcminutes:g.majorArcminutes});
+  centralFraction=photometerPointFraction(radius,0,selectedGalaxy.widthDegrees);distance=selection.galaxy.distance;
+ }else{
+  selected=stars.find(s=>s.id===selection.object.id)!;centralFraction=fraction(selected);distance=selection.star.distance;
+ }
+ const supplied=(s:PhotometerFieldObject,f:number)=>({v:s.magnitude,bMinusV:s.photometry2Single,uMinusB:s.photometry3Single,fraction:f});
  const others=neighbors.filter(s=>s.nativeName!==selected.nativeName);
- let sourceMagnitude:number;
- try{sourceMagnitude=preparePhotometerBands(supplied(selected),others.map(supplied)).v;}
- catch(e){if(e instanceof PhotometerSourceError)return Object.freeze({reason:'photometer-colour' as const});throw e;}
- return Object.freeze({field:Object.freeze({[brand]:true as const,provenanceFile:'gsc-tiles',kind,pointing:Object.freeze({ra:pointing.ra,dec:pointing.dec}),stars,neighbors,selected,selectedDistancePixels:selection.star.distance,centralFraction,sourceMagnitude,sourceMean:1000*magnitudeAmplitude(sourceMagnitude,9),skyMean:1000*magnitudeAmplitude(16,9)})});
+ const sourceMagnitude=preparePhotometerBands(supplied(selected,centralFraction),others.map(s=>supplied(s,fraction(s)))).v;
+ return Object.freeze({field:Object.freeze({[brand]:true as const,provenanceFile:'gsc-tiles',kind,pointing:Object.freeze({ra:pointing.ra,dec:pointing.dec}),stars,neighbors,selected,selectedDistancePixels:distance,centralFraction,sourceMagnitude,sourceMean:1000*magnitudeAmplitude(sourceMagnitude,9),skyMean:1000*magnitudeAmplitude(16,9),...(qsos.length?{qsos}:{}),...(selectedGalaxy?{selectedGalaxy}:{})})});
 }
 /** Front G (G3b): tiled photometer targets. A target is the exact telescope pointing (binary64 RA and Dec); its frame is prepared
  * asynchronously from the tiles (io/photometerTiledFields.ts) and registered here before the synchronous journal uses it. */
@@ -310,6 +379,7 @@ export function clearTiledPhotometerFields(){tiledFields.clear();}
 export type PhotometerTargetView=Readonly<{catalogId:string;hotlistLabel:string;hotlistRecord:number|null;nativeName:string;tiled:boolean}>;
 export function photometerTargetView(id:string):PhotometerTargetView{
  const tiled=tiledFields.get(id);
- if(tiled)return Object.freeze({catalogId:id,hotlistLabel:tiled.selected.nativeName,hotlistRecord:null,nativeName:tiled.selected.nativeName,tiled:true});
+ // Review 1 N4: a QSO's stored name has trailing spaces; the label trims them, nativeName stays the data.
+ if(tiled)return Object.freeze({catalogId:id,hotlistLabel:tiled.selected.nativeName.trimEnd(),hotlistRecord:null,nativeName:tiled.selected.nativeName,tiled:true});
  const t=photometerTarget(id);return Object.freeze({catalogId:t.catalogId,hotlistLabel:t.hotlistLabel,hotlistRecord:t.hotlistRecord,nativeName:t.nativeName,tiled:false});
 }

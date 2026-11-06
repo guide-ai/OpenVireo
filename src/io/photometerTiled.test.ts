@@ -4,7 +4,7 @@ import {afterAll,beforeAll,describe,expect,it} from 'vitest';
 import {preparePhotometerTiledField,setPhotometerTileSources} from './photometerTiledFields';
 import {checkGscIndex,createGscTileStore} from './gscTiles';
 import {parsePhotometerSession,prepareSessionFields,serializePhotometerSession} from './photometerSession';
-import {createPhotometer,photometerEvent,skyReplaceAsked,PhotometerError,type PhotometerState,type PhotometerEvent} from '../core/photometer';
+import {createPhotometer,photometerEvent,photometerStructReading,skyReplaceAsked,PhotometerError,type PhotometerState,type PhotometerEvent} from '../core/photometer';
 import {buildPhotometerTargetField,clearTiledPhotometerFields,isTiledPhotometerTarget,registerTiledPhotometerField,tiledPhotometerPointing,MAX_TILED_PHOTOMETER_FIELDS} from '../core/photometerField';
 import {PLEIADES_ADMITTED_ROWS} from '../core/pleiadesHotList';
 import {pleiadesSkyContext} from '../core/pleiadesSkyContext';
@@ -134,4 +134,34 @@ describe('photometer at a telescope pointing (tiled)',()=>{
   const s=run(createPhotometer(42),[{type:'activate'},{type:'start'},{type:'complete'},{type:'deactivate'}]);
   expect(JSON.parse(serializePhotometerSession(s)).version).toBe(1);
  });
+});
+
+// Front PHTILED (analysis/front-phtiled/RECOVERY.md): NGC 7805 (CLEA_GLX.DAT record 23) selected at its catalogue position, and the
+// QSO CLEA_QSO.DAT 2. A galaxy is read in Object mode with the sky of this context; a Sky reading on it is refused (0x53e338 [U]).
+describe('Front PHTILED: galaxy and QSO targets in the journal',()=>{
+ const glxView=new DataView(f('public/original/catalogs/CLEA_GLX.DAT').buffer),qsoView=new DataView(f('public/original/catalogs/CLEA_QSO.DAT').buffer);
+ const NGC7805={ra:glxView.getFloat64(23*59,true),dec:glxView.getFloat64(23*59+8,true)},QSO2={ra:qsoView.getFloat64(2*52+0x12,true),dec:qsoView.getFloat64(2*52+0x1a,true)};
+ it('reads the galaxy in Object mode, refuses its Sky reading, records it in the native list and replays from a session',async()=>{
+  expect(await preparePhotometerTiledField(BLANK)).toMatchObject({status:'ready',selectedType:0});
+  const galaxy=await preparePhotometerTiledField(NGC7805);expect(galaxy).toMatchObject({status:'ready',selectedType:1,selectedName:'NGC 7805'});
+  if(galaxy.status!=='ready')throw new Error(galaxy.reason);
+  let s=run(createPhotometer(11),[{type:'activate'},{type:'field',ra:BLANK.ra,dec:BLANK.dec},{type:'point',kind:'sky'},{type:'start'},{type:'complete'},{type:'field',ra:NGC7805.ra,dec:NGC7805.dec}]);
+  // Sky still declared on the galaxy: no "Reading Sky!" question, Start refused.
+  expect(skyReplaceAsked(s)).toBe(false);expect(tiledPhotometerReason(galaxy.targetId,0,10,'sky')).toBe('photometer-galaxy-sky');
+  expect(()=>photometerEvent(s,{type:'start'})).toThrow(new PhotometerError('field'));
+  s=run(s,[{type:'point',kind:'object'},{type:'start'},{type:'complete'}]);
+  const reading=s.current!;expect(reading.targetId).toBe(galaxy.targetId);expect(reading.reduction?.status).toBe('available');
+  expect(buildPhotometerTargetField(galaxy.targetId,'object').selected.type).toBe(1);
+  // Front P3/ONERESULTS: File › Data › Record/Review applies to the galaxy reading like any other.
+  s=run(s,[{type:'nativeRecord',readingId:photometerStructReading(s)!.id,id:'NGC 7805',jd:2455001.25,ra:NGC7805.ra,dec:NGC7805.dec,timeDependent:false,ok:true,remarks:'',spectralCode:0}]);
+  expect(s.native?.rows.map(r=>r.id)).toEqual(['NGC 7805']);
+  s=run(s,[{type:'deactivate'}]);const text=serializePhotometerSession(s),parsed=JSON.parse(text);
+  clearTiledPhotometerFields();await prepareSessionFields(parsed);expect(serializePhotometerSession(parsePhotometerSession(parsed))).toBe(text);
+ },120_000);
+ it('a selected QSO is read like a star',async()=>{
+  const q=await preparePhotometerTiledField(QSO2);expect(q).toMatchObject({status:'ready',selectedType:3});if(q.status!=='ready')throw new Error(q.reason);
+  await preparePhotometerTiledField(BLANK);
+  const s=run(createPhotometer(5),[{type:'activate'},{type:'field',ra:BLANK.ra,dec:BLANK.dec},{type:'point',kind:'sky'},{type:'start'},{type:'complete'},{type:'field',ra:QSO2.ra,dec:QSO2.dec},{type:'point',kind:'object'},{type:'start'},{type:'complete'}]);
+  expect(s.current?.targetId).toBe(q.targetId);expect(s.current?.reduction?.status).toBe('available');
+ },120_000);
 });

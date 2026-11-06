@@ -11,7 +11,7 @@ import {GscTileError} from './gscTiles';
 import {setTileSources,tileSources} from './tileAssembly';
 import {objectXMasked} from './objectXMask';
 
-export type PreparedTiledPhotometer=Readonly<{status:'ready';targetId:string;selectedName:string}|{status:'unavailable';reason:PhotometerTiledReason|'object-x-hidden'|'field-polar'|'field-tiles'|'field-unreadable';detail?:string}>;
+export type PreparedTiledPhotometer=Readonly<{status:'ready';targetId:string;selectedName:string;/** Front PHTILED: the selected object's kind byte (0 star, 1 galaxy, 3 QSO). */selectedType:0|1|3}|{status:'unavailable';reason:PhotometerTiledReason|'object-x-hidden'|'field-polar'|'field-tiles'|'field-unreadable';detail?:string}>;
 export type PhotometerTileSources=Readonly<{assembly:AssemblySources;glx:Uint8Array}>;
 /** Test seam (kept for the photometer tests): the photometer's sources; the shared loader supplies the rest. */
 export function setPhotometerTileSources(load:(()=>Promise<PhotometerTileSources>)|null){
@@ -30,11 +30,13 @@ export async function preparePhotometerTiledField(pointing:Pointing,options:Read
   throw e;
  }
  let built;
- try{built=buildFieldPopulation(pack,s.glx,pointing,{fieldHalfDegrees:FIELD_HALF_DEGREES.photometer,variableDispatch:'recovered',...(signal?{signal}:{})});}
+ // Front PHTILED: the telescope field object [0x5b56ac] has mode 1, which loads and merges the QSOs (0x597db0..0x597df3), as for the
+ // spectrometer at any pointing.
+ try{built=buildFieldPopulation(pack,s.glx,pointing,{fieldHalfDegrees:FIELD_HALF_DEGREES.photometer,variableDispatch:'recovered',qso:'merge',qsoCatalog:{bytes:s.assembly.qso,sha256:s.assembly.qsoSha256},...(signal?{signal}:{})});}
  catch(e){if(e instanceof FieldEngineError)return Object.freeze({status:'unavailable',reason:'field-unreadable',detail:e.code});throw e;}
- const r=photometerFieldFromPopulation(built.population,built.reasons,pointing,'object');
+ const r=photometerFieldFromPopulation(built.population,built.reasons,pointing,'object',{qso:s.assembly.qso,glx:s.glx});
  if(!r.field)return Object.freeze({status:'unavailable',reason:r.reason,...(r.detail?{detail:r.detail}:{})});
- return Object.freeze({status:'ready',targetId:registerTiledPhotometerField(r.field),selectedName:r.field.selected.nativeName});
+ return Object.freeze({status:'ready',targetId:registerTiledPhotometerField(r.field),selectedName:r.field.selected.nativeName,selectedType:r.field.selected.type});
 }
 /** Before a session with 'field' events is parsed (synchronously), prepare every frame it names. Any that cannot be prepared
  * leaves the session unreadable (the parser then refuses it); nothing is approximated. */
