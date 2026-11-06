@@ -3414,7 +3414,7 @@ export interface MessageParameters {
   "ph.skyReplaceNo": never;
   "ph.tiledProvenance": "dec" | "ra" | "record";
   "ph.tiledProvenanceCatalogue": "dec" | "ra" | "record";
-  "ph.tiledCoverage": "count" | "neighbors";
+  "ph.tiledCoverage": "count" | "neighbors" | "qsos";
   "ph.tiledTargetHelp": never;
   "ph.tiledSky": never;
   "fieldSpec.title": never;

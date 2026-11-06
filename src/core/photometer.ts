@@ -87,6 +87,11 @@ function transition(s:PhotometerState,e:PhotometerEvent,live:boolean):Photometer
   // [W] A move stands for leaving the form to point the telescope: returning re-activates it. FormActivate (0x4ff987–0x4ff9ab)
   // sets the slider to Sky when it was at Sky or the selected object's aperture fraction is 0, clears +0x41d (0x4ff9cb), and
   // SetPosition sets it again only when the position changed (G3 closure N2). A registered tiled frame always has a selection.
+  // Front PHTILED review 1 M1 [W]: for a galaxy, FormActivate's 0x500568 (0x4ff909 → 0x4ff933) runs with +0x41c as the last Start or
+  // FormActivate left it (0x4ffa61, 0x4ff965/0x4ff9ab), not with the slider. After a Sky Start, moving the slider to Object and onto
+  // a galaxy (M32), VIREO takes the Sky-gated galaxy branch: when the photometer-field Telescope view is dim at its centre
+  // (0x53e338 < 80) the fraction is 0 and 0x4ff996..0x4ff9ab puts the slider back to Sky; otherwise Object. That view is not
+  // painted here [not ported], so the web keeps the declared Object mode (the Object-mode galaxy fraction is always positive).
   const sky=s.pointing==='sky'||!(photometerSelectedFraction(targetId,'sky',s.apertureSelector??10,s.telescopeIndex??0)>0);
   next={...s,targetId,current:null,phase:'idle',...(s.timing?{work:null}:{}),color:s.colors[targetId]??null,pointing:sky?'sky':s.pointing,readingSliderMoved:sky&&s.pointing!=='sky'};
  }else if(e.type==='skyConfirm'){
@@ -166,7 +171,7 @@ function transition(s:PhotometerState,e:PhotometerEvent,live:boolean):Photometer
  * starts at size 25, 41, 91 or 128 for four targets (a nearer star in their sky field) and 148 for the other 20; with the 0.9 m and
  * 4 m at 41, 56, 106 or 144 for those four and never for the rest (photometerP2.test.ts). */
 /** Front PHTILED: never at a tiled target whose centre selects a galaxy. There VIREO's question takes the galaxy's Sky-mode fraction,
- * gated on the Telescope display (0x53e338) [U]; Start refuses such a Sky reading (`photometer-galaxy-sky`) instead [W]. */
+ * gated on the photometer-field Telescope display (0x53e338; that display paint is not ported); Start refuses such a Sky reading (`photometer-galaxy-sky`) instead [W]. */
 export function skyReplaceAsked(s:PhotometerState):boolean{
  return s.armed&&s.pointing==='sky'&&!s.readingSliderMoved&&s.skies[s.filter]!==null&&!photometerSelectsGalaxy(s.targetId)&&photometerSelectedFraction(s.targetId,'sky',s.apertureSelector??10,s.telescopeIndex??0)>0;
 }

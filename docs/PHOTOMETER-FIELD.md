@@ -178,7 +178,7 @@ unchanged (48-field equality, Pleiades contracts and P2 tests).
   and merges the QSOs (0x597db0..0x597df3) [D]. The tiled photometer field is now built with the engine's QSO merge, as the
   spectrometer at any pointing. A merged QSO (kind 3) is selected like a star and prepared from its own V, B−V and U−B through the
   point branch of 0x500568. The neighbour producer 0x59ac54 walks the star list and then the QSO list field+0x35 [D], so a QSO in
-  the aperture that is not selected adds its light once per list (the frame keeps the list as `qsos`). Measured: 1154 of the 2269
+  the aperture that is not selected adds its light once per list (the frame keeps the list as `qsos`; the bench chart draws its records too). Measured: 1154 of the 2269
   CLEA_QSO.DAT positions now select their QSO (1165 were `qso-merge` before; 1103 are empty fields).
 - **Selected galaxy (kind 1).** 0x53ce8c copies the galaxy into the current object: V from the catalogue (+0x18 Single), B−V and U−B
   from the loader's morphology table. 0x500568's galaxy branch takes its width w = 0.6 · (a + b)/4 with a = major/60 (1/120 when
@@ -186,8 +186,15 @@ unchanged (48-field equality, Pleiades contracts and P2 tests).
   I(r/w) − I(−r/w) does not depend on the telescope or on the offset of the pointing (`photometerGalaxyWidthDegrees`). Neighbour
   stars and QSOs add their light as usual. Measured: 20259 of the 24069 galaxy positions now give a reading.
   - [W] **Sky readings on a galaxy are refused** (`photometer-galaxy-sky`): in Sky mode 0x500568 gates the galaxy's fraction on the
-    mean brightness of a 3 × 19-pixel patch at the centre of the Telescope display (0x53e338 ≥ 80), which is not reproduced [U].
-    VIREO's "Reading Sky!" question is not asked there. Read the sky on a nearby patch, then the galaxy in Object mode.
+    mean brightness of a 3 × 19-pixel patch at the centre of the Telescope display (0x53e338 ≥ 80). 0x53e338 is ported
+    (`photons.slitPixelLevel`), but the display it would read, the Telescope view painted for the photometer's 0.05° field, is not
+    ported (the engine paints the instrument field), so the gate is not ported. VIREO's "Reading Sky!" question is not asked there.
+    Read the sky on a nearby patch, then the galaxy in Object mode.
+  - [W] **Mode after a move onto a galaxy** (review 1 M1): FormActivate (0x4ff909 → 0x4ff933) computes the selected object's fraction
+    with TPhotometer+0x41c as the last Start or FormActivate left it, not with the slider. Example: a Sky reading on a blank patch, the
+    slider set to Object, the telescope moved to M32. VIREO then takes the Sky-gated galaxy fraction; when the photometer-field view is
+    dim at its centre the fraction is 0 and it puts the slider back to Sky, otherwise it stays Object. The web keeps Object (the
+    Object-mode galaxy fraction is always positive). The fraction used by Start is exact (Start reads the slider first, 0x4ffa61).
   - `photometer-galaxy-name` (349 galaxy positions), see the typed reasons above.
 - **Colours.** Start skips a selected object's colour term when it is ≥ 30 (0x4ffc39, 0x4ffcb4) and sums a neighbour's colours with
   no test (0x4ffe46..0x4ffed9); both are ported (`preparePhotometerBands`). No bundled record reaches them (no compact GSC, QSO or
@@ -197,6 +204,6 @@ unchanged (48-field equality, Pleiades contracts and P2 tests).
   still apply. The bundled Pleiades 0.9 m / 4 m contracts keep their single-star rule.
 - **Left typed:** variables (`photometer-variable`, 7997 GCVS positions), the nil selection, the empty field, photographic-image
   fields and the engine's merge faults.
-- **Tests:** `src/core/photometerPhtiled.test.ts` (NGC 7805, 00002+1837, A0000-3600, NGC 190, CLEA_QSO.DAT 2 and 2132, the
-  CLEA_VStrs.dat 20193 blend), `src/core/photometerColourBranches.test.ts`, `src/io/photometerTiled.test.ts` (journal, Record,
+- **Tests:** `src/core/photometerPhtiled.test.ts` (NGC 7805, 00002+1837, A0000-3600, NGC 190, CLEA_QSO.DAT 2 and 2132, star
+  N0000-01000 beside CLEA_QSO.DAT@39 at aperture 150 (the QSO counted once per list), the CLEA_VStrs.dat 20193 blend), `src/core/photometerColourBranches.test.ts`, `src/io/photometerTiled.test.ts` (journal, Record,
   session) and `tests/photometer-tiled.spec.ts` (M32: sky on a star patch, Sky refused on the galaxy, Object reading).

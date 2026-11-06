@@ -29,7 +29,8 @@ export const PINNED_UBV_SKY=Object.freeze({V:vSky,B:vSky+skyBv,U:(vSky+skyBv)+sk
 export function buildPinnedPleiadesUbvField(kind:PleiadesFieldKind,filter:PhotometerFilter,targetId=PINNED_PLEIADES_V_TARGET.catalogId,apertureSelector=10,telescopeIndex:PhotometerTelescopeIndex=0){
  const tiled=isTiledPhotometerTarget(targetId);
  if(!isPhotometerFilter(filter)||!(tiled?isPhotometerTelescopeIndex(telescopeIndex):isPhotometerTelescopeTarget(targetId,telescopeIndex)))throw new PhotometerFieldError('domain');
- if(tiled&&tiledPhotometerReason(targetId,telescopeIndex,apertureSelector))throw new PhotometerFieldError('domain');
+ // Review 1 L1: the reading mode is passed, so a Sky build of a galaxy frame fails closed.
+ if(tiled&&tiledPhotometerReason(targetId,telescopeIndex,apertureSelector,kind))throw new PhotometerFieldError('domain');
  return ubvFromFrame(buildPhotometerTargetField(targetId,kind),kind,filter,apertureSelector,telescopeIndex,tiled?'tiled':'bundled');
 }
 /** The source preparation of the native Start (0x4ffa30/0x500568), the same in both reading modes: the central star's five bands
@@ -102,7 +103,9 @@ export type TiledPhotometerReason='photometer-galaxy-sky'|'Poisson-mean-bound'|'
  * - `photometer-colour` is gone: the native colour branches are ported (preparePhotometerBands).
  * - `photometer-galaxy-sky`: a Sky reading while the centre selects a galaxy. 0x500568 then gates the galaxy's fraction on the
  *   brightness of the Telescope display at its centre (0x53e338: the mean R+G+B of a 3 × 19-pixel patch of TObsrvtry+0x3d8, which
- *   must be ≥ 80, else fraction 0; 0x50066d..0x5006b3) [D]; that display's pixels are not reproduced [U]. */
+ *   must be ≥ 80, else fraction 0; 0x50066d..0x5006b3) [D]. 0x53e338 itself is ported (photons.slitPixelLevel), but the display it
+ *   reads would be the Telescope view painted for the photometer's 0.05° field, which is not ported (the engine paints the
+ *   instrument field only); the gate is therefore not ported here [W]. */
 export function tiledPhotometerReason(targetId:string,telescopeIndex:PhotometerTelescopeIndex,apertureSelector:number,pointing:PleiadesFieldKind='object'):TiledPhotometerReason|null{
  if(!isTiledPhotometerTarget(targetId)||!isPhotometerTelescopeIndex(telescopeIndex)||(pointing!=='object'&&pointing!=='sky'))throw new PhotometerFieldError('domain');
  const frame=buildPhotometerTargetField(targetId,'object');photometerApertureGeometry(apertureSelector);
@@ -119,7 +122,9 @@ export function drawPinnedPleiadesUbv(kind:PleiadesFieldKind,filter:PhotometerFi
 
 /** The selected object's aperture fraction for a target, mode, aperture and telescope (0x500568 as FormActivate and Start call it).
  * Front PHTILED: for a selected galaxy this is its Object-mode fraction; a Sky reading of it is refused (tiledPhotometerReason), and
- * skyReplaceAsked does not ask there. */
+ * skyReplaceAsked does not ask there. Review 1 M1 [W]: FormActivate (0x4ff909 → 0x4ff933) calls 0x500568 with whatever +0x41c holds
+ * (written only by Start 0x4ffa61 and FormActivate 0x4ff965/0x4ff9ab), so after a Sky Start VIREO takes the Sky-gated galaxy branch
+ * there (display level 0x53e338 ≥ 80 on the photometer-field Telescope view, not ported); the web always uses this Object-mode value. */
 export function photometerSelectedFraction(targetId:string,kind:PleiadesFieldKind,apertureSelector:number,telescopeIndex:PhotometerTelescopeIndex):number{
  const frame=buildPhotometerTargetField(targetId,kind);
  return selectedFraction(frame,photometerApertureGeometry(apertureSelector).radiusDegrees,photometerTelescope(telescopeIndex).seeingWidthDegrees);

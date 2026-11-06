@@ -87,6 +87,20 @@ describe('Front PHTILED: QSOs (the telescope field merges them, mode 1)',()=>{
   expect(buildPinnedPleiadesUbvField('object','V',id,a,0).sourceMagnitude).toBe(expectedV(fr,photometerPointFraction(radius,photometerSeparation(p.ra,p.dec,fr.selected.ra,fr.selected.dec),photometerTelescope(0).seeingWidthDegrees),photometerTelescope(0).seeingWidthDegrees,radius));
  },120_000);
 });
+describe('Front PHTILED review 1 L4: a QSO beside the selected star adds its light once per list',()=>{
+ it('star N0000-01000, 0.00021° from CLEA_QSO.DAT@39: aperture 150 lists the merged star-list copy and the field+0x35 record',async()=>{
+  const q=new DataView(qso.buffer,qso.byteOffset,qso.byteLength),at={ra:q.getFloat64(39*52+0x12,true),dec:q.getFloat64(39*52+0x1a,true)};
+  const star=(await frame(at)).field!.stars.find(s=>s.nativeName==='N0000-01000')!;expect(star.id).toBe('N0000.DAT@7716');
+  const fr=(await frame({ra:star.ra,dec:star.dec})).field!,id=registerTiledPhotometerField(fr);
+  expect(fr.selected.nativeName).toBe('N0000-01000');
+  const radius=photometerApertureGeometry(150).radiusDegrees;
+  expect(queryPhotometerNeighbors(fr.pointing,radius,fr.stars,fr.qsos!).map(n=>n.id)).toEqual(['N0000.DAT@7716','CLEA_QSO.DAT@39','CLEA_QSO.DAT@39']);
+  const v=buildPinnedPleiadesUbvField('object','V',id,150,0).sourceMagnitude,seeing=photometerTelescope(0).seeingWidthDegrees;
+  expect(v).toBe(expectedV(fr,photometerPointFraction(radius,photometerSeparation(fr.pointing.ra,fr.pointing.dec,fr.selected.ra,fr.selected.dec),seeing),seeing,radius));
+  // The value the reviewer's independent harness reported (Number policy).
+  expect(v).toBe(14.40154509979497);
+ },120_000);
+});
 describe('Front PHTILED: blends at the 0.9 m and 4 m are read as at the 0.4 m (the former web limit is lifted)',()=>{
  it('the CLEA_VStrs.dat 20193 position: another star shares the aperture; each telescope folds it with its own seeing width',async()=>{
   const p={ra:18.389641190591252,dec:-12.681682560966975},fr=(await frame(p)).field!,id=registerTiledPhotometerField(fr);

@@ -379,6 +379,7 @@ export function clearTiledPhotometerFields(){tiledFields.clear();}
 export type PhotometerTargetView=Readonly<{catalogId:string;hotlistLabel:string;hotlistRecord:number|null;nativeName:string;tiled:boolean}>;
 export function photometerTargetView(id:string):PhotometerTargetView{
  const tiled=tiledFields.get(id);
- if(tiled)return Object.freeze({catalogId:id,hotlistLabel:tiled.selected.nativeName,hotlistRecord:null,nativeName:tiled.selected.nativeName,tiled:true});
+ // Review 1 N4: a QSO's stored name has trailing spaces; the label trims them, nativeName stays the data.
+ if(tiled)return Object.freeze({catalogId:id,hotlistLabel:tiled.selected.nativeName.trimEnd(),hotlistRecord:null,nativeName:tiled.selected.nativeName,tiled:true});
  const t=photometerTarget(id);return Object.freeze({catalogId:t.catalogId,hotlistLabel:t.hotlistLabel,hotlistRecord:t.hotlistRecord,nativeName:t.nativeName,tiled:false});
 }
