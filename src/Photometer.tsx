@@ -8,7 +8,7 @@ import {NativeClusterError,type NativeClusterDraft,type NativeClusterParameters}
 import {PleiadesAnalysisError,samePleiadesPairSource} from './core/pleiadesAnalysis';
 import PleiadesAnalysis from './PleiadesAnalysis';
 import {AcquisitionError} from './core/acquisition';
-import {PHOTOMETER_SECONDS,PHOTOMETER_REPEATS,LEGACY_PHOTOMETER_TIMING,requiredPhotometerCallbacks,admitPhotometerCallback,photometerCallbackGapMS,PHOTOMETER_CALLBACK_MS,PhotometerIntegrationError} from './core/photometerIntegration';
+import {PHOTOMETER_SECONDS,PHOTOMETER_REPEATS,LEGACY_PHOTOMETER_TIMING,requiredPhotometerCallbacks,admitPhotometerCallback,photometerCallbackGapMS,PHOTOMETER_CALLBACK_MS,MAX_PHOTOMETER_CALLBACKS,PhotometerIntegrationError} from './core/photometerIntegration';
 import {isCompiledPhotometerParameters,photometerParameterRefusal,photometerParametersOf,uncertifiedParameterKeys,instrumentParameterField,instrumentParameterLabel,type PhotometerParameters} from './core/instrumentParameters';
 import {reconcilePhotometryDraft,defaultPhotometryDraft,type PhotometryDraft} from './core/editingWorkspace';
 import {memo,useContext,useEffect,useMemo,useRef,useState,useImperativeHandle,type Ref} from 'react';
@@ -93,6 +93,7 @@ function Photometer({active,initialState=null,controllerRef,onStateChange,invest
  // Front T6: the instructor photometer parameters (core/instrumentParameters.ts), applied at the next Start.
  const instrumentParameters=useContext(VireoOptionsContext).instrumentParameters,photometerParameters=useMemo(()=>photometerParametersOf(instrumentParameters),[instrumentParameters]);
  const photometerParametersRef=useRef(photometerParameters);photometerParametersRef.current=photometerParameters;
+ const limitByTimer=useRef(false);
  const uncertifiedPhotometerFields=uncertifiedParameterKeys(instrumentParameters).filter(k=>instrumentParameterField(k).tab==='photometer');
  // Review 1 L2: VIREO's FormActivate reads +0x6b1 at activation, so the lock (selector, note, pinned Start refusal) follows the
  // option as the last activation read it, not the live option; the next activation updates it in both directions.
@@ -129,7 +130,7 @@ function Photometer({active,initialState=null,controllerRef,onStateChange,invest
  useEffect(()=>{if(active)heading.current?.focus();else{release();dialog.current?.close();}},[active]);
  useEffect(()=>{if(current.current?.armed&&(current.current.telescopeIndex??0)!==telescopeIndex){release();setNotice(t('ph.released'));}},[telescopeIndex]);
  useEffect(()=>{const hide=()=>{if(document.visibilityState==='hidden'){if(!release())setNotice(t('ph.released'));}};document.addEventListener('visibilitychange',hide);return()=>{document.removeEventListener('visibilitychange',hide);stopClock();loadEpoch.current++;};},[]);
- function failure(e:unknown){if(e instanceof NativeClusterError){setError(t('nc.error'));return;}if(e instanceof PhotometerError&&e.code==='parameters'){setError(t('ph.parametersRefused'));return;}if(e instanceof PleiadesAnalysisError){setError(t('pa.confirmError'));return;}if(e instanceof AcquisitionError&&e.code==='precision'){setError(t('ph.seriesPrecision'));return;}setError(t(e instanceof PhotometerError&&e.code==='sky'?'ph.needSky':e instanceof PhotometerError&&e.code==='color'?'ph.colorError':(e instanceof PhotometerError||e instanceof PhotometerIntegrationError)&&e.code==='limit'?(current.current?.timing?(current.current.parameters&&current.current.parameters.timerMs!==PHOTOMETER_CALLBACK_MS?'ph.parametersTimerLimit':'ph.seriesLimit'):'ph.limitError'):e instanceof PhotometerIntegrationError?'ph.seriesError':'ph.error',{filter:current.current?.filter??'V'}));}
+ function failure(e:unknown){const byTimer=limitByTimer.current;limitByTimer.current=false;if(e instanceof NativeClusterError){setError(t('nc.error'));return;}if(e instanceof PhotometerError&&e.code==='parameters'){setError(t('ph.parametersRefused'));return;}if(e instanceof PleiadesAnalysisError){setError(t('pa.confirmError'));return;}if(e instanceof AcquisitionError&&e.code==='precision'){setError(t('ph.seriesPrecision'));return;}setError(t(e instanceof PhotometerError&&e.code==='sky'?'ph.needSky':e instanceof PhotometerError&&e.code==='color'?'ph.colorError':(e instanceof PhotometerError||e instanceof PhotometerIntegrationError)&&e.code==='limit'?(byTimer?'ph.parametersTimerLimit':current.current?.timing?'ph.seriesLimit':'ph.limitError'):e instanceof PhotometerIntegrationError?'ph.seriesError':'ph.error',{filter:current.current?.filter??'V'}));}
  // Controlled target and Sky/Object changes move the App telescope to the new verified field without releasing this context.
  function preparePoint(s:PhotometerState){link.current?.onPreparePoint(buildPhotometerTargetField(s.targetId,s.pointing).pointing);}
  function act(e:PhotometerEvent){setError('');try{if(!current.current)return false;commit(photometerEvent(current.current,e));if((e.type==='target'||e.type==='point')&&!isTiledPhotometerTarget(current.current.targetId))preparePoint(current.current);return true;}catch(e){failure(e);return false;}}
@@ -183,7 +184,7 @@ function Photometer({active,initialState=null,controllerRef,onStateChange,invest
   if(latchDetectSky()&&!keep){const detected=photometerDetectSkyEvent(prepared,next);if(detected)next=photometerEvent(next,detected);}
   commit(next);if(keep){setNotice(t('ph.activated',{filter:next.filter}));void useTelescopePointing();return;}preparePoint(next);
   setNotice(row?t('ph.activatedPointed',{label:row.id,number:row.index+1}):changedTarget?t('ph.telescopeTargetReset',{target:photometerTargetView(prepared.targetId).hotlistLabel}):t('ph.activated',{filter:next.filter}));}catch(e){failure(e);}}
- function start(skipMoved=false){setError('');try{
+ function start(skipMoved=false){setError('');limitByTimer.current=false;try{
   if(!available.current||!current.current)throw new PhotometerError('phase');
   if(access.current!=='ready'){setError(t(`ph.access.${access.current}`));return;}
   // Front T4 [W]: Detect Sky would read Object at a pinned sky position the star still lights (photometerDetectSkyPinnedRefusal).
@@ -201,6 +202,8 @@ function Photometer({active,initialState=null,controllerRef,onStateChange,invest
   // values write nothing, so a session without instructor values is byte-identical.
   const want=photometerParametersRef.current,refusal=photometerParameterRefusal(want);
   if(refusal&&!isCompiledPhotometerParameters(want)){setError(t(`ph.parametersDomain.${refusal}`));return;}
+  // Review closure (L7): Start's 'limit' is thrown before commit, so the message is decided from the values this Start uses.
+  limitByTimer.current=!isCompiledPhotometerParameters(want)&&want.timerMs!==PHOTOMETER_CALLBACK_MS&&photometerTimerOverBudget(current.current,want.timerMs);
   const prepared=withParameters(current.current,want);
   startName.current=photometerRecordedName(!!link.current?.showObjectId,current.current.pointing==='sky',idObject,link.current?.objectXId??'');
   commit(photometerEvent(prepared,{type:'start'}));setIdShown(true);stopClock();const id=epoch.current;let last=Math.floor(performance.now());
@@ -220,6 +223,12 @@ function Photometer({active,initialState=null,controllerRef,onStateChange,invest
   };clock.current=setTimeout(step,timerMs);
  }catch(e){failure(e);}}
 
+ /** Front T6 closure: whether this Start's callbacks with the instructor Timer exceed the session budget (the shown timing when
+  * the session is still untimed, as withParameters records it), while the compiled 100 ms would not. */
+ function photometerTimerOverBudget(s:PhotometerState,timerMs:number):boolean{
+  const timing=s.timing??LEGACY_PHOTOMETER_TIMING,used=s.callbacksUsed??s.readings.length;
+  return used+requiredPhotometerCallbacks(timing,timerMs)>MAX_PHOTOMETER_CALLBACKS&&used+requiredPhotometerCallbacks(timing)<=MAX_PHOTOMETER_CALLBACKS;
+ }
  /** Front T6: the state the next Start runs on: instructor values recorded first (an untimed session first takes its shown 0.1 s × 1
   * timing, the only way a 'parameters' event is admitted), the compiled values cleared, an unchanged set left alone. */
  function withParameters(s:PhotometerState,want:PhotometerParameters):PhotometerState{

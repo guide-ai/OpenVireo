@@ -58,7 +58,7 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
  // Front T6: Multi-Spec reads BaseMag, SpSky, SpBase and SpTimer (0x527013, 0x52702c, 0x52727a..0x527290); instructor values refuse it.
  const parameterRefusal=useSpectrometerParameterGate('multispec');
  // Review 1 L5: an open Multi-Spec stops exposing when instructor values appear, and Init / Go stay refused while they last.
- useEffect(()=>{if(parameterRefusal&&state.running)dispatch({type:'stop'});},[parameterRefusal,state.running]);
+ useEffect(()=>{if(parameterRefusal&&state.running)dispatch({type:'parameter-stop'});},[parameterRefusal,state.running]);// no Terminate question (it would loop: No resumes)
  const [view,setView]=useState<ViewState>({status:'none'}),[viewTry,setViewTry]=useState(0);
  const [results,setResults]=useState<ReadonlyMap<string,Result>>(new Map());
  // Front R4d: VIREO's global Show Object ID / Show Object Mag (env+0x2e81 / +0x2e80), no longer two local check boxes.

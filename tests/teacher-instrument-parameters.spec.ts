@@ -85,3 +85,19 @@ test('spectrometer parameters: the exercise routes refuse them with a typed reas
  await id(page,'ob-options-reset').click();await id(page,'ob-options-reset-box-yes').click();await expect(id(page,'ob-options-param-spectrometerSkyMagnitude')).toHaveValue('19.00');
  await id(page,'ob-options-ok').click();await expect(id(page,'ob-options-dialog')).toBeHidden();await expect(id(page,'ms-parameters-refused')).toHaveCount(0);
 });
+
+test('closure L7: an instructor Timer of 1 ms that overruns the session callback budget is named at the first Start',async({page})=>{
+ test.setTimeout(120000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();
+ await openOptions(page);await id(page,'ob-options-param-photometerTimerMs').fill('1');await id(page,'ob-options-ok').click();await expect(id(page,'ob-options-dialog')).toBeHidden();
+ await toPhotometer(page);await page.getByRole('button',{name:'Activate Pleiades photometer',exact:true}).click();
+ await page.getByLabel('Photometer pointing',{exact:true}).selectOption('sky');
+ await page.getByLabel('Seconds per integration',{exact:true}).selectOption('100');await page.getByLabel('Number of integrations',{exact:true}).selectOption('5');
+ // 100 s × 5 at 1 ms = 500 000 callbacks, above the session's 100 000; the compiled 100 ms would need 5 000.
+ await page.getByRole('button',{name:'Start integration',exact:true}).click();
+ await expect(page.getByText(/^Start refused: with the instructor Timer Wait this series needs more photometer callbacks/).first()).toBeVisible();
+ await expect(id(page,'photo-phase')).not.toHaveText('Integration complete');
+ await page.getByRole('button',{name:'Start integration',exact:true}).click();// a retry says the same
+ await expect(page.getByText(/^Start refused: with the instructor Timer Wait/).first()).toBeVisible();
+ expect(errors).toEqual([]);
+});

@@ -160,7 +160,7 @@ export function photometerSkyBands(skyMagnitude:number,bv:number,ub:number){
  * 0x449004). The counts are SpBase × the cumulative GetTickCount delta (0x50f797..0x50f7b8), so the sum of a tick's draws is one
  * Poisson of the whole interval; but the S/N pause (√(total/600) > 1000, exposure.ts) is tested once per tick, so VIREO overshoots
  * it by up to one SpTimer interval of photons (review 1 M1). The web ticks the generic route every max(100, SpTimer) ms, with the
- * test at the end of each tick, and records a non-default SpTimer in the policy; its domain stops at 500 ms so a tick stays within
+ * test at the end of each tick (VIREO's granularity from 100 to 500 ms; [W] below 100 ms VIREO ticks at max(SpTimer, ≈15.6 ms) [I]), and records a non-default SpTimer in the policy; its domain stops at 500 ms so a tick stays within
  * the journal's 1000-ms bound (MAX_JOURNAL_TICK_MS), on which the 2³⁰ admission argument rests. */
 export type SpectrometerParameters=Readonly<{baseMagnitude:number;skyMagnitude:number;baseCount:number;timerMs:number}>;
 export const spectrometerParametersOf=(p:InstrumentParameters):SpectrometerParameters=>Object.freeze({baseMagnitude:p.baseMagnitude,skyMagnitude:p.spectrometerSkyMagnitude,baseCount:p.spectrometerBaseCount,timerMs:p.spectrometerTimerMs});

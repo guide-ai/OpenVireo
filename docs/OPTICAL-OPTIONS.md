@@ -183,7 +183,9 @@ display digits (FormActivate's ffFixed 1 or 2), so pressing OK again stores the 
   TSpectrometer's TTimer interval: the counts follow the cumulative elapsed ms (0x50f797), but the S/N pause (√(total/600) > 1000) is
   tested once per tick, so VIREO overshoots it by up to one interval of photons (review 1 M1). A non-default Timer Wait is therefore
   uncertified too: the exposure ticks every max(100, Timer Wait) ms with the test at the end of each tick, and [W] OpenVireo measures
-  1..500 ms only, so a tick stays within the 1000-ms journal bound on which the 2³⁰ argument rests.
+  1..500 ms only, so a tick stays within the 1000-ms journal bound on which the 2³⁰ argument rests. From 100 to 500 ms the tick is
+  VIREO's interval; [W] below 100 ms the web keeps its 100-ms tick, while VIREO ticks at max(Timer Wait, the Windows timer step of
+  about 15.6 ms) [I], so there the pause granularity differs (those values are uncertified anyway).
 - **Exercise spectrometer routes — refused.** Hubble, LSS, Object X, stellar classification, the sky route and Multi-Spec refuse while
   BaseMag, SpSky, SpBase or Timer Wait is not VIREO's (Multi-Spec's rate also divides by Timer Wait), with a message naming the
   edits by their dialog captions; an open Multi-Spec stops exposing and refuses Init and Go. Their exercise witnesses (E01, E02, E08,
