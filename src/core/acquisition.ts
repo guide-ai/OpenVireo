@@ -218,9 +218,9 @@ export function poissonLargeProposal(mean: number, angleUniform: number): Readon
   }
   const value = n, e = poissonLargeExponent(mean, value);
   if (Math.abs(e.exponent + 30) <= e.error) {
-    // E against −30 is not decided (0x55f2a9): T is 0 or at most the ceiling at −30 + error; u2 = 0 accepts and u2 above the
-    // ceiling rejects either way (review 1 L2).
-    const ceiling = thresholdCeiling(-30 + e.error);
+    // E against −30 is not decided (0x55f2a9): T is 0 or at most the ceiling at VIREO's highest possible exponent, the web
+    // exponent + error (up to −30 + 2·error); u2 = 0 accepts and u2 above the ceiling rejects either way (review 1 L2).
+    const ceiling = thresholdCeiling(e.exponent + e.error);
     return { kind: 'candidate', value, decide: u2 => u2 <= 0 ? 'accept' : u2 > ceiling ? 'reject' : 'precision' };
   }
   if (e.exponent < -30) return { kind: 'candidate', value, decide: u2 => u2 <= 0 ? 'accept' : 'reject' };// threshold 0 (0x55f2b5)
