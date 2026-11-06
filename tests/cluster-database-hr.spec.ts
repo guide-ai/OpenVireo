@@ -1,6 +1,7 @@
 import{test,expect,type Page}from'@playwright/test';import{readFile}from'node:fs/promises';
 import contract from'../data/photometry/cluster-comparison-contract.json'with{type:'json'};
 import dor from'../data/photometry/cluster-reference-30dor.json'with{type:'json'};
+import{setVireoOptions}from'./fixtures/vireo-options';// Front T4: Set E(B-V)
 const labels={modulus:'Trial apparent modulus V−Mv · 0–15, step 0.01',ebv:'Trial color excess E(B−V) · 0–2.50, step 0.01',age:'Trial log10(age/yr) · 7.80–10.25, step 0.05',model:'Trial metallicity model',offset:'Extra isochrone B−V offset · −1–1, step 0.01',note:'Your interpretation of the trial fit (optional)',correction:'Apply the original optional extinction correction to distance'};
 const sliders={modulus:'Slider: apparent modulus V−Mv',ebv:'Slider: color excess E(B−V)',age:'Slider: log10(age/yr)',offset:'Slider: extra isochrone B−V offset'};
 const info=(id:string)=>contract.clusters.find(c=>c.id===id)!;
@@ -69,6 +70,9 @@ test('M67 text/slider trial never invents inputs or confirms;report follows the 
  await b.getByLabel(labels.note,{exact:true}).fill('My own M67 turnoff comparison by eye.');await b.getByRole('button',{name:'Confirm chosen model fit',exact:true}).click();await expect(b.getByTestId('native-confirmed-logage')).toHaveText('9.6');
  await expect(b.getByTestId('db-hr-report-kind')).toHaveText('Confirmed result');expect(await reportText(page)).toBe(m67Lines(name));
  await b.getByText('Inspect all reference data values',{exact:true}).click();await counts(page,5);await expect(guide(page).getByTestId('cluster-lab-next')).toHaveAttribute('data-next','preserve');await expect(guide(page).getByTestId('cluster-lab-continue')).toHaveCount(0);await expect(guide(page).getByTestId('cluster-lab-preserve')).toContainText('Save investigation');await closeGuide(page);
+ // Front T4: with VIREO's Set E(B-V) on (compiled default) E(B−V) is fixed at the catalogue value: field and slider locked (0x543a32).
+ await expect(b.getByLabel(labels.ebv,{exact:true})).not.toBeEditable();await expect(ebv).toBeDisabled();await expect(b.getByTestId('cluster-ebv-gate-note')).toHaveAttribute('data-set-ebmv','on');
+ await setVireoOptions(page,{'set-ebmv':false});await expect(ebv).toBeEnabled();await expect(b.getByTestId('cluster-ebv-gate-note')).toHaveAttribute('data-set-ebmv','off');
  // Moving E writes only E, marks it manual and leaves the confirmation in place until a new explicit confirmation.
  await ebv.focus();await page.keyboard.press('ArrowRight');await expect(b.getByLabel(labels.ebv,{exact:true})).toHaveValue('0.04');await expect(b.getByTestId('cluster-reddening-source')).toContainText('your manual input');await expect(b.getByTestId('native-confirmed-ebv')).toHaveText('0.03');
  await expect(b.getByTestId('db-hr-report-kind')).toHaveText('Current trial (unconfirmed)');await expect.poll(()=>reportText(page)).toContain('  E(B-V) = 0.04');
@@ -164,6 +168,7 @@ test('a notebook first created by Retry stays without the catalog E until the ex
 
 test('unset sliders take their minimum only from an explicit key or completed press;other fields, source and confirmation are kept',async({page})=>{
  await open(page);await load(page,'m67');const b=panel(page);
+ await setVireoOptions(page,{'set-ebmv':false});// Front T4: the E(B−V) slider is free only with VIREO's Set E(B-V) off
  await b.getByLabel(labels.modulus,{exact:true}).fill('9.50');await b.getByLabel(labels.age,{exact:true}).fill('9.60');await b.getByLabel(labels.model,{exact:true}).selectOption('4');await b.getByRole('button',{name:'Confirm chosen model fit',exact:true}).click();
  const fields=['modulus','ebv','age','offset']as const,minimum={modulus:'0.00',ebv:'0.00',age:'7.80',offset:'-1.00'};type Field=typeof fields[number];
  const text=(k:Field)=>b.getByLabel(labels[k],{exact:true}),range=(k:Field)=>b.getByLabel(sliders[k],{exact:true}),source=b.getByTestId('cluster-reddening-source');

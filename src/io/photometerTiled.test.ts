@@ -4,7 +4,7 @@ import {afterAll,beforeAll,describe,expect,it} from 'vitest';
 import {preparePhotometerTiledField,setPhotometerTileSources} from './photometerTiledFields';
 import {checkGscIndex,createGscTileStore} from './gscTiles';
 import {parsePhotometerSession,prepareSessionFields,serializePhotometerSession} from './photometerSession';
-import {createPhotometer,photometerEvent,photometerStructReading,skyReplaceAsked,PhotometerError,type PhotometerState,type PhotometerEvent} from '../core/photometer';
+import {createPhotometer,photometerEvent,photometerStructReading,skyReplaceAsked,photometerDetectSkyEvent,PhotometerError,type PhotometerState,type PhotometerEvent} from '../core/photometer';
 import {buildPhotometerTargetField,clearTiledPhotometerFields,isTiledPhotometerTarget,registerTiledPhotometerField,tiledPhotometerPointing,MAX_TILED_PHOTOMETER_FIELDS} from '../core/photometerField';
 import {PLEIADES_ADMITTED_ROWS} from '../core/pleiadesHotList';
 import {pleiadesSkyContext} from '../core/pleiadesSkyContext';
@@ -168,5 +168,44 @@ describe('Front PHTILED: galaxy and QSO targets in the journal',()=>{
   await preparePhotometerTiledField(BLANK);
   const s=run(createPhotometer(5),[{type:'activate'},{type:'field',ra:BLANK.ra,dec:BLANK.dec},{type:'point',kind:'sky'},{type:'start'},{type:'complete'},{type:'field',ra:QSO2.ra,dec:QSO2.dec},{type:'point',kind:'object'},{type:'start'},{type:'complete'}]);
   expect(s.current?.targetId).toBe(q.targetId);expect(s.current?.reduction?.status).toBe('available');
+ },120_000);
+});
+
+// Front T4 (core/photometerTabOptions.ts; analysis/front-teacher/t4/RECOVERY.md): Detect Sky (env+0x2e83 → TPhotometer+0x6b1).
+// With it on, every web activation of the free photometer is followed by the slider move FormActivate 0x4ff94c makes: Sky exactly
+// when the selected star has no light in the aperture (fraction from 0x500568 in the mode before the activation), whatever the
+// student's slider said. The move is an ordinary journal event, so the session replays without the option.
+describe('Front T4: Detect Sky at telescope pointings',()=>{
+ const field=(p:typeof STAR)=>({type:'field' as const,ra:p.ra,dec:p.dec});
+ const detect=(s:PhotometerState,e:PhotometerEvent)=>{const after=photometerEvent(s,e),d=photometerDetectSkyEvent(s,after);return {after,d,final:d?photometerEvent(after,d):after};};
+ it('Sky on the star becomes Object, Object off the star becomes Sky, and +0x41d follows the position change',async()=>{
+  await preparePhotometerTiledField(STAR);await preparePhotometerTiledField(BLANK);
+  // Activated at the clean position: Sky (no event needed); the student could not have chosen otherwise.
+  let r=detect(run(createPhotometer(21),[{type:'activate'}]),field(BLANK));
+  expect(r.d).toBeNull();expect(r.final.pointing).toBe('sky');
+  // Onto the star with the slider at Sky: off, VIREO keeps Sky (0x4ff987); on, it detects Object and the position change sets +0x41d.
+  r=detect(r.final,field(STAR));
+  expect(r.after.pointing).toBe('sky');expect(r.after.readingSliderMoved).toBe(false);
+  expect(r.d).toEqual({type:'point',kind:'object'});expect(r.final.pointing).toBe('object');expect(r.final.readingSliderMoved).toBe(true);
+  // Staying on the star in Object mode: nothing changes, +0x41d cleared by the activation.
+  r=detect(r.final,field(STAR));expect(r.d).toBeNull();expect(r.final.pointing).toBe('object');expect(r.final.readingSliderMoved).toBe(false);
+  // Off the star: both rules give Sky (fraction 0); no extra event.
+  r=detect(r.final,field(BLANK));expect(r.d).toBeNull();expect(r.final.pointing).toBe('sky');expect(r.final.readingSliderMoved).toBe(true);
+  // So with Detect Sky a sky reading never holds star light and the "Reading Sky!" question never appears.
+  let s=run(r.final,[{type:'start'},{type:'complete'}]);
+  const back=detect(s,field(STAR));expect(back.final.pointing).toBe('object');expect(skyReplaceAsked(back.final)).toBe(false);
+  s=run(back.final,[{type:'start'},{type:'complete'}]);expect(s.readings.map(x=>x.kind)).toEqual(['sky','object']);
+  // The journal holds only ordinary events and replays identically.
+  s=run(s,[{type:'deactivate'}]);const text=serializePhotometerSession(s);
+  clearTiledPhotometerFields();await prepareSessionFields(JSON.parse(text));
+  expect(serializePhotometerSession(parsePhotometerSession(JSON.parse(text)))).toBe(text);
+ },120_000);
+ it('pinned targets and running or released photometers are not detected',async()=>{
+  await preparePhotometerTiledField(STAR);
+  const pinned=run(createPhotometer(22),[{type:'activate'}]);
+  expect(photometerDetectSkyEvent(createPhotometer(22),pinned)).toBeNull();
+  const onStar=run(createPhotometer(22),[{type:'activate'},field(STAR)]);
+  expect(photometerDetectSkyEvent(onStar,run(onStar,[{type:'deactivate'}]))).toBeNull();
+  expect(photometerDetectSkyEvent(onStar,run(onStar,[{type:'start'}]))).toBeNull();
  },120_000);
 });

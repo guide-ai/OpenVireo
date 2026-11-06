@@ -58,7 +58,7 @@ What Edit Mode now changes in OpenVireo, beyond Catalog Object and Field Informa
   reason (`src/core/teacherDeferred.ts`):
   - Demonstration Mode, Test Mode;
   - Restrict Scope Access, Request Time;
-  - Detect Sky, Set E(B-V);
+  - Detect Sky, Set E(B-V) (live since Front T4);
   - Files…, Scopes…;
   - parameter editing;
   - radio Site… and non-default radio options.

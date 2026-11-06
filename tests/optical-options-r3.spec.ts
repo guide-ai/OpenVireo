@@ -29,7 +29,8 @@ test('the dialog offers the ported options with their compiled states and shows 
  await expect(others).not.toContainText('Fast Slewing');
  await expect(id(page,'ob-options-tab-general')).toContainText('Finder Field (Degs)2.50');await expect(id(page,'ob-options-tab-ccd')).toContainText('Site CH350 003B Back-Illuminated');
  await expect(id(page,'ob-options-tab-ir')).toContainText('CLEA_IR1');await expect(id(page,'ob-options-tabs')).not.toContainText(/<input/);
- await expect(id(page,'ob-options-tabs').locator('input')).toHaveCount(0);await expect(id(page,'ob-options-tabs-note')).toContainText('not editable');
+ // Front T4: only the Photometer tab's Set E(B-V) and Detect Sky are live check boxes; every tab value stays read-only text.
+ await expect(id(page,'ob-options-tabs').locator('input')).toHaveCount(2);await expect(id(page,'ob-options-tabs').locator('input[type=text],input:not([type])')).toHaveCount(0);await expect(id(page,'ob-options-tabs-note')).toContainText('not editable');
  // IRBoxMouseUp: unchecking Infrared Camera hides the IR tab at once (in the draft); Cancel keeps the option.
  await id(page,'ob-options-infrared-camera').uncheck();await expect(id(page,'ob-options-tab-ir')).toHaveCount(0);
  await page.getByRole('button',{name:'Cancel',exact:true}).click();

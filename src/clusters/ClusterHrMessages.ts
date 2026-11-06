@@ -44,7 +44,10 @@ export const CLUSTER_HR_EN=Object.freeze({
  dbAxes:'The plot uses VIREO\'s fixed HR axes (V 2–18, B−V −0.5 to +2.5) on its 496 × 506 picture. Like VIREO, it does not clip points to the axes: a point outside them is drawn wherever it falls on the picture. All reference values remain in the values table. VIREO has no autoscaling. On narrow screens, scroll the plot horizontally.',
  dbFrameNote:'Recovered native plot (0x542480, 0x542bf4): 28 px per magnitude, 120 px per B−V magnitude, points rounded half to even from the stored Single values, the ZAMS kept only where its nodes are inside the axes (0x543940) and the isochrone not tested. The picture size 496 × 506 comes from the form layout. Fonts and the marker drawing are web choices.',
  outsideImage:'outside VIREO\'s picture',
- ebvGateNote:'VIREO\'s option "Set E(B-V)" (on by default) fixes the E(B−V) slider at this catalogue value whenever the ZAMS is shown for a database cluster (0x543a32). OpenVireo copies the value but lets you edit it.',
+ // Front T4: VIREO's option Set E(B-V) (env+0x2e90, compiled on; ShowZAMS1Click gate 0x543a32–0x543a75), live in the instructor
+ // options (core/photometerTabOptions.ts). Review 1 N2: the address stays here, out of the student-visible text.
+ ebvGateNote:'VIREO\'s option "Set E(B-V)" (on by default) fixes E(B−V) at this catalogue value whenever the ZAMS is shown for a database cluster, and locks its slider, so the E(B−V) field and slider here are read-only. An instructor can turn the option off in the options dialog. A notebook restored from a file, or begun while the option was off, keeps its own E(B−V) until you press the catalogue button.',
+ ebvGateNoteOff:'An instructor has turned VIREO\'s option "Set E(B-V)" off: choose E(B−V) yourself. As in VIREO, no catalogue value is copied while it is off.',
  testModeNote:'In VIREO the "Estimated Cluster Distance" line appears only in its Test Mode (option off by default; 0x543f43). OpenVireo shows it when you apply the extinction-corrected distance, and always while an instructor has Test Mode on.',
  // Possible Cluster Member (TClstrStrForm1)
  memberItemMenu:'Item',// VIREO
