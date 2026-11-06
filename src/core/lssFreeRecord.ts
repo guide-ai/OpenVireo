@@ -43,7 +43,8 @@ export type LssFreeSource=Readonly<{object:string;ra:number;dec:number;telescope
 export function lssFreeSource(state:JournalState,result:FieldResult,pointing:Readonly<{ra:number;dec:number}>,countsSha256:string):LssFreeSource{
  if(typeof countsSha256!=='string'||!/^[0-9a-f]{64}$/.test(countsSha256))fail();
  const p=parseFieldSpectrumPolicy(state?.policy);
- if(!p||p.pointing.ra!==pointing.ra||p.pointing.dec!==pointing.dec||state.exposure.phase==='running'||!state.exposure.counts.some(n=>n>0))fail();
+ // Front T6 [W]: an exposure taken with instructor spectrometer values (#P…, uncertified-parameter) is not an LSS measurement.
+ if(!p||p.parameters||p.pointing.ra!==pointing.ra||p.pointing.dec!==pointing.dec||state.exposure.phase==='running'||!state.exposure.counts.some(n=>n>0))fail();
  let header;try{header=parseLegacySpectrumFile(fieldSpectrumBytes(state,result,pointing)).header;}catch{return fail();}
  if(!header)fail();
  const ra=header!.pointingRa,dec=header!.pointingDec;

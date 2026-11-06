@@ -2,6 +2,7 @@ import {AcquisitionError} from './core/acquisition';
 import type {ExposureWorkspace} from './core/observingWorkspace';
 import {useEffect,useRef,useState,type RefObject} from 'react';
 import {t} from './i18n';
+import {useSpectrometerParameterGate} from './useSpectrometerParameterGate';
 import {JournalError,MAX_JOURNAL_TICK_MS,parseJournalSeed as parseSkySeed,type JournalState} from './core/exposureJournal';
 export type ExposureController=Readonly<{snapshot:()=>ExposureWorkspace;replace:(w:ExposureWorkspace)=>void}>;
 export type ExposureEngine=Readonly<{
@@ -17,8 +18,9 @@ function exposureMessage(e:unknown,limit=MAX_JOURNAL_TICK_MS):string {
  return t('skyExposure.thisOperationCouldNotBeCompleted');
 }
 function download(text:string,name:string,type:string){const url=URL.createObjectURL(new Blob([text],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
-export function useBoundedExposure({engine,active,fieldMatches,onActivate,onStart,canIntegrate,heading,initialWorkspace,onWorkspaceChange,projectBusy=false,configurationAvailable=true}:{configurationAvailable?:boolean;initialWorkspace?:ExposureWorkspace;onWorkspaceChange?:(w:ExposureWorkspace)=>void;projectBusy?:boolean;engine:ExposureEngine;active:boolean;fieldMatches:boolean;onActivate:()=>void;onStart?:()=>boolean;canIntegrate?:()=>boolean;heading:RefObject<HTMLHeadingElement|null>}){
+export function useBoundedExposure({engine,active,fieldMatches,onActivate,onStart,canIntegrate,heading,initialWorkspace,onWorkspaceChange,projectBusy=false,configurationAvailable=true,parameterRoute='exercise'}:{/** Front T6: 'generic' (the observatory spectrometer, which records its own instructor values) or an exercise route, which refuses Start with instructor values. */parameterRoute?:'generic'|'exercise';configurationAvailable?:boolean;initialWorkspace?:ExposureWorkspace;onWorkspaceChange?:(w:ExposureWorkspace)=>void;projectBusy?:boolean;engine:ExposureEngine;active:boolean;fieldMatches:boolean;onActivate:()=>void;onStart?:()=>boolean;canIntegrate?:()=>boolean;heading:RefObject<HTMLHeadingElement|null>}){
  const permitted=useRef(canIntegrate);permitted.current=canIntegrate;
+ const parameterRefusal=useSpectrometerParameterGate('exercise'),route=parameterRoute;
  const message=(e:unknown)=>exposureMessage(e,engine.maximumTickMS);
  const [state,setState]=useState<JournalState|null>(initialWorkspace?.state??null),[seed,setSeedState]=useState(initialWorkspace?.seedText??'1'),[notice,setNotice]=useState(''),[error,setError]=useState(''),[localBusy,setBusy]=useState(false);
  const busy=localBusy||projectBusy,seedCurrent=useRef(seed);
@@ -50,7 +52,7 @@ export function useBoundedExposure({engine,active,fieldMatches,onActivate,onStar
  },[active,fieldMatches,armed,running,busy,configurationAvailable]);
  useEffect(()=>{const hide=()=>{if(document.visibilityState==='hidden'&&current.current?.exposure.phase==='running'){stop();setNotice(t('skyExposure.pausedWhileThisTabWasHidden'));}};document.addEventListener('visibilitychange',hide);return()=>{document.removeEventListener('visibilitychange',hide);stopClock();generation.current++;};},[]);
  function activate(useCurrent=false){setError('');try{if(!configurationAvailable||useCurrent&&!available.current)throw new JournalError('phase');const next=engine.activate(current.current??engine.create(parseSkySeed(seed)));if(!useCurrent)onActivate();commit(next);setNotice(engine.activated);}catch(e){setError(message(e));}}
- function start(){setError('');try{if(!available.current||!current.current)throw new JournalError('phase');const next=engine.start(current.current);if(onStart&&!onStart())throw new JournalError('phase');commit(next);setNotice(engine.started);}catch(e){setError(message(e));}}
+ function start(){setError('');try{if(route==='exercise'&&parameterRefusal){setError(parameterRefusal);return;}if(!available.current||!current.current)throw new JournalError('phase');const next=engine.start(current.current);if(onStart&&!onStart())throw new JournalError('phase');commit(next);setNotice(engine.started);}catch(e){setError(message(e));}}
  function save(kind:'csv'|'json'){setError('');try{const s=stop();if(!s)return;download(kind==='csv'?engine.csv(s):engine.serialize(s),`${engine.basename}.${kind}`,kind==='csv'?'text/csv;charset=utf-8':'application/json');setNotice(t('exposureIO.saved'));}catch(e){setError(message(e));}}
  async function restore(file:File){setError('');stop();setNotice(t('exposureIO.loading'));const ticket=++generation.current;pendingRestore.current=true;setBusy(true);try{const s=await engine.read(file);if(ticket!==generation.current)return;commit(s);setSeed(String(s.seedAtReset));setNotice(engine.restored);}catch(e){if(ticket===generation.current){setError(message(e));setNotice(t('exposureIO.kept'));}}finally{if(ticket===generation.current){pendingRestore.current=false;setBusy(false);}}}
  function snapshot():ExposureWorkspace{const cancelled=pendingRestore.current;pendingRestore.current=false;stopClock();generation.current++;setBusy(false);if(current.current){const wasActive=current.current.armed||current.current.exposure.phase==='running';commit(engine.deactivate(current.current));if(wasActive)setNotice(t('skyExposure.pausedCountsAndTheRandomState'));}if(cancelled)setNotice(t('exposureIO.cancelled'));return Object.freeze({state:current.current,seedText:seedCurrent.current});}

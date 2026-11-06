@@ -13,7 +13,8 @@
  * Front T4 removed 'detect-sky' and 'set-ebmv': DtctSkyBox and SetEBmVBox are live on the Photometer tab
  * (core/photometerTabOptions.ts) and travel in the options file. Front T5 removed 'restrict-scope-access' and 'request-time':
  * RstrctScpBox is live and travels in the options file, and Telescopes › Optical › Request Time works (core/scopeAccess.ts).
- * Scopes… (TScopeDataDlg) stays: its Avail / Reap / Min / Max fields (OK 0x593754: StrToFloat → record +0x29, StrToInt → bytes
+ * Front T6 narrowed 'parameters': the Photometer and Spectrometer tabs' edits are live (core/instrumentParameters.ts); the General,
+ * CCD and IR tabs stay read-only (Fronts T8, T7). Scopes… (TScopeDataDlg) stays: its Avail / Reap / Min / Max fields (OK 0x593754: StrToFloat → record +0x29, StrToInt → bytes
  * +0x2f, +0x2d, +0x2e for the 1.0 m and 4.0 m) share the dialog with the optics fields of Front T8. */
 export type TeacherDeferredReason='teacher-front'|'compiled-password-not-ported'|'needs-backend';
 export type TeacherDeferredItem=Readonly<{key:string;caption:string;control:string;dfm:string;reason:TeacherDeferredReason}>;
@@ -22,7 +23,7 @@ export const TEACHER_DEFERRED:readonly TeacherDeferredItem[]=Object.freeze([
  item('radio-test-mode','Test Mode (radio)','TRadiOptsDlg.TestModeBox (record+0x940 → env+0x37d5; radio options front T11b)','0x21ce45'),
  item('files','&Files...','TOptionsDlg.FilesBtn, TRadiOptsDlg FilesBtn (names and paths of VIREO\'s install; an options file keeps them typed, Front T2)','0x209ec2, 0x21bd31'),
  item('scopes','&Scopes...','TOptionsDlg.ScopeBtn (TScopeDataDlg: availability, reapply wait and uses with the optics, Front T8)','0x20dfb8'),
- item('parameters','Parameter editing','TOptionsDlg tab parameters (read-only here)','—'),
+ item('parameters','Parameter editing (General, CCD and IR tabs)','TOptionsDlg General, CCD Camera and IR Camera tab parameters (read-only here; Fronts T7, T8). The Photometer and Spectrometer tabs are live since Front T6','—'),
  item('radio-site','&Site...','TRadiOptsDlg.SiteBtn','0x21bf6e'),
  item('radio-options','Non-default radio options','TRadiOptsDlg (compiled values; Access Pulsar List is the only live box)','—'),
  item('cluster-edit','Edit Cluster Parameters','TClstrPrmForm1 (TClstrListForm1 Edit/Delete/Undo Selection)','0x1e8aa6'),

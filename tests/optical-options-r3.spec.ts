@@ -23,14 +23,16 @@ test('the dialog offers the ported options with their compiled states and shows 
  await observatory(page);await enterInstructorMode(page);await card(page).getByTestId('ob-options').click();
  for(const k of ['fast-slewing','infrared-camera'])await expect(id(page,`ob-options-${k}`)).toBeChecked();
  for(const k of ['fast-scope-change','compute-redshift-velocity','monochrome-displays','print-in-color','time-dependent-data'])await expect(id(page,`ob-options-${k}`)).not.toBeChecked();
- const others=id(page,'ob-options-others');await expect(others.getByRole('listitem')).toHaveCount(3);// Front T3: Test Mode is live (5 → 4); Front T2: Demonstration Mode is live (4 → 3)
+ const others=id(page,'ob-options-others');await expect(others.getByRole('listitem')).toHaveCount(2);// Front T3: Test Mode is live (5 → 4); Front T2: Demonstration Mode is live (4 → 3); Front T5: Restrict Scope Access is live (3 → 2)
  // 7 before Front L3 added Time-Dependent Data (2026-10-30); 6 before Front R4 made Show Object ID live (2026-10-31; Show Object
  // Mag. was a Spectrometer tab value, not in this list).
  await expect(others).not.toContainText('Fast Slewing');
  await expect(id(page,'ob-options-tab-general')).toContainText('Finder Field (Degs)2.50');await expect(id(page,'ob-options-tab-ccd')).toContainText('Site CH350 003B Back-Illuminated');
  await expect(id(page,'ob-options-tab-ir')).toContainText('CLEA_IR1');await expect(id(page,'ob-options-tabs')).not.toContainText(/<input/);
- // Front T4: only the Photometer tab's Set E(B-V) and Detect Sky are live check boxes; every tab value stays read-only text.
- await expect(id(page,'ob-options-tabs').locator('input')).toHaveCount(2);await expect(id(page,'ob-options-tabs').locator('input[type=text],input:not([type])')).toHaveCount(0);await expect(id(page,'ob-options-tabs-note')).toContainText('not editable');
+ // Front T4: the Photometer tab's Set E(B-V) and Detect Sky are live check boxes; Front T6: the seven Photometer and Spectrometer
+ // parameters are text edits; the General, CCD and IR values stay read-only text.
+ await expect(id(page,'ob-options-tabs').locator('input')).toHaveCount(9);await expect(id(page,'ob-options-tabs').locator('input[type=text],input:not([type])')).toHaveCount(7);
+ for(const tab of ['general','ccd','ir'])await expect(id(page,`ob-options-tab-${tab}`).locator('input')).toHaveCount(0);await expect(id(page,'ob-options-tabs-note')).toContainText('not editable');
  // IRBoxMouseUp: unchecking Infrared Camera hides the IR tab at once (in the draft); Cancel keeps the option.
  await id(page,'ob-options-infrared-camera').uncheck();await expect(id(page,'ob-options-tab-ir')).toHaveCount(0);
  await page.getByRole('button',{name:'Cancel',exact:true}).click();

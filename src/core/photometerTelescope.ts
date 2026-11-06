@@ -43,6 +43,13 @@ export function photometerTelescope(index:PhotometerTelescopeIndex){
  // are pinned by the earlier ubv-contract.json andthe new address/range proof.
  return Object.freeze({index,name:p.name,seeingArcsec:p.seeingArcsec,seeingWidthDegrees:(p.seeingArcsec/2)/3600,zeroPoint});
 }
+/** Front T6 (core/instrumentParameters.ts): the prepared photometer zero point for an instructor Base Magnitude. TObsrvtry 0x53df4f
+ * stores Single(BaseMag + the telescope record's Single correction +0x3c) at +0x6f0 on every telescope selection; Start 0x500976
+ * loads it and adds the Single 5.0 at 0x500ac0 into Extended +0x483. With BaseMag 6 it equals photometerTelescope(index).zeroPoint. */
+export function photometerPreparedZeroPoint(index:PhotometerTelescopeIndex,baseMagnitude:number):number{
+ if(!isPhotometerTelescopeIndex(index))throw new PhotometerTelescopeError();
+ const p=opticalProfile(index);return telescopeZeroPoint(baseMagnitude,index===0?legacyCorrection:p.scopeFactorMag)+photoOffset;
+}
 /** Front P2 D1 (a): the superseding domain over U..I and apertures 5..150 (data/photometry/ri-contract.json telescopeDomain).
  * A target it excludes is refused at Start in a live session; the earlier contracts' admission still governs target and
  * telescope events, so every recorded history replays exactly (a reading recorded before P2 still replays). */

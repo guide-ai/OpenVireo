@@ -1,3 +1,4 @@
+import {useSpectrometerParameterGate} from '../useSpectrometerParameterGate';
 import {useEffect,useId,useMemo,useReducer,useRef,useState,useContext} from 'react';
 import {TestModeContext} from '../polish/testModeContext';
 import {VireoOptionsContext} from '../vireoOptionsContext';
@@ -54,6 +55,8 @@ const safeName=(s:string)=>s.replace(/[^\x20-\x7e]|[\\/:*?"<>|]/g,'_');
 export default function MultiSpecInstrument({field,telescope,access,armed,armedText,mask,editMode,busy,active,title,help,noFieldText,rangeBlock=null,heading:Heading='h2',spectralRange}:MultiSpecInstrumentProps){
  const id=useId(),fieldWrap=useRef<HTMLDivElement>(null);
  const [state,dispatch]=useReducer(multiSpecReducer,undefined,()=>createMultiSpecState(telescope,pageSeed()));
+ // Front T6: Multi-Spec reads BaseMag, SpSky, SpBase and SpTimer (0x527013, 0x52702c, 0x52727a..0x527290); instructor values refuse it.
+ const parameterRefusal=useSpectrometerParameterGate('multispec');
  const [view,setView]=useState<ViewState>({status:'none'}),[viewTry,setViewTry]=useState(0);
  const [results,setResults]=useState<ReadonlyMap<string,Result>>(new Map());
  // Front R4d: VIREO's global Show Object ID / Show Object Mag (env+0x2e81 / +0x2e80), no longer two local check boxes.
@@ -171,7 +174,7 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
   <Heading id={`${id}-title`}>{title}</Heading>
   <p className="observatory-note">{help}</p>
   <div className="button-row">
-   <button type="button" className="primary-button" disabled={!usable||access!=='ready'||state.open} onClick={()=>dispatch({type:'show'})} data-testid="ms-access">{t('multispec.access')}</button>
+   <button type="button" className="primary-button" disabled={!usable||access!=='ready'||state.open||!!parameterRefusal} onClick={()=>dispatch({type:'show'})} data-testid="ms-access">{t('multispec.access')}</button>{parameterRefusal&&<p role="status" data-testid="ms-parameters-refused" data-reason="uncertified-parameter">{parameterRefusal}</p>}
   </div>
   <p role="status" data-testid="ms-access-status">{state.open?t('multispec.accessOpen'):access!=='ready'?multiSpecAccessText(access):''}</p>{rangeBlock&&<p role="status" data-testid="ms-range-block">{rangeBlock}</p>}
   {state.open&&<div className="ms-body">

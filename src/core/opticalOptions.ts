@@ -83,7 +83,9 @@ export const telescopeChangeClosesDome=(options:Pick<SessionOpticalOptions,'fast
 /** The read-only tab values: the compiled record (defaults routine 0x5a21d0) as FormActivate 0x5a56e0 writes it into the edits,
  * FloatToStrF(ffFixed,18,d) for Singles and IntToStr for Integers (ir-gate-and-tab-values.md). Horizon Limit is the selected
  * site's (stored in radians, shown ×180/π); the three compiled sites all hold 10°. [W] Shown, never editable: changing them
- * would invalidate the certified field, photometer, spectrometer and camera contracts built on these values. */
+ * would invalidate the certified field, photometer, spectrometer and camera contracts built on these values. Front T6: the
+ * Photometer and Spectrometer tabs' seven parameters are edits in the dialog (core/instrumentParameters.ts, typed
+ * uncertified-parameter when not compiled); these rows keep their compiled texts, which those edits start from. */
 export type OptionTabValue=Readonly<{label:string;text:string}>;
 export type OptionTab=Readonly<{tab:'general'|'photometer'|'spectrometer'|'ccd'|'ir';caption:string;values:readonly OptionTabValue[]}>;
 const v=(label:string,text:string):OptionTabValue=>Object.freeze({label,text});

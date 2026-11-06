@@ -1,3 +1,4 @@
+import {useSpectrometerParameterGate} from './useSpectrometerParameterGate';
 import {DEFAULT_SPECTRAL_RANGE,sameRange,type SpectralRange} from './core/spectralRange';
 import {parseObjectXSpectrumPolicy} from './core/objectXSpectrometer';
 import {spectralRangeCoverage} from './core/spectralRangeCoverage';
@@ -62,8 +63,11 @@ export default function ObjectXSpectrum({spectralRange=DEFAULT_SPECTRAL_RANGE,on
  // Front R4d [W]: on the Object X route the current object is always hidden (never looked up): IDText shows the hidden-name text,
  // MagText stays empty, and Save keeps the student's label as its name.
  const current=useSpectrometerObject(null,'masked');
+ // Front T6: instructor spectrometer values refuse this exercise route (useSpectrometerParameterGate).
+ const parameterRefusal=useSpectrometerParameterGate('exercise');
  const update=(f:(r:Available,s:JournalState)=>JournalState)=>setView(v=>{if(v.kind!=='ready')return v;try{return {...v,state:f(v.result,v.state),keptAs:null};}catch{return v;}});
  function start(){
+  if(parameterRefusal)return;
   update((r,s)=>r.engine.start(s));last.current=performance.now();stopTimer();
   timer.current=window.setInterval(()=>{const now=performance.now(),d=Math.min(1000,Math.max(1,Math.round(now-last.current)));last.current=now;
    setView(v=>{if(v.kind!=='ready'||v.state.exposure.phase!=='running')return v;try{return {...v,state:v.result.engine.tick(v.state,d)};}catch{return v;}});},TICK_MS);
@@ -115,7 +119,7 @@ export default function ObjectXSpectrum({spectralRange=DEFAULT_SPECTRAL_RANGE,on
     :view.kind==='ready'?M.spectrumReady(label,M.spectrumTelescopes[view.result.telescope]):view.kind==='kept'?M.spectrumKeptRow(view.label,M.spectrumTelescopes[view.result.telescope],seconds(view.state.exposure.elapsedMs)):''}
   </div>
   {view.kind==='ready'&&<div className="button-row">
-   <button className="primary-button" disabled={disabled||running||limited} onClick={start}>{M.spectrumStart}</button>
+   <button className="primary-button" disabled={disabled||running||limited||!!parameterRefusal} onClick={start}>{M.spectrumStart}</button>{parameterRefusal&&<p role="status" data-testid="objectx-parameters-refused" data-reason="uncertified-parameter">{parameterRefusal}</p>}
    <button className="secondary-button" disabled={!running} onClick={stop}>{M.spectrumStop}</button>
    <button className="secondary-button" disabled={disabled||running||view.state.exposure.elapsedMs===0} onClick={clear}>{M.spectrumReset}</button>
    <button className="secondary-button" disabled={disabled||running||view.state.exposure.elapsedMs===0||view.keptAs!==null||full} onClick={keep}>{M.spectrumKeep}</button>

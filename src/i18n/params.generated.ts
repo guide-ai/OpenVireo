@@ -3548,4 +3548,19 @@ export interface MessageParameters {
   "optionsFile.invalid.too-large": never;
   "optionsFile.ok": never;
   "optionsFile.cancel": never;
+  "instrumentParameters.photometerNote": never;
+  "instrumentParameters.spectrometerNote": never;
+  "instrumentParameters.draftUncertified": "fields";
+  "instrumentParameters.errorOk": never;
+  "instrumentParameters.exerciseRefused": "fields";
+  "ph.parametersRefused": never;
+  "ph.parametersDomain.base-count": never;
+  "ph.parametersDomain.timer": never;
+  "ph.parametersDomain.magnitude": never;
+  "ph.parametersNote": "fields";
+  "ph.uncertifiedReading": "base" | "count" | "sky" | "timer";
+  "fieldSpec.parametersDomain.base-count": never;
+  "fieldSpec.parametersDomain.magnitude": never;
+  "fieldSpec.uncertified": "base" | "count" | "sky";
+  "optionsFile.reason.not-representable": never;
 }

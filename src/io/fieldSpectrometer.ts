@@ -5,6 +5,7 @@
 import {DEFAULT_SPECTRAL_RANGE,type SpectralRange} from '../core/spectralRange';
 import {spectralRangeCoverage} from '../core/spectralRangeCoverage';
 import type {FieldResult,FieldTelescope,FieldVariableTime} from '../core/fieldEngine';
+import {isCompiledSpectrometerParameters,type SpectrometerParameters} from '../core/instrumentParameters';
 import {FIELD_SPECTRUM_FORMAT,fieldSpectrumPolicy,parseFieldSpectrumPolicy,spectrometerFieldResult,type SpectrometerInputs} from '../core/fieldSpectrometer';
 export {FIELD_SPECTRUM_FORMAT,serializeFieldSpectrumSession} from '../core/fieldSpectrometer';
 import {GLXYSP_LST} from '../core/lssLists';
@@ -77,7 +78,8 @@ export type FieldSpectrumRecord=Readonly<{prepared:Extract<PreparedFieldSpectrum
 /** The spectrometer's field result at a pointing and telescope. An available result has no reasons; the result is returned either
  * way so the page can show what the slit selects and the engine's typed reasons. An abort rejects with AbortError.
  * variableTime: the observatory JD frozen when the student pressed Use (recorded in the policy). */
-export async function prepareFieldSpectrum(pointing:Pointing,telescope:FieldTelescope,options:Readonly<{signal?:AbortSignal;hidden?:Pointing|null;variableTime?:FieldVariableTime;range?:SpectralRange}>={}):Promise<PreparedFieldSpectrum>{
+/** Front T6: `parameters`, instructor spectrometer values (BaseMag, SpSky, SpBase); recorded in the policy (#P…). */
+export async function prepareFieldSpectrum(pointing:Pointing,telescope:FieldTelescope,options:Readonly<{signal?:AbortSignal;hidden?:Pointing|null;variableTime?:FieldVariableTime;range?:SpectralRange;parameters?:SpectrometerParameters}>={}):Promise<PreparedFieldSpectrum>{
  const {signal}=options;signal?.throwIfAborted();
  if(await objectXMasked(options.hidden??null,pointing))return Object.freeze({status:'unavailable',reason:'object-x-hidden'});
  const [s]=await Promise.all([tileSources(),spectrometerInputs()]);signal?.throwIfAborted();
@@ -90,11 +92,11 @@ export async function prepareFieldSpectrum(pointing:Pointing,telescope:FieldTele
  }
  const inp=await spectrometerInputsFor(pack,signal);
  await yieldTask();signal?.throwIfAborted();
- const range=options.range??DEFAULT_SPECTRAL_RANGE,result=spectrometerFieldResult(inp,pack,pointing,telescope,options.variableTime,range);
+ const range=options.range??DEFAULT_SPECTRAL_RANGE,parameters=options.parameters&&!isCompiledSpectrometerParameters(options.parameters)?options.parameters:undefined,result=spectrometerFieldResult(inp,pack,pointing,telescope,options.variableTime,range,parameters);
  // Front S2 [W]: off the default only star sources are witnessed (spectralRangeCoverage.ts); galaxies and QSOs are refused.
  const source=result.qsoTarget?'qso':result.starTarget?'star':result.target?'galaxy':null;
  if(source&&spectralRangeCoverage('field',range,source)!=='covered')return Object.freeze({status:'unavailable',reason:'range-not-witnessed'});
- return Object.freeze({status:'ready',pointing:Object.freeze({ra:pointing.ra,dec:pointing.dec}),telescope,policy:fieldSpectrumPolicy(pointing,telescope,options.variableTime,range),result});
+ return Object.freeze({status:'ready',pointing:Object.freeze({ra:pointing.ra,dec:pointing.dec}),telescope,policy:fieldSpectrumPolicy(pointing,telescope,options.variableTime,range,parameters),result});
 }
 
 /** Reads a session file: the field is prepared again at its policy's pointing and telescope, then the journal is replayed. */
@@ -106,7 +108,7 @@ export async function readFieldSpectrumSession(text:string,options:Readonly<{sig
  // G4c review 1 M1: the mask fails closed when ObjectX.HTL cannot be read; read it first so a file that did not arrive is a
  // missing resource (retryable), and a part refused as masked really lies near Object X.
  await loadObjectXPositions();
- const prepared=await prepareFieldSpectrum(p.pointing,p.telescope,{...options,range:p.range,...(p.variableTime?{variableTime:p.variableTime}:{})});
+ const prepared=await prepareFieldSpectrum(p.pointing,p.telescope,{...options,range:p.range,...(p.variableTime?{variableTime:p.variableTime}:{}),...(p.parameters?{parameters:p.parameters}:{})});
  // G4c: a field whose tiles did not arrive is a missing resource (retryable), not a bad file.
  if(prepared.status==='unavailable'&&prepared.reason==='field-tiles')throw new GscTileError((prepared.detail??'fetch') as GscTileError['code']);
  if(prepared.status!=='ready'||prepared.policy!==r.policy||prepared.result.reasons.length||!prepared.result.calibration)throw new JournalError('session');

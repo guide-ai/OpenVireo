@@ -85,7 +85,7 @@ In OpenVireo (`src/io/optionsFile.ts`, `src/io/demonstrationModeStorage.ts`):
   install paths and addresses built from VIREO's own folder at run time, and the rest of its parameter block belongs to the
   parameter fronts T6–T8, so a web-written native file would have to invent them. The file holds the 17 applied options
   (Demonstration Mode, Test Mode, Limit Slewing, Edit Mode, Virtual Observatory, the R3 options and, since Front T4, Set E(B-V)
-  and Detect Sky), the other options at
+  and Detect Sky), since Front T6 the seven Photometer and Spectrometer parameters under `parameters`, the other options at
   their compiled values under `notApplied`, and a **zero-length password**.
 - **Load options file…** reads that JSON file or a native `VEO_OPTS.INI` with VIREO's checks (version rule, length/Eof) and its
   box texts. VIREO reads its file only at start-up, so here a file fills the dialog, as Reset does: OK applies it and Cancel
@@ -93,7 +93,8 @@ In OpenVireo (`src/io/optionsFile.ts`, `src/io/demonstrationModeStorage.ts`):
   is cleared. Values OpenVireo does not apply are listed with their reason and not applied: Restrict Scope Access (a later
   instructor version; Detect Sky and Set E(B−V) are applied since Front T4); Compute Magnitudes, Include R and I and Plot HR (fixed here); Sound Effects
   (OpenVireo's own switch); Write Log File; the Lab Table Number (undecided, its value is not shown); and the native parameter
-  block. Saving again writes VIREO's compiled values for those listed items, and the load notice says so (review 1 L2). A native
+  block other than the seven Photometer and Spectrometer fields, which Front T6 applies (a NaN or infinite native Single keeps its
+  compiled value and is listed). Saving again writes VIREO's compiled values for those listed items, and the load notice says so (review 1 L2). A native
   Fast Slewing byte other than 3 or 4 is noted with its rate index, which VIREO's ProgrammedSlew would pass straight to the
   rate slider (0x539cbf); the box shows ticked only for 4 (review 1 L1). Error boxes show the file's name where VIREO shows its
   full path; `Read beyond end of file` is inferred (Delphi run-time text). Unlike VIREO, OpenVireo never deletes a file it could
@@ -146,6 +147,47 @@ investigations replay identically. Scopes… (TScopeDataDlg; OK 0x593754 writes 
 guides now lock the 1.0 m and 4.0 m behind Request Time, as VIREO does; those exercises use the 0.4 m, so nothing in them is
 blocked. Recovery and excerpts: `analysis/front-teacher/t5/RECOVERY.md`.
 
+## Photometer and Spectrometer parameters (Front T6, 2026-11-06)
+The seven parameter edits of the Photometer and Spectrometer tabs are live in instructor mode (`src/core/instrumentParameters.ts`).
+Static map [D] (TOptionsDlg field table at VMT 0x5a0a28; OKBtnClick 0x5a6068; FormActivate 0x5a56e0; defaults 0x5a21d0):
+
+| Tab | Edit | Record (env = +0x6b4) | Type, display | Compiled | Read by |
+|---|---|---|---|---|---|
+| Photometer | Base Magnitude (V), BaseMagEd | +0x250c Single | ffFixed 18, 1 | 6.0 | TObsrvtry 0x53df4f → +0x6f0 = Single(BaseMag + scope correction): photometer zero point (Start 0x500976, +5), spectrometer source and sky amplitudes (0x50e12f..0x50e24c), Multi-Spec (0x527013, 0x52a486) |
+| Photometer | Sky Magnitude (V), SkyMagEd | +0x2510 Single | ffFixed 18, 2 | 16.00 | TPhotometer FormShow 0x4ff6aa (V; B = V + 1.0, U = B + 0.33) |
+| Photometer | Base Photon Count, BaseCountEd | +0x279f Integer (Round) | IntToStr | 1000 | photometer callback 0x501506 / 0x501582 |
+| Photometer | Timer Wait (ms), PhoTimerEd | +0x27a3 Integer | IntToStr | 100 | photometer Start 0x500a01 (increment ms/1000) and 0x500a43 (TTimer interval) |
+| Spectrometer | Sky Magnitude (V), SpSkyEd | +0x2514 Single | ffFixed 18, 2 | 19.00 | TSpectrometer 0x50e23f; Multi-Spec 0x52702c, 0x52a4e9 |
+| Spectrometer | Base Photon Count, SpBaseEd | +0x27a7 Integer | IntToStr | 50 | TSpectrometer timer 0x50f7b2 (× GetTickCount delta); Multi-Spec 0x527278, 0x52a507 |
+| Spectrometer | Timer Wait (ms), SpTimerEd | +0x27ab Integer | IntToStr | 1 | TSpectrometer TTimer interval only (0x50f5f2); Multi-Spec rate divisor 0x52728a, 0x52a526 |
+
+The plan's FndrMagEd ("Finder Mag Limit", +0x2504, default 11.5) is on the **General** tab (DFM 0x20a647), so it stays for Front T8.
+OK converts every parameter edit with StrToFloat inside one try, in VIREO's order (… BaseMag, SkyMag, SpSky, MinLmda, MaxLmda,
+BaseCount, SpBase, PhoTimer, SpTimer, then the CCD and IR edits). An EConvertError shows `Numeric Conversion Error!` / `Verify Values
+of Numeric Parameters.` with caption `Non-Numeric Value!` (0x5a6bac / 0x5a6bf0, MB_ICONHAND), sets ModalResult to 0 (the dialog
+stays open) and sets no focus. Here the same box appears, nothing is committed, and focus returns to OK; [W] a Single overflow or an
+Integer outside Int32 also gets that box (VIREO would raise an unhandled EOverflow or store the low 32 bits). The values last for the
+page session, Reset restores the compiled texts, Leave keeps them, Save Updates writes them (`parameters` in the web file) and Load
+reads them from a web file or from a native VEO_OPTS.INI's stream fields.
+
+**Any value other than VIREO's is `uncertified-parameter`.** With the compiled values every result is byte-identical. Otherwise:
+- **Photometer — measured, labelled.** VIREO's formulas: zero point Single(BaseMag + correction) + 5, sky colours from SkyMag, means
+  and base-count sum × BaseCount, ⌈1000·s / Timer⌉ callbacks per period at a Timer-ms interval. The values travel in the session as
+  a `parameters` event (owner 17); each reading records them and is labelled. The per-callback Poisson bound and the 32-bit count
+  domain, which the contracts precomputed for the compiled values, are recomputed with the instructor values (a target beyond them
+  is refused). E04 does not count such readings (the pinned Pleiades fields are certified for the compiled values only).
+- **Observatory spectrometer — measured, labelled.** BaseMag, SpSky and SpBase replace the field engine's zero point, sky and
+  multiplier; the policy records them (`#P…`) so a saved session replays them; the 2³⁰ per-tick admission applies to the instructor
+  multiplier. Such a spectrum is not an LSS Record Z source. Timer Wait changes nothing here (VIREO's counts follow the elapsed ms; the
+  web keeps its 100 ms browser tick).
+- **Exercise spectrometer routes — refused.** Hubble, LSS, Object X, stellar classification, the sky route and Multi-Spec (which also
+  reads Timer Wait) refuse while a value they read is not VIREO's, with a message naming the edits: their exercise witnesses
+  (E01, E02, E08, Multi-Spec D3) were computed with the compiled values.
+- [W] VIREO latches BaseMag at each telescope selection and SkyMag at the photometer's FormShow; the web applies the photometer values
+  at the next Start and the spectrometer values at the next Use.
+
+Recovery, excerpts and the full policy: `analysis/front-teacher/t6/RECOVERY.md`.
+
 ## In OpenVireo
 The dialog opens from the telescope-motion card, in instructor mode. These controls are live:
 
@@ -158,6 +200,7 @@ The dialog opens from the telescope-motion card, in instructor mode. These contr
 | Set E(B-V) (Photometer tab) | on | Front T4 (above): a database cluster's E(B−V) is the catalogue value, read-only | +0x27dc = env+0x2e90; ShowZAMS1Click 0x543a39 |
 | Detect Sky (Photometer tab) | off | Front T4 (above): the photometer decides Object or Sky at each activation | +0x27cf = env+0x2e83 → TPhotometer+0x6b1; FormActivate 0x4ff94c |
 | Restrict Scope Access | on | Front T5 (above): the Photometry, HR Diagrams and Stellar Spectra exercises put the 1.0 m and 4.0 m behind Request Time | +0x27d1 = env+0x2e85 → env+0x3840; 0x589bd8, 0x58ba88, 0x53cce4 |
+| Photometer and Spectrometer tab parameters (7 edits) | 6.0, 16.00, 1000, 100; 19.00, 50, 1 | Front T6 (above): the photometer and the observatory spectrometer measure with instructor values, labelled uncertified; the exercise spectrometer routes refuse them | +0x250c, +0x2510, +0x279f, +0x27a3, +0x2514, +0x27a7, +0x27ab |
 | Fast Slewing | on | Programmed slews run at rate index 4; off gives index 3, half as fast. | +0x27af := 4/3; ProgrammedSlew 0x5399e8 sets RateSlider.Position at 0x539cbf |
 | Fast Scope Change | off | On, a telescope change with the dome open keeps it open, with no dome sound. | +0x27d0 = env+0x2e84; 0x58b554 needs the option on and the dome open (+0x552 = 1) |
 | Compute Rdshft Vel. | off | The LSS Measured Redshift Data dialog and, since Front H2, the Hubble Observational Data dialog open with the velocity filled in: Single(c·z), ffExponent 4. The Hubble dialog fills it only when z ≠ 0. OK still applies the 1 % check. | +0x27d4 = env+0x2e88; TLSSRsltsDlg1.FormActivate 0x57cbcb; TObsRsltsDlg1.FormActivate 0x54aedb |
@@ -170,7 +213,8 @@ The dialog opens from the telescope-motion card, in instructor mode. These contr
 | Allow User Change (Spectrometer tab) | on | Checked, Spectral Range… is offered on every spectrometer route; unchecked, it is disabled with a note and the current range stays (Front S3). [W] the openers follow the option at once (the dialog is on another page, so the next show reads it). | +0x27d7 = env+0x2e8b; compiled 0x5a2a32; read by TSpectrometer FormShow 0x50d9d5 and TSpClassify FormShow 0x507945 |
 
 The dialog also shows the General, Photometer, Spectrometer, CCD and IR tab values **read-only** (except the Photometer tab's
-Set E(B-V) and Detect Sky, live since Front T4), formatted as FormActivate 0x5a56e0 writes them. Editing them would invalidate the certified field, photometer, spectrometer and camera
+Set E(B-V) and Detect Sky, live since Front T4, and the Photometer and Spectrometer parameters, live since Front T6), formatted as
+FormActivate 0x5a56e0 writes them. Editing them would invalidate the certified field, photometer, spectrometer and camera
 contracts built on those values.
 
 **Web adaptations [W]:**
@@ -216,5 +260,6 @@ contracts built on those values.
     the print preview writes nothing (0x542fc5).
   - The photometer route's own web plot is not VIREO's form and keeps its colours.
 - Not ported: Administrator and the remaining photometer check boxes keep their compiled state and are listed as text. Test
-  Mode is live since Front T3, Demonstration Mode since Front T2, Set E(B-V) and Detect Sky since Front T4, and Restrict Scope
-  Access since Front T5 (above). Scopes… stays read-only (Front T8).
+  Mode is live since Front T3, Demonstration Mode since Front T2, Set E(B-V) and Detect Sky since Front T4, Restrict Scope
+  Access since Front T5, and the Photometer and Spectrometer parameters since Front T6 (above). The General, CCD and IR tab
+  parameters stay read-only (Fronts T8, T7), and so does Scopes… (Front T8).

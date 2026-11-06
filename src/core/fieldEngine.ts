@@ -44,6 +44,7 @@ import {createJournalExposure,type JournalState,type JournalSourcePreparer} from
 import {continuationSourcePreparer,galaxySourceValues,type FieldContinuationSource} from './fieldContinuation';
 import {galaxyChannelGrid} from './galaxySpectrum';
 import {sampleUniformSpectrum,type UniformSpectrum} from './acquisition';
+import type {SpectrometerParameters} from './instrumentParameters';
 import {SPECTROMETER_TICK_MEAN_BOUND} from './exposure';
 import {packCovers,type FieldPack} from './fieldPack';
 import {prepareQsoProfile,QsoSpectrumError,type QsoSpectrumFile} from './qsoSpectrum';
@@ -70,6 +71,13 @@ export const FIELD_CALIBRATIONS=Object.freeze([
  Object.freeze({baseZeroPoint:base.baseZeroPoint,telescopeCorrection:3,skyMagnitude:base.skyMagnitude,magnitudeShift:3,zeroPoint:9,meanBound:SPECTROMETER_TICK_MEAN_BOUND}),
 ]);
 export const FIELD_MULTIPLIER=base.multiplier;
+/** Front T6 (core/instrumentParameters.ts): a telescope record's calibration with instructor spectrometer values: BaseMag replaces
+ * the base zero point 6 (0x53df4f: Single(BaseMag + correction) at TObsrvtry+0x6f0, read by the spectrometer at 0x50e12f..0x50e24c),
+ * SpSky the sky magnitude 19 (0x50e23f), SpBase the multiplier 50 (0x50f7b2). Without parameters, the compiled record unchanged. */
+function fieldCalibration(telescope:FieldTelescope,parameters?:SpectrometerParameters):Calibration&Readonly<{multiplier:number}>{
+ const c=FIELD_CALIBRATIONS[telescope];if(!parameters)return Object.freeze({...c,multiplier:FIELD_MULTIPLIER});
+ return Object.freeze({...c,baseZeroPoint:parameters.baseMagnitude,skyMagnitude:parameters.skyMagnitude,zeroPoint:telescopeZeroPoint(parameters.baseMagnitude,c.telescopeCorrection),multiplier:parameters.baseCount});
+}
 /** Why a pointing cannot be acquired in this version (never a fabricated substitute). */
 export type FieldUnavailableReason=
  |'outside-pack'|'qso-merge'|'photographic-image'|'variable-merge'
@@ -192,7 +200,9 @@ export type FieldOptions=Readonly<{/** GLXYSP.LST rows (review 2 finding 2): a s
  variableTime?:FieldVariableTime;
  /** Front C6: evaluateFieldView also returns `galaxyRed`, the red channel of the 936² paint after the galaxy loop and before the
   * stars (obs+0x550 when 0x53b390 copies it to the CCD form, 0x53b63f..0x53b6c9), the source of the CCD overlay. */
- galaxyLayer?:boolean}>;
+ galaxyLayer?:boolean;
+ /** Front T6: instructor spectrometer values (never the compiled ones): the calibration and multiplier of evaluateField. */
+ spectrometerParameters?:SpectrometerParameters}>;
 /** hitId: the nearest record (the merge winner); resolvedId: the record at the unrepaired saved index that the unmodelled update
  * would act on (a runner pruned below the winner shifts it onto another record); removedRunner: pruned as natively. */
 export type FieldOutsideViewVariable=Readonly<{variable:number;name:string;classification:string;hitId:string;resolvedId:string;hitArcseconds:number;removedRunner:string|null}>;
@@ -229,7 +239,7 @@ export type FieldPopulation=Readonly<{
  /** Front AXISMERGE: the access violation that ended the QSO merge or the galaxy cleanup ('merge-access-violation'). */
  mergeFault?:FieldMergeFault;
 }>;
-export type FieldCalibration=Readonly<{sourcePreparer?:JournalSourcePreparer;continuationSource?:FieldContinuationSource;continuationDraws?:'start-time';sourceFile:string;zeroPoint:number;pixelLevel:number;fraction:number;amplitude:PhotonAmplitudes;instrumentMagnitude:number;sourceMeans:readonly number[];sourceValues:readonly number[];wavelengths:readonly number[]}>;
+export type FieldCalibration=Readonly<{sourcePreparer?:JournalSourcePreparer;continuationSource?:FieldContinuationSource;continuationDraws?:'start-time';/** Front T6: the multiplier of an instructor SpBase (absent: FIELD_MULTIPLIER). */multiplier?:number;sourceFile:string;zeroPoint:number;pixelLevel:number;fraction:number;amplitude:PhotonAmplitudes;instrumentMagnitude:number;sourceMeans:readonly number[];sourceValues:readonly number[];wavelengths:readonly number[]}>;
 export type FieldResult=Readonly<{
  /** 'outside-view' only: galaxies outside the browser stamp bound that were not painted because they miss the crop. */
  outsideViewGalaxies?:readonly Readonly<{galaxy:string;margin:number}>[];
@@ -649,7 +659,7 @@ function runTrueVariableStage(initial:readonly FieldStar[],variables:readonly Na
 }
 /** Front T §3.6: implemented in variableDispatch.ts (the module Front O imports); re-exported for the engine's callers. */
 export {fieldStarVariable,type FieldStarVariable} from './variableDispatch';
-type Calibration=(typeof FIELD_CALIBRATIONS)[number];
+type Calibration=Readonly<{baseZeroPoint:number;telescopeCorrection:number;skyMagnitude:number;magnitudeShift:number;zeroPoint:number;meanBound:number}>;
 /** Same paint order and levels as galaxyExposure.ts: galaxies first (rounded projected centres), then stars by stored level. */
 /** The 'outside-view' conditions that need the projected scene: both footprints outside the 312² crop (every pixel of the 99×99
  * stamp around the rounded centre lies outside rows/columns 312..623), and no galaxy or QSO within the 2′ merge radius. */
@@ -745,7 +755,7 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
  // page delegates field evaluation to a Worker. No state or result depends on it.
  if(typeof performance!=='undefined'&&typeof performance.mark==='function')performance.mark(FIELD_EVALUATION_MARK);
  if(telescope!==0&&telescope!==1&&telescope!==2)throw new FieldEngineError('input');
- const c=FIELD_CALIBRATIONS[telescope],at=Object.freeze({ra:pointing.ra,dec:pointing.dec});
+ const c=fieldCalibration(telescope,options.spectrometerParameters),at=Object.freeze({ra:pointing.ra,dec:pointing.dec}),mult=c.multiplier,multiplied=options.spectrometerParameters?{multiplier:mult}:{};
  const empty={pointing:at,telescope,scene:null,viewport:null,selection:null,target:null,calibration:null};
  const {population,reasons}=buildFieldPopulation(pack,glx,at,options);
  if(!population||reasons.length)return Object.freeze({...empty,population,reasons:Object.freeze(reasons)});
@@ -784,8 +794,8 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
   let profile;try{profile=prepareQsoProfile(options.qsoObservation.file,q.redshift,options.qsoObservation.minimum,options.qsoObservation.maximum);}
   catch(e){if(e instanceof QsoSpectrumError)return Object.freeze({...base,qsoTarget:q,reasons:Object.freeze(['spectrum-range' as const])});throw e;}
   const sourceMeans=Object.freeze(profile.values.map(v=>v*amplitude.source));
-  const calibration=Object.freeze({sourceFile:'QSOSpect.dat',zeroPoint,pixelLevel,fraction,amplitude,instrumentMagnitude:q.magnitude,sourceMeans,sourceValues:profile.values,wavelengths:profile.wavelengths});
-  if(Math.max(...sourceMeans)*FIELD_MULTIPLIER*1000>=c.meanBound)return Object.freeze({...base,qsoTarget:q,calibration,reasons:Object.freeze(['mean-bound' as const])});
+  const calibration=Object.freeze({...multiplied,sourceFile:'QSOSpect.dat',zeroPoint,pixelLevel,fraction,amplitude,instrumentMagnitude:q.magnitude,sourceMeans,sourceValues:profile.values,wavelengths:profile.wavelengths});
+  if(Math.max(...sourceMeans)*mult*1000>=c.meanBound)return Object.freeze({...base,qsoTarget:q,calibration,reasons:Object.freeze(['mean-bound' as const])});
   return Object.freeze({...base,qsoTarget:q,calibration,reasons:Object.freeze([])});
  }
  if(selection.kind==='star'&&population.stars[selection.star.index].type===0&&options.starObservation){
@@ -804,8 +814,8 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
   // Sampler 0x55dfe0: a wavelength outside the template gives 0 with no draw (Front S2 review 1 M2, as the catalogue star route).
   for(const w of grid.wavelengths){const v=sampleUniformSpectrum(template.spectrum,w);if(v.valid&&!(v.value>=0))return Object.freeze({...base,starTarget:st,reasons:Object.freeze(['spectrum-range' as const])});values.push(v.valid?v.value:0);}
   const sourceMeans=Object.freeze(values.map(v=>v*amplitude.source));
-  const calibration=Object.freeze({sourceFile:template.file,zeroPoint,pixelLevel,fraction,amplitude,instrumentMagnitude:st.magnitude,sourceMeans,sourceValues:Object.freeze(values),wavelengths:grid.wavelengths});
-  if(Math.max(...sourceMeans)*FIELD_MULTIPLIER*1000>=c.meanBound)return Object.freeze({...base,starTarget:st,calibration,reasons:Object.freeze(['mean-bound' as const])});
+  const calibration=Object.freeze({...multiplied,sourceFile:template.file,zeroPoint,pixelLevel,fraction,amplitude,instrumentMagnitude:st.magnitude,sourceMeans,sourceValues:Object.freeze(values),wavelengths:grid.wavelengths});
+  if(Math.max(...sourceMeans)*mult*1000>=c.meanBound)return Object.freeze({...base,starTarget:st,calibration,reasons:Object.freeze(['mean-bound' as const])});
   return Object.freeze({...base,starTarget:st,calibration,reasons:Object.freeze([])});
  }
  if(selection.kind!=='galaxy')return Object.freeze({...base,reasons:Object.freeze([selection.kind==='star'?population.stars[selection.star.index].type===3?'qso-selected' as const:'star-selected' as const:'no-galaxy-selected' as const])});
@@ -824,13 +834,13 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
  if(v.kind==='continuation'){
   const boundMeans=Object.freeze(v.values.map(x=>x*amplitude.source)),continuationSource:FieldContinuationSource=v.continuationSource;
   const sourcePreparer:JournalSourcePreparer=continuationSourcePreparer(continuationSource);
-  const calibration=Object.freeze({sourcePreparer,continuationSource,continuationDraws:'start-time' as const,sourceFile:own?own.file:galaxySource.file,zeroPoint,pixelLevel,fraction,amplitude,instrumentMagnitude,sourceMeans:boundMeans,sourceValues:v.values,wavelengths:v.wavelengths});
-  if(Math.max(...boundMeans)*FIELD_MULTIPLIER*1000>=c.meanBound)return Object.freeze({...base,target,calibration,reasons:Object.freeze(['mean-bound' as const])});
+  const calibration=Object.freeze({...multiplied,sourcePreparer,continuationSource,continuationDraws:'start-time' as const,sourceFile:own?own.file:galaxySource.file,zeroPoint,pixelLevel,fraction,amplitude,instrumentMagnitude,sourceMeans:boundMeans,sourceValues:v.values,wavelengths:v.wavelengths});
+  if(Math.max(...boundMeans)*mult*1000>=c.meanBound)return Object.freeze({...base,target,calibration,reasons:Object.freeze(['mean-bound' as const])});
   return Object.freeze({...base,target,calibration,reasons:Object.freeze([])});
  }
  const sourceMeans=Object.freeze(v.values.map(x=>x*amplitude.source));
- const calibration=Object.freeze({sourceFile:own?own.file:galaxySource.file,zeroPoint,pixelLevel,fraction,amplitude,instrumentMagnitude,sourceMeans,sourceValues:v.values,wavelengths:v.wavelengths});
- if(Math.max(...sourceMeans)*FIELD_MULTIPLIER*1000>=c.meanBound)return Object.freeze({...base,target,calibration,reasons:Object.freeze(['mean-bound' as const])});
+ const calibration=Object.freeze({...multiplied,sourceFile:own?own.file:galaxySource.file,zeroPoint,pixelLevel,fraction,amplitude,instrumentMagnitude,sourceMeans,sourceValues:v.values,wavelengths:v.wavelengths});
+ if(Math.max(...sourceMeans)*mult*1000>=c.meanBound)return Object.freeze({...base,target,calibration,reasons:Object.freeze(['mean-bound' as const])});
  return Object.freeze({...base,target,calibration,reasons:Object.freeze([])});
 }
 // ---- Front M (Multi-Spec): the field view without the slit. One block; announce edits to the Front T/A owners. ----
@@ -955,5 +965,5 @@ export function createFieldSkyExposure(telescope:FieldTelescope,range:SpectralRa
 /** Journal factory for an available field result (same journal as the galaxy exposure; policy chosen by the caller). */
 export function createFieldExposure(result:FieldResult,policy:string,seed:number):JournalState{
  if(!result||result.reasons.length||!result.calibration)throw new FieldEngineError('input');
- return createJournalExposure(policy,result.calibration.sourceMeans,result.calibration.amplitude.sky,FIELD_MULTIPLIER,seed,result.calibration.sourcePreparer);
+ return createJournalExposure(policy,result.calibration.sourceMeans,result.calibration.amplitude.sky,result.calibration.multiplier??FIELD_MULTIPLIER,seed,result.calibration.sourcePreparer);
 }

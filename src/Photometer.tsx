@@ -8,7 +8,8 @@ import {NativeClusterError,type NativeClusterDraft,type NativeClusterParameters}
 import {PleiadesAnalysisError,samePleiadesPairSource} from './core/pleiadesAnalysis';
 import PleiadesAnalysis from './PleiadesAnalysis';
 import {AcquisitionError} from './core/acquisition';
-import {PHOTOMETER_SECONDS,PHOTOMETER_REPEATS,LEGACY_PHOTOMETER_TIMING,requiredPhotometerCallbacks,admitPhotometerCallback,MAX_PHOTOMETER_GAP_MS,PHOTOMETER_CALLBACK_MS,PhotometerIntegrationError} from './core/photometerIntegration';
+import {PHOTOMETER_SECONDS,PHOTOMETER_REPEATS,LEGACY_PHOTOMETER_TIMING,requiredPhotometerCallbacks,admitPhotometerCallback,photometerCallbackGapMS,PHOTOMETER_CALLBACK_MS,PhotometerIntegrationError} from './core/photometerIntegration';
+import {isCompiledPhotometerParameters,photometerParameterRefusal,photometerParametersOf,uncertifiedParameterKeys,instrumentParameterField,type PhotometerParameters} from './core/instrumentParameters';
 import {reconcilePhotometryDraft,defaultPhotometryDraft,type PhotometryDraft} from './core/editingWorkspace';
 import {memo,useContext,useEffect,useMemo,useRef,useState,useImperativeHandle,type Ref} from 'react';
 import {createPhotometer,photometerEvent,photometerStructReading,releasePhotometer,skyReplaceAsked,photometerDetectSkyEvent,photometerDetectSkyPinnedRefusal,PhotometerError,type PhotometerState,type PhotometerEvent} from './core/photometer';
@@ -89,6 +90,10 @@ function Photometer({active,initialState=null,controllerRef,onStateChange,invest
  const results=useContext(ObservationListContext),shownList=useContext(ObservationListValue);
  // Front T4: Detect Sky (env+0x2e83 → TPhotometer+0x6b1, core/photometerTabOptions.ts), read at each activation through a ref.
  const detectSky=useContext(VireoOptionsContext).detectSky,detectSkyRef=useRef(detectSky);detectSkyRef.current=detectSky;
+ // Front T6: the instructor photometer parameters (core/instrumentParameters.ts), applied at the next Start.
+ const instrumentParameters=useContext(VireoOptionsContext).instrumentParameters,photometerParameters=useMemo(()=>photometerParametersOf(instrumentParameters),[instrumentParameters]);
+ const photometerParametersRef=useRef(photometerParameters);photometerParametersRef.current=photometerParameters;
+ const uncertifiedPhotometerFields=uncertifiedParameterKeys(instrumentParameters).filter(k=>instrumentParameterField(k).tab==='photometer');
  // Review 1 L2: VIREO's FormActivate reads +0x6b1 at activation, so the lock (selector, note, pinned Start refusal) follows the
  // option as the last activation read it, not the live option; the next activation updates it in both directions.
  const [detectLatched,setDetectLatchedState]=useState(false),detectLatchedRef=useRef(false);
@@ -124,7 +129,7 @@ function Photometer({active,initialState=null,controllerRef,onStateChange,invest
  useEffect(()=>{if(active)heading.current?.focus();else{release();dialog.current?.close();}},[active]);
  useEffect(()=>{if(current.current?.armed&&(current.current.telescopeIndex??0)!==telescopeIndex){release();setNotice(t('ph.released'));}},[telescopeIndex]);
  useEffect(()=>{const hide=()=>{if(document.visibilityState==='hidden'){if(!release())setNotice(t('ph.released'));}};document.addEventListener('visibilitychange',hide);return()=>{document.removeEventListener('visibilitychange',hide);stopClock();loadEpoch.current++;};},[]);
- function failure(e:unknown){if(e instanceof NativeClusterError){setError(t('nc.error'));return;}if(e instanceof PleiadesAnalysisError){setError(t('pa.confirmError'));return;}if(e instanceof AcquisitionError&&e.code==='precision'){setError(t('ph.seriesPrecision'));return;}setError(t(e instanceof PhotometerError&&e.code==='sky'?'ph.needSky':e instanceof PhotometerError&&e.code==='color'?'ph.colorError':(e instanceof PhotometerError||e instanceof PhotometerIntegrationError)&&e.code==='limit'?(current.current?.timing?'ph.seriesLimit':'ph.limitError'):e instanceof PhotometerIntegrationError?'ph.seriesError':'ph.error',{filter:current.current?.filter??'V'}));}
+ function failure(e:unknown){if(e instanceof NativeClusterError){setError(t('nc.error'));return;}if(e instanceof PhotometerError&&e.code==='parameters'){setError(t('ph.parametersRefused'));return;}if(e instanceof PleiadesAnalysisError){setError(t('pa.confirmError'));return;}if(e instanceof AcquisitionError&&e.code==='precision'){setError(t('ph.seriesPrecision'));return;}setError(t(e instanceof PhotometerError&&e.code==='sky'?'ph.needSky':e instanceof PhotometerError&&e.code==='color'?'ph.colorError':(e instanceof PhotometerError||e instanceof PhotometerIntegrationError)&&e.code==='limit'?(current.current?.timing?'ph.seriesLimit':'ph.limitError'):e instanceof PhotometerIntegrationError?'ph.seriesError':'ph.error',{filter:current.current?.filter??'V'}));}
  // Controlled target and Sky/Object changes move the App telescope to the new verified field without releasing this context.
  function preparePoint(s:PhotometerState){link.current?.onPreparePoint(buildPhotometerTargetField(s.targetId,s.pointing).pointing);}
  function act(e:PhotometerEvent){setError('');try{if(!current.current)return false;commit(photometerEvent(current.current,e));if((e.type==='target'||e.type==='point')&&!isTiledPhotometerTarget(current.current.targetId))preparePoint(current.current);return true;}catch(e){failure(e);return false;}}
@@ -192,23 +197,38 @@ function Photometer({active,initialState=null,controllerRef,onStateChange,invest
   // Front T5: an Object reading's Start uses the telescope's allotment (0x4fffd4 → 0x5001a2, +0x41c = 0); a Sky reading does not,
   // but it still needs the instrument Access check when the photometer is not open (review 1 M1/L2).
   if(scopeUse&&!scopeUse('photometer',current.current.pointing!=='sky')){setError(t('scopeAccess.instrumentRefused'));return;}
+  // Front T6: the instructor values travel in the journal ('parameters', owner 17) just before the Start that uses them; the compiled
+  // values write nothing, so a session without instructor values is byte-identical.
+  const want=photometerParametersRef.current,refusal=photometerParameterRefusal(want);
+  if(refusal&&!isCompiledPhotometerParameters(want)){setError(t(`ph.parametersDomain.${refusal}`));return;}
+  const prepared=withParameters(current.current,want);
   startName.current=photometerRecordedName(!!link.current?.showObjectId,current.current.pointing==='sky',idObject,link.current?.objectXId??'');
-  commit(photometerEvent(current.current,{type:'start'}));setIdShown(true);stopClock();const id=epoch.current;let last=Math.floor(performance.now());
+  commit(photometerEvent(prepared,{type:'start'}));setIdShown(true);stopClock();const id=epoch.current;let last=Math.floor(performance.now());
+  const timerMs=current.current.work?.parameters?.timerMs??PHOTOMETER_CALLBACK_MS,maxGap=photometerCallbackGapMS(timerMs);
   const step=()=>{if(id!==epoch.current||!available.current||!current.current)return;clock.current=null;
    // Browser guard before any draw: a telescope off this field releases the context instead of integrating.
    if(access.current!=='ready'){release();setNotice(t('ph.pointingReleased'));return;}
    const now=Math.floor(performance.now());
-   const admission=current.current.timing?admitPhotometerCallback(last,now,document.visibilityState==='hidden'):'advance';
+   const admission=current.current.timing?admitPhotometerCallback(last,now,document.visibilityState==='hidden',maxGap):'advance';
    if(admission==='release'){release();setNotice(t('ph.released'));return;}
-   if(admission==='stop'){stop();setError(t('ph.seriesGap',{limit:MAX_PHOTOMETER_GAP_MS}));return;}
+   if(admission==='stop'){stop();setError(t('ph.seriesGap',{limit:maxGap}));return;}
    try{const next=photometerEvent(current.current,current.current.timing?{type:'advance',callbacks:1}:{type:'complete'});commit(next);last=now;
     if(next.phase==='complete'&&next.current&&startName.current!==null)structMeta.current.set(next.current.id,Object.freeze({name:startName.current,jd:link.current?.currentJd?.()??hostJd()}));
-    if(next.phase==='running'&&id===epoch.current&&available.current)clock.current=setTimeout(step,PHOTOMETER_CALLBACK_MS);
+    if(next.phase==='running'&&id===epoch.current&&available.current)clock.current=setTimeout(step,timerMs);
     else if(id===epoch.current)setNotice(t(next.timing?'ph.seriesCompleted':'ph.completed'));
    }catch(e){stop();failure(e);}
-  };clock.current=setTimeout(step,PHOTOMETER_CALLBACK_MS);
+  };clock.current=setTimeout(step,timerMs);
  }catch(e){failure(e);}}
 
+ /** Front T6: the state the next Start runs on: instructor values recorded first (an untimed session first takes its shown 0.1 s × 1
+  * timing, the only way a 'parameters' event is admitted), the compiled values cleared, an unchanged set left alone. */
+ function withParameters(s:PhotometerState,want:PhotometerParameters):PhotometerState{
+  const compiled=isCompiledPhotometerParameters(want);
+  if(compiled&&!s.parameters)return s;
+  if(!compiled&&s.parameters&&s.parameters.baseMagnitude===want.baseMagnitude&&s.parameters.skyMagnitude===want.skyMagnitude&&s.parameters.baseCount===want.baseCount&&s.parameters.timerMs===want.timerMs)return s;
+  const timed=s.timing?s:photometerEvent(s,{type:'timing',...LEGACY_PHOTOMETER_TIMING});
+  return photometerEvent(timed,{type:'parameters',...want});
+ }
  function save(){setError('');try{release();if(current.current){download(serializePhotometerSession(current.current));setNotice(t('ph.saved'));}}catch(e){failure(e);}}
  async function restore(file:File){if(busy)return;setError('');release();const ticket=++loadEpoch.current;pendingLoad.current=true;setBusy(true);try{const s=await readPhotometerSession(file);if(ticket!==loadEpoch.current||!available.current)return;structMeta.current.clear();commit(s);onDraftsChange(defaultPhotometryDraft(s));
   // Front ONERESULTS [W]: a photometer session file fills an empty Observational Results list with its Record/Review rows (as an
@@ -319,7 +339,9 @@ function Photometer({active,initialState=null,controllerRef,onStateChange,invest
  <div className="photometer-timing"><label htmlFor="photo-seconds">{t('ph.seriesSeconds')}</label><select id="photo-seconds" value={timing.secondsPerIntegration} disabled={!armed||running||busy} onChange={e=>act({type:'timing',secondsPerIntegration:Number(e.target.value),integrations:timing.integrations})}>{PHOTOMETER_SECONDS.map(seconds=><option key={seconds} value={seconds}>{t('ph.seriesSecondsOption',{seconds:num(seconds)})}</option>)}</select><label htmlFor="photo-repeats">{t('ph.seriesRepeats')}</label><select id="photo-repeats" value={timing.integrations} disabled={!armed||running||busy} onChange={e=>act({type:'timing',secondsPerIntegration:timing.secondsPerIntegration,integrations:Number(e.target.value)})}>{PHOTOMETER_REPEATS.map(n=><option key={n} value={n}>{n}</option>)}</select><p className="observatory-note">{t('ph.seriesHelp')}</p></div>
  {domainLimit&&<p role="status" data-testid="photo-domain-limit" data-reason={domainLimit}>{t(`ph.domainLimit.${domainLimit}`,{telescope:bench.name})}</p>}<p className="photometer-sky" role="status">{t(state?.sky?'ph.skyReady':'ph.needSky',{filter})}</p>{state?.sky&&<p data-testid="photo-sky-origin">{t('ph.skyOrigin',{id:state.sky.id,target:photometerTargetView(state.sky.fieldTargetId).hotlistLabel})} {t('ph.apertureOrigin',{selector:state.sky.apertureSelector??10})} {t('ph.readingTelescope',{telescope:opticalProfile(state.sky.telescopeIndex??0).name})}</p>}<div className="sky-actions"><button className="primary-button" disabled={!armed||running||busy||(kind==='object'&&!state?.sky)||pointingAccess!=='ready'||!!tiledLimit||!!domainLimit} onClick={()=>start()}>{t('ph.start')}</button><button className="secondary-button" disabled={!running||busy} onClick={()=>{stop();setNotice(t(current.current?.timing?'ph.seriesStopped':'ph.stopped'));}}>{t('ph.stop')}</button></div>
  <p role="status" data-testid="photo-phase">{t(running?'ph.running':!armed?'ph.inactive':state?.phase==='stopped'?'ph.stoppedShort':state?.phase==='complete'?'ph.complete':'ph.ready')}</p>
- {state?.timing&&state.work&&<section className="photometer-series" aria-label={t('ph.seriesProgress')}><h3>{t('ph.seriesProgress')}</h3><progress value={state.work.callbacks} max={requiredPhotometerCallbacks(state.timing)} aria-label={t('ph.seriesProgress')}/><p>{t('ph.seriesCallbacks')} <output data-testid="photo-series-callbacks">{state.work.callbacks} / {requiredPhotometerCallbacks(state.timing)}</output></p><p>{t('ph.seriesPeriods')} <output data-testid="photo-series-periods">{state.work.periodCounts.length} / {state.timing.integrations}</output></p><p>{t('ph.seriesTime')} <output data-testid="photo-series-time">{t('ph.seriesSecondsOption',{seconds:num(state.work.callbacks*PHOTOMETER_CALLBACK_MS/1000)})}</output></p><p>{t('ph.seriesCommittedCounts')} <output data-testid="photo-series-counts">{state.work.totalPhotonCount}</output></p>{state.phase!=='complete'&&<p>{t('ph.seriesUnfinished')}</p>}<ol>{state.work.periodCounts.map((count,i)=><li key={i}>{t('ph.seriesPeriodCount',{index:i+1,count})}</li>)}</ol></section>}
+ {state?.timing&&state.work&&<section className="photometer-series" aria-label={t('ph.seriesProgress')}><h3>{t('ph.seriesProgress')}</h3><progress value={state.work.callbacks} max={requiredPhotometerCallbacks(state.timing,state.work.parameters?.timerMs)} aria-label={t('ph.seriesProgress')}/><p>{t('ph.seriesCallbacks')} <output data-testid="photo-series-callbacks">{state.work.callbacks} / {requiredPhotometerCallbacks(state.timing,state.work.parameters?.timerMs)}</output></p><p>{t('ph.seriesPeriods')} <output data-testid="photo-series-periods">{state.work.periodCounts.length} / {state.timing.integrations}</output></p><p>{t('ph.seriesTime')} <output data-testid="photo-series-time">{t('ph.seriesSecondsOption',{seconds:num(state.work.callbacks*PHOTOMETER_CALLBACK_MS/1000)})}</output></p><p>{t('ph.seriesCommittedCounts')} <output data-testid="photo-series-counts">{state.work.totalPhotonCount}</output></p>{state.phase!=='complete'&&<p>{t('ph.seriesUnfinished')}</p>}<ol>{state.work.periodCounts.map((count,i)=><li key={i}>{t('ph.seriesPeriodCount',{index:i+1,count})}</li>)}</ol></section>}
+ {uncertifiedPhotometerFields.length>0&&<p role="status" className="observatory-note" data-testid="photo-parameters-note">{t('ph.parametersNote',{fields:uncertifiedPhotometerFields.map(k=>instrumentParameterField(k).control).join(', ')})}</p>}
+ {reading?.parameters&&<p role="status" data-testid="photo-uncertified" data-reason="uncertified-parameter">{t('ph.uncertifiedReading',{base:reading.parameters.baseMagnitude,sky:reading.parameters.skyMagnitude,count:reading.parameters.baseCount,timer:reading.parameters.timerMs})}</p>}
  {reading&&<p data-testid="photo-reading-telescope">{t('ph.readingTelescope',{telescope:opticalProfile(reading.telescopeIndex??0).name})}</p>}<div className="photometer-readout"><span>{t('ph.counts')}<output data-testid="photo-counts">{reading?.callback.totalPhotonCount??'—'}</output></span><span>{t('ph.magnitude',{filter})}<output data-testid="photo-magnitude">{reading?.reduction?.magnitude==null?'—':num(reading.reduction.magnitude)}</output></span></div>
  {reading?.integration&&reading.reduction&&<p>{t('ph.seriesSnr')} <output data-testid="photo-series-snr">{num(reading.reduction.nativeDisplaySnr)}</output></p>}
  {reading?.reduction&&reading.reduction.status!=='available'&&<p role="status">{t('ph.unavailable')}</p>}<p>{t('ph.readingHelp')}</p><button ref={entryButton} className="primary-button" disabled={!canRecord} onClick={openEntry}>{t('ph.record')}</button> <button type="button" className="secondary-button" data-testid="photo-record-review" disabled={!canNative} onClick={()=>openReview('menu')}>{menuCaptionText(RL.menu)}</button><p className="observatory-note" data-testid="photo-record-review-help">{t('ph.nativeRecordHelp')}</p>

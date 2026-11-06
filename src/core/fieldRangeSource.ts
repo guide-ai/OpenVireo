@@ -18,7 +18,7 @@ export type FieldRangeOutcome='available'|'spectrum-range'|'mean-bound';
  * (both are range-dependent; every other reason is decided before the source step and does not read the range). */
 export function fieldRangeOutcome(r:FieldResult,telescope:FieldTelescope,range:SpectralRange,inputs:FieldRangeSourceInputs):FieldRangeOutcome{
  const c=r.calibration;if(!c||!r.reasons.every(x=>x==='mean-bound'))throw new Error('fieldRangeOutcome: not a calibrated result');
- const bound=FIELD_CALIBRATIONS[telescope].meanBound,over=(means:readonly number[])=>Math.max(...means)*FIELD_MULTIPLIER*1000>=bound;
+ const bound=FIELD_CALIBRATIONS[telescope].meanBound,over=(means:readonly number[])=>Math.max(...means)*(c.multiplier??FIELD_MULTIPLIER)*1000>=bound;// Front T6: an instructor SpBase
  if(r.qsoTarget){
   let values:readonly number[];try{values=prepareQsoProfile(inputs.qsoSpectrum,r.qsoTarget.redshift,range.minimum,range.maximum).values;}
   catch(e){if(e instanceof QsoSpectrumError)return 'spectrum-range';throw e;}

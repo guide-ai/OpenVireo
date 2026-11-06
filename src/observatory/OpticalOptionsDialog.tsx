@@ -15,6 +15,7 @@ import {DEMONSTRATION_MODE_CAPTIONS as DM,type PreferencesGateResult} from '../c
 import {COMPILED_RESTRICT_SCOPE_ACCESS,RESTRICT_SCOPE_ACCESS_CAPTIONS as RS} from '../core/scopeAccess';
 import {NOT_APPLIED,OPTIONS_FILE_LITERALS as OF,OPTIONS_FILE_MAX_BYTES,WEB_OPTIONS_FILE_NAME,optionsFileErrorBox,readOptionsFile,writeOptionsFile,type OptionsFileLoad,type OptionsFileValues} from '../io/optionsFile';
 import {downloadText} from './downloadText';
+import {COMPILED_INSTRUMENT_PARAMETERS,INSTRUMENT_PARAMETER_FIELDS,INSTRUMENT_PARAMETER_TEXT_MAX,PARAMETER_ERROR_BOX,applyParameterTexts,instrumentParameterTexts,uncertifiedParameterKeys,type InstrumentParameterKey,type InstrumentParameters} from '../core/instrumentParameters';
 import {t} from '../i18n';
 import './observatory-dialogs.css';
 const M=OBSERVATORY_MESSAGES.options,S=M.session;
@@ -23,7 +24,9 @@ const SESSION_HINTS:Readonly<Record<keyof SessionOpticalOptions,string>>={fastSl
 const SESSION_NOTES:Partial<Record<keyof SessionOpticalOptions,string>>={fastScopeChange:S.fastScopeChangeNote,computeRedshiftVelocity:S.computeRedshiftVelocityNote,printInColor:S.colorNote,timeDependentData:S.timeDependentDataNote,showObjectId:S.showObjectIdNote};
 const testId=(k:string)=>`ob-options-${k.replace(/[A-Z]/g,c=>'-'+c.toLowerCase())}`;
 /** Front T4: the Photometer tab's read-only rows that become live check boxes (core/photometerTabOptions.ts). */
-const TAB_LIVE_LABELS=new Set(['Detect Sky','Set E(B-V)']),TAB_TEST_ID:Readonly<Record<keyof PhotometerTabOptions,string>>={setEBmV:'ob-options-set-ebmv',detectSky:'ob-options-detect-sky'};
+const TAB_LIVE_LABELS=new Set(['Detect Sky','Set E(B-V)']),
+ /** Front T6: the parameter rows that become edits (core/instrumentParameters.ts), per tab. */
+ PARAMETER_LABELS:Readonly<Record<string,ReadonlySet<string>>>={photometer:new Set(INSTRUMENT_PARAMETER_FIELDS.filter(f=>f.tab==='photometer').map(f=>f.caption)),spectrometer:new Set(INSTRUMENT_PARAMETER_FIELDS.filter(f=>f.tab==='spectrometer').map(f=>f.caption))},TAB_TEST_ID:Readonly<Record<keyof PhotometerTabOptions,string>>={setEBmV:'ob-options-set-ebmv',detectSky:'ob-options-detect-sky'};
 
 /** "Optical Simulation Options" (OB-LS-01, WEB-LS-01): Limit Slewing, Edit Mode (Front O, WEB-EM-01), Virtual Observatory
  * (Front O2) and Test Mode (Front T3) are live, and so are Front R3's ported options (`sessionOptions`, page session only, WEB-OPT-R3). The tab parameters
@@ -31,7 +34,7 @@ const TAB_LIVE_LABELS=new Set(['Detect Sky','Set E(B-V)']),TAB_TEST_ID:Readonly<
  * Cancel discards them. Front T1: the button is VIREO's File › Preferences (Preferences1Click 0x5886ac): with the page's
  * instructor gate closed (0x5886c9) it shows the INSTRUCTOR / USER OPTIONS! box (0x588a84 / 0x588b70, MessageBox flags 0x30)
  * instead of the dialog, plus one web line on instructor mode. */
-export default function OpticalOptionsDialog({gate='user-options-box',options,onOptions,disabled,editMode=false,onEditMode,virtualObservatory=false,onVirtualObservatory,testMode=false,onTestMode,demonstrationMode=false,onDemonstrationMode,sessionOptions,onSessionOptions,photometerTabOptions,onPhotometerTabOptions,restrictScopeAccess=COMPILED_RESTRICT_SCOPE_ACCESS,onRestrictScopeAccess,horizonRadians}:{
+export default function OpticalOptionsDialog({gate='user-options-box',options,onOptions,disabled,editMode=false,onEditMode,virtualObservatory=false,onVirtualObservatory,testMode=false,onTestMode,demonstrationMode=false,onDemonstrationMode,sessionOptions,onSessionOptions,photometerTabOptions,onPhotometerTabOptions,restrictScopeAccess=COMPILED_RESTRICT_SCOPE_ACCESS,onRestrictScopeAccess,instrumentParameters=COMPILED_INSTRUMENT_PARAMETERS,onInstrumentParameters,horizonRadians}:{
  /** Front T1: the page's instructor gate test (core/instructorMode.ts preferencesGate); absent: closed, as VIREO starts. */
  gate?:PreferencesGateResult;
  options:OpticalOptions;onOptions:(o:OpticalOptions)=>void;disabled:boolean;editMode?:boolean;onEditMode?:(on:boolean)=>void;
@@ -46,6 +49,8 @@ export default function OpticalOptionsDialog({gate='user-options-box',options,on
  photometerTabOptions?:PhotometerTabOptions;onPhotometerTabOptions?:(o:PhotometerTabOptions)=>void;
  /** Front T5: RstrctScpBox (record+0x27d1), live when `onRestrictScopeAccess` is given (page session; the exercise menus copy it). */
  restrictScopeAccess?:boolean;onRestrictScopeAccess?:(on:boolean)=>void;
+ /** Front T6: the Photometer and Spectrometer tabs' parameter edits, live when `onInstrumentParameters` is given (page session). */
+ instrumentParameters?:InstrumentParameters;onInstrumentParameters?:(p:InstrumentParameters)=>void;
  /** Front R3: shown when both are given; not persisted. */
  sessionOptions?:SessionOpticalOptions;onSessionOptions?:(o:SessionOpticalOptions)=>void;
  /** R3 review L2: the selected site's horizon (radians). */horizonRadians?:number}){
@@ -53,24 +58,31 @@ export default function OpticalOptionsDialog({gate='user-options-box',options,on
  const [demoDraft,setDemoDraft]=useState(demonstrationMode),[scopeDraft,setScopeDraft]=useState(restrictScopeAccess),[saveAsk,setSaveAsk]=useState<'edit'|'vo'|null>(null),[loadState,setLoadState]=useState<Readonly<{name:string;result:OptionsFileLoad;message?:string}>|null>(null);
  useEffect(()=>{const el=ref.current;if(!el)return;if(draft&&!el.open){el.showModal();el.querySelector<HTMLInputElement>('input:not([disabled])')?.focus();}else if(!draft&&el.open)el.close();},[draft!==null]);
  const [refused,setRefused]=useState(false),opener=useRef<HTMLButtonElement>(null),loadToken=useRef(0);
+ // Front T6: the edits' texts (FormActivate 0x5a56e0 fills them) and the OK conversion box (0x5a696a handler).
+ const [paramDraft,setParamDraft]=useState(()=>instrumentParameterTexts(instrumentParameters)),[paramError,setParamError]=useState<InstrumentParameterKey|null>(null),okButton=useRef<HTMLButtonElement>(null);
+ const paramsLive=!!onInstrumentParameters;
  // Review 1 N5: every open and close of the dialog makes an in-flight Load stale.
  useEffect(()=>{loadToken.current++;},[draft!==null]);
- useEffect(()=>{if(disabled){setDraft(null);setResetAsked(false);setRefused(false);setSaveAsk(null);}},[disabled]);
+ useEffect(()=>{if(disabled){setDraft(null);setResetAsked(false);setRefused(false);setSaveAsk(null);setParamError(null);}},[disabled]);
  // Front R5: with Edit Mode live, SlewBox follows it (FormActivate 0x5a5985, EditModeBoxClick 0x5a6edc); without it, as before.
  const slew=draft?(onEditMode?limitSlewingBox(editDraft,draft.limitSlewing):Object.freeze({enabled:true,checked:draft.limitSlewing})):null;
  const editModeClick=(on:boolean)=>{setEditDraft(on);if(on)setDraft(d=>d&&{limitSlewing:false});};
  /** ResetBtnClick Yes: every live draft to its compiled value (0x5a21d0); OK still commits and Cancel still discards. */
- const reset=(yes:boolean)=>{setResetAsked(false);if(!yes)return;setDraft(OPTIONS_RESET_DEFAULTS.options);setEditDraft(OPTIONS_RESET_DEFAULTS.editMode);setVobsDraft(OPTIONS_RESET_DEFAULTS.virtualObservatory);setTestDraft(OPTIONS_RESET_DEFAULTS.testMode);setDemoDraft(false);setScopeDraft(COMPILED_RESTRICT_SCOPE_ACCESS);setLoadState(null);if(sessionDraft)setSessionDraft(COMPILED_SESSION_OPTICAL_OPTIONS);if(tabDraft)setTabDraft(COMPILED_PHOTOMETER_TAB_OPTIONS);};
+ const reset=(yes:boolean)=>{setResetAsked(false);if(!yes)return;setDraft(OPTIONS_RESET_DEFAULTS.options);setEditDraft(OPTIONS_RESET_DEFAULTS.editMode);setVobsDraft(OPTIONS_RESET_DEFAULTS.virtualObservatory);setTestDraft(OPTIONS_RESET_DEFAULTS.testMode);setDemoDraft(false);setScopeDraft(COMPILED_RESTRICT_SCOPE_ACCESS);setLoadState(null);if(sessionDraft)setSessionDraft(COMPILED_SESSION_OPTICAL_OPTIONS);if(tabDraft)setTabDraft(COMPILED_PHOTOMETER_TAB_OPTIONS);setParamDraft(instrumentParameterTexts(COMPILED_INSTRUMENT_PARAMETERS));};
  const live=sessionDraft&&onSessionOptions?sessionDraft:null,tabLive=tabDraft&&onPhotometerTabOptions?tabDraft:null;
  const ported=new Set<string>(live?SESSION_KEYS.map(k=>SC[k]):[]);
+ /** OKBtnClick's parameter block (0x5a62da..0x5a6968): the seven edits in VIREO's order; a conversion error shows the box and
+  * keeps the dialog open with nothing committed (Cancel would restore the snapshot, 0x5a6d04). null: no live edits. */
+ const parsedParameters=():InstrumentParameters|null|false=>{if(!paramsLive)return null;const r=applyParameterTexts(paramDraft);if(!r.ok){setParamError(r.key);return false;}return r.values;};
  /** OKBtnClick: commits every live draft (shared by OK and Save Updates). */
- const commit=()=>{if(!draft)return;onOptions(draft);if(onEditMode&&editDraft!==editMode)onEditMode(editDraft);if(onVirtualObservatory&&vobsDraft!==virtualObservatory)onVirtualObservatory(vobsDraft);if(onTestMode&&testDraft!==testMode)onTestMode(testDraft);if(onDemonstrationMode&&demoDraft!==demonstrationMode)onDemonstrationMode(demoDraft);if(onRestrictScopeAccess&&scopeDraft!==restrictScopeAccess)onRestrictScopeAccess(scopeDraft);if(live&&onSessionOptions&&SESSION_KEYS.some(k=>live[k]!==sessionOptions?.[k]))onSessionOptions(Object.freeze({...live}));if(tabLive&&onPhotometerTabOptions&&PHOTOMETER_TAB_OPTION_KEYS.some(k=>tabLive[k]!==photometerTabOptions?.[k]))onPhotometerTabOptions(Object.freeze({...tabLive}));setDraft(null);};
+ const commit=()=>{if(!draft)return;const params=parsedParameters();if(params===false)return;if(params&&onInstrumentParameters&&INSTRUMENT_PARAMETER_FIELDS.some(f=>!Object.is(params[f.key],instrumentParameters[f.key])))onInstrumentParameters(params);onOptions(draft);if(onEditMode&&editDraft!==editMode)onEditMode(editDraft);if(onVirtualObservatory&&vobsDraft!==virtualObservatory)onVirtualObservatory(vobsDraft);if(onTestMode&&testDraft!==testMode)onTestMode(testDraft);if(onDemonstrationMode&&demoDraft!==demonstrationMode)onDemonstrationMode(demoDraft);if(onRestrictScopeAccess&&scopeDraft!==restrictScopeAccess)onRestrictScopeAccess(scopeDraft);if(live&&onSessionOptions&&SESSION_KEYS.some(k=>live[k]!==sessionOptions?.[k]))onSessionOptions(Object.freeze({...live}));if(tabLive&&onPhotometerTabOptions&&PHOTOMETER_TAB_OPTION_KEYS.some(k=>tabLive[k]!==photometerTabOptions?.[k]))onPhotometerTabOptions(Object.freeze({...tabLive}));setDraft(null);};
  // Front T2: the options file needs every live control (the page's full dialog).
- const fileable=!!(live&&tabLive&&onEditMode&&onVirtualObservatory&&onTestMode&&onDemonstrationMode&&onRestrictScopeAccess);
- const fileValues=():OptionsFileValues|null=>draft&&live&&tabLive?Object.freeze({demonstrationMode:demoDraft,testMode:testDraft,limitSlewing:slew!.checked,editMode:editDraft,virtualObservatory:vobsDraft,restrictScopeAccess:scopeDraft,...live,...tabLive}):null;
+ const fileable=!!(live&&tabLive&&onEditMode&&onVirtualObservatory&&onTestMode&&onDemonstrationMode&&onRestrictScopeAccess&&paramsLive);
+ const fileValues=(parameters:InstrumentParameters):OptionsFileValues|null=>draft&&live&&tabLive?Object.freeze({demonstrationMode:demoDraft,testMode:testDraft,limitSlewing:slew!.checked,editMode:editDraft,virtualObservatory:vobsDraft,restrictScopeAccess:scopeDraft,...live,...tabLive,parameters}):null;
  /** Save Updates: OK, then the writer 0x5a4644 (its Edit Mode box 0x14, else its Virtual Observatory box 0x41), then the file. */
- const finishSave=(save:boolean)=>{const values=fileValues();setSaveAsk(null);commit();if(save&&values)downloadText(new TextEncoder().encode(writeOptionsFile(values)),WEB_OPTIONS_FILE_NAME);};
- const saveClick=()=>{if(editDraft)setSaveAsk('edit');else if(vobsDraft)setSaveAsk('vo');else finishSave(true);};
+ const finishSave=(save:boolean)=>{setSaveAsk(null);const params=parsedParameters();if(params===false)return;const values=fileValues(params??instrumentParameters);commit();if(save&&values)downloadText(new TextEncoder().encode(writeOptionsFile(values)),WEB_OPTIONS_FILE_NAME);};
+ // Front T6: Save Updates runs OK first (0x58ed74 after OKBtnClick), so a conversion error stops it before its questions.
+ const saveClick=()=>{if(paramsLive&&!applyParameterTexts(paramDraft).ok){parsedParameters();return;}if(editDraft)setSaveAsk('edit');else if(vobsDraft)setSaveAsk('vo');else finishSave(true);};
  /** Load: VIREO reads VEO_OPTS.INI only at start-up (0x5a1a08); here the file fills the drafts, as Reset does, and OK applies. */
  const load=async(file:File)=>{
   const token=++loadToken.current;
@@ -85,12 +97,13 @@ export default function OpticalOptionsDialog({gate='user-options-box',options,on
   setEditDraft(v.editMode);setVobsDraft(v.virtualObservatory);setTestDraft(v.testMode);setDemoDraft(v.demonstrationMode);setScopeDraft(v.restrictScopeAccess);
   setSessionDraft(Object.freeze(Object.fromEntries(SESSION_KEYS.map(k=>[k,v[k]]))) as SessionOpticalOptions);
   if(tabDraft)setTabDraft(Object.freeze({setEBmV:v.setEBmV,detectSky:v.detectSky}));
+  setParamDraft(instrumentParameterTexts(v.parameters));
   setLoadState({name,result});
  };
  const fileError=loadState&&loadState.result.kind!=='loaded'?optionsFileErrorBox(loadState.result,loadState.name,loadState.message):null;
  return <>
-  <button ref={opener} type="button" className="secondary-button" disabled={disabled} data-testid="ob-options" data-gate={gate} onClick={()=>{if(gate!=='options'){setRefused(true);return;}setDraft(onEditMode&&editMode?{limitSlewing:false}:options);setEditDraft(editMode);setVobsDraft(virtualObservatory);setTestDraft(testMode);setDemoDraft(demonstrationMode);setScopeDraft(restrictScopeAccess);setLoadState(null);setSaveAsk(null);setSessionDraft(sessionOptions);setTabDraft(photometerTabOptions);}}>{M.open}</button>
-  <dialog ref={ref} className="ob-dialog" aria-labelledby={`${id}-title`} data-testid="ob-options-dialog" onCancel={e=>{e.preventDefault();if(!resetAsked&&!saveAsk)setDraft(null);}}>
+  <button ref={opener} type="button" className="secondary-button" disabled={disabled} data-testid="ob-options" data-gate={gate} onClick={()=>{if(gate!=='options'){setRefused(true);return;}setDraft(onEditMode&&editMode?{limitSlewing:false}:options);setEditDraft(editMode);setVobsDraft(virtualObservatory);setTestDraft(testMode);setDemoDraft(demonstrationMode);setScopeDraft(restrictScopeAccess);setLoadState(null);setSaveAsk(null);setSessionDraft(sessionOptions);setTabDraft(photometerTabOptions);setParamDraft(instrumentParameterTexts(instrumentParameters));setParamError(null);}}>{M.open}</button>
+  <dialog ref={ref} className="ob-dialog" aria-labelledby={`${id}-title`} data-testid="ob-options-dialog" onCancel={e=>{e.preventDefault();if(!resetAsked&&!saveAsk&&!paramError)setDraft(null);}}>
    {draft&&<>
     <h2 id={`${id}-title`} className="ob-native">{C.form}</h2>
     <p className="ob-note ob-native">{menuCaptionText(C.general)}</p>
@@ -116,7 +129,10 @@ export default function OpticalOptionsDialog({gate='user-options-box',options,on
     </fieldset>
     {live?<section className="ob-group" data-testid="ob-options-tabs" aria-label={S.tabsHeading}><p className="ob-note">{S.tabsHeading}</p>
      {visibleOptionTabs(live.infraredCamera,horizonRadians).map(tab=><fieldset key={tab.tab} className="ob-group" data-testid={`ob-options-tab-${tab.tab}`}><legend className="ob-native">{menuCaptionText(tab.caption)}</legend>
-      <dl className="ob-values">{tab.values.filter(v=>!(tabLive&&tab.tab==='photometer'&&TAB_LIVE_LABELS.has(v.label))).map(v=><div key={v.label}><dt className="ob-native">{v.label}</dt><dd>{v.text}</dd></div>)}</dl>
+      {paramsLive&&PARAMETER_LABELS[tab.tab]&&<div className="ob-values ob-parameter-edits" data-testid={`ob-options-parameters-${tab.tab}`}>{INSTRUMENT_PARAMETER_FIELDS.filter(f=>f.tab===tab.tab).map(f=><label key={f.key} className="ob-parameter" title={f.hint}><span className="ob-native">{f.caption}</span>
+       <input type="text" inputMode="decimal" spellCheck={false} maxLength={INSTRUMENT_PARAMETER_TEXT_MAX} data-testid={`ob-options-param-${f.key}`} value={paramDraft[f.key]} aria-describedby={`${id}-param-note`} onChange={e=>setParamDraft(d=>({...d,[f.key]:e.target.value}))}/><small className="ob-note">{f.hint}</small></label>)}</div>}
+      <dl className="ob-values">{tab.values.filter(v=>!(tabLive&&tab.tab==='photometer'&&TAB_LIVE_LABELS.has(v.label))&&!(paramsLive&&PARAMETER_LABELS[tab.tab]?.has(v.label))).map(v=><div key={v.label}><dt className="ob-native">{v.label}</dt><dd>{v.text}</dd></div>)}</dl>
+      {paramsLive&&PARAMETER_LABELS[tab.tab]&&<small className="ob-note" id={tab.tab==='photometer'?`${id}-param-note`:undefined} data-testid={`ob-options-parameters-${tab.tab}-note`}>{t(tab.tab==='photometer'?'instrumentParameters.photometerNote':'instrumentParameters.spectrometerNote')}</small>}
       {tabLive&&tab.tab==='photometer'&&PHOTOMETER_TAB_OPTION_KEYS.map(k=><Fragment key={k}><label className="ob-check" title={PT[k].hint}><input type="checkbox" data-testid={TAB_TEST_ID[k]} checked={tabLive[k]} onChange={e=>setTabDraft({...tabLive,[k]:e.target.checked})}/><span className="ob-native">{PT[k].box}</span></label>
        <small className="ob-note">{PT[k].hint}</small><small className="ob-note" data-testid={TAB_TEST_ID[k]+'-note'}>{t(`photometerTab.${k}Note`)}</small></Fragment>)}</fieldset>)}
      <small className="ob-note" data-testid="ob-options-tabs-note">{S.tabsNote}</small></section>
@@ -135,11 +151,13 @@ export default function OpticalOptionsDialog({gate='user-options-box',options,on
      {fileError&&<div role="alert" className="ob-group" data-testid="ob-options-file-error"><p className="ob-native"><strong data-testid="ob-options-file-error-caption">{fileError.caption}</strong></p>
       <p className="ob-native ob-pre-line" data-testid="ob-options-file-error-text">{fileError.text}</p>{loadState?.result.kind==='invalid'&&loadState.result.reason==='read-beyond-eof'&&<small className="ob-note" data-testid="ob-options-file-error-inferred">{t('optionsFile.readBeyondEofNote')} </small>}<small className="ob-note">{t('optionsFile.errorNote')}</small></div>}
     </section>}
-    <div className="ob-actions"><button type="button" className="primary-button" data-testid="ob-options-ok" onClick={commit}>{menuCaptionText(C.ok)}</button><button type="button" className="secondary-button" onClick={()=>setDraft(null)}>{menuCaptionText(C.cancel)}</button>
+    {paramsLive&&(()=>{const r=applyParameterTexts(paramDraft),keys=r.ok?uncertifiedParameterKeys(r.values):[];return keys.length>0&&<p className="ob-note" role="status" data-testid="ob-options-parameters-uncertified">{t('instrumentParameters.draftUncertified',{fields:keys.map(k=>INSTRUMENT_PARAMETER_FIELDS.find(f=>f.key===k)!.control).join(', ')})}</p>;})()}
+    <div className="ob-actions"><button type="button" ref={okButton} className="primary-button" data-testid="ob-options-ok" onClick={commit}>{menuCaptionText(C.ok)}</button><button type="button" className="secondary-button" onClick={()=>setDraft(null)}>{menuCaptionText(C.cancel)}</button>
      <button type="button" className="secondary-button" title={R.hint} data-testid="ob-options-reset" onClick={()=>setResetAsked(true)}>{menuCaptionText(R.caption)}</button></div>
     <small className="ob-note" data-testid="ob-options-reset-note">{M.resetNote}</small>
     <p className="ob-note">{M.teacherDeferred}</p>
     <ul className="ob-option-list" data-testid="ob-options-teacher-deferred">{TEACHER_DEFERRED.map(d=><li key={d.key} data-reason={d.reason}><span className="ob-native">{menuCaptionText(d.caption)}</span></li>)}</ul>
+    {paramError&&<ParameterErrorBox onClose={()=>{setParamError(null);okButton.current?.focus();}}/>}
     {resetAsked&&<QuestionBox caption={R.questionCaption} text={R.questionText} testId="ob-options-reset-box" onAnswer={reset}/>}
     {saveAsk==='edit'&&<QuestionBox caption={OF.saveCaption} text={OF.editModeSet} testId="ob-options-save-edit-mode" preLine onAnswer={finishSave}/>}
     {saveAsk==='vo'&&<QuestionBox caption={OF.saveCaption} text={OF.virtualObservatory} testId="ob-options-save-vo" preLine labels={{yes:t('optionsFile.ok'),no:t('optionsFile.cancel')}} onAnswer={finishSave}/>}
@@ -147,6 +165,19 @@ export default function OpticalOptionsDialog({gate='user-options-box',options,on
   </dialog>
   {refused&&<UserOptionsBox onClose={()=>{setRefused(false);opener.current?.focus();}}/>}
  </>;
+}
+
+/** Front T6: OKBtnClick's conversion handler (0x5a697b..0x5a69b5): Application.MessageBox(0x5a6bac, 0x5a6bf0, MB_ICONHAND), then
+ * ModalResult := 0. VIREO sets no focus (it stays on OK); the web returns it to OK when the box closes. */
+function ParameterErrorBox({onClose}:{onClose:()=>void}){
+ const id=useId(),ref=useRef<HTMLDialogElement>(null);
+ const close=()=>{ref.current?.close();onClose();};
+ useEffect(()=>{const el=ref.current;if(el&&!el.open){el.showModal();el.querySelector<HTMLButtonElement>('button')?.focus();}},[]);
+ return <dialog ref={ref} className="ob-dialog ob-box" role="alertdialog" aria-labelledby={`${id}-title`} aria-describedby={`${id}-body`} data-testid="ob-options-parameter-error" onCancel={e=>{e.preventDefault();close();}}>
+  <h2 id={`${id}-title`} className="ob-native">{PARAMETER_ERROR_BOX.caption}</h2>
+  <p id={`${id}-body`} className="ob-native" style={{whiteSpace:'pre-line'}} data-testid="ob-options-parameter-error-text">{PARAMETER_ERROR_BOX.text}</p>
+  <div className="ob-actions"><button type="button" className="primary-button" data-testid="ob-options-parameter-error-ok" onClick={close}>{t('instrumentParameters.errorOk')}</button></div>
+ </dialog>;
 }
 
 /** Preferences1Click with the gate closed (0x5889a6..0x5889cb): the recovered body 0x588a84 (passed through 0x405ec8 and the
