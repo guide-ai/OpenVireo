@@ -193,6 +193,16 @@ describe('the generic spectrometer',()=>{
    expect(m31.status).toBe('ready');if(m31.status!=='ready')continue;
    expect(m31.result.m31Notice).toBe(true);expect(m31.result.target?.id).toBe('NGC 224');expect(m31.result.reasons).toEqual(['slit-empty']);expect(fieldSpectrometerSkyReading(m31.result)).toBe(true);}
  });
+ it('Front MEANBOUND: Sirius (S1500.DAT@213830, V −1.46), mean-bound on every telescope before, is acquired on the 4 m',async()=>{
+  // Its largest per-1000-ms mean is 7.6·10⁸ on the 4 m (analysis/front-meanbound/measure-spectro.json), above the former 10⁶ and
+  // below the spectrometer's 2^30; one tick passes the recovered S/N limit, so the exposure pauses with every channel in Int32.
+  const r=await prepareFieldSpectrum({ra:6.752464,dec:-16.71611},2);expect(r.status).toBe('ready');if(r.status!=='ready')return;
+  expect(r.result.starTarget?.id).toBe('S1500.DAT@213830');expect(r.result.reasons).toEqual([]);
+  const peak=Math.max(...r.result.calibration!.sourceMeans)*50*1000;expect(peak).toBeGreaterThan(1e8);expect(peak).toBeLessThan(2**30);
+  const e=lssExposureEngine(r.result,r.policy),s=tickJournal(startJournal(activateJournal(e.create(5))),1000);
+  expect(s.exposure.phase).toBe('paused');expect(s.exposure.stopReason).toBe('signal-to-noise-limit');
+  expect(Math.max(...s.exposure.counts)).toBeGreaterThan(1e8);expect(Math.max(...s.exposure.counts)).toBeLessThan(2**31);
+ });
  it('Front S2: off the default a star is observed on the range (#R policy, its grid, a replayable session); Front S3: a galaxy too',async()=>{
   const r={minimum:4000,maximum:5000},at={ra:11+44/60+42.9/3600,dec:55+22/60+43/3600};
   const star=await prepareFieldSpectrum(at,0,{range:r});expect(star.status).toBe('ready');if(star.status!=='ready')return;

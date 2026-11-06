@@ -35,7 +35,7 @@ test('the 0.9 m observes the bright rows (Front L4: no web mean bound below 10‚Å
  await expect(page.locator('[data-testid^="lss-row-"]')).toHaveCount(23,{timeout:30000});
  // Re-pinned 2026-10-31 (Front L4): Field 1 rows that were mean-bound on the 0.9 m (the testids lss-row-0..2 among them) are observable.
  await expect(page.getByTestId('lss-row-1')).toContainText('Observable');
- expect(await page.locator('[data-testid^="lss-row-"]',{hasText:"per-draw bound"}).count()).toBe(0);
+ expect(await page.locator('[data-testid^="lss-row-"]',{hasText:"(2^30"}).count()).toBe(0);
  await delay(page,'LSS_Field05.HTL',1500);await load(page,'5');await clickHeaderTool(page,'Observatory');
  await clickHeaderTool(page,'LSS survey');await expect(page.getByText('Loading cancelled; nothing changed.')).toBeVisible();
  await expect(page.getByText('Loading the field list, catalogue and field evidence‚Ä¶')).toHaveCount(0);

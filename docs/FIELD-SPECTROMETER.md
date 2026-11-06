@@ -49,7 +49,8 @@ The Spectrometer page (`#spectrometer`) now holds VIREO's single-slit spectromet
   `fieldSpectrometerSkyReading` decides it and `createFieldSkyExposure` builds the sky-only journal. [W] This route does not take
   that reading at a field pointing; the reason text says so, and the Sky route gives the same sky-only counts.
 - **Typed results**, shown as readable text (`fieldSpec.reason.*`):
-  - the engine's reasons (slit-empty, mean-bound, variable-*, merge-boundary, merge-access-violation, empty-field,
+  - the engine's reasons (slit-empty, mean-bound (since Front MEANBOUND a per-tick mean above 2^30; every compact GSC star, Sirius
+    included, now fits; docs/FIELD-ENGINE.md), variable-*, merge-boundary, merge-access-violation, empty-field,
     photographic-image, spectrum-mapping, …); since Front AXISMERGE (2026-11-05) `axis-fallback` is gone (the recovered axis rules
     cover the whole catalogue), a nil GetAt in the merges is the recovered access violation (`merge-access-violation`, 9 of 24069
     galaxy pointings, no exercise pointing; pointings a variable gate stops first, 59 galaxy and 3 QSO positions, are not

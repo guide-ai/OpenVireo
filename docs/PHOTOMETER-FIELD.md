@@ -160,6 +160,11 @@ in VIREO. Static evidence is in `analysis/front-g-gsc/RE-photometer-start.md`.
     1e-8 (`src/core/photometerTiledBench.test.ts`).
   - Tiled targets get the same limits as typed reasons that block Start (`tiledPhotometerReason`): `Poisson-mean-bound` and
     `all-duration-count-domain`. The earlier 0.9 m / 4 m `photometer-blend` web limit was lifted by Front PHTILED (below).
+    Front MEANBOUND (2026-11-05) leaves both unchanged: `poissonDraw` now admits 2^36, but `Poisson-mean-bound` is the
+    photometer's own 10⁶ per-callback rule (`PHOTOMETER_MEAN_BOUNDS`) [W]. Lifting it alone would make nothing measurable (a
+    mean above 10⁶ over the longest 5000 callbacks exceeds the counter, so `all-duration-count-domain` would refuse it) and would
+    only move the three Mayall Pleiades exclusions to the other reason; a shorter-series domain with VIREO's overflow message
+    0x5019a0 is left for a later front.
 - **Notebook and B−V** work for tiled stars. They never count toward the Pleiades exercise, whose summary reads only Pleiades
   rows.
 - **Skies and E04 (G3 review 1 L3, web rule [W]).** VIREO keeps one sky per filter and telescope bank, wherever it was read, and

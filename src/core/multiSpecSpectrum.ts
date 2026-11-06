@@ -33,15 +33,23 @@
  * Typed (never the native fault or message box): a nil template, the code-0 random pick (all 132 templates are bundled since
  * 2026-10-30, but the random state is not reproduced; no compact GSC record has code 0), a TRUE-dispatch star without values, a galaxy name
  * the list does not hold (the native loop has no end guard), an own galaxy spectrum not bundled, galaxy/QSO construction errors,
- * types ≥ 5 (nil sampler), any bin mean above the 10⁶ web admission of poissonDraw (decision D3), negative means, and the
- * Poisson rejection branch's singular u = 0.5 ('precision').
+ * types ≥ 5 (nil sampler), any bin mean above poissonDraw's web admission (2^36 since Front MEANBOUND, 10⁶ before; decision D3),
+ * negative means, and the Poisson rejection branch's precision boundaries ('precision': u = 0.5, and since Front MEANBOUND the
+ * guard band above 10⁶).
+ *
+ * Int32 channels (Front MEANBOUND, 0x5272cf..0x527352) [D]: each draw is Rounded (0x403700, FISTP to Int64) and only its low 32
+ * bits are used: the object's are MOVed into the channel (+0xa) and added, as a signed Int32 (FILD dword), to the Int64 object
+ * total +0x224d; the sky's are ADDed to the channel and to the Int32 sky total +0x2249, with no overflow check (no INTO/JO), so
+ * both wrap. The Int64 total +0x2255 = sky + object (0x527358..0x527366); average = total / 400; S/N = √average when average ≥ 0,
+ * else 0 (0x527386..0x5273c2); the maximum +0x2245 is a signed comparison; plot y := 170 − low 32 bits of Round(c·150/max).
+ * The web reproduces these wraps ('wrapped' marks a fibre where one happened).
  *
  * Decision D3: the Poisson draw runs on every telescope, including the rejection branch (mean ≥ 12) that the field engine's
  * per-tick spectrometer guard (meanBound 12 on the 0.4/0.9 m) does not admit. That branch is recovered [D] (0x55f0f4..0x55f324,
  * docs/HUBBLE-RECOVERY.md) and covered with its draw order by the independent witness
  * analysis/front-m-multispec/tools/multispec_witness.py (data/multispec/witness.json).
  * Number policy: binary64 for the Extended values and Math.pow/Math.sin/Math.log for the x87 routines; not x87 equivalence. */
-import {AcquisitionError,poissonDraw,sampleUniformSpectrum,type UniformSpectrum} from './acquisition';
+import {AcquisitionError,poissonDraw,sampleUniformSpectrum,POISSON_MEAN_ADMISSION,type UniformSpectrum} from './acquisition';
 import {galaxyLibrarySpectrum} from './galaxySpectrum';
 import {prepareCatalogGalaxyExtension,sampleGalaxyExtension,type GalaxyExtension} from './galaxyContinuum';
 import {catalogGalaxyMagnitude} from './galaxyCatalogAxes';
@@ -59,8 +67,11 @@ export const MULTISPEC_INTERVAL=Object.freeze({minimum:3700,maximum:4700});
 /** The options-dialog values Multi-Spec reads, at their compiled defaults [W: no options dialog]: base count options+0x27a7,
  * timer ms options+0x27ab, sky magnitude options+0x2514. */
 export const MULTISPEC_OPTIONS=Object.freeze({baseCount:50,timerMs:1,skyMagnitude:19});
-/** poissonDraw's web admission (decision D3): a fibre whose mean exceeds it in any bin is typed. */
-export const MULTISPEC_MEAN_LIMIT=1_000_000;
+/** poissonDraw's web admission (decision D3; 2^36 since Front MEANBOUND, 10⁶ before): a fibre whose mean exceeds it in any bin is
+ * typed. */
+export const MULTISPEC_MEAN_LIMIT=POISSON_MEAN_ADMISSION;
+/** The low 32 bits of an integer draw as a signed Int32 (FISTP to Int64, then EAX). */
+export const int32Low=(value:number)=>value|0;
 
 export class MultiSpecError extends Error{constructor(readonly code:'input'|'grid'|'seed'){super(`Multi-Spec: ${code}`);this.name='MultiSpecError';}}
 
@@ -201,8 +212,10 @@ export function prepareMultiSpecFibre(selection:MultiSpecSelection,context:Multi
 
 export type MultiSpecSpectrum=Readonly<{
  seconds:number;K:number;wavelengths:readonly number[];dispersion:number;minimum:number;
- /** Per-bin object + sky counts (Int32). */
+ /** Per-bin object + sky counts (Int32, wrapped as VIREO's channels are). */
  counts:readonly number[];
+ /** True when a draw reached 2^31 or a channel or the sky total wrapped (VIREO's Int32 storage, reproduced). */
+ wrapped:boolean;
  signal:number;skySum:number;total:number;average:number;snr:number;
  /** The plot maximum (starts at 1) and plot y := 170 − Round(c·150/max). */
  plotMaximum:number;plotY:readonly number[];
@@ -223,20 +236,21 @@ export function exposeMultiSpecFibre(prepared:MultiSpecPrepared,seconds:number):
  const means=prepared.isSky?[sky]:[...object,sky];
  if(means.some(m=>!Number.isFinite(m)||m>MULTISPEC_MEAN_LIMIT))return unavailable('multispec-mean-bound');
  if(means.some(m=>m<0))return unavailable('negative-mean');
- let s=prepared.seed,draws=prepared.draws,signal=0,skySum=0,maximum=1;
+ let s=prepared.seed,draws=prepared.draws,signal=0,skySum=0,maximum=1,wrapped=false;
  const counts:number[]=[];
  try{
   for(let i=0;i<MULTISPEC_BINS;i++){
    let c=0;
-   if(!prepared.isSky){const d=poissonDraw(object[i],s);s=d.seed;draws+=d.draws;c=roundNearestEven(d.value);signal+=c;}
-   const d=poissonDraw(sky,s);s=d.seed;draws+=d.draws;const k=roundNearestEven(d.value);c+=k;skySum+=k;
-   if(c>0x7fff_ffff||skySum>0x7fff_ffff)return unavailable('multispec-mean-bound');// Int32 bin and sky accumulators
+   if(!prepared.isSky){const d=poissonDraw(object[i],s);s=d.seed;draws+=d.draws;const o=roundNearestEven(d.value);c=int32Low(o);if(c!==o)wrapped=true;signal+=c;}
+   const d=poissonDraw(sky,s);s=d.seed;draws+=d.draws;const k=roundNearestEven(d.value),k32=int32Low(k),sum=c+k32,next=skySum+k32;
+   if(k32!==k||int32Low(sum)!==sum||int32Low(next)!==next)wrapped=true;
+   c=int32Low(sum);skySum=int32Low(next);// Int32 channel and sky total: ADD without an overflow check
    counts.push(c);if(c>maximum)maximum=c;
   }
  }catch(e){if(e instanceof AcquisitionError&&e.code==='precision')return unavailable('precision');throw e;}
  const total=signal+skySum,average=total/400,snr=average<0?0:Math.sqrt(average),scale=150/maximum;
  return Object.freeze({status:'ready',spectrum:Object.freeze({seconds:Math.fround(seconds),K,wavelengths:prepared.grid.wavelengths,dispersion:prepared.grid.dispersion,minimum:prepared.grid.minimum,
-  counts:Object.freeze(counts),signal,skySum,total,average,snr,plotMaximum:maximum,plotY:Object.freeze(counts.map(c=>170-roundNearestEven(c*scale))),seed:s,draws})});
+  counts:Object.freeze(counts),wrapped,signal,skySum,total,average,snr,plotMaximum:maximum,plotY:Object.freeze(counts.map(c=>int32Low(170-int32Low(roundNearestEven(c*scale))))),seed:s,draws})});
 }
 /** prepare + expose in one call (the fibre's own seed). */
 export function multiSpecFibreSpectrum(selection:MultiSpecSelection,context:MultiSpecContext,seed:number,seconds:number):MultiSpecExposure{

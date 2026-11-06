@@ -1,0 +1,2690 @@
+{
+ "tool": "poisson_witness.py",
+ "precisionDigits": 110,
+ "constants": {
+  "pi": "3.14159265358979323851280895940618620443274267017841339111328125",
+  "nine": "0.8999999999999999999783159565502899113198509439826011657714843750",
+  "s0": "2.50662827464999999997619095637446662294678390026092529296875000",
+  "cof": [
+   "76.180091729999999998479420781904991599731147289276123046875",
+   "-86.505320329999999998116244626089610392227768898010253906250",
+   "24.01409821999999999984909404560085022239945828914642333984375",
+   "-1.231739515999999999996267208146605298679787665605545043945312500",
+   "0.0012085800300000000000088794271414782688367495211423374712467193603515625",
+   "-0.000005363820000000000000105481283972121142600286702872836031019687652587890625000"
+  ]
+ },
+ "cases": [
+  {
+   "mean": "1000001.0",
+   "seed": 1,
+   "exact": {
+    "outcome": "value",
+    "value": 1000140,
+    "proposals": [
+     {
+      "u1": 134775814,
+      "cand": "1000140.870878088095362256442149138217",
+      "value": 1000140,
+      "fracDistance": "1.291219e-01",
+      "exponent": "-9.7295378574695189077825574486269033513963e-03",
+      "u2": 3698175007,
+      "threshold": "9.000043653360390027984294647467e-01",
+      "relativeMargin": "-4.328412e-02",
+      "decision": "accept"
+     }
+    ],
+    "seed": 3698175007,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 1000140,
+    "seed": 3698175007,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.587e-13"
+    ]
+   }
+  },
+  {
+   "mean": "1000001.0",
+   "seed": 2,
+   "exact": {
+    "outcome": "value",
+    "value": 1000283,
+    "proposals": [
+     {
+      "u1": 269551627,
+      "cand": "1000283.505198785079599576444098087381",
+      "value": 1000283,
+      "fracDistance": "4.948012e-01",
+      "exponent": "-3.9899203102713227953035612927124020643532e-02",
+      "u2": 2966606904,
+      "threshold": "8.993070244755259068369923625141e-01",
+      "relativeMargin": "-2.319453e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 2966606904,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 1000283,
+    "seed": 2966606904,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "5.189e-13"
+    ]
+   }
+  },
+  {
+   "mean": "1000001.0",
+   "seed": 123,
+   "exact": {
+    "outcome": "value",
+    "value": 999334,
+    "proposals": [
+     {
+      "u1": 3692523112,
+      "cand": "999334.069246749539012076870411394698",
+      "value": 999334,
+      "fracDistance": "6.924675e-02",
+      "exponent": "-2.2216013990199273697712101238721515983343e-01",
+      "u2": 346212361,
+      "threshold": "8.809925788332465534935522555315e-01",
+      "relativeMargin": "-9.085022e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 346212361,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 999334,
+    "seed": 346212361,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.288e-12"
+    ]
+   }
+  },
+  {
+   "mean": "1000001.0",
+   "seed": 99991,
+   "exact": {
+    "outcome": "value",
+    "value": 998195,
+    "proposals": [
+     {
+      "u1": 3055910132,
+      "cand": "998195.550775175105579893077372368698",
+      "value": 998195,
+      "fracDistance": "4.492248e-01",
+      "exponent": "-1.6308951918010297088557081224280409514904e+00",
+      "u2": 1791574213,
+      "threshold": "4.633189376188596719785550703818e-01",
+      "relativeMargin": "-9.968416e-02",
+      "decision": "accept"
+     }
+    ],
+    "seed": 1791574213,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 998195,
+    "seed": 1791574213,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.635e-12"
+    ]
+   }
+  },
+  {
+   "mean": "1000001.0",
+   "seed": 2796574514,
+   "exact": {
+    "outcome": "value",
+    "value": 1000961,
+    "proposals": [
+     {
+      "u1": 2012707835,
+      "cand": "1014299.916559860218510276651570654327",
+      "value": 1014299,
+      "fracDistance": "8.344014e-02",
+      "exponent": "-1.0173968887654761772409983677789568901062e+02",
+      "u2": 2879051752,
+      "threshold": "0.000000000000000000000000000000e+00",
+      "relativeMargin": null,
+      "decision": "reject"
+     },
+     {
+      "u1": 815388553,
+      "cand": "1000961.108503122990105015926377829974",
+      "value": 1000961,
+      "fracDistance": "1.085031e-01",
+      "exponent": "-4.6113192342118525246519311622250825166702e-01",
+      "u2": 1248582062,
+      "threshold": "8.290811689338276613270295456459e-01",
+      "relativeMargin": "-6.493610e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 1248582062,
+    "draws": 4
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 1000961,
+    "seed": 1248582062,
+    "draws": 4,
+    "decisions": [
+     "reject",
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "2.984e-13",
+     "6.319e-13"
+    ]
+   }
+  },
+  {
+   "mean": "1000001.0",
+   "seed": 4294967295,
+   "exact": {
+    "outcome": "value",
+    "value": 999861,
+    "proposals": [
+     {
+      "u1": 4160191484,
+      "cand": "999861.129124001021878327728338245660",
+      "value": 999861,
+      "fracDistance": "1.291240e-01",
+      "exponent": "-9.7304427456650199185217431363525975029916e-03",
+      "u2": 866343917,
+      "threshold": "9.000035506726421496992429638340e-01",
+      "relativeMargin": "-7.758771e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 866343917,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 999861,
+    "seed": 866343917,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "2.431e-13"
+    ]
+   }
+  },
+  {
+   "mean": "1234567.875",
+   "seed": 1,
+   "exact": {
+    "outcome": "value",
+    "value": 1234723,
+    "proposals": [
+     {
+      "u1": 134775814,
+      "cand": "1234723.287007407312694696391341439663",
+      "value": 1234723,
+      "fracDistance": "2.870074e-01",
+      "exponent": "-9.8082387902742214358386974026871030218899e-03",
+      "u2": 3698175007,
+      "threshold": "8.999335369401256778942865821591e-01",
+      "relativeMargin": "-4.320882e-02",
+      "decision": "accept"
+     }
+    ],
+    "seed": 3698175007,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 1234723,
+    "seed": 3698175007,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "8.175e-14"
+    ]
+   }
+  },
+  {
+   "mean": "1234567.875",
+   "seed": 2,
+   "exact": {
+    "outcome": "value",
+    "value": 1234881,
+    "proposals": [
+     {
+      "u1": 269551627,
+      "cand": "1234881.769505034410993520101874644509",
+      "value": 1234881,
+      "fracDistance": "2.304950e-01",
+      "exponent": "-3.9832586218748772255437984313175547868013e-02",
+      "u2": 2966606904,
+      "threshold": "8.993669355027446021821901922522e-01",
+      "relativeMargin": "-2.319965e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 2966606904,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 1234881,
+    "seed": 2966606904,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "8.701e-14"
+    ]
+   }
+  },
+  {
+   "mean": "1234567.875",
+   "seed": 123,
+   "exact": {
+    "outcome": "value",
+    "value": 1233826,
+    "proposals": [
+     {
+      "u1": 3692523112,
+      "cand": "1233826.841208112001429275095713610480",
+      "value": 1233826,
+      "fracDistance": "1.587919e-01",
+      "exponent": "-2.2264741625782594192095587004587287083268e-01",
+      "u2": 346212361,
+      "threshold": "8.805633965535971663385339525121e-01",
+      "relativeMargin": "-9.084576e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 346212361,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 1233826,
+    "seed": 346212361,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "6.938e-13"
+    ]
+   }
+  },
+  {
+   "mean": "1234567.875",
+   "seed": 99991,
+   "exact": {
+    "outcome": "value",
+    "value": 1232561,
+    "proposals": [
+     {
+      "u1": 3055910132,
+      "cand": "1232561.821330091032748529962464468408",
+      "value": 1232561,
+      "fracDistance": "1.786699e-01",
+      "exponent": "-1.6312278031645592868414951226441189646721e+00",
+      "u2": 1791574213,
+      "threshold": "4.631648581009889520387901029608e-01",
+      "relativeMargin": "-9.938466e-02",
+      "decision": "accept"
+     }
+    ],
+    "seed": 1791574213,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 1232561,
+    "seed": 1791574213,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.758e-12"
+    ]
+   }
+  },
+  {
+   "mean": "1234567.875",
+   "seed": 2796574514,
+   "exact": {
+    "outcome": "value",
+    "value": 1235634,
+    "proposals": [
+     {
+      "u1": 2012707835,
+      "cand": "1250455.551953868208196361053590626161",
+      "value": 1250455,
+      "fracDistance": "4.480461e-01",
+      "exponent": "-1.0179301015568313459880300797522068023682e+02",
+      "u2": 2879051752,
+      "threshold": "0.000000000000000000000000000000e+00",
+      "relativeMargin": null,
+      "decision": "reject"
+     },
+     {
+      "u1": 815388553,
+      "cand": "1235634.661680964389760674156578579608",
+      "value": 1235634,
+      "fracDistance": "3.383190e-01",
+      "exponent": "-4.6063127171148632310604398298892192542553e-01",
+      "u2": 1248582062,
+      "threshold": "8.294963537613582182927984831622e-01",
+      "relativeMargin": "-6.495365e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 1248582062,
+    "draws": 4
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 1235634,
+    "seed": 1248582062,
+    "draws": 4,
+    "decisions": [
+     "reject",
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.876e-12",
+     "1.842e-12"
+    ]
+   }
+  },
+  {
+   "mean": "1234567.875",
+   "seed": 4294967295,
+   "exact": {
+    "outcome": "value",
+    "value": 1234412,
+    "proposals": [
+     {
+      "u1": 4160191484,
+      "cand": "1234412.462994913927498447468561794105",
+      "value": 1234412,
+      "fracDistance": "4.629949e-01",
+      "exponent": "-9.7775723508845453768589806031741318292916e-03",
+      "u2": 866343917,
+      "threshold": "8.999611348601308513650565146236e-01",
+      "relativeMargin": "-7.758665e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 866343917,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 1234412,
+    "seed": 866343917,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.620e-12"
+    ]
+   }
+  },
+  {
+   "mean": "2500000.0",
+   "seed": 1,
+   "exact": {
+    "outcome": "value",
+    "value": 2500221,
+    "proposals": [
+     {
+      "u1": 134775814,
+      "cand": "2500221.155165965504082145745612223209",
+      "value": 2500221,
+      "fracDistance": "1.551660e-01",
+      "exponent": "-9.8121102199570774810011286604094493668526e-03",
+      "u2": 3698175007,
+      "threshold": "8.999300529174623086703377339290e-01",
+      "relativeMargin": "-4.320512e-02",
+      "decision": "accept"
+     }
+    ],
+    "seed": 3698175007,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 2500221,
+    "seed": 3698175007,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.250e-13"
+    ]
+   }
+  },
+  {
+   "mean": "2500000.0",
+   "seed": 2,
+   "exact": {
+    "outcome": "value",
+    "value": 2500446,
+    "proposals": [
+     {
+      "u1": 269551627,
+      "cand": "2500446.679716159939952826616598731272",
+      "value": 2500446,
+      "fracDistance": "3.202838e-01",
+      "exponent": "-3.9870026475071727867227622255086316727102e-02",
+      "u2": 2966606904,
+      "threshold": "8.993332636044971684086135610414e-01",
+      "relativeMargin": "-2.319677e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 2966606904,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 2500446,
+    "seed": 2966606904,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "9.807e-13"
+    ]
+   }
+  },
+  {
+   "mean": "2500000.0",
+   "seed": 123,
+   "exact": {
+    "outcome": "value",
+    "value": 2498945,
+    "proposals": [
+     {
+      "u1": 3692523112,
+      "cand": "2498945.490416313058769072224396060034",
+      "value": 2498945,
+      "fracDistance": "4.904163e-01",
+      "exponent": "-2.2242527519261490187574281662818975746632e-01",
+      "u2": 346212361,
+      "threshold": "8.807590275725304396203796386544e-01",
+      "relativeMargin": "-9.084780e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 346212361,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 2498945,
+    "seed": 346212361,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.416e-12"
+    ]
+   }
+  },
+  {
+   "mean": "2500000.0",
+   "seed": 99991,
+   "exact": {
+    "outcome": "value",
+    "value": 2497145,
+    "proposals": [
+     {
+      "u1": 3055910132,
+      "cand": "2497145.335552215826373710900475928313",
+      "value": 2497145,
+      "fracDistance": "3.355522e-01",
+      "exponent": "-1.6302545930374308102983604840119369328022e+00",
+      "u2": 1791574213,
+      "threshold": "4.636158342431023759999675348809e-01",
+      "relativeMargin": "-1.002607e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 1791574213,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 2497145,
+    "seed": 1791574213,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.037e-13"
+    ]
+   }
+  },
+  {
+   "mean": "2500000.0",
+   "seed": 2796574514,
+   "exact": {
+    "outcome": "value",
+    "value": 2501518,
+    "proposals": [
+     {
+      "u1": 2012707835,
+      "cand": "2522608.560896651209611305999661199552",
+      "value": 2522608,
+      "fracDistance": "4.391033e-01",
+      "exponent": "-1.0192207484233699688047636300325393676758e+02",
+      "u2": 2879051752,
+      "threshold": "0.000000000000000000000000000000e+00",
+      "relativeMargin": null,
+      "decision": "reject"
+     },
+     {
+      "u1": 815388553,
+      "cand": "2501518.064076349918717902918142479715",
+      "value": 2501518,
+      "fracDistance": "6.407635e-02",
+      "exponent": "-4.6107505711778890011842690910270903259516e-01",
+      "u2": 1248582062,
+      "threshold": "8.291283170556774662074417392432e-01",
+      "relativeMargin": "-6.493810e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 1248582062,
+    "draws": 4
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 2501518,
+    "seed": 1248582062,
+    "draws": 4,
+    "decisions": [
+     "reject",
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.137e-12",
+     "2.267e-12"
+    ]
+   }
+  },
+  {
+   "mean": "2500000.0",
+   "seed": 4294967295,
+   "exact": {
+    "outcome": "value",
+    "value": 2499778,
+    "proposals": [
+     {
+      "u1": 4160191484,
+      "cand": "2499778.844837337678655949264161568857",
+      "value": 2499778,
+      "fracDistance": "1.551627e-01",
+      "exponent": "-9.8126898057184410578690503257348609622568e-03",
+      "u2": 866343917,
+      "threshold": "8.999295310705507366932920376712e-01",
+      "relativeMargin": "-7.758587e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 866343917,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 2499778,
+    "seed": 866343917,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.043e-12"
+    ]
+   }
+  },
+  {
+   "mean": "9576761.90450113",
+   "seed": 1,
+   "exact": {
+    "outcome": "value",
+    "value": 9577194,
+    "proposals": [
+     {
+      "u1": 134775814,
+      "cand": "9577194.753511863488938968924216758262",
+      "value": 9577194,
+      "fracDistance": "2.464881e-01",
+      "exponent": "-9.7703064878366368412043740931949287187308e-03",
+      "u2": 3698175007,
+      "threshold": "8.999676741386698486380169015320e-01",
+      "relativeMargin": "-4.324512e-02",
+      "decision": "accept"
+     }
+    ],
+    "seed": 3698175007,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 9577194,
+    "seed": 3698175007,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "2.336e-11"
+    ]
+   }
+  },
+  {
+   "mean": "9576761.90450113",
+   "seed": 2,
+   "exact": {
+    "outcome": "value",
+    "value": 9577636,
+    "proposals": [
+     {
+      "u1": 269551627,
+      "cand": "9577636.154362806404504013119588807694",
+      "value": 9577636,
+      "fracDistance": "1.543628e-01",
+      "exponent": "-3.9934884047668373074913006348651833832264e-02",
+      "u2": 2966606904,
+      "threshold": "8.992749369235483181128643082047e-01",
+      "relativeMargin": "-2.319179e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 2966606904,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 9577636,
+    "seed": 2966606904,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "2.520e-11"
+    ]
+   }
+  },
+  {
+   "mean": "9576761.90450113",
+   "seed": 123,
+   "exact": {
+    "outcome": "value",
+    "value": 9574697,
+    "proposals": [
+     {
+      "u1": 3692523112,
+      "cand": "9574697.998699453877576626561100441180",
+      "value": 9574697,
+      "fracDistance": "1.300546e-03",
+      "exponent": "-2.2252155778040613731683095011248951777816e-01",
+      "u2": 346212361,
+      "threshold": "8.806742298964705950581333127047e-01",
+      "relativeMargin": "-9.084692e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 346212361,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 9574697,
+    "seed": 346212361,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.238e-11"
+    ]
+   }
+  },
+  {
+   "mean": "9576761.90450113",
+   "seed": 99991,
+   "exact": {
+    "outcome": "value",
+    "value": 9571174,
+    "proposals": [
+     {
+      "u1": 3055910132,
+      "cand": "9571174.702064313749134348905975396596",
+      "value": 9571174,
+      "fracDistance": "2.979357e-01",
+      "exponent": "-1.6302567774990510685029221349395811557770e+00",
+      "u2": 1791574213,
+      "threshold": "4.636148214932121480735816021479e-01",
+      "relativeMargin": "-1.002588e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 1791574213,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 9571174,
+    "seed": 1791574213,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "4.289e-11"
+    ]
+   }
+  },
+  {
+   "mean": "9576761.90450113",
+   "seed": 2796574514,
+   "exact": {
+    "outcome": "value",
+    "value": 9579733,
+    "proposals": [
+     {
+      "u1": 2012707835,
+      "cand": "9621011.801063490879555548837634890834",
+      "value": 9621011,
+      "fracDistance": "1.989365e-01",
+      "exponent": "-1.0207092804437610311651951633393764495850e+02",
+      "u2": 2879051752,
+      "threshold": "0.000000000000000000000000000000e+00",
+      "relativeMargin": null,
+      "decision": "reject"
+     },
+     {
+      "u1": 815388553,
+      "cand": "9579733.087791415700923419365204680786",
+      "value": 9579733,
+      "fracDistance": "8.779142e-02",
+      "exponent": "-4.6098391375321212670712611725321039557457e-01",
+      "u2": 1248582062,
+      "threshold": "8.292038900440957815973774813756e-01",
+      "relativeMargin": "-6.494129e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 1248582062,
+    "draws": 4
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 9579733,
+    "seed": 1248582062,
+    "draws": 4,
+    "decisions": [
+     "reject",
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "2.279e-11",
+     "1.697e-11"
+    ]
+   }
+  },
+  {
+   "mean": "9576761.90450113",
+   "seed": 4294967295,
+   "exact": {
+    "outcome": "value",
+    "value": 9576329,
+    "proposals": [
+     {
+      "u1": 4160191484,
+      "cand": "9576329.055496863170690137742224169017",
+      "value": 9576329,
+      "fracDistance": "5.549686e-02",
+      "exponent": "-9.7619747971757105109436025713876006193459e-03",
+      "u2": 866343917,
+      "threshold": "8.999751721617412769660404592287e-01",
+      "relativeMargin": "-7.758700e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 866343917,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 9576329,
+    "seed": 866343917,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "2.951e-11"
+    ]
+   }
+  },
+  {
+   "mean": "151781447.48264772",
+   "seed": 1,
+   "exact": {
+    "outcome": "value",
+    "value": 151783170,
+    "proposals": [
+     {
+      "u1": 134775814,
+      "cand": "151783170.685597113693106022676085594817",
+      "value": 151783170,
+      "fracDistance": "3.144029e-01",
+      "exponent": "-9.7797766515976825019151874585077166557312e-03",
+      "u2": 3698175007,
+      "threshold": "8.999591513377722673538983144681e-01",
+      "relativeMargin": "-4.323606e-02",
+      "decision": "accept"
+     }
+    ],
+    "seed": 3698175007,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 151783170,
+    "seed": 3698175007,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "2.606e-10"
+    ]
+   }
+  },
+  {
+   "mean": "151781447.48264772",
+   "seed": 2,
+   "exact": {
+    "outcome": "value",
+    "value": 151784927,
+    "proposals": [
+     {
+      "u1": 269551627,
+      "cand": "151784927.934035601594226042671939653244",
+      "value": 151784927,
+      "fracDistance": "6.596440e-02",
+      "exponent": "-3.9894295937258406059555682077188976109028e-02",
+      "u2": 2966606904,
+      "threshold": "8.993114375347174282993023552990e-01",
+      "relativeMargin": "-2.319491e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 2966606904,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 151784927,
+    "seed": 2966606904,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "8.090e-11"
+    ]
+   }
+  },
+  {
+   "mean": "151781447.48264772",
+   "seed": 123,
+   "exact": {
+    "outcome": "value",
+    "value": 151773230,
+    "proposals": [
+     {
+      "u1": 3692523112,
+      "cand": "151773230.925657771510841433374257726291",
+      "value": 151773230,
+      "fracDistance": "7.434223e-02",
+      "exponent": "-2.2242514864666423912709092292061541229486e-01",
+      "u2": 346212361,
+      "threshold": "8.807591390290259170114950393327e-01",
+      "relativeMargin": "-9.084780e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 346212361,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 151773230,
+    "seed": 346212361,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "5.713e-11"
+    ]
+   }
+  },
+  {
+   "mean": "151781447.48264772",
+   "seed": 99991,
+   "exact": {
+    "outcome": "value",
+    "value": 151759204,
+    "proposals": [
+     {
+      "u1": 3055910132,
+      "cand": "151759204.429113408569365355797108218286",
+      "value": 151759204,
+      "fracDistance": "4.291134e-01",
+      "exponent": "-1.6298910529095813615185761591419577598572e+00",
+      "u2": 1791574213,
+      "threshold": "4.637844078425335525572847927833e-01",
+      "relativeMargin": "-1.005878e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 1791574213,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 151759204,
+    "seed": 1791574213,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "6.744e-11"
+    ]
+   }
+  },
+  {
+   "mean": "151781447.48264772",
+   "seed": 2796574514,
+   "exact": {
+    "outcome": "value",
+    "value": 151793275,
+    "proposals": [
+     {
+      "u1": 2012707835,
+      "cand": "151957609.493824977947716308701452690024",
+      "value": 151957609,
+      "fracDistance": "4.938250e-01",
+      "exponent": "-1.0218988510976322459100629203021526336670e+02",
+      "u2": 2879051752,
+      "threshold": "0.000000000000000000000000000000e+00",
+      "relativeMargin": null,
+      "decision": "reject"
+     },
+     {
+      "u1": 815388553,
+      "cand": "151793275.976376628503786149336417006142",
+      "value": 151793275,
+      "fracDistance": "2.362337e-02",
+      "exponent": "-4.6085461235810865066042651960742659866810e-01",
+      "u2": 1248582062,
+      "threshold": "8.293111141958704468635232842644e-01",
+      "relativeMargin": "-6.494583e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 1248582062,
+    "draws": 4
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 151793275,
+    "seed": 1248582062,
+    "draws": 4,
+    "decisions": [
+     "reject",
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.002e-10",
+     "1.656e-10"
+    ]
+   }
+  },
+  {
+   "mean": "151781447.48264772",
+   "seed": 4294967295,
+   "exact": {
+    "outcome": "value",
+    "value": 151779724,
+    "proposals": [
+     {
+      "u1": 4160191484,
+      "cand": "151779724.279724058135777088175795657079",
+      "value": 151779724,
+      "fracDistance": "2.797241e-01",
+      "exponent": "-9.7794567017728765284667602486479154322296e-03",
+      "u2": 866343917,
+      "threshold": "8.999594390191647530485852257698e-01",
+      "relativeMargin": "-7.758661e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 866343917,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 151779724,
+    "seed": 866343917,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "3.011e-10"
+    ]
+   }
+  },
+  {
+   "mean": "766912211.2261606",
+   "seed": 1,
+   "exact": {
+    "outcome": "value",
+    "value": 766916084,
+    "proposals": [
+     {
+      "u1": 134775814,
+      "cand": "766916084.693609163498122683828314728776",
+      "value": 766916084,
+      "fracDistance": "3.063908e-01",
+      "exponent": "-9.7809270141390736164055397239280864596367e-03",
+      "u2": 3698175007,
+      "threshold": "8.999581160590712780589228714234e-01",
+      "relativeMargin": "-4.323496e-02",
+      "decision": "accept"
+     }
+    ],
+    "seed": 3698175007,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 766916084,
+    "seed": 3698175007,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "5.471e-10"
+    ]
+   }
+  },
+  {
+   "mean": "766912211.2261606",
+   "seed": 2,
+   "exact": {
+    "outcome": "value",
+    "value": 766920034,
+    "proposals": [
+     {
+      "u1": 269551627,
+      "cand": "766920034.689532641373580783766156803752",
+      "value": 766920034,
+      "fracDistance": "3.104674e-01",
+      "exponent": "-3.9902484474713804940559924716581008397043e-02",
+      "u2": 2966606904,
+      "threshold": "8.993040735194774981664522783831e-01",
+      "relativeMargin": "-2.319428e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 2966606904,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 766920034,
+    "seed": 2966606904,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "5.010e-10"
+    ]
+   }
+  },
+  {
+   "mean": "766912211.2261606",
+   "seed": 123,
+   "exact": {
+    "outcome": "value",
+    "value": 766893741,
+    "proposals": [
+     {
+      "u1": 3692523112,
+      "cand": "766893741.802085791324390964369373714064",
+      "value": 766893741,
+      "fracDistance": "1.979142e-01",
+      "exponent": "-2.2240715283279727243481715959205757826567e-01",
+      "u2": 346212361,
+      "threshold": "8.807749891491709615110039521824e-01",
+      "relativeMargin": "-9.084796e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 346212361,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 766893741,
+    "seed": 346212361,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "9.748e-10"
+    ]
+   }
+  },
+  {
+   "mean": "766912211.2261606",
+   "seed": 99991,
+   "exact": {
+    "outcome": "value",
+    "value": 766862212,
+    "proposals": [
+     {
+      "u1": 3055910132,
+      "cand": "766862212.621033517711173075630407288891",
+      "value": 766862212,
+      "fracDistance": "3.789665e-01",
+      "exponent": "-1.6298651324668678164186985668493434786797e+00",
+      "u2": 1791574213,
+      "threshold": "4.637964294955111421714377684111e-01",
+      "relativeMargin": "-1.006111e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 1791574213,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 766862212,
+    "seed": 1791574213,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "7.367e-10"
+    ]
+   }
+  },
+  {
+   "mean": "766912211.2261606",
+   "seed": 2796574514,
+   "exact": {
+    "outcome": "value",
+    "value": 766938799,
+    "proposals": [
+     {
+      "u1": 2012707835,
+      "cand": "767308193.496385684937293254381922109892",
+      "value": 767308193,
+      "fracDistance": "4.963857e-01",
+      "exponent": "-1.0221181675656865195378486532717943191528e+02",
+      "u2": 2879051752,
+      "threshold": "0.000000000000000000000000000000e+00",
+      "relativeMargin": null,
+      "decision": "reject"
+     },
+     {
+      "u1": 815388553,
+      "cand": "766938799.670336637136075377433424137550",
+      "value": 766938799,
+      "fracDistance": "3.296634e-01",
+      "exponent": "-4.6089247611962097517235292798432055860758e-01",
+      "u2": 1248582062,
+      "threshold": "8.292797139520924343258911903831e-01",
+      "relativeMargin": "-6.494450e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 1248582062,
+    "draws": 4
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 766938799,
+    "seed": 1248582062,
+    "draws": 4,
+    "decisions": [
+     "reject",
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "5.139e-10",
+     "2.183e-11"
+    ]
+   }
+  },
+  {
+   "mean": "766912211.2261606",
+   "seed": 4294967295,
+   "exact": {
+    "outcome": "value",
+    "value": 766908337,
+    "proposals": [
+     {
+      "u1": 4160191484,
+      "cand": "766908337.758769981742308592114983828877",
+      "value": 766908337,
+      "fracDistance": "2.412300e-01",
+      "exponent": "-9.7832445246714225955964039371792750898749e-03",
+      "u2": 866343917,
+      "threshold": "8.999560301386499983067324137664e-01",
+      "relativeMargin": "-7.758653e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 866343917,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 766908337,
+    "seed": 866343917,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.671e-10"
+    ]
+   }
+  },
+  {
+   "mean": "2147483647.0",
+   "seed": 1,
+   "exact": {
+    "outcome": "value",
+    "value": 2147490128,
+    "proposals": [
+     {
+      "u1": 134775814,
+      "cand": "2147490128.746127211411502826865752573708",
+      "value": 2147490128,
+      "fracDistance": "2.538728e-01",
+      "exponent": "-9.7811687167625813860150074674493225757033e-03",
+      "u2": 3698175007,
+      "threshold": "8.999578985368598127436712275085e-01",
+      "relativeMargin": "-4.323472e-02",
+      "decision": "accept"
+     }
+    ],
+    "seed": 3698175007,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 2147490128,
+    "seed": 3698175007,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.806e-09"
+    ]
+   }
+  },
+  {
+   "mean": "2147483647.0",
+   "seed": 2,
+   "exact": {
+    "outcome": "value",
+    "value": 2147496738,
+    "proposals": [
+     {
+      "u1": 269551627,
+      "cand": "2147496738.552746161889159660753987967725",
+      "value": 2147496738,
+      "fracDistance": "4.472538e-01",
+      "exponent": "-3.9904151067611068337548374529433203861117e-02",
+      "u2": 2966606904,
+      "threshold": "8.993025747469449715509881571052e-01",
+      "relativeMargin": "-2.319415e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 2966606904,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 2147496738,
+    "seed": 2966606904,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "3.681e-09"
+    ]
+   }
+  },
+  {
+   "mean": "2147483647.0",
+   "seed": 123,
+   "exact": {
+    "outcome": "value",
+    "value": 2147452740,
+    "proposals": [
+     {
+      "u1": 3692523112,
+      "cand": "2147452740.810762547203961771692682968352",
+      "value": 2147452740,
+      "fracDistance": "1.892375e-01",
+      "exponent": "-2.2240363176315150472994730534992413595319e-01",
+      "u2": 346212361,
+      "threshold": "8.807780904247098918702363334887e-01",
+      "relativeMargin": "-9.084800e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 346212361,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 2147452740,
+    "seed": 346212361,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.149e-09"
+    ]
+   }
+  },
+  {
+   "mean": "2147483647.0",
+   "seed": 99991,
+   "exact": {
+    "outcome": "value",
+    "value": 2147399980,
+    "proposals": [
+     {
+      "u1": 3055910132,
+      "cand": "2147399980.809576036256520858971967674883",
+      "value": 2147399980,
+      "fracDistance": "1.904240e-01",
+      "exponent": "-1.6298550496254355923753109891549684107304e+00",
+      "u2": 1791574213,
+      "threshold": "4.638011059049421680455793648434e-01",
+      "relativeMargin": "-1.006201e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 1791574213,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 2147399980,
+    "seed": 1791574213,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.714e-09"
+    ]
+   }
+  },
+  {
+   "mean": "2147483647.0",
+   "seed": 2796574514,
+   "exact": {
+    "outcome": "value",
+    "value": 2147528139,
+    "proposals": [
+     {
+      "u1": 2012707835,
+      "cand": "2148146272.046057256443020753270496394552",
+      "value": 2148146272,
+      "fracDistance": "4.605726e-02",
+      "exponent": "-1.0221903223654236114725790685042738914490e+02",
+      "u2": 2879051752,
+      "threshold": "0.000000000000000000000000000000e+00",
+      "relativeMargin": null,
+      "decision": "reject"
+     },
+     {
+      "u1": 815388553,
+      "cand": "2147528139.317892653963586231683326099714",
+      "value": 2147528139,
+      "fracDistance": "3.178927e-01",
+      "exponent": "-4.6090429783318381806722641158557962626219e-01",
+      "u2": 1248582062,
+      "threshold": "8.292699105027975248205507341481e-01",
+      "relativeMargin": "-6.494408e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 1248582062,
+    "draws": 4
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 2147528139,
+    "seed": 1248582062,
+    "draws": 4,
+    "decisions": [
+     "reject",
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "2.627e-09",
+     "1.346e-09"
+    ]
+   }
+  },
+  {
+   "mean": "2147483647.0",
+   "seed": 4294967295,
+   "exact": {
+    "outcome": "value",
+    "value": 2147477165,
+    "proposals": [
+     {
+      "u1": 4160191484,
+      "cand": "2147477165.253969600217683617378528965779",
+      "value": 2147477165,
+      "fracDistance": "2.539696e-01",
+      "exponent": "-9.7811883976912841059947467670099285896868e-03",
+      "u2": 866343917,
+      "threshold": "8.999578805644268264529728185153e-01",
+      "relativeMargin": "-7.758657e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 866343917,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 2147477165,
+    "seed": 866343917,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "8.652e-10"
+    ]
+   }
+  },
+  {
+   "mean": "2147483648.0",
+   "seed": 1,
+   "exact": {
+    "outcome": "value",
+    "value": 2147490129,
+    "proposals": [
+     {
+      "u1": 134775814,
+      "cand": "2147490129.746128720560626153539667229919",
+      "value": 2147490129,
+      "fracDistance": "2.538713e-01",
+      "exponent": "-9.7811687122078740802555429922904295381159e-03",
+      "u2": 3698175007,
+      "threshold": "8.999578985409588671728897679714e-01",
+      "relativeMargin": "-4.323472e-02",
+      "decision": "accept"
+     }
+    ],
+    "seed": 3698175007,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 2147490129,
+    "seed": 3698175007,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.801e-09"
+    ]
+   }
+  },
+  {
+   "mean": "2147483648.0",
+   "seed": 2,
+   "exact": {
+    "outcome": "value",
+    "value": 2147496739,
+    "proposals": [
+     {
+      "u1": 269551627,
+      "cand": "2147496739.552749210003813042752904103634",
+      "value": 2147496739,
+      "fracDistance": "4.472508e-01",
+      "exponent": "-3.9904151049029286391078841234048013575375e-02",
+      "u2": 2966606904,
+      "threshold": "8.993025747636556044284361632890e-01",
+      "relativeMargin": "-2.319415e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 2966606904,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 2147496739,
+    "seed": 2966606904,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "6.281e-11"
+    ]
+   }
+  },
+  {
+   "mean": "2147483648.0",
+   "seed": 123,
+   "exact": {
+    "outcome": "value",
+    "value": 2147452741,
+    "proposals": [
+     {
+      "u1": 3692523112,
+      "cand": "2147452741.810755351296026214118197077895",
+      "value": 2147452741,
+      "fracDistance": "1.892446e-01",
+      "exponent": "-2.2240363165958623725693144024262437596917e-01",
+      "u2": 346212361,
+      "threshold": "8.807780905159279249971859826474e-01",
+      "relativeMargin": "-9.084800e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 346212361,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 2147452741,
+    "seed": 346212361,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.045e-09"
+    ]
+   }
+  },
+  {
+   "mean": "2147483648.0",
+   "seed": 99991,
+   "exact": {
+    "outcome": "value",
+    "value": 2147399981,
+    "proposals": [
+     {
+      "u1": 3055910132,
+      "cand": "2147399981.809556556203545576940170989005",
+      "value": 2147399981,
+      "fracDistance": "1.904434e-01",
+      "exponent": "-1.6298550488664653723702713250531814992428e+00",
+      "u2": 1791574213,
+      "threshold": "4.638011062569534215249689168559e-01",
+      "relativeMargin": "-1.006201e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 1791574213,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 2147399981,
+    "seed": 1791574213,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "9.551e-10"
+    ]
+   }
+  },
+  {
+   "mean": "2147483648.0",
+   "seed": 2796574514,
+   "exact": {
+    "outcome": "value",
+    "value": 2147528140,
+    "proposals": [
+     {
+      "u1": 2012707835,
+      "cand": "2148146273.046211535859049320759517057108",
+      "value": 2148146273,
+      "fracDistance": "4.621154e-02",
+      "exponent": "-1.0221903218894780707159952726215124130249e+02",
+      "u2": 2879051752,
+      "threshold": "0.000000000000000000000000000000e+00",
+      "relativeMargin": null,
+      "decision": "reject"
+     },
+     {
+      "u1": 815388553,
+      "cand": "2147528140.317903013138602448786114292940",
+      "value": 2147528140,
+      "fracDistance": "3.179030e-01",
+      "exponent": "-4.6090429761855999934994088107487186789513e-01",
+      "u2": 1248582062,
+      "threshold": "8.292699106807785991435366668156e-01",
+      "relativeMargin": "-6.494408e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 1248582062,
+    "draws": 4
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 2147528140,
+    "seed": 1248582062,
+    "draws": 4,
+    "decisions": [
+     "reject",
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.933e-09",
+     "1.131e-09"
+    ]
+   }
+  },
+  {
+   "mean": "2147483648.0",
+   "seed": 4294967295,
+   "exact": {
+    "outcome": "value",
+    "value": 2147477166,
+    "proposals": [
+     {
+      "u1": 4160191484,
+      "cand": "2147477166.253968091068582831418558841386",
+      "value": 2147477166,
+      "fracDistance": "2.539681e-01",
+      "exponent": "-9.7811883931365577182770465469729970209301e-03",
+      "u2": 866343917,
+      "threshold": "8.999578805685258808821913589782e-01",
+      "relativeMargin": "-7.758657e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 866343917,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 2147477166,
+    "seed": 866343917,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "2.856e-09"
+    ]
+   }
+  },
+  {
+   "mean": "8589934592.5",
+   "seed": 1,
+   "exact": {
+    "outcome": "value",
+    "value": 8589947555,
+    "proposals": [
+     {
+      "u1": 134775814,
+      "cand": "8589947555.992257818408533089335540372945",
+      "value": 8589947555,
+      "fracDistance": "7.742182e-03",
+      "exponent": "-9.7811736755152919181588444530461856629699e-03",
+      "u2": 3698175007,
+      "threshold": "8.999578940741912447265349328518e-01",
+      "relativeMargin": "-4.323472e-02",
+      "decision": "accept"
+     }
+    ],
+    "seed": 3698175007,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 8589947555,
+    "seed": 3698175007,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "8.137e-09"
+    ]
+   }
+  },
+  {
+   "mean": "8589934592.5",
+   "seed": 2,
+   "exact": {
+    "outcome": "value",
+    "value": 8589960775,
+    "proposals": [
+     {
+      "u1": 269551627,
+      "cand": "8589960775.605499182036289331204748637227",
+      "value": 8589960775,
+      "fracDistance": "3.945008e-01",
+      "exponent": "-3.9904191634238424246650112081624683924019e-02",
+      "u2": 2966606904,
+      "threshold": "8.993025382652732879762425000081e-01",
+      "relativeMargin": "-2.319415e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 2966606904,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 8589960775,
+    "seed": 2966606904,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "4.558e-10"
+    ]
+   }
+  },
+  {
+   "mean": "8589934592.5",
+   "seed": 123,
+   "exact": {
+    "outcome": "value",
+    "value": 8589872780,
+    "proposals": [
+     {
+      "u1": 3692523112,
+      "cand": "8589872780.121508903615068774449817809821",
+      "value": 8589872780,
+      "fracDistance": "1.215089e-01",
+      "exponent": "-2.2239590226841018938408467420231318101287e-01",
+      "u2": 346212361,
+      "threshold": "8.807848984206393394558176623832e-01",
+      "relativeMargin": "-9.084807e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 346212361,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 8589872780,
+    "seed": 346212361,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "5.357e-09"
+    ]
+   }
+  },
+  {
+   "mean": "8589934592.5",
+   "seed": 99991,
+   "exact": {
+    "outcome": "value",
+    "value": 8589767260,
+    "proposals": [
+     {
+      "u1": 3055910132,
+      "cand": "8589767260.119108242393847971184571828129",
+      "value": 8589767260,
+      "fracDistance": "1.191082e-01",
+      "exponent": "-1.6298249851268140631077585567254573106766e+00",
+      "u2": 1791574213,
+      "threshold": "4.638150500622623129132193753321e-01",
+      "relativeMargin": "-1.006472e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 1791574213,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 8589767260,
+    "seed": 1791574213,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.087e-08"
+    ]
+   }
+  },
+  {
+   "mean": "8589934592.5",
+   "seed": 2796574514,
+   "exact": {
+    "outcome": "value",
+    "value": 8590023577,
+    "proposals": [
+     {
+      "u1": 2012707835,
+      "cand": "8591259842.592461641572100732004075897085",
+      "value": 8591259842,
+      "fracDistance": "4.075384e-01",
+      "exponent": "-1.0222413400754183498975180555135011672974e+02",
+      "u2": 2879051752,
+      "threshold": "0.000000000000000000000000000000e+00",
+      "relativeMargin": null,
+      "decision": "reject"
+     },
+     {
+      "u1": 815388553,
+      "cand": "8590023577.135808616070958612669793093006",
+      "value": 8590023577,
+      "fracDistance": "1.358086e-01",
+      "exponent": "-4.6090588915759023169727015556418336927891e-01",
+      "u2": 1248582062,
+      "threshold": "8.292685908663994798217800052953e-01",
+      "relativeMargin": "-6.494403e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 1248582062,
+    "draws": 4
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 8590023577,
+    "seed": 1248582062,
+    "draws": 4,
+    "decisions": [
+     "reject",
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "5.515e-09",
+     "5.480e-09"
+    ]
+   }
+  },
+  {
+   "mean": "8589934592.5",
+   "seed": 4294967295,
+   "exact": {
+    "outcome": "value",
+    "value": 8589921629,
+    "proposals": [
+     {
+      "u1": 4160191484,
+      "cand": "8589921629.007935804849890515759397164596",
+      "value": 8589921629,
+      "fracDistance": "7.935805e-03",
+      "exponent": "-9.7811835159796762378947576621612824965268e-03",
+      "u2": 866343917,
+      "threshold": "8.999578849577616335153606996755e-01",
+      "relativeMargin": "-7.758657e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 866343917,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 8589921629,
+    "seed": 866343917,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.704e-09"
+    ]
+   }
+  },
+  {
+   "mean": "68000000000.0",
+   "seed": 1,
+   "exact": {
+    "outcome": "value",
+    "value": 68000036473,
+    "proposals": [
+     {
+      "u1": 134775814,
+      "cand": "68000036473.844357071090338467368121604524",
+      "value": 68000036473,
+      "fracDistance": "1.556429e-01",
+      "exponent": "-9.7817350305192118931074674037517979741096e-03",
+      "u2": 3698175007,
+      "threshold": "8.999573888784658803885463385086e-01",
+      "relativeMargin": "-4.323418e-02",
+      "decision": "accept"
+     }
+    ],
+    "seed": 3698175007,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 68000036473,
+    "seed": 3698175007,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.360e-07"
+    ]
+   }
+  },
+  {
+   "mean": "68000000000.0",
+   "seed": 2,
+   "exact": {
+    "outcome": "value",
+    "value": 68000073668,
+    "proposals": [
+     {
+      "u1": 269551627,
+      "cand": "68000073668.306021933930329563094093387037",
+      "value": 68000073668,
+      "fracDistance": "3.060219e-01",
+      "exponent": "-3.9904749501360255170556712300822255201638e-02",
+      "u2": 2966606904,
+      "threshold": "8.993020365740945765153924185142e-01",
+      "relativeMargin": "-2.319410e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 2966606904,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 68000073668,
+    "seed": 2966606904,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "3.587e-08"
+    ]
+   }
+  },
+  {
+   "mean": "68000000000.0",
+   "seed": 123,
+   "exact": {
+    "outcome": "value",
+    "value": 67999826085,
+    "proposals": [
+     {
+      "u1": 3692523112,
+      "cand": "67999826085.824129305416098609692342887784",
+      "value": 67999826085,
+      "fracDistance": "1.758707e-01",
+      "exponent": "-2.2239911099728762455818298349186079576612e-01",
+      "u2": 346212361,
+      "threshold": "8.807820722252351908210243891517e-01",
+      "relativeMargin": "-9.084804e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 346212361,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 67999826085,
+    "seed": 346212361,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.146e-07"
+    ]
+   }
+  },
+  {
+   "mean": "68000000000.0",
+   "seed": 99991,
+   "exact": {
+    "outcome": "value",
+    "value": 67999529196,
+    "proposals": [
+     {
+      "u1": 3055910132,
+      "cand": "67999529196.678243613652923870473907257633",
+      "value": 67999529196,
+      "fracDistance": "3.217564e-01",
+      "exponent": "-1.6298268173875267716965709041687659919262e+00",
+      "u2": 1791574213,
+      "threshold": "4.638142002329467272758733997762e-01",
+      "relativeMargin": "-1.006455e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 1791574213,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 67999529196,
+    "seed": 1791574213,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.525e-07"
+    ]
+   }
+  },
+  {
+   "mean": "68000000000.0",
+   "seed": 2796574514,
+   "exact": {
+    "outcome": "value",
+    "value": 68000250365,
+    "proposals": [
+     {
+      "u1": 2012707835,
+      "cand": "68003728699.384804082486621049757570909083",
+      "value": 68003728699,
+      "fracDistance": "3.848041e-01",
+      "exponent": "-1.0222754298845606513168604578822851181030e+02",
+      "u2": 2879051752,
+      "threshold": "0.000000000000000000000000000000e+00",
+      "relativeMargin": null,
+      "decision": "reject"
+     },
+     {
+      "u1": 815388553,
+      "cand": "68000250365.541329857105045629260115678493",
+      "value": 68000250365,
+      "fracDistance": "4.586701e-01",
+      "exponent": "-4.6090299015129032600412983811111189424992e-01",
+      "u2": 1248582062,
+      "threshold": "8.292709949247533129934595308441e-01",
+      "relativeMargin": "-6.494413e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 1248582062,
+    "draws": 4
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 68000250365,
+    "seed": 1248582062,
+    "draws": 4,
+    "decisions": [
+     "reject",
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.113e-07",
+     "6.085e-08"
+    ]
+   }
+  },
+  {
+   "mean": "68000000000.0",
+   "seed": 4294967295,
+   "exact": {
+    "outcome": "value",
+    "value": 67999963526,
+    "proposals": [
+     {
+      "u1": 4160191484,
+      "cand": "67999963526.156187703762856839921835371466",
+      "value": 67999963526,
+      "fracDistance": "1.561877e-01",
+      "exponent": "-9.7817385283052553368587922477672691456974e-03",
+      "u2": 866343917,
+      "threshold": "8.999573854701816699730443360750e-01",
+      "relativeMargin": "-7.758656e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 866343917,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 67999963526,
+    "seed": 866343917,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.395e-07"
+    ]
+   }
+  },
+  {
+   "mean": "68719476736.0",
+   "seed": 1,
+   "exact": {
+    "outcome": "value",
+    "value": 68719513402,
+    "proposals": [
+     {
+      "u1": 134775814,
+      "cand": "68719513402.293132383687735858808886753275",
+      "value": 68719513402,
+      "fracDistance": "2.931324e-01",
+      "exponent": "-9.7820301226224995461144828823307761922479e-03",
+      "u2": 3698175007,
+      "threshold": "8.999571233081862242642046112451e-01",
+      "relativeMargin": "-4.323390e-02",
+      "decision": "accept"
+     }
+    ],
+    "seed": 3698175007,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 68719513402,
+    "seed": 3698175007,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "4.576e-08"
+    ]
+   }
+  },
+  {
+   "mean": "68719476736.0",
+   "seed": 2,
+   "exact": {
+    "outcome": "value",
+    "value": 68719550793,
+    "proposals": [
+     {
+      "u1": 269551627,
+      "cand": "68719550793.005801822262761332648795774989",
+      "value": 68719550793,
+      "fracDistance": "5.801822e-03",
+      "exponent": "-3.9905072013938044928060833171912236139178e-02",
+      "u2": 2966606904,
+      "threshold": "8.993017465379232744382420605689e-01",
+      "relativeMargin": "-2.319408e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 2966606904,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 68719550793,
+    "seed": 2966606904,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "7.554e-10"
+    ]
+   }
+  },
+  {
+   "mean": "68719476736.0",
+   "seed": 123,
+   "exact": {
+    "outcome": "value",
+    "value": 68719301904,
+    "proposals": [
+     {
+      "u1": 3692523112,
+      "cand": "68719301904.192035793282920169112368860808",
+      "value": 68719301904,
+      "fracDistance": "1.920358e-01",
+      "exponent": "-2.2239749751608942074376784603373380377889e-01",
+      "u2": 346212361,
+      "threshold": "8.807834933516949238452298232005e-01",
+      "relativeMargin": "-9.084805e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 346212361,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 68719301904,
+    "seed": 346212361,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "5.088e-08"
+    ]
+   }
+  },
+  {
+   "mean": "68719476736.0",
+   "seed": 99991,
+   "exact": {
+    "outcome": "value",
+    "value": 68719003448,
+    "proposals": [
+     {
+      "u1": 3055910132,
+      "cand": "68719003448.555051166190651357391618879833",
+      "value": 68719003448,
+      "fracDistance": "4.449488e-01",
+      "exponent": "-1.6298259427088550577167325172922573983669e+00",
+      "u2": 1791574213,
+      "threshold": "4.638146059215127459118832575768e-01",
+      "relativeMargin": "-1.006463e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 1791574213,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 68719003448,
+    "seed": 1791574213,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "6.960e-09"
+    ]
+   }
+  },
+  {
+   "mean": "68719476736.0",
+   "seed": 2796574514,
+   "exact": {
+    "outcome": "value",
+    "value": 68719728422,
+    "proposals": [
+     {
+      "u1": 2012707835,
+      "cand": "68723225109.308481811426681536249638434847",
+      "value": 68723225109,
+      "fracDistance": "3.084818e-01",
+      "exponent": "-1.0222755692506868285818200092762708663940e+02",
+      "u2": 2879051752,
+      "threshold": "0.000000000000000000000000000000e+00",
+      "relativeMargin": null,
+      "decision": "reject"
+     },
+     {
+      "u1": 815388553,
+      "cand": "68719728422.557599425779180374942406322210",
+      "value": 68719728422,
+      "fracDistance": "4.424006e-01",
+      "exponent": "-4.6090293433141016343768114893464371562004e-01",
+      "u2": 1248582062,
+      "threshold": "8.292710412145621878821089012490e-01",
+      "relativeMargin": "-6.494413e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 1248582062,
+    "draws": 4
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 68719728422,
+    "seed": 1248582062,
+    "draws": 4,
+    "decisions": [
+     "reject",
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.882e-08",
+     "1.242e-07"
+    ]
+   }
+  },
+  {
+   "mean": "68719476736.0",
+   "seed": 4294967295,
+   "exact": {
+    "outcome": "value",
+    "value": 68719440069,
+    "proposals": [
+     {
+      "u1": 4160191484,
+      "cand": "68719440069.707415265588355268389919689677",
+      "value": 68719440069,
+      "fracDistance": "2.925847e-01",
+      "exponent": "-9.7820336022073125364917345336834841873497e-03",
+      "u2": 866343917,
+      "threshold": "8.999571199162833545770467935654e-01",
+      "relativeMargin": "-7.758655e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 866343917,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 68719440069,
+    "seed": 866343917,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "4.228e-08"
+    ]
+   }
+  },
+  {
+   "mean": "68719476736.0",
+   "seed": 116073,
+   "exact": {
+    "outcome": "value",
+    "value": 68719170900,
+    "proposals": [
+     {
+      "u1": 1562050318,
+      "cand": "68720288899.821205497559452744703825610518",
+      "value": 68720288899,
+      "fracDistance": "1.787945e-01",
+      "exponent": "-4.7992722262858729109780142607633024454117e+00",
+      "u2": 628765511,
+      "threshold": "4.298532950909391553429017562848e-02",
+      "relativeMargin": "2.405717e+00",
+      "decision": "reject"
+     },
+     {
+      "u1": 2416680036,
+      "cand": "68717618368.866165800793585196428750470283",
+      "value": 68717618368,
+      "fracDistance": "1.338342e-01",
+      "exponent": "-2.5127962701098766729046474210917949676514e+01",
+      "u2": 3489504757,
+      "threshold": "2.873482685977177672623899345284e-10",
+      "relativeMargin": "2.827453e+09",
+      "decision": "reject"
+     },
+     {
+      "u1": 1829661130,
+      "cand": "68721042608.353048722226126311951355281973",
+      "value": 68721042608,
+      "fracDistance": "3.530487e-01",
+      "exponent": "-1.7840197416641174754659004975110292434692e+01",
+      "u2": 774125811,
+      "threshold": "3.029923830898357359337998758603e-07",
+      "relativeMargin": "5.948661e+05",
+      "decision": "reject"
+     },
+     {
+      "u1": 4088031424,
+      "cand": "68719420188.250734547592506301636032786491",
+      "value": 68719420188,
+      "fracDistance": "2.507345e-01",
+      "exponent": "-2.3265752192529919745167532596497039776295e-02",
+      "u2": 3864464321,
+      "threshold": "8.997603372298896839964754690300e-01",
+      "relativeMargin": "5.977154e-06",
+      "decision": "reject"
+     },
+     {
+      "u1": 3351953094,
+      "cand": "68719170900.547213907822919576794126538797",
+      "value": 68719170900,
+      "fracDistance": "4.527861e-01",
+      "exponent": "-6.8056027390240358965201039609382860362530e-01",
+      "u2": 2541998559,
+      "threshold": "7.658306010426362275822498304478e-01",
+      "relativeMargin": "-2.271722e-01",
+      "decision": "accept"
+     }
+    ],
+    "seed": 2541998559,
+    "draws": 10
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 68719170900,
+    "seed": 2541998559,
+    "draws": 10,
+    "decisions": [
+     "reject",
+     "reject",
+     "reject",
+     "reject",
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "7.253e-08",
+     "1.118e-07",
+     "9.189e-08",
+     "1.520e-07",
+     "4.269e-08"
+    ]
+   }
+  },
+  {
+   "mean": "68719476736.0",
+   "seed": 163779,
+   "exact": {
+    "outcome": "value",
+    "value": 68719005014,
+    "proposals": [
+     {
+      "u1": 1610943184,
+      "cand": "68720372363.840865884965168936820362736386",
+      "value": 68720372363,
+      "fracDistance": "1.591341e-01",
+      "exponent": "-5.8363739950597137706722605798859149217606e+00",
+      "u2": 1345091089,
+      "threshold": "1.796243441829263598474852869913e-02",
+      "relativeMargin": "1.643519e+01",
+      "decision": "reject"
+     },
+     {
+      "u1": 3058111062,
+      "cand": "68719005014.895594645687287926610689682557",
+      "value": 68719005014,
+      "fracDistance": "1.044054e-01",
+      "exponent": "-1.6190583317487161618686286601587198674679e+00",
+      "u2": 2005382063,
+      "threshold": "4.669157422961373038461374562758e-01",
+      "relativeMargin": "-2.882310e-06",
+      "decision": "accept"
+     }
+    ],
+    "seed": 2005382063,
+    "draws": 4
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 68719005014,
+    "seed": 2005382063,
+    "draws": 4,
+    "decisions": [
+     "reject",
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "6.985e-08",
+     "8.037e-08"
+    ]
+   }
+  },
+  {
+   "mean": "17179869184.0",
+   "seed": 181958,
+   "exact": {
+    "outcome": "value",
+    "value": 17179760339,
+    "proposals": [
+     {
+      "u1": 3569088991,
+      "cand": "17179760339.453420257769905160609277712878",
+      "value": 17179760339,
+      "fracDistance": "4.534203e-01",
+      "exponent": "-3.4479745080356488662332026251533534377813e-01",
+      "u2": 3682262364,
+      "threshold": "8.573449942856480321395906685211e-01",
+      "relativeMargin": "-1.723895e-06",
+      "decision": "accept"
+     }
+    ],
+    "seed": 3682262364,
+    "draws": 2
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 17179760339,
+    "seed": 3682262364,
+    "draws": 2,
+    "decisions": [
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "1.142e-08"
+    ]
+   }
+  },
+  {
+   "mean": "17179869184.0",
+   "seed": 310671,
+   "exact": {
+    "outcome": "value",
+    "value": 17179931805,
+    "proposals": [
+     {
+      "u1": 3595399116,
+      "cand": "17179765083.701784220171135109833673144395",
+      "value": 17179765083,
+      "fracDistance": "2.982158e-01",
+      "exponent": "-3.1539634768367297290581063862191513180733e-01",
+      "u2": 4220018429,
+      "threshold": "8.636218739494934126810221641790e-01",
+      "relativeMargin": "1.377081e-01",
+      "decision": "reject"
+     },
+     {
+      "u1": 445402866,
+      "cand": "17179931805.839230116455343118303397759718",
+      "value": 17179931805,
+      "fracDistance": "1.607699e-01",
+      "exponent": "-1.1412914310865659994753684713941765949130e-01",
+      "u2": 3842134715,
+      "threshold": "8.945671023228293217144369009475e-01",
+      "relativeMargin": "-4.511953e-07",
+      "decision": "accept"
+     }
+    ],
+    "seed": 3842134715,
+    "draws": 4
+   },
+   "x87model": {
+    "outcome": "value",
+    "value": 17179931805,
+    "seed": 3842134715,
+    "draws": 4,
+    "decisions": [
+     "reject",
+     "accept"
+    ],
+    "exponentDifferenceVsExact": [
+     "8.982e-09",
+     "1.277e-08"
+    ]
+   }
+  }
+ ]
+}

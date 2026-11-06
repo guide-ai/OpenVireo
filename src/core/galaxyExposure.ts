@@ -15,7 +15,7 @@ import {buildPinnedGalaxyPopulation,galaxyDomainFor,galaxyFieldDescriptor,GALAXY
 import {paintAdaptedGalaxy} from './galaxyScene';
 import {catalogGalaxyMagnitude} from './galaxyCatalogAxes';
 import {prepareGalaxyProfile} from './galaxySpectrum';
-import {POISSON_MEAN_ADMISSION} from './acquisition';
+import {SPECTROMETER_TICK_MEAN_BOUND} from './exposure';
 import {createNativeSelectionScene,selectCatalogObject,type NativeSelectionScene} from './objectSelection';
 import {nativeStellarPaintLevel,nativeStoredStellarLevel} from './catalogPopulation';
 import {cropNativeFrame,freshNativeViewport,paintNativeStar} from './detectorRaster';
@@ -59,7 +59,7 @@ function calibrate(target:NativeGalaxy,viewport:RgbImage,c:Calibration,index:0|1
  const samples=source.samples.map(([wavelength,intensity])=>({wavelength,intensity})),profile=prepareGalaxyProfile(samples,source.matched,target.redshift,4000,5000);
  const wavelengths=profile.wavelengths,values=profile.values;
  const means=Object.freeze(values.map(v=>v*amplitude.source));
- if(Math.max(...means)*50*1000>=POISSON_MEAN_ADMISSION)throw new JournalError('proof');
+ if(Math.max(...means)*50*1000>=SPECTROMETER_TICK_MEAN_BOUND)throw new JournalError('proof');
  return {zeroPoint:zero,pixelLevel,fraction,amplitude,instrumentMagnitude,sourceMeans:means,sourceValues:values,wavelengths};
 }
 function prepareFresh(id:string,index:0|1|2){
@@ -129,7 +129,7 @@ function rangedConfiguration(id:string,index:0|1|2,range:SpectralRange):ReturnTy
  const v=galaxySourceValues(samples,matched,target.morphology,target.redshift,range.minimum,range.maximum,base.amplitude.source,true);
  if(v.kind==='range')throw new JournalError('proof');
  const means=Object.freeze(v.values.map(x=>x*base.amplitude.source));
- if(Math.max(...means)*50*1000>=POISSON_MEAN_ADMISSION)throw new JournalError('proof');
+ if(Math.max(...means)*50*1000>=SPECTROMETER_TICK_MEAN_BOUND)throw new JournalError('proof');
  const {sourcePreparer:_p,continuationSource:_c,...rest}=base;void _p;void _c;
  const c=Object.freeze({...rest,sourceMeans:means,sourceValues:v.values,wavelengths:v.wavelengths,...(v.kind==='continuation'?{sourcePreparer:continuationSourcePreparer(v.continuationSource),continuationSource:v.continuationSource}:{})}) as ReturnType<typeof prepare>;
  ranged.set(key,c);while(ranged.size>RANGED_CACHE_SIZE)ranged.delete(ranged.keys().next().value!);return c;

@@ -24,7 +24,22 @@ The rejection branch consumes an acceptance uniform even when exponent <−30 pr
 
 One representational boundary remains unresolved: uniform exactly 0.5 places the tangent at a pole. The original Extended pi is slightly above mathematical pi, while binary64 Math.PI is below; original x87 argument-reduction behavior has not been measured. The adapter now reports a typed `precision` error at this exact draw. It does not silently substitute a random branch or claim that the original would throw. Seed 2796574515 reaches that boundary in one draw. A future integrated exposure must surface this limitation atomically; full original numerical fidelity remains gated on stronger evidence. Exact decimal representations of Extended constants are retained alongside their binary64 projections in the provenance.
 
-New protection policies are explicit: nonnegative finite mean <=1,000,000; draw budget 1–100,000 (default 10,000); unsafe integer candidates, nonfinite arithmetic or exhausted budgets throw a typed error. These are adapter limits, not recovered detector saturation, timing or physical calibration. A rejected call cannot mutate its input state. Callers must keep returned RNG state and count together when integrating later.
+New protection policies are explicit: nonnegative finite mean <=1,000,000 (Front MEANBOUND, 2026-11-05: up to 2^36, with means above 10^6 decided through a guard band against VIREO's Extended evaluation and typed `precision` inside it; means up to 10^6 keep this path unchanged; see the Front MEANBOUND section below); draw budget 1–100,000 (default 10,000); unsafe integer candidates, nonfinite arithmetic or exhausted budgets throw a typed error. These are adapter limits, not recovered detector saturation, timing or physical calibration. A rejected call cannot mutate its input state. Callers must keep returned RNG state and count together when integrating later.
+
+## Front MEANBOUND: means above 10⁶
+
+Research: `analysis/front-meanbound/RECOVERY.md` (static reading of 0x55f0f4..0x55f324, the gammln 0x55f354, the RTL helpers and
+every caller's accumulator; error analysis; measurements), plan `analysis/front-plans/front-meanbound.md`. Nothing executed.
+- [D] 0x55f0f4 has no upper bound; its candidate is truncated to Int64 (Trunc 0x40370c, FISTP qword) and it returns the Extended
+  count. The x87 control word at 0x5ae024 is 0x1332 (64-bit precision, round to nearest) [D for the static default; I at run time].
+- [W] `poissonDraw` admits means up to 2^36 (≈ 6.9·10¹⁰). Above 10⁶ (`POISSON_UNGUARDED_LIMIT`) each proposal is evaluated in a
+  form without the ~m·ln m cancellation (double-double candidate, difference-form exponent), with a bound on its own error and on
+  VIREO's Extended error; the four decisions (candidate sign, truncation, exponent against −30, acceptance) are taken only outside
+  both bounds and typed `precision` inside (rate ≈ 1.5·10⁻⁵ per draw at 2^36, none observed up to 2^33). Means ≤ 10⁶ run the
+  earlier code byte for byte.
+- Tests: `poissonLarge.test.ts` against the independent 110-digit witness `src/core/poissonLarge.witness.json`
+  (`analysis/front-meanbound/tools/poisson_witness.py`): 66 (mean, seed) outcomes from 10⁶ + 1 to 2^36, the bounds against the
+  witness's exact and Extended-model exponents, and four witnessed near-ties typed `precision`.
 
 ## Slit and magnitude calibration building blocks
 

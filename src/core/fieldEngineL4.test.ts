@@ -4,6 +4,7 @@ import {parseGlxCatalog} from './glxCatalog';
 import {galaxyStampGeometry,paintAdaptedGalaxy,paintAdaptedGalaxyInPlace,GALAXY_STAMP_SCALES} from './galaxyScene';
 import {FIELD_CALIBRATIONS,NGC224_ID} from './fieldEngine';
 import {POISSON_MEAN_ADMISSION} from './acquisition';
+import {SPECTROMETER_TICK_MEAN_BOUND} from './exposure';
 import type {NativeGalaxy} from './pinnedGalaxyField';
 import type {RgbImage} from './photons';
 // Front L4 (2026-10-31; plan analysis/front-plans/front-l4.md): the former web mean bound 12 and stamp cap are lifted.
@@ -11,8 +12,8 @@ const glx=parseGlxCatalog(new Uint8Array(readFileSync(new URL('../../public/orig
 const galaxy=(id:string):NativeGalaxy=>{const g=glx.find(x=>x.id===id);if(!g)throw Error(id);return g as unknown as NativeGalaxy;};
 const blank=(w=936,h=936):RgbImage=>({width:w,height:h,rgb:new Uint8Array(w*h*3)});
 describe('Front L4: the telescope stamp has no size bound and paints in place',()=>{
- it('every record admits poissonDraw\'s per-draw mean (0x55f0f4 has no mean guard)',()=>{
-  expect(POISSON_MEAN_ADMISSION).toBe(1_000_000);expect(FIELD_CALIBRATIONS.map(c=>c.meanBound)).toEqual([POISSON_MEAN_ADMISSION,POISSON_MEAN_ADMISSION,POISSON_MEAN_ADMISSION]);
+ it('every record has the same mean bound (0x55f0f4 has no mean guard; Front MEANBOUND: the spectrometer\'s per-tick 2^30)',()=>{
+  expect(POISSON_MEAN_ADMISSION).toBe(2**36);expect(FIELD_CALIBRATIONS.map(c=>c.meanBound)).toEqual([SPECTROMETER_TICK_MEAN_BOUND,SPECTROMETER_TICK_MEAN_BOUND,SPECTROMETER_TICK_MEAN_BOUND]);expect(SPECTROMETER_TICK_MEAN_BOUND).toBe(2**30);
  });
  it('in-place paint equals the composed stamp, on a blank and on a painted raster',()=>{
   for(const id of ['NGC 4874','NGC 4889','NGC 4559','NGC 4565']){
