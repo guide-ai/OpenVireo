@@ -238,8 +238,8 @@ holds a TRUE-dispatch variable; frames and readings unchanged).
     reference 0. Measured as well: on the 352 pointings where such a frame holds a kept variable, the frames at 24 JDs over about
     four years give the same readings (U..I, apertures 5, 10, 20, 50, 100 and 150, Sky and Object).
 - **Typed.** `photometer-variable` only when a kept variable without values is selected, within the aperture-150 neighbour
-  query, or within the QSO merge guard radius (2′ + 0.006°) of a QSO of the field (no bundled pointing; a synthetic test pins
-  it). With a JD only the model's own reasons remain: `variable-colour-residue` 9 and `variable-spectrum-dangling` 2 positions.
+  query, or (any kept entry without values, at its own position, even one whose star a QSO replaced or pruned in this build) within
+  the QSO merge guard radius (≤ 2′ + 0.006°) of a QSO of the field (no bundled pointing; synthetic tests pin both cases). With a JD only the model's own reasons remain: `variable-colour-residue` 9 and `variable-spectrum-dangling` 2 positions.
   The bench shows the reason in words.
 - **Journal.** The `field` event gains `jd` only for such frames; the target id is `gsc:<ra>,<dec>:JD<jd>`. A history with it is
   owner **16** (`OpenVireo-photometer-variable-time-v16`, header as owner 15). Restoring runs the same two steps with the stored

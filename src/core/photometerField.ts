@@ -267,7 +267,7 @@ export type PhotometerTiledReason=
   * photometer then selects and measures depends on that earlier field and is not reproduced. */|'photometer-empty'
  /** The engine gated the population (its own typed reason). */|'photometer-population';
 export type PhotometerTiledResult=Readonly<{field:PinnedPleiadesField;reason?:undefined}|{field?:undefined;reason:PhotometerTiledReason;detail?:string}>;
-type PopulationVariableLike=Readonly<{starId:string;recordIndex:number;gcvsId:string;path:'hit'|'miss';values:Readonly<{status:'computed'}|{status:'unavailable';reason:string}>}>;
+type PopulationVariableLike=Readonly<{starId:string;recordIndex:number;gcvsId:string;path:'hit'|'miss';ra:number;dec:number;values:Readonly<{status:'computed'}|{status:'unavailable';reason:string}>}>;
 type PopulationLike=Readonly<{area?:Readonly<{minimumRa:number;maximumRa:number;minimumDec:number;maximumDec:number}>;stars:readonly Readonly<{type:number;id:string;rawHex?:string;band?:string;recordIndex?:number;ra?:number;dec?:number;magnitude?:number;photometry2Single?:number;photometry3Single?:number}>[];galaxies:readonly Readonly<{ra:number;dec:number;majorArcminutes:number;minorArcminutes?:number;morphology?:number;magnitude?:number;recordIndex?:number;rawHex?:string}>[];variableStars?:readonly PopulationVariableLike[];variableTime?:FieldVariableTime;qsoStage?:unknown;qsoMatches?:readonly number[];photographAssociations?:readonly unknown[]}>;
 /** Front PHVAR: a star the TRUE dispatch kept, as the photometer reads it. Hit (0x59864d..0x59869b): the GSC star's name := the
  * variable record's name (0x403c5c, limit 0x18; CLEA_VStrs.dat names are at most 10 characters), V +0x29, B−V +0x2d and U−B +0x31
@@ -366,9 +366,13 @@ export function photometerFieldFromPopulation(population:PopulationLike|null,rea
  // within the merge guard radius (2′ nearest + 0.006° runner) of a QSO of this field may change which record the QSO replaces or
  // prunes, and so the selection and neighbours. Such a field needs the time too. (The galaxy cleanup 0x5980cc compares V only for a
  // type-3 target, never a variable star; later variable merges pass reference 0, 0x598600.)
- const nearQso=pending.find(s=>qsoGuard.some(q=>catalogMergeDistance(q,s)<PHOTOMETER_QSO_MERGE_GUARD_DEGREES));
- const blocking=selectedPending??reach[0]??nearQso;
+ // Closure check: every kept entry without values counts, at its own position, whether or not its star is still in the list: a
+ // QSO may have replaced it (0x598026..0x598037) or pruned it as the runner in this build, while at another V it would have been
+ // kept and the QSO inserted. The runner deletion is inclusive (gap ≤ 0.006°), hence ≤.
+ const nearQso=(population.variableStars??[]).find(e=>e.values.status==='unavailable'&&qsoGuard.some(q=>catalogMergeDistance(q,e)<=PHOTOMETER_QSO_MERGE_GUARD_DEGREES));
+ const blocking=selectedPending??reach[0];
  if(blocking)return Object.freeze({reason:'photometer-variable' as const,detail:pendingReason(blocking)});
+ if(nearQso)return Object.freeze({reason:'photometer-variable' as const,detail:nearQso.values.status==='unavailable'?nearQso.values.reason:''});
  let selected:PhotometerFieldObject,selectedGalaxy:PinnedPleiadesField['selectedGalaxy'],centralFraction:number,distance:number;
  if(selection.kind==='galaxy'){
   const g=population.galaxies[Number(selection.object.id.slice(1))];

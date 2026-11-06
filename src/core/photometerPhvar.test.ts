@@ -89,6 +89,13 @@ describe('Front PHVAR: a time-dependent variable at a tiled pointing',()=>{
    return photometerFieldFromPopulation({...b.population!,stars:[...b.population!.stars,star],variableStars:[entry]},b.reasons,p,'object',{qso,glx});
   };
   expect(inject(.02)).toEqual({reason:'photometer-variable',detail:'variable-time-required'});
+  // Closure check: an entry whose star the QSO replaced or pruned in this build (no longer in the list) still counts, at its own
+  // position: at another V the QSO would have been inserted and the variable kept.
+  const removed={starId:'CLEA_VStrs.dat@99998',recordIndex:99998,gcvsId:'SYN2',path:'miss' as const,ra:p.ra,dec:p.dec+.0003,riseWordDefaulted:false,values:{status:'unavailable' as const,reason:'variable-time-required' as const},nearGalaxyOrQso:true};
+  expect(photometerFieldFromPopulation({...b.population!,variableStars:[removed]},b.reasons,p,'object',{qso,glx})).toEqual({reason:'photometer-variable',detail:'variable-time-required'});
+  // A removed entry beyond the guard radius does not block, and neither does one whose values were computed.
+  expect(photometerFieldFromPopulation({...b.population!,variableStars:[{...removed,dec:p.dec+PHOTOMETER_QSO_MERGE_GUARD_DEGREES+.002}]},b.reasons,p,'object',{qso,glx}).field?.selected.id).toBe(r.field!.selected.id);
+  expect(photometerFieldFromPopulation({...b.population!,variableStars:[{...removed,values:{status:'computed' as const}}]},b.reasons,p,'object',{qso,glx}).field?.selected.id).toBe(r.field!.selected.id);
   const far=inject(PHOTOMETER_QSO_MERGE_GUARD_DEGREES+.002);expect(far.field?.selected.id).toBe(r.field!.selected.id);expect(far.field?.sourceMagnitude).toBe(r.field!.sourceMagnitude);
  },120_000);
  it('the frozen JD domain and the QSO merge guard are the field engine\'s; target ids round-trip with and without a JD',()=>{
