@@ -3509,6 +3509,17 @@ export interface MessageParameters {
   "testMode.adaptation": never;
   "photometerTab.setEBmVNote": never;
   "photometerTab.detectSkyNote": never;
+  "scopeAccess.optionNote": never;
+  "scopeAccess.restricted": never;
+  "scopeAccess.unrestricted": never;
+  "scopeAccess.accessLocked": "access" | "name";
+  "scopeAccess.applyRefused": "name";
+  "scopeAccess.waiting": "minutes" | "name";
+  "scopeAccess.research": never;
+  "scopeAccess.allotmentNote": never;
+  "scopeAccess.instrumentRefused": never;
+  "scopeAccess.ok": never;
+  "scopeAccess.cancel": never;
   "ph.detectSkyLocked": never;
   "ph.detectSkyPinned": never;
   "testMode.motionNote": never;

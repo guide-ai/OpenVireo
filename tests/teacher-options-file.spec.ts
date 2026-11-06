@@ -90,13 +90,13 @@ test('Save Updates downloads the options with an empty password; Load brings the
  await expect(id(page,'ob-options-file-error-text')).toContainText('Options File VEO_OPTS.INI is Invalid.');
  await expect(id(page,'ob-options-file-error-text')).toContainText('Read beyond end of file');await expect(id(page,'ob-options-file-error-inferred')).toContainText('inferred');
  await id(page,'ob-options-file').screenshot({path:test.info().outputPath('load-file-error.png')});
- // A full native stream with Restrict Scope Access off: loaded, with the not-applied list.
+ // A full native stream with Restrict Scope Access off: loaded; since Front T5 the box is applied (unchecked), not listed.
  const full=Buffer.alloc(8506);full[0]=5;full.write('1.504',1,'latin1');
  const at=(n:number)=>8506-(0x27dc-n)-1;// the 21 option bytes +0x27c8..+0x27dc close the stream
  full[8506-22]=1;full[8506-45]=5;/* review 1 L1: a rate index other than 3/4 */for(const r of [0x27cb,0x27ce,0x27d2,0x27d3,0x27d7,0x27db,0x27dc])full[at(r)]=1;full[at(0x27c8)]=1;
  await id(page,'ob-options-load').setInputFiles({name:'VEO_OPTS.INI',mimeType:'application/octet-stream',buffer:full});
  await expect(id(page,'ob-options-loaded')).toHaveAttribute('data-source','native');
- await expect(id(page,'ob-options-not-applied')).toContainText('Restrict Scope Access');await id(page,'ob-options-file').screenshot({path:test.info().outputPath('load-native-file.png')});await expect(id(page,'ob-options-not-applied')).toContainText('Parameters, file names, paths and addresses');
+ await expect(id(page,'ob-options-not-applied')).not.toContainText('Restrict Scope Access');await expect(id(page,'ob-options-restrict-scope-access')).not.toBeChecked();await id(page,'ob-options-file').screenshot({path:test.info().outputPath('load-native-file.png')});await expect(id(page,'ob-options-not-applied')).toContainText('Parameters, file names, paths and addresses');
  await expect(id(page,'ob-options-test-mode')).toBeChecked();await expect(id(page,'ob-options-edit-mode')).not.toBeChecked();await expect(id(page,'ob-options-fast-slewing')).not.toBeChecked();
  await expect(id(page,'ob-options-fast-slewing-rate')).toContainText('slew-rate index 5');await expect(id(page,'ob-options-resave-warning')).toContainText('compiled values');
  await id(page,'ob-options-dialog').getByRole('button',{name:'Cancel',exact:true}).click();
