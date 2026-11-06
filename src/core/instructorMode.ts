@@ -14,14 +14,15 @@
  * Demonstration Mode branch; it is not a lock. The compiled password is never compared or stored. WEB-TM-02 [W]: leaving
  * closes the gate and puts the instructor-only options (Edit Mode, Virtual Observatory and, since Front T3, Test Mode) back to
  * their compiled values; VIREO
- * has no such action. The state lives for the page session only: never in investigations, files or browser storage.
+ * has no such action. The state lives for the page session only: never in investigations, files or browser storage. Front T2:
+ * Demonstration Mode (DemoBox, kept per browser by io/demonstrationModeStorage.ts) opens it at page load (startupInstructorGate).
  * Pure: no React, storage, clock or network. Every transition returns a frozen state; a refusal returns the same object. */
 import {COMPILED_EDIT_MODE} from './editMode';
 import {COMPILED_VIRTUAL_OBSERVATORY} from './observatoryMenuLiterals';
 import {COMPILED_TEST_MODE} from './testMode';
 
 /** env+0x37d8 and the web source that opened it. */
-export type InstructorGate=Readonly<{open:boolean;source:'closed'|'instructor-switch'|'edit-mode'}>;
+export type InstructorGate=Readonly<{open:boolean;source:'closed'|'instructor-switch'|'edit-mode'|'demonstration-mode'}>;
 export type InstructorGateOutcome='gate-opened'|'gate-already-open'|'gate-closed'|'gate-already-closed'|'edit-mode-off';
 export type InstructorGateTransition=Readonly<{state:InstructorGate;outcome:InstructorGateOutcome;changed:boolean}>;
 /** What leaving resets: the instructor-only options at their compiled values (EditModeBox 0x5a2ad3, VObsBox 0x5a2b59; Front
@@ -35,6 +36,18 @@ export const INITIAL_INSTRUCTOR_GATE:InstructorGate=Object.freeze({open:false,so
 const keep=(state:InstructorGate,outcome:InstructorGateOutcome):InstructorGateTransition=>Object.freeze({state,outcome,changed:false});
 const to=(open:boolean,source:InstructorGate['source'],outcome:InstructorGateOutcome):InstructorGateTransition=>
  Object.freeze({state:Object.freeze({open,source}),outcome,changed:true});
+
+/** Front T2: TEnvironment1.FormCreate 0x587c50..0x587c73. With Demonstration Mode on (record+0x27c6 = 0) the gate opens at
+ * start-up (0x587c6a); otherwise it starts closed (0x587c2d). The web reads Demonstration Mode from this browser's storage
+ * (io/demonstrationModeStorage.ts, WEB-DM-01 [W]). Only the gate write is ported: the skipped login (+0x54c, virtual +0x80) has
+ * no web counterpart, and the options apply 0x587dbc is the page's own state. */
+export function startupInstructorGate(demonstrationMode:boolean):InstructorGate{
+ if(typeof demonstrationMode!=='boolean')throw new TypeError('Invalid Demonstration Mode value');
+ return demonstrationMode?DEMONSTRATION_GATE:INITIAL_INSTRUCTOR_GATE;
+}
+/** [D] TOptionsDlg.DemoBox (General tab, OptsGrp1): caption and hint from the DFM. */
+export const DEMONSTRATION_MODE_CAPTIONS=Object.freeze({box:'Demonstration Mode',hint:'In Demonstration Mode, the Login is not required.'});
+const DEMONSTRATION_GATE:InstructorGate=Object.freeze({open:true,source:'demonstration-mode'});
 
 /** WEB-TM-01 [W] in place of the Demonstration Mode branch's gate write (0x587c6a): the "Instructor mode…" confirmation. */
 export function enterInstructorMode(s:InstructorGate):InstructorGateTransition{

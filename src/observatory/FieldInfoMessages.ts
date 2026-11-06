@@ -3,7 +3,7 @@ import {fieldReasonText} from '../i18n';
  * translated; these are the labelled web adaptations, notices and typed reasons. */
 export const FIELD_INFO_MESSAGES=Object.freeze({
  editModeLabel:'Edit Mode (instructor, VIREO)',
- editModeAdaptation:'Web adaptation: in VIREO, Edit Mode is an instructor option behind the instructor login or Demonstration Mode. Here these options open only in instructor mode (the web form of Demonstration Mode, with no password); the box is off by default, not saved, and Leave turns it off. It only enables the Telescope-view click (Catalog Object, with galaxy redshifts hidden because they are exercise answers) and File › Field Information; its other effects (hot-list editing and saving, other print layouts) are not applied.',
+ editModeAdaptation:'Web adaptation: in VIREO, Edit Mode is an instructor option behind the instructor login or Demonstration Mode. Here these options open only in instructor mode (the web form of Demonstration Mode, with no password); the box is off by default, not saved by the page (only Save Updates writes it, to an options file you keep), and Leave turns it off. It only enables the Telescope-view click (Catalog Object, with galaxy redshifts hidden because they are exercise answers) and File › Field Information; its other effects (hot-list editing and saving, other print layouts) are not applied.',
  fileMenu:'File',
  guideTitle:'How to use (instructor)',
  guide:Object.freeze([

@@ -10,7 +10,9 @@ import {VIRTUAL_OBSERVATORY_CAPTIONS as VO} from '../core/observatoryMenuLiteral
 import {TEST_MODE_CAPTIONS as TM} from '../core/testMode';
 import {QSO_LIST_MESSAGES} from './QsoListMessages';
 import {RADIO_ACCESS_LITERALS as UL} from '../core/radioAccessOptions';
-import type {PreferencesGateResult} from '../core/instructorMode';
+import {DEMONSTRATION_MODE_CAPTIONS as DM,type PreferencesGateResult} from '../core/instructorMode';
+import {NOT_APPLIED,OPTIONS_FILE_LITERALS as OF,OPTIONS_FILE_MAX_BYTES,WEB_OPTIONS_FILE_NAME,optionsFileErrorBox,readOptionsFile,writeOptionsFile,type OptionsFileLoad,type OptionsFileValues} from '../io/optionsFile';
+import {downloadText} from './downloadText';
 import {t} from '../i18n';
 import './observatory-dialogs.css';
 const M=OBSERVATORY_MESSAGES.options,S=M.session;
@@ -25,7 +27,7 @@ const testId=(k:string)=>`ob-options-${k.replace(/[A-Z]/g,c=>'-'+c.toLowerCase()
  * Cancel discards them. Front T1: the button is VIREO's File › Preferences (Preferences1Click 0x5886ac): with the page's
  * instructor gate closed (0x5886c9) it shows the INSTRUCTOR / USER OPTIONS! box (0x588a84 / 0x588b70, MessageBox flags 0x30)
  * instead of the dialog, plus one web line on instructor mode. */
-export default function OpticalOptionsDialog({gate='user-options-box',options,onOptions,disabled,editMode=false,onEditMode,virtualObservatory=false,onVirtualObservatory,testMode=false,onTestMode,sessionOptions,onSessionOptions,horizonRadians}:{
+export default function OpticalOptionsDialog({gate='user-options-box',options,onOptions,disabled,editMode=false,onEditMode,virtualObservatory=false,onVirtualObservatory,testMode=false,onTestMode,demonstrationMode=false,onDemonstrationMode,sessionOptions,onSessionOptions,horizonRadians}:{
  /** Front T1: the page's instructor gate test (core/instructorMode.ts preferencesGate); absent: closed, as VIREO starts. */
  gate?:PreferencesGateResult;
  options:OpticalOptions;onOptions:(o:OpticalOptions)=>void;disabled:boolean;editMode?:boolean;onEditMode?:(on:boolean)=>void;
@@ -33,23 +35,51 @@ export default function OpticalOptionsDialog({gate='user-options-box',options,on
  virtualObservatory?:boolean;onVirtualObservatory?:(on:boolean)=>void;
  /** Front T3: TestBox1 (CCD tab, record+0x27c8 → env+0x2e7c), shown when `onTestMode` is given; not persisted. */
  testMode?:boolean;onTestMode?:(on:boolean)=>void;
+ /** Front T2: DemoBox (record+0x27c6, stored inverted), kept per browser by the page (WEB-DM-01); shown when
+  * `onDemonstrationMode` is given. With every live control given, the dialog also offers Save Updates and Load. */
+ demonstrationMode?:boolean;onDemonstrationMode?:(on:boolean)=>void;
  /** Front R3: shown when both are given; not persisted. */
  sessionOptions?:SessionOpticalOptions;onSessionOptions?:(o:SessionOpticalOptions)=>void;
  /** R3 review L2: the selected site's horizon (radians). */horizonRadians?:number}){
  const id=useId(),ref=useRef<HTMLDialogElement>(null),[draft,setDraft]=useState<OpticalOptions|null>(null),[resetAsked,setResetAsked]=useState(false),[editDraft,setEditDraft]=useState(editMode),[vobsDraft,setVobsDraft]=useState(virtualObservatory),[testDraft,setTestDraft]=useState(testMode),[sessionDraft,setSessionDraft]=useState(sessionOptions);
+ const [demoDraft,setDemoDraft]=useState(demonstrationMode),[saveAsk,setSaveAsk]=useState<'edit'|'vo'|null>(null),[loadState,setLoadState]=useState<Readonly<{name:string;result:OptionsFileLoad;message?:string}>|null>(null);
  useEffect(()=>{const el=ref.current;if(!el)return;if(draft&&!el.open){el.showModal();el.querySelector<HTMLInputElement>('input:not([disabled])')?.focus();}else if(!draft&&el.open)el.close();},[draft!==null]);
  const [refused,setRefused]=useState(false),opener=useRef<HTMLButtonElement>(null);
- useEffect(()=>{if(disabled){setDraft(null);setResetAsked(false);setRefused(false);}},[disabled]);
+ useEffect(()=>{if(disabled){setDraft(null);setResetAsked(false);setRefused(false);setSaveAsk(null);}},[disabled]);
  // Front R5: with Edit Mode live, SlewBox follows it (FormActivate 0x5a5985, EditModeBoxClick 0x5a6edc); without it, as before.
  const slew=draft?(onEditMode?limitSlewingBox(editDraft,draft.limitSlewing):Object.freeze({enabled:true,checked:draft.limitSlewing})):null;
  const editModeClick=(on:boolean)=>{setEditDraft(on);if(on)setDraft(d=>d&&{limitSlewing:false});};
  /** ResetBtnClick Yes: every live draft to its compiled value (0x5a21d0); OK still commits and Cancel still discards. */
- const reset=(yes:boolean)=>{setResetAsked(false);if(!yes)return;setDraft(OPTIONS_RESET_DEFAULTS.options);setEditDraft(OPTIONS_RESET_DEFAULTS.editMode);setVobsDraft(OPTIONS_RESET_DEFAULTS.virtualObservatory);setTestDraft(OPTIONS_RESET_DEFAULTS.testMode);if(sessionDraft)setSessionDraft(COMPILED_SESSION_OPTICAL_OPTIONS);};
+ const reset=(yes:boolean)=>{setResetAsked(false);if(!yes)return;setDraft(OPTIONS_RESET_DEFAULTS.options);setEditDraft(OPTIONS_RESET_DEFAULTS.editMode);setVobsDraft(OPTIONS_RESET_DEFAULTS.virtualObservatory);setTestDraft(OPTIONS_RESET_DEFAULTS.testMode);setDemoDraft(false);setLoadState(null);if(sessionDraft)setSessionDraft(COMPILED_SESSION_OPTICAL_OPTIONS);};
  const live=sessionDraft&&onSessionOptions?sessionDraft:null;
  const ported=new Set<string>(live?SESSION_KEYS.map(k=>SC[k]):[]);
+ /** OKBtnClick: commits every live draft (shared by OK and Save Updates). */
+ const commit=()=>{if(!draft)return;onOptions(draft);if(onEditMode&&editDraft!==editMode)onEditMode(editDraft);if(onVirtualObservatory&&vobsDraft!==virtualObservatory)onVirtualObservatory(vobsDraft);if(onTestMode&&testDraft!==testMode)onTestMode(testDraft);if(onDemonstrationMode&&demoDraft!==demonstrationMode)onDemonstrationMode(demoDraft);if(live&&onSessionOptions&&SESSION_KEYS.some(k=>live[k]!==sessionOptions?.[k]))onSessionOptions(Object.freeze({...live}));setDraft(null);};
+ // Front T2: the options file needs every live control (the page's full dialog).
+ const fileable=!!(live&&onEditMode&&onVirtualObservatory&&onTestMode&&onDemonstrationMode);
+ const fileValues=():OptionsFileValues|null=>draft&&live?Object.freeze({demonstrationMode:demoDraft,testMode:testDraft,limitSlewing:slew!.checked,editMode:editDraft,virtualObservatory:vobsDraft,...live}):null;
+ /** Save Updates: OK, then the writer 0x5a4644 (its Edit Mode box 0x14, else its Virtual Observatory box 0x41), then the file. */
+ const finishSave=(save:boolean)=>{const values=fileValues();setSaveAsk(null);commit();if(save&&values)downloadText(new TextEncoder().encode(writeOptionsFile(values)),WEB_OPTIONS_FILE_NAME);};
+ const saveClick=()=>{if(editDraft)setSaveAsk('edit');else if(vobsDraft)setSaveAsk('vo');else finishSave(true);};
+ /** Load: VIREO reads VEO_OPTS.INI only at start-up (0x5a1a08); here the file fills the drafts, as Reset does, and OK applies. */
+ const load=async(file:File)=>{
+  let result:OptionsFileLoad;
+  try{result=file.size>OPTIONS_FILE_MAX_BYTES?Object.freeze({kind:'invalid',reason:'too-large'}):readOptionsFile(new Uint8Array(await file.arrayBuffer()));}
+  catch{result=Object.freeze({kind:'invalid',reason:'not-options-file'});}
+  if(!dialogOpen.current)return;// closed while the file was read: nothing to fill
+  const name=file.name.slice(0,120);
+  if(result.kind!=='loaded'){setLoadState({name,result,message:result.kind==='invalid'&&(result.reason==='not-options-file'||result.reason==='too-large')?t(`optionsFile.invalid.${result.reason}`):undefined});return;}
+  const v=result.values;
+  setDraft({limitSlewing:v.limitSlewing&&!(onEditMode&&v.editMode)});// FormActivate 0x5a5985: SlewBox off under Edit Mode
+  setEditDraft(v.editMode);setVobsDraft(v.virtualObservatory);setTestDraft(v.testMode);setDemoDraft(v.demonstrationMode);
+  setSessionDraft(Object.freeze(Object.fromEntries(SESSION_KEYS.map(k=>[k,v[k]]))) as SessionOpticalOptions);
+  setLoadState({name,result});
+ };
+ const dialogOpen=useRef(false);dialogOpen.current=draft!==null;
+ const fileError=loadState&&loadState.result.kind!=='loaded'?optionsFileErrorBox(loadState.result,loadState.name,loadState.message):null;
  return <>
-  <button ref={opener} type="button" className="secondary-button" disabled={disabled} data-testid="ob-options" data-gate={gate} onClick={()=>{if(gate!=='options'){setRefused(true);return;}setDraft(onEditMode&&editMode?{limitSlewing:false}:options);setEditDraft(editMode);setVobsDraft(virtualObservatory);setTestDraft(testMode);setSessionDraft(sessionOptions);}}>{M.open}</button>
-  <dialog ref={ref} className="ob-dialog" aria-labelledby={`${id}-title`} data-testid="ob-options-dialog" onCancel={e=>{e.preventDefault();if(!resetAsked)setDraft(null);}}>
+  <button ref={opener} type="button" className="secondary-button" disabled={disabled} data-testid="ob-options" data-gate={gate} onClick={()=>{if(gate!=='options'){setRefused(true);return;}setDraft(onEditMode&&editMode?{limitSlewing:false}:options);setEditDraft(editMode);setVobsDraft(virtualObservatory);setTestDraft(testMode);setDemoDraft(demonstrationMode);setLoadState(null);setSaveAsk(null);setSessionDraft(sessionOptions);}}>{M.open}</button>
+  <dialog ref={ref} className="ob-dialog" aria-labelledby={`${id}-title`} data-testid="ob-options-dialog" onCancel={e=>{e.preventDefault();if(!resetAsked&&!saveAsk)setDraft(null);}}>
    {draft&&<>
     <h2 id={`${id}-title`} className="ob-native">{C.form}</h2>
     <p className="ob-note ob-native">{menuCaptionText(C.general)}</p>
@@ -62,11 +92,13 @@ export default function OpticalOptionsDialog({gate='user-options-box',options,on
       <small className="ob-note">{VO.hint}</small><small className="ob-note" data-testid="ob-options-virtual-observatory-note">{QSO_LIST_MESSAGES.virtualObservatoryAdaptation}</small></>}
      {onTestMode&&<><label className="ob-check" title={TM.hint}><input type="checkbox" data-testid="ob-options-test-mode" checked={testDraft} onChange={e=>setTestDraft(e.target.checked)}/>{TM.box}</label>
       <small className="ob-note">{TM.hint}</small><small className="ob-note" data-testid="ob-options-test-mode-note">{t('testMode.adaptation')}</small></>}
+     {onDemonstrationMode&&<><label className="ob-check" title={DM.hint}><input type="checkbox" data-testid="ob-options-demonstration-mode" checked={demoDraft} onChange={e=>setDemoDraft(e.target.checked)}/>{DM.box}</label>
+      <small className="ob-note">{DM.hint}</small><small className="ob-note" data-testid="ob-options-demonstration-mode-note">{t('demonstrationMode.adaptation')}</small></>}
      {live&&<>{SESSION_KEYS.map(k=><Fragment key={k}><label className="ob-check" title={SESSION_HINTS[k]}><input type="checkbox" data-testid={testId(k)} checked={live[k]} onChange={e=>setSessionDraft({...live,[k]:e.target.checked})}/>{SC[k]}</label>
       <small className="ob-note">{SESSION_HINTS[k]}</small>{SESSION_NOTES[k]&&<small className="ob-note">{SESSION_NOTES[k]}</small>}</Fragment>)}
       <small className="ob-note" data-testid="ob-options-session-note">{S.sessionNote}</small></>}
      <p className="ob-note">{M.othersHeading}</p>
-     <ul className="ob-option-list" data-testid="ob-options-others">{C.otherOptions.filter(o=>!(onEditMode&&o===EDIT_MODE_CAPTIONS.box)&&!(onVirtualObservatory&&o===VO.box)&&!(onTestMode&&o===TM.box)&&!ported.has(o)).map(o=><li key={o}><span className="ob-native">{o}</span>{o==='Fast Slewing'?<small> — {M.fastSlewing}</small>:null}</li>)}</ul>
+     <ul className="ob-option-list" data-testid="ob-options-others">{C.otherOptions.filter(o=>!(onEditMode&&o===EDIT_MODE_CAPTIONS.box)&&!(onVirtualObservatory&&o===VO.box)&&!(onTestMode&&o===TM.box)&&!(onDemonstrationMode&&o===DM.box)&&!ported.has(o)).map(o=><li key={o}><span className="ob-native">{o}</span>{o==='Fast Slewing'?<small> — {M.fastSlewing}</small>:null}</li>)}</ul>
      {live&&<small className="ob-note" data-testid="ob-options-not-ported">{S.notPorted}</small>}
     </fieldset>
     {live?<section className="ob-group" data-testid="ob-options-tabs" aria-label={S.tabsHeading}><p className="ob-note">{S.tabsHeading}</p>
@@ -75,12 +107,25 @@ export default function OpticalOptionsDialog({gate='user-options-box',options,on
      <small className="ob-note" data-testid="ob-options-tabs-note">{S.tabsNote}</small></section>
     :<><fieldset className="ob-group" disabled><legend className="ob-native">{menuCaptionText(C.parameters)}</legend>{C.parameterLabels.map(l=><span key={l} className="ob-check">{l} <small>— {M.unavailable}</small></span>)}</fieldset>
      <p className="ob-note">{C.otherTabs.map(menuCaptionText).join(', ')}: {M.unavailable}. {M.help}</p></>}
-    <div className="ob-actions"><button type="button" className="primary-button" data-testid="ob-options-ok" onClick={()=>{onOptions(draft);if(onEditMode&&editDraft!==editMode)onEditMode(editDraft);if(onVirtualObservatory&&vobsDraft!==virtualObservatory)onVirtualObservatory(vobsDraft);if(onTestMode&&testDraft!==testMode)onTestMode(testDraft);if(live&&onSessionOptions&&SESSION_KEYS.some(k=>live[k]!==sessionOptions?.[k]))onSessionOptions(Object.freeze({...live}));setDraft(null);}}>{menuCaptionText(C.ok)}</button><button type="button" className="secondary-button" onClick={()=>setDraft(null)}>{menuCaptionText(C.cancel)}</button>
+    {fileable&&<section className="ob-group" data-testid="ob-options-file" aria-labelledby={`${id}-file`}><p className="ob-note" id={`${id}-file`}><strong>{t('optionsFile.heading')}</strong></p>
+     <small className="ob-note" data-testid="ob-options-file-note">{t('optionsFile.note')}</small>
+     <div className="ob-actions"><button type="button" className="secondary-button" data-testid="ob-options-save" onClick={saveClick}>{menuCaptionText(OF.saveMenu)}</button>
+      <label className="secondary-button project-upload">{t('optionsFile.load')}<input type="file" data-testid="ob-options-load" accept=".json,.ini,application/json" onChange={e=>{const f=e.target.files?.[0];e.target.value='';if(f)void load(f);}}/></label></div>
+     {loadState?.result.kind==='loaded'&&<div role="status" data-testid="ob-options-loaded" data-source={loadState.result.source}><p className="ob-note">{t('optionsFile.loaded',{name:loadState.name,source:t(loadState.result.source==='web'?'optionsFile.source.web':'optionsFile.source.native')})}</p>
+      {loadState.result.administratorCleared&&<p className="ob-note" data-testid="ob-options-administrator-cleared">{t('optionsFile.administratorCleared')}</p>}
+      {loadState.result.notApplied.length>0&&<><p className="ob-note">{t('optionsFile.notAppliedHeading')}</p>
+       <ul className="ob-option-list" data-testid="ob-options-not-applied">{loadState.result.notApplied.map(k=><li key={k} data-key={k}><span className="ob-native">{NOT_APPLIED[k].caption}</span><small> — {t(`optionsFile.reason.${NOT_APPLIED[k].reason}`)}</small></li>)}</ul></>}</div>}
+     {fileError&&<div role="alert" className="ob-group" data-testid="ob-options-file-error"><p className="ob-native"><strong data-testid="ob-options-file-error-caption">{fileError.caption}</strong></p>
+      <p className="ob-native ob-pre-line" data-testid="ob-options-file-error-text">{fileError.text}</p><small className="ob-note">{t('optionsFile.errorNote')}</small></div>}
+    </section>}
+    <div className="ob-actions"><button type="button" className="primary-button" data-testid="ob-options-ok" onClick={commit}>{menuCaptionText(C.ok)}</button><button type="button" className="secondary-button" onClick={()=>setDraft(null)}>{menuCaptionText(C.cancel)}</button>
      <button type="button" className="secondary-button" title={R.hint} data-testid="ob-options-reset" onClick={()=>setResetAsked(true)}>{menuCaptionText(R.caption)}</button></div>
     <small className="ob-note" data-testid="ob-options-reset-note">{M.resetNote}</small>
     <p className="ob-note">{M.teacherDeferred}</p>
     <ul className="ob-option-list" data-testid="ob-options-teacher-deferred">{TEACHER_DEFERRED.map(d=><li key={d.key} data-reason={d.reason}><span className="ob-native">{menuCaptionText(d.caption)}</span></li>)}</ul>
     {resetAsked&&<QuestionBox caption={R.questionCaption} text={R.questionText} testId="ob-options-reset-box" onAnswer={reset}/>}
+    {saveAsk==='edit'&&<QuestionBox caption={OF.saveCaption} text={OF.editModeSet} testId="ob-options-save-edit-mode" preLine onAnswer={finishSave}/>}
+    {saveAsk==='vo'&&<QuestionBox caption={OF.saveCaption} text={OF.virtualObservatory} testId="ob-options-save-vo" preLine labels={{yes:t('optionsFile.ok'),no:t('optionsFile.cancel')}} onAnswer={finishSave}/>}
    </>}
   </dialog>
   {refused&&<UserOptionsBox onClose={()=>{setRefused(false);opener.current?.focus();}}/>}

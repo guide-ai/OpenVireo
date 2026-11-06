@@ -6,6 +6,7 @@
 .ob-box{width:min(calc(100vw - 48px),24rem)}
 .ob-box.ob-user-options{width:min(calc(100vw - 48px),36rem)}
 .ob-native{font-family:Tahoma,Verdana,sans-serif}
+.ob-pre-line p.ob-native,p.ob-native.ob-pre-line{white-space:pre-line;overflow-wrap:anywhere}
 .ob-note{font-size:13px;line-height:1.45;margin:6px 0}
 .ob-group{border:1px solid var(--ov-border-strong);border-radius:6px;margin:8px 0;padding:6px 10px 10px;display:flex;flex-wrap:wrap;gap:8px;min-width:0}
 .ob-group legend{padding:0 4px;font-size:13px}

@@ -3508,4 +3508,26 @@ export interface MessageParameters {
   "instructorMode.optionsClosedOk": never;
   "testMode.adaptation": never;
   "testMode.motionNote": never;
+  "demonstrationMode.adaptation": never;
+  "demonstrationMode.banner": never;
+  "optionsFile.heading": never;
+  "optionsFile.note": never;
+  "optionsFile.load": never;
+  "optionsFile.loaded": "name" | "source";
+  "optionsFile.source.web": never;
+  "optionsFile.source.native": never;
+  "optionsFile.notAppliedHeading": never;
+  "optionsFile.reason.cleared-at-load": never;
+  "optionsFile.reason.fixed-in-web": never;
+  "optionsFile.reason.teacher-front": never;
+  "optionsFile.reason.web-sound-switch": never;
+  "optionsFile.reason.out-of-scope": never;
+  "optionsFile.reason.undecided": never;
+  "optionsFile.reason.parameters-front": never;
+  "optionsFile.administratorCleared": never;
+  "optionsFile.errorNote": never;
+  "optionsFile.invalid.not-options-file": never;
+  "optionsFile.invalid.too-large": never;
+  "optionsFile.ok": never;
+  "optionsFile.cancel": never;
 }

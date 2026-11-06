@@ -7,7 +7,8 @@ import {htlCatalogMatch} from './core/hotList';
 import TargetPicker,{type TargetGroup}from'./TargetPicker';
 import TelescopeMotion from './TelescopeMotion';
 import OpticalSlewMenu from './observatory/OpticalSlewMenu';
-import {INITIAL_INSTRUCTOR_GATE,applyEditModeGate,enterInstructorMode,leaveInstructorMode,preferencesGate} from './core/instructorMode';// Front T1
+import {applyEditModeGate,enterInstructorMode,leaveInstructorMode,preferencesGate,startupInstructorGate} from './core/instructorMode';// Front T1
+import {readDemonstrationMode,writeDemonstrationMode} from './io/demonstrationModeStorage';// Front T2
 import {COMPILED_TEST_MODE,programmedSlewChecksHorizon} from './core/testMode';// Front T3
 import {TestModeContext} from './polish/testModeContext';
 import {InstructorModeBanner,InstructorModeConfirm,InstructorModeMenuItem} from './components/InstructorMode';
@@ -662,7 +663,11 @@ export default function OpenVireo(){
   // after a confirmation (the web form of the Demonstration Mode branch 0x587c6a); Edit Mode on keeps it open (0x5887f0 /
   // 0x587f70, moved from the radio card); Leave closes it and resets Edit Mode, Virtual Observatory and Test Mode [W]. The optical options
   // and the radio Preferences both test it (0x5886c9).
-  const [instructorGate,setInstructorGate]=useState(INITIAL_INSTRUCTOR_GATE),[instructorAsk,setInstructorAsk]=useState(false);
+  // Front T2 (io/demonstrationModeStorage.ts, WEB-DM-01 [W]): Demonstration Mode, kept in this browser only, opens the gate at
+  // page load as FormCreate does (0x587c50..0x587c73). It is read once here; only the options' OK changes it, and Leave keeps it.
+  const [demonstrationMode,setDemonstrationMode]=useState(()=>readDemonstrationMode());
+  const changeDemonstrationMode=useCallback((on:boolean)=>{setDemonstrationMode(writeDemonstrationMode(on)?on:false);},[]);
+  const [instructorGate,setInstructorGate]=useState(()=>startupInstructorGate(demonstrationMode)),[instructorAsk,setInstructorAsk]=useState(false);
   useEffect(()=>{setInstructorGate(g=>applyEditModeGate(g,editMode).state);},[editMode]);
   const optionsGate=preferencesGate(instructorGate);
   // Review 1 M1: after On, focus goes to the banner's Leave; after Leave, to the header item, or (phones, where the item is
@@ -675,7 +680,7 @@ export default function OpenVireo(){
    const item=instructorItem.current,toggle=item?.closest('header')?.querySelector<HTMLElement>('.tools-toggle');
    if(shown(item))item.focus();else if(shown(toggle))toggle.focus();
   },[instructorGate.open]);
-  const fieldInfo=useMemo(()=>({editMode,onEditMode:setEditMode,virtualObservatory,onVirtualObservatory:setVirtualObservatory,testMode,onTestMode:setTestMode,sessionOptions,onSessionOptions:setSessionOptions,horizonRadians,view:mode==='finder'?'finder' as const:'instrument' as const,telescopeName:opticalProfile(optical.selectedIndex).name,onOpenVariable:openVariableRecord,currentJd:observatoryJd,hidden:objectXHidden,objectXMode:objectXSummary.target,busy:projectBusy,driveOn:open&&!!observatoryClock.state?.tracking}),[optical.selectedIndex,editMode,virtualObservatory,testMode,sessionOptions,horizonRadians,mode,openVariableRecord,observatoryJd,objectXHidden,objectXSummary.target,projectBusy,open,observatoryClock.state?.tracking]);
+  const fieldInfo=useMemo(()=>({editMode,onEditMode:setEditMode,virtualObservatory,onVirtualObservatory:setVirtualObservatory,testMode,onTestMode:setTestMode,demonstrationMode,onDemonstrationMode:changeDemonstrationMode,sessionOptions,onSessionOptions:setSessionOptions,horizonRadians,view:mode==='finder'?'finder' as const:'instrument' as const,telescopeName:opticalProfile(optical.selectedIndex).name,onOpenVariable:openVariableRecord,currentJd:observatoryJd,hidden:objectXHidden,objectXMode:objectXSummary.target,busy:projectBusy,driveOn:open&&!!observatoryClock.state?.tracking}),[optical.selectedIndex,editMode,virtualObservatory,testMode,demonstrationMode,changeDemonstrationMode,sessionOptions,horizonRadians,mode,openVariableRecord,observatoryJd,objectXHidden,objectXSummary.target,projectBusy,open,observatoryClock.state?.tracking]);
   const nakedEyeUtc=()=>observatoryClock.state?clockDriveUTMS(observatoryClock.state):parseClockUTC(siteClock.utc);
   // App shell: header/sidebar with grouped tools, theme switch and the compact investigation toolbar (presentation only).
   // Front Perf: stable handlers for memoised children (renderStability.ts); each calls this render's closure at call time.
@@ -866,7 +871,7 @@ export default function OpenVireo(){
   const vireoOptions=useMemo<VireoOptions>(()=>({monochromeDisplays:sessionOptions.monochromeDisplays,printInColor:sessionOptions.printInColor,timeDependentData:sessionOptions.timeDependentData,
    showObjectId:sessionOptions.showObjectId,showObjectMag:sessionOptions.showObjectMag,editMode,currentObject,allowRangeChange:sessionOptions.allowUserChange}),[sessionOptions.monochromeDisplays,sessionOptions.printInColor,sessionOptions.timeDependentData,sessionOptions.showObjectId,sessionOptions.showObjectMag,editMode,currentObject,sessionOptions.allowUserChange]);// R4d: the spectrometer and Multi-Spec readers
   return <TestModeContext.Provider value={testMode}><VireoOptionsContext.Provider value={vireoOptions}><ObservationListContext.Provider value={observationListAccess}><ObservationListValue.Provider value={observationList}>{header}
-  {instructorGate.open&&<InstructorModeBanner onLeave={stable.leaveInstructor} inert={hostInert} leaveRef={instructorLeave}/>}{instructorAsk&&<InstructorModeConfirm onAnswer={stable.answerInstructor}/>}
+  {instructorGate.open&&<InstructorModeBanner demonstrationMode={demonstrationMode} onLeave={stable.leaveInstructor} inert={hostInert} leaveRef={instructorLeave}/>}{instructorAsk&&<InstructorModeConfirm onAnswer={stable.answerInstructor}/>}
   <section className="investigation-toolbar" aria-labelledby="project-toolbar-title" inert={hostInert}><div className="toolbar-row"><h2 id="project-toolbar-title">{t('project.title')}</h2><div className="sky-actions"><button className="secondary-button" disabled={projectBusy} onClick={()=>void projectOperation()}>{t('project.save')}</button><label className="project-upload" htmlFor="project-file">{t('project.restore')}<input id="project-file" type="file" accept=".json,application/json" disabled={projectBusy} onChange={e=>{const file=e.target.files?.[0];e.target.value='';if(file)void projectOperation(file);}}/></label>{projectBusy&&<button className="secondary-button" onClick={cancelProject}>{t('classLink.cancel')}</button>}</div></div><details className="toolbar-help research-notes"><summary>{SHELL.backupHelpSummary}</summary><p>{t('project.toolbarHelp')}</p></details><CloudEntry busy={projectBusy} onRestore={stable.cloudRestore} onSaveToCloud={stable.cloudSave}/>{projectBusy&&<p role="status">{t('project.busy')}</p>}{projectNotice&&<p role="status">{projectNotice}</p>}{projectError&&<p role="alert">{projectError}</p>}</section>
   <HubbleLabGuide dialogRef={labGuide} progress={labProgress} onNavigate={stable.hubbleGuide}/>
   <PulsarLabGuide dialogRef={pulsarGuide} progress={pulsarProgress} onNavigate={stable.navigate}/>
