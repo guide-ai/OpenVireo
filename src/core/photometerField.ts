@@ -32,6 +32,8 @@ import {reducePhotometerSky,reducePhotometerObject} from './photometryReduction'
 import type {Pointing} from './sky';
 import {decodeNativeVariableRecord,nativeVariableDispatchFalse,nativeVariableFalseMerge} from './variableMerge';
 import {catalogMergeDistance} from './catalogMerge';
+import {photometerApertureGeometry,PHOTOMETER_APERTURE_RANGE} from './photometerAperture';
+import type {FieldVariableTime} from './fieldEngine';
 import pegasusProvenance from '../../data/hubble/pegasus-field-provenance.json';
 
 /** Static finite profile, not a live instrument or native observation file.
@@ -103,7 +105,11 @@ function namedStar(rawHex:string,band:string,index:number):NamedStar{
 }
 /** The object record fields the photometer reads (TObject: name, RA +0x19, Dec +0x21, V +0x29, B−V +0x2d, U−B +0x31, kind
  * +0x3d: 0 star, 1 the galaxy copy of 0x53ce8c, 3 QSO). A bundled field's records are compact GSC stars (NamedStar). */
-export type PhotometerFieldObject=Readonly<{id:string;nativeName:string;ra:number;dec:number;magnitude:number;photometry2Single:number;photometry3Single:number;type:0|1|3}>;
+export type PhotometerFieldObject=Readonly<{id:string;nativeName:string;ra:number;dec:number;magnitude:number;photometry2Single:number;photometry3Single:number;type:0|1|3;
+ /** Front PHVAR, tiled frames only: a star the TRUE variable dispatch kept (a hit GSC star renamed to the GCVS ID, or a miss star
+  * inserted at the variable's position). valuesAvailable false: its V, B−V and U−B are not known (no clock time, or a typed model
+  * reason); such a star is never selected or folded (the frame is then typed photometer-variable). */
+ variable?:Readonly<{recordIndex:number;gcvsId:string;path:'hit'|'miss';valuesAvailable:boolean}>}>;
 export type PinnedPleiadesField=Readonly<{
  [brand]:true;provenanceFile:string;kind:PleiadesFieldKind;pointing:Pointing;stars:readonly PhotometerFieldObject[];neighbors:readonly PhotometerFieldObject[];
  selected:PhotometerFieldObject;selectedDistancePixels:number;centralFraction:number;sourceMagnitude:number;sourceMean:number;skyMean:number;
@@ -111,6 +117,8 @@ export type PinnedPleiadesField=Readonly<{
  qsos?:readonly PhotometerFieldObject[];
  /** Front PHTILED, tiled frames only: the centre selects this galaxy (selected.type 1); its photometer width (0x500700..0x5007af). */
  selectedGalaxy?:Readonly<{widthDegrees:number;majorArcminutes:number}>;
+ /** Front PHVAR, tiled frames only: the observatory-clock JD the field's variable stage used (frozen when the frame was prepared). */
+ variableTime?:FieldVariableTime;
 }>;
 /** Structural completeness layout only;this does not attest arbitrary rows. */
 export function assertPhotometerCoverageLayout(value:unknown):void{
@@ -249,7 +257,9 @@ export type PhotometerTiledReason=
   * galaxy record by name (0x5006b8..0x5006fe): a record cached from an earlier lookup ([TPhotometer+0x577]) when its name matches,
   * otherwise the first record of that name in the field's galaxy list; with two records of one name, which one gives the width and
   * the offset depends on earlier lookups [U]. */'photometer-galaxy-name'
- /** A TRUE-dispatch variable star is in the field: its brightness depends on the observatory clock. */|'photometer-variable'
+ /** Front PHVAR: a star the TRUE variable dispatch kept, whose V, B−V and U−B are not available (no observatory-clock JD, or a typed
+  * model reason, in `detail`), is selected or lies within the neighbour query of the largest aperture (0x59ac54 at aperture 150), so
+  * some reading would read its values. */|'photometer-variable'
  /** The centre selects no object (none within the native 350-pixel sentinel): Start then integrates the band magnitudes left by
   * the previous source preparation (0x4ffbba → 0x4fff04 writes none), which this port does not keep. */|'photometer-selection'
  /** Front AXISMERGE: no catalogue star in the photometer field. The field build 0x597ac8 shows "No Stars Found in Field!" and
@@ -257,7 +267,20 @@ export type PhotometerTiledReason=
   * photometer then selects and measures depends on that earlier field and is not reproduced. */|'photometer-empty'
  /** The engine gated the population (its own typed reason). */|'photometer-population';
 export type PhotometerTiledResult=Readonly<{field:PinnedPleiadesField;reason?:undefined}|{field?:undefined;reason:PhotometerTiledReason;detail?:string}>;
-type PopulationLike=Readonly<{area?:Readonly<{minimumRa:number;maximumRa:number;minimumDec:number;maximumDec:number}>;stars:readonly Readonly<{type:number;id:string;rawHex?:string;band?:string;recordIndex?:number}>[];galaxies:readonly Readonly<{ra:number;dec:number;majorArcminutes:number;minorArcminutes?:number;morphology?:number;magnitude?:number;recordIndex?:number;rawHex?:string}>[];variableStars?:readonly unknown[];qsoStage?:unknown;qsoMatches?:readonly number[];photographAssociations?:readonly unknown[]}>;
+type PopulationVariableLike=Readonly<{starId:string;recordIndex:number;gcvsId:string;path:'hit'|'miss';values:Readonly<{status:'computed'}|{status:'unavailable';reason:string}>}>;
+type PopulationLike=Readonly<{area?:Readonly<{minimumRa:number;maximumRa:number;minimumDec:number;maximumDec:number}>;stars:readonly Readonly<{type:number;id:string;rawHex?:string;band?:string;recordIndex?:number;ra?:number;dec?:number;magnitude?:number;photometry2Single?:number;photometry3Single?:number}>[];galaxies:readonly Readonly<{ra:number;dec:number;majorArcminutes:number;minorArcminutes?:number;morphology?:number;magnitude?:number;recordIndex?:number;rawHex?:string}>[];variableStars?:readonly PopulationVariableLike[];variableTime?:FieldVariableTime;qsoStage?:unknown;qsoMatches?:readonly number[];photographAssociations?:readonly unknown[]}>;
+/** Front PHVAR: a star the TRUE dispatch kept, as the photometer reads it. Hit (0x59864d..0x59869b): the GSC star's name := the
+ * variable record's name (0x403c5c, limit 0x18; CLEA_VStrs.dat names are at most 10 characters), V +0x29, B−V +0x2d and U−B +0x31
+ * := the model's values at the field's JD (0x51ec48 called with the clock JD 0x487bcc, 0x59869f..0x5986b9), its kind +0x3d stays 0.
+ * Miss (0x59873e..0x5987a9): a new object with the record's name, RA/Dec, V := the record's magnitude (0x598762), kind 0, then the
+ * same dispatch, inserted by 0x492574 when it returns TRUE. Both are read from the engine's population (Front T), never from the
+ * GSC bytes. */
+function variableObject(s:PopulationLike['stars'][number],e:PopulationVariableLike):PhotometerFieldObject{
+ if(s.type!==0||typeof s.ra!=='number'||typeof s.dec!=='number'||typeof s.magnitude!=='number'||typeof s.photometry2Single!=='number'||typeof s.photometry3Single!=='number'||typeof e.gcvsId!=='string'||e.gcvsId.length>0x18)throw new PhotometerFieldError('evidence');
+ const valuesAvailable=e.values.status==='computed';
+ if(valuesAvailable&&![s.magnitude,s.photometry2Single,s.photometry3Single].every(Number.isFinite))throw new PhotometerFieldError('evidence');
+ return Object.freeze({id:s.id,nativeName:e.gcvsId,ra:s.ra,dec:s.dec,magnitude:s.magnitude,photometry2Single:s.photometry2Single,photometry3Single:s.photometry3Single,type:0 as const,variable:Object.freeze({recordIndex:e.recordIndex,gcvsId:e.gcvsId,path:e.path,valuesAvailable})});
+}
 /** Front PHTILED: the catalogue inputs a tiled frame needs beyond the population: the bundled CLEA_QSO.DAT bytes (the QSO list
  * field+0x35 that 0x59ac54 walks after the stars) and CLEA_GLX.DAT bytes (galaxy names). */
 export type PhotometerTiledCatalogs=Readonly<{qso?:Uint8Array;glx?:Uint8Array}>;
@@ -304,10 +327,14 @@ export function photometerFieldFromPopulation(population:PopulationLike|null,rea
  if(kind!=='object'&&kind!=='sky')throw new PhotometerFieldError('field');
  if(population&&reasons.length===1&&reasons[0]==='empty-field')return Object.freeze({reason:'photometer-empty' as const});
  if(!population||reasons.length)return Object.freeze({reason:'photometer-population' as const,detail:reasons.join(',')});
- if(population.variableStars?.length)return Object.freeze({reason:'photometer-variable' as const});
  const merged=population.stars.some(s=>s.type===3);
  if(population.stars.some(s=>s.type!==0&&s.type!==3)||(merged||population.qsoStage)&&!catalogs.qso)throw new PhotometerFieldError('evidence');
- const stars:readonly PhotometerFieldObject[]=Object.freeze(population.stars.map(s=>s.type===3?qsoObject(s as unknown as NativeQso):namedStar(s.rawHex!,s.band!,s.recordIndex!)));
+ // Front PHVAR: the stars the TRUE dispatch kept carry the dispatch's name and values (the engine's population, at its JD). An entry
+ // whose star a later merge or cleanup removed names no star here (as fieldStarVariable).
+ const kept=new Map((population.variableStars??[]).map(e=>[e.starId,e]));
+ const stars:readonly PhotometerFieldObject[]=Object.freeze(population.stars.map(s=>s.type===3?qsoObject(s as unknown as NativeQso):kept.has(s.id)?variableObject(s,kept.get(s.id)!):namedStar(s.rawHex!,s.band!,s.recordIndex!)));
+ const pending=stars.filter(s=>s.variable&&!s.variable.valuesAvailable);
+ const pendingReason=(s:PhotometerFieldObject)=>{const v=kept.get(s.id)!.values;return v.status==='unavailable'?v.reason:'';};
  // 0x59ac54 walks field+0x5, then field+0x35: the QSO list as the loader 0x5987e4 read it (read order), kept by the merge.
  let qsos:readonly PhotometerFieldObject[]=Object.freeze([]);
  if(population.qsoStage){
@@ -328,6 +355,11 @@ export function photometerFieldFromPopulation(population:PopulationLike|null,rea
  if(selection.kind==='throughput-required'){const tied=selection.star?stars.find(s=>s.id===selection.star!.object.id):undefined;if(tied)selection=selectCatalogObject(scene,468,468,fraction(tied));}
  if(selection.kind==='throughput-required')throw new PhotometerFieldError('selection');
  if(selection.kind==='none')return Object.freeze({reason:'photometer-selection' as const});
+ // Front PHVAR: a kept variable whose values are unavailable matters only if some reading reads it: selected (below), or folded as
+ // a neighbour at some aperture. The neighbour query grows with the aperture, so the largest selectable one (150) bounds them all.
+ const reach=pending.length?queryPhotometerNeighbors(pointing,photometerApertureGeometry(PHOTOMETER_APERTURE_RANGE.max).radiusDegrees,pending,[]):[];
+ const selectedPending=selection.kind==='star'?pending.find(s=>s.id===selection.object.id):undefined;
+ if(selectedPending||reach.length)return Object.freeze({reason:'photometer-variable' as const,detail:pendingReason(selectedPending??reach[0])});
  let selected:PhotometerFieldObject,selectedGalaxy:PinnedPleiadesField['selectedGalaxy'],centralFraction:number,distance:number;
  if(selection.kind==='galaxy'){
   const g=population.galaxies[Number(selection.object.id.slice(1))];
@@ -345,22 +377,31 @@ export function photometerFieldFromPopulation(population:PopulationLike|null,rea
  const supplied=(s:PhotometerFieldObject,f:number)=>({v:s.magnitude,bMinusV:s.photometry2Single,uMinusB:s.photometry3Single,fraction:f});
  const others=neighbors.filter(s=>s.nativeName!==selected.nativeName);
  const sourceMagnitude=preparePhotometerBands(supplied(selected,centralFraction),others.map(s=>supplied(s,fraction(s)))).v;
- return Object.freeze({field:Object.freeze({[brand]:true as const,provenanceFile:'gsc-tiles',kind,pointing:Object.freeze({ra:pointing.ra,dec:pointing.dec}),stars,neighbors,selected,selectedDistancePixels:distance,centralFraction,sourceMagnitude,sourceMean:1000*magnitudeAmplitude(sourceMagnitude,9),skyMean:1000*magnitudeAmplitude(16,9),...(qsos.length?{qsos}:{}),...(selectedGalaxy?{selectedGalaxy}:{})})});
+ return Object.freeze({field:Object.freeze({[brand]:true as const,provenanceFile:'gsc-tiles',kind,pointing:Object.freeze({ra:pointing.ra,dec:pointing.dec}),stars,neighbors,selected,selectedDistancePixels:distance,centralFraction,sourceMagnitude,sourceMean:1000*magnitudeAmplitude(sourceMagnitude,9),skyMean:1000*magnitudeAmplitude(16,9),...(qsos.length?{qsos}:{}),...(selectedGalaxy?{selectedGalaxy}:{}),...(population.variableTime?{variableTime:Object.freeze({jd:population.variableTime.jd,source:population.variableTime.source})}:{})})});
 }
 /** Front G (G3b): tiled photometer targets. A target is the exact telescope pointing (binary64 RA and Dec); its frame is prepared
  * asynchronously from the tiles (io/photometerTiledFields.ts) and registered here before the synchronous journal uses it. */
 export {TILED_PHOTOMETER_PREFIX} from './pleiadesSkyContext';
 import {TILED_PHOTOMETER_PREFIX} from './pleiadesSkyContext';
-export function tiledPhotometerTargetId(p:Pointing):string{
- if(!p||!Number.isFinite(p.ra)||!Number.isFinite(p.dec)||p.ra<0||p.ra>=24||Math.abs(p.dec)>90)throw new PhotometerFieldError('domain');
- return `${TILED_PHOTOMETER_PREFIX}${p.ra},${p.dec}`;
+/** The frozen JD domain of a tiled frame: the observatory clock's (= fieldEngine FIELD_VARIABLE_JD_DOMAIN, checked by a test; kept
+ * here so the photometer journal does not load the field engine). */
+export const TILED_PHOTOMETER_JD_DOMAIN=Object.freeze({minimum:2415020.5,maximum:2488069.5});
+export const validTiledPhotometerJd=(jd:unknown):jd is number=>typeof jd==='number'&&Number.isFinite(jd)&&jd>=TILED_PHOTOMETER_JD_DOMAIN.minimum&&jd<=TILED_PHOTOMETER_JD_DOMAIN.maximum;
+/** `gsc:<ra>,<dec>`, and Front PHVAR `gsc:<ra>,<dec>:JD<jd>` for a frame whose variable stage needed the frozen observatory JD. */
+export function tiledPhotometerTargetId(p:Pointing,jd?:number):string{
+ if(!p||!Number.isFinite(p.ra)||!Number.isFinite(p.dec)||p.ra<0||p.ra>=24||Math.abs(p.dec)>90||(jd!==undefined&&!validTiledPhotometerJd(jd)))throw new PhotometerFieldError('domain');
+ return `${TILED_PHOTOMETER_PREFIX}${p.ra},${p.dec}${jd===undefined?'':`:JD${jd}`}`;
 }
 /** The pointing a tiled target id names (exact round trip of the number spelling), or null. */
 export function tiledPhotometerPointing(id:unknown):Pointing|null{
+ const t=tiledPhotometerTarget(id);return t?t.pointing:null;
+}
+/** Front PHVAR: the pointing and frozen JD (when present) a tiled target id names, or null. */
+export function tiledPhotometerTarget(id:unknown):Readonly<{pointing:Pointing;jd?:number}>|null{
  if(typeof id!=='string'||!id.startsWith(TILED_PHOTOMETER_PREFIX))return null;
- const parts=id.slice(TILED_PHOTOMETER_PREFIX.length).split(',');if(parts.length!==2)return null;
- const ra=Number(parts[0]),dec=Number(parts[1]);
- try{return tiledPhotometerTargetId({ra,dec})===id?Object.freeze({ra,dec}):null;}catch{return null;}
+ const m=/^([^,:]*),([^,:]*)(?::JD([^,:]*))?$/.exec(id.slice(TILED_PHOTOMETER_PREFIX.length));if(!m)return null;
+ const ra=Number(m[1]),dec=Number(m[2]),jd=m[3]===undefined?undefined:Number(m[3]);
+ try{return tiledPhotometerTargetId({ra,dec},jd)===id?Object.freeze({pointing:Object.freeze({ra,dec}),...(jd!==undefined?{jd}:{})}):null;}catch{return null;}
 }
 const tiledFields=new Map<string,PinnedPleiadesField>();
 /** G3 review 1 L5: the prepared frames are bounded (least recently registered first out). A journal holds at most 512 events
@@ -368,7 +409,7 @@ const tiledFields=new Map<string,PinnedPleiadesField>();
 export const MAX_TILED_PHOTOMETER_FIELDS=512;
 export function registerTiledPhotometerField(field:PinnedPleiadesField):string{
  if(field?.[brand]!==true||field.provenanceFile!=='gsc-tiles')throw new PhotometerFieldError('domain');
- const id=tiledPhotometerTargetId(field.pointing);tiledFields.delete(id);tiledFields.set(id,Object.freeze({...field,kind:'object'}));
+ const id=tiledPhotometerTargetId(field.pointing,field.variableTime?.jd);tiledFields.delete(id);tiledFields.set(id,Object.freeze({...field,kind:'object'}));
  while(tiledFields.size>MAX_TILED_PHOTOMETER_FIELDS)tiledFields.delete(tiledFields.keys().next().value!);
  return id;
 }

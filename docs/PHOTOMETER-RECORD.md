@@ -58,6 +58,14 @@ Observational Data window. Static reading of CLEA_VEO.exe (SHA-256 781bc970…c5
   name another record shares (`photometer-galaxy-name` [U]). A selected QSO is read like a star under its 17-character name.
 - This affects only telescope-pointing (compact GSC) fields; the bundled E04 fields do not use this path.
 
+## Variable stars at tiled pointings (Front PHVAR, 2026-11-05)
+- A variable star's reading is recorded like any other: its name is the GCVS ID (VIREO renames the hit star, 0x59864d..0x59869b,
+  or names the inserted one, 0x59873e), and its bands are the reading's, from the model at the field's frozen JD
+  (docs/PHOTOMETER-FIELD.md).
+- [W] Two times, kept apart as in VIREO: the row time is the observatory clock at completion (rule below), while the magnitudes are
+  those of the field prepared at its frozen JD (VIREO: the clock when the Telescope view last loaded the field). The frozen JD is in
+  the session's `field` event (owner 16); the row keeps its own `jd` in the `nativeRecord` event, unchanged.
+
 ## Web adaptations and typed residue
 - [W] The record time is the observatory clock at completion (VIREO: host Now). Without an observatory link, the host clock.
 - [W] Compute Magnitudes is fixed on (kind 1); counts-mode records are not produced.
@@ -79,7 +87,8 @@ Observational Data window. Static reading of CLEA_VEO.exe (SHA-256 781bc970…c5
 - [D] [0x5b5d98] is the Object X ID: only TUTTimeDlg.OKBtnClick 0x4fdf0c writes it, from the IDEd box (+0x388, "ID # of Unknown Object (From Lab Sheet or Instructor)"); an empty box gives `UNKNOWN` (0x4fe078). The off-mode name is therefore `UNKNOWN`, or `ObjX-`+that ID (Front P3 review 1 M2).
 - With Show Object ID off, every photometer reading has that one name, so with Time-Dependent Data off they all merge into one
   `UNKNOWN`/`ObjX-` row, as in VIREO (reuse by ID, 0x54a73c). Turn Show Object ID on for one row per star (review 1 M1).
-- Still typed: `photometer-variable` (field engine / clock), `photometer-selection` (stale light; Show ID on dereferences nil).
+- Still typed: `photometer-selection` (stale light; Show ID on dereferences nil); `photometer-variable` only where a variable's
+  values stay unavailable (Front PHVAR, below).
   `photometer-qso` was retired by Front PHTILED (2026-11-05).
 
 - L3 [I]: a star/galaxy tie in 0x59a0fc takes the star when its aperture fraction (0x500568) is nonzero. This assumes a current

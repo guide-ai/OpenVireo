@@ -1,3 +1,4 @@
+import{readFile}from'node:fs/promises';
 import {test,expect,type Page} from '@playwright/test';
 import{clickHeaderTool}from'./fixtures/header-tools';
 
@@ -96,5 +97,33 @@ test('a galaxy at the pointing: sky on a star patch, the galaxy refused in Sky m
  await expect(page.getByTestId('photo-tiled-limit')).toHaveCount(0);
  await integrate(page);
  await expect(page.getByRole('button',{name:'Add notebook entry',exact:true})).toBeEnabled();
+ expect(errors).toEqual([]);
+});
+// Front PHVAR (analysis/front-phvar/RECOVERY.md): GM And (CLEA_VStrs.dat record 0, a Cepheid). Its brightness comes from VIREO's
+// light-curve model at the observatory time frozen when the field is prepared; the session keeps that JD and restores the reading.
+test('a variable star at the pointing is measured at the frozen observatory time, saved and restored',async({page})=>{
+ test.setTimeout(240000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+ await observatory(page);await pointObservatory(page,SKY);await photometerHere(page);await ready(page);await integrate(page);
+ const GM_AND={ra:'0.000992922',dec:'35.362846359'};await benchPoint(page,GM_AND);
+ await expect(page.getByText('Field at the telescope pointing: the nearest star is GM And.',{exact:true})).toBeVisible({timeout:60000});
+ const frozen=page.getByTestId('photo-tiled-frozen-time');await expect(frozen).toContainText('Variable stars in this field are shown at the observatory time');
+ const jd=(await frozen.textContent())!.match(/JD ([0-9.]+)/)![1];
+ await expect(page.getByLabel('Photometry target',{exact:true})).toHaveValue(new RegExp(`^gsc:.*:JD`));
+ await expect(page.getByText(/^Variable star GM And \(catalogue record CLEA_VStrs\.dat@0, which takes over the nearby compact GSC star /)).toBeVisible();
+ await page.getByLabel('Photometer pointing',{exact:true}).selectOption('object');await integrate(page);
+ await page.getByRole('button',{name:'Add notebook entry',exact:true}).click();await page.getByLabel('Your transcribed V magnitude',{exact:true}).fill('13');await page.getByRole('button',{name:'Confirm notebook entry',exact:true}).click();
+ const counts=await page.getByTestId('photo-counts').textContent();
+ await frozen.scrollIntoViewIfNeeded();await page.screenshot({path:'test-results/photometer-variable.png'});
+ // Save: owner 16, the field event carries the frozen JD.
+ const wait=page.waitForEvent('download');await page.getByRole('button',{name:'Save photometer session',exact:true}).click();
+ const raw=await readFile((await(await wait).path())!),session=JSON.parse(raw.toString());
+ expect(session.version).toBe(16);expect(session.events.filter((e:{type:string})=>e.type==='field').at(-1)).toEqual({type:'field',ra:Number(GM_AND.ra),dec:Number(GM_AND.dec),jd:Number(jd)});
+ // Restore in a fresh page: the frame is rebuilt at the stored JD and the reading replays.
+ await page.reload();await observatory(page);await clickHeaderTool(page,'Pleiades photometry');await expect(page.getByRole('heading',{name:'Measure a listed star.'})).toBeVisible();
+ await page.getByLabel('Restore photometer session',{exact:true}).setInputFiles({name:'variable.json',mimeType:'application/json',buffer:raw});
+ await expect(page.getByText('Photometer session restored and replayed.',{exact:false})).toBeVisible({timeout:60000});
+ await expect(page.locator('.photometer-notebook tbody tr')).toHaveCount(1);await expect(page.getByTestId('photo-counts')).toHaveText(counts!);
+ const again=page.waitForEvent('download');await page.getByRole('button',{name:'Save photometer session',exact:true}).click();
+ expect(await readFile((await(await again).path())!)).toEqual(raw);
  expect(errors).toEqual([]);
 });
