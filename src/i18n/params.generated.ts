@@ -3402,7 +3402,7 @@ export interface MessageParameters {
   "ph.tiledReason.object-x-hidden": never;
   "ph.tiledReason.field-polar": never;
   "ph.tiledReason.photometer-galaxy-name": never;
-  "ph.tiledReason.photometer-variable": never;
+  "ph.tiledReason.photometer-variable": "detail";
   "ph.tiledReason.photometer-selection": never;
   "ph.tiledReason.photometer-empty": never;
   "ph.tiledReason.photometer-population": "detail";
@@ -3413,6 +3413,9 @@ export interface MessageParameters {
   "ph.skyReplaceNo.button": never;
   "ph.skyReplaceNo": never;
   "ph.tiledProvenance": "dec" | "ra" | "record";
+  "ph.tiledProvenanceVariableHit": "dec" | "name" | "ra" | "record" | "variable";
+  "ph.tiledProvenanceVariableMiss": "dec" | "name" | "ra" | "variable";
+  "ph.tiledFrozenTime": "jd" | "ut";
   "ph.tiledProvenanceCatalogue": "dec" | "ra" | "record";
   "ph.tiledCoverage": "count" | "neighbors";
   "ph.tiledCoverageQso": "count" | "neighbors" | "qsos";
