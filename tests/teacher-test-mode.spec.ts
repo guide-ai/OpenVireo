@@ -46,8 +46,8 @@ test('instructor Test Mode: a 30 s CCD exposure ends at its first tick, a progra
  await camera(page).getByLabel(/Ask VizieR live/).check();
  await camera(page).getByLabel('Minutes').fill('0');await camera(page).getByLabel('Seconds').fill('30');
  const started=Date.now();await button(page,'Start exposure').click();
- await expect(id(page,'camera-status')).toHaveText('Image ready.',{timeout:15_000});
- expect(Date.now()-started).toBeLessThan(15_000);
+ await expect(id(page,'camera-status')).toHaveText('Image ready.',{timeout:5_000});
+ expect(Date.now()-started).toBeLessThan(5_000);// review 1 L3: one 1000 ms tick, the request poll and the composition
  await expect(id(page,'camera-canvas')).toBeVisible();
  await page.screenshot({path:test.info().outputPath('test-mode-ccd.png')});
  // Slew: no confirmation dialog and no motion; the pointing is the target at once.
@@ -64,4 +64,24 @@ test('instructor Test Mode: a 30 s CCD exposure ends at its first tick, a progra
  await page.getByRole('button',{name:'Cancel slew',exact:true}).click();
  await expect(id(page,'pointing-ra')).toHaveText('0.60000');
  await setTestMode(page,false);
+});
+
+// Review 1 L1: the Point shortcuts that stand in for ProgrammedSlew skip Limit Slewing in Test Mode (0x539a1d → 0x539c4c skips the
+// horizon check; VIREO's hot-list slew reaches ProgrammedSlew through Set Coordinates, 0x530180 → 0x5301f4).
+test('instructor Test Mode: with Limit Slewing on, Point to coordinates below the horizon is not refused; off, it is',async({page})=>{
+ await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible({timeout:15000});
+ await button(page,'Open dome ↗').click();
+ await page.getByText('Site clock · fixed UT scenario',{exact:true}).click();
+ const lst=Number((await id(page,'site-clock-sidereal').textContent())!.replace(' h',''));
+ await page.getByText('Site clock · fixed UT scenario',{exact:true}).click();
+ const below=String(Math.floor((((lst+12)%24)+24)%24)),point=async()=>{await coords(page,below,'-30');await button(page,'Point to coordinates').click();};
+ await enterInstructorMode(page);await card(page).getByTestId('ob-options').click();
+ await id(page,'ob-options-limit').check();await id(page,'ob-options-ok').click();await expect(id(page,'ob-options-dialog')).toBeHidden();
+ const before=await id(page,'pointing-ra').textContent();
+ await point();
+ const box=id(page,'motion-limit-box');await expect(box).toContainText('Target Coordinates are Below the Horizon!');
+ await box.getByRole('button',{name:'OK'}).click();await expect(id(page,'pointing-ra')).toHaveText(before!);
+ await card(page).getByTestId('ob-options').click();await id(page,'ob-options-test-mode').check();await id(page,'ob-options-ok').click();
+ await point();
+ await expect(box).toHaveCount(0);await expect(id(page,'pointing-dec')).toHaveText('-30.00000');
 });

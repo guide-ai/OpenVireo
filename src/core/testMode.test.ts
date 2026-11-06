@@ -1,13 +1,15 @@
 import {describe,expect,it} from 'vitest';
-import {readFileSync} from 'node:fs';
+import {readFileSync,readdirSync} from 'node:fs';
 import {createHash} from 'node:crypto';
-import {COMPILED_TEST_MODE,TEST_MODE_CAPTIONS,TEST_MODE_NOT_APPLIED,cameraTimerRemaining,clusterHrDistanceLine,domeTravelMs,exerciseTitleMs,multiSpecTimerStep,programmedSlewPath} from './testMode';
+import {COMPILED_TEST_MODE,TEST_MODE_CAPTIONS,TEST_MODE_NOT_APPLIED,cameraTimerRemaining,clusterHrDistanceLine,domeTravelMs,exerciseTitleMs,multiSpecTimerStep,programmedSlewChecksHorizon,programmedSlewPath} from './testMode';
 import {cameraRequestTransition,createCameraRequestGate,type CameraGateEvent,type CameraRequestGate} from './cameraRequestGate';
 import {composeCameraExposure,type CameraExposureRecipe} from './cameraExposure';
 import {readVizierCatalog,selectVizierCatalog,wholeSkySelection} from './vizierNomad';
 import controls from './cameraExposure.controls.json';
 import {createMultiSpecState,multiSpecReducer,type MultiSpecAction,type MultiSpecState} from './multiSpec';
 import {multiSpecFibreSpectrum,type MultiSpecContext,type MultiSpecSelection} from './multiSpecSpectrum';
+import {decodeStarIndexList,starTemplateSpectrum} from './starTemplates';
+import type {UniformSpectrum} from './acquisition';
 import {DOME_TRAVEL_MS,soundEffectsStep} from './soundEffects';
 import {clusterNativeHrReport,type ClusterNativeHrTrial} from './clusterNativeObservationHr';
 import {INITIAL_INSTRUCTOR_GATE,enterInstructorMode,leaveInstructorMode} from './instructorMode';
@@ -88,6 +90,8 @@ describe('T3 Test Mode: the readers',()=>{
  });
  it('ProgrammedSlew 0x539a1d / 0x539ce1: jump on, confirm off',()=>{
   expect(programmedSlewPath(true)).toBe('jump');expect(programmedSlewPath(false)).toBe('confirm');
+  // Review 1 L1: the Point shortcuts that stand in for ProgrammedSlew check the horizon only with Test Mode off.
+  expect(programmedSlewChecksHorizon(false)).toBe(true);expect(programmedSlewChecksHorizon(true)).toBe(false);
  });
  it('dome switches 0x58c530 / 0x58c6f0: the travel ends at the first 80 ms DomeTimer tick on, the 98th off',()=>{
   expect(domeTravelMs(false)).toBe(98*80);expect(DOME_TRAVEL_MS).toBe(domeTravelMs(false));expect(domeTravelMs(true)).toBe(80);
@@ -118,10 +122,20 @@ describe('T3 Test Mode: instant exposures keep the same photon draws',()=>{
   const summary=(x:typeof on)=>({sha256:sha(x.plane.pixels),draws:x.drawsConsumed,finalState:x.finalRandomState,records:x.records.length});
   expect(summary(on)).toEqual(summary(off));expect(summary(on)).toEqual(controls.cases['nf-catalog']);
  },30_000);
- it('Multi-Spec: the same seed gives the same spectrum with Test Mode on and off',()=>{
-  const context={telescope:0,starIndex:[],starTemplates:new Map(),galaxies:[],glxyspLines:[],galaxySpectra:new Map(),galaxyTemplate:{file:'',samples:[]},qsoSpectrum:null as never} as MultiSpecContext;
-  const spectra=(testMode:boolean)=>exposeMultiSpec(testMode,[sky(400),sky(450)]).state.entries.map(e=>multiSpecFibreSpectrum(e.selection,context,e.seed,e.seconds));
+ it('Multi-Spec: the same seed gives the same star and sky spectra with Test Mode on and off (web S/N stream [W])',()=>{
+  // Review 1 L3: a real star fibre (JSPEC2.SPI and the bundled jspect2/classification templates) beside a sky fibre. The
+  // identity holds in the web because its S/N estimate has its own stream; in VIREO the S/N tick shares System.Random with the
+  // fibres, so one tick instead of N changes the noise realisation (review 1 L2).
+  const file=(p:string)=>new Uint8Array(readFileSync(new URL('../../public/original/'+p,import.meta.url)));
+  const latin1=(b:Uint8Array)=>{let t='';for(const x of b)t+=String.fromCharCode(x);return t;};
+  const starTemplates=new Map<string,UniformSpectrum>();
+  for(const dir of ['classification','spectra/jspect2'])for(const f of readdirSync(new URL('../../public/original/'+dir+'/',import.meta.url)).filter(x=>/^A\d{7}\.SP$/.test(x)))starTemplates.set(f,starTemplateSpectrum(latin1(file(dir+'/'+f))));
+  const context={telescope:0,starIndex:decodeStarIndexList(file('spectra/jspect2/JSPEC2.SPI')),starTemplates,galaxies:[],glxyspLines:[],galaxySpectra:new Map(),galaxyTemplate:{file:'',samples:[]},qsoSpectrum:null as never} as MultiSpecContext;
+  const spectra=(testMode:boolean)=>exposeMultiSpec(testMode,[star(400),sky(450)]).state.entries.map(e=>multiSpecFibreSpectrum(e.selection,context,e.seed,e.seconds));
   const off=spectra(false),on=spectra(true);
-  expect(off.every(x=>x.status==='ready')).toBe(true);expect(on).toEqual(off);
+  expect(off.map(x=>x.status)).toEqual(['ready','ready']);expect(on).toEqual(off);
+  if(off[0].status!=='ready'||off[1].status!=='ready')throw Error();
+  expect(off[0].spectrum.counts).not.toEqual(off[1].spectrum.counts);// the star fibre carries signal, not only sky
+  expect(off[0].spectrum.counts.reduce((a,b)=>a+b,0)).toBeGreaterThan(off[1].spectrum.counts.reduce((a,b)=>a+b,0));
  });
 });

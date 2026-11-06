@@ -8,7 +8,7 @@ import TargetPicker,{type TargetGroup}from'./TargetPicker';
 import TelescopeMotion from './TelescopeMotion';
 import OpticalSlewMenu from './observatory/OpticalSlewMenu';
 import {INITIAL_INSTRUCTOR_GATE,applyEditModeGate,enterInstructorMode,leaveInstructorMode,preferencesGate} from './core/instructorMode';// Front T1
-import {COMPILED_TEST_MODE} from './core/testMode';// Front T3
+import {COMPILED_TEST_MODE,programmedSlewChecksHorizon} from './core/testMode';// Front T3
 import {TestModeContext} from './polish/testModeContext';
 import {InstructorModeBanner,InstructorModeConfirm,InstructorModeMenuItem} from './components/InstructorMode';
 
@@ -596,7 +596,11 @@ export default function OpenVireo(){
   // Hubble exact centre) are refused below the horizon with the native ProgrammedSlew box. Instrument "Activate" jumps to a fixed
   // acquisition field (prepareTrackedField) are not checked (adaptation, docs/OPTICAL-OBSERVATORY.md).
   // A refusal changes nothing but the box: callers check it BEFORE selecting a target or a hot-list row (review note 1).
+  // Front T3 review 1 L1: these shortcuts (and the photometer's tiled Point, which shows the same box) model ProgrammedSlew's
+  // horizon check, so Test Mode skips it as 0x539a1d → 0x539c4c does (VIREO's hot-list slew reaches ProgrammedSlew through Set
+  // Coordinates, 0x530180). The manual and drive limits (0x539290) are not ProgrammedSlew and keep their guards.
   function limitRefuses(next:Pointing):boolean{
+    if(!programmedSlewChecksHorizon(testMode))return false;
     if(opticalOptions.limitSlewing&&!slewLimitAllows(opticalOptions,observatoryClock.state?clockDriveUTMS(observatoryClock.state):parseClockUTC(siteClock.utc),next,optical.selectedIndex,siteOverrides[optical.selectedIndex])){setPointRefusal({caption:OPTICAL_SLEW_LITERALS.belowCaption,text:opticalSlewBelowText(next)});return true;}
     return false;
   }

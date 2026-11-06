@@ -1,21 +1,29 @@
 /** Front T3 (analysis/front-plans/front-teacher.md §T3; analysis/front-teacher/t3/RECOVERY.md): VIREO's Test Mode.
  * CLEA_VEO.exe 781bc970…c54c, static reading only. TOptionsDlg.TestBox1 (CCD tab; hint below) is written by OKBtnClick to
  * record+0x27c8 (0x5a60cc) = env+0x2e7c; the defaults routine 0x5a21d0 writes 0 (0x5a2ac5) [D]. A byte search for the
- * displacement 0x2e7c finds 17 reads and no write, and one more read through the record (0x53bb00, [env+0x6b4]+0x27c8):
+ * displacement 0x2e7c finds 17 reads and no write, and one more read of the same byte through the embedded record (0x53bb00: lea edi,[env+0x6b4], then [edi+0x27c8] =
+ * env+0x2e7c, no dereference):
  * - camera exposure timers (TCCDCam.ObsTimerTimer 0x512b2c, read 0x512b39; TIRCam.ObsTimerTimer 0x514b5c, read 0x514b69; the
  *   plan called them RqstTimerTimer, but the DFM binds ObsTimer to these handlers): on, remaining seconds +0x3dc := 0 at the first 1000 ms tick
  *   instead of −1, so the exposure ends at that tick. The image and the headers read the requested seconds +0x3e2 (0x5120c7,
  *   0x512107, 0x512466, 0x51277d, 0x512a52), never +0x3dc, and the timer touches no clock: only time collapses [D];
  * - Multi-Spec SpecTimerTimer (0x52a1c4): on, elapsed +0x3dd := seconds +0x455 and remaining +0x3c9 := 0; the clock display,
- *   one S/N tick 0x52a58c and the ≤ 0.01 end test follow as usual, so the spectra get t = seconds − 0 [D];
+ *   one S/N tick 0x52a58c and the ≤ 0.01 end test follow as usual, so the spectra get t = seconds − 0 [D]. The S/N tick draws
+ *   twice (0x55f0f4) from System.Random (RandSeed 0x5ae008), the stream AddSpectrum's fibres also use, so in VIREO one tick
+ *   instead of N gives a different noise realisation from the same distribution; the web's identical spectra rest on its
+ *   separate S/N stream [W];
  * - ProgrammedSlew (0x539a1d → 0x539c4c, 0x539ce1): on, the no-slew box, the horizon check and the confirmation are skipped
- *   and the telescope jumps to the target (pointing := target, flags done, +0x64d := 0) [D];
+ *   and the telescope jumps to the target: RA/Dec from the target globals through 0x53caec/0x53cb40, axes done, +0x64d := 0 [D].
+ *   +0x655 (hour-angle stamp) := the uninitialised local [ebp-0x18], written only at 0x539ab8 on the non-Test path [D]; effect
+ *   on later slews/clock (readers 0x538ea7, 0x538fd5, 0x539872, 0x539913; rewritten at 0x538690, 0x53be30, 0x53c07b) [U]; the
+ *   web keeps a consistent hour angle [W];
  * - DomeSw1DownClick (0x58c530) / DomeSw1UpClick (0x58c6f0): on, from a fully open (closed) dome the travel fraction +0x553 :=
- *   0 (1), so DomeTimer (80 ms) ends the travel at its first tick; a reversal mid-travel is not collapsed [D];
+ *   0 (1), so DomeTimer (80 ms) ends the travel at its first tick; a reversal mid-travel (state 2/3) is not collapsed [D]. The
+ *   web dome is always at an end, so its 80 ms end sound after every switch is a simplification [W];
  * - THRDisplayForm1 report helper 0x543d90 (0x543f43): the "Estimated Cluster Distance" line only on [D] (Front V2);
  * - TEnvironment1.FormPaint 0x589894 (0x5899cc): an exercise menu's title screen (+0x54c = 2) stays 500 ms on, 5000 ms off,
  *   then TitleTimerTimer 0x58b2a4 runs the exercise [D];
- * - the finder field load 0x53bae4 (0x53bb00): on, the cached-area test 0x53afb0 is skipped and the field is rebuilt [D];
+ * - the finder field load 0x53bae4 (0x53bb00, env+0x6b4+0x27c8 = env+0x2e7c): on, the cached-area test 0x53afb0 is skipped and the field is rebuilt [D];
  * - the USNO-NVO catalog transport (0x59c620.., 0x59cc88.., 0x59d808..): on, a "USNO-NVO Web Service" status window shows
  *   "Requesting … Data" / "Searching … Catalog" and is hidden after the parse (0x59c6dc, 0x59c765, 0x59c848, 0x59ccc5,
  *   0x59ce60, 0x59d825, 0x59d8f7, 0x59d91a) [D].
@@ -40,8 +48,14 @@ export function multiSpecTimerStep(seconds:number,elapsed:number,remaining:numbe
 }
 
 /** ProgrammedSlew 0x5399e8: 'jump' skips the no-slew box, the horizon check and the confirmation (0x539a24 → 0x539c4c) and
- * puts the telescope on the target at once (0x539cee..0x539e0f); 'confirm' is the normal path. */
+ * puts the telescope on the target at once (RA/Dec via 0x53caec/0x53cb40 in 0x539cee..0x539e0f; the hour-angle stamp +0x655
+ * takes the uninitialised local [ebp-0x18], whose only write 0x539ab8 is on the skipped path [D], effect [U], web consistent
+ * [W]); 'confirm' is the normal path. */
 export const programmedSlewPath=(testMode:boolean):'jump'|'confirm'=>testMode?'jump':'confirm';
+/** Review 1 L1: whether a pointing that models ProgrammedSlew checks the horizon (Limit Slewing): not in Test Mode, since
+ * 0x539a1d → 0x539c4c skips the check. VIREO's hot-list slew reaches ProgrammedSlew through Set Coordinates (0x530180 →
+ * 0x5301f4). The manual and drive limits (0x539290) are separate and unaffected. */
+export const programmedSlewChecksHorizon=(testMode:boolean):boolean=>programmedSlewPath(testMode)==='confirm';
 
 /** DomeTimer: 80 ms ticks of 0.01 (the step +0x55d is written at 0x589a75; DomeTimerTimer 0x58d154). Off, the travel reaches the end sound on tick 98 (Front C5W
  * closure L2); on, a switch from a fully open or closed dome sets the fraction to its end value, so tick 1 ends it. */
