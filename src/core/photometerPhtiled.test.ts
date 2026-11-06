@@ -5,7 +5,7 @@ import {assembleFieldPack,type AssemblySources} from '../io/assembledFieldPack';
 import {checkGscIndex,createGscTileStore} from '../io/gscTiles';
 import {buildFieldPopulation,FIELD_HALF_DEGREES} from './fieldEngine';
 import {clearTiledPhotometerFields,photometerFieldFromPopulation,photometerGalaxyWidthDegrees,queryPhotometerNeighbors,registerTiledPhotometerField,type PinnedPleiadesField} from './photometerField';
-import {buildPinnedPleiadesUbvField,photometerSelectedFraction,tiledPhotometerReason} from './photometerUbvField';
+import {buildPinnedPleiadesUbvField,photometerGalaxySkyGate,photometerSelectedFraction,tiledPhotometerReason} from './photometerUbvField';
 import {attenuatePhotometerMagnitude,combinePhotometerMagnitudes,photometerPointFraction,photometerSeparation} from './photometerSource';
 import {photometerApertureGeometry} from './photometerAperture';
 import {photometerTelescope} from './photometerTelescope';
@@ -53,8 +53,12 @@ describe('Front PHTILED: a selected galaxy (kind 1) at its catalogue position',(
   const id=registerTiledPhotometerField(fr);
   expect([0,1,2].map(t=>photometerSelectedFraction(id,'object',10,t as 0|1|2))).toEqual([fr.centralFraction,fr.centralFraction,fr.centralFraction]);
   expect(fr.sourceMagnitude).toBe(expectedV(fr,fr.centralFraction,photometerTelescope(0).seeingWidthDegrees,R10));
-  // An Object reading is admitted on every telescope; a Sky reading while the galaxy is selected needs the Telescope display (0x53e338).
-  for(const t of [0,1,2] as const){expect(tiledPhotometerReason(id,t,10,'object')).toBeNull();expect(tiledPhotometerReason(id,t,10,'sky')).toBe('photometer-galaxy-sky');}
+  // An Object reading is admitted on every telescope. Front PHSKY: a Sky reading reads the Telescope display (0x53e338 ≥ 80); with the
+  // galaxy at the centre its core lights the patch, so the gate is open and the Sky-mode source equals the Object-mode one.
+  for(const t of [0,1,2] as const){
+   expect(tiledPhotometerReason(id,t,10,'object')).toBeNull();expect(photometerGalaxySkyGate(id,t,10)?.gate).toBe('open');expect(tiledPhotometerReason(id,t,10,'sky')).toBeNull();
+   expect(photometerSelectedFraction(id,'sky',10,t)).toBe(fr.centralFraction);expect(buildPinnedPleiadesUbvField('sky','V',id,10,t).sourceMagnitude).toBe(buildPinnedPleiadesUbvField('object','V',id,10,t).sourceMagnitude);
+  }
   const r150=photometerApertureGeometry(150).radiusDegrees,c=buildPinnedPleiadesUbvField('object','V',id,150,1);
   expect(c.sourceMagnitude).toBe(expectedV(fr,photometerPointFraction(r150,0,w),photometerTelescope(1).seeingWidthDegrees,r150));
  },120_000);

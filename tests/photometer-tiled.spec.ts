@@ -85,19 +85,39 @@ test('a Pleiades target calibrated by a sky taken at a tiled pointing says why i
  await expect(page.getByTestId('photo-tiled-sky-note')).toContainText('do not count toward the Pleiades exercise');
 });
 // Front PHTILED (analysis/front-phtiled/RECOVERY.md): NGC 221 (M32, CLEA_GLX.DAT record 895). The centre selects the galaxy; VIREO reads
-// it in Object mode with an aperture fraction from its catalogue size, and its Sky reading depends on the Telescope display (refused).
-test('a galaxy at the pointing: sky on a star patch, the galaxy refused in Sky mode and measured in Object mode',async({page})=>{
+// it in Object mode with an aperture fraction from its catalogue size. Front PHSKY (analysis/front-phsky/RECOVERY.md): in Sky mode VIREO
+// reads the Telescope view at the centre (0x53e338 ≥ 80); M32's core is bright there, so its light counts and "Reading Sky!" is asked.
+test('a galaxy at the pointing: sky on a star patch, the bright galaxy asked about in Sky mode and measured in Object mode',async({page})=>{
  test.setTimeout(240000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
  await observatory(page);await pointObservatory(page,SKY);await photometerHere(page);await ready(page);await integrate(page);
  const GALAXY={ra:'0.71161111',dec:'40.86527778'};await benchPoint(page,GALAXY);
  await expect(page.getByText('Field at the telescope pointing: the centre selects the galaxy NGC 221.',{exact:false})).toBeVisible({timeout:60000});
  await expect(page.getByTestId('photo-galaxy-mark')).toHaveCount(1);
- await expect(page.getByTestId('photo-tiled-limit')).toHaveAttribute('data-reason','photometer-galaxy-sky');
- await expect(page.getByRole('button',{name:'Start integration',exact:true})).toBeDisabled();
- await page.getByLabel('Photometer pointing',{exact:true}).selectOption('object');
  await expect(page.getByTestId('photo-tiled-limit')).toHaveCount(0);
+ const gate=page.getByTestId('photo-galaxy-sky-gate');await expect(gate).toHaveAttribute('data-gate','open');
+ await expect(gate).toContainText('at least 80 either way), so the galaxy\'s light is measured as in Object mode');await expect(gate).toContainText('[web choice: a true-colour screen and a fresh telescope view]');
+ await page.getByRole('button',{name:'Start integration',exact:true}).click();
+ const dialog=page.getByTestId('photo-sky-replace');await expect(dialog.getByRole('heading',{name:'Reading Sky!'})).toBeVisible();
+ await page.getByTestId('photo-sky-replace-no').click();await expect(page.getByText('The sky reading was kept; no new reading was started.')).toBeVisible();
+ await page.getByLabel('Photometer pointing',{exact:true}).selectOption('object');
+ await expect(page.getByTestId('photo-galaxy-sky-gate')).toHaveCount(0);
  await integrate(page);
  await expect(page.getByRole('button',{name:'Add notebook entry',exact:true})).toBeEnabled();
+ expect(errors).toEqual([]);
+});
+// Front PHSKY: CLEA_GLX.DAT record 1978 (a thin galaxy, zero minor axis) at its catalogue position: its Telescope view is dark at the
+// centre on the 0.4 m (level below 80 for any way Windows draws it), so a Sky reading there does not count the galaxy and is not asked about.
+test('a galaxy whose Telescope view is dark at the centre: the Sky reading leaves its light out',async({page})=>{
+ test.setTimeout(240000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+ await observatory(page);await pointObservatory(page,SKY);await photometerHere(page);await ready(page);await integrate(page);
+ await benchPoint(page,{ra:'1.409018377',dec:'15.764981688'});
+ await expect(page.getByText('Field at the telescope pointing: the centre selects the galaxy',{exact:false})).toBeVisible({timeout:60000});
+ const gate=page.getByTestId('photo-galaxy-sky-gate');await expect(gate).toHaveAttribute('data-gate','closed');
+ await expect(gate).toContainText('level about 57, between 39 and 79 depending on how Windows draws the galaxy; below 80 either way');
+ await expect(gate).toContainText('only other catalogue objects inside the aperture add light');await expect(gate).toContainText('[web choice: a true-colour screen and a fresh telescope view]');
+ await integrate(page);await expect(page.getByTestId('photo-sky-replace')).not.toBeVisible();
+ await expect(page.getByTestId('photo-sky-origin')).toContainText('Sky reference: reading 2,');
+ await gate.scrollIntoViewIfNeeded();await page.screenshot({path:'test-results/photometer-galaxy-sky-closed.png'});
  expect(errors).toEqual([]);
 });
 // Front PHVAR (analysis/front-phvar/RECOVERY.md): GM And (CLEA_VStrs.dat record 0, a Cepheid). Its brightness comes from VIREO's

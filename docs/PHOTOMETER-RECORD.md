@@ -54,7 +54,8 @@ Observational Data window. Static reading of CLEA_VEO.exe (SHA-256 781bc970…c5
   field is ignored, since the neighbour producer 0x59ac54 walks only field+0x5 and field+0x35 [D].
 - A selected galaxy is now measured in Object mode (docs/PHOTOMETER-FIELD.md, Front PHTILED); its record name is the galaxy's
   catalogue name (VIREO copies the galaxy into the current object, 0x53ce8c). Record/Review works for it as for a star.
-- Typed: a Sky reading with a galaxy selected (`photometer-galaxy-sky`, the display gate 0x53e338 [U]) and a galaxy whose catalogue
+- Typed: a Sky reading with a galaxy selected where the display gate 0x53e338 cannot be decided (`photometer-galaxy-sky`,
+  `photometer-galaxy-sky-stamp`; Front PHSKY, docs/PHOTOMETER-FIELD.md) and a galaxy whose catalogue
   name another record shares (`photometer-galaxy-name` [U]). A selected QSO is read like a star under its 17-character name.
 - This affects only telescope-pointing (compact GSC) fields; the bundled E04 fields do not use this path.
 

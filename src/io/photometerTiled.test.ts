@@ -8,7 +8,7 @@ import {createPhotometer,photometerEvent,photometerStructReading,skyReplaceAsked
 import {buildPhotometerTargetField,clearTiledPhotometerFields,isTiledPhotometerTarget,registerTiledPhotometerField,tiledPhotometerPointing,MAX_TILED_PHOTOMETER_FIELDS} from '../core/photometerField';
 import {PLEIADES_ADMITTED_ROWS} from '../core/pleiadesHotList';
 import {pleiadesSkyContext} from '../core/pleiadesSkyContext';
-import {tiledPhotometerReason} from '../core/photometerUbvField';
+import {buildPinnedPleiadesUbvField,tiledPhotometerReason} from '../core/photometerUbvField';
 import {GSC_INDEX_SHA256,photometerJournalVersion} from '../core/photometerJournal';
 import {pleiadesExerciseSummary} from '../core/pleiadesLab';
 
@@ -137,18 +137,23 @@ describe('photometer at a telescope pointing (tiled)',()=>{
 });
 
 // Front PHTILED (analysis/front-phtiled/RECOVERY.md): NGC 7805 (CLEA_GLX.DAT record 23) selected at its catalogue position, and the
-// QSO CLEA_QSO.DAT 2. A galaxy is read in Object mode with the sky of this context; a Sky reading on it is refused (0x53e338 [U]).
+// QSO CLEA_QSO.DAT 2. A galaxy is read in Object mode with the sky of this context. Front PHSKY: in Sky mode VIREO reads the
+// Telescope display (0x53e338); at NGC 7805's centre it is bright, so the Sky reading asks "Reading Sky!" and measures the galaxy.
 describe('Front PHTILED: galaxy and QSO targets in the journal',()=>{
  const glxView=new DataView(f('public/original/catalogs/CLEA_GLX.DAT').buffer),qsoView=new DataView(f('public/original/catalogs/CLEA_QSO.DAT').buffer);
  const NGC7805={ra:glxView.getFloat64(23*59,true),dec:glxView.getFloat64(23*59+8,true)},QSO2={ra:qsoView.getFloat64(2*52+0x12,true),dec:qsoView.getFloat64(2*52+0x1a,true)};
- it('reads the galaxy in Object mode, refuses its Sky reading, records it in the native list and replays from a session',async()=>{
+ it('reads the galaxy in Object mode, asks before its Sky reading, records it in the native list and replays from a session',async()=>{
   expect(await preparePhotometerTiledField(BLANK)).toMatchObject({status:'ready',selectedType:0});
   const galaxy=await preparePhotometerTiledField(NGC7805);expect(galaxy).toMatchObject({status:'ready',selectedType:1,selectedName:'NGC 7805'});
   if(galaxy.status!=='ready')throw new Error(galaxy.reason);
   let s=run(createPhotometer(11),[{type:'activate'},{type:'field',ra:BLANK.ra,dec:BLANK.dec},{type:'point',kind:'sky'},{type:'start'},{type:'complete'},{type:'field',ra:NGC7805.ra,dec:NGC7805.dec}]);
-  // Sky still declared on the galaxy: no "Reading Sky!" question, Start refused.
-  expect(skyReplaceAsked(s)).toBe(false);expect(tiledPhotometerReason(galaxy.targetId,0,10,'sky')).toBe('photometer-galaxy-sky');
-  expect(()=>photometerEvent(s,{type:'start'})).toThrow(new PhotometerError('field'));
+  // Sky still declared on the galaxy: the display gate is open (0x53e338 ≥ 80), so the galaxy has light in the aperture and VIREO asks
+  // before replacing the V sky (0x4ffad9); answering No cancels the Start, Yes measures the galaxy's light as a "sky".
+  expect(tiledPhotometerReason(galaxy.targetId,0,10,'sky')).toBeNull();expect(skyReplaceAsked(s)).toBe(true);
+  expect(()=>photometerEvent(s,{type:'start'})).toThrow(new PhotometerError('confirm'));
+  const asked=run(s,[{type:'skyConfirm'},{type:'start'},{type:'complete'}]);
+  expect(asked.current?.kind).toBe('sky');expect(asked.current?.fieldTargetId).toBe(galaxy.targetId);
+  expect(buildPinnedPleiadesUbvField('sky','V',galaxy.targetId,10,0).sourceMean).toBe(buildPinnedPleiadesUbvField('object','V',galaxy.targetId,10,0).sourceMean);
   s=run(s,[{type:'point',kind:'object'},{type:'start'},{type:'complete'}]);
   const reading=s.current!;expect(reading.targetId).toBe(galaxy.targetId);expect(reading.reduction?.status).toBe('available');
   expect(buildPhotometerTargetField(galaxy.targetId,'object').selected.type).toBe(1);

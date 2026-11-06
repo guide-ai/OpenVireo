@@ -5,6 +5,7 @@ import {buildPhotometerTargetField,isTiledPhotometerTarget,queryPhotometerNeighb
 import {photometerPointFraction,photometerSeparation,preparePhotometerBands} from './photometerSource';
 import {magnitudeAmplitude} from './photons';
 import {poissonDraw} from './acquisition';
+import {photometerDisplayLevelFor,photometerSkyGate,photometerStampWithinBound,type PhotometerDisplayLevel,type PhotometerDisplayLevels,type PhotometerSkyGate} from './photometerDisplay';
 import contractSource from '../../data/photometry/ubv-contract.json';
 const contract=projectResource(contractSource);
 
@@ -49,16 +50,21 @@ function preparedBands(frame:ReturnType<typeof buildPhotometerTargetField>,kind:
  if(rules==='bundled'&&telescopeIndex!==0&&kind==='object'&&(neighbors.length!==1||neighbors[0].id!==frame.selected.id))throw new PhotometerFieldError('evidence');
  const pointFraction=(s:typeof frame.selected)=>photometerPointFraction(geometry.radiusDegrees,photometerSeparation(frame.pointing.ra,frame.pointing.dec,s.ra,s.dec),telescope.seeingWidthDegrees);
  const supplied=(s:typeof frame.selected,fraction:number)=>({v:s.magnitude,bMinusV:s.photometry2Single,uMinusB:s.photometry3Single,fraction});
- const central=supplied(frame.selected,selectedFraction(frame,geometry.radiusDegrees,telescope.seeingWidthDegrees)),others=neighbors.filter(s=>s.nativeName!==frame.selected.nativeName).map(s=>supplied(s,pointFraction(s)));
+ const central=supplied(frame.selected,selectedFraction(frame,geometry.radiusDegrees,telescope.seeingWidthDegrees,kind,telescopeIndex,apertureSelector)),others=neighbors.filter(s=>s.nativeName!==frame.selected.nativeName).map(s=>supplied(s,pointFraction(s)));
  return {telescope,geometry,neighbors,centralFraction:central.fraction,bands:preparePhotometerBands(central,others)};
 }
 /** 0x59ac54 at this aperture: the frame's stars, then (Front PHTILED, tiled frames) its QSO list. Aperture 10 keeps the stored list. */
 function frameNeighbors(frame:ReturnType<typeof buildPhotometerTargetField>,radiusDegrees:number,apertureSelector:number){
  return apertureSelector===10?frame.neighbors:queryPhotometerNeighbors(frame.pointing,radiusDegrees,frame.stars,frame.qsos??[]);
 }
-/** 0x500568 for the selected object: the point branch (kinds 0 and 3) or, Front PHTILED, the galaxy branch (kind 1, Object mode). */
-function selectedFraction(frame:ReturnType<typeof buildPhotometerTargetField>,radiusDegrees:number,seeingWidthDegrees:number){
- if(frame.selectedGalaxy)return photometerPointFraction(radiusDegrees,0,frame.selectedGalaxy.widthDegrees);
+/** 0x500568 for the selected object: the point branch (kinds 0 and 3) or, Front PHTILED, the galaxy branch (kind 1). Front PHSKY: in
+ * Sky mode (+0x41c, which Start's 0x4ffa30 sets from the slider at 0x4ffa61) the galaxy branch first reads the display level
+ * 0x53e338 and gives 0 below 80 (0x50066d..0x5006b3); an undecided gate is typed before this is reached (tiledPhotometerReason). */
+function selectedFraction(frame:ReturnType<typeof buildPhotometerTargetField>,radiusDegrees:number,seeingWidthDegrees:number,kind:PleiadesFieldKind,telescopeIndex:PhotometerTelescopeIndex,apertureSelector:number){
+ if(frame.selectedGalaxy){
+  if(kind==='sky'){const gate=galaxyGate(frame.selectedGalaxy.display,telescopeIndex,apertureSelector).gate;if(gate==='undecided')throw new PhotometerFieldError('domain');if(gate==='closed')return 0;}
+  return photometerPointFraction(radiusDegrees,0,frame.selectedGalaxy.widthDegrees);
+ }
  return photometerPointFraction(radiusDegrees,photometerSeparation(frame.pointing.ra,frame.pointing.dec,frame.selected.ra,frame.selected.dec),seeingWidthDegrees);
 }
 const BAND_KEY=Object.freeze({U:'u',B:'b',V:'v',R:'r',I:'i'} as const);
@@ -93,7 +99,7 @@ export function photometerMaximumMean(frame:ReturnType<typeof buildPhotometerTar
  let m=maximumMeans.get(frame.stars);if(!m){m=new Map();maximumMeans.set(frame.stars,m);}m.set(key,max);
  return max;
 }
-export type TiledPhotometerReason='photometer-galaxy-sky'|'Poisson-mean-bound'|'all-duration-count-domain';
+export type TiledPhotometerReason='photometer-galaxy-sky'|'photometer-galaxy-sky-stamp'|'Poisson-mean-bound'|'all-duration-count-domain';
 /** Why a tiled target cannot be read with this telescope, aperture and reading mode (null: it can). The mean bounds are the
  * profiles' generic limits over every selectable filter and aperture. Front P2: neighbour light with no central admission is the
  * decoded native path (preparePhotometerBands), no longer a typed reason.
@@ -102,15 +108,20 @@ export type TiledPhotometerReason='photometer-galaxy-sky'|'Poisson-mean-bound'|'
  *   same way for every telescope, only the seeing width (TPhotometer+0x56d) differs, and the mean bounds below already cover every
  *   filter and aperture of the blended source.
  * - `photometer-colour` is gone: the native colour branches are ported (preparePhotometerBands).
- * - `photometer-galaxy-sky`: a Sky reading while the centre selects a galaxy. 0x500568 then gates the galaxy's fraction on the
- *   brightness of the Telescope display at its centre (0x53e338: the mean R+G+B of a 3 × 19-pixel patch of TObsrvtry+0x3d8, which
- *   must be ≥ 80, else fraction 0; 0x50066d..0x5006b3) [D]. 0x53e338 itself is ported (photons.slitPixelLevel), but the display it
- *   reads would be the Telescope view painted for the photometer's 0.05° field, which is not ported (the engine paints the
- *   instrument field only); the gate is therefore not ported here [W]. */
+ * - `photometer-galaxy-sky`: a Sky reading while the centre selects a galaxy whose gate is undecided. 0x500568 then gates the galaxy's
+ *   fraction on the brightness of the Telescope display at its centre (0x53e338: the mean R+G+B of a 3 × 19-pixel patch of
+ *   TObsrvtry+0x3d8, which must be ≥ 80, else fraction 0; 0x50066d..0x5006b3) [D]. Front PHSKY paints that display for the
+ *   photometer field (core/photometerDisplay.ts); only where the level's bounds (GDI's stretch kernel and the aperture's Ellipse
+ *   pen, which this port bounds rather than reproduces) straddle 80 is the reading still refused.
+ * - `photometer-galaxy-sky-stamp`: the same, when a galaxy of the field needs stamp bitmaps beyond the web bound
+ *   (PHOTOMETER_DISPLAY.stampBound): whether Windows paints the display then is not determined. */
 export function tiledPhotometerReason(targetId:string,telescopeIndex:PhotometerTelescopeIndex,apertureSelector:number,pointing:PleiadesFieldKind='object'):TiledPhotometerReason|null{
  if(!isTiledPhotometerTarget(targetId)||!isPhotometerTelescopeIndex(telescopeIndex)||(pointing!=='object'&&pointing!=='sky'))throw new PhotometerFieldError('domain');
  const frame=buildPhotometerTargetField(targetId,'object');photometerApertureGeometry(apertureSelector);
- if(pointing==='sky'&&frame.selectedGalaxy)return 'photometer-galaxy-sky';
+ if(pointing==='sky'&&frame.selectedGalaxy){
+  const g=galaxyGate(frame.selectedGalaxy.display,telescopeIndex,apertureSelector);
+  if(g.gate==='undecided')return g.stampBeyond?'photometer-galaxy-sky-stamp':'photometer-galaxy-sky';
+ }
  const max=photometerMaximumMean(frame,telescopeIndex,'tiled');
  if(max>PHOTOMETER_MEAN_BOUNDS.maximumPoissonMean)return 'Poisson-mean-bound';
  if(max*PHOTOMETER_MEAN_BOUNDS.callbacks>PHOTOMETER_MEAN_BOUNDS.countGuard)return 'all-duration-count-domain';
@@ -121,14 +132,26 @@ export function drawPinnedPleiadesUbv(kind:PleiadesFieldKind,filter:PhotometerFi
  return Object.freeze({sourceCount:source.value,skyCount:sky.value,totalPhotonCount:source.value+sky.value,initialSeed:seed,seed:sky.seed,draws:source.draws+sky.draws,nativeBaseCountSum:1000,timerWaitMs:100});
 }
 
-/** The selected object's aperture fraction for a target, mode, aperture and telescope (0x500568 as FormActivate and Start call it).
- * Front PHTILED: for a selected galaxy this is its Object-mode fraction; a Sky reading of it is refused (tiledPhotometerReason), and
- * skyReplaceAsked does not ask there. Review 1 M1 [W]: FormActivate (0x4ff909 → 0x4ff933) calls 0x500568 with whatever +0x41c holds
- * (written only by Start 0x4ffa61 and FormActivate 0x4ff965/0x4ff9ab), so after a Sky Start VIREO takes the Sky-gated galaxy branch
- * there (display level 0x53e338 ≥ 80 on the photometer-field Telescope view, not ported); the web always uses this Object-mode value. */
+/** The selected object's aperture fraction for a target, mode (+0x41c), aperture and telescope (0x500568 as FormActivate and Start
+ * call it). Front PHSKY: for a selected galaxy in Sky mode it is gated on the display level (0 when closed; an undecided gate throws,
+ * callers check photometerGalaxySkyGate first). FormActivate (0x4ff909 → 0x4ff933) reads +0x41c, which equals the slider position:
+ * the slider's OnPositionChange 0x5021cc calls 0x4ffa30, which writes +0x41c from it at 0x4ffa61 [D] (this corrects Front PHTILED's
+ * review 1 M1 reading, which missed that write), so with the slider at Object it takes the Object-mode fraction. */
 export function photometerSelectedFraction(targetId:string,kind:PleiadesFieldKind,apertureSelector:number,telescopeIndex:PhotometerTelescopeIndex):number{
  const frame=buildPhotometerTargetField(targetId,kind);
- return selectedFraction(frame,photometerApertureGeometry(apertureSelector).radiusDegrees,photometerTelescope(telescopeIndex).seeingWidthDegrees);
+ return selectedFraction(frame,photometerApertureGeometry(apertureSelector).radiusDegrees,photometerTelescope(telescopeIndex).seeingWidthDegrees,kind,telescopeIndex,apertureSelector);
+}
+/** Front PHSKY: for a tiled target whose centre selects a galaxy, the Sky-mode display level bounds and gate at this telescope and
+ * aperture (null for any other target). */
+export function photometerGalaxySkyGate(targetId:string,telescopeIndex:PhotometerTelescopeIndex,apertureSelector:number):Readonly<{gate:PhotometerSkyGate;level:PhotometerDisplayLevel;stampBeyond:boolean}>|null{
+ if(!isTiledPhotometerTarget(targetId))return null;
+ const g=buildPhotometerTargetField(targetId,'object').selectedGalaxy;if(!g)return null;
+ return galaxyGate(g.display,telescopeIndex,apertureSelector);
+}
+/** The gate on the stored levels; a field whose stamps exceed the web bound is undecided whatever the level. */
+function galaxyGate(display:readonly PhotometerDisplayLevels[],telescopeIndex:PhotometerTelescopeIndex,apertureSelector:number):Readonly<{gate:PhotometerSkyGate;level:PhotometerDisplayLevel;stampBeyond:boolean}>{
+ const level=photometerDisplayLevelFor(display,telescopeIndex,apertureSelector),stampBeyond=!photometerStampWithinBound(display[telescopeIndex]);
+ return Object.freeze({gate:stampBeyond?'undecided':photometerSkyGate(level),level,stampBeyond});
 }
 /** Front PHTILED: whether the centre of a tiled target selects a galaxy (VIREO's kind 1 object). */
 export const photometerSelectsGalaxy=(targetId:string)=>isTiledPhotometerTarget(targetId)&&!!buildPhotometerTargetField(targetId,'object').selectedGalaxy;
