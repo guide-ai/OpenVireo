@@ -111,7 +111,7 @@ describe('R5 options Reset (ResetBtnClick 0x5a6d24)',()=>{
  it('has the recovered caption, hint and question, and resets to the compiled defaults (0x5a21d0)',()=>{
   expect(OPTIONS_RESET_LITERALS).toEqual({caption:'&Reset',hint:'Restore All Options to Default Values',questionCaption:'Are You Sure?',
    questionText:'Resetting all options to default values\r\nwill remove any changes you have made.\r\n\r\nContinue?'});
-  expect(OPTIONS_RESET_DEFAULTS).toEqual({options:COMPILED_OPTICAL_OPTIONS,editMode:COMPILED_EDIT_MODE,virtualObservatory:false});
+  expect(OPTIONS_RESET_DEFAULTS).toEqual({options:COMPILED_OPTICAL_OPTIONS,editMode:COMPILED_EDIT_MODE,virtualObservatory:false,testMode:false});
   expect(COMPILED_OPTICAL_OPTIONS.limitSlewing).toBe(false);
   expect(OPTIONS_RESET_NOT_PORTED).toBe('radio-options-object');
  });
@@ -120,7 +120,8 @@ describe('R5 options Reset (ResetBtnClick 0x5a6d24)',()=>{
 describe('R5 deferred teacher options keep a typed reason',()=>{
  it('lists every deferred item once with the teacher-front reason',()=>{
   // Front T1: virtual-observatory-strict is gone (VO is behind the instructor gate); the forms and the password are typed.
-  expect(TEACHER_DEFERRED.map(d=>d.key)).toEqual(['demonstration-mode','test-mode','restrict-scope-access','request-time','detect-sky','set-ebmv','files','scopes','parameters','radio-site','radio-options',
+  // Front T3: the optical Test Mode is live; only the radio dialog's TestModeBox stays (T11b).
+  expect(TEACHER_DEFERRED.map(d=>d.key)).toEqual(['demonstration-mode','radio-test-mode','restrict-scope-access','request-time','detect-sky','set-ebmv','files','scopes','parameters','radio-site','radio-options',
    'cluster-edit','cluster-save-list','asteroid-subset','auto-plot','password']);
   expect(new Set(TEACHER_DEFERRED.map(d=>d.key)).size).toBe(TEACHER_DEFERRED.length);
   expect(TEACHER_DEFERRED.every(d=>Object.isFrozen(d))).toBe(true);

@@ -25,8 +25,8 @@ In OpenVireo (`src/core/instructorMode.ts`, `src/components/InstructorMode.tsx`;
   only. On opens the gate; a banner "Instructor mode (web): VIREO's Demonstration Mode gate. No password; it is not a lock."
   stays on every route with **Leave**. Only the gate write is ported; Demonstration Mode's other effects and its DemoBox are
   later fronts (T2).
-- **WEB-TM-02 [W] Leave** closes the gate and puts Edit Mode and Virtual Observatory back to their compiled values (off), so
-  "Edit Mode on ⇒ gate open" holds. VIREO has no such action.
+- **WEB-TM-02 [W] Leave** closes the gate and puts Edit Mode, Virtual Observatory and (since Front T3) Test Mode back to their
+  compiled values (off), so "Edit Mode on ⇒ gate open" holds. VIREO has no such action.
 - **One gate.** The radio card's Preferences follows the same gate (docs/RADIO-ACCESS-OPTIONS.md); its own Demonstration
   button is retired. Edit Mode on keeps it open (moved from the radio card).
 - **Not ported:** Login, TPasswordDlg and TPasswordDlg1. The web never stores, compares, hashes or exports the compiled
@@ -36,6 +36,28 @@ In OpenVireo (`src/core/instructorMode.ts`, `src/components/InstructorMode.tsx`;
 
 Recovery and evidence: `analysis/front-teacher/t1/RECOVERY.md` in the research root.
 
+## Test Mode (Front T3, 2026-11-06)
+TestBox1 (CCD tab; hint `In Test Mode coordinate settings and CCD exposures are instantaneous`) is written by OKBtnClick to
+record+0x27c8 (0x5a60cc) = env+0x2e7c; the defaults routine writes 0 (0x5a2ac5) [D]. A byte search for the displacement finds 17
+reads of env+0x2e7c, no write, and one read through the record (0x53bb00). In OpenVireo (`src/core/testMode.ts`) it is a live
+check box of this dialog, so it is reachable only in instructor mode; it is off by default, lasts for the page session, is not
+saved, and the dialog's Reset and the banner's Leave turn it off (WEB-T3-01 [W]; persistence is T2).
+
+| Reader | VIREO with Test Mode on [D] | OpenVireo |
+|---|---|---|
+| CCD/IR exposure timer (TCCDCam.ObsTimerTimer 0x512b2c, read 0x512b39; TIRCam.ObsTimerTimer 0x514b5c, read 0x514b69) | Remaining seconds +0x3dc := 0 at the first 1000 ms tick instead of −1, so the exposure ends there. The image and the headers read the requested seconds +0x3e2 (0x5120c7, 0x512107, 0x512466, 0x51277d, 0x512a52), never +0x3dc; the observing date is taken at Go and the timer advances no clock. | The camera reads the option at each tick (`cameraTimerRemaining`). Same image, seed, draws, exposure length and headers; only the wait goes. |
+| Multi-Spec SpecTimerTimer (0x52a1c4) | Elapsed +0x3dd := seconds +0x455, remaining +0x3c9 := 0; then the clock display, one S/N tick 0x52a58c and the ≤ 0.01 end test as usual. | `multiSpecTimerStep`: the exposure ends at the first tick; the spectra get the same t = seconds and fibre seeds; the display-only S/N estimate has one tick. |
+| ProgrammedSlew (0x539a1d → 0x539c4c; 0x539ce1 → 0x539cee..0x539e0f) | The no-slew box, the horizon check and the confirmation (with its B1950 note) are skipped; the pointing becomes the target, the axes are marked done and +0x64d := 0. | Selected target, coordinate draft and Set Coordinates (also when the hot list opens it) jump to the target at once after the coordinates are entered (instrument release as at a slew start); a line in the motion card says Test Mode is on. Manual N/S/E/W motion is unchanged, as in VIREO. |
+| Dome switches (DomeSw1DownClick 0x58c530, DomeSw1UpClick 0x58c6f0) | From a fully open (closed) dome the travel fraction +0x553 := 0 (1.0), so DomeTimer (80 ms) ends the travel at its first tick; a reversal mid-travel is not collapsed. | The web dome already opens and closes at once [W]; with Sound Effects on, the end sound follows after 80 ms instead of 98 × 80 ms. |
+| THRDisplayForm1 report helper 0x543d90 (0x543f43) | The `Estimated Cluster Distance` line is printed only in Test Mode. | Printed whenever Test Mode is on, on the database, own-pairs and observation HR reports; off, the web keeps Front V2's student control (the extinction box or the checkbox) [W]. |
+| TEnvironment1.FormPaint 0x5899cc | An exercise menu's title screen (+0x54c = 2) keeps TitleTimer at 500 ms instead of 5000 ms; TitleTimerTimer 0x58b2a4 then runs the exercise. | Typed (`exercise-title-screen`): the web has no title screen. |
+| Finder field load 0x53bae4 (0x53bb00) | The cached-area test 0x53afb0 is skipped, so the finder field is rebuilt at every load. | Typed (`finder-field-rebuild`) [W]: the same catalog stars; rebuilding at every tracking step would reload the field continuously. |
+| USNO-NVO transport 0x59c620 (0x59c6dc, 0x59c765, 0x59c848), 0x59cc88 (0x59ccc5, 0x59ce60), 0x59d808 (0x59d825, 0x59d8f7, 0x59d91a) | A `USNO-NVO Web Service` status window shows `Requesting … Data` / `Searching … Catalog` and is hidden after the parse. | Typed (`usno-nvo-status-window`): the NOFS service is not ported; the camera's VizieR request shows its own status in both modes. |
+
+The radio dialog's own TestModeBox (TRadiOptsDlg, record+0x940 → env+0x37d5; readers 0x564561 and the radio slew 0x566fa6) is a
+separate option of the radio options front (T11b) and stays typed (`radio-test-mode` in `src/core/teacherDeferred.ts`). Recovery
+and excerpts: `analysis/front-teacher/t3/RECOVERY.md` in the research root.
+
 ## In OpenVireo
 The dialog opens from the telescope-motion card, in instructor mode. These controls are live:
 
@@ -43,6 +65,7 @@ The dialog opens from the telescope-motion card, in instructor mode. These contr
 |---|---|---|---|
 | Limit Slewing | off | Horizon guard (OB-LS-01) | +0x27c9 |
 | Edit Mode, Virtual Observatory | off | Fronts O and O2 | +0x27ca, +0x27d5 |
+| Test Mode | off | Front T3 (above): exposures, Multi-Spec and programmed slews without the wait; the HR distance line | +0x27c8 = env+0x2e7c |
 | Fast Slewing | on | Programmed slews run at rate index 4; off gives index 3, half as fast. | +0x27af := 4/3; ProgrammedSlew 0x5399e8 sets RateSlider.Position at 0x539cbf |
 | Fast Scope Change | off | On, a telescope change with the dome open keeps it open, with no dome sound. | +0x27d0 = env+0x2e84; 0x58b554 needs the option on and the dome open (+0x552 = 1) |
 | Compute Rdshft Vel. | off | The LSS Measured Redshift Data dialog and, since Front H2, the Hubble Observational Data dialog open with the velocity filled in: Single(c·z), ffExponent 4. The Hubble dialog fills it only when z ≠ 0. OK still applies the 1 % check. | +0x27d4 = env+0x2e88; TLSSRsltsDlg1.FormActivate 0x57cbcb; TObsRsltsDlg1.FormActivate 0x54aedb |
@@ -99,5 +122,5 @@ contracts built on those values.
   - Print (0x542f44) prints in colour only with Print in Color, then the window takes Monochrome Displays again. Cancelling
     the print preview writes nothing (0x542fc5).
   - The photometer route's own web plot is not VIREO's form and keeps its colours.
-- Not ported: Demonstration, Test, Restrict Scope Access, Administrator and the remaining photometer check boxes keep their
-  compiled state and are listed as text.
+- Not ported: Demonstration, Restrict Scope Access, Administrator and the remaining photometer check boxes keep their
+  compiled state and are listed as text. Test Mode is live since Front T3 (above).

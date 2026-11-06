@@ -75,7 +75,8 @@ The following are not recovered:
 - the print path (0x542fc8) — recovered by Front V2 and ported as a print preview ([CLUSTER-HR-TOOLS.md](CLUSTER-HR-TOOLS.md));
 - the database-record name line for observation data;
 - the default of option +0x2e7c — Front V2: it is TestBox1 "Test Mode", compiled default 0 (0x5a5962), so VIREO prints the
-  distance line only in Test Mode;
+  distance line only in Test Mode; Front T3 (2026-11-06) makes it a live instructor option, and with it on the report prints
+  the line whatever the checkbox says (docs/OPTICAL-OPTIONS.md);
 - the exact FloatToStrF decimal path and host FPU state.
 
 No runtime witness exists. Tests check this implementation's contract and are not an original oracle. N04/E05 remain partial: optional CCD, uncertainty, classroom validation and original runtime fidelity are open. No original execution, emulation, network or new dependency is used.

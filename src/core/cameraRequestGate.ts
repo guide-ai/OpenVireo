@@ -1,6 +1,7 @@
 /** Camera callback ordering plus explicit web ownership guards.
  * No transport, catalog, image, RNG, clock, locale parser or persisted state.
  * Source and adaptation boundaries: docs/CAMERA-REQUEST-GATE.md. */
+import {cameraTimerRemaining} from './testMode';
 export class CameraRequestGateError extends Error {
  constructor(readonly code:'state'|'event'|'seconds') {super(`Camera request gate: ${code}`);this.name='CameraRequestGateError';}
 }
@@ -69,7 +70,8 @@ export function cameraRequestTransition(s:CameraRequestGate,e:CameraGateEvent):C
   case 'exposure-tick': {
    if(s.phase!=='exposing')return unchanged();
    if(typeof e.instant!=='boolean')throw new CameraRequestGateError('event');
-   const remainingSeconds=e.instant?0:s.remainingSeconds-1;
+   // Front T3: `instant` is Test Mode (env+0x2e7c) read at the tick, 0x512b39 / 0x514b69 (core/testMode.ts).
+   const remainingSeconds=cameraTimerRemaining(s.remainingSeconds,e.instant);
    return transition(owned({...s,remainingSeconds,phase:remainingSeconds===0?'waiting':'exposing'}),remainingSeconds===0?['observe-off','poll-on']:[]);
   }
   case 'request-result': {

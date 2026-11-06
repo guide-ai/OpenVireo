@@ -64,7 +64,8 @@ Corrected labels:
   the editable catalogue copy (user decision 1.8), now with a note.
 - **"Test Mode"** (option +0x2e7c, default 0): the View/Print Parameters distance line appears only in Test Mode (0x543f43).
   The core comment wrongly called it the extinction option; OpenVireo keeps printing it with the extinction-corrected distance,
-  with a note.
+  with a note. Since Front T3 (2026-11-06) Test Mode is a live instructor option, and with it on the line is printed whatever
+  the extinction box says, as in VIREO (docs/OPTICAL-OPTIONS.md).
 - **View/Print Parameters print** (Front R4b, `src/core/infoListPrint.ts`, dossier
   `analysis/front-r4/C-parameters-camera-list.md` §1–§2): **Print this report**, on the database, own-pairs and
   native-DAT observation routes (the last added in review 1 L1), opens a preview of VIREO's list page (TInfoListForm1 Print1Click 0x59e4c0): the date + `     Laboratory Table Number

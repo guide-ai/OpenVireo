@@ -31,6 +31,12 @@ Merely viewing the new controls does not change existing file owners. Once a mul
 
 A new22 file replaces its represented multiplier. Earlier files preserve the newer unrepresented multiplier while restoring their stated prior scopes. Unknown/running fields, changed proofs, invalid indices, downgrade smuggling and nested22 wrappers reject atomically. Raw photometer1–10, unchanged full1–21 writers and the actual earlier full21/raw9 capture remain compatibility witnesses. Browser22 is not an original CLEA result/observation format.
 
+## Test Mode (Front T3, 2026-11-06)
+With the instructor's Test Mode on (TestBox1, env+0x2e7c; docs/OPTICAL-OPTIONS.md), ProgrammedSlew skips the no-slew box, the
+horizon check and the confirmation (0x539a1d → 0x539c4c) and puts the telescope on the target at once (0x539ce1 →
+0x539cee..0x539e0f) [D]. The motion card then jumps instead of asking (`onJump`), releases the instruments as a slew start
+does, and shows a Test Mode line. Manual N/S/E/W motion is unchanged.
+
 ## Manual steps
 
 1. Open `http://127.0.0.1:5173/#observatory`, open the dome and locate **Move the telescope**. Current RA/Dec are repeated beside the controls. Hold **North/East/South/West** with pointer, Space or Enter; release to stop. Change **Manual motion multiplier** while stopped and compare finder/telescope views.

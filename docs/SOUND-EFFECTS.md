@@ -22,7 +22,7 @@ Each play opens the program folder plus a lowercase name and plays it once, from
 | Event | Sound |
 |---|---|
 | Dome Up or Down click (0x58c608 / 0x58c45c), or a telescope change with the dome open (0x58b528 → 0x58b741, unless FastScopeBox) | `gardoor.wav` once |
-| The dome reaches the end of its travel (DomeTimer, 80 ms ticks of 0.01) | `gardoor.wav` stops; one of chaclunk, clunkit, crashbrn, rolling, crinkle, drag, mailbox, whaading (table 0x5b4b04) by Random(8) |
+| The dome reaches the end of its travel (DomeTimer, 80 ms ticks of 0.01; with Test Mode on, the first tick — DomeSw1DownClick 0x58c530 / DomeSw1UpClick 0x58c6f0 set the fraction to its end value; Front T3) | `gardoor.wav` stops; one of chaclunk, clunkit, crashbrn, rolling, crinkle, drag, mailbox, whaading (table 0x5b4b04) by Random(8) |
 | Reversal during travel | `gardoor.wav` restarts; no end sound at that moment |
 | Manual N/S/E/W slew held | `servostart.wav`, then `servocontin.wav` again and again (MediaPlayer1Notify 0x540350) |
 | Release, or the slew limit | the telescope player stops (0x540480) |

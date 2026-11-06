@@ -6,13 +6,14 @@
  * against the compiled password at 0x5a316c and the options' password field are not ported, and the web never stores,
  * compares or exports a password (user decision 2026-11-06); 'needs-backend', the feature exists to share a file within a
  * group, which needs the deployed backend (not approved). Front T1 removed 'virtual-observatory-strict': Virtual Observatory
- * and Edit Mode are now instructor-only, behind the instructor-mode gate (core/instructorMode.ts). */
+ * and Edit Mode are now instructor-only, behind the instructor-mode gate (core/instructorMode.ts). Front T3 removed the optical
+ * 'test-mode' item: TOptionsDlg.TestBox1 is live (core/testMode.ts); the radio dialog's own TestModeBox stays here. */
 export type TeacherDeferredReason='teacher-front'|'compiled-password-not-ported'|'needs-backend';
 export type TeacherDeferredItem=Readonly<{key:string;caption:string;control:string;dfm:string;reason:TeacherDeferredReason}>;
 const item=(key:string,caption:string,control:string,dfm:string,reason:TeacherDeferredReason='teacher-front'):TeacherDeferredItem=>Object.freeze({key,caption,control,dfm,reason});
 export const TEACHER_DEFERRED:readonly TeacherDeferredItem[]=Object.freeze([
  item('demonstration-mode','Demonstration Mode','TOptionsDlg.DemoBox','0x20a822'),
- item('test-mode','Test Mode','TOptionsDlg.TestBox1 (also read by the Multi-Spec timer), TRadiOptsDlg.TestModeBox','0x20acd5, 0x21ce45'),
+ item('radio-test-mode','Test Mode (radio)','TRadiOptsDlg.TestModeBox (record+0x940 → env+0x37d5; radio options front T11b)','0x21ce45'),
  item('restrict-scope-access','Restrict Scope Access','TOptionsDlg.RstrctScpBox','0x20abca'),
  item('request-time','Request Time','TEnvironment1.RequestTime1','0x1ed08e'),
  item('detect-sky','Detect Sky','TOptionsDlg.DtctSkyBox','0x20b960'),

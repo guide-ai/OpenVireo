@@ -55,12 +55,13 @@ test('the Options dialog lists the other original options as text with recovered
  const list=page.getByTestId('ob-options-others');await expect(list.getByRole('checkbox')).toHaveCount(0);
  // Front O: Edit Mode, Front O2: Virtual Observatory, and Front R3's six ported options are live (non-persisted) check boxes,
  // so 7 of the 15 other options remain listed as text.
- await expect(list).not.toContainText('Fast Slewing');await expect(list.getByRole('listitem')).toHaveCount(5);
+ await expect(list).not.toContainText('Fast Slewing');await expect(list.getByRole('listitem')).toHaveCount(4);await expect(list).not.toContainText('Test Mode');// Front T3: Test Mode is live (5 → 4)
  // Front L3 (2026-10-30): Time-Dependent Data is live too. Front R4 (2026-10-31): Show Object ID too (6 → 5), and Show Object
  // Mag. left the Spectrometer tab values; both are check boxes (10 → 12).
  await expect(list).not.toContainText('Edit Mode');await expect(list).not.toContainText('Virtual Observatory');
  // Front S3 (2026-10-31): Allow User Change is a live check box too (12 → 13; it was a Spectrometer-tab value).
- await expect(page.getByTestId('ob-options-dialog').getByRole('checkbox')).toHaveCount(13);await expect(page.getByTestId('ob-options-allow-user-change')).toBeChecked();await expect(page.getByTestId('ob-options-fast-slewing')).toBeChecked();await expect(page.getByTestId('ob-options-edit-mode')).not.toBeChecked();await expect(page.getByTestId('ob-options-virtual-observatory')).not.toBeChecked();
+ await expect(page.getByTestId('ob-options-dialog').getByRole('checkbox')).toHaveCount(14);await expect(page.getByTestId('ob-options-test-mode')).not.toBeChecked();// Front T3 (13 → 14)
+  await expect(page.getByTestId('ob-options-allow-user-change')).toBeChecked();await expect(page.getByTestId('ob-options-fast-slewing')).toBeChecked();await expect(page.getByTestId('ob-options-edit-mode')).not.toBeChecked();await expect(page.getByTestId('ob-options-virtual-observatory')).not.toBeChecked();
 });
 
 test('a refused HTL Point leaves the selected target, the card and the pointing exactly as they were (review note 1)',async({page})=>{

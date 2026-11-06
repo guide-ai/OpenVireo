@@ -1,4 +1,5 @@
 import {useEffect,useId,useMemo,useReducer,useRef,useState,useContext} from 'react';
+import {TestModeContext} from '../polish/testModeContext';
 import {VireoOptionsContext} from '../vireoOptionsContext';
 import {DEFAULT_SPECTRAL_RANGE,sameRange,type SpectralRange} from '../core/spectralRange';
 import {multiSpecFieldPicture} from '../polish/PrintSkyImage';
@@ -28,8 +29,8 @@ import './multispec.css';
  *  - `armed` is the caller's CRT1MouseDown gate (plan §1, decision D1): Edit Mode ∨ exercise mode ∈ {0, 1}, in the Telescope view.
  *  - `mask` is the Object X rule (plan §4): names, V, Edit Mode lines and typed reasons are replaced while it masks.
  *  - Web [W]: Save is a browser download (no folder / file-name-base dialogs); Save All is one STORE .zip of the byte-exact .SSP
- *    files (decision D4); Show Object ID / Show Object Mag are VIREO's global options (Front R4d; compiled default off); no Test Mode
- *    (D5); nothing is saved with the investigation (D6). A new field (pointing or telescope) is the native field regeneration
+ *    files (decision D4); Show Object ID / Show Object Mag are VIREO's global options (Front R4d; compiled default off); Test Mode
+ *    from the page's instructor options (Front T3; D5 superseded); nothing is saved with the investigation (D6). A new field (pointing or telescope) is the native field regeneration
  *    (0x53a741 → Clear Objects). The native FormShow disables tracking and the Telescope menu; here a telescope change remounts
  *    the instrument (the caller keys it by telescope). */
 export type MultiSpecInstrumentProps=Readonly<{
@@ -80,8 +81,10 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
   multiSpecView(field,stop.signal).then(v=>{if(current)setView(v.fieldRead?{status:'read',read:v.fieldRead}:v.viewport&&v.population&&v.scene&&!v.reasons.length?{status:'ready',view:v}:{status:'reasons',view:v});}).catch(()=>{if(current)setView({status:'error'});});
   return()=>{current=false;stop.abort();};
  },[fieldKey,viewTry,state.open]);// eslint-disable-line react-hooks/exhaustive-deps
- // SpecTimer: one tick per whole second of the page clock while exposing.
- useEffect(()=>{if(!state.running)return;const h=window.setInterval(()=>dispatch({type:'tick'}),1000);return()=>window.clearInterval(h);},[state.running]);
+ // SpecTimer: one tick per whole second of the page clock while exposing. Front T3: Test Mode (env+0x2e7c) is read at each
+ // tick (0x52a1c4); on, the first tick ends the exposure.
+ const testMode=useContext(TestModeContext),testModeRef=useRef(testMode);testModeRef.current=testMode;
+ useEffect(()=>{if(!state.running)return;const h=window.setInterval(()=>dispatch({type:'tick',testMode:testModeRef.current}),1000);return()=>window.clearInterval(h);},[state.running]);
  // Spectra of new entries (AddSpectrum), from the field current when they were taken.
  const pending=useRef(new Set<string>()),entryRanges=useRef(new Map<string,SpectralRange>()),rangeNow=useRef(spectralRange);rangeNow.current=spectralRange;
  useEffect(()=>{

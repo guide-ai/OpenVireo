@@ -1,4 +1,5 @@
-import {memo,useEffect,useMemo,useRef,useState} from 'react';
+import {memo,useContext,useEffect,useMemo,useRef,useState} from 'react';
+import {TestModeContext} from './polish/testModeContext';
 import './camera.css';
 import {CAMERA_MESSAGES as M} from './camera/CameraMessages';
 import {cameraRequestTransition,createCameraRequestGate,CAMERA_OBSERVE_INTERVAL_MS,type CameraGateEffect,type CameraGateEvent,type CameraRequestGate} from './core/cameraRequestGate';
@@ -80,6 +81,7 @@ function CameraControl({objectXHidden=null,vireoId='',showObjectId=false,current
  const [gate,setGate]=useState<CameraRequestGate>(createCameraRequestGate),[message,setMessage]=useState<string>(M.statusIdle),[,setWaitShown]=useState(false);
  const [image,setImage]=useState<CameraImage|null>(null),[saveError,setSaveError]=useState('');
  const imageRef=useRef(image);useEffect(()=>{imageRef.current=image;},[image]);
+ const testMode=useContext(TestModeContext),testModeRef=useRef(testMode);testModeRef.current=testMode;
  // RE5 review 1 L-c: a save alert belongs to the image and ID it was about; a new image or ID clears it (and a start, below).
  useEffect(()=>{setSaveError('');},[image,vireoId]);
  const gateRef=useRef(gate),attempt=useRef<Attempt|null>(null),timers=useRef<{observe?:number;poll?:number}>({}),canvas=useRef<HTMLCanvasElement>(null);
@@ -93,7 +95,8 @@ function CameraControl({objectXHidden=null,vireoId='',showObjectId=false,current
  function apply(effect:CameraGateEffect){
   const a=attempt.current;if(!a||a.ticket!==effect.ticket)return;
   switch(effect.type){
-   case 'observe-on':timers.current.observe=window.setInterval(()=>dispatch({type:'exposure-tick',ticket:effect.ticket,instant:false}),CAMERA_OBSERVE_INTERVAL_MS);break;
+   // Front T3: Test Mode (env+0x2e7c) is read at each tick, as 0x512b39 / 0x514b69 do; on, the first tick ends the exposure.
+   case 'observe-on':timers.current.observe=window.setInterval(()=>dispatch({type:'exposure-tick',ticket:effect.ticket,instant:testModeRef.current}),CAMERA_OBSERVE_INTERVAL_MS);break;
    case 'observe-off':if(timers.current.observe)clearInterval(timers.current.observe);timers.current.observe=undefined;break;
    case 'poll-on':timers.current.poll=window.setInterval(()=>dispatch({type:'request-tick',ticket:effect.ticket}),CAMERA_OBSERVE_INTERVAL_MS);dispatch({type:'request-tick',ticket:effect.ticket});break;
    case 'poll-off':if(timers.current.poll)clearInterval(timers.current.poll);timers.current.poll=undefined;break;

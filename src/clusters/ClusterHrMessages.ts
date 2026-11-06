@@ -45,7 +45,7 @@ export const CLUSTER_HR_EN=Object.freeze({
  dbFrameNote:'Recovered native plot (0x542480, 0x542bf4): 28 px per magnitude, 120 px per B−V magnitude, points rounded half to even from the stored Single values, the ZAMS kept only where its nodes are inside the axes (0x543940) and the isochrone not tested. The picture size 496 × 506 comes from the form layout. Fonts and the marker drawing are web choices.',
  outsideImage:'outside VIREO\'s picture',
  ebvGateNote:'VIREO\'s option "Set E(B-V)" (on by default) fixes the E(B−V) slider at this catalogue value whenever the ZAMS is shown for a database cluster (0x543a32). OpenVireo copies the value but lets you edit it.',
- testModeNote:'In VIREO the "Estimated Cluster Distance" line appears only in its Test Mode (option off by default; 0x543f43). OpenVireo shows it when you apply the extinction-corrected distance.',
+ testModeNote:'In VIREO the "Estimated Cluster Distance" line appears only in its Test Mode (option off by default; 0x543f43). OpenVireo shows it when you apply the extinction-corrected distance, and always while an instructor has Test Mode on.',
  // Possible Cluster Member (TClstrStrForm1)
  memberItemMenu:'Item',// VIREO
  memberAddHotList:'Add to Hot List',// VIREO

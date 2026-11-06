@@ -24,10 +24,11 @@ export const OPTIONS_RESET_LITERALS=Object.freeze({
  questionText:'Resetting all options to default values\r\nwill remove any changes you have made.\r\n\r\nContinue?',
 });
 /** The compiled defaults (0x5a21d0) of the controls the web dialog makes live: Limit Slewing +0x27c9 := 0 (0x5a2acc), Edit Mode
- * +0x27ca := 0 (0x5a2ad3), Virtual Observatory +0x27d5 := 0 (0x5a2b59) and the R3 session options. [W] The radio options object
+ * +0x27ca := 0 (0x5a2ad3), Virtual Observatory +0x27d5 := 0 (0x5a2b59), Test Mode +0x27c8 := 0 (0x5a2ac5, Front T3) and the R3
+ * session options. [W] The radio options object
  * belongs to the radio route here and is not reset by this dialog (non-default radio options are a later teacher front). [W] 0x5a21d0
  * also sets Sound Effects (+0x27d2 := 1); the web's Sound Effects switch is outside this dialog and is left as it is. */
-export const OPTIONS_RESET_DEFAULTS=Object.freeze({options:COMPILED_OPTICAL_OPTIONS,editMode:false,virtualObservatory:false});
+export const OPTIONS_RESET_DEFAULTS=Object.freeze({options:COMPILED_OPTICAL_OPTIONS,editMode:false,virtualObservatory:false,testMode:false});
 export const OPTIONS_RESET_NOT_PORTED='radio-options-object' as const;
 export function readOpticalOptions(value:unknown):OpticalOptions{
  if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).length!==1||typeof (value as OpticalOptions).limitSlewing!=='boolean')throw new Error('Invalid optical options');
