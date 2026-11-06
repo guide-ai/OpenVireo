@@ -60,8 +60,13 @@ The cluster name and `# of Stars: N` are right-aligned at the frame's right edge
 
 Corrected labels:
 - **"Set E(B-V)"** (option +0x2e90, compiled default 1): in database mode VIREO locks the E(B−V) slider at Round(E·100)
-  whenever the ZAMS is toggled (0x543a32). For all 16 clusters this equals the contract's preset tick (Vitest). OpenVireo keeps
-  the editable catalogue copy (user decision 1.8), now with a note.
+  whenever the ZAMS is toggled (0x543a32). For all 16 clusters this equals the contract's preset tick (Vitest). Until Front T4
+  OpenVireo kept an editable catalogue copy (phase-1 item 1.8). Since Front T4 (2026-11-06, docs/OPTICAL-OPTIONS.md) the option
+  is live in the instructor options and follows VIREO's compiled default: on, the database E(B−V) field and slider are
+  read-only at the catalogue value (Load still prefills it; **Use catalog E(B−V)** applies it to a restored, Retry-created or
+  option-off notebook); off, no catalogue value is offered and E(B−V) is the student's. The E05 numbers on the default path are
+  unchanged (same prefilled value); what changed is that a student can no longer type another E(B−V) unless an instructor turns
+  the option off.
 - **"Test Mode"** (option +0x2e7c, default 0): the View/Print Parameters distance line appears only in Test Mode (0x543f43).
   The core comment wrongly called it the extinction option; OpenVireo keeps printing it with the extinction-corrected distance,
   with a note. Since Front T3 (2026-11-06) Test Mode is a live instructor option, and with it on the line is printed whatever
@@ -149,7 +154,7 @@ the Laboratory Table Number line, review L1).
   Find/Read; every topic's row count, Related Topics row and link targets equal `help-witness.json`; wrapping; history; Search
   Text; Print Topic order; fetch failures.
 - `src/core/clusterHrPlot.test.ts` (5): out-of-frame and off-picture points for all 16 datasets; Round half-even on Singles;
-  ZAMS/isochrone node rules; the "Set E(B-V)" gate arithmetic for all 16.
+  ZAMS/isochrone node rules; the "Set E(B-V)" gate arithmetic for all 16 (also `src/core/photometerTabOptions.test.ts`, Front T4).
 - `src/core/clusterHrSelect.test.ts` (5): V/RA bank digests, 2,816 hit probes, synthetic cursor rules, ties, cap, member fields.
 - `src/core/clusterHrPrint.test.ts` (3): portrait/landscape page bodies and the ZAMS-block gate.
 - `src/core/clusterReport.test.ts` (4): the sidecar covers exactly the 2,873 points; for all 16 datasets header lines 0–3

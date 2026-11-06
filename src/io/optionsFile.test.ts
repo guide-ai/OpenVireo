@@ -49,7 +49,7 @@ describe('T2 web options file',()=>{
  it('writes a zero-length password and the not-applied options with their compiled values',()=>{
   const doc=JSON.parse(writeOptionsFile(all(true)));
   expect(doc.password).toBe('');expect(doc.version).toBe('1.504');
-  expect(doc.notApplied).toEqual({administrator:false,computeMagnitudes:true,includeRIColors:true,detectSky:false,restrictScopeAccess:true,soundEffects:true,writeLogFile:false,plotHRDiagram:true,setEBmV:true,labTableNumber:'',parameters:'compiled'});
+  expect(doc.notApplied).toEqual({administrator:false,computeMagnitudes:true,includeRIColors:true,restrictScopeAccess:true,soundEffects:true,writeLogFile:false,plotHRDiagram:true,labTableNumber:'',parameters:'compiled'});
   expect(Object.keys(doc.options)).toEqual(OPTIONS_FILE_KEYS);
   expect(()=>writeOptionsFile({...all(true),testMode:1} as never)).toThrow(TypeError);
  });
@@ -70,10 +70,37 @@ describe('T2 web options file',()=>{
   const doc=JSON.parse(writeOptionsFile(COMPILED_OPTIONS_FILE_VALUES));
   expect(readOptionsFile(enc.encode(JSON.stringify({...doc,version:'1.40'})))).toEqual({kind:'version-error'});
   expect(readOptionsFile(enc.encode(JSON.stringify({...doc,version:'1.5049'}))).kind).toBe('loaded');
-  for(const bad of ['{',JSON.stringify({...doc,format:'other'}),JSON.stringify({...doc,options:{...doc.options,editMode:'yes'}}),JSON.stringify({...doc,notApplied:{detectSky:'no'}}),JSON.stringify({})])
+  for(const bad of ['{',JSON.stringify({...doc,format:'other'}),JSON.stringify({...doc,options:{...doc.options,editMode:'yes'}}),JSON.stringify({...doc,notApplied:{restrictScopeAccess:'no'}}),JSON.stringify({...doc,options:{...doc.options,setEBmV:1}}),JSON.stringify({})])
    expect(readOptionsFile(enc.encode(bad))).toEqual({kind:'invalid',reason:'not-options-file'});
   expect(readOptionsFile(new Uint8Array(70000))).toEqual({kind:'invalid',reason:'too-large'});
   expect(()=>readOptionsFile('x' as never)).toThrow(TypeError);
+ });
+});
+
+describe('Front T4: Set E(B-V) and Detect Sky in the options file',()=>{
+ it('are applied options at record +0x27dc / +0x27cf with compiled values on / off (0x5a2a55, 0x5a2af6)',()=>{
+  expect(OPTIONS_FILE_BYTES.setEBmV).toBe(0x27dc);expect(OPTIONS_FILE_BYTES.detectSky).toBe(0x27cf);
+  expect(COMPILED_OPTIONS_FILE_VALUES).toMatchObject({setEBmV:true,detectSky:false});
+  expect(NOT_APPLIED_KEYS).not.toContain('setEBmV' as never);expect(NOT_APPLIED_KEYS).not.toContain('detectSky' as never);
+  for(const [setEBmV,detectSky] of [[false,true],[true,false],[false,false],[true,true]] as const){
+   const values=Object.freeze({...COMPILED_OPTIONS_FILE_VALUES,setEBmV,detectSky});
+   expect(readOptionsFile(enc.encode(writeOptionsFile(values)))).toEqual({kind:'loaded',source:'web',values,notApplied:[],administratorCleared:false,fastSlewingRate:null});
+  }
+ });
+ it('reads a web file written before T4 (both under "notApplied") and one that lists neither',()=>{
+  const doc=JSON.parse(writeOptionsFile(COMPILED_OPTIONS_FILE_VALUES));delete doc.options.setEBmV;delete doc.options.detectSky;
+  const t2={...doc,notApplied:{...doc.notApplied,detectSky:true,setEBmV:false}};
+  const r=readOptionsFile(enc.encode(JSON.stringify(t2)));
+  expect(r).toMatchObject({kind:'loaded',notApplied:[]});if(r.kind==='loaded')expect(r.values).toMatchObject({setEBmV:false,detectSky:true});
+  const bare=readOptionsFile(enc.encode(JSON.stringify(doc)));
+  expect(bare.kind==='loaded'&&bare.values).toEqual(COMPILED_OPTIONS_FILE_VALUES);
+  expect(readOptionsFile(enc.encode(JSON.stringify({...doc,notApplied:{...doc.notApplied,detectSky:'yes'}})))).toEqual({kind:'invalid',reason:'not-options-file'});
+ });
+ it('applies the native bytes (non-zero = checked) and no longer lists them as not applied',()=>{
+  const r=readOptionsFile(nativeFile({0x27dc:0,0x27cf:1}));
+  expect(r).toMatchObject({kind:'loaded',source:'native',notApplied:['parameters']});
+  if(r.kind==='loaded')expect(r.values).toEqual({...COMPILED_OPTIONS_FILE_VALUES,setEBmV:false,detectSky:true});
+  const two=readOptionsFile(nativeFile({0x27cf:2}));expect(two.kind==='loaded'&&two.values.detectSky).toBe(true);
  });
 });
 

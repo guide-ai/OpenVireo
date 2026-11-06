@@ -143,6 +143,13 @@ in VIREO. Static evidence is in `analysis/front-g-gsc/RE-photometer-start.md`.
     clears the flag when the student comes back. So Sky declared before the move onto a star is asked about, and Sky chosen
     again on the star is not, as in VIREO.
   - Bundled Pleiades sky fields have a zero fraction, so they are never asked about.
+  - **Detect Sky (Front T4, 2026-11-06, docs/OPTICAL-OPTIONS.md).** The other branch of FormActivate: with the instructor option
+    on (DtctSkyBox, env+0x2e83, copied into the form at +0x6b1 by TObsrvtry's initialisation 0x53805c; compiled off), Sky :=
+    (fraction = 0) whatever the slider says, and the slider and its group are disabled (0x4ff94c–0x4ff985). At telescope
+    pointings OpenVireo follows each `activate`/`field` with the `point` event that FormActivate's SetPosition implies
+    (`photometerDetectSkyEvent`), so `readingSliderMoved` is set exactly when the position changes, the selector is locked,
+    and a session replays without the option. Pinned PLEIADES.HTL targets keep their Object/Sky positions (a telescope move
+    in the web); with Detect Sky on, Start at their sky position is refused while the star lights the aperture [W].
 - **No star within the selection radius** (0x59a0fc, 350 pixels, about 1.1′): VIREO keeps a nil selection and skips the
   magnitude preparation. The band magnitudes at +0x41f…+0x451 then keep the previous star's values, or 0 on a fresh form.
   That memory is not reproduced, so the case is typed `photometer-selection`.

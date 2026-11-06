@@ -3507,6 +3507,10 @@ export interface MessageParameters {
   "instructorMode.optionsClosed": never;
   "instructorMode.optionsClosedOk": never;
   "testMode.adaptation": never;
+  "photometerTab.setEBmVNote": never;
+  "photometerTab.detectSkyNote": never;
+  "ph.detectSkyLocked": never;
+  "ph.detectSkyPinned": never;
   "testMode.motionNote": never;
   "demonstrationMode.adaptation": never;
   "demonstrationMode.banner": never;

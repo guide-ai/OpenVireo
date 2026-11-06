@@ -9,7 +9,9 @@
  * and Edit Mode are now instructor-only, behind the instructor-mode gate (core/instructorMode.ts). Front T3 removed the optical
  * 'test-mode' item: TOptionsDlg.TestBox1 is live (core/testMode.ts); the radio dialog's own TestModeBox stays here. Front T2
  * removed 'demonstration-mode': DemoBox is live and kept per browser (io/demonstrationModeStorage.ts), and the options file
- * (io/optionsFile.ts) carries the options; FilesBtn's names and paths stay here (an options file lists them as not applied). */
+ * (io/optionsFile.ts) carries the options; FilesBtn's names and paths stay here (an options file lists them as not applied).
+ * Front T4 removed 'detect-sky' and 'set-ebmv': DtctSkyBox and SetEBmVBox are live on the Photometer tab
+ * (core/photometerTabOptions.ts) and travel in the options file. */
 export type TeacherDeferredReason='teacher-front'|'compiled-password-not-ported'|'needs-backend';
 export type TeacherDeferredItem=Readonly<{key:string;caption:string;control:string;dfm:string;reason:TeacherDeferredReason}>;
 const item=(key:string,caption:string,control:string,dfm:string,reason:TeacherDeferredReason='teacher-front'):TeacherDeferredItem=>Object.freeze({key,caption,control,dfm,reason});
@@ -17,8 +19,6 @@ export const TEACHER_DEFERRED:readonly TeacherDeferredItem[]=Object.freeze([
  item('radio-test-mode','Test Mode (radio)','TRadiOptsDlg.TestModeBox (record+0x940 → env+0x37d5; radio options front T11b)','0x21ce45'),
  item('restrict-scope-access','Restrict Scope Access','TOptionsDlg.RstrctScpBox','0x20abca'),
  item('request-time','Request Time','TEnvironment1.RequestTime1','0x1ed08e'),
- item('detect-sky','Detect Sky','TOptionsDlg.DtctSkyBox','0x20b960'),
- item('set-ebmv','Set E(B-V)','TOptionsDlg.SetEBmVBox','0x20ba78'),
  item('files','&Files...','TOptionsDlg.FilesBtn, TRadiOptsDlg FilesBtn (names and paths of VIREO\'s install; an options file keeps them typed, Front T2)','0x209ec2, 0x21bd31'),
  item('scopes','&Scopes...','TOptionsDlg.ScopeBtn','0x20dfb8'),
  item('parameters','Parameter editing','TOptionsDlg tab parameters (read-only here)','—'),

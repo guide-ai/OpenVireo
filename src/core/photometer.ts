@@ -179,6 +179,28 @@ export function skyReplaceAsked(s:PhotometerState):boolean{
  if(photometerGalaxySkyGate(s.targetId,telescopeIndex,apertureSelector)?.gate==='undecided')return false;
  return photometerSelectedFraction(s.targetId,'sky',apertureSelector,telescopeIndex)>0;
 }
+/** Front T4, Detect Sky (env+0x2e83 → TPhotometer+0x6b1, core/photometerTabOptions.ts): on, FormActivate 0x4ff94c sets Sky
+ * exactly when the selected object's aperture fraction (0x500568, in the mode before the activation) is 0, whatever the slider
+ * said, and disables the slider. The web activations of the free photometer are the Activate and Use-pointing events; after one,
+ * this returns the slider move that makes the declared mode the detected one, or null. The move is an ordinary `point` event, so
+ * a saved session replays without the option: as in VIREO, SetPosition fires OnPositionChange (+0x41d := 1, 0x5021cc) exactly
+ * when the position changes. `before` is the state before the activation (its slider position is +0x41c there). Pinned PLEIADES.HTL
+ * targets are not detected here: their Object/Sky choice moves the telescope (web route), see photometerDetectSkyPinnedRefusal.
+ * A galaxy whose Sky-mode display gate is undecided cannot be detected (null; Start refuses it anyway). */
+export function photometerDetectSkyEvent(before:PhotometerState,after:PhotometerState):PhotometerEvent|null{
+ if(!after.armed||after.phase==='running'||!isTiledPhotometerTarget(after.targetId))return null;
+ const telescopeIndex=after.telescopeIndex??0,apertureSelector=after.apertureSelector??10,mode:PleiadesFieldKind=before.pointing;
+ if(mode==='sky'&&photometerGalaxySkyGate(after.targetId,telescopeIndex,apertureSelector)?.gate==='undecided')return null;
+ const kind=photometerSelectedFraction(after.targetId,mode,apertureSelector,telescopeIndex)===0?'sky':'object';
+ return kind===after.pointing?null:Object.freeze({type:'point',kind});
+}
+/** Front T4 [W]: on a pinned PLEIADES.HTL target the web's Sky position is a nearby sky patch. With Detect Sky on, VIREO would
+ * read Object there while the target still has light in the aperture (fraction > 0), which the pinned route cannot hold (its
+ * position and mode are one choice), so Start is refused there with a typed reason instead of measuring a sky VIREO would not. */
+export function photometerDetectSkyPinnedRefusal(s:PhotometerState):boolean{
+ if(!s.armed||s.pointing!=='sky'||isTiledPhotometerTarget(s.targetId))return false;
+ return photometerSelectedFraction(s.targetId,'sky',s.apertureSelector??10,s.telescopeIndex??0)>0;
+}
 export function photometerEvent(s:PhotometerState,e:PhotometerEvent){return transition(s,e,true);}
 /** Front P3: Start 0x4fffd4 resets the reading struct; a web activation starts a new context [W]. */
 function withoutStruct(s:PhotometerState):PhotometerState{if(s.structReadingId===undefined)return s;const {structReadingId:_drop,...rest}=s;void _drop;return rest;}

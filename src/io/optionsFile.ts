@@ -1,4 +1,5 @@
 import {COMPILED_SESSION_OPTICAL_OPTIONS,type SessionOpticalOptions} from '../core/opticalOptions';
+import {COMPILED_PHOTOMETER_TAB_OPTIONS,PHOTOMETER_TAB_OPTION_KEYS,type PhotometerTabOptions} from '../core/photometerTabOptions';
 /** Front T2 (analysis/front-plans/front-teacher.md §T2; analysis/front-teacher/t2/RECOVERY.md): VIREO's options file
  * VEO_OPTS.INI and the web options file. CLEA_VEO.exe 781bc970…c54c, static reading only.
  * [D] TEnvironment1.FormCreate creates the options object with version '1.504' (0x587cf4) and file name 'VEO_OPTS.INI'
@@ -14,6 +15,8 @@ import {COMPILED_SESSION_OPTICAL_OPTIONS,type SessionOpticalOptions} from '../co
  * would have to invent them. It reads both its JSON file and a native VEO_OPTS.INI with VIREO's checks.
  * Password rule (front-teacher.md §1.6): the JSON file carries a zero-length password; the password field of an imported file
  * (+0x27b0, 16 bytes, length +0x27c0; or the JSON "password") is never read, decoded, shown, stored or re-exported.
+ * Front T4: Set E(B-V) (+0x27dc) and Detect Sky (+0x27cf) are applied options (core/photometerTabOptions.ts); a web file written
+ * before T4 lists them under "notApplied", and the reader takes them from there.
  * Pure: no React, DOM, storage or network. */
 
 export const OPTIONS_FILE_VERSION='1.504';
@@ -61,35 +64,36 @@ export function nativeStreamOffset(recordOffset:number):number{
 export const NATIVE_PARAMETER_FIELDS=STREAM.findIndex(f=>f[0]===0x27af);
 
 /** The options the web applies: the dialog's live controls and Demonstration Mode. Record offsets in OPTIONS_FILE_BYTES. */
-export type OptionsFileValues=Readonly<{demonstrationMode:boolean;testMode:boolean;limitSlewing:boolean;editMode:boolean;virtualObservatory:boolean}>&SessionOpticalOptions;
-export const OPTIONS_FILE_KEYS=Object.freeze(['demonstrationMode','testMode','limitSlewing','editMode','virtualObservatory',...Object.keys(COMPILED_SESSION_OPTICAL_OPTIONS)] as (keyof OptionsFileValues)[]);
+export type OptionsFileValues=Readonly<{demonstrationMode:boolean;testMode:boolean;limitSlewing:boolean;editMode:boolean;virtualObservatory:boolean}>&SessionOpticalOptions&PhotometerTabOptions;
+export const OPTIONS_FILE_KEYS=Object.freeze(['demonstrationMode','testMode','limitSlewing','editMode','virtualObservatory',...Object.keys(COMPILED_SESSION_OPTICAL_OPTIONS),...PHOTOMETER_TAB_OPTION_KEYS] as (keyof OptionsFileValues)[]);
 /** [D] The compiled values (0x5a21d0) of the applied options. */
-export const COMPILED_OPTIONS_FILE_VALUES:OptionsFileValues=Object.freeze({demonstrationMode:false,testMode:false,limitSlewing:false,editMode:false,virtualObservatory:false,...COMPILED_SESSION_OPTICAL_OPTIONS});
+export const COMPILED_OPTIONS_FILE_VALUES:OptionsFileValues=Object.freeze({demonstrationMode:false,testMode:false,limitSlewing:false,editMode:false,virtualObservatory:false,...COMPILED_SESSION_OPTICAL_OPTIONS,...COMPILED_PHOTOMETER_TAB_OPTIONS});
 /** [D] Record bytes of the applied options (option-bytes.tsv). DemoBox is stored inverted (+0x27c6 = login required; FormCreate
  * 0x587c50 tests it against 0); Fast Slewing is the slew-rate index, checked when it is 4 (FormActivate 0x5a5b61). */
 const APPLIED_BYTES:Readonly<Record<keyof OptionsFileValues,number>>=Object.freeze({demonstrationMode:0x27c6,testMode:0x27c8,limitSlewing:0x27c9,editMode:0x27ca,
  showObjectMag:0x27cc,showObjectId:0x27cd,fastScopeChange:0x27d0,infraredCamera:0x27d3,computeRedshiftVelocity:0x27d4,virtualObservatory:0x27d5,
- allowUserChange:0x27d7,timeDependentData:0x27d8,printInColor:0x27d9,monochromeDisplays:0x27da,fastSlewing:0x27af});
+ allowUserChange:0x27d7,timeDependentData:0x27d8,printInColor:0x27d9,monochromeDisplays:0x27da,fastSlewing:0x27af,
+ detectSky:0x27cf,setEBmV:0x27dc});// Front T4
 export const OPTIONS_FILE_BYTES=APPLIED_BYTES;
 
 /** The record's other options: written with their compiled values and never applied (kept typed). */
-export type NotAppliedKey='administrator'|'computeMagnitudes'|'includeRIColors'|'detectSky'|'restrictScopeAccess'|'soundEffects'|'writeLogFile'|'plotHRDiagram'|'setEBmV'|'labTableNumber'|'parameters';
+export type NotAppliedKey='administrator'|'computeMagnitudes'|'includeRIColors'|'restrictScopeAccess'|'soundEffects'|'writeLogFile'|'plotHRDiagram'|'labTableNumber'|'parameters';
 export type NotAppliedReason='cleared-at-load'|'fixed-in-web'|'teacher-front'|'web-sound-switch'|'out-of-scope'|'undecided'|'parameters-front';
 export const NOT_APPLIED:Readonly<Record<NotAppliedKey,Readonly<{caption:string;record:string;compiled:boolean|string;reason:NotAppliedReason}>>>=Object.freeze({
  administrator:Object.freeze({caption:'"Administrator"',record:'+0x27c7 (not in the stream)',compiled:false,reason:'cleared-at-load'}),
  computeMagnitudes:Object.freeze({caption:'Compute Magnitudes',record:'+0x27cb',compiled:true,reason:'fixed-in-web'}),
  includeRIColors:Object.freeze({caption:'Include R and I Colors',record:'+0x27ce',compiled:true,reason:'fixed-in-web'}),
- detectSky:Object.freeze({caption:'Detect Sky',record:'+0x27cf',compiled:false,reason:'teacher-front'}),
  restrictScopeAccess:Object.freeze({caption:'Restrict Scope Access',record:'+0x27d1',compiled:true,reason:'teacher-front'}),
  soundEffects:Object.freeze({caption:'Sound Effects',record:'+0x27d2',compiled:true,reason:'web-sound-switch'}),
  writeLogFile:Object.freeze({caption:'Write Log File',record:'+0x27d6',compiled:false,reason:'out-of-scope'}),
  plotHRDiagram:Object.freeze({caption:'Plot HR Diagram',record:'+0x27db',compiled:true,reason:'fixed-in-web'}),
- setEBmV:Object.freeze({caption:'Set E(B-V)',record:'+0x27dc',compiled:true,reason:'teacher-front'}),
  labTableNumber:Object.freeze({caption:'Lab Table Number',record:'+0x27c1',compiled:'',reason:'undecided'}),
  parameters:Object.freeze({caption:'Parameters, file names, paths and addresses',record:'+0x224..+0x27ab (81 fields)',compiled:'compiled',reason:'parameters-front'}),
 });
 export const NOT_APPLIED_KEYS=Object.freeze(Object.keys(NOT_APPLIED) as NotAppliedKey[]);
-const NOT_APPLIED_BYTES:Partial<Record<NotAppliedKey,number>>={computeMagnitudes:0x27cb,includeRIColors:0x27ce,detectSky:0x27cf,restrictScopeAccess:0x27d1,soundEffects:0x27d2,writeLogFile:0x27d6,plotHRDiagram:0x27db,setEBmV:0x27dc};
+const NOT_APPLIED_BYTES:Partial<Record<NotAppliedKey,number>>={computeMagnitudes:0x27cb,includeRIColors:0x27ce,restrictScopeAccess:0x27d1,soundEffects:0x27d2,writeLogFile:0x27d6,plotHRDiagram:0x27db};
+/** Front T4: options a web file written before T4 (Front T2) keeps under "notApplied" instead of "options". */
+const LATER_KEYS=new Set<keyof OptionsFileValues>(PHOTOMETER_TAB_OPTION_KEYS);
 
 /** 0x5a183c: Pos('.') then Delete from two characters after it (ShortString[71] copies). */
 export function vireoVersionKey(version:string):string{
@@ -137,9 +141,11 @@ function readWeb(bytes:Uint8Array):OptionsFileLoad{
  if(!isRecord(doc)||doc.format!==WEB_OPTIONS_FORMAT||doc.formatVersion!==1||typeof doc.version!=='string')return invalid('not-options-file');
  if(!vireoVersionMatches(doc.version))return Object.freeze({kind:'version-error'});
  // The password is never read (§1.6): whatever "password" holds is ignored.
- const o=doc.options;if(!isRecord(o)||!OPTIONS_FILE_KEYS.every(k=>typeof o[k]==='boolean'))return invalid('not-options-file');
- const values=Object.fromEntries(OPTIONS_FILE_KEYS.map(k=>[k,o[k]])) as OptionsFileValues;
+ const o=doc.options;if(!isRecord(o)||!OPTIONS_FILE_KEYS.every(k=>typeof o[k]==='boolean'||LATER_KEYS.has(k)&&o[k]===undefined))return invalid('not-options-file');
  const n=doc.notApplied===undefined?{}:doc.notApplied;if(!isRecord(n))return invalid('not-options-file');
+ // Front T4: a Front T2 file lists Set E(B-V) and Detect Sky under notApplied (VIREO's compiled values unless edited).
+ for(const k of LATER_KEYS)if(o[k]===undefined&&n[k]!==undefined&&typeof n[k]!=='boolean')return invalid('not-options-file');
+ const values=Object.fromEntries(OPTIONS_FILE_KEYS.map(k=>[k,o[k]??n[k]??COMPILED_OPTIONS_FILE_VALUES[k]])) as OptionsFileValues;
  const differs:NotAppliedKey[]=[];let administratorCleared=false;
  for(const k of NOT_APPLIED_KEYS){
   if(!(k in n))continue;
