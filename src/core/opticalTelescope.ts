@@ -1,12 +1,17 @@
 import packet from '../../data/observatory/compiled-optical-profiles.json';
 import provenance from '../../data/observatory/optical-provenance.json';
+import type {ScopeProfiles} from './scopeAccess';
 /** Original compiled fallback data; no imported/user VEO_OPTS.INI is assumed. */
 export const OPTICAL_PROFILE_SHA256=provenance.profileSHA256;
+/** The saved optical workspace's policy tag (investigation format, unchanged by Front T5: the restriction and its grants are page
+ * state, core/scopeAccess.ts, and are never saved). */
 export const OPTICAL_ACCESS_POLICY='VIREO-Hubble-unrestricted-optical-v1';
 export type OpticalIndex=0|1|2;
 export type OpticalWorkspace=Readonly<{selectedIndex:OpticalIndex;draftIndex:OpticalIndex}>;
 export const INITIAL_OPTICAL:OpticalWorkspace=Object.freeze({selectedIndex:0,draftIndex:0});
 export const OPTICAL_PROFILES=Object.freeze(packet.records.map(record=>Object.freeze({...record,recordIndex:opticalIndex(record.recordIndex),site:Object.freeze({...record.site,longitudeDegrees:Number(record.site.longitude.degreesViaNativeConstant),latitudeDegrees:Number(record.site.latitude.degreesViaNativeConstant),horizonDegrees:Number(record.site.horizon.degreesViaNativeConstant)})})));
+/** Front T5: the scope-record fields Request Time and the allotment read (core/scopeAccess.ts). */
+export const SCOPE_PROFILES=Object.freeze(OPTICAL_PROFILES.map(p=>Object.freeze({name:p.name,availability:p.availability,minimumAllocationUses:p.minimumAllocationUses,maximumAllocationUses:p.maximumAllocationUses,reapplyWaitMinutes:p.reapplyWaitMinutes}))) as unknown as ScopeProfiles;
 export function opticalIndex(value:unknown):OpticalIndex{if(value!==0&&value!==1&&value!==2)throw new Error('Unsupported optical telescope');return value;}
 export function opticalProfile(index:OpticalIndex){return OPTICAL_PROFILES[opticalIndex(index)];}
 export const acquisitionProfileSupported=(w:OpticalWorkspace)=>w.selectedIndex===0;

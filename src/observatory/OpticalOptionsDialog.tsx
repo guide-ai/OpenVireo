@@ -12,6 +12,7 @@ import {COMPILED_PHOTOMETER_TAB_OPTIONS,PHOTOMETER_TAB_OPTION_CAPTIONS as PT,PHO
 import {QSO_LIST_MESSAGES} from './QsoListMessages';
 import {RADIO_ACCESS_LITERALS as UL} from '../core/radioAccessOptions';
 import {DEMONSTRATION_MODE_CAPTIONS as DM,type PreferencesGateResult} from '../core/instructorMode';
+import {COMPILED_RESTRICT_SCOPE_ACCESS,RESTRICT_SCOPE_ACCESS_CAPTIONS as RS} from '../core/scopeAccess';
 import {NOT_APPLIED,OPTIONS_FILE_LITERALS as OF,OPTIONS_FILE_MAX_BYTES,WEB_OPTIONS_FILE_NAME,optionsFileErrorBox,readOptionsFile,writeOptionsFile,type OptionsFileLoad,type OptionsFileValues} from '../io/optionsFile';
 import {downloadText} from './downloadText';
 import {t} from '../i18n';
@@ -30,7 +31,7 @@ const TAB_LIVE_LABELS=new Set(['Detect Sky','Set E(B-V)']),TAB_TEST_ID:Readonly<
  * Cancel discards them. Front T1: the button is VIREO's File › Preferences (Preferences1Click 0x5886ac): with the page's
  * instructor gate closed (0x5886c9) it shows the INSTRUCTOR / USER OPTIONS! box (0x588a84 / 0x588b70, MessageBox flags 0x30)
  * instead of the dialog, plus one web line on instructor mode. */
-export default function OpticalOptionsDialog({gate='user-options-box',options,onOptions,disabled,editMode=false,onEditMode,virtualObservatory=false,onVirtualObservatory,testMode=false,onTestMode,demonstrationMode=false,onDemonstrationMode,sessionOptions,onSessionOptions,photometerTabOptions,onPhotometerTabOptions,horizonRadians}:{
+export default function OpticalOptionsDialog({gate='user-options-box',options,onOptions,disabled,editMode=false,onEditMode,virtualObservatory=false,onVirtualObservatory,testMode=false,onTestMode,demonstrationMode=false,onDemonstrationMode,sessionOptions,onSessionOptions,photometerTabOptions,onPhotometerTabOptions,restrictScopeAccess=COMPILED_RESTRICT_SCOPE_ACCESS,onRestrictScopeAccess,horizonRadians}:{
  /** Front T1: the page's instructor gate test (core/instructorMode.ts preferencesGate); absent: closed, as VIREO starts. */
  gate?:PreferencesGateResult;
  options:OpticalOptions;onOptions:(o:OpticalOptions)=>void;disabled:boolean;editMode?:boolean;onEditMode?:(on:boolean)=>void;
@@ -43,11 +44,13 @@ export default function OpticalOptionsDialog({gate='user-options-box',options,on
  demonstrationMode?:boolean;onDemonstrationMode?:(on:boolean)=>void;
  /** Front T4: Set E(B-V) and Detect Sky, live on the Photometer tab when both are given (page session). */
  photometerTabOptions?:PhotometerTabOptions;onPhotometerTabOptions?:(o:PhotometerTabOptions)=>void;
+ /** Front T5: RstrctScpBox (record+0x27d1), live when `onRestrictScopeAccess` is given (page session; the exercise menus copy it). */
+ restrictScopeAccess?:boolean;onRestrictScopeAccess?:(on:boolean)=>void;
  /** Front R3: shown when both are given; not persisted. */
  sessionOptions?:SessionOpticalOptions;onSessionOptions?:(o:SessionOpticalOptions)=>void;
  /** R3 review L2: the selected site's horizon (radians). */horizonRadians?:number}){
  const id=useId(),ref=useRef<HTMLDialogElement>(null),[draft,setDraft]=useState<OpticalOptions|null>(null),[resetAsked,setResetAsked]=useState(false),[editDraft,setEditDraft]=useState(editMode),[vobsDraft,setVobsDraft]=useState(virtualObservatory),[testDraft,setTestDraft]=useState(testMode),[sessionDraft,setSessionDraft]=useState(sessionOptions),[tabDraft,setTabDraft]=useState(photometerTabOptions);
- const [demoDraft,setDemoDraft]=useState(demonstrationMode),[saveAsk,setSaveAsk]=useState<'edit'|'vo'|null>(null),[loadState,setLoadState]=useState<Readonly<{name:string;result:OptionsFileLoad;message?:string}>|null>(null);
+ const [demoDraft,setDemoDraft]=useState(demonstrationMode),[scopeDraft,setScopeDraft]=useState(restrictScopeAccess),[saveAsk,setSaveAsk]=useState<'edit'|'vo'|null>(null),[loadState,setLoadState]=useState<Readonly<{name:string;result:OptionsFileLoad;message?:string}>|null>(null);
  useEffect(()=>{const el=ref.current;if(!el)return;if(draft&&!el.open){el.showModal();el.querySelector<HTMLInputElement>('input:not([disabled])')?.focus();}else if(!draft&&el.open)el.close();},[draft!==null]);
  const [refused,setRefused]=useState(false),opener=useRef<HTMLButtonElement>(null),loadToken=useRef(0);
  // Review 1 N5: every open and close of the dialog makes an in-flight Load stale.
@@ -57,14 +60,14 @@ export default function OpticalOptionsDialog({gate='user-options-box',options,on
  const slew=draft?(onEditMode?limitSlewingBox(editDraft,draft.limitSlewing):Object.freeze({enabled:true,checked:draft.limitSlewing})):null;
  const editModeClick=(on:boolean)=>{setEditDraft(on);if(on)setDraft(d=>d&&{limitSlewing:false});};
  /** ResetBtnClick Yes: every live draft to its compiled value (0x5a21d0); OK still commits and Cancel still discards. */
- const reset=(yes:boolean)=>{setResetAsked(false);if(!yes)return;setDraft(OPTIONS_RESET_DEFAULTS.options);setEditDraft(OPTIONS_RESET_DEFAULTS.editMode);setVobsDraft(OPTIONS_RESET_DEFAULTS.virtualObservatory);setTestDraft(OPTIONS_RESET_DEFAULTS.testMode);setDemoDraft(false);setLoadState(null);if(sessionDraft)setSessionDraft(COMPILED_SESSION_OPTICAL_OPTIONS);if(tabDraft)setTabDraft(COMPILED_PHOTOMETER_TAB_OPTIONS);};
+ const reset=(yes:boolean)=>{setResetAsked(false);if(!yes)return;setDraft(OPTIONS_RESET_DEFAULTS.options);setEditDraft(OPTIONS_RESET_DEFAULTS.editMode);setVobsDraft(OPTIONS_RESET_DEFAULTS.virtualObservatory);setTestDraft(OPTIONS_RESET_DEFAULTS.testMode);setDemoDraft(false);setScopeDraft(COMPILED_RESTRICT_SCOPE_ACCESS);setLoadState(null);if(sessionDraft)setSessionDraft(COMPILED_SESSION_OPTICAL_OPTIONS);if(tabDraft)setTabDraft(COMPILED_PHOTOMETER_TAB_OPTIONS);};
  const live=sessionDraft&&onSessionOptions?sessionDraft:null,tabLive=tabDraft&&onPhotometerTabOptions?tabDraft:null;
  const ported=new Set<string>(live?SESSION_KEYS.map(k=>SC[k]):[]);
  /** OKBtnClick: commits every live draft (shared by OK and Save Updates). */
- const commit=()=>{if(!draft)return;onOptions(draft);if(onEditMode&&editDraft!==editMode)onEditMode(editDraft);if(onVirtualObservatory&&vobsDraft!==virtualObservatory)onVirtualObservatory(vobsDraft);if(onTestMode&&testDraft!==testMode)onTestMode(testDraft);if(onDemonstrationMode&&demoDraft!==demonstrationMode)onDemonstrationMode(demoDraft);if(live&&onSessionOptions&&SESSION_KEYS.some(k=>live[k]!==sessionOptions?.[k]))onSessionOptions(Object.freeze({...live}));if(tabLive&&onPhotometerTabOptions&&PHOTOMETER_TAB_OPTION_KEYS.some(k=>tabLive[k]!==photometerTabOptions?.[k]))onPhotometerTabOptions(Object.freeze({...tabLive}));setDraft(null);};
+ const commit=()=>{if(!draft)return;onOptions(draft);if(onEditMode&&editDraft!==editMode)onEditMode(editDraft);if(onVirtualObservatory&&vobsDraft!==virtualObservatory)onVirtualObservatory(vobsDraft);if(onTestMode&&testDraft!==testMode)onTestMode(testDraft);if(onDemonstrationMode&&demoDraft!==demonstrationMode)onDemonstrationMode(demoDraft);if(onRestrictScopeAccess&&scopeDraft!==restrictScopeAccess)onRestrictScopeAccess(scopeDraft);if(live&&onSessionOptions&&SESSION_KEYS.some(k=>live[k]!==sessionOptions?.[k]))onSessionOptions(Object.freeze({...live}));if(tabLive&&onPhotometerTabOptions&&PHOTOMETER_TAB_OPTION_KEYS.some(k=>tabLive[k]!==photometerTabOptions?.[k]))onPhotometerTabOptions(Object.freeze({...tabLive}));setDraft(null);};
  // Front T2: the options file needs every live control (the page's full dialog).
- const fileable=!!(live&&tabLive&&onEditMode&&onVirtualObservatory&&onTestMode&&onDemonstrationMode);
- const fileValues=():OptionsFileValues|null=>draft&&live&&tabLive?Object.freeze({demonstrationMode:demoDraft,testMode:testDraft,limitSlewing:slew!.checked,editMode:editDraft,virtualObservatory:vobsDraft,...live,...tabLive}):null;
+ const fileable=!!(live&&tabLive&&onEditMode&&onVirtualObservatory&&onTestMode&&onDemonstrationMode&&onRestrictScopeAccess);
+ const fileValues=():OptionsFileValues|null=>draft&&live&&tabLive?Object.freeze({demonstrationMode:demoDraft,testMode:testDraft,limitSlewing:slew!.checked,editMode:editDraft,virtualObservatory:vobsDraft,restrictScopeAccess:scopeDraft,...live,...tabLive}):null;
  /** Save Updates: OK, then the writer 0x5a4644 (its Edit Mode box 0x14, else its Virtual Observatory box 0x41), then the file. */
  const finishSave=(save:boolean)=>{const values=fileValues();setSaveAsk(null);commit();if(save&&values)downloadText(new TextEncoder().encode(writeOptionsFile(values)),WEB_OPTIONS_FILE_NAME);};
  const saveClick=()=>{if(editDraft)setSaveAsk('edit');else if(vobsDraft)setSaveAsk('vo');else finishSave(true);};
@@ -79,14 +82,14 @@ export default function OpticalOptionsDialog({gate='user-options-box',options,on
   if(result.kind!=='loaded'){setLoadState({name,result,message:result.kind==='invalid'&&(result.reason==='not-options-file'||result.reason==='too-large')?t(`optionsFile.invalid.${result.reason}`):undefined});return;}
   const v=result.values;
   setDraft({limitSlewing:v.limitSlewing&&!(onEditMode&&v.editMode)});// FormActivate 0x5a5985: SlewBox off under Edit Mode
-  setEditDraft(v.editMode);setVobsDraft(v.virtualObservatory);setTestDraft(v.testMode);setDemoDraft(v.demonstrationMode);
+  setEditDraft(v.editMode);setVobsDraft(v.virtualObservatory);setTestDraft(v.testMode);setDemoDraft(v.demonstrationMode);setScopeDraft(v.restrictScopeAccess);
   setSessionDraft(Object.freeze(Object.fromEntries(SESSION_KEYS.map(k=>[k,v[k]]))) as SessionOpticalOptions);
   if(tabDraft)setTabDraft(Object.freeze({setEBmV:v.setEBmV,detectSky:v.detectSky}));
   setLoadState({name,result});
  };
  const fileError=loadState&&loadState.result.kind!=='loaded'?optionsFileErrorBox(loadState.result,loadState.name,loadState.message):null;
  return <>
-  <button ref={opener} type="button" className="secondary-button" disabled={disabled} data-testid="ob-options" data-gate={gate} onClick={()=>{if(gate!=='options'){setRefused(true);return;}setDraft(onEditMode&&editMode?{limitSlewing:false}:options);setEditDraft(editMode);setVobsDraft(virtualObservatory);setTestDraft(testMode);setDemoDraft(demonstrationMode);setLoadState(null);setSaveAsk(null);setSessionDraft(sessionOptions);setTabDraft(photometerTabOptions);}}>{M.open}</button>
+  <button ref={opener} type="button" className="secondary-button" disabled={disabled} data-testid="ob-options" data-gate={gate} onClick={()=>{if(gate!=='options'){setRefused(true);return;}setDraft(onEditMode&&editMode?{limitSlewing:false}:options);setEditDraft(editMode);setVobsDraft(virtualObservatory);setTestDraft(testMode);setDemoDraft(demonstrationMode);setScopeDraft(restrictScopeAccess);setLoadState(null);setSaveAsk(null);setSessionDraft(sessionOptions);setTabDraft(photometerTabOptions);}}>{M.open}</button>
   <dialog ref={ref} className="ob-dialog" aria-labelledby={`${id}-title`} data-testid="ob-options-dialog" onCancel={e=>{e.preventDefault();if(!resetAsked&&!saveAsk)setDraft(null);}}>
    {draft&&<>
     <h2 id={`${id}-title`} className="ob-native">{C.form}</h2>
@@ -102,11 +105,13 @@ export default function OpticalOptionsDialog({gate='user-options-box',options,on
       <small className="ob-note">{TM.hint}</small><small className="ob-note" data-testid="ob-options-test-mode-note">{t('testMode.adaptation')}</small></>}
      {onDemonstrationMode&&<><label className="ob-check" title={DM.hint}><input type="checkbox" data-testid="ob-options-demonstration-mode" checked={demoDraft} onChange={e=>setDemoDraft(e.target.checked)}/>{DM.box}</label>
       <small className="ob-note">{DM.hint}</small><small className="ob-note" data-testid="ob-options-demonstration-mode-note">{t('demonstrationMode.adaptation')}</small></>}
+     {onRestrictScopeAccess&&<><label className="ob-check" title={RS.hint}><input type="checkbox" data-testid="ob-options-restrict-scope-access" checked={scopeDraft} onChange={e=>setScopeDraft(e.target.checked)}/>{RS.box}</label>
+      <small className="ob-note">{RS.hint}</small><small className="ob-note" data-testid="ob-options-restrict-scope-access-note">{t('scopeAccess.optionNote')}</small></>}
      {live&&<>{SESSION_KEYS.map(k=><Fragment key={k}><label className="ob-check" title={SESSION_HINTS[k]}><input type="checkbox" data-testid={testId(k)} checked={live[k]} onChange={e=>setSessionDraft({...live,[k]:e.target.checked})}/>{SC[k]}</label>
       <small className="ob-note">{SESSION_HINTS[k]}</small>{SESSION_NOTES[k]&&<small className="ob-note">{SESSION_NOTES[k]}</small>}</Fragment>)}
       <small className="ob-note" data-testid="ob-options-session-note">{S.sessionNote}</small></>}
      <p className="ob-note">{M.othersHeading}</p>
-     <ul className="ob-option-list" data-testid="ob-options-others">{C.otherOptions.filter(o=>!(onEditMode&&o===EDIT_MODE_CAPTIONS.box)&&!(onVirtualObservatory&&o===VO.box)&&!(onTestMode&&o===TM.box)&&!(onDemonstrationMode&&o===DM.box)&&!ported.has(o)).map(o=><li key={o}><span className="ob-native">{o}</span>{o==='Fast Slewing'?<small> — {M.fastSlewing}</small>:null}</li>)}</ul>
+     <ul className="ob-option-list" data-testid="ob-options-others">{C.otherOptions.filter(o=>!(onEditMode&&o===EDIT_MODE_CAPTIONS.box)&&!(onVirtualObservatory&&o===VO.box)&&!(onTestMode&&o===TM.box)&&!(onDemonstrationMode&&o===DM.box)&&!(onRestrictScopeAccess&&o===RS.box)&&!ported.has(o)).map(o=><li key={o}><span className="ob-native">{o}</span>{o==='Fast Slewing'?<small> — {M.fastSlewing}</small>:null}</li>)}</ul>
      {live&&<small className="ob-note" data-testid="ob-options-not-ported">{S.notPorted}</small>}
     </fieldset>
     {live?<section className="ob-group" data-testid="ob-options-tabs" aria-label={S.tabsHeading}><p className="ob-note">{S.tabsHeading}</p>

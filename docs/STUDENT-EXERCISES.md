@@ -49,6 +49,7 @@ Phase-2 B2 is technically validated and separately reviewed (2026-10-27): `tests
 - The guide, its checklist and the line table are web presentation.
 - Equivalent width is limited to the recovered 3500–7400 Å Range envelope and the source's own grid; nothing is extrapolated.
 - The web checkbox directly exposes the recovered sampled-trace inversion; native option-dialog delivery and browser pixels are not reproduced.
+- Since Front T5 (2026-11-06), opening this guide applies VIREO's compiled Restrict Scope Access: the 1.0 m and 4.0 m telescopes then need Request Time, as in VIREO's exercise menu; the exercise uses the 0.4 m, so nothing in it is blocked, and an instructor can turn the option off (docs/OPTICAL-OPTIONS.md).
 
 ## E04 · Pleiades photometry
 **Criteria**
@@ -63,7 +64,7 @@ Phase-2 B2 is technically validated and separately reviewed (2026-10-27): `tests
 
 **Evidence** — `b1db397` plus QA3: all 16 transcribed B/V pairs, manual fit, Save and fresh-context Restore.
 
-**Web adaptations** — On the 0.4 m all 24 stars are measurable (since `c7ba82c`; earlier 8 stayed unmeasurable); the KPNO 0.9 m and Mayall domains are narrower. The guide is web presentation. The guide counts the web notebook entries; VIREO's own Record/Review (Front P3, docs/PHOTOMETER-RECORD.md) is available beside them and does not change the counts.
+**Web adaptations** — On the 0.4 m all 24 stars are measurable (since `c7ba82c`; earlier 8 stayed unmeasurable); the KPNO 0.9 m and Mayall domains are narrower. The guide is web presentation. The guide counts the web notebook entries; VIREO's own Record/Review (Front P3, docs/PHOTOMETER-RECORD.md) is available beside them and does not change the counts. Since Front T5 (2026-11-06), opening this guide applies VIREO's compiled Restrict Scope Access: the 1.0 m and 4.0 m telescopes then need Request Time, as in VIREO's exercise menu; the exercise uses the 0.4 m, so nothing in it is blocked, and an instructor can turn the option off (docs/OPTICAL-OPTIONS.md).
 
 ## E05 · Cluster HR diagrams
 **Criteria**
@@ -75,7 +76,7 @@ Phase-2 B2 is technically validated and separately reviewed (2026-10-27): `tests
 
 **Evidence** — 10 reference HR tests plus 8 own-B/V bridge tests; separate whole/closure review at `8147472`.
 
-**Web adaptations** — Browser axes and Number arithmetic stand in for native GDI/x87 drawing. Since Front T4 (2026-11-06), by default the database E(B−V) is fixed at the catalogue value and read-only, as VIREO's compiled "Set E(B-V)" option does; an instructor can free it in the options (docs/OPTICAL-OPTIONS.md).
+**Web adaptations** — Browser axes and Number arithmetic stand in for native GDI/x87 drawing. Since Front T4 (2026-11-06), by default the database E(B−V) is fixed at the catalogue value and read-only, as VIREO's compiled "Set E(B-V)" option does; an instructor can free it in the options (docs/OPTICAL-OPTIONS.md). Since Front T5 (2026-11-06), opening this guide applies VIREO's compiled Restrict Scope Access: the 1.0 m and 4.0 m telescopes then need Request Time, as in VIREO's exercise menu; the exercise uses the 0.4 m, so nothing in it is blocked, and an instructor can turn the option off (docs/OPTICAL-OPTIONS.md).
 
 ## E06 · Pulsars
 **Criteria**

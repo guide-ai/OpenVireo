@@ -49,7 +49,7 @@ describe('T2 web options file',()=>{
  it('writes a zero-length password and the not-applied options with their compiled values',()=>{
   const doc=JSON.parse(writeOptionsFile(all(true)));
   expect(doc.password).toBe('');expect(doc.version).toBe('1.504');
-  expect(doc.notApplied).toEqual({administrator:false,computeMagnitudes:true,includeRIColors:true,restrictScopeAccess:true,soundEffects:true,writeLogFile:false,plotHRDiagram:true,labTableNumber:'',parameters:'compiled'});
+  expect(doc.notApplied).toEqual({administrator:false,computeMagnitudes:true,includeRIColors:true,soundEffects:true,writeLogFile:false,plotHRDiagram:true,labTableNumber:'',parameters:'compiled'});
   expect(Object.keys(doc.options)).toEqual(OPTIONS_FILE_KEYS);
   expect(()=>writeOptionsFile({...all(true),testMode:1} as never)).toThrow(TypeError);
  });
@@ -61,9 +61,9 @@ describe('T2 web options file',()=>{
   doc.password={nested:[1,2,3]};expect(readOptionsFile(enc.encode(JSON.stringify(doc))).kind).toBe('loaded');
  });
  it('clears "Administrator" at load (0x5a1fc7) and lists the not-applied values that differ',()=>{
-  const doc=JSON.parse(writeOptionsFile(COMPILED_OPTIONS_FILE_VALUES));doc.notApplied.administrator=true;doc.notApplied.restrictScopeAccess=false;doc.notApplied.labTableNumber='12';
+  const doc=JSON.parse(writeOptionsFile(COMPILED_OPTIONS_FILE_VALUES));doc.notApplied.administrator=true;doc.notApplied.soundEffects=false;doc.notApplied.labTableNumber='12';
   const r=readOptionsFile(enc.encode(JSON.stringify(doc)));
-  expect(r).toMatchObject({kind:'loaded',administratorCleared:true,notApplied:['restrictScopeAccess','labTableNumber']});
+  expect(r).toMatchObject({kind:'loaded',administratorCleared:true,notApplied:['soundEffects','labTableNumber']});
   if(r.kind==='loaded')expect(r.values).toEqual(COMPILED_OPTIONS_FILE_VALUES);
  });
  it('applies VIREO\'s version check and refuses other files',()=>{
@@ -104,6 +104,27 @@ describe('Front T4: Set E(B-V) and Detect Sky in the options file',()=>{
  });
 });
 
+describe('Front T5: Restrict Scope Access in the options file',()=>{
+ it('is an applied option at record +0x27d1, compiled on (0x5a2b04), and no longer listed as not applied',()=>{
+  expect(OPTIONS_FILE_BYTES.restrictScopeAccess).toBe(0x27d1);expect(COMPILED_OPTIONS_FILE_VALUES.restrictScopeAccess).toBe(true);
+  expect(NOT_APPLIED_KEYS).not.toContain('restrictScopeAccess' as never);expect(OPTIONS_FILE_KEYS.at(-1)).toBe('restrictScopeAccess');
+  for(const restrictScopeAccess of [false,true]){const values=Object.freeze({...COMPILED_OPTIONS_FILE_VALUES,restrictScopeAccess});
+   expect(readOptionsFile(enc.encode(writeOptionsFile(values)))).toEqual({kind:'loaded',source:'web',values,notApplied:[],administratorCleared:false,fastSlewingRate:null});}
+ });
+ it('reads a web file written before T5 (under "notApplied"), one that lists it nowhere, and refuses a non-boolean',()=>{
+  const doc=JSON.parse(writeOptionsFile(COMPILED_OPTIONS_FILE_VALUES));delete doc.options.restrictScopeAccess;
+  const t4=readOptionsFile(enc.encode(JSON.stringify({...doc,notApplied:{...doc.notApplied,restrictScopeAccess:false}})));
+  expect(t4).toMatchObject({kind:'loaded',notApplied:[]});if(t4.kind==='loaded')expect(t4.values).toEqual({...COMPILED_OPTIONS_FILE_VALUES,restrictScopeAccess:false});
+  const bare=readOptionsFile(enc.encode(JSON.stringify(doc)));expect(bare.kind==='loaded'&&bare.values).toEqual(COMPILED_OPTIONS_FILE_VALUES);
+  expect(readOptionsFile(enc.encode(JSON.stringify({...doc,notApplied:{...doc.notApplied,restrictScopeAccess:1}})))).toEqual({kind:'invalid',reason:'not-options-file'});
+  const both=JSON.parse(writeOptionsFile({...COMPILED_OPTIONS_FILE_VALUES,restrictScopeAccess:false}));both.notApplied.restrictScopeAccess=true;
+  const r=readOptionsFile(enc.encode(JSON.stringify(both)));expect(r.kind==='loaded'&&r.values.restrictScopeAccess).toBe(false);
+ });
+ it('applies the native byte (non-zero = checked)',()=>{
+  for(const [b,v] of [[0,false],[1,true],[7,true]] as const){const r=readOptionsFile(nativeFile({0x27d1:b}));expect(r).toMatchObject({kind:'loaded',notApplied:['parameters']});expect(r.kind==='loaded'&&r.values.restrictScopeAccess).toBe(v);}
+ });
+});
+
 describe('T2 native VEO_OPTS.INI (read only)',()=>{
  it('reads the compiled stream as the compiled options; the parameter block is listed as not applied',()=>{
   expect(readOptionsFile(nativeFile())).toEqual({kind:'loaded',source:'native',values:COMPILED_OPTIONS_FILE_VALUES,notApplied:['parameters'],administratorCleared:false,fastSlewingRate:null});
@@ -111,8 +132,8 @@ describe('T2 native VEO_OPTS.INI (read only)',()=>{
  it('decodes DemoBox inverted, Fast Slewing as rate 4 and the boolean bytes',()=>{
   const r=readOptionsFile(nativeFile({0x27c6:0,0x27af:3,0x27c8:1,0x27ca:2,0x27d5:1,0x27d3:0,0x27d1:0,0x27c1:2}));
   expect(r.kind).toBe('loaded');if(r.kind!=='loaded')return;
-  expect(r.values).toMatchObject({demonstrationMode:true,fastSlewing:false,testMode:true,editMode:true,virtualObservatory:true,infraredCamera:false});
-  expect(r.notApplied).toEqual(['restrictScopeAccess','labTableNumber','parameters']);
+  expect(r.values).toMatchObject({demonstrationMode:true,fastSlewing:false,testMode:true,editMode:true,virtualObservatory:true,infraredCamera:false,restrictScopeAccess:false});
+  expect(r.notApplied).toEqual(['labTableNumber','parameters']);
  });
  it('notes a Fast Slewing rate index other than 3 or 4 (review 1 L1: RateSlider takes the raw byte, 0x539cbf)',()=>{
   expect(readOptionsFile(nativeFile({0x27af:3}))).toMatchObject({values:{fastSlewing:false},fastSlewingRate:null});

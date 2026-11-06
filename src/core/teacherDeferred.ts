@@ -11,16 +11,17 @@
  * removed 'demonstration-mode': DemoBox is live and kept per browser (io/demonstrationModeStorage.ts), and the options file
  * (io/optionsFile.ts) carries the options; FilesBtn's names and paths stay here (an options file lists them as not applied).
  * Front T4 removed 'detect-sky' and 'set-ebmv': DtctSkyBox and SetEBmVBox are live on the Photometer tab
- * (core/photometerTabOptions.ts) and travel in the options file. */
+ * (core/photometerTabOptions.ts) and travel in the options file. Front T5 removed 'restrict-scope-access' and 'request-time':
+ * RstrctScpBox is live and travels in the options file, and Telescopes › Optical › Request Time works (core/scopeAccess.ts).
+ * Scopes… (TScopeDataDlg) stays: its Avail / Reap / Min / Max fields (OK 0x593754: StrToFloat → record +0x29, StrToInt → bytes
+ * +0x2f, +0x2d, +0x2e for the 1.0 m and 4.0 m) share the dialog with the optics fields of Front T8. */
 export type TeacherDeferredReason='teacher-front'|'compiled-password-not-ported'|'needs-backend';
 export type TeacherDeferredItem=Readonly<{key:string;caption:string;control:string;dfm:string;reason:TeacherDeferredReason}>;
 const item=(key:string,caption:string,control:string,dfm:string,reason:TeacherDeferredReason='teacher-front'):TeacherDeferredItem=>Object.freeze({key,caption,control,dfm,reason});
 export const TEACHER_DEFERRED:readonly TeacherDeferredItem[]=Object.freeze([
  item('radio-test-mode','Test Mode (radio)','TRadiOptsDlg.TestModeBox (record+0x940 → env+0x37d5; radio options front T11b)','0x21ce45'),
- item('restrict-scope-access','Restrict Scope Access','TOptionsDlg.RstrctScpBox','0x20abca'),
- item('request-time','Request Time','TEnvironment1.RequestTime1','0x1ed08e'),
  item('files','&Files...','TOptionsDlg.FilesBtn, TRadiOptsDlg FilesBtn (names and paths of VIREO\'s install; an options file keeps them typed, Front T2)','0x209ec2, 0x21bd31'),
- item('scopes','&Scopes...','TOptionsDlg.ScopeBtn','0x20dfb8'),
+ item('scopes','&Scopes...','TOptionsDlg.ScopeBtn (TScopeDataDlg: availability, reapply wait and uses with the optics, Front T8)','0x20dfb8'),
  item('parameters','Parameter editing','TOptionsDlg tab parameters (read-only here)','—'),
  item('radio-site','&Site...','TRadiOptsDlg.SiteBtn','0x21bf6e'),
  item('radio-options','Non-default radio options','TRadiOptsDlg (compiled values; Access Pulsar List is the only live box)','—'),

@@ -121,7 +121,7 @@ describe('R5 deferred teacher options keep a typed reason',()=>{
  it('lists every deferred item once with the teacher-front reason',()=>{
   // Front T1: virtual-observatory-strict is gone (VO is behind the instructor gate); the forms and the password are typed.
   // Front T3: the optical Test Mode is live; only the radio dialog's TestModeBox stays (T11b). Front T2: DemoBox is live.
-  expect(TEACHER_DEFERRED.map(d=>d.key)).toEqual(['radio-test-mode','restrict-scope-access','request-time','files','scopes','parameters','radio-site','radio-options',
+  expect(TEACHER_DEFERRED.map(d=>d.key)).toEqual(['radio-test-mode','files','scopes','parameters','radio-site','radio-options',
    'cluster-edit','cluster-save-list','asteroid-subset','auto-plot','password']);
   expect(new Set(TEACHER_DEFERRED.map(d=>d.key)).size).toBe(TEACHER_DEFERRED.length);
   expect(TEACHER_DEFERRED.every(d=>Object.isFrozen(d))).toBe(true);

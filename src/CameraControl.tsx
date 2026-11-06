@@ -2,6 +2,7 @@ import {memo,useContext,useEffect,useMemo,useRef,useState} from 'react';
 import {TestModeContext} from './polish/testModeContext';
 import './camera.css';
 import {CAMERA_MESSAGES as M} from './camera/CameraMessages';
+import {t} from './i18n';// Front T5
 import {cameraRequestTransition,createCameraRequestGate,CAMERA_OBSERVE_INTERVAL_MS,type CameraGateEffect,type CameraGateEvent,type CameraRequestGate} from './core/cameraRequestGate';
 import {compiledCameraQueryReference} from './core/cameraQueryReference';
 import {vizierRouteForCamera} from './core/vizierNomad';
@@ -56,6 +57,8 @@ export type CameraControlProps=Readonly<{
  onImage?:(image:CameraImage)=>void;
  /** Test seam: fixed seed instead of crypto.getRandomValues. */
  seedSource?:()=>number;
+ /** Front T5: the telescope's Request Time allotment at each Go (core/scopeAccess.ts); false refuses the Go. */
+ scopeUse?:(instrument:'ccd'|'ir')=>boolean;
 }>;
 type Attempt={ticket:CameraGateEffect['ticket'];controller:AbortController;camera:CameraExposureKind;seconds:number;filter:number;gain:number;mode:CameraCatalogMode;jd:number;seed:number;pointing:Pointing;telescope:OpticalIndex;
  worker:Worker|null;pending:((reply:CameraWorkerReply|null)=>void)|null;source:CameraCatalogSource|null;failure:string|null;prepared:CameraImage|null;catalogName:string;region?:CameraRegionRecord;
@@ -75,7 +78,7 @@ function cameraQuery(camera:CameraExposureKind,telescope:OpticalIndex,filter:num
 }
 const randomSeed=()=>crypto.getRandomValues(new Uint32Array(1))[0];
 
-function CameraControl({objectXHidden=null,vireoId='',showObjectId=false,currentObject,infraredCamera=true,active,busy,telescopeIndex,pointing,access,currentJd,extraSources,onImage,seedSource=randomSeed}:CameraControlProps){
+function CameraControl({scopeUse,objectXHidden=null,vireoId='',showObjectId=false,currentObject,infraredCamera=true,active,busy,telescopeIndex,pointing,access,currentJd,extraSources,onImage,seedSource=randomSeed}:CameraControlProps){
  const [camera,setCamera]=useState<CameraExposureKind>('ccd'),[filter,setFilter]=useState(0),[minutes,setMinutes]=useState('0'),[seconds,setSeconds]=useState('10'),[gain,setGain]=useState(2);
  const [mode,setMode]=useState<CameraCatalogMode>('static'),[usePalette,setUsePalette]=useState(false);
  const [gate,setGate]=useState<CameraRequestGate>(createCameraRequestGate),[message,setMessage]=useState<string>(M.statusIdle),[,setWaitShown]=useState(false);
@@ -174,6 +177,8 @@ function CameraControl({objectXHidden=null,vireoId='',showObjectId=false,current
   // CCD Go 0x5126c1 stores the filter byte (form+0x405) before the preparation check 0x512244 can refuse the Go (closure L5).
   if(camera==='ccd')setCcdFilterByte(filter);
   if(mode==='static'&&!staticCovered){setMessage(`${M.statusFailed} ${M.failure['no-extract']}`);return;}
+  // Front T5: each Go uses the telescope's allotment (CCD 0x512244 → 0x5122cd, IR 0x514268 → 0x5142f1); the page shows VIREO's box.
+  if(scopeUse&&!scopeUse(camera)){setMessage(t('scopeAccess.instrumentRefused'));return;}
   // F3 review 1 I4: a save alert belongs to the image it was about, so a new exposure clears it when it starts.
   setSaveError('');
   const jd=currentJd(),seed=seedSource()>>>0;

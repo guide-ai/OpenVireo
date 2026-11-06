@@ -12,8 +12,9 @@ import {roundHalfEven} from './clusterHrPlot';
  * - DtctSkyBox (DFM 0x20b917, caption `Detect Sky ` with VIREO's trailing space, hint below): OKBtnClick writes record+0x27cf
  *   (0x5a6184) = env+0x2e83; compiled 0 (0x5a2af6) [D]. Its one reader, 0x53804d, is in TObsrvtry's initialisation 0x537f08
  *   (called from FormPaint 0x538226 after FormActivate 0x537978 marks it pending at 0x5379b2, with the panel inactive, and from
- *   ScopeTimerTimer 0x58b838 at 0x58b9bf, the Request Time telescope-grant path, so VIREO re-latches it when a requested telescope
- *   is granted; Front T5), which
+ *   ScopeTimerTimer 0x58b838 at 0x58b9bf, the completion of every optical telescope change (Access 0x58b444/0x58b490/0x58b4dc →
+ *   0x58b528), so VIREO re-latches it whenever the telescope changes, a requested one included; Front T5 corrected the earlier
+ *   "grant path" wording: the grant 0x58ba88 only enables the Access item), which
  *   copies the byte into the photometer form (cell 0x5b5d24 → form variable 0x5bc230, created as TPhotometer from 0x4fef88 at 0x5ad421) at +0x6b1 (0x53805c). The only reader of
  *   +0x6b1 is TPhotometer.FormActivate 0x4ff8b0 (0x4ff94c) [D]: on, the Sky flag +0x41c := (selected object's aperture fraction
  *   from 0x500568 = 0.0) and RdngGrp (+0x3fc) and RdngSlider (+0x400) are disabled (TControl.SetEnabled 0x45de44, FEnabled +0x57,
