@@ -97,7 +97,7 @@ describe('Front PHTILED review 1 L4: a QSO beside the selected star adds its lig
   expect(queryPhotometerNeighbors(fr.pointing,radius,fr.stars,fr.qsos!).map(n=>n.id)).toEqual(['N0000.DAT@7716','CLEA_QSO.DAT@39','CLEA_QSO.DAT@39']);
   const v=buildPinnedPleiadesUbvField('object','V',id,150,0).sourceMagnitude,seeing=photometerTelescope(0).seeingWidthDegrees;
   expect(v).toBe(expectedV(fr,photometerPointFraction(radius,photometerSeparation(fr.pointing.ra,fr.pointing.dec,fr.selected.ra,fr.selected.dec),seeing),seeing,radius));
-  // The value the reviewer's independent harness reported (Number policy).
+  // Regression pin (Number policy): the value this port gives; the review harness ran the same modules, so it is not independent evidence.
   expect(v).toBe(14.40154509979497);
  },120_000);
 });
