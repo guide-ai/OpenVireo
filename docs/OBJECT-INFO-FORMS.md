@@ -39,7 +39,7 @@ Naked Eye Star is the one student form: a right-click on the sky seen through th
 
 | # | Web | Original | Tag |
 |---|---|---|---|
-| 1 | Slew menu › Optical Simulation Options › **Edit Mode (instructor, VIREO)** › OK. Off by default, not saved, no login. | EditModeBox, OKBtnClick `0x5a60e3`, persisted in VEO_OPTS.INI | W |
+| 1 | Instructor mode… (page header, Front T1: the web form of Demonstration Mode's gate, no password) › Slew menu › Optical Simulation Options › **Edit Mode (instructor, VIREO)** › OK. Off by default, not saved, no login; Leave turns it off. | EditModeBox, OKBtnClick `0x5a60e3`, persisted in VEO_OPTS.INI | W |
 | 2 | Telescope view, Edit Mode, any field (Front G): click (or arrow keys + Enter) → lime marker + **Catalog Object** | CRT1MouseUp `0x53cff8`, gate `0x53d4f7`, ShowModal | D (keyboard W) |
 | 3 | **File › Field Information › Star Data List** (any field, Front G) | StarList1Click `0x5404e0` → `0x534e18` | D |
 | 4 | **File › Field Information › Variable Stars › All GCVS / VIREO-modeled** (any field) | `0x53dafc` / `0x53db54` → TVarFldLstForm1 | D |
@@ -81,14 +81,14 @@ That means a pointing that is **exactly** a listed pointing of a bundled pack (`
 The test sweep (`src/io/fieldInfoPacks.test.ts`, on main c7ba82c) certifies 195 of 227 pack pointings. The 32 Boötes-area pointings stay `population: variable-merge`, because their variable update is not modelled.
 
 Object X packs are excluded:
-- Web Edit Mode has no password, so these forms would reveal hidden E08 identities.
+- Web Edit Mode has no password (since Front T1 it sits behind instructor mode, which is no lock), so these forms would reveal hidden E08 identities.
 - The engine does not model asteroids in those fields.
 
 Masks (`object-x-hidden`, `src/io/objectXMask.ts`), applied whether or not the Object X lab holds a target; a failed read of the hash-checked ObjectX.HTL masks everything:
 - **Catalog Object and the Star Data List:** within 2° (`OBJECT_X_HIDE_DEGREES`, the finder field) of any ObjectX.HTL position or the lab's hidden target.
 - **Variable Stars list (closure N2):** only when one of its own rows lies within 0.25° (`OBJECT_X_ON_TARGET_DEGREES`) of such a position. The risk is a listed variable that an Object X camera or spectrometer image would contain. Half the largest camera field diagonal (0.4 m) is about 0.2°, and the spectrometer field is smaller. In CLEA_VStrs.dat only AQ CVn (near the ObjectX.HTL star N3000-01915) is that close, so the list is masked only in fields that contain it, instead of across a 7.6° area.
 
-**Galaxy redshift mask (review 1 M2) [W].** Web Edit Mode has no instructor login, so Catalog Object hides a galaxy's catalogue z (`instructor-value-masked`). That z is the answer of the Hubble and LSS exercises (E01/E02); VIREO keeps it behind the login. V, morphology, colours and size stay visible. `fieldInfoPacks.test.ts` checks every certified pointing: no galaxy z appears in the dialog fields or in the Star Data List lines and CSV. The e2e flow at 36773 checks the page text, Search (the z text is not found), Save Text, CSV and the Print preview (closure N3).
+**Galaxy redshift mask (review 1 M2) [W].** Web Edit Mode has no instructor login (Front T1's instructor mode is no lock, and the user decided on 2026-11-06 that it shows no answers), so Catalog Object hides a galaxy's catalogue z (`instructor-value-masked`). That z is the answer of the Hubble and LSS exercises (E01/E02); VIREO keeps it behind the login. V, morphology, colours and size stay visible. `fieldInfoPacks.test.ts` checks every certified pointing: no galaxy z appears in the dialog fields or in the Star Data List lines and CSV. The e2e flow at 36773 checks the page text, Search (the z text is not found), Save Text, CSV and the Print preview (closure N3).
 
 Options used:
 - QSO merge when the area needs it;

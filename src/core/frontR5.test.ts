@@ -2,7 +2,8 @@ import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
 import {addHtlRow,newHtlEditor,parseHtl,serializeHtl} from './hotList';
 import {OPTICAL_HOT_LIST_SAVE_LITERALS as S,opticalHotListEditEnabled,opticalHotListEditedRowFormat,opticalHotListSaveRecords,opticalHotListRowFormat,opticalHotListRowText,opticalHotListRows,opticalHotListSaveEnabled,opticalHotListSaveOutcome,opticalHotListSavedText} from './opticalHotList';
-import {INITIAL_RADIO_ACCESS,applyDemonstrationGate,applyEditModeGate,openPreferences,radioAccessSnapshot,restoredRadioAccessState} from './radioAccessOptions';
+import {INITIAL_RADIO_ACCESS,followPageGate,openPreferences,radioAccessSnapshot,restoredRadioAccessState} from './radioAccessOptions';
+import {INITIAL_INSTRUCTOR_GATE,applyEditModeGate,enterInstructorMode} from './instructorMode';
 import {COMPILED_EDIT_MODE,limitSlewingBox} from './editMode';
 import {COMPILED_OPTICAL_OPTIONS,OPTICAL_OPTIONS_CAPTIONS,OPTIONS_RESET_DEFAULTS,OPTIONS_RESET_LITERALS,OPTIONS_RESET_NOT_PORTED} from './opticalOptions';
 import {TEACHER_DEFERRED} from './teacherDeferred';
@@ -71,26 +72,29 @@ describe('R5 List › Save (SaveList1Click 0x5919b4)',()=>{
  });
 });
 
-describe('R5 Preferences gate under Edit Mode (0x5887f0, 0x587f70)',()=>{
- it('opens the gate with source edit-mode; it stays open and Preferences then opens',()=>{
-  const r=applyEditModeGate(INITIAL_RADIO_ACCESS);
-  expect(r.outcome).toBe('gate-opened');expect(r.state.gate).toEqual({open:true,source:'edit-mode'});
-  expect(applyEditModeGate(r.state)).toMatchObject({outcome:'gate-already-open',changed:false});
-  expect(openPreferences(r.state,null).outcome).toBe('preferences-opened');
+describe('R5 Preferences gate under Edit Mode (0x5887f0, 0x587f70), moved to the page gate by Front T1',()=>{
+ it('opens the gate with source edit-mode; it stays open and the radio Preferences then opens',()=>{
+  const r=applyEditModeGate(INITIAL_INSTRUCTOR_GATE,true);
+  expect(r.outcome).toBe('gate-opened');expect(r.state).toEqual({open:true,source:'edit-mode'});
+  expect(applyEditModeGate(r.state,true)).toMatchObject({outcome:'gate-already-open',changed:false});
+  const radio=followPageGate(INITIAL_RADIO_ACCESS,r.state).state;expect(radio.gate).toEqual({open:true,source:'edit-mode'});
+  expect(openPreferences(radio,null).outcome).toBe('preferences-opened');
   expect(openPreferences(INITIAL_RADIO_ACCESS,null).outcome).toBe('user-options-shown');
  });
- it('keeps a Demonstration gate as it is',()=>{
-  const demo=applyDemonstrationGate(INITIAL_RADIO_ACCESS).state;
-  expect(applyEditModeGate(demo)).toMatchObject({outcome:'gate-already-open',changed:false});
-  expect(demo.gate.source).toBe('demonstration');
+ it('keeps an instructor gate as it is',()=>{
+  const on=enterInstructorMode(INITIAL_INSTRUCTOR_GATE).state;
+  expect(applyEditModeGate(on,true)).toMatchObject({outcome:'gate-already-open',changed:false});
+  expect(on.source).toBe('instructor-switch');
  });
  it('is not saved: a file keeps the gate closed, so the format is unchanged',()=>{
-  const open=applyEditModeGate(INITIAL_RADIO_ACCESS).state,snap=radioAccessSnapshot(open);
-  expect(snap.ok).toBe(true);if(!snap.ok)return;
-  expect(snap.snapshot.gate).toEqual({open:false,source:'not-supplied'});
-  const plain=radioAccessSnapshot(INITIAL_RADIO_ACCESS);if(!plain.ok)throw new Error('initial snapshot');
-  expect(JSON.stringify(snap.snapshot)).toBe(JSON.stringify(plain.snapshot));
-  expect(restoredRadioAccessState(snap.snapshot).gate.open).toBe(false);
+  for(const page of [applyEditModeGate(INITIAL_INSTRUCTOR_GATE,true).state,enterInstructorMode(INITIAL_INSTRUCTOR_GATE).state]){
+   const open=followPageGate(INITIAL_RADIO_ACCESS,page).state,snap=radioAccessSnapshot(open);
+   expect(snap.ok).toBe(true);if(!snap.ok)return;
+   expect(snap.snapshot.gate).toEqual({open:false,source:'not-supplied'});
+   const plain=radioAccessSnapshot(INITIAL_RADIO_ACCESS);if(!plain.ok)throw new Error('initial snapshot');
+   expect(JSON.stringify(snap.snapshot)).toBe(JSON.stringify(plain.snapshot));
+   expect(restoredRadioAccessState(snap.snapshot).gate.open).toBe(false);
+  }
  });
 });
 
@@ -115,8 +119,12 @@ describe('R5 options Reset (ResetBtnClick 0x5a6d24)',()=>{
 
 describe('R5 deferred teacher options keep a typed reason',()=>{
  it('lists every deferred item once with the teacher-front reason',()=>{
-  expect(TEACHER_DEFERRED.map(d=>d.key)).toEqual(['demonstration-mode','test-mode','restrict-scope-access','request-time','detect-sky','set-ebmv','files','scopes','parameters','virtual-observatory-strict','radio-site','radio-options']);
-  expect(TEACHER_DEFERRED.every(d=>d.reason==='teacher-front'&&Object.isFrozen(d))).toBe(true);
+  // Front T1: virtual-observatory-strict is gone (VO is behind the instructor gate); the forms and the password are typed.
+  expect(TEACHER_DEFERRED.map(d=>d.key)).toEqual(['demonstration-mode','test-mode','restrict-scope-access','request-time','detect-sky','set-ebmv','files','scopes','parameters','radio-site','radio-options',
+   'cluster-edit','cluster-save-list','asteroid-subset','auto-plot','password']);
+  expect(new Set(TEACHER_DEFERRED.map(d=>d.key)).size).toBe(TEACHER_DEFERRED.length);
+  expect(TEACHER_DEFERRED.every(d=>Object.isFrozen(d))).toBe(true);
+  expect(Object.fromEntries(TEACHER_DEFERRED.filter(d=>d.reason!=='teacher-front').map(d=>[d.key,d.reason]))).toEqual({'auto-plot':'needs-backend',password:'compiled-password-not-ported'});
   for(const caption of ['Demonstration Mode','Test Mode','Restrict Scope Access'])expect(OPTICAL_OPTIONS_CAPTIONS.otherOptions).toContain(caption);
  });
 });

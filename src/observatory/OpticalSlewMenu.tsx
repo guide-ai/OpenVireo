@@ -13,6 +13,7 @@ import {t} from '../i18n';
 import HotListEntryDialog from './HotListEntryDialog';
 import OpticalOptionsDialog from './OpticalOptionsDialog';
 import type {OpticalOptions,SessionOpticalOptions} from '../core/opticalOptions';
+import type {PreferencesGateResult} from '../core/instructorMode';
 import {hotListPrintSnapshot,type HotListPrintSnapshot} from '../core/hotListPrint';
 import {INITIAL_OPTICAL_HOT_LIST,cancelOpticalHotListSearch,closeOpticalHotList,dismissOpticalHotListNotice,editOpticalHotListSearch,openOpticalHotList,openOpticalHotListSearch,opticalHotListCaption,opticalHotListEditEnabled,opticalHotListEditedRowFormat,opticalHotListRowFormat,opticalHotListSaveRecords,opticalHotListRowText,opticalHotListSaveEnabled,opticalHotListSaveOutcome,opticalHotListSavedText,OPTICAL_HOT_LIST_SAVE_LITERALS,opticalHotListRows,reopenOpticalHotList,selectOpticalHotListIndex,slewToOpticalHotListSelection,submitOpticalHotListSearch,type OpticalHotListWindow as HotListState} from '../core/opticalHotList';
 import {INITIAL_OPTICAL_SKY_COORDS,cancelOpticalSkyCoords,confirmOpticalSkyCoords,dismissOpticalSkyCoordsNotice,editOpticalSkyCoordsField,openOpticalSkyCoords,openOpticalSkyCoordsFromHotList,selectOpticalSkyCoordsEpoch,opticalSlewConfirmText,type OpticalSkyCoordsState} from '../core/opticalSkyCoords';
@@ -33,7 +34,9 @@ const M=OBSERVATORY_MESSAGES.skyCoords,H=OBSERVATORY_MESSAGES.hotList,E=OBSERVAT
 /** Optical Slew menu (Front B): Set Coordinates (OB-SC) and Hot List ▸ View/Select (OB-HL) with Search and Print. The
  * confirmed J2000 target goes to the existing programmed-slew confirmation through `request`; a disabled menu (telescope
  * moving, dome closed, other route) closes every open window without committing. */
-export default function OpticalSlewMenu({pointing,enabled,request,hotList,currentObject,exerciseCode=0,options,onOptions,fieldInfo}:{pointing:Pointing;enabled:boolean;request:(p:Pointing,note?:string)=>void;hotList:SharedHotListHandle;
+export default function OpticalSlewMenu({pointing,enabled,request,hotList,currentObject,exerciseCode=0,options,onOptions,fieldInfo,optionsGate}:{pointing:Pointing;enabled:boolean;request:(p:Pointing,note?:string)=>void;hotList:SharedHotListHandle;
+ /** Front T1: the page's instructor gate test for Optical Simulation Options (absent: closed, VIREO's start-up state). */
+ optionsGate?:PreferencesGateResult;
  /** Front R4: VIREO's current object at a pointing (0x53cf94), already behind the Object X gate; the session exercise code (0 none). */
  currentObject:(p:Pointing,signal?:AbortSignal)=>Promise<ShownCurrentObject>;exerciseCode?:number;options:OpticalOptions;onOptions:(o:OpticalOptions)=>void;
  /** Front O: Edit Mode (not persisted) and File › Field Information. Absent: the menu is exactly as before. */
@@ -122,7 +125,7 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,curren
    <button type="button" ref={setCoordinates} className="secondary-button" disabled={!enabled&&!programmed?.moving} data-testid="ob-set-coordinates" onClick={()=>{if(programmed?.moving){setTerminate(true);return;}setSky(s=>openOpticalSkyCoords(s,pointing));}}>{M.open}</button>
    {terminate&&programmed?.moving&&<TerminateSlewBox onYes={()=>{endTerminate();programmed.terminate();}} onNo={endTerminate}/>}
    <button type="button" className="secondary-button" disabled={!enabled} data-testid="ob-view-select" onClick={()=>setHot(h=>openOpticalHotList(h,rows.length))}>{H.open}</button>
-   <OpticalOptionsDialog options={options} onOptions={onOptions} disabled={!enabled} editMode={fieldInfo?.editMode} onEditMode={fieldInfo?.onEditMode} virtualObservatory={virtualObservatory} onVirtualObservatory={fieldInfo?setVirtualObservatory:undefined} sessionOptions={fieldInfo?.sessionOptions} onSessionOptions={fieldInfo?.onSessionOptions} horizonRadians={fieldInfo?.horizonRadians}/>
+   <OpticalOptionsDialog gate={optionsGate} options={options} onOptions={onOptions} disabled={!enabled} editMode={fieldInfo?.editMode} onEditMode={fieldInfo?.onEditMode} virtualObservatory={virtualObservatory} onVirtualObservatory={fieldInfo?setVirtualObservatory:undefined} sessionOptions={fieldInfo?.sessionOptions} onSessionOptions={fieldInfo?.onSessionOptions} horizonRadians={fieldInfo?.horizonRadians}/>
    <button type="button" className="secondary-button" disabled={!enabled||looking} aria-busy={looking||undefined} data-testid="ob-add-current" onClick={()=>void addCurrent()}>{E.open}</button>{looking&&<p role="status" className="observatory-note" data-testid="ob-add-current-looking">{E.looking}</p>}
   </div>
   {fieldInfo&&<ObservatoryFileMenu editMode={editMode} qsoList={fieldInfo.objectXMode?editMode:virtualObservatory} disabled={fieldInfo.busy??false} pointing={pointing} view={fieldInfo.view} telescope={fieldInfo.telescopeName??''} onFieldInfo={kind=>setFieldRequest(r=>({kind,token:(r?.token??0)+1}))} onQsoList={()=>setQsoRequest(n=>n+1)} onClusterData={()=>setClusterRequest(n=>n+1)}/>}

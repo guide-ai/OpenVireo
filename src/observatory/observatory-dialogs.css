@@ -4,6 +4,7 @@
 .ob-dialog h2{margin:0 0 6px;font-size:16px}
 .ob-dialog.ob-wide{width:min(calc(100vw - 32px),58rem)}
 .ob-box{width:min(calc(100vw - 48px),24rem)}
+.ob-box.ob-user-options{width:min(calc(100vw - 48px),36rem)}
 .ob-native{font-family:Tahoma,Verdana,sans-serif}
 .ob-note{font-size:13px;line-height:1.45;margin:6px 0}
 .ob-group{border:1px solid var(--ov-border-strong);border-radius:6px;margin:8px 0;padding:6px 10px 10px;display:flex;flex-wrap:wrap;gap:8px;min-width:0}

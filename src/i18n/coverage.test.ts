@@ -51,7 +51,8 @@ describe('P01 complete authored presentation catalog and interpolation contract'
   // 128: Front S2 adds src/SpectralRangeRow.tsx (the spectrometer range row on the sky, Object X and field spectrometer routes); its strings come from src/SpectralRangeMessages.ts or the recovered TSpecRangeDlg literals (core/spectralRange.ts).
   // 131: Front R4b adds src/CameraInformationList.tsx, src/CameraInformationButton.tsx and src/polish/InfoListPrintPreview.tsx (the TInfoListForm1 list and print page); their strings come from the recovered literals (core/cameraInformation.ts, core/variableFieldLiterals.ts), src/camera/CameraMessages.ts or src/polish/PolishMessages.ts.
   // 132: Front R4d adds src/observatory/SpectrometerReadout.tsx (VIREO's spectrometer Object / App. Mag (V) boxes); its captions are the recovered DFM literals and its notes come from src/observatory/ObservatoryMessages.ts.
-  const audit=auditUi(root);expect(audit.files.length).toBe(132);const actual=new Map<string,number>();for(const s of audit.sites){const key=JSON.stringify([s.file,s.kind,s.value]);actual.set(key,(actual.get(key)??0)+1);}
+  // 133: Front T1 adds src/components/InstructorMode.tsx (the instructor-mode header item, confirmation and banner); its strings come from the catalog (instructorMode.*).
+  const audit=auditUi(root);expect(audit.files.length).toBe(133);const actual=new Map<string,number>();for(const s of audit.sites){const key=JSON.stringify([s.file,s.kind,s.value]);actual.set(key,(actual.get(key)??0)+1);}
   const expected=new Map(receipts.map(r=>[JSON.stringify([r.file,r.kind,r.value]),r.count]));expect(actual).toEqual(expected);expect(receipts.every(r=>r.reason.length>30)).toBe(true);
  });
  it('sources browser title/description from the same English catalog and escapes them as text',()=>{

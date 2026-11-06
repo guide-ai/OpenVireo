@@ -1,5 +1,6 @@
 import {test,expect,type Page} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
+import{enterInstructorMode}from'./fixtures/instructor-mode';// Front T1: the options open only in instructor mode
 
 // Front P3: VIREO's photometer File › Data › Record/Review (Record1Click 0x501e7c → TObsRsltsDlg1), the Start prompt 0x4fffd4
 // and the photometer results list (Display/Print Data, the observation HR plot), analysis/front-p3/RESEARCH.md.
@@ -59,7 +60,7 @@ test('Pleiades V then B: one native row with two slots; OK, Data Saved, Cancel k
 test('Time-Dependent Data on: Cancel then Record/Review again appends a duplicate row, as in VIREO',async({page})=>{
  test.setTimeout(120000);
  await page.clock.install();await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.',exact:true})).toBeVisible({timeout:15000});
- await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await page.locator('.telescope-motion').getByTestId('ob-options').click();
+ await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await enterInstructorMode(page);await page.locator('.telescope-motion').getByTestId('ob-options').click();
  await page.getByTestId('ob-options-time-dependent-data').setChecked(true);await page.getByTestId('ob-options-ok').click();await expect(page.getByTestId('ob-options-dialog')).toBeHidden();
  await page.evaluate(()=>{location.hash='#photometer';});await expect(page.getByRole('heading',{name:'Measure a listed star.'})).toBeVisible();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
  await page.getByRole('button',{name:'Activate Pleiades photometer',exact:true}).click();await band(page,'V');

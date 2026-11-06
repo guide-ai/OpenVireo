@@ -1,11 +1,12 @@
 import{test,expect,type Page}from'@playwright/test';
+import{enterInstructorMode}from'./fixtures/instructor-mode';// Front T1: the options open only in instructor mode
 const card=(p:Page)=>p.locator('.telescope-motion');
 const LAT=39.84027778;
 async function open(page:Page){await page.clock.install();await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.',exact:true})).toBeVisible({timeout:15000});await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();}
 async function coords(page:Page,ra:number,dec:number){if(!await page.locator('#point-ra').isVisible())await page.getByText('Enter coordinates',{exact:true}).click();await page.locator('#point-ra').fill(String(ra));await page.locator('#point-dec').fill(String(dec));await page.getByRole('button',{name:'Point to coordinates',exact:true}).click();}
 async function tracking(page:Page){if(!await page.getByRole('button',{name:'Turn tracking on',exact:true}).isVisible())await page.getByText('Observatory clock & spectral tracking',{exact:true}).click();if(await page.getByRole('button',{name:'Turn tracking on',exact:true}).isVisible())await page.getByRole('button',{name:'Turn tracking on',exact:true}).click();}
 async function lst(page:Page){await page.getByText('Site clock · fixed UT scenario',{exact:true}).click();const v=Number((await page.getByTestId('site-clock-sidereal').textContent())!.replace(' h',''));await page.getByText('Site clock · fixed UT scenario',{exact:true}).click();return v;}
-async function limit(page:Page,on:boolean){await card(page).getByTestId('ob-options').click();const box=page.getByTestId('ob-options-limit');await expect(box).not.toBeChecked();if(on)await box.check();await page.getByTestId('ob-options-ok').click();}
+async function limit(page:Page,on:boolean){await enterInstructorMode(page);await card(page).getByTestId('ob-options').click();const box=page.getByTestId('ob-options-limit');await expect(box).not.toBeChecked();if(on)await box.check();await page.getByTestId('ob-options-ok').click();}
 const wrap=(h:number)=>((h%24)+24)%24;
 
 test('Limit Slewing is off by default; on, it refuses a programmed slew below the horizon and stops a manual move',async({page})=>{
@@ -50,7 +51,7 @@ test('with Limit Slewing on, the immediate Point shortcuts are refused below the
 });
 
 test('the Options dialog lists the other original options as text with recovered compiled states (review F8)',async({page})=>{
- await open(page);await card(page).getByTestId('ob-options').click();
+ await open(page);await enterInstructorMode(page);await card(page).getByTestId('ob-options').click();
  const list=page.getByTestId('ob-options-others');await expect(list.getByRole('checkbox')).toHaveCount(0);
  // Front O: Edit Mode, Front O2: Virtual Observatory, and Front R3's six ported options are live (non-persisted) check boxes,
  // so 7 of the 15 other options remain listed as text.

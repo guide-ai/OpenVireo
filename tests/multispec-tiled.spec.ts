@@ -1,4 +1,5 @@
 import{test,expect,type Page,type Locator}from'@playwright/test';
+import{enterInstructorMode}from'./fixtures/instructor-mode';// Front T1: the options open only in instructor mode
 
 // Front G G4b (analysis/front-plans/front-g-gsc.md §11): Multi-Spec at any pointing. VIREO builds the instrument field at every
 // pointing (0x53be70) and gates Multi-Spec selection by mode, not pointing (MouseDown 0x53cfa8); the field here is assembled from
@@ -19,7 +20,7 @@ async function point(page:Page,ra:string,dec:string){
  await expect(page.getByTestId('pointing-dec')).toHaveText(new RegExp('^'+dec.slice(0,5).replace('.','\\.')),{timeout:30000});
  await page.getByRole('button',{name:/^Telescope/}).click();
 }
-async function editMode(page:Page){await page.locator('.telescope-motion').getByTestId('ob-options').click();await page.getByTestId('ob-options-edit-mode').check();await page.getByTestId('ob-options-ok').click();}
+async function editMode(page:Page){await enterInstructorMode(page);await page.locator('.telescope-motion').getByTestId('ob-options').click();await page.getByTestId('ob-options-edit-mode').check();await page.getByTestId('ob-options-ok').click();}
 async function access(page:Page){
  await card(page).scrollIntoViewIfNeeded();await card(page).getByTestId('ms-access').click();
  const box=page.getByTestId('ms-box');await box.getByRole('button',{name:'OK',exact:true}).click();await expect(box).toHaveCount(0);

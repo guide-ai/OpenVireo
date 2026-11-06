@@ -2,6 +2,7 @@ import {downloadedName} from './fixtures/download-name';
 import{test,expect,type Page}from'@playwright/test';
 import{readFile}from'node:fs/promises';
 import{paceDownload}from'./fixtures/download-pacing';
+import{enterInstructorMode}from'./fixtures/instructor-mode';// Front T1: the options open only in instructor mode
 
 // Front O2 (docs/QSO-LIST-HST.md): File › QSO List (TQSOListDlg, TQSORptForm1) behind the Virtual Observatory option, and Tools › HST Image Archive (external link opened only on click, user decision 2026-10-28).
 const card=(p:Page)=>p.locator('.telescope-motion');
@@ -10,7 +11,7 @@ async function open(page:Page){
  await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
 }
 async function option(page:Page,id:'ob-options-edit-mode'|'ob-options-virtual-observatory',on:boolean){
- await card(page).getByTestId('ob-options').click();const box=page.getByTestId(id);
+ await enterInstructorMode(page);await card(page).getByTestId('ob-options').click();const box=page.getByTestId(id);
  if(on)await box.check();else await box.uncheck();await page.getByTestId('ob-options-ok').click();
 }
 const editMode=(page:Page,on:boolean)=>option(page,'ob-options-edit-mode',on);
@@ -23,7 +24,7 @@ test('File › QSO List appears only with Virtual Observatory on (VObsBox, defau
  await open(page);
  // Front P: File always holds Print Sky Image..., as in VIREO; QSO List is absent with Virtual Observatory off.
  await page.getByTestId('fi-file-menu').click();await expect(page.getByTestId('print-sky-menu')).toBeVisible();await expect(page.getByTestId('qso-menu')).toHaveCount(0);await page.getByTestId('fi-file-menu').click();
- await card(page).getByTestId('ob-options').click();await expect(page.getByTestId('ob-options-virtual-observatory')).not.toBeChecked();
+ await enterInstructorMode(page);await card(page).getByTestId('ob-options').click();await expect(page.getByTestId('ob-options-virtual-observatory')).not.toBeChecked();
  await expect(page.getByTestId('ob-options-virtual-observatory-note')).toContainText('not saved');await expect(page.getByTestId('ob-options-others')).not.toContainText('Virtual Observatory');
  await page.getByRole('button',{name:'Cancel',exact:true}).click();
  await editMode(page,true);await page.getByTestId('fi-file-menu').click();await expect(page.getByTestId('fi-field-information')).toBeVisible();await expect(page.getByTestId('qso-menu')).toHaveCount(0);

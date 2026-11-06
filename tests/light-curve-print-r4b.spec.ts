@@ -1,4 +1,5 @@
 import {test,expect,type Page} from '@playwright/test';
+import{enterInstructorMode}from'./fixtures/instructor-mode';// Front T1: the options open only in instructor mode
 // Front R4b (analysis/front-plans/front-r4b.md §1; dossier analysis/front-r4/B-mono-color-portrait.md §1, §4a): the light-curve
 // window is in colour until its first Print, prints in colour only with Print in Color, then keeps Monochrome Displays as of
 // that print for the session; portrait keeps the plot on page 1, landscape moves it to page 2.
@@ -7,7 +8,7 @@ const route=(page:Page,hash:string)=>page.evaluate(h=>{location.hash=h;},hash);
 async function setOptions(page:Page,change:Readonly<Record<string,boolean>>){
  await route(page,'#observatory');
  const card=page.locator('.telescope-motion');
- await card.getByTestId('ob-options').click();
+ await enterInstructorMode(page);await card.getByTestId('ob-options').click();
  for(const [k,on] of Object.entries(change))await id(page,`ob-options-${k}`).setChecked(on);
  await id(page,'ob-options-ok').click();await expect(id(page,'ob-options-dialog')).toBeHidden();
 }

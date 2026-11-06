@@ -2659,9 +2659,8 @@ export interface MessageParameters {
   "radioAccess.persistence": never;
   "radioAccess.gate.heading": never;
   "radioAccess.gate.closed": never;
-  "radioAccess.gate.open": never;
   "radioAccess.gate.editMode": never;
-  "radioAccess.gate.apply": never;
+  "radioAccess.gate.instructor": never;
   "radioAccess.gate.note": never;
   "radioAccess.preferences.button": never;
   "radioAccess.preferences.help": never;
@@ -2717,8 +2716,6 @@ export interface MessageParameters {
   "radioAccess.behaviour.parent": never;
   "radioAccess.behaviour.last": never;
   "radioAccess.behaviour.notPorted": never;
-  "radioAccess.status.gate-opened": never;
-  "radioAccess.status.gate-already-open": never;
   "radioAccess.status.refused-surface-open": never;
   "radioAccess.status.refused-inactive": never;
   "radioAccess.status.refused-busy": never;
@@ -3494,4 +3491,19 @@ export interface MessageParameters {
   "spectrum.observationNoTimeNote": never;
   "ph.nativeStale": never;
   "ph.nativeRestoreSkipped": never;
+  "instructorMode.menu": never;
+  "instructorMode.menuOn": never;
+  "instructorMode.confirm.title": never;
+  "instructorMode.confirm.what": never;
+  "instructorMode.confirm.lock": never;
+  "instructorMode.confirm.answers": never;
+  "instructorMode.confirm.session": never;
+  "instructorMode.confirm.on": never;
+  "instructorMode.confirm.cancel": never;
+  "instructorMode.banner.label": never;
+  "instructorMode.banner.text": never;
+  "instructorMode.banner.leave": never;
+  "instructorMode.banner.leaveNote": never;
+  "instructorMode.optionsClosed": never;
+  "instructorMode.optionsClosedOk": never;
 }

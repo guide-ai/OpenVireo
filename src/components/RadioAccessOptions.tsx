@@ -5,11 +5,11 @@ import {menuCaptionText} from '../core/radioControl';
 import {RADIO_OPTIONS_CAPTIONS,type RadioLabOptions,type RadioLabTransition} from '../core/radioAntenna';
 import type {RadioReceiverOptions} from '../core/radioReceiver';
 import {
- INITIAL_RADIO_ACCESS,RADIO_ACCESS_DFM,RADIO_ACCESS_LITERALS,applyCompiledOptionsBranch,applyDemonstrationGate,applyEditModeGate,cancelRadioOptions,closePreferences,dismissRadioOptionsFailure,
+ INITIAL_RADIO_ACCESS,RADIO_ACCESS_DFM,RADIO_ACCESS_LITERALS,applyCompiledOptionsBranch,cancelRadioOptions,closePreferences,dismissRadioOptionsFailure,
  dismissUserOptions,editAccessPulsarList,editRadioOptionsFlag,editRadioOptionsText,okRadioOptions,okRadioSimulationOptions,openPreferences,openRadioOptions,pulsarListAvailability,
- radioLabFirstActivation,receiverCloseMessage,receiverOpened,setCloseRecipient,
+ followPageGate,radioLabFirstActivation,receiverCloseMessage,receiverOpened,setCloseRecipient,
  type RadioAccessHostRefusal,type RadioAccessOutcome,type RadioAccessState,type RadioAccessTransition,type RadioCloseRecipient,type RadioOptionsAuthority,
- type RadioOptionsFullRecord,type RadioOptionsNumericChild,type RadioOptionsNumericFailure,type RadioOptionsRecord,type RadioPulsarListMenu,
+ type RadioOptionsFullRecord,type RadioOptionsNumericChild,type RadioOptionsNumericFailure,type RadioOptionsRecord,type RadioPageGate,type RadioPulsarListMenu,
 } from '../core/radioAccessOptions';
 import {
  RADIO_OPTIONS_DFM_ORDER,RADIO_OPTIONS_NUMERIC_CONSTANTS,RADIO_OPTIONS_OK_ORDER,RADIO_OPTIONS_TEXT_MAX_LENGTH,formatRadioOptionsValue,radioOptionsFixedText,
@@ -25,7 +25,7 @@ import {t,type PlainMessageKey} from '../i18n';
 const D=RADIO_ACCESS_DFM,L=RADIO_ACCESS_LITERALS;
 /** Card status texts of user outcomes (other outcomes are shown elsewhere or not announced). */
 const STATUS:Readonly<Partial<Record<RadioAccessOutcome,PlainMessageKey>>>={
- 'gate-opened':'radioAccess.status.gate-opened','gate-already-open':'radioAccess.status.gate-already-open','refused-surface-open':'radioAccess.status.refused-surface-open',
+ 'refused-surface-open':'radioAccess.status.refused-surface-open',
  'refused-inactive':'radioAccess.status.refused-inactive','refused-busy':'radioAccess.status.refused-busy','refused-modal':'radioAccess.status.refused-modal',
  'refused-receiver-box':'radioAccess.status.refused-receiver-box','refused-parent-open':'radioAccess.status.refused-parent-open',
  'refused-refusal-open':'radioAccess.status.refused-refusal-open','user-options-dismissed':'radioAccess.status.user-options-dismissed',
@@ -74,8 +74,8 @@ export type RadioAccessHostInput=Readonly<{
  numeric:RadioAccessNumericHost;
  /** Phase 1 item 1.5: the applied configuration restored from an investigation file (read once, at mount; no box or dialog). */
  initial?:RadioAccessState|null;
- /** Front R5: the page's Edit Mode has been committed on in this page session (applyEditModeGate). */
- editModeSeen?:boolean;
+ /** Front T1: the page's one instructor gate (core/instructorMode.ts); the card follows it (followPageGate). */
+ pageGate:RadioPageGate;
 }>;
 export type RadioAccessNumericHost=Readonly<{
  /** Handler-time opt-in check on the latest consumer values against the chosen compiled branch (empty: compatible). */
@@ -127,9 +127,9 @@ const canTakeFocus=(el:HTMLElement|null):el is HTMLElement=>
  * runs the route's runPulsarList, which alone writes the shared source buffer and activates Pulsar Parameters. This host
  * never touches the receivers, source buffer, cursor, records, clocks or RNG, and the command never writes the menu flags.
  */
-export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,surfaceNow,runPulsarList,numeric,initial,editModeSeen=false}:RadioAccessHostInput):RadioAccessHost{
+export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,surfaceNow,runPulsarList,numeric,initial,pageGate}:RadioAccessHostInput):RadioAccessHost{
  const id=useId();
- const [state,setState]=useState<RadioAccessState>(()=>initial&&initial.refusal===null&&initial.parent===null?initial:INITIAL_RADIO_ACCESS);
+ const [state,setState]=useState<RadioAccessState>(()=>followPageGate(initial&&initial.refusal===null&&initial.parent===null?initial:INITIAL_RADIO_ACCESS,pageGate).state);
  const stateRef=useRef(state);
  const [status,setStatus]=useState<RadioAccessOutcome|null>(null);
  const [childStatus,setChildStatus]=useState<'radio-ok'|'radio-cancelled'|null>(null);
@@ -144,8 +144,8 @@ export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,
  const step=(fn:(s:RadioAccessState)=>RadioAccessTransition)=>{
   const r=fn(stateRef.current);if(r.changed){stateRef.current=r.state;setState(r.state);}return r;
  };
- // Front R5 [D] 0x5887f0 / 0x587f70: Edit Mode opens the gate for the rest of the session; only the byte is written.
- useEffect(()=>{if(editModeSeen)step(applyEditModeGate);},[editModeSeen]);// eslint-disable-line react-hooks/exhaustive-deps
+ // Front T1: the card follows the page's instructor gate (enter, Edit Mode 0x5887f0 / 0x587f70, Leave); only the byte is written.
+ useEffect(()=>{step(s=>followPageGate(s,{open:pageGate.open,source:pageGate.source}));},[pageGate.open,pageGate.source]);// eslint-disable-line react-hooks/exhaustive-deps
  const admitted=()=>latest.current.active&&!latest.current.busy;
  /** A surface that takes priority over this host exists now (latest antenna state, receiver close box/Record dialog, date
   * dialog or Pulsar Parameters, through surfaceNow), or a foreign native <dialog>. */
@@ -158,7 +158,6 @@ export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,
  const cardUser=(fn:(s:RadioAccessState)=>RadioAccessTransition)=>admitted()&&!openNow()&&!yieldNow()?step(fn):null;
 
  // ---- Card actions (a refused one leaves the status unchanged).
- const applyGate=()=>{const r=cardUser(applyDemonstrationGate);if(r)setStatus(r.outcome);};
  const hostRefusal=():RadioAccessHostRefusal|null=>{
   const l=latest.current;if(!l.active)return 'inactive';if(l.busy)return 'busy';
   return l.surfaceNow()??(nativeModalOpen()?'modal':null);
@@ -257,12 +256,8 @@ export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,
   <ResearchNotes><p className="radio-control-note">{t('radioAccess.intro')}</p></ResearchNotes>
   <p className="radio-control-note" data-testid="radio-access-persistence">{t('radioAccess.persistence')}</p>
   <h3 className="radio-access-subheading">{t('radioAccess.gate.heading')}</h3>
-  <p data-testid="radio-access-gate" data-source={state.gate.source} style={{overflowWrap:'anywhere'}}>{state.gate.open?t(state.gate.source==='edit-mode'?'radioAccess.gate.editMode':'radioAccess.gate.open'):t('radioAccess.gate.closed')}</p>
-  <div className="button-row">
-   <button type="button" className="secondary-button" data-testid="radio-access-demo" disabled={state.gate.open} aria-describedby={`${id}-demo-note`}
-    onKeyDown={ignoreHeldKey} onClick={applyGate}>{t('radioAccess.gate.apply')}</button>
-  </div>
-  <p id={`${id}-demo-note`} className="radio-control-note" data-testid="radio-access-demo-note">{t('radioAccess.gate.note')}</p>
+  <p data-testid="radio-access-gate" data-source={state.gate.source} style={{overflowWrap:'anywhere'}}>{state.gate.open?t(state.gate.source==='edit-mode'?'radioAccess.gate.editMode':'radioAccess.gate.instructor'):t('radioAccess.gate.closed')}</p>
+  <p className="radio-control-note" data-testid="radio-access-gate-note">{t('radioAccess.gate.note')}</p>
   <div className="button-row">
    <button ref={prefsRef} type="button" className="primary-button" data-testid="radio-access-preferences" aria-describedby={`${id}-prefs-help`}
     onKeyDown={ignoreHeldKey} onClick={openPrefs}>{t('radioAccess.preferences.button')}</button>

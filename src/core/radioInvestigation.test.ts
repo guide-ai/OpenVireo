@@ -13,7 +13,7 @@ import {INITIAL_RADIO_LAB,RADIO_COMPILED_OPTIONS,isRadioLabOptions,slewRateFor} 
 import {INITIAL_RADIO_CLOCK_SCENARIO,radioClockSnapshot,startRadioClock} from './radioClock';
 import {INITIAL_RADIO_DATE} from './radioDateDialog';
 import {
- INITIAL_RADIO_ACCESS,applyCompiledOptionsBranch,applyDemonstrationGate,closePreferences,createRadioAccessState,editRadioOptionsFlag,isRadioOptionsFullRecord,okRadioSimulationOptions,
+ INITIAL_RADIO_ACCESS,applyCompiledOptionsBranch,followPageGate,closePreferences,createRadioAccessState,editRadioOptionsFlag,isRadioOptionsFullRecord,okRadioSimulationOptions,
  openPreferences,openRadioOptions,radioOptionsCompiledRecord,
 } from './radioAccessOptions';
 import {INITIAL_PULSAR_REFERENCE,RECORDED_VIREO_PULSARS_DAT,type PulsarReferenceState} from './radioPulsarReferenceCatalog';
@@ -134,15 +134,31 @@ describe('Phase 1 item 1.5 radio investigation codec (strict, canonical, binary6
   expect(configureReceiverWindow(opened,0,{frequencyMHz:400,stepIndex:4,verticalGain:0.3,horizontal:8}).outcome.kind).toBe('refused');
  });
  it('keeps a compiled-branch numeric authority (the applied 19-key record) and refuses a test-supplied profile',()=>{
-  const branch=applyCompiledOptionsBranch(applyDemonstrationGate(INITIAL_RADIO_ACCESS).state,true,true).state;
+  const branch=applyCompiledOptionsBranch(followPageGate(INITIAL_RADIO_ACCESS,{open:true,source:'instructor-switch'}).state,true,true).state;
   const ws=radioWorkspaceSnapshot(workspaceInput({access:branch}));
   expect(ws.ok).toBe(true);
   if(!ws.ok)return;
   const s={...investigation(),workspace:ws.snapshot},w=rebuildRadioInvestigation(readRadioInvestigation(asFile(s)),{plr:null,recordedCatalog:null}).workspace!;
   expect(w.access.authority).toEqual({kind:'compiled-branch',hostPredicate:true});expect(w.access.root).toEqual(radioOptionsCompiledRecord(true));
-  expect(w.access.parent).toBeNull();expect(w.access.gate).toEqual({open:true,source:'demonstration'});
+  expect(w.access.parent).toBeNull();expect(w.access.gate).toEqual({open:false,source:'not-supplied'});// Front T1: instructor mode is page-session state
   const supplied=createRadioAccessState(radioOptionsCompiledRecord(false),{numericAuthority:'supplied'});
   expect(radioWorkspaceSnapshot(workspaceInput({access:supplied}))).toEqual({ok:false,reason:'radio-profile'});
+ });
+ it('Front T1 review 1 L1: a pre-T1 file with an open Demonstration gate is accepted, the gate is not applied and a re-save writes it closed',()=>{
+  const ws=radioWorkspaceSnapshot(workspaceInput());expect(ws.ok).toBe(true);if(!ws.ok)return;
+  const file=asFile({...investigation(),workspace:ws.snapshot});
+  expect(file.workspace.access.gate).toEqual({open:false,source:'not-supplied'});
+  file.workspace.access.gate={open:true,source:'demonstration'};// as the retired "Apply the Demonstration Mode gate" button saved it
+  const w=rebuildRadioInvestigation(readRadioInvestigation(file),{plr:null,recordedCatalog:null}).workspace!;// accepted
+  expect(w.access.gate).toEqual({open:false,source:'not-supplied'});// not applied
+  expect(openPreferences(w.access,null).outcome).toBe('user-options-shown');
+  expect(followPageGate(w.access,{open:false,source:'closed'}).state.gate.open).toBe(false);// the closed page gate keeps it closed
+  const again=radioWorkspaceSnapshot(workspaceInput({access:w.access}));expect(again.ok).toBe(true);if(!again.ok)return;
+  const resaved=asFile({...investigation(),workspace:again.snapshot});
+  expect(resaved.workspace.access.gate).toEqual({open:false,source:'not-supplied'});// re-saved closed
+  // Under instructor mode the card's gate is open, yet the file still keeps it closed.
+  const open=radioWorkspaceSnapshot(workspaceInput({access:followPageGate(w.access,{open:true,source:'instructor-switch'}).state}));
+  expect(open.ok).toBe(true);if(open.ok)expect(asFile({...investigation(),workspace:open.snapshot}).workspace.access.gate).toEqual({open:false,source:'not-supplied'});
  });
  it('refuses Save while Radio or analysis activity is unsafe, naming the activity',()=>{
   const i=workspaceInput();
@@ -303,7 +319,7 @@ describe('Phase 1 item 1.5 corrective contracts: control admission, unopened win
   const d=saveAndRestore({control:ctl,environment:{...IMMEDIATE,domeByte:0}}).rebuilt;
   expect(d.control).toEqual(ctl);expect(d.environment).toEqual({...IMMEDIATE,domeByte:0});
   // Under a numeric authority the environment diameter is the record's aperture: 200 after access.
-  const branch=applyCompiledOptionsBranch(applyDemonstrationGate(INITIAL_RADIO_ACCESS).state,true,true).state;
+  const branch=applyCompiledOptionsBranch(followPageGate(INITIAL_RADIO_ACCESS,{open:true,source:'instructor-switch'}).state,true,true).state;
   const e=saveAndRestore({access:branch,environment:{...env,dishDiameterMeters:200}}).rebuilt;
   expect(e.control).toEqual(start.control);expect(e.environment.dishDiameterMeters).toBe(200);
  });
@@ -370,7 +386,7 @@ describe('Phase 1 item 1.5 corrective contracts: control admission, unopened win
   expect(session.bank.timerEnabled).toBe(false);expect(session.bank.recording.armed).toBe(false);
  });
  it('keeps the actual applied slew rate under a numeric authority and refuses a rate no Int32 base gives (F3)',()=>{
-  const branch=applyCompiledOptionsBranch(applyDemonstrationGate(INITIAL_RADIO_ACCESS).state,true,true).state;
+  const branch=applyCompiledOptionsBranch(followPageGate(INITIAL_RADIO_ACCESS,{open:true,source:'instructor-switch'}).state,true,true).state;
   const base60={...RADIO_COMPILED_OPTIONS,rateBase:60};
   // Activated under base 50 (rate 500 at index 4); the base then changed to 60 without touching the rate.
   const {saved,read,rebuilt}=saveAndRestore({access:branch,options:base60});
@@ -393,7 +409,7 @@ describe('Phase 1 item 1.5 corrective contracts: control admission, unopened win
   for(const rate of [-0,1,500])expect(()=>readRadioInvestigation(inactiveFile(rate)),String(rate)).toThrow(RadioInvestigationError);
  });
  it('admits only producible rate indices, positive applied rates and saved maxima 4 or 5, refusing the file as a whole (N1)',()=>{
-  const branch=applyCompiledOptionsBranch(applyDemonstrationGate(INITIAL_RADIO_ACCESS).state,true,true).state;
+  const branch=applyCompiledOptionsBranch(followPageGate(INITIAL_RADIO_ACCESS,{open:true,source:'instructor-switch'}).state,true,true).state;
   // Preferences ▸ Radio... with Fast Slewing off, OK, then Preferences OK: the applied record maximum becomes 4.
   const ok=okRadioSimulationOptions(editRadioOptionsFlag(openRadioOptions(openPreferences(branch,null).state).state,'fastSlewing',false).state);
   expect(ok.outcome).toBe('radio-ok');

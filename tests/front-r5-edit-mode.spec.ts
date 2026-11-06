@@ -1,6 +1,7 @@
 import{test,expect,type Page}from'@playwright/test';
 import{readFileSync}from'node:fs';
 import{clickHeaderTool}from'./fixtures/header-tools';
+import{enterInstructorMode,leaveInstructorMode}from'./fixtures/instructor-mode';// Front T1: the options open only in instructor mode
 // Front R5 (analysis/front-plans/front-r5.md): Edit Mode's hot-list rows and List › Save, the Preferences gate it opens, the
 // options Reset and Limit Slewing under Edit Mode. Expected values are the recovered literals and the chosen web contract.
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
@@ -14,7 +15,7 @@ async function addRows(page:Page){
  for(const [ra,dec,remark] of [['1','20','first'],['3','30','second']]){await coords(page,ra,dec);await card(page).getByTestId('ob-add-current').click();await id(page,'ob-entry-id').fill(`RA${ra}`);await id(page,'ob-entry-remarks').fill(remark);await id(page,'ob-entry-ok').click();await id(page,'ob-info-box').getByRole('button',{name:'OK'}).click();}
 }
 async function setEditMode(page:Page,on:boolean){
- await card(page).getByTestId('ob-options').click();const box=id(page,'ob-options-edit-mode');
+ await enterInstructorMode(page);await card(page).getByTestId('ob-options').click();const box=id(page,'ob-options-edit-mode');
  if(on)await box.check();else await box.uncheck();await id(page,'ob-options-ok').click();await expect(id(page,'ob-options-dialog')).toBeHidden();
 }
 
@@ -50,10 +51,10 @@ test('Edit Mode shows full hot-list rows in View/Select, Search and Print; Save 
 
 test('Reset asks, restores the compiled values into the dialog, and Cancel keeps the values from before; Edit Mode holds Limit Slewing off',async({page})=>{
  await observatory(page);
- const open=async()=>{await card(page).getByTestId('ob-options').click();await expect(id(page,'ob-options-dialog')).toBeVisible();};
+ const open=async()=>{await enterInstructorMode(page);await card(page).getByTestId('ob-options').click();await expect(id(page,'ob-options-dialog')).toBeVisible();};
  await open();await id(page,'ob-options-limit').check();await id(page,'ob-options-fast-scope-change').check();await id(page,'ob-options-fast-slewing').uncheck();await id(page,'ob-options-ok').click();
  await open();await expect(id(page,'ob-options-limit')).toBeChecked();
- await expect(id(page,'ob-options-teacher-deferred').locator('li')).toHaveCount(12);
+ await expect(id(page,'ob-options-teacher-deferred').locator('li')).toHaveCount(16);// Front T1: 12 − strict VO + 5 typed items
  await expect(id(page,'ob-options-reset')).toHaveAttribute('title','Restore All Options to Default Values');
  await id(page,'ob-options-reset').click();const q=id(page,'ob-options-reset-box');
  await expect(q).toContainText('Are You Sure?');await expect(q).toContainText('Resetting all options to default values');
@@ -72,16 +73,19 @@ test('Reset asks, restores the compiled values into the dialog, and Cancel keeps
  await open();await expect(id(page,'ob-options-fast-scope-change')).not.toBeChecked();await expect(id(page,'ob-options-fast-slewing')).toBeChecked();await expect(id(page,'ob-options-edit-mode')).not.toBeChecked();
 });
 
-test('Edit Mode set in the options opens the radio Preferences gate for the page session',async({page})=>{
+test('Edit Mode and the radio Preferences share the page\'s one instructor gate (Front T1): it stays open with Edit Mode off and Leave closes it',async({page})=>{
  await observatory(page);
  await clickHeaderTool(page,'Radio telescope');await expect(id(page,'radio-access-gate')).toHaveAttribute('data-source','not-supplied');
  await clickHeaderTool(page,'Observatory');await setEditMode(page,true);
  await clickHeaderTool(page,'Radio telescope');const gate=id(page,'radio-access-gate');
- await expect(gate).toHaveAttribute('data-source','edit-mode');await expect(gate).toContainText('Edit Mode gate');
+ // Edit Mode is reached only with the gate open (instructor mode), so the gate keeps the instructor source.
+ await expect(gate).toHaveAttribute('data-source','instructor');await expect(gate).toContainText('Instructor mode');
  await id(page,'radio-access-preferences').click();await expect(id(page,'radio-access-parent')).toBeVisible();
  await id(page,'radio-access-parent-cancel').click();await expect(id(page,'radio-access-parent')).toHaveCount(0);
  await clickHeaderTool(page,'Observatory');await setEditMode(page,false);
- await clickHeaderTool(page,'Radio telescope');await expect(gate).toHaveAttribute('data-source','edit-mode');
+ await clickHeaderTool(page,'Radio telescope');await expect(gate).toHaveAttribute('data-source','instructor');
+ await leaveInstructorMode(page);await expect(gate).toHaveAttribute('data-source','not-supplied');
+ await id(page,'radio-access-preferences').click();await expect(id(page,'radio-access-refusal')).toBeVisible();
 });
 
 test('review 1 M2: an exercise guide sets VIREO\'s exercise byte: LSS shows full rows, and Edit/Delete need Edit Mode outside exercise 0',async({page})=>{

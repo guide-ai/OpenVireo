@@ -1,6 +1,7 @@
 import{test,expect,type Page}from'@playwright/test';
 import{createHash}from'node:crypto';
 import{clickHeaderTool,openHeaderTools}from'./fixtures/header-tools';
+import{enterInstructorMode}from'./fixtures/instructor-mode';// Front T1: the options open only in instructor mode
 // Front P (docs/POLISH-FRONT-P.md): About, bundled Pulsars.HTL, the three web prints, Results Editors aliases, Comparison
 // Clear, Terminate Current Slew?, camera Field Size, the hot-list popup, RA-ordered Add Current and the #spectrometer index.
 // Expected values are the chosen web contract, not native runtime oracles.
@@ -153,7 +154,7 @@ test('hot-list window Edit, Delete (with the native question) and one-level Undo
 test('the QSO list popup offers its Selection items only for a selected data row',async({page})=>{
  await observatory(page);
  // QSO list (TObjctListForm1 family): no popup without a selected data row; with one, the Selection items.
- await card(page).getByTestId('ob-options').click();await id(page,'ob-options-virtual-observatory').check();await id(page,'ob-options-ok').click();
+ await enterInstructorMode(page);await card(page).getByTestId('ob-options').click();await id(page,'ob-options-virtual-observatory').check();await id(page,'ob-options-ok').click();
  await id(page,'fi-file-menu').click();await id(page,'qso-menu').click();await id(page,'qso-ok').click();
  const lines=id(page,'qso-list-lines');await expect(lines).toBeVisible();
  await lines.click({button:'right'});await expect(id(page,'popup-menu')).toHaveCount(0);

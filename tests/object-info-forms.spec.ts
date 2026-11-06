@@ -1,6 +1,7 @@
 import{test,expect,type Page}from'@playwright/test';
 import{readFile}from'node:fs/promises';
 import{paceDownload}from'./fixtures/download-pacing';
+import{enterInstructorMode}from'./fixtures/instructor-mode';// Front T1: the options open only in instructor mode
 
 // Front O (docs/OBJECT-INFO-FORMS.md): Edit Mode, Catalog Object, Field Information lists and Naked Eye Star.
 const card=(p:Page)=>p.locator('.telescope-motion');
@@ -10,7 +11,7 @@ async function open(page:Page){
 }
 async function tracking(page:Page){if(!await page.getByRole('button',{name:'Turn tracking on',exact:true}).isVisible())await page.getByText('Observatory clock & spectral tracking',{exact:true}).click();if(await page.getByRole('button',{name:'Turn tracking on',exact:true}).isVisible())await page.getByRole('button',{name:'Turn tracking on',exact:true}).click();}
 async function editMode(page:Page,on:boolean){
- await card(page).getByTestId('ob-options').click();const box=page.getByTestId('ob-options-edit-mode');
+ await enterInstructorMode(page);await card(page).getByTestId('ob-options').click();const box=page.getByTestId('ob-options-edit-mode');
  await expect(box).not.toBeChecked();if(on)await box.check();await page.getByTestId('ob-options-ok').click();
 }
 async function fieldMenu(page:Page,item:string){
@@ -28,7 +29,7 @@ async function download(page:Page,click:()=>Promise<void>){await paceDownload(pa
 
 test('Edit Mode off (compiled default): no Field Information menu, no Catalog Object click, options unchanged',async({page})=>{
  await open(page);await tracking(page);
- await card(page).getByTestId('ob-options').click();
+ await enterInstructorMode(page);await card(page).getByTestId('ob-options').click();
  await expect(page.getByTestId('ob-options-edit-mode')).not.toBeChecked();await expect(page.getByTestId('ob-options-edit-mode-note')).toContainText('not saved');
  await expect(page.getByTestId('ob-options-others')).not.toContainText('Edit Mode');
  await page.getByRole('button',{name:'Cancel',exact:true}).click();

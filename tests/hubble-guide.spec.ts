@@ -2,6 +2,7 @@ import {test,expect,type Page} from '@playwright/test';
 import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
 import {recordMeasurement,sessionBase} from './fixtures/record-measurement';
+import{enterInstructorMode}from'./fixtures/instructor-mode';// Front T1: the options open only in instructor mode
 async function openGuide(page:Page){await clickHeaderTool(page,'Hubble lab guide');return page.getByRole('dialog',{name:'Your Hubble investigation',exact:true});}
 async function save(page:Page){const wait=page.waitForEvent('download');await page.getByRole('button',{name:'Save session',exact:true}).click();return readFile((await(await wait).path())!);}
 test('self-guided all-supported-target investigation, input recovery, duplicates and derived progress after restore',async({page})=>{
@@ -39,7 +40,7 @@ test('mobile guide cancellation, route changes and raw exposure restoration pres
 test('Time-Dependent Data on: re-recording a galaxy adds a row and the guide asks to remove the extra Hubble row (H2 review 1 L2)',async({page})=>{
  test.setTimeout(120000);
  await page.clock.install();await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.',exact:true})).toBeVisible({timeout:15000});
- await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await page.locator('.telescope-motion').getByTestId('ob-options').click();
+ await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await enterInstructorMode(page);await page.locator('.telescope-motion').getByTestId('ob-options').click();
  await page.getByTestId('ob-options-time-dependent-data').setChecked(true);await page.getByTestId('ob-options-ok').click();await expect(page.getByTestId('ob-options-dialog')).toBeHidden();
  await page.evaluate(()=>{location.hash='#galaxy-exposure';});
  await page.getByLabel('Acquisition galaxy',{exact:true}).selectOption('36747');await page.getByRole('button',{name:'Activate supported galaxy field',exact:true}).click();await page.getByRole('button',{name:'Start galaxy exposure',exact:true}).click();await page.clock.runFor(1000);await page.getByRole('button',{name:'Analyze acquired galaxy',exact:true}).click();

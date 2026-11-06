@@ -1,6 +1,7 @@
 import {test,expect,type Locator,type Page} from '@playwright/test';
 import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
+import{enterInstructorMode}from'./fixtures/instructor-mode';// Front T1: the radio Preferences follows the page's instructor gate
 // Actual App flows of the R-RX13 web trace audition (docs/RADIO-RECEIVER-AUDITION.md) on the #radio-control route. No product
 // debug hook: only the rendered App, its data attributes, the browser clock control, the test-only read hold, and a test-only
 // init script that replaces the page's AudioContext constructor. By default it is a deterministic fake context (no device);
@@ -68,7 +69,7 @@ async function untilFinished(page:Page){
 // ---- Radio configuration helpers (copied from radio-simulation-options-app.spec.ts).
 const numeric=(page:Page)=>id(page,'radio-access-numeric'),full=(page:Page)=>id(page,'radio-options-full');
 const field=(page:Page,f:string)=>id(page,`radio-options-field-${f}`);
-async function demonstration(page:Page){await id(page,'radio-access-demo').click();await expect(id(page,'radio-access-gate')).toHaveAttribute('data-source','demonstration');}
+async function demonstration(page:Page){await enterInstructorMode(page);await expect(id(page,'radio-access-gate')).toHaveAttribute('data-source','instructor');}
 async function optIn(page:Page,host=true){
  await id(page,`radio-access-numeric-optin-${host}`).click();
  await expect(numeric(page)).toHaveAttribute('data-authority','compiled-branch');await expect(numeric(page)).toHaveAttribute('data-host-predicate',String(host));

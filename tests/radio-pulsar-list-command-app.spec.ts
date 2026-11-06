@@ -1,6 +1,7 @@
 import {test,expect,type Browser,type Locator,type Page,type TestInfo} from '@playwright/test';
 import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
+import{enterInstructorMode}from'./fixtures/instructor-mode';// Front T1: the radio Preferences follows the page's instructor gate
 // Actual App flows of R-RX8 File ▸ Pulsar List... (docs/RADIO-PULSAR-PARAMETERS.md WEB-PP-LIST-04, docs/RADIO-ACCESS-OPTIONS.md
 // WEB-ACC-LIST-01; acceptance cases C01–C25 of /tmp/clea-static-research/radio-rx8-list-command-20261025). No harness and no
 // product debug hook: the rendered App, its data attributes, the browser clock control, the test-only read hold, a test-only
@@ -135,9 +136,9 @@ async function configure(page:Page,access:boolean,outer:'ok'|'cancel'='ok'){
  await id(page,`radio-access-parent-${outer}`).click();await expect(parent(page)).toHaveCount(0);
  await expect(id(page,'radio-access-env')).toHaveAttribute('data-value',String(access));
 }
-/** Demonstration gate, Access Pulsar List On before the first activation, then the activation: shown and enabled (T9). */
+/** Instructor gate (Front T1), Access Pulsar List On before the first activation, then the activation: shown and enabled (T9). */
 async function menuOn(page:Page){
- await id(page,'radio-access-demo').click();await expect(id(page,'radio-access-gate')).toHaveAttribute('data-source','demonstration');
+ await enterInstructorMode(page);await expect(id(page,'radio-access-gate')).toHaveAttribute('data-source','instructor');
  await configure(page,true);await switchOnTracking(page);
  await expect(id(page,'radio-access-menu')).toHaveAttribute('data-availability','shown-enabled');
 }

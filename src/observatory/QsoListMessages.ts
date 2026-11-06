@@ -4,7 +4,7 @@ import {HST_ARCHIVE} from '../core/observatoryMenuLiterals';
 
 export const QSO_LIST_MESSAGES=Object.freeze({
  virtualObservatoryLabel:'Virtual Observatory (instructor, VIREO)',
- virtualObservatoryAdaptation:'Web adaptation: in VIREO this instructor option, off by default, enables Run Exercise › Virtual Observatory (All Instruments), the mode in which students get File › QSO List. Here it is a plain check box, off by default and not saved, and its only effect is to show File › QSO List.',
+ virtualObservatoryAdaptation:'Web adaptation: in VIREO this instructor option, off by default, enables Run Exercise › Virtual Observatory (All Instruments), the mode in which students get File › QSO List. Here it opens only in instructor mode (the web form of Demonstration Mode, with no password); it is off by default, not saved, turned off by Leave, and its only effect is to show File › QSO List.',
  sortDisabled:'Sort Options is available only in Edit Mode, as in VIREO; without it the list is sorted by magnitude.',
  limitLabel:'Magnitude limit, V',
  withheld:'Rows near Object X targets are not listed, so the list cannot reveal what an unrevealed Object X target is (web rule; VIREO shows this list only in its Virtual Observatory mode or, during Object X, in Edit Mode).',

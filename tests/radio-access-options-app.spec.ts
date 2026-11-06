@@ -1,6 +1,7 @@
 import {test,expect,type Browser,type Locator,type Page,type TestInfo} from '@playwright/test';
 import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
+import{enterInstructorMode}from'./fixtures/instructor-mode';// Front T1: the radio Preferences follows the page's instructor gate
 // Actual App flows of R-RX7 (docs/RADIO-ACCESS-OPTIONS.md): the Preferences gate scenario, the partial Optical/Radio
 // Simulation Options dialogs on one radio options object, the environment copy read by the panel, and the PulsarList1
 // readout (first activation, Receiver Open disable, the 0x53a close recipient). R-RX8: the readout's flags now also decide
@@ -100,9 +101,10 @@ async function untilFinished(page:Page){
 
 // ---- Radio configuration helpers.
 const parent=(page:Page)=>id(page,'radio-access-parent'),child=(page:Page)=>id(page,'radio-access-child');
+/** Front T1: the card's own Demonstration button is retired; the page's instructor mode is the one gate. */
 async function demonstration(page:Page){
- await id(page,'radio-access-demo').click();
- await expect(id(page,'radio-access-gate')).toHaveAttribute('data-source','demonstration');await expect(id(page,'radio-access-demo')).toBeDisabled();
+ await enterInstructorMode(page);
+ await expect(id(page,'radio-access-gate')).toHaveAttribute('data-source','instructor');await expect(id(page,'radio-access-demo')).toHaveCount(0);
 }
 /** Preferences → Radio... → Access Pulsar List → child OK → outer OK/Cancel (mouse). */
 async function configure(page:Page,access:boolean,outer:'ok'|'cancel'='cancel'){
@@ -136,7 +138,7 @@ async function commandIs(page:Page,state:'absent'|'disabled'|'enabled'){
 test('closed gate: Preferences shows the recovered USER OPTIONS! box; OK, Escape and Enter close it; held keys; nothing changes',async({page})=>{
  await startApp(page);await radioRoute(page);
  await expect(id(page,'radio-access-card')).toBeVisible();await expect(id(page,'radio-access-gate')).toHaveAttribute('data-source','not-supplied');
- await expect(id(page,'radio-access-gate')).toContainText('Not supplied');
+ await expect(id(page,'radio-access-gate')).toContainText('Closed, as the main window leaves it when it starts');
  await values(page,'false','false','unknown');await expect(id(page,'radio-access-last')).toHaveText('Unknown: its startup value was not recovered');
  await expect(id(page,'radio-access-origin')).toContainText('It is not a classroom value.');
  await menuIs(page,'hidden');await expect(id(page,'radio-access-menu-flags')).toHaveText('Enabled: False · Visible: False');
@@ -163,11 +165,11 @@ test('closed gate: Preferences shows the recovered USER OPTIONS! box; OK, Escape
  await expect(id(page,'radio-access-gate')).toHaveAttribute('data-source','not-supplied');await values(page,'false','false','unknown');await menuIs(page,'hidden');
 });
 
-test('Demonstration gate and nested dialogs: Radio OK then outer Cancel applies; first activation shows; Receiver Open disables; TEnvironment1 close keeps it; TRadioLab close re-enables; reopening the existing receiver calls Open again',async({page})=>{
+test('instructor gate and nested dialogs: Radio OK then outer Cancel applies; first activation shows; Receiver Open disables; TEnvironment1 close keeps it; TRadioLab close re-enables; reopening the existing receiver calls Open again',async({page})=>{
  await startApp(page);await radioRoute(page);await loadCatalog(page);
  await demonstration(page);
- await expect(id(page,'radio-access-status')).toHaveText('Demonstration Mode gate applied for this session.');
- await expect(id(page,'radio-access-gate')).toContainText('Demonstration Mode gate applied');await expect(id(page,'radio-access-demo-note')).toContainText('Web scenario');
+ await expect(id(page,'radio-access-status')).not.toHaveAttribute('data-outcome');
+ await expect(id(page,'radio-access-gate')).toContainText('Instructor mode: the Preferences gate is open');await expect(id(page,'radio-access-gate-note')).toContainText('One gate for the whole page');
  // Preferences → the partial parent with Radio... focused.
  await id(page,'radio-access-preferences').click();await expect(parent(page)).toBeVisible();
  await expect(parent(page)).toContainText('Optical Simulation Options');await expect(parent(page)).toContainText('Partial web form');
@@ -205,7 +207,7 @@ test('Demonstration gate and nested dialogs: Radio OK then outer Cancel applies;
  await menuIs(page,'shown-disabled','open-skipped');
  // With the copy Off the TRadioLab close changes nothing.
  await closeMain(page);await menuIs(page,'shown-disabled','close-skipped');
- await expect(id(page,'radio-access-gate')).toHaveAttribute('data-source','demonstration');
+ await expect(id(page,'radio-access-gate')).toHaveAttribute('data-source','instructor');
 });
 
 test('history: access turned on after the first activation keeps the item hidden across route hide/show; Open and a TRadioLab close only change Enabled',async({page})=>{
@@ -274,7 +276,7 @@ test('child Cancel restores; Escape cancels one level only; a held Enter and a d
  await id(page,'pulsar-params-open').click();await expect(id(page,'pulsar-params-window')).toBeVisible();await expect(id(page,'pulsar-params-heading')).toBeFocused();
  await expect(id(page,'pulsar-params-position')).toHaveText('Record 1 of 4');
  await id(page,'pulsar-params-exit').click();
- await expect(id(page,'radio-access-gate')).toHaveAttribute('data-source','demonstration');
+ await expect(id(page,'radio-access-gate')).toHaveAttribute('data-source','instructor');
 });
 
 test('suppression: hidden by an antenna surface, the dialogs keep their state and take focus again; nothing moves focus meanwhile',async({page})=>{
@@ -344,24 +346,20 @@ test('card actions dispatched behind a foreign native dialog are refused; after 
  // A page-level modal <dialog> (a browser-level foreign surface, not a product hook).
  await page.evaluate(()=>{const d=document.createElement('dialog');d.dataset.testid='foreign-dialog';d.textContent='Foreign dialog';document.body.append(d);d.showModal();});
  await expect(id(page,'foreign-dialog')).toBeVisible();
- await clickBehind(page,'radio-access-demo');await flush(page);
- await expect(id(page,'radio-access-gate')).toHaveAttribute('data-source','not-supplied');await expect(id(page,'radio-access-status')).not.toHaveAttribute('data-outcome');
  await clickBehind(page,'radio-access-recipient-radio-lab');await flush(page);
+ await expect(id(page,'radio-access-gate')).toHaveAttribute('data-source','not-supplied');await expect(id(page,'radio-access-status')).not.toHaveAttribute('data-outcome');
  await expect(id(page,'radio-access-recipient')).toHaveAttribute('data-recipient','environment');await expect(id(page,'radio-access-recipient-environment')).toBeChecked();
  // Positive control: the same programmatic clicks apply once the foreign dialog is closed.
  await page.evaluate(()=>{const d=document.querySelector<HTMLDialogElement>('[data-testid="foreign-dialog"]')!;d.close();d.remove();});
  await expect(id(page,'foreign-dialog')).toHaveCount(0);
- await clickBehind(page,'radio-access-demo');await flush(page);
- await expect(id(page,'radio-access-gate')).toHaveAttribute('data-source','demonstration');await expect(id(page,'radio-access-status')).toHaveAttribute('data-outcome','gate-opened');
  await clickBehind(page,'radio-access-recipient-radio-lab');await flush(page);
  await expect(id(page,'radio-access-recipient')).toHaveAttribute('data-recipient','radio-lab');await expect(id(page,'radio-access-recipient-radio-lab')).toBeChecked();
 });
 
 test('card actions dispatched behind the card\'s own USER OPTIONS! box or options dialogs are refused; after they close the action applies',async({page})=>{
  await startApp(page);await radioRoute(page);
- // Behind the USER OPTIONS! box: neither the gate scenario nor the recipient changes, and the status is not replaced.
+ // Behind the USER OPTIONS! box: the recipient does not change and the status is not replaced.
  await id(page,'radio-access-preferences').click();await expect(id(page,'radio-access-refusal')).toBeVisible();
- await clickBehind(page,'radio-access-demo');await flush(page);
  await expect(id(page,'radio-access-gate')).toHaveAttribute('data-source','not-supplied');await expect(id(page,'radio-access-status')).not.toHaveAttribute('data-outcome');
  await clickBehind(page,'radio-access-recipient-radio-lab');await flush(page);
  await expect(id(page,'radio-access-recipient')).toHaveAttribute('data-recipient','environment');await expect(id(page,'radio-access-recipient-environment')).toBeChecked();
@@ -427,7 +425,7 @@ for(const width of [1440,390,375,320])test(`keyboard path and layout without ove
  await id(page,'radio-access-preferences').focus();await page.keyboard.press('Enter');await expect(id(page,'radio-access-refusal')).toBeVisible();await noOverflow(page);
  await page.screenshot({path:info.outputPath(`radio-access-refusal-${width}.png`)});
  await page.keyboard.press('Enter');await expect(id(page,'radio-access-refusal')).toHaveCount(0);
- await id(page,'radio-access-demo').focus();await page.keyboard.press('Enter');await expect(id(page,'radio-access-demo')).toBeDisabled();
+ await demonstration(page);await noOverflow(page);await page.screenshot({path:info.outputPath(`radio-access-instructor-${width}.png`)});
  await id(page,'radio-access-preferences').focus();await page.keyboard.press('Enter');await expect(parent(page)).toBeVisible();await noOverflow(page);
  await page.screenshot({path:info.outputPath(`radio-access-parent-${width}.png`)});
  await page.keyboard.press('Enter');await expect(child(page)).toBeVisible();await noOverflow(page);
@@ -496,7 +494,7 @@ test('preservation: the same seeded receiver scenario with and without every con
  expect(a.menu).toBe('hidden');expect(b.menu).toBe('shown-enabled');
  const radioOf=(text:string)=>{const v=JSON.parse(text);expect(v.version).toBe(23);return v;};
  const sa=radioOf(a.saved),sb=radioOf(b.saved);
- expect(sa.radio.workspace.access.menu.visible).toBe(false);expect(sb.radio.workspace.access).toMatchObject({gate:{open:true,source:'demonstration'},env:{accessPulsarList:true},closeRecipient:'radio-lab'});
+ expect(sa.radio.workspace.access.menu.visible).toBe(false);expect(sb.radio.workspace.access).toMatchObject({gate:{open:false,source:'not-supplied'},env:{accessPulsarList:true},closeRecipient:'radio-lab'});
  delete sa.radio.workspace.access;delete sb.radio.workspace.access;delete sa.radioDigestSHA256;delete sb.radioDigestSHA256;
  expect(sb).toEqual(sa);
  expect({...b,menu:a.menu,saved:''}).toEqual({...a,saved:''});

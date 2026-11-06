@@ -1,4 +1,5 @@
 import{test,expect,type Page}from'@playwright/test';
+import{enterInstructorMode}from'./fixtures/instructor-mode';// Front T1: the options open only in instructor mode
 // Front K (docs/CLUSTER-DATA-DIALOGS.md): File › Cluster Data... → TClstrDlgForm1, View/Select → TClstrListForm1, OK → TClstrRptForm1
 // (AL = 1). Expected lines are the recovered contract over the published cluster fields, not native runtime oracles.
 const id=(page:Page,t:string)=>page.getByTestId(t);
@@ -35,7 +36,7 @@ test('any centre is queried on the GSC tiles (Front G5); validation literals; Ed
  await id(page,'cd-ok').click();
  await expect(id(page,'cluster-data-line-0')).toHaveText('Cluster Name/ID: NGC 2244',{timeout:30000});await expect(id(page,'cluster-data-line-1')).toHaveText(/^[1-9]\d* Stars$/);
  await expect(id(page,'cluster-data-source')).toContainText('full Guide Star Catalog');
- await page.locator('.telescope-motion').getByTestId('ob-options').click();await id(page,'ob-options-edit-mode').check();await id(page,'ob-options-ok').click();
+ await enterInstructorMode(page);await page.locator('.telescope-motion').getByTestId('ob-options').click();await id(page,'ob-options-edit-mode').check();await id(page,'ob-options-ok').click();
  await openDialog(page);await expect(id(page,'cd-type-0')).toBeEnabled();
  await id(page,'cd-file').click();await id(page,'cd-view-select').click();
  await expect(id(page,'cd-study-edit-note')).toBeVisible();const list=await id(page,'cd-study-lines').innerText();for(const r of DISTANCES)expect(list).not.toMatch(r);

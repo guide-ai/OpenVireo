@@ -1,4 +1,5 @@
 import{test,expect,type Page}from'@playwright/test';
+import{enterInstructorMode}from'./fixtures/instructor-mode';// Front T1: the options open only in instructor mode
 // Front R4: Show Object ID / Show Object Mag (env+0x2e81/0x2e80) — the guides force them on as VIREO's exercise menus do, and the
 // photometer's IDText (0x4ffa30) follows the option.
 const card=(p:Page)=>p.locator('.telescope-motion');
@@ -33,14 +34,14 @@ test('review 1 M1/M2: after a Start at Sky the label names the measured star, no
 test('the Options dialog shows the forced options checked; Show Object Mag only after a spectra, Hubble or LSS guide',async({page})=>{
  await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.',exact:true})).toBeVisible({timeout:15000});
  await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
- await card(page).getByTestId('ob-options').click();
+ await enterInstructorMode(page);await card(page).getByTestId('ob-options').click();
  await expect(page.getByTestId('ob-options-show-object-id')).not.toBeChecked();await expect(page.getByTestId('ob-options-show-object-mag')).not.toBeChecked();await page.keyboard.press('Escape');
  await page.getByTestId('pleiades-lab-open').click();await page.keyboard.press('Escape');
- await card(page).getByTestId('ob-options').click();
+ await enterInstructorMode(page);await card(page).getByTestId('ob-options').click();
  await expect(page.getByTestId('ob-options-show-object-id')).toBeChecked();await expect(page.getByTestId('ob-options-show-object-mag')).not.toBeChecked();await page.keyboard.press('Escape');
  await page.getByTestId('classification-lab-open').click();await page.keyboard.press('Escape');
- await card(page).getByTestId('ob-options').click();await expect(page.getByTestId('ob-options-show-object-mag')).toBeChecked();
+ await enterInstructorMode(page);await card(page).getByTestId('ob-options').click();await expect(page.getByTestId('ob-options-show-object-mag')).toBeChecked();
  // The student may still switch them off (Options OK), as in VIREO.
  await page.getByTestId('ob-options-show-object-id').uncheck();await page.getByTestId('ob-options-ok').click();
- await card(page).getByTestId('ob-options').click();await expect(page.getByTestId('ob-options-show-object-id')).not.toBeChecked();
+ await enterInstructorMode(page);await card(page).getByTestId('ob-options').click();await expect(page.getByTestId('ob-options-show-object-id')).not.toBeChecked();
 });
