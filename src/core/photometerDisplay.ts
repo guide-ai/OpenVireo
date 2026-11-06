@@ -24,8 +24,11 @@
  *   STRETCH_DELETESCANS; the pixel phase is not documented): each stamp pixel is bounded by the profile values over its source
  *   footprint widened by one source pixel on each side. The declared value (`declared`) is the engine's nearest-centre choice.
  * - The rotated readback 0x59456c rounds Extended FSIN/FCOS products (0x5946b9, 0x5946cd, Round 0x59471a/0x59473a); where a
- *   product lies within 1e-9 of a half-integer (possible for position angles ≡ 30/60/120/150 mod 180, 518 catalogue galaxies),
- *   both neighbouring readbacks bound the pixel.
+ *   product lies within 1e-9 of a half-integer (possible when the rotation angle, position angle plus the dec-derived term, is a
+ *   multiple of 30°: 518 catalogue galaxies by position angle and most widened rows by PA-0 dec-derived angles such as 120°/300°),
+ *   both neighbouring readbacks bound the pixel. Limit: Number's binary64 dec term can shift the angle by about 5e-11 rad, so the
+ *   1e-9 window covers readbacks only within about 20 px of a stamp's centre; beyond that a tie-prone pixel of a large stamp is not
+ *   widened (measured: every widened gate is at least 160 levels from 80).
  * - GDI's Ellipse pen pixels for r ≤ 9 (r ≥ 10 cannot reach the 3 × 19 patch): a patch pixel within [r − 0.75, r + 1.25] of the
  *   centre may be red (255 + 0 + 0) or keep its colour [I].
  * - The decision is taken only when the whole level interval is on one side of 80; otherwise the gate is `undecided` and the Sky
