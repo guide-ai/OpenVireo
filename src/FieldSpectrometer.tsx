@@ -116,7 +116,7 @@ export default function FieldSpectrometer({link}:{link:FieldSpectrometerLink}){
     // Front T5: FormActivate 0x50dac4 → 0x50dbd8 uses the allotment when the slit's object (name and type) changes and has light
     // (+0x416 = 0, 0x50dcdc). [W] Use stands in for the activation; the object's id stands in for the name and type.
     if(r.status==='ready'&&link.scopeUse){const o=r.result.qsoTarget??r.result.starTarget??r.result.target??null,key=o&&!fieldSpectrometerSkyReading(r.result)?`${kindOf(r.result)}:${o.id}`:'Sky';
-     // Review 1 L2: the check runs at every Use (it is RdngBtnClick's only when the instrument is not open); only a new lit object counts.
+     // Review 1 L2: the Access check is offered at every Use; the core runs it (RdngBtnClick) only when the instrument is not open; only a new lit object counts.
      if(!link.scopeUse('spectrometer',key!=='Sky'&&key!==lastObject.current)){setPrepared(null);setScopeRefused(true);return;}lastObject.current=key;}
     setPrepared(r);}}
   catch(e){if(!controller.signal.aborted)setPrepared(failure(e));}
