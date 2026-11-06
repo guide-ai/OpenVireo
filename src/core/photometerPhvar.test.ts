@@ -3,8 +3,8 @@ import {createHash} from 'node:crypto';
 import {afterEach,describe,expect,it} from 'vitest';
 import {assembleFieldPack,type AssemblySources} from '../io/assembledFieldPack';
 import {checkGscIndex,createGscTileStore} from '../io/gscTiles';
-import {buildFieldPopulation,FIELD_HALF_DEGREES,FIELD_VARIABLE_JD_DOMAIN,type FieldVariableTime} from './fieldEngine';
-import {clearTiledPhotometerFields,photometerFieldFromPopulation,queryPhotometerNeighbors,registerTiledPhotometerField,tiledPhotometerTarget,tiledPhotometerTargetId,TILED_PHOTOMETER_JD_DOMAIN,PhotometerFieldError,type PinnedPleiadesField} from './photometerField';
+import {buildFieldPopulation,FIELD_HALF_DEGREES,FIELD_VARIABLE_JD_DOMAIN,OUTSIDE_VIEW,type FieldVariableTime} from './fieldEngine';
+import {clearTiledPhotometerFields,photometerFieldFromPopulation,queryPhotometerNeighbors,registerTiledPhotometerField,tiledPhotometerTarget,tiledPhotometerTargetId,TILED_PHOTOMETER_JD_DOMAIN,PHOTOMETER_QSO_MERGE_GUARD_DEGREES,PhotometerFieldError,type PinnedPleiadesField} from './photometerField';
 import {buildPinnedPleiadesUbvField} from './photometerUbvField';
 import {attenuatePhotometerMagnitude,combinePhotometerMagnitudes,photometerPointFraction,photometerSeparation} from './photometerSource';
 import {photometerApertureGeometry} from './photometerAperture';
@@ -78,8 +78,21 @@ describe('Front PHVAR: a time-dependent variable at a tiled pointing',()=>{
   expect([s.magnitude,s.photometry2Single,s.photometry3Single]).toEqual([o.v,o.bMinusV,o.uMinusB]);
   expect(r.field.sourceMagnitude).toBe(expectedV(r.field));
  },120_000);
- it('the frozen JD domain is the field engine\'s; target ids round-trip with and without a JD',()=>{
-  expect(TILED_PHOTOMETER_JD_DOMAIN).toEqual(FIELD_VARIABLE_JD_DOMAIN);
+ it('review 1 L1: a variable without values near a QSO of the field needs the time (the merge reads its V, 0x597fda)',async()=>{
+  // Synthetic: CLEA_QSO.DAT record 2's own field (ready, the QSO selected) with one injected miss star whose values are unavailable,
+  // outside the selection radius and the aperture-150 reach. Within the QSO merge guard radius it blocks; beyond it, it does not.
+  const q=new DataView(qso.buffer,qso.byteOffset,qso.byteLength),p={ra:q.getFloat64(2*52+0x12,true),dec:q.getFloat64(2*52+0x1a,true)};
+  const {b,r}=await built(p);expect(r.field?.selected.type).toBe(3);
+  const inject=(offset:number)=>{
+   const id='CLEA_VStrs.dat@99999',star={id,band:'CLEA_VStrs.dat' as const,recordIndex:99999,ra:p.ra,dec:p.dec+offset,magnitude:12,photometry2Single:NaN,photometry3Single:NaN,type:0 as const,variableInserted:true as const};
+   const entry={starId:id,recordIndex:99999,gcvsId:'SYN',path:'miss' as const,ra:star.ra,dec:star.dec,riseWordDefaulted:false,values:{status:'unavailable' as const,reason:'variable-time-required' as const},nearGalaxyOrQso:true};
+   return photometerFieldFromPopulation({...b.population!,stars:[...b.population!.stars,star],variableStars:[entry]},b.reasons,p,'object',{qso,glx});
+  };
+  expect(inject(.02)).toEqual({reason:'photometer-variable',detail:'variable-time-required'});
+  const far=inject(PHOTOMETER_QSO_MERGE_GUARD_DEGREES+.002);expect(far.field?.selected.id).toBe(r.field!.selected.id);expect(far.field?.sourceMagnitude).toBe(r.field!.sourceMagnitude);
+ },120_000);
+ it('the frozen JD domain and the QSO merge guard are the field engine\'s; target ids round-trip with and without a JD',()=>{
+  expect(TILED_PHOTOMETER_JD_DOMAIN).toEqual(FIELD_VARIABLE_JD_DOMAIN);expect(PHOTOMETER_QSO_MERGE_GUARD_DEGREES).toBe(OUTSIDE_VIEW.mergeRadiusDegrees);
   const p={ra:0.0009929221987460951,dec:35.362846359336615};
   expect(tiledPhotometerTargetId(p)).toBe(`gsc:${p.ra},${p.dec}`);expect(tiledPhotometerTarget(tiledPhotometerTargetId(p))).toEqual({pointing:p});
   expect(tiledPhotometerTarget(tiledPhotometerTargetId(p,JD1))).toEqual({pointing:p,jd:JD1});

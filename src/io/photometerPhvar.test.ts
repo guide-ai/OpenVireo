@@ -70,6 +70,9 @@ describe('Front PHVAR: a variable star at a tiled pointing in the journal',()=>{
   // An unreadable JD leaves the session unreadable.
   const bad=JSON.parse(text);bad.events.find((e:PhotometerEvent)=>e.type==='field'&&'jd' in e).jd='x';
   await expect(prepareSessionFields(bad)).rejects.toThrow(PhotometerError);
+  // Review 1 nit 2: one file form per state. A JD on a field event whose frame does not need one (the sky patch) is refused.
+  const crafted=JSON.parse(text);crafted.events.find((e:PhotometerEvent)=>e.type==='field'&&!('jd' in e)).jd=JD1;
+  clearTiledPhotometerFields();await expect(prepareSessionFields(crafted)).rejects.toThrow(PhotometerError);
  },180_000);
  it('earlier owners (no JD in any field event) are unchanged: owner 12 at a star without variables',async()=>{
   await preparePhotometerTiledField(BLANK,{currentJd:()=>JD1});

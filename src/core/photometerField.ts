@@ -343,6 +343,8 @@ export function photometerFieldFromPopulation(population:PopulationLike|null,rea
   if(load.qsos.map(q=>q.recordIndex).join()!==population.qsoMatches.join())throw new PhotometerFieldError('evidence');
   qsos=Object.freeze(load.qsos.map(qsoObject));
  }
+ // Review 1 L1: the QSO positions the merge ran with (the loaded list field+0x35 and any merged QSO in the star list).
+ const qsoGuard:readonly Pointing[]=[...qsos,...stars.filter(s=>s.type===3)];
  const radius=10.5/(936/.05),width=(3/2)/3600,neighbors=queryPhotometerNeighbors(pointing,radius,stars,qsos);
  const galaxies=population.galaxies.map((g,i)=>({id:`g${i}`,ra:g.ra,dec:g.dec,majorArcminutes:g.majorArcminutes}));
  const scene=createNativeSelectionScene(stars,galaxies,{width:936,height:936,fieldDegrees:.05,center:pointing,population:{coverage:'complete',provenance:'compact GSC tiles; photometer field built for this pointing'}});
@@ -359,7 +361,14 @@ export function photometerFieldFromPopulation(population:PopulationLike|null,rea
  // a neighbour at some aperture. The neighbour query grows with the aperture, so the largest selectable one (150) bounds them all.
  const reach=pending.length?queryPhotometerNeighbors(pointing,photometerApertureGeometry(PHOTOMETER_APERTURE_RANGE.max).radiusDegrees,pending,[]):[];
  const selectedPending=selection.kind==='star'?pending.find(s=>s.id===selection.object.id):undefined;
- if(selectedPending||reach.length)return Object.freeze({reason:'photometer-variable' as const,detail:pendingReason(selectedPending??reach[0])});
+ // Review 1 L1: the list itself can depend on the unknown V. The QSO merge 0x597f90 passes the QSO's V as the reference magnitude to
+ // 0x59a2e0 (fld [ebp+0x29] at 0x597fda, call at 0x597fe7), which admits only records with |V − V_QSO| < 1; so a pending variable
+ // within the merge guard radius (2′ nearest + 0.006° runner) of a QSO of this field may change which record the QSO replaces or
+ // prunes, and so the selection and neighbours. Such a field needs the time too. (The galaxy cleanup 0x5980cc compares V only for a
+ // type-3 target, never a variable star; later variable merges pass reference 0, 0x598600.)
+ const nearQso=pending.find(s=>qsoGuard.some(q=>catalogMergeDistance(q,s)<PHOTOMETER_QSO_MERGE_GUARD_DEGREES));
+ const blocking=selectedPending??reach[0]??nearQso;
+ if(blocking)return Object.freeze({reason:'photometer-variable' as const,detail:pendingReason(blocking)});
  let selected:PhotometerFieldObject,selectedGalaxy:PinnedPleiadesField['selectedGalaxy'],centralFraction:number,distance:number;
  if(selection.kind==='galaxy'){
   const g=population.galaxies[Number(selection.object.id.slice(1))];
@@ -385,6 +394,9 @@ export {TILED_PHOTOMETER_PREFIX} from './pleiadesSkyContext';
 import {TILED_PHOTOMETER_PREFIX} from './pleiadesSkyContext';
 /** The frozen JD domain of a tiled frame: the observatory clock's (= fieldEngine FIELD_VARIABLE_JD_DOMAIN, checked by a test; kept
  * here so the photometer journal does not load the field engine). */
+/** Review 1 L1: the QSO merge guard radius, 2′ nearest plus the 0.006° runner deletion (= fieldEngine OUTSIDE_VIEW.mergeRadiusDegrees,
+ * checked by a test). */
+export const PHOTOMETER_QSO_MERGE_GUARD_DEGREES=0.03333333333333333+0.006;
 export const TILED_PHOTOMETER_JD_DOMAIN=Object.freeze({minimum:2415020.5,maximum:2488069.5});
 export const validTiledPhotometerJd=(jd:unknown):jd is number=>typeof jd==='number'&&Number.isFinite(jd)&&jd>=TILED_PHOTOMETER_JD_DOMAIN.minimum&&jd<=TILED_PHOTOMETER_JD_DOMAIN.maximum;
 /** `gsc:<ra>,<dec>`, and Front PHVAR `gsc:<ra>,<dec>:JD<jd>` for a frame whose variable stage needed the frozen observatory JD. */

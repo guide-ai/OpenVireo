@@ -26,10 +26,12 @@ const sources=tileSources;
  * - the field is first built without a time; if that frame is ready, no reading depends on the time (a variable that needs it is
  *   neither selected nor within reach of any aperture) and the frame and its 'field' event carry no JD (unchanged ids and sessions);
  * - otherwise, when the frame was typed by a variable reason, it is built again at the frozen JD and carries it;
- * - `variableTime` (a restored session's stored JD) builds at that JD directly; the clock is then not read. */
+ * - `variableTime` (a restored session's stored JD) takes the clock's place; the clock is then not read. The same two steps run, so
+ *   a stored JD on a field that does not need one gives the untimed frame, whose id the session's event does not name (review 1
+ *   nit 2: one file form per state). */
 export async function preparePhotometerTiledField(pointing:Pointing,options:Readonly<{signal?:AbortSignal;hidden?:Pointing|null;currentJd?:()=>number;variableTime?:FieldVariableTime}>={}):Promise<PreparedTiledPhotometer>{
  const {signal}=options;signal?.throwIfAborted();
- const frozen=options.variableTime?undefined:frozenObservatoryTime(options.currentJd);
+ const frozen=options.variableTime??frozenObservatoryTime(options.currentJd);
  if(await objectXMasked(options.hidden??null,pointing))return Object.freeze({status:'unavailable',reason:'object-x-hidden'});
  let pack;const s=await sources();signal?.throwIfAborted();
  try{pack=await assembleFieldPack(pointing,s.assembly,signal,FIELD_HALF_DEGREES.photometer);}
@@ -46,7 +48,7 @@ export async function preparePhotometerTiledField(pointing:Pointing,options:Read
   catch(e){if(e instanceof FieldEngineError)return e.code;throw e;}
   return photometerFieldFromPopulation(built.population,built.reasons,pointing,'object',{qso:s.assembly.qso,glx:s.glx});
  };
- let r=frame(options.variableTime);
+ let r=frame(undefined);
  if(typeof r!=='string'&&frozen&&needsTime(r))r=frame(frozen);
  if(typeof r==='string')return Object.freeze({status:'unavailable',reason:'field-unreadable',detail:r});
  if(!r.field)return Object.freeze({status:'unavailable',reason:r.reason,...(r.detail?{detail:r.detail}:{})});

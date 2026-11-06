@@ -3415,7 +3415,7 @@ export interface MessageParameters {
   "ph.tiledProvenance": "dec" | "ra" | "record";
   "ph.tiledProvenanceVariableHit": "dec" | "name" | "ra" | "record" | "variable";
   "ph.tiledProvenanceVariableMiss": "dec" | "name" | "ra" | "variable";
-  "ph.tiledFrozenTime": "jd";
+  "ph.tiledFrozenTime": "jd" | "ut";
   "ph.tiledProvenanceCatalogue": "dec" | "ra" | "record";
   "ph.tiledCoverage": "count" | "neighbors";
   "ph.tiledCoverageQso": "count" | "neighbors" | "qsos";

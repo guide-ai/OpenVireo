@@ -211,7 +211,7 @@ unchanged (48-field equality, Pleiades contracts and P2 tests).
 
 ## Time-dependent variables at tiled pointings (Front PHVAR, 2026-11-05)
 
-Static evidence and measurements: `analysis/front-phvar/RECOVERY.md` (excerpts.asm SHA-256 fa3267f5…ab7f); plan:
+Static evidence and measurements: `analysis/front-phvar/RECOVERY.md` (excerpts.asm SHA-256 c9494b81…48db3); plan:
 `analysis/front-plans/front-phvar.md`. Breadth only: E04 still uses the bundled Pleiades fields (none of the 24 photometer fields
 holds a TRUE-dispatch variable; frames and readings unchanged).
 
@@ -228,16 +228,23 @@ holds a TRUE-dispatch variable; frames and readings unchanged).
   the variable stage, the observatory clock (`currentJd`, read once when **Use the telescope pointing** is pressed) is frozen and
   the field is built again at that JD, as the field spectrometer (G4a) and LSS do. The frame's selected star then carries the GCVS
   name and the model's values (hit: the GSC star's id and position; miss: `CLEA_VStrs.dat@<record>` at the variable's position),
-  its neighbours likewise, and the bench says so in one line.
-  - [W] One JD for the whole field, frozen when the student prepares it (VIREO: the clock at each variable when the view loaded the
-    field). Press the button again to read at the current time; changing the clock does not rebuild a prepared frame.
-  - Frames that hold a kept variable but are ready without a time give the same readings at any JD (measured on 352 such
-    pointings: every filter at apertures 5, 10 and 150, Sky and Object, equal to the frame at the JD).
-- **Typed.** `photometer-variable` only when a kept variable without values is selected or within the aperture-150 neighbour
-  query (with a JD: the model's own reasons, `variable-colour-residue` 9 and `variable-spectrum-dangling` 2 positions).
+  its neighbours likewise, and the bench says so in one line (with the JD and its UT date).
+  - [W] One JD for the whole field, frozen when the student prepares it (Activate at a pointing, Point the telescope here or Use
+    the telescope pointing; VIREO: the clock at each variable when the view loaded the field). Press Use the telescope pointing
+    again to read at the current time; changing the clock does not rebuild a prepared frame.
+  - Why a frame ready without a time needs none: a kept variable's values reach a reading only through the fold (selected or a
+    neighbour at some aperture) or through a later stage that reads its V, and the only such stage is the QSO merge, which passes
+    the QSO's V as the reference magnitude to 0x59a2e0 (0x597fda; review 1 L1). The galaxy cleanup and later variable merges pass
+    reference 0. Measured as well: on the 352 pointings where such a frame holds a kept variable, the frames at 24 JDs over about
+    four years give the same readings (U..I, apertures 5, 10, 20, 50, 100 and 150, Sky and Object).
+- **Typed.** `photometer-variable` only when a kept variable without values is selected, within the aperture-150 neighbour
+  query, or within the QSO merge guard radius (2′ + 0.006°) of a QSO of the field (no bundled pointing; a synthetic test pins
+  it). With a JD only the model's own reasons remain: `variable-colour-residue` 9 and `variable-spectrum-dangling` 2 positions.
+  The bench shows the reason in words.
 - **Journal.** The `field` event gains `jd` only for such frames; the target id is `gsc:<ra>,<dec>:JD<jd>`. A history with it is
-  owner **16** (`OpenVireo-photometer-variable-time-v16`, header as owner 15). Restoring rebuilds each frame at its stored JD
-  without reading the clock; owners 1–15 have no such event and replay and re-save byte-identically.
+  owner **16** (`OpenVireo-photometer-variable-time-v16`, header as owner 15). Restoring runs the same two steps with the stored
+  JD in place of the clock (never read on restore), so a JD on a field that does not need one is refused (one file form per state);
+  owners 1–15 have no such event and replay and re-save byte-identically.
 - **Measured** (`analysis/front-phvar/measure.tsv`; before: `front-phtiled/measure-v2.tsv`): over the 31147 CLEA_VStrs.dat
   positions, ready 14619 → 22589 (7621 at the frozen JD); `photometer-variable` 7997 → 11; at aperture 10 Start-ready with the
   0.4 m / 0.9 m / 4 m: 14553 / 14261 / 12833 → 22514 / 22199 / 20501. 27 fields once typed as variables are now
@@ -245,4 +252,6 @@ holds a TRUE-dispatch variable; frames and readings unchanged).
   fields become 5 ready and 3 `photometer-galaxy-name`. QSO, sky-grid and Pleiades sets unchanged.
 - **Tests:** `src/core/photometerPhvar.test.ts` (GM And, record 0, a Cepheid hit, at two JDs: two magnitudes equal to the dispatch
   model; KU And, record 63, a miss; target ids), `src/io/photometerPhvar.test.ts` (clock read once, owner 16, restore at the stored
-  JD, byte-identical re-save, Record/Review) and `tests/photometer-tiled.spec.ts` (GM And measured, saved and restored).
+  JD, byte-identical re-save, Record/Review, a crafted JD refused), the synthetic QSO-guard case in the core test, and
+  `tests/photometer-tiled.spec.ts` (GM And measured, recorded through Record/Review with ID GM And, saved, the shown JD checked
+  against the saved one, and restored).
