@@ -85,8 +85,8 @@ export const OBSERVATORY_MESSAGES=Object.freeze({
    allowUserChange:'Checked (as compiled): the spectrometer routes offer Spectral Range…; unchecked, the item is disabled there, as VIREO\'s spectrometer and Classify forms disable it when they are shown. The range already set stays.',
    colorNote:'The light curve, the HR diagram and the LSS wedge plot follow these two options; the photometer route\'s own web plot does not.',
    sessionNote:'Like Edit Mode, these options last for this page session only and are not saved in investigation files.',
-   tabsHeading:'Parameter values (shown as compiled, read-only)',
-   tabsNote:'The General, CCD and IR values are shown but not editable: the field and camera simulations were checked against exactly these values, and changing them would invalidate those checks. The Photometer and Spectrometer parameters are edits (Front T6); any value other than VIREO\'s is marked uncertified.',
+   tabsHeading:'Parameter values (the Photometer and Spectrometer parameters are editable; the others are shown as compiled, read-only)',
+   tabsNote:'The General, CCD and IR values are shown but not editable: the field and camera simulations were checked against exactly these values, and changing them would invalidate those checks. The Photometer and Spectrometer parameters are edits; any value other than VIREO\'s is marked uncertified.',
    notPorted:'Write Log File stays as compiled: it writes a file a browser page cannot write.',
   }),
   /** Front R5: Reset and Edit Mode's hold on Limit Slewing. */

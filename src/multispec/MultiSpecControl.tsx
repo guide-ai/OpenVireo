@@ -26,7 +26,7 @@ const clockText=(c:Readonly<{minutes:number;seconds:number}>)=>`${c.minutes}:${S
  * (PrintSelectionField1Click 0x52a78c) only calls TObsrvtry.PrintSkyImage1Click 0x53f934, so it opens the same web Print Sky
  * Image (Front P). Help (its options index name +0xb54 is empty by
  * default, docs/CLEA-HELP.md) stays disabled with its reason. */
-export default function MultiSpecControl({state,dispatch,busy,masked,printField=null}:Readonly<{state:MultiSpecState;dispatch:(a:MultiSpecAction)=>void;busy:boolean;
+export default function MultiSpecControl({state,dispatch,busy,masked,printField=null,blockExposure=false}:Readonly<{/** Front T6 review 1 L5: instructor parameters refuse Init and Go. */blockExposure?:boolean;state:MultiSpecState;dispatch:(a:MultiSpecAction)=>void;busy:boolean;
  /** Front P: the shown field to print (null: no field shown, the item is disabled with a typed reason). */
  printField?:Readonly<{pointing:Pointing;telescope:string;clone:()=>Element|null}>|null;
  /** Object X rule (plan §4): the typed S/N reason is replaced by one neutral text. */masked:boolean}>){
@@ -56,8 +56,8 @@ export default function MultiSpecControl({state,dispatch,busy,masked,printField=
   </div>
   <p className="observatory-note">{t('multispec.timerNote')}</p>
   <div className="ms-row ms-buttons"><span>{C.exposure}</span>
-   <button type="button" className="primary-button" disabled={!c.init||busy} onClick={()=>dispatch({type:'init'})} data-testid="ms-init">{C.init}</button>
-   <button type="button" className="secondary-button" disabled={!c.go||busy} onClick={()=>dispatch({type:'go'})} data-testid="ms-go">{C.go}</button>
+   <button type="button" className="primary-button" disabled={!c.init||busy||blockExposure} onClick={()=>dispatch({type:'init'})} data-testid="ms-init">{C.init}</button>
+   <button type="button" className="secondary-button" disabled={!c.go||busy||blockExposure} onClick={()=>dispatch({type:'go'})} data-testid="ms-go">{C.go}</button>
    <button type="button" className="secondary-button" disabled={!c.stop} onClick={()=>dispatch({type:'stop'})} data-testid="ms-stop">{C.stop}</button>
   </div>
  </section>;

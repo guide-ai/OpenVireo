@@ -57,6 +57,8 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
  const [state,dispatch]=useReducer(multiSpecReducer,undefined,()=>createMultiSpecState(telescope,pageSeed()));
  // Front T6: Multi-Spec reads BaseMag, SpSky, SpBase and SpTimer (0x527013, 0x52702c, 0x52727a..0x527290); instructor values refuse it.
  const parameterRefusal=useSpectrometerParameterGate('multispec');
+ // Review 1 L5: an open Multi-Spec stops exposing when instructor values appear, and Init / Go stay refused while they last.
+ useEffect(()=>{if(parameterRefusal&&state.running)dispatch({type:'stop'});},[parameterRefusal,state.running]);
  const [view,setView]=useState<ViewState>({status:'none'}),[viewTry,setViewTry]=useState(0);
  const [results,setResults]=useState<ReadonlyMap<string,Result>>(new Map());
  // Front R4d: VIREO's global Show Object ID / Show Object Mag (env+0x2e81 / +0x2e80), no longer two local check boxes.
@@ -179,7 +181,7 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
   <p role="status" data-testid="ms-access-status">{state.open?t('multispec.accessOpen'):access!=='ready'?multiSpecAccessText(access):''}</p>{rangeBlock&&<p role="status" data-testid="ms-range-block">{rangeBlock}</p>}
   {state.open&&<div className="ms-body">
    <div className="ms-top">
-    <MultiSpecControl state={state} dispatch={dispatch} busy={!usable} masked={mask.masked} printField={ready&&field?{pointing:field.pointing,telescope:opticalProfile(telescope).name,clone:()=>multiSpecFieldPicture(fieldWrap.current)}:null}/>
+    <MultiSpecControl blockExposure={!!parameterRefusal} state={state} dispatch={dispatch} busy={!usable} masked={mask.masked} printField={ready&&field?{pointing:field.pointing,telescope:opticalProfile(telescope).name,clone:()=>multiSpecFieldPicture(fieldWrap.current)}:null}/>
     <div className="ms-field-wrap">
      <p className="observatory-note" data-testid="ms-armed">{armedText}</p>
      <div ref={fieldWrap}>{ready?<MultiSpecFieldOverlay image={ready.viewport!} selections={state.selections} base={state.numberingBase} removing={removing} armed={armed&&usable&&state.selecting}

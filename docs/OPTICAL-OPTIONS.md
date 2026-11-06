@@ -168,7 +168,8 @@ of Numeric Parameters.` with caption `Non-Numeric Value!` (0x5a6bac / 0x5a6bf0, 
 stays open) and sets no focus. Here the same box appears, nothing is committed, and focus returns to OK; [W] a Single overflow or an
 Integer outside Int32 also gets that box (VIREO would raise an unhandled EOverflow or store the low 32 bits). The values last for the
 page session, Reset restores the compiled texts, Leave keeps them, Save Updates writes them (`parameters` in the web file) and Load
-reads them from a web file or from a native VEO_OPTS.INI's stream fields.
+reads them from a web file or from a native VEO_OPTS.INI's stream fields. As in VIREO, reopening the dialog shows each Single at its
+display digits (FormActivate's ffFixed 1 or 2), so pressing OK again stores the rounded value (for example 6.25 becomes 6.3).
 
 **Any value other than VIREO's is `uncertified-parameter`.** With the compiled values every result is byte-identical. Otherwise:
 - **Photometer — measured, labelled.** VIREO's formulas: zero point Single(BaseMag + correction) + 5, sky colours from SkyMag, means
@@ -177,12 +178,21 @@ reads them from a web file or from a native VEO_OPTS.INI's stream fields.
   domain, which the contracts precomputed for the compiled values, are recomputed with the instructor values (a target beyond them
   is refused). E04 does not count such readings (the pinned Pleiades fields are certified for the compiled values only).
 - **Observatory spectrometer — measured, labelled.** BaseMag, SpSky and SpBase replace the field engine's zero point, sky and
-  multiplier; the policy records them (`#P…`) so a saved session replays them; the 2³⁰ per-tick admission applies to the instructor
-  multiplier. Such a spectrum is not an LSS Record Z source. Timer Wait changes nothing here (VIREO's counts follow the elapsed ms; the
-  web keeps its 100 ms browser tick).
-- **Exercise spectrometer routes — refused.** Hubble, LSS, Object X, stellar classification, the sky route and Multi-Spec (which also
-  reads Timer Wait) refuse while a value they read is not VIREO's, with a message naming the edits: their exercise witnesses
-  (E01, E02, E08, Multi-Spec D3) were computed with the compiled values.
+  multiplier; the policy records them with Timer Wait (`#P<base>,<sky>,<count>,<timer>`) so a saved session replays them; the 2³⁰
+  per-tick admission applies to the instructor multiplier. Such a spectrum is not an LSS Record Z source. Timer Wait is
+  TSpectrometer's TTimer interval: the counts follow the cumulative elapsed ms (0x50f797), but the S/N pause (√(total/600) > 1000) is
+  tested once per tick, so VIREO overshoots it by up to one interval of photons (review 1 M1). A non-default Timer Wait is therefore
+  uncertified too: the exposure ticks every max(100, Timer Wait) ms with the test at the end of each tick, and [W] OpenVireo measures
+  1..500 ms only, so a tick stays within the 1000-ms journal bound on which the 2³⁰ argument rests.
+- **Exercise spectrometer routes — refused.** Hubble, LSS, Object X, stellar classification, the sky route and Multi-Spec refuse while
+  BaseMag, SpSky, SpBase or Timer Wait is not VIREO's (Multi-Spec's rate also divides by Timer Wait), with a message naming the
+  edits by their dialog captions; an open Multi-Spec stops exposing and refuses Init and Go. Their exercise witnesses (E01, E02, E08,
+  Multi-Spec D3) were computed with the compiled values.
+- **Where the mark stops [W] (review 1 L3).** The uncertified mark lives in the photometer reading (and an object reading reduced with
+  an uncertified sky is marked too) and in the spectrum's policy. It is not carried into VIREO-format outputs that have no field for
+  it: the photometer's native Record/Review rows, the shared Observational Results list and its saved files, and a `#P` spectrum handed
+  to Classification or the Analyzer as an .SSP. Exercise counts are not affected (E04 leaves such readings out; the LSS list refuses
+  such spectra).
 - [W] VIREO latches BaseMag at each telescope selection and SkyMag at the photometer's FormShow; the web applies the photometer values
   at the next Start and the spectrometer values at the next Use.
 

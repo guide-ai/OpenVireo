@@ -57,7 +57,9 @@ every caller's accumulator; error analysis; measurements; review 1), plan `analy
 - Front T6 (2026-11-06): the 2³⁰ per-tick bound and its S/N-pause argument were derived with the compiled spectrometer values
   (base zero point 6, sky 19, multiplier 50). The instructor edits (docs/OPTICAL-OPTIONS.md) leave every exercise route (Hubble, LSS,
   Object X, classification, sky, Multi-Spec) refused while they differ; only the observatory spectrometer measures with them, applying
-  the same 2³⁰ admission to the instructor multiplier and labelling the spectrum `uncertified-parameter` (policy suffix `#P…`).
+  the same 2³⁰ admission to the instructor multiplier, ticking every max(100, SpTimer) ms with SpTimer ≤ 500 ms (so a tick stays within
+  1000 ms and the S/N pause is tested once per tick, as VIREO tests it), and labelling the spectrum `uncertified-parameter` (policy
+  suffix `#P…`).
 
 ## Slit and magnitude calibration building blocks
 

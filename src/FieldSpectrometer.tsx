@@ -4,7 +4,7 @@ import SpectralRangeRow from './SpectralRangeRow';
 import {SPECTRAL_RANGE_EN as SR} from './SpectralRangeMessages';
 import {useCallback,useContext,useEffect,useImperativeHandle,useMemo,useRef,useState,type Ref} from 'react';
 import {VireoOptionsContext} from './vireoOptionsContext';
-import {isCompiledSpectrometerParameters,spectrometerParameterRefusal,spectrometerParametersOf} from './core/instrumentParameters';
+import {COMPILED_SPECTROMETER_PARAMETERS,isCompiledSpectrometerParameters,spectrometerParameterRefusal,spectrometerParametersOf,spectrometerTickMs} from './core/instrumentParameters';
 import {t,scientific} from './i18n';
 import {displayError} from './i18n/errors';
 import {useBoundedExposure,type ExposureEngine} from './useBoundedExposure';
@@ -68,7 +68,7 @@ type AcquisitionHandle=Readonly<{snapshot:()=>JournalState|null}>;
 function Acquisition({prepared,fieldMatches,active,hidden,onAdopt,restored,onWorkspaceChange,handle,onClassify,onAnalyze,projectBusy,onCounts,current}:{current:Readonly<{object:SpectrometerObject;options:SpectrometerReadoutOptions}>;prepared:Ready;fieldMatches:boolean;active:boolean;hidden:Pointing|null;onAdopt:(p:Ready,s:JournalState)=>void;restored:JournalState|null;
  onWorkspaceChange:(w:ExposureWorkspace)=>void;handle:Ref<AcquisitionHandle>;onClassify?:(source:ClassificationImport)=>void;onAnalyze?:(source:ClassificationImport,origin?:LssFreeSource|null)=>void;projectBusy:boolean;onCounts:(has:boolean)=>void}){
  const heading=useRef<HTMLHeadingElement>(null),engine=useMemo(()=>engineFor(prepared,hidden,onAdopt),[prepared,hidden,onAdopt]);
- const {state,seed,setSeed,notice,setNotice,error,setError,busy,running,armed,activate,start,stop,save,restore,reset,cancel,newSeed,snapshot}=useBoundedExposure({engine,active,fieldMatches,onActivate:()=>{},heading,onWorkspaceChange,projectBusy,parameterRoute:'generic',
+ const {state,seed,setSeed,notice,setNotice,error,setError,busy,running,armed,activate,start,stop,save,restore,reset,cancel,newSeed,snapshot}=useBoundedExposure({engine,active,fieldMatches,onActivate:()=>{},heading,onWorkspaceChange,projectBusy,parameterRoute:'generic',tickMs:spectrometerTickMs(parseFieldSpectrumPolicy(prepared.policy)?.parameters??COMPILED_SPECTROMETER_PARAMETERS),
   ...(restored?{initialWorkspace:{state:restored,seedText:String(restored.seedAtReset)}}:{})});
  useEffect(()=>{if(restored)setNotice(t('fieldSpec.restored'));},[]);// eslint-disable-line react-hooks/exhaustive-deps
  useImperativeHandle(handle,()=>({snapshot:()=>snapshot().state}));
@@ -107,9 +107,9 @@ export default function FieldSpectrometer({link}:{link:FieldSpectrometerLink}){
  useEffect(()=>()=>request.current?.abort(),[]);
  useEffect(()=>{if(!link.active){request.current?.abort();setLoading(false);}},[link.active]);
  // Review 1 L2: every OK restarts the exposure (0x5110b0), even on an unchanged range: okToken is part of the Acquisition key.
- // Front T6: the instructor spectrometer values (BaseMag, SpSky, SpBase) are read at Use, as VIREO's Reset reads them (0x50e0d7..),
- // and recorded in the policy (#P…); SpTimer is TSpectrometer's TTimer interval only (the counts follow the elapsed ms), so the web
- // keeps its 100 ms browser tick for every value.
+ // Front T6: the instructor spectrometer values (BaseMag, SpSky, SpBase, SpTimer) are read at Use, as VIREO's Reset reads them
+ // (0x50e0d7..), and recorded in the policy (#P…). SpTimer is TSpectrometer's TTimer interval: the counts follow the elapsed ms, but
+ // the S/N pause is tested once per tick, so the exposure ticks every max(100, SpTimer) ms (review 1 M1).
  const instrumentParameters=useContext(VireoOptionsContext).instrumentParameters,spectrometerParameters=useMemo(()=>spectrometerParametersOf(instrumentParameters),[instrumentParameters]);
  const spectrometerParametersRef=useRef(spectrometerParameters);spectrometerParametersRef.current=spectrometerParameters;
  const [parameterRefused,setParameterRefused]=useState<string|null>(null);
@@ -177,7 +177,7 @@ export default function FieldSpectrometer({link}:{link:FieldSpectrometerLink}){
   {shown?.status==='unavailable'&&<p role="status" data-testid="field-spec-status" data-reason={shown.reason}>{shown.reason==='range-not-witnessed'?SR.notWitnessed:shown.reason==='internal'?t('fieldSpec.internalError'):shown.reason==='object-x-hidden'||shown.reason==='load-error'?fieldInfoReasonText(shown.reason):fieldInfoReasonText(shown.reason,'detail' in shown?shown.detail??'':'')}</p>}
   {ready&&<div data-testid="field-spec-field" data-kind={kind??'none'}>
    <p>{t('fieldSpec.field',{ra:ready.pointing.ra,dec:ready.pointing.dec,telescope:ready.telescope})}</p>
-   {(()=>{const p=parseFieldSpectrumPolicy(ready.policy)?.parameters;return p&&<p role="status" data-testid="field-spec-uncertified" data-reason="uncertified-parameter">{t('fieldSpec.uncertified',{base:p.baseMagnitude,sky:p.skyMagnitude,count:p.baseCount})}</p>;})()}
+   {(()=>{const p=parseFieldSpectrumPolicy(ready.policy)?.parameters;return p&&<p role="status" data-testid="field-spec-uncertified" data-reason="uncertified-parameter">{t('fieldSpec.uncertified',{base:p.baseMagnitude,sky:p.skyMagnitude,count:p.baseCount,timer:p.timerMs})}</p>;})()}
    {r!.m31Notice&&<p role="status" data-testid="field-spec-m31-notice"><strong>{M31_NOTICE.caption}</strong> <span style={{whiteSpace:'pre-line'}}>{M31_NOTICE.text}</span> <small>{M31_NOTICE.adaptation}</small></p>}
    <SpectrometerReadout object={current.object} options={current.options} sky={sky}/>
    <p data-testid="field-spec-object">{object?t('fieldSpec.object',{kind:t(`fieldSpec.kind.${kind!}`),id:object.id,magnitude:scientific(object.magnitude,4,true)}):t('fieldSpec.noObject')}</p>

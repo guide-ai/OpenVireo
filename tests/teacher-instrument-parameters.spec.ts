@@ -46,12 +46,12 @@ test('an instructor sets the photometer Base Photon Count: VIREO\'s conversion b
  await expect(id(page,'ob-options-dialog')).toBeVisible();await expect(id(page,'ob-options-ok')).toBeFocused();
 
  await id(page,'ob-options-param-baseCount').fill('2000');
- await expect(id(page,'ob-options-parameters-uncertified')).toContainText('BaseCountEd');
+ await expect(id(page,'ob-options-parameters-uncertified')).toContainText('Photometer › Base Photon Count');
  await photo.scrollIntoViewIfNeeded();await photo.screenshot({path:test.info().outputPath('photometer-tab-parameters.png')});
  await id(page,'ob-options-ok').click();await expect(id(page,'ob-options-dialog')).toBeHidden();
 
  // The photometer measures with VIREO's formula (mean × BaseCount): about twice the counts, the same V scale, labelled.
- await toPhotometer(page);await expect(id(page,'photo-parameters-note')).toContainText('BaseCountEd');
+ await toPhotometer(page);await expect(id(page,'photo-parameters-note')).toContainText('Photometer › Base Photon Count');
  await pair(page);
  await expect(id(page,'photo-uncertified')).toHaveAttribute('data-reason','uncertified-parameter');
  await expect(id(page,'photo-uncertified')).toContainText('Base Photon Count 2000');
@@ -78,7 +78,7 @@ test('spectrometer parameters: the exercise routes refuse them with a typed reas
  await id(page,'ob-options-ok').click();await expect(id(page,'ob-options-dialog')).toBeHidden();
  // Multi-Spec reads SpSky and SpTimer (0x52702c, 0x52728a): refused, with the edits named and Access disabled.
  const refused=id(page,'ms-parameters-refused');await expect(refused).toHaveAttribute('data-reason','uncertified-parameter');
- await expect(refused).toContainText('SpSkyEd, SpTimerEd');await expect(id(page,'ms-card').getByTestId('ms-access')).toBeDisabled();
+ await expect(refused).toContainText('Spectrometer › Sky Magnitude (V), Spectrometer › Timer Wait (ms)');await expect(refused).toContainText('Optical Simulation Options…');await expect(id(page,'ms-card').getByTestId('ms-access')).toBeDisabled();
  // The values survive Leave and reopening the dialog.
  await page.getByTestId('instructor-mode-leave').click();await enterInstructorMode(page);await page.locator('.telescope-motion').getByTestId('ob-options').click();
  await expect(id(page,'ob-options-param-spectrometerSkyMagnitude')).toHaveValue('20.00');

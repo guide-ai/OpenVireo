@@ -307,8 +307,9 @@ every reading, witness and pinned field above is byte-identical. Any other value
   callbacks per period at a Timer-ms interval (0x500a01, 0x500a43) [W: the integer nominal count at a tie, as for 100 ms];
 - the values travel as a `parameters` event (owner 17, `OpenVireo-photometer-instructor-parameters-v17`), and an untimed session first
   takes its shown 0.1 s × 1 timing (the only form that admits the event);
-- the reading records them and shows `photo-uncertified`; E04's summary and cluster points leave it out (the pinned Pleiades fields
-  and the contracts' maxima hold for the compiled values only);
+- the reading records them and shows `photo-uncertified` (review 1: so does an object reading reduced with an uncertified sky); E04's
+  summary and cluster points leave both out (the pinned Pleiades fields and the contracts' maxima hold for the compiled values only);
+  [W] the mark is not carried into the native Record/Review rows or the shared Observational Results list (no field for it);
 - the limits are recomputed with the instructor values: the photometer's per-callback Poisson bound (10⁶) and the all-duration 32-bit
   count over 5·⌈100000 / Timer⌉ callbacks, for tiled and bundled targets, and the base-count sum; a target beyond them refuses Start;
 - the PHSKY display gate does not read these fields (it uses the telescope record's +0x6f8 and the stamps) and is unchanged.

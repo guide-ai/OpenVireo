@@ -19,7 +19,8 @@ import {delphiFixed} from './variableStars';
  *   copies the record into env only on OK (0x588737) and Cancel restores the dialog's snapshot dlg+0x5a0 (0x5a6d04), so after a
  *   conversion error nothing reaches the instruments unless OK later succeeds [I]. The web commits nothing on an error.
  * - [D] Display: FormActivate 0x5a56e0 writes FloatToStrF(Single, ffFixed, 18, d) through 0x486268 (d = 1 for BaseMag
- *   0x5a57cd, 2 for SkyMag 0x5a57f2 and SpSky 0x5a5817) and IntToStr 0x40ac14 for the four Integers (0x5a58c0..0x5a5914).
+ *   0x5a57cd, 2 for SkyMag 0x5a57f2 and SpSky 0x5a5817) and IntToStr 0x40ac14 for the four Integers (0x5a58c0..0x5a5914). So a Single
+ *   reopened and OK'd again is stored at its display digits, in VIREO and here.
  * - [D] Compiled defaults 0x5a21d0: BaseMag 6.0 (0x5a2a00), SkyMag 16.0 (0x5a2a0a), SpSky 19.0 (0x5a2a14), BaseCount 1000
  *   (0x5a2a88), PhoTimer 100 (0x5a2a92), SpBase 50 (0x5a2a9c), SpTimer 1 (0x5a2aa6).
  * - [W] WEB-T6-01: StrToFloat is the project's web grammar parseDelphiFloat ('.' separator, exponent of at most two digits, so
@@ -155,38 +156,47 @@ export function photometerSkyBands(skyMagnitude:number,bv:number,ub:number){
 
 // ---- Spectrometer ----
 /** What the single-slit spectrometer reads: BaseMag (zero point, 0x50e12f/0x50e173/0x50e1b7/0x50e24c), SpSky (sky amplitude
- * 0x50e23f) and SpBase (the per-ms multiplier of the timer 0x50f7b2). SpTimer is only TSpectrometer's TTimer interval
- * (0x50f5f2 → 0x449004): the counts are SpBase × the GetTickCount delta (0x50f797..0x50f7b8), so they do not depend on it. */
-export type SpectrometerParameters=Readonly<{baseMagnitude:number;skyMagnitude:number;baseCount:number}>;
-export const spectrometerParametersOf=(p:InstrumentParameters):SpectrometerParameters=>Object.freeze({baseMagnitude:p.baseMagnitude,skyMagnitude:p.spectrometerSkyMagnitude,baseCount:p.spectrometerBaseCount});
+ * 0x50e23f), SpBase (the per-ms multiplier of the timer 0x50f7b2) and SpTimer, TSpectrometer's TTimer interval (0x50f5f2 →
+ * 0x449004). The counts are SpBase × the cumulative GetTickCount delta (0x50f797..0x50f7b8), so the sum of a tick's draws is one
+ * Poisson of the whole interval; but the S/N pause (√(total/600) > 1000, exposure.ts) is tested once per tick, so VIREO overshoots
+ * it by up to one SpTimer interval of photons (review 1 M1). The web ticks the generic route every max(100, SpTimer) ms, with the
+ * test at the end of each tick, and records a non-default SpTimer in the policy; its domain stops at 500 ms so a tick stays within
+ * the journal's 1000-ms bound (MAX_JOURNAL_TICK_MS), on which the 2³⁰ admission argument rests. */
+export type SpectrometerParameters=Readonly<{baseMagnitude:number;skyMagnitude:number;baseCount:number;timerMs:number}>;
+export const spectrometerParametersOf=(p:InstrumentParameters):SpectrometerParameters=>Object.freeze({baseMagnitude:p.baseMagnitude,skyMagnitude:p.spectrometerSkyMagnitude,baseCount:p.spectrometerBaseCount,timerMs:p.spectrometerTimerMs});
 export const COMPILED_SPECTROMETER_PARAMETERS=spectrometerParametersOf(COMPILED_INSTRUMENT_PARAMETERS);
-export const isCompiledSpectrometerParameters=(p:SpectrometerParameters)=>Object.is(p.baseMagnitude,6)&&Object.is(p.skyMagnitude,19)&&p.baseCount===50;
-/** [W] WEB-T6-03: the generic spectrometer measures with SpBase 1..2^20 and magnitudes within ±100; beyond that it refuses. */
-export const SPECTROMETER_PARAMETER_DOMAIN=Object.freeze({minimumBaseCount:1,maximumBaseCount:1<<20,maximumMagnitude:100});
-export function spectrometerParameterRefusal(p:SpectrometerParameters):'base-count'|'magnitude'|null{
+export const isCompiledSpectrometerParameters=(p:SpectrometerParameters)=>Object.is(p.baseMagnitude,6)&&Object.is(p.skyMagnitude,19)&&p.baseCount===50&&p.timerMs===1;
+/** The browser tick of the generic route: the compiled 1 ms keeps the web's 100 ms interval [W]; a longer SpTimer is VIREO's. */
+export const spectrometerTickMs=(p:SpectrometerParameters)=>Math.max(100,p.timerMs);
+/** [W] WEB-T6-03: the generic spectrometer measures with SpBase 1..2^20, SpTimer 1..500 ms and magnitudes within ±100. */
+export const SPECTROMETER_PARAMETER_DOMAIN=Object.freeze({minimumBaseCount:1,maximumBaseCount:1<<20,minimumTimerMs:1,maximumTimerMs:500,maximumMagnitude:100});
+export function spectrometerParameterRefusal(p:SpectrometerParameters):'base-count'|'timer'|'magnitude'|null{
  const d=SPECTROMETER_PARAMETER_DOMAIN;
  if(p.baseCount<d.minimumBaseCount||p.baseCount>d.maximumBaseCount)return 'base-count';
+ if(p.timerMs<d.minimumTimerMs||p.timerMs>d.maximumTimerMs)return 'timer';
  if(Math.abs(p.baseMagnitude)>d.maximumMagnitude||Math.abs(p.skyMagnitude)>d.maximumMagnitude)return 'magnitude';
  return null;
 }
 /** The route-level gate. 'generic': the observatory spectrometer (FieldSpectrometer), which measures with uncertified values
- * (labelled). 'exercise': the Hubble, LSS, Object X, stellar classification, sky and Multi-Spec routes, whose witnesses were
- * computed with the compiled values; any non-default value that reaches them (BaseMag, SpSky, SpBase; for Multi-Spec also
- * SpTimer, which its rate reads, 0x52728a / 0x52a526) refuses them. */
+ * (labelled). 'exercise': the Hubble, LSS, Object X, stellar classification and sky routes, and 'multispec': Multi-Spec, whose
+ * witnesses were computed with the compiled values; any non-default value that reaches them (BaseMag, SpSky, SpBase, SpTimer: the
+ * S/N pause granularity on TSpectrometer, the rate divisor 0x52728a / 0x52a526 on Multi-Spec) refuses them. */
 export function spectrometerRouteRefusal(p:InstrumentParameters,route:'generic'|'exercise'|'multispec'):readonly InstrumentParameterKey[]{
- const keys:InstrumentParameterKey[]=route==='multispec'?['baseMagnitude','spectrometerSkyMagnitude','spectrometerBaseCount','spectrometerTimerMs']:['baseMagnitude','spectrometerSkyMagnitude','spectrometerBaseCount'];
+ const keys:InstrumentParameterKey[]=['baseMagnitude','spectrometerSkyMagnitude','spectrometerBaseCount','spectrometerTimerMs'];
  if(route==='generic')return Object.freeze([]);
  return Object.freeze(keys.filter(k=>!Object.is(p[k],COMPILED_INSTRUMENT_PARAMETERS[k])));
 }
-/** The policy suffix of a generic-route exposure taken with uncertified spectrometer parameters: `#P<base>,<sky>,<count>` (the
- * exact binary64 spellings); none for the compiled values, so every earlier policy is unchanged. */
+/** The policy suffix of a generic-route exposure taken with uncertified spectrometer parameters:
+ * `#P<base>,<sky>,<count>,<timer>` (the exact binary64 spellings); none for the compiled values, so every earlier policy is unchanged. */
 export function spectrometerPolicySuffix(p:SpectrometerParameters):string{
- return isCompiledSpectrometerParameters(p)?'':`#P${p.baseMagnitude},${p.skyMagnitude},${p.baseCount}`;
+ return isCompiledSpectrometerParameters(p)?'':`#P${p.baseMagnitude},${p.skyMagnitude},${p.baseCount},${p.timerMs}`;
 }
 export function parseSpectrometerPolicySuffix(policy:string):Readonly<{base:string;parameters:SpectrometerParameters}>|null{
- const m=/^(.*)#P([^,#]+),([^,#]+),([^,#]+)$/.exec(policy);
+ const m=/^(.*)#P([^,#]+),([^,#]+),([^,#]+),([^,#]+)$/.exec(policy);
  if(!m)return policy.includes('#P')?null:Object.freeze({base:policy,parameters:COMPILED_SPECTROMETER_PARAMETERS});
- const p=Object.freeze({baseMagnitude:Number(m[2]),skyMagnitude:Number(m[3]),baseCount:Number(m[4])});
- if(!validParameterValue('baseMagnitude',p.baseMagnitude)||!validParameterValue('spectrometerSkyMagnitude',p.skyMagnitude)||!validParameterValue('spectrometerBaseCount',p.baseCount)||isCompiledSpectrometerParameters(p)||spectrometerParameterRefusal(p))return null;
- return spectrometerPolicySuffix(p)===`#P${m[2]},${m[3]},${m[4]}`?Object.freeze({base:m[1],parameters:p}):null;
+ const p=Object.freeze({baseMagnitude:Number(m[2]),skyMagnitude:Number(m[3]),baseCount:Number(m[4]),timerMs:Number(m[5])});
+ if(!validParameterValue('baseMagnitude',p.baseMagnitude)||!validParameterValue('spectrometerSkyMagnitude',p.skyMagnitude)||!validParameterValue('spectrometerBaseCount',p.baseCount)||!validParameterValue('spectrometerTimerMs',p.timerMs)||isCompiledSpectrometerParameters(p)||spectrometerParameterRefusal(p))return null;
+ return spectrometerPolicySuffix(p)===`#P${m[2]},${m[3]},${m[4]},${m[5]}`?Object.freeze({base:m[1],parameters:p}):null;
 }
+/** Review 1 L1: a field named as the dialog shows it, `<tab> › <caption>` (both tabs have a Sky Magnitude and a Timer Wait). */
+export const instrumentParameterLabel=(k:InstrumentParameterKey)=>{const f=FIELD.get(k)!;return `${f.tab==='photometer'?'Photometer':'Spectrometer'} › ${f.caption}`;};

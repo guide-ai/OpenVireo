@@ -1,7 +1,7 @@
 import {describe,expect,it} from 'vitest';
 import {COMPILED_INSTRUMENT_PARAMETERS,INSTRUMENT_PARAMETER_FIELDS,PARAMETER_ERROR_BOX,applyParameterTexts,convertParameterText,instrumentParameterText,instrumentParameterTexts,
  isCompiledParameters,parseSpectrometerPolicySuffix,photometerCallbacksPerPeriod,photometerParameterRefusal,photometerParametersOf,photometerSkyBands,readInstrumentParameters,
- spectrometerPolicySuffix,spectrometerRouteRefusal,uncertifiedParameterKeys,COMPILED_SPECTROMETER_PARAMETERS,COMPILED_PHOTOMETER_PARAMETERS,type InstrumentParameters} from './instrumentParameters';
+ spectrometerPolicySuffix,spectrometerRouteRefusal,instrumentParameterLabel,spectrometerTickMs,spectrometerParameterRefusal,uncertifiedParameterKeys,COMPILED_SPECTROMETER_PARAMETERS,COMPILED_PHOTOMETER_PARAMETERS,type InstrumentParameters} from './instrumentParameters';
 import {OPTION_TABS} from './opticalOptions';
 import {createPhotometer,photometerEvent,releasePhotometer,replayPhotometer,type PhotometerEvent,type PhotometerState} from './photometer';
 import {photometerJournalVersion,INSTRUCTOR_PARAMETERS_PHOTOMETER_POLICY} from './photometerJournal';
@@ -69,18 +69,25 @@ describe('Front T6 uncertified-parameter typing',()=>{
  it('names every non-default field and gates the routes',()=>{
   const p={...COMPILED_INSTRUMENT_PARAMETERS,skyMagnitude:17,spectrometerTimerMs:5};
   expect(uncertifiedParameterKeys(p)).toEqual(['skyMagnitude','spectrometerTimerMs']);
-  expect(spectrometerRouteRefusal(p,'exercise')).toEqual([]);// SpTimer is only TSpectrometer's TTimer interval
+  // Review 1 M1: SpTimer sets where TSpectrometer tests the S/N pause, so it gates the exercise routes too
+  expect(spectrometerRouteRefusal(p,'exercise')).toEqual(['spectrometerTimerMs']);
   expect(spectrometerRouteRefusal(p,'multispec')).toEqual(['spectrometerTimerMs']);
-  expect(spectrometerRouteRefusal({...p,baseMagnitude:7},'exercise')).toEqual(['baseMagnitude']);
+  expect(instrumentParameterLabel('spectrometerTimerMs')).toBe('Spectrometer › Timer Wait (ms)');expect(instrumentParameterLabel('skyMagnitude')).toBe('Photometer › Sky Magnitude (V)');
+  expect(spectrometerRouteRefusal({...p,baseMagnitude:7},'exercise')).toEqual(['baseMagnitude','spectrometerTimerMs']);
   expect(spectrometerRouteRefusal({...p,baseMagnitude:7},'generic')).toEqual([]);
  });
  it('policy suffix: none for the compiled values, exact round trip otherwise',()=>{
   expect(spectrometerPolicySuffix(COMPILED_SPECTROMETER_PARAMETERS)).toBe('');
   expect(parseSpectrometerPolicySuffix('x:1,2:T0')).toEqual({base:'x:1,2:T0',parameters:COMPILED_SPECTROMETER_PARAMETERS});
-  const p={baseMagnitude:Math.fround(6.5),skyMagnitude:20,baseCount:100},s=spectrometerPolicySuffix(p);
-  expect(s).toBe('#P6.5,20,100');expect(parseSpectrometerPolicySuffix('x'+s)).toEqual({base:'x',parameters:p});
-  expect(parseSpectrometerPolicySuffix('x#P6,19,50')).toBeNull();// the compiled values never carry a suffix
-  expect(parseSpectrometerPolicySuffix('x#P6.1,19,50')).toBeNull();// not a Single
+  const p={baseMagnitude:Math.fround(6.5),skyMagnitude:20,baseCount:100,timerMs:1},s=spectrometerPolicySuffix(p);
+  expect(s).toBe('#P6.5,20,100,1');expect(parseSpectrometerPolicySuffix('x'+s)).toEqual({base:'x',parameters:p});
+  expect(parseSpectrometerPolicySuffix('x#P6,19,50,1')).toBeNull();// the compiled values never carry a suffix
+  expect(parseSpectrometerPolicySuffix('x#P6.1,19,50,1')).toBeNull();// not a Single
+  expect(parseSpectrometerPolicySuffix('x#P6.5,20,100')).toBeNull();// the T6 three-field form is not admitted
+  // SpTimer alone: uncertified, recorded; the browser tick follows it (at least 100 ms); 1..500 ms only
+  const t={...COMPILED_SPECTROMETER_PARAMETERS,timerMs:300};
+  expect(spectrometerPolicySuffix(t)).toBe('#P6,19,50,300');expect(spectrometerTickMs(t)).toBe(300);expect(spectrometerTickMs(COMPILED_SPECTROMETER_PARAMETERS)).toBe(100);
+  expect(spectrometerParameterRefusal({...t,timerMs:501})).toBe('timer');expect(spectrometerParameterRefusal(t)).toBeNull();
  });
 });
 

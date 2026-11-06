@@ -31,9 +31,9 @@ describe('Front T6 generic spectrometer parameters',()=>{
   expect(b.policy).toBe(a.policy);expect(b.result.calibration).toEqual(a.result.calibration);expect(b.result.calibration!.multiplier).toBeUndefined();
  });
  it('BaseMag, SpSky and SpBase change the means and multiplier as VIREO\'s formulas say, and the policy replays them',async()=>{
-  const a=await prepareFieldSpectrum(at,0),p={baseMagnitude:7,skyMagnitude:20,baseCount:100},b=await prepareFieldSpectrum(at,0,{parameters:p});
+  const a=await prepareFieldSpectrum(at,0),p={baseMagnitude:7,skyMagnitude:20,baseCount:100,timerMs:1},b=await prepareFieldSpectrum(at,0,{parameters:p});
   if(a.status!=='ready'||b.status!=='ready')throw new Error('not ready');
-  expect(b.policy).toBe(a.policy+'#P7,20,100');expect(parseFieldSpectrumPolicy(b.policy)?.parameters).toEqual(p);
+  expect(b.policy).toBe(a.policy+'#P7,20,100,1');expect(parseFieldSpectrumPolicy(b.policy)?.parameters).toEqual(p);
   const ca=fieldSpectrumCalibration(a.result)!,cb=fieldSpectrumCalibration(b.result)!;
   expect(ca.multiplier).toBe(FIELD_MULTIPLIER);expect(cb.multiplier).toBe(100);
   expect(b.result.calibration!.zeroPoint).toBe(a.result.calibration!.zeroPoint+1);
@@ -52,7 +52,9 @@ describe('Front T6 generic spectrometer parameters',()=>{
  });
  it('refuses a policy whose suffix is not a canonical instructor set',()=>{
   const base='openvireo-field-spectrum-v1:2.5125473,0.25592:T0';
-  expect(parseFieldSpectrumPolicy(base+'#P6,19,50')).toBeNull();expect(parseFieldSpectrumPolicy(base+'#P7,20,0')).toBeNull();
-  expect(parseFieldSpectrumPolicy(base+'#P7,20,100')).toMatchObject({parameters:{baseMagnitude:7,skyMagnitude:20,baseCount:100}});
+  expect(parseFieldSpectrumPolicy(base+'#P6,19,50,1')).toBeNull();expect(parseFieldSpectrumPolicy(base+'#P7,20,0,1')).toBeNull();
+  expect(parseFieldSpectrumPolicy(base+'#P7,20,100,1')).toMatchObject({parameters:{baseMagnitude:7,skyMagnitude:20,baseCount:100,timerMs:1}});
+  // Review 1 M1: SpTimer alone is recorded (the counts are unchanged, only the tick and the S/N test granularity)
+  expect(parseFieldSpectrumPolicy(base+'#P6,19,50,250')).toMatchObject({parameters:{timerMs:250}});expect(parseFieldSpectrumPolicy(base+'#P6,19,50,600')).toBeNull();
  });
 });

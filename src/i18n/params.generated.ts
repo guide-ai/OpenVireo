@@ -3561,6 +3561,9 @@ export interface MessageParameters {
   "ph.uncertifiedReading": "base" | "count" | "sky" | "timer";
   "fieldSpec.parametersDomain.base-count": never;
   "fieldSpec.parametersDomain.magnitude": never;
-  "fieldSpec.uncertified": "base" | "count" | "sky";
+  "fieldSpec.uncertified": "base" | "count" | "sky" | "timer";
   "optionsFile.reason.not-representable": never;
+  "fieldSpec.parametersDomain.timer": never;
+  "ph.uncertifiedSky": "base" | "count" | "sky" | "timer";
+  "ph.parametersTimerLimit": never;
 }
