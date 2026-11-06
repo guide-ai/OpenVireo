@@ -17,6 +17,10 @@ import witness from './photometerDisplay.witness.json';
 // catalogue bytes and the recovered rules, not this port). Cases where only galaxies reach the patch (checked here on the
 // engine's population): galaxies at their catalogue positions (both axes, zero minor, zero axes, PA ≠ 0), and pointings off the
 // galaxy. These check the port against the reading, not against the original program.
+// Review 1 L2: the witness re-derives the paint from the disassembly, but its bounding model is the same by construction (source
+// footprint ± 1 pixel for GDI's stretch, the Ellipse pen band, the declared nearest-centre value, red-maximum compose, x87 near-tie
+// widening, and only fields where no star stamp reaches the patch). It confirms that the port implements that model; it cannot show
+// that the bounds contain what GDI really draws, and nothing static can.
 const f=(p:string)=>new Uint8Array(readFileSync(p)),sha=(b:Uint8Array)=>createHash('sha256').update(b).digest('hex');
 const glx=f('public/original/catalogs/CLEA_GLX.DAT'),qso=f('public/original/catalogs/CLEA_QSO.DAT'),vars=f('public/original/variables/CLEA_VStrs.dat');
 const sources:AssemblySources={index:checkGscIndex(JSON.parse(readFileSync('data/gsc/gsc-index.json','utf8'))),tiles:createGscTileStore({fetcher:(async(u:RequestInfo|URL)=>new Response(f('public'+String(u)))) as typeof fetch,capacity:64}),variables:vars,variablesSha256:sha(vars),qso,qsoSha256:sha(qso),glimages:f('public/original/images/GLIMAGES.LST')};

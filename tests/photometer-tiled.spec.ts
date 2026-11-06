@@ -95,7 +95,7 @@ test('a galaxy at the pointing: sky on a star patch, the bright galaxy asked abo
  await expect(page.getByTestId('photo-galaxy-mark')).toHaveCount(1);
  await expect(page.getByTestId('photo-tiled-limit')).toHaveCount(0);
  const gate=page.getByTestId('photo-galaxy-sky-gate');await expect(gate).toHaveAttribute('data-gate','open');
- await expect(gate).toContainText('so the galaxy\'s light is measured as in Object mode');
+ await expect(gate).toContainText('at least 80 either way), so the galaxy\'s light is measured as in Object mode');await expect(gate).toContainText('[web choice: a true-colour screen and a fresh telescope view]');
  await page.getByRole('button',{name:'Start integration',exact:true}).click();
  const dialog=page.getByTestId('photo-sky-replace');await expect(dialog.getByRole('heading',{name:'Reading Sky!'})).toBeVisible();
  await page.getByTestId('photo-sky-replace-no').click();await expect(page.getByText('The sky reading was kept; no new reading was started.')).toBeVisible();
@@ -113,7 +113,8 @@ test('a galaxy whose Telescope view is dark at the centre: the Sky reading leave
  await benchPoint(page,{ra:'1.409018377',dec:'15.764981688'});
  await expect(page.getByText('Field at the telescope pointing: the centre selects the galaxy',{exact:false})).toBeVisible({timeout:60000});
  const gate=page.getByTestId('photo-galaxy-sky-gate');await expect(gate).toHaveAttribute('data-gate','closed');
- await expect(gate).toContainText('so the galaxy\'s light is not counted');
+ await expect(gate).toContainText('level about 57, between 39 and 79 depending on how Windows draws the galaxy; below 80 either way');
+ await expect(gate).toContainText('only other catalogue objects inside the aperture add light');await expect(gate).toContainText('[web choice: a true-colour screen and a fresh telescope view]');
  await integrate(page);await expect(page.getByTestId('photo-sky-replace')).not.toBeVisible();
  await expect(page.getByTestId('photo-sky-origin')).toContainText('Sky reference: reading 2,');
  await gate.scrollIntoViewIfNeeded();await page.screenshot({path:'test-results/photometer-galaxy-sky-closed.png'});

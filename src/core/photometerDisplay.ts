@@ -23,6 +23,9 @@
  * - GDI's StretchBlt kernel for the galaxy stamp (TBitmap.Draw 0x431714: HALFTONE when the screen has ≤ 8 bits per pixel, else
  *   STRETCH_DELETESCANS; the pixel phase is not documented): each stamp pixel is bounded by the profile values over its source
  *   footprint widened by one source pixel on each side. The declared value (`declared`) is the engine's nearest-centre choice.
+ * - The rotated readback 0x59456c rounds Extended FSIN/FCOS products (0x5946b9, 0x5946cd, Round 0x59471a/0x59473a); where a
+ *   product lies within 1e-9 of a half-integer (possible for position angles ≡ 30/60/120/150 mod 180, 518 catalogue galaxies),
+ *   both neighbouring readbacks bound the pixel.
  * - GDI's Ellipse pen pixels for r ≤ 9 (r ≥ 10 cannot reach the 3 × 19 patch): a patch pixel within [r − 0.75, r + 1.25] of the
  *   centre may be red (255 + 0 + 0) or keep its colour [I].
  * - The decision is taken only when the whole level interval is on one side of 80; otherwise the gate is `undecided` and the Sky
@@ -86,22 +89,42 @@ function paintGalaxy(out:Painted,g:NativeGalaxy,center:Readonly<{x:number;y:numb
  let geometry;
  try{geometry=galaxyStampGeometry(g,shift,PHOTOMETER_GALAXY_STAMP_SCALE);}
  catch(e){
-  // As the field engine: only a minor axis that rounds to 0 px composes nothing [I]; anything else is an evidence error.
-  if(e instanceof Error&&e.message==='Outside bounded galaxy stamp.')return;throw e;
+  // As the field engine (fieldEngine.ts telescopeGalaxyGate): only a minor axis that rounds to 0 px composes nothing [I];
+  // anything else is an evidence error.
+  if(!(e instanceof Error&&e.message==='Outside bounded galaxy stamp.'))throw e;
+  const axes=galaxyCatalogAxes(g),r=Math.max(3,axes.major*PHOTOMETER_GALAXY_STAMP_SCALE.pixelsPerArcminute/2);
+  if(roundNearestEven(r*axes.ratio)>=1)throw new PhotometerDisplayError('evidence');
+  return;
  }
  const {major:a,minor:b,angle,level}=geometry,profile=toneProfile(level),sin=Math.sin(angle),cos=Math.cos(angle);
  const {x0,x1,y0,y1}=PHOTOMETER_DISPLAY.patch;
- for(let Y=y0;Y<=y1;Y++)for(let X=x0;X<=x1;X++){
-  const x=X-center.x,y=Y-center.y;if(Math.abs(x)>a||Math.abs(y)>a)continue;// outside the composed (2a+1)² square
-  const sx=roundNearestEven(x*cos-y*sin),sy=roundNearestEven(y*cos+x*sin);
-  if(Math.abs(sx)>a||Math.abs(sy)>b)continue;
-  const row=b+sy,col=a+sx;if(row<0||row>=2*b||col<0||col>=2*a)continue;// the black extra row and column
+ /** The stretched bitmap at (col a+sx, row a+sy) of the readback: bounds over the footprint, and the declared value; null when the
+  * readback is outside the stamp or on the black extra row/column (the pixel is left). */
+ const read=(sx:number,sy:number)=>{
+  if(Math.abs(sx)>a||Math.abs(sy)>b)return null;
+  const row=b+sy,col=a+sx;if(row<0||row>=2*b||col<0||col>=2*a)return null;
   const declared=profile[Math.min(248,Math.floor((row+.5)*249/(2*b)))*249+Math.min(248,Math.floor((col+.5)*249/(2*a)))];
   const [r0,r1]=footprint(row,2*b),[c0,c1]=footprint(col,2*a);let lo=255,hi=0;
   for(let r=r0;r<=r1;r++)for(let c=c0;c<=c1;c++){const v=profile[r*249+c];if(v<lo)lo=v;if(v>hi)hi=v;}
+  return {lo,hi,declared};
+ };
+ for(let Y=y0;Y<=y1;Y++)for(let X=x0;X<=x1;X++){
+  const x=X-center.x,y=Y-center.y;if(Math.abs(x)>a||Math.abs(y)>a)continue;// outside the composed (2a+1)² square
+  // 0x59456c: Round of Extended FSIN/FCOS products (0x5946b9, 0x5946cd, 0x59471a, 0x59473a). Within 1e-9 of a half-integer the
+  // x87 result may round the other way than Number's, so both neighbours bound the pixel (review 1 L3); the declared value keeps
+  // Number's rounding.
+  const u=x*cos-y*sin,v=y*cos+x*sin,su=photometerRoundCandidates(u),sv=photometerRoundCandidates(v);
+  let lo=255,hi=0,any=false,miss=false;
+  for(const sx of su)for(const sy of sv){const q=read(sx,sy);if(!q){miss=true;continue;}any=true;lo=Math.min(lo,q.lo);hi=Math.max(hi,q.hi);}
+  if(!any)continue;if(miss)lo=0;
+  const d=read(roundNearestEven(u),roundNearestEven(v));
   const i=patchIndex(X,Y);
-  out.lo[i]=Math.max(out.lo[i],lo);out.hi[i]=Math.max(out.hi[i],hi);out.declared[i]=Math.max(out.declared[i],declared);
+  out.lo[i]=Math.max(out.lo[i],lo);out.hi[i]=Math.max(out.hi[i],hi);if(d)out.declared[i]=Math.max(out.declared[i],d.declared);
  }
+}
+/** Round's result, or both neighbours within 1e-9 of a half-integer (an x87 near-tie). */
+export function photometerRoundCandidates(t:number):readonly number[]{
+ const f=Math.floor(t);return Math.abs(t-f-.5)<1e-9?[f,f+1]:[roundNearestEven(t)];
 }
 /** 0x59417c on the patch: a 99 × 99 level table at the rounded position, values ≥ 30 composed by maximum (paintNativeStar). */
 function paintStar(out:Painted,levels:Uint8Array,center:Readonly<{x:number;y:number}>){

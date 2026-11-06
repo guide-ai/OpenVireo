@@ -3412,8 +3412,8 @@ export interface MessageParameters {
   "ph.tiledLimit.all-duration-count-domain": "telescope";
   "ph.tiledLimit.photometer-galaxy-sky": "max" | "min";
   "ph.tiledLimit.photometer-galaxy-sky-stamp": never;
-  "ph.galaxySkyGate.open": "level";
-  "ph.galaxySkyGate.closed": "level";
+  "ph.galaxySkyGate.open": "declared" | "max" | "min";
+  "ph.galaxySkyGate.closed": "declared" | "max" | "min";
   "ph.skyReplaceYes": never;
   "ph.skyReplaceNo.button": never;
   "ph.skyReplaceNo": never;

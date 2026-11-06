@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest';
-import {PHOTOMETER_DISPLAY,PHOTOMETER_DISPLAY_SHIFTS,PHOTOMETER_GALAXY_STAMP_SCALE,photometerDisplayLevel,photometerDisplayPatch,photometerPenCandidate,photometerSkyGate,PhotometerDisplayError} from './photometerDisplay';
+import {PHOTOMETER_DISPLAY,PHOTOMETER_DISPLAY_SHIFTS,PHOTOMETER_GALAXY_STAMP_SCALE,photometerDisplayLevel,photometerRoundCandidates,photometerDisplayPatch,photometerPenCandidate,photometerSkyGate,PhotometerDisplayError} from './photometerDisplay';
 import {FIELD_CALIBRATIONS} from './fieldEngine';
 import {prepareNativeStarProfile} from './starProfiles';
 import {nativeStoredStellarLevel,nativeStellarPaintLevel} from './catalogPopulation';
@@ -40,6 +40,10 @@ describe('Front PHSKY: the patch level and the gate',()=>{
    let sum=0;for(const p of patch){const v=profile[(p.x-468+49)*99+(p.y-468+49)];const e=v>=30?v:0;expect([p.lo,p.hi,p.declared]).toEqual([e,e,e]);sum+=3*e;}
    expect(photometerDisplayLevel(patch,10).min).toBe(Math.round(sum/57));
   }
+ });
+ it('review 1 L3: a readback within 1e-9 of a half-integer (an x87 Round near-tie) is bounded by both neighbours',()=>{
+  expect(photometerRoundCandidates(2.4)).toEqual([2]);expect(photometerRoundCandidates(-2.6)).toEqual([-3]);
+  expect(photometerRoundCandidates(2.5)).toEqual([2,3]);expect(photometerRoundCandidates(2.5-5e-10)).toEqual([2,3]);expect(photometerRoundCandidates(-0.5+5e-10)).toEqual([-1,0]);
  });
  it('decides only when the whole interval is on one side of 80',()=>{
   expect(photometerSkyGate({min:80,max:200,declared:90})).toBe('open');expect(photometerSkyGate({min:0,max:79,declared:10})).toBe('closed');
