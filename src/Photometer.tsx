@@ -22,7 +22,7 @@ import {menuCaptionText} from './core/radioControl';
 import {queryPhotometerNeighbors,buildPhotometerTargetField,photometerTargetView,isTiledPhotometerTarget,PLEIADES_PHOTOMETER_CHOICES,PLEIADES_PHOTOMETER_TARGETS,PINNED_PLEIADES_V_TARGET as defaultTarget} from './core/photometerField';
 import {createNativeSelectionScene} from './core/objectSelection';
 import {readPhotometerSession,serializePhotometerSession} from './io/photometerSession';
-import {PHOTOMETER_FILTERS,PHOTOMETER_SKY_REPLACE,tiledPhotometerReason,type PhotometerFilter} from './core/photometerUbvField';
+import {PHOTOMETER_FILTERS,PHOTOMETER_SKY_REPLACE,photometerGalaxySkyGate,tiledPhotometerReason,type PhotometerFilter} from './core/photometerUbvField';
 import {pleiadesStarAt,photometerPointingAccess,type PhotometerPointingAccess,type PleiadesHotListRow} from './core/pleiadesHotList';
 import {pleiadesExerciseSummary,samePleiadesExerciseSummary,type PleiadesExerciseSummary} from './core/pleiadesLab';
 import type {FieldMode,Pointing} from './core/sky';
@@ -200,6 +200,8 @@ function Photometer({active,initialState=null,controllerRef,onStateChange,invest
   setNotice(skipped?t('ph.restored')+' '+t('ph.nativeRestoreSkipped'):t('ph.restored'));}catch(e){if(ticket===loadEpoch.current)failure(e);}finally{if(ticket===loadEpoch.current){pendingLoad.current=false;setBusy(false);}}}
  const timing=state?.timing??LEGACY_PHOTOMETER_TIMING;
  const filter=state?.filter??'V',target=photometerTargetView(state?.targetId??defaultTarget.catalogId),tiledLimit=target.tiled&&state?tiledPhotometerReason(target.catalogId,benchIndex,aperture,state.pointing):null;
+ // Front PHSKY: in Sky mode on a galaxy, the Telescope-display gate VIREO applies (0x53e338 ≥ 80, 0x50066d..0x5006b3).
+ const galaxySky=target.tiled&&state?.pointing==='sky'?photometerGalaxySkyGate(target.catalogId,benchIndex,aperture):null;
  const domainLimit=!target.tiled&&state?photometerFullDomainExclusion(target.catalogId,benchIndex):null;
  const readingFor=(id:number)=>state?.readings.find(r=>r.id===id);
  const entriesForTarget=state?.entries.filter(e=>readingFor(e.readingId)?.targetId===target.catalogId)??[];
@@ -290,7 +292,8 @@ function Photometer({active,initialState=null,controllerRef,onStateChange,invest
  {telescope.onPoint&&<div className="photometer-tiled-point"><label htmlFor="photo-point-ra">{t('ph.tiledRa')}</label><input id="photo-point-ra" inputMode="decimal" maxLength={20} value={pointDraft?.ra??String(telescope.pointing.ra)} disabled={running||busy} onChange={e=>setPointDraft({ra:e.target.value,dec:pointDraft?.dec??String(telescope.pointing.dec)})}/><label htmlFor="photo-point-dec">{t('ph.tiledDec')}</label><input id="photo-point-dec" inputMode="decimal" maxLength={20} value={pointDraft?.dec??String(telescope.pointing.dec)} disabled={running||busy} onChange={e=>setPointDraft({ra:pointDraft?.ra??String(telescope.pointing.ra),dec:e.target.value})}/><button type="button" className="secondary-button" data-testid="photo-point-telescope" disabled={running||busy||telescope.moving} onClick={()=>pointTelescope()}>{t('ph.tiledPoint')}</button></div>}
  {/* G3 closure N3: say why such readings leave E04 (the reading itself stays, as in VIREO). */}{state?.armed&&state.sky&&state.sky.fieldTargetId.startsWith(TILED_PHOTOMETER_PREFIX)&&!state.targetId.startsWith(TILED_PHOTOMETER_PREFIX)&&<p role="note" className="observatory-note" data-testid="photo-tiled-sky-note">{t('ph.tiledSkyNote')}</p>}
  {tiledStatus&&<p role="status" data-testid="photo-tiled-status" data-status={tiledStatus.status}>{tiledStatus.status==='loading'?t('ph.tiledLoading'):tiledStatus.text}</p>}
- {tiledLimit&&<p role="status" data-testid="photo-tiled-limit" data-reason={tiledLimit}>{t(`ph.tiledLimit.${tiledLimit}`,{telescope:bench.name})}</p>}</div>
+ {tiledLimit&&<p role="status" data-testid="photo-tiled-limit" data-reason={tiledLimit}>{tiledLimit==='photometer-galaxy-sky'?t('ph.tiledLimit.photometer-galaxy-sky',{min:galaxySky?.level.min??0,max:galaxySky?.level.max??0}):t(`ph.tiledLimit.${tiledLimit}`,{telescope:bench.name})}</p>}
+ {galaxySky&&galaxySky.gate!=='undecided'&&<p role="status" data-testid="photo-galaxy-sky-gate" data-gate={galaxySky.gate}>{t(galaxySky.gate==='open'?'ph.galaxySkyGate.open':'ph.galaxySkyGate.closed',{level:galaxySky.level.declared})}</p>}</div>
  {!armed&&<p data-testid="photo-pointed-row" data-pointed={pointedState}>{!pointedRow?(telescope?.studentPointed?t('ph.pointedNoneHere'):t('ph.pointedNone',{target:target.hotlistLabel})):!pointedRow.admitted?t('ph.pointedUnavailable',{label:pointedRow.id,number:pointedRow.index+1,reason:unavailableReason(pointedRow)}):pointedBlocked?t('ph.pointedOutsideTelescope',{label:pointedRow.id,number:pointedRow.index+1,telescope:opticalProfile(telescopeIndex).name}):t('ph.pointedRow',{label:pointedRow.id,number:pointedRow.index+1})}</p>}</section>}
  <p data-testid="photo-telescope-profile">{t('ph.telescopeProfile',{name:bench.name,zero:bench.zeroPoint,seeing:formatNumber(bench.seeingArcsec,{maximumFractionDigits:3,useGrouping:false})})}</p><p>{t('ph.telescopeHelp')}</p>
  <label htmlFor="photo-filter">{t('ph.filter')}</label><select id="photo-filter" value={filter} disabled={!armed||running||busy} onChange={e=>act({type:'filter',filter:e.target.value as PhotometerFilter})}>{PHOTOMETER_FILTERS.map(f=><option key={f} value={f}>{f}</option>)}</select><p className="observatory-note">{t('ph.filterHelp')}</p>

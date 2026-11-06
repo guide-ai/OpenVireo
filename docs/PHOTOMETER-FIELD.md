@@ -191,16 +191,12 @@ unchanged (48-field equality, Pleiades contracts and P2 tests).
   0) and b = minor/60 (the 0x53b94c ratio × a when 0), and a distance 0 (the object is a copy of the named record): the fraction
   I(r/w) − I(−r/w) does not depend on the telescope or on the offset of the pointing (`photometerGalaxyWidthDegrees`). Neighbour
   stars and QSOs add their light as usual. Measured: 20259 of the 24069 galaxy positions now give a reading.
-  - [W] **Sky readings on a galaxy are refused** (`photometer-galaxy-sky`): in Sky mode 0x500568 gates the galaxy's fraction on the
-    mean brightness of a 3 × 19-pixel patch at the centre of the Telescope display (0x53e338 ≥ 80). 0x53e338 is ported
-    (`photons.slitPixelLevel`), but the display it would read, the Telescope view painted for the photometer's 0.05° field, is not
-    ported (the engine paints the instrument field), so the gate is not ported. VIREO's "Reading Sky!" question is not asked there.
-    Read the sky on a nearby patch, then the galaxy in Object mode.
-  - [W] **Mode after a move onto a galaxy** (review 1 M1): FormActivate (0x4ff909 → 0x4ff933) computes the selected object's fraction
-    with TPhotometer+0x41c as the last Start or FormActivate left it, not with the slider. Example: a Sky reading on a blank patch, the
-    slider set to Object, the telescope moved to M32. VIREO then takes the Sky-gated galaxy fraction; when the photometer-field view is
-    dim at its centre the fraction is 0 and it puts the slider back to Sky, otherwise it stays Object. The web keeps Object (the
-    Object-mode galaxy fraction is always positive). The fraction used by Start is exact (Start reads the slider first, 0x4ffa61).
+  - **Sky readings on a galaxy** (Front PHSKY, 2026-11-06; section below): in Sky mode 0x500568 gates the galaxy's fraction on the
+    Telescope display (0x53e338 ≥ 80), which is now painted for the photometer field; `photometer-galaxy-sky` remains only where
+    that cannot be decided. (Until then every such reading was refused.)
+  - **Mode after a move onto a galaxy**: exact. Review 1 M1 assumed FormActivate's +0x41c could differ from the slider; the slider's
+    OnPositionChange 0x5021cc calls 0x4ffa30, which writes +0x41c from the slider (0x4ffa61) [D], so with the slider at Object
+    FormActivate takes the Object-mode galaxy fraction, as the web does (Front PHSKY, analysis/front-phsky/RECOVERY.md §2).
   - `photometer-galaxy-name` (349 galaxy positions), see the typed reasons above.
 - **Colours.** Start skips a selected object's colour term when it is ≥ 30 (0x4ffc39, 0x4ffcb4) and sums a neighbour's colours with
   no test (0x4ffe46..0x4ffed9); both are ported (`preparePhotometerBands`). No bundled record reaches them (no compact GSC, QSO or
@@ -260,3 +256,35 @@ holds a TRUE-dispatch variable; frames and readings unchanged).
   JD, byte-identical re-save, Record/Review, a crafted JD refused), the synthetic QSO-guard case in the core test, and
   `tests/photometer-tiled.spec.ts` (GM And measured, recorded through Record/Review with ID GM And, saved, the shown JD checked
   against the saved one, and restored).
+
+## Sky readings on a selected galaxy (Front PHSKY, 2026-11-06)
+
+Static evidence and measurements: `analysis/front-phsky/RECOVERY.md` (excerpts.asm, witness tool, measure-*.tsv); plan:
+`analysis/front-plans/front-phsky.md`. Breadth only: E04's bundled Pleiades fields never select a galaxy (unchanged).
+
+- **What VIREO does [D].** Start's source preparation 0x4ffa30 sets Sky mode (+0x41c) from the slider (0x4ffa61). For a selected
+  galaxy, 0x500568 in Sky mode reads 0x53e338 (the mean R+G+B of the 3 × 19 pixels at the centre of the Telescope display) and gives
+  fraction 0 below 80 (0x50066d..0x5006b3); otherwise the galaxy's Object-mode fraction. "Reading Sky!" (0x4ffad9) uses the same
+  gated fraction.
+- **The display [D].** The render 0x53a40c copies the centre 312² of the 936² cache (CopyRect, SRCCOPY), then draws the
+  photometer's overlay (instrument 2, table 0x53a947 → 0x53ad01): a red, 1-pixel Ellipse of radius = the aperture selector. The cache
+  is 0x53b390's paint: black, galaxies (bank set 6, level − +0x6f8, stamp 0x59456c; NGC 224 skipped), then stars (99 × 99). Its scale
+  is Field Creation Factor × Instr. Field: with the declared 1′ profile, 0.05° and 312 px per arcminute, so galaxies are drawn 15
+  times larger than in the instrument field. `core/photometerDisplay.ts` paints only the 57 patch pixels, per telescope record.
+- **Bounded, not reproduced.** GDI's stretch of the galaxy stamp (TBitmap.Draw 0x431714: STRETCH_DELETESCANS on a true-colour
+  screen, phase undocumented) is bounded by the source footprint ± 1 pixel, and the Ellipse's pen pixels (only apertures 5..9 reach
+  the patch) by a band around the circle [I]. The gate is decided only when the whole level interval is on one side of 80.
+- **Typed.** `photometer-galaxy-sky`: the interval straddles 80 (small or thin stamps). `photometer-galaxy-sky-stamp` [W]: a painted
+  galaxy needs stamp bitmaps beyond (2·2047 + 1)² pixels (VIREO allocates two per galaxy with no bound; whether Windows can is not
+  determined; 13 galaxies of 13′ or more).
+- **Web choices [W].** True-colour display (at 16 bpp a level could drop by up to 17; 45 decided gates with the 0.4 m lie that close),
+  fresh view (no drift), the Telescope view in instrument mode (not the finder), no click mark (0x53d648).
+- **Bench.** In Sky mode on a galaxy the bench says whether VIREO counts its light (level shown); the sky question is asked when the
+  gate is open and a sky exists. No journal change: earlier sessions could not hold such a reading, and replay unchanged.
+- **Measured** (`measure-before-*.tsv` / `measure-after-*.tsv`): 20271 galaxy frames (20264 CLEA_GLX.DAT, 3 CLEA_QSO.DAT, 4
+  CLEA_VStrs.dat positions) had every Sky reading refused. Now, at apertures ≥ 10 with the 0.4 m / 0.9 m / 4 m: decided 20185 / 20186 /
+  20189 (open 20126 / 20147 / 20164), `photometer-galaxy-sky` 73 / 72 / 69, `-stamp` 13. At aperture 5: 110 / 89 / 73 undecided.
+- **Tests:** `src/core/photometerDisplay.test.ts` (geometry, pen band, levels, gate rule), `src/core/photometerDisplayWitness.test.ts`
+  (11 cases against the independent Python model `analysis/front-phsky/tools/phsky_witness.py`, and record 3770's stamp bound),
+  `src/core/photometerPhtiled.test.ts` and `src/io/photometerTiled.test.ts` (NGC 7805: open gate, question, Sky = Object source), and
+  `tests/photometer-tiled.spec.ts` (M32: open, "Reading Sky!" asked; record 1978: closed, no question).

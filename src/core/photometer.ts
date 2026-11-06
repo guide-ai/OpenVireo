@@ -5,7 +5,7 @@ import {confirmPleiadesFit,type PleiadesFit} from './pleiadesAnalysis';
 import {TIMED_PHOTOMETER_POLICY,PHOTOMETER_SECONDS,PHOTOMETER_REPEATS,MAX_PHOTOMETER_CALLBACKS_PER_READING,LEGACY_PHOTOMETER_TIMING,photometerTiming,requiredPhotometerCallbacks,createPhotometerIntegration,advancePhotometerIntegration,photometerReplayCallbacks,MAX_PHOTOMETER_CALLBACKS,PHOTOMETER_CALLBACK_MS,type PhotometerTiming,type PhotometerIntegration} from './photometerIntegration';
 import {randomDraw} from './acquisition';
 import {PINNED_PLEIADES_V_TARGET,isExpandedPhotometerTarget,isAddedPhotometerTarget,isPhotometerTarget,isTiledPhotometerTarget,tiledPhotometerTargetId,validTiledPhotometerJd,type PleiadesFieldKind} from './photometerField';
-import {drawPinnedPleiadesUbv,isPhotometerFilter,photometerSelectedFraction,photometerSelectsGalaxy,tiledPhotometerReason,type PhotometerFilter} from './photometerUbvField';
+import {drawPinnedPleiadesUbv,isPhotometerFilter,photometerGalaxySkyGate,photometerSelectedFraction,tiledPhotometerReason,type PhotometerFilter} from './photometerUbvField';
 import {reducePhotometerSky,reducePhotometerObject,photometricBMinusV} from './photometryReduction';
 import {photometerJournalFits,EXPANDED_PHOTOMETER_POLICY,PHOTOMETER_POLICY,VARIABLE_FIELD_PHOTOMETER_POLICY} from './photometerJournal';
 import {PHOTOMETER_NATIVE_EVENT_KEYS,photometerNativeApply,validPhotometerNativeInput,validPhotometerNativeOutcome,PhotometerNativeError,type PhotometerNativeRecordEvent,type PhotometerNativeState} from './photometerNativeRecord';
@@ -88,12 +88,11 @@ function transition(s:PhotometerState,e:PhotometerEvent,live:boolean):Photometer
   // [W] A move stands for leaving the form to point the telescope: returning re-activates it. FormActivate (0x4ff987–0x4ff9ab)
   // sets the slider to Sky when it was at Sky or the selected object's aperture fraction is 0, clears +0x41d (0x4ff9cb), and
   // SetPosition sets it again only when the position changed (G3 closure N2). A registered tiled frame always has a selection.
-  // Front PHTILED review 1 M1 [W]: for a galaxy, FormActivate's 0x500568 (0x4ff909 → 0x4ff933) runs with +0x41c as the last Start or
-  // FormActivate left it (0x4ffa61, 0x4ff965/0x4ff9ab), not with the slider. After a Sky Start, moving the slider to Object and onto
-  // a galaxy (M32), VIREO takes the Sky-gated galaxy branch: when the photometer-field Telescope view is dim at its centre
-  // (0x53e338 < 80) the fraction is 0 and 0x4ff996..0x4ff9ab puts the slider back to Sky; otherwise Object. That view is not
-  // painted here [not ported], so the web keeps the declared Object mode (the Object-mode galaxy fraction is always positive).
-  const sky=s.pointing==='sky'||!(photometerSelectedFraction(targetId,'sky',s.apertureSelector??10,s.telescopeIndex??0)>0);
+  // Front PHSKY (corrects Front PHTILED review 1 M1): FormActivate's 0x500568 (0x4ff909 → 0x4ff933) runs with +0x41c, and +0x41c
+  // follows the slider: besides Start and FormActivate, the slider's OnPositionChange 0x5021cc calls 0x4ffa30, which writes it from
+  // the slider at 0x4ffa61 [D]. So with the slider at Object the fraction is the Object-mode one (for a galaxy, never gated on the
+  // display), and with it at Sky FormActivate keeps Sky whatever the fraction.
+  const sky=s.pointing==='sky'||!(photometerSelectedFraction(targetId,'object',s.apertureSelector??10,s.telescopeIndex??0)>0);
   next={...s,targetId,current:null,phase:'idle',...(s.timing?{work:null}:{}),color:s.colors[targetId]??null,pointing:sky?'sky':s.pointing,readingSliderMoved:sky&&s.pointing!=='sky'};
  }else if(e.type==='skyConfirm'){
   if(!s.armed||s.phase==='running'||s.pointing!=='sky'||!skyReplaceAsked(s))throw new PhotometerError('confirm');
@@ -171,10 +170,14 @@ function transition(s:PhotometerState,e:PhotometerEvent,live:boolean):Photometer
  * selected-star light at sizes 5/10/15 (unchanged). Front P2: at larger sizes they are asked like any field. With the 0.4 m that
  * starts at size 25, 41, 91 or 128 for four targets (a nearer star in their sky field) and 148 for the other 20; with the 0.9 m and
  * 4 m at 41, 56, 106 or 144 for those four and never for the rest (photometerP2.test.ts). */
-/** Front PHTILED: never at a tiled target whose centre selects a galaxy. There VIREO's question takes the galaxy's Sky-mode fraction,
- * gated on the photometer-field Telescope display (0x53e338; that display paint is not ported); Start refuses such a Sky reading (`photometer-galaxy-sky`) instead [W]. */
+/** Front PHSKY: at a tiled target whose centre selects a galaxy, the question (0x4ffad9) takes the galaxy's Sky-mode fraction, gated
+ * on the photometer-field Telescope display (0x53e338 ≥ 80): asked when the gate is open. Where the gate is undecided Start is refused
+ * (`photometer-galaxy-sky`), so nothing is asked. */
 export function skyReplaceAsked(s:PhotometerState):boolean{
- return s.armed&&s.pointing==='sky'&&!s.readingSliderMoved&&s.skies[s.filter]!==null&&!photometerSelectsGalaxy(s.targetId)&&photometerSelectedFraction(s.targetId,'sky',s.apertureSelector??10,s.telescopeIndex??0)>0;
+ if(!(s.armed&&s.pointing==='sky'&&!s.readingSliderMoved&&s.skies[s.filter]!==null))return false;
+ const telescopeIndex=s.telescopeIndex??0,apertureSelector=s.apertureSelector??10;
+ if(photometerGalaxySkyGate(s.targetId,telescopeIndex,apertureSelector)?.gate==='undecided')return false;
+ return photometerSelectedFraction(s.targetId,'sky',apertureSelector,telescopeIndex)>0;
 }
 export function photometerEvent(s:PhotometerState,e:PhotometerEvent){return transition(s,e,true);}
 /** Front P3: Start 0x4fffd4 resets the reading struct; a web activation starts a new context [W]. */

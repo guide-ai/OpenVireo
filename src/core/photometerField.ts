@@ -34,6 +34,8 @@ import {decodeNativeVariableRecord,nativeVariableDispatchFalse,nativeVariableFal
 import {catalogMergeDistance} from './catalogMerge';
 import {photometerApertureGeometry,PHOTOMETER_APERTURE_RANGE} from './photometerAperture';
 import type {FieldVariableTime} from './fieldEngine';
+import {photometerDisplayLevels,type PhotometerDisplayLevels} from './photometerDisplay';
+import type {NativeGalaxy} from './pinnedGalaxyField';
 import pegasusProvenance from '../../data/hubble/pegasus-field-provenance.json';
 
 /** Static finite profile, not a live instrument or native observation file.
@@ -115,8 +117,10 @@ export type PinnedPleiadesField=Readonly<{
  selected:PhotometerFieldObject;selectedDistancePixels:number;centralFraction:number;sourceMagnitude:number;sourceMean:number;skyMean:number;
  /** Front PHTILED, tiled frames only: the QSO list field+0x35 (present when not empty), walked after the stars by 0x59ac54. */
  qsos?:readonly PhotometerFieldObject[];
- /** Front PHTILED, tiled frames only: the centre selects this galaxy (selected.type 1); its photometer width (0x500700..0x5007af). */
- selectedGalaxy?:Readonly<{widthDegrees:number;majorArcminutes:number}>;
+ /** Front PHTILED, tiled frames only: the centre selects this galaxy (selected.type 1); its photometer width (0x500700..0x5007af).
+  * Front PHSKY: `display`, per telescope record, the bounds of 0x53e338 on the photometer-field Telescope display that the Sky-mode
+  * gate 0x50066d..0x5006b3 reads (core/photometerDisplay.ts). */
+ selectedGalaxy?:Readonly<{widthDegrees:number;majorArcminutes:number;display:readonly PhotometerDisplayLevels[]}>;
  /** Front PHVAR, tiled frames only: the observatory-clock JD the field's variable stage used (frozen when the frame was prepared). */
  variableTime?:FieldVariableTime;
 }>;
@@ -321,7 +325,8 @@ export function photometerGalaxyWidthDegrees(g:Readonly<{majorArcminutes:number;
  *   is not selected adds its light twice (once per list) [D].
  * - A selected galaxy (0x53ce8c copies it into the object at Obs+0x41c4ed with kind 1): V and colours from the galaxy record
  *   (+0x23, and +0x27/+0x2b from the morphology table of 0x598f35..0x599066, catalogObject.galaxyColours); the fraction from
- *   its width (photometerGalaxyWidthDegrees), independent of the telescope; Sky readings are refused later (tiledPhotometerReason).
+ *   its width (photometerGalaxyWidthDegrees), independent of the telescope; Front PHSKY: in Sky mode gated on the display level
+ *   (selectedGalaxy.display; tiledPhotometerReason types an undecided gate).
  */
 export function photometerFieldFromPopulation(population:PopulationLike|null,reasons:readonly string[],pointing:Pointing,kind:PleiadesFieldKind,catalogs:PhotometerTiledCatalogs={}):PhotometerTiledResult{
  if(kind!=='object'&&kind!=='sky')throw new PhotometerFieldError('field');
@@ -382,7 +387,11 @@ export function photometerFieldFromPopulation(population:PopulationLike|null,rea
   // CLEA_GLX.DAT holds no morphology outside the table (RECOVERY.md §5), so the colours always exist here.
   const colours=galaxyColours(g.morphology);if(!colours)throw new PhotometerFieldError('evidence');
   selected=Object.freeze({id:`CLEA_GLX.DAT@${g.recordIndex}`,nativeName:name,ra:g.ra,dec:g.dec,magnitude:Math.fround(g.magnitude),photometry2Single:colours.bv,photometry3Single:colours.ub,type:1 as const});
-  selectedGalaxy=Object.freeze({widthDegrees:photometerGalaxyWidthDegrees({majorArcminutes:g.majorArcminutes,minorArcminutes:g.minorArcminutes,morphology:g.morphology,ra:g.ra}),majorArcminutes:g.majorArcminutes});
+  // Front PHSKY: the display 0x53e338 reads in Sky mode (core/photometerDisplay.ts): every galaxy and star of the field painted for
+  // the photometer's 0.05° cache, at each telescope's +0x6f8; a kept variable without values is not painted (its stamp cannot reach
+  // the patch here: it would be within the aperture-150 reach, typed above).
+  const display=photometerDisplayLevels({pointing,stars:population.stars.map(s=>{if(typeof s.ra!=='number'||typeof s.dec!=='number'||typeof s.magnitude!=='number')throw new PhotometerFieldError('evidence');return {id:s.id,ra:s.ra,dec:s.dec,type:s.type,magnitude:s.magnitude};}),galaxies:population.galaxies as readonly NativeGalaxy[],unknownStars:new Set(pending.map(s=>s.id))});
+  selectedGalaxy=Object.freeze({widthDegrees:photometerGalaxyWidthDegrees({majorArcminutes:g.majorArcminutes,minorArcminutes:g.minorArcminutes,morphology:g.morphology,ra:g.ra}),majorArcminutes:g.majorArcminutes,display});
   centralFraction=photometerPointFraction(radius,0,selectedGalaxy.widthDegrees);distance=selection.galaxy.distance;
  }else{
   selected=stars.find(s=>s.id===selection.object.id)!;centralFraction=fraction(selected);distance=selection.star.distance;

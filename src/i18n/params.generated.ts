@@ -3410,7 +3410,10 @@ export interface MessageParameters {
   "ph.tiledReason.photometer-population": "detail";
   "ph.tiledLimit.Poisson-mean-bound": "telescope";
   "ph.tiledLimit.all-duration-count-domain": "telescope";
-  "ph.tiledLimit.photometer-galaxy-sky": never;
+  "ph.tiledLimit.photometer-galaxy-sky": "max" | "min";
+  "ph.tiledLimit.photometer-galaxy-sky-stamp": never;
+  "ph.galaxySkyGate.open": "level";
+  "ph.galaxySkyGate.closed": "level";
   "ph.skyReplaceYes": never;
   "ph.skyReplaceNo.button": never;
   "ph.skyReplaceNo": never;
