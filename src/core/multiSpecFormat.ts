@@ -59,14 +59,21 @@ export function multiSpecCaption(idx:number,name:string,options:MultiSpecTextOpt
 export function multiSpecFileName(idx:number,name:string,options:MultiSpecTextOptions={}):string{
  return (options.showObjectId?'':'MSpec_')+(options.showObjectId?name:String(idx))+'.SSP';
 }
-export class MultiSpecFormatError extends Error{constructor(readonly code:'counts'|'zero-maximum'|'range'){super(`Multi-Spec format: ${code}`);this.name='MultiSpecFormatError';}}
+/** 'zero-maximum': every count is 0. 'wrapped-maximum' (Front MEANBOUND review 1): some counts are negative (Int32 wraps) and none
+ * is positive. Save 0x529234 starts its maximum at Extended 0 and keeps the largest signed count (0x529357..0x529392), then
+ * divides each count by it (FDIVP at 0x5293fa) [D]; with a maximum of 0 the first division is 0/0 (invalid operation) or c/0
+ * (zero divide), both unmasked by the control word 0x1332, so it raises a floating-point exception [I: Delphi's RTL maps it to
+ * EInvalidOp/EZeroDivide and the VCL shows its message] after Rewrite and before CloseFile (0x529461) and the "*" mark
+ * (0x526700 at 0x529454), which are skipped (try/finally 0x529269..0x529496) [D]; what the unclosed file holds is [U]. The web
+ * saves nothing in both cases. */
+export class MultiSpecFormatError extends Error{constructor(readonly code:'counts'|'zero-maximum'|'wrapped-maximum'|'range'){super(`Multi-Spec format: ${code}`);this.name='MultiSpecFormatError';}}
 /** The 400-line headerless body (ASCII, dot decimal, CRLF). */
 export function multiSpecSspBytes(spectrum:Pick<MultiSpecSpectrum,'counts'|'minimum'|'dispersion'>):Uint8Array{
  const counts=spectrum.counts;
  if(!Array.isArray(counts)||counts.length!==MULTISPEC_BINS)throw new MultiSpecFormatError('counts');
  let maximum=0;
  for(const c of counts){if(!Number.isInteger(c)||c< -0x8000_0000||c>0x7fff_ffff)throw new MultiSpecFormatError('counts');if(c>maximum)maximum=c;}
- if(maximum===0)throw new MultiSpecFormatError('zero-maximum');
+ if(maximum===0)throw new MultiSpecFormatError(counts.some(c=>c<0)?'wrapped-maximum':'zero-maximum');
  let wavelength=Math.fround(spectrum.minimum);
  if(!Number.isFinite(wavelength)||wavelength<=0||!Number.isFinite(spectrum.dispersion)||spectrum.dispersion<=0)throw new MultiSpecFormatError('range');
  let text='';

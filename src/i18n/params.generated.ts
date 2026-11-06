@@ -3335,6 +3335,7 @@ export interface MessageParameters {
   "multispec.saveNote": never;
   "multispec.saveAllNone": never;
   "multispec.saveError": never;
+  "multispec.saveErrorWrapped": never;
   "multispec.saved": "file";
   "multispec.savedAll": "count" | "file";
   "multispec.spectrumLoading": never;

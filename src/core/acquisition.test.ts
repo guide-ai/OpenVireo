@@ -107,7 +107,7 @@ describe('recovered acquisition building blocks (synthetic vectors, no original-
   });
 
   it('fails explicitly on invalid domains and exhausted draw budgets', () => {
-    // Front MEANBOUND: the admission is 2^36 (10⁶ before; means above 10⁶ are covered by poissonLarge.test.ts).
+    // Front MEANBOUND: the admission is 2^33 (10⁶ before; means above 10⁶ are covered by poissonLarge.test.ts).
     for (const mean of [-1, NaN, Infinity, 2 ** 36 * (1 + 2 ** -40)]) expect(() => poissonDraw(mean, 1)).toThrow(AcquisitionError);
     expect(() => poissonDraw(3, -1)).toThrow(AcquisitionError);
     for (const budget of [0, 0.5, 100_001]) expect(() => poissonDraw(3, 1, budget)).toThrow(AcquisitionError);

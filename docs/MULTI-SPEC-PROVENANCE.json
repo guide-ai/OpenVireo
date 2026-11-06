@@ -392,7 +392,7 @@
    "sha256": "a80e7ada60c949a82c4e75cd27243bf62c7642a7ffea6ea60d4b4a0240cb0f96",
    "code": "claude/front-meanbound"
   },
-  "note": "Front MEANBOUND (2026-11-05): the D3 bases at 60 s before and after the Multi-Spec mean bound moved from 10^6 to 2^36; exactly the formerly multispec-mean-bound fibres change (reachable 1/10/66 selections, 1/5/56 distinct stars on the 0.4/0.9/4 m), all ready at seed 1, none wrapped."
+  "note": "Front MEANBOUND (2026-11-05): the D3 bases at 60 s before and after the Multi-Spec mean bound moved from 10^6 to 2^36 (2^33 since review 1, which changes none of these fibres); exactly the formerly multispec-mean-bound fibres change (reachable 1/10/66 selections, 1/5/56 distinct stars on the 0.4/0.9/4 m), all ready at seed 1, none wrapped."
  },
  "mstnoneScan": {
   "fields": {

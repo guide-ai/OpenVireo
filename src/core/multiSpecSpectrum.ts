@@ -33,7 +33,7 @@
  * Typed (never the native fault or message box): a nil template, the code-0 random pick (all 132 templates are bundled since
  * 2026-10-30, but the random state is not reproduced; no compact GSC record has code 0), a TRUE-dispatch star without values, a galaxy name
  * the list does not hold (the native loop has no end guard), an own galaxy spectrum not bundled, galaxy/QSO construction errors,
- * types ≥ 5 (nil sampler), any bin mean above poissonDraw's web admission (2^36 since Front MEANBOUND, 10⁶ before; decision D3),
+ * types ≥ 5 (nil sampler), any bin mean above poissonDraw's web admission (2^33 since Front MEANBOUND review 1, 2^36 in its first commit, 10⁶ before; decision D3),
  * negative means, and the Poisson rejection branch's precision boundaries ('precision': u = 0.5, and since Front MEANBOUND the
  * guard band above 10⁶).
  *

@@ -156,7 +156,7 @@ describe('Front M: fibre contract',()=>{
   expect(prepareMultiSpecFibre(star({type:2,spectralIndex:70993000}),ctx,1)).toEqual({status:'unavailable',reason:'star-template-none'});
   expect(prepareMultiSpecFibre(star({spectralIndex:10_000_000}),ctx,1).status).toBe('ready');
  });
- it('decision D3: a mean above the admission (2^36 since Front MEANBOUND, 10⁶ before) in any bin is typed before any draw',()=>{
+ it('decision D3: a mean above the admission (2^33 since Front MEANBOUND review 1, 2^36 in its first commit, 10⁶ before) in any bin is typed before any draw',()=>{
   expect(multiSpecFibreSpectrum(star({v:-8}),context(2),1,60)).toEqual({status:'unavailable',reason:'multispec-mean-bound'});
   expect(multiSpecFibreSpectrum(star({v:2}),context(2),1,60).status).toBe('ready');
  });
@@ -180,6 +180,22 @@ describe('Front MEANBOUND: channel means above 10⁶ and VIREO\'s Int32 channels
   const [, small, wrap]=meanBoundWitness.results;
   expect(small.result.maxMean).toBeGreaterThan(1e6);expect(small.result.wrapped).toBe(false);
   expect(wrap.result.maxMean).toBeGreaterThan(2**31);expect(wrap.result.wrapped).toBe(true);expect(Math.min(...wrap.result.counts)).toBeLessThan(0);
+ });
+ it('review 1: a fibre whose every channel wraps negative cannot be saved (VIREO divides by a maximum of 0, 0x529234)',()=>{
+  // A template whose channel means stay within a factor 2 over 3700–4700 Å, exposed so that every channel lies in [2^31, 2^32).
+  const ctx=context(2);let tried=0;
+  for(const entry of ctx.starIndex){
+   const p=prepareMultiSpecFibre(star(4.5,entry.index),ctx,3);if(p.status!=='ready')continue;
+   const m=multiSpecMeans(p,1),lo=Math.min(...m.object)+m.sky,hi=Math.max(...m.object)+m.sky;if(!(hi<1.9*lo))continue;
+   const seconds=Math.fround(2**31*1.05/lo);if(seconds*hi>2**32*0.95)continue;
+   tried++;const e=exposeMultiSpecFibre(p,seconds);if(e.status!=='ready')throw Error(JSON.stringify(e));
+   expect(e.spectrum.wrapped).toBe(true);expect(e.spectrum.counts.every(c=>c<0)).toBe(true);
+   expect(()=>multiSpecSspBytes(e.spectrum)).toThrow(/wrapped-maximum/);break;
+  }
+  expect(tried).toBe(1);
+  const zero=Array<number>(400).fill(0);
+  expect(()=>multiSpecSspBytes({counts:zero,minimum:3700,dispersion:2.5})).toThrow(/zero-maximum/);
+  expect(()=>multiSpecSspBytes({counts:zero.map((c,i)=>i===7?-5:c),minimum:3700,dispersion:2.5})).toThrow(/wrapped-maximum/);
  });
  it('the witness used the bundled template and JSPEC2.SPI this test reads',()=>{
   expect(meanBoundWitness.jspec2).toBe(sha(file('spectra/jspect2/JSPEC2.SPI')));

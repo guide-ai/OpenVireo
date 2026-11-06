@@ -77,11 +77,20 @@ export type PoissonDraw = Readonly<{ value: number; seed: number; draws: number 
 /** Front MEANBOUND: the largest mean the rejection branch evaluates the way it did before Front MEANBOUND (binary64, no guard
  * band). Means up to here keep every earlier draw, fingerprint and exercise result. */
 export const POISSON_UNGUARDED_LIMIT=1_000_000;
-/** poissonDraw's per-draw mean admission [W] (0x55f0f4 has none). Front MEANBOUND (2026-11-05, research
- * analysis/front-meanbound/RECOVERY.md): above POISSON_UNGUARDED_LIMIT the rejection decisions are taken with a guard band
- * (poissonLargeDecision) and typed 'precision' inside it; 2^36 keeps the expected share of 400-bin Multi-Spec fibres that meet
- * the band below 1 % (RECOVERY.md §4). Was 10^6 (Front L4, Front M D3). */
-export const POISSON_MEAN_ADMISSION=2**36;
+/** poissonDraw's per-draw mean admission [W] (0x55f0f4 has none; 10^6 before Front MEANBOUND). Above POISSON_UNGUARDED_LIMIT
+ * each proposal is decided with a guard band (poissonLargeProposal, poissonLargeExponent) and typed 'precision' inside it
+ * (research analysis/front-meanbound/RECOVERY.md §3). What the band certifies, and what it does not:
+ *  - [I] VIREO's side of the band assumes x87 FYL2X, F2XM1, FSIN and FCOS within about 1–3 ulp, the control word 0x1332 (64-bit
+ *    precision, round to nearest; 0x5ae024) unchanged at run time, and heuristic safety factors (×2) on the bound.
+ *  - It certifies VIREO's decision for the same mean. Callers pass binary64 means that differ from VIREO's Extended means by
+ *    about 10^-16..10^-15 relative, which can flip the truncation unguarded with a probability of about 2·m·ε per proposal
+ *    (measured with a one-ulp mean shift: 1.5·10^-5 per draw at 1.37·2^36, none in 4·10^5 draws up to 2^33; estimated
+ *    2·10^-6..2·10^-5 per draw at 2^33, about 10^-7 at the largest D3 60-s mean 1.5·10^8). The same input residual applies at
+ *    every mean in the project; means ≤ 10^6 also keep their earlier unguarded near-tie residual.
+ * 2^33 is the largest power of two at which the band and this residual together stay below about 1 % of 400-channel
+ * Multi-Spec fibres for input errors up to about 7·10^-16 (2^36 would reach several %); every D3 basis mean (≤ 1.5·10^8) and every
+ * spectrometer tick (≤ 2^30) is far below it. */
+export const POISSON_MEAN_ADMISSION=2**33;
 export function poissonDraw(mean: number, initialSeed: number, drawBudget = 10_000, negativeMean: 'refuse' | 'native' = 'refuse'): PoissonDraw {
   if (!Number.isFinite(mean) || (mean < 0 && negativeMean !== 'native') || mean > POISSON_MEAN_ADMISSION) throw new AcquisitionError('mean');
   if (!Number.isInteger(drawBudget) || drawBudget < 1 || drawBudget > 100_000) throw new AcquisitionError('budget');
@@ -163,7 +172,9 @@ export type PoissonLargeDecision = 'reject' | 'accept' | 'precision';
  * The web evaluates the difference form, which has no cancellation between the ~mean·ln(mean) terms:
  * E = −D·log1p(5.5/m) − tm·φ(D/tm) + 5·log1p(D/tm) − log1p(Δser/ser(m)), D = value − mean, tm = mean + 5.5.
  * VIREO's bound follows its naive Extended sequence (L, value·L, G(value+1), mean·L, G(mean+1), N, E; 0x55f1db..0x55f205 and
- * 0x55f28e..0x55f2a0), each step within its rounding, Ln (FLDLN2·FYL2X, 0x4036cc) within 3·2^-64 relative, times 2. */
+ * 0x55f28e..0x55f2a0), each step within its rounding, Ln (FLDLN2·FYL2X, 0x4036cc) within 3·2^-64 relative, times 2 [I: the x87
+ * accuracy and control word stated at POISSON_MEAN_ADMISSION]. L is the one cached Extended Ln m (+0x14, read at 0x55f1fe for
+ * m·L and at 0x55f296 for value·L), so its own rounding enters E only as |value − mean|·ΔL (review 1 L2). */
 export function poissonLargeExponent(mean: number, value: number): Readonly<{ exponent: number; error: number; webError: number; vireoError: number }> {
   const D = value - mean, tm = mean + 5.5, r = D / tm, [ph, phError] = phi(r), lp = Math.log1p(r);
   let dSer = 0, serM = 1;
@@ -172,7 +183,7 @@ export function poissonLargeExponent(mean: number, value: number): Readonly<{ ex
   const webError = 16 * UD * (Math.abs(t1) + Math.abs(t2) + Math.abs(t3) + Math.abs(t4) + tm * Math.abs(r * lp)) + tm * phError + 1e-16 * Math.abs(t4) + 1e-300;
   const L = Math.log(mean), gv = vireoGammaError(value), gm = vireoGammaError(mean);
   const vL = value * L, mL = mean * L, e1 = vL - gv.value, N = mL - gm.value, errL = 3 * UX * Math.abs(L);
-  const vireoError = 2 * ((value * errL + UX * Math.abs(vL)) + gv.error + UX * Math.abs(e1) + (mean * errL + UX * Math.abs(mL)) + gm.error + UX * Math.abs(N) + UX * Math.abs(exponent));
+  const vireoError = 2 * (Math.abs(D) * errL + UX * Math.abs(vL) + gv.error + UX * Math.abs(e1) + UX * Math.abs(mL) + gm.error + UX * Math.abs(N) + UX * Math.abs(exponent));
   return { exponent, error: webError + vireoError, webError, vireoError };
 }
 /** One proposal of the rejection branch above 10^6: candidate (0x55f209..0x55f265), its truncation (0x55f267, Trunc 0x40370c to
@@ -193,21 +204,29 @@ export function poissonLargeProposal(mean: number, angleUniform: number): Readon
   if (f < 0) { n--; f += 1; } else if (f >= 1) { n++; f -= 1; }
   const low = f <= candidateError ? n - Math.ceil(candidateError - f + 1e-9) : n, high = 1 - f <= candidateError ? n + Math.ceil(candidateError - (1 - f) + 1e-9) : n;
   if (!Number.isSafeInteger(Math.max(0, low)) || !Number.isSafeInteger(high)) throw new AcquisitionError('overflow');
+  // Relative threshold error besides the exponent's: Exp (Math.exp ≤ 2 ulp; VIREO 0x40368c 64·UX), (1+y²), 0.9 and products.
+  const otherRelative = 2 * ULP + 64 * UX + 2 * ay * (dyWeb + dyVireo) / yy + NINE_TENTHS_RELATIVE + 4 * UD + 4 * UX;
+  /** The largest threshold VIREO could compute for an exponent of at most `top` (0 when every such exponent is below −30). */
+  const thresholdCeiling = (top: number) => top < -30 ? 0 : 0.9 * yy * Math.exp(top) * (1 + 2 * otherRelative + 1e-12);
   if (low !== high) {
-    // The truncation is not decided. If every integer it could be has a threshold of 0 (exponent < −30 beyond both bounds;
-    // E(v) is concave with its maximum near the mean, so the end nearer the mean is the largest), only u2 = 0 accepts, and that
-    // acceptance's value is not decided.
-    const nearest = Math.max(0, high < mean ? high : low > mean ? low : Math.round(mean)), e = poissonLargeExponent(mean, nearest);
-    if (low <= mean && mean <= high || !(e.exponent + e.error < -30)) return { kind: 'precision' };
-    return { kind: 'candidate', value: null, decide: u2 => u2 <= 0 ? 'precision' : 'reject' };
+    // The truncation is not decided. E(v) is concave with its maximum near the mean, so the end nearer the mean bounds the
+    // exponent of every integer it could be: an acceptance uniform above that threshold ceiling rejects for all of them
+    // (review 1 L2); u2 = 0 would accept a value that is not decided.
+    if (low <= mean && mean <= high) return { kind: 'precision' };
+    const e = poissonLargeExponent(mean, high < mean ? high : low), ceiling = thresholdCeiling(e.exponent + e.error);
+    return { kind: 'candidate', value: null, decide: u2 => u2 > ceiling ? 'reject' : 'precision' };
   }
   const value = n, e = poissonLargeExponent(mean, value);
-  if (Math.abs(e.exponent + 30) <= e.error) return { kind: 'precision' };
+  if (Math.abs(e.exponent + 30) <= e.error) {
+    // E against −30 is not decided (0x55f2a9): T is 0 or at most the ceiling at −30 + error; u2 = 0 accepts and u2 above the
+    // ceiling rejects either way (review 1 L2).
+    const ceiling = thresholdCeiling(-30 + e.error);
+    return { kind: 'candidate', value, decide: u2 => u2 <= 0 ? 'accept' : u2 > ceiling ? 'reject' : 'precision' };
+  }
   if (e.exponent < -30) return { kind: 'candidate', value, decide: u2 => u2 <= 0 ? 'accept' : 'reject' };// threshold 0 (0x55f2b5)
   const threshold = 0.9 * yy * Math.exp(e.exponent);
   if (!Number.isFinite(threshold)) throw new AcquisitionError('overflow');
-  // Relative threshold error: exponent (web + VIREO), Exp (Math.exp ≤ 2 ulp; VIREO 0x40368c 64·UX), (1+y²), 0.9 and products.
-  const relative = e.error + 2 * ULP + 64 * UX + 2 * ay * (dyWeb + dyVireo) / yy + NINE_TENTHS_RELATIVE + 4 * UD + 4 * UX;
+  const relative = e.error + otherRelative;
   const margin = threshold * relative * 2;
   return { kind: 'candidate', value, decide: u2 => Math.abs(u2 - threshold) <= margin ? 'precision' : u2 <= threshold ? 'accept' : 'reject' };
 }

@@ -13,7 +13,7 @@ const galaxy=(id:string):NativeGalaxy=>{const g=glx.find(x=>x.id===id);if(!g)thr
 const blank=(w=936,h=936):RgbImage=>({width:w,height:h,rgb:new Uint8Array(w*h*3)});
 describe('Front L4: the telescope stamp has no size bound and paints in place',()=>{
  it('every record has the same mean bound (0x55f0f4 has no mean guard; Front MEANBOUND: the spectrometer\'s per-tick 2^30)',()=>{
-  expect(POISSON_MEAN_ADMISSION).toBe(2**36);expect(FIELD_CALIBRATIONS.map(c=>c.meanBound)).toEqual([SPECTROMETER_TICK_MEAN_BOUND,SPECTROMETER_TICK_MEAN_BOUND,SPECTROMETER_TICK_MEAN_BOUND]);expect(SPECTROMETER_TICK_MEAN_BOUND).toBe(2**30);
+  expect(POISSON_MEAN_ADMISSION).toBe(2**33);expect(FIELD_CALIBRATIONS.map(c=>c.meanBound)).toEqual([SPECTROMETER_TICK_MEAN_BOUND,SPECTROMETER_TICK_MEAN_BOUND,SPECTROMETER_TICK_MEAN_BOUND]);expect(SPECTROMETER_TICK_MEAN_BOUND).toBe(2**30);
  });
  it('in-place paint equals the composed stamp, on a blank and on a painted raster',()=>{
   for(const id of ['NGC 4874','NGC 4889','NGC 4559','NGC 4565']){

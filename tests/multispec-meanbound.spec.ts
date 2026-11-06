@@ -44,7 +44,7 @@ test('a star typed mean-bound before has a spectrum at 1 min on the 4 m, with no
 test('a 140-minute exposure of the same star wraps its Int32 channels as VIREO does and says so in one note',async({page})=>{
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
  const spectrum=await exposeBrightStar(page,'140',8400);
- await expect(spectrum.getByTestId('ms-wrapped')).toHaveText(/32-bit integer.*wrapped to negative values as they do in VIREO/);
+ await expect(spectrum.getByTestId('ms-wrapped')).toHaveText(/32-bit integers.*wrap modulo 2³² as in VIREO; some channels may show negative or misleadingly small values/);
  await spectrum.screenshot({path:'test-results/multispec-meanbound-wrapped.png'});
  expect(errors).toEqual([]);
 });

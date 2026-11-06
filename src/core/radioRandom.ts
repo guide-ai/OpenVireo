@@ -65,7 +65,7 @@ export class RadioRandomCursor{
   * after one uniform; Front R1); NaN, infinite or > 1e6 means are still refused atomically (browser limits). */
  poisson(mean:number):Readonly<{value:number;uniforms:number}>{
   let draw;
-  // Front MEANBOUND: poissonDraw now admits means up to 2^36; the receiver keeps its earlier 10^6 domain [W] (its draws are
+  // Front MEANBOUND: poissonDraw now admits means up to 2^33; the receiver keeps its earlier 10^6 domain [W] (its draws are
   // stored as Single, 0x562e74/0x562ecc, an accumulator not reviewed by that front).
   if(mean>RADIO_RANDOM_POLICY.poissonMeanLimit)throw new RadioSignalError('poisson-mean-domain',String(mean));
   try{draw=poissonDraw(mean,this.state,RADIO_RANDOM_POLICY.poissonDrawBudget,'native');}
