@@ -80,7 +80,7 @@ test('Save Updates downloads the options with an empty password; Load brings the
  await ok(page);await openOptions(page);await expect(id(page,'ob-options-test-mode')).toBeChecked();
  // An obsolete version: VIREO's Version Error box text; the dialog keeps its options.
  await id(page,'ob-options-load').setInputFiles({name:'old.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({...doc,version:'1.40',password:'SYNTHETIC-PATTERN'}))});
- await expect(id(page,'ob-options-file-error-caption')).toHaveText('Version Error');
+ await expect(id(page,'ob-options-file-error-caption')).toHaveText('Version Error');await expect(id(page,'ob-options-file-error-inferred')).toHaveCount(0);
  expect((await id(page,'ob-options-file-error-text').innerText()).replace(/\r/g,'')).toBe('Options File old.json is obsolete.\nProgram will continue with defaults or alternative file.');
  await expect(id(page,'ob-options-dialog')).not.toContainText('SYNTHETIC');await expect(id(page,'ob-options-test-mode')).toBeChecked();
  // A short native file: File Error with the read error.
@@ -88,16 +88,17 @@ test('Save Updates downloads the options with an empty password; Load brings the
  await id(page,'ob-options-load').setInputFiles({name:'VEO_OPTS.INI',mimeType:'application/octet-stream',buffer:native});
  await expect(id(page,'ob-options-file-error-caption')).toHaveText('File Error');
  await expect(id(page,'ob-options-file-error-text')).toContainText('Options File VEO_OPTS.INI is Invalid.');
- await expect(id(page,'ob-options-file-error-text')).toContainText('Read beyond end of file');
+ await expect(id(page,'ob-options-file-error-text')).toContainText('Read beyond end of file');await expect(id(page,'ob-options-file-error-inferred')).toContainText('inferred');
  await id(page,'ob-options-file').screenshot({path:test.info().outputPath('load-file-error.png')});
  // A full native stream with Restrict Scope Access off: loaded, with the not-applied list.
  const full=Buffer.alloc(8506);full[0]=5;full.write('1.504',1,'latin1');
  const at=(n:number)=>8506-(0x27dc-n)-1;// the 21 option bytes +0x27c8..+0x27dc close the stream
- full[8506-22]=1;full[8506-45]=4;for(const r of [0x27cb,0x27ce,0x27d2,0x27d3,0x27d7,0x27db,0x27dc])full[at(r)]=1;full[at(0x27c8)]=1;
+ full[8506-22]=1;full[8506-45]=5;/* review 1 L1: a rate index other than 3/4 */for(const r of [0x27cb,0x27ce,0x27d2,0x27d3,0x27d7,0x27db,0x27dc])full[at(r)]=1;full[at(0x27c8)]=1;
  await id(page,'ob-options-load').setInputFiles({name:'VEO_OPTS.INI',mimeType:'application/octet-stream',buffer:full});
  await expect(id(page,'ob-options-loaded')).toHaveAttribute('data-source','native');
  await expect(id(page,'ob-options-not-applied')).toContainText('Restrict Scope Access');await id(page,'ob-options-file').screenshot({path:test.info().outputPath('load-native-file.png')});await expect(id(page,'ob-options-not-applied')).toContainText('Parameters, file names, paths and addresses');
- await expect(id(page,'ob-options-test-mode')).toBeChecked();await expect(id(page,'ob-options-edit-mode')).not.toBeChecked();await expect(id(page,'ob-options-fast-slewing')).toBeChecked();
+ await expect(id(page,'ob-options-test-mode')).toBeChecked();await expect(id(page,'ob-options-edit-mode')).not.toBeChecked();await expect(id(page,'ob-options-fast-slewing')).not.toBeChecked();
+ await expect(id(page,'ob-options-fast-slewing-rate')).toContainText('slew-rate index 5');await expect(id(page,'ob-options-resave-warning')).toContainText('compiled values');
  await id(page,'ob-options-dialog').getByRole('button',{name:'Cancel',exact:true}).click();
  expect(await storageKeys(page)).toEqual([]);
 });

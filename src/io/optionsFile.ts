@@ -99,7 +99,10 @@ export const vireoVersionMatches=(fileVersion:string,compiled=OPTIONS_FILE_VERSI
 
 export type OptionsFileInvalidReason='read-beyond-eof'|'eof-not-reached'|'not-options-file'|'too-large';
 export type OptionsFileLoad=Readonly<
- |{kind:'loaded';source:'web'|'native';values:OptionsFileValues;notApplied:readonly NotAppliedKey[];administratorCleared:boolean}
+ |{kind:'loaded';source:'web'|'native';values:OptionsFileValues;notApplied:readonly NotAppliedKey[];administratorCleared:boolean;
+   /** Review 1 L1: a native Fast Slewing byte other than 3 or 4. ProgrammedSlew passes the raw byte to RateSlider.Position
+    * (0x539cbf, movzx edx,[env+0x2e63]), so VIREO would slew at that rate index; the web shows the box as on only for 4. */
+   fastSlewingRate:number|null}
  |{kind:'version-error'}
  |{kind:'invalid';reason:OptionsFileInvalidReason}>;
 /** Larger inputs are refused before reading [W]; a native file is 8506 bytes and a web file about 1 kB. */
@@ -115,8 +118,8 @@ export function writeOptionsFile(values:OptionsFileValues):string{
 }
 
 const invalid=(reason:OptionsFileInvalidReason):OptionsFileLoad=>Object.freeze({kind:'invalid',reason});
-const loaded=(source:'web'|'native',values:OptionsFileValues,notApplied:NotAppliedKey[],administratorCleared:boolean):OptionsFileLoad=>
- Object.freeze({kind:'loaded',source,values:Object.freeze(values),notApplied:Object.freeze(notApplied),administratorCleared});
+const loaded=(source:'web'|'native',values:OptionsFileValues,notApplied:NotAppliedKey[],administratorCleared:boolean,fastSlewingRate:number|null=null):OptionsFileLoad=>
+ Object.freeze({kind:'loaded',source,values:Object.freeze(values),notApplied:Object.freeze(notApplied),administratorCleared,fastSlewingRate});
 const isRecord=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
 
 /** Reads a web JSON file or a native VEO_OPTS.INI, in VIREO's order of checks. */
@@ -161,7 +164,8 @@ function readNative(bytes:Uint8Array):OptionsFileLoad{
  for(const k of NOT_APPLIED_KEYS){const r=NOT_APPLIED_BYTES[k];if(r!==undefined&&(at(r)!==0)!==NOT_APPLIED[k].compiled)differs.push(k);}
  if(at(0x27c1)!==0)differs.push('labTableNumber');// only the ShortString's length byte is read
  differs.push('parameters');// the native parameter block cannot be compared with compiled values that depend on VIREO's folder
- return loaded('native',values,NOT_APPLIED_KEYS.filter(k=>differs.includes(k)),false);
+ const rate=at(APPLIED_BYTES.fastSlewing);
+ return loaded('native',values,NOT_APPLIED_KEYS.filter(k=>differs.includes(k)),false,rate===3||rate===4?null:rate);
 }
 
 /** The reader's boxes (0x5a3648..0x5a3698 and 0x5a449f..0x5a44fc, MessageBox flags 0x40): "Options File " + name + … The

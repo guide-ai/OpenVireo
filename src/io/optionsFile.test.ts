@@ -43,7 +43,7 @@ describe('T2 web options file',()=>{
  it('round-trips every applied option',()=>{
   for(const values of [COMPILED_OPTIONS_FILE_VALUES,all(true),all(false),Object.freeze({...COMPILED_OPTIONS_FILE_VALUES,demonstrationMode:true,testMode:true,showObjectId:true,fastSlewing:false})]){
    const r=readOptionsFile(enc.encode(writeOptionsFile(values)));
-   expect(r).toEqual({kind:'loaded',source:'web',values,notApplied:[],administratorCleared:false});expect(Object.isFrozen(r)).toBe(true);
+   expect(r).toEqual({kind:'loaded',source:'web',values,notApplied:[],administratorCleared:false,fastSlewingRate:null});expect(Object.isFrozen(r)).toBe(true);
   }
  });
  it('writes a zero-length password and the not-applied options with their compiled values',()=>{
@@ -79,13 +79,19 @@ describe('T2 web options file',()=>{
 
 describe('T2 native VEO_OPTS.INI (read only)',()=>{
  it('reads the compiled stream as the compiled options; the parameter block is listed as not applied',()=>{
-  expect(readOptionsFile(nativeFile())).toEqual({kind:'loaded',source:'native',values:COMPILED_OPTIONS_FILE_VALUES,notApplied:['parameters'],administratorCleared:false});
+  expect(readOptionsFile(nativeFile())).toEqual({kind:'loaded',source:'native',values:COMPILED_OPTIONS_FILE_VALUES,notApplied:['parameters'],administratorCleared:false,fastSlewingRate:null});
  });
  it('decodes DemoBox inverted, Fast Slewing as rate 4 and the boolean bytes',()=>{
   const r=readOptionsFile(nativeFile({0x27c6:0,0x27af:3,0x27c8:1,0x27ca:2,0x27d5:1,0x27d3:0,0x27d1:0,0x27c1:2}));
   expect(r.kind).toBe('loaded');if(r.kind!=='loaded')return;
   expect(r.values).toMatchObject({demonstrationMode:true,fastSlewing:false,testMode:true,editMode:true,virtualObservatory:true,infraredCamera:false});
   expect(r.notApplied).toEqual(['restrictScopeAccess','labTableNumber','parameters']);
+ });
+ it('notes a Fast Slewing rate index other than 3 or 4 (review 1 L1: RateSlider takes the raw byte, 0x539cbf)',()=>{
+  expect(readOptionsFile(nativeFile({0x27af:3}))).toMatchObject({values:{fastSlewing:false},fastSlewingRate:null});
+  expect(readOptionsFile(nativeFile({0x27af:5}))).toMatchObject({values:{fastSlewing:false},fastSlewingRate:5});
+  expect(readOptionsFile(nativeFile({0x27af:0}))).toMatchObject({values:{fastSlewing:false},fastSlewingRate:0});
+  expect(readOptionsFile(enc.encode(writeOptionsFile(COMPILED_OPTIONS_FILE_VALUES)))).toMatchObject({fastSlewingRate:null});
  });
  it('never reads the password field: a synthetic pattern there changes nothing',()=>{
   const plain=nativeFile(),patterned=nativeFile();patterned.set(SYNTHETIC,nativeStreamOffset(0x27b0));patterned[nativeStreamOffset(0x27c0)]=16;

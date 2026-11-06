@@ -3517,6 +3517,8 @@ export interface MessageParameters {
   "optionsFile.source.web": never;
   "optionsFile.source.native": never;
   "optionsFile.notAppliedHeading": never;
+  "optionsFile.resaveWarning": never;
+  "optionsFile.fastSlewingRate": "rate";
   "optionsFile.reason.cleared-at-load": never;
   "optionsFile.reason.fixed-in-web": never;
   "optionsFile.reason.teacher-front": never;
@@ -3526,6 +3528,7 @@ export interface MessageParameters {
   "optionsFile.reason.parameters-front": never;
   "optionsFile.administratorCleared": never;
   "optionsFile.errorNote": never;
+  "optionsFile.readBeyondEofNote": never;
   "optionsFile.invalid.not-options-file": never;
   "optionsFile.invalid.too-large": never;
   "optionsFile.ok": never;

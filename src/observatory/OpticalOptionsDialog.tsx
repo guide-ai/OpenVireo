@@ -44,7 +44,9 @@ export default function OpticalOptionsDialog({gate='user-options-box',options,on
  const id=useId(),ref=useRef<HTMLDialogElement>(null),[draft,setDraft]=useState<OpticalOptions|null>(null),[resetAsked,setResetAsked]=useState(false),[editDraft,setEditDraft]=useState(editMode),[vobsDraft,setVobsDraft]=useState(virtualObservatory),[testDraft,setTestDraft]=useState(testMode),[sessionDraft,setSessionDraft]=useState(sessionOptions);
  const [demoDraft,setDemoDraft]=useState(demonstrationMode),[saveAsk,setSaveAsk]=useState<'edit'|'vo'|null>(null),[loadState,setLoadState]=useState<Readonly<{name:string;result:OptionsFileLoad;message?:string}>|null>(null);
  useEffect(()=>{const el=ref.current;if(!el)return;if(draft&&!el.open){el.showModal();el.querySelector<HTMLInputElement>('input:not([disabled])')?.focus();}else if(!draft&&el.open)el.close();},[draft!==null]);
- const [refused,setRefused]=useState(false),opener=useRef<HTMLButtonElement>(null);
+ const [refused,setRefused]=useState(false),opener=useRef<HTMLButtonElement>(null),loadToken=useRef(0);
+ // Review 1 N5: every open and close of the dialog makes an in-flight Load stale.
+ useEffect(()=>{loadToken.current++;},[draft!==null]);
  useEffect(()=>{if(disabled){setDraft(null);setResetAsked(false);setRefused(false);setSaveAsk(null);}},[disabled]);
  // Front R5: with Edit Mode live, SlewBox follows it (FormActivate 0x5a5985, EditModeBoxClick 0x5a6edc); without it, as before.
  const slew=draft?(onEditMode?limitSlewingBox(editDraft,draft.limitSlewing):Object.freeze({enabled:true,checked:draft.limitSlewing})):null;
@@ -63,10 +65,11 @@ export default function OpticalOptionsDialog({gate='user-options-box',options,on
  const saveClick=()=>{if(editDraft)setSaveAsk('edit');else if(vobsDraft)setSaveAsk('vo');else finishSave(true);};
  /** Load: VIREO reads VEO_OPTS.INI only at start-up (0x5a1a08); here the file fills the drafts, as Reset does, and OK applies. */
  const load=async(file:File)=>{
+  const token=++loadToken.current;
   let result:OptionsFileLoad;
   try{result=file.size>OPTIONS_FILE_MAX_BYTES?Object.freeze({kind:'invalid',reason:'too-large'}):readOptionsFile(new Uint8Array(await file.arrayBuffer()));}
   catch{result=Object.freeze({kind:'invalid',reason:'not-options-file'});}
-  if(!dialogOpen.current)return;// closed while the file was read: nothing to fill
+  if(token!==loadToken.current)return;// review 1 N5: a later read, or the dialog closed or reopened meanwhile
   const name=file.name.slice(0,120);
   if(result.kind!=='loaded'){setLoadState({name,result,message:result.kind==='invalid'&&(result.reason==='not-options-file'||result.reason==='too-large')?t(`optionsFile.invalid.${result.reason}`):undefined});return;}
   const v=result.values;
@@ -75,7 +78,6 @@ export default function OpticalOptionsDialog({gate='user-options-box',options,on
   setSessionDraft(Object.freeze(Object.fromEntries(SESSION_KEYS.map(k=>[k,v[k]]))) as SessionOpticalOptions);
   setLoadState({name,result});
  };
- const dialogOpen=useRef(false);dialogOpen.current=draft!==null;
  const fileError=loadState&&loadState.result.kind!=='loaded'?optionsFileErrorBox(loadState.result,loadState.name,loadState.message):null;
  return <>
   <button ref={opener} type="button" className="secondary-button" disabled={disabled} data-testid="ob-options" data-gate={gate} onClick={()=>{if(gate!=='options'){setRefused(true);return;}setDraft(onEditMode&&editMode?{limitSlewing:false}:options);setEditDraft(editMode);setVobsDraft(virtualObservatory);setTestDraft(testMode);setDemoDraft(demonstrationMode);setLoadState(null);setSaveAsk(null);setSessionDraft(sessionOptions);}}>{M.open}</button>
@@ -114,9 +116,11 @@ export default function OpticalOptionsDialog({gate='user-options-box',options,on
      {loadState?.result.kind==='loaded'&&<div role="status" data-testid="ob-options-loaded" data-source={loadState.result.source}><p className="ob-note">{t('optionsFile.loaded',{name:loadState.name,source:t(loadState.result.source==='web'?'optionsFile.source.web':'optionsFile.source.native')})}</p>
       {loadState.result.administratorCleared&&<p className="ob-note" data-testid="ob-options-administrator-cleared">{t('optionsFile.administratorCleared')}</p>}
       {loadState.result.notApplied.length>0&&<><p className="ob-note">{t('optionsFile.notAppliedHeading')}</p>
-       <ul className="ob-option-list" data-testid="ob-options-not-applied">{loadState.result.notApplied.map(k=><li key={k} data-key={k}><span className="ob-native">{NOT_APPLIED[k].caption}</span><small> — {t(`optionsFile.reason.${NOT_APPLIED[k].reason}`)}</small></li>)}</ul></>}</div>}
+       <ul className="ob-option-list" data-testid="ob-options-not-applied">{loadState.result.notApplied.map(k=><li key={k} data-key={k}><span className="ob-native">{NOT_APPLIED[k].caption}</span><small> — {t(`optionsFile.reason.${NOT_APPLIED[k].reason}`)}</small></li>)}</ul>
+       <p className="ob-note" data-testid="ob-options-resave-warning">{t('optionsFile.resaveWarning')}</p></>}
+      {loadState.result.fastSlewingRate!==null&&<p className="ob-note" data-testid="ob-options-fast-slewing-rate">{t('optionsFile.fastSlewingRate',{rate:loadState.result.fastSlewingRate})}</p>}</div>}
      {fileError&&<div role="alert" className="ob-group" data-testid="ob-options-file-error"><p className="ob-native"><strong data-testid="ob-options-file-error-caption">{fileError.caption}</strong></p>
-      <p className="ob-native ob-pre-line" data-testid="ob-options-file-error-text">{fileError.text}</p><small className="ob-note">{t('optionsFile.errorNote')}</small></div>}
+      <p className="ob-native ob-pre-line" data-testid="ob-options-file-error-text">{fileError.text}</p>{loadState?.result.kind==='invalid'&&loadState.result.reason==='read-beyond-eof'&&<small className="ob-note" data-testid="ob-options-file-error-inferred">{t('optionsFile.readBeyondEofNote')} </small>}<small className="ob-note">{t('optionsFile.errorNote')}</small></div>}
     </section>}
     <div className="ob-actions"><button type="button" className="primary-button" data-testid="ob-options-ok" onClick={commit}>{menuCaptionText(C.ok)}</button><button type="button" className="secondary-button" onClick={()=>setDraft(null)}>{menuCaptionText(C.cancel)}</button>
      <button type="button" className="secondary-button" title={R.hint} data-testid="ob-options-reset" onClick={()=>setResetAsked(true)}>{menuCaptionText(R.caption)}</button></div>

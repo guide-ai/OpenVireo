@@ -79,7 +79,8 @@ In OpenVireo (`src/io/optionsFile.ts`, `src/io/demonstrationModeStorage.ts`):
   It is not a lock: anyone using that browser gets instructor mode. Leave closes the gate for that page only; unticking it is
   the only way to stop it. Storage that is missing or blocked reads as off. Students who never enter instructor mode keep empty
   storage.
-- **WEB-OF-01 [W] Save Updates** applies the options as OK does, shows the writer's Edit Mode or Virtual Observatory warning
+- **WEB-OF-01 [W] Save Updates.** VIREO asks `Save Option Changes?` (flags 0x24) after every OK of this dialog (0x588770 tests ModalResult = mrOK; call at 0x588785 →
+  0x58ed74 → 0x58ee6c). OpenVireo's plain OK is that OK answered No, and Save Updates is the Yes: it applies the options as OK does, shows the writer's Edit Mode or Virtual Observatory warning
   when either is on, and downloads `VEO_OPTS.json`. It is a web format, not VEO_OPTS.INI: 18 fields of the native record are
   install paths and addresses built from VIREO's own folder at run time, and the rest of its parameter block belongs to the
   parameter fronts T6–T8, so a web-written native file would have to invent them. The file holds the 15 applied options
@@ -91,7 +92,11 @@ In OpenVireo (`src/io/optionsFile.ts`, `src/io/demonstrationModeStorage.ts`):
   is cleared. Values OpenVireo does not apply are listed with their reason and not applied: Restrict Scope Access, Detect Sky
   and Set E(B−V) (later instructor versions); Compute Magnitudes, Include R and I and Plot HR (fixed here); Sound Effects
   (OpenVireo's own switch); Write Log File; the Lab Table Number (undecided, its value is not shown); and the native parameter
-  block. Unlike VIREO, OpenVireo never deletes a file it could not read.
+  block. Saving again writes VIREO's compiled values for those listed items, and the load notice says so (review 1 L2). A native
+  Fast Slewing byte other than 3 or 4 is noted with its rate index, which VIREO's ProgrammedSlew would pass straight to the
+  rate slider (0x539cbf); the box shows ticked only for 4 (review 1 L1). Error boxes show the file's name where VIREO shows its
+  full path; `Read beyond end of file` is inferred (Delphi run-time text). Unlike VIREO, OpenVireo never deletes a file it could
+  not read.
 
 Recovery and evidence: `analysis/front-teacher/t2/RECOVERY.md` in the research root.
 
