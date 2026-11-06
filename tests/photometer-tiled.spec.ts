@@ -2,6 +2,7 @@ import{readFile}from'node:fs/promises';
 import {test,expect,type Page} from '@playwright/test';
 import{clickHeaderTool}from'./fixtures/header-tools';
 import{setVireoOptions}from'./fixtures/vireo-options';
+import{enterInstructorMode}from'./fixtures/instructor-mode';// Front T1: the options open only in instructor mode
 
 // Front G G3b (analysis/front-plans/front-g-gsc.md §10) and G3 review 1: the photometer wherever the telescope points, VIREO's
 // way. The student points the telescope in the Observatory and activates the photometer there (FormActivate never slews); the
@@ -70,7 +71,7 @@ test('a field VIREO\'s photometer cannot reproduce is typed: M31\'s core holds n
 });
 test('the bench move follows the Observatory\'s checks: Limit Slewing refuses below the horizon',async({page})=>{
  test.setTimeout(120000);await observatory(page);
- await card(page).getByTestId('ob-options').click();await page.getByTestId('ob-options-limit').check();await page.getByTestId('ob-options-ok').click();
+ await enterInstructorMode(page);await card(page).getByTestId('ob-options').click();await page.getByTestId('ob-options-limit').check();await page.getByTestId('ob-options-ok').click();
  await pointObservatory(page,STAR);await photometerHere(page);await ready(page);
  await page.locator('#photo-point-ra').fill('0');await page.locator('#photo-point-dec').fill('-80');await page.getByTestId('photo-point-telescope').click();
  await expect(page.getByRole('alert')).toContainText('Limit Slewing refuses a position below the horizon');

@@ -5,8 +5,35 @@ VIREO's instructor dialog "Optical Simulation Options" (CLEA_VEO.exe 781bc970…
 + 0x6b4. The defaults routine 0x5a21d0 sets the compiled values. No `VEO_OPTS.INI` ships with VIREO, so students see these
 defaults. The research notes are in `analysis/front-r3-options/` and the plan in `analysis/front-plans/front-r3-options.md`.
 
+## Instructor-mode gate (Front T1, 2026-11-06)
+VIREO opens this dialog from File › Preferences (Preferences1Click 0x5886ac) only while the gate byte env+0x37d8 is set
+(test at 0x5886c9) [D]. FormCreate clears it (0x587c2d); the Demonstration Mode branch at start-up (0x587c6a), Edit Mode under
+Preferences OK (0x5887f0) and in the options apply (0x587f70), and Login with "Instructor" and the compiled password at
+0x5a316c (0x58816c) set it; Login answered No clears it (0x5884a1). With the gate closed Preferences shows the INSTRUCTOR /
+`USER OPTIONS!` box (0x588a84 / 0x588b70, reached at 0x5889a6, MessageBox flags 0x30; the body passes through 0x405ec8 and the
+helper 0x486ae0 first, as in the radio port).
+
+In OpenVireo (`src/core/instructorMode.ts`, `src/components/InstructorMode.tsx`; user decisions of 2026-11-06):
+- **Closed to students.** The Optical Simulation Options button shows the recovered `USER OPTIONS!` box, word for word, and one
+  web line saying that Instructor mode… in the page header opens the options.
+- **WEB-TM-01 [W] Instructor mode…** (page header, every route): a confirmation says it is the web form of VIREO's
+  Demonstration Mode gate, that it needs no password and is not a lock, that it shows no answers and that it lasts for the page
+  only. On opens the gate; a banner "Instructor mode (web): VIREO's Demonstration Mode gate. No password; it is not a lock."
+  stays on every route with **Leave**. Only the gate write is ported; Demonstration Mode's other effects and its DemoBox are
+  later fronts (T2).
+- **WEB-TM-02 [W] Leave** closes the gate and puts Edit Mode and Virtual Observatory back to their compiled values (off), so
+  "Edit Mode on ⇒ gate open" holds. VIREO has no such action.
+- **One gate.** The radio card's Preferences follows the same gate (docs/RADIO-ACCESS-OPTIONS.md); its own Demonstration
+  button is retired. Edit Mode on keeps it open (moved from the radio card).
+- **Not ported:** Login, TPasswordDlg and TPasswordDlg1. The web never stores, compares, hashes or exports the compiled
+  password (`compiled-password-not-ported` in `src/core/teacherDeferred.ts`).
+- **Unchanged:** answer masks, exercise paths (the guides force their options without the dialog), saved investigations, the
+  network and browser storage. The gate is never saved.
+
+Recovery and evidence: `analysis/front-teacher/t1/RECOVERY.md` in the research root.
+
 ## In OpenVireo
-The dialog opens from the telescope-motion card. These controls are live:
+The dialog opens from the telescope-motion card, in instructor mode. These controls are live:
 
 | Option | Compiled | Effect here | Evidence |
 |---|---|---|---|
@@ -28,7 +55,8 @@ FormActivate 0x5a56e0 writes them. Editing them would invalidate the certified f
 contracts built on those values.
 
 **Web adaptations [W]:**
-- **WEB-OPT-R3:** the options are open to anyone, last for the page session and are not saved, as Edit Mode is.
+- **WEB-OPT-R3:** the options last for the page session and are not saved, as Edit Mode is. Since Front T1 they open only in
+  instructor mode (above); before, they were open to anyone.
 - **Wedge plot:** it takes Monochrome Displays when the option changes, and its own scheme choice can switch it meanwhile.
 - **Fast Scope Change:** the original's slow path is not reproduced. That path shows "Accessing <scope>" with an hourglass
   for Random(8000) ms, then the "Telescope Successfully Accessed" message, then resets to the finder view. Here the change

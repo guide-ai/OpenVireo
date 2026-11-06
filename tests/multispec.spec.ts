@@ -1,6 +1,7 @@
 import{test,expect,type Page,type Locator}from'@playwright/test';
 import{readFile}from'node:fs/promises';
 import{paceDownload}from'./fixtures/download-pacing';
+import{enterInstructorMode}from'./fixtures/instructor-mode';// Front T1: the options open only in instructor mode
 
 // Front M (M3): the multi-object spectrometer from the observatory's instrument choice (Access, as recovered), with object
 // selection armed by Edit Mode (decision D1), at the exact Hubble Coma – 2 (NGC 4889) pointing of the bundled engine pack.
@@ -9,7 +10,7 @@ import{paceDownload}from'./fixtures/download-pacing';
 test.describe.configure({timeout:180_000});
 const card=(p:Page)=>p.getByTestId('ms-card');
 async function tracking(page:Page){if(!await page.getByRole('button',{name:'Turn tracking on',exact:true}).isVisible())await page.getByText('Observatory clock & spectral tracking',{exact:true}).click();if(await page.getByRole('button',{name:'Turn tracking on',exact:true}).isVisible())await page.getByRole('button',{name:'Turn tracking on',exact:true}).click();}
-async function editMode(page:Page){await page.locator('.telescope-motion').getByTestId('ob-options').click();await page.getByTestId('ob-options-edit-mode').check();await page.getByTestId('ob-options-ok').click();}
+async function editMode(page:Page){await enterInstructorMode(page);await page.locator('.telescope-motion').getByTestId('ob-options').click();await page.getByTestId('ob-options-edit-mode').check();await page.getByTestId('ob-options-ok').click();}
 async function pointComa2(page:Page){
  await page.getByText('Enter coordinates',{exact:true}).click();
  await page.locator('#point-ra').fill('13.002305555555555');await page.locator('#point-dec').fill('27.9775');
@@ -122,7 +123,7 @@ test('Virtual Observatory (instructor, Front O2): mode 0 arms Multi-Spec selecti
  await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.',exact:true})).toBeVisible({timeout:15000});
  await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await tracking(page);
  await pointComa2(page);await page.getByRole('button',{name:/^Telescope/}).click();
- const vo=async(on:boolean)=>{await page.locator('.telescope-motion').getByTestId('ob-options').click();const box=page.getByTestId('ob-options-virtual-observatory');if(on)await box.check();else await box.uncheck();await page.getByTestId('ob-options-ok').click();};
+ const vo=async(on:boolean)=>{await enterInstructorMode(page);await page.locator('.telescope-motion').getByTestId('ob-options').click();const box=page.getByTestId('ob-options-virtual-observatory');if(on)await box.check();else await box.uncheck();await page.getByTestId('ob-options-ok').click();};
  await vo(true);
  await card(page).getByTestId('ms-access').click();await okBox(page,/^Click on objects/);
  const field=page.getByTestId('ms-field');await expect(field).toBeVisible({timeout:60000});await expect(field).toHaveAttribute('data-armed','true');

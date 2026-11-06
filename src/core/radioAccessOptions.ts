@@ -94,7 +94,12 @@ export function radioOptionsCompiledRecord(hostPredicate:boolean):RadioOptionsFu
  * createRadioAccessState with explicit admission (tests only). */
 export type RadioOptionsAuthority=Readonly<{kind:'absent'}|{kind:'compiled-branch';hostPredicate:boolean}|{kind:'supplied'}>;
 
-export type RadioAccessGate=Readonly<{open:boolean;source:'not-supplied'|'demonstration'|'edit-mode'}>;
+/** env+0x37d8 as the radio card reads it. Front T1: the page's one instructor gate (core/instructorMode.ts) is its only
+ * writer; 'instructor' is the web instructor switch (the Demonstration Mode branch 0x587c6a), 'edit-mode' the Edit Mode
+ * writes (0x5887f0, 0x587f70). */
+export type RadioAccessGate=Readonly<{open:boolean;source:'not-supplied'|'instructor'|'edit-mode'}>;
+/** The page gate followed by the card (structurally core/instructorMode.ts InstructorGate; not imported, see the import rule). */
+export type RadioPageGate=Readonly<{open:boolean;source:'closed'|'instructor-switch'|'edit-mode'}>;
 /** The failure of a numeric OK: the field, its position in the OK order (0..8), the web failure and the text. */
 export type RadioOptionsNumericFailure=Readonly<{field:RadioOptionsNumberField;position:number;text:string}>&RadioOptionsParseFailure;
 /** The numeric part of the child under an authority: the nine edit texts, the two editable check boxes and the open
@@ -123,7 +128,7 @@ export type RadioPulsarListMenu=Readonly<{
  * web adaptation. */
 export type RadioCloseRecipient='environment'|'radio-lab';
 export type RadioAccessState=Readonly<{
- /** env+0x37d8. FormCreate writes 0 (0x587c2d); only the [W] Demonstration Mode scenario opens it here. */
+ /** env+0x37d8. FormCreate writes 0 (0x587c2d); Front T1: it follows the page's instructor gate (followPageGate). */
  gate:RadioAccessGate;
  /** Where root/env started: the compiled fallback, or a record supplied to createRadioAccessState (tests only). */
  origin:'compiled-fallback'|'supplied';
@@ -146,7 +151,7 @@ export type RadioAccessState=Readonly<{
 /** Web guards checked before any native handler step: they show no message and change nothing. */
 export type RadioAccessHostRefusal='inactive'|'busy'|'modal'|'receiver-box';
 export type RadioAccessOutcome=
- |'gate-opened'|'gate-already-open'|'refused-surface-open'
+ |'gate-opened'|'gate-closed'|'gate-unchanged'|'refused-surface-open'
  |`refused-${RadioAccessHostRefusal}`|'refused-parent-open'|'refused-refusal-open'
  |'user-options-shown'|'preferences-opened'|'user-options-dismissed'|'refused-no-refusal'
  |'radio-opened'|'refused-no-parent'|'refused-child-open'|'refused-no-child'
@@ -202,24 +207,15 @@ const next=(s:RadioAccessState,patch:Partial<RadioAccessState>,outcome:RadioAcce
 const child=(s:RadioAccessState)=>s.parent?.child??null;
 const surfaceOpen=(s:RadioAccessState)=>s.refusal!==null||s.parent!==null;
 
-/** T1 [W] scenario: the FormCreate Demonstration branch's gate write (0x587c6a, env+0x37d8 := 1) applied once for this
- * session. Only the gate is written; the other Demonstration Mode effects (0x587dbc) are not ported. Nothing closes it. */
-export function applyDemonstrationGate(s:RadioAccessState):RadioAccessTransition{
- if(surfaceOpen(s))return keep(s,'refused-surface-open');
- if(s.gate.open)return keep(s,'gate-already-open');
- return next(s,{gate:Object.freeze({open:true,source:'demonstration'})},'gate-opened');
-}
-
-/** Front R5 [I]/[W] (review 1 L1): upholds VIREO's invariant "Edit Mode on ⇒ Preferences gate open". The gate writes under Edit
- * Mode (Preferences OK 0x5887f0, the options apply 0x587f70) are reached with the gate already open, except Login1Click with Edit
- * Mode on (0x588468 skips the question, 0x588527 → 0x587f70). In the web, Edit Mode is turned on without the gate (WEB-EM-01), so
- * this write becomes observable; it is applied once the page's Edit Mode has been committed on. No ported path closes the gate
- * (Login answered No with Edit Mode off writes 0 at 0x5884a1; Login is not ported). Only the byte is written: no surface is opened
- * or closed. Side effect (review 1 L2): the card's "Apply the Demonstration Mode gate" button is then disabled, and since a file
- * keeps an Edit Mode gate closed, a Demonstration gate cannot be saved in that page session. */
-export function applyEditModeGate(s:RadioAccessState):RadioAccessTransition{
- if(s.gate.open)return keep(s,'gate-already-open');
- return next(s,{gate:Object.freeze({open:true,source:'edit-mode'})},'gate-opened');
+/** T1 Front T1 [W]: the card reads the page's one gate (core/instructorMode.ts): the instructor switch in place of the
+ * Demonstration branch's write (0x587c6a), the Edit Mode writes (0x5887f0, 0x587f70) and the web Leave (WEB-TM-02). Only the
+ * byte is written: an open box or dialog stays as it is (VIREO tests the gate only at Preferences1Click 0x5886c9). */
+export function followPageGate(s:RadioAccessState,page:RadioPageGate):RadioAccessTransition{
+ if(page===null||typeof page!=='object'||typeof page.open!=='boolean'||!['closed','instructor-switch','edit-mode'].includes(page.source)||page.open!==(page.source!=='closed'))
+  throw new TypeError('Invalid page gate');
+ const gate:RadioAccessGate=page.open?Object.freeze({open:true,source:page.source==='edit-mode'?'edit-mode':'instructor'}):Object.freeze({open:false,source:'not-supplied'});
+ if(gate.open===s.gate.open&&gate.source===s.gate.source)return keep(s,'gate-unchanged');
+ return next(s,{gate},gate.open?'gate-opened':'gate-closed');
 }
 
 /** T2 Preferences1Click 0x5886ac. Web guards first (no native step runs); then the gate test at 0x5886c9: closed shows the
@@ -403,10 +399,12 @@ export type RadioAccessSnapshot=Readonly<{
  gate:SavedRadioAccessGate;authority:Readonly<{kind:'absent'}|{kind:'compiled-branch';hostPredicate:boolean}>;
  root:RadioOptionsRecord;env:RadioOptionsRecord;lastChildOk:boolean|null;menu:RadioPulsarListMenu;closeRecipient:RadioCloseRecipient;
 }>;
-/** Front R5: a gate opened by Edit Mode is page-session state, like Edit Mode itself, so a file keeps it closed and the page
- * opens it again on restore (the file format is unchanged). */
+/** The file field (format unchanged). Front T1 [W]: the gate is page-session state (instructor mode), so a file is always
+ * written with it closed; a Demonstration gate in a file written before T1 is read and not applied: the restored card
+ * follows the page's instructor gate. */
 export type SavedRadioAccessGate=Readonly<{open:boolean;source:'not-supplied'|'demonstration'}>;
-const savedGate=(g:RadioAccessGate):SavedRadioAccessGate=>g.source==='edit-mode'?Object.freeze({open:false,source:'not-supplied'}):g as SavedRadioAccessGate;
+const CLOSED_SAVED_GATE:SavedRadioAccessGate=Object.freeze({open:false,source:'not-supplied'});
+const savedGate=():SavedRadioAccessGate=>CLOSED_SAVED_GATE;
 const exactKeys=(r:object,keys:readonly string[])=>{const k=Object.keys(r);return k.length===keys.length&&keys.every(x=>Object.hasOwn(r,x));};
 function recordIssue(r:unknown,authority:RadioAccessSnapshot['authority']):string|null{
  if(r===null||typeof r!=='object'||Array.isArray(r)||!isPlain(r))return 'record';
@@ -430,16 +428,17 @@ export function radioAccessSnapshotIssue(s:RadioAccessSnapshot):string|null{
 export function radioAccessSnapshot(s:RadioAccessState):Readonly<{ok:true;snapshot:RadioAccessSnapshot}|{ok:false;reason:'dialog'|'profile'}>{
  if(s.refusal!==null||s.parent!==null)return Object.freeze({ok:false,reason:'dialog'});
  if(s.origin!=='compiled-fallback'||s.authority.kind==='supplied')return Object.freeze({ok:false,reason:'profile'});
- const snapshot:RadioAccessSnapshot=Object.freeze({gate:savedGate(s.gate),authority:s.authority as RadioAccessSnapshot['authority'],root:s.root,env:s.env,lastChildOk:s.lastChildOk,menu:s.menu,
+ const snapshot:RadioAccessSnapshot=Object.freeze({gate:savedGate(),authority:s.authority as RadioAccessSnapshot['authority'],root:s.root,env:s.env,lastChildOk:s.lastChildOk,menu:s.menu,
   closeRecipient:s.closeRecipient});
  return radioAccessSnapshotIssue(snapshot)===null?Object.freeze({ok:true,snapshot}):Object.freeze({ok:false,reason:'profile'});
 }
 /** The restored state: createRadioAccessState's startup state with the saved applied values; no box, dialog, draft or
- * failure. Throws on a snapshot radioAccessSnapshotIssue refuses. */
+ * failure. The gate starts closed whatever the file says (Front T1); the host then follows the page gate. Throws on a
+ * snapshot radioAccessSnapshotIssue refuses. */
 export function restoredRadioAccessState(s:RadioAccessSnapshot):RadioAccessState{
  if(radioAccessSnapshotIssue(s)!==null)throw new TypeError('Invalid radio access snapshot');
  const base=createRadioAccessState();
- return Object.freeze({...base,gate:Object.freeze({open:s.gate.open,source:s.gate.source}),root:frozenCopy(s.root) as RadioOptionsRecord,env:frozenCopy(s.env) as RadioOptionsRecord,
+ return Object.freeze({...base,root:frozenCopy(s.root) as RadioOptionsRecord,env:frozenCopy(s.env) as RadioOptionsRecord,
   lastChildOk:s.lastChildOk,menu:Object.freeze({enabled:s.menu.enabled,visible:s.menu.visible,activationSeen:s.menu.activationSeen}),closeRecipient:s.closeRecipient,
   authority:Object.freeze(s.authority.kind==='absent'?{kind:'absent' as const}:{kind:'compiled-branch' as const,hostPredicate:s.authority.hostPredicate})});
 }

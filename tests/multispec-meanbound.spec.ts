@@ -1,4 +1,5 @@
 import{test,expect,type Page,type Locator}from'@playwright/test';
+import{enterInstructorMode}from'./fixtures/instructor-mode';// Front T1: the options open only in instructor mode
 
 // Front MEANBOUND (analysis/front-meanbound/RECOVERY.md §6): at Coma – 1 (the NGC 4874 pointing) on the 4 m, the star N2230-01732
 // (V 7.17, control point (166, 24) of the Telescope crop) was typed multispec-mean-bound (a channel mean of 1.6·10⁷ at 1 min, above
@@ -7,7 +8,7 @@ import{test,expect,type Page,type Locator}from'@playwright/test';
 test.describe.configure({timeout:300_000});
 const card=(p:Page)=>p.getByTestId('ms-card');
 async function tracking(page:Page){if(!await page.getByRole('button',{name:'Turn tracking on',exact:true}).isVisible())await page.getByText('Observatory clock & spectral tracking',{exact:true}).click();if(await page.getByRole('button',{name:'Turn tracking on',exact:true}).isVisible())await page.getByRole('button',{name:'Turn tracking on',exact:true}).click();}
-async function editMode(page:Page){await page.locator('.telescope-motion').getByTestId('ob-options').click();await page.getByTestId('ob-options-edit-mode').check();await page.getByTestId('ob-options-ok').click();}
+async function editMode(page:Page){await enterInstructorMode(page);await page.locator('.telescope-motion').getByTestId('ob-options').click();await page.getByTestId('ob-options-edit-mode').check();await page.getByTestId('ob-options-ok').click();}
 async function at(field:Locator,x:number,y:number){const b=(await field.boundingBox())!;await field.click({position:{x:(x+.5)*b.width/312,y:(y+.5)*b.height/312}});}
 async function okBox(page:Page){const box=page.getByTestId('ms-box');await box.getByRole('button',{name:'OK',exact:true}).click();await expect(box).toHaveCount(0);}
 async function exposeBrightStar(page:Page,minutes:string,seconds:number){

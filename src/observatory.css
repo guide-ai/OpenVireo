@@ -70,6 +70,17 @@
 .investigation-toolbar>[role=alert]{background:var(--ov-danger-soft);color:var(--ov-danger)}
 @media(max-width:1150px){.investigation-toolbar{width:calc(100% - 32px)}}
 @media(max-width:520px){.investigation-toolbar{width:calc(100% - 24px);padding:10px 12px}}
+/* Front T1: the instructor-mode banner (every route) and the header item. */
+.instructor-mode-banner{box-sizing:border-box;max-width:1500px;width:calc(100% - 60px);margin:16px auto 0;padding:8px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;border:1px solid var(--ov-warning-border);border-radius:var(--ov-radius-md);background:var(--ov-surface);color:var(--ov-text);font-size:var(--ov-text-sm);line-height:1.5}
+.instructor-mode-banner p{margin:0;display:flex;flex-wrap:wrap;gap:0 8px;flex:1 1 24rem;min-width:0;overflow-wrap:anywhere}
+.instructor-mode-banner strong{color:var(--ov-warning)}
+.instructor-mode-banner small{flex-basis:100%;color:var(--ov-text-muted);overflow-wrap:anywhere}
+.portal-footer .instructor-mode-item{width:100%;margin-bottom:var(--ov-space-2);min-height:30px}
+.instructor-mode-confirm{max-width:min(36rem,calc(100vw - 32px))}
+.instructor-mode-confirm p{overflow-wrap:anywhere}
+@media(max-width:1150px){.instructor-mode-banner{width:calc(100% - 32px)}}
+@media(max-width:520px){.instructor-mode-banner{width:calc(100% - 24px);padding:8px 12px}}
+@media(min-width:600px) and (max-width:1099.98px){.portal-footer .instructor-mode-item{width:auto;margin:0}}
 
 /* Running clock card sits between the toolbar and the route content. */
 .running-clock{width:calc(100% - 60px);max-width:1500px;margin:16px auto 0!important}
@@ -288,5 +299,5 @@
 /* ── Print: app chrome is never printed ── */
 @media print{
  body{padding-left:0!important}
- .portal-header,.investigation-toolbar{display:none!important}
+ .portal-header,.investigation-toolbar,.instructor-mode-banner{display:none!important}
 }

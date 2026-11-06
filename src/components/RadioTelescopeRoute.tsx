@@ -24,7 +24,7 @@ import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeN
 import {usePulsarParametersHost} from './RadioPulsarParameters';
 import {useRadioAccessHost} from './RadioAccessOptions';
 import {preparePulsarListCommand,type PulsarListCommandResult} from '../core/radioPulsarListCommand';
-import {radioOptionsCompiledRecord,type RadioOptionsRecord} from '../core/radioAccessOptions';
+import {radioOptionsCompiledRecord,type RadioOptionsRecord,type RadioPageGate} from '../core/radioAccessOptions';
 import {projectRadioOptionsEnv,radioOptionsConsumerMismatches,type RadioOptionsProjectionReport,type RadioReceiverProjectionReport} from '../core/radioOptionsProjection';
 import {RADIO_RECEIVER_COMPILED_OPTIONS,type RadioReceiverOptions} from '../core/radioReceiver';
 import {copyReceiverLiveOptions} from '../core/radioReceiverSession';
@@ -58,13 +58,14 @@ const CLOCK_OUTCOME_KEYS:Readonly<Partial<Record<RadioClockScenarioOutcome,Plain
 /** WEB-DATE-02 domain bounds of the dialog result (whole seconds), for the browser-limit box. */
 const DATE_MIN_TEXT=new Date(RADIO_DATE_WEB_LIMITS.minUTMS).toISOString().slice(0,19)+'Z',DATE_MAX_TEXT=new Date(RADIO_DATE_WEB_LIMITS.maxUTMS).toISOString().slice(0,19)+'Z';
 const DATE_MENU_TEXT=menuCaptionText(SET_DATE_MENU_CAPTION);
+const CLOSED_PAGE_GATE:RadioPageGate=Object.freeze({open:false,source:'closed'});
 const LIST_UNAVAILABLE:PulsarListCommandResult=Object.freeze({ok:false,reason:'unavailable'});
 const LIST_PREPARE_FAILED:PulsarListCommandResult=Object.freeze({ok:false,reason:'prepare-failed'});
 type DateFieldRefusal=Readonly<{field:RadioDateField;outcome:'field-too-long'|'field-not-ascii'}>;
 
 export type RadioTelescopeRouteProps=Readonly<{
- /** Front R5: the page's Edit Mode has been committed on (it opens the Preferences gate, applyEditModeGate). */
- editModeSeen?:boolean;
+ /** Front T1: the page's one instructor gate (core/instructorMode.ts); the radio Preferences follows it. Absent: closed. */
+ pageGate?:RadioPageGate;
  /** The route is shown. While false the panel presents no dialog or box; its timers keep running. */
  active:boolean;
  /** A project operation runs: presentation is suppressed, the panel timers pause without catch-up and the radio clock
@@ -118,7 +119,7 @@ export type RadioRouteController=Readonly<{snapshot:()=>RadioSnapshotResult<Radi
  * (projectOptions), the panel's Limit Slewing scenario is withdrawn and legacy diameter writes are shielded here. Phase 1
  * item 1.5: Save investigation reads this workspace through controllerRef, and a restore mounts it from `restored`.
  */
-function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarData,onOpenPulsarAnalysis,onExerciseProgress,restored=null,controllerRef,hiddenName,hotListMask,prefillTarget=null,sessionId,onSessionId,editModeSeen=false}:RadioTelescopeRouteProps){
+function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarData,onOpenPulsarAnalysis,onExerciseProgress,restored=null,controllerRef,hiddenName,hotListMask,prefillTarget=null,sessionId,onSessionId,pageGate=CLOSED_PAGE_GATE}:RadioTelescopeRouteProps){
  const [initial]=useState(()=>restored);
  const [state,setState]=useState<RadioControlState>(()=>initial?.control??INITIAL_RADIO_CONTROL);
  // Latest accepted control state, read by Start pulsar exercise.
@@ -273,7 +274,7 @@ function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarD
    :receiverApiRef.current?.boxRefusal()?'receiver-box':null,
   runPulsarList:()=>listRunner.current(),
   numeric:{mismatchesFor:optionsMismatches,onEnvironmentCopied:projectOptions,view:{antenna:options,receiver:liveReceiverOptions,panelDiameter:environment.dishDiameterMeters}},
-  initial:initial?.access??null,editModeSeen});
+  initial:initial?.access??null,pageGate});
  const optionsManaged=access.authority.kind!=='absent';
  // R-RX6: Open and Find read the receiver session's shared +0x5f7 buffer live and write nothing; the receiver close box and
  // Record dialogs refuse Open (WEB-PP-LIST-01..03); the receivers' picker runs move the window's shared list cursor (WEB-PP-CUR-01).

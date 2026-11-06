@@ -1,6 +1,7 @@
 import{test,expect,type Page}from'@playwright/test';
 import{clickHeaderTool}from'./fixtures/header-tools';
 import{readFile}from'node:fs/promises';
+import{enterInstructorMode}from'./fixtures/instructor-mode';// Front T1: the options open only in instructor mode
 const card=(p:Page)=>p.locator('.telescope-motion');
 async function save(page:Page){const event=page.waitForEvent('download');await page.getByRole('button',{name:'Save investigation',exact:true}).click();return readFile((await(await event).path())!);}
 async function tracking(page:Page){if(!await page.getByRole('button',{name:'Turn tracking on',exact:true}).isVisible())await page.getByText('Observatory clock & spectral tracking',{exact:true}).click();if(await page.getByRole('button',{name:'Turn tracking on',exact:true}).isVisible())await page.getByRole('button',{name:'Turn tracking on',exact:true}).click();}
@@ -24,7 +25,7 @@ test('daily use: date, site, options, hot list slew, add current, Save and fresh
  await expect(page.getByTestId('ob-info-box')).toContainText('Object Tonight 1 added to Observation List.');await page.getByTestId('ob-info-box').getByRole('button',{name:'OK'}).click();
  await expect(page.getByText('HTL targets · 14')).toBeVisible();
  // Options: Limit Slewing on (kept by Save).
- await card(page).getByTestId('ob-options').click();await page.getByTestId('ob-options-limit').check();await page.getByTestId('ob-options-ok').click();
+ await enterInstructorMode(page);await card(page).getByTestId('ob-options').click();await page.getByTestId('ob-options-limit').check();await page.getByTestId('ob-options-ok').click();
  // Save: v26 outermost with the options and the override.
  const bytes=await save(page),v=JSON.parse(bytes.toString());
  expect(v.version).toBe(26);expect(v.observatory.options).toEqual({limitSlewing:true});expect(v.observatory.siteOverrides['0'].name).toBe('Classroom roof');
@@ -34,7 +35,7 @@ test('daily use: date, site, options, hot list slew, add current, Save and fresh
  await expect(page.getByRole('status').filter({hasText:/restored/i}).first()).toBeVisible({timeout:15000});
  await clickHeaderTool(page,'Observatory');const dome=page.getByRole('button',{name:'Open dome ↗',exact:true});if(await dome.isVisible())await dome.click();
  await page.getByText('Site clock · fixed UT scenario',{exact:true}).click();await expect(page.getByTestId('ob-site-status')).toContainText('Classroom roof');
- await card(page).getByTestId('ob-options').click();await expect(page.getByTestId('ob-options-limit')).toBeChecked();await page.keyboard.press('Escape');
+ await enterInstructorMode(page);await card(page).getByTestId('ob-options').click();await expect(page.getByTestId('ob-options-limit')).toBeChecked();await page.keyboard.press('Escape');
  // A file without v26 resets to the compiled defaults.
  const plain=JSON.parse(bytes.toString()).base;
  await page.getByLabel('Restore investigation JSON',{exact:true}).setInputFiles({name:'plain.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(plain))});

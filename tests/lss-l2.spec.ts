@@ -3,6 +3,7 @@ import {LAZY_ROUTE_TIMEOUT} from './fixtures/lazy-route';
 import {readFile} from 'node:fs/promises';
 import{clickHeaderTool}from'./fixtures/header-tools';
 import {okWithVelocity} from './fixtures/lss-velocity';
+import{enterInstructorMode}from'./fixtures/instructor-mode';// Front T1: the options open only in instructor mode
 // Re-pinned 2026-10-31 (Front S2 round 2): new Hubble/LSS exposures use VIREO's 3700–4700 Å with the start-time continuation (docs/RANGE-FINGERPRINTS-2026-10-31.md).
 // Front L2 (docs/LSS-SURVEY.md): a formerly QSO-gated row acquires with the recovered QSO merge; .SSP Save / Print on the LSS
 // and galaxy routes (recovered writer); the native LSS results .TXT; LSS Galaxy Data only with Edit Mode.
@@ -66,7 +67,7 @@ test('LSS Galaxy Data appears only with Edit Mode; validation boxes; extraction 
  // Edit Mode is the observatory's Optical Options checkbox (Front O, not saved).
  await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.',exact:true})).toBeVisible({timeout:15000});
  await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
- await page.getByTestId('ob-options').first().click();await page.getByTestId('ob-options-edit-mode').check();await page.getByTestId('ob-options-ok').click();
+ await enterInstructorMode(page);await page.getByTestId('ob-options').first().click();await page.getByTestId('ob-options-edit-mode').check();await page.getByTestId('ob-options-ok').click();
  await page.goto('/#lss-survey');await expect(page.getByTestId('lss-region-card')).toBeVisible();
  await page.getByTestId('lss-region-open').click();
  const dialog=page.getByRole('dialog',{name:'Extract LSS Galaxy Data for Region'});await expect(dialog).toBeVisible();

@@ -1,5 +1,6 @@
 import {test,expect,type Page} from '@playwright/test';
 import {clickHeaderTool} from './fixtures/header-tools';
+import{enterInstructorMode}from'./fixtures/instructor-mode';// Front T1: the options open only in instructor mode
 // Front R3: the ported Optical Simulation Options (analysis/front-plans/front-r3-options.md). They start from the compiled
 // record, last for the page session, and change only what VIREO's own readers change.
 const card=(p:Page)=>p.locator('.telescope-motion');
@@ -12,14 +13,14 @@ async function observatory(page:Page,clock=false){
  await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
 }
 async function setOptions(page:Page,change:Readonly<Record<string,boolean>>){
- await card(page).getByTestId('ob-options').click();
+ await enterInstructorMode(page);await card(page).getByTestId('ob-options').click();
  for(const [k,on] of Object.entries(change))await id(page,`ob-options-${k}`).setChecked(on);
  await id(page,'ob-options-ok').click();await expect(id(page,'ob-options-dialog')).toBeHidden();
 }
 const route=(page:Page,hash:string)=>page.evaluate(h=>{location.hash=h;},hash);
 
 test('the dialog offers the ported options with their compiled states and shows the tab values read-only',async({page})=>{
- await observatory(page);await card(page).getByTestId('ob-options').click();
+ await observatory(page);await enterInstructorMode(page);await card(page).getByTestId('ob-options').click();
  for(const k of ['fast-slewing','infrared-camera'])await expect(id(page,`ob-options-${k}`)).toBeChecked();
  for(const k of ['fast-scope-change','compute-redshift-velocity','monochrome-displays','print-in-color','time-dependent-data'])await expect(id(page,`ob-options-${k}`)).not.toBeChecked();
  const others=id(page,'ob-options-others');await expect(others.getByRole('listitem')).toHaveCount(5);
@@ -32,7 +33,7 @@ test('the dialog offers the ported options with their compiled states and shows 
  // IRBoxMouseUp: unchecking Infrared Camera hides the IR tab at once (in the draft); Cancel keeps the option.
  await id(page,'ob-options-infrared-camera').uncheck();await expect(id(page,'ob-options-tab-ir')).toHaveCount(0);
  await page.getByRole('button',{name:'Cancel',exact:true}).click();
- await card(page).getByTestId('ob-options').click();await expect(id(page,'ob-options-infrared-camera')).toBeChecked();await expect(id(page,'ob-options-tab-ir')).toBeVisible();
+ await enterInstructorMode(page);await card(page).getByTestId('ob-options').click();await expect(id(page,'ob-options-infrared-camera')).toBeChecked();await expect(id(page,'ob-options-tab-ir')).toBeVisible();
  await id(page,'ob-options-dialog').screenshot({path:test.info().outputPath('options-dialog.png')});
  await id(page,'ob-options-tabs').scrollIntoViewIfNeeded();await id(page,'ob-options-dialog').screenshot({path:test.info().outputPath('options-tabs.png')});
 });

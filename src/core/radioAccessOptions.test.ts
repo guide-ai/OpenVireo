@@ -1,7 +1,7 @@
 import {describe,it,expect} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {
- INITIAL_RADIO_ACCESS,RADIO_ACCESS_DFM,RADIO_ACCESS_LITERALS,RADIO_OPTIONS_COMPILED_FALLBACK,applyDemonstrationGate,cancelRadioOptions,closePreferences,createRadioAccessState,
+ INITIAL_RADIO_ACCESS,RADIO_ACCESS_DFM,RADIO_ACCESS_LITERALS,RADIO_OPTIONS_COMPILED_FALLBACK,followPageGate,cancelRadioOptions,closePreferences,createRadioAccessState,
  dismissUserOptions,editAccessPulsarList,okRadioOptions,openPreferences,openRadioOptions,pulsarListAvailability,radioLabFirstActivation,receiverCloseMessage,
  receiverOpened,setCloseRecipient,
  RADIO_OPTIONS_TYPED_KEYS,applyCompiledOptionsBranch,dismissRadioOptionsFailure,editRadioOptionsFlag,editRadioOptionsText,isRadioOptionsFullRecord,okRadioSimulationOptions,
@@ -15,10 +15,12 @@ import {RADIO_OPTIONS_NUMERIC_CONSTANTS as K,RADIO_OPTIONS_OK_ORDER,type RadioOp
 // oracle for the original program. No native file, classroom value or 2370-byte record is used.
 type Step=(s:RadioAccessState)=>RadioAccessTransition;
 const run=(s:RadioAccessState,...steps:Step[])=>steps.reduce((x,step)=>{const r=step(x);expect(Object.isFrozen(r.state)).toBe(true);return r.state;},s);
-const demo:Step=applyDemonstrationGate,prefs:Step=s=>openPreferences(s,null),radio:Step=openRadioOptions,ok:Step=s=>okRadioOptions(s,'not-ported');
+/** Front T1: the page's instructor switch opens the gate the card follows. */
+const INSTRUCTOR={open:true,source:'instructor-switch'} as const,CLOSED={open:false,source:'closed'} as const,EDIT={open:true,source:'edit-mode'} as const;
+const demo:Step=s=>followPageGate(s,INSTRUCTOR),prefs:Step=s=>openPreferences(s,null),radio:Step=openRadioOptions,ok:Step=s=>okRadioOptions(s,'not-ported');
 const check=(b:boolean):Step=>s=>editAccessPulsarList(s,b),cancel:Step=cancelRadioOptions,parentOk:Step=s=>closePreferences(s,'ok'),parentCancel:Step=s=>closePreferences(s,'cancel');
 const activate:Step=radioLabFirstActivation,open:Step=receiverOpened,close:Step=receiverCloseMessage;
-/** Demonstration gate, Preferences, Radio..., Access on, OK, then the outer result. */
+/** Instructor gate, Preferences, Radio..., Access on, OK, then the outer result. */
 const accessOn=(outer:Step=parentCancel)=>run(INITIAL_RADIO_ACCESS,demo,prefs,radio,check(true),ok,outer);
 /** With the gate already open: Preferences, Radio..., Access off, OK, outer Cancel (env off). */
 const turnOff:Step=s=>{const state=run(s,prefs,radio,check(false),ok,parentCancel);return {state,outcome:'preferences-closed-cancel',changed:state!==s};};
@@ -62,17 +64,24 @@ describe('T1–T3 gate',()=>{
   }
   expect(()=>openPreferences(INITIAL_RADIO_ACCESS,'other' as never)).toThrow(TypeError);
  });
- it('applies the Demonstration gate once; nothing exported closes it; it refuses while a surface is open',()=>{
-  const a=applyDemonstrationGate(INITIAL_RADIO_ACCESS);
-  expect(a.outcome).toBe('gate-opened');expect(a.state.gate).toEqual({open:true,source:'demonstration'});
+ it('follows the page gate (Front T1): open, closed again by Leave, idempotent, and only the byte is written',()=>{
+  const a=followPageGate(INITIAL_RADIO_ACCESS,INSTRUCTOR);
+  expect(a.outcome).toBe('gate-opened');expect(a.state.gate).toEqual({open:true,source:'instructor'});
   expect(a.state.root).toBe(INITIAL_RADIO_ACCESS.root);expect(a.state.env).toBe(INITIAL_RADIO_ACCESS.env);expect(a.state.menu).toBe(INITIAL_RADIO_ACCESS.menu);
-  const again=applyDemonstrationGate(a.state);expect(again).toMatchObject({outcome:'gate-already-open',changed:false});expect(again.state).toBe(a.state);
-  const boxed=run(INITIAL_RADIO_ACCESS,prefs);expect(applyDemonstrationGate(boxed)).toMatchObject({outcome:'refused-surface-open',changed:false});
-  const parent=run(INITIAL_RADIO_ACCESS,demo,prefs);expect(applyDemonstrationGate(parent)).toMatchObject({outcome:'refused-surface-open',changed:false});
+  const again=followPageGate(a.state,INSTRUCTOR);expect(again).toMatchObject({outcome:'gate-unchanged',changed:false});expect(again.state).toBe(a.state);
+  expect(followPageGate(INITIAL_RADIO_ACCESS,EDIT).state.gate).toEqual({open:true,source:'edit-mode'});
+  const left=followPageGate(a.state,CLOSED);expect(left.outcome).toBe('gate-closed');expect(left.state.gate).toEqual({open:false,source:'not-supplied'});
+  expect(openPreferences(left.state,null).outcome).toBe('user-options-shown');
+  expect(followPageGate(INITIAL_RADIO_ACCESS,CLOSED)).toMatchObject({outcome:'gate-unchanged',changed:false});
+  // An open box or dialog stays: VIREO tests the gate only at Preferences1Click.
+  const parent=run(INITIAL_RADIO_ACCESS,demo,prefs);const closed=followPageGate(parent,CLOSED);
+  expect(closed.state.parent).toBe(parent.parent);expect(closed.state.gate.open).toBe(false);
+  for(const bad of [null,{open:true,source:'closed'},{open:false,source:'instructor-switch'},{open:true,source:'demonstration'}])
+   expect(()=>followPageGate(INITIAL_RADIO_ACCESS,bad as never)).toThrow(TypeError);
   // Every full path ends with the gate still open.
   for(const end of [accessOn(parentOk),accessOn(parentCancel),run(accessOn(),activate,open,close)])expect(end.gate.open).toBe(true);
-  // Front R5 adds the Edit Mode writer (0x5887f0); both only open the gate.
-  expect(Object.keys(access).filter(k=>/gate/i.test(k)).sort()).toEqual(['applyDemonstrationGate','applyEditModeGate']);
+  // Front T1: the card has no gate writer of its own; the page gate (core/instructorMode.ts) is the only one.
+  expect(Object.keys(access).filter(k=>/gate/i.test(k)).sort()).toEqual(['followPageGate']);
  });
  it('opens the parent with the gate open and refuses a second parent',()=>{
   const r=openPreferences(run(INITIAL_RADIO_ACCESS,demo),null);

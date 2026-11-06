@@ -1,6 +1,7 @@
 import {test,expect,type Locator,type Page,type TestInfo} from '@playwright/test';
 import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
+import{enterInstructorMode}from'./fixtures/instructor-mode';// Front T1: the radio Preferences follows the page's instructor gate
 // Actual App flows of R-RX9 (docs/RADIO-SIMULATION-OPTIONS.md): the explicit compiled numeric branch, the full Radio
 // Simulation Options form (nine numbers, ordered OK, failure prefix, whole Cancel), the projection at the Preferences close
 // onto the antenna options, the receivers' live options and the panel diameter, and the ownership guards. Only the rendered
@@ -57,7 +58,7 @@ async function applyClock(page:Page){
 // ---- Radio configuration helpers.
 const numeric=(page:Page)=>id(page,'radio-access-numeric'),full=(page:Page)=>id(page,'radio-options-full'),failure=(page:Page)=>id(page,'radio-options-failure');
 const field=(page:Page,f:string)=>id(page,`radio-options-field-${f}`);
-async function demonstration(page:Page){await id(page,'radio-access-demo').click();await expect(id(page,'radio-access-gate')).toHaveAttribute('data-source','demonstration');}
+async function demonstration(page:Page){await enterInstructorMode(page);await expect(id(page,'radio-access-gate')).toHaveAttribute('data-source','instructor');}
 async function optIn(page:Page,host=true){
  await id(page,`radio-access-numeric-optin-${host}`).click();
  await expect(numeric(page)).toHaveAttribute('data-authority','compiled-branch');await expect(numeric(page)).toHaveAttribute('data-host-predicate',String(host));

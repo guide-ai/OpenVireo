@@ -1,5 +1,6 @@
 import {test,expect,type Page} from '@playwright/test';
 import {clickHeaderTool} from './fixtures/header-tools';
+import{enterInstructorMode}from'./fixtures/instructor-mode';// Front T1: the options open only in instructor mode
 
 // Front QA1 (2026-10-31, E08 identity hint): VIREO gives the student only an identifier and coordinates. Masking only the
 // catalogue entries near the hidden target made its own name vanish from the observatory's target list (target NGC 4631 →
@@ -26,7 +27,7 @@ async function listsFor(page:Page,id:string){
  await expect(page.getByTestId('sky-names-hidden')).toHaveText('Names hidden during Object X.');
  const picker=await page.locator('#target option').allTextContents();
  // QA1 closure M1: in Object X VIREO offers File › QSO List only in Edit Mode (ObjectX1Click 0x58ad55), whatever Virtual Observatory says.
- await page.locator('.telescope-motion').getByTestId('ob-options').click();await page.getByTestId('ob-options-edit-mode').check();await page.getByTestId('ob-options-ok').click();
+ await enterInstructorMode(page);await page.locator('.telescope-motion').getByTestId('ob-options').click();await page.getByTestId('ob-options-edit-mode').check();await page.getByTestId('ob-options-ok').click();
  await page.getByTestId('fi-file-menu').click();await page.getByTestId('qso-menu').click();await page.getByTestId('qso-ok').click();
  const lines=page.getByTestId('qso-list-lines');await expect(lines).toBeVisible();
  return {picker,qso:await lines.innerText(),asteroidList};
@@ -84,7 +85,7 @@ test('QA1 closure E2/M1: in Object X the QSO List needs Edit Mode, and the Aster
  test.setTimeout(120_000);
  await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible({timeout:20_000});
  await button(page,'Open dome ↗').click();
- await page.locator('.telescope-motion').getByTestId('ob-options').click();await page.getByTestId('ob-options-edit-mode').check();await page.getByTestId('ob-options-ok').click();
+ await enterInstructorMode(page);await page.locator('.telescope-motion').getByTestId('ob-options').click();await page.getByTestId('ob-options-edit-mode').check();await page.getByTestId('ob-options-ok').click();
  // In-app navigation: Edit Mode is page state (Front O, not saved), so a reload would lose it.
  await clickHeaderTool(page,'Object X');await expect(page.getByRole('heading',{name:'The quest for Object X'})).toBeVisible({timeout:20_000});
  const code=await page.evaluate(`import('/src/core/objectXLab.ts').then(m=>m.objectXCode('(433) Eros'))`) as string;
@@ -94,9 +95,9 @@ test('QA1 closure E2/M1: in Object X the QSO List needs Edit Mode, and the Aster
  await expect(page.getByTestId('objectx-asteroid-list')).toHaveCount(0);await expect(page.getByTestId('objectx-asteroid-list-closed')).toBeVisible();
  // M1 [D]: with a target, File › QSO List follows Edit Mode only: off with Virtual Observatory on, on with Edit Mode on.
  await clickHeaderTool(page,'Observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible({timeout:20_000});
- await page.locator('.telescope-motion').getByTestId('ob-options').click();await page.getByTestId('ob-options-edit-mode').uncheck();await page.getByTestId('ob-options-virtual-observatory').check();await page.getByTestId('ob-options-ok').click();
+ await enterInstructorMode(page);await page.locator('.telescope-motion').getByTestId('ob-options').click();await page.getByTestId('ob-options-edit-mode').uncheck();await page.getByTestId('ob-options-virtual-observatory').check();await page.getByTestId('ob-options-ok').click();
  await page.getByTestId('fi-file-menu').click();await expect(page.getByTestId('qso-menu')).toHaveCount(0);await page.keyboard.press('Escape');
- await page.locator('.telescope-motion').getByTestId('ob-options').click();await page.getByTestId('ob-options-edit-mode').check();await page.getByTestId('ob-options-virtual-observatory').uncheck();await page.getByTestId('ob-options-ok').click();
+ await enterInstructorMode(page);await page.locator('.telescope-motion').getByTestId('ob-options').click();await page.getByTestId('ob-options-edit-mode').check();await page.getByTestId('ob-options-virtual-observatory').uncheck();await page.getByTestId('ob-options-ok').click();
  await page.getByTestId('fi-file-menu').click();await expect(page.getByTestId('qso-menu')).toBeVisible();await page.keyboard.press('Escape');
  // After the reveal, in Edit Mode, the Asteroid List opens (VIREO's Edit Mode rule).
  await clickHeaderTool(page,'Object X');

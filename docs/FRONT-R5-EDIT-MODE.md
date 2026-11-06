@@ -34,12 +34,13 @@ What Edit Mode now changes in OpenVireo, beyond Catalog Object and Field Informa
 - **In VIREO**, Edit Mode on means the Preferences gate (env+0x37d8) is open: the writes under Edit Mode (Preferences OK
   0x5887f0, the options apply 0x587f70) run with the gate already open, except Login with Edit Mode on (0x588468 → 0x588527),
   which opens it. Login answered No with Edit Mode off closes it (0x5884a1).
-- **In OpenVireo** Edit Mode is turned on without the gate (WEB-EM-01), so the web upholds that rule: once Edit Mode is turned
-  on in Optical Simulation Options, the radio telescope's Preferences opens instead of showing the instructor box. No ported path
-  closes it again (Login is not ported), so it stays open for the page session.
+- **In OpenVireo (Front R5)** Edit Mode was turned on without the gate (WEB-EM-01), so the web upheld that rule: once Edit Mode
+  was turned on, the radio telescope's Preferences opened instead of showing the instructor box.
+- **Since Front T1 (2026-11-06)** the rule lives in the page's one instructor gate (`src/core/instructorMode.ts`
+  `applyEditModeGate`, docs/OPTICAL-OPTIONS.md). Optical Simulation Options itself opens only in instructor mode, so Edit Mode
+  is reached with the gate already open, as in VIREO; Leave closes the gate and turns Edit Mode off [W]. The radio card's
+  "Apply the Demonstration Mode gate" button is retired: the card follows the page gate.
 - **[W]** Investigation files keep this gate closed, as they keep Edit Mode off, so the file format is unchanged.
-- **Side effect:** while this gate is open, the radio card's "Apply the Demonstration Mode gate" button is disabled, so a
-  Demonstration gate (which a file does keep) cannot be saved in that page session.
 
 ## Optical Simulation Options
 - **Reset [D]:**
@@ -60,5 +61,7 @@ What Edit Mode now changes in OpenVireo, beyond Catalog Object and Field Informa
   - Detect Sky, Set E(B-V);
   - Files…, Scopes…;
   - parameter editing;
-  - an instructor-only Virtual Observatory;
   - radio Site… and non-default radio options.
+  - Front T1 removed "an instructor-only Virtual Observatory" (VO is now behind the instructor gate) and added cluster editing
+    and Save List, the Object X asteroid subset, Wedge Auto Plot (`needs-backend`) and the password
+    (`compiled-password-not-ported`).

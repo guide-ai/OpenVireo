@@ -40,7 +40,7 @@
   ],
   "contracts": [
     {"id": "T0", "native": "FormCreate gate := 0 at 0x587c2d; record+0x941 := 0 at 0x5a90ad (fallback only when no file loads); env copy 0x587a20..0x587a36; PulsarList1 DFM Enabled/Visible False", "web": "createRadioAccessState; lastChildOk null (startup env+0x37d9 not recovered)"},
-    {"id": "T1", "native": "Demonstration branch gate := 1 at 0x587c6a", "web": "[W] applyDemonstrationGate: gate write only, once per session"},
+    {"id": "T1", "native": "Demonstration branch gate := 1 at 0x587c6a", "web": "[W] followPageGate (Front T1, 2026-11-06): the card follows the page instructor gate (src/core/instructorMode.ts), the web form of this gate write with no password; Leave closes it. Until T1: applyDemonstrationGate, the card's own scenario button (retired)"},
     {"id": "T2", "native": "Preferences1Click 0x5886ac, gate test 0x5886c9, message 0x588a84/0x588b70, parent creation 0x5886f3..0x588725, alias 0x58870e", "web": "openPreferences; web guards first"},
     {"id": "T4", "native": "0x5a6f58/0x5a6f67 new child; FormActivate 0x5a9138 snapshot and Checked 0x5a9240..0x5a924f", "web": "openRadioOptions"},
     {"id": "T6", "native": "OK 0x5a9428 store 0x5a954f before numeric validation; failure ModalResult 0 at 0x5a9723; button assignment 0x5a6f9c", "web": "okRadioOptions('not-ported'); 'failed' core-only: chosen core-only contract assuming no intervening FormActivate [I]"},

@@ -8,6 +8,9 @@ import {TEACHER_DEFERRED} from '../core/teacherDeferred';
 import {FIELD_INFO_MESSAGES} from './FieldInfoMessages';
 import {VIRTUAL_OBSERVATORY_CAPTIONS as VO} from '../core/observatoryMenuLiterals';
 import {QSO_LIST_MESSAGES} from './QsoListMessages';
+import {RADIO_ACCESS_LITERALS as UL} from '../core/radioAccessOptions';
+import type {PreferencesGateResult} from '../core/instructorMode';
+import {t} from '../i18n';
 import './observatory-dialogs.css';
 const M=OBSERVATORY_MESSAGES.options,S=M.session;
 const SESSION_KEYS=Object.keys(SC) as (keyof SessionOpticalOptions)[];
@@ -18,8 +21,13 @@ const testId=(k:string)=>`ob-options-${k.replace(/[A-Z]/g,c=>'-'+c.toLowerCase()
 /** "Optical Simulation Options" (OB-LS-01, WEB-LS-01): Limit Slewing, Edit Mode (Front O, WEB-EM-01) and Virtual Observatory
  * (Front O2) are live, and so are Front R3's ported options (`sessionOptions`, page session only, WEB-OPT-R3). The tab parameters
  * are shown read-only with their compiled values; every other control is listed with its compiled state. OK commits the drafts;
- * Cancel discards them. */
-export default function OpticalOptionsDialog({options,onOptions,disabled,editMode=false,onEditMode,virtualObservatory=false,onVirtualObservatory,sessionOptions,onSessionOptions,horizonRadians}:{options:OpticalOptions;onOptions:(o:OpticalOptions)=>void;disabled:boolean;editMode?:boolean;onEditMode?:(on:boolean)=>void;
+ * Cancel discards them. Front T1: the button is VIREO's File › Preferences (Preferences1Click 0x5886ac): with the page's
+ * instructor gate closed (0x5886c9) it shows the INSTRUCTOR / USER OPTIONS! box (0x588a84 / 0x588b70, MessageBox flags 0x30)
+ * instead of the dialog, plus one web line on instructor mode. */
+export default function OpticalOptionsDialog({gate='user-options-box',options,onOptions,disabled,editMode=false,onEditMode,virtualObservatory=false,onVirtualObservatory,sessionOptions,onSessionOptions,horizonRadians}:{
+ /** Front T1: the page's instructor gate test (core/instructorMode.ts preferencesGate); absent: closed, as VIREO starts. */
+ gate?:PreferencesGateResult;
+ options:OpticalOptions;onOptions:(o:OpticalOptions)=>void;disabled:boolean;editMode?:boolean;onEditMode?:(on:boolean)=>void;
  /** Front O2 (review 1 M1): VObsBox, shown when `onVirtualObservatory` is given; not persisted. */
  virtualObservatory?:boolean;onVirtualObservatory?:(on:boolean)=>void;
  /** Front R3: shown when both are given; not persisted. */
@@ -27,7 +35,8 @@ export default function OpticalOptionsDialog({options,onOptions,disabled,editMod
  /** R3 review L2: the selected site's horizon (radians). */horizonRadians?:number}){
  const id=useId(),ref=useRef<HTMLDialogElement>(null),[draft,setDraft]=useState<OpticalOptions|null>(null),[resetAsked,setResetAsked]=useState(false),[editDraft,setEditDraft]=useState(editMode),[vobsDraft,setVobsDraft]=useState(virtualObservatory),[sessionDraft,setSessionDraft]=useState(sessionOptions);
  useEffect(()=>{const el=ref.current;if(!el)return;if(draft&&!el.open){el.showModal();el.querySelector<HTMLInputElement>('input:not([disabled])')?.focus();}else if(!draft&&el.open)el.close();},[draft!==null]);
- useEffect(()=>{if(disabled){setDraft(null);setResetAsked(false);}},[disabled]);
+ const [refused,setRefused]=useState(false);
+ useEffect(()=>{if(disabled){setDraft(null);setResetAsked(false);setRefused(false);}},[disabled]);
  // Front R5: with Edit Mode live, SlewBox follows it (FormActivate 0x5a5985, EditModeBoxClick 0x5a6edc); without it, as before.
  const slew=draft?(onEditMode?limitSlewingBox(editDraft,draft.limitSlewing):Object.freeze({enabled:true,checked:draft.limitSlewing})):null;
  const editModeClick=(on:boolean)=>{setEditDraft(on);if(on)setDraft(d=>d&&{limitSlewing:false});};
@@ -36,7 +45,7 @@ export default function OpticalOptionsDialog({options,onOptions,disabled,editMod
  const live=sessionDraft&&onSessionOptions?sessionDraft:null;
  const ported=new Set<string>(live?SESSION_KEYS.map(k=>SC[k]):[]);
  return <>
-  <button type="button" className="secondary-button" disabled={disabled} data-testid="ob-options" onClick={()=>{setDraft(onEditMode&&editMode?{limitSlewing:false}:options);setEditDraft(editMode);setVobsDraft(virtualObservatory);setSessionDraft(sessionOptions);}}>{M.open}</button>
+  <button type="button" className="secondary-button" disabled={disabled} data-testid="ob-options" data-gate={gate} onClick={()=>{if(gate!=='options'){setRefused(true);return;}setDraft(onEditMode&&editMode?{limitSlewing:false}:options);setEditDraft(editMode);setVobsDraft(virtualObservatory);setSessionDraft(sessionOptions);}}>{M.open}</button>
   <dialog ref={ref} className="ob-dialog" aria-labelledby={`${id}-title`} data-testid="ob-options-dialog" onCancel={e=>{e.preventDefault();if(!resetAsked)setDraft(null);}}>
    {draft&&<>
     <h2 id={`${id}-title`} className="ob-native">{C.form}</h2>
@@ -69,5 +78,19 @@ export default function OpticalOptionsDialog({options,onOptions,disabled,editMod
     {resetAsked&&<QuestionBox caption={R.questionCaption} text={R.questionText} testId="ob-options-reset-box" onAnswer={reset}/>}
    </>}
   </dialog>
+  {refused&&<UserOptionsBox onClose={()=>setRefused(false)}/>}
  </>;
+}
+
+/** Preferences1Click with the gate closed (0x5889a6..0x5889cb): the recovered body 0x588a84 (passed through 0x405ec8 and the
+ * helper 0x486ae0 before the box, as in the radio port) with caption 0x588b70, OK only; one web line follows. */
+function UserOptionsBox({onClose}:{onClose:()=>void}){
+ const id=useId(),ref=useRef<HTMLDialogElement>(null);
+ useEffect(()=>{const el=ref.current;if(el&&!el.open){el.showModal();el.querySelector<HTMLButtonElement>('button')?.focus();}},[]);
+ return <dialog ref={ref} className="ob-dialog ob-box ob-user-options" role="alertdialog" aria-labelledby={`${id}-title`} aria-describedby={`${id}-body`} data-testid="ob-user-options" onCancel={e=>{e.preventDefault();onClose();}}>
+  <h2 id={`${id}-title`} className="ob-native" data-testid="ob-user-options-title">{UL.userOptionsCaption}</h2>
+  <p id={`${id}-body`} className="ob-native" style={{whiteSpace:'pre-line',overflowWrap:'anywhere'}} data-testid="ob-user-options-text">{UL.instructorText}</p>
+  <p className="ob-note" data-testid="ob-user-options-note">{t('instructorMode.optionsClosed')}</p>
+  <div className="ob-actions"><button type="button" className="primary-button" data-testid="ob-user-options-ok" onClick={onClose}>{t('instructorMode.optionsClosedOk')}</button></div>
+ </dialog>;
 }
