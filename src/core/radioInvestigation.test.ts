@@ -144,6 +144,22 @@ describe('Phase 1 item 1.5 radio investigation codec (strict, canonical, binary6
   const supplied=createRadioAccessState(radioOptionsCompiledRecord(false),{numericAuthority:'supplied'});
   expect(radioWorkspaceSnapshot(workspaceInput({access:supplied}))).toEqual({ok:false,reason:'radio-profile'});
  });
+ it('Front T1 review 1 L1: a pre-T1 file with an open Demonstration gate is accepted, the gate is not applied and a re-save writes it closed',()=>{
+  const ws=radioWorkspaceSnapshot(workspaceInput());expect(ws.ok).toBe(true);if(!ws.ok)return;
+  const file=asFile({...investigation(),workspace:ws.snapshot});
+  expect(file.workspace.access.gate).toEqual({open:false,source:'not-supplied'});
+  file.workspace.access.gate={open:true,source:'demonstration'};// as the retired "Apply the Demonstration Mode gate" button saved it
+  const w=rebuildRadioInvestigation(readRadioInvestigation(file),{plr:null,recordedCatalog:null}).workspace!;// accepted
+  expect(w.access.gate).toEqual({open:false,source:'not-supplied'});// not applied
+  expect(openPreferences(w.access,null).outcome).toBe('user-options-shown');
+  expect(followPageGate(w.access,{open:false,source:'closed'}).state.gate.open).toBe(false);// the closed page gate keeps it closed
+  const again=radioWorkspaceSnapshot(workspaceInput({access:w.access}));expect(again.ok).toBe(true);if(!again.ok)return;
+  const resaved=asFile({...investigation(),workspace:again.snapshot});
+  expect(resaved.workspace.access.gate).toEqual({open:false,source:'not-supplied'});// re-saved closed
+  // Under instructor mode the card's gate is open, yet the file still keeps it closed.
+  const open=radioWorkspaceSnapshot(workspaceInput({access:followPageGate(w.access,{open:true,source:'instructor-switch'}).state}));
+  expect(open.ok).toBe(true);if(open.ok)expect(asFile({...investigation(),workspace:open.snapshot}).workspace.access.gate).toEqual({open:false,source:'not-supplied'});
+ });
  it('refuses Save while Radio or analysis activity is unsafe, naming the activity',()=>{
   const i=workspaceInput();
   expect(radioWorkspaceSnapshot({...i,antenna:{...i.antenna,slewing:true}})).toEqual({ok:false,reason:'slewing'});

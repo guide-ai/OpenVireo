@@ -1,10 +1,15 @@
 /** Front T1 (analysis/front-plans/front-teacher.md §T1, §4; analysis/front-teacher/t1/RECOVERY.md): the instructor-mode gate.
- * CLEA_VEO.exe 781bc970…c54c, static reading only. VIREO has one gate byte, env+0x37d8 (TEnvironment1 = [0x5b59a4]) [D]:
- * - FormCreate writes 0 (0x587c2d); Login answered No writes 0 (0x5884a1; Login is not ported);
- * - it is opened by the Demonstration Mode branch at start-up (0x587c6a), by Edit Mode under Preferences OK (0x5887f0) and in
- *   the options apply (0x587f70), and by Login with "Instructor" and the compiled password at 0x5a316c (0x58816c);
- * - Preferences1Click 0x5886ac tests it at 0x5886c9: closed shows the INSTRUCTOR / "USER OPTIONS!" box (0x588a84 / 0x588b70,
- *   reached at 0x5889a6); open shows TOptionsDlg.
+ * CLEA_VEO.exe 781bc970…c54c, static reading only. VIREO has one gate byte, env+0x37d8 (TEnvironment1 = [0x5b59a4]) [D]; a
+ * byte search for its displacement finds 8 sites (review 1 L2):
+ * - writes: FormCreate 0 (0x587c2d); the Demonstration Mode branch at start-up 1 (0x587c6a); the options apply 0x587dbc under
+ *   Edit Mode 1 (0x587f70); Preferences OK under Edit Mode 1 (0x5887f0); and Login1Click (entry 0x58816c, after "Instructor"
+ *   and the compiled password at 0x5a316c) at 0x5884a1 := (Retain Options Access? answered Yes), so the same instruction opens
+ *   or closes it; the question is skipped when Edit Mode (env+0x2e7e) is on (0x588468). Login also sets RunSep (env+0x374)
+ *   Enabled := gate (0x5884a7);
+ * - reads: Preferences1Click 0x5886ac at 0x5886c9 (closed: the INSTRUCTOR / "USER OPTIONS!" box 0x588a84 / 0x588b70, reached
+ *   at 0x5889a6; open: TOptionsDlg); 0x587d54 at 0x587d57 (gate open and four forms' +0x57 clear → Preferences1, env+0x378,
+ *   Enabled/Visible := 1; 9 callers: 0x507729, 0x537e6b, 0x542316, 0x54704c, 0x565122, 0x56ab82, 0x57ae14, 0x582e7e, 0x5884d4);
+ *   Login at 0x5884c9 (gate open → 0x587d54). So the gate controls only File › Preferences and its menu item.
  * WEB-TM-01 [W] (user decision 2026-11-06): the gate is opened by a web switch with no password, the web form of the
  * Demonstration Mode branch; it is not a lock. The compiled password is never compared or stored. WEB-TM-02 [W]: leaving
  * closes the gate and puts the instructor-only options (Edit Mode, Virtual Observatory) back to their compiled values; VIREO
@@ -35,7 +40,9 @@ export function enterInstructorMode(s:InstructorGate):InstructorGateTransition{
 }
 
 /** Moved here from the radio card (Front R5): Edit Mode on ⇒ gate open (Preferences OK 0x5887f0, the options apply
- * 0x587f70). Only the byte is written; Edit Mode off writes nothing (no recovered path closes the gate under Edit Mode). */
+ * 0x587f70). Only the byte is written; Edit Mode off writes nothing (no recovered path closes the gate under Edit Mode).
+ * The 'edit-mode' source cannot be reached in the UI (Edit Mode is set only in the options, behind the open gate); it is
+ * kept for the invariant "Edit Mode on ⇒ gate open". */
 export function applyEditModeGate(s:InstructorGate,editMode:boolean):InstructorGateTransition{
  if(typeof editMode!=='boolean')throw new TypeError('Invalid Edit Mode value');
  if(!editMode)return keep(s,'edit-mode-off');

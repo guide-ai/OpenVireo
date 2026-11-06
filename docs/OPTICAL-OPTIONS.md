@@ -7,9 +7,13 @@ defaults. The research notes are in `analysis/front-r3-options/` and the plan in
 
 ## Instructor-mode gate (Front T1, 2026-11-06)
 VIREO opens this dialog from File › Preferences (Preferences1Click 0x5886ac) only while the gate byte env+0x37d8 is set
-(test at 0x5886c9) [D]. FormCreate clears it (0x587c2d); the Demonstration Mode branch at start-up (0x587c6a), Edit Mode under
-Preferences OK (0x5887f0) and in the options apply (0x587f70), and Login with "Instructor" and the compiled password at
-0x5a316c (0x58816c) set it; Login answered No clears it (0x5884a1). With the gate closed Preferences shows the INSTRUCTOR /
+(test at 0x5886c9) [D]. A byte search finds 8 sites. Writes: FormCreate clears it (0x587c2d); the Demonstration Mode branch at
+start-up (0x587c6a) and Edit Mode in the options apply (0x587f70) and under Preferences OK (0x5887f0) set it; Login1Click
+(entry 0x58816c, after "Instructor" and the compiled password at 0x5a316c) writes it once, at 0x5884a1, := (Retain Options
+Access? answered Yes), so that one instruction opens or closes it; the question is skipped when Edit Mode is on (0x588468),
+and Login also sets RunSep Enabled := gate (0x5884a7). Reads: 0x5886c9; 0x587d57 in 0x587d54, which shows and enables the
+Preferences item (env+0x378) when the gate is open and four forms' +0x57 are clear (9 callers); and Login at 0x5884c9 (open →
+0x587d54). So the gate controls only File › Preferences. With the gate closed Preferences shows the INSTRUCTOR /
 `USER OPTIONS!` box (0x588a84 / 0x588b70, reached at 0x5889a6, MessageBox flags 0x30; the body passes through 0x405ec8 and the
 helper 0x486ae0 first, as in the radio port).
 

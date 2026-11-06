@@ -9,5 +9,5 @@ export const SPECTRAL_RANGE_EN=Object.freeze({
  multiSpecRange:(min:string,max:string)=>`Multi-Spec reads the spectrometer range (${min}–${max} Å), which cannot be used here in this web version; set it back to 3700–4700 Å to take spectra.`,
  unavailable:'This range cannot be observed for this star in this web version.',
  slider:(edge:string)=>`${edge} slider`,
- locked:'Spectral Range… is disabled: Allow User Change is unchecked in the Optical Simulation Options (Spectrometer tab), as in VIREO.',
+ locked:'Spectral Range… is disabled: Allow User Change is unchecked in the Optical Simulation Options (Spectrometer tab), as in VIREO. Those options open in instructor mode.',
 });
