@@ -49,12 +49,14 @@ Observational Data window. Static reading of CLEA_VEO.exe (SHA-256 781bc970…c5
 - The guide's counts read the notebook entries and B−V pairs only (`pleiadesExerciseSummary`). Record/Review does not move them.
   A Vitest test compares the summary before and after native records.
 
-## Galaxy gate (tiled fields)
-- `photometer-galaxy` now applies only when the centre selects a galaxy (0x59a0fc over stars and the galaxy list field+0x1b).
-  - It also applies when the star/galaxy overlap tie needs a throughput the field build does not have ([W] fail closed).
-- A galaxy elsewhere in the field is ignored: the neighbour producer 0x59ac54 walks only field+0x5 and field+0x35 [D].
+## Galaxies and QSOs at tiled pointings (Front PHTILED, 2026-11-05)
+- A galaxy matters only when the centre selects it (0x59a0fc over stars and the galaxy list field+0x1b); a galaxy elsewhere in the
+  field is ignored, since the neighbour producer 0x59ac54 walks only field+0x5 and field+0x35 [D].
+- A selected galaxy is now measured in Object mode (docs/PHOTOMETER-FIELD.md, Front PHTILED); its record name is the galaxy's
+  catalogue name (VIREO copies the galaxy into the current object, 0x53ce8c). Record/Review works for it as for a star.
+- Typed: a Sky reading with a galaxy selected (`photometer-galaxy-sky`, the display gate 0x53e338 [U]) and a galaxy whose catalogue
+  name another record shares (`photometer-galaxy-name` [U]). A selected QSO is read like a star under its 17-character name.
 - This affects only telescope-pointing (compact GSC) fields; the bundled E04 fields do not use this path.
-- The selected-galaxy branch (σ from the axes and 0x53b94c, Sky gated by the image level 0x53e338 ≥ 80) stays typed [U].
 
 ## Web adaptations and typed residue
 - [W] The record time is the observatory clock at completion (VIREO: host Now). Without an observatory link, the host clock.
@@ -77,8 +79,8 @@ Observational Data window. Static reading of CLEA_VEO.exe (SHA-256 781bc970…c5
 - [D] [0x5b5d98] is the Object X ID: only TUTTimeDlg.OKBtnClick 0x4fdf0c writes it, from the IDEd box (+0x388, "ID # of Unknown Object (From Lab Sheet or Instructor)"); an empty box gives `UNKNOWN` (0x4fe078). The off-mode name is therefore `UNKNOWN`, or `ObjX-`+that ID (Front P3 review 1 M2).
 - With Show Object ID off, every photometer reading has that one name, so with Time-Dependent Data off they all merge into one
   `UNKNOWN`/`ObjX-` row, as in VIREO (reuse by ID, 0x54a73c). Turn Show Object ID on for one row per star (review 1 M1).
-- Still typed: `photometer-variable` (field engine / clock), `photometer-selection` (stale light; Show ID on dereferences nil),
-  `photometer-qso`.
+- Still typed: `photometer-variable` (field engine / clock), `photometer-selection` (stale light; Show ID on dereferences nil).
+  `photometer-qso` was retired by Front PHTILED (2026-11-05).
 
 - L3 [I]: a star/galaxy tie in 0x59a0fc takes the star when its aperture fraction (0x500568) is nonzero. This assumes a current
   object already exists: 0x500568 returns 0 when [Obs+0x41c4c1] is nil (0x50057d), and neither caller of 0x53ce8c clears it

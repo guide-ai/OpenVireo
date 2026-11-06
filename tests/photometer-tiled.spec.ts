@@ -82,3 +82,19 @@ test('a Pleiades target calibrated by a sky taken at a tiled pointing says why i
  await target.selectOption(pleiades!);
  await expect(page.getByTestId('photo-tiled-sky-note')).toContainText('do not count toward the Pleiades exercise');
 });
+// Front PHTILED (analysis/front-phtiled/RECOVERY.md): NGC 221 (M32, CLEA_GLX.DAT record 895). The centre selects the galaxy; VIREO reads
+// it in Object mode with an aperture fraction from its catalogue size, and its Sky reading depends on the Telescope display (refused).
+test('a galaxy at the pointing: sky on a star patch, the galaxy refused in Sky mode and measured in Object mode',async({page})=>{
+ test.setTimeout(240000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+ await observatory(page);await pointObservatory(page,SKY);await photometerHere(page);await ready(page);await integrate(page);
+ const GALAXY={ra:'0.71161111',dec:'40.86527778'};await benchPoint(page,GALAXY);
+ await expect(page.getByText('Field at the telescope pointing: the centre selects the galaxy NGC 221.',{exact:false})).toBeVisible({timeout:60000});
+ await expect(page.getByTestId('photo-galaxy-mark')).toHaveCount(1);
+ await expect(page.getByTestId('photo-tiled-limit')).toHaveAttribute('data-reason','photometer-galaxy-sky');
+ await expect(page.getByRole('button',{name:'Start integration',exact:true})).toBeDisabled();
+ await page.getByLabel('Photometer pointing',{exact:true}).selectOption('object');
+ await expect(page.getByTestId('photo-tiled-limit')).toHaveCount(0);
+ await integrate(page);
+ await expect(page.getByRole('button',{name:'Add notebook entry',exact:true})).toBeEnabled();
+ expect(errors).toEqual([]);
+});

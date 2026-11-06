@@ -76,27 +76,45 @@ export type SuppliedPhotometerStar=Readonly<{v:number;bMinusV:number;uMinusB:num
 function bands(s:SuppliedPhotometerStar){
  const v=Math.fround(s.v),bv=Math.fround(s.bMinusV),ub=Math.fround(s.uMinusB);
  if(!Number.isFinite(v)||!Number.isFinite(bv)||!Number.isFinite(ub))throw new PhotometerSourceError('magnitude');
- // Native central fallback clones V/B; neighbors do not use the same check.
- // Withhold that domain instead of silently manufacturing known UBV colors.
+ // Only the bounded known-colour fold (prepareKnownColorPhotometerUbv, the pinned Pleiades fields) uses this: it keeps its domain
+ // of known colours. The general preparation (preparePhotometerBands) follows the native branches instead.
  if(bv>=30||ub>=30)throw new PhotometerSourceError('missing-color');
  // Front P2 (0x4ffbed..0x4ffce2): R := V − (B−V); I := B − (U−B), with B = V + (B−V) (I uses B, not R).
  const b=v+bv;
  return {u:b+ub,b,v,r:v-bv,i:b-ub};
 }
 export type PhotometerBands=Readonly<{u:number;b:number;v:number;r:number;i:number;includedNeighbors:number}>;
+/** Front PHTILED: the selected object's five slots as Start fills them (0x4ffbc8..0x4ffce2): V := the object's V; B := V and
+ * R := V; when B−V < 30.0 (Single, 0x4fffd0), B += B−V and R −= B−V; U := B and I := B; when U−B < 30.0, U += U−B and I −= U−B. A
+ * colour ≥ 30 skips its term only (the earlier port refused it as `missing-color`). Extended sums in Number. */
+function centralBands(s:SuppliedPhotometerStar){
+ const v=Math.fround(s.v),bv=Math.fround(s.bMinusV),ub=Math.fround(s.uMinusB);
+ if(!Number.isFinite(v)||!Number.isFinite(bv)||!Number.isFinite(ub))throw new PhotometerSourceError('magnitude');
+ let b=v,r=v;if(bv<30){b+=bv;r-=bv;}
+ let u=b,i=b;if(ub<30){u+=ub;i-=ub;}
+ return {u,b,v,r,i};
+}
 /** Front P2: the five-slot source preparation of Start 0x4ffa30 (U, B, V, R, I; dossier analysis/front-p2/B-photometer-r-i.md).
- * - The central star's five magnitudes are attenuated by its aperture fraction; a fraction of 0 gives the literal 30 in every
- *   slot (0x5953a0) and its colours are not used (0x4ffd17).
+ * - The central object's five magnitudes (centralBands) are attenuated by its aperture fraction; a fraction of 0 gives the literal
+ *   30 in every slot (0x5953a0) and its colours are not used (0x4ffd17).
  * - Each neighbour with a positive fraction is added in flux to U, B and V only (0x4ffdbb..0x4ffee0); R and I never take
- *   neighbour light.
+ *   neighbour light. Front PHTILED: the neighbour terms are V, V + (B−V) and V + (B−V) + (U−B) with no colour test
+ *   (0x4ffe19, 0x4ffe5d..0x4ffe63, 0x4ffea7..0x4ffeb3), so a colour ≥ 30 makes that band's neighbour light about 30 mag fainter.
+ * No published catalogue record has a colour ≥ 30 (analysis/front-phtiled/RECOVERY.md §5); the branches are ported as decoded.
  * Unlike prepareKnownColorPhotometerUbv, a zero central fraction is admitted: the native loop runs the same way (the sky of a
  * large aperture can hold a neighbour while the central star is outside it; coordinator decision D2 a). */
 export function preparePhotometerBands(central:SuppliedPhotometerStar,neighbors:readonly SuppliedPhotometerStar[]):PhotometerBands{
  fraction(central.fraction);
  if(!Array.isArray(neighbors)||neighbors.length>10000)throw new PhotometerSourceError('neighbors');
  let u=30,b=30,v=30,r=30,i=30,includedNeighbors=0;
- if(central.fraction>0){const c=bands(central);u=attenuatePhotometerMagnitude(c.u,central.fraction);b=attenuatePhotometerMagnitude(c.b,central.fraction);v=attenuatePhotometerMagnitude(c.v,central.fraction);r=attenuatePhotometerMagnitude(c.r,central.fraction);i=attenuatePhotometerMagnitude(c.i,central.fraction);}
- for(const neighbor of neighbors){fraction(neighbor.fraction);if(neighbor.fraction===0)continue;const n=bands(neighbor);u=combinePhotometerMagnitudes(attenuatePhotometerMagnitude(n.u,neighbor.fraction),u);b=combinePhotometerMagnitudes(attenuatePhotometerMagnitude(n.b,neighbor.fraction),b);v=combinePhotometerMagnitudes(attenuatePhotometerMagnitude(n.v,neighbor.fraction),v);includedNeighbors++;}
+ if(central.fraction>0){const c=centralBands(central);u=attenuatePhotometerMagnitude(c.u,central.fraction);b=attenuatePhotometerMagnitude(c.b,central.fraction);v=attenuatePhotometerMagnitude(c.v,central.fraction);r=attenuatePhotometerMagnitude(c.r,central.fraction);i=attenuatePhotometerMagnitude(c.i,central.fraction);}
+ for(const neighbor of neighbors){
+  fraction(neighbor.fraction);if(neighbor.fraction===0)continue;
+  const nv=Math.fround(neighbor.v),nbv=Math.fround(neighbor.bMinusV),nub=Math.fround(neighbor.uMinusB);
+  if(!Number.isFinite(nv)||!Number.isFinite(nbv)||!Number.isFinite(nub))throw new PhotometerSourceError('magnitude');
+  // 0x4ffead/0x4ffeb3: (U−B + B−V) + V, in that order.
+  v=combinePhotometerMagnitudes(attenuatePhotometerMagnitude(nv,neighbor.fraction),v);b=combinePhotometerMagnitudes(attenuatePhotometerMagnitude(nbv+nv,neighbor.fraction),b);u=combinePhotometerMagnitudes(attenuatePhotometerMagnitude((nub+nbv)+nv,neighbor.fraction),u);includedNeighbors++;
+ }
  return Object.freeze({u,b,v,r,i,includedNeighbors});
 }
 /** Bounded0x4ffa30 UBV fold: complete ordered supplied neighbors, distinct from

@@ -5,7 +5,7 @@ import {confirmPleiadesFit,type PleiadesFit} from './pleiadesAnalysis';
 import {TIMED_PHOTOMETER_POLICY,PHOTOMETER_SECONDS,PHOTOMETER_REPEATS,MAX_PHOTOMETER_CALLBACKS_PER_READING,LEGACY_PHOTOMETER_TIMING,photometerTiming,requiredPhotometerCallbacks,createPhotometerIntegration,advancePhotometerIntegration,photometerReplayCallbacks,MAX_PHOTOMETER_CALLBACKS,PHOTOMETER_CALLBACK_MS,type PhotometerTiming,type PhotometerIntegration} from './photometerIntegration';
 import {randomDraw} from './acquisition';
 import {PINNED_PLEIADES_V_TARGET,isExpandedPhotometerTarget,isAddedPhotometerTarget,isPhotometerTarget,isTiledPhotometerTarget,tiledPhotometerTargetId,type PleiadesFieldKind} from './photometerField';
-import {drawPinnedPleiadesUbv,isPhotometerFilter,photometerSelectedFraction,tiledPhotometerReason,type PhotometerFilter} from './photometerUbvField';
+import {drawPinnedPleiadesUbv,isPhotometerFilter,photometerSelectedFraction,photometerSelectsGalaxy,tiledPhotometerReason,type PhotometerFilter} from './photometerUbvField';
 import {reducePhotometerSky,reducePhotometerObject,photometricBMinusV} from './photometryReduction';
 import {photometerJournalFits,EXPANDED_PHOTOMETER_POLICY,PHOTOMETER_POLICY,VARIABLE_FIELD_PHOTOMETER_POLICY} from './photometerJournal';
 import {PHOTOMETER_NATIVE_EVENT_KEYS,photometerNativeApply,validPhotometerNativeInput,validPhotometerNativeOutcome,PhotometerNativeError,type PhotometerNativeRecordEvent,type PhotometerNativeState} from './photometerNativeRecord';
@@ -110,7 +110,7 @@ function transition(s:PhotometerState,e:PhotometerEvent,live:boolean):Photometer
   if(!s.armed||s.phase==='running')throw new PhotometerError('phase');
   if(s.pointing==='object'&&(!s.sky||s.sky.filter!==s.filter||s.sky.contextId!==s.contextId||(s.sky.telescopeIndex??0)!==(s.telescopeIndex??0)))throw new PhotometerError('sky');
   if(skyReplaceAsked(s)&&!s.skyReplaceConfirmed)throw new PhotometerError('confirm');
-  if(isTiledPhotometerTarget(s.targetId)&&tiledPhotometerReason(s.targetId,s.telescopeIndex??0,s.apertureSelector??10))throw new PhotometerError('field');
+  if(isTiledPhotometerTarget(s.targetId)&&tiledPhotometerReason(s.targetId,s.telescopeIndex??0,s.apertureSelector??10,s.pointing))throw new PhotometerError('field');
   if(live&&!isTiledPhotometerTarget(s.targetId)&&photometerFullDomainExclusion(s.targetId,s.telescopeIndex??0))throw new PhotometerError('field');
   if(s.timing&&(s.callbacksUsed??0)+requiredPhotometerCallbacks(s.timing)>MAX_PHOTOMETER_CALLBACKS)throw new PhotometerError('limit');
   next={...withoutStruct(s),current:null,phase:'running',...(s.timing?{work:createPhotometerIntegration(s.timing,s.pointing,s.filter,s.targetId,s.seed,s.apertureSelector??10,s.telescopeIndex??0)}:{})};
@@ -127,7 +127,7 @@ function transition(s:PhotometerState,e:PhotometerEvent,live:boolean):Photometer
  }else if(e.type==='complete'){
   if(s.timing)throw new PhotometerError('event');
   if(!s.armed||s.phase!=='running')throw new PhotometerError('phase');
-  if(isTiledPhotometerTarget(s.targetId)&&tiledPhotometerReason(s.targetId,s.telescopeIndex??0,s.apertureSelector??10))throw new PhotometerError('field');
+  if(isTiledPhotometerTarget(s.targetId)&&tiledPhotometerReason(s.targetId,s.telescopeIndex??0,s.apertureSelector??10,s.pointing))throw new PhotometerError('field');
   if(live&&!isTiledPhotometerTarget(s.targetId)&&photometerFullDomainExclusion(s.targetId,s.telescopeIndex??0))throw new PhotometerError('field');
   if(s.pointing==='object'&&(!s.sky||s.sky.filter!==s.filter||s.sky.contextId!==s.contextId||(s.sky.telescopeIndex??0)!==(s.telescopeIndex??0)))throw new PhotometerError('sky');
   const callback=drawPinnedPleiadesUbv(s.pointing,s.filter,s.seed,s.targetId,s.apertureSelector??10,s.telescopeIndex??0);
@@ -165,8 +165,10 @@ function transition(s:PhotometerState,e:PhotometerEvent,live:boolean):Photometer
  * selected-star light at sizes 5/10/15 (unchanged). Front P2: at larger sizes they are asked like any field. With the 0.4 m that
  * starts at size 25, 41, 91 or 128 for four targets (a nearer star in their sky field) and 148 for the other 20; with the 0.9 m and
  * 4 m at 41, 56, 106 or 144 for those four and never for the rest (photometerP2.test.ts). */
+/** Front PHTILED: never at a tiled target whose centre selects a galaxy. There VIREO's question takes the galaxy's Sky-mode fraction,
+ * gated on the Telescope display (0x53e338) [U]; Start refuses such a Sky reading (`photometer-galaxy-sky`) instead [W]. */
 export function skyReplaceAsked(s:PhotometerState):boolean{
- return s.armed&&s.pointing==='sky'&&!s.readingSliderMoved&&s.skies[s.filter]!==null&&photometerSelectedFraction(s.targetId,'sky',s.apertureSelector??10,s.telescopeIndex??0)>0;
+ return s.armed&&s.pointing==='sky'&&!s.readingSliderMoved&&s.skies[s.filter]!==null&&!photometerSelectsGalaxy(s.targetId)&&photometerSelectedFraction(s.targetId,'sky',s.apertureSelector??10,s.telescopeIndex??0)>0;
 }
 export function photometerEvent(s:PhotometerState,e:PhotometerEvent){return transition(s,e,true);}
 /** Front P3: Start 0x4fffd4 resets the reading struct; a web activation starts a new context [W]. */

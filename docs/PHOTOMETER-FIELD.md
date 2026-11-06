@@ -77,24 +77,24 @@ I01/E04 are not accepted complete; N03 remains partial. [Verification](PHOTOMETE
 - **Equality:** `src/core/photometerTiled.test.ts` checks that, for all 24 PLEIADES.HTL targets in both object and sky fields
   (48 fields), the tiled field equals the bundled field. That covers stars and their order, neighbours, the selected star and
   its pixel distance, the aperture fraction, the source magnitude, and the means.
-- **Typed reasons** (`PhotometerTiledReason`), never approximated:
-  - `photometer-galaxy`: a galaxy in the field (unchanged by Front C7: the photometer builds its own population, so M31's core
-    stays typed here although its telescope field is now drawn). The photometer's treatment of the galaxy list is not recovered.
-    M31's core gave this reason until Front AXISMERGE; it is now `photometer-empty` (below).
+- **Typed reasons** (`PhotometerTiledReason`), never approximated (Front PHTILED, 2026-11-05, retired `photometer-galaxy`,
+  `photometer-qso` and `photometer-colour`; see the section below):
+  - `photometer-galaxy-name`: the centre selects a galaxy whose catalogue name another CLEA_GLX.DAT record shares (195 names); the
+    photometer finds the galaxy record by name, possibly from a record cached by an earlier lookup (0x5006b8..0x5006fe) [U].
   - `photometer-empty` (Front AXISMERGE, 2026-11-05): no GSC star in the photometer field. The field build 0x597ac8 then shows
     "No Stars Found in Field!" / "Possible Error in Field Parameters" and jumps past the QSO and galaxy loads (0x597c8a) [D]; those
     lists are cleared only inside the skipped loaders, so the galaxies and QSOs of the previously loaded field remain, the paint
     is skipped and the telescope clock stays stopped (docs/FIELD-ENGINE.md). What the photometer then selects and measures depends
-    on that earlier field and is not reproduced. M31's core (0.7123 h, +41.2692°) is such a field: this field's own galaxies, which
-    the web used to load and type `photometer-galaxy`, are not reached by VIREO's load.
-  - `photometer-qso`
-  - `photometer-variable`: a TRUE-dispatch variable star, whose values depend on the clock.
-  - `photometer-selection`: no star selected at the centre.
+    on that earlier field and is not reproduced. M31's core (0.7123 h, +41.2692°) is such a field.
+  - `photometer-variable`: a TRUE-dispatch variable star, whose values depend on the clock (left for its own front:
+    analysis/front-plans/front-phtiled.md §4).
+  - `photometer-selection`: no star or galaxy selected at the centre; Start then integrates the band slots left by the previous
+    source preparation (0x4ffbba → 0x4fff04 writes none; StrtBtnClick has no nil test) [D], which the web does not keep.
   - `photometer-population`: an engine gate.
-- **Mode independence:** the source does not depend on the reading mode (G3b). A positive central fraction gives the known
-  colours of the central star and its neighbours. A zero fraction with no admitted neighbour gives the literal 30. Neighbour
-  light without central admission is added to that 30 (Front P2 ported this decoded path; it was typed
-  `photometer-central-unadmitted` before, docs/PHOTOMETER-P2.md); a missing colour is `photometer-colour`.
+- **Mode independence:** the source does not depend on the reading mode (G3b), except for a selected galaxy (below). A positive
+  central fraction gives the known colours of the central object and its neighbours. A zero fraction with no admitted neighbour
+  gives the literal 30. Neighbour light without central admission is added to that 30 (Front P2 ported this decoded path; it was
+  typed `photometer-central-unadmitted` before, docs/PHOTOMETER-P2.md).
 
 ## Photometer at the telescope pointing (Front G, G3b)
 
@@ -157,10 +157,8 @@ in VIREO. Static evidence is in `analysis/front-g-gsc/RE-photometer-start.md`.
   - Their per-target exclusions follow from the field and telescope alone. `photometerMaximumMean`, the largest per-callback
     mean over U/B/V and apertures 5/10/15, reproduces every recorded `maximumMean` and reason of both contracts, to a relative
     1e-8 (`src/core/photometerTiledBench.test.ts`).
-  - Tiled targets get the same limits as typed reasons that block Start (`tiledPhotometerReason`): `Poisson-mean-bound`,
-    `all-duration-count-domain`, and at 0.9 m and 4 m `photometer-blend` (neighbours other than the selected star). The blend
-    rule is a web validation limit [W]: the bounded 0.9 m and 4 m profiles were checked only for single stars (their Pleiades
-    contracts), not a recovered VIREO branch.
+  - Tiled targets get the same limits as typed reasons that block Start (`tiledPhotometerReason`): `Poisson-mean-bound` and
+    `all-duration-count-domain`. The earlier 0.9 m / 4 m `photometer-blend` web limit was lifted by Front PHTILED (below).
 - **Notebook and B−V** work for tiled stars. They never count toward the Pleiades exercise, whose summary reads only Pleiades
   rows.
 - **Skies and E04 (G3 review 1 L3, web rule [W]).** VIREO keeps one sky per filter and telescope bank, wherever it was read, and
@@ -169,3 +167,36 @@ in VIREO. Static evidence is in `analysis/front-g-gsc/RE-photometer-start.md`.
   (`pleiadesSkyContext`); a Pleiades reading reduced with a sky taken at a tiled pointing is shown but not counted.
 - **Tests:** `src/io/photometerTiled.test.ts` (journal, session round trip, telescopes, sky question, E04) and
   `tests/photometer-tiled.spec.ts` (browser flow, and M31 typed).
+
+## Galaxies, QSOs, colours and blends at tiled pointings (Front PHTILED, 2026-11-05)
+
+Static evidence and measurements: `analysis/front-phtiled/RECOVERY.md` (excerpts.asm SHA-256 6c53f6ea…bf34); plan and what is left:
+`analysis/front-plans/front-phtiled.md`. Breadth only: E04 still uses the bundled Pleiades fields, whose frames and readings are
+unchanged (48-field equality, Pleiades contracts and P2 tests).
+
+- **QSOs.** The photometer's field is the telescope field object [0x5b56ac] that 0x53be70 builds (0x53c010); its mode byte 1 loads
+  and merges the QSOs (0x597db0..0x597df3) [D]. The tiled photometer field is now built with the engine's QSO merge, as the
+  spectrometer at any pointing. A merged QSO (kind 3) is selected like a star and prepared from its own V, B−V and U−B through the
+  point branch of 0x500568. The neighbour producer 0x59ac54 walks the star list and then the QSO list field+0x35 [D], so a QSO in
+  the aperture that is not selected adds its light once per list (the frame keeps the list as `qsos`). Measured: 1154 of the 2269
+  CLEA_QSO.DAT positions now select their QSO (1165 were `qso-merge` before; 1103 are empty fields).
+- **Selected galaxy (kind 1).** 0x53ce8c copies the galaxy into the current object: V from the catalogue (+0x18 Single), B−V and U−B
+  from the loader's morphology table. 0x500568's galaxy branch takes its width w = 0.6 · (a + b)/4 with a = major/60 (1/120 when
+  0) and b = minor/60 (the 0x53b94c ratio × a when 0), and a distance 0 (the object is a copy of the named record): the fraction
+  I(r/w) − I(−r/w) does not depend on the telescope or on the offset of the pointing (`photometerGalaxyWidthDegrees`). Neighbour
+  stars and QSOs add their light as usual. Measured: 20259 of the 24069 galaxy positions now give a reading.
+  - [W] **Sky readings on a galaxy are refused** (`photometer-galaxy-sky`): in Sky mode 0x500568 gates the galaxy's fraction on the
+    mean brightness of a 3 × 19-pixel patch at the centre of the Telescope display (0x53e338 ≥ 80), which is not reproduced [U].
+    VIREO's "Reading Sky!" question is not asked there. Read the sky on a nearby patch, then the galaxy in Object mode.
+  - `photometer-galaxy-name` (349 galaxy positions), see the typed reasons above.
+- **Colours.** Start skips a selected object's colour term when it is ≥ 30 (0x4ffc39, 0x4ffcb4) and sums a neighbour's colours with
+  no test (0x4ffe46..0x4ffed9); both are ported (`preparePhotometerBands`). No bundled record reaches them (no compact GSC, QSO or
+  galaxy-table colour is ≥ 30), so `photometer-colour` is gone.
+- **0.9 m and 4 m blends.** The native neighbour fold is the same for every telescope; only the seeing width differs. The former
+  `photometer-blend` web limit is lifted for tiled targets (4 CLEA_VStrs.dat positions were refused at aperture 10); the mean bounds
+  still apply. The bundled Pleiades 0.9 m / 4 m contracts keep their single-star rule.
+- **Left typed:** variables (`photometer-variable`, 7997 GCVS positions), the nil selection, the empty field, photographic-image
+  fields and the engine's merge faults.
+- **Tests:** `src/core/photometerPhtiled.test.ts` (NGC 7805, 00002+1837, A0000-3600, NGC 190, CLEA_QSO.DAT 2 and 2132, the
+  CLEA_VStrs.dat 20193 blend), `src/core/photometerColourBranches.test.ts`, `src/io/photometerTiled.test.ts` (journal, Record,
+  session) and `tests/photometer-tiled.spec.ts` (M32: sky on a star patch, Sky refused on the galaxy, Object reading).

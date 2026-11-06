@@ -14,8 +14,9 @@ const sources=():AssemblySources=>{const v=f('public/original/variables/CLEA_VSt
  return {index:checkGscIndex(JSON.parse(readFileSync('data/gsc/gsc-index.json','utf8'))),tiles:createGscTileStore({fetcher:(async(u:RequestInfo|URL)=>new Response(f('public'+String(u)))) as typeof fetch,capacity:64}),variables:v,variablesSha256:sha(v),qso:q,qsoSha256:sha(q),glimages:f('public/original/images/GLIMAGES.LST')};};
 async function tiled(pointing:Readonly<{ra:number;dec:number}>,kind:PleiadesFieldKind,s:AssemblySources){
  const pack=await assembleFieldPack(pointing,s,undefined,FIELD_HALF_DEGREES.photometer);
- const built=buildFieldPopulation(pack,glx,pointing,{fieldHalfDegrees:FIELD_HALF_DEGREES.photometer,variableDispatch:'recovered'});
- return photometerFieldFromPopulation(built.population,built.reasons,pointing,kind);
+ // Front PHTILED: as io/photometerTiledFields.ts, with the QSO load and merge of the telescope field (mode 1).
+ const q=s.qso,built=buildFieldPopulation(pack,glx,pointing,{fieldHalfDegrees:FIELD_HALF_DEGREES.photometer,variableDispatch:'recovered',qso:'merge',qsoCatalog:{bytes:q,sha256:s.qsoSha256}});
+ return photometerFieldFromPopulation(built.population,built.reasons,pointing,kind,{qso:q,glx});
 }
 describe('photometer fields from the tiles',()=>{
  it('equal every bundled Pleiades field (stars, neighbours, selection, fraction, magnitude, means)',async()=>{
@@ -52,6 +53,8 @@ describe('photometer fields from the tiles',()=>{
   const g=(dDec:number,major:number)=>({...(built.population!.galaxies[0]??{}),ra:pointing.ra,dec:pointing.dec+dDec,majorArcminutes:major});
   const away=photometerFieldFromPopulation({...built.population!,galaxies:[g(.02,.1) as never]},[],pointing,'object');
   expect(away.reason).toBeUndefined();expect(away.field!.selected.nativeName).toBe('N5230-00946');expect(away.field!.sourceMagnitude).toBe(plain.field!.sourceMagnitude);
-  expect(photometerFieldFromPopulation({...built.population!,galaxies:[g(0,5) as never]},[],pointing,'object').reason).toBe('photometer-galaxy');
+  // A centred galaxy is now selected and measured (Front PHTILED, photometerPhtiled.test.ts uses catalogue galaxies); a synthetic one
+  // without its catalogue record cannot be.
+  expect(()=>photometerFieldFromPopulation({...built.population!,galaxies:[g(0,5) as never]},[],pointing,'object',{glx})).toThrow(/evidence/);
  },120_000);
 });
