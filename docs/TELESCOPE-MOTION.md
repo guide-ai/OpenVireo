@@ -36,8 +36,9 @@ With the instructor's Test Mode on (TestBox1, env+0x2e7c; docs/OPTICAL-OPTIONS.m
 horizon check and the confirmation (0x539a1d → 0x539c4c) and puts the telescope on the target at once (0x539ce1 →
 0x539cee..0x539e0f; RA/Dec through 0x53caec/0x53cb40 on the target globals) [D]. +0x655 (hour-angle stamp) := the uninitialised local [ebp-0x18], written only at 0x539ab8 on the non-Test path [D]; effect on later slews/clock [U]; the web keeps a consistent hour angle [W]. The motion card then jumps
 instead of asking (`onJump`), releases the instruments as a slew start does, and shows a Test Mode line. The immediate Point
-shortcuts that stand in for ProgrammedSlew skip the Limit Slewing check in Test Mode as well (VIREO's hot-list slew reaches
-ProgrammedSlew through Set Coordinates, 0x530180 → 0x5301f4). Manual N/S/E/W motion and its limits are unchanged.
+shortcuts that stand in for ProgrammedSlew skip the Limit Slewing check in Test Mode as well (VIREO's hot-list slew calls
+ProgrammedSlew at 0x53f42a; the variable-field list's Slew to Selection at 0x5301f4). Manual N/S/E/W motion and its limits are
+unchanged, and so is the browse pan, a web quarter-field step whose nearest VIREO analogue is manual motion [W].
 
 ## Manual steps
 

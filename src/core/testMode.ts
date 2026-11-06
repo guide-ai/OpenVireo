@@ -53,8 +53,8 @@ export function multiSpecTimerStep(seconds:number,elapsed:number,remaining:numbe
  * [W]); 'confirm' is the normal path. */
 export const programmedSlewPath=(testMode:boolean):'jump'|'confirm'=>testMode?'jump':'confirm';
 /** Review 1 L1: whether a pointing that models ProgrammedSlew checks the horizon (Limit Slewing): not in Test Mode, since
- * 0x539a1d → 0x539c4c skips the check. VIREO's hot-list slew reaches ProgrammedSlew through Set Coordinates (0x530180 →
- * 0x5301f4). The manual and drive limits (0x539290) are separate and unaffected. */
+ * 0x539a1d → 0x539c4c skips the check. VIREO's hot-list slew (ViewSelectfromList1Click) calls ProgrammedSlew at
+ * 0x53f42a after its ShowModal dialogs (0x53f387, 0x53f40d); the variable-field list's Slew to Selection does too (0x530180 → 0x5301f4). The manual and drive limits (0x539290) are separate and unaffected. */
 export const programmedSlewChecksHorizon=(testMode:boolean):boolean=>programmedSlewPath(testMode)==='confirm';
 
 /** DomeTimer: 80 ms ticks of 0.01 (the step +0x55d is written at 0x589a75; DomeTimerTimer 0x58d154). Off, the travel reaches the end sound on tick 98 (Front C5W

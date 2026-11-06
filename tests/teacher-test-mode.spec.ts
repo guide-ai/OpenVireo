@@ -67,7 +67,7 @@ test('instructor Test Mode: a 30 s CCD exposure ends at its first tick, a progra
 });
 
 // Review 1 L1: the Point shortcuts that stand in for ProgrammedSlew skip Limit Slewing in Test Mode (0x539a1d → 0x539c4c skips the
-// horizon check; VIREO's hot-list slew reaches ProgrammedSlew through Set Coordinates, 0x530180 → 0x5301f4).
+// horizon check; VIREO's hot-list slew calls ProgrammedSlew at 0x53f42a).
 test('instructor Test Mode: with Limit Slewing on, Point to coordinates below the horizon is not refused; off, it is',async({page})=>{
  await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible({timeout:15000});
  await button(page,'Open dome ↗').click();
@@ -84,4 +84,8 @@ test('instructor Test Mode: with Limit Slewing on, Point to coordinates below th
  await card(page).getByTestId('ob-options').click();await id(page,'ob-options-test-mode').check();await id(page,'ob-options-ok').click();
  await point();
  await expect(box).toHaveCount(0);await expect(id(page,'pointing-dec')).toHaveText('-30.00000');
+ // Closure L1a: the browse pan is not ProgrammedSlew (its nearest analogue is manual motion), so it keeps the guard in Test Mode.
+ await page.getByRole('button',{name:'South',exact:true}).click();
+ await expect(box).toContainText('Target Coordinates are Below the Horizon!');
+ await box.getByRole('button',{name:'OK'}).click();await expect(id(page,'pointing-dec')).toHaveText('-30.00000');
 });
