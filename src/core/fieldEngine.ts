@@ -43,7 +43,8 @@ import {isDialogRange,policyWithRange,type SpectralRange} from './spectralRange'
 import {createJournalExposure,type JournalState,type JournalSourcePreparer} from './exposureJournal';
 import {continuationSourcePreparer,galaxySourceValues,type FieldContinuationSource} from './fieldContinuation';
 import {galaxyChannelGrid} from './galaxySpectrum';
-import {sampleUniformSpectrum,POISSON_MEAN_ADMISSION,type UniformSpectrum} from './acquisition';
+import {sampleUniformSpectrum,type UniformSpectrum} from './acquisition';
+import {SPECTROMETER_TICK_MEAN_BOUND} from './exposure';
 import {packCovers,type FieldPack} from './fieldPack';
 import {prepareQsoProfile,QsoSpectrumError,type QsoSpectrumFile} from './qsoSpectrum';
 import {loadNativeQsoList,nativeQsoMerge,qsoPositionPredicate,QsoMergeError,QSO_CATALOG,type NativeQso,type QsoMergeWitness} from './qsoMerge';
@@ -59,14 +60,14 @@ export class FieldEngineError extends Error{
 }
 export type FieldTelescope=0|1|2;
 /** Calibration per telescope record, as galaxyExposure.ts: base and sky from the verified 0.4 m definition; the 0.9 m uses
- * correction/shift 0 and the 4 m 3/3. Zero points 4/6/9. The mean bound is poissonDraw's per-draw admission on every record
- * (Front L4, 2026-10-31: it was 12 on the 0.4/0.9 m, the product/rejection switch of 0x55f0f4, a web guard; VIREO's routine has
- * no mean guard and its rejection branch is ported and witnessed, Front M D3). */
+ * correction/shift 0 and the 4 m 3/3. Zero points 4/6/9. The mean bound is the spectrometer's per-tick bound on every record,
+ * exposure.SPECTROMETER_TICK_MEAN_BOUND = 2^30 (Front MEANBOUND, 2026-11-05: it was poissonDraw's 10^6 admission since Front L4,
+ * and 12 on the 0.4/0.9 m before; VIREO's routine has no mean guard). */
 const base=galaxyProvenance.calibration;
 export const FIELD_CALIBRATIONS=Object.freeze([
- Object.freeze({baseZeroPoint:base.baseZeroPoint,telescopeCorrection:base.telescopeCorrection,skyMagnitude:base.skyMagnitude,magnitudeShift:base.magnitudeShift,zeroPoint:4,meanBound:POISSON_MEAN_ADMISSION}),
- Object.freeze({baseZeroPoint:base.baseZeroPoint,telescopeCorrection:0,skyMagnitude:base.skyMagnitude,magnitudeShift:0,zeroPoint:6,meanBound:POISSON_MEAN_ADMISSION}),
- Object.freeze({baseZeroPoint:base.baseZeroPoint,telescopeCorrection:3,skyMagnitude:base.skyMagnitude,magnitudeShift:3,zeroPoint:9,meanBound:POISSON_MEAN_ADMISSION}),
+ Object.freeze({baseZeroPoint:base.baseZeroPoint,telescopeCorrection:base.telescopeCorrection,skyMagnitude:base.skyMagnitude,magnitudeShift:base.magnitudeShift,zeroPoint:4,meanBound:SPECTROMETER_TICK_MEAN_BOUND}),
+ Object.freeze({baseZeroPoint:base.baseZeroPoint,telescopeCorrection:0,skyMagnitude:base.skyMagnitude,magnitudeShift:0,zeroPoint:6,meanBound:SPECTROMETER_TICK_MEAN_BOUND}),
+ Object.freeze({baseZeroPoint:base.baseZeroPoint,telescopeCorrection:3,skyMagnitude:base.skyMagnitude,magnitudeShift:3,zeroPoint:9,meanBound:SPECTROMETER_TICK_MEAN_BOUND}),
 ]);
 export const FIELD_MULTIPLIER=base.multiplier;
 /** Why a pointing cannot be acquired in this version (never a fabricated substitute). */

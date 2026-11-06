@@ -3335,6 +3335,7 @@ export interface MessageParameters {
   "multispec.saveNote": never;
   "multispec.saveAllNone": never;
   "multispec.saveError": never;
+  "multispec.saveErrorWrapped": never;
   "multispec.saved": "file";
   "multispec.savedAll": "count" | "file";
   "multispec.spectrumLoading": never;
@@ -3352,6 +3353,7 @@ export interface MessageParameters {
   "multispec.reason.multispec-mean-bound": never;
   "multispec.reason.negative-mean": never;
   "multispec.reason.precision": never;
+  "multispec.wrapped": never;
   "multispec.reason.variable": "code";
   "multispec.fibreUnavailable": "reason";
   "multispec.maskOther": never;

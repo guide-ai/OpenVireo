@@ -4,6 +4,13 @@ import { poissonDraw, randomDraw } from './acquisition';
  * Callers supply per-bin source means, uniform sky mean and elapsed multiplier.
  * Explicit delta milliseconds replace GetTickCount/event scheduling. */
 export const EXPOSURE_BINS = 600;
+/** Front MEANBOUND [W]: the largest per-tick bin mean the spectrometer routes admit (their 'mean-bound'), 2^30. VIREO has no bound;
+ * its timer 0x50f76c adds the low 32 bits of each Round (0x403700, FISTP to Int64) draw to the signed Int32 bin (ADD at 0x50f7fc
+ * and 0x50f848, no overflow check, so a bin past 2^31 − 1 wraps [D]) and adds the draw's signed low 32 bits to the Int64 source
+ * total (0x50f802..0x50f80d). With ticks ≤ 1000 ms and the S/N pause once the total passes 6·10^8 (every bin is then ≤ 6·10^8),
+ * a per-tick mean ≤ 2^30 cannot carry a bin past 2^31 − 1 except through a far-tail acceptance at uniform 0, which the 'counter'
+ * guard below still refuses. The brightest compact GSC star (Sirius, V −1.46) peaks at 7.7·10^8 per 1000-ms tick on the 4 m. */
+export const SPECTROMETER_TICK_MEAN_BOUND = 2 ** 30;
 export class ExposureError extends Error {
   constructor(readonly code: 'configuration' | 'phase' | 'elapsed' | 'counter') {
     super(`Exposure state contract: ${code}`); this.name = 'ExposureError';

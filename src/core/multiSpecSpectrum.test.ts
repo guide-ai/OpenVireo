@@ -2,6 +2,7 @@ import {describe,it,expect} from 'vitest';
 import {readFileSync,readdirSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import witness from '../../data/multispec/witness.json';
+import meanBoundWitness from './multiSpecMeanBound.witness.json';
 import coma from '../../data/hubble/engine-coma.json';
 import engineTargets from '../../data/hubble/engine-targets.json';
 import galaxySource from '../../data/hubble/galaxy-source.json';
@@ -69,8 +70,9 @@ describe('Front M: Multi-Spec grid, constants and flux factors (0x526e6c, 0x526f
   expect(multiSpecK(60)).toBe(3_000_000);expect(multiSpecK(0.1)).toBe(50*Math.fround(0.1)*1000);
   expect([0,1,2].map(t=>multiSpecZeroPoint(t as FieldTelescope))).toEqual([4,6,9]);
   expect(multiSpecFluxFactor(19,4)).toBe(Math.pow(10,15/-2.5));
-  // Front L4 (2026-10-31): the field engine's bound is poissonDraw's 10⁶ admission on every record (it was 12 on the 0.4/0.9 m).
-  expect(FIELD_CALIBRATIONS.map(c=>c.meanBound)).toEqual([1_000_000,1_000_000,1_000_000]);
+  // Front MEANBOUND (2026-11-05): the field engine's bound is the spectrometer's per-tick 2^30 on every record (10⁶ since Front L4,
+  // 12 on the 0.4/0.9 m before).
+  expect(FIELD_CALIBRATIONS.map(c=>c.meanBound)).toEqual([2**30,2**30,2**30]);
  });
 });
 
@@ -83,6 +85,9 @@ describe('Front M: fibre spectra equal the independent Python witness (data/mult
  for(const r of witness.results)it(`${r.case.field} ${r.case.label} on telescope ${r.telescope}`,()=>{
   const sel=selectionOf(r.case),ctx=context(r.telescope as FieldTelescope),w=r.result as Record<string,unknown>&typeof r.result;
   const prepared=prepareMultiSpecFibre(sel,ctx,r.case.seed),e=exposeMultiSpecFibre(prepared,witness.seconds);
+  // Front MEANBOUND: the Front M witness typed this fibre under the earlier 10⁶ rule; it is drawn now and checked against
+  // multiSpecMeanBound.witness.json below.
+  if(w.status!=='ready'&&(w as {reason?:string}).reason==='multispec-mean-bound'){expect(e.status).toBe('ready');return;}
   if(w.status!=='ready'){expect(e).toEqual({status:'unavailable',reason:w.reason});return;}
   if(prepared.status!=='ready'||e.status!=='ready')throw Error(JSON.stringify(e));
   const means=multiSpecMeans(prepared,witness.seconds),wm=w.means as {bins:number[];values:number[];max:number;sky:number};
@@ -151,7 +156,49 @@ describe('Front M: fibre contract',()=>{
   expect(prepareMultiSpecFibre(star({type:2,spectralIndex:70993000}),ctx,1)).toEqual({status:'unavailable',reason:'star-template-none'});
   expect(prepareMultiSpecFibre(star({spectralIndex:10_000_000}),ctx,1).status).toBe('ready');
  });
- it('decision D3: a mean above 10⁶ in any bin is typed before any draw',()=>{
-  expect(multiSpecFibreSpectrum(star({v:2}),context(2),1,60)).toEqual({status:'unavailable',reason:'multispec-mean-bound'});
+ it('decision D3: a mean above the admission (2^33 since Front MEANBOUND review 1, 2^36 in its first commit, 10⁶ before) in any bin is typed before any draw',()=>{
+  expect(multiSpecFibreSpectrum(star({v:-8}),context(2),1,60)).toEqual({status:'unavailable',reason:'multispec-mean-bound'});
+  expect(multiSpecFibreSpectrum(star({v:2}),context(2),1,60).status).toBe('ready');
+ });
+});
+
+describe('Front MEANBOUND: channel means above 10⁶ and VIREO\'s Int32 channels (multiSpecMeanBound.witness.json)',()=>{
+ const star=(v:number,spectralIndex:number):MultiSpecSelection=>({type:0,name:'s',ra:13,dec:28,v:Math.fround(v),z:null,spectralIndex,x:0,y:0,source:{kind:'star',index:0}});
+ for(const r of meanBoundWitness.results)it(r.case.label,()=>{
+  const w=r.result as typeof meanBoundWitness.results[number]['result'];
+  const e=multiSpecFibreSpectrum(star(r.case.v,r.case.spectralIndex),context(r.case.telescope as FieldTelescope),r.case.seed,r.case.seconds);
+  if(e.status!=='ready')throw Error(JSON.stringify(e));
+  const s=e.spectrum;
+  // The witness decided every draw above 10⁶ on the 110-digit formula; its closest decision is far outside the web's band.
+  expect(w.closestRelativeMargin).toBeGreaterThan(1e-5);
+  expect(s.counts).toEqual(w.counts);expect(s.wrapped).toBe(w.wrapped);expect(s.plotY).toEqual(w.plotY);
+  expect([s.signal,s.skySum,s.total,s.plotMaximum,s.draws,s.seed]).toEqual([w.signal,w.skySum,w.total,w.plotMaximum,w.draws,w.seedAfter]);
+  expect(close(s.average,w.average)&&close(s.snr,w.snr)).toBe(true);
+  const bytes=multiSpecSspBytes(s);expect([bytes.byteLength,sha(bytes)]).toEqual([w.ssp!.bytes,w.ssp!.sha256]);
+ });
+ it('N2230-01405 (V 4.5, lss-field-08), typed on the 0.4 m before, has a spectrum; on the 4 m for 20 min its channels wrap',()=>{
+  const [, small, wrap]=meanBoundWitness.results;
+  expect(small.result.maxMean).toBeGreaterThan(1e6);expect(small.result.wrapped).toBe(false);
+  expect(wrap.result.maxMean).toBeGreaterThan(2**31);expect(wrap.result.wrapped).toBe(true);expect(Math.min(...wrap.result.counts)).toBeLessThan(0);
+ });
+ it('review 1: a fibre whose every channel wraps negative cannot be saved (VIREO divides by a maximum of 0, 0x529234)',()=>{
+  // A template whose channel means stay within a factor 2 over 3700–4700 Å, exposed so that every channel lies in [2^31, 2^32).
+  const ctx=context(2);let tried=0;
+  for(const entry of ctx.starIndex){
+   const p=prepareMultiSpecFibre(star(4.5,entry.index),ctx,3);if(p.status!=='ready')continue;
+   const m=multiSpecMeans(p,1),lo=Math.min(...m.object)+m.sky,hi=Math.max(...m.object)+m.sky;if(!(hi<1.9*lo))continue;
+   const seconds=Math.fround(2**31*1.05/lo);if(seconds*hi>2**32*0.95)continue;
+   tried++;const e=exposeMultiSpecFibre(p,seconds);if(e.status!=='ready')throw Error(JSON.stringify(e));
+   expect(e.spectrum.wrapped).toBe(true);expect(e.spectrum.counts.every(c=>c<0)).toBe(true);
+   expect(()=>multiSpecSspBytes(e.spectrum)).toThrow(/wrapped-maximum/);break;
+  }
+  expect(tried).toBe(1);
+  const zero=Array<number>(400).fill(0);
+  expect(()=>multiSpecSspBytes({counts:zero,minimum:3700,dispersion:2.5})).toThrow(/zero-maximum/);
+  expect(()=>multiSpecSspBytes({counts:zero.map((c,i)=>i===7?-5:c),minimum:3700,dispersion:2.5})).toThrow(/wrapped-maximum/);
+ });
+ it('the witness used the bundled template and JSPEC2.SPI this test reads',()=>{
+  expect(meanBoundWitness.jspec2).toBe(sha(file('spectra/jspect2/JSPEC2.SPI')));
+  for(const r of meanBoundWitness.results){const t=r.result.template;expect(sha(file(t.path.replace('public/original/','')))).toBe(t.sha256);}
  });
 });

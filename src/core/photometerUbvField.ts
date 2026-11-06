@@ -77,6 +77,7 @@ function ubvFromFrame(frame:ReturnType<typeof buildPhotometerTargetField>,kind:P
  * it within the int32 count guard. They are functions of the field and telescope only (Front G G3b point 4).
  * Front P2 D1 (a): the bound covers every reading a student can take, U to I and apertures 5 to 150. The `legacy` scope
  * (U/B/V × 5/10/15) reproduces the earlier contracts' recorded maxima. */
+/** The photometer's own per-callback mean rule [W] (poissonDraw admits 2^33 since Front MEANBOUND; this stays 10⁶, docs/PHOTOMETER-FIELD.md). */
 export const PHOTOMETER_MEAN_BOUNDS=Object.freeze({maximumPoissonMean:1_000_000,callbacks:5000,countGuard:2147483647});
 export type PhotometerMeanScope='full'|'legacy';
 const maximumMeans=new WeakMap<object,Map<string,number>>();

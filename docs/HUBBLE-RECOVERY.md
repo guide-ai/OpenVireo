@@ -24,7 +24,35 @@ The rejection branch consumes an acceptance uniform even when exponent <−30 pr
 
 One representational boundary remains unresolved: uniform exactly 0.5 places the tangent at a pole. The original Extended pi is slightly above mathematical pi, while binary64 Math.PI is below; original x87 argument-reduction behavior has not been measured. The adapter now reports a typed `precision` error at this exact draw. It does not silently substitute a random branch or claim that the original would throw. Seed 2796574515 reaches that boundary in one draw. A future integrated exposure must surface this limitation atomically; full original numerical fidelity remains gated on stronger evidence. Exact decimal representations of Extended constants are retained alongside their binary64 projections in the provenance.
 
-New protection policies are explicit: nonnegative finite mean <=1,000,000; draw budget 1–100,000 (default 10,000); unsafe integer candidates, nonfinite arithmetic or exhausted budgets throw a typed error. These are adapter limits, not recovered detector saturation, timing or physical calibration. A rejected call cannot mutate its input state. Callers must keep returned RNG state and count together when integrating later.
+New protection policies are explicit: a nonnegative finite mean up to the admission (10⁶ until Front MEANBOUND, 2³³ since; see the Front MEANBOUND section below); draw budget 1–100,000 (default 10,000); unsafe integer candidates, nonfinite arithmetic or exhausted budgets throw a typed error. These are adapter limits, not recovered detector saturation, timing or physical calibration. A rejected call cannot mutate its input state. Callers must keep returned RNG state and count together when integrating later.
+
+## Front MEANBOUND: means above 10⁶
+
+Research: `analysis/front-meanbound/RECOVERY.md` (static reading of 0x55f0f4..0x55f324, the gammln 0x55f354, the RTL helpers and
+every caller's accumulator; error analysis; measurements; review 1), plan `analysis/front-plans/front-meanbound.md`. Nothing executed.
+- [D] 0x55f0f4 has no upper bound; its candidate is truncated to Int64 (Trunc 0x40370c, FISTP qword) and it returns the Extended
+  count. The x87 control word at 0x5ae024 is 0x1332 (64-bit precision, round to nearest).
+- [W] `poissonDraw` admits means up to 2³³ (≈ 8.6·10⁹). Above 10⁶ (`POISSON_UNGUARDED_LIMIT`) each proposal is evaluated in a
+  form without the ~m·ln m cancellation (double-double candidate, difference-form exponent), with a bound on its own error and on
+  VIREO's Extended error; the four decisions (candidate sign, truncation, exponent against −30, acceptance) are taken only outside
+  both bounds and typed `precision` inside. Since review 1 the cached Ln m enters VIREO's bound only through |v − m|, and an
+  undecided exponent near −30 or an undecided far-tail truncation is still decided when the acceptance uniform is 0 or above the
+  largest threshold either case allows. Measured band rate: none in 4·10⁵ draws up to 2³⁵, 2.5·10⁻⁶ per draw at 1.37·2³⁶.
+- What the band certifies [I]: VIREO's side assumes x87 FYL2X, F2XM1, FSIN and FCOS within about 1–3 ulp, the control word
+  unchanged at run time, and heuristic safety factors (×2). It certifies VIREO's decision **for the same mean**: callers pass
+  binary64 means, about 10⁻¹⁶–10⁻¹⁵ relative from VIREO's Extended ones, which can flip the truncation unguarded with a probability
+  of about 2·m·ε per proposal (one-ulp mean shift, measured: 1.0·10⁻⁵ per draw at 1.37·2³⁴, 1.5·10⁻⁵ at 1.37·2³⁶, none observed up
+  to 2³³; estimated 2·10⁻⁶–2·10⁻⁵ per draw at 2³³ and about 10⁻⁷ at the largest Multi-Spec D3 mean, 1.5·10⁸, at 60 s). That input
+  residual exists at every mean in the project; means ≤ 10⁶ run the earlier code byte for byte and keep their unguarded near-tie
+  residual.
+- Why 2³³: the largest power of two at which the band and the input residual together stay below about 1 % of 400-channel
+  Multi-Spec fibres for input errors up to about 7·10⁻¹⁶; at 2³⁶ (the first commit) the residual alone would be several %. Every
+  D3-basis Multi-Spec mean at 60 s (≤ 1.5·10⁸) and every spectrometer tick (≤ 2³⁰) is below it; at arbitrary pointings 11 compact
+  GSC stars on the 4 m exceed it at 60 s (Sirius after 11 s) and stay typed.
+- Tests: `poissonLarge.test.ts` against the independent 110-digit witness `src/core/poissonLarge.witness.json`
+  (`analysis/front-meanbound/tools/poisson_witness.py`): 66 (mean, seed) outcomes from 10⁶ + 1 to 2³⁶ (above 2³³ through the
+  guarded decisions directly), the bounds against the witness's exact and Extended-model exponents, six witnessed near-ties typed
+  `precision`, and decided exponents within the band around −30.
 
 ## Slit and magnitude calibration building blocks
 

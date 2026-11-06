@@ -60,6 +60,19 @@ test('a naked-eye star whose spectral index is not a whole class gets its templa
  await expect(page.getByTestId('field-spec-reasons')).toHaveCount(0);await expect(page.getByTestId('field-spec-acquisition')).toBeVisible();
  expect(errors).toEqual([]);
 });
+test('Front MEANBOUND: Sirius (S1500.DAT@213830), mean-bound before, is acquired on the 0.4 m and stops at the S/N limit',async({page})=>{
+ test.setTimeout(150000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await open(page);
+ // Its largest per-1000-ms mean on the 0.4 m is 7.6·10⁶ (above the former 10⁶; analysis/front-meanbound/RECOVERY.md §5).
+ await pointAndUse(page,'6.752464','-16.71611');
+ await expect(page.getByTestId('field-spec-object')).toContainText('S1500.DAT@213830',{timeout:90000});
+ await expect(page.getByTestId('field-spec-reasons')).toHaveCount(0);
+ const acquisition=page.getByTestId('field-spec-acquisition');await expect(acquisition).toBeVisible();
+ await expect(page.getByTestId('field-spec-access')).toHaveAttribute('data-access','ready',{timeout:30000});
+ await acquisition.getByRole('button',{name:'Activate spectrometer',exact:true}).click();
+ await acquisition.getByRole('button',{name:'Start exposure',exact:true}).click();
+ await expect(async()=>expect(Number(await page.getByTestId('field-spec-total').textContent())).toBeGreaterThan(6e8)).toPass({timeout:30000});
+ expect(errors).toEqual([]);
+});
 test('Front F4: a newly bundled photograph is drawn, and the page fetches only the photograph its field names (NGC 891)',async({page})=>{
  test.setTimeout(180000);const errors:string[]=[],photographs:string[]=[];page.on('pageerror',e=>errors.push(e.message));
  page.on('request',r=>{const m=/\/original\/images\/([^/?]+\.bmp)$/i.exec(new URL(r.url()).pathname);if(m)photographs.push(m[1]);});

@@ -50,7 +50,28 @@ addresses, evidence ids and tags in `docs/MULTI-SPEC-PROVENANCE.json`. Tags: [D]
   subtraction; S/N = √(mean counts per channel). Stars: JSPEC2.SPI templates; galaxies: 0x55e55c/0x55e97c with the
   surface-brightness magnitude (own GLXYSP spectra where bundled); QSOs: QSOSpect.dat.
 - Poisson: the large-mean rejection branch (0x55f0f4..0x55f324) is recovered and checked by the independent witness, so every
-  telescope draws (D3); a fibre with any bin mean above 10⁶ stays typed `multispec-mean-bound`. Against the field engine's
+  telescope draws (D3). **Front MEANBOUND (2026-11-05):** a fibre is typed `multispec-mean-bound` only when a bin mean exceeds 2³³
+  (≈ 8.6·10⁹; it was 10⁶, and 2³⁶ in the front's first commit) [W]; above 10⁶ each draw is decided through a guard band against
+  VIREO's Extended evaluation and typed `precision` inside it (docs/HUBBLE-RECOVERY.md, research front-meanbound/RECOVERY.md). The
+  band rests on assumptions [I] (x87 FYL2X/F2XM1/FSIN/FCOS within about 1–3 ulp, the control word unchanged at run time, ×2 safety
+  factors) and certifies VIREO's decision for the same binary64 mean only: the means themselves differ from VIREO's Extended ones
+  by about 10⁻¹⁶–10⁻¹⁵ relative, which can change a draw unguarded (estimated 2·10⁻⁶–2·10⁻⁵ per draw at 2³³, about 10⁻⁷ at the
+  largest D3 mean at 60 s; the same residual exists at every mean, and means ≤ 10⁶ keep their earlier unguarded near-ties). 2³³ keeps
+  band plus residual below about 1 % of fibres. VIREO's Int32 channels are reproduced [D]: each Round draw's low 32 bits are MOVed
+  (object) or ADDed (sky) into the channel and the Int32 sky total with no overflow check, the object total is Int64 of the signed
+  low words, S/N is 0 when the average is negative, and the plot y wraps (0x5272cf..0x527411). Counts wrap modulo 2³², so a draw
+  of 2³² or more can also land on a positive, plausible-looking count (N2230-01405 on the 4 m after about 28 min); a fibre where
+  a channel or the sky total wrapped shows one web note saying so. Save of a fibre whose channels all wrapped negative: VIREO's
+  Save 0x529234 starts the maximum at 0 and divides by it (0x5293fa), raising a floating-point exception [I] before CloseFile and
+  the "*" mark [D]; the web types it `wrapped-maximum` and saves nothing. Re-pinned D3 counts at 60 s (harness
+  `analysis/front-meanbound/multispec_meanbound_counts.test.ts.txt`, run on main b60e01c and on this branch; outputs
+  `multispec-meanbound-counts.base.json` / `.json`; `docs/MULTI-SPEC-PROVENANCE.json` `meanBoundCounts`): exactly the fibres
+  that were `multispec-mean-bound` change, every one now gives a spectrum (none wraps or meets the band at 60 s): selections /
+  distinct stars 1 / 1 on the 0.4 m (N2230-01405, V 4.50, lss-field-08), 10 / 5 on the 0.9 m (N2230-01405, N2230-01473,
+  N3000-00257, N3000-00556, N2230-01732), 66 / 56 on the 4 m (V 4.50 to 10.12; listed in the research output); packRows 1 / 11 /
+  69 selections. The Front M counts below are the earlier record (fields have changed since). Long exposures of bright stars
+  wrap (N2230-01405 on the 4 m after about 14 min; at arbitrary pointings, 40 compact GSC stars on the 4 m and 1 on the 0.9 m
+  already at 60 s, of which 11 on the 4 m exceed 2³³ at 60 s and stay typed). Front M's record, against the field engine's
   former spectrometer bound (12 on the 0.4/0.9 m until Front L4, 2026-10-31; since then the same 10⁶ admission on every record,
   so the two rules agree), at 60 s, counted by the research harness
   `analysis/front-m-multispec/tools/multispec_d3_counts.test.ts.txt` (SHA-256 097a8283…0626; output
@@ -100,7 +121,7 @@ reproducible; all 132 templates are bundled since 2026-10-30. It is unreachable 
 GSC records has code 0, a code-0 variable makes the dispatch FALSE, and QSOs are type 3; Front RE6, research
 front-re6/random-template-code0.md, as in docs/FIELD-SPECTROMETER.md. It stays typed), `galaxy-lookup`, `spectrum-mapping` (own galaxy
 spectrum not bundled), `galaxy-spectrum`, `qso-spectrum`, `object-type` (types ≥ 5), the Front T variable reasons,
-`multispec-mean-bound` (> 10⁶), `negative-mean`, `precision` (u = 0.5), `zero-maximum` (nothing to save), the photographic-image
+`multispec-mean-bound` (> 2³³ since Front MEANBOUND, > 10⁶ before), `negative-mean`, `precision` (u = 0.5, and the guard band above 10⁶), `zero-maximum` (nothing to save), `wrapped-maximum` (every channel wrapped negative: VIREO's Save divides by 0), the photographic-image
 field gate, the G2 field reads (field-polar, field-tiles, field-unreadable); Help (0-byte help files). Print Selection Field works
 (Front P): it runs Print Sky Image (header 0x58e860, footer 0x53fe14) on the Multi-Spec telescope display. The display's own Print
 starts with the same header (Front H2).
@@ -113,7 +134,7 @@ approved on 2026-10-30 for stars at any pointing (Front G) and are bundled in th
 all 132 that JSPEC2.SPI names are available, so a named template is never missing (a context without one is an input error).
 
 ## Tests
-Vitest: multiSpecSpectrum (fibres equal the independent Python witness `data/multispec/witness.json`: LCG, Poisson incl. the
+Vitest: multiSpecSpectrum (fibres equal the independent Python witness `data/multispec/witness.json`: LCG, Poisson incl. the Front MEANBOUND: multiSpecSpectrum also checks the fibres above 10⁶ and the Int32 wraps against `src/core/multiSpecMeanBound.witness.json` (`analysis/front-meanbound/tools/multispec_meanbound_witness.py`); Playwright `tests/multispec-meanbound.spec.ts` (Coma – 1 on the 4 m: N2230-01732 at 1 min, and its wrapped 140-min spectrum with the web note).
 rejection branch and its draw order, grid, templates, QSO), multiSpec (state machine), multiSpecSelect, multiSpecFormat (.SSP
 bytes, names, Information/Print with and without the mask), io/multiSpec, fieldEngineView (the view equals evaluateField's
 population, scene and viewport for LSS (default and QSO merge), Hubble and Object X pointings), io/multiSpecTiled (G4b: the

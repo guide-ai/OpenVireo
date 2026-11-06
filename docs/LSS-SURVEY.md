@@ -205,6 +205,8 @@ CLEA_VEO.exe 781bc970…c54c; nothing executed.
   product/rejection switch of 0x55f0f4, which has no mean guard; the rejection branch is ported and witnessed (Front M D3). Every
   record now admits poissonDraw's 10⁶ per-draw mean (`POISSON_MEAN_ADMISSION`); the largest LSS per-tick means at 3700–4700 Å are
   77.5 / 525.2 / 8323.8.
+- **Front MEANBOUND (2026-11-05).** The bound is now the spectrometer's per-tick 2^30 (docs/FIELD-ENGINE.md); no LSS row was
+  `mean-bound`, so every LSS count and fingerprint is unchanged.
 - **Stamp cap.** The web refused a field whose galaxy stamp exceeded 100 px or whose minor axis rounded to 0 px. VIREO's 0x5943d4
   and its draw 0x59456c have neither bound; the telescope cache now paints in place, clipped (as the finder), and a 0 px minor
   composes nothing (0x594488 stretches into a zero-height rect [I]). NGC 224 is routed to its own routine 0x53b848 (name test

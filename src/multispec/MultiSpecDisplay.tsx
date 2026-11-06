@@ -78,6 +78,7 @@ export default function MultiSpecDisplay({caption,result,information,printLines,
    <button type="button" className="secondary-button" disabled={!ready} onClick={()=>setPrint(printLines())} data-testid="ms-print">{D.print}</button>
    <button type="button" className="secondary-button" onClick={onClose} data-testid="ms-spectrum-exit">{D.exit}</button>
   </div>
+  {result.status==='ready'&&result.spectrum.wrapped&&<p className="ob-note" data-testid="ms-wrapped">{t('multispec.wrapped')}</p>}
   {result.status==='ready'?<MultiSpecPlot spectrum={result.spectrum} label={t('multispec.plotLabel',{caption})}/>
    :<p role="status" data-testid="ms-spectrum-status">{result.status==='loading'?t('multispec.spectrumLoading'):result.status==='error'?t('multispec.spectrumError'):result.text}</p>}
   {info&&<InformationDialog lines={info} onClose={()=>setInfo(null)}/>}

@@ -129,7 +129,7 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
  function save(e:MultiSpecEntry){
   const s=readyOf(e);if(!s)return;
   try{const name=fileOf(e);download(name,multiSpecSspBytes(s),'text/plain');dispatch({type:'saved',idx:[e.idx]});setNotice(t('multispec.saved',{file:name}));}
-  catch(x){if(x instanceof MultiSpecFormatError)setNotice(t('multispec.saveError'));else throw x;}
+  catch(x){if(x instanceof MultiSpecFormatError)setNotice(t(x.code==='wrapped-maximum'?'multispec.saveErrorWrapped':'multispec.saveError'));else throw x;}
  }
  function saveAll(){
   // Every entry not yet saved, in list order; a later file of the same name replaces an earlier one (the native overwrite).
