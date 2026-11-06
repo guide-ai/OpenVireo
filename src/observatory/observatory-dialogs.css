@@ -62,6 +62,8 @@ html[data-print-scope=hot-list] .ob-print-report{border:0!important;max-height:n
 .ob-values>div{display:flex;justify-content:space-between;align-items:baseline;gap:.5rem;min-width:0;font-size:13px}
 .ob-values dt{margin:0;font-weight:400;overflow-wrap:anywhere}
 .ob-values dd{margin:0;font-variant-numeric:tabular-nums;text-align:right;overflow-wrap:anywhere}
+.ob-parameter{display:flex;flex-direction:column;gap:.15rem;min-width:0;font-size:13px}
+.ob-parameter input{max-width:12rem;font-variant-numeric:tabular-nums}
 /* Front K2.3: the hot-list print header lines (Courier, 0x591098). */
 .ob-print-native{font-family:'Courier New',Courier,monospace;margin:0 0 4px;white-space:pre;overflow-x:auto}
 /* Front R4d: VIREO's spectrometer Object / App. Mag (V) boxes (DFM: MS Sans Serif bold, clLime on clBlack; padded text kept). */

@@ -150,3 +150,10 @@ gate, no field near Object X), tests/multispec.spec.ts (Edit Mode flow,
 the Virtual Observatory gate, 320 px dark), tests/multispec-objectx.spec.ts (no identity in the DOM, Information, .SSP names or
 zip entries before the reveal; only the target fibre reads ObjX-<ID>, neighbour stars read the neutral name; a galaxy target
 with a photograph and an Object X neighbour, row 3/4, which stays masked after the reveal).
+
+## Instructor parameters (Front T6, 2026-11-06)
+Multi-Spec reads the options' Base Magnitude (through TObsrvtry+0x6f0, 0x527013 / 0x52a486), Spectrometer Sky Magnitude (0x52702c),
+Base Photon Count and Timer Wait (K = SpBase · t · 1000 / SpTimer, 0x527278..0x527290; the S/N setup 0x52a507..0x52a52e). Its
+witnesses (the D3 fibres, the MEANBOUND counts) were computed with the compiled 6, 19, 50 and 1, so while an instructor value differs
+Multi-Spec refuses Access with a typed `uncertified-parameter` note naming the edits (`ms-parameters-refused`;
+`src/core/instrumentParameters.ts`, docs/OPTICAL-OPTIONS.md). With the compiled values nothing changes.

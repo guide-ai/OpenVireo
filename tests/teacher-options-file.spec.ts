@@ -65,6 +65,7 @@ test('Save Updates downloads the options with an empty password; Load brings the
  const file=await download;expect(file.suggestedFilename()).toBe('VEO_OPTS.json');
  const saved=await file.path();const doc=JSON.parse(await readFile(saved,'utf8'));
  expect(doc.password).toBe('');expect(doc.version).toBe('1.504');
+ expect(doc.parameters).toEqual({baseMagnitude:6,skyMagnitude:16,spectrometerSkyMagnitude:19,baseCount:1000,spectrometerBaseCount:50,photometerTimerMs:100,spectrometerTimerMs:1});// Front T6
  expect(doc.options).toMatchObject({testMode:true,showObjectId:true,fastSlewing:false,editMode:true,limitSlewing:false,demonstrationMode:false,virtualObservatory:false});
  await expect(id(page,'ob-options-dialog')).toBeHidden();// Save Updates applied the options as OK does
  expect(await storageKeys(page)).toEqual([]);
@@ -96,7 +97,9 @@ test('Save Updates downloads the options with an empty password; Load brings the
  full[8506-22]=1;full[8506-45]=5;/* review 1 L1: a rate index other than 3/4 */for(const r of [0x27cb,0x27ce,0x27d2,0x27d3,0x27d7,0x27db,0x27dc])full[at(r)]=1;full[at(0x27c8)]=1;
  await id(page,'ob-options-load').setInputFiles({name:'VEO_OPTS.INI',mimeType:'application/octet-stream',buffer:full});
  await expect(id(page,'ob-options-loaded')).toHaveAttribute('data-source','native');
- await expect(id(page,'ob-options-not-applied')).not.toContainText('Restrict Scope Access');await expect(id(page,'ob-options-restrict-scope-access')).not.toBeChecked();await id(page,'ob-options-file').screenshot({path:test.info().outputPath('load-native-file.png')});await expect(id(page,'ob-options-not-applied')).toContainText('Parameters, file names, paths and addresses');
+ await expect(id(page,'ob-options-not-applied')).not.toContainText('Restrict Scope Access');await expect(id(page,'ob-options-restrict-scope-access')).not.toBeChecked();await id(page,'ob-options-file').screenshot({path:test.info().outputPath('load-native-file.png')});await expect(id(page,'ob-options-not-applied')).toContainText('Parameters (General, CCD and IR tabs, Scopes…), file names, paths and addresses');
+ // Front T6: the seven Photometer and Spectrometer fields are applied from the stream (here all zero bytes), not listed.
+ await expect(id(page,'ob-options-param-baseMagnitude')).toHaveValue('0.0');await expect(id(page,'ob-options-param-spectrometerTimerMs')).toHaveValue('0');
  await expect(id(page,'ob-options-test-mode')).toBeChecked();await expect(id(page,'ob-options-edit-mode')).not.toBeChecked();await expect(id(page,'ob-options-fast-slewing')).not.toBeChecked();
  await expect(id(page,'ob-options-fast-slewing-rate')).toContainText('slew-rate index 5');await expect(id(page,'ob-options-resave-warning')).toContainText('compiled values');
  await id(page,'ob-options-dialog').getByRole('button',{name:'Cancel',exact:true}).click();

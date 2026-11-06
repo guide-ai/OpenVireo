@@ -1,6 +1,7 @@
 import {COMPILED_SESSION_OPTICAL_OPTIONS,type SessionOpticalOptions} from '../core/opticalOptions';
 import {COMPILED_PHOTOMETER_TAB_OPTIONS,PHOTOMETER_TAB_OPTION_KEYS,type PhotometerTabOptions} from '../core/photometerTabOptions';
 import {COMPILED_RESTRICT_SCOPE_ACCESS} from '../core/scopeAccess';
+import {COMPILED_INSTRUMENT_PARAMETERS,INSTRUMENT_PARAMETER_FIELDS,INSTRUMENT_PARAMETER_KEYS,readInstrumentParameters,type InstrumentParameters} from '../core/instrumentParameters';
 /** Front T2 (analysis/front-plans/front-teacher.md §T2; analysis/front-teacher/t2/RECOVERY.md): VIREO's options file
  * VEO_OPTS.INI and the web options file. CLEA_VEO.exe 781bc970…c54c, static reading only.
  * [D] TEnvironment1.FormCreate creates the options object with version '1.504' (0x587cf4) and file name 'VEO_OPTS.INI'
@@ -20,6 +21,10 @@ import {COMPILED_RESTRICT_SCOPE_ACCESS} from '../core/scopeAccess';
  * before T4 lists them under "notApplied", and the reader takes them from there.
  * Front T5: Restrict Scope Access (+0x27d1) is applied too (core/scopeAccess.ts); a web file written before T5 lists it under
  * "notApplied", and the reader takes it from there in the same way.
+ * Front T6: the Photometer and Spectrometer tabs' seven parameters (core/instrumentParameters.ts) are applied: the web file
+ * carries them in "parameters" (a file written before T6 has none, so the compiled values), and a native file gives them from
+ * their stream fields (Singles +0x250c/+0x2510/+0x2514, Integers +0x279f/+0x27a3/+0x27a7/+0x27ab, little-endian). The rest of
+ * the parameter block stays under "notApplied".
  * Pure: no React, DOM, storage or network. */
 
 export const OPTIONS_FILE_VERSION='1.504';
@@ -67,13 +72,14 @@ export function nativeStreamOffset(recordOffset:number):number{
 export const NATIVE_PARAMETER_FIELDS=STREAM.findIndex(f=>f[0]===0x27af);
 
 /** The options the web applies: the dialog's live controls and Demonstration Mode. Record offsets in OPTIONS_FILE_BYTES. */
-export type OptionsFileValues=Readonly<{demonstrationMode:boolean;testMode:boolean;limitSlewing:boolean;editMode:boolean;virtualObservatory:boolean;restrictScopeAccess:boolean}>&SessionOpticalOptions&PhotometerTabOptions;
-export const OPTIONS_FILE_KEYS=Object.freeze(['demonstrationMode','testMode','limitSlewing','editMode','virtualObservatory',...Object.keys(COMPILED_SESSION_OPTICAL_OPTIONS),...PHOTOMETER_TAB_OPTION_KEYS,'restrictScopeAccess'] as (keyof OptionsFileValues)[]);
+export type OptionsFileValues=Readonly<{demonstrationMode:boolean;testMode:boolean;limitSlewing:boolean;editMode:boolean;virtualObservatory:boolean;restrictScopeAccess:boolean;/** Front T6. */parameters:InstrumentParameters}>&SessionOpticalOptions&PhotometerTabOptions;
+export const OPTIONS_FILE_KEYS=Object.freeze(['demonstrationMode','testMode','limitSlewing','editMode','virtualObservatory',...Object.keys(COMPILED_SESSION_OPTICAL_OPTIONS),...PHOTOMETER_TAB_OPTION_KEYS,'restrictScopeAccess'] as BooleanKey[]);
+type BooleanKey=Exclude<keyof OptionsFileValues,'parameters'>;
 /** [D] The compiled values (0x5a21d0) of the applied options. */
-export const COMPILED_OPTIONS_FILE_VALUES:OptionsFileValues=Object.freeze({demonstrationMode:false,testMode:false,limitSlewing:false,editMode:false,virtualObservatory:false,...COMPILED_SESSION_OPTICAL_OPTIONS,...COMPILED_PHOTOMETER_TAB_OPTIONS,restrictScopeAccess:COMPILED_RESTRICT_SCOPE_ACCESS});
+export const COMPILED_OPTIONS_FILE_VALUES:OptionsFileValues=Object.freeze({demonstrationMode:false,testMode:false,limitSlewing:false,editMode:false,virtualObservatory:false,...COMPILED_SESSION_OPTICAL_OPTIONS,...COMPILED_PHOTOMETER_TAB_OPTIONS,restrictScopeAccess:COMPILED_RESTRICT_SCOPE_ACCESS,parameters:COMPILED_INSTRUMENT_PARAMETERS});
 /** [D] Record bytes of the applied options (option-bytes.tsv). DemoBox is stored inverted (+0x27c6 = login required; FormCreate
  * 0x587c50 tests it against 0); Fast Slewing is the slew-rate index, checked when it is 4 (FormActivate 0x5a5b61). */
-const APPLIED_BYTES:Readonly<Record<keyof OptionsFileValues,number>>=Object.freeze({demonstrationMode:0x27c6,testMode:0x27c8,limitSlewing:0x27c9,editMode:0x27ca,
+const APPLIED_BYTES:Readonly<Record<BooleanKey,number>>=Object.freeze({demonstrationMode:0x27c6,testMode:0x27c8,limitSlewing:0x27c9,editMode:0x27ca,
  showObjectMag:0x27cc,showObjectId:0x27cd,fastScopeChange:0x27d0,infraredCamera:0x27d3,computeRedshiftVelocity:0x27d4,virtualObservatory:0x27d5,
  allowUserChange:0x27d7,timeDependentData:0x27d8,printInColor:0x27d9,monochromeDisplays:0x27da,fastSlewing:0x27af,
  detectSky:0x27cf,setEBmV:0x27dc,// Front T4
@@ -81,8 +87,8 @@ const APPLIED_BYTES:Readonly<Record<keyof OptionsFileValues,number>>=Object.free
 export const OPTIONS_FILE_BYTES=APPLIED_BYTES;
 
 /** The record's other options: written with their compiled values and never applied (kept typed). */
-export type NotAppliedKey='administrator'|'computeMagnitudes'|'includeRIColors'|'soundEffects'|'writeLogFile'|'plotHRDiagram'|'labTableNumber'|'parameters';
-export type NotAppliedReason='cleared-at-load'|'fixed-in-web'|'teacher-front'|'web-sound-switch'|'out-of-scope'|'undecided'|'parameters-front';
+export type NotAppliedKey='administrator'|'computeMagnitudes'|'includeRIColors'|'soundEffects'|'writeLogFile'|'plotHRDiagram'|'labTableNumber'|'parameters'|'instrumentParameters';
+export type NotAppliedReason='cleared-at-load'|'fixed-in-web'|'teacher-front'|'web-sound-switch'|'out-of-scope'|'undecided'|'parameters-front'|'not-representable';
 export const NOT_APPLIED:Readonly<Record<NotAppliedKey,Readonly<{caption:string;record:string;compiled:boolean|string;reason:NotAppliedReason}>>>=Object.freeze({
  administrator:Object.freeze({caption:'"Administrator"',record:'+0x27c7 (not in the stream)',compiled:false,reason:'cleared-at-load'}),
  computeMagnitudes:Object.freeze({caption:'Compute Magnitudes',record:'+0x27cb',compiled:true,reason:'fixed-in-web'}),
@@ -91,12 +97,16 @@ export const NOT_APPLIED:Readonly<Record<NotAppliedKey,Readonly<{caption:string;
  writeLogFile:Object.freeze({caption:'Write Log File',record:'+0x27d6',compiled:false,reason:'out-of-scope'}),
  plotHRDiagram:Object.freeze({caption:'Plot HR Diagram',record:'+0x27db',compiled:true,reason:'fixed-in-web'}),
  labTableNumber:Object.freeze({caption:'Lab Table Number',record:'+0x27c1',compiled:'',reason:'undecided'}),
- parameters:Object.freeze({caption:'Parameters, file names, paths and addresses',record:'+0x224..+0x27ab (81 fields)',compiled:'compiled',reason:'parameters-front'}),
+ parameters:Object.freeze({caption:'Parameters (General, CCD and IR tabs, Scopes…), file names, paths and addresses',record:'+0x224..+0x27ab (74 of the 81 fields; Front T6 applies the other 7)',compiled:'compiled',reason:'parameters-front'}),
+ /** Front T6: a native Photometer or Spectrometer Single that is not a finite number (NaN or ±Inf bytes): its compiled value is kept. */
+ instrumentParameters:Object.freeze({caption:'Photometer / Spectrometer parameters',record:'+0x250c, +0x2510, +0x2514',compiled:'compiled',reason:'not-representable'}),
 });
 export const NOT_APPLIED_KEYS=Object.freeze(Object.keys(NOT_APPLIED) as NotAppliedKey[]);
+/** The keys a web file lists under "notApplied" (instrumentParameters only reports a native read). */
+const WRITTEN_NOT_APPLIED=NOT_APPLIED_KEYS.filter(k=>k!=='instrumentParameters');
 const NOT_APPLIED_BYTES:Partial<Record<NotAppliedKey,number>>={computeMagnitudes:0x27cb,includeRIColors:0x27ce,soundEffects:0x27d2,writeLogFile:0x27d6,plotHRDiagram:0x27db};
 /** Front T4 / T5: options a web file written before T4 (Front T2) or T5 keeps under "notApplied" instead of "options". */
-const LATER_KEYS=new Set<keyof OptionsFileValues>([...PHOTOMETER_TAB_OPTION_KEYS,'restrictScopeAccess']);
+const LATER_KEYS=new Set<BooleanKey>([...PHOTOMETER_TAB_OPTION_KEYS,'restrictScopeAccess']);
 
 /** 0x5a183c: Pos('.') then Delete from two characters after it (ShortString[71] copies). */
 export function vireoVersionKey(version:string):string{
@@ -118,10 +128,11 @@ export const OPTIONS_FILE_MAX_BYTES=65536;
 /** The JSON options file: every applied option, the others at their compiled values, a zero-length password. */
 export function writeOptionsFile(values:OptionsFileValues):string{
  const options=Object.fromEntries(OPTIONS_FILE_KEYS.map(k=>{const v=values[k];if(typeof v!=='boolean')throw new TypeError('Invalid option value');return [k,v];}));
- const notApplied=Object.fromEntries(NOT_APPLIED_KEYS.map(k=>[k,NOT_APPLIED[k].compiled]));
+ const parameters=readInstrumentParameters(values.parameters);
+ const notApplied=Object.fromEntries(WRITTEN_NOT_APPLIED.map(k=>[k,NOT_APPLIED[k].compiled]));
  return JSON.stringify({format:WEB_OPTIONS_FORMAT,formatVersion:1,version:OPTIONS_FILE_VERSION,
   adaptation:'OpenVireo web options file (not VEO_OPTS.INI). The options not applied by OpenVireo are written with VIREO\'s compiled values. No password is stored.',
-  password:'',options,notApplied},null,1)+'\n';
+  password:'',options,parameters,notApplied},null,1)+'\n';
 }
 
 const invalid=(reason:OptionsFileInvalidReason):OptionsFileLoad=>Object.freeze({kind:'invalid',reason});
@@ -149,9 +160,12 @@ function readWeb(bytes:Uint8Array):OptionsFileLoad{
  // Front T4 / T5: a Front T2 file lists Set E(B-V), Detect Sky and Restrict Scope Access under notApplied (VIREO's compiled
  // values unless edited); "options" wins when a file has both.
  for(const k of LATER_KEYS)if(n[k]!==undefined&&typeof n[k]!=='boolean')return invalid('not-options-file');
- const values=Object.fromEntries(OPTIONS_FILE_KEYS.map(k=>[k,o[k]??n[k]??COMPILED_OPTIONS_FILE_VALUES[k]])) as OptionsFileValues;
+ // Front T6: a file written before T6 has no "parameters" (VIREO's compiled values).
+ let parameters=COMPILED_INSTRUMENT_PARAMETERS;
+ if(doc.parameters!==undefined){try{parameters=readInstrumentParameters(doc.parameters);}catch{return invalid('not-options-file');}}
+ const values=Object.freeze({...Object.fromEntries(OPTIONS_FILE_KEYS.map(k=>[k,o[k]??n[k]??COMPILED_OPTIONS_FILE_VALUES[k]])),parameters}) as OptionsFileValues;
  const differs:NotAppliedKey[]=[];let administratorCleared=false;
- for(const k of NOT_APPLIED_KEYS){
+ for(const k of WRITTEN_NOT_APPLIED){
   if(!(k in n))continue;
   const v=n[k],c=NOT_APPLIED[k].compiled;
   if(typeof v!==typeof c)return invalid('not-options-file');
@@ -168,14 +182,28 @@ function readNative(bytes:Uint8Array):OptionsFileLoad{
  if(bytes.length<NATIVE_OPTIONS_FILE_BYTES)return invalid('read-beyond-eof');
  if(bytes.length>NATIVE_OPTIONS_FILE_BYTES)return invalid('eof-not-reached');
  const at=(record:number)=>bytes[nativeStreamOffset(record)]!;
- const values=Object.fromEntries(OPTIONS_FILE_KEYS.map(k=>{const b=at(APPLIED_BYTES[k]);
-  return [k,k==='demonstrationMode'?b===0:k==='fastSlewing'?b===4:b!==0];})) as OptionsFileValues;
- const differs:NotAppliedKey[]=[];
+ const {parameters,representable}=nativeParameters(bytes);
+ const values=Object.freeze({...Object.fromEntries(OPTIONS_FILE_KEYS.map(k=>{const b=at(APPLIED_BYTES[k]);
+  return [k,k==='demonstrationMode'?b===0:k==='fastSlewing'?b===4:b!==0];})),parameters}) as OptionsFileValues;
+ const differs:NotAppliedKey[]=representable?[]:['instrumentParameters'];
  for(const k of NOT_APPLIED_KEYS){const r=NOT_APPLIED_BYTES[k];if(r!==undefined&&(at(r)!==0)!==NOT_APPLIED[k].compiled)differs.push(k);}
  if(at(0x27c1)!==0)differs.push('labTableNumber');// only the ShortString's length byte is read
  differs.push('parameters');// the native parameter block cannot be compared with compiled values that depend on VIREO's folder
  const rate=at(APPLIED_BYTES.fastSlewing);
  return loaded('native',values,NOT_APPLIED_KEYS.filter(k=>differs.includes(k)),false,rate===3||rate===4?null:rate);
+}
+
+/** Front T6: the seven parameter fields of a native file (Single: float32, Integer: int32, little-endian as BlockRead stores
+ * them). A Single that is NaN or infinite keeps its compiled value (reported under notApplied); -0 reads as 0. */
+function nativeParameters(bytes:Uint8Array):Readonly<{parameters:InstrumentParameters;representable:boolean}>{
+ const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);let representable=true;
+ const out=Object.fromEntries(INSTRUMENT_PARAMETER_FIELDS.map(f=>{
+  const p=nativeStreamOffset(parseInt(f.record,16));
+  if(f.type==='integer')return [f.key,view.getInt32(p,true)+0];
+  const v=view.getFloat32(p,true);if(!Number.isFinite(v)){representable=false;return [f.key,f.compiled];}
+  return [f.key,v+0];
+ }));
+ return Object.freeze({parameters:readInstrumentParameters(Object.fromEntries(INSTRUMENT_PARAMETER_KEYS.map(k=>[k,out[k]]))),representable});
 }
 
 /** The reader's boxes (0x5a3648..0x5a3698 and 0x5a449f..0x5a44fc, MessageBox flags 0x40): "Options File " + name + … The

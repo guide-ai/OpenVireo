@@ -27,6 +27,10 @@ export const NATIVE_RECORD_PHOTOMETER_POLICY='OpenVireo-photometer-native-record
  * frame whose variable stage needs the time was prepared (a TRUE-dispatch variable selected or within an aperture's reach). The
  * header adds no contract file: the event carries the JD, and the tiles and catalogues are pinned as for owner 12. */
 export const VARIABLE_TIME_PHOTOMETER_POLICY='OpenVireo-photometer-variable-time-v16';
+/** Owner 17 (Front T6, 2026-11-06): a history with a 'parameters' event, instructor values for the photometer's Base Magnitude, Sky
+ * Magnitude, Base Photon Count and Timer Wait (core/instrumentParameters.ts). Its readings are typed uncertified-parameter. The
+ * header adds no contract file: the event carries the values. */
+export const INSTRUCTOR_PARAMETERS_PHOTOMETER_POLICY='OpenVireo-photometer-instructor-parameters-v17';
 export const RI_CONTRACT_SHA256='d23f83d21d6cb1de21b6ab4f5fb6439df58f4350f2204d5df9bdfc4a53de3b30';
 export const PHOTOMETER_POLICY='OpenVireo-Pleiades-three-targets-v3';
 export const UBV_PHOTOMETER_POLICY='OpenVireo-Pleiades-UBV-observing-v2';
@@ -36,10 +40,11 @@ export const PHOTOMETER_FIELD_SHA256='143ddf5cb0f4fed671135f1dbc105022f5627588d7
 export const PHOTOMETER_UBV_SHA256='27ff130438aa41e6ee92bb8103ad8f749442d981bca207193e305fb01c466abf';
 export const PHOTOMETER_TARGETS_SHA256='5f1a9c4feb879fa004cec1b739551866e347c078a652c875f9fd8746dbdbd356';
 export const PHOTOMETER_FORMAT='OpenVireo Pleiades photometer session',PHOTOMETER_NUMERICAL='Number_Math_native_x87_equivalence_unvalidated';
-export type PhotometerOwnerVersion=1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16;
-const OWNER_POLICIES=Object.freeze({1:LEGACY_PHOTOMETER_POLICY,2:UBV_PHOTOMETER_POLICY,3:PHOTOMETER_POLICY,4:TIMED_PHOTOMETER_POLICY,5:EXPANDED_PHOTOMETER_POLICY,6:PLEIADES_ANALYSIS_POLICY,7:NATIVE_CLUSTER_POLICY,8:APERTURE_PHOTOMETER_POLICY,9:KP09_PHOTOMETER_POLICY,10:MAYALL_PHOTOMETER_POLICY,11:VARIABLE_FIELD_PHOTOMETER_POLICY,12:GSC_FIELD_PHOTOMETER_POLICY,13:APERTURE_DOMAIN_PHOTOMETER_POLICY,14:RI_PHOTOMETER_POLICY,15:NATIVE_RECORD_PHOTOMETER_POLICY,16:VARIABLE_TIME_PHOTOMETER_POLICY});
+export type PhotometerOwnerVersion=1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17;
+const OWNER_POLICIES=Object.freeze({1:LEGACY_PHOTOMETER_POLICY,2:UBV_PHOTOMETER_POLICY,3:PHOTOMETER_POLICY,4:TIMED_PHOTOMETER_POLICY,5:EXPANDED_PHOTOMETER_POLICY,6:PLEIADES_ANALYSIS_POLICY,7:NATIVE_CLUSTER_POLICY,8:APERTURE_PHOTOMETER_POLICY,9:KP09_PHOTOMETER_POLICY,10:MAYALL_PHOTOMETER_POLICY,11:VARIABLE_FIELD_PHOTOMETER_POLICY,12:GSC_FIELD_PHOTOMETER_POLICY,13:APERTURE_DOMAIN_PHOTOMETER_POLICY,14:RI_PHOTOMETER_POLICY,15:NATIVE_RECORD_PHOTOMETER_POLICY,16:VARIABLE_TIME_PHOTOMETER_POLICY,17:INSTRUCTOR_PARAMETERS_PHOTOMETER_POLICY});
 /** Minimal canonical owner follows recorded capabilities,not a mutable label. */
 export function photometerJournalVersion(events:readonly PhotometerEvent[]):PhotometerOwnerVersion{
+ if(events.some(e=>e?.type==='parameters'))return 17;
  if(events.some(e=>e?.type==='field'&&Object.hasOwn(e,'jd')))return 16;
  if(events.some(e=>e?.type==='nativeRecord'))return 15;
  if(events.some(e=>e?.type==='filter'&&(e.filter==='R'||e.filter==='I')))return 14;

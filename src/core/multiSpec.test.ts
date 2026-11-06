@@ -39,6 +39,17 @@ describe('Front M: Multi-Spec control form (TMultSpCntrl) state machine',()=>{
   let seed=1234;seed=randomDraw(seed).seed;// Go (S/N stream)
   const fibre=[1,2,3].map(()=>(seed=randomDraw(seed).seed));expect(s.entries.map(e=>e.seed)).toEqual(fibre);
  });
+ it('Front T6 closure: a parameter refusal ends an exposure in progress as Terminate Yes, with no question (no loop after a No)',()=>{
+  let s=run(opened(),{type:'add',selection:sel(400,400)},{type:'edit-exposure',text:'0.05'},{type:'init'},{type:'go'},{type:'tick'});
+  expect(s.running).toBe(true);
+  s=run(s,{type:'parameter-stop'});
+  expect([s.question,s.running,s.entries.map(e=>[e.idx,e.seconds]),s.controls.go]).toEqual([null,false,[[1,1]],true]);
+  expect(run(s,{type:'parameter-stop'})).toBe(s);// not running: nothing
+  // A Terminate question already open: No resumes, and the refusal then stops it at once.
+  let q=run(opened(),{type:'add',selection:sel(400,400)},{type:'edit-exposure',text:'0.05'},{type:'init'},{type:'go'},{type:'tick'},{type:'stop'});
+  expect(q.question).toEqual({kind:'terminate'});expect(run(q,{type:'parameter-stop'})).toBe(q);// modal box
+  q=run(q,{type:'answer',yes:false},{type:'parameter-stop'});expect([q.question,q.running,q.entries.length]).toEqual([null,false,1]);
+ });
  it('Stop asks only when 0 < remaining < seconds; No resumes; Yes builds with t = seconds − remaining and Go stays on',()=>{
   let s=run(opened(),{type:'add',selection:sel(400,400)},{type:'edit-exposure',text:'0.05'},{type:'init'},{type:'go'},{type:'tick'},{type:'stop'});
   expect([s.question,s.running]).toEqual([{kind:'terminate'},false]);

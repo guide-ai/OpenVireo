@@ -10,6 +10,7 @@ import {lookupStarTemplate,type StarIndexEntry} from './starTemplates';
 import type {UniformSpectrum} from './acquisition';
 import {JournalError,type JournalState} from './exposureJournal';
 import {DEFAULT_SPECTRAL_RANGE,isDialogRange,policyRange,policyWithRange,type SpectralRange} from './spectralRange';
+import {isCompiledSpectrometerParameters,parseSpectrometerPolicySuffix,spectrometerParameterRefusal,spectrometerPolicySuffix,type SpectrometerParameters} from './instrumentParameters';
 
 /** The normal spectrometer's interval: the configured range's compiled default 3700–4700 Å (0x5a2a1e/0x5a2a28); see
  * objectXSpectrometer.ts for the copy chain. */
@@ -25,10 +26,11 @@ export type SpectrometerInputs=Readonly<{glx:Uint8Array;qsoCatalog:FieldQsoCatal
  * when the field is prepared, as Field Information and LSS pass it; without it a time-dependent variable in view stays
  * variable-time-required. */
 /** range (Front S2): the page's spectrometer range (default 3700–4700 Å); only the calibration reads it. */
-export function spectrometerFieldResult(inputs:SpectrometerInputs,pack:FieldPack,pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope,variableTime?:FieldVariableTime,range:SpectralRange=SPECTROMETER_INTERVAL):FieldResult{
+/** Front T6: `parameters`, instructor spectrometer values (BaseMag, SpSky, SpBase); the compiled ones are passed as none. */
+export function spectrometerFieldResult(inputs:SpectrometerInputs,pack:FieldPack,pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope,variableTime?:FieldVariableTime,range:SpectralRange=SPECTROMETER_INTERVAL,parameters?:SpectrometerParameters):FieldResult{
  const at={ra:pointing.ra,dec:pointing.dec};
  const starObservation={templateFor:(index:number)=>{const file=lookupStarTemplate(inputs.starIndex,index);if(!file)return null;const spectrum=inputs.starTemplates.get(file);if(!spectrum)throw new Error(`spectrometer inputs: star template ${file} missing`);return {file,spectrum};}};
- const options:FieldOptions={glxyspLines:inputs.glxyspLines,variableDispatch:'recovered',photographs:inputs.photographs,qso:'merge',qsoCatalog:inputs.qsoCatalog,continuation:'start-time',spectralInterval:{minimum:range.minimum,maximum:range.maximum},starObservation,qsoObservation:{file:inputs.qsoSpectrum,minimum:range.minimum,maximum:range.maximum},...(variableTime?{variableTime}:{})};
+ const options:FieldOptions={glxyspLines:inputs.glxyspLines,variableDispatch:'recovered',photographs:inputs.photographs,qso:'merge',qsoCatalog:inputs.qsoCatalog,continuation:'start-time',spectralInterval:{minimum:range.minimum,maximum:range.maximum},starObservation,qsoObservation:{file:inputs.qsoSpectrum,minimum:range.minimum,maximum:range.maximum},...(variableTime?{variableTime}:{}),...(parameters&&!isCompiledSpectrometerParameters(parameters)?{spectrometerParameters:parameters}:{})};
  let r=evaluateField(pack,inputs.glx,at,telescope,options);
  const own=r.target?glxyspLookup(inputs.glxyspLines,r.target.id):null;
  if(r.target&&own&&r.reasons.includes('spectrum-mapping')&&inputs.galaxySpectra.has(own))r=evaluateField(pack,inputs.glx,at,telescope,{...options,librarySpectrum:{targetId:r.target.id,file:own,samples:inputs.galaxySpectra.get(own)!}});
@@ -37,15 +39,27 @@ export function spectrometerFieldResult(inputs:SpectrometerInputs,pack:FieldPack
 /** Journal policy of the generic route: the exact binary64 pointing, the telescope and (G4a review 1 M1) the frozen observatory JD
  * when the field was prepared with one: `openvireo-field-spectrum-v1:<ra>,<dec>:T<telescope>[:JD<jd>]`. */
 export const FIELD_SPECTRUM_POLICY_PREFIX='openvireo-field-spectrum-v1';
-export type FieldSpectrumPolicy=Readonly<{pointing:Readonly<{ra:number;dec:number}>;telescope:FieldTelescope;variableTime?:FieldVariableTime;range:SpectralRange}>;
-/** Front S2: a non-default range appends `#R<min>-<max>` (spectralRange.ts); the default keeps the policy unchanged. */
-export function fieldSpectrumPolicy(pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope,variableTime?:FieldVariableTime,range:SpectralRange=DEFAULT_SPECTRAL_RANGE):string{
+export type FieldSpectrumPolicy=Readonly<{pointing:Readonly<{ra:number;dec:number}>;telescope:FieldTelescope;variableTime?:FieldVariableTime;range:SpectralRange;/** Front T6: instructor values (absent: compiled). */parameters?:SpectrometerParameters}>;
+/** Front S2: a non-default range appends `#R<min>-<max>` (spectralRange.ts); the default keeps the policy unchanged. Front T6:
+ * instructor spectrometer values append `#P<base>,<sky>,<count>` last (core/instrumentParameters.ts); the compiled ones nothing. */
+export function fieldSpectrumPolicy(pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope,variableTime?:FieldVariableTime,range:SpectralRange=DEFAULT_SPECTRAL_RANGE,parameters?:SpectrometerParameters):string{
+ if(parameters&&spectrometerParameterRefusal(parameters))throw new RangeError('field spectrum policy');
+ return fieldSpectrumBasePolicy(pointing,telescope,variableTime,range)+(parameters?spectrometerPolicySuffix(parameters):'');
+}
+function fieldSpectrumBasePolicy(pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope,variableTime:FieldVariableTime|undefined,range:SpectralRange):string{
  if(!Number.isFinite(pointing?.ra)||!Number.isFinite(pointing?.dec)||pointing.ra<0||pointing.ra>=24||Math.abs(pointing.dec)>90||![0,1,2].includes(telescope))throw new RangeError('field spectrum policy');
  if(variableTime&&!(variableTime.source==='observatory-clock'&&Number.isFinite(variableTime.jd)&&variableTime.jd>=FIELD_VARIABLE_JD_DOMAIN.minimum&&variableTime.jd<=FIELD_VARIABLE_JD_DOMAIN.maximum))throw new RangeError('field spectrum policy');
  if(!isDialogRange(range))throw new RangeError('field spectrum policy');
  return policyWithRange(`${FIELD_SPECTRUM_POLICY_PREFIX}:${pointing.ra},${pointing.dec}:T${telescope}${variableTime?`:JD${variableTime.jd}`:''}`,range);
 }
 export function parseFieldSpectrumPolicy(policy:unknown):FieldSpectrumPolicy|null{
+ if(typeof policy!=='string')return null;
+ const p=parseSpectrometerPolicySuffix(policy);if(!p)return null;
+ const parameters=isCompiledSpectrometerParameters(p.parameters)?undefined:p.parameters;
+ const r=parsePlainPolicy(p.base);if(!r)return null;
+ return parameters?Object.freeze({...r,parameters}):r;
+}
+function parsePlainPolicy(policy:string):FieldSpectrumPolicy|null{
  const split=policyRange(policy);if(!split)return null;
  const m=/^openvireo-field-spectrum-v1:([^,:]+),([^,:]+):T([012])(?::JD([^,:]+))?$/.exec(split.base);if(!m)return null;
  const pointing={ra:Number(m[1]),dec:Number(m[2])},telescope=Number(m[3]) as FieldTelescope;
@@ -71,5 +85,5 @@ export type FieldSpectrumCalibration=Readonly<{sourceMeans:readonly number[];sky
 export function fieldSpectrumCalibration(r:FieldResult):FieldSpectrumCalibration|null{
  if(r.reasons.length||!r.calibration)return null;
  const c=r.calibration;
- return Object.freeze({sourceMeans:c.sourceMeans,skyMean:c.amplitude.sky,multiplier:FIELD_MULTIPLIER,...(c.continuationSource?{continuationSource:c.continuationSource}:{})});
+ return Object.freeze({sourceMeans:c.sourceMeans,skyMean:c.amplitude.sky,multiplier:c.multiplier??FIELD_MULTIPLIER,...(c.continuationSource?{continuationSource:c.continuationSource}:{})});
 }

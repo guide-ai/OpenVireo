@@ -1,11 +1,12 @@
 import{projectResource}from'./projectMetadata';
-import {photometerTelescopeContractSHA256,photometerTelescope,isPhotometerTelescopeIndex,isPhotometerTelescopeTarget,type PhotometerTelescopeIndex} from './photometerTelescope';
+import {photometerTelescopeContractSHA256,photometerTelescope,photometerPreparedZeroPoint,isPhotometerTelescopeIndex,isPhotometerTelescopeTarget,type PhotometerTelescopeIndex} from './photometerTelescope';
 import {photometerApertureDomain,photometerApertureGeometry,LEGACY_PHOTOMETER_APERTURES} from './photometerAperture';
 import {buildPhotometerTargetField,isTiledPhotometerTarget,queryPhotometerNeighbors,PINNED_PLEIADES_V_TARGET,PhotometerFieldError,type PleiadesFieldKind} from './photometerField';
 import {photometerPointFraction,photometerSeparation,preparePhotometerBands} from './photometerSource';
 import {magnitudeAmplitude} from './photons';
 import {poissonDraw} from './acquisition';
 import {photometerDisplayLevelFor,photometerSkyGate,photometerStampWithinBound,type PhotometerDisplayLevel,type PhotometerDisplayLevels,type PhotometerSkyGate} from './photometerDisplay';
+import {photometerCallbacksPerPeriod,photometerSkyBands,type PhotometerParameters} from './instrumentParameters';
 import contractSource from '../../data/photometry/ubv-contract.json';
 const contract=projectResource(contractSource);
 
@@ -23,16 +24,19 @@ function calibration(address:string){const c=contract.calibrationConstants.find(
 const vSky=calibration('0x5a2a10');
 export const PHOTOMETER_UBV_ZERO_POINT=photometerTelescope(0).zeroPoint;
 /** Sky (FormShow 0x4ff6aa..0x4ff706): B = V + 1.0, U = B + 0.33; Front P2: R = V − 1.0 = 15, I = R − 0.33 = 14.67. */
+/** Front T6: the two sky literals (Single 1.0 at 0x4ff864, Extended 0.33 at 0x4ff868). */
+export const PHOTOMETER_SKY_LITERALS=Object.freeze({bv:skyBv,ub:skyUb});
 export const PINNED_UBV_SKY=Object.freeze({V:vSky,B:vSky+skyBv,U:(vSky+skyBv)+skyUb,R:vSky-skyBv,I:(vSky-skyBv)-skyUb});
 /** Original complete field census/geometry is unchanged by filter reset.
  * This extension reuses that V-population witness, then the separately pinned
  * native UBV source/sky contract. It does not widen the old V-only API/domain. */
-export function buildPinnedPleiadesUbvField(kind:PleiadesFieldKind,filter:PhotometerFilter,targetId=PINNED_PLEIADES_V_TARGET.catalogId,apertureSelector=10,telescopeIndex:PhotometerTelescopeIndex=0){
+/** Front T6: `parameters` (instructor values, never the compiled ones) replace BaseMag, SkyMag and BaseCount (photometerParameterMeans). */
+export function buildPinnedPleiadesUbvField(kind:PleiadesFieldKind,filter:PhotometerFilter,targetId=PINNED_PLEIADES_V_TARGET.catalogId,apertureSelector=10,telescopeIndex:PhotometerTelescopeIndex=0,parameters?:PhotometerParameters){
  const tiled=isTiledPhotometerTarget(targetId);
  if(!isPhotometerFilter(filter)||!(tiled?isPhotometerTelescopeIndex(telescopeIndex):isPhotometerTelescopeTarget(targetId,telescopeIndex)))throw new PhotometerFieldError('domain');
  // Review 1 L1: the reading mode is passed, so a Sky build of a galaxy frame fails closed.
  if(tiled&&tiledPhotometerReason(targetId,telescopeIndex,apertureSelector,kind))throw new PhotometerFieldError('domain');
- return ubvFromFrame(buildPhotometerTargetField(targetId,kind),kind,filter,apertureSelector,telescopeIndex,tiled?'tiled':'bundled');
+ return ubvFromFrame(buildPhotometerTargetField(targetId,kind),kind,filter,apertureSelector,telescopeIndex,tiled?'tiled':'bundled',parameters);
 }
 /** The source preparation of the native Start (0x4ffa30/0x500568), the same in both reading modes: the central star's five bands
  * attenuated by its aperture fraction (a fraction of 0 gives the literal 30), then each neighbour with a positive fraction added
@@ -68,14 +72,20 @@ function selectedFraction(frame:ReturnType<typeof buildPhotometerTargetField>,ra
  return photometerPointFraction(radiusDegrees,photometerSeparation(frame.pointing.ra,frame.pointing.dec,frame.selected.ra,frame.selected.dec),seeingWidthDegrees);
 }
 const BAND_KEY=Object.freeze({U:'u',B:'b',V:'v',R:'r',I:'i'} as const);
-function skyMagnitudeFor(filter:PhotometerFilter,apertureSelector:number,areaFactor:number){
+function skyMagnitudeFor(filter:PhotometerFilter,apertureSelector:number,areaFactor:number,parameters?:PhotometerParameters){
  // Preserve default10 arithmetic exactly; nondefault follows native log magnitude area path.
- return apertureSelector===10?PINNED_UBV_SKY[filter]:PINNED_UBV_SKY[filter]+(-2.5*Math.log10(areaFactor));
+ const sky=parameters?photometerSkyBands(parameters.skyMagnitude,skyBv,skyUb):PINNED_UBV_SKY;
+ return apertureSelector===10?sky[filter]:sky[filter]+(-2.5*Math.log10(areaFactor));
 }
-function ubvFromFrame(frame:ReturnType<typeof buildPhotometerTargetField>,kind:PleiadesFieldKind,filter:PhotometerFilter,apertureSelector:number,telescopeIndex:PhotometerTelescopeIndex,rules:'bundled'|'tiled'){
- const {telescope,geometry,neighbors,centralFraction,bands}=preparedBands(frame,kind,apertureSelector,telescopeIndex,rules),zero=telescope.zeroPoint;
- const sourceMagnitude=bands[BAND_KEY[filter]],skyMagnitude=skyMagnitudeFor(filter,apertureSelector,geometry.areaFactor);
- return Object.freeze({...frame,...(telescopeIndex!==0?{telescopeIndex,telescopeContractSHA256:photometerTelescopeContractSHA256(telescopeIndex),preparedZeroPoint:zero,seeingWidthDegrees:telescope.seeingWidthDegrees}:{}),neighbors,centralFraction,includedNeighbors:bands.includedNeighbors,filter,sourceMagnitude,skyMagnitude,sourceMean:1000*magnitudeAmplitude(sourceMagnitude,zero),skyMean:1000*magnitudeAmplitude(skyMagnitude,zero)});
+/** Front T6 [D]: the zero point and per-callback base count of a reading: Start's +0x483 (photometerPreparedZeroPoint) and the
+ * callback's fild env+0x2e53 × amplitude (0x501506..0x501519 source, 0x50153a.. sky); compiled when `parameters` is absent. */
+function zeroAndBase(telescope:ReturnType<typeof photometerTelescope>,telescopeIndex:PhotometerTelescopeIndex,parameters?:PhotometerParameters){
+ return parameters?{zero:photometerPreparedZeroPoint(telescopeIndex,parameters.baseMagnitude),base:parameters.baseCount}:{zero:telescope.zeroPoint,base:1000};
+}
+function ubvFromFrame(frame:ReturnType<typeof buildPhotometerTargetField>,kind:PleiadesFieldKind,filter:PhotometerFilter,apertureSelector:number,telescopeIndex:PhotometerTelescopeIndex,rules:'bundled'|'tiled',parameters?:PhotometerParameters){
+ const {telescope,geometry,neighbors,centralFraction,bands}=preparedBands(frame,kind,apertureSelector,telescopeIndex,rules),{zero,base}=zeroAndBase(telescope,telescopeIndex,parameters);
+ const sourceMagnitude=bands[BAND_KEY[filter]],skyMagnitude=skyMagnitudeFor(filter,apertureSelector,geometry.areaFactor,parameters);
+ return Object.freeze({...frame,...(telescopeIndex!==0?{telescopeIndex,telescopeContractSHA256:photometerTelescopeContractSHA256(telescopeIndex),preparedZeroPoint:zero,seeingWidthDegrees:telescope.seeingWidthDegrees}:{}),...(parameters?{parameters}:{}),neighbors,centralFraction,includedNeighbors:bands.includedNeighbors,filter,sourceMagnitude,skyMagnitude,sourceMean:base*magnitudeAmplitude(sourceMagnitude,zero),skyMean:base*magnitudeAmplitude(skyMagnitude,zero)});
 }
 /** The bounded-profile limits the 0.9 m and 4 m contracts apply per target (kpno09/mayall-photometer-contract.json
  * domain.excludedTargets, superseded for every selectable filter and size by data/photometry/ri-contract.json telescopeDomain): the largest per-callback mean over the
@@ -87,14 +97,14 @@ function ubvFromFrame(frame:ReturnType<typeof buildPhotometerTargetField>,kind:P
 export const PHOTOMETER_MEAN_BOUNDS=Object.freeze({maximumPoissonMean:1_000_000,callbacks:5000,countGuard:2147483647});
 export type PhotometerMeanScope='full'|'legacy';
 const maximumMeans=new WeakMap<object,Map<string,number>>();
-export function photometerMaximumMean(frame:ReturnType<typeof buildPhotometerTargetField>,telescopeIndex:PhotometerTelescopeIndex,rules:'bundled'|'tiled'='bundled',scope:PhotometerMeanScope='full'):number{
+export function photometerMaximumMean(frame:ReturnType<typeof buildPhotometerTargetField>,telescopeIndex:PhotometerTelescopeIndex,rules:'bundled'|'tiled'='bundled',scope:PhotometerMeanScope='full',parameters?:PhotometerParameters):number{
  // Keyed by the field's frozen star list, which a tiled frame shares with its registered field (each build copies the frame).
- const key=`${telescopeIndex}:${rules}:${scope}:${frame.pointing.ra},${frame.pointing.dec}:${frame.selected.id}`,cached=maximumMeans.get(frame.stars)?.get(key);if(cached!==undefined)return cached;
+ const key=`${telescopeIndex}:${rules}:${scope}:${frame.pointing.ra},${frame.pointing.dec}:${frame.selected.id}${parameters?`:P${parameters.baseMagnitude},${parameters.skyMagnitude},${parameters.baseCount}`:''}`,cached=maximumMeans.get(frame.stars)?.get(key);if(cached!==undefined)return cached;
  const filters=scope==='full'?PHOTOMETER_FILTERS:LEGACY_PHOTOMETER_FILTERS,apertures=scope==='full'?photometerApertureDomain():LEGACY_PHOTOMETER_APERTURES;
  let max=0;
  for(const a of apertures){
-  const p=preparedBands(frame,'object',a,telescopeIndex,rules),zero=p.telescope.zeroPoint;
-  for(const f of filters)max=Math.max(max,1000*magnitudeAmplitude(p.bands[BAND_KEY[f]],zero)+1000*magnitudeAmplitude(skyMagnitudeFor(f,a,p.geometry.areaFactor),zero));
+  const p=preparedBands(frame,'object',a,telescopeIndex,rules),{zero,base}=zeroAndBase(p.telescope,telescopeIndex,parameters);
+  for(const f of filters)max=Math.max(max,base*magnitudeAmplitude(p.bands[BAND_KEY[f]],zero)+base*magnitudeAmplitude(skyMagnitudeFor(f,a,p.geometry.areaFactor,parameters),zero));
  }
  let m=maximumMeans.get(frame.stars);if(!m){m=new Map();maximumMeans.set(frame.stars,m);}m.set(key,max);
  return max;
@@ -115,16 +125,32 @@ export type TiledPhotometerReason='photometer-galaxy-sky'|'photometer-galaxy-sky
  *   pen, which this port bounds rather than reproduces) straddle 80 is the reading still refused.
  * - `photometer-galaxy-sky-stamp`: the same, when a galaxy of the field needs stamp bitmaps beyond the web bound
  *   (PHOTOMETER_DISPLAY.stampBound): whether Windows paints the display then is not determined. */
-export function tiledPhotometerReason(targetId:string,telescopeIndex:PhotometerTelescopeIndex,apertureSelector:number,pointing:PleiadesFieldKind='object'):TiledPhotometerReason|null{
+export function tiledPhotometerReason(targetId:string,telescopeIndex:PhotometerTelescopeIndex,apertureSelector:number,pointing:PleiadesFieldKind='object',parameters?:PhotometerParameters):TiledPhotometerReason|null{
  if(!isTiledPhotometerTarget(targetId)||!isPhotometerTelescopeIndex(telescopeIndex)||(pointing!=='object'&&pointing!=='sky'))throw new PhotometerFieldError('domain');
  const frame=buildPhotometerTargetField(targetId,'object');photometerApertureGeometry(apertureSelector);
  if(pointing==='sky'&&frame.selectedGalaxy){
   const g=galaxyGate(frame.selectedGalaxy.display,telescopeIndex,apertureSelector);
   if(g.gate==='undecided')return g.stampBeyond?'photometer-galaxy-sky-stamp':'photometer-galaxy-sky';
  }
- const max=photometerMaximumMean(frame,telescopeIndex,'tiled');
+ const max=photometerMaximumMean(frame,telescopeIndex,'tiled','full',parameters);
  if(max>PHOTOMETER_MEAN_BOUNDS.maximumPoissonMean)return 'Poisson-mean-bound';
- if(max*PHOTOMETER_MEAN_BOUNDS.callbacks>PHOTOMETER_MEAN_BOUNDS.countGuard)return 'all-duration-count-domain';
+ if(max*photometerMaximumCallbacks(parameters)>PHOTOMETER_MEAN_BOUNDS.countGuard)return 'all-duration-count-domain';
+ return null;
+}
+/** The longest reading's callbacks (100 s × 5): 5000 at the compiled 100 ms (PHOTOMETER_MEAN_BOUNDS.callbacks); Front T6: 5·⌈100000 / Timer⌉. */
+export function photometerMaximumCallbacks(parameters?:PhotometerParameters):number{
+ return parameters?5*photometerCallbacksPerPeriod(100,parameters.timerMs):PHOTOMETER_MEAN_BOUNDS.callbacks;
+}
+/** Front T6: the full-domain limits of a bundled target with instructor parameters (photometerFullDomainExclusion's contract
+ * maxima hold for the compiled values only): the same two rules, recomputed. null: the target can be read. A bundled 0.9 m / 4 m
+ * field whose single-star contract does not hold at some aperture is refused as the contract refuses it ('evidence' → domain). */
+export function photometerParameterExclusion(targetId:string,telescopeIndex:PhotometerTelescopeIndex,parameters:PhotometerParameters):'Poisson-mean-bound'|'all-duration-count-domain'|'parameter-domain'|null{
+ let max:number;
+ try{max=photometerMaximumMean(buildPhotometerTargetField(targetId,'object'),telescopeIndex,'bundled','full',parameters);}
+ catch(e){if(e instanceof PhotometerFieldError)return 'parameter-domain';throw e;}
+ if(!Number.isFinite(max))return 'parameter-domain';
+ if(max>PHOTOMETER_MEAN_BOUNDS.maximumPoissonMean)return 'Poisson-mean-bound';
+ if(max*photometerMaximumCallbacks(parameters)>PHOTOMETER_MEAN_BOUNDS.countGuard)return 'all-duration-count-domain';
  return null;
 }
 export function drawPinnedPleiadesUbv(kind:PleiadesFieldKind,filter:PhotometerFilter,seed:number,targetId=PINNED_PLEIADES_V_TARGET.catalogId,apertureSelector=10,telescopeIndex:PhotometerTelescopeIndex=0){

@@ -5,6 +5,7 @@ import {DEMONSTRATION_MODE_KEY,readDemonstrationMode,writeDemonstrationMode} fro
 import {INITIAL_INSTRUCTOR_GATE,leaveInstructorMode,preferencesGate,startupInstructorGate} from '../core/instructorMode';
 import {INITIAL_RADIO_ACCESS,followPageGate} from '../core/radioAccessOptions';
 import {TEACHER_DEFERRED} from '../core/teacherDeferred';
+import {COMPILED_INSTRUMENT_PARAMETERS,INSTRUMENT_PARAMETER_FIELDS} from '../core/instrumentParameters';
 
 // Front T2 contracts (analysis/front-teacher/t2/RECOVERY.md). CLEA_VEO.exe 781bc970…c54c, static only. The native files below are
 // synthetic streams built from the recovered field table: evidence of the port, not an oracle for VIREO. No real password is
@@ -17,9 +18,12 @@ function nativeFile(changes:Readonly<Record<number,number>>={},version='1.504'){
  b[0]=version.length;b.set(enc.encode(version),1);
  const compiled:Record<number,number>={0x27af:4,0x27c6:1,0x27cb:1,0x27ce:1,0x27d1:1,0x27d2:1,0x27d3:1,0x27d7:1,0x27db:1,0x27dc:1};
  for(const [o,v] of Object.entries({...compiled,...changes}))b[nativeStreamOffset(Number(o))]=v;
+ // Front T6: the seven Photometer / Spectrometer parameters at their compiled values (float32 / int32, little-endian).
+ const view=new DataView(b.buffer);
+ for(const f of INSTRUMENT_PARAMETER_FIELDS){const p=nativeStreamOffset(parseInt(f.record,16));if(f.type==='single')view.setFloat32(p,f.compiled,true);else view.setInt32(p,f.compiled,true);}
  return b;
 }
-const all=(v:boolean):OptionsFileValues=>Object.freeze(Object.fromEntries(OPTIONS_FILE_KEYS.map(k=>[k,v]))) as OptionsFileValues;
+const all=(v:boolean):OptionsFileValues=>Object.freeze({...Object.fromEntries(OPTIONS_FILE_KEYS.map(k=>[k,v])),parameters:COMPILED_INSTRUMENT_PARAMETERS}) as unknown as OptionsFileValues;
 
 describe('T2 options file layout (0x5a4644 / 0x5a3534)',()=>{
  it('moves 107 fields, 8506 bytes, without overlap; "Administrator" and +0xf44 are not in the stream',()=>{
@@ -188,5 +192,33 @@ describe('T2 Demonstration Mode (per browser) and the start-up gate (FormCreate 
  });
  it('removes Demonstration Mode from the deferred list; FilesBtn stays typed',()=>{
   const keys=TEACHER_DEFERRED.map(d=>d.key);expect(keys).not.toContain('demonstration-mode');expect(keys).toContain('files');
+ });
+});
+
+describe('T6 Photometer and Spectrometer parameters in the options file',()=>{
+ const changed={...COMPILED_INSTRUMENT_PARAMETERS,baseMagnitude:Math.fround(6.5),skyMagnitude:17,baseCount:2000,photometerTimerMs:50,spectrometerSkyMagnitude:Math.fround(19.25),spectrometerBaseCount:80,spectrometerTimerMs:5};
+ it('the web file carries them and reads them back; a T5 file without them gives the compiled values',()=>{
+  const values={...COMPILED_OPTIONS_FILE_VALUES,parameters:changed},text=writeOptionsFile(values),doc=JSON.parse(text);
+  expect(doc.parameters).toEqual(changed);expect(doc.notApplied.instrumentParameters).toBeUndefined();
+  const r=readOptionsFile(enc.encode(text));expect(r).toMatchObject({kind:'loaded',source:'web',notApplied:[]});
+  if(r.kind==='loaded')expect(r.values.parameters).toEqual(changed);
+  delete doc.parameters;const old=readOptionsFile(enc.encode(JSON.stringify(doc)));
+  if(old.kind!=='loaded')throw new Error('not loaded');expect(old.values.parameters).toEqual(COMPILED_INSTRUMENT_PARAMETERS);
+  expect(readOptionsFile(enc.encode(JSON.stringify({...doc,parameters:{...changed,baseMagnitude:6.1}})))).toEqual({kind:'invalid',reason:'not-options-file'});
+  expect(readOptionsFile(enc.encode(JSON.stringify({...doc,parameters:{...changed,baseCount:'2000'}})))).toEqual({kind:'invalid',reason:'not-options-file'});
+ });
+ it('a native file gives them from their stream fields (float32 / int32 LE)',()=>{
+  const b=nativeFile(),view=new DataView(b.buffer);
+  for(const f of INSTRUMENT_PARAMETER_FIELDS){const p=nativeStreamOffset(parseInt(f.record,16)),v=changed[f.key];if(f.type==='single')view.setFloat32(p,v,true);else view.setInt32(p,v,true);}
+  const r=readOptionsFile(b);if(r.kind!=='loaded')throw new Error('not loaded');
+  expect(r.values.parameters).toEqual(changed);expect(r.notApplied).toEqual(['parameters']);
+  expect(nativeStreamOffset(0x250c)).toBe(7794);expect(nativeStreamOffset(0x2510)).toBe(7798);expect(nativeStreamOffset(0x2514)).toBe(7802);
+  expect(nativeStreamOffset(0x279f)).toBe(8445);expect(nativeStreamOffset(0x27a3)).toBe(8449);expect(nativeStreamOffset(0x27a7)).toBe(8453);expect(nativeStreamOffset(0x27ab)).toBe(8457);
+  const compiled=readOptionsFile(nativeFile());if(compiled.kind!=='loaded')throw new Error('not loaded');expect(compiled.values.parameters).toEqual(COMPILED_INSTRUMENT_PARAMETERS);
+ });
+ it('a non-finite native Single keeps its compiled value and is reported',()=>{
+  const b=nativeFile();new DataView(b.buffer).setFloat32(nativeStreamOffset(0x2510),NaN,true);
+  const r=readOptionsFile(b);if(r.kind!=='loaded')throw new Error('not loaded');
+  expect(r.values.parameters.skyMagnitude).toBe(16);expect(r.notApplied).toEqual(['parameters','instrumentParameters']);
  });
 });

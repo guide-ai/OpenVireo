@@ -82,6 +82,8 @@ export type MultiSpecAction=
  |Readonly<{type:'init'}>|Readonly<{type:'go'}>
  /** Front T3: `testMode` is env+0x2e7c read at the tick (0x52a1c4); absent means off. */
  |Readonly<{type:'tick';testMode?:boolean}>|Readonly<{type:'stop'}>
+ /** Front T6 closure [W]: instructor parameters refuse Multi-Spec: an exposure in progress ends as Terminate Yes, with no question. */
+ |Readonly<{type:'parameter-stop'}>
  |Readonly<{type:'view-save'}>|Readonly<{type:'list-closed'}>|Readonly<{type:'clear-all'}>
  |Readonly<{type:'saved';idx:readonly number[]}>;
 
@@ -202,6 +204,7 @@ export function multiSpecReducer(s:MultiSpecState,a:MultiSpecAction):MultiSpecSt
   return remaining<=0.01?stopClick(n):n;
  }
  case 'stop':return s.controls.stop?stopClick(s):s;
+ case 'parameter-stop':return s.running?finishStop(set(s,{running:false})):s;
  case 'view-save':return s.entries.length?set(s,{listShown:true}):set(s,{message:'no-spectra'});
  case 'list-closed':return set(s,{listShown:false,controls:ctl(s,{viewSave:true})});
  case 'clear-all':return s.entries.length?set(s,{question:Object.freeze({kind:'clear-all' as const})}):s;

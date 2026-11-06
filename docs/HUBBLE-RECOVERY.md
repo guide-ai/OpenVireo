@@ -54,6 +54,14 @@ every caller's accumulator; error analysis; measurements; review 1), plan `analy
   guarded decisions directly), the bounds against the witness's exact and Extended-model exponents, six witnessed near-ties typed
   `precision`, and decided exponents within the band around −30.
 
+- Front T6 (2026-11-06): the 2³⁰ per-tick bound and its S/N-pause argument were derived with the compiled spectrometer values
+  (base zero point 6, sky 19, multiplier 50). The instructor edits (docs/OPTICAL-OPTIONS.md) leave every exercise route (Hubble, LSS,
+  Object X, classification, sky, Multi-Spec) refused while they differ; only the observatory spectrometer measures with them, applying
+  the same 2³⁰ admission to the instructor multiplier, ticking every max(100, SpTimer) ms with SpTimer ≤ 500 ms (so a tick stays within
+  1000 ms and the S/N pause is tested once per tick: VIREO's granularity for SpTimer 100..500 ms; [W] below 100 ms the web keeps
+  a 100-ms tick where VIREO ticks at max(SpTimer, the ≈15.6-ms Windows timer step) [I]), and labelling the spectrum `uncertified-parameter` (policy
+  suffix `#P…`).
+
 ## Slit and magnitude calibration building blocks
 
 `src/core/photons.ts` implements the supplied-image arithmetic, without claiming that the supplied image is an original detector frame:

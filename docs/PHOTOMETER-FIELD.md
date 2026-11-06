@@ -296,3 +296,20 @@ Static evidence and measurements: `analysis/front-phsky/RECOVERY.md` (excerpts.a
   (11 cases against the independent Python model `analysis/front-phsky/tools/phsky_witness.py`, and record 3770's stamp bound),
   `src/core/photometerPhtiled.test.ts` and `src/io/photometerTiled.test.ts` (NGC 7805: open gate, question, Sky = Object source), and
   `tests/photometer-tiled.spec.ts` (M32: open, "Reading Sky!" asked; record 1978: closed, no question).
+
+## Instructor parameters (Front T6, 2026-11-06)
+The options dialog's Photometer tab edits (Base Magnitude, Sky Magnitude, Base Photon Count, Timer Wait; record +0x250c, +0x2510,
++0x279f, +0x27a3; `src/core/instrumentParameters.ts`, docs/OPTICAL-OPTIONS.md, `analysis/front-teacher/t6/RECOVERY.md`) reach the
+photometer at its next Start. With the compiled values (6, 16, 1000, 100) nothing changes: no journal event, the same code path, and
+every reading, witness and pinned field above is byte-identical. Any other value is **uncertified-parameter**:
+- the reading is measured with VIREO's formulas [D]: zero point Single(BaseMag + correction) + 5 (0x53df4f, 0x500976), sky
+  V = SkyMag, B = V + 1.0, U = B + 0.33 (0x4ff6aa), means and base-count sum × BaseCount (0x501506, 0x501582), ⌈1000·s / Timer⌉
+  callbacks per period at a Timer-ms interval (0x500a01, 0x500a43) [W: the integer nominal count at a tie, as for 100 ms];
+- the values travel as a `parameters` event (owner 17, `OpenVireo-photometer-instructor-parameters-v17`), and an untimed session first
+  takes its shown 0.1 s × 1 timing (the only form that admits the event);
+- the reading records them and shows `photo-uncertified` (review 1: so does an object reading reduced with an uncertified sky); E04's
+  summary and cluster points leave both out (the pinned Pleiades fields and the contracts' maxima hold for the compiled values only);
+  [W] the mark is not carried into the native Record/Review rows or the shared Observational Results list (no field for it);
+- the limits are recomputed with the instructor values: the photometer's per-callback Poisson bound (10⁶) and the all-duration 32-bit
+  count over 5·⌈100000 / Timer⌉ callbacks, for tiled and bundled targets, and the base-count sum; a target beyond them refuses Start;
+- the PHSKY display gate does not read these fields (it uses the telescope record's +0x6f8 and the stamps) and is unchanged.
