@@ -144,7 +144,8 @@ in VIREO. Static evidence is in `analysis/front-g-gsc/RE-photometer-start.md`.
     again on the star is not, as in VIREO.
   - Bundled Pleiades sky fields have a zero fraction, so they are never asked about.
   - **Detect Sky (Front T4, 2026-11-06, docs/OPTICAL-OPTIONS.md).** The other branch of FormActivate: with the instructor option
-    on (DtctSkyBox, env+0x2e83, copied into the form at +0x6b1 by TObsrvtry's initialisation 0x53805c; compiled off), Sky :=
+    on (DtctSkyBox, env+0x2e83, copied into the form at +0x6b1 by TObsrvtry's initialisation 0x537f08 at 0x53805c, run after the observatory's
+    FormActivate/FormPaint and by ScopeTimerTimer 0x58b9bf when a requested telescope is granted; compiled off), Sky :=
     (fraction = 0) whatever the slider says, and the slider and its group are disabled (0x4ff94c–0x4ff985). At telescope
     pointings OpenVireo follows each `activate`/`field` with the `point` event that FormActivate's SetPosition implies
     (`photometerDetectSkyEvent`), so `readingSliderMoved` is set exactly when the position changes, the selector is locked,

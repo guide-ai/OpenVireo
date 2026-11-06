@@ -3,15 +3,17 @@ import {roundHalfEven} from './clusterHrPlot';
  * the options dialog's Photometer tab, Set E(B-V) and Detect Sky. CLEA_VEO.exe 781bc970…c54c, static reading only.
  * - SetEBmVBox (DFM 0x20ba49, caption `Set E(B-V)`, hint below): OKBtnClick writes record+0x27dc (0x5a62af) = env+0x2e90; the
  *   defaults routine 0x5a21d0 writes 1 (0x5a2a55) [D]. A byte search for the displacement 0x2e90 finds one reader, 0x543a39 in
- *   THRDisplayForm1.ShowZAMS1Click 0x543968 (Tools › Zero-Age Main Sequence; Clear1Click 0x542244 calls it at 0x54226f when the
- *   ZAMS is checked). After the toggle enables XScroll (E(B−V), DFM 0..250) with the ZAMS, the gate 0x543a32–0x543a75 runs when
- *   the option is set and the form is in database mode (+0x40c, written only by Plot 0x5465ce): XScroll.Position :=
+ *   THRDisplayForm1.ShowZAMS1Click 0x543968 (Tools › Zero-Age Main Sequence; it toggles Checked, xor dl,1 at 0x543978, so the gate runs on
+ *   every toggle; Clear1Click 0x542244 calls it at 0x54226f when the ZAMS is checked, which hides it). After the toggle enables XScroll (E(B−V), DFM 0..250) with the ZAMS, the gate 0x543a32–0x543a75 runs when
+ *   the option is set and the form is in database mode (+0x40c: set to 1 by Plot 0x5465ce, cleared by MeasuredData1Click 0x542edb, so the own-observation plot is never gated): XScroll.Position :=
  *   Round(Single E(B−V) of the current cluster record (cell 0x5b5c30 → 0x5bca0c, which Plot fills from the chosen CLUSTERS.DAT record) +0x2d × Single 100.0 at 0x543a84) and XScroll.Enabled := False
  *   [D]. So with the option on, whenever a database cluster's ZAMS is shown its E(B−V) is the catalogue value and the student
  *   cannot move it; off, the slider follows the ZAMS and keeps its position (no catalogue value is copied).
  * - DtctSkyBox (DFM 0x20b917, caption `Detect Sky ` with VIREO's trailing space, hint below): OKBtnClick writes record+0x27cf
  *   (0x5a6184) = env+0x2e83; compiled 0 (0x5a2af6) [D]. Its one reader, 0x53804d, is in TObsrvtry's initialisation 0x537f08
- *   (called from FormPaint 0x538226 after FormActivate 0x537978 marks it pending at 0x5379b2, with the panel inactive), which
+ *   (called from FormPaint 0x538226 after FormActivate 0x537978 marks it pending at 0x5379b2, with the panel inactive, and from
+ *   ScopeTimerTimer 0x58b838 at 0x58b9bf, the Request Time telescope-grant path, so VIREO re-latches it when a requested telescope
+ *   is granted; Front T5), which
  *   copies the byte into the photometer form (cell 0x5b5d24 → form variable 0x5bc230, created as TPhotometer from 0x4fef88 at 0x5ad421) at +0x6b1 (0x53805c). The only reader of
  *   +0x6b1 is TPhotometer.FormActivate 0x4ff8b0 (0x4ff94c) [D]: on, the Sky flag +0x41c := (selected object's aperture fraction
  *   from 0x500568 = 0.0) and RdngGrp (+0x3fc) and RdngSlider (+0x400) are disabled (TControl.SetEnabled 0x45de44, FEnabled +0x57,

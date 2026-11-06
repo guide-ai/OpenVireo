@@ -8,7 +8,7 @@
 
 .pleiades-chart-scroll{max-width:100%;overflow-x:auto}.pleiades-chart-scroll svg{min-width:600px}
 
-.native-cluster-inputs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.4rem 1.2rem}.native-cluster-inputs input,.native-cluster-inputs select{width:100%;max-width:100%}.native-correction{display:flex!important;align-items:flex-start;gap:.6rem}.native-cluster textarea{min-height:5rem}@media(max-width:600px){.native-cluster-inputs{grid-template-columns:1fr}}
+.native-cluster-inputs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.4rem 1.2rem}.native-cluster-inputs input,.native-cluster-inputs select{width:100%;max-width:100%}.native-cluster-inputs input[readonly]{background:var(--ov-surface-sunken)}.native-correction{display:flex!important;align-items:flex-start;gap:.6rem}.native-cluster textarea{min-height:5rem}@media(max-width:600px){.native-cluster-inputs{grid-template-columns:1fr}}
 
 .cluster-comparison-table small { display:block; white-space:normal; }
 

@@ -75,7 +75,7 @@ Phase-2 B2 is technically validated and separately reviewed (2026-10-27): `tests
 
 **Evidence** — 10 reference HR tests plus 8 own-B/V bridge tests; separate whole/closure review at `8147472`.
 
-**Web adaptations** — Browser axes and Number arithmetic stand in for native GDI/x87 drawing.
+**Web adaptations** — Browser axes and Number arithmetic stand in for native GDI/x87 drawing. Since Front T4 (2026-11-06), by default the database E(B−V) is fixed at the catalogue value and read-only, as VIREO's compiled "Set E(B-V)" option does; an instructor can free it in the options (docs/OPTICAL-OPTIONS.md).
 
 ## E06 · Pulsars
 **Criteria**

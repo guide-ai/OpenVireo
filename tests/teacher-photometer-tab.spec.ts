@@ -21,6 +21,7 @@ test('Set E(B-V): on by default the database E(B−V) is the catalogue value and
  // Student, compiled default: Load prefills the gate's value (Round(0.03·100) = 3 ticks) and the field and slider are locked.
  await load(page,'m67','506 catalog points');const b=db(page);
  await expect(b.getByLabel(EBV,{exact:true})).toHaveValue('0.03');await expect(b.getByLabel(EBV,{exact:true})).not.toBeEditable();
+ await expect(b.getByLabel(EBV,{exact:true})).toHaveAttribute('aria-describedby','cluster-ebv-gate-note');// review 1 L3
  await expect(b.getByLabel(EBV_SLIDER,{exact:true})).toBeDisabled();await expect(b.getByLabel(EBV_SLIDER,{exact:true})).toHaveValue('3');
  await expect(id(page,'cluster-ebv-gate-note')).toHaveAttribute('data-set-ebmv','on');await expect(id(page,'cluster-ebv-gate-note')).toContainText('read-only');
  await expect(b.getByRole('button',{name:'Use catalog E(B−V) = 0.03',exact:true})).toBeVisible();
@@ -92,8 +93,26 @@ test('Detect Sky: the photometer reads Object on the star and Sky off it by itse
  await benchPoint(page,STAR);await ready(page);await expect(pointing).toHaveValue('object');await integrate(page);
  await expect(id(page,'photo-sky-replace')).not.toBeVisible();await expect(page.getByRole('button',{name:'Add notebook entry',exact:true})).toBeEnabled();
  await page.screenshot({path:test.info().outputPath('detect-sky.png')});
- // Turned off, the choice is the student's again at the next activation.
- await setVireoOptions(page,{'detect-sky':false});
+ // Turning it off frees the choice only at the next activation (review 1 L2; see the next test).
+ expect(errors).toEqual([]);
+});
+
+test('Detect Sky is read at activation (review 1 L2): turning it on or off changes the lock only at the next activation',async({page})=>{
+ test.setTimeout(240000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();
+ await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await pointObservatory(page,STAR);
+ await clickHeaderTool(page,'Pleiades photometry');await expect(page.getByRole('heading',{name:'Measure a listed star.'})).toBeVisible();
+ const activate=page.getByRole('button',{name:'Activate Pleiades photometer',exact:true}),pointing=page.getByLabel('Photometer pointing',{exact:true});
+ // Option off (compiled): the activation on the star keeps the slider at Sky (0x4ff987) and the choice is the student's.
+ await activate.click();await ready(page);await expect(pointing).toHaveValue('sky');await expect(pointing).toBeEnabled();await expect(id(page,'photo-detect-sky')).toHaveCount(0);
+ // Turned on meanwhile: nothing is claimed until the photometer is activated again (leaving the bench released it).
+ await setVireoOptions(page,{'detect-sky':true});await expect(page.getByRole('heading',{name:'Measure a listed star.'})).toBeVisible();
  await expect(id(page,'photo-detect-sky')).toHaveCount(0);
+ await activate.click();await ready(page);await expect(pointing).toHaveValue('object');await expect(pointing).toBeDisabled();await expect(id(page,'photo-detect-sky')).toBeVisible();
+ // Turned off: the last activation's lock stays until the next activation, which frees the choice again.
+ await setVireoOptions(page,{'detect-sky':false});await expect(page.getByRole('heading',{name:'Measure a listed star.'})).toBeVisible();
+ // (The web activation declares Sky and the off branch keeps it on the star, as at the first activation.)
+ await activate.click();await ready(page);await expect(id(page,'photo-detect-sky')).toHaveCount(0);await expect(pointing).toBeEnabled();await expect(pointing).toHaveValue('sky');
+ await pointing.selectOption('object');await expect(pointing).toHaveValue('object');
  expect(errors).toEqual([]);
 });
