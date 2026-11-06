@@ -23,7 +23,7 @@ test('the dialog offers the ported options with their compiled states and shows 
  await observatory(page);await enterInstructorMode(page);await card(page).getByTestId('ob-options').click();
  for(const k of ['fast-slewing','infrared-camera'])await expect(id(page,`ob-options-${k}`)).toBeChecked();
  for(const k of ['fast-scope-change','compute-redshift-velocity','monochrome-displays','print-in-color','time-dependent-data'])await expect(id(page,`ob-options-${k}`)).not.toBeChecked();
- const others=id(page,'ob-options-others');await expect(others.getByRole('listitem')).toHaveCount(4);// Front T3: Test Mode is live (5 → 4)
+ const others=id(page,'ob-options-others');await expect(others.getByRole('listitem')).toHaveCount(3);// Front T3: Test Mode is live (5 → 4); Front T2: Demonstration Mode is live (4 → 3)
  // 7 before Front L3 added Time-Dependent Data (2026-10-30); 6 before Front R4 made Show Object ID live (2026-10-31; Show Object
  // Mag. was a Spectrometer tab value, not in this list).
  await expect(others).not.toContainText('Fast Slewing');

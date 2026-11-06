@@ -96,10 +96,10 @@ export type RadioOptionsAuthority=Readonly<{kind:'absent'}|{kind:'compiled-branc
 
 /** env+0x37d8 as the radio card reads it. Front T1: the page's one instructor gate (core/instructorMode.ts) is its only
  * writer; 'instructor' is the web instructor switch (the Demonstration Mode branch 0x587c6a), 'edit-mode' the Edit Mode
- * writes (0x5887f0, 0x587f70). */
+ * writes (0x5887f0, 0x587f70); Front T2's page-load Demonstration Mode gate (0x587c6a itself) is 'instructor' too. */
 export type RadioAccessGate=Readonly<{open:boolean;source:'not-supplied'|'instructor'|'edit-mode'}>;
 /** The page gate followed by the card (structurally core/instructorMode.ts InstructorGate; not imported, see the import rule). */
-export type RadioPageGate=Readonly<{open:boolean;source:'closed'|'instructor-switch'|'edit-mode'}>;
+export type RadioPageGate=Readonly<{open:boolean;source:'closed'|'instructor-switch'|'edit-mode'|'demonstration-mode'}>;
 /** The failure of a numeric OK: the field, its position in the OK order (0..8), the web failure and the text. */
 export type RadioOptionsNumericFailure=Readonly<{field:RadioOptionsNumberField;position:number;text:string}>&RadioOptionsParseFailure;
 /** The numeric part of the child under an authority: the nine edit texts, the two editable check boxes and the open
@@ -211,7 +211,7 @@ const surfaceOpen=(s:RadioAccessState)=>s.refusal!==null||s.parent!==null;
  * Demonstration branch's write (0x587c6a), the Edit Mode writes (0x5887f0, 0x587f70) and the web Leave (WEB-TM-02). Only the
  * byte is written: an open box or dialog stays as it is (VIREO tests the gate only at Preferences1Click 0x5886c9). */
 export function followPageGate(s:RadioAccessState,page:RadioPageGate):RadioAccessTransition{
- if(page===null||typeof page!=='object'||typeof page.open!=='boolean'||!['closed','instructor-switch','edit-mode'].includes(page.source)||page.open!==(page.source!=='closed'))
+ if(page===null||typeof page!=='object'||typeof page.open!=='boolean'||!['closed','instructor-switch','edit-mode','demonstration-mode'].includes(page.source)||page.open!==(page.source!=='closed'))
   throw new TypeError('Invalid page gate');
  const gate:RadioAccessGate=page.open?Object.freeze({open:true,source:page.source==='edit-mode'?'edit-mode':'instructor'}):Object.freeze({open:false,source:'not-supplied'});
  if(gate.open===s.gate.open&&gate.source===s.gate.source)return keep(s,'gate-unchanged');

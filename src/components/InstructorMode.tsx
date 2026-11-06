@@ -3,7 +3,8 @@ import {t} from '../i18n';
 
 /** Front T1 (docs/OPTICAL-OPTIONS.md, core/instructorMode.ts): the web instructor switch, the web form of VIREO's
  * Demonstration Mode gate (0x587c6a) with no password [W]. The header item opens a confirmation; while the mode is on, a banner
- * with Leave shows on every route. Nothing is stored or sent. */
+ * with Leave shows on every route. Nothing is sent; only Demonstration Mode (Front T2, set in the options) is kept in this
+ * browser. */
 export function InstructorModeMenuItem({on,onRequest,buttonRef}:{on:boolean;onRequest:()=>void;buttonRef?:RefObject<HTMLButtonElement|null>}){
  return <button ref={buttonRef} type="button" className="secondary-button instructor-mode-item" data-testid="instructor-mode-open" disabled={on} aria-haspopup="dialog"
   onClick={onRequest}>{t(on?'instructorMode.menuOn':'instructorMode.menu')}</button>;
@@ -30,12 +31,14 @@ export function InstructorModeConfirm({onAnswer}:{onAnswer:(on:boolean)=>void}){
  </dialog>;
 }
 
-/** Shown while instructor mode is on, on every route. */
-export function InstructorModeBanner({onLeave,inert,leaveRef}:{onLeave:()=>void;inert:boolean;leaveRef?:RefObject<HTMLButtonElement|null>}){
+/** Shown while instructor mode is on, on every route. Front T2: with Demonstration Mode on in this browser, one more line says
+ * that every page load opens it for anyone using the browser. */
+export function InstructorModeBanner({onLeave,inert,leaveRef,demonstrationMode=false}:{onLeave:()=>void;inert:boolean;leaveRef?:RefObject<HTMLButtonElement|null>;demonstrationMode?:boolean}){
  const id=useId();
  return <section className="instructor-mode-banner" aria-labelledby={`${id}-label`} data-testid="instructor-mode-banner" inert={inert||undefined}>
   <p role="status"><strong id={`${id}-label`}>{t('instructorMode.banner.label')}</strong><span>{t('instructorMode.banner.text')}</span></p>
   <button ref={leaveRef} type="button" className="secondary-button" data-testid="instructor-mode-leave" aria-describedby={`${id}-note`} onClick={onLeave}>{t('instructorMode.banner.leave')}</button>
   <small id={`${id}-note`}>{t('instructorMode.banner.leaveNote')}</small>
+  {demonstrationMode&&<small data-testid="instructor-mode-demonstration">{t('demonstrationMode.banner')}</small>}
  </section>;
 }

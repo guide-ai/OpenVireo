@@ -23,16 +23,17 @@ In OpenVireo (`src/core/instructorMode.ts`, `src/components/InstructorMode.tsx`;
 - **WEB-TM-01 [W] Instructor mode…** (page header, every route): a confirmation says it is the web form of VIREO's
   Demonstration Mode gate, that it needs no password and is not a lock, that it shows no answers and that it lasts for the page
   only. On opens the gate; a banner "Instructor mode (web): VIREO's Demonstration Mode gate. No password; it is not a lock."
-  stays on every route with **Leave**. Only the gate write is ported; Demonstration Mode's other effects and its DemoBox are
-  later fronts (T2).
+  stays on every route with **Leave**. Only the gate write is ported; Demonstration Mode's DemoBox is live since Front T2 (below), and
+  its skipped login has no web counterpart.
 - **WEB-TM-02 [W] Leave** closes the gate and puts Edit Mode, Virtual Observatory and (since Front T3) Test Mode back to their
   compiled values (off), so "Edit Mode on ⇒ gate open" holds. VIREO has no such action.
 - **One gate.** The radio card's Preferences follows the same gate (docs/RADIO-ACCESS-OPTIONS.md); its own Demonstration
   button is retired. Edit Mode on keeps it open (moved from the radio card).
 - **Not ported:** Login, TPasswordDlg and TPasswordDlg1. The web never stores, compares, hashes or exports the compiled
   password (`compiled-password-not-ported` in `src/core/teacherDeferred.ts`).
-- **Unchanged:** answer masks, exercise paths (the guides force their options without the dialog), saved investigations, the
-  network and browser storage. The gate is never saved.
+- **Unchanged:** answer masks, exercise paths (the guides force their options without the dialog), saved investigations and
+  the network. The gate itself is never saved; since Front T2 only Demonstration Mode, turned on in the options, is kept in
+  the browser (below).
 
 Recovery and evidence: `analysis/front-teacher/t1/RECOVERY.md` in the research root.
 
@@ -41,7 +42,8 @@ TestBox1 (CCD tab; hint `In Test Mode coordinate settings and CCD exposures are 
 record+0x27c8 (0x5a60cc) = env+0x2e7c; the defaults routine writes 0 (0x5a2ac5) [D]. A byte search for the displacement finds 17
 reads of env+0x2e7c, no write, and one read of the same byte through the embedded record (0x53bb00: env+0x6b4+0x27c8 = env+0x2e7c). In OpenVireo (`src/core/testMode.ts`) it is a live
 check box of this dialog, so it is reachable only in instructor mode; it is off by default, lasts for the page session, is not
-saved, and the dialog's Reset and the banner's Leave turn it off (WEB-T3-01 [W]; persistence is T2).
+saved by the page, and the dialog's Reset and the banner's Leave turn it off (WEB-T3-01 [W]). Since Front T2 an options file
+written by Save Updates carries it (record+0x27c8), and Load brings it back.
 
 | Reader | VIREO with Test Mode on [D] | OpenVireo |
 |---|---|---|
@@ -58,6 +60,46 @@ The radio dialog's own TestModeBox (TRadiOptsDlg, record+0x940 → env+0x37d5; r
 separate option of the radio options front (T11b) and stays typed (`radio-test-mode` in `src/core/teacherDeferred.ts`). Recovery
 and excerpts: `analysis/front-teacher/t3/RECOVERY.md` in the research root.
 
+## Options persistence: Demonstration Mode, Save Updates, options files (Front T2, 2026-11-06)
+VIREO keeps its options in `VEO_OPTS.INI` [D]. FormCreate creates the options object with version `1.504` and that name
+(0x5879b3 → 0x5a1a08). The object reads the file from the user folder, then from the program folder, and falls back to the compiled
+defaults 0x5a21d0; after any load it clears "Administrator" (0x5a1fc7). The reader 0x5a3534 and the writer 0x5a4644 move the
+same 107 fields (OptsRec, size 0x27dd, CopyRecord typeinfo [0x5a094c]) with record size 1: 8506 bytes. The reader first
+checks the version: 0x5a183c cuts both strings two characters after the dot, so `1.504` accepts `1.50…`. On a mismatch it
+shows `Options File … is obsolete.` (`Version Error`) and deletes the file. After the last field Eof must hold (`EOF Not
+Reached!`). Any read error shows `Options File … is Invalid.` (`File Error`) and deletes the file. Save Updates (File ›
+Preferences, and the question `Save Option Changes?` after OK) writes through 0x5a4644. Before writing, it warns with
+`Edit Mode is Set!…` (Yes/No) or, otherwise, the Virtual Observatory box (OK/Cancel). DemoBox is stored inverted, as
+record+0x27c6 "login required" (compiled 1). At start-up 0 opens the instructor gate (0x587c50..0x587c73).
+
+In OpenVireo (`src/io/optionsFile.ts`, `src/io/demonstrationModeStorage.ts`):
+- **WEB-DM-01 [W] Demonstration Mode** is a check box of this dialog, so only instructor mode reaches it. Off by default, OK
+  stores it in this browser's local storage (`openvireo.demonstrationMode`); off removes the key. While it is on, every page
+  load in that browser opens instructor mode without the confirmation, as FormCreate opens the gate, and the banner says so.
+  It is not a lock: anyone using that browser gets instructor mode. Leave closes the gate for that page only; unticking it is
+  the only way to stop it. Storage that is missing or blocked reads as off. Students who never enter instructor mode keep empty
+  storage.
+- **WEB-OF-01 [W] Save Updates.** VIREO asks `Save Option Changes?` (flags 0x24) after every OK of this dialog (0x588770 tests ModalResult = mrOK; call at 0x588785 →
+  0x58ed74 → 0x58ee6c). OpenVireo's plain OK is that OK answered No, and Save Updates is the Yes: it applies the options as OK does, shows the writer's Edit Mode or Virtual Observatory warning
+  when either is on, and downloads `VEO_OPTS.json`. It is a web format, not VEO_OPTS.INI: 18 fields of the native record are
+  install paths and addresses built from VIREO's own folder at run time, and the rest of its parameter block belongs to the
+  parameter fronts T6–T8, so a web-written native file would have to invent them. The file holds the 15 applied options
+  (Demonstration Mode, Test Mode, Limit Slewing, Edit Mode, Virtual Observatory and the R3 options), the other options at
+  their compiled values under `notApplied`, and a **zero-length password**.
+- **Load options file…** reads that JSON file or a native `VEO_OPTS.INI` with VIREO's checks (version rule, length/Eof) and its
+  box texts. VIREO reads its file only at start-up, so here a file fills the dialog, as Reset does: OK applies it and Cancel
+  discards it. The password field of an imported file (JSON `password`, native +0x27b0..+0x27c0) is never read. "Administrator"
+  is cleared. Values OpenVireo does not apply are listed with their reason and not applied: Restrict Scope Access, Detect Sky
+  and Set E(B−V) (later instructor versions); Compute Magnitudes, Include R and I and Plot HR (fixed here); Sound Effects
+  (OpenVireo's own switch); Write Log File; the Lab Table Number (undecided, its value is not shown); and the native parameter
+  block. Saving again writes VIREO's compiled values for those listed items, and the load notice says so (review 1 L2). A native
+  Fast Slewing byte other than 3 or 4 is noted with its rate index, which VIREO's ProgrammedSlew would pass straight to the
+  rate slider (0x539cbf); the box shows ticked only for 4 (review 1 L1). Error boxes show the file's name where VIREO shows its
+  full path; `Read beyond end of file` is inferred (Delphi run-time text). Unlike VIREO, OpenVireo never deletes a file it could
+  not read.
+
+Recovery and evidence: `analysis/front-teacher/t2/RECOVERY.md` in the research root.
+
 ## In OpenVireo
 The dialog opens from the telescope-motion card, in instructor mode. These controls are live:
 
@@ -66,6 +108,7 @@ The dialog opens from the telescope-motion card, in instructor mode. These contr
 | Limit Slewing | off | Horizon guard (OB-LS-01) | +0x27c9 |
 | Edit Mode, Virtual Observatory | off | Fronts O and O2 | +0x27ca, +0x27d5 |
 | Test Mode | off | Front T3 (above): exposures, Multi-Spec and programmed slews without the wait; the HR distance line | +0x27c8 = env+0x2e7c |
+| Demonstration Mode | off | Front T2 (above): kept in this browser; on, every page load opens instructor mode | +0x27c6 (inverted); FormCreate 0x587c50 |
 | Fast Slewing | on | Programmed slews run at rate index 4; off gives index 3, half as fast. | +0x27af := 4/3; ProgrammedSlew 0x5399e8 sets RateSlider.Position at 0x539cbf |
 | Fast Scope Change | off | On, a telescope change with the dome open keeps it open, with no dome sound. | +0x27d0 = env+0x2e84; 0x58b554 needs the option on and the dome open (+0x552 = 1) |
 | Compute Rdshft Vel. | off | The LSS Measured Redshift Data dialog and, since Front H2, the Hubble Observational Data dialog open with the velocity filled in: Single(c·z), ffExponent 4. The Hubble dialog fills it only when z ≠ 0. OK still applies the 1 % check. | +0x27d4 = env+0x2e88; TLSSRsltsDlg1.FormActivate 0x57cbcb; TObsRsltsDlg1.FormActivate 0x54aedb |
@@ -82,8 +125,9 @@ FormActivate 0x5a56e0 writes them. Editing them would invalidate the certified f
 contracts built on those values.
 
 **Web adaptations [W]:**
-- **WEB-OPT-R3:** the options last for the page session and are not saved, as Edit Mode is. Since Front T1 they open only in
-  instructor mode (above); before, they were open to anyone.
+- **WEB-OPT-R3:** the options last for the page session and are not saved by the page, as Edit Mode is. Since Front T1 they
+  open only in instructor mode (above); before, they were open to anyone. Since Front T2 Save Updates writes them to an options
+  file that the instructor keeps and loads again.
 - **Wedge plot:** it takes Monochrome Displays when the option changes, and its own scheme choice can switch it meanwhile.
 - **Fast Scope Change:** the original's slow path is not reproduced. That path shows "Accessing <scope>" with an hourglass
   for Random(8000) ms, then the "Telescope Successfully Accessed" message, then resets to the finder view. Here the change
@@ -122,5 +166,5 @@ contracts built on those values.
   - Print (0x542f44) prints in colour only with Print in Color, then the window takes Monochrome Displays again. Cancelling
     the print preview writes nothing (0x542fc5).
   - The photometer route's own web plot is not VIREO's form and keeps its colours.
-- Not ported: Demonstration, Restrict Scope Access, Administrator and the remaining photometer check boxes keep their
-  compiled state and are listed as text. Test Mode is live since Front T3 (above).
+- Not ported: Restrict Scope Access, Administrator and the remaining photometer check boxes keep their compiled state and are
+  listed as text. Test Mode is live since Front T3, and Demonstration Mode since Front T2 (above).
