@@ -3506,4 +3506,6 @@ export interface MessageParameters {
   "instructorMode.banner.leaveNote": never;
   "instructorMode.optionsClosed": never;
   "instructorMode.optionsClosedOk": never;
+  "testMode.adaptation": never;
+  "testMode.motionNote": never;
 }

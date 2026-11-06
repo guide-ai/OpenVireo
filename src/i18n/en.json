@@ -3502,7 +3502,9 @@
   "instructorMode.banner.label": "Instructor mode (web):",
   "instructorMode.banner.text": "VIREO's Demonstration Mode gate. No password; it is not a lock.",
   "instructorMode.banner.leave": "Leave",
-  "instructorMode.banner.leaveNote": "Leave closes the options again and turns Edit Mode and Virtual Observatory off (a web action; VIREO has none).",
+  "instructorMode.banner.leaveNote": "Leave closes the options again and turns Edit Mode, Virtual Observatory and Test Mode off (a web action; VIREO has none).",
   "instructorMode.optionsClosed": "Web note: the options are closed to students, as in VIREO. Instructor mode… in the page header opens them (the web form of Demonstration Mode, with no password).",
-  "instructorMode.optionsClosedOk": "OK"
+  "instructorMode.optionsClosedOk": "OK",
+  "testMode.adaptation": "Web adaptation: in VIREO this instructor option, off by default, makes CCD and IR exposures and the Multi-Spec exposure end at their first one-second tick, makes Set Coordinates and the other programmed slews jump to the target without the confirmation or the horizon check, ends the dome travel at once, and prints the Estimated Cluster Distance line in the HR report. The image, the spectra and their exposure times are the same as without it: only the waiting goes. Here it opens only in instructor mode; it is off by default, not saved, and Leave turns it off.",
+  "testMode.motionNote": "Test Mode is on (instructor): programmed slews jump to the target at once, without the confirmation or the horizon check."
 }

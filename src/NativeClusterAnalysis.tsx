@@ -1,5 +1,7 @@
 import PhotometerPlotSettings from './PhotometerPlotSettings';
 import {memo,useContext,useEffect,useMemo,useRef,useState} from 'react';
+import {TestModeContext} from './polish/testModeContext';
+import {clusterHrDistanceLine} from './core/testMode';
 import type {ClusterReferencePoint} from './core/clusterDatabase';
 import type {PhotometerState} from './core/photometer';
 import {pleiadesPoints,pleiadesPointVisible,PLEIADES_PLOT,type PleiadesPoint} from './core/pleiadesAnalysis';
@@ -107,7 +109,9 @@ function NativeClusterAnalysis({state,busy,draft,onDraft,onConfirm,referenceData
  const hrTrial=useMemo(()=>frame?clusterDatabaseHrTrial(d,ready):null,[frame,d.modulus,d.ebv,d.logAge,d.modelIndex,d.offset,d.extinctionCorrected,ready]);
  // The own report names its actual source(the learner's confirmed exercise pairs), never a catalog or DAT identity.
  const reportLabel=own?t('ownHr.reportLabel'):referenceData?.label??'';
- const report=useMemo(()=>hrTrial?clusterDatabaseHrReport(reportLabel,hrTrial):null,[hrTrial,reportLabel]);
+ // Front T3: VIREO prints the distance line only in Test Mode (0x543f43); the web's extinction box also prints it [W].
+ const testMode=useContext(TestModeContext);
+ const report=useMemo(()=>hrTrial?clusterDatabaseHrReport(reportLabel,{...hrTrial,distanceOption:clusterHrDistanceLine(hrTrial.distanceOption,testMode)}):null,[hrTrial,reportLabel,testMode]);
  const reportKind=draft?'db.reportTrial':fit?'db.reportConfirmed':'db.reportNone';
  const [reportOpen,setReportOpen]=useState(false),[printing,setPrinting]=useState(false);
  const validTrial=hrTrial?.isochroneShown??false;

@@ -1,5 +1,7 @@
 import {memo} from 'react';
-import{useEffect,useLayoutEffect,useMemo,useRef,useState,type ChangeEvent}from'react';
+import{useContext,useEffect,useLayoutEffect,useMemo,useRef,useState,type ChangeEvent}from'react';
+import{TestModeContext}from'../polish/testModeContext';
+import{clusterHrDistanceLine}from'../core/testMode';
 import'./ClusterNativeObservationHr.css';
 import{nativeObservationBytes}from'../core/nativeObservationResults';
 import type{NativeResultList}from'../core/nativeResultList';
@@ -61,7 +63,9 @@ function ClusterNativeObservationHr({initialList=null,messages,idPrefix='cnhr-',
  useEffect(()=>{onWorkspaceChange?.(w);},[w,onWorkspaceChange]);
  const records=clusterNativeHrRecords(w),busy=disabled||w.reading!==null;
  const plot=useMemo(()=>w.list?clusterNativeHrPlot(w.list.data):clusterNativeHrPlot({records:[]}),[w.list]);
- const report=useMemo(()=>clusterNativeHrReport(w.trial),[w.trial]);
+ // Front T3: VIREO prints the distance line only in Test Mode (0x543f43); the web's checkbox also prints it [W].
+ const testMode=useContext(TestModeContext);
+ const report=useMemo(()=>clusterNativeHrReport({...w.trial,distanceOption:clusterHrDistanceLine(w.trial.distanceOption,testMode)}),[w.trial,testMode]);
  const trial=w.trial;
  // Original model curves:verified bundled payloads,late responses cannot replace a newer choice.
  const [model,setModel]=useState<{index:number;curves:NativeModelCurves}|null>(null),[modelError,setModelError]=useState<number|null>(null),[retry,setRetry]=useState(0);

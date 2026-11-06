@@ -12,19 +12,22 @@
  *   Login at 0x5884c9 (gate open → 0x587d54). So the gate controls only File › Preferences and its menu item.
  * WEB-TM-01 [W] (user decision 2026-11-06): the gate is opened by a web switch with no password, the web form of the
  * Demonstration Mode branch; it is not a lock. The compiled password is never compared or stored. WEB-TM-02 [W]: leaving
- * closes the gate and puts the instructor-only options (Edit Mode, Virtual Observatory) back to their compiled values; VIREO
+ * closes the gate and puts the instructor-only options (Edit Mode, Virtual Observatory and, since Front T3, Test Mode) back to
+ * their compiled values; VIREO
  * has no such action. The state lives for the page session only: never in investigations, files or browser storage.
  * Pure: no React, storage, clock or network. Every transition returns a frozen state; a refusal returns the same object. */
 import {COMPILED_EDIT_MODE} from './editMode';
 import {COMPILED_VIRTUAL_OBSERVATORY} from './observatoryMenuLiterals';
+import {COMPILED_TEST_MODE} from './testMode';
 
 /** env+0x37d8 and the web source that opened it. */
 export type InstructorGate=Readonly<{open:boolean;source:'closed'|'instructor-switch'|'edit-mode'}>;
 export type InstructorGateOutcome='gate-opened'|'gate-already-open'|'gate-closed'|'gate-already-closed'|'edit-mode-off';
 export type InstructorGateTransition=Readonly<{state:InstructorGate;outcome:InstructorGateOutcome;changed:boolean}>;
-/** What leaving resets: the instructor-only options at their compiled values (EditModeBox 0x5a2ad3, VObsBox 0x5a2b59). */
-export type InstructorOnlyOptions=Readonly<{editMode:boolean;virtualObservatory:boolean}>;
-export const INSTRUCTOR_ONLY_COMPILED:InstructorOnlyOptions=Object.freeze({editMode:COMPILED_EDIT_MODE,virtualObservatory:COMPILED_VIRTUAL_OBSERVATORY});
+/** What leaving resets: the instructor-only options at their compiled values (EditModeBox 0x5a2ad3, VObsBox 0x5a2b59; Front
+ * T3: TestBox1 0x5a2ac5). */
+export type InstructorOnlyOptions=Readonly<{editMode:boolean;virtualObservatory:boolean;testMode:boolean}>;
+export const INSTRUCTOR_ONLY_COMPILED:InstructorOnlyOptions=Object.freeze({editMode:COMPILED_EDIT_MODE,virtualObservatory:COMPILED_VIRTUAL_OBSERVATORY,testMode:COMPILED_TEST_MODE});
 
 /** FormCreate 0x587c2d: the gate starts closed. */
 export const INITIAL_INSTRUCTOR_GATE:InstructorGate=Object.freeze({open:false,source:'closed'});

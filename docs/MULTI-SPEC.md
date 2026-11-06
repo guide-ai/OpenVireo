@@ -93,7 +93,12 @@ addresses, evidence ids and tags in `docs/MULTI-SPEC-PROVENANCE.json`. Tags: [D]
   "wavelength(2 decimals) normalised counts(6 decimals)", CRLF, no header.
 
 ## Web choices [W]
-- D4 Save All: one uncompressed (STORE) .zip of the byte-exact .SSP files. D5: no Test Mode. D6: no new session version (the
+- D4 Save All: one uncompressed (STORE) .zip of the byte-exact .SSP files. D5: no Test Mode — superseded by Front T3 (2026-11-06, docs/OPTICAL-OPTIONS.md): with the
+  instructor's Test Mode on, SpecTimerTimer (0x52a1c4) sets elapsed := seconds and remaining := 0 at the first tick, so the
+  exposure ends there with the same spectra (t = seconds, same fibre seeds) and a one-tick S/N estimate. The identity holds
+  only in the web [W]: VIREO's S/N tick 0x52a58c draws twice (0x55f0f4) from System.Random (RandSeed 0x5ae008), the stream
+  AddSpectrum's fibres also use, so one tick instead of N gives VIREO's spectra a different noise realisation from the same
+  distribution; the web keeps its separate S/N stream. D6: no new session version (the
   selection and spectra are browsing state). D7: the active spectrometer range, 3700–4700 Å by default as recovered; since Front S3 every dialog range, frozen per entry
   (docs/SPECTRAL-RANGE.md). D8: Sky fibres show RA/Dec/V "not recorded".
 - Save is a browser download; the native folder, base-name and overwrite dialogs are not ported. A telescope change remounts the

@@ -1,4 +1,5 @@
-import {memo,useEffect,useId,useRef,useState} from 'react';
+import {memo,useContext,useEffect,useId,useRef,useState} from 'react';
+import {TestModeContext} from '../polish/testModeContext';
 import {DOME_END_SOUNDS,SOUND_EFFECTS_DEFAULT,SOUND_FILES,domeEndActions,soundEffectsStep,soundFileUrl,type ObservatorySoundState,type SoundAction,type SoundChannel,type SoundName} from '../core/soundEffects';
 import {resourceSha256} from '../io/boundedResource';
 import {decodeMsAdpcm,pcm16Wav,readWavInfo,widenPcm8} from '../core/msAdpcm';
@@ -64,7 +65,8 @@ function ObservatorySounds({motion}:ObservatorySoundsProps){
   else if(x.kind==='cancel-dome-end'){if(domeTimer.current!==null){clearTimeout(domeTimer.current);domeTimer.current=null;}}
   else domeTimer.current=window.setTimeout(()=>{domeTimer.current=null;run(domeEndActions(Math.random));},x.ms);
  }};
- useEffect(()=>{const actions=soundEffectsStep(prev.current,state,enabled);prev.current=state;run(actions);});
+ const testMode=useContext(TestModeContext);// Front T3: read when the dome switch is cued (0x58c530 / 0x58c6f0)
+ useEffect(()=>{const actions=soundEffectsStep(prev.current,state,enabled,testMode);prev.current=state;run(actions);});
  useEffect(()=>()=>stopAll(),[]);
  const unlock=(a:HTMLAudioElement|null)=>{if(!a||a.dataset.sound)return;a.muted=true;a.src=silent();
   a.play().then(()=>{if(!a.dataset.sound){a.pause();a.removeAttribute('src');a.load();}},()=>{}).finally(()=>{if(!a.dataset.sound)a.muted=false;});};

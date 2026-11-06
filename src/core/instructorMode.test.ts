@@ -33,12 +33,12 @@ describe('T1 instructor-mode gate',()=>{
   for(const open of [enterInstructorMode(INITIAL_INSTRUCTOR_GATE).state,applyEditModeGate(INITIAL_INSTRUCTOR_GATE,true).state]){
    const l=leaveInstructorMode(open);
    expect(l).toMatchObject({outcome:'gate-closed',changed:true});expect(l.state).toEqual(INITIAL_INSTRUCTOR_GATE);
-   expect(l.reset).toEqual({editMode:false,virtualObservatory:false});
+   expect(l.reset).toEqual({editMode:false,virtualObservatory:false,testMode:false});
    expect(preferencesGate(l.state)).toBe('user-options-box');
   }
   const idle=leaveInstructorMode(INITIAL_INSTRUCTOR_GATE);expect(idle).toMatchObject({outcome:'gate-already-closed',changed:false});expect(idle.state).toBe(INITIAL_INSTRUCTOR_GATE);
   // The same compiled values as the options Reset (0x5a21d0: EditModeBox 0x5a2ad3, VObsBox 0x5a2b59).
-  expect(INSTRUCTOR_ONLY_COMPILED).toEqual({editMode:OPTIONS_RESET_DEFAULTS.editMode,virtualObservatory:OPTIONS_RESET_DEFAULTS.virtualObservatory});
+  expect(INSTRUCTOR_ONLY_COMPILED).toEqual({editMode:OPTIONS_RESET_DEFAULTS.editMode,virtualObservatory:OPTIONS_RESET_DEFAULTS.virtualObservatory,testMode:OPTIONS_RESET_DEFAULTS.testMode});
   // The invariant "Edit Mode on ⇒ gate open" holds after leaving: the reset turns Edit Mode off, so re-applying writes nothing.
   const l=leaveInstructorMode(enterInstructorMode(INITIAL_INSTRUCTOR_GATE).state);
   expect(applyEditModeGate(l.state,l.reset.editMode).state.open).toBe(false);
@@ -56,12 +56,13 @@ describe('T1 instructor-mode gate',()=>{
  it('keeps the deferred list typed, without the strict-VO item and with the password typed as not ported',()=>{
   const keys=TEACHER_DEFERRED.map(d=>d.key);
   expect(keys).not.toContain('virtual-observatory-strict');
-  for(const k of ['cluster-edit','cluster-save-list','auto-plot','asteroid-subset','password','test-mode'])expect(keys).toContain(k);
+  for(const k of ['cluster-edit','cluster-save-list','auto-plot','asteroid-subset','password','radio-test-mode'])expect(keys).toContain(k);
+  expect(keys).not.toContain('test-mode');// Front T3: TOptionsDlg.TestBox1 is live
   expect(TEACHER_DEFERRED.find(d=>d.key==='password')?.reason).toBe('compiled-password-not-ported');
  });
  it('is pure and session-only: no React, storage, clock, network or password handling',()=>{
   const source=readFileSync(new URL('./instructorMode.ts',import.meta.url),'utf8');
-  expect([...source.matchAll(/^import\b[\s\S]*?from\s*'([^']+)';/gm)].map(m=>m[1])).toEqual(['./editMode','./observatoryMenuLiterals']);
+  expect([...source.matchAll(/^import\b[\s\S]*?from\s*'([^']+)';/gm)].map(m=>m[1])).toEqual(['./editMode','./observatoryMenuLiterals','./testMode']);
   expect(source).not.toMatch(/localStorage|sessionStorage|indexedDB|fetch\(|Date\.now|new Date|document\.|window\./);
  });
 });

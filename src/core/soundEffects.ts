@@ -13,6 +13,7 @@
  * [W] Off by default and a student checkbox (user decision, 2026-10-29); the option lasts for the page session only. The web
  *     dome opens or closes at once, so the end sound comes after DOME_TRAVEL_MS (the native 98 ticks of 80 ms).
  *     The end sound is chosen by a web random source (no Delphi Random parity). */
+import {domeTravelMs} from './testMode';
 export const SOUND_FILES=Object.freeze({
  'chaclunk.wav':Object.freeze({file:'CHACLUNK.WAV',bytes:3588,sha256:'5dfc3dc78c3e19138c30b2497a3c54cf57509c034a52b01431a61adf8ffe19d5'}),
  'clunkit.wav':Object.freeze({file:'CLUNKIT.WAV',bytes:6692,sha256:'abb5ad92221c4a15a5de8305c612f55ae704669d04c6315e016479d20ad41561'}),
@@ -34,7 +35,7 @@ export const DOME_END_SOUNDS=Object.freeze(['chaclunk.wav','clunkit.wav','crashb
  * (closing). Under VIREO's own x87 control word 0x1332 (64-bit precision) the accumulated 0.01 steps reach it on tick 98 in
  * both directions; 97 holds only at 53-bit precision [D] (C5W closure L2). [W] The web dome opens or closes at once, so the
  * end sound comes after this delay. */
-export const DOME_TRAVEL_MS=98*80;
+export const DOME_TRAVEL_MS=domeTravelMs(false);
 export const SOUND_EFFECTS_DEFAULT=false;// [W] native compiled default 1 (0x5a2b0b); off by the user's decision
 
 export type SoundChannel='dome'|'telescope';
@@ -51,10 +52,12 @@ export type SoundAction=
 export type ObservatorySoundState=Readonly<{domeCue:number;motion:Readonly<{kind:'manual'|'programmed';moving:boolean}>|null}>;
 
 /** The actions between two observatory states. Nothing plays while the option is off, and turning it on plays nothing by itself. */
-export function soundEffectsStep(prev:ObservatorySoundState,next:ObservatorySoundState,enabled:boolean):readonly SoundAction[]{
+/** Front T3: with Test Mode on (env+0x2e7c, DomeSw1DownClick 0x58c530 / DomeSw1UpClick 0x58c6f0) the travel ends at the first
+ * DomeTimer tick, so the end sound follows after 80 ms (core/testMode.ts domeTravelMs). */
+export function soundEffectsStep(prev:ObservatorySoundState,next:ObservatorySoundState,enabled:boolean,testMode=false):readonly SoundAction[]{
  if(!enabled)return [];
  const out:SoundAction[]=[];
- if(prev.domeCue!==next.domeCue)out.push({kind:'cancel-dome-end'},{kind:'play',channel:'dome',sound:'gardoor.wav',loop:false},{kind:'dome-end-after',ms:DOME_TRAVEL_MS});
+ if(prev.domeCue!==next.domeCue)out.push({kind:'cancel-dome-end'},{kind:'play',channel:'dome',sound:'gardoor.wav',loop:false},{kind:'dome-end-after',ms:domeTravelMs(testMode)});
  const was=prev.motion?.moving?prev.motion.kind:null,is=next.motion?.moving?next.motion.kind:null;
  if(was!==is){
   if(was)out.push({kind:'stop',channel:'telescope'});

@@ -18,8 +18,9 @@
  *    Trunc(s/60):Round(Frac(s/60)·60), Num := count, S/N := 0; Select off, Go on, Init off, View/Save off.
  *  - GoBtnClick 0x52a0dc: Objects off, Stop on, Go off, remaining := seconds, clock red, S/N setup 0x52a430, elapsed 0, timer on,
  *    Select on, selection mode off.
- *  - SpecTimerTimer 0x52a1b4 (Test Mode off, decision D5): remaining −= 1, elapsed += 1, clock, S/N tick 0x52a58c; remaining ≤
- *    0.01 → timer off and StopBtnClick.
+ *  - SpecTimerTimer 0x52a1b4: remaining −= 1, elapsed += 1 (Test Mode on, 0x52a1c4, Front T3: elapsed := seconds, remaining :=
+ *    0), clock, S/N tick 0x52a58c; remaining ≤ 0.01 → timer off and StopBtnClick. So Test Mode ends at the first tick with one
+ *    S/N tick, and the spectra get the same t = seconds and the same fibre seeds (the S/N stream is separate).
  *  - StopBtnClick 0x52a2d4: timer off; 0 < remaining < seconds → "Do You Want to Terminate the Current Exposure?" (No → timer on);
  *    else clock green, Objects on, Stop off, Go on iff remaining > 0, then 0x52a79c: for each selection in list order
  *    AddSpectrum(idx := numbering base + position, t := seconds − remaining), which appends only when idx > last + 1 (so a second
@@ -29,8 +30,9 @@
  *  - Spectra list: Clear All (confirmed) frees everything and the numbering base := 1; Save marks "*".
  * Web [W]: one page seed (uint32) feeds, through the LCG 0x4035e4, each fibre's seed and the S/N stream (the native Randomize
  * seeds are not reproducible); StrToFloat accepts '.' only; a Sky selection (uninitialised V, D8) or an S/N mean above 10⁶ makes
- * the estimate typed 'indeterminate'. No Test Mode (D5); no session persistence (D6). */
+ * the estimate typed 'indeterminate'. Test Mode since Front T3 (D5 superseded); no session persistence (D6). */
 import {AcquisitionError,poissonDraw,randomDraw} from './acquisition';
+import {multiSpecTimerStep} from './testMode';
 import {roundNearestEven} from './numericPolicy';
 import {delphiFixed} from './variableStars';
 import {multiSpecZeroPoint,MULTISPEC_OPTIONS,MULTISPEC_MEAN_LIMIT,type MultiSpecSelection} from './multiSpecSpectrum';
@@ -77,7 +79,9 @@ export type MultiSpecAction=
  |Readonly<{type:'dismiss'}>
  |Readonly<{type:'clear'}>|Readonly<{type:'field-regenerated'}>
  |Readonly<{type:'edit-exposure';text:string}>
- |Readonly<{type:'init'}>|Readonly<{type:'go'}>|Readonly<{type:'tick'}>|Readonly<{type:'stop'}>
+ |Readonly<{type:'init'}>|Readonly<{type:'go'}>
+ /** Front T3: `testMode` is env+0x2e7c read at the tick (0x52a1c4); absent means off. */
+ |Readonly<{type:'tick';testMode?:boolean}>|Readonly<{type:'stop'}>
  |Readonly<{type:'view-save'}>|Readonly<{type:'list-closed'}>|Readonly<{type:'clear-all'}>
  |Readonly<{type:'saved';idx:readonly number[]}>;
 
@@ -192,8 +196,9 @@ export function multiSpecReducer(s:MultiSpecState,a:MultiSpecAction):MultiSpecSt
  }
  case 'tick':{
   if(!s.running)return s;
-  const remaining=s.remaining-1,sn=tickSignalToNoise(s.signalToNoise);
-  const n=set(s,{remaining,elapsed:s.elapsed+1,signalToNoise:sn,displays:Object.freeze({...s.displays,clock:clock(remaining),snr:snrDisplay(sn)})});
+  if(a.testMode!==undefined&&typeof a.testMode!=='boolean')throw new MultiSpecStateError('action');
+  const {remaining,elapsed}=multiSpecTimerStep(s.seconds,s.elapsed,s.remaining,a.testMode===true),sn=tickSignalToNoise(s.signalToNoise);
+  const n=set(s,{remaining,elapsed,signalToNoise:sn,displays:Object.freeze({...s.displays,clock:clock(remaining),snr:snrDisplay(sn)})});
   return remaining<=0.01?stopClick(n):n;
  }
  case 'stop':return s.controls.stop?stopClick(s):s;
