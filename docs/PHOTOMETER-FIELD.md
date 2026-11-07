@@ -315,3 +315,6 @@ every reading, witness and pinned field above is byte-identical. Any other value
   count over 5·⌈100000 / Timer⌉ callbacks (Front PHCALLBACK: 5 × the exact 100 s period in new sessions), for tiled and bundled
   targets, and the base-count sum; a target beyond them refuses Start;
 - the PHSKY display gate does not read these fields (it uses the telescope record's +0x6f8 and the stamps) and is unchanged.
+- PHCALLBACK review 1 (fix): the Yes to VIREO's "Reading Sky!" question survives the `timing` and `parameters` events the web Start
+  records between the answer and itself (earlier the first Start after changing instructor values failed with `confirm` and a second
+  Start was needed); any other event still drops it, and it stays one-shot.

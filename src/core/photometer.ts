@@ -191,9 +191,11 @@ function transition(s:PhotometerState,e:PhotometerEvent,live:boolean):Photometer
   try{next={...s,native:photometerNativeApply(s.native,r,e)};}catch(error){if(error instanceof PhotometerNativeError)throw new PhotometerError('entry');throw error;}
  }
  // The answer to the sky-replacement question applies to the very next Start only (Front PHCALLBACK: the declaration a live Start
- // records just before itself does not consume it).
+ // records just before itself does not consume it). PHCALLBACK review 1 (T6 bug): neither do the 'timing' and 'parameters' events
+ // the web Start records between the Yes and itself (Photometer.tsx withParameters: an untimed session's shown timing, then the
+ // instructor values); they change no sky, filter, pointing or telescope, so the question's subject is unchanged.
  // Front P3: a Record/Review answered from Start's "Telescope has Moved!" prompt (0x4fffd4) runs after the sky question.
- if(e.type!=='skyConfirm'&&e.type!=='nativeRecord'&&e.type!=='callbackCount'&&next.skyReplaceConfirmed){const {skyReplaceConfirmed:_drop,...rest}=next;void _drop;next=rest as PhotometerState;}
+ if(e.type!=='skyConfirm'&&e.type!=='nativeRecord'&&e.type!=='callbackCount'&&e.type!=='parameters'&&e.type!=='timing'&&next.skyReplaceConfirmed){const {skyReplaceConfirmed:_drop,...rest}=next;void _drop;next=rest as PhotometerState;}
  const last=s.events.at(-1),events=e.type==='advance'&&last?.type==='advance'&&last.callbacks+e.callbacks<=MAX_PHOTOMETER_CALLBACKS_PER_READING?[...s.events.slice(0,-1),Object.freeze({type:'advance' as const,callbacks:last.callbacks+e.callbacks})]:[...s.events,Object.freeze({...e})];
  // Reserve the largest possible running suffix once,at Start. Advances then
  // only change up to four digits and reuse that admitted space;no full journal

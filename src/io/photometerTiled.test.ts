@@ -4,7 +4,7 @@ import {afterAll,beforeAll,describe,expect,it} from 'vitest';
 import {preparePhotometerTiledField,setPhotometerTileSources} from './photometerTiledFields';
 import {checkGscIndex,createGscTileStore} from './gscTiles';
 import {parsePhotometerSession,prepareSessionFields,serializePhotometerSession} from './photometerSession';
-import {createPhotometer,photometerEvent,photometerStructReading,skyReplaceAsked,photometerDetectSkyEvent,PhotometerError,type PhotometerState,type PhotometerEvent} from '../core/photometer';
+import {createPhotometer,replayPhotometer,photometerEvent,photometerStructReading,skyReplaceAsked,photometerDetectSkyEvent,PhotometerError,type PhotometerState,type PhotometerEvent} from '../core/photometer';
 import {buildPhotometerTargetField,clearTiledPhotometerFields,isTiledPhotometerTarget,registerTiledPhotometerField,tiledPhotometerPointing,MAX_TILED_PHOTOMETER_FIELDS} from '../core/photometerField';
 import {PLEIADES_ADMITTED_ROWS} from '../core/pleiadesHotList';
 import {pleiadesSkyContext} from '../core/pleiadesSkyContext';
@@ -83,6 +83,20 @@ describe('photometer at a telescope pointing (tiled)',()=>{
   expect(()=>photometerEvent(s,{type:'start'})).toThrow(new PhotometerError('confirm'));
   s=run(s,[{type:'field',ra:BLANK.ra,dec:BLANK.dec},{type:'start'},{type:'complete'}]);expect(s.readings).toHaveLength(3);
   expect(()=>photometerEvent(s,{type:'skyConfirm'})).toThrow(new PhotometerError('confirm'));
+ },120_000);
+ it('PHCALLBACK review 1 (T6 bug): the Yes survives the timing and instructor values the web Start records before itself; replay is strict',async()=>{
+  await preparePhotometerTiledField(STAR);
+  // An untimed session with a sky on the star: the web Start records the shown timing and the instructor values after the Yes.
+  let s=run(createPhotometer(3),[{type:'activate'},{type:'field',ra:STAR.ra,dec:STAR.dec},{type:'point',kind:'sky'},{type:'start'},{type:'complete'}]);
+  expect(skyReplaceAsked(s)).toBe(true);
+  const params={type:'parameters' as const,baseMagnitude:6,skyMagnitude:16,baseCount:1000,timerMs:200};
+  s=run(s,[{type:'skyConfirm'},{type:'timing',secondsPerIntegration:.1,integrations:1},params]);expect(s.skyReplaceConfirmed).toBe(true);
+  s=run(s,[{type:'start'},{type:'advance',callbacks:1}]);expect(s.readings).toHaveLength(2);expect(s.current?.parameters?.timerMs).toBe(200);expect(s.skyReplaceConfirmed).toBeUndefined();
+  // Still one-shot: the next Start asks again, and any other event in between drops the Yes.
+  expect(()=>photometerEvent(s,{type:'start'})).toThrow(new PhotometerError('confirm'));
+  expect(()=>run(s,[{type:'skyConfirm'},{type:'point',kind:'sky'},{type:'start'}])).toThrow(new PhotometerError('confirm'));
+  // Replay of the saved history reproduces the same state.
+  expect(replayPhotometer(s.seedAtStart,s.events)).toEqual(s);
  },120_000);
  it('+0x41d: moving the Object/Sky slider since activation skips the question; a move onto the star in Sky mode asks (G3 review 1 M3)',async()=>{
   await preparePhotometerTiledField(STAR);await preparePhotometerTiledField(BLANK);
