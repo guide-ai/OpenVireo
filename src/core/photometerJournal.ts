@@ -35,7 +35,7 @@ export const INSTRUCTOR_PARAMETERS_PHOTOMETER_POLICY='OpenVireo-photometer-instr
  * Extended elapsed period (the compiled 100 s takes 1001 callbacks; data/photometry/callback-count-contract.json, pinned in the
  * header). Owners 4–17 keep the legacy nominal count. */
 export const CALLBACK_COUNT_PHOTOMETER_POLICY='OpenVireo-photometer-x87-callback-count-v18';
-export const CALLBACK_COUNT_CONTRACT_SHA256='0e16cf8bff3d13e48243c4f8af587397edfe07fb45ca72f2eb3baa8f04485a44';
+export const CALLBACK_COUNT_CONTRACT_SHA256='7240452022a75fd375dbfa3311e263530c787006ff4941a4b82db76be13d5a61';
 export const RI_CONTRACT_SHA256='d23f83d21d6cb1de21b6ab4f5fb6439df58f4350f2204d5df9bdfc4a53de3b30';
 export const PHOTOMETER_POLICY='OpenVireo-Pleiades-three-targets-v3';
 export const UBV_PHOTOMETER_POLICY='OpenVireo-Pleiades-UBV-observing-v2';

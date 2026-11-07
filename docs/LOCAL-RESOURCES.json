@@ -9078,8 +9078,8 @@
     },
     {
       "path": "data/photometry/callback-count-contract.json",
-      "bytes": 9388,
-      "sha256": "0e16cf8bff3d13e48243c4f8af587397edfe07fb45ca72f2eb3baa8f04485a44"
+      "bytes": 10747,
+      "sha256": "7240452022a75fd375dbfa3311e263530c787006ff4941a4b82db76be13d5a61"
     },
     {
       "path": "data/photometry/callback-count-reference.json",

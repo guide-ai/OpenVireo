@@ -4,6 +4,16 @@
   "front": "PHCALLBACK (2026-11-06)",
   "editionSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
   "method": "Static reading only (GNU objdump, guarded Python byte reads); CLEA_VEO.exe was not executed or emulated. Research: analysis/front-phcallback/RECOVERY.md.",
+  "supersedes": [
+    {
+      "file": "data/photometry/integration-provenance.json",
+      "sha256": "b11fcc556da1011dc89b0c6e66c143d0f9fae3f6de653538daa4a4e38cf2fab0",
+      "field": "uncertainty[0]",
+      "text": "Native Extended repeated-addition/threshold callback counts and VCL queue scheduling are not witnessed;integer nominal browser timing is explicit adaptation,not x87 equivalence.",
+      "by": "loop/numerics/witnesses",
+      "scope": "The repeated-addition/threshold part only (owner 18). The VCL queue scheduling part stays [W] (uncertainty below). The file is not edited: every owner 4+ header pins its SHA-256."
+    }
+  ],
   "loop": [
     "[D] Duration handler 0x501e20 copies the chosen Extended seconds from the table 0x5b3a40 (10 bytes per entry) to TPhotometer+0x57b; repeat handler 0x501e60 stores slider+1 at +0x585.",
     "[D] Start 0x500a01..0x500a0d: fild Timer (env+0x2e57), fdiv Single 1000.0 (0x500ac8), fstp TBYTE +0x498: the increment is Timer/1000 rounded once to the precision-control mantissa.",
@@ -204,7 +214,8 @@
     "ownerPolicy": "OpenVireo-photometer-x87-callback-count-v18",
     "event": "callbackCount",
     "rule": "[W] A live Start whose count or full-domain count guard differs between the nominal and the exact rule first records one callbackCount event; from it on every Start of the session uses the exact count. Histories without it (owners 4-17) keep the nominal count, ceil(1000 * seconds / Timer), and replay byte-identically. Elsewhere the two rules agree, so no event is recorded and the owner is unchanged.",
-    "guard": "[W] The all-duration 32-bit count guard (photometerMaximumCallbacks) uses 5 x the exact 100 s count (5005 at 100 ms) under the exact rule; no bundled target's decision changes (closest ratio 0.9899 on the 0.4 m)."
+    "guard": "[W] The all-duration 32-bit guard (photometerMaximumCallbacks) uses 5 x the exact 100 s period (5005 at 100 ms) under the exact rule; no bundled target's decision changes (closest ratio 0.9899 on the 0.4 m). The exact count is never below the nominal one, so a tiled pointing whose largest per-callback mean lies in (2147483647/5005, 2147483647/5000] is refused at every duration once the exact rule applies: in new sessions, and at a live Start of a restored owner 4-17 session (which records callbackCount first because the guard decision differs). Replaying such a history's earlier readings is unchanged.",
+    "reservation": "[W] A live timed Start reserves 3 + ceil(required/5000) events (one advance event per 5000 callbacks), for every owner including 17; this also fixes a latent Front T6 mid-reading 'limit' when an instructor Timer made a reading longer than 5000 callbacks. Replay keeps the earlier reservation of 4."
   },
   "uncertainty": [
     "[I] The precision/rounding control stays 0x1332 at run time.",

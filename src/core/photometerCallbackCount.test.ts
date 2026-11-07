@@ -5,7 +5,7 @@ import contract from '../../data/photometry/callback-count-contract.json';
 import provenance from '../../data/photometry/integration-provenance.json';
 import {x87PhotometerCallbacksPerPeriod} from './photometerCallbackCount';
 import {photometerCallbacksPerPeriod,COMPILED_PHOTOMETER_PARAMETERS,type PhotometerParameters} from './instrumentParameters';
-import {photometerTiming,requiredPhotometerCallbacks,PHOTOMETER_SECONDS} from './photometerIntegration';
+import {photometerTiming,requiredPhotometerCallbacks,PHOTOMETER_SECONDS,PHOTOMETER_INTEGRATION_SHA256} from './photometerIntegration';
 import {createPhotometer,photometerEvent as event,photometerCallbackCountMatters,releasePhotometer,replayPhotometer,type PhotometerEvent,type PhotometerState} from './photometer';
 import {CALLBACK_COUNT_CONTRACT_SHA256,CALLBACK_COUNT_PHOTOMETER_POLICY,photometerJournalVersion,photometerJournalText} from './photometerJournal';
 import {parsePhotometerSession,serializePhotometerSession} from '../io/photometerSession';
@@ -24,6 +24,9 @@ describe('Front PHCALLBACK: VIREO\'s Extended elapsed period count',()=>{
  it('pins the contract and its seconds table, which equals the integration contract\'s Extended fractions',()=>{
   expect(sha('../../data/photometry/callback-count-contract.json')).toBe(CALLBACK_COUNT_CONTRACT_SHA256);
   expect(CALLBACK_COUNT_PHOTOMETER_POLICY).toBe(contract.browserPolicy.ownerPolicy);
+  // Review 1 L1: the superseded uncertainty is named by file, pinned hash and field (the file itself is unchanged).
+  expect(contract.supersedes).toEqual([expect.objectContaining({file:'data/photometry/integration-provenance.json',sha256:PHOTOMETER_INTEGRATION_SHA256,field:'uncertainty[0]',text:provenance.uncertainty[0]})]);
+  expect(sha('../../data/photometry/integration-provenance.json')).toBe(PHOTOMETER_INTEGRATION_SHA256);
   expect(contract.numerics).toMatchObject({controlWord:'0x1332',address:'0x5ae024',precisionBits:64,rounding:'nearest-even'});
   expect(contract.secondsTable.map(e=>e.address)).toEqual(provenance.secondsTable.map(e=>e.address));
   for(const [i,e] of contract.secondsTable.entries()){
