@@ -24,7 +24,7 @@ import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeN
 import {usePulsarParametersHost} from './RadioPulsarParameters';
 import {useRadioAccessHost} from './RadioAccessOptions';
 import {preparePulsarListCommand,type PulsarListCommandResult} from '../core/radioPulsarListCommand';
-import {radioOptionsCompiledRecord,radioSiteNonDefault,type RadioOptionsRecord,type RadioPageGate,type RadioSiteRecord} from '../core/radioAccessOptions';
+import {radioOptionsCompiledRecord,type RadioOptionsRecord,type RadioPageGate,type RadioSiteRecord} from '../core/radioAccessOptions';
 import {projectRadioOptionsEnv,projectRadioSiteClock,radioOptionsConsumerMismatches,type RadioOptionsProjectionReport,type RadioReceiverProjectionReport} from '../core/radioOptionsProjection';
 import {RADIO_RECEIVER_COMPILED_OPTIONS,type RadioReceiverOptions} from '../core/radioReceiver';
 import {copyReceiverLiveOptions} from '../core/radioReceiverSession';
@@ -40,7 +40,7 @@ const UNSUPPLIED_ENVIRONMENT:RadioEnvironment=UNSUPPLIED_RADIO_ENVIRONMENT;
 type ExerciseBlock='inactive'|'modal'|'receiver-box'|'hold';
 type ExerciseStatus=Readonly<{kind:'started'|'incomplete';applied:number;kept:number}|{kind:'blocked';reason:ExerciseBlock}|{kind:'refused';step:PulsarSetupStep;outcome:string}>;
 /** Refusal outcomes with their own wording; any other is named generically. */
-const EXERCISE_OUTCOMES=new Set(['non-default-site','diameter-required','timer-waiting-dome','draft-pending','options-unsupported','modal-open','manual-latched','changed','exercise-required','switch-unavailable']);
+const EXERCISE_OUTCOMES=new Set(['diameter-required','timer-waiting-dome','draft-pending','options-unsupported','modal-open','manual-latched','changed','exercise-required','switch-unavailable']);
 /** Monotonic browser time injected into the pure scenario transitions. */
 const perfNow=()=>performance.now();
 /** Largest setTimeout delay (2^31 − 1 ms): browsers overflow a larger one and fire it at once, so the range-end deadline
@@ -385,7 +385,7 @@ function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarD
  const startExercise=()=>{
   const blocked=exerciseBlockNow();if(blocked){setExerciseStatus({kind:'blocked',reason:blocked});return;}
   const snapshot={control:controlRef.current,environment:environmentRef.current,antenna:antennaRef.current,options:optionsRef.current,clock:scenarioRef.current,
-   managedDiameter:access.authorityNow().kind!=='absent',radioSiteNonDefault:radioSiteNonDefault(access.stateNow())};
+   managedDiameter:access.authorityNow().kind!=='absent'};
   const result=startPulsarExercise(snapshot);
   if(!result.ok){setExerciseStatus({kind:'refused',step:result.step,outcome:result.outcome});return;}
   if(exerciseBlockNow()!==null||controlRef.current!==snapshot.control||environmentRef.current!==snapshot.environment||antennaRef.current!==snapshot.antenna
@@ -414,9 +414,9 @@ function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarD
   }});
   return ()=>{controllerRef.current=null;};
  });
- // Front T11a: with an instructor radio site the guided setup does not count as done (its LST, HA and Dec are uncertified).
+ // Front T11a: an instructor radio site (or consumers left at one) is labelled; it does not change the exercise steps.
  const siteCompiled=pulsarSiteCompiled({options,clock:scenario,radioSiteNonDefault:access.siteNonDefault});
- const setupDone=pulsarSetupComplete({control:state,antenna,clock:scenario})&&siteCompiled;
+ const setupDone=pulsarSetupComplete({control:state,antenna,clock:scenario});
  const catalogState:RadioExerciseSummary['catalog']=parameters.catalog!==null?(parameters.source?.recorded?'recorded':'supplied'):parameters.catalogReading?'reading':'none';
  const exerciseSummary:RadioExerciseSummary={setup:setupDone,catalog:catalogState,sourceInBeam:receiverSummary.sourceInBeam,receivers:receiverSummary.receivers,
   frequencies:receiverSummary.frequencies,record:receiverSummary.record,trackingOff:antenna.activated&&!antenna.tracking};
@@ -441,7 +441,7 @@ function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarD
  return <div className="radio-route" data-testid="radio-route">
   {!siteCompiled&&<section className="card radio-control radio-control-env" aria-labelledby={`${id}-site`} data-testid="radio-site-uncertified">
    <h2 id={`${id}-site`}>{t('radioRoute.site.heading')}</h2>
-   <p style={{overflowWrap:'anywhere'}}>{t('radioRoute.site.uncertified',{name:access.siteEnv.name})}</p>
+   <p style={{overflowWrap:'anywhere'}}>{access.siteNonDefault?t('radioRoute.site.uncertified',{name:access.siteEnv.name}):t('radioRoute.site.uncertifiedConsumers')}</p>
   </section>}
   {initial!==null&&<section className="card radio-control radio-control-env" aria-labelledby={`${id}-restored`} data-testid="radio-restored-note">
    <h2 id={`${id}-restored`}>{t('radioRoute.restored.heading')}</h2>

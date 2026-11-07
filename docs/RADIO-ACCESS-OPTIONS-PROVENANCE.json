@@ -72,7 +72,8 @@
       {"path": "options-file-site.asm", "sha256": "1610da90782c676c26d0259fe8927a087aad54300467ce962903459765be8135", "receipt": "analysis/front-teacher/t11a/SHA256SUMS"},
       {"path": "options-reset.asm", "sha256": "8f9ae39a437f52bc16553f8204cbd1068fb5f5b8582df19254170e8b6be05ff4", "receipt": "analysis/front-teacher/t11a/SHA256SUMS"},
       {"path": "site-button.asm", "sha256": "90837ce3a0ff23d6c462e435b19115aaa4b4b206e14460bfec3f846540a9ea97", "receipt": "analysis/front-teacher/t11a/SHA256SUMS"},
-      {"path": "station-callers-optical.asm", "sha256": "3f93928c12f742a3816bd5a2f6384063246bf073db558d354dfaf478e434cdf8", "receipt": "analysis/front-teacher/t11a/SHA256SUMS"}
+      {"path": "station-callers-optical.asm", "sha256": "3f93928c12f742a3816bd5a2f6384063246bf073db558d354dfaf478e434cdf8", "receipt": "analysis/front-teacher/t11a/SHA256SUMS"},
+      {"path": "vcl-showmodal-activate.asm", "sha256": "c8a4bac1b41b2ff72d4a97d3894a161a15e4b18a03750537af0dc84dc06a1952", "receipt": "analysis/front-teacher/t11a/SHA256SUMS"}
     ]
   }
 }

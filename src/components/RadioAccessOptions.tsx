@@ -224,7 +224,8 @@ export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,
  /** TStationDlg OKBtnClick (OB-ST-03, parseStationDraft): a failure shows its box and keeps the dialog. */
  const okSite=()=>{
   if(!stationDraftState||stationError||!admitted()||yieldNow())return;
-  const p=parseStationDraft(stationDraftState);
+  // The radio copy-back discards the horizon (0x5a98d5..0x5a9928), so its web range check does not apply here (it is still parsed).
+ const p=parseStationDraft(stationDraftState,{horizonDiscarded:true});
   if(p.status==='error'){setStationError(p.message);return;}
   if(p.status==='unsupported'){setStationError(p.field==='name'?OBSERVATORY_MESSAGES.site.nameUnsupported:OBSERVATORY_MESSAGES.site.horizonUnsupported);return;}
   const r=user(s=>okRadioSite(s,p.site));
@@ -232,12 +233,12 @@ export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,
  };
  const cancelSite=()=>{if(stationError)return;const r=user(cancelRadioSite);if(r?.outcome==='site-cancelled'){setStationDraft(null);setSiteStatus('site-cancelled');}};
  const dismissStationError=()=>{if(admitted()&&!yieldNow())setStationError('');};
- /** [W] Reset (card action): the Site dialog's six fields to the compiled defaults in the object and the panel's copy, then
-  * the same projection as a Preferences close. */
+ /** [W] Reset (card action): the five site fields to the compiled defaults in the object and the panel's copy, then the
+  * same projection as a Preferences close, also when the site was already compiled (consumers left at another site). */
  const resetSite=()=>{
   const r=cardUser(resetRadioSite);if(!r)return;
-  if(r.outcome==='site-reset'||r.outcome==='site-reset-unchanged')setSiteStatus(r.outcome);
-  if(r.outcome==='site-reset')setProjection(latest.current.numeric.onEnvironmentCopied(r.state.env,r.state.site.env));
+  if(r.outcome!=='site-reset'&&r.outcome!=='site-reset-unchanged')return;
+  setSiteStatus(r.outcome);setProjection(latest.current.numeric.onEnvironmentCopied(r.state.env,r.state.site.env));
  };
  /** T8, then under an authority the projection at the recovered copy point (0x588751..0x588767), synchronously. */
  const closeParent=(result:'ok'|'cancel')=>{
@@ -584,13 +585,10 @@ type SimProps=Readonly<{snapshot:RadioOptionsFullRecord;checked:boolean;numeric:
  * chose OK (OKBtnClick has no SetFocus). */
 function RadioSimulationOptionsDialog({snapshot,checked,numeric,refusal,onText,onFlag,onAccess,onOk,onCancel,returnFocus,suppressed,station,siteRef,onSite}:SimProps){
  const id=useId(),root=useRef<HTMLDivElement>(null),horizon=useRef<HTMLInputElement>(null),lastFocus=useRef<HTMLElement|null>(null);
- // Front T11a: after TStationDlg, FormActivate focuses HorzEd again (0x5a938f..0x5a93a2) through the unblocked path.
+ // Front T11a: inert while TStationDlg is open; FormActivate does not run again after it (focus returns to Site...).
  const blocked=numeric.failure!==null||station;
  useModalFocus(horizon,blocked,{returnFocus,suppressed});
  useEffect(()=>{if(!blocked)horizon.current?.select();},[]);// mount-time `blocked` only
- // Front T11a [I]: TStationDlg closed, the form is active again and FormActivate focuses HorzEd with its text selected.
- const wasStation=useRef(station);
- useEffect(()=>{if(wasStation.current&&!station&&!suppressed.current&&horizon.current&&canTakeFocus(horizon.current)){horizon.current.focus();horizon.current.select();}wasStation.current=station;},[station]);// the refs are stable
  useEffect(()=>{if(blocked)return;const el=lastFocus.current;lastFocus.current=null;if(el&&root.current?.contains(el)&&canTakeFocus(el))el.focus();},[blocked]);
  const ok=()=>{lastFocus.current=document.activeElement as HTMLElement|null;onOk();};
  const onKeyDown=(e:KeyboardEvent<HTMLDivElement>)=>{

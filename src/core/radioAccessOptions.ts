@@ -307,15 +307,12 @@ export function openRadioOptions(s:RadioAccessState):RadioAccessTransition{
  if(s.parent===null)return keep(s,'refused-no-parent');
  if(s.parent.child!==null)return keep(s,'refused-child-open');
  if(s.authority.kind==='absent')return next(s,{parent:Object.freeze({child:Object.freeze({snapshot:s.root,checked:s.root.accessPulsarList})})},'radio-opened');
- return next(s,activated(s),'radio-opened');
-}
-/** R-RX9 RSO-03 FormActivate 0x5a9138 under an authority: the same snapshot (Front T11a: its site part too), the check boxes
- * (FastSlw shown as record+0x93b = 5 at 0x5a919b) and the nine texts, from the object as it is now. */
-function activated(s:RadioAccessState):Partial<RadioAccessState>{
+ // R-RX9 RSO-03: the same snapshot (Front T11a: its site part too), the check boxes (FastSlw shown as record+0x93b = 5 at
+ // 0x5a919b) and the nine texts.
  const r=s.root as RadioOptionsFullRecord;
  const texts=Object.freeze(Object.fromEntries(RADIO_OPTIONS_OK_ORDER.map(f=>[f,formatRadioOptionsValue(f,r[f])]))) as Record<RadioOptionsNumberField,string>;
  const numeric:RadioOptionsNumericChild=Object.freeze({texts,limitSlewing:r.limitSlewing93a,fastSlewing:r.maxRateIndex93b===5,failure:null});
- return {parent:Object.freeze({child:Object.freeze({snapshot:s.root,checked:r.accessPulsarList,numeric})}),site:Object.freeze({...s.site,snapshot:s.site.root,station:false})};
+ return next(s,{parent:Object.freeze({child:Object.freeze({snapshot:s.root,checked:r.accessPulsarList,numeric})}),site:Object.freeze({...s.site,snapshot:s.site.root})},'radio-opened');
 }
 /** T5 the checkbox: Checked only. R-RX9: refused while the failure box is open (it is modal over the dialog). */
 export function editAccessPulsarList(s:RadioAccessState,checked:boolean):RadioAccessTransition{
@@ -425,10 +422,11 @@ export function dismissRadioOptionsFailure(s:RadioAccessState):RadioAccessTransi
  return withNumeric(s,x.c,{...x.n,failure:null},'failure-dismissed');
 }
 // ---- Front T11a: Site... (TRadiOptsDlg.SiteBtnClick 0x5a9810), TStationDlg's return and the web Reset.
-/** SiteBtnClick 0x5a9810: the object's site fields and record+0x90c go to the station buffer (0x5a9824..0x5a9897), then a new
- * TStationDlg (class 0x592330, the optical observatory's dialog) is shown modally (0x5a98a4..0x5a98bf). [W] Only under a
- * numeric authority: the dialog edits record+0x90c, which the web interprets only there (WEB-RSO-AUTH-01); refused while
- * the failure box or the station dialog is open. */
+/** SiteBtnClick 0x5a9810: the object's site fields and record+0x90c (the Horizon Limit) go to the station buffer
+ * (0x5a9824..0x5a9897), then a new TStationDlg (class 0x592330, the optical observatory's dialog) is shown modally
+ * (0x5a98a4..0x5a98bf). [W] Only under a numeric authority: the site reaches its consumers only through the projection at
+ * the Preferences close, which exists only there (WEB-RSO-AUTH-01, WEB-RSO-PROJ-01); refused while the failure box or the
+ * station dialog is open. */
 export function openRadioSite(s:RadioAccessState):RadioAccessTransition{
  const c=child(s);if(c===null)return keep(s,'refused-no-child');
  if(s.authority.kind==='absent'||!c.numeric)return keep(s,'refused-no-authority');
@@ -437,36 +435,34 @@ export function openRadioSite(s:RadioAccessState):RadioAccessTransition{
  return next(s,{site:Object.freeze({...s.site,station:true})},'site-opened');
 }
 /** ModalResult = 1 (0x5a98cc): the buffer goes back field by field into the object (0x5a98d5..0x5a9928): name (0x403c50),
- * longitude, latitude, height, record+0x90c (the Horizon Limit) and UT − local. Then TRadiOptsDlg becomes the active form
- * again and its FormActivate 0x5a9138, which has no first-activation guard, runs once more [I: VCL CM_ACTIVATE when the
- * active form changes back from TStationDlg]: a new snapshot of the whole object (so a later Cancel keeps the site), and the
- * nine texts and check boxes reloaded from the object (unsaved edits in them are replaced). `site` is what TStationDlg's OK
- * stored (observatorySite.ts parseStationDraft); outside the web site domain the call is refused and nothing changes. */
-export function okRadioSite(s:RadioAccessState,site:Readonly<RadioSiteRecord&{horizonRadians:number}>):RadioAccessTransition{
+ * longitude, latitude, height (+0x47) and UT − local (+0x4b). The horizon (+0x3d) is NOT copied back, so an edit to it is
+ * discarded and record+0x90c keeps its value [D]. TRadiOptsDlg's FormActivate does not run again: ShowModal (0x47a100)
+ * restores Screen's focused form (0x47a35c..0x47a373) before SetActiveWindow, and SetFocusedControl (0x477f3c) sends
+ * CM_ACTIVATE only when the focused form changes (0x47801d..0x478027) [D for the VCL path]. So the form's snapshot, texts and
+ * check boxes stay as they were, and a later Radio Cancel restores the earlier site. `site` is what TStationDlg's OK stored
+ * (observatorySite.ts parseStationDraft; any horizon it carries is ignored); outside the web site domain the call is refused
+ * and nothing changes. */
+export function okRadioSite(s:RadioAccessState,site:RadioSiteRecord):RadioAccessTransition{
  if(!s.site.station)return keep(s,'refused-no-site');
- if(!isRadioSiteRecord(site)||!isRadioOptionsFieldValue('horizon90c',site.horizonRadians))return keep(s,'refused-site-value');
- const root=Object.freeze({...s.root,horizon90c:site.horizonRadians}) as RadioOptionsRecord;
- const siteRoot:RadioSiteRecord=Object.freeze({name:site.name,longitudeRadians:site.longitudeRadians,latitudeRadians:site.latitudeRadians,heightMetres:site.heightMetres,utMinusLocalHours:site.utMinusLocalHours});
- const written={...s,root,site:Object.freeze({...s.site,root:siteRoot})};
- return next(s,{root,...activated(written)},'site-ok');
+ if(!isRadioSiteRecord(site))return keep(s,'refused-site-value');
+ const root:RadioSiteRecord=Object.freeze({name:site.name,longitudeRadians:site.longitudeRadians,latitudeRadians:site.latitudeRadians,heightMetres:site.heightMetres,utMinusLocalHours:site.utMinusLocalHours});
+ return next(s,{site:Object.freeze({...s.site,root,station:false})},'site-ok');
 }
-/** TStationDlg Cancel (ModalResult ≠ 1, 0x5a98d3): the object is unchanged; FormActivate runs again as after OK [I]. */
+/** TStationDlg Cancel (ModalResult ≠ 1, 0x5a98d3): the dialog closes and nothing else changes. */
 export function cancelRadioSite(s:RadioAccessState):RadioAccessTransition{
  if(!s.site.station)return keep(s,'refused-no-site');
- return next(s,activated(s),'site-cancelled');
+ return next(s,{site:Object.freeze({...s.site,station:false})},'site-cancelled');
 }
-/** [W] Reset (card action, page session): the six fields the Site dialog edits — the five site fields and record+0x90c —
- * return to the compiled defaults (0x5a8ec4) in the object and in its env copy; the caller then projects the env copy as at
- * a Preferences close. VIREO's own reset is TOptionsDlg's ResetBtnClick (0x5a6d24 → 0x5a8ec4 at 0x5a6dc5), which resets the
- * whole radio object (not ported, Front T11b). Refused while a box or dialog is open and without an authority (the site
- * cannot differ there). */
+/** [W] Reset (card action, page session): the five site fields return to the compiled defaults (0x5a8ec4) in the object
+ * and in its env copy. The caller then projects the env copy as at a Preferences close, also when the site was already
+ * compiled ('site-reset-unchanged'), so consumers left elsewhere (a restored investigation, a projection refused during a
+ * manual hold) come back too. VIREO's own reset is TOptionsDlg's ResetBtnClick (0x5a6d24 → 0x5a8ec4 at 0x5a6dc5), which
+ * resets the whole radio object (not ported, Front T11b). Refused while a box or dialog is open and without an authority. */
 export function resetRadioSite(s:RadioAccessState):RadioAccessTransition{
  if(surfaceOpen(s))return keep(s,'refused-surface-open');
  if(s.authority.kind==='absent')return keep(s,'refused-no-authority');
- const h=RADIO_OPTIONS_NUMERIC_CONSTANTS.compiledHorizonRadians,root=s.root as RadioOptionsFullRecord,env=s.env as RadioOptionsFullRecord;
- if(isCompiledRadioSite(s.site.root)&&isCompiledRadioSite(s.site.env)&&Object.is(root.horizon90c,h)&&Object.is(env.horizon90c,h))return keep(s,'site-reset-unchanged');
- return next(s,{root:Object.freeze({...s.root,horizon90c:h}) as RadioOptionsRecord,env:Object.freeze({...s.env,horizon90c:h}) as RadioOptionsRecord,
-  site:Object.freeze({...s.site,root:RADIO_SITE_COMPILED,env:RADIO_SITE_COMPILED})},'site-reset');
+ if(isCompiledRadioSite(s.site.root)&&isCompiledRadioSite(s.site.env))return keep(s,'site-reset-unchanged');
+ return next(s,{site:Object.freeze({...s.site,root:RADIO_SITE_COMPILED,env:RADIO_SITE_COMPILED})},'site-reset');
 }
 /** The radio site in effect is not VIREO's compiled one: the env copy's site fields (Front T11a). */
 export const radioSiteNonDefault=(s:RadioAccessState)=>!isCompiledRadioSite(s.site.env);

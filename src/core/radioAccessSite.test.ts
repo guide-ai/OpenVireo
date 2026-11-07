@@ -71,24 +71,32 @@ describe('T11a SiteBtnClick 0x5a9810 and the TStationDlg return',()=>{
   expect(cancelRadioOptions(s).outcome).toBe('refused-site-open');expect(okRadioSimulationOptions(s).outcome).toBe('refused-site-open');
   expect(okRadioOptions(s,'not-ported').outcome).toBe('refused-numeric-authority');
  });
- it('OK writes the object directly (not env), record+0x90c included, and the form reactivates from the object [I]',()=>{
+ it('OK writes only the five site fields; the horizon edit is discarded [D] and the form is not reactivated [D]',()=>{
   const edited=run(INITIAL_RADIO_ACCESS,optIn,demo,prefs,radio,x=>editRadioOptionsText(x,'aperture916','250'),x=>editRadioOptionsFlag(x,'limitSlewing',true),site);
   const r=okRadioSite(edited,SITE);expect(r.outcome).toBe('site-ok');
   const st=r.state,c=st.parent!.child!;
   expect(st.site.root).toEqual({name:'Test Site',longitudeRadians:SITE.longitudeRadians,latitudeRadians:SITE.latitudeRadians,heightMetres:2500,utMinusLocalHours:4});
-  expect(full(st).horizon90c).toBe(SITE.horizonRadians);expect(full(st).aperture916).toBe(100);
+  // 0x5a98d5..0x5a9928 copies no +0x3d: record+0x90c keeps its value though the dialog's Horizon said 15°.
+  expect(st.root).toBe(edited.root);expect(Object.is(full(st).horizon90c,K.compiledHorizonRadians)).toBe(true);
   expect(st.site.env).toBe(RADIO_SITE_COMPILED);expect(st.env).toBe(edited.env);expect(st.site.station).toBe(false);
-  // FormActivate again: snapshot of the new object, the texts and boxes reloaded (the unconfirmed 250 and Limit Slewing are gone).
-  expect(c.snapshot).toBe(st.root);expect(st.site.snapshot).toBe(st.site.root);
-  expect(c.numeric!.texts.horizon90c).toBe('15.0');expect(c.numeric!.texts.aperture916).toBe('100');expect(c.numeric!.limitSlewing).toBe(false);
-  // So a later Radio Cancel keeps the site (the re-snapshot), and Radio OK stores the reloaded Horizon Limit text.
-  const cancelled=run(st,cancelRadioOptions);expect(cancelled.site.root).toBe(st.site.root);expect(full(cancelled).horizon90c).toBe(SITE.horizonRadians);
-  const okd=run(st,okRadioSimulationOptions);expect(okd.site.root).toBe(st.site.root);expect(full(okd).horizon90c).toBe(15*K.degreesToRadians);expect(okd.site.snapshot).toBeNull();
+  // No FormActivate: the activation snapshot, the unconfirmed texts and boxes stay.
+  expect(st.parent).toBe(edited.parent);expect(c.snapshot).toBe(edited.parent!.child!.snapshot);expect(st.site.snapshot).toBe(RADIO_SITE_COMPILED);
+  expect(c.numeric!.texts.horizon90c).toBe('10.0');expect(c.numeric!.texts.aperture916).toBe('250');expect(c.numeric!.limitSlewing).toBe(true);
+  // Radio OK keeps the site and stores the texts; a horizon NaN from the dialog is irrelevant (never copied back).
+  const okd=run(st,okRadioSimulationOptions);expect(okd.site.root).toBe(st.site.root);expect(full(okd).aperture916).toBe(250);expect(okd.site.snapshot).toBeNull();
+  expect(okRadioSite(run(edited),{...SITE,horizonRadians:Number.NaN} as RadioSiteRecord).outcome).toBe('site-ok');
  });
- it('Cancel leaves the object and reactivates the form too; Radio Cancel without Site restores the snapshot',()=>{
+ it('Site OK with latitude −30°, then Radio Cancel, restores the earlier site (0x5a9940 copies the activation snapshot)',()=>{
+  const opened=siteOpen(),r=run(opened,okSite({...SITE,latitudeRadians:-30*D2R}));
+  expect(r.site.root.latitudeRadians).toBe(-30*D2R);
+  const back=run(r,cancelRadioOptions);expect(back.site.root).toBe(RADIO_SITE_COMPILED);expect(back.site.snapshot).toBeNull();expect(back.root).toBe(opened.root);
+  expect(radioSiteNonDefault(run(back,parentOk))).toBe(false);
+ });
+ it('Cancel closes the station dialog only',()=>{
   const edited=run(INITIAL_RADIO_ACCESS,optIn,demo,prefs,radio,x=>editRadioOptionsText(x,'aperture916','250'),site);
   const r=cancelRadioSite(edited);expect(r.outcome).toBe('site-cancelled');
-  expect(r.state.site.root).toBe(edited.site.root);expect(r.state.root).toBe(edited.root);expect(r.state.parent!.child!.numeric!.texts.aperture916).toBe('100');
+  expect(r.state.site).toEqual({...edited.site,station:false});expect(r.state.root).toBe(edited.root);expect(r.state.parent).toBe(edited.parent);
+  expect(r.state.parent!.child!.numeric!.texts.aperture916).toBe('250');
   expect(cancelRadioSite(r.state)).toMatchObject({outcome:'refused-no-site',changed:false});
   expect(okRadioSite(r.state,SITE)).toMatchObject({outcome:'refused-no-site',changed:false});
   const back=run(r.state,cancelRadioOptions);expect(back.site.root).toBe(RADIO_SITE_COMPILED);expect(back.site.snapshot).toBeNull();
@@ -96,38 +104,44 @@ describe('T11a SiteBtnClick 0x5a9810 and the TStationDlg return',()=>{
  it('refuses values outside the web site domain without changing anything',()=>{
   const s=siteOpen();
   for(const bad of [{...SITE,latitudeRadians:Math.PI/2+1e-9},{...SITE,longitudeRadians:Math.PI+1e-9},{...SITE,name:'é'},{...SITE,name:'x'.repeat(41)},
-   {...SITE,horizonRadians:Number.NaN},{...SITE,heightMetres:0.1},{...SITE,utMinusLocalHours:13}]){
+   {...SITE,heightMetres:0.1},{...SITE,utMinusLocalHours:13}]){
    const r=okRadioSite(s,bad);expect(r.outcome).toBe('refused-site-value');expect(r.state).toBe(s);
   }
  });
+ it('the radio host parses the horizon as natively but skips the web ±90° check (the value is discarded)',()=>{
+  const d={...stationDraft({...RADIO_SITE_COMPILED,horizonRadians:K.compiledHorizonRadians}),horizon:'120'};
+  expect(parseStationDraft(d)).toEqual({status:'unsupported',field:'horizon'});
+  expect(parseStationDraft(d,{horizonDiscarded:true}).status).toBe('ok');
+  expect(parseStationDraft({...d,horizon:'x'},{horizonDiscarded:true}).status).toBe('error');
+ });
  it('the Preferences close copies the site to env with OK and with Cancel; the env site is what reads as non-default',()=>{
-  const stored=run(siteOpen(),okSite(),cancelRadioOptions);
+  const stored=run(siteOpen(),okSite(),okRadioSimulationOptions);
   expect(radioSiteNonDefault(stored)).toBe(false);
   for(const result of ['ok','cancel'] as const){
    const closed=run(stored,s=>closePreferences(s,result));
-   expect(closed.site.env).toBe(stored.site.root);expect(radioSiteNonDefault(closed)).toBe(true);expect(full(closed).horizon90c).toBe(SITE.horizonRadians);
+   expect(closed.site.env).toBe(stored.site.root);expect(radioSiteNonDefault(closed)).toBe(true);expect(Object.is(full(closed).horizon90c,K.compiledHorizonRadians)).toBe(true);
   }
  });
 });
 
 describe('T11a Reset [W] and page-session only',()=>{
- it('returns the six fields to the compiled values in root and env; refused while a surface is open and without an authority',()=>{
-  const applied=run(siteOpen(),okSite(),cancelRadioOptions,parentOk);
+ it('returns the five site fields to the compiled values in root and env; refused while a surface is open and without an authority',()=>{
+  const applied=run(siteOpen(),okSite(),okRadioSimulationOptions,parentOk);
   expect(resetRadioSite(run(applied,prefs))).toMatchObject({outcome:'refused-surface-open',changed:false});
   expect(resetRadioSite(INITIAL_RADIO_ACCESS)).toMatchObject({outcome:'refused-no-authority',changed:false});
   const r=resetRadioSite(applied);expect(r.outcome).toBe('site-reset');
   expect(r.state.site.root).toBe(RADIO_SITE_COMPILED);expect(r.state.site.env).toBe(RADIO_SITE_COMPILED);
-  expect(Object.is(full(r.state).horizon90c,K.compiledHorizonRadians)).toBe(true);expect(Object.is((r.state.env as RadioOptionsFullRecord).horizon90c,K.compiledHorizonRadians)).toBe(true);
-  expect(full(r.state).aperture916).toBe(100);expect(radioSiteNonDefault(r.state)).toBe(false);
+  expect(r.state.root).toBe(applied.root);expect(r.state.env).toBe(applied.env);expect(radioSiteNonDefault(r.state)).toBe(false);
+  // Unchanged here; the host still projects the env copy, so consumers left at another site come back (M2).
   expect(resetRadioSite(r.state)).toMatchObject({outcome:'site-reset-unchanged',changed:false});
  });
  it('Leave keeps the values: the page gate closing writes only the gate',()=>{
-  const applied=run(siteOpen(),okSite(),cancelRadioOptions,parentOk);
+  const applied=run(siteOpen(),okSite(),okRadioSimulationOptions,parentOk);
   const left=run(applied,s=>followPageGate(s,{open:false,source:'closed'}));
   expect(left.site).toBe(applied.site);expect(left.root).toBe(applied.root);
  });
  it('no investigation file carries the site: the snapshot has no site and a restore starts from the compiled site',()=>{
-  const applied=run(siteOpen(),okSite(),cancelRadioOptions,parentOk);
+  const applied=run(siteOpen(),okSite(),okRadioSimulationOptions,parentOk);
   const snap=radioAccessSnapshot(applied);if(!snap.ok)throw new Error('snapshot');
   expect(Object.keys(snap.snapshot).sort()).toEqual(['authority','closeRecipient','env','gate','lastChildOk','menu','root']);
   expect(JSON.stringify(snap.snapshot)).not.toContain('Test Site');
@@ -169,13 +183,16 @@ describe('T11a consumers of the env site',()=>{
   expect(applyRadioSiteLongitude(tr.scenario,SITE.longitudeRadians)).toMatchObject({outcome:'longitude-unchanged',changed:false});
   expect(()=>applyRadioSiteLongitude(INITIAL_RADIO_CLOCK_SCENARIO,4)).toThrow();
  });
- it('E06 Start refuses an instructor site (env, antenna latitude or applied clock longitude) and keeps the compiled path',()=>{
+ it('E06 Start does not depend on the site (M1); pulsarSiteCompiled only drives the uncertified label',()=>{
   const input={control:INITIAL_RADIO_CONTROL,environment:UNSUPPLIED_RADIO_ENVIRONMENT,antenna:INITIAL_RADIO_LAB,options:RADIO_COMPILED_OPTIONS,clock:INITIAL_RADIO_CLOCK_SCENARIO,managedDiameter:false};
-  expect(startPulsarExercise(input).ok).toBe(true);expect(startPulsarExercise({...input,radioSiteNonDefault:false}).ok).toBe(true);
-  expect(startPulsarExercise({...input,radioSiteNonDefault:true})).toEqual({ok:false,step:'site',outcome:'non-default-site'});
-  expect(startPulsarExercise({...input,options:{...RADIO_COMPILED_OPTIONS,latitudeRadians:SITE.latitudeRadians}})).toEqual({ok:false,step:'site',outcome:'non-default-site'});
-  const clock=applyRadioSiteLongitude(INITIAL_RADIO_CLOCK_SCENARIO,SITE.longitudeRadians).scenario;
-  expect(startPulsarExercise({...input,clock})).toEqual({ok:false,step:'site',outcome:'non-default-site'});
+  const options={...RADIO_COMPILED_OPTIONS,latitudeRadians:SITE.latitudeRadians},clock=applyRadioSiteLongitude(INITIAL_RADIO_CLOCK_SCENARIO,SITE.longitudeRadians).scenario;
+  const r=startPulsarExercise({...input,options,clock});
+  if(!r.ok)throw new Error('start');expect(r.clock.longitudeRadians).toBe(SITE.longitudeRadians);expect(r.kept).toContain('longitude');
+  expect(r.antennaSteps[0].state.pointing.dec).toBe(SITE.latitudeRadians*RADIO_LAB_CONSTANTS.radiansToDegrees);
+  expect(pulsarSiteCompiled({options:RADIO_COMPILED_OPTIONS,clock:INITIAL_RADIO_CLOCK_SCENARIO})).toBe(true);
   expect(pulsarSiteCompiled({options:RADIO_COMPILED_OPTIONS,clock:applyCompiledRadioLongitude(INITIAL_RADIO_CLOCK_SCENARIO).scenario})).toBe(true);
+  expect(pulsarSiteCompiled({options:RADIO_COMPILED_OPTIONS,clock:INITIAL_RADIO_CLOCK_SCENARIO,radioSiteNonDefault:true})).toBe(false);
+  expect(pulsarSiteCompiled({options,clock:INITIAL_RADIO_CLOCK_SCENARIO})).toBe(false);
+  expect(pulsarSiteCompiled({options:RADIO_COMPILED_OPTIONS,clock})).toBe(false);
  });
 });

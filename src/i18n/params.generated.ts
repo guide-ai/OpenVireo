@@ -2848,7 +2848,6 @@ export interface MessageParameters {
   "radioRoute.exercise.step.tracking": never;
   "radioRoute.exercise.step.ut": never;
   "radioRoute.exercise.step.longitude": never;
-  "radioRoute.exercise.step.site": never;
   "radioRoute.exercise.outcome.diameter-required": never;
   "radioRoute.exercise.outcome.timer-waiting-dome": never;
   "radioRoute.exercise.outcome.draft-pending": never;
@@ -2858,9 +2857,9 @@ export interface MessageParameters {
   "radioRoute.exercise.outcome.changed": never;
   "radioRoute.exercise.outcome.exercise-required": never;
   "radioRoute.exercise.outcome.switch-unavailable": never;
-  "radioRoute.exercise.outcome.non-default-site": never;
   "radioRoute.site.heading": never;
   "radioRoute.site.uncertified": "name";
+  "radioRoute.site.uncertifiedConsumers": never;
   "radioRoute.exercise.outcome.other": "outcome";
   "radioRoute.exercise.catalogRetry": never;
   "radioRoute.exercise.catalog.none": never;

@@ -23,16 +23,13 @@ export const PULSAR_EXERCISE_SCENARIO=Object.freeze({
 /** The main-window inputs at first use (FormCreate dome byte 0, nothing supplied); the route's initial value. */
 export const UNSUPPLIED_RADIO_ENVIRONMENT:RadioEnvironment=Object.freeze({domeByte:0,accessOptionByte:false,dishDiameterMeters:null,otherWindowItemsVisible:false});
 
-/** 'site' is a refusal only (Front T11a), never an applied or kept step. */
-export type PulsarSetupStep='site'|'exercise'|'environment'|'access'|'access-tick'|'switch'|'activate'|'tracking'|'ut'|'longitude';
+export type PulsarSetupStep='exercise'|'environment'|'access'|'access-tick'|'switch'|'activate'|'tracking'|'ut'|'longitude';
 export const PULSAR_SETUP_STEPS:readonly PulsarSetupStep[]=Object.freeze(['exercise','environment','access','access-tick','switch','activate','tracking','ut','longitude']);
 
 export type PulsarExerciseStartInput=Readonly<{
  control:RadioControlState;environment:RadioEnvironment;antenna:RadioLabState;options:RadioLabOptions;clock:RadioClockScenario;
  /** R-RX9: the dish diameter is owned by the radio options authority; only the access option byte may be written. */
  managedDiameter:boolean;
- /** Front T11a: the radio options' env copy holds a site that is not VIREO's compiled one (radioSiteNonDefault). */
- radioSiteNonDefault?:boolean;
 }>;
 export type PulsarExerciseStartResult=Readonly<
  |{ok:true;control:RadioControlState;environment:RadioEnvironment;antennaSteps:readonly RadioLabTransition[];clock:RadioClockScenario;
@@ -50,9 +47,11 @@ export function radioEnvironmentUnsupplied(env:RadioEnvironment,managedDiameter:
 }
 
 const refuse=(step:PulsarSetupStep,outcome:string):PulsarExerciseStartResult=>Object.freeze({ok:false,step,outcome});
-/** Front T11a [W]: the E06 guide's setup (initial Dec, LST, hour angles, the altitude check) is certified only with VIREO's
- * compiled site: the env site, the antenna latitude and an applied clock longitude must all be the compiled values. */
-export function pulsarSiteCompiled(input:Pick<PulsarExerciseStartInput,'options'|'clock'|'radioSiteNonDefault'>):boolean{
+/** Front T11a [W]: the radio site in use is VIREO's compiled one: the env site (radioSiteNonDefault false), the antenna
+ * latitude and an applied clock longitude. Otherwise the first-activation Dec and the LST/HA readouts are uncertified and the
+ * route says so. The exercise Start does not depend on it: receivers and pulsar measurements read no site field, and at the
+ * compiled options (Limit Slewing off, 0x5a9075) the altitude predicate 0x5668e0 gates no slew. */
+export function pulsarSiteCompiled(input:Readonly<{options:RadioLabOptions;clock:RadioClockScenario;radioSiteNonDefault?:boolean}>):boolean{
  return input.radioSiteNonDefault!==true&&Object.is(input.options.latitudeRadians,RADIO_COMPILED_OPTIONS.latitudeRadians)
   &&(input.clock.longitudeRadians===null||Object.is(input.clock.longitudeRadians,RADIO_CLOCK_CONSTANTS.compiledLongitudeRadians));
 }
@@ -110,10 +109,6 @@ export function startPulsarExercise(input:PulsarExerciseStartInput):PulsarExerci
   if(tr.outcome!=='activated')return refuse('activate',tr.outcome);
   antenna=tr.state;antennaSteps.push(tr);applied.push('activate');activatedHere=true;
  }
-
- // Front T11a: an instructor radio site keeps the guided exercise out. Checked after the activation step so that options
- // outside the supported profile are still named there; the call runs on one snapshot, so nothing is committed either way.
- if(!pulsarSiteCompiled(input))return refuse('site','non-default-site');
 
  // 7. RA-05 Tracking on, only right after this call's activation.
  if(!activatedHere||antenna.tracking)kept.push('tracking');
