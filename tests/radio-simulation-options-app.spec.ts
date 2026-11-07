@@ -244,9 +244,10 @@ test('activation texts, focus and selection on Horizon Limit, the Tab cycle; rea
  for(const k of ['plotPulsars93c','hotListFile93d','hotListExact93e','testMode940'])await expect(id(page,`radio-options-readonly-${k}`)).not.toBeChecked();
  await expect(id(page,'radio-options-readonly-soundFeatures93f')).toBeChecked();await expect(id(page,'radio-options-readonly-soundFeatures93f')).toBeDisabled();
  await expect(id(page,'radio-options-readonly-pulsarId939')).toHaveAttribute('data-value','1');await expect(id(page,'radio-options-readonly-telescopeType938')).toHaveAttribute('data-value','0');
- await expect(id(page,'radio-options-files')).toBeDisabled();await expect(id(page,'radio-options-site')).toBeDisabled();
- // Tab: the nine fields in DFM order, Limit Slewing, Fast Slewing, Access Pulsar List, OK, Cancel, then back to Horizon.
- const order=[...DFM_ORDER.slice(1).map(f=>`radio-options-field-${f}`),'radio-options-flag-limitSlewing','radio-options-flag-fastSlewing','radio-options-effects-summary','radio-access-checkbox','radio-access-child-ok','radio-access-child-cancel','radio-options-field-horizon90c'];
+ // Front T11a: Site... is live (tests/teacher-radio-site.spec.ts); Files... stays disabled.
+ await expect(id(page,'radio-options-files')).toBeDisabled();await expect(id(page,'radio-options-site')).toBeEnabled();
+ // Tab: the nine fields in DFM order, Limit Slewing, Fast Slewing, Access Pulsar List, Site..., OK, Cancel, then back to Horizon.
+ const order=[...DFM_ORDER.slice(1).map(f=>`radio-options-field-${f}`),'radio-options-flag-limitSlewing','radio-options-flag-fastSlewing','radio-options-effects-summary','radio-access-checkbox','radio-options-site','radio-access-child-ok','radio-access-child-cancel','radio-options-field-horizon90c'];
  for(const t of order){await page.keyboard.press('Tab');await expect(id(page,t),t).toBeFocused();}
  await page.keyboard.press('Shift+Tab');await expect(id(page,'radio-access-child-cancel')).toBeFocused();
  for(const card of ['radio-access-card','radio-route-clock','pulsar-params-card','radio-route-panel-wrapper'])await expect(id(page,card)).toHaveAttribute('inert');

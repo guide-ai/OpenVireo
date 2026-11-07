@@ -127,6 +127,13 @@ export function applyCompiledRadioLongitude(s:RadioClockScenario):RadioClockScen
  if(s.longitudeRadians===lon)return keep(s,'longitude-unchanged');
  return next({...s,longitudeRadians:lon,run:s.run+1},'longitude-applied');
 }
+/** Front T11a: the radio site longitude (env+0x3789, record+0x8f4) projected at a Preferences close; the same change as
+ * the compiled action, with the site's value. Throws outside the supported longitude domain. */
+export function applyRadioSiteLongitude(s:RadioClockScenario,lon:number):RadioClockScenarioTransition{
+ if(!isRadioLongitude(lon))throw new Error('Unsupported radio clock longitude');
+ if(Object.is(s.longitudeRadians,lon))return keep(s,'longitude-unchanged');
+ return next({...s,longitudeRadians:lon,run:s.run+1},'longitude-applied');
+}
 /** Scenario UT now (ms), or null when no UT is applied. May lie beyond maxUTMS; readRadioClock reports that. */
 export function radioClockInstant(s:RadioClockScenario,perf:number):number|null{
  const base=s.utc===null?null:parseClockUTC(s.utc);

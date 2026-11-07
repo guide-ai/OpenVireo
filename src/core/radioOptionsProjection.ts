@@ -7,10 +7,12 @@
 import {isRadioLabOptions,radioLabProfileIssues,type RadioLabOptions,type RadioLabProfileIssue} from './radioAntenna';
 import {radioReceiverOptionsIssue,type RadioReceiverOptions} from './radioReceiver';
 import type {RadioEnvironment} from './radioControl';
-import {isRadioOptionsFullRecord,type RadioOptionsFullRecord,type RadioOptionsTypedRecord} from './radioAccessOptions';
+import {RADIO_SITE_COMPILED,isRadioOptionsFullRecord,isRadioSiteRecord,type RadioOptionsFullRecord,type RadioOptionsTypedRecord,type RadioSiteRecord} from './radioAccessOptions';
 
-export type AntennaField='transitTelescope'|'limitsEnabled'|'minimumAltitudeRadians'|'maxRateIndex'|'rateBase'|'instantSlew';
+export type AntennaField='transitTelescope'|'limitsEnabled'|'minimumAltitudeRadians'|'maxRateIndex'|'rateBase'|'instantSlew'|'latitudeRadians';
 const ANTENNA_FIELDS:readonly AntennaField[]=['transitTelescope','limitsEnabled','minimumAltitudeRadians','maxRateIndex','rateBase','instantSlew'];
+/** Front T11a: with the env site supplied, the antenna's latitude (env+0x3793 = record+0x8fe) is projected too. */
+const SITE_ANTENNA_FIELDS:readonly AntennaField[]=[...ANTENNA_FIELDS,'latitudeRadians'];
 export type ReceiverField='dishDiameterMeters'|'gain924'|'background928'|'beamWidth92c'|'temperature930';
 const RECEIVER_FIELDS:readonly ReceiverField[]=['dishDiameterMeters','gain924','background928','beamWidth92c','temperature930'];
 export type RadioOptionsChange<F extends string>=Readonly<{field:F;before:number|boolean|null;after:number|boolean}>;
@@ -36,7 +38,11 @@ export type RadioReceiverProjectionReport=Readonly<
  |{kind:'unchanged'}|{kind:'unavailable'}|{kind:'refused-domain';field:string}
  |{kind:'applied';changes:readonly RadioOptionsChange<ReceiverField>[]}
  |{kind:'refused-record-lease'}|{kind:'refused-box'}|{kind:'refused-error'}|{kind:'refused-stale'}>;
-export type RadioOptionsProjectionReport=Readonly<{antenna:RadioAntennaProjection;receiver:RadioReceiverProjectionReport;panel:RadioPanelProjection}>;
+/** Front T11a: the radio clock's longitude (env+0x3789 = record+0x8f4, read by ClocktimerTimer 0x565562..0x56557f). */
+export type RadioClockProjection=Readonly<{kind:'unchanged'}|{kind:'applied';before:number|null;after:number}>;
+export type RadioOptionsProjectionReport=Readonly<{antenna:RadioAntennaProjection;receiver:RadioReceiverProjectionReport;panel:RadioPanelProjection;
+ /** Front T11a: present when the env site was projected. */
+ clock?:RadioClockProjection}>;
 export type RadioOptionsConsumers=Readonly<{
  /** The route's antenna options (RadioLabOptions) in use. */
  antenna:RadioLabOptions;
@@ -53,8 +59,9 @@ export const RADIO_OPTIONS_NOT_APPLIED:readonly (keyof RadioOptionsTypedRecord)[
 
 const changesOf=<F extends string>(fields:readonly F[],before:Readonly<Record<F,number|boolean|null>>,after:Readonly<Record<F,number|boolean>>)=>
  Object.freeze(fields.filter(f=>!Object.is(before[f],after[f])).map(f=>Object.freeze({field:f,before:before[f],after:after[f]})));
-const antennaTarget=(r:RadioOptionsFullRecord,current:RadioLabOptions):RadioLabOptions=>Object.freeze({...current,
- limitsEnabled:r.limitSlewing93a,minimumAltitudeRadians:r.horizon90c,maxRateIndex:r.maxRateIndex93b,rateBase:r.baseSlew91a,transitTelescope:r.telescopeType938===1,instantSlew:r.testMode940});
+const antennaTarget=(r:RadioOptionsFullRecord,current:RadioLabOptions,site?:RadioSiteRecord):RadioLabOptions=>Object.freeze({...current,
+ limitsEnabled:r.limitSlewing93a,minimumAltitudeRadians:r.horizon90c,maxRateIndex:r.maxRateIndex93b,rateBase:r.baseSlew91a,transitTelescope:r.telescopeType938===1,instantSlew:r.testMode940,
+ ...(site?{latitudeRadians:site.latitudeRadians}:{})});
 const receiverTarget=(r:RadioOptionsFullRecord):RadioReceiverOptions=>Object.freeze({provenance:'supplied-record',
  dishDiameterMeters:r.aperture916,gain924:r.gain924,background928:r.background928,beamWidth92c:r.beamWidth92c,temperature930:r.temperature930});
 function checked(env:unknown,c:RadioOptionsConsumers):RadioOptionsFullRecord{
@@ -70,14 +77,15 @@ function checked(env:unknown,c:RadioOptionsConsumers):RadioOptionsFullRecord{
  * 'supplied-record', unchanged when the five values are equal (the provenance label is kept), refused outside the receiver
  * domain. Panel: record+0x916 is env+0x37ab, the panel's dish diameter (every Int32 is shape-valid there); the dome byte,
  * the access option byte and the other Window items are kept. */
-export function projectRadioOptionsEnv(env:unknown,c:RadioOptionsConsumers):RadioOptionsProjection{
+export function projectRadioOptionsEnv(env:unknown,c:RadioOptionsConsumers,site?:RadioSiteRecord):RadioOptionsProjection{
  const r=checked(env,c);
+ if(site!==undefined&&!isRadioSiteRecord(site))throw new TypeError('Invalid radio site');
  let antenna:RadioAntennaProjection;
  if(r.telescopeType938===2)antenna=Object.freeze({kind:'refused',reason:'arecibo'});
  else if(r.testMode940)antenna=Object.freeze({kind:'refused',reason:'test-mode'});
  else if(c.antennaHeld)antenna=Object.freeze({kind:'refused',reason:'manual-hold'});
  else{
-  const options=antennaTarget(r,c.antenna),changes=changesOf(ANTENNA_FIELDS,c.antenna,options);
+  const options=antennaTarget(r,c.antenna,site),changes=changesOf(site?SITE_ANTENNA_FIELDS:ANTENNA_FIELDS,c.antenna,options);
   antenna=changes.length===0?Object.freeze({kind:'unchanged'}):Object.freeze({kind:'applied',options,changes,issues:radioLabProfileIssues(options)});
  }
  let receiver:RadioReceiverProjection;
@@ -103,4 +111,15 @@ export function radioOptionsConsumerMismatches(record:RadioOptionsFullRecord,c:O
  if(c.receiver===null||changesOf(RECEIVER_FIELDS,c.receiver,receiverTarget(record)).length>0)out.push('receiver-options');
  if(!Object.is(c.environment.dishDiameterMeters,record.aperture916))out.push('panel-diameter');
  return Object.freeze(out);
+}
+
+/** Front T11a, pure: the radio clock's longitude after a Preferences close (the native clock reads env+0x3789 at every tick;
+ * the web clock holds an explicit longitude, WEB-CLOCK-01). [W] Unchanged when equal (Object.is), and also while no longitude
+ * is applied and the site keeps the compiled one, so a compiled session's clock stays the learner's explicit choice; else the
+ * site's longitude is applied (and so changes LST and the hour angles). */
+export function projectRadioSiteClock(site:RadioSiteRecord,clockLongitude:number|null):RadioClockProjection{
+ if(!isRadioSiteRecord(site))throw new TypeError('Invalid radio site');
+ const lon=site.longitudeRadians;
+ if(Object.is(clockLongitude,lon)||(clockLongitude===null&&Object.is(lon,RADIO_SITE_COMPILED.longitudeRadians)))return Object.freeze({kind:'unchanged'});
+ return Object.freeze({kind:'applied',before:clockLongitude,after:lon});
 }
