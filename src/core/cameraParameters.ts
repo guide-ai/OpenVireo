@@ -234,10 +234,14 @@ export const CAMERA_MAXIMUM_SEARCH_RADIUS_DEGREES=1;
 /** Start-time refusal: the measured domain, then the search radius that the nominal field gives on this telescope (1.5 × half
  * the larger side, 0x52236a / 0x51df89). Above 1° the field of the larger side is named: its pixel size when that differs from
  * the compiled one, else its image size. */
-export function cameraStartRefusal(p:CameraParameters,kind:CameraKind,index:OpticalIndex):CameraUse|null{
+/** Closure check (lower bound) [W]: the live query writes SR with 2 decimals (vizierConeUrl), so a radius that rounds to 0.00 cannot
+ * be asked for; a live Start is refused below it (a bundled extract still covers such a cone in static mode). */
+export const CAMERA_MINIMUM_LIVE_SEARCH_RADIUS_DEGREES=0.005;
+export function cameraStartRefusal(p:CameraParameters,kind:CameraKind,index:OpticalIndex,live=false):CameraUse|null{
  const domain=cameraParameterRefusal(p,kind);if(domain)return domain;
  const r=compiledCameraQueryReference(kind,index,0,{centerRAHours:0,centerDecDegrees:0,selectionMagnitudeLimit:21.5,suppliedDateDouble:2451545,dateBias:0},p);
- if(r.searchRadiusDegrees<=CAMERA_MAXIMUM_SEARCH_RADIUS_DEGREES)return null;
+ const tooSmall=live&&Number(r.searchRadiusDegrees.toFixed(2))<=0;
+ if(r.searchRadiusDegrees<=CAMERA_MAXIMUM_SEARCH_RADIUS_DEGREES&&!tooSmall)return null;
  const own=p[kind],c=COMPILED_CAMERA_PARAMETERS[kind],wide=own.width*own.pixelWidthMicrons>=own.height*own.pixelHeightMicrons;
  const pixel=wide?'pixelWidthMicrons':'pixelHeightMicrons',size=wide?'width':'height';
  return Object.freeze({camera:kind,key:!Object.is(own[pixel],c[pixel])?pixel:size});

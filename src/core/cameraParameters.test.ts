@@ -142,6 +142,11 @@ describe('T7 the composer with instructor records',()=>{
   expect(cameraStartRefusal(withRecord('ccd',{height:1024,width:1024,pixelWidthMicrons:24}),'ccd',0)).toBeNull();
   expect(cameraStartRefusal(withRecord('ccd',{width:2048}),'ccd',0)).toEqual({camera:'ccd',key:'width'});
   for(const k of ['ccd','ir'] as const)for(const i of [0,1,2] as const)expect(cameraStartRefusal(C,k,i)).toBeNull();
+  // Closure check (lower bound): 16 × 16 px at 24 µm on the 0.4 m is a 0.0036° radius, which SR's 2 decimals cannot ask live.
+  const tiny=withRecord('ccd',{width:16,height:16});
+  expect(cameraStartRefusal(tiny,'ccd',0)).toBeNull();
+  expect(cameraStartRefusal(tiny,'ccd',0,true)).toEqual({camera:'ccd',key:'width'});
+  for(const k of ['ccd','ir'] as const)for(const i of [0,1,2] as const)expect(cameraStartRefusal(C,k,i,true)).toBeNull();
   // Review 1 nit: the refused value shows its stored spelling.
   const big=withRecord('ccd',{pixelWidthMicrons:Math.fround(1000.04)});expect(cameraParameterExactText(big,{camera:'ccd',key:'pixelWidthMicrons'})).toBe(String(Math.fround(1000.04)));
  });

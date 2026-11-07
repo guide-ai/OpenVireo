@@ -182,7 +182,7 @@ function CameraControl({scopeUse,objectXHidden=null,vireoId='',showObjectId=fals
  // Static mode: whether a bundled extract covers this pointing is known before Start (review L6).
  // Front T7 [W]: an instructor value outside the measured domain, or a search radius above 1° (review 1 M1), refuses the Start;
  // its Start message names the field, so the no-extract hint is not shown for it (review 1 nit).
- const refused=currentParameters&&cameraStartRefusal(currentParameters,camera,telescopeIndex);
+ const refused=currentParameters&&cameraStartRefusal(currentParameters,camera,telescopeIndex,mode==='live');
  let staticCovered=true;
  if(mode==='static'&&!refused){try{const {reference,route}=cameraQuery(camera,telescopeIndex,filter,pointing,2451545,currentParameters);staticCovered=!!findCameraExtract({catalog:route.catalog,raHours:pointing.ra,decDegrees:pointing.dec,radiusDegrees:reference.searchRadiusDegrees});}catch{staticCovered=false;}}
  function start(){

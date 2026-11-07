@@ -283,6 +283,9 @@ FITS bytes and control hashes. A changed field that the selected camera's exposu
     0.38°). Static mode then says there is no extract; live mode asks VizieR for that radius, up to 1°.
   - [W] A field whose search radius would pass 1° (the cone search's limit; for example 1024 × 110 µm on the 0.4 m: 1.05°) is
     refused at Start, naming the pixel or size field (review 1 M1).
+  - [W] In live mode, a field whose search radius would round to SR=0.00 (below 0.005°; for example 16 × 16 px at 24 µm on the
+    0.4 m: 0.0036°) is refused at Start the same way, since the query writes SR with 2 decimals; static mode still uses the bundled
+    extract that covers such a cone (closure check, `CAMERA_MINIMUM_LIVE_SEARCH_RADIUS_DEGREES`).
   - The selection keeps the telescope field's ±0.375° bounds, as in VIREO.
 - **Object X (E08).** An image made with instructor values is not added to the Object X investigation, and the lab's asteroid hook is
   called read-only (as for IR images). The lab's Load FITS refuses a saved file that carries the `uncertified-parameter` COMMENT card. So E08 replay and its 33/33 rows are unchanged.
