@@ -1,5 +1,6 @@
 import {parseDelphiFloat,roundHalfEven} from './radioAntenna';
 import {delphiFixed} from './variableStars';
+import {x87PhotometerCallbacksPerPeriod} from './photometerCallbackCount';
 /** Front T6 (analysis/front-plans/front-teacher.md §T6; analysis/front-teacher/t6/RECOVERY.md): the instructor options dialog's
  * Photometer and Spectrometer parameter edits. CLEA_VEO.exe 781bc970…c54c, static reading only.
  * - [D] The edits and their record fields (OKBtnClick 0x5a6068, field table of TOptionsDlg's VMT, Single stores `fstp dword`,
@@ -139,14 +140,14 @@ export function photometerParameterRefusal(p:PhotometerParameters):'base-count'|
  return null;
 }
 /** [D] Callbacks per integration period. Start 0x500a01 stores the Extended increment Timer/1000 (Single 1000.0 at 0x500ac8); each
- * callback adds it to the period's elapsed +0x48e and 0x5015cb ends the period once elapsed reaches the chosen seconds. [W] The
- * count is ⌈1000·seconds / Timer⌉; where 1000·seconds is a multiple of Timer (the compiled 100 ms among them) the web keeps the
- * integer nominal count, the same browser policy as before (integration-provenance.json: x87 accumulation at the tie is not
- * proved). */
-export function photometerCallbacksPerPeriod(secondsPerIntegration:number,timerMs:number):number{
+ * callback adds it to the period's Extended elapsed +0x48e (rounded at each add, control word 0x1332) and 0x5015cb ends the period
+ * once elapsed reaches the chosen seconds. `exact` (Front PHCALLBACK, owner 18): that count, x87PhotometerCallbacksPerPeriod, which
+ * is ⌈1000·seconds / Timer⌉ except at 18 tie pairs (the compiled 100 s at 100 ms among them: 1001), where it is one more
+ * (data/photometry/callback-count-contract.json). Otherwise the legacy nominal count ⌈1000·seconds / Timer⌉ of owners 4–17. */
+export function photometerCallbacksPerPeriod(secondsPerIntegration:number,timerMs:number,exact=false):number{
  const ms=Math.round(secondsPerIntegration*1000);
  if(!Number.isSafeInteger(ms)||ms<=0||Math.abs(ms-secondsPerIntegration*1000)>1e-9||!Number.isSafeInteger(timerMs)||timerMs<1)throw new RangeError('photometer timing');
- return Math.ceil(ms/timerMs);
+ return exact?x87PhotometerCallbacksPerPeriod(secondsPerIntegration,timerMs):Math.ceil(ms/timerMs);
 }
 /** [D] Sky colours from SkyMag (FormShow 0x4ff6aa..0x4ff706): V = Single, B = V + Single 1.0 (0x4ff864), U = B + Extended 0.33
  * (0x4ff868), R = V − 1.0, I = R − 0.33 (Front P2). `bv` and `ub` are the contract's literals. */

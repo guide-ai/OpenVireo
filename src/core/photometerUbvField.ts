@@ -125,7 +125,8 @@ export type TiledPhotometerReason='photometer-galaxy-sky'|'photometer-galaxy-sky
  *   pen, which this port bounds rather than reproduces) straddle 80 is the reading still refused.
  * - `photometer-galaxy-sky-stamp`: the same, when a galaxy of the field needs stamp bitmaps beyond the web bound
  *   (PHOTOMETER_DISPLAY.stampBound): whether Windows paints the display then is not determined. */
-export function tiledPhotometerReason(targetId:string,telescopeIndex:PhotometerTelescopeIndex,apertureSelector:number,pointing:PleiadesFieldKind='object',parameters?:PhotometerParameters):TiledPhotometerReason|null{
+/** `exact` (Front PHCALLBACK): the count guard uses VIREO's exact period count (owner 18); false keeps the legacy guard. */
+export function tiledPhotometerReason(targetId:string,telescopeIndex:PhotometerTelescopeIndex,apertureSelector:number,pointing:PleiadesFieldKind='object',parameters?:PhotometerParameters,exact=false):TiledPhotometerReason|null{
  if(!isTiledPhotometerTarget(targetId)||!isPhotometerTelescopeIndex(telescopeIndex)||(pointing!=='object'&&pointing!=='sky'))throw new PhotometerFieldError('domain');
  const frame=buildPhotometerTargetField(targetId,'object');photometerApertureGeometry(apertureSelector);
  if(pointing==='sky'&&frame.selectedGalaxy){
@@ -134,23 +135,25 @@ export function tiledPhotometerReason(targetId:string,telescopeIndex:PhotometerT
  }
  const max=photometerMaximumMean(frame,telescopeIndex,'tiled','full',parameters);
  if(max>PHOTOMETER_MEAN_BOUNDS.maximumPoissonMean)return 'Poisson-mean-bound';
- if(max*photometerMaximumCallbacks(parameters)>PHOTOMETER_MEAN_BOUNDS.countGuard)return 'all-duration-count-domain';
+ if(max*photometerMaximumCallbacks(parameters,exact)>PHOTOMETER_MEAN_BOUNDS.countGuard)return 'all-duration-count-domain';
  return null;
 }
-/** The longest reading's callbacks (100 s × 5): 5000 at the compiled 100 ms (PHOTOMETER_MEAN_BOUNDS.callbacks); Front T6: 5·⌈100000 / Timer⌉. */
-export function photometerMaximumCallbacks(parameters?:PhotometerParameters):number{
- return parameters?5*photometerCallbacksPerPeriod(100,parameters.timerMs):PHOTOMETER_MEAN_BOUNDS.callbacks;
+/** The longest reading's callbacks (100 s × 5): 5000 at the compiled 100 ms (PHOTOMETER_MEAN_BOUNDS.callbacks); Front T6: 5·⌈100000 / Timer⌉.
+ * Front PHCALLBACK: with `exact`, 5 × VIREO's exact 100 s period (5005 at the compiled 100 ms; callback-count-contract.json). No
+ * bundled target's decision changes with it (their largest mean × 5005 is at most 0.99 of the guard or above it at 5000 already). */
+export function photometerMaximumCallbacks(parameters?:PhotometerParameters,exact=false):number{
+ return parameters||exact?5*photometerCallbacksPerPeriod(100,parameters?.timerMs??100,exact):PHOTOMETER_MEAN_BOUNDS.callbacks;
 }
 /** Front T6: the full-domain limits of a bundled target with instructor parameters (photometerFullDomainExclusion's contract
  * maxima hold for the compiled values only): the same two rules, recomputed. null: the target can be read. A bundled 0.9 m / 4 m
  * field whose single-star contract does not hold at some aperture is refused as the contract refuses it ('evidence' → domain). */
-export function photometerParameterExclusion(targetId:string,telescopeIndex:PhotometerTelescopeIndex,parameters:PhotometerParameters):'Poisson-mean-bound'|'all-duration-count-domain'|'parameter-domain'|null{
+export function photometerParameterExclusion(targetId:string,telescopeIndex:PhotometerTelescopeIndex,parameters:PhotometerParameters,exact=false):'Poisson-mean-bound'|'all-duration-count-domain'|'parameter-domain'|null{
  let max:number;
  try{max=photometerMaximumMean(buildPhotometerTargetField(targetId,'object'),telescopeIndex,'bundled','full',parameters);}
  catch(e){if(e instanceof PhotometerFieldError)return 'parameter-domain';throw e;}
  if(!Number.isFinite(max))return 'parameter-domain';
  if(max>PHOTOMETER_MEAN_BOUNDS.maximumPoissonMean)return 'Poisson-mean-bound';
- if(max*photometerMaximumCallbacks(parameters)>PHOTOMETER_MEAN_BOUNDS.countGuard)return 'all-duration-count-domain';
+ if(max*photometerMaximumCallbacks(parameters,exact)>PHOTOMETER_MEAN_BOUNDS.countGuard)return 'all-duration-count-domain';
  return null;
 }
 export function drawPinnedPleiadesUbv(kind:PleiadesFieldKind,filter:PhotometerFilter,seed:number,targetId=PINNED_PLEIADES_V_TARGET.catalogId,apertureSelector=10,telescopeIndex:PhotometerTelescopeIndex=0){

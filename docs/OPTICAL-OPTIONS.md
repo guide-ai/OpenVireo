@@ -173,7 +173,8 @@ display digits (FormActivate's ffFixed 1 or 2), so pressing OK again stores the 
 
 **Any value other than VIREO's is `uncertified-parameter`.** With the compiled values every result is byte-identical. Otherwise:
 - **Photometer — measured, labelled.** VIREO's formulas: zero point Single(BaseMag + correction) + 5, sky colours from SkyMag, means
-  and base-count sum × BaseCount, ⌈1000·s / Timer⌉ callbacks per period at a Timer-ms interval. The values travel in the session as
+  and base-count sum × BaseCount, ⌈1000·s / Timer⌉ callbacks per period at a Timer-ms interval (one more at 18 tie pairs, VIREO's
+  Extended elapsed sum, in new sessions since Front PHCALLBACK; docs/PHOTOMETER-INTEGRATION.md). The values travel in the session as
   a `parameters` event (owner 17); each reading records them and is labelled. The per-callback Poisson bound and the 32-bit count
   domain, which the contracts precomputed for the compiled values, are recomputed with the instructor values (a target beyond them
   is refused). E04 does not count such readings (the pinned Pleiades fields are certified for the compiled values only).
