@@ -12,15 +12,23 @@
  *     [W] The web's ID source is the Object X lab's ID (the web's Set Date/Time editor for it); an empty ID counts as never set.
  *     [D] The ID is used raw, so a spaces-only ID gives 'ObjX-  -01.FIT' (the Object X lab shows its own empty-ID text; VIREO
  *     does not trim here). [W] An ID outside printable ASCII is refused by CameraControl, because FITS cards cannot hold it.
- *     Object X is never revealed here (the ID is the student's, not the object's); DATE is the exposure time (VIREO's clock Double +0x37f2 is not recovered); DETECTOR is
- *     known (Front T7: the camera record's name, copied at 0x523d2d / 0x523e3b to header +0x174 and printed from +0x180 [D]) but stays
- *     empty here until the next front fixes it; OBSERVER is empty (its student string is not recovered); NAXIS1/2 are the plane's size (VIREO
+ *     Object X is never revealed here (the ID is the student's, not the object's); DATE is the exposure time (VIREO's clock Double +0x37f2 is not recovered);
+ *     OBSERVER is empty (VIREO fills it from the Login student names env+0x5fa, 0x523ac8..0x523c34, which the web does not collect);
+ *     NAXIS1/2 are the plane's size (VIREO
  *     reads the camera's configuration record, equal for the compiled cameras [I]); OBSERVAT and TELESCOP are the site and
- *     telescope names of the compiled profile. */
+ *     telescope names of the compiled profile.
+ * [D] DETECTOR (Front FITSDET, analysis/front-fitsdet/RECOVERY.md): the header fill 0x5239f8, called by the keyword writer at each
+ *     save (0x523242), copies the options record's name String[40] (env+0x6b4+0x26e5 CCD at 0x523d2d, +0x2740 IR at 0x523e3b; cl =
+ *     0x28, 0x403c5c) to header +0x174 (ebx = obj+0xc, 0x523a0a), and 0x523726 prints obj+0x180 with the string formatter under
+ *     key entry 28 'DETECTOR' (0x523751). So the card holds the camera's record as it is when the file is saved; the compiled
+ *     names are 'Site CH350 003B Back-Illuminated' (CCD) and 'CLEA_IR1' (IR). The name is at most 40 characters, so the card
+ *     (at most 54) is never cut. [W] VIREO writes a name's ANSI bytes raw; the web writes '?' for each character outside
+ *     printable ASCII, because FITS cards allow only ASCII (WEB-FITSDET-01). */
 import type {CameraExposure} from './cameraExposure';
 import {FitsWriterError,jdToIso} from './fitsWriter';
 import {formatNativeSexagesimalDigits} from './nativeListFormat';
 import {opticalProfile} from './opticalTelescope';
+import {compiledCameraInformation} from './cameraInformation';
 
 export const NATIVE_FITS_FILTERS=Object.freeze({ccd:Object.freeze(['NONE','B','V','R','I']),ir:Object.freeze(['J','H','K'])});
 export const NATIVE_FITS_UNKNOWN_OBJECT='UNKNOWN';
@@ -29,14 +37,19 @@ function printable(s:string){if(!/^[\x20-\x7e]*$/.test(s))throw new FitsWriterEr
 export const nativeLogical=(v:boolean)=>'='+' '.repeat(20)+(v?'T':'F')+' /';
 export const nativeNumeric=(v:string)=>'='+(printable(v)+' /').padStart(23);
 export const nativeString=(v:string)=>(("= '"+printable(v)).padEnd(11)+"'").padEnd(22)+' /';
+/** [D] ShortString[40] (0x403c5c, cl = 0x28) of the record's name; [W] '?' for each code point outside printable ASCII. */
+export const NATIVE_FITS_DETECTOR_MAX=40;
+export const nativeFitsDetector=(name:string)=>Array.from(name,c=>/^[\x20-\x7e]$/.test(c)?c:'?').join('').slice(0,NATIVE_FITS_DETECTOR_MAX);
 const nativeCard=(key:string,text:string)=>(key.padEnd(8)+text).slice(0,80).padEnd(80);
 /** FmtSexagesimal with ':' separators, leading spaces cut (RA digits 1, Dec digits 0). */
 export function nativeFitsSexagesimal(value:number,digits:0|1):string{return formatNativeSexagesimalDigits(value,digits,[':',':','']).trimStart();}
 export function nativeFitsDate(jd:number):string{return jdToIso(jd).slice(0,19);}
-/** Front R4: `currentName` is the current object's name when Show Object ID is on and VIREO's 0x522c28 found an object (behind the
+/** Front FITSDET: `detector` is the camera record's name at save time (VIREO's 0x5239f8 reads the options record when it saves);
+ * absent, the compiled record's. Front R4: `currentName` is the current object's name when Show Object ID is on and VIREO's 0x522c28 found an object (behind the
  * Object X gate); it then fills OBJECT (String[68]) instead of the Object X label (0x5239f8) and names the file (0x5230dc). */
-export function nativeCameraFitsCards(exposure:CameraExposure,jd:number,objectName=NATIVE_FITS_UNKNOWN_OBJECT,currentName?:string):readonly string[]{
+export function nativeCameraFitsCards(exposure:CameraExposure,jd:number,objectName=NATIVE_FITS_UNKNOWN_OBJECT,currentName?:string,detector?:string):readonly string[]{
  const {plane,recipe}=exposure,profile=opticalProfile(recipe.opticalIndex),ir=recipe.camera==='ir';
+ const detectorName=nativeFitsDetector(detector??compiledCameraInformation(recipe.camera).detector);
  const filter=(ir?NATIVE_FITS_FILTERS.ir:NATIVE_FITS_FILTERS.ccd)[recipe.filterPosition];
  if(filter===undefined||!Number.isInteger(recipe.seconds)||!Number.isInteger(recipe.gain))throw new FitsWriterError('value');
  const object=currentName!==undefined?currentName.slice(0,68):objectName===NATIVE_FITS_UNKNOWN_OBJECT?objectName:'ObjX-'+objectName,date=nativeFitsDate(jd);
@@ -46,15 +59,15 @@ export function nativeCameraFitsCards(exposure:CameraExposure,jd:number,objectNa
   ['OBJECT',nativeString(object)],['ORIGIN',nativeString('CLEA Simulation')],['DATE',nativeString(date)],['FILTER',nativeString(filter)],
   ['RA',nativeString(nativeFitsSexagesimal(recipe.centerRaHours,1))],['DEC',nativeString(nativeFitsSexagesimal(recipe.centerDecDegrees,0))],
   ['EPOCH',nativeString('2000.0')],['OBSERVAT',nativeString(profile.site.name)],['TELESCOP',nativeString(profile.name)],
-  ['INSTRUME',nativeString(ir?'Infrared CCD Camera':'CCD Camera')],['DETECTOR',nativeString('')],['OBSERVER',nativeString('')],
+  ['INSTRUME',nativeString(ir?'Infrared CCD Camera':'CCD Camera')],['DETECTOR',nativeString(detectorName)],['OBSERVER',nativeString('')],
   ['EXP',nativeNumeric(String(recipe.seconds))],['DATE-OBS',nativeString(date)],['GAIN',nativeNumeric(String(recipe.gain))],
  ];
  return Object.freeze([...cards.map(([k,t])=>nativeCard(k,t)),nativeCard('END','')]);
 }
-export function writeNativeCameraFits(exposure:CameraExposure,jd:number,objectName?:string,currentName?:string):Uint8Array{
+export function writeNativeCameraFits(exposure:CameraExposure,jd:number,objectName?:string,currentName?:string,detector?:string):Uint8Array{
  const {plane}=exposure;
  if(!plane||plane.pixels.length!==plane.width*plane.height)throw new FitsWriterError('plane');
- const header=nativeCameraFitsCards(exposure,jd,objectName,currentName).join(''),headerBytes=Math.ceil(header.length/BLOCK)*BLOCK;
+ const header=nativeCameraFitsCards(exposure,jd,objectName,currentName,detector).join(''),headerBytes=Math.ceil(header.length/BLOCK)*BLOCK;
  const out=new Uint8Array(headerBytes+plane.pixels.length*4);out.fill(0x20,0,headerBytes);
  for(let i=0;i<header.length;i++)out[i]=header.charCodeAt(i);
  const view=new DataView(out.buffer);

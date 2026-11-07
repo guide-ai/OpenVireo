@@ -106,10 +106,17 @@ The read-only boxes show the compiled states, each with one line on its effect:
   - an ID that is not printable ASCII is refused with a message and nothing is saved, because FITS header cards allow only
     ASCII (RE5 review 1 L-b);
   - DATE is the exposure time;
-  - DETECTOR and OBSERVER are empty. DETECTOR is known since Front T7: VIREO writes the camera record's name there (0x523d2d /
-    0x523e3b → header +0x174, printed from +0x180) [D]; it stays empty until the next front fills it;
+  - OBSERVER is empty: VIREO fills it from the Login student names (env+0x5fa, 0x523ac8..0x523c34), which the web does not
+    collect;
+  - a DETECTOR name character outside printable ASCII is written as `?` (VIREO writes its ANSI byte), because FITS cards allow
+    only ASCII (WEB-FITSDET-01);
   - NAXIS1/2 are the plane size;
   - OBSERVAT and TELESCOP come from the compiled profile.
+- **DETECTOR** [D] (Front FITSDET, `analysis/front-fitsdet/RECOVERY.md`): the camera record's name as the options hold it when
+  the file is saved. The header fill 0x5239f8 runs at each save (0x523242) and copies the record's String[40] (0x523d2d CCD,
+  0x523e3b IR) to header +0x174; 0x523726 prints it from obj+0x180 under entry 28 of 0x5b3ff8. With the compiled records the
+  card is `DETECTOR= 'Site CH350 003B Back-Illuminated' /` (CCD) or `DETECTOR= 'CLEA_IR1'` + 10 spaces + ` /` (IR). A name has
+  at most 40 characters, so the card is never cut.
 - **Key column** [D]: the keyword table 0x5b3ff8 holds String[8] entries already space-padded.
 - The standard web FITS stays the first button.
 

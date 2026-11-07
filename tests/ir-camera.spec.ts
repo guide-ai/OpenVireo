@@ -73,6 +73,10 @@ test('a live K exposure asks NOMAD with the IR radius, makes a 512² image and s
  const header=bytes.subarray(0,2880*2).toString('latin1');
  expect(header).toContain("INSTRUME= 'IR      '");expect(header).toContain("FILTER  = 'K       '");expect(header).toContain('NAXIS1  =                  512');
  expect(header).toContain('J/H/K: 2MASS via NOMAD (Skrutskie et al. 2006, AJ 131, 1163).');
+ // Front FITSDET: the VIREO-header file's DETECTOR is the compiled IR record's name (0x523e3b), card 16.
+ const nativeDownload=page.waitForEvent('download');await button(page,'Save image (VIREO header)').click();
+ const native=await readFile((await (await nativeDownload).path())!);expect(native.length).toBe(2880+512*512*4);
+ expect(native.subarray(80*14,80*16).toString('latin1')).toBe("INSTRUME= 'Infrared CCD Camera' /"+' '.repeat(47)+"DETECTOR= 'CLEA_IR1'"+' '.repeat(10)+' /'+' '.repeat(48));
  await page.goto('/#images');
  await page.getByLabel('Open float32 FITS image (up to 5 MiB)',{exact:true}).setInputFiles({name:d.suggestedFilename(),mimeType:'application/octet-stream',buffer:bytes});
  await expect(page.locator('.fits-lab')).toContainText('512 × 512 pixels');

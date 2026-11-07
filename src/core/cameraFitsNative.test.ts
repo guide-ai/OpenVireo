@@ -4,7 +4,7 @@ import {composeCameraExposure} from './cameraExposure';
 import {readVizierCatalog,selectVizierCatalog,wholeSkySelection} from './vizierNomad';
 import {parseFitsImage,fitsPixel} from './fitsImage';
 import {opticalProfile} from './opticalTelescope';
-import {nativeCameraFitsCards,nativeCameraFitsFileName,nativeFitsSexagesimal,nativeLogical,nativeNumeric,nativeString,writeNativeCameraFits} from './cameraFitsNative';
+import {nativeCameraFitsCards,nativeCameraFitsFileName,nativeFitsDetector,nativeFitsSexagesimal,nativeLogical,nativeNumeric,nativeString,writeNativeCameraFits} from './cameraFitsNative';
 
 const recorded=new Uint8Array(readFileSync(new URL('../../tests/fixtures/vizier/nomad-56.75+24.12-r0.01.xml',import.meta.url)));
 const selection=selectVizierCatalog(readVizierCatalog(recorded,{catalog:'I/297',band:'R',epochOffsetYears:0,queryBrightMagnitude:1,queryFaintMagnitude:21.5}),wholeSkySelection(21.5));
@@ -35,6 +35,45 @@ describe('VIREO keyword writer 0x523218',()=>{
  test('sexagesimal and file name',()=>{
   expect(nativeFitsSexagesimal(-(5+1/60+9.4/3600),0)).toBe('-5:01:09');
   expect(nativeCameraFitsFileName()).toBe('UNKNOWN-01.FIT');expect(nativeCameraFitsFileName('17')).toBe('ObjX-17-01.FIT');
+ });
+});
+
+// Front FITSDET (analysis/front-fitsdet/RECOVERY.md): DETECTOR is the record's name String[40] (0x523d2d / 0x523e3b → header
+// +0x174, printed from obj+0x180 at 0x523726 with the string formatter 0x523f8c under entry 28 of 0x5b3ff8).
+describe('native DETECTOR card',()=>{
+ const card=(cards:readonly string[])=>cards[15];
+ const ir={...exposure,recipe:{...exposure.recipe,camera:'ir' as const,filterPosition:2}};
+ test('compiled CCD and IR records: the exact 80-byte cards',()=>{
+  expect(card(nativeCameraFitsCards(exposure,jd))).toBe("DETECTOR= 'Site CH350 003B Back-Illuminated' /"+' '.repeat(34));
+  expect(card(nativeCameraFitsCards(ir,jd))).toBe("DETECTOR= 'CLEA_IR1'"+' '.repeat(10)+' /'+' '.repeat(48));
+  // Columns (1-based): '=' 9, opening quote 11, name from 12; the CCD's closing quote 44 and '/' 46; the IR's quote 20, '/' 32.
+  const c=card(nativeCameraFitsCards(exposure,jd)),i=card(nativeCameraFitsCards(ir,jd));
+  expect([c.indexOf('=')+1,c.indexOf("'")+1,c.lastIndexOf("'")+1,c.indexOf('/')+1]).toEqual([9,11,44,46]);
+  expect([i.lastIndexOf("'")+1,i.indexOf('/')+1]).toEqual([20,32]);
+  // The compiled default equals passing the compiled name explicitly.
+  expect(nativeCameraFitsCards(exposure,jd,undefined,undefined,'Site CH350 003B Back-Illuminated')).toEqual(nativeCameraFitsCards(exposure,jd));
+  // OBSERVER stays empty (Login names, not collected).
+  expect(nativeCameraFitsCards(exposure,jd)[16]).toBe("OBSERVER= '        '           /"+' '.repeat(48));
+ });
+ test('an instructor name, a 40-character name and quotes as VIREO writes them',()=>{
+  expect(card(nativeCameraFitsCards(exposure,jd,undefined,undefined,'Lab CCD #2'))).toBe("DETECTOR= 'Lab CCD #2'"+' '.repeat(8)+' /'+' '.repeat(48));
+  expect(card(nativeCameraFitsCards(exposure,jd,undefined,undefined,'CCD'))).toMatch(/^DETECTOR= 'CCD     ' {11}\/ {48}$/);
+  const forty='X'.repeat(40);expect(card(nativeCameraFitsCards(exposure,jd,undefined,undefined,forty))).toBe(`DETECTOR= '${forty}' /`+' '.repeat(26));
+  expect(card(nativeCameraFitsCards(exposure,jd,undefined,undefined,"O'Neil"))).toMatch(/^DETECTOR= 'O'Neil  ' {11}\//);
+  expect(card(nativeCameraFitsCards(exposure,jd,undefined,undefined,''))).toMatch(/^DETECTOR= ' {8}' {11}\//);
+ });
+ test('[W] non-ASCII characters are written as ?, one per character',()=>{
+  expect(nativeFitsDetector('Cámara Ω1')).toBe('C?mara ?1');expect(nativeFitsDetector('star 🌟')).toBe('star ?');expect(nativeFitsDetector('a\u007fb')).toBe('a?b');
+  expect(nativeFitsDetector('Y'.repeat(45))).toBe('Y'.repeat(40));
+  expect(card(nativeCameraFitsCards(exposure,jd,undefined,undefined,'Cámara'))).toMatch(/^DETECTOR= 'C\?mara  ' {11}\/ {48}$/);
+ });
+ test('the header length and the 2880-byte block are unchanged',()=>{
+  for(const name of [undefined,'X'.repeat(40),'Cámara']){
+   const cards=nativeCameraFitsCards(exposure,jd,undefined,undefined,name);expect(cards).toHaveLength(21);expect(cards.every(c=>c.length===80)).toBe(true);
+   const bytes=writeNativeCameraFits(exposure,jd,undefined,undefined,name);expect(bytes.length).toBe(2880+exposure.plane.pixels.length*4);
+   expect(bytes.subarray(21*80,2880).every(b=>b===0x20)).toBe(true);
+   expect(new TextDecoder('latin1').decode(bytes.subarray(15*80,16*80))).toBe(cards[15]);
+  }
  });
 });
 

@@ -291,8 +291,8 @@ FITS bytes and control hashes. A changed field that the selected camera's exposu
   called read-only (as for IR images). The lab's Load FITS refuses a saved file that carries the `uncertified-parameter` COMMENT card. So E08 replay and its 33/33 rows are unchanged.
 - **Where the mark stops [W].**
   - The VIREO-header FITS save has no field for the mark.
-  - Its DETECTOR card stays empty, as before T7. VIREO writes the camera name there (0x523d2d / 0x523e3b) [D]; filling it would
-    change the compiled native file, so a separate front fixes it next.
+  - Its DETECTOR card carries the record's name at the save, as VIREO's (0x523d2d / 0x523e3b) [D] (Front FITSDET); the other
+    instructor values leave no mark in it.
 - **Latching [W].** VIREO stores the nominal field at each telescope selection, so the search radius, the overlay rectangle and the
   size labels follow a new size only after the next telescope change. The web reads the records at each Start.
 

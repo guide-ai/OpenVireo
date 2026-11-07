@@ -52,6 +52,7 @@ test('an instructor sets the CCD image size and bias: VIREO\'s box, a 512² imag
  await expect(id(page,'ob-options-parameter-error')).toBeVisible();await expect(id(page,'ob-options-parameter-error').getByRole('heading')).toHaveText('Non-Numeric Value!');
  await id(page,'ob-options-parameter-error-ok').click();await expect(id(page,'ob-options-ok')).toBeFocused();
  await id(page,'ob-options-camera-ccd-width').fill('512');await id(page,'ob-options-camera-ccd-height').fill('512');await id(page,'ob-options-camera-ccd-biasElectronsPerPixel').fill('2000');
+ await id(page,'ob-options-camera-ccd-detector').fill('Cámara Lab 2');
  await expect(id(page,'ob-options-camera-uncertified')).toContainText('CCD Camera › Image Size (Pixels): Width, CCD Camera › Image Size (Pixels): Height, CCD Camera › Bias (e/Pixel)');
  await id(page,'ob-options-tab-ccd').scrollIntoViewIfNeeded();await id(page,'ob-options-tab-ccd').screenshot({path:test.info().outputPath('ccd-tab.png')});
  await id(page,'ob-options-ok').click();await expect(id(page,'ob-options-dialog')).toBeHidden();
@@ -70,11 +71,16 @@ test('an instructor sets the CCD image size and bias: VIREO\'s box, a 512² imag
  const download=page.waitForEvent('download');await button(page,'Save image (FITS)').click();
  const fits=await readFile(await (await download).path()),header=fits.subarray(0,2880*2).toString('latin1');
  expect(header).toContain('COMMENT uncertified-parameter: instructor camera values');expect(header).toContain('CCD Camera > Bias (e/Pixel) = 2000');expect(header).toMatch(/NAXIS1  = +512/);
+ // Front FITSDET: the VIREO-header file's DETECTOR is the record's name at the save (0x5239f8), [W] '?' for the non-ASCII 'á'.
+ const detector=async()=>{const d=page.waitForEvent('download');await button(page,'Save image (VIREO header)').click();return (await readFile(await (await d).path())).subarray(80*15,80*16).toString('latin1');};
+ expect(await detector()).toBe("DETECTOR= 'C?mara Lab 2'"+' '.repeat(6)+' /'+' '.repeat(48));
 
  // Reset restores the compiled records; the next image is VIREO's size and radius again, without a label.
  await openOptions(page);await id(page,'ob-options-reset').click();await id(page,'ob-options-reset-box-yes').click();
  await expect(id(page,'ob-options-camera-ccd-width')).toHaveValue('1024');await expect(id(page,'ob-options-camera-uncertified')).toHaveCount(0);
  await id(page,'ob-options-ok').click();await expect(id(page,'ob-options-dialog')).toBeHidden();await expect(id(page,'camera-parameters-note')).toHaveCount(0);
+ // The same 512² image saved again after Reset carries the compiled name: VIREO reads the record when it saves, not at the exposure.
+ expect(await detector()).toBe("DETECTOR= 'Site CH350 003B Back-Illuminated' /"+' '.repeat(34));
  await expose(page);expect(new URL(seen[2].url()).searchParams.get('SR')).toBe('0.23');
  await expect(id(page,'camera-canvas')).toHaveJSProperty('width',1024);await expect(id(page,'camera-uncertified')).toHaveCount(0);
  expect(errors).toEqual([]);

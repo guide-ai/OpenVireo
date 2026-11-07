@@ -123,7 +123,9 @@ test('Save image writes a FITS file that reopens under Saved images with the sam
  const native=await readFile((await n.path())!);expect(native.length).toBe(2880+1024*1024*4);
  const nh=native.subarray(0,2880).toString('latin1');
  expect(nh.slice(80*5,80*8)).toMatch(/^OBJECT  = 'UNKNOWN '\s+\/\s*ORIGIN  = 'CLEA Simulation'    \/\s*DATE    = '\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d'/);
- expect(nh).toContain("FILTER  = 'V       '           /");expect(nh).toContain("INSTRUME= 'CCD Camera'");expect(nh).not.toContain('CATALOG');
+ expect(nh).toContain("FILTER  = 'V       '           /");expect(nh).toContain("INSTRUME= 'CCD Camera'");
+ // Front FITSDET: DETECTOR is the compiled CCD record's name (0x523d2d → header +0x174, printed from +0x180), card 16; OBSERVER empty.
+ expect(nh.slice(80*15,80*17)).toBe("DETECTOR= 'Site CH350 003B Back-Illuminated' /"+' '.repeat(34)+"OBSERVER= '        '           /"+' '.repeat(48));expect(nh).not.toContain('CATALOG');
  // Front RE5 (RE5 review 1 L1, M2): with a Set Date/Time ID from the Object X lab, the file and OBJECT become ObjX-<ID> (Save 0x522c28,
  // header 0x5239f8); an ID that FITS cannot hold (non-ASCII) is refused with a message and nothing is downloaded.
  const objectXId=async(id:string)=>{await page.evaluate(()=>{location.hash='#object-x';});await page.getByLabel('ID # of your unknown object (from the lab sheet or instructor)').fill(id);await page.evaluate(()=>{location.hash='#observatory';});await expect(camera(page)).toBeVisible();};
