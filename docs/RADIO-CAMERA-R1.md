@@ -109,7 +109,11 @@ The read-only boxes show the compiled states, each with one line on its effect:
   - OBSERVER is empty: VIREO fills it from the Login student names (env+0x5fa, 0x523ac8..0x523c34), which the web does not
     collect;
   - a DETECTOR name character outside printable ASCII is written as `?` (VIREO writes its ANSI byte), because FITS cards allow
-    only ASCII (WEB-FITSDET-01);
+    only ASCII (WEB-FITSDET-01). A character outside the host code page (for example Ω on cp1252) already becomes `?` through
+    VIREO's ANSI VCL edit [I], so the web differs only for code-page characters such as `á`;
+  - DETECTOR uses the image's own camera (`recipe.camera`), as INSTRUME, FILTER and NAXIS do. VIREO picks the record by the
+    observatory instrument slider [obs+0x41c54c] (InstSliderClick 0x53e194: 0 IR, 1 CCD); that this is the saving form's camera
+    is [I], and its stale branch (slider 2..4) is not reproduced;
   - NAXIS1/2 are the plane size;
   - OBSERVAT and TELESCOP come from the compiled profile.
 - **DETECTOR** [D] (Front FITSDET, `analysis/front-fitsdet/RECOVERY.md`): the camera record's name as the options hold it when

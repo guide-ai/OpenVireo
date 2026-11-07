@@ -20,10 +20,14 @@
  * [D] DETECTOR (Front FITSDET, analysis/front-fitsdet/RECOVERY.md): the header fill 0x5239f8, called by the keyword writer at each
  *     save (0x523242), copies the options record's name String[40] (env+0x6b4+0x26e5 CCD at 0x523d2d, +0x2740 IR at 0x523e3b; cl =
  *     0x28, 0x403c5c) to header +0x174 (ebx = obj+0xc, 0x523a0a), and 0x523726 prints obj+0x180 with the string formatter under
- *     key entry 28 'DETECTOR' (0x523751). So the card holds the camera's record as it is when the file is saved; the compiled
+ *     key entry 28 'DETECTOR' (0x523751). So the card holds the camera's record as it is when the file is saved. The block is chosen
+ *     by the observatory instrument slider [obs+0x41c54c] (InstSliderClick 0x53e194: 0 IR, 1 CCD, 2..4 other instruments, which
+ *     leave the camera fields stale); that it is the saving form's camera is [I]. [W] The web uses the image's own camera
+ *     (recipe.camera), as for INSTRUME, FILTER and NAXIS, and does not reproduce the stale branch. The compiled
  *     names are 'Site CH350 003B Back-Illuminated' (CCD) and 'CLEA_IR1' (IR). The name is at most 40 characters, so the card
- *     (at most 54) is never cut. [W] VIREO writes a name's ANSI bytes raw; the web writes '?' for each character outside
- *     printable ASCII, because FITS cards allow only ASCII (WEB-FITSDET-01). */
+ *     (at most 54) is never cut. [W] VIREO writes a name's ANSI bytes raw (a character outside the host code page, such as Ω
+ *     on cp1252, already becomes '?' in the ANSI VCL edit [I]); the web writes '?' for each character outside printable ASCII,
+ *     because FITS cards allow only ASCII, so it differs from VIREO only for code-page characters such as á (WEB-FITSDET-01). */
 import type {CameraExposure} from './cameraExposure';
 import {FitsWriterError,jdToIso} from './fitsWriter';
 import {formatNativeSexagesimalDigits} from './nativeListFormat';

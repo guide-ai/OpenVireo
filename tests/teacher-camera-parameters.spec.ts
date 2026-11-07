@@ -8,6 +8,7 @@ import {enterInstructorMode} from './fixtures/instructor-mode';
 // values are the web contract, not native oracles.
 const CDS=/vizier\.cds\.unistra\.fr|vizier\.cfa\.harvard\.edu|vizier\.idia\.ac\.za|cdsarc|unistra\.fr/;
 const recorded=readFile(new URL('./fixtures/vizier/nomad-56.75+24.12-r0.01.xml',import.meta.url));
+const jhk=readFile(new URL('./fixtures/vizier/authored-nomad-jhk-control.xml',import.meta.url));
 const id=(p:Page,t:string)=>p.getByTestId(t),button=(p:Page,name:string)=>p.getByRole('button',{name,exact:true}),camera=(p:Page)=>p.getByTestId('camera-control');
 function onPointing(xml:string){const dRa=.4987684*15-56.75,dDec=.03628-24.12;
  return xml.replace(/<TD>(0?5[67]\.\d{4,})<\/TD>/g,(_,v:string)=>`<TD>${(Number(v)+dRa).toFixed(7)}</TD>`).replace(/<TD>\+?(24\.1\d+)<\/TD>/g,(_,v:string)=>`<TD>+${(Number(v)+dDec).toFixed(7)}</TD>`);}
@@ -124,4 +125,19 @@ test('Object X: an image made with instructor camera values is not added to the 
  await host.getByTestId('objectx-open-fits').setInputFiles({name:'instructor.fit',mimeType:'application/fits',buffer:await readFile(saved)});
  await expect(host.getByRole('alert').filter({hasText:'instructor.fit was made with instructor camera values'})).toBeVisible();
  await expect(host.getByTestId('objectx-images').locator('li')).toHaveCount(0);
+});
+
+test('Front FITSDET review 1 L2: an IR image saved after switching to the CCD camera carries the IR tab\'s name',async({page})=>{
+ await trackedField(page);const body=await jhk;
+ await page.route(CDS,route=>route.fulfill({status:200,contentType:'text/xml',body}));
+ await openOptions(page);await id(page,'ob-options-camera-ir-detector').fill('Lab IR 7');await id(page,'ob-options-ok').click();await expect(id(page,'ob-options-dialog')).toBeHidden();
+ // The name is read only by Information and DETECTOR, so the IR image stays compiled (no label).
+ await camera(page).getByLabel('IR camera (J, H, K)').check();await camera(page).getByLabel(/Ask VizieR live/).check();
+ await camera(page).getByLabel('Minutes').fill('0');await camera(page).getByLabel('Seconds').fill('1');
+ await expose(page);await expect(id(page,'camera-uncertified')).toHaveCount(0);
+ await camera(page).getByLabel('CCD camera',{exact:true}).check();await expect(id(page,'camera-canvas')).toHaveAttribute('aria-label',/^IR image/);
+ // [W] The web uses the image's own camera (recipe.camera), as INSTRUME, FILTER and NAXIS do: the IR record's name, card 16.
+ const d=page.waitForEvent('download');await button(page,'Save image (VIREO header)').click();
+ const native=(await readFile(await (await d).path())).subarray(80*14,80*16).toString('latin1');
+ expect(native).toBe("INSTRUME= 'Infrared CCD Camera' /"+' '.repeat(47)+"DETECTOR= 'Lab IR 7'"+' '.repeat(10)+' /'+' '.repeat(48));
 });
