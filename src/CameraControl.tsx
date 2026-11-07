@@ -26,10 +26,14 @@ import {cameraFieldInputs,ccdFilterByte,setCcdFilterByte,type CameraFieldInputs}
 import {cameraOverlayInputs,type CameraOverlayStatus} from './camera/cameraOverlayInputs';
 import {cameraRegionRecord,cameraRegionSelection,type CameraRegionRecord} from './core/cameraRegion';
 import {telescopeFieldLoad,type TelescopeFieldLoad} from './observatory/telescopeField';
+import {VireoOptionsContext} from './vireoOptionsContext';
+import {cameraParameterLabel,cameraParameterRefusal,cameraParameterValueText,exposureCameraParameters,uncertifiedExposureFields,type CameraParameters} from './core/cameraParameters';// Front T7
 
-export type CameraExtraSourceProvider=(jd:number,seconds:number,camera:CameraExposureKind)=>readonly CameraExtraSource[];
+/** Front T7: `readOnly` is true for an exposure made with instructor camera values: like an IR image it only reads the Object X
+ * list for its date and leaves the Object X state unchanged. */
+export type CameraExtraSourceProvider=(jd:number,seconds:number,camera:CameraExposureKind,readOnly?:boolean)=>readonly CameraExtraSource[];
 /** The one place the camera asks its caller for moving pairs. */
-export function cameraExtras(provider:CameraExtraSourceProvider|undefined,jd:number,seconds:number,camera:CameraExposureKind):readonly CameraExtraSource[]{return provider?.(jd,seconds,camera)??[];}
+export function cameraExtras(provider:CameraExtraSourceProvider|undefined,jd:number,seconds:number,camera:CameraExposureKind,readOnly=false):readonly CameraExtraSource[]{return (readOnly?provider?.(jd,seconds,camera,true):provider?.(jd,seconds,camera))??[];}
 export type CameraImage=Readonly<{exposure:CameraExposure;source:CameraCatalogSource;jd:number;catalogName:string;fieldObjectsStatus?:CameraFieldInputs['status'];
  /** Front C6: the region record the catalogue was selected with, and the overlay's outcome (CCD only). */
  region?:CameraRegionRecord;overlayStatus?:CameraOverlayStatus}>;
@@ -53,7 +57,8 @@ export type CameraControlProps=Readonly<{
   * (IR images draw moving objects too, but must not change Object X state). */
  extraSources?:CameraExtraSourceProvider;
  /** Receives every finished CCD image; image.exposure.skipped lists moving pairs that were not drawn, with a typed reason.
-  * IR images are not passed on: they stay out of the Object X investigation and its replay (coordinator, 2026-10-28). */
+  * IR images are not passed on: they stay out of the Object X investigation and its replay (coordinator, 2026-10-28). Front T7: nor
+  * are images made with instructor camera values (uncertified-parameter): Object X's replay and witnesses use the compiled records. */
  onImage?:(image:CameraImage)=>void;
  /** Test seam: fixed seed instead of crypto.getRandomValues. */
  seedSource?:()=>number;
@@ -63,7 +68,9 @@ export type CameraControlProps=Readonly<{
 type Attempt={ticket:CameraGateEffect['ticket'];controller:AbortController;camera:CameraExposureKind;seconds:number;filter:number;gain:number;mode:CameraCatalogMode;jd:number;seed:number;pointing:Pointing;telescope:OpticalIndex;
  worker:Worker|null;pending:((reply:CameraWorkerReply|null)=>void)|null;source:CameraCatalogSource|null;failure:string|null;prepared:CameraImage|null;catalogName:string;region?:CameraRegionRecord;
  /** Front C6 review L2: the telescope field load at Go, read once for both the region and the overlay. */
- load:TelescopeFieldLoad|null};
+ load:TelescopeFieldLoad|null;
+ /** Front T7: the instructor camera records this exposure reads, latched at Start (null: the compiled ones). */
+ parameters:CameraParameters|null};
 /** One Worker per attempt; parse and compose run there so Stop stays responsive (review fix H2). */
 function call(a:Attempt,request:CameraWorkerRequest,transfer:Transferable[]=[]):Promise<CameraWorkerReply|null>{
  if(!a.worker){a.worker=new Worker(new URL('./camera/cameraWorker.ts',import.meta.url),{type:'module'});
@@ -72,8 +79,9 @@ function call(a:Attempt,request:CameraWorkerRequest,transfer:Transferable[]=[]):
  return new Promise(resolve=>{a.pending=resolve;a.worker!.postMessage(request,transfer);});
 }
 function stopWorker(a:Attempt|null){if(!a)return;a.worker?.terminate();a.worker=null;const p=a.pending;a.pending=null;p?.(null);}
-function cameraQuery(camera:CameraExposureKind,telescope:OpticalIndex,filter:number,pointing:Pointing,jd:number){
- const reference=compiledCameraQueryReference(camera,telescope,filter,{centerRAHours:pointing.ra,centerDecDegrees:pointing.dec,selectionMagnitudeLimit:21.5,suppliedDateDouble:jd,dateBias:0});
+function cameraQuery(camera:CameraExposureKind,telescope:OpticalIndex,filter:number,pointing:Pointing,jd:number,parameters:CameraParameters|null=null){
+ // Front T7: instructor records change the nominal field and so the search radius (and which bundled extract covers it).
+ const reference=compiledCameraQueryReference(camera,telescope,filter,{centerRAHours:pointing.ra,centerDecDegrees:pointing.dec,selectionMagnitudeLimit:21.5,suppliedDateDouble:jd,dateBias:0},parameters??undefined);
  return {reference,route:vizierRouteForCamera(camera,filter)};
 }
 const randomSeed=()=>crypto.getRandomValues(new Uint32Array(1))[0];
@@ -85,6 +93,8 @@ function CameraControl({scopeUse,objectXHidden=null,vireoId='',showObjectId=fals
  const [image,setImage]=useState<CameraImage|null>(null),[saveError,setSaveError]=useState('');
  const imageRef=useRef(image);useEffect(()=>{imageRef.current=image;},[image]);
  const testMode=useContext(TestModeContext),testModeRef=useRef(testMode);testModeRef.current=testMode;
+ // Front T7: the CCD / IR tabs' records (VIREO reads env+0x2d99 / env+0x2df4 at each Go); null while this camera's are compiled.
+ const {cameraParameters}=useContext(VireoOptionsContext),currentParameters=exposureCameraParameters(cameraParameters,camera);
  // RE5 review 1 L-c: a save alert belongs to the image and ID it was about; a new image or ID clears it (and a start, below).
  useEffect(()=>{setSaveError('');},[image,vireoId]);
  const gateRef=useRef(gate),attempt=useRef<Attempt|null>(null),timers=useRef<{observe?:number;poll?:number}>({}),canvas=useRef<HTMLCanvasElement>(null);
@@ -108,14 +118,14 @@ function CameraControl({scopeUse,objectXHidden=null,vireoId='',showObjectId=fals
    case 'initialize-request':void request(a);break;
    case 'prepare':setMessage(M.statusPreparing);void prepare(a);break;
    case 'release':a.controller.abort();stopWorker(a);stopTimers();window.setTimeout(()=>dispatch({type:'released',ticket:effect.ticket,ok:true}),0);break;
-   case 'accept-prepared':if(a.prepared){setImage(a.prepared);if(a.camera==='ccd')onImage?.(a.prepared);}break;
+   case 'accept-prepared':if(a.prepared){setImage(a.prepared);if(a.camera==='ccd'&&!a.parameters)onImage?.(a.prepared);}break;
   }
  }
  /** Every outcome ends in a gate event; nothing is rethrown (review fix H1). */
  async function request(a:Attempt){
   const fail=(failure:string,transportSucceeded:boolean,catalog:'invalid'|'unsupported')=>{if(attempt.current!==a)return;a.failure=failure;dispatch({type:'request-result',ticket:a.ticket,finished:true,transportSucceeded,catalog});};
   let query;
-  try{query=cameraQuery(a.camera,a.telescope,a.filter,a.pointing,a.jd);}
+  try{query=cameraQuery(a.camera,a.telescope,a.filter,a.pointing,a.jd,a.parameters);}
   catch{a.failure='initialization';dispatch({type:'initialization-failed',ticket:a.ticket});return;}
   try{
    const {reference,route}=query;a.catalogName=route.catalogName;
@@ -135,17 +145,17 @@ function CameraControl({scopeUse,objectXHidden=null,vireoId='',showObjectId=fals
  async function prepare(a:Attempt){
   if(attempt.current!==a||gateRef.current.phase!=='preparing')return;
   try{
-   const extras=cameraExtras(extraSources,a.jd,a.seconds,a.camera);
+   const extras=cameraExtras(extraSources,a.jd,a.seconds,a.camera,a.parameters!==null);
    // Front R2: the field-object pass 0x5228dc reads the CCD form's filter byte, also for IR (set at CCD Start, review 1 L5).
    // Front G merge: any pointing now builds a field (tiles if no pack is listed); Stop or release aborts that work.
    const field=await cameraFieldInputs(a.pointing,a.jd,ccdFilterByte(),{signal:a.controller.signal,hidden:objectXHidden});
    if(attempt.current!==a||gateRef.current.phase!=='preparing')return;
    // Front C6: the CCD overlay (form+0x412) from the loaded telescope field; IR has none.
-   const overlay=a.camera==='ccd'?await cameraOverlayInputs(a.load,a.pointing,a.telescope,a.controller.signal):null;
+   const overlay=a.camera==='ccd'?await cameraOverlayInputs(a.load,a.pointing,a.telescope,a.controller.signal,a.parameters):null;
    if(attempt.current!==a||gateRef.current.phase!=='preparing')return;
-   const reply=await call(a,{type:'compose',recipe:{camera:a.camera,opticalIndex:a.telescope,filterPosition:a.filter,seconds:a.seconds,gain:a.gain,centerRaHours:a.pointing.ra,centerDecDegrees:a.pointing.dec,seed:a.seed},extras,fieldObjects:field.objects,overlay:overlay?.red?{red:overlay.red}:null},overlay?.red?[overlay.red.buffer]:[]);
+   const reply=await call(a,{type:'compose',recipe:{camera:a.camera,opticalIndex:a.telescope,filterPosition:a.filter,seconds:a.seconds,gain:a.gain,centerRaHours:a.pointing.ra,centerDecDegrees:a.pointing.dec,seed:a.seed,...(a.parameters?{parameters:a.parameters}:{})},extras,fieldObjects:field.objects,overlay:overlay?.red?{red:overlay.red}:null},overlay?.red?[overlay.red.buffer]:[]);
    if(attempt.current!==a||gateRef.current.phase!=='preparing')return;
-   if(reply?.type!=='composed'||!reply.ok){a.failure='preparation';dispatch({type:'prepared',ticket:a.ticket,ok:false});return;}
+   if(reply?.type!=='composed'||!reply.ok){a.failure=reply?.type==='composed'&&reply.code==='parameters'?'parameters':'preparation';dispatch({type:'prepared',ticket:a.ticket,ok:false});return;}
    a.prepared=Object.freeze({exposure:exposureFromWorker(reply.exposure),source:a.source!,jd:a.jd,catalogName:a.catalogName,fieldObjectsStatus:field.status,...(a.region?{region:a.region}:{}),...(overlay?{overlayStatus:overlay.status}:{})});
    dispatch({type:'prepared',ticket:a.ticket,ok:true});
   }catch{a.failure='preparation';if(attempt.current===a&&gateRef.current.phase==='preparing')dispatch({type:'prepared',ticket:a.ticket,ok:false});}
@@ -154,7 +164,7 @@ function CameraControl({scopeUse,objectXHidden=null,vireoId='',showObjectId=fals
  useEffect(()=>{
   if(gate.phase!=='idle'||gate.terminal==='none')return;
   const a=attempt.current;
-  setMessage(gate.terminal==='completed'?M.statusDone:gate.terminal==='cancelled'?M.statusCancelled:`${M.statusFailed} ${M.failure[a?.failure??'catalog']??''}`);
+  setMessage(gate.terminal==='completed'?M.statusDone:gate.terminal==='cancelled'?M.statusCancelled:`${M.statusFailed} ${a?.failure==='parameters'?t('cameraParameters.failed'):M.failure[a?.failure??'catalog']??''}`);
  },[gate]);
  // The live region announces phase changes only; the countdown is a separate, non-live line (review L10).
  useEffect(()=>{if(gate.phase==='exposing')setMessage(M.statusExposing);else if(gate.phase==='waiting')setMessage(M.statusWaiting);},[gate.phase]);
@@ -171,11 +181,14 @@ function CameraControl({scopeUse,objectXHidden=null,vireoId='',showObjectId=fals
  const ready=access==='ready'&&active&&!busy;
  // Static mode: whether a bundled extract covers this pointing is known before Start (review L6).
  let staticCovered=true;
- if(mode==='static'){try{const {reference,route}=cameraQuery(camera,telescopeIndex,filter,pointing,2451545);staticCovered=!!findCameraExtract({catalog:route.catalog,raHours:pointing.ra,decDegrees:pointing.dec,radiusDegrees:reference.searchRadiusDegrees});}catch{staticCovered=false;}}
+ if(mode==='static'){try{const {reference,route}=cameraQuery(camera,telescopeIndex,filter,pointing,2451545,currentParameters);staticCovered=!!findCameraExtract({catalog:route.catalog,raHours:pointing.ra,decDegrees:pointing.dec,radiusDegrees:reference.searchRadiusDegrees});}catch{staticCovered=false;}}
  function start(){
   if(!ready||!validExposure||running)return;
   // CCD Go 0x5126c1 stores the filter byte (form+0x405) before the preparation check 0x512244 can refuse the Go (closure L5).
   if(camera==='ccd')setCcdFilterByte(filter);
+  // Front T7 [W]: an instructor value outside the measured domain refuses the Start, naming the field (WEB-T7-02).
+  const refused=currentParameters&&cameraParameterRefusal(currentParameters,camera);
+  if(refused){setMessage(t('cameraParameters.refused',{field:cameraParameterLabel(refused),value:cameraParameterValueText(currentParameters!,refused)}));return;}
   if(mode==='static'&&!staticCovered){setMessage(`${M.statusFailed} ${M.failure['no-extract']}`);return;}
   // Front T5: each Go uses the telescope's allotment (CCD 0x512244 → 0x5122cd, IR 0x514268 → 0x5142f1); the page shows VIREO's box.
   if(scopeUse&&!scopeUse(camera)){setMessage(t('scopeAccess.instrumentRefused'));return;}
@@ -185,7 +198,7 @@ function CameraControl({scopeUse,objectXHidden=null,vireoId='',showObjectId=fals
   attempt.current=null;
   const transition=cameraRequestTransition(gateRef.current,{type:'start',seconds:total});
   const ticket=transition.state.ticket!;
-  attempt.current={ticket,controller:new AbortController(),camera,seconds:total,filter,gain,mode,jd,seed,pointing:{ra:pointing.ra,dec:pointing.dec},telescope:telescopeIndex,worker:null,pending:null,source:null,failure:null,prepared:null,catalogName:'',load:telescopeFieldLoad()};
+  attempt.current={ticket,controller:new AbortController(),camera,seconds:total,filter,gain,mode,jd,seed,pointing:{ra:pointing.ra,dec:pointing.dec},telescope:telescopeIndex,worker:null,pending:null,source:null,failure:null,prepared:null,catalogName:'',load:telescopeFieldLoad(),parameters:currentParameters};
   // Front Eros: the status changes in the same update as the gate. Left to the phase effect below, the previous terminal
   // message ("Image ready.") stayed on screen for one scheduler task after every Start (a test poll could land in it). Set after
   // the effects, so a request that fails while initializing (gate already releasing) never shows "Exposing…".
@@ -224,12 +237,12 @@ function CameraControl({scopeUse,objectXHidden=null,vireoId='',showObjectId=fals
  function chooseCamera(next:CameraExposureKind){if(next===camera)return;setCamera(next);setFilter(0);if(!CAMERA_GAINS[next].includes(gain))setGain(2);}
  useEffect(()=>{if(!infraredCamera&&camera==='ir'&&!running)chooseCamera('ccd');},[infraredCamera,camera,running]);
  return <section className="card camera-control" aria-labelledby="camera-control-title" data-testid="camera-control" data-phase={gate.phase} data-terminal={gate.terminal}>
-  <div className="eyebrow">{M.eyebrow}</div><h2 id="camera-control-title">{camera==='ir'?M.titleIr:M.title}</h2>{/* TCCDCam 0x5130fc / TIRCam 0x51512c Help1Click; options +0x9a4 and +0x9ec both default CamHlp.LST (docs/CLEA-HELP.md) */}<CleaHelp list={HELP_FILES['CAMHLP.LST']} testId="camera-help"/>{/* Front R4b: File › Information... (TCCDCam 0x512c80 / TIRCam 0x514cb0) */}<CameraInformationButton kind={camera} disabled={busy}/><p>{camera==='ir'?M.introIr:M.intro}</p>
+  <div className="eyebrow">{M.eyebrow}</div><h2 id="camera-control-title">{camera==='ir'?M.titleIr:M.title}</h2>{/* TCCDCam 0x5130fc / TIRCam 0x51512c Help1Click; options +0x9a4 and +0x9ec both default CamHlp.LST (docs/CLEA-HELP.md) */}<CleaHelp list={HELP_FILES['CAMHLP.LST']} testId="camera-help"/>{/* Front R4b: File › Information... (TCCDCam 0x512c80 / TIRCam 0x514cb0) */}<CameraInformationButton kind={camera} disabled={busy} parameters={cameraParameters}/><p>{camera==='ir'?M.introIr:M.intro}</p>
   <fieldset className="camera-settings" disabled={running||busy}>
    <fieldset className="camera-kind"><legend>{M.camera}</legend>
     {/* R3 review L3: a running IR exposure keeps its radio until it ends, then the effect above returns to the CCD. */(infraredCamera||camera==='ir'?['ccd','ir'] as const:['ccd'] as const).map(k=><label key={k}><input type="radio" name="camera-kind" checked={camera===k} onChange={()=>chooseCamera(k)}/>{M.cameraNames[k]}</label>)}
    </fieldset>
-   <CameraFieldSize camera={camera} telescopeIndex={telescopeIndex}/>
+   <CameraFieldSize camera={camera} telescopeIndex={telescopeIndex} parameters={currentParameters}/>
    <label>{M.filter}<select value={filter} onChange={e=>setFilter(Number(e.target.value))}>{filterNames.map((n,i)=><option key={n} value={i}>{n}</option>)}</select></label>
    <div className="camera-exposure" role="group" aria-label={M.exposure}>
     <label>{M.minutes}<input inputMode="numeric" value={minutes} maxLength={2} onChange={e=>setMinutes(e.target.value.trim())} aria-invalid={!validExposure}/></label>
@@ -242,6 +255,7 @@ function CameraControl({scopeUse,objectXHidden=null,vireoId='',showObjectId=fals
     {mode==='static'&&!staticCovered&&<p className="camera-hint" data-testid="camera-static-hint">{M.noExtractHere}</p>}
    </fieldset>
   </fieldset>
+  {currentParameters&&<p className="observatory-note" data-testid="camera-parameters-note">{t('cameraParameters.cameraNote',{fields:uncertifiedExposureFields(currentParameters,camera).map(cameraParameterLabel).join(', ')})}</p>}
   {!validExposure&&<p className="camera-invalid" role="alert">{M.invalidExposure}</p>}
   <div className="button-row">
    <button className="primary-button" disabled={!ready||!validExposure||running} onClick={start}>{M.start}</button>
@@ -252,10 +266,12 @@ function CameraControl({scopeUse,objectXHidden=null,vireoId='',showObjectId=fals
   {shown&&image&&<figure className="camera-image">
    <canvas ref={canvas} role="img" aria-label={M.imageAlt(filterName(shown.recipe.camera,shown.recipe.filterPosition),shown.recipe.seconds,shown.recipe.camera)} data-testid="camera-canvas"/>
    <figcaption>{M.displayNote}</figcaption>
+   {shown.recipe.parameters&&<p className="camera-uncertified" data-testid="camera-uncertified" data-reason="uncertified-parameter">{t('cameraParameters.imageLabel',{fields:uncertifiedExposureFields(shown.recipe.parameters,shown.recipe.camera).map(u=>`${cameraParameterLabel(u)} ${cameraParameterValueText(shown.recipe.parameters!,u)}`).join(', ')})}</p>}
    <div className="button-row"><button className="secondary-button" disabled={running} onClick={()=>void save()}>{M.save}</button><button className="secondary-button" disabled={running} onClick={()=>void save(true)} data-testid="camera-save-native" aria-describedby="camera-save-native-note">{M.saveNative}</button></div><p className="observatory-note">{M.saveNote}</p>{saveError&&<p role="alert" className="error" data-testid="camera-save-error">{saveError}</p>}<p className="observatory-note" id="camera-save-native-note">{M.saveNativeNote}</p>
    <label className="camera-palette"><input type="checkbox" checked={usePalette} onChange={e=>setUsePalette(e.target.checked)}/>{M.palette}</label>
    <details><summary>{M.details}</summary><dl className="camera-details">
     <dt>{M.detailCatalog}</dt><dd data-testid="camera-detail-catalog">{image.catalogName}</dd>
+    {shown.recipe.parameters&&<><dt>{t('cameraParameters.detail')}</dt><dd data-testid="camera-detail-parameters">{uncertifiedExposureFields(shown.recipe.parameters,shown.recipe.camera).map(u=>`${cameraParameterLabel(u)} = ${cameraParameterValueText(shown.recipe.parameters!,u)}`).join('; ')}</dd></>}
     <dt>{M.detailSource}</dt><dd data-testid="camera-detail-source">{M.sourceWithHash(image.source.mode==='static'?M.sourceStaticLabel(image.source.extractId??'',image.source.recordedAt??'',image.source.host):M.sourceLiveLabel(image.source.host),image.source.sha256)}</dd>
     <dt>{M.detailRows}</dt><dd data-testid="camera-detail-rows">{M.rowCounts(shown.catalog.rows,shown.catalog.selected,shown.catalog.onDetector)}</dd>
     <dt>{M.detailJd}</dt><dd>{image.jd.toFixed(5)}</dd>

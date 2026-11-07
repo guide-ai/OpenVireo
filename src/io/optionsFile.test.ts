@@ -6,6 +6,15 @@ import {INITIAL_INSTRUCTOR_GATE,leaveInstructorMode,preferencesGate,startupInstr
 import {INITIAL_RADIO_ACCESS,followPageGate} from '../core/radioAccessOptions';
 import {TEACHER_DEFERRED} from '../core/teacherDeferred';
 import {COMPILED_INSTRUMENT_PARAMETERS,INSTRUMENT_PARAMETER_FIELDS} from '../core/instrumentParameters';
+import {COMPILED_CAMERA_PARAMETERS,type CameraRecord} from '../core/cameraParameters';
+
+/** Front T7: one 91-byte camera record as BlockWrite stores it (core/cameraParameters.ts layout); a test encoder, not a port. */
+function nativeCameraRecordBytes(r:CameraRecord):Uint8Array{
+ const b=new Uint8Array(91),v=new DataView(b.buffer);b[0]=r.detector.length;for(let i=0;i<r.detector.length;i++)b[1+i]=r.detector.charCodeAt(i);
+ v.setFloat32(0x29,r.pixelWidthMicrons,true);v.setFloat32(0x2d,r.pixelHeightMicrons,true);v.setFloat32(0x31,r.readNoiseElectronsPerPixel,true);v.setFloat32(0x35,r.darkNoiseElectronsPerPixelSecond,true);v.setFloat32(0x39,r.baseMagnitude,true);
+ v.setInt32(0x3d,r.baseCount,true);v.setInt32(0x41,r.baseSeconds,true);v.setInt32(0x45,r.biasElectronsPerPixel,true);v.setInt32(0x49,r.width,true);v.setInt32(0x4d,r.height,true);v.setInt32(0x51,r.adBits,true);v.setInt32(0x55,r.wellDepthElectrons,true);
+ b[0x59]=r.cooling==='liquidNitrogen'?1:0;b[0x5a]=r.positionNoise?1:0;return b;
+}
 
 // Front T2 contracts (analysis/front-teacher/t2/RECOVERY.md). CLEA_VEO.exe 781bc970…c54c, static only. The native files below are
 // synthetic streams built from the recovered field table: evidence of the port, not an oracle for VIREO. No real password is
@@ -21,9 +30,11 @@ function nativeFile(changes:Readonly<Record<number,number>>={},version='1.504'){
  // Front T6: the seven Photometer / Spectrometer parameters at their compiled values (float32 / int32, little-endian).
  const view=new DataView(b.buffer);
  for(const f of INSTRUMENT_PARAMETER_FIELDS){const p=nativeStreamOffset(parseInt(f.record,16));if(f.type==='single')view.setFloat32(p,f.compiled,true);else view.setInt32(p,f.compiled,true);}
+ // Front T7: the two camera records at their compiled values.
+ b.set(nativeCameraRecordBytes(COMPILED_CAMERA_PARAMETERS.ccd),nativeStreamOffset(0x26e5));b.set(nativeCameraRecordBytes(COMPILED_CAMERA_PARAMETERS.ir),nativeStreamOffset(0x2740));
  return b;
 }
-const all=(v:boolean):OptionsFileValues=>Object.freeze({...Object.fromEntries(OPTIONS_FILE_KEYS.map(k=>[k,v])),parameters:COMPILED_INSTRUMENT_PARAMETERS}) as unknown as OptionsFileValues;
+const all=(v:boolean):OptionsFileValues=>Object.freeze({...Object.fromEntries(OPTIONS_FILE_KEYS.map(k=>[k,v])),parameters:COMPILED_INSTRUMENT_PARAMETERS,cameraParameters:COMPILED_CAMERA_PARAMETERS}) as unknown as OptionsFileValues;
 
 describe('T2 options file layout (0x5a4644 / 0x5a3534)',()=>{
  it('moves 107 fields, 8506 bytes, without overlap; "Administrator" and +0xf44 are not in the stream',()=>{
@@ -220,5 +231,27 @@ describe('T6 Photometer and Spectrometer parameters in the options file',()=>{
   const b=nativeFile();new DataView(b.buffer).setFloat32(nativeStreamOffset(0x2510),NaN,true);
   const r=readOptionsFile(b);if(r.kind!=='loaded')throw new Error('not loaded');
   expect(r.values.parameters.skyMagnitude).toBe(16);expect(r.notApplied).toEqual(['parameters','instrumentParameters']);
+ });
+});
+
+describe('Front T7: the CCD and IR camera records in the options file',()=>{
+ const changed=Object.freeze({...COMPILED_CAMERA_PARAMETERS,ccd:Object.freeze({...COMPILED_CAMERA_PARAMETERS.ccd,biasElectronsPerPixel:2500,width:512,cooling:'liquidNitrogen' as const,detector:'Lab CCD'})});
+ it('the web file carries "cameraParameters" and reads them back; a T6 file without them gives the compiled records',()=>{
+  const values=Object.freeze({...COMPILED_OPTIONS_FILE_VALUES,cameraParameters:changed}),doc=JSON.parse(writeOptionsFile(values));
+  expect(doc.cameraParameters.ccd).toMatchObject({biasElectronsPerPixel:2500,width:512,cooling:'liquidNitrogen',detector:'Lab CCD'});expect(Object.hasOwn(doc.cameraParameters.ccd,'kind')).toBe(false);
+  expect(doc.notApplied.parameters).toBe('compiled');expect(Object.hasOwn(doc.notApplied,'cameraParameters')).toBe(false);
+  expect(readOptionsFile(enc.encode(JSON.stringify(doc)))).toEqual({kind:'loaded',source:'web',values,notApplied:[],administratorCleared:false,fastSlewingRate:null});
+  delete doc.cameraParameters;const t6=readOptionsFile(enc.encode(JSON.stringify(doc)));expect(t6.kind==='loaded'&&t6.values.cameraParameters).toEqual(COMPILED_CAMERA_PARAMETERS);
+  expect(readOptionsFile(enc.encode(JSON.stringify({...doc,cameraParameters:{ccd:{}}})))).toEqual({kind:'invalid',reason:'not-options-file'});
+  expect(NOT_APPLIED.parameters.record).toContain('72 of the 81 fields');
+ });
+ it('a native file gives both records from their stream bytes (offsets 8259 and 8350); a NaN Single keeps its compiled field',()=>{
+  expect([nativeStreamOffset(0x26e5),nativeStreamOffset(0x2740)]).toEqual([8259,8350]);
+  const b=nativeFile();b.set(nativeCameraRecordBytes(changed.ccd),nativeStreamOffset(0x26e5));
+  const r=readOptionsFile(b);expect(r).toMatchObject({kind:'loaded',source:'native',notApplied:['parameters']});
+  if(r.kind==='loaded'){expect(r.values.cameraParameters.ccd).toEqual(changed.ccd);expect(r.values.cameraParameters.ir).toEqual(COMPILED_CAMERA_PARAMETERS.ir);}
+  new DataView(b.buffer).setFloat32(nativeStreamOffset(0x2740)+0x31,Number.NaN,true);
+  const n=readOptionsFile(b);expect(n).toMatchObject({kind:'loaded',notApplied:['parameters','cameraParameters']});
+  if(n.kind==='loaded')expect(n.values.cameraParameters.ir.readNoiseElectronsPerPixel).toBe(53);
  });
 });

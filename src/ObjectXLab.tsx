@@ -27,7 +27,8 @@ import {objectXFitsBytes} from './io/objectXImage';
  * total length the camera captured at Start (ComputeMovers T and dt). */
 /** The unrevealed target as instruments need it: position, opaque code and the ObjX-<ID> data label. */
 export type ObjectXHiddenTarget=Readonly<{ra:number;dec:number;code:string;label:string}>;
-export type ObjectXController=Readonly<{extraSources:(jd:number,pointing:Readonly<{ra:number;dec:number}>,seconds:number,camera:CameraExposureKind)=>readonly CameraExtraSource[];acceptImage:(image:CameraImage)=>void}>;
+/** Front T7: `readOnly` (an exposure made with instructor camera values) reads the list as an IR exposure does and changes nothing. */
+export type ObjectXController=Readonly<{extraSources:(jd:number,pointing:Readonly<{ra:number;dec:number}>,seconds:number,camera:CameraExposureKind,readOnly?:boolean)=>readonly CameraExtraSource[];acceptImage:(image:CameraImage)=>void}>;
 type Props=Readonly<{
  /** Edit Mode (env+0x2e7e): VIREO shows the Asteroid List during Object X only then (QA1 review 1 H3). This site's Edit Mode needs
   * no instructor login (WEB-EM-01), so the list also waits for the reveal (QA1 closure E2) [W]. */
@@ -129,20 +130,20 @@ function ObjectXLab({sessionId=null,editMode=false,spectralRange=DEFAULT_SPECTRA
   });
  }
  controllerRef.current={
-  extraSources:(jd,pointing,seconds,camera)=>{
-   const l=listRef.current,o=orbit.current;
+  extraSources:(jd,pointing,seconds,camera,readOnly=false)=>{
+   const l=listRef.current,o=orbit.current,observing=camera==='ccd'&&!readOnly;
    const current=!!l&&!!o&&o.id===l.orbitFile&&Math.abs(jd-l.list.jd)<=OBJECT_X_LIST_CURRENT_DAYS;
-   const use=objectXCameraListUse({camera,listCurrent:current,clockSet:invRef.current.clockSet,hasList:!!l});
+   const use=objectXCameraListUse({camera:observing?'ccd':'ir',listCurrent:current,clockSet:invRef.current.clockSet,hasList:!!l});
    // No list, or one for another date: no asteroids in this image ("asteroids not computed"); a list for this date is built
    // for the next CCD image if the exercise has started. IR images only read a current list: they never build one and do
    // not touch lastPairs, so they leave Object X state unchanged.
    if(use!=='use'){
-    if(camera==='ccd')lastPairs.current={jd,list:null,pairs:0};
+    if(observing)lastPairs.current={jd,list:null,pairs:0};
     if(use==='build')window.setTimeout(()=>void buildList(jd),0);
     return [];
    }
    const r=movingPairs(o!.bytes,l!.list,pointing,jd,seconds);
-   if(camera==='ccd')lastPairs.current={jd,list:l,pairs:r.pairs.length};
+   if(observing)lastPairs.current={jd,list:l,pairs:r.pairs.length};
    return r.pairs.map(p=>p.source);
   },
   acceptImage:image=>{void acceptImage(image);},

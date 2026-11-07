@@ -1,5 +1,6 @@
 import recovered from '../../docs/CAMERA-PROJECTION-PROVENANCE.json';
 import {compiledCameraInformation,type CameraKind} from './cameraInformation';
+import type {CameraRecord} from './cameraParameters';
 import {opticalProfile,opticalIndex,type OpticalIndex} from './opticalTelescope';
 export type CameraProjectionContext=Readonly<{kind:CameraKind;opticalIndex:OpticalIndex;width:number;height:number;centerRaRadians:number;centerDecRadians:number;centerCosDec:number;centerSinDec:number;seeingEnabled:boolean;seeingWidthRadians:number;halfX:number;halfY:number;originX:number;originY:number;stepX:number;stepY:number}>;
 export type CameraSourceProjection=Readonly<{planeX:number;planeY:number;denominator:number;jitteredRaRadians:number;jitteredDecRadians:number;inside:boolean;pixelX:number|null;pixelY:number|null;localDrawsConsumed:2}>;
@@ -7,8 +8,10 @@ const contexts=new WeakSet<object>();
 const k=Object.freeze(Object.fromEntries(Object.entries(recovered.constants).map(([name,c])=>[name,c.numberPolicyValue])));
 /** Compiled reference owners only;seeing enable is explicit,not inferred from
  * an image or live camera. Source initializers0x5220f4/0x51dd10. */
-export function compiledCameraProjection(kind:unknown,index:unknown,center:Readonly<{raHours:number;decDegrees:number}>,seeingEnabled:boolean):CameraProjectionContext {
- const camera=compiledCameraInformation(kind),i=opticalIndex(index),optics=opticalProfile(i);
+/** Front T7: `record` is the camera's own options record (instructor values, core/cameraParameters.ts); absent, the compiled one.
+ * Its width, height and pixel size are read here, as 0x5220f4 / 0x51dd10 read them from env+0x2d99 / env+0x2df4. */
+export function compiledCameraProjection(kind:unknown,index:unknown,center:Readonly<{raHours:number;decDegrees:number}>,seeingEnabled:boolean,record?:CameraRecord):CameraProjectionContext {
+ const camera=record&&record.kind===kind?record:compiledCameraInformation(kind),i=opticalIndex(index),optics=opticalProfile(i);
  if(!center||!Number.isFinite(center.raHours)||center.raHours<0||center.raHours>24||!Number.isFinite(center.decDegrees)||Math.abs(center.decDegrees)>90||typeof seeingEnabled!=='boolean')throw new Error('Unsupported projection reference context');
  const centerRaRadians=(center.raHours*k.hoursToDegrees)*k.radiansPerDegree,centerDecRadians=center.decDegrees*k.radiansPerDegree;
  const halfX=((camera.width*camera.pixelWidthMicrons)*k.micronsToMM)/(k.two*optics.focalLengthMM),halfY=((camera.height*camera.pixelHeightMicrons)*k.micronsToMM)/(k.two*optics.focalLengthMM);

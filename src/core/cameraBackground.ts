@@ -1,6 +1,7 @@
 import {compiledCameraInformation, type CameraKind} from './cameraInformation';
 import preparation from '../../docs/CAMERA-PREPARATION-PROVENANCE.json';
 import {roundNearestEven} from './numericPolicy';
+import type {CameraParameters} from './cameraParameters';
 
 /** Initial background only, before sources/overlay/well/gain/ADC clipping.
  * Explicit uniforms are a supplied local segment, never an invented native seed.
@@ -21,8 +22,10 @@ const int32=(n:number)=>Number.isInteger(n)&&n>=-0x80000000&&n<=0x7fffffff;
 
 /** Both original preparation routes read the CCD background record. IR's own
  * dimensions and gain remain separate. Compiled defaults only; no host options. */
-export function compiledCameraBackgroundParameters(kind:CameraKind,seconds:number,gain:number):CameraBackgroundParameters {
- const dimensions=compiledCameraInformation(kind),background=compiledCameraInformation('ccd');
+/** Front T7: `records` are the instructor's records (core/cameraParameters.ts); the dimensions come from the camera's own, read noise,
+ * dark noise, cooling and bias from the CCD record for both cameras (0x5215e4..0x52164b; IR 0x51e45f). */
+export function compiledCameraBackgroundParameters(kind:CameraKind,seconds:number,gain:number,records?:CameraParameters):CameraBackgroundParameters {
+ const dimensions=records?records[kind]:compiledCameraInformation(kind),background=records?records.ccd:compiledCameraInformation('ccd');
  const gains=preparation.forms.find(r=>r.kind===kind)!.gainsElectronsPerADU;
  if(!int32(seconds)||seconds<=0||!gains.includes(gain))throw new CameraBackgroundError('parameters');
  return Object.freeze({width:dimensions.width,height:dimensions.height,mean:background.readNoiseElectronsPerPixel+(background.cooling==='thermoelectric'?seconds*background.darkNoiseElectronsPerPixelSecond:0),bias:background.biasElectronsPerPixel,gain});

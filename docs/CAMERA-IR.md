@@ -17,6 +17,13 @@ The IR search radius (1.5 × half of the larger field side) is 0.19° on the 0.4
 - Moving objects (Object X asteroids) get the IR offsets of 0x51e110: J m − 1.13, H (m − 1.13) − 0.29, K ((m − 1.13) − 0.29) − 0.07, stored as Single.
 - Final stage uses the IR well and A/D.
 
+**Instructor values (Front T7).** VIREO reads the IR tab's record for the IR projection, plane, nominal field, well, A/D and
+position noise. It reads the CCD tab's record for the background (read noise, dark noise, cooling, bias), the pixel size of the
+star width and the base magnitude, count and exposure. The IR tab's own noise, bias, cooling and base values are therefore read
+only by Information (and the dialog). The web follows that (docs/OPTICAL-OPTIONS.md): an IR image is uncertified when any field it
+reads differs from VIREO's. A 1024² IR field on the 0.4 m needs a 0.38° cone, so no bundled extract covers it, and static mode
+refuses with the usual no-extract message.
+
 ## Web adaptations
 - **Exposure limit (recovered, Front RE5):** TIRCam's Start check (0x514268) is the CCD's (0x512244). A time ≥ 3600 s makes the ExpClock.Minutes setter (0x4fcbc8) raise "Minutes must be in the range of 0-59" uncaught, so both cameras take 1 s to 59 min 59 s. It is no longer an adaptation. (The absence of an overlay is recovered too, see above.) The card says so under the IR camera, and `src/core/cameraExposure.test.ts` and `tests/ir-camera.spec.ts` test it.
 - One card with a camera choice instead of two windows. Changing camera resets the filter to the first position; gain 2 is kept (both cameras offer it).

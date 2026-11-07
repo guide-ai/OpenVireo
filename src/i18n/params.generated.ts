@@ -3567,4 +3567,17 @@ export interface MessageParameters {
   "fieldSpec.parametersDomain.timer": never;
   "ph.uncertifiedSky": "base" | "count" | "sky" | "timer";
   "ph.parametersTimerLimit": never;
+  "cameraParameters.ccdNote": never;
+  "cameraParameters.irNote": never;
+  "cameraParameters.adUp": never;
+  "cameraParameters.adDown": never;
+  "cameraParameters.draftUncertified": "fields";
+  "cameraParameters.cameraNote": "fields";
+  "cameraParameters.imageLabel": "fields";
+  "cameraParameters.detail": never;
+  "cameraParameters.refused": "field" | "value";
+  "cameraParameters.failed": never;
+  "cameraParameters.informationNote": never;
+  "cameraParameters.adUpGlyph": never;
+  "cameraParameters.adDownGlyph": never;
 }

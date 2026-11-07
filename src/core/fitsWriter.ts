@@ -7,6 +7,7 @@
 import type {CameraExposure} from './cameraExposure';
 import {compiledCameraProjection} from './cameraProjection';
 import {opticalProfile} from './opticalTelescope';
+import {cameraParameterLabel,cameraParameterValueText,uncertifiedExposureFields} from './cameraParameters';
 
 export class FitsWriterError extends Error {
  constructor(readonly code:'plane'|'card'|'value'){super(`FITS writer: ${code}`);this.name='FitsWriterError';}
@@ -46,7 +47,9 @@ export function jdToIso(jd:number):string {
 function fitsCatalogHost(url:string):string {try{return new URL(url).hostname.slice(0,60);}catch{return '';}}
 export function cameraFitsCards(exposure:CameraExposure,context:CameraFitsContext):readonly string[] {
  const {plane,recipe}=exposure,profile=opticalProfile(recipe.opticalIndex);
- const ir=recipe.camera==='ir',projection=compiledCameraProjection(recipe.camera,recipe.opticalIndex,{raHours:recipe.centerRaHours,decDegrees:recipe.centerDecDegrees},true);
+ const ir=recipe.camera==='ir',projection=compiledCameraProjection(recipe.camera,recipe.opticalIndex,{raHours:recipe.centerRaHours,decDegrees:recipe.centerDecDegrees},true,recipe.parameters?.[recipe.camera]);
+ // Front T7: an exposure composed with instructor camera values lists them (uncertified-parameter); compiled files are unchanged.
+ const instructor:Card[]=recipe.parameters?[['COMMENT','uncertified-parameter: instructor camera values (not compiled):'],...uncertifiedExposureFields(recipe.parameters,recipe.camera).map(u=>['COMMENT',`  ${cameraParameterLabel(u).replace(' \u203a ',' > ')} = ${cameraParameterValueText(recipe.parameters!,u)}`.slice(0,72)] as Card)]:[];
  const degrees=180/Math.PI;
  // Gnomonic plane: xi = -planeX = halfX - x*stepX, eta = planeY = halfY + y*stepY (x,y 0-based pixel centres).
  const cards:Card[]=[
@@ -72,6 +75,7 @@ export function cameraFitsCards(exposure:CameraExposure,context:CameraFitsContex
   ...(ir?[['COMMENT','J/H/K: 2MASS via NOMAD (Skrutskie et al. 2006, AJ 131, 1163).'],['COMMENT','Two Micron All Sky Survey: UMass, IPAC/Caltech; NASA and NSF.']] as Card[]:[]),
   ['COMMENT','Header cards are web-authored; the CLEA keyword writer is not ported.'],
   ['COMMENT','WCS describes the camera projection without the per-star seeing jitter.'],
+  ...instructor,
  ];
  return Object.freeze([...cards.map(card),'END'.padEnd(80)]);
 }

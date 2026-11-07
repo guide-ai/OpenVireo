@@ -85,7 +85,8 @@ In OpenVireo (`src/io/optionsFile.ts`, `src/io/demonstrationModeStorage.ts`):
   install paths and addresses built from VIREO's own folder at run time, and the rest of its parameter block belongs to the
   parameter fronts T6–T8, so a web-written native file would have to invent them. The file holds the 17 applied options
   (Demonstration Mode, Test Mode, Limit Slewing, Edit Mode, Virtual Observatory, the R3 options and, since Front T4, Set E(B-V)
-  and Detect Sky), since Front T6 the seven Photometer and Spectrometer parameters under `parameters`, the other options at
+  and Detect Sky), since Front T6 the seven Photometer and Spectrometer parameters under `parameters`, since Front T7 the two
+  camera records under `cameraParameters`, the other options at
   their compiled values under `notApplied`, and a **zero-length password**.
 - **Load options file…** reads that JSON file or a native `VEO_OPTS.INI` with VIREO's checks (version rule, length/Eof) and its
   box texts. VIREO reads its file only at start-up, so here a file fills the dialog, as Reset does: OK applies it and Cancel
@@ -93,8 +94,8 @@ In OpenVireo (`src/io/optionsFile.ts`, `src/io/demonstrationModeStorage.ts`):
   is cleared. Values OpenVireo does not apply are listed with their reason and not applied: Restrict Scope Access (a later
   instructor version; Detect Sky and Set E(B−V) are applied since Front T4); Compute Magnitudes, Include R and I and Plot HR (fixed here); Sound Effects
   (OpenVireo's own switch); Write Log File; the Lab Table Number (undecided, its value is not shown); and the native parameter
-  block other than the seven Photometer and Spectrometer fields, which Front T6 applies (a NaN or infinite native Single keeps its
-  compiled value and is listed). Saving again writes VIREO's compiled values for those listed items, and the load notice says so (review 1 L2). A native
+  block other than the seven Photometer and Spectrometer fields, which Front T6 applies, and the two camera records, which Front T7
+  applies (a NaN or infinite native Single keeps its compiled value and is listed). Saving again writes VIREO's compiled values for those listed items, and the load notice says so (review 1 L2). A native
   Fast Slewing byte other than 3 or 4 is noted with its rate index, which VIREO's ProgrammedSlew would pass straight to the
   rate slider (0x539cbf); the box shows ticked only for 4 (review 1 L1). Error boxes show the file's name where VIREO shows its
   full path; `Read beyond end of file` is inferred (Delphi run-time text). Unlike VIREO, OpenVireo never deletes a file it could
@@ -201,6 +202,96 @@ display digits (FormActivate's ffFixed 1 or 2), so pressing OK again stores the 
 
 Recovery, excerpts and the full policy: `analysis/front-teacher/t6/RECOVERY.md`.
 
+## CCD and IR camera parameters (Front T7, 2026-11-06)
+The CCD Camera and IR Camera tabs are live in instructor mode (`src/core/cameraParameters.ts`,
+`src/observatory/CameraParameterEdits.tsx`).
+
+**The records [D].** Each camera has a 91-byte record: CCD at record+0x26e5 (env+0x2d99), IR at +0x2740 (env+0x2df4).
+
+| Field | Offset | Type, OK conversion, display | CCD / IR compiled |
+|---|---|---|---|
+| Camera Name/ID | +0x00 | String[40] (0x403c5c, cl = 0x28) | Site CH350 003B Back-Illuminated / CLEA_IR1 |
+| Pixel Size: Width, Height (µm) | +0x29, +0x2d | Single, StrToFloat, ffFixed 18,1 | 24.0 / 40.0 |
+| Image Size (Pixels): Width, Height | +0x49, +0x4d | Integer, StrToFloat + Round, IntToStr | 1024 / 512 |
+| Read Noise (e/pixel) | +0x31 | Single | 5.0 / 53.0 |
+| Dark Noise (e/pixel/sec) | +0x35 | Single | 2.0 / 0.7 |
+| Bias (e/Pixel) | +0x45 | Integer (Round) | 1000 / 1000 |
+| Base Magnitude | +0x39 | Single | 10.0 / 10.0 |
+| Base Count | +0x3d | Integer (Round) | 1000 / 1000 |
+| Base Exposure (s) | +0x41 | Integer (Round) | 10 / 10 |
+| Chip Well Depth | +0x55 | Integer, **StrToInt** | 320000 / 250000 |
+| AD Depth (Bits) | +0x51 | Integer, StrToInt, read-only | 16 / 32 |
+| Chip Cooling | +0x59 | Byte, ItemIndex = 1 is Liquid Nitrogen | Thermoelectric / Liquid Nitrogen |
+| Apply Position Noise | +0x5a | Byte, check box | on / on |
+
+**The dialog [D].**
+- **Order.** OK converts these edits after SpTimer, in the same try: first the CCD block (0x5a6522..0x5a673e), then the IR block
+  (0x5a6741..0x5a695d). An EConvertError shows the same box as T6.
+- **A/D spin buttons.** The A/D edit is read-only; its spin buttons step it:
+  - CCD: 8 ↔ 12 ↔ 14 ↔ 16 (0x5a6ffc / 0x5a70b4);
+  - IR: 8 ↔ 12 ↔ 14 ↔ 16 ↔ 32 (0x5a716c / 0x5a7248);
+  - any other value stays as it is.
+- **Cooling.**
+  - On the CCD tab, Liquid Nitrogen disables the dark-noise edit (FormActivate 0x5a5d42, CoolGrpClick 0x5a6fb0).
+  - On the IR tab, the whole cooling group is disabled when the IR record holds Liquid Nitrogen (0x5a5f72).
+  - CoolGrpClick serves both groups but toggles only the CCD edit, so the IR dark-noise edit is never disabled.
+- **No range check.** VIREO checks no range. Its only guard is the image allocation 0x524348, which shows "Insufficient memory to
+  create image.  You cannot use the CCD camera!" when GetMem(width × height × 4) runs out.
+
+Here the controls behave the same way. The values last for the page session: Reset restores the compiled records, and Leave keeps
+them. Save Updates writes them (`cameraParameters` in the web file). Load reads them from a web file or from a native VEO_OPTS.INI
+(stream offsets 8259 and 8350); a native field the web cannot hold keeps its compiled value and is listed as not representable.
+
+**What reads them [D] (RECOVERY §3).**
+- **Each camera's own record:**
+  - the field initialize (0x5220f4 / 0x51dd10): width, height, pixel size, and position noise (seeing jitter on or off);
+  - the image plane (0x5214c8 / 0x51e3b8);
+  - the final well and A/D clipping (0x521b3b / 0x51e60a);
+  - the nominal field (0x53df24), and through it the search radius;
+  - Information.
+- **The CCD record, for both cameras:**
+  - the background: b = read noise + seconds × dark noise unless Liquid Nitrogen, plus bias (0x5215e4 / 0x51e45f);
+  - the pixel size that sets the star width (0x52455c);
+  - base magnitude, count and exposure: peak = count / 10^((m − base mag − scope factor)/2.5), scale = seconds / base exposure
+    (0x5245e7);
+  - the CCD overlay (bitmap size and scale).
+- **So, on the IR tab:** the noise, bias, cooling and base values are read only by Information. The name is read only by
+  Information and by VIREO's FITS DETECTOR card.
+
+**Policy (`uncertified-parameter`).** With the compiled records every image is byte-identical: no recipe field, no event, the same
+FITS bytes and control hashes. A changed field that the selected camera's exposure does not read also leaves its image compiled.
+- **Measured, labelled.** Every field above that an exposure reads is measured with VIREO's formulas, through the projection,
+  background, calibration, overlay, final clipping, nominal field and search radius.
+  - The camera window names the values before Start.
+  - The image is labelled.
+  - Exposure details list the values.
+  - The web FITS file adds `uncertified-parameter` COMMENT cards.
+- **Refused [W], with the field named.**
+  - [W] Image sizes outside 1..1024 per axis. That is the compiled CCD's 1024², the largest plane the composer and the Saved images
+    viewer admit; it bounds the memory at 4 MiB per plane. VIREO only fails GetMem.
+  - Pixel sizes outside (0, 1000] µm.
+  - Negative read or dark noise.
+  - |base magnitude| > 100.
+  - Base count or base exposure below 1.
+  - Well below 1.
+  - A/D outside 1..32.
+  - A value inside that domain which a stage still cannot hold refuses the exposure with its own message.
+- **Extracts.**
+  - The bundled VizieR extracts are 0.25° cones keyed by field, not by camera size.
+  - A larger nominal field asks for a larger radius, which no extract covers (for example the IR camera at 1024² on the 0.4 m:
+    0.38°). Static mode then says there is no extract; live mode asks VizieR for that radius.
+  - The selection keeps the telescope field's ±0.375° bounds, as in VIREO.
+- **Object X (E08).** An image made with instructor values is not added to the Object X investigation, and the lab's asteroid hook is
+  called read-only (as for IR images). So E08 replay and its 33/33 rows are unchanged.
+- **Where the mark stops [W].**
+  - The VIREO-header FITS save has no field for the mark.
+  - Its DETECTOR card stays empty, as before T7. VIREO writes the camera name there (0x523d2d / 0x523e3b); filling it would change
+    the compiled native file.
+- **Latching [W].** VIREO stores the nominal field at each telescope selection, so the search radius, the overlay rectangle and the
+  size labels follow a new size only after the next telescope change. The web reads the records at each Start.
+
+Recovery, excerpts and the full policy: `analysis/front-teacher/t7/RECOVERY.md`.
+
 ## In OpenVireo
 The dialog opens from the telescope-motion card, in instructor mode. These controls are live:
 
@@ -214,6 +305,7 @@ The dialog opens from the telescope-motion card, in instructor mode. These contr
 | Detect Sky (Photometer tab) | off | Front T4 (above): the photometer decides Object or Sky at each activation | +0x27cf = env+0x2e83 → TPhotometer+0x6b1; FormActivate 0x4ff94c |
 | Restrict Scope Access | on | Front T5 (above): the Photometry, HR Diagrams and Stellar Spectra exercises put the 1.0 m and 4.0 m behind Request Time | +0x27d1 = env+0x2e85 → env+0x3840; 0x589bd8, 0x58ba88, 0x53cce4 |
 | Photometer and Spectrometer tab parameters (7 edits) | 6.0, 16.00, 1000, 100; 19.00, 50, 1 | Front T6 (above): the photometer and the observatory spectrometer measure with instructor values, labelled uncertified; the exercise spectrometer routes refuse them | +0x250c, +0x2510, +0x279f, +0x27a3, +0x2514, +0x27a7, +0x27ab |
+| CCD and IR tab parameters (two records) | the compiled cameras (Information) | Front T7 (above): both cameras measure with instructor values, labelled uncertified, kept out of Object X; sizes up to 1024² | +0x26e5, +0x2740 |
 | Fast Slewing | on | Programmed slews run at rate index 4; off gives index 3, half as fast. | +0x27af := 4/3; ProgrammedSlew 0x5399e8 sets RateSlider.Position at 0x539cbf |
 | Fast Scope Change | off | On, a telescope change with the dome open keeps it open, with no dome sound. | +0x27d0 = env+0x2e84; 0x58b554 needs the option on and the dome open (+0x552 = 1) |
 | Compute Rdshft Vel. | off | The LSS Measured Redshift Data dialog and, since Front H2, the Hubble Observational Data dialog open with the velocity filled in: Single(c·z), ffExponent 4. The Hubble dialog fills it only when z ≠ 0. OK still applies the 1 % check. | +0x27d4 = env+0x2e88; TLSSRsltsDlg1.FormActivate 0x57cbcb; TObsRsltsDlg1.FormActivate 0x54aedb |
@@ -225,10 +317,9 @@ The dialog opens from the telescope-motion card, in instructor mode. These contr
 | Time-Dependent Data | off | Off, Record Z on an already recorded object updates its row, in the LSS survey (Front L3, docs/LSS-SURVEY.md) and for Hubble galaxy measurements (Front H2, docs/HUBBLE-VELOCITY.md), and re-classifying an object edits its result (Front R4c); on, every Record Z or classification adds a row. | +0x27d8 = env+0x2e8c; 0x57c918, 0x54a73c (core/recordReuse.ts) |
 | Allow User Change (Spectrometer tab) | on | Checked, Spectral Range… is offered on every spectrometer route; unchecked, it is disabled with a note and the current range stays (Front S3). [W] the openers follow the option at once (the dialog is on another page, so the next show reads it). | +0x27d7 = env+0x2e8b; compiled 0x5a2a32; read by TSpectrometer FormShow 0x50d9d5 and TSpClassify FormShow 0x507945 |
 
-The dialog also shows the General, Photometer, Spectrometer, CCD and IR tab values **read-only** (except the Photometer tab's
-Set E(B-V) and Detect Sky, live since Front T4, and the Photometer and Spectrometer parameters, live since Front T6), formatted as
-FormActivate 0x5a56e0 writes them. Editing them would invalidate the certified field, photometer, spectrometer and camera
-contracts built on those values.
+The dialog also shows the General tab values **read-only**, formatted as FormActivate 0x5a56e0 writes them. Editing them would
+invalidate the certified field contracts built on those values. The Photometer tab's Set E(B-V) and Detect Sky are live since
+Front T4, the Photometer and Spectrometer parameters since Front T6, and the CCD and IR parameters since Front T7.
 
 **Web adaptations [W]:**
 - **WEB-OPT-R3:** the options last for the page session and are not saved by the page, as Edit Mode is. Since Front T1 they
@@ -274,5 +365,5 @@ contracts built on those values.
   - The photometer route's own web plot is not VIREO's form and keeps its colours.
 - Not ported: Administrator and the remaining photometer check boxes keep their compiled state and are listed as text. Test
   Mode is live since Front T3, Demonstration Mode since Front T2, Set E(B-V) and Detect Sky since Front T4, Restrict Scope
-  Access since Front T5, and the Photometer and Spectrometer parameters since Front T6 (above). The General, CCD and IR tab
-  parameters stay read-only (Fronts T8, T7), and so does Scopes… (Front T8).
+  Access since Front T5, the Photometer and Spectrometer parameters since Front T6, and the CCD and IR parameters since Front T7
+  (above). The General tab parameters stay read-only (Front T8), and so does Scopes… (Front T8).

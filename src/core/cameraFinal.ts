@@ -4,6 +4,7 @@ import preparation from '../../docs/CAMERA-PREPARATION-PROVENANCE.json';
 import type {CameraBackgroundStage} from './cameraBackground';
 import type {CameraPointStage} from './cameraPointSource';
 import type {CameraExtendedStage} from './cameraExtendedSource';
+import type {CameraParameters} from './cameraParameters';
 
 /** Final numerical conversion only. Source CCD521b3b../IR51e60a..,
  * complete parents pinned in CAMERA-FINAL-PROVENANCE. No acquisition/header. */
@@ -21,8 +22,9 @@ export function cameraFinalParameters(well:number,gain:number,adBits:number):Cam
  if(!Number.isInteger(well)||well<1||well>0x7fffffff||!gains.includes(gain)||!Number.isInteger(adBits)||adBits<1||adBits>32)throw new CameraFinalError('parameters');
  return Object.freeze({well,gain,adBits});
 }
-export function compiledCameraFinalParameters(kind:CameraKind,gain:number):CameraFinalParameters {
- const r=compiledCameraInformation(kind),positions=preparation.forms.find(r=>r.kind===kind)!.gainsElectronsPerADU;
+/** Front T7: the camera's own well and A/D (CCD 0x521b3b.., IR 0x51e60a..) from the instructor's records when given. */
+export function compiledCameraFinalParameters(kind:CameraKind,gain:number,records?:CameraParameters):CameraFinalParameters {
+ const r=records?records[kind]:compiledCameraInformation(kind),positions=preparation.forms.find(r=>r.kind===kind)!.gainsElectronsPerADU;
  if(!positions.includes(gain))throw new CameraFinalError('parameters');
  return cameraFinalParameters(r.wellDepthElectrons,gain,r.adBits);
 }

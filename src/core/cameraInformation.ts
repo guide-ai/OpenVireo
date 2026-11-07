@@ -11,8 +11,10 @@ export function compiledCameraInformation(kind:unknown):CameraInformation{if(kin
  * TIRCam 0x514d83–0x514f63, literals 0x514fd8–0x51511c): the nine ListBox lines of the TInfoListForm1 Information window, in
  * order. F1 = FloatToStrF ffFixed,18,1; the bias is an Integer field printed with F1. Static reading; nothing executed. */
 export const CAMERA_INFORMATION_CAPTIONS=Object.freeze({ccd:'CCD Camera Parameters',ir:'IR Camera Parameters'});
-export function cameraInformationLines(kind:CameraKind):readonly string[]{
- const r=compiledCameraInformation(kind),f1=(v:number)=>delphiFixed(v,1);
+/** Front T7: `record` is the camera's current options record (VIREO lists env+0x2d99 / env+0x2df4 at 0x512d5a / 0x514d8a, so an
+ * instructor's values show here); absent, the compiled one. */
+export function cameraInformationLines(kind:CameraKind,record?:CameraInformation):readonly string[]{
+ const r=record&&record.kind===kind?record:compiledCameraInformation(kind),f1=(v:number)=>delphiFixed(v,1);
  return Object.freeze([
   `Detector: ${r.detector}`,
   `Image Size (pixels): ${r.width} x ${r.height}`,
