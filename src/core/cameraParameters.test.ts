@@ -2,7 +2,7 @@ import {describe,expect,test} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {CAMERA_PARAMETER_FIELDS,CAMERA_TEXT_KEYS,COMPILED_CAMERA_PARAMETERS,applyCameraParameterTexts,cameraAdSpin,cameraDraftsOf,cameraExposureUses,cameraParameterLabel,cameraParameterRefusal,
- ccdDarkNoiseEnabled,convertCameraText,exposureCameraParameters,irCoolingEnabled,isCompiledCameraParameters,readCameraParameters,cameraParametersJson,readNativeCameraRecord,sameCameraParameters,
+ ccdDarkNoiseEnabled,convertCameraText,cameraStartRefusal,cameraParameterExactText,CAMERA_MAXIMUM_SEARCH_RADIUS_DEGREES,exposureCameraParameters,irCoolingEnabled,isCompiledCameraParameters,readCameraParameters,cameraParametersJson,readNativeCameraRecord,sameCameraParameters,
  uncertifiedCameraFields,uncertifiedExposureFields,type CameraParameters,type CameraRecord} from './cameraParameters';
 import {compiledCameraInformation,cameraInformationLines} from './cameraInformation';
 import {composeCameraExposure,CameraExposureError,CAMERA_PARAMETERS_ADAPTATION,type CameraExposureRecipe} from './cameraExposure';
@@ -12,7 +12,7 @@ import {compiledCameraSourceCalibration,CAMERA_SOURCE_ADMISSION} from './cameraS
 import {compiledCameraQueryReference} from './cameraQueryReference';
 import {cameraPreparationReference} from './cameraPreparation';
 import {overlayStretch} from './cameraOverlaySource';
-import {writeCameraFits,cameraFitsCards,type CameraFitsContext} from './fitsWriter';
+import {writeCameraFits,cameraFitsCards,isUncertifiedCameraFits,type CameraFitsContext} from './fitsWriter';
 import {findCameraExtract,CAMERA_EXTRACTS} from '../io/cameraCatalog';
 import {handleCameraWorkerRequest} from '../camera/cameraWorkerCore';
 import controls from './cameraExposure.controls.json';
@@ -130,6 +130,21 @@ describe('T7 the composer with instructor records',()=>{
   const i0=compiledCameraSourceCalibration('ir',0,0,20,12),i1=compiledCameraSourceCalibration('ir',0,0,20,12,CAMERA_SOURCE_ADMISSION,withRecord('ccd',{pixelWidthMicrons:12}));
   expect(i1.sigmaX).toBeCloseTo(2*i0.sigmaX,12);
  });
+ test('review 1 M1: a search radius above 1° refuses the Start, naming the field of the larger side (110 µm, 0.4 m: 1.05°)',()=>{
+  const ctx={centerRAHours:0,centerDecDegrees:0,selectionMagnitudeLimit:21.5,suppliedDateDouble:2451545,dateBias:0};
+  const p=withRecord('ccd',{pixelWidthMicrons:110,pixelHeightMicrons:110});
+  expect(cameraParameterRefusal(p,'ccd')).toBeNull();
+  expect(compiledCameraQueryReference('ccd',0,0,ctx,p).searchRadiusDegrees).toBeGreaterThan(CAMERA_MAXIMUM_SEARCH_RADIUS_DEGREES);
+  expect(cameraStartRefusal(p,'ccd',0)).toEqual({camera:'ccd',key:'pixelWidthMicrons'});
+  // The same pixel fits the longer focal lengths of the 0.9 m and 4 m; an image size alone names the size.
+  expect(cameraStartRefusal(p,'ccd',2)).toBeNull();
+  expect(cameraStartRefusal(withRecord('ir',{width:1024,height:1024,pixelWidthMicrons:200}),'ir',0)).toEqual({camera:'ir',key:'pixelWidthMicrons'});
+  expect(cameraStartRefusal(withRecord('ccd',{height:1024,width:1024,pixelWidthMicrons:24}),'ccd',0)).toBeNull();
+  expect(cameraStartRefusal(withRecord('ccd',{width:2048}),'ccd',0)).toEqual({camera:'ccd',key:'width'});
+  for(const k of ['ccd','ir'] as const)for(const i of [0,1,2] as const)expect(cameraStartRefusal(C,k,i)).toBeNull();
+  // Review 1 nit: the refused value shows its stored spelling.
+  const big=withRecord('ccd',{pixelWidthMicrons:Math.fround(1000.04)});expect(cameraParameterExactText(big,{camera:'ccd',key:'pixelWidthMicrons'})).toBe(String(Math.fround(1000.04)));
+ });
  test('a value inside the domain that a stage cannot hold refuses as `parameters`, and the worker reports it',()=>{
   const huge=withRecord('ccd',{readNoiseElectronsPerPixel:Math.fround(1e9)});
   expect(()=>composeCameraExposure({...recipe,parameters:huge},selection())).toThrow(expect.objectContaining({code:'parameters'}));
@@ -162,7 +177,7 @@ describe('T7 query radius, extracts, overlay, FITS and Information',()=>{
   const cards=cameraFitsCards(x,context);
   expect(cards).toContain('COMMENT uncertified-parameter: instructor camera values (not compiled):'.padEnd(80));
   expect(cards.some(c=>c.startsWith('COMMENT   CCD Camera > Bias (e/Pixel) = 2000'))).toBe(true);
-  expect(cards.find(c=>c.startsWith('NAXIS1'))).toContain('512');expect(cards.find(c=>c.startsWith('CRPIX1'))).toContain('257');
+  expect(cards.find(c=>c.startsWith('NAXIS1'))).toContain('512');expect(isUncertifiedCameraFits(cards)).toBe(true);expect(isUncertifiedCameraFits(cameraFitsCards(plain,context))).toBe(false);expect(cards.find(c=>c.startsWith('CRPIX1'))).toContain('257');
  });
  test('Information lists the current record (0x512d5a / 0x514d8a)',()=>{
   const r=withRecord('ir',{detector:'Lab IR',readNoiseElectronsPerPixel:Math.fround(20),cooling:'thermoelectric'}).ir;
@@ -187,5 +202,9 @@ describe('T7 records: JSON and native bytes',()=>{
   expect(r.record).toMatchObject({detector:'Lab CCD',readNoiseElectronsPerPixel:8,biasElectronsPerPixel:1500,width:512,height:256,cooling:'liquidNitrogen',positionNoise:false});
   v.setFloat32(0x31,NaN,true);b[0x5a]=7;const n=readNativeCameraRecord('ccd',b,0);
   expect(n.representable).toBe(false);expect(n.record.readNoiseElectronsPerPixel).toBe(5);expect(n.record.positionNoise).toBe(true);
+  // Review 1 L3: a length byte above 40 is not representable and keeps the compiled name.
+  v.setFloat32(0x31,8,true);b[0x5a]=0;expect(readNativeCameraRecord('ccd',b,0).representable).toBe(true);
+  const long=new Uint8Array(b);long[0]=41;const l=readNativeCameraRecord('ccd',long,0);
+  expect(l.representable).toBe(false);expect(l.record.detector).toBe(C.ccd.detector);expect(l.record.readNoiseElectronsPerPixel).toBe(8);
  });
 });

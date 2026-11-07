@@ -12,8 +12,9 @@
  *     [W] The web's ID source is the Object X lab's ID (the web's Set Date/Time editor for it); an empty ID counts as never set.
  *     [D] The ID is used raw, so a spaces-only ID gives 'ObjX-  -01.FIT' (the Object X lab shows its own empty-ID text; VIREO
  *     does not trim here). [W] An ID outside printable ASCII is refused by CameraControl, because FITS cards cannot hold it.
- *     Object X is never revealed here (the ID is the student's, not the object's); DATE is the exposure time (VIREO's clock Double +0x37f2 is not recovered); DETECTOR and
- *     OBSERVER are empty (their calibration and student strings are not recovered); NAXIS1/2 are the plane's size (VIREO
+ *     Object X is never revealed here (the ID is the student's, not the object's); DATE is the exposure time (VIREO's clock Double +0x37f2 is not recovered); DETECTOR is
+ *     known (Front T7: the camera record's name, copied at 0x523d2d / 0x523e3b to header +0x174 and printed from +0x180 [D]) but stays
+ *     empty here until the next front fixes it; OBSERVER is empty (its student string is not recovered); NAXIS1/2 are the plane's size (VIREO
  *     reads the camera's configuration record, equal for the compiled cameras [I]); OBSERVAT and TELESCOP are the site and
  *     telescope names of the compiled profile. */
 import type {CameraExposure} from './cameraExposure';

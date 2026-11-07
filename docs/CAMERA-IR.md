@@ -21,7 +21,8 @@ The IR search radius (1.5 × half of the larger field side) is 0.19° on the 0.4
 position noise. It reads the CCD tab's record for the background (read noise, dark noise, cooling, bias), the pixel size of the
 star width and the base magnitude, count and exposure. The IR tab's own noise, bias, cooling and base values are therefore read
 only by Information (and the dialog). The web follows that (docs/OPTICAL-OPTIONS.md): an IR image is uncertified when any field it
-reads differs from VIREO's. A 1024² IR field on the 0.4 m needs a 0.38° cone, so no bundled extract covers it, and static mode
+reads differs from VIREO's. A 1024² IR field on the 0.4 m needs a 0.38° cone, so no bundled extract covers it (live mode asks for it; a field above 1° is
+refused at Start), and static mode
 refuses with the usual no-extract message.
 
 ## Web adaptations

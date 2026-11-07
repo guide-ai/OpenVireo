@@ -82,10 +82,20 @@ test('an instructor sets the CCD image size and bias: VIREO\'s box, a 512² imag
 
 test('a value outside the measured domain refuses the Start with its field; Leave keeps the values',async({page})=>{
  await trackedField(page);
+ await expect(id(page,'camera-static-hint')).toBeVisible();// compiled values: this field has no bundled extract
  await openOptions(page);await id(page,'ob-options-camera-ccd-width').fill('2048');await id(page,'ob-options-ok').click();await expect(id(page,'ob-options-dialog')).toBeHidden();
+ // Review 1 nit: a refused value is named at Start, so the no-extract hint is not shown for it.
+ await expect(id(page,'camera-static-hint')).toHaveCount(0);
  await camera(page).getByLabel(/Ask VizieR live/).check();await button(page,'Start exposure').click();
  await expect(id(page,'camera-status')).toContainText('CCD Camera › Image Size (Pixels): Width = 2048');await expect(camera(page)).toHaveAttribute('data-phase','idle');
- await page.getByTestId('instructor-mode-leave').click();await openOptions(page);await expect(id(page,'ob-options-camera-ccd-width')).toHaveValue('2048');
+ // Review 1 M1: a pixel size that takes the search radius past 1° (110 µm on the 0.4 m: 1.05°) is refused before any request,
+ // naming the pixel field, instead of failing as an unreadable catalog.
+ const seen:string[]=[];page.on('request',r=>{if(CDS.test(r.url()))seen.push(r.url());});
+ await openOptions(page);await id(page,'ob-options-camera-ccd-width').fill('1024');await id(page,'ob-options-camera-ccd-pixelWidthMicrons').fill('110');await id(page,'ob-options-camera-ccd-pixelHeightMicrons').fill('110');
+ await id(page,'ob-options-ok').click();await expect(id(page,'ob-options-dialog')).toBeHidden();
+ await button(page,'Start exposure').click();await expect(id(page,'camera-status')).toContainText('CCD Camera › Pixel Size: Width = 110');await expect(id(page,'camera-status')).toContainText('search radius up to 1°');
+ expect(seen).toEqual([]);
+ await page.getByTestId('instructor-mode-leave').click();await openOptions(page);await expect(id(page,'ob-options-camera-ccd-pixelWidthMicrons')).toHaveValue('110.0');await expect(id(page,'ob-options-camera-ccd-width')).toHaveValue('1024');
 });
 
 test('Object X: an image made with instructor camera values is not added to the investigation',async({page})=>{
@@ -102,5 +112,10 @@ test('Object X: an image made with instructor camera values is not added to the 
  // The lab's hook was asked read-only (no list built, no pairs recorded) and no image reached the investigation.
  expect(JSON.parse(await host.getByTestId('host-extra-calls').textContent()??'[]')).toEqual([2454983.5+4/24,2,true]);
  await expect(host.getByTestId('host-objectx-snapshot')).toHaveText('{"exposures":0,"images":0,"listJd":null}');
+ await expect(host.getByTestId('objectx-images').locator('li')).toHaveCount(0);
+ // Review 1 L1: the saved file (its uncertified-parameter COMMENT card) is refused by the lab's Load FITS too.
+ const download=page.waitForEvent('download');await cam.getByRole('button',{name:'Save image (FITS)',exact:true}).click();const saved=await (await download).path();
+ await host.getByTestId('objectx-open-fits').setInputFiles({name:'instructor.fit',mimeType:'application/fits',buffer:await readFile(saved)});
+ await expect(host.getByRole('alert').filter({hasText:'instructor.fit was made with instructor camera values'})).toBeVisible();
  await expect(host.getByTestId('objectx-images').locator('li')).toHaveCount(0);
 });

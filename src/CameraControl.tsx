@@ -27,7 +27,7 @@ import {cameraOverlayInputs,type CameraOverlayStatus} from './camera/cameraOverl
 import {cameraRegionRecord,cameraRegionSelection,type CameraRegionRecord} from './core/cameraRegion';
 import {telescopeFieldLoad,type TelescopeFieldLoad} from './observatory/telescopeField';
 import {VireoOptionsContext} from './vireoOptionsContext';
-import {cameraParameterLabel,cameraParameterRefusal,cameraParameterValueText,exposureCameraParameters,uncertifiedExposureFields,type CameraParameters} from './core/cameraParameters';// Front T7
+import {cameraParameterExactText,cameraParameterLabel,cameraStartRefusal,cameraParameterValueText,exposureCameraParameters,uncertifiedExposureFields,type CameraParameters} from './core/cameraParameters';// Front T7
 
 /** Front T7: `readOnly` is true for an exposure made with instructor camera values: like an IR image it only reads the Object X
  * list for its date and leaves the Object X state unchanged. */
@@ -180,15 +180,17 @@ function CameraControl({scopeUse,objectXHidden=null,vireoId='',showObjectId=fals
  const total=m*60+s,validExposure=Number.isInteger(total)&&s<=59&&total>=1&&total<=CAMERA_MAX_SECONDS;
  const ready=access==='ready'&&active&&!busy;
  // Static mode: whether a bundled extract covers this pointing is known before Start (review L6).
+ // Front T7 [W]: an instructor value outside the measured domain, or a search radius above 1° (review 1 M1), refuses the Start;
+ // its Start message names the field, so the no-extract hint is not shown for it (review 1 nit).
+ const refused=currentParameters&&cameraStartRefusal(currentParameters,camera,telescopeIndex);
  let staticCovered=true;
- if(mode==='static'){try{const {reference,route}=cameraQuery(camera,telescopeIndex,filter,pointing,2451545,currentParameters);staticCovered=!!findCameraExtract({catalog:route.catalog,raHours:pointing.ra,decDegrees:pointing.dec,radiusDegrees:reference.searchRadiusDegrees});}catch{staticCovered=false;}}
+ if(mode==='static'&&!refused){try{const {reference,route}=cameraQuery(camera,telescopeIndex,filter,pointing,2451545,currentParameters);staticCovered=!!findCameraExtract({catalog:route.catalog,raHours:pointing.ra,decDegrees:pointing.dec,radiusDegrees:reference.searchRadiusDegrees});}catch{staticCovered=false;}}
  function start(){
   if(!ready||!validExposure||running)return;
   // CCD Go 0x5126c1 stores the filter byte (form+0x405) before the preparation check 0x512244 can refuse the Go (closure L5).
   if(camera==='ccd')setCcdFilterByte(filter);
-  // Front T7 [W]: an instructor value outside the measured domain refuses the Start, naming the field (WEB-T7-02).
-  const refused=currentParameters&&cameraParameterRefusal(currentParameters,camera);
-  if(refused){setMessage(t('cameraParameters.refused',{field:cameraParameterLabel(refused),value:cameraParameterValueText(currentParameters!,refused)}));return;}
+  // Front T7 [W]: refused values name their field (WEB-T7-02) with the stored value's exact spelling.
+  if(refused){setMessage(t('cameraParameters.refused',{field:cameraParameterLabel(refused),value:cameraParameterExactText(currentParameters!,refused)}));return;}
   if(mode==='static'&&!staticCovered){setMessage(`${M.statusFailed} ${M.failure['no-extract']}`);return;}
   // Front T5: each Go uses the telescope's allotment (CCD 0x512244 → 0x5122cd, IR 0x514268 → 0x5142f1); the page shows VIREO's box.
   if(scopeUse&&!scopeUse(camera)){setMessage(t('scopeAccess.instrumentRefused'));return;}

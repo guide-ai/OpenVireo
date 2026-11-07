@@ -3574,9 +3574,10 @@
   "cameraParameters.cameraNote": "Instructor camera values (uncertified): {fields}. Images are made with VIREO's formulas, labelled, and not added to the Object X investigation.",
   "cameraParameters.imageLabel": "Uncertified: made with instructor camera values ({fields}).",
   "cameraParameters.detail": "Camera values",
-  "cameraParameters.refused": "Not started: the instructor value {field} = {value} is outside what OpenVireo measures. Change it in Optical Simulation Options… (instructor mode).",
+  "cameraParameters.refused": "Not started: the instructor value {field} = {value} is outside what OpenVireo measures (image sizes up to 1024 pixels and a catalog search radius up to 1°, among others). Change it in Optical Simulation Options… (instructor mode).",
   "cameraParameters.failed": "The image could not be made with the instructor camera values: a value takes a star, the background or the image beyond what OpenVireo can compute. Reset the camera values in Optical Simulation Options… to continue.",
   "cameraParameters.informationNote": "These are the instructor's camera values (not VIREO's compiled ones), as VIREO lists its current options.",
   "cameraParameters.adUpGlyph": "▲",
-  "cameraParameters.adDownGlyph": "▼"
+  "cameraParameters.adDownGlyph": "▼",
+  "cameraParameters.objectXRefused": "{name} was made with instructor camera values (uncertified): it is not added to the Object X investigation."
 }

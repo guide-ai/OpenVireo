@@ -17,6 +17,8 @@ import {parseClockUTC} from './core/siteClock';
 import {cameraCatalogReference} from './core/cameraCatalogReference';
 import type {CameraExposureKind,CameraExtraSource} from './core/cameraExposure';
 import type {CameraImage} from './CameraControl';
+import {isUncertifiedCameraFits} from './core/fitsWriter';// Front T7 review 1 L1
+import {t} from './i18n';
 import {DEFAULT_ORBIT_FILE,SELECTABLE_ORBIT_FILES,fetchBundledOrbitFile,fetchObjectXHotList,type BundledOrbitFileId} from './io/bundledOrbitFile';
 import {resourceSha256} from './io/boundedResource';
 import {OBJECT_X_SESSION_LIMITS,buildObservableListInSlices,type ObjectXExposure,type ObjectXInvestigation} from './io/objectXInvestigation';
@@ -157,6 +159,9 @@ function ObjectXLab({sessionId=null,editMode=false,spectralRange=DEFAULT_SPECTRA
     const bytes=new Uint8Array(await file.arrayBuffer()),fits=parseFitsImage(bytes),sha256=await resourceSha256(bytes.slice().buffer);
     const mjd=fits.cards.find(c=>c.startsWith('MJD-OBS ='));const jd=mjd?Number(mjd.slice(10).split('/')[0])+2400000.5:NaN;
     if(!Number.isFinite(jd))throw Error('time');
+    // Front T7 review 1 L1: an image the camera made with instructor values (its uncertified-parameter COMMENT card) stays out of
+    // the investigation, as it does when it is made.
+    if(isUncertifiedCameraFits(fits.cards)){setFitsError(t('cameraParameters.objectXRefused',{name:file.name.slice(0,120)}));continue;}
     update(i=>{
      const known=i.images.find(m=>m.sha256===sha256);
      if(!known&&i.images.length>=OBJECT_X_SESSION_LIMITS.images){setFitsError(M.imagesFull(OBJECT_X_SESSION_LIMITS.images,OBJECT_X_SESSION_LIMITS.exposures));return i;}

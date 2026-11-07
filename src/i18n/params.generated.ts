@@ -3580,4 +3580,5 @@ export interface MessageParameters {
   "cameraParameters.informationNote": never;
   "cameraParameters.adUpGlyph": never;
   "cameraParameters.adDownGlyph": never;
+  "cameraParameters.objectXRefused": "name";
 }

@@ -3,9 +3,11 @@ import calibration from '../../docs/CAMERA-SOURCE-CALIBRATION-PROVENANCE.json';
 import {parseDelphiFloat,roundHalfEven} from './radioAntenna';
 import {delphiFixed} from './variableStars';
 import {nativeVal} from './photographicList';
+import {compiledCameraQueryReference} from './cameraQueryReference';
+import type {OpticalIndex} from './opticalTelescope';
 /** Front T7 (analysis/front-plans/front-teacher.md §T7; analysis/front-teacher/t7/RECOVERY.md): the instructor options dialog's
  * CCD Camera and IR Camera tabs. CLEA_VEO.exe 781bc970…c54c, static reading only.
- * - [D] Two 91-byte records (stream fields 77/78 of VEO_OPTS.INI, offsets 8259/8350): CCD at record+0x26e5 (env+0x2d99), IR at
+ * - [D] Two 91-byte records (stream fields 74/75 of VEO_OPTS.INI, offsets 8259/8350): CCD at record+0x26e5 (env+0x2d99), IR at
  *   record+0x2740 (env+0x2df4), each laid out as name String[40] +0x00, Singles pixel width +0x29, pixel height +0x2d, read noise
  *   +0x31, dark noise +0x35, base magnitude +0x39, Integers base count +0x3d, base exposure +0x41, bias +0x45, width +0x49,
  *   height +0x4d, A/D bits +0x51, well depth +0x55, Bytes cooling +0x59 (1 = Liquid Nitrogen) and position noise +0x5a.
@@ -201,8 +203,8 @@ export function cameraParameterValueText(p:CameraParameters,u:CameraUse):string{
  * zero divide (EZeroDivide/EInvalidOp under control word 0x1332 [I]), and a negative background mean an EInvalidOp in FSQRT [I].
  * The web measures image sizes 1..1024 per axis (the compiled CCD's 1024² is the largest plane the composer, the Saved images
  * viewer and its FITS reader admit; docs/CAMERA-DEFAULT-SIZE.md), pixel sizes in (0, 1000] µm, read and dark noise ≥ 0,
- * |base magnitude| ≤ 100, base count ≥ 1, base exposure ≥ 1 s, well depth ≥ 1 and A/D 1..32 bits; anything else is refused with its
- * field. A value inside this domain that still leaves an admission bound of a stage (Float32 or safe-integer moments, the PSF width,
+ * |base magnitude| ≤ 100, base count ≥ 1, base exposure ≥ 1 s, well depth ≥ 1 and A/D 1..32 bits, and a search radius of at most
+ * 1° (cameraStartRefusal, review 1 M1); anything else is refused with its field. A value inside this domain that still leaves an admission bound of a stage (Float32 or safe-integer moments, the PSF width,
  * a peak beyond 1e12) refuses the exposure as `parameters` instead of making it. */
 export const CAMERA_PARAMETER_DOMAIN=Object.freeze({maximumImageAxis:1024,maximumPixelMicrons:1000,maximumMagnitude:100,minimumBaseCount:1,minimumBaseSeconds:1,minimumWell:1,minimumAdBits:1,maximumAdBits:32});
 export function cameraParameterRefusal(p:CameraParameters,kind:CameraKind):CameraUse|null{
@@ -222,6 +224,24 @@ export function cameraParameterRefusal(p:CameraParameters,kind:CameraKind):Camer
  }
  return null;
 }
+/** Review 1 nit: a refused value as stored (shortest binary64 spelling), so a Single such as 1000.04 shows why it is out of range. */
+export function cameraParameterExactText(p:CameraParameters,u:CameraUse):string{
+ const v=p[u.camera][u.key];return typeof v==='number'?String(v):cameraParameterValueText(p,u);
+}
+/** [W] WEB-T7-02, review 1 M1: the largest search radius the camera asks for. VizieR cone searches are built for at most 1°
+ * (vizierConeUrl), and every compiled camera asks for at most 0.23°. */
+export const CAMERA_MAXIMUM_SEARCH_RADIUS_DEGREES=1;
+/** Start-time refusal: the measured domain, then the search radius that the nominal field gives on this telescope (1.5 × half
+ * the larger side, 0x52236a / 0x51df89). Above 1° the field of the larger side is named: its pixel size when that differs from
+ * the compiled one, else its image size. */
+export function cameraStartRefusal(p:CameraParameters,kind:CameraKind,index:OpticalIndex):CameraUse|null{
+ const domain=cameraParameterRefusal(p,kind);if(domain)return domain;
+ const r=compiledCameraQueryReference(kind,index,0,{centerRAHours:0,centerDecDegrees:0,selectionMagnitudeLimit:21.5,suppliedDateDouble:2451545,dateBias:0},p);
+ if(r.searchRadiusDegrees<=CAMERA_MAXIMUM_SEARCH_RADIUS_DEGREES)return null;
+ const own=p[kind],c=COMPILED_CAMERA_PARAMETERS[kind],wide=own.width*own.pixelWidthMicrons>=own.height*own.pixelHeightMicrons;
+ const pixel=wide?'pixelWidthMicrons':'pixelHeightMicrons',size=wide?'width':'height';
+ return Object.freeze({camera:kind,key:!Object.is(own[pixel],c[pixel])?pixel:size});
+}
 /** The records an exposure of `kind` composes with: null for the compiled values, so every compiled recipe, FITS file and draw
  * count stays byte-identical (no field is added to the recipe). */
 export function exposureCameraParameters(p:CameraParameters,kind:CameraKind):CameraParameters|null{
@@ -236,8 +256,9 @@ export const NATIVE_CAMERA_RECORD_BYTES=91;
 export function readNativeCameraRecord(kind:CameraKind,bytes:Uint8Array,at:number):Readonly<{record:CameraRecord;representable:boolean}>{
  if(at<0||at+NATIVE_CAMERA_RECORD_BYTES>bytes.length)throw new RangeError('Native camera record out of range');
  const view=new DataView(bytes.buffer,bytes.byteOffset+at,NATIVE_CAMERA_RECORD_BYTES),c=COMPILED_CAMERA_PARAMETERS[kind];let representable=true;
- const length=Math.min(bytes[at]!,CAMERA_NAME_MAX);let name='';for(let i=1;i<=length;i++)name+=String.fromCharCode(bytes[at+i]!);
- if(!validCameraName(name)){representable=false;name=c.detector;}
+ // Review 1 L3: a length byte above 40 cannot come from String[40]; it is not representable and keeps the compiled name.
+ const length=bytes[at]!;let name='';for(let i=1;i<=Math.min(length,CAMERA_NAME_MAX);i++)name+=String.fromCharCode(bytes[at+i]!);
+ if(length>CAMERA_NAME_MAX||!validCameraName(name)){representable=false;name=c.detector;}
  const s=(o:number,fallback:number)=>{const v=view.getFloat32(o,true);if(!Number.isFinite(v)){representable=false;return fallback;}return v+0;};
  const i=(o:number)=>view.getInt32(o,true)+0;
  const flag=(o:number,fallback:boolean)=>{const b=view.getUint8(o);if(b>1){representable=false;return fallback;}return b===1;};

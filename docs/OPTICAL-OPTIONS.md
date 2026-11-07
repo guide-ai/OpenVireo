@@ -275,18 +275,21 @@ FITS bytes and control hashes. A changed field that the selected camera's exposu
   - Base count or base exposure below 1.
   - Well below 1.
   - A/D outside 1..32.
+  - A search radius above 1° on the selected telescope.
   - A value inside that domain which a stage still cannot hold refuses the exposure with its own message.
 - **Extracts.**
   - The bundled VizieR extracts are 0.25° cones keyed by field, not by camera size.
   - A larger nominal field asks for a larger radius, which no extract covers (for example the IR camera at 1024² on the 0.4 m:
-    0.38°). Static mode then says there is no extract; live mode asks VizieR for that radius.
+    0.38°). Static mode then says there is no extract; live mode asks VizieR for that radius, up to 1°.
+  - [W] A field whose search radius would pass 1° (the cone search's limit; for example 1024 × 110 µm on the 0.4 m: 1.05°) is
+    refused at Start, naming the pixel or size field (review 1 M1).
   - The selection keeps the telescope field's ±0.375° bounds, as in VIREO.
 - **Object X (E08).** An image made with instructor values is not added to the Object X investigation, and the lab's asteroid hook is
-  called read-only (as for IR images). So E08 replay and its 33/33 rows are unchanged.
+  called read-only (as for IR images). The lab's Load FITS refuses a saved file that carries the `uncertified-parameter` COMMENT card. So E08 replay and its 33/33 rows are unchanged.
 - **Where the mark stops [W].**
   - The VIREO-header FITS save has no field for the mark.
-  - Its DETECTOR card stays empty, as before T7. VIREO writes the camera name there (0x523d2d / 0x523e3b); filling it would change
-    the compiled native file.
+  - Its DETECTOR card stays empty, as before T7. VIREO writes the camera name there (0x523d2d / 0x523e3b) [D]; filling it would
+    change the compiled native file, so a separate front fixes it next.
 - **Latching [W].** VIREO stores the nominal field at each telescope selection, so the search radius, the overlay rectangle and the
   size labels follow a new size only after the next telescope change. The web reads the records at each Start.
 
