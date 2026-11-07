@@ -18,8 +18,9 @@ async function radioRoute(page:Page){
  await page.clock.install({time:new Date('2026-10-24T00:00:00Z')});
  await page.goto('/#pulsar-analysis');await expect(heading(page,'Recorded pulsar analysis')).toBeVisible();
  await clickHeaderTool(page,'Radio telescope');await expect(heading(page,'Radio telescope control')).toBeFocused();
- await page.clock.pauseAt(new Date('2026-10-24T00:10:00Z'));await flush(page);
+ // The lazily loaded route must render before the fake clock pauses (closure L2).
  await expect(id(page,'radio-route')).toBeVisible();await expect(id(page,'radio-env-compiled')).toBeVisible();
+ await page.clock.pauseAt(new Date('2026-10-24T00:10:00Z'));await flush(page);
 }
 /** Instructor mode, then the compiled numeric branch (Site... needs it: only there does the Preferences close project). */
 async function instructorWithAuthority(page:Page){
