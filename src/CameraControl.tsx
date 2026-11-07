@@ -226,7 +226,8 @@ function CameraControl({scopeUse,objectXHidden=null,vireoId='',showObjectId=fals
   // error is shown too, and nothing is downloaded.
   if(native&&!nativeCameraIdSavable(vireoId)){setSaveError(M.saveIdNotAscii);return;}
   let bytes:Uint8Array;const context=fitsContext(image);
-  try{bytes=native?writeNativeCameraFits(image.exposure,image.jd,vireoId||undefined,currentName):writeCameraFits(image.exposure,context);}catch{setSaveError(M.saveFailed);return;}
+  // Front FITSDET: DETECTOR is the camera record's name as the options hold it now (VIREO's 0x5239f8 reads the record at the save).
+  try{bytes=native?writeNativeCameraFits(image.exposure,image.jd,vireoId||undefined,currentName,cameraParameters[image.exposure.recipe.camera].detector):writeCameraFits(image.exposure,context);}catch{setSaveError(M.saveFailed);return;}
   const url=URL.createObjectURL(new Blob([bytes as Uint8Array<ArrayBuffer>],{type:'application/fits'})),a=document.createElement('a');
   a.href=url;a.download=native?nativeCameraFitsFileName(vireoId||undefined,currentName):cameraFitsFileName(image.exposure,context);document.body.append(a);a.click();a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),0);
  }
