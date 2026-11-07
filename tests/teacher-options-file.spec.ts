@@ -97,7 +97,7 @@ test('Save Updates downloads the options with an empty password; Load brings the
  full[8506-22]=1;full[8506-45]=5;/* review 1 L1: a rate index other than 3/4 */for(const r of [0x27cb,0x27ce,0x27d2,0x27d3,0x27d7,0x27db,0x27dc])full[at(r)]=1;full[at(0x27c8)]=1;
  await id(page,'ob-options-load').setInputFiles({name:'VEO_OPTS.INI',mimeType:'application/octet-stream',buffer:full});
  await expect(id(page,'ob-options-loaded')).toHaveAttribute('data-source','native');
- await expect(id(page,'ob-options-not-applied')).not.toContainText('Restrict Scope Access');await expect(id(page,'ob-options-restrict-scope-access')).not.toBeChecked();await id(page,'ob-options-file').screenshot({path:test.info().outputPath('load-native-file.png')});await expect(id(page,'ob-options-not-applied')).toContainText('Parameters (General, CCD and IR tabs, Scopes…), file names, paths and addresses');
+ await expect(id(page,'ob-options-not-applied')).not.toContainText('Restrict Scope Access');await expect(id(page,'ob-options-restrict-scope-access')).not.toBeChecked();await id(page,'ob-options-file').screenshot({path:test.info().outputPath('load-native-file.png')});await expect(id(page,'ob-options-not-applied')).toContainText('Parameters (General tab, Scopes…), file names, paths and addresses');
  // Front T6: the seven Photometer and Spectrometer fields are applied from the stream (here all zero bytes), not listed.
  await expect(id(page,'ob-options-param-baseMagnitude')).toHaveValue('0.0');await expect(id(page,'ob-options-param-spectrometerTimerMs')).toHaveValue('0');
  await expect(id(page,'ob-options-test-mode')).toBeChecked();await expect(id(page,'ob-options-edit-mode')).not.toBeChecked();await expect(id(page,'ob-options-fast-slewing')).not.toBeChecked();

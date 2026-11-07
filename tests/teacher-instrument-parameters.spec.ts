@@ -34,7 +34,7 @@ test('an instructor sets the photometer Base Photon Count: VIREO\'s conversion b
  await expect(id(page,'ob-options-param-spectrometerTimerMs')).toHaveValue('1');
  await expect(photo.locator('dt',{hasText:'Base Photon Count'})).toHaveCount(0);await expect(spec.locator('dt',{hasText:'Timer Wait (ms)'})).toHaveCount(0);
  await expect(photo).toContainText('Count for base magnitude.');await expect(spec).toContainText('Spectrometer time interval in milliseconds.');
- await expect(id(page,'ob-options-teacher-deferred')).toContainText('General, CCD and IR tabs');
+ await expect(id(page,'ob-options-teacher-deferred')).toContainText('Parameter editing (General tab)');
 
  // Not a number: VIREO's box; the dialog stays open, nothing is applied, and focus comes back to OK.
  await id(page,'ob-options-param-baseCount').fill('two thousand');await id(page,'ob-options-ok').click();

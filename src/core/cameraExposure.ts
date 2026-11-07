@@ -22,7 +22,7 @@
 import {CameraRandomCursor} from './cameraRandom';
 import {compiledCameraProjection,projectCameraSource,type CameraProjectionContext} from './cameraProjection';
 import {cameraBackgroundStage,compiledCameraBackgroundParameters} from './cameraBackground';
-import {compiledCameraSourceCalibration,cameraPointParametersFromCalibration,CameraSourceCalibrationError,CAMERA_SATURATED_TAIL_ADMISSION} from './cameraSourceCalibration';
+import {compiledCameraSourceCalibration,cameraPointParametersFromCalibration,CameraSourceCalibrationError,CAMERA_SATURATED_TAIL_ADMISSION,CAMERA_SOURCE_ADMISSION} from './cameraSourceCalibration';
 import {cameraPointPlan,CameraPointError,type CameraPointPlan} from './cameraPointSource';
 import {cameraExtendedPlan,CameraExtendedError,CAMERA_STREAK_VISIT_LIMIT,type CameraExtendedPlan} from './cameraExtendedSource';
 import {cameraScalarJitter} from './cameraBackground';
@@ -31,6 +31,7 @@ import {compiledCameraFinalParameters,finalizeCameraPlane,type CameraFinalStage}
 import {cameraCatalogReference} from './cameraCatalogReference';
 import {opticalIndex,type OpticalIndex} from './opticalTelescope';
 import type {VizierSelection} from './vizierNomad';
+import {cameraParameterRefusal,exposureCameraParameters,readCameraParameters,type CameraParameters} from './cameraParameters';
 
 /** Agreed with front X (asteroids): one moving object as a start/end pair of kind-2 records (0x522718).
  * storedMag is the record magnitude before the recovered filter offset, which the composer applies.
@@ -42,8 +43,11 @@ export type CameraExposureRecipe=Readonly<{
  centerRaHours:number;centerDecDegrees:number;
  /** uint32 seed of the camera-private stream [W]. */
  seed:number;
+ /** Front T7: the instructor's camera records (core/cameraParameters.ts), present only when a field this camera's exposure reads
+  * differs from the compiled one; absent, every stage reads the compiled records, so compiled recipes are unchanged. */
+ parameters?:CameraParameters;
 }>;
-export type CameraExposureErrorCode='recipe'|'extra'|'catalog'|'source-geometry';
+export type CameraExposureErrorCode='recipe'|'extra'|'catalog'|'source-geometry'|'parameters';
 export class CameraExposureError extends Error {
  constructor(readonly code:CameraExposureErrorCode,readonly detail=''){super(`Camera exposure: ${code}${detail?` (${detail})`:''}`);this.name='CameraExposureError';}
 }
@@ -95,6 +99,8 @@ export const CAMERA_EXPOSURE_ADAPTATIONS=Object.freeze([
  'moving-pair-streak-limit: streak visits are bounded by the clipped 1024^2 rectangle plus a cross pass (CAMERA_STREAK_VISIT_LIMIT); a pair that still cannot be planned (budget or coincident endpoints) is skipped alone, with no draws for its streak',
  'number-arithmetic: Number/Math with Single stores replaces x87 Extended',
 ]);
+/** Front T7: added to an exposure composed with instructor camera values (uncertified-parameter). */
+export const CAMERA_PARAMETERS_ADAPTATION='uncertified-parameter: composed with instructor camera values (Optical Simulation Options, CCD/IR tabs) through VIREO\'s formulas; the bundled controls, extracts and exercise witnesses were computed with the compiled records only';
 export const CAMERA_EXPOSURE_UNRECOVERED=Object.freeze([
  'shared-random-prefix: the native global stream state at Go',
 ]);
@@ -109,7 +115,14 @@ function checkRecipe(r:CameraExposureRecipe):CameraExposureRecipe {
  if(!CAMERA_GAINS[r.camera].includes(r.gain))throw new CameraExposureError('recipe','gain');
  if(!finite(r.centerRaHours,24)||r.centerRaHours<0||!finite(r.centerDecDegrees,90))throw new CameraExposureError('recipe','center');
  if(!Number.isInteger(r.seed)||r.seed<0||r.seed>0xffff_ffff)throw new CameraExposureError('recipe','seed');
- return Object.freeze({camera:r.camera,opticalIndex:index,filterPosition:r.filterPosition,seconds:r.seconds,gain:r.gain,centerRaHours:r.centerRaHours,centerDecDegrees:r.centerDecDegrees,seed:r.seed});
+ // Front T7: instructor records are validated and kept only when they change what this camera reads (compiled values: no field).
+ let parameters:CameraParameters|null=null;
+ if(r.parameters!==undefined){
+  try{parameters=exposureCameraParameters(readCameraParameters(r.parameters),r.camera);}catch{throw new CameraExposureError('recipe','parameters');}
+  const refused=parameters&&cameraParameterRefusal(parameters,r.camera);
+  if(refused)throw new CameraExposureError('parameters',`${refused.camera}.${refused.key}`);
+ }
+ return Object.freeze({camera:r.camera,opticalIndex:index,filterPosition:r.filterPosition,seconds:r.seconds,gain:r.gain,centerRaHours:r.centerRaHours,centerDecDegrees:r.centerDecDegrees,seed:r.seed,...(parameters?{parameters}:{})});
 }
 /** Front RE5 (analysis/front-re5/ir-exposure-limit.md) [D]: both cameras accept t = Round(StrToFloat) seconds, or ×60 in minutes
  * mode, when t > 0 (TCCDCam 0x512244, TIRCam 0x514268: the same check). Then ExpClock.Minutes := Trunc(t/60), whose setter 0x4fcbc8
@@ -144,10 +157,18 @@ export type CameraOverlayInput=Readonly<{red:Uint8Array}>;
 export function composeCameraExposure(recipeInput:CameraExposureRecipe,selection:VizierSelection,extrasInput:readonly CameraExtraSource[]=[],fieldObjectsInput:readonly CameraFieldObjectInput[]|null=null,overlayInput:CameraOverlayInput|null=null):CameraExposure {
  const recipe=checkRecipe(recipeInput),extras=checkExtras(extrasInput);
  if(!selection||!Array.isArray(selection.selectedEntries))throw new CameraExposureError('catalog');
- const stream=new CameraRandomCursor(recipe.seed);
- // Compiled record byte +0x5a = 1 for both cameras (CCD store 0x5a2bd8, IR store 0x5a2c48): seeing jitter on.
+ if(!recipe.parameters)return compose(recipe,selection,extras,fieldObjectsInput,overlayInput);
+ // Front T7 [W]: with instructor values, a stage admission bound they leave (Float32, safe-integer moments, PSF width, peak) refuses
+ // the exposure as `parameters` instead of failing as a preparation error.
+ try{return compose(recipe,selection,extras,fieldObjectsInput,overlayInput);}
+ catch(e){if(e instanceof CameraExposureError)throw e;throw new CameraExposureError('parameters',e instanceof Error?e.name:'');}
+}
+function compose(recipe:CameraExposureRecipe,selection:VizierSelection,extras:readonly CameraExtraSource[],fieldObjectsInput:readonly CameraFieldObjectInput[]|null,overlayInput:CameraOverlayInput|null):CameraExposure {
+ const stream=new CameraRandomCursor(recipe.seed),P=recipe.parameters;
+ // Compiled record byte +0x5a = 1 for both cameras (CCD store 0x5a2bd8, IR store 0x5a2c48): seeing jitter on. Front T7: the
+ // camera's own +0x5a (0x5221be / 0x51ddda) and dimensions from the instructor's record when given.
  const kind=recipe.camera;
- const context=compiledCameraProjection(kind,recipe.opticalIndex,{raHours:recipe.centerRaHours,decDegrees:recipe.centerDecDegrees},true);
+ const context=compiledCameraProjection(kind,recipe.opticalIndex,{raHours:recipe.centerRaHours,decDegrees:recipe.centerDecDegrees},P?P[kind].positionNoise:true,P?.[kind]);
  const records:CameraFieldRecord[]=[],skipped:CameraSkippedSource[]=[];
  // 1. Moving (kind-2) records: start and end are both kind 2; the end record's magnitude is never read.
  extras.forEach((e,extraIndex)=>{
@@ -186,7 +207,7 @@ export function composeCameraExposure(recipeInput:CameraExposureRecipe,selection
   fieldObjects=Object.freeze({eligible:fieldObjectsInput.length,inBounds,tail,magnitude,tailDrawn:overwrittenTail===null?null:true,tailSaturatedAdmission:false});
  }
  // 3. Background.
- const background=compiledCameraBackgroundParameters(kind,recipe.seconds,recipe.gain);
+ const background=compiledCameraBackgroundParameters(kind,recipe.seconds,recipe.gain,P);
  const initial=cameraBackgroundStage(background,stream.take(background.width*background.height));
  const plane=Float32Array.from(initial.pixels);
  // 4. CCD overlay (Front C6): calibration record root+0x2d99 (+0x39/+0x3d/+0x41) and the selected telescope's record +0x3c
@@ -194,7 +215,7 @@ export function composeCameraExposure(recipeInput:CameraExposureRecipe,selection
  let overlay:CameraOverlayResult|null=null;
  if(overlayInput){
   if(kind!=='ccd'||!(overlayInput.red instanceof Uint8Array)||overlayInput.red.length!==plane.length)throw new CameraExposureError('recipe','overlay');
-  const c=compiledCameraSourceCalibration('ccd',recipe.opticalIndex,recipe.filterPosition,recipe.seconds,0);
+  const c=compiledCameraSourceCalibration('ccd',recipe.opticalIndex,recipe.filterPosition,recipe.seconds,0,CAMERA_SOURCE_ADMISSION,P);
   const scale=ccdOverlayScale({baseMagnitude:c.baseMagnitude,baseCount:c.baseCount,baseSeconds:c.baseSeconds,seconds:recipe.seconds,opticalMagnitudeFactor:c.opticalMagnitudeFactor});
   overlay=Object.freeze({draws:applyCcdOverlayInPlace(plane,overlayInput.red,scale,()=>stream.next())});
  }
@@ -206,17 +227,17 @@ export function composeCameraExposure(recipeInput:CameraExposureRecipe,selection
    // as VIREO draws it, a saturated star, through the same calibration and point plan. Only its admission is wider [W]
    // (CAMERA_SATURATED_TAIL_ADMISSION, Float32-safe); a value that would still overflow is skipped with a typed reason [W].
    let plan:CameraPointPlan|null=null,saturated=false;
-   try{const c=compiledCameraSourceCalibration(kind,recipe.opticalIndex,recipe.filterPosition,recipe.seconds,r.magnitude);plan=cameraPointPlan(cameraPointParametersFromCalibration(c,r.pixelX,r.pixelY));}
+   try{const c=compiledCameraSourceCalibration(kind,recipe.opticalIndex,recipe.filterPosition,recipe.seconds,r.magnitude,CAMERA_SOURCE_ADMISSION,P);plan=cameraPointPlan(cameraPointParametersFromCalibration(c,r.pixelX,r.pixelY));}
    catch(e){
     if(!(e instanceof CameraSourceCalibrationError)||(e.code!=='magnitude'&&e.code!=='range'))throw e;
     saturated=true;
-    try{const c=compiledCameraSourceCalibration(kind,recipe.opticalIndex,recipe.filterPosition,recipe.seconds,r.magnitude,CAMERA_SATURATED_TAIL_ADMISSION);plan=cameraPointPlan(cameraPointParametersFromCalibration(c,r.pixelX,r.pixelY),Number.MAX_VALUE);}
+    try{const c=compiledCameraSourceCalibration(kind,recipe.opticalIndex,recipe.filterPosition,recipe.seconds,r.magnitude,CAMERA_SATURATED_TAIL_ADMISSION,P);plan=cameraPointPlan(cameraPointParametersFromCalibration(c,r.pixelX,r.pixelY),Number.MAX_VALUE);}
     catch(f){if(!(f instanceof CameraSourceCalibrationError)&&!(f instanceof CameraPointError))throw f;plan=null;}
    }
    if(plan)applyPlan(plane,plan,stream);
    fieldObjects=Object.freeze({...fieldObjects!,tailDrawn:plan!==null,tailSaturatedAdmission:saturated});continue;
   }
-  const calibration=compiledCameraSourceCalibration(kind,recipe.opticalIndex,recipe.filterPosition,recipe.seconds,r.magnitude);
+  const calibration=compiledCameraSourceCalibration(kind,recipe.opticalIndex,recipe.filterPosition,recipe.seconds,r.magnitude,CAMERA_SOURCE_ADMISSION,P);
   if(r.kind===2){
    const end=records[i+1];
    let plan:CameraExtendedPlan|null=null;
@@ -229,8 +250,8 @@ export function composeCameraExposure(recipeInput:CameraExposureRecipe,selection
    if(plan)applyPlan(plane,plan,stream);i++;
   }else applyPlan(plane,cameraPointPlan(cameraPointParametersFromCalibration(calibration,r.pixelX,r.pixelY)),stream);
  }
- const final=finalizeCameraPlane({phase:'point-sources-before-clipping',width:initial.width,height:initial.height,localDrawsConsumed:0,pixels:Array.from(plane),histogram:initial.histogram},compiledCameraFinalParameters(kind,recipe.gain));
+ const final=finalizeCameraPlane({phase:'point-sources-before-clipping',width:initial.width,height:initial.height,localDrawsConsumed:0,pixels:Array.from(plane),histogram:initial.histogram},compiledCameraFinalParameters(kind,recipe.gain,P));
  return Object.freeze({recipe,plane:final,records:Object.freeze(records),skipped:Object.freeze(skipped),fieldObjects,overlay,drawsConsumed:stream.drawsConsumed,finalRandomState:stream.finalState,
   catalog:Object.freeze({rows:selection.catalog?.entries.length??0,selected:selection.selectedEntries.length,onDetector}),
-  adaptations:CAMERA_EXPOSURE_ADAPTATIONS,unrecovered:CAMERA_EXPOSURE_UNRECOVERED});
+  adaptations:P?Object.freeze([...CAMERA_EXPOSURE_ADAPTATIONS,CAMERA_PARAMETERS_ADAPTATION]):CAMERA_EXPOSURE_ADAPTATIONS,unrecovered:CAMERA_EXPOSURE_UNRECOVERED});
 }

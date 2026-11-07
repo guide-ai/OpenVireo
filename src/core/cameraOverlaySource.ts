@@ -39,17 +39,20 @@ export function overlayRect(anchor:Pointing,pointing:Pointing,widthArcminutes:nu
  if(![w,h,x,y].every(Number.isFinite))throw new RangeError('Camera overlay: geometry');
  return Object.freeze({left:roundNearestEven(x-w/2),top:roundNearestEven(y-h/2),width:roundNearestEven(w),height:roundNearestEven(h),exactWidth:w,exactHeight:h});
 }
-/** The 1024² GetPixel low bytes after StretchBlt: the rect replicated to 1023², the last column and row white. */
-export function overlayStretch(red:Uint8Array,rect:CameraOverlayRect):Uint8Array{
- const {width:W}=OVERLAY_FRAME,N=OVERLAY_SIZE,D=OVERLAY_STRETCH,out=new Uint8Array(N*N).fill(OVERLAY_BORDER_RED);
- const column=new Int32Array(D),row=new Int32Array(D);
- for(let d=0;d<D;d++){column[d]=rect.left+Math.floor((d+.5)*rect.width/D);row[d]=rect.top+Math.floor((d+.5)*rect.height/D);}
- for(let y=0;y<D;y++){const source=row[y]*W,target=y*N;for(let x=0;x<D;x++)out[target+x]=red[source+column[x]];}
+/** The 1024² GetPixel low bytes after StretchBlt: the rect replicated to 1023², the last column and row white. Front T7: bmpB is
+ * the CCD record's width × height (0x5216ce..0x5216ed) and the destination its (width − 1) × (height − 1) (cam+0x3e/+0x42), so an
+ * instructor size stretches to that plane [D code, I runtime]; the compiled call is the 1024² one. */
+export function overlayStretch(red:Uint8Array,rect:CameraOverlayRect,planeWidth=OVERLAY_SIZE,planeHeight=OVERLAY_SIZE):Uint8Array{
+ const {width:W}=OVERLAY_FRAME,Dx=planeWidth-1,Dy=planeHeight-1,out=new Uint8Array(planeWidth*planeHeight).fill(OVERLAY_BORDER_RED);
+ const column=new Int32Array(Dx),row=new Int32Array(Dy);
+ for(let d=0;d<Dx;d++)column[d]=rect.left+Math.floor((d+.5)*rect.width/Dx);
+ for(let d=0;d<Dy;d++)row[d]=rect.top+Math.floor((d+.5)*rect.height/Dy);
+ for(let y=0;y<Dy;y++){const source=row[y]*W,target=y*planeWidth;for(let x=0;x<Dx;x++)out[target+x]=red[source+column[x]];}
  return out;
 }
 /** The overlay of one CCD exposure, or why it cannot be drawn exactly. `field` is null when the loaded field is not available
  * (the reason is the caller's). With no gate there is no overlay, as in VIREO. */
-export function cameraOverlaySource(field:OverlayField,pointing:Pointing,widthArcminutes:number,heightArcminutes:number):CameraOverlaySource{
+export function cameraOverlaySource(field:OverlayField,pointing:Pointing,widthArcminutes:number,heightArcminutes:number,planeWidth=OVERLAY_SIZE,planeHeight=OVERLAY_SIZE):CameraOverlaySource{
  const unavailable=(reason:CameraOverlayReason)=>Object.freeze({status:'unavailable' as const,reason});
  if(!overlayGate(field.galaxyIds))return Object.freeze({status:'off' as const});
  if(field.unpaintedGalaxies>0)return unavailable('unpainted');
@@ -57,5 +60,5 @@ export function cameraOverlaySource(field:OverlayField,pointing:Pointing,widthAr
  if(!field.galaxyRed||field.galaxyRed.length!==W*H)return unavailable('field');
  const rect=overlayRect(field.anchor,pointing,widthArcminutes,heightArcminutes);
  if(rect.left<0||rect.top<0||rect.width<1||rect.height<1||rect.left+rect.width>W||rect.top+rect.height>H)return unavailable('outside');
- return Object.freeze({status:'ready' as const,rect,red:overlayStretch(field.galaxyRed,rect)});
+ return Object.freeze({status:'ready' as const,rect,red:overlayStretch(field.galaxyRed,rect,planeWidth,planeHeight)});
 }

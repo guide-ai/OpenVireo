@@ -106,7 +106,8 @@ The read-only boxes show the compiled states, each with one line on its effect:
   - an ID that is not printable ASCII is refused with a message and nothing is saved, because FITS header cards allow only
     ASCII (RE5 review 1 L-b);
   - DATE is the exposure time;
-  - DETECTOR and OBSERVER are empty;
+  - DETECTOR and OBSERVER are empty. DETECTOR is known since Front T7: VIREO writes the camera record's name there (0x523d2d /
+    0x523e3b → header +0x174, printed from +0x180) [D]; it stays empty until the next front fills it;
   - NAXIS1/2 are the plane size;
   - OBSERVAT and TELESCOP come from the compiled profile.
 - **Key column** [D]: the keyword table 0x5b3ff8 holds String[8] entries already space-padded.

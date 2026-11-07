@@ -103,6 +103,31 @@ be merged."), which also reads the record. The web has no such feature.
 
 Front R1 (2026-10-29): the colour term 0x51ef38 is recovered and ported as a pure function, `src/core/cameraColourTerm.ts` (docs/RADIO-CAMERA-R1.md). It is not wired, because the camera has no field-engine population of field variable stars; the field-object pass stays typed.
 
+### Instructor camera values (Front T7, 2026-11-06)
+The CCD and IR tabs of Optical Simulation Options are live in instructor mode (docs/OPTICAL-OPTIONS.md, research
+`analysis/front-teacher/t7/RECOVERY.md`).
+- **Compiled values.** With the compiled records nothing above changes: the recipe has no new field, and the control hashes and FITS
+  bytes are the same.
+- **Instructor values: what the camera reads at Start [D].**
+  - From its own record:
+    - the projection: width, height, pixel size, and position noise (0x5221be: seeing width 0 when off; the two draws per source
+      are still consumed);
+    - the plane (width × height);
+    - the well and A/D clipping;
+    - the nominal field, which sets the search radius 1.5 × half the larger side and therefore which bundled extract covers the
+      pointing.
+  - From the CCD record, for both cameras:
+    - read noise, dark noise, cooling and bias (background);
+    - pixel size (star width);
+    - base magnitude, count and exposure (peak and exposure scale; also the CCD overlay scale).
+  - The CCD overlay is stretched to (width − 1) × (height − 1) of a width × height bitmap.
+- **What is shown.** The window names the values before Start. The image is labelled `uncertified-parameter`, Exposure details list
+  the values, and the web FITS file adds COMMENT cards.
+- **Refused [W].** Sizes outside 1..1024 per axis and the other values outside the measured domain refuse the Start, naming the field.
+  A value inside the domain that a stage cannot hold ends with its own message.
+- **Object X.** Such images are not added to the Object X investigation, and the asteroid hook is called read-only.
+- **Latching [W].** VIREO latches the nominal field at the telescope selection (0x53df24); the web reads the records at each Start.
+
 ## Catalog: NOFS → CDS/VizieR
 
 Endpoint: IVOA Simple Cone Search, `https://vizier.cds.unistra.fr/viz-bin/conesearch/<cat>/out?RA=…&DEC=…&SR=…` with `I/297` (NOMAD) or `I/284` (USNO-B1). It was chosen because NOFS `vo_cone.cgi` was itself a cone search, the request carries nothing but the cone, and VizieR answers with CORS. RA/Dec use 6 decimals and SR 2 decimals, as in the recovered query builder; SR is 1.5 × half-field (0.23° for the 0.4 m, 0.12° for the 0.9 m, 0.10° for the 4 m).

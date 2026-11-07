@@ -4,6 +4,10 @@
 
 Front R4b (dossier `analysis/front-r4/C-parameters-camera-list.md` §3): the lines are VIREO's own text (C5), for example `Pixel Size (microns): 24.0 x 24.0` and `Dark Noise (electrons/pixel/sec): 2.0`, with FloatToStrF ffFixed 1 through `delphiFixed`. The window's List menu keeps only **Print...** and **Close**, as in VIREO (Edit, Search and Save Text are hidden). Print... opens a preview of VIREO's list page (0x59e4c0, `src/core/infoListPrint.ts`): date and laboratory-table line, the student line (blank: no sign-in), the caption `CCD Camera Parameters` or `IR Camera Parameters`, then the lines. Nothing about a target is listed, so nothing is hidden for Object X.
 
+**Front T7.** The live camera window's **Information...** now lists the camera's current record, as VIREO lists env+0x2d99 /
+env+0x2df4 (0x512d5a / 0x514d8a). With instructor values (Optical Simulation Options, CCD and IR tabs) it shows them, with a note
+that they are not VIREO's compiled values. The Saved images view below still shows the compiled fallback settings.
+
 This view describes the original compiled fallback settings. It does not read an instructor's option file, select an active camera, identify a supplied image or create acquisition/calibration metadata. The FITS image, selected pixel, notebook and investigation remain independent.
 
 | Native field | CCD compiled fallback | IR compiled fallback |

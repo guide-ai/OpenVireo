@@ -5,6 +5,7 @@ import {readNativeNomadResponse,type NomadResponse} from './nativeNomadResponse'
 import type {CameraKind} from './cameraInformation';
 import type {OpticalIndex} from './opticalTelescope';
 import type {NomadRowContext} from './nativeNomadRows';
+import type {CameraParameters} from './cameraParameters';
 
 export class CameraQueryReferenceError extends Error {
  constructor(readonly code:'context'|'center'|'magnitude'|'time'|'ownership'){super(`Camera query reference: ${code}`);this.name='CameraQueryReferenceError';}
@@ -24,8 +25,9 @@ const owned=new WeakSet<object>();
 /** CCD/IR selection,59bf6c query scalars and59c4ab epoch initialization.
  * Explicit context plus compiled geometry only. This does not serialize a URL,
  * authenticate supplied bytes,derive selection bounds or certify a cache. */
-export function compiledCameraQueryReference(kind:unknown,index:unknown,filterPosition:unknown,context:CameraQueryContext):CameraQueryReference {
- const geometry=cameraPreparationReference(kind,index),lookup=cameraCatalogReference(geometry.kind,filterPosition);
+/** Front T7: `records` (instructor values) change the nominal field and so the search radius (1.5 × half the larger side). */
+export function compiledCameraQueryReference(kind:unknown,index:unknown,filterPosition:unknown,context:CameraQueryContext,records?:CameraParameters):CameraQueryReference {
+ const geometry=cameraPreparationReference(kind,index,records),lookup=cameraCatalogReference(geometry.kind,filterPosition);
  if(!context||typeof context!=='object')throw new CameraQueryReferenceError('context');
  const {centerRAHours,centerDecDegrees,selectionMagnitudeLimit,suppliedDateDouble,dateBias}=context;
  if(!Number.isFinite(centerRAHours)||centerRAHours<0||centerRAHours>24||!Number.isFinite(centerDecDegrees)||Math.abs(centerDecDegrees)>90)throw new CameraQueryReferenceError('center');

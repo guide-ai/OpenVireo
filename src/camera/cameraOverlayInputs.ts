@@ -7,13 +7,15 @@ import {cameraPreparationReference} from '../core/cameraPreparation';
 import type {OpticalIndex} from '../core/opticalTelescope';
 import type {Pointing} from '../core/sky';
 import type {TelescopeFieldLoad} from '../observatory/telescopeField';
+import type {CameraParameters} from '../core/cameraParameters';
 
 export type CameraOverlayStatus='run'|'off'|CameraOverlayReason;
 export type CameraOverlayInputs=Readonly<{status:CameraOverlayStatus;red:Uint8Array|null}>;
 /** The telescope view ignores the finder limit (io/skyField.ts keyOf); any value builds the same field. */
 const UNUSED_FINDER_LIMIT=11.5;
 
-export async function cameraOverlayInputs(load:TelescopeFieldLoad|null,pointing:Pointing,opticalIndex:OpticalIndex,signal?:AbortSignal):Promise<CameraOverlayInputs>{
+/** Front T7: `records` (instructor values, null for the compiled ones) give the CCD field (rect, obs+0x6ce/+0x6d2) and bmpB's size. */
+export async function cameraOverlayInputs(load:TelescopeFieldLoad|null,pointing:Pointing,opticalIndex:OpticalIndex,signal?:AbortSignal,records:CameraParameters|null=null):Promise<CameraOverlayInputs>{
  const no=(status:CameraOverlayStatus)=>Object.freeze({status,red:null});
  signal?.throwIfAborted();
  if(!load)return no('no-load');
@@ -26,7 +28,8 @@ export async function cameraOverlayInputs(load:TelescopeFieldLoad|null,pointing:
   field=await loadSkyField({view:'telescope',anchor:load.anchor,telescope:load.telescope,hidden:load.hidden,currentJd:load.currentJd,finderMagnitudeLimit:UNUSED_FINDER_LIMIT,...(signal?{signal}:{})});
  }catch(e){if(signal?.aborted)throw e;return no('field');}
  if(field.status!=='ready')return no(field.reason==='object-x-hidden'||field.reason==='object-x-unreadable'?'object-x':'field');
- const {widthArcminutes,heightArcminutes}=cameraPreparationReference('ccd',opticalIndex);
- const source=cameraOverlaySource({anchor:field.anchor,galaxyIds:field.population.galaxies.map(g=>g.id),galaxyRed:field.galaxyRed??null,unpaintedGalaxies:field.unpaintedGalaxies??0},pointing,widthArcminutes,heightArcminutes);
+ const {widthArcminutes,heightArcminutes}=cameraPreparationReference('ccd',opticalIndex,records??undefined);
+ const source=records?cameraOverlaySource({anchor:field.anchor,galaxyIds:field.population.galaxies.map(g=>g.id),galaxyRed:field.galaxyRed??null,unpaintedGalaxies:field.unpaintedGalaxies??0},pointing,widthArcminutes,heightArcminutes,records.ccd.width,records.ccd.height)
+  :cameraOverlaySource({anchor:field.anchor,galaxyIds:field.population.galaxies.map(g=>g.id),galaxyRed:field.galaxyRed??null,unpaintedGalaxies:field.unpaintedGalaxies??0},pointing,widthArcminutes,heightArcminutes);
  return source.status==='ready'?Object.freeze({status:'run',red:source.red}):no(source.status==='off'?'off':source.reason);
 }

@@ -2,6 +2,7 @@ import {COMPILED_SESSION_OPTICAL_OPTIONS,type SessionOpticalOptions} from '../co
 import {COMPILED_PHOTOMETER_TAB_OPTIONS,PHOTOMETER_TAB_OPTION_KEYS,type PhotometerTabOptions} from '../core/photometerTabOptions';
 import {COMPILED_RESTRICT_SCOPE_ACCESS} from '../core/scopeAccess';
 import {COMPILED_INSTRUMENT_PARAMETERS,INSTRUMENT_PARAMETER_FIELDS,INSTRUMENT_PARAMETER_KEYS,readInstrumentParameters,type InstrumentParameters} from '../core/instrumentParameters';
+import {COMPILED_CAMERA_PARAMETERS,cameraParametersJson,readCameraParameters,readNativeCameraRecord,type CameraParameters} from '../core/cameraParameters';
 /** Front T2 (analysis/front-plans/front-teacher.md §T2; analysis/front-teacher/t2/RECOVERY.md): VIREO's options file
  * VEO_OPTS.INI and the web options file. CLEA_VEO.exe 781bc970…c54c, static reading only.
  * [D] TEnvironment1.FormCreate creates the options object with version '1.504' (0x587cf4) and file name 'VEO_OPTS.INI'
@@ -25,6 +26,10 @@ import {COMPILED_INSTRUMENT_PARAMETERS,INSTRUMENT_PARAMETER_FIELDS,INSTRUMENT_PA
  * carries them in "parameters" (a file written before T6 has none, so the compiled values), and a native file gives them from
  * their stream fields (Singles +0x250c/+0x2510/+0x2514, Integers +0x279f/+0x27a3/+0x27a7/+0x27ab, little-endian). The rest of
  * the parameter block stays under "notApplied".
+ * Front T7: the CCD and IR camera records (core/cameraParameters.ts; stream fields +0x26e5 and +0x2740, 91 bytes each) are applied
+ * too: the web file carries them in "cameraParameters" (none in a file written before T7: the compiled records), and a native
+ * file gives them from their stream bytes. "notApplied.parameters" then covers the General tab, Scopes…, file names, paths and
+ * addresses (72 of the 81 fields).
  * Pure: no React, DOM, storage or network. */
 
 export const OPTIONS_FILE_VERSION='1.504';
@@ -72,11 +77,11 @@ export function nativeStreamOffset(recordOffset:number):number{
 export const NATIVE_PARAMETER_FIELDS=STREAM.findIndex(f=>f[0]===0x27af);
 
 /** The options the web applies: the dialog's live controls and Demonstration Mode. Record offsets in OPTIONS_FILE_BYTES. */
-export type OptionsFileValues=Readonly<{demonstrationMode:boolean;testMode:boolean;limitSlewing:boolean;editMode:boolean;virtualObservatory:boolean;restrictScopeAccess:boolean;/** Front T6. */parameters:InstrumentParameters}>&SessionOpticalOptions&PhotometerTabOptions;
+export type OptionsFileValues=Readonly<{demonstrationMode:boolean;testMode:boolean;limitSlewing:boolean;editMode:boolean;virtualObservatory:boolean;restrictScopeAccess:boolean;/** Front T6. */parameters:InstrumentParameters;/** Front T7. */cameraParameters:CameraParameters}>&SessionOpticalOptions&PhotometerTabOptions;
 export const OPTIONS_FILE_KEYS=Object.freeze(['demonstrationMode','testMode','limitSlewing','editMode','virtualObservatory',...Object.keys(COMPILED_SESSION_OPTICAL_OPTIONS),...PHOTOMETER_TAB_OPTION_KEYS,'restrictScopeAccess'] as BooleanKey[]);
-type BooleanKey=Exclude<keyof OptionsFileValues,'parameters'>;
+type BooleanKey=Exclude<keyof OptionsFileValues,'parameters'|'cameraParameters'>;
 /** [D] The compiled values (0x5a21d0) of the applied options. */
-export const COMPILED_OPTIONS_FILE_VALUES:OptionsFileValues=Object.freeze({demonstrationMode:false,testMode:false,limitSlewing:false,editMode:false,virtualObservatory:false,...COMPILED_SESSION_OPTICAL_OPTIONS,...COMPILED_PHOTOMETER_TAB_OPTIONS,restrictScopeAccess:COMPILED_RESTRICT_SCOPE_ACCESS,parameters:COMPILED_INSTRUMENT_PARAMETERS});
+export const COMPILED_OPTIONS_FILE_VALUES:OptionsFileValues=Object.freeze({demonstrationMode:false,testMode:false,limitSlewing:false,editMode:false,virtualObservatory:false,...COMPILED_SESSION_OPTICAL_OPTIONS,...COMPILED_PHOTOMETER_TAB_OPTIONS,restrictScopeAccess:COMPILED_RESTRICT_SCOPE_ACCESS,parameters:COMPILED_INSTRUMENT_PARAMETERS,cameraParameters:COMPILED_CAMERA_PARAMETERS});
 /** [D] Record bytes of the applied options (option-bytes.tsv). DemoBox is stored inverted (+0x27c6 = login required; FormCreate
  * 0x587c50 tests it against 0); Fast Slewing is the slew-rate index, checked when it is 4 (FormActivate 0x5a5b61). */
 const APPLIED_BYTES:Readonly<Record<BooleanKey,number>>=Object.freeze({demonstrationMode:0x27c6,testMode:0x27c8,limitSlewing:0x27c9,editMode:0x27ca,
@@ -87,7 +92,7 @@ const APPLIED_BYTES:Readonly<Record<BooleanKey,number>>=Object.freeze({demonstra
 export const OPTIONS_FILE_BYTES=APPLIED_BYTES;
 
 /** The record's other options: written with their compiled values and never applied (kept typed). */
-export type NotAppliedKey='administrator'|'computeMagnitudes'|'includeRIColors'|'soundEffects'|'writeLogFile'|'plotHRDiagram'|'labTableNumber'|'parameters'|'instrumentParameters';
+export type NotAppliedKey='administrator'|'computeMagnitudes'|'includeRIColors'|'soundEffects'|'writeLogFile'|'plotHRDiagram'|'labTableNumber'|'parameters'|'instrumentParameters'|'cameraParameters';
 export type NotAppliedReason='cleared-at-load'|'fixed-in-web'|'teacher-front'|'web-sound-switch'|'out-of-scope'|'undecided'|'parameters-front'|'not-representable';
 export const NOT_APPLIED:Readonly<Record<NotAppliedKey,Readonly<{caption:string;record:string;compiled:boolean|string;reason:NotAppliedReason}>>>=Object.freeze({
  administrator:Object.freeze({caption:'"Administrator"',record:'+0x27c7 (not in the stream)',compiled:false,reason:'cleared-at-load'}),
@@ -97,13 +102,16 @@ export const NOT_APPLIED:Readonly<Record<NotAppliedKey,Readonly<{caption:string;
  writeLogFile:Object.freeze({caption:'Write Log File',record:'+0x27d6',compiled:false,reason:'out-of-scope'}),
  plotHRDiagram:Object.freeze({caption:'Plot HR Diagram',record:'+0x27db',compiled:true,reason:'fixed-in-web'}),
  labTableNumber:Object.freeze({caption:'Lab Table Number',record:'+0x27c1',compiled:'',reason:'undecided'}),
- parameters:Object.freeze({caption:'Parameters (General, CCD and IR tabs, Scopes…), file names, paths and addresses',record:'+0x224..+0x27ab (74 of the 81 fields; Front T6 applies the other 7)',compiled:'compiled',reason:'parameters-front'}),
+ parameters:Object.freeze({caption:'Parameters (General tab, Scopes…), file names, paths and addresses',record:'+0x224..+0x27ab (72 of the 81 fields; Front T6 applies 7, Front T7 the CCD and IR records +0x26e5 and +0x2740)',compiled:'compiled',reason:'parameters-front'}),
  /** Front T6: a native Photometer or Spectrometer Single that is not a finite number (NaN or ±Inf bytes): its compiled value is kept. */
  instrumentParameters:Object.freeze({caption:'Photometer / Spectrometer parameters',record:'+0x250c, +0x2510, +0x2514',compiled:'compiled',reason:'not-representable'}),
+ /** Front T7: a native CCD or IR field the web cannot hold (a NaN or ±Inf Single, a name with control characters, a cooling or
+  * position-noise byte other than 0 or 1): that field keeps its compiled value. */
+ cameraParameters:Object.freeze({caption:'CCD / IR camera parameters',record:'+0x26e5, +0x2740',compiled:'compiled',reason:'not-representable'}),
 });
 export const NOT_APPLIED_KEYS=Object.freeze(Object.keys(NOT_APPLIED) as NotAppliedKey[]);
-/** The keys a web file lists under "notApplied" (instrumentParameters only reports a native read). */
-const WRITTEN_NOT_APPLIED=NOT_APPLIED_KEYS.filter(k=>k!=='instrumentParameters');
+/** The keys a web file lists under "notApplied" (instrumentParameters and cameraParameters only report a native read). */
+const WRITTEN_NOT_APPLIED=NOT_APPLIED_KEYS.filter(k=>k!=='instrumentParameters'&&k!=='cameraParameters');
 const NOT_APPLIED_BYTES:Partial<Record<NotAppliedKey,number>>={computeMagnitudes:0x27cb,includeRIColors:0x27ce,soundEffects:0x27d2,writeLogFile:0x27d6,plotHRDiagram:0x27db};
 /** Front T4 / T5: options a web file written before T4 (Front T2) or T5 keeps under "notApplied" instead of "options". */
 const LATER_KEYS=new Set<BooleanKey>([...PHOTOMETER_TAB_OPTION_KEYS,'restrictScopeAccess']);
@@ -128,11 +136,11 @@ export const OPTIONS_FILE_MAX_BYTES=65536;
 /** The JSON options file: every applied option, the others at their compiled values, a zero-length password. */
 export function writeOptionsFile(values:OptionsFileValues):string{
  const options=Object.fromEntries(OPTIONS_FILE_KEYS.map(k=>{const v=values[k];if(typeof v!=='boolean')throw new TypeError('Invalid option value');return [k,v];}));
- const parameters=readInstrumentParameters(values.parameters);
+ const parameters=readInstrumentParameters(values.parameters),cameraParameters=cameraParametersJson(readCameraParameters(values.cameraParameters));
  const notApplied=Object.fromEntries(WRITTEN_NOT_APPLIED.map(k=>[k,NOT_APPLIED[k].compiled]));
  return JSON.stringify({format:WEB_OPTIONS_FORMAT,formatVersion:1,version:OPTIONS_FILE_VERSION,
   adaptation:'OpenVireo web options file (not VEO_OPTS.INI). The options not applied by OpenVireo are written with VIREO\'s compiled values. No password is stored.',
-  password:'',options,parameters,notApplied},null,1)+'\n';
+  password:'',options,parameters,cameraParameters,notApplied},null,1)+'\n';
 }
 
 const invalid=(reason:OptionsFileInvalidReason):OptionsFileLoad=>Object.freeze({kind:'invalid',reason});
@@ -163,7 +171,10 @@ function readWeb(bytes:Uint8Array):OptionsFileLoad{
  // Front T6: a file written before T6 has no "parameters" (VIREO's compiled values).
  let parameters=COMPILED_INSTRUMENT_PARAMETERS;
  if(doc.parameters!==undefined){try{parameters=readInstrumentParameters(doc.parameters);}catch{return invalid('not-options-file');}}
- const values=Object.freeze({...Object.fromEntries(OPTIONS_FILE_KEYS.map(k=>[k,o[k]??n[k]??COMPILED_OPTIONS_FILE_VALUES[k]])),parameters}) as OptionsFileValues;
+ // Front T7: a file written before T7 has no "cameraParameters" (VIREO's compiled records).
+ let cameraParameters=COMPILED_CAMERA_PARAMETERS;
+ if(doc.cameraParameters!==undefined){try{cameraParameters=readCameraParameters(doc.cameraParameters);}catch{return invalid('not-options-file');}}
+ const values=Object.freeze({...Object.fromEntries(OPTIONS_FILE_KEYS.map(k=>[k,o[k]??n[k]??COMPILED_OPTIONS_FILE_VALUES[k]])),parameters,cameraParameters}) as OptionsFileValues;
  const differs:NotAppliedKey[]=[];let administratorCleared=false;
  for(const k of WRITTEN_NOT_APPLIED){
   if(!(k in n))continue;
@@ -183,9 +194,13 @@ function readNative(bytes:Uint8Array):OptionsFileLoad{
  if(bytes.length>NATIVE_OPTIONS_FILE_BYTES)return invalid('eof-not-reached');
  const at=(record:number)=>bytes[nativeStreamOffset(record)]!;
  const {parameters,representable}=nativeParameters(bytes);
+ // Front T7: the two camera records, as BlockRead stored them (core/cameraParameters.ts readNativeCameraRecord).
+ const ccd=readNativeCameraRecord('ccd',bytes,nativeStreamOffset(0x26e5)),ir=readNativeCameraRecord('ir',bytes,nativeStreamOffset(0x2740));
+ const cameraParameters=Object.freeze({ccd:ccd.record,ir:ir.record});
  const values=Object.freeze({...Object.fromEntries(OPTIONS_FILE_KEYS.map(k=>{const b=at(APPLIED_BYTES[k]);
-  return [k,k==='demonstrationMode'?b===0:k==='fastSlewing'?b===4:b!==0];})),parameters}) as OptionsFileValues;
+  return [k,k==='demonstrationMode'?b===0:k==='fastSlewing'?b===4:b!==0];})),parameters,cameraParameters}) as OptionsFileValues;
  const differs:NotAppliedKey[]=representable?[]:['instrumentParameters'];
+ if(!ccd.representable||!ir.representable)differs.push('cameraParameters');
  for(const k of NOT_APPLIED_KEYS){const r=NOT_APPLIED_BYTES[k];if(r!==undefined&&(at(r)!==0)!==NOT_APPLIED[k].compiled)differs.push(k);}
  if(at(0x27c1)!==0)differs.push('labTableNumber');// only the ShortString's length byte is read
  differs.push('parameters');// the native parameter block cannot be compared with compiled values that depend on VIREO's folder

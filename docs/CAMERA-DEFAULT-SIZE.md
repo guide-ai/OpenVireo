@@ -4,6 +4,10 @@ The saved-image viewer now admits up to **1024 × 1024 float32 pixels**, allowin
 
 This continues saved-image inspection. It does not operate either camera,certify an imported file's origin,replace acquisition/calibration or add instrument metadata to existing sessions.
 
+**Front T7.** Instructor image sizes (Optical Simulation Options, CCD and IR tabs) are measured up to 1024 per axis, the same
+ceiling as this viewer, so every camera image the web makes can be reopened here. VIREO itself has no limit beyond its memory
+allocation (0x524348).
+
 ## Evidence and limits
 
 [NATIVE-CAMERA-DEFAULT-DIMENSIONS-01](CAMERA-DEFAULT-SIZE-PROVENANCE.json) pins the complete options-default procedure `0x5a21d0..0x5a2c92` and both display initializers. Original executable SHA-256 remains `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c`; originals were only read/disassembled. Captures,checks and synthetic images stay outside the web source in `/home/dobleuber/Documents/Codex/2026-10-18/task-3/native-camera-size/`.

@@ -3,6 +3,7 @@ import {compiledCameraInformation,type CameraKind} from './cameraInformation';
 import {cameraCatalogReference,type CameraCatalogReference} from './cameraCatalogReference';
 import {opticalProfile,opticalIndex,type OpticalIndex} from './opticalTelescope';
 import type {CameraPointParameters} from './cameraPointSource';
+import type {CameraParameters} from './cameraParameters';
 
 export class CameraSourceCalibrationError extends Error {
  constructor(readonly code:'magnitude'|'duration'|'range'|'ownership'|'position'){super(`Camera source calibration reference: ${code}`);this.name='CameraSourceCalibrationError';}
@@ -24,11 +25,13 @@ const owned=new WeakSet<object>();
 export type CameraSourceAdmission=Readonly<{magnitude:number;referencePeak:number;float32Safe:boolean}>;
 export const CAMERA_SOURCE_ADMISSION:CameraSourceAdmission=Object.freeze({magnitude:50,referencePeak:1e12,float32Safe:false});
 export const CAMERA_SATURATED_TAIL_ADMISSION:CameraSourceAdmission=Object.freeze({magnitude:100,referencePeak:Number.MAX_VALUE,float32Safe:true});
-export function compiledCameraSourceCalibration(kind:unknown,index:unknown,filterPosition:unknown,seconds:number,storedMagnitude:number,admission:CameraSourceAdmission=CAMERA_SOURCE_ADMISSION):CameraSourceCalibration {
- const dimensions=compiledCameraInformation(kind),sourcePixels=compiledCameraInformation('ccd'),i=opticalIndex(index),optics=opticalProfile(i),lookup=cameraCatalogReference(dimensions.kind,filterPosition);
+/** Front T7: with `records` (instructor values) the dimensions are the camera's own record, the pixel size (0x52455c) and the base
+ * magnitude, count and exposure (0x5245e7 / 0x524ae9) the CCD record's, for both cameras. */
+export function compiledCameraSourceCalibration(kind:unknown,index:unknown,filterPosition:unknown,seconds:number,storedMagnitude:number,admission:CameraSourceAdmission=CAMERA_SOURCE_ADMISSION,records?:CameraParameters):CameraSourceCalibration {
+ const dimensions=records&&(kind==='ccd'||kind==='ir')?records[kind]:compiledCameraInformation(kind),sourcePixels=records?records.ccd:compiledCameraInformation('ccd'),i=opticalIndex(index),optics=opticalProfile(i),lookup=cameraCatalogReference(dimensions.kind,filterPosition);
  if(!Number.isFinite(storedMagnitude)||Math.abs(storedMagnitude)>admission.magnitude||!Object.is(storedMagnitude,Math.fround(storedMagnitude)))throw new CameraSourceCalibrationError('magnitude');
  if(!Number.isInteger(seconds)||seconds<=0||seconds>0x7fffffff)throw new CameraSourceCalibrationError('duration');
- const base=recovered.compiledCCD,k=recovered.constants.pixelScaleArcsec.numberPolicyValue;
+ const base=records?{baseMagnitude:records.ccd.baseMagnitude,baseCount:records.ccd.baseCount,baseSeconds:records.ccd.baseSeconds}:recovered.compiledCCD,k=recovered.constants.pixelScaleArcsec.numberPolicyValue;
  const NFAdjustment=dimensions.kind==='ccd'&&lookup.position===0?recovered.constants.NFAdjustment.numberPolicyValue:0;
  const effectiveMagnitude=storedMagnitude-NFAdjustment,opticalMagnitudeFactor=optics.scopeFactorMag;
  const pixelScaleXArcseconds=(k*sourcePixels.pixelWidthMicrons)/optics.focalLengthMM,pixelScaleYArcseconds=(k*sourcePixels.pixelHeightMicrons)/optics.focalLengthMM;

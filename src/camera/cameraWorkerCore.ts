@@ -3,7 +3,7 @@
  * thread; Stop terminates the Worker. */
 import {readVizierCatalog,selectVizierCatalog,wholeSkySelection,VizierCatalogError,type VizierRowContext,type VizierSelection} from '../core/vizierNomad';
 import type {NomadSelection} from '../core/nativeNomadRows';
-import {composeCameraExposure,type CameraExposure,type CameraExposureRecipe,type CameraExtraSource,type CameraFieldObjectInput,type CameraOverlayInput} from '../core/cameraExposure';
+import {composeCameraExposure,CameraExposureError,type CameraExposure,type CameraExposureRecipe,type CameraExtraSource,type CameraFieldObjectInput,type CameraOverlayInput} from '../core/cameraExposure';
 
 export type CameraWorkerRequest=
  /** Front C6: `bounds` is the region record's selection (cameraRegion.ts); without it the whole sky, as exposures made before C6. */
@@ -35,7 +35,11 @@ export function handleCameraWorkerRequest(state:CameraWorkerState,request:Camera
   // Pixels are Single values, so a Float32Array carries them exactly.
   const pixels=Float32Array.from(x.plane.pixels);
   return {reply:{type:'composed',ok:true,exposure:{...x,plane:{...x.plane,pixels}}},transfer:[pixels.buffer]};
- }catch{return {reply:{type:'composed',ok:false,code:'preparation'},transfer:[]};}
+ }catch(error){
+  // Front T7: an exposure refused for its instructor camera values says so (CameraControl names the field).
+  const code=error instanceof CameraExposureError&&error.code==='parameters'?'parameters':'preparation';
+  return {reply:{type:'composed',ok:false,code},transfer:[]};
+ }
 }
 /** Main-thread view: back to the CameraExposure shape (plain number array). */
 export function exposureFromWorker(x:CameraWorkerExposure):CameraExposure {
