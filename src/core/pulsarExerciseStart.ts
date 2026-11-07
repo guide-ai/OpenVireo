@@ -11,8 +11,8 @@ import {
  RADIO_SCOPE_ID,clickRadioSwitch,enterRadioPulsarsExercise,reopenRadioPanel,scopeTimerTick,selectRadioAccess,
  type RadioControlState,type RadioEnvironment,
 } from './radioControl';
-import {RADIO_COMPILED_ENVIRONMENT,activateRadioLab,toggleTracking,type RadioLabOptions,type RadioLabState,type RadioLabTransition} from './radioAntenna';
-import {applyCompiledRadioLongitude,applyRadioClockUTC,editRadioClockDraft,type RadioClockScenario} from './radioClock';
+import {RADIO_COMPILED_ENVIRONMENT,RADIO_COMPILED_OPTIONS,activateRadioLab,toggleTracking,type RadioLabOptions,type RadioLabState,type RadioLabTransition} from './radioAntenna';
+import {RADIO_CLOCK_CONSTANTS,applyCompiledRadioLongitude,applyRadioClockUTC,editRadioClockDraft,type RadioClockScenario} from './radioClock';
 
 export const PULSAR_EXERCISE_SCENARIO=Object.freeze({
  /** Declared web scenario UT (parseClockUTC form), applied only when no UT is applied and the UT field is empty. */
@@ -47,6 +47,14 @@ export function radioEnvironmentUnsupplied(env:RadioEnvironment,managedDiameter:
 }
 
 const refuse=(step:PulsarSetupStep,outcome:string):PulsarExerciseStartResult=>Object.freeze({ok:false,step,outcome});
+/** Front T11a [W]: the radio site in use is VIREO's compiled one: the env site (radioSiteNonDefault false), the antenna
+ * latitude and an applied clock longitude. Otherwise the first-activation Dec and the LST/HA readouts are uncertified and the
+ * route says so. The exercise Start does not depend on it: receivers and pulsar measurements read no site field, and at the
+ * compiled options (Limit Slewing off, 0x5a9075) the altitude predicate 0x5668e0 gates no slew. */
+export function pulsarSiteCompiled(input:Readonly<{options:RadioLabOptions;clock:RadioClockScenario;radioSiteNonDefault?:boolean}>):boolean{
+ return input.radioSiteNonDefault!==true&&Object.is(input.options.latitudeRadians,RADIO_COMPILED_OPTIONS.latitudeRadians)
+  &&(input.clock.longitudeRadians===null||Object.is(input.clock.longitudeRadians,RADIO_CLOCK_CONSTANTS.compiledLongitudeRadians));
+}
 
 export function startPulsarExercise(input:PulsarExerciseStartInput):PulsarExerciseStartResult{
  const {options,managedDiameter}=input;
@@ -54,6 +62,7 @@ export function startPulsarExercise(input:PulsarExerciseStartInput):PulsarExerci
  const applied:PulsarSetupStep[]=[],kept:PulsarSetupStep[]=[],antennaSteps:RadioLabTransition[]=[];
  const guard=<T,>(step:PulsarSetupStep,run:()=>T):T|PulsarExerciseStartResult=>{try{return run();}catch{return refuse(step,'invalid-input');}};
  const isRefusal=(v:unknown):v is PulsarExerciseStartResult=>typeof v==='object'&&v!==null&&'ok' in v&&(v as {ok:unknown}).ok===false;
+
 
  // 1. RC-02 Radio Astronomy of Pulsars.
  if(control.exerciseEntered)kept.push('exercise');

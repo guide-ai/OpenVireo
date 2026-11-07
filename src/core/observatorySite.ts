@@ -51,8 +51,9 @@ export type StationResult=Readonly<{status:'ok';site:ObservatorySite}|{status:'e
 /** OB-ST-03 OKBtnClick order: UT − local, height and horizon parse (|UT − local| ≤ 12), then longitude d + m/60 + s/3600 in
  * [0, 180] (West negates), then latitude in [0, 90] (South negates); bounds inclusive. Singles are Math.fround.
  * WEB: the name must be printable ASCII of at most 40 characters (the ShortString[40] the dialog truncates to) and the
- * horizon within ±90° (no native range check; the horizon readout needs it). */
-export function parseStationDraft(d:StationDraft):StationResult{
+ * horizon within ±90° (no native range check; the horizon readout needs it). Front T11a: `horizonDiscarded` (the radio
+ * SiteBtnClick 0x5a9810 never copies the horizon back) parses the horizon as natively but skips that web range check. */
+export function parseStationDraft(d:StationDraft,opts?:Readonly<{horizonDiscarded?:boolean}>):StationResult{
  const C=STATION_DIALOG_CAPTIONS,err=(message:string):StationResult=>Object.freeze({status:'error',message});
  const ut=parseDelphiFloat(d.utLocal),height=parseDelphiFloat(d.altitude),horizon=parseDelphiFloat(d.horizon);
  if(ut===null||height===null||horizon===null||Math.abs(Math.fround(ut))>12)return err(C.utOrHeight);
@@ -61,7 +62,7 @@ export function parseStationDraft(d:StationDraft):StationResult{
  const lat=angle(d.latDeg,d.latMin,d.latSec,90);if(lat===null)return err(C.latitudeError);
  const name=d.name.slice(0,40);
  if(!/^[\x20-\x7e]*$/.test(name))return Object.freeze({status:'unsupported',field:'name'});
- if(!Number.isFinite(Math.fround(height))||Math.abs(horizon)>90)return Object.freeze({status:'unsupported',field:'horizon'});
+ if(!Number.isFinite(Math.fround(height))||(opts?.horizonDiscarded!==true&&Math.abs(horizon)>90))return Object.freeze({status:'unsupported',field:'horizon'});
  // Zeros are normalized: "-0", 0° West or 0° South give +0 (a −0 would not survive the session number codec).
  const z=(x:number)=>x===0?0:x;
  return Object.freeze({status:'ok',site:Object.freeze({name,utMinusLocalHours:z(Math.fround(ut)),heightMetres:z(Math.fround(height)),horizonRadians:z(horizon*RAD),

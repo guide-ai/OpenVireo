@@ -54,7 +54,7 @@ test('Reset asks, restores the compiled values into the dialog, and Cancel keeps
  const open=async()=>{await enterInstructorMode(page);await card(page).getByTestId('ob-options').click();await expect(id(page,'ob-options-dialog')).toBeVisible();};
  await open();await id(page,'ob-options-limit').check();await id(page,'ob-options-fast-scope-change').check();await id(page,'ob-options-fast-slewing').uncheck();await id(page,'ob-options-ok').click();
  await open();await expect(id(page,'ob-options-limit')).toBeChecked();
- await expect(id(page,'ob-options-teacher-deferred').locator('li')).toHaveCount(11);// Front T1: 12 − strict VO + 5 typed items; Front T2: − Demonstration Mode; Front T4: − Detect Sky, Set E(B-V); Front T5: − Restrict Scope Access, Request Time (Front T6 narrows 'parameters', same count)
+ await expect(id(page,'ob-options-teacher-deferred').locator('li')).toHaveCount(10);// Front T1: 12 − strict VO + 5 typed items; Front T2: − Demonstration Mode; Front T4: − Detect Sky, Set E(B-V); Front T5: − Restrict Scope Access, Request Time (Front T6 narrows 'parameters', same count); Front T11a: − radio Site...
  await expect(id(page,'ob-options-reset')).toHaveAttribute('title','Restore All Options to Default Values');
  await id(page,'ob-options-reset').click();const q=id(page,'ob-options-reset-box');
  await expect(q).toContainText('Are You Sure?');await expect(q).toContainText('Resetting all options to default values');

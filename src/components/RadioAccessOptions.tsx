@@ -1,4 +1,7 @@
 import {Fragment,useEffect,useId,useLayoutEffect,useRef,useState,useSyncExternalStore,type KeyboardEvent,type ReactNode,type RefObject} from 'react';
+import {SITE_INFORMATION_LITERALS as SIL,STATION_DIALOG_CAPTIONS as SC,parseStationDraft,siteInformationAngle,stationDraft,type StationDraft} from '../core/observatorySite';
+import {StationFields} from '../observatory/SiteDialogs';
+import {OBSERVATORY_MESSAGES} from '../observatory/ObservatoryMessages';
 import {RADIO_R1_MESSAGES as R1} from './RadioR1Messages';
 import ResearchNotes from './ResearchNotes';
 import {menuCaptionText} from '../core/radioControl';
@@ -8,6 +11,7 @@ import {
  INITIAL_RADIO_ACCESS,RADIO_ACCESS_DFM,RADIO_ACCESS_LITERALS,applyCompiledOptionsBranch,cancelRadioOptions,closePreferences,dismissRadioOptionsFailure,
  dismissUserOptions,editAccessPulsarList,editRadioOptionsFlag,editRadioOptionsText,okRadioOptions,okRadioSimulationOptions,openPreferences,openRadioOptions,pulsarListAvailability,
  followPageGate,radioLabFirstActivation,receiverCloseMessage,receiverOpened,setCloseRecipient,
+ RADIO_SITE_DFM,cancelRadioSite,okRadioSite,openRadioSite,radioSiteNonDefault,radioStationSite,resetRadioSite,type RadioSiteRecord,
  type RadioAccessHostRefusal,type RadioAccessOutcome,type RadioAccessState,type RadioAccessTransition,type RadioCloseRecipient,type RadioOptionsAuthority,
  type RadioOptionsFullRecord,type RadioOptionsNumericChild,type RadioOptionsNumericFailure,type RadioOptionsRecord,type RadioPageGate,type RadioPulsarListMenu,
 } from '../core/radioAccessOptions';
@@ -16,7 +20,7 @@ import {
  type RadioOptionsNumberField,
 } from '../core/radioOptionsNumeric';
 import type {
- AntennaField,RadioAntennaProjection,RadioOptionsChange,RadioOptionsConsumerMismatch,RadioOptionsProjectionReport,RadioPanelProjection,RadioReceiverProjectionReport,ReceiverField,
+ AntennaField,RadioAntennaProjection,RadioClockProjection,RadioOptionsChange,RadioOptionsConsumerMismatch,RadioOptionsProjectionReport,RadioPanelProjection,RadioReceiverProjectionReport,ReceiverField,
 } from '../core/radioOptionsProjection';
 import type {PulsarListCommandRefusal,PulsarListCommandResult} from '../core/radioPulsarListCommand';
 import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeNothing,trapTab} from './radioModal';
@@ -46,7 +50,7 @@ const syncText=(hostPredicate:boolean)=>String(Number((hostPredicate?RADIO_OPTIO
 /** Native DFM labels of the consumer fields a projection changed (original strings, never translated). */
 const CHANGE_LABEL:Readonly<Record<AntennaField|ReceiverField,string>>={
  limitsEnabled:D.checkBoxes.limitSlewing93a,minimumAltitudeRadians:D.labels.horizon90c,maxRateIndex:D.checkBoxes.maxRateIndex93b,rateBase:D.labels.baseSlew91a,
- transitTelescope:menuCaptionText(D.scopeGroup),instantSlew:D.checkBoxes.testMode940,
+ transitTelescope:menuCaptionText(D.scopeGroup),instantSlew:D.checkBoxes.testMode940,latitudeRadians:SC.latitude,
  dishDiameterMeters:D.labels.aperture916,gain924:D.labels.gain924,background928:D.labels.background928,beamWidth92c:D.labels.beamWidth92c,temperature930:D.labels.temperature930,
 };
 const changeList=(changes:readonly RadioOptionsChange<string>[])=>changes.map(c=>CHANGE_LABEL[c.field as AntennaField|ReceiverField]).join(', ');
@@ -81,8 +85,9 @@ export type RadioAccessNumericHost=Readonly<{
  /** Handler-time opt-in check on the latest consumer values against the chosen compiled branch (empty: compatible). */
  mismatchesFor:(hostPredicate:boolean)=>readonly RadioOptionsConsumerMismatch[];
  /** Called synchronously after a committed Preferences close under an authority, with the env copy just written; the
-  * route projects and commits it and reports each consumer's outcome (WEB-RSO-PROJ-01). */
- onEnvironmentCopied:(env:RadioOptionsRecord)=>RadioOptionsProjectionReport;
+  * route projects and commits it and reports each consumer's outcome (WEB-RSO-PROJ-01). Front T11a: with the env copy's
+  * site fields, also after the site Reset. */
+ onEnvironmentCopied:(env:RadioOptionsRecord,site:RadioSiteRecord)=>RadioOptionsProjectionReport;
  /** The consumer values in use, for the card. */
  view:Readonly<{antenna:RadioLabOptions;receiver:RadioReceiverOptions|null;panelDiameter:number|null}>;
 }>;
@@ -111,6 +116,10 @@ export type RadioAccessHost=Readonly<{
  authorityNow:()=>RadioOptionsAuthority;
  /** Phase 1 item 1.5: the latest accepted state, read by Save investigation. */
  stateNow:()=>RadioAccessState;
+ /** Front T11a: the env copy holds a radio site that is not the compiled one (rendered). */
+ siteNonDefault:boolean;
+ /** Front T11a: the env copy's site (rendered). */
+ siteEnv:RadioSiteRecord;
 }>;
 
 /** A target that can take focus: connected, enabled, rendered and not under an inert ancestor. */
@@ -139,6 +148,10 @@ export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,
  const [optIn,setOptIn]=useState<OptInStatus|null>(null);
  const [projection,setProjection]=useState<RadioOptionsProjectionReport|null>(null);
  const [textRefusal,setTextRefusal]=useState<RadioOptionsNumberField|null>(null);
+ // Front T11a: the TStationDlg fields while Site... is open (kept across a suppression) and its error box text.
+ const [stationDraftState,setStationDraft]=useState<StationDraft|null>(null);
+ const [stationError,setStationError]=useState('');
+ const [siteStatus,setSiteStatus]=useState<'site-ok'|'site-cancelled'|'site-reset'|'site-reset-unchanged'|null>(null);
  const latest=useRef({active,busy,surfaceNow,runPulsarList,numeric});
  useLayoutEffect(()=>{latest.current={active,busy,surfaceNow,runPulsarList,numeric};});
  const step=(fn:(s:RadioAccessState)=>RadioAccessTransition)=>{
@@ -202,11 +215,36 @@ export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,
  const editFlag=(flag:'limitSlewing'|'fastSlewing',checked:boolean)=>{user(s=>editRadioOptionsFlag(s,flag,checked));};
  const okFull=()=>{const r=user(okRadioSimulationOptions);if(r?.outcome==='radio-ok'){setChildStatus('radio-ok');setTextRefusal(null);}};
  const dismissFailure=()=>{user(dismissRadioOptionsFailure);};
+ // ---- Front T11a: Site... (SiteBtnClick 0x5a9810 → TStationDlg) and the card's Reset.
+ const openSite=()=>{
+  const r=user(openRadioSite);if(r?.outcome!=='site-opened')return;
+  const v=radioStationSite(r.state)!;setStationError('');setSiteStatus(null);
+  setStationDraft(stationDraft({name:v.name,longitudeRadians:v.longitudeRadians,latitudeRadians:v.latitudeRadians,horizonRadians:v.horizonRadians,heightMetres:v.heightMetres,utMinusLocalHours:v.utMinusLocalHours}));
+ };
+ /** TStationDlg OKBtnClick (OB-ST-03, parseStationDraft): a failure shows its box and keeps the dialog. */
+ const okSite=()=>{
+  if(!stationDraftState||stationError||!admitted()||yieldNow())return;
+  // The radio copy-back discards the horizon (0x5a98d5..0x5a9928), so its web range check does not apply here (it is still parsed).
+ const p=parseStationDraft(stationDraftState,{horizonDiscarded:true});
+  if(p.status==='error'){setStationError(p.message);return;}
+  if(p.status==='unsupported'){setStationError(p.field==='name'?OBSERVATORY_MESSAGES.site.nameUnsupported:OBSERVATORY_MESSAGES.site.horizonUnsupported);return;}
+  const r=user(s=>okRadioSite(s,p.site));
+  if(r?.outcome==='site-ok'){setStationDraft(null);setSiteStatus('site-ok');}
+ };
+ const cancelSite=()=>{if(stationError)return;const r=user(cancelRadioSite);if(r?.outcome==='site-cancelled'){setStationDraft(null);setSiteStatus('site-cancelled');}};
+ const dismissStationError=()=>{if(admitted()&&!yieldNow())setStationError('');};
+ /** [W] Reset (card action): the five site fields to the compiled defaults in the object and the panel's copy, then the
+  * same projection as a Preferences close, also when the site was already compiled (consumers left at another site). */
+ const resetSite=()=>{
+  const r=cardUser(resetRadioSite);if(!r)return;
+  if(r.outcome!=='site-reset'&&r.outcome!=='site-reset-unchanged')return;
+  setSiteStatus(r.outcome);setProjection(latest.current.numeric.onEnvironmentCopied(r.state.env,r.state.site.env));
+ };
  /** T8, then under an authority the projection at the recovered copy point (0x588751..0x588767), synchronously. */
  const closeParent=(result:'ok'|'cancel')=>{
   const r=user(s=>closePreferences(s,result));if(!r?.changed)return;
   setStatus(r.outcome);setChildStatus(null);
-  if(r.state.authority.kind!=='absent')setProjection(latest.current.numeric.onEnvironmentCopied(r.state.env));
+  if(r.state.authority.kind!=='absent')setProjection(latest.current.numeric.onEnvironmentCopied(r.state.env,r.state.site.env));
  };
 
  // ---- Committed host events (refs only; also on a hidden route: they follow committed antenna/receiver transitions).
@@ -228,7 +266,7 @@ export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,
  // A surface removed by a suppression must not move focus; read by the views' cleanups after this commit's layout effects.
  const suppressed=useRef(false);
  useLayoutEffect(()=>{suppressed.current=open&&!presented;});
- const prefsRef=useRef<HTMLButtonElement>(null),headingRef=useRef<HTMLHeadingElement>(null),radioRef=useRef<HTMLButtonElement>(null);
+ const prefsRef=useRef<HTMLButtonElement>(null),headingRef=useRef<HTMLHeadingElement>(null),radioRef=useRef<HTMLButtonElement>(null),siteRef=useRef<HTMLButtonElement>(null);
  // WEB-RSO-AUTH-01 focus: an applied opt-in removes the focused branch button; its one-shot request moves focus to the
  // numeric section heading. Consumed before the guards, so it never fires on a later commit; no move on a hidden or busy
  // route, with this host's box/dialog, another radio surface or a foreign native <dialog>, or when focus is already elsewhere.
@@ -292,7 +330,7 @@ export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,
     onChange={()=>chooseRecipient('radio-lab')}/> {t('radioAccess.recipient.radioLab')}</label>
   </fieldset>
   <p id={`${id}-recipient-note`} className="radio-control-note">{t('radioAccess.recipient.note')}</p>
-  <NumericSection state={state} view={numeric.view} optIn={optIn} projection={projection} headingRef={numericHeadingRef} onBranch={applyBranch}/>
+  <NumericSection state={state} view={numeric.view} optIn={optIn} projection={projection} headingRef={numericHeadingRef} onBranch={applyBranch} siteStatus={siteStatus} onResetSite={resetSite}/>
   <h3 className="radio-access-subheading">{t('radioAccess.behaviour.heading')}</h3>
   <ul className="radio-control-note" data-testid="radio-access-behaviour">
    <li>{t('radioAccess.behaviour.childOk')}</li><li>{t('radioAccess.behaviour.childCancel')}</li><li>{t('radioAccess.behaviour.parent')}</li>
@@ -306,12 +344,17 @@ export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,
    returnFocus={prefsRef} fallbackFocus={headingRef} suppressed={suppressed}/>}
   {presented&&child!==null&&(child.numeric
    ?<RadioSimulationOptionsDialog snapshot={child.snapshot as RadioOptionsFullRecord} checked={child.checked} numeric={child.numeric} refusal={textRefusal}
-     onText={editText} onFlag={editFlag} onAccess={editChild} onOk={okFull} onCancel={cancelChild} returnFocus={radioRef} suppressed={suppressed}/>
+     onText={editText} onFlag={editFlag} onAccess={editChild} onOk={okFull} onCancel={cancelChild} returnFocus={radioRef} suppressed={suppressed}
+     station={state.site.station} siteRef={siteRef} onSite={openSite}/>
    :<RadioOptionsChildDialog checked={child.checked} onEdit={editChild} onOk={okChild} onCancel={cancelChild} returnFocus={radioRef} suppressed={suppressed}/>)}
   {presented&&child?.numeric?.failure&&<RadioOptionsFailureBox failure={child.numeric.failure} onDismiss={dismissFailure}/>}
+  {presented&&state.site.station&&stationDraftState&&<RadioStationDialog draft={stationDraftState} setDraft={setStationDraft} error={stationError} onOk={okSite} onCancel={cancelSite}
+   returnFocus={siteRef} suppressed={suppressed}/>}
+  {presented&&state.site.station&&stationError!==''&&<RadioStationErrorBox text={stationError} onDismiss={dismissStationError}/>}
  </div>;
  return {open,openNow,menuNow,pending,presented,card,layer,
-  antennaTransition,receiverOpened:onReceiverOpened,mainCloseMessage:onMainClose,authority:state.authority,authorityNow,stateNow:()=>stateRef.current};
+  antennaTransition,receiverOpened:onReceiverOpened,mainCloseMessage:onMainClose,authority:state.authority,authorityNow,stateNow:()=>stateRef.current,
+  siteNonDefault:radioSiteNonDefault(state),siteEnv:state.site.env};
 }
 
 type FocusBack=Readonly<{returnFocus:RefObject<HTMLElement|null>;fallbackFocus?:RefObject<HTMLElement|null>;suppressed:RefObject<boolean>}>;
@@ -431,11 +474,24 @@ function receiverReportText(r:RadioReceiverProjectionReport):string{
 const panelReportText=(p:RadioPanelProjection)=>p.kind==='unchanged'?t('radioAccess.numeric.report.panel.unchanged')
  :t('radioAccess.numeric.report.panel.applied',{before:notSupplied(p.before),after:String(p.after)});
 
+type SiteStatus='site-ok'|'site-cancelled'|'site-reset'|'site-reset-unchanged';
 type NumericSectionProps=Readonly<{state:RadioAccessState;view:RadioAccessNumericHost['view'];optIn:OptInStatus|null;projection:RadioOptionsProjectionReport|null;
- headingRef:RefObject<HTMLHeadingElement|null>;onBranch:(hostPredicate:boolean,focused:boolean)=>void}>;
+ headingRef:RefObject<HTMLHeadingElement|null>;onBranch:(hostPredicate:boolean,focused:boolean)=>void;siteStatus:SiteStatus|null;onResetSite:()=>void}>;
+/** Front T11a: the site fields as TRadioLab's FormActivate labels show them (0x564868..0x56497a: |angle| × 180/π through
+ * 0x486ca0 with digits 0, then ' W'/' E' and ' S'/' N' by sign), the Singles with one decimal (presentation only). */
+const R2D=RADIO_OPTIONS_NUMERIC_CONSTANTS.radiansToDegrees;
+const SITE_ROWS=[
+ ['name',SC.name,(v:RadioSiteRecord)=>v.name],
+ ['longitudeRadians',SC.longitude,(v:RadioSiteRecord)=>siteInformationAngle(v.longitudeRadians*R2D).trim()+(v.longitudeRadians<0?SIL.west:SIL.east)],
+ ['latitudeRadians',SC.latitude,(v:RadioSiteRecord)=>siteInformationAngle(v.latitudeRadians*R2D).trim()+(v.latitudeRadians<0?SIL.south:SIL.north)],
+ ['heightMetres',SC.altitude,(v:RadioSiteRecord)=>radioOptionsFixedText(v.heightMetres,1)+SIL.meters],
+ ['utMinusLocalHours',SC.utLocal,(v:RadioSiteRecord)=>radioOptionsFixedText(v.utMinusLocalHours,1)],
+] as const;
+const clockReportText=(c:RadioClockProjection)=>c.kind==='unchanged'?t('radioAccess.site.report.clock.unchanged')
+ :t('radioAccess.site.report.clock.applied',{before:c.before===null?t('radioAccess.numeric.mismatch.notSupplied'):String(c.before),after:String(c.after)});
 /** WEB-RSO-AUTH-01 / WEB-RSO-PROJ-01 card section: the authority, the two explicit compiled branches (absent only), the
  * object and panel copy per field, the consumers in use and the last projection, consumer by consumer. */
-function NumericSection({state,view,optIn,projection,headingRef,onBranch}:NumericSectionProps){
+function NumericSection({state,view,optIn,projection,headingRef,onBranch,siteStatus,onResetSite}:NumericSectionProps){
  const id=useId(),a=state.authority;
  const authorityText=a.kind==='absent'?t('radioAccess.numeric.absent'):a.kind==='supplied'?t('radioAccess.numeric.supplied'):t('radioAccess.numeric.compiled',{sync:syncText(a.hostPredicate)});
  const statusKey=optIn===null?undefined:OPT_IN_STATUS[optIn.outcome];
@@ -476,7 +532,7 @@ function NumericSection({state,view,optIn,projection,headingRef,onBranch}:Numeri
    <p className="radio-control-note">{t('radioAccess.numeric.consumers.note')}</p>
    <ul data-testid="radio-access-numeric-consumers">
     <li data-testid="radio-access-numeric-antenna" data-limits={o.limitsEnabled} data-horizon={String(o.minimumAltitudeRadians)} data-max={o.maxRateIndex} data-base={o.rateBase}
-     data-transit={o.transitTelescope} data-instant={o.instantSlew}>
+     data-transit={o.transitTelescope} data-instant={o.instantSlew} data-latitude={String(o.latitudeRadians)}>
      {t('radioAccess.numeric.consumers.antenna',{limits:onOff(o.limitsEnabled),degrees:horizon,max:o.maxRateIndex,base:o.rateBase,transit:onOff(o.transitTelescope)})}</li>
     <li data-testid="radio-access-numeric-receiver" data-provenance={r?.provenance} data-dish={r?.dishDiameterMeters} data-gain={r===null?undefined:String(r.gain924)}
      data-background={r?.background928} data-beam={r===null?undefined:String(r.beamWidth92c)} data-temperature={r===null?undefined:String(r.temperature930)}>
@@ -493,7 +549,23 @@ function NumericSection({state,view,optIn,projection,headingRef,onBranch}:Numeri
      <li data-testid="radio-access-numeric-report-antenna">{antennaReportText(projection.antenna)}</li>
      <li data-testid="radio-access-numeric-report-receiver">{receiverReportText(projection.receiver)}</li>
      <li data-testid="radio-access-numeric-report-panel">{panelReportText(projection.panel)}</li>
+     {projection.clock&&<li data-testid="radio-access-numeric-report-clock" data-clock={projection.clock.kind}>{clockReportText(projection.clock)}</li>}
     </ul>}
+   <h4>{t('radioAccess.site.heading')}</h4>
+   <p className="radio-control-note">{t('radioAccess.site.note')}</p>
+   <dl className="radio-control-state" data-testid="radio-access-site-values">
+    {SITE_ROWS.map(([k,label,text])=><Fragment key={k}>
+     <dt className="radio-control-native">{label}</dt>
+     <dd data-testid={`radio-access-site-${k}`} data-root={String(state.site.root[k])} data-env={String(state.site.env[k])} style={{overflowWrap:'anywhere'}}>
+      {t('radioAccess.numeric.values.pair',{root:text(state.site.root),env:text(state.site.env)})}</dd>
+    </Fragment>)}
+   </dl>
+   <p data-testid="radio-access-site-status" data-site={radioSiteNonDefault(state)?'non-default':'compiled'}>{t(radioSiteNonDefault(state)?'radioAccess.site.nonDefault':'radioAccess.site.compiled')}</p>
+   <div className="button-row">
+    <button type="button" className="secondary-button" data-testid="radio-access-site-reset" aria-describedby={`${id}-site-reset`} onKeyDown={ignoreHeldKey} onClick={onResetSite}>{t('radioAccess.site.reset')}</button>
+   </div>
+   <p id={`${id}-site-reset`} className="radio-control-note">{t('radioAccess.site.resetHelp')}</p>
+   <p className="radio-control-status" role="status" aria-live="polite" data-testid="radio-access-site-outcome" data-outcome={siteStatus??undefined}>{siteStatus===null?'':t(`radioAccess.site.outcome.${siteStatus}`)}</p>
   </>}
  </section>;
 }
@@ -502,16 +574,19 @@ type ReadOnlyBox='plotPulsars93c'|'hotListFile93d'|'hotListExact93e'|'soundFeatu
 const READ_ONLY_BOXES:readonly ReadOnlyBox[]=['plotPulsars93c','hotListFile93d','hotListExact93e','soundFeatures93f','testMode940'];
 type SimProps=Readonly<{snapshot:RadioOptionsFullRecord;checked:boolean;numeric:RadioOptionsNumericChild;refusal:RadioOptionsNumberField|null;
  onText:(field:RadioOptionsNumberField,text:string)=>void;onFlag:(flag:'limitSlewing'|'fastSlewing',checked:boolean)=>void;onAccess:(checked:boolean)=>void;
- onOk:()=>void;onCancel:()=>void;returnFocus:RefObject<HTMLButtonElement|null>;suppressed:RefObject<boolean>}>;
+ onOk:()=>void;onCancel:()=>void;returnFocus:RefObject<HTMLButtonElement|null>;suppressed:RefObject<boolean>;
+ /** Front T11a: TStationDlg is open over the form (inert behind it); Site... opens it. */
+ station:boolean;siteRef:RefObject<HTMLButtonElement|null>;onSite:()=>void}>;
 /** TRadiOptsDlg (VMT 0x5a7c84) under a numeric authority. The nine edits in DFM order, Limit Slewing, Fast Slewing and
  * Access Pulsar List editable; the other check boxes and both groups shown read only from the activation snapshot.
  * WEB-RSO-KEY-01: focus on HorzEd with its text selected (0x5a938f..0x5a93a2); a fresh Enter in a field or check box chooses
  * OK (DFM OKBtn Default = True), Enter on a button activates that button; Escape is Cancel and stops here; held Enter and
  * Escape are ignored; Tab stays inside. Inert while the failure box is open; after it, focus returns to the control that
  * chose OK (OKBtnClick has no SetFocus). */
-function RadioSimulationOptionsDialog({snapshot,checked,numeric,refusal,onText,onFlag,onAccess,onOk,onCancel,returnFocus,suppressed}:SimProps){
+function RadioSimulationOptionsDialog({snapshot,checked,numeric,refusal,onText,onFlag,onAccess,onOk,onCancel,returnFocus,suppressed,station,siteRef,onSite}:SimProps){
  const id=useId(),root=useRef<HTMLDivElement>(null),horizon=useRef<HTMLInputElement>(null),lastFocus=useRef<HTMLElement|null>(null);
- const blocked=numeric.failure!==null;
+ // Front T11a: inert while TStationDlg is open; FormActivate does not run again after it (focus returns to Site...).
+ const blocked=numeric.failure!==null||station;
  useModalFocus(horizon,blocked,{returnFocus,suppressed});
  useEffect(()=>{if(!blocked)horizon.current?.select();},[]);// mount-time `blocked` only
  useEffect(()=>{if(blocked)return;const el=lastFocus.current;lastFocus.current=null;if(el&&root.current?.contains(el)&&canTakeFocus(el))el.focus();},[blocked]);
@@ -568,7 +643,7 @@ function RadioSimulationOptionsDialog({snapshot,checked,numeric,refusal,onText,o
    <p id={`${id}-readonly`} className="radio-control-note" data-testid="radio-options-readonly-note">{t('radioSimOptions.readonlyNote')}</p>
    <div className="button-row">
     <button type="button" className="secondary-button" data-testid="radio-options-files" disabled aria-describedby={`${id}-files`}>{menuCaptionText(D.filesButton)}</button>
-    <button type="button" className="secondary-button" data-testid="radio-options-site" disabled aria-describedby={`${id}-files`}>{menuCaptionText(D.siteButton)}</button>
+    <button ref={siteRef} type="button" className="secondary-button" data-testid="radio-options-site" title={RADIO_SITE_DFM.hint} aria-describedby={`${id}-files`} onClick={onSite}>{menuCaptionText(D.siteButton)}</button>
    </div>
    <p id={`${id}-files`} className="radio-control-note">{t('radioSimOptions.filesSiteNote')}</p>
    <p className="radio-control-note">{t('radioSimOptions.okNote')}</p>
@@ -609,6 +684,46 @@ function RadioOptionsFailureBox({failure,onDismiss}:Readonly<{failure:RadioOptio
    <p className="radio-control-note" data-testid="radio-options-failure-note">{native?t('radioSimOptions.failure.nativeNote',{literal:L.numericErrorHelperInput.replace(/\r\n/g,' ')}):t('radioSimOptions.failure.webNote')}</p>
    <div className="button-row">
     <button ref={button} type="button" className="primary-button" data-testid="radio-options-failure-ok" onClick={onDismiss}>{t('radioSimOptions.failure.ok')}</button>
+   </div>
+  </div>
+ </div>;
+}
+
+// ---- Front T11a: TStationDlg over the Radio Simulation Options form (SiteBtnClick 0x5a9810) and its Input Error! box.
+type StationProps=Readonly<{draft:StationDraft;setDraft:(f:(d:StationDraft|null)=>StationDraft|null)=>void;error:string;onOk:()=>void;onCancel:()=>void;
+ returnFocus:RefObject<HTMLButtonElement|null>;suppressed:RefObject<boolean>}>;
+/** The same TStationDlg fields as the observatory's Site Parameters (observatory/SiteDialogs.tsx StationFields), in this
+ * card's own application-modal frame (a native <dialog> here would count as a foreign modal). FormActivate 0x5928e8 focuses
+ * LocEd; Escape is Cancel and stops here; Tab stays inside; Enter in a field is OK; inert while its error box is open. */
+function RadioStationDialog({draft,setDraft,error,onOk,onCancel,returnFocus,suppressed}:StationProps){
+ const id=useId(),root=useRef<HTMLDivElement>(null),first=useRef<HTMLElement|null>(null),blocked=error!=='';
+ useEffect(()=>{first.current=root.current?.querySelector<HTMLInputElement>('input')??null;},[]);
+ useModalFocus(first,blocked,{returnFocus,suppressed});
+ return <div className="antenna-backdrop antenna-backdrop-top">
+  <div ref={root} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-note`} className="antenna-dialog radio-station" data-testid="radio-station-dialog"
+   data-blocked={blocked} inert={blocked||undefined} onKeyDown={e=>{if(!blocked)surfaceKeys(e,root.current,onCancel);}}>
+   <h3 id={`${id}-title`} className="radio-control-native">{SC.form}</h3>
+   <StationFields station={draft} setStation={setDraft as Parameters<typeof StationFields>[0]['setStation']} onOk={onOk} testId="radio-station"/>
+   <p id={`${id}-note`} className="radio-control-note" style={{overflowWrap:'anywhere'}}>{t('radioAccess.site.dialogNote')}</p>
+   <div className="button-row">
+    <button type="button" className="primary-button" data-testid="radio-station-ok" onClick={onOk}>{menuCaptionText(SC.ok)}</button>
+    <button type="button" className="secondary-button" data-testid="radio-station-cancel" onClick={onCancel}>{menuCaptionText(SC.cancel)}</button>
+   </div>
+  </div>
+ </div>;
+}
+/** TStationDlg OK's MB_ICONSTOP box (OB-ST-03, caption "Input Error!"), or the web domain note for a name or horizon the web
+ * does not support. Enter or Escape closes it; focus starts on its OK. */
+function RadioStationErrorBox({text,onDismiss}:Readonly<{text:string;onDismiss:()=>void}>){
+ const id=useId(),root=useRef<HTMLDivElement>(null),button=useRef<HTMLButtonElement>(null);
+ useEffect(()=>{button.current?.focus();},[]);
+ return <div className="antenna-backdrop antenna-backdrop-top radio-options-failure-layer">
+  <div ref={root} role="alertdialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-body`} className="antenna-dialog antenna-notice" data-testid="radio-station-error"
+   onKeyDown={e=>surfaceKeys(e,root.current,onDismiss,onDismiss)}>
+   <h3 id={`${id}-title`} className="radio-control-native">{SC.errorCaption}</h3>
+   <p id={`${id}-body`} className="radio-control-native" data-testid="radio-station-error-text" style={{overflowWrap:'anywhere'}}>{text}</p>
+   <div className="button-row">
+    <button ref={button} type="button" className="primary-button" data-testid="radio-station-error-ok" onClick={onDismiss}>{t('radioSimOptions.failure.ok')}</button>
    </div>
   </div>
  </div>;

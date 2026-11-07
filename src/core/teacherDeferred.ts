@@ -15,7 +15,8 @@
  * RstrctScpBox is live and travels in the options file, and Telescopes › Optical › Request Time works (core/scopeAccess.ts).
  * Front T6 narrowed 'parameters': the Photometer and Spectrometer tabs' edits are live (core/instrumentParameters.ts). Front T7
  * narrowed it again: the CCD and IR tabs are live (core/cameraParameters.ts); only the General tab stays read-only (Front T8). Scopes… (TScopeDataDlg) stays: its Avail / Reap / Min / Max fields (OK 0x593754: StrToFloat → record +0x29, StrToInt → bytes
- * +0x2f, +0x2d, +0x2e for the 1.0 m and 4.0 m) share the dialog with the optics fields of Front T8. */
+ * +0x2f, +0x2d, +0x2e for the 1.0 m and 4.0 m) share the dialog with the optics fields of Front T8. Front T11a removed
+ * 'radio-site': TRadiOptsDlg.SiteBtn opens the shared TStationDlg on the radio site (radioAccessOptions.ts openRadioSite). */
 export type TeacherDeferredReason='teacher-front'|'compiled-password-not-ported'|'needs-backend';
 export type TeacherDeferredItem=Readonly<{key:string;caption:string;control:string;dfm:string;reason:TeacherDeferredReason}>;
 const item=(key:string,caption:string,control:string,dfm:string,reason:TeacherDeferredReason='teacher-front'):TeacherDeferredItem=>Object.freeze({key,caption,control,dfm,reason});
@@ -24,7 +25,6 @@ export const TEACHER_DEFERRED:readonly TeacherDeferredItem[]=Object.freeze([
  item('files','&Files...','TOptionsDlg.FilesBtn, TRadiOptsDlg FilesBtn (names and paths of VIREO\'s install; an options file keeps them typed, Front T2)','0x209ec2, 0x21bd31'),
  item('scopes','&Scopes...','TOptionsDlg.ScopeBtn (TScopeDataDlg: availability, reapply wait and uses with the optics, Front T8)','0x20dfb8'),
  item('parameters','Parameter editing (General tab)','TOptionsDlg General tab parameters (read-only here; Front T8). The Photometer and Spectrometer tabs are live since Front T6, the CCD Camera and IR Camera tabs since Front T7','—'),
- item('radio-site','&Site...','TRadiOptsDlg.SiteBtn','0x21bf6e'),
  item('radio-options','Non-default radio options','TRadiOptsDlg (compiled values; Access Pulsar List is the only live box)','—'),
  item('cluster-edit','Edit Cluster Parameters','TClstrPrmForm1 (TClstrListForm1 Edit/Delete/Undo Selection)','0x1e8aa6'),
  item('cluster-save-list','Save List...','TClstrListForm1.SaveList1','0x1e7d95'),

@@ -8,10 +8,10 @@ import RadioControlPanel,{type RadioClockSource,type RadioReceiverButton,type Ra
 import {INITIAL_RADIO_RECEIVER_SUMMARY,RadioReceiverWorkspace,type RadioReceiverApi,type RadioReceiverSummary} from './RadioReceiverWindows';
 import {INITIAL_RADIO_CONTROL,RANDOM_ACCESS_RANGE_MS,menuCaptionText,type RadioControlState,type RadioEnvironment} from '../core/radioControl';
 import {INITIAL_RADIO_LAB,RADIO_COMPILED_OPTIONS,RADIO_LAB_CONSTANTS,isRadioLabModal,receiverOneOpened,seedObjectXTarget,type RadioLabOptions,type RadioLabState,type RadioLabTransition} from '../core/radioAntenna';
-import {PULSAR_EXERCISE_SCENARIO,UNSUPPLIED_RADIO_ENVIRONMENT,pulsarSetupComplete,startPulsarExercise,type PulsarSetupStep} from '../core/pulsarExerciseStart';
+import {PULSAR_EXERCISE_SCENARIO,UNSUPPLIED_RADIO_ENVIRONMENT,pulsarSetupComplete,pulsarSiteCompiled,startPulsarExercise,type PulsarSetupStep} from '../core/pulsarExerciseStart';
 import {sameRadioExerciseSummary,type RadioExerciseSummary} from '../core/pulsarLab';
 import {
- INITIAL_RADIO_CLOCK_SCENARIO,RADIO_CLOCK_CONSTANTS,applyCompiledRadioLongitude,applyRadioClockDialogUT,applyRadioClockUTC,cancelRadioClockDraft,editRadioClockDraft,
+ INITIAL_RADIO_CLOCK_SCENARIO,RADIO_CLOCK_CONSTANTS,applyCompiledRadioLongitude,applyRadioClockDialogUT,applyRadioSiteLongitude,applyRadioClockUTC,cancelRadioClockDraft,editRadioClockDraft,
  freezeRadioClock,pauseRadioClock,radioClockDomainWaitMS,radioClockInstant,radioClockSnapshot,readRadioClock,startRadioClock,stopRadioClockPastEnd,thawRadioClock,
  type RadioClockScenario,type RadioClockScenarioOutcome,type RadioClockScenarioTransition,
 } from '../core/radioClock';
@@ -24,8 +24,8 @@ import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeN
 import {usePulsarParametersHost} from './RadioPulsarParameters';
 import {useRadioAccessHost} from './RadioAccessOptions';
 import {preparePulsarListCommand,type PulsarListCommandResult} from '../core/radioPulsarListCommand';
-import {radioOptionsCompiledRecord,type RadioOptionsRecord,type RadioPageGate} from '../core/radioAccessOptions';
-import {projectRadioOptionsEnv,radioOptionsConsumerMismatches,type RadioOptionsProjectionReport,type RadioReceiverProjectionReport} from '../core/radioOptionsProjection';
+import {radioOptionsCompiledRecord,type RadioOptionsRecord,type RadioPageGate,type RadioSiteRecord} from '../core/radioAccessOptions';
+import {projectRadioOptionsEnv,projectRadioSiteClock,radioOptionsConsumerMismatches,type RadioOptionsProjectionReport,type RadioReceiverProjectionReport} from '../core/radioOptionsProjection';
 import {RADIO_RECEIVER_COMPILED_OPTIONS,type RadioReceiverOptions} from '../core/radioReceiver';
 import {copyReceiverLiveOptions} from '../core/radioReceiverSession';
 import {t,type PlainMessageKey} from '../i18n';
@@ -252,9 +252,12 @@ function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarD
  /** WEB-RSO-PROJ-01: synchronously after a committed Preferences close under an authority. Each consumer commits on its own
   * latest owner state; a refused consumer keeps its value and is reported as refused (no retry, no Open, reseed,
   * reassociation or paint). The receiver copy is a compare-and-swap on the session it was prepared from. */
- const projectOptions=(env:RadioOptionsRecord):RadioOptionsProjectionReport=>{
+ const projectOptions=(env:RadioOptionsRecord,site:RadioSiteRecord):RadioOptionsProjectionReport=>{
   const api=receiverApiRef.current,session=api?.sessionNow()??null;
-  const p=projectRadioOptionsEnv(env,{antenna:optionsRef.current,antennaHeld:antennaRef.current.manualPress,receiver:session?.bank.options??null,environment:environmentRef.current});
+  const p=projectRadioOptionsEnv(env,{antenna:optionsRef.current,antennaHeld:antennaRef.current.manualPress,receiver:session?.bank.options??null,environment:environmentRef.current},site);
+  // Front T11a: the clock reads the site longitude (env+0x3789) natively at every tick; here it is applied at this copy point.
+  const clock=projectRadioSiteClock(site,scenarioRef.current.longitudeRadians);
+  if(clock.kind==='applied'){const tr=applyRadioSiteLongitude(scenarioRef.current,clock.after);scenarioRef.current=tr.scenario;setScenario(tr.scenario);setClockOutcome(tr.outcome);}
   if(p.antenna.kind==='applied'){optionsRef.current=p.antenna.options;setOptions(p.antenna.options);}
   if(p.panel.kind==='applied'){environmentRef.current=p.panel.environment;setEnvironment(p.panel.environment);}
   let receiver:RadioReceiverProjectionReport;
@@ -267,7 +270,7 @@ function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarD
    else if(api.commitLiveOptions(session,tr)){receiver={kind:'applied',changes:p.receiver.changes};setLiveReceiverOptions(p.receiver.options);}
    else receiver={kind:'refused-stale'};
   }
-  return Object.freeze({antenna:p.antenna,receiver:Object.freeze(receiver),panel:p.panel});
+  return Object.freeze({antenna:p.antenna,receiver:Object.freeze(receiver),panel:p.panel,clock});
  };
  const access=useRadioAccessHost({active,busy,antennaModal:modal,receiverBoxPending:receiverSummary.boxPending&&active&&!busy,
   surfaceNow:()=>isRadioLabModal(antennaRef.current)||dateRef.current.dialog!==null||parametersOpenRef.current?'modal'
@@ -411,6 +414,8 @@ function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarD
   }});
   return ()=>{controllerRef.current=null;};
  });
+ // Front T11a: an instructor radio site (or consumers left at one) is labelled; it does not change the exercise steps.
+ const siteCompiled=pulsarSiteCompiled({options,clock:scenario,radioSiteNonDefault:access.siteNonDefault});
  const setupDone=pulsarSetupComplete({control:state,antenna,clock:scenario});
  const catalogState:RadioExerciseSummary['catalog']=parameters.catalog!==null?(parameters.source?.recorded?'recorded':'supplied'):parameters.catalogReading?'reading':'none';
  const exerciseSummary:RadioExerciseSummary={setup:setupDone,catalog:catalogState,sourceInBeam:receiverSummary.sourceInBeam,receivers:receiverSummary.receivers,
@@ -434,6 +439,10 @@ function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarD
  const behindAccess=access.open||undefined,panelBehindAccess=access.presented||undefined;
  const restoredInstant=initial===null?null:radioClockInstant(initial.clock,0);
  return <div className="radio-route" data-testid="radio-route">
+  {!siteCompiled&&<section className="card radio-control radio-control-env" aria-labelledby={`${id}-site`} data-testid="radio-site-uncertified">
+   <h2 id={`${id}-site`}>{t('radioRoute.site.heading')}</h2>
+   <p style={{overflowWrap:'anywhere'}}>{access.siteNonDefault?t('radioRoute.site.uncertified',{name:access.siteEnv.name}):t('radioRoute.site.uncertifiedConsumers')}</p>
+  </section>}
   {initial!==null&&<section className="card radio-control radio-control-env" aria-labelledby={`${id}-restored`} data-testid="radio-restored-note">
    <h2 id={`${id}-restored`}>{t('radioRoute.restored.heading')}</h2>
    <p>{t('radioRoute.restored.help')}</p>
