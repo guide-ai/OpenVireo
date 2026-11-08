@@ -1,4 +1,4 @@
-import {readFileSync} from 'node:fs';
+import {readOriginalFile} from '../../tests/fixtures/original-file';
 import {describe,expect,it} from 'vitest';
 import controls from './ephemeris.controls.json';
 import {parseHtl} from './hotList';
@@ -11,7 +11,7 @@ const record=(c:Control):OrbitRecord=>({index:c.record.index,prefix:c.record.pre
  frame:{type:c.record.frame[0],sub:c.record.frame[1],tag:c.record.frame[2],equinoxJd:c.record.frame[3]},flags:c.record.flags});
 const wrap=(x:number)=>((x%(2*Math.PI))+2*Math.PI)%(2*Math.PI);
 const distance=(a:readonly number[],b:readonly number[])=>Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]);
-const load=(path:string)=>new Uint8Array(readFileSync(new URL(`../../public/original/${path}`,import.meta.url)));
+const load=(path:string)=>readOriginalFile(path);
 
 describe('elements from the CMO state vector (0x517af8 + 0x516990/0x5169cc/0x51689c)',()=>{
  it.each(controls.records)('match standard rv→coe for $file $record.name',c=>{

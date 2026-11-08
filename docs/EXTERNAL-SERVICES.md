@@ -70,7 +70,7 @@ Medidas de hoy: build de unos 75 MB y 1194 archivos. Con los archivos de Object 
 
 **Prerrequisitos de despliegue** (se resuelven antes de publicar, no ahora):
 
-- `public/original/.../ObjX_MPC.CMO` mide 30 989 466 B y supera el límite de 25 MiB por archivo de Cloudflare Pages. Hay que servirlo en trozos byte a byte, como el GSC (Front G), o desde R2. Lo detectó la revisión de G1 (29 oct 2026).
+- `public/original/.../ObjX_MPC.CMO` mide 30 989 466 B y supera el límite de 25 MiB por archivo de Cloudflare Pages. Hay que servirlo en trozos byte a byte, como el GSC (Front G), o desde R2. Lo detectó la revisión de G1 (29 oct 2026). **Resuelto en Front REL1 (7 nov 2026):** se sirve en tres trozos byte a byte de 65 536 registros, registrados en `assembled[]` de `docs/LOCAL-RESOURCES.json`, y `npm run build` comprueba los límites de Pages (`scripts/check-deploy-limits.mjs`).
 
 - Límite global de enlaces de entrada (Front A, cierre N1): hoy cuenta también las peticiones que ya rechazó el límite por correo o por IP, así que un solo cliente puede agotar el cupo global (200 por hora) y bloquear la entrada de todos durante esa hora. Antes de desplegar, contar el cupo global solo después de pasar los límites por correo e IP, y revisar con el proveedor de correo real el bloqueo de una víctima (cerrar su cupo pidiendo enlaces a su nombre), que ya está documentado.
 

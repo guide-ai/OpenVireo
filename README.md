@@ -1,8 +1,10 @@
 # OpenVireo
 
-**Open Virtual Educational Observatory.** A React/TypeScript/Vite reconstruction of Project CLEA/VIREO based on recovered behavior. This is a bounded educational reconstruction; original runtime/x87 equivalence and full exercise acceptance remain unverified.
+**Open Virtual Educational Observatory.** A React/TypeScript/Vite reconstruction of Project CLEA/VIREO based on recovered behavior. This is a bounded educational reconstruction; original runtime/x87 equivalence remains unverified.
 
-The repository includes the **1279 runtime, test and provenance resources** in [the identity manifest](docs/LOCAL-RESOURCES.json). A checkout supplies its own catalogs, spectra, images, models and reference fixtures. No separate workstation resource directory or original Windows installation is needed to build or run it.
+**Status: version 1.0.** All seven VIREO exercises (Hubble, large-scale structure, stellar classification, Pleiades photometry, cluster HR diagrams, pulsars and Object X) have a guided student path with an end-to-end test ([exercise board](docs/STUDENT-EXERCISES.md)). Version 1.0 is published as a static site on Cloudflare Pages at its free address: no accounts, saves on the student's computer, aggregate cookie-free visit analytics. See the [release notes](docs/RELEASE-1.0.md) and the [deployment guide](docs/DEPLOY.md) (Spanish); the user runs or authorises each deploy.
+
+The repository includes the **1989 runtime, test and provenance resources** in [the identity manifest](docs/LOCAL-RESOURCES.json) (the original 1279 plus later approved inclusions; large originals stored as byte-range tiles that reassemble to the recorded whole-file SHA-256). A checkout supplies its own catalogs, spectra, images, models and reference fixtures. No separate workstation resource directory or original Windows installation is needed to build or run it.
 
 ## Install and run
 
@@ -24,6 +26,14 @@ npm run test:resources
 npm test -- --maxWorkers=4
 PLAYWRIGHT_BROWSERS_PATH=.local/browsers npx playwright install chromium
 npm run test:e2e -- --workers=2
+```
+
+Before a deploy, check the production build with Cloudflare Pages semantics on loopback (it applies `dist/_headers`; nothing leaves the machine):
+
+```sh
+npm run build                       # ends with the Pages limit check (scripts/check-deploy-limits.mjs)
+(cd worker && npm ci)               # once: the pinned wrangler 4.150.0
+npm run test:pages                  # wrangler pages dev on 127.0.0.1:6310 + tests/release/pages-smoke.pages.ts
 ```
 
 The eleven Node tool contracts run without scientific data or application dependencies. Vitest covers the scientific/state contracts; Playwright covers complete user flows. The browser installation is ordinary test tooling, ignored by Git. E2E starts its own strict loopback5175server by default and refuses reuse of an existing preview. No dependency version changes for resource inclusion.

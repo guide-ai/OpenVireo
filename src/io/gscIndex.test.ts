@@ -9,8 +9,11 @@ import {GSC_RECORD_BYTES,GSC_TILE_RECORDS,gscTileOf} from '../core/gscTilePlan';
 describe('the GSC index rebuilds exactly from the published tiles',()=>{
  it('records, hashes, tile ranges, packed RA bounds and the search skeleton',()=>{
   const index=checkGscIndex(JSON.parse(readFileSync('data/gsc/gsc-index.json','utf8')));
-  const manifest=JSON.parse(readFileSync('docs/LOCAL-RESOURCES.json','utf8')) as {assembled:{name:string;bytes:number;sha256:string;tiles:string[]}[]};
-  expect(index.bands.map(b=>b.name)).toEqual(manifest.assembled.map(a=>a.name.replace(/\.DAT$/,'')));
+  const manifest=JSON.parse(readFileSync('docs/LOCAL-RESOURCES.json','utf8')) as {assembled:{name:string;source:string;bytes:number;sha256:string;tiles:string[]}[]};
+  // assembled[] also lists other tiled originals (Front REL1: Orbit/ObjX_MPC.CMO); the GSC bands are those from Cgsc/GSC/.
+  const bands=manifest.assembled.filter(a=>a.source.startsWith('program files/CLEA/VIREO/Cgsc/GSC/'));
+  expect(manifest.assembled.length-bands.length).toBe(1);
+  expect(index.bands.map(b=>b.name)).toEqual(bands.map(a=>a.name.replace(/\.DAT$/,'')));
   for(const b of index.bands){
    const whole=createHash('sha256'),tiles=[] as unknown[],chunks:Uint8Array[]=[];
    const assembled=manifest.assembled.find(a=>a.name===`${b.name}.DAT`)!;

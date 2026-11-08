@@ -1,16 +1,19 @@
 {
   "name": "openvireo",
   "private": true,
-  "version": "0.2.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "node scripts/check-resources.mjs && vite --host 127.0.0.1",
-    "build": "node scripts/check-resources.mjs && tsc -b && vite build && node scripts/check-cloud-free-dist.mjs",
+    "build": "node scripts/check-resources.mjs && tsc -b && vite build && node scripts/check-cloud-free-dist.mjs && node scripts/check-deploy-limits.mjs",
     "test": "node scripts/check-resources.mjs && vitest run",
     "test:e2e": "node scripts/check-resources.mjs && playwright test",
     "preview": "vite preview --host 127.0.0.1",
     "check:resources": "node scripts/check-resources.mjs",
-    "test:resources": "node scripts/check-resources.test.mjs"
+    "test:resources": "node scripts/check-resources.test.mjs",
+    "check:deploy-limits": "node scripts/check-deploy-limits.mjs",
+    "test:deploy-limits": "node scripts/check-deploy-limits.test.mjs",
+    "test:pages": "playwright test -c playwright.pages.config.ts"
   },
   "dependencies": {
     "react": "19.3.1",

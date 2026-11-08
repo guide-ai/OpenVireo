@@ -21,19 +21,57 @@ export async function resourceSha256(bytes:ArrayBuffer|Uint8Array<ArrayBuffer>):
 const kept=new WeakMap<typeof fetch,Map<string,ArrayBuffer>>();
 const isAbort=(error:unknown)=>error instanceof DOMException&&error.name==='AbortError';
 export async function verifiedSameOriginResource<T>(fetcher:typeof fetch,signal:AbortSignal,path:string,maxBytes:number,verify:(buffer:ArrayBuffer)=>Promise<T>,failure:(code:'size'|'download')=>Error):Promise<T>{
+ return verifiedKept(fetcher,signal,path,async()=>{
+  try{
+   const response=await fetcher(path,{signal,credentials:'same-origin'});
+   return await boundedResourceBody(response,maxBytes,signal);
+  }catch(error){
+   checkResourceAbort(signal);
+   throw failure(error instanceof BoundedResourceError&&error.code==='size'?'size':'download');
+  }
+ },verify);
+}
+/** Front REL1: one byte-exact tile of a same-origin original file stored in byte ranges (docs/LOCAL-RESOURCES.json assembled[]). */
+export type SameOriginTile=Readonly<{path:string;bytes:number;sha256:string}>;
+/** Tiles whose bytes failed their check in this tab; the next request for them bypasses the HTTP cache (cache: 'reload'). */
+const badTiles=new Set<string>();
+/** Front REL1 (web adapter): a whole original file stored as in-order byte-range tiles under the host's per-file limit. Every
+ * tile is fetched from this origin, bounded to and checked for its exact recorded size and SHA-256, then the tiles are
+ * concatenated and the whole file goes through `verify` (its own size and SHA-256), exactly as a single download would. The
+ * verified whole file is kept for the tab under `key`, as verifiedSameOriginResource does. A tile answered with an HTML page (a
+ * host's SPA fallback for a missing file) is a failed download. Abort rejects with the DOMException AbortError. */
+export async function verifiedSameOriginTiles<T>(fetcher:typeof fetch,signal:AbortSignal,key:string,tiles:readonly SameOriginTile[],verify:(buffer:ArrayBuffer)=>Promise<T>,failure:(code:'size'|'download'|'sha256')=>Error):Promise<T>{
+ if(!tiles.length||tiles.some(t=>!Number.isSafeInteger(t.bytes)||t.bytes<1))throw failure('size');
+ return verifiedKept(fetcher,signal,key,async()=>{
+  const parts=await Promise.all(tiles.map(async tile=>{
+   let buffer:ArrayBuffer;
+   try{
+    const response=await fetcher(tile.path,{signal,credentials:'same-origin',...(badTiles.has(tile.path)?{cache:'reload' as const}:{})});
+    if(/^\s*text\/html\b/i.test(response.headers.get('content-type')??'')){try{await response.body?.cancel();}catch{/* ignore */}throw new BoundedResourceError('download');}
+    buffer=await boundedResourceBody(response,tile.bytes,signal);
+   }catch(error){
+    checkResourceAbort(signal);
+    const size=error instanceof BoundedResourceError&&error.code==='size';if(size)badTiles.add(tile.path);
+    throw failure(size?'size':'download');
+   }
+   checkResourceAbort(signal);
+   if(buffer.byteLength!==tile.bytes){badTiles.add(tile.path);throw failure('size');}
+   if(await resourceSha256(buffer)!==tile.sha256){badTiles.add(tile.path);throw failure('sha256');}
+   checkResourceAbort(signal);badTiles.delete(tile.path);
+   return new Uint8Array(buffer);
+  }));
+  const whole=new Uint8Array(parts.reduce((sum,p)=>sum+p.byteLength,0));let offset=0;
+  for(const part of parts){whole.set(part,offset);offset+=part.byteLength;}
+  return whole.buffer;
+ },verify);
+}
+async function verifiedKept<T>(fetcher:typeof fetch,signal:AbortSignal,key:string,download:()=>Promise<ArrayBuffer>,verify:(buffer:ArrayBuffer)=>Promise<T>):Promise<T>{
  checkResourceAbort(signal);
- const files=kept.get(fetcher),held=files?.get(path);
- if(held){try{return await verify(held);}catch(error){if(isAbort(error))throw error;files!.delete(path);}}
- let buffer:ArrayBuffer;
- try{
-  const response=await fetcher(path,{signal,credentials:'same-origin'});
-  buffer=await boundedResourceBody(response,maxBytes,signal);
- }catch(error){
-  checkResourceAbort(signal);
-  throw failure(error instanceof BoundedResourceError&&error.code==='size'?'size':'download');
- }
+ const files=kept.get(fetcher),held=files?.get(key);
+ if(held){try{return await verify(held);}catch(error){if(isAbort(error))throw error;files!.delete(key);}}
+ const buffer=await download();
  checkResourceAbort(signal);
  const result=await verify(buffer);
- let map=kept.get(fetcher);if(!map)kept.set(fetcher,map=new Map());map.set(path,buffer);
+ let map=kept.get(fetcher);if(!map)kept.set(fetcher,map=new Map());map.set(key,buffer);
  return result;
 }
