@@ -65,6 +65,7 @@ Medidas de hoy: build de unos 75 MB y 1194 archivos. Con los archivos de Object 
 - **Entrada:** enlace por correo, sin contraseña. Enviar esos correos requiere un servicio de envío, que es otro servicio externo y se elegirá y aprobará al implementar el backend.
 - **Proveedor:** Cloudflare (sitio estático, y Workers, D1 y R2 cuando haga falta backend).
 - **Dominio y despliegue:** todavía no hay dominio ni cuenta; el usuario comprará un dominio pronto. Mientras tanto no se despliega nada y la prohibición de `AGENTS.md` sigue vigente.
+- **Actualización del 7 nov 2026:** el usuario aprobó publicar la primera versión: solo el sitio estático (las 7 prácticas, guardado en el equipo del estudiante y analítica agregada sin cookies), en su cuenta de Cloudflare y con la dirección gratuita (*.pages.dev o *.workers.dev) hasta tener dominio. Las cuentas, la base de datos y el envío de correo quedan fuera de esta versión. Los términos exactos están en `AGENTS.md`.
 - **Analítica:** sí, métricas de visitas. Propuesta por defecto: Cloudflare Web Analytics, agregada y sin cookies.
 
 **Prerrequisitos de despliegue** (se resuelven antes de publicar, no ahora):
