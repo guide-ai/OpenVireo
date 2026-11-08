@@ -27,7 +27,7 @@
 .lab-troubleshooting dt{font-weight:600;margin-top:16px}
 .lab-troubleshooting dd{margin:6px 0}
 .lab-sources ul{padding-left:20px}
-.lab-sources li{margin:10px 0}
+.lab-sources li{margin:10px 0;overflow-wrap:anywhere}/* layout audit 2026-11-08: hashes wrap at 320 px */
 .lab-sources code{overflow-wrap:anywhere;font-size:12px}
 .lab-recovery{border-left:3px solid var(--ov-warning);padding-left:12px}
 @media(max-width:620px){.hubble-lab-dialog{width:calc(100% - 20px);padding:18px;max-height:94dvh}
