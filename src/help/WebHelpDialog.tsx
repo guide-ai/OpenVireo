@@ -1,9 +1,14 @@
 import {useEffect,useId,useRef,useState} from 'react';
 import {createPortal} from 'react-dom';
 import {WEB_HELP,webHelpTopic,type WebHelpBlock} from './webHelp';
+import {helpKeyEnabled,setHelpKeyEnabled} from './helpShortcut';
 import '../observatory/observatory-dialogs.css';
 import './help.css';
 
+function HelpKeySwitch({label}:{label:string}){
+ const [on,setOn]=useState(helpKeyEnabled);
+ return <label className="web-help-switch"><input type="checkbox" checked={on} data-testid="web-help-key" onChange={e=>{setHelpKeyEnabled(e.target.checked);setOn(e.target.checked);}}/><span>{label}</span></label>;
+}
 function Block({block}:{block:WebHelpBlock}){
  switch(block.kind){
   case 'p':return <p>{block.text}</p>;
@@ -13,6 +18,7 @@ function Block({block}:{block:WebHelpBlock}){
    <thead><tr><th scope="col">{block.head[0]}</th><th scope="col">{block.head[1]}</th></tr></thead>
    <tbody>{block.rows.map(([a,b])=><tr key={a}><th scope="row">{a}</th><td>{b}</td></tr>)}</tbody>
   </table></div>;
+  case 'helpKey':return <HelpKeySwitch label={block.label}/>;
  }
 }
 

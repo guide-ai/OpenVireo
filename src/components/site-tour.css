@@ -1,12 +1,13 @@
 /* First-visit tour (Front Onboarding [W], SiteTour.tsx). Colours come from src/theme/tokens.css (light and dark). */
 .site-tour{position:fixed;inset:0;width:100vw;height:100vh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:transparent;overflow:hidden;color:var(--ov-text)}
-.site-tour::backdrop{background:transparent}
+.site-tour::backdrop{background:transparent;backdrop-filter:none}
+/* The global dialog backdrop blurs the page; here the outlined part must stay readable (review 1 B1). */
 .site-tour-dim{position:fixed;inset:0;background:var(--ov-backdrop)}
 .site-tour-spot{position:fixed;border-radius:var(--ov-radius-md);box-shadow:0 0 0 3px var(--ov-accent),0 0 0 100vmax var(--ov-backdrop);pointer-events:none;transition:left .2s,top .2s,width .2s,height .2s}
 .site-tour-card{position:fixed;width:min(22rem,calc(100vw - 24px));padding:16px 18px;border:2px solid var(--ov-accent);border-radius:var(--ov-radius-lg);background:var(--ov-surface);box-shadow:var(--ov-shadow-lg);line-height:1.5}
 .site-tour-card h2{margin:0 0 6px;font-size:18px}
-.site-tour-card h2:focus{outline:none}
-.site-tour-card h2:focus-visible{outline:2px solid var(--ov-focus);outline-offset:2px}
+.site-tour-card:focus{outline:none}
+.site-tour-card:focus-visible{outline:3px solid var(--ov-focus);outline-offset:3px}
 .site-tour-card p{margin:0 0 12px}
 .site-tour-progress{font-size:var(--ov-text-xs);font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ov-text-muted)}
 .site-tour-actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px}
@@ -14,3 +15,4 @@
 .site-tour :focus-visible{outline:3px solid var(--ov-focus);outline-offset:2px}
 @media(prefers-reduced-motion:reduce){.site-tour-spot{transition:none}}
 .site-tour-actions button{width:auto;flex:none}
+@media print{.site-tour{display:none}}

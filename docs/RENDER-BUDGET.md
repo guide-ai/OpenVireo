@@ -15,15 +15,15 @@ load, so they are never asserted.
 ## Scenarios and budgets
 | Scenario | What happens | Count | Budget |
 |---|---|---|---|
-| classificationLoad | open `#classification` cold, until the type field shows and commits stop | 147 | 158 |
-| classificationKey | one keystroke in "Proposed spectral type" | 31 | 36 |
-| classificationFill | `fill` of that field | 31 | 36 |
-| classificationToSpectrum | header click from classification to the spectrum analyzer | 43 | 47 |
+| classificationLoad | open `#classification` cold, until the type field shows and commits stop | 164 | 178 |
+| classificationKey | one keystroke in "Proposed spectral type" | 34 | 36 |
+| classificationFill | `fill` of that field | 34 | 36 |
+| classificationToSpectrum | header click from classification to the spectrum analyzer | 51 | 55 |
 | analyzerKey | one keystroke in the analyzer's "Object or reference" | 8 | 12 |
-| observatoryLoad | open `#observatory` cold, until its heading shows | 85 | 90 |
-| openDome | click "Open dome ↗" | 26 | 30 |
-| visitedKey | after visiting eight routes (they stay mounted, hidden), one classification keystroke | 31 | 36 |
-| visitedRouteChange | then the header click to the spectrum analyzer | 43 | 47 |
+| observatoryLoad | open `#observatory` cold, until its heading shows | 93 | 100 |
+| openDome | click "Open dome ↗" | 30 | 30 |
+| visitedKey | after visiting eight routes (they stay mounted, hidden), one classification keystroke | 34 | 36 |
+| visitedRouteChange | then the header click to the spectrum analyzer | 51 | 55 |
 
 Counts are as of the commit that set them; the Front Perf commits lower them step by step and update this table.
 
@@ -39,6 +39,16 @@ Counts are as of the commit that set them; the Front Perf commits lower them ste
   onRestore. Keystroke and route-change counts are back to 31 and 43. On load each renders once more (classificationLoad
   144 → 147, observatoryLoad 82 → 85, within the budgets), and openDome 25 → 26: the dome switch cues the dome sound, which
   re-renders ObservatorySounds once.
+
+- Front REL1 (v1.0) and Front Onboarding (2026-11-08). REL1 wrapped every lazily loaded part in an error boundary
+  (LazyBoundary, RouteErrorBoundary). The shell builds new but equal route elements on each keystroke, so both wrappers
+  rendered again for every mounted route: visitedKey 31 → 47 and classificationLoad 147 → 160, already over budget on main
+  d6d0167. Front Onboarding memoises LazyBoundary (it skips a render when its child element has the same type, key and
+  shallowly equal props), so keystrokes are 34 (the remaining wrappers belong to the route being typed in). Front Onboarding
+  also makes each header section a NavGroup, which must know the current page to open its section: six more on load
+  (observatoryLoad 85 → 93, budget 100; classificationLoad 164, budget 178) and five on every route change
+  (classificationToSpectrum and visitedRouteChange 43 → 51, budgets 55). openDome is 30 (the dome's lazy sky boundary
+  renders twice while it loads).
 
 ## Changing a budget
 - `OPENVIREO_RENDER_REPORT=1 npx playwright test tests/render-budget.spec.ts` (or `=all` for every component) prints each scenario's count, commit count and

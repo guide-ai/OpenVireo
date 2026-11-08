@@ -4,7 +4,7 @@
 // Here only that part is replaced by a notice that the site was updated, with Save investigation (the shell's own path, from
 // RecoveryContext) and Reload; the header, the toolbar and every other route keep their state. Other render errors get a
 // generic notice with the same actions. Not a VIREO behaviour.
-import {Component,createContext,Suspense,useContext,type ErrorInfo,type ReactNode} from 'react';
+import {Component,createContext,isValidElement,memo,Suspense,useContext,type ErrorInfo,type ReactNode} from 'react';
 import {APP_SHELL_MESSAGES as SHELL} from './AppShellMessages';
 
 export type RecoveryActions=Readonly<{save?:()=>void;busy?:boolean}>;
@@ -39,6 +39,16 @@ export class RouteErrorBoundary extends Component<{children:ReactNode},BoundaryS
  render(){return this.state.caught?<RecoveryNotice chunk={isChunkLoadError(this.state.error)}/>:this.props.children;}
 }
 /** Suspense for a lazy part, inside its own error boundary. */
-export function LazyBoundary({fallback,children}:{fallback:ReactNode;children:ReactNode}){
- return <RouteErrorBoundary><Suspense fallback={fallback}>{children}</Suspense></RouteErrorBoundary>;
+/** Same node for rendering purposes: identical, or the same element type and key with shallowly equal props. */
+function sameNode(a:ReactNode,b:ReactNode):boolean{
+ if(Object.is(a,b))return true;
+ if(!isValidElement(a)||!isValidElement(b)||a.type!==b.type||a.key!==b.key)return false;
+ const pa=a.props as Record<string,unknown>,pb=b.props as Record<string,unknown>,ka=Object.keys(pa),kb=Object.keys(pb);
+ return ka.length===kb.length&&ka.every(k=>Object.hasOwn(pb,k)&&(k==='children'?sameNode(pa[k] as ReactNode,pb[k] as ReactNode):Object.is(pa[k],pb[k])));
 }
+/** Memoised (Front Onboarding, render budget): the shell re-renders on many keystrokes, and each time it builds new but
+ * equal elements for every mounted route; the two boundary wrappers then rendered again for nothing. The wrapped content
+ * still updates whenever its element or props change. */
+export const LazyBoundary=memo(function LazyBoundary({fallback,children}:{fallback:ReactNode;children:ReactNode}){
+ return <RouteErrorBoundary><Suspense fallback={fallback}>{children}</Suspense></RouteErrorBoundary>;
+},(a,b)=>sameNode(a.children,b.children)&&sameNode(a.fallback,b.fallback));

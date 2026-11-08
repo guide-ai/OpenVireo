@@ -6,6 +6,7 @@ import {HELP_FILES} from './helpFiles';
 import {ABOUT_BOX,HELP_WEBSITES,MAIN_HELP_MENU,QUIT_QUESTION,RADIO_HELP_MENU,REMINDER_CAPTION,reminderBoxText} from './mainHelp';
 import {HELP_MENU_EN as M} from './HelpMessages';
 import WebHelpDialog from './WebHelpDialog';
+import {helpKeyBlocked} from './helpShortcut';
 import '../observatory/field-info.css';
 import './help.css';
 
@@ -29,19 +30,12 @@ function AboutDialog({version,onClose}:{version:string;onClose:()=>void}){
 }
 
 type Menu='help'|'websites'|null;
-/** True when a key press should not be taken as the Help shortcut: typing in a field, or a modal window is open. */
-function shortcutBlocked(e:KeyboardEvent):boolean{
- if(e.ctrlKey||e.metaKey||e.altKey||e.defaultPrevented)return true;
- const t=e.target instanceof Element?e.target:null;
- if(t&&(t.closest('input,textarea,select,[contenteditable=""],[contenteditable="true"]')))return true;
- return document.querySelector('dialog:modal')!==null;
-}
 /** The Help menu of the main window or of the radio lab (TRadioLab: Topics..., About This Exercise...). On Help and User are
  * hidden by default in VIREO (empty option names) and are not shown. `disabledReason` disables the menu with a typed note (the
  * radio lab's panel is not open).
  * Main window [W] (Front WebHelp, Front Onboarding): VIREO's TEnvironment1 items (Topics..., Websites, About...) describe the
  * Windows program, so the menu holds OpenVireo's own help (Help topics…, WebHelpDialog; also opened by the "?" key anywhere
- * outside a text field), the first-visit tour (`onTour`), Websites and the site's About page (`onSiteAbout`, Front REL1, which
+ * outside a text field or a modal window, unless the visitor turned it off: helpShortcut.ts), the first-visit tour (`onTour`), Websites and the site's About page (`onSiteAbout`, Front REL1, which
  * also shows VIREO's About box). VIREO's main-window help (VIRMnHlp) and About... are not offered (user decision, 2026-11-08). */
 export function HelpMenu({kind,disabled=false,disabledReason,onSiteAbout,onTour}:{kind:'main'|'radio';disabled?:boolean;disabledReason?:string;onSiteAbout?:()=>void;onTour?:()=>void}){
  const id=useId(),[menu,setMenu]=useState<Menu>(null),[topics,setTopics]=useState(0),[about,setAbout]=useState(false),[webHelp,setWebHelp]=useState(false);
@@ -50,7 +44,7 @@ export function HelpMenu({kind,disabled=false,disabledReason,onSiteAbout,onTour}
  useEffect(()=>{if(off)setMenu(null);},[off]);
  useEffect(()=>{
   if(kind!=='main')return;
-  const key=(e:KeyboardEvent)=>{if(e.key==='?'&&!shortcutBlocked(e)){e.preventDefault();setMenu(null);setWebHelp(true);}};
+  const key=(e:KeyboardEvent)=>{if(!helpKeyBlocked(e,trigger.current)){e.preventDefault();setMenu(null);setWebHelp(true);}};
   document.addEventListener('keydown',key);return()=>document.removeEventListener('keydown',key);
  },[kind]);
  const escape=(e:React.KeyboardEvent)=>{

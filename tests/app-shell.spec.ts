@@ -9,6 +9,8 @@ test('phone Tools menu is a keyboard disclosure: Escape returns focus, choosing 
  await toggle.focus();await page.keyboard.press('Enter');await expect(toggle).toHaveAttribute('aria-expanded','true');
  for(const name of['Observatory','Radio telescope','Spectrum analyzer','Saved images','Classification guide'])await expect(headerTool(page,name)).toBeVisible();
  await expect(page.getByRole('group',{name:'Exercise guides'})).toBeVisible();
+ // Front Onboarding: each section's name is a disclosure button, first in the panel.
+ await page.keyboard.press('Tab');await expect(page.getByRole('button',{name:'Optical observatory',exact:true})).toBeFocused();
  await page.keyboard.press('Tab');await expect(headerTool(page,'Observatory')).toBeFocused();
  await page.keyboard.press('Escape');await expect(toggle).toHaveAttribute('aria-expanded','false');await expect(toggle).toBeFocused();await expect(headerTool(page,'Observatory')).toBeHidden();
  await toggle.click();await headerTool(page,'Spectrometer').click();

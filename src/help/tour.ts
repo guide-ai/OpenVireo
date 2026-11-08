@@ -22,6 +22,6 @@ export const TOUR=Object.freeze({
   {id:'save',title:'Save your work as a file',targets:['.investigation-toolbar'],
    text:'Your work stays in this browser tab until you save it. Save investigation downloads a file; Restore investigation JSON loads it again later.'},
   {id:'help',title:'Help is always here',targets:['.portal-help .help-trigger'],
-   text:'Open Help for the help topics, or press the ? key at any time. You can take this tour again from the Help menu.'},
+   text:'Open Help for the help topics, or press the ? key anywhere outside a text field. You can take this tour again from the Help menu.'},
  ]),
 });

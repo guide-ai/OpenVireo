@@ -138,3 +138,41 @@ Plan and implementation: Claude Opus 5.5 (coordinator); independent review: a se
 Raw findings (should-fix): (1) on phones Escape in the help dialog also closed the header's Tools drawer and lost focus, because React bubbles a portal's keydown to the header; (2) the printing topic said every print button opens a preview, but Print results and Print spectrum call the browser's print dialog directly; (3) the pulsar saving advice said Pulsar Results saves .CSV, but it only opens a saved file, and omitted that Save investigation keeps pulsar recordings and rows; (4) telescope names did not match the Request 1.0 / 4.0 Meter Telescope buttons; (5) "the help matches the panel because the panels are rebuilt from VIREO's" overclaimed equivalence; (6) the guide button is not called "Continue". Nits: tracking gates only the cameras and spectrometers; Exit Observatory is in the File menu of Move the telescope; "Results Editors" capitalisation; Choose an object's groups; Sky exposure missing from Instruments; Site Parameters changes the site; instructor mode unlocks after a confirmation; no test checked the quoted labels.
 
 Resolution: all confirmed against the source and fixed. Escape is stopped at the Help menu for every dialog it opens (web help, VIREO help list, VIREO About), with a phone e2e step per dialog; the topics were reworded as suggested; a unit test now checks that 35 labels the help quotes exist in the English catalog or the message modules.
+
+## Front Onboarding (2026-11-08)
+
+User decisions of 2026-11-08: remove VIREO's main-window help from the Help menu (per-window Help buttons stay), add a guided first-visit tour, keep Help always visible, and make the menu sections collapsible. Plan and implementation: Claude Opus 5.5 (coordinator); independent review: a separate Claude Opus 5.5 subagent at high effort, read-only, over commit abbad4b.
+
+What changed [W]: the Help button sits in the header's top row (beside the brand; pinned at the top of the wide sidebar; outside the Tools panel on phones; icon only below 360 px). The `?` key opens Help topics (`src/help/helpShortcut.ts`). The tour (`src/help/tour.ts`, `src/components/SiteTour.tsx`) has six steps and starts once per browser. Each header section is a disclosure button (`src/components/NavGroup.tsx`): the current page's section and Exercise guides start open, and the browser remembers the visitor's choices. Browsers driven by automation (`navigator.webdriver`) get every section open and no automatic tour, so the existing end-to-end suites keep the full menu; `tests/onboarding.spec.ts` checks the visitor's view. New per-browser keys: `openvireo.tour.v1`, `openvireo.nav-sections.v1` and `openvireo.help-key.v1`, all read and written inside try/catch, and none part of saved work.
+
+Raw review findings:
+- Blocker: the global `dialog::backdrop` blur also blurred the outlined part of the page under the tour.
+- Should-fix:
+  - On phones the bottom-docked card could cover a low target.
+  - The `?` key ignored `aria-modal` panels that are not `<dialog>` elements (Wedge Options, radio windows), which let it escape their focus trap.
+  - The automatic tour could interrupt a visitor already typing or opening a guide.
+  - A single-character shortcut needs an off switch (WCAG 2.1.4).
+  - Focusing the step heading let screen readers hear only the title.
+- Nits:
+  - no `close` fallback;
+  - unguarded `showModal`;
+  - focus hidden under the pinned top row (WCAG 2.4.11);
+  - `isContentEditable` and AltGr handling;
+  - icon-only Help at 375 px;
+  - "at any time" wording;
+  - the tour not hidden in print.
+- It judged the `navigator.webdriver` exception acceptable and safe. Its cost: most suites test a menu that visitors see only after opening every section.
+
+Resolution: all fixed.
+- The tour's backdrop has no filter.
+- Phone cards dock at the top when the target is in the lower half.
+- The key is blocked by any `dialog:modal` or `[aria-modal="true"]` and when the Help button is inert.
+- The tour starts only when nothing was pressed, no modal is open and focus is not in a field. Otherwise it waits for the next visit.
+- Help topics › Menus, keyboard and phones has an "Open the help topics with the ? key" switch.
+- Focus goes to the step card, named by "Step n of 6" and the title and described by the text.
+- Closing is idempotent through `onClose`, and `showModal` is guarded.
+- The wide sidebar has `scroll-padding-top`.
+- The icon-only breakpoint is below 360 px, and the tour is hidden in print.
+- Tests: `tests/onboarding.spec.ts` (tour, sections, phone, the busy-visitor guard, the `?` switch and the aria-modal block) and `src/help/tour.test.ts` (placement).
+
+Render budget: REL1's boundaries had already pushed the keystroke count over budget on main. `LazyBoundary` is now memoised, which brings it back within budget. The new sections' counts are documented in docs/RENDER-BUDGET.md.

@@ -2,7 +2,7 @@ import {describe,expect,it} from 'vitest';
 import {WEB_HELP,webHelpTopic} from './webHelp';
 
 const topics=WEB_HELP.groups.flatMap(g=>g.topics);
-const text=(id:string)=>{const t=webHelpTopic(id);return [t.title,...t.blocks.flatMap(b=>b.kind==='p'?[b.text]:b.kind==='map'?b.rows.flat():b.items)].join('\n');};
+const text=(id:string)=>{const t=webHelpTopic(id);return [t.title,...t.blocks.flatMap(b=>b.kind==='p'?[b.text]:b.kind==='map'?b.rows.flat():b.kind==='helpKey'?[b.label]:b.items)].join('\n');};
 
 describe('Front WebHelp: OpenVireo help topics',()=>{
  it('has unique topic ids, non-empty topics and resolvable related links',()=>{
