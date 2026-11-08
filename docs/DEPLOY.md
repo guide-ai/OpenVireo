@@ -58,6 +58,8 @@ No copies la salida de `whoami` en issues, documentos ni chats: muestra el corre
 npx wrangler@4.150.0 pages project create openvireo --production-branch=main
 ```
 
+Con Wrangler 4.150.0, `pages project create` intenta pasar el proyecto a la nueva versión de Pages integrada en Workers, y eso falla con "Missing entry-point" sin crear nada. Añade `--force` solo en este comando para crearlo en Pages clásico, que es lo que describe esta guía. Así se creó `openvireo` el 8 de noviembre de 2026. Los comandos siguientes (`pages deploy`) ya van directos a Pages y no necesitan `--force`.
+
 El proyecto se llama siempre `openvireo`; mantén `--project-name=openvireo` en todos los comandos. La dirección pública suele ser `https://openvireo.pages.dev`. Si ese subdominio de `pages.dev` ya está ocupado, Cloudflare asigna otro (por ejemplo `https://openvireo-xyz.pages.dev`) y lo muestra al crear el proyecto y en el panel. En ese caso, cambia solo las direcciones de los pasos 8 y 9 por la que muestre Cloudflare.
 
 También puedes crear el proyecto en el panel: **Workers & Pages → Create → Pages → Upload assets**, con el nombre `openvireo`. No conectes Git: esta versión se publica por subida directa.
