@@ -1267,7 +1267,7 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
                   {k === 'file' && (fileRec || memoryWritten) && <span className="plr-help"> {t(fileRec ? 'pulsar.props.fileNote' : 'pulsar.props.fileNoteWritten')}</span>}</dd></div>
               ))}
             </dl>
-            <table className="plr-table">
+            <table className="plr-table plr-props-table">
               <thead><tr><th scope="col">{t('pulsar.props.receiver')}</th><th scope="col">{t('pulsar.props.frequency')}</th><th scope="col">{t('pulsar.props.gain')}</th></tr></thead>
               <tbody>{props.receivers.map(r => (
                 <tr key={r.receiver} data-testid={`pulsar-prop-receiver-${r.receiver + 1}`}><th scope="row">{r.receiver + 1}</th><td>{r.frequency}</td><td>{r.gain}{r.recorded && r.gainZeroReplaced && <span className="plr-help"> ({t('pulsar.props.gainReplaced')})</span>}</td></tr>

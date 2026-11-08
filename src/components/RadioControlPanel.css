@@ -6,7 +6,7 @@
 .radio-control-block{border:1px solid var(--ov-border);border-radius:8px;padding:12px 14px;margin-top:12px;min-width:0}
 .radio-control-menu{display:flex;flex-wrap:wrap;gap:8px}
 .radio-control .secondary-button{width:auto;min-height:40px;font-size:12px;margin-top:0}
-.radio-control .primary-button{width:auto;flex:0 0 auto;min-height:40px}
+.radio-control .primary-button{width:auto;flex:0 0 auto;min-height:40px;max-width:100%;white-space:normal}/* layout audit 2026-11-08: a long caption wraps at 320 px */
 .radio-control .button-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .radio-control button:focus-visible,.radio-control select:focus-visible,.radio-control input:focus-visible,.radio-control summary:focus-visible{outline:3px solid var(--ov-focus);outline-offset:2px}
 .radio-control-native{font-family:"MS Sans Serif",Tahoma,ui-sans-serif,sans-serif;font-weight:600}
