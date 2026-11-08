@@ -214,7 +214,7 @@ test('mobile LSS Options keeps the host inert until Escape and preserves source 
 
 test('all tools remain reachable without document overflow across the navigation breakpoints',async({page},info)=>{
  await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();
- const buttons=page.locator('.portal-header nav button');await expect(buttons).toHaveText(HEADER_TOOLS);
+ const buttons=page.locator('.portal-header nav .nav-group-items button');await expect(buttons).toHaveText(HEADER_TOOLS);
  for(const width of[1440,1251,1250,780,600,521,520,360,320]){
   // UI redesign: below 600px the tools fold behind the "Tools" disclosure; open it, then require every tool fully in view.
   await page.setViewportSize({width,height:900});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);

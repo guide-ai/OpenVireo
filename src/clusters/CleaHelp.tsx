@@ -81,8 +81,7 @@ function MessageBox({message,onClose}:{message:Message;onClose:()=>void}){
 /** A VIREO Help item (Help1Click; HR 0x544668, the same sequence in every window, docs/CLEA-HELP.md): "Select Help Topic"
  * (THelpLstDlg) and the modeless "Help - <title>" window (THelpWin), index-faithful over a bundled LST and the text file
  * each row names. Pure rules live in src/core/cleaHelp.ts. */
-export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALHLP.LST'],label=M.help,pushHistory=true,disabledReason,openRequest,onReturnFocus,extraNote}:{testId?:string;
- /** A web note shown first under the topic list (Front WebHelp: the main window's VIREO help describes the Windows program). */ extraNote?:string;
+export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALHLP.LST'],label=M.help,pushHistory=true,disabledReason,openRequest,onReturnFocus}:{testId?:string;
  /** The window's help index (its options field default, docs/CLEA-HELP.md). */ list?:HelpFileIdentity;label?:string;
  /** False for TPlsrAnalysisForm1 (Help1Click 0x56e634 does not set THelpWin+0x56c, so the first topic is not pushed). */ pushHistory?:boolean;
  /** A typed reason when VIREO disables this Help item (its options name is empty). */ disabledReason?:string;
@@ -169,7 +168,6 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
    </HelpMenu></div>
    <HelpListBox rows={loaded.rows.map(r=>r.title)} selected={listIndex} onSelect={i=>{setListIndex(i);setStatus('');}} onActivate={readRow} label={M.topicRows} testId={`${testId}-topic-list`}/>
    <p role="status" className="cluster-hr-note">{status}</p>
-   {extraNote&&<p className="cluster-hr-note" data-testid={`${testId}-extra-note`}>{extraNote}</p>}
    <p className="cluster-hr-note">{M.helpAdaptation(list.name)}</p>
   </dialog>}
   {loaded&&topic&&<section className="cluster-hr-window" aria-labelledby={`${id}-topic`} data-testid={`${testId}-window`}>

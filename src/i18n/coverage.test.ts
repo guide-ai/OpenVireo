@@ -56,7 +56,8 @@ describe('P01 complete authored presentation catalog and interpolation contract'
   // 135: Front T7 adds src/observatory/CameraParameterEdits.tsx (the CCD / IR tabs' edits); its captions are the recovered DFM literals (core/cameraParameters.ts) and its notes, spin labels and glyphs come from the catalog (cameraParameters.*).
   // 136: Front REL1 review 1 M1 adds src/components/LazyBoundary.tsx (the update / error notice of a lazily loaded part); its strings come from src/components/AppShellMessages.ts (recovery.*).
   // 137: Front WebHelp adds src/help/WebHelpDialog.tsx (Help › Help topics…, OpenVireo's own help); its strings come from src/help/webHelp.ts.
-  const audit=auditUi(root);expect(audit.files.length).toBe(137);const actual=new Map<string,number>();for(const s of audit.sites){const key=JSON.stringify([s.file,s.kind,s.value]);actual.set(key,(actual.get(key)??0)+1);}
+  // 139: Front Onboarding adds src/components/{NavGroup,SiteTour}.tsx (collapsible menu sections, first-visit tour); their strings come from their props (AppShellMessages) and src/help/tour.ts.
+  const audit=auditUi(root);expect(audit.files.length).toBe(139);const actual=new Map<string,number>();for(const s of audit.sites){const key=JSON.stringify([s.file,s.kind,s.value]);actual.set(key,(actual.get(key)??0)+1);}
   const expected=new Map(receipts.map(r=>[JSON.stringify([r.file,r.kind,r.value]),r.count]));expect(actual).toEqual(expected);expect(receipts.every(r=>r.reason.length>30)).toBe(true);
  });
  it('sources browser title/description from the same English catalog and escapes them as text',()=>{

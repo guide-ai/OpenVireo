@@ -37,7 +37,7 @@ name is an options field; OpenVireo uses its default.
 | LSS wedge plot (0x5821cc) | Wedge plot | WdgPltHlp.LST (+0xb9c) |
 | Pulsar analysis (0x56e634) | Pulsar analysis | PLSANHLP.LST (pulsar +0x644) |
 | Pulsar parameters, TPlsrDataForm1 (0x569690) | Pulsar parameters window | PLSLSHLP.LST (pulsar +0x68c) |
-| Main window, Help › Topics... (0x589724) | App header › Help › VIREO help topics…, on every route | VIRMnHlp.LST (+0x884) |
+| Main window, Help › Topics... (0x589724) | Not offered (user decision, 2026-11-08); Help › Help topics… shows OpenVireo's own help | VIRMnHlp.LST (+0x884), bundled, unused |
 | Radio lab, Help › Topics... (0x565278) | Radio telescope control panel › Help | PULSRHLP.LST (pulsar +0x5fc) |
 | Multi-Spec list TMSpecListForm1 (0x5267a8) | Multi-Spec list window | SpLstHlp (+0xb0c), empty: Help disabled |
 | Multi-Spec control TMultSpCntrl (0x52a88c) | Multi-Spec control window | MltSpHlp (+0xb54), empty: Help disabled |
@@ -55,11 +55,15 @@ Notes:
 
 VIREO's main window Help has Topics..., Websites (2MASS Catalog, Project CLEA, NVO) and About... ("Version 1.504").
 
-OpenVireo's main window Help (Front WebHelp, 2026-11-08 [W]) has:
-- Help topics… — OpenVireo's own help, written for the web site (`src/help/webHelp.ts`, shown by `src/help/WebHelpDialog.tsx`). VIRMnHlp.TXT describes the Windows program (File › Log In, Run Exercise, the Telescopes and Tools menus, DS9, a spreadsheet, NumLock and MouseKeys), which made no sense as the site's help. The web help covers getting started, the exercise guides, the observatory, instruments, analysis pages, saving, printing, finishing, keyboard and phones, instructor mode, and a "Coming from VIREO (Windows)" table that maps each VIREO menu step to its place in OpenVireo. It is new web text, not a CLEA resource.
+OpenVireo's main window Help (Front WebHelp and Front Onboarding, 2026-11-08 [W]) has:
+- Help topics… — OpenVireo's own help, written for the web site (`src/help/webHelp.ts`, shown by `src/help/WebHelpDialog.tsx`), also opened by the `?` key anywhere outside a text field when no modal window is open. VIRMnHlp.TXT describes the Windows program (File › Log In, Run Exercise, the Telescopes and Tools menus, DS9, a spreadsheet, NumLock and MouseKeys), which made no sense as the site's help. The web help covers getting started, the exercise guides, the observatory, instruments, analysis pages, saving, printing, finishing, keyboard and phones, instructor mode, and a "Coming from VIREO (Windows)" table that maps each VIREO menu step to its place in OpenVireo. It is new web text, not a CLEA resource.
+- Take the tour of the site — repeats the first-visit tour (`src/help/tour.ts`, `src/components/SiteTour.tsx`).
 - Websites (2MASS Catalog, Project CLEA, NVO), unchanged;
-- About OpenVireo and privacy — the site's About page (Front REL1);
-- under the label "Original VIREO (Windows program)": VIREO help topics… (VIREO's Topics..., VIRMnHlp.LST, unchanged, with a first note that it describes the Windows program) and About VIREO 1.504… (VIREO's About...).
+- About OpenVireo and privacy — the site's About page (Front REL1), which also shows VIREO's About box.
+
+VIREO's main-window Topics... (VIRMnHlp) and About... are no longer offered (user decision, 2026-11-08): the files stay bundled under the 2026-10-29 approval but no view opens them. The radio lab's Help (PULSRHLP, About This Exercise) is unchanged.
+
+The Help button is always visible (Front Onboarding [W]): in the header's top row beside the brand, pinned at the top of the wide sidebar, and on phones outside the Tools panel.
 
 The per-window Help buttons keep VIREO's own help for that window; where the web panel differs, the panel carries its own web note.
 
@@ -68,7 +72,7 @@ The radio lab's Help has Topics... and About This Exercise... ("Version 1.001-32
 Both windows also have On Help and User items. VIREO hides them by default, because their option names are empty, so they are not shown here. The About box keeps the TAboutBox texts. The DFM's design-time "Version 0.5" is always overwritten by the caller (0x58982c, 0x56543c), so it is never shown; `src/help/mainHelp.ts` is the single source of these texts, and `AboutBoxPanel` in `src/help/HelpMenus.tsx` renders them.
 
 Where the menus are:
-- **Main window [W].** VIREO's TEnvironment1 is the always-present main window, so its Help menu is in the app header, next to the theme switch, on every route (including Object X, LSS, Hubble and the variable stars). On phones it is inside the header's Tools panel; in the wide sidebar layout its list opens upward. The observatory view keeps only File and Tools. The Help menu stays enabled while a project is being saved or restored, because Help changes nothing; the header is inert only while a modal window is open.
+- **Main window [W].** VIREO's TEnvironment1 is the always-present main window, so its Help menu is in the app header on every route (including Object X, LSS, Hubble and the variable stars): in the top row beside the brand, pinned at the top of the wide sidebar, and on phones outside the Tools panel. Its list opens below it. The observatory view keeps only File and Tools. The Help menu stays enabled while a project is being saved or restored, because Help changes nothing; the header is inert only while a modal window is open.
 - **Radio lab.** TRadioLab is the "VIREO Radio Telescope Control Panel" form, which VIREO shows only after the telescope is switched on, so its Help menu exists only then. Before that, OpenVireo shows the radio Help menu disabled, with a note saying where it appears.
 
 ## Websites (user decision of 2026-10-29)
@@ -115,7 +119,7 @@ ASTRMHLP, HUBHLP, LSSHLP, OBJXHLP, OBXMNHLP and TOOLSHLP (TOOLSHLP is identical 
 - The text files they name (`astrmhlp.txt`, `hublab.txt`, `lsslab.txt`, `astrmlab.txt`, `ObXMnHlp.txt`) are not in the zip.
 - No Hubble, LSS, Object X or astrometry window has a Help item.
 
-They are bundled under the approval but not shown. The Hubble, LSS and Object X exercises are covered by the main window's VIREO help topics (VIRMnHlp, its "Tools" and exercise topics) and by OpenVireo's own Help topics….
+They are bundled under the approval but not shown. The Hubble, LSS and Object X exercises are covered by OpenVireo's own Help topics… and their exercise guides.
 
 Object X: no shown help text names an Object X target. A test checks that no ObjectX.HTL object ID appears in any bundled help text.
 
@@ -134,3 +138,41 @@ Plan and implementation: Claude Opus 5.5 (coordinator); independent review: a se
 Raw findings (should-fix): (1) on phones Escape in the help dialog also closed the header's Tools drawer and lost focus, because React bubbles a portal's keydown to the header; (2) the printing topic said every print button opens a preview, but Print results and Print spectrum call the browser's print dialog directly; (3) the pulsar saving advice said Pulsar Results saves .CSV, but it only opens a saved file, and omitted that Save investigation keeps pulsar recordings and rows; (4) telescope names did not match the Request 1.0 / 4.0 Meter Telescope buttons; (5) "the help matches the panel because the panels are rebuilt from VIREO's" overclaimed equivalence; (6) the guide button is not called "Continue". Nits: tracking gates only the cameras and spectrometers; Exit Observatory is in the File menu of Move the telescope; "Results Editors" capitalisation; Choose an object's groups; Sky exposure missing from Instruments; Site Parameters changes the site; instructor mode unlocks after a confirmation; no test checked the quoted labels.
 
 Resolution: all confirmed against the source and fixed. Escape is stopped at the Help menu for every dialog it opens (web help, VIREO help list, VIREO About), with a phone e2e step per dialog; the topics were reworded as suggested; a unit test now checks that 35 labels the help quotes exist in the English catalog or the message modules.
+
+## Front Onboarding (2026-11-08)
+
+User decisions of 2026-11-08: remove VIREO's main-window help from the Help menu (per-window Help buttons stay), add a guided first-visit tour, keep Help always visible, and make the menu sections collapsible. Plan and implementation: Claude Opus 5.5 (coordinator); independent review: a separate Claude Opus 5.5 subagent at high effort, read-only, over commit abbad4b.
+
+What changed [W]: the Help button sits in the header's top row (beside the brand; pinned at the top of the wide sidebar; outside the Tools panel on phones; icon only below 360 px). The `?` key opens Help topics (`src/help/helpShortcut.ts`). The tour (`src/help/tour.ts`, `src/components/SiteTour.tsx`) has six steps and starts once per browser. Each header section is a disclosure button (`src/components/NavGroup.tsx`): the current page's section and Exercise guides start open, and the browser remembers the visitor's choices. Browsers driven by automation (`navigator.webdriver`) get every section open and no automatic tour, so the existing end-to-end suites keep the full menu; `tests/onboarding.spec.ts` checks the visitor's view. New per-browser keys: `openvireo.tour.v1`, `openvireo.nav-sections.v1` and `openvireo.help-key.v1`, all read and written inside try/catch, and none part of saved work.
+
+Raw review findings:
+- Blocker: the global `dialog::backdrop` blur also blurred the outlined part of the page under the tour.
+- Should-fix:
+  - On phones the bottom-docked card could cover a low target.
+  - The `?` key ignored `aria-modal` panels that are not `<dialog>` elements (Wedge Options, radio windows), which let it escape their focus trap.
+  - The automatic tour could interrupt a visitor already typing or opening a guide.
+  - A single-character shortcut needs an off switch (WCAG 2.1.4).
+  - Focusing the step heading let screen readers hear only the title.
+- Nits:
+  - no `close` fallback;
+  - unguarded `showModal`;
+  - focus hidden under the pinned top row (WCAG 2.4.11);
+  - `isContentEditable` and AltGr handling;
+  - icon-only Help at 375 px;
+  - "at any time" wording;
+  - the tour not hidden in print.
+- It judged the `navigator.webdriver` exception acceptable and safe. Its cost: most suites test a menu that visitors see only after opening every section.
+
+Resolution: all fixed.
+- The tour's backdrop has no filter.
+- Phone cards dock at the top when the target is in the lower half.
+- The key is blocked by any `dialog:modal` or `[aria-modal="true"]` and when the Help button is inert.
+- The tour starts only when nothing was pressed, no modal is open and focus is not in a field. Otherwise it waits for the next visit.
+- Help topics › Menus, keyboard and phones has an "Open the help topics with the ? key" switch.
+- Focus goes to the step card, named by "Step n of 6" and the title and described by the text.
+- Closing is idempotent through `onClose`, and `showModal` is guarded.
+- The wide sidebar has `scroll-padding-top`.
+- The icon-only breakpoint is below 360 px, and the tour is hidden in print.
+- Tests: `tests/onboarding.spec.ts` (tour, sections, phone, the busy-visitor guard, the `?` switch and the aria-modal block) and `src/help/tour.test.ts` (placement).
+
+Render budget: REL1's boundaries had already pushed the keystroke count over budget on main. `LazyBoundary` is now memoised, which brings it back within budget. The new sections' counts are documented in docs/RENDER-BUDGET.md.

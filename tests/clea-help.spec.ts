@@ -70,12 +70,14 @@ test('the spectrometer Help is in the windows where students take spectra (TSpec
  }
 });
 
-test('main window Help leads with OpenVireo\'s own help; VIREO\'s Windows help is labelled as such (Front WebHelp)',async({page})=>{
+test('main window Help offers OpenVireo\'s own help, the tour, Websites and About; VIREO\'s main-window help is gone (Front WebHelp, Onboarding)',async({page})=>{
  await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible({timeout:15000});
+ await expect(id(page,'portal-help').getByTestId('main-help-menu')).toHaveAccessibleName('Help menu of the observatory');
  await id(page,'main-help-menu').click();
  const items=id(page,'portal-help').locator('.fi-menu-list > button');
- await expect(items).toHaveText(['Help topics…','Websites ›','About OpenVireo and privacy','VIREO help topics…','About VIREO 1.504…']);
- await expect(id(page,'main-help-menu-topics')).toHaveAccessibleDescription('Original VIREO (Windows program)');
+ await expect(items).toHaveText(['Help topics…?','Take the tour of the site','Websites ›','About OpenVireo and privacy']);
+ await expect(id(page,'main-help-web')).toHaveAttribute('aria-keyshortcuts','?');
+ await expect(page.getByTestId('main-help-menu-topics')).toHaveCount(0);await expect(page.getByTestId('main-help-about')).toHaveCount(0);
  await id(page,'main-help-web').click();
  const help=id(page,'web-help');await expect(help).toBeVisible();
  await expect(help.getByRole('heading',{name:'OpenVireo help'})).toBeVisible();
@@ -88,59 +90,37 @@ test('main window Help leads with OpenVireo\'s own help; VIREO\'s Windows help i
  await id(page,'web-help-topic').getByRole('button',{name:'Saving your work'}).click();
  await expect(id(page,'web-help-topic')).toHaveAttribute('data-topic','saving');
  await page.keyboard.press('Escape');await expect(help).toHaveCount(0);await expect(id(page,'main-help-menu')).toBeFocused();
- // VIREO's own main-window help says first that it describes the Windows program.
- await id(page,'main-help-menu').click();await id(page,'main-help-menu-topics').click();
- await expect(id(page,'main-help-extra-note')).toContainText('original VIREO program for Windows');
- await page.keyboard.press('Escape');
+ // The ? key opens Help topics from anywhere except a text field.
+ await page.getByRole('heading',{name:'Start with the sky.'}).click();await page.keyboard.press('?');await expect(help).toBeVisible();
+ await page.keyboard.press('Escape');await expect(help).toHaveCount(0);
+ await page.getByLabel('Search catalog',{exact:true}).fill('M8');await page.keyboard.press('?');
+ await expect(help).toHaveCount(0);
 });
 
-test('OpenVireo help opens from the phone Tools menu and fits the screen',async({page})=>{
+test('on a phone, Help is in the top bar (outside Tools), and its help fits the screen',async({page})=>{
  await page.setViewportSize({width:375,height:812});
  await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible({timeout:15000});
- await page.getByRole('banner').getByRole('button',{name:'Tools'}).click();
+ await expect(id(page,'main-help-menu')).toBeVisible();
+ await expect(page.getByRole('banner').getByRole('button',{name:'Tools'})).toHaveAttribute('aria-expanded','false');
  await id(page,'main-help-menu').click();await id(page,'main-help-web').click();
  const help=id(page,'web-help');await expect(help).toBeVisible();
  expect(await help.evaluate(d=>d.scrollWidth<=d.clientWidth&&d.getBoundingClientRect().right<=window.innerWidth)).toBe(true);
  await id(page,'web-help-close').click();await expect(help).toHaveCount(0);await expect(id(page,'main-help-menu')).toBeFocused();
- // Escape closes only the dialog: the Tools drawer stays open and focus returns to Help (review 1 S1), for the web help, VIREO's
- // help list and VIREO's About box.
+ // With the Tools panel open, Escape in the help closes only the help (review 1 S1).
+ await page.getByRole('banner').getByRole('button',{name:'Tools'}).click();
  await id(page,'main-help-menu').click();await id(page,'main-help-web').click();await expect(help).toBeVisible();
  await page.keyboard.press('Escape');await expect(help).toHaveCount(0);await expect(id(page,'main-help-menu')).toBeFocused();
- await id(page,'main-help-menu').click();await id(page,'main-help-menu-topics').click();await expect(id(page,'main-help-topics')).toBeVisible();
- await page.keyboard.press('Escape');await expect(id(page,'main-help-topics')).toBeHidden();await expect(id(page,'main-help-menu')).toBeFocused();
- await id(page,'main-help-menu').click();await id(page,'main-help-about').click();await expect(id(page,'help-about')).toBeVisible();
- await page.keyboard.press('Escape');await expect(id(page,'help-about')).toHaveCount(0);await expect(id(page,'main-help-menu')).toBeFocused();
+ await expect(page.getByRole('banner').getByRole('button',{name:'Tools'})).toHaveAttribute('aria-expanded','true');
 });
 
-test('main window Help: Topics, Websites and About; File › Exit Observatory shows VIREO\'s reminder',async({page})=>{
+test('main window Help: Websites; File › Exit Observatory shows VIREO\'s reminder',async({page})=>{
  await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible({timeout:15000});
- await expect(id(page,'portal-help').getByTestId('main-help-menu')).toHaveAccessibleName('Help menu of the observatory');
- // Escape, and Topics › Close Help Topics, return focus to the menu button (review 1 M2); Escape in the Topics submenu closes
- // only the submenu.
- await id(page,'main-help-menu').click();await id(page,'main-help-menu-topics').click();
- await expect(id(page,'main-help-topics')).toBeVisible();
- await id(page,'main-help-topics-menu').click();await page.keyboard.press('Escape');
- await expect(id(page,'main-help-topics')).toBeVisible();await expect(id(page,'main-help-topics-menu')).toBeFocused();
- await page.keyboard.press('Escape');await expect(id(page,'main-help-topics')).toBeHidden();await expect(id(page,'main-help-menu')).toBeFocused();
- await id(page,'main-help-menu').click();await id(page,'main-help-menu-topics').click();
- await id(page,'main-help-topics-menu').click();await id(page,'main-help-topics').getByRole('button',{name:'Close Help Topics'}).click();
- await expect(id(page,'main-help-menu')).toBeFocused();
- await id(page,'main-help-menu').click();await id(page,'main-help-menu-topics').click();
- const rows=id(page,'main-help-topic-list').getByRole('option');
- await expect(rows.first()).toHaveText('-Getting Started-');await expect(rows.nth(1)).toHaveText('Log In');
- await rows.filter({hasText:'Select Exercise'}).dblclick();
- await expect(id(page,'main-help-topic-text')).toContainText('select "File"->"Run Exercise"');
- await id(page,'main-help-topic-menu').click();await id(page,'main-help-close-topic').click();
- await expect(id(page,'main-help-menu')).toBeFocused();
  // Websites: links open a new tab only on click; NVO has no equivalent page.
  await id(page,'main-help-menu').click();await id(page,'main-help-websites').click();
  for(const [k,href] of [['twoMass','https://irsa.ipac.caltech.edu/Missions/2mass.html'],['clea','https://public.gettysburg.edu/~marschal/clea/CLEAhome.html'],['nvo','https://heasarc.gsfc.nasa.gov/navo/summary/about_navo.html']]){
   const a=id(page,`help-website-${k}`);await expect(a).toHaveAttribute('href',href);await expect(a).toHaveAttribute('target','_blank');await expect(a).toHaveAttribute('rel','noopener noreferrer');
  }
- await page.keyboard.press('Escape');
- await id(page,'main-help-menu').click();await id(page,'main-help-about').click();
- await expect(id(page,'help-about')).toContainText('VIREO - The VIRtual Educational Observatory');await expect(id(page,'help-about').getByTestId('help-about-version')).toHaveText('Version 1.504');
- await id(page,'help-about').getByRole('button',{name:'OK'}).click();await expect(id(page,'main-help-menu')).toBeFocused();
+ await page.keyboard.press('Escape');await expect(id(page,'main-help-menu')).toBeFocused();
  // Exit Observatory: the reminder box; Cancel keeps the exercise, OK explains that the tab can now be closed.
  await id(page,'fi-file-menu').click();await id(page,'ob-exit').click();
  const box=id(page,'exit-reminder');await expect(box.getByRole('heading',{name:'** Exercise Finished? **'})).toBeVisible();
@@ -153,8 +133,8 @@ test('main window Help: Topics, Websites and About; File › Exit Observatory sh
 
 test('the main Help menu is in the app header on every route; the reminder falls back to VIREO\'s Yes/No question',async({page})=>{
  await page.goto('/#object-x');
- await id(page,'main-help-menu').click();await id(page,'main-help-menu-topics').click();
- await expect(id(page,'main-help-topic-list').getByRole('option').first()).toHaveText('-Getting Started-');
+ await id(page,'main-help-menu').click();await id(page,'main-help-web').click();
+ await expect(id(page,'web-help-topic')).toHaveAttribute('data-topic','welcome');
  await page.keyboard.press('Escape');
  await page.route('**/original/help/Reminder.obs',r=>r.fulfill({status:404,body:''}));
  await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible({timeout:15000});
@@ -208,12 +188,15 @@ test('Front K2.5: a single click on a line moves the classification cursor to it
 test('Help fits a 320 px screen in the dark theme',async({page})=>{
  await page.emulateMedia({colorScheme:'dark'});await page.setViewportSize({width:320,height:800});
  await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible({timeout:15000});
- // On phones the header's Help menu is inside the Tools panel.
- await page.locator('.tools-toggle').click();
- await id(page,'main-help-menu').click();await id(page,'main-help-menu-topics').click();
- await id(page,'main-help-topic-list').getByRole('option',{name:'Log In'}).dblclick();
- await expect(id(page,'main-help-window')).toBeVisible();
+ // The Help button and Tools share the top bar; the open menu and the help window stay within the screen.
  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+ await id(page,'main-help-menu').click();
+ const list=id(page,'portal-help').locator('.fi-menu-list');await expect(list).toBeVisible();
+ expect(await list.evaluate(e=>{const r=e.getBoundingClientRect();return r.left>=0&&r.right<=320;})).toBe(true);
+ await id(page,'main-help-web').click();await id(page,'web-help-topics').getByRole('button',{name:'Coming from VIREO (Windows)'}).click();
+ await expect(id(page,'web-help-topic').getByRole('table')).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+ expect(await id(page,'web-help').evaluate(d=>d.getBoundingClientRect().right<=320)).toBe(true);
 });
 
 test('radio lab Help: Topics opens PULSRHLP.LST and About This Exercise shows its version',async({page})=>{
