@@ -55,12 +55,13 @@ test('the Options dialog lists the other original options as text with recovered
  const list=page.getByTestId('ob-options-others');await expect(list.getByRole('checkbox')).toHaveCount(0);
  // Front O: Edit Mode, Front O2: Virtual Observatory, and Front R3's six ported options are live (non-persisted) check boxes,
  // so 7 of the 15 other options remain listed as text.
- await expect(list).not.toContainText('Fast Slewing');await expect(list.getByRole('listitem')).toHaveCount(3);await expect(list).not.toContainText('Test Mode');await expect(list).not.toContainText('Demonstration Mode');// Front T3: Test Mode is live (5 → 4); Front T2: Demonstration Mode (4 → 3)
+ await expect(list).not.toContainText('Fast Slewing');await expect(list.getByRole('listitem')).toHaveCount(2);await expect(list).not.toContainText('Test Mode');await expect(list).not.toContainText('Demonstration Mode');await expect(list).not.toContainText('Restrict Scope Access');// Front T3: Test Mode is live (5 → 4); Front T2: Demonstration Mode (4 → 3); Front T5: Restrict Scope Access (3 → 2)
  // Front L3 (2026-10-30): Time-Dependent Data is live too. Front R4 (2026-10-31): Show Object ID too (6 → 5), and Show Object
  // Mag. left the Spectrometer tab values; both are check boxes (10 → 12).
  await expect(list).not.toContainText('Edit Mode');await expect(list).not.toContainText('Virtual Observatory');
  // Front S3 (2026-10-31): Allow User Change is a live check box too (12 → 13; it was a Spectrometer-tab value).
- await expect(page.getByTestId('ob-options-dialog').getByRole('checkbox')).toHaveCount(15);await expect(page.getByTestId('ob-options-test-mode')).not.toBeChecked();await expect(page.getByTestId('ob-options-demonstration-mode')).not.toBeChecked();// Front T3 (13 → 14); Front T2 (14 → 15)
+ // Front T4: Set E(B-V) and Detect Sky (15 → 17); Front T5: Restrict Scope Access (17 → 18); Front T7: CCD and IR position noise (18 → 20).
+ await expect(page.getByTestId('ob-options-dialog').getByRole('checkbox')).toHaveCount(20);await expect(page.getByTestId('ob-options-test-mode')).not.toBeChecked();await expect(page.getByTestId('ob-options-demonstration-mode')).not.toBeChecked();// Front T3 (13 → 14); Front T2 (14 → 15)
   await expect(page.getByTestId('ob-options-allow-user-change')).toBeChecked();await expect(page.getByTestId('ob-options-fast-slewing')).toBeChecked();await expect(page.getByTestId('ob-options-edit-mode')).not.toBeChecked();await expect(page.getByTestId('ob-options-virtual-observatory')).not.toBeChecked();
 });
 

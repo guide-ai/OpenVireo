@@ -7,7 +7,7 @@ Guía paso a paso para publicar la versión 1.0 como sitio estático en tu cuent
 - La analítica de visitas es agregada y sin cookies (Cloudflare Web Analytics).
 - No se despliegan cuentas, base de datos, correo ni Workers.
 
-Tú ejecutas o autorizas cada despliegue. Ningún agente inicia sesión en Cloudflare ni despliega por ti.
+Desde el 8 de noviembre de 2026 (decisión tuya, `AGENTS.md`), cada push a `main` que pasa todas las pruebas se publica solo, con GitHub Actions (§ 11). El despliegue a mano de los pasos 4–6 sigue sirviendo para la primera vez o para emergencias, y lo ejecutas o autorizas tú. Ningún agente inicia sesión en Cloudflare por ti ni ve el token.
 
 > **Nunca** pongas tokens, contraseñas ni identificadores de cuenta en el repositorio, en `.env`, en los registros ni en las revisiones. `wrangler login` guarda su credencial en tu carpeta de usuario, fuera del repositorio.
 
@@ -178,3 +178,51 @@ Cuando compres el dominio, y con una nueva aprobación según `AGENTS.md`:
 3. Comprueba las cabeceras con `curl -I` en el nuevo dominio (paso 8.5). `_headers` se aplica igual.
 4. Opcional: redirige `openvireo.pages.dev` al dominio con una regla de redirección (**Rules → Redirect Rules**) o con `public/_redirects`.
 5. Las cuentas, la base de datos, el correo y los Workers siguen fuera de esta versión. Cada uno necesita su propia aprobación (`docs/EXTERNAL-SERVICES.md` §4).
+
+## 11. Despliegue automático (CI/CD con GitHub Actions)
+
+El flujo `.github/workflows/ci-cd.yml` corre en GitHub en cada push y en cada pull request:
+
+1. **Tipos, pruebas unitarias y recursos:** `tsc`, Vitest, la comprobación de los recursos originales y de los límites de Pages.
+2. **Pruebas del navegador:** la suite completa de Playwright, repartida en 4 trabajos en paralelo.
+3. **Compilación y pruebas de Pages:** `npm run build` y `npm run test:pages`, que sirve `dist/` con `wrangler pages dev` en local (sin cuenta).
+4. **Despliegue:** solo en un push a `main`, y solo si los tres anteriores pasan. Compila de nuevo y publica `dist/` en el proyecto `openvireo` con `wrangler pages deploy … --branch=main`.
+
+Si una prueba falla, no se despliega nada y la versión publicada sigue igual. GitHub te avisa por correo. Las evidencias del fallo quedan 7 días como artefacto del run (**Actions → el run → Artifacts**).
+
+### 11.1 Configuración (una sola vez, la haces tú)
+
+El flujo necesita dos secretos de GitHub. Nunca van en el repositorio, en `.env` ni en los registros.
+
+1. **Crea un token de Cloudflare solo para Pages:**
+   1. Entra en **dash.cloudflare.com → icono de perfil → My Profile → API Tokens → Create Token**.
+   2. Elige **Create Custom Token**.
+   3. En **Permissions**, añade solo **Account · Cloudflare Pages · Edit**.
+   4. En **Account Resources**, elige **Include · tu cuenta**.
+   5. Opcional: pon una fecha de caducidad (**TTL**) y apúntala para renovarlo.
+   6. Pulsa **Continue to summary → Create Token** y copia el token. Cloudflare solo lo muestra una vez.
+2. **Busca el ID de tu cuenta.** Está en el panel (**Workers & Pages → Account details → Account ID**) o en la salida de:
+   ```sh
+   npx wrangler@4.150.0 whoami
+   ```
+3. **Guarda los dos valores como secretos del repositorio.** Desde la raíz del proyecto, con `gh` autenticado:
+   ```sh
+   gh secret set CLOUDFLARE_API_TOKEN -R guide-ai/OpenVireo
+   ```
+   ```sh
+   gh secret set CLOUDFLARE_ACCOUNT_ID -R guide-ai/OpenVireo
+   ```
+   Cada comando te pide el valor y no lo muestra. También puedes hacerlo en **GitHub → Settings → Secrets and variables → Actions → New repository secret**.
+4. **Lanza el primer despliegue automático:** haz un push a `main`, o abre **Actions → CI/CD → Run workflow**.
+
+### 11.2 Uso diario
+
+- **Publicar:** fusiona en `main` y haz push. El run completo tarda unos 15–25 minutos; la dirección de producción es `https://openvireo.pages.dev`.
+- **Ver el estado:** **GitHub → Actions**, o desde la terminal:
+  ```sh
+  gh run list -R guide-ai/OpenVireo --limit 5
+  ```
+- **Fuera del horario de clase:** un despliegue obliga a recargar las pestañas abiertas (§ 6). Si una clase está en curso, espera para hacer push a `main` o trabaja en otra rama.
+- **Volver atrás:** igual que en § 9 (rollback en el panel), o con `git revert` del commit y un push, que vuelve a desplegar la versión anterior.
+- **Pull requests:** corren todas las pruebas pero nunca despliegan. Los de forks no tienen acceso a los secretos.
+- **Cambiar el token:** crea uno nuevo (11.1), sustituye el secreto con `gh secret set CLOUDFLARE_API_TOKEN -R guide-ai/OpenVireo` y revoca el anterior en Cloudflare.

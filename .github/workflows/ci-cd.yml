@@ -1,0 +1,142 @@
+# OpenVireo CI/CD (user decision, 2026-11-08): every push to main or a claude/ work branch, and every pull request, runs the
+# full checks; a push to main that passes
+# them is published to Cloudflare Pages (project openvireo, https://openvireo.pages.dev). Only the static site is deployed
+# (the ordinary `npm run build` output). The Cloudflare API token and account ID live only in GitHub secrets
+# (CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID); see docs/DEPLOY.md § 11.
+name: CI/CD
+
+on:
+  push:
+    # main deploys; the coordinator's work branches (claude/<front>) get the same checks before they are merged.
+    branches: [main, 'claude/**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  # A newer push to a pull request supersedes its older run; runs on main always finish, so each one can deploy in order.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  WRANGLER_SEND_METRICS: 'false'
+  PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.local/browsers
+
+jobs:
+  unit:
+    name: Types, unit tests and resource checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: node scripts/check-resources.mjs
+      - run: npx tsc -b
+      # Some scientific contracts take a few seconds each; the CI runner gets a wider per-test timeout than a workstation.
+      - run: npx vitest run --testTimeout=30000
+      - run: npm run test:resources
+      - run: npm run test:deploy-limits
+
+  e2e:
+    name: Browser tests (${{ matrix.shard }}/4)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Cache the Playwright browser
+        uses: actions/cache@v4
+        with:
+          path: .local/browsers
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test --shard=${{ matrix.shard }}/4 --reporter=line
+      - name: Keep the failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-results-${{ matrix.shard }}
+          path: test-results/
+          retention-days: 7
+
+  pages:
+    name: Build and Cloudflare Pages checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            worker/package-lock.json
+      - run: npm ci --ignore-scripts
+      # As docs/DEPLOY.md: the pinned wrangler 4.150.0 (and its workerd binary for the local Pages server).
+      - run: npm ci
+        working-directory: worker
+      - name: Cache the Playwright browser
+        uses: actions/cache@v4
+        with:
+          path: .local/browsers
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - run: npx playwright install --with-deps chromium
+      # Builds dist/, checks it holds no optional-cloud code and fits the Pages limits, then serves it with wrangler pages dev
+      # on loopback (no account) and runs the release smoke tests against it.
+      - run: npm run build
+      - run: npm run test:pages -- --reporter=line
+
+  deploy:
+    name: Deploy to Cloudflare Pages
+    needs: [unit, e2e, pages]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: production
+      url: https://openvireo.pages.dev
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            worker/package-lock.json
+      - run: npm ci --ignore-scripts
+      # As docs/DEPLOY.md: the pinned wrangler 4.150.0 (and its workerd binary for the local Pages server).
+      - run: npm ci
+        working-directory: worker
+      - run: npm run build
+      # Run from the repository root, never from worker/ (whose wrangler.jsonc is the optional backend's).
+      - name: Publish dist/ to the openvireo Pages project
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::The CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID secrets are not set (docs/DEPLOY.md § 11)."
+            exit 1
+          fi
+          worker/node_modules/.bin/wrangler pages deploy dist --project-name=openvireo --branch=main \
+            --commit-hash="$COMMIT_SHA" --commit-message="CI deploy of $COMMIT_SHA"
