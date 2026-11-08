@@ -176,3 +176,19 @@ Resolution: all fixed.
 - Tests: `tests/onboarding.spec.ts` (tour, sections, phone, the busy-visitor guard, the `?` switch and the aria-modal block) and `src/help/tour.test.ts` (placement).
 
 Render budget: REL1's boundaries had already pushed the keystroke count over budget on main. `LazyBoundary` is now memoised, which brings it back within budget. The new sections' counts are documented in docs/RENDER-BUDGET.md.
+
+### Tour outline fix (2026-11-08)
+
+User report: on step 4 ("Or explore the sky freely") the outline sat only 6 px outside the Observatory steps strip, so the strip's text touched the ring, and the strip was scrolled only until it touched the window's bottom edge, which cut the outline off. The sidebar step lost its ring the same way at the window's top-left corner. Plan and implementation: Claude Opus 5.5 (coordinator); independent review: a separate Claude Opus 5.5 subagent at high effort, read-only, over the uncommitted diff.
+
+Fix [W]: `spotBox` (`src/help/tourPlacement.ts`) leaves 12 px between a part and its outline and pulls the outline 3 px inside the window's edges. The card is placed against the outline. Each part is scrolled into view with a 24 px scroll margin (`.site-tour-scrolling`, set only while scrolling). `src/help/tour.test.ts` checks the geometry. `tests/onboarding.spec.ts` checks the step-4 outline, and that check fails against the previous code.
+
+Raw review findings (all low; nothing blocking): (1) the e2e check might not reproduce the bug at Playwright's window size; (2) `innerWidth`/`innerHeight` include a classic scrollbar; (3) restoring an inline `scroll-margin` loses per-side values; (4) the larger outline makes the bottom fallback slightly more likely on short landscape windows, which was already the case there; (5) the ring width is written in both the TypeScript and the CSS; (6) the fix was not recorded here.
+
+Resolution:
+- (1) The check was confirmed failing on the old code.
+- (2) The window size now comes from `documentElement.clientWidth/clientHeight`.
+- (3) A class replaces the inline style.
+- (5) The CSS and the constants note each other.
+- (6) This entry records the fix.
+- (4) Accepted.

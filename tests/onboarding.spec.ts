@@ -21,6 +21,12 @@ test('the tour starts on the first visit, steps through the page, and does not s
   await id(page,'site-tour-next').click();
   await expect(tour).toHaveAttribute('data-step',step);await expect(id(page,'site-tour-card')).toBeFocused();
   await expect(id(page,'site-tour-spot')).toBeVisible();
+  // The Observatory steps strip sits low on the page: it is scrolled fully into view, with space between its text and the
+  // whole outline, which stays inside the window (the first version cut the outline off at the bottom edge).
+  if(step==='observatory')await expect.poll(async()=>{
+   const spot=await id(page,'site-tour-spot').boundingBox(),strip=await page.locator('.first-steps').boundingBox(),view=page.viewportSize();
+   return !!(spot&&strip&&view&&spot.x<=strip.x-8&&spot.y<=strip.y-8&&spot.x+spot.width>=strip.x+strip.width+8&&spot.y+spot.height>=strip.y+strip.height+8
+    &&spot.y>=3&&spot.y+spot.height<=view.height-3);}).toBe(true);
  }
  // The last step outlines the Help button.
  await expect.poll(async()=>{const spot=await id(page,'site-tour-spot').boundingBox(),help=await id(page,'main-help-menu').boundingBox();

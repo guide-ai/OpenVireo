@@ -20,3 +20,16 @@ export function placeTourCard(target:Box|null,card:{width:number;height:number},
  if(above>=MARGIN)return {left,top:above,side:'above'};
  return {left:clamp((view.width-card.width)/2,MARGIN,maxLeft),top:maxTop,side:'bottom'};
 }
+
+/** Space between a highlighted part and its outline, and the outline's width. Keep in step with site-tour.css: the 3 px ring of
+ * .site-tour-spot, and the 24 px scroll margin of .site-tour-scrolling (more than both together, so the whole outline is on
+ * screen after scrolling). */
+export const SPOT_PAD=12,SPOT_RING=3;
+
+/** The outline around a highlighted part: SPOT_PAD of space all round, so the part's own text never touches the ring, pulled in
+ * at the window's edges so the ring stays visible there (a sidebar at the edge, a part cut off by the window). */
+export function spotBox(target:Box,view:{width:number;height:number}):Box{
+ const left=Math.max(target.left-SPOT_PAD,SPOT_RING),top=Math.max(target.top-SPOT_PAD,SPOT_RING);
+ const right=Math.min(target.left+target.width+SPOT_PAD,view.width-SPOT_RING),bottom=Math.min(target.top+target.height+SPOT_PAD,view.height-SPOT_RING);
+ return {left,top,width:Math.max(0,right-left),height:Math.max(0,bottom-top)};
+}
