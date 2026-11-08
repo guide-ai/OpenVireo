@@ -4,14 +4,33 @@
 .help-reminder-text{white-space:pre-line;max-width:min(36rem,100%)}
 .help-menu-off{font-weight:600}
 .spl-window{max-width:min(40rem,100%)}
-/* The main Help menu in the app header (dark chrome): its list is in the flow, so the sidebar never clips it. */
-.portal-help{margin-bottom:var(--ov-space-2)}
-.portal-help .fi-menu>button{min-height:36px;width:100%;text-align:left;border-color:var(--ov-chrome-border);background:var(--ov-chrome-hover);color:var(--ov-chrome-text)}
-.portal-help .fi-menu>button:focus-visible{outline:2px solid var(--ov-chrome-focus);outline-offset:2px}
-.portal-help .fi-menu-list{position:static;margin-top:4px;min-width:0;max-width:100%}
-@media(min-width:600px) and (max-width:1099.98px){.portal-footer{display:flex;align-items:flex-start;gap:var(--ov-space-2)}.portal-help{margin:0}.portal-help .fi-menu-list{position:absolute;left:auto;right:0;min-width:min(18rem,calc(100vw - 48px))}.portal-help .fi-menu{position:relative}}
-/* Wide layout: the menu sits at the foot of the sidebar, so its list opens upward over the navigation (review closure N5). */
-@media(min-width:1100px){.portal-help .fi-menu{position:relative}.portal-help .fi-menu-list{position:absolute;top:auto;bottom:calc(100% + 4px);left:0;right:0;margin:0;max-height:calc(100vh - 96px);overflow-y:auto}}
+/* The main Help menu (Front Onboarding [W]): always visible in the header's top row, beside the brand; its list opens below. */
+.portal-help{flex:none;margin-left:auto}
+.portal-help .help-trigger{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:4px 12px 4px 6px;border:1px solid var(--ov-chrome-border);border-radius:var(--ov-radius-pill);background:var(--ov-chrome-hover);color:var(--ov-chrome-text);font-weight:600}
+.portal-help .help-trigger:hover:not(:disabled){border-color:var(--ov-chrome-muted);background:var(--ov-chrome-hover);color:var(--ov-chrome-text)}
+.portal-help .help-trigger[aria-expanded=true]{background:var(--ov-chrome-active-bg);color:var(--ov-chrome-active-text);border-color:var(--ov-chrome-active-bg)}
+.portal-help .help-trigger:focus-visible{outline:2px solid var(--ov-chrome-focus);outline-offset:2px}
+.help-trigger-icon{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--ov-chrome-active-bg);color:var(--ov-chrome-active-text);font-weight:700;font-size:13px;line-height:1}
+.help-trigger[aria-expanded=true] .help-trigger-icon{background:var(--ov-chrome-bg);color:var(--ov-chrome-text)}
+.portal-help .fi-menu{position:relative}
+.portal-help .fi-menu-list{position:absolute;z-index:30;top:calc(100% + 6px);left:auto;right:0;width:max-content;min-width:min(17rem,calc(100vw - 24px));max-width:calc(100vw - 24px);max-height:calc(100vh - 96px);overflow-y:auto}
+.portal-help .fi-menu-list>button,.portal-help .fi-submenu>a{justify-content:flex-start}
+.help-menu-key{margin-left:auto;padding:0 6px;border:1px solid var(--ov-border);border-radius:var(--ov-radius-sm);font-size:12px;color:var(--ov-text-muted)}
+/* Wide sidebar: the top row (brand and Help) stays pinned while the sidebar scrolls; the list spans the sidebar. */
+@media(min-width:1100px){
+ .portal-header .portal-top{position:sticky;top:-14px;z-index:5;margin:-14px -12px 0;padding:14px 12px 8px 20px;background:var(--ov-chrome-bg);display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px 8px}
+ .portal-header .portal-top .portal-brand-block{display:contents}
+ .portal-top .portal-status{grid-column:1/-1;grid-row:2}
+ .portal-top .portal-help{grid-column:2;grid-row:1}
+ .portal-help .fi-menu{position:static}
+ .portal-help .fi-menu-list{left:12px;right:12px;width:auto;min-width:0}
+}
+/* Very narrow phones: the Help button keeps its icon and accessible name; its word is hidden to leave room for Tools. */
+@media(max-width:379.98px){.portal-help .help-trigger{padding:4px 6px}.portal-help .help-trigger .help-trigger-text{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
+.portal-brand-block{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0}
+@media(max-width:1099.98px){.portal-brand-block{flex-direction:row;align-items:center;gap:16px}}
+@media(max-width:599.98px){.portal-header .portal-top{position:relative}.portal-top .portal-help{margin-left:auto}.portal-help .fi-menu{position:static}.portal-help .fi-menu-list{left:0;right:0;width:auto;min-width:0;max-width:none}}
+
 /* Help › Help topics… (web help, WebHelpDialog.tsx): topic list beside the text; stacked on phones. */
 .web-help{width:min(calc(100vw - 32px),56rem)}
 .web-help-head{display:flex;align-items:center;justify-content:space-between;gap:var(--ov-space-2);margin-bottom:var(--ov-space-2)}

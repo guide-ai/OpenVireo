@@ -29,31 +29,45 @@ function AboutDialog({version,onClose}:{version:string;onClose:()=>void}){
 }
 
 type Menu='help'|'websites'|null;
+/** True when a key press should not be taken as the Help shortcut: typing in a field, or a modal window is open. */
+function shortcutBlocked(e:KeyboardEvent):boolean{
+ if(e.ctrlKey||e.metaKey||e.altKey||e.defaultPrevented)return true;
+ const t=e.target instanceof Element?e.target:null;
+ if(t&&(t.closest('input,textarea,select,[contenteditable=""],[contenteditable="true"]')))return true;
+ return document.querySelector('dialog:modal')!==null;
+}
 /** The Help menu of the main window or of the radio lab (TRadioLab: Topics..., About This Exercise...). On Help and User are
  * hidden by default in VIREO (empty option names) and are not shown. `disabledReason` disables the menu with a typed note (the
  * radio lab's panel is not open).
- * Main window [W] (Front WebHelp): VIREO's TEnvironment1 items (Topics..., Websites, About...) describe the Windows program
- * (File › Log In, Run Exercise, the Telescopes and Tools menus, DS9, a spreadsheet), so the menu leads with OpenVireo's own
- * help (Help topics…, WebHelpDialog) and the site's About page (`onSiteAbout`, Front REL1), keeps Websites, and moves VIREO's
- * Topics... and About... under an "Original VIREO (Windows program)" label with captions that say so. */
-export function HelpMenu({kind,disabled=false,disabledReason,onSiteAbout}:{kind:'main'|'radio';disabled?:boolean;disabledReason?:string;onSiteAbout?:()=>void}){
+ * Main window [W] (Front WebHelp, Front Onboarding): VIREO's TEnvironment1 items (Topics..., Websites, About...) describe the
+ * Windows program, so the menu holds OpenVireo's own help (Help topics…, WebHelpDialog; also opened by the "?" key anywhere
+ * outside a text field), the first-visit tour (`onTour`), Websites and the site's About page (`onSiteAbout`, Front REL1, which
+ * also shows VIREO's About box). VIREO's main-window help (VIRMnHlp) and About... are not offered (user decision, 2026-11-08). */
+export function HelpMenu({kind,disabled=false,disabledReason,onSiteAbout,onTour}:{kind:'main'|'radio';disabled?:boolean;disabledReason?:string;onSiteAbout?:()=>void;onTour?:()=>void}){
  const id=useId(),[menu,setMenu]=useState<Menu>(null),[topics,setTopics]=useState(0),[about,setAbout]=useState(false),[webHelp,setWebHelp]=useState(false);
  const trigger=useRef<HTMLButtonElement>(null);
  const C=kind==='main'?MAIN_HELP_MENU:RADIO_HELP_MENU,off=disabled||disabledReason!==undefined;
  useEffect(()=>{if(off)setMenu(null);},[off]);
+ useEffect(()=>{
+  if(kind!=='main')return;
+  const key=(e:KeyboardEvent)=>{if(e.key==='?'&&!shortcutBlocked(e)){e.preventDefault();setMenu(null);setWebHelp(true);}};
+  document.addEventListener('keydown',key);return()=>document.removeEventListener('keydown',key);
+ },[kind]);
  const escape=(e:React.KeyboardEvent)=>{
   if(e.key!=='Escape')return;
   // Escape in a dialog this menu opened closes only that dialog, never the header's phone Tools drawer around the menu.
   if((e.target as Element).closest('dialog')){e.stopPropagation();return;}
   if(menu){e.preventDefault();e.stopPropagation();setMenu(null);trigger.current?.focus();}
  };
+ const caption=menuCaptionText(C.help);
  return <div className="fi-menu" onKeyDown={escape}>
-  <button type="button" ref={trigger} disabled={off} aria-label={M.menuName[kind]} aria-describedby={disabledReason?`${id}-off`:undefined} aria-expanded={menu!==null} aria-controls={`${id}-help`} data-testid={`${kind}-help-menu`} onClick={()=>setMenu(m=>m?null:'help')}>{menuCaptionText(C.help)}</button>
+  <button type="button" ref={trigger} disabled={off} className={kind==='main'?'help-trigger':undefined} aria-label={M.menuName[kind]} aria-describedby={disabledReason?`${id}-off`:undefined} aria-expanded={menu!==null} aria-controls={`${id}-help`} data-testid={`${kind}-help-menu`} onClick={()=>setMenu(m=>m?null:'help')}>
+   {kind==='main'?<><span className="help-trigger-icon" aria-hidden="true">{M.shortcutKey}</span><span className="help-trigger-text">{caption}</span></>:caption}</button>
   {disabledReason&&<p id={`${id}-off`} className="fi-note fi-menu-note" data-testid={`${kind}-help-off`}>{disabledReason}</p>}
-  {menu&&<div id={`${id}-help`} role="group" aria-label={menuCaptionText(C.help)} className="fi-menu-list">
-   {kind==='main'&&<button type="button" data-testid="main-help-web" onClick={()=>{setMenu(null);setWebHelp(true);}}>{M.webTopics}</button>}
-   {kind==='radio'&&<button type="button" data-testid="radio-help-menu-topics" onClick={()=>{setMenu(null);setTopics(n=>n+1);}}>{menuCaptionText(C.topics)}</button>}
+  {menu&&<div id={`${id}-help`} role="group" aria-label={caption} className="fi-menu-list">
    {kind==='main'&&<>
+    <button type="button" data-testid="main-help-web" aria-keyshortcuts={M.shortcutKey} onClick={()=>{setMenu(null);setWebHelp(true);}}>{M.webTopics}<span className="help-menu-key" aria-hidden="true">{M.shortcutKey}</span></button>
+    {onTour&&<button type="button" data-testid="main-help-tour" onClick={()=>{setMenu(null);onTour();}}>{M.tour}</button>}
     <button type="button" aria-expanded={menu==='websites'} data-testid="main-help-websites" onClick={()=>setMenu(m=>m==='websites'?'help':'websites')}>{menuCaptionText(MAIN_HELP_MENU.websites)} ›</button>
     {menu==='websites'&&<div role="group" aria-label={menuCaptionText(MAIN_HELP_MENU.websites)} className="fi-submenu">
      {HELP_WEBSITES.map(w=>w.web
@@ -63,16 +77,15 @@ export function HelpMenu({kind,disabled=false,disabledReason,onSiteAbout}:{kind:
      <p className="fi-note fi-menu-note" data-testid="help-websites-note">{M.websitesNote}</p>
     </div>}
     {onSiteAbout&&<button type="button" data-testid="main-help-site-about" onClick={()=>{setMenu(null);trigger.current?.focus();onSiteAbout();}}>{M.siteAbout}</button>}
-    <hr/>
-    <p className="fi-note fi-menu-note help-menu-section" id={`${id}-orig`}>{M.originalSection}</p>
-    <button type="button" data-testid="main-help-menu-topics" aria-describedby={`${id}-orig`} onClick={()=>{setMenu(null);setTopics(n=>n+1);}}>{M.originalTopics}</button>
-    <button type="button" data-testid="main-help-about" aria-describedby={`${id}-orig`} onClick={()=>{setMenu(null);setAbout(true);}}>{M.originalAbout}</button>
    </>}
-   {kind==='radio'&&<button type="button" data-testid="radio-help-about" onClick={()=>{setMenu(null);setAbout(true);}}>{menuCaptionText(C.about)}</button>}
+   {kind==='radio'&&<>
+    <button type="button" data-testid="radio-help-menu-topics" onClick={()=>{setMenu(null);setTopics(n=>n+1);}}>{menuCaptionText(C.topics)}</button>
+    <button type="button" data-testid="radio-help-about" onClick={()=>{setMenu(null);setAbout(true);}}>{menuCaptionText(C.about)}</button>
+   </>}
   </div>}
-  <CleaHelp list={HELP_FILES[kind==='main'?'VIRMNHLP.LST':'PULSRHLP.LST']} openRequest={topics} onReturnFocus={()=>trigger.current?.focus()} testId={`${kind}-help`} extraNote={kind==='main'?M.originalTopicsNote:undefined}/>
+  {kind==='radio'&&<CleaHelp list={HELP_FILES['PULSRHLP.LST']} openRequest={topics} onReturnFocus={()=>trigger.current?.focus()} testId="radio-help"/>}
   {webHelp&&<WebHelpDialog onClose={()=>{setWebHelp(false);requestAnimationFrame(()=>trigger.current?.focus());}}/>}
-  {about&&<AboutDialog version={kind==='main'?ABOUT_BOX.mainVersion:ABOUT_BOX.radioVersion} onClose={()=>{setAbout(false);requestAnimationFrame(()=>trigger.current?.focus());}}/>}
+  {about&&<AboutDialog version={ABOUT_BOX.radioVersion} onClose={()=>{setAbout(false);requestAnimationFrame(()=>trigger.current?.focus());}}/>}
  </div>;
 }
 

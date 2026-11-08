@@ -16,11 +16,9 @@ export const HELP_MENU_EN=Object.freeze({
  siteAbout:'About OpenVireo and privacy',
  /** Front WebHelp [W]: OpenVireo's own help (WebHelpDialog), first in the main Help menu. */
  webTopics:'Help topics…',
- /** Front WebHelp [W]: VIREO's own Topics... and About... of the main window, kept under a label that names the program. */
- originalSection:'Original VIREO (Windows program)',
- originalTopics:'VIREO help topics…',
- originalAbout:'About VIREO 1.504…',
- originalTopicsNote:'This is the help of the original VIREO program for Windows, kept for reference. It describes that program\'s menus (File › Log In and Run Exercise, the Telescopes and Tools menus, DS9, a spreadsheet), which OpenVireo replaces with its own pages: see Help › Help topics… for how the web version works.',
+ /** Front Onboarding [W]: the first-visit tour, repeatable from Help; and the key that opens Help topics from anywhere. */
+ tour:'Take the tour of the site',
+ shortcutKey:'?',
  exitNote:'VIREO shows this reminder when you exit the observatory during an exercise (after Run Exercise); otherwise it only asks whether to quit. OpenVireo has no Log In or Run Exercise step, so the observatory is always an exercise in progress. In VIREO, OK or Yes quits the program; Cancel or No keeps it open.',
 });
 

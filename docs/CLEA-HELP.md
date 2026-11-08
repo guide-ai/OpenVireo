@@ -37,7 +37,7 @@ name is an options field; OpenVireo uses its default.
 | LSS wedge plot (0x5821cc) | Wedge plot | WdgPltHlp.LST (+0xb9c) |
 | Pulsar analysis (0x56e634) | Pulsar analysis | PLSANHLP.LST (pulsar +0x644) |
 | Pulsar parameters, TPlsrDataForm1 (0x569690) | Pulsar parameters window | PLSLSHLP.LST (pulsar +0x68c) |
-| Main window, Help › Topics... (0x589724) | App header › Help › VIREO help topics…, on every route | VIRMnHlp.LST (+0x884) |
+| Main window, Help › Topics... (0x589724) | Not offered (user decision, 2026-11-08); Help › Help topics… shows OpenVireo's own help | VIRMnHlp.LST (+0x884), bundled, unused |
 | Radio lab, Help › Topics... (0x565278) | Radio telescope control panel › Help | PULSRHLP.LST (pulsar +0x5fc) |
 | Multi-Spec list TMSpecListForm1 (0x5267a8) | Multi-Spec list window | SpLstHlp (+0xb0c), empty: Help disabled |
 | Multi-Spec control TMultSpCntrl (0x52a88c) | Multi-Spec control window | MltSpHlp (+0xb54), empty: Help disabled |
@@ -55,11 +55,15 @@ Notes:
 
 VIREO's main window Help has Topics..., Websites (2MASS Catalog, Project CLEA, NVO) and About... ("Version 1.504").
 
-OpenVireo's main window Help (Front WebHelp, 2026-11-08 [W]) has:
-- Help topics… — OpenVireo's own help, written for the web site (`src/help/webHelp.ts`, shown by `src/help/WebHelpDialog.tsx`). VIRMnHlp.TXT describes the Windows program (File › Log In, Run Exercise, the Telescopes and Tools menus, DS9, a spreadsheet, NumLock and MouseKeys), which made no sense as the site's help. The web help covers getting started, the exercise guides, the observatory, instruments, analysis pages, saving, printing, finishing, keyboard and phones, instructor mode, and a "Coming from VIREO (Windows)" table that maps each VIREO menu step to its place in OpenVireo. It is new web text, not a CLEA resource.
+OpenVireo's main window Help (Front WebHelp and Front Onboarding, 2026-11-08 [W]) has:
+- Help topics… — OpenVireo's own help, written for the web site (`src/help/webHelp.ts`, shown by `src/help/WebHelpDialog.tsx`), also opened by the `?` key anywhere outside a text field when no modal window is open. VIRMnHlp.TXT describes the Windows program (File › Log In, Run Exercise, the Telescopes and Tools menus, DS9, a spreadsheet, NumLock and MouseKeys), which made no sense as the site's help. The web help covers getting started, the exercise guides, the observatory, instruments, analysis pages, saving, printing, finishing, keyboard and phones, instructor mode, and a "Coming from VIREO (Windows)" table that maps each VIREO menu step to its place in OpenVireo. It is new web text, not a CLEA resource.
+- Take the tour of the site — repeats the first-visit tour (`src/help/tour.ts`, `src/components/SiteTour.tsx`).
 - Websites (2MASS Catalog, Project CLEA, NVO), unchanged;
-- About OpenVireo and privacy — the site's About page (Front REL1);
-- under the label "Original VIREO (Windows program)": VIREO help topics… (VIREO's Topics..., VIRMnHlp.LST, unchanged, with a first note that it describes the Windows program) and About VIREO 1.504… (VIREO's About...).
+- About OpenVireo and privacy — the site's About page (Front REL1), which also shows VIREO's About box.
+
+VIREO's main-window Topics... (VIRMnHlp) and About... are no longer offered (user decision, 2026-11-08): the files stay bundled under the 2026-10-29 approval but no view opens them. The radio lab's Help (PULSRHLP, About This Exercise) is unchanged.
+
+The Help button is always visible (Front Onboarding [W]): in the header's top row beside the brand, pinned at the top of the wide sidebar, and on phones outside the Tools panel.
 
 The per-window Help buttons keep VIREO's own help for that window; where the web panel differs, the panel carries its own web note.
 
@@ -68,7 +72,7 @@ The radio lab's Help has Topics... and About This Exercise... ("Version 1.001-32
 Both windows also have On Help and User items. VIREO hides them by default, because their option names are empty, so they are not shown here. The About box keeps the TAboutBox texts. The DFM's design-time "Version 0.5" is always overwritten by the caller (0x58982c, 0x56543c), so it is never shown; `src/help/mainHelp.ts` is the single source of these texts, and `AboutBoxPanel` in `src/help/HelpMenus.tsx` renders them.
 
 Where the menus are:
-- **Main window [W].** VIREO's TEnvironment1 is the always-present main window, so its Help menu is in the app header, next to the theme switch, on every route (including Object X, LSS, Hubble and the variable stars). On phones it is inside the header's Tools panel; in the wide sidebar layout its list opens upward. The observatory view keeps only File and Tools. The Help menu stays enabled while a project is being saved or restored, because Help changes nothing; the header is inert only while a modal window is open.
+- **Main window [W].** VIREO's TEnvironment1 is the always-present main window, so its Help menu is in the app header on every route (including Object X, LSS, Hubble and the variable stars): in the top row beside the brand, pinned at the top of the wide sidebar, and on phones outside the Tools panel. Its list opens below it. The observatory view keeps only File and Tools. The Help menu stays enabled while a project is being saved or restored, because Help changes nothing; the header is inert only while a modal window is open.
 - **Radio lab.** TRadioLab is the "VIREO Radio Telescope Control Panel" form, which VIREO shows only after the telescope is switched on, so its Help menu exists only then. Before that, OpenVireo shows the radio Help menu disabled, with a note saying where it appears.
 
 ## Websites (user decision of 2026-10-29)
@@ -115,7 +119,7 @@ ASTRMHLP, HUBHLP, LSSHLP, OBJXHLP, OBXMNHLP and TOOLSHLP (TOOLSHLP is identical 
 - The text files they name (`astrmhlp.txt`, `hublab.txt`, `lsslab.txt`, `astrmlab.txt`, `ObXMnHlp.txt`) are not in the zip.
 - No Hubble, LSS, Object X or astrometry window has a Help item.
 
-They are bundled under the approval but not shown. The Hubble, LSS and Object X exercises are covered by the main window's VIREO help topics (VIRMnHlp, its "Tools" and exercise topics) and by OpenVireo's own Help topics….
+They are bundled under the approval but not shown. The Hubble, LSS and Object X exercises are covered by OpenVireo's own Help topics… and their exercise guides.
 
 Object X: no shown help text names an Object X target. A test checks that no ObjectX.HTL object ID appears in any bundled help text.
 

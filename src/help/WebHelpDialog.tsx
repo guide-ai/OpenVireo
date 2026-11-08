@@ -16,8 +16,8 @@ function Block({block}:{block:WebHelpBlock}){
  }
 }
 
-/** Help › Help topics… (web [W]): OpenVireo's own help, written for the web site. VIREO's Windows help stays available
- * under Help › VIREO help topics…. Content is pure data in webHelp.ts. Rendered at the document root, so the header's navigation
+/** Help › Help topics… (web [W]): OpenVireo's own help, written for the web site (VIREO's main-window help described the
+ * Windows program and is not offered). Content is pure data in webHelp.ts. Rendered at the document root, so the header's navigation
  * styles (the menu lives in the header) never apply to it. */
 export default function WebHelpDialog({onClose}:{onClose:()=>void}){
  const dialog=useRef<HTMLDialogElement>(null),heading=useRef<HTMLHeadingElement>(null),id=useId();

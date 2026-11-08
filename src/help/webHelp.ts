@@ -110,7 +110,7 @@ const ANALYSIS:WebHelpGroup={title:'Analysis and results',topics:[
    'Save investigation also keeps your pulsar recording and confirmed pulsar measurements. For a .CSV file use Save recorded measurements (.CSV) in Radio data; Pulsar Results opens a saved file to review it.',
    'Camera images download as FITS files; open them under Files › Saved images.',
    'Hot lists save as .HTL files from the Original hot lists editor.'),
-  p('Only the colour theme, instructor Demonstration Mode and the classification observation notebook are remembered by the browser itself.'),
+  p('Only the colour theme, which menu sections you left open, whether you have seen the tour, instructor Demonstration Mode and the classification observation notebook are remembered by the browser itself.'),
  ],['finishing','printing']),
  topic('printing','Printing',[
   p('Some print buttons, such as Print results and Print spectrum, open your browser\'s print dialog directly. Others, such as Print Sky Image... and Print Wedge Plot..., first show a print preview whose Print… button opens it. The browser\'s print dialog can also save as PDF.'),
@@ -123,7 +123,9 @@ const ANALYSIS:WebHelpGroup={title:'Analysis and results',topics:[
 const SITE:WebHelpGroup={title:'Using the site',topics:[
  topic('navigation','Menus, keyboard and phones',[
   list(
-   'The header groups every page: Optical observatory, Radio observatory, Analysis, Results Editors, Files and Exercise guides. On a phone they fold behind the Tools button.',
+   'The menu groups every page into sections: Optical observatory, Radio observatory, Analysis, Results Editors, Files and Exercise guides. Click a section\'s name to open or close it; the section of the page you are on opens by itself, and the browser remembers the rest. On a phone the menu is behind the Tools button.',
+   'Help is always at the top of the page, also on a phone. Press the ? key anywhere outside a text field to open these help topics.',
+   'Help › Take the tour of the site shows the first-visit tour again.',
    'Tab and Shift+Tab move between controls; Enter or Space presses a button.',
    'Escape closes menus and dialogs.',
    'Direction buttons (telescope and radio) move while held with the mouse, Space or Enter.',
@@ -135,7 +137,7 @@ const SITE:WebHelpGroup={title:'Using the site',topics:[
  ],['telescope']),
  topic('original-help','VIREO\'s original help',[
   p('The Help buttons inside each instrument and tool show VIREO\'s own help for that window, unchanged from the original program.'),
-  p('Help › VIREO help topics… shows the help of VIREO\'s main window. It describes the Windows program\'s menus, which OpenVireo replaces with its own pages; Coming from VIREO (Windows) maps each of them. Help › About VIREO 1.504… shows the original program\'s About box.'),
+  p('VIREO\'s main-window help described the Windows program\'s menus, which OpenVireo replaces with its own pages, so it is not offered here: Coming from VIREO (Windows) maps each of those menus to its place in OpenVireo.'),
  ],['from-vireo','instruments']),
 ]};
 

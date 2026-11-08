@@ -13,6 +13,14 @@
 .portal-header nav{display:flex;flex-direction:column;gap:10px;min-width:0}
 .nav-group{display:flex;flex-direction:column;gap:2px;min-width:0}
 .nav-group-label{padding:0 10px 1px;font-size:11px;line-height:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ov-chrome-muted)}
+/* Front Onboarding [W]: each section name is a disclosure button (components/NavGroup.tsx). */
+.portal-header nav .nav-group-toggle{display:flex;align-items:center;justify-content:space-between;gap:6px;width:100%;min-height:28px;padding:2px 0;border:0;border-radius:var(--ov-radius-sm);background:transparent;color:var(--ov-chrome-muted);font:inherit;cursor:pointer}
+.portal-header nav .nav-group-toggle:hover:not(:disabled){background:var(--ov-chrome-hover);color:var(--ov-chrome-text)}
+.portal-header nav .nav-group-toggle .nav-group-label{padding:0 10px 1px;color:inherit}
+.nav-group-chevron{flex:none;margin-right:8px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:transform var(--ov-duration,.15s)}
+.nav-group-toggle[aria-expanded=false] .nav-group-chevron{transform:rotate(-90deg)}
+.portal-header .nav-group-items[hidden]{display:none}
+@media(prefers-reduced-motion:reduce){.nav-group-chevron{transition:none}}
 .nav-group-items{display:flex;flex-direction:column;gap:1px;min-width:0}
 .portal-header nav button{display:flex;align-items:center;justify-content:flex-start;width:100%;min-height:30px;padding:4px 10px;border:0;line-height:1.25;border-radius:var(--ov-radius-sm);background:transparent;color:var(--ov-chrome-text);font-size:var(--ov-text-sm);font-weight:500;text-align:left;white-space:normal}
 .portal-header nav button:hover:not(:disabled){background:var(--ov-chrome-hover)}
@@ -33,6 +41,8 @@
  .nav-group-label{padding:0 2px 2px}
  .nav-group-items{flex-direction:row;flex-wrap:wrap;gap:4px}
  .portal-header nav button{width:auto;min-height:36px;padding:6px 12px;background:rgb(255 255 255 / .06)}
+ .portal-header nav .nav-group-toggle{width:auto;justify-content:flex-start;padding:2px 0}
+ .portal-header nav .nav-group-toggle .nav-group-label{padding:0 2px 1px}
 }
 /* Phones: the groups and theme switch fold behind the "Tools" disclosure button. */
 .tools-toggle{display:none}
@@ -51,6 +61,7 @@
  .portal-header nav{display:flex;flex-direction:column;gap:10px}
  .nav-group-items{display:grid;grid-template-columns:1fr 1fr;gap:4px}
  .portal-header nav button{width:100%;min-height:40px;justify-content:flex-start}
+ .portal-header nav .nav-group-toggle{min-height:40px;justify-content:space-between}
  .portal-footer{margin:0;padding:0}
  .theme-switch{width:100%}
 }
