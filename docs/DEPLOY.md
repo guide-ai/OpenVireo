@@ -192,32 +192,37 @@ Si una prueba falla, no se despliega nada y la versión publicada sigue igual. G
 
 ### 11.1 Configuración (una sola vez, la haces tú)
 
-El flujo necesita dos secretos de GitHub. Nunca van en el repositorio, en `.env` ni en los registros.
+El flujo necesita dos secretos. Se guardan en el **entorno** `production` de GitHub, que solo puede usar la rama `main`. Así, ningún flujo de otra rama (incluidas las ramas `claude/…` de los agentes) puede leerlos. Nunca van en el repositorio, en `.env` ni en los registros.
 
-1. **Crea un token de Cloudflare solo para Pages:**
+1. **Crea el entorno y limítalo a `main`:**
+   1. Entra en **GitHub → guide-ai/OpenVireo → Settings → Environments → New environment**.
+   2. Ponle el nombre `production`.
+   3. En **Deployment branches and tags**, elige **Selected branches and tags → Add deployment branch or tag rule → `main`**.
+   4. No añadas revisores: el despliegue es automático (decisión del 8 de noviembre de 2026).
+2. **Crea un token de Cloudflare solo para Pages:**
    1. Entra en **dash.cloudflare.com → icono de perfil → My Profile → API Tokens → Create Token**.
    2. Elige **Create Custom Token**.
    3. En **Permissions**, añade solo **Account · Cloudflare Pages · Edit**.
    4. En **Account Resources**, elige **Include · tu cuenta**.
    5. Opcional: pon una fecha de caducidad (**TTL**) y apúntala para renovarlo.
    6. Pulsa **Continue to summary → Create Token** y copia el token. Cloudflare solo lo muestra una vez.
-2. **Busca el ID de tu cuenta.** Está en el panel (**Workers & Pages → Account details → Account ID**) o en la salida de:
+3. **Busca el ID de tu cuenta.** Está en el panel (**Workers & Pages → Account details → Account ID**) o en la salida de:
    ```sh
-   npx wrangler@4.150.0 whoami
+   worker/node_modules/.bin/wrangler whoami
    ```
-3. **Guarda los dos valores como secretos del repositorio.** Desde la raíz del proyecto, con `gh` autenticado:
+4. **Guarda los dos valores como secretos del entorno `production`.** Desde la raíz del proyecto, con `gh` autenticado:
    ```sh
-   gh secret set CLOUDFLARE_API_TOKEN -R guide-ai/OpenVireo
+   gh secret set CLOUDFLARE_API_TOKEN --env production -R guide-ai/OpenVireo
    ```
    ```sh
-   gh secret set CLOUDFLARE_ACCOUNT_ID -R guide-ai/OpenVireo
+   gh secret set CLOUDFLARE_ACCOUNT_ID --env production -R guide-ai/OpenVireo
    ```
-   Cada comando te pide el valor y no lo muestra. También puedes hacerlo en **GitHub → Settings → Secrets and variables → Actions → New repository secret**.
-4. **Lanza el primer despliegue automático:** haz un push a `main`, o abre **Actions → CI/CD → Run workflow**.
+   Cada comando te pide el valor y no lo muestra. También puedes hacerlo en **Settings → Environments → production → Environment secrets → Add environment secret**.
+5. **Lanza el primer despliegue automático:** haz un push a `main`, o abre **Actions → CI/CD → Run workflow** sobre `main`.
 
 ### 11.2 Uso diario
 
-- **Publicar:** fusiona en `main` y haz push. El run completo tarda unos 15–25 minutos; la dirección de producción es `https://openvireo.pages.dev`.
+- **Publicar:** fusiona en `main` y haz push. El run completo tarda unos 25–35 minutos; la dirección de producción es `https://openvireo.pages.dev`.
 - **Ver el estado:** **GitHub → Actions**, o desde la terminal:
   ```sh
   gh run list -R guide-ai/OpenVireo --limit 5
@@ -225,4 +230,5 @@ El flujo necesita dos secretos de GitHub. Nunca van en el repositorio, en `.env`
 - **Fuera del horario de clase:** un despliegue obliga a recargar las pestañas abiertas (§ 6). Si una clase está en curso, espera para hacer push a `main` o trabaja en otra rama.
 - **Volver atrás:** igual que en § 9 (rollback en el panel), o con `git revert` del commit y un push, que vuelve a desplegar la versión anterior.
 - **Pull requests:** corren todas las pruebas pero nunca despliegan. Los de forks no tienen acceso a los secretos.
-- **Cambiar el token:** crea uno nuevo (11.1), sustituye el secreto con `gh secret set CLOUDFLARE_API_TOKEN -R guide-ai/OpenVireo` y revoca el anterior en Cloudflare.
+- **Cambiar el token:** crea uno nuevo (11.1), sustituye el secreto con `gh secret set CLOUDFLARE_API_TOKEN --env production -R guide-ai/OpenVireo` y revoca el anterior en Cloudflare.
+- **Qué no corre en CI:** las pruebas del backend opcional (`worker/`, `playwright.cloud.config.ts`), porque ese backend no se despliega.

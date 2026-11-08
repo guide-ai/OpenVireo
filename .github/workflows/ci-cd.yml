@@ -1,8 +1,9 @@
 # OpenVireo CI/CD (user decision, 2026-11-08): every push to main or a claude/ work branch, and every pull request, runs the
 # full checks; a push to main that passes
 # them is published to Cloudflare Pages (project openvireo, https://openvireo.pages.dev). Only the static site is deployed
-# (the ordinary `npm run build` output). The Cloudflare API token and account ID live only in GitHub secrets
-# (CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID); see docs/DEPLOY.md § 11.
+# (the ordinary `npm run build` output). The Cloudflare API token and account ID live only as secrets of the GitHub
+# environment `production`, which only main may use (CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID); see docs/DEPLOY.md § 11.
+# Not run here: the optional backend's own tests (worker/, playwright.cloud.config.ts), since that backend is not deployed.
 name: CI/CD
 
 on:
@@ -30,8 +31,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -52,14 +53,14 @@ jobs:
       matrix:
         shard: [1, 2, 3, 4]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
       - run: npm ci --ignore-scripts
       - name: Cache the Playwright browser
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .local/browsers
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
@@ -67,7 +68,7 @@ jobs:
       - run: npx playwright test --shard=${{ matrix.shard }}/4 --reporter=line
       - name: Keep the failure evidence
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: e2e-results-${{ matrix.shard }}
           path: test-results/
@@ -78,8 +79,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -91,7 +92,7 @@ jobs:
       - run: npm ci
         working-directory: worker
       - name: Cache the Playwright browser
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .local/browsers
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
@@ -104,7 +105,8 @@ jobs:
   deploy:
     name: Deploy to Cloudflare Pages
     needs: [unit, e2e, pages]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # A push to main, or Actions › CI/CD › Run workflow on main (docs/DEPLOY.md § 11.1).
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment:
@@ -114,8 +116,8 @@ jobs:
       group: deploy-production
       cancel-in-progress: false
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
