@@ -22,7 +22,8 @@
 .radio-control-env legend{font-weight:600}
 .radio-control-env input[type="text"],.radio-control-env select{max-width:16rem;min-height:36px}
 .radio-control-check{display:flex;align-items:center;gap:8px}
-.radio-control-state{display:grid;grid-template-columns:max-content 1fr;gap:4px 16px;margin:8px 0 0}
+.radio-control-state{display:grid;grid-template-columns:minmax(0,max-content) minmax(6rem,1fr);gap:4px 16px;margin:8px 0 0}
+.radio-control-state dt,.radio-control-state dd{overflow-wrap:anywhere}/* layout audit 2026-11-08: long labels no longer push values past the card */
 .radio-control-state dd{margin:0;font-variant-numeric:tabular-nums}
 .antenna-controls{display:grid;gap:8px;margin:8px 0}
 .antenna-controls h4{margin:0 0 6px;font-size:13px}

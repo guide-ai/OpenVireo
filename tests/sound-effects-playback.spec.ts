@@ -61,20 +61,23 @@ async function tracking(page:Page){if(!await page.getByRole('button',{name:'Turn
 
 test('the slew motor (decoded MS-ADPCM) and the servo start and loop sounds load and play',async({page})=>{
  test.setTimeout(240_000);
- const {seen,errors}=await watch(page);await start(page);
+ // The page clock is controlled (as in telescope-motion.spec.ts), so the programmed slew cannot arrive before the motor and
+ // Stop are checked, however slow the machine; media playback still runs in real time.
+ const {seen,errors}=await watch(page);await page.clock.install();await start(page);
  await toggle(page).check();await expect.poll(()=>seen).toEqual(['Emotor.wav']);
  await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();// pointing needs the open dome
- // A long programmed slew (12 h in RA, 160° in Dec), so the motor is still running when it is checked on a slow CI runner.
- await coords(page,'.5','80');await tracking(page);await coords(page,'12.5','-80',false);
+ await coords(page,'.5','0');await tracking(page);await coords(page,'14','-50',false);
+ await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
  await card(page).getByRole('button',{name:'Slew to coordinate draft',exact:true}).click();await page.getByRole('button',{name:'Start programmed slew',exact:true}).click();
- // The motor plays only while the programmed slew moves (SlewTimer2Timer 0x5396f5). A programmed slew lasts about a second
- // here and longer on a slow CI runner, so check the motor and Stop at once, then the playback evidence recorded meanwhile.
+ await page.clock.runFor(40);
+ // The motor plays only while the programmed slew moves (SlewTimer2Timer 0x5396f5), so Stop is offered now; Stop ends it.
  const stopButton=card(page).getByRole('button',{name:'Stop telescope motion',exact:true});
+ await expect(page.getByTestId('motion-phase')).toContainText('Telescope moving');
  await expect(page.getByTestId('sound-telescope')).toHaveAttribute('data-sound','Emotor.wav');await expect(stopButton).toBeEnabled();
  await played(page,'emotor.wav');
- // Stop ends it; if the slew already arrived, its end did. Either way the motor is silent once the telescope stops.
- if(await stopButton.isEnabled())await stopButton.click();
- await expect(page.getByTestId('sound-telescope')).not.toHaveAttribute('data-sound',{timeout:5_000});
+ await expect(page.getByTestId('motion-phase')).toContainText('Telescope moving');
+ await stopButton.click();await expect(page.getByTestId('sound-telescope')).not.toHaveAttribute('data-sound',{timeout:5_000});
+ await page.clock.resume();
  // A held manual slew: servostart.wav, then servocontin.wav when it ends (MediaPlayer1Notify 0x540350).
  const north=card(page).getByRole('button',{name:'Hold North',exact:true});const box=(await north.boundingBox())!;
  await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.down();
