@@ -73,6 +73,10 @@
 .investigation-toolbar .sky-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
 .project-upload{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:var(--ov-text-sm);font-weight:550;color:var(--ov-text-muted);max-width:100%}
 .project-upload input{max-width:100%}
+/* Layout audit (2026-11-08): with wider fonts (DejaVu Sans, the usual Linux system-ui) the file field kept its intrinsic
+ * width and pushed the page past 320 px; let the row, the label and the field shrink. */
+.investigation-toolbar .sky-actions,.project-upload{min-width:0}
+.project-upload input{min-width:0;width:auto}
 .investigation-toolbar .toolbar-help{margin-top:4px;padding-top:0;border-top:0}
 .investigation-toolbar .toolbar-help>summary{min-height:30px;padding:2px 0;font-size:var(--ov-text-xs)}
 .investigation-toolbar .toolbar-help p{margin:4px 0 8px;max-width:110ch;font-size:var(--ov-text-sm);line-height:1.6}
@@ -100,6 +104,21 @@
 
 /* ── Observatory ── */
 .observatory-main{margin:0 auto;width:100%;max-width:1560px;padding:0 30px 28px}
+/* Layout audit (2026-11-08): cards stacked in a page's main column keep a gap (zero specificity for the first card, so a
+ * page's own card margins still win), and the cards that had no padding of their own get the padding of their neighbours
+ * (Multi-Spec beside the camera, the Spectrometer routes, the classification cursor readout). Grids set their own gap. */
+:where(.observatory-main>.card)+.card{margin-top:var(--ov-space-5)}
+.observatory-main>.card+.first-steps{margin-top:var(--ov-space-5)}
+.ms-card,.spectrometer-index,.field-spectrometer{padding:var(--ov-space-5)}
+.ms-card>h2:first-child,.spectrometer-index>h2:first-child,.field-spectrometer>h2:first-child,.comparison-inspection>h2:first-child{margin-top:0}
+.comparison-inspection{padding:var(--ov-space-5)}
+/* Sound effects is a small card inside the telescope field card: inset like the field card's other sections. */
+.observatory-sounds{margin:18px 22px;padding:var(--ov-space-4) 18px}
+@media(max-width:520px){.observatory-sounds{margin:12px 14px;padding:var(--ov-space-3)}}
+/* The route links wrap as whole buttons on a phone. */
+.spectrometer-index .button-row{display:flex;flex-wrap:wrap;gap:8px}
+.spectrometer-index .button-row a{display:inline-flex;max-width:100%;white-space:normal}
+@media(max-width:599.98px){.ms-card,.spectrometer-index,.field-spectrometer,.comparison-inspection{padding:var(--ov-space-4)}}
 .observatory-heading{position:relative;padding:28px 0 20px}
 .observatory-heading h1{font-size:var(--ov-text-2xl);letter-spacing:-1px;margin:8px 0}
 .observatory-heading p{font-size:var(--ov-text-md);color:var(--ov-text-muted);max-width:760px;line-height:1.65}

@@ -18,7 +18,7 @@ if(!existsSync(wrangler))throw new Error('The pinned wrangler is missing: run np
 const state=fileURLToPath(new URL('./.wrangler/state',import.meta.url));
 const baseURL=`http://127.0.0.1:${port}`;
 export default defineConfig({
- testDir:'./tests/release',testMatch:/\.pages\.ts$/,workers:1,reporter:'list',
+ testDir:'./tests/release',forbidOnly:!!process.env.CI,retries:process.env.CI?1:0,testMatch:/\.pages\.ts$/,workers:1,reporter:'list',
  use:{baseURL,viewport:{width:1440,height:1050},serviceWorkers:'block'},
  webServer:{
   command:`node "${wrangler}" pages dev dist --ip 127.0.0.1 --port ${port} --inspector-port ${inspector} --compatibility-date 2025-06-01 --persist-to "${state}" --log-level warn --show-interactive-dev-session=false`,

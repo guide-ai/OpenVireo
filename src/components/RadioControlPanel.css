@@ -6,7 +6,7 @@
 .radio-control-block{border:1px solid var(--ov-border);border-radius:8px;padding:12px 14px;margin-top:12px;min-width:0}
 .radio-control-menu{display:flex;flex-wrap:wrap;gap:8px}
 .radio-control .secondary-button{width:auto;min-height:40px;font-size:12px;margin-top:0}
-.radio-control .primary-button{width:auto;flex:0 0 auto;min-height:40px}
+.radio-control .primary-button{width:auto;flex:0 0 auto;min-height:40px;max-width:100%;white-space:normal}/* layout audit 2026-11-08: a long caption wraps at 320 px */
 .radio-control .button-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .radio-control button:focus-visible,.radio-control select:focus-visible,.radio-control input:focus-visible,.radio-control summary:focus-visible{outline:3px solid var(--ov-focus);outline-offset:2px}
 .radio-control-native{font-family:"MS Sans Serif",Tahoma,ui-sans-serif,sans-serif;font-weight:600}
@@ -22,7 +22,8 @@
 .radio-control-env legend{font-weight:600}
 .radio-control-env input[type="text"],.radio-control-env select{max-width:16rem;min-height:36px}
 .radio-control-check{display:flex;align-items:center;gap:8px}
-.radio-control-state{display:grid;grid-template-columns:max-content 1fr;gap:4px 16px;margin:8px 0 0}
+.radio-control-state{display:grid;grid-template-columns:minmax(0,max-content) minmax(6rem,1fr);gap:4px 16px;margin:8px 0 0}
+.radio-control-state dt,.radio-control-state dd{overflow-wrap:anywhere}/* layout audit 2026-11-08: long labels no longer push values past the card */
 .radio-control-state dd{margin:0;font-variant-numeric:tabular-nums}
 .antenna-controls{display:grid;gap:8px;margin:8px 0}
 .antenna-controls h4{margin:0 0 6px;font-size:13px}
