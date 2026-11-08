@@ -12,9 +12,15 @@ export const HELP_MENU_EN=Object.freeze({
  radioOff:'VIREO\'s radio Help menu (Topics..., About This Exercise...) is on the radio telescope control panel, which opens when you switch the telescope on.',
  reminderErrorQuestion:'VIREO then asks instead:',
  exitDone:'You have finished the exercise. A web page cannot close itself: save your work, then close this browser tab when you are ready.',
- /** Front REL1 [W]: a web item after VIREO's About..., opening the site's About page (privacy and credits). */
- siteAbout:'About this site and privacy (web)',
- siteAboutNote:'Web addition: VIREO\'s Help menu has no such item.',
+ /** Front REL1 [W]: the site's About page (privacy and credits). */
+ siteAbout:'About OpenVireo and privacy',
+ /** Front WebHelp [W]: OpenVireo's own help (WebHelpDialog), first in the main Help menu. */
+ webTopics:'Help topics…',
+ /** Front WebHelp [W]: VIREO's own Topics... and About... of the main window, kept under a label that names the program. */
+ originalSection:'Original VIREO (Windows program)',
+ originalTopics:'VIREO help topics…',
+ originalAbout:'About VIREO 1.504…',
+ originalTopicsNote:'This is the help of the original VIREO program for Windows, kept for reference. It describes that program\'s menus (File › Log In and Run Exercise, the Telescopes and Tools menus, DS9, a spreadsheet), which OpenVireo replaces with its own pages: see Help › Help topics… for how the web version works.',
  exitNote:'VIREO shows this reminder when you exit the observatory during an exercise (after Run Exercise); otherwise it only asks whether to quit. OpenVireo has no Log In or Run Exercise step, so the observatory is always an exercise in progress. In VIREO, OK or Yes quits the program; Cancel or No keeps it open.',
 });
 

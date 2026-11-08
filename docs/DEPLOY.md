@@ -122,7 +122,7 @@ npx wrangler@4.150.0 pages deploy dist --project-name=openvireo --branch=main
 1. En el panel: **Workers & Pages → openvireo → Metrics → Web Analytics → Enable** (en algunas versiones del panel: **Analytics & Logs → Web Analytics**).
 2. Pages inserta por sí solo el script de medición (`static.cloudflareinsights.com/beacon.min.js`) en las páginas HTML del siguiente despliegue. Vuelve a desplegar (paso 6) para que aparezca.
 3. La CSP de `public/_headers` ya admite `https://static.cloudflareinsights.com` (script) y `https://cloudflareinsights.com` (envío de datos). No hay que cambiar el código ni añadir ningún token al repositorio.
-4. Web Analytics no usa cookies ni crea perfiles de visitante. El aviso de privacidad de la aplicación (Help › About this site and privacy (web)) lo explica.
+4. Web Analytics no usa cookies ni crea perfiles de visitante. El aviso de privacidad de la aplicación (Help › About OpenVireo and privacy) lo explica.
 
 Si al cabo de un día el panel no muestra visitas, comprueba en la consola del navegador que el script no está bloqueado. Si la causa fuera `Referrer-Policy: same-origin`, cámbiala a `strict-origin-when-cross-origin` en `public/_headers`. Esto no se pudo verificar sin contactar con Cloudflare.
 
@@ -138,7 +138,7 @@ Si al cabo de un día el panel no muestra visitas, comprueba en la consola del n
    - **Púlsares** (`/#radio-control` y `/#pulsar-analysis`);
    - **Objeto X** (`/#object-x`). Elige *Orbit file → ObjX_MPC.CMO* y pulsa *Build the asteroid list…*: la lista debe construirse sin error.
 3. Cámaras: apunta a un campo, marca *Ask VizieR live* y haz una exposición corta. La imagen debe aparecer y los detalles deben nombrar el servidor de VizieR que respondió.
-4. Abre **Help › About this site and privacy (web)** y comprueba el aviso de privacidad y los créditos (Project CLEA, NSF, Gettysburg College y ATNF).
+4. Abre **Help › About OpenVireo and privacy** y comprueba el aviso de privacidad y los créditos (Project CLEA, NSF, Gettysburg College y ATNF).
 5. Comprueba las cabeceras desde una terminal:
    ```sh
    curl -sI https://openvireo.pages.dev/ | grep -iE 'content-security-policy|x-content-type-options|referrer-policy|permissions-policy|x-frame-options|cache-control'

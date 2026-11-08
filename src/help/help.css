@@ -12,3 +12,27 @@
 @media(min-width:600px) and (max-width:1099.98px){.portal-footer{display:flex;align-items:flex-start;gap:var(--ov-space-2)}.portal-help{margin:0}.portal-help .fi-menu-list{position:absolute;left:auto;right:0;min-width:min(18rem,calc(100vw - 48px))}.portal-help .fi-menu{position:relative}}
 /* Wide layout: the menu sits at the foot of the sidebar, so its list opens upward over the navigation (review closure N5). */
 @media(min-width:1100px){.portal-help .fi-menu{position:relative}.portal-help .fi-menu-list{position:absolute;top:auto;bottom:calc(100% + 4px);left:0;right:0;margin:0;max-height:calc(100vh - 96px);overflow-y:auto}}
+/* Help › Help topics… (web help, WebHelpDialog.tsx): topic list beside the text; stacked on phones. */
+.web-help{width:min(calc(100vw - 32px),56rem)}
+.web-help-head{display:flex;align-items:center;justify-content:space-between;gap:var(--ov-space-2);margin-bottom:var(--ov-space-2)}
+.web-help-head h2{margin:0}
+.web-help-body{display:grid;grid-template-columns:minmax(12rem,15rem) 1fr;gap:var(--ov-space-3);align-items:start}
+.web-help-nav h3{margin:var(--ov-space-2) 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--ov-text-muted)}
+.web-help-group:first-child h3{margin-top:0}
+.web-help-nav ul{list-style:none;margin:0;padding:0}
+.web-help-nav button{display:block;width:100%;text-align:left;padding:5px 8px;border:1px solid transparent;border-radius:6px;background:none;color:inherit;font:inherit;cursor:pointer}
+.web-help-nav button:hover{background:var(--ov-surface-hover)}
+.web-help-nav button[aria-current="true"]{border-color:var(--ov-accent-soft-border);background:var(--ov-accent-soft);color:var(--ov-accent-text);font-weight:600}
+.web-help-topic{min-width:0;line-height:1.5}
+.web-help-topic h3{margin:0 0 var(--ov-space-2);font-size:18px}
+.web-help-topic p,.web-help-topic ol,.web-help-topic ul{margin:0 0 var(--ov-space-2)}
+.web-help-topic li{margin-bottom:4px}
+.web-help-table{overflow-x:auto;margin-bottom:var(--ov-space-2)}
+.web-help-table table{border-collapse:collapse;width:100%}
+.web-help .web-help-table th,.web-help .web-help-table td{border:1px solid var(--ov-border);padding:5px 8px;text-align:left;vertical-align:top}
+.web-help-table thead th{background:var(--ov-surface-hover)}
+.web-help .web-help-table tbody th{font-weight:600;text-transform:none;font-size:inherit;letter-spacing:normal;color:var(--ov-text)}
+.web-help-related{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+@media(max-width:720px){.web-help-body{grid-template-columns:1fr}.web-help-nav ul{display:flex;flex-wrap:wrap;gap:4px}.web-help-nav button{width:auto;border-color:var(--ov-border)}}
+.help-menu-section{font-weight:600}
+.portal-help .fi-menu-list>button,.portal-help .fi-submenu>a{justify-content:flex-start}
