@@ -17,14 +17,16 @@ decompiler provider configured. Nothing was executed or emulated. Research notes
 | File | Bytes | SHA-256 | Use |
 |---|---|---|---|
 | public/original/hotlists/ObjectX.HTL | 1462 | fd9e68e4…858243b3 | 17 targets; only the coordinates are shown before the reveal (the identifier and the remarks both give the answer) |
-| public/original/orbit/ObjX_MPC.CMO | 30989466 | b41e03f1…6802e | original default `ORBIT\OBJX_MPC.CMO` (exe 0x5a2dc4), 191293 records, epoch JD 2455400.5 |
+| public/original/orbit/ObjX_MPC/000..002.bin (tiles of ObjX_MPC.CMO) | 30989466 | b41e03f1…6802e | original default `ORBIT\OBJX_MPC.CMO` (exe 0x5a2dc4), 191293 records, epoch JD 2455400.5 |
 | public/original/orbit/ObjX_AST.CMO | 4750326 | 341134bf…a12 | 29323 records, epoch JD 2454900.5 |
 | public/original/orbit/ObjX_MPC.CMO.sav | 4798116 | efd665a7…124030 | 29618 records, epoch JD 2455000.5, zip date 2009-08-12; **web default** |
 
 Byte-exact from CLEA_Vireo.zip under the approvals of 2026-10-26 (ObjectX.HTL), 2026-10-27 (ObjX_MPC.CMO, ObjX_AST.CMO) and the
 later .sav approval recorded in AGENTS.md (e296ae4); manifest 1312 → 1316 (`docs/LOCAL-RESOURCES.json`, `docs/RESOURCE-PROVENANCE.json` group `public/original/orbit`, `THIRD_PARTY_NOTICES.txt`).
 `src/io/bundledOrbitFile.ts` fetches an orbit file lazily from this origin, bounded to and checked for the exact size and
-SHA-256 before parsing. **Web default: ObjX_MPC.CMO.sav** (coordinator decision): it reproduces the three moving rows of
+SHA-256 before parsing. Front REL1 [W] (2026-11-07): ObjX_MPC.CMO exceeds Cloudflare Pages' 25 MiB per-file limit, so it is
+stored and served as three byte-exact record-aligned tiles of 65536 records (10616832, 10616832 and 9755802 bytes; manifest
+`assembled[]`); the loader checks each tile's size and SHA-256, then the assembled file's, so selecting it behaves as before. **Web default: ObjX_MPC.CMO.sav** (coordinator decision): it reproduces the three moving rows of
 ObjectX.HTL at the original default time (table below), while the original options default ObjX_MPC.CMO misses 1994 CC by 0.86°.
 ObjX_MPC.CMO and ObjX_AST.CMO stay bundled and selectable (`SELECTABLE_ORBIT_FILES`). One-line adaptation label: "Orbit file:
 ObjX_MPC.CMO.sav (web default; it reproduces ObjectX.HTL at 2009-06-01 04:00 UT — the original's default is ObjX_MPC.CMO)".

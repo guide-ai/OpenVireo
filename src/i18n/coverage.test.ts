@@ -54,7 +54,8 @@ describe('P01 complete authored presentation catalog and interpolation contract'
   // 133: Front T1 adds src/components/InstructorMode.tsx (the instructor-mode header item, confirmation and banner); its strings come from the catalog (instructorMode.*).
   // 134: Front T5 adds src/observatory/ScopeAccessBox.tsx (Request Time's and the allotment's message boxes); its captions and texts are the recovered literals (core/scopeAccess.ts) and its buttons and note come from the catalog (scopeAccess.*).
   // 135: Front T7 adds src/observatory/CameraParameterEdits.tsx (the CCD / IR tabs' edits); its captions are the recovered DFM literals (core/cameraParameters.ts) and its notes, spin labels and glyphs come from the catalog (cameraParameters.*).
-  const audit=auditUi(root);expect(audit.files.length).toBe(135);const actual=new Map<string,number>();for(const s of audit.sites){const key=JSON.stringify([s.file,s.kind,s.value]);actual.set(key,(actual.get(key)??0)+1);}
+  // 136: Front REL1 review 1 M1 adds src/components/LazyBoundary.tsx (the update / error notice of a lazily loaded part); its strings come from src/components/AppShellMessages.ts (recovery.*).
+  const audit=auditUi(root);expect(audit.files.length).toBe(136);const actual=new Map<string,number>();for(const s of audit.sites){const key=JSON.stringify([s.file,s.kind,s.value]);actual.set(key,(actual.get(key)??0)+1);}
   const expected=new Map(receipts.map(r=>[JSON.stringify([r.file,r.kind,r.value]),r.count]));expect(actual).toEqual(expected);expect(receipts.every(r=>r.reason.length>30)).toBe(true);
  });
  it('sources browser title/description from the same English catalog and escapes them as text',()=>{

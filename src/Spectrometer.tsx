@@ -6,7 +6,8 @@ import { t } from './i18n';
 import { POLISH_MESSAGES as PM } from './polish/PolishMessages';
 import CleaHelp from './clusters/CleaHelp';
 import {HELP_FILES} from './help/helpFiles';
-import {lazy,Suspense} from 'react';
+import {lazy} from 'react';
+import {LazyBoundary} from './components/LazyBoundary';
 import type {FieldSpectrometerLink} from './FieldSpectrometer';
 const FieldSpectrometer=lazy(()=>import('./FieldSpectrometer'));
 
@@ -25,7 +26,7 @@ function Spectrometer({ onReturn, field }: { field?: FieldSpectrometerLink; targ
       <p className="observatory-note">{S.retired}</p>
     </section>
     {/* Front G (G4a): the spectrometer wherever the telescope points, from the compact GSC tiles. */}
-    {field&&<Suspense fallback={<p>{t('sky.loading')}</p>}><FieldSpectrometer link={field}/></Suspense>}
+    {field&&<LazyBoundary fallback={<p>{t('sky.loading')}</p>}><FieldSpectrometer link={field}/></LazyBoundary>}
   </main>;
 }
 // Front Perf: re-render only when a prop changes (handlers come stable from the shell; docs/RENDER-BUDGET.md).

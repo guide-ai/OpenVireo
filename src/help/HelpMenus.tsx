@@ -30,8 +30,9 @@ function AboutDialog({version,onClose}:{version:string;onClose:()=>void}){
 type Menu='help'|'websites'|null;
 /** The Help menu of the main window (TEnvironment1: Topics..., Websites, About...) or of the radio lab (TRadioLab: Topics...,
  * About This Exercise...). On Help and User are hidden by default in VIREO (empty option names) and are not shown.
- * `disabledReason` disables the menu with a typed note (the radio lab's panel is not open). */
-export function HelpMenu({kind,disabled=false,disabledReason}:{kind:'main'|'radio';disabled?:boolean;disabledReason?:string}){
+ * `disabledReason` disables the menu with a typed note (the radio lab's panel is not open). `onSiteAbout` adds the web item
+ * "About this site and privacy" after About... (Front REL1 [W]; VIREO has no such item). */
+export function HelpMenu({kind,disabled=false,disabledReason,onSiteAbout}:{kind:'main'|'radio';disabled?:boolean;disabledReason?:string;onSiteAbout?:()=>void}){
  const id=useId(),[menu,setMenu]=useState<Menu>(null),[topics,setTopics]=useState(0),[about,setAbout]=useState(false);
  const trigger=useRef<HTMLButtonElement>(null);
  const C=kind==='main'?MAIN_HELP_MENU:RADIO_HELP_MENU,off=disabled||disabledReason!==undefined;
@@ -53,6 +54,7 @@ export function HelpMenu({kind,disabled=false,disabledReason}:{kind:'main'|'radi
     </div>}
    </>}
    <button type="button" data-testid={`${kind}-help-about`} onClick={()=>{setMenu(null);setAbout(true);}}>{menuCaptionText(C.about)}</button>
+   {onSiteAbout&&<button type="button" data-testid={`${kind}-help-site-about`} title={M.siteAboutNote} onClick={()=>{setMenu(null);trigger.current?.focus();onSiteAbout();}}>{M.siteAbout}</button>}
   </div>}
   <CleaHelp list={HELP_FILES[kind==='main'?'VIRMNHLP.LST':'PULSRHLP.LST']} openRequest={topics} onReturnFocus={()=>trigger.current?.focus()} testId={`${kind}-help`}/>
   {about&&<AboutDialog version={kind==='main'?ABOUT_BOX.mainVersion:ABOUT_BOX.radioVersion} onClose={()=>{setAbout(false);requestAnimationFrame(()=>trigger.current?.focus());}}/>}

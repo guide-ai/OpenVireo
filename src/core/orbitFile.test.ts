@@ -1,9 +1,9 @@
-import {readFileSync} from 'node:fs';
+import {readOriginalFile} from '../../tests/fixtures/original-file';
 import {describe,expect,it} from 'vitest';
 import controls from './ephemeris.controls.json';
 import {OrbitFileError,findOrbitRecord,orbitRecordCount,readOrbitRecord,orbitRecordLabel} from './orbitFile';
 
-const load=(name:string)=>new Uint8Array(readFileSync(new URL(`../../public/original/orbit/${name}`,import.meta.url)));
+const load=(name:string)=>readOriginalFile(`orbit/${name}`);
 const files={'ObjX_MPC.CMO':load('ObjX_MPC.CMO'),'ObjX_AST.CMO':load('ObjX_AST.CMO'),'ObjX_MPC.CMO.sav':load('ObjX_MPC.CMO.sav')} as const;
 const code=(f:()=>unknown)=>{try{f();}catch(error){return error instanceof OrbitFileError?error.code:'other';}return 'none';};
 

@@ -87,13 +87,22 @@ export const POLISH_MESSAGES=Object.freeze({
  about:Object.freeze({
   nativeNote:'VIREO’s About box, with its texts as read from the original program (its logo is not included). The rest of this window describes this web reconstruction.',
   siteTitle:'This site',
-  site:'OpenVireo is a local, non-commercial reconstruction of Project CLEA’s VIREO for students, rebuilt in the browser from VIREO’s recovered behaviour and original data files. It is not CLEA’s program and claims no equivalence with it; web adaptations are labelled where they appear.',
+  site:'OpenVireo is a free, non-commercial web reconstruction of Project CLEA’s VIREO for students, rebuilt in the browser from VIREO’s recovered behaviour and original data files. It is not CLEA’s program and claims no equivalence with it; web adaptations are labelled where they appear.',
   worksTitle:'What works',
   works:Object.freeze([
    'All seven VIREO exercises have a web student path: Hubble’s law (13 galaxies), large-scale structure, stellar classification, Pleiades photometry (24 stars), cluster HR diagrams, pulsars and the Quest for Object X.',
    'Optical observatory: dome, telescopes, finder and telescope views, slewing with the optional horizon limit, hot lists, site and date, catalog and field information, the variable-star and QSO lists.',
    'Instruments: spectrometer and photometer for the exercise targets, CCD and infrared cameras (live catalogue query), the multi-object spectrometer (Multi-Spec, on the bundled exercise fields and in the Object X lab), and the radio telescope with its receiver and pulsar analysis.',
    'Analysis: spectrum measuring and classification, Hubble and Pleiades fits, the LSS wedge plot, your observational results, and saved investigations.',
+  ]),
+  /** Front REL1 [W]: the privacy notice of the public static release (user decision of 2026-11-07, AGENTS.md). */
+  privacyTitle:'Privacy',
+  privacy:Object.freeze([
+   'No cookies and no accounts: OpenVireo never asks for your name, e-mail address or a password.',
+   'Your investigations, options and results are saved only on your computer: in this browser\'s own storage or in files you choose to download. Nothing is uploaded.',
+   'Visits are counted only in aggregate and without cookies (Cloudflare Web Analytics). Like any web host, Cloudflare receives the technical data of each request, such as your IP address, to serve the page.',
+   'The live catalogue query of the CCD and infrared cameras sends only the field\'s sky coordinates and radius to CDS/VizieR (or one of its official mirrors). Your browser contacts that server directly, so, like any website, it sees your IP address.',
+   'External links (the HST image archive, Help › Websites) open in a new tab only when you click them, and nothing is sent with them.',
   ]),
   creditsTitle:'Credits',
   credits:Object.freeze([

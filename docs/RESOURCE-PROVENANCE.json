@@ -1,12 +1,12 @@
 {
   "schema": 1,
   "scope": "All files in LOCAL-RESOURCES.json(count in totalFiles):the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md,plus byte-exact HRAnalHlp.LST and HRAnalHlp.TXT(approval of2026-10-28)in public/original/cluster-help,plus the derived data/clusters comments and point sidecar(approval of2026-10-28,cluster HR tools (a) and (b));no executable,installer,archive or additional fullGSCfile is included(historical: true until the user approval of 2026-10-29,decision 2,which publishes the full compact GSC as tiles; see the Front G sentence below);plus Front F derived data/hubble resources(fingerprints,UM-I – 3 cached-pan provenance and vectors,QSO merge witnesses)and byte-exact CLEA_QSO.DAT(second user approval of2026-10-26). Plus byte-exact NkdEye.dat(user approval of2026-10-28) and the derived Front O witness data/fieldinfo/info-witness.json. Plus the Front M independent Multi-Spec fibre witness data/multispec/witness.json(derived),the 67 byte-exact jspect2 templates approved on2026-10-28 for the multi-object spectrometer(public/original/spectra/jspect2/,Appendix T)and their derived requirement record data/multispec/template-requirements.json. Plus the 35 byte-exact VIREO help files (user approval of 2026-10-29): 34 in public/original/help and VarTypeHlp.LST in public/original/variables. Plus byte-exact NGC4670.SP(user approval of2026-10-27,group 1)in public/original/spectra for the LSS row NGC 4670(Front L2). Plus the Front K derived data/clusters/cluster-dialog-certificate.json(dialog-key census result:keys,counts,booleans and hashes only;no GSC record,distance,age or modulus). Plus the full compact GSC (Front G; user approval of 2026-10-29, decision 2; band sizes and SHA-256 in the research file analysis/approved-gsc-wav-2026-10-29.txt): the 24 bands N0000..N8230.DAT and S0000..S8230.DAT of CLEA_Vireo.zip (program files/CLEA/VIREO/Cgsc/GSC/) as 300 byte-exact record-aligned tiles in public/original/gsc/<band>/ (whole bands are not stored; assembled[] in LOCAL-RESOURCES.json lists each band with its approved SHA-256 and its tiles in order), byte-exact TABLES/REGIONS.BIN as public/original/gsc/REGIONS.BIN, and the derived tile index and search skeleton data/gsc/gsc-index.json (cut tool analysis/front-g-gsc/tools/cut_gsc_tiles.py, SHA-256 dd9ee8d0bb1ced7f4cd7b195a9513dadf438550520328662fa5998c948d17566). Plus the 17 remaining byte-exact jspect2 templates JSPEC2.SPI names (user approval of 2026-10-30, Front G; public/original/spectra/jspect2/), so every template JSPEC2.SPI names is bundled. Plus the five byte-exact LSS galaxy photographs NGC4150.BMP, NGC4274.BMP, NGC4278.BMP, NGC4314.BMP and NGC4793.BMP (user approval of 2026-10-30, Front F3; public/original/images/). Plus the 166 remaining byte-exact galaxy photographs GLIMAGES.LST names and CLEA_Vireo.zip contains (user approval of 2026-11-02, Front F4; public/original/images/, 6594708 bytes; research file analysis/photos-2026-11-02/glimages-remaining.txt, SHA-256 e31489b4f83a2be9a180cee750f24289aa29dab3316b1332a8b7bb468cb3b81a).",
-  "totalFiles": 1987,
+  "totalFiles": 1989,
   "totalBytes": 655801604,
   "extensions": {
     ".BIN": 1,
     ".BMP": 138,
-    ".CMO": 2,
+    ".CMO": 1,
     ".DAT": 2,
     ".HTL": 13,
     ".LNL": 1,
@@ -15,7 +15,7 @@
     ".SP": 167,
     ".SPI": 1,
     ".TXT": 14,
-    ".bin": 300,
+    ".bin": 303,
     ".bmp": 37,
     ".dat": 4,
     ".json": 1087,
@@ -25,8 +25,8 @@
     ".wav": 3,
     ".WAV": 17
   },
-  "assembledFiles": 24,
-  "assembledBytes": 508713480,
+  "assembledFiles": 25,
+  "assembledBytes": 539702946,
   "groups": {
     "data/classification": {
       "files": 7,
@@ -157,11 +157,11 @@
       "upstreamStatus": "Included under the user approval of 2026-10-27 (AGENTS.md). Project CLEA, Gettysburg College (originator); NSF and Gettysburg College (supporters); GSC source-specific terms remain uncertain. Not the full GSC or either complete band; no original-runtime equivalence."
     },
     "public/original/orbit": {
-      "files": 3,
+      "files": 5,
       "bytes": 40537908,
       "materialClass": "unchanged-original-binary-resource",
-      "description": "Byte-exact original VIREO Object X orbit files from CLEA_Vireo.zip(SHA-256 58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b):program files/CLEA/VIREO/Orbit/ObjX_MPC.CMO(30989466bytes,191293records of162bytes,the original default ORBIT\\OBJX_MPC.CMO),SHA-256 b41e03f14dcef5a54dea67e156e0e7cf2b654432a85bf6d10611ed8e6d25802e;and Orbit/ObjX_AST.CMO(4750326bytes,29323records of162bytes),SHA-256 341134bf9033989fa2c7fa9008551fa8ef015ee158ec5a25c04754696e58ba12;and Orbit/ObjX_MPC.CMO.sav(4798116bytes,29618records of162bytes,epoch JD2455000.5,zip date2009-08-12),SHA-256 efd665a75dbd1d8afeb68b4c7b947d82304ffe2b6355cd2c7e74e58347124030.Every other file is excluded.",
-      "usedBy": "E08 Object X:lazy same-origin fetch(size and SHA-256 checked before parsing);heliocentric state vectors propagated by the recovered ephemeris(docs/OBJECT-X.md).Web default ObjX_MPC.CMO.sav(it reproduces the three ObjectX.HTL moving rows at the original default 2009-06-01 04:00 UT);ObjX_MPC.CMO(the original options default)and ObjX_AST.CMO selectable",
+      "description": "Byte-exact original VIREO Object X orbit files from CLEA_Vireo.zip(SHA-256 58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b):program files/CLEA/VIREO/Orbit/ObjX_MPC.CMO(30989466bytes,191293records of162bytes,the original default ORBIT\\OBJX_MPC.CMO),SHA-256 b41e03f14dcef5a54dea67e156e0e7cf2b654432a85bf6d10611ed8e6d25802e,stored since Front REL1(2026-11-07)as three byte-exact record-aligned tiles of65536records(ObjX_MPC/000.bin..002.bin,10616832,10616832 and9755802bytes)under Cloudflare's25MiB per-file limit,reassembling byte-exactly to the whole file(assembled[] in LOCAL-RESOURCES.json);and Orbit/ObjX_AST.CMO(4750326bytes,29323records of162bytes),SHA-256 341134bf9033989fa2c7fa9008551fa8ef015ee158ec5a25c04754696e58ba12;and Orbit/ObjX_MPC.CMO.sav(4798116bytes,29618records of162bytes,epoch JD2455000.5,zip date2009-08-12),SHA-256 efd665a75dbd1d8afeb68b4c7b947d82304ffe2b6355cd2c7e74e58347124030.Every other file is excluded.",
+      "usedBy": "E08 Object X:lazy same-origin fetch(size and SHA-256 checked before parsing;for ObjX_MPC.CMO every tile and then the assembled file);heliocentric state vectors propagated by the recovered ephemeris(docs/OBJECT-X.md).Web default ObjX_MPC.CMO.sav(it reproduces the three ObjectX.HTL moving rows at the original default 2009-06-01 04:00 UT);ObjX_MPC.CMO(the original options default)and ObjX_AST.CMO selectable",
       "upstreamStatus": "Included under the user approvals of2026-10-27 and the later ObjX_MPC.CMO.sav approval(AGENTS.md)on the CLEA License.rtf basis(free noncommercial student copies,no distribution for profit).Originator Project CLEA,Gettysburg College;supporters NSF and Gettysburg College.The state vectors were likely computed by CLEA from Minor Planet Center(MPCORB)and Lowell Observatory(ASTORB)orbits(inference from tool strings and file names;uncertain).No public-domain or open-license status,independent upstream permission or original-runtime equivalence is asserted."
     },
     "data/objectx": {

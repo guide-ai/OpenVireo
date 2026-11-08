@@ -1,0 +1,42 @@
+# Front REL1 [W]: response headers for the static release on Cloudflare Pages (docs/DEPLOY.md, docs/RELEASE-1.0.md).
+# Pages applies this file from the output directory; it is not served. Headers of every matching rule are combined, so
+# Cache-Control is set only in the path rules below, never under /*. src/deployHeaders.test.ts checks this file against the
+# code: the inline theme script and print <style> hashes, the live VizieR hosts and the cache rules.
+#
+# Content-Security-Policy, from the hosts the code contacts:
+#   script-src  'self' (Vite bundles, module workers), the inline theme script of index.html by its hash, and
+#               static.cloudflareinsights.com (the Web Analytics beacon Pages injects when analytics is turned on).
+#   style-src   'self' and the two print-preview <style> elements (@page{size:portrait} and @page{size:landscape}) by hash.
+#               React's style props go through the CSSOM, which CSP does not restrict, so no 'unsafe-inline'.
+#   img-src     'self' and data: (print previews draw the sky canvas as a PNG data URL).
+#   media-src   'self' and blob: (Sound Effects play verified WAV bytes from blob URLs).
+#   connect-src 'self', the live camera query's VizieR hosts (VIZIER_POLICY.liveHosts: IDIA, then CDS) and
+#               cloudflareinsights.com (the beacon's report). CfA is approved but not queried live, so it is not listed.
+#   worker-src  'self' (hubble engine, sky field, camera, multi-spec and Object X spectrometer module workers).
+# External links (hubblesite.org, Help > Websites) are navigations in a new tab and need no entry.
+/*
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-Zsw1HYW5lFg+9Ue5KUtmTk4PPZXbvfd2zXC6dzEmPNY=' https://static.cloudflareinsights.com; style-src 'self' 'sha256-Qt3eEwhVZ1pvGGctp+/HYkbxkf+aIHVP/Mb6MDlwYEQ=' 'sha256-5q16RQfYDZjXxeC8pQn71mV4X7fJQh1TRbLSBPXDXsY='; img-src 'self' data:; media-src 'self' blob:; connect-src 'self' https://vizier.idia.ac.za https://vizier.cds.unistra.fr https://cloudflareinsights.com; worker-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: same-origin
+  Cross-Origin-Opener-Policy: same-origin
+  Permissions-Policy: accelerometer=(), camera=(), display-capture=(), geolocation=(), gyroscope=(), hid=(), magnetometer=(), microphone=(), midi=(), payment=(), publickey-credentials-get=(), screen-wake-lock=(), serial=(), usb=(), xr-spatial-tracking=(), browsing-topics=()
+
+# The page itself: always revalidated, so a new release is seen on the next visit.
+/
+  Cache-Control: no-cache
+/index.html
+  Cache-Control: no-cache
+
+# Vite's content-hashed bundles: a changed file gets a new URL.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Byte-exact original resources and the bundled VizieR extracts. Their URLs are file names, not content hashes, so a
+# changed file would keep its URL; the loaders check every file's recorded size and SHA-256 and refuse other bytes. They
+# are cached for a day and then revalidated (ETag) in the background for up to a week. Rule: never change the bytes at an
+# existing URL under /original or /camera; re-cut tiles or re-extract a file under a new path.
+/original/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+/camera/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800

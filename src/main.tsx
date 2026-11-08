@@ -4,6 +4,10 @@ import './theme/base.css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
+import {RouteErrorBoundary,watchPreloadErrors} from './components/LazyBoundary';
 import './style.css';
 import './observatory.css';
-createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);
+// Front REL1 review 1 M1: chunk-load failures after a redeploy are recognised (vite:preloadError), and a last-resort boundary
+// keeps a notice with Reload on screen instead of an empty page if an error escapes every route's own boundary.
+watchPreloadErrors();
+createRoot(document.getElementById('root')!).render(<StrictMode><RouteErrorBoundary><App /></RouteErrorBoundary></StrictMode>);
