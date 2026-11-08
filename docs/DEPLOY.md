@@ -58,7 +58,7 @@ No copies la salida de `whoami` en issues, documentos ni chats: muestra el corre
 npx wrangler@4.150.0 pages project create openvireo --production-branch=main
 ```
 
-La dirección pública será `https://openvireo.pages.dev`. Si ese nombre ya está ocupado, Cloudflare propondrá otro. En ese caso, usa tu nombre en lugar de `openvireo` en todos los comandos.
+El proyecto se llama siempre `openvireo`; mantén `--project-name=openvireo` en todos los comandos. La dirección pública suele ser `https://openvireo.pages.dev`. Si ese subdominio de `pages.dev` ya está ocupado, Cloudflare asigna otro (por ejemplo `https://openvireo-xyz.pages.dev`) y lo muestra al crear el proyecto y en el panel. En ese caso, cambia solo las direcciones de los pasos 8 y 9 por la que muestre Cloudflare.
 
 También puedes crear el proyecto en el panel: **Workers & Pages → Create → Pages → Upload assets**, con el nombre `openvireo`. No conectes Git: esta versión se publica por subida directa.
 
@@ -102,6 +102,10 @@ La prueba comprueba:
 
 ## 6. Desplegar
 
+Despliega **fuera del horario de clase**. Una pestaña que ya estaba abierta sigue pidiendo los archivos de la versión anterior, y esos archivos dejan de existir. La parte que aún no había cargado muestra entonces el aviso "A new version of OpenVireo was published", con *Save investigation* y *Reload the page*. El estudiante debe guardar y recargar. El resto de su trabajo en esa pestaña no se pierde, pero tiene que recargar.
+
+Ejecuta el comando **desde la raíz del repositorio, nunca desde `worker/`**. En `worker/`, Wrangler leería `worker/wrangler.jsonc`, que es la configuración del backend opcional, no la de este sitio.
+
 ```sh
 npx wrangler@4.150.0 pages deploy dist --project-name=openvireo --branch=main
 ```
@@ -109,13 +113,14 @@ npx wrangler@4.150.0 pages deploy dist --project-name=openvireo --branch=main
 - `--branch=main` publica en producción, porque `main` es la rama de producción del proyecto. Otra rama crearía una vista previa en `https://<rama>.openvireo.pages.dev`.
 - Al terminar, Wrangler muestra la dirección del despliegue (`https://<id>.openvireo.pages.dev`). La dirección de producción es `https://openvireo.pages.dev`.
 - Subir unos 676 MiB tarda varios minutos. Si se corta, repite el comando: Pages solo sube los archivos que faltan.
+- **Regla para versiones futuras:** nunca cambies los bytes de un archivo que ya está publicado en `/original/…` o `/camera/…`. Esos archivos se guardan en la caché un día por su nombre. Si hay que volver a trocear un original o rehacer un extracto, publícalo con una ruta nueva (y su SHA-256 en el manifiesto).
 
 ## 7. Activar Web Analytics (una sola vez)
 
 1. En el panel: **Workers & Pages → openvireo → Metrics → Web Analytics → Enable** (en algunas versiones del panel: **Analytics & Logs → Web Analytics**).
 2. Pages inserta por sí solo el script de medición (`static.cloudflareinsights.com/beacon.min.js`) en las páginas HTML del siguiente despliegue. Vuelve a desplegar (paso 6) para que aparezca.
 3. La CSP de `public/_headers` ya admite `https://static.cloudflareinsights.com` (script) y `https://cloudflareinsights.com` (envío de datos). No hay que cambiar el código ni añadir ningún token al repositorio.
-4. Web Analytics no usa cookies ni crea perfiles de visitante. El aviso de privacidad de la aplicación (Help › About this site and privacy) lo explica.
+4. Web Analytics no usa cookies ni crea perfiles de visitante. El aviso de privacidad de la aplicación (Help › About this site and privacy (web)) lo explica.
 
 Si al cabo de un día el panel no muestra visitas, comprueba en la consola del navegador que el script no está bloqueado. Si la causa fuera `Referrer-Policy: same-origin`, cámbiala a `strict-origin-when-cross-origin` en `public/_headers`. Esto no se pudo verificar sin contactar con Cloudflare.
 
@@ -131,7 +136,7 @@ Si al cabo de un día el panel no muestra visitas, comprueba en la consola del n
    - **Púlsares** (`/#radio-control` y `/#pulsar-analysis`);
    - **Objeto X** (`/#object-x`). Elige *Orbit file → ObjX_MPC.CMO* y pulsa *Build the asteroid list…*: la lista debe construirse sin error.
 3. Cámaras: apunta a un campo, marca *Ask VizieR live* y haz una exposición corta. La imagen debe aparecer y los detalles deben nombrar el servidor de VizieR que respondió.
-4. Abre **Help › About this site and privacy** y comprueba el aviso de privacidad y los créditos (Project CLEA, NSF, Gettysburg College y ATNF).
+4. Abre **Help › About this site and privacy (web)** y comprueba el aviso de privacidad y los créditos (Project CLEA, NSF, Gettysburg College y ATNF).
 5. Comprueba las cabeceras desde una terminal:
    ```sh
    curl -sI https://openvireo.pages.dev/ | grep -iE 'content-security-policy|x-content-type-options|referrer-policy|permissions-policy|x-frame-options|cache-control'
@@ -160,7 +165,7 @@ Cada despliegue queda guardado. Para volver al anterior:
   npx wrangler@4.150.0 pages deploy dist --project-name=openvireo --branch=main
   ```
 
-`index.html` se sirve con `no-cache`, así que los visitantes ven la versión restaurada en su siguiente visita. Los recursos con hash de `/assets/` no chocan entre versiones.
+`index.html` se sirve con `no-cache`, así que los visitantes ven la versión restaurada en su siguiente visita. Igual que un despliegue, un rollback hace que las pestañas abiertas tengan que recargar: si puedes, hazlo fuera del horario de clase. Los recursos con hash de `/assets/` no chocan entre versiones.
 
 ## 10. Más adelante: dominio propio
 

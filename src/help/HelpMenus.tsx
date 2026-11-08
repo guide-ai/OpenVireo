@@ -54,7 +54,7 @@ export function HelpMenu({kind,disabled=false,disabledReason,onSiteAbout}:{kind:
     </div>}
    </>}
    <button type="button" data-testid={`${kind}-help-about`} onClick={()=>{setMenu(null);setAbout(true);}}>{menuCaptionText(C.about)}</button>
-   {onSiteAbout&&<button type="button" data-testid={`${kind}-help-site-about`} onClick={()=>{setMenu(null);trigger.current?.focus();onSiteAbout();}}>{M.siteAbout}</button>}
+   {onSiteAbout&&<button type="button" data-testid={`${kind}-help-site-about`} title={M.siteAboutNote} onClick={()=>{setMenu(null);trigger.current?.focus();onSiteAbout();}}>{M.siteAbout}</button>}
   </div>}
   <CleaHelp list={HELP_FILES[kind==='main'?'VIRMNHLP.LST':'PULSRHLP.LST']} openRequest={topics} onReturnFocus={()=>trigger.current?.focus()} testId={`${kind}-help`}/>
   {about&&<AboutDialog version={kind==='main'?ABOUT_BOX.mainVersion:ABOUT_BOX.radioVersion} onClose={()=>{setAbout(false);requestAnimationFrame(()=>trigger.current?.focus());}}/>}

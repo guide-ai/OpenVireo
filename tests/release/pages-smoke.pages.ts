@@ -49,7 +49,7 @@ test('the page, a hashed bundle and an original file carry the release headers',
  const whole=await request.get('/original/orbit/ObjX_MPC.CMO');
  expect([whole.status(),whole.headers()['content-type']]).toEqual([404,'text/html; charset=utf-8']);
  expect(await whole.text()).toContain('This address is not part of OpenVireo.');
- expect(baseURL).toMatch(/^http:\/\/127\.0\.0\.1:63\d\d$/);
+ expect(baseURL).toMatch(/^http:\/\/127\.0\.0\.1:63\d\d$/);// playwright.pages.config.ts admits only 6300–6398
 });
 
 test('the live camera query may reach exactly the VizieR hosts it tries; other hosts are refused by the policy',async({page,baseURL})=>{
@@ -153,4 +153,100 @@ test('a print preview\'s @page <style> elements pass the policy by their hashes,
  // An applied @page rule is visible through the CSSOM; a blocked <style> element has no sheet.
  expect(await preview.locator('style').evaluate(s=>(s as HTMLStyleElement).sheet?.cssRules.length??0)).toBe(1);
  expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);
+});
+
+/** Opens the dome and points the 0.4 m at RA/Dec (hours, degrees) in the telescope view, tracking on. */
+async function pointAt(page:Page,ra:number,dec:number){
+ await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();
+ await button(page,'Open dome ↗').click();
+ if(!await page.locator('#point-ra').isVisible())await page.getByText('Enter coordinates',{exact:true}).click();
+ await page.locator('#point-ra').fill(String(ra));await page.locator('#point-dec').fill(String(dec));
+ await button(page,'Point to coordinates').click();
+ await page.getByRole('group',{name:'Field of view'}).getByRole('button',{name:'Telescope · 15′',exact:true}).click();
+ if(!await button(page,'Turn tracking on').isVisible())await page.getByText('Observatory clock & spectral tracking',{exact:true}).click();
+ await button(page,'Turn tracking on').click();
+}
+// The bundled C5W extract public/camera/vizier/nomad-184.7070+14.7974-r0.25.xml (as tests/ir-camera.spec.ts uses it).
+const EXTRACT_RA=184.707/15,EXTRACT_DEC=14.797389;
+
+test('review 1 L6: a static camera exposure from a bundled extract passes the policy and contacts no other host',async({page,baseURL})=>{
+ test.setTimeout(120_000);
+ const p=await watch(page,baseURL!);await pointAt(page,EXTRACT_RA,EXTRACT_DEC);
+ const camera=page.getByTestId('camera-control');
+ await expect(camera.getByLabel(/Bundled extracts/)).toBeChecked();
+ await camera.getByLabel('Minutes').fill('0');await camera.getByLabel('Seconds').fill('2');
+ await button(page,'Start exposure').click();
+ await expect(page.getByTestId('camera-status')).toHaveText('Image ready.',{timeout:90_000});
+ await camera.getByText('Exposure details',{exact:true}).click();
+ await expect(page.getByTestId('camera-detail-source')).toContainText('Bundled extract nomad-184.7070+14.7974-r0.25 (recorded');
+ expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);
+});
+
+test('review 1 M1: a module worker that cannot be loaded ends the exposure with a typed failure, not a hang',async({page,baseURL})=>{
+ test.setTimeout(120_000);
+ const p=await watch(page,baseURL!);let blocked=0;
+ await page.route(/\/assets\/cameraWorker-[\w-]+\.js$/,route=>{blocked++;return route.fulfill({status:404,contentType:'text/html; charset=utf-8',body:'<!doctype html><title>Not found</title>'});});
+ await pointAt(page,EXTRACT_RA,EXTRACT_DEC);
+ const camera=page.getByTestId('camera-control');
+ await camera.getByLabel('Minutes').fill('0');await camera.getByLabel('Seconds').fill('2');
+ await button(page,'Start exposure').click();
+ await expect(page.getByTestId('camera-status')).toContainText('No image was made',{timeout:60_000});
+ expect(blocked).toBeGreaterThan(0);
+ expect([p.errors,await violations(page),p.external]).toEqual([[],[],[]]);
+});
+
+test('review 1 L6: Sound Effects play their verified WAV bytes from blob: URLs under media-src',async({page,baseURL})=>{
+ test.setTimeout(60_000);
+ const p=await watch(page,baseURL!);
+ await page.addInitScript(()=>{const log:string[]=[];(window as unknown as {__played:string[]}).__played=log;
+  document.addEventListener('playing',e=>{const a=e.target;if(a instanceof HTMLAudioElement&&a.dataset.sound)log.push(`${a.dataset.sound} ${a.currentSrc.split(':')[0]}`);},true);});
+ await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();
+ await page.getByTestId('sound-effects-toggle').check();
+ await button(page,'Open dome ↗').click();
+ await expect.poll(()=>page.evaluate(()=>(window as unknown as {__played:string[]}).__played),{timeout:20_000}).toContain('GARDOOR.WAV blob');
+ expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);
+});
+
+test('review 1 L6: File › Print Sky Image opens its preview with no policy violation',async({page,baseURL})=>{
+ const p=await watch(page,baseURL!),id=(t:string)=>page.getByTestId(t);
+ await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();
+ await button(page,'Open dome ↗').click();
+ if(!await page.locator('#point-ra').isVisible())await page.getByText('Enter coordinates',{exact:true}).click();
+ await page.locator('#point-ra').fill('12.5');await page.locator('#point-dec').fill('12.4');await button(page,'Point to coordinates').click();
+ await id('fi-file-menu').click();await id('print-sky-menu').click();
+ await expect(id('print-sky')).toBeVisible();await expect(id('print-sky-picture').locator('svg')).toHaveCount(1);
+ await expect(id('print-sky-footer')).toContainText('Right Ascension:  12h 30m 00.0s');
+ expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);
+});
+
+test('review 1 M1: after a redeploy, a route whose old chunk is gone shows the update notice; the shell and other work stay',async({page,baseURL})=>{
+ test.setTimeout(90_000);
+ const p=await watch(page,baseURL!);let blocked=0;
+ // As Pages answers a hashed chunk that a new deployment no longer has: its 404 page.
+ await page.route(/\/assets\/ObjectXLab-[\w-]+\.js$/,route=>{blocked++;return route.fulfill({status:404,contentType:'text/html; charset=utf-8',body:'<!doctype html><title>Not found</title>'});});
+ await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();
+ await button(page,'Open dome ↗').click();
+ if(!await page.locator('#point-ra').isVisible())await page.getByText('Enter coordinates',{exact:true}).click();
+ await page.locator('#point-ra').fill('12.5');await page.locator('#point-dec').fill('12.4');// unsaved observatory input
+ await page.locator('button[data-route="object-x"]').click();
+ const notice=page.getByTestId('site-updated');
+ await expect(notice).toBeVisible({timeout:20_000});
+ await expect(notice).toContainText('A new version of OpenVireo was published');
+ await expect(notice).toContainText('Save your investigation first, then reload the page');
+ expect(blocked).toBeGreaterThan(0);
+ // The shell stays: header, navigation and the investigation toolbar.
+ await expect(page.locator('button[data-route="observatory"]')).toBeVisible();
+ await expect(page.getByRole('heading',{name:'One investigation backup'})).toBeVisible();
+ // Save investigation from the notice is the toolbar's own save (a downloaded backup).
+ const download=page.waitForEvent('download');await notice.getByTestId('recovery-save').click();
+ expect((await download).suggestedFilename()).toMatch(/\.json$/);
+ // The other routes kept their state.
+ await page.locator('button[data-route="observatory"]').click();
+ await expect(page.locator('#point-ra')).toHaveValue('12.5');await expect(page.locator('#point-dec')).toHaveValue('12.4');
+ // Reload loads the current version (here the chunk is served again).
+ await page.unroute(/\/assets\/ObjectXLab-[\w-]+\.js$/);
+ await page.locator('button[data-route="object-x"]').click();await notice.getByTestId('recovery-reload').click();
+ await expect(page.getByRole('heading',{name:'The quest for Object X'})).toBeVisible({timeout:20_000});
+ expect([p.errors,await violations(page),p.external]).toEqual([[],[],[]]);
+ expect(p.console.some(m=>/Failed to fetch dynamically imported module/.test(m))).toBe(true);
 });

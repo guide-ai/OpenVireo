@@ -54,15 +54,22 @@ describe('bundled Object X orbit files: lazy same-origin fetch, exact size and S
   // Tiles swapped in order: every tile passes its own check only if served at its own path, so serve tile 0 at tile 1's path.
   const swapped=filesFetcher([],(p,b)=>p===second?read('/original/orbit/ObjX_MPC/000.bin'):b);
   expect(await code(fetchBundledOrbitFile(swapped,signal,'ObjX_MPC.CMO'))).toBe('sha256');
-  // Every request after a bad copy of a tile bypasses the HTTP cache for that tile, until a good copy arrives.
-  const modes:(string|undefined)[]=[];let bad=1;
-  const serve=(log:(string|undefined)[])=>(async(input:RequestInfo|URL,init?:RequestInit)=>{const path=String(input);if(path===second)log.push(init?.cache);let b=read(path);if(path===second&&bad>0){bad--;b=flip(path,b);}return new Response(b);}) as typeof fetch;
-  const retry=serve(modes);
-  expect(await code(fetchBundledOrbitFile(retry,signal,'ObjX_MPC.CMO'))).toBe('sha256');
-  expect(await code(fetchBundledOrbitFile(retry,signal,'ObjX_MPC.CMO'))).toBe('resolved');
-  expect(modes).toEqual(['reload','reload']);
-  const fresh:(string|undefined)[]=[];expect(await code(fetchBundledOrbitFile(serve(fresh),signal,'ObjX_MPC.CMO'))).toBe('resolved');
-  expect(fresh).toEqual([undefined]);
+  // Review 1 L5: a bad copy of a tile is asked for again at once past the HTTP cache (cache: 'reload'), within the same call;
+  // if that copy is bad too, the call fails and the next call asks past the cache from the start.
+  const serve=(bad:{n:number},log:(string|undefined)[])=>(async(input:RequestInfo|URL,init?:RequestInit)=>{const path=String(input);if(path===second)log.push(init?.cache);let b=read(path);if(path===second&&bad.n>0){bad.n--;b=flip(path,b);}return new Response(b);}) as typeof fetch;
+  expect(await code(fetchBundledOrbitFile(serve({n:0},[]),signal,'ObjX_MPC.CMO'))).toBe('resolved');// a good copy clears earlier marks
+  const once:(string|undefined)[]=[];
+  expect(await code(fetchBundledOrbitFile(serve({n:1},once),signal,'ObjX_MPC.CMO'))).toBe('resolved');
+  expect(once).toEqual([undefined,'reload']);
+  const twice:(string|undefined)[]=[],bad2={n:2},f2=serve(bad2,twice);
+  expect(await code(fetchBundledOrbitFile(f2,signal,'ObjX_MPC.CMO'))).toBe('sha256');
+  expect(twice).toEqual([undefined,'reload']);
+  expect(await code(fetchBundledOrbitFile(f2,signal,'ObjX_MPC.CMO'))).toBe('resolved');
+  expect(twice).toEqual([undefined,'reload','reload']);
+  // A failed download is not retried within the call.
+  const offline:(string|undefined)[]=[];
+  const down=(async(input:RequestInfo|URL,init?:RequestInit)=>{const path=String(input);if(path===second){offline.push(init?.cache);return new Response(null,{status:503});}return new Response(read(path));}) as typeof fetch;
+  expect(await code(fetchBundledOrbitFile(down,signal,'ObjX_MPC.CMO'))).toBe('download');expect(offline).toEqual([undefined]);
  },60_000);
  it('rejects other sizes and altered bytes before parsing, and failed responses as download',async()=>{
   const ast=read(BUNDLED_ORBIT_FILES['ObjX_AST.CMO'].path);

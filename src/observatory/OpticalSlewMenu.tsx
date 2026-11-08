@@ -1,4 +1,5 @@
-import {lazy,Suspense,useContext,useEffect,useMemo,useRef,useState} from 'react';
+import {LazyBoundary} from '../components/LazyBoundary';
+import {lazy,useContext,useEffect,useMemo,useRef,useState} from 'react';
 import {ProgrammedSlewContext} from '../polish/programmedSlew';
 import TerminateSlewBox from '../polish/TerminateSlewBox';
 import QuestionBox from '../polish/QuestionBox';
@@ -149,9 +150,9 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,curren
   {deleting!==null&&<QuestionBox caption={HE.deleteCaption} text={HE.deleteText} note={PM.hotListEdit.deleteNote} testId="ob-hotlist-delete-box" onAnswer={confirmDelete}/>}
   <OpticalSkyCoordsDialog state={sky} onEdit={(f,text)=>setSky(s=>editOpticalSkyCoordsField(s,f,text))} onEpoch={i=>setSky(s=>selectOpticalSkyCoordsEpoch(s,i))} onOk={ok} onCancel={cancel} onDismiss={()=>setSky(dismissOpticalSkyCoordsNotice)}/>
   <HotListEntryDialog draft={entry} error={entryError} onEdit={(f,v)=>setEntry(e=>e&&{...e,[f]:v})} onOk={addEntry} onCancel={()=>{setEntry(null);setEditing(null);}} onDismiss={()=>setEntryError('')}/>
-  {fieldInfo?.editMode&&<Suspense fallback={null}><FieldInformationMenu info={fieldInfo} pointing={pointing} enabled={enabled} hotList={hotList} request={fieldRequest} onSlew={target=>setSky(s=>openOpticalSkyCoordsAt(s,target))}/></Suspense>}
-  {fieldInfo&&clusterRequest>0&&<Suspense fallback={null}><ClusterDataWindow request={clusterRequest} editMode={editMode} driveOn={!!fieldInfo.driveOn} pointing={pointing} hotList={hotList}/></Suspense>}
-  {fieldInfo&&qsoRequest>0&&<Suspense fallback={null}><QsoListWindow request={qsoRequest} editMode={editMode} hotList={hotList} hidden={fieldInfo.hidden??null}/></Suspense>}
+  {fieldInfo?.editMode&&<LazyBoundary fallback={null}><FieldInformationMenu info={fieldInfo} pointing={pointing} enabled={enabled} hotList={hotList} request={fieldRequest} onSlew={target=>setSky(s=>openOpticalSkyCoordsAt(s,target))}/></LazyBoundary>}
+  {fieldInfo&&clusterRequest>0&&<LazyBoundary fallback={null}><ClusterDataWindow request={clusterRequest} editMode={editMode} driveOn={!!fieldInfo.driveOn} pointing={pointing} hotList={hotList}/></LazyBoundary>}
+  {fieldInfo&&qsoRequest>0&&<LazyBoundary fallback={null}><QsoListWindow request={qsoRequest} editMode={editMode} hotList={hotList} hidden={fieldInfo.hidden??null}/></LazyBoundary>}
   {info&&<InfoBox caption={info.caption} text={info.text} onClose={()=>setInfo(null)}/>}
   {print&&<HotListPrintPreview snapshot={print} editMode={editMode} onClose={()=>setPrint(null)}/>}
  </div>;

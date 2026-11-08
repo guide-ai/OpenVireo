@@ -40,8 +40,8 @@ Each adaptation is labelled in the app where it appears and in each exercise's d
 
 - No cookies and no accounts.
 - Visit analytics are aggregate and cookie-free (Cloudflare Web Analytics).
-- Apart from that analytics beacon, the live camera query is the only request to another site, and it runs only when the student chooses it.
-- The notice is in the app under Help › About this site and privacy.
+- Apart from that analytics beacon, the live camera query is the only request to another site, and it runs only when the student chooses it. The browser contacts the VizieR mirror directly, so the mirror sees the student's IP address, as any site does.
+- The notice is in the app under Help › About this site and privacy (web).
 - The response headers are in `public/_headers`: a strict Content-Security-Policy, `nosniff`, `same-origin` referrer, a deny-all `Permissions-Policy` and `frame-ancestors 'none'`.
 
 ## Known limits
@@ -49,6 +49,7 @@ Each adaptation is labelled in the app where it appears and in each exercise's d
 - Equivalence with the original runtime (x87, GDI, timing, random numbers) is not claimed or verified. Tests prove the chosen contracts, not the original's output.
 - Peripheral VIREO branches outside the seven student paths may be partial. They are marked where they appear.
 - Some originals are missing from VIREO's own archive (for example seven galaxy photographs). Their rows keep VIREO's missing-file behaviour.
+- After a new deploy or a rollback, a tab that was already open must reload: a part it had not loaded yet shows a notice with Save investigation and Reload the page.
 - The live camera query depends on the VizieR mirrors (IDIA, then CDS). If they are unreachable, only fields with a bundled extract can be imaged.
 - The site is large (about 676 MiB in about 2000 files), but the browser loads data only as an exercise needs it.
 - These are deferred:

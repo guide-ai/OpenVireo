@@ -34,7 +34,8 @@
 
 # Byte-exact original resources and the bundled VizieR extracts. Their URLs are file names, not content hashes, so a
 # changed file would keep its URL; the loaders check every file's recorded size and SHA-256 and refuse other bytes. They
-# are cached for a day and then revalidated (ETag) in the background for up to a week.
+# are cached for a day and then revalidated (ETag) in the background for up to a week. Rule: never change the bytes at an
+# existing URL under /original or /camera; re-cut tiles or re-extract a file under a new path.
 /original/*
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 /camera/*

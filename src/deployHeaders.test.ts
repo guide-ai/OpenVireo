@@ -32,12 +32,13 @@ describe('public/_headers for the static release',()=>{
  it('allows each inline script of index.html by its hash, and nothing inline otherwise',()=>{
   const inline=[...text('index.html').matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)].map(m=>m[1]);
   expect(inline.length).toBeGreaterThan(0);
-  for(const s of inline)expect(directive('script-src')).toContain(sha(s));
+  // Exactly these hashes: one per inline script, none left over from an earlier version.
+  expect(directive('script-src')!.filter(x=>x.startsWith("'sha256-")).sort()).toEqual([...new Set(inline.map(sha))].sort());
   for(const d of ['script-src','style-src'])expect(directive(d)).not.toContain("'unsafe-inline'");
   expect(directive('script-src')).not.toContain("'unsafe-eval'");
  });
  it('allows the print-preview <style> elements by hash',()=>{
-  for(const o of ['portrait','landscape'] as const)expect(directive('style-src')).toContain(sha(printPageSizeCss(o)));
+  expect(directive('style-src')!.filter(x=>x.startsWith("'sha256-")).sort()).toEqual((['portrait','landscape'] as const).map(o=>sha(printPageSizeCss(o))).sort());
  });
  it('lets the live camera query reach exactly the hosts it tries, plus the analytics beacon',()=>{
   const connect=directive('connect-src')!;

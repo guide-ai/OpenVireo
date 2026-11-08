@@ -9,7 +9,8 @@ import {defineConfig} from '@playwright/test';
 
 process.env.PLAYWRIGHT_BROWSERS_PATH ??= fileURLToPath(new URL('./.local/browsers', import.meta.url));
 const port=Number(process.env.OPENVIREO_PAGES_PORT??6310),inspector=port+1;
-if(!Number.isInteger(port)||port<1024||port>65534)throw new Error('Invalid local Pages port');
+// Loopback ports 6300–6399 only (the server and its inspector on port+1); never Vite's 5173.
+if(!Number.isInteger(port)||port<6300||port>6398)throw new Error('OPENVIREO_PAGES_PORT must be 6300–6398');
 const wrangler=fileURLToPath(new URL('./worker/node_modules/wrangler/bin/wrangler.js',import.meta.url));
 if(!existsSync(fileURLToPath(new URL('./dist/index.html',import.meta.url))))throw new Error('dist/ is missing: run npm run build first.');
 if(!existsSync(wrangler))throw new Error('The pinned wrangler is missing: run npm ci in worker/.');

@@ -13,7 +13,8 @@ export const HELP_MENU_EN=Object.freeze({
  reminderErrorQuestion:'VIREO then asks instead:',
  exitDone:'You have finished the exercise. A web page cannot close itself: save your work, then close this browser tab when you are ready.',
  /** Front REL1 [W]: a web item after VIREO's About..., opening the site's About page (privacy and credits). */
- siteAbout:'About this site and privacy',
+ siteAbout:'About this site and privacy (web)',
+ siteAboutNote:'Web addition: VIREO\'s Help menu has no such item.',
  exitNote:'VIREO shows this reminder when you exit the observatory during an exercise (after Run Exercise); otherwise it only asks whether to quit. OpenVireo has no Log In or Run Exercise step, so the observatory is always an exercise in progress. In VIREO, OK or Yes quits the program; Cancel or No keeps it open.',
 });
 

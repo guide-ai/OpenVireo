@@ -16,7 +16,9 @@ export type BundledOrbitFileId='ObjX_MPC.CMO.sav'|'ObjX_MPC.CMO'|'ObjX_AST.CMO';
 /** `path` is where the whole file is served; a tiled file (`tiles`, in order) is served only as its tiles and `path` is then
  * the tile directory, used only to key the verified bytes kept for the tab (never fetched). */
 export type BundledOrbitFileIdentity=Readonly<{id:BundledOrbitFileId;path:string;bytes:number;records:number;sha256:string;archiveSha256:string;archiveMember:string;tiles?:readonly SameOriginTile[]}>;
-/** Front REL1: tiles of 65536 162-byte records (10616832 bytes, the GSC tiles' record count), under 25 MiB with a wide margin. */
+/** Front REL1: tiles of 65536 162-byte records (10616832 bytes, the GSC tiles' record count), under 25 MiB with a wide margin.
+ * Rule (review 1 L5): /original and /camera files are cached for a day by their file names (public/_headers), so the bytes at an
+ * existing URL must never change. A file re-cut into other tiles, or a re-extracted file, gets a new path. */
 export const ORBIT_TILE_RECORDS=65536;
 export const BUNDLED_ORBIT_FILES:Readonly<Record<BundledOrbitFileId,BundledOrbitFileIdentity>>=Object.freeze({
  'ObjX_MPC.CMO.sav':Object.freeze({id:'ObjX_MPC.CMO.sav',path:'/original/orbit/ObjX_MPC.CMO.sav',bytes:4798116,records:29618,

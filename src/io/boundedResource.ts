@@ -43,22 +43,32 @@ const badTiles=new Set<string>();
 export async function verifiedSameOriginTiles<T>(fetcher:typeof fetch,signal:AbortSignal,key:string,tiles:readonly SameOriginTile[],verify:(buffer:ArrayBuffer)=>Promise<T>,failure:(code:'size'|'download'|'sha256')=>Error):Promise<T>{
  if(!tiles.length||tiles.some(t=>!Number.isSafeInteger(t.bytes)||t.bytes<1))throw failure('size');
  return verifiedKept(fetcher,signal,key,async()=>{
-  const parts=await Promise.all(tiles.map(async tile=>{
+  /** One request for one tile: its bytes, or the failure code (an integrity code marks the tile bad for later requests). */
+  async function attempt(tile:SameOriginTile,reload:boolean):Promise<Uint8Array|'size'|'download'|'sha256'>{
    let buffer:ArrayBuffer;
    try{
-    const response=await fetcher(tile.path,{signal,credentials:'same-origin',...(badTiles.has(tile.path)?{cache:'reload' as const}:{})});
+    const response=await fetcher(tile.path,{signal,credentials:'same-origin',...(reload?{cache:'reload' as const}:{})});
     if(/^\s*text\/html\b/i.test(response.headers.get('content-type')??'')){try{await response.body?.cancel();}catch{/* ignore */}throw new BoundedResourceError('download');}
     buffer=await boundedResourceBody(response,tile.bytes,signal);
    }catch(error){
     checkResourceAbort(signal);
     const size=error instanceof BoundedResourceError&&error.code==='size';if(size)badTiles.add(tile.path);
-    throw failure(size?'size':'download');
+    return size?'size':'download';
    }
    checkResourceAbort(signal);
-   if(buffer.byteLength!==tile.bytes){badTiles.add(tile.path);throw failure('size');}
-   if(await resourceSha256(buffer)!==tile.sha256){badTiles.add(tile.path);throw failure('sha256');}
+   if(buffer.byteLength!==tile.bytes){badTiles.add(tile.path);return 'size';}
+   if(await resourceSha256(buffer)!==tile.sha256){badTiles.add(tile.path);return 'sha256';}
    checkResourceAbort(signal);badTiles.delete(tile.path);
    return new Uint8Array(buffer);
+  }
+  const parts=await Promise.all(tiles.map(async tile=>{
+   const reload=badTiles.has(tile.path);
+   let got=await attempt(tile,reload);
+   // Review 1 L5: a tile whose bytes were wrong (a stale or damaged cached copy) is asked for once more at once, past the HTTP
+   // cache; a failed download is not retried here.
+   if((got==='size'||got==='sha256')&&!reload)got=await attempt(tile,true);
+   if(typeof got==='string')throw failure(got);
+   return got;
   }));
   const whole=new Uint8Array(parts.reduce((sum,p)=>sum+p.byteLength,0));let offset=0;
   for(const part of parts){whole.set(part,offset);offset+=part.byteLength;}
