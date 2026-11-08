@@ -21,3 +21,14 @@ describe('Front WebHelp: OpenVireo help topics',()=>{
   expect(map&&map.kind==='map'&&map.rows.length).toBeGreaterThan(5);
  });
 });
+
+describe('Front WebHelp review 1: the labels the help quotes exist in the UI',()=>{
+ it('finds each quoted control label in the English catalog or the message modules',async()=>{
+  const {readFileSync,readdirSync,statSync}=await import('node:fs');const path=await import('node:path');
+  const root=path.resolve(import.meta.dirname,'..');let ui='';
+  const walk=(d:string)=>{for(const f of readdirSync(d)){const q=path.join(d,f);if(statSync(q).isDirectory())walk(q);else if(/(Messages|Literals)?\.(ts|json)$/.test(f)&&!f.endsWith('.test.ts')&&q!==path.join(root,'help','webHelp.ts'))ui+=readFileSync(q,'utf8');}};
+  walk(root);ui=ui.replace(/&/g,'');
+  for(const label of ['Open dome','Point telescope','Point to coordinates','Turn tracking on','Use this telescope','Telescope profile to inspect or select','Save investigation','Restore investigation JSON','What a backup includes','Download results text','Download results CSV','Print results','Save image (FITS)','Start exposure','Saved images','Set Date/Time…','Site Information…','Site Parameters…','Request 1.0 Meter Telescope','Request 4.0 Meter Telescope','Continue to next step','Go to the next step','Start pulsar exercise','Save recorded measurements (.CSV)','Set the observatory clock','Optical Simulation Options…','Results Editors','Exit Observatory','Leave','Hubble lab guide','LSS guide','Pulsar guide','Pleiades lab guide','Classification guide','Cluster HR guide'])
+   expect(ui,label).toContain(label);
+ });
+});

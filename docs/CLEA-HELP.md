@@ -61,7 +61,7 @@ OpenVireo's main window Help (Front WebHelp, 2026-11-08 [W]) has:
 - About OpenVireo and privacy — the site's About page (Front REL1);
 - under the label "Original VIREO (Windows program)": VIREO help topics… (VIREO's Topics..., VIRMnHlp.LST, unchanged, with a first note that it describes the Windows program) and About VIREO 1.504… (VIREO's About...).
 
-The per-window Help buttons keep VIREO's own help: those windows are rebuilt from VIREO's, so their help matches them.
+The per-window Help buttons keep VIREO's own help for that window; where the web panel differs, the panel carries its own web note.
 
 The radio lab's Help has Topics... and About This Exercise... ("Version 1.001-32").
 
@@ -126,3 +126,11 @@ Object X: no shown help text names an Object X target. A test checks that no Obj
 - Options cannot change the index or URL names.
 - The help directory option is not modelled.
 - A text file missing from the zip would show VIREO's "Help Not Available" message, but no shown index names one.
+
+## Front WebHelp review (2026-11-08)
+
+Plan and implementation: Claude Opus 5.5 (coordinator); independent review: a separate Claude Opus 5.5 subagent at high effort, read-only, over commit f0e97d6.
+
+Raw findings (should-fix): (1) on phones Escape in the help dialog also closed the header's Tools drawer and lost focus, because React bubbles a portal's keydown to the header; (2) the printing topic said every print button opens a preview, but Print results and Print spectrum call the browser's print dialog directly; (3) the pulsar saving advice said Pulsar Results saves .CSV, but it only opens a saved file, and omitted that Save investigation keeps pulsar recordings and rows; (4) telescope names did not match the Request 1.0 / 4.0 Meter Telescope buttons; (5) "the help matches the panel because the panels are rebuilt from VIREO's" overclaimed equivalence; (6) the guide button is not called "Continue". Nits: tracking gates only the cameras and spectrometers; Exit Observatory is in the File menu of Move the telescope; "Results Editors" capitalisation; Choose an object's groups; Sky exposure missing from Instruments; Site Parameters changes the site; instructor mode unlocks after a confirmation; no test checked the quoted labels.
+
+Resolution: all confirmed against the source and fixed. Escape is stopped at the Help menu for every dialog it opens (web help, VIREO help list, VIREO About), with a phone e2e step per dialog; the topics were reworded as suggested; a unit test now checks that 35 labels the help quotes exist in the English catalog or the message modules.

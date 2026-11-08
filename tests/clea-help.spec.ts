@@ -101,7 +101,15 @@ test('OpenVireo help opens from the phone Tools menu and fits the screen',async(
  await id(page,'main-help-menu').click();await id(page,'main-help-web').click();
  const help=id(page,'web-help');await expect(help).toBeVisible();
  expect(await help.evaluate(d=>d.scrollWidth<=d.clientWidth&&d.getBoundingClientRect().right<=window.innerWidth)).toBe(true);
- await id(page,'web-help-close').click();await expect(help).toHaveCount(0);
+ await id(page,'web-help-close').click();await expect(help).toHaveCount(0);await expect(id(page,'main-help-menu')).toBeFocused();
+ // Escape closes only the dialog: the Tools drawer stays open and focus returns to Help (review 1 S1), for the web help, VIREO's
+ // help list and VIREO's About box.
+ await id(page,'main-help-menu').click();await id(page,'main-help-web').click();await expect(help).toBeVisible();
+ await page.keyboard.press('Escape');await expect(help).toHaveCount(0);await expect(id(page,'main-help-menu')).toBeFocused();
+ await id(page,'main-help-menu').click();await id(page,'main-help-menu-topics').click();await expect(id(page,'main-help-topics')).toBeVisible();
+ await page.keyboard.press('Escape');await expect(id(page,'main-help-topics')).toBeHidden();await expect(id(page,'main-help-menu')).toBeFocused();
+ await id(page,'main-help-menu').click();await id(page,'main-help-about').click();await expect(id(page,'help-about')).toBeVisible();
+ await page.keyboard.press('Escape');await expect(id(page,'help-about')).toHaveCount(0);await expect(id(page,'main-help-menu')).toBeFocused();
 });
 
 test('main window Help: Topics, Websites and About; File › Exit Observatory shows VIREO\'s reminder',async({page})=>{

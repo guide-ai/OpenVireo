@@ -41,7 +41,12 @@ export function HelpMenu({kind,disabled=false,disabledReason,onSiteAbout}:{kind:
  const trigger=useRef<HTMLButtonElement>(null);
  const C=kind==='main'?MAIN_HELP_MENU:RADIO_HELP_MENU,off=disabled||disabledReason!==undefined;
  useEffect(()=>{if(off)setMenu(null);},[off]);
- const escape=(e:React.KeyboardEvent)=>{if(e.key==='Escape'&&menu){e.preventDefault();e.stopPropagation();setMenu(null);trigger.current?.focus();}};
+ const escape=(e:React.KeyboardEvent)=>{
+  if(e.key!=='Escape')return;
+  // Escape in a dialog this menu opened closes only that dialog, never the header's phone Tools drawer around the menu.
+  if((e.target as Element).closest('dialog')){e.stopPropagation();return;}
+  if(menu){e.preventDefault();e.stopPropagation();setMenu(null);trigger.current?.focus();}
+ };
  return <div className="fi-menu" onKeyDown={escape}>
   <button type="button" ref={trigger} disabled={off} aria-label={M.menuName[kind]} aria-describedby={disabledReason?`${id}-off`:undefined} aria-expanded={menu!==null} aria-controls={`${id}-help`} data-testid={`${kind}-help-menu`} onClick={()=>setMenu(m=>m?null:'help')}>{menuCaptionText(C.help)}</button>
   {disabledReason&&<p id={`${id}-off`} className="fi-note fi-menu-note" data-testid={`${kind}-help-off`}>{disabledReason}</p>}
