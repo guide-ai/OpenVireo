@@ -37,7 +37,7 @@ name is an options field; OpenVireo uses its default.
 | LSS wedge plot (0x5821cc) | Wedge plot | WdgPltHlp.LST (+0xb9c) |
 | Pulsar analysis (0x56e634) | Pulsar analysis | PLSANHLP.LST (pulsar +0x644) |
 | Pulsar parameters, TPlsrDataForm1 (0x569690) | Pulsar parameters window | PLSLSHLP.LST (pulsar +0x68c) |
-| Main window, Help › Topics... (0x589724) | App header › Help, on every route | VIRMnHlp.LST (+0x884) |
+| Main window, Help › Topics... (0x589724) | App header › Help › VIREO help topics…, on every route | VIRMnHlp.LST (+0x884) |
 | Radio lab, Help › Topics... (0x565278) | Radio telescope control panel › Help | PULSRHLP.LST (pulsar +0x5fc) |
 | Multi-Spec list TMSpecListForm1 (0x5267a8) | Multi-Spec list window | SpLstHlp (+0xb0c), empty: Help disabled |
 | Multi-Spec control TMultSpCntrl (0x52a88c) | Multi-Spec control window | MltSpHlp (+0xb54), empty: Help disabled |
@@ -53,10 +53,15 @@ Notes:
 
 ## Main window and radio lab menus
 
-The main window's Help has:
-- Topics...;
-- Websites (2MASS Catalog, Project CLEA, NVO);
-- About... ("Version 1.504").
+VIREO's main window Help has Topics..., Websites (2MASS Catalog, Project CLEA, NVO) and About... ("Version 1.504").
+
+OpenVireo's main window Help (Front WebHelp, 2026-11-08 [W]) has:
+- Help topics… — OpenVireo's own help, written for the web site (`src/help/webHelp.ts`, shown by `src/help/WebHelpDialog.tsx`). VIRMnHlp.TXT describes the Windows program (File › Log In, Run Exercise, the Telescopes and Tools menus, DS9, a spreadsheet, NumLock and MouseKeys), which made no sense as the site's help. The web help covers getting started, the exercise guides, the observatory, instruments, analysis pages, saving, printing, finishing, keyboard and phones, instructor mode, and a "Coming from VIREO (Windows)" table that maps each VIREO menu step to its place in OpenVireo. It is new web text, not a CLEA resource.
+- Websites (2MASS Catalog, Project CLEA, NVO), unchanged;
+- About OpenVireo and privacy — the site's About page (Front REL1);
+- under the label "Original VIREO (Windows program)": VIREO help topics… (VIREO's Topics..., VIRMnHlp.LST, unchanged, with a first note that it describes the Windows program) and About VIREO 1.504… (VIREO's About...).
+
+The per-window Help buttons keep VIREO's own help: those windows are rebuilt from VIREO's, so their help matches them.
 
 The radio lab's Help has Topics... and About This Exercise... ("Version 1.001-32").
 
@@ -110,7 +115,7 @@ ASTRMHLP, HUBHLP, LSSHLP, OBJXHLP, OBXMNHLP and TOOLSHLP (TOOLSHLP is identical 
 - The text files they name (`astrmhlp.txt`, `hublab.txt`, `lsslab.txt`, `astrmlab.txt`, `ObXMnHlp.txt`) are not in the zip.
 - No Hubble, LSS, Object X or astrometry window has a Help item.
 
-They are bundled under the approval but not shown. The Hubble, LSS and Object X exercises are covered by the main window's Help › Topics (VIRMnHlp, its "Tools" and exercise topics).
+They are bundled under the approval but not shown. The Hubble, LSS and Object X exercises are covered by the main window's VIREO help topics (VIRMnHlp, its "Tools" and exercise topics) and by OpenVireo's own Help topics….
 
 Object X: no shown help text names an Object X target. A test checks that no ObjectX.HTL object ID appears in any bundled help text.
 

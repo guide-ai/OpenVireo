@@ -9,7 +9,7 @@ import './polish.css';
  * (src/help/HelpMenus.tsx AboutBoxPanel; texts in src/help/mainHelp.ts) with the Version label 0x58982c sets at run time,
  * "Version 1.504" (the DFM's design-time "Version 0.5" is never shown), then the web section [W]: what this site is, what works, privacy (Front REL1), credits and licence basis. ProgramIcon (CLEA logo) is not an
  * approved resource and is omitted. Opened by the observatory's "What works in this version" button and by the web item Help ›
- * About this site and privacy (Front REL1 [W]). */
+ * About OpenVireo and privacy (Front REL1 [W]). */
 function AboutDialog({dialogRef}:{dialogRef:RefObject<HTMLDialogElement|null>}){
  const A=ABOUT_BOX,W=PM.about;
  return <dialog ref={dialogRef} className="about-dialog" aria-labelledby="scope-heading" data-testid="about-dialog">

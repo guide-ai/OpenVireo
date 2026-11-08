@@ -41,7 +41,7 @@ Each adaptation is labelled in the app where it appears and in each exercise's d
 - No cookies and no accounts.
 - Visit analytics are aggregate and cookie-free (Cloudflare Web Analytics).
 - Apart from that analytics beacon, the live camera query is the only request to another site, and it runs only when the student chooses it. The browser contacts the VizieR mirror directly, so the mirror sees the student's IP address, as any site does.
-- The notice is in the app under Help › About this site and privacy (web).
+- The notice is in the app under Help › About OpenVireo and privacy.
 - The response headers are in `public/_headers`: a strict Content-Security-Policy, `nosniff`, `same-origin` referrer, a deny-all `Permissions-Policy` and `frame-ancestors 'none'`.
 
 ## Known limits

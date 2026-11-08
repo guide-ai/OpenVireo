@@ -106,7 +106,7 @@ for(const [hash,name] of ROUTES)test(`${name} (${hash}) opens with no policy vio
  expect({console:p.console,errors:p.errors,csp:await violations(page),external:p.external}).toEqual({console:[],errors:[],csp:[],external:[]});
 });
 
-test('Help › About this site and privacy shows the privacy notice and the credits',async({page,baseURL})=>{
+test('Help › About OpenVireo and privacy shows the privacy notice and the credits',async({page,baseURL})=>{
  const p=await watch(page,baseURL!);
  await page.goto('/#object-x');await page.getByTestId('main-help-menu').click();await page.getByTestId('main-help-site-about').click();
  const about=page.getByTestId('about-dialog');await expect(about).toBeVisible();
