@@ -1,6 +1,6 @@
 import {describe,expect,it} from 'vitest';
 import {TOUR} from './tour';
-import {placeTourCard} from './tourPlacement';
+import {placeTourCard,spotBox,SPOT_PAD,SPOT_RING} from './tourPlacement';
 
 const card={width:320,height:200};
 describe('Front Onboarding: tour data and card placement',()=>{
@@ -21,5 +21,13 @@ describe('Front Onboarding: tour data and card placement',()=>{
   expect(placeTourCard({left:800,top:560,width:470,height:220},card,{width:1280,height:800})).toEqual({left:800,top:346,side:'above'});
   const p=placeTourCard({left:700,top:20,width:580,height:760},card,{width:1280,height:800});
   expect(p.side).toBe('bottom');expect(p.top+card.height).toBeLessThanOrEqual(800);
+ });
+ it('outlines a part with even space around its text, and keeps the whole outline inside the window',()=>{
+  // The Observatory steps strip in the middle of the page: SPOT_PAD all round (the first version left 6 px, and the strip's
+  // own text touched the ring).
+  expect(spotBox({left:278,top:400,width:1235,height:88},{width:1558,height:700})).toEqual({left:278-SPOT_PAD,top:400-SPOT_PAD,width:1235+2*SPOT_PAD,height:88+2*SPOT_PAD});
+  // A sidebar against the window's top-left corner and a part cut off at the bottom: the ring is pulled in, not cut off.
+  expect(spotBox({left:0,top:0,width:225,height:700},{width:1558,height:700})).toEqual({left:SPOT_RING,top:SPOT_RING,width:225+SPOT_PAD-SPOT_RING,height:700-2*SPOT_RING});
+  expect(spotBox({left:15,top:560,width:290,height:80},{width:320,height:640})).toEqual({left:SPOT_RING,top:548,width:320-2*SPOT_RING,height:640-SPOT_RING-548});
  });
 });
