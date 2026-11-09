@@ -25,6 +25,7 @@ export default function SpectralLineTable({testId='spl',onLineSelect,cursorWavel
  const id=useId(),opener=useRef<HTMLButtonElement>(null),rowsRef=useRef<HTMLDivElement>(null),helpHeading=useRef<HTMLHeadingElement>(null);
  const [load,setLoad]=useState<'idle'|'loading'|'error'|Loaded>('idle'),[open,setOpen]=useState(false),[index,setIndex]=useState(-1);
  const [original,setOriginal]=useState(false),offered=helpTranslationOffered(),view:HelpView=offered&&!original?'translation':'original';
+ const textLang=offered&&view==='original'?'en':undefined;
  const [help,setHelp]=useState<Readonly<{name:string;rows:readonly string[]}>|null>(null),[message,setMessage]=useState<Readonly<{caption:string;text:string}>|null>(null);
  const loaded=typeof load==='object'?load:null;
  async function show(){
@@ -68,7 +69,7 @@ export default function SpectralLineTable({testId='spl',onLineSelect,cursorWavel
   </div>
   {open&&loaded&&<section className="cluster-hr-window spl-window" aria-labelledby={`${id}-list`} data-testid={`${testId}-list`}>
    <h3 id={`${id}-list`}>{M.listCaption}</h3>
-   <div ref={rowsRef}><HelpListBox rows={loaded.lines.map(l=>l.row)} selected={index} onSelect={select} onActivate={i=>void readLine(i)} label={M.rows} testId={`${testId}-rows`} columns/></div>
+   <div ref={rowsRef}><HelpListBox rows={loaded.lines.map(l=>l.row)} selected={index} onSelect={select} onActivate={i=>void readLine(i)} label={M.rows} testId={`${testId}-rows`} columns lang={textLang}/></div>
    <p className="cluster-hr-note">{M.note}</p>
    {offered&&<ViewSwitch view={view} onSwitch={()=>void switchView()} testId={`${testId}-view`}/>}
    {lineCursorShown&&<p role="status" data-testid={`${testId}-cursor`}>{cursorWavelength===null?M.cursorOutside:M.cursorAt(cursorWavelength.toFixed(2))}</p>}
@@ -78,7 +79,7 @@ export default function SpectralLineTable({testId='spl',onLineSelect,cursorWavel
   </section>}
   {open&&help&&<section className="cluster-hr-window spl-window" aria-labelledby={`${id}-help`} data-testid={`${testId}-help`}>
    <h3 id={`${id}-help`} ref={helpHeading} tabIndex={-1}>{vireo(SPECTRAL_LINE_HELP_CAPTION)}</h3>
-   <HelpListBox rows={help.rows} selected={-1} onSelect={()=>{}} onActivate={()=>{}} label={M.helpRows} testId={`${testId}-help-text`} wrap/>
+   <HelpListBox rows={help.rows} selected={-1} onSelect={()=>{}} onActivate={()=>{}} label={M.helpRows} testId={`${testId}-help-text`} wrap lang={textLang}/>
    <button type="button" className="secondary-button" data-testid={`${testId}-help-close`} onClick={closeHelp}>{M.close}</button>
   </section>}
  </div>;

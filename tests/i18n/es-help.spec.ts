@@ -1,6 +1,8 @@
 import {test,expect,type Page} from '@playwright/test';
 import {readFileSync} from 'node:fs';
 import witness from '../../src/help/helpAll.witness.json' with {type:'json'};
+import en from '../../src/i18n/en.json' with {type:'json'};
+import es from '../../src/i18n/es/es.json' with {type:'json'};
 
 // Front ES-HELP (docs/I18N.md): VIREO's help files in Spanish on a `?lang=es-419` preview load. Every window's Help opens the
 // translation (a web adaptation, labelled as such), "Ver original (inglés)" shows VIREO's exact English (the bundled file's own
@@ -9,8 +11,11 @@ import witness from '../../src/help/helpAll.witness.json' with {type:'json'};
 const id=(p:Page,t:string)=>p.getByTestId(t);
 const lists=witness.lists as Record<string,{rows:string[];topics:{index:number}[]}>;
 const original=(path:string)=>readFileSync(new URL(`../../public/original/${path}`,import.meta.url),'latin1').split(/\r?\n/);
-const WINDOWS=[['#photometer','photo-help','PHOTOHLP.LST'],['#spectrometer','spectrometer-index-help','SPECHLP.LST'],['#classification','class-help','CLASSHLP.LST'],
+const WINDOWS=[['#observatory','telescope-help','OBSRVHLP.LST'],['#observatory','camera-help','CAMHLP.LST'],['#cluster-database','cluster-help','HRANALHLP.LST'],
+ ['#photometer','photo-help','PHOTOHLP.LST'],['#spectrometer','spectrometer-index-help','SPECHLP.LST'],['#classification','class-help','CLASSHLP.LST'],
  ['#spectrum','measure-help','MEASHLP.LST'],['#lss-wedge','wedge-help','WDGPLTHLP.LST'],['#pulsar-analysis','pulsar-analysis-help','PLSANHLP.LST']] as const;
+/** A catalog key's text on a Spanish load (English until the area's sub-front translates it). */
+const tr=(key:keyof typeof en)=>(es as Record<string,string>)[key]??en[key];
 const LABEL='Traducción: adaptación web de OpenVireo (no es de CLEA)';
 async function noHorizontalScroll(page:Page){
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
@@ -21,7 +26,11 @@ test('every instrument window opens its help in Spanish, and "Ver original (ingl
  for(const [route,prefix,list] of WINDOWS){
   await page.goto('about:blank');// a hash-only change would keep the previous window's open dialog
   await page.goto(`/?lang=es-419${route}`);
-  await id(page,`${prefix}-open`).click();
+  if(prefix==='cluster-help'){// the cluster window's Help needs a loaded dataset (tests/cluster-hr-help.spec.ts)
+   const lab=page.locator('.cluster-database-lab');
+   await lab.getByLabel(tr('db.choose'),{exact:true}).selectOption('m67');await lab.getByRole('button',{name:tr('db.load'),exact:true}).click();
+  }
+  await id(page,`${prefix}-open`).click({timeout:20000});
   const topics=id(page,`${prefix}-topics`),rows=id(page,`${prefix}-topic-list`).getByRole('option'),expected=lists[list].rows;
   await expect(rows).toHaveCount(expected.length);
   // Spanish rows: not VIREO's English, and labelled as a web adaptation.
@@ -37,12 +46,40 @@ test('every instrument window opens its help in Spanish, and "Ver original (ingl
   // Ver original: the same topic, VIREO's exact English rows and text.
   await id(page,`${prefix}-view-switch`).click();
   await expect(id(page,`${prefix}-view-label`)).toHaveText('Original: el texto exacto de VIREO, en inglés');
+  await expect(id(page,`${prefix}-topic-text`)).toHaveAttribute('lang','en');
   expect(await id(page,`${prefix}-topic-text`).textContent()).not.toBe(spanishText);
   await id(page,`${prefix}-topic-menu`).click();await window.getByRole('button',{name:/Mostrar los temas de ayuda|Show Help Topics/}).click();
-  await expect(rows).toHaveCount(expected.length);
+  await expect(rows).toHaveCount(expected.length);await expect(id(page,`${prefix}-topic-list`)).toHaveAttribute('lang','en');
   expect((await rows.allTextContents()).map(t=>t.replace(/\u00a0/g,' ')),list).toEqual(expected.map(r=>r===''?' ':r));
   await expect(topics).toBeVisible();
  }
+});
+
+test('the radio Help menu opens PULSRHLP in Spanish, and its original is VIREO\'s',async({page})=>{
+ await page.goto('/?lang=es-419#radio-control');
+ await id(page,'radio-exercise').click();await id(page,'radio-env-compiled').click();await id(page,'radio-access').click();await id(page,'radio-timer-deliver').click();
+ await id(page,'radio-switch').click();await expect(id(page,'radio-panel-window')).toBeVisible();
+ await id(page,'radio-help-menu').click();await id(page,'radio-help-menu-topics').click();
+ const rows=id(page,'radio-help-topic-list').getByRole('option'),expected=lists['PULSRHLP.LST'].rows;
+ await expect(rows).toHaveCount(expected.length);await expect(rows.first()).toHaveText('-Operaciones básicas-');
+ await expect(id(page,'radio-help-topics-view-label')).toHaveText(LABEL);
+ await id(page,'radio-help-topics-view-switch').click();
+ await expect(rows.first()).toHaveText(expected[0]);await expect(id(page,'radio-help-topic-list')).toHaveAttribute('lang','en');
+});
+
+test('File › Exit Observatory shows the reminder in Spanish, and its original is VIREO\'s exact box text',async({page})=>{
+ await page.goto('/?lang=es-419#observatory');
+ await id(page,'fi-file-menu').click({timeout:20000});await id(page,'ob-exit').click();
+ const box=id(page,'exit-reminder'),text=id(page,'exit-reminder-text');
+ await expect(box.getByRole('heading',{name:'** ¿Ejercicio terminado? **'})).toBeVisible();
+ await expect(text).toContainText('¿SEGURO que terminaste por completo este ejercicio?');
+ await expect(text).toContainText('Selecciona «Aceptar» para salir del ejercicio o «Cancelar» para continuar.');
+ await expect(id(page,'exit-reminder-view-label')).toHaveText(LABEL);
+ await id(page,'exit-reminder-view-switch').click();
+ await expect(text).toContainText('Are you SURE you have completely finished this exercise?');
+ await expect(text).toContainText('Select "OK" to Quit Exercise, "Cancel" to Continue.');
+ await expect(text).toHaveAttribute('lang','en');
+ await id(page,'exit-reminder-cancel').click();await expect(box).toHaveCount(0);
 });
 
 test('the original view shows the bundled file\'s own text, and the translation comes back',async({page})=>{

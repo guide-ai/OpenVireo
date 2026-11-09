@@ -76,7 +76,7 @@ const OBSERVATORY={title:'El observatorio',topics:[
    'Cámaras CCD e IR: la tarjeta de la cámara en la página Observatorio. Iniciar exposición toma una imagen; Guardar imagen (FITS) la descarga. Los campos sin una lista de estrellas incluida pueden consultar en vivo el servicio de catálogos VizieR (solo se envían las coordenadas y el radio).',
    'Multi-Spec: la tarjeta del espectrómetro multiobjeto en la página Observatorio.',
    'Radiotelescopio: consulta Radiotelescopio y púlsares.'),
-  p('Cada instrumento tiene su propio botón de Ayuda. Muestra la ayuda original de VIREO para ese instrumento; donde el panel de OpenVireo difiere del de VIREO, el propio panel tiene una nota web.'),
+  p('Cada instrumento tiene su propio botón de Ayuda. Muestra la ayuda de VIREO para ese instrumento, traducida, con Ver original (inglés); donde el panel de OpenVireo difiere del de VIREO, el propio panel tiene una nota web.'),
  ]),
  topic('Radiotelescopio y púlsares',[
   p('Radiotelescopio, en el encabezado, abre el panel de control del radiotelescopio. Inícialo con Iniciar ejercicio de púlsares, apunta a un púlsar y registra su señal con el receptor. El panel tiene su propio menú Ayuda con la ayuda de radio de VIREO.'),
@@ -120,10 +120,10 @@ const SITE={title:'Usar el sitio',topics:[
    'Ayuda siempre está en la parte superior de la página, también en un celular. Presiona la tecla ? en cualquier lugar fuera de un campo de texto para abrir estos temas de ayuda; puedes desactivar esa tecla más abajo.',
    'Ayuda › Hacer el recorrido por el sitio vuelve a mostrar el recorrido de la primera visita.',
    'Código fuente e Informar un problema, al pie del menú y en Ayuda, abren la página de OpenVireo en GitHub en una pestaña nueva. Informar un problema inicia una incidencia nueva con el nombre de la página en la que estabas ya escrito; GitHub te pide iniciar sesión, y no se envía nada hasta que lo envíes allí.',
-   'Las teclas Tab y Mayús+Tab (no pestañas del navegador) se mueven entre los controles; Enter o Espacio presiona un botón.',
+   'Tab y Mayús+Tab se mueven entre los controles; Enter o Espacio presiona un botón.',
    'Esc cierra los menús y los cuadros de diálogo.',
    'Los botones de dirección (del telescopio y de radio) se mueven mientras los mantienes presionados con el mouse, Espacio o Enter.',
-   'Los cursores del espectro se mueven con las teclas de flecha (Shift para pasos más grandes); Enter o Espacio aplica, Esc cancela.',
+   'Los cursores del espectro se mueven con las teclas de flecha (Mayús para pasos más grandes); Enter o Espacio aplica, Esc cancela.',
    'El interruptor de tema elige los colores Sistema, Claro u Oscuro.'),
   'Abrir los temas de ayuda con la tecla ?',
  ]),
@@ -131,7 +131,7 @@ const SITE={title:'Usar el sitio',topics:[
   p('Modo instructor…, en el encabezado, después de una confirmación, abre las opciones de instructor de VIREO en esta pestaña del navegador: Opciones de simulación óptica… en el menú de Mover el telescopio y las preferencias de radio, que están cerradas para los estudiantes. No tiene contraseña, no es un bloqueo y no muestra respuestas. Salir lo desactiva.'),
  ]),
  topic('La ayuda original de VIREO',[
-  p('Los botones de Ayuda dentro de cada instrumento y herramienta muestran la ayuda propia de VIREO para esa ventana, sin cambios respecto del programa original.'),
+  p('Los botones de Ayuda dentro de cada instrumento y herramienta muestran la ayuda propia de VIREO para esa ventana, traducida al español como adaptación web de OpenVireo; Ver original (inglés) muestra el texto del programa original sin cambios.'),
   p('La ayuda de la ventana principal de VIREO describía los menús del programa de Windows, que OpenVireo reemplaza con sus propias páginas, así que no se ofrece aquí: Si vienes de VIREO (Windows) relaciona cada uno de esos menús con su lugar en OpenVireo.'),
  ]),
 ]};

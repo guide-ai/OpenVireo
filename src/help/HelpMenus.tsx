@@ -104,7 +104,7 @@ export function ExitObservatoryDialog({onClose}:{onClose:()=>void}){
   const abort=new AbortController();
   setState(s=>s==='done'?s:'loading');
   (view==='translation'?loadHelpTranslation(HELP_FILES['REMINDER.OBS']):fetchBundledClusterHelp(fetch,abort.signal,HELP_FILES['REMINDER.OBS']))
-   .then(b=>{if(!abort.signal.aborted)setState(s=>s==='done'?s:reminderBoxText(b,vireo(REMINDER_SELECT)));},e=>{if(!(e instanceof DOMException&&e.name==='AbortError'))setState('error');});
+   .then(b=>{if(!abort.signal.aborted)setState(s=>s==='done'?s:reminderBoxText(b,view==='translation'?vireo(REMINDER_SELECT):REMINDER_SELECT));},e=>{if(!(e instanceof DOMException&&e.name==='AbortError'))setState('error');});
   return ()=>abort.abort();
  },[view]);
  const quit=()=>setState('done');
@@ -113,7 +113,7 @@ export function ExitObservatoryDialog({onClose}:{onClose:()=>void}){
   {state==='loading'&&<p id={`${id}-d`} role="status">{M.reminderLoading}</p>}
   {state==='error'&&<div id={`${id}-d`}><p role="alert">{M.reminderError} {M.reminderErrorQuestion}</p><p className="help-reminder-text" data-testid="exit-quit-question">{vireo(QUIT_QUESTION)}</p></div>}
   {state==='done'&&<p id={`${id}-d`} role="status" data-testid="exit-reminder-done">{M.exitDone}</p>}
-  {state!=='loading'&&state!=='error'&&state!=='done'&&<p id={`${id}-d`} className="help-reminder-text" data-testid="exit-reminder-text">{state}</p>}
+  {state!=='loading'&&state!=='error'&&state!=='done'&&<p id={`${id}-d`} className="help-reminder-text" lang={offered&&view==='original'?'en':undefined} data-testid="exit-reminder-text">{state}</p>}
   <div className="ob-actions">
    {state==='done'?<button type="button" className="primary-button" autoFocus onClick={onClose}>{M.close}</button>
     :state==='error'?<><button type="button" className="primary-button" data-testid="exit-quit-yes" onClick={quit}>{M.yes}</button>

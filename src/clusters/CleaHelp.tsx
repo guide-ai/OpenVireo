@@ -34,8 +34,9 @@ type Search=Readonly<{query:string;matchCase:boolean}>;
 type Topic=Readonly<{index:number;body:HelpTopicBody;selected:number}>;
 
 /** A ListBox: one selected row, arrow keys/Home/End move, Enter or double-click activates. */
-export function HelpListBox({rows,selected,onSelect,onActivate,label,testId,wrap=false,columns=false}:{rows:readonly string[];selected:number;onSelect:(i:number)=>void;onActivate:(i:number)=>void;label:string;testId:string;wrap?:boolean;
- /** Column-built native lines: monospace, full width, scrolled horizontally (never cut). */ columns?:boolean}){
+export function HelpListBox({rows,selected,onSelect,onActivate,label,testId,wrap=false,columns=false,lang}:{rows:readonly string[];selected:number;onSelect:(i:number)=>void;onActivate:(i:number)=>void;label:string;testId:string;wrap?:boolean;
+ /** Column-built native lines: monospace, full width, scrolled horizontally (never cut). */ columns?:boolean;
+ /** Front ES7: `en` for native lines that mirror VIREO's own text. */ lang?:string}){
  const id=useId(),list=useRef<HTMLUListElement>(null);
  useEffect(()=>{list.current?.querySelector<HTMLElement>(`[data-row="${selected}"]`)?.scrollIntoView({block:'nearest'});},[selected]);
  function key(e:KeyboardEvent<HTMLUListElement>){
@@ -45,7 +46,7 @@ export function HelpListBox({rows,selected,onSelect,onActivate,label,testId,wrap
   else if(e.key==='Enter'){e.preventDefault();if(selected>=0)onActivate(selected);return;}else return;
   e.preventDefault();if(next>=0)onSelect(next);
  }
- return <ul ref={list} role="listbox" tabIndex={0} aria-label={label} data-testid={testId} className={`cluster-hr-listbox${wrap?' cluster-hr-wrap':''}${columns?' cluster-hr-columns':''}`}
+ return <ul ref={list} role="listbox" tabIndex={0} lang={lang} aria-label={label} data-testid={testId} className={`cluster-hr-listbox${wrap?' cluster-hr-wrap':''}${columns?' cluster-hr-columns':''}`}
   aria-activedescendant={selected>=0?`${id}-${selected}`:undefined} onKeyDown={key}>
   {rows.map((r,i)=><li key={i} id={`${id}-${i}`} data-row={i} role="option" aria-selected={i===selected} onClick={()=>onSelect(i)} onDoubleClick={()=>onActivate(i)}>{r===''?' ':r}</li>)}
  </ul>;
@@ -111,6 +112,7 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
  const [message,setMessage]=useState<Message|null>(null),[status,setStatus]=useState(''),[printing,setPrinting]=useState(false);
  // Front ES-HELP: a Spanish load shows the translation unless the student chose the original (per viewer, not stored).
  const [original,setOriginal]=useState(false),offered=helpTranslationOffered(),view:HelpView=offered&&!original?'translation':'original';
+ const textLang=offered&&view==='original'?'en':undefined;// the original view on a Spanish page is VIREO's English
  const topicCaption=(title:string)=>vireo('Help - ')+title.replace(/^ +/,'');
  const listDialog=useRef<HTMLDialogElement>(null),opener=useRef<HTMLButtonElement>(null),topicHeading=useRef<HTMLHeadingElement>(null);
  const id=useId(),loaded=typeof load==='object'?load:null;
@@ -200,7 +202,7 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
     <button type="button" data-testid={`${testId}-read-topic`} onClick={()=>{setTopicsMenu(false);readRow(listIndex);}}>{M.readTopic}</button>
     <button type="button" onClick={()=>{setTopicsMenu(false);setListOpen(false);returnFocus();}}>{M.closeTopics}</button>
    </HelpMenu></div>
-   <HelpListBox rows={loaded.rows.map(r=>r.title)} selected={listIndex} onSelect={i=>{setListIndex(i);setStatus('');}} onActivate={readRow} label={M.topicRows} testId={`${testId}-topic-list`}/>
+   <HelpListBox rows={loaded.rows.map(r=>r.title)} selected={listIndex} onSelect={i=>{setListIndex(i);setStatus('');}} onActivate={readRow} label={M.topicRows} testId={`${testId}-topic-list`} lang={textLang}/>
    <p role="status" className="cluster-hr-note">{status}</p>
    <p className="cluster-hr-note">{M.helpAdaptation(list.name)}</p>
    {offered&&<ViewSwitch view={view} onSwitch={()=>void switchView()} testId={`${testId}-topics-view`}/>}
@@ -216,7 +218,7 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
     </HelpMenu>
     <button type="button" data-testid={`${testId}-back`} disabled={!helpBackEnabled(history)} onClick={back}>{M.back}</button>
    </div>
-   <HelpListBox rows={topic.body.rows} selected={topic.selected} wrap onSelect={i=>setTopic({...topic,selected:i})} onActivate={activateBodyRow} label={M.topicText} testId={`${testId}-topic-text`}/>
+   <HelpListBox rows={topic.body.rows} selected={topic.selected} wrap onSelect={i=>setTopic({...topic,selected:i})} onActivate={activateBodyRow} label={M.topicText} testId={`${testId}-topic-text`} lang={textLang}/>
    <p className="cluster-hr-note">{M.linkNote}</p>
    {offered&&<ViewSwitch view={view} onSwitch={()=>void switchView()} testId={`${testId}-view`}/>}
   </section>}
