@@ -5,6 +5,7 @@
 // and fails with the install command if a font is missing. FONTCONFIG_FILE then points the browser at it.
 // Loopback only, on its own port range (6400–6498, never Vite's 5173 nor the Pages range 6300–6399).
 import {execFileSync} from 'node:child_process';
+import {readFileSync} from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {defineConfig} from '@playwright/test';
@@ -12,8 +13,10 @@ import {defineConfig} from '@playwright/test';
 process.env.PLAYWRIGHT_BROWSERS_PATH ??= fileURLToPath(new URL('./.local/browsers', import.meta.url));
 const port=Number(process.env.OPENVIREO_SCRIPTS_PORT??6420);
 if(!Number.isInteger(port)||port<6400||port>6498)throw new Error('OPENVIREO_SCRIPTS_PORT must be 6400–6498');
-// The runner generates the fonts once; its workers load this file again and inherit the variables it set.
-if(!process.env.OPENVIREO_TEST_FONTS_REPORT){
+// The runner generates the fonts once; its workers load this file again and inherit the variables it set. Generation is
+// skipped only when FONTCONFIG_FILE already is the file the report names (an exported report path alone is not enough).
+const reportedConfig=(()=>{try{return(JSON.parse(readFileSync(process.env.OPENVIREO_TEST_FONTS_REPORT??'','utf8')) as {fontconfigFile?:string}).fontconfigFile;}catch{return undefined;}})();
+if(!reportedConfig||process.env.FONTCONFIG_FILE!==reportedConfig){
  const generator=fileURLToPath(new URL('./scripts/test-fonts.mjs',import.meta.url));
  let out:string;
  try{out=execFileSync(process.execPath,[generator,'--json'],{encoding:'utf8',stdio:['ignore','pipe','inherit']});}
