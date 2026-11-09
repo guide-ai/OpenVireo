@@ -1,0 +1,14 @@
+import type {SPECTRAL_RANGE_EN} from '../../../SpectralRangeMessages';
+import type {Translation} from '../../maps';
+/** Front ES3: Spanish (es-419) for the spectrometer range web strings (Front S). A web adaptation by OpenVireo, not CLEA's. */
+export const SPECTRAL_RANGE_ES:Translation<typeof SPECTRAL_RANGE_EN>=Object.freeze({
+ current:(min:string,max:string)=>`Rango del espectrómetro: ${min}–${max} Å (600 canales).`,
+ note:'Como en VIREO, Aceptar inicia una exposición nueva con el rango nuevo (la actual se descarta); Cancelar conserva el rango, y Predeterminado (Default) restaura 3700–4700 Å. Fuera de la cobertura de la plantilla (por debajo de 3510 Å), la fuente no da cuentas, como en VIREO. Como en VIREO, el rango es un único ajuste que comparten las rutas del espectrómetro de estrellas, cielo, galaxias de Hubble, LSS, Objeto X y de campo, y la Clasificación estelar; una exposición existente conserva el rango con el que se tomó [W], y restaurar un archivo de sesión hace que su rango sea el actual [W]. Cualquier rango del diálogo se puede usar para espectros de estrellas, galaxias, QSO y cielo en estas rutas y en Multi-Spec; una galaxia cuyo espectro no alcanza un rango, o una fuente demasiado brillante en él para el telescopio, lo indica. Objeto X solo admite los rangos en los que cada objetivo se comporta como en 3700–4700 Å [W].',
+ objectXNote:'Como en VIREO, Aceptar vuelve a iniciar el espectrómetro con el rango nuevo (un espectro sin guardar se descarta); Cancelar conserva el rango, y Predeterminado (Default) restaura 3700–4700 Å. El rango es un único ajuste compartido con las demás rutas del espectrómetro. En esta versión web, Objeto X solo admite los rangos en los que cada objetivo del Objeto X se puede observar exactamente como en 3700–4700 Å; cualquier otro rango da el mismo mensaje para todos los objetivos [W].',
+ skyNote:'La fuente del cielo no depende del rango (la rama del cielo de VIREO en 0x50df64 y Comenzar [Go] en 0x50f4da no leen ninguno), así que solo cambian las longitudes de onda de los 600 canales.',
+ notWitnessed:'Este rango espectral no se puede usar aquí en esta versión web; vuelve a fijar el rango en 3700–4700 Å (Predeterminado) para observar.',
+ multiSpecRange:(min:string,max:string)=>`Multi-Spec lee el rango del espectrómetro (${min}–${max} Å), que no se puede usar aquí en esta versión web; vuelve a fijarlo en 3700–4700 Å para tomar espectros.`,
+ unavailable:'Este rango no se puede observar para esta estrella en esta versión web.',
+ slider:(edge:string)=>`Deslizador: ${edge}`,
+ locked:'Rango espectral… (Spectral Range) está desactivado: Permitir cambios del usuario (Allow User Change) no está marcado en las Opciones de simulación óptica (Optical Simulation Options), en la pestaña Espectrómetro, como en VIREO. Esas opciones se abren en el modo instructor.',
+});

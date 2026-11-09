@@ -31,6 +31,9 @@
   "map:fieldInfo.no": "the same word in Spanish (No)",
   "map:observatory.skyCoords.errorTitle": "the same word in Spanish (Error)",
   "map:observatory.site.errorTitle": "the same word in Spanish (Error)",
-  "map:polish.spectrometerIndex.routes.4.label": "a kept name (Multi-Spec)"
+  "map:polish.spectrometerIndex.routes.4.label": "a kept name (Multi-Spec)",
+  "catalog:lss.exposure.elapsed": "a parameter and a unit symbol ({ms} ms), the same in Spanish",
+  "catalog:hubble.ratioColumn": "a column header of symbols and units only (v/D · km/s/Mpc)",
+  "catalog:ownResults.sha": "a format name and the hash value (SHA-256 {sha256})"
  }
 }

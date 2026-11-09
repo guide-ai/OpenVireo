@@ -911,6 +911,7 @@ export interface MessageParameters {
   "hubble.unknownStatus": never;
   "hubble.source.stellar": "id";
   "hubble.source.measured": "id";
+  "hubble.source.typed": "id";
   "hubble.recipe.workbook": never;
   "hubble.recipe.vireo": never;
   "error.operation": never;
@@ -3506,6 +3507,7 @@ export interface MessageParameters {
   "ph.nativeListFull": never;
   "session.observationListLimit": never;
   "spectrum.observationRemarksError": never;
+  "spectrum.observationTypeError": never;
   "spectrum.observationStale": never;
   "spectrum.observationNoTimeNote": never;
   "ph.nativeStale": never;

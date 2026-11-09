@@ -1,4 +1,5 @@
 import {M31_NOTICE} from './core/m31Notice';
+import {vireo} from './i18n/vireo';
 import {DEFAULT_SPECTRAL_RANGE,type SpectralRange} from './core/spectralRange';
 import SpectralRangeRow from './SpectralRangeRow';
 import {SPECTRAL_RANGE as SR} from './SpectralRangeMessages';
@@ -178,7 +179,7 @@ export default function FieldSpectrometer({link}:{link:FieldSpectrometerLink}){
   {ready&&<div data-testid="field-spec-field" data-kind={kind??'none'}>
    <p>{t('fieldSpec.field',{ra:ready.pointing.ra,dec:ready.pointing.dec,telescope:ready.telescope})}</p>
    {(()=>{const p=parseFieldSpectrumPolicy(ready.policy)?.parameters;return p&&<p role="status" data-testid="field-spec-uncertified" data-reason="uncertified-parameter">{t('fieldSpec.uncertified',{base:p.baseMagnitude,sky:p.skyMagnitude,count:p.baseCount,timer:p.timerMs})}</p>;})()}
-   {r!.m31Notice&&<p role="status" data-testid="field-spec-m31-notice"><strong>{M31_NOTICE.caption}</strong> <span style={{whiteSpace:'pre-line'}}>{M31_NOTICE.text}</span> <small>{M31_NOTICE.adaptation}</small></p>}
+   {r!.m31Notice&&<p role="status" data-testid="field-spec-m31-notice"><strong>{vireo(M31_NOTICE.caption)}</strong> <span style={{whiteSpace:'pre-line'}}>{vireo(M31_NOTICE.text)}</span> <small>{vireo(M31_NOTICE.adaptation)}</small></p>}
    <SpectrometerReadout object={current.object} options={current.options} sky={sky}/>
    <p data-testid="field-spec-object">{object?t('fieldSpec.object',{kind:t(`fieldSpec.kind.${kind!}`),id:object.id,magnitude:scientific(object.magnitude,4,true)}):t('fieldSpec.noObject')}</p>
    {r!.calibration&&<p>{t('lss.exposure.slit',{level:r!.calibration.pixelLevel,fraction:scientific(r!.calibration.fraction,6,true)})}</p>}

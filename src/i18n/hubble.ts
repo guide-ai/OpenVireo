@@ -35,6 +35,6 @@ export function summaryMessage(result:HubbleAnalysisResult,translate:Translate=t
 export function recipeLabel(id:RecipeId,translate:Translate=t){return translate(id==='workbook'?'hubble.recipe.workbook':'hubble.recipe.vireo');}
 export function velocitySource(row:HubbleDerivedRow,translate:Translate=t){
  if(row.kind!=='measurement')return row.velocitySource;
- const match=/^(Stellar alignment measurement|Saved measurement) (\d+)(?: · v = c z)?$/.exec(row.velocitySource);
- return match?translate(match[1]==='Saved measurement'?'hubble.source.measured':'hubble.source.stellar',{id:match[2]}):row.velocitySource;
+ const match=/^(Stellar alignment measurement|Saved measurement) (\d+)(?: · v = c z| · (typed in Observational Data))?$/.exec(row.velocitySource);
+ return match?translate(match[3]?'hubble.source.typed':match[1]==='Saved measurement'?'hubble.source.measured':'hubble.source.stellar',{id:match[2]}):row.velocitySource;
 }

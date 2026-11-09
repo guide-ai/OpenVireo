@@ -16,6 +16,7 @@ import {hubbleLabProgress,type HubbleLabProgress} from './core/hubbleLab';
 import {galaxyStateDefinition} from './core/galaxyDefinitions';
 import {EXTENDED_MAX_ACQUISITION_ARCHIVE,MAX_ARCHIVE_EVENTS} from './core/acquisitionArchive';
 import { t, formatNumber, fixed, scientific } from './i18n';
+import {vireo} from './i18n/vireo';
 import {acquisitionObjectId,acquisitionReference,acquiredSpectrumBytes,type AcquisitionObservation} from './io/acquisitionObservation';
 import VelocityAnalysis from './VelocityAnalysis';
 import HubbleAnalysis from './HubbleAnalysis';
@@ -117,7 +118,7 @@ function Chart({ observation, z, reference, view, baseline, cursor, selectedLine
     <g clipPath="url(#plot-clip)"><polyline points={originalCurve} className="reference-curve"/>{observation && <polyline points={observedCurve} className="observed-curve"/>}
     {(reference ? references[reference].lines : []).map((line, index) => { const x = 60 + (shiftedWavelength(line.wavelength, z) - min) / (max - min) * 860; return <g key={index}><line x1={x} x2={x} y1="48" y2="306" className={selectedLine===index?'marker marker-selected':'marker'}/><text x={x + 5} y={66 + index % 2 * 23} className="marker-label">{line.label.split(' (')[0]}</text><circle cx={x} cy="52" r="3" className="marker-dot"/></g>; })}</g>
     {cursor&&<g className={cursor.final?'engine-cursor engine-cursor-final':'engine-cursor'} data-testid="engine-cursor"><line x1={toSvgX(cursor.at.x)} x2={toSvgX(cursor.at.x)} y1="56" y2="306"/>{cursor.final&&<line x1={toSvgX(cursor.at.x)-14} x2={toSvgX(cursor.at.x)+14} y1={toSvgY(cursor.at.y)} y2={toSvgY(cursor.at.y)}/>}</g>}
-    <text x="16" y="175" transform="rotate(-90 16 175)" textAnchor="middle" className="axis-label">{t('spectrum.displayLevel')}</text><text x="490" y="355" textAnchor="middle" className="axis-label">{t('spectrum.wavelength')}</text>
+    <text x="16" y="175" transform="rotate(-90 16 175)" textAnchor="middle" className="axis-label axis-label-y">{t('spectrum.displayLevel')}</text><text x="490" y="355" textAnchor="middle" className="axis-label">{t('spectrum.wavelength')}</text>
   </svg>;
 }
 
@@ -251,8 +252,10 @@ function SpectrumInstrument({onRecordLss,lssMode=false,onPrepareFieldSpectrum,on
     const o=observationDraft;if(!o)return true;
     // Review 1 H2: the shared list holds printable Windows-1252 text only (VIREO's ANSI edit box); say so instead of failing later.
     try{observationText(changes.remarks,36);}catch{return t('spectrum.observationRemarksError');}
-    let r;try{r=confirmHubbleObservation(o.draft,{velocityText:changes.velocityText,remarks:changes.remarks,spText:changes.typeText});}catch{return OBSERVATIONAL_SP_ERROR;}
-    if(!r.ok)return r.caption?`${r.caption} ${r.message.replace(/\r\n/g,' ')}`:r.message;
+    // Front ES3: VIREO's velocity boxes go through vireo(); the web Sp.Type refusal [W] is a catalog key with the same English.
+    const refusal=(message:string)=>message===OBSERVATIONAL_SP_ERROR?t('spectrum.observationTypeError'):vireo(message);
+    let r;try{r=confirmHubbleObservation(o.draft,{velocityText:changes.velocityText,remarks:changes.remarks,spText:changes.typeText});}catch{return refusal(OBSERVATIONAL_SP_ERROR);}
+    if(!r.ok)return r.caption?`${vireo(r.caption)} ${refusal(r.message).replace(/\r\n/g,' ')}`:refusal(r.message);
     const reused=o.target===null?null:rows[o.target];
     if(results){
       if(results.get()!==o.base)return t('spectrum.observationStale');
