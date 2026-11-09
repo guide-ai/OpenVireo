@@ -184,3 +184,12 @@ describe('inputs, captions and presentation catalog',()=>{
   expect(provenance.contracts.find(c=>c.id==='RC-10')).toMatchObject({status:'superseded by RC-11'});
  });
 });
+
+// Front ES8a (docs/I18N.md): the ID caption takes a screen translator; a translation holding {diameter} places the number.
+describe('radioIdCaptionText with tr (ES8a)',()=>{
+ it('keeps VIREO\'s English by default and lets a translation place the number',()=>{
+  expect(radioIdCaptionText(100)).toBe('100 Meter Radio Telescope');
+  expect(radioIdCaptionText(100,()=>'Radiotelescopio de {diameter} metros')).toBe('Radiotelescopio de 100 metros');
+  expect(radioIdCaptionText(-0,t=>t.toUpperCase())).toBe('0 METER RADIO TELESCOPE');
+ });
+});

@@ -1,7 +1,9 @@
 import {pickMessages} from '../i18n/registry';
+/** Front ES8a: VIREO's TRadioLab File menu and its SvRcData1 item, shown as the web's "File ▸ Save Recorded Data..." through
+ * vireo() (View original applies). The File caption is the &File of VIREO's forms; SvRcData1's accelerator is not recorded here. */
+export const RADIO_R1_LITERALS=Object.freeze({file:'&File',saveRecordedData:'Save Recorded Data...'});
 /** Web texts of Front R1 (docs/RADIO-CAMERA-R1.md). Original literals stay in the core files. */
 export const RADIO_R1_MESSAGES_EN=Object.freeze({
- saveData:'File ▸ Save Recorded Data...',
  saveDataNote:'VIREO’s File ▸ Save Recorded Data... (SvRcData1Click 0x567f70) runs the same save as the pulsar analysis Save; it is enabled while recorded data exist. Here it opens the pulsar analysis, whose verified Save writes the recording (web adaptation).',
  optionEffectsTitle:'What these VIREO settings do (shown with their compiled values; not editable here):',
  optionEffects:Object.freeze([
