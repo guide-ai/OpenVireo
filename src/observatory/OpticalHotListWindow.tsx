@@ -71,7 +71,7 @@ export default function OpticalHotListWindow({caption,texts,state,rows,onSelect,
   </dialog>
   <dialog ref={box} className="ob-dialog ob-box" role="alertdialog" aria-labelledby={`${id}-box-title`} aria-describedby={`${id}-box-text`} data-testid="ob-hotlist-box" onCancel={e=>{e.preventDefault();onDismiss();}}>
    <h2 id={`${id}-box-title`} className="ob-native">{boxTitle}</h2><p id={`${id}-box-text`} className="ob-native">{boxText}</p>
-   <div className="ob-actions"><button type="button" className="primary-button" autoFocus onClick={onDismiss}>{OBSERVATORY_MESSAGES.skyCoords.ok}</button></div>
+   <div className="ob-actions"><button type="button" className="primary-button" autoFocus onClick={onDismiss}>{vireo(OV.ok)}</button></div>
   </dialog>
  </>;
 }
