@@ -416,9 +416,9 @@
  "Spectral Range...": "Rango espectral...",
  "Telescope": "Telescopio",
  "Sky": "Cielo",
- "App. Mag (V):": "Mag. ap. (V):",
+ "App. Mag (V):": "Mag. aparente (V):",
  "Observational Data": "Datos de observación",
- "Observation Time (JD)": "Hora de observación (JD)",
+ "Observation Time (JD)": "Fecha de observación (JD)",
  "Sp.Type:": "Tipo esp.:",
  "Redshift (Z):": "Corrimiento al rojo (Z):",
  "Velocity (V):": "Velocidad (V):",
@@ -428,5 +428,6 @@
  "Observed Magnitudes": "Magnitudes observadas",
  "Velocity Error!": "¡Error de velocidad!",
  "Velocity is incorrect or missing!\r\nYou must supply a valid velocity for plotting.": "¡La velocidad es incorrecta o falta!\r\nDebes indicar una velocidad válida para graficar.",
- "Velocity calculation is invalid!": "¡El cálculo de la velocidad no es válido!"
+ "Velocity calculation is invalid!": "¡El cálculo de la velocidad no es válido!",
+ "Display/Print Data": "Mostrar/imprimir datos"
 }

@@ -3,6 +3,8 @@ import {measurementGalaxyTarget} from './galaxyIdentity';
 import type {Measurement,ShiftControl} from './spectrum';
 import {formatObservationType} from './observationResults';
 import {delphiFixed} from './variableStars';
+/** Front ES3 review: VIREO's File › Display/Print Data caption (the shared results list opener), rendered through vireo(). */
+export const OWN_RESULTS_LITERALS=Object.freeze({displayData:'Display/Print Data'});
 /** Phase 1 item 1.12, new web adaptation: an immutable read-only projection of the
  * confirmed measurement log for the student's Observational Results view and its
  * text/CSV handoff. It is not a native CLEA results record, file or 0x90 layout and

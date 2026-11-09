@@ -3073,7 +3073,6 @@ export interface MessageParameters {
   "ownResults.caption": "count";
   "ownResults.sharedTitle": never;
   "ownResults.sharedHelp": "count";
-  "ownResults.sharedShow": never;
   "ownResults.sourceColumn": never;
   "ownResults.velocityColumn": never;
   "ownResults.statusColumn": never;
@@ -3604,4 +3603,5 @@ export interface MessageParameters {
   "nativeMirror.caption": never;
   "nativeMirror.captionPrint": never;
   "sky.targetCoordinates": "dec" | "ra";
+  "sky.m31Adaptation": never;
 }

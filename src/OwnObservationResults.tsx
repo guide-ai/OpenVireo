@@ -2,7 +2,8 @@ import {useContext,useEffect,useMemo,useRef,useState,type Ref} from 'react';
 import {ObservationListValue} from './observationListContext';
 import {observationListData} from './core/sharedObservationList';
 import RecordedResultsWindow from './clusters/RecordedResultsWindow';
-import {ownObservationResults,ownResultsCsv,ownResultsText,type OwnResultsArchiveEntry} from './core/ownObservationResults';
+import {ownObservationResults,ownResultsCsv,ownResultsText,OWN_RESULTS_LITERALS,type OwnResultsArchiveEntry} from './core/ownObservationResults';
+import {vireo} from './i18n/vireo';
 import type {Measurement} from './core/spectrum';
 import {formatFloat32} from './view/spectrum';
 import {t} from './i18n';
@@ -49,7 +50,7 @@ export default function OwnObservationResults({detailsRef,rows,archive,busy,acti
     <div className="own-results-actions"><button className="secondary-button" disabled={disabled} onClick={()=>save('text')}>{t('ownResults.downloadText')}</button><button className="secondary-button" disabled={disabled} onClick={()=>save('csv')}>{t('ownResults.downloadCsv')}</button><button className="secondary-button" disabled={disabled} onClick={print}>{t('ownResults.print')}</button></div>
     {error&&<p role="alert" className="error">{error}</p>}<p className="own-results-notice" role="status">{notice}</p>
     <section className="own-results-shared" aria-labelledby="own-shared-title" data-testid="own-shared-list"><h3 id="own-shared-title">{t('ownResults.sharedTitle')}</h3><p data-testid="own-shared-count">{t('ownResults.sharedHelp',{count:shared.records.length})}</p>
-      <button type="button" className="secondary-button" data-testid="own-shared-results" disabled={busy||!shared.records.length} onClick={()=>setSharedOpen(true)}>{t('ownResults.sharedShow')}</button>
+      <button type="button" className="secondary-button" data-testid="own-shared-results" disabled={busy||!shared.records.length} onClick={()=>setSharedOpen(true)}>{vireo(OWN_RESULTS_LITERALS.displayData)}</button>
       {sharedOpen&&shared.records.length>0&&<RecordedResultsWindow data={observationListData(shared)} testId="own-shared-window" onClose={()=>setSharedOpen(false)}/>}</section>
     <details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('ownResults.adaptation')}</p></details>
   </div></details>;

@@ -3072,7 +3072,6 @@
   "ownResults.caption": "Confirmed measurements in log order: {count}",
   "ownResults.sharedTitle": "VIREO's Observational Results list",
   "ownResults.sharedHelp": "Records in VIREO's one Observational Results list: {count}. The photometer's Record/Review, Classification Results and this page's Hubble Record all write it; a Record reuses the first record of the same name, whichever instrument made it, unless Time-Dependent Data is on. Records stay in VIREO's list order (by time when each record was made). Adaptations: only catalogue-galaxy measurements reach it from this page (imported and other spectra keep the web's own confirmation, whereas VIREO's Record Z writes it for any loaded spectrum); saved DAT or text results read in the web (the classifier's DAT inspector, the cluster HR workspace) are not merged into it; it has no web Edit, Delete or Clear and Save investigation keeps it; files saved before this list existed bring their photometer records, then their Hubble records, without merging them.",
-  "ownResults.sharedShow": "Display/Print Data",
   "ownResults.sourceColumn": "Source · file, SHA-256 and link",
   "ownResults.velocityColumn": "c z (derived) · km/s · float32",
   "ownResults.statusColumn": "Velocity status",
@@ -3602,5 +3601,6 @@
   "cameraParameters.objectXRefused": "{name} was made with instructor camera values (uncertified): it is not added to the Object X investigation.",
   "nativeMirror.caption": "VIREO's native text, in English as in the file it saves.",
   "nativeMirror.captionPrint": "VIREO's native text, in English as VIREO shows it.",
-  "sky.targetCoordinates": "RA {ra} h · Dec {dec}°"
+  "sky.targetCoordinates": "RA {ra} h · Dec {dec}°",
+  "sky.m31Adaptation": "VIREO shows this as a message box each time it draws this field; M31 itself is not drawn, the rest of the field is."
 }

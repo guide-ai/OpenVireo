@@ -170,7 +170,9 @@ describe('Front ES1: the Spanish (es-419) catalog, maps and originals',()=>{
   for(const p of pairs()){
    for(const g of GLYPHS)if(g!=='?'&&count(p.en,g)!==count(p.es,g))problems.push(`${p.id}: ${count(p.es,g)}×${g} instead of ${count(p.en,g)}`);
    // Front ES2: a 'fragment|' original is one piece of a VIREO text the core composes around data, so its marks pair across pieces.
-   if(!p.id.startsWith('original:fragment|'))for(const [open,close] of [['¿','?'],['¡','!']]){const issue=unpaired(p.es,open,close);if(issue)problems.push(`${p.id}: ${issue}`);}
+   // Front ES3 review: a VIREO message quoted in English inside “…” (as the English quotes it) keeps its own ! and ?.
+   const unquoted=p.es.replace(/“([^”]*)”/g,(m,q:string)=>p.en.includes(q)?'“”':m);
+   if(!p.id.startsWith('original:fragment|'))for(const [open,close] of [['¿','?'],['¡','!']]){const issue=unpaired(unquoted,open,close);if(issue)problems.push(`${p.id}: ${issue}`);}
    // Map functions: every placeholder in the English output reaches the Spanish output.
    for(const arg of p.en.match(/«A\d+»/g)??[])if(!p.es.includes(arg))problems.push(`${p.id}: drops ${arg}`);
    if(/<\/?[a-z]/i.test(p.es)&&!/<\/?[a-z]/i.test(p.en))problems.push(`${p.id}: HTML`);

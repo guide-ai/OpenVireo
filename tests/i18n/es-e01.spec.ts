@@ -5,6 +5,7 @@ import originals from '../../src/i18n/es/originals.json' with {type:'json'};
 import {ENGINE_VIEW_ES} from '../../src/i18n/es/maps/engineView';
 import {SPECTRAL_RANGE_ES} from '../../src/i18n/es/maps/spectralRange';
 import {OBSERVATORY_ES} from '../../src/i18n/es/maps/observatory';
+import {enterInstructorMode} from '../fixtures/instructor-mode';
 
 // Front ES3 (docs/I18N.md): exercise E01, Hubble's law, in Spanish on a `?lang=es-419` preview load. One walk through the whole
 // student flow runs in English, Spanish and the pseudo-locale: the Hubble lab guide (every disclosure open), the galaxy
@@ -154,7 +155,10 @@ test('View original (English) on: every VIREO name in the E01 walk reads in Engl
  const left=new Map<string,string>();
  const checks:Record<string,()=>Promise<void>>={
   'engine Zoom dialog':async()=>{await expect(id(page,'engine-zoom')).toHaveText('Zoom');await expect(id(page,'engine-zoom-dialog').getByRole('heading')).toHaveText('Set Wavelength Range');},
-  'Observational Data':async()=>{const d=id(page,'hubble-obsdata');await expect(d.getByRole('heading')).toHaveText('Observational Data');await expect(d).toContainText('Redshift (Z):');await expect(id(page,'hubble-obsdata-ok')).toHaveText('OK');},
+  'Observational Data':async()=>{const d=id(page,'hubble-obsdata');await expect(d.getByRole('heading')).toHaveText('Observational Data');await expect(id(page,'hubble-obsdata-ok')).toHaveText('OK');
+   // Review: the field captions explicitly, since a generic check skips originals that coincide with catalog text.
+   for(const caption of ['Object:','Observation Time (JD)','Right Ascension:','Declination:','Sp.Type:','Redshift (Z):','Velocity (V):','Remarks:'])await expect(d.locator('label',{hasText:caption}).first()).toHaveText(caption);
+   await expect(d.locator('legend')).toHaveText('Observed Magnitudes');await expect(id(page,'hubble-obsdata-cancel')).toHaveText('Cancel');},
   'Spectral Range warning':async()=>{await expect(id(page,'spectral-range-warning').getByRole('heading')).toHaveText('Spectrometer Will Clear!');},
   'Spectral Range dialog':async()=>{await expect(id(page,'spectral-range-dialog').getByRole('heading')).toHaveText('Spectrometer Wavelength Range');await expect(id(page,'spectral-range-default')).toHaveText('Default');},
  };
@@ -213,4 +217,45 @@ for(const width of [320,1440])test(`at ${width} px the Spanish E01 screens lay o
   if(/guide|analyser|Observational Data|Hubble diagram with|Spectral Range dialog|star exposure/.test(step))await page.screenshot({path:test.info().outputPath(`es-e01-${width}-${step.replace(/\W+/g,'-')}.png`),fullPage:false});
   if(/analyser/.test(step))await page.locator('svg.spectrum:visible').first().screenshot({path:test.info().outputPath(`es-e01-${width}-spectrum-plot.png`)});});
  expect([...problems].map(([p,step])=>`${step}: ${p}`)).toEqual([]);
+});
+
+// Review: the spectrometer readout boxes (Show Object ID and Show Object Mag, turned on in instructor mode as an exercise menu
+// does) on the star and sky routes: Spanish captions, and VIREO's English with View original (English) at the next load.
+for(const original of [false,true])test(`the spectrometer readout captions ${original?'follow View original (English)':'read in Spanish'}`,async({page})=>{
+ test.setTimeout(120_000);await page.setViewportSize({width:1440,height:1000});
+ await page.addInitScript(on=>{localStorage.setItem('openvireo.tour.v1','done');if(on)localStorage.setItem('openvireo-vireo-originals','1');else localStorage.removeItem('openvireo-vireo-originals');},original);
+ await page.goto('/?lang=es-419#observatory');await expect(page.locator('html')).toHaveAttribute('lang','es-419');
+ const dome=page.getByRole('button',{name:new RegExp(N('es-419','sky.open').source.replace(/\$$/,'').concat(' ↗$'))});await dome.click();
+ await enterInstructorMode(page);await page.locator('.telescope-motion').getByTestId('ob-options').click();
+ await id(page,'ob-options-show-object-id').check();await id(page,'ob-options-show-object-mag').check();await id(page,'ob-options-ok').click();await expect(id(page,'ob-options-dialog')).toBeHidden();
+ const T=(en:string)=>original?en:O[en];
+ await page.evaluate(()=>{location.hash='#star-exposure';});await button(page,'es-419','starExposure.activate').click();
+ const star=id(page,'spec-readout');await expect(star).toBeVisible();
+ await expect(star.locator('dt').nth(0)).toHaveText(T('Object:'));await expect(star.locator('dt').nth(1)).toHaveText(T('App. Mag (V):'));
+ await expect(id(page,'spec-readout-id')).not.toHaveText(original?O['Telescope']:'Telescope');// the pending caption, if still shown, is in this load's language
+ await page.evaluate(()=>{location.hash='#sky-exposure';});await button(page,'es-419','skyExposure.activateSupportedSkyField').click();
+ await expect(page.locator('[data-testid=spec-readout-id]:visible')).toHaveText(T('Sky'));// the hidden star route keeps its own box
+ await expect(button(page,'es-419','skyExposure.startSkyExposure')).toBeVisible();// web text: Spanish either way
+});
+
+// Review (S2): at M31 (NGC 224) the observatory's telescope view and the single-slit spectrometer show VIREO's "Image Too Large!"
+// box as a notice. Its caption and text are VIREO's (they follow View original); the adaptation line beside them is OpenVireo's
+// own text and stays Spanish either way.
+for(const original of [false,true])test(`the M31 notice in Spanish: VIREO's box ${original?'in English with View original':'translated'}, the web line in Spanish`,async({page})=>{
+ test.setTimeout(240_000);await page.setViewportSize({width:1440,height:1000});
+ await page.addInitScript(on=>{localStorage.setItem('openvireo.tour.v1','done');if(on)localStorage.setItem('openvireo-vireo-originals','1');else localStorage.removeItem('openvireo-vireo-originals');},original);
+ await page.goto('/?lang=es-419#observatory');await expect(page.locator('html')).toHaveAttribute('lang','es-419');
+ await page.getByRole('button',{name:new RegExp(N('es-419','sky.open').source.replace(/\$$/,'').concat(' ↗$'))}).click();
+ if(!await page.locator('#point-ra').isVisible())await page.getByText(N('es-419','sky.coordinates')).click();
+ await page.locator('#point-ra').fill('0.71231');await page.locator('#point-dec').fill('41.2692');await button(page,'es-419','sky.pointCoordinates').click();
+ await page.getByRole('button',{name:/^\s*Telescopio ·/}).first().click();
+ const caption=original?'Image Too Large!':O['Image Too Large!'],adaptation=S['sky.m31Adaptation'];
+ const sky=id(page,'sky-m31-notice');await expect(sky).toBeVisible({timeout:60_000});
+ await expect(sky.locator('strong')).toHaveText(caption);await expect(sky.locator('small')).toHaveText(adaptation);
+ if(!await button(page,'es-419','runningClock.trackingOn').isVisible())await page.getByText(N('es-419','runningClock.title')).click();
+ if(await button(page,'es-419','runningClock.trackingOn').isVisible())await button(page,'es-419','runningClock.trackingOn').click();
+ await tool(page,'es-419','spectrometer.nav');await expect(id(page,'field-spec-use')).toBeEnabled({timeout:60_000});await id(page,'field-spec-use').click();
+ const notice=id(page,'field-spec-m31-notice');await expect(notice).toBeVisible({timeout:90_000});
+ await expect(notice.locator('strong')).toHaveText(caption);await expect(notice.locator('small')).toHaveText(adaptation);
+ await expect(notice).toContainText(original?'M31 Image Too Large to Load!':'¡La imagen de M31 es demasiado grande para cargarla!');
 });
