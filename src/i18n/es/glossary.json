@@ -416,6 +416,14 @@
   {
    "en": "\\btimers?\\b",
    "es": "temporizador"
+  },
+  {
+   "en": "\\baltitude limits?\\b",
+   "es": "límites? de altitud"
+  },
+  {
+   "en": "(?<!clock[/ ])\\bdrive\\b",
+   "es": "accionamiento"
   }
  ],
  "names": [

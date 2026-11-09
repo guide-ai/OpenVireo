@@ -796,7 +796,7 @@ const manualLimitText=(refusal:RadioLabManualRefusal|RadioLabManualTickRefusal,a
  return ta(
   left?'antenna.manual.limit.manual-unavailable-leftover':refusal==='manual-unavailable'&&(a.slewing||a.slewTimerEnabled)?'antenna.manual.limit.manual-unavailable-slew':`antenna.manual.limit.${refusal}` as RadioAntennaMessageKey,
   {rate:String(a.rate),dec:RADIO_MANUAL_WEB_DOMAIN.decStepLimitDegrees,ra:RADIO_MANUAL_WEB_DOMAIN.raStepLimitHours,
-   caption:left?vireo(manualButtonCaption(a,left)):'',original:left?RADIO_LAB_CAPTIONS[left]:''});
+   caption:left?vireo(manualButtonCaption(a,left)):'',original:left?vireo(RADIO_LAB_CAPTIONS[left]):''});
 };
 /** The N/S/E/W pad: DOM in DFM TabOrder (N 1, S 2, E 3, W 4), laid out as the DFM cross (N top, E left, W right, S bottom).
  * WEB-MANUAL-01/02: pointer, touch or Space/Enter on the focused button hold it; a click alone does nothing. WEB-KEY-03:

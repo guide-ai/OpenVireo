@@ -26,7 +26,7 @@ import {
  RECEIVER_DFM_CAPTIONS,RECEIVER_DISPLAY_COLOURS,RECEIVER_DISPLAY_GEOMETRY,RECEIVER_DISPLAY_LITERALS,receiverCaption,receiverLabels,receiverPaintOps,receiverScreenText,
  type ReceiverDisplayOp,type ReceiverPen,
 } from '../core/radioReceiverDisplay';
-import {RECEIVER_MARK_LABEL_BACKGROUND,RECEIVER_MARK_WEB_POLICY,receiverMarkOverlayOps,type ReceiverMarkOverlay,type ReceiverMarkSelector} from '../core/radioReceiverMarks';
+import {RECEIVER_MARK_LABEL_BACKGROUND,RECEIVER_MARK_WEB_POLICY,receiverMarkOverlayOps,receiverMarkScreenText,type ReceiverMarkOverlay,type ReceiverMarkSelector} from '../core/radioReceiverMarks';
 import {receiverMarkCode,receiverMarkColumn,receiverMarkMoveReleases,type ReceiverMarkButton} from '../core/radioReceiverMarkInput';
 import {
  RADIO_RECEIVER_SESSION_POLICY,addReceiverWindow,answerRecordIdentify,answerRecordPrompt,answerRecordSave,clearReceiverNextMark,closeRecordProperties,completeRecordArming,
@@ -1121,9 +1121,9 @@ function ReceiverMarkCanvas({slot,overlay,selected,marks}:Readonly<{slot:number;
     pen={x:op.x,y:op.y};
    }else if(op.kind==='text'){
     ctx.font='bold 13px sans-serif';ctx.textBaseline='top';
-    const width=Math.ceil(ctx.measureText(op.text).width);
+    const shown=receiverMarkScreenText(op.text,vireo),width=Math.ceil(ctx.measureText(shown).width);
     ctx.fillStyle=css(RECEIVER_MARK_LABEL_BACKGROUND);ctx.fillRect(op.x,op.y,width,16);
-    ctx.fillStyle=css(op.colour);ctx.fillText(receiverScreenText(op.text,vireo),op.x,op.y);
+    ctx.fillStyle=css(op.colour);ctx.fillText(shown,op.x,op.y);
    }
   }
  },[overlay]);
@@ -1161,7 +1161,7 @@ function ReceiverMarks({slot,r,overlay,availability,selected,onSelect,marks}:Rea
   else marks.step(slot,selected,ARROW_STEP[e.key]);
  };
  const shown=(sel:ReceiverMarkSelector)=>r.marks[sel]<0?t('radioReceiver.marks.unset'):t('radioReceiver.marks.column',{x:r.marks[sel]});
- const label=(sel:ReceiverMarkSelector)=>{const l=overlay?.labels[sel];return l?t('radioReceiver.marks.labelValue',{text:l.text,x:l.x}):t('radioReceiver.marks.labelNone');};
+ const label=(sel:ReceiverMarkSelector)=>{const l=overlay?.labels[sel];return l?t('radioReceiver.marks.labelValue',{text:receiverMarkScreenText(l.text,vireo),x:l.x}):t('radioReceiver.marks.labelNone');};
  const l0=overlay?.labels[0]??null,l1=overlay?.labels[1]??null;
  return <fieldset className="radio-receiver-marks" data-testid={`receiver-marks-${slot}`}>
   <legend>{t('radioReceiver.marks.legend')}</legend>

@@ -88,6 +88,7 @@
   "map:radioAntenna.antenna.rateLimit.alternative.separator": "a punctuation separator",
   "original:Radio...": "the same word in Spanish (Radio), a VIREO button",
   "original:PEpoch (MJD):": "the catalogue parameter name PEpoch and the unit MJD, kept",
-  "original:Radio": "the same word in Spanish (Radio), VIREO's access menu and switch caption"
+  "original:Radio": "the same word in Spanish (Radio), VIREO's access menu and switch caption",
+  "original:Hrs": "the hours abbreviation, the same in Spanish (as VIREO's Min and Seg captions are short)"
  }
 }

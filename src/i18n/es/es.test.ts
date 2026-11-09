@@ -96,8 +96,12 @@ const WORD=(w:string)=>`(?<![\\p{L}\\p{N}])${w}(?![\\p{L}\\p{N}])`;
 const FORBIDDEN=(glossary.forbidden as {words?:string[];es?:string;use:string}[]).map(f=>({label:f.words?`«${f.words.join('», «')}»`:`/${f.es}/`,use:f.use,words:f.words??null,pattern:new RegExp(f.words?f.words.map(WORD).join('|'):f.es!,'iu')}));
 /** The forbidden words or patterns found in a string, less the words lint-allowed.json allows in that string. */
 const ALLOWED=lintAllowed.entries as Record<string,{words:string[];reason:string}>;
-export function forbiddenIn(id:string,text:string):string[]{
- const out:string[]=[];
+/** Front ES8a review: VIREO's English names that hold the word "Pulsar", quoted as glosses («Parámetros de púlsares (Pulsar
+ * Parameters)»). Only these exact, case-sensitive phrases are removed before the forbidden-word check, so the verb «pulsar» or an
+ * unaccented «pulsar» elsewhere in the same string still fails. */
+const VIREO_PULSAR_NAMES=/(?<![\p{L}\p{N}])(?:Access Pulsar List|Plot Pulsar Positions|Pulsar (?:Analysis|Parameters|List|Identification))(?![\p{L}\p{N}])/gu;
+export function forbiddenIn(id:string,original:string):string[]{
+ const out:string[]=[],text=original.replace(VIREO_PULSAR_NAMES,' ');
  for(const f of FORBIDDEN){
   if(f.words){for(const w of f.words)if(new RegExp(WORD(w),'iu').test(text)&&!ALLOWED[id]?.words.some(a=>a.toLowerCase()===w.toLowerCase()))out.push(`«${w}», use ${f.use}`);}
   else if(f.pattern.test(text))out.push(`${f.label}, use ${f.use}`);
@@ -124,6 +128,11 @@ describe('Front ES1 review 1: the lint catches what it must',()=>{
   expect(forbiddenIn('map:languageChoice.originalsNote','la próxima vez que se cargue la página')).toEqual([]);
   expect(forbiddenIn('catalog:other','la próxima vez que se cargue la página')).not.toEqual([]);
   expect(forbiddenIn('map:languageChoice.originalsNote','Haga clic')).not.toEqual([]);
+  // Front ES8a review: only the exact English VIREO names with "Pulsar" are exempt, never the verb or a lower-case form.
+  expect(forbiddenIn('catalog:x','Abre Parámetros de púlsares (Pulsar Parameters) o Archivo ▸ Lista de púlsares... [Pulsar List...]')).toEqual([]);
+  expect(forbiddenIn('catalog:x','Abre Parámetros de púlsares (Pulsar Parameters) y pulsar el botón')).not.toEqual([]);
+  expect(forbiddenIn('catalog:x','Abre el pulsar (Pulsar Analysis)')).not.toEqual([]);
+  expect(forbiddenIn('catalog:x','(pulsar parameters)')).not.toEqual([]);
   for(const [id,entry] of Object.entries(ALLOWED)){expect(entry.reason.length,id).toBeGreaterThan(20);expect(pairs().some(p=>p.id===id&&entry.words.every(w=>new RegExp(WORD(w),'iu').test(p.es))),`${id} still needs its allowance`).toBe(true);}
   expect(unpaired('¿Cambiar el idioma?','¿','?')).toBeNull();expect(unpaired('Cambiar el idioma?','¿','?')).toBe('? without ¿');expect(unpaired('¿Cambiar el idioma.','¿','?')).toBe('¿ without ?');
   expect(unpaired('presiona la tecla ? o abre ?lang=es','¿','?')).toBeNull();expect(unpaired('¡Listo!','¡','!')).toBeNull();expect(unpaired('¿Restaurar {file}?','¿','?')).toBeNull();expect(unpaired('Restaurar {file}?','¿','?')).toBe('? without ¿');expect(unpaired('¡Listo.','¡','!')).toBe('¡ without !');

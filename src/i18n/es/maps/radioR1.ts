@@ -2,8 +2,7 @@ import type {RADIO_R1_MESSAGES_EN} from '../../../components/RadioR1Messages';
 import type {Translation} from '../../maps';
 /** Front ES8a: Spanish (es-419) for the Front R1 radio web texts. A web adaptation by OpenVireo, not CLEA's. */
 export const RADIO_R1_ES:Translation<typeof RADIO_R1_MESSAGES_EN>=Object.freeze({
- saveData:"Archivo ▸ Guardar datos registrados...",
- saveDataNote:"Archivo ▸ Guardar datos registrados... (Save Recorded Data...) de VIREO (SvRcData1Click 0x567f70) ejecuta el mismo guardado que Guardar del análisis de púlsares; está habilitado mientras existan datos registrados. Aquí abre el análisis de púlsares, cuyo guardado verificado escribe el registro (adaptación web).",
+ saveDataNote:"Archivo ▸ Guardar datos registrados... (Save Recorded Data...) de VIREO (SvRcData1Click 0x567f70) ejecuta el mismo guardado que Guardar (Save) del Análisis de púlsares; está habilitado mientras existan datos registrados. Aquí abre el Análisis de púlsares, cuyo guardado verificado escribe el registro (adaptación web).",
  optionEffects:Object.freeze([
   "Graficar posiciones de púlsares (Plot Pulsar Positions; desactivado): dibuja los púlsares del catálogo en el mapa del cielo de radio.",
   "Escribir archivo de lista de objetos (Write Hot List File; desactivado): muestra Mover ▸ Lista de objetos ▸ Guardar lista actualizada....",

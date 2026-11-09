@@ -1,6 +1,6 @@
 import {isClearedData} from '../core/pulsarCurrentData';// Front R1 review L2
 import type {RadioPointing} from '../core/radioAntenna';
-import {RADIO_R1_MESSAGES as R1} from './RadioR1Messages';
+import {RADIO_R1_LITERALS,RADIO_R1_MESSAGES as R1} from './RadioR1Messages';
 import {memo,useEffect,useId,useLayoutEffect,useRef,useState,useSyncExternalStore,type KeyboardEvent,type MutableRefObject,type RefObject} from 'react';
 import ResearchNotes from './ResearchNotes';
 import {radioWorkspaceSnapshot,type RadioSnapshotResult,type RadioWorkspaceSnapshot,type RestoredRadioWorkspace} from '../core/radioInvestigation';
@@ -549,7 +549,7 @@ function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarD
    onSourcePicker={parameters.pickerMoved} restored={initial===null?null:{session:initial.receiverSession,windows:initial.receiverWindows}}/>
   {/* Front R1: TRadioLab +0x468 SvRcData1 (DFM disabled; enabled from the analysis Save1 state and the finish box) → 0x56b36c. */}
   {pulsarData&&onOpenPulsarAnalysis&&<p className="radio-control-note" data-testid="radio-save-recorded-data-row"><button type="button" className="secondary-button" data-testid="radio-save-recorded-data"
-   disabled={pulsarData.doc.data===null||isClearedData(pulsarData.doc.data)} onClick={onOpenPulsarAnalysis}>{R1.saveData}</button>{' '}
+   disabled={pulsarData.doc.data===null||isClearedData(pulsarData.doc.data)} onClick={onOpenPulsarAnalysis}>{menuCaptionText(vireo(RADIO_R1_LITERALS.file))} ▸ {vireo(RADIO_R1_LITERALS.saveRecordedData)}</button>{' '}
    {pulsarData.doc.data===null||isClearedData(pulsarData.doc.data)?R1.saveDataOff:R1.saveDataNote}</p>}
   {/* .radio-control (box-less) only scopes the shared dialog styles; the layer itself is never inert. */}
   <div className="radio-control" style={{display:'contents'}} data-testid="radio-date-layer" data-modal-pending={datePending} data-modal-presented={datePresented}>

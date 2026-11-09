@@ -495,7 +495,7 @@
  "Telescope Control Panel": "Panel de control del telescopio",
  "On": "Encendido",
  "Off": "Apagado",
- "No Telescope Accessed": "Ningún telescopio con acceso",
+ "No Telescope Accessed": "No se accedió a ningún telescopio",
  "fragment|Meter Radio Telescope": "Radiotelescopio de {diameter} metros",
  "Set Observation Date/Time, ID...": "Fijar fecha/hora de observación e ID...",
  "Receiver": "Receptor",
@@ -517,7 +517,6 @@
  "Slew": "Mover",
  "Tracking": "Seguimiento",
  "Slew Rate": "Velocidad de movimiento",
- "Hrs": "Horas",
  "\"Hot List\"": "\"Lista de objetos\"",
  "Add Current Item to List...": "Agregar el objeto actual a la lista...",
  "Load Hot List...": "Cargar lista de objetos...",
@@ -552,7 +551,7 @@
  "B1950 Name:": "Nombre B1950:",
  "J2000 Name:": "Nombre J2000:",
  "J2000 Right Ascension:": "Ascensión recta J2000:",
- "P (Secs):": "P (seg):",
+ "P (Secs):": "P (s):",
  "PDot (S/S):": "PDot (s/s):",
  "Sky Bkgrnd (K):": "Fondo de cielo (K):",
  "Dispersion (pc/cm^3):": "Dispersión (pc/cm^3):",
@@ -587,5 +586,6 @@
  "Close the Lowest Receiver First, or Close the Master Receiver to Close All.": "Cierra primero el receptor de más abajo, o cierra el receptor maestro para cerrarlos todos.",
  "Cannot Close Receiver!": "¡No se puede cerrar el receptor!",
  "Set location  time parameters.": "Fija los parámetros de ubicación y hora.",
- "Data Not Written to File": "Datos no escritos en un archivo"
+ "Data Not Written to File": "Datos no escritos en un archivo",
+ "Save Recorded Data...": "Guardar datos registrados..."
 }

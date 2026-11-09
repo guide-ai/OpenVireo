@@ -5,6 +5,8 @@ import en from '../../src/i18n/en.json' with {type:'json'};
 import originals from '../../src/i18n/es/originals.json' with {type:'json'};
 import {RADIO_ANTENNA_ES} from '../../src/i18n/es/maps/radioAntenna';
 import identical from '../../src/i18n/es/identical.json' with {type:'json'};
+import {RADIO_RECORD_SAVE_ES} from '../../src/i18n/es/maps/radioRecordSave';
+import {readFileSync} from 'node:fs';
 
 // Front ES8a (docs/I18N.md): the radio telescope route (#radio-control) in Spanish on a `?lang=es-419` preview load. One walk runs
 // in English, Spanish and the pseudo-locale: the route page and its scenario, the exercise menu, the scenario inputs, Radio access
@@ -25,7 +27,7 @@ const SAME=new Set<string>([
  'VIREO','OpenVireo','SHA-256','UT','UTC','MJD','JD','MHz','K','ms','px','J2000.0','B1950.0','Pulsars.dat','Pulsars.HTL','PEpoch (MJD):','HH:MM:SS',
  'S400:','S600:','S1400:','Radio','Radio...','N','S','E','#','?','·','—','✳','↗','×','▸','›',
  // The same word in Spanish (VIREO's No and Min, the web's «no» and «Bytes»).
- 'No','no','Min','Bytes',
+ 'No','no','Min','Hrs','Bytes',
  // VIREO's stored ID when the field is empty (UNKNOWN_ID, recorded data), quoted in the date error box.
  '“UNKNOWN”',
  // The test's own typed values and the bundled catalog's first rows as recorded.
@@ -35,6 +37,17 @@ const SAME=new Set<string>([
 const RECORDED=/^(?:[BJ]?\d{4}[+-−]\d{2,4}[A-Z]?)$|^(?:SHA-256 )?[0-9a-f]{64}$|^[0-9a-f]{12}$|^[\w.-]+\.(?:dat|DAT|HTL|PLR|txt|TXT|json)$/;
 const NUMERIC=/^[-+−±\d\s.,:;°′″'"·×÷/()[\]–%=→eE]*\d[-+−±\d\s.,:;°′″'"·×÷/()[\]–%=→eE]*(?:\s*(?:MHz|ms|s|K|h|m|px|UT|Z|°|mJy|pc\/cm\^3|rad|×))*\s*$/;
 const ISO=/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z?(?: UT)?$/;
+/** TODO(ES8b merge): the receiver's verified-Save dialog (Record's Yes) on this route also renders these `pulsar` map strings
+ * through createPulsarTranslator; they belong to ES8b's `pulsar` map and stay English until it merges. The coordinator removes
+ * this list at that merge, so the comparison then requires them in Spanish. */
+const TODO_ES8B_PULSAR_KEYS=['pulsar.rawExport.scope','pulsar.rawExport.format','pulsar.rawExport.inactive','pulsar.rawExport.inactiveNone','pulsar.rawExport.loss.heading',
+ 'pulsar.rawExport.loss.header','pulsar.rawExport.loss.headerNone','pulsar.rawExport.loss.samples','pulsar.rawExport.loss.memory','pulsar.save.how','pulsar.save.extensionRule',
+ 'pulsar.save.origin','pulsar.save.warning','pulsar.save.choose','pulsar.save.chooseAgain','pulsar.save.refusal.stale'] as const;
+// Read from the English map's source (importing it here would pull in the catalog without an import attribute).
+const PULSAR_SOURCE=readFileSync(new URL('../../src/components/PulsarMessages.ts',import.meta.url),'utf8');
+const TODO_ES8B=TODO_ES8B_PULSAR_KEYS.map(k=>{const m=new RegExp(`'${k.replace(/\./g,'\\.')}': '((?:[^'\\\\]|\\\\.)*)'`).exec(PULSAR_SOURCE);if(!m)throw new Error(k);
+ const t=m[1].replace(/\\'/g,"'");return new RegExp(`^${t.split(/\{\w+\}/).map(p=>p.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')).join('[\\s\\S]*?')}$`);});
+const pendingEs8b=(text:string)=>TODO_ES8B.some(p=>p.test(text));
 const same=(text:string)=>SAME.has(text)||RECORDED.test(text)||NUMERIC.test(text)||ISO.test(text);
 const id=(page:Page|Locator,testId:string)=>page.getByTestId(testId);
 const ACCENTED:Readonly<Record<string,string>>={a:'aá',e:'eé',i:'ií',o:'oó',u:'uú',A:'AÁ',E:'EÉ',I:'IÍ',O:'OÓ',U:'UÚ'};
@@ -105,7 +118,10 @@ const STEPS:readonly (readonly [string,(page:Page,lang:Lang)=>Promise<void>])[]=
  ['Identify',async page=>{await id(page,'receiver-mode').click();await untilFinished(page);await expect(id(page,'receiver-record-finish')).toHaveAttribute('data-stage','identify');}],
  ['data properties',async page=>{await id(page,'receiver-record-identify-ok').click();await expect(id(page,'receiver-record-finish')).toHaveAttribute('data-stage','properties');}],
  ['Save question',async page=>{await id(page,'receiver-record-properties-ok').click();await expect(id(page,'receiver-record-finish')).toHaveAttribute('data-stage','save');}],
- ['unsaved data question',async page=>{await id(page,'receiver-record-save-cancel').click();await expect(id(page,'receiver-record-finish')).toHaveCount(0);await id(page,'receiver-record').click();await expect(id(page,'receiver-record-prompt-text')).toBeVisible();}],
+ ['mark placed',async page=>{await id(page,'receiver-record-save-cancel').click();await expect(id(page,'receiver-record-finish')).toHaveCount(0);
+  await id(page,'receiver-mark-position-0').fill('200');await id(page,'receiver-mark-place-0').click();await expect(id(page,'receiver-mark-label-first-0')).toContainText('200');}],
+ ['unsaved data question',async page=>{await id(page,'receiver-record').click();await expect(id(page,'receiver-record-prompt-text')).toBeVisible();}],
+ ['Record Save dialog',async page=>{await id(page,'receiver-record-yes').click();await expect(id(page,'receiver-record-save')).toBeVisible();}],
 ];
 async function walk(page:Page,lang:Lang,each:(step:string)=>Promise<void>){
  await page.addInitScript(()=>localStorage.setItem('openvireo.tour.v1','done'));
@@ -126,7 +142,7 @@ test('the radio telescope reads differently in Spanish from English: route, cont
  }
  const english=new Set([...seen.en.values()].flatMap(s=>[...s].map(bare)));
  const left=new Map<string,string>();// each text once, with the first step that shows it
- for(const [step,list] of seen['es-419'])for(const t of list)if(english.has(bare(t))&&!same(bare(t))&&!left.has(t))left.set(t,step);
+ for(const [step,list] of seen['es-419'])for(const t of list)if(english.has(bare(t))&&!same(bare(t))&&!(step==='Record Save dialog'&&pendingEs8b(bare(t)))&&!left.has(t))left.set(t,step);
  expect([...left].map(([t,step])=>`${step}: ${t}`)).toEqual([]);
  // The scenario selectors' options are Spanish.
  const options=[...seen['es-419'].get('control panel')!].filter(t=>t.startsWith('@option:'));
@@ -142,6 +158,7 @@ test('qps: every text of the radio walk is marked, outside identifiers and nativ
 
 /** VIREO's captions on each step, in English (View original, English) or in this load's Spanish. */
 const captions=(page:Page,T:(original:string)=>string):Record<string,()=>Promise<void>>=>({
+ 'radio route':async()=>{await expect(id(page,'radio-save-recorded-data')).toHaveText(`${T('&File')} ▸ ${T('Save Recorded Data...')}`);},
  'exercise entered':async()=>{await expect(id(page,'radio-switch-panel-caption')).toHaveText(T('Telescope Control Panel'));},
  'control panel':async()=>{await expect(id(page,'antenna-form-caption')).toHaveText(T('VIREO Radio Telescope Control Panel'));await expect(id(page,'antenna-tracking')).toHaveText(T('Tracking'));
   await expect(id(page,'antenna-receiver-button')).toHaveText(T('Receiver'));await expect(id(page,'radio-switch-caption')).toHaveText(T('On'));},
@@ -166,6 +183,7 @@ const captions=(page:Page,T:(original:string)=>string):Record<string,()=>Promise
   await expect(id(page,'receiver-mode-disp-0')).toHaveText(T('Stop'));},
  'Cannot Close Receiver':async()=>{const b=id(page,'receiver-close-box');await expect(b.locator('h3')).toHaveText(T('Cannot Close Receiver!'));
   await expect(id(page,'receiver-close-box-text')).toHaveText(T('Close the Lowest Receiver First, or Close the Master Receiver to Close All.'));await expect(id(page,'receiver-close-box-ok')).toHaveText(T('OK'));},
+ 'mark placed':async()=>{await expect(id(page,'receiver-mark-label-first-0')).toContainText(T(' Sec').trim());await expect(id(page,'receiver-mark-label-first-0')).not.toContainText(T(' Sec').trim()==='Sec'?'Seg':'Sec');},
  'record armed':async()=>{await expect(id(page,'receiver-record-disp')).toHaveText(T('On'));},
  'Identify':async()=>{const f=id(page,'receiver-record-finish');await expect(f.locator('h3')).toHaveText(T('Identify Recorded Object'));await expect(f).toContainText(T('Enter/Verify Name or ID of Object'));
   await expect(id(page,'receiver-record-identify-ok')).toHaveText(T('OK'));},
@@ -191,6 +209,7 @@ test('View original (English) on: every VIREO caption in the radio walk reads in
   await checks[step]?.();
   if(step==='radio route')await expect(page.getByRole('heading',{level:1,name:N('es-419','radioRoute.title')})).toBeVisible();
   if(step==='control panel')await expect(id(page,'radio-panel-window').locator('h3').first()).toHaveText(S['radio.panel.heading']);
+  if(step==='Record Save dialog')await expect(id(page,'receiver-record-save').locator('h3')).toHaveText(RADIO_RECORD_SAVE_ES['radioSave.heading']);
  });
  expect([...left].map(([t,step])=>`${step}: ${t}`)).toEqual([]);
 });
@@ -207,7 +226,7 @@ test('Spanish: every VIREO caption in the radio walk is its Spanish original; En
 });
 
 /** The receiver's drawn annotation and caption: only VIREO's unit words and title pieces change; numbers and names do not. */
-test('the receiver caption and the drawn annotation translate VIREO pieces only',async({page})=>{
+test('the receiver caption, the drawn annotation and a mark label translate VIREO pieces only',async({page})=>{
  test.setTimeout(180_000);await page.setViewportSize({width:1440,height:1000});
  const drawn:string[]=[];
  await page.exposeFunction('__drawn',(t:string)=>{drawn.push(t);});
@@ -218,10 +237,15 @@ test('the receiver caption and the drawn annotation translate VIREO pieces only'
  await page.goto('/?lang=es-419#radio-control');await expect(id(page,'radio-exercise')).toBeVisible({timeout:30_000});
  for(const [,run] of STEPS.slice(0,steps+1))await run(page,'es-419');
  await expect(id(page,'receiver-heading-0')).toHaveText(/^(?:Receptor 1|¡No hay ningún púlsar en el haz!|Púlsar \S+)\s+Apertura: \d+ Metros/);
- await id(page,'receiver-mode').click();await page.waitForTimeout(600);
+ // Through the capture to a placed mark: the annotation is drawn while receiving, the mark label after it.
+ for(const [,run] of STEPS.slice(steps+1,STEPS.findIndex(([s])=>s==='mark placed')+1))await run(page,'es-419');
  await expect.poll(()=>drawn.some(t=>/^\d+\.\d Seg $/.test(t))).toBe(true);
  expect(drawn.some(t=>/ Sec /.test(t))).toBe(false);
  expect(drawn.some(t=>/^\d+\.\d{2} MHz {0,}$/.test(t))).toBe(true);
+ // A mark's time label (RECEIVER_MARK_LITERALS ' Sec', drawn on the overlay and shown in the DOM): «Seg», never "Sec".
+ await expect(id(page,'receiver-mark-label-first-0')).toContainText(/\d Seg \(/);await expect(id(page,'receiver-mark-label-first-0')).not.toContainText('Sec');
+ await expect.poll(()=>drawn.some(t=>/^\s*\d+(?:\.\d+)? Seg$/.test(t))).toBe(true);
+ expect(drawn.some(t=>/ Sec$/.test(t))).toBe(false);
 });
 
 /** Layout problems at this width: page overflow; dialogs that leave the viewport or scroll sideways; buttons, labels, selects,
