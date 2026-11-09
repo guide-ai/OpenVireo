@@ -198,3 +198,28 @@ Resolution:
 User report: in the tour card, Next sat about 8 px lower than Back. Cause: the site-wide `.primary-button` has `margin-top:16px` and taller padding than `.secondary-button`, so in a centred flex row it drops below its neighbour. Fix [W]: the tour's buttons have no margin and share one size (`site-tour.css`). An in-browser audit of all 25 routes found the same offset only in the Radio telescope's button rows (Apply UT / Cancel UT edit, Start / Pause radio clock, Apply / Cancel, Apply diameter / Cancel), fixed in `RadioControlPanel.css`. `tests/onboarding.spec.ts` checks that Skip, Back and Next share one line; that check fails on the previous CSS. Plan and implementation: Claude Opus 5.5 (coordinator); independent review: a separate Claude Opus 5.5 subagent, read-only, over the uncommitted diff.
 
 Raw review findings (all low; nothing blocking): (1) two radio rows whose only button is a primary button (Preferences in Access options, Open pulsar parameters) lose 16 px above, which now matches the rows of secondary buttons; (2) the new e2e block split an existing comment from its check; (3) the radio fix had no test; (4) Skip the tour is about 29 px tall, which passes WCAG 2.5.8 but is below the site's usual 44 px (not new). Resolution: (1) and (4) accepted; (2) the comment was moved; (3) `tests/radio-control.spec.ts` checks that Apply and Cancel share one line, and that check fails on the previous CSS.
+
+## Front Project Links (2026-11-08)
+
+User request: a button to the repository and another to report problems through GitHub's new-issue page. Plan and implementation: Claude Opus 5.5 (coordinator); independent review: a separate Claude Opus 5.5 subagent, read-only, over the uncommitted diff.
+
+What changed [W]:
+- **Header:** `src/components/ProjectLinks.tsx` puts Source code and Report a problem at the foot of the header menu, above Instructor mode…. That is the bottom of the wide sidebar, the top-right of the top bar (600–1099 px, where the three rows now stack at the right with even gaps), and the phone Tools panel.
+- **Help menu:** it lists Source code on GitHub and Report a problem on GitHub after About.
+- **Route-error screen:** it offers Report this problem on GitHub. A site update offers no report link, because it is not a bug.
+- **Links and data:** `src/help/projectLinks.ts` holds the address and the text. The issue address carries a short template (page, what happened, what was expected, steps). Its only data is the current route name, encoded so it cannot add parameters.
+- **Header layout fix:** on the way, the top bar's status line ("Web reconstruction · not the original VIREO") no longer runs under Help at 600–700 px. It wraps below the brand instead. This was already wrong on main.
+
+Tests: `src/help/projectLinks.test.ts` and `tests/project-links.spec.ts` (links, page name, Help, the 320 px Tools panel, no overlap from 600 to 1099 px), plus one assertion in the release smoke test.
+
+Raw review findings (nothing blocking):
+- (1, low-medium) The Help and route-error report links copied the raw address hash, so an in-page anchor (#measurement-log) or crafted text could reach the issue text. This contradicted the "route name only" rule.
+- (2) The 600–1099 px footer column might crowd the brand and Help with wider fonts.
+- (3) The two Help items use the link colour of the Websites links, not the plain items around them.
+- (4) This entry lacked the review.
+
+Resolution:
+- (1) `currentPage()` now reads the menu's current page, and `routeName()` accepts only plain route names (anything else becomes observatory). A unit test and an e2e step cover it.
+- (2) The e2e now checks that Help stays left of the footer column with no overflow, at 600, 700, 900 and 1099 px. It passes with the CI's DejaVu fonts.
+- (3) Accepted: the colour marks them as external links, like Websites.
+- (4) This paragraph.

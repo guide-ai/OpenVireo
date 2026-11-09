@@ -331,3 +331,12 @@
  body{padding-left:0!important}
  .portal-header,.investigation-toolbar,.instructor-mode-banner{display:none!important}
 }
+/* GitHub source code and Report a problem buttons at the foot of the header (ProjectLinks.tsx, user decision 2026-11-08). */
+.project-links{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:var(--ov-space-2)}
+.project-links a{display:inline-flex;align-items:center;gap:6px;flex:1 1 auto;justify-content:center;min-height:32px;padding:4px 10px;border:1px solid var(--ov-chrome-border);border-radius:var(--ov-radius-sm);color:var(--ov-chrome-text);font-size:var(--ov-text-xs);font-weight:600;text-decoration:none;white-space:nowrap}
+.project-links a:hover{background:var(--ov-chrome-hover)}
+.project-links a:focus-visible{outline:2px solid var(--ov-chrome-focus);outline-offset:2px}
+.project-links svg{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+/* Top-bar layout (600–1099 px): the footer's three rows (links, instructor mode, theme) stack at the right with even gaps. */
+@media(min-width:600px) and (max-width:1099.98px){.portal-footer{display:flex;flex-direction:column;align-items:flex-end;gap:6px}.project-links{margin:0;flex-wrap:nowrap}.project-links a{flex:none}}
+@media(max-width:599.98px){.project-links a{min-height:40px}}

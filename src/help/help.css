@@ -30,7 +30,10 @@
 /* Very narrow phones: the Help button keeps its icon and accessible name; its word is hidden to leave room for Tools. */
 @media(max-width:359.98px){.portal-help .help-trigger{padding:4px 6px}.portal-help .help-trigger .help-trigger-text{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
 .portal-brand-block{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0}
-@media(max-width:1099.98px){.portal-brand-block{flex-direction:row;align-items:center;gap:16px}}
+@media(max-width:1099.98px){.portal-brand-block{flex-direction:row;flex-wrap:wrap;align-items:center;gap:2px 16px}}
+/* Top-bar layout: when the row is narrow the status line wraps below the brand instead of running under Help (layout audit,
+ * 2026-11-08: at 600–700 px it did). */
+@media(min-width:600px) and (max-width:1099.98px){.portal-brand-block .portal-status{white-space:normal;min-width:0}}
 @media(max-width:599.98px){.portal-header .portal-top{position:relative}.portal-top .portal-help{margin-left:auto}.portal-help .fi-menu{position:static}.portal-help .fi-menu-list{left:0;right:0;width:auto;min-width:0;max-width:none}}
 
 /* Help › Help topics… (web help, WebHelpDialog.tsx): topic list beside the text; stacked on phones. */

@@ -66,6 +66,7 @@ Medidas de hoy: build de unos 75 MB y 1194 archivos. Con los archivos de Object 
 - **Proveedor:** Cloudflare (sitio estático, y Workers, D1 y R2 cuando haga falta backend).
 - **Dominio y despliegue:** todavía no hay dominio ni cuenta; el usuario comprará un dominio pronto. Mientras tanto no se despliega nada y la prohibición de `AGENTS.md` sigue vigente.
 - **Actualización del 7 nov 2026:** el usuario aprobó publicar la primera versión: solo el sitio estático (las 7 prácticas, guardado en el equipo del estudiante y analítica agregada sin cookies), en su cuenta de Cloudflare y con la dirección gratuita (*.pages.dev o *.workers.dev) hasta tener dominio. Las cuentas, la base de datos y el envío de correo quedan fuera de esta versión. Los términos exactos están en `AGENTS.md`.
+- **Enlaces a GitHub (8 nov 2026):** el usuario pidió un botón al repositorio público `guide-ai/OpenVireo` y otro para reportar problemas en la página de nueva *issue* de GitHub. Están al pie del menú y en Help, y abren GitHub en una pestaña nueva solo al hacer clic (`rel="noopener noreferrer"`). El sitio no envía nada: la dirección de la *issue* lleva solo el nombre de la página actual en el texto, que el estudiante ve y puede editar antes de enviarla. Para enviarla, GitHub le pide iniciar sesión.
 - **Analítica:** sí, métricas de visitas. Propuesta por defecto: Cloudflare Web Analytics, agregada y sin cookies.
 
 **Prerrequisitos de despliegue** (se resuelven antes de publicar, no ahora):

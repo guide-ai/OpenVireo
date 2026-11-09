@@ -233,6 +233,8 @@ test('review 1 M1: after a redeploy, a route whose old chunk is gone shows the u
  await expect(notice).toBeVisible({timeout:20_000});
  await expect(notice).toContainText('A new version of OpenVireo was published');
  await expect(notice).toContainText('Save your investigation first, then reload the page');
+ // A site update is not a bug: no Report a problem link here (only a route error offers one, Front Project Links).
+ await expect(notice.getByTestId('recovery-report')).toHaveCount(0);
  expect(blocked).toBeGreaterThan(0);
  // The shell stays: header, navigation and the investigation toolbar.
  await expect(page.locator('button[data-route="observatory"]')).toBeVisible();
