@@ -34,7 +34,7 @@ const START={title:'Empieza aquí',topics:[
   {head:['En VIREO (Windows)','En OpenVireo'],rows:[
    ['Archivo › Iniciar sesión...','No hace falta: no hay cuentas ni inicio de sesión. Los nombres en las impresiones quedan en blanco.'],
    ['Archivo › Ejecutar ejercicio','Abre la guía del ejercicio en Guías de los ejercicios, en el encabezado.'],
-   ['Archivo › Fijar fecha/hora de observación, ID...','Reloj del sitio › Fijar fecha/hora… en la página Observatorio (UT). La página del Objeto X tiene su propio cuadro de fecha y hora (Fijar el reloj del observatorio); su cuadro de ID rotula tus datos guardados.'],
+   ['Archivo › Fijar fecha/hora de observación e ID...','Reloj del sitio › Fijar fecha/hora… en la página Observatorio (UT). La página del Objeto X tiene su propio cuadro de fecha y hora (Fijar el reloj del observatorio); su cuadro de ID rotula tus datos guardados.'],
    ['Telescopios › Óptico','La tarjeta Telescopio óptico en la página Observatorio: elige un perfil y luego Usar este telescopio.'],
    ['Telescopios › Óptico › Solicitar tiempo','El cuadro Solicitar tiempo de la misma tarjeta (solo en los ejercicios en los que VIREO restringe los telescopios más grandes).'],
    ['Telescopios › Radio','Radiotelescopio en el encabezado (grupo Radioobservatorio).'],

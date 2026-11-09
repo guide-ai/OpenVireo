@@ -10,11 +10,12 @@ Para cargar un espectro para clasificarlo:
 
     2)  Elige una opción del submenú que aparece:
 
-        «Espectros guardados (*.CSP...)» (Saved Spectra)
+        «Espectros guardados (*.CSP...)» (Saved Spectra (*.CSP...))
             Elige de una lista de espectros tomados y guardados para
-            clasificar como parte de este ejercicio. Para seleccionar,
-            haz doble clic en el nombre del archivo o mueve el cursor
-            al nombre del archivo y presiona «Abrir» (Open).
+            clasificarlos como parte de este ejercicio. Para
+            seleccionar, haz doble clic en el nombre del archivo o
+            mueve el cursor al nombre del archivo y presiona «Abrir»
+            (Open).
 
         «Lista de programa» (Program List)
             Elige de una lista de estrellas del programa para este
@@ -46,11 +47,12 @@ Para cargar espectros estándar para compararlos:
         mueve el cursor al atlas deseado y selecciona
         «Archivo»->«Abrir selección» (Open Selection) en el menú.
 
-    3)  La lista de estándares del atlas aparecerá en la pantalla
-        verde azulado «Estándares» (Standards) a la derecha de la
-        ventana de clasificación. Observa que el espectro resaltado se
-        muestra arriba del desconocido, mientras que la siguiente
-        entrada del atlas se muestra debajo del desconocido.
+    3)  La lista de estándares del atlas aparecerá en el panel verde
+        azulado «Estándares» (Standards), a la derecha de la ventana
+        de clasificación. Observa que el espectro resaltado se
+        muestra arriba del desconocido en el área de visualización,
+        mientras que la siguiente entrada del atlas se muestra debajo
+        del desconocido.
 
     4)  Usa las teclas de flecha o haz clic en las entradas de la
         lista de estándares para recorrer el atlas. Observa los
@@ -64,20 +66,20 @@ Para cargar espectros estándar para compararlos:
 Para medir la longitud de onda y la intensidad de un rasgo espectral:
 
     Con el cursor sobre la pantalla del espectro, mantén presionado el
-    botón izquierdo del mouse: el cursor cambia de flecha a cruz. Al
-    mover el cursor dentro del área de visualización del espectro, la
-    lectura de la longitud de onda y de la intensidad relativa en el
-    cursor se muestra en la parte inferior de la ventana. Cuando hayas
-    colocado el cursor en el punto que quieres medir, suelta el botón
-    del mouse. Las lecturas no cambiarán hasta que vuelvas a presionar
-    el botón izquierdo del mouse.
+    botón izquierdo del mouse: el cursor cambia de una flecha a una
+    cruz. Al mover el cursor dentro del área de visualización del
+    espectro, la lectura de la longitud de onda y de la intensidad
+    relativa en el cursor se muestra en la parte inferior de la
+    ventana. Cuando hayas colocado el cursor en el punto que quieres
+    medir, suelta el botón del mouse. Las lecturas no cambiarán hasta
+    que vuelvas a presionar el botón izquierdo del mouse.
 
         NOTA:  Si el espectro se muestra como una traza de intensidad
         (consulta el tema de ayuda «Configurar visualización»), la
         posición vertical (coordenada Y) del cursor determina la
-        medición de la intensidad. Si la pantalla está en modo «Foto»,
-        se muestra la intensidad «bajo» el cursor (en la coordenada
-        horizontal o X).
+        medición de la intensidad. Si la pantalla está en modo «Foto»
+        (Photo), se muestra la intensidad «bajo» el cursor (en la
+        coordenada horizontal o X).
 
     Cuando sueltas el botón del mouse, el cursor vuelve a su forma
     normal y la posición medida se marca en la pantalla con una línea
@@ -105,21 +107,20 @@ Temas relacionados:
 Los siguientes controles están en el lado derecho de la ventana de
 clasificación:
 
-    «Ampliar» (Zoom In) (punta de flecha hacia arriba):
+    Acercar (punta de flecha hacia arriba):
         Amplía los espectros mostrados por un factor de 2, hasta un
         máximo de 16 veces la visualización original. Si hay un rasgo
-        marcado, la ampliación intenta centrarlo en la visualización
+        marcado, el zoom intenta centrarlo en la visualización
         ampliada. Si no hay ninguna línea marcada, la longitud de onda
         del centro de la visualización sigue siendo la misma.
 
-    «Reducir» (Zoom Out) (punta de flecha hacia abajo):
+    Alejar (punta de flecha hacia abajo):
         Disminuye la ampliación de los espectros mostrados por un
         factor de 2, hasta la ampliación original (1X). Si hay una
-        línea marcada, la reducción intenta mantenerla centrada en la
+        línea marcada, el zoom intenta mantenerla centrada en la
         visualización.
 
-    «Flechas de desplazamiento» (Pan Arrows) (puntas de flecha
-    izquierda y derecha):
+    Flechas de desplazamiento (puntas de flecha izquierda y derecha):
         Usa los controles de flecha izquierda y derecha para recorrer
         los espectros ampliados.
 
@@ -149,7 +150,7 @@ Características de la tabla de líneas espectrales:
         tabla se desplaza para seguir al cursor cuando se mueve el
         mouse con el botón izquierdo presionado.
 
-            PRECAUCIÓN: Se debe usar el criterio al aceptar las
+            PRECAUCIÓN: Hay que usar el buen juicio al aceptar las
             identificaciones de líneas de la tabla, ya que la longitud
             de onda es el único criterio: no se tienen en cuenta la
             temperatura, la luminosidad, etc. Por ejemplo, las líneas
@@ -167,8 +168,9 @@ Características de la tabla de líneas espectrales:
         una entrada de la tabla de líneas espectrales, se resalta la
         entrada, se marca la línea como arriba y aparece una ventana
         de ayuda con información sobre la línea seleccionada. Una vez
-        abierta, la ventana de ayuda seguirá las selecciones de la
-        tabla (sin hacer doble clic) hasta que se cierre.
+        abierta, la ventana de ayuda seguirá «rastreando» las
+        selecciones de la tabla (sin hacer doble clic) hasta que se
+        cierre.
 
 Temas relacionados:
     Medir y marcar rasgos espectrales
@@ -179,13 +181,13 @@ ventana de clasificación están disponibles en la selección de menú
 «Archivo» (File)->«Ver» (Display).
 
     «Archivo»->«Ver»
-        Fija el formato de la pantalla del espectro. Están disponibles
-        las siguientes opciones:
+        Fija el formato de la visualización del espectro. Están
+        disponibles las siguientes opciones:
 
-        «Mostrar diferencia (Est - Desc)» (Show Difference (Std -
-        Unkn))
+        «Mostrar diferencia (Est - Desc)»
+        (Show Difference (Std - Unkn))
             Cuando se selecciona esta opción, el espectro estándar
-            inferior se reemplaza por una pantalla que muestra la
+            inferior se reemplaza por una visualización que muestra la
             diferencia punto por punto entre el espectro estándar
             superior y el desconocido. Es una ayuda muy útil para la
             clasificación espectral.
@@ -202,7 +204,8 @@ ventana de clasificación están disponibles en la selección de menú
             Muestra el desconocido en ambos modos. Un estándar se
             muestra como «Foto».
 
-        «Escala de grises invertida» (Reverse Grayscale Displays)
+        «Invertir pantallas en escala de grises»
+        (Reverse Grayscale Displays)
             Invierte la conversión de intensidades a niveles de gris
             para imitar una imagen fotográfica negativa.
 
@@ -215,8 +218,8 @@ seguro de las intensidades relativas de rasgos importantes, la
 medición del ancho equivalente puede ayudarte. Para medir el ancho
 equivalente de un rasgo espectral:
 
-    1)  Amplía la visualización a un aumento que permita identificar y
-        marcar con claridad los «hombros» de la línea.
+    1)  Acerca la visualización hasta un aumento que permita
+        identificar y marcar con claridad los «hombros» de la línea.
 
     2)  Selecciona «Ancho equivalente de la línea...» (Line Equivalent
         Width...) en el menú de clasificación. Aparecerá un cuadro con
@@ -233,11 +236,11 @@ equivalente de un rasgo espectral:
         cursor debe indicar el nivel del continuo a cada lado de la
         línea. Si lo hiciste correctamente, los extremos de la línea
         quedarán delimitados por un cuadro azul, con el marcador rojo
-        de posición de la línea pasando cerca de su centro. Si quieres
-        cambiar una posición, simplemente mueve el cursor a la nueva
-        posición y haz clic de nuevo con el botón derecho. También
-        puedes volver a colocar el marcador del centro de la línea
-        haciendo clic con el botón izquierdo.
+        de posición de la línea pasando por algún punto cerca de su
+        centro. Si quieres cambiar una posición, simplemente mueve el
+        cursor a la nueva posición y haz clic de nuevo con el botón
+        derecho. También puedes volver a colocar el marcador del
+        centro de la línea haciendo clic con el botón izquierdo.
 
     5)  Cuando el rasgo esté correctamente delimitado, presiona
         «Aceptar» (OK) en el cuadro de instrucciones. Se mostrarán el
@@ -259,16 +262,17 @@ incertidumbre o rasgo inusual del espectro en el cuadro «Comentarios»
 escribiste se coloca en una lista, pero no se guarda en un archivo.
 Para revisar, imprimir o guardar tus resultados en un archivo,
 selecciona «Herramientas» (Tools)->«Editores de resultados» (Results
-Editors)->«Resultados de observación» (Observational
-Results)->«Mostrar/imprimir/guardar» (Display/Print/Save) en el menú
-del panel de control del observatorio.
+Editors)->«Resultados de observación» (Observational Results)->
+«Mostrar/imprimir/guardar» (Display/Print/Save) en el menú del panel
+de control del observatorio.
 
 Temas relacionados:
-    «Editores de resultados» en «Ayuda» del panel del observatorio.
+    «Editores de resultados» en el menú «Ayuda» del panel de control
+    del observatorio.
 
-**Fijar el rango de longitudes de onda**
+**Fijar rango de longitudes de onda**
 Puedes cambiar el rango de longitudes de onda visible en la ventana de
-clasificación, dentro del rango máximo de 3500 a 7400 Angstroms. Para
+clasificación, dentro del rango máximo de 3500 a 7400 angstroms. Para
 cambiar el rango de longitudes de onda, selecciona «Archivo»
 (File)->«Ver» (Display)->«Rango espectral» (Spectral Range) en el menú
 del panel de control de clasificación. Usa los controles deslizantes

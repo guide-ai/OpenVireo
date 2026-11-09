@@ -2,18 +2,18 @@
 // provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Spanish chunk.
 export const sourceName='SPECHLP.TXT';
 export const sourceSha256='e085a513389cd65a7726260daf6607b8c277be6e6a2a46222a8fd5bb90fcee79';
-export const text=`**Fijar el rango de longitudes de onda**
+export const text=`**Fijar rango de longitudes de onda**
 Puedes cambiar el rango de longitudes de onda que registra el
-espectrómetro, dentro del rango máximo de 3500 a 7400 Angstroms. (Tu
-instructor te dirá si hay alguna razón por la que quieras hacerlo).
-Para cambiar el rango de longitudes de onda, selecciona «Archivo»
-(File)->«Preferencias» (Preferences)->«Rango espectral» (Spectral
-Range) en el menú del panel de control del espectrómetro. Usa los
-controles deslizantes para cambiar los valores mínimo y/o máximo. El
-botón «Predeterminado» (Default) devuelve los valores al rango óptimo
-para la clasificación espectral. Ten en cuenta que perderás cualquier
-espectro que hayas tomado pero no guardado cuando cambies el rango de
-longitudes de onda.
+espectrómetro, dentro del rango máximo de 3500 a 7400 angstroms. (Tu
+instructor debería decirte si hay alguna razón por la que podrías
+querer hacerlo). Para cambiar el rango de longitudes de onda,
+selecciona «Archivo» (File)->«Preferencias» (Preferences)->«Rango
+espectral» (Spectral Range) en el menú del panel de control del
+espectrómetro. Usa los controles deslizantes para cambiar los valores
+mínimo y/o máximo. El botón «Predeterminado» (Default) devuelve los
+valores al rango óptimo para la clasificación espectral. Ten en cuenta
+que perderás cualquier espectro que hayas tomado pero no guardado
+cuando cambies el rango de longitudes de onda.
 
 **Iniciar/reanudar la cuenta**
 Presiona el botón de integración «Comenzar» (Go) del espectrómetro
@@ -42,20 +42,20 @@ Para imprimir el espectro actual, selecciona «Archivo» (File)->«Datos»
 panel de control del espectrómetro. Aparecerá el formulario estándar
 de opciones de impresión de Windows. (Tu instructor puede darte
 información adicional sobre cómo configurar y dirigir tu impresión).
-El espectro se imprime tal como aparece en la pantalla, junto con la
-información de encabezado de identificación.
+El espectro se imprime tal como aparece en la pantalla, junto con un
+encabezado con información de identificación.
 
 **Guardar espectro para análisis**
 No puedes medir ni clasificar un espectro que hayas tomado a menos que
 lo guardes. Cuando consideres que la relación señal/ruido es
 suficientemente alta para un análisis preciso (ver abajo), detén la
-cuenta y selecciona «Archivo»->«Datos»->«Guardar espectro...» (Save
-Spectrum...) en el menú del panel de control del espectrómetro. Se
-genera un nombre de archivo a partir del nombre o ID del objeto
-(calificador .CSP). Se te pedirá que verifiques el nombre y la ruta
-del archivo. (En general, no debes cambiar la ruta a menos que se te
-indique). Si ya existe un archivo con ese nombre, se te avisará antes
-de sobrescribir el archivo existente.
+cuenta y selecciona «Archivo» (File)->«Datos» (Data)->«Guardar
+espectro...» (Save Spectrum...) en el menú del panel de control del
+espectrómetro. Se genera un nombre de archivo a partir del nombre o ID
+del objeto (extensión .CSP). Se te pedirá que verifiques el nombre y
+la ruta del archivo. (En general, no debes cambiar la ruta a menos que
+se te indique). Si ya existe un archivo con ese nombre, se te avisará
+antes de sobrescribir el archivo existente.
 
 Se recomienda una relación señal/ruido de alrededor de 100 para una
 clasificación precisa de estrellas, pero valores más bajos pueden
@@ -68,8 +68,9 @@ espectrómetro y seguir integrándolo, usa la siguiente técnica:
     1)  Guarda el espectro.
 
     2)  NO cierres el panel de control del espectrómetro. Si quieres,
-        puedes minimizarlo con el cuadro «_» de la esquina superior
-        derecha, pero no es necesario.
+        puedes minimizar el panel de control del espectrómetro con el
+        cuadro «_» de la esquina superior derecha, pero no es
+        necesario.
 
     3)  Selecciona la herramienta de clasificación o de medición en
         «Herramientas» (Tools) del menú del panel de control del
@@ -78,8 +79,8 @@ espectrómetro y seguir integrándolo, usa la siguiente técnica:
 
     4)  Si el espectro tiene demasiado ruido para un análisis preciso,
         puedes seguir integrándolo. Vuelve al panel de control del
-        espectrómetro y presiona «Comenzar». Cuando termines, tendrás
-        que guardarlo de nuevo (puedes sobrescribir la versión
+        espectrómetro y presiona «Comenzar» (Go). Cuando termines,
+        tendrás que guardarlo de nuevo (puedes sobrescribir la versión
         anterior) y volver a cargarlo en la herramienta de análisis.
 
 Temas relacionados:
@@ -111,7 +112,7 @@ clasificación.
 
 Temas relacionados:
     Guardar espectro para análisis
-    Temas en «Ayuda» del menú de la herramienta de clasificación.
+    Temas de «Ayuda» en el menú de la herramienta de clasificación.
 
 **Acceder a la herramienta de medición de espectros**
 Para medir la posición de líneas espectrales y determinar la velocidad
@@ -124,5 +125,6 @@ de acceder a la herramienta de medición de espectros.
 
 Temas relacionados:
     Guardar espectro para análisis
-    Temas en «Ayuda» del menú de la herramienta de medición.
+    Temas de «Ayuda» en el menú de la herramienta de medición de
+    espectros.
 `;

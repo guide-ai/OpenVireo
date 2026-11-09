@@ -3,7 +3,7 @@
 export const sourceName='SPECHLP.LST';
 export const sourceSha256='1b90822216661b0592e1873d6a44994cd30ec5843f5f907774ad580e0f7b4c49';
 export const text=`'Usar el espectrómetro' 'begin'
-'Fijar el rango de longitudes de onda' 'spechlp.txt'
+'Fijar rango de longitudes de onda' 'spechlp.txt'
 'Iniciar/reanudar la cuenta' 'spechlp.txt'
 'Detener la cuenta' 'spechlp.txt'
 'Guardar espectro para análisis' 'spechlp.txt'

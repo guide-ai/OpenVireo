@@ -3,7 +3,7 @@
 export const sourceName='HRAnalHlp.LST';
 export const sourceSha256='b50c590f0f0f3e60456b8adeae06d123a2121ed5db3f741a74610d28d0a61537';
 export const text=`'Cargar/graficar datos' 'begin'
-'Cargar datos de las observaciones' 'HRAnalHlp.txt'
+'Cargar datos a partir de observaciones' 'HRAnalHlp.txt'
 'Cargar datos de la base de datos de cúmulos' 'HRAnalHlp.txt'
 'Cargar un cúmulo nuevo de la base de datos' 'HRAnalHlp.txt'
 'Cargar/graficar datos' 'end'

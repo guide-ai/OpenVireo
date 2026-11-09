@@ -43,7 +43,7 @@ horizonte local y posiblemente por otras limitaciones del telescopio.
 
 Temas relacionados:
     Fijar coordenadas
-    Observaciones sobre el movimiento del telescopio
+    Comentarios sobre el movimiento del telescopio
     Usar los receptores
 
 **Fijar coordenadas**
@@ -58,9 +58,9 @@ meridiano, esta función moverá el telescopio solo en declinación.
 
 Temas relacionados:
     Controles del radiotelescopio
-    Observaciones sobre el movimiento del telescopio
+    Comentarios sobre el movimiento del telescopio
 
-**Observaciones sobre el movimiento del telescopio**
+**Comentarios sobre el movimiento del telescopio**
 La porción del cielo accesible para un telescopio en un momento dado
 está limitada por varios factores.  En la realidad, ningún telescopio,
 óptico o de radio, puede «ver» por debajo del horizonte local.  Si así
@@ -73,7 +73,7 @@ regiones limitadas del cielo sobre ellos.  El más común de estos es el
 telescopio de tránsito meridiano, que solo puede moverse en declinación
 y debe esperar a que la rotación de la Tierra lleve el objeto que se
 observa a través del campo de visión.  Otro tipo de restricción es el
-que ejemplifica el plato de 1000 pies de Arecibo, que solo puede
+que ejemplifica la antena de 1000 pies de Arecibo, que solo puede
 apuntarse a objetos que estén a pocos grados del cenit local.  Este
 programa puede configurarse para simular cualquiera de estas
 restricciones de movimiento; tu instructor te informará si se ha hecho
@@ -97,7 +97,7 @@ informará si ese es el caso.
 Véase también:
     «Fijar la fecha y la hora de observación»
 
-**Seleccionar un objeto de la «Lista de objetos»**
+**Seleccionar un objeto de la "Lista de objetos"**
 Para mover el telescopio a un elemento de la lista de objetos,
 selecciona «Mover» (Slew)->«Lista de objetos» (Hot List)->
 «Ver/seleccionar de la lista...» (View/Select from List...) en el menú
@@ -110,9 +110,9 @@ Si el telescopio es un instrumento de tránsito meridiano, la función
 «Lista de objetos» moverá el telescopio solo en declinación.
 
 Véase también:
-    «Observaciones sobre el movimiento del telescopio»
+    «Comentarios sobre el movimiento del telescopio»
 
-**Agregar un objeto a la «Lista de objetos»**
+**Agregar un objeto a la "Lista de objetos"**
 Puedes agregar objetos interesantes a la lista de objetos para que sea
 fácil volver a ellos más tarde y observarlos de nuevo.  Para agregar un
 objeto, apunta con precisión el telescopio hacia él y accede a un
@@ -125,10 +125,10 @@ por qué es de interés.  (También puedes cambiar la identificación y la
 posición para agregar un objeto que no esté actualmente en el campo del
 telescopio).  Cuando hayas completado la entrada, presiona «Aceptar»
 (OK) para agregarla a la lista.  (Si creas una entrada incorrecta por
-error, consulta el tema de ayuda «Quitar un objeto de la «Lista de
-objetos»».)
+error, consulta el tema de ayuda «Quitar un objeto de la "Lista de
+objetos"».)
 
-**Quitar un objeto de la «Lista de objetos»**
+**Quitar un objeto de la "Lista de objetos"**
 Para quitar una entrada de la lista de objetos, selecciona «Mover»
 (Slew)->«Lista de objetos» (Hot List)-> «Ver/seleccionar de la
 lista...» (View/Select from List...) en el menú del panel de control del
@@ -142,45 +142,47 @@ de los objetos restantes de la lista.
 **Fijar la fecha y la hora de observación**
 Para fijar la fecha y la hora «actuales» del telescopio, cierra el panel
 de control del radiotelescopio y luego selecciona «Archivo» (File)->
-«Fijar fecha/hora e ID...» (Set Observation Date/Time, ID...) en el menú
-del panel de control del observatorio.
+«Fijar fecha/hora de observación e ID...» (Set Observation Date/Time,
+ID...) en el menú del panel de control del observatorio.
 
 Temas relacionados:
-    «Fijar fecha y hora» en el menú «Ayuda» del panel del observatorio.
+    «Fijar fecha y hora» en el menú «Ayuda» (Help) del panel de control
+    del observatorio.
 
-**Analizar los datos de púlsares**
+**Analizar datos de púlsares**
 Para analizar los datos de púlsares que tomaste y registraste,
 selecciona «Herramientas» (Tools)->«Herramienta de análisis de
-púlsares de radio» (Radio Pulsar Analysis Tool) en el menú del panel
+radiopúlsares» (Radio Pulsar Analysis Tool) en el menú del panel
 de control del observatorio.
 
 Temas relacionados:
     Recibir señales
     Registrar señales
     Medir las señales recibidas
-    Temas del menú «Ayuda» de la herramienta de análisis de púlsares.
+    Temas de «Ayuda» (Help) del menú de la herramienta de análisis de
+    púlsares.
 
 **Cerrar el panel de control del radiotelescopio**
 Para cerrar el panel de control del radiotelescopio, selecciona
 «Archivo» (File)->«Salir» (Exit) en el menú, o usa cualquiera de las
-funciones estándar de Windows (menú del sistema o casilla «X») para
+funciones estándar de Windows (menú del sistema o botón «X») para
 cerrar la ventana.  Se te recordará cualquier dato sin guardar y tendrás
 la oportunidad de guardarlo antes de que se cierre el telescopio.
 
 **Acceder a los receptores**
 Para acceder al receptor principal, o «maestro», presiona el botón
 «Receptor» (Receiver) en el panel de control del radiotelescopio.  Una
-vez que aparezca la ventana del receptor maestro, se podrán abrir hasta
-dos canales adicionales, o receptores «esclavos», presionando el botón
-«Agregar canal» (Add Channel) en el panel del receptor maestro.
+vez que aparezca la ventana del receptor maestro, se puede acceder a
+hasta dos canales adicionales, o receptores «esclavos», presionando el
+botón «Agregar canal» (Add Channel) en el panel del receptor maestro.
 
 **Controles del receptor**
 Los siguientes controles se usan para operar los receptores.  Ten en
 cuenta que algunos de los controles están ubicados solo en el receptor
-principal, o «maestro».  Durante la recepción, los controles de
-segundos horizontales, agregar canal y registro están deshabilitados.
-Durante el registro, todos los controles, excepto el modo del receptor,
-alinear receptores y volumen, están deshabilitados.
+principal, o «maestro».  Durante la recepción, los controles Segundos
+horizontales, Agregar canal y Registrar están deshabilitados.  Durante
+el registro, todos los controles, excepto Modo del receptor, Alinear
+receptores y Volumen, están deshabilitados.
 
     Frecuencia del receptor (Receiver Frequency) - Este control fija la
     frecuencia del receptor.  Cada clic en el botón con flecha
@@ -230,32 +232,33 @@ alinear receptores y volumen, están deshabilitados.
     principal, pero se aplican ciertas restricciones; consulta el tema
     de ayuda «Cerrar los receptores».
 
-    Alinear receptores (Align Receivers) - Este botón activa («yes») y
-    desactiva («no») la alineación de los receptores.  Cuando la
-    alineación está desactivada, todos los receptores abiertos pueden
-    moverse y colocarse de forma independiente en cualquier lugar de la
-    pantalla.  Cuando la alineación está activada, los receptores se
-    colocan en una pila debajo del receptor principal y lo «siguen»
-    cada vez que este se mueve.  Los receptores secundarios no pueden
-    moverse de forma independiente cuando la alineación está activada.
-    Este control siempre está habilitado.
+    Alinear receptores (Align Receivers) - Este botón activa («Sí»
+    (Yes)) y desactiva («No») la alineación de los receptores.
+    Cuando la alineación está desactivada, todos los receptores
+    abiertos pueden moverse y colocarse de forma independiente en
+    cualquier lugar de la pantalla.  Cuando la alineación está
+    activada, los receptores se colocan en una pila debajo del receptor
+    principal y lo «siguen» cada vez que este se mueve.  Los receptores
+    secundarios no pueden moverse de forma independiente cuando la
+    alineación está activada.  Este control siempre está habilitado.
 
     Modo del receptor (Receiver Mode) - Este botón se usa para iniciar
-    y detener los receptores.  Cuando el modo se fija en «Receive»,
-    todos los receptores abiertos comienzan a mostrar las señales
-    recibidas.  El registro también comienza si el interruptor de
-    registro está en «on», y se escuchan sonidos si la computadora está
-    debidamente equipada y los efectos de sonido están habilitados.
-    Para detener la recepción, el registro y el sonido, presiona de
-    nuevo el botón de modo del receptor para cambiar el modo a «Stop».
+    y detener los receptores.  Cuando el modo se fija en «Recibir»
+    (Receive), todos los receptores abiertos comienzan a mostrar las
+    señales recibidas.  El registro también comienza si el interruptor
+    de registro está en «Encendido» (On), y se escuchan sonidos si la
+    computadora está debidamente equipada y los efectos de sonido están
+    habilitados.  Para detener la recepción o el registro, presiona de
+    nuevo el botón Modo del receptor para cambiar el modo a «Detener»
+    (Stop).
     La recepción, el registro y el sonido se detendrán entonces cuando
     la pantalla llegue al final del panel actual.  (Consulta también el
     tema de ayuda «Registrar señales»).
 
     Interruptor de registro (Record Switch) - Este botón activa y
     desactiva el registro de señales.  Este botón solo está habilitado
-    cuando el modo del receptor es «Stop» (véase arriba).  Consulta el
-    tema de ayuda «Registrar señales» para obtener más información.
+    cuando el modo del receptor es «Detener» (véase arriba).  Consulta
+    el tema de ayuda «Registrar señales» para obtener más información.
 
     Control de volumen (Volume Control) - Este control aparecerá solo
     en el receptor principal si la computadora está debidamente
@@ -270,7 +273,7 @@ la posición del púlsar.  El seguimiento del telescopio debe estar
 activado.  (Si usas un telescopio de tránsito meridiano, consulta la
 nota más abajo).  Una vez que el telescopio haya dejado de moverse,
 accede al receptor.  Para comenzar a recibir una señal, presiona el
-botón «Modo» (Mode).  Para detenerla, presiona de nuevo el botón
+botón «Modo» (Mode).  Para detener, presiona de nuevo el botón
 «Modo»; la recepción se detendrá al final de la pantalla actual.  Ten
 en cuenta que mientras se reciben señales puedes cambiar la frecuencia
 y la ganancia vertical de forma individual para cada receptor activo.
@@ -297,7 +300,7 @@ la señal, durante el breve tiempo en que el púlsar está en el haz.
 
 Temas relacionados:
     Controles del radiotelescopio
-    Observaciones sobre el movimiento del telescopio
+    Comentarios sobre el movimiento del telescopio
     Acceder a los receptores
     Controles del receptor
 
@@ -310,15 +313,15 @@ identificables, detén la recepción, presiona el botón «Registrar»
 lo que veas en las pantallas de los receptores se registrará, hasta un
 máximo de 4 pantallas completas (de 2 a 64 segundos, según el ajuste
 de los segundos horizontales).  Para detener el registro, presiona el
-botón de modo para detener la recepción (pero nunca se registrarán más
-de las primeras cuatro pantallas).
+botón «Modo» (Mode) para detener la recepción (pero nunca se
+registrarán más de las primeras cuatro pantallas).
 
 Las señales registradas pueden medirse con la herramienta de análisis
-de púlsares de radio y/o guardarse para analizarlas más tarde.
+de radiopúlsares y/o guardarse para analizarlas más tarde.
 
 Temas relacionados:
     Guardar las señales recibidas
-    Analizar los datos de púlsares
+    Analizar datos de púlsares
 
 **Sonidos**
 Si tu computadora está debidamente equipada y las funciones de sonido
@@ -352,12 +355,12 @@ Con este método estás limitado a mediciones de una sola pantalla
 (intervalo de tiempo) de datos.  Para intervalos de tiempo más largos,
 mediciones más exactas (con zoom y desplazamiento) y funciones de
 registro de mediciones, debes registrar los datos del receptor y usar
-la herramienta de análisis de púlsares de radio.
+la herramienta de análisis de radiopúlsares.
 
 Temas relacionados:
     Registrar señales
     Guardar las señales recibidas
-    Analizar los datos de púlsares
+    Analizar datos de púlsares
 
 **Guardar las señales recibidas**
 Las señales registradas se conservan en la RAM.  En ese estado pueden
@@ -382,8 +385,8 @@ confusión más adelante.
 
 **Cerrar los receptores**
 Las ventanas de los receptores se cierran mediante el menú del sistema
-(haz clic en la casilla pequeña de la esquina superior izquierda de la
-ventana del receptor y luego selecciona «Cerrar» (Close)) o la casilla
+(haz clic en el pequeño cuadro de la esquina superior izquierda de la
+ventana del receptor y luego selecciona «Cerrar» (Close)) o el botón
 «X» de la esquina superior derecha de la ventana.  Al cerrar la ventana
 del receptor maestro se cierran todas las ventanas de receptor
 abiertas.  Los receptores esclavos pueden cerrarse individualmente,

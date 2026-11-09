@@ -8,7 +8,7 @@ la lista (es posible que los púlsares descubiertos más recientemente no
 tengan un nombre B1950).  Para buscar un púlsar por nombre:
 
     o  Selecciona «Archivo» (File)->«Buscar púlsar...» (Find Pulsar...)
-       en el menú de parámetros de púlsares.
+       en el menú de «Parámetros de púlsares» (Pulsar Parameters).
     o  Escribe el nombre del púlsar en el cuadro.
     o  Selecciona el tipo de nombre.
     o  Presiona «Aceptar» (OK).
@@ -38,28 +38,28 @@ formato de fecha normal.  Para hacerlo:
 
     o  Selecciona «Archivo» (File)->«Fecha/hora...» (Date/Time...) en el
        menú del panel de control del telescopio.  (No tienes que cerrar
-       la pantalla de parámetros de púlsares para hacerlo.  Solo
-       muévela a un lado o minimízala).
+       la ventana «Parámetros de púlsares» (Pulsar Parameters) para
+       hacerlo.  Solo muévela a un lado o minimízala).
     o  Escribe la fecha y hora deseadas en los cuadros correspondientes.
-    o  Presiona «Aceptar».
-    o  Vuelve a la pantalla de parámetros de púlsares.  Quizá quieras
-       presionar «Restablecer» para asegurarte de que se use la nueva
-       fecha.  (Esto debería ocurrir automáticamente cuando se vuelve a
-       acceder a la pantalla).
+    o  Presiona «Aceptar» (Ok).
+    o  Vuelve a la ventana «Parámetros de púlsares».  Quizá quieras
+       presionar «Restablecer» para asegurarte de que se aplique la
+       nueva fecha.  (Esto debería ocurrir automáticamente cuando se
+       vuelve a acceder a la ventana).
 
-**Cambiar la densidad de electrones - calcular la distancia**
-La distancia derivada se calcula a partir del parámetro de dispersión y
-la densidad de electrones.  Para ver el efecto de los cambios en la
-densidad de electrones sobre la distancia calculada:
+**Cambiar la densidad electrónica - calcular la distancia**
+La distancia derivada se calcula a partir del parámetro «Dispersión»
+(Dispersion) y de la densidad electrónica.  Para ver el efecto de los
+cambios en la densidad electrónica sobre la distancia calculada:
 
-    o  Edita el valor de la densidad de electrones en el campo con la
-       etiqueta correspondiente.
+    o  Edita el valor de la densidad electrónica en el campo con la
+       etiqueta «Densidad electrónica» (Electron Density).
     o  Presiona el botón «Actualizar» (Update) para recalcular la
        distancia.
 
 **Volver a los valores actuales**
 El botón «Restablecer» (Reset) devolverá la pantalla a la fecha y hora
-de observación actuales y a la densidad de electrones predeterminada de
+de observación actuales y a la densidad electrónica predeterminada de
 0.03.  Como el reloj siempre está en marcha, siempre habrá un pequeño
 cambio en la fecha juliana (JD) al hacer esto, pero las magnitudes de
 los valores de PDot son tan pequeñas que esto normalmente no tendrá un
@@ -72,6 +72,6 @@ flujo registradas en las tres frecuencias (400, 600 y 1400 MHz).
 Además, ten en cuenta que es difícil detectar pulsos con el instrumento
 y los factores de ganancia predeterminados si la densidad de flujo es
 menor de 10.0.  Para trabajar con los púlsares más tenues, aumenta la
-apertura del telescopio y/o el factor de ganancia base en las
-opciones.
+apertura del telescopio y/o el «Factor de ganancia base» (Base Gain
+Factor) en las «Opciones» (Options).
 `;

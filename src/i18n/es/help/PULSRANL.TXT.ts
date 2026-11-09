@@ -34,11 +34,11 @@ datos de púlsares actuales, selecciona «Archivo» (File)->
 propiedades que muestra el cuadro de diálogo resultante incluyen:
 
     Identificación del objeto
-    Hora de inicio de los datos (número del día juliano menos 2,400,000)
+    Hora de inicio de los datos (número de día juliano menos 2,400,000)
     Apertura del telescopio (metros)
     Frecuencia (MHz) y ganancia relativa de cada receptor registrado
     Número de puntos de datos (de cada receptor registrado)
-    Intervalo de tiempo (ms) entre puntos de datos
+    Intervalo de tiempo (msec) entre puntos de datos
     Nombre del archivo
 
 El cuadro de diálogo de propiedades también aparece automáticamente al
@@ -49,32 +49,32 @@ porque reflejan información sobre datos que ya se guardaron.
 Los siguientes controles aparecen en el lado derecho de la ventana de
 análisis de datos:
 
-    Escala vertical - Usa los botones de escala vertical para ajustar la
-    escala de cada panel de visualización.  La escala puede variar en
-    factores de 2 desde un mínimo de 0.125 hasta un máximo de 8.  (Un
-    factor de escala de 1 muestra los datos exactamente como se
-    registraron).  Este factor afecta solo la visualización y no altera
-    los datos subyacentes.
+    Escala vertical (Vertical Scale) - Usa los botones de escala
+    vertical para ajustar la escala de cada panel de visualización.  La
+    escala puede variar en factores de 2 desde un mínimo de 0.125 hasta
+    un máximo de 8.  (Un factor de escala de 1 muestra los datos
+    exactamente como se registraron).  Este factor afecta solo la
+    visualización y no altera los datos subyacentes.
 
-    Desplazamiento horizontal - Usa las flechas de desplazamiento
-    horizontal izquierda y derecha para variar el intervalo de datos
-    registrados que se muestra en los paneles.  El intervalo mostrado
-    (en segundos desde el comienzo de los datos) se indica con las
-    lecturas de la izquierda y de la derecha debajo de los paneles de
-    visualización.
+    Desplazamiento horizontal (Horizontal Pan) - Usa las flechas de
+    desplazamiento horizontal izquierda y derecha para variar el
+    intervalo de datos registrados que se muestra en los paneles.  El
+    intervalo mostrado (en segundos desde el comienzo de los datos) se
+    indica con las lecturas de la izquierda y de la derecha debajo de
+    los paneles de visualización.
 
-    Velocidad de desplazamiento - El control de velocidad de
+    Velocidad de desplazamiento (Pan Rate) - El control de velocidad de
     desplazamiento modifica la rapidez del desplazamiento horizontal.
 
-    Zoom horizontal - Usa los controles de zoom «In» y «Out» para
-    ampliar o comprimir el intervalo de datos registrados que se muestra
-    en los paneles.  El factor de zoom tiene un rango de 0.125 a 8 en
-    factores de 2.  (Un factor de zoom de 1 muestra los datos
-    exactamente como se registraron).  El intervalo mostrado (en
-    segundos desde el comienzo de los datos) se indica con las lecturas
-    de la izquierda y de la derecha debajo de los paneles de
-    visualización.
- 
+    Zoom horizontal (Horizontal Zoom) - Usa los controles de zoom
+    «Acercar» (In) y «Alejar» (Out) para ampliar o comprimir el
+    intervalo de datos registrados que se muestra en los paneles.  El
+    factor de zoom tiene un rango de 0.125 a 8 en factores de 2.  (Un
+    factor de zoom de 1 muestra los datos exactamente como se
+    registraron).  El intervalo mostrado (en segundos desde el comienzo
+    de los datos) se indica con las lecturas de la izquierda y de la
+    derecha debajo de los paneles de visualización.
+
     Restablecer (Reset) - Al presionar el botón «Restablecer», la escala
     vertical de todos los paneles vuelve a 1, el factor de zoom a 1 y la
     velocidad de desplazamiento a 2.  Las pantallas vuelven al comienzo
@@ -97,21 +97,21 @@ magenta) es un indicador de intensidad relativa que incluye tanto el
 factor de escala vertical del panel de visualización como la ganancia
 relativa aplicada cuando se registraron los datos (consulta el tema de
 ayuda «Ver las propiedades de los datos»).  Para cambiar el botón
-izquierdo del mouse entre cursores verticales y horizontales de cada
+izquierdo del mouse entre los cursores vertical y horizontal de cada
 panel, haz clic con el mouse sobre la lectura correspondiente.
 
-Ampliar la pantalla horizontalmente (zoom «In») puede ayudar a
-determinar y medir con exactitud las posiciones de los pulsos.
+Ampliar la visualización horizontalmente (zoom «Acercar» (In)) puede
+ayudar a determinar y medir con exactitud las posiciones de los pulsos.
 
 **Registrar mediciones**
 Usa el siguiente procedimiento para registrar tus mediciones:
 
     1) Haz mediciones colocando el cursor o los cursores como se
     describe en el tema de ayuda «Hacer mediciones».  Puedes hacer
-    mediciones en todos los paneles de visualización activos a la vez
-    si lo deseas.
+    mediciones en todos los paneles de visualización activos en este
+    momento si lo deseas.
 
-    2) Selecciona «Resultados» (Results)->«Registrar las mediciones
+    2) Selecciona «Resultados» (Results)->«Registrar mediciones
     actuales...» (Record Current Measurements...) en el menú de
     análisis de datos.
 
@@ -123,38 +123,38 @@ Usa el siguiente procedimiento para registrar tus mediciones:
     omitirla por ahora.
 
 Cada medición que registres se agregará al final de la lista de
-mediciones actual.  Consulta los temas de ayuda «Revisar las mediciones
-registradas», «Guardar las mediciones registradas» y «Borrar la lista
-de mediciones» para obtener información sobre cómo manejar los
-registros de esta lista.
+mediciones actual.  Consulta los temas de ayuda «Revisar mediciones
+registradas», «Guardar mediciones registradas» y «Borrar la lista de
+mediciones» para obtener información sobre cómo manejar los registros
+de esta lista.
 
-**Revisar las mediciones registradas**
+**Revisar mediciones registradas**
 Puedes revisar la lista actual de mediciones registradas en cualquier
 momento, una vez que hayas comenzado a registrar mediciones.
-Selecciona «Resultados» (Results)->«Revisar las mediciones
-registradas...» (Review Recorded Measurements...) en el menú de
-análisis de datos.  Aparecerá un cuadro de diálogo con todos los
-registros actuales.  Para seleccionar un registro en particular, haz
-clic en él con el mouse.  Puedes buscar los registros que contengan una
-cadena de texto particular (selecciona «Buscar...» (Find...)).  Una vez
-que hayas seleccionado un registro, puedes verlo y editar su campo de
-comentario (selecciona «Editar...» (Edit...)), o eliminarlo de la
-lista (selecciona «Eliminar» (Delete)).
+Selecciona «Resultados» (Results)->«Revisar mediciones registradas...»
+(Review Recorded Measurements...) en el menú de análisis de datos.
+Aparecerá un cuadro de diálogo con todos los registros actuales.  Para
+seleccionar un registro en particular, haz clic en él con el mouse.
+Puedes buscar los registros que contengan una cadena de texto
+particular (selecciona «Buscar...» (Find...)).  Una vez que hayas
+seleccionado un registro, puedes verlo y editar su campo de comentario
+(selecciona «Editar...» (Edit...)), o eliminarlo de la lista
+(selecciona «Eliminar» (Delete)).
 
 Cuando termines de revisar los registros, selecciona «Aceptar» (OK) o
 «Cancelar» (Cancel).  Los cambios que hayas hecho a los registros de la
 lista (ediciones o eliminaciones) se descartarán si seleccionas
 «Cancelar».
 
-**Guardar las mediciones registradas**
+**Guardar mediciones registradas**
 Para guardar en un archivo tu lista actual de mediciones registradas,
-selecciona «Resultados» (Results)->«Guardar las mediciones
-registradas...» (Save Recorded Measurements...) en el menú de análisis
-de datos.  Indica un nombre de archivo en el cuadro de diálogo que
-aparece.  Los datos se guardan en un formato (valores separados por
-comas) que aceptan los programas de hoja de cálculo estándar.  Debes
-usar el calificador ".CSV" en cualquier archivo que crees aquí.
-(Consulta el tema de ayuda «Acceder al programa de hoja de cálculo»).
+selecciona «Resultados» (Results)->«Guardar mediciones registradas...»
+(Save Recorded Measurements...) en el menú de análisis de datos.
+Indica un nombre de archivo en el cuadro de diálogo que aparece.  Los
+datos se guardan en un formato (valores separados por comas) que
+aceptan los programas de hoja de cálculo estándar.  Debes usar el
+calificador ".CSV" en cualquier archivo que crees aquí.  (Consulta el
+tema de ayuda «Acceder al programa de hoja de cálculo»).
 
 Si seleccionas un nombre de archivo que ya existe, sobrescribirás los
 datos existentes.  Se te advertirá de esto y tendrás la oportunidad de
@@ -176,10 +176,10 @@ analizar tus datos directamente desde este ejercicio.  Si la opción
 está habilitada, selecciona «Resultados» (Results)->«Hoja de cálculo»
 (Spreadsheet) en el menú de análisis de datos.  Si guardaste
 recientemente un archivo para usarlo en la hoja de cálculo (consulta el
-tema de ayuda «Guardar las mediciones registradas»), ese archivo se
-cargará automáticamente cuando se abra el programa de hoja de cálculo.
-Si quieres cargar tú mismo un archivo en la hoja de cálculo, recuerda
-que el tipo de archivo es ".CSV".  Puede aparecer bajo el encabezado
+tema de ayuda «Guardar mediciones registradas»), ese archivo se cargará
+automáticamente cuando se abra el programa de hoja de cálculo.  Si
+quieres cargar tú mismo un archivo en la hoja de cálculo, recuerda que
+el tipo de archivo es ".CSV".  Puede aparecer bajo el encabezado
 «Archivos de texto» en el cuadro de diálogo de carga de archivos de la
 hoja de cálculo.
 

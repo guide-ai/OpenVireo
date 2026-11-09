@@ -9,7 +9,8 @@ Spectrum...) en el menú de la herramienta de medición y elige el
 archivo de espectro que quieres cargar.
 
 Temas relacionados:
-    «Guardar espectro para análisis» en «Ayuda» del espectrómetro.
+    «Guardar espectro para análisis» en el menú «Ayuda» (Help) del
+    espectrómetro.
 
 **Medir rasgos espectrales individuales**
 Puedes medir la posición y la intensidad relativa de rasgos
@@ -76,9 +77,9 @@ lo siguiente:
         individualmente. (Consulta el tema de ayuda «Medir rasgos
         espectrales individuales»). Puedes usar el espectro de
         comparación para identificar las líneas, pero tendrás que
-        registrar tus resultados y calcular un promedio de Z por tu
-        cuenta. El valor que aparezca en la lectura de Z no será
-        válido.
+        registrar tus resultados y calcular un promedio de Z fuera
+        del programa. El valor que aparezca en la lectura de Z no
+        será válido.
 
 Véase también:
     Cargar espectro de comparación
@@ -94,7 +95,7 @@ Véase también:
 Para identificar una línea del espectro de comparación, coloca el
 cursor del mouse cerca de la línea en la pantalla y presiona el botón
 derecho del mouse. El cuadro que aparece mostrará el ID de la línea,
-las longitudes de onda en reposo y desplazada, y la categoría de la
+la longitud de onda en reposo y la desplazada, y la categoría de la
 fuente de la línea.
 
 Véase también:
@@ -127,20 +128,21 @@ menú del panel de control del observatorio.
 Véase también:
     Medir con espectro de comparación
     Medir rasgos espectrales individuales
-    «Editores de resultados» en «Ayuda» del panel del observatorio.
+    «Editores de resultados» en el menú «Ayuda» (Help) del panel de
+    control del observatorio.
 
 **Ampliar/recorrer espectro**
 Para ampliar un espectro que estás midiendo, presiona el botón
 «Ampliar» (Zoom). Aparecerá un cuadro con controles deslizantes que te
 permite fijar el rango de longitudes de onda mostrado en la ventana de
 medición. Los controles deslizantes cambian las longitudes de onda en
-pasos de 100 Angstroms. El botón «Restablecer» (Reset) devuelve la
+pasos de 100 Angstrom. El botón «Restablecer» (Reset) devuelve la
 pantalla al rango de longitudes de onda original (completo).
 
-Cuando una pantalla está ampliada, se habilitan las flechas de
-recorrido que están debajo del botón de ampliación. Úsalas para
-cambiar la parte visible del espectro. Al igual que los controles
-deslizantes, operan en pasos de 100 Angstroms.
+Cuando la pantalla está ampliada, se habilitan las flechas de
+recorrido que están debajo del botón «Ampliar». Úsalas para cambiar
+la parte visible del espectro. Al igual que los controles
+deslizantes, operan en pasos de 100 Angstrom.
 
 Ampliar el espectro permite determinar Z con más precisión, ya que la
 pixelación más fina da un paso más pequeño en la colocación de la
@@ -175,6 +177,6 @@ Temas relacionados:
 **Cerrar la ventana de medición**
 Para cerrar la ventana de la herramienta de medición y volver al panel
 de control del observatorio, selecciona «Archivo» (File)->«Salir de
-Medición de espectros» (Exit Spectrum Measuring) en el menú, o
+la medición de espectros» (Exit Spectrum Measuring) en el menú, o
 presiona el cuadro «X» de la esquina superior derecha.
 `;

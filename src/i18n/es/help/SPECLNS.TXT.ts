@@ -20,16 +20,16 @@ Visible en O6-B9, pero más intensa
 alrededor de B0-B2
 
 *3968.49   Ca II (línea H)*
-Aparece mezclada con la H épsilon
+Aparece mezclada con la H epsilon
 adyacente hasta mediados de F.
 Línea H (mezcla) = línea K en ~F0
 Más intensa de G8-K2.
 
-*3970.07   H I (H épsilon)*
+*3970.07   H I (H Epsilon)*
 Serie de Balmer del hidrógeno
 Alcanza su máxima intensidad en A0
-Puede confundirse con la línea H del
-Ca II adyacente, que es intensa
+Puede confundirse con la línea H
+del Ca II adyacente, que es intensa
 en estrellas más frías.
 
 *4026.19   He I*
@@ -37,14 +37,14 @@ Más intensa en estrellas B, con un máximo
 alrededor de B2
 
 *4030.76   Mn I*
-Compárala con la línea Si II de 4130
+Compárala con la línea Si II 4130
 para discriminar en estrellas F
 
 *4045.82   Fe I*
-Visible en F0 y más frías.
+Visible en estrellas F0 y más frías.
 Más intensa en K2-K5
 
-La comparación con la línea H I de 4101
+La comparación con la línea H I 4101
 da una indicación del tipo espectral
 en estrellas G. Son aproximadamente
 iguales en G8
@@ -66,7 +66,7 @@ Visible en B0-B2
 *4100.04   He II*
 Más intensa en estrellas O
 
-*4101.75   H I (H delta)*
+*4101.75   H I (H Delta)*
 Serie de Balmer del hidrógeno
 Alcanza su máxima intensidad en A0
 
@@ -103,7 +103,7 @@ rango, con el máximo de la línea del Si
 en B5-B8
 
 *4143.88   Fe I*
-Aparece en F0 y más frías
+Aparece en estrellas F0 y más frías
 Más intensa en K2-K5
 
 La razón entre esta línea y H I delta
@@ -112,17 +112,17 @@ aproximadamente iguales en G8
 
 *4226.74   Ca I*
 Visible por primera vez alrededor de F0.
-Se fortalece hacia las estrellas K y M
+Se intensifica hacia las estrellas K y M
 más frías, donde es prominente.
 
 En las estrellas F, donde las líneas H I
 (de Balmer) no cambian mucho de intensidad,
-Ca I ayuda a discriminar. Compárala con la
-cercana línea H I de 4340; Ca I se fortalece
-de F0 a F9
+el Ca I ayuda a discriminar. Compárala con
+la cercana línea H I 4340; el Ca I se
+intensifica a medida que se pasa de F0 a F9
 
 En las estrellas G, la intensidad relativa
-de esta línea respecto de la línea H de 4101
+de esta línea respecto de la línea H 4101
 puede usarse para determinar el tipo
 espectral preciso
 
@@ -139,7 +139,7 @@ estrellas más frías (G, K, M).
 *4317.14   O II*
 Visible en O9-B2
 
-*4340.48   H I (H gamma)*
+*4340.48   H I (H Gamma)*
 Serie de Balmer del hidrógeno
 Alcanza su máxima intensidad en A0
 
@@ -153,7 +153,7 @@ alrededor de B2
 *4471.48   He I*
 Más intensa en estrellas B, con un máximo
 alrededor de B2
-La intensidad de He II 4541/He I 4471 es un
+La intensidad HeII 4541/HeI 4471 es un
 indicador útil del tipo entre O3-O9
 
 
