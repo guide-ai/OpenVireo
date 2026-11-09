@@ -74,6 +74,41 @@ test('wedge options restore with the survey; restore drops the wedge’s own LSS
  await clickHeaderTool(fresh,'LSS data');await fresh.getByTestId('wedge-options-open').click();await expect(fresh.getByTestId('wedge-grid-0')).toBeChecked();await expect(fresh.getByTestId('wedge-size-1')).toBeChecked();
  await context.close();
 });
+// fix-lss-wedge-restore (2026-11-09): the wedge panel is a lazy chunk that mounts when it is first needed. If a restore and a Plot
+// are both still pending when it first renders, it must apply them in order: the restored options must survive the hand-over,
+// and a later restore must still drop the handed-over points. Holding the panel's module until both are pending makes the
+// earlier race (the hand-over overwrote the restored options) deterministic; it does not depend on the time of day.
+test('a wedge panel that first mounts with a restore and a Plot pending applies both in order',async({page,browser})=>{
+ test.setTimeout(180000);
+ await page.clock.install();await page.goto('/');await survey(page);await load(page,'1');await acquireAndRecord(page,1,'20','one');
+ await page.getByRole('button',{name:'Plot my records in the wedge',exact:true}).click();await expect(page.getByTestId('wedge-count')).toHaveText('Points Plotted: 1');
+ await page.getByTestId('wedge-options-open').click();await page.getByTestId('wedge-grid-1').check();await page.getByTestId('wedge-size-3').check();await page.getByTestId('wedge-style-1').check();await page.getByTestId('wedge-options-ok').click();
+ const saved=await save(page);
+ const restored='Session restored. The current spectrum and measurement arithmetic were checked.',plot=(p:Page)=>p.getByRole('button',{name:'Plot my records in the wedge',exact:true});
+ async function heldContext(){
+  const context=await browser.newContext();let release!:()=>void;const held=new Promise<void>(r=>{release=r;});
+  await context.route(/\/src\/components\/WedgeLab\.tsx(\?|$)/,async route=>{await held;await route.continue();});
+  const fresh=await context.newPage();const errors:string[]=[];fresh.on('pageerror',e=>errors.push(e.message));
+  await fresh.goto('/');await restore(fresh,saved);await expect(fresh.getByText(restored)).toBeAttached({timeout:30000});
+  await survey(fresh);await expect(fresh.getByTestId('lss-record-count')).toHaveText('1 records');
+  return {context,fresh,errors,release};
+ }
+ // Restore, then Plot, before the panel renders: one point, drawn with the file's options.
+ const a=await heldContext();
+ await plot(a.fresh).click();await expect(a.fresh.getByText('Loading LSS plotting tools…',{exact:true})).toBeVisible();await expect(a.fresh.getByTestId('wedge-count')).toHaveCount(0);
+ a.release();await expect(a.fresh.getByTestId('wedge-count')).toHaveText('Points Plotted: 1',{timeout:30000});
+ await expect(a.fresh.locator('.wedge-text text[data-role="axis-title"]')).toHaveText('Z(=V/C)');await expect(a.fresh.getByTestId('wedge-point-0')).toHaveAttribute('r','3');await expect(a.fresh.getByTestId('wedge-point-0')).toHaveClass(/filled/);
+ expect(a.errors).toEqual([]);await a.context.close();
+ // Plot, then a second Restore, before the panel renders: the restore comes last, so it drops the handed-over point.
+ const b=await heldContext();
+ await plot(b.fresh).click();await expect(b.fresh.getByText('Loading LSS plotting tools…',{exact:true})).toBeVisible();
+ await restore(b.fresh,saved);await expect(b.fresh.getByText(restored)).toBeAttached({timeout:30000});await expect(b.fresh.getByTestId('wedge-count')).toHaveCount(0);
+ b.release();await expect(b.fresh.getByTestId('wedge-count')).toHaveText('Points Plotted: 0',{timeout:30000});
+ await expect(b.fresh.locator('.wedge-text text[data-role="axis-title"]')).toHaveText('Z(=V/C)');
+ // The survey ignores the wedge's late acceptance of the dropped hand-over, so the restored record can be plotted again.
+ await survey(b.fresh);await expect(plot(b.fresh)).toBeEnabled();await plot(b.fresh).click();await expect(b.fresh.getByTestId('wedge-count')).toHaveText('Points Plotted: 1');await expect(b.fresh.getByTestId('wedge-point-0')).toHaveAttribute('r','3');
+ expect(b.errors).toEqual([]);await b.context.close();
+});
 test('the description refuses pasted control characters inline and Save keeps working',async({page})=>{
  await page.goto('/#lss-survey');const box=page.getByLabel('Describe the structure you see (not graded)',{exact:true});
  await box.fill('Line one\nline two');

@@ -79,14 +79,24 @@ function WedgeLab({monochrome=false,printInColor=false,messages,idPrefix='wedge-
  const modal=w.optionsDraft!==null;
  useEffect(()=>{onWorkspaceChange?.(w);},[w,onWorkspaceChange]);
  const appliedOwn=useRef(0),appliedOptions=useRef(0);
- useEffect(()=>{if(!restoredOptions||restoredOptions.token===appliedOptions.current)return;appliedOptions.current=restoredOptions.token;setW(c=>{try{return commitWedgeOptions(editWedgeOptions(openWedgeOptions(cancelWedgeOptions(removeOwnLssRecords(c))),restoredOptions.options));}catch{return c;}});},[restoredOptions?.token]);
+ // A restore and a hand-over are applied by one effect, in token order (the host draws both tokens from one counter). When
+ // the panel first mounts with both pending (a restore made before the lazy panel ever rendered, then Plot), two separate
+ // effects let the hand-over's workspace, built from this render's state, overwrite the restore queued just before it, so
+ // the restored options were lost (fix-lss-wedge-restore, 2026-11-09).
  useEffect(()=>{
-  if(!ownRecords||ownRecords.token===appliedOwn.current)return;appliedOwn.current=ownRecords.token;
+  const restore=restoredOptions&&restoredOptions.token!==appliedOptions.current?restoredOptions:null;
+  const own=ownRecords&&ownRecords.token!==appliedOwn.current?ownRecords:null;
+  if(restore)appliedOptions.current=restore.token;
+  const applyRestore=(c:WedgeWorkspace)=>{if(!restore)return c;try{return commitWedgeOptions(editWedgeOptions(openWedgeOptions(cancelWedgeOptions(removeOwnLssRecords(c))),restore.options));}catch{return c;}};
+  if(!own){if(restore)setW(applyRestore);return;}
+  appliedOwn.current=own.token;
+  const before=restore&&restore.token<own.token?applyRestore(w):w;
   // Review 1 L3: atomic (handOverOwnLssRecords). A refused hand-over keeps the earlier own points; only its notice is shown.
-  let result:ReturnType<typeof handOverOwnLssRecords>|null=null;try{result=handOverOwnLssRecords(suspendWedgeWorkspace(w),ownRecords.records,ownRecords,!!ownRecords.replace);}catch{result=null;}
-  if(result)setW(result.workspace);
-  onOwnRecordsResult?.(ownRecords.token,!!result?.accepted);
- },[ownRecords?.token]);
+  let result:ReturnType<typeof handOverOwnLssRecords>|null=null;try{result=handOverOwnLssRecords(suspendWedgeWorkspace(before),own.records,own,!!own.replace);}catch{result=null;}
+  const next=restore&&restore.token>own.token?applyRestore(result?.workspace??before):result?.workspace??before;
+  if(next!==w)setW(next);
+  onOwnRecordsResult?.(own.token,!!result?.accepted);
+ },[restoredOptions?.token,ownRecords?.token]);
  // Before paint, so a hidden prompt or dialog is never shown or clickable while disabled.
  // Host inactivity also drops a pending focus return: it never pulls focus into the panel.
  useLayoutEffect(()=>{if(disabled){refocusFile.current=null;abort.current?.abort();abort.current=null;setW(suspendWedgeWorkspace);}},[disabled]);
