@@ -5,6 +5,7 @@ import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
 import {VIZIER_POLICY} from './core/vizierNomad';
 import {printPageSizeCss} from './core/lightCurvePrint';
+import {documentMessages} from './i18n/html';
 
 const text=(p:string)=>readFileSync(new URL(`../${p}`,import.meta.url),'utf8');
 /** Pages _headers: a rule is an unindented URL line followed by indented "Name: value" lines; # starts a comment. */
@@ -30,7 +31,8 @@ describe('public/_headers for the static release',()=>{
   for(const line of text('public/_headers').split('\n'))expect(line.length).toBeLessThanOrEqual(2000);
  });
  it('allows each inline script of index.html by its hash, and nothing inline otherwise',()=>{
-  const inline=[...text('index.html').matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)].map(m=>m[1]);
+  // JSON-LD blocks (Front SEO) are data that browsers never run, so CSP does not apply to them; only runnable scripts count.
+  const inline=[...documentMessages(text('index.html')).matchAll(/<script(?![^>]*\bsrc=)(?![^>]*type="application\/ld\+json")[^>]*>([\s\S]*?)<\/script>/g)].map(m=>m[1]);
   expect(inline.length).toBeGreaterThan(0);
   // Exactly these hashes: one per inline script, none left over from an earlier version.
   expect(directive('script-src')!.filter(x=>x.startsWith("'sha256-")).sort()).toEqual([...new Set(inline.map(sha))].sort());
@@ -55,6 +57,6 @@ describe('public/_headers for the static release',()=>{
   expect(header('/*','Cache-Control')).toBeUndefined();// rules combine: a Cache-Control here would merge into every path
   expect(header('/assets/*','Cache-Control')).toBe('public, max-age=31536000, immutable');
   for(const p of ['/original/*','/camera/*'])expect(header(p,'Cache-Control')).toBe('public, max-age=86400, stale-while-revalidate=604800');
-  for(const p of ['/','/index.html'])expect(header(p,'Cache-Control')).toBe('no-cache');
+  for(const p of ['/','/index.html','/labs/*','/sitemap.xml','/robots.txt'])expect(header(p,'Cache-Control')).toBe('no-cache');
  });
 });

@@ -28,6 +28,15 @@
 /index.html
   Cache-Control: no-cache
 
+# Front SEO: the static lab pages and their stylesheet, the sitemap and robots.txt are plain files with fixed URLs, so they are
+# revalidated like the page. JSON-LD blocks are data, never run, and need no script-src entry.
+/labs/*
+  Cache-Control: no-cache
+/sitemap.xml
+  Cache-Control: no-cache
+/robots.txt
+  Cache-Control: no-cache
+
 # Vite's content-hashed bundles: a changed file gets a new URL.
 /assets/*
   Cache-Control: public, max-age=31536000, immutable

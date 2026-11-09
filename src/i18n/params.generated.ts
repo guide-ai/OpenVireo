@@ -189,6 +189,8 @@ export interface MessageParameters {
   "sky.limitTitle": never;
   "sky.limitHelp": never;
   "sky.attribution": never;
+  "sky.labsLink": never;
+  "sky.labsLinkNewTab": never;
   "sky.referenceLoadError": never;
   "sky.libraryLoading": never;
   "sky.noAcquisition": never;
