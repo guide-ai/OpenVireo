@@ -97,13 +97,13 @@ export function forbiddenIn(id:string,text:string):string[]{
  }
  return out;
 }
-/** Unpaired ¿ ? or ¡ !: a closer that ends a question or exclamation (after a letter, digit, bracket, quote or …) needs an
+/** Unpaired ¿ ? or ¡ !: a closer that ends a question or exclamation (after a letter, digit, bracket, quote, … or a {param}, ES5) needs an
  * opener before it, and every opener needs a closer. A bare ? (a key, «?lang=») is not a closer. */
 export function unpaired(text:string,open:string,close:string):string|null{
  let depth=0;
  for(let i=0;i<text.length;i++){
   if(text[i]===open)depth++;
-  else if(text[i]===close&&/[\p{L}\d)»”…]/u.test(text[i-1]??'')&&/[\s)»”.,;:]|$/.test(text[i+1]??'')){if(depth===0)return `${close} without ${open}`;depth--;}
+  else if(text[i]===close&&/[\p{L}\d)»”…}]/u.test(text[i-1]??'')&&/[\s)»”.,;:]|$/.test(text[i+1]??'')){if(depth===0)return `${close} without ${open}`;depth--;}
  }
  return depth>0?`${open} without ${close}`:null;
 }
@@ -119,7 +119,7 @@ describe('Front ES1 review 1: the lint catches what it must',()=>{
   expect(forbiddenIn('map:languageChoice.originalsNote','Haga clic')).not.toEqual([]);
   for(const [id,entry] of Object.entries(ALLOWED)){expect(entry.reason.length,id).toBeGreaterThan(20);expect(pairs().some(p=>p.id===id&&entry.words.every(w=>new RegExp(WORD(w),'iu').test(p.es))),`${id} still needs its allowance`).toBe(true);}
   expect(unpaired('¿Cambiar el idioma?','¿','?')).toBeNull();expect(unpaired('Cambiar el idioma?','¿','?')).toBe('? without ¿');expect(unpaired('¿Cambiar el idioma.','¿','?')).toBe('¿ without ?');
-  expect(unpaired('presiona la tecla ? o abre ?lang=es','¿','?')).toBeNull();expect(unpaired('¡Listo!','¡','!')).toBeNull();expect(unpaired('¡Listo.','¡','!')).toBe('¡ without !');
+  expect(unpaired('presiona la tecla ? o abre ?lang=es','¿','?')).toBeNull();expect(unpaired('¡Listo!','¡','!')).toBeNull();expect(unpaired('¿Restaurar {file}?','¿','?')).toBeNull();expect(unpaired('Restaurar {file}?','¿','?')).toBe('? without ¿');expect(unpaired('¡Listo.','¡','!')).toBe('¡ without !');
  });
 });
 describe('Front ES1: the Spanish (es-419) catalog, maps and originals',()=>{

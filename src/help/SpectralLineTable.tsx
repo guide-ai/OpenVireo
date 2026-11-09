@@ -1,14 +1,14 @@
 import {useEffect,useId,useRef,useState} from 'react';
 import {menuCaptionText} from '../core/radioControl';
+import {vireo} from '../i18n/vireo';
 import {HelpListBox} from '../clusters/CleaHelp';
 import {fetchBundledClusterHelp} from '../io/bundledClusterHelp';
 import {HELP_FILES,helpFile} from './helpFiles';
-import {SPECTRAL_LINE_HELP_CAPTION,nearestSpectralLine,parseSpectralLineList,spectralLineHelp,type SpectralLine} from './spectralLines';
+import {SPECTRAL_LINE_TABLE_LITERALS,SPECTRAL_LINE_HELP_CAPTION,nearestSpectralLine,parseSpectralLineList,spectralLineHelp,type SpectralLine} from './spectralLines';
 import './help.css';
 import '../clusters/cluster-hr.css';
 
 const M=Object.freeze({
- menu:'Spectral Line &Table',// VIREO (TSpClassify SpectralLineTable1)
  listCaption:'Spectral Lines',
  rows:'Spectral lines',helpRows:'Spectral line help text',close:'Close',
  loading:'Loading VIREO\'s spectral line list…',
@@ -62,7 +62,7 @@ export default function SpectralLineTable({testId='spl',onLineSelect,cursorWavel
  const closeHelp=()=>{setHelp(null);requestAnimationFrame(()=>rowsRef.current?.querySelector<HTMLElement>('[role=listbox]')?.focus());};
  return <div className="spl" data-testid={testId}>
   <div className="cluster-hr-help-bar">
-   <button type="button" ref={opener} className="secondary-button" data-testid={`${testId}-open`} disabled={load==='loading'} onClick={()=>void show()}>{menuCaptionText(M.menu)}</button>
+   <button type="button" ref={opener} className="secondary-button" data-testid={`${testId}-open`} disabled={load==='loading'} onClick={()=>void show()}>{menuCaptionText(vireo(SPECTRAL_LINE_TABLE_LITERALS.menu))}</button>
    {load==='loading'&&<span role="status">{M.loading}</span>}
    {load==='error'&&<span role="alert">{M.error} <button type="button" className="secondary-button" onClick={()=>{setLoad('idle');void show();}}>{M.retry}</button></span>}
   </div>

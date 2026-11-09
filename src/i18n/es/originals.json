@@ -484,5 +484,10 @@
  "Save Reshift Measurements in Text File": "Guardar las mediciones de corrimiento al rojo en un archivo de texto",
  "Cannot access LSS fields file": "No se puede acceder al archivo de campos LSS",
  "Save Data": "Guardar datos",
- "Record Z": "Registrar Z"
+ "Record Z": "Registrar Z",
+ "Program List...": "Lista de programa...",
+ "Next on List": "Siguiente en la lista",
+ "No More Spectra": "No hay más espectros",
+ "You are at the end of the spectra list.": "Llegaste al final de la lista de espectros.",
+ "Spectral Line Table": "Tabla de líneas espectrales"
 }

@@ -57,6 +57,16 @@
   "map:wedge.detail.z": "a symbol and a number format (Z binary32)",
   "map:wedge.detail.hours": "a unit symbol (h)",
   "map:wedge.detail.degrees": "a unit symbol (°)",
-  "map:wedge.detail.px": "a unit symbol (px)"
+  "map:wedge.detail.px": "a unit symbol (px)",
+  "catalog:classLines.option": "only placeholders, a unit and a separator ({wavelength} Å · {label})",
+  "catalog:probe.shaLabel": "a hash name kept in every language (SHA-256)",
+  "catalog:photo.caption": "only placeholders and a separator ({label} · {polarity})",
+  "catalog:viewport.range": "only placeholders, a unit and symbols ({minimum}–{maximum} Å · {zoom}×)",
+  "catalog:program.row": "only placeholders and a separator ({position} · {object})",
+  "catalog:nativeResults.typeValue": "only placeholders and a separator ({code} · {label})",
+  "catalog:nativeResults.kindValue": "only placeholders and a separator ({kind} · {label})",
+  "catalog:nativeResults.storage.binary32": "a Delphi type name and a bit count (Single · 32 bits)",
+  "catalog:nativeResults.storage.binary64": "a Delphi type name and a bit count (Double · 64 bits)",
+  "catalog:nativeText.choice": "only placeholders and a separator ({index} · {object})"
  }
 }

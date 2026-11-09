@@ -1676,7 +1676,6 @@ export interface MessageParameters {
   "obs.emptyRemarks": never;
   "obs.source": "id" | "sha256";
   "obs.edit": "id";
-  "obs.dialogTitle": never;
   "obs.object": never;
   "obs.identity": never;
   "obs.time": never;
@@ -1841,8 +1840,6 @@ export interface MessageParameters {
   "program.help": never;
   "program.position": "object" | "position" | "total";
   "program.unavailable": never;
-  "program.open": never;
-  "program.next": never;
   "program.dialogTitle": never;
   "program.scope": never;
   "program.choose": never;
