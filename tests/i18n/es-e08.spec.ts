@@ -107,14 +107,24 @@ const lab=(page:Page)=>id(page,'objectx-lab');
 const camera=(page:Page)=>id(page,'camera-control');
 const go=async(page:Page,hash:string)=>{await page.evaluate(h=>{location.hash=h;},hash);};
 
-/** Identifiers and remarks found as whole words in the Object X route (outside the asteroid list), its guide or the camera
- * (tests/object-x-path.spec.ts). The camera's shared text may use a kind word; only identifiers count there. */
+/** What could reveal the object before the reveal, in any language:
+ * - an ObjectX.HTL identifier or remark as a whole word in the Object X route (outside the asteroid list) or its guide. The
+ *   remarks are English data, so in Spanish this is in effect an identifier check;
+ * - an identifier in the camera, the observatory's sky view (where `namesHidden` shows), the spectrometer and photometer ID
+ *   readouts (where `hiddenName` shows) and the radio route's Object X card and hot list (`hiddenRowName`). The camera's shared
+ *   text may use a kind word, and the observatory's target picker legitimately lists catalogue galaxies, so only identifiers count
+ *   there (tests/object-x-path.spec.ts);
+ * - a verdict sentence («Es una…», «Tu respuesta es correcta», "It is a…", "Your answer is right") anywhere in the lab. */
 async function leaks(page:Page){
- const found=await page.evaluate(()=>['objectx-lab','objectx-guide','camera-control'].map(t=>{
-  const n=document.querySelector(`[data-testid=${t}]`);if(!n)return '';const c=n.cloneNode(true) as HTMLElement;
-  c.querySelectorAll('[data-testid=objectx-asteroid-list], [data-testid=objectx-asteroid-list-closed]').forEach(x=>x.remove());return c.innerHTML+' '+c.textContent;}));
+ const found=await page.evaluate(()=>{
+  const read=(selector:string)=>[...document.querySelectorAll(selector)].map(n=>{const c=n.cloneNode(true) as HTMLElement;
+   c.querySelectorAll('[data-testid=objectx-asteroid-list], [data-testid=objectx-asteroid-list-closed]').forEach(x=>x.remove());return c.innerHTML+' '+c.textContent;}).join(' ');
+  return {lab:read('[data-testid=objectx-lab]')+' '+read('[data-testid=objectx-guide]'),labText:document.querySelector('[data-testid=objectx-lab]')?.textContent??'',
+   shared:read('[data-testid=camera-control], .sky-view, .spec-readout, [data-testid=objectx-radio-card], [data-testid$=hot-list], [data-testid*=hotlist]')};
+ });
  const word=(s:string)=>new RegExp(`(^|[^\\w])${s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}($|[^\\w])`);
- return [...SECRETS.filter(s=>word(s).test(found[0]+' '+found[1])),...IDS.filter(s=>word(s).test(found[2]))];
+ const verdict=/\bEs (?:una|un) |Tu respuesta es correcta|\bIt is an? |Your answer is right/;
+ return [...SECRETS.filter(s=>word(s).test(found.lab)),...IDS.filter(s=>word(s).test(found.shared)),...(verdict.test(found.labText)?[`verdict: ${verdict.exec(found.labText)![0]}`]:[])];
 }
 async function expose(page:Page,lang:Lang){
  const c=camera(page);
@@ -221,8 +231,8 @@ test('E08 reads differently in Spanish from English: guide, lab, spectrometer, c
  for(const name of [LS.orbitNames['ObjX_MPC.CMO.sav'],LS.orbitNames['ObjX_MPC.CMO'],LS.targetChoose])expect(lab).toContain(`@option:${name}`);
  for(const kind of Object.values(LS.kinds))expect(lab).toContain(kind);
  // The reveal and its verdict (an asteroid, the right answer) read in Spanish with the right article.
- expect([...seen['es-419'].get('answer revealed')!]).toContain(LS.verdict(true,LS.kinds.asteroid));
- expect(LS.verdict(false,LS.kinds.star)).toBe('Es una estrella.');expect(LS.verdict(false,LS.kinds.qso)).toBe('Es un cuásar (QSO).');
+ expect([...seen['es-419'].get('answer revealed')!]).toContain(LS.verdict(true,LS.kinds.asteroid,'asteroid'));
+ expect(Object.entries(LS.kinds).map(([k,name])=>LS.verdict(false,name,k))).toEqual(['Es una estrella.','Es una galaxia.','Es un cuásar (QSO).','Es un púlsar.','Es un asteroide.']);
 });
 
 test('qps: every text of the E08 walk is marked, outside identifiers and native mirrors',async({page})=>{
@@ -230,6 +240,28 @@ test('qps: every text of the E08 walk is marked, outside identifiers and native 
  const left=new Map<string,string>();
  await walk(page,'qps',async(step,root)=>{for(const t of await texts(page,root))if(!/[⟦⟧]/.test(t)&&!same(bare(t))&&!left.has(t))left.set(t,step);});
  expect([...left].map(([t,step])=>`${step}: ${t}`)).toEqual([]);
+});
+
+// ES9 review: the route reads the same for every target before the reveal. With a star target and an asteroid target, the
+// lab's and the guide's texts (and the observatory's sky-view toolbar after Copy the coordinates) are equal once the object code
+// and the coordinates line are removed (the spectrometer is not prepared, so its state is the same).
+test('Spanish: before the reveal the Object X route reads the same for a star target and an asteroid target',async({page})=>{
+ test.setTimeout(240_000);await page.setViewportSize({width:1440,height:1000});
+ const body=await RECORDED_VIZIER;await page.route(CDS,route=>route.fulfill({status:200,contentType:'text/xml',body}));
+ await page.addInitScript(()=>localStorage.setItem('openvireo.tour.v1','done'));
+ await page.goto('/?lang=es-419#object-x');await expect(id(page,'objectx-target').locator('option')).toHaveCount(18,{timeout:30_000});
+ await lab(page).getByLabel(exact(LS.idLabel)).fill('42');
+ const read=async(code:string)=>{
+  await go(page,'#object-x');await id(page,'objectx-target').selectOption(code);await expect(id(page,'objectx-coordinates')).toContainText(code);
+  await page.waitForTimeout(300);
+  const own=await page.evaluate(()=>{const strip=(selector:string)=>{const n=document.querySelector(selector);if(!n)return '';const c=n.cloneNode(true) as HTMLElement;c.querySelectorAll('[data-testid=objectx-coordinates]').forEach(x=>x.remove());return c.textContent??'';};
+   return strip('[data-testid=objectx-lab]')+'\n'+strip('[data-testid=objectx-guide]');});
+  await mapButton(lab(page),'es-419',L.pointObservatory,LS.pointObservatory).click();await expect(page.locator('.sky-view').first()).toBeVisible();await page.waitForTimeout(300);
+  const sky=await page.locator('.sky-toolbar').first().textContent();
+  return `${own}\n${sky}`.replaceAll(code,'<code>');
+ };
+ const star=await read(STAR_CODE),asteroid=await read(EROS_CODE);
+ expect(star).toContain(LS.scope);expect(star).toContain(GS.steps.measure[1]);expect(asteroid).toBe(star);
 });
 
 /** VIREO's captions on each step, in English (View original) or in this load's Spanish. */

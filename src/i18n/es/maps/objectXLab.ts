@@ -2,7 +2,8 @@ import type {OBJECT_X_LAB_EN} from '../../../objectx/ObjectXMessages';
 import type {Translation} from '../../maps';
 /** Front ES1 (the header menu names) and ES9 (the rest): Spanish (es-419) for the E08 #object-x route. A web adaptation by
  * OpenVireo, not CLEA's. No string names or describes a particular target, and the same words serve every target. */
-const KIND_ARTICLE:Readonly<Record<string,string>>={estrella:'una',galaxia:'una'};
+/** The article of each answer kind, by its OBJECT_X_KINDS id: «una estrella», «una galaxia», «un cuásar», «un púlsar», «un asteroide». */
+const KIND_ARTICLE:Readonly<Record<string,string>>={star:'una',galaxy:'una',qso:'un',pulsar:'un',asteroid:'un'};
 export const OBJECT_X_LAB_ES:Translation<typeof OBJECT_X_LAB_EN>=Object.freeze({
  nav:'Objeto X',guideNav:'Guía del Objeto X',
  hiddenName:'Nombre oculto durante el Objeto X',hiddenRowName:'Nombre oculto',namesHidden:'Nombres ocultos durante el Objeto X.',
@@ -47,7 +48,7 @@ export const OBJECT_X_LAB_ES:Translation<typeof OBJECT_X_LAB_EN>=Object.freeze({
  spectrumPrepare:'Colocar la rendija sobre el objeto',
  spectrumLoading:'Cargando los datos del espectrómetro…',
  spectrumLoadError:'No se pudieron cargar los datos del espectrómetro. Vuelve a intentarlo.',
- spectrumInvalid:'Los datos del espectrómetro no pasaron su comprobación de integridad, así que no se puede observar esta posición. Informa de este problema; volver a intentarlo no servirá de ayuda.',
+ spectrumInvalid:'Los datos del espectrómetro no pasaron su comprobación de integridad, así que no se puede observar esta posición. Reporta este problema; volver a intentarlo no ayudará.',
  spectrumReady:(label,telescope)=>`${label}: rendija sobre el objeto con el telescopio de ${telescope}. Inicia el espectro.`,
  spectrumUnavailableNeutral:'No hay un espectro medible en esta posición con este telescopio.',
  spectrumLimit:'La exposición alcanzó el límite de señal/ruido y se detuvo. Bórrala para empezar una nueva.',
@@ -64,7 +65,7 @@ export const OBJECT_X_LAB_ES:Translation<typeof OBJECT_X_LAB_EN>=Object.freeze({
  spectrumSaveNote:'El archivo .SSP lleva el nombre de tu etiqueta ObjX. Hasta la revelación, su encabezado contiene esa etiqueta, las coordenadas que recibiste y la magnitud 0.000, para que el archivo nunca nombre el objeto; después de la revelación contiene la magnitud del catálogo, como escribe VIREO, y como objeto la referencia del registro de catálogo de esta versión web (no se recuperó el nombre que VIREO le da). Carga el archivo en Clasificación estelar (Importar SP o SSP) para clasificarlo.',
  spectrumSaved:name=>`Espectro guardado como ${name}. Tu investigación guardada conserva la exposición misma.`,
  spectrumClassify:'Clasificar este espectro',
- spectrumClassifyError:'Este espectro no se pudo abrir en Clasificación estelar (necesita un canal positivo, una exposición detenida y longitudes de onda que cubran al menos 100 Å del intervalo 3500–7400 Å).',
+ spectrumClassifyError:'Este espectro no se pudo abrir en Clasificación estelar (necesita un canal con cuentas positivas, una exposición detenida y longitudes de onda que cubran al menos 100 Å del intervalo 3500–7400 Å).',
  spectrumClassifyLimit:'Clasificación estelar ya tiene tantos espectros importados como puede conservar (cuatro archivos, 4 MiB en total). No se agregó nada y se conservaron los importados existentes.',
  imagesTitle:'3. Tus imágenes',noImages:'Todavía no hay imágenes. Las imágenes tomadas con la cámara CCD aparecen aquí.',
  imageRow:(label,ut,filter,seconds)=>`${label}: ${ut} UT, ${filter}, ${seconds} s`,
@@ -75,7 +76,7 @@ export const OBJECT_X_LAB_ES:Translation<typeof OBJECT_X_LAB_EN>=Object.freeze({
  imagesFull:(images,exposures)=>`Se alcanzó el límite de imágenes (${images} imágenes, ${exposures} exposiciones por investigación): las imágenes nuevas no se agregan.`,
  confirmClearMarks:'Cambiar las imágenes quita tus marcas en ellas. ¿Continuar?',
  imageMovers:pairs=>`${pairs} ${pairs===1?'asteroide':'asteroides'} en el recuadro del campo.`,
- imageMoversHidden:'incluye los asteroides de la lista actual (la cuenta se muestra después de la revelación)',
+ imageMoversHidden:'incluye los asteroides de la lista actual (el número se muestra después de la revelación)',
  imageSkipped:reasons=>{
   const text:Readonly<Record<string,string>>={'moving-pair-off-detector':'muy fuera del detector','moving-pair-geometry':'sin movimiento medible que dibujar','moving-pair-budget':'estela demasiado grande para dibujarla'};
   const counts=new Map<string,number>();for(const r of reasons)counts.set(r,(counts.get(r)??0)+1);
@@ -86,7 +87,7 @@ export const OBJECT_X_LAB_ES:Translation<typeof OBJECT_X_LAB_EN>=Object.freeze({
  loadFits:'Abrir imágenes FITS guardadas',loadFitsError:name=>`${name} no se pudo abrir como imagen de la cámara.`,
  measureTitle:'4. Comparar y medir',measureFirst:'Primera imagen',measureSecond:'Segunda imagen',measureNeedTwo:'Toma o abre dos imágenes para compararlas con el parpadeo y medirlas.',
  measureNotLoaded:'Abre los archivos FITS guardados de ambas imágenes para medirlas.',
- listClosed:'La lista de asteroides (Asteroid List) queda cerrada durante el Objeto X: VIREO solo la muestra en Modo de edición (Edit Mode), y este sitio además espera a la revelación, porque su Modo de edición no requiere iniciar sesión como instructor. Las imágenes nuevas siguen incluyendo los asteroides observables.',
+ listClosed:'La Lista de asteroides (Asteroid List) queda cerrada durante el Objeto X: VIREO solo la muestra en Modo de edición (Edit Mode), y este sitio además espera a la revelación, porque su Modo de edición no requiere iniciar sesión como instructor. Las imágenes nuevas siguen incluyendo los asteroides observables.',
  listTitle:'Asteroides observables actuales',listColumns:Object.freeze(['Nombre','AR','Dec','V','Δ (UA)','(1)','(2)','(3)','(4)']),
  listNotesAst:'Notas (archivo de Lowell): (1) código de cruce de órbitas planetarias, (2) código del cálculo de la órbita, (3) código de la lista crítica, (4) importancia de las observaciones.',
  listNotesMpc:'Notas (archivo del MPC): (1) tipo de órbita (2 Aten, 3 Apollo, 4 Amor, …), (2) excentricidad/H supuesta, (3) indicadores (128 = potencialmente peligroso), (4) incertidumbre U.',
@@ -96,7 +97,7 @@ export const OBJECT_X_LAB_ES:Translation<typeof OBJECT_X_LAB_EN>=Object.freeze({
  describeLabel:'Describe tu evidencia',
  reveal:'Revelar la identidad',revealConfirm:'¿Revelar ahora? Tu respuesta queda como está.',revealNeedAnswer:'Elige una respuesta antes de revelar.',
  revealed:(id,remarks)=>`Objeto: ${id} — ${remarks}`,
- verdict:(right,kind)=>{const a=KIND_ARTICLE[kind.split(' ')[0]]??'un';return right?`Tu respuesta es correcta: es ${a} ${kind}.`:`Es ${a} ${kind}.`;},
+ verdict:(right,kind,kindId)=>{const a=KIND_ARTICLE[kindId]??'un';return right?`Tu respuesta es correcta: es ${a} ${kind}.`:`Es ${a} ${kind}.`;},
  answerFrozen:'Tu respuesta quedó registrada cuando revelaste el objeto; ya no se puede cambiar.',
  progress:'Tu progreso',
 });

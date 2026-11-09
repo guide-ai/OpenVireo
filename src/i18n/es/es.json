@@ -1652,7 +1652,7 @@
  "fits.kind.negativeZero": "Cero negativo",
  "fits.kind.positiveInfinity": "Infinito positivo",
  "fits.kind.negativeInfinity": "Infinito negativo",
- "fits.kind.nan": "NaN / píxel de coma flotante indefinido",
+ "fits.kind.nan": "NaN / píxel de punto flotante indefinido",
  "fits.error.size": "La imagen supera los límites de 5 MiB por archivo, 1024 píxeles por eje o los del encabezado. La imagen anterior no cambia.",
  "fits.error.header": "Encabezado FITS no admitido o no válido: las tarjetas obligatorias, el ASCII, el orden, la unicidad, END y el relleno de bloque deben ser inequívocos. La imagen anterior no cambia.",
  "fits.error.profile": "Solo se admite una imagen primaria float32 bidimensional con escala identidad. Se rechazan los arreglos de enteros o float64, los cubos, los grupos, las transformaciones y las palabras clave estructurales no admitidas.",

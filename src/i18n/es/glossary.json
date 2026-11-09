@@ -162,7 +162,7 @@
    "es": "contraseña"
   },
   {
-   "en": "\\bcounts?\\b",
+   "en": "\\bcounts?\\b(?! shows after the reveal)",
    "es": "cuenta"
   },
   {
