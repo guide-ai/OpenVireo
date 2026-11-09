@@ -3197,7 +3197,6 @@ export interface MessageParameters {
   "lss.recorded": never;
   "lss.recordedWedge": never;
   "lss.zSavedWeb": never;
-  "lss.dialog.object": never;
   "lss.dialog.jd": never;
   "lss.dialog.ra": never;
   "lss.dialog.dec": never;

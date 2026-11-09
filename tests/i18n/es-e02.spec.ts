@@ -36,10 +36,10 @@ const SAME=new Set<string>([
  'K Line','H Line','G Band','K Line (Ca II)','H Line (Ca II + H)','G Band (Blend)',
 ]);
 /** Galaxy ids from the field lists (catalogue designations, e.g. 12021+3127, NGC 4080, IC 3046, UGC 7085, CGCG 158-084). */
-const GALAXY=/^(?:\d{5}[+-]\d{4}|(?:NGC|IC|UGC|CGCG|MCG|MRK|KUG|A)\s?[\dA-Z+-]+(?:\s?[A-Z\d-]+)?)$/;
-/** A hash (with or without its SHA-256 label), a binary32 bit pattern, the print date (en-US numbers in every language), a saved .TXT line (the wedge's Saved line), a telescope name, a field list item
- * (LSSFields.LST name and centre) or a row/field file name. */
-const RECORDED=/^(?:SHA-256 )?[0-9a-f]{64}$|^[0-9a-f]{8}$|^\d{1,2}\/\d{1,2}\/\d{4}, \d{1,2}:\d\d:\d\d [AP]M$|^\S.{10}\s+\d{4}\.\d{6}\s+\d+h\d\dm\d\d\.\ds|^\d\.\d-meter$|^\d\.\d m\b|^LSS_Field0\d\.HTL$|^Object ID +MJD\(Days\)/;
+const GALAXY=/^(?:\d{5}[+-]\d{4}|(?:NGC|IC|UGC|CGCG|MCG|MRK|KUG)\s?\d[\d+-]*(?:\s?[A-Z\d-]{1,4})?|A\d[\d+-]*)$/;
+/** A hash (with or without its SHA-256 label), a binary32 bit pattern, the print date (en-US numbers in every language), a saved .TXT line (the wedge's Saved line), a field list file name
+ * or the saved file's header. */
+const RECORDED=/^(?:SHA-256 )?[0-9a-f]{64}$|^[0-9a-f]{8}$|^\d{1,2}\/\d{1,2}\/\d{4}, \d{1,2}:\d\d:\d\d [AP]M$|^\S.{10}\s+\d{4}\.\d{6}\s+\d+h\d\dm\d\d\.\ds|^LSS_Field0\d\.HTL$|^Object ID +MJD\(Days\)/;
 /** A number with its unit or symbol, and nothing else that could be a word. */
 const NUMERIC=/^[-+−±\d\s.,:;°′″'"·×/()[\]–%=→hms]*\d[-+−±\d\s.,:;°′″'"·×/()[\]–%=→hms]*(?:\s*(?:Å|km\/s|Mpc|ms|mag|h|s|m|JD|z|px|°))*\s*$/;
 const same=(text:string)=>SAME.has(text)||NUMERIC.test(text)||RECORDED.test(text)||GALAXY.test(text);
@@ -93,6 +93,8 @@ const STEPS:readonly (readonly [string,(page:Page,lang:Lang,c:Context)=>Promise<
   await expect(id(page,'lss-current-z')).toContainText('+0.020');}],
  ['Measured Redshift Data',async page=>{await page.locator('.lss-measure button.primary-button').click();await expect(page.locator('dialog.lss-dialog[open]')).toBeVisible();}],
  ['velocity refusal',async page=>{await page.locator('dialog.lss-dialog[open] button[type=submit]').click();await expect(page.locator('#lss-dialog-error')).toBeVisible();}],
+ ['velocity invalid',async page=>{await id(page,'lss-dialog-velocity').fill('5000');await page.locator('dialog.lss-dialog[open] button[type=submit]').click();
+  await expect(page.locator('#lss-dialog-error')).toBeVisible();}],
  ['redshift recorded',async page=>{const z=Number(await id(page,'lss-dialog-z').inputValue());await id(page,'lss-dialog-velocity').fill(String(Math.round(299792.458*z*100)/100));
   await page.locator('dialog.lss-dialog[open] button[type=submit]').click();await expect(page.locator('dialog.lss-dialog[open]')).toHaveCount(0);await expect(page.locator('[data-testid=lss-results] tbody tr')).toHaveCount(1);}],
  ['Save Data (.TXT)',async(page,_lang,c)=>{const d=page.waitForEvent('download');await id(page,'lss-results-txt').click();c.txt=await readFile((await(await d).path())!);}],
@@ -116,6 +118,8 @@ const STEPS:readonly (readonly [string,(page:Page,lang:Lang,c:Context)=>Promise<
   await tool(page,lang,'lss.nav');await expect(id(page,'lss-region-card')).toBeVisible();}],
  ['Extract LSS Galaxy Data for Region',async page=>{await id(page,'lss-region-open').click();await expect(id(page,'lss-region-ok')).toBeVisible();}],
  ['Input Error!',async page=>{await id(page,'lss-region-ok').click();await expect(id(page,'lss-region-box')).toBeVisible();}],
+ ['non-numeric data',async page=>{await id(page,'lss-region-box').getByRole('button').click();await expect(id(page,'lss-region-box')).toBeHidden();
+  await id(page,'lss-region-raMin').fill('abc');await id(page,'lss-region-ok').click();await expect(id(page,'lss-region-box')).toBeVisible();}],
  ['Search Results',async page=>{await id(page,'lss-region-box').getByRole('button').click();await expect(id(page,'lss-region-box')).toBeHidden();
   for(const [k,v] of [['raMin','12'],['raMax','12.5'],['decMin','27'],['decMax','29']])await id(page,`lss-region-${k}`).fill(v);
   await id(page,'lss-region-ok').click();await expect(id(page,'lss-region-box')).toContainText('24069',{timeout:30_000});}],
@@ -161,10 +165,13 @@ test('qps: every text of the E02 walk is marked, outside identifiers and native 
 const captions=(page:Page,T:(original:string,context?:string)=>string):Record<string,()=>Promise<void>>=>({
  'measurement panel':async()=>{await expect(page.locator('.lss-measure button.primary-button')).toHaveText(T('Record Z'));},
  'Measured Redshift Data':async()=>{const d=page.locator('dialog.lss-dialog[open]');await expect(d.locator('h2')).toHaveText(T('Measured Redshift Data'));
+  // VIREO's Object: and Remarks: without their colon (the web form of the labels).
+  await expect(d.locator('label[for=lss-object]')).toHaveText(T('Object:').replace(/:$/,''));await expect(d.locator('label[for=lss-remarks]')).toHaveText(T('Remarks:').replace(/:$/,''));
   await expect(d.locator('label[for=lss-jd]')).toHaveText(T('Observation Time (JD)'));await expect(d.locator('label[for=lss-z]')).toHaveText(T('Redshift (Z):'));
   await expect(d.locator('label[for=lss-velocity]')).toHaveText(T('Velocity (km/sec):'));await expect(d.locator('legend')).toHaveText([T('Right Ascension'),T('Declination')]);
   await expect(d.locator('.sky-actions button')).toHaveText([T('OK'),T('Cancel')]);},
  'velocity refusal':async()=>{await expect(page.locator('#lss-dialog-error')).toHaveText(`${T('Velocity Error!')} ${T('Velocity is incorrect or missing!\r\nYou must supply a valid velocity for plotting.').replace(/\r\n/g,' ')}`);},
+ 'velocity invalid':async()=>{await expect(page.locator('#lss-dialog-error')).toHaveText(T('Velocity calculation is invalid!'));},
  'redshift recorded':async()=>{await expect(page.locator('.observatory-feedback [role=status]')).toContainText(`${T('Z Measurement Saved')}: ${T('Z Measurement added to results list.\r\n\r\nSave, plot, view list under "Tools"->\r\n"Results Editors"->"Observational \r\nResults" on main Window.').replace(/\s*\r\n\s*/g,' ')}`);
   await expect(id(page,'lss-results-txt')).toHaveText(`${T('Save Data')} (.TXT)`);await expect(id(page,'lss-results-txt')).toHaveAttribute('title',T('Save Reshift Measurements in Text File'));},
  'wedge with own records':async()=>{const w=id(page,'wedge-lab');await expect(w.locator('h2').first()).toHaveText(T('LSS Wedge Plot'));
@@ -191,6 +198,7 @@ const captions=(page:Page,T:(original:string,context?:string)=>string):Record<st
   await expect(id(page,'lss-region-raMin')).toHaveAccessibleName(`${T('Right Ascension (Hrs):')} ${T('Minimum')}`);
   await expect(id(page,'lss-region-ok')).toHaveText(T('OK'));await expect(id(page,'lss-region-ok').locator('xpath=following-sibling::button')).toHaveText(T('Cancel'));},
  'Input Error!':async()=>{const b=id(page,'lss-region-box');await expect(b.locator('h2')).toHaveText(T('Input Error!'));await expect(b.locator('p')).toHaveText(T('Parameters are inconsistant!'));await expect(b.getByRole('button')).toHaveText(T('OK'));},
+ 'non-numeric data':async()=>{const b=id(page,'lss-region-box');await expect(b.locator('h2')).toHaveText(T('Input Error!'));await expect(b.locator('p')).toHaveText(T('Parameters contain non-numeric data!'));},
  'Search Results':async()=>{const b=id(page,'lss-region-box');await expect(b.locator('h2')).toHaveText(T('Search Results'));
   const lines=(await b.locator('p').textContent())!.split('\n');expect(lines[0]).toBe(`${T('Galaxy Records Searched: ')}24069`);
   expect(lines[1]).toMatch(/\d+$/);expect(lines[1].startsWith(T('Galaxies Found in Region: '))).toBe(true);expect(lines[2].startsWith(T('Range in Z: '))).toBe(true);},
