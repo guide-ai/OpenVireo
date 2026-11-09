@@ -99,6 +99,22 @@ test('at 1440 px the header sidebar lays out in English and in Spanish: no overl
  await page.locator('.portal-header').screenshot({path:test.info().outputPath('es-shell-1440-sidebar.png')});
 });
 
+test('at 1440 px keyboard focus moving up the scrolled sidebar is never hidden under the pinned top row (WCAG 2.4.11), in English and in Spanish',async({page})=>{
+ for(const lang of ['en','es-419'] as const){
+  await open(page,lang);
+  await page.locator('.portal-header nav button:visible').last().focus();
+  await page.evaluate(()=>{const h=document.querySelector('.portal-header')!;h.scrollTop=h.scrollHeight;});
+  const hidden:string[]=[];let steps=0;
+  for(;steps<60;steps++){
+   const r=await page.evaluate(()=>{const a=document.activeElement as HTMLElement|null,row=document.querySelector('.portal-top')!.getBoundingClientRect();
+    if(!a?.closest('.portal-header nav'))return null;const q=a.getBoundingClientRect();return {text:a.textContent?.trim()??'',top:q.top,rowBottom:row.bottom};});
+   if(!r)break;if(r.top<r.rowBottom-.5)hidden.push(`${r.text}: ${Math.round(r.rowBottom-r.top)} px under the row`);
+   await page.keyboard.press('Shift+Tab');
+  }
+  expect(steps,lang).toBeGreaterThan(20);expect(hidden,lang).toEqual([]);
+ }
+});
+
 test('at 320 px the Spanish shell lays out without horizontal overflow, with the menu open',async({page})=>{
  await page.setViewportSize({width:320,height:700});await open(page,'es-419');
  const fits=()=>page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth);

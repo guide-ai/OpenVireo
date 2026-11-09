@@ -71,7 +71,7 @@ test('"View original (English)" is stored and applies at the next load: VIREO\'s
  await open(page,'?lang=es-419');
  await expect(id(page,'main-help-menu')).toContainText('Ayuda');
  await id(page,'language-originals').check();
- await expect(id(page,'language-originals-note')).toContainText('Se aplica en la próxima carga de la página.');
+ await expect(id(page,'language-originals-note')).toContainText('Se aplica la próxima vez que se cargue la página.');
  await expect(id(page,'main-help-menu')).toContainText('Ayuda');// not before the next load
  expect(await page.evaluate(()=>localStorage.getItem('openvireo-vireo-originals'))).toBe('1');
  await page.reload();await expect(page.locator('.investigation-toolbar')).toBeVisible({timeout:15_000});

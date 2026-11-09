@@ -16,6 +16,6 @@ export const LANGUAGE_CHOICE_ES:Translation<typeof LANGUAGE_CHOICE_EN>=Object.fr
  preview:'Vista previa antes del lanzamiento: el idioma lo elige la dirección (?lang=) y no se guarda.',
  notRemembered:'Este navegador no permite a OpenVireo guardar la elección, así que solo se aplica a esta carga de la página.',
  originals:'Mostrar los textos originales de VIREO (inglés)',
- originalsNote:'Los textos de los menús, ventanas y mensajes de VIREO aparecen en inglés, tal como los escribe VIREO. Los textos propios de OpenVireo siguen en el idioma elegido. Se aplica en la próxima carga de la página.',
+ originalsNote:'Los textos de los menús, ventanas y mensajes de VIREO aparecen en inglés, tal como los escribe VIREO. Los textos propios de OpenVireo siguen en el idioma elegido. Se aplica la próxima vez que se cargue la página.',
  originalsNotStored:'Este navegador no permite a OpenVireo guardar esta opción.',
 });

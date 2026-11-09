@@ -96,7 +96,7 @@
  "instructorMode.banner.leaveNote": "Salir vuelve a cerrar las opciones y desactiva el Modo de edición, el Observatorio virtual y el Modo de prueba (una acción web; VIREO no la tiene).",
  "instructorMode.optionsClosed": "Nota web: las opciones están cerradas para los estudiantes, como en VIREO. Modo instructor… en el encabezado de la página las abre (la forma web del Modo de demostración, sin contraseña).",
  "instructorMode.optionsClosedOk": "Aceptar",
- "demonstrationMode.banner": "El Modo de demostración está activado en este navegador: cada carga de la página abre el modo instructor para cualquier persona en este navegador. Desmárcalo en las Opciones de simulación óptica para detenerlo.",
+ "demonstrationMode.banner": "El Modo de demostración está activado en este navegador: cada carga de la página abre el modo instructor para cualquier persona con acceso a este navegador. Desmárcalo en las Opciones de simulación óptica para detenerlo.",
  "spectrometer.nav": "Espectrómetro",
  "skyExposure.nav": "Exposición del cielo",
  "starExposure.nav": "Exposición de estrella",

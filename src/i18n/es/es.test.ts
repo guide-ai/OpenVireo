@@ -6,6 +6,7 @@ import es from './es.json';
 import originals from './originals.json';
 import glossary from './glossary.json';
 import identical from './identical.json';
+import lintAllowed from './lint-allowed.json';
 import {SPANISH} from './index';
 import {createI18n,type MessageKey} from '../catalog';
 import {mapParity} from '../parity';
@@ -43,7 +44,17 @@ function pairs():Pair[]{
 }
 /** Forbidden words match with Unicode word boundaries (JavaScript's \\b is ASCII-only, so «abrí» or «móvil» would slip). */
 const WORD=(w:string)=>`(?<![\\p{L}\\p{N}])${w}(?![\\p{L}\\p{N}])`;
-const FORBIDDEN=(glossary.forbidden as {words?:string[];es?:string;use:string}[]).map(f=>({label:f.words?`«${f.words.join('», «')}»`:`/${f.es}/`,use:f.use,pattern:new RegExp(f.words?f.words.map(WORD).join('|'):f.es!,'iu')}));
+const FORBIDDEN=(glossary.forbidden as {words?:string[];es?:string;use:string}[]).map(f=>({label:f.words?`«${f.words.join('», «')}»`:`/${f.es}/`,use:f.use,words:f.words??null,pattern:new RegExp(f.words?f.words.map(WORD).join('|'):f.es!,'iu')}));
+/** The forbidden words or patterns found in a string, less the words lint-allowed.json allows in that string. */
+const ALLOWED=lintAllowed.entries as Record<string,{words:string[];reason:string}>;
+export function forbiddenIn(id:string,text:string):string[]{
+ const out:string[]=[];
+ for(const f of FORBIDDEN){
+  if(f.words){for(const w of f.words)if(new RegExp(WORD(w),'iu').test(text)&&!ALLOWED[id]?.words.some(a=>a.toLowerCase()===w.toLowerCase()))out.push(`«${w}», use ${f.use}`);}
+  else if(f.pattern.test(text))out.push(`${f.label}, use ${f.use}`);
+ }
+ return out;
+}
 /** Unpaired ¿ ? or ¡ !: a closer that ends a question or exclamation (after a letter, digit, bracket, quote or …) needs an
  * opener before it, and every opener needs a closer. A bare ? (a key, «?lang=») is not a closer. */
 export function unpaired(text:string,open:string,close:string):string|null{
@@ -60,6 +71,11 @@ describe('Front ES1 review 1: the lint catches what it must',()=>{
   const hits=(text:string)=>FORBIDDEN.filter(f=>f.pattern.test(text)).map(f=>f.label);
   for(const bad of ['Haga clic aquí','Elija un objeto','Pulse el botón','Pulsá Aceptar','Abrí la cúpula','Guardá tu trabajo','Mirá esto','Guarde su trabajo','¿Tenés tiempo?','Copia su investigación','Usá el móvil','Abre el fichero'])expect(hits(bad),bad).not.toEqual([]);
   for(const good of ['Haz clic en el púlsar','Elige un objeto','Presiona el botón','Abre la cúpula','Guarda tu trabajo','Los púlsares','Su investigación no' ])if(good!=='Su investigación no')expect(hits(good),good).toEqual([]);
+  // A word allowed for one string only (lint-allowed.json), never for others; every allowance names a reason and is used.
+  expect(forbiddenIn('map:languageChoice.originalsNote','la próxima vez que se cargue la página')).toEqual([]);
+  expect(forbiddenIn('catalog:other','la próxima vez que se cargue la página')).not.toEqual([]);
+  expect(forbiddenIn('map:languageChoice.originalsNote','Haga clic')).not.toEqual([]);
+  for(const [id,entry] of Object.entries(ALLOWED)){expect(entry.reason.length,id).toBeGreaterThan(20);expect(pairs().some(p=>p.id===id&&entry.words.every(w=>new RegExp(WORD(w),'iu').test(p.es))),`${id} still needs its allowance`).toBe(true);}
   expect(unpaired('¿Cambiar el idioma?','¿','?')).toBeNull();expect(unpaired('Cambiar el idioma?','¿','?')).toBe('? without ¿');expect(unpaired('¿Cambiar el idioma.','¿','?')).toBe('¿ without ?');
   expect(unpaired('presiona la tecla ? o abre ?lang=es','¿','?')).toBeNull();expect(unpaired('¡Listo!','¡','!')).toBeNull();expect(unpaired('¡Listo.','¡','!')).toBe('¡ without !');
  });
@@ -97,7 +113,7 @@ describe('Front ES1: the Spanish (es-419) catalog, maps and originals',()=>{
   for(const p of pairs()){
    for(const term of glossary.terms)if(new RegExp(term.en,'i').test(p.en)&&!new RegExp(term.es,'iu').test(p.es))problems.push(`${p.id}: "${term.en}" needs «${term.es}»`);
    for(const name of glossary.names)if(p.en.includes(name.en)&&!p.es.includes(name.es))problems.push(`${p.id}: "${name.en}" must read «${name.es}»`);
-   for(const f of FORBIDDEN)if(f.pattern.test(p.es))problems.push(`${p.id}: forbidden ${f.label}, use ${f.use}`);
+   for(const hit of forbiddenIn(p.id,p.es))problems.push(`${p.id}: forbidden ${hit}`);
   }
   expect(problems).toEqual([]);
  });
