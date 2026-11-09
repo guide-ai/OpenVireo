@@ -119,3 +119,18 @@ describe('display ops',()=>{
   expect(receiverFrameOps({position:7,row:null,erasePosition:7,wrapErase:false},{x:6,y:60})).toEqual({ops:[fill(7)],pen:{x:6,y:60}});
  });
 });
+
+// Front ES8a (docs/I18N.md): the screen form of a caption or drawn annotation translates VIREO's literal pieces only.
+describe('receiverScreenText (ES8a)',()=>{
+ it('is the identity by default and replaces only literal pieces, longest first, keeping names and numbers',async()=>{
+  const {receiverScreenText,receiverCaption,receiverApertureBase,receiverHpbwText,receiverChildTitle}=await import('./radioReceiverDisplay');
+  const caption=receiverCaption('Pulsar B0329+54',receiverHpbwText(receiverApertureBase(100),0.7));
+  expect(receiverScreenText(caption)).toBe(caption);
+  const tr=(t:string)=>`<${t}>`;
+  expect(receiverScreenText(caption,tr)).toBe(caption.replace('Pulsar ','<Pulsar >').replace('   Aperture: ','<   Aperture: >').replace(' Meters    ','< Meters    >').replace('Beam (HPBW): ','<Beam (HPBW): >').replace(' Deg ','< Deg >'));
+  expect(receiverScreenText(receiverChildTitle(1),tr)).toBe('<Receiver >2< (Slave)>');
+  expect(receiverScreenText('No Pulsar in Beam!',tr)).toBe('<No Pulsar in Beam!>');
+  expect(receiverScreenText('4.0 Sec ',tr)).toBe('4.0< Sec >');
+  expect(receiverScreenText('600.00 MHz  ',tr)).toBe('600.00 MHz  ');
+ });
+});

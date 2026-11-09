@@ -55,7 +55,7 @@ const OBSERVATORY={title:'El observatorio',topics:[
  topic('Cúpula, apuntado y seguimiento',[
   p('La página Observatorio sigue tres pasos: 1 · Abre la cúpula, 2 · Elige y apunta, 3 · Explora un instrumento.'),
   list(
-   'Abrir la cúpula muestra el cielo y habilita los controles del telescopio. La vista del campo cambia entre Buscador · 2.5° y Telescopio · 15′.',
+   'Abrir la cúpula revela el cielo y habilita los controles del telescopio. La vista del campo cambia entre Buscador · 2.5° y Telescopio · 15′.',
    'Elige un objeto enumera objetivos sugeridos, la lista del ejercicio de Hubble y todos los objetivos del catálogo; Buscar en catálogo aplica un filtro a la lista (Esc lo borra). Apuntar el telescopio centra el telescopio en tu elección. En Escribir coordenadas, Apuntar a las coordenadas apunta a cualquier ascensión recta y declinación.',
    'Mover el telescopio mueve el telescopio mientras mantienes presionado un botón de dirección (con el mouse, Espacio o Enter). Su menú tiene Fijar coordenadas…, Ver/seleccionar de la lista… (las listas de objetos) y Agregar el objeto o la posición actual a la lista….',
    'El seguimiento está en Reloj del observatorio y seguimiento espectral: Activar seguimiento mantiene la posición del telescopio mientras corre el reloj. Las cámaras y los espectrómetros se niegan a tomar datos mientras el seguimiento está desactivado.'),

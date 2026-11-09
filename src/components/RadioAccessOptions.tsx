@@ -25,6 +25,8 @@ import type {
 import type {PulsarListCommandRefusal,PulsarListCommandResult} from '../core/radioPulsarListCommand';
 import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeNothing,trapTab} from './radioModal';
 import {t,type PlainMessageKey} from '../i18n';
+import {vireo,vireoList} from '../i18n/vireo';
+import {OBSERVATORY_VIREO_CAPTIONS as VB} from '../observatory/ObservatoryMessages';
 
 const D=RADIO_ACCESS_DFM,L=RADIO_ACCESS_LITERALS;
 /** Card status texts of user outcomes (other outcomes are shown elsewhere or not announced). */
@@ -53,7 +55,7 @@ const CHANGE_LABEL:Readonly<Record<AntennaField|ReceiverField,string>>={
  transitTelescope:menuCaptionText(D.scopeGroup),instantSlew:D.checkBoxes.testMode940,latitudeRadians:SC.latitude,
  dishDiameterMeters:D.labels.aperture916,gain924:D.labels.gain924,background928:D.labels.background928,beamWidth92c:D.labels.beamWidth92c,temperature930:D.labels.temperature930,
 };
-const changeList=(changes:readonly RadioOptionsChange<string>[])=>changes.map(c=>CHANGE_LABEL[c.field as AntennaField|ReceiverField]).join(', ');
+const changeList=(changes:readonly RadioOptionsChange<string>[])=>changes.map(c=>vireo(CHANGE_LABEL[c.field as AntennaField|ReceiverField])).join(', ');
 const MENU_EVENT:Readonly<Partial<Record<RadioAccessOutcome,MenuEvent>>>={
  'menu-receiver-open-disable':'open-disabled','menu-receiver-open-skip':'open-skipped',
  'close-not-delivered':'close-environment','menu-close-enable':'close-enabled','menu-close-skip':'close-skipped',
@@ -317,7 +319,7 @@ export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,
   <p className="radio-control-note" data-testid="radio-access-menu-event" data-event={menuEvent??undefined}>{menuEvent===null?'':t(`radioAccess.menu.event.${menuEvent}`)}</p>
   {menu.visible&&<div className="button-row">
    <button type="button" className="secondary-button" data-testid="radio-access-pulsar-list" disabled={!menu.enabled} aria-describedby={`${id}-list-note`}
-    onKeyDown={ignoreHeldKey} onClick={runList}>{menuCaptionText(D.pulsarListCaption)}</button>
+    onKeyDown={ignoreHeldKey} onClick={runList}>{menuCaptionText(vireo(D.pulsarListCaption))}</button>
   </div>}
   <p id={`${id}-list-note`} className="radio-control-note" data-testid="radio-access-command-note">{t('radioAccess.menu.command')}</p>
   <p className="radio-control-status" role="status" aria-live="polite" data-testid="radio-access-list-status" data-outcome={listStatus?.outcome}
@@ -386,11 +388,11 @@ function UserOptionsBox({onDismiss,...focus}:Readonly<{onDismiss:()=>void}>&Focu
  return <div className="antenna-backdrop antenna-backdrop-top">
   <div ref={root} role="alertdialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-body`} className="antenna-dialog antenna-notice"
    data-testid="radio-access-refusal" onKeyDown={e=>surfaceKeys(e,root.current,onDismiss,onDismiss)}>
-   <h3 id={`${id}-title`} className="radio-control-native" data-testid="radio-access-refusal-title">{L.userOptionsCaption}</h3>
-   <p id={`${id}-body`} className="radio-control-native" style={{whiteSpace:'pre-line',overflowWrap:'anywhere'}} data-testid="radio-access-refusal-text">{L.instructorText}</p>
+   <h3 id={`${id}-title`} className="radio-control-native" data-testid="radio-access-refusal-title">{vireo(L.userOptionsCaption)}</h3>
+   <p id={`${id}-body`} className="radio-control-native" style={{whiteSpace:'pre-line',overflowWrap:'anywhere'}} data-testid="radio-access-refusal-text">{vireo(L.instructorText)}</p>
    <p className="radio-control-note">{t('radioAccess.refusal.note')}</p>
    <div className="button-row">
-    <button ref={button} type="button" className="primary-button" data-testid="radio-access-refusal-ok" onClick={onDismiss}>{t('radioAccess.refusal.ok')}</button>
+    <button ref={button} type="button" className="primary-button" data-testid="radio-access-refusal-ok" onClick={onDismiss}>{vireo(VB.ok)}</button>
    </div>
   </div>
  </div>;
@@ -404,19 +406,19 @@ function OptionsParentDialog({blocked,status,full,radioRef,onRadio,onClose,...fo
  return <div className="antenna-backdrop">
   <div ref={root} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-note`} className="antenna-dialog" data-testid="radio-access-parent"
    data-blocked={blocked} inert={blocked||undefined} onKeyDown={e=>{if(!blocked)surfaceKeys(e,root.current,()=>onClose('cancel'));}}>
-   <h3 id={`${id}-title`} className="radio-control-native">{D.parentCaption}</h3>
+   <h3 id={`${id}-title`} className="radio-control-native">{vireo(D.parentCaption)}</h3>
    <p id={`${id}-note`} className="radio-control-note" style={{overflowWrap:'anywhere'}}>{t('radioAccess.parent.note')}</p>
    <div className="button-row">
     <button ref={radioRef} type="button" className="secondary-button" data-testid="radio-access-radio" aria-describedby={`${id}-radio-help`}
-     onClick={onRadio}>{menuCaptionText(D.radioButton)}</button>
+     onClick={onRadio}>{menuCaptionText(vireo(D.radioButton))}</button>
    </div>
    <p id={`${id}-radio-help`} className="radio-control-note">{t('radioAccess.parent.radioHelp')}</p>
    <p className="radio-control-status" role="status" aria-live="polite" data-testid="radio-access-parent-status" data-status={status??undefined}>
     {status===null?'':t(full&&status==='radio-ok'?'radioAccess.parent.status.radio-ok-full':`radioAccess.parent.status.${status}`)}</p>
    <p className="radio-control-note">{t('radioAccess.parent.closeNote')}</p>
    <div className="button-row">
-    <button type="button" className="primary-button" data-testid="radio-access-parent-ok" onClick={()=>onClose('ok')}>{menuCaptionText(D.parentOk)}</button>
-    <button type="button" className="secondary-button" data-testid="radio-access-parent-cancel" onClick={()=>onClose('cancel')}>{menuCaptionText(D.parentCancel)}</button>
+    <button type="button" className="primary-button" data-testid="radio-access-parent-ok" onClick={()=>onClose('ok')}>{menuCaptionText(vireo(D.parentOk))}</button>
+    <button type="button" className="secondary-button" data-testid="radio-access-parent-cancel" onClick={()=>onClose('cancel')}>{menuCaptionText(vireo(D.parentCancel))}</button>
    </div>
   </div>
  </div>;
@@ -431,15 +433,15 @@ function RadioOptionsChildDialog({checked,onEdit,onOk,onCancel,returnFocus,suppr
  return <div className="antenna-backdrop antenna-backdrop-top">
   <div ref={root} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-note`} className="antenna-dialog" data-testid="radio-access-child"
    onKeyDown={e=>surfaceKeys(e,root.current,onCancel)}>
-   <h3 id={`${id}-title`} className="radio-control-native">{D.childCaption}</h3>
+   <h3 id={`${id}-title`} className="radio-control-native">{vireo(D.childCaption)}</h3>
    <p id={`${id}-note`} className="radio-control-note" style={{overflowWrap:'anywhere'}}>{t('radioAccess.child.note')}</p>
    <label className="radio-control-native">
     <input ref={box} type="checkbox" data-testid="radio-access-checkbox" checked={checked} aria-describedby={`${id}-ok-note`}
-     onChange={e=>onEdit(e.target.checked)}/> {D.accessBox}</label>
+     onChange={e=>onEdit(e.target.checked)}/> {vireo(D.accessBox)}</label>
    <p id={`${id}-ok-note`} className="radio-control-note" style={{overflowWrap:'anywhere'}}>{t('radioAccess.child.okNote')}</p>
    <div className="button-row">
-    <button type="button" className="primary-button" data-testid="radio-access-child-ok" onClick={onOk}>{menuCaptionText(D.childOk)}</button>
-    <button type="button" className="secondary-button" data-testid="radio-access-child-cancel" onClick={onCancel}>{menuCaptionText(D.childCancel)}</button>
+    <button type="button" className="primary-button" data-testid="radio-access-child-ok" onClick={onOk}>{menuCaptionText(vireo(D.childOk))}</button>
+    <button type="button" className="secondary-button" data-testid="radio-access-child-cancel" onClick={onCancel}>{menuCaptionText(vireo(D.childCancel))}</button>
    </div>
   </div>
  </div>;
@@ -519,12 +521,12 @@ function NumericSection({state,view,optIn,projection,headingRef,onBranch,siteSta
    <h4>{t('radioAccess.numeric.values.heading')}</h4>
    <dl className="radio-control-state" data-testid="radio-access-numeric-values">
     {RADIO_OPTIONS_DFM_ORDER.map(f=><Fragment key={f}>
-     <dt className="radio-control-native">{D.labels[f]}</dt>
+     <dt className="radio-control-native">{vireo(D.labels[f])}</dt>
      <dd data-testid={`radio-access-numeric-${f}`} data-root={String(root[f])} data-env={String(env[f])}>
       {t('radioAccess.numeric.values.pair',{root:formatRadioOptionsValue(f,root[f]),env:formatRadioOptionsValue(f,env[f])})}</dd>
     </Fragment>)}
     {FLAG_ROWS.map(k=><Fragment key={k}>
-     <dt className="radio-control-native">{flagLabel(k)}</dt>
+     <dt className="radio-control-native">{vireo(flagLabel(k))}</dt>
      <dd data-testid={`radio-access-numeric-${k}`} data-root={String(root[k])} data-env={String(env[k])}>{t('radioAccess.numeric.values.pair',{root:flagValue(k,root),env:flagValue(k,env)})}</dd>
     </Fragment>)}
    </dl>
@@ -555,7 +557,7 @@ function NumericSection({state,view,optIn,projection,headingRef,onBranch,siteSta
    <p className="radio-control-note">{t('radioAccess.site.note')}</p>
    <dl className="radio-control-state" data-testid="radio-access-site-values">
     {SITE_ROWS.map(([k,label,text])=><Fragment key={k}>
-     <dt className="radio-control-native">{label}</dt>
+     <dt className="radio-control-native">{vireo(label)}</dt>
      <dd data-testid={`radio-access-site-${k}`} data-root={String(state.site.root[k])} data-env={String(state.site.env[k])} style={{overflowWrap:'anywhere'}}>
       {t('radioAccess.numeric.values.pair',{root:text(state.site.root),env:text(state.site.env)})}</dd>
     </Fragment>)}
@@ -601,13 +603,13 @@ function RadioSimulationOptionsDialog({snapshot,checked,numeric,refusal,onText,o
  const max=RADIO_OPTIONS_TEXT_MAX_LENGTH;
  // No maxLength attribute: a paste is never truncated silently; an over-long edit is refused and named instead.
  const field=(f:RadioOptionsNumberField)=><div className="antenna-field" key={f}>
-  <label htmlFor={`${id}-${f}`} className="radio-control-native">{D.labels[f]}</label>
+  <label htmlFor={`${id}-${f}`} className="radio-control-native">{vireo(D.labels[f])}</label>
   <input ref={f==='horizon90c'?horizon:undefined} id={`${id}-${f}`} type="text" autoComplete="off" spellCheck={false} data-testid={`radio-options-field-${f}`} value={numeric.texts[f]}
    aria-invalid={numeric.failure?.field===f||refusal===f||undefined} aria-describedby={f==='horizon90c'?`${id}-grammar ${id}-horizon-hint`:`${id}-grammar`} onChange={e=>onText(f,e.target.value)}/>
-  {f==='horizon90c'&&<span id={`${id}-horizon-hint`} className="radio-control-note radio-control-native">{RADIO_OPTIONS_CAPTIONS.horizonLimitHint}</span>}
+  {f==='horizon90c'&&<span id={`${id}-horizon-hint`} className="radio-control-note radio-control-native">{vireo(RADIO_OPTIONS_CAPTIONS.horizonLimitHint)}</span>}
  </div>;
  const readOnlyBox=(k:ReadOnlyBox)=><label key={k} className="radio-control-check radio-control-native">
-  <input type="checkbox" data-testid={`radio-options-readonly-${k}`} checked={snapshot[k]} disabled readOnly aria-describedby={`${id}-readonly`}/> {D.checkBoxes[k]}</label>;
+  <input type="checkbox" data-testid={`radio-options-readonly-${k}`} checked={snapshot[k]} disabled readOnly aria-describedby={`${id}-readonly`}/> {vireo(D.checkBoxes[k])}</label>;
  const group=(k:'pulsarId939'|'telescopeType938',caption:string,items:readonly string[])=><fieldset className="antenna-group" data-testid={`radio-options-readonly-${k}`} data-value={snapshot[k]} disabled aria-describedby={`${id}-readonly`}>
   <legend className="radio-control-native">{menuCaptionText(caption)}</legend>
   {items.map((item,i)=><label key={item} className="radio-control-check radio-control-native"><input type="radio" name={`${id}-${k}`} checked={snapshot[k]===i} disabled readOnly/> {item}</label>)}
@@ -615,41 +617,41 @@ function RadioSimulationOptionsDialog({snapshot,checked,numeric,refusal,onText,o
  return <div className="antenna-backdrop antenna-backdrop-top">
   <div ref={root} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-note`} className="antenna-dialog radio-options-full" data-testid="radio-options-full"
    data-blocked={blocked} inert={blocked||undefined} onKeyDown={onKeyDown}>
-   <h3 id={`${id}-title`} className="radio-control-native">{D.childCaption}</h3>
+   <h3 id={`${id}-title`} className="radio-control-native">{vireo(D.childCaption)}</h3>
    <p id={`${id}-note`} className="radio-control-note">{t('radioSimOptions.note')}</p>
    <fieldset className="antenna-group radio-options-parameters">
-    <legend className="radio-control-native">{menuCaptionText(D.parametersGroup)}</legend>
+    <legend className="radio-control-native">{menuCaptionText(vireo(D.parametersGroup))}</legend>
     {RADIO_OPTIONS_DFM_ORDER.map(field)}
    </fieldset>
    <p id={`${id}-grammar`} className="radio-control-note">{t('radioSimOptions.grammar',{max})}</p>
    <p className="radio-control-note" role="status" aria-live="polite" data-testid="radio-options-field-refusal" data-field={refusal??undefined}>
-    {refusal===null?'':t('radioSimOptions.fieldTooLong',{label:D.labels[refusal],max})}</p>
+    {refusal===null?'':t('radioSimOptions.fieldTooLong',{label:vireo(D.labels[refusal]),max})}</p>
    <fieldset className="antenna-group radio-options-flags">
-    <legend className="radio-control-native">{menuCaptionText(D.optionsGroup)}</legend>
+    <legend className="radio-control-native">{menuCaptionText(vireo(D.optionsGroup))}</legend>
     <label className="radio-control-check radio-control-native"><input type="checkbox" data-testid="radio-options-flag-limitSlewing" checked={numeric.limitSlewing}
-     aria-describedby={`${id}-limit-hint`} onChange={e=>onFlag('limitSlewing',e.target.checked)}/> {D.checkBoxes.limitSlewing93a}</label>
-    <span id={`${id}-limit-hint`} className="radio-control-note radio-control-native">{RADIO_OPTIONS_CAPTIONS.limitSlewingHint}</span>
+     aria-describedby={`${id}-limit-hint`} onChange={e=>onFlag('limitSlewing',e.target.checked)}/> {vireo(D.checkBoxes.limitSlewing93a)}</label>
+    <span id={`${id}-limit-hint`} className="radio-control-note radio-control-native">{vireo(RADIO_OPTIONS_CAPTIONS.limitSlewingHint)}</span>
     <label className="radio-control-check radio-control-native"><input type="checkbox" data-testid="radio-options-flag-fastSlewing" checked={numeric.fastSlewing}
-     aria-describedby={`${id}-fast-note`} onChange={e=>onFlag('fastSlewing',e.target.checked)}/> {D.checkBoxes.maxRateIndex93b}</label>
+     aria-describedby={`${id}-fast-note`} onChange={e=>onFlag('fastSlewing',e.target.checked)}/> {vireo(D.checkBoxes.maxRateIndex93b)}</label>
     <span id={`${id}-fast-note`} className="radio-control-note">{t('radioSimOptions.fastNote')}</span>
     {READ_ONLY_BOXES.map(readOnlyBox)}
     {/* Front R1: the effect of each read-only setting (dossier C, compiled defaults 0x5a8fcb..0x5a90ad). */}
     <details className="radio-control-note" data-testid="radio-options-effects"><summary data-testid="radio-options-effects-summary">{R1.optionEffectsTitle}</summary><ul>{R1.optionEffects.map(e=><li key={e}>{e}</li>)}</ul></details>
     <label className="radio-control-check radio-control-native"><input type="checkbox" data-testid="radio-access-checkbox" checked={checked}
-     onChange={e=>onAccess(e.target.checked)}/> {D.checkBoxes.accessPulsarList}</label>
+     onChange={e=>onAccess(e.target.checked)}/> {vireo(D.checkBoxes.accessPulsarList)}</label>
    </fieldset>
-   {group('pulsarId939',D.idGroup,D.idItems)}
-   {group('telescopeType938',D.scopeGroup,D.scopeItems)}
+   {group('pulsarId939',vireo(D.idGroup),vireoList(D.idItems))}
+   {group('telescopeType938',vireo(D.scopeGroup),vireoList(D.scopeItems))}
    <p id={`${id}-readonly`} className="radio-control-note" data-testid="radio-options-readonly-note">{t('radioSimOptions.readonlyNote')}</p>
    <div className="button-row">
-    <button type="button" className="secondary-button" data-testid="radio-options-files" disabled aria-describedby={`${id}-files`}>{menuCaptionText(D.filesButton)}</button>
-    <button ref={siteRef} type="button" className="secondary-button" data-testid="radio-options-site" title={RADIO_SITE_DFM.hint} aria-describedby={`${id}-files`} onClick={onSite}>{menuCaptionText(D.siteButton)}</button>
+    <button type="button" className="secondary-button" data-testid="radio-options-files" disabled aria-describedby={`${id}-files`}>{menuCaptionText(vireo(D.filesButton))}</button>
+    <button ref={siteRef} type="button" className="secondary-button" data-testid="radio-options-site" title={vireo(RADIO_SITE_DFM.hint)} aria-describedby={`${id}-files`} onClick={onSite}>{menuCaptionText(vireo(D.siteButton))}</button>
    </div>
    <p id={`${id}-files`} className="radio-control-note">{t('radioSimOptions.filesSiteNote')}</p>
    <p className="radio-control-note">{t('radioSimOptions.okNote')}</p>
    <div className="button-row">
-    <button type="button" className="primary-button" data-testid="radio-access-child-ok" onClick={ok}>{menuCaptionText(D.childOk)}</button>
-    <button type="button" className="secondary-button" data-testid="radio-access-child-cancel" onClick={onCancel}>{menuCaptionText(D.childCancel)}</button>
+    <button type="button" className="primary-button" data-testid="radio-access-child-ok" onClick={ok}>{menuCaptionText(vireo(D.childOk))}</button>
+    <button type="button" className="secondary-button" data-testid="radio-access-child-cancel" onClick={onCancel}>{menuCaptionText(vireo(D.childCancel))}</button>
    </div>
   </div>
  </div>;
@@ -667,14 +669,14 @@ function RadioOptionsFailureBox({failure,onDismiss}:Readonly<{failure:RadioOptio
   if(e.key==='Escape'||e.key==='Enter'){e.preventDefault();e.stopPropagation();onDismiss();return;}
   trapTab(e,root.current);
  };
- const native=failure.kind==='grammar',label=D.labels[failure.field];
- const earlier=RADIO_OPTIONS_OK_ORDER.slice(0,failure.position).map(f=>D.labels[f]).join(', '),later=RADIO_OPTIONS_OK_ORDER.slice(failure.position+1).map(f=>D.labels[f]).join(', ');
+ const native=failure.kind==='grammar',label=vireo(D.labels[failure.field]);
+ const earlier=RADIO_OPTIONS_OK_ORDER.slice(0,failure.position).map(f=>vireo(D.labels[f])).join(', '),later=RADIO_OPTIONS_OK_ORDER.slice(failure.position+1).map(f=>vireo(D.labels[f])).join(', ');
  const written=failure.position===0?t('radioSimOptions.failure.writtenFirst',{label,later})
   :later===''?t('radioSimOptions.failure.writtenLast',{label,earlier}):t('radioSimOptions.failure.writtenSome',{label,earlier,later});
  return <div className="antenna-backdrop antenna-backdrop-top radio-options-failure-layer">
   <div ref={root} role="alertdialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-body`} className="antenna-dialog antenna-notice" data-testid="radio-options-failure"
    data-field={failure.field} data-kind={failure.kind} data-reason={failure.reason} data-position={failure.position} onKeyDown={onKeyDown}>
-   <h3 id={`${id}-title`} className={native?'radio-control-native':undefined} data-testid="radio-options-failure-title">{native?L.numericErrorCaption:t('radioSimOptions.failure.title.web')}</h3>
+   <h3 id={`${id}-title`} className={native?'radio-control-native':undefined} data-testid="radio-options-failure-title">{native?vireo(L.numericErrorCaption):t('radioSimOptions.failure.title.web')}</h3>
    <div id={`${id}-body`}>
     <p data-testid="radio-options-failure-text" style={{overflowWrap:'anywhere',whiteSpace:'pre-wrap'}}>{t('radioSimOptions.failure.field',{label,text:failure.text})}</p>
     <p>{t(`radioSimOptions.failure.reason.${failure.reason}`)}</p>
@@ -683,7 +685,7 @@ function RadioOptionsFailureBox({failure,onDismiss}:Readonly<{failure:RadioOptio
    </div>
    <p className="radio-control-note" data-testid="radio-options-failure-note">{native?t('radioSimOptions.failure.nativeNote',{literal:L.numericErrorHelperInput.replace(/\r\n/g,' ')}):t('radioSimOptions.failure.webNote')}</p>
    <div className="button-row">
-    <button ref={button} type="button" className="primary-button" data-testid="radio-options-failure-ok" onClick={onDismiss}>{t('radioSimOptions.failure.ok')}</button>
+    <button ref={button} type="button" className="primary-button" data-testid="radio-options-failure-ok" onClick={onDismiss}>{vireo(VB.ok)}</button>
    </div>
   </div>
  </div>;
@@ -702,12 +704,12 @@ function RadioStationDialog({draft,setDraft,error,onOk,onCancel,returnFocus,supp
  return <div className="antenna-backdrop antenna-backdrop-top">
   <div ref={root} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-note`} className="antenna-dialog radio-station" data-testid="radio-station-dialog"
    data-blocked={blocked} inert={blocked||undefined} onKeyDown={e=>{if(!blocked)surfaceKeys(e,root.current,onCancel);}}>
-   <h3 id={`${id}-title`} className="radio-control-native">{SC.form}</h3>
+   <h3 id={`${id}-title`} className="radio-control-native">{vireo(SC.form)}</h3>
    <StationFields station={draft} setStation={setDraft as Parameters<typeof StationFields>[0]['setStation']} onOk={onOk} testId="radio-station"/>
    <p id={`${id}-note`} className="radio-control-note" style={{overflowWrap:'anywhere'}}>{t('radioAccess.site.dialogNote')}</p>
    <div className="button-row">
-    <button type="button" className="primary-button" data-testid="radio-station-ok" onClick={onOk}>{menuCaptionText(SC.ok)}</button>
-    <button type="button" className="secondary-button" data-testid="radio-station-cancel" onClick={onCancel}>{menuCaptionText(SC.cancel)}</button>
+    <button type="button" className="primary-button" data-testid="radio-station-ok" onClick={onOk}>{menuCaptionText(vireo(SC.ok))}</button>
+    <button type="button" className="secondary-button" data-testid="radio-station-cancel" onClick={onCancel}>{menuCaptionText(vireo(SC.cancel))}</button>
    </div>
   </div>
  </div>;
@@ -720,10 +722,10 @@ function RadioStationErrorBox({text,onDismiss}:Readonly<{text:string;onDismiss:(
  return <div className="antenna-backdrop antenna-backdrop-top radio-options-failure-layer">
   <div ref={root} role="alertdialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-body`} className="antenna-dialog antenna-notice" data-testid="radio-station-error"
    onKeyDown={e=>surfaceKeys(e,root.current,onDismiss,onDismiss)}>
-   <h3 id={`${id}-title`} className="radio-control-native">{SC.errorCaption}</h3>
+   <h3 id={`${id}-title`} className="radio-control-native">{vireo(SC.errorCaption)}</h3>
    <p id={`${id}-body`} className="radio-control-native" data-testid="radio-station-error-text" style={{overflowWrap:'anywhere'}}>{text}</p>
    <div className="button-row">
-    <button ref={button} type="button" className="primary-button" data-testid="radio-station-error-ok" onClick={onDismiss}>{t('radioSimOptions.failure.ok')}</button>
+    <button ref={button} type="button" className="primary-button" data-testid="radio-station-error-ok" onClick={onDismiss}>{vireo(VB.ok)}</button>
    </div>
   </div>
  </div>;
