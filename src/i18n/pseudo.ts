@@ -1,4 +1,4 @@
-import en from './en.json';
+import en from './en.json' with {type:'json'};
 import type {LocaleBundle,MessageKey} from './catalog';
 /** Front ES0 [W], dev server and tests only: the pseudo-locale `qps` (`?lang=qps`, accepted only when import.meta.env.DEV;
  * src/boot.ts imports this module only behind that check, so the production build does not contain it). Every translated
@@ -17,11 +17,12 @@ export function pseudo(text:string):string{
 }
 /** The result of a map function: it may carry data (names, numbers), so it is only padded and marked. */
 export const pseudoMark=(text:string):string=>text?`${PSEUDO_OPEN}${text}${padding(text.length)}${PSEUDO_CLOSE}`:text;
-/** A map with every string leaf pseudo-localized and every function's string result marked; other leaves are unchanged. */
-export function pseudoMap<T>(english:T):T{
+/** A map with every string leaf pseudo-localized and every function's string result marked; other leaves are unchanged.
+ * Front SC2: `text` is the string transform (the script-stress pseudo-locales of src/i18n/pseudoScripts.ts pass theirs). */
+export function pseudoMap<T>(english:T,text:(value:string)=>string=pseudo):T{
  const seen=new WeakMap<object,unknown>();
  const walk=(value:unknown):unknown=>{
-  if(typeof value==='string')return pseudo(value);
+  if(typeof value==='string')return text(value);
   if(typeof value==='function'){
    const fn=value as (...args:unknown[])=>unknown;
    const wrapped=function(this:unknown,...args:unknown[]){const result=fn.apply(this,args);return typeof result==='string'?pseudoMark(result):result;};

@@ -2,7 +2,12 @@
  * navigator access here; boot passes them in. User decisions of 2026-11-09 (AGENTS.md): any `es-*` browser opens Spanish
  * (es-419) and everything else English, with a selector remembered only in that browser (1, 2); Spanish stays hidden, reachable
  * only through a `?lang=es-419` preview link, until every translation sub-front is merged (5). */
-export type UiLanguage='en'|'es-419'|'qps';
+export type UiLanguage='en'|'es-419'|'qps'|PseudoScriptLanguage;
+// Front SC2 [dev server and tests only]: the script-stress pseudo-locales of src/i18n/pseudoScripts.ts, offered like qps. Their
+// <html lang> is the real tag of the script they stress, so :lang() rules apply. The production build drops them (import.meta.env
+// .DEV is false there); the typeof guard keeps this module loadable outside Vite, where the Playwright specs import app modules.
+export type PseudoScriptLanguage='qps-cjk'|'qps-deva'|'qps-cyrl';
+const PSEUDO_SCRIPT_LANG:Readonly<Record<PseudoScriptLanguage,string>>|false=typeof import.meta.env!=='undefined'&&import.meta.env.DEV===true&&{'qps-cjk':'ja','qps-deva':'hi','qps-cyrl':'ru'};
 /** localStorage key of the selector's choice (the selector arrives with ES1 and is shown from ES-REL). */
 export const LANGUAGE_STORAGE_KEY='openvireo-language';
 /** localStorage key of "View original (English)" for VIREO's menus and dialogs (decision 9): '1' when on. Applied at load. */
@@ -10,7 +15,7 @@ export const VIREO_ORIGINALS_KEY='openvireo-vireo-originals';
 /** Release gate (decision 5): false until ES-REL. While false, neither the stored choice nor the browser language is used. */
 export const SPANISH_RELEASED=false;
 /** `<html lang>` for each UI language. The dev-only pseudo-locale keeps English's tag: its text is marked English. */
-export const HTML_LANG:Readonly<Record<UiLanguage,string>>=Object.freeze({en:'en','es-419':'es-419',qps:'en'});
+export const HTML_LANG:Readonly<Record<UiLanguage,string>>=Object.freeze({en:'en','es-419':'es-419',qps:'en',...PSEUDO_SCRIPT_LANG}as Record<UiLanguage,string>);
 export type LocaleInputs=Readonly<{
  /** The `lang` link parameter of this load (not stored). */
  param:string|null;
@@ -22,7 +27,7 @@ export type LocaleInputs=Readonly<{
  /** The pseudo-locale `qps` is accepted only in the dev server and tests. */
  dev:boolean;
 }>;
-const offered=(value:string|null,dev:boolean):UiLanguage|null=>value==='en'||value==='es-419'?value:dev&&value==='qps'?'qps':null;
+const offered=(value:string|null,dev:boolean):UiLanguage|null=>value==='en'||value==='es-419'?value:dev&&value==='qps'?'qps':PSEUDO_SCRIPT_LANG&&dev&&value!==null&&Object.hasOwn(PSEUDO_SCRIPT_LANG,value)?value as PseudoScriptLanguage:null;
 /** The order is the link parameter, then (after release) the stored choice, then (after release) the first browser language:
  * `es`, `es-MX`, `es-ES`… give es-419; `['en-US','es-MX']` gives English, because only the first preference decides. */
 export function decideLocale({param,stored,languages,released,dev}:LocaleInputs):UiLanguage{
