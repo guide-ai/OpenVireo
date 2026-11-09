@@ -1,9 +1,9 @@
 import {useEffect,useId,useRef,useState} from 'react';
+import {OBSERVATORY_VIREO_CAPTIONS as OV} from './ObservatoryMessages';
 import {vireo} from '../i18n/vireo';
 import {menuCaptionText} from '../core/radioControl';
 import {EDIT_MODE_CAPTIONS} from '../core/editMode';
 import {VARIABLE_STARS_MENU as VM,QSO_LIST_MENU,HST_ARCHIVE} from '../core/observatoryMenuLiterals';
-import {FIELD_INFO_MESSAGES as M} from './FieldInfoMessages';
 import {QSO_LIST_MESSAGES as Q} from './QsoListMessages';
 import './field-info.css';
 import {ExitObservatoryDialog} from '../help/HelpMenus';
@@ -42,8 +42,8 @@ export default function ObservatoryFileMenu({editMode,qsoList,disabled,onFieldIn
  const fileOpen=menu==='file'||menu==='field'||menu==='variables';
  return <div className="fi-menubar ob-file-menu" data-testid="ob-file-menubar">
   <div className="fi-menu" onKeyDown={e=>escape(e,fileTrigger)}>
-   <button type="button" ref={fileTrigger} disabled={disabled} aria-expanded={fileOpen} aria-controls={`${id}-file`} data-testid="fi-file-menu" onClick={()=>setMenu(m=>m==='file'||m==='field'||m==='variables'?null:'file')}>{M.fileMenu}</button>
-   {fileOpen&&<div id={`${id}-file`} role="group" aria-label={M.fileMenu} className="fi-menu-list">
+   <button type="button" ref={fileTrigger} disabled={disabled} aria-expanded={fileOpen} aria-controls={`${id}-file`} data-testid="fi-file-menu" onClick={()=>setMenu(m=>m==='file'||m==='field'||m==='variables'?null:'file')}>{vireo(menuCaptionText(OV.file))}</button>
+   {fileOpen&&<div id={`${id}-file`} role="group" aria-label={vireo(menuCaptionText(OV.file))} className="fi-menu-list">
     {editMode&&<><button type="button" aria-expanded={menu==='field'||menu==='variables'} data-testid="fi-field-information" onClick={()=>setMenu(m=>m==='file'?'field':'file')}>{vireo(menuCaptionText(EDIT_MODE_CAPTIONS.fieldInformation))} ›</button>
      {(menu==='field'||menu==='variables')&&<div role="group" aria-label={vireo(menuCaptionText(EDIT_MODE_CAPTIONS.fieldInformation))} className="fi-submenu">
       <button type="button" data-testid="fi-star-list" onClick={()=>pick(()=>onFieldInfo('stars'))}>{vireo(menuCaptionText(EDIT_MODE_CAPTIONS.starList))}</button>
@@ -57,7 +57,7 @@ export default function ObservatoryFileMenu({editMode,qsoList,disabled,onFieldIn
     {/* TEnvironment1 File order: Print Sky Image, Cluster Data (ClusterData1 sits directly before QSOList1), QSO List. */}
     {onClusterData&&<button type="button" data-testid="cluster-data-menu" onClick={()=>pick(onClusterData)}>{vireo(menuCaptionText(CLUSTER_DATA_MENU))}</button>}
     {qsoList&&<button type="button" data-testid="qso-menu" onClick={()=>pick(onQsoList)}>{vireo(menuCaptionText(QSO_LIST_MENU))}</button>}
-    <button type="button" data-testid="ob-exit" onClick={()=>pick(()=>setExiting(true))}>{menuCaptionText(MAIN_HELP_MENU.exit)}</button>
+    <button type="button" data-testid="ob-exit" onClick={()=>pick(()=>setExiting(true))}>{vireo(menuCaptionText(MAIN_HELP_MENU.exit))}</button>
    </div>}
   </div>
   {printSky&&<PrintSkyImage pointing={pointing} view={view} telescope={telescope} instrument={null} onClose={()=>{setPrintSky(false);fileTrigger.current?.focus();}}/>}

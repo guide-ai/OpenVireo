@@ -14,7 +14,7 @@ import {readFileSync,readdirSync} from 'node:fs';
 import path from 'node:path';
 import {CLUSTER_NATIVE_HR_MESSAGES} from '../components/ClusterNativeObservationHrMessages';
 import {SOUND_MESSAGES,SOUND_MESSAGES_EN} from '../sound/SoundMessages';
-import {normalizeOriginal,vireo} from './vireo';
+import {normalizeOriginal,vireo,vireoMenuItem} from './vireo';
 import {PSEUDO_CLOSE,PSEUDO_OPEN,pseudo,pseudoBundle,pseudoMap} from './pseudo';
 import {mapParity} from './parity';
 import {createMeasurement,measurementCsv} from '../core/spectrum';
@@ -91,6 +91,11 @@ describe('Front ES0: the per-load language infrastructure (docs/I18N.md), Englis
   expect(normalizeOriginal('  &Print Sky Image... ')).toBe('Print Sky Image...');expect(normalizeOriginal('Slew && &Track')).toBe('Slew & Track');
   activateLocale({language:'es-419',messages:{},originals:{'Set Coordinates':'Fijar coordenadas','verb|Open':'Abrir',Open:'Abierto'}});
   expect(vireo('Set &Coordinates')).toBe('Fijar coordenadas');expect(vireo('Open','verb')).toBe('Abrir');expect(vireo('Open')).toBe('Abierto');expect(vireo('Open','noun')).toBe('Abierto');expect(vireo('Close')).toBe('Close');
+  // Front ES2: a plain entry keeps the literal's own spacing; a context entry carries its own (review 1, C3).
+  activateLocale({language:'es-419',messages:{},originals:{'RA:':'AR:','fragment|Remove Selection #':'¿Quitar la selección #','fragment|?\r\n\r\n(Remaining Selections Will Be Re-Numbered.)':'?\r\n\r\n(Las selecciones restantes se volverán a numerar).'}});
+  expect(vireo('RA:  ')).toBe('AR:  ');
+  expect(vireo('Remove Selection #','fragment')+2+vireo(' ?\r\n\r\n(Remaining Selections Will Be Re-Numbered.)','fragment')).toBe('¿Quitar la selección #2?\r\n\r\n(Las selecciones restantes se volverán a numerar).');
+  expect(vireoMenuItem('&Set Coordinates...')).toBe('Set Coordinates…');
   expect(t('app.name')).toBe(en['app.name']);
  });
 });

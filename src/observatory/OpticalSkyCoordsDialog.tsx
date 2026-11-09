@@ -1,4 +1,5 @@
 import {useEffect,useId,useRef,type ReactNode,type RefObject} from 'react';
+import {OBSERVATORY_VIREO_CAPTIONS as OV} from './ObservatoryMessages';
 import {vireo,vireoList} from '../i18n/vireo';
 import {SKY_COORDS_CAPTIONS as C,SKY_COORDS_FIELD_MAX_LENGTH,skyCoordsDraftTarget,type SkyCoordsField} from '../core/radioAntenna';
 import {menuCaptionText} from '../core/radioControl';
@@ -38,7 +39,7 @@ export default function OpticalSkyCoordsDialog({state,onEdit,onEpoch,onOk,onCanc
    <dialog ref={box} className="ob-dialog ob-box" role="alertdialog" aria-labelledby={`${id}-box-title`} aria-describedby={`${id}-box-text`} data-testid="ob-sky-error" onCancel={e=>{e.preventDefault();onDismiss();}}>
     <h2 id={`${id}-box-title`}>{M.errorTitle}</h2>
     <p id={`${id}-box-text`}>{state.notice?M.notice[state.notice.kind]:''}</p>
-    <div className="ob-actions"><button type="button" className="primary-button" autoFocus onClick={onDismiss}>{M.ok}</button></div>
+    <div className="ob-actions"><button type="button" className="primary-button" autoFocus onClick={onDismiss}>{vireo(OV.ok)}</button></div>
    </dialog>
   </dialog>
  </>;

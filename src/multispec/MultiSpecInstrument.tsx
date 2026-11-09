@@ -207,8 +207,8 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
     {state.entries.filter(e=>shown.includes(entryKey(e))).map(e=>{
      const m=multiSpecFibreMask(mask,e.selection,targetSource),caption=multiSpecCaption(e.idx,e.selection.name,nameOptions);
      return <MultiSpecDisplay key={entryKey(e)} caption={caption} result={resultOf(e)}
-      information={()=>{const s=readyOf(e)!,r=results.get(entryKey(e));return multiSpecInformationLines(e,s,{...textOptions,mask:m,galaxyType:r?.status==='done'?r.galaxyType:null,galaxyRedshiftMask:t('multispec.zMasked')});}}
-      printLines={()=>multiSpecPrintLines(e,readyOf(e)!,{...nameOptions,mask:m})}
+      information={()=>{const s=readyOf(e)!,r=results.get(entryKey(e));return multiSpecInformationLines(e,s,{...textOptions,mask:m,galaxyType:r?.status==='done'?r.galaxyType:null,galaxyRedshiftMask:t('multispec.zMasked')},vireo);}}
+      printLines={()=>multiSpecPrintLines(e,readyOf(e)!,{...nameOptions,mask:m},vireo)}
       onSave={()=>save(e)} onClose={()=>{const k=entryKey(e);setShown(s=>s.filter(x=>x!==k));}}/>;
     })}
    </div>

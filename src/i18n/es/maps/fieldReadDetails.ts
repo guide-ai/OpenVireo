@@ -15,7 +15,7 @@ export const FIELD_READ_DETAILS_ES:Translation<typeof FIELD_READ_DETAILS_EN>=Obj
   budget:'el campo tiene más registros de catálogo de los que este sitio lee en una franja de declinación [límite web].',
   plan:'este sitio leyó fuera de los fragmentos del catálogo que había planeado (por favor, repórtalo).',
   source:'un archivo de catálogo incluido no tiene la forma esperada (por favor, repórtalo).',
-  input:'este apuntado no es una posición válida del cielo.',
+  input:'esta posición del telescopio no es un punto válido del cielo.',
   evidence:'el motor de campos encontró que sus registros son incoherentes (por favor, repórtalo).',
  } as Record<string,string>),
 });

@@ -1,5 +1,5 @@
 import {Fragment,useEffect,useId,useRef,useState} from 'react';
-import {vireo,vireoList} from '../i18n/vireo';
+import {vireo,vireoList,vireoMenuItem} from '../i18n/vireo';
 import {COMPILED_SESSION_OPTICAL_OPTIONS,OPTICAL_OPTIONS_CAPTIONS as C,OPTIONS_RESET_DEFAULTS,OPTIONS_RESET_LITERALS as R,SESSION_OPTION_CAPTIONS as SC,visibleOptionTabs,type OpticalOptions,type SessionOpticalOptions} from '../core/opticalOptions';
 import {menuCaptionText} from '../core/radioControl';
 import {OBSERVATORY_MESSAGES} from './ObservatoryMessages';
@@ -119,7 +119,7 @@ export default function OpticalOptionsDialog({gate='user-options-box',options,on
  };
  const fileError=loadState&&loadState.result.kind!=='loaded'?optionsFileErrorBox(loadState.result,loadState.name,loadState.message):null;
  return <>
-  <button ref={opener} type="button" className="secondary-button" disabled={disabled} data-testid="ob-options" data-gate={gate} onClick={()=>{if(gate!=='options'){setRefused(true);return;}setDraft(onEditMode&&editMode?{limitSlewing:false}:options);setEditDraft(editMode);setVobsDraft(virtualObservatory);setTestDraft(testMode);setDemoDraft(demonstrationMode);setScopeDraft(restrictScopeAccess);setLoadState(null);setSaveAsk(null);setSessionDraft(sessionOptions);setTabDraft(photometerTabOptions);setParamDraft(instrumentParameterTexts(instrumentParameters));setParamError(null);setCamDraft(cameraDraftsOf(cameraParameters));setCamActivated(cameraParameters);}}>{M.open}</button>
+  <button ref={opener} type="button" className="secondary-button" disabled={disabled} data-testid="ob-options" data-gate={gate} onClick={()=>{if(gate!=='options'){setRefused(true);return;}setDraft(onEditMode&&editMode?{limitSlewing:false}:options);setEditDraft(editMode);setVobsDraft(virtualObservatory);setTestDraft(testMode);setDemoDraft(demonstrationMode);setScopeDraft(restrictScopeAccess);setLoadState(null);setSaveAsk(null);setSessionDraft(sessionOptions);setTabDraft(photometerTabOptions);setParamDraft(instrumentParameterTexts(instrumentParameters));setParamError(null);setCamDraft(cameraDraftsOf(cameraParameters));setCamActivated(cameraParameters);}}>{vireoMenuItem(C.form)}</button>
   <dialog ref={ref} className="ob-dialog" aria-labelledby={`${id}-title`} data-testid="ob-options-dialog" onCancel={e=>{e.preventDefault();if(!resetAsked&&!saveAsk&&!paramError)setDraft(null);}}>
    {draft&&<>
     <h2 id={`${id}-title`} className="ob-native">{vireo(C.form)}</h2>

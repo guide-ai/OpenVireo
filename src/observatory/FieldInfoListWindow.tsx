@@ -1,4 +1,5 @@
 import {useEffect,useId,useRef,useState,type KeyboardEvent,type ReactNode} from 'react';
+import {OBSERVATORY_VIREO_CAPTIONS as OV} from './ObservatoryMessages';
 import {vireo} from '../i18n/vireo';
 import NativeMirrorCaption from '../components/NativeMirrorCaption';
 import {createPortal} from 'react-dom';
@@ -124,9 +125,9 @@ export function FindDialog({draft,onDraft,onSearch,onCancel}:{draft:Readonly<{qu
  useEffect(()=>{const el=ref.current;if(el&&!el.open){el.showModal();el.querySelector('input')?.focus();}},[]);
  return <dialog ref={ref} className="ob-dialog ob-box" aria-labelledby={`${id}-t`} data-testid="fi-find-dialog" onCancel={e=>{e.preventDefault();onCancel();}}>
   <h2 id={`${id}-t`} className="ob-native">{vireo(SL.caption)}</h2>
-  <label className="ob-field">{M.find.label}<input data-testid="fi-find-query" maxLength={RADIO_HOT_LIST_SEARCH_QUERY_MAX} value={draft.query} onChange={e=>onDraft({...draft,query:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();onSearch('top');}}}/></label>
-  <label className="ob-check"><input type="checkbox" checked={draft.matchCase} onChange={e=>onDraft({...draft,matchCase:e.target.checked})}/>{M.find.matchCase}</label>
-  <div className="ob-actions"><button type="button" className="primary-button" data-testid="fi-find-top" onClick={()=>onSearch('top')}>{M.find.top}</button><button type="button" className="secondary-button" data-testid="fi-find-next" onClick={()=>onSearch('next')}>{M.find.next}</button><button type="button" className="secondary-button" onClick={onCancel}>{M.find.cancel}</button></div>
+  <label className="ob-field">{vireo(OV.find.label)}<input data-testid="fi-find-query" maxLength={RADIO_HOT_LIST_SEARCH_QUERY_MAX} value={draft.query} onChange={e=>onDraft({...draft,query:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();onSearch('top');}}}/></label>
+  <label className="ob-check"><input type="checkbox" checked={draft.matchCase} onChange={e=>onDraft({...draft,matchCase:e.target.checked})}/>{vireo(OV.find.matchCase)}</label>
+  <div className="ob-actions"><button type="button" className="primary-button" data-testid="fi-find-top" onClick={()=>onSearch('top')}>{vireo(OV.find.top)}</button><button type="button" className="secondary-button" data-testid="fi-find-next" onClick={()=>onSearch('next')}>{vireo(OV.find.next)}</button><button type="button" className="secondary-button" onClick={onCancel}>{vireo(OV.cancel)}</button></div>
  </dialog>;
 }
 
@@ -136,7 +137,7 @@ export function MessageBox({box,onClose,actions}:{box:FieldInfoBox;onClose:()=>v
  useEffect(()=>{const el=ref.current;if(el&&!el.open){el.showModal();el.querySelector<HTMLButtonElement>('button')?.focus();}},[]);
  return <dialog ref={ref} className="ob-dialog ob-box" role="alertdialog" aria-label={box.caption} data-testid="fi-box" onCancel={e=>{e.preventDefault();onClose();}}>
   <h2 className="ob-native">{box.caption}</h2><p className="ob-native fi-box-text" data-testid="fi-box-text">{box.text}</p>
-  <div className="ob-actions">{actions??<button type="button" className="primary-button" onClick={onClose}>{M.ok}</button>}</div>
+  <div className="ob-actions">{actions??<button type="button" className="primary-button" onClick={onClose}>{vireo(OV.ok)}</button>}</div>
  </dialog>;
 }
 

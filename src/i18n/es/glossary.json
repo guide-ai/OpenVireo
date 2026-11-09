@@ -1,5 +1,5 @@
 {
- "about": "Front ES1: the es-419 glossary (plan analysis/front-plans/front-i18n-es.md §5.1) that src/i18n/es/es.test.ts enforces on every Spanish string. A term applies when its English pattern (case-insensitive regular expression) matches the English source: the Spanish must then contain the required stem. Names are fixed interface names: when the English contains one, the Spanish contains its Spanish form exactly. Forbidden words (matched with Unicode word boundaries) and patterns never appear in Spanish: Spain-only words, usted and its imperatives, voseo, and any claim that a translation is CLEA's. Kept names stay exactly as in English. Front ES2 adds the VIREO observatory menu tree, dialog captions and buttons (final: later fronts reuse these forms). A name marked \"exact\" (a single generic word such as OK, File or Close) applies only when the whole English string, accelerators removed, equals it; other names apply wherever the English contains them. In prose, a VIREO name is written in Spanish with VIREO's English in parentheses at its first mention. The lint applies to the Spanish strings that exist, so rows for areas still in English wait for their sub-front. Style: tú, buttons and menu items in the infinitive, no voseo or Spain-only forms, paired ¿ ¡, the decimal point, a space before units, and the glyphs › … ↗ ▸ · kept. Translations are web adaptations by OpenVireo, never CLEA's.",
+ "about": "Front ES1: the es-419 glossary (plan analysis/front-plans/front-i18n-es.md §5.1) that src/i18n/es/es.test.ts enforces on every Spanish string. A term applies when its English pattern (case-insensitive regular expression) matches the English source: the Spanish must then contain the required stem. Names are fixed interface names: when the English contains one, the Spanish contains its Spanish form exactly. Forbidden words (matched with Unicode word boundaries) and patterns never appear in Spanish: Spain-only words, usted and its imperatives, voseo, and any claim that a translation is CLEA's. Kept names stay exactly as in English. Front ES2 adds the VIREO observatory menu tree, dialog captions and buttons (final: later fronts reuse these forms). A name marked \"exact\" (a single generic word such as OK, File or Close) applies only when the whole English string, accelerators removed, equals it; other names apply wherever the English contains them. In prose, a VIREO name is written in Spanish with VIREO's English in parentheses at its first mention. The lint applies to the Spanish strings that exist, so rows for areas still in English wait for their sub-front. Style: tú, buttons and menu items in the infinitive, no voseo or Spain-only forms, paired ¿ ¡, the decimal point, a space before units, and the glyphs › … ↗ ▸ · kept. Translations are web adaptations by OpenVireo, never CLEA's. Front ES2 review (final VIREO glossary): pointing as a noun is «posición del telescopio» (short labels «Posición actual», «Centro de la posición»), never «apuntado»; supported is «compatible»; a VIREO English gloss that would fall inside parentheses goes in square brackets [ ] instead.",
  "terms": [
   {
    "en": "\\bobservator(y|ies)\\b",
@@ -616,7 +616,7 @@
   },
   {
    "en": "Display",
-   "es": "Mostrar",
+   "es": "Ver",
    "exact": true
   },
   {
@@ -626,12 +626,12 @@
   },
   {
    "en": "Go",
-   "es": "Ir",
+   "es": "Comenzar",
    "exact": true
   },
   {
    "en": "Init",
-   "es": "Iniciar",
+   "es": "Preparar",
    "exact": true
   },
   {
@@ -744,15 +744,15 @@
   },
   {
    "en": "Monochrome Displays",
-   "es": "Pantallas monocromas"
+   "es": "Pantallas monocromáticas"
   },
   {
    "en": "Compute Rdshft Vel.",
-   "es": "Calcular vel. de corrim."
+   "es": "Calcular vel. por corrimiento al rojo"
   },
   {
    "en": "Allow User Change",
-   "es": "Permitir cambio del usuario"
+   "es": "Permitir cambios del usuario"
   },
   {
    "en": "Set E(B-V)",
@@ -776,7 +776,7 @@
   },
   {
    "en": "Observation List",
-   "es": "Lista de observación"
+   "es": "Lista de observaciones"
   },
   {
    "en": "Star Data List",
@@ -836,7 +836,7 @@
   },
   {
    "en": "Enter Sky Coordinates for Slew",
-   "es": "Escribe las coordenadas del cielo para el movimiento"
+   "es": "Coordenadas del cielo para mover el telescopio"
   },
   {
    "en": "Add/Edit Hot List Entry",
@@ -849,6 +849,30 @@
   {
    "en": "Spectra From Multi-channel Spectrometer",
    "es": "Espectros del espectrómetro multicanal"
+  },
+  {
+   "en": "Terminate Current Slew",
+   "es": "Detener el movimiento actual"
+  },
+  {
+   "en": "Save Updates",
+   "es": "Guardar cambios"
+  },
+  {
+   "en": "Sort Options",
+   "es": "Opciones de ordenamiento"
+  },
+  {
+   "en": "Scan Rate",
+   "es": "Intervalo de recorrido"
+  },
+  {
+   "en": "Chip Well Depth",
+   "es": "Capacidad de pozo del chip"
+  },
+  {
+   "en": "Dark Noise",
+   "es": "Ruido de corriente oscura"
   }
  ],
  "forbidden": [
@@ -955,6 +979,10 @@
   {
    "es": "VIREO original de CLEA|traducción (oficial|de CLEA)|versión oficial",
    "use": "las traducciones son adaptaciones web de OpenVireo"
+  },
+  {
+   "es": "(?<![\\p{L}\\p{N}])(?:el|del|al|un|este|ese|cada|su|tu|sus|los|propios|de) apuntados?(?![\\p{L}\\p{N}])|^apuntados?(?![\\p{L}\\p{N}])",
+   "use": "posición del telescopio (pointing as a noun); the participle stays («el telescopio está apuntado…»)"
   }
  ]
 }

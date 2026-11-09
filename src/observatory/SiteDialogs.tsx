@@ -1,5 +1,6 @@
 import {useEffect,useId,useRef,useState,type Dispatch,type ReactNode,type SetStateAction} from 'react';
-import {vireo,vireoList} from '../i18n/vireo';
+import {OBSERVATORY_VIREO_CAPTIONS as OV} from './ObservatoryMessages';
+import {vireo,vireoList,vireoMenuItem} from '../i18n/vireo';
 import WebPrintPreview from '../polish/WebPrintPreview';
 import {POLISH_MESSAGES as PM} from '../polish/PolishMessages';
 import {VARIABLE_FIELD_LITERALS as VL} from '../core/variableFieldLiterals';
@@ -20,7 +21,7 @@ function Modal({open,label,testId,onCancel,children,wide=false}:{open:boolean;la
 function ErrorBox({caption,text,onClose,testId}:{caption:string;text:string;onClose:()=>void;testId:string}){
  const ref=useRef<HTMLDialogElement>(null);
  useEffect(()=>{const el=ref.current;if(!el)return;if(text&&!el.open)el.showModal();else if(!text&&el.open)el.close();},[text]);
- return <dialog ref={ref} className="ob-dialog ob-box" role="alertdialog" aria-label={caption} data-testid={testId} onCancel={e=>{e.preventDefault();onClose();}}><h2 className="ob-native">{caption}</h2><p className="ob-native">{text}</p><div className="ob-actions"><button type="button" className="primary-button" onClick={onClose}>{OBSERVATORY_MESSAGES.common.ok}</button></div></dialog>;
+ return <dialog ref={ref} className="ob-dialog ob-box" role="alertdialog" aria-label={caption} data-testid={testId} onCancel={e=>{e.preventDefault();onClose();}}><h2 className="ob-native">{caption}</h2><p className="ob-native">{text}</p><div className="ob-actions"><button type="button" className="primary-button" onClick={onClose}>{vireo(OV.ok)}</button></div></dialog>;
 }
 
 /** TStationDlg's fields (OB-ST-02/03): Site Name and Local Time Difference, the Longitude and Latitude groups with their
@@ -50,9 +51,9 @@ export default function SiteDialogs({utc,site,overridden,index,limitSlewing,onAp
  const stationOk=()=>{if(!station)return;const r=parseStationDraft(station);if(r.status==='error'){setStationError(r.message);return;}if(r.status==='unsupported'){setStationError(r.field==='name'?M.nameUnsupported:M.horizonUnsupported);return;}setStation(null);onSite(r.site);};
  return <div className="ob-site-dialogs">
   <div className="ob-menu">
-   <button type="button" className="secondary-button" data-testid="ob-set-date" onClick={()=>{setDateError('');setDate({...observatoryDatePrefill(utc),id:sessionId});}}>{M.dateOpen}</button>
-   <button type="button" className="secondary-button" data-testid="ob-site-parameters" onClick={()=>{setStationError('');setStation(stationDraft(site));}}>{M.siteOpen}</button>
-   <button type="button" className="secondary-button" data-testid="ob-site-information" onClick={()=>setInfo(true)}>{M.infoOpen}</button>
+   <button type="button" className="secondary-button" data-testid="ob-set-date" onClick={()=>{setDateError('');setDate({...observatoryDatePrefill(utc),id:sessionId});}}>{vireoMenuItem(OV.setDateTime)}</button>
+   <button type="button" className="secondary-button" data-testid="ob-site-parameters" onClick={()=>{setStationError('');setStation(stationDraft(site));}}>{vireoMenuItem(SC.form)}</button>
+   <button type="button" className="secondary-button" data-testid="ob-site-information" onClick={()=>setInfo(true)}>{vireoMenuItem(OV.siteInformation)}</button>
    {overridden&&<button type="button" className="secondary-button" data-testid="ob-site-reset" onClick={()=>onSite(null)}>{M.reset}</button>}
   </div>
   <p className="observatory-note" data-testid="ob-site-status">{overridden?M.overridden(site.name):M.compiled} {M.adaptation}</p>
@@ -62,7 +63,7 @@ export default function SiteDialogs({utc,site,overridden,index,limitSlewing,onAp
    <div className="ob-group"><label className="ob-field"><span>{vireo(DC.date)} ({vireo(DC.dateFormat)})</span><input type="text" maxLength={RADIO_DATE_WEB_LIMITS.fieldMaxLength} title={vireo(DC.dateHint)} data-testid="ob-date-date" value={date?.date??''} onChange={e=>setDate(d=>d&&{...d,date:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();dateOk();}}}/></label>
     <label className="ob-field"><span>{vireo(DC.time)} ({vireo(DC.timeFormat)})</span><input type="text" maxLength={RADIO_DATE_WEB_LIMITS.fieldMaxLength} title={vireo(DC.timeHint)} data-testid="ob-date-time" value={date?.time??''} onChange={e=>setDate(d=>d&&{...d,time:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();dateOk();}}}/></label></div>
    <p className="ob-note">{M.dateHelp}</p>
-   <div className="ob-actions"><button type="button" className="primary-button" data-testid="ob-date-ok" onClick={dateOk}>{OBSERVATORY_MESSAGES.common.ok}</button><button type="button" className="secondary-button" onClick={()=>setDate(null)}>{OBSERVATORY_MESSAGES.common.cancel}</button></div>
+   <div className="ob-actions"><button type="button" className="primary-button" data-testid="ob-date-ok" onClick={dateOk}>{vireo(OV.ok)}</button><button type="button" className="secondary-button" onClick={()=>setDate(null)}>{vireo(OV.cancel)}</button></div>
    <ErrorBox caption={M.errorTitle} text={dateError} onClose={()=>setDateError('')} testId="ob-date-error"/>
   </Modal>
   <Modal open={station!==null} label={vireo(SC.form)} testId="ob-station-dialog" onCancel={()=>setStation(null)}>

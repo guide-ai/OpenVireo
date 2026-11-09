@@ -1,5 +1,6 @@
 import {LazyBoundary} from '../components/LazyBoundary';
-import {vireo} from '../i18n/vireo';
+import {OBSERVATORY_VIREO_CAPTIONS as OV} from './ObservatoryMessages';
+import {vireo,vireoMenuItem} from '../i18n/vireo';
 import {lazy,useContext,useEffect,useMemo,useRef,useState} from 'react';
 import {ProgrammedSlewContext} from '../polish/programmedSlew';
 import TerminateSlewBox from '../polish/TerminateSlewBox';
@@ -136,11 +137,11 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,curren
  return <div className="ob-slew-menu">
   <div className="ob-menu">
    {/* OB-SC-02 (Front P): during a programmed slew Set Coordinates asks "Terminate Current Slew?" instead of opening. */}
-   <button type="button" ref={setCoordinates} className="secondary-button" disabled={!enabled&&!programmed?.moving} data-testid="ob-set-coordinates" onClick={()=>{if(programmed?.moving){setTerminate(true);return;}setSky(s=>openOpticalSkyCoords(s,pointing));}}>{M.open}</button>
+   <button type="button" ref={setCoordinates} className="secondary-button" disabled={!enabled&&!programmed?.moving} data-testid="ob-set-coordinates" onClick={()=>{if(programmed?.moving){setTerminate(true);return;}setSky(s=>openOpticalSkyCoords(s,pointing));}}>{vireoMenuItem(OV.setCoordinates)}</button>
    {terminate&&programmed?.moving&&<TerminateSlewBox onYes={()=>{endTerminate();programmed.terminate();}} onNo={endTerminate}/>}
-   <button type="button" className="secondary-button" disabled={!enabled} data-testid="ob-view-select" onClick={()=>setHot(h=>openOpticalHotList(h,rows.length))}>{H.open}</button>
+   <button type="button" className="secondary-button" disabled={!enabled} data-testid="ob-view-select" onClick={()=>setHot(h=>openOpticalHotList(h,rows.length))}>{vireoMenuItem(OV.viewSelect)}</button>
    <OpticalOptionsDialog gate={optionsGate} options={options} onOptions={onOptions} disabled={!enabled} editMode={fieldInfo?.editMode} onEditMode={fieldInfo?.onEditMode} virtualObservatory={virtualObservatory} onVirtualObservatory={fieldInfo?setVirtualObservatory:undefined} testMode={fieldInfo?.testMode} onTestMode={fieldInfo?.onTestMode} demonstrationMode={fieldInfo?.demonstrationMode} onDemonstrationMode={fieldInfo?.onDemonstrationMode} sessionOptions={fieldInfo?.sessionOptions} onSessionOptions={fieldInfo?.onSessionOptions} photometerTabOptions={fieldInfo?.photometerTabOptions} onPhotometerTabOptions={fieldInfo?.onPhotometerTabOptions} instrumentParameters={fieldInfo?.instrumentParameters} onInstrumentParameters={fieldInfo?.onInstrumentParameters} cameraParameters={fieldInfo?.cameraParameters} onCameraParameters={fieldInfo?.onCameraParameters} restrictScopeAccess={fieldInfo?.restrictScopeAccess} onRestrictScopeAccess={fieldInfo?.onRestrictScopeAccess} horizonRadians={fieldInfo?.horizonRadians}/>
-   <button type="button" className="secondary-button" disabled={!enabled||looking} aria-busy={looking||undefined} data-testid="ob-add-current" onClick={()=>void addCurrent()}>{E.open}</button>{looking&&<p role="status" className="observatory-note" data-testid="ob-add-current-looking">{E.looking}</p>}
+   <button type="button" className="secondary-button" disabled={!enabled||looking} aria-busy={looking||undefined} data-testid="ob-add-current" onClick={()=>void addCurrent()}>{vireoMenuItem(HOT_LIST_ENTRY_CAPTIONS.menu)}</button>{looking&&<p role="status" className="observatory-note" data-testid="ob-add-current-looking">{E.looking}</p>}
   </div>
   {fieldInfo&&<ObservatoryFileMenu editMode={editMode} qsoList={fieldInfo.objectXMode?editMode:virtualObservatory} disabled={fieldInfo.busy??false} pointing={pointing} view={fieldInfo.view} telescope={fieldInfo.telescopeName??''} onFieldInfo={kind=>setFieldRequest(r=>({kind,token:(r?.token??0)+1}))} onQsoList={()=>setQsoRequest(n=>n+1)} onClusterData={()=>setClusterRequest(n=>n+1)}/>}
   <ResearchNotes><p>{M.openHelp} {H.openHelp} {E.openHelp} {M.adaptation} {E.adaptation}</p></ResearchNotes>
@@ -164,6 +165,6 @@ function InfoBox({caption,text,onClose}:{caption:string;text:string;onClose:()=>
  const ref=useRef<HTMLDialogElement>(null);
  useEffect(()=>{const el=ref.current;if(el&&!el.open)el.showModal();},[]);
  return <dialog ref={ref} className="ob-dialog ob-box" role="alertdialog" aria-label={caption} data-testid="ob-info-box" onCancel={e=>{e.preventDefault();onClose();}}>
-  <h2 className="ob-native">{caption}</h2><p className="ob-native" style={{whiteSpace:'pre-line'}}>{text}</p><div className="ob-actions"><button type="button" className="primary-button" onClick={onClose}>{OBSERVATORY_MESSAGES.common.ok}</button></div>
+  <h2 className="ob-native">{caption}</h2><p className="ob-native" style={{whiteSpace:'pre-line'}}>{text}</p><div className="ob-actions"><button type="button" className="primary-button" onClick={onClose}>{vireo(OV.ok)}</button></div>
  </dialog>;
 }

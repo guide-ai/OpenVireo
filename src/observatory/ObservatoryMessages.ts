@@ -3,6 +3,17 @@ import {pickMessages} from '../i18n/registry';
  * WedgeMessages pattern so a later coordinator merge can move it. Recovered original captions live in the core modules
  * (SKY_COORDS_CAPTIONS and friends) and are never translated here; these strings are OpenVireo wording and one-line
  * adaptation labels. English is the default. */
+/** Front ES2 review 1 (C1): VIREO's names on the observatory's web buttons, menus and boxes, kept apart from the web text so they
+ * go through vireo() (and "View original (English)" shows them in English). The VCL default buttons (bkOK, bkCancel, the box
+ * Yes/No), VIREO's File menu, the Slew items Set Coordinates and View/Select from List (TEnvironment1, as in the radio form's
+ * RADIO_LAB_CAPTIONS), the list window's Search/Print items and the Find dialog (TGetSrchStrDlg). Set Date/Time and Site
+ * Information are the web's short names for VIREO's 'Set Observation Date/Time, ID...' and its 'Current Site & Telescope
+ * Parameters' window [W]. The web adds its ellipsis (vireoMenuItem). */
+export const OBSERVATORY_VIREO_CAPTIONS=Object.freeze({ok:'OK',cancel:'Cancel',yes:'Yes',no:'No',file:'&File',
+ setCoordinates:'Set Coordinates...',viewSelect:'&View/Select from List...',setDateTime:'Set Date/Time...',siteInformation:'Site Information...',
+ search:'&Search...',print:'&Print...',
+ find:Object.freeze({label:'Search String:',matchCase:'Case Dependent',top:'From Top',next:'From Cursor'}),
+});
 export const OBSERVATORY_MESSAGES_EN=Object.freeze({
  /** VCL default button captions (bkOK/bkCancel without DFM captions) and plain box buttons. */
  common:Object.freeze({ok:'OK',cancel:'Cancel'}),
@@ -11,7 +22,6 @@ export const OBSERVATORY_MESSAGES_EN=Object.freeze({
   siteOverride:(name:string)=>`Site in use: your override “${name}” (clocks and horizon only).`,
  }),
  skyCoords:Object.freeze({
-  open:'Set Coordinates…',
   openHelp:'Slew ▸ Set Coordinates: enter the target in hours/minutes/seconds and degrees/arcminutes/arcseconds, then OK starts the programmed slew confirmation.',
   help:'Enter J2000.0 or B1950.0 coordinates. OK checks RA 0–24 h and Dec −90° to +90°; Escape or Cancel leaves the telescope where it is.',
   arcminutes:'arcminutes',arcseconds:'arcseconds',
@@ -30,7 +40,6 @@ export const OBSERVATORY_MESSAGES_EN=Object.freeze({
   adaptation:'Adaptation: the dialog is a web modal; Point and the decimal RA/Dec boxes remain as labelled web shortcuts.',
  }),
  hotList:Object.freeze({
-  open:'View/Select from List…',
   openHelp:'Slew ▸ Hot List ▸ View/Select: the list opened or loaded in “Original hot lists” below, in the original window order (by right ascension).',
   help:'Choose a row, then Slew to Selection (or double-click it). The coordinate dialog opens fixed at J2000.0; Cancel there returns here.',
   menu:'List and Selection menu',rows:'Hot list rows',search:'Search…',print:'Print…',
@@ -41,7 +50,6 @@ export const OBSERVATORY_MESSAGES_EN=Object.freeze({
   adaptation:'Adaptation: the native List/Selection menus are shown as buttons (and as the right-click menu). Save List saves only in Edit Mode, as in VIREO; it downloads the HTL file, and the “Original hot lists” editor below keeps its own Save.',
  }),
  entry:Object.freeze({
-  open:'Add Current Item/Position to List…',
   openHelp:'Slew ▸ Observation Hot List ▸ Add Current Item/Position: adds the current pointing (and the object there, when the observatory identifies one) to the shared list in memory; save it from “Original hot lists”.',
   help:'Right Ascension 0–24 h and Declination −90° to +90° (bounds included). A degree entry of “-0” counts as north, as in the original.',
   raUnsupported:'An RA of exactly 24 h cannot be stored in an HTL file (0 ≤ RA < 24). Enter 0 h instead.',
@@ -51,7 +59,7 @@ export const OBSERVATORY_MESSAGES_EN=Object.freeze({
   sexagesimal:'Enter as h/m/s, d/m/s…',sexagesimalHelp:'Opens the original Add/Edit Hot List Entry fields; OK copies the values into this form.',
  }),
  site:Object.freeze({
-  dateOpen:'Set Date/Time…',siteOpen:'Site Parameters…',infoOpen:'Site Information…',reset:'Use compiled site',
+  reset:'Use compiled site',
   dateHelp:'Universal Time, not local time. OK applies it to the site clock (and the shared observatory clock).',
   siteHelp:'These values change only the clocks (local time, sidereal time) and the horizon. Spectra, photometry and saved observations keep the telescope’s compiled site.',
   dateError:'The date is not valid. Use YYYY/MM/DD with a full year. The dialog stays open.',
@@ -65,7 +73,7 @@ export const OBSERVATORY_MESSAGES_EN=Object.freeze({
   adaptation:'Adaptation: originally Site Parameters is an instructor dialog (Options ▸ Scopes ▸ Telescope Parameters); here students may set it for the clocks and horizon only. Set Date/Time is the main window’s dialog, offered here.',
  }),
  options:Object.freeze({
-  open:'Optical Simulation Options…',unavailable:'Not available in OpenVireo',
+  unavailable:'Not available in OpenVireo',
   othersHeading:'Other options of the original (not available in OpenVireo; each keeps its compiled state, which is not shown here except where recovered):',
   fastSlewing:'compiled: checked (programmed-slew rate index 4)',
   /** Front R3: the ported options (hints and what each does here). */

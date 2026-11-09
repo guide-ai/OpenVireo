@@ -31,13 +31,6 @@
   "map:fieldInfo.no": "the same word in Spanish (No)",
   "map:observatory.skyCoords.errorTitle": "the same word in Spanish (Error)",
   "map:observatory.site.errorTitle": "the same word in Spanish (Error)",
-  "map:polish.spectrometerIndex.routes.0.href": "a page anchor (#route), not text",
-  "map:polish.spectrometerIndex.routes.1.href": "a page anchor (#route), not text",
-  "map:polish.spectrometerIndex.routes.2.href": "a page anchor (#route), not text",
-  "map:polish.spectrometerIndex.routes.3.href": "a page anchor (#route), not text",
-  "map:polish.spectrometerIndex.routes.4.href": "a page anchor (#route), not text",
-  "map:polish.spectrometerIndex.routes.5.href": "a page anchor (#route), not text",
-  "map:polish.spectrometerIndex.routes.6.href": "a page anchor (#route), not text",
   "map:polish.spectrometerIndex.routes.4.label": "a kept name (Multi-Spec)"
  }
 }

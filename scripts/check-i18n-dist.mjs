@@ -5,6 +5,7 @@
 // Usage: node scripts/check-i18n-dist.mjs [distDir]   (default: dist)
 import {readdirSync,readFileSync,statSync} from 'node:fs';
 import {join} from 'node:path';
+import {gzipSync} from 'node:zlib';
 const dist=process.argv[2]??'dist',offenders=[];
 const TEXT=/\.(?:js|mjs|css|html?|xml|txt|json|svg|map|webmanifest|lst|htl|dat|sp|lnl|obs|pls)$/i;
 const MARK=/⟦|\\u27e6|\\u\{27e6\}|&#x27e6;|&#10214;/i;
@@ -40,5 +41,14 @@ const bundle=spanishFiles.filter(f=>/\.js$/.test(f.name)&&f.hits===markers.lengt
 if(bundle.length!==1)offenders.push(`expected one Spanish chunk holding the whole catalog, found ${bundle.length}`);
 for(const f of spanishFiles)if(!bundle.includes(f))offenders.push(`${f.file}: Spanish text outside the Spanish chunk (${f.hits} strings)`);
 for(const f of bundle)if(html.includes(f.name))offenders.push(`index.html loads or preloads the Spanish chunk ${f.name}`);
+// ES2 review 1: a size budget for the Spanish chunk (a Spanish load waits for it before the first render). Above 150 KB gzip
+// it warns; above 250 KB gzip it fails. Whether to split it per area is decided at ES5, from measured first-render times on a
+// throttled connection (docs/I18N.md).
+const BUDGET={warn:150_000,fail:250_000};
+const sizes=bundle.map(f=>({name:f.name,gzip:gzipSync(readFileSync(f.file),{level:9}).length}));
+for(const f of sizes){
+ if(f.gzip>BUDGET.fail)offenders.push(`${f.name}: ${(f.gzip/1000).toFixed(1)} KB gzip is over the 250 KB budget for the Spanish chunk`);
+ else if(f.gzip>BUDGET.warn)console.warn(`Warning: the Spanish chunk ${f.name} is ${(f.gzip/1000).toFixed(1)} KB gzip, over 150 KB (split decided at ES5).`);
+}
 if(offenders.length){console.error(`The build carries development language code:\n${offenders.join('\n')}`);process.exit(1);}
-console.log(`Build is free of the pseudo-locale (${scanned} text files searched); Spanish is only in ${bundle.map(f=>f.name).join(', ')}, which index.html does not load.`);
+console.log(`Build is free of the pseudo-locale (${scanned} text files searched); Spanish is only in ${sizes.map(f=>`${f.name} (${(f.gzip/1000).toFixed(1)} KB gzip)`).join(', ')}, which index.html does not load.`);

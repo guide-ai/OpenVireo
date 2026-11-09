@@ -91,30 +91,32 @@ const dec=(x:number|null)=>x===null?NOT_RECORDED:formatNativeSexagesimalDigits(x
  * (uninitialised natively, D8) read "not recorded". The name line is always shown natively (≤ 32 characters with "Object: "). */
 /** `galaxyRedshiftMask` [W] (docs/OBJECT-INFO-FORMS.md review 1 M2): web Edit Mode has no instructor login, so the galaxy
  * catalogue z (the E01/E02 answer) is replaced by this text in the Edit Mode "Z:" line, as Catalog Object does. */
-export function multiSpecInformationLines(entry:Pick<MultiSpecEntry,'selection'|'seconds'>,spectrum:Pick<MultiSpecSpectrum,'average'|'snr'>,options:MultiSpecTextOptions&Readonly<{mask?:MultiSpecMask;galaxyType?:string|null;galaxyRedshiftMask?:string}>={}):readonly string[]{
- const s=entry.selection,masked=!!options.mask,lines=[options.mask?'Object: '+options.mask.objectName:('Object: '+s.name).slice(0,32),'RA:  '+ra(s.ra),'Dec: '+dec(s.dec)];
- if(!masked&&(options.showObjectMagnitude||options.editMode))lines.push('V Magnitude: '+(s.v===null?NOT_RECORDED:delphiFixed(Math.fround(s.v),3)));
+/** Front ES2 review: `tr` shows a label in the screen language (these lines are shown and printed, never saved; the web passes
+ * vireo(), default unchanged). */
+export function multiSpecInformationLines(entry:Pick<MultiSpecEntry,'selection'|'seconds'>,spectrum:Pick<MultiSpecSpectrum,'average'|'snr'>,options:MultiSpecTextOptions&Readonly<{mask?:MultiSpecMask;galaxyType?:string|null;galaxyRedshiftMask?:string}>={},tr:(literal:string)=>string=literal=>literal):readonly string[]{
+ const s=entry.selection,masked=!!options.mask,lines=[options.mask?tr('Object: ')+options.mask.objectName:(tr('Object: ')+s.name).slice(0,32),tr('RA:  ')+ra(s.ra),tr('Dec: ')+dec(s.dec)];
+ if(!masked&&(options.showObjectMagnitude||options.editMode))lines.push(tr('V Magnitude: ')+(s.v===null?tr(NOT_RECORDED):delphiFixed(Math.fround(s.v),3)));
  const t=Math.fround(entry.seconds);
- lines.push('Exposure: '+(t<60?delphiFixed(t,1)+' Seconds':delphiFixed(t/60,2)+' Minutes'));
- lines.push('Avg. Photons per Channel: '+delphiFixed(spectrum.average,0));
- lines.push('Signal to Noise Ratio: '+delphiFixed(spectrum.snr,1));
+ lines.push(tr('Exposure: ')+(t<60?delphiFixed(t,1)+tr(' Seconds'):delphiFixed(t/60,2)+tr(' Minutes')));
+ lines.push(tr('Avg. Photons per Channel: ')+delphiFixed(spectrum.average,0));
+ lines.push(tr('Signal to Noise Ratio: ')+delphiFixed(spectrum.snr,1));
  if(!masked&&options.editMode){
-  if(s.type===0||s.type===2)lines.push('Spectral Type: '+(s.spectralIndex===null?NOT_RECORDED:nativeSpectralText(s.spectralIndex)??NOT_RECORDED));
-  else if(s.type===1){lines.push('Galaxy Type: '+(options.galaxyType??NOT_RECORDED));lines.push('Z: '+(options.galaxyRedshiftMask??(s.z===null?NOT_RECORDED:delphiFixed(s.z,3))));}
-  else if(s.type===3){lines.push('Spectrum: QSO');lines.push('Z: '+(s.z===null?NOT_RECORDED:delphiFixed(s.z,3)));}
+  if(s.type===0||s.type===2)lines.push(tr('Spectral Type: ')+(s.spectralIndex===null?tr(NOT_RECORDED):nativeSpectralText(s.spectralIndex)??tr(NOT_RECORDED)));
+  else if(s.type===1){lines.push(tr('Galaxy Type: ')+(options.galaxyType??tr(NOT_RECORDED)));lines.push(tr('Z: ')+(options.galaxyRedshiftMask??(s.z===null?tr(NOT_RECORDED):delphiFixed(s.z,3))));}
+  else if(s.type===3){lines.push(tr('Spectrum: QSO'));lines.push(tr('Z: ')+(s.z===null?tr(NOT_RECORDED):delphiFixed(s.z,3)));}
   else lines.push('');
  }
  return Object.freeze(lines);
 }
 /** Print 0x528454 text lines (the plot itself is drawn by the page). */
-export function multiSpecPrintLines(entry:Pick<MultiSpecEntry,'idx'|'selection'|'seconds'>,spectrum:Pick<MultiSpecSpectrum,'total'|'average'|'snr'>,options:MultiSpecTextOptions&Readonly<{mask?:MultiSpecMask}>={}):readonly string[]{
+export function multiSpecPrintLines(entry:Pick<MultiSpecEntry,'idx'|'selection'|'seconds'>,spectrum:Pick<MultiSpecSpectrum,'total'|'average'|'snr'>,options:MultiSpecTextOptions&Readonly<{mask?:MultiSpecMask}>={},tr:(literal:string)=>string=literal=>literal):readonly string[]{
  const s=entry.selection,masked=!!options.mask,lines:string[]=[];
  if(s.type!==4){
-  lines.push('Object: ('+entry.idx+') '+(options.showObjectId&&!masked?s.name:''));
-  if(!masked&&(options.showObjectMagnitude||options.editMode))lines.push('Apparent Magnitude (V): '+(s.v===null?NOT_RECORDED:delphiFixed(Math.fround(s.v),2)));
- }else lines.push('Reading Sky');
- lines.push('Right Ascension: '+ra(s.ra),'Declination: '+dec(s.dec),'Integration (Seconds): '+delphiFixed(Math.fround(entry.seconds),1),
-  'Photon Count: '+delphiFixed(spectrum.total,0),'Avg. per Channel: '+delphiFixed(spectrum.average,0),'Signal/Noise: '+delphiFixed(spectrum.snr,1));
+  lines.push(tr('Object: (')+entry.idx+') '+(options.showObjectId&&!masked?s.name:''));
+  if(!masked&&(options.showObjectMagnitude||options.editMode))lines.push(tr('Apparent Magnitude (V): ')+(s.v===null?tr(NOT_RECORDED):delphiFixed(Math.fround(s.v),2)));
+ }else lines.push(tr('Reading Sky'));
+ lines.push(tr('Right Ascension: ')+ra(s.ra),tr('Declination: ')+dec(s.dec),tr('Integration (Seconds): ')+delphiFixed(Math.fround(entry.seconds),1),
+  tr('Photon Count: ')+delphiFixed(spectrum.total,0),tr('Avg. per Channel: ')+delphiFixed(spectrum.average,0),tr('Signal/Noise: ')+delphiFixed(spectrum.snr,1));
  return Object.freeze(lines);
 }
 

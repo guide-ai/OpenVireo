@@ -1,10 +1,11 @@
 import {useEffect,useId,useRef,useState,type KeyboardEvent,type MouseEvent} from 'react';
+import {OBSERVATORY_VIREO_CAPTIONS as OV} from './ObservatoryMessages';
 import {vireo} from '../i18n/vireo';
 import {NAKED_EYE_LITERALS as L,NKDEYE_FILE,decodeNakedEyeFile,nakedEyeFormFields,nakedEyeMarker,pickNakedEye,type NakedEyeRecord} from '../core/nakedEye';
 import {NAKED_EYE_SKY as S,buildNakedEyeSky,nakedEyeDrawLevel,type NakedEyeSky,type NakedEyeSite} from '../core/nakedEyeSky';
 import {fetchBundledVariableFile} from '../io/bundledVariableStars';
 import type {Pointing} from '../core/sky';
-import {FIELD_INFO_MESSAGES,NAKED_EYE_MESSAGES as M} from './FieldInfoMessages';
+import {NAKED_EYE_MESSAGES as M} from './FieldInfoMessages';
 import './observatory-dialogs.css';
 import './field-info.css';
 
@@ -82,6 +83,6 @@ function NakedEyeStarDialog({record,onClose}:{record:NakedEyeRecord;onClose:()=>
    <div className="co-row ne-row"><label htmlFor={`${id}-mag`} className="ob-native">{vireo(L.mag)}</label><input id={`${id}-mag`} value={mag} onChange={e=>setMag(e.target.value.slice(0,20))} data-testid="ne-mag"/></div>
   </div>
   <p className="fi-note">{M.magNote}</p>
-  <div className="ob-actions"><button type="button" className="primary-button" data-testid="ne-ok" onClick={onClose}>{FIELD_INFO_MESSAGES.ok}</button></div>
+  <div className="ob-actions"><button type="button" className="primary-button" data-testid="ne-ok" onClick={onClose}>{vireo(OV.ok)}</button></div>
  </dialog>;
 }

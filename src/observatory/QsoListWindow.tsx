@@ -1,4 +1,5 @@
 import {useEffect,useId,useRef,useState} from 'react';
+import {OBSERVATORY_VIREO_CAPTIONS as OV} from './ObservatoryMessages';
 import {vireo,vireoList} from '../i18n/vireo';
 import {menuCaptionText} from '../core/radioControl';
 import {HtlError,addHtlRow,newHtlEditor,serializeHtl} from '../core/hotList';
@@ -81,8 +82,8 @@ export default function QsoListWindow({request,editMode,hotList,hidden}:{request
     <button type="button" className="secondary-button" onClick={()=>setShown(null)}>{M.close}</button></section>)}
   {fileBox&&<MessageBox box={fileBox} onClose={()=>setFileBox(null)}/>}
   {confirm&&<MessageBox box={{caption:vireo(VL.unsavedCaption),text:vireo(VL.unsavedText)}} onClose={()=>setConfirm(null)} actions={<>
-   <button type="button" className="primary-button" data-testid="qso-unsaved-yes" onClick={()=>startNew(confirm,true)}>{M.yes}</button>
-   <button type="button" className="secondary-button" data-testid="qso-unsaved-no" onClick={()=>startNew(confirm,false)}>{M.no}</button></>}/>}
+   <button type="button" className="primary-button" data-testid="qso-unsaved-yes" onClick={()=>startNew(confirm,true)}>{vireo(OV.yes)}</button>
+   <button type="button" className="secondary-button" data-testid="qso-unsaved-no" onClick={()=>startNew(confirm,false)}>{vireo(OV.no)}</button></>}/>}
  </>;
 }
 

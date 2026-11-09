@@ -1,5 +1,6 @@
 import {useEffect,useId,useRef,type RefObject} from 'react';
-import {vireo} from '../i18n/vireo';
+import {OBSERVATORY_VIREO_CAPTIONS as OV} from './ObservatoryMessages';
+import {vireo,vireoMenuItem} from '../i18n/vireo';
 import {htlNumberDraft} from '../core/hotList';
 import {OPTICAL_HOT_LIST_EMPTY,OPTICAL_HOT_LIST_SAVE_LITERALS as SL,opticalHotListMissText,type OpticalHotListWindow as WindowState} from '../core/opticalHotList';
 import {RADIO_HOT_LIST_FORM_CAPTIONS as C} from '../core/radioAntenna';
@@ -39,8 +40,8 @@ export default function OpticalHotListWindow({caption,texts,state,rows,onSelect,
    <h2 id={`${id}-title`} className="ob-native">{caption}</h2>
    <p id={`${id}-help`} className="ob-note">{M.help}</p>
    <div className="ob-menu" role="group" aria-label={M.menu}>
-    <button type="button" className="secondary-button" data-testid="ob-hotlist-search" onClick={onSearch}>{M.search}</button>
-    <button type="button" className="secondary-button" data-testid="ob-hotlist-print" onClick={onPrint}>{M.print}</button>
+    <button type="button" className="secondary-button" data-testid="ob-hotlist-search" onClick={onSearch}>{vireoMenuItem(OV.search)}</button>
+    <button type="button" className="secondary-button" data-testid="ob-hotlist-print" onClick={onPrint}>{vireoMenuItem(OV.print)}</button>
     {onSave&&<button type="button" className="secondary-button" data-testid="ob-hotlist-save" disabled={!saveEnabled||editBlocked} onClick={onSave}>{vireo(menuCaptionText(SL.item))}</button>}
     <button type="button" className="primary-button" data-testid="ob-hotlist-slew" onClick={onSlew}>{vireo(menuCaptionText(C.slew))}</button>
     {onEdit&&<><button type="button" className="secondary-button" data-testid="ob-hotlist-edit" disabled={editBlocked||!editEnabled} onClick={onEdit}>{vireo(menuCaptionText(P.edit))}</button>

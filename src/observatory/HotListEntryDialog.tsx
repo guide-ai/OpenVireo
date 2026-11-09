@@ -1,4 +1,5 @@
 import {useEffect,useId,useRef} from 'react';
+import {OBSERVATORY_VIREO_CAPTIONS as OV} from './ObservatoryMessages';
 import {vireo} from '../i18n/vireo';
 import {HOT_LIST_ENTRY_CAPTIONS as C,type HotListEntryDraft,type HotListEntryField} from '../core/hotListEntry';
 import {OBSERVATORY_MESSAGES} from './ObservatoryMessages';
@@ -21,11 +22,11 @@ export default function HotListEntryDialog({draft,error,onEdit,onOk,onCancel,onD
    <fieldset className="ob-group"><legend className="ob-native">{vireo(C.raGroup)}</legend>{field('raHours',vireo(C.hours))}{field('raMinutes',vireo(C.minutes))}{field('raSeconds',vireo(C.seconds))}</fieldset>
    <fieldset className="ob-group"><legend className="ob-native">{vireo(C.decGroup)}</legend>{field('decDegrees',vireo(C.degrees))}{field('decMinutes',vireo(C.minutes))}{field('decSeconds',vireo(C.seconds))}</fieldset>
    <p className="ob-note">{M.help}</p>
-   <div className="ob-actions"><button type="button" className="primary-button" data-testid={`${testId}-ok`} onClick={onOk}>{OBSERVATORY_MESSAGES.common.ok}</button><button type="button" className="secondary-button" data-testid={`${testId}-cancel`} onClick={onCancel}>{OBSERVATORY_MESSAGES.common.cancel}</button></div>
+   <div className="ob-actions"><button type="button" className="primary-button" data-testid={`${testId}-ok`} onClick={onOk}>{vireo(OV.ok)}</button><button type="button" className="secondary-button" data-testid={`${testId}-cancel`} onClick={onCancel}>{vireo(OV.cancel)}</button></div>
   </>}
   <dialog ref={box} className="ob-dialog ob-box" role="alertdialog" aria-labelledby={`${id}-box`} data-testid={`${testId}-error`} onCancel={e=>{e.preventDefault();onDismiss();}}>
    <h2 id={`${id}-box`}>{OBSERVATORY_MESSAGES.skyCoords.errorTitle}</h2><p className="ob-native">{error}</p>
-   <div className="ob-actions"><button type="button" className="primary-button" onClick={onDismiss}>{OBSERVATORY_MESSAGES.common.ok}</button></div>
+   <div className="ob-actions"><button type="button" className="primary-button" onClick={onDismiss}>{vireo(OV.ok)}</button></div>
   </dialog>
  </dialog>;
 }

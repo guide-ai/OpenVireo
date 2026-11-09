@@ -1,4 +1,5 @@
 import {useEffect,useRef,useState} from 'react';
+import {OBSERVATORY_VIREO_CAPTIONS as OV} from './ObservatoryMessages';
 import {vireo} from '../i18n/vireo';
 import {HtlError,addHtlRow,newHtlEditor,serializeHtl} from '../core/hotList';
 import {addHtlRowRaOrdered} from '../core/hotListEntry';
@@ -151,8 +152,8 @@ export default function FieldInformationMenu({info,pointing,enabled,hotList,onSl
    :<section className="card fi-window" data-testid="fi-vlist-status"><p role="status" className={'loading' in variable?'fi-note':'fi-unavailable'} data-reason={'hidden' in variable?'object-x-hidden':'error' in variable?'load-error':'loading'}>{fieldInfoReasonText('hidden' in variable?'object-x-hidden':'error' in variable?'load-error':'loading')}</p>
     <button type="button" className="secondary-button" onClick={()=>setVariable(null)}>{M.close}</button></section>)}
   {confirm&&<MessageBox box={{caption:vireo(VL.unsavedCaption),text:vireo(VL.unsavedText)}} onClose={()=>setConfirm(null)} actions={<>
-   <button type="button" className="primary-button" data-testid="fi-unsaved-yes" onClick={()=>startNew(confirm,true)}>{M.yes}</button>
-   <button type="button" className="secondary-button" data-testid="fi-unsaved-no" onClick={()=>startNew(confirm,false)}>{M.no}</button></>}/>}
+   <button type="button" className="primary-button" data-testid="fi-unsaved-yes" onClick={()=>startNew(confirm,true)}>{vireo(OV.yes)}</button>
+   <button type="button" className="secondary-button" data-testid="fi-unsaved-no" onClick={()=>startNew(confirm,false)}>{vireo(OV.no)}</button></>}/>}
   {confirm&&<p className="fi-note">{M.startNewAdaptation}</p>}
  </div>;
 }

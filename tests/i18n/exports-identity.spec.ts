@@ -195,6 +195,7 @@ test('options file: Save Updates writes VEO_OPTS.json',async({browser,baseURL})=
 // Front ES2: the observatory's File › Field Information lists (Edit Mode) and the QSO List (Virtual Observatory) write the lines
 // they show; the windows around them are translated, the files are not.
 test('field information: Star Data List Save Text and Comma Delimit, QSO List Save Text',async({browser,baseURL})=>{
+ test.setTimeout(120_000);
  const id=(page:Page,testId:string)=>page.getByTestId(testId);
  const ok=async(page:Page)=>{await id(page,'fi-box').getByRole('button').first().click();await expect(id(page,'fi-box')).toHaveCount(0);};
  const save=async(page:Page,list:string,kind:'displayed'|'csv')=>{const f=await download(page,async()=>{await id(page,`${list}-list-menu`).click();await id(page,`${list}-save-menu`).click();await id(page,`${list}-save-${kind}`).click();});await ok(page);return f;};

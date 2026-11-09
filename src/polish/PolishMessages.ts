@@ -29,19 +29,22 @@ export const HOT_LIST_POPUP_LITERALS=Object.freeze({label:'Hot list',edit:'&Edit
  * 0x59172c (MessageDlg 0x5918ac, mtConfirmation, [mbYes,mbNo]) [D]; "Confirm" is Delphi's mtConfirmation caption [I]. */
 export const HOT_LIST_EDIT_LITERALS=Object.freeze({noSelectionCaption:'No Selection!',noSelectionText:'Please select an entry, using the left mouse button.',deleteCaption:'Confirm',deleteText:'Delete Highlighted Entry from List?'});
 
+/** Front ES2 review 1 (C6): the page anchor of each spectrometer route, in the order of `spectrometerIndex.routes` (not text,
+ * so not in the translatable map). */
+export const SPECTROMETER_ROUTE_HREFS=Object.freeze(['#star-exposure','#galaxy-exposure','#lss-survey','#object-x','#observatory','#spectrum','#classification'] as const);
 export const POLISH_MESSAGES_EN=Object.freeze({
  spectrometerIndex:Object.freeze({
   title:'Where to take a spectrum',
   intro:'VIREO’s spectrometer is used from the observatory with the telescope pointed at a target. In OpenVireo each exercise has its own verified spectrometer route:',
   routesTitle:'Spectrometer routes',
   routes:Object.freeze([
-   Object.freeze({href:'#star-exposure',label:'Catalog star exposure',help:'the spectrum of the supported catalog star, with Save and Print.'}),
-   Object.freeze({href:'#galaxy-exposure',label:'Galaxy exposure',help:'the thirteen Hubble.HTL galaxies (Hubble’s law).'}),
-   Object.freeze({href:'#lss-survey',label:'LSS survey',help:'galaxy spectra in the nine LSS fields.'}),
-   Object.freeze({href:'#object-x',label:'Object X',help:'spectra of the Object X targets.'}),
-   Object.freeze({href:'#observatory',label:'Multi-Spec',help:'the multi-object spectrometer card in the observatory, on the bundled exercise fields (and in the Object X lab).'}),
-   Object.freeze({href:'#spectrum',label:'Spectrum analyzer',help:'measure line shifts and record redshifts.'}),
-   Object.freeze({href:'#classification',label:'Classification',help:'classify star spectra against the standards.'}),
+   Object.freeze({label:'Catalog star exposure',help:'the spectrum of the supported catalog star, with Save and Print.'}),
+   Object.freeze({label:'Galaxy exposure',help:'the thirteen Hubble.HTL galaxies (Hubble’s law).'}),
+   Object.freeze({label:'LSS survey',help:'galaxy spectra in the nine LSS fields.'}),
+   Object.freeze({label:'Object X',help:'spectra of the Object X targets.'}),
+   Object.freeze({label:'Multi-Spec',help:'the multi-object spectrometer card in the observatory, on the bundled exercise fields (and in the Object X lab).'}),
+   Object.freeze({label:'Spectrum analyzer',help:'measure line shifts and record redshifts.'}),
+   Object.freeze({label:'Classification',help:'classify star spectra against the standards.'}),
   ]),
   retired:'This page used to show a preview of prepared source profiles (M82, Coma1, Coma2) before acquisition existed. It was retired on 2026-10-29; the routes above replace it.',
  }),
