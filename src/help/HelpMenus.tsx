@@ -1,5 +1,6 @@
 import {useEffect,useId,useRef,useState} from 'react';
 import {menuCaptionText} from '../core/radioControl';
+import {vireo} from '../i18n/vireo';
 import CleaHelp from '../clusters/CleaHelp';
 import {fetchBundledClusterHelp} from '../io/bundledClusterHelp';
 import {HELP_FILES} from './helpFiles';
@@ -54,7 +55,7 @@ export function HelpMenu({kind,disabled=false,disabledReason,onSiteAbout,onTour}
   if((e.target as Element).closest('dialog')){e.stopPropagation();return;}
   if(menu){e.preventDefault();e.stopPropagation();setMenu(null);trigger.current?.focus();}
  };
- const caption=menuCaptionText(C.help);
+ const caption=vireo(menuCaptionText(C.help));
  return <div className="fi-menu" onKeyDown={escape}>
   <button type="button" ref={trigger} disabled={off} className={kind==='main'?'help-trigger':undefined} aria-label={M.menuName[kind]} aria-describedby={disabledReason?`${id}-off`:undefined} aria-expanded={menu!==null} aria-controls={`${id}-help`} data-testid={`${kind}-help-menu`} onClick={()=>setMenu(m=>m?null:'help')}>
    {kind==='main'?<><span className="help-trigger-icon" aria-hidden="true">{M.shortcutKey}</span><span className="help-trigger-text">{caption}</span></>:caption}</button>
@@ -63,12 +64,12 @@ export function HelpMenu({kind,disabled=false,disabledReason,onSiteAbout,onTour}
    {kind==='main'&&<>
     <button type="button" data-testid="main-help-web" aria-keyshortcuts={M.shortcutKey} onClick={()=>{setMenu(null);setWebHelp(true);}}>{M.webTopics}<span className="help-menu-key" aria-hidden="true">{M.shortcutKey}</span></button>
     {onTour&&<button type="button" data-testid="main-help-tour" onClick={()=>{setMenu(null);onTour();}}>{M.tour}</button>}
-    <button type="button" aria-expanded={menu==='websites'} data-testid="main-help-websites" onClick={()=>setMenu(m=>m==='websites'?'help':'websites')}>{menuCaptionText(MAIN_HELP_MENU.websites)} ›</button>
-    {menu==='websites'&&<div role="group" aria-label={menuCaptionText(MAIN_HELP_MENU.websites)} className="fi-submenu">
+    <button type="button" aria-expanded={menu==='websites'} data-testid="main-help-websites" onClick={()=>setMenu(m=>m==='websites'?'help':'websites')}>{vireo(menuCaptionText(MAIN_HELP_MENU.websites))} ›</button>
+    {menu==='websites'&&<div role="group" aria-label={vireo(menuCaptionText(MAIN_HELP_MENU.websites))} className="fi-submenu">
      {HELP_WEBSITES.map(w=>w.web
       ?<a key={w.key} href={w.web} target="_blank" rel="noopener noreferrer" className="fi-menu-link" data-testid={`help-website-${w.key}`} onClick={()=>setMenu(null)}>
-        {menuCaptionText(MAIN_HELP_MENU[w.key])} <span aria-hidden="true">↗</span><span className="visually-hidden"> {M.newTab}</span></a>
-      :<p key={w.key} className="fi-note fi-menu-note" data-testid={`help-website-${w.key}`}><span className="help-menu-off">{menuCaptionText(MAIN_HELP_MENU[w.key])}</span> {M.noEquivalent(w.original)}</p>)}
+        {vireo(menuCaptionText(MAIN_HELP_MENU[w.key]))} <span aria-hidden="true">↗</span><span className="visually-hidden"> {M.newTab}</span></a>
+      :<p key={w.key} className="fi-note fi-menu-note" data-testid={`help-website-${w.key}`}><span className="help-menu-off">{vireo(menuCaptionText(MAIN_HELP_MENU[w.key]))}</span> {M.noEquivalent(w.original)}</p>)}
      <p className="fi-note fi-menu-note" data-testid="help-websites-note">{M.websitesNote}</p>
     </div>}
     {onSiteAbout&&<button type="button" data-testid="main-help-site-about" onClick={()=>{setMenu(null);trigger.current?.focus();onSiteAbout();}}>{M.siteAbout}</button>}
@@ -78,8 +79,8 @@ export function HelpMenu({kind,disabled=false,disabledReason,onSiteAbout,onTour}
      {PROJECT_LINKS.reportMenu} <span aria-hidden="true">↗</span><span className="visually-hidden"> {PROJECT_LINKS.newTab}</span></a>
    </>}
    {kind==='radio'&&<>
-    <button type="button" data-testid="radio-help-menu-topics" onClick={()=>{setMenu(null);setTopics(n=>n+1);}}>{menuCaptionText(C.topics)}</button>
-    <button type="button" data-testid="radio-help-about" onClick={()=>{setMenu(null);setAbout(true);}}>{menuCaptionText(C.about)}</button>
+    <button type="button" data-testid="radio-help-menu-topics" onClick={()=>{setMenu(null);setTopics(n=>n+1);}}>{vireo(menuCaptionText(C.topics))}</button>
+    <button type="button" data-testid="radio-help-about" onClick={()=>{setMenu(null);setAbout(true);}}>{vireo(menuCaptionText(C.about))}</button>
    </>}
   </div>}
   {kind==='radio'&&<CleaHelp list={HELP_FILES['PULSRHLP.LST']} openRequest={topics} onReturnFocus={()=>trigger.current?.focus()} testId="radio-help"/>}

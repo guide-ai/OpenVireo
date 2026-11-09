@@ -24,7 +24,7 @@ import type {RgbImage} from './core/photons';
 import './sky-exposure.css';
 import SpectrumSavePrint from './observatory/SpectrumSavePrint';
 import SpectrometerReadout,{useSpectrometerObject} from './observatory/SpectrometerReadout';
-const baseEngine={create:createStarExposure,activate:activateStar,start:startStar,tick:tickStar,pause:pauseStar,deactivate:deactivateStar,reset:resetStar,cancel:cancelStar,csv:starCountsCsv,serialize:serializeStarSession,read:readStarSession,basename:'openvireo-star',activated:t('starExposure.activated'),started:t('starExposure.started'),restored:t('starExposure.restored')};
+const baseEngine={create:createStarExposure,activate:activateStar,start:startStar,tick:tickStar,pause:pauseStar,deactivate:deactivateStar,reset:resetStar,cancel:cancelStar,csv:starCountsCsv,serialize:serializeStarSession,read:readStarSession,basename:'openvireo-star',get activated(){return t('starExposure.activated');},get started(){return t('starExposure.started');},get restored(){return t('starExposure.restored');}};
 function NativeFrame({image,inspection=false}:{image:RgbImage;inspection?:boolean}){
  const canvas=useRef<HTMLCanvasElement>(null);
  useEffect(()=>{const context=canvas.current?.getContext('2d');if(!context)return;const data=context.createImageData(image.width,image.height);for(let i=0;i<image.width*image.height;i++){data.data[i*4]=image.rgb[i*3];data.data[i*4+1]=image.rgb[i*3+1];data.data[i*4+2]=image.rgb[i*3+2];data.data[i*4+3]=255;}context.putImageData(data,0,0);},[image]);

@@ -1,0 +1,7 @@
+/* Front ES1: the language selector at the foot of the header menu (src/components/LanguageChoice.tsx). Loaded with that lazy
+   part only, so English pages without the selector keep their stylesheet unchanged. It reuses the theme switch's look. */
+.language-choice{display:flex;flex-direction:column;gap:6px;margin-top:var(--ov-space-2);min-width:0}
+.language-choice .theme-switch{margin:0}
+.language-originals{display:flex;align-items:flex-start;gap:6px;color:var(--ov-chrome-muted);font-size:var(--ov-text-xs);line-height:1.4;cursor:pointer}
+.language-originals input{margin:2px 0 0;flex:none;accent-color:var(--ov-chrome-active-bg)}
+.language-originals-note{margin:0;color:var(--ov-chrome-muted);font-size:var(--ov-text-xs);line-height:1.4}

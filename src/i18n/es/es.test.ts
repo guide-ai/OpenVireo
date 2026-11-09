@@ -1,0 +1,99 @@
+import {describe,expect,it} from 'vitest';
+import {readdirSync,readFileSync} from 'node:fs';
+import path from 'node:path';
+import en from '../en.json';
+import es from './es.json';
+import originals from './originals.json';
+import glossary from './glossary.json';
+import identical from './identical.json';
+import {SPANISH} from './index';
+import {createI18n,type MessageKey} from '../catalog';
+import {mapParity} from '../parity';
+import {normalizeOriginal} from '../vireo';
+import {MAP_IDS,type MapId} from '../maps';
+import {APP_SHELL_MESSAGES_EN} from '../../components/AppShellMessages';
+import {HELP_MENU_EN} from '../../help/HelpMessages';
+import {LANGUAGE_CHOICE_EN} from '../../components/LanguageChoiceMessages';
+import {OBJECT_X_LAB_EN} from '../../objectx/ObjectXMessages';
+import {POLISH_MESSAGES_EN} from '../../polish/PolishMessages';
+import {PROJECT_LINKS_EN} from '../../help/projectLinks';
+import {TOUR_EN} from '../../help/tour';
+import {VARIABLE_STARS_EN} from '../../variables/VariableStarMessages';
+
+// Front ES1 (docs/I18N.md; plan §3.2 and §5.3 step 1): automatic checks of every Spanish string. They fail the batch; the
+// independent reviewer agent then reads the strings in context. Length ratios outside 0.7–1.6 are reported, not failed.
+const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN};
+/** The maps ES1 translates completely (the shell); the others are partial until their sub-front. */
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour'];
+/** ES1's area of en.json: the shell (header, menu, home and portal, toolbar, errors, instructor mode, document title). */
+const SHELL_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(app|project|session|error|instructorMode)\./.test(k)||/\.nav$/.test(k)||['demonstrationMode.banner','sky.eyebrow','sky.title','sky.subtitle','sky.about','sky.local','sky.observatory','sky.analyzer','sky.step1','sky.step1Help','sky.step2','sky.step2Help','sky.step3','sky.step3Help','spectrum.tools','classLink.cancel'].includes(k));
+type Pair=Readonly<{id:string;en:string;es:string}>;
+/** Every translated string with its English source: catalog values, map leaves (functions called with sample arguments) and originals. */
+function pairs():Pair[]{
+ const out:Pair[]=[];
+ for(const [key,text] of Object.entries(es))out.push({id:`catalog:${key}`,en:en[key as MessageKey],es:text});
+ const walk=(e:unknown,s:unknown,at:string)=>{
+  if(typeof s==='string'&&typeof e==='string')out.push({id:at,en:e,es:s});
+  else if(typeof s==='function'&&typeof e==='function'){const args=Array.from({length:e.length},(_,i)=>`«A${i+1}»`);out.push({id:at,en:String(e(...args)),es:String(s(...args))});}
+  else if(s&&typeof s==='object'&&e&&typeof e==='object')for(const k of Object.keys(s))walk((e as Record<string,unknown>)[k],(s as Record<string,unknown>)[k],`${at}.${k}`);
+ };
+ for(const [id,map] of Object.entries(SPANISH.maps??{}))walk(ENGLISH_MAPS[id as MapId],map,`map:${id}`);
+ for(const [key,text] of Object.entries(originals))out.push({id:`original:${key}`,en:key,es:text});
+ return out;
+}
+const GLYPHS=['›','…','↗','▸','·','—','–','×','✳','?'];
+describe('Front ES1: the Spanish (es-419) catalog, maps and originals',()=>{
+ it('the catalog is a valid partial catalog: known keys, the same {params}, strings only (fallback mode until ES-REL)',()=>{
+  expect(()=>createI18n(es,'es-419',{fallback:true,numberLocale:'en-US'})).not.toThrow();
+  for(const key of Object.keys(es))expect(Object.hasOwn(en,key),key).toBe(true);
+ });
+ it('every map has the English shape: the same keys, kinds, {params} and arities (complete for the shell maps)',()=>{
+  for(const id of Object.keys(SPANISH.maps??{}))expect(MAP_IDS,id).toContain(id);
+  for(const [id,map] of Object.entries(SPANISH.maps??{})){
+   const english=ENGLISH_MAPS[id as MapId];expect(english,`${id}: English map registered in this test`).toBeDefined();
+   expect(mapParity(english,map,'$',{partial:!COMPLETE_MAPS.includes(id as MapId)}),id).toEqual([]);
+  }
+ });
+ it('originals are keyed by a normalised literal that exists in the source, so stale keys fail',()=>{
+  const literals=new Set<string>();
+  (function scan(dir:string){for(const e of readdirSync(dir,{withFileTypes:true})){const f=path.join(dir,e.name);if(e.isDirectory()){if(!['i18n'].includes(e.name))scan(f);}else if(/\.tsx?$/.test(e.name)&&!/\.test\.ts$/.test(e.name))for(const m of readFileSync(f,'utf8').matchAll(/'((?:[^'\\\n]|\\.)*)'/g))literals.add(normalizeOriginal(m[1].replace(/\\'/g,'\'')));}})(path.resolve(import.meta.dirname,'../..'));
+  for(const key of Object.keys(originals))expect(literals.has(key),key).toBe(true);
+  for(const key of Object.keys(originals))expect(normalizeOriginal(key),key).toBe(key);
+ });
+ it('the shell (ES1\'s area) is 100 % Spanish: catalog keys and the shell maps',()=>{
+  expect(SHELL_KEYS.filter(k=>!Object.hasOwn(es,k))).toEqual([]);
+  expect(SHELL_KEYS.length).toBeGreaterThan(120);
+  for(const id of COMPLETE_MAPS)expect(mapParity(ENGLISH_MAPS[id],SPANISH.maps?.[id]),id).toEqual([]);
+ });
+ it('a Spanish string equals its English source only when identical.json gives the reason',()=>{
+  const allowed=identical.entries as Record<string,string>;
+  expect(pairs().filter(p=>p.es===p.en&&!Object.hasOwn(allowed,p.id)).map(p=>p.id)).toEqual([]);
+  for(const [id,reason] of Object.entries(allowed))expect(reason.length,id).toBeGreaterThan(10);
+ });
+ it('follows the glossary: required Spanish terms and fixed names present, forbidden forms absent',()=>{
+  const problems:string[]=[];
+  for(const p of pairs()){
+   for(const term of glossary.terms)if(new RegExp(term.en,'i').test(p.en)&&!new RegExp(term.es,'iu').test(p.es))problems.push(`${p.id}: "${term.en}" needs «${term.es}»`);
+   for(const name of glossary.names)if(p.en.includes(name.en)&&!p.es.includes(name.es))problems.push(`${p.id}: "${name.en}" must read «${name.es}»`);
+   for(const f of glossary.forbidden)if(new RegExp(f.es,'iu').test(p.es))problems.push(`${p.id}: forbidden /${f.es}/, use ${f.use}`);
+  }
+  expect(problems).toEqual([]);
+ });
+ it('keeps the glyphs, pairs ¿ ? and ¡ !, adds no HTML, and reports the length ratio',()=>{
+  const problems:string[]=[],ratios:string[]=[];
+  const count=(s:string,g:string)=>s.split(g).length-1;
+  const questions=(s:string,close:string,open:string)=>s.split(/(?<=[.!?:;…])\s+/).filter(sentence=>new RegExp(`[\\p{L}\\d)»”]${close==='?'?'\\?':close}(?=\\s|$|[)»”])`,'u').test(sentence)&&!sentence.includes(open)).length;
+  for(const p of pairs()){
+   for(const g of GLYPHS)if(g!=='?'&&count(p.en,g)!==count(p.es,g))problems.push(`${p.id}: ${count(p.es,g)}×${g} instead of ${count(p.en,g)}`);
+   if(questions(p.es,'?','¿'))problems.push(`${p.id}: a question without ¿`);
+   if(questions(p.es,'!','¡'))problems.push(`${p.id}: an exclamation without ¡`);
+   if(/<\/?[a-z]/i.test(p.es)&&!/<\/?[a-z]/i.test(p.en))problems.push(`${p.id}: HTML`);
+   const ratio=p.es.length/Math.max(1,p.en.length);if(p.en.length>12&&(ratio<.7||ratio>1.6))ratios.push(`${p.id} ${ratio.toFixed(2)}`);
+  }
+  expect(problems).toEqual([]);
+  if(ratios.length)console.info(`Length ratio outside 0.7–1.6 (reported for the reviewer, not a failure):\n${ratios.join('\n')}`);
+ });
+ it('never claims to be CLEA\'s, and addresses the student as tú',()=>{
+  for(const p of pairs()){expect(p.es,p.id).not.toMatch(/\b(usted|ustedes)\b/iu);expect(p.es,p.id).not.toMatch(/traducci[oó]n (oficial|de CLEA)/iu);}
+ });
+});

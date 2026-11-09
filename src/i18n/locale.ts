@@ -5,6 +5,8 @@
 export type UiLanguage='en'|'es-419'|'qps';
 /** localStorage key of the selector's choice (the selector arrives with ES1 and is shown from ES-REL). */
 export const LANGUAGE_STORAGE_KEY='openvireo-language';
+/** localStorage key of "View original (English)" for VIREO's menus and dialogs (decision 9): '1' when on. Applied at load. */
+export const VIREO_ORIGINALS_KEY='openvireo-vireo-originals';
 /** Release gate (decision 5): false until ES-REL. While false, neither the stored choice nor the browser language is used. */
 export const SPANISH_RELEASED=false;
 /** `<html lang>` for each UI language. The dev-only pseudo-locale keeps English's tag: its text is marked English. */
@@ -29,3 +31,6 @@ export function decideLocale({param,stored,languages,released,dev}:LocaleInputs)
  const kept=offered(stored,false);if(kept)return kept;
  return /^es(?:-|$)/i.test(languages[0]??'')?'es-419':'en';
 }
+/** Front ES1 [W]: the language selector is shown after the release, and before it only on a load that carries a `?lang=` link
+ * parameter (the preview), so the reload flow can be tested; production without `?lang` shows none (decision 5). */
+export const selectorShown=(search:string,released=SPANISH_RELEASED):boolean=>released||new URLSearchParams(search).has('lang');

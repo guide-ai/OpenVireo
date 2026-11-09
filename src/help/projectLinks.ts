@@ -2,9 +2,11 @@
  * Both open in a new tab only when the visitor clicks them (rel="noopener noreferrer"). The only thing the site puts in the
  * address is the name of the current page, in the issue text, which the visitor sees and can edit on GitHub before sending;
  * GitHub asks the visitor to sign in to create an issue. Pure data; components/ProjectLinks.tsx and help/HelpMenus.tsx render it. */
+import {lazyMessages,pickMessages} from '../i18n/registry';
 export const PROJECT_REPO_URL='https://github.com/guide-ai/OpenVireo';
 
-export const PROJECT_LINKS=Object.freeze({
+/** Front ES1: the links' screen text, a pickMessages map translated per load (docs/I18N.md). */
+export const PROJECT_LINKS_EN=Object.freeze({
  groupLabel:'OpenVireo on GitHub',
  repo:'Source code',
  repoMenu:'Source code on GitHub',
@@ -13,18 +15,23 @@ export const PROJECT_LINKS=Object.freeze({
  /** Read by screen readers after each link. */
  newTab:'(opens GitHub in a new tab)',
  recoveryReport:'Report this problem on GitHub',
- issue:Object.freeze({
-  page:'Page',
-  happened:'What happened?',
-  expected:'What did you expect?',
-  steps:'Steps to reproduce',
- }),
 });
+/** The issue template stays English in every language (docs/I18N.md F5): the address carries only the route name and the
+ * same fixed headings as before (user decision, 2026-11-08). */
+export const ISSUE_TEMPLATE=Object.freeze({
+ page:'Page',
+ happened:'What happened?',
+ expected:'What did you expect?',
+ steps:'Steps to reproduce',
+});
+const PROJECT_LINKS_TEXT=pickMessages('projectLinks',PROJECT_LINKS_EN);
+/** The links' text in this load's language, with the English issue template; built on first use. */
+export const PROJECT_LINKS=lazyMessages(()=>Object.freeze({...PROJECT_LINKS_TEXT,issue:ISSUE_TEMPLATE}));
 
 /** GitHub's new-issue page with a short template. `page` is the site's route name (for example "observatory"); nothing else
  * about the visitor or their work is included. */
 export function newIssueUrl(page:string):string{
- const I=PROJECT_LINKS.issue;
+ const I=ISSUE_TEMPLATE;
  const body=`**${I.page}:** #${page}\n\n**${I.happened}**\n\n\n**${I.expected}**\n\n\n**${I.steps}**\n1. \n`;
  return `${PROJECT_REPO_URL}/issues/new?body=${encodeURIComponent(body)}`;
 }

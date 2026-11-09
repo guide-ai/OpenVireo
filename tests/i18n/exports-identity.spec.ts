@@ -3,6 +3,7 @@ import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {enterInstructorMode} from '../fixtures/instructor-mode';
 import {PLR} from '../fixtures/pulsar-saved-rows-controls';
+import es from '../../src/i18n/es/es.json' with {type:'json'};
 // Front ES0 (docs/I18N.md; user decision 3, 2026-11-09): the files the site writes stay exactly as VIREO or the web contract
 // writes them, in English, whatever the screen language. Each export family is downloaded once in English and once in the
 // dev-only pseudo-locale qps (?lang=qps: every catalog, map and vireo() string marked ⟦…⟧, accented and ~35 % longer), from the
@@ -26,7 +27,7 @@ async function open(page:Page,locale:Locale,hash:string,clock:'fixed'|'real'='fi
  await page.goto(`/${locale==='qps'?'?lang=qps':''}#${hash}`);
  await expect(page.locator('html')).toHaveAttribute('lang','en');
  if(locale==='qps')await expect.poll(()=>page.title()).toMatch(/^⟦/);
- const skip=page.getByRole('button',{name:'Skip the tour'});// the first-visit tour (src/help/tour.ts, still English in ES0)
+ const skip=page.getByRole('button',{name:L('Skip the tour')});// the first-visit tour (translated since ES1)
  if(await skip.isVisible().catch(()=>false))await skip.click();
 }
 async function download(page:Page,click:()=>Promise<void>):Promise<File>{
@@ -276,4 +277,25 @@ test('radio telescope: Download capture as .PLR of a model-generated recording',
   await id(page,'pulsar-raw-export').click();await expect(id(page,'pulsar-raw-export-download')).toBeEnabled();
   return {plr:await download(page,()=>id(page,'pulsar-raw-export-download').click())};
  },{},page=>page.getByTestId('receiver-workspace'));
+});
+
+// Front ES1: the shell is translated, and its toolbar's Save investigation writes a file, so this family also runs in Spanish
+// (es-419, the `?lang=es-419` preview). The three downloads must be byte-identical (decision 3: files stay English).
+test('the shell toolbar: Save investigation is byte-identical in English, qps and Spanish',async({browser,baseURL})=>{
+ const files:Record<string,File>={};
+ for(const locale of ['en','qps','es-419'] as const){
+  const context=await browser.newContext({baseURL,locale:'en-US',viewport:{width:1440,height:1050}}),page=await context.newPage();page.setDefaultTimeout(20_000);
+  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+  try{
+   await page.clock.setFixedTime(NOW);await page.goto(`/?lang=${locale}#observatory`);
+   const toolbar=page.locator('.investigation-toolbar');await expect(toolbar).toBeVisible({timeout:15_000});
+   if(locale==='qps')await expect(toolbar,'the pseudo-locale applied').toContainText('⟦');
+   if(locale==='es-419'){await expect(page.locator('html')).toHaveAttribute('lang','es-419');await expect(toolbar).toContainText(es['project.title']);}
+   const name=locale==='es-419'?es['project.save']:L('Save investigation');
+   files[locale]=await download(page,()=>toolbar.getByRole('button',{name,exact:typeof name==='string'||undefined}).click());
+  }finally{await context.close();}
+  expect(errors,locale).toEqual([]);
+ }
+ for(const locale of ['qps','es-419'])expect([files[locale].name,sha(files[locale].bytes)],locale).toEqual([files.en.name,sha(files.en.bytes)]);
+ for(const f of Object.values(files)){expect(f.bytes.includes('⟦')).toBe(false);expect(f.bytes.toString('utf8')).not.toMatch(/[áéíóúñ¿¡]/);}
 });
