@@ -66,11 +66,11 @@
    "es": "navegador"
   },
   {
-   "en": "(?<!line breaks and )\\btabs?\\b(?!,? (?:line breaks|or other|BOM))",
+   "en": "(?<!line breaks and |for example a |accented letter, a )\\btabs?\\b(?!,? (?:line breaks|or other|BOM))",
    "es": "pestaña"
   },
   {
-   "en": "\\btabs?(?=,? (?:line breaks|or other|BOM))|(?<=line breaks and )tabs?\\b",
+   "en": "\\btabs?(?=,? (?:line breaks|or other|BOM))|(?<=line breaks and |for example a |accented letter, a )tabs?\\b",
    "es": "tabulaci"
   },
   {
@@ -400,6 +400,10 @@
   {
    "en": "\\bendpoint[- ]grids?\\b",
    "es": "rejillas? de extremos"
+  },
+  {
+   "en": "\\bdispersion measure\\b",
+   "es": "medida de dispersión"
   }
  ],
  "names": [
@@ -937,6 +941,14 @@
   {
    "en": "Program List",
    "es": "Lista de programa"
+  },
+  {
+   "en": "Pulsar guide",
+   "es": "Guía de púlsares"
+  },
+  {
+   "en": "Pulsar timing guide",
+   "es": "Guía de temporización de púlsares"
   }
  ],
  "forbidden": [

@@ -15,6 +15,10 @@ describe('Pulsar Print Window text (0x56da60)',()=>{
   const gain=lines.indexOf('  '+L.gains);expect(lines.slice(gain+1,gain+4)).toEqual(['    Receiver 1: 1.000','    Receiver 2: 1.000','    Receiver 3: (Receiver Not Recorded)']);
   expect(lines).toContain('  File Name: (Data Not Written To File)');
   expect(pulsarPrintLines('d',props(2),'pulsar.plr')).toContain('  File Name: pulsar.plr');
+  // Front ES8b: a screen translation (vireo() on screen) touches the literals only; values, file names and layout stay.
+  const tr=(l:string)=>l.trim()?`[${l}]`:l,translated=pulsarPrintLines('D',props(1),'pulsar.plr',tr);
+  expect(translated).toHaveLength(lines.length);expect(translated[0]).toBe('D[     Laboratory Table Number ][(Not Recorded)]');
+  expect(translated).toContain('  [Object: ]PSR 0329+54');expect(translated).toContain('    [Receiver ]1: 400.00');expect(translated).toContain('  [File Name: ]pulsar.plr');
  });
 });
 
@@ -28,6 +32,7 @@ describe('Print Window page and cursor switch',()=>{
   expect(land.lines.slice(0,base.length)).toEqual(base.map(l=>l===''?'':'  '+l));
   expect(land.lines.slice(base.length)).toEqual(['','',' '.repeat(28)+P.nextPage]);
   expect(land.page2).toEqual(['   - Page 2']);
+  expect(pulsarPrintPage('D',null,null,'landscape',l=>l.trim()?`[${l}]`:l).page2).toEqual(['  [ - Page 2]']);
  });
  it('leaves every panel in vertical-cursor mode, without a recording, and is idempotent',()=>{
   const s={...INITIAL_PULSAR_ANALYSIS,modes:Object.freeze(['horizontal','vertical','horizontal'] as const)};

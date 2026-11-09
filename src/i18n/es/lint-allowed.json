@@ -6,6 +6,42 @@
     "cargue"
    ],
    "reason": "third-person subjunctive in «la próxima vez que se cargue la página», not an usted imperative"
+  },
+  "catalog:pulsarLab.problem.beam": {
+   "words": [
+    "pulsar"
+   ],
+   "reason": "VIREO's own message “No Pulsar in Beam!”, quoted exactly in English"
+  },
+  "catalog:pulsarLab.sourceHelp": {
+   "words": [
+    "pulsar"
+   ],
+   "reason": "names kept as written: the file Pulsars.dat and the ATNF Pulsar Catalogue"
+  },
+  "catalog:pulsarLab.step.catalog.help": {
+   "words": [
+    "pulsar"
+   ],
+   "reason": "VIREO's caption Pulsar Parameters, given in English after the Spanish name"
+  },
+  "catalog:pulsarLab.step.point.help": {
+   "words": [
+    "pulsar"
+   ],
+   "reason": "VIREO's captions Pulsar Parameters and Find Pulsar, given in English after the Spanish names"
+  },
+  "catalog:pulsarLab.step.period.formula": {
+   "words": [
+    "pulsar"
+   ],
+   "reason": "VIREO's caption Pulsar Parameters, given in English after the Spanish name"
+  },
+  "catalog:pulsarLab.recover.catalog": {
+   "words": [
+    "pulsar"
+   ],
+   "reason": "VIREO's caption Pulsar Parameters, given in English after the Spanish name"
   }
  }
 }

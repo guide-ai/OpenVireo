@@ -3,7 +3,7 @@ import {readFile} from 'node:fs/promises';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {enterInstructorMode} from '../fixtures/instructor-mode';
-import {PLR} from '../fixtures/pulsar-saved-rows-controls';
+import {PLR,HEADER,CONTROL} from '../fixtures/pulsar-saved-rows-controls';
 import {paceDownload} from '../fixtures/download-pacing';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
@@ -535,4 +535,78 @@ test('the shell toolbar: Save investigation is byte-identical in English, qps an
  }
  for(const locale of ['qps','es-419'])expect([files[locale].name,sha(files[locale].bytes)],locale).toEqual([files.en.name,sha(files.en.bytes)]);
  for(const f of Object.values(files)){expect(f.bytes.includes('⟦')).toBe(false);expect(f.bytes.toString('utf8')).not.toMatch(/[áéíóúñ¿¡]/);}
+});
+
+// Front ES8b: exercise E06, the recorded pulsar analysis. The files of its flows stay VIREO's English in en, qps and es-419:
+// VIREO's own Save (the written results file and the appended one, US date and time, "Table Number" line), the typed-header
+// export, the append file, the original recording bytes, the saved-measurement viewer's original file, the raw .PLR download of a
+// model capture and the investigation that holds the capture and its rows. The page clock is fixed (analysis) or paused (capture)
+// and nothing is masked.
+test('E06 pulsar analysis: native Save and its append, the export, the append file, the original recording and the viewer download',async({browser,baseURL})=>{
+ test.setTimeout(240_000);
+ const id=(page:Page,testId:string)=>page.getByTestId(testId);
+ const TARGET=['"10-30-2026","3:07:42 PM"','"Table Number: "','','',HEADER].map(l=>l+'\r\n').join('')+'"PSR B0329+54",408.00,1.000,0.123456,"",5.0000E-01,49999.12345678,"older",1000,10.00,26\r\n';
+ const record=async(page:Page,comment:string)=>{
+  await id(page,'pulsar-plot-1').focus();await page.keyboard.press('ArrowRight');await page.keyboard.press('ArrowRight');await expect(id(page,'pulsar-pending-1')).toBeVisible();
+  await id(page,'pulsar-record').click();await id(page,'pulsar-comment').fill(comment);await id(page,'pulsar-record-ok').click();await expect(id(page,'pulsar-record-dialog')).toHaveCount(0);
+ };
+ await identical(browser,baseURL,async(page,locale)=>{
+  await open(page,locale,'pulsar-analysis');
+  await id(page,'pulsar-file').setInputFiles({name:'synthetic-e2e.plr',mimeType:'application/octet-stream',buffer:Buffer.from(PLR,'latin1')});
+  await expect(id(page,'pulsar-sha')).toHaveText(sha(Buffer.from(PLR,'latin1')));await id(page,'pulsar-properties-close').click();
+  const original=await download(page,()=>id(page,'pulsar-download').click());
+  await record(page,'first');
+  await id(page,'pulsar-save').click();await id(page,'pulsar-native-name').fill('run');await id(page,'pulsar-native-save').click();
+  await expect(id(page,'pulsar-native-dialog')).toHaveAttribute('data-step','verify');
+  const nativeSave=await download(page,()=>id(page,'pulsar-native-ok').click());
+  await record(page,'second');
+  await id(page,'pulsar-save').click();await id(page,'pulsar-native-name').fill('RUN.csv');await id(page,'pulsar-native-save').click();
+  await expect(id(page,'pulsar-native-dialog')).toHaveAttribute('data-step','exists');await id(page,'pulsar-native-no').click();
+  await expect(id(page,'pulsar-native-dialog')).toHaveAttribute('data-step','verify');
+  const nativeAppend=await download(page,()=>id(page,'pulsar-native-ok').click());
+  await id(page,'pulsar-export').click();await expect(id(page,'pulsar-export-dialog')).toBeVisible();
+  for(const [k,v] of Object.entries({date:'25/10/2026',time:'16:00:00',table:'7',name1:'Observer A'}))await id(page,`pulsar-export-${k}`).fill(v);
+  const exported=await download(page,()=>id(page,'pulsar-export-download').click());
+  await id(page,'pulsar-append').click();await id(page,'pulsar-append-file').setInputFiles({name:'target.csv',mimeType:'text/plain',buffer:Buffer.from(TARGET,'latin1')});await expect(id(page,'pulsar-append-target')).toBeVisible();
+  const appended=await download(page,()=>id(page,'pulsar-append-download').click());
+  await id(page,'saved-rows-disclosure').locator('summary').first().click();
+  await id(page,'saved-rows-file').setInputFiles({name:'control.csv',mimeType:'text/plain',buffer:Buffer.from(CONTROL,'latin1')});await id(page,'saved-rows-use').click();
+  const viewer=await download(page,()=>id(page,'saved-rows-download').click());
+  return {original,nativeSave,nativeAppend,exported,appended,viewer};
+ },{},page=>page.getByTestId('pulsar-analysis'),['en','qps','es-419']);
+});
+
+test('E06 receiver capture: the raw .PLR download and the investigation with the capture and its rows',async({browser,baseURL})=>{
+ test.setTimeout(300_000);
+ const id=(page:Page,testId:string)=>page.getByTestId(testId);
+ const flush=async(page:Page)=>{for(let i=0;i<3;i++)await page.evaluate(()=>new Promise<void>(resolve=>{const ch=new MessageChannel();ch.port1.onmessage=()=>{ch.port1.close();ch.port2.close();resolve();};ch.port2.postMessage(0);}));};
+ const advance=async(page:Page,ms:number)=>{for(let t=0;t<ms;t+=200){await page.clock.runFor(Math.min(200,ms-t));await flush(page);}};
+ await identical(browser,baseURL,async(page,locale)=>{
+  await page.clock.install({time:new Date('2026-10-24T00:00:00Z')});
+  await page.goto(`/?lang=${locale}#pulsar-analysis`);await expect(id(page,'pulsar-none')).toBeVisible();
+  const skip=page.getByRole('button',{name:N(locale,'Skip the tour')});if(await skip.isVisible().catch(()=>false))await skip.click();
+  await page.evaluate(()=>{location.hash='#radio-control';});await expect(id(page,'radio-exercise')).toBeVisible();
+  await page.clock.pauseAt(new Date('2026-10-24T00:10:00Z'));await flush(page);
+  await id(page,'radio-exercise').click();await id(page,'radio-env-compiled').click();await id(page,'radio-access').click();await id(page,'radio-timer-deliver').click();
+  await id(page,'radio-switch').click();await id(page,'antenna-tracking').click();await flush(page);
+  await id(page,'pulsar-ref-file').setInputFiles({name:'synthetic-receiver.dat',mimeType:'text/plain',buffer:Buffer.from(RECEIVER_CATALOG,'latin1')});
+  await id(page,'radio-clock-utc').fill('2026-10-24T12:00:00');await id(page,'radio-clock-apply').click();await id(page,'radio-clock-longitude').click();
+  await id(page,'antenna-receiver-button').click();await expect(id(page,'receiver-card-0')).toBeVisible();
+  await id(page,'receiver-record').click();
+  await id(page,'receiver-mode').click();await flush(page);await advance(page,600);await id(page,'receiver-mode').click();await flush(page);
+  for(let i=0;i<80&&await id(page,'receiver-workspace').getAttribute('data-timer')==='true';i++)await advance(page,200);
+  const finish=id(page,'receiver-record-finish');await expect(finish).toHaveAttribute('data-stage','identify');
+  await id(page,'receiver-record-identify-input').fill('PSR B2358+38');await id(page,'receiver-record-identify-ok').click();
+  await expect(finish).toHaveAttribute('data-stage','properties');await id(page,'receiver-record-properties-ok').click();
+  await expect(finish).toHaveAttribute('data-stage','save');await id(page,'receiver-record-save-no').click();
+  await page.evaluate(()=>{location.hash='#pulsar-analysis';});await expect(id(page,'pulsar-memory')).toBeVisible();await flush(page);
+  await id(page,'pulsar-raw-export').click();await expect(id(page,'pulsar-raw-export-download')).toBeEnabled();
+  const plr=await download(page,()=>id(page,'pulsar-raw-export-download').click());
+  await expect(id(page,'pulsar-raw-export-download')).toHaveCount(0);
+  await id(page,'pulsar-plot-1').focus();await page.keyboard.press('ArrowRight');await page.keyboard.press('ArrowRight');await expect(id(page,'pulsar-pending-1')).toBeVisible();
+  await id(page,'pulsar-record').click();await id(page,'pulsar-comment').fill('capture row');await id(page,'pulsar-record-ok').click();await expect(id(page,'pulsar-record-dialog')).toHaveCount(0);
+  const toolbar=page.locator('.investigation-toolbar');
+  const investigation=await download(page,()=>toolbar.getByRole('button',{name:locale==='es-419'?es['project.save']:L('Save investigation')}).click());
+  return {plr,investigation};
+ },{},page=>page.getByTestId('pulsar-analysis'),['en','qps','es-419']);
 });

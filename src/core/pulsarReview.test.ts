@@ -6,10 +6,9 @@ import {
   type PulsarAnalysisState, type PulsarEntryFields, type PulsarMeasurementEntry, type PulsarTransition,
 } from './pulsarAnalysis';
 import {
-  PULSAR_REVIEW_LITERALS, pulsarReviewAnswerDelete, pulsarReviewCancel, pulsarReviewConfirm, pulsarReviewDismissNotice, pulsarReviewEscape,
+  PULSAR_REVIEW_BUTTONS, PULSAR_REVIEW_LITERALS, pulsarReviewAnswerDelete, pulsarReviewCancel, pulsarReviewConfirm, pulsarReviewDismissNotice, pulsarReviewEscape,
   pulsarReviewOpen, pulsarReviewRequestDelete, pulsarReviewSelect,
 } from './pulsarReview';
-import { PULSAR_MESSAGES_EN } from '../components/PulsarMessages';
 
 // SYNTHETIC fixtures written for the Review contract (contract/acceptance-cases.json). Not CLEA output.
 // 11/22/33 are web stable sequence IDs, not ordinals. 22 and 33 carry identical field text and candidate.
@@ -283,10 +282,7 @@ describe('source literals (PLR-REVIEW-DELETE-STATIC-01, TMEASLISTDLG TPF0)', () 
       confirmationCaption: 'Confirm Deletion', confirmationText: 'Delete Selected Item from List?',
       dialogCaption: 'Select Measurement Record',
     });
-    expect(PULSAR_MESSAGES_EN['pulsar.review.noSelectionCaption']).toBe(PULSAR_REVIEW_LITERALS.noSelectionCaption);
-    expect(PULSAR_MESSAGES_EN['pulsar.review.noSelectionText']).toBe(PULSAR_REVIEW_LITERALS.noSelectionText);
-    expect(PULSAR_MESSAGES_EN['pulsar.review.confirmCaption']).toBe(PULSAR_REVIEW_LITERALS.confirmationCaption);
-    expect(PULSAR_MESSAGES_EN['pulsar.review.confirmText']).toBe(PULSAR_REVIEW_LITERALS.confirmationText);
-    expect(PULSAR_MESSAGES_EN['pulsar.review.heading']).toBe(PULSAR_REVIEW_LITERALS.dialogCaption);
+    // Front ES8b: the captions render through vireo() of these literals (no catalog keys); the button captions are literals too.
+    expect(PULSAR_REVIEW_BUTTONS).toEqual({ find: 'Find...', edit: 'Edit...', delete: 'Delete', ok: 'Ok', cancel: 'Cancel' });
   });
 });

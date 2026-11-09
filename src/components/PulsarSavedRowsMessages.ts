@@ -1,10 +1,9 @@
-import { SAVED_FIND_LITERALS } from '../core/pulsarSavedRows';
 import {pickMessages} from '../i18n/registry';
 /**
  * English presentation catalog for the supplied saved-rows viewer (keys `savedRows.*`). It stays a scoped catalog; the App
  * host's own disclosure texts are `plr.savedRows.*` in en.json. A complete replacement catalog is accepted by createSavedRowsTranslator.
- * Labels are authored web text, except the Find dialog caption, its DFM captions and the not-found caption, which
- * are the decoded literals (SAVED_FIND_LITERALS in src/core/pulsarSavedRows.ts). The not-found body is built by the
+ * Labels are authored web text. The Find dialog caption, its DFM captions and the not-found caption are the decoded literals
+ * (SAVED_FIND_LITERALS in src/core/pulsarSavedRows.ts); since Front ES8b they render through vireo() and are not keys here. The not-found body is built by the
  * pure core from the literals and is shown as text. Pure presentation data: no React and no scientific state.
  */
 export const SAVED_ROWS_MESSAGES_EN = Object.freeze({
@@ -76,17 +75,9 @@ export const SAVED_ROWS_MESSAGES_EN = Object.freeze({
   'savedRows.rows.none': 'No row selected.',
   'savedRows.find.open': 'Find…',
   'savedRows.find.note': 'Find searches the complete text of each row, from the first row or after the selected row, without wrapping. Letters A–Z match either case; the Case Dependent box is remembered but not used by this search, as in the original. Only printable ASCII search text is supported.',
-  'savedRows.find.caption': SAVED_FIND_LITERALS.caption,
-  'savedRows.find.searchString': SAVED_FIND_LITERALS.searchString,
-  'savedRows.find.caseDependent': SAVED_FIND_LITERALS.caseDependent,
-  'savedRows.find.beginSearch': SAVED_FIND_LITERALS.beginSearch,
-  'savedRows.find.fromTop': SAVED_FIND_LITERALS.fromTop,
-  'savedRows.find.fromCursor': SAVED_FIND_LITERALS.fromCursor,
-  'savedRows.find.cancel': SAVED_FIND_LITERALS.cancel,
   'savedRows.find.keys': 'Enter searches from the top. Escape cancels.',
   'savedRows.find.refused.query-text': 'The search text contains a character outside printable ASCII. Nothing was searched or remembered.',
   'savedRows.find.refused.query-length': 'The search text is longer than 80 characters. Nothing was searched or remembered.',
-  'savedRows.notFound.caption': SAVED_FIND_LITERALS.notFoundCaption,
   'savedRows.notFound.ok': 'OK',
   'savedRows.status.found': 'Found in row {row}.',
   'savedRows.status.empty': 'The search text is empty: nothing was searched and the selection is unchanged.',

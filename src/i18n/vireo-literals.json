@@ -534,261 +534,128 @@
  {
   "file": "src/components/PulsarAnalysis.tsx",
   "kind": "original",
-  "value": "PULSAR_ACTIVATE_LITERALS.emptyCaption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/PulsarAnalysis.tsx",
-  "kind": "original",
-  "value": "PULSAR_ACTIVATE_LITERALS.emptyText",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/PulsarAnalysis.tsx",
-  "kind": "original",
-  "value": "PP.menu",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/PulsarAnalysis.tsx",
-  "kind": "original",
   "value": "PULSAR_PAN_RATES.map",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/PulsarAnalysis.tsx",
-  "kind": "original",
-  "value": "PP.caption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the pan rates (numbers)"
  },
  {
   "file": "src/components/PulsarAnalysis.tsx",
   "kind": "original",
   "value": "PULSAR_DATA_NOT_WRITTEN",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "count": 2,
+  "reason": "identifier: compared with the stored file text; the screen shows VIREO's text through vireo()"
  },
  {
   "file": "src/components/PulsarAnalysis.tsx",
   "kind": "original",
   "value": "PULSAR_PANELS.map",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/PulsarAnalysis.tsx",
-  "kind": "original",
-  "value": "NS.clearUnsavedCaption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/PulsarAnalysis.tsx",
-  "kind": "original",
-  "value": "NS.clearUnsavedText",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/PulsarAnalysis.tsx",
-  "kind": "original",
-  "value": "NS.clearConfirmText",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/PulsarAnalysis.tsx",
-  "kind": "original",
-  "value": "PULSAR_ACTIVATE_LITERALS.loadCaption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/PulsarAnalysis.tsx",
-  "kind": "original",
-  "value": "PULSAR_ACTIVATE_LITERALS.loadText",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/PulsarAnalysis.tsx",
-  "kind": "original",
-  "value": "NS.nothingCaption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/PulsarAnalysis.tsx",
-  "kind": "original",
-  "value": "NS.nothingText",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/PulsarAnalysis.tsx",
-  "kind": "original",
-  "value": "NS.unrecordedCaption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/PulsarAnalysis.tsx",
-  "kind": "original",
-  "value": "NS.unrecordedText",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/PulsarAnalysis.tsx",
-  "kind": "original",
-  "value": "NS.extensionCaption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/PulsarAnalysis.tsx",
-  "kind": "original",
-  "value": "NS.extensionText",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/PulsarAnalysis.tsx",
-  "kind": "original",
-  "value": "NS.existsCaption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the panel indexes 0 to 2"
  },
  {
   "file": "src/components/PulsarAnalysis.tsx",
   "kind": "original",
   "value": "NS.existsText",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/PulsarAnalysis.tsx",
-  "kind": "original",
-  "value": "NS.verifyCaption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: translated in pieces around the file name through vireo(piece, \"fragment\") (nativeTr in PulsarAnalysis.tsx)"
  },
  {
   "file": "src/components/PulsarAnalysis.tsx",
   "kind": "original",
   "value": "NS.verifyText",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/PulsarAnalysis.tsx",
-  "kind": "original",
-  "value": "NS.dialogTitle",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/PulsarAnalysis.tsx",
-  "kind": "original",
-  "value": "NS.filter",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: translated in pieces around the file name through vireo(piece, \"fragment\") (nativeTr in PulsarAnalysis.tsx)"
  },
  {
   "file": "src/components/PulsarAnalysis.tsx",
   "kind": "original",
   "value": "RESULTS_EXPORT_FIELDS.map",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the export field ids (keys of the web text)"
  },
  {
   "file": "src/components/PulsarAnalysis.tsx",
   "kind": "original",
   "value": "RESULTS_EXPORT_LIMITS.maxDraft",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: an input length limit (a number)"
  },
  {
   "file": "src/components/PulsarAnalysis.tsx",
   "kind": "original",
   "value": "RESULTS_EXPORT_FILE_NAME",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a download file name"
  },
  {
   "file": "src/components/PulsarAnalysis.tsx",
   "kind": "original",
   "value": "RESULTS_APPEND_FILE_NAME",
   "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a download file name"
  },
  {
   "file": "src/components/PulsarAnalysis.tsx",
   "kind": "original",
   "value": "RAW_EXPORT_FILE_NAME",
   "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a download file name"
  },
  {
   "file": "src/components/PulsarAnalysis.tsx",
   "kind": "original",
   "value": "PULSAR_SAVE_PENDING.has",
   "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a set membership test, not text"
  },
  {
   "file": "src/components/PulsarAnalysis.tsx",
   "kind": "original",
   "value": "base",
   "count": 6,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: plot geometry in pixels (numbers)"
  },
  {
   "file": "src/components/PulsarAnalysis.tsx",
   "kind": "original",
   "value": "width",
   "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: plot geometry in pixels (numbers)"
  },
  {
   "file": "src/components/PulsarSavedRows.tsx",
   "kind": "original",
   "value": "SAVED_ROWS_LIMITS.maxBytes",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a limit (a number)"
  },
  {
   "file": "src/components/PulsarSavedRows.tsx",
   "kind": "original",
   "value": "SAVED_ROWS_LIMITS.maxRows",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a limit (a number)"
  },
  {
   "file": "src/components/PulsarSavedRows.tsx",
   "kind": "original",
   "value": "SAVED_ROWS_HEADER_NAMES.map",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "native text mirrored in a file: the column header line of the saved measurement file, shown exactly as written"
  },
  {
   "file": "src/components/PulsarSavedRows.tsx",
   "kind": "original",
   "value": "SAVED_ROW_FIELDS.map",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "native text mirrored in a file: the column names of the saved measurement file"
  },
  {
   "file": "src/components/PulsarSavedRows.tsx",
   "kind": "original",
   "value": "SAVED_FIND_MAX_QUERY",
   "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: an input length limit (a number)"
  },
  {
   "file": "src/components/RadioAccessOptions.tsx",
@@ -2580,21 +2447,21 @@
   "kind": "original",
   "value": "PULSAR_LAB_REQUIRED_STEPS.length",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a step count (a number)"
  },
  {
   "file": "src/PulsarLabGuide.tsx",
   "kind": "original",
   "value": "PULSAR_LAB_STEPS.map",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the guide step ids (keys of the web text)"
  },
  {
   "file": "src/PulsarLabGuide.tsx",
   "kind": "original",
   "value": "PULSAR_EXERCISE_SCENARIO.ut",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the exercise UT date and time (a value)"
  },
  {
   "file": "src/StarExposure.tsx",
