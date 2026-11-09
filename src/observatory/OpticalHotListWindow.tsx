@@ -1,4 +1,6 @@
 import {useEffect,useId,useRef,type RefObject} from 'react';
+import {OBSERVATORY_VIREO_CAPTIONS as OV} from './ObservatoryMessages';
+import {vireo,vireoMenuItem} from '../i18n/vireo';
 import {htlNumberDraft} from '../core/hotList';
 import {OPTICAL_HOT_LIST_EMPTY,OPTICAL_HOT_LIST_SAVE_LITERALS as SL,opticalHotListMissText,type OpticalHotListWindow as WindowState} from '../core/opticalHotList';
 import {RADIO_HOT_LIST_FORM_CAPTIONS as C} from '../core/radioAntenna';
@@ -31,21 +33,21 @@ export default function OpticalHotListWindow({caption,texts,state,rows,onSelect,
  useModal(find,state.shown&&state.search.dialog!==null,()=>{query.current?.focus();query.current?.select();});
  useModal(box,state.notice!==null);
  useEffect(()=>{if(found!==null&&!state.search.dialog)radios.current[found]?.focus();},[state.search.found]);
- const n=state.notice,boxTitle=n?.kind==='empty'?OPTICAL_HOT_LIST_EMPTY.emptyCaption:n?.kind==='search-miss'?L.missCaption:M.noSelectionTitle;
- const boxText=n?.kind==='empty'?OPTICAL_HOT_LIST_EMPTY.emptyText:n?.kind==='search-miss'?opticalHotListMissText(n.query):M.noSelection;
+ const n=state.notice,boxTitle=n?.kind==='empty'?vireo(OPTICAL_HOT_LIST_EMPTY.emptyCaption):n?.kind==='search-miss'?vireo(L.missCaption):M.noSelectionTitle;
+ const boxText=n?.kind==='empty'?vireo(OPTICAL_HOT_LIST_EMPTY.emptyText):n?.kind==='search-miss'?opticalHotListMissText(n.query,vireo):M.noSelection;
  return <>
   <dialog ref={win} className="ob-dialog ob-wide" aria-labelledby={`${id}-title`} aria-describedby={`${id}-help`} data-testid="ob-hotlist" onCancel={e=>{e.preventDefault();onClose();}}>
    <h2 id={`${id}-title`} className="ob-native">{caption}</h2>
    <p id={`${id}-help`} className="ob-note">{M.help}</p>
    <div className="ob-menu" role="group" aria-label={M.menu}>
-    <button type="button" className="secondary-button" data-testid="ob-hotlist-search" onClick={onSearch}>{M.search}</button>
-    <button type="button" className="secondary-button" data-testid="ob-hotlist-print" onClick={onPrint}>{M.print}</button>
-    {onSave&&<button type="button" className="secondary-button" data-testid="ob-hotlist-save" disabled={!saveEnabled||editBlocked} onClick={onSave}>{menuCaptionText(SL.item)}</button>}
-    <button type="button" className="primary-button" data-testid="ob-hotlist-slew" onClick={onSlew}>{menuCaptionText(C.slew)}</button>
-    {onEdit&&<><button type="button" className="secondary-button" data-testid="ob-hotlist-edit" disabled={editBlocked||!editEnabled} onClick={onEdit}>{menuCaptionText(P.edit)}</button>
-     <button type="button" className="secondary-button" data-testid="ob-hotlist-delete" disabled={editBlocked||!editEnabled} onClick={onDelete}>{menuCaptionText(P.delete)}</button>
-     <button type="button" className="secondary-button" data-testid="ob-hotlist-undo" disabled={!undoEnabled||editBlocked} onClick={onUndo}>{menuCaptionText(P.undo)}</button></>}
-    <button type="button" className="secondary-button" data-testid="ob-hotlist-close" onClick={onClose}>{menuCaptionText(C.close)}</button>
+    <button type="button" className="secondary-button" data-testid="ob-hotlist-search" onClick={onSearch}>{vireoMenuItem(OV.search)}</button>
+    <button type="button" className="secondary-button" data-testid="ob-hotlist-print" onClick={onPrint}>{vireoMenuItem(OV.print)}</button>
+    {onSave&&<button type="button" className="secondary-button" data-testid="ob-hotlist-save" disabled={!saveEnabled||editBlocked} onClick={onSave}>{vireo(menuCaptionText(SL.item))}</button>}
+    <button type="button" className="primary-button" data-testid="ob-hotlist-slew" onClick={onSlew}>{vireo(menuCaptionText(C.slew))}</button>
+    {onEdit&&<><button type="button" className="secondary-button" data-testid="ob-hotlist-edit" disabled={editBlocked||!editEnabled} onClick={onEdit}>{vireo(menuCaptionText(P.edit))}</button>
+     <button type="button" className="secondary-button" data-testid="ob-hotlist-delete" disabled={editBlocked||!editEnabled} onClick={onDelete}>{vireo(menuCaptionText(P.delete))}</button>
+     <button type="button" className="secondary-button" data-testid="ob-hotlist-undo" disabled={!undoEnabled||editBlocked} onClick={onUndo}>{vireo(menuCaptionText(P.undo))}</button></>}
+    <button type="button" className="secondary-button" data-testid="ob-hotlist-close" onClick={onClose}>{vireo(menuCaptionText(C.close))}</button>
    </div>
    {/* THotListForm1 PopupMenu (Front P): right-click or the context-menu key on the list; acts on the current selection. */}
    <div className="ob-list" role="radiogroup" aria-label={M.rows} data-testid="ob-hotlist-rows" onContextMenu={popup.open} onAuxClick={popup.auxClick}>
@@ -56,12 +58,12 @@ export default function OpticalHotListWindow({caption,texts,state,rows,onSelect,
      {found===i&&<span aria-hidden="true">{M.foundMark}</span>}
     </label>)}
    </div>
-   <PopupMenu at={popup.at} label={P.label} onClose={popup.close} returnFocus={()=>radios.current[state.index>=0?state.index:0]?.focus()} note={onEdit?PM.hotListEdit.note:PM.hotListPopup.note}
-    items={[{key:'slew',label:C.slew,onSelect:onSlew},{key:'edit',label:P.editPopup,onSelect:()=>onEdit?.(),disabled:!onEdit||editBlocked||!editEnabled},{key:'delete',label:P.delete,onSelect:()=>onDelete?.(),disabled:!onDelete||editBlocked||!editEnabled},{key:'undo',label:P.undo,onSelect:()=>onUndo?.(),disabled:!undoEnabled||editBlocked}]}/>
+   <PopupMenu at={popup.at} label={vireo(P.label)} onClose={popup.close} returnFocus={()=>radios.current[state.index>=0?state.index:0]?.focus()} note={onEdit?PM.hotListEdit.note:PM.hotListPopup.note}
+    items={[{key:'slew',label:vireo(C.slew),onSelect:onSlew},{key:'edit',label:vireo(P.editPopup),onSelect:()=>onEdit?.(),disabled:!onEdit||editBlocked||!editEnabled},{key:'delete',label:vireo(P.delete),onSelect:()=>onDelete?.(),disabled:!onDelete||editBlocked||!editEnabled},{key:'undo',label:vireo(P.undo),onSelect:()=>onUndo?.(),disabled:!undoEnabled||editBlocked}]}/>
    <p className="ob-note" role="status" aria-live="polite" data-testid="ob-hotlist-found">{found===null?'':M.found(found+1)}</p>
    <p className="ob-note">{M.adaptation}</p>
    <dialog ref={find} className="ob-dialog" aria-labelledby={`${id}-find`} data-testid="ob-hotlist-find" onCancel={e=>{e.preventDefault();onSearchCancel();}}>
-    <h2 id={`${id}-find`} className="ob-native">{L.caption}</h2>
+    <h2 id={`${id}-find`} className="ob-native">{vireo(L.caption)}</h2>
     <label className="ob-field"><span>{M.query}</span><input ref={query} type="text" autoComplete="off" spellCheck={false} maxLength={RADIO_HOT_LIST_SEARCH_QUERY_MAX} data-testid="ob-hotlist-query" value={state.search.dialog?.query??''} onChange={e=>onSearchEdit(e.target.value,state.search.dialog?.matchCase??false)} onKeyDown={e=>{if(e.key==='Enter'&&!e.nativeEvent.isComposing){e.preventDefault();onSearchSubmit('top');}}}/></label>
     <label className="ob-check"><input type="checkbox" checked={state.search.dialog?.matchCase??false} onChange={e=>onSearchEdit(state.search.dialog?.query??'',e.target.checked)}/>{M.matchCase}</label>
     <div className="ob-actions"><button type="button" className="primary-button" onClick={()=>onSearchSubmit('top')}>{M.top}</button><button type="button" className="secondary-button" onClick={()=>onSearchSubmit('next')}>{M.next}</button><button type="button" className="secondary-button" onClick={onSearchCancel}>{M.cancel}</button></div>
@@ -69,7 +71,7 @@ export default function OpticalHotListWindow({caption,texts,state,rows,onSelect,
   </dialog>
   <dialog ref={box} className="ob-dialog ob-box" role="alertdialog" aria-labelledby={`${id}-box-title`} aria-describedby={`${id}-box-text`} data-testid="ob-hotlist-box" onCancel={e=>{e.preventDefault();onDismiss();}}>
    <h2 id={`${id}-box-title`} className="ob-native">{boxTitle}</h2><p id={`${id}-box-text`} className="ob-native">{boxText}</p>
-   <div className="ob-actions"><button type="button" className="primary-button" autoFocus onClick={onDismiss}>{OBSERVATORY_MESSAGES.skyCoords.ok}</button></div>
+   <div className="ob-actions"><button type="button" className="primary-button" autoFocus onClick={onDismiss}>{vireo(OV.ok)}</button></div>
   </dialog>
  </>;
 }

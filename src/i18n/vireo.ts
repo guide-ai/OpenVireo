@@ -4,6 +4,10 @@ import {activeBundle} from './index';
  * mirrors of a written file never call it, so the same constant can feed a translated dialog and an English file
  * (docs/I18N.md; user decision 3, 2026-11-09). scripts/audit-ui-messages.mjs (`auditOriginals`) lists every unwrapped site. */
 
+/** A VIREO menu item for this load, ending in the web's ellipsis: accelerators dropped, VIREO's '...' replaced by '…'. */
+export const vireoMenuItem=(text:string,context?:string):string=>normalizeOriginal(vireo(text,context)).replace(/(?:\.\.\.|…)$/,'')+'…';
+/** A list of originals for this load (radio and option captions rendered with `.map`). */
+export const vireoList=(texts:readonly string[],context?:string):string[]=>texts.map(text=>vireo(text,context));
 /** The dictionary key of an original: single `&` accelerators removed, `&&` kept as `&`, trimmed. */
 export const normalizeOriginal=(text:string):string=>text.replace(/&(&?)/g,(_,doubled:string)=>doubled).trim();
 /** The translation of an original literal for this load, or the literal itself. `context` separates one English text that
@@ -11,7 +15,11 @@ export const normalizeOriginal=(text:string):string=>text.replace(/&(&?)/g,(_,do
 export function vireo(text:string,context?:string):string{
  const bundle=activeBundle();if(!bundle)return text;
  const key=normalizeOriginal(text),originals=bundle.originals??{};
+ // Front ES2: the literal's own leading and trailing spacing (a head such as 'RA:  ' that coordinates follow) is kept. A context
+ // entry (`ctx|original`, e.g. a `fragment|` piece of one sentence) carries its own spacing and is returned as written
+ // (ES2 review 1: «¿Quitar la selección #2?», not «… #2 ?»).
+ const spaced=(translation:string)=>/^\s*/.exec(text)![0]+translation+/\s*$/.exec(text)![0];
  if(context!==undefined&&Object.hasOwn(originals,`${context}|${key}`))return originals[`${context}|${key}`];
- if(Object.hasOwn(originals,key))return originals[key];
+ if(Object.hasOwn(originals,key))return spaced(originals[key]);
  return bundle.deriveOriginal?bundle.deriveOriginal(text):text;
 }

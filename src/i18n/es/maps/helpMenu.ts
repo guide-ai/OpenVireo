@@ -17,5 +17,11 @@ export const HELP_MENU_ES:Translation<typeof HELP_MENU_EN>=Object.freeze({
  webTopics:'Temas de ayuda…',
  tour:'Hacer el recorrido por el sitio',
  shortcutKey:'?',
+ buttonNames:Object.freeze({
+  'OBSRVHLP.LST':'Ayuda de los controles del telescopio','PHOTOHLP.LST':'Ayuda del fotómetro','CAMHLP.LST':'Ayuda de la cámara','SPECHLP.LST':'Ayuda del espectrómetro',
+  'CLASSHLP.LST':'Ayuda de la clasificación espectral','MEASHLP.LST':'Ayuda de la medición de espectros','HRANALHLP.LST':'Ayuda del diagrama HR','VARTYPEHLP.LST':'Ayuda de los tipos de estrellas variables',
+  'WDGPLTHLP.LST':'Ayuda del diagrama de cuña','PLSANHLP.LST':'Ayuda del análisis de púlsares','PLSLSHLP.LST':'Ayuda de los parámetros de púlsares','MLTSPHLP.LST':'Ayuda del espectrómetro multiobjeto',
+  'SPLSTHLP.LST':'Ayuda de la lista de espectros multiobjeto',
+ }),
  exitNote:'VIREO muestra este recordatorio cuando sales del observatorio durante un ejercicio (después de Ejecutar ejercicio, Run Exercise); si no, solo pregunta si quieres salir. OpenVireo no tiene los pasos Iniciar sesión (Log In) ni Ejecutar ejercicio, así que el observatorio siempre es un ejercicio en curso. En VIREO, Aceptar (OK) o Sí (Yes) cierran el programa; Cancelar (Cancel) o No lo dejan abierto.',
 });

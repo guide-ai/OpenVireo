@@ -3,7 +3,7 @@ import {propsEqual} from './renderStability';
 import type { Sample } from './core/spectrum';
 import type { SkyObject } from './core/sky';
 import { t } from './i18n';
-import { POLISH_MESSAGES as PM } from './polish/PolishMessages';
+import { POLISH_MESSAGES as PM, SPECTROMETER_ROUTE_HREFS } from './polish/PolishMessages';
 import CleaHelp from './clusters/CleaHelp';
 import {HELP_FILES} from './help/helpFiles';
 import {lazy} from 'react';
@@ -21,7 +21,7 @@ function Spectrometer({ onReturn, field }: { field?: FieldSpectrometerLink; targ
     <button className="back-observatory" onClick={onReturn}>{t('sky.back')}</button>
     <section className="observatory-heading"><div className="eyebrow">{t('spectrometer.eyebrow')}</div><h1 tabIndex={-1}>{S.title}</h1>{/* TSpectrometer Help1Click 0x510f4c, FormShow 0x50da3d, options +0x914 (docs/CLEA-HELP.md) */}<CleaHelp list={HELP_FILES['SPECHLP.LST']} testId="spectrometer-index-help"/><p>{S.intro}</p></section>
     <section className="card spectrometer-index" aria-labelledby="spectrometer-routes"><h2 id="spectrometer-routes">{S.routesTitle}</h2>
-      <ul data-testid="spectrometer-routes">{S.routes.map(r => <li key={r.href}><a href={r.href}>{r.label}</a> — {r.help}</li>)}</ul>
+      <ul data-testid="spectrometer-routes">{S.routes.map((r, i) => <li key={SPECTROMETER_ROUTE_HREFS[i]}><a href={SPECTROMETER_ROUTE_HREFS[i]}>{r.label}</a> — {r.help}</li>)}</ul>
       <div className="button-row"><a className="secondary-button" href="#sky-exposure">{t('skyExposure.open')}</a><a className="secondary-button" href="#star-exposure">{t('starExposure.open')}</a></div>
       <p className="observatory-note">{S.retired}</p>
     </section>

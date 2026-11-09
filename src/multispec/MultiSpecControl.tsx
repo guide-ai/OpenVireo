@@ -1,4 +1,5 @@
 import {useEffect,useId,useRef,useState} from 'react';
+import {vireo} from '../i18n/vireo';
 import PrintSkyImage from '../polish/PrintSkyImage';
 import {POLISH_MESSAGES as PM} from '../polish/PolishMessages';
 import type {Pointing} from '../core/sky';
@@ -33,32 +34,32 @@ export default function MultiSpecControl({state,dispatch,busy,masked,printField=
  const c=state.controls,menu=c.objects&&!busy,id=useId(),[printing,setPrinting]=useState(false),printButton=useRef<HTMLButtonElement>(null);
  const snr=state.displays.snr===null?t('multispec.snrIndeterminate'):state.displays.snr.toFixed(1);
  return <section className="ms-control" aria-labelledby={`${id}-title`} data-testid="ms-control">
-  <h3 id={`${id}-title`} className="ob-native">{C.caption}</h3>
-  <div className="ms-menu" role="group" aria-label={C.objects}>
-   <button type="button" className="secondary-button" disabled={!menu||!c.select} onClick={()=>dispatch({type:'select'})} data-testid="ms-select">{C.select}</button>
-   <button type="button" className="secondary-button" disabled={!menu||!c.clear} onClick={()=>dispatch({type:'clear'})} data-testid="ms-clear">{C.clear}</button>
-   <button type="button" className="secondary-button" disabled={!menu||!c.viewSave} onClick={()=>dispatch({type:'view-save'})} data-testid="ms-view-save">{C.viewSave}</button>
-   <button type="button" ref={printButton} className="secondary-button" disabled={!menu||!printField} aria-describedby={`${id}-print`} onClick={()=>setPrinting(true)} data-testid="ms-print-field">{C.printField}</button>
-   <button type="button" className="secondary-button" disabled={busy} onClick={()=>dispatch({type:'close'})} data-testid="ms-close">{C.close}</button>
-   {/* TMultSpCntrl Help1: Help1.Enabled := Length(+0xb54) > 0, empty by default (0x529b5f). */}<CleaHelp list={HELP_FILES['MLTSPHLP.LST']} label={C.help} disabledReason={t('multispec.helpEmpty')} testId="ms-control-help"/>
+  <h3 id={`${id}-title`} className="ob-native">{vireo(C.caption)}</h3>
+  <div className="ms-menu" role="group" aria-label={vireo(C.objects)}>
+   <button type="button" className="secondary-button" disabled={!menu||!c.select} onClick={()=>dispatch({type:'select'})} data-testid="ms-select">{vireo(C.select)}</button>
+   <button type="button" className="secondary-button" disabled={!menu||!c.clear} onClick={()=>dispatch({type:'clear'})} data-testid="ms-clear">{vireo(C.clear)}</button>
+   <button type="button" className="secondary-button" disabled={!menu||!c.viewSave} onClick={()=>dispatch({type:'view-save'})} data-testid="ms-view-save">{vireo(C.viewSave)}</button>
+   <button type="button" ref={printButton} className="secondary-button" disabled={!menu||!printField} aria-describedby={`${id}-print`} onClick={()=>setPrinting(true)} data-testid="ms-print-field">{vireo(C.printField)}</button>
+   <button type="button" className="secondary-button" disabled={busy} onClick={()=>dispatch({type:'close'})} data-testid="ms-close">{vireo(C.close)}</button>
+   {/* TMultSpCntrl Help1: Help1.Enabled := Length(+0xb54) > 0, empty by default (0x529b5f). */}<CleaHelp list={HELP_FILES['MLTSPHLP.LST']} label={vireo(C.help)} disabledReason={t('multispec.helpEmpty')} testId="ms-control-help"/>
   </div>
   <p className="observatory-note" id={`${id}-print`} data-testid="ms-print-field-note">{printField?t('multispec.printFieldTyped'):PM.multiSpecPrint.unavailable}</p>
   {printing&&printField&&<PrintSkyImage pointing={printField.pointing} view="instrument" telescope={printField.telescope} instrument={3} clone={printField.clone} onClose={()=>{setPrinting(false);printButton.current?.focus();}}/>}
   <div className="ms-displays">
-   <div className="ms-display"><span>{C.objectsDisplay}</span><output data-testid="ms-objects">{state.displays.objects}</output></div>
-   <div className="ms-display"><span>{C.snr}</span><output data-testid="ms-snr">{snr}</output><small>{N.snrLabel}</small></div>
-   <div className="ms-display"><span>{C.timer}</span><output data-testid="ms-clock" data-colour={state.displays.clockColour}>{clockText(state.displays.clock)}</output></div>
+   <div className="ms-display"><span>{vireo(C.objectsDisplay)}</span><output data-testid="ms-objects">{state.displays.objects}</output></div>
+   <div className="ms-display"><span>{vireo(C.snr)}</span><output data-testid="ms-snr">{snr}</output><small>{vireo(N.snrLabel)}</small></div>
+   <div className="ms-display"><span>{vireo(C.timer)}</span><output data-testid="ms-clock" data-colour={state.displays.clockColour}>{clockText(state.displays.clock)}</output></div>
   </div>
   {state.signalToNoise.status==='indeterminate'&&<p className="observatory-note" data-testid="ms-snr-typed">{multiSpecSnrText(state.signalToNoise,masked)}</p>}
   <div className="ms-row">
-   <span className="ms-led-label">{C.selectLed}<span className="ms-led" data-on={state.selecting} role="img" aria-label={t(state.selecting?'multispec.ledOn':'multispec.ledOff')} data-testid="ms-led"/></span>
-   <label className="ms-exp">{C.minutes}<input value={state.expText} inputMode="decimal" maxLength={64} title={N.hint} disabled={state.running||busy} onChange={e=>dispatch({type:'edit-exposure',text:e.target.value})} data-testid="ms-minutes"/></label>
+   <span className="ms-led-label">{vireo(C.selectLed)}<span className="ms-led" data-on={state.selecting} role="img" aria-label={t(state.selecting?'multispec.ledOn':'multispec.ledOff')} data-testid="ms-led"/></span>
+   <label className="ms-exp">{vireo(C.minutes)}<input value={state.expText} inputMode="decimal" maxLength={64} title={vireo(N.hint)} disabled={state.running||busy} onChange={e=>dispatch({type:'edit-exposure',text:e.target.value})} data-testid="ms-minutes"/></label>
   </div>
   <p className="observatory-note">{t('multispec.timerNote')}</p>
-  <div className="ms-row ms-buttons"><span>{C.exposure}</span>
-   <button type="button" className="primary-button" disabled={!c.init||busy||blockExposure} onClick={()=>dispatch({type:'init'})} data-testid="ms-init">{C.init}</button>
-   <button type="button" className="secondary-button" disabled={!c.go||busy||blockExposure} onClick={()=>dispatch({type:'go'})} data-testid="ms-go">{C.go}</button>
-   <button type="button" className="secondary-button" disabled={!c.stop} onClick={()=>dispatch({type:'stop'})} data-testid="ms-stop">{C.stop}</button>
+  <div className="ms-row ms-buttons"><span>{vireo(C.exposure)}</span>
+   <button type="button" className="primary-button" disabled={!c.init||busy||blockExposure} onClick={()=>dispatch({type:'init'})} data-testid="ms-init">{vireo(C.init)}</button>
+   <button type="button" className="secondary-button" disabled={!c.go||busy||blockExposure} onClick={()=>dispatch({type:'go'})} data-testid="ms-go">{vireo(C.go)}</button>
+   <button type="button" className="secondary-button" disabled={!c.stop} onClick={()=>dispatch({type:'stop'})} data-testid="ms-stop">{vireo(C.stop)}</button>
   </div>
  </section>;
 }

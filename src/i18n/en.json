@@ -3597,5 +3597,8 @@
   "cameraParameters.informationNote": "These are the instructor's camera values (not VIREO's compiled ones), as VIREO lists its current options.",
   "cameraParameters.adUpGlyph": "▲",
   "cameraParameters.adDownGlyph": "▼",
-  "cameraParameters.objectXRefused": "{name} was made with instructor camera values (uncertified): it is not added to the Object X investigation."
+  "cameraParameters.objectXRefused": "{name} was made with instructor camera values (uncertified): it is not added to the Object X investigation.",
+  "nativeMirror.caption": "VIREO's native text, in English as in the file it saves.",
+  "nativeMirror.captionPrint": "VIREO's native text, in English as VIREO shows it.",
+  "sky.targetCoordinates": "RA {ra} h · Dec {dec}°"
 }

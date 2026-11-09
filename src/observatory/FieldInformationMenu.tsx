@@ -1,4 +1,6 @@
 import {useEffect,useRef,useState} from 'react';
+import {OBSERVATORY_VIREO_CAPTIONS as OV} from './ObservatoryMessages';
+import {vireo} from '../i18n/vireo';
 import {HtlError,addHtlRow,newHtlEditor,serializeHtl} from '../core/hotList';
 import {addHtlRowRaOrdered} from '../core/hotListEntry';
 import {keepHotList,setHotListEditor} from '../core/sharedHotList';
@@ -96,19 +98,19 @@ export default function FieldInformationMenu({info,pointing,enabled,hotList,onSl
  const record=(selection:number)=>variable&&'list' in variable?variable.list.records[selection]??null:null;
  function add(selection:number){
   const r=record(selection);if(!r)return;
-  if(hotList.current().read){setBox({caption:VL.confirmation,text:M.busy});return;}
+  if(hotList.current().read){setBox({caption:vireo(VL.confirmation),text:M.busy});return;}
   try{hotList.update(d=>d.read?keepHotList(d):setHotListEditor(d,addHtlRowRaOrdered(d.editor??newHtlEditor(),variableHotListFields(r)),d.editor?d.name:''));}
-  catch(e){setBox({caption:VL.confirmation,text:e instanceof HtlError?e.message:M.busy});return;}
-  setBox({caption:VL.confirmation,text:variableAddedText(r.name)});
+  catch(e){setBox({caption:vireo(VL.confirmation),text:e instanceof HtlError?e.message:M.busy});return;}
+  setBox({caption:vireo(VL.confirmation),text:variableAddedText(r.name,vireo)});
  }
  function startNew(r:VariableStarRecord,saveFirst:boolean){
   setConfirm(null);
   const doc=hotList.current();
-  if(doc.read){setBox({caption:VL.confirmation,text:M.busy});return;}
+  if(doc.read){setBox({caption:vireo(VL.confirmation),text:M.busy});return;}
   if(saveFirst&&doc.editor)downloadText(serializeHtl(doc.editor.list),doc.name||'HotList.HTL');
   try{hotList.update(d=>d.read?keepHotList(d):setHotListEditor(d,addHtlRow(newHtlEditor(),variableHotListFields(r)),''));}
-  catch(e){setBox({caption:VL.confirmation,text:e instanceof HtlError?e.message:M.busy});return;}
-  setBox({caption:VL.confirmation,text:variableNewListText(r.name)});
+  catch(e){setBox({caption:vireo(VL.confirmation),text:e instanceof HtlError?e.message:M.busy});return;}
+  setBox({caption:vireo(VL.confirmation),text:variableNewListText(r.name,vireo)});
  }
  function start(selection:number){
   const r=record(selection);if(!r)return;
@@ -127,31 +129,31 @@ export default function FieldInformationMenu({info,pointing,enabled,hotList,onSl
   {star&&('report' in star?<FieldInfoListWindow testId="fi-slist" caption={star.report.caption} lines={star.report.lines} first={star.report.first} last={star.report.last}
     notice={<>{star.report.reason&&<p className="fi-unavailable" role="status" data-testid="fi-slist-reason" data-reason={star.report.reason}>{fieldInfoReasonText(star.report.reason)}</p>}<p className="fi-note">{M.modelessNote} {M.printAdaptation} {M.saveAdaptation}</p></>}
     selectionItems={[
-     {key:'add',label:FL.menu.add,onClick:()=>{},unavailable:fieldInfoReasonText('starlist-hotlist-cluster-bank')},
-     {key:'start',label:FL.menu.start,onClick:()=>{},unavailable:fieldInfoReasonText('starlist-hotlist-cluster-bank')},
-     {key:'entire',label:FL.menu.entire,onClick:()=>{},unavailable:fieldInfoReasonText('starlist-hotlist-cluster-bank')},
+     {key:'add',label:vireo(FL.menu.add),onClick:()=>{},unavailable:fieldInfoReasonText('starlist-hotlist-cluster-bank')},
+     {key:'start',label:vireo(FL.menu.start),onClick:()=>{},unavailable:fieldInfoReasonText('starlist-hotlist-cluster-bank')},
+     {key:'entire',label:vireo(FL.menu.entire),onClick:()=>{},unavailable:fieldInfoReasonText('starlist-hotlist-cluster-bank')},
     ]}
     saveName={FIELD_STAR_SAVE_NAMES.text}
-    csv={{disabled:false,bytes:()=>{const l=fieldStarCsvLines(star.report.lines);return l?{bytes:variableStarSaveText(l),name:FIELD_STAR_SAVE_NAMES.csv}:{caption:FL.csvTitle,text:fieldInfoReasonText('csv-row-short')};}}}
+    csv={{disabled:false,bytes:()=>{const l=fieldStarCsvLines(star.report.lines);return l?{bytes:variableStarSaveText(l),name:FIELD_STAR_SAVE_NAMES.csv}:{caption:vireo(FL.csvTitle),text:fieldInfoReasonText('csv-row-short')};}}}
     onClose={closeStars} box={starBox} onBox={setStarBox}/>
-   :<section className="card fi-window" data-testid="fi-slist-status"><h2 className="ob-native">{FL.caption}</h2><p role="status" className={'loading' in star?'fi-note':'fi-unavailable'} data-reason={'reason' in star?star.reason:'loading'}>{'reason' in star?fieldInfoReasonText(star.reason,star.detail):fieldInfoReasonText('loading')}</p>
+   :<section className="card fi-window" data-testid="fi-slist-status"><h2 className="ob-native">{vireo(FL.caption)}</h2><p role="status" className={'loading' in star?'fi-note':'fi-unavailable'} data-reason={'reason' in star?star.reason:'loading'}>{'reason' in star?fieldInfoReasonText(star.reason,star.detail):fieldInfoReasonText('loading')}</p>
     <button type="button" className="secondary-button" onClick={closeStars}>{M.close}</button></section>)}
   {variable&&('list' in variable?<FieldInfoListWindow testId="fi-vlist" caption={variable.list.caption} lines={variable.list.lines} first={variable.list.first} last={variable.list.last}
     notice={<>{reason&&<p className="fi-unavailable" role="status" data-testid="fi-vlist-reason" data-reason={reason}>{fieldInfoReasonText(reason as FieldInfoReason)}</p>}<p className="fi-note">{M.modelessNote} {M.printAdaptation} {M.saveAdaptation}</p></>}
     selectionItems={[
-     {key:'data',label:SM.data,onClick:s=>{const r=record(s);if(r)info.onOpenVariable(r.index);}},
-     {key:'slew',label:SM.slew,onClick:slew,unavailable:enabled?null:M.slewBusy},
-     {key:'add',label:SM.add,onClick:add},
-     {key:'start',label:SM.start,onClick:start},
+     {key:'data',label:vireo(SM.data),onClick:s=>{const r=record(s);if(r)info.onOpenVariable(r.index);}},
+     {key:'slew',label:vireo(SM.slew),onClick:slew,unavailable:enabled?null:M.slewBusy},
+     {key:'add',label:vireo(SM.add),onClick:add},
+     {key:'start',label:vireo(SM.start),onClick:start},
     ]}
     onActivate={slew} saveName={VARIABLE_FIELD_SAVE_NAME}
-    csv={{disabled:true,unavailable:{caption:VL.csvCaption,text:VL.csvText}}}
+    csv={{disabled:true,unavailable:{caption:vireo(VL.csvCaption),text:vireo(VL.csvText)}}}
     onClose={()=>setVariable(null)} box={box} onBox={setBox}/>
    :<section className="card fi-window" data-testid="fi-vlist-status"><p role="status" className={'loading' in variable?'fi-note':'fi-unavailable'} data-reason={'hidden' in variable?'object-x-hidden':'error' in variable?'load-error':'loading'}>{fieldInfoReasonText('hidden' in variable?'object-x-hidden':'error' in variable?'load-error':'loading')}</p>
     <button type="button" className="secondary-button" onClick={()=>setVariable(null)}>{M.close}</button></section>)}
-  {confirm&&<MessageBox box={{caption:VL.unsavedCaption,text:VL.unsavedText}} onClose={()=>setConfirm(null)} actions={<>
-   <button type="button" className="primary-button" data-testid="fi-unsaved-yes" onClick={()=>startNew(confirm,true)}>{M.yes}</button>
-   <button type="button" className="secondary-button" data-testid="fi-unsaved-no" onClick={()=>startNew(confirm,false)}>{M.no}</button></>}/>}
+  {confirm&&<MessageBox box={{caption:vireo(VL.unsavedCaption),text:vireo(VL.unsavedText)}} onClose={()=>setConfirm(null)} actions={<>
+   <button type="button" className="primary-button" data-testid="fi-unsaved-yes" onClick={()=>startNew(confirm,true)}>{vireo(OV.yes)}</button>
+   <button type="button" className="secondary-button" data-testid="fi-unsaved-no" onClick={()=>startNew(confirm,false)}>{vireo(OV.no)}</button></>}/>}
   {confirm&&<p className="fi-note">{M.startNewAdaptation}</p>}
  </div>;
 }

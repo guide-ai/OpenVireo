@@ -1,4 +1,5 @@
 import {useEffect,useId,useRef,useState} from 'react';
+import {vireo} from '../i18n/vireo';
 import {createPortal} from 'react-dom';
 import type {MultiSpecSpectrum} from '../core/multiSpecSpectrum';
 import {MULTISPEC_MESSAGES as N} from '../core/multiSpecFormat';
@@ -20,9 +21,9 @@ export function MultiSpecPlot({spectrum,label}:Readonly<{spectrum:MultiSpecSpect
   <g stroke="#ffffff" fill="#ffffff" fontSize="11">
    <line x1={x0} x2={x0+400} y1={170} y2={170}/><line x1={x0} x2={x0} y1={20} y2={170}/>
    {ticks.map(w=><g key={w}><line x1={xOf(w)} x2={xOf(w)} y1={170} y2={175}/><text x={xOf(w)} y={188} textAnchor="middle" stroke="none">{w}</text></g>)}
-   <text x={x0+200} y={210} textAnchor="middle" stroke="none">{D.axisX}</text>
-   <text x={12} y={95} textAnchor="middle" stroke="none" transform="rotate(-90 12 95)">{D.axisY}</text>
-   <text x={x0-4} y={24} textAnchor="end" stroke="none">{D.one}</text><text x={x0-4} y={170} textAnchor="end" stroke="none">{D.zero}</text>
+   <text x={x0+200} y={210} textAnchor="middle" stroke="none">{vireo(D.axisX)}</text>
+   <text x={12} y={95} textAnchor="middle" stroke="none" transform="rotate(-90 12 95)">{vireo(D.axisY)}</text>
+   <text x={x0-4} y={24} textAnchor="end" stroke="none">{vireo(D.one)}</text><text x={x0-4} y={170} textAnchor="end" stroke="none">{vireo(D.zero)}</text>
   </g>
   <polyline points={points} fill="none" stroke="#ffff55" strokeWidth="1"/>
  </svg>;
@@ -32,7 +33,7 @@ function InformationDialog({lines,onClose}:Readonly<{lines:readonly string[];onC
  const id=useId(),dialog=useRef<HTMLDialogElement>(null),ok=useRef<HTMLButtonElement>(null);
  useEffect(()=>{const d=dialog.current;if(d&&!d.open){d.showModal();ok.current?.focus();}return()=>{if(d?.open)d.close();};},[]);
  return <dialog ref={dialog} className="ob-dialog ms-info" aria-labelledby={`${id}-t`} data-testid="ms-info" onCancel={e=>{e.preventDefault();onClose();}}>
-  <h2 id={`${id}-t`} className="ob-native">{D.infoCaption}</h2>
+  <h2 id={`${id}-t`} className="ob-native">{vireo(D.infoCaption)}</h2>
   <ul className="ms-lines">{lines.map((l,i)=><li key={i} data-testid={`ms-info-line-${i}`}>{l}</li>)}</ul>
   <div className="ob-actions"><button type="button" className="primary-button" ref={ok} onClick={onClose}>{t('multispec.ok')}</button></div>
  </dialog>;
@@ -72,11 +73,11 @@ export default function MultiSpecDisplay({caption,result,information,printLines,
  const ready=result.status==='ready';
  return <section className="ms-spectrum" aria-labelledby={`${id}-c`} data-testid="ms-spectrum">
   <h4 id={`${id}-c`} className="ob-native" data-testid="ms-spectrum-caption">{caption}</h4>
-  <div className="ms-menu" role="group" aria-label={D.file}>
-   <button type="button" className="secondary-button" disabled={!ready} onClick={()=>setInfo(information())} data-testid="ms-information">{D.information}</button>
-   <button type="button" className="secondary-button" disabled={!ready} onClick={onSave} data-testid="ms-save">{D.save}</button>
-   <button type="button" className="secondary-button" disabled={!ready} onClick={()=>setPrint(printLines())} data-testid="ms-print">{D.print}</button>
-   <button type="button" className="secondary-button" onClick={onClose} data-testid="ms-spectrum-exit">{D.exit}</button>
+  <div className="ms-menu" role="group" aria-label={vireo(D.file)}>
+   <button type="button" className="secondary-button" disabled={!ready} onClick={()=>setInfo(information())} data-testid="ms-information">{vireo(D.information)}</button>
+   <button type="button" className="secondary-button" disabled={!ready} onClick={onSave} data-testid="ms-save">{vireo(D.save)}</button>
+   <button type="button" className="secondary-button" disabled={!ready} onClick={()=>setPrint(printLines())} data-testid="ms-print">{vireo(D.print)}</button>
+   <button type="button" className="secondary-button" onClick={onClose} data-testid="ms-spectrum-exit">{vireo(D.exit)}</button>
   </div>
   {result.status==='ready'&&result.spectrum.wrapped&&<p className="ob-note" data-testid="ms-wrapped">{t('multispec.wrapped')}</p>}
   {result.status==='ready'?<MultiSpecPlot spectrum={result.spectrum} label={t('multispec.plotLabel',{caption})}/>

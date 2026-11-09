@@ -88,7 +88,8 @@ export function variableFieldList(all:readonly VariableStarRecord[],pointing:Rea
 export function listSelection(itemIndex:number,first:number,last:number):number{return Number.isInteger(itemIndex)&&itemIndex>=first&&itemIndex<=last?itemIndex-first:-1;}
 /** Hot-list record 0x5300f0: name (max 24), RA, Dec, remark := variability type (max 40). */
 export function variableHotListFields(r:VariableStarRecord):HtlFields{return Object.freeze({id:r.name.slice(0,24),remarks:r.type.slice(0,40),ra:r.raHours,dec:r.decDegrees});}
-export const variableAddedText=(name:string)=>VARIABLE_FIELD_LITERALS.addedHead+name+VARIABLE_FIELD_LITERALS.addedTail;
-export const variableNewListText=(name:string)=>VARIABLE_FIELD_LITERALS.newList+name+VARIABLE_FIELD_LITERALS.newListTail;
+/** `tr` shows a literal in the screen language (the web passes vireo(); default unchanged). */
+export const variableAddedText=(name:string,tr:(literal:string)=>string=literal=>literal)=>tr(VARIABLE_FIELD_LITERALS.addedHead)+name+tr(VARIABLE_FIELD_LITERALS.addedTail);
+export const variableNewListText=(name:string,tr:(literal:string)=>string=literal=>literal)=>tr(VARIABLE_FIELD_LITERALS.newList)+name+tr(VARIABLE_FIELD_LITERALS.newListTail);
 /** WEB download name: the original dialog starts from an empty stem (+0x3eb has no writer) with `.TXT`. */
 export const VARIABLE_FIELD_SAVE_NAME='Variable_Stars.TXT';

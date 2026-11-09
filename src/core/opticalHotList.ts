@@ -70,12 +70,12 @@ export function opticalHotListSaveEnabled(event:OpticalHotListSaveEvent,editMode
  }
 }
 export const opticalHotListSaveOutcome=(editMode:boolean):'save'|'edit-mode-required'=>editMode?'save':'edit-mode-required';
-export const opticalHotListSavedText=(fileName:string)=>OPTICAL_HOT_LIST_SAVE_LITERALS.savedText+fileName;
+export const opticalHotListSavedText=(fileName:string,tr:(literal:string)=>string=literal=>literal)=>tr(OPTICAL_HOT_LIST_SAVE_LITERALS.savedText)+fileName;
 
 /** OB-HL-02 FormShow caption for exercise 0 (the exercise cases 1–6 only change the caption, 0x5909e7..0x590a4f; not ported): "Hot List File: " + file name, or
  * "New Hot List File" without a file. The " (Modified)" suffix (+0x587) is not tracked by the shared list (adaptation). */
 export const OPTICAL_HOT_LIST_CAPTIONS=Object.freeze({file:'Hot List File: ',modified:' (Modified)',none:'New Hot List File'});
-export function opticalHotListCaption(fileName:string):string{return fileName?OPTICAL_HOT_LIST_CAPTIONS.file+fileName:OPTICAL_HOT_LIST_CAPTIONS.none;}
+export function opticalHotListCaption(fileName:string,tr:(literal:string)=>string=literal=>literal):string{return fileName?tr(OPTICAL_HOT_LIST_CAPTIONS.file)+fileName:tr(OPTICAL_HOT_LIST_CAPTIONS.none);}
 
 /** View/Select: an empty list gives the 'Observation List Empty' box and nothing else; otherwise the list is shown with its
  * remembered index kept and the Find state reset (FormActivate 0x590c28). */

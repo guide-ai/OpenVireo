@@ -1,4 +1,5 @@
 import {useSpectrometerParameterGate} from '../useSpectrometerParameterGate';
+import {vireo} from '../i18n/vireo';
 import {useEffect,useId,useMemo,useReducer,useRef,useState,useContext} from 'react';
 import {TestModeContext} from '../polish/testModeContext';
 import {VireoOptionsContext} from '../vireoOptionsContext';
@@ -157,15 +158,15 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
 
  const ready=view.status==='ready'?view.view:null;
  const removing=state.question?.kind==='remove'?state.question.index:null;
- const box=state.question?.kind==='remove'?{caption:N.caption,text:N.removeQuestion(state.numberingBase+state.question.index),question:true}
-  :state.question?.kind==='terminate'?{caption:N.terminate.caption,text:N.terminate.text,question:true}
-  :state.question?.kind==='clear-all'?{caption:N.clearAll.caption,text:N.clearAll.text,question:true}
-  :state.message==='select-hint'?{caption:N.caption,text:N.selectHint,question:false}
-  :state.message==='cannot-remove'?{caption:N.cannotRemove.caption,text:N.cannotRemove.text,question:false}
-  :state.message==='invalid-exposure'?{caption:N.invalidExposure.caption,text:N.invalidExposure.text,question:false}
-  :state.message==='no-spectra'?{caption:N.noSpectra.caption,text:N.noSpectra.text,question:false}
-  :state.message==='cannot-close'?{caption:N.caption,text:t('multispec.cannotClose'),question:false}
-  :noItem?{caption:N.noItem.caption,text:noItem==='show'?N.noItem.show:N.noItem.close,question:false}:null;
+ const box=state.question?.kind==='remove'?{caption:vireo(N.caption),text:N.removeQuestion(state.numberingBase+state.question.index,fragment=>vireo(fragment,'fragment')),question:true}
+  :state.question?.kind==='terminate'?{caption:vireo(N.terminate.caption),text:vireo(N.terminate.text),question:true}
+  :state.question?.kind==='clear-all'?{caption:vireo(N.clearAll.caption),text:vireo(N.clearAll.text),question:true}
+  :state.message==='select-hint'?{caption:vireo(N.caption),text:vireo(N.selectHint),question:false}
+  :state.message==='cannot-remove'?{caption:vireo(N.cannotRemove.caption),text:vireo(N.cannotRemove.text),question:false}
+  :state.message==='invalid-exposure'?{caption:vireo(N.invalidExposure.caption),text:vireo(N.invalidExposure.text),question:false}
+  :state.message==='no-spectra'?{caption:vireo(N.noSpectra.caption),text:vireo(N.noSpectra.text),question:false}
+  :state.message==='cannot-close'?{caption:vireo(N.caption),text:t('multispec.cannotClose'),question:false}
+  :noItem?{caption:vireo(N.noItem.caption),text:vireo(noItem==='show'?N.noItem.show:N.noItem.close),question:false}:null;
  const answer=(yes:boolean)=>{if(state.question)dispatch({type:'answer',yes});else if(state.message)dispatch({type:'dismiss'});else setNoItem(null);};
  const fieldStatus=!field?noFieldText:view.status==='loading'?t('multispec.fieldLoading'):view.status==='error'?(mask.masked?t('multispec.fieldNeutral'):t('multispec.fieldError'))
   :view.status==='reasons'?(mask.masked?t('multispec.fieldNeutral'):t('multispec.fieldReasons',{reasons:view.view.reasons.map(fieldReasonText).join('; ')}))
@@ -206,8 +207,8 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
     {state.entries.filter(e=>shown.includes(entryKey(e))).map(e=>{
      const m=multiSpecFibreMask(mask,e.selection,targetSource),caption=multiSpecCaption(e.idx,e.selection.name,nameOptions);
      return <MultiSpecDisplay key={entryKey(e)} caption={caption} result={resultOf(e)}
-      information={()=>{const s=readyOf(e)!,r=results.get(entryKey(e));return multiSpecInformationLines(e,s,{...textOptions,mask:m,galaxyType:r?.status==='done'?r.galaxyType:null,galaxyRedshiftMask:t('multispec.zMasked')});}}
-      printLines={()=>multiSpecPrintLines(e,readyOf(e)!,{...nameOptions,mask:m})}
+      information={()=>{const s=readyOf(e)!,r=results.get(entryKey(e));return multiSpecInformationLines(e,s,{...textOptions,mask:m,galaxyType:r?.status==='done'?r.galaxyType:null,galaxyRedshiftMask:t('multispec.zMasked')},vireo);}}
+      printLines={()=>multiSpecPrintLines(e,readyOf(e)!,{...nameOptions,mask:m},vireo)}
       onSave={()=>save(e)} onClose={()=>{const k=entryKey(e);setShown(s=>s.filter(x=>x!==k));}}/>;
     })}
    </div>

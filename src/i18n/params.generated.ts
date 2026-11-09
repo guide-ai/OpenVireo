@@ -3599,4 +3599,7 @@ export interface MessageParameters {
   "cameraParameters.adUpGlyph": never;
   "cameraParameters.adDownGlyph": never;
   "cameraParameters.objectXRefused": "name";
+  "nativeMirror.caption": never;
+  "nativeMirror.captionPrint": never;
+  "sky.targetCoordinates": "dec" | "ra";
 }

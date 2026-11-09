@@ -20,14 +20,15 @@ export const HELP_MENU_EN=Object.freeze({
  /** Front Onboarding [W]: the first-visit tour, repeatable from Help; and the key that opens Help topics from anywhere. */
  tour:'Take the tour of the site',
  shortcutKey:'?',
- exitNote:'VIREO shows this reminder when you exit the observatory during an exercise (after Run Exercise); otherwise it only asks whether to quit. OpenVireo has no Log In or Run Exercise step, so the observatory is always an exercise in progress. In VIREO, OK or Yes quits the program; Cancel or No keeps it open.',
-});
-export const HELP_MENU=pickMessages('helpMenu',HELP_MENU_EN);
-
-/** Accessible names of each window's Help button, by help index (review 1 I4); the visible caption stays "Help". */
-export const HELP_BUTTON_NAMES:Readonly<Record<string,string>>=Object.freeze({
+ /** Accessible names of each window's Help button, by help index (review 1 I4); the visible caption stays VIREO's "Help".
+  * Front ES2: web text, so a map entry (it was HELP_BUTTON_NAMES). */
+ buttonNames:Object.freeze({
  'OBSRVHLP.LST':'Help for the telescope controls','PHOTOHLP.LST':'Help for the photometer','CAMHLP.LST':'Help for the camera','SPECHLP.LST':'Help for the spectrometer',
  'CLASSHLP.LST':'Help for spectral classification','MEASHLP.LST':'Help for spectrum measuring','HRANALHLP.LST':'Help for the HR diagram','VARTYPEHLP.LST':'Help for variable star types',
  'WDGPLTHLP.LST':'Help for the wedge plot','PLSANHLP.LST':'Help for the pulsar analysis','PLSLSHLP.LST':'Help for the pulsar parameters','MLTSPHLP.LST':'Help for the multi-object spectrometer',
  'SPLSTHLP.LST':'Help for the multi-object spectrum list',
+ }) as Readonly<Record<string,string>>,
+ exitNote:'VIREO shows this reminder when you exit the observatory during an exercise (after Run Exercise); otherwise it only asks whether to quit. OpenVireo has no Log In or Run Exercise step, so the observatory is always an exercise in progress. In VIREO, OK or Yes quits the program; Cancel or No keeps it open.',
 });
+export const HELP_MENU=pickMessages('helpMenu',HELP_MENU_EN);
+

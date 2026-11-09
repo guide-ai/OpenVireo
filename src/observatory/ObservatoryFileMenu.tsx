@@ -1,8 +1,9 @@
 import {useEffect,useId,useRef,useState} from 'react';
+import {OBSERVATORY_VIREO_CAPTIONS as OV} from './ObservatoryMessages';
+import {vireo} from '../i18n/vireo';
 import {menuCaptionText} from '../core/radioControl';
 import {EDIT_MODE_CAPTIONS} from '../core/editMode';
 import {VARIABLE_STARS_MENU as VM,QSO_LIST_MENU,HST_ARCHIVE} from '../core/observatoryMenuLiterals';
-import {FIELD_INFO_MESSAGES as M} from './FieldInfoMessages';
 import {QSO_LIST_MESSAGES as Q} from './QsoListMessages';
 import './field-info.css';
 import {ExitObservatoryDialog} from '../help/HelpMenus';
@@ -41,29 +42,29 @@ export default function ObservatoryFileMenu({editMode,qsoList,disabled,onFieldIn
  const fileOpen=menu==='file'||menu==='field'||menu==='variables';
  return <div className="fi-menubar ob-file-menu" data-testid="ob-file-menubar">
   <div className="fi-menu" onKeyDown={e=>escape(e,fileTrigger)}>
-   <button type="button" ref={fileTrigger} disabled={disabled} aria-expanded={fileOpen} aria-controls={`${id}-file`} data-testid="fi-file-menu" onClick={()=>setMenu(m=>m==='file'||m==='field'||m==='variables'?null:'file')}>{M.fileMenu}</button>
-   {fileOpen&&<div id={`${id}-file`} role="group" aria-label={M.fileMenu} className="fi-menu-list">
-    {editMode&&<><button type="button" aria-expanded={menu==='field'||menu==='variables'} data-testid="fi-field-information" onClick={()=>setMenu(m=>m==='file'?'field':'file')}>{menuCaptionText(EDIT_MODE_CAPTIONS.fieldInformation)} ›</button>
-     {(menu==='field'||menu==='variables')&&<div role="group" aria-label={menuCaptionText(EDIT_MODE_CAPTIONS.fieldInformation)} className="fi-submenu">
-      <button type="button" data-testid="fi-star-list" onClick={()=>pick(()=>onFieldInfo('stars'))}>{menuCaptionText(EDIT_MODE_CAPTIONS.starList)}</button>
-      <button type="button" aria-expanded={menu==='variables'} data-testid="fi-variable-stars" onClick={()=>setMenu(m=>m==='variables'?'field':'variables')}>{menuCaptionText(VM.variableStars)} ›</button>
-      {menu==='variables'&&<div role="group" aria-label={menuCaptionText(VM.variableStars)} className="fi-submenu">
-       <button type="button" data-testid="fi-variables-gcvs" onClick={()=>pick(()=>onFieldInfo('gcvs'))}>{menuCaptionText(VM.gcvs)}</button>
-       <button type="button" data-testid="fi-variables-modeled" onClick={()=>pick(()=>onFieldInfo('modeled'))}>{menuCaptionText(VM.modeled)}</button>
+   <button type="button" ref={fileTrigger} disabled={disabled} aria-expanded={fileOpen} aria-controls={`${id}-file`} data-testid="fi-file-menu" onClick={()=>setMenu(m=>m==='file'||m==='field'||m==='variables'?null:'file')}>{vireo(menuCaptionText(OV.file))}</button>
+   {fileOpen&&<div id={`${id}-file`} role="group" aria-label={vireo(menuCaptionText(OV.file))} className="fi-menu-list">
+    {editMode&&<><button type="button" aria-expanded={menu==='field'||menu==='variables'} data-testid="fi-field-information" onClick={()=>setMenu(m=>m==='file'?'field':'file')}>{vireo(menuCaptionText(EDIT_MODE_CAPTIONS.fieldInformation))} ›</button>
+     {(menu==='field'||menu==='variables')&&<div role="group" aria-label={vireo(menuCaptionText(EDIT_MODE_CAPTIONS.fieldInformation))} className="fi-submenu">
+      <button type="button" data-testid="fi-star-list" onClick={()=>pick(()=>onFieldInfo('stars'))}>{vireo(menuCaptionText(EDIT_MODE_CAPTIONS.starList))}</button>
+      <button type="button" aria-expanded={menu==='variables'} data-testid="fi-variable-stars" onClick={()=>setMenu(m=>m==='variables'?'field':'variables')}>{vireo(menuCaptionText(VM.variableStars))} ›</button>
+      {menu==='variables'&&<div role="group" aria-label={vireo(menuCaptionText(VM.variableStars))} className="fi-submenu">
+       <button type="button" data-testid="fi-variables-gcvs" onClick={()=>pick(()=>onFieldInfo('gcvs'))}>{vireo(menuCaptionText(VM.gcvs))}</button>
+       <button type="button" data-testid="fi-variables-modeled" onClick={()=>pick(()=>onFieldInfo('modeled'))}>{vireo(menuCaptionText(VM.modeled))}</button>
       </div>}
      </div>}</>}
-    <button type="button" data-testid="print-sky-menu" onClick={()=>pick(()=>setPrintSky(true))}>{menuCaptionText(PRINT_SKY_LITERALS.menu)}</button>
+    <button type="button" data-testid="print-sky-menu" onClick={()=>pick(()=>setPrintSky(true))}>{vireo(menuCaptionText(PRINT_SKY_LITERALS.menu))}</button>
     {/* TEnvironment1 File order: Print Sky Image, Cluster Data (ClusterData1 sits directly before QSOList1), QSO List. */}
-    {onClusterData&&<button type="button" data-testid="cluster-data-menu" onClick={()=>pick(onClusterData)}>{menuCaptionText(CLUSTER_DATA_MENU)}</button>}
-    {qsoList&&<button type="button" data-testid="qso-menu" onClick={()=>pick(onQsoList)}>{menuCaptionText(QSO_LIST_MENU)}</button>}
-    <button type="button" data-testid="ob-exit" onClick={()=>pick(()=>setExiting(true))}>{menuCaptionText(MAIN_HELP_MENU.exit)}</button>
+    {onClusterData&&<button type="button" data-testid="cluster-data-menu" onClick={()=>pick(onClusterData)}>{vireo(menuCaptionText(CLUSTER_DATA_MENU))}</button>}
+    {qsoList&&<button type="button" data-testid="qso-menu" onClick={()=>pick(onQsoList)}>{vireo(menuCaptionText(QSO_LIST_MENU))}</button>}
+    <button type="button" data-testid="ob-exit" onClick={()=>pick(()=>setExiting(true))}>{vireo(menuCaptionText(MAIN_HELP_MENU.exit))}</button>
    </div>}
   </div>
   {printSky&&<PrintSkyImage pointing={pointing} view={view} telescope={telescope} instrument={null} onClose={()=>{setPrintSky(false);fileTrigger.current?.focus();}}/>}
   <div className="fi-menu" onKeyDown={e=>escape(e,toolsTrigger)}>
-   <button type="button" ref={toolsTrigger} disabled={disabled} aria-expanded={menu==='tools'} aria-controls={`${id}-tools`} data-testid="ob-tools-menu" onClick={()=>setMenu(m=>m==='tools'?null:'tools')}>{menuCaptionText(HST_ARCHIVE.tools)}</button>
-   {menu==='tools'&&<div id={`${id}-tools`} role="group" aria-label={menuCaptionText(HST_ARCHIVE.tools)} className="fi-menu-list">
-    <a href={HST_ARCHIVE.webUrl} target="_blank" rel="noopener noreferrer" data-testid="hst-menu" className="fi-menu-link" onClick={()=>setMenu(null)}>{menuCaptionText(HST_ARCHIVE.menu)} <span aria-hidden="true">↗</span><span className="visually-hidden"> {Q.hst.newTab}</span></a>
+   <button type="button" ref={toolsTrigger} disabled={disabled} aria-expanded={menu==='tools'} aria-controls={`${id}-tools`} data-testid="ob-tools-menu" onClick={()=>setMenu(m=>m==='tools'?null:'tools')}>{vireo(menuCaptionText(HST_ARCHIVE.tools))}</button>
+   {menu==='tools'&&<div id={`${id}-tools`} role="group" aria-label={vireo(menuCaptionText(HST_ARCHIVE.tools))} className="fi-menu-list">
+    <a href={HST_ARCHIVE.webUrl} target="_blank" rel="noopener noreferrer" data-testid="hst-menu" className="fi-menu-link" onClick={()=>setMenu(null)}>{vireo(menuCaptionText(HST_ARCHIVE.menu))} <span aria-hidden="true">↗</span><span className="visually-hidden"> {Q.hst.newTab}</span></a>
     <p className="fi-note fi-menu-note" data-testid="hst-note">{Q.hst.note}</p>
    </div>}
   </div>

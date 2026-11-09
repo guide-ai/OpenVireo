@@ -1,4 +1,5 @@
 import {Fragment,useEffect,useId,useRef,useState} from 'react';
+import {vireo,vireoList,vireoMenuItem} from '../i18n/vireo';
 import {COMPILED_SESSION_OPTICAL_OPTIONS,OPTICAL_OPTIONS_CAPTIONS as C,OPTIONS_RESET_DEFAULTS,OPTIONS_RESET_LITERALS as R,SESSION_OPTION_CAPTIONS as SC,visibleOptionTabs,type OpticalOptions,type SessionOpticalOptions} from '../core/opticalOptions';
 import {menuCaptionText} from '../core/radioControl';
 import {OBSERVATORY_MESSAGES} from './ObservatoryMessages';
@@ -80,6 +81,10 @@ export default function OpticalOptionsDialog({gate='user-options-box',options,on
  const reset=(yes:boolean)=>{setResetAsked(false);if(!yes)return;setDraft(OPTIONS_RESET_DEFAULTS.options);setEditDraft(OPTIONS_RESET_DEFAULTS.editMode);setVobsDraft(OPTIONS_RESET_DEFAULTS.virtualObservatory);setTestDraft(OPTIONS_RESET_DEFAULTS.testMode);setDemoDraft(false);setScopeDraft(COMPILED_RESTRICT_SCOPE_ACCESS);setLoadState(null);if(sessionDraft)setSessionDraft(COMPILED_SESSION_OPTICAL_OPTIONS);if(tabDraft)setTabDraft(COMPILED_PHOTOMETER_TAB_OPTIONS);setParamDraft(instrumentParameterTexts(COMPILED_INSTRUMENT_PARAMETERS));setCamDraft(cameraDraftsOf(COMPILED_CAMERA_PARAMETERS));setCamActivated(COMPILED_CAMERA_PARAMETERS);};
  const live=sessionDraft&&onSessionOptions?sessionDraft:null,tabLive=tabDraft&&onPhotometerTabOptions?tabDraft:null;
  const ported=new Set<string>(live?SESSION_KEYS.map(k=>SC[k]):[]);
+ // Front ES2: compared in VIREO's English, shown through vireo().
+ const otherOptions=C.otherOptions.filter(o=>!(onEditMode&&o===EDIT_MODE_CAPTIONS.box)&&!(onVirtualObservatory&&o===VO.box)&&!(onTestMode&&o===TM.box)&&!(onDemonstrationMode&&o===DM.box)&&!(onRestrictScopeAccess&&o===RS.box)&&!ported.has(o));
+ const parameterFields=(tab:string)=>INSTRUMENT_PARAMETER_FIELDS.filter(f=>f.tab===tab);
+ const teacherDeferred=TEACHER_DEFERRED.map(d=>({key:d.key,reason:d.reason,caption:vireo(menuCaptionText(d.caption))}));
  /** OKBtnClick's parameter block (0x5a62da..0x5a6968): the seven edits in VIREO's order; a conversion error shows the box and
   * keeps the dialog open with nothing committed (Cancel would restore the snapshot, 0x5a6d04). null: no live edits. */
  const parsedParameters=():InstrumentParameters|null|false=>{if(!paramsLive)return null;const r=applyParameterTexts(paramDraft);if(!r.ok){setParamError(r.key);return false;}return r.values;};
@@ -114,52 +119,52 @@ export default function OpticalOptionsDialog({gate='user-options-box',options,on
  };
  const fileError=loadState&&loadState.result.kind!=='loaded'?optionsFileErrorBox(loadState.result,loadState.name,loadState.message):null;
  return <>
-  <button ref={opener} type="button" className="secondary-button" disabled={disabled} data-testid="ob-options" data-gate={gate} onClick={()=>{if(gate!=='options'){setRefused(true);return;}setDraft(onEditMode&&editMode?{limitSlewing:false}:options);setEditDraft(editMode);setVobsDraft(virtualObservatory);setTestDraft(testMode);setDemoDraft(demonstrationMode);setScopeDraft(restrictScopeAccess);setLoadState(null);setSaveAsk(null);setSessionDraft(sessionOptions);setTabDraft(photometerTabOptions);setParamDraft(instrumentParameterTexts(instrumentParameters));setParamError(null);setCamDraft(cameraDraftsOf(cameraParameters));setCamActivated(cameraParameters);}}>{M.open}</button>
+  <button ref={opener} type="button" className="secondary-button" disabled={disabled} data-testid="ob-options" data-gate={gate} onClick={()=>{if(gate!=='options'){setRefused(true);return;}setDraft(onEditMode&&editMode?{limitSlewing:false}:options);setEditDraft(editMode);setVobsDraft(virtualObservatory);setTestDraft(testMode);setDemoDraft(demonstrationMode);setScopeDraft(restrictScopeAccess);setLoadState(null);setSaveAsk(null);setSessionDraft(sessionOptions);setTabDraft(photometerTabOptions);setParamDraft(instrumentParameterTexts(instrumentParameters));setParamError(null);setCamDraft(cameraDraftsOf(cameraParameters));setCamActivated(cameraParameters);}}>{vireoMenuItem(C.form)}</button>
   <dialog ref={ref} className="ob-dialog" aria-labelledby={`${id}-title`} data-testid="ob-options-dialog" onCancel={e=>{e.preventDefault();if(!resetAsked&&!saveAsk&&!paramError)setDraft(null);}}>
    {draft&&<>
-    <h2 id={`${id}-title`} className="ob-native">{C.form}</h2>
-    <p className="ob-note ob-native">{menuCaptionText(C.general)}</p>
-    <fieldset className="ob-group"><legend className="ob-native">{menuCaptionText(C.options)}</legend>
-     <label className="ob-check" title={C.limitSlewingHint}><input type="checkbox" data-testid="ob-options-limit" checked={slew!.checked} disabled={!slew!.enabled} onChange={e=>setDraft({limitSlewing:e.target.checked})}/>{C.limitSlewing}</label>
-     <small className="ob-note">{C.limitSlewingHint}</small>{!slew!.enabled&&<small className="ob-note" data-testid="ob-options-limit-edit-mode">{M.limitSlewingEditMode}</small>}
-     {onEditMode&&<><label className="ob-check" title={EDIT_MODE_CAPTIONS.hint}><input type="checkbox" data-testid="ob-options-edit-mode" checked={editDraft} onChange={e=>editModeClick(e.target.checked)}/>{FIELD_INFO_MESSAGES.editModeLabel}</label>
-      <small className="ob-note">{EDIT_MODE_CAPTIONS.hint}</small><small className="ob-note" data-testid="ob-options-edit-mode-note">{FIELD_INFO_MESSAGES.editModeAdaptation}</small></>}
-     {onVirtualObservatory&&<><label className="ob-check" title={VO.hint}><input type="checkbox" data-testid="ob-options-virtual-observatory" checked={vobsDraft} onChange={e=>setVobsDraft(e.target.checked)}/>{QSO_LIST_MESSAGES.virtualObservatoryLabel}</label>
-      <small className="ob-note">{VO.hint}</small><small className="ob-note" data-testid="ob-options-virtual-observatory-note">{QSO_LIST_MESSAGES.virtualObservatoryAdaptation}</small></>}
-     {onTestMode&&<><label className="ob-check" title={TM.hint}><input type="checkbox" data-testid="ob-options-test-mode" checked={testDraft} onChange={e=>setTestDraft(e.target.checked)}/>{TM.box}</label>
-      <small className="ob-note">{TM.hint}</small><small className="ob-note" data-testid="ob-options-test-mode-note">{t('testMode.adaptation')}</small></>}
-     {onDemonstrationMode&&<><label className="ob-check" title={DM.hint}><input type="checkbox" data-testid="ob-options-demonstration-mode" checked={demoDraft} onChange={e=>setDemoDraft(e.target.checked)}/>{DM.box}</label>
-      <small className="ob-note">{DM.hint}</small><small className="ob-note" data-testid="ob-options-demonstration-mode-note">{t('demonstrationMode.adaptation')}</small></>}
-     {onRestrictScopeAccess&&<><label className="ob-check" title={RS.hint}><input type="checkbox" data-testid="ob-options-restrict-scope-access" checked={scopeDraft} onChange={e=>setScopeDraft(e.target.checked)}/>{RS.box}</label>
-      <small className="ob-note">{RS.hint}</small><small className="ob-note" data-testid="ob-options-restrict-scope-access-note">{t('scopeAccess.optionNote')}</small></>}
-     {live&&<>{SESSION_KEYS.map(k=><Fragment key={k}><label className="ob-check" title={SESSION_HINTS[k]}><input type="checkbox" data-testid={testId(k)} checked={live[k]} onChange={e=>setSessionDraft({...live,[k]:e.target.checked})}/>{SC[k]}</label>
+    <h2 id={`${id}-title`} className="ob-native">{vireo(C.form)}</h2>
+    <p className="ob-note ob-native">{vireo(menuCaptionText(C.general))}</p>
+    <fieldset className="ob-group"><legend className="ob-native">{vireo(menuCaptionText(C.options))}</legend>
+     <label className="ob-check" title={vireo(C.limitSlewingHint)}><input type="checkbox" data-testid="ob-options-limit" checked={slew!.checked} disabled={!slew!.enabled} onChange={e=>setDraft({limitSlewing:e.target.checked})}/>{vireo(C.limitSlewing)}</label>
+     <small className="ob-note">{vireo(C.limitSlewingHint)}</small>{!slew!.enabled&&<small className="ob-note" data-testid="ob-options-limit-edit-mode">{M.limitSlewingEditMode}</small>}
+     {onEditMode&&<><label className="ob-check" title={vireo(EDIT_MODE_CAPTIONS.hint)}><input type="checkbox" data-testid="ob-options-edit-mode" checked={editDraft} onChange={e=>editModeClick(e.target.checked)}/>{FIELD_INFO_MESSAGES.editModeLabel}</label>
+      <small className="ob-note">{vireo(EDIT_MODE_CAPTIONS.hint)}</small><small className="ob-note" data-testid="ob-options-edit-mode-note">{FIELD_INFO_MESSAGES.editModeAdaptation}</small></>}
+     {onVirtualObservatory&&<><label className="ob-check" title={vireo(VO.hint)}><input type="checkbox" data-testid="ob-options-virtual-observatory" checked={vobsDraft} onChange={e=>setVobsDraft(e.target.checked)}/>{QSO_LIST_MESSAGES.virtualObservatoryLabel}</label>
+      <small className="ob-note">{vireo(VO.hint)}</small><small className="ob-note" data-testid="ob-options-virtual-observatory-note">{QSO_LIST_MESSAGES.virtualObservatoryAdaptation}</small></>}
+     {onTestMode&&<><label className="ob-check" title={vireo(TM.hint)}><input type="checkbox" data-testid="ob-options-test-mode" checked={testDraft} onChange={e=>setTestDraft(e.target.checked)}/>{vireo(TM.box)}</label>
+      <small className="ob-note">{vireo(TM.hint)}</small><small className="ob-note" data-testid="ob-options-test-mode-note">{t('testMode.adaptation')}</small></>}
+     {onDemonstrationMode&&<><label className="ob-check" title={vireo(DM.hint)}><input type="checkbox" data-testid="ob-options-demonstration-mode" checked={demoDraft} onChange={e=>setDemoDraft(e.target.checked)}/>{vireo(DM.box)}</label>
+      <small className="ob-note">{vireo(DM.hint)}</small><small className="ob-note" data-testid="ob-options-demonstration-mode-note">{t('demonstrationMode.adaptation')}</small></>}
+     {onRestrictScopeAccess&&<><label className="ob-check" title={vireo(RS.hint)}><input type="checkbox" data-testid="ob-options-restrict-scope-access" checked={scopeDraft} onChange={e=>setScopeDraft(e.target.checked)}/>{vireo(RS.box)}</label>
+      <small className="ob-note">{vireo(RS.hint)}</small><small className="ob-note" data-testid="ob-options-restrict-scope-access-note">{t('scopeAccess.optionNote')}</small></>}
+     {live&&<>{SESSION_KEYS.map(k=><Fragment key={k}><label className="ob-check" title={SESSION_HINTS[k]}><input type="checkbox" data-testid={testId(k)} checked={live[k]} onChange={e=>setSessionDraft({...live,[k]:e.target.checked})}/>{vireo(SC[k])}</label>
       <small className="ob-note">{SESSION_HINTS[k]}</small>{SESSION_NOTES[k]&&<small className="ob-note">{SESSION_NOTES[k]}</small>}</Fragment>)}
       <small className="ob-note" data-testid="ob-options-session-note">{S.sessionNote}</small></>}
      <p className="ob-note">{M.othersHeading}</p>
-     <ul className="ob-option-list" data-testid="ob-options-others">{C.otherOptions.filter(o=>!(onEditMode&&o===EDIT_MODE_CAPTIONS.box)&&!(onVirtualObservatory&&o===VO.box)&&!(onTestMode&&o===TM.box)&&!(onDemonstrationMode&&o===DM.box)&&!(onRestrictScopeAccess&&o===RS.box)&&!ported.has(o)).map(o=><li key={o}><span className="ob-native">{o}</span>{o==='Fast Slewing'?<small> — {M.fastSlewing}</small>:null}</li>)}</ul>
+     <ul className="ob-option-list" data-testid="ob-options-others">{otherOptions.map(o=><li key={o}><span className="ob-native">{vireo(o)}</span>{o==='Fast Slewing'?<small> — {M.fastSlewing}</small>:null}</li>)}</ul>
      {live&&<small className="ob-note" data-testid="ob-options-not-ported">{S.notPorted}</small>}
     </fieldset>
     {live?<section className="ob-group" data-testid="ob-options-tabs" aria-label={S.tabsHeading}><p className="ob-note">{S.tabsHeading}</p>
-     {visibleOptionTabs(live.infraredCamera,horizonRadians).map(tab=><fieldset key={tab.tab} className="ob-group" data-testid={`ob-options-tab-${tab.tab}`}><legend className="ob-native">{menuCaptionText(tab.caption)}</legend>
-      {paramsLive&&PARAMETER_LABELS[tab.tab]&&<div className="ob-values ob-parameter-edits" data-testid={`ob-options-parameters-${tab.tab}`}>{INSTRUMENT_PARAMETER_FIELDS.filter(f=>f.tab===tab.tab).map(f=><label key={f.key} className="ob-parameter" title={f.hint}><span className="ob-native">{f.caption}</span>
-       <input type="text" inputMode="decimal" spellCheck={false} maxLength={INSTRUMENT_PARAMETER_TEXT_MAX} data-testid={`ob-options-param-${f.key}`} value={paramDraft[f.key]} aria-describedby={`${id}-param-note-${tab.tab}`} onChange={e=>setParamDraft(d=>({...d,[f.key]:e.target.value}))}/><small className="ob-note">{f.hint}</small></label>)}</div>}
+     {visibleOptionTabs(live.infraredCamera,horizonRadians).map(tab=><fieldset key={tab.tab} className="ob-group" data-testid={`ob-options-tab-${tab.tab}`}><legend className="ob-native">{vireo(menuCaptionText(tab.caption))}</legend>
+      {paramsLive&&PARAMETER_LABELS[tab.tab]&&<div className="ob-values ob-parameter-edits" data-testid={`ob-options-parameters-${tab.tab}`}>{parameterFields(tab.tab).map(f=><label key={f.key} className="ob-parameter" title={vireo(f.hint)}><span className="ob-native">{vireo(f.caption)}</span>
+       <input type="text" inputMode="decimal" spellCheck={false} maxLength={INSTRUMENT_PARAMETER_TEXT_MAX} data-testid={`ob-options-param-${f.key}`} value={paramDraft[f.key]} aria-describedby={`${id}-param-note-${tab.tab}`} onChange={e=>setParamDraft(d=>({...d,[f.key]:e.target.value}))}/><small className="ob-note">{vireo(f.hint)}</small></label>)}</div>}
       {cameraLive&&(tab.tab==='ccd'||tab.tab==='ir')?<><CameraParameterEdits kind={tab.tab} drafts={camDraft} activated={camActivated} onDrafts={setCamDraft} noteId={`${id}-camera-note-${tab.tab}`}/>
        <small className="ob-note" id={`${id}-camera-note-${tab.tab}`} data-testid={`ob-options-camera-${tab.tab}-note`}>{t(tab.tab==='ccd'?'cameraParameters.ccdNote':'cameraParameters.irNote')}</small></>
-      :<dl className="ob-values">{tab.values.filter(v=>!(tabLive&&tab.tab==='photometer'&&TAB_LIVE_LABELS.has(v.label))&&!(paramsLive&&PARAMETER_LABELS[tab.tab]?.has(v.label))).map(v=><div key={v.label}><dt className="ob-native">{v.label}</dt><dd>{v.text}</dd></div>)}</dl>}
+      :<dl className="ob-values">{tab.values.filter(v=>!(tabLive&&tab.tab==='photometer'&&TAB_LIVE_LABELS.has(v.label))&&!(paramsLive&&PARAMETER_LABELS[tab.tab]?.has(v.label))).map(v=><div key={v.label}><dt className="ob-native">{vireo(v.label)}</dt><dd>{vireo(v.text)}</dd></div>)}</dl>}
       {paramsLive&&PARAMETER_LABELS[tab.tab]&&<small className="ob-note" id={`${id}-param-note-${tab.tab}`} data-testid={`ob-options-parameters-${tab.tab}-note`}>{t(tab.tab==='photometer'?'instrumentParameters.photometerNote':'instrumentParameters.spectrometerNote')}</small>}
-      {tabLive&&tab.tab==='photometer'&&PHOTOMETER_TAB_OPTION_KEYS.map(k=><Fragment key={k}><label className="ob-check" title={PT[k].hint}><input type="checkbox" data-testid={TAB_TEST_ID[k]} checked={tabLive[k]} onChange={e=>setTabDraft({...tabLive,[k]:e.target.checked})}/><span className="ob-native">{PT[k].box}</span></label>
-       <small className="ob-note">{PT[k].hint}</small><small className="ob-note" data-testid={TAB_TEST_ID[k]+'-note'}>{t(`photometerTab.${k}Note`)}</small></Fragment>)}</fieldset>)}
+      {tabLive&&tab.tab==='photometer'&&PHOTOMETER_TAB_OPTION_KEYS.map(k=><Fragment key={k}><label className="ob-check" title={vireo(PT[k].hint)}><input type="checkbox" data-testid={TAB_TEST_ID[k]} checked={tabLive[k]} onChange={e=>setTabDraft({...tabLive,[k]:e.target.checked})}/><span className="ob-native">{vireo(PT[k].box)}</span></label>
+       <small className="ob-note">{vireo(PT[k].hint)}</small><small className="ob-note" data-testid={TAB_TEST_ID[k]+'-note'}>{t(`photometerTab.${k}Note`)}</small></Fragment>)}</fieldset>)}
      <small className="ob-note" data-testid="ob-options-tabs-note">{S.tabsNote}</small></section>
-    :<><fieldset className="ob-group" disabled><legend className="ob-native">{menuCaptionText(C.parameters)}</legend>{C.parameterLabels.map(l=><span key={l} className="ob-check">{l} <small>— {M.unavailable}</small></span>)}</fieldset>
-     <p className="ob-note">{C.otherTabs.map(menuCaptionText).join(', ')}: {M.unavailable}. {M.help}</p></>}
+    :<><fieldset className="ob-group" disabled><legend className="ob-native">{vireo(menuCaptionText(C.parameters))}</legend>{vireoList(C.parameterLabels).map(l=><span key={l} className="ob-check">{l} <small>— {M.unavailable}</small></span>)}</fieldset>
+     <p className="ob-note">{vireoList(C.otherTabs.map(menuCaptionText)).join(', ')}: {M.unavailable}. {M.help}</p></>}
     {fileable&&<section className="ob-group" data-testid="ob-options-file" aria-labelledby={`${id}-file`}><p className="ob-note" id={`${id}-file`}><strong>{t('optionsFile.heading')}</strong></p>
      <small className="ob-note" data-testid="ob-options-file-note">{t('optionsFile.note')}</small>
-     <div className="ob-actions"><button type="button" className="secondary-button" data-testid="ob-options-save" onClick={saveClick}>{menuCaptionText(OF.saveMenu)}</button>
+     <div className="ob-actions"><button type="button" className="secondary-button" data-testid="ob-options-save" onClick={saveClick}>{vireo(menuCaptionText(OF.saveMenu))}</button>
       <label className="secondary-button project-upload">{t('optionsFile.load')}<input type="file" data-testid="ob-options-load" accept=".json,.ini,application/json" onChange={e=>{const f=e.target.files?.[0];e.target.value='';if(f)void load(f);}}/></label></div>
      {loadState?.result.kind==='loaded'&&<div role="status" data-testid="ob-options-loaded" data-source={loadState.result.source}><p className="ob-note">{t('optionsFile.loaded',{name:loadState.name,source:t(loadState.result.source==='web'?'optionsFile.source.web':'optionsFile.source.native')})}</p>
       {loadState.result.administratorCleared&&<p className="ob-note" data-testid="ob-options-administrator-cleared">{t('optionsFile.administratorCleared')}</p>}
       {loadState.result.notApplied.length>0&&<><p className="ob-note">{t('optionsFile.notAppliedHeading')}</p>
-       <ul className="ob-option-list" data-testid="ob-options-not-applied">{loadState.result.notApplied.map(k=><li key={k} data-key={k}><span className="ob-native">{NOT_APPLIED[k].caption}</span><small> — {t(`optionsFile.reason.${NOT_APPLIED[k].reason}`)}</small></li>)}</ul>
+       <ul className="ob-option-list" data-testid="ob-options-not-applied">{loadState.result.notApplied.map(k=><li key={k} data-key={k}><span className="ob-native">{vireo(NOT_APPLIED[k].caption)}</span><small> — {t(`optionsFile.reason.${NOT_APPLIED[k].reason}`)}</small></li>)}</ul>
        <p className="ob-note" data-testid="ob-options-resave-warning">{t('optionsFile.resaveWarning')}</p></>}
       {loadState.result.fastSlewingRate!==null&&<p className="ob-note" data-testid="ob-options-fast-slewing-rate">{t('optionsFile.fastSlewingRate',{rate:loadState.result.fastSlewingRate})}</p>}</div>}
      {fileError&&<div role="alert" className="ob-group" data-testid="ob-options-file-error"><p className="ob-native"><strong data-testid="ob-options-file-error-caption">{fileError.caption}</strong></p>
@@ -167,15 +172,15 @@ export default function OpticalOptionsDialog({gate='user-options-box',options,on
     </section>}
     {paramsLive&&(()=>{const r=applyParameterTexts(paramDraft),keys=r.ok?uncertifiedParameterKeys(r.values):[];return keys.length>0&&<p className="ob-note" role="status" data-testid="ob-options-parameters-uncertified">{t('instrumentParameters.draftUncertified',{fields:keys.map(instrumentParameterLabel).join(', ')})}</p>;})()}
     {cameraLive&&(()=>{const r=applyCameraParameterTexts(camDraft);if(!r.ok||isCompiledCameraParameters(r.values))return null;return <p className="ob-note" role="status" data-testid="ob-options-camera-uncertified">{t('cameraParameters.draftUncertified',{fields:uncertifiedCameraFields(r.values).map(cameraParameterLabel).join(', ')})}</p>;})()}
-    <div className="ob-actions"><button type="button" ref={okButton} className="primary-button" data-testid="ob-options-ok" onClick={commit}>{menuCaptionText(C.ok)}</button><button type="button" className="secondary-button" onClick={()=>setDraft(null)}>{menuCaptionText(C.cancel)}</button>
-     <button type="button" className="secondary-button" title={R.hint} data-testid="ob-options-reset" onClick={()=>setResetAsked(true)}>{menuCaptionText(R.caption)}</button></div>
+    <div className="ob-actions"><button type="button" ref={okButton} className="primary-button" data-testid="ob-options-ok" onClick={commit}>{vireo(menuCaptionText(C.ok))}</button><button type="button" className="secondary-button" onClick={()=>setDraft(null)}>{vireo(menuCaptionText(C.cancel))}</button>
+     <button type="button" className="secondary-button" title={vireo(R.hint)} data-testid="ob-options-reset" onClick={()=>setResetAsked(true)}>{vireo(menuCaptionText(R.caption))}</button></div>
     <small className="ob-note" data-testid="ob-options-reset-note">{M.resetNote}</small>
     <p className="ob-note">{M.teacherDeferred}</p>
-    <ul className="ob-option-list" data-testid="ob-options-teacher-deferred">{TEACHER_DEFERRED.map(d=><li key={d.key} data-reason={d.reason}><span className="ob-native">{menuCaptionText(d.caption)}</span></li>)}</ul>
+    <ul className="ob-option-list" data-testid="ob-options-teacher-deferred">{teacherDeferred.map(d=><li key={d.key} data-reason={d.reason}><span className="ob-native">{d.caption}</span></li>)}</ul>
     {paramError&&<ParameterErrorBox onClose={()=>{setParamError(null);okButton.current?.focus();}}/>}
-    {resetAsked&&<QuestionBox caption={R.questionCaption} text={R.questionText} testId="ob-options-reset-box" onAnswer={reset}/>}
-    {saveAsk==='edit'&&<QuestionBox caption={OF.saveCaption} text={OF.editModeSet} testId="ob-options-save-edit-mode" preLine onAnswer={finishSave}/>}
-    {saveAsk==='vo'&&<QuestionBox caption={OF.saveCaption} text={OF.virtualObservatory} testId="ob-options-save-vo" preLine labels={{yes:t('optionsFile.ok'),no:t('optionsFile.cancel')}} onAnswer={finishSave}/>}
+    {resetAsked&&<QuestionBox caption={vireo(R.questionCaption)} text={vireo(R.questionText)} testId="ob-options-reset-box" onAnswer={reset}/>}
+    {saveAsk==='edit'&&<QuestionBox caption={vireo(OF.saveCaption)} text={vireo(OF.editModeSet)} testId="ob-options-save-edit-mode" preLine onAnswer={finishSave}/>}
+    {saveAsk==='vo'&&<QuestionBox caption={vireo(OF.saveCaption)} text={vireo(OF.virtualObservatory)} testId="ob-options-save-vo" preLine labels={{yes:t('optionsFile.ok'),no:t('optionsFile.cancel')}} onAnswer={finishSave}/>}
    </>}
   </dialog>
   {refused&&<UserOptionsBox onClose={()=>{setRefused(false);opener.current?.focus();}}/>}
@@ -189,8 +194,8 @@ function ParameterErrorBox({onClose}:{onClose:()=>void}){
  const close=()=>{ref.current?.close();onClose();};
  useEffect(()=>{const el=ref.current;if(el&&!el.open){el.showModal();el.querySelector<HTMLButtonElement>('button')?.focus();}},[]);
  return <dialog ref={ref} className="ob-dialog ob-box" role="alertdialog" aria-labelledby={`${id}-title`} aria-describedby={`${id}-body`} data-testid="ob-options-parameter-error" onCancel={e=>{e.preventDefault();close();}}>
-  <h2 id={`${id}-title`} className="ob-native">{PARAMETER_ERROR_BOX.caption}</h2>
-  <p id={`${id}-body`} className="ob-native" style={{whiteSpace:'pre-line'}} data-testid="ob-options-parameter-error-text">{PARAMETER_ERROR_BOX.text}</p>
+  <h2 id={`${id}-title`} className="ob-native">{vireo(PARAMETER_ERROR_BOX.caption)}</h2>
+  <p id={`${id}-body`} className="ob-native" style={{whiteSpace:'pre-line'}} data-testid="ob-options-parameter-error-text">{vireo(PARAMETER_ERROR_BOX.text)}</p>
   <div className="ob-actions"><button type="button" className="primary-button" data-testid="ob-options-parameter-error-ok" onClick={close}>{t('instrumentParameters.errorOk')}</button></div>
  </dialog>;
 }
@@ -203,8 +208,8 @@ function UserOptionsBox({onClose}:{onClose:()=>void}){
  const close=()=>{ref.current?.close();onClose();};
  useEffect(()=>{const el=ref.current;if(el&&!el.open){el.showModal();el.querySelector<HTMLButtonElement>('button')?.focus();}},[]);
  return <dialog ref={ref} className="ob-dialog ob-box ob-user-options" role="alertdialog" aria-labelledby={`${id}-title`} aria-describedby={`${id}-body`} data-testid="ob-user-options" onCancel={e=>{e.preventDefault();close();}}>
-  <h2 id={`${id}-title`} className="ob-native" data-testid="ob-user-options-title">{UL.userOptionsCaption}</h2>
-  <p id={`${id}-body`} className="ob-native" style={{whiteSpace:'pre-line',overflowWrap:'anywhere'}} data-testid="ob-user-options-text">{UL.instructorText}</p>
+  <h2 id={`${id}-title`} className="ob-native" data-testid="ob-user-options-title">{vireo(UL.userOptionsCaption)}</h2>
+  <p id={`${id}-body`} className="ob-native" style={{whiteSpace:'pre-line',overflowWrap:'anywhere'}} data-testid="ob-user-options-text">{vireo(UL.instructorText)}</p>
   <p className="ob-note" data-testid="ob-user-options-note">{t('instructorMode.optionsClosed')}</p>
   <div className="ob-actions"><button type="button" className="primary-button" data-testid="ob-user-options-ok" onClick={close}>{t('instructorMode.optionsClosedOk')}</button></div>
  </dialog>;

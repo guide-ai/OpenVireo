@@ -1,4 +1,5 @@
 import {useId,useState,type KeyboardEvent} from 'react';
+import {vireo} from '../i18n/vireo';
 import CleaHelp from '../clusters/CleaHelp';
 import {HELP_FILES} from '../help/helpFiles';
 import {MULTISPEC_MESSAGES as N} from '../core/multiSpecFormat';
@@ -19,31 +20,31 @@ export default function MultiSpecList({items,selected,onSelected,onShow,onHide,o
   else if(e.key==='Enter'){e.preventDefault();if(selected!==null)onShow();}
  }
  return <section className="ms-list" aria-labelledby={`${id}-t`} data-testid="ms-list">
-  <h3 id={`${id}-t`} className="ob-native">{L.caption}</h3>
-  <div className="ms-menu" role="group" aria-label={L.file}>
-   <button type="button" className="secondary-button" disabled={!file||!canSaveAll} onClick={onSaveAll} data-testid="ms-save-all">{L.saveAll}</button>
-   <button type="button" className="secondary-button" disabled={!file||!any} onClick={onClearAll} data-testid="ms-clear-all">{L.clearAll}</button>
-   <button type="button" className="secondary-button" disabled={!file||!any} onClick={onOpenAll} data-testid="ms-open-all">{L.openAll}</button>
-   <button type="button" className="secondary-button" disabled={!file||!any} onClick={onCloseAll} data-testid="ms-close-all">{L.closeAll}</button>
-   <button type="button" className="secondary-button" disabled={!file} onClick={onExit} data-testid="ms-list-exit">{L.exit}</button>
+  <h3 id={`${id}-t`} className="ob-native">{vireo(L.caption)}</h3>
+  <div className="ms-menu" role="group" aria-label={vireo(L.file)}>
+   <button type="button" className="secondary-button" disabled={!file||!canSaveAll} onClick={onSaveAll} data-testid="ms-save-all">{vireo(L.saveAll)}</button>
+   <button type="button" className="secondary-button" disabled={!file||!any} onClick={onClearAll} data-testid="ms-clear-all">{vireo(L.clearAll)}</button>
+   <button type="button" className="secondary-button" disabled={!file||!any} onClick={onOpenAll} data-testid="ms-open-all">{vireo(L.openAll)}</button>
+   <button type="button" className="secondary-button" disabled={!file||!any} onClick={onCloseAll} data-testid="ms-close-all">{vireo(L.closeAll)}</button>
+   <button type="button" className="secondary-button" disabled={!file} onClick={onExit} data-testid="ms-list-exit">{vireo(L.exit)}</button>
   </div>
-  {/* TMSpecListForm1 Help1: Help1.Enabled := Length(+0xb0c) > 0, empty by default (0x525a00; docs/CLEA-HELP.md). */}<CleaHelp list={HELP_FILES['SPLSTHLP.LST']} label={L.help} disabledReason={t('multispec.helpEmpty')} testId="ms-list-help"/>
+  {/* TMSpecListForm1 Help1: Help1.Enabled := Length(+0xb0c) > 0, empty by default (0x525a00; docs/CLEA-HELP.md). */}<CleaHelp list={HELP_FILES['SPLSTHLP.LST']} label={vireo(L.help)} disabledReason={t('multispec.helpEmpty')} testId="ms-list-help"/>
   <div className="ms-list-body">
-   <ul className="ms-items" role="listbox" tabIndex={0} aria-label={L.caption} aria-activedescendant={selected!==null?`${id}-i${selected}`:undefined} onKeyDown={key} data-testid="ms-items">
+   <ul className="ms-items" role="listbox" tabIndex={0} aria-label={vireo(L.caption)} aria-activedescendant={selected!==null?`${id}-i${selected}`:undefined} onKeyDown={key} data-testid="ms-items">
     {items.map((text,i)=><li key={i} id={`${id}-i${i}`} role="option" aria-selected={selected===i} data-testid={`ms-item-${i}`} onClick={()=>onSelected(i)} onDoubleClick={()=>{onSelected(i);onShow();}}>{text}</li>)}
    </ul>
    <div className="ms-list-side">
     <div className="ms-menu" role="group" aria-label={t('multispec.itemActions')}>
-     <button type="button" className="secondary-button" disabled={scanning||!any} onClick={onShow} data-testid="ms-show">{L.show}</button>
-     <button type="button" className="secondary-button" disabled={scanning||!any} onClick={onHide} data-testid="ms-hide">{L.hide}</button>
+     <button type="button" className="secondary-button" disabled={scanning||!any} onClick={onShow} data-testid="ms-show">{vireo(L.show)}</button>
+     <button type="button" className="secondary-button" disabled={scanning||!any} onClick={onHide} data-testid="ms-hide">{vireo(L.hide)}</button>
     </div>
     <div className="ms-menu">
-     <button type="button" className="secondary-button" disabled={scanning||!any||busy} onClick={onScan} data-testid="ms-scan">{L.scan}</button>
-     <button type="button" className="secondary-button" disabled={!scanning} onClick={onStopScan} data-testid="ms-scan-stop">{L.stop}</button>
+     <button type="button" className="secondary-button" disabled={scanning||!any||busy} onClick={onScan} data-testid="ms-scan">{vireo(L.scan)}</button>
+     <button type="button" className="secondary-button" disabled={!scanning} onClick={onStopScan} data-testid="ms-scan-stop">{vireo(L.stop)}</button>
     </div>
-    <label className="ms-rate">{L.rate}<input type="number" min={1} max={5} step={1} value={rateText} disabled={scanning} data-testid="ms-rate"
+    <label className="ms-rate">{vireo(L.rate)}<input type="number" min={1} max={5} step={1} value={rateText} disabled={scanning} data-testid="ms-rate"
      onChange={e=>{setRateText(e.target.value);const v=Number(e.target.value);if(Number.isInteger(v)&&v>=1&&v<=5)onRate(v);}} onBlur={()=>setRateText(String(rate))}/></label>
-    <p className="observatory-note">{N.savedLegend}</p>
+    <p className="observatory-note">{vireo(N.savedLegend)}</p>
    </div>
   </div>
  </section>;

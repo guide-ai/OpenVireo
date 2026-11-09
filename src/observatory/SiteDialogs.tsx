@@ -1,4 +1,6 @@
 import {useEffect,useId,useRef,useState,type Dispatch,type ReactNode,type SetStateAction} from 'react';
+import {OBSERVATORY_VIREO_CAPTIONS as OV} from './ObservatoryMessages';
+import {vireo,vireoList,vireoMenuItem} from '../i18n/vireo';
 import WebPrintPreview from '../polish/WebPrintPreview';
 import {POLISH_MESSAGES as PM} from '../polish/PolishMessages';
 import {VARIABLE_FIELD_LITERALS as VL} from '../core/variableFieldLiterals';
@@ -19,7 +21,7 @@ function Modal({open,label,testId,onCancel,children,wide=false}:{open:boolean;la
 function ErrorBox({caption,text,onClose,testId}:{caption:string;text:string;onClose:()=>void;testId:string}){
  const ref=useRef<HTMLDialogElement>(null);
  useEffect(()=>{const el=ref.current;if(!el)return;if(text&&!el.open)el.showModal();else if(!text&&el.open)el.close();},[text]);
- return <dialog ref={ref} className="ob-dialog ob-box" role="alertdialog" aria-label={caption} data-testid={testId} onCancel={e=>{e.preventDefault();onClose();}}><h2 className="ob-native">{caption}</h2><p className="ob-native">{text}</p><div className="ob-actions"><button type="button" className="primary-button" onClick={onClose}>{OBSERVATORY_MESSAGES.common.ok}</button></div></dialog>;
+ return <dialog ref={ref} className="ob-dialog ob-box" role="alertdialog" aria-label={caption} data-testid={testId} onCancel={e=>{e.preventDefault();onClose();}}><h2 className="ob-native">{caption}</h2><p className="ob-native">{text}</p><div className="ob-actions"><button type="button" className="primary-button" onClick={onClose}>{vireo(OV.ok)}</button></div></dialog>;
 }
 
 /** TStationDlg's fields (OB-ST-02/03): Site Name and Local Time Difference, the Longitude and Latitude groups with their
@@ -28,14 +30,14 @@ function ErrorBox({caption,text,onClose,testId}:{caption:string;text:string;onCl
  * keeps its own modal frame. Enter in a field is OK. */
 export function StationFields({station,setStation,onOk,testId='ob-station'}:{station:StationDraft|null;setStation:Dispatch<SetStateAction<StationDraft|null>>;onOk:()=>void;testId?:string}){
  const id=useId();
- const sf=(name:StationField,label:string,maxLength?:number)=><label className="ob-field"><span>{label}</span><input type="text" autoComplete="off" spellCheck={false} maxLength={maxLength??32} title={SC.hints[name]} data-testid={`${testId}-${name}`} value={station?.[name]??''} onChange={e=>setStation(s=>s&&{...s,[name]:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();onOk();}}}/></label>;
+ const sf=(name:StationField,label:string,maxLength?:number)=><label className="ob-field"><span>{label}</span><input type="text" autoComplete="off" spellCheck={false} maxLength={maxLength??32} title={vireo(SC.hints[name])} data-testid={`${testId}-${name}`} value={station?.[name]??''} onChange={e=>setStation(s=>s&&{...s,[name]:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();onOk();}}}/></label>;
  return <>
-  <div className="ob-group">{sf('name',SC.name,SC.maxLength.name)}{sf('utLocal',SC.utLocal,SC.maxLength.utLocal)}</div>
-  <fieldset className="ob-group"><legend className="ob-native">{SC.longitude}</legend>{sf('lngDeg',SC.deg)}{sf('lngMin',SC.min)}{sf('lngSec',SC.sec)}
-   {SC.ew.map((c,i)=><label key={c} className="ob-check"><input type="radio" name={`${id}-ew`} data-testid={`${testId}-ew-${i}`} checked={station?.ew===i} onChange={()=>setStation(s=>s&&{...s,ew:i as 0|1})}/>{c}</label>)}</fieldset>
-  <fieldset className="ob-group"><legend className="ob-native">{SC.latitude}</legend>{sf('latDeg',SC.deg)}{sf('latMin',SC.min)}{sf('latSec',SC.sec)}
-   {SC.ns.map((c,i)=><label key={c} className="ob-check"><input type="radio" name={`${id}-ns`} data-testid={`${testId}-ns-${i}`} checked={station?.ns===i} onChange={()=>setStation(s=>s&&{...s,ns:i as 0|1})}/>{c}</label>)}</fieldset>
-  <div className="ob-group">{sf('altitude',SC.altitude)}{sf('horizon',SC.horizon)}</div>
+  <div className="ob-group">{sf('name',vireo(SC.name),SC.maxLength.name)}{sf('utLocal',vireo(SC.utLocal),SC.maxLength.utLocal)}</div>
+  <fieldset className="ob-group"><legend className="ob-native">{vireo(SC.longitude)}</legend>{sf('lngDeg',vireo(SC.deg))}{sf('lngMin',vireo(SC.min))}{sf('lngSec',vireo(SC.sec))}
+   {vireoList(SC.ew).map((c,i)=><label key={c} className="ob-check"><input type="radio" name={`${id}-ew`} data-testid={`${testId}-ew-${i}`} checked={station?.ew===i} onChange={()=>setStation(s=>s&&{...s,ew:i as 0|1})}/>{c}</label>)}</fieldset>
+  <fieldset className="ob-group"><legend className="ob-native">{vireo(SC.latitude)}</legend>{sf('latDeg',vireo(SC.deg))}{sf('latMin',vireo(SC.min))}{sf('latSec',vireo(SC.sec))}
+   {vireoList(SC.ns).map((c,i)=><label key={c} className="ob-check"><input type="radio" name={`${id}-ns`} data-testid={`${testId}-ns-${i}`} checked={station?.ns===i} onChange={()=>setStation(s=>s&&{...s,ns:i as 0|1})}/>{c}</label>)}</fieldset>
+  <div className="ob-group">{sf('altitude',vireo(SC.altitude))}{sf('horizon',vireo(SC.horizon))}</div>
  </>;
 }
 
@@ -49,36 +51,36 @@ export default function SiteDialogs({utc,site,overridden,index,limitSlewing,onAp
  const stationOk=()=>{if(!station)return;const r=parseStationDraft(station);if(r.status==='error'){setStationError(r.message);return;}if(r.status==='unsupported'){setStationError(r.field==='name'?M.nameUnsupported:M.horizonUnsupported);return;}setStation(null);onSite(r.site);};
  return <div className="ob-site-dialogs">
   <div className="ob-menu">
-   <button type="button" className="secondary-button" data-testid="ob-set-date" onClick={()=>{setDateError('');setDate({...observatoryDatePrefill(utc),id:sessionId});}}>{M.dateOpen}</button>
-   <button type="button" className="secondary-button" data-testid="ob-site-parameters" onClick={()=>{setStationError('');setStation(stationDraft(site));}}>{M.siteOpen}</button>
-   <button type="button" className="secondary-button" data-testid="ob-site-information" onClick={()=>setInfo(true)}>{M.infoOpen}</button>
+   <button type="button" className="secondary-button" data-testid="ob-set-date" onClick={()=>{setDateError('');setDate({...observatoryDatePrefill(utc),id:sessionId});}}>{vireoMenuItem(OV.setDateTime)}</button>
+   <button type="button" className="secondary-button" data-testid="ob-site-parameters" onClick={()=>{setStationError('');setStation(stationDraft(site));}}>{vireoMenuItem(SC.form)}</button>
+   <button type="button" className="secondary-button" data-testid="ob-site-information" onClick={()=>setInfo(true)}>{vireoMenuItem(OV.siteInformation)}</button>
    {overridden&&<button type="button" className="secondary-button" data-testid="ob-site-reset" onClick={()=>onSite(null)}>{M.reset}</button>}
   </div>
   <p className="observatory-note" data-testid="ob-site-status">{overridden?M.overridden(site.name):M.compiled} {M.adaptation}</p>
-  <Modal open={date!==null} label={DC.form} testId="ob-date-dialog" onCancel={()=>setDate(null)}>
-   <h2 className="ob-native">{DC.form}</h2>
-   {onApplyId&&<div className="ob-group"><label className="ob-field"><span>{DC.id} {DC.idSource}</span><input type="text" autoComplete="off" spellCheck={false} maxLength={OBSERVATORY_ID_MAX_LENGTH} title={DC.idHint} data-testid="ob-date-id" value={date?.id??''} onChange={e=>{const v=e.target.value;if(observatoryIdEditable(v))setDate(d=>d&&{...d,id:v});}} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();dateOk();}}}/></label></div>}
-   <div className="ob-group"><label className="ob-field"><span>{DC.date} ({DC.dateFormat})</span><input type="text" maxLength={RADIO_DATE_WEB_LIMITS.fieldMaxLength} title={DC.dateHint} data-testid="ob-date-date" value={date?.date??''} onChange={e=>setDate(d=>d&&{...d,date:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();dateOk();}}}/></label>
-    <label className="ob-field"><span>{DC.time} ({DC.timeFormat})</span><input type="text" maxLength={RADIO_DATE_WEB_LIMITS.fieldMaxLength} title={DC.timeHint} data-testid="ob-date-time" value={date?.time??''} onChange={e=>setDate(d=>d&&{...d,time:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();dateOk();}}}/></label></div>
+  <Modal open={date!==null} label={vireo(DC.form)} testId="ob-date-dialog" onCancel={()=>setDate(null)}>
+   <h2 className="ob-native">{vireo(DC.form)}</h2>
+   {onApplyId&&<div className="ob-group"><label className="ob-field"><span>{vireo(DC.id)} {vireo(DC.idSource)}</span><input type="text" autoComplete="off" spellCheck={false} maxLength={OBSERVATORY_ID_MAX_LENGTH} title={vireo(DC.idHint)} data-testid="ob-date-id" value={date?.id??''} onChange={e=>{const v=e.target.value;if(observatoryIdEditable(v))setDate(d=>d&&{...d,id:v});}} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();dateOk();}}}/></label></div>}
+   <div className="ob-group"><label className="ob-field"><span>{vireo(DC.date)} ({vireo(DC.dateFormat)})</span><input type="text" maxLength={RADIO_DATE_WEB_LIMITS.fieldMaxLength} title={vireo(DC.dateHint)} data-testid="ob-date-date" value={date?.date??''} onChange={e=>setDate(d=>d&&{...d,date:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();dateOk();}}}/></label>
+    <label className="ob-field"><span>{vireo(DC.time)} ({vireo(DC.timeFormat)})</span><input type="text" maxLength={RADIO_DATE_WEB_LIMITS.fieldMaxLength} title={vireo(DC.timeHint)} data-testid="ob-date-time" value={date?.time??''} onChange={e=>setDate(d=>d&&{...d,time:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();dateOk();}}}/></label></div>
    <p className="ob-note">{M.dateHelp}</p>
-   <div className="ob-actions"><button type="button" className="primary-button" data-testid="ob-date-ok" onClick={dateOk}>{OBSERVATORY_MESSAGES.common.ok}</button><button type="button" className="secondary-button" onClick={()=>setDate(null)}>{OBSERVATORY_MESSAGES.common.cancel}</button></div>
+   <div className="ob-actions"><button type="button" className="primary-button" data-testid="ob-date-ok" onClick={dateOk}>{vireo(OV.ok)}</button><button type="button" className="secondary-button" onClick={()=>setDate(null)}>{vireo(OV.cancel)}</button></div>
    <ErrorBox caption={M.errorTitle} text={dateError} onClose={()=>setDateError('')} testId="ob-date-error"/>
   </Modal>
-  <Modal open={station!==null} label={SC.form} testId="ob-station-dialog" onCancel={()=>setStation(null)}>
-   <h2 className="ob-native">{SC.form}</h2>
+  <Modal open={station!==null} label={vireo(SC.form)} testId="ob-station-dialog" onCancel={()=>setStation(null)}>
+   <h2 className="ob-native">{vireo(SC.form)}</h2>
    <StationFields station={station} setStation={setStation} onOk={stationOk}/>
    <p className="ob-note">{M.siteHelp}</p>
-   <div className="ob-actions"><button type="button" className="primary-button" data-testid="ob-station-ok" onClick={stationOk}>{menuCaptionText(SC.ok)}</button><button type="button" className="secondary-button" onClick={()=>setStation(null)}>{menuCaptionText(SC.cancel)}</button></div>
-   <ErrorBox caption={SC.errorCaption} text={stationError} onClose={()=>setStationError('')} testId="ob-station-error"/>
+   <div className="ob-actions"><button type="button" className="primary-button" data-testid="ob-station-ok" onClick={stationOk}>{vireo(menuCaptionText(SC.ok))}</button><button type="button" className="secondary-button" onClick={()=>setStation(null)}>{vireo(menuCaptionText(SC.cancel))}</button></div>
+   <ErrorBox caption={vireo(SC.errorCaption)} text={stationError} onClose={()=>setStationError('')} testId="ob-station-error"/>
   </Modal>
-  <Modal open={info} label={SITE_INFORMATION_LITERALS.caption} testId="ob-site-info" onCancel={()=>setInfo(false)}>
-   <h2 className="ob-native">{SITE_INFORMATION_LITERALS.caption}</h2>
-   <pre className="ob-native ob-site-lines" data-testid="ob-site-info-lines">{siteInformationLines(site,index,limitSlewing).join('\n')}</pre>
+  <Modal open={info} label={vireo(SITE_INFORMATION_LITERALS.caption)} testId="ob-site-info" onCancel={()=>setInfo(false)}>
+   <h2 className="ob-native">{vireo(SITE_INFORMATION_LITERALS.caption)}</h2>
+   <pre className="ob-native ob-site-lines" data-testid="ob-site-info-lines">{siteInformationLines(site,index,limitSlewing,vireo).join('\n')}</pre>
    {/* TInfoListForm1 from Site1Click 0x53ea42 (ShowModal): Edit1, Search1 and SaveasText1 are hidden [D], so List keeps Print... and Close. */}
-   <div className="ob-actions"><button type="button" className="secondary-button" data-testid="ob-site-info-print" onClick={()=>setInfoPrint(true)}>{menuCaptionText(VL.listMenu.print)}</button>
-    <button type="button" className="primary-button" data-testid="ob-site-info-close" onClick={()=>setInfo(false)}>{menuCaptionText(VL.listMenu.close)}</button></div>
+   <div className="ob-actions"><button type="button" className="secondary-button" data-testid="ob-site-info-print" onClick={()=>setInfoPrint(true)}>{vireo(menuCaptionText(VL.listMenu.print))}</button>
+    <button type="button" className="primary-button" data-testid="ob-site-info-close" onClick={()=>setInfo(false)}>{vireo(menuCaptionText(VL.listMenu.close))}</button></div>
    <p className="observatory-note">{PM.siteInfo.note}</p>
-   {infoPrint&&<WebPrintPreview testId="ob-site-info-print-preview" caption={SITE_INFORMATION_LITERALS.caption} note={PM.siteInfo.printNote} onClose={()=>setInfoPrint(false)}><pre className="ob-site-lines">{siteInformationLines(site,index,limitSlewing).join('\n')}</pre></WebPrintPreview>}
+   {infoPrint&&<WebPrintPreview testId="ob-site-info-print-preview" caption={vireo(SITE_INFORMATION_LITERALS.caption)} note={PM.siteInfo.printNote} onClose={()=>setInfoPrint(false)}><pre className="ob-site-lines">{siteInformationLines(site,index,limitSlewing,vireo).join('\n')}</pre></WebPrintPreview>}
   </Modal>
  </div>;
 }

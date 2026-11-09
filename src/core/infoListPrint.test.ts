@@ -13,4 +13,10 @@ describe('TInfoListForm1 print page (0x59e51c)',()=>{
   const page=infoListPrintPage({dateText:'D',caption:'C',lines:[],names:['Ann','','Bo'],table:'7'});
   expect(page.map(l=>l.text)).toEqual(['D     Laboratory Table Number 7','','Ann','Bo','','C','']);
  });
+ it('Front ES2 review 1: the header literals follow the screen through tr (default unchanged); caption and lines stay as given',()=>{
+  const tr=(literal:string)=>({'     Laboratory Table Number ':'     Número de mesa de laboratorio ','(Not Recorded)':'(no registrado)'}[literal]??literal);
+  const page=infoListPrintPage({dateText:'D',caption:'C',lines:['L'],tr});
+  expect(page.map(l=>l.text)).toEqual(['D     Número de mesa de laboratorio (no registrado)','','','','C','','L']);
+  expect(infoListPrintPage({dateText:'D',caption:'C',lines:['L']})[0].text).toBe('D     Laboratory Table Number (Not Recorded)');
+ });
 });

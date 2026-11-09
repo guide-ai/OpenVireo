@@ -1,4 +1,5 @@
 import {useEffect,useId,useRef,useState} from 'react';
+import {vireo} from '../i18n/vireo';
 import {createPortal} from 'react-dom';
 import {hotListPrintHeader,type HotListPrintSnapshot} from '../core/hotListPrint';
 import {OBSERVATORY_MESSAGES} from './ObservatoryMessages';
@@ -27,7 +28,7 @@ export default function HotListPrintPreview({snapshot,editMode,onClose}:{snapsho
  return createPortal(<dialog ref={dialog} className="ob-dialog ob-wide ob-print-root" aria-labelledby={`${id}-title`} aria-describedby={`${id}-help`} data-testid="ob-hotlist-print-preview" onCancel={e=>{e.preventDefault();onClose();}}>
   <div className="ob-print-chrome"><h2 id={`${id}-title`}>{M.title}</h2><p id={`${id}-help`} className="ob-note">{M.help}</p><p className="ob-note" data-testid="ob-hotlist-print-count">{M.count(snapshot.lines.length)}</p></div>
   <section className="ob-print-report" tabIndex={0} aria-label={M.report} data-testid="ob-hotlist-print-report">
-   <pre className="ob-print-native" data-testid="ob-hotlist-print-header">{hotListPrintHeader(printedAt,editMode).join('\n')}</pre>
+   <pre className="ob-print-native" data-testid="ob-hotlist-print-header">{hotListPrintHeader(printedAt,editMode,[],'',vireo).join('\n')}</pre>
    <h3 className="ob-native" data-testid="ob-hotlist-print-heading">{snapshot.heading}</h3>
    {snapshot.lines.length?<ol className="ob-print-lines">{snapshot.lines.map((l,i)=><li key={l.sourceIndex} data-testid={`ob-hotlist-print-line-${i+1}`}>{l.text}</li>)}</ol>:<p>{M.empty}</p>}
   </section>

@@ -5,7 +5,6 @@ import {pickMessages} from '../i18n/registry';
 export const FIELD_INFO_MESSAGES_EN=Object.freeze({
  editModeLabel:'Edit Mode (instructor, VIREO)',
  editModeAdaptation:'Web adaptation: in VIREO, Edit Mode is an instructor option behind the instructor login or Demonstration Mode. Here these options open only in instructor mode (the web form of Demonstration Mode, with no password); the box is off by default, not saved by the page (only Save Updates writes it, to an options file you keep), and Leave turns it off. It only enables the Telescope-view click (Catalog Object, with galaxy redshifts hidden because they are exercise answers) and File › Field Information; its other effects (hot-list editing and saving, other print layouts) are not applied.',
- fileMenu:'File',
  guideTitle:'How to use (instructor)',
  guide:Object.freeze([
   'Point the telescope anywhere and switch to the Telescope view: the view then shows the complete catalogue field (read from the bundled exercise packs at their own pointings, and from the compact Guide Star Catalog tiles elsewhere), and a click opens Catalog Object with its catalogue values.',
@@ -20,7 +19,6 @@ export const FIELD_INFO_MESSAGES_EN=Object.freeze({
  editLayerLabel:'Telescope view, Edit Mode: click an object, or move the cursor with the arrow keys (Shift for larger steps) and press Enter, to open Catalog Object.',
  editLayerCaption:(pack:string,stars:number,galaxies:number,finder=false)=>finder?`Edit Mode · finder field read from the compact Guide Star Catalog (VIREO’s finder catalogue reader, stars to the Finder Mag Limit 11.5): ${stars} stars, ${galaxies} galaxies of the loaded 7.5° field (the view shows its central 2.5°). Drawing style is a web choice.`:`Edit Mode · ${pack==='gsc-tiles'?'field read from the compact Guide Star Catalog':`certified field ${pack}`}: ${stars} stars and QSOs, ${galaxies} galaxies of the loaded 0.75° field (the view shows its central 15′). Drawing style is a web choice.`,
  catalogObjectAdaptation:'Web adaptation: VIREO opens this box only in Edit Mode; values are shown, not edited.',
- find:Object.freeze({label:'Search String:',matchCase:'Case Dependent',top:'From Top',next:'From Cursor',cancel:'Cancel'}),
  printTitle:'Print preview',printButton:'Print…',printError:'Printing is not available in this browser.',
  ledAssigned:(label:string)=>`${label}: assigned`,ledCatalogue:(label:string)=>`${label}: catalogue value`,
  close:'Close',ok:'OK',cancel:'Cancel',yes:'Yes',no:'No',

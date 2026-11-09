@@ -1,4 +1,5 @@
 import {useEffect,useRef,useState} from 'react';
+import {vireo} from './i18n/vireo';
 import {CAMERA_INFORMATION_CAPTIONS,type CameraKind} from './core/cameraInformation';
 import CameraInformationList from './CameraInformationList';
 import {CAMERA_MESSAGES as M} from './camera/CameraMessages';
@@ -18,7 +19,7 @@ export default function CameraInformationButton({kind,disabled=false,parameters=
  return <>
   <button type="button" ref={button} className="secondary-button" disabled={disabled} onKeyDown={blockRepeatedEnter} data-testid="camera-information-open" onClick={()=>setOpen(true)}>{M.information}</button>
   {open&&<dialog ref={dialog} className="camera-information-dialog" aria-labelledby="camera-live-information-title" data-testid="camera-live-information" onCancel={e=>{e.preventDefault();close();}}>
-   <h2 ref={title} tabIndex={-1} id="camera-live-information-title">{CAMERA_INFORMATION_CAPTIONS[kind]}</h2>
+   <h2 ref={title} tabIndex={-1} id="camera-live-information-title">{vireo(CAMERA_INFORMATION_CAPTIONS[kind])}</h2>
    <p>{compiled?M.informationNote:t('cameraParameters.informationNote')}</p>
    <CameraInformationList kind={kind} record={compiled?undefined:record} testId="camera-live-information" onClose={close}/>
   </dialog>}

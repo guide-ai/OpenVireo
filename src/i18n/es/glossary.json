@@ -1,5 +1,5 @@
 {
- "about": "Front ES1: the es-419 glossary (plan analysis/front-plans/front-i18n-es.md §5.1) that src/i18n/es/es.test.ts enforces on every Spanish string. A term applies when its English pattern (case-insensitive regular expression) matches the English source: the Spanish must then contain the required stem. Names are fixed interface names: when the English contains one, the Spanish contains its Spanish form exactly. Forbidden words (matched with Unicode word boundaries) and patterns never appear in Spanish: Spain-only words, usted and its imperatives, voseo, and any claim that a translation is CLEA's. Kept names stay exactly as in English. The lint applies to the Spanish strings that exist, so rows for areas still in English wait for their sub-front. Style: tú, buttons and menu items in the infinitive, no voseo or Spain-only forms, paired ¿ ¡, the decimal point, a space before units, and the glyphs › … ↗ ▸ · kept. Translations are web adaptations by OpenVireo, never CLEA's.",
+ "about": "Front ES1: the es-419 glossary (plan analysis/front-plans/front-i18n-es.md §5.1) that src/i18n/es/es.test.ts enforces on every Spanish string. A term applies when its English pattern (case-insensitive regular expression) matches the English source: the Spanish must then contain the required stem. Names are fixed interface names: when the English contains one, the Spanish contains its Spanish form exactly. Forbidden words (matched with Unicode word boundaries) and patterns never appear in Spanish: Spain-only words, usted and its imperatives, voseo, and any claim that a translation is CLEA's. Kept names stay exactly as in English. Front ES2 adds the VIREO observatory menu tree, dialog captions and buttons (final: later fronts reuse these forms). A name marked \"exact\" (a single generic word such as OK, File or Close) applies only when the whole English string, accelerators removed, equals it; other names apply wherever the English contains them. In prose, a VIREO name is written in Spanish with VIREO's English in parentheses at its first mention. The lint applies to the Spanish strings that exist, so rows for areas still in English wait for their sub-front. Style: tú, buttons and menu items in the infinitive, no voseo or Spain-only forms, paired ¿ ¡, the decimal point, a space before units, and the glyphs › … ↗ ▸ · kept. Translations are web adaptations by OpenVireo, never CLEA's. Front ES2 review (final VIREO glossary): pointing as a noun is «posición del telescopio» (short labels «Posición actual», «Centro de la posición»), never «apuntado»; supported is «compatible»; a VIREO English gloss that would fall inside parentheses goes in square brackets [ ] instead.",
  "terms": [
   {
    "en": "\\bobservator(y|ies)\\b",
@@ -50,7 +50,7 @@
    "es": "descarg"
   },
   {
-   "en": "\\bsav(e|es|ed|ing)\\b",
+   "en": "(?<!daylight-)\\bsav(e|es|ed|ing)\\b",
    "es": "guard"
   },
   {
@@ -490,6 +490,389 @@
   {
    "en": "JSON",
    "es": "JSON"
+  },
+  {
+   "en": "File",
+   "es": "Archivo",
+   "exact": true
+  },
+  {
+   "en": "Slew",
+   "es": "Mover",
+   "exact": true
+  },
+  {
+   "en": "Tools",
+   "es": "Herramientas",
+   "exact": true,
+   "except": {
+    "map:appShell.toolsMenu": "OpenVireo's own header menu (not VIREO's Tools menu); ES1 names it «Menú» in Spanish."
+   }
+  },
+  {
+   "en": "Help",
+   "es": "Ayuda",
+   "exact": true
+  },
+  {
+   "en": "Options",
+   "es": "Opciones",
+   "exact": true
+  },
+  {
+   "en": "Parameters",
+   "es": "Parámetros",
+   "exact": true
+  },
+  {
+   "en": "OK",
+   "es": "Aceptar",
+   "exact": true
+  },
+  {
+   "en": "Cancel",
+   "es": "Cancelar",
+   "exact": true
+  },
+  {
+   "en": "Close",
+   "es": "Cerrar",
+   "exact": true
+  },
+  {
+   "en": "Yes",
+   "es": "Sí",
+   "exact": true
+  },
+  {
+   "en": "Reset",
+   "es": "Restablecer",
+   "exact": true
+  },
+  {
+   "en": "Update",
+   "es": "Actualizar",
+   "exact": true
+  },
+  {
+   "en": "List",
+   "es": "Lista",
+   "exact": true
+  },
+  {
+   "en": "Selection",
+   "es": "Selección",
+   "exact": true
+  },
+  {
+   "en": "Exit",
+   "es": "Salir",
+   "exact": true
+  },
+  {
+   "en": "Print...",
+   "es": "Imprimir...",
+   "exact": true
+  },
+  {
+   "en": "Search...",
+   "es": "Buscar...",
+   "exact": true
+  },
+  {
+   "en": "Save...",
+   "es": "Guardar...",
+   "exact": true
+  },
+  {
+   "en": "Stop",
+   "es": "Detener",
+   "exact": true
+  },
+  {
+   "en": "Scan",
+   "es": "Recorrer",
+   "exact": true
+  },
+  {
+   "en": "Telescopes",
+   "es": "Telescopios",
+   "exact": true
+  },
+  {
+   "en": "Websites",
+   "es": "Sitios web",
+   "exact": true
+  },
+  {
+   "en": "Confirm",
+   "es": "Confirmar",
+   "exact": true
+  },
+  {
+   "en": "Confirmation",
+   "es": "Confirmación",
+   "exact": true
+  },
+  {
+   "en": "Display",
+   "es": "Ver",
+   "exact": true
+  },
+  {
+   "en": "Objects",
+   "es": "Objetos",
+   "exact": true
+  },
+  {
+   "en": "Go",
+   "es": "Comenzar",
+   "exact": true
+  },
+  {
+   "en": "Init",
+   "es": "Preparar",
+   "exact": true
+  },
+  {
+   "en": "Set Coordinates",
+   "es": "Fijar coordenadas"
+  },
+  {
+   "en": "View/Select from List",
+   "es": "Ver/seleccionar de la lista"
+  },
+  {
+   "en": "Add Current Item/Position to List",
+   "es": "Agregar el objeto o la posición actual a la lista"
+  },
+  {
+   "en": "Slew to Selection",
+   "es": "Mover a la selección"
+  },
+  {
+   "en": "Field Information",
+   "es": "Información del campo"
+  },
+  {
+   "en": "Variable Stars",
+   "es": "Estrellas variables"
+  },
+  {
+   "en": "QSO List",
+   "es": "Lista de QSO"
+  },
+  {
+   "en": "CCD Camera",
+   "es": "Cámara CCD"
+  },
+  {
+   "en": "IR Camera",
+   "es": "Cámara IR"
+  },
+  {
+   "en": "Request Time",
+   "es": "Solicitar tiempo"
+  },
+  {
+   "en": "Set Date/Time",
+   "es": "Fijar fecha/hora"
+  },
+  {
+   "en": "Site Parameters",
+   "es": "Parámetros del sitio"
+  },
+  {
+   "en": "Site Information",
+   "es": "Información del sitio"
+  },
+  {
+   "en": "Print Sky Image",
+   "es": "Imprimir imagen del cielo"
+  },
+  {
+   "en": "HST Image Archive",
+   "es": "Archivo de imágenes del HST"
+  },
+  {
+   "en": "Exit Observatory",
+   "es": "Salir del observatorio"
+  },
+  {
+   "en": "Restrict Scope Access",
+   "es": "Restringir acceso a telescopios"
+  },
+  {
+   "en": "Limit Slewing",
+   "es": "Limitar movimiento"
+  },
+  {
+   "en": "Show Object ID",
+   "es": "Mostrar ID del objeto"
+  },
+  {
+   "en": "Show Object Mag",
+   "es": "Mostrar mag. del objeto"
+  },
+  {
+   "en": "Fast Slewing",
+   "es": "Movimiento rápido"
+  },
+  {
+   "en": "Fast Scope Change",
+   "es": "Cambio rápido de telescopio"
+  },
+  {
+   "en": "Sound Effects",
+   "es": "Efectos de sonido"
+  },
+  {
+   "en": "Infrared Camera",
+   "es": "Cámara infrarroja"
+  },
+  {
+   "en": "Write Log File",
+   "es": "Escribir archivo de registro"
+  },
+  {
+   "en": "Time-Dependent Data",
+   "es": "Datos dependientes del tiempo"
+  },
+  {
+   "en": "Print in Color",
+   "es": "Imprimir en color"
+  },
+  {
+   "en": "Monochrome Displays",
+   "es": "Pantallas monocromáticas"
+  },
+  {
+   "en": "Compute Rdshft Vel.",
+   "es": "Calcular vel. por corrimiento al rojo"
+  },
+  {
+   "en": "Allow User Change",
+   "es": "Permitir cambios del usuario"
+  },
+  {
+   "en": "Set E(B-V)",
+   "es": "Fijar E(B-V)"
+  },
+  {
+   "en": "Detect Sky",
+   "es": "Detectar cielo"
+  },
+  {
+   "en": "Catalog Object",
+   "es": "Objeto del catálogo"
+  },
+  {
+   "en": "Field Size",
+   "es": "Tamaño del campo"
+  },
+  {
+   "en": "Multi-Channel Spectrometer",
+   "es": "Espectrómetro multicanal"
+  },
+  {
+   "en": "Observation List",
+   "es": "Lista de observaciones"
+  },
+  {
+   "en": "Star Data List",
+   "es": "Lista de datos de estrellas"
+  },
+  {
+   "en": "Naked Eye Star",
+   "es": "Estrella a simple vista"
+  },
+  {
+   "en": "Get Selection Data",
+   "es": "Obtener los datos de la selección"
+  },
+  {
+   "en": "Add Selection to Current Hot List",
+   "es": "Agregar la selección a la lista de objetos actual"
+  },
+  {
+   "en": "Start New Hot List with Selection",
+   "es": "Empezar una lista de objetos nueva con la selección"
+  },
+  {
+   "en": "Save List",
+   "es": "Guardar lista"
+  },
+  {
+   "en": "Edit Selection",
+   "es": "Editar la selección"
+  },
+  {
+   "en": "Delete Selection",
+   "es": "Eliminar la selección"
+  },
+  {
+   "en": "Undo Edit/Delete",
+   "es": "Deshacer edición/eliminación"
+  },
+  {
+   "en": "Base Slew Rate",
+   "es": "Velocidad base de movimiento"
+  },
+  {
+   "en": "Horizon Limit",
+   "es": "Límite del horizonte"
+  },
+  {
+   "en": "Finder Field",
+   "es": "Campo del buscador"
+  },
+  {
+   "en": "Finder Mag Limit",
+   "es": "Mag. límite del buscador"
+  },
+  {
+   "en": "Field Creation Factor",
+   "es": "Factor de creación del campo"
+  },
+  {
+   "en": "Enter Sky Coordinates for Slew",
+   "es": "Coordenadas del cielo para mover el telescopio"
+  },
+  {
+   "en": "Add/Edit Hot List Entry",
+   "es": "Agregar/editar entrada de la lista de objetos"
+  },
+  {
+   "en": "Camera Parameters",
+   "es": "Parámetros de la cámara"
+  },
+  {
+   "en": "Spectra From Multi-channel Spectrometer",
+   "es": "Espectros del espectrómetro multicanal"
+  },
+  {
+   "en": "Terminate Current Slew",
+   "es": "Detener el movimiento actual"
+  },
+  {
+   "en": "Save Updates",
+   "es": "Guardar cambios"
+  },
+  {
+   "en": "Sort Options",
+   "es": "Opciones de ordenamiento"
+  },
+  {
+   "en": "Scan Rate",
+   "es": "Intervalo de recorrido"
+  },
+  {
+   "en": "Chip Well Depth",
+   "es": "Capacidad de pozo del chip"
+  },
+  {
+   "en": "Dark Noise",
+   "es": "Ruido de corriente oscura"
   }
  ],
  "forbidden": [
@@ -596,6 +979,10 @@
   {
    "es": "VIREO original de CLEA|traducción (oficial|de CLEA)|versión oficial",
    "use": "las traducciones son adaptaciones web de OpenVireo"
+  },
+  {
+   "es": "(?<![\\p{L}\\p{N}])(?:el|del|al|un|este|ese|cada|su|tu|sus|los|propios|de) apuntados?(?![\\p{L}\\p{N}])|^apuntados?(?![\\p{L}\\p{N}])",
+   "use": "posición del telescopio (pointing as a noun); the participle stays («el telescopio está apuntado…»)"
   }
  ]
 }

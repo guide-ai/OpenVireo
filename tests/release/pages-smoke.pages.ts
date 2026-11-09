@@ -125,6 +125,36 @@ test('Front ES1: a ?lang=es-419 preview fetches the Spanish chunk, shows the Spa
  expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);
 });
 
+// Front ES2: the production observatory in Spanish: its menus and dialogs (lazy chunks that read vireo() and the maps) open in
+// Spanish, and the language is still settled once, before any text.
+test('Front ES2: the observatory in a ?lang=es-419 preview opens its Slew and File dialogs in Spanish',async({page,baseURL})=>{
+ const p=await watch(page,baseURL!);
+ await page.goto('/?lang=es-419#observatory');await expect(page.getByRole('heading',{name:'Empieza por el cielo.'})).toBeVisible();
+ await page.locator('.sky-card .card-heading > button').click();
+ await page.getByTestId('ob-set-coordinates').click();await expect(page.getByTestId('ob-sky-coords').getByRole('heading')).toHaveText('Coordenadas del cielo para mover el telescopio');
+ await page.keyboard.press('Escape');
+ await page.getByTestId('fi-file-menu').click();await expect(page.getByTestId('print-sky-menu')).toHaveText('Imprimir imagen del cielo...');
+ await page.getByTestId('print-sky-menu').click();await page.keyboard.press('Escape');
+ await page.waitForLoadState('networkidle');
+ expect(await language(page)).toEqual({sets:1,earlyReads:0});
+ expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);
+});
+
+// ES2 review 1: with View original (English) on, the production observatory shows VIREO's names in English (menus and the
+// Sky Coordinates dialog) while OpenVireo's web text stays Spanish, and the language is still settled once.
+test('Front ES2: View original (English) in a ?lang=es-419 preview shows VIREO\'s observatory names in English',async({page,baseURL})=>{
+ const p=await watch(page,baseURL!);
+ await page.addInitScript(()=>localStorage.setItem('openvireo-vireo-originals','1'));
+ await page.goto('/?lang=es-419#observatory');await expect(page.getByRole('heading',{name:'Empieza por el cielo.'})).toBeVisible();
+ await page.locator('.sky-card .card-heading > button').click();
+ await expect(page.getByTestId('ob-set-coordinates')).toHaveText('Set Coordinates…');await expect(page.getByTestId('fi-file-menu')).toHaveText('File');
+ await page.getByTestId('ob-set-coordinates').click();await expect(page.getByTestId('ob-sky-coords').getByRole('heading')).toHaveText('Enter Sky Coordinates for Slew');
+ await page.keyboard.press('Escape');await expect(page.locator('.sky-card .card-heading > button')).toHaveText('Cerrar la cúpula');
+ await page.waitForLoadState('networkidle');
+ expect(await language(page)).toEqual({sets:1,earlyReads:0});
+ expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);
+});
+
 test('Front ES1: an English load (also ?lang=qps or ?lang=bogus) never fetches the Spanish chunk or the language selector',async({page,baseURL})=>{
  const p=await watch(page,baseURL!),fetched:string[]=[];page.on('request',r=>{if(/\/assets\/(es|LanguageChoice)-[\w-]+\.js$/.test(r.url()))fetched.push(r.url());});
  // ES1 review 1, C3: only ?lang=en or ?lang=es-419 shows the selector; the pseudo-locale and any other value show English without it.

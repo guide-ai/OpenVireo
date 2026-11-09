@@ -1,4 +1,6 @@
 import {LazyBoundary} from '../components/LazyBoundary';
+import {OBSERVATORY_VIREO_CAPTIONS as OV} from './ObservatoryMessages';
+import {vireo,vireoMenuItem} from '../i18n/vireo';
 import {lazy,useContext,useEffect,useMemo,useRef,useState} from 'react';
 import {ProgrammedSlewContext} from '../polish/programmedSlew';
 import TerminateSlewBox from '../polish/TerminateSlewBox';
@@ -73,7 +75,7 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,curren
  useEffect(()=>{if(!editMode)setFieldRequest(null);},[editMode]);
  const list=hotList.doc.editor?.list??null,fileName=hotList.doc.name;
  const rows=useMemo(()=>opticalHotListRows(list),[list]),rowFormat=opticalHotListRowFormat(editMode,exerciseCode),editedFormat=opticalHotListEditedRowFormat(editMode,exerciseCode),[editedRecords,setEditedRecords]=useState<ReadonlySet<HtlRecord>>(()=>new Set()),
-  texts=useMemo(()=>rows.map((r,i)=>opticalHotListRowText(r.record,i+1,editedRecords.has(r.record)?editedFormat:rowFormat)),[rows,rowFormat,editedFormat,editedRecords]),caption=opticalHotListCaption(fileName);
+  texts=useMemo(()=>rows.map((r,i)=>opticalHotListRowText(r.record,i+1,editedRecords.has(r.record)?editedFormat:rowFormat)),[rows,rowFormat,editedFormat,editedRecords]),caption=opticalHotListCaption(fileName,vireo);
  useEffect(()=>{if(!enabled){addCurrentTicket.current++;addCurrentAbort.current?.abort();addCurrentAbort.current=null;setLooking(false);setSky(s=>s.dialog?{...s,dialog:null,notice:null}:s);setHot(h=>h.shown||h.notice?{...INITIAL_OPTICAL_HOT_LIST,index:h.index}:h);setPrint(null);setEntry(null);setEntryError('');}},[enabled]);
  // A list replaced while the window is hidden keeps the remembered index only when it is still a row.
  useEffect(()=>{setHot(h=>h.index>=rows.length?{...h,index:-1}:h);},[rows]);
@@ -86,7 +88,7 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,curren
   if(ticket!==addCurrentTicket.current)return;
   addCurrentAbort.current=null;setLooking(false);
   setEntry(hotListEntryDraft(addCurrentPrefill(at,addCurrentId(object)||null,addCurrentRemark(object,exerciseCode))));}
- function ok(){const step=confirmOpticalSkyCoords(sky);setSky(step.state);if(step.slew){const {target,conversion}=step.slew;request(target,opticalSlewConfirmText(target,conversion!==null));}}
+ function ok(){const step=confirmOpticalSkyCoords(sky);setSky(step.state);if(step.slew){const {target,conversion}=step.slew;request(target,opticalSlewConfirmText(target,conversion!==null,vireo));}}
  function cancel(){const fromList=sky.dialog?.origin==='hot-list';setSky(cancelOpticalSkyCoords);if(fromList)setHot(reopenOpticalHotList);}
  function addEntry(){if(!entry)return;const r=parseHotListEntry(entry);if(r.status!=='ok'){setEntryError(r.status==='ra-invalid'?HOT_LIST_ENTRY_CAPTIONS.raError:r.status==='dec-invalid'?HOT_LIST_ENTRY_CAPTIONS.decError:E.raUnsupported);return;}
   if(hotList.current().read){setEntryError(E.busy);return;}
@@ -96,7 +98,7 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,curren
    // The replaced row keeps the edited-row format until the next show (0x5915d1).
    const edited=(after as HtlList|null)?.[at];if(edited)setEditedRecords(s=>new Set(s).add(edited));return;}
   try{hotList.update(d=>d.read?keepHotList(d):setHotListEditor(d,appendAddCurrentEntry(d.editor??newHtlEditor(),r.fields),d.editor?d.name:''));}catch(e){setEntryError(e instanceof HtlError?t(`htl.error.${e.code}`):E.busy);return;}
-  setEntry(null);setInfo({caption:HOT_LIST_ENTRY_CAPTIONS.addedCaption,text:hotListEntryAddedText(r.fields.id)});}
+  setEntry(null);setInfo({caption:vireo(HOT_LIST_ENTRY_CAPTIONS.addedCaption),text:hotListEntryAddedText(r.fields.id,vireo)});}
  const programmed=useContext(ProgrammedSlewContext),[terminate,setTerminate]=useState(false),setCoordinates=useRef<HTMLButtonElement>(null);
  // L3: focus returns to Set Coordinates after the answer, and when the slew ends while the question is open.
  const endTerminate=()=>setTerminate(false),wasTerminate=useRef(false);
@@ -112,7 +114,7 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,curren
   (w?.querySelector<HTMLInputElement>('[data-testid="ob-hotlist-rows"] input:checked')??w?.querySelector<HTMLButtonElement>('[data-testid="ob-hotlist-delete"]'))?.focus();}
   wasDeleting.current=deleting!==null;},[deleting]);
  const shownRow=()=>hot.index>=0&&hot.index<rows.length?rows[hot.index]:null;
- const noSelection=()=>setInfo({caption:HE.noSelectionCaption,text:HE.noSelectionText});
+ const noSelection=()=>setInfo({caption:vireo(HE.noSelectionCaption),text:vireo(HE.noSelectionText)});
  function editRow(){const r=shownRow();if(!r){noSelection();return;}setEntryError('');setEditing(r.sourceIndex);setEntry(hotListEntryDraft(r.record));}
  function deleteRow(){const r=shownRow();if(!r){noSelection();return;}setDeleting(r.sourceIndex);}
  function confirmDelete(yes:boolean){const at=deleting;setDeleting(null);if(!yes||at===null)return;let after:HtlList|null=null;const shown=hot.index;
@@ -124,22 +126,22 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,curren
  const [saveEnabled,setSaveEnabled]=useState(false);
  useEffect(()=>{if(hot.shown){setSaveEnabled(opticalHotListSaveEnabled('show',editMode,false));setEditedRecords(new Set());}},[hot.shown]);// eslint-disable-line react-hooks/exhaustive-deps
  function saveList(){
-  if(opticalHotListSaveOutcome(editMode)==='edit-mode-required'){setInfo({caption:OPTICAL_HOT_LIST_SAVE_LITERALS.editModeRequiredCaption,text:OPTICAL_HOT_LIST_SAVE_LITERALS.editModeRequiredText});return;}
+  if(opticalHotListSaveOutcome(editMode)==='edit-mode-required'){setInfo({caption:vireo(OPTICAL_HOT_LIST_SAVE_LITERALS.editModeRequiredCaption),text:vireo(OPTICAL_HOT_LIST_SAVE_LITERALS.editModeRequiredText)});return;}
   const d=hotList.current();if(d.read||!d.editor)return;
   const name=d.name||'HotList.HTL';
-  try{downloadText(serializeHtl(opticalHotListSaveRecords(opticalHotListRows(d.editor.list))),name);}catch(e){if(e instanceof HtlError){setInfo({caption:OPTICAL_HOT_LIST_SAVE_LITERALS.failedCaption,text:OPTICAL_HOT_LIST_SAVE_LITERALS.failedText+name+'\r\n'+e.message});return;}throw e;}
-  setSaveEnabled(opticalHotListSaveEnabled('saved',editMode,true));setInfo({caption:OPTICAL_HOT_LIST_SAVE_LITERALS.savedCaption,text:opticalHotListSavedText(name)});}
+  try{downloadText(serializeHtl(opticalHotListSaveRecords(opticalHotListRows(d.editor.list))),name);}catch(e){if(e instanceof HtlError){setInfo({caption:vireo(OPTICAL_HOT_LIST_SAVE_LITERALS.failedCaption),text:vireo(OPTICAL_HOT_LIST_SAVE_LITERALS.failedText)+name+'\r\n'+e.message});return;}throw e;}
+  setSaveEnabled(opticalHotListSaveEnabled('saved',editMode,true));setInfo({caption:vireo(OPTICAL_HOT_LIST_SAVE_LITERALS.savedCaption),text:opticalHotListSavedText(name,vireo)});}
  // The question goes away with the slew (it ended, or was stopped elsewhere).
  useEffect(()=>{if(!programmed?.moving)setTerminate(false);},[programmed?.moving]);
  function slew(){const step=slewToOpticalHotListSelection(hot,rows);setHot(step.window);if(step.row)setSky(s=>openOpticalSkyCoordsFromHotList(s,step.row!));}
  return <div className="ob-slew-menu">
   <div className="ob-menu">
    {/* OB-SC-02 (Front P): during a programmed slew Set Coordinates asks "Terminate Current Slew?" instead of opening. */}
-   <button type="button" ref={setCoordinates} className="secondary-button" disabled={!enabled&&!programmed?.moving} data-testid="ob-set-coordinates" onClick={()=>{if(programmed?.moving){setTerminate(true);return;}setSky(s=>openOpticalSkyCoords(s,pointing));}}>{M.open}</button>
+   <button type="button" ref={setCoordinates} className="secondary-button" disabled={!enabled&&!programmed?.moving} data-testid="ob-set-coordinates" onClick={()=>{if(programmed?.moving){setTerminate(true);return;}setSky(s=>openOpticalSkyCoords(s,pointing));}}>{vireoMenuItem(OV.setCoordinates)}</button>
    {terminate&&programmed?.moving&&<TerminateSlewBox onYes={()=>{endTerminate();programmed.terminate();}} onNo={endTerminate}/>}
-   <button type="button" className="secondary-button" disabled={!enabled} data-testid="ob-view-select" onClick={()=>setHot(h=>openOpticalHotList(h,rows.length))}>{H.open}</button>
+   <button type="button" className="secondary-button" disabled={!enabled} data-testid="ob-view-select" onClick={()=>setHot(h=>openOpticalHotList(h,rows.length))}>{vireoMenuItem(OV.viewSelect)}</button>
    <OpticalOptionsDialog gate={optionsGate} options={options} onOptions={onOptions} disabled={!enabled} editMode={fieldInfo?.editMode} onEditMode={fieldInfo?.onEditMode} virtualObservatory={virtualObservatory} onVirtualObservatory={fieldInfo?setVirtualObservatory:undefined} testMode={fieldInfo?.testMode} onTestMode={fieldInfo?.onTestMode} demonstrationMode={fieldInfo?.demonstrationMode} onDemonstrationMode={fieldInfo?.onDemonstrationMode} sessionOptions={fieldInfo?.sessionOptions} onSessionOptions={fieldInfo?.onSessionOptions} photometerTabOptions={fieldInfo?.photometerTabOptions} onPhotometerTabOptions={fieldInfo?.onPhotometerTabOptions} instrumentParameters={fieldInfo?.instrumentParameters} onInstrumentParameters={fieldInfo?.onInstrumentParameters} cameraParameters={fieldInfo?.cameraParameters} onCameraParameters={fieldInfo?.onCameraParameters} restrictScopeAccess={fieldInfo?.restrictScopeAccess} onRestrictScopeAccess={fieldInfo?.onRestrictScopeAccess} horizonRadians={fieldInfo?.horizonRadians}/>
-   <button type="button" className="secondary-button" disabled={!enabled||looking} aria-busy={looking||undefined} data-testid="ob-add-current" onClick={()=>void addCurrent()}>{E.open}</button>{looking&&<p role="status" className="observatory-note" data-testid="ob-add-current-looking">{E.looking}</p>}
+   <button type="button" className="secondary-button" disabled={!enabled||looking} aria-busy={looking||undefined} data-testid="ob-add-current" onClick={()=>void addCurrent()}>{vireoMenuItem(HOT_LIST_ENTRY_CAPTIONS.menu)}</button>{looking&&<p role="status" className="observatory-note" data-testid="ob-add-current-looking">{E.looking}</p>}
   </div>
   {fieldInfo&&<ObservatoryFileMenu editMode={editMode} qsoList={fieldInfo.objectXMode?editMode:virtualObservatory} disabled={fieldInfo.busy??false} pointing={pointing} view={fieldInfo.view} telescope={fieldInfo.telescopeName??''} onFieldInfo={kind=>setFieldRequest(r=>({kind,token:(r?.token??0)+1}))} onQsoList={()=>setQsoRequest(n=>n+1)} onClusterData={()=>setClusterRequest(n=>n+1)}/>}
   <ResearchNotes><p>{M.openHelp} {H.openHelp} {E.openHelp} {M.adaptation} {E.adaptation}</p></ResearchNotes>
@@ -147,7 +149,7 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,curren
    onSearch={()=>setHot(openOpticalHotListSearch)} onSearchEdit={(q,c)=>setHot(h=>editOpticalHotListSearch(h,q,c))} onSearchSubmit={mode=>setHot(h=>submitOpticalHotListSearch(h,mode,texts))} onSearchCancel={()=>setHot(cancelOpticalHotListSearch)}
    onDismiss={()=>setHot(dismissOpticalHotListNotice)} onPrint={()=>setPrint(hotListPrintSnapshot(caption,rows,(_r,i)=>texts[i]))}
    onEdit={editRow} onDelete={deleteRow} onUndo={undoRow} undoEnabled={undoEnabled} editBlocked={!!hotList.doc.read} editEnabled={opticalHotListEditEnabled(editMode,exerciseCode)} onSave={saveList} saveEnabled={saveEnabled}/>
-  {deleting!==null&&<QuestionBox caption={HE.deleteCaption} text={HE.deleteText} note={PM.hotListEdit.deleteNote} testId="ob-hotlist-delete-box" onAnswer={confirmDelete}/>}
+  {deleting!==null&&<QuestionBox caption={vireo(HE.deleteCaption)} text={vireo(HE.deleteText)} note={PM.hotListEdit.deleteNote} testId="ob-hotlist-delete-box" onAnswer={confirmDelete}/>}
   <OpticalSkyCoordsDialog state={sky} onEdit={(f,text)=>setSky(s=>editOpticalSkyCoordsField(s,f,text))} onEpoch={i=>setSky(s=>selectOpticalSkyCoordsEpoch(s,i))} onOk={ok} onCancel={cancel} onDismiss={()=>setSky(dismissOpticalSkyCoordsNotice)}/>
   <HotListEntryDialog draft={entry} error={entryError} onEdit={(f,v)=>setEntry(e=>e&&{...e,[f]:v})} onOk={addEntry} onCancel={()=>{setEntry(null);setEditing(null);}} onDismiss={()=>setEntryError('')}/>
   {fieldInfo?.editMode&&<LazyBoundary fallback={null}><FieldInformationMenu info={fieldInfo} pointing={pointing} enabled={enabled} hotList={hotList} request={fieldRequest} onSlew={target=>setSky(s=>openOpticalSkyCoordsAt(s,target))}/></LazyBoundary>}
@@ -163,6 +165,6 @@ function InfoBox({caption,text,onClose}:{caption:string;text:string;onClose:()=>
  const ref=useRef<HTMLDialogElement>(null);
  useEffect(()=>{const el=ref.current;if(el&&!el.open)el.showModal();},[]);
  return <dialog ref={ref} className="ob-dialog ob-box" role="alertdialog" aria-label={caption} data-testid="ob-info-box" onCancel={e=>{e.preventDefault();onClose();}}>
-  <h2 className="ob-native">{caption}</h2><p className="ob-native" style={{whiteSpace:'pre-line'}}>{text}</p><div className="ob-actions"><button type="button" className="primary-button" onClick={onClose}>{OBSERVATORY_MESSAGES.common.ok}</button></div>
+  <h2 className="ob-native">{caption}</h2><p className="ob-native" style={{whiteSpace:'pre-line'}}>{text}</p><div className="ob-actions"><button type="button" className="primary-button" onClick={onClose}>{vireo(OV.ok)}</button></div>
  </dialog>;
 }

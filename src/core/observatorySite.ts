@@ -78,8 +78,9 @@ export function siteInformationAngle(degrees:number):string{
  while(whole>=360)whole-=360;
  return (' '+whole).padStart(4,' ')+'°'+String(minutes).padStart(2,'0')+"'"+(Math.trunc(roundHalfEven(seconds))<10?'0':'')+formatFixed(seconds,0)+'"';
 }
-export function siteInformationLines(site:ObservatorySite,index:OpticalIndex,limitSlewing:boolean):readonly string[]{
- const L=SITE_INFORMATION_LITERALS,p=opticalProfile(index);
+/** `tr` shows a literal in the screen language (the window and its print follow the screen; the web passes vireo()). */
+export function siteInformationLines(site:ObservatorySite,index:OpticalIndex,limitSlewing:boolean,tr:(literal:string)=>string=literal=>literal):readonly string[]{
+ const L=Object.fromEntries(Object.entries(SITE_INFORMATION_LITERALS).map(([k,v])=>[k,tr(v)])) as Record<keyof typeof SITE_INFORMATION_LITERALS,string>,p=opticalProfile(index);
  const dms=(radians:number)=>siteInformationAngle(radians/RAD);
  const lines=[L.name+site.name,L.longitude+dms(site.longitudeRadians)+(site.longitudeRadians<0?L.west:L.east),L.latitude+dms(site.latitudeRadians)+(site.latitudeRadians<0?L.south:L.north),L.altitude+formatFixed(site.heightMetres,1)+L.meters];
  if(limitSlewing)lines.push(L.horizon+formatFixed(site.horizonRadians/RAD,1)+L.degrees);
