@@ -252,3 +252,17 @@ test('review 1 M1: after a redeploy, a route whose old chunk is gone shows the u
  expect([p.errors,await violations(page),p.external]).toEqual([[],[],[]]);
  expect(p.console.some(m=>/Failed to fetch dynamically imported module/.test(m))).toBe(true);
 });
+
+test('Front SEO: the lab pages, sitemap and robots.txt are served with the release headers and pass the policy',async({page,request,baseURL})=>{
+ for(const [path,type] of [['/labs/','text/html'],['/labs/hubble/','text/html'],['/labs/labs.css','text/css'],['/sitemap.xml','application/xml'],['/robots.txt','text/plain'],['/og-image.png','image/png'],['/favicon.svg','image/svg+xml']] as const){
+  const r=await request.get(path);expect(r.status(),path).toBe(200);expect(r.headers()['content-type'],path).toContain(type);
+  expect(r.headers()['content-security-policy'],path).toContain("default-src 'none'");
+  if(!/\.(png|svg)$/.test(path))expect(r.headers()['cache-control'],path).toBe('no-cache');
+ }
+ const p=await watch(page,baseURL!);
+ await page.goto('/labs/object-x/');await expect(page.getByRole('heading',{level:1})).toHaveText('Object X: what is it?');
+ await expect.poll(()=>page.evaluate(()=>getComputedStyle(document.querySelector('.button')!).borderRadius)).toBe('8px');// the stylesheet applied
+ await page.getByRole('link',{name:'Open the lab'}).click();
+ await expect(page.locator('dialog[open]')).toContainText('The quest for Object X',{timeout:20_000});
+ expect([p.errors,p.console,await violations(page),p.external]).toEqual([[],[],[],[]]);
+});

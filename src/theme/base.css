@@ -60,3 +60,8 @@ details.research-notes>:not(summary){color:var(--ov-text-muted);font-size:var(--
 @media (prefers-reduced-motion:reduce){
  *,*::before,*::after{transition-duration:0ms!important;animation-duration:0ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}
 }
+
+/* Front SEO: what index.html shows inside #root until the app replaces it (crawlable text and links to /labs/). */
+.seo-boot{max-width:640px;margin:48px auto;padding:0 16px;color:var(--ov-text-muted);font:var(--ov-text-sm)/1.6 var(--ov-font-sans)}
+.seo-boot h1{color:var(--ov-text);font-size:1.4rem;margin:0 0 8px}
+.seo-boot ul{display:flex;flex-wrap:wrap;gap:4px 16px;padding:0;list-style:none}

@@ -3,7 +3,7 @@ import{clickHeaderTool,openHeaderTools}from'./fixtures/header-tools';
 
 test('a beginner can open the sky, point to M82 and inspect original resources without technical input',async({page})=>{
   const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
-  await page.goto('/');await expect(page).toHaveTitle('OpenVireo · Open Virtual Educational Observatory');
+  await page.goto('/');await expect(page).toHaveTitle('OpenVireo · CLEA VIREO astronomy labs in your browser');
   await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('lang','en');
   await expect(page.getByRole('button',{name:'Point telescope ↗',exact:true})).toBeDisabled();

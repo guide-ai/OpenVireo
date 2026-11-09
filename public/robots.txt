@@ -1,0 +1,5 @@
+# Front SEO: every page may be indexed. Cloudflare adds its managed AI-crawler rules above this file.
+User-agent: *
+Allow: /
+
+Sitemap: https://openvireo.space/sitemap.xml
