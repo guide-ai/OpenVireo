@@ -24,7 +24,7 @@ const SAME=new Set<string>([
  // The recorded metallicity model labels (native-cluster-contract.json), as read from the contract.
  '[Z=0.0004, Y=0.230]','[Z=0.001, Y=0.230]','[Z=0.004, Y=0.240]','[Z=0.008, Y=0.250]','[Z=0.019, Y=0.273] (Solar Values)','[Z=0.030, Y=0.300]',
  // File names the walk reads.
- 'night1.dat','observation-results.dat','ID #:','Dec:','Min:','No','magnitudes','B−V (mag)','E(B−V) (mag)','Dec (°)','V mag','Phase','E05 note','HD 1','HD 2','HD 3','HD 4',
+ 'night1.dat','observation-results.dat','Dec:','Min:','No','magnitudes','B−V (mag)','E(B−V) (mag)','Dec (°)','E05 note','HD 1','HD 2','HD 3','HD 4',
 ]);
 /** A hash, a file name read by the walk, a coordinate or a number with its unit, and nothing else that could be a word. */
 const RECORDED=/^(?:SHA-256 )?[0-9a-f]{64}$|^[0-9a-f]{12}$/;
@@ -44,12 +44,17 @@ const PICTURE_TEXT=/^# of Stars: \d+$|^V - Mv = [\d.]+$|^E\(B-V\) = [\d.]+$/;
 const SPECTRAL=/^[OBAFGKM]\d(?:\.\d)?(?:I{1,3}|IV|V)$/;
 const RECORDED_ID=/^(?:@option:)?N\d{4}\.DAT@\d+$/;
 const GCVS_NAME=/^(?:[A-Z]{1,2}|[A-Z]{1,3}\d*|[a-z]{2,6}) [A-Z][a-z]{2}$/;
-const GCVS_TYPE=/^(?:[A-Z]{1,6}(?:[\/+:][A-Z]*:?)*:?|[^ ]{1,14} — [\d,]+)$/;
+/** The GCVS variability types, read from the variable-star page's own type list (CLEA_VStrs.dat) during the walk, and a type
+ * option ("DCEP — 1,234"); no ordinary word passes unless the catalog has it as a type. */
+const GCVS_TYPES=new Set<string>();
+const gcvsType=(text:string)=>{const m=/^(.+?)(?: — [\d,]+)?$/.exec(text)!;return GCVS_TYPES.has(m[1]!);};
+/** The light curve's own plot text (VIREO's TLtCrvDsplyForm1 picture). */
+const CURVE_TEXT=new Set(['V mag','Phase']);
 /** The steps on the variable-star route, where GCVS names and type codes (recorded catalog data) are on screen. */
 const VARIABLE_STEPS=new Set(['variable stars','variable star data','variable list saved','variable list print preview','light curve','light curve print preview']);
 /** The Cluster Data steps (#observatory), where the cluster names of CLUSTERS.DAT and the Guide Star Catalog IDs are data. */
 const CD_NAME=/^(?:NGC|IC|M|Mel|Cr|Tr|Stock|Mine) ?\d*(?: \(NGC \d+\))?$/;
-const same=(text:string,step:string)=>CLUSTER_NAMES.has(text.replace(/^@option:/,''))||PICTURE_TEXT.test(text)||SPECTRAL.test(text)||RECORDED_ID.test(text)||(VARIABLE_STEPS.has(step)&&(GCVS_NAME.test(text)||GCVS_TYPE.test(text)))||(step.startsWith('Cluster Data')&&CD_NAME.test(text))||PRINT_DATE.test(text)||text===EXERCISE_TITLE||SAME.has(text)||NUMERIC.test(text)||RECORDED.test(text);
+const same=(text:string,step:string)=>CLUSTER_NAMES.has(text.replace(/^@option:/,''))||PICTURE_TEXT.test(text)||SPECTRAL.test(text)||RECORDED_ID.test(text)||(VARIABLE_STEPS.has(step)&&(GCVS_NAME.test(text)||gcvsType(text.replace(/^@option:/,''))||CURVE_TEXT.has(text)))||(step.startsWith('Cluster Data')&&CD_NAME.test(text))||PRINT_DATE.test(text)||text===EXERCISE_TITLE||SAME.has(text)||NUMERIC.test(text)||RECORDED.test(text);
 const id=(page:Page|Locator,testId:string)=>page.getByTestId(testId);
 const ACCENTED:Readonly<Record<string,string>>={a:'aá',e:'eé',i:'ií',o:'oó',u:'uú',A:'AÁ',E:'EÉ',I:'IÍ',O:'OÓ',U:'UÚ'};
 const MARK='[⟦⟧·\\s]*';
@@ -124,7 +129,8 @@ const STEPS:readonly (readonly [string,(page:Page,lang:Lang)=>Promise<void>])[]=
  ['Recorded Results closed',async(page)=>{await id(page,'cnhr-results-list-menu').click();await id(page,'cnhr-results-close').click();await expect(id(page,'cnhr-results')).toHaveCount(0);}],
  ['Observational Data',async(page)=>{await page.locator('[data-testid=cnhr-point]').first().click({button:'right'});await expect(page.locator('dialog.obsd')).toBeVisible();}],
  ['observation overlays',async(page,lang)=>{await page.locator('dialog.obsd').locator('button').last().click();await expect(page.locator('dialog.obsd')).toHaveCount(0);await page.getByLabel(N(lang,'obsHr.zams')).check();await page.getByLabel(N(lang,'obsHr.isochrone')).check();await page.waitForTimeout(500);}],
- ['variable stars',async(page)=>{await page.evaluate(()=>{location.hash='#variable-stars';});await expect(id(page,'variable-count')).toContainText(/\d/,{timeout:30_000});}],
+ ['variable stars',async(page)=>{await page.evaluate(()=>{location.hash='#variable-stars';});await expect(id(page,'variable-count')).toContainText(/\d/,{timeout:30_000});
+  for(const v of await page.locator('[data-testid=variable-type] option').evaluateAll(o=>o.map(x=>(x as HTMLOptionElement).value)))if(v.startsWith('='))GCVS_TYPES.add(v.slice(1));}],
  ['variable star data',async(page)=>{await id(page,'variable-name').fill('del Cep');await page.locator('[data-testid=variable-results] tbody button').first().click();await expect(id(page,'vstar-list-window')).toBeVisible();await id(page,'vstar-data-menu').click();}],
  ['variable list saved',async(page)=>{await id(page,'vstar-save-menu').click();await id(page,'vstar-save-displayed').click();await expect(id(page,'vstar-notice')).not.toHaveText('');}],
  ['variable list print preview',async(page)=>{await id(page,'vstar-data-menu').click();await id(page,'vstar-print').click();await expect(id(page,'variable-print-preview')).toBeVisible();}],
@@ -135,6 +141,9 @@ const STEPS:readonly (readonly [string,(page:Page,lang:Lang)=>Promise<void>])[]=
  ['Cluster Data study list',async(page)=>{await id(page,'cd-view-select').click();await expect(id(page,'cd-study-list')).toBeVisible();await id(page,'cd-study-selection-menu').click();}],
  ['Cluster Data report',async(page)=>{await page.keyboard.press('Escape');await id(page,'cd-study-lines').getByText('NGC 752',{exact:false}).first().dblclick();await expect(id(page,'cd-study-list')).toHaveCount(0);await id(page,'cd-ok').click();await expect(id(page,'cluster-data-lines')).toBeVisible({timeout:30_000});await id(page,'cluster-data-line-7').click();await id(page,'cluster-data-selection-menu').click();}],
  ['Cluster Data added to hot list',async(page)=>{await id(page,'cluster-data-add').click();await expect(id(page,'fi-box')).toBeVisible();}],
+ ['Cluster Data hot list not saved',async(page)=>{await id(page,'fi-box').getByRole('button').first().click();await id(page,'cluster-data-selection-menu').click();await id(page,'cluster-data-entire').click();await expect(id(page,'cd-hot-unsaved-no')).toBeVisible();}],
+ ['Cluster Data new hot list',async(page)=>{await id(page,'cd-hot-unsaved-no').click();await expect(id(page,'fi-box')).toBeVisible();}],
+ ['Cluster Data no stars',async(page)=>{await id(page,'fi-box').getByRole('button').first().click();await id(page,'fi-file-menu').click();await id(page,'cluster-data-menu').click();await expect(id(page,'cd-dialog')).toBeVisible();await id(page,'cd-limit').fill('5.0');await id(page,'cd-ok').click();await expect(id(page,'fi-box')).toBeVisible({timeout:30_000});}],
  ['Cluster Data invalid diameter',async(page)=>{await id(page,'fi-box').getByRole('button').first().click();await id(page,'fi-file-menu').click();await id(page,'cluster-data-menu').click();await expect(id(page,'cd-dialog')).toBeVisible();await id(page,'cd-diameter').fill('x');await id(page,'cd-ok').click();await expect(id(page,'fi-box')).toBeVisible();}],
  ['Cluster Data unsaved list',async(page)=>{await id(page,'fi-box').getByRole('button').first().click();await id(page,'cd-name').fill('Mine');await id(page,'cd-diameter').fill('5');await id(page,'cd-file').click();await id(page,'cd-add-to-list').click();await id(page,'cd-file').click();await id(page,'cd-view-select').click();await expect(id(page,'cd-study-list')).toBeVisible();await page.keyboard.press('Escape');await expect(id(page,'cd-unsaved-yes')).toBeVisible();}],
  ['Cluster Data Save List unavailable',async(page)=>{await id(page,'cd-unsaved-yes').click();await expect(id(page,'fi-box')).toBeVisible();}],
@@ -202,6 +211,9 @@ const captions=(page:Page,T:(original:string)=>string):Record<string,()=>Promise
   for(const c of ['Cluster Name or ID','Cluster Center','Type of Listing','Sort By','Use Telescope Coordinates',"Diameter ('):",'Mag. Limit:','&Student (Finding List)'])await expect(d,c).toContainText(T(c));},
  'Cluster Data study list':async()=>{await expect(id(page,'cd-study-list').getByRole('heading').first()).toHaveText(T('Clusters for Study'));},
  'Cluster Data added to hot list':async()=>{await expect(id(page,'fi-box').getByRole('heading')).toHaveText(T('Confirmation'));},
+ 'Cluster Data hot list not saved':async()=>{await expect(id(page,'fi-box').getByRole('heading')).toHaveText(T('Current Hot List not Saved!'));},
+ 'Cluster Data new hot list':async()=>{await expect(id(page,'fi-box').getByRole('heading')).toHaveText(T('New Hot List Created'));await expect(id(page,'fi-box-text')).toHaveText(new RegExp(`^${esc(T('All stars from cluster ').trim())}\\s+NGC 752\\s+${esc(T(' placed in Hot List').trim())}$`));},
+ 'Cluster Data no stars':async()=>{await expect(id(page,'fi-box').getByRole('heading')).toHaveText(T('No Stars Found in Field!'));const t=id(page,'fi-box-text');await expect(t).toContainText(T('Possible Error in Field Parameters:'));for(const l of ['MinRA: ','MaxDec: ','LimitMag: '])await expect(t).toContainText(`${T(l).trim()} `);await expect(t).toContainText('5.000');},
  'Cluster Data invalid diameter':async()=>{await expect(id(page,'fi-box').getByRole('heading')).toHaveText(T('Input Error!'));await expect(id(page,'fi-box-text')).toHaveText(T('Diameter is Invalid!'));},
  'Cluster Data unsaved list':async()=>{await expect(id(page,'fi-box').getByRole('heading')).toHaveText(T('Cluster List not Saved!'));},
 });

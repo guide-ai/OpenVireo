@@ -540,10 +540,11 @@ test('the shell toolbar: Save investigation is byte-identical in English, qps an
 // Front ES7: exercise E05. Every file a student can save on the cluster HR route, in English, qps and Spanish: the whole
 // investigation after a confirmed fit (reference dataset, point exclusion, notebook), Display/Print Data's Save Text and Comma
 // Delimit (the CLEA Cluster Data listing), the saved-observation DAT written back by the HR tool, its Recorded Results list's Save
-// Text and Comma Delimit, and, on the variable-star route,
+// Text and Comma Delimit, File › Cluster Data…'s report (Save Text) and the two HTL files its hot-list items write,
+// and, on the variable-star route,
 // Save Text › As Displayed. The HR plot and the print previews are pictures, not files. The page
 // clock is fixed at NOW (the investigation's save time), so nothing is masked.
-test('E05 cluster HR: investigation, cluster listing TXT and CSV, observation DAT, Recorded Results TXT and CSV; variable-star TXT',async({browser,baseURL})=>{
+test('E05 cluster HR: investigation, cluster listing TXT and CSV, observation DAT, Recorded Results TXT and CSV; Cluster Data TXT and HTL; variable-star TXT',async({browser,baseURL})=>{
  test.setTimeout(240_000);
  const id=(page:Page,testId:string)=>page.getByTestId(testId);
  const dismiss=async(page:Page)=>{await id(page,'fi-box').getByRole('button').first().click();await expect(id(page,'fi-box')).toHaveCount(0);};
@@ -574,12 +575,24 @@ test('E05 cluster HR: investigation, cluster listing TXT and CSV, observation DA
   const saveResults=async(kind:'displayed'|'csv')=>{const f=await download(page,async()=>{await id(page,'cnhr-results-list-menu').click();await id(page,'cnhr-results-save-menu').click();await id(page,`cnhr-results-save-${kind}`).click();});await dismiss(page);return f;};
   const resultsText=await saveResults('displayed'),resultsCsv=await saveResults('csv');
   await id(page,'cnhr-results-list-menu').click();await id(page,'cnhr-results-close').click();
+  // File › Cluster Data… (#observatory): the CLEA Cluster Data report of NGC 752 (Save Text; its Comma Delimit answers VIREO's
+  // "not available" box, a row being shorter than the column positions, so no file) and the HTL files its
+  // hot-list items write: Yes in "Current Hot List not Saved!" downloads the current list (one added row), then the entire list.
+  await open(page,locale,'observatory');await page.locator('.sky-card .card-heading > button').click();
+  await id(page,'fi-file-menu').click();await id(page,'cluster-data-menu').click();await expect(id(page,'cd-dialog')).toBeVisible();
+  await id(page,'cd-file').click();await id(page,'cd-view-select').click();await id(page,'cd-study-lines').getByText('NGC 752',{exact:false}).first().dblclick();
+  await expect(id(page,'cd-study-list')).toHaveCount(0);await id(page,'cd-ok').click();await expect(id(page,'cluster-data-lines')).toBeVisible({timeout:30_000});
+  const saveField=async(kind:'displayed')=>{const f=await download(page,async()=>{await paceDownload(page);await id(page,'cluster-data-list-menu').click();await id(page,'cluster-data-save-menu').click();await id(page,`cluster-data-save-${kind}`).click();});await dismiss(page);return f;};
+  const fieldText=await saveField('displayed');
+  await id(page,'cluster-data-line-7').click();await id(page,'cluster-data-selection-menu').click();await id(page,'cluster-data-add').click();await dismiss(page);
+  const entire=async()=>{const f=await download(page,async()=>{await paceDownload(page);await id(page,'cluster-data-selection-menu').click();await id(page,'cluster-data-entire').click();await id(page,'cd-hot-unsaved-yes').click();});await dismiss(page);return f;};
+  const hotListAdded=await entire(),hotListEntire=await entire();
   await open(page,locale,'variable-stars');
   await expect(id(page,'variable-count')).toContainText('31,147',{timeout:20_000});
   await id(page,'variable-name').fill('RR Lyr');await page.locator('[data-testid=variable-results] tbody button').first().click();
   await expect(id(page,'vstar-list-window')).toBeVisible();
-  const variableFile=async(kind:'displayed'|'csv')=>{await id(page,'vstar-data-menu').click();await id(page,'vstar-save-menu').click();return download(page,()=>id(page,`vstar-save-${kind}`).click());};
-  const variableText=await variableFile('displayed');
-  return {investigation,listingText,listingCsv,observations,resultsText,resultsCsv,variableText};
+  await id(page,'vstar-data-menu').click();await id(page,'vstar-save-menu').click();
+  const variableText=await download(page,()=>id(page,'vstar-save-displayed').click());
+  return {investigation,listingText,listingCsv,observations,resultsText,resultsCsv,fieldText,hotListAdded,hotListEntire,variableText};
  },{},page=>page.getByTestId('variable-stars'),['en','qps','es-419']);
 });

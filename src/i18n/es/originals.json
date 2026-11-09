@@ -501,7 +501,7 @@
  "Topic": "Tema",
  "Print Topic...": "Imprimir tema...",
  "Search Text...": "Buscar texto...",
- "Show Help Topics...": "Mostrar la ayuda por temas...",
+ "Show Help Topics...": "Mostrar los temas de ayuda...",
  "Close Topic Window": "Cerrar la ventana del tema",
  "Back": "Atrás",
  "Find Help Topic": "Buscar tema de ayuda",
@@ -518,7 +518,7 @@
  "Select Cluster Data...": "Seleccionar datos de cúmulos...",
  "Comma Delimit": "Separado por comas",
  "Information": "Información",
- "Verify Removal from Plot": "Confirmar: quitar de la gráfica",
+ "Verify Removal from Plot": "Confirmar que se quita de la gráfica",
  "Possible Cluster Member": "Posible miembro del cúmulo",
  "Are you sure you want to remove this star from the HR diagram?\r\n\r\n(Restore via \"File\"->\"Restore Removed Points\")": "¿Seguro que quieres quitar esta estrella del diagrama HR?\r\n\r\n(Restáurala con \"Archivo\"->\"Restaurar puntos quitados\")",
  "Clusters for Study": "Cúmulos para estudiar",
@@ -571,5 +571,6 @@
  "View/Print Parameters": "Ver/imprimir parámetros",
  "Recorded Results - Computed Magnitudes": "Resultados registrados - Magnitudes calculadas",
  "Recorded Results - Mean Counts": "Resultados registrados - Cuentas promedio",
- "Cluster Age/Distance Parameters": "Parámetros de edad y distancia del cúmulo"
+ "Cluster Age/Distance Parameters": "Parámetros de edad y distancia del cúmulo",
+ "ID #:": "N.º de ID:"
 }
