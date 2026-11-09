@@ -366,10 +366,6 @@
    "es": "apertura"
   },
   {
-   "en": "\\bnotebook\\b",
-   "es": "cuaderno"
-  },
-  {
    "en": "\\breadings\\b",
    "es": "lectura"
   },
@@ -396,6 +392,46 @@
   {
    "en": "\\bcluster fit\\b",
    "es": "ajuste (manual )?del cúmulo"
+  },
+  {
+   "en": "\\bstandards?\\b",
+   "es": "estándar"
+  },
+  {
+   "en": "\\bshoulders?\\b",
+   "es": "hombro"
+  },
+  {
+   "en": "\\bgr[ae]yscale\\b",
+   "es": "grises"
+  },
+  {
+   "en": "\\b(?:observation )?notebook\\b",
+   "es": "cuaderno"
+  },
+  {
+   "en": "\\bluminosity\\b",
+   "es": "luminosidad"
+  },
+  {
+   "en": "\\batlas(es)?\\b",
+   "es": "atlas"
+  },
+  {
+   "en": "\\bstandard pairs?\\b",
+   "es": "par(es)? de estándares"
+  },
+  {
+   "en": "\\braw\\b",
+   "es": "en bruto"
+  },
+  {
+   "en": "\\bmerg(e|es|ed|ing)\\b",
+   "es": "fusi"
+  },
+  {
+   "en": "\\bendpoint[- ]grids?\\b",
+   "es": "rejillas? de extremos"
   }
  ],
  "names": [
@@ -925,6 +961,22 @@
   {
    "en": "Record/Review",
    "es": "Registrar/Revisar"
+  },
+  {
+   "en": "Next on List",
+   "es": "Siguiente en la lista"
+  },
+  {
+   "en": "No More Spectra",
+   "es": "No hay más espectros"
+  },
+  {
+   "en": "Spectral Line Table",
+   "es": "Tabla de líneas espectrales"
+  },
+  {
+   "en": "Program List",
+   "es": "Lista de programa"
   }
  ],
  "forbidden": [

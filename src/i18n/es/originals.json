@@ -496,5 +496,10 @@
  "Current readings added to results list.  View/Print/Save list under \"Tools\" -> \"Results Editors\" -> \"Observational Results\" on main Window.": "Lecturas actuales agregadas a la lista de resultados.  Consulta, imprime o guarda la lista en \"Herramientas\" -> \"Editores de resultados\" -> \"Resultados de observación\" en la ventana principal.",
  "Reading Sky!": "¡Lectura de cielo!",
  "Are you sure you want to replace a sky reading with one that may be invalid?": "¿Seguro que quieres reemplazar una lectura de cielo por una que puede no ser válida?",
- "Unknown": "Desconocido"
+ "Unknown": "Desconocido",
+ "Program List...": "Lista de programa...",
+ "Next on List": "Siguiente en la lista",
+ "No More Spectra": "No hay más espectros",
+ "You are at the end of the spectra list.": "Llegaste al final de la lista de espectros.",
+ "Spectral Line Table": "Tabla de líneas espectrales"
 }

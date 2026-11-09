@@ -2,6 +2,10 @@ import{CLASSIFICATION_CATALOG,readClassificationState,type ClassificationState}f
 /** Original CLASSIFY.LST order,not a type/grade key. Native handlers and list
  * hashes:docs/CLASSIFICATION-PROGRAM-LIST-PROVENANCE.json. */
 export const CLASSIFICATION_PROGRAM=Object.freeze(CLASSIFICATION_CATALOG.practice.map(p=>Object.freeze({id:p.id,label:p.label,file:p.file,sha256:p.sha256})));
+/** Front ES5: VIREO's own texts that the web Program List shows through vireo(): TSpClassify's DFM menu items ProgramList1
+ * and NextonList1 [D] (research analysis/claude-audit-2026-10-26/veo-forms.json) and the end box's caption and message, the
+ * literals at 0x50b7d4 and 0x50b7e4 that Next on List (0x50b6bc) shows (docs/CLASSIFICATION-PROGRAM-LIST-PROVENANCE.json). */
+export const CLASSIFY_PROGRAM_LITERALS=Object.freeze({programList:'Program &List...',nextOnList:'&Next on List',noMoreSpectra:'No More Spectra',endOfList:'You are at the end of the spectra list.'});
 export class ClassificationProgramError extends Error{constructor(readonly code:'source'|'draft'|'stale'){super('Classification program '+code);this.name='ClassificationProgramError';}}
 export function classificationProgramIndex(id:string):number{const index=CLASSIFICATION_PROGRAM.findIndex(p=>p.id===id);if(index<0)throw new ClassificationProgramError('source');return index;}
 /** Authored safety guard for the web's free-form response,which is absent

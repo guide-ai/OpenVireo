@@ -11,77 +11,77 @@
   "kind": "original",
   "value": "MAX_CLASSIFICATIONS",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the record limit (100) as a number"
  },
  {
   "file": "src/ClassificationLab.tsx",
   "kind": "original",
   "value": "catalog.practice.map",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the practice stars as recorded in CLASSIFY.LST (HD numbers)"
  },
  {
   "file": "src/ClassificationLab.tsx",
   "kind": "original",
   "value": "catalog.atlases.map",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the atlas labels as recorded in the original atlas index (Main Sequence, Luminosity near O8…), data kept in English"
  },
  {
   "file": "src/ClassificationLab.tsx",
   "kind": "original",
   "value": "catalog.fingerprint",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the dataset SHA-256 fingerprint"
  },
  {
   "file": "src/ClassificationLabGuide.tsx",
   "kind": "original",
   "value": "CLASSIFICATION_LAB_COUNTED_STEPS.length",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a step count (a number)"
  },
  {
   "file": "src/ClassificationLabGuide.tsx",
   "kind": "original",
   "value": "CLASSIFICATION_LAB_STEPS.map",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the guide step ids (keys of classLab.step.* texts and test ids)"
  },
  {
   "file": "src/ClassificationLabGuide.tsx",
   "kind": "original",
   "value": "CLASSIFICATION_CATALOG.fingerprint",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the dataset SHA-256 fingerprint"
  },
  {
   "file": "src/ClassificationLabGuide.tsx",
   "kind": "original",
   "value": "CLASSIFICATION_CATALOG.lineListSha256",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the SPECLNS.LNL SHA-256"
  },
  {
   "file": "src/ClassificationLineTable.tsx",
   "kind": "original",
   "value": "catalog.lines.length",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the line count (a number)"
  },
  {
   "file": "src/ClassificationLineTable.tsx",
   "kind": "original",
   "value": "catalog.lineListSha256",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the SPECLNS.LNL SHA-256"
  },
  {
   "file": "src/ClassificationLineTable.tsx",
   "kind": "original",
   "value": "catalog.lines.map",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: wavelengths and line labels as recorded in SPECLNS.LNL (Ca II (K line), H I (H Delta)…), data kept in English"
  },
  {
   "file": "src/clusterdata/ClusterDataWindow.tsx",
@@ -2048,7 +2048,7 @@
   "kind": "original",
   "value": "CLASSIFICATION_CATALOG.practice.find",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the practice star label as recorded in CLASSIFY.LST (HD number)"
  },
  {
   "file": "src/help/webHelp.ts",

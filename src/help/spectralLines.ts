@@ -9,6 +9,9 @@
  *   opens "*3819.61   He I*"). That is VIREO's rule and is kept.
  * WEB: the wavelength text is parsed as binary64 and rounded to Single (VIREO converts through Extended; the 30 values of
  * SPECLNS.LNL give the same Single either way, see spectralLines.test.ts). */
+/** Front ES5: TSpClassify's DFM menu item SpectralLineTable1 [D], the caption of the classification lab's Spectral Line Table
+ * button (rendered through vireo()). */
+export const SPECTRAL_LINE_TABLE_LITERALS=Object.freeze({menu:'Spectral Line &Table'});
 import {foldAsciiCase} from '../core/radioHotListSearch';
 import {delphiFixed} from '../core/variableStars';
 
