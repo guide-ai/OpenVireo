@@ -15,6 +15,12 @@ export const RECEIVER_MARK_LITERALS=Object.freeze({
  /** AnsiString 0x575818: prepended exactly once when k > 9 and the text is shorter than nine characters. */
  prefix:'  ',
 });
+/** Front ES8a [W]: the screen form of a mark time label ('  12.0 Sec'). `tr` (default: the literal, so English is unchanged)
+ * translates VIREO's trailing unit word only; the number and its padding stay as composed. Screen only, never a file. Kept here,
+ * not in radioReceiverDisplay's receiverScreenText, because this module imports that one. */
+export function receiverMarkScreenText(text:string,tr:(literal:string)=>string=literal=>literal):string{
+ const sec=RECEIVER_MARK_LITERALS.sec;return text.endsWith(sec)?text.slice(0,-sec.length)+tr(sec):text;
+}
 export const RECEIVER_MARK_CONSTANTS=Object.freeze({
  /** [S] FormCreate 0x572675/0x57267f: +0x430 and +0x434 := −1 (unset). */
  unset:-1,

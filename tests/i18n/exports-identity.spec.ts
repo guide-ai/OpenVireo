@@ -570,3 +570,53 @@ test('E04 Pleiades photometry: photometer session, Observational Results text an
   return {session,resultsText,resultsCsv,investigation};
  },{},page=>page.locator('.photometer-main'),['en','qps','es-419']);
 });
+
+// Front ES8a: the radio telescope route is translated. From #radio-control a student captures a model-generated recording
+// (Record, Receive, Stop, Identify, data properties, Save No), then on the pulsar analysis downloads the raw capture (.PLR), records
+// one manual reading and runs VIREO's Save Recorded Measurements (the native text with its US-format date/time header), and finally
+// saves the whole investigation (the radio configuration, clock and capture). Every file is byte-identical in English, qps and
+// Spanish. The page clock is installed at a fixed instant, the lazily loaded routes render while it runs, then it is paused and only
+// runFor moves it, so the capture, the native header's date and time and the investigation's radio clock are the same in every
+// run: nothing is masked.
+test('radio telescope (ES8a): raw capture .PLR, native Save Recorded Measurements and the investigation, in English, qps and Spanish',async({browser,baseURL})=>{
+ test.setTimeout(240_000);
+ const id=(page:Page,testId:string)=>page.getByTestId(testId);
+ const flush=async(page:Page)=>{for(let i=0;i<3;i++)await page.evaluate(()=>new Promise<void>(resolve=>{const ch=new MessageChannel();ch.port1.onmessage=()=>{ch.port1.close();ch.port2.close();resolve();};ch.port2.postMessage(0);}));};
+ const advance=async(page:Page,ms:number)=>{for(let t=0;t<ms;t+=200){await page.clock.runFor(Math.min(200,ms-t));await flush(page);}};
+ await identical(browser,baseURL,async(page,locale)=>{
+  await page.addInitScript(()=>localStorage.setItem('openvireo.tour.v1','done'));
+  await page.clock.install({time:new Date('2026-10-24T00:00:00Z')});
+  const lang=locale==='en'?'':`?lang=${locale}`;
+  await page.goto(`/${lang}#pulsar-analysis`);await expect(id(page,'pulsar-none')).toBeVisible({timeout:20_000});
+  await page.goto(`/${lang}#radio-control`);await expect(id(page,'radio-exercise')).toBeVisible({timeout:20_000});
+  await expect(page.locator('html')).toHaveAttribute('lang',locale==='es-419'?'es-419':'en');
+  await page.clock.pauseAt(new Date('2026-10-24T00:10:00Z'));await flush(page);
+  await id(page,'radio-exercise').click();await id(page,'radio-env-compiled').click();await id(page,'radio-access').click();await id(page,'radio-timer-deliver').click();
+  await id(page,'radio-switch').click();await id(page,'antenna-tracking').click();await flush(page);
+  await id(page,'pulsar-ref-file').setInputFiles({name:'synthetic-receiver.dat',mimeType:'text/plain',buffer:Buffer.from(RECEIVER_CATALOG,'latin1')});
+  await expect(id(page,'pulsar-ref-rows')).toBeVisible();
+  await id(page,'radio-clock-utc').fill('2026-10-24T12:00:00');await id(page,'radio-clock-apply').click();await id(page,'radio-clock-longitude').click();
+  await id(page,'antenna-receiver-button').click();await expect(id(page,'receiver-card-0')).toBeVisible();
+  await id(page,'receiver-record').click();
+  await id(page,'receiver-mode').click();await flush(page);await advance(page,600);await id(page,'receiver-mode').click();await flush(page);
+  for(let i=0;i<80&&await id(page,'receiver-workspace').getAttribute('data-timer')==='true';i++)await advance(page,200);
+  const finish=id(page,'receiver-record-finish');await expect(finish).toHaveAttribute('data-stage','identify');
+  await id(page,'receiver-record-identify-input').fill('PSR B2358+38');await id(page,'receiver-record-identify-ok').click();
+  await expect(finish).toHaveAttribute('data-stage','properties');await id(page,'receiver-record-properties-ok').click();
+  await expect(finish).toHaveAttribute('data-stage','save');await id(page,'receiver-record-save-no').click();
+  await expect(id(page,'pulsar-memory')).toBeVisible();await flush(page);
+  await id(page,'pulsar-raw-export').click();await expect(id(page,'pulsar-raw-export-download')).toBeEnabled();
+  const plr=await download(page,()=>id(page,'pulsar-raw-export-download').click());await paceDownload(page);
+  if(await id(page,'pulsar-raw-export-dialog').isVisible())await id(page,'pulsar-raw-export-cancel').click();
+  await id(page,'pulsar-plot-1').focus();await page.keyboard.press('ArrowRight');await page.keyboard.press('ArrowRight');await expect(id(page,'pulsar-pending-1')).toBeVisible();
+  await id(page,'pulsar-record').click();await id(page,'pulsar-comment').fill('ES8a reading');await id(page,'pulsar-record-ok').click();await expect(id(page,'pulsar-record-dialog')).toHaveCount(0);
+  await id(page,'pulsar-save').click();await expect(id(page,'pulsar-native-dialog')).toHaveAttribute('data-step','dialog');
+  await id(page,'pulsar-native-name').fill('radio');await id(page,'pulsar-native-save').click();await expect(id(page,'pulsar-native-dialog')).toHaveAttribute('data-step','verify');
+  const native=await download(page,()=>id(page,'pulsar-native-ok').click());await paceDownload(page);
+  await expect(id(page,'pulsar-native-dialog')).toHaveCount(0);
+  const toolbar=page.locator('.investigation-toolbar');
+  const name=locale==='es-419'?es['project.save']:L('Save investigation');
+  const investigation=await download(page,()=>toolbar.getByRole('button',{name,exact:typeof name==='string'||undefined}).click());
+  return {plr,native,investigation};
+ },{},page=>page.getByTestId('radio-route'),['en','qps','es-419']);
+});

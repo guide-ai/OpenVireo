@@ -31,7 +31,7 @@ import {beginHotListRead,cancelHotListRead,commitHotListRead,failHotListRead,typ
 import type {SharedHotListHandle} from '../useSharedHotList';
 import RadioHotListDialog from './RadioHotListDialog';
 import HotListEntryDialog from '../observatory/HotListEntryDialog';
-import {OBSERVATORY_MESSAGES} from '../observatory/ObservatoryMessages';
+import {OBSERVATORY_MESSAGES,OBSERVATORY_VIREO_CAPTIONS} from '../observatory/ObservatoryMessages';
 import {HOT_LIST_ENTRY_CAPTIONS,appendAddCurrentEntry,hotListEntryAddedText,hotListEntryDraft,parseHotListEntry,type HotListEntryDraft} from '../core/hotListEntry';
 import {radioAddCurrentFields} from '../core/radioAddCurrent';
 import {newHtlEditor} from '../core/hotList';
@@ -45,6 +45,7 @@ import './RadioControlPanel.css';
 import {HelpMenu} from '../help/HelpMenus';
 import {HELP_MENU} from '../help/HelpMessages';
 import {lazyTranslator} from '../i18n/registry';
+import {vireo} from '../i18n/vireo';
 
 export type RadioControlPanelProps=Readonly<{
  /** E08 Object X: label that replaces a hot-list row's identifier and remark near an unrevealed target, or null. */
@@ -151,7 +152,6 @@ const NOTICE_META:Readonly<Record<RadioLabNoticeKind,{title:RadioAntennaMessageK
  // RA-HL-09: decoded caption 0x591028 and text parts 0x59100c/0x591018 around the compared query (RADIO_HOT_LIST_SEARCH_LITERALS).
  'hot-list-search-miss':{title:'antenna.notice.title.hot-list-search-miss',flags:'0x40',note:'antenna.notice.nativeLiteral'},
 };
-const BUTTON_KEYS:Readonly<Record<NoticeAnswer,RadioAntennaMessageKey>>={ok:'antenna.button.ok',cancel:'antenna.button.cancel',yes:'antenna.button.yes',no:'antenna.button.no'};
 /** Windows MessageBox convention (inference): Escape answers OK on an OK box and Cancel on OK/Cancel; Yes/No boxes ignore it. */
 const escapeAnswer=(kind:RadioLabNoticeKind):NoticeAnswer|null=>{const b=NOTICE_BUTTONS[kind];return b.includes('cancel')?'cancel':b.length===1?'ok':null;};
 
@@ -163,13 +163,13 @@ function noticeText(n:RadioLabNotice,ta:RadioAntennaTranslate):string{
  if(n.kind==='altitude-limit-manual')return ta('antenna.notice.altitude-limit-manual',{direction:ta(`antenna.direction.${n.direction}`)});
  if(n.kind==='altitude-limit-request')return ta(n.transit?'antenna.notice.altitude-limit-request-transit':'antenna.notice.altitude-limit-request');
  if(n.kind==='altitude-undecided')return ta(`antenna.notice.altitude-undecided.${n.reason}`);
- if(n.kind==='hot-list-empty')return ta('antenna.notice.hot-list-empty',{text:RADIO_HOT_LIST_LITERALS.emptyText});
+ if(n.kind==='hot-list-empty')return ta('antenna.notice.hot-list-empty',{text:vireo(RADIO_HOT_LIST_LITERALS.emptyText)});
  // The imported query is inserted as plain text (React text), never as markup.
- if(n.kind==='hot-list-search-miss')return ta('antenna.notice.hot-list-search-miss',{text:radioHotListMissText(n.query)});
+ if(n.kind==='hot-list-search-miss')return ta('antenna.notice.hot-list-search-miss',{text:radioHotListMissText(n.query,vireo)});
  return ta(`antenna.notice.${n.kind}` as RadioAntennaMessageKey);
 }
-const noticeTitle=(n:RadioLabNotice,ta:RadioAntennaTranslate)=>n.kind==='hot-list-empty'?ta('antenna.notice.title.hot-list-empty',{caption:RADIO_HOT_LIST_LITERALS.emptyCaption})
- :n.kind==='hot-list-search-miss'?ta('antenna.notice.title.hot-list-search-miss',{caption:RADIO_HOT_LIST_SEARCH_LITERALS.missCaption}):ta(NOTICE_META[n.kind].title);
+const noticeTitle=(n:RadioLabNotice,ta:RadioAntennaTranslate)=>n.kind==='hot-list-empty'?ta('antenna.notice.title.hot-list-empty',{caption:vireo(RADIO_HOT_LIST_LITERALS.emptyCaption)})
+ :n.kind==='hot-list-search-miss'?ta('antenna.notice.title.hot-list-search-miss',{caption:vireo(RADIO_HOT_LIST_SEARCH_LITERALS.missCaption)}):ta(NOTICE_META[n.kind].title);
 /** Radio Load status (WEB-HL-05/06). */
 type HotLoadStatus=Readonly<{kind:'reading';name:string}|{kind:'loaded';name:string;count:number}|{kind:'cancelled'}|{kind:'stale'}
  |{kind:'refused';reason:'optical-draft'|'read-pending'|'modal'|'menu'|'inactive'}|{kind:'error';code:HtlErrorCode|'read';row:number}
@@ -431,7 +431,7 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
   if(r.status!=='ok'){setEntryError(r.status==='ra-invalid'?HOT_LIST_ENTRY_CAPTIONS.raError:r.status==='dec-invalid'?HOT_LIST_ENTRY_CAPTIONS.decError:ta('antenna.hotList.addUnsupported'));return;}
   if(hotList.current().read){setEntryError(ta('antenna.hotList.loadPending'));return;}
   try{hotList.update(d=>d.read?keepHotList(d):setHotListEditor(d,appendAddCurrentEntry(d.editor??newHtlEditor(),r.fields),d.editor?d.name:''));}catch{setEntryError(ta('antenna.hotList.addUnsupported'));return;}
-  setEntry(null);setAdded(hotListEntryAddedText(r.fields.id));};
+  setEntry(null);setAdded(hotListEntryAddedText(r.fields.id,vireo));};
  const hotMenu:HotListMenu|null=hotList?{doc:hotList.doc,load:hotLoad,viewSelectRef,addCurrentRef,fileRef:hotFile,onAddCurrent,
   onView:()=>runAntenna(a=>openRadioHotList(a,antennaOptions,currentHotRows().length)),onLoad:onHotListLoadClick,
   onFile:file=>{void loadRadioHotList(file);},onBundled:()=>{void loadBundledPulsars();},onCancelLoad:()=>cancelRadioRead('cancelled')}:null;
@@ -614,13 +614,13 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
   if(e.key==='Enter'){e.preventDefault();run(()=>pressRadioSwitchKey(state,environment,'\r'));}
   else if(e.key.length===1&&!e.ctrlKey&&!e.metaKey&&!e.altKey){e.preventDefault();run(()=>pressRadioSwitchKey(state,environment,e.key));}
  };
- const idText=radioIdCaptionLabel(state);
+ const idText=radioIdCaptionLabel(state,text=>vireo(text,'fragment'));
  const timerText=useMemo(()=>state.scopeTimerIntervalMs===1?t('radio.timer.fast'):t('radio.timer.random',{range:RANDOM_ACCESS_RANGE_MS}),[state.scopeTimerIntervalMs,t]);
  const yesNo=(v:boolean|null)=>v===null?t('radio.state.unknown'):v?t('radio.state.yes'):t('radio.state.no');
  const byte=(v:number|null)=>v===null?t('radio.state.none'):String(v);
  const changeEnv=(patch:Partial<RadioEnvironment>)=>onEnvironmentChange?.({...environment,...patch});
  const applyDraft=()=>{if(managedRef.current)return;try{changeEnv({dishDiameterMeters:parseDishDiameter(draft)});setDraftInvalid(false);}catch{setDraftInvalid(true);}};
- const windowCaption=menuCaptionText(NATIVE_CAPTIONS.window);
+ const windowCaption=menuCaptionText(vireo(NATIVE_CAPTIONS.window));
  const setCoordinatesRef=useRef<HTMLButtonElement>(null),radioSwitchRef=useRef<HTMLButtonElement>(null);
  // WEB focus return: closing the panel removes Set Coordinates and its close button, so the live main-window switch
  // is the fallback after that window or its arrival box closes. Only a closure edge of this panel's own surfaces counts:
@@ -651,19 +651,19 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
    <section className="radio-control-block" aria-labelledby={`${id}-menu`}>
     <h3 id={`${id}-menu`}>{t('radio.menu.heading')}</h3>
     <div className="button-row radio-control-menu">
-     <button type="button" className="secondary-button" data-testid="radio-exercise" onClick={()=>run(()=>enterRadioPulsarsExercise(state))}>{t('radio.menu.exercise',{caption:menuCaptionText(NATIVE_CAPTIONS.exercise)})}</button>
-     <button type="button" className="secondary-button" data-testid="radio-access" aria-pressed={state.radioMenuChecked} onClick={()=>run(()=>selectRadioAccess(state,environment))}>{t('radio.menu.access',{caption:menuCaptionText(NATIVE_CAPTIONS.access)})}</button>
+     <button type="button" className="secondary-button" data-testid="radio-exercise" onClick={()=>run(()=>enterRadioPulsarsExercise(state))}>{t('radio.menu.exercise',{caption:menuCaptionText(vireo(NATIVE_CAPTIONS.exercise))})}</button>
+     <button type="button" className="secondary-button" data-testid="radio-access" aria-pressed={state.radioMenuChecked} onClick={()=>run(()=>selectRadioAccess(state,environment))}>{t('radio.menu.access',{caption:menuCaptionText(vireo(NATIVE_CAPTIONS.access))})}</button>
      {state.radioWinVisible&&<button type="button" className="secondary-button" data-testid="radio-window" disabled={!state.windowMenuEnabled} onClick={()=>run(()=>reopenRadioPanel(state))}>{t('radio.menu.window',{caption:windowCaption})}</button>}
     </div>
     {!state.windowMenuEnabled&&<p className="radio-control-note">{t('radio.menu.windowDisabled')}</p>}
    </section>
    <section className="radio-control-block" aria-labelledby={`${id}-switch`}>
     <h3 id={`${id}-switch`}>{t('radio.switch.heading')}</h3>
-    <p className="radio-control-native" data-testid="radio-switch-panel-caption">{NATIVE_CAPTIONS.switchPanel}</p>
+    <p className="radio-control-native" data-testid="radio-switch-panel-caption">{vireo(NATIVE_CAPTIONS.switchPanel)}</p>
     {state.radioSwitchVisible&&<div className="radio-switch-row">
-     <span id={`${id}-radlbl`} className="radio-control-native">{NATIVE_CAPTIONS.switchLabel}</span>
+     <span id={`${id}-radlbl`} className="radio-control-native">{vireo(NATIVE_CAPTIONS.switchLabel)}</span>
      <button ref={radioSwitchRef} type="button" role="switch" className="radio-switch" data-testid="radio-switch" aria-checked={state.radioSwitchActive} aria-labelledby={`${id}-radlbl ${id}-swcap`} aria-describedby={`${id}-swhint`} disabled={!state.radioSwitchEnabled} onClick={()=>run(()=>clickRadioSwitch(state,environment))} onKeyDown={onSwitchKey} onKeyUp={e=>{if(e.key===' ')e.preventDefault();}}>
-      <span className="radio-switch-led" aria-hidden="true"/><span id={`${id}-swcap`} data-testid="radio-switch-caption">{state.radioSwitchCaption}</span>
+      <span className="radio-switch-led" aria-hidden="true"/><span id={`${id}-swcap`} data-testid="radio-switch-caption">{vireo(state.radioSwitchCaption)}</span>
      </button>
     </div>}
     <p id={`${id}-swhint`} className="radio-control-note">{state.radioSwitchEnabled?t('radio.switch.hint'):t('radio.switch.disabled')}</p>
@@ -681,7 +681,7 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
   {!state.radioPanelShown&&<div className="fi-menubar" data-testid="radio-help-closed"><HelpMenu kind="radio" disabledReason={HELP_MENU.radioOff}/></div>}
   {state.radioPanelShown&&<section role="region" aria-labelledby={`${id}-panel`} className="radio-panel-window" data-testid="radio-panel-window" inert={antennaModal||undefined}>
    <h3 id={`${id}-panel`}>{t('radio.panel.heading')}</h3>
-   <p className="radio-control-native" data-testid="antenna-form-caption">{RADIO_LAB_CAPTIONS.form}</p>
+   <p className="radio-control-native" data-testid="antenna-form-caption">{vireo(RADIO_LAB_CAPTIONS.form)}</p>
    {/* TRadioLab Help: Topics... (PULSRHLP.LST, 0x565278) and About This Exercise... (0x56543c); docs/CLEA-HELP.md. */}
    <div className="fi-menubar"><HelpMenu kind="radio"/></div>
    {antenna&&onAntennaTransition&&antenna.activated
@@ -747,7 +747,7 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
   </details>
    {/* Front R1: THOVerifyDlg (the shared Add/Edit Hot List Entry dialog) and the "Observation List" box of 0x567c5c. */}
    <HotListEntryDialog testId="antenna-entry" draft={entry} error={entryError} onEdit={(f,v)=>setEntry(e=>e&&{...e,[f]:v})} onOk={onAddOk} onCancel={()=>{focusAddCurrent.current=true;setEntry(null);}} onDismiss={()=>setEntryError('')}/>
-   {added!==null&&<AddedBox caption={HOT_LIST_ENTRY_CAPTIONS.addedCaption} text={added} onClose={()=>{focusAddCurrent.current=true;setAdded(null);}}/>}
+   {added!==null&&<AddedBox caption={vireo(HOT_LIST_ENTRY_CAPTIONS.addedCaption)} text={added} onClose={()=>{focusAddCurrent.current=true;setAdded(null);}}/>}
   {presented&&antenna?.hotListShown&&<RadioHotListDialog rows={hotRows} index={antenna.hotListIndex} found={antenna.hotListSearch.found}
    blocked={antenna.notice!==null||antenna.dialog!==null||antenna.hotListSearch.dialog!==null}
    searchBlock={antenna.hotListSearch.dialog!==null||antenna.notice?.kind==='hot-list-search-miss'} ta={ta}
@@ -796,7 +796,7 @@ const manualLimitText=(refusal:RadioLabManualRefusal|RadioLabManualTickRefusal,a
  return ta(
   left?'antenna.manual.limit.manual-unavailable-leftover':refusal==='manual-unavailable'&&(a.slewing||a.slewTimerEnabled)?'antenna.manual.limit.manual-unavailable-slew':`antenna.manual.limit.${refusal}` as RadioAntennaMessageKey,
   {rate:String(a.rate),dec:RADIO_MANUAL_WEB_DOMAIN.decStepLimitDegrees,ra:RADIO_MANUAL_WEB_DOMAIN.raStepLimitHours,
-   caption:left?manualButtonCaption(a,left):'',original:left?RADIO_LAB_CAPTIONS[left]:''});
+   caption:left?vireo(manualButtonCaption(a,left)):'',original:left?vireo(RADIO_LAB_CAPTIONS[left]):''});
 };
 /** The N/S/E/W pad: DOM in DFM TabOrder (N 1, S 2, E 3, W 4), laid out as the DFM cross (N top, E left, W right, S bottom).
  * WEB-MANUAL-01/02: pointer, touch or Space/Enter on the focused button hold it; a click alone does nothing. WEB-KEY-03:
@@ -807,15 +807,15 @@ function ManualPad({a,options,ta,manual,autoSlewTimer,run,keysNoteId}:Readonly<{
  const directions=MANUAL_DIRECTIONS.filter(d=>d==='north'||d==='south'||a.eastWestVisible);
  const refusal=(d:ManualDirection)=>valid?radioLabManualRefusal(a,options,d):null;
  const limits=held?[]:[...new Set(directions.map(refusal).filter((r):r is RadioLabManualRefusal=>r!==null&&MANUAL_LIMIT_REFUSALS.has(r)))];
- const heldCaption=held&&manualButtonCaption(a,held),left=leftoverButton(a),keys=manual.keys;
+ const heldCaption=held&&vireo(manualButtonCaption(a,held)),left=leftoverButton(a),keys=manual.keys;
  return <div className="antenna-manual" role="group" aria-labelledby={`${id}-heading`}>
   <span id={`${id}-heading`} className="antenna-label">{ta('antenna.manual.heading')}</span>
   <div className="antenna-manual-pad">
    {directions.map(d=>{
-    const caption=manualButtonCaption(a,d),isHeld=held===d,enabled=isHeld||(valid&&manualButtonEnabled(a,d)&&refusal(d)===null);
+    const caption=vireo(manualButtonCaption(a,d)),isHeld=held===d,enabled=isHeld||(valid&&manualButtonEnabled(a,d)&&refusal(d)===null);
     return <button key={d} ref={el=>{keys.buttons.current[d]=el;}} type="button" className={`antenna-manual-button antenna-manual-${d}`} data-testid={`antenna-manual-${d}`} data-held={isHeld||undefined}
      data-antenna-key-scope="" data-left-disabled={left===d||undefined}
-     aria-label={ta('antenna.manual.button',{caption,original:RADIO_LAB_CAPTIONS[d]})} aria-describedby={`${id}-hint ${keysNoteId}${left===d?` ${id}-leftover`:''}`} disabled={!enabled}
+     aria-label={ta('antenna.manual.button',{caption,original:vireo(RADIO_LAB_CAPTIONS[d])})} aria-describedby={`${id}-hint ${keysNoteId}${left===d?` ${id}-leftover`:''}`} disabled={!enabled}
      onPointerDown={e=>{
       const owner=manual.input({type:'pointer-down',pointerId:e.pointerId,button:e.button,direction:d});
       // Capture only for the accepted owner, so its release is seen wherever it happens.
@@ -831,7 +831,7 @@ function ManualPad({a,options,ta,manual,autoSlewTimer,run,keysNoteId}:Readonly<{
   <p id={`${id}-hint`} className="radio-control-note">{ta('antenna.manual.hint',{interval:RADIO_LAB_CONSTANTS.manualTimerIntervalMs})}</p>
   <p id={keysNoteId} className="radio-control-note" data-testid="antenna-manual-keys">{ta('antenna.manual.keys')}</p>
   {heldCaption&&<p data-testid="antenna-manual-held">{ta('antenna.manual.held',{caption:heldCaption})}</p>}
-  {left&&<p id={`${id}-leftover`} className="radio-control-note" data-testid="antenna-manual-leftover" data-direction={left}>{ta('antenna.manual.leftover',{caption:manualButtonCaption(a,left),original:RADIO_LAB_CAPTIONS[left]})}</p>}
+  {left&&<p id={`${id}-leftover`} className="radio-control-note" data-testid="antenna-manual-leftover" data-direction={left}>{ta('antenna.manual.leftover',{caption:vireo(manualButtonCaption(a,left)),original:vireo(RADIO_LAB_CAPTIONS[left])})}</p>}
   {a.poleReversed&&<p className="radio-control-note" data-testid="antenna-pole">{ta('antenna.manual.pole')}</p>}
   {limits.length>0&&<div className="antenna-modal-limit" data-testid="antenna-manual-limit"><div><p>{ta('antenna.manual.limit.lead')}</p><ul>{limits.map(r=><li key={r} data-refusal={r}>{manualLimitText(r,a,ta)}</li>)}</ul></div></div>}
   {manual.cancel&&!held&&<p className="radio-control-note" data-testid="antenna-manual-cancelled" data-reason={manual.cancel}>{ta(`antenna.manual.cancel.${manual.cancel}`)}</p>}
@@ -846,7 +846,7 @@ function AntennaControls({antenna:a,options,ta,run,autoSlewTimer,suspended,setCo
  const id=useId(),onOff=(v:boolean)=>ta(v?'antenna.state.enabled':'antenna.state.disabled'),yes=(v:boolean)=>ta(v?'antenna.options.yes':'antenna.options.no');
  const ra=splitSexagesimal(a.pointing.ra,2),dec=splitSexagesimal(a.pointing.dec,1);
  const storedEntered=!(a.target.ra===0&&a.target.dec===0),leftover=leftoverButton(a);
- const C=RADIO_LAB_CAPTIONS,hotItem=(item:string)=>ta('antenna.hotList.item',{menu:menuCaptionText(C.slewMenu),group:menuCaptionText(C.hotList),item:menuCaptionText(item)});
+ const C=RADIO_LAB_CAPTIONS,hotItem=(item:string)=>ta('antenna.hotList.item',{menu:menuCaptionText(vireo(C.slewMenu)),group:menuCaptionText(vireo(C.hotList)),item:menuCaptionText(item)});
  const reading=hot?.load?.kind==='reading'&&hot.doc.read?.owner==='radio';
  const loadBlocked=hot?(hot.doc.opticalDraft?'draft':hot.doc.read?'pending':null):null;
  return <div className="antenna-controls" data-testid="antenna-controls">
@@ -855,10 +855,10 @@ function AntennaControls({antenna:a,options,ta,run,autoSlewTimer,suspended,setCo
    {hot&&<div className="antenna-hotlist-menu" role="group" aria-labelledby={`${id}-hot`} data-testid="antenna-hotlist-menu">
     <span id={`${id}-hot`} className="antenna-label">{ta('antenna.hotList.heading')}</span>
     <div className="button-row">
-     <button ref={hot.viewSelectRef} type="button" className="secondary-button" data-testid="antenna-hotlist-open" onKeyDown={ignoreHeldKey} disabled={!a.slewMenuEnabled} aria-describedby={a.slewMenuEnabled?undefined:`${id}-menu-off`} onClick={hot.onView}>{hotItem(C.viewSelect)}</button>
-     <button ref={hot.addCurrentRef} type="button" className="secondary-button" data-testid="antenna-hotlist-add" onKeyDown={ignoreHeldKey} disabled={!a.addToListEnabled||!a.slewMenuEnabled} aria-describedby={`${id}-hot-add`} onClick={hot.onAddCurrent}>{hotItem(C.addCurrent)}</button>
+     <button ref={hot.viewSelectRef} type="button" className="secondary-button" data-testid="antenna-hotlist-open" onKeyDown={ignoreHeldKey} disabled={!a.slewMenuEnabled} aria-describedby={a.slewMenuEnabled?undefined:`${id}-menu-off`} onClick={hot.onView}>{hotItem(vireo(C.viewSelect))}</button>
+     <button ref={hot.addCurrentRef} type="button" className="secondary-button" data-testid="antenna-hotlist-add" onKeyDown={ignoreHeldKey} disabled={!a.addToListEnabled||!a.slewMenuEnabled} aria-describedby={`${id}-hot-add`} onClick={hot.onAddCurrent}>{hotItem(vireo(C.addCurrent))}</button>
      <button type="button" className="secondary-button" data-testid="antenna-hotlist-load" onKeyDown={ignoreHeldKey} disabled={!a.slewMenuEnabled||loadBlocked!==null}
-      aria-describedby={loadBlocked?`${id}-hot-load`:a.slewMenuEnabled?undefined:`${id}-menu-off`} onClick={hot.onLoad}>{hotItem(C.loadHotList)}</button>
+      aria-describedby={loadBlocked?`${id}-hot-load`:a.slewMenuEnabled?undefined:`${id}-menu-off`} onClick={hot.onLoad}>{hotItem(vireo(C.loadHotList))}</button>
      <button type="button" className="secondary-button" data-testid="antenna-hotlist-load-pulsars" onKeyDown={ignoreHeldKey} disabled={!a.slewMenuEnabled||loadBlocked!==null||reading}
       aria-describedby={`${id}-hot-pulsars`} onClick={hot.onBundled}>{PM.pulsarsHtl.button}</button>
      {reading&&<button type="button" className="secondary-button" data-testid="antenna-hotlist-cancel-load" onClick={hot.onCancelLoad}>{ta('antenna.hotList.cancelLoad')}</button>}
@@ -874,17 +874,17 @@ function AntennaControls({antenna:a,options,ta,run,autoSlewTimer,suspended,setCo
     <p className="radio-control-note">{ta('antenna.hotList.note')}</p>
    </div>}
    <button ref={setCoordinatesRef} type="button" className="secondary-button" data-testid="antenna-set-coordinates" onKeyDown={ignoreHeldKey} disabled={!a.slewMenuEnabled} aria-describedby={a.slewMenuEnabled?undefined:`${id}-menu-off`} onClick={()=>run(lab=>openSetCoordinates(lab,options))}>
-    {ta('antenna.menu.item',{menu:menuCaptionText(RADIO_LAB_CAPTIONS.slewMenu),item:RADIO_LAB_CAPTIONS.setCoordinates})}
+    {ta('antenna.menu.item',{menu:menuCaptionText(vireo(RADIO_LAB_CAPTIONS.slewMenu)),item:vireo(RADIO_LAB_CAPTIONS.setCoordinates)})}
    </button>
    {!a.slewMenuEnabled&&<p id={`${id}-menu-off`} className="radio-control-note" data-testid="antenna-menu-disabled">{ta(a.manualPress?'antenna.menu.slewDisabledHold':'antenna.menu.slewDisabled')}</p>}
   </div>
   <section className="radio-control-block" aria-labelledby={`${id}-pos`}>
    <h4 id={`${id}-pos`}>{ta('antenna.readout.heading')}</h4>
    <dl className="antenna-readout">
-    <dt className="radio-control-native">{RADIO_LAB_CAPTIONS.ra}</dt>
-    <dd data-testid="antenna-ra" data-ra-hours={String(a.pointing.ra)}>{ra.whole} {RADIO_LAB_CAPTIONS.hours} {ra.minutes} {RADIO_LAB_CAPTIONS.minutes} {formatFixed(ra.seconds,2)} {RADIO_LAB_CAPTIONS.seconds}</dd>
-    <dt className="radio-control-native">{RADIO_LAB_CAPTIONS.dec}</dt>
-    <dd data-testid="antenna-dec" data-dec-degrees={String(a.pointing.dec)}>{dec.sign<0?'−':'+'}{dec.whole} {RADIO_LAB_CAPTIONS.degrees} {dec.minutes} {RADIO_LAB_CAPTIONS.minutes} {formatFixed(dec.seconds,1)} {RADIO_LAB_CAPTIONS.seconds}</dd>
+    <dt className="radio-control-native">{vireo(RADIO_LAB_CAPTIONS.ra)}</dt>
+    <dd data-testid="antenna-ra" data-ra-hours={String(a.pointing.ra)}>{ra.whole} {vireo(RADIO_LAB_CAPTIONS.hours)} {ra.minutes} {vireo(RADIO_LAB_CAPTIONS.minutes)} {formatFixed(ra.seconds,2)} {vireo(RADIO_LAB_CAPTIONS.seconds)}</dd>
+    <dt className="radio-control-native">{vireo(RADIO_LAB_CAPTIONS.dec)}</dt>
+    <dd data-testid="antenna-dec" data-dec-degrees={String(a.pointing.dec)}>{dec.sign<0?'−':'+'}{dec.whole} {vireo(RADIO_LAB_CAPTIONS.degrees)} {dec.minutes} {vireo(RADIO_LAB_CAPTIONS.minutes)} {formatFixed(dec.seconds,1)} {vireo(RADIO_LAB_CAPTIONS.seconds)}</dd>
    </dl>
    <p className="radio-control-note">{ta('antenna.readout.note')}</p>
    <p data-testid="antenna-target" data-epoch={a.targetHoldsB1950?'B1950':'J2000'}><span className="antenna-label">{ta('antenna.target.heading')}</span> {storedEntered?`${raText(ta,a.target.ra)}, ${decText(ta,a.target.dec)}`:ta('antenna.target.none')}</p>
@@ -911,17 +911,17 @@ function AntennaControls({antenna:a,options,ta,run,autoSlewTimer,suspended,setCo
     <h4 id={`${id}-drive`}>{ta('antenna.tracking.heading')}</h4>
     {a.trackingVisible
      ?<button type="button" className="secondary-button" data-testid="antenna-tracking" aria-pressed={a.tracking} data-antenna-key-scope="" aria-describedby={`${id}-keys`}
-      onKeyDown={manual.keys.down} onKeyUp={manual.keys.up} onBlur={manual.keys.blur} onClick={()=>run(lab=>toggleTracking(lab,options))}>{RADIO_LAB_CAPTIONS.tracking}</button>
+      onKeyDown={manual.keys.down} onKeyUp={manual.keys.up} onBlur={manual.keys.blur} onClick={()=>run(lab=>toggleTracking(lab,options))}>{vireo(RADIO_LAB_CAPTIONS.tracking)}</button>
      :<p className="radio-control-note">{ta('antenna.tracking.transit')}</p>}
     {a.trackingVisible&&<p data-testid="antenna-tracking-state">{ta(a.tracking?'antenna.tracking.on':'antenna.tracking.off')}</p>}
     {leftover
-     ?<p className="radio-control-note" data-testid="antenna-manual" data-left-disabled={leftover}>{ta('antenna.manual.stateLeftover',{caption:manualButtonCaption(a,leftover),original:RADIO_LAB_CAPTIONS[leftover]})}</p>
+     ?<p className="radio-control-note" data-testid="antenna-manual" data-left-disabled={leftover}>{ta('antenna.manual.stateLeftover',{caption:vireo(manualButtonCaption(a,leftover)),original:vireo(RADIO_LAB_CAPTIONS[leftover])})}</p>
      :<p className="radio-control-note" data-testid="antenna-manual">{ta('antenna.manual.state',{state:onOff(a.manualButtonsEnabled)})}</p>}
     <ManualPad a={a} options={options} ta={ta} manual={manual} autoSlewTimer={autoSlewTimer} run={run} keysNoteId={`${id}-keys`}/>
     {!receiver&&<p className="radio-control-note" data-testid="antenna-receiver">{ta('antenna.receiver.state',{state:onOff(a.receiverEnabled)})} {ta('antenna.receiver.unhosted')}</p>}
    </section>
    <section className="radio-control-block" aria-labelledby={`${id}-rate`}>
-    <h4 id={`${id}-rate`}><span className="radio-control-native">{RADIO_LAB_CAPTIONS.slewRate}</span></h4>
+    <h4 id={`${id}-rate`}><span className="radio-control-native">{vireo(RADIO_LAB_CAPTIONS.slewRate)}</span></h4>
     <div className="button-row">
      <button type="button" className="secondary-button antenna-spin" data-testid="antenna-rate-down" aria-label={ta('antenna.rate.down')} disabled={!a.rateSpinEnabled} onClick={()=>run(lab=>changeSlewRate(lab,options,'down'))}>−</button>
      <button type="button" className="secondary-button antenna-spin" data-testid="antenna-rate-up" aria-label={ta('antenna.rate.up')} disabled={!a.rateSpinEnabled} onClick={()=>run(lab=>changeSlewRate(lab,options,'up'))}>+</button>
@@ -931,14 +931,14 @@ function AntennaControls({antenna:a,options,ta,run,autoSlewTimer,suspended,setCo
    </section>
    {receiver&&<section className="radio-control-block" aria-labelledby={`${id}-receiver-button`} data-testid="antenna-receiver-block">
     <button ref={receiver.buttonRef} id={`${id}-receiver-button`} type="button" className="secondary-button" data-testid="antenna-receiver-button" disabled={!receiver.available}
-     aria-describedby={`${id}-receiver`} onKeyDown={ignoreHeldKey} onClick={receiver.onOpen}>{RADIO_LAB_CAPTIONS.receiver}</button>
+     aria-describedby={`${id}-receiver`} onKeyDown={ignoreHeldKey} onClick={receiver.onOpen}>{vireo(RADIO_LAB_CAPTIONS.receiver)}</button>
     <p id={`${id}-receiver`} className="radio-control-note" data-testid="antenna-receiver" data-reason={receiver.reason}>
      {ta('antenna.receiver.state',{state:onOff(a.receiverEnabled)})} {ta(`antenna.receiver.reason.${receiver.reason}`)}</p>
    </section>}
    <section className="radio-control-block" aria-labelledby={`${id}-motion`}>
     <h4 id={`${id}-motion`}>{ta('antenna.status.heading')}</h4>
     <p data-testid="antenna-motion" data-manual={a.manualPress||undefined}>{a.manualPress
-     ?ta('antenna.status.manual',{caption:manualButtonCaption(a,heldManualDirection(a)!),interval:RADIO_LAB_CONSTANTS.manualTimerIntervalMs})
+     ?ta('antenna.status.manual',{caption:vireo(manualButtonCaption(a,heldManualDirection(a)!)),interval:RADIO_LAB_CONSTANTS.manualTimerIntervalMs})
      :ta(a.status==='slewing'?'antenna.status.slewing':a.status==='slewing-ra'?'antenna.status.slewingRa':'antenna.status.none')}</p>
     {a.slewing&&<p className="radio-control-note" data-testid="antenna-ticks">{ta('antenna.status.ticks',{ticks:a.slewTicks})}</p>}
     {a.slewTimerEnabled&&suspended&&<p className="radio-control-note" data-testid="antenna-suspended">{ta(suspended==='rate-unsupported'?'antenna.status.suspendedRate':'antenna.status.suspended')}</p>}
@@ -965,11 +965,11 @@ function RadioOptionsScenario({options,ta,blocked,onApply}:Readonly<{options:Rad
   onKeyDown={e=>{if(e.key==='Escape'&&!e.repeat){e.preventDefault();cancel();}}}>
   <legend>{ta('antenna.radioOptions.heading')}</legend>
   <ResearchNotes><p id={`${id}-help`} className="radio-control-note">{ta('antenna.radioOptions.help')}</p></ResearchNotes>
-  <p className="radio-control-native" data-testid="antenna-radio-options-caption">{RADIO_OPTIONS_CAPTIONS.form}</p>
+  <p className="radio-control-native" data-testid="antenna-radio-options-caption">{vireo(RADIO_OPTIONS_CAPTIONS.form)}</p>
   <label className="radio-control-check"><input type="checkbox" data-testid="antenna-radio-options-limit" checked={draft} aria-describedby={`${id}-hint`}
-   onChange={e=>{setDraft(e.target.checked);setStatus(null);}}/><span className="radio-control-native">{RADIO_OPTIONS_CAPTIONS.limitSlewing}</span></label>
-  <p id={`${id}-hint`} className="radio-control-note">{ta('antenna.radioOptions.limitHint',{hint:RADIO_OPTIONS_CAPTIONS.limitSlewingHint})}</p>
-  <p data-testid="antenna-radio-options-horizon" data-radians={h.radians}>{ta('antenna.radioOptions.horizon',{caption:RADIO_OPTIONS_CAPTIONS.horizonLimit,degrees:h.degrees,radians:h.radians,hint:RADIO_OPTIONS_CAPTIONS.horizonLimitHint})}</p>
+   onChange={e=>{setDraft(e.target.checked);setStatus(null);}}/><span className="radio-control-native">{vireo(RADIO_OPTIONS_CAPTIONS.limitSlewing)}</span></label>
+  <p id={`${id}-hint`} className="radio-control-note">{ta('antenna.radioOptions.limitHint',{hint:vireo(RADIO_OPTIONS_CAPTIONS.limitSlewingHint)})}</p>
+  <p data-testid="antenna-radio-options-horizon" data-radians={h.radians}>{ta('antenna.radioOptions.horizon',{caption:vireo(RADIO_OPTIONS_CAPTIONS.horizonLimit),degrees:h.degrees,radians:h.radians,hint:vireo(RADIO_OPTIONS_CAPTIONS.horizonLimitHint)})}</p>
   <ResearchNotes><p className="radio-control-note">{ta('antenna.radioOptions.clockNote')}</p></ResearchNotes>
   <p data-testid="antenna-radio-options-current" data-limits={options.limitsEnabled}>{ta('antenna.radioOptions.current',{limits:yes(options.limitsEnabled)})}</p>
   <div className="button-row">
@@ -1016,18 +1016,18 @@ function SkyCoordsDialogView({dialog,blocked,ta,limitReasons,storedB1950,onEdit,
  };
  return <div className="antenna-backdrop">
   <div ref={root} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={describedBy} className="antenna-dialog" data-testid="antenna-dialog" onKeyDown={onKeyDown} inert={blocked||undefined}>
-   <h3 id={`${id}-title`} className="radio-control-native">{SKY_COORDS_CAPTIONS.form.trim()}</h3>
+   <h3 id={`${id}-title`} className="radio-control-native">{vireo(SKY_COORDS_CAPTIONS.form).trim()}</h3>
    <p id={`${id}-help`} className="radio-control-note">{ta('antenna.dialog.help')}</p>
-   <fieldset className="antenna-group"><legend className="radio-control-native">{SKY_COORDS_CAPTIONS.raGroup}</legend>
-    {field('raHours',SKY_COORDS_CAPTIONS.hours,first)}{field('raMinutes',SKY_COORDS_CAPTIONS.minutes)}{field('raSeconds',SKY_COORDS_CAPTIONS.seconds)}
+   <fieldset className="antenna-group"><legend className="radio-control-native">{vireo(SKY_COORDS_CAPTIONS.raGroup)}</legend>
+    {field('raHours',vireo(SKY_COORDS_CAPTIONS.hours),first)}{field('raMinutes',vireo(SKY_COORDS_CAPTIONS.minutes))}{field('raSeconds',vireo(SKY_COORDS_CAPTIONS.seconds))}
    </fieldset>
-   <fieldset className="antenna-group"><legend className="radio-control-native">{SKY_COORDS_CAPTIONS.decGroup}</legend>
-    {field('decDegrees',SKY_COORDS_CAPTIONS.degrees)}
-    {field('decMinutes',<>{SKY_COORDS_CAPTIONS.arcminutes}<span className="visually-hidden">{ta('antenna.dialog.arcminutes')}</span></>)}
-    {field('decSeconds',<>{SKY_COORDS_CAPTIONS.arcseconds}<span className="visually-hidden">{ta('antenna.dialog.arcseconds')}</span></>)}
+   <fieldset className="antenna-group"><legend className="radio-control-native">{vireo(SKY_COORDS_CAPTIONS.decGroup)}</legend>
+    {field('decDegrees',vireo(SKY_COORDS_CAPTIONS.degrees))}
+    {field('decMinutes',<>{vireo(SKY_COORDS_CAPTIONS.arcminutes)}<span className="visually-hidden">{ta('antenna.dialog.arcminutes')}</span></>)}
+    {field('decSeconds',<>{vireo(SKY_COORDS_CAPTIONS.arcseconds)}<span className="visually-hidden">{ta('antenna.dialog.arcseconds')}</span></>)}
    </fieldset>
-   <fieldset className="antenna-group antenna-epoch" disabled={!dialog.epochEnabled}><legend className="radio-control-native">{SKY_COORDS_CAPTIONS.epochGroup}</legend>
-    {SKY_COORDS_CAPTIONS.epochs.map((caption,index)=><label key={caption} className="radio-control-check"><input type="radio" name={`${id}-epoch`} data-testid={`antenna-epoch-${index}`} checked={dialog.epochIndex===index} onChange={()=>onEpoch(index as 0|1)}/>{caption}</label>)}
+   <fieldset className="antenna-group antenna-epoch" disabled={!dialog.epochEnabled}><legend className="radio-control-native">{vireo(SKY_COORDS_CAPTIONS.epochGroup)}</legend>
+    {SKY_COORDS_CAPTIONS.epochs.map((caption,index)=><label key={caption} className="radio-control-check"><input type="radio" name={`${id}-epoch`} data-testid={`antenna-epoch-${index}`} checked={dialog.epochIndex===index} onChange={()=>onEpoch(index as 0|1)}/>{vireo(caption)}</label>)}
    </fieldset>
    {dialog.epochEnabled&&dialog.epochIndex===1&&<p className="radio-control-note" data-testid="antenna-b1950-note">{ta('antenna.dialog.b1950Note',{threshold:POLE_THRESHOLD_TEXT})}</p>}
    {/* Always mounted while the epoch group is enabled, so a warning that appears while typing is announced politely. */}
@@ -1040,8 +1040,8 @@ function SkyCoordsDialogView({dialog,blocked,ta,limitReasons,storedB1950,onEdit,
    {dialog.origin==='hot-list'&&<p className="radio-control-note" data-testid="antenna-dialog-hotlist-origin">{ta('antenna.hotList.origin')}</p>}
    <ModalLimit lead={ta('antenna.modalLimit.dialog')} reasons={limitReasons} testId="antenna-dialog-limit"/>
    <div className="button-row">
-    <button type="button" className="primary-button" data-testid="antenna-dialog-ok" onClick={ok}>{menuCaptionText(SKY_COORDS_CAPTIONS.ok)}</button>
-    <button type="button" className="secondary-button" data-testid="antenna-dialog-cancel" onClick={onCancel}>{menuCaptionText(SKY_COORDS_CAPTIONS.cancel)}</button>
+    <button type="button" className="primary-button" data-testid="antenna-dialog-ok" onClick={ok}>{menuCaptionText(vireo(SKY_COORDS_CAPTIONS.ok))}</button>
+    <button type="button" className="secondary-button" data-testid="antenna-dialog-cancel" onClick={onCancel}>{menuCaptionText(vireo(SKY_COORDS_CAPTIONS.cancel))}</button>
    </div>
   </div>
  </div>;
@@ -1076,7 +1076,7 @@ function NoticeView({notice,ta,limitReasons,onAnswer,panel,suppressed}:Readonly<
     {ta('antenna.notice.b1950')}{notice.b1950.southPoleSignLost?` ${ta('antenna.notice.b1950PoleSign')}`:''}</p>}
    <ModalLimit lead={ta('antenna.modalLimit.confirm')} reasons={limitReasons} testId="antenna-notice-limit"/>
    <div className="button-row">
-    {buttons.map((answer,index)=><button key={answer} ref={index===0?defaultButton:undefined} type="button" className={index===0?'primary-button':'secondary-button'} data-testid={`antenna-notice-${answer}`} onClick={()=>onAnswer(answer)}>{ta(BUTTON_KEYS[answer])}</button>)}
+    {buttons.map((answer,index)=><button key={answer} ref={index===0?defaultButton:undefined} type="button" className={index===0?'primary-button':'secondary-button'} data-testid={`antenna-notice-${answer}`} onClick={()=>onAnswer(answer)}>{vireo(OBSERVATORY_VIREO_CAPTIONS[answer])}</button>)}
    </div>
   </div>
  </div>;
