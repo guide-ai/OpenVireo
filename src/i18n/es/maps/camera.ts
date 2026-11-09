@@ -3,7 +3,6 @@ import type {Translation} from '../../maps';
 /** Front ES2: Spanish (es-419) for the CCD and IR camera windows (fronts C, C6). A web adaptation by OpenVireo, not CLEA's. */
 export const CAMERA_ES:Translation<typeof CAMERA_MESSAGES_EN>=Object.freeze({
  title:'Cámara CCD',
- information:'Información...',
  informationNote:'La lista de parámetros de VIREO para la cámara seleccionada, con los valores compilados de VIREO.',
  titleIr:'Cámara IR',
  camera:'Cámara',

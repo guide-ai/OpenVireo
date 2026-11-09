@@ -10,6 +10,9 @@ export function compiledCameraInformation(kind:unknown):CameraInformation{if(kin
 /** Front R4b (analysis/front-r4/C-parameters-camera-list.md §3 C5; TCCDCam 0x512d53–0x512f48, literals 0x512fa8–0x5130ec;
  * TIRCam 0x514d83–0x514f63, literals 0x514fd8–0x51511c): the nine ListBox lines of the TInfoListForm1 Information window, in
  * order. F1 = FloatToStrF ffFixed,18,1; the bias is an Integer field printed with F1. Static reading; nothing executed. */
+/** Front ES9: the File menu item "&Information..." of TCCDCam and TIRCam (DFM Information1 of both forms,
+ * analysis/claude-audit-2026-10-26/veo-forms.json), which the web's Information button renders through vireo(). */
+export const CAMERA_INFORMATION_MENU='&Information...';
 export const CAMERA_INFORMATION_CAPTIONS=Object.freeze({ccd:'CCD Camera Parameters',ir:'IR Camera Parameters'});
 /** Front T7: `record` is the camera's current options record (VIREO lists env+0x2d99 / env+0x2df4 at 0x512d5a / 0x514d8a, so an
  * instructor's values show here); absent, the compiled one. */

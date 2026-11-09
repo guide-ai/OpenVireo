@@ -2188,28 +2188,28 @@
   "kind": "original",
   "value": "OBJECT_X_ID_MAX",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a numeric input length"
  },
  {
   "file": "src/ObjectXLab.tsx",
   "kind": "original",
   "value": "OBJECT_X_KINDS.map",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the answer kind ids (star, galaxy…), keys of the objectXLab.kinds names and radio values"
  },
  {
   "file": "src/ObjectXLabGuide.tsx",
   "kind": "original",
   "value": "OBJECT_X_LAB_STEPS.length",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a step count (a number)"
  },
  {
   "file": "src/ObjectXLabGuide.tsx",
   "kind": "original",
   "value": "OBJECT_X_LAB_STEPS.map",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the guide step ids (keys of the objectXGuide.steps texts and test ids)"
  },
  {
   "file": "src/observatory/CameraParameterEdits.tsx",
