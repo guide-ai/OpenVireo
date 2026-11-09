@@ -192,3 +192,9 @@ Resolution:
 - (5) The CSS and the constants note each other.
 - (6) This entry records the fix.
 - (4) Accepted.
+
+### Tour button alignment (2026-11-08)
+
+User report: in the tour card, Next sat about 8 px lower than Back. Cause: the site-wide `.primary-button` has `margin-top:16px` and taller padding than `.secondary-button`, so in a centred flex row it drops below its neighbour. Fix [W]: the tour's buttons have no margin and share one size (`site-tour.css`). An in-browser audit of all 25 routes found the same offset only in the Radio telescope's button rows (Apply UT / Cancel UT edit, Start / Pause radio clock, Apply / Cancel, Apply diameter / Cancel), fixed in `RadioControlPanel.css`. `tests/onboarding.spec.ts` checks that Skip, Back and Next share one line; that check fails on the previous CSS. Plan and implementation: Claude Opus 5.5 (coordinator); independent review: a separate Claude Opus 5.5 subagent, read-only, over the uncommitted diff.
+
+Raw review findings (all low; nothing blocking): (1) two radio rows whose only button is a primary button (Preferences in Access options, Open pulsar parameters) lose 16 px above, which now matches the rows of secondary buttons; (2) the new e2e block split an existing comment from its check; (3) the radio fix had no test; (4) Skip the tour is about 29 px tall, which passes WCAG 2.5.8 but is below the site's usual 44 px (not new). Resolution: (1) and (4) accepted; (2) the comment was moved; (3) `tests/radio-control.spec.ts` checks that Apply and Cancel share one line, and that check fails on the previous CSS.

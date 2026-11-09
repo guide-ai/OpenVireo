@@ -69,3 +69,11 @@ test('mobile layout keeps all controls reachable without horizontal overflow',as
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);expect(overflow).toBeLessThanOrEqual(0);
  for(const id of ['radio-exercise','radio-access','radio-switch','radio-env-dome','radio-env-diameter','radio-env-apply'])await expect(page.getByTestId(id)).toBeVisible();
 });
+
+test('a primary button lines up with the buttons beside it',async({page})=>{
+ // The site-wide primary button's top margin once pushed Apply 8 px below Cancel (layout audit, 2026-11-08).
+ await open(page);
+ const [apply,cancel]=await Promise.all(['radio-env-apply','radio-env-cancel'].map(id=>page.getByTestId(id).boundingBox()));
+ expect(apply&&cancel).toBeTruthy();
+ expect(Math.abs((apply!.y+apply!.height/2)-(cancel!.y+cancel!.height/2))).toBeLessThan(1);
+});
