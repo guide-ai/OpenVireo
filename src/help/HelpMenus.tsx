@@ -6,6 +6,7 @@ import {fetchBundledClusterHelp} from '../io/bundledClusterHelp';
 import {HELP_FILES} from './helpFiles';
 import {ABOUT_BOX,HELP_WEBSITES,MAIN_HELP_MENU,QUIT_QUESTION,RADIO_HELP_MENU,REMINDER_CAPTION,REMINDER_SELECT,reminderBoxText} from './mainHelp';
 import {HELP_MENU as M} from './HelpMessages';
+import {HELP_VIEWER} from './HelpViewerMessages';
 import {helpTranslationOffered,loadHelpTranslation,type HelpView} from './helpTranslation';
 import WebHelpDialog from './WebHelpDialog';
 import {helpKeyBlocked} from './helpShortcut';
@@ -99,12 +100,14 @@ export function ExitObservatoryDialog({onClose}:{onClose:()=>void}){
  const [state,setState]=useState<'loading'|'error'|'done'|string>('loading');
  // Front ES-HELP: a Spanish load shows the translation of Reminder.obs (a web adaptation) unless the student asks for the original.
  const offered=helpTranslationOffered(),[original,setOriginal]=useState(false),view:HelpView=offered&&!original?'translation':'original';
+ // Review S1: a translation that cannot be loaded or verified falls back to VIREO's original, with a note.
+ const [translationFailed,setTranslationFailed]=useState(false);
  useEffect(()=>{dialog.current?.showModal();},[]);
  useEffect(()=>{
   const abort=new AbortController();
   setState(s=>s==='done'?s:'loading');
   (view==='translation'?loadHelpTranslation(HELP_FILES['REMINDER.OBS']):fetchBundledClusterHelp(fetch,abort.signal,HELP_FILES['REMINDER.OBS']))
-   .then(b=>{if(!abort.signal.aborted)setState(s=>s==='done'?s:reminderBoxText(b,view==='translation'?vireo(REMINDER_SELECT):REMINDER_SELECT));},e=>{if(!(e instanceof DOMException&&e.name==='AbortError'))setState('error');});
+   .then(b=>{if(!abort.signal.aborted)setState(s=>s==='done'?s:reminderBoxText(b,view==='translation'?vireo(REMINDER_SELECT):REMINDER_SELECT));},e=>{if(e instanceof DOMException&&e.name==='AbortError')return;if(view==='translation'){setTranslationFailed(true);setOriginal(true);}else setState('error');});
   return ()=>abort.abort();
  },[view]);
  const quit=()=>setState('done');
@@ -121,7 +124,8 @@ export function ExitObservatoryDialog({onClose}:{onClose:()=>void}){
     :<><button type="button" className="primary-button" disabled={state==='loading'} data-testid="exit-reminder-ok" onClick={quit}>{M.ok}</button>
      <button type="button" className="secondary-button" autoFocus data-testid="exit-reminder-cancel" onClick={onClose}>{M.cancel}</button></>}
   </div>
-  {offered&&state!=='done'&&state!=='error'&&<ViewSwitch view={view} onSwitch={()=>setOriginal(o=>!o)} testId="exit-reminder-view"/>}
+  {translationFailed&&state!=='done'&&<p role="alert" className="fi-note" data-testid="exit-reminder-translation-error">{HELP_VIEWER.translationError}</p>}
+  {offered&&state!=='done'&&state!=='error'&&<ViewSwitch view={view} onSwitch={()=>{setTranslationFailed(false);setOriginal(o=>!o);}} testId="exit-reminder-view"/>}
   <p className="fi-note">{M.exitNote}</p>
  </dialog>;
 }

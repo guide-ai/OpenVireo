@@ -3,6 +3,7 @@ import {readFileSync} from 'node:fs';
 import witness from '../../src/help/helpAll.witness.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
 import es from '../../src/i18n/es/es.json' with {type:'json'};
+import {HELP_VIEWER_ES} from '../../src/i18n/es/maps/helpViewer';
 
 // Front ES-HELP (docs/I18N.md): VIREO's help files in Spanish on a `?lang=es-419` preview load. Every window's Help opens the
 // translation (a web adaptation, labelled as such), "Ver original (inglés)" shows VIREO's exact English (the bundled file's own
@@ -82,6 +83,17 @@ test('File › Exit Observatory shows the reminder in Spanish, and its original 
  await id(page,'exit-reminder-cancel').click();await expect(box).toHaveCount(0);
 });
 
+test('a translation that cannot be loaded falls back to VIREO\'s original and says so (review S1)',async({page})=>{
+ await page.route(/\/i18n\/es\/help\/CLASSHLP\.LST\.ts/,r=>r.abort());
+ await page.goto('/?lang=es-419#classification');
+ await id(page,'class-help-open').click({timeout:20000});
+ await expect(id(page,'class-help-topics-translation-error')).toHaveText(HELP_VIEWER_ES.translationError);
+ const rows=id(page,'class-help-topic-list').getByRole('option');
+ await expect(rows).toHaveCount(lists['CLASSHLP.LST'].rows.length);await expect(rows.first()).toHaveText(lists['CLASSHLP.LST'].rows[0]);
+ await expect(id(page,'class-help-topics-view')).toHaveAttribute('data-view','original');
+ await expect(id(page,'class-help-topic-list')).toHaveAttribute('lang','en');
+});
+
 test('the original view shows the bundled file\'s own text, and the translation comes back',async({page})=>{
  await page.goto('/?lang=es-419#classification');
  await id(page,'class-help-open').click();
@@ -128,7 +140,7 @@ test('the Spectral Line Table is Spanish, with its help, and the original view i
  await id(page,'spl-open').click();
  const rows=id(page,'spl-rows').getByRole('option');
  await expect(rows).toHaveCount(30);await expect(rows.first()).toHaveText('3759.87   O III');
- await expect(rows.nth(2)).toHaveText('3933.68   Ca II (línea K)');
+ await expect(rows.nth(2)).toHaveText('3933.68   Ca II (K line)');// VIREO's line names are kept (review S2, as ES5's line table)
  await expect(id(page,'spl-view-label')).toHaveText(LABEL);
  await rows.nth(2).dblclick();
  await expect(id(page,'spl-help').getByRole('heading',{name:'Ayuda de líneas espectrales'})).toBeFocused();

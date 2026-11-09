@@ -437,7 +437,7 @@ con el teclado son las siguientes:
     -Controles-
     Puedes moverte entre los controles (botones, interruptores,
     controles deslizantes, cuadros de texto, etc.) de cualquier ventana
-    con las teclas «Tab» y «Shift-Tab». (A veces pueden usarse las
+    con las teclas Tab y Mayús+Tab. (A veces pueden usarse las
     teclas de flecha para esto, pero no funcionan con todos los
     controles.) El control seleccionado en ese momento se indica con un
     contorno punteado o, en un cuadro de texto, con un cambio de color.

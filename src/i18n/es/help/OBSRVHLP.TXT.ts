@@ -108,7 +108,7 @@ interruptor deslizante, puedes:
     C)  Acceso con el teclado: usar las teclas de flecha para mover el
         control deslizante cuando el control deseado esté seleccionado.
         (El control seleccionado aparece delineado con una línea
-        punteada. Usa Tab y Shift-Tab para cambiar la selección.)
+        punteada. Usa Tab y Mayús+Tab para cambiar la selección.)
 
 **«Mover»**
 La opción de menú «Mover» (Slew) del panel de control del telescopio

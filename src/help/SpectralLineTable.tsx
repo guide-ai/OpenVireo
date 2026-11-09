@@ -6,7 +6,7 @@ import {HELP_VIEWER} from './HelpViewerMessages';
 import {helpTranslationOffered,loadHelpTranslation,type HelpView} from './helpTranslation';
 import {fetchBundledClusterHelp} from '../io/bundledClusterHelp';
 import {HELP_FILES,helpFile,type HelpFileIdentity} from './helpFiles';
-import {SPECTRAL_LINE_TABLE_LITERALS,SPECTRAL_LINE_HELP_CAPTION,nearestSpectralLine,parseSpectralLineList,spectralLineHelp,type SpectralLine} from './spectralLines';
+import {SPECTRAL_LINE_TABLE_LITERALS,SPECTRAL_LINE_HELP_CAPTION,SPECTRAL_LINE_MISSING_LITERALS,nearestSpectralLine,parseSpectralLineList,spectralLineHelp,type SpectralLine} from './spectralLines';
 import './help.css';
 import '../clusters/cluster-hr.css';
 
@@ -32,7 +32,13 @@ export default function SpectralLineTable({testId='spl',onLineSelect,cursorWavel
   if(loaded){setOpen(true);return;}
   setLoad('loading');
   try{setLoad({lines:parseSpectralLineList(await fetchView(HELP_FILES['SPECLNS.LNL'],view))});setOpen(true);setIndex(-1);}
-  catch{setLoad('error');}
+  catch{
+   // Front ES-HELP review S1: a translation that cannot be loaded or verified falls back to VIREO's original, and says so.
+   if(view!=='translation'){setLoad('error');return;}
+   try{setLoad({lines:parseSpectralLineList(await fetchView(HELP_FILES['SPECLNS.LNL'],'original'))});setOriginal(true);setOpen(true);setIndex(-1);
+    setMessage({caption:M.textErrorCaption,text:HELP_VIEWER.translationError});}
+   catch{setLoad('error');}
+  }
  }
  /** Front ES-HELP: switch between the translation and VIREO's exact original (the two lists have the same lines in the same order). */
  async function switchView(){
@@ -40,16 +46,25 @@ export default function SpectralLineTable({testId='spl',onLineSelect,cursorWavel
   try{
    const lines=parseSpectralLineList(await fetchView(HELP_FILES['SPECLNS.LNL'],next));
    setLoad({lines});setOriginal(next==='original');setHelp(null);setMessage(null);
-  }catch{setMessage({caption:M.textErrorCaption,text:M.error});}
+  }catch{setMessage({caption:M.textErrorCaption,text:next==='translation'?HELP_VIEWER.translationError:M.error});}
  }
  async function readLine(i:number){
   if(!loaded||i<0)return;
   const line=loaded.lines[i],file=helpFile(line.file);setMessage(null);
-  if(!file){setMessage({caption:M.missingCaption,text:M.missing(line.file)});return;}
+  if(!file){const L=SPECTRAL_LINE_MISSING_LITERALS;setMessage({caption:vireo(L.caption),text:vireo(L.head)+line.file+vireo(L.tail)});return;}
   try{
    const h=spectralLineHelp(await fetchView(file,view),line.name);
    if(h.kind==='topic')setHelp({name:line.name,rows:h.rows});else setMessage({caption:h.caption,text:h.text});
-  }catch{setMessage({caption:M.textErrorCaption,text:M.textError(file.name)});}
+  }catch{
+   if(view!=='translation'){setMessage({caption:M.textErrorCaption,text:M.textError(file.name)});return;}
+   // Review S1: the translated SPECLNS.TXT failed; the list keeps VIREO's line names, so the original is read for the same line.
+   try{
+    const lines=parseSpectralLineList(await fetchView(HELP_FILES['SPECLNS.LNL'],'original')),h=spectralLineHelp(await fetchView(file,'original'),lines[i].name);
+    setLoad({lines});setOriginal(true);
+    if(h.kind==='topic')setHelp({name:lines[i].name,rows:h.rows});
+    setMessage({caption:M.textErrorCaption,text:HELP_VIEWER.translationError});
+   }catch{setMessage({caption:M.textErrorCaption,text:M.textError(file.name)});}
+  }
  }
  /** Focus the help window when it opens or changes line; back to the list when it closes (review 1 L4). */
  useEffect(()=>{if(help)helpHeading.current?.focus();},[help]);

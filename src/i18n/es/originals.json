@@ -507,5 +507,8 @@
  "Spectral Line Help": "Ayuda de líneas espectrales",
  "** Exercise Finished? **": "** ¿Ejercicio terminado? **",
  "Select \"OK\" to Quit Exercise, \"Cancel\" to Continue.": "Selecciona «Aceptar» para salir del ejercicio o «Cancelar» para continuar.",
- "Are You Sure You Want to Quit This Exercise?": "¿Seguro que quieres salir de este ejercicio?"
+ "Are You Sure You Want to Quit This Exercise?": "¿Seguro que quieres salir de este ejercicio?",
+ "Sp Line Help not Available!": "¡Ayuda de líneas espectrales no disponible!",
+ "Unable to open Spectral Line Help File.\r\n\r\nFile Name:": "No se puede abrir el archivo de ayuda de líneas espectrales.\r\n\r\nNombre del archivo:",
+ "File Not Found!": "¡Archivo no encontrado!"
 }

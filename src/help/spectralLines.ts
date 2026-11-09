@@ -45,6 +45,9 @@ export function parseSpectralLineList(bytes:Uint8Array):readonly SpectralLine[]{
 
 export type SpectralLineHelp=Readonly<{kind:'topic';rows:readonly string[]}|{kind:'not-found';caption:string;text:string}>;
 export const SPECTRAL_LINE_HELP_CAPTION='Spectral Line Help';
+/** 0x5049f0: the box shown when a line's help file is absent (caption, then head + file name + tail). Rendered through vireo()
+ * (Front ES-HELP review S7). */
+export const SPECTRAL_LINE_MISSING_LITERALS=Object.freeze({caption:'Sp Line Help not Available!',head:'Unable to open Spectral Line Help File.\r\n\r\nFile Name: ',tail:'\r\n\r\nFile Not Found!'});
 /** 0x5049f0 + 0x504fd0. Rows: ' * ' + name + ' *', ' ', then '  ' + line + '  ' up to the next line that starts and ends
  * with '*', then ' '. A file whose first line is empty or does not start with '*' is shown whole. */
 export function spectralLineHelp(txt:Uint8Array,name:string):SpectralLineHelp{

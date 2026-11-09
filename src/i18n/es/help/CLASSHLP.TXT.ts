@@ -107,14 +107,14 @@ Temas relacionados:
 Los siguientes controles están en el lado derecho de la ventana de
 clasificación:
 
-    Acercar (punta de flecha hacia arriba):
+    «Acercar» (Zoom In) (punta de flecha hacia arriba):
         Amplía los espectros mostrados por un factor de 2, hasta un
         máximo de 16 veces la visualización original. Si hay un rasgo
         marcado, el zoom intenta centrarlo en la visualización
         ampliada. Si no hay ninguna línea marcada, la longitud de onda
         del centro de la visualización sigue siendo la misma.
 
-    Alejar (punta de flecha hacia abajo):
+    «Alejar» (Zoom Out) (punta de flecha hacia abajo):
         Disminuye la ampliación de los espectros mostrados por un
         factor de 2, hasta la ampliación original (1X). Si hay una
         línea marcada, el zoom intenta mantenerla centrada en la

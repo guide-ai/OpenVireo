@@ -47,9 +47,9 @@ Temas relacionados:
     Usar los receptores
 
 **Fijar coordenadas**
-Para escribir directamente las coordenadas de apuntado deseadas para el
+Para escribir directamente las coordenadas a las que quieres apuntar el
 telescopio, selecciona «Mover» (Slew)->«Fijar coordenadas...» (Set
-Coordinates...) en el menú del panel de control del radiotelescopio e
+Coordinates...) en el menú del panel de control del radiotelescopio y
 escribe las coordenadas en el formulario que aparece.  Esto suele ser
 más rápido que usar los botones de movimiento para llevar el telescopio
 de un objeto a otro, a menos que los objetos estén muy cerca entre sí
@@ -97,7 +97,7 @@ informará si ese es el caso.
 Véase también:
     «Fijar la fecha y la hora de observación»
 
-**Seleccionar un objeto de la "Lista de objetos"**
+**Seleccionar un objeto de la «Lista de objetos»**
 Para mover el telescopio a un elemento de la lista de objetos,
 selecciona «Mover» (Slew)->«Lista de objetos» (Hot List)->
 «Ver/seleccionar de la lista...» (View/Select from List...) en el menú
@@ -112,7 +112,7 @@ Si el telescopio es un instrumento de tránsito meridiano, la función
 Véase también:
     «Comentarios sobre el movimiento del telescopio»
 
-**Agregar un objeto a la "Lista de objetos"**
+**Agregar un objeto a la «Lista de objetos»**
 Puedes agregar objetos interesantes a la lista de objetos para que sea
 fácil volver a ellos más tarde y observarlos de nuevo.  Para agregar un
 objeto, apunta con precisión el telescopio hacia él y accede a un
@@ -128,7 +128,7 @@ telescopio).  Cuando hayas completado la entrada, presiona «Aceptar»
 error, consulta el tema de ayuda «Quitar un objeto de la "Lista de
 objetos"».)
 
-**Quitar un objeto de la "Lista de objetos"**
+**Quitar un objeto de la «Lista de objetos»**
 Para quitar una entrada de la lista de objetos, selecciona «Mover»
 (Slew)->«Lista de objetos» (Hot List)-> «Ver/seleccionar de la
 lista...» (View/Select from List...) en el menú del panel de control del
@@ -248,9 +248,9 @@ receptores y Volumen, están deshabilitados.
     señales recibidas.  El registro también comienza si el interruptor
     de registro está en «Encendido» (On), y se escuchan sonidos si la
     computadora está debidamente equipada y los efectos de sonido están
-    habilitados.  Para detener la recepción o el registro, presiona de
-    nuevo el botón Modo del receptor para cambiar el modo a «Detener»
-    (Stop).
+    habilitados.  Para detener la recepción o el registro, presiona
+    de nuevo el botón Modo del receptor para cambiar el modo a
+    «Detener» (Stop).
     La recepción, el registro y el sonido se detendrán entonces cuando
     la pantalla llegue al final del panel actual.  (Consulta también el
     tema de ayuda «Registrar señales»).
@@ -379,8 +379,8 @@ herramienta de análisis de datos.
 Cuando eliges guardar el archivo, aparece un formulario que te permite
 escribir o seleccionar un nombre para el archivo guardado.  Puedes
 usar el nombre que quieras; el programa sugerirá un nombre generado a
-partir de tus datos de inicio de sesión.  Siempre debes usar el
-calificador ".PLR" en estos archivos para evitar dificultades y
+partir de tus datos de inicio de sesión.  Siempre debes usar la
+extensión ".PLR" en estos archivos para evitar dificultades y
 confusión más adelante.
 
 **Cerrar los receptores**

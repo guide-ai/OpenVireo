@@ -20,7 +20,7 @@ Temas relacionados:
 **Cargar datos de la base de datos de cúmulos**
 Para cargar y analizar los datos fotométricos de cúmulos individuales
 de la base de datos de VIREO, selecciona «Archivo»
-(File)->«Cargar/graficar» (Load/Plot)->«Seleccionar datos del cúmulo»
+(File)->«Cargar/graficar» (Load/Plot)->«Seleccionar datos de cúmulos»
 (Select Cluster Data) en el menú de la herramienta de análisis del
 diagrama HR. En la lista que aparece, haz clic en una entrada para
 seleccionarla y luego elige «Selección» (Selection)->«Graficar» (Plot)

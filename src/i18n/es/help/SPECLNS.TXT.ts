@@ -9,7 +9,7 @@ Visible en estrellas O
 Más intensa en estrellas B, con un máximo
 alrededor de B2
 
-*3933.68   Ca II (línea K)*
+*3933.68   Ca II (K line)*
 Visible por primera vez alrededor de A0.
 Progresivamente más intensa de A1 -> A9
 Línea K = línea H (mezcla) en ~F0
@@ -19,7 +19,7 @@ Más intensa de G8-K2.
 Visible en O6-B9, pero más intensa
 alrededor de B0-B2
 
-*3968.49   Ca II (línea H)*
+*3968.49   Ca II (H line)*
 Aparece mezclada con la H epsilon
 adyacente hasta mediados de F.
 Línea H (mezcla) = línea K en ~F0
@@ -130,7 +130,7 @@ espectral preciso
 Visible de B0-B8, pero más intensa
 en B4
 
-*4300.00   CH y metales (banda G)*
+*4300.00   CH & Metals (G Band)*
 Visible por primera vez alrededor de F5 en
 estrellas de la secuencia principal, y de G0
 en supergigantes. Se vuelve prominente en

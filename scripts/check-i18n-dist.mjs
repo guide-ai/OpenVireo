@@ -41,15 +41,13 @@ const html=readFileSync(join(dist,'index.html'),'utf8'),spanishFiles=[];
 // their own chunks: each is recognised by the SHA-256 of the VIREO original it records, must not be loaded or preloaded by
 // index.html, and may share phrases with the catalog. All 38 must be present.
 const helpIds=[...readFileSync(join(import.meta.dirname,'..','src','help','helpFiles.ts'),'utf8').matchAll(/^ '([^']+)':file\('[^']+','[^']+',\d+,'([0-9a-f]{64})'/gm)].map(m=>({key:m[1],sha:m[2]}));
-const helpChunks=new Map();
-for(const f of spanishFiles){
- if(!/\.js$/.test(f.name))continue;const text=readFileSync(f.file,'utf8'),found=helpIds.filter(h=>text.includes(`sourceSha256`)&&text.includes(h.sha));
- if(found.length===1&&/^[A-Za-z]+\.(?:LST|TXT|OBS|PLS|LNL)-/.test(f.name))helpChunks.set(f.name,found[0].key);
-}
+// A help chunk is named after its module (CAMHLP.LST-<hash>.js) and holds the SHA-256 of that file's original (review N10: matched
+// by the chunk's own name, since OBJXHLP.LST and TOOLSHLP.LST have byte-identical originals and so one SHA-256).
+const HELP_CHUNK=/^([A-Za-z]+\.(?:LST|TXT|OBS|PLS|LNL))-[\w-]+\.js$/,helpChunks=new Map(),helpAll=[];
+(function w(dir){for(const n of readdirSync(dir)){const q=join(dir,n);if(statSync(q).isDirectory()){w(q);continue;}
+ const m=HELP_CHUNK.exec(n),id=m&&helpIds.find(h=>h.key===m[1].toUpperCase());
+ if(id&&readFileSync(q,'utf8').includes(id.sha)){helpChunks.set(n,id.key);helpAll.push(q);}}})(join(dist,'assets'));
 for(const name of helpChunks.keys())if(html.includes(name))offenders.push(`index.html loads or preloads the Spanish help chunk ${name}`);
-// Every help chunk is found by name too (a chunk whose phrases matched no marker is not in spanishFiles).
-const allJs=[];(function w(dir){for(const n of readdirSync(dir)){const q=join(dir,n);if(statSync(q).isDirectory())w(q);else if(/^[A-Za-z]+\.(?:LST|TXT|OBS|PLS|LNL)-[\w-]+\.js$/.test(n))allJs.push(q);}})(join(dist,'assets'));
-const helpAll=allJs.filter(q=>helpIds.some(h=>readFileSync(q,'utf8').includes(h.sha)));
 if(helpAll.length!==helpIds.length)offenders.push(`expected ${helpIds.length} Spanish help chunks, found ${helpAll.length}`);
 const helpGzip=helpAll.reduce((n,q)=>n+gzipSync(readFileSync(q),{level:9}).length,0),helpRaw=helpAll.reduce((n,q)=>n+statSync(q).size,0);
 const bundle=spanishFiles.filter(f=>/\.js$/.test(f.name)&&f.hits===markers.length&&!helpChunks.has(f.name));

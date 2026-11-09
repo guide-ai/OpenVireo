@@ -7,7 +7,7 @@ Para cargar en la ventana de análisis de datos los datos de púlsares
 registrados y guardados, selecciona «Archivo» (File)->«Cargar...»
 (Load...) en el menú de análisis de datos y selecciona el archivo con
 el cuadro de diálogo que aparece.  Los archivos que contienen datos de
-púlsares registrados deben llevar el calificador ".PLR".
+púlsares registrados deben llevar la extensión ".PLR".
 
 NOTA: Si accedes a la ventana de análisis de datos inmediatamente
 después de registrar datos de púlsares, los últimos datos registrados
@@ -20,7 +20,7 @@ Para guardar los datos de púlsares actuales, selecciona «Archivo»
 Aparecerá un cuadro de diálogo que te permite escribir o seleccionar un
 nombre para el archivo guardado.  Puedes usar el nombre que quieras; el
 cuadro de diálogo sugerirá un nombre generado a partir de tus datos de
-inicio de sesión.  Siempre debes usar el calificador ".PLR" en estos
+inicio de sesión.  Siempre debes usar la extensión ".PLR" en estos
 archivos para evitar dificultades y confusión más adelante.
 
 También puedes guardar los datos de púlsares actuales seleccionando
@@ -34,11 +34,11 @@ datos de púlsares actuales, selecciona «Archivo» (File)->
 propiedades que muestra el cuadro de diálogo resultante incluyen:
 
     Identificación del objeto
-    Hora de inicio de los datos (número de día juliano menos 2,400,000)
+    Hora de inicio de los datos (número de día juliano menos 2 400 000)
     Apertura del telescopio (metros)
     Frecuencia (MHz) y ganancia relativa de cada receptor registrado
     Número de puntos de datos (de cada receptor registrado)
-    Intervalo de tiempo (msec) entre puntos de datos
+    Intervalo de tiempo (ms) entre puntos de datos
     Nombre del archivo
 
 El cuadro de diálogo de propiedades también aparece automáticamente al
@@ -152,8 +152,8 @@ selecciona «Resultados» (Results)->«Guardar mediciones registradas...»
 (Save Recorded Measurements...) en el menú de análisis de datos.
 Indica un nombre de archivo en el cuadro de diálogo que aparece.  Los
 datos se guardan en un formato (valores separados por comas) que
-aceptan los programas de hoja de cálculo estándar.  Debes usar el
-calificador ".CSV" en cualquier archivo que crees aquí.  (Consulta el
+aceptan los programas de hoja de cálculo estándar.  Debes usar la
+extensión ".CSV" en cualquier archivo que crees aquí.  (Consulta el
 tema de ayuda «Acceder al programa de hoja de cálculo»).
 
 Si seleccionas un nombre de archivo que ya existe, sobrescribirás los

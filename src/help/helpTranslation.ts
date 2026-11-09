@@ -17,8 +17,12 @@ export class HelpTranslationError extends Error{constructor(readonly file:string
 export async function loadHelpTranslation(file:HelpFileIdentity):Promise<Uint8Array>{
  const load=loaders[`../i18n/es/help/${file.name.toUpperCase()}.ts`];
  if(!load)throw new HelpTranslationError(file.name);
- const m=await load();
- if(m.sourceName!==file.name||m.sourceSha256!==file.sha256)throw new HelpTranslationError(file.name);
+ return helpTranslationBytes(await load(),file);
+}
+/** A translation module's text as Latin-1 bytes; refused when it names another source file or SHA-256, or has a character
+ * above U+00FF. */
+export function helpTranslationBytes(m:Module,file:HelpFileIdentity):Uint8Array{
+ if(m.sourceName!==file.name||m.sourceSha256!==file.sha256||typeof m.text!=='string')throw new HelpTranslationError(file.name);
  const bytes=new Uint8Array(m.text.length);
  for(let i=0;i<m.text.length;i++){const c=m.text.charCodeAt(i);if(c>255)throw new HelpTranslationError(file.name);bytes[i]=c;}
  return bytes;

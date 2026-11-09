@@ -113,6 +113,10 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
  // Front ES-HELP: a Spanish load shows the translation unless the student chose the original (per viewer, not stored).
  const [original,setOriginal]=useState(false),offered=helpTranslationOffered(),view:HelpView=offered&&!original?'translation':'original';
  const textLang=offered&&view==='original'?'en':undefined;// the original view on a Spanish page is VIREO's English
+ // Review S1: the translation failed and the original is shown instead (a note in the list and topic windows, not a modal box,
+ // which the list dialog opened after it would cover).
+ const [fallback,setFallback]=useState(false);
+ const fallbackNote=(t:string)=>fallback&&<p role="alert" className="cluster-hr-note" data-testid={t}>{HELP_VIEWER.translationError}</p>;
  const topicCaption=(title:string)=>vireo('Help - ')+title.replace(/^ +/,'');
  const listDialog=useRef<HTMLDialogElement>(null),opener=useRef<HTMLButtonElement>(null),topicHeading=useRef<HTMLHeadingElement>(null);
  const id=useId(),loaded=typeof load==='object'?load:null;
@@ -126,7 +130,27 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
  async function openHelp(){
   if(loaded){showTopics();return;}
   setLoad('loading');
-  try{setLoad(await loadList(list,view));setListOpen(true);setSearch({query:'',matchCase:false});}catch{setLoad('error');}
+  try{setLoad(await loadList(list,view));setListOpen(true);setSearch({query:'',matchCase:false});}
+  catch{
+   // Front ES-HELP review S1: a translation that cannot be loaded, verified or parsed falls back to VIREO's original, and says so.
+   if(view!=='translation'){setLoad('error');return;}
+   try{setLoad(await loadList(list,'original'));setOriginal(true);setListOpen(true);setSearch({query:'',matchCase:false});translationFailed();}
+   catch{setLoad('error');}
+  }
+ }
+ const translationFailed=()=>setFallback(true);
+ /** Front ES-HELP review S1: the translated topic text failed; show the same row in VIREO's original (both indexes have the same
+  * rows), with the original index. */
+ async function originalInstead(index:number,push:boolean,base:HelpHistory){
+  try{
+   const l=await loadList(list,'original'),file=helpFile(l.rows[index].file);
+   if(!file)return translationFailed();
+   const txt=await loadText(file,'original');
+   setLoad(l);setOriginal(true);
+   const body=helpTopicBody(txt,l.rows[index].title);
+   if(body){setTopic({index,body,selected:-1});setListIndex(index);setHistory(push?helpHistoryOpen(base,index):base);setTopicMenu(false);}
+   translationFailed();
+  }catch{setMessage({caption:M.topicFileErrorCaption,text:M.topicFileError(list.name)});}
  }
  /** THelpLstDlg FormActivate: the shared search query and case flag are reset each time the list is shown. */
  function showTopics(){setTopicsMenu(false);setTopicMenu(false);setStatus('');setSearch({query:'',matchCase:false});setListOpen(true);}
@@ -134,7 +158,10 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
   if(!loaded)return;
   const file=helpFile(rows[index].file);
   if(!file){setMessage({caption:M.topicFileCaption,text:M.topicFileMissing(rows[index].file)});return;}
-  void loadText(file,view).then(txt=>showTopic(rows,index,push,base,txt),()=>setMessage({caption:M.topicFileErrorCaption,text:M.topicFileError(file.name)}));
+  void loadText(file,view).then(txt=>showTopic(rows,index,push,base,txt),()=>{
+   if(view==='translation'){setListOpen(false);void originalInstead(index,push,base);}
+   else setMessage({caption:M.topicFileErrorCaption,text:M.topicFileError(file.name)});
+  });
  }
  function showTopic(rows:readonly HelpRow[],index:number,push:boolean,base:HelpHistory,txt:Uint8Array){
   const body=helpTopicBody(txt,rows[index].title,RELATED_MARKER[view]);
@@ -160,7 +187,7 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
    if(r.kind==='hit')setListIndex(r.index);else if(r.kind==='miss')setMessage({caption:M.notFoundCaption,text:radioHotListMissText(s.query,vireo)});
   }else if(kind==='text'&&topic){
    const r=searchRadioHotListRows(topic.body.rows,s.query,s.matchCase,mode==='top'?0:topic.selected+1,foldOf(view));
-   if(r.kind==='hit')setTopic({...topic,selected:r.index});else setMessage({caption:M.notFoundCaption,text:radioHotListMissText(s.matchCase?s.query:foldOf(view)(s.query),vireo)});
+   if(r.kind==='hit')setTopic({...topic,selected:r.index});else setMessage({caption:M.notFoundCaption,text:radioHotListMissText(s.matchCase?s.query:view==='translation'?s.query.toLowerCase():foldAsciiCase(s.query),vireo)});
   }
  }
  function activateBodyRow(i:number){
@@ -183,8 +210,8 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
     const file=helpFile(l.rows[topic.index].file),body=file?helpTopicBody(await loadText(file,next),l.rows[topic.index].title,RELATED_MARKER[next]):null;
     if(body)t={...topic,body,selected:-1};
    }
-   setLoad(l);setTopic(t);setOriginal(next==='original');setStatus('');
-  }catch{setMessage({caption:M.topicFileErrorCaption,text:HELP_VIEWER.translationError});}
+   setLoad(l);setTopic(t);setOriginal(next==='original');setStatus('');setFallback(false);
+  }catch{setMessage(next==='translation'?{caption:M.topicFileErrorCaption,text:HELP_VIEWER.translationError}:{caption:M.topicFileErrorCaption,text:M.topicFileError(list.name)});}
  }
  function closeTopic(){setTopic(null);setHistory([]);setTopicMenu(false);returnFocus();}
 
@@ -205,10 +232,11 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
    <HelpListBox rows={loaded.rows.map(r=>r.title)} selected={listIndex} onSelect={i=>{setListIndex(i);setStatus('');}} onActivate={readRow} label={M.topicRows} testId={`${testId}-topic-list`} lang={textLang}/>
    <p role="status" className="cluster-hr-note">{status}</p>
    <p className="cluster-hr-note">{M.helpAdaptation(list.name)}</p>
+   {fallbackNote(`${testId}-topics-translation-error`)}
    {offered&&<ViewSwitch view={view} onSwitch={()=>void switchView()} testId={`${testId}-topics-view`}/>}
   </dialog>}
   {loaded&&topic&&<section className="cluster-hr-window" aria-labelledby={`${id}-topic`} data-testid={`${testId}-window`}>
-   <h3 id={`${id}-topic`} ref={topicHeading} tabIndex={-1}>{topicCaption(loaded.rows[topic.index].title)}</h3>
+   <h3 id={`${id}-topic`} ref={topicHeading} tabIndex={-1}>{vireo('Help - ')}<span lang={textLang}>{loaded.rows[topic.index].title.replace(/^ +/,'')}</span></h3>
    <div className="cluster-hr-menubar">
     <HelpMenu label={M.topicMenu} open={topicMenu} onToggle={setTopicMenu} testId={`${testId}-topic-menu`}>
      <button type="button" data-testid={`${testId}-print-topic`} onClick={()=>{setTopicMenu(false);setPrinting(true);}}>{M.printTopic}</button>
@@ -220,6 +248,7 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
    </div>
    <HelpListBox rows={topic.body.rows} selected={topic.selected} wrap onSelect={i=>setTopic({...topic,selected:i})} onActivate={activateBodyRow} label={M.topicText} testId={`${testId}-topic-text`} lang={textLang}/>
    <p className="cluster-hr-note">{M.linkNote}</p>
+   {fallbackNote(`${testId}-translation-error`)}
    {offered&&<ViewSwitch view={view} onSwitch={()=>void switchView()} testId={`${testId}-view`}/>}
   </section>}
   {searching&&<SearchDialog caption={searching==='topic'?M.findTopicCaption:M.findItemCaption} search={search} note={view==='translation'?HELP_VIEWER.searchFoldNote:undefined} onSubmit={submitSearch} onCancel={()=>setSearching(null)}/>}
@@ -228,7 +257,7 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
    return <ClusterPrintPreview caption={caption} note={M.helpPrintNote} onClose={()=>{setPrinting(false);requestAnimationFrame(()=>topicHeading.current?.focus());}} testId={`${testId}-print`}>
     {helpPrintPage(new Date().toLocaleString(),caption,topic.body.rows).map((l,i)=>l.kind==='students'
      ?<p key={i} className="cluster-print-line cluster-print-placeholder">{M.printPlaceholder}</p>
-     :<p key={i} className={`cluster-print-line${l.indent?' cluster-print-indent':''}`}>{l.kind==='title'?<>{l.text}<span className="cluster-print-placeholder">{M.printPlaceholder}</span></>:l.text}</p>)}
+     :<p key={i} className={`cluster-print-line${l.indent?' cluster-print-indent':''}`} lang={l.kind==='row'?textLang:undefined}>{l.kind==='title'?<>{l.text}<span className="cluster-print-placeholder">{M.printPlaceholder}</span></>:l.text}</p>)}
    </ClusterPrintPreview>;})()}
  </div>;
 }

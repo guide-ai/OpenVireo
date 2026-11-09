@@ -43,7 +43,7 @@ const START={title:'Empieza aquí',topics:[
    ['Herramientas › (herramientas de análisis)','El grupo Análisis en el encabezado: Analizador de espectros, Clasificación estelar, Base de datos de cúmulos, Sondeo LSS, Datos LSS, Objeto X, Estrellas variables; Datos de radio para los púlsares.'],
    ['Herramientas › Editores de resultados','El grupo Editores de resultados en el encabezado: Resultados de observación y Resultados de púlsares.'],
    ['Cargar datos guardados...','Restaurar investigación (JSON) en la barra de copia de seguridad, o el botón de carga del editor de resultados desde el que guardaste.'],
-   ['Herramientas › Hoja de cálculo','Descargar CSV de resultados y abre el archivo en cualquier programa de hojas de cálculo.'],
+   ['Herramientas › Hoja de cálculo','Usa Descargar CSV de resultados y abre el archivo en cualquier programa de hojas de cálculo.'],
    ['Herramientas › Procesamiento de imágenes (DS9)','Las imágenes de las cámaras se guardan como descargas FITS y se pueden abrir en Archivos › Imágenes guardadas o en cualquier visor de FITS, incluido DS9.'],
    ['Archivo › Salir del observatorio','Guarda tu trabajo y luego cierra la pestaña del navegador. El menú Archivo de Mover el telescopio tiene Salir del observatorio, que muestra el recordatorio de VIREO.'],
    ['Teclado: Alt, NumLock y MouseKeys','Las teclas normales del navegador: consulta Menús, teclado y celulares.'],

@@ -4,7 +4,8 @@ import {HelpListError,foldLatin1Accents,helpLinkTarget,helpTopicBody,parseHelpLi
 import {foldAsciiCase} from '../core/radioHotListSearch';
 import {parseSpectralLineList,spectralLineHelp} from './spectralLines';
 import {HELP_FILES,helpFile} from './helpFiles';
-import {RELATED_MARKER} from './helpTranslation';
+import glossary from '../i18n/es/glossary.json';
+import {HelpTranslationError,RELATED_MARKER,helpTranslationBytes} from './helpTranslation';
 
 // Front ES-HELP: the Spanish web adaptation of VIREO's help files (src/i18n/es/help) against the bundled originals.
 type Module={sourceName:string;sourceSha256:string;text:string};
@@ -103,5 +104,45 @@ describe('the search fold of the translation (a web adaptation)',()=>{
  });
  it('leaves VIREO\'s own rule (A to Z only) as it is',()=>{
   expect(foldAsciiCase('Órbita ABC')).toBe('Órbita abc');
+ });
+});
+
+describe('the translation loader (review S1)',()=>{
+ const id=HELP_FILES['CAMHLP.LST'],ok={sourceName:id.name,sourceSha256:id.sha256,text:'Año «x»'};
+ it('returns the text as Latin-1 bytes',()=>{
+  expect([...helpTranslationBytes(ok,id)]).toEqual([0x41,0xf1,0x6f,0x20,0xab,0x78,0xbb]);
+ });
+ it('refuses a module whose recorded source is another file or another SHA-256',()=>{
+  expect(()=>helpTranslationBytes({...ok,sourceSha256:'0'.repeat(64)},id)).toThrow(HelpTranslationError);
+  expect(()=>helpTranslationBytes({...ok,sourceName:'CLASSHLP.LST'},id)).toThrow(HelpTranslationError);
+ });
+ it('refuses a character above U+00FF',()=>{
+  expect(()=>helpTranslationBytes({...ok,text:'Tema “x”'},id)).toThrow(HelpTranslationError);
+  expect(()=>helpTranslationBytes({...ok,text:'ü€'},id)).toThrow(HelpTranslationError);
+ });
+});
+
+// Review S5: the Spanish lints of es.test.ts (glossary.forbidden, usted and voseo) never see the help texts, so they run here over
+// every translated help file, with the same Unicode word boundaries. ALLOWED names each permitted word per file, with its reason.
+const WORD=(w:string)=>`(?<![\\p{L}\\p{N}])${w}(?![\\p{L}\\p{N}])`;
+const ALLOWED:Record<string,{words:string[];reason:string}>={
+ 'PULSRANL.TXT':{words:['abra'],reason:'impersonal subjunctive «cuando se abra el programa», not a usted imperative'},
+ 'PULSRHLP.TXT':{words:['pulsar'],reason:'VIREO\'s English menu name in parentheses (Radio Pulsar Analysis Tool)'},
+ 'PULSRLST.TXT':{words:['pulsar'],reason:'VIREO\'s English menu names in parentheses (Find Pulsar..., Pulsar Parameters)'},
+ 'VIRMNHLP.TXT':{words:['pulsar','móvil'],reason:'VIREO\'s English menu name in parentheses (Radio Pulsar Analysis Tool), and «cursor móvil» (a moving cursor, not a phone)'},
+};
+describe('the Spanish help texts follow the Spanish lints (review S5)',()=>{
+ const forbidden=glossary.forbidden as {words?:string[];es?:string;use:string}[];
+ for(const key of Object.keys(HELP_FILES))it(`${key}: no forbidden word or pattern, no usted, no voseo`,()=>{
+  const text=es(key).text,hits:string[]=[];
+  for(const f of forbidden){
+   if(f.words){for(const w of f.words)if(new RegExp(WORD(w),'iu').test(text)&&!ALLOWED[key]?.words.includes(w))hits.push(`«${w}», use ${f.use}`);}
+   else if(new RegExp(f.es!,'iu').test(text))hits.push(`/${f.es}/, use ${f.use}`);
+  }
+  expect(hits).toEqual([]);
+  expect(text).not.toMatch(/(?<![\p{L}\p{N}])(usted|ustedes|vos)(?![\p{L}\p{N}])/iu);
+ });
+ it('every allowance is still needed and has a reason',()=>{
+  for(const [key,a] of Object.entries(ALLOWED)){expect(a.reason.length,key).toBeGreaterThan(20);for(const w of a.words)expect(new RegExp(WORD(w),'iu').test(es(key).text),`${key} ${w}`).toBe(true);}
  });
 });
