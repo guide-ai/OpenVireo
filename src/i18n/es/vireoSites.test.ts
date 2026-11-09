@@ -25,7 +25,7 @@ function chain(n:Node):string[]|null{
  if(n.type==='MemberExpression'&&!n.computed){const head=chain(n.object as Node);return head?[...head,(n.property as Node).name as string]:null;}
  return null;
 }
-type Site={file:string;expression:string;module:string;exportName:string;path:string[];context?:string}|{file:string;expression:string;literal:string;context?:string};
+type Site={file:string;expression:string;module:string;exportName:string;path:string[];context?:string}|{file:string;expression:string;literal:string;context?:string}|{file:string;expression:string;unresolved:true};
 function sites():Site[]{
  const out:Site[]=[];
  for(const file of files(path.join(root,'src'))){
@@ -40,24 +40,27 @@ function sites():Site[]{
    if(n.type!=='CallExpression'||(n.callee as Node).type!=='Identifier'||!['vireo','vireoMenuItem','vireoList'].includes((n.callee as Node).name as string))return;
    const [arg,ctx]=n.arguments as Node[],context=ctx?.type==='Literal'&&typeof ctx.value==='string'?ctx.value:undefined,expression=text.slice(arg.start as number,arg.end as number);
    if(arg.type==='Literal'&&typeof arg.value==='string'){out.push({file,expression,literal:arg.value,context});return;}
-   let c=chain(arg);if(!c)return;
+   let c=chain(arg);if(!c){out.push({file,expression,unresolved:true});return;}
    for(let guard=0;c&&aliases.has(c[0])&&guard<5;guard++)c=[...aliases.get(c[0])!,...c.slice(1)];
-   const binding=c&&imports.get(c[0]);if(!binding)return;
+   const binding=c&&imports.get(c[0]);if(!binding){out.push({file,expression,unresolved:true});return;}
    out.push({file,expression,module:binding.module,exportName:binding.name,path:c!.slice(1),context});
   });
  }
  return out;
 }
+/** vireo() sites the guard cannot resolve statically (ES3 closure); each is covered by a screen spec under tests/i18n/. */
+const UNRESOLVED_SITES=103;
 const resolveModule=(base:string)=>[`${base}.ts`,`${base}/index.ts`].find(f=>{try{readFileSync(f);return true;}catch{return false;}});
 const strings=(v:unknown):string[]=>typeof v==='string'?[v]:Array.isArray(v)?v.flatMap(strings):[];
 
 describe('Front ES3 review: every literal wrapped in vireo() has a Spanish original',()=>{
  it('resolves the vireo() sites and finds each string in originals.json or identical.json',async()=>{
-  const O=originals as Record<string,string>,same=identical.entries as Record<string,string>,missing:string[]=[];let resolved=0;
+  const O=originals as Record<string,string>,same=identical.entries as Record<string,string>,missing:string[]=[],unresolved:string[]=[];let resolved=0;
   for(const site of sites()){
    let values:string[];
+   if('unresolved' in site){unresolved.push(`${path.relative(root,site.file)}: ${site.expression}`);continue;}
    if('literal' in site)values=[site.literal];
-   else{const module=resolveModule(site.module);if(!module)continue;// a .tsx module (a component) is not imported here
+   else{const module=resolveModule(site.module);if(!module){unresolved.push(`${path.relative(root,site.file)}: ${site.expression}`);continue;}// a .tsx module (a component) is not imported here
     let v:unknown=(await import(/* @vite-ignore */pathToFileURL(module).href))[site.exportName];
     for(const p of site.path)v=v&&typeof v==='object'?(v as Record<string,unknown>)[p]:undefined;
     values=strings(v);}
@@ -67,6 +70,9 @@ describe('Front ES3 review: every literal wrapped in vireo() has a Spanish origi
     if(!known)missing.push(`${path.relative(root,site.file)}: ${site.expression} = ${JSON.stringify(value)}`);}
   }
   expect(resolved).toBeGreaterThan(300);
+  // Closure: sites this guard cannot resolve (a value built at run time, a same-file constant, a constant exported from a .tsx
+  // module) are counted, so a new one is noticed: check it by its screen spec, then update the count.
+  expect(unresolved.length,unresolved.join('\n')).toBe(UNRESOLVED_SITES);
   expect([...new Set(missing)]).toEqual([]);
  },60_000);
 });

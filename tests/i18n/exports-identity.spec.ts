@@ -117,6 +117,12 @@ function observatoryTimeMasked(bytes:Buffer):Buffer{
  for(const o of doc.observations??[])if(o[1]&&'jd' in o[1])o[1].jd='<masked>';
  return Buffer.from(JSON.stringify(doc),'utf8');
 }
+/** Front ES3 closure: the own Observational Results text and CSV write that record's JD (6 decimals, about 86 ms) as
+ * `record_jd`, which follows real time between the steps too. Only that value is masked: the `record_jd:` line of the text and the
+ * last field (record_jd) of each CSV data row; every other byte, the CSV header included, is compared as written. */
+const masked=(text:string,what:string)=>{if(!text.includes('<masked>'))throw new Error(`${what}: no record_jd to mask`);return Buffer.from(text,'latin1');};
+const recordJdTextMasked=(bytes:Buffer)=>masked(bytes.toString('latin1').replace(/^(record_jd: )\d+\.\d{6}(?=\r?$)/gm,'$1<masked>'),'results text');
+const recordJdCsvMasked=(bytes:Buffer)=>masked(bytes.toString('latin1').replace(/^(?!schema,)(.*,)\d+\.\d{6}(?=\r?$)/gm,'$1<masked>'),'results CSV');
 function fitsHeader(bytes:Buffer):Buffer{
  const cards:string[]=[];
  for(let at=0;at+80<=bytes.length;at+=80){const card=bytes.subarray(at,at+80).toString('latin1');const key=card.slice(0,8).trim();cards.push(TIMED_CARDS.has(key)?`${card.slice(0,10)}<masked>`:card);if(key==='END')break;}
@@ -145,8 +151,8 @@ test('spectrum analysis: measurement CSV, velocities CSV and the analysis sessio
 
 // Front ES3 review: an acquired catalogue galaxy recorded through VIREO's Observational Data (typed velocity, Sp.Type and
 // remarks) writes the measurement CSV and analysis session, the own Observational Results text and CSV, the acquired SSP and the
-// analysis spectrum. One second of exposure on the page clock from a fixed instant; the session masks only the observatory
-// clock's elapsed time and the record's JD (observatoryTimeMasked).
+// analysis spectrum. One second of exposure on the page clock from a fixed instant; only the observatory clock's elapsed time and
+// the record's JD are masked (observatoryTimeMasked, recordJdTextMasked, recordJdCsvMasked), because they follow real time.
 test('E01 measurement through Observational Data: measurement CSV, session, results text/CSV, acquired SSP and analysis spectrum',async({browser,baseURL})=>{
  test.setTimeout(180_000);
  await identical(browser,baseURL,async(page,locale)=>{
@@ -173,7 +179,7 @@ test('E01 measurement through Observational Data: measurement CSV, session, resu
   const ssp=await download(page,()=>button(page,'Download acquired SSP',locale).click());
   const spectrum=await download(page,()=>button(page,'Download analysis spectrum',locale).click());
   return {measurements,session,resultsText,resultsCsv,ssp,spectrum};
- },{session:observatoryTimeMasked},page=>page.locator('.spectrum-route'),['en','qps','es-419']);
+ },{session:observatoryTimeMasked,resultsText:recordJdTextMasked,resultsCsv:recordJdCsvMasked},page=>page.locator('.spectrum-route'),['en','qps','es-419']);
 });
 
 test('Hubble analysis: Hubble CSV and the Hubble session from the original workbook example',async({browser,baseURL})=>{
