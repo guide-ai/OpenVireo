@@ -21,6 +21,8 @@ import {resourceSha256} from '../io/boundedResource';
 import {BUNDLED_PULSAR_CATALOG,BundledPulsarCatalogError,fetchBundledPulsarCatalog,type BundledPulsarCatalogFailure} from '../io/bundledPulsarCatalog';
 import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeNothing,trapTab} from './radioModal';
 import {t} from '../i18n';
+import {vireo} from '../i18n/vireo';
+import {OBSERVATORY_VIREO_CAPTIONS as VB} from '../observatory/ObservatoryMessages';
 import CleaHelp from '../clusters/CleaHelp';
 import {HELP_FILES} from '../help/helpFiles';
 
@@ -356,33 +358,33 @@ function PulsarParametersWindowView({win,activatedBy,fieldRefusal,headingRef,fin
  const derivedNotes=win.derivedIssues.map(issue=>t(`pulsarParameters.window.issue.${issue}`));
  return <div className="pulsar-params-window" role="region" aria-labelledby={`${id}-heading`} data-testid="pulsar-params-window" data-index={win.index}
   data-shown={win.shownIndex} data-cursor={win.listCursor}>
-  <h3 ref={headingRef} id={`${id}-heading`} tabIndex={-1} className="radio-control-native" data-testid="pulsar-params-heading">{C.form}</h3>
+  <h3 ref={headingRef} id={`${id}-heading`} tabIndex={-1} className="radio-control-native" data-testid="pulsar-params-heading">{vireo(C.form)}</h3>
   <div className="pulsar-params-menu" role="group" aria-labelledby={`${id}-file`}>
-   <span id={`${id}-file`} className="radio-control-native">{menuCaptionText(C.file)}</span>
-   <button ref={findRef} type="button" className="secondary-button" data-testid="pulsar-params-find" onKeyDown={ignoreHeldKey} onClick={onFind}>{menuCaptionText(C.find)}</button>
-   <button type="button" className="secondary-button" data-testid="pulsar-params-exit" onKeyDown={ignoreHeldKey} onClick={onExit}>{menuCaptionText(C.exit)}</button>
+   <span id={`${id}-file`} className="radio-control-native">{menuCaptionText(vireo(C.file))}</span>
+   <button ref={findRef} type="button" className="secondary-button" data-testid="pulsar-params-find" onKeyDown={ignoreHeldKey} onClick={onFind}>{menuCaptionText(vireo(C.find))}</button>
+   <button type="button" className="secondary-button" data-testid="pulsar-params-exit" onKeyDown={ignoreHeldKey} onClick={onExit}>{menuCaptionText(vireo(C.exit))}</button>
    {/* TPlsrDataForm1 Help1Click 0x569690: the shared help viewer over PLSLSHLP.LST (pulsar options +0x68c; docs/CLEA-HELP.md). */}
-   <CleaHelp list={HELP_FILES['PLSLSHLP.LST']} label={menuCaptionText(C.help)} testId="pulsar-params-help"/>
+   <CleaHelp list={HELP_FILES['PLSLSHLP.LST']} label={menuCaptionText(vireo(C.help))} testId="pulsar-params-help"/>
   </div>
   <p className="radio-control-note">{t('pulsarParameters.window.readOnly')}</p>
   <div className="pulsar-params-grid">
-   {plain('b1950',C.b1950,s.b1950)}{plain('j2000',C.j2000,s.j2000)}
+   {plain('b1950',vireo(C.b1950),s.b1950)}{plain('j2000',vireo(C.j2000),s.j2000)}
   </div>
-  {sexagesimal('ra',C.ra,[['raHours',C.hours],['raMinutes',C.minutes],['raSeconds',C.seconds]])}
-  {sexagesimal('dec',C.dec,[['decDegrees',C.degrees],['decMinutes',C.minutes],['decSeconds',C.seconds]])}
+  {sexagesimal('ra',vireo(C.ra),[['raHours',vireo(C.hours)],['raMinutes',vireo(C.minutes)],['raSeconds',vireo(C.seconds)]])}
+  {sexagesimal('dec',vireo(C.dec),[['decDegrees',vireo(C.degrees)],['decMinutes',vireo(C.minutes)],['decSeconds',vireo(C.seconds)]])}
   <div className="pulsar-params-grid">
-   {plain('period',C.period,s.period)}{plain('periodDot',C.periodDot,s.periodDot)}
-   {plain('epoch',C.epoch,s.epoch)}{plain('sky',C.sky,s.sky)}
-   {plain('dm',C.dm,s.dm)}{plain('width',C.width,s.width)}
+   {plain('period',vireo(C.period),s.period)}{plain('periodDot',vireo(C.periodDot),s.periodDot)}
+   {plain('epoch',vireo(C.epoch),s.epoch)}{plain('sky',vireo(C.sky),s.sky)}
+   {plain('dm',vireo(C.dm),s.dm)}{plain('width',vireo(C.width),s.width)}
   </div>
   <div className="pulsar-params-group" role="group" aria-labelledby={`${id}-flux`}>
-   <span id={`${id}-flux`} className="radio-control-native">{C.flux}</span>
-   <div className="pulsar-params-grid">{plain('s400',C.s400,s.s400)}{plain('s600',C.s600,s.s600)}{plain('s1400',C.s1400,s.s1400)}</div>
+   <span id={`${id}-flux`} className="radio-control-native">{vireo(C.flux)}</span>
+   <div className="pulsar-params-grid">{plain('s400',vireo(C.s400),s.s400)}{plain('s600',vireo(C.s600),s.s600)}{plain('s1400',vireo(C.s1400),s.s1400)}</div>
   </div>
   {s.issues.length>0&&<p className="radio-control-note" data-testid="pulsar-params-source-issues">{t('pulsarParameters.window.sourceDomain')}</p>}
   <div className="button-row">
-   <button type="button" className="secondary-button" data-testid="pulsar-params-prev" aria-describedby={cursorMoved?`${id}-cursor`:undefined} onKeyDown={ignoreHeldKey} onClick={onPrev}>{menuCaptionText(C.prev)}</button>
-   <button type="button" className="secondary-button" data-testid="pulsar-params-next" aria-describedby={cursorMoved?`${id}-cursor`:undefined} onKeyDown={ignoreHeldKey} onClick={onNext}>{menuCaptionText(C.next)}</button>
+   <button type="button" className="secondary-button" data-testid="pulsar-params-prev" aria-describedby={cursorMoved?`${id}-cursor`:undefined} onKeyDown={ignoreHeldKey} onClick={onPrev}>{menuCaptionText(vireo(C.prev))}</button>
+   <button type="button" className="secondary-button" data-testid="pulsar-params-next" aria-describedby={cursorMoved?`${id}-cursor`:undefined} onKeyDown={ignoreHeldKey} onClick={onNext}>{menuCaptionText(vireo(C.next))}</button>
   </div>
   <p data-testid="pulsar-params-position">{t('pulsarParameters.window.position',{position:win.shownIndex+1,count:win.catalog.length})}</p>
   {cursorMoved&&<p id={`${id}-cursor`} className="radio-control-note" data-testid="pulsar-params-cursor-note" style={{overflowWrap:'anywhere'}}>
@@ -390,31 +392,31 @@ function PulsarParametersWindowView({win,activatedBy,fieldRefusal,headingRef,fin
   <p className="radio-control-status" role="status" aria-live="polite" data-testid="pulsar-params-boundary" data-boundary={win.boundary??undefined}>
    {win.boundary===null?'':t(`pulsarParameters.window.boundary.${win.boundary}`)}</p>
   <div className="pulsar-params-group" role="group" aria-labelledby={`${id}-derived`} data-testid="pulsar-params-derived">
-   <span id={`${id}-derived`} className="radio-control-native">{C.derived}</span>
+   <span id={`${id}-derived`} className="radio-control-native">{vireo(C.derived)}</span>
    <div className="button-row">
-    <button type="button" className="secondary-button" data-testid="pulsar-params-reset" aria-describedby={pointerMoved?`${id}-pointer`:undefined} onKeyDown={ignoreHeldKey} onClick={onReset}>{menuCaptionText(C.reset)}</button>
-    <button type="button" className="primary-button" data-testid="pulsar-params-update" aria-describedby={pointerMoved?`${id}-pointer`:undefined} disabled={!win.updateEnabled} onKeyDown={ignoreHeldKey} onClick={onUpdate}>{menuCaptionText(C.update)}</button>
+    <button type="button" className="secondary-button" data-testid="pulsar-params-reset" aria-describedby={pointerMoved?`${id}-pointer`:undefined} onKeyDown={ignoreHeldKey} onClick={onReset}>{menuCaptionText(vireo(C.reset))}</button>
+    <button type="button" className="primary-button" data-testid="pulsar-params-update" aria-describedby={pointerMoved?`${id}-pointer`:undefined} disabled={!win.updateEnabled} onKeyDown={ignoreHeldKey} onClick={onUpdate}>{menuCaptionText(vireo(C.update))}</button>
    </div>
    {pointerMoved&&<p id={`${id}-pointer`} className="radio-control-note" data-testid="pulsar-params-pointer-note" style={{overflowWrap:'anywhere'}}>
     {t('pulsarParameters.window.pointerNote',{position:win.index+1,name:nameAt(win.index),shown:win.shownIndex+1})}</p>}
    <div className="pulsar-params-grid">
     <div className="antenna-field">
-     <label htmlFor={`${id}-date`} className="radio-control-native">{C.date}</label>
+     <label htmlFor={`${id}-date`} className="radio-control-native">{vireo(C.date)}</label>
      <input ref={dateRef} id={`${id}-date`} type="text" autoComplete="off" spellCheck={false} value={win.dateText} data-testid="pulsar-params-field-date"
       aria-describedby={`${id}-date-hint ${id}-refusal`} aria-invalid={fieldRefusal==='date'||undefined} onChange={e=>onEdit('date',e.target.value)} onKeyDown={editKey}/>
-     <span id={`${id}-date-hint`} className="radio-control-note">{C.dateHint}</span>
+     <span id={`${id}-date-hint`} className="radio-control-note">{vireo(C.dateHint)}</span>
     </div>
     <div className="antenna-field">
-     <label htmlFor={`${id}-density`} className="radio-control-native">{C.density}</label>
+     <label htmlFor={`${id}-density`} className="radio-control-native">{vireo(C.density)}</label>
      <input ref={densityRef} id={`${id}-density`} type="text" autoComplete="off" spellCheck={false} value={win.densityText} data-testid="pulsar-params-field-density"
       aria-describedby={`${id}-density-hint ${id}-refusal`} aria-invalid={fieldRefusal==='density'||undefined} onChange={e=>onEdit('density',e.target.value)} onKeyDown={editKey}/>
-     <span id={`${id}-density-hint`} className="radio-control-note">{C.densityHint}</span>
+     <span id={`${id}-density-hint`} className="radio-control-note">{vireo(C.densityHint)}</span>
     </div>
     <div className="antenna-field">
-     <span id={`${id}-derivedPeriod-label`} className="radio-control-native">{C.derivedPeriod}</span>{readOnly('derivedPeriod',win.periodText,`${id}-derivedPeriod-label`)}
+     <span id={`${id}-derivedPeriod-label`} className="radio-control-native">{vireo(C.derivedPeriod)}</span>{readOnly('derivedPeriod',win.periodText,`${id}-derivedPeriod-label`)}
     </div>
     <div className="antenna-field">
-     <span id={`${id}-distance-label`} className="radio-control-native">{C.distance}</span>{readOnly('distance',win.distanceText,`${id}-distance-label`)}
+     <span id={`${id}-distance-label`} className="radio-control-native">{vireo(C.distance)}</span>{readOnly('distance',win.distanceText,`${id}-distance-label`)}
     </div>
    </div>
    <p id={`${id}-refusal`} className="radio-control-note" role="status" aria-live="polite" data-testid="pulsar-params-field-refusal">
@@ -439,23 +441,23 @@ function PulsarFindDialog({draft,refused,onEdit,onMode,onOk,onCancel}:Readonly<{
  };
  return <div className="antenna-backdrop">
   <div ref={root} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-bounds`} className="antenna-dialog" data-testid="pulsar-find-dialog" onKeyDown={onKeyDown}>
-   <h3 id={`${id}-title`} className="radio-control-native">{F.form}</h3>
+   <h3 id={`${id}-title`} className="radio-control-native">{vireo(F.form)}</h3>
    <div className="antenna-field">
-    <label htmlFor={`${id}-name`} className="radio-control-native">{F.name}</label>
+    <label htmlFor={`${id}-name`} className="radio-control-native">{vireo(F.name)}</label>
     <input ref={field} id={`${id}-name`} type="text" autoComplete="off" spellCheck={false} value={draft.text} data-testid="pulsar-find-query"
      aria-describedby={`${id}-bounds ${id}-refusal`} aria-invalid={refused||undefined} onChange={e=>onEdit(e.target.value)}/>
    </div>
    <fieldset className="antenna-group">
-    <legend className="radio-control-native">{F.type}</legend>
-    <label><input type="radio" name={`${id}-mode`} checked={draft.mode===1} data-testid="pulsar-find-b1950" onChange={()=>onMode(1)}/> {F.b1950}</label>
-    <label><input type="radio" name={`${id}-mode`} checked={draft.mode===2} data-testid="pulsar-find-j2000" onChange={()=>onMode(2)}/> {F.j2000}</label>
+    <legend className="radio-control-native">{vireo(F.type)}</legend>
+    <label><input type="radio" name={`${id}-mode`} checked={draft.mode===1} data-testid="pulsar-find-b1950" onChange={()=>onMode(1)}/> {vireo(F.b1950)}</label>
+    <label><input type="radio" name={`${id}-mode`} checked={draft.mode===2} data-testid="pulsar-find-j2000" onChange={()=>onMode(2)}/> {vireo(F.j2000)}</label>
    </fieldset>
    <p id={`${id}-bounds`} className="radio-control-note">{t('pulsarParameters.find.bounds',{max:PULSAR_PARAMETERS_WEB_POLICY.findDraftMaxLength,searched:PULSAR_PARAMETERS_CONSTANTS.queryMaxLength})}</p>
    <p id={`${id}-refusal`} className="radio-control-note" role="status" aria-live="polite" data-testid="pulsar-find-refusal">
     {refused?t('pulsarParameters.find.tooLong',{max:PULSAR_PARAMETERS_WEB_POLICY.findDraftMaxLength}):''}</p>
    <div className="button-row">
-    <button type="button" className="secondary-button" data-testid="pulsar-find-cancel" onClick={onCancel}>{menuCaptionText(F.cancel)}</button>
-    <button type="button" className="primary-button" data-testid="pulsar-find-ok" onClick={onOk}>{menuCaptionText(F.ok)}</button>
+    <button type="button" className="secondary-button" data-testid="pulsar-find-cancel" onClick={onCancel}>{menuCaptionText(vireo(F.cancel))}</button>
+    <button type="button" className="primary-button" data-testid="pulsar-find-ok" onClick={onOk}>{menuCaptionText(vireo(F.ok))}</button>
    </div>
   </div>
  </div>;
@@ -480,7 +482,7 @@ function PulsarNoticeBox({notice,onDismiss}:Readonly<{notice:PulsarParametersNot
    <p id={`${id}-body`} data-testid="pulsar-params-notice-text" style={{overflowWrap:'anywhere',whiteSpace:'pre-wrap'}}>{body}</p>
    <p className="radio-control-note">{notice.kind==='not-found'?t('pulsarParameters.notice.notFound.note'):t('pulsarParameters.notice.update.note')}</p>
    <div className="button-row">
-    <button ref={button} type="button" className="primary-button" data-testid="pulsar-params-notice-ok" onClick={onDismiss}>{t('pulsarParameters.notice.ok')}</button>
+    <button ref={button} type="button" className="primary-button" data-testid="pulsar-params-notice-ok" onClick={onDismiss}>{vireo(VB.ok)}</button>
    </div>
   </div>
  </div>;

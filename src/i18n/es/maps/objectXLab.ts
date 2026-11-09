@@ -34,7 +34,7 @@ export const OBJECT_X_LAB_ES:Translation<typeof OBJECT_X_LAB_EN>=Object.freeze({
  pointObservatory:'Copiar las coordenadas al observatorio',
  pointHelp:'En el observatorio: abre la cúpula, usa Apuntar a las coordenadas en Escribir coordenadas, elige el campo de visión Telescopio, inicia el reloj, activa el seguimiento y usa la cámara CCD.',
  radioCardTitle:code=>`Objeto X ${code}`,
- radioCardHelp:'Inicia la preparación del ejercicio de púlsares y luego abre Fijar coordenadas (Set Coordinates): se abre con estos valores (J2000). Confirma, inicia el movimiento y abre el receptor (Receiver). Los nombres de los púlsares cercanos a tu objeto quedan ocultos; los receptores llevan tu ID de ObjX, como en el original.',
+ radioCardHelp:'Presiona Iniciar ejercicio de púlsares para la preparación y luego abre Fijar coordenadas (Set Coordinates): se abre con estos valores (J2000). Confirma, inicia el movimiento y abre el Receptor (Receiver). Los nombres de los púlsares cercanos a tu objeto quedan ocultos; los receptores llevan tu ID de ObjX, como en el original.',
  radioCardCoordinates:(h,m,s,d,dm,ds)=>`AR ${h} h ${m} m ${s} s · Dec ${d}° ${dm}′ ${ds}″`,
  radioTitle:'Radiotelescopio',
  radioHelp:'Un púlsar muestra pulsos regulares. En la página del radiotelescopio, Fijar coordenadas (Set Coordinates) se abre con las coordenadas de tu objeto.',

@@ -1667,7 +1667,7 @@ describe('captions, catalog and provenance',()=>{
   const {['antenna.scope']:_omit,...missing}=RADIO_ANTENNA_MESSAGES_EN;void _omit;
   expect(()=>createRadioAntennaTranslator(missing as typeof RADIO_ANTENNA_MESSAGES_EN)).toThrow();
   const marked=createRadioAntennaTranslator(Object.fromEntries(Object.entries(RADIO_ANTENNA_MESSAGES_EN).map(([k,v])=>[k,'[x] '+v])) as typeof RADIO_ANTENNA_MESSAGES_EN);
-  expect(marked('antenna.button.yes')).toBe('[x] Yes');
+  expect(marked('antenna.clock.ut')).toBe('[x] UT');
  });
  it('binds the artifact, the reused/fresh REA records and every emitted contract',()=>{
   expect(provenance.artifact.sha256).toBe('781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c');

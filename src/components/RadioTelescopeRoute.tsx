@@ -1,6 +1,6 @@
 import {isClearedData} from '../core/pulsarCurrentData';// Front R1 review L2
 import type {RadioPointing} from '../core/radioAntenna';
-import {RADIO_R1_MESSAGES as R1} from './RadioR1Messages';
+import {RADIO_R1_LITERALS,RADIO_R1_MESSAGES as R1} from './RadioR1Messages';
 import {memo,useEffect,useId,useLayoutEffect,useRef,useState,useSyncExternalStore,type KeyboardEvent,type MutableRefObject,type RefObject} from 'react';
 import ResearchNotes from './ResearchNotes';
 import {radioWorkspaceSnapshot,type RadioSnapshotResult,type RadioWorkspaceSnapshot,type RestoredRadioWorkspace} from '../core/radioInvestigation';
@@ -29,6 +29,8 @@ import {projectRadioOptionsEnv,projectRadioSiteClock,radioOptionsConsumerMismatc
 import {RADIO_RECEIVER_COMPILED_OPTIONS,type RadioReceiverOptions} from '../core/radioReceiver';
 import {copyReceiverLiveOptions} from '../core/radioReceiverSession';
 import {t,type PlainMessageKey} from '../i18n';
+import {vireo} from '../i18n/vireo';
+import {OBSERVATORY_VIREO_CAPTIONS as VB} from '../observatory/ObservatoryMessages';
 import type {SharedHotListHandle} from '../useSharedHotList';
 import type {SharedPulsarDataHandle} from '../useSharedPulsarData';
 
@@ -57,7 +59,6 @@ const CLOCK_OUTCOME_KEYS:Readonly<Partial<Record<RadioClockScenarioOutcome,Plain
 };
 /** WEB-DATE-02 domain bounds of the dialog result (whole seconds), for the browser-limit box. */
 const DATE_MIN_TEXT=new Date(RADIO_DATE_WEB_LIMITS.minUTMS).toISOString().slice(0,19)+'Z',DATE_MAX_TEXT=new Date(RADIO_DATE_WEB_LIMITS.maxUTMS).toISOString().slice(0,19)+'Z';
-const DATE_MENU_TEXT=menuCaptionText(SET_DATE_MENU_CAPTION);
 const CLOSED_PAGE_GATE:RadioPageGate=Object.freeze({open:false,source:'closed'});
 const LIST_UNAVAILABLE:PulsarListCommandResult=Object.freeze({ok:false,reason:'unavailable'});
 const LIST_PREPARE_FAILED:PulsarListCommandResult=Object.freeze({ok:false,reason:'prepare-failed'});
@@ -519,7 +520,7 @@ function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarD
    <ResearchNotes><p className="radio-control-note">{t('radioRoute.date.help')}</p></ResearchNotes>
    <div className="button-row">
     <button ref={dateMenuRef} type="button" className="secondary-button" data-testid="radio-date-menu" disabled={dateGate.status!=='available'} aria-describedby={`${id}-date-reason`}
-     onKeyDown={ignoreHeldKey} onClick={openDate}>{DATE_MENU_TEXT}</button>
+     onKeyDown={ignoreHeldKey} onClick={openDate}>{menuCaptionText(vireo(SET_DATE_MENU_CAPTION))}</button>
    </div>
    <p id={`${id}-date-reason`} className="radio-control-note" data-testid="radio-date-reason" data-reason={dateGate.status==='refused'?dateGate.reason:undefined}>{dateGateText}</p>
    <dl className="radio-control-state">
@@ -548,7 +549,7 @@ function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarD
    onSourcePicker={parameters.pickerMoved} restored={initial===null?null:{session:initial.receiverSession,windows:initial.receiverWindows}}/>
   {/* Front R1: TRadioLab +0x468 SvRcData1 (DFM disabled; enabled from the analysis Save1 state and the finish box) → 0x56b36c. */}
   {pulsarData&&onOpenPulsarAnalysis&&<p className="radio-control-note" data-testid="radio-save-recorded-data-row"><button type="button" className="secondary-button" data-testid="radio-save-recorded-data"
-   disabled={pulsarData.doc.data===null||isClearedData(pulsarData.doc.data)} onClick={onOpenPulsarAnalysis}>{R1.saveData}</button>{' '}
+   disabled={pulsarData.doc.data===null||isClearedData(pulsarData.doc.data)} onClick={onOpenPulsarAnalysis}>{menuCaptionText(vireo(RADIO_R1_LITERALS.file))} ▸ {vireo(RADIO_R1_LITERALS.saveRecordedData)}</button>{' '}
    {pulsarData.doc.data===null||isClearedData(pulsarData.doc.data)?R1.saveDataOff:R1.saveDataNote}</p>}
   {/* .radio-control (box-less) only scopes the shared dialog styles; the layer itself is never inert. */}
   <div className="radio-control" style={{display:'contents'}} data-testid="radio-date-layer" data-modal-pending={datePending} data-modal-presented={datePresented}>
@@ -609,17 +610,17 @@ function RadioDateDialogView({dialog,refusal,onEdit,onOk,onCancel,returnFocus,fa
   :t('radioRoute.date.field.too-long',{max:refusal.field==='id'?ID_MAX_LENGTH:RADIO_DATE_WEB_LIMITS.fieldMaxLength}):null;
  return <div className="antenna-backdrop">
   <div ref={root} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-bounds`} className="antenna-dialog" data-testid="radio-date-dialog" onKeyDown={onKeyDown} inert={blocked||undefined}>
-   <h3 id={`${id}-title`} className="radio-control-native">{C.form}</h3>
-   <div className="antenna-group">{field('id',C.id,`${C.idSource} ${C.idHint}`)}</div>
+   <h3 id={`${id}-title`} className="radio-control-native">{vireo(C.form)}</h3>
+   <div className="antenna-group">{field('id',vireo(C.id),`${vireo(C.idSource)} ${vireo(C.idHint)}`)}</div>
    <div className="antenna-group">
-    {field('date',C.date,C.dateHint,C.dateFormat,dateField)}
-    {field('time',C.time.trim(),C.timeHint,C.timeFormat)}
+    {field('date',vireo(C.date),vireo(C.dateHint),vireo(C.dateFormat),dateField)}
+    {field('time',vireo(C.time).trim(),vireo(C.timeHint),vireo(C.timeFormat))}
    </div>
    <p id={`${id}-bounds`} className="radio-control-note" data-testid="radio-date-bounds">{t('radioRoute.date.dialog.bounds',{field:RADIO_DATE_WEB_LIMITS.fieldMaxLength,id:ID_MAX_LENGTH})}</p>
    <p id={`${id}-refusal`} className="radio-control-note" role="status" aria-live="polite" data-testid="radio-date-field-refusal" data-field={refusal?.field}>{refusalText}</p>
    <div className="button-row">
-    <button type="button" className="primary-button" data-testid="radio-date-ok" onClick={ok}>{t('radioRoute.date.dialog.ok')}</button>
-    <button type="button" className="secondary-button" data-testid="radio-date-cancel" onClick={onCancel}>{t('radioRoute.date.dialog.cancel')}</button>
+    <button type="button" className="primary-button" data-testid="radio-date-ok" onClick={ok}>{vireo(VB.ok)}</button>
+    <button type="button" className="secondary-button" data-testid="radio-date-cancel" onClick={onCancel}>{vireo(VB.cancel)}</button>
    </div>
   </div>
  </div>;
@@ -644,7 +645,7 @@ function RadioDateErrorBox({failure,dialog,storedId,onDismiss}:Readonly<{failure
    <p className="radio-control-note" data-testid="radio-date-error-note">{native?t('radioRoute.date.error.nativeNote'):t('radioRoute.date.error.webNote')}</p>
    <p data-testid="radio-date-error-id" style={{whiteSpace:'pre-wrap',overflowWrap:'anywhere'}}>{t('radioRoute.date.error.id',{id:storedId})}</p>
    <div className="button-row">
-    <button ref={button} type="button" className="primary-button" data-testid="radio-date-error-ok" onClick={onDismiss}>{t('radioRoute.date.error.ok')}</button>
+    <button ref={button} type="button" className="primary-button" data-testid="radio-date-error-ok" onClick={onDismiss}>{vireo(VB.ok)}</button>
    </div>
   </div>
  </div>;
