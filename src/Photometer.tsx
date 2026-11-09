@@ -36,8 +36,8 @@ import {TILED_PHOTOMETER_PREFIX} from './core/pleiadesSkyContext';
 import {HELP_FILES} from './help/helpFiles';
 import {PHOTOMETER_ID_LITERALS,photometerIdText,photometerRecordedName,shownCurrentObject} from './core/currentObject';
 import {loadedObjectXPositions,objectXMaskState,objectXNear,type ObjectXMaskState} from './io/objectXMask';
-import {OBJECT_X_LAB_EN} from './objectx/ObjectXMessages';
-const OBJECT_X_HIDDEN_NAME=OBJECT_X_LAB_EN.hiddenName;
+import {OBJECT_X_LAB} from './objectx/ObjectXMessages';
+const OBJECT_X_HIDDEN_NAME=OBJECT_X_LAB.hiddenName;
 const num=(value:number)=>formatNumber(value,{maximumFractionDigits:9,useGrouping:false});
 /** A native message box (MessageBox) of the Record/Review path, as a modal dialog. Escape answers with the last button. */
 function NativeMessage({caption,lines,testId,buttons}:{caption:string;lines:readonly string[];testId:string;buttons:readonly Readonly<{label:string;testId:string;onClick:()=>void}>[]}){

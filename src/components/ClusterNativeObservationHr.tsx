@@ -16,7 +16,7 @@ import HrPrint from '../clusters/HrPrint';
 import {clusterNativeHrHitTest,observationalDataFields,OBSERVATIONAL_DATA_LITERALS} from '../core/clusterNativeHrSelect';
 import ObservationalDataDialog from '../clusters/ObservationalDataDialog';
 import RecordedResultsWindow from '../clusters/RecordedResultsWindow';
-import {CLUSTER_HR_EN as HR} from '../clusters/ClusterHrMessages';
+import {CLUSTER_HR as HR} from '../clusters/ClusterHrMessages';
 import InfoListPrintPreview from '../polish/InfoListPrintPreview';// Front R4b review 1 L1
 import {useHrScheme} from '../clusters/useHrScheme';// Front R4c
 import {HR_SCHEMES,hrSchemeStyle} from '../core/hrScheme';

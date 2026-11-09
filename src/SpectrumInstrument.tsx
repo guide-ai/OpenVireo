@@ -32,8 +32,8 @@ import type {FieldSpectrumRecord} from './io/fieldSpectrometer';
 import {LssSessionError} from './io/lssSessionError';
 import type {ObjectXInvestigation} from './io/objectXInvestigation';
 import {ObjectXSessionError} from './io/objectXSessionError';
-import {OBJECT_X_SESSION_EN} from './objectx/ObjectXMessages';
-const OBJECT_X_SAVE_ERROR=OBJECT_X_SESSION_EN.saveError;
+import {OBJECT_X_SESSION} from './objectx/ObjectXMessages';
+const OBJECT_X_SAVE_ERROR=OBJECT_X_SESSION.saveError;
 import { formatFloat32, formatZ, spectrumPoints } from './view/spectrum';
 import type { RadioInvestigation, RadioRestoreBlock, RadioSaveBlock } from './core/radioInvestigation';
 import type { RadioInvestigationRecord } from './io/radioInvestigation';
@@ -43,7 +43,7 @@ import qsoText from '../data/original/AGN_QSO.LST?raw';
 import templateText from '../data/original/GLXYTMPL.SP?raw';
 import CleaHelp from './clusters/CleaHelp';
 import SpectrumEngineControls from './SpectrumEngineControls';
-import {ENGINE_VIEW_EN} from './SpectrumEngineMessages';
+import {ENGINE_VIEW} from './SpectrumEngineMessages';
 import {applyZoomDraft,ENGINE_CURSOR_START,engineTicks,ENGINE_PLOT_HEIGHT,ENGINE_PLOT_WIDTH,engineReadout,initialEngineWindow,insideEnginePlot,moveEngineCursor,nearestComparisonLine,panEngineWindow,type EngineCursor,type EngineWindow} from './core/spectrumEngineView';
 import {HELP_FILES} from './help/helpFiles';
 import ObservationalDataDialog from './clusters/ObservationalDataDialog';
@@ -192,7 +192,7 @@ function SpectrumInstrument({onRecordLss,lssMode=false,onPrepareFieldSpectrum,on
   const readout=cursor&&!wide?readoutOf(cursor.at):null;
   function findNearest(c:EngineCursor){
    const lines=comparisonCleared?[]:selected.lines,index=nearestComparisonLine(lines.map(l=>shiftedWavelength(l.wavelength,z)),engineReadout(engine,c).wavelength);
-   setNearest({index,text:index===null?ENGINE_VIEW_EN.nearestNone:ENGINE_VIEW_EN.nearestFound(lines[index].label,fixed(shiftedWavelength(lines[index].wavelength,z),2))});
+   setNearest({index,text:index===null?ENGINE_VIEW.nearestNone:ENGINE_VIEW.nearestFound(lines[index].label,fixed(shiftedWavelength(lines[index].wavelength,z),2))});
   }
   function engineCursor(c:EngineCursor,phase:'down'|'move'|'up'|'nearest'){if(wide)return;setCursor({at:c,final:phase==='up'||phase==='nearest'});if(phase==='nearest')findNearest(c);else setNearest(null);}
   function engineKey(key:string):boolean{
@@ -373,7 +373,7 @@ function SpectrumInstrument({onRecordLss,lssMode=false,onPrepareFieldSpectrum,on
     <div className="workspace"><div className="left-column"><section className="instrument card"><div className="card-heading"><div><div className="eyebrow">{t('spectrum.bench')}</div><h2>{t('spectrum.spectrumLines')}</h2></div><span className={'status-badge '+(observation ? 'loaded' : '')}>{observation ? isStar?t('continuity.acquiredBadge'):isGalaxy?t('galaxyExposure.acquiredBadge'):t('spectrum.importedData') : t('spectrum.originalReference')}</span></div>
       <div className="plot-toolbar"><div className="legend"><span><i className="ref-key"/> {isStar?t('continuity.template'):isGalaxy?t('galaxyExposure.restTemplate'):library ? t('spectrum.scaledLibrary') : t('spectrum.template')}</span>{observation && <span><i className="obs-key"/> {observation.name}</span>}<span><i className="line-key"/> {t('spectrum.shiftedLines')}</span></div><button className="plot-button" onClick={() => setWide(v => !v)} aria-pressed={wide}>{wide ? t('spectrum.hkView') : t('spectrum.fullView')}</button></div>
       <Chart observation={observation} z={z} reference={comparisonCleared ? null : reference} view={wide?{min:3650,max:7000}:engine} cursor={wide?null:cursor} selectedLine={nearest?.index??null} onCursor={engineCursor} onKey={engineKey} baseline={isAcquired?observation.templateSamples:library?.samples ?? template}/>
-      <p id="engine-plot-help" className="visually-hidden">{ENGINE_VIEW_EN.plotHelp}</p>
+      <p id="engine-plot-help" className="visually-hidden">{ENGINE_VIEW.plotHelp}</p>
       <SpectrumEngineControls window={engine} wide={wide} readout={readout} nearest={nearest?.text??null} onNearest={()=>{if(cursor)findNearest(cursor.at);}}
         onZoom={d=>{setControl(rebase);setEngine(w=>applyZoomDraft(w,d));setCursor(null);setNearest(null);}} onPan={dir=>{setEngine(w=>panEngineWindow(w,dir));setCursor(null);setNearest(null);}}/>
       <div className="plot-foot"><span>{isStar?'A0000049.SP':isGalaxy?t('spectrum.unshiftedTemplate',{file:'GLXYTMPL.SP'}):library ? library.name : t('spectrum.templateCaption')}</span><span>{observation ? t(isStar?'continuity.binCount':'spectrum.sampleCount', {count: formatNumber(observation.samples.length)}) : t('spectrum.noObservation')}</span></div>

@@ -3,6 +3,7 @@
 // loads no App stylesheet. `?host=1` wraps the panel in a host simulator (not App): "hide" keeps the panel mounted but
 // hidden and disabled (inactive route), "busy" disables it while visible (project operation). `?lang=es` passes
 // placeholder overrides that exercise the presentation-catalog contract; they are not a reviewed translation.
+import '../../src/i18n/useEnglish';
 import '../../src/focusAfterLayout';
 import {StrictMode,useState} from 'react';
 import {createRoot} from 'react-dom/client';

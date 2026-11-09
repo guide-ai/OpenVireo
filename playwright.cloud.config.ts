@@ -12,7 +12,7 @@ process.env.OPENVIREO_CLOUD_E2E='1';
 const state='.wrangler/e2e-state',wrangler='./node_modules/.bin/wrangler';
 export default defineConfig({
  testDir:'./tests',testMatch:/cloud-account\.spec\.ts$/,
- use:{baseURL,viewport:{width:1440,height:1050}},reporter:'list',
+ use:{baseURL,locale:'en-US',viewport:{width:1440,height:1050}},reporter:'list',
  webServer:[
   {command:`cd worker && rm -rf ${state} && ${wrangler} d1 migrations apply DB --local --persist-to ${state} && ${wrangler} dev --local --ip 127.0.0.1 --port ${workerPort} --inspector-port 0 --persist-to ${state} --var APP_ORIGIN:${baseURL} --var EMAIL_MODE:dev-sink`,
    url:`http://127.0.0.1:${workerPort}/api/session`,reuseExistingServer:false,timeout:120_000,env:{WRANGLER_SEND_METRICS:'false',WRANGLER_HIDE_BANNER:'true',CI:'1'}},

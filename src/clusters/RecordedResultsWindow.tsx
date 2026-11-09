@@ -2,7 +2,7 @@ import {useState} from 'react';
 import type {NativeObservationData} from '../core/nativeObservationResults';
 import {recordedResultsCsv,recordedResultsLines} from '../core/recordedResults';
 import FieldInfoListWindow,{type FieldInfoBox} from '../observatory/FieldInfoListWindow';
-import {CLUSTER_HR_EN as HR} from './ClusterHrMessages';
+import {CLUSTER_HR as HR} from './ClusterHrMessages';
 
 const latin1=(s:string)=>Uint8Array.from(s,c=>c.charCodeAt(0));
 /** Comma Delimit: VIREO's own writer 0x5472e0 over the shown lines (core/recordedResults.ts, review 1 M1). */

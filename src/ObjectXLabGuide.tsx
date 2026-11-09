@@ -1,6 +1,6 @@
 import {memo,type RefObject} from 'react';
 import {sameData} from './renderStability';
-import {OBJECT_X_GUIDE_EN as G} from './objectx/ObjectXMessages';
+import {OBJECT_X_GUIDE as G} from './objectx/ObjectXMessages';
 import {OBJECT_X_LAB_STEPS,type ObjectXLabProgress,type ObjectXLabStep} from './core/objectXLab';
 import './hubble-lab.css';
 export type ObjectXLabDestination='object-x'|'observatory';

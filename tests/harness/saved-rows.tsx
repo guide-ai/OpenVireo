@@ -3,6 +3,7 @@
 // Host API: window.__savedRows.render(props)/unmount(), window.__mount() (remount after unmount), window.__modalLog (the
 // default onModalChange sink; render() merges given props over it), ?plr=1 (also mounts the PLR analysis workbench) and
 // ?strict=1 (React StrictMode).
+import '../../src/i18n/useEnglish';
 import '../../src/focusAfterLayout';
 import '../../src/style.css';
 import {StrictMode} from 'react';

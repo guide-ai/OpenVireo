@@ -1,0 +1,2970 @@
+[
+ {
+  "file": "src/CameraInformationButton.tsx",
+  "kind": "original",
+  "value": "CAMERA_INFORMATION_CAPTIONS[kind]",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/CameraInformationList.tsx",
+  "kind": "original",
+  "value": "VL.listMenu.close",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/CameraInformationList.tsx",
+  "kind": "original",
+  "value": "VL.listMenu.list",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/CameraInformationList.tsx",
+  "kind": "original",
+  "value": "VL.listMenu.print",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/ClassificationLab.tsx",
+  "kind": "original",
+  "value": "catalog.atlases.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/ClassificationLab.tsx",
+  "kind": "original",
+  "value": "catalog.fingerprint",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/ClassificationLab.tsx",
+  "kind": "original",
+  "value": "catalog.practice.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/ClassificationLab.tsx",
+  "kind": "original",
+  "value": "MAX_CLASSIFICATIONS",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/ClassificationLabGuide.tsx",
+  "kind": "original",
+  "value": "CLASSIFICATION_CATALOG.fingerprint",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/ClassificationLabGuide.tsx",
+  "kind": "original",
+  "value": "CLASSIFICATION_CATALOG.lineListSha256",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/ClassificationLabGuide.tsx",
+  "kind": "original",
+  "value": "CLASSIFICATION_LAB_COUNTED_STEPS.length",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/ClassificationLabGuide.tsx",
+  "kind": "original",
+  "value": "CLASSIFICATION_LAB_STEPS.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/ClassificationLineTable.tsx",
+  "kind": "original",
+  "value": "catalog.lineListSha256",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/ClassificationLineTable.tsx",
+  "kind": "original",
+  "value": "catalog.lines.length",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/ClassificationLineTable.tsx",
+  "kind": "original",
+  "value": "catalog.lines.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusterdata/ClusterDataWindow.tsx",
+  "kind": "original",
+  "value": "CLUSTER_EMPTY_FIELD_CAPTION",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusterdata/ClusterDataWindow.tsx",
+  "kind": "original",
+  "value": "FL.csvTitle",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusterdata/ClusterDataWindow.tsx",
+  "kind": "original",
+  "value": "FL.menu.add",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusterdata/ClusterDataWindow.tsx",
+  "kind": "original",
+  "value": "FL.menu.entire",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusterdata/ClusterDataWindow.tsx",
+  "kind": "original",
+  "value": "FL.menu.start",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusterdata/ClusterDataWindow.tsx",
+  "kind": "original",
+  "value": "SL.add",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusterdata/ClusterDataWindow.tsx",
+  "kind": "original",
+  "value": "SL.caption",
+  "count": 5,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusterdata/ClusterDataWindow.tsx",
+  "kind": "original",
+  "value": "SL.close",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusterdata/ClusterDataWindow.tsx",
+  "kind": "original",
+  "value": "SL.getData",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusterdata/ClusterDataWindow.tsx",
+  "kind": "original",
+  "value": "SL.list",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusterdata/ClusterDataWindow.tsx",
+  "kind": "original",
+  "value": "SL.notSavedCaption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusterdata/ClusterDataWindow.tsx",
+  "kind": "original",
+  "value": "SL.notSavedText",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusterdata/ClusterDataWindow.tsx",
+  "kind": "original",
+  "value": "SL.print",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusterdata/ClusterDataWindow.tsx",
+  "kind": "original",
+  "value": "SL.saveList",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusterdata/ClusterDataWindow.tsx",
+  "kind": "original",
+  "value": "SL.search",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusterdata/ClusterDataWindow.tsx",
+  "kind": "original",
+  "value": "SL.selection",
+  "count": 3,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusterdata/ClusterDataWindow.tsx",
+  "kind": "original",
+  "value": "SL.start",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusterdata/ClusterDataWindow.tsx",
+  "kind": "original",
+  "value": "VL.confirmation",
+  "count": 6,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusterdata/ClusterDataWindow.tsx",
+  "kind": "original",
+  "value": "VL.unsavedCaption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusterdata/ClusterDataWindow.tsx",
+  "kind": "original",
+  "value": "VL.unsavedText",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/ClusterDatabaseLab.tsx",
+  "kind": "original",
+  "value": "CLUSTER_DATASETS.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/ClusterDatabaseLab.tsx",
+  "kind": "original",
+  "value": "NATIVE_CLUSTER_MODELS[c.parameters.modelIndex]",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/ClusterLabGuide.tsx",
+  "kind": "original",
+  "value": "CLUSTER_LAB_STEPS.length",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/ClusterLabGuide.tsx",
+  "kind": "original",
+  "value": "CLUSTER_LAB_STEPS.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusters/CleaHelp.tsx",
+  "kind": "original",
+  "value": "RADIO_HOT_LIST_SEARCH_QUERY_MAX",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusters/ObservationalDataDialog.tsx",
+  "kind": "original",
+  "value": "L.b",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusters/ObservationalDataDialog.tsx",
+  "kind": "original",
+  "value": "L.cancel",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusters/ObservationalDataDialog.tsx",
+  "kind": "original",
+  "value": "L.caption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusters/ObservationalDataDialog.tsx",
+  "kind": "original",
+  "value": "L.dec",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusters/ObservationalDataDialog.tsx",
+  "kind": "original",
+  "value": "L.i",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusters/ObservationalDataDialog.tsx",
+  "kind": "original",
+  "value": "L.jd",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusters/ObservationalDataDialog.tsx",
+  "kind": "original",
+  "value": "L.object",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusters/ObservationalDataDialog.tsx",
+  "kind": "original",
+  "value": "L.ok",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusters/ObservationalDataDialog.tsx",
+  "kind": "original",
+  "value": "L.r",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusters/ObservationalDataDialog.tsx",
+  "kind": "original",
+  "value": "L.ra",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusters/ObservationalDataDialog.tsx",
+  "kind": "original",
+  "value": "L.remarks",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusters/ObservationalDataDialog.tsx",
+  "kind": "original",
+  "value": "L.sp",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusters/ObservationalDataDialog.tsx",
+  "kind": "original",
+  "value": "L.u",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusters/ObservationalDataDialog.tsx",
+  "kind": "original",
+  "value": "L.v",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusters/ObservationalDataDialog.tsx",
+  "kind": "original",
+  "value": "L.vel",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusters/ObservationalDataDialog.tsx",
+  "kind": "original",
+  "value": "L.velHint",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusters/ObservationalDataDialog.tsx",
+  "kind": "original",
+  "value": "L.z",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusters/PossibleMemberWindow.tsx",
+  "kind": "original",
+  "value": "CLUSTER_REMOVE_CAPTION",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusters/PossibleMemberWindow.tsx",
+  "kind": "original",
+  "value": "CLUSTER_REMOVE_QUESTION",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/clusters/PossibleMemberWindow.tsx",
+  "kind": "original",
+  "value": "POSSIBLE_MEMBER_CAPTION",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/ClusterNativeObservationHr.tsx",
+  "kind": "original",
+  "value": "G.marker",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/ClusterNativeObservationHr.tsx",
+  "kind": "original",
+  "value": "NATIVE_CLUSTER_MODELS.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "NS.clearConfirmText",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "NS.clearUnsavedCaption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "NS.clearUnsavedText",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "NS.dialogTitle",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "NS.existsCaption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "NS.existsText",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "NS.extensionCaption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "NS.extensionText",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "NS.filter",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "NS.nothingCaption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "NS.nothingText",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "NS.unrecordedCaption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "NS.unrecordedText",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "NS.verifyCaption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "NS.verifyText",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "PULSAR_ACTIVATE_LITERALS.emptyCaption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "PULSAR_ACTIVATE_LITERALS.emptyText",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "PULSAR_ACTIVATE_LITERALS.loadCaption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "PULSAR_ACTIVATE_LITERALS.loadText",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "PULSAR_DATA_NOT_WRITTEN",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "PULSAR_PAN_RATES.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "PULSAR_PANELS.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "PULSAR_SAVE_PENDING.has",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "RAW_EXPORT_FILE_NAME",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "RESULTS_APPEND_FILE_NAME",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "RESULTS_EXPORT_FIELDS.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "RESULTS_EXPORT_FILE_NAME",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarAnalysis.tsx",
+  "kind": "original",
+  "value": "RESULTS_EXPORT_LIMITS.maxDraft",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarSavedRows.tsx",
+  "kind": "original",
+  "value": "SAVED_FIND_MAX_QUERY",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarSavedRows.tsx",
+  "kind": "original",
+  "value": "SAVED_ROW_FIELDS.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarSavedRows.tsx",
+  "kind": "original",
+  "value": "SAVED_ROWS_HEADER_NAMES.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarSavedRows.tsx",
+  "kind": "original",
+  "value": "SAVED_ROWS_LIMITS.maxBytes",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/PulsarSavedRows.tsx",
+  "kind": "original",
+  "value": "SAVED_ROWS_LIMITS.maxRows",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioAccessOptions.tsx",
+  "kind": "original",
+  "value": "RADIO_OPTIONS_CAPTIONS.horizonLimitHint",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioAccessOptions.tsx",
+  "kind": "original",
+  "value": "RADIO_OPTIONS_CAPTIONS.limitSlewingHint",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioAccessOptions.tsx",
+  "kind": "original",
+  "value": "RADIO_OPTIONS_DFM_ORDER.map",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioAccessOptions.tsx",
+  "kind": "original",
+  "value": "RADIO_SITE_DFM.hint",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioAccessOptions.tsx",
+  "kind": "original",
+  "value": "SC.cancel",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioAccessOptions.tsx",
+  "kind": "original",
+  "value": "SC.errorCaption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioAccessOptions.tsx",
+  "kind": "original",
+  "value": "SC.form",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioAccessOptions.tsx",
+  "kind": "original",
+  "value": "SC.ok",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "HOT_LIST_ENTRY_CAPTIONS.addedCaption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "NATIVE_CAPTIONS.access",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "NATIVE_CAPTIONS.exercise",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "NATIVE_CAPTIONS.switchLabel",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "NATIVE_CAPTIONS.switchPanel",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "RADIO_CLOCK_CONSTANTS.nominalIntervalMs",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "RADIO_LAB_CAPTIONS.dec",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "RADIO_LAB_CAPTIONS.degrees",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "RADIO_LAB_CAPTIONS.form",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "RADIO_LAB_CAPTIONS.hours",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "RADIO_LAB_CAPTIONS.minutes",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "RADIO_LAB_CAPTIONS.ra",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "RADIO_LAB_CAPTIONS.receiver",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "RADIO_LAB_CAPTIONS.seconds",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "RADIO_LAB_CAPTIONS.setCoordinates",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "RADIO_LAB_CAPTIONS.slewMenu",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "RADIO_LAB_CAPTIONS.slewRate",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "RADIO_LAB_CAPTIONS.tracking",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "RADIO_LAB_CAPTIONS[d]",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "RADIO_LAB_CAPTIONS[left]",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "RADIO_LAB_CAPTIONS[leftover]",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "RADIO_LAB_CONSTANTS.manualTimerIntervalMs",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "RADIO_OPTIONS_CAPTIONS.form",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "RADIO_OPTIONS_CAPTIONS.horizonLimit",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "RADIO_OPTIONS_CAPTIONS.horizonLimitHint",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "RADIO_OPTIONS_CAPTIONS.limitSlewing",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "RADIO_OPTIONS_CAPTIONS.limitSlewingHint",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "RADIO_WEB_OPTION_PROFILE.raStepLimitHours",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "SKY_COORDS_CAPTIONS.arcminutes",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "SKY_COORDS_CAPTIONS.arcseconds",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "SKY_COORDS_CAPTIONS.cancel",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "SKY_COORDS_CAPTIONS.decGroup",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "SKY_COORDS_CAPTIONS.degrees",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "SKY_COORDS_CAPTIONS.epochGroup",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "SKY_COORDS_CAPTIONS.epochs.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "SKY_COORDS_CAPTIONS.form.trim",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "SKY_COORDS_CAPTIONS.hours",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "SKY_COORDS_CAPTIONS.minutes",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "SKY_COORDS_CAPTIONS.ok",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "SKY_COORDS_CAPTIONS.raGroup",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "SKY_COORDS_CAPTIONS.seconds",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioControlPanel.tsx",
+  "kind": "original",
+  "value": "SKY_COORDS_FIELD_MAX_LENGTH",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioHotListDialog.tsx",
+  "kind": "original",
+  "value": "C.close",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioHotListDialog.tsx",
+  "kind": "original",
+  "value": "C.form",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioHotListDialog.tsx",
+  "kind": "original",
+  "value": "C.slew",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioHotListSearchDialog.tsx",
+  "kind": "original",
+  "value": "L.caption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioHotListSearchDialog.tsx",
+  "kind": "original",
+  "value": "RADIO_HOT_LIST_SEARCH_QUERY_MAX",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioPulsarParameters.tsx",
+  "kind": "original",
+  "value": "PULSAR_PARAMETERS_CONSTANTS.queryMaxLength",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioPulsarParameters.tsx",
+  "kind": "original",
+  "value": "PULSAR_PARAMETERS_WEB_POLICY.fieldMaxLength",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioPulsarParameters.tsx",
+  "kind": "original",
+  "value": "PULSAR_PARAMETERS_WEB_POLICY.findDraftMaxLength",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioPulsarParameters.tsx",
+  "kind": "original",
+  "value": "PULSAR_REFERENCE_WEB_POLICY.maxBytes",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioReceiverWindows.tsx",
+  "kind": "original",
+  "value": "PULSAR_RESERVED_DATA_NAME",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioReceiverWindows.tsx",
+  "kind": "original",
+  "value": "RADIO_IDENTIFY_DFM.cancel",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioReceiverWindows.tsx",
+  "kind": "original",
+  "value": "RADIO_IDENTIFY_DFM.ok",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioReceiverWindows.tsx",
+  "kind": "original",
+  "value": "RADIO_IDENTIFY_POLICY.draftLimit",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioReceiverWindows.tsx",
+  "kind": "original",
+  "value": "RAW_EXPORT_FILE_NAME",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioReceiverWindows.tsx",
+  "kind": "original",
+  "value": "RECEIVER_MARK_WEB_POLICY.maxColumn",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioReceiverWindows.tsx",
+  "kind": "original",
+  "value": "RECEIVER_MARK_WEB_POLICY.minColumn",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioTelescopeRoute.tsx",
+  "kind": "original",
+  "value": "ID_MAX_LENGTH",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioTelescopeRoute.tsx",
+  "kind": "original",
+  "value": "PULSAR_EXERCISE_SCENARIO.ut",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioTelescopeRoute.tsx",
+  "kind": "original",
+  "value": "RADIO_CLOCK_CONSTANTS.draftMaxLength",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioTelescopeRoute.tsx",
+  "kind": "original",
+  "value": "RADIO_CLOCK_CONSTANTS.nominalIntervalMs",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioTelescopeRoute.tsx",
+  "kind": "original",
+  "value": "RADIO_DATE_WEB_LIMITS.fieldMaxLength",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioTelescopeRoute.tsx",
+  "kind": "original",
+  "value": "RADIO_LAB_CONSTANTS.slewTimerIntervalMs",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/RadioTelescopeRoute.tsx",
+  "kind": "original",
+  "value": "RANDOM_ACCESS_RANGE_MS",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/WedgeLab.tsx",
+  "kind": "original",
+  "value": "WEDGE_COLOUR_SCHEMES[printInColor?0:1]",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/components/WedgeLab.tsx",
+  "kind": "original",
+  "value": "WEDGE_COLOUR_SCHEMES[scheme]",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/FeatureMeasurement.tsx",
+  "kind": "original",
+  "value": "CLASSIFICATION_CATALOG.practice.find",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/FieldSpectrometer.tsx",
+  "kind": "original",
+  "value": "M31_NOTICE.adaptation",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/FieldSpectrometer.tsx",
+  "kind": "original",
+  "value": "M31_NOTICE.caption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/FieldSpectrometer.tsx",
+  "kind": "original",
+  "value": "M31_NOTICE.text",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/HotListEditor.tsx",
+  "kind": "original",
+  "value": "HUBBLE_HTL.name",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/HotListEditor.tsx",
+  "kind": "original",
+  "value": "PLEIADES_HTL.name",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/HubbleAnalysis.tsx",
+  "kind": "original",
+  "value": "HUBBLE_RECIPES",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/HubbleAnalysis.tsx",
+  "kind": "original",
+  "value": "HUBBLE_SOURCES",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/HubbleAnalysis.tsx",
+  "kind": "original",
+  "value": "HUBBLE_TARGETS.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/HubbleLabGuide.tsx",
+  "kind": "original",
+  "value": "HUBBLE_SOURCES",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/LssLabGuide.tsx",
+  "kind": "original",
+  "value": "LSS_LAB_REPEAT_RECORDS",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/LssLabGuide.tsx",
+  "kind": "original",
+  "value": "LSS_LAB_STEPS.length",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/LssLabGuide.tsx",
+  "kind": "original",
+  "value": "LSS_LAB_STEPS.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/LssRegion.tsx",
+  "kind": "original",
+  "value": "R.cancel",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/LssRegion.tsx",
+  "kind": "original",
+  "value": "R.caption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/LssRegion.tsx",
+  "kind": "original",
+  "value": "R.maximum",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/LssRegion.tsx",
+  "kind": "original",
+  "value": "R.menu",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/LssRegion.tsx",
+  "kind": "original",
+  "value": "R.minimum",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/LssRegion.tsx",
+  "kind": "original",
+  "value": "R.ok",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/LssSurvey.tsx",
+  "kind": "original",
+  "value": "LSS_FIELD_FILES[f.field-1].records",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/LssSurvey.tsx",
+  "kind": "original",
+  "value": "LSS_FIELDS_FILE_ERROR.caption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/LssSurvey.tsx",
+  "kind": "original",
+  "value": "LSS_LIMITS.description",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/LssSurvey.tsx",
+  "kind": "original",
+  "value": "LSS_LIMITS.remarks",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/LssSurvey.tsx",
+  "kind": "original",
+  "value": "LSS_LIMITS.velocity",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/LssSurvey.tsx",
+  "kind": "original",
+  "value": "LSS_RESULTS_TXT.title",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/multispec/MultiSpecControl.tsx",
+  "kind": "original",
+  "value": "N.hint",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/multispec/MultiSpecControl.tsx",
+  "kind": "original",
+  "value": "N.snrLabel",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/multispec/MultiSpecList.tsx",
+  "kind": "original",
+  "value": "N.savedLegend",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/NativeClusterAnalysis.tsx",
+  "kind": "original",
+  "value": "G.marker",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/NativeClusterAnalysis.tsx",
+  "kind": "original",
+  "value": "NATIVE_CLUSTER_MODELS.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/NativeClusterAnalysis.tsx",
+  "kind": "original",
+  "value": "NATIVE_CLUSTER_MODELS[fit.modelIndex]",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/NativeClusterAnalysis.tsx",
+  "kind": "original",
+  "value": "PLEIADES_PHOTOMETER_TARGETS.length",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/ObjectXLab.tsx",
+  "kind": "original",
+  "value": "OBJECT_X_ID_MAX",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/ObjectXLab.tsx",
+  "kind": "original",
+  "value": "OBJECT_X_KINDS.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/ObjectXLabGuide.tsx",
+  "kind": "original",
+  "value": "OBJECT_X_LAB_STEPS.length",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/ObjectXLabGuide.tsx",
+  "kind": "original",
+  "value": "OBJECT_X_LAB_STEPS.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/CameraParameterEdits.tsx",
+  "kind": "original",
+  "value": "CAMERA_NAME_MAX",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/CameraParameterEdits.tsx",
+  "kind": "original",
+  "value": "CAMERA_PARAMETER_FIELDS.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/CameraParameterEdits.tsx",
+  "kind": "original",
+  "value": "CAMERA_PARAMETER_TEXT_MAX",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/CameraParameterEdits.tsx",
+  "kind": "original",
+  "value": "G.cooling",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/CameraParameterEdits.tsx",
+  "kind": "original",
+  "value": "G.positionNoise",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/CameraParameterEdits.tsx",
+  "kind": "original",
+  "value": "G[c]",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/CatalogObjectDialog.tsx",
+  "kind": "original",
+  "value": "L.bv",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/CatalogObjectDialog.tsx",
+  "kind": "original",
+  "value": "L.cancel",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/CatalogObjectDialog.tsx",
+  "kind": "original",
+  "value": "L.caption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/CatalogObjectDialog.tsx",
+  "kind": "original",
+  "value": "L.dec",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/CatalogObjectDialog.tsx",
+  "kind": "original",
+  "value": "L.gcvs",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/CatalogObjectDialog.tsx",
+  "kind": "original",
+  "value": "L.gcvsHint",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/CatalogObjectDialog.tsx",
+  "kind": "original",
+  "value": "L.id",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/CatalogObjectDialog.tsx",
+  "kind": "original",
+  "value": "L.ledHint",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/CatalogObjectDialog.tsx",
+  "kind": "original",
+  "value": "L.mag",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/CatalogObjectDialog.tsx",
+  "kind": "original",
+  "value": "L.ok",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/CatalogObjectDialog.tsx",
+  "kind": "original",
+  "value": "L.ra",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/CatalogObjectDialog.tsx",
+  "kind": "original",
+  "value": "L.size",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/CatalogObjectDialog.tsx",
+  "kind": "original",
+  "value": "L.sizeHint",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/CatalogObjectDialog.tsx",
+  "kind": "original",
+  "value": "L.spLedHint",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/CatalogObjectDialog.tsx",
+  "kind": "original",
+  "value": "L.type",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/CatalogObjectDialog.tsx",
+  "kind": "original",
+  "value": "L.ub",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/CatalogObjectDialog.tsx",
+  "kind": "original",
+  "value": "L.update",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/CatalogObjectDialog.tsx",
+  "kind": "original",
+  "value": "L.z",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/FieldInfoListWindow.tsx",
+  "kind": "original",
+  "value": "HOT_LIST_PRINT_LITERALS.notRecorded",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/FieldInfoListWindow.tsx",
+  "kind": "original",
+  "value": "HOT_LIST_PRINT_LITERALS.tableNumber",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/FieldInfoListWindow.tsx",
+  "kind": "original",
+  "value": "RADIO_HOT_LIST_SEARCH_QUERY_MAX",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/FieldInfoListWindow.tsx",
+  "kind": "original",
+  "value": "SL.caption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/FieldInformationMenu.tsx",
+  "kind": "original",
+  "value": "FIELD_STAR_SAVE_NAMES.csv",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/FieldInformationMenu.tsx",
+  "kind": "original",
+  "value": "FIELD_STAR_SAVE_NAMES.text",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/FieldInformationMenu.tsx",
+  "kind": "original",
+  "value": "FL.caption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/FieldInformationMenu.tsx",
+  "kind": "original",
+  "value": "FL.csvTitle",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/FieldInformationMenu.tsx",
+  "kind": "original",
+  "value": "FL.menu.add",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/FieldInformationMenu.tsx",
+  "kind": "original",
+  "value": "FL.menu.entire",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/FieldInformationMenu.tsx",
+  "kind": "original",
+  "value": "FL.menu.start",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/FieldInformationMenu.tsx",
+  "kind": "original",
+  "value": "VARIABLE_FIELD_SAVE_NAME",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/FieldInformationMenu.tsx",
+  "kind": "original",
+  "value": "VL.csvCaption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/FieldInformationMenu.tsx",
+  "kind": "original",
+  "value": "VL.csvText",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/FieldInformationMenu.tsx",
+  "kind": "original",
+  "value": "VL.unsavedCaption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/FieldInformationMenu.tsx",
+  "kind": "original",
+  "value": "VL.unsavedText",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/HotListEntryDialog.tsx",
+  "kind": "original",
+  "value": "C.decGroup",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/HotListEntryDialog.tsx",
+  "kind": "original",
+  "value": "C.degrees",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/HotListEntryDialog.tsx",
+  "kind": "original",
+  "value": "C.form",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/HotListEntryDialog.tsx",
+  "kind": "original",
+  "value": "C.hints[name]",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/HotListEntryDialog.tsx",
+  "kind": "original",
+  "value": "C.hours",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/HotListEntryDialog.tsx",
+  "kind": "original",
+  "value": "C.id",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/HotListEntryDialog.tsx",
+  "kind": "original",
+  "value": "C.maxLength[name]",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/HotListEntryDialog.tsx",
+  "kind": "original",
+  "value": "C.minutes",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/HotListEntryDialog.tsx",
+  "kind": "original",
+  "value": "C.raGroup",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/HotListEntryDialog.tsx",
+  "kind": "original",
+  "value": "C.remarks",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/HotListEntryDialog.tsx",
+  "kind": "original",
+  "value": "C.seconds",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/NakedEyeDomeSky.tsx",
+  "kind": "original",
+  "value": "L.caption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/NakedEyeDomeSky.tsx",
+  "kind": "original",
+  "value": "L.dec",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/NakedEyeDomeSky.tsx",
+  "kind": "original",
+  "value": "L.mag",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/NakedEyeDomeSky.tsx",
+  "kind": "original",
+  "value": "L.ra",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/NakedEyeDomeSky.tsx",
+  "kind": "original",
+  "value": "S.bitmapHeight",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/ObservatoryFileMenu.tsx",
+  "kind": "original",
+  "value": "EDIT_MODE_CAPTIONS.fieldInformation",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/ObservatoryFileMenu.tsx",
+  "kind": "original",
+  "value": "EDIT_MODE_CAPTIONS.starList",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/ObservatoryFileMenu.tsx",
+  "kind": "original",
+  "value": "HST_ARCHIVE.menu",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/ObservatoryFileMenu.tsx",
+  "kind": "original",
+  "value": "HST_ARCHIVE.tools",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/ObservatoryFileMenu.tsx",
+  "kind": "original",
+  "value": "QSO_LIST_MENU",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/ObservatoryFileMenu.tsx",
+  "kind": "original",
+  "value": "VM.gcvs",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/ObservatoryFileMenu.tsx",
+  "kind": "original",
+  "value": "VM.modeled",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/ObservatoryFileMenu.tsx",
+  "kind": "original",
+  "value": "VM.variableStars",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalHotListWindow.tsx",
+  "kind": "original",
+  "value": "C.close",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalHotListWindow.tsx",
+  "kind": "original",
+  "value": "C.slew",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalHotListWindow.tsx",
+  "kind": "original",
+  "value": "L.caption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalHotListWindow.tsx",
+  "kind": "original",
+  "value": "RADIO_HOT_LIST_SEARCH_QUERY_MAX",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalHotListWindow.tsx",
+  "kind": "original",
+  "value": "SL.item",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "C.cancel",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "C.form",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "C.general",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "C.limitSlewing",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "C.limitSlewingHint",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "C.ok",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "C.options",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "C.otherOptions.filter",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "C.otherTabs.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "C.parameterLabels.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "C.parameters",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "DM.box",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "DM.hint",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "EDIT_MODE_CAPTIONS.box",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "EDIT_MODE_CAPTIONS.hint",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "INSTRUMENT_PARAMETER_FIELDS.filter",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "INSTRUMENT_PARAMETER_TEXT_MAX",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "PARAMETER_ERROR_BOX.caption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "PARAMETER_ERROR_BOX.text",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "PHOTOMETER_TAB_OPTION_KEYS.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "PT[k].box",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "PT[k].hint",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "R.caption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "R.hint",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "R.questionCaption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "R.questionText",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "RS.box",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "RS.hint",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "SC[k]",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "TEACHER_DEFERRED.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "TM.box",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "TM.hint",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "UL.instructorText",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "UL.userOptionsCaption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "VO.box",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalOptionsDialog.tsx",
+  "kind": "original",
+  "value": "VO.hint",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalSkyCoordsDialog.tsx",
+  "kind": "original",
+  "value": "C.arcminutes",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalSkyCoordsDialog.tsx",
+  "kind": "original",
+  "value": "C.arcseconds",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalSkyCoordsDialog.tsx",
+  "kind": "original",
+  "value": "C.cancel",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalSkyCoordsDialog.tsx",
+  "kind": "original",
+  "value": "C.decGroup",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalSkyCoordsDialog.tsx",
+  "kind": "original",
+  "value": "C.degrees",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalSkyCoordsDialog.tsx",
+  "kind": "original",
+  "value": "C.epochGroup",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalSkyCoordsDialog.tsx",
+  "kind": "original",
+  "value": "C.epochs.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalSkyCoordsDialog.tsx",
+  "kind": "original",
+  "value": "C.form.trim",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalSkyCoordsDialog.tsx",
+  "kind": "original",
+  "value": "C.hours",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalSkyCoordsDialog.tsx",
+  "kind": "original",
+  "value": "C.minutes",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalSkyCoordsDialog.tsx",
+  "kind": "original",
+  "value": "C.ok",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalSkyCoordsDialog.tsx",
+  "kind": "original",
+  "value": "C.raGroup",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalSkyCoordsDialog.tsx",
+  "kind": "original",
+  "value": "C.seconds",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/OpticalSkyCoordsDialog.tsx",
+  "kind": "original",
+  "value": "SKY_COORDS_FIELD_MAX_LENGTH",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/QsoListWindow.tsx",
+  "kind": "original",
+  "value": "FL.menu.add",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/QsoListWindow.tsx",
+  "kind": "original",
+  "value": "FL.menu.start",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/QsoListWindow.tsx",
+  "kind": "original",
+  "value": "QL.caption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/QsoListWindow.tsx",
+  "kind": "original",
+  "value": "QSO_LIST_SAVE_NAME",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/QsoListWindow.tsx",
+  "kind": "original",
+  "value": "VL.unsavedCaption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/QsoListWindow.tsx",
+  "kind": "original",
+  "value": "VL.unsavedText",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "DC.date",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "DC.dateFormat",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "DC.dateHint",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "DC.form",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "DC.id",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "DC.idHint",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "DC.idSource",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "DC.time",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "DC.timeFormat",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "DC.timeHint",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "OBSERVATORY_ID_MAX_LENGTH",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "RADIO_DATE_WEB_LIMITS.fieldMaxLength",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "SC.altitude",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "SC.cancel",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "SC.deg",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "SC.errorCaption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "SC.ew.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "SC.form",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "SC.hints[name]",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "SC.horizon",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "SC.latitude",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "SC.longitude",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "SC.maxLength.name",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "SC.maxLength.utLocal",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "SC.min",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "SC.name",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "SC.ns.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "SC.ok",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "SC.sec",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "SC.utLocal",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "SITE_INFORMATION_LITERALS.caption",
+  "count": 3,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "VL.listMenu.close",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SiteDialogs.tsx",
+  "kind": "original",
+  "value": "VL.listMenu.print",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SpectrumSavePrint.tsx",
+  "kind": "original",
+  "value": "SPECTROMETER_PRINT_TEXT_HEIGHT",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SpectrumSavePrint.tsx",
+  "kind": "original",
+  "value": "STAR_TARGET",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/observatory/SpectrumSavePrint.tsx",
+  "kind": "original",
+  "value": "STAR_TARGET.id",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/OpenVireo.tsx",
+  "kind": "original",
+  "value": "GALAXY_TARGETS.map",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/OpenVireo.tsx",
+  "kind": "original",
+  "value": "M31_NOTICE.adaptation",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/OpenVireo.tsx",
+  "kind": "original",
+  "value": "M31_NOTICE.caption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/OpenVireo.tsx",
+  "kind": "original",
+  "value": "M31_NOTICE.text",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/OpenVireo.tsx",
+  "kind": "original",
+  "value": "SLEW_LIMIT_LITERALS.driveCaption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/OpenVireo.tsx",
+  "kind": "original",
+  "value": "SLEW_LIMIT_LITERALS.driveText",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/OpenVireo.tsx",
+  "kind": "original",
+  "value": "SLEW_LIMIT_LITERALS.manualCaption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/OpticalTelescope.tsx",
+  "kind": "original",
+  "value": "INITIAL_OPTICAL.selectedIndex",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/OpticalTelescope.tsx",
+  "kind": "original",
+  "value": "OPTICAL_PROFILES.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/OpticalTelescope.tsx",
+  "kind": "original",
+  "value": "SCOPE_MENU_CAPTIONS.access[workspace.draftIndex]",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/OpticalTelescope.tsx",
+  "kind": "original",
+  "value": "SCOPE_MENU_CAPTIONS.request[s]",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/OpticalTelescope.tsx",
+  "kind": "original",
+  "value": "SCOPE_MENU_CAPTIONS.requestTime",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/Photometer.tsx",
+  "kind": "original",
+  "value": "PHOTOMETER_APERTURE_RANGE.max",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/Photometer.tsx",
+  "kind": "original",
+  "value": "PHOTOMETER_APERTURE_RANGE.min",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/Photometer.tsx",
+  "kind": "original",
+  "value": "PHOTOMETER_CALLBACK_MS",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/Photometer.tsx",
+  "kind": "original",
+  "value": "PHOTOMETER_FILTERS.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/Photometer.tsx",
+  "kind": "original",
+  "value": "PHOTOMETER_ID_LITERALS.caption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/Photometer.tsx",
+  "kind": "original",
+  "value": "PHOTOMETER_REPEATS.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/Photometer.tsx",
+  "kind": "original",
+  "value": "PHOTOMETER_SECONDS.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/Photometer.tsx",
+  "kind": "original",
+  "value": "PHOTOMETER_SKY_REPLACE.caption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/Photometer.tsx",
+  "kind": "original",
+  "value": "PHOTOMETER_SKY_REPLACE.text",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/Photometer.tsx",
+  "kind": "original",
+  "value": "PLEIADES_PHOTOMETER_CHOICES.length",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/Photometer.tsx",
+  "kind": "original",
+  "value": "PLEIADES_PHOTOMETER_CHOICES.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/Photometer.tsx",
+  "kind": "original",
+  "value": "PLEIADES_PHOTOMETER_TARGETS.find",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/Photometer.tsx",
+  "kind": "original",
+  "value": "RL.menu",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/Photometer.tsx",
+  "kind": "original",
+  "value": "RL.movedCaption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/Photometer.tsx",
+  "kind": "original",
+  "value": "RL.movedText",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/Photometer.tsx",
+  "kind": "original",
+  "value": "RL.notSavedCaption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/Photometer.tsx",
+  "kind": "original",
+  "value": "RL.notSavedText",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/Photometer.tsx",
+  "kind": "original",
+  "value": "RL.savedCaption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/Photometer.tsx",
+  "kind": "original",
+  "value": "RL.savedText",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/Photometer.tsx",
+  "kind": "original",
+  "value": "TILED_PHOTOMETER_PREFIX",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/PleiadesAnalysis.tsx",
+  "kind": "original",
+  "value": "PLEIADES_STANDARDS.map",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/PleiadesLabGuide.tsx",
+  "kind": "original",
+  "value": "PLEIADES_HTL.archiveMember",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/PleiadesLabGuide.tsx",
+  "kind": "original",
+  "value": "PLEIADES_HTL.archiveSha256",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/PleiadesLabGuide.tsx",
+  "kind": "original",
+  "value": "PLEIADES_HTL.bytes",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/PleiadesLabGuide.tsx",
+  "kind": "original",
+  "value": "PLEIADES_HTL.name",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/PleiadesLabGuide.tsx",
+  "kind": "original",
+  "value": "PLEIADES_HTL.sha256",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/PleiadesLabGuide.tsx",
+  "kind": "original",
+  "value": "PLEIADES_LAB_COUNTED_STEPS.length",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/PleiadesLabGuide.tsx",
+  "kind": "original",
+  "value": "PLEIADES_LAB_STEPS.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/PulsarLabGuide.tsx",
+  "kind": "original",
+  "value": "PULSAR_EXERCISE_SCENARIO.ut",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/PulsarLabGuide.tsx",
+  "kind": "original",
+  "value": "PULSAR_LAB_REQUIRED_STEPS.length",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/PulsarLabGuide.tsx",
+  "kind": "original",
+  "value": "PULSAR_LAB_STEPS.map",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/SpectralRangeDialog.tsx",
+  "kind": "original",
+  "value": "L.cancel",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/SpectralRangeDialog.tsx",
+  "kind": "original",
+  "value": "L.caption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/SpectralRangeDialog.tsx",
+  "kind": "original",
+  "value": "L.default",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/SpectralRangeDialog.tsx",
+  "kind": "original",
+  "value": "L.defaultHint",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/SpectralRangeDialog.tsx",
+  "kind": "original",
+  "value": "L.maximum",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/SpectralRangeDialog.tsx",
+  "kind": "original",
+  "value": "L.minimum",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/SpectralRangeDialog.tsx",
+  "kind": "original",
+  "value": "L.ok",
+  "count": 2,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/SpectralRangeDialog.tsx",
+  "kind": "original",
+  "value": "L.warning",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/SpectralRangeDialog.tsx",
+  "kind": "original",
+  "value": "L.warningCaption",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/SpectralRangeRow.tsx",
+  "kind": "original",
+  "value": "SPECTRAL_RANGE_LITERALS.menu",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/StarExposure.tsx",
+  "kind": "original",
+  "value": "SPECTRAL_RANGE_LITERALS.menu",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/StarExposure.tsx",
+  "kind": "original",
+  "value": "STAR_TARGET.id",
+  "count": 1,
+  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+ },
+ {
+  "file": "src/help/webHelp.ts",
+  "kind": "module literal",
+  "value": "*",
+  "count": 112,
+  "reason": "pending-translation: multi-word web text built outside the catalog; ES1 or ES-HELP moves it to a translatable source."
+ },
+ {
+  "file": "src/help/tour.ts",
+  "kind": "module literal",
+  "value": "*",
+  "count": 16,
+  "reason": "pending-translation: multi-word web text built outside the catalog; ES1 or ES-HELP moves it to a translatable source."
+ }
+]

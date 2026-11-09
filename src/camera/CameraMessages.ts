@@ -1,6 +1,7 @@
+import {pickMessages} from '../i18n/registry';
 /** Presentation strings for the CCD and IR camera windows (fronts C, C6). Pure and keyed so the coordinator can fold them into
  * en.json at merge. English default. Native captions recovered from the CCD form are marked (native). */
-export const CAMERA_MESSAGES=Object.freeze({
+export const CAMERA_MESSAGES_EN=Object.freeze({
  title:'CCD camera',
  // Front R4b: File › Information... (TCCDCam / TIRCam, dossier C §3).
  information:'Information...',
@@ -112,3 +113,4 @@ export const CAMERA_MESSAGES=Object.freeze({
  citation:'Catalog data: CDS/VizieR (doi:10.26093/cds/vizier); NOMAD, Zacharias et al. 2004; USNO-B1.0, Monet et al. 2003. VizieR declares no explicit licence for these two catalogs.',
  citationIr:'The J, H and K magnitudes in NOMAD come from the Two Micron All Sky Survey (2MASS; Skrutskie et al. 2006), a joint project of the University of Massachusetts and IPAC/Caltech, funded by NASA and the NSF.',
 });
+export const CAMERA_MESSAGES=pickMessages('camera',CAMERA_MESSAGES_EN);

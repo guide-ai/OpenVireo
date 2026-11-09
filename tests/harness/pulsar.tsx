@@ -2,6 +2,7 @@
 // PLR analysis front harness (task-3/claude-pulsar-analysis/harness/vite.harness.mjs, 2026-10-21): one page that calls
 // mountPulsarWorkbench and keeps its {render, unmount} controller on window.__pulsarHarness. Like the original page it
 // loads no App stylesheet, only a plain body style.
+import '../../src/i18n/useEnglish';
 import '../../src/focusAfterLayout';
 import {mountPulsarWorkbench} from '../../src/components/PulsarAnalysis.tsx';
 

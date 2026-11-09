@@ -1,5 +1,6 @@
+import {pickMessages} from '../i18n/registry';
 /** Texts of the observatory Sound Effects option (Front C5W, docs/SOUND-EFFECTS.md). */
-export const SOUND_MESSAGES=Object.freeze({
+export const SOUND_MESSAGES_EN=Object.freeze({
  title:'Sound effects',
  toggle:'Sound Effects (VIREO’s dome and telescope sounds)',
  hint:'Sound for dome, slewing, etc.',
@@ -8,3 +9,4 @@ export const SOUND_MESSAGES=Object.freeze({
  failed:'VIREO sound features are not available: this browser could not load or play the sound, so Sound Effects is off again.',
  channel:{dome:'Dome sound',telescope:'Telescope sound'},
 });
+export const SOUND_MESSAGES=pickMessages('sound',SOUND_MESSAGES_EN);

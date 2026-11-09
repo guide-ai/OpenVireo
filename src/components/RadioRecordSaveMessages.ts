@@ -1,3 +1,4 @@
+import {pickMessages} from '../i18n/registry';
 /**
  * English presentation catalog of the R-RX16 Radio arming Save (keys `radioSave.*`, docs/RADIO-RECORD-SAVE.md). It is kept out
  * of the shared en.json, like PulsarMessages.ts, until the coordinator integrates it; the shared R-RX15 Save texts (`pulsar.save.*`,
@@ -30,7 +31,7 @@ export type RadioSaveTranslate = (key: RadioSaveMessageKey, values?: Readonly<Re
 const placeholders = (text: string) => [...text.matchAll(/\{(\w+)\}/g)].map(m => m[1]).sort().join(',');
 
 /** A replacement catalog must have every key and the same placeholders. Values are inserted as plain text, never as HTML. */
-export function createRadioSaveTranslator(messages: Readonly<Record<RadioSaveMessageKey, string>> = RADIO_SAVE_MESSAGES_EN): RadioSaveTranslate {
+export function createRadioSaveTranslator(messages: Readonly<Record<RadioSaveMessageKey, string>> = pickMessages('radioRecordSave', RADIO_SAVE_MESSAGES_EN)): RadioSaveTranslate {
   const keys = Object.keys(RADIO_SAVE_MESSAGES_EN) as RadioSaveMessageKey[];
   if (!messages || Object.keys(messages).length !== keys.length || keys.some(k => !Object.hasOwn(messages, k) || typeof messages[k] !== 'string' || placeholders(messages[k]) !== placeholders(RADIO_SAVE_MESSAGES_EN[k])))
     throw new Error('Invalid radio save message catalog');

@@ -4,7 +4,7 @@ import type {ClusterReferencePoint} from '../core/clusterDatabase';
 import {nativeSpectralText} from '../core/catalogObject';
 import type {ClusterPointDetail} from '../core/clusterReport';
 import {delphiFixed} from '../core/variableStars';
-import {CLUSTER_HR_EN as M} from './ClusterHrMessages';
+import {CLUSTER_HR as M} from './ClusterHrMessages';
 import './cluster-hr.css';
 
 /** TClstrStrForm1 "Possible Cluster Member" (0x5408ac): a modeless window over the plot (VIREO: fsStayOnTop). Its Item menu

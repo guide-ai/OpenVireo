@@ -1,8 +1,9 @@
+import {pickMessages} from '../i18n/registry';
 /** Presentation catalog for the optical observatory dialogs (Front B), kept apart from the shared i18n catalog on the
  * WedgeMessages pattern so a later coordinator merge can move it. Recovered original captions live in the core modules
  * (SKY_COORDS_CAPTIONS and friends) and are never translated here; these strings are OpenVireo wording and one-line
  * adaptation labels. English is the default. */
-export const OBSERVATORY_MESSAGES=Object.freeze({
+export const OBSERVATORY_MESSAGES_EN=Object.freeze({
  /** VCL default button captions (bkOK/bkCancel without DFM captions) and plain box buttons. */
  common:Object.freeze({ok:'OK',cancel:'Cancel'}),
  horizon:Object.freeze({
@@ -119,4 +120,5 @@ export const OBSERVATORY_MESSAGES=Object.freeze({
   skyLabel:'Sky background',
  }),
 });
+export const OBSERVATORY_MESSAGES=pickMessages('observatory',OBSERVATORY_MESSAGES_EN);
 export type ObservatoryMessages=typeof OBSERVATORY_MESSAGES;

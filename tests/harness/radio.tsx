@@ -5,6 +5,7 @@
 // and unmount. Query: ?transit=1 ?instant=1 ?limits=1 ?manualTick=1 ?rateBase= ?maxRateIndex= ?latitude= and
 // ?synthetic=scope-modal (a pending 1 ms ScopeTimer held by dome byte 3 while the coordinate dialog is open; not
 // reachable through the UI). Default options are the recovered compiled defaults; scenario inputs start unsupplied.
+import '../../src/i18n/useEnglish';
 import '../../src/focusAfterLayout';
 import '../../src/style.css';
 import {StrictMode,useState} from 'react';

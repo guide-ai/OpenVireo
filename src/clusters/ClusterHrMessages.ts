@@ -1,3 +1,4 @@
+import {pickMessages} from '../i18n/registry';
 /** Front V2 English strings for the cluster HR tools (self-contained, like VariableStarMessages). Captions, menu items and
  * message-box texts marked "VIREO" are copied from CLEA_VEO.exe (research analysis/front-v2-cluster-hr/); everything else is
  * web text. */
@@ -113,4 +114,5 @@ export const CLUSTER_HR_EN=Object.freeze({
  printPlaceholder:'[student and lab text entered in VIREO: not recovered on this site]',
  helpPrintNote:'Print preview of what VIREO prints for a help topic: the date and time (here in your browser\'s format), the laboratory-table line, the student lines entered in VIREO (a placeholder here), the CLEA exercise title, the window caption and the topic rows. VIREO prints them on one page and drops rows that do not fit; page layout and fonts are not reproduced.',
 });
+export const CLUSTER_HR=pickMessages('clusterHr',CLUSTER_HR_EN);
 export type ClusterHrMessages=typeof CLUSTER_HR_EN;

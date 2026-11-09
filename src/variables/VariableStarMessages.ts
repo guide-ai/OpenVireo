@@ -1,4 +1,5 @@
 import type {LightCurveUnavailable} from '../core/lightCurve';
+import {pickMessages} from '../i18n/registry';
 /** Front V English strings (self-contained, like ObjectXMessages). Original captions and menu texts are copied from the
  * TVStarListForm1 / TLtCrvDsplyForm1 DFMs of CLEA_VEO.exe; everything else is web text. */
 export const VARIABLE_STARS_EN=Object.freeze({
@@ -68,4 +69,5 @@ export const VARIABLE_STARS_EN=Object.freeze({
  printClose:'Close preview',
  printError:'Printing is not available in this browser window.',
 });
+export const VARIABLE_STARS=pickMessages('variableStars',VARIABLE_STARS_EN);
 export type VariableStarsMessages=typeof VARIABLE_STARS_EN;

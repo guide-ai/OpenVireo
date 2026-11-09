@@ -1,7 +1,8 @@
 import {fieldReasonText} from '../i18n';
+import {pickMessages} from '../i18n/registry';
 /** Web texts of the Front O forms (docs/OBJECT-INFO-FORMS.md). Original literals stay in the core modules and are never
  * translated; these are the labelled web adaptations, notices and typed reasons. */
-export const FIELD_INFO_MESSAGES=Object.freeze({
+export const FIELD_INFO_MESSAGES_EN=Object.freeze({
  editModeLabel:'Edit Mode (instructor, VIREO)',
  editModeAdaptation:'Web adaptation: in VIREO, Edit Mode is an instructor option behind the instructor login or Demonstration Mode. Here these options open only in instructor mode (the web form of Demonstration Mode, with no password); the box is off by default, not saved by the page (only Save Updates writes it, to an options file you keep), and Leave turns it off. It only enables the Telescope-view click (Catalog Object, with galaxy redshifts hidden because they are exercise answers) and File › Field Information; its other effects (hot-list editing and saving, other print layouts) are not applied.',
  fileMenu:'File',
@@ -56,9 +57,10 @@ export const FIELD_INFO_MESSAGES=Object.freeze({
   'load-error':'The catalogue data could not be loaded or did not match its recorded size and SHA-256.',
  }),
 });
+export const FIELD_INFO_MESSAGES=pickMessages('fieldInfo',FIELD_INFO_MESSAGES_EN);
 export type FieldInfoReason=keyof typeof FIELD_INFO_MESSAGES.unavailable;
 /** Readable details for the typed tile and catalogue-read results (G2 review 1 L2): students never see a raw code. */
-export const FIELD_READ_DETAILS=Object.freeze({
+export const FIELD_READ_DETAILS_EN=Object.freeze({
  'field-tiles':Object.freeze({
   fetch:'a catalogue piece did not arrive',
   integrity:'a catalogue piece did not match its recorded size and SHA-256',
@@ -76,6 +78,7 @@ export const FIELD_READ_DETAILS=Object.freeze({
   evidence:'the field engine found its records inconsistent (please report it).',
  } as Record<string,string>),
 });
+export const FIELD_READ_DETAILS=pickMessages('fieldReadDetails',FIELD_READ_DETAILS_EN);
 export function fieldInfoReasonText(reason:FieldInfoReason,detail=''):string{
  const details=(FIELD_READ_DETAILS as Record<string,Record<string,string>>)[reason];
  // Front AXISMERGE review 1: a population code is shown in words (the field spectrometer's reason text) when it has one.
@@ -83,7 +86,7 @@ export function fieldInfoReasonText(reason:FieldInfoReason,detail=''):string{
  return FIELD_INFO_MESSAGES.unavailable[reason].replace('{reason}',text);
 }
 /** Naked Eye Star (student path). */
-export const NAKED_EYE_MESSAGES=Object.freeze({
+export const NAKED_EYE_MESSAGES_EN=Object.freeze({
  eyebrow:'VIREO · Dome open',title:'Naked-eye sky',
  help:'The bright stars (V ≤ 5.5) you would see by eye through the open dome, as VIREO draws them: about 31° wide and 40° high, centred 45° above the horizon in the direction the telescope points. Right-click a star (or move the cursor with the arrow keys and press Enter) to see its data.',
  skyLabel:'Naked-eye sky through the dome. Right-click a star, or use the arrow keys and Enter, to open Naked Eye Star.',
@@ -95,3 +98,4 @@ export const NAKED_EYE_MESSAGES=Object.freeze({
  tapAdaptation:'Web adaptation for touch screens: tap the sky to move the cursor (+), then press “Show star at cursor”. A tap alone does not open the star, as a left click does nothing in VIREO.',
  magNote:'As in VIREO, V Mag can be typed in but nothing is saved.',
 });
+export const NAKED_EYE_MESSAGES=pickMessages('nakedEye',NAKED_EYE_MESSAGES_EN);

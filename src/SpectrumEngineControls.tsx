@@ -2,7 +2,7 @@ import {useEffect,useId,useRef,useState} from 'react';
 import {menuCaptionText} from './core/radioControl';
 import {canPanLeft,canPanRight,moveZoomMaximum,moveZoomMinimum,resetZoomDraft,zoomDraft,zoomDraftWavelengths,type EngineWindow,type ZoomDraft} from './core/spectrumEngineView';
 import {fixed} from './i18n';
-import {ENGINE_VIEW_EN as M} from './SpectrumEngineMessages';
+import {ENGINE_VIEW as M} from './SpectrumEngineMessages';
 import './spectrum-engine.css';
 
 /** TSpecDsplyRngDlg "Set Wavelength Range" (ZoomBtnClick 0x58451c, modal): two sliders in 100 Å steps from lo, Reset,

@@ -2,7 +2,7 @@ import SpectralRangeRow from './SpectralRangeRow';
 import {parseJournalSeed} from './core/exposureJournal';
 import {DEFAULT_SPECTRAL_RANGE,galaxyPolicyRange,galaxyRestoreRange,type SpectralRange} from './core/spectralRange';
 import {spectralRangeCoverage} from './core/spectralRangeCoverage';
-import {SPECTRAL_RANGE_EN as SR} from './SpectralRangeMessages';
+import {SPECTRAL_RANGE as SR} from './SpectralRangeMessages';
 import {galaxyTelescopeIndex,isCachedGalaxyTarget,isPegasusGalaxyTarget} from './core/galaxyTelescope';
 import CleaHelp from './clusters/CleaHelp';
 import {HELP_FILES} from './help/helpFiles';

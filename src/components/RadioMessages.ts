@@ -1,5 +1,6 @@
 import en from '../i18n/en.json';
 import{createI18n,t}from'../i18n';
+import {pickMessages} from '../i18n/registry';
 /** English presentation catalog for the radio control slice. Keys are
  * namespaced `radio.*` in the shared catalog;the panel accepts a translator with this key set. Native
  * captions (On/Off, IDPnl text, menu captions) are original labels and are
@@ -9,7 +10,7 @@ export type RadioMessageKey=typeof RADIO_KEYS[number];
 export const RADIO_MESSAGES_EN=Object.freeze(Object.fromEntries(RADIO_KEYS.map(key=>[key,en[key]]))) as Readonly<Record<RadioMessageKey,string>>;
 export type RadioTranslate=(key:RadioMessageKey,values?:Readonly<Record<string,string|number>>)=>string;
 /** Same contract as src/i18n createI18n: complete keys, identical placeholders, values inserted as text. */
-export function createRadioTranslator(messages:Readonly<Record<RadioMessageKey,string>>=RADIO_MESSAGES_EN):RadioTranslate{
+export function createRadioTranslator(messages:Readonly<Record<RadioMessageKey,string>>=pickMessages('radio', RADIO_MESSAGES_EN)):RadioTranslate{
  const keys=Object.keys(RADIO_MESSAGES_EN) as RadioMessageKey[];
  if(!messages||Object.keys(messages).length!==keys.length||keys.some(k=>!Object.hasOwn(messages,k)))throw new Error('Invalid radio message catalog');
  const shared=messages===RADIO_MESSAGES_EN?t:createI18n({...en,...messages},'en-US').t;

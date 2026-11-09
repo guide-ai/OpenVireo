@@ -2,6 +2,7 @@ import type{WedgeParseFailure}from'../core/wedgeLssText';
 import{WEDGE_NATIVE_TEXT as N}from'../core/wedgeNativeText';
 import type{WedgePlotStatus}from'../core/wedgePlot';
 import type{WedgeWorkspace}from'../core/wedgeWorkspace';
+import {pickMessages} from '../i18n/registry';
 /** Presentation catalog for the LSS wedge panel, keyed and pure so a later
  * coordinator merge can move it into the shared i18n catalog. Every value is typed
  * as a plain string/function/tuple (not the English literal), so translations
@@ -58,7 +59,7 @@ export const WEDGE_NATIVE_CAPTIONS:WedgeNativeCaptions=Object.freeze({
  headerText:N.headerText,headerCaption:N.headerCaption,accessText:N.accessText,accessCaption:N.accessCaption,
  retainText:N.retainText,retainCaption:N.retainCaption,deleteText:N.deleteText,deleteCaption:N.deleteCaption,
 });
-export const WEDGE_MESSAGES:WedgeMessageCatalog=Object.freeze({
+export const WEDGE_MESSAGES_EN:WedgeMessageCatalog=Object.freeze({
  native:WEDGE_NATIVE_CAPTIONS,
  intro:'Load redshift data that the VIREO Large-Scale Structure exercise saved as a text file, then plot it on the original wedge diagram. The data stay exactly as saved: nothing is measured, estimated or filled in here.',
  persistenceNote:'Save investigation keeps the options of the records you plotted from the LSS survey; after Restore, plot your records again from the survey. Files you load here, the plot itself and the selection are not included in Save investigation; they are discarded when the page is reloaded or closed. Your saved .TXT files are not changed and can be loaded again.',
@@ -120,6 +121,7 @@ export const WEDGE_MESSAGES:WedgeMessageCatalog=Object.freeze({
  autoPlotUnavailable:'Group Auto Plot needs a shared group file prepared by an instructor. It is not available in this version.',
  optionsButtonHelp:'Grid type, point size and point style',
 });
+export const WEDGE_MESSAGES=pickMessages('wedge',WEDGE_MESSAGES_EN);
 
 const isGroup=(v:unknown):v is Readonly<Record<string,unknown>>=>typeof v==='object'&&v!==null&&!Array.isArray(v);
 const sameShape=(base:unknown,v:unknown)=>typeof v===typeof base&&Array.isArray(v)===Array.isArray(base)&&(!Array.isArray(base)||base===WEDGE_MESSAGES.about||(v as unknown[]).length===base.length);

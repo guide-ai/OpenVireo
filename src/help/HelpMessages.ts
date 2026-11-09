@@ -1,3 +1,4 @@
+import {pickMessages} from '../i18n/registry';
 /** Front H English web strings for the Help menus (self-contained, like ClusterHrMessages). VIREO's own captions live in
  * mainHelp.ts. */
 export const HELP_MENU_EN=Object.freeze({
@@ -21,6 +22,7 @@ export const HELP_MENU_EN=Object.freeze({
  shortcutKey:'?',
  exitNote:'VIREO shows this reminder when you exit the observatory during an exercise (after Run Exercise); otherwise it only asks whether to quit. OpenVireo has no Log In or Run Exercise step, so the observatory is always an exercise in progress. In VIREO, OK or Yes quits the program; Cancel or No keeps it open.',
 });
+export const HELP_MENU=pickMessages('helpMenu',HELP_MENU_EN);
 
 /** Accessible names of each window's Help button, by help index (review 1 I4); the visible caption stays "Help". */
 export const HELP_BUTTON_NAMES:Readonly<Record<string,string>>=Object.freeze({

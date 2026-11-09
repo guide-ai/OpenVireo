@@ -13,7 +13,7 @@ import {t,fixed} from './i18n';
 import {useMemo,useRef,useState,useImperativeHandle,type Ref} from 'react';
 import {activateSky,cancelSky,createSkyExposure,deactivateSky,pauseSky,resetSky,skyCountsCsv,skySpectralRange,skyWavelengths,startSky,tickSky} from './core/skyExposure';
 import SpectralRangeRow from './SpectralRangeRow';
-import {SPECTRAL_RANGE_EN as SR} from './SpectralRangeMessages';
+import {SPECTRAL_RANGE as SR} from './SpectralRangeMessages';
 import {DEFAULT_SPECTRAL_RANGE,type SpectralRange} from './core/spectralRange';
 import {parseJournalSeed} from './core/exposureJournal';
 import {readSkySession,serializeSkySession} from './io/skySession';

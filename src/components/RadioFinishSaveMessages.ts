@@ -1,3 +1,4 @@
+import {pickMessages} from '../i18n/registry';
 /**
  * English presentation catalog of the R-RX17 finish Save (keys `finishSave.*`, docs/RADIO-FINISH-SAVE.md). It is kept out of the
  * shared en.json, like RadioRecordSaveMessages.ts; the shared R-RX15 Save texts (`pulsar.save.*`, `pulsar.rawExport.*`) are reused
@@ -29,7 +30,7 @@ export type FinishSaveTranslate = (key: FinishSaveMessageKey, values?: Readonly<
 const placeholders = (text: string) => [...text.matchAll(/\{(\w+)\}/g)].map(m => m[1]).sort().join(',');
 
 /** A replacement catalog must have every key and the same placeholders. Values are inserted as plain text, never as HTML. */
-export function createFinishSaveTranslator(messages: Readonly<Record<FinishSaveMessageKey, string>> = FINISH_SAVE_MESSAGES_EN): FinishSaveTranslate {
+export function createFinishSaveTranslator(messages: Readonly<Record<FinishSaveMessageKey, string>> = pickMessages('radioFinishSave', FINISH_SAVE_MESSAGES_EN)): FinishSaveTranslate {
   const keys = Object.keys(FINISH_SAVE_MESSAGES_EN) as FinishSaveMessageKey[];
   if (!messages || Object.keys(messages).length !== keys.length || keys.some(k => !Object.hasOwn(messages, k) || typeof messages[k] !== 'string' || placeholders(messages[k]) !== placeholders(FINISH_SAVE_MESSAGES_EN[k])))
     throw new Error('Invalid finish save message catalog');

@@ -1,8 +1,9 @@
 /** Web texts of the QSO List and the HST Image Archive item (Front O2, docs/QSO-LIST-HST.md). Original literals stay in
  * core/qsoList.ts and are never translated; these are the labelled web adaptations, notices and typed reasons. */
 import {HST_ARCHIVE} from '../core/observatoryMenuLiterals';
+import {pickMessages} from '../i18n/registry';
 
-export const QSO_LIST_MESSAGES=Object.freeze({
+export const QSO_LIST_MESSAGES_EN=Object.freeze({
  virtualObservatoryLabel:'Virtual Observatory (instructor, VIREO)',
  virtualObservatoryAdaptation:'Web adaptation: in VIREO this instructor option, off by default, enables Run Exercise › Virtual Observatory (All Instruments), the mode in which students get File › QSO List. Here it opens only in instructor mode (the web form of Demonstration Mode, with no password); it is off by default, not saved by the page (only Save Updates writes it, to an options file you keep), turned off by Leave, and its only effect is to show File › QSO List.',
  sortDisabled:'Sort Options is available only in Edit Mode, as in VIREO; without it the list is sorted by magnitude.',
@@ -23,3 +24,4 @@ export const QSO_LIST_MESSAGES=Object.freeze({
   note:`Web adaptation: VIREO opened ${HST_ARCHIVE.defaultUrl} (the “${HST_ARCHIVE.optionsLabel}” of File Options) in a browser window. That page no longer exists; this link opens its current equivalent on hubblesite.org, which NASA now serves as its Hubble Images gallery. Nothing is sent with it.`,
  }),
 });
+export const QSO_LIST_MESSAGES=pickMessages('qsoList',QSO_LIST_MESSAGES_EN);

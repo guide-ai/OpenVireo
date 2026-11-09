@@ -1,3 +1,4 @@
+import {pickMessages} from './i18n/registry';
 /** Front S (S5) English web strings for the measuring engine's zoom, pan and readout (docs/SPECTRUM-ENGINE-VIEW.md). VIREO's
  * own captions are quoted as recovered (TSpectrumEngine / TSpecDsplyRngDlg DFM). */
 export const ENGINE_VIEW_EN=Object.freeze({
@@ -17,3 +18,4 @@ export const ENGINE_VIEW_EN=Object.freeze({
  fullViewNote:'The Full and H/K views are web presets; Zoom and the arrows apply to the normal view.',
  note:'As in VIREO, Zoom chooses a window in 100 Å steps from the start of the loaded spectrum and first folds the z control into its base (like Recenter); the arrows move the window 100 Å and may pass its ends by less than 100 Å; the readout shows the observed wavelength under the cursor and the cursor\'s height on the plot axis, not the spectrum\'s value.',
 });
+export const ENGINE_VIEW=pickMessages('engineView',ENGINE_VIEW_EN);

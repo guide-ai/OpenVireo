@@ -8,7 +8,7 @@ import {MULTISPEC_MASK_REACH,anyMultiSpecField,multiSpecAnchor,multiSpecMaskReac
 import {MULTISPEC_MASK_PENDING,MULTISPEC_UNMASKED,type MultiSpecMaskPolicy} from './multiSpecText';
 import MultiSpecInstrument from './MultiSpecInstrument';
 import {spectralRangeCoverage} from '../core/spectralRangeCoverage';
-import {SPECTRAL_RANGE_EN as SR} from '../SpectralRangeMessages';
+import {SPECTRAL_RANGE as SR} from '../SpectralRangeMessages';
 import type {SpectralRange} from '../core/spectralRange';
 /** Front S2: Multi-Spec reads the page's one range (0x526e7f); off the default it is not witnessed here [W]. */
 /** Front S3: every dialog range unmasked; while an Object X target is masked only Object X's admitted ranges (kind-free). */

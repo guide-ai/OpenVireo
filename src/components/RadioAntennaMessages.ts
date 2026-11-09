@@ -1,3 +1,4 @@
+import {pickMessages} from '../i18n/registry';
 /** English presentation catalog for the radio antenna slice (TRadioLab controls and
  * TSkyCoordsDlg). Scoped to this slice and ready for translation; it does not touch the
  * shared en.json. Original DFM captions are NOT here: they are rendered from
@@ -343,7 +344,7 @@ const placeholders=(text:string)=>[...new Set([...text.matchAll(/\{(\w+)\}/g)].m
 
 /** A replacement catalog must have every key with the same placeholders. Values are inserted as plain text,
  * never as HTML; a missing value throws instead of leaking a placeholder. */
-export function createRadioAntennaTranslator(messages:Readonly<Record<RadioAntennaMessageKey,string>>=RADIO_ANTENNA_MESSAGES_EN):RadioAntennaTranslate{
+export function createRadioAntennaTranslator(messages:Readonly<Record<RadioAntennaMessageKey,string>>=pickMessages('radioAntenna', RADIO_ANTENNA_MESSAGES_EN)):RadioAntennaTranslate{
  const keys=Object.keys(RADIO_ANTENNA_MESSAGES_EN) as RadioAntennaMessageKey[];
  if(!messages||typeof messages!=='object'||Object.keys(messages).length!==keys.length||keys.some(k=>!Object.hasOwn(messages,k)||typeof messages[k]!=='string'||placeholders(messages[k])!==placeholders(RADIO_ANTENNA_MESSAGES_EN[k])))
   throw new Error('Invalid radio antenna message catalog');

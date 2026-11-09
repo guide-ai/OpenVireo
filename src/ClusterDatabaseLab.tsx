@@ -12,7 +12,7 @@ import {pleiadesPoints} from './core/pleiadesAnalysis';
 import {PLEIADES_PHOTOMETER_TARGETS} from './core/photometerField';
 import {clusterDatabaseHrInFrame} from './core/clusterDatabaseHr';
 import {clusterHrPixel,clusterHrPixelOnImage} from './core/clusterHrPlot';
-import {CLUSTER_HR_EN as HR} from './clusters/ClusterHrMessages';
+import {CLUSTER_HR as HR} from './clusters/ClusterHrMessages';
 import PossibleMemberWindow from './clusters/PossibleMemberWindow';
 import ClusterListWindow from './clusters/ClusterListWindow';
 import FieldInfoListWindow,{type FieldInfoBox} from './observatory/FieldInfoListWindow';
