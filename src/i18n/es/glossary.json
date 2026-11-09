@@ -360,6 +360,42 @@
   {
    "en": "\\bexercise guide\\b|\\blab guide\\b",
    "es": "guía"
+  },
+  {
+   "en": "\\bapertures?\\b",
+   "es": "apertura"
+  },
+  {
+   "en": "\\bnotebook\\b",
+   "es": "cuaderno"
+  },
+  {
+   "en": "\\breadings\\b",
+   "es": "lectura"
+  },
+  {
+   "en": "\\bseeded\\b",
+   "es": "semilla"
+  },
+  {
+   "en": "\\bcallbacks?\\b",
+   "es": "llamada"
+  },
+  {
+   "en": "\\bzero point\\b",
+   "es": "punto cero"
+  },
+  {
+   "en": "\\bphotons?\\b",
+   "es": "fot(ón|ones)"
+  },
+  {
+   "en": "\\bcolou?r[–-]magnitude\\b",
+   "es": "color[–-]magnitud"
+  },
+  {
+   "en": "\\bcluster fit\\b",
+   "es": "ajuste (manual )?del cúmulo"
   }
  ],
  "names": [
@@ -881,6 +917,14 @@
   {
    "en": "Dark Noise",
    "es": "Ruido de corriente oscura"
+  },
+  {
+   "en": "Data from Observations",
+   "es": "Datos de observaciones"
+  },
+  {
+   "en": "Record/Review",
+   "es": "Registrar/Revisar"
   }
  ],
  "forbidden": [

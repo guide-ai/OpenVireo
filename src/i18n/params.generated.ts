@@ -3414,8 +3414,6 @@ export interface MessageParameters {
   "ph.tiledLimit.photometer-galaxy-sky-stamp": never;
   "ph.galaxySkyGate.open": "declared" | "max" | "min";
   "ph.galaxySkyGate.closed": "declared" | "max" | "min";
-  "ph.skyReplaceYes": never;
-  "ph.skyReplaceNo.button": never;
   "ph.skyReplaceNo": never;
   "ph.tiledProvenance": "dec" | "ra" | "record";
   "ph.tiledProvenanceVariableHit": "dec" | "name" | "ra" | "record" | "variable";
@@ -3480,10 +3478,8 @@ export interface MessageParameters {
   "ph.nativeBlocked": never;
   "ph.nativeSpError": never;
   "ph.nativeVelocityNote": never;
-  "ph.nativeOk": never;
   "ph.nativeTitle": never;
   "ph.nativeHelp": "count";
-  "ph.nativeResults": never;
   "obsHr.ownRecords": never;
   "obsHr.ownRecordsHelp": never;
   "obsHr.ownRecordsError": never;

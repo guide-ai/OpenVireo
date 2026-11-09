@@ -484,5 +484,17 @@
  "Save Reshift Measurements in Text File": "Guardar las mediciones de corrimiento al rojo en un archivo de texto",
  "Cannot access LSS fields file": "No se puede acceder al archivo de campos LSS",
  "Save Data": "Guardar datos",
- "Record Z": "Registrar Z"
+ "Record Z": "Registrar Z",
+ "Record/Review": "Registrar/Revisar",
+ "Telescope has Moved!": "¡El telescopio se movió!",
+ "fragment|You have not recorded your current readings for \"": "No registraste tus lecturas actuales de \"",
+ "If you do not record them now, you cannot access them later.": "Si no las registras ahora, no podrás consultarlas después.",
+ "Record current readings?": "¿Registrar las lecturas actuales?",
+ "Data Not Saved!": "¡Datos no guardados!",
+ "Current Readings Cleared!": "¡Se borraron las lecturas actuales!",
+ "Data Saved": "Datos guardados",
+ "Current readings added to results list.  View/Print/Save list under \"Tools\" -> \"Results Editors\" -> \"Observational Results\" on main Window.": "Lecturas actuales agregadas a la lista de resultados.  Consulta, imprime o guarda la lista en \"Herramientas\" -> \"Editores de resultados\" -> \"Resultados de observación\" en la ventana principal.",
+ "Reading Sky!": "¡Lectura de cielo!",
+ "Are you sure you want to replace a sky reading with one that may be invalid?": "¿Seguro que quieres reemplazar una lectura de cielo por una que puede no ser válida?",
+ "Unknown": "Desconocido"
 }

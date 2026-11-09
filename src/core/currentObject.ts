@@ -59,9 +59,10 @@ const objxLabel=(objectXId:string)=>objectXDataLabel(objectXId);
  * on, a sky reading or no object `Sky`; on with an object, its name. The label starts as `Telescope` (DFM) until the first update.
  * [W] a hidden object shows the hidden-name text instead of its name. */
 export const PHOTOMETER_ID_LITERALS=Object.freeze({caption:'Object:',initial:'Telescope',unknown:'Unknown',sky:'Sky'});
-export function photometerIdText(showObjectId:boolean,skyReading:boolean,object:ShownCurrentObject,hiddenText:string):string{
- if(!showObjectId)return PHOTOMETER_ID_LITERALS.unknown;
- if(skyReading||object.status==='none')return PHOTOMETER_ID_LITERALS.sky;
+/** Front ES6: `tr` renders VIREO's own `Unknown` and `Sky` for the screen (default: the literal itself); a name is data and stays. */
+export function photometerIdText(showObjectId:boolean,skyReading:boolean,object:ShownCurrentObject,hiddenText:string,tr:(text:string)=>string=text=>text):string{
+ if(!showObjectId)return tr(PHOTOMETER_ID_LITERALS.unknown);
+ if(skyReading||object.status==='none')return tr(PHOTOMETER_ID_LITERALS.sky);
  return object.status==='hidden'?hiddenText:object.name;
 }
 /** The recorded reading name (record +0x620, String[15]; 0x4fffd4) [D]: sky `Sky`; option on the name, trailing spaces removed,

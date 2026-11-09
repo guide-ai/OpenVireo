@@ -2384,196 +2384,126 @@
   "kind": "original",
   "value": "PLEIADES_PHOTOMETER_CHOICES.map",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the PLEIADES.HTL rows as select options; each option text is a catalog key (ph.targetOption, ph.targetUnavailable…) around the recorded hotlist label"
  },
  {
   "file": "src/Photometer.tsx",
   "kind": "original",
   "value": "PLEIADES_PHOTOMETER_CHOICES.length",
   "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/Photometer.tsx",
-  "kind": "original",
-  "value": "PHOTOMETER_ID_LITERALS.caption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a count of PLEIADES.HTL rows in a catalog message"
  },
  {
   "file": "src/Photometer.tsx",
   "kind": "original",
   "value": "TILED_PHOTOMETER_PREFIX",
   "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a target id prefix compared in a condition, not text"
  },
  {
   "file": "src/Photometer.tsx",
   "kind": "original",
   "value": "PHOTOMETER_FILTERS.map",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the photometric band letters (U, B, V, R, I) as select options, the same in Spanish"
  },
  {
   "file": "src/Photometer.tsx",
   "kind": "original",
   "value": "PHOTOMETER_SECONDS.map",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the integration durations (numbers) as select options; the option text is a catalog key (ph.seriesSecondsOption)"
  },
  {
   "file": "src/Photometer.tsx",
   "kind": "original",
   "value": "PHOTOMETER_REPEATS.map",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the numbers of integrations (1–5) as select options"
  },
  {
   "file": "src/Photometer.tsx",
   "kind": "original",
   "value": "PHOTOMETER_CALLBACK_MS",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/Photometer.tsx",
-  "kind": "original",
-  "value": "RL.menu",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a timer period in ms (a number) in the series time"
  },
  {
   "file": "src/Photometer.tsx",
   "kind": "original",
   "value": "PLEIADES_PHOTOMETER_TARGETS.find",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/Photometer.tsx",
-  "kind": "original",
-  "value": "RL.movedCaption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/Photometer.tsx",
-  "kind": "original",
-  "value": "RL.movedText",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/Photometer.tsx",
-  "kind": "original",
-  "value": "RL.notSavedCaption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/Photometer.tsx",
-  "kind": "original",
-  "value": "RL.notSavedText",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/Photometer.tsx",
-  "kind": "original",
-  "value": "RL.savedCaption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/Photometer.tsx",
-  "kind": "original",
-  "value": "RL.savedText",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/Photometer.tsx",
-  "kind": "original",
-  "value": "PHOTOMETER_SKY_REPLACE.caption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/Photometer.tsx",
-  "kind": "original",
-  "value": "PHOTOMETER_SKY_REPLACE.text",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a notebook row's recorded PLEIADES.HTL star label (data)"
  },
  {
   "file": "src/Photometer.tsx",
   "kind": "original",
   "value": "PHOTOMETER_APERTURE_RANGE.min",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: an input bound (a number) in a catalog message"
  },
  {
   "file": "src/Photometer.tsx",
   "kind": "original",
   "value": "PHOTOMETER_APERTURE_RANGE.max",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: an input bound (a number) in a catalog message"
  },
  {
   "file": "src/PleiadesAnalysis.tsx",
   "kind": "original",
   "value": "PLEIADES_STANDARDS.map",
   "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the 14 printed calibration rows (spectral labels as printed and numbers), kept as recorded"
  },
  {
   "file": "src/PleiadesLabGuide.tsx",
   "kind": "original",
   "value": "PLEIADES_LAB_COUNTED_STEPS.length",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the number of counted guide steps"
  },
  {
   "file": "src/PleiadesLabGuide.tsx",
   "kind": "original",
   "value": "PLEIADES_LAB_STEPS.map",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the guide's step ids; each step's text is a catalog key (pleiadesLab.step.*)"
  },
  {
   "file": "src/PleiadesLabGuide.tsx",
   "kind": "original",
   "value": "PLEIADES_HTL.name",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a bundled file name (PLEIADES.HTL)"
  },
  {
   "file": "src/PleiadesLabGuide.tsx",
   "kind": "original",
   "value": "PLEIADES_HTL.bytes",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a file size in bytes"
  },
  {
   "file": "src/PleiadesLabGuide.tsx",
   "kind": "original",
   "value": "PLEIADES_HTL.sha256",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a SHA-256 hash"
  },
  {
   "file": "src/PleiadesLabGuide.tsx",
   "kind": "original",
   "value": "PLEIADES_HTL.archiveMember",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the archive member path of the bundled file"
  },
  {
   "file": "src/PleiadesLabGuide.tsx",
   "kind": "original",
   "value": "PLEIADES_HTL.archiveSha256",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a SHA-256 hash"
  },
  {
   "file": "src/PulsarLabGuide.tsx",

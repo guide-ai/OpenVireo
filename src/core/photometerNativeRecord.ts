@@ -129,10 +129,14 @@ export function photometerNativeData(rows:readonly PhotometerNativeRow[]):Native
 
 /** The native texts of the Record/Review path [D]: menu caption (DFM Record1), the Start prompt 0x4fffd4 (0x50032c..0x5003c4),
  * its follow-up (0x5003dc/0x5003ec) and the first-OK message of Record1Click (0x502080/0x50210c). Lines end in CR LF natively. */
+/** Front ES6: the pieces of the "Telescope has Moved!" message around the reading name (the screen translates each piece). */
+export const PHOTOMETER_RECORD_PIECES=Object.freeze({movedHead:'You have not recorded your current readings for "',movedTail:'".',
+ movedLater:'If you do not record them now, you cannot access them later.',movedAsk:'Record current readings?'});
+const P=PHOTOMETER_RECORD_PIECES;
 export const PHOTOMETER_RECORD_LITERALS=Object.freeze({
  menu:'&Record/Review',
  movedCaption:'Telescope has Moved!',
- movedText:(id:string)=>[`You have not recorded your current readings for "${id}".`,'If you do not record them now, you cannot access them later.','Record current readings?'] as const,
+ movedText:(id:string)=>[P.movedHead+id+P.movedTail,P.movedLater,P.movedAsk] as const,
  notSavedCaption:'Data Not Saved!',notSavedText:'Current Readings Cleared!',
  savedCaption:'Data Saved',
  savedText:'Current readings added to results list.  View/Print/Save list under "Tools" -> "Results Editors" -> "Observational Results" on main Window.',

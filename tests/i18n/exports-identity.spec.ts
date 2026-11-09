@@ -503,3 +503,37 @@ test('the shell toolbar: Save investigation is byte-identical in English, qps an
  for(const locale of ['qps','es-419'])expect([files[locale].name,sha(files[locale].bytes)],locale).toEqual([files.en.name,sha(files.en.bytes)]);
  for(const f of Object.values(files)){expect(f.bytes.includes('⟦')).toBe(false);expect(f.bytes.toString('utf8')).not.toMatch(/[áéíóúñ¿¡]/);}
 });
+
+// Front ES6: the E04 flow (Pleiades photometry) in English, qps and Spanish: the photometer session JSON, VIREO's Record/Review rows
+// shown by Display/Print Data and written with Save Text and Comma Delimit, and the saved investigation. The page clock is paused at
+// a fixed instant before activation and only moves by runFor until the last file is written; nothing is masked (each record's JD is
+// the observatory clock's, which stands still).
+test('E04 Pleiades photometry: photometer session, Observational Results text and CSV, investigation',async({browser,baseURL})=>{
+ test.setTimeout(180_000);
+ const id=(page:Page,testId:string)=>page.getByTestId(testId);
+ const T=(locale:Locale,key:string)=>locale==='es-419'?exact((es as Record<string,string>)[key]):L((en as Record<string,string>)[key]);
+ await identical(browser,baseURL,async(page,locale)=>{
+  await open(page,locale,'photometer');
+  const main=page.locator('.photometer-main'),press=(key:string)=>main.getByRole('button',{name:T(locale,key)}).click();
+  await expect(main.getByRole('heading',{level:1})).toBeVisible({timeout:20_000});
+  await page.clock.pauseAt(new Date(NOW.getTime()+600_000));
+  const integrate=async()=>{await press('ph.start');await page.clock.runFor(3100);await expect(id(page,'photo-phase')).toHaveText(T(locale,'ph.complete'));};
+  const record=async(value:string,note:string)=>{await press('ph.record');await page.locator('#photo-manual').fill(value);await page.locator('#photo-note').fill(note);
+   await page.locator('dialog[aria-labelledby=photo-entry-title] button[type=submit]').click();await expect(page.locator('dialog[aria-labelledby=photo-entry-title]')).toBeHidden();};
+  await press('ph.activate');await page.locator('#photo-seconds').selectOption('1');await page.locator('#photo-repeats').selectOption('3');
+  for(const band of ['V','B']){await page.locator('#photo-pointing').selectOption('sky');await page.locator('#photo-filter').selectOption(band);await integrate();
+   await page.locator('#photo-pointing').selectOption('object');await integrate();await record(band==='V'?'10.5':'11.25',`${band} typed`);
+   await id(page,'photo-record-review').click();await id(page,'photo-obs-data-sp').fill('B8V');await id(page,'photo-obs-data-remarks').fill('Pleiades star');await id(page,'photo-obs-data-ok').click();
+   if(band==='V')await id(page,'photo-data-saved-ok').click();await expect(id(page,'photo-obs-data')).toHaveCount(0);}
+  for(const band of ['b','v']){const select=page.locator(`#photo-${band}-reading`);await select.selectOption((await select.locator('option').last().getAttribute('value'))!);}
+  await press('ph.calculateColor');await expect(id(page,'photo-manual-bv')).toHaveText('0.75');
+  const session=await download(page,()=>press('ph.save'));
+  await id(page,'photo-native-results').click();await expect(id(page,'photo-native-list-lines')).toContainText('Pleiades star');
+  const list=async(kind:'displayed'|'csv')=>{const f=await download(page,async()=>{await id(page,'photo-native-list-list-menu').click();await id(page,'photo-native-list-save-menu').click();await id(page,`photo-native-list-save-${kind}`).click();});
+   await id(page,'fi-box').getByRole('button').first().click();await expect(id(page,'fi-box')).toHaveCount(0);return f;};
+  const resultsText=await list('displayed'),resultsCsv=await list('csv');
+  const toolbar=page.locator('.investigation-toolbar');
+  const investigation=await download(page,()=>toolbar.getByRole('button',{name:locale==='es-419'?exact(es['project.save']):L('Save investigation')}).click());
+  return {session,resultsText,resultsCsv,investigation};
+ },{},page=>page.locator('.photometer-main'),['en','qps','es-419']);
+});
