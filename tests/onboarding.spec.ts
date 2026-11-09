@@ -21,6 +21,14 @@ test('the tour starts on the first visit, steps through the page, and does not s
   await id(page,'site-tour-next').click();
   await expect(tour).toHaveAttribute('data-step',step);await expect(id(page,'site-tour-card')).toBeFocused();
   await expect(id(page,'site-tour-spot')).toBeVisible();
+  // Skip, Back and Next share one line, and Back and Next one height (the site-wide primary button's margin once pushed Next
+  // below Back).
+  if(step==='sections'){
+   const [skip,back,next]=await Promise.all(['site-tour-skip','site-tour-back','site-tour-next'].map(t=>id(page,t).boundingBox()));
+   const mid=(b:{y:number;height:number}|null)=>b?b.y+b.height/2:NaN;
+   expect(Math.abs(mid(back)-mid(next))).toBeLessThan(1);expect(Math.abs(mid(skip)-mid(next))).toBeLessThan(1);
+   expect(Math.abs((back?.height??0)-(next?.height??-9))).toBeLessThan(1);
+  }
   // The Observatory steps strip sits low on the page: it is scrolled fully into view, with space between its text and the
   // whole outline, which stays inside the window (the first version cut the outline off at the bottom edge).
   if(step==='observatory')await expect.poll(async()=>{

@@ -14,7 +14,10 @@
 .site-tour-skip{margin-right:auto}
 .site-tour :focus-visible{outline:3px solid var(--ov-focus);outline-offset:2px}
 @media(prefers-reduced-motion:reduce){.site-tour-spot{transition:none}}
-.site-tour-actions button{width:auto;flex:none}
+.site-tour-actions button{width:auto;flex:none;margin:0}
+/* Back and Next share one size and line: the site-wide .primary-button adds margin-top:16px and taller padding, which pushed
+ * Next below Back (user report, 2026-11-08). */
+.site-tour-actions .primary-button,.site-tour-actions .secondary-button{min-height:40px;padding:8px 16px;font-size:13px;line-height:1.2}
 /* Set only while the tour scrolls a part into view: room for its outline (tourPlacement.ts SPOT_PAD + SPOT_RING). */
 .site-tour-scrolling{scroll-margin:24px!important}
 @media print{.site-tour{display:none}}
