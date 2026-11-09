@@ -254,14 +254,16 @@ test('Spanish: before the reveal the Object X route reads the same for a star ta
  const read=async(code:string)=>{
   await go(page,'#object-x');await id(page,'objectx-target').selectOption(code);await expect(id(page,'objectx-coordinates')).toContainText(code);
   await page.waitForTimeout(300);
-  const own=await page.evaluate(()=>{const strip=(selector:string)=>{const n=document.querySelector(selector);if(!n)return '';const c=n.cloneNode(true) as HTMLElement;c.querySelectorAll('[data-testid=objectx-coordinates]').forEach(x=>x.remove());return c.textContent??'';};
-   return strip('[data-testid=objectx-lab]')+'\n'+strip('[data-testid=objectx-guide]');});
+  const own=[...await texts(page,'[data-testid=objectx-lab]'),...await page.evaluate(()=>[document.querySelector('[data-testid=objectx-guide]')?.textContent??''])]
+   .filter(t=>!/^(?:— )?Coordenadas \(J2000\): /.test(t));
   await mapButton(lab(page),'es-419',L.pointObservatory,LS.pointObservatory).click();await expect(page.locator('.sky-view').first()).toBeVisible();await page.waitForTimeout(300);
   const sky=await page.locator('.sky-toolbar').first().textContent();
-  return `${own}\n${sky}`.replaceAll(code,'<code>');
+  // The chosen code is replaced; the code list (both codes, as options) is the same for both.
+  return [...own,sky??''].map(t=>/^@option:/.test(t)?t:t.replaceAll(code,'<code>'));
  };
  const star=await read(STAR_CODE),asteroid=await read(EROS_CODE);
- expect(star).toContain(LS.scope);expect(star).toContain(GS.steps.measure[1]);expect(asteroid).toBe(star);
+ expect(star).toContain(LS.scope);expect(star.join('\n')).toContain(GS.steps.measure[1]);
+ expect(asteroid.filter(t=>!star.includes(t)),'only for the asteroid').toEqual([]);expect(star.filter(t=>!asteroid.includes(t)),'only for the star').toEqual([]);expect(asteroid).toEqual(star);
 });
 
 /** VIREO's captions on each step, in English (View original) or in this load's Spanish. */
