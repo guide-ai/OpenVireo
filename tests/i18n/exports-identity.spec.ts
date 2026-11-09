@@ -7,6 +7,7 @@ import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
 import {CAMERA_ES} from '../../src/i18n/es/maps/camera';
 import {TOUR_ES} from '../../src/i18n/es/maps/tour';
+import {OBSERVATORY_ES} from '../../src/i18n/es/maps/observatory';
 // Front ES0 (docs/I18N.md; user decision 3, 2026-11-09): the files the site writes stay exactly as VIREO or the web contract
 // writes them, in English, whatever the screen language. Each export family is downloaded once in English and once in the
 // dev-only pseudo-locale qps (?lang=qps: every catalog, map and vireo() string marked ⟦…⟧, accented and ~35 % longer), from the
@@ -29,6 +30,7 @@ const SPANISH=(()=>{
  for(const [key,text] of Object.entries(en))if(Object.hasOwn(es,key))out.set(text,(es as Record<string,string>)[key]);
  for(const [key,text] of Object.entries(CAMERA_EN))out.set(text,(CAMERA_ES as unknown as Record<string,string>)[key]);
  out.set('Skip the tour',TOUR_ES.skip);
+ out.set('Save spectrum (.SSP)',OBSERVATORY_ES.spectrumSave.save);// Front ES3: the route spectrum save panel
  return out;
 })();
 const exact=(text:string)=>new RegExp(`^\\s*${text.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&').replace(/\s+/g,'\\s+')}\\s*$`);
@@ -106,6 +108,21 @@ function objectXReplayMasked(bytes:Buffer):Buffer{
  for(const s of doc.objectXSpectra??[]){s.seedAtReset=typeof s.seedAtReset;s.events=[...new Set((s.events??[]).map(e=>e.kind))].sort().map(kind=>({kind}));}
  return Buffer.from(JSON.stringify(doc),'utf8');
 }
+/** Front ES3 review: an analysis session after an acquisition records the observatory clock's elapsed time and the observation
+ * record's JD, which follow real time between the steps (the analyser and the next route need running timers, so the page clock
+ * cannot stay fixed). Only those two values are masked; every other field is compared as written. */
+function observatoryTimeMasked(bytes:Buffer):Buffer{
+ const doc=JSON.parse(bytes.toString('utf8')) as {base?:{observing?:{clockDrive?:{elapsedMS?:unknown}}};observations?:[unknown,{jd?:unknown}][]};
+ const drive=doc.base?.observing?.clockDrive;if(drive&&'elapsedMS' in drive)drive.elapsedMS='<masked>';
+ for(const o of doc.observations??[])if(o[1]&&'jd' in o[1])o[1].jd='<masked>';
+ return Buffer.from(JSON.stringify(doc),'utf8');
+}
+/** Front ES3 closure: the own Observational Results text and CSV write that record's JD (6 decimals, about 86 ms) as
+ * `record_jd`, which follows real time between the steps too. Only that value is masked: the `record_jd:` line of the text and the
+ * last field (record_jd) of each CSV data row; every other byte, the CSV header included, is compared as written. */
+const masked=(text:string,what:string)=>{if(!text.includes('<masked>'))throw new Error(`${what}: no record_jd to mask`);return Buffer.from(text,'latin1');};
+const recordJdTextMasked=(bytes:Buffer)=>masked(bytes.toString('latin1').replace(/^(record_jd: )\d+\.\d{6}(?=\r?$)/gm,'$1<masked>'),'results text');
+const recordJdCsvMasked=(bytes:Buffer)=>masked(bytes.toString('latin1').replace(/^(?!schema,)(.*,)\d+\.\d{6}(?=\r?$)/gm,'$1<masked>'),'results CSV');
 function fitsHeader(bytes:Buffer):Buffer{
  const cards:string[]=[];
  for(let at=0;at+80<=bytes.length;at+=80){const card=bytes.subarray(at,at+80).toString('latin1');const key=card.slice(0,8).trim();cards.push(TIMED_CARDS.has(key)?`${card.slice(0,10)}<masked>`:card);if(key==='END')break;}
@@ -114,34 +131,68 @@ function fitsHeader(bytes:Buffer):Buffer{
 
 test.describe.configure({mode:'parallel'});
 
+// Front ES3: the E01 analyser screens are translated, so these families also run in Spanish (es-419).
 test('spectrum analysis: measurement CSV, velocities CSV and the analysis session',async({browser,baseURL})=>{
  await identical(browser,baseURL,async(page,locale)=>{
   await open(page,locale,'spectrum');
-  await page.getByLabel(L('Import spectrum')).setInputFiles({name:'identity-vector.csv',mimeType:'text/csv',buffer:SPECTRUM});
-  await page.getByLabel(L('Object or reference')).fill('Identity vector');
-  await page.getByLabel(L('z step per tick')).fill('0.015625');await button(page,'Apply step').click();
+  await page.getByLabel(N(locale,'Import spectrum')).setInputFiles({name:'identity-vector.csv',mimeType:'text/csv',buffer:SPECTRUM});
+  await page.getByLabel(N(locale,'Object or reference')).fill('Identity vector');
+  await page.getByLabel(N(locale,'z step per tick')).fill('0.015625');await button(page,'Apply step',locale).click();
   await page.getByRole('slider').focus();await page.getByRole('slider').press('ArrowRight');
-  await page.getByRole('button',{name:/R[eé]c[oó]rd m[eé][aá]s[uú]r[eé]m[eé]nt/}).click();await button(page,'Save measurement').click();
+  await page.getByRole('button',{name:locale==='es-419'?new RegExp(`^\\s*${SPANISH.get('Record measurement')}`):/R[eé]c[oó]rd m[eé][aá]s[uú]r[eé]m[eé]nt/}).click();await button(page,'Save measurement',locale).click();
   await expect(page.locator('#measurement-log tbody tr')).toHaveCount(1);
-  const measurements=await download(page,()=>button(page,'Export CSV ↓').click());
-  await page.getByText(L('Velocity analysis')).click();
-  const velocities=await download(page,()=>button(page,'Export velocities CSV').click());
-  const session=await download(page,()=>button(page,'Save session').first().click());
+  const measurements=await download(page,()=>button(page,'Export CSV ↓',locale).click());
+  await page.getByText(N(locale,'Velocity analysis')).click();
+  const velocities=await download(page,()=>button(page,'Export velocities CSV',locale).click());
+  const session=await download(page,()=>button(page,'Save session',locale).first().click());
   return {measurements,velocities,session};
- },{},page=>page.locator('.spectrum-route'));
+ },{},page=>page.locator('.spectrum-route'),['en','qps','es-419']);
+});
+
+// Front ES3 review: an acquired catalogue galaxy recorded through VIREO's Observational Data (typed velocity, Sp.Type and
+// remarks) writes the measurement CSV and analysis session, the own Observational Results text and CSV, the acquired SSP and the
+// analysis spectrum. One second of exposure on the page clock from a fixed instant; only the observatory clock's elapsed time and
+// the record's JD are masked (observatoryTimeMasked, recordJdTextMasked, recordJdCsvMasked), because they follow real time.
+test('E01 measurement through Observational Data: measurement CSV, session, results text/CSV, acquired SSP and analysis spectrum',async({browser,baseURL})=>{
+ test.setTimeout(180_000);
+ await identical(browser,baseURL,async(page,locale)=>{
+  page.setDefaultTimeout(30_000);
+  await page.clock.install({time:NOW});
+  await page.goto(`/${locale==='en'?'':`?lang=${locale}`}#galaxy-exposure`);
+  const skip=page.getByRole('button',{name:N(locale,'Skip the tour')});if(await skip.isVisible().catch(()=>false))await skip.click();
+  await page.getByLabel(N(locale,'Acquisition galaxy')).selectOption('36747');
+  await button(page,'Activate supported galaxy field',locale).click();
+  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));await button(page,'Start galaxy exposure',locale).click();
+  await page.clock.runFor(1000);await button(page,'Pause exposure',locale).first().click();await page.clock.resume();
+  await button(page,'Analyze acquired galaxy',locale).click();
+  await page.getByLabel(N(locale,'z step per tick')).fill('.001');await button(page,'Apply step',locale).click();await page.getByRole('slider').fill('10');
+  await page.getByRole('button',{name:locale==='es-419'?new RegExp(`^\\s*${SPANISH.get('Record measurement')}`):/R[eé]c[oó]rd m[eé][aá]s[uú]r[eé]m[eé]nt/}).click();
+  const dialog=page.getByTestId('hubble-obsdata');await expect(dialog).toBeVisible();
+  await page.getByTestId('hubble-obsdata-vel').fill('2997.92');await page.getByTestId('hubble-obsdata-sp').fill('G5');await page.getByTestId('hubble-obsdata-remarks').fill('typed, with comma');
+  await page.getByTestId('hubble-obsdata-ok').click();await expect(dialog).toHaveCount(0);
+  await expect(page.locator('#measurement-log tbody tr')).toHaveCount(1);
+  const measurements=await download(page,()=>button(page,'Export CSV ↓',locale).click());
+  const session=await download(page,()=>button(page,'Save session',locale).first().click());
+  await page.locator('.own-results-card').evaluate(d=>{(d as HTMLDetailsElement).open=true;});
+  const resultsText=await download(page,()=>button(page,'Download results text',locale).click());
+  const resultsCsv=await download(page,()=>button(page,'Download results CSV',locale).click());
+  const ssp=await download(page,()=>button(page,'Download acquired SSP',locale).click());
+  const spectrum=await download(page,()=>button(page,'Download analysis spectrum',locale).click());
+  return {measurements,session,resultsText,resultsCsv,ssp,spectrum};
+ },{session:observatoryTimeMasked,resultsText:recordJdTextMasked,resultsCsv:recordJdCsvMasked},page=>page.locator('.spectrum-route'),['en','qps','es-419']);
 });
 
 test('Hubble analysis: Hubble CSV and the Hubble session from the original workbook example',async({browser,baseURL})=>{
  await identical(browser,baseURL,async(page,locale)=>{
   await open(page,locale,'spectrum');
-  await page.getByText(L('Hubble diagram & distances')).click();
-  await button(page,'Load original workbook example').click();
-  await page.getByLabel(L('Distance and summary recipe')).selectOption('vireo');
+  await page.getByText(N(locale,'Hubble diagram & distances')).click();
+  await button(page,'Load original workbook example',locale).click();
+  await page.getByLabel(N(locale,'Distance and summary recipe')).selectOption('vireo');
   await expect(page.locator('.hubble-card').getByTestId('hubble-value')).toHaveText('52.49829 km/s/Mpc');
-  const csv=await download(page,()=>button(page,'Export Hubble CSV').click());
-  const session=await download(page,()=>button(page,'Save Hubble session').click());
+  const csv=await download(page,()=>button(page,'Export Hubble CSV',locale).click());
+  const session=await download(page,()=>button(page,'Save Hubble session',locale).click());
   return {csv,session};
- },{},page=>page.locator('.hubble-card'));
+ },{},page=>page.locator('.hubble-card'),['en','qps','es-419']);
 });
 
 test('classification: investigation, classification CSV, observation notebook and native TXT/CSV',async({browser,baseURL})=>{
@@ -243,14 +294,70 @@ test('pulsar analysis: the results CSV of two recorded measurements',async({brow
 test('star spectrometer: Save spectrum (.SSP) of a paused exposure',async({browser,baseURL})=>{
  await identical(browser,baseURL,async(page,locale)=>{
   await page.clock.install({time:NOW});
-  await page.goto(`/${locale==='qps'?'?lang=qps':''}#spectrometer`);
-  await page.getByRole('link',{name:L('Open supported star exposure')}).click();
-  await button(page,'Activate supported star field').click();await expect(page.getByTestId('star-phase')).toHaveText(L('Ready / paused'));
-  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));await button(page,'Start star exposure').click();
-  await page.clock.runFor(1000);await button(page,'Pause exposure').click();await expect(page.getByTestId('star-elapsed')).toHaveText('1000 ms');
+  await page.goto(`/${locale==='en'?'':`?lang=${locale}`}#spectrometer`);
+  await page.getByRole('link',{name:N(locale,'Open supported star exposure')}).click();
+  await button(page,'Activate supported star field',locale).click();await expect(page.getByTestId('star-phase')).toHaveText(N(locale,'Ready / paused'));
+  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));await button(page,'Start star exposure',locale).click();
+  await page.clock.runFor(1000);await button(page,'Pause exposure',locale).click();await expect(page.getByTestId('star-elapsed')).toHaveText('1000 ms');
   const panel=page.getByTestId('ob-spectrum-save');
-  return {ssp:await download(page,()=>panel.getByRole('button',{name:L('Save spectrum (.SSP)')}).click())};
- },{},page=>page.getByTestId('ob-spectrum-save'));
+  return {ssp:await download(page,()=>panel.getByRole('button',{name:N(locale,'Save spectrum (.SSP)')}).click())};
+ },{},page=>page.getByTestId('ob-spectrum-save'),['en','qps','es-419']);
+});
+
+// Front ES3: the galaxy, sky and star exposure routes of E01 write counts CSV and session JSON files; their screens are
+// translated, the files are not. Each exposure runs one second on the page clock from a fixed instant.
+test('E01 exposures: galaxy, sky and star counts CSV and session JSON',async({browser,baseURL})=>{
+ test.setTimeout(120_000);
+ const run=async(page:Page,locale:Locale,activate:string,start:string)=>{
+  await button(page,activate,locale).click();
+  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));await button(page,start,locale).click();
+  await page.clock.runFor(1000);await button(page,'Pause exposure',locale).first().click();
+  await page.clock.resume();// the next route loads its configuration on timers
+ };
+ await identical(browser,baseURL,async(page,locale)=>{
+  await page.clock.install({time:NOW});
+  await page.goto(`/${locale==='en'?'':`?lang=${locale}`}#galaxy-exposure`);
+  await run(page,locale,'Activate supported galaxy field','Start galaxy exposure');
+  const galaxyCsv=await download(page,()=>button(page,'Save galaxy counts CSV',locale).click());
+  const galaxyJson=await download(page,()=>button(page,'Save galaxy session JSON',locale).click());
+  await page.evaluate(()=>{location.hash='#sky-exposure';});
+  await run(page,locale,'Activate supported sky field','Start sky exposure');
+  const skyCsv=await download(page,()=>button(page,'Save sky counts CSV',locale).click());
+  const skyJson=await download(page,()=>button(page,'Save sky session JSON',locale).click());
+  await page.evaluate(()=>{location.hash='#star-exposure';});
+  await run(page,locale,'Activate supported star field','Start star exposure');
+  const starCsv=await download(page,()=>button(page,'Save star counts CSV',locale).click());
+  const starJson=await download(page,()=>button(page,'Save star session JSON',locale).click());
+  return {galaxyCsv,galaxyJson,skyCsv,skyJson,starCsv,starJson};
+ },{},page=>page.locator('.sky-exposure-controls:visible').first(),['en','qps','es-419']);
+});
+
+// Front ES3: the single-slit spectrometer at a free pointing (the spectrometer route) writes a counts CSV and an exposure
+// session; NGC 4874 (Coma – 1) is pointed exactly, as tests/field-spectrometer.spec.ts does, and exposed one second on the page clock.
+test('field spectrometer: Save counts CSV and Save exposure session at a free pointing',async({browser,baseURL})=>{
+ test.setTimeout(400_000);
+ await identical(browser,baseURL,async(page,locale)=>{
+  page.setDefaultTimeout(90_000);
+  await page.clock.install({time:NOW});
+  await page.goto(`/${locale==='en'?'':`?lang=${locale}`}#observatory`);
+  const skip=page.getByRole('button',{name:N(locale,'Skip the tour')});if(await skip.isVisible().catch(()=>false))await skip.click();
+  await button(page,'Open dome ↗',locale).click();
+  if(!await page.locator('#point-ra').isVisible())await page.getByText(N(locale,'Enter coordinates')).click();
+  await page.locator('#point-ra').fill('12.99311111111111');await page.locator('#point-dec').fill('27.959722222222222');await button(page,'Point to coordinates',locale).click();
+  await page.getByRole('button',{name:/^\s*[⟦]?\s*T[eé]l[eé]sc[oó]p[eéi]/}).first().click();
+  if(!await button(page,'Turn tracking on',locale).isVisible())await page.getByText(N(locale,'Observatory clock & spectral tracking')).click();
+  if(await button(page,'Turn tracking on',locale).isVisible())await button(page,'Turn tracking on',locale).click();
+  await page.evaluate(()=>{location.hash='#spectrometer';});
+  await expect(page.getByTestId('field-spec-use')).toBeEnabled();await page.getByTestId('field-spec-use').click();
+  const acquisition=page.getByTestId('field-spec-acquisition');await expect(acquisition).toBeVisible();
+  await expect(page.getByTestId('field-spec-access')).toHaveAttribute('data-access','ready');
+  await acquisition.getByRole('button',{name:N(locale,'Activate spectrometer')}).click();
+  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));await acquisition.getByRole('button',{name:N(locale,'Start exposure')}).click();
+  await page.clock.runFor(1000);await acquisition.getByRole('button',{name:N(locale,'Pause exposure')}).click();await page.clock.resume();
+  const csv=await download(page,()=>acquisition.getByRole('button',{name:N(locale,'Save counts CSV')}).click());
+  const session=await download(page,()=>acquisition.getByRole('button',{name:N(locale,'Save exposure session')}).click());
+  return {csv,session};
+ },{},page=>page.getByTestId('field-spectrometer'),['en','qps','es-419']);
 });
 
 test('CCD camera: Save image (FITS) and Save image (VIREO header) from the recorded VizieR answer',async({browser,baseURL})=>{

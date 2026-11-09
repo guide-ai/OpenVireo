@@ -911,6 +911,7 @@ export interface MessageParameters {
   "hubble.unknownStatus": never;
   "hubble.source.stellar": "id";
   "hubble.source.measured": "id";
+  "hubble.source.typed": "id";
   "hubble.recipe.workbook": never;
   "hubble.recipe.vireo": never;
   "error.operation": never;
@@ -3072,7 +3073,6 @@ export interface MessageParameters {
   "ownResults.caption": "count";
   "ownResults.sharedTitle": never;
   "ownResults.sharedHelp": "count";
-  "ownResults.sharedShow": never;
   "ownResults.sourceColumn": never;
   "ownResults.velocityColumn": never;
   "ownResults.statusColumn": never;
@@ -3506,6 +3506,7 @@ export interface MessageParameters {
   "ph.nativeListFull": never;
   "session.observationListLimit": never;
   "spectrum.observationRemarksError": never;
+  "spectrum.observationTypeError": never;
   "spectrum.observationStale": never;
   "spectrum.observationNoTimeNote": never;
   "ph.nativeStale": never;
@@ -3602,4 +3603,5 @@ export interface MessageParameters {
   "nativeMirror.caption": never;
   "nativeMirror.captionPrint": never;
   "sky.targetCoordinates": "dec" | "ra";
+  "sky.m31Adaptation": never;
 }

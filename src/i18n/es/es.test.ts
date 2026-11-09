@@ -27,12 +27,14 @@ import {OBSERVATION_METADATA_EN} from '../../ObservationMetadataMessages';
 import {OBSERVATORY_MESSAGES_EN} from '../../observatory/ObservatoryMessages';
 import {QSO_LIST_MESSAGES_EN} from '../../observatory/QsoListMessages';
 import {SOUND_MESSAGES_EN} from '../../sound/SoundMessages';
+import {ENGINE_VIEW_EN} from '../../SpectrumEngineMessages';
+import {SPECTRAL_RANGE_EN} from '../../SpectralRangeMessages';
 
 // Front ES1 (docs/I18N.md; plan §3.2 and §5.3 step 1): automatic checks of every Spanish string. They fail the batch; the
 // independent reviewer agent then reads the strings in context. Length ratios outside 0.7–1.6 are reported, not failed.
-const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,nakedEye:NAKED_EYE_MESSAGES_EN,objectXLab:OBJECT_X_LAB_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN};
-/** The maps translated completely (ES1: the shell; ES2: the observatory); the others are partial until their sub-front. */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','camera','fieldInfo','fieldReadDetails','nakedEye','observationMetadata','observatory','polish','qsoList','sound'];
+const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,camera:CAMERA_MESSAGES_EN,engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,nakedEye:NAKED_EYE_MESSAGES_EN,objectXLab:OBJECT_X_LAB_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN};
+/** The maps translated completely (ES1: the shell; ES2: the observatory; ES3: the E01 spectrometer maps); the others are partial until their sub-front. */
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','camera','fieldInfo','fieldReadDetails','nakedEye','observationMetadata','observatory','polish','qsoList','sound','engineView','spectralRange'];
 /** ES1's area of en.json: the shell (header, menu, home and portal, toolbar, errors, instructor mode, document title). */
 const SHELL_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(app|project|session|error|instructorMode)\./.test(k)||/\.nav$/.test(k)||['demonstrationMode.banner','sky.eyebrow','sky.title','sky.subtitle','sky.about','sky.local','sky.observatory','sky.analyzer','sky.step1','sky.step1Help','sky.step2','sky.step2Help','sky.step3','sky.step3Help','spectrum.tools','classLink.cancel'].includes(k));
 /** The string literals of a TypeScript source (escapes decoded; template literals with substitutions skipped). */
@@ -168,7 +170,9 @@ describe('Front ES1: the Spanish (es-419) catalog, maps and originals',()=>{
   for(const p of pairs()){
    for(const g of GLYPHS)if(g!=='?'&&count(p.en,g)!==count(p.es,g))problems.push(`${p.id}: ${count(p.es,g)}×${g} instead of ${count(p.en,g)}`);
    // Front ES2: a 'fragment|' original is one piece of a VIREO text the core composes around data, so its marks pair across pieces.
-   if(!p.id.startsWith('original:fragment|'))for(const [open,close] of [['¿','?'],['¡','!']]){const issue=unpaired(p.es,open,close);if(issue)problems.push(`${p.id}: ${issue}`);}
+   // Front ES3 review: a VIREO message quoted in English inside “…” (as the English quotes it) keeps its own ! and ?.
+   const unquoted=p.es.replace(/“([^”]*)”/g,(m,q:string)=>p.en.includes(q)?'“”':m);
+   if(!p.id.startsWith('original:fragment|'))for(const [open,close] of [['¿','?'],['¡','!']]){const issue=unpaired(unquoted,open,close);if(issue)problems.push(`${p.id}: ${issue}`);}
    // Map functions: every placeholder in the English output reaches the Spanish output.
    for(const arg of p.en.match(/«A\d+»/g)??[])if(!p.es.includes(arg))problems.push(`${p.id}: drops ${arg}`);
    if(/<\/?[a-z]/i.test(p.es)&&!/<\/?[a-z]/i.test(p.en))problems.push(`${p.id}: HTML`);

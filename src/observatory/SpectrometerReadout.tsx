@@ -4,6 +4,7 @@ import {OBJECT_X_LAB} from '../objectx/ObjectXMessages';
 import {VireoOptionsContext} from '../vireoOptionsContext';
 import {OBSERVATORY_MESSAGES} from './ObservatoryMessages';
 import './observatory-dialogs.css';
+import {vireo} from '../i18n/vireo';
 
 /** Front R4d (docs/FRONT-R4-OPTIONS.md): VIREO's spectrometer Object and App. Mag (V) boxes (TSpectrometer IDText/MagText, FormShow
  * 0x50d8b8, filled by 0x50df64 from the current object 0x53cf94 refreshed at FormActivate 0x50dac4) [D].
@@ -39,7 +40,7 @@ export default function SpectrometerReadout({object,options,sky=false,testId='sp
  const mag=spectrometerMagText(options,sky||pending,shown);
  if(id===null&&mag===null)return null;
  return <div className="spec-readout" data-testid={testId}><dl aria-label={OBSERVATORY_MESSAGES.spectrometerReadout.label}>
-  {id!==null&&<div><dt className="ob-native">{L.idCaption}</dt><dd className="ob-native spec-readout-box" data-testid={`${testId}-id`}>{id}</dd></div>}
-  {mag!==null&&<div><dt className="ob-native">{L.magCaption}</dt><dd className="ob-native spec-readout-box" data-testid={`${testId}-mag`}>{mag}</dd></div>}
+  {id!==null&&<div><dt className="ob-native">{vireo(L.idCaption)}</dt><dd className="ob-native spec-readout-box" data-testid={`${testId}-id`}>{id===L.initial||(sky&&id==='Sky')?vireo(id):id}</dd></div>}
+  {mag!==null&&<div><dt className="ob-native">{vireo(L.magCaption)}</dt><dd className="ob-native spec-readout-box" data-testid={`${testId}-mag`}>{mag}</dd></div>}
   </dl><p className="observatory-note">{OBSERVATORY_MESSAGES.spectrometerReadout.note}</p></div>;
 }

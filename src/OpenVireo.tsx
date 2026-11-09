@@ -227,7 +227,7 @@ const SkyField=memo(function SkyField({center,mode,active,selected,onSelect,hidd
 
 /** Front C7: VIREO's "Image Too Large!" box for a telescope field with M31, as a notice. */
 function M31NoticeView(){
-  return <span role="status" className="sky-m31-notice" data-testid="sky-m31-notice"><strong>{vireo(M31_NOTICE.caption)}</strong> <span style={{whiteSpace:'pre-line'}}>{vireo(M31_NOTICE.text)}</span> <small>{vireo(M31_NOTICE.adaptation)}</small></span>;
+  return <span role="status" className="sky-m31-notice" data-testid="sky-m31-notice"><strong>{vireo(M31_NOTICE.caption)}</strong> <span style={{whiteSpace:'pre-line'}}>{vireo(M31_NOTICE.text)}</span> <small>{t('sky.m31Adaptation')}</small></span>;
 }
 
 export default function OpenVireo(){
