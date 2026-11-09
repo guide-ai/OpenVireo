@@ -1,6 +1,8 @@
 import type{WedgeColours,WedgeOptions,WedgePlot}from'../core/wedgePlot';
 import{WEDGE_GEOMETRY as G,wedgeArcSvgPath}from'../core/wedgePlot';
 import type{WedgeRecord}from'../core/wedgeLssText';
+import{WEDGE_NATIVE_TEXT as N}from'../core/wedgeNativeText';
+import{vireo}from'../i18n/vireo';
 
 /** SVG rendering of the recovered TWedgePlot frame and points on a 550×550 client,
  * in the recovered TColor scheme. Arc paths (SVG approximation of GDI Arc) come from the
@@ -17,8 +19,8 @@ export default function WedgePlotSvg({plot,records,options,colours,selected,labe
    {frame.arcs.map((a,i)=><path key={'a'+i} d={wedgeArcSvgPath(a)} data-radius={a.r}/>)}
   </g>
   <g className="wedge-text" fill={colours.ink} aria-hidden="true">
-   {frame.texts.map((t,i)=><text key={'t'+i} x={t.x} y={t.y} dominantBaseline="hanging" data-role={t.role}>{t.text}</text>)}
-   <text x={G.countLabel.x} y={G.countLabel.y} dominantBaseline="hanging" data-testid="wedge-count">{plot.countText}</text>
+   {frame.texts.map((t,i)=><text key={'t'+i} x={t.x} y={t.y} dominantBaseline="hanging" data-role={t.role}>{t.role==='ra-title'?vireo(G.raTitle.text):t.text}</text>)}
+   <text x={G.countLabel.x} y={G.countLabel.y} dominantBaseline="hanging" data-testid="wedge-count">{vireo(N.pointsPlotted)+plot.admitted}</text>
   </g>
   <g className="wedge-points">
    {plot.points.map(p=>p.status!=='plotted'||p.cx===null||p.cy===null?null:

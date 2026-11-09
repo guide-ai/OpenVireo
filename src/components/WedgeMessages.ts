@@ -1,8 +1,9 @@
 import type{WedgeParseFailure}from'../core/wedgeLssText';
-import{WEDGE_NATIVE_TEXT as N}from'../core/wedgeNativeText';
+import{WEDGE_NATIVE_PIECES as P,WEDGE_NATIVE_TEXT as N}from'../core/wedgeNativeText';
 import type{WedgePlotStatus}from'../core/wedgePlot';
 import type{WedgeWorkspace}from'../core/wedgeWorkspace';
 import {pickMessages} from '../i18n/registry';
+import {vireo,vireoList} from '../i18n/vireo';
 /** Presentation catalog for the LSS wedge panel, keyed and pure so a later
  * coordinator merge can move it into the shared i18n catalog. Every value is typed
  * as a plain string/function/tuple (not the English literal), so translations
@@ -26,8 +27,8 @@ type ColumnKey='index'|'object'|'mjd'|'ra'|'dec'|'velocity'|'z'|'comment'|'statu
 /** `degrees` is an attached unit suffix; include a leading space for a word unit (e.g. ' grad').
  * `hours` is joined with an explicit space by the table/details renderer. */
 type DetailKey='redshift'|'kmPerS'|'raw'|'line'|'source'|'ra'|'dec'|'velocity'|'z'|'derived'|'theta'|'radius'|'pixel'|'hours'|'degrees'|'px';
-export type WedgeMessageCatalog=Readonly<{
- native:WedgeNativeCaptions;
+/** The panel's web text: the picked map `wedge` (Front ES4 moved VIREO's captions out of it, into `native`). */
+export type WedgeWebMessages=Readonly<{
  intro:string;persistenceNote:string;
  loadLabel:string;loadHelp:string;separatorLabel:string;separatorPoint:string;separatorComma:string;
  reading:(name:string)=>string;cancelRead:string;exportCsv:string;exportNote:string;dismiss:string;
@@ -46,9 +47,11 @@ export type WedgeMessageCatalog=Readonly<{
  unsupported:Readonly<Record<UnsupportedCode,string>>;atLine:(line:number)=>string;capacity:string;readFailed:string;
  suspended:(name:string)=>string;autoPlotUnavailable:string;optionsButtonHelp:string;
 }>;
+/** What the panel reads: the web text and VIREO's captions for this load (wedgeMessages). */
+export type WedgeMessageCatalog=WedgeWebMessages&Readonly<{native:WedgeNativeCaptions}>;
 type Fn=(...args:never[])=>unknown;
 /** Host overrides: any subset; nested groups may be partial; strings, functions and
- * tuples are replaced whole. Missing keys keep the English default. */
+ * tuples are replaced whole. Missing keys keep this load's text (wedgeMessages). */
 export type WedgeMessageOverrides=Readonly<{[K in keyof WedgeMessageCatalog]?:WedgeMessageCatalog[K] extends string|Fn|readonly unknown[]?WedgeMessageCatalog[K]:Readonly<Partial<WedgeMessageCatalog[K]>>}>;
 
 export const WEDGE_NATIVE_CAPTIONS:WedgeNativeCaptions=Object.freeze({
@@ -59,8 +62,22 @@ export const WEDGE_NATIVE_CAPTIONS:WedgeNativeCaptions=Object.freeze({
  headerText:N.headerText,headerCaption:N.headerCaption,accessText:N.accessText,accessCaption:N.accessCaption,
  retainText:N.retainText,retainCaption:N.retainCaption,deleteText:N.deleteText,deleteCaption:N.deleteCaption,
 });
-export const WEDGE_MESSAGES_EN:WedgeMessageCatalog=Object.freeze({
- native:WEDGE_NATIVE_CAPTIONS,
+/** Front ES4: VIREO's captions for this load, each through vireo() (so View original (English) applies); the three messages
+ * that VIREO composes around a file name are translated piece by piece. In English they equal WEDGE_NATIVE_CAPTIONS. */
+export function wedgeNativeCaptions():WedgeNativeCaptions{
+ const [g0,g1,g2]=vireoList(N.gridItems),[s0,s1]=vireoList(N.styleItems,'pointStyle');
+ return Object.freeze({
+  windowCaption:vireo(N.windowCaption),menuPlotData:vireo(N.menuPlotData),menuOptions:vireo(N.menuOptions),noDataToPlot:vireo(N.noDataToPlot),
+  optionsCaption:vireo(N.optionsCaption),gridType:vireo(N.gridType),gridItems:Object.freeze([g0,g1,g2]as const),plottedPoints:vireo(N.plottedPoints),size:vireo(N.size),style:vireo(N.style),styleItems:Object.freeze([s0,s1]as const),
+  autoPlotGroup:vireo(N.autoPlotGroup),autoPlotOn:vireo(N.autoPlotOn),ok:vireo(N.ok),cancel:vireo(N.cancel),yes:vireo(N.yes),no:vireo(N.no),
+  extensionText:vireo(N.extensionText),extensionCaption:vireo(N.extensionCaption),notLoadedText:vireo(N.notLoadedText),notLoadedCaption:vireo(N.notLoadedCaption),loadedCaption:vireo(N.loadedCaption),
+  loadedText:(name:string)=>vireo(P.loadedHead,'fragment')+name+vireo(P.loadedTail,'fragment'),
+  headerText:(name:string)=>vireo(P.headerHead,'fragment')+name+vireo(P.headerTail,'fragment'),headerCaption:vireo(N.headerCaption),
+  accessText:(name:string)=>vireo(P.accessHead,'fragment')+name,accessCaption:vireo(N.accessCaption),
+  retainText:vireo(N.retainText),retainCaption:vireo(N.retainCaption),deleteText:vireo(N.deleteText),deleteCaption:vireo(N.deleteCaption),
+ });
+}
+export const WEDGE_MESSAGES_EN:WedgeWebMessages=Object.freeze({
  intro:'Load redshift data that the VIREO Large-Scale Structure exercise saved as a text file, then plot it on the original wedge diagram. The data stay exactly as saved: nothing is measured, estimated or filled in here.',
  persistenceNote:'Save investigation keeps the options of the records you plotted from the LSS survey; after Restore, plot your records again from the survey. Files you load here, the plot itself and the selection are not included in Save investigation; they are discarded when the page is reloaded or closed. Your saved .TXT files are not changed and can be loaded again.',
  loadLabel:'Load saved LSS data (.TXT)…',
@@ -124,22 +141,23 @@ export const WEDGE_MESSAGES_EN:WedgeMessageCatalog=Object.freeze({
 export const WEDGE_MESSAGES=pickMessages('wedge',WEDGE_MESSAGES_EN);
 
 const isGroup=(v:unknown):v is Readonly<Record<string,unknown>>=>typeof v==='object'&&v!==null&&!Array.isArray(v);
-const sameShape=(base:unknown,v:unknown)=>typeof v===typeof base&&Array.isArray(v)===Array.isArray(base)&&(!Array.isArray(base)||base===WEDGE_MESSAGES.about||(v as unknown[]).length===base.length);
+const sameShape=(base:unknown,v:unknown,about:unknown)=>typeof v===typeof base&&Array.isArray(v)===Array.isArray(base)&&(!Array.isArray(base)||base===about||(v as unknown[]).length===base.length);
 /** Defaults merged with host overrides. Undefined entries and values whose kind
  * (string, function, tuple length, group) differs from the default are ignored, so
  * an untyped catalog cannot blank or break a control. */
 export function wedgeMessages(overrides?:WedgeMessageOverrides):WedgeMessageCatalog{
- if(!overrides)return WEDGE_MESSAGES;
- const out:Record<string,unknown>={...WEDGE_MESSAGES};
+ const defaults:WedgeMessageCatalog=Object.freeze({...WEDGE_MESSAGES,native:wedgeNativeCaptions()});
+ if(!overrides)return defaults;
+ const out:Record<string,unknown>={...defaults},about=defaults.about;
  for(const[key,value]of Object.entries(overrides)){
-  const base=(WEDGE_MESSAGES as Readonly<Record<string,unknown>>)[key];
+  const base=(defaults as Readonly<Record<string,unknown>>)[key];
   if(value===undefined||base===undefined)continue;
   if(isGroup(base)&&typeof base!=='function'){
    if(!isGroup(value))continue;
    const group:Record<string,unknown>={...base};
-   for(const[k,v]of Object.entries(value))if(v!==undefined&&k in base&&sameShape(base[k],v))group[k]=v;
+   for(const[k,v]of Object.entries(value))if(v!==undefined&&k in base&&sameShape(base[k],v,about))group[k]=v;
    out[key]=Object.freeze(group);
-  }else if(sameShape(base,value))out[key]=value;
+  }else if(sameShape(base,value,about))out[key]=value;
  }
  return Object.freeze(out)as WedgeMessageCatalog;
 }

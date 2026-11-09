@@ -433,6 +433,58 @@ test('radio telescope: Download capture as .PLR of a model-generated recording',
 
 // Front ES1: the shell is translated, and its toolbar's Save investigation writes a file, so this family also runs in Spanish
 // (es-419, the `?lang=es-419` preview). The three downloads must be byte-identical (decision 3: files stay English).
+// Front ES4: exercise E02. On the LSS survey a student saves the exposure's counts CSV and session JSON, the acquired spectrum
+// (.SSP), the results CSV and VIREO's results .TXT (Save Data), the whole investigation with the survey and its description, and,
+// after Plot, the wedge's points CSV; the wedge then reads the saved .TXT back (Load Saved Data) and writes its CSV again. With
+// Edit Mode (an instructor option), LSS Galaxy Data writes LSS_Galaxy_Data.TXT. The page clock is paused at a fixed instant
+// before the exposure and only moves by runFor until the investigation is saved; the wedge and LSS Galaxy Data files written after
+// it resumes record no time (the region rows take the observatory clock's JD, which stands still), so nothing is masked.
+test('E02 LSS survey and wedge: counts CSV, session, SSP, results CSV and TXT, investigation, wedge CSV and LSS Galaxy Data TXT',async({browser,baseURL})=>{
+ test.setTimeout(240_000);
+ await identical(browser,baseURL,async(page,locale)=>{
+  page.setDefaultTimeout(30_000);
+  await page.clock.install({time:NOW});
+  await page.goto(`/${locale==='en'?'':`?lang=${locale}`}#lss-survey`);
+  const skip=page.getByRole('button',{name:N(locale,'Skip the tour')});if(await skip.isVisible().catch(()=>false))await skip.click();
+  await expect(page.locator('#lss-field')).toBeEnabled({timeout:30_000});await page.locator('#lss-field').selectOption('1');
+  await button(page,'Load selected list',locale).click();await expect(page.getByTestId('lss-rows')).toBeVisible({timeout:30_000});
+  await page.getByTestId('lss-row-1').getByRole('button',{name:N(locale,'Point and view')}).click();
+  await button(page,'Activate spectrometer',locale).click();
+  await page.clock.pauseAt(new Date(NOW.getTime()+600_000));// a fixed instant (loading took less), then only runFor
+  await button(page,'Start exposure',locale).click();await page.clock.runFor(2000);await button(page,'Pause exposure',locale).click();
+  await expect(page.getByTestId('lss-elapsed')).toContainText('2000');
+  const countsCsv=await download(page,()=>button(page,'Save counts (CSV)',locale).click());
+  const session=await download(page,()=>button(page,'Save exposure session',locale).click());
+  const ssp=await download(page,()=>page.getByTestId('ob-spectrum-save').getByRole('button',{name:N(locale,'Save spectrum (.SSP)')}).click());
+  await page.locator('#lss-step').fill('.001');await button(page,'Set step',locale).click();await page.locator('#lss-shift').fill('20');
+  await page.locator('.lss-measure button.primary-button').click();// Record Z (a VIREO caption)
+  const z=Number(await page.getByTestId('lss-dialog-z').inputValue());await page.getByTestId('lss-dialog-velocity').fill(String(Math.round(299792.458*z*100)/100));
+  await page.locator('#lss-remarks').fill('first, typed');await page.locator('dialog.lss-dialog[open] button[type=submit]').click();
+  await expect(page.locator('[data-testid=lss-results] tbody tr')).toHaveCount(1);
+  const resultsCsv=await download(page,()=>button(page,'Save results (CSV)',locale).click());
+  const resultsTxt=await download(page,()=>page.getByTestId('lss-results-txt').click());
+  await page.locator('#lss-description').fill('One galaxy so far.');
+  const toolbar=page.locator('.investigation-toolbar');
+  const investigation=await download(page,()=>toolbar.getByRole('button',{name:locale==='es-419'?exact(es['project.save']):L('Save investigation')}).click());
+  await page.clock.resume();// the wedge's lazy route needs running timers; nothing written after this follows the clock (checked with --repeat-each)
+  await button(page,'Plot my records in the wedge',locale).click();await expect(page.getByTestId('wedge-count')).toBeVisible({timeout:30_000});
+  const wedgeCsv=await download(page,()=>page.getByTestId('wedge-export').click());
+  await page.getByTestId('wedge-file').setInputFiles({name:resultsTxt.name,mimeType:'text/plain',buffer:resultsTxt.bytes});
+  await page.getByTestId('wedge-prompt-yes').click();await expect(page.getByTestId('wedge-notice')).toHaveAttribute('data-kind','loaded');
+  const wedgeLoadedCsv=await download(page,()=>page.getByTestId('wedge-export').click());
+  // LSS Galaxy Data (Edit Mode, instructor).
+  await page.evaluate(()=>{location.hash='#observatory';});
+  const dome=page.getByRole('button',{name:N(locale,'Open dome ↗')});if(await dome.isVisible())await dome.click();
+  await enterInstructorMode(page);await page.getByTestId('ob-options').first().click();await page.getByTestId('ob-options-edit-mode').check();await page.getByTestId('ob-options-ok').click();
+  await page.evaluate(()=>{location.hash='#lss-survey';});await page.getByTestId('lss-region-open').click();
+  for(const [k,v] of [['raMin','12'],['raMax','12.5'],['decMin','27'],['decMax','29']])await page.getByTestId(`lss-region-${k}`).fill(v);
+  await page.getByTestId('lss-region-ok').click();await expect(page.getByTestId('lss-region-box')).toContainText('24069',{timeout:30_000});
+  await page.getByTestId('lss-region-box').getByRole('button').click();
+  const regionTxt=await download(page,()=>page.getByTestId('lss-region-txt').click());
+  return {countsCsv,session,ssp,resultsCsv,resultsTxt,investigation,wedgeCsv,wedgeLoadedCsv,regionTxt};
+ },{},page=>page.locator('.lss-main'),['en','qps','es-419']);
+});
+
 test('the shell toolbar: Save investigation is byte-identical in English, qps and Spanish',async({browser,baseURL})=>{
  const files:Record<string,File>={};
  for(const locale of ['en','qps','es-419'] as const){

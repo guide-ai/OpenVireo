@@ -34,11 +34,11 @@ export function auditOriginals(root){
   // `*_NAMES` from any module, for example PolishMessages.ts TERMINATE_SLEW_LITERALS or HelpMessages.ts HELP_BUTTON_NAMES).
   for(const node of result.program.body)if(node.type==='ImportDeclaration'&&node.importKind!=='type'){const fromCore=path.resolve(path.dirname(file),node.source.value).startsWith(core);
    for(const s of node.specifiers){const name=s.imported?.name??s.imported?.value;if(s.type==='ImportSpecifier'&&s.importKind!=='type'&&/^[A-Z][A-Z0-9_]+$/.test(name)&&(fromCore||/_(?:LITERALS|CAPTIONS|NAMES)$/.test(name)))literals.add(s.local.name);}}
-  // Local aliases: `const L=SOME_LITERALS` (or a member of one), and `const C=m.native`, the Wedge map's VIREO captions
-  // (WEDGE_NATIVE_CAPTIONS reached through wedgeMessages()).
+  // Local aliases: `const L=SOME_LITERALS` (or a member of one). Front ES4: the wedge's `m.native` is no longer listed; wedgeMessages()
+  // builds it through vireo() (wedgeNativeCaptions, WedgeMessages.ts).
   const rootOf=(n)=>{while(n?.type==='MemberExpression')n=n.object;return n?.type==='Identifier'?n.name:null;};
   (function aliases(node){if(!node||typeof node!=='object')return;
-   if(node.type==='VariableDeclarator'&&node.id?.type==='Identifier'&&node.init){const init=node.init;if(literals.has(rootOf(init))||(init.type==='MemberExpression'&&!init.computed&&init.property?.name==='native'))literals.add(node.id.name);}
+   if(node.type==='VariableDeclarator'&&node.id?.type==='Identifier'&&node.init){const init=node.init;if(literals.has(rootOf(init)))literals.add(node.id.name);}
    for(const[k,v]of Object.entries(node))if(!['loc','comments'].includes(k)){if(Array.isArray(v))v.forEach(aliases);else if(v&&typeof v==='object'&&v.type)aliases(v);}
   })(result.program);
   if(!literals.size)continue;

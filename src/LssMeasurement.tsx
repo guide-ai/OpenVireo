@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import galaxyText from '../data/original/GLXYLNS.LST?raw';
 import {t} from './i18n';
+import {vireo} from './i18n/vireo';
 import {INITIAL_CONTROL,changeFactor,configureStep,currentZ,moveControl,parseLines,shiftedWavelength,type ShiftControl} from './core/spectrum';
 import {formatZ} from './view/spectrum';
 const LINES=parseLines(galaxyText);
@@ -21,7 +22,7 @@ export default function LssMeasurement({counts,wavelengths,onRecord,disabled}:{c
    <label htmlFor="lss-shift">{t('lss.measure.shift')}</label><input id="lss-shift" type="range" min={-100} max={100} step={1} value={control.position} disabled={disabled||control.step<=0} onChange={e=>apply(()=>moveControl(control,Number(e.target.value)))}/>
    <fieldset disabled={disabled||control.step<=0}><legend>{t('lss.measure.factor')}</legend>{([1,10] as const).map(f=><label key={f}><input type="radio" name="lss-factor" checked={control.factor===f} onChange={()=>apply(()=>changeFactor(control,f))}/>×{f}</label>)}</fieldset>
    <p data-testid="lss-current-z" role="status">{control.step>0?t('lss.measure.z',{z:formatZ(z)}):t('lss.measure.noStep')}</p>
-   <button className="primary-button" disabled={disabled||control.step<=0||!counts.some(n=>n>0)} onClick={()=>onRecord(control)}>{t('lss.measure.record')}</button>
+   <button className="primary-button" disabled={disabled||control.step<=0||!counts.some(n=>n>0)} onClick={()=>onRecord(control)}>{vireo('Record Z')}</button>
   </div>{error&&<p role="alert">{error}</p>}
  </section>;
 }

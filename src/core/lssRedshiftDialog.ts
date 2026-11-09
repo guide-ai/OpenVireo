@@ -21,6 +21,9 @@ import {splitNativeSexagesimal} from './nativeListFormat';
 import {delphiFixed} from './variableStars';
 import {HUBBLE_C_KM_S,HUBBLE_VELOCITY_TOLERANCE} from './hubbleVelocity';
 
+/** Front ES4: TLSSRsltsDlg1's DFM captions [D] (rsltsdlg-txt-findings.md §2.1) that the web dialog shows through vireo(); the
+ * web's Object and Remarks labels drop VIREO's colon and stay web text. */
+export const LSS_DIALOG_CAPTIONS=Object.freeze({caption:'Measured Redshift Data',jd:'Observation Time (JD)',ra:'Right Ascension',dec:'Declination',z:'Redshift (Z):',velocity:'Velocity (km/sec):',ok:'&OK',cancel:'&Cancel'});
 export const LSS_DIALOG_TEXT=Object.freeze({
  velocityCaption:'Velocity Error!',velocityMissing:'Velocity is incorrect or missing!\r\nYou must supply a valid velocity for plotting.',
  velocityInvalid:'Velocity calculation is invalid!',
