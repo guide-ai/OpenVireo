@@ -212,6 +212,7 @@ dialog dd{margin:0;color:var(--ov-text-muted);line-height:1.6}
 @media(max-width:570px){.spectrum text{font-size:23px}
  .spectrum .axis-label{font-size:24px}
  .spectrum .axis-label-y{dominant-baseline:central}
+ .spectrum .tick-y{font-size:20px;transform:translate(12px,0)}
  .spectrum .marker-label{font-size:19px}
 }
 
