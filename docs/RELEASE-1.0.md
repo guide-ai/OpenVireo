@@ -55,8 +55,8 @@ Each adaptation is labelled in the app where it appears and in each exercise's d
 - These are deferred:
   - the remaining CLEA programs;
   - accounts and cloud saves;
-  - teacher features (the paused fronts T8–T11b);
-  - a custom domain.
+  - teacher features (the paused fronts T8–T11b).
+- The production address is https://openvireo.space (since 2026-11-08). The old address, openvireo.pages.dev, redirects there.
 
 ## Credits
 

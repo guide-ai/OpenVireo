@@ -66,6 +66,7 @@ Medidas de hoy: build de unos 75 MB y 1194 archivos. Con los archivos de Object 
 - **Proveedor:** Cloudflare (sitio estático, y Workers, D1 y R2 cuando haga falta backend).
 - **Dominio y despliegue:** todavía no hay dominio ni cuenta; el usuario comprará un dominio pronto. Mientras tanto no se despliega nada y la prohibición de `AGENTS.md` sigue vigente.
 - **Actualización del 7 nov 2026:** el usuario aprobó publicar la primera versión: solo el sitio estático (las 7 prácticas, guardado en el equipo del estudiante y analítica agregada sin cookies), en su cuenta de Cloudflare y con la dirección gratuita (*.pages.dev o *.workers.dev) hasta tener dominio. Las cuentas, la base de datos y el envío de correo quedan fuera de esta versión. Los términos exactos están en `AGENTS.md`.
+- **Actualización del 8 nov 2026:** el usuario compró el dominio `openvireo.space` (registrador: Namecheap; DNS en su cuenta de Cloudflare) y lo conectó al proyecto de Pages. La dirección de producción es `https://openvireo.space`; `www.openvireo.space` y `openvireo.pages.dev` redirigen a ella con 301. El correo del dominio, las cuentas y el backend siguen necesitando aprobación.
 - **Analítica:** sí, métricas de visitas. Propuesta por defecto: Cloudflare Web Analytics, agregada y sin cookies.
 
 **Prerrequisitos de despliegue** (se resuelven antes de publicar, no ahora):
