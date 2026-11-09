@@ -13,7 +13,10 @@
     "test:resources": "node scripts/check-resources.test.mjs",
     "check:deploy-limits": "node scripts/check-deploy-limits.mjs",
     "test:deploy-limits": "node scripts/check-deploy-limits.test.mjs",
-    "test:pages": "playwright test -c playwright.pages.config.ts"
+    "test:pages": "playwright test -c playwright.pages.config.ts",
+    "test-fonts": "node scripts/test-fonts.mjs",
+    "test:test-fonts": "node scripts/test-fonts.test.mjs",
+    "test:scripts": "playwright test -c playwright.scripts.config.ts"
   },
   "dependencies": {
     "react": "19.3.1",
