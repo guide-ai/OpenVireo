@@ -1,6 +1,6 @@
 # Publicar OpenVireo 1.0 en Cloudflare Pages
 
-Guía paso a paso para publicar la versión 1.0 como sitio estático en tu cuenta de Cloudflare, con la dirección gratuita `*.pages.dev`. Sigue la decisión del 7 de noviembre de 2026 (`AGENTS.md`):
+Guía paso a paso para publicar la versión 1.0 como sitio estático en tu cuenta de Cloudflare, primero con la dirección gratuita `*.pages.dev` y, desde el 8 de noviembre de 2026, con el dominio propio `https://openvireo.space` (§ 10). Sigue la decisión del 7 de noviembre de 2026 (`AGENTS.md`):
 
 - Se publica solo el sitio estático: la salida normal de `npm run build`, sin código de la nube opcional.
 - Las investigaciones se guardan solo en el equipo del estudiante.
@@ -113,7 +113,7 @@ npx wrangler@4.150.0 pages deploy dist --project-name=openvireo --branch=main
 ```
 
 - `--branch=main` publica en producción, porque `main` es la rama de producción del proyecto. Otra rama crearía una vista previa en `https://<rama>.openvireo.pages.dev`.
-- Al terminar, Wrangler muestra la dirección del despliegue (`https://<id>.openvireo.pages.dev`). La dirección de producción es `https://openvireo.pages.dev`.
+- Al terminar, Wrangler muestra la dirección del despliegue (`https://<id>.openvireo.pages.dev`). La dirección de producción es `https://openvireo.space`; `https://openvireo.pages.dev` redirige a ella (§ 10).
 - Subir unos 676 MiB tarda varios minutos. Si se corta, repite el comando: Pages solo sube los archivos que faltan.
 - **Regla para versiones futuras:** nunca cambies los bytes de un archivo que ya está publicado en `/original/…` o `/camera/…`. Esos archivos se guardan en la caché un día por su nombre. Si hay que volver a trocear un original o rehacer un extracto, publícalo con una ruta nueva (y su SHA-256 en el manifiesto).
 
@@ -128,7 +128,7 @@ Si al cabo de un día el panel no muestra visitas, comprueba en la consola del n
 
 ## 8. Lista de comprobación después de desplegar
 
-1. Abre `https://openvireo.pages.dev`. Se muestra el observatorio ("Start with the sky.").
+1. Abre `https://openvireo.space`. Se muestra el observatorio ("Start with the sky.").
 2. Recorre brevemente cada ejercicio y comprueba que carga sin errores en la consola del navegador (F12):
    - **Hubble** (`/#galaxy-exposure`, y Analyzer → *Hubble diagram & distances*);
    - **Estructura a gran escala** (`/#lss-survey`);
@@ -141,16 +141,16 @@ Si al cabo de un día el panel no muestra visitas, comprueba en la consola del n
 4. Abre **Help › About OpenVireo and privacy** y comprueba el aviso de privacidad y los créditos (Project CLEA, NSF, Gettysburg College y ATNF).
 5. Comprueba las cabeceras desde una terminal:
    ```sh
-   curl -sI https://openvireo.pages.dev/ | grep -iE 'content-security-policy|x-content-type-options|referrer-policy|permissions-policy|x-frame-options|cache-control'
-   curl -sI https://openvireo.pages.dev/original/hotlists/Hubble.HTL | grep -i cache-control
-   curl -s https://openvireo.pages.dev/ | grep -o '/assets/index-[A-Za-z0-9_-]*\.js'   # copia la ruta para el siguiente
-   curl -sI https://openvireo.pages.dev/assets/index-XXXX.js | grep -i cache-control
+   curl -sI https://openvireo.space/ | grep -iE 'content-security-policy|x-content-type-options|referrer-policy|permissions-policy|x-frame-options|cache-control'
+   curl -sI https://openvireo.space/original/hotlists/Hubble.HTL | grep -i cache-control
+   curl -s https://openvireo.space/ | grep -o '/assets/index-[A-Za-z0-9_-]*\.js'   # copia la ruta para el siguiente
+   curl -sI https://openvireo.space/assets/index-XXXX.js | grep -i cache-control
    ```
    Lo esperado:
    - en `/`: `cache-control: no-cache` y la CSP completa;
    - en `/original/…`: `public, max-age=86400, stale-while-revalidate=604800`;
    - en `/assets/…`: `public, max-age=31536000, immutable`.
-6. Comprueba que el archivo entero de 31 MB no está publicado: `curl -sI https://openvireo.pages.dev/original/orbit/ObjX_MPC.CMO` debe devolver `404`, nunca `application/octet-stream` de 30 989 466 bytes.
+6. Comprueba que el archivo entero de 31 MB no está publicado: `curl -sI https://openvireo.space/original/orbit/ObjX_MPC.CMO` debe devolver `404`, nunca `application/octet-stream` de 30 989 466 bytes.
 
 ## 9. Volver atrás (rollback)
 
@@ -169,15 +169,21 @@ Cada despliegue queda guardado. Para volver al anterior:
 
 `index.html` se sirve con `no-cache`, así que los visitantes ven la versión restaurada en su siguiente visita. Igual que un despliegue, un rollback hace que las pestañas abiertas tengan que recargar: si puedes, hazlo fuera del horario de clase. Los recursos con hash de `/assets/` no chocan entre versiones.
 
-## 10. Más adelante: dominio propio
+## 10. Dominio propio: openvireo.space
 
-Cuando compres el dominio, y con una nueva aprobación según `AGENTS.md`:
+Desde el 8 de noviembre de 2026 el sitio se publica en `https://openvireo.space` (decisión tuya, `AGENTS.md`). Así quedó configurado, por si hay que rehacerlo:
 
-1. Añade el dominio a Cloudflare (**Websites → Add a site**) y cambia sus servidores DNS a los que indique Cloudflare.
-2. En **Workers & Pages → openvireo → Custom domains → Set up a custom domain**, escribe el nombre (por ejemplo `openvireo.example`). Cloudflare crea el registro DNS y el certificado.
-3. Comprueba las cabeceras con `curl -I` en el nuevo dominio (paso 8.5). `_headers` se aplica igual.
-4. Opcional: redirige `openvireo.pages.dev` al dominio con una regla de redirección (**Rules → Redirect Rules**) o con `public/_redirects`.
-5. Las cuentas, la base de datos, el correo y los Workers siguen fuera de esta versión. Cada uno necesita su propia aprobación (`docs/EXTERNAL-SERVICES.md` §4).
+1. **Registro:** el dominio está registrado en Namecheap. Un dominio nuevo no puede transferirse a otro registrador durante 60 días; no hace falta transferirlo para usarlo con Pages.
+2. **DNS en Cloudflare:** **Add a domain → Connect a domain** con `openvireo.space`, plan Free. Al importar los registros se borraron el `A` y el CNAME `www` de la página de estacionamiento de Namecheap, y también sus MX y TXT de reenvío de correo, que dejan de funcionar fuera del DNS de Namecheap. En Namecheap, **Domain List → Manage → Nameservers → Custom DNS** con los dos servidores que da Cloudflare (`bryce.ns.cloudflare.com` y `diana.ns.cloudflare.com`), con DNSSEC desactivado. El registro de `.space` puede tardar en recibir el cambio; mientras tanto Cloudflare muestra "Invalid nameservers".
+3. **Dominios de Pages:** **Workers & Pages → openvireo → Custom domains → Set up a custom domain**, primero `openvireo.space` y después `www.openvireo.space`. Cloudflare crea los registros DNS y los certificados.
+4. **www → sin www:** en la zona `openvireo.space`, **Rules → Overview → Redirect from WWW to root** (`https://www.*` → `https://${1}`, 301, *Preserve query string*). El aviso de que `www` no está detrás del proxy es falso: el registro lo creó Pages y sí pasa por Cloudflare; se despliega con *Ignore and deploy rule anyway*.
+5. **openvireo.pages.dev → dominio:** con **Bulk Redirects**, en el nivel de la cuenta, porque `pages.dev` no es una zona tuya y ni las Redirect Rules ni `public/_redirects` pueden redirigirlo. Una entrada: origen `openvireo.pages.dev`, destino `https://openvireo.space`, 301, con *Preserve query string*, *Subpath matching* y *Preserve path suffix*, y **sin** *Include subdomains*, para que las vistas previas `<id>.openvireo.pages.dev` sigan funcionando.
+6. **Comprobación:** las cabeceras del paso 8.5 en el dominio, y que `www.openvireo.space` y `openvireo.pages.dev` respondan `301` hacia `https://openvireo.space` conservando ruta y parámetros:
+   ```sh
+   curl -sI https://www.openvireo.space/a?b=1 | grep -iE '^HTTP|^location'
+   curl -sI https://openvireo.pages.dev/a?b=1 | grep -iE '^HTTP|^location'
+   ```
+7. El correo del dominio (por ejemplo Cloudflare Email Routing), las cuentas, la base de datos y los Workers siguen fuera de esta versión. Cada uno necesita su propia aprobación (`docs/EXTERNAL-SERVICES.md` §4).
 
 ## 11. Despliegue automático (CI/CD con GitHub Actions)
 
@@ -222,7 +228,7 @@ El flujo necesita dos secretos. Se guardan en el **entorno** `production` de Git
 
 ### 11.2 Uso diario
 
-- **Publicar:** fusiona en `main` y haz push. El run completo tarda unos 25–35 minutos; la dirección de producción es `https://openvireo.pages.dev`.
+- **Publicar:** fusiona en `main` y haz push. El run completo tarda unos 25–35 minutos; la dirección de producción es `https://openvireo.space`.
 - **Ver el estado:** **GitHub → Actions**, o desde la terminal:
   ```sh
   gh run list -R guide-ai/OpenVireo --limit 5
