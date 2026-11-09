@@ -35,6 +35,6 @@ const settled=settleLanguage({
  setTitle:title=>{document.title=title;},
  error:(message,detail)=>{if(detail===undefined)console.error(message);else console.error(message,detail);},
 });
-/** null when the language is already active (English, qps); otherwise resolves when the Spanish chunk is active or English
+/** null when the language is already active (English and the dev pseudo-locales); otherwise resolves when the Spanish chunk is active or English
  * replaced it. */
 export const languageReady:Promise<unknown>|null=settled instanceof Promise?settled:null;

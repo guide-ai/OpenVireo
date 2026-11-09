@@ -7,7 +7,7 @@ import {PSEUDO_SCRIPT} from '../src/i18n/pseudoScripts';
 // these variants belong to SC3 (tests/scripts/, playwright.scripts.config.ts).
 const VARIANTS=[['qps-cjk','ja',/[\p{sc=Han}\p{sc=Hiragana}\p{sc=Katakana}]/u],['qps-deva','hi',/\p{sc=Devanagari}/u],['qps-cyrl','ru',/\p{sc=Cyrillic}/u]] as const;
 for(const [language,tag,script] of VARIANTS)test(`?lang=${language} renders the home page in its script with <html lang="${tag}">`,async({page})=>{
- const errors:string[]=[];page.on('pageerror',e=>errors.push(String(e)));
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(String(e)));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
  await page.goto(`/?lang=${language}#observatory`);await expect(page.locator('.investigation-toolbar')).toBeVisible({timeout:15_000});
  await expect(page.locator('html')).toHaveAttribute('lang',tag);
  await expect(page).toHaveTitle(PSEUDO_SCRIPT[language](en['app.documentTitle']));

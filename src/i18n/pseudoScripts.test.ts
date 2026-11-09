@@ -1,6 +1,7 @@
 import {afterEach,describe,expect,it} from 'vitest';
 import {createHash} from 'node:crypto';
 import en from './en.json';
+import spanishOriginals from './es/originals.json';
 import baseline from '../../tests/fixtures/p01-scientific-baseline.json';
 import {activateLocale,createI18n,fixed,formatNumber,scientific,t,uiLanguage,type MessageKey} from './index';
 import {decideLocale,HTML_LANG,selectorShown,type LocaleInputs,type PseudoScriptLanguage} from './locale';
@@ -28,6 +29,10 @@ const columns=(text:string)=>[...text].reduce((n,c)=>n+(/[\p{sc=Han}\p{sc=Hiraga
 const sha=(s:string)=>createHash('sha256').update(s).digest('hex');
 // Every `*Messages.ts` map registers itself with pickMessages when its module evaluates.
 const maps=import.meta.glob<Record<string,unknown>>('../**/*Messages.ts',{eager:true});
+/** Every string leaf of the registered English maps (map functions are only marked, so they have no leaves here). */
+const mapLeaves=()=>{const out:string[]=[];const walk=(v:unknown)=>{if(typeof v==='string'){if(v)out.push(v);}else if(v&&typeof v==='object')for(const x of Object.values(v))walk(x);};for(const english of pickedMessages().values())walk(english);return out;};
+/** VIREO originals as vireo() receives them: the keys of the Spanish originals dictionary, without their `context|` prefix. */
+const originals=Object.keys(spanishOriginals).map(k=>k.replace(/^[A-Za-z]\w*\|/,''));
 afterEach(()=>{activateLocale(null);});
 
 describe('Front SC2: the script-stress transforms',()=>{
@@ -43,18 +48,18 @@ describe('Front SC2: the script-stress transforms',()=>{
   }
  });
  it('keep {params}, <placeholders>, digits, decimal points, line breaks and outer spacing; write no English letter',()=>{
-  const nonAsciiLetters=new Set(strings.flatMap(s=>[...outside(s)].filter(c=>/\p{L}/u.test(c)&&c>'\x7f')));
-  expect([...nonAsciiLetters].sort()).toEqual(['Å','Δ']);
-  // Collected and compared once: 3 × 3581 strings.
+  // Collected and compared once: 3 variants × (3581 catalog strings, the map leaves, the VIREO originals).
+  const leaves=mapLeaves();expect(leaves.length).toBeGreaterThan(800);expect(originals.length).toBeGreaterThan(400);
   const problems:string[]=[],same=(what:string,a:unknown,b:unknown,where:string)=>{if(JSON.stringify(a)!==JSON.stringify(b))problems.push(`${where}: ${what}`);};
-  for(const language of LANGUAGES)for(const s of strings){
+  for(const language of LANGUAGES)for(const s of [...strings,...leaves,...originals]){
    const out=inner(PSEUDO_SCRIPT[language](s)),rest=outside(out),where=`${language} ${JSON.stringify(s)}`;
    same('protected parts',protectedParts(out),protectedParts(s),where);
    same('digits',rest.match(/[0-9]+/g),outside(s).match(/[0-9]+/g),where);
    same('decimal points',rest.match(/[0-9][.,:][0-9]/g),outside(s).match(/[0-9][.,:][0-9]/g),where);
    same('line breaks',out.match(/[\r\n]/g),s.match(/[\r\n]/g),where);
    same('outer spacing',[/^\s*/.exec(out)![0],/\s*$/.exec(out)![0]],[/^\s*/.exec(s)![0],/\s*$/.exec(s)![0]],where);
-   for(const c of rest)if(/[\p{L}\p{M}]/u.test(c)&&!SCRIPT[language].test(c)&&!nonAsciiLetters.has(c))problems.push(`${where}: letter ${c}`);
+   // No English letter is left, and every non-ASCII letter of the English (Å, Δ…) passes through unchanged and in order.
+   same('letters outside the script',[...rest].filter(c=>/[\p{L}\p{M}]/u.test(c)&&!SCRIPT[language].test(c)),[...outside(s)].filter(c=>/[\p{L}\p{M}]/u.test(c)&&c>'\x7f'),where);
   }
   expect(problems.slice(0,10)).toEqual([]);
   expect(pseudoCjk('<value> Meter {n} of 12.5 m. Ready?')).toBe(`${PSEUDO_OPEN}<value>${pseudoCjk('Meter').slice(1,-1)}{n}${pseudoCjk('of').slice(1,-1)}12.5${pseudoCjk('m').slice(1,-1)}。${pseudoCjk('Ready').slice(1,-1)}？${PSEUDO_CLOSE}`);
@@ -87,22 +92,23 @@ describe('Front SC2: the script-stress transforms',()=>{
   for(const word of ['Dome','Telescope','Spectrometer'])expect(syllables(word)).toBeLessThanOrEqual(Math.ceil(.8*word.length));
   const words=[...new Set(strings.flatMap(s=>s.match(/[A-Za-z]+/g)??[]))],out=words.map(w=>inner(pseudoDeva(w)));
   expect(out.every(w=>/[ि-्ँ-ः़]/u.test(w))).toBe(true);
-  const tall=out.filter(w=>/्.*्/u.test(w)).length/out.length;expect(tall).toBeGreaterThan(.25);expect(tall).toBeLessThan(.42);
+  const tall=out.filter(w=>/्/u.test(w)).length/out.length;expect(tall).toBeGreaterThan(.25);expect(tall).toBeLessThan(.42);
   for(const sign of ['ि','ी','े','ै','ु','ू','ृ','ँ','ं','़','र्'])expect(out.join(''),sign).toContain(sign);
   expect(inner(pseudoDeva('Done. Value 12.5...'))).toMatch(/^\S+। \S+ 12\.5\.\.\.$/u);
  });
- it('qps-cyrl: words about 40 % longer, an unbreakable word of 22–26 letters in about one long word of six, case kept',()=>{
+ it('qps-cyrl: words about 25 % longer, an unbreakable word of min(24, 1.7 n) letters in about one word of 8+ letters in six, case kept',()=>{
   const words=[...new Set(strings.flatMap(s=>s.match(/[A-Za-z]+/g)??[]))];
-  let long=0,eligible=0;
+  let long=0,eligible=0;const wrong:string[]=[];
   for(const word of words){
-   const out=inner(pseudoCyrl(word)),n=word.length;if(n>=4)eligible++;
-   if(out.length>n+Math.round(.4*n)){long++;expect(n).toBeGreaterThanOrEqual(4);expect(out.length).toBeGreaterThanOrEqual(22);expect(out.length).toBeLessThanOrEqual(Math.max(26,n+Math.round(.4*n)));}
-   else expect(out.length,word).toBe(n+Math.round(.4*n));
+   const out=inner(pseudoCyrl(word)),n=word.length,regular=n+Math.round(.25*n);if(n>=8)eligible++;
+   if(out.length>regular){long++;if(n<8||out.length!==Math.min(24,Math.round(1.7*n)))wrong.push(word);}
+   else if(out.length!==regular)wrong.push(word);
   }
-  expect(long/eligible).toBeGreaterThan(.12);expect(long/eligible).toBeLessThan(.22);
-  expect(inner(pseudoCyrl('Close'))).toMatch(/^Ц[а-я]{6}$/u);expect(inner(pseudoCyrl('CLEA'))).toMatch(/^[А-ЯЁ]+$/u);
+  expect(wrong).toEqual([]);expect(long/eligible).toBeGreaterThan(.12);expect(long/eligible).toBeLessThan(.22);
+  for(const word of ['Help','Save','About','Close','Telescope'])expect(inner(pseudoCyrl(word)).length,word).toBe(word.length+Math.round(.25*word.length));
+  expect(inner(pseudoCyrl('Close'))).toMatch(/^Ц[а-я]{5}$/u);expect(inner(pseudoCyrl('CLEA'))).toMatch(/^[А-ЯЁ]+$/u);
   const ratio=strings.reduce((n,s)=>n+inner(pseudoCyrl(s)).length,0)/strings.reduce((n,s)=>n+s.length,0);
-  expect(ratio).toBeGreaterThan(1.4);expect(ratio).toBeLessThan(1.8);
+  expect(ratio).toBeGreaterThan(1.18);expect(ratio).toBeLessThan(1.32);
  });
 });
 

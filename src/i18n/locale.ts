@@ -14,8 +14,9 @@ export const LANGUAGE_STORAGE_KEY='openvireo-language';
 export const VIREO_ORIGINALS_KEY='openvireo-vireo-originals';
 /** Release gate (decision 5): false until ES-REL. While false, neither the stored choice nor the browser language is used. */
 export const SPANISH_RELEASED=false;
-/** `<html lang>` for each UI language. The dev-only pseudo-locale keeps English's tag: its text is marked English. */
-export const HTML_LANG:Readonly<Record<UiLanguage,string>>=Object.freeze({en:'en','es-419':'es-419',qps:'en',...PSEUDO_SCRIPT_LANG}as Record<UiLanguage,string>);
+/** `<html lang>` for each UI language. The dev-only pseudo-locale qps keeps English's tag (its text is marked English); the
+ * script-stress pseudo-locales take the real tag of their script (ja, hi, ru). `satisfies` keeps every released language tagged. */
+export const HTML_LANG:Readonly<Record<UiLanguage,string>>=Object.freeze({...({en:'en','es-419':'es-419',qps:'en'} satisfies Record<Exclude<UiLanguage,PseudoScriptLanguage>,string>),...PSEUDO_SCRIPT_LANG}as Record<UiLanguage,string>);
 export type LocaleInputs=Readonly<{
  /** The `lang` link parameter of this load (not stored). */
  param:string|null;
@@ -24,7 +25,8 @@ export type LocaleInputs=Readonly<{
  /** navigator.languages, most preferred first. */
  languages:readonly string[];
  released:boolean;
- /** The pseudo-locale `qps` is accepted only in the dev server and tests. */
+ /** The pseudo-locales (`qps`, and the script-stress `qps-cjk`, `qps-deva`, `qps-cyrl`) are accepted only in the dev server and
+  * tests. */
  dev:boolean;
 }>;
 const offered=(value:string|null,dev:boolean):UiLanguage|null=>value==='en'||value==='es-419'?value:dev&&value==='qps'?'qps':PSEUDO_SCRIPT_LANG&&dev&&value!==null&&Object.hasOwn(PSEUDO_SCRIPT_LANG,value)?value as PseudoScriptLanguage:null;
