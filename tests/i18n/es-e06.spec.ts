@@ -29,23 +29,26 @@ import {PULSAR_ACTIVATE_LITERALS as ACTIVATE} from '../../src/core/pulsarAnalysi
 // file names and the Review table's cells.
 type Lang='en'|'es-419'|'qps';
 const O=originals as Record<string,string>,E=en as Record<string,string>,S=es as Record<string,string>,M=PULSAR_ES as unknown as Record<string,string>;
-const SAME=new Set<string>([
- 'VIREO','OpenVireo','SHA-256','CSV','PLR','JSON','#','—','×','·','MHz','ms','px','CRLF','CR LF','LF','Pulsars.dat',
- // Words that read the same in Spanish (identical.json).
+/** Spanish only: product and format names, units, symbols and words that read the same in Spanish (identical.json). The qps
+ * walk marks them all. */
+const IDENTICAL=new Set<string>([
+ 'VIREO','OpenVireo','SHA-256','CSV','PLR','JSON','#','—','×','·','MHz','ms','px','CR LF','LF',
  'Bytes','Zoom','Horizontal','Panel','Vertical (s)','No',
- // Data of the synthetic recording and files (names, identities, comments), shown as stored.
- 'SYNTHETIC E2E','synthetic-e2e.plr','control.csv','bad.csv','run.CSV','run','first','second','first, with comma','target.csv','target-bad.csv',
+]);
+/** Both walks: data of the synthetic recording and files (names, identities, comments) shown as stored, outside the `lang="en"`
+ * file mirrors that texts() skips. */
+const DATA=new Set<string>([
+ 'Pulsars.dat','CRLF','SYNTHETIC E2E','synthetic-e2e.plr','control.csv','bad.csv','run.CSV','run','first','second','first, with comma','target.csv','target-bad.csv',
  'PSR B2358+38','PSR B0329+54','PSR B0531+21','PSR B1919+21','Ada Student','Ben Student','Table Number: 3','10/22/2026, 9:41:07 AM',
 ]);
-/** The lines of the supplied measurement files and their quoted cells as written (English files, shown exactly) and a SHA-256 hash. */
-const FILE_LINES=()=>{const lines=[...CONTROL.split('\r\n'),...TARGET.split('\r\n')].filter(Boolean);return new Set([...lines,...lines.flatMap(l=>l.match(/"[^"]*"/g)??[])]);};
-const RECORDED=(text:string)=>FILE_LINES().has(text)||/^[0-9a-f]{64}$/.test(text);
 const NUMERIC=/^[-+−±\d\s.,:;°′″'"·×÷/()[\]–%=→eE]*\d[-+−±\d\s.,:;°′″'"·×÷/()[\]–%=→eE]*(?:\s*(?:MHz|ms|s|m|px|bytes|Bytes))*\s*$/;
 /** radioR1.findNote (ES8a): the Find note under Review; English until ES8a. */
 const ES8A=new Set<string>(['Find searches each stored line (the original’s text of every measurement']);
 const ES8A_STARTS=(text:string)=>[...ES8A].some(s=>text.startsWith(s));
-const HEADER_NAMES=new Set(HEADER.split(',').map(c=>c.replace(/^"|"$/g,'')));
-const same=(text:string)=>SAME.has(text)||HEADER_NAMES.has(text)||/^Panel \d$/.test(text)||RECORDED(text)||NUMERIC.test(text)||ES8A_STARTS(text);
+/** Recorded data, a SHA-256 hash or a number with its unit: the same in every language. */
+const data=(text:string)=>DATA.has(text)||/^[0-9a-f]{64}$/.test(text)||NUMERIC.test(text)||ES8A_STARTS(text);
+/** What may read the same in Spanish as in English. */
+const same=(text:string)=>IDENTICAL.has(text)||/^Panel \d$/.test(text)||data(text);
 const id=(page:Page|Locator,testId:string)=>page.getByTestId(testId);
 const ACCENTED:Readonly<Record<string,string>>={a:'aá',e:'eé',i:'ií',o:'oó',u:'uú',A:'AÁ',E:'EÉ',I:'IÍ',O:'OÓ',U:'UÚ'};
 const MARK='[⟦⟧·\\s]*';
@@ -161,7 +164,7 @@ test('E06 reads differently in Spanish from English: guide, saved file viewer, r
 test('qps: every text of the E06 walk is marked, outside recorded data',async({page})=>{
  test.setTimeout(300_000);await page.setViewportSize({width:1440,height:1000});
  const left=new Map<string,string>();
- await walk(page,'qps',async step=>{for(const t of await texts(page))if(!/[⟦⟧]/.test(t)&&!same(bare(t))&&!left.has(t))left.set(t,step);});
+ await walk(page,'qps',async step=>{for(const t of await texts(page))if(!/[⟦⟧]/.test(t)&&!data(bare(t))&&!left.has(t))left.set(t,step);});
  expect([...left].map(([t,step])=>`${step}: ${t}`)).toEqual([]);
 });
 
@@ -328,6 +331,6 @@ test('E06 receiver capture: the raw download, verified Save and Load question re
  for(const [step,list] of seen['es-419'])for(const t of list)if(english.has(bare(t))&&!same(bare(t))&&!left.has(t))left.set(t,step);
  expect([...left].map(([t,step])=>`es: ${step}: ${t}`)).toEqual([]);
  const unmarked=new Map<string,string>();
- for(const [step,list] of seen.qps)for(const t of list)if(!/[⟦⟧]/.test(t)&&!same(bare(t))&&!unmarked.has(t))unmarked.set(t,step);
+ for(const [step,list] of seen.qps)for(const t of list)if(!/[⟦⟧]/.test(t)&&!data(bare(t))&&!unmarked.has(t))unmarked.set(t,step);
  expect([...unmarked].map(([t,step])=>`qps: ${step}: ${t}`)).toEqual([]);
 });

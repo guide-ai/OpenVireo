@@ -78,7 +78,6 @@ export const SAVED_ROWS_MESSAGES_EN = Object.freeze({
   'savedRows.find.keys': 'Enter searches from the top. Escape cancels.',
   'savedRows.find.refused.query-text': 'The search text contains a character outside printable ASCII. Nothing was searched or remembered.',
   'savedRows.find.refused.query-length': 'The search text is longer than 80 characters. Nothing was searched or remembered.',
-  'savedRows.notFound.ok': 'OK',
   'savedRows.status.found': 'Found in row {row}.',
   'savedRows.status.empty': 'The search text is empty: nothing was searched and the selection is unchanged.',
   'savedRows.status.cancelled': 'Find cancelled.',

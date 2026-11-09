@@ -8,6 +8,8 @@ import {
   type SavedFindAction, type SavedFindDraft, type SavedReadResult, type SavedRowsSource, type SavedRowsWorkspace,
 } from '../core/pulsarSavedRows';
 import { vireo } from '../i18n/vireo';
+import NativeMirrorCaption from './NativeMirrorCaption';
+import { OBSERVATORY_VIREO_CAPTIONS as OV } from '../observatory/ObservatoryMessages';
 import { createSavedRowsTranslator, type SavedRowsMessageKey, type SavedRowsTranslate } from './PulsarSavedRowsMessages';
 
 /**
@@ -288,9 +290,9 @@ function PulsarSavedRows({ translate, idPrefix = 'psr-', active = true, onModalC
               <p className="psr-note">{t('savedRows.meta.note')}</p>
               <dl className="psr-meta">
                 {metaLines.map(l => (
-                  <div key={l.line}><dt>{t('savedRows.meta.line', { line: l.line })}</dt><dd><code data-testid={`saved-rows-meta-${l.line}`}>{l.text}</code></dd></div>
+                  <div key={l.line}><dt>{t('savedRows.meta.line', { line: l.line })}</dt><dd><code lang="en" data-testid={`saved-rows-meta-${l.line}`}>{l.text}</code></dd></div>
                 ))}
-                <div><dt>{t('savedRows.meta.columns')}</dt><dd><code data-testid="saved-rows-header">{source.metadata.header.text}</code></dd></div>
+                <div><dt>{t('savedRows.meta.columns')}</dt><dd><code lang="en" data-testid="saved-rows-header">{source.metadata.header.text}</code></dd></div>
               </dl>
             </section>
 
@@ -308,7 +310,7 @@ function PulsarSavedRows({ translate, idPrefix = 'psr-', active = true, onModalC
                       <th scope="col">{t('savedRows.rows.select')}</th>
                       <th scope="col">{t('savedRows.rows.number')}</th>
                       <th scope="col">{t('savedRows.rows.line')}</th>
-                      {SAVED_ROWS_HEADER_NAMES.map(name => <th key={name} scope="col">{name}</th>)}
+                      {SAVED_ROWS_HEADER_NAMES.map(name => <th key={name} scope="col" lang="en">{name}</th>)}
                     </tr>
                   </thead>
                   <tbody>
@@ -321,7 +323,7 @@ function PulsarSavedRows({ translate, idPrefix = 'psr-', active = true, onModalC
                         </td>
                         <td>{row.ordinal + 1}</td>
                         <td>{row.line}</td>
-                        {SAVED_ROW_FIELDS.map((field, k) => <td key={field} className="psr-mono">{row.fields[k]?.raw ?? <span className="psr-absent">{t('savedRows.rows.noField')}</span>}</td>)}
+                        {SAVED_ROW_FIELDS.map((field, k) => { const raw = row.fields[k]?.raw; return <td key={field} className="psr-mono" lang={raw === undefined ? undefined : 'en'}>{raw ?? <span className="psr-absent">{t('savedRows.rows.noField')}</span>}</td>; })}
                       </tr>
                     ))}
                   </tbody>
@@ -330,7 +332,8 @@ function PulsarSavedRows({ translate, idPrefix = 'psr-', active = true, onModalC
               {selectedRow ? (
                 <div data-testid="saved-rows-selected">
                   <p className="psr-note">{t('savedRows.rows.selected', { row: selectedRow.ordinal + 1 })}</p>
-                  <pre className="psr-raw" data-testid="saved-rows-selected-text">{selectedRow.text}</pre>
+                  <pre className="psr-raw" lang="en" data-testid="saved-rows-selected-text">{selectedRow.text}</pre>
+                  <NativeMirrorCaption testId="saved-rows-mirror-caption" />
                 </div>
               ) : <p>{t('savedRows.rows.none')}</p>}
             </section>
@@ -367,7 +370,7 @@ function PulsarSavedRows({ translate, idPrefix = 'psr-', active = true, onModalC
         <dialog ref={noticeDialog} className="psr-modal" role="alertdialog" aria-labelledby={`${idPrefix}notice-title`} aria-describedby={`${idPrefix}notice-body`} data-testid="saved-rows-notice" {...dialogEvents(closeNotice)}>
           <h3 id={`${idPrefix}notice-title`}>{vireo(SAVED_FIND_LITERALS.notFoundCaption)}</h3>
           <p id={`${idPrefix}notice-body`} data-testid="saved-rows-notice-body">{notFoundBody(notice)}</p>
-          <div className="psr-row"><button ref={noticeOk} type="button" onClick={closeNotice} data-testid="saved-rows-notice-ok">{t('savedRows.notFound.ok')}</button></div>
+          <div className="psr-row"><button ref={noticeOk} type="button" onClick={closeNotice} data-testid="saved-rows-notice-ok">{vireo(OV.ok)}</button></div>
         </dialog>
       )}
     </section>
@@ -422,7 +425,6 @@ export function ReviewFindDialog({ draft, refusal, onDraft, onAnswer, idPrefix }
   );
 }
 export function ReviewFindNotice({ body, onClose, idPrefix }: Readonly<{ body: string; onClose: () => void; idPrefix: string }>) {
-  const t = useMemo(() => createSavedRowsTranslator(), []);
   const ref = useRef<HTMLDialogElement>(null), ok = useRef<HTMLButtonElement>(null);
   useEffect(() => { const el = ref.current; if (el && !el.open) el.showModal(); ok.current?.focus(); return () => { if (el?.open) el.close(); }; }, []);
   return (
@@ -431,7 +433,7 @@ export function ReviewFindNotice({ body, onClose, idPrefix }: Readonly<{ body: s
       onCancel={e => { e.preventDefault(); e.stopPropagation(); }}>
       <h3 id={`${idPrefix}rnotice-title`}>{vireo(SAVED_FIND_LITERALS.notFoundCaption)}</h3>
       <p id={`${idPrefix}rnotice-body`} data-testid="pulsar-review-find-notice-body">{notFoundBody(body)}</p>
-      <div className="psr-row"><button ref={ok} type="button" onClick={onClose} data-testid="pulsar-review-find-notice-ok">{t('savedRows.notFound.ok')}</button></div>
+      <div className="psr-row"><button ref={ok} type="button" onClick={onClose} data-testid="pulsar-review-find-notice-ok">{vireo(OV.ok)}</button></div>
     </dialog>
   );
 }

@@ -42,6 +42,18 @@
     "pulsar"
    ],
    "reason": "VIREO's caption Pulsar Parameters, given in English after the Spanish name"
+  },
+  "catalog:pulsarLab.next.period": {
+   "words": [
+    "pulsar"
+   ],
+   "reason": "VIREO's name Pulsar Analysis, given in English after the Spanish name"
+  },
+  "catalog:pulsarLab.step.capture.help": {
+   "words": [
+    "pulsar"
+   ],
+   "reason": "VIREO's name Pulsar Analysis, given in English after the Spanish name"
   }
  }
 }

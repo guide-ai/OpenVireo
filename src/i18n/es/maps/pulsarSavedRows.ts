@@ -73,7 +73,6 @@ export const SAVED_ROWS_ES:Translation<typeof SAVED_ROWS_MESSAGES_EN>=Object.fre
  'savedRows.find.keys':'Enter busca desde el principio. Escape cancela.',
  'savedRows.find.refused.query-text':'El texto de búsqueda contiene un carácter fuera del ASCII imprimible. No se buscó ni se recordó nada.',
  'savedRows.find.refused.query-length':'El texto de búsqueda tiene más de 80 caracteres. No se buscó ni se recordó nada.',
- 'savedRows.notFound.ok':'Aceptar',
  'savedRows.status.found':'Encontrado en la fila {row}.',
  'savedRows.status.empty':'El texto de búsqueda está vacío: no se buscó nada y la selección no cambia.',
  'savedRows.status.cancelled':'Búsqueda cancelada.',

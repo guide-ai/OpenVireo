@@ -557,14 +557,14 @@
   "kind": "original",
   "value": "NS.existsText",
   "count": 1,
-  "reason": "identifier: translated in pieces around the file name through vireo(piece, \"fragment\") (nativeTr in PulsarAnalysis.tsx)"
+  "reason": "translated in pieces: VIREO's message around the file name; its fixed pieces render through vireo(piece, \"fragment\") (nativeTr in PulsarAnalysis.tsx) and the name stays as typed"
  },
  {
   "file": "src/components/PulsarAnalysis.tsx",
   "kind": "original",
   "value": "NS.verifyText",
   "count": 1,
-  "reason": "identifier: translated in pieces around the file name through vireo(piece, \"fragment\") (nativeTr in PulsarAnalysis.tsx)"
+  "reason": "translated in pieces: VIREO's message around the file name; its fixed pieces render through vireo(piece, \"fragment\") (nativeTr in PulsarAnalysis.tsx) and the name stays as typed"
  },
  {
   "file": "src/components/PulsarAnalysis.tsx",

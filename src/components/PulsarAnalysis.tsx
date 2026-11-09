@@ -50,6 +50,7 @@ import {
 import { PULSAR_SAVE_PENDING, pulsarSaveBegin, pulsarSaveRefusalNotice, type PulsarSaveNotice } from '../core/pulsarSavedCopy';
 import { browserPulsarSaveSupport, continuePulsarSave, invokePulsarSavePicker, type SaveHandle } from './pulsarSaveHost';
 import { vireo, vireoMenuItem } from '../i18n/vireo';
+import { OBSERVATORY_VIREO_CAPTIONS as OV } from '../observatory/ObservatoryMessages';
 import { createPulsarTranslator, type PulsarMessageKey, type PulsarTranslate } from './PulsarMessages';
 import {
   loadSaveAttempt, loadSaveChoiceCancelled, loadSaveChoose, loadSaveImport, loadSaveLive, loadSaveOpen, loadSaveReadLive, loadSaveReadOwned, loadSaveSelected, loadSaveVerified,
@@ -1384,13 +1385,13 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
             <div className="plr-row">
               <button type="button" onClick={() => answerClear('save')} data-testid="pulsar-clear-save">{t('pulsar.clear.save')}</button>
               <button type="button" onClick={() => answerClear('discard')} data-testid="pulsar-clear-discard">{t('pulsar.clear.discard')}</button>
-              <button type="button" ref={clearDefault} onClick={() => answerClear('cancel')} data-testid="pulsar-clear-cancel">{t('pulsar.clear.cancel')}</button>
+              <button type="button" ref={clearDefault} onClick={() => answerClear('cancel')} data-testid="pulsar-clear-cancel">{vireo(OV.cancel)}</button>
             </div>
           </>) : (<>
             <p id={`${idPrefix}clear`}>{vireo(NS.clearConfirmText)}</p>
             <div className="plr-row">
               <button type="button" onClick={() => answerClear('yes')} data-testid="pulsar-clear-yes">{t('pulsar.clear.yes')}</button>
-              <button type="button" ref={clearDefault} onClick={() => answerClear('no')} data-testid="pulsar-clear-no">{t('pulsar.clear.no')}</button>
+              <button type="button" ref={clearDefault} onClick={() => answerClear('no')} data-testid="pulsar-clear-no">{vireo(OV.no)}</button>
             </div>
           </>)}
         </dialog>
@@ -1403,9 +1404,9 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
           <p className="plr-help" id={`${idPrefix}load-gated`} data-testid="pulsar-load-yes-reason" data-support={saveSupport}>
             {saveSupport === 'ok' ? ls('loadSave.yes.reason') : ls(`loadSave.yes.unsupported.${saveSupport}` as LoadSaveMessageKey)} {t('pulsar.load.webDefault')}</p>
           <div className="plr-row">
-            <button type="button" onClick={answerLoadSave} disabled={saveSupport !== 'ok'} aria-describedby={`${idPrefix}load-gated`} data-testid="pulsar-load-yes">{t('pulsar.load.yes')}</button>
-            <button type="button" onClick={() => answerLoad('no')} data-testid="pulsar-load-no">{t('pulsar.load.no')}</button>
-            <button type="button" ref={loadDefault} onClick={() => answerLoad('cancel')} data-testid="pulsar-load-cancel">{t('pulsar.load.cancel')}</button>
+            <button type="button" onClick={answerLoadSave} disabled={saveSupport !== 'ok'} aria-describedby={`${idPrefix}load-gated`} data-testid="pulsar-load-yes">{vireo(OV.yes)}</button>
+            <button type="button" onClick={() => answerLoad('no')} data-testid="pulsar-load-no">{vireo(OV.no)}</button>
+            <button type="button" ref={loadDefault} onClick={() => answerLoad('cancel')} data-testid="pulsar-load-cancel">{vireo(OV.cancel)}</button>
           </div>
           <p role="status" aria-live="polite" className="plr-status" data-testid="pulsar-load-status">{status}</p>
         </dialog>
@@ -1423,7 +1424,7 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
         const box = (caption: string, text: string, answers: readonly NativeSaveAnswer[]) => (<>
           <h3 id={`${idPrefix}native`}>{caption}</h3>
           <p style={{ whiteSpace: 'pre-line' }} data-testid="pulsar-native-text">{text}</p>
-          <div className="plr-row">{answers.map((a, i) => <button key={a} type="button" ref={i === 0 ? ref : undefined} onClick={() => answerNative(a)} data-testid={`pulsar-native-${a}`}>{t(`pulsar.nativeSave.${a}` as PulsarMessageKey)}</button>)}</div>
+          <div className="plr-row">{answers.map((a, i) => <button key={a} type="button" ref={i === 0 ? ref : undefined} onClick={() => answerNative(a)} data-testid={`pulsar-native-${a}`}>{vireo(OV[a])}</button>)}</div>
         </>);
         return (
           <dialog ref={nativeDialog} role={st.kind === 'dialog' ? undefined : 'alertdialog'} aria-labelledby={`${idPrefix}native`} className="plr-modal plr-native-save" data-testid="pulsar-native-dialog" data-step={st.kind}
@@ -1444,7 +1445,7 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
                   {st.problem && <p role="alert" className="plr-error" data-testid="pulsar-native-problem">{t(`pulsar.nativeSave.problem.${st.problem}` as PulsarMessageKey)}</p>}
                   <div className="plr-row">
                     <button type="submit" data-testid="pulsar-native-save">{t('pulsar.nativeSave.save')}</button>
-                    <button type="button" onClick={() => answerNative('cancel')} data-testid="pulsar-native-cancel">{t('pulsar.nativeSave.cancel')}</button>
+                    <button type="button" onClick={() => answerNative('cancel')} data-testid="pulsar-native-cancel">{vireo(OV.cancel)}</button>
                   </div>
                 </form>)}
             {nativeError && <p role="alert" className="plr-error" data-testid="pulsar-native-error">{nativeError}</p>}
@@ -1786,8 +1787,8 @@ function Review({ findMemory, onFindMemory, session, editor, t, idPrefix, act, f
           <h4 id={`${idPrefix}review-prompt`}>{vireo(PULSAR_REVIEW_LITERALS.confirmationCaption)}</h4>
           <p id={`${idPrefix}review-prompt-text`}>{vireo(PULSAR_REVIEW_LITERALS.confirmationText)}</p>
           <div className="plr-row">
-            <button type="button" onClick={() => act(st => pulsarReviewAnswerDelete(st, 'yes'))} data-testid="pulsar-review-yes">{t('pulsar.review.yes')}</button>
-            <button type="button" ref={refs.promptDefault} onClick={() => act(st => pulsarReviewAnswerDelete(st, 'no'))} data-testid="pulsar-review-no">{t('pulsar.review.no')}</button>
+            <button type="button" onClick={() => act(st => pulsarReviewAnswerDelete(st, 'yes'))} data-testid="pulsar-review-yes">{vireo(OV.yes)}</button>
+            <button type="button" ref={refs.promptDefault} onClick={() => act(st => pulsarReviewAnswerDelete(st, 'no'))} data-testid="pulsar-review-no">{vireo(OV.no)}</button>
           </div>
         </section>
       )}
@@ -1796,7 +1797,7 @@ function Review({ findMemory, onFindMemory, session, editor, t, idPrefix, act, f
           <h4 id={`${idPrefix}review-prompt`}>{vireo(PULSAR_REVIEW_LITERALS.noSelectionCaption)}</h4>
           <p id={`${idPrefix}review-prompt-text`}>{vireo(prompt === 'no-selection' ? PULSAR_REVIEW_LITERALS.noSelectionText : PULSAR_REVIEW_EDIT_LITERALS.noSelectionText)}</p>
           <div className="plr-row">
-            <button type="button" ref={refs.promptDefault} onClick={() => act(pulsarReviewDismissNotice)} data-testid="pulsar-review-notice-ok">{t('pulsar.review.noticeOk')}</button>
+            <button type="button" ref={refs.promptDefault} onClick={() => act(pulsarReviewDismissNotice)} data-testid="pulsar-review-notice-ok">{vireo(OV.ok)}</button>
           </div>
         </section>
       )}
