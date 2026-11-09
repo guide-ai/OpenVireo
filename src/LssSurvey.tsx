@@ -75,6 +75,9 @@ function LssSurvey({freeRecord=null,wedgeShown=false,spectralRange=DEFAULT_SPECT
  const appliedRestore=useRef(0);
  useEffect(()=>{
   if(!restored||restored.token===appliedRestore.current)return;appliedRestore.current=restored.token;
+  // A hand-over still waiting for the wedge's answer belonged to the replaced survey; the restore drops the wedge's own points,
+  // so its late acceptance (a wedge that first mounts after the restore) must not mark the restored records as plotted.
+  handoff.current=null;
   abort.current?.abort();abort.current=null;setLoading(false);dialog.current?.close();setDialogError('');setLoaded(null);setPointed(null);setExposure(null);setError('');
   const i=restored.investigation;
   update(()=>i?restoredLssSurvey(i.field,i.records):EMPTY_LSS_SURVEY);setTelescope(i?.telescope??initialTelescope);setDescription(i?.description??'');
