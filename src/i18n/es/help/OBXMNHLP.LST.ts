@@ -1,0 +1,30 @@
+// Front ES-HELP [W]: OpenVireo's Spanish (es-419) web adaptation of VIREO's OBXMNHLP.LST. Not CLEA's text: the original bytes, hashes and
+// provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Spanish chunk.
+export const sourceName='OBXMNHLP.LST';
+export const sourceSha256='62d1c620cb3d2155e4790de4e194fd34ba524a6d90aa1168a3c2d87842bd6e9f';
+export const text=`'Primeros pasos' 'begin'
+'Iniciar sesión' 'ObXMnHlp.txt'
+'Fijar fecha y hora' 'ObXMnHlp.txt'
+'Seleccionar telescopio' 'ObXMnHlp.txt'
+'Abrir la cúpula' 'ObXMnHlp.txt'
+'Acceder al control del telescopio' 'ObXMnHlp.txt'
+'Terminar el ejercicio' 'ObXMnHlp.txt'
+'Acceso con el teclado' 'ObXMnHlp.txt'
+'Primeros pasos' 'end'
+'Cambiar de telescopio' 'begin'
+'Solicitar tiempo de telescopio' 'ObXMnHlp.txt'
+'Cambiar de telescopio óptico' 'ObXMnHlp.txt'
+'Cambiar de telescopio' 'end'
+'Herramientas' 'begin'
+'Herramienta de clasificación espectral' 'ObXMnHlp.txt'
+'Herramienta de medición de espectros' 'ObXMnHlp.txt'
+'Herramienta de análisis de radiopúlsares' 'ObXMnHlp.txt'
+'Módulo de astrometría' 'ObXMnHlp.txt'
+'Editores de resultados' 'ObXMnHlp.txt'
+'Cargar datos guardados' 'ObXMnHlp.txt'
+'Hoja de cálculo' 'ObXMnHlp.txt'
+'Herramientas' 'end'
+'Funciones de datos' 'begin'
+'Operaciones con datos' 'ObXMnHlp.txt'
+'Funciones de datos' 'end'
+`;

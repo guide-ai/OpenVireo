@@ -68,13 +68,13 @@ function checkQuery(query:unknown):asserts query is string{
 /** Search1Click loop from `start` over the row texts (see the module comment). The query is folded here when matchCase is
  * false, as the rows are; folding is idempotent. Throws on an empty or over-long query, a start that is not an integer
  * ≥ 0, or a row that is not a string (mode 2 exits before the loop, so an empty query never reaches it). */
-export function searchRadioHotListRows(rows:readonly string[],query:string,matchCase:boolean,start:number):RadioHotListSearchResult{
+export function searchRadioHotListRows(rows:readonly string[],query:string,matchCase:boolean,start:number,fold:(text:string)=>string=foldAsciiCase):RadioHotListSearchResult{
  if(!Array.isArray(rows)||rows.some(r=>typeof r!=='string'))throw new TypeError('Invalid hot list row texts');
  checkQuery(query);
  if(typeof matchCase!=='boolean')throw new TypeError('Invalid match case flag');
  if(!Number.isInteger(start)||start<0)throw new RangeError('Invalid search start');
- const prepare=(row:string)=>trimLeadingAsciiSpaces(matchCase?row:foldAsciiCase(row));
- const q=matchCase?query:foldAsciiCase(query),count=rows.length;
+ const prepare=(row:string)=>trimLeadingAsciiSpaces(matchCase?row:fold(row));
+ const q=matchCase?query:fold(query),count=rows.length;
  let i=start;
  if(count<=i)return Object.freeze({kind:'miss'});
  for(;;){

@@ -28,18 +28,18 @@ import {createRadioSaveTranslator} from '../components/RadioRecordSaveMessages';
 import {createRadioTranslator} from '../components/RadioMessages';
 const maps=import.meta.glob<Record<string,unknown>>('../**/*Messages.ts',{eager:true});
 const sha=(s:string)=>createHash('sha256').update(s).digest('hex');
-const IDS_UNSORTED=['appShell','languageChoice','projectLinks','tour','camera','clusterData','clusterHr','engineView','fieldInfo','fieldReadDetails','helpMenu','nakedEye','objectXGuide','objectXLab','objectXMeasure','objectXSession','observationMetadata','observatory','polish','pulsar','pulsarLoadSave','pulsarSavedRows','qsoList','radioAntenna','radioFinishSave','radioR1','radioRecordSave','sound','spectralRange','variableStars','wedge'];
+const IDS_UNSORTED=['appShell','languageChoice','projectLinks','tour','camera','clusterData','clusterHr','engineView','fieldInfo','fieldReadDetails','helpMenu','helpViewer','webHelp','nakedEye','objectXGuide','objectXLab','objectXMeasure','objectXSession','observationMetadata','observatory','polish','pulsar','pulsarLoadSave','pulsarSavedRows','qsoList','radioAntenna','radioFinishSave','radioR1','radioRecordSave','sound','spectralRange','variableStars','wedge'];
 const IDS=[...IDS_UNSORTED].sort();
 const root=path.resolve(import.meta.dirname,'../..');
 const page=(over:Partial<SettlePage>={}):SettlePage&{errors:string[];lang:string[]}=>{const errors:string[]=[],lang:string[]=[];return {search:'',stored:()=>null,languages:['en-US'],dev:true,bundleFor:()=>null,setLang:l=>{lang.push(l);},setTitle:()=>{},error:m=>{errors.push(m);},...over,errors,lang};};
 afterEach(()=>{activateLocale(null);});
 describe('Front ES0: the per-load language infrastructure (docs/I18N.md), English by default',()=>{
- it('the 26 *Messages.ts files, tour.ts and projectLinks.ts pick 31 maps by unique id, chosen on first use; in English each reads the English map',async()=>{
-  expect(Object.keys(maps)).toHaveLength(26);await import('../help/tour');await import('../help/projectLinks');
+ it('the 27 *Messages.ts files, tour.ts, projectLinks.ts and webHelp.ts pick 33 maps by unique id, chosen on first use; in English each reads the English map',async()=>{
+  expect(Object.keys(maps)).toHaveLength(27);await import('../help/tour');await import('../help/webHelp');await import('../help/projectLinks');
   for(const create of [createPulsarTranslator,createLoadSaveTranslator,createSavedRowsTranslator,createRadioAntennaTranslator,createFinishSaveTranslator,createRadioSaveTranslator,createRadioTranslator])create();
   expect([...pickedMessages().keys()].sort()).toEqual(IDS);expect([...MAP_IDS].sort()).toEqual(IDS);
   // Each id is picked by exactly one source line (a duplicate id would make two maps share one translation).
-  const ids:string[]=[];(function scan(dir:string){for(const e of readdirSync(dir,{withFileTypes:true})){const f=path.join(dir,e.name);if(e.isDirectory())scan(f);else if(/Messages\.ts$|^tour\.ts$|^projectLinks\.ts$/.test(e.name))for(const m of readFileSync(f,'utf8').matchAll(/pickMessages\('(\w+)'/g))ids.push(m[1]);}})(path.join(root,'src'));
+  const ids:string[]=[];(function scan(dir:string){for(const e of readdirSync(dir,{withFileTypes:true})){const f=path.join(dir,e.name);if(e.isDirectory())scan(f);else if(/Messages\.ts$|^tour\.ts$|^projectLinks\.ts$|^webHelp\.ts$/.test(e.name))for(const m of readFileSync(f,'utf8').matchAll(/pickMessages\('(\w+)'/g))ids.push(m[1]);}})(path.join(root,'src'));
   expect(ids.sort()).toEqual(IDS);
   for(const module of Object.values(maps))for(const [name,value] of Object.entries(module))if(Object.hasOwn(module,`${name}_EN`)){const english=module[`${name}_EN`] as Record<string,unknown>;expect(Object.keys(value as object),name).toEqual(Object.keys(english));for(const k of Object.keys(english))if(typeof english[k]==='string')expect((value as Record<string,unknown>)[k],`${name}.${k}`).toBe(english[k]);expect(JSON.stringify(value)).toBe(JSON.stringify(english));}
   for(const [id,english] of pickedMessages())expect(resolveMessages(id,english as never),id).toBe(english);

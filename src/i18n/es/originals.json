@@ -489,5 +489,11 @@
  "Next on List": "Siguiente en la lista",
  "No More Spectra": "No hay más espectros",
  "You are at the end of the spectra list.": "Llegaste al final de la lista de espectros.",
- "Spectral Line Table": "Tabla de líneas espectrales"
+ "Spectral Line Table": "Tabla de líneas espectrales",
+ "Help -": "Ayuda -",
+ "Select a Topic Under": "Selecciona un tema de",
+ "Spectral Line Help": "Ayuda de líneas espectrales",
+ "** Exercise Finished? **": "** ¿Ejercicio terminado? **",
+ "Select \"OK\" to Quit Exercise, \"Cancel\" to Continue.": "Selecciona «Aceptar» para salir del ejercicio o «Cancelar» para continuar.",
+ "Are You Sure You Want to Quit This Exercise?": "¿Seguro que quieres salir de este ejercicio?"
 }

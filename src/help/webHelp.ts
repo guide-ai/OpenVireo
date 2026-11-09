@@ -1,3 +1,4 @@
+import {lazyMessages,pickMessages} from '../i18n/registry';
 /** OpenVireo's own help (Front WebHelp [W]), shown by Help › Help topics…. VIREO's main-window help (VIRMNHLP.TXT) describes
  * the Windows program, so this text is written for the web site and describes only what it has. It is new web text, not a
  * CLEA resource. Pure data; WebHelpDialog.tsx renders it. */
@@ -145,13 +146,38 @@ const SITE:WebHelpGroup={title:'Using the site',topics:[
  ],['from-vireo','instruments']),
 ]};
 
-export const WEB_HELP=Object.freeze({
+/** Front ES-HELP: only the text of the topics is translated. The structure (topic ids, block kinds, related links) is this file's in
+ * every language, so a translation cannot break a link or change a block; the map `webHelp` (WEB_HELP_EN, Spanish in
+ * src/i18n/es/maps/webHelp.ts) holds the text of each block by position: a string (paragraph or the help-key label), a list of
+ * strings (steps, bullets) or a table `{head, rows}`. Web adaptations by OpenVireo, not CLEA's. */
+type TextBlock=string|readonly string[]|Readonly<{head:readonly [string,string];rows:readonly (readonly [string,string])[]}>;
+const textOf=(b:WebHelpBlock):TextBlock=>b.kind==='p'?b.text:b.kind==='helpKey'?b.label:b.kind==='map'?{head:b.head,rows:b.rows}:b.items;
+const GROUPS:readonly WebHelpGroup[]=[START,OBSERVATORY,ANALYSIS,SITE];
+export const WEB_HELP_EN=Object.freeze({
  caption:'OpenVireo help',
  close:'Close',
  navLabel:'Help topics',
  related:'See also:',
- groups:[START,OBSERVATORY,ANALYSIS,SITE] as readonly WebHelpGroup[],
+ groups:GROUPS.map(g=>({title:g.title,topics:g.topics.map(t=>({title:t.title,blocks:t.blocks.map(textOf)}))})),
 });
+const WEB_HELP_TEXT=pickMessages('webHelp',WEB_HELP_EN);
+function merge(b:WebHelpBlock,x:TextBlock):WebHelpBlock{
+ switch(b.kind){
+  case 'p':return {kind:'p',text:x as string};
+  case 'helpKey':return {kind:'helpKey',label:x as string};
+  case 'steps':return {kind:'steps',items:x as readonly string[]};
+  case 'list':return {kind:'list',items:x as readonly string[]};
+  case 'map':{const m=x as Extract<TextBlock,{head:unknown}>;return {kind:'map',head:m.head,rows:m.rows};}
+ }
+}
+/** The help for this load's language, built on first read (no text is read when the module evaluates). */
+export const WEB_HELP:Readonly<{caption:string;close:string;navLabel:string;related:string;groups:readonly WebHelpGroup[]}>=lazyMessages(()=>({
+ caption:WEB_HELP_TEXT.caption,close:WEB_HELP_TEXT.close,navLabel:WEB_HELP_TEXT.navLabel,related:WEB_HELP_TEXT.related,
+ groups:GROUPS.map((g,gi)=>({title:WEB_HELP_TEXT.groups[gi].title,topics:g.topics.map((t,ti)=>{
+  const text=WEB_HELP_TEXT.groups[gi].topics[ti];
+  return {id:t.id,title:text.title,related:t.related,blocks:t.blocks.map((b,bi)=>merge(b,text.blocks[bi] as TextBlock))};
+ })})),
+}));
 
 export function webHelpTopic(id:string):WebHelpTopic{
  for(const g of WEB_HELP.groups)for(const t of g.topics)if(t.id===id)return t;

@@ -63,19 +63,26 @@ export function parseHelpList(bytes:Uint8Array):readonly HelpRow[]{
 
 /** 0x493c10 normalisation: leading and trailing spaces removed, ASCII-lowercased unless matchCase. Null for an all-space
  * text: the native routine then reads through a nil string (an access violation, not ported). */
-function topicKey(text:string,matchCase:boolean):string|null{
+function topicKey(text:string,matchCase:boolean,fold:(text:string)=>string=foldAsciiCase):string|null{
  const t=text.replace(/^ +| +$/g,'');
  if(t==='')return null;
- return matchCase?t:foldAsciiCase(t);
+ return matchCase?t:fold(t);
+}
+/** WEB (Front ES-HELP) [W]: the fold of the Spanish translation's search. VIREO's own rule (`foldAsciiCase`) lowercases A-Z only;
+ * for the Latin-1 translation the web folds every Latin-1 letter's case and ignores accents and the diaeresis ("orbita" finds
+ * "Órbita"), but keeps ñ a letter of its own. Not VIREO behaviour: the original view keeps `foldAsciiCase`. */
+export function foldLatin1Accents(text:string):string{
+ if(typeof text!=='string')throw new TypeError('Invalid search text');
+ return text.replace(/[ñÑ]/g,'\u0001').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\u0001/g,'ñ');
 }
 export type HelpFindResult=Readonly<{kind:'hit';index:number}|{kind:'miss'}|{kind:'blank'}>;
 /** Find Topic / link lookup 0x493c10: the first row from `start` whose trimmed (folded) title EQUALS the trimmed (folded)
  * query; no wrap. `blank`: an all-space query, where VIREO raises an access violation (WEB: nothing happens). */
-export function findHelpTopic(rows:readonly HelpRow[],query:string,matchCase:boolean,start=0):HelpFindResult{
+export function findHelpTopic(rows:readonly HelpRow[],query:string,matchCase:boolean,start=0,fold:(text:string)=>string=foldAsciiCase):HelpFindResult{
  if(!Number.isInteger(start)||start<0)throw new RangeError('Invalid start');
- const q=topicKey(query,matchCase);
+ const q=topicKey(query,matchCase,fold);
  if(q===null)return Object.freeze({kind:'blank'});
- for(let i=start;i<rows.length;i++)if(rows[i].title!==''&&topicKey(rows[i].title,matchCase)===q)return Object.freeze({kind:'hit',index:i});
+ for(let i=start;i<rows.length;i++)if(rows[i].title!==''&&topicKey(rows[i].title,matchCase,fold)===q)return Object.freeze({kind:'hit',index:i});
  return Object.freeze({kind:'miss'});
 }
 /** Find Topic / Search Text miss box text (0x493c10 / 0x59f9fc): the query as typed between quotes. */
@@ -114,7 +121,7 @@ export type HelpTopicBody=Readonly<{rows:readonly string[];relatedIndex:number}>
  * the next line that starts and ends with `*`. Rows: ' ', then '  ' + line + '  ' (lines over 72 characters wrapped piece by
  * piece), then ' '. `relatedIndex` is the last unwrapped row whose upper-case text contains RELATED TOPICS, else −1. Null:
  * no header names the topic (`Topic Not Found`). */
-export function helpTopicBody(txt:Uint8Array,title:string):HelpTopicBody|null{
+export function helpTopicBody(txt:Uint8Array,title:string,relatedMarker='RELATED TOPICS'):HelpTopicBody|null{
  if(!(txt instanceof Uint8Array)||txt.length>HELP_LIST_LIMITS.bytes*4)throw new HelpListError('size');
  const lines=textLines(txt),key=foldAsciiCase(title.replace(/^ +/,''));
  let i=0;
@@ -128,7 +135,7 @@ export function helpTopicBody(txt:Uint8Array,title:string):HelpTopicBody|null{
   const s=lines[i];
   if(s.length>0&&s[0]==='*'&&s[s.length-1]==='*')break;
   if(s.length>HELP_WRAP_WIDTH){for(const piece of wrapHelpLine(s))rows.push(`  ${piece}  `);}
-  else{rows.push(`  ${s}  `);if(s.toUpperCase().includes('RELATED TOPICS'))relatedIndex=rows.length-1;}
+  else{rows.push(`  ${s}  `);if(s.toUpperCase().includes(relatedMarker))relatedIndex=rows.length-1;}
  }
  rows.push(' ');
  return Object.freeze({rows:Object.freeze(rows),relatedIndex});
@@ -139,9 +146,9 @@ export const helpTopicCaption=(title:string)=>`Help - ${title.replace(/^ +/,'')}
 /** ListBox1DblClick 0x5a020c: only rows after the Related Topics row (all rows when there is none) are tested, by exact
  * trimmed title over the whole list. Returns the row index to open, or null (no match, or a blank row: VIREO raises an
  * access violation there; WEB: nothing happens). */
-export function helpLinkTarget(rows:readonly HelpRow[],body:HelpTopicBody,bodyRow:number,matchCase:boolean):number|null{
+export function helpLinkTarget(rows:readonly HelpRow[],body:HelpTopicBody,bodyRow:number,matchCase:boolean,fold:(text:string)=>string=foldAsciiCase):number|null{
  if(!Number.isInteger(bodyRow)||bodyRow<=body.relatedIndex||bodyRow>=body.rows.length)return null;
- const r=findHelpTopic(rows,body.rows[bodyRow],matchCase,0);
+ const r=findHelpTopic(rows,body.rows[bodyRow],matchCase,0,fold);
  return r.kind==='hit'&&rows[r.index].kind==='topic'?r.index:null;
 }
 

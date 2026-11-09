@@ -37,9 +37,24 @@ const markers=[...new Set([...Object.entries(spanish).filter(([k,v])=>v!==englis
 const html=readFileSync(join(dist,'index.html'),'utf8'),spanishFiles=[];
 (function scan(dir){for(const name of readdirSync(dir)){const file=join(dir,name);if(statSync(file).isDirectory()){scan(file);continue;}
  if(!TEXT.test(name))continue;const text=readFileSync(file,'utf8'),hits=markers.filter(forms=>forms.some(m=>text.includes(m))).length;if(hits)spanishFiles.push({file,name,hits});}})(dist);
-const bundle=spanishFiles.filter(f=>/\.js$/.test(f.name)&&f.hits===markers.length);
+// Front ES-HELP: the Spanish help files (src/i18n/es/help, one chunk each, fetched only when the help viewer opens that file) are
+// their own chunks: each is recognised by the SHA-256 of the VIREO original it records, must not be loaded or preloaded by
+// index.html, and may share phrases with the catalog. All 38 must be present.
+const helpIds=[...readFileSync(join(import.meta.dirname,'..','src','help','helpFiles.ts'),'utf8').matchAll(/^ '([^']+)':file\('[^']+','[^']+',\d+,'([0-9a-f]{64})'/gm)].map(m=>({key:m[1],sha:m[2]}));
+const helpChunks=new Map();
+for(const f of spanishFiles){
+ if(!/\.js$/.test(f.name))continue;const text=readFileSync(f.file,'utf8'),found=helpIds.filter(h=>text.includes(`sourceSha256`)&&text.includes(h.sha));
+ if(found.length===1&&/^[A-Za-z]+\.(?:LST|TXT|OBS|PLS|LNL)-/.test(f.name))helpChunks.set(f.name,found[0].key);
+}
+for(const name of helpChunks.keys())if(html.includes(name))offenders.push(`index.html loads or preloads the Spanish help chunk ${name}`);
+// Every help chunk is found by name too (a chunk whose phrases matched no marker is not in spanishFiles).
+const allJs=[];(function w(dir){for(const n of readdirSync(dir)){const q=join(dir,n);if(statSync(q).isDirectory())w(q);else if(/^[A-Za-z]+\.(?:LST|TXT|OBS|PLS|LNL)-[\w-]+\.js$/.test(n))allJs.push(q);}})(join(dist,'assets'));
+const helpAll=allJs.filter(q=>helpIds.some(h=>readFileSync(q,'utf8').includes(h.sha)));
+if(helpAll.length!==helpIds.length)offenders.push(`expected ${helpIds.length} Spanish help chunks, found ${helpAll.length}`);
+const helpGzip=helpAll.reduce((n,q)=>n+gzipSync(readFileSync(q),{level:9}).length,0),helpRaw=helpAll.reduce((n,q)=>n+statSync(q).size,0);
+const bundle=spanishFiles.filter(f=>/\.js$/.test(f.name)&&f.hits===markers.length&&!helpChunks.has(f.name));
 if(bundle.length!==1)offenders.push(`expected one Spanish chunk holding the whole catalog, found ${bundle.length}`);
-for(const f of spanishFiles)if(!bundle.includes(f))offenders.push(`${f.file}: Spanish text outside the Spanish chunk (${f.hits} strings)`);
+for(const f of spanishFiles)if(!bundle.includes(f)&&!helpChunks.has(f.name))offenders.push(`${f.file}: Spanish text outside the Spanish chunk (${f.hits} strings)`);
 for(const f of bundle)if(html.includes(f.name))offenders.push(`index.html loads or preloads the Spanish chunk ${f.name}`);
 // ES2 review 1: a size budget for the Spanish chunk (a Spanish load waits for it before the first render). Above 150 KB gzip
 // it warns; above 250 KB gzip it fails. Whether to split it per area is decided at ES5, from measured first-render times on a
@@ -51,4 +66,4 @@ for(const f of sizes){
  else if(f.gzip>BUDGET.warn)console.warn(`Warning: the Spanish chunk ${f.name} is ${(f.gzip/1000).toFixed(1)} KB gzip, over 150 KB (split decided at ES5).`);
 }
 if(offenders.length){console.error(`The build carries development language code:\n${offenders.join('\n')}`);process.exit(1);}
-console.log(`Build is free of the pseudo-locale (${scanned} text files searched); Spanish is only in ${sizes.map(f=>`${f.name} (${(f.gzip/1000).toFixed(1)} KB gzip)`).join(', ')}, which index.html does not load.`);
+console.log(`Build is free of the pseudo-locale (${scanned} text files searched); Spanish is only in ${sizes.map(f=>`${f.name} (${(f.gzip/1000).toFixed(1)} KB gzip)`).join(', ')}, which index.html does not load; ${helpAll.length} Spanish help chunks (${(helpRaw/1000).toFixed(1)} KB raw, ${(helpGzip/1000).toFixed(1)} KB gzip in all) are fetched only by the help viewer.`);
