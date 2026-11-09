@@ -1,7 +1,9 @@
 import{t}from'../i18n';
 import type{StoredNumber}from'../core/nativeObservationResults';
-/** Stable presentation keys use the shared English catalog;scientific source/report values remain unchanged. */
-export const CLUSTER_NATIVE_HR_MESSAGES={
+import {lazyMessages} from '../i18n/registry';
+/** Stable presentation keys use the shared English catalog;scientific source/report values remain unchanged.
+ * Front ES0: catalog-backed (every text comes from t), so it is not a pickMessages map; built on first use, after boot. */
+export const CLUSTER_NATIVE_HR_MESSAGES=lazyMessages(()=>({
  title:t("obsHr.title"),
  intro:t("obsHr.intro"),
  resultsHeading:t("obsHr.resultsHeading"),
@@ -72,5 +74,5 @@ export const CLUSTER_NATIVE_HR_MESSAGES={
  blocked:(index:number,field:string)=>t("obsHr.blocked",{index,field}),
  kindWarning:(counts:number,other:number)=>t(counts===1?(other===0?"obsHr.kindWarning.one.none":other===1?"obsHr.kindWarning.one.one":"obsHr.kindWarning.one.many"):(other===0?"obsHr.kindWarning.many.none":other===1?"obsHr.kindWarning.many.one":"obsHr.kindWarning.many.many"),{counts,other}),
  kind:(k:number)=>t(k===1?"obsHr.kind.magnitudes":k===0?"obsHr.kind.counts":"obsHr.kind.unknown",{k}),
-};
+}));
 export type ClusterNativeHrMessages=typeof CLUSTER_NATIVE_HR_MESSAGES;

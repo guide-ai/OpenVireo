@@ -1,7 +1,7 @@
 import {useEffect,useId,useRef,useState} from 'react';
 import {CLUSTER_LIST_LITERALS as L,type ClusterList} from '../core/clusterList';
 import {HelpListBox} from './CleaHelp';
-import {CLUSTER_HR_EN as M} from './ClusterHrMessages';
+import {CLUSTER_HR as M} from './ClusterHrMessages';
 import ClusterPrintPreview from './ClusterPrintPreview';
 import './cluster-hr.css';
 

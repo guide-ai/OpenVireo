@@ -1,6 +1,6 @@
 import {useEffect,useRef,useState,type RefObject} from 'react';
 import {clusterHrPrintPage,type ClusterHrPrintLine,type ClusterHrPrintOrientation} from '../core/clusterHrPrint';
-import {CLUSTER_HR_EN as M} from './ClusterHrMessages';
+import {CLUSTER_HR as M} from './ClusterHrMessages';
 import ClusterPrintPreview from './ClusterPrintPreview';
 import './cluster-hr.css';
 import {hrScheme,hrSchemeStyle} from '../core/hrScheme';

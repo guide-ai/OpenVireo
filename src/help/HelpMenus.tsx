@@ -4,7 +4,7 @@ import CleaHelp from '../clusters/CleaHelp';
 import {fetchBundledClusterHelp} from '../io/bundledClusterHelp';
 import {HELP_FILES} from './helpFiles';
 import {ABOUT_BOX,HELP_WEBSITES,MAIN_HELP_MENU,QUIT_QUESTION,RADIO_HELP_MENU,REMINDER_CAPTION,reminderBoxText} from './mainHelp';
-import {HELP_MENU_EN as M} from './HelpMessages';
+import {HELP_MENU as M} from './HelpMessages';
 import WebHelpDialog from './WebHelpDialog';
 import {helpKeyBlocked} from './helpShortcut';
 import {PROJECT_LINKS,PROJECT_REPO_URL,currentPage,newIssueUrl} from './projectLinks';

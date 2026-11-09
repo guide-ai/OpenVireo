@@ -7,7 +7,7 @@ import {delphiFixed,formatNativeSexagesimal} from '../core/variableStars';
 import {BUNDLED_VARIABLE_STARS,fetchBundledVariableFile} from '../io/bundledVariableStars';
 import CleaHelp from '../clusters/CleaHelp';
 import {HELP_FILES} from '../help/helpFiles';
-import {VARIABLE_STARS_EN as M} from './VariableStarMessages';
+import {VARIABLE_STARS as M} from './VariableStarMessages';
 import LightCurveSvg from './LightCurveSvg';
 import {INITIAL_LIGHT_CURVE_MONOCHROME,lightCurvePrintFlags} from '../core/lightCurveScheme';
 import {lightCurvePrintPage,printPageSizeCss,type LightCurvePrintItem,type PrintOrientation} from '../core/lightCurvePrint';

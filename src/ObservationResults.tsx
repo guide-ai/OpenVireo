@@ -4,7 +4,7 @@ import{stageObservationEdit,isObservationEditRecovery,undoObservationRecovery,se
 import{loadObservationRecovery,storeObservationRecovery,restoreObservationRecovery,finishObservationRecovery,OBSERVATION_RECOVERY_KEY,EMPTY_RECOVERY,type StoredRecovery,type RecoveryStorage}from'./io/observationRecovery';
 import{useContext,useEffect,useLayoutEffect,useImperativeHandle,useRef,useState,useMemo,type Ref,type ChangeEvent}from'react';
 import{formatObservationDec,formatObservationJd,formatObservationRa}from'./core/observationMetadata';
-import{OBSERVATION_METADATA_EN as OM}from'./ObservationMetadataMessages';
+import{OBSERVATION_METADATA as OM}from'./ObservationMetadataMessages';
 import{observationSource,openObservation,confirmObservation,type ObservationSource,parseObservationType,formatObservationType,ObservationResultError,type ObservationNotebook,type ObservationMode,type ObservationEdit}from'./core/observationResults';
 import{serializeObservationSnapshot,type ObservationSnapshot}from'./core/observationNotebook';
 import{loadObservationCache,saveObservationCache,readObservationNotebookFile,OBSERVATION_STORAGE_KEY,type CacheStatus}from'./io/observationNotebook';

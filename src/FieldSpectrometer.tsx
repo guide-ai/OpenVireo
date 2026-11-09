@@ -1,7 +1,7 @@
 import {M31_NOTICE} from './core/m31Notice';
 import {DEFAULT_SPECTRAL_RANGE,type SpectralRange} from './core/spectralRange';
 import SpectralRangeRow from './SpectralRangeRow';
-import {SPECTRAL_RANGE_EN as SR} from './SpectralRangeMessages';
+import {SPECTRAL_RANGE as SR} from './SpectralRangeMessages';
 import {useCallback,useContext,useEffect,useImperativeHandle,useMemo,useRef,useState,type Ref} from 'react';
 import {VireoOptionsContext} from './vireoOptionsContext';
 import {COMPILED_SPECTROMETER_PARAMETERS,isCompiledSpectrometerParameters,spectrometerParameterRefusal,spectrometerParametersOf,spectrometerTickMs} from './core/instrumentParameters';

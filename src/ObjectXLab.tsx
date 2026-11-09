@@ -3,7 +3,7 @@ import {observatoryIdEditable} from './core/observatoryDateTime';
 import type {ClassificationImport} from './core/classificationImport';
 import {memo,useEffect,useMemo,useRef,useState,type MutableRefObject} from 'react';
 import './objectx.css';
-import {OBJECT_X_LAB_EN as M,OBJECT_X_MEASURE_EN} from './objectx/ObjectXMessages';
+import {OBJECT_X_LAB as M,OBJECT_X_MEASURE} from './objectx/ObjectXMessages';
 import {ObjectXMeasure,type MeasureFrame} from './ObjectXMeasure';
 import ObjectXSpectrum from './ObjectXSpectrum';
 import {MultiSpecObjectXLazy} from './multispec/MultiSpecLazy';
@@ -256,7 +256,7 @@ function ObjectXLab({sessionId=null,editMode=false,spectralRange=DEFAULT_SPECTRA
     <div className="button-row">
      {(['first','second'] as const).map((part,p)=><label key={part}>{p?M.measureSecond:M.measureFirst}<select data-testid={`objectx-measure-${part}`} disabled={disabled} value={inv.measure?inv.measure[part]:p} onChange={e=>chooseMeasure(part,Number(e.target.value))}>
       {inv.images.map((m,i)=><option key={m.sha256} value={i}>{m.label}</option>)}</select></label>)}
-     {!inv.measure&&<button className="secondary-button" disabled={disabled} onClick={()=>update(i=>({...i,measure:{first:0,second:1},log:[]}))}>{OBJECT_X_MEASURE_EN.title}</button>}
+     {!inv.measure&&<button className="secondary-button" disabled={disabled} onClick={()=>update(i=>({...i,measure:{first:0,second:1},log:[]}))}>{OBJECT_X_MEASURE.title}</button>}
     </div>
     {inv.measure&&(frames?<ObjectXMeasure frames={frames} log={inv.log} active={active&&!busy} onLogChange={(log:MeasurementLog)=>update(i=>({...i,log}))}/>:<p>{M.measureNotLoaded}</p>)}
    </>}

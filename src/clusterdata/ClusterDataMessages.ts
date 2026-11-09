@@ -1,5 +1,6 @@
+import {pickMessages} from '../i18n/registry';
 /** Web texts of Front K (docs/CLUSTER-DATA-DIALOGS.md). Original literals stay in core/clusterDialog.ts. */
-export const CLUSTER_DATA_MESSAGES=Object.freeze({
+export const CLUSTER_DATA_MESSAGES_EN=Object.freeze({
  menuNote:'VIREO shows File › Cluster Data... in its photometry, HR-diagram and all-instruments modes; this site has no modes, so it is always here.',
  groupsDisabled:'Type of Listing and Sort By are instructor (Edit Mode) settings in VIREO; without Edit Mode the list is the student finding list, sorted by RA.',
  useTelescopeOff:'Use Telescope Coordinates needs the dome open and tracking on, as VIREO needs the telescope drive on.',
@@ -25,3 +26,4 @@ export const CLUSTER_DATA_MESSAGES=Object.freeze({
  listNote:'Double-click a row (or Get Selection Data) to copy it into Cluster Data Parameters; right-click a selected row for the hot-list items.',
  printNote:'Web adaptation: a print preview of the list; VIREO prints landscape in Edit Mode and portrait otherwise.',
 });
+export const CLUSTER_DATA_MESSAGES=pickMessages('clusterData',CLUSTER_DATA_MESSAGES_EN);

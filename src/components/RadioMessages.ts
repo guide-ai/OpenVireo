@@ -8,7 +8,8 @@ const RADIO_KEYS=["radio.title","radio.scope","radio.menu.heading","radio.menu.e
 export type RadioMessageKey=typeof RADIO_KEYS[number];
 export const RADIO_MESSAGES_EN=Object.freeze(Object.fromEntries(RADIO_KEYS.map(key=>[key,en[key]]))) as Readonly<Record<RadioMessageKey,string>>;
 export type RadioTranslate=(key:RadioMessageKey,values?:Readonly<Record<string,string|number>>)=>string;
-/** Same contract as src/i18n createI18n: complete keys, identical placeholders, values inserted as text. */
+/** Front ES0: catalog-backed (the English default renders through the active catalog's t), so it is not a pickMessages map.
+ * Same contract as src/i18n createI18n: complete keys, identical placeholders, values inserted as text. */
 export function createRadioTranslator(messages:Readonly<Record<RadioMessageKey,string>>=RADIO_MESSAGES_EN):RadioTranslate{
  const keys=Object.keys(RADIO_MESSAGES_EN) as RadioMessageKey[];
  if(!messages||Object.keys(messages).length!==keys.length||keys.some(k=>!Object.hasOwn(messages,k)))throw new Error('Invalid radio message catalog');

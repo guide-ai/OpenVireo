@@ -1,6 +1,7 @@
 /** Web texts of Front P (docs/POLISH-FRONT-P.md): labelled web adaptations, notices and typed reasons. Original literals
  * are quoted from the DFM or code and never translated. */
 import type {BundledHotListFailure} from '../io/bundledHotList';
+import {pickMessages} from '../i18n/registry';
 
 const FILE_REASONS:Readonly<Record<BundledHotListFailure,string>>=Object.freeze({download:'could not be downloaded',size:'does not have its recorded size',sha256:'does not match its recorded SHA-256'});
 
@@ -28,7 +29,7 @@ export const HOT_LIST_POPUP_LITERALS=Object.freeze({label:'Hot list',edit:'&Edit
  * 0x59172c (MessageDlg 0x5918ac, mtConfirmation, [mbYes,mbNo]) [D]; "Confirm" is Delphi's mtConfirmation caption [I]. */
 export const HOT_LIST_EDIT_LITERALS=Object.freeze({noSelectionCaption:'No Selection!',noSelectionText:'Please select an entry, using the left mouse button.',deleteCaption:'Confirm',deleteText:'Delete Highlighted Entry from List?'});
 
-export const POLISH_MESSAGES=Object.freeze({
+export const POLISH_MESSAGES_EN=Object.freeze({
  spectrometerIndex:Object.freeze({
   title:'Where to take a spectrum',
   intro:'VIREO’s spectrometer is used from the observatory with the telescope pointed at a target. In OpenVireo each exercise has its own verified spectrometer route:',
@@ -122,3 +123,4 @@ export const POLISH_MESSAGES=Object.freeze({
   error:(code:BundledHotListFailure)=>`The bundled Pulsars.HTL ${FILE_REASONS[code]}; the current hot list is unchanged.`,
  }),
 });
+export const POLISH_MESSAGES=pickMessages('polish',POLISH_MESSAGES_EN);

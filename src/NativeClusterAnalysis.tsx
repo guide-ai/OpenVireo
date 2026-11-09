@@ -16,7 +16,7 @@ import {formatNumber,t} from './i18n';
 import CleaHelp from './clusters/CleaHelp';
 import {CLUSTER_HR_IMAGE,clusterHrIsochronePolyline,clusterHrPixel,clusterHrPlotModel,clusterHrZamsPolyline} from './core/clusterHrPlot';
 import {clusterHrHitTest,clusterVBank} from './core/clusterHrSelect';
-import {CLUSTER_HR_EN as HR} from './clusters/ClusterHrMessages';
+import {CLUSTER_HR as HR} from './clusters/ClusterHrMessages';
 import HrPrint,{ObservationDataUnavailable} from './clusters/HrPrint';
 import RecordedResultsWindow from './clusters/RecordedResultsWindow';
 import {observationListData} from './core/sharedObservationList';

@@ -3,11 +3,11 @@ import {DEFAULT_SPECTRAL_RANGE,sameRange,type SpectralRange} from './core/spectr
 import {parseObjectXSpectrumPolicy} from './core/objectXSpectrometer';
 import {spectralRangeCoverage} from './core/spectralRangeCoverage';
 import SpectralRangeRow from './SpectralRangeRow';
-import {SPECTRAL_RANGE_EN as SR} from './SpectralRangeMessages';
+import {SPECTRAL_RANGE as SR} from './SpectralRangeMessages';
 import {useEffect,useRef,useState} from 'react';
 import CleaHelp from './clusters/CleaHelp';
 import {HELP_FILES} from './help/helpFiles';
-import {OBJECT_X_LAB_EN as M} from './objectx/ObjectXMessages';
+import {OBJECT_X_LAB as M} from './objectx/ObjectXMessages';
 import {observeObjectXSpectrum,objectXSpectrometerFailure,revealObjectXSpectrum,type ObjectXSpectrumView} from './io/objectXSpectrometer';
 import {OBJECT_X_SPECTRA_LIMITS,type ObjectXSpectrumRecord} from './io/objectXSpectra';
 import type {FieldTelescope} from './core/fieldEngine';

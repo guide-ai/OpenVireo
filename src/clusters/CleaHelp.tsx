@@ -5,7 +5,7 @@ import {foldAsciiCase,searchRadioHotListRows,RADIO_HOT_LIST_SEARCH_QUERY_MAX} fr
 import {fetchBundledClusterHelp} from '../io/bundledClusterHelp';
 import {HELP_FILES,helpFile,type HelpFileIdentity} from '../help/helpFiles';
 import {HELP_BUTTON_NAMES} from '../help/HelpMessages';
-import {CLUSTER_HR_EN as M} from './ClusterHrMessages';
+import {CLUSTER_HR as M} from './ClusterHrMessages';
 import ClusterPrintPreview from './ClusterPrintPreview';
 import './cluster-hr.css';
 

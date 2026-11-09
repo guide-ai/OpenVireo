@@ -1,3 +1,4 @@
+import {pickMessages} from '../i18n/registry';
 /**
  * English presentation catalog for the recorded-pulsar analysis panel (keys `pulsar.*`).
  * It is kept out of the shared en.json until the coordinator integrates it. The panel
@@ -496,7 +497,7 @@ export type PulsarTranslate = (key: PulsarMessageKey, values?: Readonly<Record<s
 const placeholders = (text: string) => [...text.matchAll(/\{(\w+)\}/g)].map(m => m[1]).sort().join(',');
 
 /** A replacement catalog must have every key and the same placeholders. Values are inserted as plain text, never as HTML. */
-export function createPulsarTranslator(messages: Readonly<Record<PulsarMessageKey, string>> = PULSAR_MESSAGES_EN): PulsarTranslate {
+export function createPulsarTranslator(messages: Readonly<Record<PulsarMessageKey, string>> = pickMessages('pulsar', PULSAR_MESSAGES_EN)): PulsarTranslate {
   const keys = Object.keys(PULSAR_MESSAGES_EN) as PulsarMessageKey[];
   if (!messages || Object.keys(messages).length !== keys.length || keys.some(k => !Object.hasOwn(messages, k) || typeof messages[k] !== 'string' || placeholders(messages[k]) !== placeholders(PULSAR_MESSAGES_EN[k])))
     throw new Error('Invalid pulsar message catalog');

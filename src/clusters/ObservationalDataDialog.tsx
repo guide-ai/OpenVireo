@@ -2,7 +2,7 @@ import {useEffect,useId,useRef,useState} from 'react';
 import {createPortal} from 'react-dom';
 import {menuCaptionText} from '../core/radioControl';
 import {OBSERVATIONAL_DATA_LITERALS as L,type ObservationalDataFields} from '../core/clusterNativeHrSelect';
-import {CLUSTER_HR_EN as HR} from './ClusterHrMessages';
+import {CLUSTER_HR as HR} from './ClusterHrMessages';
 import '../observatory/observatory-dialogs.css';
 import './cluster-hr.css';
 

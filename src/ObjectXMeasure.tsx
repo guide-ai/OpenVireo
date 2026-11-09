@@ -1,7 +1,7 @@
 import {useEffect,useLayoutEffect,useMemo,useRef,useState,type KeyboardEvent} from 'react';
 import type {FitsImage} from './core/fitsImage';
 import {BLINK_INTERVAL,MeasureError,addMeasurement,blinkAlignment,centroid,clampBlinkInterval,defaultDisplayRange,deriveTargets,imageMedian,formatSexagesimal,framePlate,measureImageFromFits,parseSexagesimal,removeMeasurement,stretchRaster,targetMotion,type MeasurementLog,type TanWcs} from './core/astrometryMeasure';
-import {OBJECT_X_MEASURE_EN,type ObjectXMeasureMessages} from './objectx/ObjectXMessages';
+import {OBJECT_X_MEASURE,type ObjectXMeasureMessages} from './objectx/ObjectXMessages';
 
 /** One image offered for measurement: a saved camera FITS, its observation JD and its header WCS when present. */
 export type MeasureFrame=Readonly<{label:string;jd:number;image:FitsImage;wcs:TanWcs|null}>;
@@ -22,7 +22,7 @@ const utText=(jd:number)=>new Date(Math.round((jd-2440587.5)*86400)*1000).toISOS
 
 /** E08 web measuring tool (X3): blink, click/keyboard centroid measurement, plate or header-WCS solution, motion. Marks keep
  * pixels only; every sky position, residual and the motion are derived from the current log at render time. */
-export function ObjectXMeasure({frames,log,onLogChange,active=true,messages=OBJECT_X_MEASURE_EN}:Props){
+export function ObjectXMeasure({frames,log,onLogChange,active=true,messages=OBJECT_X_MEASURE}:Props){
  const m=messages;
  const [shown,setShown]=useState(0),[blinking,setBlinking]=useState(false),[interval,setIntervalMs]=useState<number>(BLINK_INTERVAL.default);
  const [cursor,setCursor]=useState({x:1,y:1}),[role,setRole]=useState<'target'|'reference'>('target');

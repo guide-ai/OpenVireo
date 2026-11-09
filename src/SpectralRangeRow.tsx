@@ -1,7 +1,7 @@
 import {useContext,useState} from 'react';
 import {VireoOptionsContext} from './vireoOptionsContext';
 import SpectralRangeDialog from './SpectralRangeDialog';
-import {SPECTRAL_RANGE_EN as SR} from './SpectralRangeMessages';
+import {SPECTRAL_RANGE as SR} from './SpectralRangeMessages';
 import {SPECTRAL_RANGE_LITERALS,type SpectralRange} from './core/spectralRange';
 import {menuCaptionText} from './core/radioControl';
 

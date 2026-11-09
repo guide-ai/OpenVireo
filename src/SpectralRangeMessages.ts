@@ -1,3 +1,4 @@
+import {pickMessages} from './i18n/registry';
 /** Front S (S1) web strings for the spectrometer range (docs/SPECTRAL-RANGE.md). VIREO's own captions and messages are in
  * src/core/spectralRange.ts (SPECTRAL_RANGE_LITERALS). */
 export const SPECTRAL_RANGE_EN=Object.freeze({
@@ -11,3 +12,4 @@ export const SPECTRAL_RANGE_EN=Object.freeze({
  slider:(edge:string)=>`${edge} slider`,
  locked:'Spectral Range… is disabled: Allow User Change is unchecked in the Optical Simulation Options (Spectrometer tab), as in VIREO. Those options open in instructor mode.',
 });
+export const SPECTRAL_RANGE=pickMessages('spectralRange',SPECTRAL_RANGE_EN);

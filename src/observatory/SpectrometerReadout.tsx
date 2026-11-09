@@ -1,6 +1,6 @@
 import {useContext,useEffect,useState} from 'react';
 import {spectrometerIdText,spectrometerMagText,spectrometerMagVisible,type ShownCurrentObject,type SpectrometerReadoutOptions} from '../core/currentObject';
-import {OBJECT_X_LAB_EN} from '../objectx/ObjectXMessages';
+import {OBJECT_X_LAB} from '../objectx/ObjectXMessages';
 import {VireoOptionsContext} from '../vireoOptionsContext';
 import {OBSERVATORY_MESSAGES} from './ObservatoryMessages';
 import './observatory-dialogs.css';
@@ -35,7 +35,7 @@ export const SPECTROMETER_READOUT_LITERALS=Object.freeze({idCaption:'Object:',ma
 /** The two boxes; renders nothing while both are hidden (the compiled default). */
 export default function SpectrometerReadout({object,options,sky=false,testId='spec-readout'}:{object:SpectrometerObject;options:SpectrometerReadoutOptions;sky?:boolean;testId?:string}){
  const L=SPECTROMETER_READOUT_LITERALS,pending=object==='pending',shown=pending?NONE:object;
- const id=options.showObjectId?(pending&&!sky?L.initial:spectrometerIdText(options,sky,shown,OBJECT_X_LAB_EN.hiddenName)):null;
+ const id=options.showObjectId?(pending&&!sky?L.initial:spectrometerIdText(options,sky,shown,OBJECT_X_LAB.hiddenName)):null;
  const mag=spectrometerMagText(options,sky||pending,shown);
  if(id===null&&mag===null)return null;
  return <div className="spec-readout" data-testid={testId}><dl aria-label={OBSERVATORY_MESSAGES.spectrometerReadout.label}>

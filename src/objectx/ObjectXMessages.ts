@@ -1,3 +1,4 @@
+import {pickMessages} from '../i18n/registry';
 /** Presentation strings of the E08 Object X screens, keyed and pure so the coordinator can fold them into the shared i18n
  * catalog at merge. English default. Nothing here reveals a target's identity. */
 export type ObjectXMeasureMessages=Readonly<{
@@ -37,6 +38,7 @@ export const OBJECT_X_MEASURE_EN:ObjectXMeasureMessages=Object.freeze({
  motionNone:'Measure the target on two images taken at different times to get its motion.',
  errors:Object.freeze({bounds:'The cursor is outside the image.',range:'The low cut must be below the high cut.','no-signal':'No source above the low cut near the cursor.',references:'Too many marks; remove some first.',degenerate:'The reference stars are too close to a line; choose others.',wcs:'This image has no usable coordinate header.',time:'The two images have the same time.'}),
 });
+export const OBJECT_X_MEASURE=pickMessages('objectXMeasure',OBJECT_X_MEASURE_EN);
 
 /** #object-x route and E08 guide. No string names or describes a particular target. */
 export const OBJECT_X_LAB_EN=Object.freeze({
@@ -145,6 +147,7 @@ export const OBJECT_X_LAB_EN=Object.freeze({
  answerFrozen:'Your answer was recorded when you revealed the object; it can no longer be changed.',
  progress:'Your progress',
 });
+export const OBJECT_X_LAB=pickMessages('objectXLab',OBJECT_X_LAB_EN);
 export type ObjectXLabMessages=typeof OBJECT_X_LAB_EN;
 
 export const OBJECT_X_GUIDE_EN=Object.freeze({
@@ -167,7 +170,9 @@ export const OBJECT_X_GUIDE_EN=Object.freeze({
  progress:'Your progress',go:'Go to Object X',goObservatory:'Go to the observatory',
  close:'Close Object X guide',return:'Return',
 });
+export const OBJECT_X_GUIDE=pickMessages('objectXGuide',OBJECT_X_GUIDE_EN);
 
 export const OBJECT_X_SESSION_EN=Object.freeze({
  saveError:'The Object X part could not be saved: the asteroid positions of your images could not be recomputed from the orbit file.',
 });
+export const OBJECT_X_SESSION=pickMessages('objectXSession',OBJECT_X_SESSION_EN);

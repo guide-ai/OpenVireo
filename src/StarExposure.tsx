@@ -11,7 +11,7 @@ import {t,formatNumber} from './i18n';
 import {useBoundedExposure} from './useBoundedExposure';
 import {activateStar,cancelStar,createStarExposure,deactivateStar,pauseStar,resetStar,starConfigurationOf,starCountsCsv,starSpectralRange,startStar,tickStar,STAR_TARGET,verifiedStarConfiguration} from './core/starExposure';
 import SpectralRangeDialog from './SpectralRangeDialog';
-import {SPECTRAL_RANGE_EN as SR} from './SpectralRangeMessages';
+import {SPECTRAL_RANGE as SR} from './SpectralRangeMessages';
 import {DEFAULT_SPECTRAL_RANGE,SPECTRAL_RANGE_LITERALS,type SpectralRange} from './core/spectralRange';
 import {menuCaptionText} from './core/radioControl';
 import {parseJournalSeed} from './core/exposureJournal';

@@ -2,12 +2,12 @@ import {useEffect,useMemo,useState} from 'react';
 import {frozenObservatoryTime,type FieldTelescope} from '../core/fieldEngine';
 import type {HtlList} from '../core/hotList';
 import {loadObjectXPositions,objectXNear} from '../io/objectXMask';
-import {OBJECT_X_LAB_EN as XM} from '../objectx/ObjectXMessages';
+import {OBJECT_X_LAB as XM} from '../objectx/ObjectXMessages';
 import {multiSpecMaskReach,objectXMultiSpecField} from './multiSpecFields';
 import {MULTISPEC_MASK_PENDING,MULTISPEC_UNMASKED,type MultiSpecMaskPolicy} from './multiSpecText';
 import MultiSpecInstrument from './MultiSpecInstrument';
 import {spectralRangeCoverage} from '../core/spectralRangeCoverage';
-import {SPECTRAL_RANGE_EN as SR} from '../SpectralRangeMessages';
+import {SPECTRAL_RANGE as SR} from '../SpectralRangeMessages';
 import type {SpectralRange} from '../core/spectralRange';
 /** Front S2: Multi-Spec reads the page's one range (0x526e7f); off the default it is not witnessed here [W]. */
 /** Front S3: every dialog range unmasked; while an Object X target is masked only Object X's admitted ranges (kind-free). */

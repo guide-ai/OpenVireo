@@ -1,6 +1,6 @@
 import {useEffect,useId,useRef,useState,type ReactNode} from 'react';
 import {createPortal} from 'react-dom';
-import {CLUSTER_HR_EN as M} from './ClusterHrMessages';
+import {CLUSTER_HR as M} from './ClusterHrMessages';
 import './cluster-hr.css';
 
 export const CLUSTER_PRINT_SCOPE='cluster-hr';

@@ -1,3 +1,5 @@
+// Front ES0 (docs/I18N.md): first, so the UI language is settled before any module below builds text.
+import './boot';
 import './focusAfterLayout';
 import './theme/tokens.css';
 import './theme/base.css';

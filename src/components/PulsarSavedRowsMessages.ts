@@ -1,4 +1,5 @@
 import { SAVED_FIND_LITERALS } from '../core/pulsarSavedRows';
+import {pickMessages} from '../i18n/registry';
 /**
  * English presentation catalog for the supplied saved-rows viewer (keys `savedRows.*`). It stays a scoped catalog; the App
  * host's own disclosure texts are `plr.savedRows.*` in en.json. A complete replacement catalog is accepted by createSavedRowsTranslator.
@@ -104,7 +105,7 @@ export type SavedRowsMessageKey = keyof typeof SAVED_ROWS_MESSAGES_EN;
 export type SavedRowsTranslate = (key: SavedRowsMessageKey, values?: Readonly<Record<string, string | number>>) => string;
 const placeholders = (s: string) => [...s.matchAll(/\{(\w+)\}/g)].map(m => m[1]).sort().join(',');
 /** Builds a translator from a complete catalog with the same keys and placeholders. Inserted values are plain text. */
-export function createSavedRowsTranslator(messages: Readonly<Record<SavedRowsMessageKey, string>> = SAVED_ROWS_MESSAGES_EN): SavedRowsTranslate {
+export function createSavedRowsTranslator(messages: Readonly<Record<SavedRowsMessageKey, string>> = pickMessages('pulsarSavedRows', SAVED_ROWS_MESSAGES_EN)): SavedRowsTranslate {
   const keys = Object.keys(SAVED_ROWS_MESSAGES_EN) as SavedRowsMessageKey[];
   if (!messages || Object.keys(messages).length !== keys.length || keys.some(k => !Object.hasOwn(messages, k) || typeof messages[k] !== 'string' || placeholders(messages[k]) !== placeholders(SAVED_ROWS_MESSAGES_EN[k])))
     throw new Error('Invalid saved-rows message catalog');

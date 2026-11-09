@@ -22,12 +22,18 @@ async function watch(page:Page,base:string):Promise<Problems>{
  await page.addInitScript(()=>{
   const w=window as unknown as {__csp:string[]};w.__csp=[];
   document.addEventListener('securitypolicyviolation',e=>{w.__csp.push(`${e.effectiveDirective} ${e.blockedURI}`);});
+  // Front ES0 review 1: src/boot.ts must settle the UI language before any text is built. Count the writes of the active-language
+  // holder (src/i18n/active.ts) and the reads that found it empty; a read before boot would show here and as boot's console error.
+  const key=Symbol.for('openvireo.i18n.active'),l=window as unknown as {__languageSets:number;__languageEarlyReads:number};let held:unknown;l.__languageSets=0;l.__languageEarlyReads=0;
+  Object.defineProperty(globalThis,key,{configurable:true,get(){if(held===undefined)l.__languageEarlyReads++;return held;},set(value){l.__languageSets++;held=value;}});
  });
  page.on('console',m=>{if(m.type()==='error'||(m.type()==='warning'&&/Content.Security.Policy|Permissions.Policy|Refused to/i.test(m.text())))p.console.push(`${m.type()}: ${m.text()}`);});
  page.on('pageerror',e=>p.errors.push(e.message));
  return p;
 }
 const violations=(page:Page)=>page.evaluate(()=>(window as unknown as {__csp:string[]}).__csp);
+/** How often the active-language holder was set and read while still empty (see watch). Boot sets it once and nothing reads it first. */
+const language=(page:Page)=>page.evaluate(()=>{const l=window as unknown as {__languageSets:number;__languageEarlyReads:number};return {sets:l.__languageSets,earlyReads:l.__languageEarlyReads};});
 
 test('the page, a hashed bundle and an original file carry the release headers',async({request,baseURL})=>{
  const page=await request.get('/');expect(page.status()).toBe(200);
@@ -104,6 +110,15 @@ for(const [hash,name] of ROUTES)test(`${name} (${hash}) opens with no policy vio
  if(hash==='#spectrum'){await page.getByText('Hubble diagram & distances',{exact:true}).click();await page.waitForLoadState('networkidle');}
  await page.waitForTimeout(500);
  expect({console:p.console,errors:p.errors,csp:await violations(page),external:p.external}).toEqual({console:[],errors:[],csp:[],external:[]});
+ expect(await language(page)).toEqual({sets:1,earlyReads:0});
+});
+
+test('Front ES0: the language is settled once, by boot, before any text, also for a ?lang=es-419 preview (English in ES0)',async({page,baseURL})=>{
+ const p=await watch(page,baseURL!);
+ await page.goto('/?lang=es-419#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.lang)).toBe('en');
+ expect(await language(page)).toEqual({sets:1,earlyReads:0});
+ expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);
 });
 
 test('Help › About OpenVireo and privacy shows the privacy notice and the credits',async({page,baseURL})=>{

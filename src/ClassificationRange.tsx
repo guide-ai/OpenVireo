@@ -1,4 +1,4 @@
-import{useContext,useEffect,useState}from'react';import{VireoOptionsContext}from'./vireoOptionsContext';import{SPECTRAL_RANGE_EN as SR}from'./SpectralRangeMessages';import{classificationBounds,classificationRangeView,type ClassificationViewport}from'./core/classificationViewport';import{t}from'./i18n';
+import{useContext,useEffect,useState}from'react';import{VireoOptionsContext}from'./vireoOptionsContext';import{SPECTRAL_RANGE as SR}from'./SpectralRangeMessages';import{classificationBounds,classificationRangeView,type ClassificationViewport}from'./core/classificationViewport';import{t}from'./i18n';
 export default function ClassificationRange({view,disabled,onApply}:{view:ClassificationViewport;disabled:boolean;onApply:(view:ClassificationViewport)=>void}){
  // S3 review 1 M1: TSpClassify FormShow enables its Spectral Range item from Allow User Change (0x507945 → [+0x440].Enabled).
  const {allowRangeChange}=useContext(VireoOptionsContext);

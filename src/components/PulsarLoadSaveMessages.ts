@@ -1,3 +1,4 @@
+import {pickMessages} from '../i18n/registry';
 /**
  * English presentation catalog of the R-RX18 Load question Yes flow (keys `loadSave.*`, docs/PULSAR-LOAD-SAVE.md): E9 Yes → the
  * verified web Save → a separate, fresh Load choice. It is kept out of the shared en.json, like PulsarMessages.ts, until the
@@ -38,7 +39,7 @@ export type LoadSaveTranslate = (key: LoadSaveMessageKey, values?: Readonly<Reco
 const placeholders = (text: string) => [...text.matchAll(/\{(\w+)\}/g)].map(m => m[1]).sort().join(',');
 
 /** A replacement catalog must have every key and the same placeholders. Values are inserted as plain text, never as HTML. */
-export function createLoadSaveTranslator(messages: Readonly<Record<LoadSaveMessageKey, string>> = LOAD_SAVE_MESSAGES_EN): LoadSaveTranslate {
+export function createLoadSaveTranslator(messages: Readonly<Record<LoadSaveMessageKey, string>> = pickMessages('pulsarLoadSave', LOAD_SAVE_MESSAGES_EN)): LoadSaveTranslate {
   const keys = Object.keys(LOAD_SAVE_MESSAGES_EN) as LoadSaveMessageKey[];
   if (!messages || Object.keys(messages).length !== keys.length || keys.some(k => !Object.hasOwn(messages, k) || typeof messages[k] !== 'string' || placeholders(messages[k]) !== placeholders(LOAD_SAVE_MESSAGES_EN[k])))
     throw new Error('Invalid load save message catalog');
