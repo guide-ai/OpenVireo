@@ -49,6 +49,7 @@ import {
 import {browserReceiverAuditionDeps,createReceiverAuditionHost,type ReceiverAuditionHost,type ReceiverAuditionHostEvent} from './receiverAuditionHost';
 import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeNothing,trapTab} from './radioModal';
 import {t,type PlainMessageKey} from '../i18n';
+import {lazyMessages,lazyTranslator} from '../i18n/registry';
 
 /** Host access for the route: open from the panel's Receiver button, the antenna transitions (clock reassociation), the
  * catalog lock, and two read-only views for Pulsar Parameters: the shared +0x5f7 buffer (sourceBuffer, read live; Receiver
@@ -134,17 +135,18 @@ type Notice=Readonly<{slot:number|null;outcome:ReceiverSessionOutcome;text?:stri
 const noticeText=(n:Notice)=>n.text??outcomeText(n.outcome);
 /** R-RX16 (docs/RADIO-RECORD-SAVE.md): the reused R-RX15/R-RX14 Save texts and the Radio Save catalog; R-RX17
  * (docs/RADIO-FINISH-SAVE.md): the finish Save catalog. */
-const PT=createPulsarTranslator(),RS=createRadioSaveTranslator(),FS=createFinishSaveTranslator();
+const PT=lazyTranslator(createPulsarTranslator),RS=lazyTranslator(createRadioSaveTranslator),FS=lazyTranslator(createFinishSaveTranslator);// Front ES1: made on first call
 /** Which Radio Save dialog: R-RX16 from the Record arming question, R-RX17 from the finish Save question. */
 type RadioSaveKind='arming'|'finish';
 /** The texts and test ids that differ between the two Radio Save dialogs; everything else is shared. */
 type RadioSaveTexts=Readonly<{testId:string;heading:string;intro:string;back:string;pendingNote:string;notReady:string;abandoned:string;busy:string}>;
-const RADIO_SAVE_TEXTS:Readonly<Record<RadioSaveKind,RadioSaveTexts>>={
+// Front ES1: built on first read, after the language is settled (docs/I18N.md: no text at module evaluation).
+const RADIO_SAVE_TEXTS:Readonly<Record<RadioSaveKind,RadioSaveTexts>>=lazyMessages(()=>({
  arming:{testId:'receiver-record-save',heading:RS('radioSave.heading'),intro:RS('radioSave.intro'),back:RS('radioSave.back'),pendingNote:RS('radioSave.pendingNote'),
   notReady:RS('radioSave.refusal.not-ready'),abandoned:RS('radioSave.fail.abandoned'),busy:RS('radioSave.busy')},
  finish:{testId:'receiver-finish-save',heading:FS('finishSave.heading'),intro:FS('finishSave.intro'),back:FS('finishSave.back'),pendingNote:FS('finishSave.pendingNote'),
   notReady:FS('finishSave.refusal.not-ready'),abandoned:FS('finishSave.fail.abandoned'),busy:FS('finishSave.busy')},
-};
+}));
 const RAW_FIELD_LABEL:Readonly<Record<RawExportField,PulsarMessageKey>>={
  frequency1:'pulsar.rawExport.field.frequency1',frequency2:'pulsar.rawExport.field.frequency2',frequency3:'pulsar.rawExport.field.frequency3',
  gain1:'pulsar.rawExport.field.gain1',gain2:'pulsar.rawExport.field.gain2',gain3:'pulsar.rawExport.field.gain3',start:'pulsar.rawExport.field.start',interval:'pulsar.rawExport.field.interval',

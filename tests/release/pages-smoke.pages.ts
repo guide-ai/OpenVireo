@@ -113,11 +113,26 @@ for(const [hash,name] of ROUTES)test(`${name} (${hash}) opens with no policy vio
  expect(await language(page)).toEqual({sets:1,earlyReads:0});
 });
 
-test('Front ES0: the language is settled once, by boot, before any text, also for a ?lang=es-419 preview (English in ES0)',async({page,baseURL})=>{
- const p=await watch(page,baseURL!);
- await page.goto('/?lang=es-419#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();
- expect(await page.evaluate(()=>document.documentElement.lang)).toBe('en');
+test('Front ES1: a ?lang=es-419 preview fetches the Spanish chunk, shows the Spanish shell and settles the language once, before any text',async({page,baseURL})=>{
+ const p=await watch(page,baseURL!),chunks:string[]=[];page.on('request',r=>{if(/\/assets\/es-[\w-]+\.js$/.test(r.url()))chunks.push(r.url());});
+ await page.goto('/?lang=es-419#observatory');await expect(page.getByRole('heading',{name:'Empieza por el cielo.'})).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.lang)).toBe('es-419');
+ await expect(page).toHaveTitle('OpenVireo · Prácticas de astronomía de CLEA VIREO en tu navegador');
+ await expect(page.locator('.investigation-toolbar')).toContainText('Guardar investigación');
+ await expect(page.getByTestId('language-choice')).toBeVisible();
+ expect(chunks).toHaveLength(1);
  expect(await language(page)).toEqual({sets:1,earlyReads:0});
+ expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);
+});
+
+test('Front ES1: an English load (also ?lang=qps or ?lang=bogus) never fetches the Spanish chunk or the language selector',async({page,baseURL})=>{
+ const p=await watch(page,baseURL!),fetched:string[]=[];page.on('request',r=>{if(/\/assets\/(es|LanguageChoice)-[\w-]+\.js$/.test(r.url()))fetched.push(r.url());});
+ // ES1 review 1, C3: only ?lang=en or ?lang=es-419 shows the selector; the pseudo-locale and any other value show English without it.
+ for(const query of ['','?lang=qps','?lang=bogus']){
+  await page.goto(`/${query}#observatory`);await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();await page.waitForLoadState('networkidle');
+  expect(fetched,query).toEqual([]);await expect(page.getByTestId('language-choice')).toHaveCount(0);await expect(page.getByTestId('language-failure')).toHaveCount(0);
+  expect(await language(page),query).toEqual({sets:1,earlyReads:0});
+ }
  expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);
 });
 

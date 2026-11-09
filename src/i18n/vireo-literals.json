@@ -4480,27 +4480,6 @@
   "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
  },
  {
-  "file": "src/polish/ResultsEditorsNav.tsx",
-  "kind": "original",
-  "value": "R.observational",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/polish/ResultsEditorsNav.tsx",
-  "kind": "original",
-  "value": "R.pulsar",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/polish/ResultsEditorsNav.tsx",
-  "kind": "original",
-  "value": "R.resultsEditors",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
   "file": "src/polish/TerminateSlewBox.tsx",
   "kind": "original",
   "value": "L.caption",
@@ -4624,13 +4603,6 @@
   "kind": "module literal",
   "value": "*",
   "count": 112,
-  "reason": "pending-translation: multi-word web text built outside the catalog; ES1 or ES-HELP moves it to a translatable source."
- },
- {
-  "file": "src/help/tour.ts",
-  "kind": "module literal",
-  "value": "*",
-  "count": 16,
   "reason": "pending-translation: multi-word web text built outside the catalog; ES1 or ES-HELP moves it to a translatable source."
  }
 ]

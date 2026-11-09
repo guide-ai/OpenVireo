@@ -1,0 +1,11 @@
+{
+ "about": "Front ES1 review 2: words on the glossary's forbidden lists that are correct in a given string, each with a reason. Several usted imperatives (use, guarde, cargue, abra, espere, revise, escriba) are also third-person subjunctives, and «vale» also appears in «vale la pena». Keys are the lint's string ids (`catalog:<key>`, `map:<id>.<path>`, `original:<text>`); `words` are the forbidden words allowed in that string only.",
+ "entries": {
+  "map:languageChoice.originalsNote": {
+   "words": [
+    "cargue"
+   ],
+   "reason": "third-person subjunctive in «la próxima vez que se cargue la página», not an usted imperative"
+  }
+ }
+}

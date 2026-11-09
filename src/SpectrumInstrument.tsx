@@ -33,7 +33,6 @@ import {LssSessionError} from './io/lssSessionError';
 import type {ObjectXInvestigation} from './io/objectXInvestigation';
 import {ObjectXSessionError} from './io/objectXSessionError';
 import {OBJECT_X_SESSION} from './objectx/ObjectXMessages';
-const OBJECT_X_SAVE_ERROR=OBJECT_X_SESSION.saveError;
 import { formatFloat32, formatZ, spectrumPoints } from './view/spectrum';
 import type { RadioInvestigation, RadioRestoreBlock, RadioSaveBlock } from './core/radioInvestigation';
 import type { RadioInvestigationRecord } from './io/radioInvestigation';
@@ -88,7 +87,8 @@ export type SessionDelivery=(text:string,signal:AbortSignal)=>Promise<void>;
 
 /** Front ONERESULTS: why the shared Observational Results list refused a record (full, or a record the dialog cannot show). */
 const listMessage=(e:ObservationListError|null)=>t(e?.code==='limit'?'ph.nativeListFull':'ph.nativeBlocked');
-const references = { galaxy: { title: t('spectrum.galaxy'), source: 'GLXYLNS.LST', lines: parseLines(galaxyText) }, balmer: { title: t('spectrum.balmer'), source: 'BALMER.LST', lines: parseLines(balmerText) }, qso: { title: t('spectrum.qso'), source: 'AGN_QSO.LST', lines: parseLines(qsoText) } };
+// Front ES1: the titles are read when shown, after the language is settled (docs/I18N.md: no text at module evaluation).
+const references = { galaxy: { get title(){return t('spectrum.galaxy');}, source: 'GLXYLNS.LST', lines: parseLines(galaxyText) }, balmer: { get title(){return t('spectrum.balmer');}, source: 'BALMER.LST', lines: parseLines(balmerText) }, qso: { get title(){return t('spectrum.qso');}, source: 'AGN_QSO.LST', lines: parseLines(qsoText) } };
 const template = parseSpectrum(templateText);
 type Imported = SessionObservation;
 /** Native plot pixels (600 × 200, docs/SPECTRUM-ENGINE-VIEW.md) on this chart's SVG: x 60..920, y 56..306. */
@@ -307,7 +307,7 @@ function SpectrumInstrument({onRecordLss,lssMode=false,onPrepareFieldSpectrum,on
       if(deliver){const delivery=new AbortController();deliveryAbort.current=delivery;try{await deliver(saved,delivery.signal);}catch{return false;}finally{if(deliveryAbort.current===delivery)deliveryAbort.current=null;}if(ticket!==generation.current)return false;}
       else download(saved,'openvireo-session.json','application/json;charset=utf-8');
       if(radio.kind==='ready')radio.onSaved();setNotice(deliver?'':t('session.saved'));return true;
-    } catch(e) {if(ticket===generation.current)setError(e instanceof SessionCodeLoadError?t('session.saveCodeError'):e instanceof LssSessionError?t('lss.saveError'):e instanceof ObjectXSessionError?OBJECT_X_SAVE_ERROR:t('session.exportError'));return false;}
+    } catch(e) {if(ticket===generation.current)setError(e instanceof SessionCodeLoadError?t('session.saveCodeError'):e instanceof LssSessionError?t('lss.saveError'):e instanceof ObjectXSessionError?OBJECT_X_SESSION.saveError:t('session.exportError'));return false;}
     finally {if(ticket===generation.current)setBusy(false);}
   }
   const saveToFile=()=>void exportSession();

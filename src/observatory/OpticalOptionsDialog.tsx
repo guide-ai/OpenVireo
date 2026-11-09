@@ -19,11 +19,13 @@ import {COMPILED_INSTRUMENT_PARAMETERS,INSTRUMENT_PARAMETER_FIELDS,INSTRUMENT_PA
 import {COMPILED_CAMERA_PARAMETERS,applyCameraParameterTexts,cameraDraftsOf,cameraParameterLabel,isCompiledCameraParameters,sameCameraParameters,uncertifiedCameraFields,type CameraDrafts,type CameraParameters} from '../core/cameraParameters';
 import CameraParameterEdits from './CameraParameterEdits';
 import {t} from '../i18n';
+import {lazyMessages} from '../i18n/registry';
 import './observatory-dialogs.css';
 const M=OBSERVATORY_MESSAGES.options,S=M.session;
 const SESSION_KEYS=Object.keys(SC) as (keyof SessionOpticalOptions)[];
-const SESSION_HINTS:Readonly<Record<keyof SessionOpticalOptions,string>>={fastSlewing:S.fastSlewing,fastScopeChange:S.fastScopeChange,computeRedshiftVelocity:S.computeRedshiftVelocity,infraredCamera:S.infraredCamera,monochromeDisplays:S.monochromeDisplays,printInColor:S.printInColor,timeDependentData:S.timeDependentData,showObjectId:S.showObjectId,showObjectMag:S.showObjectMag,allowUserChange:S.allowUserChange};
-const SESSION_NOTES:Partial<Record<keyof SessionOpticalOptions,string>>={fastScopeChange:S.fastScopeChangeNote,computeRedshiftVelocity:S.computeRedshiftVelocityNote,printInColor:S.colorNote,timeDependentData:S.timeDependentDataNote,showObjectId:S.showObjectIdNote};
+// Front ES1: built on first read, after the language is settled (docs/I18N.md: no text at module evaluation).
+const SESSION_HINTS:Readonly<Record<keyof SessionOpticalOptions,string>>=lazyMessages(()=>({fastSlewing:S.fastSlewing,fastScopeChange:S.fastScopeChange,computeRedshiftVelocity:S.computeRedshiftVelocity,infraredCamera:S.infraredCamera,monochromeDisplays:S.monochromeDisplays,printInColor:S.printInColor,timeDependentData:S.timeDependentData,showObjectId:S.showObjectId,showObjectMag:S.showObjectMag,allowUserChange:S.allowUserChange}));
+const SESSION_NOTES:Partial<Record<keyof SessionOpticalOptions,string>>=lazyMessages(()=>({fastScopeChange:S.fastScopeChangeNote,computeRedshiftVelocity:S.computeRedshiftVelocityNote,printInColor:S.colorNote,timeDependentData:S.timeDependentDataNote,showObjectId:S.showObjectIdNote}));
 const testId=(k:string)=>`ob-options-${k.replace(/[A-Z]/g,c=>'-'+c.toLowerCase())}`;
 /** Front T4: the Photometer tab's read-only rows that become live check boxes (core/photometerTabOptions.ts). */
 const TAB_LIVE_LABELS=new Set(['Detect Sky','Set E(B-V)']),

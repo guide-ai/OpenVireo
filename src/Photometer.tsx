@@ -37,7 +37,6 @@ import {HELP_FILES} from './help/helpFiles';
 import {PHOTOMETER_ID_LITERALS,photometerIdText,photometerRecordedName,shownCurrentObject} from './core/currentObject';
 import {loadedObjectXPositions,objectXMaskState,objectXNear,type ObjectXMaskState} from './io/objectXMask';
 import {OBJECT_X_LAB} from './objectx/ObjectXMessages';
-const OBJECT_X_HIDDEN_NAME=OBJECT_X_LAB.hiddenName;
 const num=(value:number)=>formatNumber(value,{maximumFractionDigits:9,useGrouping:false});
 /** A native message box (MessageBox) of the Record/Review path, as a modal dialog. Escape answers with the last button. */
 function NativeMessage({caption,lines,testId,buttons}:{caption:string;lines:readonly string[];testId:string;buttons:readonly Readonly<{label:string;testId:string;onClick:()=>void}>[]}){
@@ -271,7 +270,7 @@ function Photometer({active,initialState=null,controllerRef,onStateChange,invest
   objectXMaskState(hiddenTarget,{ra:objectPick.ra,dec:objectPick.dec},0).then(r=>{if(live)setAsyncMask({key:idKey,state:r});},()=>{if(live)setAsyncMask({key:idKey,state:'unknown'});});
   return()=>{live=false;};},[idKey,loadedPositions]);
  const idSky=kind==='sky',idObject=shownCurrentObject({status:'object',name:objectPick.nativeName,kind:objectPick.type,v:0,ra:objectPick.ra,dec:objectPick.dec},idMask==='pending'?'unknown':idMask);
- const idText=!idShown?PHOTOMETER_ID_LITERALS.initial:idMask==='pending'&&!!telescope?.showObjectId&&!idSky?PHOTOMETER_ID_LITERALS.initial:photometerIdText(!!telescope?.showObjectId,idSky,idObject,OBJECT_X_HIDDEN_NAME);
+ const idText=!idShown?PHOTOMETER_ID_LITERALS.initial:idMask==='pending'&&!!telescope?.showObjectId&&!idSky?PHOTOMETER_ID_LITERALS.initial:photometerIdText(!!telescope?.showObjectId,idSky,idObject,OBJECT_X_LAB.hiddenName);
  const apertureNeighbors=useMemo(()=>queryPhotometerNeighbors(field.pointing,geometry.radiusDegrees,field.stars,field.qsos??[]),[field,aperture]);
  // Front PHTILED: a selected galaxy is drawn as a ring of its catalogue diameter (the selection radius rule of 0x59a0fc uses it too).
  // Review 1 N3: QSO-list records whose star-list copy is gone still add light (0x59ac54 walks field+0x35), so they are drawn too.

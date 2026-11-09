@@ -1,0 +1,13 @@
+{
+ "about": "Front ES1: Spanish strings that may equal their English source, each with a reason (plan §3.2 item 4). Keys: `catalog:<key>`, `map:<id>.<path>`, `original:<normalised original>`.",
+ "entries": {
+  "catalog:app.name": "product name (OpenVireo)",
+  "map:helpMenu.shortcutKey": "a key on the keyboard (?)",
+  "map:helpMenu.no": "the same word in Spanish (No)",
+  "map:languageChoice.legend": "bilingual on purpose so either reader finds the selector",
+  "map:languageChoice.english": "each language is named in its own language",
+  "map:languageChoice.spanish": "each language is named in its own language",
+  "original:NVO": "catalogue acronym (National Virtual Observatory), kept",
+  "original:Project CLEA": "official name kept in English (plan §5.1)"
+ }
+}

@@ -44,6 +44,7 @@ import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeN
 import './RadioControlPanel.css';
 import {HelpMenu} from '../help/HelpMenus';
 import {HELP_MENU} from '../help/HelpMessages';
+import {lazyTranslator} from '../i18n/registry';
 
 export type RadioControlPanelProps=Readonly<{
  /** E08 Object X: label that replaces a hot-list row's identifier and remark near an unrevealed target, or null. */
@@ -121,7 +122,7 @@ export type RadioClockSource=Readonly<{
 const BROWSER_TIMER:RadioTimerHost={setInterval:(callback,ms)=>window.setInterval(callback,ms),clearInterval:handle=>window.clearInterval(handle as number)};
 
 const DOME_BYTES:readonly DomeByte[]=[0,1,2,3];
-const englishRadio=createRadioTranslator(),englishAntenna=createRadioAntennaTranslator();
+const englishRadio=lazyTranslator(createRadioTranslator),englishAntenna=lazyTranslator(createRadioAntennaTranslator);// Front ES1: made on first call
 /** RC outcomes whose wording lives in the scoped antenna catalog (shared en.json is outside this slice). */
 const SCOPED_RC_OUTCOMES:Partial<Record<RadioOutcome,RadioAntennaMessageKey>>={'panel-hidden-switch-off':'antenna.outcome.panel-hidden-switch-off'};
 const outcomeText=(o:RadioOutcome,t:RadioTranslate,ta:RadioAntennaTranslate)=>{const scoped=SCOPED_RC_OUTCOMES[o];return scoped?ta(scoped):t(`radio.outcome.${o}` as RadioMessageKey);};

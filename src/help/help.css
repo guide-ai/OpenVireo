@@ -18,12 +18,16 @@
 .help-menu-key{margin-left:auto;padding:0 6px;border:1px solid var(--ov-border);border-radius:var(--ov-radius-sm);font-size:12px;color:var(--ov-text-muted)}
 /* Wide sidebar: the top row (brand and Help) stays pinned while the sidebar scrolls; the list spans the sidebar. */
 @media(min-width:1100px){
- .portal-header .portal-top{position:sticky;top:-14px;z-index:5;margin:-14px -12px 0;padding:14px 12px 8px 20px;background:var(--ov-chrome-bg);display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px 8px}
+ /* ES1 review 1 C5: a wrapping row, so a wide brand (or a longer Help word) moves Help down instead of overlapping the brand. */
+ .portal-header .portal-top{position:sticky;top:-14px;z-index:5;margin:-14px -12px 0;padding:14px 12px 8px 20px;background:var(--ov-chrome-bg);display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:4px 8px}
  .portal-header .portal-top .portal-brand-block{display:contents}
- /* Keyboard focus moving up the scrolled sidebar is never hidden under the pinned top row (WCAG 2.4.11). */
- .portal-header{scroll-padding-top:96px}
- .portal-top .portal-status{grid-column:1/-1;grid-row:2}
- .portal-top .portal-help{grid-column:2;grid-row:1}
+ /* Keyboard focus moving up the scrolled sidebar is never hidden under the pinned top row (WCAG 2.4.11). ES1 review 2 N1:
+    sized for the wrapped worst case of that row (brand, Help on its own line, a two-line status: 134 px with the CI's DejaVu
+    fonts, in English and in Spanish) plus one menu item, in rem so it follows text zoom. */
+ .portal-header{scroll-padding-top:11rem}
+ /* The status line wraps instead of being cut off at the sidebar edge. */
+ .portal-top .portal-status{order:3;flex-basis:100%;min-width:0;white-space:normal}
+ .portal-top .portal-help{margin-left:auto}
  .portal-help .fi-menu{position:static}
  .portal-help .fi-menu-list{left:12px;right:12px;width:auto;min-width:0}
 }
