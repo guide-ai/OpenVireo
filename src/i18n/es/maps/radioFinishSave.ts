@@ -1,0 +1,21 @@
+import type {FINISH_SAVE_MESSAGES_EN} from '../../../components/RadioFinishSaveMessages';
+import type {Translation} from '../../maps';
+/** Front ES8a: Spanish (es-419) for the receiver finish question’s verified web Save. A web adaptation by OpenVireo, not CLEA's. */
+export const RADIO_FINISH_SAVE_ES:Translation<typeof FINISH_SAVE_MESSAGES_EN>=Object.freeze({
+ "finishSave.yes.reason":"Sí abre un guardado web de este registro, no el cuadro de diálogo Guardar original: luego eliges un archivo en tu navegador, y solo una copia que se relee idéntica marca el registro como escrito y termina esta finalización. Sí por sí mismo no elige ni escribe nada.",
+ "finishSave.yes.webDefault":"Botón predeterminado web: Cancelar (el predeterminado original es Sí).",
+ "finishSave.yes.unsupported.insecure-context":"Sí (guardar) no está disponible: esta página no es un contexto seguro, que la API de archivos del navegador requiere. No y Cancelar funcionan como antes; el Análisis de púlsares podrá descargar una copia .PLR cuando haya terminado esta finalización.",
+ "finishSave.yes.unsupported.no-api":"Sí (guardar) no está disponible: este navegador no ofrece el selector para guardar archivos con archivos escribibles (showSaveFilePicker y createWritable). No y Cancelar funcionan como antes; el Análisis de púlsares podrá descargar una copia .PLR cuando haya terminado esta finalización.",
+ "finishSave.yes.webDefaultUnsupported":"Botón predeterminado web: Cancelar (el Sí predeterminado original guarda, y este navegador no puede hacerlo aquí).",
+ "finishSave.heading":"Guarda el registro nuevo (guardado web con verificación)",
+ "finishSave.intro":"Lo abrió el Sí de la pregunta de finalización. No es el cuadro de diálogo Guardar original. Mientras este cuadro de diálogo está abierto, el registro sigue conteniendo los datos actuales del púlsar, así que el Análisis de púlsares no puede cargar, guardar ni descargar. Solo una copia verificada termina la finalización: el registro sigue siendo entonces los datos actuales del púlsar, marcado como escrito (una comprobación en ese momento), y el Análisis de púlsares no se abre. Un intento fallido o cancelado se queda aquí y puede que ya haya creado o vaciado un archivo. Volver regresa a la pregunta de finalización, donde No abre el Análisis de púlsares y Cancelar conserva los datos sin guardar.",
+ "finishSave.back":"Volver a la pregunta de finalización",
+ "finishSave.pendingNote":"Mientras se ejecuta un intento, Elegir y Volver no hacen nada, y el registro sigue conteniendo los datos. Ocultar la página del radiotelescopio o iniciar una operación del proyecto lo detiene.",
+ "finishSave.refusal.not-ready":"El guardado no empezó y no se eligió ningún archivo: el Análisis de púlsares está leyendo un archivo, el registro ya no contiene los datos u otro intento de guardado todavía está terminando. Inténtalo de nuevo cuando haya terminado.",
+ "finishSave.fail.abandoned":"El intento de guardado se detuvo porque se ocultó la página del radiotelescopio o empezó una operación del proyecto. Puede que un archivo elegido ya se haya creado, vaciado o escrito en parte o por completo; OpenVireo no puede restaurarlo y no marcó el registro como escrito. El registro sigue conteniendo los datos. Elegir y Volver vuelven a funcionar cuando se haya cerrado el flujo del archivo.",
+ "finishSave.busy":"Terminando el intento detenido: esperando a que se cierre su flujo de archivo…",
+ "finishSave.status.opened":"Cuadro de diálogo Guardar abierto. Todavía no se ha elegido ningún archivo; el registro sigue conteniendo los datos actuales del púlsar.",
+ "finishSave.status.back":"De vuelta en la pregunta de finalización. El cuadro de diálogo Guardar no marcó el registro como escrito; puede que un archivo elegido ahí ya se haya creado, vaciado o cambiado.",
+ "finishSave.status.verified":"Copia verificada guardada como “{file}” ({bytes} bytes releídos idénticos). La finalización terminó: el registro sigue siendo los datos actuales del púlsar y se marcó como escrito en el momento de la comprobación; es un resultado histórico. El Análisis de púlsares no se abrió.",
+ "finishSave.status.unavailable":"El cuadro de diálogo Guardar no se abrió: el registro ya no contiene los datos actuales del púlsar como espera esta finalización. No se eligió ningún archivo; No y Cancelar todavía responden la pregunta.",
+});

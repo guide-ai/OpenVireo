@@ -49,7 +49,7 @@ function sites():Site[]{
  return out;
 }
 /** vireo() sites the guard cannot resolve statically (ES3 closure); each is covered by a screen spec under tests/i18n/. */
-const UNRESOLVED_SITES=109;
+const UNRESOLVED_SITES=136;
 const resolveModule=(base:string)=>[`${base}.ts`,`${base}/index.ts`].find(f=>{try{readFileSync(f);return true;}catch{return false;}});
 const strings=(v:unknown):string[]=>typeof v==='string'?[v]:Array.isArray(v)?v.flatMap(strings):[];
 

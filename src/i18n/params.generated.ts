@@ -2352,8 +2352,6 @@ export interface MessageParameters {
   "radioRoute.date.outcome.cancelled": never;
   "radioRoute.date.outcome.gate-closed": never;
   "radioRoute.date.dialog.bounds": "field" | "id";
-  "radioRoute.date.dialog.ok": never;
-  "radioRoute.date.dialog.cancel": never;
   "radioRoute.date.field.too-long": "max";
   "radioRoute.date.field.not-ascii": never;
   "radioRoute.date.error.title.native": never;
@@ -2369,7 +2367,6 @@ export interface MessageParameters {
   "radioRoute.date.error.nativeNote": never;
   "radioRoute.date.error.webNote": never;
   "radioRoute.date.error.id": "id";
-  "radioRoute.date.error.ok": never;
   "pulsarParameters.heading": never;
   "pulsarParameters.intro": never;
   "pulsarParameters.persistence": never;
@@ -2444,7 +2441,6 @@ export interface MessageParameters {
   "pulsarParameters.notice.update.date": "text";
   "pulsarParameters.notice.update.density": "text";
   "pulsarParameters.notice.update.note": never;
-  "pulsarParameters.notice.ok": never;
   "wedge.nav": never;
   "wedge.routeTitle": never;
   "wedge.routeScope": never;
@@ -2539,7 +2535,6 @@ export interface MessageParameters {
   "radioReceiver.tickError": "reason";
   "radioReceiver.box.note": never;
   "radioReceiver.box.closeOrder": "n";
-  "radioReceiver.box.ok": never;
   "radioReceiver.error.options-missing": never;
   "radioReceiver.error.options-domain": never;
   "radioReceiver.error.clock-required": never;
@@ -2572,10 +2567,6 @@ export interface MessageParameters {
   "radioReceiver.record.status.kept": never;
   "radioReceiver.record.yesGated": never;
   "radioReceiver.record.webDefault": never;
-  "radioReceiver.record.yes": never;
-  "radioReceiver.record.no": never;
-  "radioReceiver.record.cancel": never;
-  "radioReceiver.record.ok": never;
   "radioReceiver.record.boxNote": never;
   "radioReceiver.record.fullNote": never;
   "radioReceiver.record.identifyHelp": never;
@@ -2725,7 +2716,6 @@ export interface MessageParameters {
   "radioAccess.status.preferences-closed-ok": never;
   "radioAccess.status.preferences-closed-cancel": never;
   "radioAccess.refusal.note": never;
-  "radioAccess.refusal.ok": never;
   "radioAccess.parent.note": never;
   "radioAccess.parent.radioHelp": never;
   "radioAccess.parent.closeNote": never;
@@ -2816,7 +2806,6 @@ export interface MessageParameters {
   "radioSimOptions.failure.stay": never;
   "radioSimOptions.failure.nativeNote": "literal";
   "radioSimOptions.failure.webNote": never;
-  "radioSimOptions.failure.ok": never;
   "pulsarParameters.reference.bundled": never;
   "pulsarParameters.reference.bundledHelp": never;
   "pulsarParameters.reference.status.bundled.download": "name";
@@ -3408,8 +3397,6 @@ export interface MessageParameters {
   "ph.tiledLimit.photometer-galaxy-sky-stamp": never;
   "ph.galaxySkyGate.open": "declared" | "max" | "min";
   "ph.galaxySkyGate.closed": "declared" | "max" | "min";
-  "ph.skyReplaceYes": never;
-  "ph.skyReplaceNo.button": never;
   "ph.skyReplaceNo": never;
   "ph.tiledProvenance": "dec" | "ra" | "record";
   "ph.tiledProvenanceVariableHit": "dec" | "name" | "ra" | "record" | "variable";
@@ -3474,10 +3461,8 @@ export interface MessageParameters {
   "ph.nativeBlocked": never;
   "ph.nativeSpError": never;
   "ph.nativeVelocityNote": never;
-  "ph.nativeOk": never;
   "ph.nativeTitle": never;
   "ph.nativeHelp": "count";
-  "ph.nativeResults": never;
   "obsHr.ownRecords": never;
   "obsHr.ownRecordsHelp": never;
   "obsHr.ownRecordsError": never;

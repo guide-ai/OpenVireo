@@ -5,7 +5,7 @@ import type {Translation} from '../../maps';
 export const CLUSTER_DATA_ES:Translation<typeof CLUSTER_DATA_MESSAGES_EN>=Object.freeze({
  menuNote:'VIREO muestra Archivo (File) › Datos de cúmulos... (Cluster Data...) en sus modos de fotometría, de diagrama HR y de todos los instrumentos; este sitio no tiene modos, así que siempre está aquí.',
  groupsDisabled:'Tipo de lista (Type of Listing) y Ordenar por (Sort By) son ajustes del instructor (Modo de edición [Edit Mode]) en VIREO; sin el Modo de edición la lista es la lista de búsqueda del estudiante, ordenada por AR.',
- useTelescopeOff:'Usar las coordenadas del telescopio (Use Telescope Coordinates) necesita la cúpula abierta y el seguimiento activado, igual que VIREO necesita el motor del telescopio encendido.',
+ useTelescopeOff:'Usar las coordenadas del telescopio (Use Telescope Coordinates) necesita la cúpula abierta y el seguimiento activado, igual que VIREO necesita el accionamiento del telescopio encendido.',
  loading:'Cargando los datos de cúmulos…',loadError:'No se pudieron cargar los datos de cúmulos.',
  unavailableCaption:'Datos de cúmulos',
  tileReason:Object.freeze({

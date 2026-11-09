@@ -33,8 +33,6 @@ const RECORDED=/^(?:SHA-256 )?[0-9a-f]{64}$|^[0-9a-f]{12}$/;
 const PRINT_DATE=/^\d{1,2}\/\d{1,2}\/\d{4}, \d{1,2}:\d{2}:\d{2}\s?[AP]M$/;
 const EXERCISE_TITLE='CLEA Exercise "VIREO - The VIRtual Educational Observatory"';
 const NUMERIC=/^[-+−±\d\s.,:;°′″'"·×÷/()[\]–%=→e*]*\d[-+−±\d\s.,:;°′″'"·×÷/()[\]–%=→e*]*(?:\s*(?:mag|pc|Myr|d|h|px|Å))*\s*$/;
-/** The own-observation panel shows PhotometerPlotSettings (ph.* keys, Front ES6): until ES6 is merged these two keys are English. */
-for(const k of ['ph.plotPairPolicy','ph.plotMembershipScope'])SAME.add(E[k]);
 /** The cluster names with their catalog suffix, exactly as the contract records them (the dataset selector's options). */
 const CLUSTER_NAMES=new Set<string>(comparison.clusters.map((c:{name:string})=>c.name));
 /** The count and the zero-age line that VIREO draws on its own HR picture and prints (core/clusterHrPlot.ts, clusterHrPrint.ts): an image of VIREO's window, in English. */

@@ -96,13 +96,16 @@ export function parseDishDiameter(text:unknown):number{
  return value===0?0:value;
 }
 export function isDishDiameter(value:unknown):value is number{return typeof value==='number'&&Number.isInteger(value)&&value>=INT32_MIN&&value<=INT32_MAX;}
-/** Delphi IntToStr for Int32 (0x40ac14), concatenated with the 0x58cbbc/0x58b7a8/0x58ba2c literal. */
-export function radioIdCaptionText(diameterMeters:number):string{
+/** Delphi IntToStr for Int32 (0x40ac14), concatenated with the 0x58cbbc/0x58b7a8/0x58ba2c literal. Front ES8a: `tr` (default:
+ * the literal) translates the suffix for the screen; a translation that holds `{diameter}` places the number itself (Spanish
+ * word order), otherwise the number is followed by the suffix as in VIREO. */
+export function radioIdCaptionText(diameterMeters:number,tr:(literal:string)=>string=literal=>literal):string{
  if(!isDishDiameter(diameterMeters))throw new Error('Invalid radio dish diameter');
- return String(diameterMeters===0?0:diameterMeters)+NATIVE_RADIO_SUFFIX;
+ const number=String(diameterMeters===0?0:diameterMeters),suffix=tr(NATIVE_RADIO_SUFFIX);
+ return suffix.includes('{diameter}')?suffix.replace('{diameter}',number):number+suffix;
 }
-export function idCaptionText(caption:IdCaption):string|null{
- return caption.kind==='dfm-default'?NATIVE_ID_DEFAULT:caption.kind==='radio'?radioIdCaptionText(caption.diameterMeters):null;
+export function idCaptionText(caption:IdCaption,tr:(literal:string)=>string=literal=>literal):string|null{
+ return caption.kind==='dfm-default'?tr(NATIVE_ID_DEFAULT):caption.kind==='radio'?radioIdCaptionText(caption.diameterMeters,tr):null;
 }
 
 function validEnvironment(env:RadioEnvironment){
@@ -200,4 +203,4 @@ export function closeRadioPanel(s:RadioControlState,env:RadioEnvironment):RadioT
  return done({...off.state,radioPanelShown:false},'panel-hidden-switch-off',['RC-11','RC-08'],s);
 }
 
-export function radioIdCaptionLabel(s:RadioControlState):string|null{return idCaptionText(s.idCaption);}
+export function radioIdCaptionLabel(s:RadioControlState,tr:(literal:string)=>string=literal=>literal):string|null{return idCaptionText(s.idCaption,tr);}
