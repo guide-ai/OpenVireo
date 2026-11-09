@@ -362,6 +362,38 @@
    "es": "guía"
   },
   {
+   "en": "\\bapertures?\\b",
+   "es": "apertura"
+  },
+  {
+   "en": "\\breadings\\b",
+   "es": "lectura"
+  },
+  {
+   "en": "\\bseeded\\b",
+   "es": "semilla"
+  },
+  {
+   "en": "\\bcallbacks?\\b",
+   "es": "llamada"
+  },
+  {
+   "en": "\\bzero point\\b",
+   "es": "punto cero"
+  },
+  {
+   "en": "\\bphotons?\\b",
+   "es": "fot(ón|ones)"
+  },
+  {
+   "en": "\\bcolou?r[–-]magnitude\\b",
+   "es": "color[–-]magnitud"
+  },
+  {
+   "en": "\\bcluster fit\\b",
+   "es": "ajuste (manual )?del cúmulo"
+  },
+  {
    "en": "\\bstandards?\\b",
    "es": "estándar"
   },
@@ -921,6 +953,14 @@
   {
    "en": "Dark Noise",
    "es": "Ruido de corriente oscura"
+  },
+  {
+   "en": "Data from Observations",
+   "es": "Datos a partir de observaciones"
+  },
+  {
+   "en": "Record/Review",
+   "es": "Registrar/Revisar"
   },
   {
    "en": "Next on List",
