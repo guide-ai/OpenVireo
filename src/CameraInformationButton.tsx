@@ -1,6 +1,6 @@
 import {useEffect,useRef,useState} from 'react';
-import {vireo} from './i18n/vireo';
-import {CAMERA_INFORMATION_CAPTIONS,type CameraKind} from './core/cameraInformation';
+import {normalizeOriginal,vireo} from './i18n/vireo';
+import {CAMERA_INFORMATION_CAPTIONS,CAMERA_INFORMATION_MENU,type CameraKind} from './core/cameraInformation';
 import CameraInformationList from './CameraInformationList';
 import {CAMERA_MESSAGES as M} from './camera/CameraMessages';
 import {blockRepeatedEnter} from './dialogKeyboard';
@@ -17,7 +17,7 @@ export default function CameraInformationButton({kind,disabled=false,parameters=
  useEffect(()=>{if(disabled&&open)close();},[disabled]);// eslint-disable-line react-hooks/exhaustive-deps
  function close(){dialog.current?.close();setOpen(false);requestAnimationFrame(()=>button.current?.focus({preventScroll:true}));}
  return <>
-  <button type="button" ref={button} className="secondary-button" disabled={disabled} onKeyDown={blockRepeatedEnter} data-testid="camera-information-open" onClick={()=>setOpen(true)}>{M.information}</button>
+  <button type="button" ref={button} className="secondary-button" disabled={disabled} onKeyDown={blockRepeatedEnter} data-testid="camera-information-open" onClick={()=>setOpen(true)}>{normalizeOriginal(vireo(CAMERA_INFORMATION_MENU))}</button>
   {open&&<dialog ref={dialog} className="camera-information-dialog" aria-labelledby="camera-live-information-title" data-testid="camera-live-information" onCancel={e=>{e.preventDefault();close();}}>
    <h2 ref={title} tabIndex={-1} id="camera-live-information-title">{vireo(CAMERA_INFORMATION_CAPTIONS[kind])}</h2>
    <p>{compiled?M.informationNote:t('cameraParameters.informationNote')}</p>

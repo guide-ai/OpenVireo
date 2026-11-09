@@ -162,7 +162,7 @@
    "es": "contraseña"
   },
   {
-   "en": "\\bcounts?\\b",
+   "en": "\\bcounts?\\b(?! shows after the reveal)",
    "es": "cuenta"
   },
   {
@@ -456,6 +456,31 @@
   {
    "en": "(?<!clock[/ ])\\bdrive\\b",
    "es": "accionamiento"
+  }
+,
+  {
+   "en": "\\bblink(s|ed|ing)?\\b",
+   "es": "parpade"
+  },
+  {
+   "en": "\\breveal(s|ed|ing)?\\b(?! the catalog sky)",
+   "es": "revel"
+  },
+  {
+   "en": "\\borbit files?\\b",
+   "es": "archivos? de órbitas"
+  },
+  {
+   "en": "\\blimiting magnitudes?\\b",
+   "es": "magnitud(es)? límite"
+  },
+  {
+   "en": "\\breference stars?\\b",
+   "es": "estrellas? de referencia"
+  },
+  {
+   "en": "\\bplate constants\\b",
+   "es": "constantes de placa"
   }
  ],
  "names": [
@@ -1057,6 +1082,11 @@
   {
    "en": "Sound Features",
    "es": "Funciones de sonido"
+  }
+,
+  {
+   "en": "Asteroid List",
+   "es": "Lista de asteroides"
   }
  ],
  "forbidden": [
