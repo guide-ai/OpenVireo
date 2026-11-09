@@ -384,6 +384,22 @@
   {
    "en": "\\batlas(es)?\\b",
    "es": "atlas"
+  },
+  {
+   "en": "\\bstandard pairs?\\b",
+   "es": "par(es)? de estándares"
+  },
+  {
+   "en": "\\braw\\b",
+   "es": "en bruto"
+  },
+  {
+   "en": "\\bmerg(e|es|ed|ing)\\b",
+   "es": "fusi"
+  },
+  {
+   "en": "\\bendpoint[- ]grids?\\b",
+   "es": "rejillas? de extremos"
   }
  ],
  "names": [

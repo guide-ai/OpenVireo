@@ -1,7 +1,8 @@
 import{describe,it,expect}from'vitest';
-import{CLASSIFICATION_PROGRAM,classificationProgramIndex,programResponseRecorded,selectProgramPractice,nextProgramPractice,commitProgramPractice}from'./classificationProgram';
+import{CLASSIFY_PROGRAM_LITERALS,CLASSIFICATION_PROGRAM,classificationProgramIndex,programResponseRecorded,selectProgramPractice,nextProgramPractice,commitProgramPractice}from'./classificationProgram';
 import{INITIAL_CLASSIFICATION,classificationRecord,CLASSIFICATION_CATALOG}from'./classification';
 import{EMPTY_FEATURES,updateFeatureDraft}from'./featureWidth';
+import{CLASSIFY_PROGRAM_LITERALS_RESTATED}from'../../tests/i18n/classifyProgramLiterals';
 const draft=()=>({...INITIAL_CLASSIFICATION,proposed:'  My own proposal  ',reason:'My independent evidence α 😀'});
 const recorded=()=>{const s=draft();return{...s,records:[classificationRecord(s)]};};
 describe('original fixed program-list navigation',()=>{
@@ -12,3 +13,5 @@ describe('original fixed program-list navigation',()=>{
  it('keeps the100record capacity and a new manual response intact until the operator explicitly clears it',()=>{const one=classificationRecord(draft()),records=Array.from({length:100},(_,i)=>({...one,id:i+1,proposed:'Synthetic record '+i})),full={...draft(),records};expect(()=>selectProgramPractice(full,'u2')).toThrow('draft');expect(()=>classificationRecord(full)).toThrow();const cleared={...full,proposed:'',reason:''},request=selectProgramPractice(cleared,'u2');expect(request.next.records).toBe(records);expect(request.next.records).toHaveLength(100);expect(full.proposed).toBe('  My own proposal  ');});
  it('reports end even with unrecorded last-object work and retains old classification schema input boundaries',()=>{const last={...draft(),unknownId:'u25'};expect(nextProgramPractice(last)).toBeNull();expect(selectProgramPractice(last,'u25').next).toBe(last);expect(()=>selectProgramPractice({...INITIAL_CLASSIFICATION,unknownId:'imported:'+'a'.repeat(64)},'u1')).toThrow('source');expect(()=>selectProgramPractice({...INITIAL_CLASSIFICATION,reason:'x'.repeat(1001)},'u2')).toThrow();});
 });
+// Front ES5 review: the Spanish E03 spec restates these literals (Playwright cannot import this module); both must agree.
+it('the literals restated for tests/i18n/es-e03.spec.ts equal CLASSIFY_PROGRAM_LITERALS',()=>{expect(CLASSIFY_PROGRAM_LITERALS_RESTATED).toEqual(CLASSIFY_PROGRAM_LITERALS);});

@@ -1,5 +1,6 @@
 import {test,expect,type Page,type Locator} from '@playwright/test';
 import {readFileSync} from 'node:fs';
+import {CLASSIFY_PROGRAM_LITERALS_RESTATED} from './classifyProgramLiterals';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
 import originals from '../../src/i18n/es/originals.json' with {type:'json'};
@@ -17,9 +18,8 @@ import originals from '../../src/i18n/es/originals.json' with {type:'json'};
 // - qps: every visible text is marked ⟦…⟧ (it goes through the catalog, a map or vireo()), with the same exceptions;
 // - views that mirror a written file (`lang="en"`, F2) are left out of both comparisons.
 type Lang='en'|'es-419'|'qps';
-/** CLASSIFY_PROGRAM_LITERALS (src/core/classificationProgram.ts, which Playwright cannot import: its catalog JSON has no import
- * attribute): VIREO's Program List... and Next on List items and the No More Spectra box. */
-const P={programList:'Program &List...',nextOnList:'&Next on List',noMoreSpectra:'No More Spectra',endOfList:'You are at the end of the spectra list.'} as const;
+/** VIREO's Program List... and Next on List items and the No More Spectra box (CLASSIFY_PROGRAM_LITERALS, restated). */
+const P=CLASSIFY_PROGRAM_LITERALS_RESTATED;
 const O=originals as Record<string,string>,E=en as Record<string,string>,S=es as Record<string,string>;
 /** Texts that read the same in both languages. Exact strings only: a caption left in English fails. */
 const SAME=new Set<string>([
@@ -30,16 +30,17 @@ const SAME=new Set<string>([
  // The SPECLNS.LNL line labels as recorded (catalog.json `lines`), shown in the line table.
  'Ca II (K line)','He I','Ca II (H line)','H I (H Epsilon)','Mn I','Fe I','C III','O II','Si IV','N III','He II','H I (H Delta)','Si II','Ca I','CH & Metals (G Band)','H I (H Gamma)','Mg II',
  'H I (H Beta)','H I (H Alpha)','Na I (D lines)','TiO','Mg I (b lines)','Ca I (4227)','Na I',
- // File names the walk reads or writes, and the acquired packet's recorded designation.
- 'limited.sp','bad.json','A0000021.SP','N0000.DAT@14428','MYLIST.LST','synthetic.dat','synthetic.txt','G2V','E03 remarks','First alias','Repeated alias','Last alias','A0000021.sp','A0000014.sp',
+ // File names the walk reads or writes (and the imported file's object ID, its name without extension), and the acquired
+ // packet's recorded designation.
+ 'limited.sp','limited','bad.json','A0000021.SP','N0000.DAT@14428','MYLIST.LST','synthetic.dat','synthetic.txt','G2V','E03 remarks','First alias','Repeated alias','Last alias','A0000021.sp','A0000014.sp',
  // The stored text of the synthetic DAT record (object, remarks) and of the synthetic TXT row, shown as read from the files.
  'FORMAT-CHECK','SYNTHETIC: NOT OBSERVED','OWN-TEXT','Own G2V','My original comment',
 ]);
 /** A star of the practice list or the standards (HD 124320, BD+…, a spectral type such as A1 V, B9.5 IV, M5 V, K0 III, O5 V((f))). */
 const STAR=/^(?:HD|BD|HR|HZ|SAO|Feige|Gl|O)\s?[+-]?\d[\d.+-]*(?: \d{1,4})?\s?[A-Z]?$|^[OBAFGKM]\d(?:\.\d)?\s?(?:I{1,3}|IV|V|Ia|Ib|Iab|Ia0)(?:[ab]|-[IV]+)?(?:\(\(?f\)?\))?$/;
-/** A hash (with or without its SHA-256 label), an acquisition identity, an original spectrum file (A0000021.SP) or the acquired
+/** A hash (with or without its SHA-256 label), an imported file's source identity (imported:<SHA-256>), an acquisition identity, an original spectrum file (A0000021.SP) or the acquired
  * star's spectrum file name. */
-const RECORDED=/^[0-9a-f]{20}$|^(?:Single|Double) · (?:32|64) bits$|^\d{8} · [A-Z]{1,4}$|^(?:SHA-256 )?[0-9a-f]{64}$|^[0-9a-f]{12}$|^acq-[0-9a-z-]{8,}$|^A\d{7}\.SP$|^catalog-star-[0-9a-f]{12}\.sp$/;
+const RECORDED=/^imported:[0-9a-f]{64}$|^[0-9a-f]{20}$|^(?:Single|Double) · (?:32|64) bits$|^\d{8} · [A-Z]{1,4}$|^(?:SHA-256 )?[0-9a-f]{64}$|^[0-9a-f]{12}$|^acq-[0-9a-z-]{8,}$|^A\d{7}\.SP$|^catalog-star-[0-9a-f]{12}\.sp$/;
 /** A number with its unit or symbol, and nothing else that could be a word. */
 const NUMERIC=/^[-+−±\d\s.,:;°′″'"·×÷/()[\]–%=→e]*\d[-+−±\d\s.,:;°′″'"·×÷/()[\]–%=→e]*(?:\s*(?:Å|ms|px|×))*\s*$/;
 /** The acquired source option and the imported file's option (recorded designation or file name, then a hash prefix). */
@@ -151,7 +152,9 @@ const STEPS:readonly (readonly [string,(page:Page,lang:Lang)=>Promise<void>])[]=
   await expect(main(page).locator('.class-feedback [role=alert]')).toBeVisible();}],
  ['imported spectrum',async(page,lang)=>{await page.locator('.class-source input[type=file]').setInputFiles({name:'limited.sp',mimeType:'text/plain',buffer:Buffer.from('3900 .2\n4200 .8\n4500 .4\n')});
   await ready(page,lang);await expect(page.locator('#class-source')).toHaveValue(/^imported:/);await openAll(main(page));}],
- ['acquired star',async(page,lang)=>{await tool(page,lang,'starExposure.nav');await button(page,lang,'starExposure.activate').click();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
+ ['imported spectrum observation',async(page,lang)=>{await button(main(page),lang,'obs.open').click();await expect(page.locator('dialog.observation-dialog')).toBeVisible();
+  await expect(id(page,'observation-jd')).toBeVisible();}],
+ ['acquired star',async(page,lang)=>{await button(page.locator('dialog.observation-dialog'),lang,'obs.cancel').click();await expect(page.locator('dialog.observation-dialog')).toBeHidden();await tool(page,lang,'starExposure.nav');await button(page,lang,'starExposure.activate').click();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
   await button(page,lang,'starExposure.start').click();await page.clock.runFor(1000);await button(page,lang,'classLink.open').click();await page.clock.resume();await ready(page,lang);
   await expect(page.locator('#class-source')).not.toHaveValue(/^(?:practice|imported:)/);await openAll(main(page));}],
 ];
@@ -195,6 +198,10 @@ const captions=(page:Page,T:(original:string)=>string):Record<string,()=>Promise
  'classification lab':async()=>{await expect(id(page,'spl-open')).toHaveText(T('Spectral Line &Table'));await expect(programButton(page,P.programList)).toHaveText(T(P.programList).replace(/\.\.\.$/,''));await expect(programButton(page,P.nextOnList)).toHaveText(T(P.nextOnList));},
  'observation results':async()=>{await expect(page.locator('#observation-dialog-title')).toHaveText(T('Observational Data'));},
  'observation edit':async()=>{await expect(page.locator('#observation-dialog-title')).toHaveText(T('Observational Data'));},
+ // VIREO's Observational Data field captions for a loaded file (TObsRsltsDlg1, OBSERVATIONAL_DATA_LITERALS), in the web notebook.
+ 'imported spectrum observation':async()=>{const d=page.locator('dialog.observation-dialog');await expect(page.locator('#observation-dialog-title')).toHaveText(T('Observational Data'));
+  await expect(d.locator('dt').nth(2)).toHaveText(T('Observation Time (JD)'));await expect(d.locator('dt').nth(3)).toHaveText(T('Right Ascension:'));await expect(d.locator('dt').nth(4)).toHaveText(T('Declination:'));
+  await expect(d.locator('dt').nth(5)).toHaveText(T('Observed Magnitudes'));await expect(d.locator('dt').nth(6)).toHaveText(T('Redshift (Z):'));await expect(d.locator('dt').nth(7)).toHaveText(T('Velocity (V):'));},
  'No More Spectra':async()=>{await expect(page.locator('.classification-program [role=status]')).toHaveText(`${T(P.noMoreSpectra)}. ${T(P.endOfList)} ${S['program.end']}`);},
 });
 
@@ -214,6 +221,7 @@ test('View original (English) on: every VIREO caption in the E03 walk reads in E
   // Web text around the VIREO captions stays Spanish.
   if(step==='classification lab'){await expect(page.getByRole('heading',{level:1,name:N('es-419','class.title')})).toBeVisible();await expect(page.locator('#classification-program-title')).toHaveText(S['program.title']);}
   if(step==='No More Spectra')await expect(page.locator('.classification-program [role=status]')).toContainText(S['program.end']);
+  if(step==='imported spectrum observation')await expect(page.locator('dialog.observation-dialog p').first()).toHaveText(S['obs.temporary']);
  });
  expect([...left].map(([t,step])=>`${step}: ${t}`)).toEqual([]);
 });
@@ -228,7 +236,7 @@ test('Spanish: every VIREO caption in the E03 walk is its Spanish original; Engl
   await walk(page,lang,async step=>{await checks[step]?.();});
   await page.close();
  }
- expect(vireoEs(P.programList)).not.toBe('Program List...');expect(vireoEs('Observational Data')).not.toBe('Observational Data');expect(vireoEs('Spectral Line &Table')).not.toBe('Spectral Line Table');expect(vireoEs(P.noMoreSpectra)).not.toBe(P.noMoreSpectra);
+ expect(vireoEs(P.programList)).not.toBe('Program List...');expect(vireoEs('Observational Data')).not.toBe('Observational Data');for(const t of ['Observation Time (JD)','Right Ascension:','Declination:','Observed Magnitudes','Redshift (Z):','Velocity (V):'])expect(vireoEs(t)).not.toBe(t);expect(vireoEs('Spectral Line &Table')).not.toBe('Spectral Line Table');expect(vireoEs(P.noMoreSpectra)).not.toBe(P.noMoreSpectra);
 });
 
 /** Layout problems at this width: page overflow; dialogs that leave the viewport or scroll sideways; buttons, labels, selects,
