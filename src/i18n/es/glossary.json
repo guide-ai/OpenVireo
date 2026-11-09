@@ -66,7 +66,7 @@
    "es": "navegador"
   },
   {
-   "en": "(?<!line breaks and |for example a |accented letter, a )\\btabs?\\b(?!,? (?:line breaks|or other|BOM))",
+   "en": "(?<!line breaks and |for example a |accented letter, a )(?<!reachable with )\\btabs?\\b(?!,? (?:line breaks|or other|BOM))",
    "es": "pestaña"
   },
   {
@@ -362,6 +362,38 @@
    "es": "guía"
   },
   {
+   "en": "\\bapertures?\\b",
+   "es": "apertura"
+  },
+  {
+   "en": "\\breadings\\b",
+   "es": "lectura"
+  },
+  {
+   "en": "\\bseeded\\b",
+   "es": "semilla"
+  },
+  {
+   "en": "\\bcallbacks?\\b",
+   "es": "llamada"
+  },
+  {
+   "en": "\\bzero point\\b",
+   "es": "punto cero"
+  },
+  {
+   "en": "\\bphotons?\\b",
+   "es": "fot(ón|ones)"
+  },
+  {
+   "en": "\\bcolou?r[–-]magnitude\\b",
+   "es": "color[–-]magnitud"
+  },
+  {
+   "en": "\\bcluster fit\\b",
+   "es": "ajuste (manual )?del cúmulo"
+  },
+  {
    "en": "\\bstandards?\\b",
    "es": "estándar"
   },
@@ -404,6 +436,30 @@
   {
    "en": "\\bdispersion measure\\b",
    "es": "medida de dispersión"
+  },
+  {
+   "en": "\\bsweeps?\\b",
+   "es": "barrido"
+  },
+  {
+   "en": "\\bbeams?\\b",
+   "es": "haz"
+  },
+  {
+   "en": "\\bseeds?\\b",
+   "es": "semilla"
+  },
+  {
+   "en": "\\btimers?\\b",
+   "es": "temporizador"
+  },
+  {
+   "en": "\\baltitude limits?\\b",
+   "es": "límites? de altitud"
+  },
+  {
+   "en": "(?<!clock[/ ])\\bdrive\\b",
+   "es": "accionamiento"
   }
  ],
  "names": [
@@ -927,6 +983,14 @@
    "es": "Ruido de corriente oscura"
   },
   {
+   "en": "Data from Observations",
+   "es": "Datos a partir de observaciones"
+  },
+  {
+   "en": "Record/Review",
+   "es": "Registrar/Revisar"
+  },
+  {
    "en": "Next on List",
    "es": "Siguiente en la lista"
   },
@@ -949,6 +1013,62 @@
   {
    "en": "Pulsar timing guide",
    "es": "Guía de temporización de púlsares"
+  },
+  {
+   "en": "Radio Astronomy of Pulsars",
+   "es": "Radioastronomía de púlsares"
+  },
+  {
+   "en": "Radio Telescope Control Panel",
+   "es": "Panel de control del radiotelescopio"
+  },
+  {
+   "en": "Radio Simulation Options",
+   "es": "Opciones de simulación de radio"
+  },
+  {
+   "en": "Pulsar Parameters",
+   "es": "Parámetros de púlsares"
+  },
+  {
+   "en": "Access Pulsar List",
+   "es": "Acceso a la lista de púlsares"
+  },
+  {
+   "en": "Pulsar Identification",
+   "es": "Identificación del púlsar"
+  },
+  {
+   "en": "Telescope Type",
+   "es": "Tipo de telescopio"
+  },
+  {
+   "en": "Slew Rate",
+   "es": "Velocidad de movimiento",
+   "except": {
+    "original:Base Slew Rate": "VIREO's Base Slew Rate is «Velocidad base de movimiento» (ES2)",
+    "catalog:radioSimOptions.okNote": "names Base Slew Rate, «Velocidad base de movimiento» (ES2)"
+   }
+  },
+  {
+   "en": "Find Pulsar Data",
+   "es": "Buscar datos de púlsar"
+  },
+  {
+   "en": "Identify Recorded Object",
+   "es": "Identificar el objeto registrado"
+  },
+  {
+   "en": "Add Channel",
+   "es": "Agregar canal"
+  },
+  {
+   "en": "Antenna Aperture",
+   "es": "Apertura de la antena"
+  },
+  {
+   "en": "Sound Features",
+   "es": "Funciones de sonido"
   }
  ],
  "forbidden": [

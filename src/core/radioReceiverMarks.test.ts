@@ -95,3 +95,13 @@ describe('module audit',()=>{
   expect(text).not.toMatch(/radioPulsar|radioRandom|Math\.random|Date\.now|performance\.now|document\.|window\./);
  });
 });
+
+// Front ES8a review: the mark time label's screen form translates VIREO's trailing ' Sec' only.
+describe('receiverMarkScreenText (ES8a)',()=>{
+ it('is the identity by default and keeps the number and its padding',async()=>{
+  const {receiverMarkScreenText}=await import('./radioReceiverMarks');
+  expect(receiverMarkScreenText('  12.0 Sec')).toBe('  12.0 Sec');
+  expect(receiverMarkScreenText('  12.0 Sec',t=>`<${t}>`)).toBe('  12.0< Sec>');
+  expect(receiverMarkScreenText('12.0',t=>`<${t}>`)).toBe('12.0');
+ });
+});

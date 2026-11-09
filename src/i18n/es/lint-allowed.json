@@ -19,41 +19,11 @@
    ],
    "reason": "names kept as written: the file Pulsars.dat and the ATNF Pulsar Catalogue"
   },
-  "catalog:pulsarLab.step.catalog.help": {
-   "words": [
-    "pulsar"
-   ],
-   "reason": "VIREO's caption Pulsar Parameters, given in English after the Spanish name"
-  },
   "catalog:pulsarLab.step.point.help": {
    "words": [
     "pulsar"
    ],
    "reason": "VIREO's captions Pulsar Parameters and Find Pulsar, given in English after the Spanish names"
-  },
-  "catalog:pulsarLab.step.period.formula": {
-   "words": [
-    "pulsar"
-   ],
-   "reason": "VIREO's caption Pulsar Parameters, given in English after the Spanish name"
-  },
-  "catalog:pulsarLab.recover.catalog": {
-   "words": [
-    "pulsar"
-   ],
-   "reason": "VIREO's caption Pulsar Parameters, given in English after the Spanish name"
-  },
-  "catalog:pulsarLab.next.period": {
-   "words": [
-    "pulsar"
-   ],
-   "reason": "VIREO's name Pulsar Analysis, given in English after the Spanish name"
-  },
-  "catalog:pulsarLab.step.capture.help": {
-   "words": [
-    "pulsar"
-   ],
-   "reason": "VIREO's name Pulsar Analysis, given in English after the Spanish name"
   }
  }
 }

@@ -6,6 +6,7 @@ import type {RadioHotListRow} from '../core/radioHotList';
 import {formatRadioHotListRow} from '../core/radioHotListFormat';
 import {radioHotListFoundIndex,type RadioHotListFound} from '../core/radioHotListSearch';
 import type {RadioAntennaTranslate} from './RadioAntennaMessages';
+import {vireo} from '../i18n/vireo';
 
 export type RadioHotListDialogProps=Readonly<{
  /** Projection rows in native RA insertion order. */
@@ -84,7 +85,7 @@ export default function RadioHotListDialog({rows,index,found,blocked,searchBlock
  },[found,foundIndex,blocked]);
  return <div className="antenna-backdrop">
   <div ref={root} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-help`} className="antenna-dialog antenna-hotlist" data-testid="antenna-hotlist-dialog" onKeyDown={onKeyDown} onFocus={e=>{lastFocus.current=e.target;}} inert={blocked||undefined}>
-   <h3 id={`${id}-title`} className="radio-control-native">{C.form}</h3>
+   <h3 id={`${id}-title`} className="radio-control-native">{vireo(C.form)}</h3>
    <p id={`${id}-help`} className="radio-control-note">{ta('antenna.hotList.dialog.help')}</p>
    <p className="radio-control-note" data-testid="antenna-hotlist-units">{ta('antenna.hotList.dialog.units')}</p>
    <span id={`${id}-rows`} className="antenna-label">{ta('antenna.hotList.dialog.rows')}</span>
@@ -109,8 +110,8 @@ export default function RadioHotListDialog({rows,index,found,blocked,searchBlock
    </p>
    <div className="button-row">
     <button ref={searchRef} type="button" className="secondary-button" data-testid="antenna-hotlist-search-open" onClick={onSearch}>{ta('antenna.hotList.search.open')}</button>
-    <button type="button" className="primary-button" data-testid="antenna-hotlist-select" onClick={onSlew}>{menuCaptionText(C.slew)}</button>
-    <button ref={closeButton} type="button" className="secondary-button" data-testid="antenna-hotlist-close" onClick={onClose}>{menuCaptionText(C.close)}</button>
+    <button type="button" className="primary-button" data-testid="antenna-hotlist-select" onClick={onSlew}>{menuCaptionText(vireo(C.slew))}</button>
+    <button ref={closeButton} type="button" className="secondary-button" data-testid="antenna-hotlist-close" onClick={onClose}>{menuCaptionText(vireo(C.close))}</button>
    </div>
   </div>
  </div>;

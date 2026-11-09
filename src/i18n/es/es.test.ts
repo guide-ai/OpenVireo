@@ -30,6 +30,10 @@ import {SOUND_MESSAGES_EN} from '../../sound/SoundMessages';
 import {ENGINE_VIEW_EN} from '../../SpectrumEngineMessages';
 import {SPECTRAL_RANGE_EN} from '../../SpectralRangeMessages';
 import {WEDGE_MESSAGES_EN} from '../../components/WedgeMessages';
+import {RADIO_ANTENNA_MESSAGES_EN} from '../../components/RadioAntennaMessages';
+import {FINISH_SAVE_MESSAGES_EN} from '../../components/RadioFinishSaveMessages';
+import {RADIO_R1_MESSAGES_EN} from '../../components/RadioR1Messages';
+import {RADIO_SAVE_MESSAGES_EN} from '../../components/RadioRecordSaveMessages';
 import {PULSAR_MESSAGES_EN} from '../../components/PulsarMessages';
 import {LOAD_SAVE_MESSAGES_EN} from '../../components/PulsarLoadSaveMessages';
 import {SAVED_ROWS_MESSAGES_EN} from '../../components/PulsarSavedRowsMessages';
@@ -39,6 +43,9 @@ import {SAVED_ROWS_MESSAGES_EN} from '../../components/PulsarSavedRowsMessages';
 const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,camera:CAMERA_MESSAGES_EN,engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,nakedEye:NAKED_EYE_MESSAGES_EN,objectXLab:OBJECT_X_LAB_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,wedge:WEDGE_MESSAGES_EN};
 /** The maps translated completely (ES1: the shell; ES2: the observatory; ES3: the E01 spectrometer maps; ES4: the wedge); the others are partial until their sub-front. */
 const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','camera','fieldInfo','fieldReadDetails','nakedEye','observationMetadata','observatory','polish','qsoList','sound','engineView','spectralRange','wedge'];
+// Front ES8a: the radio telescope maps (complete).
+Object.assign(ENGLISH_MAPS,{radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN});
+(COMPLETE_MAPS as MapId[]).push('radioAntenna','radioFinishSave','radioR1','radioRecordSave');
 // Front ES8b: the pulsar analysis maps (complete).
 Object.assign(ENGLISH_MAPS,{pulsar:PULSAR_MESSAGES_EN,pulsarLoadSave:LOAD_SAVE_MESSAGES_EN,pulsarSavedRows:SAVED_ROWS_MESSAGES_EN});
 (COMPLETE_MAPS as MapId[]).push('pulsar','pulsarLoadSave','pulsarSavedRows');
@@ -95,8 +102,12 @@ const WORD=(w:string)=>`(?<![\\p{L}\\p{N}])${w}(?![\\p{L}\\p{N}])`;
 const FORBIDDEN=(glossary.forbidden as {words?:string[];es?:string;use:string}[]).map(f=>({label:f.words?`«${f.words.join('», «')}»`:`/${f.es}/`,use:f.use,words:f.words??null,pattern:new RegExp(f.words?f.words.map(WORD).join('|'):f.es!,'iu')}));
 /** The forbidden words or patterns found in a string, less the words lint-allowed.json allows in that string. */
 const ALLOWED=lintAllowed.entries as Record<string,{words:string[];reason:string}>;
-export function forbiddenIn(id:string,text:string):string[]{
- const out:string[]=[];
+/** Front ES8a review: VIREO's English names that hold the word "Pulsar", quoted as glosses («Parámetros de púlsares (Pulsar
+ * Parameters)»). Only these exact, case-sensitive phrases are removed before the forbidden-word check, so the verb «pulsar» or an
+ * unaccented «pulsar» elsewhere in the same string still fails. */
+const VIREO_PULSAR_NAMES=/(?<![\p{L}\p{N}])(?:Access Pulsar List|Plot Pulsar Positions|Pulsar (?:Analysis|Parameters|List|Identification))(?![\p{L}\p{N}])/gu;
+export function forbiddenIn(id:string,original:string):string[]{
+ const out:string[]=[],text=original.replace(VIREO_PULSAR_NAMES,' ');
  for(const f of FORBIDDEN){
   if(f.words){for(const w of f.words)if(new RegExp(WORD(w),'iu').test(text)&&!ALLOWED[id]?.words.some(a=>a.toLowerCase()===w.toLowerCase()))out.push(`«${w}», use ${f.use}`);}
   else if(f.pattern.test(text))out.push(`${f.label}, use ${f.use}`);
@@ -123,6 +134,11 @@ describe('Front ES1 review 1: the lint catches what it must',()=>{
   expect(forbiddenIn('map:languageChoice.originalsNote','la próxima vez que se cargue la página')).toEqual([]);
   expect(forbiddenIn('catalog:other','la próxima vez que se cargue la página')).not.toEqual([]);
   expect(forbiddenIn('map:languageChoice.originalsNote','Haga clic')).not.toEqual([]);
+  // Front ES8a review: only the exact English VIREO names with "Pulsar" are exempt, never the verb or a lower-case form.
+  expect(forbiddenIn('catalog:x','Abre Parámetros de púlsares (Pulsar Parameters) o Archivo ▸ Lista de púlsares... [Pulsar List...]')).toEqual([]);
+  expect(forbiddenIn('catalog:x','Abre Parámetros de púlsares (Pulsar Parameters) y pulsar el botón')).not.toEqual([]);
+  expect(forbiddenIn('catalog:x','Abre el pulsar (Pulsar Analysis)')).not.toEqual([]);
+  expect(forbiddenIn('catalog:x','(pulsar parameters)')).not.toEqual([]);
   for(const [id,entry] of Object.entries(ALLOWED)){expect(entry.reason.length,id).toBeGreaterThan(20);expect(pairs().some(p=>p.id===id&&entry.words.every(w=>new RegExp(WORD(w),'iu').test(p.es))),`${id} still needs its allowance`).toBe(true);}
   expect(unpaired('¿Cambiar el idioma?','¿','?')).toBeNull();expect(unpaired('Cambiar el idioma?','¿','?')).toBe('? without ¿');expect(unpaired('¿Cambiar el idioma.','¿','?')).toBe('¿ without ?');
   expect(unpaired('presiona la tecla ? o abre ?lang=es','¿','?')).toBeNull();expect(unpaired('¡Listo!','¡','!')).toBeNull();expect(unpaired('¿Restaurar {file}?','¿','?')).toBeNull();expect(unpaired('Restaurar {file}?','¿','?')).toBe('? without ¿');expect(unpaired('¡Listo.','¡','!')).toBe('¡ without !');

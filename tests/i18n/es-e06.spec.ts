@@ -23,8 +23,7 @@ import {PULSAR_ACTIVATE_LITERALS as ACTIVATE} from '../../src/core/pulsarAnalysi
 //   identifiers in SAME and the narrow patterns below (data read from the recording, file names, hashes, numbers with units);
 // - qps: every visible text is marked ⟦…⟧, with the same exceptions;
 // - the radio telescope route (receiver, access options, pulsar parameters: Front ES8a) is only crossed to make the capture;
-//   its texts are not compared here. radioR1.findNote (the Find note under Review, ES8a's map) is the one ES8a text shown on
-//   the analysis page; it reads English until ES8a lands and is excluded below.
+//   its texts are not compared here. radioR1.findNote (the Find note under Review, ES8a's map) is compared like the rest.
 // Recorded data stays English: the pulsar name of the recording, the stored header and rows of the saved-measurement file, the
 // file names and the Review table's cells.
 type Lang='en'|'es-419'|'qps';
@@ -42,11 +41,8 @@ const DATA=new Set<string>([
  'PSR B2358+38','PSR B0329+54','PSR B0531+21','PSR B1919+21','Ada Student','Ben Student','Table Number: 3','10/22/2026, 9:41:07 AM',
 ]);
 const NUMERIC=/^[-+−±\d\s.,:;°′″'"·×÷/()[\]–%=→eE]*\d[-+−±\d\s.,:;°′″'"·×÷/()[\]–%=→eE]*(?:\s*(?:MHz|ms|s|m|px|bytes|Bytes))*\s*$/;
-/** radioR1.findNote (ES8a): the Find note under Review; English until ES8a. */
-const ES8A=new Set<string>(['Find searches each stored line (the original’s text of every measurement']);
-const ES8A_STARTS=(text:string)=>[...ES8A].some(s=>text.startsWith(s));
 /** Recorded data, a SHA-256 hash or a number with its unit: the same in every language. */
-const data=(text:string)=>DATA.has(text)||/^[0-9a-f]{64}$/.test(text)||NUMERIC.test(text)||ES8A_STARTS(text);
+const data=(text:string)=>DATA.has(text)||/^[0-9a-f]{64}$/.test(text)||NUMERIC.test(text);
 /** What may read the same in Spanish as in English. */
 const same=(text:string)=>IDENTICAL.has(text)||/^Panel \d$/.test(text)||data(text);
 const id=(page:Page|Locator,testId:string)=>page.getByTestId(testId);

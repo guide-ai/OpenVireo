@@ -84,6 +84,16 @@ export function receiverMainTitle(inSource:boolean,record:Readonly<{legacyName:s
 export const receiverChildTitle=(index:number)=>cap(RECEIVER_DISPLAY_LITERALS.receiver+String(index+1)+RECEIVER_DISPLAY_LITERALS.slave,32);
 /** Form caption: title + aperture text in ShortString[92]. */
 export const receiverCaption=(title:string,aperture:string)=>cap(title+aperture,92);
+/** Front ES8a [W]: the screen form of a receiver caption or of a drawn annotation ('12.0 Sec '). `tr` (default: the literal,
+ * so English is unchanged) translates VIREO's own literal pieces of RECEIVER_DISPLAY_LITERALS (the title prefixes, the fixed
+ * titles and the unit words); pulsar names and numbers stay as composed. Screen only: files and the recorded data never
+ * use it. Longer pieces are tried first (' Deg ' before ' Deg'). */
+export function receiverScreenText(text:string,tr:(literal:string)=>string=literal=>literal):string{
+ const L=RECEIVER_DISPLAY_LITERALS;
+ const pieces=[L.noPulsar,L.pulsar,L.receiver,L.slave,L.aperture,L.meters,L.fov,L.hpbw,L.deg,L.fovDeg,L.sec].sort((a,b)=>b.length-a.length);
+ const pattern=new RegExp(pieces.map(p=>p.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|'),'g');
+ return text.replace(pattern,piece=>tr(piece));
+}
 
 export type ReceiverLabels=Readonly<{frequency:string;step:string;vertical:string;horizontal:string;mode:string;align:string|null;record:string}>;
 /** Refresh 0x572f8c label texts: Freq fixed2, Step caption, Vert fixed2, Horz fixed1, ModeDisp, AlignDisp (main; R-RX5: the
