@@ -1,4 +1,4 @@
-import {test,expect,type Browser,type Page} from '@playwright/test';
+import {test,expect,type Browser,type Locator,type Page} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {enterInstructorMode} from '../fixtures/instructor-mode';
@@ -33,13 +33,18 @@ async function download(page:Page,click:()=>Promise<void>):Promise<File>{
  const event=page.waitForEvent('download');await click();const d=await event;
  return {name:d.suggestedFilename(),bytes:await readFile((await d.path())!)};
 }
-/** Runs `flow` in a fresh English context and a fresh qps context and compares every file it returns. */
-async function identical(browser:Browser,baseURL:string|undefined,flow:(page:Page,locale:Locale)=>Promise<Record<string,File>>,masks:Readonly<Record<string,(b:Buffer)=>Buffer>>={}){
+/** Runs `flow` in a fresh English context and a fresh qps context and compares every file it returns. `scope` is the flow's own
+ * part of the page: in qps it must show at least one ⟦, so a route where the pseudo-locale silently did not apply cannot pass by
+ * comparing English with English. `masks` hides documented run-dependent values (wall clock, random stream) before hashing. */
+async function identical(browser:Browser,baseURL:string|undefined,flow:(page:Page,locale:Locale)=>Promise<Record<string,File>>,masks:Readonly<Record<string,(b:Buffer)=>Buffer>>,scope:(page:Page)=>Locator){
  const results:Partial<Record<Locale,Record<string,File>>>={};
  for(const locale of ['en','qps'] as const){
   const context=await browser.newContext({baseURL,locale:'en-US',viewport:{width:1440,height:1050}}),page=await context.newPage();page.setDefaultTimeout(20_000);
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
-  try{results[locale]=await flow(page,locale);}finally{await context.close();}
+  try{
+   results[locale]=await flow(page,locale);
+   if(locale==='qps')await expect(scope(page),'the pseudo-locale applied to this flow').toContainText('⟦');
+  }finally{await context.close();}
   expect(errors,locale).toEqual([]);
  }
  const en=results.en!,qps=results.qps!;
@@ -49,14 +54,34 @@ async function identical(browser:Browser,baseURL:string|undefined,flow:(page:Pag
   expect(qps[family].name,family).toBe(file.name);
   expect(qps[family].bytes.includes('⟦'),`${family}: a pseudo-locale mark reached the file`).toBe(false);
   const mask=masks[family]??((b:Buffer)=>b);
+  if(process.env.ES0_DUMP&&sha(mask(qps[family].bytes))!==sha(mask(file.bytes))){const {writeFile}=await import('node:fs/promises');await writeFile(`${process.env.ES0_DUMP}/${family}.en`,file.bytes);await writeFile(`${process.env.ES0_DUMP}/${family}.qps`,qps[family].bytes);}
   expect(sha(mask(qps[family].bytes)),`${family}: ${file.name}`).toBe(sha(mask(file.bytes)));
  }
 }
 const SPECTRUM=Buffer.from('3700,.2\n4000,.5\n4700,.9');
+/** A one-pulsar receiver catalog in the Pulsars.dat column layout (synthetic, as tests/radio-receiver-raw-export-app.spec.ts). */
+const RECEIVER_CATALOG=(()=>{
+ const COLUMNS={primaryName:[0,12],legacyName:[12,8],ra:[20,16],dec:[62,16],x2a:[208,22],x34:[240,16],x3e:[266,14],s48:[336,8],s4c:[350,14],s50:[410,10],s54:[430,8],s58:[438,8],s5c:[446,8]} as const;
+ const row:Record<keyof typeof COLUMNS,string>={primaryName:'J0001+3826',legacyName:'B2358+38',ra:'0.25',dec:'38.4',x2a:'0.5',x34:'1.0E-15',x3e:'50000.0',s48:'28.2',s4c:'30.0',s50:'12.5',s54:'14.0',s58:'9.0',s5c:'3.0'};
+ const chars=Array.from({length:454},()=>' ');
+ for(const [field,[start,width]] of Object.entries(COLUMNS) as [keyof typeof COLUMNS,readonly [number,number]][]){const text=row[field],cell=field==='primaryName'||field==='legacyName'?text.padEnd(width):text.padStart(width);for(let i=0;i<width;i++)chars[start+i]=cell[i];}
+ return chars.join('')+'\r\n';
+})();
 /** A camera image depends on wall-clock time and the web random stream (docs/CAMERA-EXPOSURE.md: DATE-OBS, MJD-OBS, the drifting
  * pointing RA/CRVAL1 and CAMSEED, which drives every pixel). Only the header is compared, with the values of those cards masked;
  * every other card, keyword, comment and the END block must be byte-identical. */
 const TIMED_CARDS=new Set(['DATE-OBS','MJD-OBS','RA','DEC','CRVAL1','CRVAL2','CAMSEED']);
+/** An Object X spectrum CSV: the counts come from a real-time exposure and the web random stream, so only the header, the
+ * wavelength column and the row count are compared. */
+const countsMasked=(bytes:Buffer)=>Buffer.from(bytes.toString('latin1').replace(/^([^,\r\n]+),\d+(?=\r\n)/gm,'$1,<counts>'),'latin1');
+/** A saved investigation with kept Object X spectra: each spectrum's replay seed (the web random stream) and its exposure events
+ * (real-time ticks) are run-dependent, so they are reduced to the seed's presence and the distinct event kinds. Every other
+ * field, the labels and codes included, is compared as written. */
+function objectXReplayMasked(bytes:Buffer):Buffer{
+ const doc=JSON.parse(bytes.toString('utf8')) as {objectXSpectra?:{seedAtReset?:unknown;events?:{kind:string}[]}[]};
+ for(const s of doc.objectXSpectra??[]){s.seedAtReset=typeof s.seedAtReset;s.events=[...new Set((s.events??[]).map(e=>e.kind))].sort().map(kind=>({kind}));}
+ return Buffer.from(JSON.stringify(doc),'utf8');
+}
 function fitsHeader(bytes:Buffer):Buffer{
  const cards:string[]=[];
  for(let at=0;at+80<=bytes.length;at+=80){const card=bytes.subarray(at,at+80).toString('latin1');const key=card.slice(0,8).trim();cards.push(TIMED_CARDS.has(key)?`${card.slice(0,10)}<masked>`:card);if(key==='END')break;}
@@ -79,7 +104,7 @@ test('spectrum analysis: measurement CSV, velocities CSV and the analysis sessio
   const velocities=await download(page,()=>button(page,'Export velocities CSV').click());
   const session=await download(page,()=>button(page,'Save session').first().click());
   return {measurements,velocities,session};
- });
+ },{},page=>page.locator('.spectrum-route'));
 });
 
 test('Hubble analysis: Hubble CSV and the Hubble session from the original workbook example',async({browser,baseURL})=>{
@@ -92,7 +117,7 @@ test('Hubble analysis: Hubble CSV and the Hubble session from the original workb
   const csv=await download(page,()=>button(page,'Export Hubble CSV').click());
   const session=await download(page,()=>button(page,'Save Hubble session').click());
   return {csv,session};
- });
+ },{},page=>page.locator('.hubble-card'));
 });
 
 test('classification: investigation, classification CSV, observation notebook and native TXT/CSV',async({browser,baseURL})=>{
@@ -116,7 +141,7 @@ test('classification: investigation, classification CSV, observation notebook an
   await button(page,'Preview native CSV from TXT').click();
   const nativeCsv=await download(page,()=>button(page,'Download generated native CSV').click());
   return {investigation,classification,notebook,unchanged,nativeCsv};
- });
+ },{},page=>page.locator('.classification-main'));
 });
 
 test('hot list: Save HTL file after adding a target',async({browser,baseURL})=>{
@@ -128,7 +153,7 @@ test('hot list: Save HTL file after adding a target',async({browser,baseURL})=>{
   await page.getByLabel(L('HTL right ascension · hours')).fill('23.75');await page.getByLabel(L('HTL declination · degrees')).fill('-30');
   await button(page,'Apply HTL edit').click();await expect(page.locator('#htl-rows option')).toHaveCount(1);
   return {htl:await download(page,()=>button(page,'Save HTL file').click())};
- });
+ },{},page=>page.locator('.htl-card'));
 });
 
 test('options file: Save Updates writes VEO_OPTS.json',async({browser,baseURL})=>{
@@ -140,7 +165,7 @@ test('options file: Save Updates writes VEO_OPTS.json',async({browser,baseURL})=
   await page.locator('.telescope-motion').getByTestId('ob-options').click();await expect(page.getByTestId('ob-options-dialog')).toBeVisible();
   await page.getByTestId('ob-options-test-mode').check();await page.getByTestId('ob-options-show-object-id').check();
   return {options:await download(page,()=>page.getByTestId('ob-options-save').click())};
- });
+ },{},page=>page.locator('.telescope-motion'));
 });
 
 test('variable stars: Save Text › As Displayed',async({browser,baseURL})=>{
@@ -151,7 +176,7 @@ test('variable stars: Save Text › As Displayed',async({browser,baseURL})=>{
   await expect(page.getByTestId('vstar-list-window')).toBeVisible();
   await page.getByTestId('vstar-data-menu').click();await page.getByTestId('vstar-save-menu').click();
   return {text:await download(page,()=>page.getByTestId('vstar-save-displayed').click())};
- });
+ },{},page=>page.getByTestId('vstar-list-window'));
 });
 
 test('pulsar analysis: the results CSV of two recorded measurements',async({browser,baseURL})=>{
@@ -167,7 +192,7 @@ test('pulsar analysis: the results CSV of two recorded measurements',async({brow
   await id(page,'pulsar-export').click();await expect(id(page,'pulsar-export-dialog')).toBeVisible();
   for(const [k,v] of Object.entries({date:'25/10/2026',time:'16:00:00',table:'7',name1:'Observer A'}))await id(page,`pulsar-export-${k}`).fill(v);
   return {results:await download(page,()=>id(page,'pulsar-export-download').click())};
- });
+ },{},page=>page.getByTestId('pulsar-analysis'));
 });
 
 test('star spectrometer: Save spectrum (.SSP) of a paused exposure',async({browser,baseURL})=>{
@@ -180,7 +205,7 @@ test('star spectrometer: Save spectrum (.SSP) of a paused exposure',async({brows
   await page.clock.runFor(1000);await button(page,'Pause exposure').click();await expect(page.getByTestId('star-elapsed')).toHaveText('1000 ms');
   const panel=page.getByTestId('ob-spectrum-save');
   return {ssp:await download(page,()=>panel.getByRole('button',{name:L('Save spectrum (.SSP)')}).click())};
- });
+ },{},page=>page.getByTestId('ob-spectrum-save'));
 });
 
 test('CCD camera: Save image (FITS) and Save image (VIREO header) from the recorded VizieR answer',async({browser,baseURL})=>{
@@ -201,5 +226,54 @@ test('CCD camera: Save image (FITS) and Save image (VIREO header) from the recor
   const fits=await download(page,()=>button(page,'Save image (FITS)').click());
   const native=await download(page,()=>button(page,'Save image (VIREO header)').click());
   return {fits,native};
- },{fits:fitsHeader,native:fitsHeader});
+ },{fits:fitsHeader,native:fitsHeader},page=>page.getByTestId('camera-control'));
+});
+
+test('Object X (identity still hidden): the kept spectrum CSV and the saved investigation',async({browser,baseURL})=>{
+ test.setTimeout(240_000);
+ await identical(browser,baseURL,async(page,locale)=>{
+  await open(page,locale,'object-x','real');
+  await expect(page.getByTestId('objectx-target').locator('option')).toHaveCount(18);
+  await page.locator('[data-testid=objectx-lab] input').first().fill('7');
+  await page.getByTestId('objectx-target').selectOption('X-NTFB6');// ObjectX.HTL row 9 (a star; not named before the reveal)
+  await page.getByTestId('objectx-spectrum-telescope').selectOption('2');// 4.0 m
+  await button(page,'Place the slit on the object').click();
+  await expect(button(page,'Start spectrum')).toBeEnabled({timeout:90_000});
+  await button(page,'Start spectrum').click();
+  await expect(async()=>{const t=await page.getByTestId('objectx-spectrum-progress').textContent();expect(Number(/(\d+)\D*$/.exec(t??'')?.[1]??0)).toBeGreaterThan(0);}).toPass({timeout:20_000});
+  const stop=button(page,'Stop spectrum');if(await stop.isEnabled())await stop.click();await expect(stop).toBeDisabled();
+  await button(page,'Keep this spectrum').click();await expect(page.getByTestId('objectx-spectra').locator('li')).toHaveCount(1);
+  const csv=await download(page,()=>button(page,'Save ObjX-7-S01 spectrum (CSV)').click());
+  const investigation=await download(page,()=>button(page,'Save investigation').first().click());
+  return {csv,investigation};
+ },{csv:countsMasked,investigation:objectXReplayMasked},page=>page.getByTestId('objectx-lab'));
+});
+
+test('radio telescope: Download capture as .PLR of a model-generated recording',async({browser,baseURL})=>{
+ test.setTimeout(180_000);
+ const id=(page:Page,testId:string)=>page.getByTestId(testId);
+ const flush=async(page:Page)=>{for(let i=0;i<3;i++)await page.evaluate(()=>new Promise<void>(resolve=>{const ch=new MessageChannel();ch.port1.onmessage=()=>{ch.port1.close();ch.port2.close();resolve();};ch.port2.postMessage(0);}));};
+ const advance=async(page:Page,ms:number)=>{for(let t=0;t<ms;t+=200){await page.clock.runFor(Math.min(200,ms-t));await flush(page);}};
+ const tool=(page:Page,name:string)=>page.locator('.portal-header nav').getByRole('button',{name:L(name)});
+ await identical(browser,baseURL,async(page,locale)=>{
+  await page.clock.install({time:new Date('2026-10-24T00:00:00Z')});
+  await page.goto(`/${locale==='qps'?'?lang=qps':''}#pulsar-analysis`);await expect(id(page,'pulsar-none')).toBeVisible();
+  await tool(page,'Radio telescope').click();await expect(id(page,'radio-exercise')).toBeVisible();
+  await page.clock.pauseAt(new Date('2026-10-24T00:10:00Z'));await flush(page);
+  await id(page,'radio-exercise').click();await id(page,'radio-env-compiled').click();await id(page,'radio-access').click();await id(page,'radio-timer-deliver').click();
+  await id(page,'radio-switch').click();await id(page,'antenna-tracking').click();await flush(page);
+  await id(page,'pulsar-ref-file').setInputFiles({name:'synthetic-receiver.dat',mimeType:'text/plain',buffer:Buffer.from(RECEIVER_CATALOG,'latin1')});
+  await id(page,'radio-clock-utc').fill('2026-10-24T12:00:00');await id(page,'radio-clock-apply').click();await id(page,'radio-clock-longitude').click();
+  await id(page,'antenna-receiver-button').click();await expect(id(page,'receiver-card-0')).toBeVisible();
+  await id(page,'receiver-record').click();
+  await id(page,'receiver-mode').click();await flush(page);await advance(page,600);await id(page,'receiver-mode').click();await flush(page);
+  for(let i=0;i<80&&await id(page,'receiver-workspace').getAttribute('data-timer')==='true';i++)await advance(page,200);
+  const finish=id(page,'receiver-record-finish');await expect(finish).toHaveAttribute('data-stage','identify');
+  await id(page,'receiver-record-identify-input').fill('PSR B2358+38');await id(page,'receiver-record-identify-ok').click();
+  await expect(finish).toHaveAttribute('data-stage','properties');await id(page,'receiver-record-properties-ok').click();
+  await expect(finish).toHaveAttribute('data-stage','save');await id(page,'receiver-record-save-no').click();
+  await expect(id(page,'pulsar-memory')).toBeVisible();await flush(page);
+  await id(page,'pulsar-raw-export').click();await expect(id(page,'pulsar-raw-export-download')).toBeEnabled();
+  return {plr:await download(page,()=>id(page,'pulsar-raw-export-download').click())};
+ },{},page=>page.getByTestId('receiver-workspace'));
 });

@@ -17,8 +17,8 @@ export function auditUi(root){const sites=[],files=[];
  }}}scan(path.join(root,'src'));return {files,sites};}
 /** Front ES0 (docs/I18N.md): VIREO's own literals live in src/core/ and stay byte-exact there (user decision 3, 2026-11-09).
  * A tsx render site that puts one on screen opts in with vireo(…) (src/i18n/vireo.ts); this lists every site that does not.
- * A site is a JSX child expression or a text-bearing attribute that reads a member of an UPPER_CASE import from src/core/,
- * outside a vireo() call. Event handlers, keys, ids, classes, styles, values and data-* attributes are not text. Literals
+ * A site is a JSX child expression or a text-bearing attribute that reads a member of an UPPER_CASE import from src/core/, or of
+ * a `*_LITERALS`, `*_CAPTIONS` or `*_NAMES` import from any module, outside a vireo() call. Event handlers, keys, ids, classes, styles, values and data-* attributes are not text. Literals
  * that reach the screen through helper functions or props are not visible here; the qps pseudo-locale is the backstop.
  * `modules` also lists the multi-word string literals of the .ts presentation modules that build visible text outside the
  * catalog (ES1 and ES-HELP translate them). Every listed site needs a receipt in src/i18n/vireo-literals.json. */
@@ -29,8 +29,17 @@ export function auditOriginals(root){
  function scan(dir){for(const item of readdirSync(dir,{withFileTypes:true})){const file=path.join(dir,item.name);if(item.isDirectory()){scan(file);continue;}if(!/\.tsx$/.test(file))continue;
   const relative=path.relative(root,file),text=readFileSync(file,'utf8'),result=parseSync(relative,text);if(result.errors.length)throw new Error(`Could not audit ${relative}`);files.push(relative);
   const literals=new Set();
-  for(const node of result.program.body)if(node.type==='ImportDeclaration'&&node.importKind!=='type'&&path.resolve(path.dirname(file),node.source.value).startsWith(core))
-   for(const s of node.specifiers)if(s.type==='ImportSpecifier'&&s.importKind!=='type'&&/^[A-Z][A-Z0-9_]+$/.test(s.imported.name??s.imported.value))literals.add(s.local.name);
+  // Roots: UPPER_CASE imports from src/core/, and VIREO literal constants kept beside the web text (`*_LITERALS`, `*_CAPTIONS`,
+  // `*_NAMES` from any module, for example PolishMessages.ts TERMINATE_SLEW_LITERALS or HelpMessages.ts HELP_BUTTON_NAMES).
+  for(const node of result.program.body)if(node.type==='ImportDeclaration'&&node.importKind!=='type'){const fromCore=path.resolve(path.dirname(file),node.source.value).startsWith(core);
+   for(const s of node.specifiers){const name=s.imported?.name??s.imported?.value;if(s.type==='ImportSpecifier'&&s.importKind!=='type'&&/^[A-Z][A-Z0-9_]+$/.test(name)&&(fromCore||/_(?:LITERALS|CAPTIONS|NAMES)$/.test(name)))literals.add(s.local.name);}}
+  // Local aliases: `const L=SOME_LITERALS` (or a member of one), and `const C=m.native`, the Wedge map's VIREO captions
+  // (WEDGE_NATIVE_CAPTIONS reached through wedgeMessages()).
+  const rootOf=(n)=>{while(n?.type==='MemberExpression')n=n.object;return n?.type==='Identifier'?n.name:null;};
+  (function aliases(node){if(!node||typeof node!=='object')return;
+   if(node.type==='VariableDeclarator'&&node.id?.type==='Identifier'&&node.init){const init=node.init;if(literals.has(rootOf(init))||(init.type==='MemberExpression'&&!init.computed&&init.property?.name==='native'))literals.add(node.id.name);}
+   for(const[k,v]of Object.entries(node))if(!['loc','comments'].includes(k)){if(Array.isArray(v))v.forEach(aliases);else if(v&&typeof v==='object'&&v.type)aliases(v);}
+  })(result.program);
   if(!literals.size)continue;
   const add=(node)=>sites.push({file:relative,line:text.slice(0,node.start).split('\n').length,kind:'original',value:text.slice(node.start,node.end)});
   // A member chain rooted at a literal import (X, X.a, X.a.b, X[a]); the outermost chain is one site.

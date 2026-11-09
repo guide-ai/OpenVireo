@@ -3,6 +3,7 @@
 import en from './en.json';
 import type {MessageParameters} from './params.generated';
 import type {UiLanguage} from './locale';
+import type {BundleMaps} from './maps';
 export type MessageKey=keyof typeof en;
 export type PlainMessageKey={[K in MessageKey]:MessageParameters[K]extends never?K:never}[MessageKey];
 type ParameterNames<K extends MessageKey>=K extends keyof MessageParameters?MessageParameters[K]:never;
@@ -22,8 +23,12 @@ type CatalogOptions=Readonly<{
 }>;
 /** Explicit instances allow later language providers without global mutation.
  * Only presentation consumes them; inputs, original labels, journals and files
- * never pass through a translator or locale number parser. */
-export function createI18n(messages:Readonly<Partial<Record<MessageKey,string>>>,language:string,{fallback=false,numberLocale=language}:CatalogOptions={}){
+ * never pass through a translator or locale number parser.
+ * A complete catalog is required at compile time unless `fallback` is given explicitly. */
+export function createI18n(messages:Readonly<Record<MessageKey,string>>,language:string,options?:CatalogOptions&Readonly<{fallback?:false}>):I18n;
+export function createI18n(messages:Readonly<Partial<Record<MessageKey,string>>>,language:string,options:CatalogOptions&Readonly<{fallback:boolean}>):I18n;
+export function createI18n(messages:Readonly<Partial<Record<MessageKey,string>>>,language:string,options:CatalogOptions={}):I18n{return build(messages,language,options);}
+function build(messages:Readonly<Partial<Record<MessageKey,string>>>,language:string,{fallback=false,numberLocale=language}:CatalogOptions){
  const keys=Object.keys(en) as MessageKey[];
  if(!messages||typeof messages!=='object'||Object.keys(messages).some(k=>!Object.hasOwn(en,k))||(!fallback&&(Object.keys(messages).length!==keys.length||keys.some(k=>!Object.hasOwn(messages,k)))))throw new Error('Invalid message catalog keys');
  for(const key of keys)if(Object.hasOwn(messages,key)&&(typeof messages[key]!=='string'||parameters(messages[key]!).join('|')!==parameters(en[key]).join('|')))throw new Error(`Invalid message parameters: ${key}`);
@@ -38,15 +43,15 @@ export function createI18n(messages:Readonly<Partial<Record<MessageKey,string>>>
  const scientific=(value:number,digits:number,trim=false)=>{const text=value.toPrecision(digits);return (trim?Number(text).toString():text).replace('.',decimal);};
  return Object.freeze({locale:language,t:translate,fixed,scientific,formatNumber:(value:number,options:Intl.NumberFormatOptions={})=>new Intl.NumberFormat(numberLocale,options).format(value)});
 }
-export type I18n=ReturnType<typeof createI18n>;
+export type I18n=ReturnType<typeof build>;
 /** What a non-English load registers before the app is imported (docs/I18N.md). The Spanish bundle arrives with ES1 in
  * src/i18n/es/; the dev-only pseudo-locale is src/i18n/pseudo.ts. */
 export type LocaleBundle=Readonly<{
  language:Exclude<UiLanguage,'en'>;
  /** Catalog text by key; missing keys fall back to English until ES-REL. */
  messages:Readonly<Partial<Record<MessageKey,string>>>;
- /** `*Messages.ts` maps by their pickMessages id (src/i18n/registry.ts). */
- maps?:Readonly<Record<string,unknown>>;
+ /** `*Messages.ts` maps by their pickMessages id (src/i18n/maps.ts), each checked against its English map on first use. */
+ maps?:BundleMaps;
  /** VIREO's own literals by normalised original (src/i18n/vireo.ts). */
  originals?:Readonly<Record<string,string>>;
  /** Dev-only pseudo-locale: derive a map or an original that the bundle does not list. */

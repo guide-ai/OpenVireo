@@ -1,5 +1,5 @@
-// Front ES0 (docs/I18N.md): src/boot.ts settles the language of this load and only then imports the app, so every module
-// that builds text (t, the pickMessages maps, vireo()) evaluates after the language is known.
+// Front ES0 (docs/I18N.md): src/boot.ts settles the language of this load; t, the pickMessages maps and vireo() read it when they
+// are used, never when a module evaluates.
 import en from './en.json';
 import {english,type MessageKey,type Translate} from './catalog';
 import {activateLocale,current} from './active';
