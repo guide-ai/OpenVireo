@@ -2032,100 +2032,16 @@
  {
   "file": "src/components/WedgeLab.tsx",
   "kind": "original",
-  "value": "C.windowCaption",
-  "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/WedgeLab.tsx",
-  "kind": "original",
-  "value": "C.menuPlotData",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/WedgeLab.tsx",
-  "kind": "original",
-  "value": "C.menuOptions",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/WedgeLab.tsx",
-  "kind": "original",
-  "value": "WP.menu",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/WedgeLab.tsx",
-  "kind": "original",
-  "value": "C.retainCaption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/WedgeLab.tsx",
-  "kind": "original",
-  "value": "C.deleteCaption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/WedgeLab.tsx",
-  "kind": "original",
-  "value": "C.retainText",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/WedgeLab.tsx",
-  "kind": "original",
-  "value": "C.deleteText",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/WedgeLab.tsx",
-  "kind": "original",
-  "value": "C.yes",
-  "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/WedgeLab.tsx",
-  "kind": "original",
-  "value": "C.no",
-  "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/WedgeLab.tsx",
-  "kind": "original",
-  "value": "C.cancel",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/WedgeLab.tsx",
-  "kind": "original",
   "value": "WEDGE_COLOUR_SCHEMES[scheme]",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a recovered TColor scheme passed to the plot (colours, not text)"
  },
  {
   "file": "src/components/WedgeLab.tsx",
   "kind": "original",
   "value": "WEDGE_COLOUR_SCHEMES[printInColor?0:1]",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/WedgeLab.tsx",
-  "kind": "original",
-  "value": "C",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a recovered TColor scheme passed to the printed plot (colours, not text)"
  },
  {
   "file": "src/FeatureMeasurement.tsx",
@@ -2188,105 +2104,49 @@
   "kind": "original",
   "value": "LSS_LAB_STEPS.length",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the number of guide steps"
  },
  {
   "file": "src/LssLabGuide.tsx",
   "kind": "original",
   "value": "LSS_LAB_STEPS.map",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the guide's step ids; each step's text is a catalog key (lssLab.step.*, lssLab.help.*)"
  },
  {
   "file": "src/LssLabGuide.tsx",
   "kind": "original",
   "value": "LSS_LAB_REPEAT_RECORDS",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/LssRegion.tsx",
-  "kind": "original",
-  "value": "R.menu",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/LssRegion.tsx",
-  "kind": "original",
-  "value": "R.caption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/LssRegion.tsx",
-  "kind": "original",
-  "value": "R.minimum",
-  "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/LssRegion.tsx",
-  "kind": "original",
-  "value": "R.maximum",
-  "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/LssRegion.tsx",
-  "kind": "original",
-  "value": "R.ok",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/LssRegion.tsx",
-  "kind": "original",
-  "value": "R.cancel",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a record count in the repeat step's text"
  },
  {
   "file": "src/LssSurvey.tsx",
   "kind": "original",
   "value": "LSS_FIELD_FILES[f.field-1].records",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a field list's record count"
  },
  {
   "file": "src/LssSurvey.tsx",
   "kind": "original",
   "value": "LSS_LIMITS.velocity",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: an input's maximum length"
  },
  {
   "file": "src/LssSurvey.tsx",
   "kind": "original",
   "value": "LSS_LIMITS.remarks",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/LssSurvey.tsx",
-  "kind": "original",
-  "value": "LSS_RESULTS_TXT.title",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: an input's maximum length"
  },
  {
   "file": "src/LssSurvey.tsx",
   "kind": "original",
   "value": "LSS_LIMITS.description",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/LssSurvey.tsx",
-  "kind": "original",
-  "value": "LSS_FIELDS_FILE_ERROR.caption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: an input's maximum length"
  },
  {
   "file": "src/multispec/MultiSpecFieldOverlay.tsx",

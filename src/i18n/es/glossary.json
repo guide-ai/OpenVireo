@@ -66,8 +66,16 @@
    "es": "navegador"
   },
   {
-   "en": "\\btabs?\\b",
+   "en": "(?<!line breaks and )\\btabs?\\b(?!,? (?:line breaks|or other|BOM))",
    "es": "pestaña"
+  },
+  {
+   "en": "\\btabs?(?=,? (?:line breaks|or other|BOM))|(?<=line breaks and )tabs?\\b",
+   "es": "tabulaci"
+  },
+  {
+   "en": "\\bremarks?\\b",
+   "es": "comentario"
   },
   {
    "en": "\\bpages?\\b",

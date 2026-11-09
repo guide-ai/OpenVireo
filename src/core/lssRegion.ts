@@ -71,9 +71,11 @@ export function extractLssRegion(catalogue:readonly IndexedGlxRecord[],b:LssRegi
 }
 /** The "Search Results" box text. `zMask` [W, coordinator decision of 2026-10-29]: catalogue redshifts are what E02 asks the
  * student to measure, so the web replaces the Z range by this text (as Catalog Object masks z); undefined = the native text. */
-export function lssRegionSummary(r:LssRegionResult,zMask?:string):string{
- const range=zMask??`${floatToStrFExponent3(r.zLow)} to ${floatToStrFExponent3(r.zHigh)}`;
- return `Galaxy Records Searched: ${r.searched}\r\nGalaxies Found in Region: ${r.rows.length}\r\nRange in Z: ${range}`;
+export const LSS_REGION_SUMMARY_TEXT=Object.freeze({searched:'Galaxy Records Searched: ',found:'Galaxies Found in Region: ',range:'Range in Z: ',to:' to '});
+/** `tr` (Front ES4): the screen's translator for VIREO's labels (default: the literal). */
+export function lssRegionSummary(r:LssRegionResult,zMask?:string,tr:(literal:string)=>string=literal=>literal):string{
+ const S=LSS_REGION_SUMMARY_TEXT,range=zMask??`${floatToStrFExponent3(r.zLow)}${tr(S.to)}${floatToStrFExponent3(r.zHigh)}`;
+ return `${tr(S.searched)}${r.searched}\r\n${tr(S.found)}${r.rows.length}\r\n${tr(S.range)}${range}`;
 }
 /** The rows as the web keeps them: no catalogue z (masked, see lssRegionSummary). */
 export type LssRegionListRow=Omit<LssRegionRow,'z'>;

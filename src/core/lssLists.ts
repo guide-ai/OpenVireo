@@ -20,7 +20,8 @@ export const GLXYSP_LST:OriginalListIdentity=Object.freeze({name:'GLXYSP.LST',pa
  * MB_ICONSTOP (0x10), then FormShow exits (strings 0x52afd0, 0x52aff8, 0x52affc). Static reading of CLEA_VEO.exe 781bc970…c54c.
  * [W] The path is the bundled file's address and the system text is the web's own reason. */
 export const LSS_FIELDS_FILE_ERROR=Object.freeze({prefix:'Cannot access LSS fields file ',separator:'\r\n\r\n',caption:'File Error!',flags:0x10});
-export function lssFieldsFileErrorText(path:string,reason:string):string{return LSS_FIELDS_FILE_ERROR.prefix+path+LSS_FIELDS_FILE_ERROR.separator+reason;}
+/** `tr` (Front ES4): the screen's translator for VIREO's prefix (default: the literal). */
+export function lssFieldsFileErrorText(path:string,reason:string,tr:(literal:string)=>string=literal=>literal):string{return tr(LSS_FIELDS_FILE_ERROR.prefix)+path+LSS_FIELDS_FILE_ERROR.separator+reason;}
 export class OriginalListError extends Error{constructor(readonly list:string,readonly line:number){super(`${list}: line ${line}`);this.name='OriginalListError';}}
 const lines=(bytes:Uint8Array)=>{let text='';for(const b of bytes)text+=String.fromCharCode(b);return text.replace(/\x1a$/,'').split('\r\n');};
 

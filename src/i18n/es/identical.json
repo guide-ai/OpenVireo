@@ -41,6 +41,22 @@
   "original:Dec:": "the declination abbreviation Dec, kept as in the glossary (ascensión recta [AR] / declinación [Dec])",
   "original:No": "the same word in Spanish (No)",
   "original:Min": "the minutes abbreviation, the same in Spanish (min)",
-  "original:HH:MM:SS": "a time format pattern, not words"
+  "original:HH:MM:SS": "a time format pattern, not words",
+  "catalog:lss.status.available": "the same word in Spanish (Observable)",
+  "catalog:lss.dialog.jd": "an identifier (JD, Julian Date) as a column header",
+  "catalog:lss.dialog.dec": "the coordinate abbreviation and its unit (Dec, °) as a column header",
+  "catalog:lss.dialog.z": "the redshift symbol (z) as a column header",
+  "map:wedge.columns.index": "the number sign as a column header (#)",
+  "map:wedge.columns.dec": "the coordinate abbreviation (Dec) as a column header",
+  "map:wedge.columns.velocity": "a symbol and its unit, V (km/s)",
+  "map:wedge.columns.z": "the redshift symbol (Z)",
+  "map:wedge.sha256": "a hash name kept in English (SHA-256)",
+  "map:wedge.detail.redshift": "symbols (V / Z)",
+  "map:wedge.detail.kmPerS": "a unit (km/s)",
+  "map:wedge.detail.velocity": "a symbol and a number format (V binary32)",
+  "map:wedge.detail.z": "a symbol and a number format (Z binary32)",
+  "map:wedge.detail.hours": "a unit symbol (h)",
+  "map:wedge.detail.degrees": "a unit symbol (°)",
+  "map:wedge.detail.px": "a unit symbol (px)"
  }
 }

@@ -77,6 +77,13 @@
     "reason": "Fixed cryptographic algorithm identifier or pinned original binary digest; never translated."
   },
   {
+    "file": "src/LssSurvey.tsx",
+    "kind": "text",
+    "value": "(.TXT)",
+    "count": 2,
+    "reason": "File format name (TXT stays English), after VIREO's Save Data caption, which vireo() translates (Front ES4)."
+  },
+  {
     "file": "src/OpenVireo.tsx",
     "kind": "text",
     "value": "N",

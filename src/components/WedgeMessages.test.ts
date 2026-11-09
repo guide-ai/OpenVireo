@@ -39,7 +39,10 @@ describe('LSS wedge presentation catalog',()=>{
   expect([m.native.yes,m.native.no,m.native.cancel,m.native.retainCaption,m.native.loadedText('a.txt')]).toEqual(['Sí','No','Cancelar','¿Conservar los datos actuales?','Archivo «a.txt» cargado.']);
   // Untranslated native captions keep the verbatim original.
   expect([m.native.deleteCaption,m.native.retainText,m.native.headerText('f')]).toEqual([N.deleteCaption,N.retainText,N.headerText('f')]);
-  expect(wedgeMessages()).toBe(WEDGE_MESSAGES);expect(Object.isFrozen(m)&&Object.isFrozen(m.native)).toBe(true);
+  // Front ES4: in English, this load's VIREO captions are the literals, and the web text is the picked map's.
+  const d=wedgeMessages(),strings=(o:object)=>Object.entries(o).filter(([,v])=>typeof v!=='function');expect(strings(d.native)).toEqual(strings(WEDGE_NATIVE_CAPTIONS));expect(d.native.loadedText('a.txt')).toBe(N.loadedText('a.txt'));
+  expect(d.native.headerText('f')).toBe(N.headerText('f'));expect(d.native.accessText('f')).toBe(N.accessText('f'));expect(d.intro).toBe(WEDGE_MESSAGES.intro);
+  expect('native' in WEDGE_MESSAGES).toBe(false);expect(Object.isFrozen(m)&&Object.isFrozen(m.native)&&Object.isFrozen(d)).toBe(true);
  });
  it('declares translatable units and a row-count label (used by the table, details and prompt)',()=>{
   expect([WEDGE_MESSAGES.detail.hours,WEDGE_MESSAGES.detail.degrees,WEDGE_MESSAGES.rowCount(1),WEDGE_MESSAGES.rowCount(2)]).toEqual(['h','°','1 data row','2 data rows']);
@@ -75,7 +78,7 @@ describe('LSS wedge presentation catalog',()=>{
   const read=(w:typeof EMPTY_WEDGE_WORKSPACE,t:number,name:string)=>completeWedgeRead(beginWedgeRead(w,t,name),t,{name,sha256:'0'.repeat(64),bytes});
   const reading=beginWedgeRead(read(EMPTY_WEDGE_WORKSPACE,1,'a.txt'),2,'b.txt'),retain=read(read(EMPTY_WEDGE_WORKSPACE,1,'a.txt'),2,'b.txt'),del=clearWedgePending(retain);
   expect(retain.pending?.stage).toBe('retain');expect(del.pending?.stage).toBe('confirm-delete');
-  const M=WEDGE_MESSAGES;
+  const M=wedgeMessages();
   expect(wedgeStatusText(EMPTY_WEDGE_WORKSPACE,M)).toBe(M.statusEmpty);
   expect(wedgeStatusText(reading,M)).toBe(M.reading('b.txt'));
   expect(wedgeStatusText(retain,M)).toBe(M.statusLoaded(1,1)+' '+M.awaitingAnswer(N.retainCaption));

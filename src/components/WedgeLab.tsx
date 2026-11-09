@@ -12,6 +12,7 @@ import{wedgeMessages,wedgeStatusText,type WedgeMessageCatalog,type WedgeMessageO
 import WedgeOptionsDialog from'./WedgeOptionsDialog';
 import WedgePlotSvg from'./WedgePlotSvg';
 import CleaHelp from '../clusters/CleaHelp';
+import {vireo} from '../i18n/vireo';
 import {HELP_FILES} from '../help/helpFiles';
 import WebPrintPreview from'../polish/WebPrintPreview';
 import{POLISH_MESSAGES as PM,WEDGE_PRINT_LITERALS as WP}from'../polish/PolishMessages';
@@ -191,7 +192,7 @@ function WedgeLab({monochrome=false,printInColor=false,messages,idPrefix='wedge-
     <div className="wedge-actions">
      <button type="button" className="primary-button" disabled={busy} onClick={()=>act(plotWedgeData)} data-testid="wedge-plot-data">{C.menuPlotData}</button>
      <button ref={optionsButton} type="button" disabled={busy} onClick={()=>act(openWedgeOptions)} title={m.optionsButtonHelp} data-testid="wedge-options-open">{C.menuOptions}</button>
-     <button ref={printButton} type="button" disabled={busy} onClick={()=>setPrinting(true)} data-testid="wedge-print">{WP.menu}</button>
+     <button ref={printButton} type="button" disabled={busy} onClick={()=>setPrinting(true)} data-testid="wedge-print">{vireo(WP.menu)}</button>
      <button type="button" disabled={busy||w.records.length===0} onClick={()=>downloadWedgeText('openvireo-lss-wedge-points.csv',wedgeCsv(w.records,w.receipts,w.options))} aria-describedby={id('export-note')} data-testid="wedge-export">{m.exportCsv}</button>
     </div>
    </div>
