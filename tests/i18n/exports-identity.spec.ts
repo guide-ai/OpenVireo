@@ -1,8 +1,10 @@
 import {test,expect,type Browser,type Locator,type Page} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
+import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {enterInstructorMode} from '../fixtures/instructor-mode';
 import {PLR} from '../fixtures/pulsar-saved-rows-controls';
+import {paceDownload} from '../fixtures/download-pacing';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
 import {CAMERA_ES} from '../../src/i18n/es/maps/camera';
@@ -195,28 +197,59 @@ test('Hubble analysis: Hubble CSV and the Hubble session from the original workb
  },{},page=>page.locator('.hubble-card'),['en','qps','es-419']);
 });
 
-test('classification: investigation, classification CSV, observation notebook and native TXT/CSV',async({browser,baseURL})=>{
+// Front ES5: every file a student can save on the E03 route, in English, qps and Spanish. The page clock is installed at NOW and
+// paused before the acquisition's one-second exposure and stays paused (only runFor moves it), so the observation notebook's
+// and the recovery copies' times and the observatory clock are the same in every run; nothing is masked.
+test('E03 classification: session, CSV, width record, investigations, observation notebook and recoveries, DAT and TXT inspectors, imported spectrum',async({browser,baseURL})=>{
+ test.setTimeout(240_000);
  // The canonical 3-band counts layout of tests/native-csv-export.spec.ts (authored, not an original observation).
  const header='Object ID    MJD(Days)      RA           Dec    '+['U','B','V'].map(f=>'     '+f+'    ').join('')+'     Z      Spectrum     Comments';
  const row='OWN-TXT'.padEnd(12)+'1179.125000 '+' 05h03m04.5s '+'-06°07\'08" '+Array(3).fill('100.0'.padStart(9)+' ').join('')+'0.125'.padStart(11)+' '+'G2V'.padEnd(12)+' Original, comment with spaces';
  const txt=Buffer.from(`${header}\r\n${row}\r\n${row}\r\n`,'latin1');
+ const dat=readFileSync(new URL('../fixtures/observation-results-synthetic.dat',import.meta.url));
  await identical(browser,baseURL,async(page,locale)=>{
-  await open(page,locale,'classification');await expect(button(page,'Review classification')).toBeEnabled();
-  await page.getByLabel(L('Proposed spectral type')).fill('My independent type');
-  await page.getByLabel(L('Features and reasoning')).fill('Independent reasoning retained throughout export');
-  await button(page,'Review classification').click();await button(page,'Save classification').click();
-  await button(page,'Open observation results').click();
-  await page.getByLabel(L('Observation spectral type (up to 12 bytes)')).fill('G2V');await button(page,'Record observation result').click();
-  const investigation=await download(page,()=>button(page,'Save complete investigation').first().click());
-  const classification=await download(page,()=>button(page,'Export classification CSV').click());
-  const notebook=await download(page,()=>button(page,'Export observation notebook').click());
-  await page.getByLabel(L('Inspect native results TXT (up to 512 KiB, 1000 rows)')).setInputFiles({name:'identity.txt',mimeType:'text/plain',buffer:txt});
-  await expect(button(page,'Preview native CSV from TXT')).toBeEnabled();
-  const unchanged=await download(page,()=>button(page,'Download unchanged TXT bytes').click());
-  await button(page,'Preview native CSV from TXT').click();
-  const nativeCsv=await download(page,()=>button(page,'Download generated native CSV').click());
-  return {investigation,classification,notebook,unchanged,nativeCsv};
- },{},page=>page.locator('.classification-main'));
+  page.setDefaultTimeout(30_000);
+  // Headless Chromium drops the 11th of more than ten fast downloads (tests/fixtures/download-pacing.ts): pace each one.
+  const save=async(click:()=>Promise<void>)=>{await paceDownload(page);return download(page,click);};const B=(name:string)=>button(page,name,locale),F=(name:string)=>page.getByLabel(N(locale,name));
+  await page.clock.install({time:NOW});
+  // The classification route loads (lazily, with its spectra) while the clock still runs; then the clock is paused for good.
+  await page.goto(`/${locale==='en'?'':`?lang=${locale}`}#classification`);
+  const skip=page.getByRole('button',{name:N(locale,'Skip the tour')});if(await skip.isVisible().catch(()=>false))await skip.click();
+  await expect(B('Review classification')).toBeEnabled({timeout:30_000});
+  await page.evaluate(()=>{location.hash='#star-exposure';});
+  await B('Activate supported star field').click();await page.clock.pauseAt(new Date(NOW.getTime()+600_000));
+  await B('Start star exposure').click();await page.clock.runFor(1000);await B('Pause exposure').click();await expect(page.getByTestId('star-elapsed')).toHaveText('1000 ms');
+  await B('Classify acquired star').click();await expect(B('Review classification')).toBeEnabled();
+  await page.locator('#class-source').selectOption('practice');await expect(page.locator('main.classification-main')).toHaveAttribute('aria-busy','false');await expect(B('Review classification')).toBeEnabled();
+  await F('Proposed spectral type').fill('My independent type');await F('Features and reasoning').fill('Independent reasoning retained throughout export');
+  await B('Review classification').click();await B('Save classification').click();
+  for(const [label,value] of [['Feature center (Å)','4150'],['Left shoulder (Å)','4100'],['Left continuum intensity','.99'],['Right shoulder (Å)','4200'],['Right continuum intensity','.98']] as const)await F(label).fill(value);
+  await B('Calculate equivalent width').click();await B('Save width measurement').click();await expect(page.locator('.feature-measurement ol li')).toHaveCount(1);
+  await B('Open observation results').click();await F('Observation spectral type (up to 12 bytes)').fill('G2V');await F('Observation remarks (up to 36 bytes)').fill('First remarks');await B('Record observation result').click();
+  const session=await save(()=>B('Save classification session').click());
+  const classification=await save(()=>B('Export classification CSV').click());
+  const investigation=await save(()=>B('Save complete investigation').first().click());
+  const notebook=await save(()=>B('Export observation notebook').click());
+  await page.getByRole('button',{name:locale==='es-419'?exact(es['obs.edit'].replace('{id}','1')):L('Edit observation result 1')}).click();await F('Observation remarks (up to 36 bytes)').fill('Edited remarks');await B('Record observation result').click();
+  const editRecovery=await save(()=>B('Export edit recovery').click());
+  const editedNotebook=await save(()=>B('Export observation notebook').click());
+  await F('Import SP or SSP for visual classification (up to 2 MiB)').setInputFiles({name:'limited.sp',mimeType:'text/plain',buffer:Buffer.from('3900 .2\n4200 .8\n4500 .4\n')});
+  await expect(page.locator('#class-source')).toHaveValue(/^imported:/);await expect(B('Review classification')).toBeEnabled();
+  const imported=await save(()=>B('Download exact imported spectrum').click());
+  await F('Inspect observation DAT (up to 144000 bytes, 1000 records)').setInputFiles({name:'synthetic-format-check.dat',mimeType:'application/octet-stream',buffer:dat});
+  const datUnchanged=await save(()=>B('Download unchanged DAT bytes').click());
+  await B('Edit selected DAT text fields').click();await F('DAT object label (up to 15 bytes)').fill('EDITED-OBJ');await B('Confirm DAT text changes').click();
+  const datEdited=await save(()=>B('Download edited DAT copy').click());
+  await F('Inspect native results TXT (up to 512 KiB, 1000 rows)').setInputFiles({name:'identity.txt',mimeType:'text/plain',buffer:txt});
+  await expect(B('Preview native CSV from TXT')).toBeEnabled();
+  const txtUnchanged=await save(()=>B('Download unchanged TXT bytes').click());
+  await B('Preview native CSV from TXT').click();
+  const nativeCsv=await save(()=>B('Download generated native CSV').click());
+  const investigationAll=await save(()=>B('Save complete investigation').first().click());
+  // The edits reached their files (so the families compare an edited copy, not the input twice).
+  expect(datEdited.bytes.equals(datUnchanged.bytes)).toBe(false);expect(editedNotebook.bytes.equals(notebook.bytes)).toBe(false);expect(investigationAll.bytes.equals(investigation.bytes)).toBe(false);
+  return {session,classification,investigation,notebook,editRecovery,editedNotebook,datUnchanged,datEdited,txtUnchanged,nativeCsv,imported,investigationAll};
+ },{},page=>page.locator('.classification-main'),['en','qps','es-419']);
 });
 
 test('hot list: Save HTL file after adding a target',async({browser,baseURL})=>{

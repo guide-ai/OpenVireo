@@ -360,6 +360,30 @@
   {
    "en": "\\bexercise guide\\b|\\blab guide\\b",
    "es": "guía"
+  },
+  {
+   "en": "\\bstandards?\\b",
+   "es": "estándar"
+  },
+  {
+   "en": "\\bshoulders?\\b",
+   "es": "hombro"
+  },
+  {
+   "en": "\\bgr[ae]yscale\\b",
+   "es": "grises"
+  },
+  {
+   "en": "\\b(?:observation )?notebook\\b",
+   "es": "cuaderno"
+  },
+  {
+   "en": "\\bluminosity\\b",
+   "es": "luminosidad"
+  },
+  {
+   "en": "\\batlas(es)?\\b",
+   "es": "atlas"
   }
  ],
  "names": [
@@ -881,6 +905,22 @@
   {
    "en": "Dark Noise",
    "es": "Ruido de corriente oscura"
+  },
+  {
+   "en": "Next on List",
+   "es": "Siguiente en la lista"
+  },
+  {
+   "en": "No More Spectra",
+   "es": "No hay más espectros"
+  },
+  {
+   "en": "Spectral Line Table",
+   "es": "Tabla de líneas espectrales"
+  },
+  {
+   "en": "Program List",
+   "es": "Lista de programa"
   }
  ],
  "forbidden": [
