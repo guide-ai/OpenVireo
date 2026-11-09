@@ -7,6 +7,9 @@ export type CameraInformation=Readonly<{kind:CameraKind;detector:string;width:nu
 function record(kind:CameraKind):CameraInformation{const r=recovered.records.find(r=>r.kind===kind);if(!r)throw new Error('Missing compiled camera information');return Object.freeze({kind,detector:r.detector,width:r.width,height:r.height,pixelWidthMicrons:r.pixelWidthMicrons,pixelHeightMicrons:r.pixelHeightMicrons,readNoiseElectronsPerPixel:r.readNoiseElectronsPerPixel,darkNoiseElectronsPerPixelSecond:r.darkNoiseElectronsPerPixelSecond,biasElectronsPerPixel:r.biasElectronsPerPixel,adBits:r.adBits,wellDepthElectrons:r.wellDepthElectrons,cooling:r.coolingFlag===0?'thermoelectric':'liquidNitrogen'});}
 const defaults=Object.freeze({ccd:record('ccd'),ir:record('ir')});
 export function compiledCameraInformation(kind:unknown):CameraInformation{if(kind!=='ccd'&&kind!=='ir')throw new Error('Unsupported compiled camera kind');return defaults[kind];}
+/** Front ES9: the File menu item "&Information..." of TCCDCam and TIRCam (DFM Information1 of both forms,
+ * analysis/claude-audit-2026-10-26/veo-forms.json), which the web's Information button renders through vireo(). */
+export const CAMERA_INFORMATION_MENU='&Information...';
 /** Front R4b (analysis/front-r4/C-parameters-camera-list.md §3 C5; TCCDCam 0x512d53–0x512f48, literals 0x512fa8–0x5130ec;
  * TIRCam 0x514d83–0x514f63, literals 0x514fd8–0x51511c): the nine ListBox lines of the TInfoListForm1 Information window, in
  * order. F1 = FloatToStrF ffFixed,18,1; the bias is an Integer field printed with F1. Static reading; nothing executed. */

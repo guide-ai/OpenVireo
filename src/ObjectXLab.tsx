@@ -278,7 +278,7 @@ function ObjectXLab({sessionId=null,editMode=false,spectralRange=DEFAULT_SPECTRA
     {!confirmReveal?<button className="secondary-button" disabled={!inv.target||!htl} onClick={()=>inv.answer?setConfirmReveal(true):setNotice(M.revealNeedAnswer)}>{M.reveal}</button>
      :<><span>{M.revealConfirm}</span><button className="primary-button" onClick={()=>{update(i=>({...i,revealed:true}));setConfirmReveal(false);}}>{M.reveal}</button></>}
    </div>}
-   {reveal&&<div data-testid="objectx-reveal" role="status"><p>{M.revealed(reveal.id,reveal.remarks)}</p>{reveal.kind&&<p>{M.verdict(reveal.kind===inv.answer,kindName(reveal.kind))}</p>}</div>}
+   {reveal&&<div data-testid="objectx-reveal" role="status"><p>{M.revealed(reveal.id,reveal.remarks)}</p>{reveal.kind&&<p>{M.verdict(reveal.kind===inv.answer,kindName(reveal.kind),reveal.kind)}</p>}</div>}
   </fieldset>
  </main>;
 }

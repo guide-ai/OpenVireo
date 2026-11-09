@@ -143,7 +143,8 @@ export const OBJECT_X_LAB_EN=Object.freeze({
  describeLabel:'Describe your evidence',
  reveal:'Reveal the identity',revealConfirm:'Reveal now? Your answer stays as it is.',revealNeedAnswer:'Choose an answer before revealing.',
  revealed:(id:string,remarks:string)=>`Object: ${id} — ${remarks}`,
- verdict:(right:boolean,kind:string)=>{const a=/^[aeiou]/i.test(kind)?'an':'a';return right?`Your answer is right: it is ${a} ${kind}.`:`It is ${a} ${kind}.`;},
+ /** `kind` is the shown name; `kindId` the OBJECT_X_KINDS id, so a translation can choose its article by kind (ES9 review). */
+ verdict:(right:boolean,kind:string,kindId:string)=>{void kindId;const a=/^[aeiou]/i.test(kind)?'an':'a';return right?`Your answer is right: it is ${a} ${kind}.`:`It is ${a} ${kind}.`;},
  answerFrozen:'Your answer was recorded when you revealed the object; it can no longer be changed.',
  progress:'Your progress',
 });

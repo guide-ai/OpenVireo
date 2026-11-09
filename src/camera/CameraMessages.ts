@@ -3,8 +3,7 @@ import {pickMessages} from '../i18n/registry';
  * en.json at merge. English default. Native captions recovered from the CCD form are marked (native). */
 export const CAMERA_MESSAGES_EN=Object.freeze({
  title:'CCD camera',
- // Front R4b: File › Information... (TCCDCam / TIRCam, dossier C §3).
- information:'Information...',
+ // Front R4b: File › Information... (TCCDCam / TIRCam, dossier C §3); ES9: the item is VIREO's CAMERA_INFORMATION_MENU (core), through vireo().
  informationNote:'VIREO\'s camera parameter list for the selected camera, with VIREO\'s compiled values.',
  titleIr:'IR camera',
  camera:'Camera',

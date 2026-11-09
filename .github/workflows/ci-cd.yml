@@ -74,6 +74,43 @@ jobs:
           path: test-results/
           retention-days: 7
 
+  scripts:
+    # Front SC1 (docs/I18N.md; plan front-i18n-scripts.md § 5): the checks for non-Latin scripts (Japanese, Chinese, Hindi,
+    # Russian) under pinned test fonts, with their own config (playwright.scripts.config.ts). The runner is pinned to
+    # ubuntu-24.04 so its font packages do not change with the ubuntu-latest image; the fonts come from the Ubuntu archive,
+    # the same source Playwright's --with-deps already installs from, and scripts/test-fonts.mjs logs each file's SHA-256.
+    name: Script fonts (ja, zh, hi, ru)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Cache the Playwright browser
+        uses: actions/cache@v6
+        with:
+          path: .local/browsers
+          key: playwright-ubuntu-24.04-${{ hashFiles('package-lock.json') }}
+      - run: npx playwright install --with-deps chromium
+      - name: Install the test fonts (Noto Sans CJK, Noto Sans Devanagari, DejaVu)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends fontconfig fonts-dejavu-core fonts-dejavu-mono fonts-noto-cjk fonts-noto-core
+      - run: npm run test:test-fonts
+      # Writes the private fontconfig and prints the font-hash log (a font package update shows here first).
+      - run: npm run test-fonts
+      - run: npm run test:scripts -- --reporter=line
+      - name: Keep the failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: scripts-results
+          path: test-results/
+          retention-days: 7
+
   pages:
     name: Build and Cloudflare Pages checks
     runs-on: ubuntu-latest
@@ -104,7 +141,7 @@ jobs:
 
   deploy:
     name: Deploy to Cloudflare Pages
-    needs: [unit, e2e, pages]
+    needs: [unit, e2e, pages, scripts]
     # A push to main, or Actions › CI/CD › Run workflow on main (docs/DEPLOY.md § 11.1).
     if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest

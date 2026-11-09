@@ -1,6 +1,7 @@
 import {useEffect,useId,useRef,type KeyboardEvent,type RefObject} from 'react';
 import {RADIO_HOT_LIST_SEARCH_LITERALS as L,RADIO_HOT_LIST_SEARCH_QUERY_MAX,type RadioHotListSearchDraft,type RadioHotListSearchMode} from '../core/radioHotListSearch';
 import type {RadioAntennaTranslate} from './RadioAntennaMessages';
+import {vireo} from '../i18n/vireo';
 
 export type RadioHotListSearchDialogProps=Readonly<{
  draft:RadioHotListSearchDraft;
@@ -48,7 +49,7 @@ export default function RadioHotListSearchDialog({draft,blocked,ta,onQuery,onMat
  return <div className="antenna-backdrop">
   <div ref={root} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-help`} className="antenna-dialog antenna-hotlist-search" data-testid="antenna-hotlist-search"
    onKeyDown={onKeyDown} onFocus={e=>{lastFocus.current=e.target;}} inert={blocked||undefined}>
-   <h3 id={`${id}-title`} className="radio-control-native">{L.caption}</h3>
+   <h3 id={`${id}-title`} className="radio-control-native">{vireo(L.caption)}</h3>
    <p id={`${id}-help`} className="radio-control-note">{ta('antenna.hotList.search.help')}</p>
    <label className="antenna-field">
     <span>{ta('antenna.hotList.search.query')}</span>
