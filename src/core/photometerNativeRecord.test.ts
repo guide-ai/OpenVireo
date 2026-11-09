@@ -1,6 +1,6 @@
 import {describe,expect,it} from 'vitest';
 import {createPhotometer,photometerEvent as step,photometerStructReading,releasePhotometer,replayPhotometer,type PhotometerEvent,type PhotometerState} from './photometer';
-import {photometerNativeApply,photometerNativeData,photometerNativeMerge,photometerStructRecordable,photometerStructUnrecorded,type PhotometerNativeRecordEvent} from './photometerNativeRecord';
+import {photometerNativeApply,photometerNativeData,photometerNativeMerge,photometerStructRecordable,photometerStructUnrecorded,type PhotometerNativeRecordEvent,PHOTOMETER_RECORD_LITERALS,PHOTOMETER_RECORD_PIECES} from './photometerNativeRecord';
 import {photometerJournalVersion} from './photometerJournal';
 import {pleiadesExerciseSummary} from './pleiadesLab';
 import {observationalDataFields} from './clusterNativeHrSelect';
@@ -93,3 +93,8 @@ describe('native rows as results records (0x54a91c, 0x5486a8, 0x542990)',()=>{
   expect(p2.status==='plotted'&&p2.rows[0]!.status).toBe('skipped-b-zero');
  });
 });
+
+// Front ES6 review: the screen builds "Telescope has Moved!" from the pieces (each translated); the whole message stays VIREO's bytes.
+it('Telescope has Moved! pieces rebuild VIREO\'s three lines byte for byte',()=>{const P=PHOTOMETER_RECORD_PIECES;
+ expect([P.movedHead+'01799-01442'+P.movedTail,P.movedLater,P.movedAsk]).toEqual(PHOTOMETER_RECORD_LITERALS.movedText('01799-01442'));
+ expect(PHOTOMETER_RECORD_LITERALS.movedText('UNKNOWN')).toEqual(['You have not recorded your current readings for "UNKNOWN".','If you do not record them now, you cannot access them later.','Record current readings?']);});

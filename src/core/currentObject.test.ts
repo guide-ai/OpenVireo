@@ -42,6 +42,9 @@ describe('readers',()=>{
   expect(photometerIdText(false,false,clear,'H')).toBe('Unknown');expect(photometerIdText(false,true,clear,'H')).toBe('Unknown');
   expect(photometerIdText(true,true,clear,'H')).toBe('Sky');expect(photometerIdText(true,false,none,'H')).toBe('Sky');
   expect(photometerIdText(true,false,clear,'H')).toBe('N2230-01732');expect(photometerIdText(true,false,hidden,'H')).toBe('H');
+  // Front ES6: the screen's translator applies to VIREO's words only, never to a name.
+  const tr=(s:string)=>`<${s}>`;expect(photometerIdText(false,false,clear,'H',tr)).toBe('<Unknown>');expect(photometerIdText(true,true,clear,'H',tr)).toBe('<Sky>');
+  expect(photometerIdText(true,false,clear,'H',tr)).toBe('N2230-01732');expect(photometerIdText(true,false,hidden,'H',tr)).toBe('H');
  });
  it('photometer recorded name (0x4fffd4): Sky; the name ≤15 trimmed; else the Object X label',()=>{
   expect(photometerRecordedName(true,true,clear,'')).toBe('Sky');
