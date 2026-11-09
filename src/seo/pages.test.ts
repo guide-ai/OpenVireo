@@ -1,8 +1,11 @@
 // Front SEO: the static lab pages, the sitemap and the home page's extra tags are built from one list (src/seo/labs.ts).
 import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
-import {LABS,SITE_URL,labFromHash,labUrl} from './labs';
-import {SITEMAP_PATHS,homeBoot,homeHead,labPage,labsIndexPage,sitemap,staticSeoFiles} from './pages';
+import {LABS,LAB_SLUGS,SITE_URL,labFromHash,labUrl} from './labs';
+import en from '../i18n/en.json' with {type:'json'};
+import {OBJECT_X_LAB_EN} from '../objectx/ObjectXMessages';
+import {POLISH_MESSAGES} from '../polish/PolishMessages';
+import {LABS_INDEX_DESCRIPTION,SITEMAP_PATHS,homeBoot,homeHead,labPage,labsIndexPage,sitemap,staticSeoFiles} from './pages';
 import {documentMessages} from '../i18n/html';
 
 const attr=(html:string,re:RegExp)=>re.exec(html)?.[1];
@@ -14,7 +17,18 @@ describe('lab overview pages',()=>{
   for(const key of ['slug','title','description','heading'] as const)expect(new Set(LABS.map(l=>l[key])).size).toBe(LABS.length);
  });
  it('keep titles and descriptions within what search results show',()=>{
-  for(const l of LABS){expect(l.title.length).toBeLessThanOrEqual(70);expect(l.description.length).toBeGreaterThanOrEqual(110);expect(l.description.length).toBeLessThanOrEqual(160);}
+  for(const l of LABS){expect(l.title.length).toBeLessThanOrEqual(65);expect(l.description.length).toBeGreaterThanOrEqual(110);expect(l.description.length).toBeLessThanOrEqual(160);}
+  expect(LABS_INDEX_DESCRIPTION.length).toBeLessThanOrEqual(160);expect(en['app.description'].length).toBeLessThanOrEqual(160);
+ });
+ it('say in every search snippet that the site is a reconstruction, never an official or equivalent CLEA product (review 1 m2)',()=>{
+  for(const l of LABS)expect(l.description).toContain('free web reconstruction of');
+  expect(en['app.description']).toMatch(/^Unofficial free web reconstruction/);expect(LABS_INDEX_DESCRIPTION).toContain('rebuilt');
+  for(const text of [...LABS.map(l=>l.description),LABS_INDEX_DESCRIPTION,en['app.description']])expect(text).not.toMatch(/web version|official CLEA|any computer|in any browser/i);
+ });
+ it("use the slug list the app reads, and name each guide as the app's Guides menu does",()=>{
+  expect(LABS.map(l=>l.slug)).toEqual([...LAB_SLUGS]);
+  const menu:Record<string,string>={hubble:en['lab.nav'],'large-scale-structure':en['lssLab.nav'],'stellar-classification':en['classLab.nav'],pleiades:en['pleiadesLab.nav'],'cluster-hr':POLISH_MESSAGES.clusterGuide.nav,pulsars:en['pulsarLab.nav'],'object-x':OBJECT_X_LAB_EN.guideNav};
+  for(const l of LABS)expect(l.guide).toBe(menu[l.slug]);
  });
  it('each page has its own title, description, canonical address, one h1, the lab link and valid JSON-LD',()=>{
   for(const l of LABS){
@@ -68,13 +82,16 @@ describe('index.html',()=>{
   expect(served).toContain(`<link rel="canonical" href="${SITE_URL}/"/>`);
   expect(served).toContain('<meta property="og:image" content="https://openvireo.space/og-image.png"/>');
   expect(served).toContain('<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>');
-  expect(ld(served)[0]).toMatchObject({'@type':'WebApplication',url:`${SITE_URL}/`,isAccessibleForFree:true});
+  const graph=ld(served)[0]['@graph'];
+  expect(graph[0]).toMatchObject({'@type':'WebApplication',url:`${SITE_URL}/`,isAccessibleForFree:true});
+  expect(graph[0].isBasedOn.funder.map((f:{name:string})=>f.name)).toEqual(['National Science Foundation','Gettysburg College']);
+  expect(graph[1]).toEqual({'@type':'WebSite',name:'OpenVireo',url:`${SITE_URL}/`});
   expect(served).not.toContain('OPENVIREO_SEO');
  });
  it('shows crawlable text and links to every lab inside #root until the app starts',()=>{
   const root=/<div id="root">([\s\S]*?)<\/div><script/.exec(served)![1];
   for(const l of LABS)expect(root).toContain(`href="${labUrl(l.slug)}"`);
-  expect(homeBoot('x')).toContain('<h1>OpenVireo</h1>');expect(homeHead('t','d')).toContain('og:title" content="t"');
+  expect(homeBoot('x')).toContain('<h1>OpenVireo</h1>');expect(root).not.toMatch(/style=|<style|<script/);expect(homeHead('t','d')).toContain('og:title" content="t"');
  });
  it('the icons and preview image it names exist',()=>{
   for(const f of ['favicon.svg','apple-touch-icon.png','og-image.png'])expect(readFileSync(new URL(`../../public/${f}`,import.meta.url)).length).toBeGreaterThan(100);

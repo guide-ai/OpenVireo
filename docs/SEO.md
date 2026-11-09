@@ -19,13 +19,13 @@ program. The goal is to be the first result for CLEA, VIREO and each lab name, n
   what the student does and learns, links to the other labs, and the credit and "not the original program" notice.
   Source: `src/seo/labs.ts` (texts and slugs), `src/seo/pages.ts` (HTML), `src/seo/vitePlugin.ts` (dev server and `dist/`),
   `public/labs/labs.css`.
-- **Open the lab** links to `/#lab=<slug>`. At load the app opens that lab's guide exactly as its Guides menu button does
-  (`startExercise` and the guide dialog; the cluster guide through its own button), then removes the hash so a reload shows the
-  plain observatory. Unknown slugs are ignored.
+- **Open the lab** links to `/#lab=<slug>`. At load the app opens that lab's guide through the same opener as its Guides menu
+  button (`openGuide` in `OpenVireo.tsx`: `startExercise` and the guide dialog; `openClusterGuide` for the cluster guide), skips
+  the first-visit tour, then removes the hash so a reload shows the plain observatory. Unknown slugs are ignored.
 - **Home page** (`index.html` through `src/i18n/html.ts`): new title and description naming CLEA VIREO; canonical, Open Graph and
   Twitter card tags; `WebApplication` JSON-LD (free, browser-based, based on Project CLEA's VIREO); favicon and Apple touch icon;
   and crawlable text with links to every lab inside `#root`, which React replaces when it starts. The observatory footer links to
-  `/labs/` ("About the seven labs").
+  `/labs/` ("About the seven labs") in a new tab, so unsaved work stays.
 - **Files**: `sitemap.xml` (generated from the same list), `robots.txt` (allows everything and names the sitemap; Cloudflare adds
   its managed AI-crawler rules above it), `favicon.svg`, `apple-touch-icon.png` and `og-image.png` (1200×630, an original
   design rendered with Playwright; no CLEA image is used).
@@ -55,4 +55,41 @@ equivalence with the original program.
 
 ## Review
 
-Independent review: see the review section added after the reviewer's report.
+Workflow (REVIEW.md): plan and implementation by the coordinator (Claude Opus 5.5); independent review 1 by a separate
+subagent (Claude Opus, high effort) that did not write the code, over commit `d6cde55`. Raw findings, then the resolution.
+
+### Review 1 findings (raw summary)
+
+- **M1 major**: the footer link `/labs/` left the single-page app in the same tab, discarding unsaved work (no unload guard).
+- **m2**: search snippets ("A free web version of CLEA's VIREO … lab", "A free web CLEA VIREO lab") and the home description,
+  which dropped "not the original program", read as an official or equivalent CLEA product; the preview image said "on any
+  computer".
+- **m3**: the footer sentence "Where the web version behaves differently, the app says so" promised complete labelling.
+- **m4**: `#lab=cluster-hr` opens its guide only after a lazy route loads, so on a slow first visit the first-visit tour could
+  open under it.
+- **m5**: the `#lab=` handlers duplicated the Guides menu handlers, and the cluster link clicked a test id.
+- **m6**: light-mode focus ring on the dark page header was about 2.8:1.
+- **m7**: no `WebSite` JSON-LD on the home page (site name in results); the structured credit omitted the supporters.
+- **m8**: test gaps (cluster guide text, exercise side effects of `#lab=`, guide labels tied to the app, index description length,
+  no `style=` in the pre-render content).
+- Nits: public "E01…E08" board codes; dev server did not redirect `/labs` like Pages; lab texts pulled into the app bundle for
+  the slug check; a 66-character title.
+
+### Resolution
+
+- M1: the footer link opens a new tab (`target="_blank" rel="noopener noreferrer"`, with "(opens in a new tab)" for screen
+  readers), as the project's other outbound links do; the e2e test checks the app stays.
+- m2: every lab description now says "A free web reconstruction of …"; the index says "rebuilt for the browser"; the home
+  description starts "Unofficial free web reconstruction"; "in any browser"/"any computer" became "in a modern browser"; the
+  preview image says "An unofficial, free web reconstruction". A unit test forbids the old phrasings.
+- m3: "The app labels its known web adaptations."
+- m4: the tour is not scheduled when the page opens with a `#lab=` address.
+- m5: one `openGuide` map in `OpenVireo.tsx` serves both the Guides menu buttons and the `#lab=` effect; the cluster opener is
+  exported from `ClusterGuideNavButton.tsx` (`openClusterGuide`) instead of clicking its button.
+- m6: header links get a light focus outline (#9cc8ff).
+- m7: home JSON-LD is a graph of `WebApplication` and `WebSite`; the credit lists the NSF and Gettysburg College as funders. No
+  rating is added.
+- m8: tests added for each gap (`#lab=pleiades` forces Show Object ID as the menu does; cluster guide title; labels; lengths;
+  no inline style).
+- Nits: the eyebrow reads "Lab based on a CLEA VIREO exercise"; the dev server answers `/labs` and `/labs/<slug>` with 308 like
+  Pages; slugs live in `src/seo/labSlugs.ts`, so the app bundle no longer includes the page texts; the LSS title is shorter.

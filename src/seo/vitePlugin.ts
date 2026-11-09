@@ -10,6 +10,8 @@ export function openVireoSeoPages():Plugin{
   configureServer(server){
    server.middlewares.use((req,res,next)=>{
     const path=(req.url??'').split(/[?#]/)[0];
+    // As Cloudflare Pages does: /labs and /labs/<slug> redirect to the address with the trailing slash.
+    if(staticSeoFiles()[`${path.slice(1)}/index.html`]!==undefined){res.statusCode=308;res.setHeader('Location',`${path}/`);res.end();return;}
     const file=path.endsWith('/')?`${path.slice(1)}index.html`:path.slice(1);
     const body=staticSeoFiles()[file];
     if(body===undefined)return next();

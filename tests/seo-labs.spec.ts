@@ -1,4 +1,5 @@
 import {test,expect} from '@playwright/test';
+import {enterInstructorMode} from './fixtures/instructor-mode';
 
 // Front SEO (user request, 2026-11-08): the static lab overview pages under /labs/ and their "Open the lab" links, which open
 // the lab's guide in the app as its Guides menu button does. The dev server serves the same pages the build writes to dist/.
@@ -37,11 +38,18 @@ for(const {slug,title} of GUIDES)test(`#lab=${slug} opens its guide`,async({page
 
 test('#lab=cluster-hr opens the cluster database with its guide; an unknown lab leaves the observatory as it is',async({page})=>{
  await page.goto('/#lab=cluster-hr');
- await expect(page.locator('dialog[open]')).toBeVisible({timeout:15000});
+ await expect(page.locator('dialog[open]')).toContainText('Ages and distances of star clusters',{timeout:15000});
  await expect.poll(()=>page.evaluate(()=>location.hash)).toBe('#cluster-database');
  await page.goto('/#lab=nope');await page.reload();
  await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible({timeout:15000});
  await expect(page.locator('dialog[open]')).toHaveCount(0);
+});
+
+test('#lab= applies the exercise settings its menu button applies: Pleiades forces Show Object ID on',async({page})=>{
+ await page.goto('/#lab=pleiades');await expect(page.locator('dialog[open]')).toContainText('Your Pleiades photometry',{timeout:15000});
+ await page.keyboard.press('Escape');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
+ await enterInstructorMode(page);await page.locator('.telescope-motion').getByTestId('ob-options').click();
+ await expect(page.getByTestId('ob-options-show-object-id')).toBeChecked();await expect(page.getByTestId('ob-options-show-object-mag')).not.toBeChecked();
 });
 
 test('the labs index, sitemap and robots.txt link every lab; the observatory footer links the index',async({page,request})=>{
@@ -50,8 +58,16 @@ test('the labs index, sitemap and robots.txt link every lab; the observatory foo
  const xml=await (await request.get('/sitemap.xml')).text();
  for(const href of await cards.evaluateAll(as=>as.map(a=>(a as HTMLAnchorElement).getAttribute('href'))))expect(xml).toContain(`https://openvireo.space${href}</loc>`);
  expect(await (await request.get('/robots.txt')).text()).toContain('Sitemap: https://openvireo.space/sitemap.xml');
- await page.goto('/#observatory');await page.getByRole('link',{name:'About the seven labs'}).click();
- await expect(page).toHaveURL(/\/labs\/$/);await expect(page.getByRole('heading',{level:1})).toHaveText('Astronomy labs in your browser');
+ // The footer link opens a new tab, so unsaved work in the app stays (review 1 M1).
+ await page.goto('/#observatory');const link=page.getByRole('link',{name:'About the seven labs (opens in a new tab)'});
+ await expect(link).toHaveAttribute('target','_blank');await expect(link).toHaveAttribute('rel','noopener noreferrer');
+ const [tab]=await Promise.all([page.context().waitForEvent('page'),link.click()]);
+ await expect(tab).toHaveURL(/\/labs\/$/);await expect(tab.getByRole('heading',{level:1})).toHaveText('Astronomy labs in your browser');
+ await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();
+});
+
+test('the dev server, like Pages, redirects /labs and /labs/<slug> to the trailing-slash address',async({request})=>{
+ for(const path of ['/labs','/labs/hubble']){const r=await request.get(path,{maxRedirects:0});expect([r.status(),r.headers().location]).toEqual([308,`${path}/`]);}
 });
 
 test('a lab page fits a 320 px screen without horizontal scrolling',async({page})=>{

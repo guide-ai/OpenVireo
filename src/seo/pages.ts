@@ -15,6 +15,7 @@ const ldJson=(value:unknown)=>JSON.stringify(value).replaceAll('<','\\u003c');
 const CREDIT={
  '@type':'CreativeWork',name:'VIREO, the Virtual Educational Observatory',
  author:{'@type':'Organization',name:'Project CLEA, Gettysburg College',url:'https://public.gettysburg.edu/~marschal/clea/CLEAhome.html'},
+ funder:[{'@type':'Organization',name:'National Science Foundation'},{'@type':'Organization',name:'Gettysburg College'}],
 };
 
 /** Canonical, link-preview and icon tags shared by every page. `path` starts with "/". */
@@ -40,11 +41,13 @@ export function sharedHead({path,title,description}:{path:string;title:string;de
 /** Extra <head> tags of index.html (the app). */
 export function homeHead(title:string,description:string):string{
  const app={
-  '@context':'https://schema.org','@type':'WebApplication',name:SITE_NAME,url:SITE_URL+'/',description,
+  '@type':'WebApplication',name:SITE_NAME,url:SITE_URL+'/',description,
   applicationCategory:'EducationalApplication',operatingSystem:'Any (runs in a web browser)',inLanguage:'en',
   isAccessibleForFree:true,offers:{'@type':'Offer',price:'0',priceCurrency:'USD'},isBasedOn:CREDIT,
  };
- return sharedHead({path:'/',title,description})+`<script type="application/ld+json">${ldJson(app)}</script>`;
+ // WebSite: Google reads the site name for search results from it (review 1 m7).
+ const site={'@type':'WebSite',name:SITE_NAME,url:SITE_URL+'/'};
+ return sharedHead({path:'/',title,description})+`<script type="application/ld+json">${ldJson({'@context':'https://schema.org','@graph':[app,site]})}</script>`;
 }
 
 /** Content inside <div id="root"> before the app starts: what the site is and links to the lab pages. React replaces it. */
@@ -56,7 +59,7 @@ export function homeBoot(description:string):string{
 const ABOUT=`OpenVireo is a free, non-commercial web reconstruction of VIREO, the Virtual Educational Observatory of Project CLEA `+
  `(Gettysburg College, supported by the National Science Foundation and Gettysburg College). It is based on the original `+
  `program's recovered behaviour and uses the original data files with credit. It is not the original program and is not `+
- `affiliated with Project CLEA. Where the web version behaves differently, the app says so.`;
+ `affiliated with Project CLEA. The app labels its known web adaptations.`;
 
 function page({path,title,description,body,ld}:{path:string;title:string;description:string;body:string;ld:unknown}):string{
  return `<!doctype html>\n<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>`+
@@ -78,7 +81,7 @@ const crumbs=(items:{name:string;path:string}[])=>({
 export function labPage(lab:Lab):string{
  const path=labUrl(lab.slug),others=LABS.filter(l=>l!==lab);
  const body=`<nav class="crumbs" aria-label="Breadcrumb"><a href="/">${SITE_NAME}</a> › <a href="/labs/">Labs</a> › <span aria-current="page">${esc(lab.name)}</span></nav>`+
-  `<p class="eyebrow">CLEA VIREO lab · ${lab.exercise}</p><h1>${esc(lab.heading)}</h1><p class="lead">${esc(lab.intro)}</p>`+
+  `<p class="eyebrow">Lab based on a CLEA VIREO exercise</p><h1>${esc(lab.heading)}</h1><p class="lead">${esc(lab.intro)}</p>`+
   `<p class="cta"><a class="button" href="${labLink(lab.slug)}">Open the lab</a> <span>Opens the observatory with the ${esc(lab.guide)}. Free, no sign-up.</span></p>`+
   `<section><h2>What you do</h2><ol>${lab.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol></section>`+
   `<section><h2>What you learn</h2><ul>${lab.learn.map(s=>`<li>${esc(s)}</li>`).join('')}</ul></section>`+
@@ -93,7 +96,7 @@ export function labPage(lab:Lab):string{
 }
 
 export const LABS_INDEX_TITLE='CLEA VIREO astronomy labs online · OpenVireo';
-export const LABS_INDEX_DESCRIPTION="Seven CLEA VIREO astronomy labs in your browser: Hubble's law, large-scale structure, stellar spectra, Pleiades photometry, cluster HR diagrams, pulsars and Object X.";
+export const LABS_INDEX_DESCRIPTION="Seven CLEA VIREO labs rebuilt for the browser: Hubble's law, large-scale structure, stellar spectra, Pleiades, cluster HR diagrams, pulsars and Object X.";
 
 export function labsIndexPage():string{
  const body=`<nav class="crumbs" aria-label="Breadcrumb"><a href="/">${SITE_NAME}</a> › <span aria-current="page">Labs</span></nav>`+
