@@ -125,11 +125,14 @@ test('Front ES1: a ?lang=es-419 preview fetches the Spanish chunk, shows the Spa
  expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);
 });
 
-test('Front ES1: an English load never fetches the Spanish chunk or the language selector (hidden before the release)',async({page,baseURL})=>{
+test('Front ES1: an English load (also ?lang=qps or ?lang=bogus) never fetches the Spanish chunk or the language selector',async({page,baseURL})=>{
  const p=await watch(page,baseURL!),fetched:string[]=[];page.on('request',r=>{if(/\/assets\/(es|LanguageChoice)-[\w-]+\.js$/.test(r.url()))fetched.push(r.url());});
- await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();await page.waitForLoadState('networkidle');
- expect(fetched).toEqual([]);await expect(page.getByTestId('language-choice')).toHaveCount(0);
- expect(await language(page)).toEqual({sets:1,earlyReads:0});
+ // ES1 review 1, C3: only ?lang=en or ?lang=es-419 shows the selector; the pseudo-locale and any other value show English without it.
+ for(const query of ['','?lang=qps','?lang=bogus']){
+  await page.goto(`/${query}#observatory`);await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();await page.waitForLoadState('networkidle');
+  expect(fetched,query).toEqual([]);await expect(page.getByTestId('language-choice')).toHaveCount(0);await expect(page.getByTestId('language-failure')).toHaveCount(0);
+  expect(await language(page),query).toEqual({sets:1,earlyReads:0});
+ }
  expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);
 });
 

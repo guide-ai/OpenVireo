@@ -1,7 +1,7 @@
 // Front ES0 (docs/I18N.md): the dev-only pseudo-locale (src/i18n/pseudo.ts, ?lang=qps) must not reach the production build.
 // Every text file under dist/ (the app, the lab pages, the sitemap, the original text resources) is searched for the
 // pseudo-locale mark ⟦ in any form: the character itself, a ⟦ escape (any case) or an HTML character reference.
-// Front ES1: the Spanish catalog's text appears in exactly one chunk, which index.html does not load or preload.
+// Front ES1: the Spanish catalog's and maps' text appears in exactly one chunk, which index.html does not load or preload.
 // Usage: node scripts/check-i18n-dist.mjs [distDir]   (default: dist)
 import {readdirSync,readFileSync,statSync} from 'node:fs';
 import {join} from 'node:path';
@@ -22,7 +22,14 @@ walk(dist);
 // Front ES1: Spanish lives only in its own chunk (src/i18n/es/index.ts), which index.html neither loads nor preloads; every other
 // file is free of the Spanish catalog's text, so English visitors never download Spanish.
 const spanish=JSON.parse(readFileSync(join(import.meta.dirname,'..','src','i18n','es','es.json'),'utf8')),english=JSON.parse(readFileSync(join(import.meta.dirname,'..','src','i18n','en.json'),'utf8'));
-const markers=Object.entries(spanish).filter(([k,v])=>v!==english[k]&&v.length>=16).map(([,v])=>JSON.stringify(v).slice(1,-1));
+const SPANISH_LETTERS=/[áéíóúñ¿¡ÁÉÍÓÚÑ]/;
+// The catalog's own strings, and (ES1 review 1) the Spanish map and originals texts: the single-quoted literals of
+// src/i18n/es/maps/*.ts and the values of originals.json that carry Spanish letters.
+const mapsDir=join(import.meta.dirname,'..','src','i18n','es','maps'),mapTexts=[];
+for(const name of readdirSync(mapsDir))for(const m of readFileSync(join(mapsDir,name),'utf8').matchAll(/'((?:[^'\\\n]|\\.)*)'/g)){const text=m[1].replace(/\\'/g,"'");if(text.length>=12&&SPANISH_LETTERS.test(text))mapTexts.push(text);}
+const originals=JSON.parse(readFileSync(join(import.meta.dirname,'..','src','i18n','es','originals.json'),'utf8'));
+for(const v of Object.values(originals))if(v.length>=8&&SPANISH_LETTERS.test(v))mapTexts.push(v);
+const markers=[...new Set([...Object.entries(spanish).filter(([k,v])=>v!==english[k]&&v.length>=16).map(([,v])=>v),...mapTexts])].map(v=>JSON.stringify(v).slice(1,-1));
 const html=readFileSync(join(dist,'index.html'),'utf8'),spanishFiles=[];
 (function scan(dir){for(const name of readdirSync(dir)){const file=join(dir,name);if(statSync(file).isDirectory()){scan(file);continue;}
  if(!TEXT.test(name))continue;const text=readFileSync(file,'utf8'),hits=markers.filter(m=>text.includes(m)).length;if(hits)spanishFiles.push({file,name,hits});}})(dist);

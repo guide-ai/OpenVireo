@@ -54,7 +54,7 @@ test('Help menu, the tour, instructor mode and the project links are Spanish',as
  await expect(id(page,'main-help-web')).toContainText('Temas de ayuda…');await expect(id(page,'main-help-tour')).toHaveText('Hacer el recorrido por el sitio');
  await expect(id(page,'main-help-site-about')).toHaveText('Acerca de OpenVireo y la privacidad');
  await expect(id(page,'main-help-websites')).toHaveText('Sitios web ›');await id(page,'main-help-websites').click();
- await expect(id(page,'help-website-twoMass')).toContainText('Catálogo 2MASS');await expect(id(page,'help-website-clea')).toContainText('Proyecto CLEA');
+ await expect(id(page,'help-website-twoMass')).toContainText('Catálogo 2MASS');await expect(id(page,'help-website-clea')).toContainText('Project CLEA');
  await expect(id(page,'help-websites-note')).toContainText('se abren en una pestaña nueva solo cuando haces clic');
  await expect(id(page,'main-help-repo')).toContainText('Código fuente en GitHub');await expect(id(page,'main-help-report')).toContainText('Informar un problema en GitHub');
  // The issue text stays English (docs/I18N.md F5): only the route name and the fixed English headings.
@@ -76,14 +76,33 @@ test('the recovery notice of a part that cannot load is Spanish',async({page})=>
  await page.evaluate(()=>{location.hash='#classification';});
  const notice=id(page,'site-updated');
  await expect(notice).toContainText('Se publicó una nueva versión de OpenVireo',{timeout:15_000});
- await expect(notice).toContainText('El resto del sitio y tu demás trabajo en esta pestaña siguen aquí.');
+ await expect(notice).toContainText('El resto del sitio y el resto de tu trabajo en esta pestaña siguen aquí.');
  await expect(id(page,'recovery-reload')).toHaveText('Volver a cargar la página');await expect(id(page,'recovery-save')).toHaveText('Guardar investigación');
+});
+
+/** Layout problems in the header: elements of the top row that overlap, the status line or a theme or language option cut
+ * off or crossing its pill, and horizontal page overflow. Run with the CI's DejaVu fonts (docs/I18N.md). */
+const headerProblems=(page:Page)=>page.evaluate(()=>{
+ const out:string[]=[];
+ if(document.documentElement.scrollWidth>document.documentElement.clientWidth)out.push('page overflows horizontally');
+ const rect=(s:string)=>{const e=document.querySelector<HTMLElement>(s);return e&&e.offsetParent?e.getBoundingClientRect():null;};
+ const top=['.portal-brand','.portal-help','.portal-header .tools-toggle'].map(rect);
+ for(let i=0;i<top.length;i++)for(let j=i+1;j<top.length;j++){const a=top[i],b=top[j];if(a&&b&&a.right>b.left+.5&&b.right>a.left+.5&&a.bottom>b.top+.5&&b.bottom>a.top+.5)out.push(`top row ${i}/${j} overlap`);}
+ const status=document.querySelector<HTMLElement>('.portal-status');if(status?.offsetParent&&status.scrollWidth>status.clientWidth+1)out.push('status line cut off');
+ for(const pill of document.querySelectorAll<HTMLElement>('.portal-footer .theme-switch')){if(!pill.offsetParent)continue;const r=pill.getBoundingClientRect();
+  for(const o of pill.querySelectorAll<HTMLElement>('.theme-option')){const q=o.getBoundingClientRect(),span=o.querySelector('span');if(q.right>r.right+.5||q.left<r.left-.5)out.push(`${o.textContent?.trim()} crosses its pill`);if(span&&span.scrollWidth>span.clientWidth+1)out.push(`${o.textContent?.trim()} cut off`);}}
+ return out;
+});
+
+test('at 1440 px the header sidebar lays out in English and in Spanish: no overlap, nothing cut off, the theme options inside their pill',async({page})=>{
+ for(const lang of ['en','es-419'] as const){await open(page,lang);expect(await headerProblems(page),lang).toEqual([]);}
+ await page.locator('.portal-header').screenshot({path:test.info().outputPath('es-shell-1440-sidebar.png')});
 });
 
 test('at 320 px the Spanish shell lays out without horizontal overflow, with the menu open',async({page})=>{
  await page.setViewportSize({width:320,height:700});await open(page,'es-419');
  const fits=()=>page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth);
- expect(await fits()).toBe(true);
+ expect(await fits()).toBe(true);expect(await headerProblems(page)).toEqual([]);
  // The top row (brand, Help, the menu button) does not overlap.
  const boxes=await Promise.all(['.portal-brand-block','.portal-help','.portal-header .tools-toggle'].map(s=>page.locator(s).boundingBox()));
  for(let i=0;i<boxes.length;i++)for(let j=i+1;j<boxes.length;j++){const a=boxes[i]!,b=boxes[j]!;expect(a.x+a.width<=b.x+.5||b.x+b.width<=a.x+.5||a.y+a.height<=b.y+.5||b.y+b.height<=a.y+.5,`${i}/${j} overlap`).toBe(true);}
@@ -93,4 +112,33 @@ test('at 320 px the Spanish shell lays out without horizontal overflow, with the
   .filter(el=>(el as HTMLElement).offsetParent!==null&&el.scrollWidth>el.clientWidth+1&&getComputedStyle(el).overflow==='hidden').map(el=>el.textContent?.trim()));
  expect(clipped).toEqual([]);
  await page.screenshot({path:test.info().outputPath('es-shell-320.png'),fullPage:false});
+});
+
+// ES1 review 1, C1 and C4: a Spanish chunk that fails or does not arrive within 10 s leaves the page in English with a
+// bilingual one-line notice; a chunk that arrives later is never activated.
+const FAILURE_EN='Spanish could not be loaded; English is shown. Reload to try again.';
+const FAILURE_ES='No se pudo cargar el español; se muestra en inglés. Recarga para intentarlo de nuevo.';
+test('a Spanish chunk that fails to load shows English with the bilingual notice',async({page})=>{
+ await page.route(/\/src\/i18n\/es\/index\.ts/,route=>route.abort('failed'));
+ await page.goto('/?lang=es-419#observatory');
+ await expect(page.getByRole('heading',{level:1,name:en['sky.title']})).toBeVisible({timeout:15_000});
+ await expect(page.locator('html')).toHaveAttribute('lang','en');
+ const notice=id(page,'language-failure');await expect(notice).toContainText(FAILURE_EN);await expect(notice).toContainText(FAILURE_ES);
+ await expect(notice.locator('[lang=es]')).toHaveText(FAILURE_ES);
+});
+test('a Spanish chunk that does not arrive within 10 s shows English with the notice, and a late chunk changes nothing',async({page})=>{
+ let release:(()=>void)|undefined;
+ await page.route(/\/src\/i18n\/es\/index\.ts/,async route=>{await new Promise<void>(resolve=>{release=resolve;});await route.continue().catch(()=>{});});
+ await page.clock.install();
+ await page.goto('/?lang=es-419#observatory');
+ await expect.poll(()=>release!==undefined).toBe(true);
+ await expect(page.locator('.investigation-toolbar')).toHaveCount(0);// nothing renders while the chunk is awaited
+ await page.clock.runFor(10_000);
+ await expect(page.getByRole('heading',{level:1,name:en['sky.title']})).toBeVisible({timeout:15_000});
+ await expect(id(page,'language-failure')).toContainText(FAILURE_EN);await expect(page.locator('html')).toHaveAttribute('lang','en');
+ release!();await page.waitForTimeout(500);
+ await expect(page.locator('html')).toHaveAttribute('lang','en');await expect(page.locator('.investigation-toolbar')).toContainText(en['project.save']);
+});
+test('a Spanish load that works shows no failure notice',async({page})=>{
+ await open(page,'es-419');await expect(id(page,'language-failure')).toHaveCount(0);
 });

@@ -17,5 +17,5 @@ export const HELP_MENU_ES:Translation<typeof HELP_MENU_EN>=Object.freeze({
  webTopics:'Temas de ayuda…',
  tour:'Hacer el recorrido por el sitio',
  shortcutKey:'?',
- exitNote:'VIREO muestra este recordatorio cuando sales del observatorio durante un ejercicio (después de Run Exercise); si no, solo pregunta si quieres salir. OpenVireo no tiene los pasos Log In ni Run Exercise, así que el observatorio siempre es un ejercicio en curso. En VIREO, Aceptar o Sí cierran el programa; Cancelar o No lo dejan abierto.',
+ exitNote:'VIREO muestra este recordatorio cuando sales del observatorio durante un ejercicio (después de Ejecutar ejercicio, Run Exercise); si no, solo pregunta si quieres salir. OpenVireo no tiene los pasos Iniciar sesión (Log In) ni Ejecutar ejercicio, así que el observatorio siempre es un ejercicio en curso. En VIREO, Aceptar (OK) o Sí (Yes) cierran el programa; Cancelar (Cancel) o No lo dejan abierto.',
 });

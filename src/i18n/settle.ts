@@ -1,4 +1,4 @@
-import {activateLocale,earlyTextRequests} from './active';
+import {activateLocale,earlyTextRequests,noteLanguageFailure} from './active';
 import type {LocaleBundle} from './catalog';
 import {decideLocale,HTML_LANG,SPANISH_RELEASED,type UiLanguage} from './locale';
 /** Front ES0 [W]: what src/boot.ts does once per load, with the page reached through `page` so tests can run it (docs/I18N.md).
@@ -18,25 +18,36 @@ export type SettlePage=Readonly<{
  setLang:(lang:string)=>void;
  setTitle:(title:string)=>void;
  error:(message:string,detail?:unknown)=>void;
+ /** Resolves after `ms` (default setTimeout); tests pass their own. */
+ wait?:(ms:number)=>Promise<void>;
 }>;
+/** The settled language, and the language that was asked for but could not be used (its chunk failed, timed out or did not
+ * validate), or null. src/main.tsx shows LANGUAGE_FAILURE_NOTICE when it is set (ES1 review 1, C1). */
+export type Settled=Readonly<{language:UiLanguage;failed:UiLanguage|null}>;
+/** How long a Spanish load waits for its chunk before it shows English (ES1 review 1, C4). */
+export const LANGUAGE_TIMEOUT_MS=10_000;
 const FAILED='OpenVireo: the language bundle could not be used; English is used.';
-export function settleLanguage(page:SettlePage):UiLanguage|Promise<UiLanguage>{
+export function settleLanguage(page:SettlePage):Settled|Promise<Settled>{
  let stored:string|null=null;try{stored=page.stored();}catch{stored=null;}
  const wanted=decideLocale({param:new URLSearchParams(page.search).get('lang'),stored,languages:page.languages,released:SPANISH_RELEASED,dev:page.dev});
  let source:LocaleBundle|null|Promise<LocaleBundle|null>;
- try{source=page.bundleFor(wanted);}catch(error){page.error(FAILED,error);return finish(page,null);}
- if(source instanceof Promise)return source.then(bundle=>finish(page,bundle),error=>{page.error(FAILED,error);return finish(page,null);});
- return finish(page,source);
+ try{source=page.bundleFor(wanted);}catch(error){page.error(FAILED,error);return finish(page,null,wanted,true);}
+ if(!(source instanceof Promise))return finish(page,source,wanted,source===null);
+ // The chunk races a timeout. Whichever settles first decides once: a chunk that arrives later is never activated.
+ const wait=page.wait??((ms:number)=>new Promise<void>(resolve=>setTimeout(resolve,ms)));
+ const timeout=wait(LANGUAGE_TIMEOUT_MS).then(()=>{throw new Error(`the ${wanted} chunk did not arrive within ${LANGUAGE_TIMEOUT_MS} ms`);});
+ return Promise.race([source,timeout]).then(bundle=>finish(page,bundle,wanted,bundle===null),error=>{page.error(FAILED,error);return finish(page,null,wanted,true);});
 }
-function finish(page:SettlePage,loaded:LocaleBundle|null):UiLanguage{
- let bundle=loaded,language:UiLanguage;
+function finish(page:SettlePage,loaded:LocaleBundle|null,wanted:UiLanguage,missing:boolean):Settled{
+ let bundle=loaded,language:UiLanguage,failed:UiLanguage|null=missing&&wanted!=='en'?wanted:null;
  let originals=false;try{originals=!!page.originals?.();}catch{originals=false;}
  if(bundle&&originals)bundle=Object.freeze({...bundle,originals:{},deriveOriginal:undefined});
  try{language=activateLocale(bundle);}
- catch(error){page.error(FAILED,error);bundle=null;language=activateLocale(null);}
+ catch(error){page.error(FAILED,error);bundle=null;language=activateLocale(null);if(wanted!=='en')failed=wanted;}
+ noteLanguageFailure(failed);
  const early=earlyTextRequests();
  if(early)page.error(`OpenVireo: ${early} text request(s) ran before the language was settled and stayed English.`);
  page.setLang(HTML_LANG[language]);
  const title=bundle?.messages['app.documentTitle'];if(title)page.setTitle(title);
- return language;
+ return Object.freeze({language,failed});
 }

@@ -7,7 +7,7 @@ export const TOUR_ES:Translation<typeof TOUR_EN>=Object.freeze({
  next:'Siguiente',back:'Atrás',skip:'Saltar el recorrido',done:'Empezar a explorar',
  steps:Object.freeze({
   welcome:Object.freeze({title:'Te damos la bienvenida a OpenVireo',
-   text:'OpenVireo es un observatorio virtual para ejercicios de astronomía, reconstruido en el navegador a partir de VIREO del Proyecto CLEA. Este breve recorrido te muestra dónde está cada cosa. Toma menos de un minuto.'}),
+   text:'OpenVireo es un observatorio virtual para ejercicios de astronomía, reconstruido en el navegador a partir de VIREO de Project CLEA. Este breve recorrido te muestra dónde está cada cosa. Toma menos de un minuto.'}),
   sections:Object.freeze({title:'Todas las páginas están en el menú',
    text:'Las páginas se agrupan en secciones: los observatorios óptico y de radio, las herramientas de análisis, los resultados y los archivos. Haz clic en el nombre de una sección para abrirla o cerrarla. En un celular, el menú está detrás del botón Menú.'}),
   guides:Object.freeze({title:'¿Vas a hacer un ejercicio? Empieza por su guía',

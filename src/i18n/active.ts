@@ -5,8 +5,8 @@ import {MAP_IDS} from './maps';
 type Active=Readonly<{language:UiLanguage;i18n:I18n;bundle:LocaleBundle|null}>;
 /** The active language lives on globalThis (as src/focusAfterLayout.ts keeps its state), so a re-evaluated copy of this module
  * (dev-server hot update, a test's vi.resetModules) keeps the language boot settled instead of tripping the wire below. */
-const ACTIVE=Symbol.for('openvireo.i18n.active'),EARLY=Symbol.for('openvireo.i18n.early');
-const holder=globalThis as typeof globalThis&{[ACTIVE]?:Active;[EARLY]?:number};
+const ACTIVE=Symbol.for('openvireo.i18n.active'),EARLY=Symbol.for('openvireo.i18n.early'),FAILED=Symbol.for('openvireo.i18n.failed');
+const holder=globalThis as typeof globalThis&{[ACTIVE]?:Active;[EARLY]?:number;[FAILED]?:UiLanguage|null};
 const ENGLISH:Active=Object.freeze({language:'en',i18n:english,bundle:null});
 /** Dev server and Vitest only: text requested before the language was settled fails loudly (in Vitest the English setup file
  * src/i18n/useEnglish.ts settles it). In production the request is answered in English and counted (earlyTextRequests), and
@@ -30,3 +30,12 @@ export function activateLocale(bundle:LocaleBundle|null):UiLanguage{
  }
  holder[ACTIVE]=next;return next.language;
 }
+/** The language this load asked for but could not use (its chunk failed, timed out or did not validate), or null. */
+export const languageFailure=():UiLanguage|null=>holder[FAILED]??null;
+export function noteLanguageFailure(failed:UiLanguage|null){holder[FAILED]=failed;}
+/** ES1 review 1, C1: shown when the Spanish chunk could not be used. Its own bilingual text, since the Spanish catalog is the
+ * part that failed. */
+export const LANGUAGE_FAILURE_NOTICE=Object.freeze({
+ en:'Spanish could not be loaded; English is shown. Reload to try again.',
+ es:'No se pudo cargar el español; se muestra en inglés. Recarga para intentarlo de nuevo.',
+});

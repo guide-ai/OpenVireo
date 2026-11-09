@@ -1,76 +1,601 @@
 {
- "about": "Front ES1: the es-419 glossary (plan analysis/front-plans/front-i18n-es.md §5.1) that src/i18n/es/es.test.ts enforces on every Spanish string. A term applies when its English pattern (case-insensitive regular expression) matches the English source: the Spanish must then contain the required stem. Names are fixed interface names: when the English contains one, the Spanish contains its Spanish form exactly. Forbidden patterns never appear in Spanish. Style: tú, buttons and menu items in the infinitive, no voseo or Spain-only forms, paired ¿ ¡, the decimal point, a space before units, and the glyphs › … ↗ ▸ · kept. Translations are web adaptations by OpenVireo, never CLEA's.",
+ "about": "Front ES1: the es-419 glossary (plan analysis/front-plans/front-i18n-es.md §5.1) that src/i18n/es/es.test.ts enforces on every Spanish string. A term applies when its English pattern (case-insensitive regular expression) matches the English source: the Spanish must then contain the required stem. Names are fixed interface names: when the English contains one, the Spanish contains its Spanish form exactly. Forbidden words (matched with Unicode word boundaries) and patterns never appear in Spanish: Spain-only words, usted and its imperatives, voseo, and any claim that a translation is CLEA's. Kept names stay exactly as in English. The lint applies to the Spanish strings that exist, so rows for areas still in English wait for their sub-front. Style: tú, buttons and menu items in the infinitive, no voseo or Spain-only forms, paired ¿ ¡, the decimal point, a space before units, and the glyphs › … ↗ ▸ · kept. Translations are web adaptations by OpenVireo, never CLEA's.",
  "terms": [
-  {"en": "\\bobservator(y|ies)\\b", "es": "observatorio"},
-  {"en": "\\btelescopes?\\b", "es": "telescopio"},
-  {"en": "\\bdomes?\\b", "es": "cúpula"},
-  {"en": "\\bspectr(um|a)\\b", "es": "espectro"},
-  {"en": "\\bspectrometers?\\b", "es": "espectrómetro"},
-  {"en": "\\bphotometers?\\b", "es": "fotómetro"},
-  {"en": "\\bphotometry\\b", "es": "fotometría"},
-  {"en": "\\bexposures?\\b", "es": "exposici"},
-  {"en": "\\bmeasurements?\\b", "es": "medici"},
-  {"en": "\\binvestigations?\\b", "es": "investigaci"},
-  {"en": "\\bfiles?\\b", "es": "archivo"},
-  {"en": "\\bdownload(s|ed|ing)?\\b", "es": "descarg"},
-  {"en": "\\bsav(e|es|ed|ing)\\b", "es": "guard"},
-  {"en": "\\brestor(e|es|ed|ing)\\b", "es": "restaur"},
-  {"en": "\\b(re)?load(s|ed|ing)?\\b", "es": "carg"},
-  {"en": "\\bbrowsers?\\b", "es": "navegador"},
-  {"en": "\\btabs?\\b", "es": "pestaña"},
-  {"en": "\\bpages?\\b", "es": "página"},
-  {"en": "\\bcomputers?\\b", "es": "computadora"},
-  {"en": "\\bphones?\\b", "es": "celular"},
-  {"en": "\\bclick\\b", "es": "clic"},
-  {"en": "\\bpress\\b", "es": "presiona"},
-  {"en": "\\bmenus?\\b", "es": "menú"},
-  {"en": "\\bguides?\\b", "es": "guía"},
-  {"en": "\\bexercises?\\b", "es": "ejercicio"},
-  {"en": "\\blabs?\\b", "es": "práctica"},
-  {"en": "\\bredshifts?\\b", "es": "corrimiento"},
-  {"en": "\\bpulsars?\\b", "es": "púlsar"},
-  {"en": "\\binstructor mode\\b", "es": "modo instructor"},
-  {"en": "\\bhelp\\b", "es": "ayuda"},
-  {"en": "\\btracking\\b", "es": "seguimiento"},
-  {"en": "\\bcatalog(ue)?s?\\b", "es": "catálogo"},
-  {"en": "\\bgalax(y|ies)\\b", "es": "galaxia"},
-  {"en": "\\bstars?\\b", "es": "estrella"},
-  {"en": "\\bclusters?\\b", "es": "cúmulo"},
-  {"en": "\\bresults?\\b", "es": "resultado"},
-  {"en": "\\bwavelengths?\\b", "es": "longitud(es)? de onda"},
-  {"en": "\\bpassword\\b", "es": "contraseña"}
+  {
+   "en": "\\bobservator(y|ies)\\b",
+   "es": "observatorio"
+  },
+  {
+   "en": "\\btelescopes?\\b",
+   "es": "telescopio"
+  },
+  {
+   "en": "\\bdomes?\\b",
+   "es": "cúpula"
+  },
+  {
+   "en": "\\bspectr(um|a)\\b",
+   "es": "espectro"
+  },
+  {
+   "en": "\\bspectrometers?\\b",
+   "es": "espectrómetro"
+  },
+  {
+   "en": "\\bphotometers?\\b",
+   "es": "fotómetro"
+  },
+  {
+   "en": "\\bphotometry\\b",
+   "es": "fotometría"
+  },
+  {
+   "en": "\\bexposures?\\b",
+   "es": "exposici"
+  },
+  {
+   "en": "\\bmeasurements?\\b",
+   "es": "medici"
+  },
+  {
+   "en": "\\binvestigations?\\b",
+   "es": "investigaci"
+  },
+  {
+   "en": "\\bfiles?\\b",
+   "es": "archivo"
+  },
+  {
+   "en": "\\bdownload(s|ed|ing)?\\b",
+   "es": "descarg"
+  },
+  {
+   "en": "\\bsav(e|es|ed|ing)\\b",
+   "es": "guard"
+  },
+  {
+   "en": "\\brestor(e|es|ed|ing)\\b",
+   "es": "restaur"
+  },
+  {
+   "en": "\\b(re)?load(s|ed|ing)?\\b",
+   "es": "carg"
+  },
+  {
+   "en": "\\bbrowsers?\\b",
+   "es": "navegador"
+  },
+  {
+   "en": "\\btabs?\\b",
+   "es": "pestaña"
+  },
+  {
+   "en": "\\bpages?\\b",
+   "es": "página"
+  },
+  {
+   "en": "\\bcomputers?\\b",
+   "es": "computadora"
+  },
+  {
+   "en": "\\bphones?\\b",
+   "es": "celular"
+  },
+  {
+   "en": "\\bclick\\b",
+   "es": "clic"
+  },
+  {
+   "en": "\\bpress\\b",
+   "es": "presiona"
+  },
+  {
+   "en": "\\bmenus?\\b",
+   "es": "menú"
+  },
+  {
+   "en": "\\bguides?\\b",
+   "es": "guía"
+  },
+  {
+   "en": "\\bexercises?\\b",
+   "es": "ejercicio"
+  },
+  {
+   "en": "\\blabs?\\b",
+   "es": "práctica"
+  },
+  {
+   "en": "\\bredshifts?\\b",
+   "es": "corrimiento"
+  },
+  {
+   "en": "\\bpulsars?\\b",
+   "es": "púlsar"
+  },
+  {
+   "en": "\\binstructor mode\\b",
+   "es": "modo instructor"
+  },
+  {
+   "en": "\\bhelp\\b",
+   "es": "ayuda"
+  },
+  {
+   "en": "\\btracking\\b",
+   "es": "seguimiento"
+  },
+  {
+   "en": "\\bcatalog(ue)?s?\\b",
+   "es": "catálogo"
+  },
+  {
+   "en": "\\bgalax(y|ies)\\b",
+   "es": "galaxia"
+  },
+  {
+   "en": "\\bstars?\\b",
+   "es": "estrella"
+  },
+  {
+   "en": "\\bclusters?\\b",
+   "es": "cúmulo"
+  },
+  {
+   "en": "\\bresults?\\b",
+   "es": "resultado"
+  },
+  {
+   "en": "\\bwavelengths?\\b",
+   "es": "longitud(es)? de onda"
+  },
+  {
+   "en": "\\bpassword\\b",
+   "es": "contraseña"
+  },
+  {
+   "en": "\\bcounts?\\b",
+   "es": "cuenta"
+  },
+  {
+   "en": "\\bslew(s|ed|ing)?\\b",
+   "es": "mov"
+  },
+  {
+   "en": "\\bhot lists?\\b",
+   "es": "listas? de objetos"
+  },
+  {
+   "en": "\\bsky background\\b",
+   "es": "fondo de cielo"
+  },
+  {
+   "en": "\\bseeing\\b",
+   "es": "seeing"
+  },
+  {
+   "en": "\\bright ascension\\b",
+   "es": "ascensión recta"
+  },
+  {
+   "en": "\\bdeclinations?\\b",
+   "es": "declinación"
+  },
+  {
+   "en": "\\bfilters?\\b",
+   "es": "filtro"
+  },
+  {
+   "en": "\\bslits?\\b",
+   "es": "rendija"
+  },
+  {
+   "en": "\\blight curves?\\b",
+   "es": "curvas? de luz"
+  },
+  {
+   "en": "\\bHR diagrams?\\b",
+   "es": "diagramas? H-?R"
+  },
+  {
+   "en": "\\bmain sequence\\b",
+   "es": "secuencias? principal(es)?"
+  },
+  {
+   "en": "\\bisochrones?\\b",
+   "es": "isócrona"
+  },
+  {
+   "en": "\\bvariable stars?\\b",
+   "es": "estrellas? variables?"
+  },
+  {
+   "en": "\\bperiods?\\b",
+   "es": "per[ií]odo"
+  },
+  {
+   "en": "\\bdispersion measure\\b",
+   "es": "medidas? de dispersión"
+  },
+  {
+   "en": "\\bradio telescopes?\\b",
+   "es": "radiotelescopio"
+  },
+  {
+   "en": "\\breceivers?\\b",
+   "es": "receptor"
+  },
+  {
+   "en": "\\bantennas?\\b",
+   "es": "antena"
+  },
+  {
+   "en": "\\bquasars?\\b",
+   "es": "cuásar"
+  },
+  {
+   "en": "\\basteroids?\\b",
+   "es": "asteroide"
+  },
+  {
+   "en": "\\bastrometry\\b",
+   "es": "astrometría"
+  },
+  {
+   "en": "\\blarge-scale structure\\b",
+   "es": "estructura a gran escala"
+  },
+  {
+   "en": "\\bwedge plots?\\b",
+   "es": "diagramas? de cuña"
+  },
+  {
+   "en": "\\bfield of view\\b",
+   "es": "campos? de visión"
+  },
+  {
+   "en": "\\bsignal-to-noise\\b",
+   "es": "señal/ruido"
+  },
+  {
+   "en": "\\bequivalent widths?\\b",
+   "es": "anchos? equivalentes?"
+  },
+  {
+   "en": "\\bcontinuum\\b",
+   "es": "continuo"
+  },
+  {
+   "en": "\\bspectral (type|class)(es)?\\b",
+   "es": "(tipos?|clases?) espectral(es)?"
+  },
+  {
+   "en": "\\bapparent magnitudes?\\b",
+   "es": "magnitud(es)? aparentes?"
+  },
+  {
+   "en": "\\babsolute magnitudes?\\b",
+   "es": "magnitud(es)? absolutas?"
+  },
+  {
+   "en": "\\bdistance modulus\\b",
+   "es": "módulos? de distancia"
+  },
+  {
+   "en": "\\breddening\\b",
+   "es": "enrojecimiento"
+  },
+  {
+   "en": "\\bcolou?r excess\\b",
+   "es": "excesos? de color"
+  },
+  {
+   "en": "\\bHubble's law\\b",
+   "es": "ley de Hubble"
+  },
+  {
+   "en": "\\bHubble constant\\b",
+   "es": "constante de Hubble"
+  },
+  {
+   "en": "\\brecessional velocit(y|ies)\\b",
+   "es": "velocidad(es)? de recesión"
+  },
+  {
+   "en": "\\bfinding charts?\\b",
+   "es": "cartas? de localización"
+  },
+  {
+   "en": "\\bfinder\\b",
+   "es": "buscador"
+  },
+  {
+   "en": "\\bepochs?\\b",
+   "es": "época"
+  },
+  {
+   "en": "\\bintegration\\b",
+   "es": "integración"
+  },
+  {
+   "en": "\\bCCD camera\\b",
+   "es": "cámaras? CCD"
+  },
+  {
+   "en": "\\bIR camera\\b",
+   "es": "cámaras? IR"
+  },
+  {
+   "en": "\\bspectral lines?\\b",
+   "es": "línea espectral|líneas espectrales"
+  },
+  {
+   "en": "\\bemission\\b",
+   "es": "emisión"
+  },
+  {
+   "en": "\\babsorption\\b",
+   "es": "absorción"
+  },
+  {
+   "en": "\\bopen clusters?\\b",
+   "es": "cúmulo abierto|cúmulos abiertos"
+  },
+  {
+   "en": "\\bglobular clusters?\\b",
+   "es": "cúmulo globular|cúmulos globulares"
+  },
+  {
+   "en": "\\bsignal\\b",
+   "es": "señal"
+  },
+  {
+   "en": "\\bexercise guide\\b|\\blab guide\\b",
+   "es": "guía"
+  }
  ],
  "names": [
-  {"en": "Save investigation", "es": "Guardar investigación"},
-  {"en": "Restore investigation JSON", "es": "Restaurar investigación (JSON)"},
-  {"en": "Save session", "es": "Guardar sesión"},
-  {"en": "Restore session", "es": "Restaurar sesión"},
-  {"en": "Instructor mode…", "es": "Modo instructor…"},
-  {"en": "Help topics…", "es": "Temas de ayuda…"},
-  {"en": "Tools button", "es": "botón Menú"},
-  {"en": "Optical Simulation Options", "es": "Opciones de simulación óptica"},
-  {"en": "Demonstration Mode", "es": "Modo de demostración"},
-  {"en": "Edit Mode", "es": "Modo de edición"},
-  {"en": "Virtual Observatory", "es": "Observatorio virtual"},
-  {"en": "Test Mode", "es": "Modo de prueba"},
-  {"en": "Pulsar Analysis", "es": "Análisis de púlsares"},
-  {"en": "Observational Data", "es": "Datos de observación"},
-  {"en": "Observational Results", "es": "Resultados de observación"},
-  {"en": "Results Editors", "es": "Editores de resultados"},
-  {"en": "Topics...", "es": "Temas..."},
-  {"en": "About This Exercise...", "es": "Acerca de este ejercicio..."}
+  {
+   "en": "Save investigation",
+   "es": "Guardar investigación"
+  },
+  {
+   "en": "Restore investigation JSON",
+   "es": "Restaurar investigación (JSON)"
+  },
+  {
+   "en": "Save session",
+   "es": "Guardar sesión"
+  },
+  {
+   "en": "Restore session",
+   "es": "Restaurar sesión"
+  },
+  {
+   "en": "Instructor mode…",
+   "es": "Modo instructor…"
+  },
+  {
+   "en": "Help topics…",
+   "es": "Temas de ayuda…"
+  },
+  {
+   "en": "Tools button",
+   "es": "botón Menú"
+  },
+  {
+   "en": "Optical Simulation Options",
+   "es": "Opciones de simulación óptica"
+  },
+  {
+   "en": "Demonstration Mode",
+   "es": "Modo de demostración"
+  },
+  {
+   "en": "Edit Mode",
+   "es": "Modo de edición"
+  },
+  {
+   "en": "Virtual Observatory",
+   "es": "Observatorio virtual"
+  },
+  {
+   "en": "Test Mode",
+   "es": "Modo de prueba"
+  },
+  {
+   "en": "Pulsar Analysis",
+   "es": "Análisis de púlsares"
+  },
+  {
+   "en": "Observational Data",
+   "es": "Datos de observación"
+  },
+  {
+   "en": "Observational Results",
+   "es": "Resultados de observación"
+  },
+  {
+   "en": "Results Editors",
+   "es": "Editores de resultados"
+  },
+  {
+   "en": "Topics...",
+   "es": "Temas..."
+  },
+  {
+   "en": "About This Exercise...",
+   "es": "Acerca de este ejercicio..."
+  },
+  {
+   "en": "Project CLEA",
+   "es": "Project CLEA"
+  },
+  {
+   "en": "Gettysburg College",
+   "es": "Gettysburg College"
+  },
+  {
+   "en": "VIREO",
+   "es": "VIREO"
+  },
+  {
+   "en": "OpenVireo",
+   "es": "OpenVireo"
+  },
+  {
+   "en": "CLEA",
+   "es": "CLEA"
+  },
+  {
+   "en": "NSF",
+   "es": "NSF"
+  },
+  {
+   "en": "GitHub",
+   "es": "GitHub"
+  },
+  {
+   "en": "FITS",
+   "es": "FITS"
+  },
+  {
+   "en": "CSV",
+   "es": "CSV"
+  },
+  {
+   "en": "VizieR",
+   "es": "VizieR"
+  },
+  {
+   "en": "NOMAD",
+   "es": "NOMAD"
+  },
+  {
+   "en": "USNO-B1",
+   "es": "USNO-B1"
+  },
+  {
+   "en": "GSC",
+   "es": "GSC"
+  },
+  {
+   "en": "2MASS",
+   "es": "2MASS"
+  },
+  {
+   "en": "SHA-256",
+   "es": "SHA-256"
+  },
+  {
+   "en": "JSON",
+   "es": "JSON"
+  }
  ],
  "forbidden": [
-  {"es": "\\bficheros?\\b", "use": "archivo"},
-  {"es": "\\bordenador(es)?\\b", "use": "computadora"},
-  {"es": "\\bm[óo]vil(es)?\\b", "use": "celular"},
-  {"es": "\\bpinch(a|ar|e)\\b", "use": "hacer clic"},
-  {"es": "\\bpulsa(r|ndo|)\\b", "use": "presionar / hacer clic (púlsar lleva tilde)"},
-  {"es": "desplazamiento al rojo", "use": "corrimiento al rojo"},
-  {"es": "\\busted(es)?\\b", "use": "tú (decisión 6)"},
-  {"es": "\\bvosotros\\b|\\bvuestr[oa]s?\\b", "use": "ustedes no; tú"},
-  {"es": "\\bcoger\\b", "use": "tomar"},
-  {"es": "\\bvale\\b", "use": "Aceptar / de acuerdo"},
-  {"es": "\\bVIREO original de CLEA\\b|\\btraducción de CLEA\\b|\\bversión oficial\\b", "use": "las traducciones son adaptaciones web de OpenVireo"}
+  {
+   "words": [
+    "fichero",
+    "ficheros"
+   ],
+   "use": "archivo"
+  },
+  {
+   "words": [
+    "ordenador",
+    "ordenadores"
+   ],
+   "use": "computadora"
+  },
+  {
+   "words": [
+    "móvil",
+    "móviles",
+    "movil",
+    "moviles"
+   ],
+   "use": "celular"
+  },
+  {
+   "words": [
+    "pincha",
+    "pinchar",
+    "pinche"
+   ],
+   "use": "hacer clic"
+  },
+  {
+   "words": [
+    "pulsa",
+    "pulsar",
+    "pulsando",
+    "pulse",
+    "pulsá"
+   ],
+   "use": "presionar / hacer clic (el astro, púlsar, lleva tilde)"
+  },
+  {
+   "words": [
+    "usted",
+    "ustedes",
+    "vosotros",
+    "vosotras",
+    "vuestro",
+    "vuestra",
+    "vuestros",
+    "vuestras"
+   ],
+   "use": "tú (decisión 6)"
+  },
+  {
+   "words": [
+    "haga",
+    "elija",
+    "presione",
+    "seleccione",
+    "abra",
+    "guarde",
+    "escriba",
+    "revise",
+    "espere",
+    "use",
+    "cargue"
+   ],
+   "use": "tú: haz, elige, presiona, selecciona, abre, guarda, escribe, revisa, espera, usa, carga"
+  },
+  {
+   "words": [
+    "tenés",
+    "podés",
+    "querés",
+    "hacé",
+    "elegí",
+    "apuntá",
+    "abrí",
+    "guardá",
+    "mirá",
+    "usá"
+   ],
+   "use": "tú, sin voseo: tienes, puedes, quieres, haz, elige, apunta, abre, guarda, mira, usa"
+  },
+  {
+   "words": [
+    "coger",
+    "vale"
+   ],
+   "use": "tomar / Aceptar"
+  },
+  {
+   "es": "desplazamiento al rojo",
+   "use": "corrimiento al rojo"
+  },
+  {
+   "es": "(?<![\\p{L}\\p{N}])su (trabajo|investigación)(?![\\p{L}\\p{N}])",
+   "use": "tu trabajo / tu investigación"
+  },
+  {
+   "es": "VIREO original de CLEA|traducción (oficial|de CLEA)|versión oficial",
+   "use": "las traducciones son adaptaciones web de OpenVireo"
+  }
  ]
 }

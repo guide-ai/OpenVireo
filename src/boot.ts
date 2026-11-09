@@ -34,4 +34,4 @@ const settled=settleLanguage({
 });
 /** null when the language is already active (English, qps); otherwise resolves when the Spanish chunk is active or English
  * replaced it. */
-export const languageReady:Promise<UiLanguage>|null=typeof settled==='string'?null:settled;
+export const languageReady:Promise<unknown>|null=settled instanceof Promise?settled:null;

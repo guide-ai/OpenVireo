@@ -12,7 +12,7 @@ export const APP_SHELL_ES:Translation<typeof APP_SHELL_MESSAGES_EN>=Object.freez
   updated:'Esta parte del sitio no se pudo cargar porque el sitio se actualizó mientras esta página estaba abierta.',
   errorTitle:'Esta parte de OpenVireo se detuvo por un error',
   error:'Volver a cargar la página suele resolverlo. Si vuelve a pasar, anota qué hiciste justo antes.',
-  kept:'El resto del sitio y tu demás trabajo en esta pestaña siguen aquí.',
+  kept:'El resto del sitio y el resto de tu trabajo en esta pestaña siguen aquí.',
   saveFirst:'Primero guarda tu investigación y luego vuelve a cargar la página para continuar con la versión actual.',
   saveHow:'Vuelve a cargar la página para continuar. El trabajo que guardaste antes con Guardar investigación se puede recuperar después con Restaurar investigación (JSON).',
   save:'Guardar investigación',

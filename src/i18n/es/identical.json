@@ -7,6 +7,7 @@
   "map:languageChoice.legend": "bilingual on purpose so either reader finds the selector",
   "map:languageChoice.english": "each language is named in its own language",
   "map:languageChoice.spanish": "each language is named in its own language",
-  "original:NVO": "catalogue acronym (National Virtual Observatory), kept"
+  "original:NVO": "catalogue acronym (National Virtual Observatory), kept",
+  "original:Project CLEA": "official name kept in English (plan §5.1)"
  }
 }

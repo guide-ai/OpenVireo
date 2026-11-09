@@ -1,5 +1,6 @@
 import {describe,it,expect} from 'vitest';
-import {decideLocale,HTML_LANG,SPANISH_RELEASED,type LocaleInputs} from './locale';
+import {decideLocale,HTML_LANG,selectorShown,SPANISH_RELEASED,type LocaleInputs} from './locale';
+import {nextAddress} from '../components/LanguageChoice';
 const decide=(over:Partial<LocaleInputs>)=>decideLocale({param:null,stored:null,languages:['en-US'],released:true,dev:false,...over});
 describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-09)',()=>{
  it('keeps Spanish hidden before ES-REL: only the ?lang=es-419 preview reaches it',()=>{
@@ -22,5 +23,16 @@ describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-0
   expect(decide({param:'qps'})).toBe('en');expect(decide({param:'qps',dev:true,released:false})).toBe('qps');
   expect(decide({stored:'qps',dev:true})).toBe('en');
   expect(HTML_LANG).toEqual({en:'en','es-419':'es-419',qps:'en'});
+ });
+ it('shows the selector before the release only for ?lang=en or ?lang=es-419 (ES1 review 1, C3)',()=>{
+  for(const search of ['?lang=en','?lang=es-419','?x=1&lang=en'])expect(selectorShown(search,false),search).toBe(true);
+  for(const search of ['','?lang=qps','?lang=bogus','?lang=','?lang=ES-419','?language=en'])expect(selectorShown(search,false),search).toBe(false);
+  expect(selectorShown('',true)).toBe(true);
+ });
+ it('a language change keeps the route and, before the release, always carries ?lang (the choice is not stored: C2)',()=>{
+  expect(nextAddress('https://openvireo.space/?lang=en#spectrum','es-419',false,false)).toBe('https://openvireo.space/?lang=es-419#spectrum');
+  expect(nextAddress('https://openvireo.space/#spectrum','es-419',true,true)).toBe('https://openvireo.space/#spectrum');
+  expect(nextAddress('https://openvireo.space/#spectrum','en',false,true)).toBe('https://openvireo.space/?lang=en#spectrum');
+  expect(nextAddress('https://openvireo.space/?lang=en#x','es-419',true,true)).toBe('https://openvireo.space/?lang=es-419#x');
  });
 });

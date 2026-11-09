@@ -41,7 +41,29 @@ function pairs():Pair[]{
  for(const [key,text] of Object.entries(originals))out.push({id:`original:${key}`,en:key,es:text});
  return out;
 }
+/** Forbidden words match with Unicode word boundaries (JavaScript's \\b is ASCII-only, so «abrí» or «móvil» would slip). */
+const WORD=(w:string)=>`(?<![\\p{L}\\p{N}])${w}(?![\\p{L}\\p{N}])`;
+const FORBIDDEN=(glossary.forbidden as {words?:string[];es?:string;use:string}[]).map(f=>({label:f.words?`«${f.words.join('», «')}»`:`/${f.es}/`,use:f.use,pattern:new RegExp(f.words?f.words.map(WORD).join('|'):f.es!,'iu')}));
+/** Unpaired ¿ ? or ¡ !: a closer that ends a question or exclamation (after a letter, digit, bracket, quote or …) needs an
+ * opener before it, and every opener needs a closer. A bare ? (a key, «?lang=») is not a closer. */
+export function unpaired(text:string,open:string,close:string):string|null{
+ let depth=0;
+ for(let i=0;i<text.length;i++){
+  if(text[i]===open)depth++;
+  else if(text[i]===close&&/[\p{L}\d)»”…]/u.test(text[i-1]??'')&&/[\s)»”.,;:]|$/.test(text[i+1]??'')){if(depth===0)return `${close} without ${open}`;depth--;}
+ }
+ return depth>0?`${open} without ${close}`:null;
+}
 const GLYPHS=['›','…','↗','▸','·','—','–','×','✳','?'];
+describe('Front ES1 review 1: the lint catches what it must',()=>{
+ it('finds usted, voseo, Spain-only words and unpaired ¿ ¡ with Unicode-aware boundaries',()=>{
+  const hits=(text:string)=>FORBIDDEN.filter(f=>f.pattern.test(text)).map(f=>f.label);
+  for(const bad of ['Haga clic aquí','Elija un objeto','Pulse el botón','Pulsá Aceptar','Abrí la cúpula','Guardá tu trabajo','Mirá esto','Guarde su trabajo','¿Tenés tiempo?','Copia su investigación','Usá el móvil','Abre el fichero'])expect(hits(bad),bad).not.toEqual([]);
+  for(const good of ['Haz clic en el púlsar','Elige un objeto','Presiona el botón','Abre la cúpula','Guarda tu trabajo','Los púlsares','Su investigación no' ])if(good!=='Su investigación no')expect(hits(good),good).toEqual([]);
+  expect(unpaired('¿Cambiar el idioma?','¿','?')).toBeNull();expect(unpaired('Cambiar el idioma?','¿','?')).toBe('? without ¿');expect(unpaired('¿Cambiar el idioma.','¿','?')).toBe('¿ without ?');
+  expect(unpaired('presiona la tecla ? o abre ?lang=es','¿','?')).toBeNull();expect(unpaired('¡Listo!','¡','!')).toBeNull();expect(unpaired('¡Listo.','¡','!')).toBe('¡ without !');
+ });
+});
 describe('Front ES1: the Spanish (es-419) catalog, maps and originals',()=>{
  it('the catalog is a valid partial catalog: known keys, the same {params}, strings only (fallback mode until ES-REL)',()=>{
   expect(()=>createI18n(es,'es-419',{fallback:true,numberLocale:'en-US'})).not.toThrow();
@@ -75,18 +97,18 @@ describe('Front ES1: the Spanish (es-419) catalog, maps and originals',()=>{
   for(const p of pairs()){
    for(const term of glossary.terms)if(new RegExp(term.en,'i').test(p.en)&&!new RegExp(term.es,'iu').test(p.es))problems.push(`${p.id}: "${term.en}" needs «${term.es}»`);
    for(const name of glossary.names)if(p.en.includes(name.en)&&!p.es.includes(name.es))problems.push(`${p.id}: "${name.en}" must read «${name.es}»`);
-   for(const f of glossary.forbidden)if(new RegExp(f.es,'iu').test(p.es))problems.push(`${p.id}: forbidden /${f.es}/, use ${f.use}`);
+   for(const f of FORBIDDEN)if(f.pattern.test(p.es))problems.push(`${p.id}: forbidden ${f.label}, use ${f.use}`);
   }
   expect(problems).toEqual([]);
  });
- it('keeps the glyphs, pairs ¿ ? and ¡ !, adds no HTML, and reports the length ratio',()=>{
+ it('keeps the glyphs and every map placeholder, pairs ¿ ? and ¡ ! both ways, adds no HTML, and reports the length ratio',()=>{
   const problems:string[]=[],ratios:string[]=[];
   const count=(s:string,g:string)=>s.split(g).length-1;
-  const questions=(s:string,close:string,open:string)=>s.split(/(?<=[.!?:;…])\s+/).filter(sentence=>new RegExp(`[\\p{L}\\d)»”]${close==='?'?'\\?':close}(?=\\s|$|[)»”])`,'u').test(sentence)&&!sentence.includes(open)).length;
   for(const p of pairs()){
    for(const g of GLYPHS)if(g!=='?'&&count(p.en,g)!==count(p.es,g))problems.push(`${p.id}: ${count(p.es,g)}×${g} instead of ${count(p.en,g)}`);
-   if(questions(p.es,'?','¿'))problems.push(`${p.id}: a question without ¿`);
-   if(questions(p.es,'!','¡'))problems.push(`${p.id}: an exclamation without ¡`);
+   for(const [open,close] of [['¿','?'],['¡','!']]){const issue=unpaired(p.es,open,close);if(issue)problems.push(`${p.id}: ${issue}`);}
+   // Map functions: every placeholder in the English output reaches the Spanish output.
+   for(const arg of p.en.match(/«A\d+»/g)??[])if(!p.es.includes(arg))problems.push(`${p.id}: drops ${arg}`);
    if(/<\/?[a-z]/i.test(p.es)&&!/<\/?[a-z]/i.test(p.en))problems.push(`${p.id}: HTML`);
    const ratio=p.es.length/Math.max(1,p.en.length);if(p.en.length>12&&(ratio<.7||ratio>1.6))ratios.push(`${p.id} ${ratio.toFixed(2)}`);
   }

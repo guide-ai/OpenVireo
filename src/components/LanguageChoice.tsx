@@ -7,9 +7,9 @@ import './LanguageChoice.css';
 /** Front ES1 [W] (docs/I18N.md; user decisions 1, 5 and 9 of 2026-11-09): English / Español at the foot of the header menu,
  * beside the theme switch, and the "View original (English)" option for VIREO's own texts. Lazily loaded and shown only when
  * src/i18n/locale.ts selectorShown allows it (before ES-REL: only on a `?lang=` preview load). Changing the language reloads
- * the page after a confirmation that says what a reload keeps and loses and offers Save investigation first. The choice is
- * stored in this browser (try/catch); before ES-REL, or when storage fails, it travels as `?lang=` in the address. The
- * address keeps its #route. */
+ * the page after a confirmation that says what a reload keeps and loses and offers Save investigation first. After ES-REL the
+ * choice is stored in this browser (try/catch); before ES-REL it is never stored (ES1 review 1, C2), and before ES-REL or when
+ * storage fails it travels as `?lang=` in the address. The address keeps its #route. */
 type Choice='en'|'es-419';
 const NAMES:Readonly<Record<Choice,()=>string>>={en:()=>M.english,'es-419':()=>M.spanish};
 function storageWorks():boolean{try{const probe='openvireo-language-probe';localStorage.setItem(probe,'1');localStorage.removeItem(probe);return true;}catch{return false;}}
@@ -29,7 +29,10 @@ export default function LanguageChoice({onSave}:{onSave:()=>void}){
  function close(){dialog.current?.close();setAsked(null);}
  function change(){
   if(!asked)return;
-  let stored=false;try{localStorage.setItem(LANGUAGE_STORAGE_KEY,asked);stored=localStorage.getItem(LANGUAGE_STORAGE_KEY)===asked;}catch{stored=false;}
+  // ES1 review 1, C2: before the release the choice is never stored, so a tester's preview choice cannot start applying after
+  // ES-REL; the address alone (?lang=) carries it.
+  let stored=false;
+  if(SPANISH_RELEASED)try{localStorage.setItem(LANGUAGE_STORAGE_KEY,asked);stored=localStorage.getItem(LANGUAGE_STORAGE_KEY)===asked;}catch{stored=false;}
   const href=nextAddress(location.href,asked,stored);
   if(href===location.href)location.reload();else location.assign(href);
  }
@@ -53,7 +56,7 @@ export default function LanguageChoice({onSave}:{onSave:()=>void}){
     <p>{M.kept}</p>
     <p className="observatory-note">{M.saveNote}</p>
     {!SPANISH_RELEASED&&<p className="observatory-note" data-testid="language-preview">{M.preview}</p>}
-    {!canStore&&<p className="observatory-note" data-testid="language-not-remembered">{M.notRemembered}</p>}
+    {SPANISH_RELEASED&&!canStore&&<p className="observatory-note" data-testid="language-not-remembered">{M.notRemembered}</p>}
    </div>
    <div className="ob-actions">
     <button type="button" className="secondary-button" data-testid="language-save" onClick={onSave}>{M.save}</button>

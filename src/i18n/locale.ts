@@ -31,6 +31,7 @@ export function decideLocale({param,stored,languages,released,dev}:LocaleInputs)
  const kept=offered(stored,false);if(kept)return kept;
  return /^es(?:-|$)/i.test(languages[0]??'')?'es-419':'en';
 }
-/** Front ES1 [W]: the language selector is shown after the release, and before it only on a load that carries a `?lang=` link
- * parameter (the preview), so the reload flow can be tested; production without `?lang` shows none (decision 5). */
-export const selectorShown=(search:string,released=SPANISH_RELEASED):boolean=>released||new URLSearchParams(search).has('lang');
+/** Front ES1 [W]: the language selector is shown after the release, and before it only on a load whose `?lang=` link parameter
+ * is exactly `en` or `es-419` (the preview), so the reload flow can be tested; production without it shows none and never
+ * fetches it (decision 5; ES1 review 1, C3: `?lang=qps` or any other value shows none). */
+export const selectorShown=(search:string,released=SPANISH_RELEASED):boolean=>{const lang=new URLSearchParams(search).get('lang');return released||lang==='en'||lang==='es-419';};
