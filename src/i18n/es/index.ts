@@ -19,6 +19,9 @@ import {OBJECT_X_GUIDE_ES} from './maps/objectXGuide';
 import {OBJECT_X_MEASURE_ES} from './maps/objectXMeasure';
 import {OBJECT_X_SESSION_ES} from './maps/objectXSession';
 import {POLISH_ES} from './maps/polish';
+import {PULSAR_ES} from './maps/pulsar';
+import {LOAD_SAVE_ES} from './maps/pulsarLoadSave';
+import {SAVED_ROWS_ES} from './maps/pulsarSavedRows';
 import {PROJECT_LINKS_ES} from './maps/projectLinks';
 import {TOUR_ES} from './maps/tour';
 import {VARIABLE_STARS_ES} from './maps/variableStars';
@@ -34,6 +37,6 @@ import {RADIO_RECORD_SAVE_ES} from './maps/radioRecordSave';
 export const SPANISH:LocaleBundle=Object.freeze({
  language:'es-419',
  messages,
- maps:Object.freeze({appShell:APP_SHELL_ES,camera:CAMERA_ES,engineView:ENGINE_VIEW_ES,fieldInfo:FIELD_INFO_ES,fieldReadDetails:FIELD_READ_DETAILS_ES,helpMenu:HELP_MENU_ES,languageChoice:LANGUAGE_CHOICE_ES,nakedEye:NAKED_EYE_ES,objectXGuide:OBJECT_X_GUIDE_ES,objectXLab:OBJECT_X_LAB_ES,objectXMeasure:OBJECT_X_MEASURE_ES,objectXSession:OBJECT_X_SESSION_ES,observationMetadata:OBSERVATION_METADATA_ES,observatory:OBSERVATORY_ES,polish:POLISH_ES,projectLinks:PROJECT_LINKS_ES,qsoList:QSO_LIST_ES,sound:SOUND_ES,spectralRange:SPECTRAL_RANGE_ES,tour:TOUR_ES,variableStars:VARIABLE_STARS_ES,wedge:WEDGE_ES,radioAntenna:RADIO_ANTENNA_ES,radioFinishSave:RADIO_FINISH_SAVE_ES,radioR1:RADIO_R1_ES,radioRecordSave:RADIO_RECORD_SAVE_ES}),
+ maps:Object.freeze({appShell:APP_SHELL_ES,camera:CAMERA_ES,engineView:ENGINE_VIEW_ES,fieldInfo:FIELD_INFO_ES,fieldReadDetails:FIELD_READ_DETAILS_ES,helpMenu:HELP_MENU_ES,languageChoice:LANGUAGE_CHOICE_ES,nakedEye:NAKED_EYE_ES,objectXGuide:OBJECT_X_GUIDE_ES,objectXLab:OBJECT_X_LAB_ES,objectXMeasure:OBJECT_X_MEASURE_ES,objectXSession:OBJECT_X_SESSION_ES,observationMetadata:OBSERVATION_METADATA_ES,observatory:OBSERVATORY_ES,polish:POLISH_ES,projectLinks:PROJECT_LINKS_ES,qsoList:QSO_LIST_ES,sound:SOUND_ES,spectralRange:SPECTRAL_RANGE_ES,tour:TOUR_ES,variableStars:VARIABLE_STARS_ES,wedge:WEDGE_ES,radioAntenna:RADIO_ANTENNA_ES,radioFinishSave:RADIO_FINISH_SAVE_ES,radioR1:RADIO_R1_ES,radioRecordSave:RADIO_RECORD_SAVE_ES,pulsar:PULSAR_ES,pulsarLoadSave:LOAD_SAVE_ES,pulsarSavedRows:SAVED_ROWS_ES}),
  originals,
 });

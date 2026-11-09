@@ -48,6 +48,9 @@ export const PULSAR_REVIEW_LITERALS = Object.freeze({
   dialogCaption: 'Select Measurement Record',
 });
 
+/** TMEASLISTDLG TPF0 button captions as the web shows them (the '&' accelerators dropped, the ellipsis written '...' like VIREO's menu items). */
+export const PULSAR_REVIEW_BUTTONS = Object.freeze({ find: 'Find...', edit: 'Edit...', delete: 'Delete', ok: 'Ok', cancel: 'Cancel' });
+
 const TX = 'PLR-REVIEW-TRANSACTION-STATIC-01', DELETE = 'PLR-REVIEW-DELETE-STATIC-01', CALLER = 'PLR-REVIEW-CALLER-STATIC-01', EDIT = 'PLR-REVIEW-EDIT-STATIC-01';
 /** An inner MessageBox or the comment editor is open over the list. */
 const layered = (r: PulsarReviewSession) => r.prompt !== null || r.edit !== null;

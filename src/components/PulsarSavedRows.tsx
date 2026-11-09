@@ -3,10 +3,13 @@ import { createRoot } from 'react-dom/client';
 import './PulsarSavedRows.css';
 import { resourceSha256 } from '../io/boundedResource';
 import {
-  admitSavedRows, INITIAL_SAVED_ROWS, SAVED_FIND_MAX_QUERY, SAVED_ROW_FIELDS, SAVED_ROWS_HEADER_NAMES, SAVED_ROWS_LIMITS, savedFindOpen, savedRowsBeginRead, savedRowsBytes,
+  admitSavedRows, INITIAL_SAVED_ROWS, SAVED_FIND_LITERALS, SAVED_FIND_MAX_QUERY, SAVED_ROW_FIELDS, SAVED_ROWS_HEADER_NAMES, SAVED_ROWS_LIMITS, savedFindOpen, savedRowsBeginRead, savedRowsBytes,
   savedRowsCancelRead, savedRowsConfirm, savedRowsDiscardCandidate, savedRowsDismissRejection, savedRowsFind, savedRowsReadFinished, savedRowsSelect,
   type SavedFindAction, type SavedFindDraft, type SavedReadResult, type SavedRowsSource, type SavedRowsWorkspace,
 } from '../core/pulsarSavedRows';
+import { vireo } from '../i18n/vireo';
+import NativeMirrorCaption from './NativeMirrorCaption';
+import { OBSERVATORY_VIREO_CAPTIONS as OV } from '../observatory/ObservatoryMessages';
 import { createSavedRowsTranslator, type SavedRowsMessageKey, type SavedRowsTranslate } from './PulsarSavedRowsMessages';
 
 /**
@@ -23,6 +26,11 @@ import { createSavedRowsTranslator, type SavedRowsMessageKey, type SavedRowsTran
  *   A dialog opens only while the viewer is active and rendered and no other modal dialog is open, so a host modal
  *   stays topmost; ours opens when that one closes.
  */
+/** The core builds the not-found body in VIREO's English (quote + search text + tail); on screen the fixed tail is VIREO's text for this load. */
+function notFoundBody(body: string): string {
+  const tail = SAVED_FIND_LITERALS.notFoundTail;
+  return body.startsWith(SAVED_FIND_LITERALS.quote) && body.endsWith(tail) ? body.slice(0, body.length - tail.length) + vireo(tail) : body;
+}
 export type PulsarSavedRowsProps = Readonly<{ translate?: SavedRowsTranslate; idPrefix?: string; active?: boolean; onModalChange?: (open: boolean) => void }>;
 
 const fieldName = (field: string) => SAVED_ROWS_HEADER_NAMES[(SAVED_ROW_FIELDS as readonly string[]).indexOf(field)] ?? field;
@@ -282,9 +290,9 @@ function PulsarSavedRows({ translate, idPrefix = 'psr-', active = true, onModalC
               <p className="psr-note">{t('savedRows.meta.note')}</p>
               <dl className="psr-meta">
                 {metaLines.map(l => (
-                  <div key={l.line}><dt>{t('savedRows.meta.line', { line: l.line })}</dt><dd><code data-testid={`saved-rows-meta-${l.line}`}>{l.text}</code></dd></div>
+                  <div key={l.line}><dt>{t('savedRows.meta.line', { line: l.line })}</dt><dd><code lang="en" data-testid={`saved-rows-meta-${l.line}`}>{l.text}</code></dd></div>
                 ))}
-                <div><dt>{t('savedRows.meta.columns')}</dt><dd><code data-testid="saved-rows-header">{source.metadata.header.text}</code></dd></div>
+                <div><dt>{t('savedRows.meta.columns')}</dt><dd><code lang="en" data-testid="saved-rows-header">{source.metadata.header.text}</code></dd></div>
               </dl>
             </section>
 
@@ -302,7 +310,7 @@ function PulsarSavedRows({ translate, idPrefix = 'psr-', active = true, onModalC
                       <th scope="col">{t('savedRows.rows.select')}</th>
                       <th scope="col">{t('savedRows.rows.number')}</th>
                       <th scope="col">{t('savedRows.rows.line')}</th>
-                      {SAVED_ROWS_HEADER_NAMES.map(name => <th key={name} scope="col">{name}</th>)}
+                      {SAVED_ROWS_HEADER_NAMES.map(name => <th key={name} scope="col" lang="en">{name}</th>)}
                     </tr>
                   </thead>
                   <tbody>
@@ -315,7 +323,7 @@ function PulsarSavedRows({ translate, idPrefix = 'psr-', active = true, onModalC
                         </td>
                         <td>{row.ordinal + 1}</td>
                         <td>{row.line}</td>
-                        {SAVED_ROW_FIELDS.map((field, k) => <td key={field} className="psr-mono">{row.fields[k]?.raw ?? <span className="psr-absent">{t('savedRows.rows.noField')}</span>}</td>)}
+                        {SAVED_ROW_FIELDS.map((field, k) => { const raw = row.fields[k]?.raw; return <td key={field} className="psr-mono" lang={raw === undefined ? undefined : 'en'}>{raw ?? <span className="psr-absent">{t('savedRows.rows.noField')}</span>}</td>; })}
                       </tr>
                     ))}
                   </tbody>
@@ -324,7 +332,8 @@ function PulsarSavedRows({ translate, idPrefix = 'psr-', active = true, onModalC
               {selectedRow ? (
                 <div data-testid="saved-rows-selected">
                   <p className="psr-note">{t('savedRows.rows.selected', { row: selectedRow.ordinal + 1 })}</p>
-                  <pre className="psr-raw" data-testid="saved-rows-selected-text">{selectedRow.text}</pre>
+                  <pre className="psr-raw" lang="en" data-testid="saved-rows-selected-text">{selectedRow.text}</pre>
+                  <NativeMirrorCaption testId="saved-rows-mirror-caption" />
                 </div>
               ) : <p>{t('savedRows.rows.none')}</p>}
             </section>
@@ -334,34 +343,34 @@ function PulsarSavedRows({ translate, idPrefix = 'psr-', active = true, onModalC
 
       {findDraft && (
         <dialog ref={findDialog} className="psr-modal" aria-labelledby={`${idPrefix}find-title`} data-testid="saved-rows-find-dialog" {...dialogEvents(() => submitFind('cancel'))}>
-          <h3 id={`${idPrefix}find-title`}>{t('savedRows.find.caption')}</h3>
+          <h3 id={`${idPrefix}find-title`}>{vireo(SAVED_FIND_LITERALS.caption)}</h3>
           <label>
-            {t('savedRows.find.searchString')}
+            {vireo(SAVED_FIND_LITERALS.searchString)}
             <input ref={queryInput} type="text" maxLength={SAVED_FIND_MAX_QUERY} value={findDraft.text} spellCheck={false} autoComplete="off"
               aria-describedby={`${idPrefix}find-keys`} onChange={e => { setFindDraft({ ...findDraft, text: e.currentTarget.value }); setFindRefusal(null); }}
               onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); if (!e.repeat) submitFind('top'); } }} data-testid="saved-rows-query" />
           </label>
           <label className="psr-check">
             <input type="checkbox" checked={findDraft.caseDependent} onChange={e => setFindDraft({ ...findDraft, caseDependent: e.currentTarget.checked })} data-testid="saved-rows-case" />
-            {t('savedRows.find.caseDependent')}
+            {vireo(SAVED_FIND_LITERALS.caseDependent)}
           </label>
           <p id={`${idPrefix}find-keys`} className="psr-note">{t('savedRows.find.keys')}</p>
           {findRefusal && <p role="alert" className="psr-error" data-testid="saved-rows-find-refusal">{t(`savedRows.find.refused.${findRefusal}`)}</p>}
           <div role="group" aria-labelledby={`${idPrefix}begin`} className="psr-find-buttons">
-            <span id={`${idPrefix}begin`}>{t('savedRows.find.beginSearch')}</span>
+            <span id={`${idPrefix}begin`}>{vireo(SAVED_FIND_LITERALS.beginSearch)}</span>
             <div className="psr-row">
-              <button type="button" onClick={() => submitFind('top')} data-testid="saved-rows-from-top">{t('savedRows.find.fromTop')}</button>
-              <button type="button" onClick={() => submitFind('cursor')} data-testid="saved-rows-from-cursor">{t('savedRows.find.fromCursor')}</button>
-              <button type="button" onClick={() => submitFind('cancel')} data-testid="saved-rows-find-cancel">{t('savedRows.find.cancel')}</button>
+              <button type="button" onClick={() => submitFind('top')} data-testid="saved-rows-from-top">{vireo(SAVED_FIND_LITERALS.fromTop)}</button>
+              <button type="button" onClick={() => submitFind('cursor')} data-testid="saved-rows-from-cursor">{vireo(SAVED_FIND_LITERALS.fromCursor)}</button>
+              <button type="button" onClick={() => submitFind('cancel')} data-testid="saved-rows-find-cancel">{vireo(SAVED_FIND_LITERALS.cancel)}</button>
             </div>
           </div>
         </dialog>
       )}
       {notice !== null && (
         <dialog ref={noticeDialog} className="psr-modal" role="alertdialog" aria-labelledby={`${idPrefix}notice-title`} aria-describedby={`${idPrefix}notice-body`} data-testid="saved-rows-notice" {...dialogEvents(closeNotice)}>
-          <h3 id={`${idPrefix}notice-title`}>{t('savedRows.notFound.caption')}</h3>
-          <p id={`${idPrefix}notice-body`} data-testid="saved-rows-notice-body">{notice}</p>
-          <div className="psr-row"><button ref={noticeOk} type="button" onClick={closeNotice} data-testid="saved-rows-notice-ok">{t('savedRows.notFound.ok')}</button></div>
+          <h3 id={`${idPrefix}notice-title`}>{vireo(SAVED_FIND_LITERALS.notFoundCaption)}</h3>
+          <p id={`${idPrefix}notice-body`} data-testid="saved-rows-notice-body">{notFoundBody(notice)}</p>
+          <div className="psr-row"><button ref={noticeOk} type="button" onClick={closeNotice} data-testid="saved-rows-notice-ok">{vireo(OV.ok)}</button></div>
         </dialog>
       )}
     </section>
@@ -392,40 +401,39 @@ export function ReviewFindDialog({ draft, refusal, onDraft, onAnswer, idPrefix }
     <dialog ref={ref} className="psr-modal" aria-labelledby={`${idPrefix}rfind-title`} data-testid="pulsar-review-find-dialog"
       onKeyDown={e => { e.stopPropagation(); if (e.key === 'Escape') { e.preventDefault(); if (!e.repeat) onAnswer('cancel'); } }}
       onCancel={e => { e.preventDefault(); e.stopPropagation(); }}>
-      <h3 id={`${idPrefix}rfind-title`}>{t('savedRows.find.caption')}</h3>
+      <h3 id={`${idPrefix}rfind-title`}>{vireo(SAVED_FIND_LITERALS.caption)}</h3>
       <label>
-        {t('savedRows.find.searchString')}
+        {vireo(SAVED_FIND_LITERALS.searchString)}
         <input ref={query} type="text" maxLength={SAVED_FIND_MAX_QUERY} value={draft.text} spellCheck={false} autoComplete="off"
           onChange={e => onDraft({ ...draft, text: e.currentTarget.value })}
           onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); if (!e.repeat) onAnswer('top'); } }} data-testid="pulsar-review-find-query" />
       </label>
       <label className="psr-check">
         <input type="checkbox" checked={draft.caseDependent} onChange={e => onDraft({ ...draft, caseDependent: e.currentTarget.checked })} data-testid="pulsar-review-find-case" />
-        {t('savedRows.find.caseDependent')}
+        {vireo(SAVED_FIND_LITERALS.caseDependent)}
       </label>
       {refusal && <p role="alert" className="psr-error" data-testid="pulsar-review-find-refusal">{t(`savedRows.find.refused.${refusal}`)}</p>}
       <div role="group" aria-labelledby={`${idPrefix}rfind-begin`} className="psr-find-buttons">
-        <span id={`${idPrefix}rfind-begin`}>{t('savedRows.find.beginSearch')}</span>
+        <span id={`${idPrefix}rfind-begin`}>{vireo(SAVED_FIND_LITERALS.beginSearch)}</span>
         <div className="psr-row">
-          <button type="button" onClick={() => onAnswer('top')} data-testid="pulsar-review-find-top">{t('savedRows.find.fromTop')}</button>
-          <button type="button" onClick={() => onAnswer('cursor')} data-testid="pulsar-review-find-cursor">{t('savedRows.find.fromCursor')}</button>
-          <button type="button" onClick={() => onAnswer('cancel')} data-testid="pulsar-review-find-cancel">{t('savedRows.find.cancel')}</button>
+          <button type="button" onClick={() => onAnswer('top')} data-testid="pulsar-review-find-top">{vireo(SAVED_FIND_LITERALS.fromTop)}</button>
+          <button type="button" onClick={() => onAnswer('cursor')} data-testid="pulsar-review-find-cursor">{vireo(SAVED_FIND_LITERALS.fromCursor)}</button>
+          <button type="button" onClick={() => onAnswer('cancel')} data-testid="pulsar-review-find-cancel">{vireo(SAVED_FIND_LITERALS.cancel)}</button>
         </div>
       </div>
     </dialog>
   );
 }
 export function ReviewFindNotice({ body, onClose, idPrefix }: Readonly<{ body: string; onClose: () => void; idPrefix: string }>) {
-  const t = useMemo(() => createSavedRowsTranslator(), []);
   const ref = useRef<HTMLDialogElement>(null), ok = useRef<HTMLButtonElement>(null);
   useEffect(() => { const el = ref.current; if (el && !el.open) el.showModal(); ok.current?.focus(); return () => { if (el?.open) el.close(); }; }, []);
   return (
     <dialog ref={ref} className="psr-modal" role="alertdialog" aria-labelledby={`${idPrefix}rnotice-title`} aria-describedby={`${idPrefix}rnotice-body`} data-testid="pulsar-review-find-notice"
       onKeyDown={e => { e.stopPropagation(); if (e.key === 'Escape') { e.preventDefault(); if (!e.repeat) onClose(); } }}
       onCancel={e => { e.preventDefault(); e.stopPropagation(); }}>
-      <h3 id={`${idPrefix}rnotice-title`}>{t('savedRows.notFound.caption')}</h3>
-      <p id={`${idPrefix}rnotice-body`} data-testid="pulsar-review-find-notice-body">{body}</p>
-      <div className="psr-row"><button ref={ok} type="button" onClick={onClose} data-testid="pulsar-review-find-notice-ok">{t('savedRows.notFound.ok')}</button></div>
+      <h3 id={`${idPrefix}rnotice-title`}>{vireo(SAVED_FIND_LITERALS.notFoundCaption)}</h3>
+      <p id={`${idPrefix}rnotice-body`} data-testid="pulsar-review-find-notice-body">{notFoundBody(body)}</p>
+      <div className="psr-row"><button ref={ok} type="button" onClick={onClose} data-testid="pulsar-review-find-notice-ok">{vireo(OV.ok)}</button></div>
     </dialog>
   );
 }

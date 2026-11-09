@@ -6,7 +6,6 @@ import originals from '../../src/i18n/es/originals.json' with {type:'json'};
 import {RADIO_ANTENNA_ES} from '../../src/i18n/es/maps/radioAntenna';
 import identical from '../../src/i18n/es/identical.json' with {type:'json'};
 import {RADIO_RECORD_SAVE_ES} from '../../src/i18n/es/maps/radioRecordSave';
-import {readFileSync} from 'node:fs';
 
 // Front ES8a (docs/I18N.md): the radio telescope route (#radio-control) in Spanish on a `?lang=es-419` preview load. One walk runs
 // in English, Spanish and the pseudo-locale: the route page and its scenario, the exercise menu, the scenario inputs, Radio access
@@ -37,17 +36,6 @@ const SAME=new Set<string>([
 const RECORDED=/^(?:[BJ]?\d{4}[+-−]\d{2,4}[A-Z]?)$|^(?:SHA-256 )?[0-9a-f]{64}$|^[0-9a-f]{12}$|^[\w.-]+\.(?:dat|DAT|HTL|PLR|txt|TXT|json)$/;
 const NUMERIC=/^[-+−±\d\s.,:;°′″'"·×÷/()[\]–%=→eE]*\d[-+−±\d\s.,:;°′″'"·×÷/()[\]–%=→eE]*(?:\s*(?:MHz|ms|s|K|h|m|px|UT|Z|°|mJy|pc\/cm\^3|rad|×))*\s*$/;
 const ISO=/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z?(?: UT)?$/;
-/** TODO(ES8b merge): the receiver's verified-Save dialog (Record's Yes) on this route also renders these `pulsar` map strings
- * through createPulsarTranslator; they belong to ES8b's `pulsar` map and stay English until it merges. The coordinator removes
- * this list at that merge, so the comparison then requires them in Spanish. */
-const TODO_ES8B_PULSAR_KEYS=['pulsar.rawExport.scope','pulsar.rawExport.format','pulsar.rawExport.inactive','pulsar.rawExport.inactiveNone','pulsar.rawExport.loss.heading',
- 'pulsar.rawExport.loss.header','pulsar.rawExport.loss.headerNone','pulsar.rawExport.loss.samples','pulsar.rawExport.loss.memory','pulsar.save.how','pulsar.save.extensionRule',
- 'pulsar.save.origin','pulsar.save.warning','pulsar.save.choose','pulsar.save.chooseAgain','pulsar.save.refusal.stale'] as const;
-// Read from the English map's source (importing it here would pull in the catalog without an import attribute).
-const PULSAR_SOURCE=readFileSync(new URL('../../src/components/PulsarMessages.ts',import.meta.url),'utf8');
-const TODO_ES8B=TODO_ES8B_PULSAR_KEYS.map(k=>{const m=new RegExp(`'${k.replace(/\./g,'\\.')}': '((?:[^'\\\\]|\\\\.)*)'`).exec(PULSAR_SOURCE);if(!m)throw new Error(k);
- const t=m[1].replace(/\\'/g,"'");return new RegExp(`^${t.split(/\{\w+\}/).map(p=>p.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')).join('[\\s\\S]*?')}$`);});
-const pendingEs8b=(text:string)=>TODO_ES8B.some(p=>p.test(text));
 const same=(text:string)=>SAME.has(text)||RECORDED.test(text)||NUMERIC.test(text)||ISO.test(text);
 const id=(page:Page|Locator,testId:string)=>page.getByTestId(testId);
 const ACCENTED:Readonly<Record<string,string>>={a:'aá',e:'eé',i:'ií',o:'oó',u:'uú',A:'AÁ',E:'EÉ',I:'IÍ',O:'OÓ',U:'UÚ'};
@@ -142,7 +130,7 @@ test('the radio telescope reads differently in Spanish from English: route, cont
  }
  const english=new Set([...seen.en.values()].flatMap(s=>[...s].map(bare)));
  const left=new Map<string,string>();// each text once, with the first step that shows it
- for(const [step,list] of seen['es-419'])for(const t of list)if(english.has(bare(t))&&!same(bare(t))&&!(step==='Record Save dialog'&&pendingEs8b(bare(t)))&&!left.has(t))left.set(t,step);
+ for(const [step,list] of seen['es-419'])for(const t of list)if(english.has(bare(t))&&!same(bare(t))&&!left.has(t))left.set(t,step);
  expect([...left].map(([t,step])=>`${step}: ${t}`)).toEqual([]);
  // The scenario selectors' options are Spanish.
  const options=[...seen['es-419'].get('control panel')!].filter(t=>t.startsWith('@option:'));

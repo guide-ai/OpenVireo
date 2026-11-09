@@ -3,7 +3,7 @@ import {readFile} from 'node:fs/promises';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {enterInstructorMode} from '../fixtures/instructor-mode';
-import {PLR} from '../fixtures/pulsar-saved-rows-controls';
+import {PLR,HEADER,CONTROL} from '../fixtures/pulsar-saved-rows-controls';
 import {paceDownload} from '../fixtures/download-pacing';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
@@ -688,4 +688,42 @@ test('E08 Object X and the CCD camera: spectrum CSV and SSP, image FITS, camera 
   expect(inspected.bytes.equals(image1.bytes)).toBe(true);expect(image2.bytes.equals(image1.bytes)).toBe(false);
   return {spectrumCsv,spectrumSsp,cameraFits,cameraNative,image1,image2,investigation,revealed,inspected};
  },{cameraFits:fitsWhole,cameraNative:fitsWhole,image1:fitsWhole,image2:fitsWhole,inspected:fitsWhole,investigation:clockElapsedMasked,revealed:clockElapsedMasked},page=>page.getByTestId('objectx-lab'),['en','qps','es-419']);
+});
+
+// Front ES8b: exercise E06, the recorded pulsar analysis. The files of its flows stay VIREO's English in en, qps and es-419:
+// VIREO's own Save (the written results file and the appended one, US date and time, "Table Number" line), the typed-header
+// export, the append file, the original recording bytes, the saved-measurement viewer's original file. The page clock is
+// fixed and nothing is masked. (The raw .PLR download of a model capture and the investigation that holds it are ES8a's family.)
+test('E06 pulsar analysis: native Save and its append, the export, the append file, the original recording and the viewer download',async({browser,baseURL})=>{
+ test.setTimeout(240_000);
+ const id=(page:Page,testId:string)=>page.getByTestId(testId);
+ const TARGET=['"10-30-2026","3:07:42 PM"','"Table Number: "','','',HEADER].map(l=>l+'\r\n').join('')+'"PSR B0329+54",408.00,1.000,0.123456,"",5.0000E-01,49999.12345678,"older",1000,10.00,26\r\n';
+ const record=async(page:Page,comment:string)=>{
+  await id(page,'pulsar-plot-1').focus();await page.keyboard.press('ArrowRight');await page.keyboard.press('ArrowRight');await expect(id(page,'pulsar-pending-1')).toBeVisible();
+  await id(page,'pulsar-record').click();await id(page,'pulsar-comment').fill(comment);await id(page,'pulsar-record-ok').click();await expect(id(page,'pulsar-record-dialog')).toHaveCount(0);
+ };
+ await identical(browser,baseURL,async(page,locale)=>{
+  await open(page,locale,'pulsar-analysis');
+  await id(page,'pulsar-file').setInputFiles({name:'synthetic-e2e.plr',mimeType:'application/octet-stream',buffer:Buffer.from(PLR,'latin1')});
+  await expect(id(page,'pulsar-sha')).toHaveText(sha(Buffer.from(PLR,'latin1')));await id(page,'pulsar-properties-close').click();
+  const original=await download(page,()=>id(page,'pulsar-download').click());
+  await record(page,'first');
+  await id(page,'pulsar-save').click();await id(page,'pulsar-native-name').fill('run');await id(page,'pulsar-native-save').click();
+  await expect(id(page,'pulsar-native-dialog')).toHaveAttribute('data-step','verify');
+  const nativeSave=await download(page,()=>id(page,'pulsar-native-ok').click());
+  await record(page,'second');
+  await id(page,'pulsar-save').click();await id(page,'pulsar-native-name').fill('RUN.csv');await id(page,'pulsar-native-save').click();
+  await expect(id(page,'pulsar-native-dialog')).toHaveAttribute('data-step','exists');await id(page,'pulsar-native-no').click();
+  await expect(id(page,'pulsar-native-dialog')).toHaveAttribute('data-step','verify');
+  const nativeAppend=await download(page,()=>id(page,'pulsar-native-ok').click());
+  await id(page,'pulsar-export').click();await expect(id(page,'pulsar-export-dialog')).toBeVisible();
+  for(const [k,v] of Object.entries({date:'25/10/2026',time:'16:00:00',table:'7',name1:'Observer A'}))await id(page,`pulsar-export-${k}`).fill(v);
+  const exported=await download(page,()=>id(page,'pulsar-export-download').click());
+  await id(page,'pulsar-append').click();await id(page,'pulsar-append-file').setInputFiles({name:'target.csv',mimeType:'text/plain',buffer:Buffer.from(TARGET,'latin1')});await expect(id(page,'pulsar-append-target')).toBeVisible();
+  const appended=await download(page,()=>id(page,'pulsar-append-download').click());
+  await id(page,'saved-rows-disclosure').locator('summary').first().click();
+  await id(page,'saved-rows-file').setInputFiles({name:'control.csv',mimeType:'text/plain',buffer:Buffer.from(CONTROL,'latin1')});await id(page,'saved-rows-use').click();
+  const viewer=await download(page,()=>id(page,'saved-rows-download').click());
+  return {original,nativeSave,nativeAppend,exported,appended,viewer};
+ },{},page=>page.getByTestId('pulsar-analysis'),['en','qps','es-419']);
 });

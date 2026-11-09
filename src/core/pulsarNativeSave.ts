@@ -34,6 +34,9 @@ import { buildResultsAppend, type ResultsAppendListProblem } from './pulsarResul
 import { admitSavedRows } from './pulsarSavedRows';
 import type { PulsarMeasurementEntry } from './pulsarAnalysis';
 
+const EXISTS_HEAD = 'The File ';
+const EXISTS_TAIL = ' Already Exists.\r\n\r\nOverwrite Existing Data With New Measurements?\r\n\r\n"No" => Append To Existing Data\r\n"Cancel" => Select New File Name';
+const VERIFY_APPEND = 'Appending Data to ', VERIFY_WRITE = 'Writing Data to ';
 export const PULSAR_NATIVE_SAVE_TEXT = Object.freeze({
   nothingText: 'Nothing To Save!', nothingCaption: 'No Measurements Recorded!',
   unrecordedText: 'You have not recorded your current measurements!  You must record all measurements you want to save.\r\n\r\nDo you want to continue with the Save process?',
@@ -41,9 +44,10 @@ export const PULSAR_NATIVE_SAVE_TEXT = Object.freeze({
   dialogTitle: 'Select File Name for Data Save', filter: 'Comma Delimited Text |*.CSV',
   extensionText: 'The file extension you specified is not ".CSV".  This may lead to confusion and errors when identfying and loading the file into the Spreadsheet Program.\r\n\r\nDo you want to change your specification?',
   extensionCaption: 'Extension Not .CSV!',
-  existsText: (name: string) => `The File ${name} Already Exists.\r\n\r\nOverwrite Existing Data With New Measurements?\r\n\r\n"No" => Append To Existing Data\r\n"Cancel" => Select New File Name`,
+  /** The message with the file name between two fixed pieces; `tr` (a screen translation of each piece, default none) never touches the name. */
+  existsText: (name: string, tr: (piece: string) => string = p => p) => tr(EXISTS_HEAD) + name + tr(EXISTS_TAIL),
   existsCaption: 'Overwrite Existing File?',
-  verifyText: (name: string, append: boolean) => (append ? 'Appending Data to ' : 'Writing Data to ') + name,
+  verifyText: (name: string, append: boolean, tr: (piece: string) => string = p => p) => tr(append ? VERIFY_APPEND : VERIFY_WRITE) + name,
   verifyCaption: 'Verify Data Save',
   clearUnsavedText: 'You have not saved all your recorded measurements!  You will lose recorded measurements if you clear the list now without saving.\r\n\r\nSave recorded measurements now?',
   clearUnsavedCaption: 'Recorded Measurements Not Saved!',

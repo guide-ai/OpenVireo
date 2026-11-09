@@ -12,7 +12,6 @@ import {
   pulsarReviewEditCancel, pulsarReviewEditConfirm, pulsarReviewEditDraft, pulsarReviewEditSupport, pulsarReviewEditView, pulsarReviewRequestEdit,
   rtlAnsiToShort, rtlCopy, rtlDelete, rtlPos, rtlShortAppend, rtlShortCopy, rtlShortIsQuotedEmpty,
 } from './pulsarReviewEdit';
-import { PULSAR_MESSAGES_EN } from '../components/PulsarMessages';
 
 // SYNTHETIC vectors written for this contract. They are not CLEA output and not an oracle for the original:
 // they check the chosen literal models of 0x570498/0x5710d0 and the web policy against hand-written strings.
@@ -293,7 +292,6 @@ describe('Review Edit transaction (PLR-REVIEW-EDIT-STATIC-01; WEB inline editor)
       expect(tr).toMatchObject({ changed: false, outcome: 'blocked-modal', state: notice });
     expect(step(notice, pulsarReviewDismissNotice, 'review-edit-notice-closed').reviewSession).toEqual(s.reviewSession);
     expect(step(notice, pulsarReviewEscape, 'review-edit-notice-closed').reviewSession).toEqual(s.reviewSession);
-    expect(PULSAR_MESSAGES_EN['pulsar.review.editNoSelectionText']).toBe(PULSAR_REVIEW_EDIT_LITERALS.noSelectionText);
   });
   it('an unsupported selected row is refused with its reason and nothing changes, other rows stay editable', () => {
     const quoted = pulsarReviewOpen(initial('Obj, "Q"')).state;
@@ -358,8 +356,6 @@ describe('Review Edit transaction (PLR-REVIEW-EDIT-STATIC-01; WEB inline editor)
 describe('decoded editor literals and DFM captions (PLR-REVIEW-EDIT-STATIC-01)', () => {
   it('the English catalog uses the decoded literals and the TMEASFORM captions', () => {
     expect(PULSAR_REVIEW_EDIT_LITERALS).toEqual({ noSelectionCaption: 'No Item Selected!', noSelectionText: 'Select Item for Edit.', formCaption: 'Measurement Data' });
-    expect(PULSAR_MESSAGES_EN['pulsar.review.noSelectionCaption']).toBe(PULSAR_REVIEW_EDIT_LITERALS.noSelectionCaption);
-    expect(PULSAR_MESSAGES_EN['pulsar.reviewEdit.heading']).toBe(PULSAR_REVIEW_EDIT_LITERALS.formCaption);
-    for (const [k, v] of Object.entries(PULSAR_REVIEW_EDIT_DFM)) expect(PULSAR_MESSAGES_EN[`pulsar.reviewEdit.${k}` as keyof typeof PULSAR_MESSAGES_EN], k).toBe(v);
+    expect(PULSAR_REVIEW_EDIT_DFM).toEqual({ julianDate: 'Julian Date (-2,400,000):', frequency: 'Frequency (MHz):', gain: 'Gain:', readings: 'Cursor Readings:', reference: 'Reference (Sec)', vertical: 'Vertical (Sec)', horizontal: 'Horizontal (Rel)', comment: 'Comment:', ok: 'OK', cancel: 'Cancel' });
   });
 });

@@ -3,11 +3,11 @@ import {pickMessages} from '../i18n/registry';
  * English presentation catalog for the recorded-pulsar analysis panel (keys `pulsar.*`).
  * It is kept out of the shared en.json until the coordinator integrates it. The panel
  * accepts a complete replacement catalog through createPulsarTranslator. Labels are
- * authored web text, except the Review dialog caption, its button captions (TMEASLISTDLG
+ * authored web text. The Review dialog caption, its button captions (TMEASLISTDLG
  * TPF0, without the '&' accelerators) and its MessageBox captions and texts, which are
  * the decoded literals (PULSAR_REVIEW_LITERALS in src/core/pulsarReview.ts), and the comment
  * editor's caption, labels and buttons (PULSAR_REVIEW_EDIT_LITERALS / PULSAR_REVIEW_EDIT_DFM in
- * src/core/pulsarReviewEdit.ts). Pure presentation data: no React and no scientific state.
+ * src/core/pulsarReviewEdit.ts) are VIREO text: since Front ES8b they render through vireo() and are not keys here. Pure presentation data: no React and no scientific state.
  */
 export const PULSAR_MESSAGES_EN = Object.freeze({
   'pulsar.title': 'Radio pulsar data analysis (recorded data)',
@@ -156,9 +156,6 @@ export const PULSAR_MESSAGES_EN = Object.freeze({
   // Not rendered since R-RX18 (Yes opens the verified Save; src/components/PulsarLoadSaveMessages.ts); kept so existing catalogs stay complete.
   'pulsar.load.yesGated':'Yes (save first) is not available here: the original Save dialog, its file naming and its questions are not ported, and this question cannot run the separate web Save. To keep a copy, choose Cancel and use “Save capture as .PLR (verified)…”, which marks the data as written only after its copy is read back equal, or “Download capture as .PLR…”, which leaves it unsaved.',
   'pulsar.load.webDefault': 'Web default button: Cancel.',
-  'pulsar.load.yes': 'Yes',
-  'pulsar.load.no': 'No',
-  'pulsar.load.cancel': 'Cancel',
   'pulsar.status.readCancelled': 'Reading cancelled. The current analysis is unchanged.',
   'pulsar.status.pickerCancelled': 'No file chosen. The current analysis is unchanged.',
   'pulsar.status.lateDiscarded': 'An earlier read finished after it was replaced or cancelled, and was ignored.',
@@ -267,10 +264,6 @@ export const PULSAR_MESSAGES_EN = Object.freeze({
   'pulsar.nativeSave.problem.text': 'Use only plain ASCII letters, digits and symbols in the file name.',
   'pulsar.nativeSave.problem.reserved': 'A file name cannot contain \\ / : * ? " < > or |.',
   'pulsar.nativeSave.problem.length': 'The file name is too long (at most 255 characters).',
-  'pulsar.nativeSave.ok': 'OK',
-  'pulsar.nativeSave.yes': 'Yes',
-  'pulsar.nativeSave.no': 'No',
-  'pulsar.nativeSave.cancel': 'Cancel',
   'pulsar.nativeSave.save': 'Save',
   'pulsar.nativeSave.cancelled': 'Nothing was saved.',
   'pulsar.nativeSave.stale': 'Nothing was saved: the measurement list or the data changed while the Save dialog was open.',
@@ -438,27 +431,11 @@ export const PULSAR_MESSAGES_EN = Object.freeze({
   'pulsar.clear.save': 'Yes, save first',
   'pulsar.clear.discard': 'Continue without saving',
   'pulsar.clear.yes': 'Yes, clear',
-  'pulsar.clear.no': 'No',
-  'pulsar.clear.cancel': 'Cancel',
-  'pulsar.review.heading': 'Select Measurement Record',
   'pulsar.review.note': 'Changes apply to a working copy. Ok replaces the recorded list with it; Cancel or Escape discards it. Escape is a web shortcut.',
   'pulsar.review.empty': 'No measurements in the list.',
   'pulsar.review.list': 'Measurements',
   'pulsar.review.select': 'Select',
   'pulsar.review.selectRow': 'Select measurement {seq}',
-  'pulsar.review.find': 'Find…',
-  'pulsar.review.edit': 'Edit…',
-  'pulsar.review.delete': 'Delete',
-  'pulsar.review.ok': 'Ok',
-  'pulsar.review.cancel': 'Cancel',
-  'pulsar.review.noSelectionCaption': 'No Item Selected!',
-  'pulsar.review.noSelectionText': 'Select Item for Deletion.',
-  'pulsar.review.editNoSelectionText': 'Select Item for Edit.',
-  'pulsar.review.noticeOk': 'OK',
-  'pulsar.review.confirmCaption': 'Confirm Deletion',
-  'pulsar.review.confirmText': 'Delete Selected Item from List?',
-  'pulsar.review.yes': 'Yes',
-  'pulsar.review.no': 'No',
   'pulsar.review.seq': '#',
   'pulsar.review.panel': 'Panel',
   'pulsar.review.object': 'Object',
@@ -474,19 +451,8 @@ export const PULSAR_MESSAGES_EN = Object.freeze({
   'pulsar.review.aperture': 'Aperture (m)',
   'pulsar.review.file': 'File',
   'pulsar.review.blank': '—',
-  'pulsar.reviewEdit.heading': 'Measurement Data',
   'pulsar.reviewEdit.note': 'Only the comment can be changed. OK changes the working copy; the recorded list changes only with Ok in Review. Enter is OK; Escape is a web shortcut for Cancel.',
-  'pulsar.reviewEdit.julianDate': 'Julian Date (-2,400,000):',
-  'pulsar.reviewEdit.frequency': 'Frequency (MHz):',
-  'pulsar.reviewEdit.gain': 'Gain:',
-  'pulsar.reviewEdit.readings': 'Cursor Readings:',
-  'pulsar.reviewEdit.reference': 'Reference (Sec)',
-  'pulsar.reviewEdit.vertical': 'Vertical (Sec)',
-  'pulsar.reviewEdit.horizontal': 'Horizontal (Rel)',
-  'pulsar.reviewEdit.comment': 'Comment:',
   'pulsar.reviewEdit.commentHelp': 'Up to 80 printable ASCII characters, without double quotes.',
-  'pulsar.reviewEdit.ok': 'OK',
-  'pulsar.reviewEdit.cancel': 'Cancel',
   'pulsar.reviewEdit.lengthDetail': 'The stored {field} text has {length} characters; the original editor keeps at most {capacity}.',
   'pulsar.reviewEdit.tail': 'points, interval, aperture and file',
 } as const);
