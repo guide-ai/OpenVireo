@@ -5,12 +5,14 @@ import {VIZIER_HOSTS,VIZIER_POLICY} from '../src/core/vizierNomad';
 // Front SC6 (plan front-i18n-scripts.md §11.4 item 4; checklist docs/CHINA-CHECKLIST.md): the site must fail soft when the only
 // hosts outside its own origin hang or fail, as they may from mainland China. Those hosts are the Web Analytics beacon script
 // (static.cloudflareinsights.com), the beacon's report (cloudflareinsights.com) and the live camera query's VizieR mirrors.
-// Every request to them is intercepted here; nothing leaves the machine.
+// Every off-origin request is intercepted here (a catch-all aborts any host not named below); nothing leaves the machine.
 //
 // The beacon is not in the repository: Cloudflare Pages injects it at the edge when Web Analytics is on (docs/DEPLOY.md §7). On
-// 2026-11-09 the live page carried `<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='…'>`,
-// so this spec injects the same deferred tag (with a dummy token) into the dev server's page, just before </body>, where the
-// app's own module script precedes it as in the built page. Its position in the served HTML was not observed [I].
+// 2026-11-09 the live page's script tags were, in order: an inline script, the ld+json block, the app's
+// `<script type="module" crossorigin src="/assets/index-….js">` and then
+// `<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='…'>`. This spec injects the same
+// deferred tag (with a dummy token) just before </body> of the dev server's page, right after its module script
+// (/src/main.tsx), so the beacon again comes after the app's module script.
 
 const BEACON_SRC='https://static.cloudflareinsights.com/beacon.min.js';
 const BEACON_TAG=`<script defer src='${BEACON_SRC}' data-cf-beacon='{"token": "sc6-test-not-a-token"}'></script>`;
@@ -30,10 +32,12 @@ const button=(p:Page,name:string)=>p.getByRole('button',{name,exact:true});
 const camera=(p:Page)=>p.getByTestId('camera-control');
 const status=(p:Page)=>p.getByTestId('camera-status');
 
-/** Serves the dev page with the beacon tag Pages adds, and fails the test on any uncaught page error. */
+/** Serves the dev page with the beacon tag Pages adds, and fails the test on any uncaught page error. Call it before any other
+ * route: its catch-all is registered first, so the routes added later for the named hosts take priority over it. */
 async function asPagesServesIt(page:Page,baseURL:string){
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
  const origin=new URL(baseURL).origin;
+ await page.route(url=>url.origin!==origin&&!/^(data|blob|about):$/.test(url.protocol),route=>route.abort('blockedbyclient'));
  await page.route(url=>url.origin===origin&&url.pathname==='/',async route=>{
   const response=await route.fetch(),html=await response.text();
   expect(html).toContain('</body>');
@@ -42,14 +46,14 @@ async function asPagesServesIt(page:Page,baseURL:string){
  return errors;
 }
 /** A host that never answers. The requests stay pending until the page aborts them or closes. */
-function hang(page:Page,pattern:RegExp){
+async function hang(page:Page,pattern:RegExp){
  const seen:Request[]=[],settled=new Set<Request>();
  page.on('requestfinished',r=>settled.add(r));page.on('requestfailed',r=>settled.add(r));
- void page.route(pattern,(route:Route)=>{seen.push(route.request());/* never answered */});
+ await page.route(pattern,(route:Route)=>{seen.push(route.request());/* never answered */});
  return {seen,pending:()=>seen.filter(r=>!settled.has(r))};
 }
-function refuse(page:Page,pattern:RegExp){
- const seen:Request[]=[];void page.route(pattern,route=>{seen.push(route.request());return route.abort('connectionrefused');});return seen;
+async function refuse(page:Page,pattern:RegExp){
+ const seen:Request[]=[];await page.route(pattern,route=>{seen.push(route.request());return route.abort('connectionrefused');});return seen;
 }
 /** Every request that leaves the local origin (data: and blob: URLs stay in the page). */
 function offOrigin(page:Page,baseURL:string){
@@ -73,7 +77,7 @@ async function trackedExtractField(page:Page){
 
 test('a hanging beacon holds neither the home page nor an exercise: both render while it is still pending',async({page,baseURL})=>{
  test.setTimeout(90_000);
- const errors=await asPagesServesIt(page,baseURL!),beacon=hang(page,BEACON),report=hang(page,REPORT);
+ const errors=await asPagesServesIt(page,baseURL!),beacon=await hang(page,BEACON),report=await hang(page,REPORT);
  const pages=[
   ['/',page.getByRole('heading',{name:'Start with the sky.'})],
   ['/#classification',page.getByRole('status').filter({hasText:'Original spectra verified.'})],
@@ -87,9 +91,10 @@ test('a hanging beacon holds neither the home page nor an exercise: both render 
   // The beacon was asked for and has still not answered, so the render above did not wait for it.
   expect(beacon.seen.length,path).toBe(before+1);
   expect(beacon.pending().filter(r=>beacon.seen.indexOf(r)>=before).map(r=>r.url()),path).toEqual([BEACON_SRC]);
-  // Finding, pinned: the pending deferred script holds DOMContentLoaded (readyState stays 'interactive') and the load event,
-  // although the app is already usable. A phone's loading bar may keep turning until the beacon request fails.
-  expect(await page.evaluate(()=>document.readyState),path).toBe('interactive');
+  // Finding, pinned: the pending deferred script holds DOMContentLoaded (and so the load event), although the app is already
+  // usable; a phone's loading bar may keep turning until the beacon request fails. This pins the browser's behaviour for a
+  // pending deferred script, not anything about Cloudflare's injection.
+  expect(await page.evaluate(()=>(performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming).domContentLoadedEventStart),path).toBe(0);
  }
  expect(report.seen).toHaveLength(0);
  expect(errors).toEqual([]);
@@ -99,14 +104,17 @@ for(const variant of ['beacon refused','report refused','report hangs'] as const
  test(`${variant}: the home page and an exercise load with no uncaught error`,async({page,baseURL})=>{
   test.setTimeout(90_000);
   const errors=await asPagesServesIt(page,baseURL!),off=offOrigin(page,baseURL!);
-  if(variant==='beacon refused')refuse(page,BEACON);
-  else await page.route(BEACON,route=>route.fulfill({status:200,contentType:'text/javascript',body:BEACON_STUB}));
-  const report=variant==='report hangs'?hang(page,REPORT).seen:refuse(page,REPORT);
+  const beacon:Request[]=[];
+  if(variant==='beacon refused')await page.route(BEACON,route=>{beacon.push(route.request());return route.abort('connectionrefused');});
+  else await page.route(BEACON,route=>{beacon.push(route.request());return route.fulfill({status:200,contentType:'text/javascript',body:BEACON_STUB});});
+  const report=variant==='report hangs'?(await hang(page,REPORT)).seen:await refuse(page,REPORT);
   await page.goto('/');
   await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible({timeout:30_000});
+  await expect.poll(()=>beacon.length).toBe(1);
   if(variant!=='beacon refused')await expect.poll(()=>report.length).toBe(1);
   await page.goto('about:blank');await page.goto('/#classification');
   await expect(page.getByRole('status').filter({hasText:'Original spectra verified.'})).toBeVisible({timeout:30_000});
+  await expect.poll(()=>beacon.length).toBe(2);
   // The page itself contacts no other host.
   expect(off.filter(u=>!BEACON.test(u)&&!REPORT.test(u))).toEqual([]);
   expect(errors).toEqual([]);
@@ -116,7 +124,7 @@ for(const variant of ['beacon refused','report refused','report hangs'] as const
 test('with every outside host hanging, a bundled camera field still makes an image and asks none of them',async({page,baseURL})=>{
  test.setTimeout(180_000);
  const errors=await asPagesServesIt(page,baseURL!),off=offOrigin(page,baseURL!);
- hang(page,BEACON);hang(page,REPORT);const vizier=hang(page,VIZIER);
+ await hang(page,BEACON);await hang(page,REPORT);const vizier=await hang(page,VIZIER);
  await trackedExtractField(page);
  await expect(camera(page).getByLabel(/Bundled extracts/)).toBeChecked();
  await expect(page.getByTestId('camera-static-hint')).toHaveCount(0);
@@ -132,14 +140,14 @@ test('with every outside host hanging, a bundled camera field still makes an ima
 
 test('live query, every mirror refused: the typed "could not be reached" message, after trying each mirror once',async({page,baseURL})=>{
  test.setTimeout(120_000);
- const errors=await asPagesServesIt(page,baseURL!);hang(page,BEACON);
- const vizier=refuse(page,VIZIER);
+ const errors=await asPagesServesIt(page,baseURL!);await hang(page,BEACON);
+ const vizier=await refuse(page,VIZIER);
  await trackedExtractField(page);
  await camera(page).getByLabel(/Ask VizieR live/).check();
  const started=Date.now();await button(page,'Start exposure').click();
  await expect(status(page)).toHaveText('No image was made. No VizieR mirror could be reached. The camera does not invent a star field.',{timeout:30_000});
  // A refused connection is reported as soon as the exposure ends, not after the 30 s request timeout.
- expect(Date.now()-started).toBeLessThan(CAMERA_CATALOG_TIMEOUT_MS);
+ expect(Date.now()-started).toBeLessThan(10_000);
  expect(vizier.map(r=>new URL(r.url()).hostname)).toEqual([...VIZIER_POLICY.liveHosts]);
  await expect(camera(page)).toHaveAttribute('data-phase','idle');
  await expect(button(page,'Start exposure')).toBeEnabled();
@@ -151,8 +159,8 @@ test('live query, every mirror hanging: each mirror gets its 30 s, then the type
  test.setTimeout(120_000);
  // The page's clock is installed (it runs normally) so the 30 s request timeouts can be skipped with fastForward.
  await page.clock.install();
- const errors=await asPagesServesIt(page,baseURL!);hang(page,BEACON);
- const vizier=hang(page,VIZIER),hosts=()=>vizier.seen.map(r=>new URL(r.url()).hostname);
+ const errors=await asPagesServesIt(page,baseURL!);await hang(page,BEACON);
+ const vizier=await hang(page,VIZIER),hosts=()=>vizier.seen.map(r=>new URL(r.url()).hostname);
  const [first,second]=VIZIER_POLICY.liveHosts;
  await trackedExtractField(page);
  await camera(page).getByLabel(/Ask VizieR live/).check();
