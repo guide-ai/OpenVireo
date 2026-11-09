@@ -30,12 +30,19 @@ import {SOUND_MESSAGES_EN} from '../../sound/SoundMessages';
 import {ENGINE_VIEW_EN} from '../../SpectrumEngineMessages';
 import {SPECTRAL_RANGE_EN} from '../../SpectralRangeMessages';
 import {WEDGE_MESSAGES_EN} from '../../components/WedgeMessages';
+import {RADIO_ANTENNA_MESSAGES_EN} from '../../components/RadioAntennaMessages';
+import {FINISH_SAVE_MESSAGES_EN} from '../../components/RadioFinishSaveMessages';
+import {RADIO_R1_MESSAGES_EN} from '../../components/RadioR1Messages';
+import {RADIO_SAVE_MESSAGES_EN} from '../../components/RadioRecordSaveMessages';
 
 // Front ES1 (docs/I18N.md; plan §3.2 and §5.3 step 1): automatic checks of every Spanish string. They fail the batch; the
 // independent reviewer agent then reads the strings in context. Length ratios outside 0.7–1.6 are reported, not failed.
 const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,camera:CAMERA_MESSAGES_EN,engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,nakedEye:NAKED_EYE_MESSAGES_EN,objectXLab:OBJECT_X_LAB_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,wedge:WEDGE_MESSAGES_EN};
 /** The maps translated completely (ES1: the shell; ES2: the observatory; ES3: the E01 spectrometer maps; ES4: the wedge); the others are partial until their sub-front. */
 const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','camera','fieldInfo','fieldReadDetails','nakedEye','observationMetadata','observatory','polish','qsoList','sound','engineView','spectralRange','wedge'];
+// Front ES8a: the radio telescope maps (complete).
+Object.assign(ENGLISH_MAPS,{radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN});
+(COMPLETE_MAPS as MapId[]).push('radioAntenna','radioFinishSave','radioR1','radioRecordSave');
 /** ES1's area of en.json: the shell (header, menu, home and portal, toolbar, errors, instructor mode, document title). */
 const SHELL_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(app|project|session|error|instructorMode)\./.test(k)||/\.nav$/.test(k)||['demonstrationMode.banner','sky.eyebrow','sky.title','sky.subtitle','sky.about','sky.local','sky.observatory','sky.analyzer','sky.step1','sky.step1Help','sky.step2','sky.step2Help','sky.step3','sky.step3Help','spectrum.tools','classLink.cancel'].includes(k));
 /** The string literals of a TypeScript source (escapes decoded; template literals with substitutions skipped). */

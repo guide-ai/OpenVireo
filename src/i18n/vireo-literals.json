@@ -793,1241 +793,205 @@
  {
   "file": "src/components/RadioAccessOptions.tsx",
   "kind": "original",
-  "value": "D.pulsarListCaption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "L.userOptionsCaption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "L.instructorText",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "D.parentCaption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "D.radioButton",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "D.parentOk",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "D.parentCancel",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "D.childCaption",
-  "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "D.accessBox",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "D.childOk",
-  "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "D.childCancel",
-  "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
   "value": "RADIO_OPTIONS_DFM_ORDER.map",
   "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "D.labels[f]",
-  "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the option field ids that key the rows; each label is rendered through vireo()"
  },
  {
   "file": "src/components/RadioAccessOptions.tsx",
   "kind": "original",
   "value": "max",
   "count": 5,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "label",
-  "count": 5,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "RADIO_OPTIONS_CAPTIONS.horizonLimitHint",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "D.checkBoxes[k]",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "D.parametersGroup",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "D.labels[refusal]",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "D.optionsGroup",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "D.checkBoxes.limitSlewing93a",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "RADIO_OPTIONS_CAPTIONS.limitSlewingHint",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "D.checkBoxes.maxRateIndex93b",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "D.checkBoxes.accessPulsarList",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "D.idGroup",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "D.idItems",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "D.scopeGroup",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "D.scopeItems",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "D.filesButton",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "RADIO_SITE_DFM.hint",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "D.siteButton",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "L.numericErrorCaption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a number (a length, limit, interval, index or the scenario UT) inserted into web text"
  },
  {
   "file": "src/components/RadioAccessOptions.tsx",
   "kind": "original",
   "value": "L.numericErrorHelperInput.replace",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "SC.form",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "SC.ok",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "SC.cancel",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioAccessOptions.tsx",
-  "kind": "original",
-  "value": "SC.errorCaption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "NATIVE_CAPTIONS.exercise",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "NATIVE_CAPTIONS.access",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "NATIVE_CAPTIONS.switchPanel",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "NATIVE_CAPTIONS.switchLabel",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "RADIO_LAB_CAPTIONS.form",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: VIREO's English literal quoted inside a web note, kept in English as the rule for quoted VIREO text requires"
  },
  {
   "file": "src/components/RadioControlPanel.tsx",
   "kind": "original",
   "value": "RADIO_WEB_OPTION_PROFILE.raStepLimitHours",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a number (a length, limit, interval, index or the scenario UT) inserted into web text"
  },
  {
   "file": "src/components/RadioControlPanel.tsx",
   "kind": "original",
   "value": "b",
   "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "HOT_LIST_ENTRY_CAPTIONS.addedCaption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "RADIO_LAB_CAPTIONS[d]",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the dome state byte values (0–3) as select option keys and lookups"
  },
  {
   "file": "src/components/RadioControlPanel.tsx",
   "kind": "original",
   "value": "RADIO_LAB_CONSTANTS.manualTimerIntervalMs",
   "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "RADIO_LAB_CAPTIONS[left]",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "C.viewSelect",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "C.addCurrent",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "C.loadHotList",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "RADIO_LAB_CAPTIONS.slewMenu",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "RADIO_LAB_CAPTIONS.setCoordinates",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "RADIO_LAB_CAPTIONS.ra",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "RADIO_LAB_CAPTIONS.hours",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "RADIO_LAB_CAPTIONS.minutes",
-  "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "RADIO_LAB_CAPTIONS.seconds",
-  "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "RADIO_LAB_CAPTIONS.dec",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "RADIO_LAB_CAPTIONS.degrees",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a number (a length, limit, interval, index or the scenario UT) inserted into web text"
  },
  {
   "file": "src/components/RadioControlPanel.tsx",
   "kind": "original",
   "value": "RADIO_CLOCK_CONSTANTS.nominalIntervalMs",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "RADIO_LAB_CAPTIONS.tracking",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "RADIO_LAB_CAPTIONS[leftover]",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "RADIO_LAB_CAPTIONS.slewRate",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "RADIO_LAB_CAPTIONS.receiver",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "RADIO_OPTIONS_CAPTIONS.form",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "RADIO_OPTIONS_CAPTIONS.limitSlewing",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "RADIO_OPTIONS_CAPTIONS.limitSlewingHint",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "RADIO_OPTIONS_CAPTIONS.horizonLimit",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "RADIO_OPTIONS_CAPTIONS.horizonLimitHint",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a number (a length, limit, interval, index or the scenario UT) inserted into web text"
  },
  {
   "file": "src/components/RadioControlPanel.tsx",
   "kind": "original",
   "value": "SKY_COORDS_FIELD_MAX_LENGTH",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "SKY_COORDS_CAPTIONS.form.trim",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "SKY_COORDS_CAPTIONS.raGroup",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "SKY_COORDS_CAPTIONS.hours",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "SKY_COORDS_CAPTIONS.minutes",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "SKY_COORDS_CAPTIONS.seconds",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "SKY_COORDS_CAPTIONS.decGroup",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "SKY_COORDS_CAPTIONS.degrees",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "SKY_COORDS_CAPTIONS.arcminutes",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "SKY_COORDS_CAPTIONS.arcseconds",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "SKY_COORDS_CAPTIONS.epochGroup",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a number (a length, limit, interval, index or the scenario UT) inserted into web text"
  },
  {
   "file": "src/components/RadioControlPanel.tsx",
   "kind": "original",
   "value": "SKY_COORDS_CAPTIONS.epochs.map",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "SKY_COORDS_CAPTIONS.ok",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioControlPanel.tsx",
-  "kind": "original",
-  "value": "SKY_COORDS_CAPTIONS.cancel",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the epoch names J2000.0 and B1950.0 as keys; each caption is rendered through vireo()"
  },
  {
   "file": "src/components/RadioControlPanel.tsx",
   "kind": "original",
   "value": "buttons.map",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioHotListDialog.tsx",
-  "kind": "original",
-  "value": "C.form",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioHotListDialog.tsx",
-  "kind": "original",
-  "value": "C.slew",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioHotListDialog.tsx",
-  "kind": "original",
-  "value": "C.close",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioHotListSearchDialog.tsx",
-  "kind": "original",
-  "value": "L.caption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the message-box answer ids (ok, cancel, yes, no); each caption is rendered through vireo()"
  },
  {
   "file": "src/components/RadioHotListSearchDialog.tsx",
   "kind": "original",
   "value": "RADIO_HOT_LIST_SEARCH_QUERY_MAX",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a number (a length, limit, interval, index or the scenario UT) inserted into web text"
  },
  {
   "file": "src/components/RadioPulsarParameters.tsx",
   "kind": "original",
   "value": "PULSAR_REFERENCE_WEB_POLICY.maxBytes",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.form",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.file",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.find",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.exit",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.help",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.b1950",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.j2000",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.ra",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.hours",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.minutes",
-  "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.seconds",
-  "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.dec",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.degrees",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.period",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.periodDot",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.epoch",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.sky",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.dm",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.width",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.flux",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.s400",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.s600",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.s1400",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.prev",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.next",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.derived",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.reset",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.update",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.date",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.dateHint",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.density",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.densityHint",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.derivedPeriod",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "C.distance",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a number (a length, limit, interval, index or the scenario UT) inserted into web text"
  },
  {
   "file": "src/components/RadioPulsarParameters.tsx",
   "kind": "original",
   "value": "PULSAR_PARAMETERS_WEB_POLICY.fieldMaxLength",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "F.form",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "F.name",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "F.type",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "F.b1950",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "F.j2000",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a number (a length, limit, interval, index or the scenario UT) inserted into web text"
  },
  {
   "file": "src/components/RadioPulsarParameters.tsx",
   "kind": "original",
   "value": "PULSAR_PARAMETERS_WEB_POLICY.findDraftMaxLength",
   "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a number (a length, limit, interval, index or the scenario UT) inserted into web text"
  },
  {
   "file": "src/components/RadioPulsarParameters.tsx",
   "kind": "original",
   "value": "PULSAR_PARAMETERS_CONSTANTS.queryMaxLength",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "F.cancel",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioPulsarParameters.tsx",
-  "kind": "original",
-  "value": "F.ok",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioReceiverWindows.tsx",
-  "kind": "original",
-  "value": "L.unsavedCaption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioReceiverWindows.tsx",
-  "kind": "original",
-  "value": "L.eraseCaption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioReceiverWindows.tsx",
-  "kind": "original",
-  "value": "L.unsavedText",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioReceiverWindows.tsx",
-  "kind": "original",
-  "value": "L.eraseText",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a number (a length, limit, interval, index or the scenario UT) inserted into web text"
  },
  {
   "file": "src/components/RadioReceiverWindows.tsx",
   "kind": "original",
   "value": "RAW_EXPORT_FILE_NAME",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioReceiverWindows.tsx",
-  "kind": "original",
-  "value": "L.fullText",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioReceiverWindows.tsx",
-  "kind": "original",
-  "value": "L.identifyLabel",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a file name"
  },
  {
   "file": "src/components/RadioReceiverWindows.tsx",
   "kind": "original",
   "value": "RADIO_IDENTIFY_POLICY.draftLimit",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a number (a length, limit, interval, index or the scenario UT) inserted into web text"
  },
  {
   "file": "src/components/RadioReceiverWindows.tsx",
   "kind": "original",
   "value": "PULSAR_RESERVED_DATA_NAME",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioReceiverWindows.tsx",
-  "kind": "original",
-  "value": "RADIO_IDENTIFY_DFM.ok",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioReceiverWindows.tsx",
-  "kind": "original",
-  "value": "RADIO_IDENTIFY_DFM.cancel",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioReceiverWindows.tsx",
-  "kind": "original",
-  "value": "L.saveText",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioReceiverWindows.tsx",
-  "kind": "original",
-  "value": "D.frequency",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioReceiverWindows.tsx",
-  "kind": "original",
-  "value": "D.step",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioReceiverWindows.tsx",
-  "kind": "original",
-  "value": "D.vertical",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioReceiverWindows.tsx",
-  "kind": "original",
-  "value": "D.horizontal",
-  "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioReceiverWindows.tsx",
-  "kind": "original",
-  "value": "D.add",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioReceiverWindows.tsx",
-  "kind": "original",
-  "value": "D.align",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioReceiverWindows.tsx",
-  "kind": "original",
-  "value": "D.mode",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioReceiverWindows.tsx",
-  "kind": "original",
-  "value": "D.record",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the reserved data name compared with the draft (not rendered)"
  },
  {
   "file": "src/components/RadioReceiverWindows.tsx",
   "kind": "original",
   "value": "RECEIVER_MARK_WEB_POLICY.minColumn",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a number (a length, limit, interval, index or the scenario UT) inserted into web text"
  },
  {
   "file": "src/components/RadioReceiverWindows.tsx",
   "kind": "original",
   "value": "RECEIVER_MARK_WEB_POLICY.maxColumn",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioReceiverWindows.tsx",
-  "kind": "original",
-  "value": "L.receive",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioReceiverWindows.tsx",
-  "kind": "original",
-  "value": "L.stop",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a number (a length, limit, interval, index or the scenario UT) inserted into web text"
  },
  {
   "file": "src/components/RadioTelescopeRoute.tsx",
   "kind": "original",
   "value": "PULSAR_EXERCISE_SCENARIO.ut",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a number (a length, limit, interval, index or the scenario UT) inserted into web text"
  },
  {
   "file": "src/components/RadioTelescopeRoute.tsx",
   "kind": "original",
   "value": "o.maxRateIndex",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a number (a length, limit, interval, index or the scenario UT) inserted into web text"
  },
  {
   "file": "src/components/RadioTelescopeRoute.tsx",
   "kind": "original",
   "value": "o.rateBase",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a number (a length, limit, interval, index or the scenario UT) inserted into web text"
  },
  {
   "file": "src/components/RadioTelescopeRoute.tsx",
   "kind": "original",
   "value": "RANDOM_ACCESS_RANGE_MS",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a number (a length, limit, interval, index or the scenario UT) inserted into web text"
  },
  {
   "file": "src/components/RadioTelescopeRoute.tsx",
   "kind": "original",
   "value": "RADIO_LAB_CONSTANTS.slewTimerIntervalMs",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a number (a length, limit, interval, index or the scenario UT) inserted into web text"
  },
  {
   "file": "src/components/RadioTelescopeRoute.tsx",
   "kind": "original",
   "value": "RADIO_CLOCK_CONSTANTS.nominalIntervalMs",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a number (a length, limit, interval, index or the scenario UT) inserted into web text"
  },
  {
   "file": "src/components/RadioTelescopeRoute.tsx",
   "kind": "original",
   "value": "RADIO_CLOCK_CONSTANTS.draftMaxLength",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioTelescopeRoute.tsx",
-  "kind": "original",
-  "value": "C.form",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioTelescopeRoute.tsx",
-  "kind": "original",
-  "value": "C.id",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioTelescopeRoute.tsx",
-  "kind": "original",
-  "value": "C.idSource",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioTelescopeRoute.tsx",
-  "kind": "original",
-  "value": "C.idHint",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioTelescopeRoute.tsx",
-  "kind": "original",
-  "value": "C.date",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioTelescopeRoute.tsx",
-  "kind": "original",
-  "value": "C.dateHint",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioTelescopeRoute.tsx",
-  "kind": "original",
-  "value": "C.dateFormat",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioTelescopeRoute.tsx",
-  "kind": "original",
-  "value": "C.time.trim",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioTelescopeRoute.tsx",
-  "kind": "original",
-  "value": "C.timeHint",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/components/RadioTelescopeRoute.tsx",
-  "kind": "original",
-  "value": "C.timeFormat",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a number (a length, limit, interval, index or the scenario UT) inserted into web text"
  },
  {
   "file": "src/components/RadioTelescopeRoute.tsx",
   "kind": "original",
   "value": "RADIO_DATE_WEB_LIMITS.fieldMaxLength",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a number (a length, limit, interval, index or the scenario UT) inserted into web text"
  },
  {
   "file": "src/components/RadioTelescopeRoute.tsx",
   "kind": "original",
   "value": "ID_MAX_LENGTH",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a number (a length, limit, interval, index or the scenario UT) inserted into web text"
  },
  {
   "file": "src/components/WedgeLab.tsx",
@@ -2602,5 +1566,12 @@
   "value": "STAR_TARGET.id",
   "count": 1,
   "reason": "identifier: the star target's catalogue id (GSC number)"
+ },
+ {
+  "file": "src/components/RadioReceiverWindows.tsx",
+  "kind": "original",
+  "value": "PULSAR_DATA_NOT_WRITTEN",
+  "count": 1,
+  "reason": "identifier: the recorded data name compared with the field to choose its vireo() caption"
  }
 ]

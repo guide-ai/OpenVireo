@@ -5,7 +5,7 @@ import type {PulsarCatalog} from '../core/radioPulsarCatalog';
 import type {RadioReceiver,RadioReceiverControl,RadioReceiverEvent,RadioSourceBuffer,ReceiverWindowConfiguration} from '../core/radioReceiver';
 import {configureReceiverWindow} from '../core/radioReceiverSession';
 import {
- PULSAR_RESERVED_DATA_NAME,acquirePulsarCaptureLease,claimPulsarOutput,commitPulsarCapture,pulsarClaimBytes,pulsarClaimReadback,pulsarCurrentSaved,pulsarDataProperties,pulsarDataRows,
+ PULSAR_DATA_NOT_WRITTEN,PULSAR_RESERVED_DATA_NAME,acquirePulsarCaptureLease,claimPulsarOutput,commitPulsarCapture,pulsarClaimBytes,pulsarClaimReadback,pulsarCurrentSaved,pulsarDataProperties,pulsarDataRows,
  pulsarHeaderCells,pulsarMemoryRecording,recordPulsarFinishWrittenCopy,recordPulsarWrittenCopy,releasePulsarCaptureLease,releasePulsarOutput,setPulsarCapturePhase,
  type PulsarCaptureLease,type PulsarWriteClaim,
 } from '../core/pulsarCurrentData';
@@ -23,7 +23,7 @@ import {createFinishSaveTranslator} from './RadioFinishSaveMessages';
 import {RADIO_IDENTIFY_DFM,RADIO_IDENTIFY_POLICY,RADIO_RECORD_LITERALS,radioCaptureInput,radioIdentifyIssue} from '../core/radioReceiverRecord';
 import type {SharedPulsarDataHandle} from '../useSharedPulsarData';
 import {
- RECEIVER_DFM_CAPTIONS,RECEIVER_DISPLAY_COLOURS,RECEIVER_DISPLAY_GEOMETRY,RECEIVER_DISPLAY_LITERALS,receiverCaption,receiverLabels,receiverPaintOps,
+ RECEIVER_DFM_CAPTIONS,RECEIVER_DISPLAY_COLOURS,RECEIVER_DISPLAY_GEOMETRY,RECEIVER_DISPLAY_LITERALS,receiverCaption,receiverLabels,receiverPaintOps,receiverScreenText,
  type ReceiverDisplayOp,type ReceiverPen,
 } from '../core/radioReceiverDisplay';
 import {RECEIVER_MARK_LABEL_BACKGROUND,RECEIVER_MARK_WEB_POLICY,receiverMarkOverlayOps,type ReceiverMarkOverlay,type ReceiverMarkSelector} from '../core/radioReceiverMarks';
@@ -50,6 +50,8 @@ import {browserReceiverAuditionDeps,createReceiverAuditionHost,type ReceiverAudi
 import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeNothing,trapTab} from './radioModal';
 import {t,type PlainMessageKey} from '../i18n';
 import {lazyMessages,lazyTranslator} from '../i18n/registry';
+import {vireo} from '../i18n/vireo';
+import {OBSERVATORY_VIREO_CAPTIONS as VB} from '../observatory/ObservatoryMessages';
 
 /** Host access for the route: open from the panel's Receiver button, the antenna transitions (clock reassociation), the
  * catalog lock, and two read-only views for Pulsar Parameters: the shared +0x5f7 buffer (sourceBuffer, read live; Receiver
@@ -804,7 +806,7 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
    recordHost={!!pulsarData} recordRef={slot===0?recordButton:undefined} onRecord={record}
    alignRef={slot===0?alignButton:undefined} onAlign={align} onMove={move} moveRef={(dir,el)=>{moveButtons.current[dir][slot]=el;}}
    audition={cardAudition(slot)} onAudition={pressAudition}/>;})}
-  {closePresented&&session.closeBox&&<ReceiverCloseBox caption={session.closeBox.caption} text={session.closeBox.text} onDismiss={dismissBox}
+  {closePresented&&session.closeBox&&<ReceiverCloseBox caption={vireo(session.closeBox.caption)} text={vireo(session.closeBox.text)} onDismiss={dismissBox}
    closeFirst={session.bank.slots.reduce((h,r,i)=>r?i+1:h,1)}/>}
   <div className="radio-control" style={{display:'contents'}} data-testid="receiver-record-layer" data-modal-pending={recordPending} data-modal-presented={recordPresented}>
    {recordPresented&&session.record.prompt&&(session.record.prompt.kind==='save'
@@ -842,15 +844,15 @@ function RecordPromptBox({prompt,note,support,onAnswer,onYes}:Readonly<{prompt:E
  const arrived=prompt.kind==='erase'&&prompt.verified!==undefined;
  const reason=saveOk?`${RS('radioSave.yes.reason')} ${RS('radioSave.yes.webDefault')}`
   :`${RS(support==='insecure-context'?'radioSave.yes.unsupported.insecure-context':'radioSave.yes.unsupported.no-api')} ${RS('radioSave.yes.webDefaultUnsupported')}`;
- const okButton=<button ref={arrived?undefined:first} type="button" className="primary-button" data-testid="receiver-record-ok" onClick={()=>onAnswer('ok')}>{t('radioReceiver.record.ok')}</button>;
+ const okButton=<button ref={arrived?undefined:first} type="button" className="primary-button" data-testid="receiver-record-ok" onClick={()=>onAnswer('ok')}>{vireo(VB.ok)}</button>;
  const cancelButton=(primary:boolean)=><button ref={primary?first:undefined} type="button" className={primary?'primary-button':'secondary-button'} data-testid="receiver-record-cancel"
-  onClick={()=>onAnswer('cancel')}>{t('radioReceiver.record.cancel')}</button>;
+  onClick={()=>onAnswer('cancel')}>{vireo(VB.cancel)}</button>;
  return <div className="antenna-backdrop antenna-backdrop-top">
   <div ref={root} role="alertdialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={note?`${id}-body ${id}-verified`:`${id}-body`}
    className="antenna-dialog antenna-notice radio-receiver-save" data-testid="receiver-record-prompt" data-kind={prompt.kind} data-verified={arrived||undefined}
    onKeyDown={e=>boxKeys(e,root.current,()=>onAnswer('cancel'))}>
-   <h3 id={`${id}-title`} className="radio-control-native">{unsaved?L.unsavedCaption:L.eraseCaption}</h3>
-   <p id={`${id}-body`} className="radio-control-native" style={{whiteSpace:'pre-line'}} data-testid="receiver-record-prompt-text">{unsaved?L.unsavedText:L.eraseText}</p>
+   <h3 id={`${id}-title`} className="radio-control-native">{unsaved?vireo(L.unsavedCaption):vireo(L.eraseCaption)}</h3>
+   <p id={`${id}-body`} className="radio-control-native" style={{whiteSpace:'pre-line'}} data-testid="receiver-record-prompt-text">{unsaved?vireo(L.unsavedText):vireo(L.eraseText)}</p>
    {unsaved&&<p id={`${id}-gated`} className="radio-control-note" data-testid="receiver-record-yes-reason" data-support={support}>{reason}</p>}
    {note&&<p id={`${id}-verified`} className="radio-control-note" data-testid="receiver-record-erase-verified">{RS('radioSave.erase.verified',{file:note.fileName,bytes:note.byteLength})}</p>}
    {arrived&&<p className="radio-control-note" data-testid="receiver-record-erase-default">{RS('radioSave.erase.webDefault')}</p>}
@@ -858,8 +860,8 @@ function RecordPromptBox({prompt,note,support,onAnswer,onYes}:Readonly<{prompt:E
    <div className="button-row">
     {unsaved?<>
      <button type="button" className="secondary-button" disabled={!saveOk} aria-haspopup={saveOk?'dialog':undefined} aria-describedby={`${id}-gated`} data-testid="receiver-record-yes"
-      onClick={onYes}>{t('radioReceiver.record.yes')}</button>
-     <button type="button" className="secondary-button" data-testid="receiver-record-no" onClick={()=>onAnswer('no')}>{t('radioReceiver.record.no')}</button>
+      onClick={onYes}>{vireo(VB.yes)}</button>
+     <button type="button" className="secondary-button" data-testid="receiver-record-no" onClick={()=>onAnswer('no')}>{vireo(VB.no)}</button>
      {cancelButton(true)}
     </>:<>{okButton}{cancelButton(arrived)}</>}
    </div>
@@ -949,12 +951,12 @@ function RecordFinishSurface({finish,support,onFull,onDraft,onIdentify,onPropert
   </div>
  </div>;
  const ref=(el:HTMLElement|null)=>{focusTarget.current=el;};
- if(stage==='full')return box(L.fullCaption,<p className="radio-control-native" data-testid="receiver-record-full-text">{L.fullText}</p>,
-  <button ref={ref} type="button" className="primary-button" data-testid="receiver-record-full-ok" onClick={onFull}>{t('radioReceiver.record.ok')}</button>,t('radioReceiver.record.fullNote'));
+ if(stage==='full')return box(vireo(L.fullCaption),<p className="radio-control-native" data-testid="receiver-record-full-text">{vireo(L.fullText)}</p>,
+  <button ref={ref} type="button" className="primary-button" data-testid="receiver-record-full-ok" onClick={onFull}>{vireo(VB.ok)}</button>,t('radioReceiver.record.fullNote'));
  if(stage==='identify'){
   const issue=radioIdentifyIssue(finish.draft);
-  return box(L.identifyCaption,<div className="antenna-field">
-   <label htmlFor={`${id}-name`} className="radio-control-native">{L.identifyLabel}</label>
+  return box(vireo(L.identifyCaption),<div className="antenna-field">
+   <label htmlFor={`${id}-name`} className="radio-control-native">{vireo(L.identifyLabel)}</label>
    <input ref={ref} id={`${id}-name`} type="text" autoComplete="off" spellCheck={false} data-testid="receiver-record-identify-input" value={finish.draft}
     aria-invalid={issue!==null||undefined} aria-describedby={`${id}-help ${id}-refusal`} maxLength={RADIO_IDENTIFY_POLICY.draftLimit}
     onChange={e=>onDraft(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.repeat){e.preventDefault();onIdentify('ok');}}}/>
@@ -962,8 +964,8 @@ function RecordFinishSurface({finish,support,onFull,onDraft,onIdentify,onPropert
    {finish.draft===PULSAR_RESERVED_DATA_NAME&&<span className="radio-control-note" data-testid="receiver-record-identify-nodata">{t('radioReceiver.record.identifyNoData')}</span>}
    <span id={`${id}-refusal`} className="radio-control-note" role="status" aria-live="polite" data-testid="receiver-record-identify-refusal">{refusal}</span>
   </div>,<>
-   <button type="button" className="primary-button" data-testid="receiver-record-identify-ok" onClick={()=>onIdentify('ok')}>{RADIO_IDENTIFY_DFM.ok}</button>
-   <button type="button" className="secondary-button" data-testid="receiver-record-identify-cancel" onClick={()=>onIdentify('cancel')}>{RADIO_IDENTIFY_DFM.cancel}</button>
+   <button type="button" className="primary-button" data-testid="receiver-record-identify-ok" onClick={()=>onIdentify('ok')}>{vireo(RADIO_IDENTIFY_DFM.ok)}</button>
+   <button type="button" className="secondary-button" data-testid="receiver-record-identify-cancel" onClick={()=>onIdentify('cancel')}>{vireo(RADIO_IDENTIFY_DFM.cancel)}</button>
   </>);
  }
  if(stage==='properties'){
@@ -972,25 +974,25 @@ function RecordFinishSurface({finish,support,onFull,onDraft,onIdentify,onPropert
    <p className="radio-control-note">{t('radioReceiver.record.propertiesNote')}</p>
    <dl className="radio-control-state">
     {(['object','start','aperture','interval','points','file'] as const).map(k=><div key={k}><dt>{t(`${P}${k}` as `radioReceiver.record.properties.${typeof k}`)}</dt>
-     <dd className="radio-control-native" data-testid={`receiver-record-prop-${k}`}>{props.fields[k]}</dd></div>)}
+     <dd className="radio-control-native" data-testid={`receiver-record-prop-${k}`}>{props.fields[k]===PULSAR_DATA_NOT_WRITTEN?vireo(PULSAR_DATA_NOT_WRITTEN):props.fields[k]}</dd></div>)}
    </dl>
    <table className="radio-receiver-record-table">
     <thead><tr><th scope="col">{t('radioReceiver.record.properties.receiver')}</th><th scope="col">{t('radioReceiver.record.properties.frequency')}</th><th scope="col">{t('radioReceiver.record.properties.gain')}</th></tr></thead>
     <tbody>{props.receivers.map(r=><tr key={r.receiver} data-testid={`receiver-record-prop-receiver-${r.receiver+1}`}><th scope="row">{r.receiver+1}</th><td>{r.frequency}</td><td>{r.gain}</td></tr>)}</tbody>
    </table>
-  </>,<button ref={ref} type="button" className="primary-button" data-testid="receiver-record-properties-ok" onClick={onProperties}>{t('radioReceiver.record.ok')}</button>);
+  </>,<button ref={ref} type="button" className="primary-button" data-testid="receiver-record-properties-ok" onClick={onProperties}>{vireo(VB.ok)}</button>);
  }
  const saveOk=support==='ok';
  const reason=saveOk?`${FS('finishSave.yes.reason')} ${FS('finishSave.yes.webDefault')}`
   :`${FS(support==='insecure-context'?'finishSave.yes.unsupported.insecure-context':'finishSave.yes.unsupported.no-api')} ${FS('finishSave.yes.webDefaultUnsupported')}`;
- return box(L.saveCaption,<>
-  <p className="radio-control-native" style={{whiteSpace:'pre-line'}} data-testid="receiver-record-save-text">{L.saveText}</p>
+ return box(vireo(L.saveCaption),<>
+  <p className="radio-control-native" style={{whiteSpace:'pre-line'}} data-testid="receiver-record-save-text">{vireo(L.saveText)}</p>
   <p id={`${id}-gated`} className="radio-control-note" data-testid="receiver-record-save-yes-reason" data-support={support}>{reason}</p>
  </>,<>
   <button type="button" className="secondary-button" disabled={!saveOk} aria-haspopup={saveOk?'dialog':undefined} aria-describedby={`${id}-gated`}
-   data-testid="receiver-record-save-yes" onClick={onSaveYes}>{t('radioReceiver.record.yes')}</button>
-  <button type="button" className="secondary-button" data-testid="receiver-record-save-no" onClick={()=>onSave('no')}>{t('radioReceiver.record.no')}</button>
-  <button ref={ref} type="button" className="primary-button" data-testid="receiver-record-save-cancel" onClick={()=>onSave('cancel')}>{t('radioReceiver.record.cancel')}</button>
+   data-testid="receiver-record-save-yes" onClick={onSaveYes}>{vireo(VB.yes)}</button>
+  <button type="button" className="secondary-button" data-testid="receiver-record-save-no" onClick={()=>onSave('no')}>{vireo(VB.no)}</button>
+  <button ref={ref} type="button" className="primary-button" data-testid="receiver-record-save-cancel" onClick={()=>onSave('cancel')}>{vireo(VB.cancel)}</button>
  </>,t('radioReceiver.record.boxNote'));
 }
 
@@ -1018,7 +1020,7 @@ function ReceiverCard({maskedName,r,session,log,overlay,inert,notice,headingRef,
   aria-label={t(dir==='up'?'radioReceiver.window.upLabel':'radioReceiver.window.downLabel',{n:slot+1})} aria-disabled={moves[dir]!=='enabled'||undefined}
   aria-describedby={`${id}-window-help`} onKeyDown={ignoreHeldKey} onClick={()=>onMove(slot,dir)}>{t(dir==='up'?'radioReceiver.window.up':'radioReceiver.window.down')}</button>;
  const [selected,setSelected]=useState<ReceiverMarkSelector>(0);
- const caption=maskCaption(String(receiverCaption(r.title,r.apertureText)),maskedName),finishing=r.stopPending===true&&session.bank.timerEnabled;
+ const caption=receiverScreenText(maskCaption(String(receiverCaption(r.title,r.apertureText)),maskedName),vireo),finishing=r.stopPending===true&&session.bank.timerEnabled;
  const error=session.tickError;
  const spin=(control:RadioReceiverControl,caption:string,value:string,down:PlainMessageKey,up:PlainMessageKey,state:ReceiverControlState)=>
   <div className="radio-receiver-spin" role="group" aria-labelledby={`${id}-${control}`} data-testid={`receiver-${control}-${slot}`}>
@@ -1040,22 +1042,22 @@ function ReceiverCard({maskedName,r,session,log,overlay,inert,notice,headingRef,
    <ReceiverMarkCanvas slot={slot} overlay={overlay} selected={selected} marks={marks}/>
   </div>
   <div className="radio-receiver-controls">
-   {spin('frequency',D.frequency,labels.frequency,'radioReceiver.control.frequencyDown','radioReceiver.control.frequencyUp',avail.frequency)}
-   {spin('frequency-step',D.step,labels.step,'radioReceiver.control.stepDown','radioReceiver.control.stepUp',avail['frequency-step'])}
-   {spin('vertical',D.vertical,labels.vertical,'radioReceiver.control.verticalDown','radioReceiver.control.verticalUp',avail.vertical)}
-   {main?spin('horizontal',D.horizontal,labels.horizontal,'radioReceiver.control.horizontalDown','radioReceiver.control.horizontalUp',avail.horizontal)
-    :<div className="radio-receiver-spin" data-testid={`receiver-horizontal-${slot}`}><span className="radio-control-native">{D.horizontal}</span>
+   {spin('frequency',vireo(D.frequency),labels.frequency,'radioReceiver.control.frequencyDown','radioReceiver.control.frequencyUp',avail.frequency)}
+   {spin('frequency-step',vireo(D.step),labels.step,'radioReceiver.control.stepDown','radioReceiver.control.stepUp',avail['frequency-step'])}
+   {spin('vertical',vireo(D.vertical),labels.vertical,'radioReceiver.control.verticalDown','radioReceiver.control.verticalUp',avail.vertical)}
+   {main?spin('horizontal',vireo(D.horizontal),labels.horizontal,'radioReceiver.control.horizontalDown','radioReceiver.control.horizontalUp',avail.horizontal)
+    :<div className="radio-receiver-spin" data-testid={`receiver-horizontal-${slot}`}><span className="radio-control-native">{vireo(D.horizontal)}</span>
      <span className="radio-receiver-value radio-control-native" data-testid={`receiver-horizontal-value-${slot}`}>{labels.horizontal}</span></div>}
   </div>
   <div className="button-row radio-receiver-buttons">
    {main&&<button ref={addRef} type="button" className="secondary-button" data-testid="receiver-add" disabled={avail.add!=='enabled'}
-    aria-describedby={session.bank.recording.armed?`${id}-add-disarms`:undefined} onKeyDown={ignoreHeldKey} onClick={onAdd}>{D.add}</button>}
+    aria-describedby={session.bank.recording.armed?`${id}-add-disarms`:undefined} onKeyDown={ignoreHeldKey} onClick={onAdd}>{vireo(D.add)}</button>}
    {main&&<button ref={alignRef} type="button" className="secondary-button" data-testid="receiver-align" disabled={avail.align!=='enabled'} aria-pressed={aligned}
-    aria-describedby={alignStale?`${id}-align ${id}-align-stale`:`${id}-align`} onKeyDown={ignoreHeldKey} onClick={onAlign}>{D.align}</button>}
+    aria-describedby={alignStale?`${id}-align ${id}-align-stale`:`${id}-align`} onKeyDown={ignoreHeldKey} onClick={onAlign}>{vireo(D.align)}</button>}
    {main&&<button type="button" className="primary-button" data-testid="receiver-mode" aria-disabled={avail.mode!=='enabled'||undefined} aria-describedby={finishing?`${id}-sweep`:undefined}
-    onKeyDown={ignoreHeldKey} onClick={()=>{if(avail.mode==='enabled')onMode(slot);}}>{D.mode}</button>}
+    onKeyDown={ignoreHeldKey} onClick={()=>{if(avail.mode==='enabled')onMode(slot);}}>{vireo(D.mode)}</button>}
    {main&&<button ref={recordRef} type="button" className="secondary-button" data-testid="receiver-record" disabled={avail.record!=='enabled'||!recordHost}
-    aria-describedby={`${id}-record`} onKeyDown={ignoreHeldKey} onClick={onRecord}>{D.record}</button>}
+    aria-describedby={`${id}-record`} onKeyDown={ignoreHeldKey} onClick={onRecord}>{vireo(D.record)}</button>}
    <button ref={closeRef} type="button" className="secondary-button" data-testid={`receiver-close-${slot}`} onKeyDown={ignoreHeldKey} onClick={()=>onClose(slot)}>{t('radioReceiver.control.close')}</button>
   </div>
   {main&&session.bank.recording.armed&&<p id={`${id}-add-disarms`} role="note" className="radio-control-note radio-receiver-alert" data-testid="receiver-add-disarms">{t('radioReceiver.record.addDisarms')}</p>}
@@ -1068,9 +1070,9 @@ function ReceiverCard({maskedName,r,session,log,overlay,inert,notice,headingRef,
     :session.bank.recording.armed&&session.record.leaseId!==null?<p data-testid="receiver-record-armed">{t('radioReceiver.record.armed')}</p>:null}
   </div>}
   <dl className="radio-control-state radio-receiver-indicators">
-   <dt>{t('radioReceiver.card.modeDisp')}</dt><dd className="radio-control-native" data-testid={`receiver-mode-disp-${slot}`}>{labels.mode}</dd>
-   {labels.align!==null&&<><dt>{t('radioReceiver.card.alignDisp')}</dt><dd className="radio-control-native" data-testid="receiver-align-disp">{labels.align}</dd></>}
-   {main&&<><dt>{t('radioReceiver.card.recordDisp')}</dt><dd className="radio-control-native" data-testid="receiver-record-disp" data-native-record-display={labels.record} data-armed={session.bank.recording.armed}>{t(session.bank.recording.armed?'radioAccess.values.on':'radioAccess.values.off')}</dd></>}
+   <dt>{t('radioReceiver.card.modeDisp')}</dt><dd className="radio-control-native" data-testid={`receiver-mode-disp-${slot}`}>{r.receiving?vireo(L.receive):vireo(L.stop)}</dd>
+   {labels.align!==null&&<><dt>{t('radioReceiver.card.alignDisp')}</dt><dd className="radio-control-native" data-testid="receiver-align-disp">{vireo(labels.align)}</dd></>}
+   {main&&<><dt>{t('radioReceiver.card.recordDisp')}</dt><dd className="radio-control-native" data-testid="receiver-record-disp" data-native-record-display={labels.record} data-armed={session.bank.recording.armed}>{session.bank.recording.armed?vireo(L.on):vireo(L.off)}</dd></>}
   </dl>
   <p id={`${id}-sweep`} data-testid={`receiver-sweep-${slot}`} data-position={r.position??''} data-receiving={r.receiving} data-stop-pending={r.stopPending===true} data-timer={session.bank.timerEnabled}>
    {r.position===null?t('radioReceiver.card.sweepNone'):finishing?t('radioReceiver.card.finishing',{position:r.position,width:r.sweepWidth}):t('radioReceiver.card.sweep',{position:r.position,width:r.sweepWidth})}</p>
@@ -1121,7 +1123,7 @@ function ReceiverMarkCanvas({slot,overlay,selected,marks}:Readonly<{slot:number;
     ctx.font='bold 13px sans-serif';ctx.textBaseline='top';
     const width=Math.ceil(ctx.measureText(op.text).width);
     ctx.fillStyle=css(RECEIVER_MARK_LABEL_BACKGROUND);ctx.fillRect(op.x,op.y,width,16);
-    ctx.fillStyle=css(op.colour);ctx.fillText(op.text,op.x,op.y);
+    ctx.fillStyle=css(op.colour);ctx.fillText(receiverScreenText(op.text,vireo),op.x,op.y);
    }
   }
  },[overlay]);
@@ -1216,7 +1218,7 @@ function ReceiverCanvas({slot,r,log,onPaint}:Readonly<{slot:number;r:RadioReceiv
    ctx.font='bold 13px sans-serif';ctx.textBaseline='top';
    const width=Math.ceil(ctx.measureText(op.text).width);
    ctx.fillStyle=css(RECEIVER_DISPLAY_COLOURS.background);ctx.fillRect(op.x,op.y,width,16);
-   ctx.fillStyle=css(op.colour);ctx.fillText(op.text,op.x,op.y);
+   ctx.fillStyle=css(op.colour);ctx.fillText(receiverScreenText(op.text,vireo),op.x,op.y);
   };
   const first=log.ops[0];
   if(log.dropped&&first&&first.seq>lastSeq.current+1){
@@ -1228,7 +1230,7 @@ function ReceiverCanvas({slot,r,log,onPaint}:Readonly<{slot:number;r:RadioReceiv
   lastSeq.current=log.nextSeq-1;
  },[log,r]);
  return <canvas ref={ref} width={G.width} height={G.height} className="radio-receiver-canvas" role="img" data-testid={`receiver-canvas-${slot}`}
-  aria-label={t('radioReceiver.canvas.label',{n:slot+1,mode:r.receiving?L.receive:L.stop})}/>;
+  aria-label={t('radioReceiver.canvas.label',{n:slot+1,mode:r.receiving?vireo(L.receive):vireo(L.stop)})}/>;
 }
 
 /** FormCloseQuery box (MessageBox flags 0x40, MB_ICONINFORMATION | MB_OK) with the recovered caption and text; Enter or
@@ -1250,7 +1252,7 @@ function ReceiverCloseBox({caption,text,closeFirst,onDismiss}:Readonly<{caption:
     <p id={`${id}-order`} className="radio-control-note" data-testid="receiver-close-box-order">{t('radioReceiver.box.closeOrder',{n:closeFirst})}</p>
     <p className="radio-control-note">{t('radioReceiver.box.note')}</p>
     <div className="button-row">
-     <button ref={button} type="button" className="primary-button" data-testid="receiver-close-box-ok" onClick={onDismiss}>{t('radioReceiver.box.ok')}</button>
+     <button ref={button} type="button" className="primary-button" data-testid="receiver-close-box-ok" onClick={onDismiss}>{vireo(VB.ok)}</button>
     </div>
    </div>
   </div>
