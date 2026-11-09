@@ -12,8 +12,8 @@ const PHONE_QUERY='(max-width: 599.98px)';
  * TEnvironment1 menu bar, reachable from every route; docs/CLEA-HELP.md). Front Onboarding [W]: it sits in the top row beside the
  * brand on every layout (also on phones, outside the Tools panel, and pinned at the top of the wide sidebar), so it is always
  * visible. `instructor` is Front T1's "Instructor mode…" item,
- * reachable from every route as well. */
-export default function PortalHeader({inert,view,brand,navLabel,help,instructor,children}:{inert:boolean;view:string;brand:ReactNode;navLabel:string;help?:ReactNode;instructor?:ReactNode;children:ReactNode}){
+ * reachable from every route as well. `links` are the GitHub source code and Report a problem buttons (ProjectLinks.tsx). */
+export default function PortalHeader({inert,view,brand,navLabel,help,instructor,links,children}:{inert:boolean;view:string;brand:ReactNode;navLabel:string;help?:ReactNode;instructor?:ReactNode;links?:ReactNode;children:ReactNode}){
  const [open,setOpen]=useState(false),toggle=useRef<HTMLButtonElement>(null),panel=useId();
  useEffect(()=>{setOpen(false);},[view]);
  useEffect(()=>{
@@ -29,7 +29,7 @@ export default function PortalHeader({inert,view,brand,navLabel,help,instructor,
    <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" focusable="false"><path d={open?'M5 5l10 10M15 5L5 15':'M3 5h14M3 10h14M3 15h14'}/></svg>{M.toolsMenu}</button></div>
   <div className="portal-panel" id={panel}>
    <nav aria-label={navLabel} onClick={onNavClick}>{children}</nav>
-   <div className="portal-footer">{instructor}<ThemeSwitch/></div>
+   <div className="portal-footer">{links}{instructor}<ThemeSwitch/></div>
   </div>
  </header>;
 }

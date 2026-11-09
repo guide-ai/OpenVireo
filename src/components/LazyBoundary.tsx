@@ -6,6 +6,7 @@
 // generic notice with the same actions. Not a VIREO behaviour.
 import {Component,createContext,isValidElement,memo,Suspense,useContext,type ErrorInfo,type ReactNode} from 'react';
 import {APP_SHELL_MESSAGES as SHELL} from './AppShellMessages';
+import {PROJECT_LINKS,currentPage,newIssueUrl} from '../help/projectLinks';
 
 export type RecoveryActions=Readonly<{save?:()=>void;busy?:boolean}>;
 /** The shell's Save investigation, for the notice; absent outside the shell (then the notice says how to save). */
@@ -28,6 +29,7 @@ function RecoveryNotice({chunk}:{chunk:boolean}){
    {save&&<button type="button" className="secondary-button" disabled={busy} data-testid="recovery-save" onClick={save}>{R.save}</button>}
    <button type="button" className="primary-button" data-testid="recovery-reload" onClick={()=>location.reload()}>{R.reload}</button>
   </div>
+  {!chunk&&<p><a href={newIssueUrl(currentPage())} target="_blank" rel="noopener noreferrer" data-testid="recovery-report">{PROJECT_LINKS.recoveryReport}<span className="visually-hidden"> {PROJECT_LINKS.newTab}</span></a></p>}
  </section>;
 }
 

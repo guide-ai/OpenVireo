@@ -128,6 +128,7 @@ const SITE:WebHelpGroup={title:'Using the site',topics:[
    'The menu groups every page into sections: Optical observatory, Radio observatory, Analysis, Results Editors, Files and Exercise guides. Click a section\'s name to open or close it; the section of the page you are on opens by itself, and the browser remembers the rest. On a phone the menu is behind the Tools button.',
    'Help is always at the top of the page, also on a phone. Press the ? key anywhere outside a text field to open these help topics; you can turn that key off below.',
    'Help › Take the tour of the site shows the first-visit tour again.',
+   'Source code and Report a problem, at the foot of the menu and in Help, open OpenVireo\'s page on GitHub in a new tab. Report a problem starts a new issue with the name of the page you were on filled in; GitHub asks you to sign in, and nothing is sent until you submit it there.',
    'Tab and Shift+Tab move between controls; Enter or Space presses a button.',
    'Escape closes menus and dialogs.',
    'Direction buttons (telescope and radio) move while held with the mouse, Space or Enter.',

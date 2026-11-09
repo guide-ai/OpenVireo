@@ -7,6 +7,7 @@ import {ABOUT_BOX,HELP_WEBSITES,MAIN_HELP_MENU,QUIT_QUESTION,RADIO_HELP_MENU,REM
 import {HELP_MENU_EN as M} from './HelpMessages';
 import WebHelpDialog from './WebHelpDialog';
 import {helpKeyBlocked} from './helpShortcut';
+import {PROJECT_LINKS,PROJECT_REPO_URL,currentPage,newIssueUrl} from './projectLinks';
 import '../observatory/field-info.css';
 import './help.css';
 
@@ -71,6 +72,10 @@ export function HelpMenu({kind,disabled=false,disabledReason,onSiteAbout,onTour}
      <p className="fi-note fi-menu-note" data-testid="help-websites-note">{M.websitesNote}</p>
     </div>}
     {onSiteAbout&&<button type="button" data-testid="main-help-site-about" onClick={()=>{setMenu(null);trigger.current?.focus();onSiteAbout();}}>{M.siteAbout}</button>}
+    <a href={PROJECT_REPO_URL} target="_blank" rel="noopener noreferrer" className="fi-menu-link" data-testid="main-help-repo" onClick={()=>setMenu(null)}>
+     {PROJECT_LINKS.repoMenu} <span aria-hidden="true">↗</span><span className="visually-hidden"> {PROJECT_LINKS.newTab}</span></a>
+    <a href={newIssueUrl(currentPage())} target="_blank" rel="noopener noreferrer" className="fi-menu-link" data-testid="main-help-report" onClick={()=>setMenu(null)}>
+     {PROJECT_LINKS.reportMenu} <span aria-hidden="true">↗</span><span className="visually-hidden"> {PROJECT_LINKS.newTab}</span></a>
    </>}
    {kind==='radio'&&<>
     <button type="button" data-testid="radio-help-menu-topics" onClick={()=>{setMenu(null);setTopics(n=>n+1);}}>{menuCaptionText(C.topics)}</button>
