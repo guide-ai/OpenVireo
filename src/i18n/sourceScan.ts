@@ -60,9 +60,14 @@ export function pinLines(lines:readonly string[]):string[]{
  return [...counts].map(([l,n])=>n>1?`${l} ×${n}`:l).sort();
 }
 export type PinFile={about:string;[list:string]:unknown};
-/** Compares an inventory with its pin, or rewrites the pin when OPENVIREO_REFRESH_PINS=1. Returns the pinned value to assert on. */
-export function pinned<T>(file:string,list:string,actual:T):T{
+/** Compares an inventory with its pin, or rewrites the pin when OPENVIREO_REFRESH_PINS=1. Returns the pinned value to assert on.
+ * A refresh is refused when CI is set (CI must compare, never rewrite), and a list missing from the pin file is an error. */
+export function pinned<T>(file:string,list:string,actual:T,env:Readonly<Record<string,string|undefined>>=process.env):T{
  const full=path.join(REPOSITORY_ROOT,file),pin=JSON.parse(readFileSync(full,'utf8')) as PinFile;
- if(process.env.OPENVIREO_REFRESH_PINS==='1'){pin[list]=actual;writeFileSync(full,JSON.stringify(pin,null,1)+'\n');return actual;}
+ if(env.OPENVIREO_REFRESH_PINS==='1'){
+  if(env.CI)throw new Error(`OPENVIREO_REFRESH_PINS=1 is refused in CI: refresh ${file} locally and commit the reviewed diff`);
+  pin[list]=actual;writeFileSync(full,JSON.stringify(pin,null,1)+'\n');return actual;
+ }
+ if(!Object.hasOwn(pin,list))throw new Error(`${file} has no "${list}" list; run OPENVIREO_REFRESH_PINS=1 npx vitest run on its test and review the diff`);
  return pin[list] as T;
 }

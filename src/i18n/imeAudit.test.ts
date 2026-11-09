@@ -16,6 +16,10 @@ import {enclosingPlaces,parseSource,pinLines,pinned,readSource,sourceFiles,sourc
 // - `no text field`: unguarded, bound only to elements that neither are nor hold a text field (buttons, canvases, lists);
 // - `unbound here`: no binding in the same file (an exported helper or a handler handed to another component).
 // Offenders are the first three.
+//
+// For SC11, the guard is `e.nativeEvent.isComposing||e.keyCode===229` (both): Safari fires the Enter that confirms a
+// conversion after compositionend, with isComposing false and keyCode 229. A guard on isComposing alone counts as guarded
+// here, so SC11 reviews the existing guards too.
 const OFFENDING=new Set(['text field','contains text field','input target']);
 /** Input types that never take IME text. */
 const NOT_TEXT_INPUT=new Set(['checkbox','radio','button','submit','reset','range','color','file','hidden','image','date','time','datetime-local','month','week']);

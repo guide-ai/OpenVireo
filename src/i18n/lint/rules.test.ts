@@ -1,7 +1,7 @@
 import {describe,expect,it} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {FIXTURES,RULES_WITH_FIXTURES,type Fixture} from './fixtures';
-import {PROFILE_IDS,PROFILES,REGISTER,profileFor} from './profiles';
+import {OPTIONAL_PLURAL_CATEGORIES,PROFILE_IDS,PROFILES,REGISTER,profileFor} from './profiles';
 import {SIMPLIFIED_ONLY,TRADITIONAL_ONLY} from './hanVariants';
 import {collectPairs} from './pairs';
 import {allowances,describeFindings,errorsOf,glossaryFrom,graphemeLength,lintPair,lintPairs,normalizeName,pluralForms,reportsOf,unbalanced,wordSource,type LintData,type LocaleProfile,type Pair} from './rules';
@@ -14,7 +14,7 @@ const name=(f:Fixture,which:'good'|'bad')=>`${f.profile} ${f.rule}${f.note?` (${
 describe('Front SC4: per-locale lint profiles',()=>{
  it('has one profile per planned language, each with the register setting of REGISTER',()=>{
   expect(Object.keys(PROFILES)).toEqual(['ja','hi','zh-Hans','zh-Hant','ru']);
-  expect(REGISTER).toEqual({ja:'desu-masu',hi:'aap',ru:'vy',zh:'ni'});// plan §13 Q1–Q3: recommendations until the user decides
+  expect(REGISTER).toEqual({ja:'desu-masu',hi:'aap',ru:'vy',zh:'ni'});// decided by the user on 2026-11-09 (AGENTS.md; plan §13, §14)
   expect(PROFILE_IDS.map(id=>PROFILES[id].register.setting)).toEqual(['desu-masu','aap','ni','ni','vy']);
  });
  it('declares the plural categories that Intl.PluralRules gives each language',()=>{
@@ -94,6 +94,14 @@ describe('Front SC4: rule details',()=>{
   ]);
   expect(describeFindings(allowances([],ru,{identical:{'catalog:x':'kept'}}))).toEqual(['catalog:x: [allowances] identical.json entry needs a reason']);
  });
+ it('lets a profile mark plural categories optional (Spanish, Portuguese and French many), falling back to other',()=>{
+  expect(OPTIONAL_PLURAL_CATEGORIES).toEqual({es:['many'],pt:['many'],fr:['many']});
+  const es:LocaleProfile={...PROFILES.ru,id:'es-test',name:'Spanish (test)',pluralCategories:pluralCategories('es'),optionalPluralCategories:OPTIONAL_PLURAL_CATEGORIES.es};
+  const forms=(cats:string[])=>Object.fromEntries(cats.map(c=>[`rows.${c}`,`${c} form`]));
+  expect(pluralForms(forms(['one','other']),['rows'],es)).toEqual([]);
+  expect(pluralForms(forms(['one','many','other']),['rows'],es)).toEqual([]);
+  expect(describeFindings(pluralForms(forms(['many','other']),['rows'],es))).toEqual(['catalog:rows: [plural] lacks the one form (Spanish (test) needs one, many, other)']);
+ });
  it('requires exactly the plural categories of the language for keys marked plural',()=>{
   const forms=(cats:string[])=>Object.fromEntries(cats.map(c=>[`files.count.${c}`,`${c} form`]));
   expect(pluralForms(forms(['one','few','many','other']),['files.count'],PROFILES.ru)).toEqual([]);
@@ -101,6 +109,44 @@ describe('Front SC4: rule details',()=>{
   expect(pluralForms(forms(['other']),['files.count'],PROFILES.ja)).toEqual([]);
   expect(describeFindings(pluralForms(forms(['one','other']),['files.count'],PROFILES['zh-Hans']))).toEqual(['catalog:files.count: [plural] has a one form, which Simplified Chinese never selects']);
   expect(pluralForms(forms(['one','other']),['files.count'],PROFILES.hi)).toEqual([]);
+ });
+ it('treats VIREO\'s ... as the ellipsis in Japanese and Chinese, never as ASCII punctuation after CJK',()=>{
+  for(const text of ['名前を付けて保存...','名前を付けて保存…','名前を付けて保存……'])expect(describeFindings(errorsOf(lintPair({id:'x',en:'Save As...',text},PROFILES.ja))),text).toEqual([]);
+  for(const id of ['zh-Hans','zh-Hant'] as const)expect(describeFindings(errorsOf(lintPair({id:'x',en:'Loading...',text:id==='zh-Hans'?'正在加载……':'正在載入……'},PROFILES[id]))),id).toEqual([]);
+  expect(lintPair({id:'x',en:'Save As...',text:'名前を付けて保存..'},PROFILES.ja).map(f=>f.rule)).toContain('typography');
+  expect(lintPair({id:'x',en:'Open the file...',text:'Открыть файл…'},PROFILES.ru).filter(f=>f.rule==='glyphs')).toEqual([]);
+ });
+ it('Spanish hooks for SC9: names set aside before forbidden words, quoted English keeps its marks, an added placeholder by key',()=>{
+  // (a) the forbidden-word check ignores exact VIREO names (es.test.ts VIREO_PULSAR_NAMES on main) but not the word elsewhere.
+  const names=/(?<![\p{L}\p{N}])(?:Access Pulsar List|Plot Pulsar Positions|Pulsar (?:Analysis|Parameters|List|Identification))(?![\p{L}\p{N}])/gu;
+  const q={open:'¿',close:'?',closeAfter:/[\p{L}\d)»”…}]/u,closeBefore:/[\s)»”.,;:]|$/};
+  const spanish:LocaleProfile={...PROFILES.ru,id:'es-test',name:'Spanish (test)',script:null,caseFold:'es',pairs:[q,{open:'¡',close:'!',closeAfter:q.closeAfter,closeBefore:q.closeBefore}],register:{setting:'test',patterns:[]},typography:[],forbiddenMarks:[],forbiddenSetAside:names};
+  const glossary={forbidden:[{words:['pulsar'],use:'presionar'}]};
+  expect(lintPair({id:'x',en:'Open Pulsar Parameters.',text:'Abre Parámetros de púlsares (Pulsar Parameters).'},spanish,{glossary}).filter(f=>f.rule==='glossary')).toEqual([]);
+  expect(lintPair({id:'x',en:'Press Pulsar Parameters.',text:'Pulsar Parámetros de púlsares (Pulsar Parameters).'},spanish,{glossary}).map(f=>f.rule)).toContain('glossary');
+  expect(lintPair({id:'x',en:'Open Pulsar Parameters.',text:'Abre Parámetros de púlsares (Pulsar Parameters).'},{...spanish,forbiddenSetAside:undefined},{glossary}).map(f=>f.rule)).toContain('glossary');
+  // (b) a VIREO message quoted in English inside “…” keeps its own ! and ?, only when the English contains it.
+  expect(lintPair({id:'x',en:'VIREO says “Done!”',text:'VIREO dice “Done!”'},spanish).filter(f=>f.rule==='pairs')).toEqual([]);
+  expect(lintPair({id:'x',en:'VIREO says “Done!”',text:'VIREO dice “Listo!”'},spanish).map(f=>f.rule)).toContain('pairs');
+  // (c) an original that gains a value: only the named placeholder, for that key.
+  const p:Pair={id:'original:fragment|Meter Radio Telescope',en:'Meter Radio Telescope',text:'Radiotelescopio de {diameter} metros'};
+  const allowed={[p.id]:{placeholders:['{diameter}'],reason:'VIREO composes the diameter before this fragment; Spanish puts it inside'}};
+  expect(lintPair(p,spanish).map(f=>f.rule)).toContain('placeholders');
+  expect(errorsOf(lintPair(p,spanish,{allowed}))).toEqual([]);
+  expect(errorsOf(lintPair({...p,text:'Radiotelescopio de {diameter} metros {size}'},spanish,{allowed})).map(f=>f.message)).toEqual(['adds {size}, which the English does not have']);
+  expect(describeFindings(allowances([{...p,text:'Radiotelescopio'}],spanish,{allowed}))).toEqual([`${p.id}: [allowances] allows placeholder {diameter}, which no longer differs from the English`]);
+ });
+ it('passes denials of a claim and the polite Japanese endings; flags plain endings and Russian/Hindi tú-forms (review 1 cases)',()=>{
+  const rules=(id:keyof typeof PROFILES,text:string,en='x')=>lintPair({id:'x',en,text},PROFILES[id]).map(f=>f.rule);
+  for(const [id,text] of [['ja','非公式翻訳'],['ja','公式翻訳ではありません'],['ja','CLEAによる翻訳ではありません'],['zh-Hans','非官方翻译'],['zh-Hant','非官方翻譯'],['ru','Это неофициальный перевод'],['ru','Это не официальный перевод'],['hi','गैर-आधिकारिक अनुवाद']] as const)expect(rules(id,text),text).not.toContain('claim');
+  for(const [id,text] of [['ja','公式翻訳です'],['zh-Hans','官方翻译'],['ru','Официальный перевод'],['hi','आधिकारिक अनुवाद']] as const)expect(rules(id,text),text).toContain('claim');
+  for(const text of ['確認してください。','始めましょう。','終わりでした。','開きますか。','開きません。','終わりました。','終わりませんでした。','いいでしょう。'])expect(rules('ja',text),text).not.toContain('register');
+  for(const text of ['ドームを開く。','スペクトルを読む。','記録を残す。','露出を待つ。','露出は長い。','露出が終わった。','準備ができない。'])expect(rules('ja',text),text).toContain('register');
+  expect(rules('ru','Поверни купол.')).toContain('register');expect(rules('ru','Телескоп в Вашингтоне.')).not.toContain('register');
+  for(const text of ['गुंबद घुमाओ।','संकेत सुनो।'])expect(rules('hi',text),text).toContain('register');
+  for(const id of ['ja','ru'] as const)expect(rules(id,id==='ja'?'形式：YYYY-MM-DDTHH:MM:SS':'Формат: YYYY-MM-DDTHH:MM:SS','Format: YYYY-MM-DDTHH:MM:SS'),id).not.toContain('leftover-english');
+  expect(rules('ru','С 1990—2000 гг.')).not.toContain('typography');
+  expect(rules('ja','露出完了。')).not.toContain('purity');expect(rules('ja','保存完了。')).not.toContain('purity');
  });
  it('counts length in grapheme clusters, not UTF-16 units',()=>{
   expect(graphemeLength('क्षत्रिय')).toBe(3);expect(graphemeLength('望遠鏡')).toBe(3);expect(graphemeLength('👩\u200d🔬')).toBe(1);

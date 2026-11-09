@@ -45,9 +45,15 @@ export type LocaleProfile=Readonly<{
  /** Grapheme-count ratio translation/English outside which a string is reported (not failed). */
  lengthBand:readonly [number,number];
  pluralCategories:readonly PluralCategory[];
+ /** Categories a plural key may leave out, falling back to `other` as plural() does (Spanish, Portuguese and French `many`:
+ * exact millions, «de millones»). */
+ optionalPluralCategories?:readonly PluralCategory[];
+ /** Text set aside before the glossary's forbidden-word check: exact names that hold a forbidden word on purpose (Spanish:
+ * VIREO's English «Pulsar Parameters» glossed in brackets, while the verb «pulsar» elsewhere in the string still fails). */
+ forbiddenSetAside?:RegExp;
  /** Characters that mark the other written form of the language (zh-Hans ↔ zh-Hant), with the expected form. */
  otherScript?:Readonly<{label:string;characters:ReadonlyMap<string,string>}>;
- /** Japanese: a sentence (ending in 。) of four or more Han characters and no kana reads as Chinese. */
+ /** Japanese: a sentence (ending in 。) of six or more Han characters and no kana reads as Chinese. */
  kanaInSentences?:boolean;
  /** ZWJ/ZWNJ are allowed only between two characters of this script (Devanagari conjunct control). */
  joinerScript?:RegExp;
@@ -59,8 +65,10 @@ export type GlossaryForbidden=Readonly<{words?:readonly string[];pattern?:string
  * English source, the translation must match `text` (a stem or pattern). `names`: fixed interface names (an `exact` name
  * applies only to a whole string). `forbidden`: words or patterns that never appear. */
 export type Glossary=Readonly<{terms?:readonly GlossaryTerm[];names?:readonly GlossaryName[];forbidden?:readonly GlossaryForbidden[]}>;
-/** A finding the language accepts in one string: forbidden `words` found there, or whole `rules`, always with a reason. */
-export type Allowance=Readonly<{words?:readonly string[];rules?:readonly RuleId[];reason:string}>;
+/** A finding the language accepts in one string, always with a reason: forbidden `words` found there, `placeholders` the
+ * translation may add (an original that gains a value, such as `fragment|Meter Radio Telescope` gaining `{diameter}`), or
+ * whole `rules`. */
+export type Allowance=Readonly<{words?:readonly string[];placeholders?:readonly string[];rules?:readonly RuleId[];reason:string}>;
 export type LintData=Readonly<{
  glossary?:Glossary;
  /** Strings that may equal their English source (or have no character of the script), each with a reason (identical.json). */
@@ -96,8 +104,8 @@ export const graphemeLength=(s:string)=>{let n=0;for(const _ of graphemes.segmen
 export function placeholders(p:Pair):Finding[]{
  const tally=(s:string)=>{const m=new Map<string,number>();for(const x of s.match(PLACEHOLDER)??[])m.set(x,(m.get(x)??0)+1);return m;};
  const a=tally(p.en),b=tally(p.text),out:Finding[]=[];
- for(const [x,n] of a){const k=b.get(x)??0;if(k!==n)out.push(finding('placeholders',p.id,k?`${x} ×${k} instead of ×${n}`:`drops ${x}`));}
- for(const x of b.keys())if(!a.has(x))out.push(finding('placeholders',p.id,`adds ${x}, which the English does not have`));
+ for(const [x,n] of a){const k=b.get(x)??0;if(k!==n)out.push(finding('placeholders',p.id,k?`${x} ×${k} instead of ×${n}`:`drops ${x}`,x));}
+ for(const x of b.keys())if(!a.has(x))out.push(finding('placeholders',p.id,`adds ${x}, which the English does not have`,x));
  return out;
 }
 export function html(p:Pair):Finding[]{
@@ -113,7 +121,10 @@ export function identical(p:Pair,profile:LocaleProfile,data:LintData):Finding[]{
 }
 /** Bracketed and quoted spans (a VIREO English gloss, a quoted English message) and placeholders are set aside first. */
 const SET_ASIDE=/\([^()]*\)|（[^（）]*）|\[[^\]]*\]|“[^”]*”|「[^」]*」|『[^』]*』|«[^»]*»|„[^“]*“|《[^》]*》|\{[^}]*\}/gu;
-const ENGLISH_RUN=/\p{sc=Latn}+(?:[ \u00a0'’-]+\p{sc=Latn}+){2,}/u;
+/** A word holds a lower-case Latin letter, so acronyms (CCD FITS UT) and format tokens (YYYY-MM-DDTHH:MM:SS: a hyphen joins,
+ * it does not separate words) are not read as English. */
+const LATIN_WORD='\\p{sc=Latn}*(?:(?=\\p{sc=Latn})\\p{Ll})\\p{sc=Latn}*';
+const ENGLISH_RUN=new RegExp(`(?<![\\p{sc=Latn}\\p{N}-])${LATIN_WORD}(?:[ \\u00a0'’]+${LATIN_WORD}){2,}(?![\\p{sc=Latn}\\p{N}-])`,'u');
 /** Three or more Latin-script words in a row, outside brackets and quotes, in a non-Latin language: left-over English. */
 export function leftoverEnglish(p:Pair,profile:LocaleProfile):Finding[]{
  if(!profile.script||p.text===p.en)return [];
@@ -125,9 +136,10 @@ export function glossary(p:Pair,profile:LocaleProfile,data:LintData):Finding[]{
  const out:Finding[]=[],english=p.en.replace(/\{[\p{L}\p{N}_]+\}/gu,'');
  for(const t of g.terms??[])if(new RegExp(t.en,'i').test(english)&&!new RegExp(t.text,'iu').test(p.text))out.push(finding('glossary',p.id,`"${t.en}" needs «${t.text}»`));
  for(const n of g.names??[])if(!n.except?.[p.id]&&(n.exact?normalizeName(p.en)===n.en:p.en.includes(n.en))&&!fold(profile,p.text).includes(fold(profile,n.text)))out.push(finding('glossary',p.id,`"${n.en}" must read «${n.text}»`));
+ const aside=profile.forbiddenSetAside,checked=aside?p.text.replace(new RegExp(aside.source,aside.flags.includes('g')?aside.flags:aside.flags+'g'),' '):p.text;
  for(const f of g.forbidden??[]){
-  if(f.words){for(const w of f.words){const m=new RegExp(wordSource(w,profile.boundary),'iu').exec(p.text);if(m)out.push(finding('glossary',p.id,`forbidden «${m[0]}», use ${f.use}`,m[0]));}}
-  else if(f.pattern){const m=new RegExp(f.pattern,'iu').exec(p.text);if(m)out.push(finding('glossary',p.id,`forbidden /${f.pattern}/ («${m[0]}»), use ${f.use}`,m[0]));}
+  if(f.words){for(const w of f.words){const m=new RegExp(wordSource(w,profile.boundary),'iu').exec(checked);if(m)out.push(finding('glossary',p.id,`forbidden «${m[0]}», use ${f.use}`,m[0]));}}
+  else if(f.pattern){const m=new RegExp(f.pattern,'iu').exec(checked);if(m)out.push(finding('glossary',p.id,`forbidden /${f.pattern}/ («${m[0]}»), use ${f.use}`,m[0]));}
  }
  return out;
 }
@@ -169,11 +181,12 @@ export function unbalanced(text:string,pair:MarkPair):string|null{
  return depth>0?`${pair.open} without ${pair.close}`:null;
 }
 /** Paired marks balance (an `english` pair is not checked where the English leaves it unbalanced); a `fragment|` original is one piece of a
- * VIREO text composed around data, so its marks pair across pieces (as for Spanish). */
+ * VIREO text composed around data, so its marks pair across pieces (as for Spanish). A VIREO message quoted in English inside
+ * “…”, as the English quotes it, keeps its own marks: the quoted text is set aside when the English contains it (Spanish ¡! ¿?). */
 export function markPairs(p:Pair,profile:LocaleProfile):Finding[]{
  if(p.id.startsWith('original:fragment|'))return [];
- const out:Finding[]=[];
- for(const pair of profile.pairs){if(pair.english&&unbalanced(p.en,pair))continue;const issue=unbalanced(p.text,pair);if(issue)out.push(finding('pairs',p.id,issue));}
+ const out:Finding[]=[],text=p.text.replace(/“([^”]*)”/gu,(m,q:string)=>q&&p.en.includes(q)?'“”':m);
+ for(const pair of profile.pairs){if(pair.english&&unbalanced(p.en,pair))continue;const issue=unbalanced(text,pair);if(issue)out.push(finding('pairs',p.id,issue));}
  return out;
 }
 export function quotes(p:Pair,profile:LocaleProfile):Finding[]{
@@ -205,7 +218,7 @@ const KANA=/[\p{sc=Hira}\p{sc=Kana}]/u,HAN=/\p{sc=Han}/gu;
 export function purity(p:Pair,profile:LocaleProfile):Finding[]{
  const out:Finding[]=[];
  if(profile.otherScript)for(const ch of p.text){const want=profile.otherScript.characters.get(ch);if(want)out.push(finding('purity',p.id,`«${ch}» is ${profile.otherScript.label}; use «${want}»`,ch));}
- if(profile.kanaInSentences)for(const sentence of p.text.split('。').slice(0,-1))if((sentence.match(HAN)?.length??0)>=4&&!KANA.test(sentence))out.push(finding('purity',p.id,`«${sentence}。» has no kana and reads as Chinese`));
+ if(profile.kanaInSentences)for(const sentence of p.text.split('。').slice(0,-1))if((sentence.match(HAN)?.length??0)>=6&&!KANA.test(sentence))out.push(finding('purity',p.id,`«${sentence}。» has no kana and reads as Chinese`));
  return out;
 }
 /** Reported, never failed: the ratio of grapheme clusters outside the profile's band (English longer than 12). */
@@ -215,10 +228,12 @@ export function length(p:Pair,profile:LocaleProfile):Finding[]{
 }
 /** Every rule that reads one string. */
 export const PAIR_RULES:readonly ((p:Pair,profile:LocaleProfile,data:LintData)=>Finding[])[]=[placeholders,html,identical,leftoverEnglish,glossary,register,claim,glyphs,markPairs,quotes,typography,digits,normalization,invisible,purity,length];
-/** A finding the language accepted for that string (lint-allowed.json): by rule, or by the forbidden word it matched. */
+/** A finding the language accepted for that string (lint-allowed.json): by rule, by the placeholder it added, or by the
+ * forbidden word it matched. */
 function accepted(f:Finding,data:LintData,profile:LocaleProfile):boolean{
  const a=data.allowed?.[f.id];if(!a)return false;
  if(a.rules?.includes(f.rule))return true;
+ if(f.rule==='placeholders')return f.match!==undefined&&!!a.placeholders?.includes(f.match);
  return f.match!==undefined&&!!a.words?.some(w=>fold(profile,w)===fold(profile,f.match!));
 }
 /** All findings for one string, less the accepted ones. */
@@ -234,15 +249,17 @@ export function allowances(all:readonly Pair[],profile:LocaleProfile,data:LintDa
   const p=byId.get(id);if(!p){out.push(finding('allowances',id,'lint-allowed.json entry for a string that does not exist'));continue;}
   const raw=PAIR_RULES.flatMap(rule=>rule(p,profile,{...data,allowed:{}}));
   for(const r of a.rules??[])if(!raw.some(f=>f.rule===r))out.push(finding('allowances',id,`allows rule ${r}, which no longer fires`));
-  for(const w of a.words??[])if(!raw.some(f=>f.match!==undefined&&fold(profile,f.match)===fold(profile,w)))out.push(finding('allowances',id,`allows «${w}», which no longer appears`));
+  for(const w of a.words??[])if(!raw.some(f=>f.rule!=='placeholders'&&f.match!==undefined&&fold(profile,f.match)===fold(profile,w)))out.push(finding('allowances',id,`allows «${w}», which no longer appears`));
+  for(const x of a.placeholders??[])if(!raw.some(f=>f.rule==='placeholders'&&f.match===x))out.push(finding('allowances',id,`allows placeholder ${x}, which no longer differs from the English`));
  }
  return out;
 }
-/** Keys marked plural must have exactly the language's categories, as `<key>.<category>` catalog entries. */
+/** Keys marked plural must have the language's categories, as `<key>.<category>` catalog entries (an optional category may be
+ * left out: plural() then uses `other`), and no category the language never selects. */
 export function pluralForms(catalog:Readonly<Record<string,string>>,pluralKeys:readonly string[],profile:LocaleProfile):Finding[]{
  const out:Finding[]=[],all=['zero','one','two','few','many','other'];
  for(const key of pluralKeys){
-  for(const c of profile.pluralCategories)if(typeof catalog[`${key}.${c}`]!=='string')out.push(finding('plural',`catalog:${key}`,`lacks the ${c} form (${profile.name} needs ${profile.pluralCategories.join(', ')})`));
+  for(const c of profile.pluralCategories)if(!profile.optionalPluralCategories?.includes(c)&&typeof catalog[`${key}.${c}`]!=='string')out.push(finding('plural',`catalog:${key}`,`lacks the ${c} form (${profile.name} needs ${profile.pluralCategories.join(', ')})`));
   for(const c of all)if(!profile.pluralCategories.includes(c as PluralCategory)&&Object.hasOwn(catalog,`${key}.${c}`))out.push(finding('plural',`catalog:${key}`,`has a ${c} form, which ${profile.name} never selects`));
  }
  return out;

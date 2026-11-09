@@ -39,6 +39,14 @@ describe('Front SC5: plural forms by CLDR category (Intl.PluralRules)',()=>{
   expect(plural('qps-cjk',1,FORMS)).toBe('1 file');
   expect(pluralCategory('ru',Number.NaN)).toBe('other');expect(pluralCategory('en',Infinity)).toBe('other');
  });
+ it('never reuses rules built for other options (each option is part of the cache key)',()=>{
+  expect(pluralCategory('en',1)).toBe('one');
+  expect(pluralCategory('en',1,{minimumSignificantDigits:2})).toBe('other');// "1.0"
+  expect(pluralCategory('en',1.2)).toBe('other');
+  expect(pluralCategory('en',1.2,{maximumSignificantDigits:1})).toBe('one');// "1"
+  expect(pluralCategory('en',1.2,{maximumFractionDigits:0})).toBe('one');
+  expect(pluralCategory('en',1.2,{maximumSignificantDigits:2})).toBe('other');
+ });
  it('lists the categories a set of forms lacks',()=>{
   expect(missingPluralForms('ru',{one:'a',other:'b'})).toEqual(['few','many']);
   expect(missingPluralForms('ja',{other:'b'})).toEqual([]);
@@ -95,6 +103,13 @@ function pluralSites(file:string,text:string,program=parseSource(file,text)):str
  return out;
 }
 const PINS='src/i18n/plural-sites.json';
+describe('Front SC5: pins',()=>{
+ it('refuses a refresh in CI and names a list missing from the pin file',()=>{
+  expect(()=>pinned(PINS,'codeSites',[],{OPENVIREO_REFRESH_PINS:'1',CI:'true'})).toThrow(/refused in CI/);
+  expect(()=>pinned(PINS,'noSuchList',[],{})).toThrow(/has no "noSuchList" list/);
+  expect(pinned(PINS,'twoFormKeyFamilies',[],{})).toContain('obsHr.current ×2');
+ });
+});
 describe('Front SC5: inventory of the two-form plural sites (converted in SC11; this front changes none)',()=>{
  it('recognises plural choices and leaves other comparisons with 1 alone',()=>{
   const sites=(code:string)=>pluralSites('fixture.ts',code);

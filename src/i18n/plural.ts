@@ -22,7 +22,8 @@ export function pluralLanguage(language:string):string{
  try{return Intl.PluralRules.supportedLocalesOf(language).length?language:'en';}catch{return 'en';}
 }
 function rulesFor(language:string,options:Intl.PluralRulesOptions={}):Intl.PluralRules{
- const tag=pluralLanguage(language),key=`${tag}|${options.type??'cardinal'}|${options.minimumFractionDigits??''}|${options.maximumFractionDigits??''}`;
+ // Keyed by every option (sorted), so rules built for one digit setting are never reused for another.
+ const tag=pluralLanguage(language),key=`${tag}|${JSON.stringify(Object.entries(options).filter(([,v])=>v!==undefined).sort(([a],[b])=>a<b?-1:1))}`;
  let r=rules.get(key);if(!r){r=new Intl.PluralRules(tag,options);rules.set(key,r);}
  return r;
 }
