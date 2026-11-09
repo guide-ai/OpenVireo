@@ -117,10 +117,15 @@ export function clusterRecordsReport(name:string,type:0|1,sort:0|1,limit:number,
 /** 0x53435b–0x534452: the reader returned no star in the rectangle → MessageBox (MB_ICONERROR) caption `No Stars Found in
  * Field!` with the rectangle (6, 6, 5, 5 decimals) and the limit (3 decimals); the query then ends without touching the bank. */
 export const CLUSTER_EMPTY_FIELD_CAPTION='No Stars Found in Field!';
-export function clusterEmptyFieldText(a:Readonly<{minimumRa:number;maximumRa:number;minimumDec:number;maximumDec:number}>,limit:number):string{
- return 'Possible Error in Field Parameters:\r\n\r\nMinRA: '+delphiFixed(a.minimumRa,6)+'\r\nMaxRA: '+delphiFixed(a.maximumRa,6)
-  +'\r\nMinDec: '+delphiFixed(a.minimumDec,5)+'\r\nMaxDec: '+delphiFixed(a.maximumDec,5)+'\r\nLimitMag: '+delphiFixed(Math.fround(limit),3);
+export const CLUSTER_EMPTY_FIELD_LITERALS=Object.freeze({head:'Possible Error in Field Parameters:',minRa:'MinRA: ',maxRa:'MaxRA: ',minDec:'MinDec: ',maxDec:'MaxDec: ',limitMag:'LimitMag: '});
+/** `tr` shows a literal in the screen language (the web passes vireo(); default unchanged). The numbers are not translated. */
+export function clusterEmptyFieldText(a:Readonly<{minimumRa:number;maximumRa:number;minimumDec:number;maximumDec:number}>,limit:number,tr:(literal:string)=>string=literal=>literal):string{
+ const E=CLUSTER_EMPTY_FIELD_LITERALS;
+ return tr(E.head)+'\r\n\r\n'+tr(E.minRa)+delphiFixed(a.minimumRa,6)+'\r\n'+tr(E.maxRa)+delphiFixed(a.maximumRa,6)
+  +'\r\n'+tr(E.minDec)+delphiFixed(a.minimumDec,5)+'\r\n'+tr(E.maxDec)+delphiFixed(a.maximumDec,5)+'\r\n'+tr(E.limitMag)+delphiFixed(Math.fround(limit),3);
 }
+/** Create New Hot List of Entire List (Front O M15) box: caption, then head + cluster stem + tail. */
+export const CLUSTER_ENTIRE_LITERALS=Object.freeze({caption:'New Hot List Created',head:'All stars from cluster ',tail:' placed in Hot List'});
 /** Create New Hot List of Entire List (Front O M15): stem := name cut before any '(' and the spaces before it. */
 export function clusterEntireListStem(name:string):string{const i=name.indexOf('(');return (i<0?name:name.slice(0,i)).replace(/\s+$/,'');}
 

@@ -25,19 +25,22 @@ export type ClusterHrPrintPage=Readonly<{lines:readonly ClusterHrPrintLine[];pag
 export const CLUSTER_HR_PRINT_LITERALS=Object.freeze({
  lab:'     Laboratory Table Number (Not Recorded)',zams:'Fit of Zero-Age Main Sequence:',modulus:'V - Mv = ',ebv:'E(B-V) = ',
  caption:'Color-Magnitude Diagram',nextPage:'(Screen Image Printed on Next Page)',page2:' - Page 2',title:'CLEA Cluster Exercise - '});
-export function clusterHrPrintPage(input:Readonly<{dateText:string;zamsShown:boolean;modulusTicks:number;ebvTicks:number;orientation:ClusterHrPrintOrientation}>):ClusterHrPrintPage{
- const L=CLUSTER_HR_PRINT_LITERALS,x0=input.orientation==='landscape'?50:0,lines:ClusterHrPrintLine[]=[];
+export function clusterHrPrintPage(input:Readonly<{dateText:string;zamsShown:boolean;modulusTicks:number;ebvTicks:number;orientation:ClusterHrPrintOrientation;
+ /** Front ES7: shows a literal in the screen language (the web passes vireo()); the default keeps it, so English is unchanged. The
+  * date and the numbers are not translated. */
+ tr?:(literal:string)=>string}>):ClusterHrPrintPage{
+ const L=CLUSTER_HR_PRINT_LITERALS,tr=input.tr??((literal:string)=>literal),x0=input.orientation==='landscape'?50:0,lines:ClusterHrPrintLine[]=[];
  const add=(kind:ClusterHrPrintLine['kind'],text:string|null,x:number,gap:ClusterHrPrintLine['gap'],suffix?:string)=>lines.push(Object.freeze({kind,text,x,gap,...(suffix===undefined?{}:{suffix})}));
- add('date',input.dateText+L.lab,x0,{h:0});
+ add('date',input.dateText+tr(L.lab),x0,{h:0});
  add('students',null,x0,{h:2});
  if(input.zamsShown&&input.modulusTicks!==0){
-  add('zams',L.zams,x0,{h:2});
-  add('modulus',L.modulus+delphiFixed(input.modulusTicks/100,2),x0+150,{h:1});
-  add('ebv',L.ebv+delphiFixed(input.ebvTicks/100,2),x0+150,{h:1});
+  add('zams',tr(L.zams),x0,{h:2});
+  add('modulus',tr(L.modulus)+delphiFixed(input.modulusTicks/100,2),x0+150,{h:1});
+  add('ebv',tr(L.ebv)+delphiFixed(input.ebvTicks/100,2),x0+150,{h:1});
  }
- add('caption',L.caption,x0,{h:3});
+ add('caption',tr(L.caption),x0,{h:3});
  if(input.orientation==='portrait')return Object.freeze({lines:Object.freeze(lines),page2:false,imageGap:{h:1}});
- add('next-page',L.nextPage,700,{px:300});
- add('page-2',null,x0,{px:0},L.page2);
+ add('next-page',tr(L.nextPage),700,{px:300});
+ add('page-2',null,x0,{px:0},tr(L.page2));
  return Object.freeze({lines:Object.freeze(lines),page2:true,imageGap:{px:70}});
 }

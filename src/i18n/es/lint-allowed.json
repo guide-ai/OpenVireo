@@ -6,6 +6,12 @@
     "cargue"
    ],
    "reason": "third-person subjunctive in «la próxima vez que se cargue la página», not an usted imperative"
+  },
+  "map:clusterData.useTelescopeOff": {
+   "words": [
+    "use"
+   ],
+   "reason": "the quoted VIREO caption “Use Telescope Coordinates” in English, not a Spanish imperative"
   }
  }
 }

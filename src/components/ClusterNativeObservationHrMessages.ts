@@ -1,6 +1,8 @@
 import{t}from'../i18n';
 import type{StoredNumber}from'../core/nativeObservationResults';
 import {lazyMessages} from '../i18n/registry';
+import {vireo} from '../i18n/vireo';
+import {CLUSTER_HR_CAPTIONS} from '../core/clusterHrCaptions';
 /** Stable presentation keys use the shared English catalog;scientific source/report values remain unchanged.
  * Front ES0: catalog-backed (every text comes from t), so it is not a pickMessages map; built on first use, after boot. */
 export const CLUSTER_NATIVE_HR_MESSAGES=lazyMessages(()=>({
@@ -29,7 +31,7 @@ export const CLUSTER_NATIVE_HR_MESSAGES=lazyMessages(()=>({
  downloadNote:t("obsHr.downloadNote"),
  errors:{"size":t("obsHr.errors.size"),"layout":t("obsHr.errors.layout"),"text":t("obsHr.errors.text"),"key":t("obsHr.errors.key"),"limit":t("obsHr.errors.limit"),"read":t("obsHr.errors.read")},
  dismiss:t("obsHr.dismiss"),
- plotHeading:t("obsHr.plotHeading"),
+ plotHeading:vireo(CLUSTER_HR_CAPTIONS.loadPlot),
  plotButton:t("obsHr.plotButton"),
  plotHelp:t("obsHr.plotHelp"),
  notPlotted:t("obsHr.notPlotted"),
@@ -51,7 +53,7 @@ export const CLUSTER_NATIVE_HR_MESSAGES=lazyMessages(()=>({
  modelError:t("obsHr.modelError"),
  retryModel:t("obsHr.retryModel"),
  distanceOption:t("obsHr.distanceOption"),
- reportHeading:t("obsHr.reportHeading"),
+ reportHeading:vireo(CLUSTER_HR_CAPTIONS.viewPrintParameters),
  reportNote:t("obsHr.reportNote"),
  recordsSummary:t("obsHr.recordsSummary"),
  colIndex:t("obsHr.colIndex"),

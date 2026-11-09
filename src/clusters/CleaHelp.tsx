@@ -6,6 +6,7 @@ import {fetchBundledClusterHelp} from '../io/bundledClusterHelp';
 import {HELP_FILES,helpFile,type HelpFileIdentity} from '../help/helpFiles';
 import {HELP_MENU} from '../help/HelpMessages';
 import {vireo} from '../i18n/vireo';
+import {CLUSTER_HR_CAPTIONS as C} from '../core/clusterHrCaptions';
 import {CLUSTER_HR as M} from './ClusterHrMessages';
 import ClusterPrintPreview from './ClusterPrintPreview';
 import './cluster-hr.css';
@@ -27,8 +28,9 @@ type Search=Readonly<{query:string;matchCase:boolean}>;
 type Topic=Readonly<{index:number;body:HelpTopicBody;selected:number}>;
 
 /** A ListBox: one selected row, arrow keys/Home/End move, Enter or double-click activates. */
-export function HelpListBox({rows,selected,onSelect,onActivate,label,testId,wrap=false,columns=false}:{rows:readonly string[];selected:number;onSelect:(i:number)=>void;onActivate:(i:number)=>void;label:string;testId:string;wrap?:boolean;
- /** Column-built native lines: monospace, full width, scrolled horizontally (never cut). */ columns?:boolean}){
+export function HelpListBox({rows,selected,onSelect,onActivate,label,testId,wrap=false,columns=false,lang}:{rows:readonly string[];selected:number;onSelect:(i:number)=>void;onActivate:(i:number)=>void;label:string;testId:string;wrap?:boolean;
+ /** Column-built native lines: monospace, full width, scrolled horizontally (never cut). */ columns?:boolean;
+ /** Front ES7: `en` for native lines that mirror VIREO's own text. */ lang?:string}){
  const id=useId(),list=useRef<HTMLUListElement>(null);
  useEffect(()=>{list.current?.querySelector<HTMLElement>(`[data-row="${selected}"]`)?.scrollIntoView({block:'nearest'});},[selected]);
  function key(e:KeyboardEvent<HTMLUListElement>){
@@ -38,7 +40,7 @@ export function HelpListBox({rows,selected,onSelect,onActivate,label,testId,wrap
   else if(e.key==='Enter'){e.preventDefault();if(selected>=0)onActivate(selected);return;}else return;
   e.preventDefault();if(next>=0)onSelect(next);
  }
- return <ul ref={list} role="listbox" tabIndex={0} aria-label={label} data-testid={testId} className={`cluster-hr-listbox${wrap?' cluster-hr-wrap':''}${columns?' cluster-hr-columns':''}`}
+ return <ul ref={list} role="listbox" tabIndex={0} lang={lang} aria-label={label} data-testid={testId} className={`cluster-hr-listbox${wrap?' cluster-hr-wrap':''}${columns?' cluster-hr-columns':''}`}
   aria-activedescendant={selected>=0?`${id}-${selected}`:undefined} onKeyDown={key}>
   {rows.map((r,i)=><li key={i} id={`${id}-${i}`} data-row={i} role="option" aria-selected={i===selected} onClick={()=>onSelect(i)} onDoubleClick={()=>onActivate(i)}>{r===''?' ':r}</li>)}
  </ul>;
@@ -112,12 +114,12 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
  function openTopic(rows:readonly HelpRow[],index:number,push:boolean,base:HelpHistory=history){
   if(!loaded)return;
   const file=helpFile(rows[index].file);
-  if(!file){setMessage({caption:M.topicFileCaption,text:M.topicFileMissing(rows[index].file)});return;}
+  if(!file){setMessage({caption:vireo(C.topicFileCaption),text:vireo(C.topicFileMissingHead)+rows[index].file+vireo(C.topicFileMissingTail)});return;}
   void loadText(file).then(txt=>showTopic(rows,index,push,base,txt),()=>setMessage({caption:M.topicFileErrorCaption,text:M.topicFileError(file.name)}));
  }
  function showTopic(rows:readonly HelpRow[],index:number,push:boolean,base:HelpHistory,txt:Uint8Array){
   const body=helpTopicBody(txt,rows[index].title);
-  if(!body){setMessage({caption:M.topicNotFoundCaption,text:M.topicNotFound(rows[index].title.replace(/^ +/,''))});return;}
+  if(!body){setMessage({caption:vireo(C.topicNotFoundCaption),text:vireo(C.topicNotFoundHead)+rows[index].title.replace(/^ +/,'')+vireo(C.topicNotFoundTail)});return;}
   setTopic({index,body,selected:-1});setListIndex(index);setHistory(push?helpHistoryOpen(base,index):base);setTopicMenu(false);
  }
  /** Focus the topic heading once the topic window has rendered (its text arrives from a fetch, so a frame callback could
@@ -128,7 +130,7 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
   const r=readHelpRow(loaded.rows,i);setStatus('');
   if(!r)return;
   if(r.kind==='separator'){setStatus(M.separatorNote);return;}
-  if(r.kind==='heading'){setMessage({caption:M.headingCaption,text:r.message});return;}
+  if(r.kind==='heading'){setMessage({caption:vireo(C.headingCaption),text:r.message});return;}
   setListOpen(false);openTopic(loaded.rows,r.index,pushHistory);
  }
  function submitSearch(s:Search,mode:'top'|'next'){
@@ -136,10 +138,10 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
   if(!loaded)return;
   if(kind==='topic'){
    const r=findHelpTopic(loaded.rows,s.query,s.matchCase,mode==='top'?0:listIndex+1);
-   if(r.kind==='hit')setListIndex(r.index);else if(r.kind==='miss')setMessage({caption:M.notFoundCaption,text:helpNotFoundText(s.query)});
+   if(r.kind==='hit')setListIndex(r.index);else if(r.kind==='miss')setMessage({caption:vireo(C.notFoundCaption),text:helpNotFoundText(s.query)});
   }else if(kind==='text'&&topic){
    const r=searchRadioHotListRows(topic.body.rows,s.query,s.matchCase,mode==='top'?0:topic.selected+1);
-   if(r.kind==='hit')setTopic({...topic,selected:r.index});else setMessage({caption:M.notFoundCaption,text:helpNotFoundText(s.matchCase?s.query:foldAsciiCase(s.query))});
+   if(r.kind==='hit')setTopic({...topic,selected:r.index});else setMessage({caption:vireo(C.notFoundCaption),text:helpNotFoundText(s.matchCase?s.query:foldAsciiCase(s.query))});
   }
  }
  function activateBodyRow(i:number){
@@ -161,11 +163,11 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
    {load==='error'&&<span role="alert">{M.helpLoadError} <button type="button" className="secondary-button" onClick={()=>void openHelp()}>{M.helpRetry}</button></span>}
   </div>:(load==='loading'||load==='error')&&<p className="cluster-hr-note" role={load==='error'?'alert':'status'}>{load==='error'?M.helpLoadError:M.helpLoading}</p>}
   {loaded&&<dialog ref={listDialog} className="ob-dialog" aria-labelledby={`${id}-list`} data-testid={`${testId}-topics`} onCancel={e=>{e.preventDefault();setListOpen(false);returnFocus();}}>
-   <h2 id={`${id}-list`}>{M.topicListCaption}</h2>
-   <div className="cluster-hr-menubar"><HelpMenu label={M.topicsMenu} open={topicsMenu} onToggle={setTopicsMenu} testId={`${testId}-topics-menu`}>
-    <button type="button" data-testid={`${testId}-find-topic`} onClick={()=>{setTopicsMenu(false);setSearching('topic');}}>{M.findTopic}</button>
-    <button type="button" data-testid={`${testId}-read-topic`} onClick={()=>{setTopicsMenu(false);readRow(listIndex);}}>{M.readTopic}</button>
-    <button type="button" onClick={()=>{setTopicsMenu(false);setListOpen(false);returnFocus();}}>{M.closeTopics}</button>
+   <h2 id={`${id}-list`}>{vireo(C.topicListCaption)}</h2>
+   <div className="cluster-hr-menubar"><HelpMenu label={vireo(C.topicsMenu)} open={topicsMenu} onToggle={setTopicsMenu} testId={`${testId}-topics-menu`}>
+    <button type="button" data-testid={`${testId}-find-topic`} onClick={()=>{setTopicsMenu(false);setSearching('topic');}}>{vireo(C.findTopic)}</button>
+    <button type="button" data-testid={`${testId}-read-topic`} onClick={()=>{setTopicsMenu(false);readRow(listIndex);}}>{vireo(C.readTopic)}</button>
+    <button type="button" onClick={()=>{setTopicsMenu(false);setListOpen(false);returnFocus();}}>{vireo(C.closeTopics)}</button>
    </HelpMenu></div>
    <HelpListBox rows={loaded.rows.map(r=>r.title)} selected={listIndex} onSelect={i=>{setListIndex(i);setStatus('');}} onActivate={readRow} label={M.topicRows} testId={`${testId}-topic-list`}/>
    <p role="status" className="cluster-hr-note">{status}</p>
@@ -174,18 +176,18 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
   {loaded&&topic&&<section className="cluster-hr-window" aria-labelledby={`${id}-topic`} data-testid={`${testId}-window`}>
    <h3 id={`${id}-topic`} ref={topicHeading} tabIndex={-1}>{helpTopicCaption(loaded.rows[topic.index].title)}</h3>
    <div className="cluster-hr-menubar">
-    <HelpMenu label={M.topicMenu} open={topicMenu} onToggle={setTopicMenu} testId={`${testId}-topic-menu`}>
-     <button type="button" data-testid={`${testId}-print-topic`} onClick={()=>{setTopicMenu(false);setPrinting(true);}}>{M.printTopic}</button>
-     <button type="button" data-testid={`${testId}-search-text`} onClick={()=>{setTopicMenu(false);setSearching('text');}}>{M.searchText}</button>
-     <button type="button" onClick={showTopics}>{M.showTopics}</button>
-     <button type="button" data-testid={`${testId}-close-topic`} onClick={closeTopic}>{M.closeTopic}</button>
+    <HelpMenu label={vireo(C.topicMenu)} open={topicMenu} onToggle={setTopicMenu} testId={`${testId}-topic-menu`}>
+     <button type="button" data-testid={`${testId}-print-topic`} onClick={()=>{setTopicMenu(false);setPrinting(true);}}>{vireo(C.printTopic)}</button>
+     <button type="button" data-testid={`${testId}-search-text`} onClick={()=>{setTopicMenu(false);setSearching('text');}}>{vireo(C.searchText)}</button>
+     <button type="button" onClick={showTopics}>{vireo(C.showTopics)}</button>
+     <button type="button" data-testid={`${testId}-close-topic`} onClick={closeTopic}>{vireo(C.closeTopic)}</button>
     </HelpMenu>
-    <button type="button" data-testid={`${testId}-back`} disabled={!helpBackEnabled(history)} onClick={back}>{M.back}</button>
+    <button type="button" data-testid={`${testId}-back`} disabled={!helpBackEnabled(history)} onClick={back}>{vireo(C.back)}</button>
    </div>
    <HelpListBox rows={topic.body.rows} selected={topic.selected} wrap onSelect={i=>setTopic({...topic,selected:i})} onActivate={activateBodyRow} label={M.topicText} testId={`${testId}-topic-text`}/>
    <p className="cluster-hr-note">{M.linkNote}</p>
   </section>}
-  {searching&&<SearchDialog caption={searching==='topic'?M.findTopicCaption:M.findItemCaption} search={search} onSubmit={submitSearch} onCancel={()=>setSearching(null)}/>}
+  {searching&&<SearchDialog caption={searching==='topic'?vireo(C.findTopicCaption):vireo(C.findItemCaption)} search={search} onSubmit={submitSearch} onCancel={()=>setSearching(null)}/>}
   {message&&<MessageBox message={message} onClose={()=>setMessage(null)}/>}
   {printing&&loaded&&topic&&(()=>{const caption=helpTopicCaption(loaded.rows[topic.index].title);
    return <ClusterPrintPreview caption={caption} note={M.helpPrintNote} onClose={()=>{setPrinting(false);requestAnimationFrame(()=>topicHeading.current?.focus());}} testId={`${testId}-print`}>

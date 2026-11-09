@@ -21,11 +21,13 @@ export type PrintOrientation='portrait'|'landscape';
 export type LightCurvePrintItem=Readonly<
  |{kind:'text';x:number;text:string;page:1|2;yH:number;yUnits:number;role:'date'|'name'|'line'|'next-page'|'page2'|'title'}
  |{kind:'image';x:number;page:1|2;yH:number;yUnits:number}>;
-export function lightCurvePrintPage(input:Readonly<{orientation:PrintOrientation;dateText:string;listLines:readonly string[];names?:readonly string[];table?:string}>):readonly LightCurvePrintItem[]{
- const L=LIGHT_CURVE_PRINT_LITERALS,names=input.names??[],items:LightCurvePrintItem[]=[];
+export function lightCurvePrintPage(input:Readonly<{orientation:PrintOrientation;dateText:string;listLines:readonly string[];names?:readonly string[];table?:string;
+ /** Front ES7: renders VIREO's literals for the screen language (default: the literal itself, so files and English are unchanged). */
+ tr?:(literal:string)=>string}>):readonly LightCurvePrintItem[]{
+ const L=LIGHT_CURVE_PRINT_LITERALS,tr=input.tr??((literal:string)=>literal),names=input.names??[],items:LightCurvePrintItem[]=[];
  let yH=0,yUnits=0,page:1|2=1;
  const text=(x:number,t:string,role:Extract<LightCurvePrintItem,{kind:'text'}>['role'])=>items.push({kind:'text',x,text:t,page,yH,yUnits,role});
- text(0,input.dateText+L.tableNumber+(input.table||L.notRecorded),'date');
+ text(0,input.dateText+tr(L.tableNumber)+(input.table||tr(L.notRecorded)),'date');
  yH+=2;text(0,names[0]??'','name');
  for(const n of names.slice(1,4))if(n){yH+=1;text(0,n,'name');}
  yH+=4;
@@ -33,8 +35,8 @@ export function lightCurvePrintPage(input:Readonly<{orientation:PrintOrientation
  for(const line of input.listLines){text(50,line,'line');yH+=1;}
  yH+=1;
  if(input.orientation==='landscape'){
-  yUnits+=300;text(700,L.nextPage,'next-page');
-  page=2;yH=0;yUnits=0;text(0,((names[0]??'')+L.page2).slice(0,49),'page2');yH=1;
+  yUnits+=300;text(700,tr(L.nextPage),'next-page');
+  page=2;yH=0;yUnits=0;text(0,((names[0]??'')+tr(L.page2)).slice(0,49),'page2');yH=1;
  }else yH+=3;
  text(0,L.title,'title');
  // [W] VIREO draws the image at the title's y (it covers the title); the web places it one line below.

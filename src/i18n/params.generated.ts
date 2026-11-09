@@ -1251,7 +1251,6 @@ export interface MessageParameters {
   "db.sliderOffset": never;
   "db.sliderNotSet": never;
   "db.sliderHelp": never;
-  "db.reportSummary": never;
   "db.reportTrial": never;
   "db.reportConfirmed": never;
   "db.reportNone": never;
@@ -2217,7 +2216,6 @@ export interface MessageParameters {
   "obsHr.errors.limit": never;
   "obsHr.errors.read": never;
   "obsHr.dismiss": never;
-  "obsHr.plotHeading": never;
   "obsHr.plotButton": never;
   "obsHr.plotHelp": never;
   "obsHr.notPlotted": never;
@@ -2241,7 +2239,6 @@ export interface MessageParameters {
   "obsHr.modelError": never;
   "obsHr.retryModel": never;
   "obsHr.distanceOption": never;
-  "obsHr.reportHeading": never;
   "obsHr.reportNote": never;
   "obsHr.recordsSummary": never;
   "obsHr.colIndex": never;
