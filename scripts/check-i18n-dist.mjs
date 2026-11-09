@@ -29,10 +29,13 @@ const mapsDir=join(import.meta.dirname,'..','src','i18n','es','maps'),mapTexts=[
 for(const name of readdirSync(mapsDir))for(const m of readFileSync(join(mapsDir,name),'utf8').matchAll(/'((?:[^'\\\n]|\\.)*)'/g)){const text=m[1].replace(/\\'/g,"'");if(text.length>=12&&SPANISH_LETTERS.test(text))mapTexts.push(text);}
 const originals=JSON.parse(readFileSync(join(import.meta.dirname,'..','src','i18n','es','originals.json'),'utf8'));
 for(const v of Object.values(originals))if(v.length>=8&&SPANISH_LETTERS.test(v))mapTexts.push(v);
-const markers=[...new Set([...Object.entries(spanish).filter(([k,v])=>v!==english[k]&&v.length>=16).map(([,v])=>v),...mapTexts])].map(v=>JSON.stringify(v).slice(1,-1));
+// Front ES2: a minifier writes a string as "…", '…' or `…` (a template keeps real line feeds and writes CR as \r), so each
+// marker is looked for in all three forms.
+const quoted=(v)=>{const json=JSON.stringify(v).slice(1,-1);return [json,json.replace(/\\"/g,'"').replace(/'/g,"\\'"),v.replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\$\{/g,'\\${').replace(/\r/g,'\\r')];};
+const markers=[...new Set([...Object.entries(spanish).filter(([k,v])=>v!==english[k]&&v.length>=16).map(([,v])=>v),...mapTexts])].map(quoted);
 const html=readFileSync(join(dist,'index.html'),'utf8'),spanishFiles=[];
 (function scan(dir){for(const name of readdirSync(dir)){const file=join(dir,name);if(statSync(file).isDirectory()){scan(file);continue;}
- if(!TEXT.test(name))continue;const text=readFileSync(file,'utf8'),hits=markers.filter(m=>text.includes(m)).length;if(hits)spanishFiles.push({file,name,hits});}})(dist);
+ if(!TEXT.test(name))continue;const text=readFileSync(file,'utf8'),hits=markers.filter(forms=>forms.some(m=>text.includes(m))).length;if(hits)spanishFiles.push({file,name,hits});}})(dist);
 const bundle=spanishFiles.filter(f=>/\.js$/.test(f.name)&&f.hits===markers.length);
 if(bundle.length!==1)offenders.push(`expected one Spanish chunk holding the whole catalog, found ${bundle.length}`);
 for(const f of spanishFiles)if(!bundle.includes(f))offenders.push(`${f.file}: Spanish text outside the Spanish chunk (${f.hits} strings)`);

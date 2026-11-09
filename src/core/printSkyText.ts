@@ -41,17 +41,18 @@ export function printSkyHeader(dateText:string,names:readonly string[]=[],table=
 }
 /** The instrument index of TObsrvtry+0x41c54c (0 IR … 4 spectrometer), 'finder', or null when the web has none. */
 export type PrintSkyInstrument=0|1|2|3|4|'finder'|null;
-/** Footer 0x53fe14 lines with the 12-space margin; `instrumentText` is used when `instrument` is null (a web note). */
-export function printSkyFooter(p:Readonly<{raHours:number;decDegrees:number;instrument:PrintSkyInstrument;telescope:string;instrumentText?:string}>):readonly string[]{
+/** Footer 0x53fe14 lines with the 12-space margin; `instrumentText` is used when `instrument` is null (a web note). `tr` shows
+ * a literal in the screen language (a print follows the screen; the web passes vireo(), default unchanged). */
+export function printSkyFooter(p:Readonly<{raHours:number;decDegrees:number;instrument:PrintSkyInstrument;telescope:string;instrumentText?:string}>,tr:(literal:string)=>string=literal=>literal):readonly string[]{
  const finder=p.instrument==='finder';
- const size=finder?delphiFixed(T.finderFieldDegrees,1)+T.degrees:delphiFixed(T.instrumentFieldArcMinutes,1)+T.arcMinutes;
- const instrument=finder?T.finder:p.instrument===null?(p.instrumentText??''):T.instruments[p.instrument];
+ const size=finder?delphiFixed(T.finderFieldDegrees,1)+tr(T.degrees):delphiFixed(T.instrumentFieldArcMinutes,1)+tr(T.arcMinutes);
+ const instrument=finder?tr(T.finder):p.instrument===null?(p.instrumentText??''):tr(T.instruments[p.instrument]);
  return Object.freeze([
-  MARGIN+T.center,'',
-  MARGIN+INDENT+T.ra+formatNativeSexagesimalDigits(p.raHours,1,['h ','m ','s']),
-  MARGIN+INDENT+T.dec+formatNativeSexagesimalDigits(p.decDegrees,0,['° ',"' ",'"']),'',
-  MARGIN+T.fieldSize+size,'',
-  MARGIN+(T.telescope+p.telescope).slice(0,51),'',
-  MARGIN+T.instrument+instrument,
+  MARGIN+tr(T.center),'',
+  MARGIN+INDENT+tr(T.ra)+formatNativeSexagesimalDigits(p.raHours,1,['h ','m ','s']),
+  MARGIN+INDENT+tr(T.dec)+formatNativeSexagesimalDigits(p.decDegrees,0,['° ',"' ",'"']),'',
+  MARGIN+tr(T.fieldSize)+size,'',
+  MARGIN+(tr(T.telescope)+p.telescope).slice(0,51),'',
+  MARGIN+tr(T.instrument)+instrument,
  ]);
 }

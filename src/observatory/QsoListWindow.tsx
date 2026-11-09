@@ -1,4 +1,5 @@
 import {useEffect,useId,useRef,useState} from 'react';
+import {vireo,vireoList} from '../i18n/vireo';
 import {menuCaptionText} from '../core/radioControl';
 import {HtlError,addHtlRow,newHtlEditor,serializeHtl} from '../core/hotList';
 import {addHtlRowRaOrdered} from '../core/hotListEntry';
@@ -45,26 +46,26 @@ export default function QsoListWindow({request,editMode,hotList,hidden}:{request
   }).catch(e=>{
    setShown(s=>s&&'list' in s?s:null);
    const code=e instanceof BundledQsoCatalogError?e.code:'download';
-   setFileBox({caption:QL.fileErrorCaption,text:QL.fileErrorHead+BUNDLED_QSO_CATALOG.name+'\r\n'+Q.fileError(Q.fileReasons[code])});
+   setFileBox({caption:vireo(QL.fileErrorCaption),text:vireo(QL.fileErrorHead)+BUNDLED_QSO_CATALOG.name+'\r\n'+Q.fileError(Q.fileReasons[code])});
   });
  }
  const list=shown&&'list' in shown?shown.list:null;
  const row=(selection:number)=>list?.rows[selection]??null;
  function add(selection:number){
   const r=row(selection);if(!r)return;
-  if(hotList.current().read){setBox({caption:VL.confirmation,text:M.busy});return;}
+  if(hotList.current().read){setBox({caption:vireo(VL.confirmation),text:M.busy});return;}
   const f=qsoHotListFields(r);
   try{hotList.update(d=>d.read?keepHotList(d):setHotListEditor(d,addHtlRowRaOrdered(d.editor??newHtlEditor(),f),d.editor?d.name:''));}
-  catch(e){setBox({caption:VL.confirmation,text:e instanceof HtlError?e.message:M.busy});return;}
-  setBox({caption:VL.confirmation,text:variableAddedText(f.id)});
+  catch(e){setBox({caption:vireo(VL.confirmation),text:e instanceof HtlError?e.message:M.busy});return;}
+  setBox({caption:vireo(VL.confirmation),text:variableAddedText(f.id,vireo)});
  }
  function startNew(r:NativeQso,saveFirst:boolean){
   setConfirm(null);const doc=hotList.current(),f=qsoHotListFields(r);
-  if(doc.read){setBox({caption:VL.confirmation,text:M.busy});return;}
+  if(doc.read){setBox({caption:vireo(VL.confirmation),text:M.busy});return;}
   if(saveFirst&&doc.editor)downloadText(serializeHtl(doc.editor.list),doc.name||'HotList.HTL');
   try{hotList.update(d=>d.read?keepHotList(d):setHotListEditor(d,addHtlRow(newHtlEditor(),f),''));}
-  catch(e){setBox({caption:VL.confirmation,text:e instanceof HtlError?e.message:M.busy});return;}
-  setBox({caption:VL.confirmation,text:variableNewListText(f.id)});
+  catch(e){setBox({caption:vireo(VL.confirmation),text:e instanceof HtlError?e.message:M.busy});return;}
+  setBox({caption:vireo(VL.confirmation),text:variableNewListText(f.id,vireo)});
  }
  function start(selection:number){const r=row(selection);if(!r)return;if(hotList.current().editor?.list.length)setConfirm(r);else startNew(r,false);}
  return <>
@@ -72,14 +73,14 @@ export default function QsoListWindow({request,editMode,hotList,hidden}:{request
   {shown&&('list' in shown?<FieldInfoListWindow testId="qso-list" caption={shown.list.caption} lines={shown.list.lines} first={shown.list.first} last={shown.list.last}
     notice={<><p className="fi-note" data-testid="qso-withheld">{Q.withheld}</p>{shown.editMode&&<p className="fi-note">{Q.editModeColumns}</p>}
      <p className="fi-note">{Q.noActivate} {Q.csvDisabled} {Q.modeless}</p><p className="fi-note">{M.printAdaptation} {shown.editMode?'':Q.printStudent} {M.saveAdaptation}</p></>}
-    selectionItems={[{key:'add',label:FL.menu.add,onClick:add},{key:'start',label:FL.menu.start,onClick:start}]}
+    selectionItems={[{key:'add',label:vireo(FL.menu.add),onClick:add},{key:'start',label:vireo(FL.menu.start),onClick:start}]}
     saveName={QSO_LIST_SAVE_NAME} csv={{disabled:true}} printStudent={!shown.editMode} noSelection={Q.noSelection}
     onClose={()=>setShown(null)} box={box} onBox={setBox}/>
-   :<section className="card fi-window" data-testid="qso-list-status"><h2 className="ob-native">{QL.caption}</h2>
+   :<section className="card fi-window" data-testid="qso-list-status"><h2 className="ob-native">{vireo(QL.caption)}</h2>
     <p role="status" className={'loading' in shown?'fi-note':'fi-unavailable'} data-reason={'loading' in shown?'loading':'object-x-positions'}>{'loading' in shown?Q.loading:Q.objectXUnavailable}</p>
     <button type="button" className="secondary-button" onClick={()=>setShown(null)}>{M.close}</button></section>)}
   {fileBox&&<MessageBox box={fileBox} onClose={()=>setFileBox(null)}/>}
-  {confirm&&<MessageBox box={{caption:VL.unsavedCaption,text:VL.unsavedText}} onClose={()=>setConfirm(null)} actions={<>
+  {confirm&&<MessageBox box={{caption:vireo(VL.unsavedCaption),text:vireo(VL.unsavedText)}} onClose={()=>setConfirm(null)} actions={<>
    <button type="button" className="primary-button" data-testid="qso-unsaved-yes" onClick={()=>startNew(confirm,true)}>{M.yes}</button>
    <button type="button" className="secondary-button" data-testid="qso-unsaved-no" onClick={()=>startNew(confirm,false)}>{M.no}</button></>}/>}
  </>;
@@ -98,16 +99,16 @@ function QsoOptionsDialog({editMode,onOk,onCancel}:{editMode:boolean;onOk:(o:Qso
   * _DoneExcept (0x405840), so execution continues and stores the sort (0x5784b4..0x5784c4) while the limit keeps its old value. */
  function ok(){const limit=parseQsoMagnitudeLimit(text);if(limit===null){sessionOptions={...sessionOptions,sort};setInvalid(true);return;}onOk({limit,sort});}
  return <dialog ref={ref} className="ob-dialog ob-box qso-options" aria-labelledby={`${id}-t`} data-testid="qso-options" onCancel={e=>{e.preventDefault();onCancel();}}>
-  <h2 id={`${id}-t`} className="ob-native">{D.caption}</h2>
+  <h2 id={`${id}-t`} className="ob-native">{vireo(D.caption)}</h2>
   <form method="dialog" onSubmit={e=>{e.preventDefault();ok();}}>
-   <label className="ob-field qso-limit"><span className="ob-native">{D.magnitude}</span>
-    <input ref={input} data-testid="qso-limit" maxLength={5} title={D.magnitudeHint} aria-label={Q.limitLabel} inputMode="decimal" value={text} onChange={e=>setText(e.target.value)}/></label>
-   <fieldset className="qso-sort" disabled={!activated.sortEnabled} data-testid="qso-sort"><legend className="ob-native">{D.sort}</legend>
-    {D.sorts.map((s,i)=><label key={s} className="ob-check"><input type="radio" name={`${id}-sort`} value={i} checked={sort===i} data-testid={`qso-sort-${i}`} onChange={()=>setSort(i as QsoSort)}/>{s}</label>)}
+   <label className="ob-field qso-limit"><span className="ob-native">{vireo(D.magnitude)}</span>
+    <input ref={input} data-testid="qso-limit" maxLength={5} title={vireo(D.magnitudeHint)} aria-label={Q.limitLabel} inputMode="decimal" value={text} onChange={e=>setText(e.target.value)}/></label>
+   <fieldset className="qso-sort" disabled={!activated.sortEnabled} data-testid="qso-sort"><legend className="ob-native">{vireo(D.sort)}</legend>
+    {vireoList(D.sorts).map((s,i)=><label key={s} className="ob-check"><input type="radio" name={`${id}-sort`} value={i} checked={sort===i} data-testid={`qso-sort-${i}`} onChange={()=>setSort(i as QsoSort)}/>{s}</label>)}
    </fieldset>
    {!activated.sortEnabled&&<p className="fi-note">{Q.sortDisabled}</p>}
-   <div className="ob-actions"><button type="submit" className="primary-button" data-testid="qso-ok">{menuCaptionText(D.ok)}</button><button type="button" className="secondary-button" data-testid="qso-cancel" onClick={onCancel}>{menuCaptionText(D.cancel)}</button></div>
+   <div className="ob-actions"><button type="submit" className="primary-button" data-testid="qso-ok">{vireo(menuCaptionText(D.ok))}</button><button type="button" className="secondary-button" data-testid="qso-cancel" onClick={onCancel}>{vireo(menuCaptionText(D.cancel))}</button></div>
   </form>
-  {invalid&&<MessageBox box={{caption:D.errorCaption,text:D.errorText}} onClose={()=>{setInvalid(false);input.current?.focus();}}/>}
+  {invalid&&<MessageBox box={{caption:vireo(D.errorCaption),text:vireo(D.errorText)}} onClose={()=>{setInvalid(false);input.current?.focus();}}/>}
  </dialog>;
 }

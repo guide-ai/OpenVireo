@@ -1,4 +1,5 @@
 import {cameraPreparationReference} from '../core/cameraPreparation';
+import {vireo} from '../i18n/vireo';
 import type {OpticalIndex} from '../core/opticalTelescope';
 import type {CameraParameters} from '../core/cameraParameters';
 import {CAMERA_FIELD_SIZE_LITERALS as L,POLISH_MESSAGES as PM} from './PolishMessages';
@@ -11,10 +12,10 @@ import './polish.css';
  * telescope selection (0x53df24), so there it changes only after the next telescope change. */
 export default function CameraFieldSize({camera,telescopeIndex,parameters=null}:{camera:'ccd'|'ir';telescopeIndex:OpticalIndex;parameters?:CameraParameters|null}){
  const r=cameraPreparationReference(camera,telescopeIndex,parameters??undefined);
- return <div className="camera-field-size" role="group" aria-label={L.group} data-testid="camera-field-size">
-  <span className="camera-field-size-title">{L.group}</span>
-  <span>{L.width} <output data-testid="camera-field-width">{r.widthArcminutes.toFixed(2)}</output></span>
-  <span>{L.height} <output data-testid="camera-field-height">{r.heightArcminutes.toFixed(2)}</output></span>
+ return <div className="camera-field-size" role="group" aria-label={vireo(L.group)} data-testid="camera-field-size">
+  <span className="camera-field-size-title">{vireo(L.group)}</span>
+  <span>{vireo(L.width)} <output data-testid="camera-field-width">{r.widthArcminutes.toFixed(2)}</output></span>
+  <span>{vireo(L.height)} <output data-testid="camera-field-height">{r.heightArcminutes.toFixed(2)}</output></span>
   <span className="observatory-note">{PM.cameraFieldSize.note}</span>
  </div>;
 }

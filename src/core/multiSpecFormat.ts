@@ -28,7 +28,8 @@ export type MultiSpecMask=Readonly<{objectName:string}>;
 export const MULTISPEC_MESSAGES=Object.freeze({
  caption:'Multi-Channel Spectrometer',
  selectHint:'Click on objects in Telescope Display to select.\r\n\r\nRight-click selected object to remove.',
- removeQuestion:(n:number)=>`Remove Selection #${n} ?\r\n\r\n(Remaining Selections Will Be Re-Numbered.)`,
+ /** `tr` shows each fragment in the screen language (the web passes vireo with the 'fragment' context; default unchanged). */
+ removeQuestion:(n:number,tr:(literal:string)=>string=literal=>literal)=>tr('Remove Selection #')+n+tr(' ?\r\n\r\n(Remaining Selections Will Be Re-Numbered.)'),
  cannotRemove:Object.freeze({caption:'Spectrum Already Taken',text:'You Cannot Remove This Object!'}),
  invalidExposure:Object.freeze({caption:'Invalid Exposure Time!',text:'Exposure Time must be numeric, > 0!'}),
  terminate:Object.freeze({caption:'Exposure Stopped Prematurely',text:'Do You Want to Terminate the Current Exposure?'}),

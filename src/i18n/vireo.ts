@@ -4,6 +4,8 @@ import {activeBundle} from './index';
  * mirrors of a written file never call it, so the same constant can feed a translated dialog and an English file
  * (docs/I18N.md; user decision 3, 2026-11-09). scripts/audit-ui-messages.mjs (`auditOriginals`) lists every unwrapped site. */
 
+/** A list of originals for this load (radio and option captions rendered with `.map`). */
+export const vireoList=(texts:readonly string[],context?:string):string[]=>texts.map(text=>vireo(text,context));
 /** The dictionary key of an original: single `&` accelerators removed, `&&` kept as `&`, trimmed. */
 export const normalizeOriginal=(text:string):string=>text.replace(/&(&?)/g,(_,doubled:string)=>doubled).trim();
 /** The translation of an original literal for this load, or the literal itself. `context` separates one English text that
@@ -11,7 +13,9 @@ export const normalizeOriginal=(text:string):string=>text.replace(/&(&?)/g,(_,do
 export function vireo(text:string,context?:string):string{
  const bundle=activeBundle();if(!bundle)return text;
  const key=normalizeOriginal(text),originals=bundle.originals??{};
- if(context!==undefined&&Object.hasOwn(originals,`${context}|${key}`))return originals[`${context}|${key}`];
- if(Object.hasOwn(originals,key))return originals[key];
+ // Front ES2: the literal's own leading and trailing spacing (a head such as 'RA:  ' that coordinates follow) is kept.
+ const spaced=(translation:string)=>/^\s*/.exec(text)![0]+translation+/\s*$/.exec(text)![0];
+ if(context!==undefined&&Object.hasOwn(originals,`${context}|${key}`))return spaced(originals[`${context}|${key}`]);
+ if(Object.hasOwn(originals,key))return spaced(originals[key]);
  return bundle.deriveOriginal?bundle.deriveOriginal(text):text;
 }

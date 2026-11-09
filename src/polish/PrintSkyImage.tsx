@@ -1,4 +1,5 @@
 import {printSkyFooter,printSkyHeader,type PrintSkyInstrument} from '../core/printSkyText';
+import {vireo} from '../i18n/vireo';
 import type {Pointing} from '../core/sky';
 import WebPrintPreview from './WebPrintPreview';
 import {POLISH_MESSAGES as PM,PRINT_SKY_LITERALS as L} from './PolishMessages';
@@ -14,8 +15,8 @@ export default function PrintSkyImage({pointing,view,telescope,instrument,onClos
  /** The selected instrument in the telescope view; the finder view always prints Finder. */instrument:PrintSkyInstrument;onClose:()=>void;
  /** The picture to print (default: the observatory sky map). Multi-Spec passes its own field with its markers. */
  clone?:()=>Element|null}){
- const footer=pointing?printSkyFooter({raHours:pointing.ra,decDegrees:pointing.dec,telescope,instrument:view==='finder'?'finder':instrument,instrumentText:PM.printSky.noInstrument}):undefined;
- return <WebPrintPreview testId="print-sky" caption={L.caption} note={PM.printSky.note} clone={clone} onClose={onClose} invert
+ const footer=pointing?printSkyFooter({raHours:pointing.ra,decDegrees:pointing.dec,telescope,instrument:view==='finder'?'finder':instrument,instrumentText:PM.printSky.noInstrument},vireo):undefined;
+ return <WebPrintPreview testId="print-sky" caption={vireo(L.caption)} note={PM.printSky.note} clone={clone} onClose={onClose} invert
   nativeHeader={date=>printSkyHeader(date)} footer={footer}/>;
 }
 

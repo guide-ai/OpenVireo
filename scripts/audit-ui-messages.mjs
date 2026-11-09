@@ -47,7 +47,7 @@ export function auditOriginals(root){
   const rooted=(node)=>{let n=node;while(n.type==='MemberExpression')n=n.object;return n.type==='Identifier'&&literals.has(n.name);};
   function expression(node,parent){if(!node||typeof node!=='object')return;
    if(node.type==='JSXElement'||node.type==='JSXFragment')return;// visited as JSX on its own
-   if(node.type==='CallExpression'&&node.callee?.type==='Identifier'&&node.callee.name==='vireo')return;
+   if(node.type==='CallExpression'&&node.callee?.type==='Identifier'&&['vireo','vireoList'].includes(node.callee.name))return;
    if((node.type==='MemberExpression'||node.type==='Identifier')&&rooted(node)&&!(parent?.type==='MemberExpression'&&parent.object===node)){add(node);return;}
    if(node.type==='Identifier')return;
    for(const[k,value]of Object.entries(node))if(!['loc','comments','type'].includes(k)){if(Array.isArray(value)){for(const child of value)expression(child,node);}else if(value&&typeof value==='object')expression(value,node);}

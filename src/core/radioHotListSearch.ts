@@ -57,9 +57,9 @@ export function trimLeadingAsciiSpaces(text:string):string{
  return text.slice(i);
 }
 /** The not-found MessageBox text 0x59100c + query + 0x591018 (the query as compared: folded when case-insensitive). */
-export function radioHotListMissText(query:string):string{
+export function radioHotListMissText(query:string,tr:(literal:string)=>string=literal=>literal):string{
  const L=RADIO_HOT_LIST_SEARCH_LITERALS;
- return L.missPrefix+query+L.missSuffix;
+ return L.missPrefix+query+tr(L.missSuffix);
 }
 
 function checkQuery(query:unknown):asserts query is string{

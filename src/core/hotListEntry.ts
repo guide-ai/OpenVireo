@@ -58,8 +58,9 @@ export function parseHotListEntry(d:HotListEntryDraft):HotListEntryResult{
  return Object.freeze({status:'ok',fields:Object.freeze({id:d.id.slice(0,24),remarks:d.remarks.slice(0,40),ra,dec:Object.is(dec,-0)?0:dec})});
 }
 /** OB-AC-04 confirmation box text. */
-export function hotListEntryAddedText(id:string):string{
- const C=HOT_LIST_ENTRY_CAPTIONS;return id?C.addedHead+id+C.addedTail:C.positionAdded;
+/** `tr` shows a literal in the screen language (the web passes vireo(); default unchanged). */
+export function hotListEntryAddedText(id:string,tr:(literal:string)=>string=literal=>literal):string{
+ const C=HOT_LIST_ENTRY_CAPTIONS;return id?tr(C.addedHead)+id+tr(C.addedTail):tr(C.positionAdded);
 }
 
 /** OB-AC-04 append (0x590588) for Add Current (review F7). A non-blank ID goes through the reviewed web editor rule (addHtlRow).

@@ -4,30 +4,47 @@ import {createHash} from 'node:crypto';
 import {enterInstructorMode} from '../fixtures/instructor-mode';
 import {PLR} from '../fixtures/pulsar-saved-rows-controls';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
+import en from '../../src/i18n/en.json' with {type:'json'};
+import {CAMERA_ES} from '../../src/i18n/es/maps/camera';
+import {TOUR_ES} from '../../src/i18n/es/maps/tour';
 // Front ES0 (docs/I18N.md; user decision 3, 2026-11-09): the files the site writes stay exactly as VIREO or the web contract
 // writes them, in English, whatever the screen language. Each export family is downloaded once in English and once in the
 // dev-only pseudo-locale qps (?lang=qps: every catalog, map and vireo() string marked ⟦…⟧, accented and ~35 % longer), from the
 // same deterministic path, and the two downloads must have the same file name and SHA-256, with no ⟦ in the qps bytes.
-// Spanish (es-419) joins each family when its sub-front lands (ES1 onwards). Selectors go through `L`, which matches an English
+// Spanish (es-419) joins each family when its sub-front lands (ES1 onwards; ES2: the hot list HTL, the options file and the
+// CCD camera FITS, whose screens it translates). Selectors go through `L`, which matches an English
 // accessible name in both languages (the pseudo-locale only adds marks and padding and accents vowels).
 
-type Locale='en'|'qps';
+type Locale='en'|'qps'|'es-419';
 type File=Readonly<{name:string;bytes:Buffer}>;
 const ACCENTED:Readonly<Record<string,string>>={a:'aá',e:'eé',i:'ií',o:'oó',u:'uú',A:'AÁ',E:'EÉ',I:'IÍ',O:'OÓ',U:'UÚ'};
 const MARK='[⟦⟧·\\s]*';
 /** An exact accessible-name matcher for English text that also matches its pseudo-localized form. */
 const L=(text:string)=>new RegExp(`^${MARK}${[...text].map(c=>ACCENTED[c]?`[${ACCENTED[c]}]`:/\s/.test(c)?'\\s+':c.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')).join(MARK)}${MARK}$`);
-const button=(p:Page,name:string)=>p.getByRole('button',{name:L(name)});
+/** Front ES2: English text to its Spanish form, from the catalog and the camera map (the strings these flows click; the
+ * English camera texts are listed here because the app's map module cannot load outside the page). */
+const CAMERA_EN={sourceLive:'Ask VizieR live (sends only RA, Dec and search radius; tries the IDIA mirror, then CDS)',filter:'Filter',minutes:'Minutes',seconds:'Seconds',start:'Start exposure',statusDone:'Image ready.',save:'Save image (FITS)',saveNative:'Save image (VIREO header)'} as const;
+const SPANISH=(()=>{
+ const out=new Map<string,string>();
+ for(const [key,text] of Object.entries(en))if(Object.hasOwn(es,key))out.set(text,(es as Record<string,string>)[key]);
+ for(const [key,text] of Object.entries(CAMERA_EN))out.set(text,(CAMERA_ES as unknown as Record<string,string>)[key]);
+ out.set('Skip the tour',TOUR_ES.skip);
+ return out;
+})();
+const exact=(text:string)=>new RegExp(`^\\s*${text.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&').replace(/\s+/g,'\\s+')}\\s*$`);
+/** The accessible-name matcher of an English text in this locale: its Spanish form in es-419 (which must exist), else `L`. */
+const N=(locale:Locale,text:string)=>{if(locale!=='es-419')return L(text);const arrow=/ ↗$/.test(text)&&!SPANISH.has(text)?' ↗':'',spanish=SPANISH.get(arrow?text.slice(0,-2):text);if(!spanish)throw new Error(`No Spanish for “${text}”`);return exact(spanish+arrow);};
+const button=(p:Page,name:string,locale:Locale='en')=>p.getByRole('button',{name:N(locale,name)});
 const sha=(b:Buffer)=>createHash('sha256').update(b).digest('hex');
 /** A fixed instant for every Date read (timers keep running), so exports that record "now" are comparable. */
 const NOW=new Date('2026-11-02T15:04:05.678Z');
 
 async function open(page:Page,locale:Locale,hash:string,clock:'fixed'|'real'='fixed'){
  if(clock==='fixed')await page.clock.setFixedTime(NOW);
- await page.goto(`/${locale==='qps'?'?lang=qps':''}#${hash}`);
- await expect(page.locator('html')).toHaveAttribute('lang','en');
+ await page.goto(`/${locale==='en'?'':`?lang=${locale}`}#${hash}`);
+ await expect(page.locator('html')).toHaveAttribute('lang',locale==='es-419'?'es-419':'en');
  if(locale==='qps')await expect.poll(()=>page.title()).toMatch(/^⟦/);
- const skip=page.getByRole('button',{name:L('Skip the tour')});// the first-visit tour (translated since ES1)
+ const skip=page.getByRole('button',{name:N(locale,'Skip the tour')});// the first-visit tour (translated since ES1)
  if(await skip.isVisible().catch(()=>false))await skip.click();
 }
 async function download(page:Page,click:()=>Promise<void>):Promise<File>{
@@ -37,27 +54,33 @@ async function download(page:Page,click:()=>Promise<void>):Promise<File>{
 /** Runs `flow` in a fresh English context and a fresh qps context and compares every file it returns. `scope` is the flow's own
  * part of the page: in qps it must show at least one ⟦, so a route where the pseudo-locale silently did not apply cannot pass by
  * comparing English with English. `masks` hides documented run-dependent values (wall clock, random stream) before hashing. */
-async function identical(browser:Browser,baseURL:string|undefined,flow:(page:Page,locale:Locale)=>Promise<Record<string,File>>,masks:Readonly<Record<string,(b:Buffer)=>Buffer>>,scope:(page:Page)=>Locator){
+async function identical(browser:Browser,baseURL:string|undefined,flow:(page:Page,locale:Locale)=>Promise<Record<string,File>>,masks:Readonly<Record<string,(b:Buffer)=>Buffer>>,scope:(page:Page)=>Locator,
+ /** Front ES2: the families whose screens are translated also run in Spanish (es-419), and must match English the same way. */
+ locales:readonly Locale[]=['en','qps']){
  const results:Partial<Record<Locale,Record<string,File>>>={};
- for(const locale of ['en','qps'] as const){
+ for(const locale of locales){
   const context=await browser.newContext({baseURL,locale:'en-US',viewport:{width:1440,height:1050}}),page=await context.newPage();page.setDefaultTimeout(20_000);
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
   try{
    results[locale]=await flow(page,locale);
    if(locale==='qps')await expect(scope(page),'the pseudo-locale applied to this flow').toContainText('⟦');
+   if(locale==='es-419')await expect(page.locator('html')).toHaveAttribute('lang','es-419');
   }finally{await context.close();}
   expect(errors,locale).toEqual([]);
  }
- const en=results.en!,qps=results.qps!;
- expect(Object.keys(qps)).toEqual(Object.keys(en));
- for(const [family,file] of Object.entries(en)){
+ const english=results.en!;
+ for(const locale of locales.filter(l=>l!=='en')){const qps=results[locale]!;
+ expect(Object.keys(qps)).toEqual(Object.keys(english));
+ for(const [family,file] of Object.entries(english)){
   expect(file.bytes.length,family).toBeGreaterThan(0);
   expect(qps[family].name,family).toBe(file.name);
   expect(qps[family].bytes.includes('⟦'),`${family}: a pseudo-locale mark reached the file`).toBe(false);
   const mask=masks[family]??((b:Buffer)=>b);
+  // Spanish text in a file (checked on the compared part, so binary image data is left out).
+  if(locale==='es-419')expect(mask(qps[family].bytes).toString('utf8'),`${family}: Spanish reached the file`).not.toMatch(/[áéíóúñ¿¡]/);
   if(process.env.ES0_DUMP&&sha(mask(qps[family].bytes))!==sha(mask(file.bytes))){const {writeFile}=await import('node:fs/promises');await writeFile(`${process.env.ES0_DUMP}/${family}.en`,file.bytes);await writeFile(`${process.env.ES0_DUMP}/${family}.qps`,qps[family].bytes);}
   expect(sha(mask(qps[family].bytes)),`${family}: ${file.name}`).toBe(sha(mask(file.bytes)));
- }
+ }}
 }
 const SPECTRUM=Buffer.from('3700,.2\n4000,.5\n4700,.9');
 /** A one-pulsar receiver catalog in the Pulsars.dat column layout (synthetic, as tests/radio-receiver-raw-export-app.spec.ts). */
@@ -148,25 +171,45 @@ test('classification: investigation, classification CSV, observation notebook an
 test('hot list: Save HTL file after adding a target',async({browser,baseURL})=>{
  await identical(browser,baseURL,async(page,locale)=>{
   await open(page,locale,'observatory');
-  await page.getByRole('heading',{name:L('Original hot lists')}).click();
-  await button(page,'New HTL list').click();await button(page,'Add HTL target').click();
-  await page.getByLabel(L('HTL identifier')).fill('Student 1');await page.getByLabel(L('HTL remarks')).fill('manual coordinates');
-  await page.getByLabel(L('HTL right ascension · hours')).fill('23.75');await page.getByLabel(L('HTL declination · degrees')).fill('-30');
-  await button(page,'Apply HTL edit').click();await expect(page.locator('#htl-rows option')).toHaveCount(1);
-  return {htl:await download(page,()=>button(page,'Save HTL file').click())};
- },{},page=>page.locator('.htl-card'));
+  await page.getByRole('heading',{name:N(locale,'Original hot lists')}).click();
+  await button(page,'New HTL list',locale).click();await button(page,'Add HTL target',locale).click();
+  await page.getByLabel(N(locale,'HTL identifier')).fill('Student 1');await page.getByLabel(N(locale,'HTL remarks')).fill('manual coordinates');
+  await page.getByLabel(N(locale,'HTL right ascension · hours')).fill('23.75');await page.getByLabel(N(locale,'HTL declination · degrees')).fill('-30');
+  await button(page,'Apply HTL edit',locale).click();await expect(page.locator('#htl-rows option')).toHaveCount(1);
+  return {htl:await download(page,()=>button(page,'Save HTL file',locale).click())};
+ },{},page=>page.locator('.htl-card'),['en','qps','es-419']);
 });
 
 test('options file: Save Updates writes VEO_OPTS.json',async({browser,baseURL})=>{
  await identical(browser,baseURL,async(page,locale)=>{
   await open(page,locale,'observatory');
-  await button(page,'Open dome ↗').click();await page.getByLabel(L('Target')).selectOption('N0000.DAT@14428');
-  await button(page,'Point telescope ↗').click();await button(page,'Switch to telescope view ↗').click();
+  await button(page,'Open dome ↗',locale).click();await page.getByLabel(N(locale,'Target')).selectOption('N0000.DAT@14428');
+  await button(page,'Point telescope ↗',locale).click();await button(page,'Switch to telescope view ↗',locale).click();
   await enterInstructorMode(page);
   await page.locator('.telescope-motion').getByTestId('ob-options').click();await expect(page.getByTestId('ob-options-dialog')).toBeVisible();
   await page.getByTestId('ob-options-test-mode').check();await page.getByTestId('ob-options-show-object-id').check();
   return {options:await download(page,()=>page.getByTestId('ob-options-save').click())};
- },{},page=>page.locator('.telescope-motion'));
+ },{},page=>page.locator('.telescope-motion'),['en','qps','es-419']);
+});
+
+// Front ES2: the observatory's File › Field Information lists (Edit Mode) and the QSO List (Virtual Observatory) write the lines
+// they show; the windows around them are translated, the files are not.
+test('field information: Star Data List Save Text and Comma Delimit, QSO List Save Text',async({browser,baseURL})=>{
+ const id=(page:Page,testId:string)=>page.getByTestId(testId);
+ const ok=async(page:Page)=>{await id(page,'fi-box').getByRole('button').first().click();await expect(id(page,'fi-box')).toHaveCount(0);};
+ const save=async(page:Page,list:string,kind:'displayed'|'csv')=>{const f=await download(page,async()=>{await id(page,`${list}-list-menu`).click();await id(page,`${list}-save-menu`).click();await id(page,`${list}-save-${kind}`).click();});await ok(page);return f;};
+ await identical(browser,baseURL,async(page,locale)=>{
+  await open(page,locale,'observatory');
+  await page.locator('.sky-card .card-heading > button').click();
+  await enterInstructorMode(page);await page.locator('.telescope-motion').getByTestId('ob-options').click();
+  await id(page,'ob-options-edit-mode').check();await id(page,'ob-options-virtual-observatory').check();await id(page,'ob-options-ok').click();
+  await id(page,'fi-file-menu').click();await id(page,'fi-field-information').click();await id(page,'fi-star-list').click();
+  await expect(id(page,'fi-slist-line-2')).toBeVisible({timeout:20_000});
+  const starText=await save(page,'fi-slist','displayed'),starCsv=await save(page,'fi-slist','csv');
+  await id(page,'fi-file-menu').click();await id(page,'qso-menu').click();await page.locator('[data-testid=qso-ok],[data-testid=qso-dialog-ok]').first().click();
+  await expect(id(page,'qso-list-line-2')).toBeVisible({timeout:20_000});
+  return {starText,starCsv,qsoText:await save(page,'qso-list','displayed')};
+ },{},page=>page.getByTestId('fi-slist'),['en','qps','es-419']);
 });
 
 test('variable stars: Save Text › As Displayed',async({browser,baseURL})=>{
@@ -215,19 +258,20 @@ test('CCD camera: Save image (FITS) and Save image (VIREO header) from the recor
  await identical(browser,baseURL,async(page,locale)=>{
   await page.route(/vizier\.cds\.unistra\.fr|vizier\.cfa\.harvard\.edu|vizier\.idia\.ac\.za|cdsarc|unistra\.fr/,route=>route.fulfill({status:200,contentType:'text/xml',body:recorded}));
   await open(page,locale,'observatory','real');
-  await button(page,'Open dome ↗').click();await page.getByLabel(L('Target')).selectOption('N0000.DAT@14428');
-  await button(page,'Point telescope ↗').click();await button(page,'Switch to telescope view ↗').click();
-  if(!await button(page,'Start observatory clock').isVisible())await page.getByText(L('Observatory clock & spectral tracking')).click();
-  await button(page,'Start observatory clock').click();await button(page,'Turn tracking on').click();
+  await button(page,'Open dome ↗',locale).click();await page.getByLabel(N(locale,'Target')).selectOption('N0000.DAT@14428');
+  await button(page,'Point telescope ↗',locale).click();await button(page,'Switch to telescope view ↗',locale).click();
+  if(!await button(page,'Start observatory clock',locale).isVisible())await page.getByText(N(locale,'Observatory clock & spectral tracking')).click();
+  await button(page,'Start observatory clock',locale).click();await button(page,'Turn tracking on',locale).click();
   const camera=page.getByTestId('camera-control');
-  await camera.getByLabel(/[AÁ]sk V[ií]z[ií][eé]R l[ií]v[eé]/).check();await camera.getByLabel(/F[ií]lt[eé]r/).selectOption('2');
-  await camera.getByLabel(/M[ií]n[uú]t[eé]s/).fill('0');await camera.getByLabel(/S[eé]c[oó]nds/).fill('1');
-  await button(page,'Start exposure').click();
-  await expect(page.getByTestId('camera-status')).toHaveText(L('Image ready.'),{timeout:15_000});
-  const fits=await download(page,()=>button(page,'Save image (FITS)').click());
-  const native=await download(page,()=>button(page,'Save image (VIREO header)').click());
+  const es419=locale==='es-419',spanish=(text:string)=>new RegExp(SPANISH.get(text)!.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&').slice(0,12));
+  await camera.getByLabel(es419?spanish(CAMERA_EN.sourceLive):/[AÁ]sk V[ií]z[ií][eé]R l[ií]v[eé]/).check();await camera.getByLabel(es419?new RegExp(`^\\s*${SPANISH.get('Filter')}`):/F[ií]lt[eé]r/).selectOption('2');
+  await camera.getByLabel(es419?new RegExp(`^\\s*${SPANISH.get('Minutes')}`):/M[ií]n[uú]t[eé]s/).fill('0');await camera.getByLabel(es419?new RegExp(`^\\s*${SPANISH.get('Seconds')}`):/S[eé]c[oó]nds/).fill('1');
+  await camera.getByRole('button',{name:N(locale,CAMERA_EN.start)}).click();
+  await expect(page.getByTestId('camera-status')).toHaveText(N(locale,'Image ready.'),{timeout:15_000});
+  const fits=await download(page,()=>camera.getByRole('button',{name:N(locale,'Save image (FITS)')}).click());
+  const native=await download(page,()=>camera.getByRole('button',{name:N(locale,'Save image (VIREO header)')}).click());
   return {fits,native};
- },{fits:fitsHeader,native:fitsHeader},page=>page.getByTestId('camera-control'));
+ },{fits:fitsHeader,native:fitsHeader},page=>page.getByTestId('camera-control'),['en','qps','es-419']);
 });
 
 test('Object X (identity still hidden): the kept spectrum CSV and the saved investigation',async({browser,baseURL})=>{

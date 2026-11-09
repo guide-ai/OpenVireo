@@ -20,11 +20,12 @@ export type HotListPrintLine=Readonly<{sourceIndex:number;text:string}>;
 export type HotListPrintSnapshot=Readonly<{heading:string;lines:readonly HotListPrintLine[]}>;
 /** Recovered literals of the body (PRINT-LITERALS.json; Front K2.3 corrected `spoolTitle`: 'Text' is the TextHeight sample). */
 export const HOT_LIST_PRINT_LITERALS=Object.freeze({spoolTitle:'CLEA "Object X" Exercise - ',databaseModification:'Database Modification',font:'Courier',textHeightSample:'Text',tableNumber:'     Laboratory Table Number ',notRecorded:'(Not Recorded)'});
-/** The lines above the caption (0x591098): '' is a blank line (a 2H advance). Names and table as VIREO stores them. */
-export function hotListPrintHeader(dateText:string,editMode:boolean,names:readonly string[]=[],table=''):readonly string[]{
+/** The lines above the caption (0x591098): '' is a blank line (a 2H advance). Names and table as VIREO stores them. `tr`
+ * shows a literal in the screen language (a print follows the screen; the web passes vireo(), default unchanged). */
+export function hotListPrintHeader(dateText:string,editMode:boolean,names:readonly string[]=[],table='',tr:(literal:string)=>string=literal=>literal):readonly string[]{
  const L=HOT_LIST_PRINT_LITERALS;
  if(editMode)return Object.freeze([dateText,'']);
- const out=[dateText+L.tableNumber+(table||L.notRecorded),'',names[0]??''];
+ const out=[dateText+tr(L.tableNumber)+(table||tr(L.notRecorded)),'',names[0]??''];
  for(const n of names.slice(1,4))if(n)out.push(n);
  out.push('');return Object.freeze(out);
 }

@@ -4,7 +4,8 @@ import {findHelpTopic,helpBackEnabled,helpHistoryBack,helpHistoryOpen,helpLinkTa
 import {foldAsciiCase,searchRadioHotListRows,RADIO_HOT_LIST_SEARCH_QUERY_MAX} from '../core/radioHotListSearch';
 import {fetchBundledClusterHelp} from '../io/bundledClusterHelp';
 import {HELP_FILES,helpFile,type HelpFileIdentity} from '../help/helpFiles';
-import {HELP_BUTTON_NAMES} from '../help/HelpMessages';
+import {HELP_MENU} from '../help/HelpMessages';
+import {vireo} from '../i18n/vireo';
 import {CLUSTER_HR as M} from './ClusterHrMessages';
 import ClusterPrintPreview from './ClusterPrintPreview';
 import './cluster-hr.css';
@@ -81,7 +82,7 @@ function MessageBox({message,onClose}:{message:Message;onClose:()=>void}){
 /** A VIREO Help item (Help1Click; HR 0x544668, the same sequence in every window, docs/CLEA-HELP.md): "Select Help Topic"
  * (THelpLstDlg) and the modeless "Help - <title>" window (THelpWin), index-faithful over a bundled LST and the text file
  * each row names. Pure rules live in src/core/cleaHelp.ts. */
-export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALHLP.LST'],label=M.help,pushHistory=true,disabledReason,openRequest,onReturnFocus}:{testId?:string;
+export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALHLP.LST'],label,pushHistory=true,disabledReason,openRequest,onReturnFocus}:{testId?:string;
  /** The window's help index (its options field default, docs/CLEA-HELP.md). */ list?:HelpFileIdentity;label?:string;
  /** False for TPlsrAnalysisForm1 (Help1Click 0x56e634 does not set THelpWin+0x56c, so the first topic is not pushed). */ pushHistory?:boolean;
  /** A typed reason when VIREO disables this Help item (its options name is empty). */ disabledReason?:string;
@@ -154,7 +155,7 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
 
  return <div className="cluster-hr-help" data-testid={testId}>
   {openRequest===undefined?<div className="cluster-hr-help-bar">
-   <button type="button" ref={opener} className="secondary-button" data-testid={`${testId}-open`} disabled={load==='loading'||disabledReason!==undefined} aria-describedby={disabledReason?`${id}-off`:undefined} aria-label={label===M.help?HELP_BUTTON_NAMES[list.name]:undefined} onClick={()=>void openHelp()}>{label}</button>
+   <button type="button" ref={opener} className="secondary-button" data-testid={`${testId}-open`} disabled={load==='loading'||disabledReason!==undefined} aria-describedby={disabledReason?`${id}-off`:undefined} aria-label={label===undefined||label===M.help||label===vireo('Help')?HELP_MENU.buttonNames[list.name]:undefined} onClick={()=>void openHelp()}>{label??vireo('Help')}</button>
    {disabledReason&&<span id={`${id}-off`} className="cluster-hr-note">{disabledReason}</span>}
    {load==='loading'&&<span role="status">{M.helpLoading}</span>}
    {load==='error'&&<span role="alert">{M.helpLoadError} <button type="button" className="secondary-button" onClick={()=>void openHelp()}>{M.helpRetry}</button></span>}

@@ -98,20 +98,6 @@
     "reason": "Product/edition name or original catalog identifier, preserved as source identity."
   },
   {
-    "file": "src/OpenVireo.tsx",
-    "kind": "text",
-    "value": "RA",
-    "count": 1,
-    "reason": "Established celestial coordinate/direction symbols and unit separators, preserved with the projection contract."
-  },
-  {
-    "file": "src/OpenVireo.tsx",
-    "kind": "text",
-    "value": "h · Dec",
-    "count": 1,
-    "reason": "Established celestial coordinate/direction symbols and unit separators, preserved with the projection contract."
-  },
-  {
     "file": "src/Photometer.tsx",
     "kind": "text",
     "value": "N",

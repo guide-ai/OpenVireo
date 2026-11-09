@@ -100,13 +100,14 @@ export const OPTICAL_SLEW_LITERALS=Object.freeze({
 export const formatSlewRa=(ra:number)=>slewField(ra,2,['h   ','m   ','s']);
 export const formatSlewDec=(dec:number)=>slewField(dec,1,['°  ',"'   ",'"']);
 /** OB-SC-06 confirmation text (J2000 target; the B1950 line when the flag is set). */
-export function opticalSlewConfirmText(target:Pointing,b1950:boolean):string{
+/** `tr` shows a literal in the screen language (the web passes vireo(); default unchanged). */
+export function opticalSlewConfirmText(target:Pointing,b1950:boolean,tr:(literal:string)=>string=literal=>literal):string{
  const L=OPTICAL_SLEW_LITERALS;
- return L.confirmHead+formatSlewRa(target.ra)+L.lineBreak+L.decHead+formatSlewDec(target.dec)+(b1950?L.b1950Separator+L.b1950Note:'');
+ return tr(L.confirmHead)+formatSlewRa(target.ra)+L.lineBreak+tr(L.decHead)+formatSlewDec(target.dec)+(b1950?L.b1950Separator+tr(L.b1950Note):'');
 }
 /** OB-SC-05 horizon refusal text. */
-export function opticalSlewBelowText(target:Pointing):string{
- const L=OPTICAL_SLEW_LITERALS;return L.belowHead+formatSlewRa(target.ra)+L.lineBreak+L.decHead+formatSlewDec(target.dec);
+export function opticalSlewBelowText(target:Pointing,tr:(literal:string)=>string=literal=>literal):string{
+ const L=OPTICAL_SLEW_LITERALS;return tr(L.belowHead)+formatSlewRa(target.ra)+L.lineBreak+tr(L.decHead)+formatSlewDec(target.dec);
 }
 /** Front O FO-VF Slew to Selection (TVarFldLstForm1 0x530180): the target cells take the record's RA/Dec, the B1950 flag
  * +0x3c5 := 0 and EpochGrp is enabled; OK then runs ProgrammedSlew (OB-SC-03..08). No hot-list origin (Cancel reopens nothing).

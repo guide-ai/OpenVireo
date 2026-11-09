@@ -1,4 +1,6 @@
 import {useEffect,useId,useRef,useState,type KeyboardEvent,type ReactNode} from 'react';
+import {vireo} from '../i18n/vireo';
+import NativeMirrorCaption from '../components/NativeMirrorCaption';
 import {createPortal} from 'react-dom';
 import {RADIO_HOT_LIST_SEARCH_LITERALS as SL,RADIO_HOT_LIST_SEARCH_QUERY_MAX,foldAsciiCase,radioHotListMissText,searchRadioHotListRows} from '../core/radioHotListSearch';
 import {menuCaptionText} from '../core/radioControl';
@@ -64,53 +66,54 @@ export default function FieldInfoListWindow({testId,caption,lines,first,last,not
   const start=mode==='top'?0:itemIndex+1;
   const r=searchRadioHotListRows(lines,q,find.matchCase,start);
   if(r.kind==='hit'){setItemIndex(r.index);listRef.current?.focus();}
-  else onBox({caption:SL.missCaption,text:radioHotListMissText(find.matchCase?q:foldAsciiCase(q))});
+  else onBox({caption:vireo(SL.missCaption),text:radioHotListMissText(find.matchCase?q:foldAsciiCase(q),vireo)});
  }
  function save(){
   setMenu(null);
   downloadText(variableStarSaveText(lines),saveName);
-  onBox({caption:VL.savedCaption,text:VL.savedHead+saveName+VL.savedTail});
+  onBox({caption:vireo(VL.savedCaption),text:vireo(VL.savedHead)+saveName+vireo(VL.savedTail)});
  }
  function comma(){
   setMenu(null);
   if(csv.unavailable){onBox(csv.unavailable);return;}
   const r=csv.bytes?.();if(!r)return;
-  if('bytes' in r){downloadText(r.bytes,r.name);onBox({caption:VL.savedCaption,text:VL.savedHead+r.name+VL.savedTail});}else onBox(r);
+  if('bytes' in r){downloadText(r.bytes,r.name);onBox({caption:vireo(VL.savedCaption),text:vireo(VL.savedHead)+r.name+vireo(VL.savedTail)});}else onBox(r);
  }
- const LM=VL.listMenu,SM=VL.selectionMenu;
+ const LM=VL.listMenu,SM=VL.selectionMenu,shownCaption=vireo(caption);
  return <section className="card fi-window" aria-labelledby={`${id}-cap`} data-testid={testId}>
-  <h2 id={`${id}-cap`} className="ob-native">{caption}</h2>
+  <h2 id={`${id}-cap`} className="ob-native">{shownCaption}</h2>
   <div className="fi-menubar">
-   <div className="fi-menu" onKeyDown={e=>escape(e,listTrigger)}><button type="button" ref={listTrigger} aria-expanded={menu==='list'||menu==='save'} aria-controls={`${id}-list`} data-testid={`${testId}-list-menu`} onClick={()=>setMenu(m=>m==='list'||m==='save'?null:'list')}>{menuCaptionText(LM.list)}</button>
-    {(menu==='list'||menu==='save')&&<div id={`${id}-list`} role="group" aria-label={menuCaptionText(LM.list)} className="fi-menu-list">
-     <button type="button" data-testid={`${testId}-search`} disabled={!lines.length} onClick={()=>{setMenu(null);setFind({query:'',matchCase:false});}}>{menuCaptionText(LM.search)}</button><hr/>
-     <button type="button" data-testid={`${testId}-print`} disabled={!lines.length} onClick={()=>{setMenu(null);setPrinting(true);}}>{menuCaptionText(LM.print)}</button><hr/>
-     <button type="button" aria-expanded={menu==='save'} data-testid={`${testId}-save-menu`} disabled={!lines.length} onClick={()=>setMenu(m=>m==='save'?'list':'save')}>{menuCaptionText(LM.saveText)} ›</button>
-     {menu==='save'&&<div role="group" aria-label={menuCaptionText(LM.saveText)} className="fi-submenu">
-      <button type="button" data-testid={`${testId}-save-displayed`} onClick={save}>{menuCaptionText(LM.asDisplayed)}</button>
-      <button type="button" data-testid={`${testId}-save-csv`} disabled={csv.disabled} onClick={comma}>{menuCaptionText(LM.commaDelimit)}</button>
+   <div className="fi-menu" onKeyDown={e=>escape(e,listTrigger)}><button type="button" ref={listTrigger} aria-expanded={menu==='list'||menu==='save'} aria-controls={`${id}-list`} data-testid={`${testId}-list-menu`} onClick={()=>setMenu(m=>m==='list'||m==='save'?null:'list')}>{vireo(menuCaptionText(LM.list))}</button>
+    {(menu==='list'||menu==='save')&&<div id={`${id}-list`} role="group" aria-label={vireo(menuCaptionText(LM.list))} className="fi-menu-list">
+     <button type="button" data-testid={`${testId}-search`} disabled={!lines.length} onClick={()=>{setMenu(null);setFind({query:'',matchCase:false});}}>{vireo(menuCaptionText(LM.search))}</button><hr/>
+     <button type="button" data-testid={`${testId}-print`} disabled={!lines.length} onClick={()=>{setMenu(null);setPrinting(true);}}>{vireo(menuCaptionText(LM.print))}</button><hr/>
+     <button type="button" aria-expanded={menu==='save'} data-testid={`${testId}-save-menu`} disabled={!lines.length} onClick={()=>setMenu(m=>m==='save'?'list':'save')}>{vireo(menuCaptionText(LM.saveText))} ›</button>
+     {menu==='save'&&<div role="group" aria-label={vireo(menuCaptionText(LM.saveText))} className="fi-submenu">
+      <button type="button" data-testid={`${testId}-save-displayed`} onClick={save}>{vireo(menuCaptionText(LM.asDisplayed))}</button>
+      <button type="button" data-testid={`${testId}-save-csv`} disabled={csv.disabled} onClick={comma}>{vireo(menuCaptionText(LM.commaDelimit))}</button>
      </div>}<hr/>
-     <button type="button" data-testid={`${testId}-close`} onClick={()=>{setMenu(null);onClose();}}>{menuCaptionText(LM.close)}</button>
+     <button type="button" data-testid={`${testId}-close`} onClick={()=>{setMenu(null);onClose();}}>{vireo(menuCaptionText(LM.close))}</button>
     </div>}
    </div>
-   {!hideSelection&&<div className="fi-menu" onKeyDown={e=>escape(e,selTrigger)}><button type="button" ref={selTrigger} aria-expanded={menu==='selection'} aria-controls={`${id}-sel`} data-testid={`${testId}-selection-menu`} onClick={()=>setMenu(m=>m==='selection'?null:'selection')}>{menuCaptionText(SM.selection)}</button>
-    {menu==='selection'&&<div id={`${id}-sel`} role="group" aria-label={menuCaptionText(SM.selection)} className="fi-menu-list">
+   {!hideSelection&&<div className="fi-menu" onKeyDown={e=>escape(e,selTrigger)}><button type="button" ref={selTrigger} aria-expanded={menu==='selection'} aria-controls={`${id}-sel`} data-testid={`${testId}-selection-menu`} onClick={()=>setMenu(m=>m==='selection'?null:'selection')}>{vireo(menuCaptionText(SM.selection))}</button>
+    {menu==='selection'&&<div id={`${id}-sel`} role="group" aria-label={vireo(menuCaptionText(SM.selection))} className="fi-menu-list">
      {selectionItems.map(item=><button key={item.key} type="button" data-testid={`${testId}-${item.key}`} disabled={!!item.unavailable||selection<0} title={item.unavailable??undefined} onClick={()=>{setMenu(null);item.onClick(selection);}}>{menuCaptionText(item.label)}</button>)}
      {selectionItems.some(i=>i.unavailable)&&<p className="fi-note" data-testid={`${testId}-selection-reason`}>{selectionItems.find(i=>i.unavailable)!.unavailable}</p>}
     </div>}
    </div>}
   </div>
-  <div ref={listRef} className="fi-lines" role="listbox" tabIndex={0} aria-label={caption} aria-activedescendant={itemIndex>=0?`${id}-l${itemIndex}`:undefined} data-testid={`${testId}-lines`} onKeyDown={onKey} onContextMenu={openPopup} onAuxClick={popup.auxClick}>
+  <NativeMirrorCaption testId={`${testId}-mirror-caption`}/>
+  <div ref={listRef} className="fi-lines" role="listbox" lang="en" tabIndex={0} aria-label={shownCaption} aria-activedescendant={itemIndex>=0?`${id}-l${itemIndex}`:undefined} data-testid={`${testId}-lines`} onKeyDown={onKey} onContextMenu={openPopup} onAuxClick={popup.auxClick}>
    {lines.map((line,i)=><div key={i} id={`${id}-l${i}`} role="option" aria-selected={i===itemIndex} data-line={i} data-testid={`${testId}-line-${i}`} className="fi-line" onClick={()=>choose(i)} onDoubleClick={()=>{const s=listSelection(i,first,last);if(s>=0&&onActivate)onActivate(s);}}>{line||' '}</div>)}
   </div>
   {notice}
   {!hideSelection&&<p role="status" className="fi-status" data-testid={`${testId}-selection`}>{selection>=0?`${selection+1} / ${last-first+1}`:noSelection}</p>}
   {children}
-  <PopupMenu at={popup.at} label={menuCaptionText(SM.selection)} onClose={popup.close} returnFocus={()=>listRef.current?.focus()}
+  <PopupMenu at={popup.at} label={vireo(menuCaptionText(SM.selection))} onClose={popup.close} returnFocus={()=>listRef.current?.focus()}
    items={selectionItems.map(item=>({key:`${testId}-${item.key}`,label:item.label,onSelect:()=>item.onClick(selection),disabled:!!item.unavailable,title:item.unavailable??undefined}))}/>
   {find&&<FindDialog draft={find} onDraft={setFind} onSearch={search} onCancel={()=>{setFind(null);listRef.current?.focus();}}/>}
   {box&&<MessageBox box={box} onClose={()=>{onBox(null);listRef.current?.focus();}}/>}
-  {printing&&<FieldInfoPrintPreview caption={caption} lines={lines} student={printStudent} onClose={()=>setPrinting(false)}/>}
+  {printing&&<FieldInfoPrintPreview caption={shownCaption} lines={lines} student={printStudent} onClose={()=>setPrinting(false)}/>}
  </section>;
 }
 
@@ -120,7 +123,7 @@ export function FindDialog({draft,onDraft,onSearch,onCancel}:{draft:Readonly<{qu
  const id=useId(),ref=useRef<HTMLDialogElement>(null);
  useEffect(()=>{const el=ref.current;if(el&&!el.open){el.showModal();el.querySelector('input')?.focus();}},[]);
  return <dialog ref={ref} className="ob-dialog ob-box" aria-labelledby={`${id}-t`} data-testid="fi-find-dialog" onCancel={e=>{e.preventDefault();onCancel();}}>
-  <h2 id={`${id}-t`} className="ob-native">{SL.caption}</h2>
+  <h2 id={`${id}-t`} className="ob-native">{vireo(SL.caption)}</h2>
   <label className="ob-field">{M.find.label}<input data-testid="fi-find-query" maxLength={RADIO_HOT_LIST_SEARCH_QUERY_MAX} value={draft.query} onChange={e=>onDraft({...draft,query:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();onSearch('top');}}}/></label>
   <label className="ob-check"><input type="checkbox" checked={draft.matchCase} onChange={e=>onDraft({...draft,matchCase:e.target.checked})}/>{M.find.matchCase}</label>
   <div className="ob-actions"><button type="button" className="primary-button" data-testid="fi-find-top" onClick={()=>onSearch('top')}>{M.find.top}</button><button type="button" className="secondary-button" data-testid="fi-find-next" onClick={()=>onSearch('next')}>{M.find.next}</button><button type="button" className="secondary-button" onClick={onCancel}>{M.find.cancel}</button></div>
@@ -158,9 +161,10 @@ function FieldInfoPrintPreview({caption,lines,student,onClose}:{caption:string;l
  return createPortal(<dialog ref={dialog} className="ob-dialog ob-wide fi-print-root" aria-labelledby={`${id}-t`} data-testid="fi-print-preview" onCancel={e=>{e.preventDefault();onClose();}}>
   <div className="fi-print-chrome"><h2 id={`${id}-t`}>{M.printTitle}</h2><p className="fi-note">{M.printAdaptation}</p></div>
   <section className="fi-print-report" tabIndex={0} aria-label={caption}>
-   <p className="fi-print-header" data-testid="fi-print-date">{printedAt}{student?HOT_LIST_PRINT_LITERALS.tableNumber+HOT_LIST_PRINT_LITERALS.notRecorded:''}</p>
+   <p className="fi-print-header" data-testid="fi-print-date">{printedAt}{student?vireo(HOT_LIST_PRINT_LITERALS.tableNumber)+vireo(HOT_LIST_PRINT_LITERALS.notRecorded):''}</p>
    <p className="fi-print-header">{caption}</p>
-   <pre className="fi-print-lines" data-testid="fi-print-lines">{lines.join('\n')}</pre>
+   <NativeMirrorCaption/>
+   <pre className="fi-print-lines" lang="en" data-testid="fi-print-lines">{lines.join('\n')}</pre>
   </section>
   <div className="fi-print-chrome"><p role="alert">{failed?M.printError:''}</p>
    <div className="ob-actions"><button type="button" className="primary-button" ref={button} data-testid="fi-print-print" onClick={print}>{M.printButton}</button><button type="button" className="secondary-button" data-testid="fi-print-close" onClick={onClose}>{M.close}</button></div></div>
