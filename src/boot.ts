@@ -14,10 +14,13 @@ import {settleLanguage} from './i18n/settle';
 // Dev server and tests only: the import is dropped from the production build with the DEV branch below
 // (scripts/check-i18n-dist.mjs checks that dist/ carries no pseudo-locale).
 import {pseudoBundle} from './i18n/pseudo';
+// Front SC2: the script-stress pseudo-locales qps-cjk, qps-deva and qps-cyrl, dropped from the production build the same way.
+import {isPseudoScriptLanguage,pseudoScriptBundle} from './i18n/pseudoScripts';
 
 /** The bundle of a non-English language, or null for English. */
 function bundleFor(language:UiLanguage):LocaleBundle|null|Promise<LocaleBundle|null>{
  if(import.meta.env.DEV&&language==='qps')return pseudoBundle();
+ if(import.meta.env.DEV&&isPseudoScriptLanguage(language))return pseudoScriptBundle(language);
  if(language==='es-419')return import('./i18n/es/index').then(m=>m.SPANISH);
  return null;
 }
@@ -32,6 +35,6 @@ const settled=settleLanguage({
  setTitle:title=>{document.title=title;},
  error:(message,detail)=>{if(detail===undefined)console.error(message);else console.error(message,detail);},
 });
-/** null when the language is already active (English, qps); otherwise resolves when the Spanish chunk is active or English
+/** null when the language is already active (English and the dev pseudo-locales); otherwise resolves when the Spanish chunk is active or English
  * replaced it. */
 export const languageReady:Promise<unknown>|null=settled instanceof Promise?settled:null;

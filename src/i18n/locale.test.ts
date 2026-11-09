@@ -22,7 +22,7 @@ describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-0
  it('accepts the pseudo-locale only in the dev server and tests, never from storage',()=>{
   expect(decide({param:'qps'})).toBe('en');expect(decide({param:'qps',dev:true,released:false})).toBe('qps');
   expect(decide({stored:'qps',dev:true})).toBe('en');
-  expect(HTML_LANG).toEqual({en:'en','es-419':'es-419',qps:'en'});
+  expect(HTML_LANG).toEqual({en:'en','es-419':'es-419',qps:'en','qps-cjk':'ja','qps-deva':'hi','qps-cyrl':'ru'});
  });
  it('shows the selector before the release only for ?lang=en or ?lang=es-419 (ES1 review 1, C3)',()=>{
   for(const search of ['?lang=en','?lang=es-419','?x=1&lang=en'])expect(selectorShown(search,false),search).toBe(true);
