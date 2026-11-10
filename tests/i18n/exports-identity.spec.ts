@@ -119,6 +119,9 @@ test('spectrum analysis: measurement CSV, velocities CSV and the analysis sessio
  await identical(browser,baseURL,async(page,locale)=>{
   await open(page,locale,'spectrum');
   await page.getByLabel(N(locale,'Import spectrum')).setInputFiles({name:'identity-vector.csv',mimeType:'text/csv',buffer:SPECTRUM});
+  // Front ES-REL review: the import hashes the file asynchronously and then clears the object field, so the name is typed only
+  // after the file is in (a fill that raced it left the row "Unidentified" in one run).
+  await expect(page.locator('.spectrum-route .file-identity')).toContainText('identity-vector.csv');
   await page.getByLabel(N(locale,'Object or reference')).fill('Identity vector');
   await page.getByLabel(N(locale,'z step per tick')).fill('0.015625');await button(page,'Apply step',locale).click();
   await page.getByRole('slider').focus();await page.getByRole('slider').press('ArrowRight');
