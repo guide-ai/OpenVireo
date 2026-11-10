@@ -36,6 +36,11 @@ test('the tour starts on the first visit, steps through the page, and does not s
    return !!(spot&&strip&&view&&spot.x<=strip.x-8&&spot.y<=strip.y-8&&spot.x+spot.width>=strip.x+strip.width+8&&spot.y+spot.height>=strip.y+strip.height+8
     &&spot.y>=3&&spot.y+spot.height<=view.height-3);}).toBe(true);
  }
+ // Front HEADER: the save step outlines Save investigation and More in the page bar.
+ await id(page,'site-tour-back').click();await expect(tour).toHaveAttribute('data-step','save');
+ await expect.poll(async()=>{const spot=await id(page,'site-tour-spot').boundingBox(),actions=await id(page,'investigation-actions').boundingBox();
+  return !!(spot&&actions&&spot.x<=actions.x&&spot.y<=actions.y&&spot.x+spot.width>=actions.x+actions.width&&spot.y+spot.height>=actions.y+actions.height);}).toBe(true);
+ await id(page,'site-tour-next').click();await expect(tour).toHaveAttribute('data-step','help');
  // The last step outlines the Help button.
  await expect.poll(async()=>{const spot=await id(page,'site-tour-spot').boundingBox(),help=await id(page,'main-help-menu').boundingBox();
   return !!(spot&&help&&spot.x<=help.x&&spot.y<=help.y&&spot.x+spot.width>=help.x+help.width&&spot.y+spot.height>=help.y+help.height);}).toBe(true);

@@ -23,7 +23,7 @@ export const TOUR_EN=Object.freeze({
   observatory:Object.freeze({title:'Or explore the sky freely',
    text:'On the Observatory page: open the dome, choose an object and point the telescope. Then turn tracking on and use an instrument.'}),
   save:Object.freeze({title:'Save your work as a file',
-   text:'Your work stays in this browser tab until you save it. Save investigation downloads a file; Restore investigation JSON loads it again later.'}),
+   text:'Your work stays in this browser tab until you save it. Save investigation, at the top of every page, downloads a file; Restore investigation JSON, in the menu beside it, loads it again later.'}),
   help:Object.freeze({title:'Help is always here',
    text:'Open Help for the help topics, or press the ? key anywhere outside a text field. You can take this tour again from the Help menu.'}),
  }),
@@ -35,8 +35,8 @@ export const TOUR_TARGETS=Object.freeze([
  {id:'sections',targets:['.portal-header nav','.tools-toggle']},
  {id:'guides',targets:['[data-nav-group="guides"]','.tools-toggle']},
  {id:'observatory',targets:['.first-steps']},
- {id:'save',targets:['.investigation-toolbar']},
- {id:'help',targets:['.portal-help .help-trigger']},
+ {id:'save',targets:['[data-testid="investigation-actions"]']},
+ {id:'help',targets:['.page-bar .help-trigger']},
 ] as const satisfies readonly {id:keyof typeof TOUR_EN.steps;targets:readonly string[]}[]);
 /** The tour in this load's language, built on first use. */
 export const TOUR=lazyMessages(()=>Object.freeze({

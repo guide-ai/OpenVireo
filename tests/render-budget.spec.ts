@@ -12,7 +12,7 @@ const BUDGET={
  classificationFill:36,
  classificationToSpectrum:55,
  analyzerKey:12,
- observatoryLoad:100,
+ observatoryLoad:110,
  openDome:30,
  visitedKey:36,
  visitedRouteChange:55,

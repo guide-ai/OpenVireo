@@ -52,7 +52,7 @@ const START:WebHelpGroup={title:'Start here',topics:[
    ['Telescope Control Panel button','Switch to telescope view, then Move the telescope and the instrument cards.'],
    ['Tools › (analysis tools)','The Analysis group in the header: Spectrum analyzer, Stellar classification, Cluster database, LSS survey, LSS data, Object X, Variable stars; Radio data for pulsars.'],
    ['Tools › Results Editors','The Results Editors group in the header: Observational Results and Pulsar Results.'],
-   ['Load Saved Data...','Restore investigation JSON in the backup bar, or the load button of the results editor you saved from.'],
+   ['Load Saved Data...','Restore investigation JSON in the More menu at the top of the page, or the load button of the results editor you saved from.'],
    ['Tools › Spreadsheet','Download results CSV and open the file in any spreadsheet program.'],
    ['Tools › Image Processing (DS9)','Camera images are saved as FITS downloads and can be opened under Files › Saved images or in any FITS viewer, including DS9.'],
    ['File › Exit Observatory','Save your work, then close the browser tab. The File menu of Move the telescope has Exit Observatory, which shows VIREO\'s reminder.'],
@@ -108,7 +108,7 @@ const ANALYSIS:WebHelpGroup={title:'Analysis and results',topics:[
  topic('saving','Saving your work',[
   p('OpenVireo keeps nothing on a server. Most of your work lives in this tab and is lost when you reload or close it, so save it as a file on your computer.'),
   list(
-   'Save investigation (in the backup bar near the top of the page) downloads one file with your spectra, measurements and settings. Restore investigation JSON loads that file again later. What a backup includes lists exactly what it covers.',
+   'Save investigation (at the top of every page) downloads one file with your spectra, measurements and settings. Restore investigation JSON, in the menu beside it, loads that file again later; the same menu\'s What a backup includes lists exactly what it covers.',
    'Observational Results (in the Results Editors group) opens your confirmed redshifts: Download results text, Download results CSV (for a spreadsheet program) and Print results.',
    'Save investigation also keeps your pulsar recording and confirmed pulsar measurements. For a .CSV file use Save recorded measurements (.CSV) in Radio data; Pulsar Results opens a saved file to review it.',
    'Camera images download as FITS files; open them under Files › Saved images.',

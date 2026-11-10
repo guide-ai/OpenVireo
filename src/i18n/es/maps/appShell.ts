@@ -1,12 +1,13 @@
 import type {APP_SHELL_MESSAGES_EN} from '../../../components/AppShellMessages';
 import type {Translation} from '../../maps';
-/** Front ES1: Spanish (es-419) for the app shell: navigation groups, theme switch, toolbar disclosure and the recovery notice
+/** Front ES1: Spanish (es-419) for the app shell: navigation groups, theme switch, toolbar disclosure, the page bar and the recovery notice
  * of a part of the site that cannot load. A web adaptation by OpenVireo, not CLEA's. */
 export const APP_SHELL_ES:Translation<typeof APP_SHELL_MESSAGES_EN>=Object.freeze({
  theme:Object.freeze({legend:'Tema de color',system:'Sistema',light:'Claro',dark:'Oscuro'}),
  navGroups:Object.freeze({optical:'Observatorio óptico',radio:'Radioobservatorio',analysis:'Análisis',files:'Archivos',guides:'Guías de los ejercicios'}),
  backupHelpSummary:'Qué incluye una copia de seguridad',
  toolsMenu:'Menú',// the phone menu button; «Herramientas» does not fit beside the brand and Help at 320 px
+ pageBar:Object.freeze({label:'Investigación, idioma y ayuda',more:'Más',moreName:'Más acciones de la investigación'}),
  recovery:Object.freeze({
   updatedTitle:'Se publicó una nueva versión de OpenVireo',
   updated:'Esta parte del sitio no se pudo cargar porque el sitio se actualizó mientras esta página estaba abierta.',

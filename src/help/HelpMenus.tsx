@@ -1,4 +1,4 @@
-import {useEffect,useId,useRef,useState} from 'react';
+import {useCallback,useEffect,useId,useRef,useState} from 'react';
 import {menuCaptionText} from '../core/radioControl';
 import {vireo} from '../i18n/vireo';
 import CleaHelp,{ViewSwitch} from '../clusters/CleaHelp';
@@ -11,6 +11,7 @@ import {helpTranslationOffered,loadHelpTranslation,type HelpView} from './helpTr
 import WebHelpDialog from './WebHelpDialog';
 import {helpKeyBlocked} from './helpShortcut';
 import {PROJECT_LINKS,PROJECT_REPO_URL,currentPage,newIssueUrl} from './projectLinks';
+import {useMenuDismiss} from '../components/useMenuDismiss';
 import '../observatory/field-info.css';
 import './help.css';
 
@@ -43,7 +44,9 @@ type Menu='help'|'websites'|null;
  * also shows VIREO's About box). VIREO's main-window help (VIRMnHlp) and About... are not offered (user decision, 2026-11-08). */
 export function HelpMenu({kind,disabled=false,disabledReason,onSiteAbout,onTour}:{kind:'main'|'radio';disabled?:boolean;disabledReason?:string;onSiteAbout?:()=>void;onTour?:()=>void}){
  const id=useId(),[menu,setMenu]=useState<Menu>(null),[topics,setTopics]=useState(0),[about,setAbout]=useState(false),[webHelp,setWebHelp]=useState(false);
- const trigger=useRef<HTMLButtonElement>(null);
+ const trigger=useRef<HTMLButtonElement>(null),root=useRef<HTMLDivElement>(null),closeMenu=useCallback(()=>setMenu(null),[]);
+ // Front HEADER: the main menu sits beside the page bar's More menu; a press or a focus outside it closes it (the radio lab's is unchanged).
+ useMenuDismiss(root,menu!==null,closeMenu,kind==='main');
  const C=kind==='main'?MAIN_HELP_MENU:RADIO_HELP_MENU,off=disabled||disabledReason!==undefined;
  useEffect(()=>{if(off)setMenu(null);},[off]);
  useEffect(()=>{
@@ -58,7 +61,7 @@ export function HelpMenu({kind,disabled=false,disabledReason,onSiteAbout,onTour}
   if(menu){e.preventDefault();e.stopPropagation();setMenu(null);trigger.current?.focus();}
  };
  const caption=vireo(menuCaptionText(C.help));
- return <div className="fi-menu" onKeyDown={escape}>
+ return <div className="fi-menu" ref={root} onKeyDown={escape}>
   <button type="button" ref={trigger} disabled={off} className={kind==='main'?'help-trigger':undefined} aria-label={M.menuName[kind]} aria-describedby={disabledReason?`${id}-off`:undefined} aria-expanded={menu!==null} aria-controls={`${id}-help`} data-testid={`${kind}-help-menu`} onClick={()=>setMenu(m=>m?null:'help')}>
    {kind==='main'?<><span className="help-trigger-icon" aria-hidden="true">{M.shortcutKey}</span><span className="help-trigger-text">{caption}</span></>:caption}</button>
   {disabledReason&&<p id={`${id}-off`} className="fi-note fi-menu-note" data-testid={`${kind}-help-off`}>{disabledReason}</p>}

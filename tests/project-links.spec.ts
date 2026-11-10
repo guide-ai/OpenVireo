@@ -45,16 +45,19 @@ test('on a phone the links are in the Tools panel and fit the screen',async({pag
  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
 });
 
-test('between the phone and wide layouts the status line never runs under Help',async({page})=>{
+test('between the phone and wide layouts the status line never runs under the footer, and the page bar\'s place never under its controls',async({page})=>{
+ // Front HEADER: Help moved from the sidebar's top row to the page bar; the top bar keeps the brand and status left, the footer right.
  for(const width of [600,700,900,1099]){
   await page.setViewportSize({width,height:700});await page.goto('/#observatory');
-  const [status,help]=await Promise.all([page.locator('.portal-status').boundingBox(),page.locator('.portal-help').boundingBox()]);
-  expect(status&&help,String(width)).toBeTruthy();
-  const overlap=!(status!.x+status!.width<=help!.x||status!.y+status!.height<=help!.y||status!.y>=help!.y+help!.height);
-  expect(overlap,`${width}px`).toBe(false);
-  // The footer column (links, instructor mode, theme) never runs into the brand and Help (review 1).
-  const [top,footer]=await Promise.all([page.locator('.portal-help').boundingBox(),page.locator('.portal-footer').boundingBox()]);
-  expect(top!.x+top!.width,`${width}px`).toBeLessThanOrEqual(footer!.x);
+  const [status,footer]=await Promise.all([page.locator('.portal-status').boundingBox(),page.locator('.portal-footer').boundingBox()]);
+  expect(status&&footer,String(width)).toBeTruthy();
+  const overlap=(a:{x:number;y:number;width:number;height:number},b:typeof a)=>a.x+a.width>b.x+.5&&b.x+b.width>a.x+.5&&a.y+a.height>b.y+.5&&b.y+b.height>a.y+.5;
+  expect(overlap(status!,footer!),`${width}px`).toBe(false);
+  // The footer column (links, instructor mode, theme) never runs into the brand (review 1).
+  const brand=await page.locator('.portal-brand-block').boundingBox();
+  expect(brand!.x+brand!.width,`${width}px`).toBeLessThanOrEqual(footer!.x);
+  const place=(await page.getByTestId('page-bar-place').boundingBox())!;
+  for(const t of ['investigation-save','investigation-more','language-select','main-help-menu'])expect(overlap(place,(await page.getByTestId(t).boundingBox())!),`${width}px ${t}`).toBe(false);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth),`${width}px`).toBeLessThanOrEqual(width);
  }
 });

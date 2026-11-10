@@ -34,14 +34,21 @@ const shellTexts=(page:Page)=>page.evaluate(regions=>{
  return out;
 },SHELL);
 
-/** Layout problems in the header: elements of the top row that overlap, the status line or a theme or language option cut
- * off or crossing its pill, and horizontal page overflow. Run with the CI's DejaVu fonts (docs/I18N.md). */
+/** Layout problems in the header and the page bar: elements of the sidebar's top row (brand, Tools) that overlap, the page bar's
+ * place and controls that overlap or leave the screen, the status line or a theme or language option cut off or crossing its
+ * pill, and horizontal page overflow. Run with the CI's DejaVu fonts (docs/I18N.md). Front HEADER: Help left the sidebar's top
+ * row for the page bar. */
 const headerProblems=(page:Page)=>page.evaluate(()=>{
  const out:string[]=[];
  if(document.documentElement.scrollWidth>document.documentElement.clientWidth)out.push('page overflows horizontally');
  const rect=(s:string)=>{const e=document.querySelector<HTMLElement>(s);return e&&e.offsetParent?e.getBoundingClientRect():null;};
- const top=['.portal-brand','.portal-help','.portal-header .tools-toggle'].map(rect);
- for(let i=0;i<top.length;i++)for(let j=i+1;j<top.length;j++){const a=top[i],b=top[j];if(a&&b&&a.right>b.left+.5&&b.right>a.left+.5&&a.bottom>b.top+.5&&b.bottom>a.top+.5)out.push(`top row ${i}/${j} overlap`);}
+ const overlap=(a:DOMRect|null,b:DOMRect|null)=>!!a&&!!b&&a.right>b.left+.5&&b.right>a.left+.5&&a.bottom>b.top+.5&&b.bottom>a.top+.5;
+ const top=['.portal-brand','.portal-header .tools-toggle'].map(rect);
+ for(let i=0;i<top.length;i++)for(let j=i+1;j<top.length;j++)if(overlap(top[i],top[j]))out.push(`top row ${i}/${j} overlap`);
+ const bar=['.page-bar-place','[data-testid="investigation-save"]','[data-testid="investigation-more"]','.page-bar .language-select','.page-bar .help-trigger'].map(rect);
+ for(let i=0;i<bar.length;i++){const a=bar[i];if(a&&(a.left<-.5||a.right>document.documentElement.clientWidth+.5))out.push(`page bar ${i} leaves the screen`);
+  for(let j=i+1;j<bar.length;j++)if(overlap(a,bar[j]))out.push(`page bar ${i}/${j} overlap`);}
+ for(const b of document.querySelectorAll<HTMLElement>('.page-bar button,.page-bar-place'))if(b.offsetParent&&b.scrollWidth>b.clientWidth+1&&getComputedStyle(b).overflow==='hidden')out.push(`${b.textContent?.trim()} cut off`);
  const status=document.querySelector<HTMLElement>('.portal-status');if(status?.offsetParent&&status.scrollWidth>status.clientWidth+1)out.push('status line cut off');
  for(const pill of document.querySelectorAll<HTMLElement>('.portal-footer .theme-switch')){if(!pill.offsetParent)continue;const r=pill.getBoundingClientRect();
   for(const o of pill.querySelectorAll<HTMLElement>('.theme-option')){const q=o.getBoundingClientRect(),span=o.querySelector('span');if(q.right>r.right+.5||q.left<r.left-.5)out.push(`${o.textContent?.trim()} crosses its pill`);if(span&&span.scrollWidth>span.clientWidth+1)out.push(`${o.textContent?.trim()} cut off`);}}
@@ -77,6 +84,25 @@ for(const L of TRANSLATED){
   const same=texts.en.map((t,i)=>t===texts.own[i]&&!SAME.has(t.replace(/^@[a-z-]+:/,''))?t:null).filter(Boolean);
   expect(same).toEqual([]);
   expect(texts.own).toContain(C['project.save']);expect(texts.own).toContain(C['sky.local']);
+ });
+
+ // Front HEADER: the page bar names the current page with the sidebar's own labels, and its More button and region are named in
+ // the language.
+ test(title(L,'the page bar is Spanish: the place reads the Spanish section and page, More and the region are named in Spanish','the page bar is <L> in the <tag> preview: the place reads the <L> section and page, More and the region are named in <L>'),async({page})=>{
+  for(const [hash,group,key] of [['observatory','optical','sky.observatory'],['pulsar-analysis','radio','plr.nav'],['images','files','fits.nav']] as const){
+   await page.goto(`/${L.query}#${hash}`);
+   await expect(page.locator('.portal-header nav button[aria-current="page"]')).toHaveText(C[key],{timeout:15_000});
+   await expect(id(page,'page-bar-place')).toHaveText(`${M.appShell.navGroups[group]}${C[key]}`);
+  }
+  await expect(page.getByRole('region',{name:M.appShell.pageBar.label,exact:true})).toHaveCount(1);
+  await expect(id(page,'investigation-more')).toHaveAccessibleName(M.appShell.pageBar.moreName);await expect(id(page,'investigation-more')).toHaveText(M.appShell.pageBar.more);
+  await id(page,'investigation-more').click();
+  await expect(id(page,'investigation-restore')).toHaveText(C['project.restore']);await expect(id(page,'investigation-backup-help').locator('summary')).toHaveText(M.appShell.backupHelpSummary);
+  for(const width of [320,1440]){
+   await page.setViewportSize({width,height:800});await open(page,L);await expect(id(page,'language-choice')).toBeVisible();
+   expect(await headerProblems(page),`${width}`).toEqual([]);
+   await page.locator('.page-bar').screenshot({path:test.info().outputPath(`${L.tag}-page-bar-${width}.png`)});
+  }
  });
 
  test(title(L,'Help menu, the tour, instructor mode and the project links are Spanish','Help menu, the tour, instructor mode and the project links are <L> in the <tag> preview'),async({page})=>{
@@ -138,12 +164,12 @@ for(const L of TRANSLATED){
   await page.setViewportSize({width:320,height:700});await open(page,L);
   const fits=()=>page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth);
   expect(await fits()).toBe(true);expect(await headerProblems(page)).toEqual([]);
-  // The top row (brand, Help, the menu button) does not overlap.
-  const boxes=await Promise.all(['.portal-brand-block','.portal-help','.portal-header .tools-toggle'].map(s=>page.locator(s).boundingBox()));
+  // The top row (brand, the menu button) and the page bar's controls do not overlap (Front HEADER: Help is in the page bar).
+  const boxes=await Promise.all(['.portal-brand-block','.portal-header .tools-toggle','[data-testid="investigation-save"]','[data-testid="investigation-more"]','.page-bar .language-select','.page-bar .help-trigger'].map(s=>page.locator(s).boundingBox()));
   for(let i=0;i<boxes.length;i++)for(let j=i+1;j<boxes.length;j++){const a=boxes[i]!,b=boxes[j]!;expect(a.x+a.width<=b.x+.5||b.x+b.width<=a.x+.5||a.y+a.height<=b.y+.5||b.y+b.height<=a.y+.5,`${i}/${j} overlap`).toBe(true);}
   await page.locator('.portal-header .tools-toggle').click();await expect(page.locator('.portal-header')).toHaveClass(/tools-open/);
   expect(await fits()).toBe(true);
-  const clipped=await page.evaluate(()=>[...document.querySelectorAll('.portal-header button, .portal-header a, .portal-header label, .investigation-toolbar button, .investigation-toolbar label')]
+  const clipped=await page.evaluate(()=>[...document.querySelectorAll('.portal-header button, .portal-header a, .portal-header label, .investigation-toolbar button, .investigation-toolbar label, .page-bar-place')]
    .filter(el=>(el as HTMLElement).offsetParent!==null&&el.scrollWidth>el.clientWidth+1&&getComputedStyle(el).overflow==='hidden').map(el=>el.textContent?.trim()));
   expect(clipped).toEqual([]);
   await page.screenshot({path:test.info().outputPath(`${L.tag}-shell-320.png`),fullPage:false});

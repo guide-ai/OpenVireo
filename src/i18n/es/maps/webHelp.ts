@@ -42,7 +42,7 @@ const START={title:'Empieza aquí',topics:[
    ['Botón del panel de control del telescopio','Cambia a la vista del telescopio y luego usa Mover el telescopio y las tarjetas de los instrumentos.'],
    ['Herramientas › (herramientas de análisis)','El grupo Análisis en el encabezado: Analizador de espectros, Clasificación estelar, Base de datos de cúmulos, Sondeo LSS, Datos LSS, Objeto X, Estrellas variables; Datos de radio para los púlsares.'],
    ['Herramientas › Editores de resultados','El grupo Editores de resultados en el encabezado: Resultados de observación y Resultados de púlsares.'],
-   ['Cargar datos guardados...','Restaurar investigación (JSON) en la barra de copia de seguridad, o el botón de carga del editor de resultados desde el que guardaste.'],
+   ['Cargar datos guardados...','Restaurar investigación (JSON) en el menú Más, arriba en la página, o el botón de carga del editor de resultados desde el que guardaste.'],
    ['Herramientas › Hoja de cálculo','Usa Descargar CSV de resultados y abre el archivo en cualquier programa de hojas de cálculo.'],
    ['Herramientas › Procesamiento de imágenes (DS9)','Las imágenes de las cámaras se guardan como descargas FITS y se pueden abrir en Archivos › Imágenes guardadas o en cualquier visor de FITS, incluido DS9.'],
    ['Archivo › Salir del observatorio','Guarda tu trabajo y luego cierra la pestaña del navegador. El menú Archivo de Mover el telescopio tiene Salir del observatorio, que muestra el recordatorio de VIREO.'],
@@ -98,7 +98,7 @@ const ANALYSIS={title:'Análisis y resultados',topics:[
  topic('Guardar tu trabajo',[
   p('OpenVireo no guarda nada en un servidor. La mayor parte de tu trabajo vive en esta pestaña y se pierde al volver a cargarla o cerrarla, así que guárdalo como archivo en tu computadora.'),
   list(
-   'Guardar investigación (en la barra de copia de seguridad, cerca de la parte superior de la página) descarga un archivo con tus espectros, mediciones y ajustes. Restaurar investigación (JSON) vuelve a cargar ese archivo más adelante. Qué incluye una copia de seguridad enumera exactamente lo que abarca.',
+   'Guardar investigación (arriba en cada página) descarga un archivo con tus espectros, mediciones y ajustes. Restaurar investigación (JSON), en el menú de al lado, vuelve a cargar ese archivo más adelante; Qué incluye una copia de seguridad, en ese mismo menú, enumera exactamente lo que abarca.',
    'Resultados de observación (en el grupo Editores de resultados) abre tus corrimientos al rojo confirmados: Descargar texto de resultados, Descargar CSV de resultados (para un programa de hojas de cálculo) e Imprimir resultados.',
    'Guardar investigación también conserva tu registro de púlsares y las mediciones de púlsares confirmadas. Para un archivo .CSV usa Guardar mediciones registradas (.CSV) en Datos de radio; Resultados de púlsares abre un archivo guardado para revisarlo.',
    'Las imágenes de las cámaras se descargan como archivos FITS; ábrelas en Archivos › Imágenes guardadas.',

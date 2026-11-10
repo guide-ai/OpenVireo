@@ -349,9 +349,9 @@ test('review 1 M1: after a redeploy, a route whose old chunk is gone shows the u
  // A site update is not a bug: no Report a problem link here (only a route error offers one, Front Project Links).
  await expect(notice.getByTestId('recovery-report')).toHaveCount(0);
  expect(blocked).toBeGreaterThan(0);
- // The shell stays: header, navigation and the investigation toolbar.
+ // The shell stays: header, navigation and the page bar with the investigation backup (Front HEADER: its h2 is gone).
  await expect(page.locator('button[data-route="observatory"]')).toBeVisible();
- await expect(page.getByRole('heading',{name:'One investigation backup'})).toBeVisible();
+ await expect(page.getByRole('region',{name:'Investigation, language and help'}).getByRole('button',{name:'Save investigation',exact:true})).toBeVisible();
  // Save investigation from the notice is the toolbar's own save (a downloaded backup).
  const download=page.waitForEvent('download');await notice.getByTestId('recovery-save').click();
  expect((await download).suggestedFilename()).toMatch(/\.json$/);

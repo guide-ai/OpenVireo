@@ -15,15 +15,15 @@ load, so they are never asserted.
 ## Scenarios and budgets
 | Scenario | What happens | Count | Budget |
 |---|---|---|---|
-| classificationLoad | open `#classification` cold, until the type field shows and commits stop | 164 | 178 |
+| classificationLoad | open `#classification` cold, until the type field shows and commits stop | 173 | 178 |
 | classificationKey | one keystroke in "Proposed spectral type" | 34 | 36 |
 | classificationFill | `fill` of that field | 34 | 36 |
-| classificationToSpectrum | header click from classification to the spectrum analyzer | 51 | 55 |
+| classificationToSpectrum | header click from classification to the spectrum analyzer | 52 | 55 |
 | analyzerKey | one keystroke in the analyzer's "Object or reference" | 8 | 12 |
-| observatoryLoad | open `#observatory` cold, until its heading shows | 93 | 100 |
+| observatoryLoad | open `#observatory` cold, until its heading shows | 102 | 110 |
 | openDome | click "Open dome ↗" | 30 | 30 |
 | visitedKey | after visiting eight routes (they stay mounted, hidden), one classification keystroke | 34 | 36 |
-| visitedRouteChange | then the header click to the spectrum analyzer | 51 | 55 |
+| visitedRouteChange | then the header click to the spectrum analyzer | 52 | 55 |
 
 Counts are as of the commit that set them; the Front Perf commits lower them step by step and update this table.
 
@@ -49,6 +49,16 @@ Counts are as of the commit that set them; the Front Perf commits lower them ste
   (observatoryLoad 85 → 93, budget 100; classificationLoad 164, budget 178) and five on every route change
   (classificationToSpectrum and visitedRouteChange 43 → 51, budgets 55). openDome is 30 (the dome's lazy sky boundary
   renders twice while it loads).
+
+- Front HEADER (2026-11-10): the page bar replaces the investigation card and takes Help and the language select from the
+  sidebar. On main 2dbb118 the counts had drifted to classificationLoad 168, observatoryLoad 97 and both route changes 54 (the
+  table still showed the Onboarding counts). The bar is a memoised element (rebuilt only when the page, the host modal or the
+  investigation's busy, notice or error change) whose parts (InvestigationActions, the Help menu, the language slot, CloudEntry)
+  are memoised separately, so keystrokes do not render it and a route change renders only PageBar: the route changes go 54 → 52
+  (HelpMenu, LanguageChoiceSlot and LanguageChoice no longer render with the sidebar). Loads mount PageBar and InvestigationActions,
+  and the language module now fills two slots (LanguageSelectSlot ×2 + LanguageSelect, VireoOriginalsSlot ×2 +
+  VireoOriginalsOption, against LanguageChoiceSlot ×2 + LanguageChoice): observatoryLoad 97 → 102, so its budget is raised to 110;
+  classificationLoad 168 → 173, within 178. openDome stays 30; keystrokes stay 34 and analyzerKey 8.
 
 ## Changing a budget
 - `OPENVIREO_RENDER_REPORT=1 npx playwright test tests/render-budget.spec.ts` (or `=all` for every component) prints each scenario's count, commit count and
