@@ -5,16 +5,18 @@ import {foldAsciiCase} from '../core/radioHotListSearch';
 import {parseSpectralLineList,spectralLineHelp} from './spectralLines';
 import {HELP_FILES,helpFile} from './helpFiles';
 import glossary from '../i18n/es/glossary.json';
+import ptGlossary from '../i18n/pt-br/glossary.json';
 import {HelpTranslationError,helpTranslationBytes} from './helpTranslation';
-import {languageEntry} from '../i18n/languages';
+import {LANGUAGES,type LanguageEntry} from '../i18n/languages';
+import {PROFILES} from '../i18n/lint/profiles';
 
-// Front ES-HELP: the Spanish web adaptation of VIREO's help files (src/i18n/es/help) against the bundled originals.
+// Front ES-HELP: the Spanish web adaptation of VIREO's help files (src/i18n/es/help) against the bundled originals. Front PT-HELP:
+// the same structure checks run for every registered language whose registry entry has `help` (Spanish, then Brazilian
+// Portuguese in src/i18n/pt-br/help), each with its own related-topics marker; the Spanish titles are kept.
 type Module={language:string;sourceName:string;sourceSha256:string;text:string};
-const modules=import.meta.glob<Module>('../i18n/es/help/*.ts',{eager:true});
-const es=(key:string):Module=>modules[`../i18n/es/help/${key}.ts`];
+const modules=import.meta.glob<Module>('../i18n/*/help/*.ts',{eager:true});
 const latin1=(s:string)=>Uint8Array.from(s,c=>c.charCodeAt(0));
 const original=(key:string)=>new Uint8Array(readFileSync(new URL(`../../public${HELP_FILES[key].path}`,import.meta.url)));
-const spanish=(key:string)=>latin1(es(key).text);
 const LST=Object.keys(HELP_FILES).filter(k=>k.endsWith('.LST'));
 const TXT=Object.keys(HELP_FILES).filter(k=>k.endsWith('.TXT'));
 const REFUSED=['HUBHLP.LST','LSSHLP.LST'];
@@ -26,13 +28,23 @@ function sectionOf(bytes:Uint8Array,title:string):number{
  const at=lines.findIndex(l=>l.includes('*')&&foldAsciiCase(l).includes(key));
  return headers(lines.join('\n')).indexOf(at);
 }
+/** The languages that translate the help files, with the describe title each keeps (Spanish: ES-HELP's). */
+const HELP_LANGUAGES=LANGUAGES.filter((l):l is LanguageEntry&{help:{related:string}}=>!!l.help);
+const TITLES:Readonly<Record<string,string>>={'es-419':'the Spanish help files (Front ES-HELP)','pt-BR':'the Brazilian Portuguese help files (Front PT-HELP)'};
+it('Front PT-HELP: Spanish and Brazilian Portuguese translate the help files, each with its own marker',()=>{
+ expect(HELP_LANGUAGES.map(l=>[l.tag,l.help.related])).toEqual([['es-419','TEMAS RELACIONADOS'],['pt-BR','TÓPICOS RELACIONADOS']]);
+ for(const l of HELP_LANGUAGES)expect(TITLES[l.tag],l.tag).toBeDefined();
+});
 
-describe('the Spanish help files (Front ES-HELP)',()=>{
+for(const L of HELP_LANGUAGES)describe(TITLES[L.tag],()=>{
+ const own=Object.fromEntries(Object.entries(modules).filter(([f])=>f.startsWith(`../i18n/${L.dir}/help/`)));
+ const es=(key:string):Module=>own[`../i18n/${L.dir}/help/${key}.ts`];
+ const spanish=(key:string)=>latin1(es(key).text);
  it('has a module for each bundled help file, recording the SHA-256 of the original it was translated from',()=>{
-  expect(Object.keys(modules).length).toBe(Object.keys(HELP_FILES).length);
+  expect(Object.keys(own).length).toBe(Object.keys(HELP_FILES).length);
   for(const [key,id] of Object.entries(HELP_FILES)){
    expect(es(key),key).toBeDefined();
-   expect(es(key).language).toBe('es-419');// Front SC8
+   expect(es(key).language).toBe(L.tag);// Front SC8
    expect(es(key).sourceName).toBe(id.name);
    expect(es(key).sourceSha256).toBe(id.sha256);
   }
@@ -62,7 +74,7 @@ describe('the Spanish help files (Front ES-HELP)',()=>{
    const ek=file.name.toUpperCase(),eb=original(ek),sb=spanish(ek);
    const ei=sectionOf(eb,r.title),si=sectionOf(sb,s[i].title);
    expect(si,`${key} row ${i} "${s[i].title}"`).toBe(ei);
-   const ebody=helpTopicBody(eb,r.title)!,sbody=helpTopicBody(sb,s[i].title,languageEntry('es-419')!.help!.related)!;
+   const ebody=helpTopicBody(eb,r.title)!,sbody=helpTopicBody(sb,s[i].title,L.help.related)!;
    expect(sbody,`${key} row ${i}`).not.toBeNull();
    expect(sbody.relatedIndex>=0,`${key} row ${i} related`).toBe(ebody.relatedIndex>=0);
    const targets=(rows:typeof e,body:typeof ebody,fold?:(t:string)=>string)=>body.rows.map((_,b)=>helpLinkTarget(rows,body,b,false,fold)).filter((t):t is number=>t!==null);
@@ -138,6 +150,7 @@ const ALLOWED:Record<string,{words:string[];reason:string}>={
  'VIRMNHLP.TXT':{words:['pulsar','móvil'],reason:'VIREO\'s English menu name in parentheses (Radio Pulsar Analysis Tool), and «cursor móvil» (a moving cursor, not a phone)'},
 };
 describe('the Spanish help texts follow the Spanish lints (review S5)',()=>{
+ const es=(key:string):Module=>modules[`../i18n/es/help/${key}.ts`];
  const forbidden=glossary.forbidden as {words?:string[];es?:string;use:string}[];
  for(const key of Object.keys(HELP_FILES))it(`${key}: no forbidden word or pattern, no usted, no voseo`,()=>{
   const text=es(key).text,hits:string[]=[];
@@ -150,5 +163,31 @@ describe('the Spanish help texts follow the Spanish lints (review S5)',()=>{
  });
  it('every allowance is still needed and has a reason',()=>{
   for(const [key,a] of Object.entries(ALLOWED)){expect(a.reason.length,key).toBeGreaterThan(20);for(const w of a.words)expect(new RegExp(WORD(w),'iu').test(es(key).text),`${key} ${w}`).toBe(true);}
+ });
+});
+
+// Front PT-HELP: the pt-BR profile's errors that read a text on its own (src/i18n/lint/profiles.ts: its typography patterns, the
+// você register's patterns) and the pt-BR glossary's `forbidden` patterns, over each paragraph of every Portuguese help text
+// (its wrapped lines joined). The rules that need the English pair (the tu-imperative, placeholders, glossary terms) and the
+// curly-quote rule do not apply: a help file is Latin-1, so it quotes with VIREO's straight " (helpTranslationBytes refuses “ ”).
+// PT_ALLOWED names each permitted hit per file (the matched text), with its reason.
+const PT_ALLOWED:Record<string,{matches:string[];reason:string}>={};
+describe('the Brazilian Portuguese help texts follow the pt-BR lints',()=>{
+ const pt=(key:string):Module=>modules[`../i18n/pt-br/help/${key}.ts`];
+ const profile=PROFILES['pt-BR'];
+ const patterns=[...profile.typography,...profile.register.patterns,
+  ...(ptGlossary.forbidden as {pt:string;use:string}[]).map(f=>({label:'glossary forbidden',pattern:new RegExp(f.pt,'iu'),use:f.use}))];
+ const paragraphs=(text:string)=>text.split(/\n[ ]*\n/).map(p=>p.split('\n').map(l=>l.trim()).join(' ').trim()).filter(Boolean);
+ const hitsOf=(key:string)=>{
+  const out:{label:string;match:string;use:string}[]=[];
+  for(const para of paragraphs(pt(key).text))for(const p of patterns){const m=new RegExp(p.pattern.source,p.pattern.flags.replace('g','')).exec(para);if(m)out.push({label:p.label,match:m[0],use:p.use});}
+  return out;
+ };
+ for(const key of Object.keys(HELP_FILES))it(`${key}: no pt-BR lint error (European, Spanish or English word, guillemets, tu, title case)`,()=>{
+  expect(hitsOf(key).filter(h=>!PT_ALLOWED[key]?.matches.includes(h.match)).map(h=>`${h.label}: «${h.match}», use ${h.use}`)).toEqual([]);
+  expect(pt(key).text).not.toMatch(/[«»]/);
+ });
+ it('every allowance is still needed and has a reason',()=>{
+  for(const [key,a] of Object.entries(PT_ALLOWED)){expect(a.reason.length,key).toBeGreaterThan(20);for(const m of a.matches)expect(hitsOf(key).map(h=>h.match),`${key} ${m}`).toContain(m);}
  });
 });

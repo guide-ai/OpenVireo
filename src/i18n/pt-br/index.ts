@@ -32,6 +32,8 @@ import {LOAD_SAVE_PT} from './maps/pulsarLoadSave';
 import {OBJECT_X_GUIDE_PT} from './maps/objectXGuide';
 import {OBJECT_X_MEASURE_PT} from './maps/objectXMeasure';
 import {OBJECT_X_SESSION_PT} from './maps/objectXSession';
+import {HELP_VIEWER_PT} from './maps/helpViewer';
+import {WEB_HELP_PT} from './maps/webHelp';
 /** Front PT0 [W]: the Brazilian Portuguese (pt-BR) bundle (docs/I18N.md, "Brazilian Portuguese: the folder, lints and shell
  * (PT0)"). Partial until its release (src/i18n/languages.json `released:false`): only a `?lang=pt-BR` preview reaches it, and
  * every string it lacks is English. The production build splits it by route area like Spanish (scripts/i18n-split.mjs parses
@@ -42,6 +44,7 @@ export const PORTUGUESE:LocaleBundle=Object.freeze({
  messages,
  maps:Object.freeze({appShell:APP_SHELL_PT,camera:CAMERA_PT,fieldInfo:FIELD_INFO_PT,fieldReadDetails:FIELD_READ_DETAILS_PT,helpMenu:HELP_MENU_PT,languageChoice:LANGUAGE_CHOICE_PT,nakedEye:NAKED_EYE_PT,objectXLab:OBJECT_X_LAB_PT,observationMetadata:OBSERVATION_METADATA_PT,observatory:OBSERVATORY_PT,polish:POLISH_PT,projectLinks:PROJECT_LINKS_PT,qsoList:QSO_LIST_PT,sound:SOUND_PT,tour:TOUR_PT,variableStars:VARIABLE_STARS_PT,engineView:ENGINE_VIEW_PT,spectralRange:SPECTRAL_RANGE_PT,wedge:WEDGE_PT,clusterHr:CLUSTER_HR_PT,clusterData:CLUSTER_DATA_PT,
   radioAntenna:RADIO_ANTENNA_PT,radioFinishSave:RADIO_FINISH_SAVE_PT,radioR1:RADIO_R1_PT,radioRecordSave:RADIO_RECORD_SAVE_PT,
-  pulsar:PULSAR_PT,pulsarSavedRows:SAVED_ROWS_PT,pulsarLoadSave:LOAD_SAVE_PT,objectXGuide:OBJECT_X_GUIDE_PT,objectXMeasure:OBJECT_X_MEASURE_PT,objectXSession:OBJECT_X_SESSION_PT}),
+  pulsar:PULSAR_PT,pulsarSavedRows:SAVED_ROWS_PT,pulsarLoadSave:LOAD_SAVE_PT,objectXGuide:OBJECT_X_GUIDE_PT,objectXMeasure:OBJECT_X_MEASURE_PT,objectXSession:OBJECT_X_SESSION_PT,
+  helpViewer:HELP_VIEWER_PT,webHelp:WEB_HELP_PT}),
  originals,
 });

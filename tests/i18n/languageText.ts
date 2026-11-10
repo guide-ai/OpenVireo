@@ -155,3 +155,27 @@ export const E08_MAPS:Readonly<Record<string,E08Maps>>=Object.freeze({
  'pt-BR':{objectXLab:OBJECT_X_LAB_PT,objectXGuide:OBJECT_X_GUIDE_PT,objectXMeasure:OBJECT_X_MEASURE_PT,camera:CAMERA_PT,sound:SOUND_PT},
 });
 export const e08Maps=(tag:string):E08Maps=>{const m=E08_MAPS[tag];if(!m)throw new Error(`No E08 maps for ${tag}`);return m;};
+// Front PT-HELP: what the help spec (tests/i18n/help.spec.ts) reads per language beyond the catalog and originals: the help
+// viewer's map and OpenVireo's own help map, and the few words of the translated help files and their viewer that the spec looks
+// for on screen (each is in that language's src/i18n/<dir>/help module or VIREO-name originals).
+import {HELP_VIEWER_ES} from '../../src/i18n/es/maps/helpViewer';
+import {WEB_HELP_ES} from '../../src/i18n/es/maps/webHelp';
+import {HELP_VIEWER_PT} from '../../src/i18n/pt-br/maps/helpViewer';
+import {WEB_HELP_PT} from '../../src/i18n/pt-br/maps/webHelp';
+import type {HELP_VIEWER_EN} from '../../src/help/HelpViewerMessages';
+import type {WEB_HELP_EN} from '../../src/help/webHelp';
+export type HelpText=Readonly<{
+ helpViewer:Translation<typeof HELP_VIEWER_EN>;webHelp:Translation<typeof WEB_HELP_EN>;
+ /** PULSRHLP.LST's first row as the viewer lists it, the Exit Observatory reminder's question line, and CLASSHLP's texts the
+  * spec opens, searches and checks: the first words of Load Spectrum, the row and words of the search, the classification
+  * window's Controls row, and SPECLNS.TXT's Ca II K line text. */
+ pulsarFirstRow:string;reminderQuestion:string;loadSpectrumText:string;
+ searchRow:RegExp;searchQuery:string;searchHit:string;controlsRow:RegExp;lineHelpText:string;
+}>;
+export const HELP_TEXT:Readonly<Record<string,HelpText>>=Object.freeze({
+ 'es-419':{helpViewer:HELP_VIEWER_ES,webHelp:WEB_HELP_ES,pulsarFirstRow:'-Operaciones básicas-',reminderQuestion:'¿SEGURO que terminaste por completo este ejercicio?',
+  loadSpectrumText:'Para cargar un espectro',searchRow:/Medir y marcar/,searchQuery:'POSICION VERTICAL',searchHit:'posición vertical',controlsRow:/Controles/,lineHelpText:'Visible por primera vez alrededor de A0'},
+ 'pt-BR':{helpViewer:HELP_VIEWER_PT,webHelp:WEB_HELP_PT,pulsarFirstRow:'-Operações básicas-',reminderQuestion:'Você tem CERTEZA de que concluiu totalmente este exercício?',
+  loadSpectrumText:'Para carregar um espectro',searchRow:/Medir e marcar/,searchQuery:'POSICAO VERTICAL',searchHit:'posição vertical',controlsRow:/Controles/,lineHelpText:'Visível pela primeira vez em torno de A0'},
+});
+export const helpText=(tag:string):HelpText=>{const m=HELP_TEXT[tag];if(!m)throw new Error(`No help text for ${tag}`);return m;};

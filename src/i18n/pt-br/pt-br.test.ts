@@ -43,6 +43,8 @@ import {PULSAR_MESSAGES_EN} from '../../components/PulsarMessages';
 import {SAVED_ROWS_MESSAGES_EN} from '../../components/PulsarSavedRowsMessages';
 import {LOAD_SAVE_MESSAGES_EN} from '../../components/PulsarLoadSaveMessages';
 import {OBJECT_X_GUIDE_EN,OBJECT_X_MEASURE_EN,OBJECT_X_SESSION_EN} from '../../objectx/ObjectXMessages';
+import {HELP_VIEWER_EN} from '../../help/HelpViewerMessages';
+import {WEB_HELP_EN} from '../../help/webHelp';
 
 // Front PT0 (docs/I18N.md, "Brazilian Portuguese: the folder, lints and shell (PT0)"; plan front-i18n-pt-br.md §3.4): the
 // structural checks of the partial pt-BR bundle and every Portuguese string through the SC4 lint framework, profile pt-BR. Errors
@@ -50,13 +52,16 @@ import {OBJECT_X_GUIDE_EN,OBJECT_X_MEASURE_EN,OBJECT_X_SESSION_EN} from '../../o
 // COMPLETE_MAPS, and their areas to the coverage check.
 const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,nakedEye:NAKED_EYE_MESSAGES_EN,objectXLab:OBJECT_X_LAB_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN,clusterHr:CLUSTER_HR_EN,clusterData:CLUSTER_DATA_MESSAGES_EN,
   radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN,
-  pulsar:PULSAR_MESSAGES_EN,pulsarSavedRows:SAVED_ROWS_MESSAGES_EN,pulsarLoadSave:LOAD_SAVE_MESSAGES_EN,objectXGuide:OBJECT_X_GUIDE_EN,objectXMeasure:OBJECT_X_MEASURE_EN,objectXSession:OBJECT_X_SESSION_EN};
+  pulsar:PULSAR_MESSAGES_EN,pulsarSavedRows:SAVED_ROWS_MESSAGES_EN,pulsarLoadSave:LOAD_SAVE_MESSAGES_EN,objectXGuide:OBJECT_X_GUIDE_EN,objectXMeasure:OBJECT_X_MEASURE_EN,objectXSession:OBJECT_X_SESSION_EN,
+  helpViewer:HELP_VIEWER_EN,webHelp:WEB_HELP_EN};
 /** The maps translated completely (PT0's shell maps; PT1's observatory maps, the camera card the observatory shows, and polish); the others are partial until their
  * front. PT4 completes clusterHr, clusterData and variableStars; PT5 the four radio maps; PT6 the pulsar analysis maps (pulsar,
- * pulsarSavedRows, pulsarLoadSave) and the Object X maps (objectXLab, objectXGuide, objectXMeasure, objectXSession). */
+ * pulsarSavedRows, pulsarLoadSave) and the Object X maps (objectXLab, objectXGuide, objectXMeasure, objectXSession); PT-HELP the
+ * help viewer's and OpenVireo's own help (helpViewer, webHelp), so every map is complete. */
 const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars',
   'radioAntenna','radioFinishSave','radioR1','radioRecordSave',
-  'pulsar','pulsarSavedRows','pulsarLoadSave','objectXLab','objectXGuide','objectXMeasure','objectXSession'];
+  'pulsar','pulsarSavedRows','pulsarLoadSave','objectXLab','objectXGuide','objectXMeasure','objectXSession',
+  'helpViewer','webHelp'];
 /** PT0's area of en.json: the shell (header, menu, home and first steps, toolbar, errors, instructor mode, document title), as ES1's. */
 const SHELL_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(app|project|session|error|instructorMode)\./.test(k)||/\.nav$/.test(k)||['demonstrationMode.banner','sky.eyebrow','sky.title','sky.subtitle','sky.about','sky.local','sky.observatory','sky.analyzer','sky.step1','sky.step1Help','sky.step2','sky.step2Help','sky.step3','sky.step3Help','spectrum.tools','classLink.cancel'].includes(k));
 /** Front PT1's area of en.json: ES2's observatory keys (the 546 keys Spanish translated in ES2: the observatory route, its
@@ -93,7 +98,8 @@ const pairs=()=>collectPairs({catalog:pt,english:en,maps:PORTUGUESE.maps,english
 describe('Front PT0: the Brazilian Portuguese (pt-BR) bundle',()=>{
  it('is registered before its release: a ?lang=pt-BR preview only, never detected or offered',()=>{
   expect(languageEntry('pt-BR')).toMatchObject({dir:'pt-br',catalog:'pt-br.json',htmlLang:'pt-BR',pagePath:'pt-br',autonym:'Português (Brasil)',match:['pt'],released:false});
-  expect(languageEntry('pt-BR')?.help).toBeUndefined();
+  // Front PT-HELP: Portuguese translates VIREO's help files (src/i18n/pt-br/help, src/help/helpTranslation.test.ts).
+  expect(languageEntry('pt-BR')?.help).toEqual({related:'TÓPICOS RELACIONADOS'});
   expect(PORTUGUESE.language).toBe('pt-BR');
  });
  it('the catalog is a valid partial catalog (en.json keys, the same {params}) and covers the whole shell',()=>{
@@ -130,6 +136,8 @@ describe('Front PT0: the Brazilian Portuguese (pt-BR) bundle',()=>{
    expect(mapParity(english,map,'$',{partial:!COMPLETE_MAPS.includes(id as MapId)}),id).toEqual([]);
   }
   for(const id of COMPLETE_MAPS)expect(Object.hasOwn(PORTUGUESE.maps??{},id),id).toBe(true);
+  // Front PT-HELP: with helpViewer and webHelp every map of MAP_IDS is complete.
+  expect([...COMPLETE_MAPS].sort()).toEqual([...MAP_IDS].sort());
  });
  it('originals are normalised keys that Spanish also knows (src/i18n/es/es.test.ts checks those against the source)',()=>{
   const esSame=(key:string)=>Object.hasOwn(esIdentical.entries,`original:${key}`);
