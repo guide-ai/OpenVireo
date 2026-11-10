@@ -7,7 +7,7 @@ import {HELP_FILES} from '../help/helpFiles';
 import {LANGUAGES} from './languages';
 import es from './es/es.json';
 // @ts-expect-error Build script (plain JS), as in split.test.ts.
-import {checkI18nDist,stringsOf} from '../../scripts/check-i18n-dist.mjs';
+import {checkI18nDist,stringsOf,testOnlyMarkers} from '../../scripts/check-i18n-dist.mjs';
 // @ts-expect-error Build script (plain JS).
 import {languageDir,planLanguage,sourceGraph} from '../../scripts/i18n-split.mjs';
 // Front SC8 (docs/I18N.md, "Script groundwork: the language registry, detection and selector (SC8)"): scripts/check-i18n-dist.mjs
@@ -151,5 +151,19 @@ describe('Front SC7: scripts/check-i18n-dist.mjs with help chunks in a Unicode s
   const scaled=check(out,[{...helped,budgetFactor:1.5}]);
   expect(scaled.offenders).toEqual([]);
   expect(scaled.warnings).toEqual([expect.stringMatching(/^the help chunk CAMHLP\.TXT-HHHHHHHH\.js is 4\d\.\d KB gzip, over 37\.5 KB$/)]);
+ });
+});
+
+describe('Front SC7 review: scripts/check-i18n-dist.mjs keeps the test harnesses and fixture languages out of the build',()=>{
+ it('knows the harness path, every harness title and every fixture language tag',()=>{
+  const markers=testOnlyMarkers(root) as string[];
+  for(const m of ['/__harness/','Unicode help harness (test only)','LSS wedge harness (test only)','qaa-Jpan','qab-Deva','qac-Cyrl','qaa-XA'])expect(markers).toContain(m);
+ });
+ it('fails a dist/ that holds the help harness or a Unicode help fixture, and allows a fixture language the check registers',()=>{
+  for(const leak of ['fetch("/__harness/help/")','document.title="Unicode help harness (test only)"','const e="qac-Cyrl"']){
+   const result=check(dist([PARTIAL],a=>writeFileSync(path.join(a,'harness-ZZZZZZZZ.js'),leak)),[PARTIAL]);
+   expect(result.offenders,leak).toEqual([expect.stringMatching(/harness-ZZZZZZZZ\.js: contains the test-only text/)]);
+  }
+  expect(check(dist([PARTIAL]),[PARTIAL]).offenders).toEqual([]);// qaa-XA is registered here
  });
 });

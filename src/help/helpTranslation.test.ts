@@ -185,7 +185,7 @@ describe('the Spanish help texts follow the Spanish lints (review S5)',()=>{
 // Front PT-HELP: the pt-BR profile's errors that read a text on its own (src/i18n/lint/profiles.ts: its typography patterns, the
 // você register's patterns) and the pt-BR glossary's `forbidden` patterns, over each paragraph of every Portuguese help text
 // (its wrapped lines joined). The rules that need the English pair (the tu-imperative, placeholders, glossary terms) and the
-// curly-quote rule do not apply: a help file is Latin-1, so it quotes with VIREO's straight " (helpTranslationBytes refuses “ ”).
+// curly-quote rule do not apply: the Portuguese help files are Latin-1 (LATIN1_HELP above refuses “ ”), so they quote with VIREO's straight ".
 // PT_ALLOWED names each permitted hit per file (the matched text), with its reason.
 const PT_ALLOWED:Record<string,{matches:string[];reason:string}>={};
 describe('the Brazilian Portuguese help texts follow the pt-BR lints',()=>{

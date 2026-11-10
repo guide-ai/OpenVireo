@@ -10,9 +10,10 @@
  * A web measure, not CLEA's. Pure; no DOM.
  * WIDE: the code point ranges whose East_Asian_Width is W or F in Unicode 16.0.0 (EAST_ASIAN_WIDTH_UNICODE; the unassigned code
  * points of the wide blocks included, as EastAsianWidth.txt defaults them), as inclusive [first,last] pairs, generated from the
- * local Python standard library (no download) by
- *   python3 -I -c "import unicodedata as u;print(u.unidata_version,[c for c in range(0x110000) if u.east_asian_width(chr(c)) in 'WF'])"
- * and folding the list into runs. src/core/textColumns.test.ts pins its size and sample points. */
+ * local Python standard library (no download; its unicodedata must report 16.0.0, as Python 3.14's does) by
+ *   python3 -I -c "import unicodedata as u;r=[];[r[-1].__setitem__(1,c) if r and r[-1][1]==c-1 else r.append([c,c]) for c in
+ *   range(0x110000) if u.east_asian_width(chr(c)) in 'WF'];print(u.unidata_version,len(r));print(','.join(f'{a:#x},{b:#x}' for a,b in r))"
+ * (checked by the review of 2026-11-10: 122 runs, equal to this list). src/core/textColumns.test.ts pins its size and sample points. */
 export const EAST_ASIAN_WIDTH_UNICODE='16.0.0';
 export const WIDE:readonly number[]=Object.freeze([
  0x1100,0x115f,0x231a,0x231b,0x2329,0x232a,0x23e9,0x23ec,0x23f0,0x23f0,0x23f3,0x23f3,0x25fd,0x25fe,0x2614,0x2615,

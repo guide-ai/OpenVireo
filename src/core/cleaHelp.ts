@@ -162,30 +162,36 @@ const wide=(g:string|undefined)=>g!==undefined&&codePointColumns(g.codePointAt(0
  * piece ends at the last break opportunity within the width: after a space (VIREO's rule, with its run of spaces dropped when
  * the space ends exactly at the width), or between two clusters either of which is East Asian Wide (Japanese and Chinese break
  * between characters) unless kinsoku forbids it. With none, the line breaks at the last cluster that fits (a long Devanagari or
- * Russian word, a CJK run that kinsoku pins), moving back while kinsoku forbids it. On Latin-1 text that `wrapHelpLine` wraps,
- * the result is the same. */
+ * Russian word, a CJK run that kinsoku pins), moving back while kinsoku forbids it. When no space ends a piece and the cluster
+ * just past the width is a space, the piece ends before it and the run of spaces is dropped (VIREO's rule for a space at the
+ * width; review). A cluster wider than the width is a piece of its own. On Latin-1 text that `wrapHelpLine` wraps, the result is
+ * the same (only lines it refuses can differ). Linear in the line's clusters. */
 export function wrapHelpText(text:string,width=HELP_WRAP_WIDTH):readonly string[]{
  if(!Number.isInteger(width)||width<2)throw new RangeError('Invalid wrap width');
- const out:string[]=[];let g=graphemes(text);
+ const out:string[]=[],g=graphemes(text),cols=g.map(displayColumns);
+ let left=cols.reduce((a,b)=>a+b,0),s=0;
  for(;;){
-  const cols=g.map(displayColumns);
-  if(cols.reduce((a,b)=>a+b,0)<=width){out.push(g.join(''));return Object.freeze(out);}
-  let k=0,n=0;while(k<g.length&&n+cols[k]<=width){n+=cols[k];k++;}
-  if(k===0){k=1;n=cols[0];}
+  if(left<=width||g.length-s<=1){out.push(g.slice(s).join(''));return Object.freeze(out);}
+  let k=s,n=0;while(k<g.length&&n+cols[k]<=width){n+=cols[k];k++;}
+  if(k===s){k=s+1;n=cols[s];}
   let p=k;
-  for(;p>0;p--){
+  for(;p>s;p--){
    if(g[p-1]===' ')break;
    if(g[p]!==' '&&(wide(g[p-1])||wide(g[p]))&&!NO_START.has(g[p])&&!NO_END.has(g[p-1]))break;
   }
-  let rest:number;
-  if(p>0&&g[p-1]===' '){
-   rest=p;
+  let end:number,rest:number;
+  if(p>s&&g[p-1]===' '){
+   end=rest=p;
    if(p===k&&n===width){while(rest<g.length&&g[rest-1]===' ')rest++;rest--;}
+  }else if(g[k]===' '&&!NO_END.has(g[k-1])){
+   end=rest=k;while(rest<g.length&&g[rest]===' ')rest++;
+   if(rest===g.length)rest--;
   }else{
-   if(p===0){p=k;while(p>1&&(NO_START.has(g[p])||NO_END.has(g[p-1])))p--;}
-   rest=p;
+   if(p===s){p=k;while(p>s+1&&(NO_START.has(g[p])||NO_END.has(g[p-1])))p--;}
+   end=rest=p;
   }
-  out.push(g.slice(0,p).join(''));g=g.slice(rest);
+  out.push(g.slice(s,end).join(''));
+  for(;s<rest;s++)left-=cols[s];
  }
 }
 

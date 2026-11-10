@@ -22,7 +22,7 @@ Host APIs and query options:
 
 ## How they are served
 
-`tests/harness/vite-plugin.ts` is a Vite plugin with `apply: 'serve'`. It only adds dev-server middleware, so `vite build` never sees it and the production bundle is unchanged (checked on 2026-10-29: the `dist/` file list and SHA-256 of all 1281 files were identical before and after). `vite preview` does not serve these pages either.
+`tests/harness/vite-plugin.ts` is a Vite plugin with `apply: 'serve'`. It only adds dev-server middleware, so `vite build` never sees it and the production bundle is unchanged (checked on 2026-10-29: the `dist/` file list and SHA-256 of all 1281 files were identical before and after). `vite preview` does not serve these pages either. Since Front SC7's review, `npm run build` also fails if any `dist/` file holds the harness path, a harness page title or a test fixture's language tag (`scripts/check-i18n-dist.mjs`, `testOnlyMarkers`).
 
 `playwright.config.ts` sets the four env vars to the pages on its own test server (`OPENVIREO_TEST_PORT`, default 5175) unless they are already set. A plain `npx playwright test` therefore runs these specs. To try a page by hand, start the dev server and open, for example, `http://127.0.0.1:5173/__harness/radio/?instant=1`.
 

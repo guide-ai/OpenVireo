@@ -221,6 +221,24 @@ describe('Front SC7: Unicode help text',()=>{
    let vireo:readonly string[]|null=null;try{vireo=wrapHelpLine(line,width);}catch{/* a word longer than the width */}
    if(vireo)expect(wrapHelpText(line,width),JSON.stringify([line,width])).toEqual(vireo);
   }
+  // Review: every Latin-1 character (punctuation, controls, NBSP, soft hyphen), leading and trailing space runs, narrow widths.
+  let compared=0;
+  for(let i=0;i<6000;i++){
+   let line=' '.repeat(rnd(3)===0?rnd(5):0);for(let j=rnd(160);j>0;j--)line+=rnd(4)===0?' ':String.fromCharCode(rnd(256));
+   const width=2+rnd(80);let vireo:readonly string[]|null=null;try{vireo=wrapHelpLine(line,width);}catch{continue;}
+   expect(wrapHelpText(line,width),JSON.stringify([line,width])).toEqual(vireo);compared++;
+  }
+  expect(compared).toBeGreaterThan(1500);
+  // Review: a space just past the width ends the piece (no row of one space); a cluster wider than the width is a row of its own.
+  expect(wrapHelpText('क्षत्रिय क्षत्रिय क्षत्रिय',6)).toEqual(['क्षत्रिय','क्षत्रिय','क्षत्रिय']);
+  expect(wrapHelpText('あいうえ かきくけ',8)).toEqual(['あいうえ','かきくけ']);
+  expect(wrapHelpText('слово  ',5)).toEqual(['слово',' ']);// as VIREO's 'abcd  ' at 5: a trailing run leaves one space
+  expect(wrapHelpLine('abcd  ',5)).toEqual(['abcd ',' ']);
+  expect(wrapHelpText('\u{1f468}\u200d\u{1f469}\u200d\u{1f467}'.repeat(3),4)).toEqual(Array(3).fill('\u{1f468}\u200d\u{1f469}\u200d\u{1f467}'));
+  expect(wrapHelpText('観',2)).toEqual(['観']);expect(wrapHelpText('',72)).toEqual(['']);
+  const long='露光を始めます。'.repeat(1500),t0=performance.now();
+  expect(wrapHelpText(long).length).toBe(Math.ceil(displayColumns(long)/72));
+  expect(performance.now()-t0).toBeLessThan(2000);// linear: ~10 ms here; the quadratic first version took 300 ms
   expect(wrapHelpText('a'.repeat(80))).toEqual(['a'.repeat(72),'a'.repeat(8)]);
   expect(wrapHelpText('あいうえお。かきくけ',10)).toEqual(['あいうえ','お。かきく','け']);
   expect(wrapHelpText('ありがとう「ございます」',10)).toEqual(['ありがとう','「ございま','す」']);
