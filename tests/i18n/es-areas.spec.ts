@@ -1,5 +1,6 @@
 import {type Page,type Request} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
+import {SPANISH_LOCALE} from '../fixtures/language';
 import en from '../../src/i18n/en.json' with {type:'json'};
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import {WEDGE_ES} from '../../src/i18n/es/maps/wedge';
@@ -7,6 +8,8 @@ import {APP_SHELL_ES} from '../../src/i18n/es/maps/appShell';
 import {HELP_VIEWER_ES} from '../../src/i18n/es/maps/helpViewer';
 // @ts-expect-error The planner is a plain JS script (scripts/i18n-split.mjs), as tests import scripts/audit-ui-messages.mjs.
 import {loadLanguages,planLanguage} from '../../scripts/i18n-split.mjs';
+// Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
+test.use({locale:SPANISH_LOCALE});
 
 // Front ES-SPLIT (docs/I18N.md, "Spanish: the chunk split by route area"): on the dev server, where the tripwire is on, a Spanish
 // load fetches the core module only, each area route fetches its area and shared modules once (in parallel with its own
@@ -50,17 +53,21 @@ async function watch(page:Page):Promise<Watch>{
 const names=(w:Watch)=>w.language.map(r=>r.name);
 async function noRouteError(page:Page){await expect(page.locator('[data-testid=route-error],[data-testid=site-updated]')).toHaveCount(0);}
 
-test('English fetches no language module on the home page or on any area route',async({page})=>{
- test.setTimeout(240_000);
- const w=await watch(page);
- await page.goto('/#observatory');await expect(page.getByRole('heading',{level:1,name:E['sky.title']})).toBeVisible({timeout:30_000});
- for(const r of ROUTES){await page.goto('about:blank');await page.goto(`/#${r.hash}`);await page.waitForLoadState('networkidle');await noRouteError(page);}
- expect(names(w)).toEqual([]);expect(w.problems).toEqual([]);
+// Front ES-REL: an English browser (en-US), with no ?lang=, as an English visitor arrives.
+test.describe('in an English browser',()=>{
+ test.use({locale:'en-US'});
+ test('English fetches no language module on the home page or on any area route',async({page})=>{
+  test.setTimeout(240_000);
+  const w=await watch(page);
+  await page.goto('/#observatory');await expect(page.getByRole('heading',{level:1,name:E['sky.title']})).toBeVisible({timeout:30_000});
+  for(const r of ROUTES){await page.goto('about:blank');await page.goto(`/#${r.hash}`);await page.waitForLoadState('networkidle');await noRouteError(page);}
+  expect(names(w)).toEqual([]);expect(w.problems).toEqual([]);
+ });
 });
 
 test('a Spanish home page fetches only the core module, and the shell is Spanish',async({page})=>{
  const w=await watch(page);
- await page.goto('/?lang=es-419#observatory');await expect(page.getByRole('heading',{level:1,name:S['sky.title']})).toBeVisible({timeout:30_000});
+ await page.goto('/#observatory');await expect(page.getByRole('heading',{level:1,name:S['sky.title']})).toBeVisible({timeout:30_000});
  await expect(page.locator('.investigation-toolbar')).toContainText(S['project.save']);
  await page.waitForLoadState('networkidle');
  expect(names(w)).toEqual(['core']);expect(w.problems).toEqual([]);
@@ -69,7 +76,7 @@ test('a Spanish home page fetches only the core module, and the shell is Spanish
 for(const r of ROUTES)test(`#${r.hash} fetches the ${r.area} area once, with its route, and reads no text before it arrives`,async({page})=>{
  test.setTimeout(120_000);
  const w=await watch(page);
- await page.goto(`/?lang=es-419#${r.hash}`);
+ await page.goto(`/#${r.hash}`);
  await r.ready(page);await page.waitForLoadState('networkidle');await noRouteError(page);
  await expect(page.locator('html')).toHaveAttribute('lang','es-419');
  const fetched=names(w);
@@ -83,7 +90,7 @@ for(const r of ROUTES)test(`#${r.hash} fetches the ${r.area} area once, with its
 
 test('File › Cluster Data… on the observatory fetches the cluster area and opens in Spanish',async({page})=>{
  const w=await watch(page);
- await page.goto('/?lang=es-419#observatory');
+ await page.goto('/#observatory');
  await expect(page.locator('.sky-card .card-heading > button')).toBeVisible({timeout:30_000});await page.locator('.sky-card .card-heading > button').click();
  await id(page,'fi-file-menu').click();await id(page,'cluster-data-menu').click();
  await expect(id(page,'cd-dialog')).toBeVisible({timeout:30_000});await page.waitForLoadState('networkidle');
@@ -98,7 +105,7 @@ const spanish=(text:string)=>{const v=ES_TEXT.get(text);if(!v)throw new Error(`N
 test('the field spectrometer at a field pointing fetches the exposure area and opens in Spanish',async({page})=>{
  test.setTimeout(180_000);
  const w=await watch(page);
- await page.goto('/?lang=es-419#observatory');await expect(page.getByRole('heading',{level:1,name:S['sky.title']})).toBeVisible({timeout:30_000});
+ await page.goto('/#observatory');await expect(page.getByRole('heading',{level:1,name:S['sky.title']})).toBeVisible({timeout:30_000});
  await page.getByRole('button',{name:`${spanish('Open dome')} ↗`,exact:true}).click();
  if(!await page.locator('#point-ra').isVisible())await page.getByText(spanish('Enter coordinates'),{exact:true}).click();
  await page.locator('#point-ra').fill('12.99311111111111');await page.locator('#point-dec').fill('27.959722222222222');
@@ -117,18 +124,18 @@ test('the field spectrometer at a field pointing fetches the exposure area and o
 test('an area\'s help viewer, its print preview and a forced route error read no text before their area',async({page})=>{
  test.setTimeout(120_000);
  const w=await watch(page);
- await page.goto('/?lang=es-419#classification');await ROUTES[0].ready(page);
+ await page.goto('/#classification');await ROUTES[0].ready(page);
  await id(page,'class-help-open').click();
  await expect(id(page,'class-help-topics-view-label')).toHaveText(HELP_VIEWER_ES.translationLabel);
  // The wedge print preview (an lss window).
- await page.goto('about:blank');await page.goto('/?lang=es-419#lss-wedge');await ROUTES.find(r=>r.hash==='lss-wedge')!.ready(page);
+ await page.goto('about:blank');await page.goto('/#lss-wedge');await ROUTES.find(r=>r.hash==='lss-wedge')!.ready(page);
  await id(page,'wedge-print').click();await expect(id(page,'wedge-print-preview')).toBeVisible();
  await id(page,'wedge-print-preview-close').click();await expect(id(page,'wedge-print-preview')).toHaveCount(0);
  expect(w.problems).toEqual([]);
  // A route whose JavaScript cannot be fetched (a redeploy) shows the shell's "site updated" notice, in Spanish (core text).
  await page.goto('about:blank');
  await page.route(/\/src\/FitsImageLab\.tsx/,route=>route.abort('failed'));
- await page.goto('/?lang=es-419#images');
+ await page.goto('/#images');
  await expect(id(page,'site-updated')).toBeVisible({timeout:30_000});
  await expect(id(page,'site-updated')).toContainText(APP_SHELL_ES.recovery!.updatedTitle!);
  // The failed route fetch logs its own console errors; no text was read before its area.
@@ -140,7 +147,7 @@ const NOTICE_ES='No se pudo cargar parte del texto en español; esa parte se mue
 test('an area module that fails leaves its route in English with the bilingual notice; the shell stays Spanish',async({page})=>{
  const w=await watch(page);
  await page.route(/openvireo-i18n\/i18n-es-419-classification/,route=>route.abort('failed'));
- await page.goto('/?lang=es-419#classification');
+ await page.goto('/#classification');
  await expect(page.getByRole('heading',{level:1,name:E['class.title'],exact:true})).toBeVisible({timeout:30_000});
  const notice=id(page,'area-failure');await expect(notice).toContainText(NOTICE_EN);await expect(notice.locator('[lang=es]')).toHaveText(NOTICE_ES);
  await expect(notice).toHaveAttribute('role','status');await expect(notice).toHaveCount(1);
@@ -154,7 +161,7 @@ test('an area module that does not arrive within 10 s leaves its route in Englis
  let release:(()=>void)|undefined;
  await page.route(/openvireo-i18n\/i18n-es-419-fits/,async route=>{await new Promise<void>(resolve=>{release=resolve;});await route.continue().catch(()=>{});});
  await page.clock.install();
- await page.goto('/?lang=es-419#images');
+ await page.goto('/#images');
  await expect.poll(()=>release!==undefined,{timeout:30_000}).toBe(true);
  await expect(page.getByRole('heading',{level:1,name:S['fits.title']})).toHaveCount(0);// the route waits for its area
  await page.clock.runFor(10_000);
@@ -169,7 +176,7 @@ test('an area module that does not arrive within 10 s leaves its route in Englis
 test('View original (English) on an area route: VIREO\'s names in English, the area\'s web text Spanish',async({page})=>{
  const w=await watch(page);
  await page.addInitScript(()=>{try{localStorage.setItem('openvireo-vireo-originals','1');}catch{/* about:blank */}});
- await page.goto('/?lang=es-419#classification');await ROUTES[0].ready(page);
+ await page.goto('/#classification');await ROUTES[0].ready(page);
  await expect(page.locator('#classification-program-title')).toHaveText(S['program.title']);
  await expect(id(page,'class-help-open')).toHaveText('Help');
  await page.waitForLoadState('networkidle');

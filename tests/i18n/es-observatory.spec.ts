@@ -1,5 +1,6 @@
 import {type Page} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
+import {SPANISH_LOCALE,langQuery} from '../fixtures/language';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
 import originals from '../../src/i18n/es/originals.json' with {type:'json'};
@@ -19,9 +20,11 @@ import {QSO_LIST_ES} from '../../src/i18n/es/maps/qsoList';
 import {SOUND_ES} from '../../src/i18n/es/maps/sound';
 import {TOUR_ES} from '../../src/i18n/es/maps/tour';
 import {VARIABLE_STARS_ES} from '../../src/i18n/es/maps/variableStars';
+// Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
+test.use({locale:SPANISH_LOCALE});
 
-// Front ES2 (docs/I18N.md): the optical observatory, its VIREO menus and its File, Slew, Site and options dialogs in Spanish on a
-// `?lang=es-419` preview load. The same walk through the observatory runs in English, Spanish and the pseudo-locale:
+// Front ES2 (docs/I18N.md): the optical observatory, its VIREO menus and its File, Slew, Site and options dialogs in Spanish in an
+// `es-*` browser (a `?lang=es-419` preview load before ES-REL). The same walk through the observatory runs in English, Spanish and the pseudo-locale:
 // - Spanish: no visible text, accessible name or title reads the same as in English, except identifiers (SAME);
 // - qps: every visible text is marked ⟦…⟧ (it goes through the catalog, a map or vireo()), except identifiers;
 // - native views that mirror a written file (`lang="en"`, F2) are left out of both comparisons and keep a Spanish caption.
@@ -38,7 +41,7 @@ const id=(page:Page,testId:string)=>page.getByTestId(testId);
 
 async function open(page:Page,lang:Lang){
  await page.addInitScript(()=>localStorage.setItem('openvireo.tour.v1','done'));
- await page.goto(`/?lang=${lang}#observatory`);
+ await page.goto(`/${langQuery(lang)}#observatory`);
  await expect(page.locator('html')).toHaveAttribute('lang',lang==='es-419'?'es-419':'en');
  await expect(page.locator('.sky-card')).toBeVisible({timeout:15_000});
 }

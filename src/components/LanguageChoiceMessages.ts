@@ -1,6 +1,6 @@
 import {pickMessages} from '../i18n/registry';
 /** Front ES1 [W]: the language selector and its reload dialog (src/components/LanguageChoice.tsx, docs/I18N.md). Kept out of
- * en.json because the selector is a lazily loaded part: English visitors without it never download these strings. The
+ * en.json because the selector is a lazily loaded part: these strings arrive with its chunk, after the first render. The
  * option names are bilingual on purpose so either reader finds them. What the dialog says survives a reload was checked
  * against what the app keeps (ES1 plan item: the risk of lost work): files the visitor saved; in this browser, confirmed
  * observation results (localStorage `openvireo.observation-notebook.v1`) and display preferences (theme, menu sections,

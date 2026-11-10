@@ -22,8 +22,10 @@ export function auditUi(root){const sites=[],files=[];
  * that reach the screen through helper functions or props are not visible here; the qps pseudo-locale is the backstop.
  * `modules` also lists the multi-word string literals of the .ts presentation modules that build visible text outside the
  * catalog (ES1 and ES-HELP translate them). Every listed site needs a receipt in src/i18n/vireo-literals.json. */
-// Front ES1: src/help/tour.ts left this list: its text is the pickMessages map 'tour'.
-export const PRESENTATION_MODULES=['src/multispec/multiSpecText.ts','src/help/webHelp.ts'];
+// Front ES1: src/help/tour.ts left this list: its text is the pickMessages map 'tour'. Front ES-REL: src/help/webHelp.ts left it
+// too: since ES-HELP its text is the English source of the pickMessages map 'webHelp' (src/i18n/es/maps/webHelp.ts), which the
+// strict map parity checks leaf by leaf.
+export const PRESENTATION_MODULES=['src/multispec/multiSpecText.ts'];
 const NOT_TEXT=/^(?:on[A-Z].*|key|ref|className|style|id|htmlFor|role|type|name|href|src|value|defaultValue|checked|defaultChecked|selected|disabled|hidden|inert|tabIndex|data-.*|testId|min|max|step|width|height|x|y|cx|cy|r|d|viewBox|fill|stroke|transform|points|colSpan|rowSpan|form|accept|download|target|rel|lang|dir|autoFocus|readOnly|required|multiple|open)$/;
 export function auditOriginals(root){
  const sites=[],files=[],modules=[],core=path.resolve(root,'src','core')+path.sep;

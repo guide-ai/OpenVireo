@@ -35,8 +35,8 @@ import {RADIO_RECORD_SAVE_ES} from './maps/radioRecordSave';
 import {CLUSTER_HR_ES} from './maps/clusterHr';
 import {CLUSTER_DATA_ES} from './maps/clusterData';
 /** Front ES1 [W]: the Spanish (es-419) bundle, a chunk of its own that src/boot.ts loads only for a Spanish load
- * (docs/I18N.md). Before ES-REL it is partial: the catalog and the maps hold the sub-fronts merged so far, and every missing
- * string stays English. Translations are web adaptations by OpenVireo; they never claim to be CLEA's, and CLEA's bytes,
+ * (docs/I18N.md). Before ES-REL it was partial (the sub-fronts merged so far, every missing string English); since ES-REL the
+ * catalog and every map are complete (src/i18n/es/es.test.ts). Translations are web adaptations by OpenVireo; they never claim to be CLEA's, and CLEA's bytes,
  * hashes and provenance are unchanged. */
 export const SPANISH:LocaleBundle=Object.freeze({
  language:'es-419',

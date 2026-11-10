@@ -1,5 +1,6 @@
 import {type Page,type Locator} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
+import {SPANISH_LOCALE,langQuery} from '../fixtures/language';
 import {enterInstructorMode} from '../fixtures/instructor-mode';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
@@ -7,8 +8,10 @@ import originals from '../../src/i18n/es/originals.json' with {type:'json'};
 import {RADIO_ANTENNA_ES} from '../../src/i18n/es/maps/radioAntenna';
 import identical from '../../src/i18n/es/identical.json' with {type:'json'};
 import {RADIO_RECORD_SAVE_ES} from '../../src/i18n/es/maps/radioRecordSave';
+// Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
+test.use({locale:SPANISH_LOCALE});
 
-// Front ES8a (docs/I18N.md): the radio telescope route (#radio-control) in Spanish on a `?lang=es-419` preview load. One walk runs
+// Front ES8a (docs/I18N.md): the radio telescope route (#radio-control) in Spanish in an `es-*` browser (a `?lang=es-419` preview load before ES-REL). One walk runs
 // in English, Spanish and the pseudo-locale: the route page and its scenario, the exercise menu, the scenario inputs, Radio access
 // and its timer, the Radio switch and VIREO's control panel (Tracking, Set Coordinates with the B1950.0 entry, the slew question,
 // the empty hot list box), the student options refusal (USER OPTIONS!), in instructor mode the Optical and Radio Simulation
@@ -115,7 +118,7 @@ const STEPS:readonly (readonly [string,(page:Page,lang:Lang)=>Promise<void>])[]=
 async function walk(page:Page,lang:Lang,each:(step:string)=>Promise<void>){
  await page.addInitScript(()=>localStorage.setItem('openvireo.tour.v1','done'));
  await page.clock.install({time:new Date('2026-11-09T12:00:00Z')});page.setDefaultTimeout(20_000);
- await page.goto(`/?lang=${lang}#radio-control`);
+ await page.goto(`/${langQuery(lang)}#radio-control`);
  await expect(page.locator('html')).toHaveAttribute('lang',lang==='es-419'?'es-419':'en');
  await expect(id(page,'radio-exercise')).toBeVisible({timeout:30_000});
  for(const [step,run] of STEPS){await test.step(step,()=>run(page,lang));await page.waitForTimeout(150);await each(step);}
@@ -223,7 +226,7 @@ test('the receiver caption, the drawn annotation and a mark label translate VIRE
  const upTo='receiver',steps=STEPS.findIndex(([s])=>s===upTo);
  await page.addInitScript(()=>localStorage.setItem('openvireo.tour.v1','done'));
  await page.clock.install({time:new Date('2026-11-09T12:00:00Z')});page.setDefaultTimeout(20_000);
- await page.goto('/?lang=es-419#radio-control');await expect(id(page,'radio-exercise')).toBeVisible({timeout:30_000});
+ await page.goto('/#radio-control');await expect(id(page,'radio-exercise')).toBeVisible({timeout:30_000});
  for(const [,run] of STEPS.slice(0,steps+1))await run(page,'es-419');
  await expect(id(page,'receiver-heading-0')).toHaveText(/^(?:Receptor 1|¡No hay ningún púlsar en el haz!|Púlsar \S+)\s+Apertura: \d+ Metros/);
  // Through the capture to a placed mark: the annotation is drawn while receiving, the mark label after it.

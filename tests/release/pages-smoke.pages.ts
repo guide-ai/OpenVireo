@@ -66,7 +66,9 @@ test('the page, a hashed bundle and an original file carry the release headers',
  // routes by #hash), so a missing original can never pass for a 200 page.
  const whole=await request.get('/original/orbit/ObjX_MPC.CMO');
  expect([whole.status(),whole.headers()['content-type']]).toEqual([404,'text/html; charset=utf-8']);
- expect(await whole.text()).toContain('This address is not part of OpenVireo.');
+ const notFound=await whole.text();expect(notFound).toContain('This address is not part of OpenVireo.');
+ // Front ES-REL: the 404 page is bilingual.
+ expect(notFound).toContain('Esta dirección no forma parte de OpenVireo.');
  expect(baseURL).toMatch(/^http:\/\/127\.0\.0\.1:63\d\d$/);// playwright.pages.config.ts admits only 6300–6398
 });
 
@@ -126,18 +128,21 @@ for(const [hash,name] of ROUTES)test(`${name} (${hash}) opens with no policy vio
  expect(p.language,'English fetches no language chunk').toEqual([]);
 });
 
-// Front ES-SPLIT: every route of the production build in a ?lang=es-419 preview: it fetches the core and exactly its area's
-// modules (scripts/i18n-split.mjs), the language is activated once and then extended once per area, and nothing logs an error
-// (a text read before its area would be answered in English and logged once the catalog is complete, after ES-REL).
+// Front ES-SPLIT: every route of the production build in Spanish: it fetches the core and exactly its area's modules
+// (scripts/i18n-split.mjs), the language is activated once and then extended once per area, and nothing logs an error (a text
+// read before its area is answered in English and logged, since ES-REL made the catalog complete). Front ES-REL: in an es-MX
+// browser with no ?lang=, as a Spanish visitor arrives (the preview link keeps its own test below).
 const plan=planLanguage(loadLanguages()[0]) as {modules:{name:string;shared:string[]}[]};
 const AREA_OF:Readonly<Record<string,string>>={'#classification':'classification','#cluster-database':'cluster','#photometer':'photometer','#pulsar-analysis':'pulsar',
  '#radio-control':'radio','#lss-survey':'lss','#lss-wedge':'lss','#galaxy-exposure':'exposure','#star-exposure':'exposure','#sky-exposure':'exposure','#images':'fits',
  '#spectrometer':'exposure'};// the field spectrometer at the default pointing
 const modulesOf=(area:string|undefined)=>{if(!area)return [];const m=plan.modules.find(x=>x.name===area)!;return [area,...m.shared].sort();};
+test.describe('in a Spanish browser (es-MX)',()=>{
+test.use({locale:'es-MX'});
 for(const [hash,name] of ROUTES)test(`Front ES-SPLIT: ${name} (${hash}) in Spanish fetches the core and its area only, with no error`,async({page,baseURL})=>{
  const p=await watch(page,baseURL!);
  await page.addInitScript(()=>localStorage.setItem('openvireo.tour.v1','done'));
- await page.goto(`/?lang=es-419${hash}`);await page.waitForLoadState('networkidle');
+ await page.goto(`/${hash}`);await page.waitForLoadState('networkidle');
  await expect(page.locator('h1:visible, h2:visible').first()).toBeVisible();
  await expect(page.locator('html')).toHaveAttribute('lang','es-419');
  await expect(page.locator('[data-testid=route-error],[data-testid=site-updated],[data-testid=area-failure],[data-testid=language-failure]')).toHaveCount(0);
@@ -146,6 +151,18 @@ for(const [hash,name] of ROUTES)test(`Front ES-SPLIT: ${name} (${hash}) in Spani
  const area=AREA_OF[hash],modules=modulesOf(area);
  expect(p.language[0]).toBe('core');expect(p.language.slice(1).sort()).toEqual(modules);
  expect(await language(page)).toEqual({sets:area?2:1,earlyReads:0,changes:[]});
+});
+// Front ES-REL: the browser language alone opens Spanish, with the selector shown and its stylesheet allowed by the release CSP.
+test('Front ES-REL: an es-MX browser opens Spanish without ?lang=, with the selector, under the release CSP',async({page,baseURL})=>{
+ const p=await watch(page,baseURL!);
+ await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Empieza por el cielo.'})).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.lang)).toBe('es-419');
+ await expect(page).toHaveTitle('OpenVireo · Prácticas de astronomía de CLEA VIREO en tu navegador');
+ await expect(page.getByTestId('language-choice')).toBeVisible();await expect(page.getByTestId('language-es-419')).toBeChecked();
+ await page.waitForLoadState('networkidle');expect(p.language).toEqual(['core']);
+ expect(await language(page)).toEqual({sets:1,earlyReads:0,changes:[]});
+ expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);
+});
 });
 
 test('Front ES1: a ?lang=es-419 preview fetches the Spanish chunk, shows the Spanish shell and settles the language once, before any text',async({page,baseURL})=>{
@@ -190,12 +207,13 @@ test('Front ES2: View original (English) in a ?lang=es-419 preview shows VIREO\'
  expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);
 });
 
-test('Front ES1: an English load (also ?lang=qps or ?lang=bogus) never fetches a Spanish chunk or the language selector',async({page,baseURL})=>{
- const p=await watch(page,baseURL!),fetched:string[]=[];page.on('request',r=>{if(/\/assets\/(i18n-[\w-]+|LanguageChoice)-[\w-]+\.js$/.test(r.url()))fetched.push(r.url());});
- // ES1 review 1, C3: only ?lang=en or ?lang=es-419 shows the selector; the pseudo-locale and any other value show English without it.
+test('Front ES1: an English load (also ?lang=qps or ?lang=bogus) never fetches a Spanish chunk; since ES-REL it shows the selector',async({page,baseURL})=>{
+ const p=await watch(page,baseURL!),fetched:string[]=[];page.on('request',r=>{if(/\/assets\/i18n-[\w-]+-[\w-]+\.js$/.test(r.url()))fetched.push(r.url());});
+ // Front ES-REL: the selector is shown on every load (its small chunk and stylesheet, under the release CSP); the pseudo-locale
+ // and any other ?lang= value show English.
  for(const query of ['','?lang=qps','?lang=bogus']){
   await page.goto(`/${query}#observatory`);await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();await page.waitForLoadState('networkidle');
-  expect(fetched,query).toEqual([]);await expect(page.getByTestId('language-choice')).toHaveCount(0);await expect(page.getByTestId('language-failure')).toHaveCount(0);
+  expect(fetched,query).toEqual([]);await expect(page.getByTestId('language-choice')).toBeVisible();await expect(page.getByTestId('language-en')).toBeChecked();await expect(page.getByTestId('language-failure')).toHaveCount(0);
   expect(await language(page),query).toEqual({sets:1,earlyReads:0,changes:[]});
  }
  expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);

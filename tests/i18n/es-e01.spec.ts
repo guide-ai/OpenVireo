@@ -1,5 +1,6 @@
 import {type Page,type Locator} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
+import {SPANISH_LOCALE,langQuery} from '../fixtures/language';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
 import originals from '../../src/i18n/es/originals.json' with {type:'json'};
@@ -7,8 +8,10 @@ import {ENGINE_VIEW_ES} from '../../src/i18n/es/maps/engineView';
 import {SPECTRAL_RANGE_ES} from '../../src/i18n/es/maps/spectralRange';
 import {OBSERVATORY_ES} from '../../src/i18n/es/maps/observatory';
 import {enterInstructorMode} from '../fixtures/instructor-mode';
+// Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
+test.use({locale:SPANISH_LOCALE});
 
-// Front ES3 (docs/I18N.md): exercise E01, Hubble's law, in Spanish on a `?lang=es-419` preview load. One walk through the whole
+// Front ES3 (docs/I18N.md): exercise E01, Hubble's law, in Spanish in an `es-*` browser (a `?lang=es-419` preview load before ES-REL). One walk through the whole
 // student flow runs in English, Spanish and the pseudo-locale: the Hubble lab guide (every disclosure open), the galaxy
 // exposure and its Spectral Range dialog, the spectrum analyser (z step, the engine's Zoom dialog, Record measurement and VIREO's
 // Observational Data, the measurement log, velocity analysis, the Hubble diagram with the VIREO recipe), the sky exposure, the
@@ -54,7 +57,7 @@ const button=(scope:Page|Locator,lang:Lang,key:string)=>scope.getByRole('button'
 async function open(page:Page,lang:Lang,hash='galaxy-exposure'){
  await page.addInitScript(()=>localStorage.setItem('openvireo.tour.v1','done'));
  await page.clock.install();page.setDefaultTimeout(20_000);
- await page.goto(`/?lang=${lang}#${hash}`);
+ await page.goto(`/${langQuery(lang)}#${hash}`);
  await expect(page.locator('html')).toHaveAttribute('lang',lang==='es-419'?'es-419':'en');
  await expect(button(page,lang,'galaxyExposure.activate')).toBeVisible({timeout:20_000});
 }
@@ -225,7 +228,7 @@ for(const width of [320,1440])test(`at ${width} px the Spanish E01 screens lay o
 for(const original of [false,true])test(`the spectrometer readout captions ${original?'follow View original (English)':'read in Spanish'}`,async({page})=>{
  test.setTimeout(120_000);await page.setViewportSize({width:1440,height:1000});
  await page.addInitScript(on=>{localStorage.setItem('openvireo.tour.v1','done');if(on)localStorage.setItem('openvireo-vireo-originals','1');else localStorage.removeItem('openvireo-vireo-originals');},original);
- await page.goto('/?lang=es-419#observatory');await expect(page.locator('html')).toHaveAttribute('lang','es-419');
+ await page.goto('/#observatory');await expect(page.locator('html')).toHaveAttribute('lang','es-419');
  const dome=page.getByRole('button',{name:new RegExp(N('es-419','sky.open').source.replace(/\$$/,'').concat(' ↗$'))});await dome.click();
  await enterInstructorMode(page);await page.locator('.telescope-motion').getByTestId('ob-options').click();
  await id(page,'ob-options-show-object-id').check();await id(page,'ob-options-show-object-mag').check();await id(page,'ob-options-ok').click();await expect(id(page,'ob-options-dialog')).toBeHidden();
@@ -245,7 +248,7 @@ for(const original of [false,true])test(`the spectrometer readout captions ${ori
 for(const original of [false,true])test(`the M31 notice in Spanish: VIREO's box ${original?'in English with View original':'translated'}, the web line in Spanish`,async({page})=>{
  test.setTimeout(240_000);await page.setViewportSize({width:1440,height:1000});
  await page.addInitScript(on=>{localStorage.setItem('openvireo.tour.v1','done');if(on)localStorage.setItem('openvireo-vireo-originals','1');else localStorage.removeItem('openvireo-vireo-originals');},original);
- await page.goto('/?lang=es-419#observatory');await expect(page.locator('html')).toHaveAttribute('lang','es-419');
+ await page.goto('/#observatory');await expect(page.locator('html')).toHaveAttribute('lang','es-419');
  await page.getByRole('button',{name:new RegExp(N('es-419','sky.open').source.replace(/\$$/,'').concat(' ↗$'))}).click();
  if(!await page.locator('#point-ra').isVisible())await page.getByText(N('es-419','sky.coordinates')).click();
  await page.locator('#point-ra').fill('0.71231');await page.locator('#point-dec').fill('41.2692');await button(page,'es-419','sky.pointCoordinates').click();

@@ -28,7 +28,8 @@ export function activateLocale(bundle:LocaleBundle|null):UiLanguage{
  if(bundle){
   checkMapIds([...Object.keys(bundle.maps??{}),...Object.keys(bundle.mapModules??{})]);
   // Front ES-SPLIT: a split bundle always builds with the English fallback, since its catalog is never complete in one module
-  // (completeness is checked statically: src/i18n/split.test.ts). ES-REL must keep `bundle.areas` here when it flips the gate.
+  // (completeness is checked statically: src/i18n/split.test.ts item 7 and src/i18n/es/es.test.ts). Front ES-REL kept
+  // `bundle.areas` here when it flipped the gate: only a whole released bundle (Vitest's src/i18n/es/index.ts) builds strictly.
   next=Object.freeze({language:bundle.language,i18n:createI18n(bundle.messages,HTML_LANG[bundle.language],{fallback:!!bundle.areas||(bundle.language==='es-419'&&!SPANISH_RELEASED),numberLocale:locale}),bundle,areas:NO_AREAS});
  }
  holder[ACTIVE]=next;return next.language;

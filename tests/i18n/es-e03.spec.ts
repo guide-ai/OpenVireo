@@ -1,12 +1,15 @@
 import {type Page,type Locator} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
+import {SPANISH_LOCALE,langQuery} from '../fixtures/language';
 import {readFileSync} from 'node:fs';
 import {CLASSIFY_PROGRAM_LITERALS_RESTATED} from './classifyProgramLiterals';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
 import originals from '../../src/i18n/es/originals.json' with {type:'json'};
+// Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
+test.use({locale:SPANISH_LOCALE});
 
-// Front ES5 (docs/I18N.md): exercise E03, Spectral Classification, in Spanish on a `?lang=es-419` preview load. One walk through the
+// Front ES5 (docs/I18N.md): exercise E03, Spectral Classification, in Spanish in an `es-*` browser (a `?lang=es-419` preview load before ES-REL). One walk through the
 // student flow runs in English, Spanish and the pseudo-locale: the classification guide, the lab (source, Program List with its
 // dialog, VIREO's No More Spectra end box, atlas and standard pairs, Standard − practice, the line table, the wavelength window,
 // the four renderings with their reverse options, the normalized sampled difference, the range dialog and its refusal, the
@@ -162,7 +165,7 @@ const STEPS:readonly (readonly [string,(page:Page,lang:Lang)=>Promise<void>])[]=
 async function walk(page:Page,lang:Lang,each:(step:string)=>Promise<void>){
  await page.addInitScript(()=>localStorage.setItem('openvireo.tour.v1','done'));
  await page.clock.install({time:new Date('2026-11-09T12:00:00Z')});page.setDefaultTimeout(20_000);
- await page.goto(`/?lang=${lang}#classification`);
+ await page.goto(`/${langQuery(lang)}#classification`);
  await expect(page.locator('html')).toHaveAttribute('lang',lang==='es-419'?'es-419':'en');
  await expect(page.locator('.portal-header nav')).toBeAttached({timeout:20_000});
  await ready(page,lang);

@@ -55,10 +55,11 @@ describe('Front ES0: the per-load language infrastructure (docs/I18N.md), Englis
  });
  it('checks a bundle map against the English map: unknown ids are refused, a wrong shape throws in dev and tests',()=>{
   expect(()=>activateLocale({language:'es-419',messages:{},maps:{nope:{}} as never})).toThrow('Unknown message map id: nope');expect(uiLanguage()).toBe('en');
-  activateLocale({language:'es-419',messages:{},maps:{sound:{...SOUND_MESSAGES_EN,extra:'x'} as never}});
+  // Front ES-REL: a whole (not split) es-419 bundle builds strictly now, so these stand-ins carry a complete catalog (English).
+  activateLocale({language:'es-419',messages:en,maps:{sound:{...SOUND_MESSAGES_EN,extra:'x'} as never}});
   expect(()=>resolveMessages('sound',SOUND_MESSAGES_EN)).toThrow(/map "sound" does not match/);
   const translated=Object.fromEntries(Object.entries(SOUND_MESSAGES_EN).map(([k,v])=>[k,typeof v==='string'?`ES ${v}`:v]));
-  activateLocale({language:'es-419',messages:{},maps:{sound:translated as never}});
+  activateLocale({language:'es-419',messages:en,maps:{sound:translated as never}});
   expect(resolveMessages('sound',SOUND_MESSAGES_EN)).toBe(translated);
  });
  it('keeps the two catalog-backed maps out of the registry: their text comes from t, so qps marks it once',()=>{
@@ -89,10 +90,10 @@ describe('Front ES0: the per-load language infrastructure (docs/I18N.md), Englis
  it('vireo() returns the literal in English and keys its dictionary by the normalised original',()=>{
   for(const text of ['&Print Sky Image...','Set Coordinates','Slew && Track'])expect(vireo(text)).toBe(text);
   expect(normalizeOriginal('  &Print Sky Image... ')).toBe('Print Sky Image...');expect(normalizeOriginal('Slew && &Track')).toBe('Slew & Track');
-  activateLocale({language:'es-419',messages:{},originals:{'Set Coordinates':'Fijar coordenadas','verb|Open':'Abrir',Open:'Abierto'}});
+  activateLocale({language:'es-419',messages:en,originals:{'Set Coordinates':'Fijar coordenadas','verb|Open':'Abrir',Open:'Abierto'}});
   expect(vireo('Set &Coordinates')).toBe('Fijar coordenadas');expect(vireo('Open','verb')).toBe('Abrir');expect(vireo('Open')).toBe('Abierto');expect(vireo('Open','noun')).toBe('Abierto');expect(vireo('Close')).toBe('Close');
   // Front ES2: a plain entry keeps the literal's own spacing; a context entry carries its own (review 1, C3).
-  activateLocale({language:'es-419',messages:{},originals:{'RA:':'AR:','fragment|Remove Selection #':'¿Quitar la selección #','fragment|?\r\n\r\n(Remaining Selections Will Be Re-Numbered.)':'?\r\n\r\n(Las selecciones restantes se volverán a numerar).'}});
+  activateLocale({language:'es-419',messages:en,originals:{'RA:':'AR:','fragment|Remove Selection #':'¿Quitar la selección #','fragment|?\r\n\r\n(Remaining Selections Will Be Re-Numbered.)':'?\r\n\r\n(Las selecciones restantes se volverán a numerar).'}});
   expect(vireo('RA:  ')).toBe('AR:  ');
   expect(vireo('Remove Selection #','fragment')+2+vireo(' ?\r\n\r\n(Remaining Selections Will Be Re-Numbered.)','fragment')).toBe('¿Quitar la selección #2?\r\n\r\n(Las selecciones restantes se volverán a numerar).');
   expect(vireoMenuItem('&Set Coordinates...')).toBe('Set Coordinates…');
@@ -135,14 +136,15 @@ describe('Front ES0: settling the language of a load (src/boot.ts)',()=>{
   const blocked=page({stored:()=>{throw new Error('storage blocked');}});expect(sync(settleLanguage(blocked)).language).toBe('en');
  });
  it('falls back to English and logs when a bundle fails to build or validate, so the page never goes blank',()=>{
-  for(const broken of [()=>{throw new Error('chunk failed');},()=>({language:'es-419' as const,messages:{'sky.pointed':'{objetivo}'}}),()=>({language:'es-419' as const,messages:{},maps:{nope:{}} as never})]){
+  // Front ES-REL: a whole released es-419 bundle with an incomplete catalog (no `areas`) does not validate either.
+  for(const broken of [()=>{throw new Error('chunk failed');},()=>({language:'es-419' as const,messages:{'sky.pointed':'{objetivo}'}}),()=>({language:'es-419' as const,messages:{'app.name':'OpenVireo'}}),()=>({language:'es-419' as const,messages:{},maps:{nope:{}} as never})]){
    const p=page({search:'?lang=es-419',bundleFor:broken});
    expect(sync(settleLanguage(p))).toEqual({language:'en',failed:'es-419'});expect(languageFailure()).toBe('es-419');expect(uiLanguage()).toBe('en');expect(p.lang).toEqual(['en']);
    expect(p.errors).toEqual(['OpenVireo: the language bundle could not be used; English is used.']);
   }
  });
  it('waits for an asynchronous bundle, falls back to English on failure or timeout, and never activates a late chunk (ES1 review 1)',async()=>{
-  const ok=page({search:'?lang=es-419',bundleFor:()=>Promise.resolve({language:'es-419' as const,messages:{'app.name':'OpenVireo'}})});
+  const ok=page({search:'?lang=es-419',bundleFor:()=>Promise.resolve({language:'es-419' as const,messages:{...en,'app.name':'OpenVireo'}})});
   expect(await settleLanguage(ok)).toEqual({language:'es-419',failed:null});expect(languageFailure()).toBeNull();expect(ok.lang).toEqual(['es-419']);
   const rejected=page({search:'?lang=es-419',bundleFor:()=>Promise.reject(new Error('chunk 404'))});
   expect(await settleLanguage(rejected)).toEqual({language:'en',failed:'es-419'});expect(rejected.errors).toEqual(['OpenVireo: the language bundle could not be used; English is used.']);

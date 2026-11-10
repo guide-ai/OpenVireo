@@ -109,8 +109,10 @@ describe('Front ES-SPLIT: the Spanish bundle split by route area',()=>{
   const actual=pinLines(lines);
   expect(actual).toEqual(pinned('src/i18n/dynamic-key-sites.json','sites',actual));
  });
- it('7. the catalog is complete only when it covers en.json (ES-REL); until then the core says so',()=>{
+ it('7. the catalog is complete only when it covers en.json; since ES-REL it does, and the core says so',()=>{
   expect(plan.complete).toBe(Object.keys(en).every(k=>Object.hasOwn(es,k)));
   expect((core as LocaleBundle).complete).toBe(plan.complete);
+  // Front ES-REL: Spanish is released, so its catalog must be complete (production then logs a pending key: docs/I18N.md).
+  expect(plan.complete).toBe(true);
  });
 });

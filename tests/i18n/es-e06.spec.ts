@@ -1,5 +1,6 @@
 import {type Page,type Locator} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
+import {SPANISH_LOCALE,langQuery} from '../fixtures/language';
 import {HEADER,CONTROL,PLR} from '../fixtures/pulsar-saved-rows-controls';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
@@ -11,8 +12,10 @@ import {PULSAR_REVIEW_BUTTONS,PULSAR_REVIEW_LITERALS} from '../../src/core/pulsa
 import {PULSAR_REVIEW_EDIT_DFM,PULSAR_REVIEW_EDIT_LITERALS} from '../../src/core/pulsarReviewEdit';
 import {PULSAR_NATIVE_SAVE_TEXT as NS} from '../../src/core/pulsarNativeSave';
 import {PULSAR_ACTIVATE_LITERALS as ACTIVATE} from '../../src/core/pulsarAnalysis';
+// Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
+test.use({locale:SPANISH_LOCALE});
 
-// Front ES8b (docs/I18N.md): exercise E06, the recorded pulsar analysis, in Spanish on a `?lang=es-419` preview load. One walk
+// Front ES8b (docs/I18N.md): exercise E06, the recorded pulsar analysis, in Spanish in an `es-*` browser (a `?lang=es-419` preview load before ES-REL). One walk
 // through the student flow runs in English, Spanish and the pseudo-locale: the empty route, the Pulsar guide, the supplied saved
 // measurement file viewer (candidate, in use, Find, not found, refusal), a recording that has no rows (VIREO's "No Current Data to
 // Analyze"), a loaded .PLR with its properties, the display controls, the print preview in both orientations, a manual
@@ -136,7 +139,7 @@ const STEPS:readonly (readonly [string,(page:Page,lang:Lang)=>Promise<void>])[]=
 async function walk(page:Page,lang:Lang,each:(step:string)=>Promise<void>,steps:typeof STEPS=STEPS,setup:(page:Page,lang:Lang)=>Promise<void>=async()=>{},time:Date=new Date(2026,9,30,15,7,42)){
  await page.addInitScript(()=>localStorage.setItem('openvireo.tour.v1','done'));
  await page.clock.install({time});page.setDefaultTimeout(20_000);
- await page.goto(`/?lang=${lang}#pulsar-analysis`);
+ await page.goto(`/${langQuery(lang)}#pulsar-analysis`);
  await expect(page.locator('html')).toHaveAttribute('lang',lang==='es-419'?'es-419':'en');
  await expect(page.locator('.portal-header nav')).toBeAttached({timeout:20_000});
  await expect(id(page,'pulsar-none')).toBeVisible({timeout:20_000});

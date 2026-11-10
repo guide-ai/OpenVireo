@@ -8,12 +8,15 @@ export type UiLanguage='en'|'es-419'|'qps'|PseudoScriptLanguage;
 // .DEV is false there); the typeof guard keeps this module loadable outside Vite, where the Playwright specs import app modules.
 export type PseudoScriptLanguage='qps-cjk'|'qps-deva'|'qps-cyrl';
 const PSEUDO_SCRIPT_LANG:Readonly<Record<PseudoScriptLanguage,string>>|false=typeof import.meta.env!=='undefined'&&import.meta.env.DEV===true&&{'qps-cjk':'ja','qps-deva':'hi','qps-cyrl':'ru'};
-/** localStorage key of the selector's choice (the selector arrives with ES1 and is shown from ES-REL). */
+/** localStorage key of the selector's choice (the selector arrived with ES1 and is shown since ES-REL). */
 export const LANGUAGE_STORAGE_KEY='openvireo-language';
 /** localStorage key of "View original (English)" for VIREO's menus and dialogs (decision 9): '1' when on. Applied at load. */
 export const VIREO_ORIGINALS_KEY='openvireo-vireo-originals';
-/** Release gate (decision 5): false until ES-REL. While false, neither the stored choice nor the browser language is used. */
-export const SPANISH_RELEASED=false;
+/** Release gate (decision 5): false until ES-REL. While false, neither the stored choice nor the browser language is used.
+ * Front ES-REL (2026-11-09): every Spanish sub-front is merged, so Spanish is released: the stored choice and the first browser
+ * language decide, and the selector is always shown. A later language keeps its own gate until its sub-fronts are merged
+ * (front SC8 replaces this flag with a per-language `released` in a language registry). */
+export const SPANISH_RELEASED=true;
 /** `<html lang>` for each UI language. The dev-only pseudo-locale qps keeps English's tag (its text is marked English); the
  * script-stress pseudo-locales take the real tag of their script (ja, hi, ru). `satisfies` keeps every released language tagged. */
 export const HTML_LANG:Readonly<Record<UiLanguage,string>>=Object.freeze({...({en:'en','es-419':'es-419',qps:'en'} satisfies Record<Exclude<UiLanguage,PseudoScriptLanguage>,string>),...PSEUDO_SCRIPT_LANG}as Record<UiLanguage,string>);
