@@ -13,9 +13,9 @@ const dataOf=(f:Fixture):LintData=>f.glossary?{glossary:f.glossary}:{};
 const name=(f:Fixture,which:'good'|'bad')=>`${f.profile} ${f.rule}${f.note?` (${f.note})`:''} ${which}: ${f[which]}`;
 describe('Front SC4: per-locale lint profiles',()=>{
  it('has one profile per planned language, each with the register setting of REGISTER',()=>{
-  expect(Object.keys(PROFILES)).toEqual(['ja','hi','zh-Hans','zh-Hant','ru']);
-  expect(REGISTER).toEqual({ja:'desu-masu',hi:'aap',ru:'vy',zh:'ni'});// decided by the user on 2026-11-09 (AGENTS.md; plan §13, §14)
-  expect(PROFILE_IDS.map(id=>PROFILES[id].register.setting)).toEqual(['desu-masu','aap','ni','ni','vy']);
+  expect(Object.keys(PROFILES)).toEqual(['ja','hi','zh-Hans','zh-Hant','ru','es-419']);
+  expect(REGISTER).toEqual({ja:'desu-masu',hi:'aap',ru:'vy',zh:'ni',es:'tu'});// decided by the user on 2026-11-09 (AGENTS.md; plan §13, §14; Spanish tú: decision 6)
+  expect(PROFILE_IDS.map(id=>PROFILES[id].register.setting)).toEqual(['desu-masu','aap','ni','ni','vy','tu']);
  });
  it('declares the plural categories that Intl.PluralRules gives each language',()=>{
   for(const id of PROFILE_IDS)expect(PROFILES[id].pluralCategories,id).toEqual(pluralCategories(id));
@@ -34,7 +34,10 @@ describe('Front SC4: per-locale lint profiles',()=>{
 describe('Front SC4: mutation fixtures',()=>{
  it('covers every rule in every profile it applies to',()=>{
   for(const id of PROFILE_IDS){
-   const p=PROFILES[id],rules=RULES_WITH_FIXTURES.filter(r=>r!=='purity'||p.otherScript||p.kanaInSentences);
+   // Front SC9: a rule applies only where the profile configures it (a Latin-script profile has no script, so no `script` or
+   // `leftover-english`; Spanish forbids no quote mark).
+   const p=PROFILES[id],applies=(r:string)=>r==='purity'?!!(p.otherScript||p.kanaInSentences):r==='script'||r==='leftover-english'?!!p.script:r==='quotes'?p.forbiddenMarks.length>0:r==='typography'?p.typography.length>0:true;
+   const rules=RULES_WITH_FIXTURES.filter(applies);
    expect(rules.filter(r=>!FIXTURES.some(f=>f.profile===id&&f.rule===r)),id).toEqual([]);
    expect(FIXTURES.some(f=>f.profile===id&&f.rule==='register'&&f.registers),`${id}: a fixture with the register flipped`).toBe(true);
   }
@@ -79,7 +82,9 @@ describe('Front SC4: rule details',()=>{
   for(const id of PROFILE_IDS){
    expect(lintPair(p,PROFILES[id]).map(f=>f.rule),id).toContain('identical');
    expect(lintPair(p,PROFILES[id],{identical:{'catalog:app.name':'product name (OpenVireo)'}}),id).toEqual([]);
-   expect(lintPair(q,PROFILES[id]).map(f=>f.rule),id).toContain('script');
+   // A Latin-script profile (Spanish) has no script to look for: only equality with the English is checked (SC9).
+   if(PROFILES[id].script)expect(lintPair(q,PROFILES[id]).map(f=>f.rule),id).toContain('script');
+   else expect(lintPair(q,PROFILES[id]).map(f=>f.rule),id).not.toContain('script');
   }
  });
  it('accepts a finding only where lint-allowed names it, and flags allowances that are vague or no longer needed',()=>{

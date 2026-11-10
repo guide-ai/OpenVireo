@@ -12,6 +12,9 @@ import {manualLimitText} from '../../core/slewLimit';
 import {createI18n,type MessageKey} from '../catalog';
 import {mapParity} from '../parity';
 import {normalizeOriginal} from '../vireo';
+import {collectPairs} from '../lint/pairs';
+import {PROFILES,SPANISH_VIREO_PULSAR_NAMES} from '../lint/profiles';
+import {allowances,describeFindings,errorsOf,glossaryFrom,lintPair,lintPairs,reportsOf,unbalanced,type LintData,type Pair} from '../lint/rules';
 import {MAP_IDS,type MapId} from '../maps';
 import {APP_SHELL_MESSAGES_EN} from '../../components/AppShellMessages';
 import {HELP_MENU_EN} from '../../help/HelpMessages';
@@ -44,6 +47,9 @@ import {SAVED_ROWS_MESSAGES_EN} from '../../components/PulsarSavedRowsMessages';
 
 // Front ES1 (docs/I18N.md; plan §3.2 and §5.3 step 1): automatic checks of every Spanish string. They fail the batch; the
 // independent reviewer agent then reads the strings in context. Length ratios outside 0.7–1.6 are reported, not failed.
+// Front SC9: the per-string lints run on the framework of src/i18n/lint/ with the es-419 profile (profiles.ts); this file
+// loads the Spanish files, keeps the Spanish structural checks (strict catalog, map parity, originals keys, the shell) and
+// proves on the real glossary that the lints catch what they must.
 const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,camera:CAMERA_MESSAGES_EN,engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,nakedEye:NAKED_EYE_MESSAGES_EN,objectXGuide:OBJECT_X_GUIDE_EN,objectXLab:OBJECT_X_LAB_EN,objectXMeasure:OBJECT_X_MEASURE_EN,objectXSession:OBJECT_X_SESSION_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,wedge:WEDGE_MESSAGES_EN};
 /** The maps translated completely (ES1: the shell; ES2: the observatory; ES3: the E01 spectrometer maps; ES4: the wedge; ES9: Object X); the others are partial until their sub-front. */
 const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','camera','fieldInfo','fieldReadDetails','nakedEye','observationMetadata','observatory','polish','qsoList','sound','engineView','spectralRange','wedge','objectXGuide','objectXLab','objectXMeasure','objectXSession'];
@@ -80,78 +86,44 @@ export function stringLiterals(source:string):string[]{
  }
  return out;
 }
-/** A sample argument that prints as «An» and acts as the number n+2 in comparisons and number methods (toFixed…). */
-function sampleArgument(i:number):unknown{
- const text=`«A${i+1}»`;
- return new Proxy(Object(i+2),{get:(target,key)=>key===Symbol.toPrimitive?(hint:string)=>hint==='number'?i+2:text:key==='toString'||typeof key==='string'&&key.startsWith('to')?()=>text:Reflect.get(target,key)});
-}
-type Pair=Readonly<{id:string;en:string;es:string}>;
-/** Every translated string with its English source: catalog values, map leaves (functions called with sample arguments) and originals. */
-function pairs():Pair[]{
- const out:Pair[]=[];
- for(const [key,text] of Object.entries(es))out.push({id:`catalog:${key}`,en:en[key as MessageKey],es:text});
- const walk=(e:unknown,s:unknown,at:string)=>{
-  if(typeof s==='string'&&typeof e==='string')out.push({id:at,en:e,es:s});
-  else if(typeof s==='function'&&typeof e==='function'){
-   // Front ES2: string arguments first; a function that formats numbers gets an argument that reads as «An» in text and as
-   // a number in comparisons and number methods; one that takes a record or list gets plain numbers.
-   for(const make of [(i:number)=>`«A${i+1}»`,sampleArgument,(i:number)=>i+2]){
-    const args=Array.from({length:e.length},(_,i)=>make(i));
-    try{out.push({id:at,en:String((e as (...a:unknown[])=>unknown)(...args)),es:String((s as (...a:unknown[])=>unknown)(...args))});break;}catch{/* next kind of argument */}
-   }
-  }
-  else if(s&&typeof s==='object'&&e&&typeof e==='object')for(const k of Object.keys(s))walk((e as Record<string,unknown>)[k],(s as Record<string,unknown>)[k],`${at}.${k}`);
- };
- for(const [id,map] of Object.entries(SPANISH.maps??{}))walk(ENGLISH_MAPS[id as MapId],map,`map:${id}`);
- for(const [key,text] of Object.entries(originals))out.push({id:`original:${key}`,en:key,es:text});
- return out;
-}
-/** Forbidden words match with Unicode word boundaries (JavaScript's \\b is ASCII-only, so «abrí» or «móvil» would slip). */
-const lower=(s:string)=>s.toLocaleLowerCase('es');
-const WORD=(w:string)=>`(?<![\\p{L}\\p{N}])${w}(?![\\p{L}\\p{N}])`;
-const FORBIDDEN=(glossary.forbidden as {words?:string[];es?:string;use:string}[]).map(f=>({label:f.words?`«${f.words.join('», «')}»`:`/${f.es}/`,use:f.use,words:f.words??null,pattern:new RegExp(f.words?f.words.map(WORD).join('|'):f.es!,'iu')}));
-/** The forbidden words or patterns found in a string, less the words lint-allowed.json allows in that string. */
-const ALLOWED=lintAllowed.entries as Record<string,{words:string[];reason:string}>;
-/** Front ES8a review: VIREO's English names that hold the word "Pulsar", quoted as glosses («Parámetros de púlsares (Pulsar
- * Parameters)»). Only these exact, case-sensitive phrases are removed before the forbidden-word check, so the verb «pulsar» or an
- * unaccented «pulsar» elsewhere in the same string still fails. */
-const VIREO_PULSAR_NAMES=/(?<![\p{L}\p{N}])(?:Access Pulsar List|Plot Pulsar Positions|Pulsar (?:Analysis|Parameters|List|Identification))(?![\p{L}\p{N}])/gu;
-export function forbiddenIn(id:string,original:string):string[]{
- const out:string[]=[],text=original.replace(VIREO_PULSAR_NAMES,' ');
- for(const f of FORBIDDEN){
-  if(f.words){for(const w of f.words)if(new RegExp(WORD(w),'iu').test(text)&&!ALLOWED[id]?.words.some(a=>a.toLowerCase()===w.toLowerCase()))out.push(`«${w}», use ${f.use}`);}
-  else if(f.pattern.test(text))out.push(`${f.label}, use ${f.use}`);
- }
- return out;
-}
-/** Unpaired ¿ ? or ¡ !: a closer that ends a question or exclamation (after a letter, digit, bracket, quote, … or a {param}, ES5) needs an
- * opener before it, and every opener needs a closer. A bare ? (a key, «?lang=») is not a closer. */
-export function unpaired(text:string,open:string,close:string):string|null{
- let depth=0;
- for(let i=0;i<text.length;i++){
-  if(text[i]===open)depth++;
-  else if(text[i]===close&&/[\p{L}\d)»”…}]/u.test(text[i-1]??'')&&/[\s)»”.,;:]|$/.test(text[i+1]??'')){if(depth===0)return `${close} without ${open}`;depth--;}
- }
- return depth>0?`${open} without ${close}`:null;
-}
-const GLYPHS=['›','…','↗','▸','·','—','–','×','✳','?'];
+const PROFILE=PROFILES['es-419'];
+/** The Spanish lint data: glossary.json in the framework's neutral form, identical.json and lint-allowed.json. */
+const DATA:LintData={glossary:glossaryFrom(glossary,'es'),identical:identical.entries,allowed:lintAllowed.entries as LintData['allowed']};
+/** Every translated string with its English source: catalog values, map leaves (functions called with sample arguments) and
+ * originals (an original's English is its literal without the `context|` prefix). */
+const pairs=():Pair[]=>collectPairs({catalog:es,english:en,maps:SPANISH.maps,englishMaps:ENGLISH_MAPS,originals});
+/** The glossary and register findings for a text (en 'x' requires no term or name), with or without the allowances. */
+const hits=(text:string,id='catalog:x',data:LintData={glossary:DATA.glossary})=>lintPair({id,en:'x',text},PROFILE,data).filter(f=>f.rule==='glossary'||f.rule==='register').map(f=>f.message);
 describe('Front ES1 review 1: the lint catches what it must',()=>{
  it('finds usted, voseo, Spain-only words and unpaired ¿ ¡ with Unicode-aware boundaries',()=>{
-  const hits=(text:string)=>FORBIDDEN.filter(f=>f.pattern.test(text)).map(f=>f.label);
   for(const bad of ['Haga clic aquí','Elija un objeto','Pulse el botón','Pulsá Aceptar','Abrí la cúpula','Guardá tu trabajo','Mirá esto','Guarde su trabajo','¿Tenés tiempo?','Copia su investigación','Usá el móvil','Abre el fichero'])expect(hits(bad),bad).not.toEqual([]);
-  for(const good of ['Haz clic en el púlsar','Elige un objeto','Presiona el botón','Abre la cúpula','Guarda tu trabajo','Los púlsares','Su investigación no' ])if(good!=='Su investigación no')expect(hits(good),good).toEqual([]);
+  for(const good of ['Haz clic en el púlsar','Elige un objeto','Presiona el botón','Abre la cúpula','Guarda tu trabajo','Los púlsares'])expect(hits(good),good).toEqual([]);
   // A word allowed for one string only (lint-allowed.json), never for others; every allowance names a reason and is used.
-  expect(forbiddenIn('map:languageChoice.originalsNote','la próxima vez que se cargue la página')).toEqual([]);
-  expect(forbiddenIn('catalog:other','la próxima vez que se cargue la página')).not.toEqual([]);
-  expect(forbiddenIn('map:languageChoice.originalsNote','Haga clic')).not.toEqual([]);
+  expect(hits('la próxima vez que se cargue la página','map:languageChoice.originalsNote',DATA)).toEqual([]);
+  expect(hits('la próxima vez que se cargue la página','catalog:other',DATA)).not.toEqual([]);
+  expect(hits('Haga clic','map:languageChoice.originalsNote',DATA)).not.toEqual([]);
   // Front ES8a review: only the exact English VIREO names with "Pulsar" are exempt, never the verb or a lower-case form.
-  expect(forbiddenIn('catalog:x','Abre Parámetros de púlsares (Pulsar Parameters) o Archivo ▸ Lista de púlsares... [Pulsar List...]')).toEqual([]);
-  expect(forbiddenIn('catalog:x','Abre Parámetros de púlsares (Pulsar Parameters) y pulsar el botón')).not.toEqual([]);
-  expect(forbiddenIn('catalog:x','Abre el pulsar (Pulsar Analysis)')).not.toEqual([]);
-  expect(forbiddenIn('catalog:x','(pulsar parameters)')).not.toEqual([]);
-  for(const [id,entry] of Object.entries(ALLOWED)){expect(entry.reason.length,id).toBeGreaterThan(20);expect(pairs().some(p=>p.id===id&&entry.words.every(w=>new RegExp(WORD(w),'iu').test(p.es))),`${id} still needs its allowance`).toBe(true);}
-  expect(unpaired('¿Cambiar el idioma?','¿','?')).toBeNull();expect(unpaired('Cambiar el idioma?','¿','?')).toBe('? without ¿');expect(unpaired('¿Cambiar el idioma.','¿','?')).toBe('¿ without ?');
-  expect(unpaired('presiona la tecla ? o abre ?lang=es','¿','?')).toBeNull();expect(unpaired('¡Listo!','¡','!')).toBeNull();expect(unpaired('¿Restaurar {file}?','¿','?')).toBeNull();expect(unpaired('Restaurar {file}?','¿','?')).toBe('? without ¿');expect(unpaired('¡Listo.','¡','!')).toBe('¡ without !');
+  expect(PROFILE.forbiddenSetAside).toBe(SPANISH_VIREO_PULSAR_NAMES);
+  expect(hits('Abre Parámetros de púlsares (Pulsar Parameters) o Archivo ▸ Lista de púlsares... [Pulsar List...]',undefined,DATA)).toEqual([]);
+  expect(hits('Abre Parámetros de púlsares (Pulsar Parameters) y pulsar el botón',undefined,DATA)).not.toEqual([]);
+  expect(hits('Abre el pulsar (Pulsar Analysis)',undefined,DATA)).not.toEqual([]);
+  expect(hits('(pulsar parameters)',undefined,DATA)).not.toEqual([]);
+  // usted and ustedes fail in every string, even an identical one or one with an allowance (es.test.ts's ASCII edges kept).
+  for(const text of ['Abra usted','Ustedes abren','ustedés'])expect(lintPair({id:'catalog:x',en:text,text},PROFILE,{...DATA,identical:{'catalog:x':'a test string kept on purpose'}}).map(f=>f.rule),text).toContain('register');
+  expect(lintPair({id:'catalog:x',en:'x',text:'Traducción oficial'},PROFILE,DATA).map(f=>f.rule)).toContain('claim');
+  const [q,e]=PROFILE.pairs;
+  expect(unbalanced('¿Cambiar el idioma?',q)).toBeNull();expect(unbalanced('Cambiar el idioma?',q)).toBe('? without ¿');expect(unbalanced('¿Cambiar el idioma.',q)).toBe('¿ without ?');
+  expect(unbalanced('presiona la tecla ? o abre ?lang=es',q)).toBeNull();expect(unbalanced('¡Listo!',e)).toBeNull();expect(unbalanced('¿Restaurar {file}?',q)).toBeNull();expect(unbalanced('Restaurar {file}?',q)).toBe('? without ¿');expect(unbalanced('¡Listo.',e)).toBe('¡ without !');
+ });
+ it('Front SC9: an allowance exempts only a forbidden glossary word, never usted, a claim or a forbidden pattern',()=>{
+  // es.test.ts applied lint-allowed.json to the glossary's forbidden words only; the framework accepts any finding whose
+  // matched text an allowance names, so this keeps the old reach.
+  const byId=new Map(pairs().map(p=>[p.id,p]));
+  for(const [id,a] of Object.entries(DATA.allowed??{})){
+   const p=byId.get(id);if(!p)continue;// allowances() reports it
+   const raw=lintPair(p,PROFILE,{...DATA,allowed:{}});
+   for(const w of a.words??[])for(const f of raw.filter(f=>f.match!==undefined&&f.match.toLocaleLowerCase('es')===w.toLocaleLowerCase('es')))expect(f.rule==='glossary'&&f.message.startsWith('forbidden «'),`${id}: «${w}» exempts ${f.rule} ${f.message}`).toBe(true);
+  }
  });
 });
 describe('Front ES1: the Spanish (es-419) catalog, maps and originals',()=>{
@@ -186,40 +158,14 @@ describe('Front ES1: the Spanish (es-419) catalog, maps and originals',()=>{
   expect(SHELL_KEYS.length).toBeGreaterThan(120);
   for(const id of COMPLETE_MAPS)expect(mapParity(ENGLISH_MAPS[id],SPANISH.maps?.[id]),id).toEqual([]);
  });
- it('a Spanish string equals its English source only when identical.json gives the reason',()=>{
-  const allowed=identical.entries as Record<string,string>;
-  expect(pairs().filter(p=>p.es===p.en&&!Object.hasOwn(allowed,p.id)).map(p=>p.id)).toEqual([]);
-  for(const [id,reason] of Object.entries(allowed))expect(reason.length,id).toBeGreaterThan(10);
- });
- it('follows the glossary: required Spanish terms and fixed names present, forbidden forms absent',()=>{
-  const problems:string[]=[];
-  for(const p of pairs()){
-   if(p.es===p.en&&Object.hasOwn(identical.entries,p.id))continue;// an identifier or anchor kept on purpose (identical.json)
-   for(const term of glossary.terms)if(new RegExp(term.en,'i').test(p.en.replace(/\{\w+\}/g,''))&&!new RegExp(term.es,'iu').test(p.es))problems.push(`${p.id}: "${term.en}" needs «${term.es}»`);
-   // Front ES2: an "exact" name (one generic word: OK, File, Close…) applies only to a whole string; Spanish case follows the sentence.
-   for(const name of glossary.names as {en:string;es:string;exact?:boolean;except?:Record<string,string>}[])if(!name.except?.[p.id]&&(name.exact?normalizeOriginal(p.en)===name.en:p.en.includes(name.en))&&!lower(p.es).includes(lower(name.es)))problems.push(`${p.id}: "${name.en}" must read «${name.es}»`);
-   for(const hit of forbiddenIn(p.id,p.es))problems.push(`${p.id}: forbidden ${hit}`);
-  }
-  expect(problems).toEqual([]);
- });
- it('keeps the glyphs and every map placeholder, pairs ¿ ? and ¡ ! both ways, adds no HTML, and reports the length ratio',()=>{
-  const problems:string[]=[],ratios:string[]=[];
-  const count=(s:string,g:string)=>s.split(g).length-1;
-  for(const p of pairs()){
-   for(const g of GLYPHS)if(g!=='?'&&count(p.en,g)!==count(p.es,g))problems.push(`${p.id}: ${count(p.es,g)}×${g} instead of ${count(p.en,g)}`);
-   // Front ES2: a 'fragment|' original is one piece of a VIREO text the core composes around data, so its marks pair across pieces.
-   // Front ES3 review: a VIREO message quoted in English inside “…” (as the English quotes it) keeps its own ! and ?.
-   const unquoted=p.es.replace(/“([^”]*)”/g,(m,q:string)=>p.en.includes(q)?'“”':m);
-   if(!p.id.startsWith('original:fragment|'))for(const [open,close] of [['¿','?'],['¡','!']]){const issue=unpaired(unquoted,open,close);if(issue)problems.push(`${p.id}: ${issue}`);}
-   // Map functions: every placeholder in the English output reaches the Spanish output.
-   for(const arg of p.en.match(/«A\d+»/g)??[])if(!p.es.includes(arg))problems.push(`${p.id}: drops ${arg}`);
-   if(/<\/?[a-z]/i.test(p.es)&&!/<\/?[a-z]/i.test(p.en))problems.push(`${p.id}: HTML`);
-   const ratio=p.es.length/Math.max(1,p.en.length);if(p.en.length>12&&(ratio<.7||ratio>1.6))ratios.push(`${p.id} ${ratio.toFixed(2)}`);
-  }
-  expect(problems).toEqual([]);
-  if(ratios.length)console.info(`Length ratio outside 0.7–1.6 (reported for the reviewer, not a failure):\n${ratios.join('\n')}`);
- });
- it('never claims to be CLEA\'s, and addresses the student as tú',()=>{
-  for(const p of pairs()){expect(p.es,p.id).not.toMatch(/\b(usted|ustedes)\b/iu);expect(p.es,p.id).not.toMatch(/traducci[oó]n (oficial|de CLEA)/iu);}
+});
+describe('Front SC9: the Spanish strings pass the es-419 lints (src/i18n/lint/)',()=>{
+ it('identical only with a reason, glossary terms, names and forbidden words, usted, claims, glyphs, ¿? ¡!, placeholders, no HTML, digits, NFC, no invisible characters, and every allowance still needed',()=>{
+  const all=pairs(),findings=lintPairs(all,PROFILE,DATA);
+  expect(all.length).toBeGreaterThan(6000);
+  expect(describeFindings(errorsOf(findings))).toEqual([]);
+  expect(allowances(all,PROFILE,DATA)).toEqual([]);
+  const ratios=describeFindings(reportsOf(findings));
+  if(ratios.length)console.info(`Length ratio outside 0.7–1.6 in grapheme clusters (reported for the reviewer, not a failure):\n${ratios.join('\n')}`);
  });
 });
