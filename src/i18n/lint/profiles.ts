@@ -84,6 +84,11 @@ const PT_EUROPEAN=['ecrã','ecrãs','ficheiro','ficheiros','utilizador','utiliza
  'acção','acções','direcção','direcções','selecção','selecções','objecto','objectos','actual','actuais','exacto','exacta','exactos','exactas','óptimo','óptima','actualizar','actualização','actualizado','factor','factores','projecto','projectos','correcto','correcta','directo','directa',
  'protão','protões','neutrão','neutrões','electrão','electrões','eletrão','eletrões'];
 const PT_SPANISH=['usted','ustedes','también','pantalla','pantallas','ventana','ventanas','botón','botones','archivo','archivos','cúmulo','cúmulos','estrella','estrellas','configuración','medición','mediciones','púlsar','púlsares','una','del','con','el','pero','muy','hacer','haz','elige'];
+/** Front PT0 review: English left in a Latin-script translation (the `leftover-english` rule reads a script, so it cannot see it):
+ * English function words that are no Portuguese word, outside brackets and quotes (VIREO's English names in brackets keep them). */
+const PT_ENGLISH=['the','and','with','your','you','this','that','from','is','are','not','will','which','when','only','it','of','to','be','was','were','has','have','its'];
+/** Outside brackets (a VIREO English gloss, «Fator de criação do campo (Field Creation Factor)») and “ ” quotes. */
+const outsideGlosses=(r:RegExp)=>new RegExp(`(?:${r.source})(?![^(]*\\))(?![^“]*”)`,r.flags);
 const PT_TU=['tu','teu','tua','teus','tuas','contigo','vós','vosso','vossa','vossos','vossas','te'];
 /** Commands of the verbs this interface uses: the tu-imperative (= third person, «Salva») and the você one (subjunctive, «Salve»). */
 const PT_TU_COMMANDS=['Clica','Escolhe','Abre','Salva','Seleciona','Digita','Carrega','Fecha','Verifica','Usa','Mede','Aponta','Espera','Olha','Vê','Faz','Põe','Pressiona','Liga','Desliga','Guarda','Começa','Marca','Ativa','Lê','Escreve','Define','Volta','Recarrega','Restaura','Baixa','Tenta','Segue','Deixa'];
@@ -159,7 +164,7 @@ export function profileFor(id:ProfileId,registers:Registers=REGISTER):LocaleProf
     typography:[
      // « » are not Brazilian quotes; the lint's own sample placeholders «A1» are set aside.
      {label:'guillemets',pattern:/«(?!A\p{N}+»)|(?<!«A\p{N}+)»/u,use:'“ ” (inner ‘ ’)'},
-     {label:'European Portuguese word',pattern:words(PT_EUROPEAN,'letters'),use:'the Brazilian form (tela, arquivo, usuário, mouse, celular, configurações, senha, acessar, equipe, fato, contato, registro, baixar, pressionar, site; ação, objeto, atual, exato)'},
+     {label:'European Portuguese word',pattern:outsideGlosses(words(PT_EUROPEAN,'letters')),use:'the Brazilian form (tela, arquivo, usuário, mouse, celular, configurações, senha, acessar, equipe, fato, contato, registro, baixar, pressionar, site; ação, objeto, atual, exato)'},
      {label:'European accent',pattern:/(?<![\p{L}\p{N}])(?:astronómic|fenómen|quilómetr|electrónic|eletrónic|económic|atómic|anónim|sinónim|espectrómetr|fotómetr|cronómetr|génio)\p{L}*/iu,use:'the Brazilian accent (astronômico, fenômeno, quilômetro, eletrônico, espectrômetro, fotômetro, gênio)'},
      {label:'«estar a» + infinitive',pattern:/(?<![\p{L}\p{N}])est(?:á|ão|ava|avam|ou|amos|ar|eja|ejam)[  ]+a[  ]+\p{L}+[aei]r(?![\p{L}\p{N}])/iu,use:'the gerund («está medindo»)'},
      {label:'«A» + infinitive as a progress label',pattern:/^A[  ]+(?!partir|seguir)\p{L}+[aei]r(?![\p{L}\p{N}])/u,use:'the gerund («Carregando…»)'},
@@ -167,6 +172,7 @@ export function profileFor(id:ProfileId,registers:Registers=REGISTER):LocaleProf
      // «los»/«las» only as words: Portuguese writes them as enclitics after a hyphen («salvá-las», «abri-los»).
      {label:'Spanish article',pattern:/(?<![\p{L}\p{N}-])(?:los|las)(?![\p{L}\p{N}-])/iu,use:'os / as'},
      {label:'Spanish character',pattern:/[ñ¿¡]/u,use:'Portuguese has no ñ, ¿ or ¡'},
+     {label:'English word',pattern:outsideGlosses(words(PT_ENGLISH,'letters')),use:'translate it (a VIREO English name goes in brackets after its Portuguese)'},
      // Sentence case: three capitalised words in a row (articles and prepositions between them allowed), outside brackets.
      {label:'title case',pattern:/(?<![\p{L}\p{N}])\p{Lu}\p{Ll}+(?:[  ]+(?:(?:d[aeo]s?|e|em|para|por|com)[  ]+)?\p{Lu}\p{Ll}+){2,}(?![^(]*\))/u,use:'sentence case (only the first word and names capitalised)'},
     ],

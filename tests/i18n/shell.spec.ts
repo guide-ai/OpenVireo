@@ -23,12 +23,12 @@ async function open(page:Page,lang:LanguageText|'en',hash='observatory'){
  await page.goto(`/${lang==='en'?'?lang=en':lang.query}#${hash}`);
  await expect(page.getByRole('heading',{level:1,name:lang==='en'?en['sky.title']:lang.catalog['sky.title']})).toBeVisible({timeout:15_000});
 }
-/** Visible text nodes, accessible names and titles inside the shell regions, in document order (option texts left out). */
+/** Visible text nodes, accessible names and titles inside the shell regions, in document order (the language options left out). */
 const shellTexts=(page:Page)=>page.evaluate(regions=>{
  const out:string[]=[];
  for(const sel of regions)for(const root of document.querySelectorAll(sel))if(root.closest('[hidden]')===null){
   const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n:Node|null;
-  while((n=walker.nextNode())){const text=n.textContent?.trim();const el=n.parentElement;if(text&&el&&el.closest('[hidden],details:not([open])>:not(summary),option')===null)out.push(text);}
+  while((n=walker.nextNode())){const text=n.textContent?.trim();const el=n.parentElement;if(text&&el&&el.closest('[hidden],details:not([open])>:not(summary),.language-select option')===null)out.push(text);}
   for(const el of root.querySelectorAll('[aria-label],[title],[placeholder]'))if(el.closest('[hidden]')===null)for(const a of ['aria-label','title','placeholder']){const v=el.getAttribute(a)?.trim();if(v)out.push(`@${a}:${v}`);}
  }
  return out;

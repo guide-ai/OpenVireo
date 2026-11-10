@@ -119,6 +119,8 @@ test('Front PT0: the keyboard steps across all three options without opening the
  await page.keyboard.press('Tab');
  await expect(dialog).toBeVisible();await expect(dialog).toContainText(P.maps.languageChoice.reload('Español'));
  await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);await expect(select).toHaveValue('pt-BR');
+ // PT0 review: the dialog opened between elements; closing it never leaves the focus on the body (Chromium returned it there).
+ expect(await page.evaluate(()=>document.activeElement!==document.body&&document.activeElement!==null)).toBe(true);
  expect(new URL(page.url()).search).toBe('?lang=pt-BR');expect(await stored(page)).toBeNull();
  // A pick from the list (selectOption, as a mouse or touch pick) still asks at once.
  await choose(page,'en');await expect(dialog).toBeVisible();await page.keyboard.press('Escape');await expect(select).toHaveValue('pt-BR');

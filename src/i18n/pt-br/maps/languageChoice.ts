@@ -5,7 +5,7 @@ export const LANGUAGE_CHOICE_PT:Translation<typeof LANGUAGE_CHOICE_EN>=Object.fr
  legend:'Idioma / Language',
  title:'Mudar o idioma?',
  reload:(language:string)=>`A página será recarregada em ${language}, na mesma página do site.`,
- lost:'O trabalho que está apenas na tela é perdido: a posição atual do telescópio, as exposições em andamento, as medições, as janelas abertas, o modo instrutor e tudo o que você não salvou em um arquivo.',
+ lost:'O trabalho que está apenas na tela se perde: a posição atual do telescópio, as exposições em andamento, as medições, as janelas abertas, o modo instrutor e tudo o que você não salvou em um arquivo.',
  kept:'Os arquivos que você salvou no seu computador não são afetados; Restaurar investigação (JSON) carrega uma investigação novamente. Este navegador também mantém os seus resultados de observação confirmados e as suas preferências de exibição.',
  save:'Salvar investigação',
  saveNote:'Salvar investigação baixa primeiro um arquivo com o seu trabalho atual. Depois, mude o idioma.',

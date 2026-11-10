@@ -191,6 +191,8 @@ const ptBR:Fixture[]=[
  {profile:'pt-BR',rule:'typography',en:'Open the window.',good:'Abra a janela.',bad:'Abra la ventana.',note:'Spanish left from the reference'},
  {profile:'pt-BR',rule:'typography',en:'Change the language?',good:'Mudar o idioma?',bad:'¿Mudar o idioma?'},
  {profile:'pt-BR',rule:'typography',en:'Save them in the files.',good:'Salve-as nos arquivos.',bad:'Salve las en los archivos.',note:'«-las» after a hyphen is Portuguese'},
+ {profile:'pt-BR',rule:'typography',en:'Field Creation Factor',good:'Fator de criação do campo (Field Creation Factor)',bad:'Factor de criação do campo',note:"VIREO's English name in brackets is not European Portuguese"},
+ {profile:'pt-BR',rule:'typography',en:'Save the investigation to a file.',good:'Salve a investigação em um arquivo (Add Current Item/Position to List).',bad:'Salve the investigation em um arquivo.',note:'English left in the translation; brackets set aside'},
  {profile:'pt-BR',rule:'typography',en:'Optical simulation options',good:'Opções de simulação óptica',bad:'Opções De Simulação Óptica'},
  {profile:'pt-BR',rule:'typography',en:'Optical Simulation Options',good:'Opções de simulação óptica (Optical Simulation Options)',bad:'Opções de Simulação Óptica',note:"VIREO's English name in brackets keeps its case"},
  {profile:'pt-BR',rule:'digits',en:EXPOSURE,good:'Exposição: 2.5 s',bad:'Exposição: 2,5 s'},

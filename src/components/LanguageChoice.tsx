@@ -31,14 +31,16 @@ export function nextAddress(href:string,next:string,stored:boolean):string{
 export default function LanguageChoice({onSave}:{onSave:()=>void}){
  const current=uiLanguage(),options=selectorLanguages(current),preview=current!=='en'&&!isReleased(current);
  const [asked,setAsked]=useState<string|null>(null),name=useId(),dialog=useRef<HTMLDialogElement>(null),cancel=useRef<HTMLButtonElement>(null);
- const [pending,setPendingState]=useState<string|null>(null),pendingRef=useRef<string|null>(null),steppedAt=useRef(-Infinity);
+ const [pending,setPendingState]=useState<string|null>(null),pendingRef=useRef<string|null>(null),steppedAt=useRef(-Infinity),select=useRef<HTMLSelectElement>(null);
  const setPending=(value:string|null)=>{pendingRef.current=value;setPendingState(value);};
  function ask(value:string){setPending(null);steppedAt.current=-Infinity;if(value!==current)setAsked(value);}
  const [originals,setOriginals]=useState(()=>{try{return localStorage.getItem(VIREO_ORIGINALS_KEY)==='1';}catch{return false;}});
  const [originalsStored,setOriginalsStored]=useState(true);
  const [canStore]=useState(storageWorks);
  useEffect(()=>{if(asked){dialog.current?.showModal();cancel.current?.focus();}},[asked]);
- function close(){dialog.current?.close();setAsked(null);}
+ /** PT0 review: a dialog opened by leaving the select (Tab) opens while the focus is between elements, so Chromium returns it to
+  * the body on close, or leaves it on the dialog's button that is then removed; the focus goes back to the select instead of being lost. */
+ function close(){dialog.current?.close();setAsked(null);const a=document.activeElement;if(!a||a===document.body||dialog.current?.contains(a))select.current?.focus();}
  function change(){
   if(!asked)return;
   let stored=false;
@@ -53,7 +55,7 @@ export default function LanguageChoice({onSave}:{onSave:()=>void}){
  const label=(tag:string)=>{const o=options.find(l=>l.tag===tag);return o?optionLabel(o):tag;};
  return <div className="language-choice" data-testid="language-choice">
   <label className="language-select-label"><span className="visually-hidden" data-testid="language-legend">{M.legend}</span>
-   <select className="language-select" value={asked??pending??current} data-testid="language-select"
+   <select ref={select} className="language-select" value={asked??pending??current} data-testid="language-select"
     onKeyDown={e=>{
      if(STEP_KEYS.has(e.key)||(e.key.length===1&&e.key!==' '&&!e.ctrlKey&&!e.metaKey&&!e.altKey))steppedAt.current=performance.now();
      else if(e.key==='Enter'&&pendingRef.current!==null){e.preventDefault();ask(pendingRef.current);}
