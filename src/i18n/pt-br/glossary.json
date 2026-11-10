@@ -427,7 +427,7 @@
   },
   {
    "en": "\\braw\\b",
-   "pt": "bruto"
+   "pt": "brut[oa]s?"
   },
   {
    "en": "\\bmerg(e|es|ed|ing)\\b",
@@ -488,6 +488,30 @@
   {
    "en": "\\bplate constants\\b",
    "pt": "constantes de placa"
+  },
+  {
+   "en": "(?<!All Sky )\\bsurveys?\\b",
+   "pt": "levantamento"
+  },
+  {
+   "en": "\\bsnapshots?\\b",
+   "pt": "instantâne"
+  },
+  {
+   "en": "\\banaly[sz]ers?\\b",
+   "pt": "analisador"
+  },
+  {
+   "en": "\\btemplates?\\b",
+   "pt": "modelo"
+  },
+  {
+   "en": "\\bjournals?\\b",
+   "pt": "diário"
+  },
+  {
+   "en": "\\b(?:600-)?bins?\\b",
+   "pt": "can(al|ais)"
   }
  ],
  "names": [
@@ -1144,6 +1168,42 @@
   {
    "en": "Close Multi-Spec",
    "pt": "Fechar Multi-Spec"
+  },
+  {
+   "en": "Measured Redshift Data",
+   "pt": "Dados de desvio para o vermelho medidos"
+  },
+  {
+   "en": "Record Z",
+   "pt": "Registrar Z"
+  },
+  {
+   "en": "Save Data",
+   "pt": "Salvar dados",
+   "except": {
+    "original:Save Data in Comma-Separated Text File": "another VIREO caption (a file dialog title, «Salvar os dados em…»), not the Save Data button",
+    "original:Save Data Now?": "another VIREO message (a question, «Salvar os dados agora?»), not the Save Data button"
+   }
+  },
+  {
+   "en": "Plot Data",
+   "pt": "Plotar dados"
+  },
+  {
+   "en": "LSS Wedge Plot",
+   "pt": "Diagrama em cunha LSS"
+  },
+  {
+   "en": "Load Saved Data",
+   "pt": "Carregar dados salvos"
+  },
+  {
+   "en": "LSS Galaxy Data",
+   "pt": "Dados de galáxias LSS"
+  },
+  {
+   "en": "Time-Dependent Data",
+   "pt": "Dados dependentes do tempo"
   }
  ],
  "forbidden": [
