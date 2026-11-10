@@ -3,8 +3,11 @@ import {decideLocale,HTML_LANG,selectorShown,SPANISH_RELEASED,type LocaleInputs}
 import {nextAddress} from '../components/LanguageChoice';
 const decide=(over:Partial<LocaleInputs>)=>decideLocale({param:null,stored:null,languages:['en-US'],released:true,dev:false,...over});
 describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-09)',()=>{
- it('keeps Spanish hidden before ES-REL: only the ?lang=es-419 preview reaches it',()=>{
-  expect(SPANISH_RELEASED).toBe(false);
+ it('Front ES-REL: Spanish is released, so the stored choice and the browser language decide and the selector is shown',()=>{
+  expect(SPANISH_RELEASED).toBe(true);
+  expect(selectorShown('')).toBe(true);expect(selectorShown('?lang=qps')).toBe(true);
+ });
+ it('a gate that is still closed (a later language before its release) keeps it hidden: only the ?lang= preview reaches it',()=>{
   for(const languages of [['es-MX'],['es'],['es-ES'],['es-419','en']])expect(decide({languages,released:false})).toBe('en');
   expect(decide({stored:'es-419',languages:['es-MX'],released:false})).toBe('en');
   expect(decide({param:'es-419',released:false})).toBe('es-419');

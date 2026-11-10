@@ -532,13 +532,6 @@
   "reason": "identifier: the practice star label as recorded in CLASSIFY.LST (HD number)"
  },
  {
-  "file": "src/help/webHelp.ts",
-  "kind": "module literal",
-  "value": "*",
-  "count": 112,
-  "reason": "pending-translation: multi-word web text built outside the catalog; ES1 or ES-HELP moves it to a translatable source."
- },
- {
   "file": "src/HotListEditor.tsx",
   "kind": "original",
   "value": "PLEIADES_HTL.name",

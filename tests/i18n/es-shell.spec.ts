@@ -1,9 +1,12 @@
 import {type Page} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
+import {SPANISH_LOCALE,langQuery} from '../fixtures/language';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
+// Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
+test.use({locale:SPANISH_LOCALE});
 
-// Front ES1 (docs/I18N.md): the shell in Spanish on a `?lang=es-419` preview load (Spanish is hidden until ES-REL, decision 5).
+// Front ES1 (docs/I18N.md): the shell in Spanish in an `es-*` browser (a `?lang=es-419` preview load before ES-REL, decision 5).
 // Spanish strings come from the catalog and the maps, never hard-coded here except the few map texts named below.
 // The untranslated check compares the same shell regions in English and in Spanish: no visible text, accessible name or title
 // may read the same, except the names below that are the same in both languages.
@@ -12,7 +15,7 @@ const SHELL=['.portal-header','.investigation-toolbar','.observatory-heading','.
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
 const asVisitor=(page:Page)=>page.addInitScript(()=>{Object.defineProperty(Navigator.prototype,'webdriver',{configurable:true,get:()=>false});});
 async function open(page:Page,lang:'en'|'es-419',hash='observatory'){
- await page.goto(`/?lang=${lang}#${hash}`);
+ await page.goto(`/${langQuery(lang)}#${hash}`);
  await expect(page.getByRole('heading',{level:1,name:lang==='en'?en['sky.title']:es['sky.title']})).toBeVisible({timeout:15_000});
 }
 /** Visible text nodes, accessible names and titles inside the shell regions, in document order. */
@@ -26,7 +29,7 @@ const shellTexts=(page:Page)=>page.evaluate(regions=>{
  return out;
 },SHELL);
 
-test('a Spanish preview load fetches the Spanish chunk, sets <html lang="es-419"> and the Spanish title; English never fetches it',async({page})=>{
+test('a Spanish browser fetches the Spanish chunk, sets <html lang="es-419"> and the Spanish title; ?lang=en never fetches it',async({page})=>{
  // Front ES-SPLIT: the chunk is the core module virtual:openvireo-i18n/es-419 (served as /@id/__x00__openvireo-i18n/i18n-es-419-core);
  // the whole bundle src/i18n/es/index.ts and the catalog es.json are never fetched, and the home page fetches no area module.
  const requested:string[]=[];page.on('request',r=>{if(/\/src\/i18n\/es\/|openvireo-i18n\/i18n-/.test(r.url()))requested.push(r.url());});
@@ -141,7 +144,7 @@ const FAILURE_EN='Spanish could not be loaded; English is shown. Reload to try a
 const FAILURE_ES='No se pudo cargar el español; se muestra en inglés. Recarga para intentarlo de nuevo.';
 test('a Spanish chunk that fails to load shows English with the bilingual notice',async({page})=>{
  await page.route(/openvireo-i18n\/i18n-es-419-core/,route=>route.abort('failed'));
- await page.goto('/?lang=es-419#observatory');
+ await page.goto('/#observatory');
  await expect(page.getByRole('heading',{level:1,name:en['sky.title']})).toBeVisible({timeout:15_000});
  await expect(page.locator('html')).toHaveAttribute('lang','en');
  const notice=id(page,'language-failure');await expect(notice).toContainText(FAILURE_EN);await expect(notice).toContainText(FAILURE_ES);
@@ -151,7 +154,7 @@ test('a Spanish chunk that does not arrive within 10 s shows English with the no
  let release:(()=>void)|undefined;
  await page.route(/openvireo-i18n\/i18n-es-419-core/,async route=>{await new Promise<void>(resolve=>{release=resolve;});await route.continue().catch(()=>{});});
  await page.clock.install();
- await page.goto('/?lang=es-419#observatory');
+ await page.goto('/#observatory');
  await expect.poll(()=>release!==undefined).toBe(true);
  await expect(page.locator('.investigation-toolbar')).toHaveCount(0);// nothing renders while the chunk is awaited
  await page.clock.runFor(10_000);

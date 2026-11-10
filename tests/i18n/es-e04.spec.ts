@@ -1,5 +1,6 @@
 import {type Page,type Locator} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
+import {SPANISH_LOCALE,langQuery} from '../fixtures/language';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
 import originals from '../../src/i18n/es/originals.json' with {type:'json'};
@@ -9,8 +10,10 @@ import {OBSERVATORY_ES} from '../../src/i18n/es/maps/observatory';
 import {POLISH_ES} from '../../src/i18n/es/maps/polish';
 import {CAMERA_ES} from '../../src/i18n/es/maps/camera';
 import {SOUND_ES} from '../../src/i18n/es/maps/sound';
+// Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
+test.use({locale:SPANISH_LOCALE});
 
-// Front ES6 (docs/I18N.md): exercise E04, Pleiades photometry, in Spanish on a `?lang=es-419` preview load. One walk through the
+// Front ES6 (docs/I18N.md): exercise E04, Pleiades photometry, in Spanish in an `es-*` browser (a `?lang=es-419` preview load before ES-REL). One walk through the
 // student flow runs in English, Spanish and the pseudo-locale: the observatory's exercise list and pointing card, the Pleiades guide,
 // the photometer (activation, sky and target readings through V and B, a running series, the notebook entry, VIREO's Record/Review
 // with Observational Data and its Data Saved, Telescope has Moved! and Data Not Saved! boxes, B−V for two stars, the aperture dialog,
@@ -147,7 +150,7 @@ const STEPS:readonly (readonly [string,(page:Page,lang:Lang)=>Promise<void>])[]=
 async function walk(page:Page,lang:Lang,each:(step:string)=>Promise<void>){
  await page.addInitScript(()=>localStorage.setItem('openvireo.tour.v1','done'));
  await page.clock.install({time:new Date('2026-11-09T12:00:00Z')});page.setDefaultTimeout(20_000);
- await page.goto(`/?lang=${lang}#observatory`);
+ await page.goto(`/${langQuery(lang)}#observatory`);
  await expect(page.locator('html')).toHaveAttribute('lang',lang==='es-419'?'es-419':'en');
  await expect(page.locator('.portal-header nav')).toBeAttached({timeout:20_000});
  for(const [step,run] of STEPS){await run(page,lang);await page.waitForTimeout(200);await each(step);}

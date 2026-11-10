@@ -1,5 +1,6 @@
 import {type Page,type Locator} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
+import {SPANISH_LOCALE,langQuery} from '../fixtures/language';
 import {readFile} from 'node:fs/promises';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
@@ -9,8 +10,10 @@ import {SPECTRAL_RANGE_ES} from '../../src/i18n/es/maps/spectralRange';
 import {OBSERVATORY_ES} from '../../src/i18n/es/maps/observatory';
 import {POLISH_ES} from '../../src/i18n/es/maps/polish';
 import {enterInstructorMode} from '../fixtures/instructor-mode';
+// Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
+test.use({locale:SPANISH_LOCALE});
 
-// Front ES4 (docs/I18N.md): exercise E02, Large-Scale Structure, in Spanish on a `?lang=es-419` preview load. One walk through the
+// Front ES4 (docs/I18N.md): exercise E02, Large-Scale Structure, in Spanish in an `es-*` browser (a `?lang=es-419` preview load before ES-REL). One walk through the
 // whole student flow runs in English, Spanish and the pseudo-locale: the LSS guide, the survey (field list, row statuses, pointing,
 // exposure, the measurement panel, Record Z and VIREO's Measured Redshift Data with its refusal and its Z Measurement Saved box,
 // Save Data (.TXT)), the wedge with the student's own records (Options, the Load Saved Data prompts and notices, a selected row,
@@ -130,7 +133,7 @@ const STEPS:readonly (readonly [string,(page:Page,lang:Lang,c:Context)=>Promise<
 async function walk(page:Page,lang:Lang,each:(step:string)=>Promise<void>){
  await page.addInitScript(()=>localStorage.setItem('openvireo.tour.v1','done'));
  await page.clock.install({time:new Date('2026-11-09T12:00:00Z')});page.setDefaultTimeout(20_000);
- await page.goto(`/?lang=${lang}#lss-survey`);
+ await page.goto(`/${langQuery(lang)}#lss-survey`);
  await expect(page.locator('html')).toHaveAttribute('lang',lang==='es-419'?'es-419':'en');
  await expect(page.locator('.portal-header nav')).toBeAttached({timeout:20_000});
  const c:Context={};
@@ -243,7 +246,7 @@ test('Spanish: every VIREO caption in the E02 walk is its Spanish original; Engl
 for(const original of [false,true])test(`the LSS fields file error box ${original?'follows View original (English)':'reads in Spanish'}`,async({page})=>{
  await page.addInitScript(on=>{localStorage.setItem('openvireo.tour.v1','done');if(on)localStorage.setItem('openvireo-vireo-originals','1');},original);
  await page.route('**/original/hotlists/LSSFields.LST*',r=>r.abort());
- await page.goto('/?lang=es-419#lss-survey');await expect(page.locator('html')).toHaveAttribute('lang','es-419');
+ await page.goto('/#lss-survey');await expect(page.locator('html')).toHaveAttribute('lang','es-419');
  const box=id(page,'lss-fields-error');await expect(box).toBeVisible({timeout:30_000});
  const T=(t:string)=>original?t:O[t];
  await expect(box.locator('strong')).toHaveText(T('File Error!'));

@@ -1,5 +1,6 @@
 import {type Browser,type Locator,type Page} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
+import {contextLocale,contextQuery} from '../fixtures/language';
 import {readFile} from 'node:fs/promises';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
@@ -46,7 +47,7 @@ const NOW=new Date('2026-11-02T15:04:05.678Z');
 
 async function open(page:Page,locale:Locale,hash:string,clock:'fixed'|'real'='fixed'){
  if(clock==='fixed')await page.clock.setFixedTime(NOW);
- await page.goto(`/${locale==='en'?'':`?lang=${locale}`}#${hash}`);
+ await page.goto(`/${contextQuery(locale)}#${hash}`);
  await expect(page.locator('html')).toHaveAttribute('lang',locale==='es-419'?'es-419':'en');
  if(locale==='qps')await expect.poll(()=>page.title()).toMatch(/^⟦/);
  const skip=page.getByRole('button',{name:N(locale,'Skip the tour')});// the first-visit tour (translated since ES1)
@@ -64,7 +65,7 @@ async function identical(browser:Browser,baseURL:string|undefined,flow:(page:Pag
  locales:readonly Locale[]=['en','qps']){
  const results:Partial<Record<Locale,Record<string,File>>>={};
  for(const locale of locales){
-  const context=await browser.newContext({baseURL,locale:'en-US',viewport:{width:1440,height:1050}}),page=await context.newPage();page.setDefaultTimeout(20_000);
+  const context=await browser.newContext({baseURL,locale:contextLocale(locale),viewport:{width:1440,height:1050}}),page=await context.newPage();page.setDefaultTimeout(20_000);
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
   try{
    results[locale]=await flow(page,locale);
@@ -140,7 +141,7 @@ test('E01 measurement through Observational Data: measurement CSV, session, resu
  await identical(browser,baseURL,async(page,locale)=>{
   page.setDefaultTimeout(30_000);
   await page.clock.install({time:NOW});
-  await page.goto(`/${locale==='en'?'':`?lang=${locale}`}#galaxy-exposure`);
+  await page.goto(`/${contextQuery(locale)}#galaxy-exposure`);
   const skip=page.getByRole('button',{name:N(locale,'Skip the tour')});if(await skip.isVisible().catch(()=>false))await skip.click();
   await page.getByLabel(N(locale,'Acquisition galaxy')).selectOption('36747');
   await button(page,'Activate supported galaxy field',locale).click();
@@ -193,7 +194,7 @@ test('E03 classification: session, CSV, width record, investigations, observatio
   const save=async(click:()=>Promise<void>)=>{await paceDownload(page);return download(page,click);};const B=(name:string)=>button(page,name,locale),F=(name:string)=>page.getByLabel(N(locale,name));
   await page.clock.install({time:NOW});
   // The classification route loads (lazily, with its spectra) while the clock still runs; then the clock is paused for good.
-  await page.goto(`/${locale==='en'?'':`?lang=${locale}`}#classification`);
+  await page.goto(`/${contextQuery(locale)}#classification`);
   const skip=page.getByRole('button',{name:N(locale,'Skip the tour')});if(await skip.isVisible().catch(()=>false))await skip.click();
   await expect(B('Review classification')).toBeEnabled({timeout:30_000});
   await page.evaluate(()=>{location.hash='#star-exposure';});
@@ -307,7 +308,7 @@ test('pulsar analysis: the results CSV of two recorded measurements',async({brow
 test('star spectrometer: Save spectrum (.SSP) of a paused exposure',async({browser,baseURL})=>{
  await identical(browser,baseURL,async(page,locale)=>{
   await page.clock.install({time:NOW});
-  await page.goto(`/${locale==='en'?'':`?lang=${locale}`}#spectrometer`);
+  await page.goto(`/${contextQuery(locale)}#spectrometer`);
   await page.getByRole('link',{name:N(locale,'Open supported star exposure')}).click();
   await button(page,'Activate supported star field',locale).click();await expect(page.getByTestId('star-phase')).toHaveText(N(locale,'Ready / paused'));
   await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));await button(page,'Start star exposure',locale).click();
@@ -329,7 +330,7 @@ test('E01 exposures: galaxy, sky and star counts CSV and session JSON',async({br
  };
  await identical(browser,baseURL,async(page,locale)=>{
   await page.clock.install({time:NOW});
-  await page.goto(`/${locale==='en'?'':`?lang=${locale}`}#galaxy-exposure`);
+  await page.goto(`/${contextQuery(locale)}#galaxy-exposure`);
   await run(page,locale,'Activate supported galaxy field','Start galaxy exposure');
   const galaxyCsv=await download(page,()=>button(page,'Save galaxy counts CSV',locale).click());
   const galaxyJson=await download(page,()=>button(page,'Save galaxy session JSON',locale).click());
@@ -352,7 +353,7 @@ test('field spectrometer: Save counts CSV and Save exposure session at a free po
  await identical(browser,baseURL,async(page,locale)=>{
   page.setDefaultTimeout(90_000);
   await page.clock.install({time:NOW});
-  await page.goto(`/${locale==='en'?'':`?lang=${locale}`}#observatory`);
+  await page.goto(`/${contextQuery(locale)}#observatory`);
   const skip=page.getByRole('button',{name:N(locale,'Skip the tour')});if(await skip.isVisible().catch(()=>false))await skip.click();
   await button(page,'Open dome ↗',locale).click();
   if(!await page.locator('#point-ra').isVisible())await page.getByText(N(locale,'Enter coordinates')).click();
@@ -383,7 +384,7 @@ test('CCD camera: Save image (FITS) and Save image (VIREO header) from the recor
  await identical(browser,baseURL,async(page,locale)=>{
   await page.route(/vizier\.cds\.unistra\.fr|vizier\.cfa\.harvard\.edu|vizier\.idia\.ac\.za|cdsarc|unistra\.fr/,route=>route.fulfill({status:200,contentType:'text/xml',body:recorded}));
   await fixedRandom(page);await page.clock.install({time:NOW});
-  await page.goto(`/${locale==='en'?'':`?lang=${locale}`}#observatory`);
+  await page.goto(`/${contextQuery(locale)}#observatory`);
   const skip=page.getByRole('button',{name:N(locale,'Skip the tour')});if(await skip.isVisible().catch(()=>false))await skip.click();
   await button(page,'Open dome ↗',locale).click();await page.getByLabel(N(locale,'Target')).selectOption('N0000.DAT@14428');
   await button(page,'Point telescope ↗',locale).click();await button(page,'Switch to telescope view ↗',locale).click();
@@ -407,7 +408,7 @@ test('radio telescope: Download capture as .PLR of a model-generated recording',
  const tool=(page:Page,name:string)=>page.locator('.portal-header nav').getByRole('button',{name:L(name)});
  await identical(browser,baseURL,async(page,locale)=>{
   await page.clock.install({time:new Date('2026-10-24T00:00:00Z')});
-  await page.goto(`/${locale==='qps'?'?lang=qps':''}#pulsar-analysis`);await expect(id(page,'pulsar-none')).toBeVisible();
+  await page.goto(`/${contextQuery(locale)}#pulsar-analysis`);await expect(id(page,'pulsar-none')).toBeVisible();
   await tool(page,'Radio telescope').click();await expect(id(page,'radio-exercise')).toBeVisible();
   await page.clock.pauseAt(new Date('2026-10-24T00:10:00Z'));await flush(page);
   await id(page,'radio-exercise').click();await id(page,'radio-env-compiled').click();await id(page,'radio-access').click();await id(page,'radio-timer-deliver').click();
@@ -429,7 +430,7 @@ test('radio telescope: Download capture as .PLR of a model-generated recording',
 });
 
 // Front ES1: the shell is translated, and its toolbar's Save investigation writes a file, so this family also runs in Spanish
-// (es-419, the `?lang=es-419` preview). The three downloads must be byte-identical (decision 3: files stay English).
+// (es-419: an es-MX browser since ES-REL, the `?lang=es-419` preview before it). The three downloads must be byte-identical (decision 3: files stay English).
 // Front ES4: exercise E02. On the LSS survey a student saves the exposure's counts CSV and session JSON, the acquired spectrum
 // (.SSP), the results CSV and VIREO's results .TXT (Save Data), the whole investigation with the survey and its description, and,
 // after Plot, the wedge's points CSV; the wedge then reads the saved .TXT back (Load Saved Data) and writes its CSV again. With
@@ -441,7 +442,7 @@ test('E02 LSS survey and wedge: counts CSV, session, SSP, results CSV and TXT, i
  await identical(browser,baseURL,async(page,locale)=>{
   page.setDefaultTimeout(30_000);
   await page.clock.install({time:NOW});
-  await page.goto(`/${locale==='en'?'':`?lang=${locale}`}#lss-survey`);
+  await page.goto(`/${contextQuery(locale)}#lss-survey`);
   const skip=page.getByRole('button',{name:N(locale,'Skip the tour')});if(await skip.isVisible().catch(()=>false))await skip.click();
   await expect(page.locator('#lss-field')).toBeEnabled({timeout:30_000});await page.locator('#lss-field').selectOption('1');
   await button(page,'Load selected list',locale).click();await expect(page.getByTestId('lss-rows')).toBeVisible({timeout:30_000});
@@ -485,10 +486,10 @@ test('E02 LSS survey and wedge: counts CSV, session, SSP, results CSV and TXT, i
 test('the shell toolbar: Save investigation is byte-identical in English, qps and Spanish',async({browser,baseURL})=>{
  const files:Record<string,File>={};
  for(const locale of ['en','qps','es-419'] as const){
-  const context=await browser.newContext({baseURL,locale:'en-US',viewport:{width:1440,height:1050}}),page=await context.newPage();page.setDefaultTimeout(20_000);
+  const context=await browser.newContext({baseURL,locale:contextLocale(locale),viewport:{width:1440,height:1050}}),page=await context.newPage();page.setDefaultTimeout(20_000);
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
   try{
-   await page.clock.setFixedTime(NOW);await page.goto(`/?lang=${locale}#observatory`);
+   await page.clock.setFixedTime(NOW);await page.goto(`/${contextQuery(locale)}#observatory`);
    const toolbar=page.locator('.investigation-toolbar');await expect(toolbar).toBeVisible({timeout:15_000});
    if(locale==='qps')await expect(toolbar,'the pseudo-locale applied').toContainText('⟦');
    if(locale==='es-419'){await expect(page.locator('html')).toHaveAttribute('lang','es-419');await expect(toolbar).toContainText(es['project.title']);}
@@ -550,7 +551,7 @@ test('radio telescope (ES8a): raw capture .PLR, native Save Recorded Measurement
  await identical(browser,baseURL,async(page,locale)=>{
   await page.addInitScript(()=>localStorage.setItem('openvireo.tour.v1','done'));
   await page.clock.install({time:new Date('2026-10-24T00:00:00Z')});
-  const lang=locale==='en'?'':`?lang=${locale}`;
+  const lang=contextQuery(locale);
   await page.goto(`/${lang}#pulsar-analysis`);await expect(id(page,'pulsar-none')).toBeVisible({timeout:20_000});
   await page.goto(`/${lang}#radio-control`);await expect(id(page,'radio-exercise')).toBeVisible({timeout:20_000});
   await expect(page.locator('html')).toHaveAttribute('lang',locale==='es-419'?'es-419':'en');
@@ -636,7 +637,7 @@ test('E08 Object X and the CCD camera: spectrum CSV and SSP, image FITS, camera 
   const lab=page.getByTestId('objectx-lab'),B=(english:string,spanish:string)=>lab.getByRole('button',{name:NX(locale,english,spanish)});
   await page.route(/vizier\.cds\.unistra\.fr|vizier\.cfa\.harvard\.edu|vizier\.idia\.ac\.za|cdsarc|unistra\.fr/,route=>route.fulfill({status:200,contentType:'text/xml',body:recorded}));
   await fixedRandom(page);await page.clock.install({time:NOW});
-  await page.goto(`/${locale==='en'?'':`?lang=${locale}`}#object-x`);
+  await page.goto(`/${contextQuery(locale)}#object-x`);
   const skip=page.getByRole('button',{name:N(locale,'Skip the tour')});if(await skip.isVisible().catch(()=>false))await skip.click();
   await expect(page.getByTestId('objectx-target').locator('option')).toHaveCount(18,{timeout:30_000});
   await lab.getByLabel(NX(locale,'ID # of your unknown object (from the lab sheet or instructor)',LS.idLabel)).fill('42');

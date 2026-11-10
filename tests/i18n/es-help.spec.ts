@@ -1,12 +1,15 @@
 import {type Page} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
+import {SPANISH_LOCALE} from '../fixtures/language';
 import {readFileSync} from 'node:fs';
 import witness from '../../src/help/helpAll.witness.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import {HELP_VIEWER_ES} from '../../src/i18n/es/maps/helpViewer';
+// Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
+test.use({locale:SPANISH_LOCALE});
 
-// Front ES-HELP (docs/I18N.md): VIREO's help files in Spanish on a `?lang=es-419` preview load. Every window's Help opens the
+// Front ES-HELP (docs/I18N.md): VIREO's help files in Spanish in an `es-*` browser (a `?lang=es-419` preview load before ES-REL). Every window's Help opens the
 // translation (a web adaptation, labelled as such), "Ver original (inglés)" shows VIREO's exact English (the bundled file's own
 // rows and text), the translation's search ignores accents, the Spectral Line Table is Spanish, and the windows fit at 320 and
 // 1440 px. Run under a DejaVu-only fontconfig for the layout checks (see the ES-HELP section of docs/I18N.md).
@@ -27,7 +30,7 @@ test('every instrument window opens its help in Spanish, and "Ver original (ingl
  test.setTimeout(120000);
  for(const [route,prefix,list] of WINDOWS){
   await page.goto('about:blank');// a hash-only change would keep the previous window's open dialog
-  await page.goto(`/?lang=es-419${route}`);
+  await page.goto(`/${route}`);
   if(prefix==='cluster-help'){// the cluster window's Help needs a loaded dataset (tests/cluster-hr-help.spec.ts)
    const lab=page.locator('.cluster-database-lab');
    await lab.getByLabel(tr('db.choose'),{exact:true}).selectOption('m67');await lab.getByRole('button',{name:tr('db.load'),exact:true}).click();
@@ -58,7 +61,7 @@ test('every instrument window opens its help in Spanish, and "Ver original (ingl
 });
 
 test('the radio Help menu opens PULSRHLP in Spanish, and its original is VIREO\'s',async({page})=>{
- await page.goto('/?lang=es-419#radio-control');
+ await page.goto('/#radio-control');
  await id(page,'radio-exercise').click();await id(page,'radio-env-compiled').click();await id(page,'radio-access').click();await id(page,'radio-timer-deliver').click();
  await id(page,'radio-switch').click();await expect(id(page,'radio-panel-window')).toBeVisible();
  await id(page,'radio-help-menu').click();await id(page,'radio-help-menu-topics').click();
@@ -70,7 +73,7 @@ test('the radio Help menu opens PULSRHLP in Spanish, and its original is VIREO\'
 });
 
 test('File › Exit Observatory shows the reminder in Spanish, and its original is VIREO\'s exact box text',async({page})=>{
- await page.goto('/?lang=es-419#observatory');
+ await page.goto('/#observatory');
  await id(page,'fi-file-menu').click({timeout:20000});await id(page,'ob-exit').click();
  const box=id(page,'exit-reminder'),text=id(page,'exit-reminder-text');
  await expect(box.getByRole('heading',{name:'** ¿Ejercicio terminado? **'})).toBeVisible();
@@ -86,7 +89,7 @@ test('File › Exit Observatory shows the reminder in Spanish, and its original 
 
 test('a translation that cannot be loaded falls back to VIREO\'s original and says so (review S1)',async({page})=>{
  await page.route(/\/i18n\/es\/help\/CLASSHLP\.LST\.ts/,r=>r.abort());
- await page.goto('/?lang=es-419#classification');
+ await page.goto('/#classification');
  await id(page,'class-help-open').click({timeout:20000});
  await expect(id(page,'class-help-topics-translation-error')).toHaveText(HELP_VIEWER_ES.translationError);
  const rows=id(page,'class-help-topic-list').getByRole('option');
@@ -96,7 +99,7 @@ test('a translation that cannot be loaded falls back to VIREO\'s original and sa
 });
 
 test('the original view shows the bundled file\'s own text, and the translation comes back',async({page})=>{
- await page.goto('/?lang=es-419#classification');
+ await page.goto('/#classification');
  await id(page,'class-help-open').click();
  await id(page,'class-help-topic-list').getByRole('option').nth(1).dblclick();
  await expect(id(page,'class-help-window')).toBeVisible();
@@ -114,7 +117,7 @@ test('the original view shows the bundled file\'s own text, and the translation 
 });
 
 test('the translation\'s search ignores accents; the original keeps VIREO\'s rule',async({page})=>{
- await page.goto('/?lang=es-419#classification');
+ await page.goto('/#classification');
  await id(page,'class-help-open').click();
  await id(page,'class-help-topic-list').getByRole('option',{name:/Medir y marcar/}).dblclick();
  await id(page,'class-help-topic-menu').click();await id(page,'class-help-search-text').click();
@@ -137,7 +140,7 @@ test('the translation\'s search ignores accents; the original keeps VIREO\'s rul
 });
 
 test('the Spectral Line Table is Spanish, with its help, and the original view is VIREO\'s English',async({page})=>{
- await page.goto('/?lang=es-419#classification');
+ await page.goto('/#classification');
  await id(page,'spl-open').click();
  const rows=id(page,'spl-rows').getByRole('option');
  await expect(rows).toHaveCount(30);await expect(rows.first()).toHaveText('3759.87   O III');
@@ -154,7 +157,7 @@ test('the Spectral Line Table is Spanish, with its help, and the original view i
 });
 
 test('OpenVireo\'s own help opens in Spanish',async({page})=>{
- await page.goto('/?lang=es-419');
+ await page.goto('/');
  await id(page,'main-help-menu').click();await id(page,'main-help-web').click();
  const dialog=id(page,'web-help');
  await expect(dialog.getByRole('heading',{name:'Ayuda de OpenVireo',level:2})).toBeVisible();
@@ -165,7 +168,7 @@ test('OpenVireo\'s own help opens in Spanish',async({page})=>{
 
 for(const width of [320,1440])test(`help windows fit at ${width} px`,async({page})=>{
  await page.setViewportSize({width,height:width===320?700:1050});
- await page.goto('/?lang=es-419#classification');
+ await page.goto('/#classification');
  await id(page,'class-help-open').click();
  await id(page,'class-help-topic-list').getByRole('option',{name:/Controles/}).dblclick();
  await expect(id(page,'class-help-window')).toBeVisible();

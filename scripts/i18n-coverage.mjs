@@ -22,5 +22,9 @@ const ids=[];(function scan(dir){for(const item of readdirSync(dir,{withFileType
  if(/\.ts$/.test(item.name)&&!/\.test\.ts$/.test(item.name)&&!file.includes(`${path.sep}i18n${path.sep}`))for(const m of readFileSync(file,'utf8').matchAll(/pickMessages\('([\w-]+)'/g))ids.push(m[1]);}})(path.join(root,'src'));
 const started=ids.filter(id=>existsSync(path.join(es,'maps',`${id}.ts`)));
 console.log(`*Messages.ts maps: ${started.length}/${ids.length} started (${pct(started.length,ids.length)}); started: ${started.sort().join(', ')}`);
-const receipts=json(path.join(root,'src/i18n/vireo-literals.json'),[]),pending=receipts.filter(r=>r.reason.startsWith('pending-translation')).reduce((n,r)=>n+r.count,0);
-console.log(`VIREO originals: ${Object.keys(originals).length} translated; ${pending} render sites or module literals still pending (src/i18n/vireo-literals.json)`);
+// Front ES-REL: the receipts of the sites that render a VIREO literal outside vireo() by design are counted by reason, apart from
+// the ones still pending translation (none since ES-REL; src/i18n/vireoAudit.test.ts fails on any).
+const receipts=json(path.join(root,'src/i18n/vireo-literals.json'),[]),sum=(rows)=>rows.reduce((n,r)=>n+r.count,0);
+const pending=sum(receipts.filter(r=>r.reason.startsWith('pending-translation'))),byDesign=new Map();
+for(const r of receipts)if(!r.reason.startsWith('pending-translation')){const reason=r.reason.split(':')[0];byDesign.set(reason,(byDesign.get(reason)??0)+r.count);}
+console.log(`VIREO originals: ${Object.keys(originals).length} translated; ${pending} render sites or module literals still pending; receipted outside vireo() by design: ${[...byDesign].map(([reason,n])=>`${n} ${reason}`).join(', ')||'none'} (src/i18n/vireo-literals.json)`);

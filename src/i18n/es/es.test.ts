@@ -155,15 +155,20 @@ describe('Front ES1 review 1: the lint catches what it must',()=>{
  });
 });
 describe('Front ES1: the Spanish (es-419) catalog, maps and originals',()=>{
- it('the catalog is a valid partial catalog: known keys, the same {params}, strings only (fallback mode until ES-REL)',()=>{
-  expect(()=>createI18n(es,'es-419',{fallback:true,numberLocale:'en-US'})).not.toThrow();
+ it('Front ES-REL: the catalog is complete and strict: every en.json key, the same {params}, strings only, no extra key',()=>{
+  // Strict mode (no fallback) is what createI18n checks at compile time. The split bundle still builds each module with the
+  // English fallback (src/i18n/active.ts), so this static check is where strictness lives (docs/I18N.md, ES-REL).
+  expect(()=>createI18n(es as Record<MessageKey,string>,'es-419')).not.toThrow();
+  expect(Object.keys(en).filter(k=>!Object.hasOwn(es,k))).toEqual([]);
   for(const key of Object.keys(es))expect(Object.hasOwn(en,key),key).toBe(true);
  });
- it('every map has the English shape: the same keys, kinds, {params} and arities (complete for the shell maps)',()=>{
+ it('Front ES-REL: every pickMessages id has a complete Spanish map with the English shape (keys, kinds, {params}, arities)',()=>{
   for(const id of Object.keys(SPANISH.maps??{}))expect(MAP_IDS,id).toContain(id);
+  expect(MAP_IDS.filter(id=>!Object.hasOwn(SPANISH.maps??{},id))).toEqual([]);
+  expect(MAP_IDS.filter(id=>!COMPLETE_MAPS.includes(id))).toEqual([]);
   for(const [id,map] of Object.entries(SPANISH.maps??{})){
    const english=ENGLISH_MAPS[id as MapId];expect(english,`${id}: English map registered in this test`).toBeDefined();
-   expect(mapParity(english,map,'$',{partial:!COMPLETE_MAPS.includes(id as MapId)}),id).toEqual([]);
+   expect(mapParity(english,map),id).toEqual([]);
   }
  });
  it('originals are keyed by a normalised literal that exists in the source, so stale keys fail',()=>{

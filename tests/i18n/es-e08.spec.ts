@@ -1,5 +1,6 @@
 import {type Page,type Locator} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
+import {SPANISH_LOCALE,langQuery} from '../fixtures/language';
 import {readFile} from 'node:fs/promises';
 import {readFileSync} from 'node:fs';
 import {syntheticFits} from '../fixtures/fits';
@@ -11,8 +12,10 @@ import {OBJECT_X_LAB_ES} from '../../src/i18n/es/maps/objectXLab';
 import {OBJECT_X_MEASURE_ES} from '../../src/i18n/es/maps/objectXMeasure';
 import {CAMERA_ES} from '../../src/i18n/es/maps/camera';
 import {SOUND_ES} from '../../src/i18n/es/maps/sound';
+// Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
+test.use({locale:SPANISH_LOCALE});
 
-// Front ES9 (docs/I18N.md): exercise E08, Object X, and the CCD/IR camera in Spanish on a `?lang=es-419` preview load. One walk
+// Front ES9 (docs/I18N.md): exercise E08, Object X, and the CCD/IR camera in Spanish in an `es-*` browser (a `?lang=es-419` preview load before ES-REL). One walk
 // through the student flow runs in English, Spanish and the pseudo-locale: the Object X guide, the lab (ID, code, the reveal
 // refusal, the date refusal, the spectrometer with a kept spectrum and the neutral unavailable message, the clock and the asteroid
 // list), the observatory with the CCD camera (live VizieR replaced by the recorded CDS response, two images 45 minutes apart),
@@ -204,7 +207,7 @@ async function walk(page:Page,lang:Lang,each:(step:string,root:string)=>Promise<
  const body=await RECORDED_VIZIER;await page.route(CDS,route=>route.fulfill({status:200,contentType:'text/xml',body}));
  await page.addInitScript(()=>localStorage.setItem('openvireo.tour.v1','done'));
  await page.clock.install({time:new Date('2026-11-09T12:00:00Z')});page.setDefaultTimeout(30_000);
- await page.goto(`/?lang=${lang}#object-x`);
+ await page.goto(`/${langQuery(lang)}#object-x`);
  await expect(page.locator('html')).toHaveAttribute('lang',lang==='es-419'?'es-419':'en');
  await expect(page.locator('.portal-header nav')).toBeAttached({timeout:20_000});
  await expect(lab(page)).toBeVisible({timeout:30_000});
@@ -250,7 +253,7 @@ test('Spanish: before the reveal the Object X route reads the same for a star ta
  test.setTimeout(240_000);await page.setViewportSize({width:1440,height:1000});
  const body=await RECORDED_VIZIER;await page.route(CDS,route=>route.fulfill({status:200,contentType:'text/xml',body}));
  await page.addInitScript(()=>localStorage.setItem('openvireo.tour.v1','done'));
- await page.goto('/?lang=es-419#object-x');await expect(id(page,'objectx-target').locator('option')).toHaveCount(18,{timeout:30_000});
+ await page.goto('/#object-x');await expect(id(page,'objectx-target').locator('option')).toHaveCount(18,{timeout:30_000});
  await lab(page).getByLabel(exact(LS.idLabel)).fill('42');
  const read=async(code:string)=>{
   await go(page,'#object-x');await id(page,'objectx-target').selectOption(code);await expect(id(page,'objectx-coordinates')).toContainText(code);

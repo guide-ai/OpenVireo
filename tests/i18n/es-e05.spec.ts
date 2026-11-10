@@ -1,13 +1,16 @@
 import {type Page,type Locator} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
+import {SPANISH_LOCALE,langQuery} from '../fixtures/language';
 import {writeFileSync} from 'node:fs';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
 import comparison from '../../data/photometry/cluster-comparison-contract.json' with {type:'json'};
 import {CLUSTER_HR_ES} from '../../src/i18n/es/maps/clusterHr';
 import originals from '../../src/i18n/es/originals.json' with {type:'json'};
+// Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
+test.use({locale:SPANISH_LOCALE});
 
-// Front ES7 (docs/I18N.md): exercise E05, the cluster HR diagram and variable stars, in Spanish on a `?lang=es-419` preview load. One
+// Front ES7 (docs/I18N.md): exercise E05, the cluster HR diagram and variable stars, in Spanish in an `es-*` browser (a `?lang=es-419` preview load before ES-REL). One
 // walk runs in English, Spanish and the pseudo-locale over the cluster guide, the reference database lab (dataset, point
 // inspection, Possible Cluster Member, Select Cluster Data, Display/Print Data, exclusions, the native ZAMS/isochrone fit, the
 // parameter report and its print preview, the help viewer), the own-observation HR panel, the saved-observation HR tool with
@@ -136,7 +139,7 @@ const STEPS:readonly (readonly [string,(page:Page,lang:Lang)=>Promise<void>])[]=
  ['light curve',async(page)=>{await id(page,'variable-print-close').click();await expect(id(page,'variable-print-preview')).toHaveCount(0);await id(page,'vstar-data-menu').click();await id(page,'vstar-display-curve').click();await expect(id(page,'light-curve-window')).toBeVisible();await id(page,'curve-file-menu').click();}],
  ['light curve print preview',async(page)=>{await id(page,'curve-print').click();await expect(id(page,'variable-print-preview')).toBeVisible();await page.locator('[data-testid=variable-print-orientation] input').last().check();}],
  // File › Cluster Data… (Front K) on the observatory route: the dialog, VIREO's study list, the field report and its boxes.
- ['Cluster Data dialog',async(page,lang)=>{await page.goto(`/?lang=${lang}#observatory`);await expect(page.locator('.sky-card .card-heading > button')).toBeVisible({timeout:30_000});await page.locator('.sky-card .card-heading > button').click();await id(page,'fi-file-menu').click();await id(page,'cluster-data-menu').click();await expect(id(page,'cd-dialog')).toBeVisible();await id(page,'cd-file').click();}],
+ ['Cluster Data dialog',async(page,lang)=>{await page.goto(`/${langQuery(lang)}#observatory`);await expect(page.locator('.sky-card .card-heading > button')).toBeVisible({timeout:30_000});await page.locator('.sky-card .card-heading > button').click();await id(page,'fi-file-menu').click();await id(page,'cluster-data-menu').click();await expect(id(page,'cd-dialog')).toBeVisible();await id(page,'cd-file').click();}],
  ['Cluster Data study list',async(page)=>{await id(page,'cd-view-select').click();await expect(id(page,'cd-study-list')).toBeVisible();await id(page,'cd-study-selection-menu').click();}],
  ['Cluster Data report',async(page)=>{await page.keyboard.press('Escape');await id(page,'cd-study-lines').getByText('NGC 752',{exact:false}).first().dblclick();await expect(id(page,'cd-study-list')).toHaveCount(0);await id(page,'cd-ok').click();await expect(id(page,'cluster-data-lines')).toBeVisible({timeout:30_000});await id(page,'cluster-data-line-7').click();await id(page,'cluster-data-selection-menu').click();}],
  ['Cluster Data added to hot list',async(page)=>{await id(page,'cluster-data-add').click();await expect(id(page,'fi-box')).toBeVisible();}],
@@ -150,7 +153,7 @@ const STEPS:readonly (readonly [string,(page:Page,lang:Lang)=>Promise<void>])[]=
 async function walk(page:Page,lang:Lang,each:(step:string)=>Promise<void>){
  await page.addInitScript(()=>localStorage.setItem('openvireo.tour.v1','done'));
  await page.clock.install({time:new Date('2026-11-09T12:00:00Z')});page.setDefaultTimeout(20_000);
- await page.goto(`/?lang=${lang}#cluster-database`);
+ await page.goto(`/${langQuery(lang)}#cluster-database`);
  await expect(page.locator('html')).toHaveAttribute('lang',lang==='es-419'?'es-419':'en');
  await expect(page.locator('.portal-header nav')).toBeAttached({timeout:20_000});
  await expect(main(page)).toBeVisible({timeout:30_000});

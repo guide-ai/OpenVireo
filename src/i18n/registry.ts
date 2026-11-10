@@ -64,7 +64,8 @@ export function resolveMessages<K extends MapId>(id:K,english:MessageMaps[K]):Me
  if(bundle.maps&&Object.hasOwn(bundle.maps,id)){
   const own=bundle.maps[id];
   if(!mapParity(english,own).length)return own as MessageMaps[K];
-  // Before ES-REL a Spanish map may be partial (the sub-fronts merged so far); its missing strings stay English.
+  // Before ES-REL a Spanish map could be partial (the sub-fronts merged so far); its missing strings stayed English. Since ES-REL
+  // a Spanish map must be complete (src/i18n/es/es.test.ts checks every map id statically).
   const partial=bundle.language==='es-419'&&!SPANISH_RELEASED,problems=mapParity(english,own,'$',{partial});
   if(!problems.length)return completeWithEnglish(english,own);
   const message=`OpenVireo: the ${bundle.language} map "${id}" does not match the English map (${problems.slice(0,5).join('; ')}); English is used.`;
