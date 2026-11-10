@@ -27,7 +27,7 @@ program. The goal is to be the first result for CLEA, VIREO and each lab name, n
   and crawlable text with links to every lab inside `#root`, which React replaces when it starts. The observatory footer links to
   `/labs/` ("About the seven labs") in a new tab, so unsaved work stays.
 - **Files**: `sitemap.xml` (generated from the same list), `robots.txt` (allows everything and names the sitemap; Cloudflare adds
-  its managed AI-crawler rules above it), `favicon.svg`, `apple-touch-icon.png` and `og-image.png` (1200×630, an original
+  its managed AI-crawler rules above it), `favicon.svg`, `favicon.ico` (16, 32 and 48 px renderings of `favicon.svg`, only for browsers and crawlers that request `/favicon.ico` whatever the page declares), `apple-touch-icon.png` and `og-image.png` (1200×630, an original
   design rendered with Playwright; no CLEA image is used).
 - **Headers**: `/labs/*`, `/sitemap.xml` and `/robots.txt` are `no-cache`, like the page. JSON-LD blocks are data and are never
   run, so the Content-Security-Policy needs no new entry; `src/deployHeaders.test.ts` now counts only runnable inline scripts.
