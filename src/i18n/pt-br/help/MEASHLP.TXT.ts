@@ -10,7 +10,7 @@ Spectrum...) no menu da ferramenta de medição e escolha o arquivo de
 espectro que deseja carregar.
 
 Tópicos relacionados:
-    "Salvar espectro para análise" no menu "Ajuda" (Help) do
+    "Salvar o espectro para análise" no menu "Ajuda" (Help) do
     espectrômetro.
 
 **Medir características espectrais individuais**
@@ -134,13 +134,13 @@ Para ampliar um espectro que você está medindo, pressione o botão
 "Zoom". Aparece uma caixa com controles deslizantes que permite
 definir a faixa de comprimentos de onda exibida na janela de medição.
 Os controles deslizantes mudam os comprimentos de onda em passos de
-100 Angstroms. O botão "Redefinir" (Reset) devolve a exibição à faixa
+100 angstroms. O botão "Redefinir" (Reset) devolve a exibição à faixa
 de comprimentos de onda original (completa).
 
 Quando a exibição está ampliada, as setas de deslocamento abaixo do
 botão de zoom são habilitadas. Use-as para mudar a parte visível do
 espectro. Como os controles deslizantes, elas operam em passos de 100
-Angstroms.
+angstroms.
 
 Ampliar o espectro permite determinar Z com mais precisão, pois a
 pixelização mais fina dá um passo menor no posicionamento da linha de

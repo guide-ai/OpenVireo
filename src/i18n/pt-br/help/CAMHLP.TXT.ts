@@ -19,9 +19,9 @@ Tópicos relacionados:
 Use o interruptor deslizante de filtros para definir o filtro da
 câmera. A posição rotulada "NF" significa "sem filtro".
 
-    OBSERVAÇÃO: Devido às limitações de tamanho do arquivo de dados,
-    na câmera infravermelha (IR) só está disponível o filtro "J". O
-    controle deslizante não se moverá para as posições "H" e "K".
+    NOTA: Devido às limitações de tamanho do arquivo de dados, na câmera
+    infravermelha (IR) só está disponível o filtro "J". O controle
+    deslizante não se moverá para as posições "H" e "K".
 
 Tópicos relacionados:
     Fazer uma exposição
@@ -78,9 +78,9 @@ algo relacionado ao exercício que está fazendo ou mais significativo
 para você. As imagens são salvas no formato FITS (extensão de arquivo
 padrão ".FIT").
 
-    OBSERVAÇÃO: Se você fechar a janela de controle da câmera ou iniciar
-    uma nova exposição sem salvar a imagem anterior, ela será perdida.
-    Você será avisado se tentar fazer isso.
+    NOTA: Se você fechar a janela de controle da câmera ou iniciar uma
+    nova exposição sem salvar a imagem anterior, ela será perdida. Você
+    será avisado se tentar fazer isso.
 
 Tópicos relacionados:
     Analisar as imagens

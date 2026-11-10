@@ -71,7 +71,7 @@ test(title('every instrument window opens its help in Spanish, and "Ver original
   expect(await id(page,`${prefix}-topic-text`).textContent()).not.toBe(spanishText);
   await id(page,`${prefix}-topic-menu`).click();await window.getByRole('button',{name:new RegExp(`${escape(vireo('Show Help Topics...').replace(/\.\.\.$/,''))}|Show Help Topics`)}).click();
   await expect(rows).toHaveCount(expected.length);await expect(id(page,`${prefix}-topic-list`)).toHaveAttribute('lang','en');
-  expect((await rows.allTextContents()).map(t=>t.replace(/ /g,' ')),list).toEqual(expected.map(r=>r===''?' ':r));
+  expect((await rows.allTextContents()).map(t=>t.replace(/\u00a0/g,' ')),list).toEqual(expected.map(r=>r===''?' ':r));
   await expect(topics).toBeVisible();
  }
 });

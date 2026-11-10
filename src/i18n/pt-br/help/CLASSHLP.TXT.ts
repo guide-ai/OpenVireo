@@ -74,7 +74,7 @@ espectral:
     botão do mouse. As leituras não mudam até que você pressione o
     botão esquerdo do mouse novamente.
 
-        OBSERVAÇÃO:  Se o espectro estiver exibido como um traçado de
+        NOTA:  Se o espectro estiver exibido como um traçado de
         intensidade (veja o tópico de ajuda "Configurar a exibição"),
         a posição vertical (coordenada Y) do cursor determina a
         medição da intensidade. Se a exibição estiver no modo "Foto"
@@ -270,7 +270,7 @@ Tópicos relacionados:
 
 **Definir faixa de comprimento de onda**
 Você pode mudar a faixa de comprimentos de onda visível na janela de
-classificação, dentro do máximo de 3500 a 7400 Angstroms. Para mudar
+classificação, dentro do máximo de 3500 a 7400 angstroms. Para mudar
 a faixa de comprimentos de onda, selecione "Arquivo" (File)->"Exibir"
 (Display)->"Faixa espectral" (Spectral Range) no menu do painel de
 controle de classificação. Use os controles deslizantes para mudar os

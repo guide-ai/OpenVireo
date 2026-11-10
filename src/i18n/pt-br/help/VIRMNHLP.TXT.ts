@@ -185,7 +185,7 @@ ferramenta de classificação espectral, selecione "Ferramentas" (Tools)->
 "Ferramenta de classificação espectral" (Spectral Classification Tool)
 no menu do painel de controle do observatório.
 
-OBSERVAÇÃO: Esta ferramenta não está disponível nos exercícios que não
+NOTA: Esta ferramenta não está disponível nos exercícios que não
 a exigem.
 
 Tópicos relacionados:
@@ -200,7 +200,7 @@ ferramenta de análise de radiopulsares, selecione "Ferramentas"
 (Tools)->"Ferramenta de análise de radiopulsares" (Radio Pulsar
 Analysis Tool) no menu do painel de controle do observatório.
 
-OBSERVAÇÃO: Esta ferramenta não está disponível nos exercícios que não
+NOTA: Esta ferramenta não está disponível nos exercícios que não
 a exigem.
 
 Tópicos relacionados:
@@ -216,7 +216,7 @@ das estrelas do aglomerado. Para acessar a ferramenta de análise do
 diagrama HR, selecione "Ferramentas" (Tools)->"Análise do diagrama HR"
 (HR Diagram Analysis) no menu do painel de controle do observatório.
 
-OBSERVAÇÃO: Esta ferramenta não está disponível nos exercícios que não
+NOTA: Esta ferramenta não está disponível nos exercícios que não
 a exigem.
 
 Tópicos relacionados:
@@ -231,7 +231,7 @@ de espectros, selecione "Ferramentas" (Tools)->"Ferramenta de medição de
 espectros" (Spectrum Measuring Tool) no menu do painel de controle do
 observatório.
 
-OBSERVAÇÃO: Esta ferramenta não está disponível nos exercícios que não
+NOTA: Esta ferramenta não está disponível nos exercícios que não
 a exigem.
 
 Tópicos relacionados:
@@ -246,8 +246,8 @@ acessar a ferramenta do diagrama em cunha LSS, selecione "Ferramentas"
 (Tools)->"Diagrama em cunha LSS" (LSS Wedge Plot) no menu do painel de
 controle do observatório.
 
-OBSERVAÇÃO: Esta ferramenta está disponível apenas no exercício
-"Estrutura em grande escala do universo".
+NOTA: Esta ferramenta está disponível apenas no exercício "Estrutura em
+grande escala do universo".
 
 Tópicos relacionados:
     Tópicos em "Ajuda" no menu da ferramenta do diagrama em cunha.
@@ -262,7 +262,7 @@ asteroides nas imagens. Para acessar o módulo de astrometria, selecione
 "Ferramentas" (Tools)->"Módulo de astrometria" (Astrometry Module) no
 menu do painel de controle do observatório.
 
-OBSERVAÇÃO: Esta ferramenta não está disponível nos exercícios que não
+NOTA: Esta ferramenta não está disponível nos exercícios que não
 a exigem.
 
 Tópicos relacionados:
@@ -288,7 +288,7 @@ carregar arquivos é ".FITS", enquanto os arquivos de imagem gerados pelo
 VIREO têm a extensão ".FIT". Digite "*.FIT" no campo do nome do arquivo
 na janela de abertura de arquivo para ver seus arquivos de imagem.
 
-OBSERVAÇÃO: Esta ferramenta não está disponível nos exercícios que não
+NOTA: Esta ferramenta não está disponível nos exercícios que não
 a exigem.
 
 Tópicos relacionados:
@@ -416,7 +416,7 @@ Guia do usuário para mais detalhes.
  
 **Acesso pelo teclado**
 O VIREO oferece acesso pelo teclado (sem mouse) aos seus recursos (veja
-a OBSERVAÇÃO abaixo). As características gerais do acesso pelo teclado
+a NOTA abaixo). As características gerais do acesso pelo teclado
 são as seguintes:
 
     -Menus-
@@ -452,13 +452,13 @@ são as seguintes:
     fique ativo quando o NumLock estiver desativado ("Off"), para evitar
     um conflito com o uso das teclas de seta do teclado numérico
     (acima). Você não deve precisar do MouseKeys para o acesso pelo
-    teclado aos recursos básicos do VIREO (mas veja a OBSERVAÇÃO
+    teclado aos recursos básicos do VIREO (mas veja a NOTA
     abaixo).
 
-OBSERVAÇÃO: O acesso completo pelo teclado (esperamos) é oferecido nos
+NOTA: O acesso completo pelo teclado (esperamos) é oferecido nos
 recursos do controle principal e do observatório óptico do VIREO. No
 entanto, nesta versão (1.0), os recursos aproveitados de pacotes de
-software anteriores (principalmente os do radioobservatório e os de
+software anteriores (principalmente os do radio-observatório e os de
 astrometria de asteroides) não são totalmente acessíveis pelo teclado,
 embora algumas melhorias tenham sido feitas. Se você quiser usar todos
 os recursos dessas ferramentas pelo teclado, terá de usar o MouseKeys.

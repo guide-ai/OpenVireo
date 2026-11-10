@@ -56,7 +56,7 @@ mudar a abertura são:
         isso, certifique-se de que não haja estrelas na abertura
         contaminando as leituras do céu.
 
-    OBSERVAÇÃO: Se você mudar o tamanho da abertura depois de fazer as
+    NOTA: Se você mudar o tamanho da abertura depois de fazer as
     leituras do céu, as contagens médias do céu por segundo serão
     automaticamente reescaladas para o novo tamanho de abertura na
     determinação das magnitudes.
@@ -76,11 +76,11 @@ correta) por uma inválida, que inclui o objeto. Se isso acontecer, você
 terá de se afastar do objeto e fazer uma leitura do céu válida antes de
 continuar.
 
-    OBSERVAÇÃO: É possível que o interruptor "Leitura" não apareça no
-    painel de controle do fotômetro no exercício "Fotometria
-    fotoelétrica de aglomerados" (Photoelectric Photometry of Clusters).
-    Nesse caso, o programa detecta automaticamente a presença ou a
-    ausência de um objeto na abertura e processa a leitura de acordo.
+    NOTA: É possível que o interruptor "Leitura" não apareça no painel
+    de controle do fotômetro no exercício "Fotometria fotoelétrica de
+    aglomerados" (Photoelectric Photometry of Clusters). Nesse caso, o
+    programa detecta automaticamente a presença ou a ausência de um
+    objeto na abertura e processa a leitura de acordo.
 
 **Fazer leituras do céu**
 Você deve fazer uma leitura do céu através de cada filtro antes de poder
@@ -102,7 +102,7 @@ leituras do céu da seguinte maneira:
         interruptor "Leitura" (Reading) estiver visível, certifique-se
         de que esteja em "Céu" (Sky). Se nenhum interruptor "Leitura"
         aparecer, a caixa rotulada "Objeto" (Object) deve dizer "Céu" se
-        o telescópio estiver bem posicionado, .
+        o telescópio estiver bem posicionado.
 
     3)  Coloque o filtro na cor desejada. (Se já foi feita uma leitura
         do céu com um determinado filtro, a caixa rotulada "Céu médio"
@@ -257,12 +257,12 @@ de variabilidade.) Note que os registros recebem a data juliana com 6
 casas decimais (cerca de 0.1 segundo). Esse é o instante em que foi
 concluída a última medição que você fez (independentemente do filtro).
 
-    OBSERVAÇÃO: Registrar suas leituras dessa maneira as salva
-    internamente para processamento posterior, mas NÃO as grava em um
-    arquivo. Para isso, você deve voltar ao painel de controle do
-    observatório e selecionar "Ferramentas" (Tools)->"Editores de
-    resultados" (Results Editors)->"Resultados de observação"
-    (Observational Results)->"Exibir/imprimir/salvar..."
+    NOTA: Registrar suas leituras dessa maneira as salva internamente
+    para processamento posterior, mas NÃO as grava em um arquivo. Para
+    isso, você deve voltar ao painel de controle do observatório e
+    selecionar "Ferramentas" (Tools)->"Editores de resultados" (Results
+    Editors)->"Resultados de observação" (Observational
+    Results)->"Exibir/imprimir/salvar..."
     (Display/Print/Save...) no menu.
 
 Tópicos relacionados:

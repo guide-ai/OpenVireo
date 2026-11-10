@@ -129,5 +129,5 @@ nível do mar e o fuso horário do local. A abertura e a distância focal
 do telescópio também são mostradas.
 
 Tópicos relacionados:
-    "Alterar o telescópio óptico" em "Ajuda" do painel do observatório
+    "Trocar de telescópio óptico" em "Ajuda" do painel do observatório
 `;

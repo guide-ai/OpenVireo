@@ -10,7 +10,7 @@ registrados e salvos, selecione "Arquivo" (File)->"Carregar..."
 diálogo que aparece.  Os arquivos que contêm dados de pulsares
 registrados devem ter a extensão ".PLR".
 
-OBSERVAÇÃO: Se você abrir a janela de análise de dados logo depois de
+NOTA: Se você abrir a janela de análise de dados logo depois de
 registrar dados de pulsares, os últimos dados registrados aparecerão
 automaticamente na janela de análise de dados, estejam ou não salvos.
 

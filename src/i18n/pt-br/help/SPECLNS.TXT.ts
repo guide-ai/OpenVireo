@@ -77,14 +77,14 @@ em torno de B2
 
 A razão entre esta linha e a Si II 4130
 próxima permite uma discriminação fina
-nesta faixa. O Si é apenas visível em B3
+nesta faixa. O Si é pouco visível em B3
 
 *4130.89   Si II*
 Visível de B2 a A5
 
 A razão entre esta linha e a He I 4121
 próxima permite uma discriminação fina
-nesta faixa. Apenas visível em B3.
+nesta faixa. Pouco visível em B3.
 
 A razão entre esta linha e a He 4144
 próxima permite uma discriminação fina
