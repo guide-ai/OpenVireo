@@ -1,14 +1,12 @@
 import {pickMessages} from '../i18n/registry';
 /** Front ES1 [W]: the language selector and its reload dialog (src/components/LanguageChoice.tsx, docs/I18N.md). Kept out of
- * en.json because the selector is a lazily loaded part: these strings arrive with its chunk, after the first render. The
- * option names are bilingual on purpose so either reader finds them. What the dialog says survives a reload was checked
- * against what the app keeps (ES1 plan item: the risk of lost work): files the visitor saved; in this browser, confirmed
+ * en.json because the selector is a lazily loaded part: these strings arrive with its chunk, after the first render.
+ * Front SC8: the options are each language's own name (its autonym, src/i18n/languages.json), not text of this map.
+ * What the dialog says survives a reload was checked against what the app keeps (ES1 plan item: the risk of lost work): files the visitor saved; in this browser, confirmed
  * observation results (localStorage `openvireo.observation-notebook.v1`) and display preferences (theme, menu sections,
  * the tour, the ? key, Demonstration Mode); everything else on screen is lost. */
 export const LANGUAGE_CHOICE_EN=Object.freeze({
  legend:'Idioma / Language',
- english:'English',
- spanish:'Español',
  title:'Change the language?',
  reload:(language:string)=>`The page will reload in ${language}, on the same page of the site.`,
  lost:'Work that is only on screen is lost: the telescope\'s current position, running exposures, measurements, open windows, instructor mode and anything else you have not saved to a file.',

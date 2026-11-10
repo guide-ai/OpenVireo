@@ -150,7 +150,7 @@ test('a Spanish chunk that fails to load shows English with the bilingual notice
  await expect(page.getByRole('heading',{level:1,name:en['sky.title']})).toBeVisible({timeout:15_000});
  await expect(page.locator('html')).toHaveAttribute('lang','en');
  const notice=id(page,'language-failure');await expect(notice).toContainText(FAILURE_EN);await expect(notice).toContainText(FAILURE_ES);
- await expect(notice.locator('[lang=es]')).toHaveText(FAILURE_ES);
+ await expect(notice.locator('[lang=es-419]')).toHaveText(FAILURE_ES);
 });
 test('a Spanish chunk that does not arrive within 10 s shows English with the notice, and a late chunk changes nothing',async({page})=>{
  let release:(()=>void)|undefined;

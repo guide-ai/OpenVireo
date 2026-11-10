@@ -132,7 +132,7 @@ for(const [hash,name] of ROUTES)test(`${name} (${hash}) opens with no policy vio
 // (scripts/i18n-split.mjs), the language is activated once and then extended once per area, and nothing logs an error (a text
 // read before its area is answered in English and logged, since ES-REL made the catalog complete). Front ES-REL: in an es-MX
 // browser with no ?lang=, as a Spanish visitor arrives (the preview link keeps its own test below).
-const plan=planLanguage(loadLanguages()[0]) as {modules:{name:string;shared:string[]}[]};
+const plan=planLanguage(loadLanguages().find((l:{tag:string})=>l.tag==='es-419')) as {modules:{name:string;shared:string[]}[]};
 const AREA_OF:Readonly<Record<string,string>>={'#classification':'classification','#cluster-database':'cluster','#photometer':'photometer','#pulsar-analysis':'pulsar',
  '#radio-control':'radio','#lss-survey':'lss','#lss-wedge':'lss','#galaxy-exposure':'exposure','#star-exposure':'exposure','#sky-exposure':'exposure','#images':'fits',
  '#spectrometer':'exposure'};// the field spectrometer at the default pointing
@@ -158,7 +158,7 @@ test('Front ES-REL: an es-MX browser opens Spanish without ?lang=, with the sele
  await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Empieza por el cielo.'})).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.lang)).toBe('es-419');
  await expect(page).toHaveTitle('OpenVireo · Prácticas de astronomía de CLEA VIREO en tu navegador');
- await expect(page.getByTestId('language-choice')).toBeVisible();await expect(page.getByTestId('language-es-419')).toBeChecked();
+ await expect(page.getByTestId('language-choice')).toBeVisible();await expect(page.getByTestId('language-select')).toHaveValue('es-419');
  await page.waitForLoadState('networkidle');expect(p.language).toEqual(['core']);
  expect(await language(page)).toEqual({sets:1,earlyReads:0,changes:[]});
  expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);
@@ -213,7 +213,7 @@ test('Front ES1: an English load (also ?lang=qps or ?lang=bogus) never fetches a
  // and any other ?lang= value show English.
  for(const query of ['','?lang=qps','?lang=bogus']){
   await page.goto(`/${query}#observatory`);await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();await page.waitForLoadState('networkidle');
-  expect(fetched,query).toEqual([]);await expect(page.getByTestId('language-choice')).toBeVisible();await expect(page.getByTestId('language-en')).toBeChecked();await expect(page.getByTestId('language-failure')).toHaveCount(0);
+  expect(fetched,query).toEqual([]);await expect(page.getByTestId('language-choice')).toBeVisible();await expect(page.getByTestId('language-select')).toHaveValue('en');await expect(page.getByTestId('language-failure')).toHaveCount(0);
   expect(await language(page),query).toEqual({sets:1,earlyReads:0,changes:[]});
  }
  expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);

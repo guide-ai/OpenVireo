@@ -1,5 +1,6 @@
 // Front ES-HELP [W]: OpenVireo's Spanish (es-419) web adaptation of VIREO's PLSANHLP.LST. Not CLEA's text: the original bytes, hashes and
 // provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Spanish chunk.
+export const language='es-419';
 export const sourceName='PLSANHLP.LST';
 export const sourceSha256='fc62c7f0f49ffdc8cc188e6119b9ebe79da613e27bc1561c44e5d5565ac16ec8';
 export const text=`'Operaciones con datos' 'begin'

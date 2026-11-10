@@ -1,5 +1,6 @@
 // Front ES-HELP [W]: OpenVireo's Spanish (es-419) web adaptation of VIREO's PULSRANL.TXT. Not CLEA's text: the original bytes, hashes and
 // provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Spanish chunk.
+export const language='es-419';
 export const sourceName='PULSRANL.TXT';
 export const sourceSha256='9d1cb3ff7daf80cc79f9a97f0b8f13a740b41f7162ba46f3d0cb31e8ac851bf4';
 export const text=`**Cargar datos de púlsares registrados**

@@ -1,5 +1,6 @@
 // Front ES-HELP [W]: OpenVireo's Spanish (es-419) web adaptation of VIREO's OBSRVHLP.TXT. Not CLEA's text: the original bytes, hashes and
 // provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Spanish chunk.
+export const language='es-419';
 export const sourceName='OBSRVHLP.TXT';
 export const sourceSha256='2dcae5e678d69ed80784bb2958ed856289ff04779edd19656681288846102bd7';
 export const text=`**«Seguimiento»**

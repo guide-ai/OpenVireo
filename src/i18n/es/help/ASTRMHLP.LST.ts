@@ -1,5 +1,6 @@
 // Front ES-HELP [W]: OpenVireo's Spanish (es-419) web adaptation of VIREO's ASTRMHLP.LST. Not CLEA's text: the original bytes, hashes and
 // provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Spanish chunk.
+export const language='es-419';
 export const sourceName='ASTRMHLP.LST';
 export const sourceSha256='a5088a41ca31f7a6ecca82c0368b8d979e7758682718e09c96107fd39cb40993';
 export const text=`'Operaciones básicas' 'begin'

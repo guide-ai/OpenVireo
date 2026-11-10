@@ -1,5 +1,6 @@
 // Front ES-HELP [W]: OpenVireo's Spanish (es-419) web adaptation of VIREO's HRAnalHlp.LST. Not CLEA's text: the original bytes, hashes and
 // provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Spanish chunk.
+export const language='es-419';
 export const sourceName='HRAnalHlp.LST';
 export const sourceSha256='b50c590f0f0f3e60456b8adeae06d123a2121ed5db3f741a74610d28d0a61537';
 export const text=`'Cargar/graficar datos' 'begin'

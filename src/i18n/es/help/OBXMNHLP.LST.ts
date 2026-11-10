@@ -1,5 +1,6 @@
 // Front ES-HELP [W]: OpenVireo's Spanish (es-419) web adaptation of VIREO's OBXMNHLP.LST. Not CLEA's text: the original bytes, hashes and
 // provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Spanish chunk.
+export const language='es-419';
 export const sourceName='OBXMNHLP.LST';
 export const sourceSha256='62d1c620cb3d2155e4790de4e194fd34ba524a6d90aa1168a3c2d87842bd6e9f';
 export const text=`'Primeros pasos' 'begin'

@@ -4,7 +4,8 @@ import en from './en.json';
 import spanishOriginals from './es/originals.json';
 import baseline from '../../tests/fixtures/p01-scientific-baseline.json';
 import {activateLocale,createI18n,fixed,formatNumber,scientific,t,uiLanguage,type MessageKey} from './index';
-import {decideLocale,HTML_LANG,selectorShown,type LocaleInputs,type PseudoScriptLanguage} from './locale';
+import {decideLocale,HTML_LANG,type LocaleInputs,type PseudoScriptLanguage} from './locale';
+import {selectorShown} from './languages';
 import {pickedMessages} from './registry';
 import {mapParity} from './parity';
 import {PSEUDO_CLOSE,PSEUDO_OPEN,pseudoMark} from './pseudo';
@@ -113,13 +114,13 @@ describe('Front SC2: the script-stress transforms',()=>{
 });
 
 describe('Front SC2: the pseudo-locales as UI languages (dev server and tests only)',()=>{
- const decide=(over:Partial<LocaleInputs>)=>decideLocale({param:null,stored:null,languages:['en-US'],released:true,dev:false,...over});
+ const decide=(over:Partial<LocaleInputs>)=>decideLocale({param:null,stored:null,languages:['en-US'],dev:false,...over});
  it('are offered only through ?lang= in the dev server and tests, never from storage or the browser, and show no selector',()=>{
   for(const language of LANGUAGES){
    expect(isPseudoScriptLanguage(language)).toBe(true);
-   expect(decide({param:language,dev:true,released:false})).toBe(language);expect(decide({param:language})).toBe('en');
+   expect(decide({param:language,dev:true})).toBe(language);expect(decide({param:language})).toBe('en');
    expect(decide({stored:language,dev:true})).toBe('en');expect(decide({languages:[TAG[language]],dev:true})).toBe('en');
-   expect(HTML_LANG[language]).toBe(TAG[language]);expect(selectorShown(`?lang=${language}`,false)).toBe(false);
+   expect(HTML_LANG[language]).toBe(TAG[language]);expect(selectorShown(language)).toBe(false);
   }
   for(const junk of ['qps-','qps-CJK','qps-latn','ja','hi','ru','constructor','__proto__'])expect(decide({param:junk,dev:true}),junk).toBe('en');
   expect(isPseudoScriptLanguage('qps')).toBe(false);expect(isPseudoScriptLanguage('toString')).toBe(false);

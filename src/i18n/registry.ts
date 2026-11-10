@@ -1,7 +1,7 @@
 import {activeBundle} from './index';
 import {current,notePendingText,pendingTextRequests} from './active';
 import {completeWithEnglish,mapParity} from './parity';
-import {SPANISH_RELEASED} from './locale';
+import {isReleased} from './languages';
 import type {MapId,MessageMaps} from './maps';
 export type {MapId,MessageMaps,Translation} from './maps';
 /** Front ES0 [W]: the `*Messages.ts` maps are chosen per load (docs/I18N.md). Each English map stays the typed source; a module
@@ -64,9 +64,10 @@ export function resolveMessages<K extends MapId>(id:K,english:MessageMaps[K]):Me
  if(bundle.maps&&Object.hasOwn(bundle.maps,id)){
   const own=bundle.maps[id];
   if(!mapParity(english,own).length)return own as MessageMaps[K];
-  // Before ES-REL a Spanish map could be partial (the sub-fronts merged so far); its missing strings stayed English. Since ES-REL
-  // a Spanish map must be complete (src/i18n/es/es.test.ts checks every map id statically).
-  const partial=bundle.language==='es-419'&&!SPANISH_RELEASED,problems=mapParity(english,own,'$',{partial});
+  // Before its release a language's map may be partial (the sub-fronts merged so far); its missing strings stay English. Since
+  // ES-REL a Spanish map must be complete (src/i18n/es/es.test.ts checks every map id statically). Front SC8: the gate is the
+  // registry's per-language `released` (src/i18n/languages.ts).
+  const partial=!isReleased(bundle.language),problems=mapParity(english,own,'$',{partial});
   if(!problems.length)return completeWithEnglish(english,own);
   const message=`OpenVireo: the ${bundle.language} map "${id}" does not match the English map (${problems.slice(0,5).join('; ')}); English is used.`;
   if(strict())throw new Error(message);

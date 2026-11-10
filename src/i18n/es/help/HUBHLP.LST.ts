@@ -1,5 +1,6 @@
 // Front ES-HELP [W]: OpenVireo's Spanish (es-419) web adaptation of VIREO's HUBHLP.LST. Not CLEA's text: the original bytes, hashes and
 // provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Spanish chunk.
+export const language='es-419';
 export const sourceName='HUBHLP.LST';
 export const sourceSha256='ec4b9c183d430d371e13b6c3e5ea65167a58aeb8a866563b0425def1f7c25cf7';
 export const text=`'Primeros pasos' 'begin'

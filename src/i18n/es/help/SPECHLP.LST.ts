@@ -1,5 +1,6 @@
 // Front ES-HELP [W]: OpenVireo's Spanish (es-419) web adaptation of VIREO's SPECHLP.LST. Not CLEA's text: the original bytes, hashes and
 // provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Spanish chunk.
+export const language='es-419';
 export const sourceName='SPECHLP.LST';
 export const sourceSha256='1b90822216661b0592e1873d6a44994cd30ec5843f5f907774ad580e0f7b4c49';
 export const text=`'Usar el espectrómetro' 'begin'

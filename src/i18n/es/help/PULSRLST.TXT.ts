@@ -1,5 +1,6 @@
 // Front ES-HELP [W]: OpenVireo's Spanish (es-419) web adaptation of VIREO's PULSRLST.TXT. Not CLEA's text: the original bytes, hashes and
 // provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Spanish chunk.
+export const language='es-419';
 export const sourceName='PULSRLST.TXT';
 export const sourceSha256='51df0d67752ffa73d661e33751905db3af359e723062c70eb25883b947c79bb8';
 export const text=`**Buscar un púlsar en la lista**

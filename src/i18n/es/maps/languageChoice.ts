@@ -1,10 +1,8 @@
 import type {LANGUAGE_CHOICE_EN} from '../../../components/LanguageChoiceMessages';
 import type {Translation} from '../../maps';
-/** Front ES1: Spanish (es-419) for the language selector and its reload dialog. The option names stay bilingual. */
+/** Front ES1: Spanish (es-419) for the language selector and its reload dialog. The option names are the autonyms of src/i18n/languages.json (Front SC8). */
 export const LANGUAGE_CHOICE_ES:Translation<typeof LANGUAGE_CHOICE_EN>=Object.freeze({
  legend:'Idioma / Language',
- english:'English',
- spanish:'Español',
  title:'¿Cambiar el idioma?',
  reload:(language:string)=>`La página se volverá a cargar en ${language}, en la misma página del sitio.`,
  lost:'Se pierde el trabajo que solo está en pantalla: la posición actual del telescopio, las exposiciones en curso, las mediciones, las ventanas abiertas, el modo instructor y todo lo que no hayas guardado en un archivo.',

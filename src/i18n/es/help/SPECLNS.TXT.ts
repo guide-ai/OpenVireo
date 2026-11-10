@@ -1,5 +1,6 @@
 // Front ES-HELP [W]: OpenVireo's Spanish (es-419) web adaptation of VIREO's SPECLNS.TXT. Not CLEA's text: the original bytes, hashes and
 // provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Spanish chunk.
+export const language='es-419';
 export const sourceName='SPECLNS.TXT';
 export const sourceSha256='495d0627f11e1f8a5e780f04aa4f402a6b6650e6a26181c5842b7ecaea9faa5a';
 export const text=`*3759.87   O III*

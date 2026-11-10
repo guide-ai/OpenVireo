@@ -16,7 +16,7 @@ test.use({locale:SPANISH_LOCALE});
 // JavaScript), and no text is read before its area arrives (that would throw, reach the route's error notice and log a console
 // error). An area that fails or does not arrive leaves that route in English with a bilingual notice; English fetches nothing.
 type Module={name:string;kind:string;shared:string[]};
-const plan=planLanguage(loadLanguages()[0]) as {modules:Module[];keyModule:Record<string,string>;mapModule:Record<string,string>};
+const plan=planLanguage(loadLanguages().find((l:{tag:string})=>l.tag==='es-419')) as {modules:Module[];keyModule:Record<string,string>;mapModule:Record<string,string>};
 const S=es as Record<string,string>,E=en as Record<string,string>;
 /** The modules an area route fetches: the area and its shared modules. */
 const modulesOf=(area:string)=>{const m=plan.modules.find(x=>x.name===area)!;return [area,...m.shared].sort();};
@@ -149,7 +149,7 @@ test('an area module that fails leaves its route in English with the bilingual n
  await page.route(/openvireo-i18n\/i18n-es-419-classification/,route=>route.abort('failed'));
  await page.goto('/#classification');
  await expect(page.getByRole('heading',{level:1,name:E['class.title'],exact:true})).toBeVisible({timeout:30_000});
- const notice=id(page,'area-failure');await expect(notice).toContainText(NOTICE_EN);await expect(notice.locator('[lang=es]')).toHaveText(NOTICE_ES);
+ const notice=id(page,'area-failure');await expect(notice).toContainText(NOTICE_EN);await expect(notice.locator('[lang=es-419]')).toHaveText(NOTICE_ES);
  await expect(notice).toHaveAttribute('role','status');await expect(notice).toHaveCount(1);
  await expect(page.locator('html')).toHaveAttribute('lang','es-419');await expect(page.locator('.investigation-toolbar')).toContainText(S['project.save']);
  await noRouteError(page);

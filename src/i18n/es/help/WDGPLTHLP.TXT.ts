@@ -1,5 +1,6 @@
 // Front ES-HELP [W]: OpenVireo's Spanish (es-419) web adaptation of VIREO's WdgPltHlp.TXT. Not CLEA's text: the original bytes, hashes and
 // provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Spanish chunk.
+export const language='es-419';
 export const sourceName='WdgPltHlp.TXT';
 export const sourceSha256='01d062eb13b41a197aa6123256a991c5b4b4194b47968d816d60d1302f5fd10e';
 export const text=`**Graficar los datos**
