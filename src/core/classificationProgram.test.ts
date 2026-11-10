@@ -14,4 +14,4 @@ describe('original fixed program-list navigation',()=>{
  it('reports end even with unrecorded last-object work and retains old classification schema input boundaries',()=>{const last={...draft(),unknownId:'u25'};expect(nextProgramPractice(last)).toBeNull();expect(selectProgramPractice(last,'u25').next).toBe(last);expect(()=>selectProgramPractice({...INITIAL_CLASSIFICATION,unknownId:'imported:'+'a'.repeat(64)},'u1')).toThrow('source');expect(()=>selectProgramPractice({...INITIAL_CLASSIFICATION,reason:'x'.repeat(1001)},'u2')).toThrow();});
 });
 // Front ES5 review: the Spanish E03 spec restates these literals (Playwright cannot import this module); both must agree.
-it('the literals restated for tests/i18n/es-e03.spec.ts equal CLASSIFY_PROGRAM_LITERALS',()=>{expect(CLASSIFY_PROGRAM_LITERALS_RESTATED).toEqual(CLASSIFY_PROGRAM_LITERALS);});
+it('the literals restated for tests/i18n/e03.spec.ts equal CLASSIFY_PROGRAM_LITERALS',()=>{expect(CLASSIFY_PROGRAM_LITERALS_RESTATED).toEqual(CLASSIFY_PROGRAM_LITERALS);});

@@ -52,6 +52,16 @@
   "map:camera.accessReason.ready": "empty on purpose (no reason when the telescope is ready)",
   "map:camera.peakCount": "a format of parameters, numbers and units only",
   "map:camera.sourceWithHash": "a format of parameters, numbers and units only",
-  "map:camera.rowCounts": "a format of parameters, numbers and units only"
+  "map:camera.rowCounts": "a format of parameters, numbers and units only",
+  "catalog:classLines.option": "only placeholders, a unit and a separator ({wavelength} Å · {label})",
+  "catalog:probe.shaLabel": "a hash name kept in every language (SHA-256)",
+  "catalog:photo.caption": "only placeholders and a separator ({label} · {polarity})",
+  "catalog:viewport.range": "only placeholders, a unit and symbols ({minimum}–{maximum} Å · {zoom}×)",
+  "catalog:nativeResults.typeValue": "only placeholders and a separator ({code} · {label})",
+  "catalog:nativeResults.kindValue": "only placeholders and a separator ({kind} · {label})",
+  "catalog:program.row": "only placeholders and a separator ({position} · {object})",
+  "catalog:nativeText.choice": "only placeholders and a separator ({index} · {object})",
+  "catalog:nativeResults.storage.binary32": "a Delphi type name and a bit count (Single · 32 bits)",
+  "catalog:nativeResults.storage.binary64": "a Delphi type name and a bit count (Double · 64 bits)"
  }
 }
