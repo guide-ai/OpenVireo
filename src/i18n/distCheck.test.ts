@@ -104,5 +104,8 @@ describe('Front SC8: scripts/check-i18n-dist.mjs with a partial language before 
   expect(script).toHaveLength(1);expect(script[0]).toMatch(/es\/x\.js: 1 es-419 core text/);
   const other=check(dist([spanish,PARTIAL],put('es/y/index.html','<p>Konservi la esploron ĉi tie</p>')),[spanish,PARTIAL]).offenders;
   expect(other).toHaveLength(1);expect(other[0]).toMatch(/es\/y\/index\.html: 1 qaa-XA core text/);
+  // SC8 review: a pagePath that is not one segment exempts nothing and fails ('.' would otherwise exempt every page).
+  const dot={...spanish,pagePath:'.'} as Language,dotted=check(dist([dot],at('labs/x/index.html')),[dot]).offenders;
+  expect(dotted[0]).toBe('es-419: pagePath "." is not one lower-case path segment');expect(dotted[1]).toMatch(/labs\/x\/index\.html: 1 es-419 core text/);
  },180_000);
 });

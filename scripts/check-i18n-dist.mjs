@@ -112,7 +112,10 @@ export function checkI18nDist(dist,{root=ROOT,languages=loadLanguages(root),grap
   for(const [v,owners] of candidates)if(owners.size===1)markers.get([...owners][0]).push({text:v,forms:quoted(v)});
   // Which files carry which module's markers (the help chunks may share phrases with the catalog, as ES-HELP recorded; the
   // language's own static pages, dist/<pagePath>/….html, are its text by design).
-  const ownPages=language.pagePath?join(dist,language.pagePath)+sep:null;
+  // SC8 review: one lower-case path segment only ('.', '..', 'a/b' or '' would exempt other pages; src/i18n/languages.test.ts also
+  // refuses the site's own directories).
+  if(language.pagePath!==undefined&&!/^[a-z0-9-]+$/.test(language.pagePath))offenders.push(`${tag}: pagePath ${JSON.stringify(language.pagePath)} is not one lower-case path segment`);
+  const ownPages=/^[a-z0-9-]+$/.test(language.pagePath??'')?join(dist,language.pagePath)+sep:null;
   const holders=new Map();
   for(const f of files){if(helpChunks.has(f.name)||(ownPages&&/\.html?$/i.test(f.name)&&f.file.startsWith(ownPages)))continue;
    const hits=new Map();for(const [name,list] of markers){const found=list.filter(m=>m.forms.some(form=>f.text.includes(form)));if(found.length)hits.set(name,found);}

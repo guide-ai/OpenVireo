@@ -179,8 +179,8 @@ export function languageManifest(root,dir){
 
 // ---------------------------------------------------------------------------------------------------------------------------
 /** The plan of one language (docs/I18N.md, "Spanish: the chunk split by route area"). Front SC8: a language before its release
- * may be partial (docs/I18N.md, SC8): an area it has no text for yet is empty and gets no chunk; a released language must cover
- * en.json. */
+ * may be partial (docs/I18N.md, SC8): an area it has no text for yet is empty and gets no chunk (also with a complete catalog:
+ * the maps-only pulsar area); a released language must cover en.json and has no empty area. */
 export function planLanguage(language,root=ROOT,graph=sourceGraph(root)){
  const dir=languageDir(language),en=JSON.parse(read(root,'src/i18n/en.json')),catalog=JSON.parse(read(root,`${dir}/${language.catalog}`));
  const originals=JSON.parse(read(root,`${dir}/originals.json`)),manifest=languageManifest(root,dir);
@@ -231,7 +231,9 @@ export function planLanguage(language,root=ROOT,graph=sourceGraph(root)){
  for(const a of declared)ensure(a);
  for(const [k,m] of Object.entries(keyModule))ensure(m).keys.push(k);
  for(const [id,m] of Object.entries(mapModule))ensure(m).maps.push(id);
- for(const m of modules.values()){if(complete&&m.kind==='area'&&!m.keys.length&&!m.maps.length&&!sharedOf(m.name).length)problems.push(`area ${m.name} is empty`);
+ // SC8 review: gated on the release, not on the catalog: a language before its release may have a complete catalog while a
+ // maps-only area (pulsar) still has no map, and that area is empty, not a problem.
+ for(const m of modules.values()){if(language.released&&m.kind==='area'&&!m.keys.length&&!m.maps.length&&!sharedOf(m.name).length)problems.push(`area ${m.name} is empty`);
   if(m.kind!=='core')for(const a of m.areas)if(!declared.includes(a))problems.push(`module ${m.name}: ${a} is not a declared area`);}
  if(language.released&&!complete)problems.push(`${language.tag} is released but its catalog does not cover en.json`);
  function sharedOf(area){return [...modules.values()].filter(m=>m.kind==='shared'&&m.areas.includes(area)).map(m=>m.name).sort();}

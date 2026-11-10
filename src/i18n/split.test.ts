@@ -1,5 +1,7 @@
 import {describe,expect,it} from 'vitest';
 import path from 'node:path';
+import {mkdtempSync,rmSync,writeFileSync} from 'node:fs';
+import {tmpdir} from 'node:os';
 import en from './en.json';
 import {MAP_IDS} from './maps';
 import {AREAS} from './areas';
@@ -38,14 +40,14 @@ for(const language of languages){
 const tag=language.tag,plan=planLanguage(language,root,graph) as Plan,whole=wholeBundle(language);
 const spanish=tag==='es-419';
 describe(`Front ES-SPLIT: the ${tag} bundle split by route area`,()=>{
- it('1. partitions every key, map and original into exactly one module; the originals are all in the core; no area of a complete language is empty',()=>{
+ it('1. partitions every key, map and original into exactly one module; the originals are all in the core; no area of a released language is empty',()=>{
   expect(plan.problems).toEqual([]);
   const keys=plan.modules.flatMap(m=>m.keys),maps=plan.modules.flatMap(m=>m.maps);
   expect(keys.length).toBe(new Set(keys).size);expect(new Set(keys)).toEqual(new Set(Object.keys(plan.catalog)));
   expect(maps.length).toBe(new Set(maps).size);expect(new Set(maps)).toEqual(new Set(Object.keys(whole.maps??{})));
   expect(plan.modules.filter(m=>m.originals).map(m=>m.name)).toEqual([CORE]);
   for(const m of plan.modules.filter(m=>m.kind==='area'))expect(m.empty,m.name).toBe(m.keys.length+m.maps.length+m.shared.length===0);
-  if(plan.complete)for(const m of plan.modules.filter(m=>m.kind==='area'))expect(m.empty,m.name).toBe(false);
+  if(language.released)for(const m of plan.modules.filter(m=>m.kind==='area'))expect(m.empty,m.name).toBe(false);
   for(const m of plan.modules.filter(m=>m.kind==='shared'))expect(m.keys.length+m.maps.length,m.name).toBeGreaterThan(0);
   // Every map id is a known one, and the core holds the maps the shell reads on every load.
   for(const id of Object.keys(plan.mapModule))expect(MAP_IDS as readonly string[]).toContain(id);
@@ -145,7 +147,19 @@ describe('Front SC8: a partial language before its release (test fixture qaa-XA,
   expect(code.match(/import\(/g)).toHaveLength(1);expect(code).toContain('complete:false');
   expect(moduleCode(partial,'fits',{root})).toContain('"fits.title":"Inspekti konservitan FITS-bildon ĉi tie"');
  });
- it('released while incomplete is a plan problem, which fails the build',()=>{
-  expect((planLanguage({...PARTIAL,released:true},root,graph) as Plan).problems).toEqual(['qaa-XA is released but its catalog does not cover en.json']);
+ it('released while incomplete is a plan problem, which fails the build, and so is each empty area',()=>{
+  expect([...(planLanguage({...PARTIAL,released:true},root,graph) as Plan).problems].sort()).toEqual(['qaa-XA is released but its catalog does not cover en.json',
+   ...[...AREAS].filter(a=>a!=='fits').map(a=>`area ${a} is empty`)].sort());
+ });
+ it('SC8 review: a complete catalog before its release, with no map yet, leaves its maps-only area (pulsar) empty, not a problem',()=>{
+  const dir=mkdtempSync(path.join(tmpdir(),'openvireo-sc8-complete-'));
+  try{
+   writeFileSync(path.join(dir,'c.json'),JSON.stringify(en));writeFileSync(path.join(dir,'originals.json'),'{}');
+   writeFileSync(path.join(dir,'index.ts'),"export const B=Object.freeze({language:'qad-XD',messages:{},maps:Object.freeze({}),originals:{}});\n");
+   const complete={...PARTIAL,tag:'qad-XD',dir:'qad-xd',catalog:'c.json',path:path.relative(root,dir)};
+   const plan=planLanguage(complete,root,graph) as Plan;
+   expect(plan.complete).toBe(true);expect(plan.problems).toEqual([]);expect(plan.modules.filter(m=>m.empty).map(m=>m.name)).toEqual(['pulsar']);
+   expect((planLanguage({...complete,released:true},root,graph) as Plan).problems).toEqual(['area pulsar is empty']);
+  }finally{rmSync(dir,{recursive:true,force:true});}
  });
 });

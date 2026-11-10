@@ -35,6 +35,8 @@ function problems(registry:readonly LanguageEntry[]):string[]{
 describe('Front SC8: the language registry (src/i18n/languages.json)',()=>{
  it('is valid: unique tags and directories, canonical <html lang>, names, notices, ranges that no two languages share',()=>{
   expect(problems(LANGUAGES)).toEqual([]);
+  // SC8 review: `path` is for test fixtures only; a production language lives in src/i18n/<dir>.
+  expect(LANGUAGES.filter(l=>Object.hasOwn(l,'path')).map(l=>l.tag)).toEqual([]);
   expect(problems(PLANNED)).toEqual([]);expect(problems([...PLANNED,ZH_HANT])).toEqual([]);expect(problems([...LANGUAGES,PARTIAL])).toEqual([]);
   expect(problems([...LANGUAGES,{...PARTIAL,match:['es-MX']}])).toEqual([]);// more specific than Spanish's es: allowed
   expect(problems([...LANGUAGES,{...PARTIAL,match:['ES']}])).toEqual(['qaa-XA: range ES is also es-419\'s']);
