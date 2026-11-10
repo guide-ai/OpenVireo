@@ -113,8 +113,11 @@ User decision 8 of 2026-11-09 (AGENTS.md): after the Spanish release, a Spanish 
   Spanish JSON-LD (`WebApplication` on `/es/`, `ItemList` on the index, `LearningResource` with `inLanguage` `es-419` and
   breadcrumbs on each lab). «Abrir la práctica» goes to `/?lang=es-419#lab=<slug>`. Texts: `src/seo/labs.es.ts` and the `es-419`
   row; the footer says they are OpenVireo's web adaptation, not CLEA's text.
-- **hreflang** on every page pair (`/` ↔ `/es/`, `/labs/` ↔ `/es/labs/`, each lab): `en`, `es-419`, `es` (the app opens Spanish for
-  any `es-*` browser, so Spanish from Spain finds the same page) and `x-default` → the English URL. The sitemap lists all 18
+- **hreflang** on every page pair (`/` ↔ `/es/`, `/labs/` ↔ `/es/labs/`, each lab): `en`, `es` and `x-default` → the English URL.
+  The Spanish alternate is `es`, not `es-419`: Google's `hreflang` takes an ISO 639-1 language with an optional ISO 3166-1 alpha-2
+  region, and 419 is a UN M.49 region, so `es-419` would be ignored (and audit tools flag it); `es` matches every Spanish
+  searcher, as the app opens Spanish for any `es-*` browser (review). `<html lang>`, the JSON-LD `inLanguage` and the
+  `hreflang` attribute of the visible «Español» link stay `es-419`, where BCP 47 tags are valid. The sitemap lists all 18
   addresses with the same alternates as `xhtml:link` entries. English pages also get `og:locale` `en_US` / `es_LA` and a visible
   «Español» link to their Spanish version; nothing else in their HTML changed.
 - **App**: the observatory footer's labs link goes to `/es/labs/` when the app is in Spanish.
@@ -141,5 +144,5 @@ User decision 8 of 2026-11-09 (AGENTS.md): after the Spanish release, a Spanish 
 
 After the deploy: in Google Search Console (once the `openvireo.space` property exists, see above) submit or resubmit
 `https://openvireo.space/sitemap.xml`, and inspect `https://openvireo.space/es/` and a Spanish lab page with URL Inspection
-(«Request indexing»); Search Console reports `hreflang` problems under the page indexing report. The same in Bing Webmaster Tools if
+(«Request indexing»); Search Console no longer reports `hreflang` (its International Targeting report was retired in 2022): URL Inspection shows the canonical Google chose, and a site audit (OpenSEO) can check the alternates. The same in Bing Webmaster Tools if
 wanted. OpenSEO can track Spanish keywords (for example «práctica ley de Hubble», «CLEA astronomía») for a Spanish-speaking market.

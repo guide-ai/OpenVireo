@@ -17,7 +17,9 @@ export type SeoLab=LabText&{slug:LabSlug;exercise:string};
 export type SeoLanguage=Readonly<{
  /** The UI language tag (src/i18n/languages.json), also the pages' <html lang> and the JSON-LD inLanguage. */
  tag:string;
- /** Its hreflang values, the tag first. Spanish adds `es`, since the app opens Spanish for any `es-*` browser. */
+ /** Its hreflang values. Google takes an ISO 639-1 language with an optional ISO 3166-1 alpha-2 region, so a UN M.49 region such
+  * as es-419's is not one (ES-SEO review): Spanish is `es`, which also matches every `es-*` searcher, as the app opens Spanish for
+  * any `es-*` browser. A language whose tag is valid there lists it first (PT-SEO: `['pt-BR','pt']`). */
  hreflang:readonly string[];
  /** Open Graph locale (language_TERRITORY): en_US, es_LA. */
  ogLocale:string;
@@ -71,7 +73,7 @@ const EN:SeoLanguage={
 };
 
 const ES:SeoLanguage={
- tag:'es-419',hreflang:['es-419','es'],ogLocale:'es_LA',prefix:SEO_PATH_PREFIX['es-419'],app:'/?lang=es-419',
+ tag:'es-419',hreflang:['es'],ogLocale:'es_LA',prefix:SEO_PATH_PREFIX['es-419'],app:'/?lang=es-419',
  ogImage:'/og-image-es.png',ogImageAlt:'OpenVireo: prácticas de astronomía de CLEA VIREO en tu navegador, en español',
  ogImageText:{title:'Prácticas de astronomía CLEA VIREO en tu navegador',lines:['Ley de Hubble · Púlsares · Pléyades · Objeto X · y más.','Reconstrucción web gratuita y no oficial, en español. Nada que instalar.']},
  labs:merge(LAB_TEXT_ES),
@@ -100,7 +102,7 @@ const ES:SeoLanguage={
   labsHeading:'Las siete prácticas',howHeading:'Cómo funciona',
   how:['Todo ocurre en tu navegador: no hay nada que instalar ni necesitas una cuenta.',
    'Guardas tus investigaciones como archivos en tu propia computadora y las vuelves a cargar cuando quieras.',
-   'La interfaz, las guías y la ayuda están en español. Los archivos que escribe el sitio (TXT, FITS, CSV e investigaciones guardadas) quedan en inglés, tal como los escribe VIREO.',
+   'La interfaz, las guías y la ayuda están en español. Los archivos que escribe el sitio (TXT, FITS, CSV e investigaciones guardadas) quedan en inglés, en el formato de VIREO o de OpenVireo.',
    'Puedes cambiar a inglés cuando quieras con el selector de idioma del menú.']},
 };
 

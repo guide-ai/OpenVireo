@@ -390,7 +390,7 @@ test('Front ES-SEO: the Spanish pages, their preview image and the hreflang link
  }
  for(const path of ['/es','/es/labs/hubble']){const r=await request.get(path,{maxRedirects:0});expect(r.status(),path).toBe(308);expect(new URL(r.headers().location,baseURL).pathname,path).toBe(`${path}/`);}
  const alternates=(html:string)=>[...html.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)"\/>/g)].map(m=>`${m[1]} ${m[2]}`);
- const home=['en https://openvireo.space/','es-419 https://openvireo.space/es/','es https://openvireo.space/es/','x-default https://openvireo.space/'];
+ const home=['en https://openvireo.space/','es https://openvireo.space/es/','x-default https://openvireo.space/'];
  expect(alternates(await (await request.get('/')).text())).toEqual(home);expect(alternates(await (await request.get('/es/')).text())).toEqual(home);
  const sitemap=await (await request.get('/sitemap.xml')).text();expect(sitemap).toContain('<loc>https://openvireo.space/es/labs/pulsars/</loc>');
  const p=await watch(page,baseURL!);

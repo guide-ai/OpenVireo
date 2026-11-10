@@ -32,7 +32,9 @@ describe('the language table',()=>{
    expect(l.prefix).toBe(SEO_PATH_PREFIX[l.tag]);expect(l.prefix).toMatch(/^\/[a-z-]+$/);
    // A language gets search pages only once the app speaks it (src/i18n/languages.json; front SC8's registry may replace it).
    expect(uiLanguages.map(u=>u.tag)).toContain(l.tag);
-   expect(l.hreflang[0]).toBe(l.tag);expect(l.app).toBe(`/?lang=${l.tag}`);expect(l.home).not.toBeNull();
+   // hreflang: ISO 639-1 language, optional ISO 3166-1 alpha-2 region (Google's format; es-419's UN M.49 region is not one), same language as the tag.
+   for(const h of l.hreflang){expect(h).toMatch(/^[a-z]{2}(?:-[A-Z]{2})?$/);expect(h.slice(0,2)).toBe(l.tag.slice(0,2));}
+   expect(l.app).toBe(`/?lang=${l.tag}`);expect(l.home).not.toBeNull();
   }
  });
  it('gives every language the seven labs with the English slugs, exercise codes and number of steps',()=>{
@@ -170,7 +172,7 @@ describe('hreflang',()=>{
  it('every page names itself and each translation, with x-default on the English page, and the translations name it back',()=>{
   for(const key of KEYS){
    const expected=alternates(key);
-   expect(expected).toEqual([['en',SITE_URL+pathOf(ENGLISH,key)],['es-419',SITE_URL+pathOf(SPANISH,key)],['es',SITE_URL+pathOf(SPANISH,key)],['x-default',SITE_URL+pathOf(ENGLISH,key)]]);
+   expect(expected).toEqual([['en',SITE_URL+pathOf(ENGLISH,key)],['es',SITE_URL+pathOf(SPANISH,key)],['x-default',SITE_URL+pathOf(ENGLISH,key)]]);
    for(const l of SEO_LANGUAGES){const html=PAGES[pathOf(l,key)];expect(hreflangs(html),pathOf(l,key)).toEqual(expected);}
   }
   expect(Object.keys(PAGES)).toHaveLength(SEO_LANGUAGES.length*KEYS.length);

@@ -53,6 +53,6 @@ export const LAB_TEXT_ES:Readonly<Record<LabSlug,LabText>>=Object.freeze({
   description:'¿Estrella, galaxia, cuásar, púlsar o asteroide? Identifica el Objeto X con imágenes, espectros y radio. Reconstrucción web gratuita de una práctica de CLEA.',
   heading:'Objeto X: ¿qué es?',
   intro:'Recibes solo un identificador y unas coordenadas. Con imágenes CCD tomadas en distintos momentos, espectros y el radiotelescopio, decides si el objeto es una estrella, una galaxia, un cuásar, un púlsar o un asteroide.',
-  steps:['Recibes un objetivo como identificador y coordenadas; su identidad permanece oculta.','Obsérvalo con la cámara CCD, el espectrómetro y el radiotelescopio.','Decide qué tipo de objeto es y justifícalo con tus propias observaciones.','Si es un asteroide, mide sus posiciones en varias imágenes y describe su movimiento.'],
+  steps:['Recibes el objetivo solo como un identificador y unas coordenadas; su identidad permanece oculta.','Obsérvalo con la cámara CCD, el espectrómetro y el radiotelescopio.','Decide qué tipo de objeto es y justifícalo con tus propias observaciones.','Si es un asteroide, mide sus posiciones en varias imágenes y describe su movimiento.'],
   learn:['Cómo se ven distintos tipos de objetos en imágenes, espectros y radio.','Cómo el movimiento entre imágenes revela un cuerpo del sistema solar.','Cómo construir un argumento a partir de varios tipos de evidencia.']},
 });
