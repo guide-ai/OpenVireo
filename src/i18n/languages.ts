@@ -4,6 +4,8 @@ import data from './languages.json' with {type:'json'};
  * plans each language's chunks, scripts/check-i18n-dist.mjs checks them), so it stays plain JSON; this module types it and holds
  * the pure rules the app needs: which language a browser tag asks for, which languages are released, what the selector lists,
  * <html lang> and the failure notices. English is the source language and is not in the list. No DOM or storage here. */
+/** Front RTL-1 (RT1): the text direction of a language (the `dir` field is the folder name, not this). */
+export type TextDirection='ltr'|'rtl';
 export type LanguageEntry=Readonly<{
  /** The `?lang=` value, the stored value and the bundle's `language` (exact, case-sensitive). */
  tag:string;
@@ -30,6 +32,10 @@ export type LanguageEntry=Readonly<{
  help?:Readonly<{related:string}>;
  /** The language's own sentence for "<language> could not be loaded…" and "Part of the <language> text…" (src/OpenVireo.tsx). */
  notices:Readonly<{language:string;area:string}>;
+ /** Front RTL-1 (RT1): the language's text direction, `rtl` for a right-to-left script; absent means `ltr` (every language
+  * today). It sets `<html dir>` (src/i18n/settle.ts), and src/i18n/direction.test.ts requires it to equal the direction Intl gives
+  * `htmlLang`. Not `dir`, which is the folder name. */
+ direction?:TextDirection;
  /** Tests only: a root-relative directory used instead of src/i18n/<dir> (a fixture language outside src/). */
  path?:string;
 }>;
@@ -50,7 +56,10 @@ export function matchLanguage(tag:string,registry:readonly LanguageEntry[]=LANGU
  for(const l of registry){const m=longest(l.match,tag);if(m>length&&longest(l.except,tag)<m){best=l;length=m;}}
  return best;
 }
-/** The dev-only pseudo-locales (qps, qps-cjk, qps-deva, qps-cyrl): never in the registry, never offered. */
+/** Front RTL-1 (RT1): a registered language's text direction (its `direction`, ltr when absent); ltr for English and any tag
+ * outside the registry (the pseudo-locales' directions are src/i18n/locale.ts HTML_DIR). */
+export const textDirection=(tag:string,registry:readonly LanguageEntry[]=LANGUAGES):TextDirection=>languageEntry(tag,registry)?.direction??'ltr';
+/** The dev-only pseudo-locales (qps, qps-cjk, qps-deva, qps-cyrl, qps-rtl): never in the registry, never offered. */
 export const isPseudoLocale=(tag:string):boolean=>tag==='qps'||tag.startsWith('qps-');
 /** What the selector lists for a load in `current`: English, every released language, and `current` when it is a preview (a
  * registered language before its release), in registry order. */

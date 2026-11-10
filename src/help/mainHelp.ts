@@ -1,6 +1,7 @@
 /** Main-window (TEnvironment1) and radio-lab (TRadioLab) Help menu data as pure values (Front H, docs/CLEA-HELP.md). Static
  * reading of CLEA_VEO.exe (SHA-256 781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c), research
  * analysis/front-h-help/RECOVERY.md; nothing executed or emulated. Captions are the DFM's, raw with '&' accelerators. */
+import {cutColumns} from '../core/textColumns';
 
 export const MAIN_HELP_MENU=Object.freeze({help:'&Help',topics:'&Topics...',websites:'&Websites',twoMass:'&2MASS Catalog',clea:'Project &CLEA',nvo:'&NVO',
  about:'&About...',file:'&File',exit:'E&xit Observatory'});
@@ -36,9 +37,20 @@ export const QUIT_QUESTION='Are You Sure You Want to Quit This Exercise?';
 export function reminderBoxText(bytes:Uint8Array,select:string=REMINDER_SELECT):string{
  if(!(bytes instanceof Uint8Array)||bytes.length>65536)throw new RangeError('Reminder file size');
  let text='';for(const b of bytes)text+=String.fromCharCode(b);
+ return reminderBox(text,select);
+}
+/** Front SC7: `reminderBoxText` for a translated reminder as Unicode text (at most 65536 UTF-16 units). The 255- and
+ * 1023-character limits count display columns and cut at whole grapheme clusters (core/textColumns.ts; CR LF is one cluster):
+ * for Latin-1 text, the same cuts. */
+export function reminderBoxTextOf(text:string,select:string):string{
+ if(typeof text!=='string'||text.length>65536)throw new RangeError('Reminder file size');
+ return reminderBox(text,select);
+}
+function reminderBox(text:string,select:string):string{
  const lines=text.split(/\r?\n/);if(lines.length>0&&lines[lines.length-1]==='')lines.pop();
- let out='';const cat=(s:string)=>{out=(out+s).slice(0,REMINDER_LIMIT);};
- for(const line of lines){cat(line.slice(0,255));cat('\r\n');}
+ // Once a part does not fit, nothing more is added (StrLCat on a full buffer; with Latin-1 text the cut fills it exactly).
+ let out='',full=false;const cat=(s:string)=>{if(full)return;const next=cutColumns(out+s,REMINDER_LIMIT);full=next.length<out.length+s.length;out=next;};
+ for(const line of lines){cat(cutColumns(line,255));cat('\r\n');}
  cat('\r\n');cat(select);
  return out;
 }

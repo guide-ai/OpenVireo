@@ -15,15 +15,17 @@ export const SPECTRAL_LINE_TABLE_LITERALS=Object.freeze({menu:'Spectral Line &Ta
 import {foldAsciiCase} from '../core/radioHotListSearch';
 import {CLUSTER_HR_CAPTIONS as C} from '../core/clusterHrCaptions';
 import {delphiFixed} from '../core/variableStars';
+import {cutColumns} from '../core/textColumns';
 
 export type SpectralLine=Readonly<{wavelength:number;name:string;file:string;row:string}>;
 export class SpectralLineError extends Error{
  constructor(readonly line:number){super(`Spectral line list: line ${line}`);this.name='SpectralLineError';}
 }
 const latin1=(bytes:Uint8Array)=>{let s='';for(const b of bytes)s+=String.fromCharCode(b);return s;};
-function textLines(bytes:Uint8Array):string[]{
- const lines=latin1(bytes).split(/\r?\n/);if(lines.length>0&&lines[lines.length-1]==='')lines.pop();return lines;
+function splitLines(text:string):string[]{
+ const lines=text.split(/\r?\n/);if(lines.length>0&&lines[lines.length-1]==='')lines.pop();return lines;
 }
+const textLines=(bytes:Uint8Array)=>splitLines(latin1(bytes));
 function quotedToken(line:string):[string,string]{
  let i=0;while(i<line.length&&line.charCodeAt(i)===0x20)i++;
  if(i>=line.length)return ['',''];
@@ -34,13 +36,23 @@ function quotedToken(line:string):[string,string]{
  * traced; the bundled file has none). */
 export function parseSpectralLineList(bytes:Uint8Array):readonly SpectralLine[]{
  if(!(bytes instanceof Uint8Array)||bytes.length>65536)throw new SpectralLineError(0);
- return Object.freeze(textLines(bytes).map((raw,n)=>{
+ return spectralLines(textLines(bytes));
+}
+/** Front SC7: `parseSpectralLineList` for a translated list as Unicode text (at most 65536 UTF-16 units); the 35-character name
+ * and 12-character file fields are cut at whole grapheme clusters within that many display columns (core/textColumns.ts), which
+ * is the same cut for Latin-1 text. */
+export function parseSpectralLineListText(text:string):readonly SpectralLine[]{
+ if(typeof text!=='string'||text.length>65536)throw new SpectralLineError(0);
+ return spectralLines(splitLines(text));
+}
+function spectralLines(lines:readonly string[]):readonly SpectralLine[]{
+ return Object.freeze(lines.map((raw,n)=>{
   const s=raw.replace(/^ +/,''),space=s.indexOf(' '),first=space<0?s:s.slice(0,space);
   if(!/^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/.test(first))throw new SpectralLineError(n+1);
   const wavelength=Math.fround(Number(first));
   const [name,rest]=quotedToken(space<0?'':s.slice(space)),[file]=quotedToken(rest);
-  const shown=name.slice(0,35);
-  return Object.freeze({wavelength,name:shown,file:file.slice(0,12),row:`${delphiFixed(wavelength,2)}   ${shown}`});
+  const shown=cutColumns(name,35);
+  return Object.freeze({wavelength,name:shown,file:cutColumns(file,12),row:`${delphiFixed(wavelength,2)}   ${shown}`});
  }));
 }
 
@@ -53,7 +65,15 @@ export const SPECTRAL_LINE_MISSING_LITERALS=Object.freeze({caption:'Sp Line Help
  * with '*', then ' '. A file whose first line is empty or does not start with '*' is shown whole. */
 export function spectralLineHelp(txt:Uint8Array,name:string):SpectralLineHelp{
  if(!(txt instanceof Uint8Array)||txt.length>262144)throw new SpectralLineError(0);
- const title=name.replace(/^ +/,''),key=foldAsciiCase(title),lines=textLines(txt);
+ return lineHelp(textLines(txt),name);
+}
+/** Front SC7: `spectralLineHelp` for a translated SPECLNS.TXT as Unicode text (at most 262144 UTF-16 units); the same seek. */
+export function spectralLineHelpText(text:string,name:string):SpectralLineHelp{
+ if(typeof text!=='string'||text.length>262144)throw new SpectralLineError(0);
+ return lineHelp(splitLines(text),name);
+}
+function lineHelp(lines:readonly string[],name:string):SpectralLineHelp{
+ const title=name.replace(/^ +/,''),key=foldAsciiCase(title);
  let i=0;
  if(lines.length>0&&lines[0]!==''&&lines[0][0]==='*'){
   while(i<lines.length&&!(lines[i].includes('*')&&foldAsciiCase(lines[i]).includes(key)))i++;
