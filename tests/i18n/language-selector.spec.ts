@@ -1,4 +1,5 @@
-import {test,expect,type Page} from '@playwright/test';
+import {type Page} from '@playwright/test';
+import {test,expect} from '../fixtures/area-tripwire';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 
 // Front ES1 (docs/I18N.md; user decisions 1, 5 and 9 of 2026-11-09): the English / Español selector at the foot of the header

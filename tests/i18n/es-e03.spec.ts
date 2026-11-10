@@ -1,4 +1,5 @@
-import {test,expect,type Page,type Locator} from '@playwright/test';
+import {type Page,type Locator} from '@playwright/test';
+import {test,expect} from '../fixtures/area-tripwire';
 import {readFileSync} from 'node:fs';
 import {CLASSIFY_PROGRAM_LITERALS_RESTATED} from './classifyProgramLiterals';
 import es from '../../src/i18n/es/es.json' with {type:'json'};

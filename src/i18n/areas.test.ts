@@ -69,6 +69,15 @@ describe('Front ES-SPLIT: route areas of a split language',()=>{
   m.index.activateLocale(bundle(never,{complete:false,keyModules:undefined}));
   expect(m.index.t(AREA_KEY)).toBe('Inspect a saved FITS image');expect(m.active.pendingTextRequests()).toBe(4);
  });
+ it('React Refresh\'s probe of $$typeof on a module-level map builds nothing and reads no text (review: a dev-server false alarm)',async()=>{
+  const m=await fresh(),build=vi.fn(()=>({title:m.index.t(AREA_KEY)}));
+  vi.spyOn(console,'error').mockImplementation(()=>{});
+  m.index.activateLocale(bundle(never));
+  const table=m.registry.lazyMessages(build),sound=m.registry.pickMessages('sound',SOUND_MESSAGES_EN);
+  expect([(table as Record<string,unknown>).$$typeof,(sound as unknown as Record<string,unknown>).$$typeof]).toEqual([undefined,undefined]);
+  expect(build).not.toHaveBeenCalled();expect(m.active.pendingTextRequests()).toBe(0);
+  expect(()=>table.title).toThrow(/before its area fits loaded/);
+ });
  it('an area that times out is failed: its text is English without an error, the notice state is set, and a late part is ignored',async()=>{
   const m=await fresh(),error=vi.spyOn(console,'error').mockImplementation(()=>{}),notified=vi.fn();
   const late=deferred<{default:LocaleAreaPart}>(),arrive=late.resolve;

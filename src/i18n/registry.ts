@@ -30,6 +30,10 @@ function lazyView(value:()=>object,shape:unknown):object{
  const parts=new Map<PropertyKey,unknown>();
  return new Proxy(Array.isArray(shape)?[]:{},{
   get:(_target,key)=>{
+   // Front ES-SPLIT review: React Refresh (dev server only) probes `$$typeof` of every capitalised module-level value when its
+   // module evaluates (`const RADIO_SAVE_TEXTS=lazyMessages(…)`). A message map is never a React type, so that probe must not build
+   // it: in a route area's module it would read text before the area arrived.
+   if(key==='$$typeof')return undefined;
    const english=shape!==undefined&&shape!==null&&typeof shape==='object'&&Object.hasOwn(shape,key)?(shape as Record<PropertyKey,unknown>)[key]:undefined;
    if(english!==undefined&&(deferred(english)||typeof english==='function')){
     if(!parts.has(key))parts.set(key,deferred(english)

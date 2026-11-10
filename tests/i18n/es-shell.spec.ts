@@ -1,4 +1,5 @@
-import {test,expect,type Page} from '@playwright/test';
+import {type Page} from '@playwright/test';
+import {test,expect} from '../fixtures/area-tripwire';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
 

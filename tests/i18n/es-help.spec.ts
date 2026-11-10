@@ -1,4 +1,5 @@
-import {test,expect,type Page} from '@playwright/test';
+import {type Page} from '@playwright/test';
+import {test,expect} from '../fixtures/area-tripwire';
 import {readFileSync} from 'node:fs';
 import witness from '../../src/help/helpAll.witness.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};

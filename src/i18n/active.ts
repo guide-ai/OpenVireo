@@ -65,7 +65,7 @@ export function notePendingText(active:Active,what:string,areas?:readonly string
  const name=areas?.join('+')??'',message=`OpenVireo: ${what} was read before its area${areas?` ${name}`:''} loaded`;
  // The tripwire also logs, so a read inside app code that catches the error (a try around t) still reaches the console, where
  // every Spanish Playwright spec collects it (tests/fixtures/area-tripwire.ts).
- if(areas&&tripwire()){console.error(message);throw new Error(message);}
+ if(areas&&tripwire()){const error=new Error(message);console.error(error);throw error;}
  pendingReads++;
  if(!logged.has(name)&&(areas||![...active.areas.values()].includes('failed'))){logged.add(name);console.error(message);}
 }

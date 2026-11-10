@@ -1,4 +1,5 @@
-import {test,expect,type Page,type Request} from '@playwright/test';
+import {type Page,type Request} from '@playwright/test';
+import {test,expect} from '../fixtures/area-tripwire';
 import en from '../../src/i18n/en.json' with {type:'json'};
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import {WEDGE_ES} from '../../src/i18n/es/maps/wedge';
