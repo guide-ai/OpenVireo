@@ -1,17 +1,19 @@
 import {pickMessages} from '../i18n/registry';
 /** Front ES-HELP [W]: English web text of the shared help viewer's language switch and of the Spectral Line Table window (the
- * viewer's own VIREO captions stay in ClusterHrMessages.ts). Spanish: src/i18n/es/maps/helpViewer.ts. A web adaptation by
- * OpenVireo; the original files, hashes and provenance are unchanged. */
+ * viewer's own VIREO captions stay in ClusterHrMessages.ts). Spanish: src/i18n/es/maps/helpViewer.ts; Brazilian Portuguese
+ * (Front PT-HELP): src/i18n/pt-br/maps/helpViewer.ts. The translation-view texts are shown only in a language that translates the
+ * help files, so their English source names no language (Front PT-HELP). A web adaptation by OpenVireo; the original files, hashes
+ * and provenance are unchanged. */
 export const HELP_VIEWER_EN=Object.freeze({
- /** Shown above the translated help text (Spanish loads only). */
+ /** Shown above the translated help text (loads of a language with help only). */
  translationLabel:'Translation: an OpenVireo web adaptation (not CLEA\'s)',
  originalLabel:'Original: VIREO\'s exact English text',
  viewOriginal:'View original (English)',
- viewTranslation:'View translation (Spanish)',
+ viewTranslation:'View translation',
  translationError:'The translated help could not be loaded, or did not match the original file it was translated from, so VIREO\'s original English help is shown.',
  /** Review S6: the help viewer's notes in the translation view (the original view keeps ClusterHrMessages' helpAdaptation and linkNote). */
- helpAdaptationTranslation:(list:string)=>`OpenVireo's Spanish translation of VIREO's own help (its index ${list} and the text files it names; a web adaptation, not CLEA's), shown in a web version of VIREO's help viewer. Window sizes, fonts and the system beep are not reproduced.`,
- linkNoteTranslation:'Double-click or press Enter on a title under "Temas relacionados" to open it. A blank line there does nothing here; VIREO stops with an error on it.',
+ helpAdaptationTranslation:(list:string)=>`OpenVireo's translation of VIREO's own help (its index ${list} and the text files it names; a web adaptation, not CLEA's), shown in a web version of VIREO's help viewer. Window sizes, fonts and the system beep are not reproduced.`,
+ linkNoteTranslation:'Double-click or press Enter on a title under the translated "Related Topics" line to open it. A blank line there does nothing here; VIREO stops with an error on it.',
  searchFoldNote:'In the translation, the search ignores accents and letter case, which is a web adaptation. VIREO\'s own search, kept in the original view, only ignores the case of A to Z.',
  spectralLines:Object.freeze({
   listCaption:'Spectral Lines',

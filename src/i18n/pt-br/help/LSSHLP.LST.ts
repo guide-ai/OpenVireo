@@ -1,0 +1,45 @@
+// Front PT-HELP [W]: OpenVireo's Brazilian Portuguese (pt-BR) web adaptation of VIREO's LSSHLP.LST. Not CLEA's text: the original bytes,
+// hashes and provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Portuguese chunk.
+export const language='pt-BR';
+export const sourceName='LSSHLP.LST';
+export const sourceSha256='f4ee3de45cead6cac0ae53458c94f9927bd48248a573632787d9e6a275e05c10';
+export const text=`'Primeiros passos' 'begin'
+'Fazer login' 'lsslab.txt'
+'Operar o telescópio' 'begin'
+'Acessar a janela do telescópio' 'lsslab.txt'
+'Controles do telescópio' 'lsslab.txt'
+'Operar o telescópio' 'end'
+'Trocar de telescópio' 'begin'
+'Solicitar tempo de telescópio' 'lsslab.txt'
+'Acessar os telescópios' 'lsslab.txt'
+'Trocar de telescópio' 'end'
+'Trocar o campo estelar' 'lsslab.txt'
+'Primeiros passos' 'end'
+
+'Aquisição de dados' 'begin'
+'Usar o espectrômetro' 'begin'
+'Acessar a janela do espectrômetro' 'lsslab.txt'
+'Iniciar/retomar a contagem' 'lsslab.txt'
+'Parar a contagem' 'lsslab.txt'
+'Medir o espectro' 'lsslab.txt'
+'Imprimir o espectro' 'lsslab.txt'
+'Usar o espectrômetro' 'end'
+'Calcular a velocidade' 'begin'
+'Calcular manualmente' 'lsslab.txt'
+'Verificar os cálculos' 'lsslab.txt'
+'Calcular a velocidade' 'end'
+'Voltar à janela do telescópio' 'lsslab.txt'
+'Aquisição de dados' 'end'
+
+'Operações com dados' 'begin'
+'Carregar dados' 'lsslab.txt'
+'Revisar dados' 'lsslab.txt'
+'Salvar dados' 'lsslab.txt'
+'Imprimir dados' 'lsslab.txt'
+'Plotar resultados' 'begin'
+'Salvar resultados no arquivo de plotagem compartilhado' 'lsslab.txt'
+'Acessar o programa do diagrama em "cunha"' 'lsslab.txt'
+'Plotar resultados' 'end'
+'Usar o programa de planilha' 'lsslab.txt'
+'Operações com dados' 'end'
+`;

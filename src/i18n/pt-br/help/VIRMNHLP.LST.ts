@@ -1,0 +1,35 @@
+// Front PT-HELP [W]: OpenVireo's Brazilian Portuguese (pt-BR) web adaptation of VIREO's VIRMNHLP.LST. Not CLEA's text: the original bytes,
+// hashes and provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Portuguese chunk.
+export const language='pt-BR';
+export const sourceName='VIRMNHLP.LST';
+export const sourceSha256='db9bab876ef1d03ad8b0e96596eb47c3ca9573156a65b4bff7b49bbfac295b2a';
+export const text=`'Primeiros passos' 'begin'
+'Fazer login' 'VIRMnHlp.txt'
+'Selecionar exercício' 'VIRMnHlp.txt'
+'Definir data e hora' 'VIRMnHlp.txt'
+'Selecionar telescópio' 'VIRMnHlp.txt'
+'Abrir a cúpula' 'VIRMnHlp.txt'
+'Acessar o controle do telescópio' 'VIRMnHlp.txt'
+'Encerrar o exercício' 'VIRMnHlp.txt'
+'Acesso pelo teclado' 'VIRMnHlp.txt'
+'Primeiros passos' 'end'
+'Trocar de telescópio' 'begin'
+'Solicitar tempo de telescópio' 'VIRMnHlp.txt'
+'Trocar de telescópio óptico' 'VIRMnHlp.txt'
+'Trocar de telescópio' 'end'
+'Ferramentas' 'begin'
+'Ferramenta de classificação espectral' 'VIRMnHlp.txt'
+'Ferramenta de medição de espectros' 'VIRMnHlp.txt'
+'Ferramenta de análise de radiopulsares' 'VIRMnHlp.txt'
+'Ferramenta de análise do diagrama HR' 'VIRMnHlp.txt'
+'Ferramenta do diagrama em cunha LSS' 'VIRMnHlp.txt'
+'Módulo de astrometria' 'VIRMnHlp.txt'
+'Processamento de imagens (DS9)' 'VIRMnHlp.txt'
+'Editores de resultados' 'VIRMnHlp.txt'
+'Carregar dados salvos' 'VIRMnHlp.txt'
+'Planilha' 'VIRMnHlp.txt'
+'Ferramentas' 'end'
+'Funções de dados' 'begin'
+'Operações com dados' 'VIRMnHlp.txt'
+'Funções de dados' 'end'
+`;

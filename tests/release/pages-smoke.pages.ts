@@ -404,16 +404,23 @@ test('Front ES-SEO: the Spanish pages, their preview image and the hreflang link
 });
 
 // Front ES-HELP: a translated help file is its own chunk, fetched only when the viewer opens it, under the release policy; "Ver
-// original (inglés)" then fetches VIREO's bundled file.
-test('Front ES-HELP: a ?lang=es-419 help viewer fetches only its translated help chunks and switches to the original',async({page,baseURL})=>{
- const p=await watch(page,baseURL!),help:string[]=[];page.on('request',r=>{const m=/\/assets\/([A-Z]+\.(?:LST|TXT|OBS|PLS|LNL))-[\w-]+\.js$/.exec(r.url());if(m)help.push(m[1]);});
- await page.goto('/?lang=es-419#classification');
+// original (inglés)" then fetches VIREO's bundled file. Front PT-HELP: the same for the Brazilian Portuguese help set in its
+// ?lang=pt-BR preview (both sets have chunks of the same names, so the fetched chunks' own language is checked too).
+const HELP_SMOKE=[
+ {tag:'es-419',title:'Front ES-HELP: a ?lang=es-419 help viewer fetches only its translated help chunks and switches to the original',label:'Traducción: adaptación web de OpenVireo (no es de CLEA)',text:'Para cargar un espectro'},
+ {tag:'pt-BR',title:'Front PT-HELP: a ?lang=pt-BR help viewer fetches only its translated help chunks and switches to the original',label:'Tradução: adaptação web do OpenVireo (não é do CLEA)',text:'Para carregar um espectro'},
+] as const;
+for(const h of HELP_SMOKE)test(h.title,async({page,baseURL})=>{
+ const p=await watch(page,baseURL!),help:string[]=[],languages:Promise<string>[]=[];
+ page.on('response',r=>{const m=/\/assets\/([A-Z]+\.(?:LST|TXT|OBS|PLS|LNL))-[\w-]+\.js$/.exec(r.url());if(m){help.push(m[1]);languages.push(r.text().then(t=>/^var \w+=`([\w-]+)`/.exec(t)?.[1]??'?'));}});
+ await page.goto(`/?lang=${h.tag}#classification`);
  await page.getByTestId('class-help-open').click({timeout:20_000});
- await expect(page.getByTestId('class-help-topics-view-label')).toHaveText('Traducción: adaptación web de OpenVireo (no es de CLEA)');
+ await expect(page.getByTestId('class-help-topics-view-label')).toHaveText(h.label);
  expect(help).toEqual(['CLASSHLP.LST']);
  await page.getByTestId('class-help-topic-list').getByRole('option').nth(1).dblclick();
- await expect(page.getByTestId('class-help-topic-text')).toContainText('Para cargar un espectro');
+ await expect(page.getByTestId('class-help-topic-text')).toContainText(h.text);
  expect(help).toEqual(['CLASSHLP.LST','CLASSHLP.TXT']);
+ expect(await Promise.all(languages)).toEqual([h.tag,h.tag]);
  await page.getByTestId('class-help-view-switch').click();
  await expect(page.getByTestId('class-help-topic-text')).toHaveAttribute('lang','en');
  expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);

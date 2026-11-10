@@ -170,6 +170,7 @@
   "map:objectXLab.listColumns.7": "a note number ((3))",
   "map:objectXLab.listColumns.8": "a note number ((4))",
   "map:objectXLab.kinds.qso": "the same word in Portuguese (quasar, IAU OAE pt-BR) with the abbreviation QSO",
-  "map:objectXLab.kinds.pulsar": "the same word in Portuguese (pulsar, IAU OAE pt-BR)"
+  "map:objectXLab.kinds.pulsar": "the same word in Portuguese (pulsar, IAU OAE pt-BR)",
+  "map:helpViewer.spectralLines.ok": "the same word in Portuguese (OK, as Windows pt-BR writes it)"
  }
 }
