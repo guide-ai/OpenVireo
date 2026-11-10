@@ -64,7 +64,7 @@ export const POLISH_ES:Translation<typeof POLISH_MESSAGES_EN>=Object.freeze({
  about:Object.freeze({
   nativeNote:'El cuadro Acerca de (About) de VIREO, con sus textos tal como se leyeron del programa original (su logotipo no se incluye). El resto de esta ventana describe esta reconstrucción web.',
   siteTitle:'Este sitio',
-  site:'OpenVireo es una reconstrucción web gratuita y no comercial de VIREO de Project CLEA para estudiantes, hecha en el navegador a partir del comportamiento recuperado de VIREO y de sus archivos de datos originales. No es el programa de CLEA ni afirma ser equivalente a él; las adaptaciones web se señalan donde aparecen.',
+  site:'OpenVireo es una reconstrucción web gratuita y no comercial de VIREO de Project CLEA para estudiantes, hecha en el navegador a partir del comportamiento recuperado de VIREO y de sus archivos de datos originales. No es el programa de CLEA ni afirma ser equivalente a él; las adaptaciones web se señalan donde aparecen. La traducción al español es una adaptación web de OpenVireo; los archivos y textos de CLEA no cambian.',
   worksTitle:'Qué funciona',
   works:Object.freeze([
    'Los siete ejercicios de VIREO tienen una ruta web para estudiantes: la ley de Hubble (13 galaxias), la estructura a gran escala, la clasificación estelar, la fotometría de las Pléyades (24 estrellas), los diagramas HR de cúmulos, los púlsares y la búsqueda del Objeto X.',

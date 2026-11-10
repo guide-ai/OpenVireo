@@ -5,8 +5,8 @@ import {LANGUAGE_STORAGE_KEY,SPANISH_RELEASED,VIREO_ORIGINALS_KEY} from '../i18n
 import './LanguageChoice.css';
 
 /** Front ES1 [W] (docs/I18N.md; user decisions 1, 5 and 9 of 2026-11-09): English / Español at the foot of the header menu,
- * beside the theme switch, and the "View original (English)" option for VIREO's own texts. Lazily loaded and shown only when
- * src/i18n/locale.ts selectorShown allows it (before ES-REL: only on a `?lang=` preview load). Changing the language reloads
+ * beside the theme switch, and the "View original (English)" option for VIREO's own texts. Lazily loaded and shown when
+ * src/i18n/locale.ts selectorShown allows it (since ES-REL on every load; before it only on a `?lang=` preview load). Changing the language reloads
  * the page after a confirmation that says what a reload keeps and loses and offers Save investigation first. After ES-REL the
  * choice is stored in this browser (try/catch); before ES-REL it is never stored (ES1 review 1, C2), and before ES-REL or when
  * storage fails it travels as `?lang=` in the address. The address keeps its #route. */
