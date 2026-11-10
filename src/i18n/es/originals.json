@@ -587,7 +587,7 @@
  "Slew": "Mover",
  "Tracking": "Seguimiento",
  "Slew Rate": "Velocidad de movimiento",
- "\"Hot List\"": "\"Lista de objetos\"",
+ "\"Hot List\"": "«Lista de objetos»",
  "Add Current Item to List...": "Agregar el objeto actual a la lista...",
  "Load Hot List...": "Cargar lista de objetos...",
  "Save Updated List...": "Guardar lista actualizada...",
@@ -694,8 +694,6 @@
  "Please select (highlight) an item on the list, then select \"Selection\" -> \"Plot\" from the menu.": "Selecciona (resalta) un elemento de la lista y luego elige \"Selección\" -> \"Graficar\" en el menú.",
  "Laboratory Table Number (Not Recorded)": "Número de mesa de laboratorio (no registrado)",
  "Fit of Zero-Age Main Sequence:": "Ajuste de la secuencia principal de edad cero:",
- "(Screen Image Printed on Next Page)": "(Imagen de pantalla impresa en la página siguiente)",
- "- Page 2": "- Página 2",
  "Color-Magnitude Diagram": "Diagrama color-magnitud",
  "Cluster Data Parameters": "Parámetros de datos de cúmulos",
  "Cluster Name or ID": "Nombre o ID del cúmulo",
@@ -740,5 +738,13 @@
  "Recorded Results - Computed Magnitudes": "Resultados registrados - Magnitudes calculadas",
  "Recorded Results - Mean Counts": "Resultados registrados - Cuentas promedio",
  "Cluster Age/Distance Parameters": "Parámetros de edad y distancia del cúmulo",
- "ID #:": "N.º de ID:"
+ "ID #:": "N.º de ID:",
+ "Help -": "Ayuda -",
+ "Select a Topic Under": "Selecciona un tema de",
+ "Spectral Line Help": "Ayuda de líneas espectrales",
+ "** Exercise Finished? **": "** ¿Ejercicio terminado? **",
+ "Select \"OK\" to Quit Exercise, \"Cancel\" to Continue.": "Selecciona «Aceptar» para salir del ejercicio o «Cancelar» para continuar.",
+ "Are You Sure You Want to Quit This Exercise?": "¿Seguro que quieres salir de este ejercicio?",
+ "Sp Line Help not Available!": "¡Ayuda de líneas espectrales no disponible!",
+ "Unable to open Spectral Line Help File.\r\n\r\nFile Name:": "No se puede abrir el archivo de ayuda de líneas espectrales.\r\n\r\nNombre del archivo:"
 }

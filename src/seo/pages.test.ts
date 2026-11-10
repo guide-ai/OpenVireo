@@ -94,7 +94,7 @@ describe('index.html',()=>{
   expect(homeBoot('x')).toContain('<h1>OpenVireo</h1>');expect(root).not.toMatch(/style=|<style|<script/);expect(homeHead('t','d')).toContain('og:title" content="t"');
  });
  it('the icons and preview image it names exist',()=>{
-  for(const f of ['favicon.svg','apple-touch-icon.png','og-image.png'])expect(readFileSync(new URL(`../../public/${f}`,import.meta.url)).length).toBeGreaterThan(100);
+  for(const f of ['favicon.svg','favicon.ico','apple-touch-icon.png','og-image.png'])expect(readFileSync(new URL(`../../public/${f}`,import.meta.url)).length).toBeGreaterThan(100);
   const png=readFileSync(new URL('../../public/og-image.png',import.meta.url));
   expect([png.readUInt32BE(16),png.readUInt32BE(20)]).toEqual([1200,630]);
  });

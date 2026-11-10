@@ -15,6 +15,8 @@ import {normalizeOriginal} from '../vireo';
 import {MAP_IDS,type MapId} from '../maps';
 import {APP_SHELL_MESSAGES_EN} from '../../components/AppShellMessages';
 import {HELP_MENU_EN} from '../../help/HelpMessages';
+import {HELP_VIEWER_EN} from '../../help/HelpViewerMessages';
+import {WEB_HELP_EN} from '../../help/webHelp';
 import {LANGUAGE_CHOICE_EN} from '../../components/LanguageChoiceMessages';
 import {OBJECT_X_GUIDE_EN,OBJECT_X_LAB_EN,OBJECT_X_MEASURE_EN,OBJECT_X_SESSION_EN} from '../../objectx/ObjectXMessages';
 import {POLISH_MESSAGES_EN} from '../../polish/PolishMessages';
@@ -54,6 +56,9 @@ Object.assign(ENGLISH_MAPS,{pulsar:PULSAR_MESSAGES_EN,pulsarLoadSave:LOAD_SAVE_M
 // Front ES7: the cluster HR, Cluster Data and variable-star maps (complete).
 Object.assign(ENGLISH_MAPS,{clusterHr:CLUSTER_HR_EN,clusterData:CLUSTER_DATA_MESSAGES_EN});
 (COMPLETE_MAPS as MapId[]).push('clusterHr','clusterData','variableStars');
+// Front ES-HELP: the help viewer's web text and OpenVireo's own help (complete).
+Object.assign(ENGLISH_MAPS,{helpViewer:HELP_VIEWER_EN,webHelp:WEB_HELP_EN});
+(COMPLETE_MAPS as MapId[]).push('helpViewer','webHelp');
 /** ES1's area of en.json: the shell (header, menu, home and portal, toolbar, errors, instructor mode, document title). */
 const SHELL_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(app|project|session|error|instructorMode)\./.test(k)||/\.nav$/.test(k)||['demonstrationMode.banner','sky.eyebrow','sky.title','sky.subtitle','sky.about','sky.local','sky.observatory','sky.analyzer','sky.step1','sky.step1Help','sky.step2','sky.step2Help','sky.step3','sky.step3Help','spectrum.tools','classLink.cancel'].includes(k));
 /** The string literals of a TypeScript source (escapes decoded; template literals with substitutions skipped). */

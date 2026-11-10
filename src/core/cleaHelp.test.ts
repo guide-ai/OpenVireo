@@ -135,5 +135,10 @@ describe('Help topic window 0x59f174 / 0x59f84c / 0x5a020c / 0x5a030c / 0x59fe44
   expect(page.map(l=>[l.kind,l.text,l.indent])).toEqual([
    ['date','10/28/2026 7:00:00 AM     Laboratory Table Number (Not Recorded)',false],['students',null,false],
    ['title','CLEA Exercise "VIREO - The VIRtual Educational Observatory" - ',true],['caption','Help - X',true],['row','  a  ',true]]);
+  // Front ES-HELP: `tr` reaches only the lab-table suffix; the title prefix stays VIREO's English.
+  const seen:string[]=[],tr=(l:string)=>{seen.push(l);return `«${l}»`;};
+  const shown=helpPrintPage('D','C',[],tr);
+  expect(seen).toEqual(['     Laboratory Table Number (Not Recorded)']);
+  expect(shown[0].text).toBe('D«     Laboratory Table Number (Not Recorded)»');expect(shown[2].text).toBe('CLEA Exercise "VIREO - The VIRtual Educational Observatory" - ');
  });
 });

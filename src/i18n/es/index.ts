@@ -13,6 +13,8 @@ import {OBSERVATORY_ES} from './maps/observatory';
 import {QSO_LIST_ES} from './maps/qsoList';
 import {SOUND_ES} from './maps/sound';
 import {HELP_MENU_ES} from './maps/helpMenu';
+import {HELP_VIEWER_ES} from './maps/helpViewer';
+import {WEB_HELP_ES} from './maps/webHelp';
 import {LANGUAGE_CHOICE_ES} from './maps/languageChoice';
 import {OBJECT_X_LAB_ES} from './maps/objectXLab';
 import {OBJECT_X_GUIDE_ES} from './maps/objectXGuide';
@@ -39,6 +41,6 @@ import {CLUSTER_DATA_ES} from './maps/clusterData';
 export const SPANISH:LocaleBundle=Object.freeze({
  language:'es-419',
  messages,
- maps:Object.freeze({appShell:APP_SHELL_ES,camera:CAMERA_ES,engineView:ENGINE_VIEW_ES,fieldInfo:FIELD_INFO_ES,fieldReadDetails:FIELD_READ_DETAILS_ES,helpMenu:HELP_MENU_ES,languageChoice:LANGUAGE_CHOICE_ES,nakedEye:NAKED_EYE_ES,objectXGuide:OBJECT_X_GUIDE_ES,objectXLab:OBJECT_X_LAB_ES,objectXMeasure:OBJECT_X_MEASURE_ES,objectXSession:OBJECT_X_SESSION_ES,observationMetadata:OBSERVATION_METADATA_ES,observatory:OBSERVATORY_ES,polish:POLISH_ES,projectLinks:PROJECT_LINKS_ES,qsoList:QSO_LIST_ES,sound:SOUND_ES,spectralRange:SPECTRAL_RANGE_ES,tour:TOUR_ES,variableStars:VARIABLE_STARS_ES,wedge:WEDGE_ES,radioAntenna:RADIO_ANTENNA_ES,radioFinishSave:RADIO_FINISH_SAVE_ES,radioR1:RADIO_R1_ES,radioRecordSave:RADIO_RECORD_SAVE_ES,pulsar:PULSAR_ES,pulsarLoadSave:LOAD_SAVE_ES,pulsarSavedRows:SAVED_ROWS_ES,clusterHr:CLUSTER_HR_ES,clusterData:CLUSTER_DATA_ES}),
+ maps:Object.freeze({appShell:APP_SHELL_ES,camera:CAMERA_ES,engineView:ENGINE_VIEW_ES,fieldInfo:FIELD_INFO_ES,fieldReadDetails:FIELD_READ_DETAILS_ES,helpMenu:HELP_MENU_ES,languageChoice:LANGUAGE_CHOICE_ES,nakedEye:NAKED_EYE_ES,objectXGuide:OBJECT_X_GUIDE_ES,objectXLab:OBJECT_X_LAB_ES,objectXMeasure:OBJECT_X_MEASURE_ES,objectXSession:OBJECT_X_SESSION_ES,observationMetadata:OBSERVATION_METADATA_ES,observatory:OBSERVATORY_ES,polish:POLISH_ES,projectLinks:PROJECT_LINKS_ES,qsoList:QSO_LIST_ES,sound:SOUND_ES,spectralRange:SPECTRAL_RANGE_ES,tour:TOUR_ES,variableStars:VARIABLE_STARS_ES,wedge:WEDGE_ES,radioAntenna:RADIO_ANTENNA_ES,radioFinishSave:RADIO_FINISH_SAVE_ES,radioR1:RADIO_R1_ES,radioRecordSave:RADIO_RECORD_SAVE_ES,pulsar:PULSAR_ES,pulsarLoadSave:LOAD_SAVE_ES,pulsarSavedRows:SAVED_ROWS_ES,clusterHr:CLUSTER_HR_ES,clusterData:CLUSTER_DATA_ES,helpViewer:HELP_VIEWER_ES,webHelp:WEB_HELP_ES}),
  originals,
 });

@@ -20,6 +20,8 @@ import type {RADIO_R1_MESSAGES_EN} from '../components/RadioR1Messages';
 import type {RADIO_SAVE_MESSAGES_EN} from '../components/RadioRecordSaveMessages';
 import type {WEDGE_MESSAGES_EN} from '../components/WedgeMessages';
 import type {HELP_MENU_EN} from '../help/HelpMessages';
+import type {HELP_VIEWER_EN} from '../help/HelpViewerMessages';
+import type {WEB_HELP_EN} from '../help/webHelp';
 import type {OBJECT_X_GUIDE_EN,OBJECT_X_LAB_EN,OBJECT_X_MEASURE_EN,OBJECT_X_SESSION_EN} from '../objectx/ObjectXMessages';
 import type {FIELD_INFO_MESSAGES_EN,FIELD_READ_DETAILS_EN,NAKED_EYE_MESSAGES_EN} from '../observatory/FieldInfoMessages';
 import type {OBSERVATORY_MESSAGES_EN} from '../observatory/ObservatoryMessages';
@@ -59,9 +61,11 @@ export interface MessageMaps{
  spectralRange:typeof SPECTRAL_RANGE_EN;
  variableStars:typeof VARIABLE_STARS_EN;
  wedge:typeof WEDGE_MESSAGES_EN;
+ helpViewer:typeof HELP_VIEWER_EN;
+ webHelp:typeof WEB_HELP_EN;
 }
 export type MapId=keyof MessageMaps;
-export const MAP_IDS=Object.freeze(['appShell','camera','clusterData','clusterHr','engineView','fieldInfo','fieldReadDetails','helpMenu','languageChoice','nakedEye','objectXGuide','objectXLab','objectXMeasure','objectXSession','observationMetadata','observatory','polish','projectLinks','pulsar','pulsarLoadSave','pulsarSavedRows','qsoList','radioAntenna','radioFinishSave','radioR1','radioRecordSave','sound','spectralRange','tour','variableStars','wedge'] as const satisfies readonly MapId[]);
+export const MAP_IDS=Object.freeze(['appShell','camera','clusterData','clusterHr','engineView','fieldInfo','fieldReadDetails','helpMenu','languageChoice','nakedEye','objectXGuide','objectXLab','objectXMeasure','objectXSession','observationMetadata','observatory','polish','projectLinks','pulsar','pulsarLoadSave','pulsarSavedRows','qsoList','radioAntenna','radioFinishSave','radioR1','radioRecordSave','sound','spectralRange','tour','variableStars','wedge','helpViewer','webHelp'] as const satisfies readonly MapId[]);
 /** A translated map: the English map's shape, with string literal types widened to string and functions kept. */
 export type Translation<T>=T extends string?string
  :T extends (...args:infer A)=>infer R?(...args:A)=>R extends string?string:R

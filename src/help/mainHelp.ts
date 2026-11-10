@@ -33,12 +33,12 @@ export const REMINDER_LIMIT=1023;
 /** FormCloseQuery 0x588b9c step 3: shown when env+0x54c ≠ 3, or after 0x5a0418's "File Error!" box when the reminder file
  * cannot be read (it then returns 3). Yes/No, same caption. */
 export const QUIT_QUESTION='Are You Sure You Want to Quit This Exercise?';
-export function reminderBoxText(bytes:Uint8Array):string{
+export function reminderBoxText(bytes:Uint8Array,select:string=REMINDER_SELECT):string{
  if(!(bytes instanceof Uint8Array)||bytes.length>65536)throw new RangeError('Reminder file size');
  let text='';for(const b of bytes)text+=String.fromCharCode(b);
  const lines=text.split(/\r?\n/);if(lines.length>0&&lines[lines.length-1]==='')lines.pop();
  let out='';const cat=(s:string)=>{out=(out+s).slice(0,REMINDER_LIMIT);};
  for(const line of lines){cat(line.slice(0,255));cat('\r\n');}
- cat('\r\n');cat(REMINDER_SELECT);
+ cat('\r\n');cat(select);
  return out;
 }
