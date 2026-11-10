@@ -80,7 +80,7 @@ test('a hanging beacon holds neither the home page nor an exercise: both render 
  const errors=await asPagesServesIt(page,baseURL!),beacon=await hang(page,BEACON),report=await hang(page,REPORT);
  const pages=[
   // Front HOME: the home page is the welcome.
-  ['/',page.getByRole('heading',{level:1,name:"Project CLEA's VIREO astronomy labs, in your browser"})],
+  ['/',page.getByRole('heading',{level:1,name:"Project CLEA's VIREO astronomy labs, rebuilt for your browser"})],
   ['/#classification',page.getByRole('status').filter({hasText:'Original spectra verified.'})],
  ] as const;
  for(const [path,ready] of pages){
@@ -110,7 +110,7 @@ for(const variant of ['beacon refused','report refused','report hangs'] as const
   else await page.route(BEACON,route=>{beacon.push(route.request());return route.fulfill({status:200,contentType:'text/javascript',body:BEACON_STUB});});
   const report=variant==='report hangs'?(await hang(page,REPORT)).seen:await refuse(page,REPORT);
   await page.goto('/');
-  await expect(page.getByRole('heading',{level:1,name:"Project CLEA's VIREO astronomy labs, in your browser"})).toBeVisible({timeout:30_000});
+  await expect(page.getByRole('heading',{level:1,name:"Project CLEA's VIREO astronomy labs, rebuilt for your browser"})).toBeVisible({timeout:30_000});
   await expect.poll(()=>beacon.length).toBe(1);
   if(variant!=='beacon refused')await expect.poll(()=>report.length).toBe(1);
   await page.goto('about:blank');await page.goto('/#classification');

@@ -3,6 +3,8 @@ import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
 import {LABS,LAB_SLUGS,SITE_URL,labFromHash,labUrl} from './labs';
 import en from '../i18n/en.json' with {type:'json'};
+import es from '../i18n/es/es.json' with {type:'json'};
+import pt from '../i18n/pt-br/pt-br.json' with {type:'json'};
 import {OBJECT_X_LAB_EN} from '../objectx/ObjectXMessages';
 import {POLISH_MESSAGES} from '../polish/PolishMessages';
 import {HOME_LAB_KEYS,LABS_INDEX_DESCRIPTION,SITEMAP_PATHS,homeBoot,homeHead,labPage,labsIndexPage,sitemap,staticSeoFiles} from './pages';
@@ -110,6 +112,11 @@ describe('home pre-render (Front HOME)',()=>{
   for(const key of ['home.title','home.lead','home.factInstall','home.factFree','home.factFaithful','home.labsHeading'] as const)expect(boot).toContain(en[key]);
   expect(en['home.factInstall']).toMatch(/no Windows and no virtual machine/);expect(en['home.factInstall']).toMatch(/Mac, Windows, Linux or a Chromebook/);
   expect(en['home.factFaithful']).toMatch(/^An unofficial reconstruction/);
+  // Front HOME review 1 (finding 5, SEO review m2): the h1 or the lead says it is unofficial in every language, and the h1 is
+  // never just the third party's product name.
+  for(const [lang,m,word] of [['en',en,/unofficial/],['es-419',es,/no oficial/],['pt-BR',pt,/não oficial/]] as const){
+   expect(`${m['home.title']} ${m['home.lead']}`,lang).toMatch(word);expect(m['home.title'],lang).toMatch(/rebuilt|reconstruíd|reconstruid/);}
+  expect(en['home.lead']).toMatch(/^OpenVireo is an unofficial web reconstruction of VIREO/);
  });
  it('lists the seven labs with their one-line summaries, each linking to its /labs/ page in the /labs/ order',()=>{
   const links=[...boot.matchAll(/<li><a href="([^"]+)">([^<]+)<\/a>: ([^<]+)<\/li>/g)];
@@ -126,5 +133,14 @@ describe('home pre-render (Front HOME)',()=>{
   expect(()=>homeBoot({})).toThrow(/home\.eyebrow/);
   const text=Object.entries(en).filter(([k])=>k.startsWith('home.')).map(([,v])=>v).join(' ');
   expect(text).not.toMatch(/official CLEA|endorsed|equivalent|student|teacher|class(room)?\b|homework/i);
+ });
+ it('sends every static page\'s Open the observatory link to the exploration page, not to the welcome (review 1 finding 4)',()=>{
+  const files=staticSeoFiles(),pages=Object.entries(files).filter(([f])=>f.endsWith('.html'));
+  expect(pages.length).toBeGreaterThan(10);
+  for(const [f,html] of pages){
+   const opens=[...html.matchAll(/<a class="(?:open|button)" href="([^"]+)">/g)].map(m=>m[1]).filter(h=>!h.includes('#lab='));
+   expect(opens.length,f).toBeGreaterThan(0);
+   for(const h of opens)expect(h,f).toMatch(/^\/(\?lang=[a-zA-Z0-9-]+)?#observatory$/);
+  }
  });
 });

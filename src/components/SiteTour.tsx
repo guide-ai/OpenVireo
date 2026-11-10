@@ -10,13 +10,13 @@ function markTourSeen(){try{localStorage.setItem(TOUR_SEEN_KEY,'done');}catch{/*
 
 /** Starts the first-visit tour shortly after load, unless the visitor is already busy (review 1 S4): any key press or pointer
  * press before then, a modal window open, or focus in a form field. It is then left for the next visit (not marked seen).
- * Returns the cleanup. */
-export function scheduleFirstVisitTour(start:()=>void,delay=700):()=>void{
+ * Returns the cleanup. Front HOME review 1: `ran`, when given, is told when the timer has run (whether or not the tour started). */
+export function scheduleFirstVisitTour(start:()=>void,delay=700,ran?:()=>void):()=>void{
  let busy=false;const mark=()=>{busy=true;};
  window.addEventListener('pointerdown',mark,true);window.addEventListener('keydown',mark,true);
  const stop=()=>{window.removeEventListener('pointerdown',mark,true);window.removeEventListener('keydown',mark,true);};
  const timer=window.setTimeout(()=>{
-  stop();
+  ran?.();stop();
   const active=document.activeElement;
   if(busy||document.querySelector('dialog:modal,[aria-modal="true"]')||active?.closest('input,textarea,select')||(active instanceof HTMLElement&&active.isContentEditable))return;
   start();

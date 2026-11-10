@@ -72,7 +72,7 @@ export function homeBoot(m:Readonly<Record<string,string>>):string{
  return `<div class="seo-boot"><p class="eyebrow">${text('home.eyebrow')}</p><h1>${text('home.title')}</h1><p>${text('home.lead')}</p>`+
   `<ul aria-label="${text('home.factsLabel')}"><li>${text('home.factInstall')}</li><li>${text('home.factFree')}</li><li>${text('home.factFaithful')}</li></ul>`+
   `<h2>${text('home.labsHeading')}</h2><nav aria-label="Labs"><ul class="labs">${ENGLISH.labs.map(l=>`<li><a href="${labUrl(l.slug)}">${text(HOME_LAB_KEYS[l.slug])}</a>: ${text(HOME_LAB_KEYS[l.slug]+'Summary')}</li>`).join('')}</ul></nav>`+
-  `<p>Loading the observatory…</p></div>`;
+  `<p>Loading OpenVireo…</p></div>`;
 }
 
 /** The links to this page in the other languages, each named in its own language. A home page that is the app (English) is
@@ -88,11 +88,15 @@ function page({key,title,description,body,ld,language}:{key:PageKey;title:string
   sharedHead({key,title,description,language})+
   `<link rel="stylesheet" href="/labs/labs.css"/><script type="application/ld+json">${ldJson(ld)}</script></head>`+
   `<body><header class="top"><a class="brand" href="${pathOf(language,'home')}"><span aria-hidden="true">✳</span> ${SITE_NAME}</a>`+
-  `<nav aria-label="${esc(ui.siteNav)}"><a href="${pathOf(language,'labs')}">${esc(ui.allLabs)}</a>${languageLinks(language,key)}<a class="open" href="${esc(language.app)}">${esc(ui.openObservatory)}</a></nav></header>`+
+  `<nav aria-label="${esc(ui.siteNav)}"><a href="${pathOf(language,'labs')}">${esc(ui.allLabs)}</a>${languageLinks(language,key)}<a class="open" href="${esc(openObservatoryHref(language))}">${esc(ui.openObservatory)}</a></nav></header>`+
   `<main>${body}</main>`+
   `<footer><p>${esc(ui.about)}</p><p>${esc(ui.platform)}</p></footer>`+
   `</body></html>\n`;
 }
+
+/** Front HOME review 1 (finding 4): "Open the observatory" goes to the exploration page, not to the app's welcome (`/`), which
+ * a static page has already stood in for. */
+export const openObservatoryHref=(language:SeoLanguage)=>`${language.app}#observatory`;
 
 const crumbs=(items:{name:string;path:string}[])=>({
  '@type':'BreadcrumbList',itemListElement:items.map((it,i)=>({'@type':'ListItem',position:i+1,name:it.name,item:SITE_URL+it.path})),
@@ -129,7 +133,7 @@ export function labsIndexPage(language:SeoLanguage=ENGLISH):string{
  const x=language.labsIndex,home=pathOf(language,'home'),labs=pathOf(language,'labs');
  const body=crumbNav(language,[{name:SITE_NAME,path:home}],language.ui.labsCrumb)+
   `<p class="eyebrow">${esc(x.eyebrow)}</p><h1>${esc(x.heading)}</h1><p class="lead">${esc(x.lead)}</p>`+cards(language)+
-  `<p class="cta"><a class="button" href="${esc(language.app)}">${esc(language.ui.openObservatory)}</a></p>`;
+  `<p class="cta"><a class="button" href="${esc(openObservatoryHref(language))}">${esc(language.ui.openObservatory)}</a></p>`;
  const ld={'@context':'https://schema.org','@graph':[
   {'@type':'ItemList',name:x.listName,itemListElement:language.labs.map((l,i)=>({'@type':'ListItem',position:i+1,name:l.name,url:SITE_URL+pathOf(language,l.slug)}))},
   crumbs([{name:SITE_NAME,path:home},{name:language.ui.labsCrumb,path:labs}]),
@@ -143,7 +147,7 @@ export function languageHomePage(language:SeoLanguage):string{
  const h=language.home;
  if(!h)throw new Error(`${language.tag}: its home page is the app`);
  const body=`<p class="eyebrow">${esc(h.eyebrow)}</p><h1>${esc(h.heading)}</h1><p class="lead">${esc(h.lead)}</p>`+
-  `<p class="cta"><a class="button" href="${esc(language.app)}">${esc(language.ui.openObservatory)}</a> <span>${esc(h.note)}</span></p>`+
+  `<p class="cta"><a class="button" href="${esc(openObservatoryHref(language))}">${esc(language.ui.openObservatory)}</a> <span>${esc(h.note)}</span></p>`+
   `<section><h2>${esc(h.labsHeading)}</h2>${cards(language)}</section>`+
   `<section><h2>${esc(h.howHeading)}</h2><ul>${h.how.map(s=>`<li>${esc(s)}</li>`).join('')}</ul></section>`;
  const ld={'@context':'https://schema.org','@graph':[{

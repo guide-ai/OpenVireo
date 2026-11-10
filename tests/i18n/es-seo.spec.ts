@@ -19,9 +19,9 @@ test('/es/ is a static Spanish page; Abrir el observatorio opens the app in Span
  await expect(page.locator('.cards a')).toHaveCount(7);
  await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute('href','https://openvireo.space/');
  await page.getByRole('link',{name:'Abrir el observatorio'}).first().click();
- await expect(page.getByRole('heading',{level:1,name:es['home.title']})).toBeVisible({timeout:15_000});
+ await expect(page.getByRole('heading',{level:1,name:es['sky.title']})).toBeVisible({timeout:15_000});
  await expect(page.locator('html')).toHaveAttribute('lang','es-419');
- expect(new URL(page.url()).search).toBe('?lang=es-419');expect(await stored(page)).toBeNull();
+ expect(new URL(page.url()).search).toBe('?lang=es-419');expect(new URL(page.url()).hash).toBe('#observatory');expect(await stored(page)).toBeNull();
  // An English browser opening the plain address afterwards still gets English (nothing was stored).
  await page.goto('/');await expect(page.getByRole('heading',{level:1,name:en['home.title']})).toBeVisible({timeout:15_000});
  await page.goto('/es/');await page.getByRole('navigation',{name:'Sitio'}).getByRole('link',{name:'English'}).click();
@@ -46,7 +46,7 @@ for(const {slug,guide} of [{slug:'pulsars',guide:es['pulsarLab.title']},{slug:'o
   const dialog=page.locator('dialog[open]');
   await expect(dialog).toBeVisible({timeout:15_000});await expect(dialog).toContainText(guide);
   await expect(page.locator('html')).toHaveAttribute('lang','es-419');
-  await expect.poll(()=>page.evaluate(()=>[location.search,location.hash])).toEqual(['?lang=es-419','']);
+  await expect.poll(()=>page.evaluate(()=>[location.search,location.hash])).toEqual(['?lang=es-419','#observatory']);
   expect(await stored(page)).toBeNull();
  });
 

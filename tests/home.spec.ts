@@ -107,3 +107,32 @@ test('a visitor arriving through #lab= gets the guide and no tour, even on reach
  await welcome(page).getByRole('button',{name:en['home.explore'],exact:true}).click();await expect(h1(page,'Start with the sky.')).toBeVisible();
  await page.waitForTimeout(1500);await expect(page.getByTestId('site-tour')).toHaveCount(0);
 });
+
+// Front HOME review 1, finding 1: a visitor who opens a guide (here from a welcome card) and follows it to the observatory does not
+// get the tour over the lab; Explore the sky without a guide still gets it (the test above).
+test('a visitor who chose a lab card and follows its guide to the observatory gets no tour',async({page})=>{
+ await asVisitor(page);
+ await page.goto('/');await expect(h1(page)).toBeVisible({timeout:15000});
+ await welcome(page).getByRole('button',{name:en['home.pleiades'],exact:true}).click();
+ const guide=page.locator('dialog[open]');await expect(guide).toContainText('Your Pleiades photometry',{timeout:15000});
+ await guide.getByRole('button',{name:en['pleiadesLab.goObservatory'],exact:true}).first().click();
+ await expect(page).toHaveURL(/#observatory$/);await expect(h1(page,'Start with the sky.')).toBeVisible();
+ await page.waitForTimeout(1500);await expect(page.getByTestId('site-tour')).toHaveCount(0);
+});
+
+test('Help replays the tour from the welcome, and Report a problem names the welcome (#home), not the observatory',async({page})=>{
+ await page.goto('/');await expect(h1(page)).toBeVisible({timeout:15000});
+ // The brand link is the welcome's current page in the menu (review 1 finding 3).
+ await expect(page.locator('.portal-brand')).toHaveAttribute('aria-current','page');
+ await page.getByTestId('main-help-menu').click();
+ const report=page.getByTestId('main-help-report');await expect(report).toBeVisible();
+ const body=new URL((await report.getAttribute('href'))!).searchParams.get('body')??'';
+ expect(body).toContain('#home');expect(body).not.toContain('#observatory');
+ await expect(page.getByTestId('project-report')).toHaveAttribute('href',/%23home/);
+ await page.getByTestId('main-help-tour').click();
+ const tour=page.getByTestId('site-tour');await expect(tour).toBeVisible();await expect(tour).toContainText('Step 1 of 6');
+ await page.keyboard.press('Escape');await expect(tour).toHaveCount(0);await expect(h1(page)).toBeVisible();
+ // Leaving the welcome takes the mark off the brand link.
+ await welcome(page).getByRole('button',{name:en['home.explore'],exact:true}).click();
+ await expect(page.locator('.portal-brand')).not.toHaveAttribute('aria-current','page');
+});

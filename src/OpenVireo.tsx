@@ -970,37 +970,43 @@ export default function OpenVireo(){
   // Front Perf: the header and nav depend only on view, hostInert and stable handlers/refs; built again only when those change.
   // Front Onboarding [W]: the first-visit tour starts by itself once per browser (not in automated browsers); Help repeats it.
   const [tour,setTour]=useState(false);
-  /** The Guides menu: each lab's guide opener, shared by its menu button and by the #lab= links of the /labs/ pages. */
+  // Front HOME review 1 (finding 1): the first-visit tour is not for a visitor who chose a lab. Every guide opener (the welcome's
+  // cards, the Guides menu, #lab= and the cluster menu button) starts its exercise through guideStart, which records that a guide
+  // was opened in this load; a #lab= arrival counts from the start, before its effect below opens the guide.
+  const guideOpened=useRef(labFromHash(location.hash)!==null),tourScheduled=useRef(false);
+  const guideStart=useCallback((code:ExerciseCode)=>{guideOpened.current=true;startExercise(code);},[startExercise]);
+  /** The Guides menu: each lab's guide opener, shared by its menu button, the welcome's card and the #lab= links of the /labs/ pages. */
   const openGuide=useMemo<Record<LabSlug,()=>void>>(()=>({
-   hubble:()=>{startExercise(4);labGuide.current?.showModal();},
-   'large-scale-structure':()=>{startExercise(5);lssGuide.current?.showModal();},
-   'object-x':()=>{startExercise(1);objectXGuide.current?.showModal();},
-   pulsars:()=>{startExercise(6);pulsarGuide.current?.showModal();},
-   pleiades:()=>{startExercise(3);pleiadesGuide.current?.showModal();},
-   'stellar-classification':()=>{startExercise(2);classificationGuide.current?.showModal();},
-   'cluster-hr':()=>openClusterGuide(stable.navigate,startExercise),
-  }),[startExercise,stable]);
-  // A visitor arriving from a /labs/ page (#lab=) gets that lab's guide instead of the first-visit tour (review 1 m4).
-  // Front HOME: the tour starts the first time the visitor reaches the exploration page, not on the welcome (firstVisit.ts).
-  // A leave within the delay (or React's development double effect) cancels it and lets the next visit there schedule it again.
-  const arrivedWithLab=useRef(labFromHash(location.hash)!==null),tourScheduled=useRef(false);
+   hubble:()=>{guideStart(4);labGuide.current?.showModal();},
+   'large-scale-structure':()=>{guideStart(5);lssGuide.current?.showModal();},
+   'object-x':()=>{guideStart(1);objectXGuide.current?.showModal();},
+   pulsars:()=>{guideStart(6);pulsarGuide.current?.showModal();},
+   pleiades:()=>{guideStart(3);pleiadesGuide.current?.showModal();},
+   'stellar-classification':()=>{guideStart(2);classificationGuide.current?.showModal();},
+   'cluster-hr':()=>openClusterGuide(stable.navigate,guideStart),
+  }),[guideStart,stable]);
+  // Front HOME: the tour starts the first time the visitor reaches the exploration page, not on the welcome, and never once a guide
+  // was opened in this load (firstVisit.ts). Leaving before its timer runs (or React's development double effect) cancels it and
+  // lets the next visit there schedule it again (review 1 finding 7: decided by the timer having run, not by elapsed time).
   useEffect(()=>{
-   if(!firstVisitTourDue({view,automated:automatedBrowser(),seen:tourSeen(),arrivedWithLab:arrivedWithLab.current,alreadyScheduled:tourScheduled.current}))return;
-   tourScheduled.current=true;const since=performance.now(),cancel=scheduleFirstVisitTour(()=>setTour(true),FIRST_VISIT_TOUR_DELAY);
-   return()=>{cancel();if(performance.now()-since<FIRST_VISIT_TOUR_DELAY)tourScheduled.current=false;};
+   if(!firstVisitTourDue({view,automated:automatedBrowser(),seen:tourSeen(),guideOpened:guideOpened.current,alreadyScheduled:tourScheduled.current}))return;
+   tourScheduled.current=true;let fired=false;
+   const cancel=scheduleFirstVisitTour(()=>setTour(true),FIRST_VISIT_TOUR_DELAY,()=>{fired=true;});
+   return()=>{cancel();if(!fired)tourScheduled.current=false;};
   },[view]);
   // Front SEO: a /labs/ page's "Open the lab" link (#lab=<slug>) opens that lab's guide through the same opener as its Guides
-  // menu button, then leaves the plain observatory address, so a reload or a shared link does not reopen it.
+  // menu button, then leaves the observatory's own address (#observatory, Front HOME review 1 finding 2), so a reload or a shared
+  // link shows the observatory without reopening the guide.
   useEffect(()=>{
    const lab=labFromHash(location.hash);if(!lab)return;
-   history.replaceState(history.state,'',location.pathname+location.search);
+   history.replaceState(history.state,'',location.pathname+location.search+'#observatory');
    openGuide[lab]();
   },[]);
   // Front HEADER: the sidebar's page buttons come from the route table the page bar reads (routePages.ts), one markup for all.
   const navGroup=(group:RouteGroup)=><NavGroup id={group} label={SHELL.navGroups[group]} view={view} routes={routesIn(group)}>{routesIn(group).map(r=><button key={r} data-route={r} aria-current={view===r?'page':undefined} className={view===r?'active':''} onClick={()=>stable.navigate(r)}>{ROUTE_PAGES[r].label()}</button>)}</NavGroup>;
   // The slots and the Help menu are built once, so a route change or a keystroke does not render them again.
   const originalsSlot=useMemo(()=>selectorShown(uiLanguage())?<VireoOriginalsSlot/>:undefined,[]);
-  const header=useMemo(()=><PortalHeader inert={hostInert} view={view} navLabel={SHELL.toolsMenu} links={<ProjectLinks page={view}/>} originals={originalsSlot} instructor={<InstructorModeMenuItem on={instructorGate.open} onRequest={stable.askInstructor} buttonRef={instructorItem}/>} brand={<><a className="portal-brand" href="#home" onClick={()=>stable.navigate('home')}><span aria-hidden="true">✳</span> {t('app.name')}</a><span className="portal-status"><i/>{t('sky.local')}</span></>}>{navGroup('optical')}{navGroup('radio')}{navGroup('analysis')}<ResultsEditorsNav navigate={stable.navigate}/>{navGroup('files')}<NavGroup id="guides" label={SHELL.navGroups.guides} view={view} routes={[]} defaultOpen><button onClick={openGuide.hubble}>{t('lab.nav')}</button><button data-testid="lss-lab-open" onClick={openGuide['large-scale-structure']}>{t('lssLab.nav')}</button><button data-testid="objectx-lab-open" onClick={openGuide['object-x']}>{OBJECT_X_LAB.guideNav}</button><button data-testid="pulsar-lab-open" onClick={openGuide.pulsars}>{t('pulsarLab.nav')}</button><button data-testid="pleiades-lab-open" onClick={openGuide.pleiades}>{t('pleiadesLab.nav')}</button><button data-testid="classification-lab-open" onClick={openGuide['stellar-classification']}>{t('classLab.nav')}</button><ClusterGuideNavButton navigate={stable.navigate} onOpen={startExercise}/></NavGroup></PortalHeader>,[hostInert,view,stable,instructorGate.open,openGuide,originalsSlot]);
+  const header=useMemo(()=><PortalHeader inert={hostInert} view={view} navLabel={SHELL.toolsMenu} links={<ProjectLinks page={view}/>} originals={originalsSlot} instructor={<InstructorModeMenuItem on={instructorGate.open} onRequest={stable.askInstructor} buttonRef={instructorItem}/>} brand={<><a className="portal-brand" href="#home" data-route="home" aria-current={view==='home'?'page':undefined} onClick={()=>stable.navigate('home')}><span aria-hidden="true">✳</span> {t('app.name')}</a><span className="portal-status"><i/>{t('sky.local')}</span></>}>{navGroup('optical')}{navGroup('radio')}{navGroup('analysis')}<ResultsEditorsNav navigate={stable.navigate}/>{navGroup('files')}<NavGroup id="guides" label={SHELL.navGroups.guides} view={view} routes={[]} defaultOpen><button onClick={openGuide.hubble}>{t('lab.nav')}</button><button data-testid="lss-lab-open" onClick={openGuide['large-scale-structure']}>{t('lssLab.nav')}</button><button data-testid="objectx-lab-open" onClick={openGuide['object-x']}>{OBJECT_X_LAB.guideNav}</button><button data-testid="pulsar-lab-open" onClick={openGuide.pulsars}>{t('pulsarLab.nav')}</button><button data-testid="pleiades-lab-open" onClick={openGuide.pleiades}>{t('pleiadesLab.nav')}</button><button data-testid="classification-lab-open" onClick={openGuide['stellar-classification']}>{t('classLab.nav')}</button><ClusterGuideNavButton navigate={stable.navigate} onOpen={guideStart}/></NavGroup></PortalHeader>,[hostInert,view,stable,instructorGate.open,openGuide,originalsSlot]);
   // Front R4c: the options VIREO's HR form and observation results read themselves.
   const vireoOptions=useMemo<VireoOptions>(()=>({monochromeDisplays:sessionOptions.monochromeDisplays,printInColor:sessionOptions.printInColor,timeDependentData:sessionOptions.timeDependentData,
    showObjectId:sessionOptions.showObjectId,showObjectMag:sessionOptions.showObjectMag,editMode,currentObject,allowRangeChange:sessionOptions.allowUserChange,setEBmV:photometerTabOptions.setEBmV,detectSky:photometerTabOptions.detectSky,instrumentParameters,cameraParameters}),[instrumentParameters,cameraParameters,sessionOptions.monochromeDisplays,sessionOptions.printInColor,sessionOptions.timeDependentData,sessionOptions.showObjectId,sessionOptions.showObjectMag,editMode,currentObject,sessionOptions.allowUserChange,photometerTabOptions]);// R4d: the spectrometer and Multi-Spec readers

@@ -55,7 +55,9 @@ const close=async(page:Page)=>{await page.keyboard.press('Escape');await page.wa
 /** The walk: the observatory, Slew, Site, File, Tools and Exit, the student options box, then in instructor mode the options
  * dialog with Reset, Edit Mode and Virtual Observatory, File › Field Information (star list, GCVS variables) and the QSO List. */
 const STEPS:readonly (readonly [string,(page:Page)=>Promise<void>])[]=[
- ['observatory',async()=>{}],
+ // Front HOME review 1: the welcome (#home) is walked first, then the observatory.
+ ['welcome',async page=>{await page.evaluate(()=>{location.hash='home';});await expect(page.locator('#home-title')).toBeVisible();}],
+ ['observatory',async page=>{await page.evaluate(()=>{location.hash='observatory';});await expect(page.locator('.sky-card')).toBeVisible();}],
  ['dome open',async page=>{await page.locator('.sky-card .card-heading > button').click();await expect(id(page,'ob-set-coordinates')).toBeEnabled();}],
  ['Slew › Set Coordinates',async page=>{await id(page,'ob-set-coordinates').click();await expect(id(page,'ob-sky-coords')).toBeVisible();}],
  ['Slew › Hot List › View/Select (empty)',async page=>{await close(page);await id(page,'ob-view-select').click();await expect(id(page,'ob-hotlist-box')).toBeVisible();}],

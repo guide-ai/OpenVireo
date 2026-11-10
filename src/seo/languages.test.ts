@@ -137,7 +137,7 @@ describe('Spanish pages',()=>{
    // Every link stays on the Spanish pages or opens the app in Spanish, except the one link to the English version.
    const links=attrs(html,/<a [^>]*href="([^"]*)"/g),english=attrs(html,/<a href="([^"]*)" hreflang="en" lang="en">English<\/a>/g);
    expect(english).toEqual([key==='home'?'/?lang=en':pathOf(ENGLISH,key)]);
-   for(const href of links.filter(h=>!english.includes(h)))expect(href,`${path} → ${href}`).toMatch(/^\/es\/|^\/\?lang=es-419(?:#lab=[a-z-]+)?$/);
+   for(const href of links.filter(h=>!english.includes(h)))expect(href,`${path} → ${href}`).toMatch(/^\/es\/|^\/\?lang=es-419(?:#lab=[a-z-]+|#observatory)?$/);
   }
  });
  it("a lab page's Abrir la práctica opens the app in Spanish with that lab's guide; its JSON-LD is a Spanish LearningResource",()=>{
@@ -152,7 +152,7 @@ describe('Spanish pages',()=>{
  it('/es/ is a static Spanish home page that opens the app in Spanish and lists every Spanish lab page',()=>{
   const html=languageHomePage(SPANISH);expect(PAGES['/es/']).toBe(html);
   expect(attr(html,/<title>([^<]*)<\/title>/)).toBe(SPANISH.home!.title);
-  expect(html).toContain('<a class="button" href="/?lang=es-419">Abrir el observatorio</a>');
+  expect(html).toContain('<a class="button" href="/?lang=es-419#observatory">Abrir el observatorio</a>');// Front HOME review 1: the exploration page
   for(const l of LABS)expect(html).toContain(`href="/es/labs/${l.slug}/"`);
   expect(ld(html)[0]['@graph'][0]).toMatchObject({'@type':'WebApplication',url:`${SITE_URL}/es/`,inLanguage:'es-419',isAccessibleForFree:true});
   expect(()=>languageHomePage(ENGLISH)).toThrow();
