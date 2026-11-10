@@ -81,3 +81,18 @@ export const PORTUGUESE_TEXT=language('pt-BR',pt,ptOriginals,{appShell:APP_SHELL
 export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT]);
 export const textOf=(tag:string):LanguageText=>{const t=TRANSLATED.find(l=>l.tag===tag);if(!t)throw new Error(`No test text for ${tag}`);return t;};
 if(LANGUAGES.some(l=>!TRANSLATED.some(t=>t.tag===l.tag)))throw new Error('tests/i18n/languageText.ts: a registered language has no test text');
+
+// Front PT2: the maps the E01 and E02 walks render beyond the observatory's (tests/i18n/e01.spec.ts, e02.spec.ts), per language. Only
+// their text leaves are read (the View original tests' web text).
+import {ENGINE_VIEW_ES} from '../../src/i18n/es/maps/engineView';
+import {SPECTRAL_RANGE_ES} from '../../src/i18n/es/maps/spectralRange';
+import {WEDGE_ES} from '../../src/i18n/es/maps/wedge';
+import {ENGINE_VIEW_PT} from '../../src/i18n/pt-br/maps/engineView';
+import {SPECTRAL_RANGE_PT} from '../../src/i18n/pt-br/maps/spectralRange';
+import {WEDGE_PT} from '../../src/i18n/pt-br/maps/wedge';
+export type E01E02Maps=Readonly<{engineView:unknown;spectralRange:unknown;wedge:unknown;observatory:unknown;polish:unknown}>;
+export const E01_E02_MAPS:Readonly<Record<string,E01E02Maps>>=Object.freeze({
+ 'es-419':{engineView:ENGINE_VIEW_ES,spectralRange:SPECTRAL_RANGE_ES,wedge:WEDGE_ES,observatory:OBSERVATORY_ES,polish:POLISH_ES},
+ 'pt-BR':{engineView:ENGINE_VIEW_PT,spectralRange:SPECTRAL_RANGE_PT,wedge:WEDGE_PT,observatory:OBSERVATORY_PT,polish:POLISH_PT},
+});
+export const e01e02Maps=(tag:string):E01E02Maps=>{const m=E01_E02_MAPS[tag];if(!m)throw new Error(`No E01/E02 maps for ${tag}`);return m;};

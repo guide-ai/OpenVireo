@@ -12,7 +12,7 @@ import en from '../../src/i18n/en.json' with {type:'json'};
 import {CAMERA_ES} from '../../src/i18n/es/maps/camera';
 import {TOUR_ES} from '../../src/i18n/es/maps/tour';
 import {OBSERVATORY_ES} from '../../src/i18n/es/maps/observatory';
-import {TRANSLATED} from './languageText';
+import {TRANSLATED,e01e02Maps,textOf as ptText} from './languageText';
 // Front ES0 (docs/I18N.md; user decision 3, 2026-11-09): the files the site writes stay exactly as VIREO or the web contract
 // writes them, in English, whatever the screen language. Each export family is downloaded once in English and once in the
 // dev-only pseudo-locale qps (?lang=qps: every catalog, map and vireo() string marked ⟦…⟧, accented and ~35 % longer), from the
@@ -47,9 +47,11 @@ const LETTERS:Readonly<Record<string,RegExp>>=Object.fromEntries(TRANSLATED.map(
 const HTML_LANG:Readonly<Record<Locale,string>>={en:'en',qps:'en','es-419':'es-419','pt-BR':'pt-BR'};
 /** The accessible-name matcher of an English text in this locale: its Spanish form in es-419 (which must exist), a language before
  * its release its own form or the English the page then shows (languageText.ts `text`), else `L`. */
-const N=(locale:Locale,text:string)=>{if(locale==='pt-BR'){const t=TRANSLATED.find(x=>x.tag===locale)!;if(text==='Skip the tour')return exact(t.maps.tour.skip);
+const N=(locale:Locale,text:string)=>{if(locale==='pt-BR'){const t=TRANSLATED.find(x=>x.tag===locale)!;if(text==='Skip the tour')return exact(t.maps.tour.skip);if(text==='Save spectrum (.SSP)')return exact((e01e02Maps(locale).observatory as typeof OBSERVATORY_ES).spectrumSave.save);
  // Front PT1: a button whose English ends in “ ↗” is its catalog text plus the arrow the component adds, as for Spanish.
  const arrow=/ ↗$/.test(text)&&t.text(text)===text?' ↗':'';return exact(t.text(arrow?text.slice(0,-2):text)+arrow);}if(locale!=='es-419')return L(text);const arrow=/ ↗$/.test(text)&&!SPANISH.has(text)?' ↗':'',spanish=SPANISH.get(arrow?text.slice(0,-2):text);if(!spanish)throw new Error(`No Spanish for “${text}”`);return exact(spanish+arrow);};
+/** Front PT2: a Portuguese accessible name that starts with this English text's translation (a button whose name adds a glyph). */
+const ptStart=(english:string)=>new RegExp(`^\\s*${ptText('pt-BR').text(english).replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')}`);
 const button=(p:Page,name:string,locale:Locale='en')=>p.getByRole('button',{name:N(locale,name)});
 const sha=(b:Buffer)=>createHash('sha256').update(b).digest('hex');
 /** A fixed instant for every Date read (timers keep running), so exports that record "now" are comparable. */
@@ -125,6 +127,8 @@ const recordJdCsvMasked=(bytes:Buffer)=>masked(bytes.toString('latin1').replace(
 test.describe.configure({mode:'parallel'});
 
 // Front ES3: the E01 analyser screens are translated, so these families also run in Spanish (es-419).
+// Front PT2: the E01 and E02 families below (analyser, Observational Data, Hubble, star SSP, exposures, field spectrometer, LSS and
+// wedge) also run in the Brazilian Portuguese preview (pt-BR): same names and SHA-256 as English, no Portuguese letter in the files.
 test('spectrum analysis: measurement CSV, velocities CSV and the analysis session',async({browser,baseURL})=>{
  await identical(browser,baseURL,async(page,locale)=>{
   await open(page,locale,'spectrum');
@@ -135,14 +139,14 @@ test('spectrum analysis: measurement CSV, velocities CSV and the analysis sessio
   await page.getByLabel(N(locale,'Object or reference')).fill('Identity vector');
   await page.getByLabel(N(locale,'z step per tick')).fill('0.015625');await button(page,'Apply step',locale).click();
   await page.getByRole('slider').focus();await page.getByRole('slider').press('ArrowRight');
-  await page.getByRole('button',{name:locale==='es-419'?new RegExp(`^\\s*${SPANISH.get('Record measurement')}`):/R[eé]c[oó]rd m[eé][aá]s[uú]r[eé]m[eé]nt/}).click();await button(page,'Save measurement',locale).click();
+  await page.getByRole('button',{name:locale==='es-419'?new RegExp(`^\\s*${SPANISH.get('Record measurement')}`):locale==='pt-BR'?ptStart('Record measurement'):/R[eé]c[oó]rd m[eé][aá]s[uú]r[eé]m[eé]nt/}).click();await button(page,'Save measurement',locale).click();
   await expect(page.locator('#measurement-log tbody tr')).toHaveCount(1);
   const measurements=await download(page,()=>button(page,'Export CSV ↓',locale).click());
   await page.getByText(N(locale,'Velocity analysis')).click();
   const velocities=await download(page,()=>button(page,'Export velocities CSV',locale).click());
   const session=await download(page,()=>button(page,'Save session',locale).first().click());
   return {measurements,velocities,session};
- },{},page=>page.locator('.spectrum-route'),['en','qps','es-419']);
+ },{},page=>page.locator('.spectrum-route'),['en','qps','es-419','pt-BR']);
 });
 
 // Front ES3 review: an acquired catalogue galaxy recorded through VIREO's Observational Data (typed velocity, Sp.Type and
@@ -162,7 +166,7 @@ test('E01 measurement through Observational Data: measurement CSV, session, resu
   await page.clock.runFor(1000);await button(page,'Pause exposure',locale).first().click();await page.clock.resume();
   await button(page,'Analyze acquired galaxy',locale).click();
   await page.getByLabel(N(locale,'z step per tick')).fill('.001');await button(page,'Apply step',locale).click();await page.getByRole('slider').fill('10');
-  await page.getByRole('button',{name:locale==='es-419'?new RegExp(`^\\s*${SPANISH.get('Record measurement')}`):/R[eé]c[oó]rd m[eé][aá]s[uú]r[eé]m[eé]nt/}).click();
+  await page.getByRole('button',{name:locale==='es-419'?new RegExp(`^\\s*${SPANISH.get('Record measurement')}`):locale==='pt-BR'?ptStart('Record measurement'):/R[eé]c[oó]rd m[eé][aá]s[uú]r[eé]m[eé]nt/}).click();
   const dialog=page.getByTestId('hubble-obsdata');await expect(dialog).toBeVisible();
   await page.getByTestId('hubble-obsdata-vel').fill('2997.92');await page.getByTestId('hubble-obsdata-sp').fill('G5');await page.getByTestId('hubble-obsdata-remarks').fill('typed, with comma');
   await page.getByTestId('hubble-obsdata-ok').click();await expect(dialog).toHaveCount(0);
@@ -175,7 +179,7 @@ test('E01 measurement through Observational Data: measurement CSV, session, resu
   const ssp=await download(page,()=>button(page,'Download acquired SSP',locale).click());
   const spectrum=await download(page,()=>button(page,'Download analysis spectrum',locale).click());
   return {measurements,session,resultsText,resultsCsv,ssp,spectrum};
- },{session:observatoryTimeMasked,resultsText:recordJdTextMasked,resultsCsv:recordJdCsvMasked},page=>page.locator('.spectrum-route'),['en','qps','es-419']);
+ },{session:observatoryTimeMasked,resultsText:recordJdTextMasked,resultsCsv:recordJdCsvMasked},page=>page.locator('.spectrum-route'),['en','qps','es-419','pt-BR']);
 });
 
 test('Hubble analysis: Hubble CSV and the Hubble session from the original workbook example',async({browser,baseURL})=>{
@@ -188,7 +192,7 @@ test('Hubble analysis: Hubble CSV and the Hubble session from the original workb
   const csv=await download(page,()=>button(page,'Export Hubble CSV',locale).click());
   const session=await download(page,()=>button(page,'Save Hubble session',locale).click());
   return {csv,session};
- },{},page=>page.locator('.hubble-card'),['en','qps','es-419']);
+ },{},page=>page.locator('.hubble-card'),['en','qps','es-419','pt-BR']);
 });
 
 // Front ES5: every file a student can save on the E03 route, in English, qps and Spanish. The page clock is installed at NOW and
@@ -328,7 +332,7 @@ test('star spectrometer: Save spectrum (.SSP) of a paused exposure',async({brows
   await page.clock.runFor(1000);await button(page,'Pause exposure',locale).click();await expect(page.getByTestId('star-elapsed')).toHaveText('1000 ms');
   const panel=page.getByTestId('ob-spectrum-save');
   return {ssp:await download(page,()=>panel.getByRole('button',{name:N(locale,'Save spectrum (.SSP)')}).click())};
- },{},page=>page.getByTestId('ob-spectrum-save'),['en','qps','es-419']);
+ },{},page=>page.getByTestId('ob-spectrum-save'),['en','qps','es-419','pt-BR']);
 });
 
 // Front ES3: the galaxy, sky and star exposure routes of E01 write counts CSV and session JSON files; their screens are
@@ -356,7 +360,7 @@ test('E01 exposures: galaxy, sky and star counts CSV and session JSON',async({br
   const starCsv=await download(page,()=>button(page,'Save star counts CSV',locale).click());
   const starJson=await download(page,()=>button(page,'Save star session JSON',locale).click());
   return {galaxyCsv,galaxyJson,skyCsv,skyJson,starCsv,starJson};
- },{},page=>page.locator('.sky-exposure-controls:visible').first(),['en','qps','es-419']);
+ },{},page=>page.locator('.sky-exposure-controls:visible').first(),['en','qps','es-419','pt-BR']);
 });
 
 // Front ES3: the single-slit spectrometer at a free pointing (the spectrometer route) writes a counts CSV and an exposure
@@ -384,7 +388,7 @@ test('field spectrometer: Save counts CSV and Save exposure session at a free po
   const csv=await download(page,()=>acquisition.getByRole('button',{name:N(locale,'Save counts CSV')}).click());
   const session=await download(page,()=>acquisition.getByRole('button',{name:N(locale,'Save exposure session')}).click());
   return {csv,session};
- },{},page=>page.getByTestId('field-spectrometer'),['en','qps','es-419']);
+ },{},page=>page.getByTestId('field-spectrometer'),['en','qps','es-419','pt-BR']);
 });
 
 test('CCD camera: Save image (FITS) and Save image (VIREO header) from the recorded VizieR answer',async({browser,baseURL})=>{
@@ -476,7 +480,7 @@ test('E02 LSS survey and wedge: counts CSV, session, SSP, results CSV and TXT, i
   const resultsTxt=await download(page,()=>page.getByTestId('lss-results-txt').click());
   await page.locator('#lss-description').fill('One galaxy so far.');
   const toolbar=page.locator('.investigation-toolbar');
-  const investigation=await download(page,()=>toolbar.getByRole('button',{name:locale==='es-419'?exact(es['project.save']):L('Save investigation')}).click());
+  const investigation=await download(page,()=>toolbar.getByRole('button',{name:locale==='es-419'?exact(es['project.save']):locale==='pt-BR'?exact(ptText('pt-BR').catalog['project.save']!):L('Save investigation')}).click());
   await page.clock.resume();// the wedge's lazy route needs running timers; nothing written after this follows the clock (checked with --repeat-each)
   await button(page,'Plot my records in the wedge',locale).click();await expect(page.getByTestId('wedge-count')).toBeVisible({timeout:30_000});
   const wedgeCsv=await download(page,()=>page.getByTestId('wedge-export').click());
@@ -493,7 +497,7 @@ test('E02 LSS survey and wedge: counts CSV, session, SSP, results CSV and TXT, i
   await page.getByTestId('lss-region-box').getByRole('button').click();
   const regionTxt=await download(page,()=>page.getByTestId('lss-region-txt').click());
   return {countsCsv,session,ssp,resultsCsv,resultsTxt,investigation,wedgeCsv,wedgeLoadedCsv,regionTxt};
- },{},page=>page.locator('.lss-main'),['en','qps','es-419']);
+ },{},page=>page.locator('.lss-main'),['en','qps','es-419','pt-BR']);
 });
 
 test('the shell toolbar: Save investigation is byte-identical in English, qps, Spanish and the Brazilian Portuguese preview',async({browser,baseURL})=>{

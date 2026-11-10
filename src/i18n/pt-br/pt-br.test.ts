@@ -30,15 +30,18 @@ import {QSO_LIST_MESSAGES_EN} from '../../observatory/QsoListMessages';
 import {SOUND_MESSAGES_EN} from '../../sound/SoundMessages';
 import {OBSERVATION_METADATA_EN} from '../../ObservationMetadataMessages';
 import {CAMERA_MESSAGES_EN} from '../../camera/CameraMessages';
+import {ENGINE_VIEW_EN} from '../../SpectrumEngineMessages';
+import {SPECTRAL_RANGE_EN} from '../../SpectralRangeMessages';
+import {WEDGE_MESSAGES_EN} from '../../components/WedgeMessages';
 
 // Front PT0 (docs/I18N.md, "Brazilian Portuguese: the folder, lints and shell (PT0)"; plan front-i18n-pt-br.md §3.4): the
 // structural checks of the partial pt-BR bundle and every Portuguese string through the SC4 lint framework, profile pt-BR. Errors
 // fail the batch; length ratios are reported for the independent reviewer. Later PT fronts add their maps to ENGLISH_MAPS and
 // COMPLETE_MAPS, and their areas to the coverage check.
-const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,nakedEye:NAKED_EYE_MESSAGES_EN,objectXLab:OBJECT_X_LAB_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN};
+const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,nakedEye:NAKED_EYE_MESSAGES_EN,objectXLab:OBJECT_X_LAB_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN};
 /** The maps translated completely (PT0's shell maps; PT1's observatory maps, the camera card the observatory shows, and polish); the others are partial until their
  * front (objectXLab PT6, variableStars PT4). */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera'];
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge'];
 /** PT0's area of en.json: the shell (header, menu, home and first steps, toolbar, errors, instructor mode, document title), as ES1's. */
 const SHELL_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(app|project|session|error|instructorMode)\./.test(k)||/\.nav$/.test(k)||['demonstrationMode.banner','sky.eyebrow','sky.title','sky.subtitle','sky.about','sky.local','sky.observatory','sky.analyzer','sky.step1','sky.step1Help','sky.step2','sky.step2Help','sky.step3','sky.step3Help','spectrum.tools','classLink.cancel'].includes(k));
 /** Front PT1's area of en.json: ES2's observatory keys (the 546 keys Spanish translated in ES2: the observatory route, its
@@ -49,6 +52,11 @@ const PT1_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>OBSERVATORY_PREFIXES.
 /** VIREO originals that Spanish keeps with no entry (its word equals VIREO's, and the vireo() site is one the source guard cannot
  * resolve, src/i18n/vireoSites.test.ts), but Portuguese translates: the options dialog's General tab and the Site Information
  * longitude letter E (East, «L» for Leste). tests/i18n/observatory.spec.ts checks both on screen. */
+/** Front PT2's area of en.json: ES3's and ES4's keys (exercise E01, Hubble's law, and E02, large-scale structure: the two guides,
+ * the galaxy, sky and star exposures, the analyser, velocities, the Hubble diagram, Observational Results of your redshifts, the
+ * single-slit spectrometer at a free pointing, the LSS survey and the wedge), every key of their prefixes. */
+const E01_E02_PREFIXES=/^(continuity|lab|lssLab|hubble|velocity|ownResults|spectrum|spectrometer|galaxyExposure|skyExposure|starExposure|ssp|exposureIO|drift|skyProfiles|fieldSpec|lss|wedge)\./;
+const PT2_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E01_E02_PREFIXES.test(k));
 const PT_ONLY_ORIGINALS:readonly string[]=['General','E'];
 const profile=PROFILES['pt-BR'];
 const data:LintData={glossary:glossaryFrom(glossaryJson,'pt'),identical:identical.entries,allowed:lintAllowed.entries as Readonly<Record<string,Allowance>>};
@@ -69,6 +77,10 @@ describe('Front PT0: the Brazilian Portuguese (pt-BR) bundle',()=>{
  it('Front PT1: the catalog covers the observatory (every key of its instruments\' prefixes)',()=>{
   expect(PT1_KEYS.length).toBeGreaterThan(450);
   expect(PT1_KEYS.filter(k=>!Object.hasOwn(pt,k))).toEqual([]);
+ });
+ it('Front PT2: the catalog covers E01 and E02 (every key of their prefixes)',()=>{
+  expect(PT2_KEYS.length).toBeGreaterThan(700);
+  expect(PT2_KEYS.filter(k=>!Object.hasOwn(pt,k))).toEqual([]);
  });
  it('every map has its English shape: the shell maps complete, the header-name maps partial',()=>{
   for(const [id,map] of Object.entries(PORTUGUESE.maps??{})){
