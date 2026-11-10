@@ -29,7 +29,10 @@ export function nextAddress(href:string,next:string,stored:boolean):string{
  if(!stored||url.searchParams.has('lang'))url.searchParams.set('lang',next);
  return url.href;
 }
-/** The language <select> and its reload confirmation (in the page bar). */
+/** The language <select> and its reload confirmation (in the page bar). Front HEADER review: its label (the bilingual legend
+ * «Idioma / Language» and the autonyms, the same in every language by design) is shell text checked by language-selector.spec.ts
+ * and shell.spec.ts, so it carries `data-i18n-shell`, which the translation walks of tests/i18n skip as they skip the sidebar;
+ * the reload dialog is outside the label and is still walked. */
 export function LanguageSelect({onSave}:{onSave:()=>void}){
  const current=uiLanguage(),options=selectorLanguages(current),preview=current!=='en'&&!isReleased(current);
  const [asked,setAsked]=useState<string|null>(null),name=useId(),dialog=useRef<HTMLDialogElement>(null),cancel=useRef<HTMLButtonElement>(null);
@@ -50,7 +53,7 @@ export function LanguageSelect({onSave}:{onSave:()=>void}){
  }
  const label=(tag:string)=>{const o=options.find(l=>l.tag===tag);return o?optionLabel(o):tag;};
  return <div className="language-choice" data-testid="language-choice">
-  <label className="language-select-label"><span className="visually-hidden" data-testid="language-legend">{M.legend}</span>
+  <label className="language-select-label" data-i18n-shell=""><span className="visually-hidden" data-testid="language-legend">{M.legend}</span>
    <select ref={select} className="language-select" value={asked??pending??current} data-testid="language-select"
     onKeyDown={e=>{
      if(STEP_KEYS.has(e.key)||(e.key.length===1&&e.key!==' '&&!e.ctrlKey&&!e.metaKey&&!e.altKey))steppedAt.current=performance.now();

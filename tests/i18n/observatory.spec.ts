@@ -45,10 +45,10 @@ const texts=(page:Page)=>page.evaluate(()=>{
  const out:string[]=[];
  const shown=(el:Element)=>{for(let e:Element|null=el;e;e=e.parentElement){if((e as HTMLElement).hidden||e.getAttribute('aria-hidden')==='true')return false;const s=getComputedStyle(e);if(s.display==='none'||s.visibility==='hidden')return false;}return true;};
  // The exit reminder is VIREO's Reminder.obs help file, translated with the other help files in ES-HELP.
- const skipped=(el:Element)=>el.closest('.portal-header,script,style,[data-testid=site-tour],[data-testid^=exit-reminder]')!==null||el.closest('[lang=en]:not(html)')!==null;
+ const skipped=(el:Element)=>el.closest('.portal-header,[data-i18n-shell],script,style,[data-testid=site-tour],[data-testid^=exit-reminder]')!==null||el.closest('[lang=en]:not(html)')!==null;
  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n:Node|null;
  while((n=walker.nextNode())){const t=n.textContent?.trim(),el=n.parentElement;if(t&&el&&/[A-Za-z]{2}/.test(t)&&!skipped(el)&&shown(el))out.push(t);}
- for(const el of document.querySelectorAll('[aria-label],[title],[placeholder]'))if(!el.closest('.portal-header')&&shown(el))for(const a of ['aria-label','title','placeholder']){const v=el.getAttribute(a)?.trim();if(v&&/[A-Za-z]{2}/.test(v))out.push(`@${a}:${v}`);}
+ for(const el of document.querySelectorAll('[aria-label],[title],[placeholder]'))if(!el.closest('.portal-header,[data-i18n-shell]')&&shown(el))for(const a of ['aria-label','title','placeholder']){const v=el.getAttribute(a)?.trim();if(v&&/[A-Za-z]{2}/.test(v))out.push(`@${a}:${v}`);}
  return out;
 });
 const close=async(page:Page)=>{await page.keyboard.press('Escape');await page.waitForTimeout(150);};

@@ -11,7 +11,8 @@ import './page-bar.css';
  * the old card. A named <section> (a region): the sidebar stays the page's one banner, and the bar holds no heading, so each
  * page's h1 is its first heading. The class `investigation-toolbar` is kept as the hook of the specs, the print rule and the
  * script rules (a rename is a separate cleanup). The bar is inert while a host-level modal is open, as the card was.
- * Pinned (user decision, 2026-11-10, after seeing the bar): from 600 px up it stays at the top of the viewport while the page
+ * The place repeats the sidebar's own labels, so like them it is shell text (`data-i18n-shell`: checked by tests/i18n/shell.spec.ts,
+ * skipped by the translation walks, which skip the sidebar). Pinned (user decision, 2026-11-10, after seeing the bar): from 600 px up it stays at the top of the viewport while the page
  * scrolls (page-bar.css). Its height, written to `--ov-page-bar-height` on <html> by a ResizeObserver (no React render), sets the
  * page's scroll padding, so focus, anchors and scrollIntoView never land under it (WCAG 2.4.11), and the classification cursor
  * read-out's own sticky offset. */
@@ -27,7 +28,7 @@ export default function PageBar({view,inert,busy,notice,error,actions,language,h
  },[]);
  return <section ref={bar} className="page-bar investigation-toolbar" aria-label={SHELL.pageBar.label} inert={inert} data-testid="page-bar">
   <div className="page-bar-row">
-   <p className="page-bar-place" data-testid="page-bar-place"><span className="page-bar-section">{groupLabel(page.group)}</span>{' '}
+   <p className="page-bar-place" data-testid="page-bar-place" data-i18n-shell=""><span className="page-bar-section">{groupLabel(page.group)}</span>{' '}
     <svg className="page-bar-separator" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M4.5 3l3 3-3 3"/></svg>{' '}
     <strong className="page-bar-page">{page.label()}</strong></p>
    {actions}
