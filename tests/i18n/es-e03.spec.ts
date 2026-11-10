@@ -1,6 +1,7 @@
 import {type Page,type Locator} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
 import {SPANISH_LOCALE,langQuery} from '../fixtures/language';
+import {layoutProblems,type LayoutOptions} from '../fixtures/layoutProblems';
 import {readFileSync} from 'node:fs';
 import {CLASSIFY_PROGRAM_LITERALS_RESTATED} from './classifyProgramLiterals';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
@@ -243,38 +244,13 @@ test('Spanish: every VIREO caption in the E03 walk is its Spanish original; Engl
  expect(vireoEs(P.programList)).not.toBe('Program List...');expect(vireoEs('Observational Data')).not.toBe('Observational Data');for(const t of ['Observation Time (JD)','Right Ascension:','Declination:','Observed Magnitudes','Redshift (Z):','Velocity (V):'])expect(vireoEs(t)).not.toBe(t);expect(vireoEs('Spectral Line &Table')).not.toBe('Spectral Line Table');expect(vireoEs(P.noMoreSpectra)).not.toBe(P.noMoreSpectra);
 });
 
-/** Layout problems at this width: page overflow; dialogs that leave the viewport or scroll sideways; buttons, labels, selects,
- * inputs and headings that are clipped, cross their card or dialog, or leave the viewport; plot text outside its SVG. Run with
- * the CI's DejaVu fonts (docs/I18N.md). */
-const layoutProblems=(page:Page)=>page.evaluate(()=>{
- const out:string[]=[],width=document.documentElement.clientWidth;
- const visible=(el:Element)=>{const r=el.getBoundingClientRect();if(!r.width||!r.height)return false;for(let e:Element|null=el;e;e=e.parentElement){if((e as HTMLElement).hidden)return false;const s=getComputedStyle(e);if(s.display==='none'||s.visibility==='hidden')return false;}return true;};
- const name=(el:Element)=>`${el.tagName.toLowerCase()} “${(el.textContent||el.getAttribute('aria-label')||'').trim().slice(0,40)}”`;
- if(document.documentElement.scrollWidth>width)out.push(`page overflows horizontally (${document.documentElement.scrollWidth} > ${width})`);
- for(const d of document.querySelectorAll<HTMLElement>('dialog[open],[role=dialog][aria-modal=true]')){const r=d.getBoundingClientRect();if(!r.width)continue;
-  const id=d.getAttribute('data-testid')??d.className;
-  if(r.left<-.5||r.right>width+.5)out.push(`${id} leaves the viewport (${Math.round(r.left)}–${Math.round(r.right)})`);
-  if(d.scrollWidth>d.clientWidth+1&&getComputedStyle(d).overflowX!=='visible')out.push(`${id} scrolls horizontally`);}
- const root=document.querySelector('dialog[open],[role=dialog][aria-modal=true]')??document.body;
- for(const c of root.querySelectorAll<HTMLElement>('button,label,legend,h1,h2,h3,h4,select,input,summary,th')){
-  if(c.closest('.portal-header,[lang=en]:not(html)')||!visible(c))continue;
-  const q=c.getBoundingClientRect(),cs=getComputedStyle(c);
-  if(q.width<=2||(cs.clip!=='auto'&&cs.position==='absolute'))continue;// visually hidden (an accessible name only)
-  let scroller=false;for(let e=c.parentElement;e&&e!==document.body;e=e.parentElement){const o=getComputedStyle(e).overflowX;if((o==='auto'||o==='scroll')&&e.scrollWidth>e.clientWidth){scroller=true;break;}}
-  if(!scroller&&(q.left<-.5||q.right>width+.5))out.push(`${name(c)} leaves the viewport`);
-  if(c.scrollWidth>c.clientWidth+1&&['hidden','clip'].includes(getComputedStyle(c).overflowX)&&!['INPUT','SELECT'].includes(c.tagName))out.push(`${name(c)} clipped`);
-  const box=c.parentElement?.closest('dialog,.card,details,fieldset,[role=dialog],[role=alertdialog]');
-  if(box&&!scroller&&!c.closest('table,.table-scroll,[role=region]')){const b=box.getBoundingClientRect();if(q.right>b.right+1||q.left<b.left-1)out.push(`${name(c)} crosses its ${box.tagName.toLowerCase()}`);}
- }
- for(const t of root.querySelectorAll<SVGTextElement>('svg text')){if(!visible(t)||t.closest('[lang=en]:not(html)'))continue;
-  const svg=t.ownerSVGElement!,b=svg.getBoundingClientRect(),q=t.getBoundingClientRect();
-  if(q.left<b.left-1||q.right>b.right+1||q.top<b.top-1||q.bottom>b.bottom+1)out.push(`plot text “${t.textContent?.trim().slice(0,40)}” outside its plot ${svg.closest("figure,section")?.className??""} (${[q.left-b.left,b.right-q.right,q.top-b.top,b.bottom-q.bottom].map(Math.round).join(', ')})`);}
- return out;
-});
+/** Front SC9: the layout check of tests/fixtures/layoutProblems.ts (no local copy), with the options that keep this spec's
+ * checks: its old copy was the fixture's default. Run with the CI's DejaVu fonts (docs/I18N.md). */
+const LAYOUT:LayoutOptions={};
 for(const width of [320,1440])test(`at ${width} px the Spanish E03 screens lay out without overflow, clipping or crossing`,async({page})=>{
  test.setTimeout(360_000);await page.setViewportSize({width,height:width===320?700:1000});
  const problems=new Map<string,string>();
- await walk(page,(process.env.ES5_LAYOUT_LANG as Lang|undefined)??'es-419',async step=>{for(const p of await layoutProblems(page))if(!problems.has(p))problems.set(p,step);
+ await walk(page,(process.env.ES5_LAYOUT_LANG as Lang|undefined)??'es-419',async step=>{for(const p of await layoutProblems(page,LAYOUT))if(!problems.has(p))problems.set(p,step);
   if(/guide|lab|Program|Spectra|practice|photo|traces|range|cursor|width|review|imported|acquired/.test(step))await page.screenshot({path:test.info().outputPath(`es-e03-${width}-${step.replace(/\W+/g,'-')}.png`),fullPage:false});});
  expect([...problems].map(([p,step])=>`${step}: ${p}`)).toEqual([]);
 });

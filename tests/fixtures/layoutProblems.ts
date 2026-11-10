@@ -1,8 +1,8 @@
 // Front SC3 (plan analysis/front-plans/front-i18n-scripts.md § 4): the layout check that the Spanish specs copy-paste
 // (tests/i18n/es-e0*.spec.ts, es-radio, es-observatory), extracted once, plus a vertical-ink check for tall scripts.
-// The Spanish specs keep their own copies until SC9 switches them to this file. With no options, layoutProblems is the
-// es-e03/es-e05 copy exactly; every difference the other copies carry is an option here, so each of them can switch with
-// the options it needs and keep its result.
+// Front SC9 switched the Spanish specs to this file. With no options, layoutProblems is the es-e03/es-e05 copy exactly;
+// every difference the other copies carried is an option here (SC9 added crossingInScrollers for es-e01/e02/e04 and
+// eachDialog for es-observatory), so each spec keeps at least the checks of its old copy.
 import type {Page} from '@playwright/test';
 
 export type LayoutOptions=Readonly<{
@@ -20,8 +20,15 @@ export type LayoutOptions=Readonly<{
  topDialog?:boolean;
  /** Name the first three elements that stick out when the page overflows (es-e06). */
  explainOverflow?:boolean;
+ /** Also report a control that crosses its card or dialog inside a container that scrolls sideways (es-e01, es-e02 and
+  * es-e04 did; the default, from es-e03 on, leaves that to the scrolling container). */
+ crossingInScrollers?:boolean;
+ /** Every element matching `dialogs` (menus, sub-menus and boxes that open together, modal or not) is checked too: it must
+  * stay inside the viewport and not scroll sideways, and each `controls` element in it with an offsetParent must not be
+  * clipped, nor cross it while it clips its overflow (es-observatory). */
+ eachDialog?:Readonly<{dialogs:string;controls:string}>;
 }>;
-const LAYOUT_DEFAULTS={skip:'.portal-header,[lang=en]:not(html)',crossingExempt:'',svgSkip:'',controls:'button,label,legend,h1,h2,h3,h4,select,input,summary,th',dialogs:'dialog[open],[role=dialog][aria-modal=true]',topDialog:false,explainOverflow:false};
+const LAYOUT_DEFAULTS={skip:'.portal-header,[lang=en]:not(html)',crossingExempt:'',svgSkip:'',controls:'button,label,legend,h1,h2,h3,h4,select,input,summary,th',dialogs:'dialog[open],[role=dialog][aria-modal=true]',topDialog:false,explainOverflow:false,crossingInScrollers:false,eachDialog:null as LayoutOptions['eachDialog']|null};
 
 /** Layout problems at this width: page overflow; dialogs that leave the viewport or scroll sideways; buttons, labels, selects,
  * inputs and headings that are clipped, cross their card or dialog, or leave the viewport; plot text outside its SVG. Purely
@@ -50,8 +57,15 @@ export const layoutProblems=(page:Page,options:LayoutOptions={})=>page.evaluate(
   if(!scroller&&(q.left<-.5||q.right>width+.5))out.push(`${name(c)} leaves the viewport`);
   if(c.scrollWidth>c.clientWidth+1&&['hidden','clip'].includes(getComputedStyle(c).overflowX)&&!['INPUT','SELECT'].includes(c.tagName))out.push(`${name(c)} clipped`);
   const box=c.parentElement?.closest('dialog,.card,details,fieldset,[role=dialog],[role=alertdialog]');
-  if(box&&!scroller&&!c.closest(exempt)){const b=box.getBoundingClientRect();if(q.right>b.right+1||q.left<b.left-1)out.push(`${name(c)} crosses its ${box.tagName.toLowerCase()}`);}
+  if(box&&(o.crossingInScrollers||!scroller)&&!c.closest(exempt)){const b=box.getBoundingClientRect();if(q.right>b.right+1||q.left<b.left-1)out.push(`${name(c)} crosses its ${box.tagName.toLowerCase()}`);}
  }
+ if(o.eachDialog)for(const d of document.querySelectorAll<HTMLElement>(o.eachDialog.dialogs)){const r=d.getBoundingClientRect();if(!r.width)continue;
+  const id=d.getAttribute('data-testid')??d.className,clips=getComputedStyle(d).overflowX!=='visible';
+  if(r.left<-.5||r.right>width+.5)out.push(`${id} leaves the viewport (${Math.round(r.left)}–${Math.round(r.right)})`);
+  if(d.scrollWidth>d.clientWidth+1&&clips)out.push(`${id} scrolls horizontally`);
+  for(const c of d.querySelectorAll<HTMLElement>(o.eachDialog.controls)){if(!c.offsetParent)continue;
+   if(c.scrollWidth>c.clientWidth+1&&['hidden','clip'].includes(getComputedStyle(c).overflowX))out.push(`${id}: “${c.textContent?.trim().slice(0,40)}” clipped`);
+   const q=c.getBoundingClientRect();if(q.width&&(q.right>r.right+1||q.left<r.left-1)&&clips)out.push(`${id}: “${c.textContent?.trim().slice(0,40)}” crosses its dialog`);}}
  const svgSkip=['[lang=en]:not(html)',o.svgSkip].filter(Boolean).join(',');
  for(const t of root.querySelectorAll<SVGTextElement>('svg text')){if(!visible(t)||t.closest(svgSkip))continue;
   const svg=t.ownerSVGElement!,b=svg.getBoundingClientRect(),q=t.getBoundingClientRect();
