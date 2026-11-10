@@ -1,12 +1,15 @@
 import {pickMessages} from '../i18n/registry';
 /** Presentation catalog for the app shell (header navigation groups, theme switch,
- * investigation toolbar disclosure). Kept local so the coordinator can fold it into
+ * investigation toolbar disclosure, the page bar). Kept local so the coordinator can fold it into
  * src/i18n/en.json at merge, like WedgeMessages.ts. English is the default. */
 export type AppShellMessageCatalog=Readonly<{
  theme:Readonly<{legend:string;system:string;light:string;dark:string}>;
  navGroups:Readonly<{optical:string;radio:string;analysis:string;files:string;guides:string}>;
  backupHelpSummary:string;
  toolsMenu:string;
+ /** Front HEADER [W]: the page bar at the top of the content area (src/components/PageBar.tsx). `label` names its region; `more` is the
+  * visible word of the button beside Save investigation and must start `moreName`, its accessible name (WCAG 2.5.3). */
+ pageBar:Readonly<{label:string;more:string;moreName:string}>;
  /** Front REL1 review 1 M1 [W]: a part of the site that cannot load or stopped with an error (src/components/LazyBoundary.tsx). */
  recovery:Readonly<{updatedTitle:string;updated:string;errorTitle:string;error:string;kept:string;saveFirst:string;saveHow:string;save:string;reload:string}>;
 }>;
@@ -16,6 +19,7 @@ export const APP_SHELL_MESSAGES_EN:AppShellMessageCatalog=Object.freeze({
  navGroups:Object.freeze({optical:'Optical observatory',radio:'Radio observatory',analysis:'Analysis',files:'Files',guides:'Exercise guides'}),
  backupHelpSummary:'What a backup includes',
  toolsMenu:'Tools',
+ pageBar:Object.freeze({label:'Investigation, language and help',more:'More',moreName:'More investigation actions'}),
  recovery:Object.freeze({
   updatedTitle:'A new version of OpenVireo was published',
   updated:'This part of the site could not be loaded because the site was updated while this page was open.',

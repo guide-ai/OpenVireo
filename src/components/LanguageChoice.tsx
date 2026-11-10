@@ -5,9 +5,10 @@ import {LANGUAGE_STORAGE_KEY,VIREO_ORIGINALS_KEY} from '../i18n/locale';
 import {isReleased,optionLabel,selectorLanguages} from '../i18n/languages';
 import './LanguageChoice.css';
 
-/** Front ES1 [W] (docs/I18N.md; user decisions 1, 5 and 9 of 2026-11-09): the language selector at the foot of the header menu,
- * beside the theme switch, and the "View original (English)" option for VIREO's own texts. Lazily loaded and shown when
- * src/i18n/languages.ts selectorShown allows it. Changing the language reloads the page after a confirmation that says what a
+/** Front ES1 [W] (docs/I18N.md; user decisions 1, 5 and 9 of 2026-11-09): the language selector and the "View original (English)"
+ * option for VIREO's own texts. Lazily loaded (one module for both) and shown when src/i18n/languages.ts selectorShown allows it.
+ * Front HEADER (user decision, 2026-11-10): the selector (LanguageSelect) sits in the page bar beside Help; the option
+ * (VireoOriginalsOption) stays at the foot of the sidebar under the theme switch, with the other display preferences. Changing the language reloads the page after a confirmation that says what a
  * reload keeps and loses and offers Save investigation first. The choice is stored in this browser (try/catch); when storage
  * fails, or the address already has `?lang=`, it travels as `?lang=` in the address. The address keeps its #route.
  * Front SC8: a native <select> over the language registry (English, the released languages, and the current language when this
@@ -28,14 +29,16 @@ export function nextAddress(href:string,next:string,stored:boolean):string{
  if(!stored||url.searchParams.has('lang'))url.searchParams.set('lang',next);
  return url.href;
 }
-export default function LanguageChoice({onSave}:{onSave:()=>void}){
+/** The language <select> and its reload confirmation (in the page bar). Front HEADER review: its label (the bilingual legend
+ * «Idioma / Language» and the autonyms, the same in every language by design) is shell text checked by language-selector.spec.ts
+ * and shell.spec.ts, so it carries `data-i18n-shell`, which the translation walks of tests/i18n skip as they skip the sidebar;
+ * the reload dialog is outside the label and is still walked. */
+export function LanguageSelect({onSave}:{onSave:()=>void}){
  const current=uiLanguage(),options=selectorLanguages(current),preview=current!=='en'&&!isReleased(current);
  const [asked,setAsked]=useState<string|null>(null),name=useId(),dialog=useRef<HTMLDialogElement>(null),cancel=useRef<HTMLButtonElement>(null);
  const [pending,setPendingState]=useState<string|null>(null),pendingRef=useRef<string|null>(null),steppedAt=useRef(-Infinity),select=useRef<HTMLSelectElement>(null);
  const setPending=(value:string|null)=>{pendingRef.current=value;setPendingState(value);};
  function ask(value:string){setPending(null);steppedAt.current=-Infinity;if(value!==current)setAsked(value);}
- const [originals,setOriginals]=useState(()=>{try{return localStorage.getItem(VIREO_ORIGINALS_KEY)==='1';}catch{return false;}});
- const [originalsStored,setOriginalsStored]=useState(true);
  const [canStore]=useState(storageWorks);
  useEffect(()=>{if(asked){dialog.current?.showModal();cancel.current?.focus();}},[asked]);
  /** PT0 review: a dialog opened by leaving the select (Tab) opens while the focus is between elements, so Chromium returns it to
@@ -48,13 +51,9 @@ export default function LanguageChoice({onSave}:{onSave:()=>void}){
   const href=nextAddress(location.href,asked,stored);
   if(href===location.href)location.reload();else location.assign(href);
  }
- function toggleOriginals(on:boolean){
-  setOriginals(on);
-  try{if(on)localStorage.setItem(VIREO_ORIGINALS_KEY,'1');else localStorage.removeItem(VIREO_ORIGINALS_KEY);setOriginalsStored(true);}catch{setOriginalsStored(false);}
- }
  const label=(tag:string)=>{const o=options.find(l=>l.tag===tag);return o?optionLabel(o):tag;};
  return <div className="language-choice" data-testid="language-choice">
-  <label className="language-select-label"><span className="visually-hidden" data-testid="language-legend">{M.legend}</span>
+  <label className="language-select-label" data-i18n-shell=""><span className="visually-hidden" data-testid="language-legend">{M.legend}</span>
    <select ref={select} className="language-select" value={asked??pending??current} data-testid="language-select"
     onKeyDown={e=>{
      if(STEP_KEYS.has(e.key)||(e.key.length===1&&e.key!==' '&&!e.ctrlKey&&!e.metaKey&&!e.altKey))steppedAt.current=performance.now();
@@ -67,8 +66,6 @@ export default function LanguageChoice({onSave}:{onSave:()=>void}){
     {options.map(o=><option key={o.tag} value={o.tag} lang={o.htmlLang} data-testid={`language-${o.tag}`}>{optionLabel(o)}</option>)}
    </select>
   </label>
-  <label className="language-originals"><input type="checkbox" checked={originals} data-testid="language-originals" onChange={e=>toggleOriginals(e.target.checked)}/> {M.originals}</label>
-  {originals&&<p className="language-originals-note" data-testid="language-originals-note">{originalsStored?M.originalsNote:M.originalsNotStored}</p>}
   {asked&&<dialog ref={dialog} className="ob-dialog" aria-labelledby={`${name}-t`} aria-describedby={`${name}-d`} data-testid="language-confirm" onCancel={e=>{e.preventDefault();close();}}>
    <h2 id={`${name}-t`}>{M.title}</h2>
    <div id={`${name}-d`}>
@@ -85,5 +82,18 @@ export default function LanguageChoice({onSave}:{onSave:()=>void}){
     <button type="button" ref={cancel} className="secondary-button" data-testid="language-cancel" onClick={close}>{M.cancel}</button>
    </div>
   </dialog>}
+ </div>;
+}
+/** "View original (English)" for VIREO's own texts, applied at the next load (in the sidebar footer). */
+export function VireoOriginalsOption(){
+ const [originals,setOriginals]=useState(()=>{try{return localStorage.getItem(VIREO_ORIGINALS_KEY)==='1';}catch{return false;}});
+ const [originalsStored,setOriginalsStored]=useState(true);
+ function toggleOriginals(on:boolean){
+  setOriginals(on);
+  try{if(on)localStorage.setItem(VIREO_ORIGINALS_KEY,'1');else localStorage.removeItem(VIREO_ORIGINALS_KEY);setOriginalsStored(true);}catch{setOriginalsStored(false);}
+ }
+ return <div className="language-originals-choice" data-testid="language-originals-choice">
+  <label className="language-originals"><input type="checkbox" checked={originals} data-testid="language-originals" onChange={e=>toggleOriginals(e.target.checked)}/> {M.originals}</label>
+  {originals&&<p className="language-originals-note" data-testid="language-originals-note">{originalsStored?M.originalsNote:M.originalsNotStored}</p>}
  </div>;
 }

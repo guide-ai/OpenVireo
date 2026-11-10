@@ -45,9 +45,11 @@ test('at 320 px every Spanish route, the menu with the language selector, OpenVi
  };
  await load(page,'');await check('home');
  for(const r of ROUTES){await load(page,r);await check(r);}
- // The header menu (folded behind its button at phone width), with the selector at its foot, and the selector's confirmation.
+ // The header menu (folded behind its button at phone width), with "View original (English)" at its foot; the selector is in the
+ // page bar (Front HEADER), with its confirmation.
  await load(page,'observatory');await openMenu(page);
- await id(page,'language-choice').scrollIntoViewIfNeeded();await expect(id(page,'language-select')).toHaveValue('es-419');await check('header menu');
+ await id(page,'language-originals').scrollIntoViewIfNeeded();await expect(id(page,'language-originals')).toBeVisible();await check('header menu');
+ await load(page,'observatory');await expect(id(page,'language-select')).toHaveValue('es-419');await check('page bar');
  await id(page,'language-select').selectOption('en');await expect(id(page,'language-confirm')).toBeVisible();await check('language confirmation');
  await id(page,'language-cancel').click();await expect(id(page,'language-confirm')).toHaveCount(0);
  // OpenVireo's own help and the About box.

@@ -15,7 +15,7 @@ export const TOUR_ES:Translation<typeof TOUR_EN>=Object.freeze({
   observatory:Object.freeze({title:'O explora el cielo libremente',
    text:'En la página Observatorio: abre la cúpula, elige un objeto y apunta el telescopio. Después activa el seguimiento y usa un instrumento.'}),
   save:Object.freeze({title:'Guarda tu trabajo como archivo',
-   text:'Tu trabajo se queda en esta pestaña del navegador hasta que lo guardes. Guardar investigación descarga un archivo; Restaurar investigación (JSON) lo vuelve a cargar más tarde.'}),
+   text:'Tu trabajo se queda en esta pestaña del navegador hasta que lo guardes. Guardar investigación, arriba en cada página, descarga un archivo; Restaurar investigación (JSON), en el menú de al lado, lo vuelve a cargar más tarde.'}),
   help:Object.freeze({title:'La ayuda siempre está aquí',
    text:'Abre Ayuda para ver los temas de ayuda, o presiona la tecla ? en cualquier lugar fuera de un campo de texto. Puedes volver a hacer este recorrido desde el menú Ayuda.'}),
  }),

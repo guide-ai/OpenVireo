@@ -150,6 +150,7 @@ test('mobile LSS history and keyboard options remain usable and cancel replaceme
 
 const header=(page:Page)=>page.locator('.portal-header'),toolbar=(page:Page)=>page.locator('.investigation-toolbar');
 const save=(page:Page)=>toolbar(page).locator('.sky-actions button').first();
+async function openBackupHelp(page:Page){if(await page.getByTestId('investigation-menu').count()===0)await page.getByTestId('investigation-more').click();await toolbar(page).getByText('What a backup includes',{exact:true}).click();}
 async function draftOptions(page:Page){await openWedge(page);await page.getByTestId('wedge-file').setInputFiles(lss());await expect(rows(page)).toHaveCount(1);await page.getByTestId('wedge-options-open').click();await page.getByTestId('wedge-size-4').check();await expect(page.getByTestId('wedge-options')).toBeVisible();}
 async function hostReleased(page:Page){await expect(header(page)).not.toHaveAttribute('inert');await expect(toolbar(page)).not.toHaveAttribute('inert');await expect(nav(page,'Observatory')).toBeEnabled();}
 
@@ -230,14 +231,15 @@ test('all tools remain reachable without document overflow across the navigation
 });
 
 test('toolbar backup caveat and temporary lab examples match visible persistence notices',async({page},info)=>{
- // UI redesign: the caveat is folded one click away under "What a backup includes"; its text is unchanged.
- await page.goto('/#observatory');await toolbar(page).getByText('What a backup includes',{exact:true}).click();await expect(toolbar(page).getByText(TOOLBAR_HELP,{exact:true})).toBeVisible();
+ // UI redesign: the caveat is folded one click away under "What a backup includes"; its text is unchanged. Front HEADER: that
+ // disclosure is in the page bar's More menu, which closes when another page is chosen, so it is opened again at 390 px.
+ await page.goto('/#observatory');await openBackupHelp(page);await expect(toolbar(page).getByText(TOOLBAR_HELP,{exact:true})).toBeVisible();
  // Four lab examples have their own visible notices. Other temporary scopes are covered by classification-program-import,classification-range,selected-source-width,native-text-results,native-result-list and native-result-clear-load specs; this is not a serialization test.
  await clickHeaderTool(page,'Saved images');await expect(page.getByText('Investigation and notebook files do not include this temporary image.',{exact:false})).toBeVisible();
  await clickHeaderTool(page,'Cluster database');await page.getByText('HR diagram from saved observations').click();await expect(page.getByText('This observation HR workspace is separate from Save investigation.',{exact:false})).toBeVisible();
  await clickHeaderTool(page,'Radio data');await load(page);await expect(page.getByTestId('pulsar-persistence')).toContainText(PLR_PERSISTENCE);await expect(page.getByTestId('pulsar-persistence')).toContainText(PLR_RELOAD);
  await clickHeaderTool(page,'LSS data');await expect(page.getByTestId('wedge-persistence')).toContainText('not included in Save investigation');
- await page.setViewportSize({width:390,height:844});await expect(toolbar(page).getByText(TOOLBAR_HELP,{exact:true})).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await page.setViewportSize({width:390,height:844});await openBackupHelp(page);await expect(toolbar(page).getByText(TOOLBAR_HELP,{exact:true})).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await toolbar(page).screenshot({path:info.outputPath('toolbar-scope-mobile.png')});
 });
 

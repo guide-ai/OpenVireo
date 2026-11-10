@@ -72,9 +72,9 @@ test('the spectrometer Help is in the windows where students take spectra (TSpec
 
 test('main window Help offers OpenVireo\'s own help, the tour, Websites and About; VIREO\'s main-window help is gone (Front WebHelp, Onboarding)',async({page})=>{
  await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible({timeout:15000});
- await expect(id(page,'portal-help').getByTestId('main-help-menu')).toHaveAccessibleName('Help menu of the observatory');
+ await expect(id(page,'page-bar-help').getByTestId('main-help-menu')).toHaveAccessibleName('Help menu of the observatory');
  await id(page,'main-help-menu').click();
- const items=id(page,'portal-help').locator('.fi-menu-list > button');
+ const items=id(page,'page-bar-help').locator('.fi-menu-list > button');
  await expect(items).toHaveText(['Help topics…?','Take the tour of the site','Websites ›','About OpenVireo and privacy']);
  await expect(id(page,'main-help-web')).toHaveAttribute('aria-keyshortcuts','?');
  await expect(page.getByTestId('main-help-menu-topics')).toHaveCount(0);await expect(page.getByTestId('main-help-about')).toHaveCount(0);
@@ -188,10 +188,10 @@ test('Front K2.5: a single click on a line moves the classification cursor to it
 test('Help fits a 320 px screen in the dark theme',async({page})=>{
  await page.emulateMedia({colorScheme:'dark'});await page.setViewportSize({width:320,height:800});
  await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible({timeout:15000});
- // The Help button and Tools share the top bar; the open menu and the help window stay within the screen.
+ // Front HEADER: the Help button is in the page bar; the open menu and the help window stay within the screen.
  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
  await id(page,'main-help-menu').click();
- const list=id(page,'portal-help').locator('.fi-menu-list');await expect(list).toBeVisible();
+ const list=id(page,'page-bar-help').locator('.fi-menu-list');await expect(list).toBeVisible();
  expect(await list.evaluate(e=>{const r=e.getBoundingClientRect();return r.left>=0&&r.right<=320;})).toBe(true);
  await id(page,'main-help-web').click();await id(page,'web-help-topics').getByRole('button',{name:'Coming from VIREO (Windows)'}).click();
  await expect(id(page,'web-help-topic').getByRole('table')).toBeVisible();

@@ -66,25 +66,7 @@
  .theme-switch{width:100%}
 }
 
-/* ── Investigation toolbar: one compact row; the long caveat is one click away ── */
-.investigation-toolbar{max-width:1500px;width:calc(100% - 60px);margin:16px auto 0;padding:10px 16px;border:1px solid var(--ov-border);border-radius:var(--ov-radius-md);background:var(--ov-surface);color:var(--ov-text);box-shadow:var(--ov-shadow-sm)}
-.toolbar-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 16px}
-.investigation-toolbar h2{margin:0;font-size:var(--ov-text-sm);font-weight:700;letter-spacing:.2px;color:var(--ov-text-muted)}
-.investigation-toolbar .sky-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
-.project-upload{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:var(--ov-text-sm);font-weight:550;color:var(--ov-text-muted);max-width:100%}
-.project-upload input{max-width:100%}
-/* Layout audit (2026-11-08): with wider fonts (DejaVu Sans, the usual Linux system-ui) the file field kept its intrinsic
- * width and pushed the page past 320 px; let the row, the label and the field shrink. */
-.investigation-toolbar .sky-actions,.project-upload{min-width:0}
-.project-upload input{min-width:0;width:auto}
-.investigation-toolbar .toolbar-help{margin-top:4px;padding-top:0;border-top:0}
-.investigation-toolbar .toolbar-help>summary{min-height:30px;padding:2px 0;font-size:var(--ov-text-xs)}
-.investigation-toolbar .toolbar-help p{margin:4px 0 8px;max-width:110ch;font-size:var(--ov-text-sm);line-height:1.6}
-.investigation-toolbar>[role=status],.investigation-toolbar>[role=alert]{margin:8px 0 2px;padding:8px 12px;border-radius:var(--ov-radius-sm);font-size:var(--ov-text-sm);line-height:1.5}
-.investigation-toolbar>[role=status]{background:var(--ov-success-soft);color:var(--ov-success)}
-.investigation-toolbar>[role=alert]{background:var(--ov-danger-soft);color:var(--ov-danger)}
-@media(max-width:1150px){.investigation-toolbar{width:calc(100% - 32px)}}
-@media(max-width:520px){.investigation-toolbar{width:calc(100% - 24px);padding:10px 12px}}
+/* The investigation backup lives in the page bar (src/components/page-bar.css, Front HEADER). */
 /* Front T1: the instructor-mode banner (every route) and the header item. */
 .instructor-mode-banner{box-sizing:border-box;max-width:1500px;width:calc(100% - 60px);margin:16px auto 0;padding:8px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;border:1px solid var(--ov-warning-border);border-radius:var(--ov-radius-md);background:var(--ov-surface);color:var(--ov-text);font-size:var(--ov-text-sm);line-height:1.5}
 .instructor-mode-banner p{margin:0;display:flex;flex-wrap:wrap;gap:0 8px;flex:1 1 24rem;min-width:0;overflow-wrap:anywhere}
