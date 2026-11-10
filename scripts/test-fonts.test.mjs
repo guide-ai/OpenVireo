@@ -12,10 +12,12 @@ async function fixture(fn) {
   try {await fn(root);} finally {await rm(root, {recursive: true, force: true});}
 }
 
-test('the scripts profile needs DejaVu Regular and Bold, both Noto Sans CJK collections once, and Noto Sans Devanagari', () => {
+test('the scripts profile needs DejaVu Regular and Bold, both Noto Sans CJK collections once, Noto Sans Devanagari, Arabic and Hebrew', () => {
   assert.deepEqual(profileFiles(PROFILES.scripts), ['DejaVuSans.ttf', 'DejaVuSans-Bold.ttf', 'DejaVuSerif.ttf', 'DejaVuSerif-Bold.ttf',
     'DejaVuSansMono.ttf', 'DejaVuSansMono-Bold.ttf', 'NotoSansCJK-Regular.ttc', 'NotoSansCJK-Bold.ttc',
-    'NotoSansDevanagari-Regular.ttf', 'NotoSansDevanagari-Bold.ttf']);
+    'NotoSansDevanagari-Regular.ttf', 'NotoSansDevanagari-Bold.ttf',
+    // Front RTL-1 (RT3): the non-UI Noto Sans Arabic (the tallest Arabic metrics) and Noto Sans Hebrew, from fonts-noto-core.
+    'NotoSansArabic-Regular.ttf', 'NotoSansArabic-Bold.ttf', 'NotoSansHebrew-Regular.ttf', 'NotoSansHebrew-Bold.ttf']);
   assert.deepEqual(profileFiles(PROFILES.dejavu), profileFiles(PROFILES.scripts).slice(0, 6));
   assert.throws(() => profileOf('cjk'), e => e instanceof TestFontsError && e.code === 'profile');
 });
@@ -31,7 +33,8 @@ test('the XML holds only the private folder, a private cache, DejaVu generics an
     assert.ok(xml.includes(`<alias binding="strong"><family>${generic}</family><prefer><family>${family}</family></prefer></alias>`), generic);
   const rules = [...xml.matchAll(/<string>([^<]+)<\/string><\/test><edit name="family" mode="append_last" binding="strong"><string>([^<]+)<\/string>/g)].map(m => `${m[1]}→${m[2]}`);
   assert.deepEqual(rules, ['ja→Noto Sans CJK JP', 'zh-cn→Noto Sans CJK SC', 'zh-sg→Noto Sans CJK SC', 'zh-hans→Noto Sans CJK SC',
-    'zh-tw→Noto Sans CJK TC', 'zh-hk→Noto Sans CJK TC', 'zh-mo→Noto Sans CJK TC', 'zh-hant→Noto Sans CJK TC', 'hi→Noto Sans Devanagari']);
+    'zh-tw→Noto Sans CJK TC', 'zh-hk→Noto Sans CJK TC', 'zh-mo→Noto Sans CJK TC', 'zh-hant→Noto Sans CJK TC', 'hi→Noto Sans Devanagari',
+    'ar→Noto Sans Arabic', 'fa→Noto Sans Arabic', 'ur→Noto Sans Arabic', 'he→Noto Sans Hebrew']);
   assert.doesNotMatch(fontsConf({fontDir: '/f', cacheDir: '/c', profile: PROFILES.dejavu}), /<match/);
 });
 
@@ -46,6 +49,8 @@ test('each file comes from the first folder that has it; OPENVIREO_TEST_FONT_DIR
 
 test('a missing font fails with a typed message naming the files, the folders and the packages to install', () => fixture(async root => {
   const missing = locateFonts(PROFILES.scripts, [root]).missing;
+  assert.match(missingFontsMessage(missing.filter(m => /Arabic|Hebrew/.test(m.file)), ['/u']),
+    /^Test fonts missing: NotoSansArabic-Regular\.ttf \(Noto Sans Arabic\), NotoSansArabic-Bold\.ttf \(Noto Sans Arabic\), NotoSansHebrew-Regular\.ttf \(Noto Sans Hebrew\), NotoSansHebrew-Bold\.ttf \(Noto Sans Hebrew\)\.\n[^]*\n  Debian\/Ubuntu: sudo apt-get install -y fonts-noto-core\n  Arch: sudo pacman -S --needed noto-fonts\n/);
   assert.equal(missingFontsMessage(missing.filter(m => /CJK|Devanagari/.test(m.file)), ['/u', '/v']), [
     'Test fonts missing: NotoSansCJK-Regular.ttc (Noto Sans CJK JP), NotoSansCJK-Bold.ttc (Noto Sans CJK JP), NotoSansDevanagari-Regular.ttf (Noto Sans Devanagari), NotoSansDevanagari-Bold.ttf (Noto Sans Devanagari).',
     'Searched: /u, /v.',
@@ -75,6 +80,7 @@ test('with the fonts installed, it links them, writes the config and logs one ha
     assert.match(f.sha256, /^[0-9a-f]{64}$/);
   }
   assert.deepEqual(report.fallback.map(c => `${c.lang}:${c.first}>${c.scriptFace}`).slice(0, 2), ['ja:DejaVu Sans>Noto Sans CJK JP', 'zh-cn:DejaVu Sans>Noto Sans CJK SC']);
+  assert.deepEqual(report.fallback.map(c => `${c.lang}:${c.first}>${c.scriptFace}`).slice(-4), ['ar:DejaVu Sans>Noto Sans Arabic', 'fa:DejaVu Sans>Noto Sans Arabic', 'ur:DejaVu Sans>Noto Sans Arabic', 'he:DejaVu Sans>Noto Sans Hebrew']);
   const lines = reportLines(report);
   assert.equal(lines.length, 1 + report.files.length + report.fallback.length);
   // A second run over the same folder (another worktree, a Playwright worker) keeps the links and the result.
@@ -90,7 +96,9 @@ test('the cache folder is named after the bytes: same list, same digest; one cha
 });
 
 test('only the families of the profile (and the other faces of its collections) may be listed', () => {
-  assert.deepEqual(extraFamilies(PROFILES.scripts, ['DejaVu Sans', 'Noto Sans CJK KR', 'Noto Sans Mono CJK SC', 'Noto Sans Devanagari']), []);
+  assert.deepEqual(extraFamilies(PROFILES.scripts, ['DejaVu Sans', 'Noto Sans CJK KR', 'Noto Sans Mono CJK SC', 'Noto Sans Devanagari', 'Noto Sans Arabic', 'Noto Sans Hebrew']), []);
+  // Other Arabic faces that fonts-noto-core and noto-fonts also install never reach the private config.
+  assert.deepEqual(extraFamilies(PROFILES.scripts, ['Noto Sans Arabic UI', 'Noto Naskh Arabic', 'Noto Kufi Arabic']), ['Noto Kufi Arabic', 'Noto Naskh Arabic', 'Noto Sans Arabic UI']);
   assert.deepEqual(extraFamilies(PROFILES.scripts, ['DejaVu Sans', 'WenQuanYi Zen Hei', 'Unifont']), ['Unifont', 'WenQuanYi Zen Hei']);
   assert.deepEqual(extraFamilies(PROFILES.dejavu, ['DejaVu Serif', 'Noto Sans CJK JP']), ['Noto Sans CJK JP']);
 });

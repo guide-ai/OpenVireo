@@ -19,7 +19,8 @@ import LANGUAGE_LOADERS from 'virtual:openvireo-i18n/loaders';
 // Dev server and tests only: the import is dropped from the production build with the DEV branch below
 // (scripts/check-i18n-dist.mjs checks that dist/ carries no pseudo-locale).
 import {pseudoBundle} from './i18n/pseudo';
-// Front SC2: the script-stress pseudo-locales qps-cjk, qps-deva and qps-cyrl, dropped from the production build the same way.
+// Front SC2: the script-stress pseudo-locales qps-cjk, qps-deva and qps-cyrl (and Front RTL-1's qps-rtl), dropped from the
+// production build the same way.
 import {isPseudoScriptLanguage,pseudoScriptBundle} from './i18n/pseudoScripts';
 
 /** The bundle of a non-English language, or null for English. */
@@ -37,6 +38,8 @@ const settled=settleLanguage({
  bundleFor,
  originals:()=>localStorage.getItem(VIREO_ORIGINALS_KEY)==='1',
  setLang:lang=>{document.documentElement.lang=lang;},
+ // Front RTL-1 (RT1): ltr for every language today (index.html has no dir; the attribute arrives here, with lang).
+ setDir:dir=>{document.documentElement.dir=dir;},
  setTitle:title=>{document.title=title;},
  error:(message,detail)=>{if(detail===undefined)console.error(message);else console.error(message,detail);},
 });

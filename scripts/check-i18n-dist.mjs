@@ -20,6 +20,10 @@ import {gzipSync} from 'node:zlib';
 import {CORE,ROOT,languageDir,loadLanguages,planLanguage,sourceGraph} from './i18n-split.mjs';
 const TEXT=/\.(?:js|mjs|css|html?|xml|txt|json|svg|map|webmanifest|lst|htl|dat|sp|lnl|obs|pls)$/i;
 const MARK=/⟦|\\u27e6|\\u\{27e6\}|&#x27e6;|&#10214;/i;
+// Front RTL-1 review: a dev-only pseudo-locale's name (qps-cjk, qps-deva, qps-cyrl, qps-rtl, any later qps-*): each is DEV-gated,
+// so its name reaching dist/ means its gate leaked. The production code's generic tests (`startsWith('qps-')`) name none, and a
+// chunk hash that happens to hold `qps-` (base64url: letters, digits, - and _) follows a letter, digit, - or _, so it is no name.
+const PSEUDO_NAME=/(?<![\w-])qps-[a-z]+/g;
 const gzip=(text)=>gzipSync(Buffer.from(text),{level:9}).length,kb=(n)=>(n/1000).toFixed(1);
 const escape=(s)=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 // Front ES1 review 1 and ES2: a minifier writes a string as "…", '…' or `…` (a template keeps real line feeds and writes CR as \r),
@@ -70,6 +74,7 @@ export function checkI18nDist(dist,{root=ROOT,languages=loadLanguages(root),grap
   if(/^pseudo-/.test(name))offenders.push(`${file}: pseudo-locale chunk`);
   if(TEXT.test(name))files.push({file,name,text:readFileSync(file,'utf8')});}})(dist);
  for(const f of files)if(MARK.test(f.text))offenders.push(`${f.file}: contains the pseudo-locale mark ⟦`);
+ for(const f of files)for(const name of new Set(f.text.match(PSEUDO_NAME)??[]))offenders.push(`${f.file}: names the dev-only pseudo-locale ${name}`);
  const html=readFileSync(join(dist,'index.html'),'utf8');
  const inAssets=(f)=>f.file.startsWith(join(dist,'assets'));
 

@@ -1,5 +1,6 @@
 // Front SC1 (plan analysis/front-plans/front-i18n-scripts.md § 5): proves that the browser of playwright.scripts.config.ts
-// renders Japanese, Simplified and Traditional Chinese, Hindi and Russian with the pinned test fonts of scripts/test-fonts.mjs,
+// renders Japanese, Simplified and Traditional Chinese, Hindi and Russian (and, Front RTL-1, Arabic and Hebrew: the end of this
+// file) with the pinned test fonts of scripts/test-fonts.mjs,
 // asking Chromium which platform font drew each glyph (DevTools CSS.getPlatformFontsForNode), so a fallback to another face
 // (IPA Gothic, WenQuanYi, Unifont, a CJK face of the wrong region) or a missing glyph fails here instead of moving the
 // geometric checks silently. Also writes the font-hash log into the test output.
@@ -54,7 +55,7 @@ test('the generated fontconfig is in use and its font hashes are logged',async({
  expect(report.profile).toBe('scripts');
  console.log([`fontconfig: ${report.fontconfigFile} (${report.fontconfigVersion??'version unknown'})`,...report.files.map(f=>`${f.sha256}  ${f.bytes}  ${f.path}`)].join('\n'));
  await testInfo.attach('test-fonts.json',{body:JSON.stringify(report,null,2),contentType:'application/json'});
- expect(report.files.map(f=>f.name).sort()).toEqual(['DejaVuSans-Bold.ttf','DejaVuSans.ttf','DejaVuSansMono-Bold.ttf','DejaVuSansMono.ttf','DejaVuSerif-Bold.ttf','DejaVuSerif.ttf','NotoSansCJK-Bold.ttc','NotoSansCJK-Regular.ttc','NotoSansDevanagari-Bold.ttf','NotoSansDevanagari-Regular.ttf']);
+ expect(report.files.map(f=>f.name).sort()).toEqual(['DejaVuSans-Bold.ttf','DejaVuSans.ttf','DejaVuSansMono-Bold.ttf','DejaVuSansMono.ttf','DejaVuSerif-Bold.ttf','DejaVuSerif.ttf','NotoSansArabic-Bold.ttf','NotoSansArabic-Regular.ttf','NotoSansCJK-Bold.ttc','NotoSansCJK-Regular.ttc','NotoSansDevanagari-Bold.ttf','NotoSansDevanagari-Regular.ttf','NotoSansHebrew-Bold.ttf','NotoSansHebrew-Regular.ttf']);
 });
 
 for(const stackName of Object.keys(STACKS) as (keyof typeof STACKS)[])for(const s of SAMPLES)
@@ -130,3 +131,71 @@ test('a named regional family keeps each Han region on one page',async({page})=>
  await page.setContent(page$('en',body,style));
  for(const [i,s] of [...han,...[...han].reverse()].entries())expect(Object.keys(byFamily(await platformFonts(page,`#p${i}`))).filter(f=>f!=='DejaVu Sans'),`#p${i} ${s.lang}`).toEqual([s.face]);
 });
+
+// ---- Front RTL-1 (RT3; plan front-i18n-rtl.md § 6.3): Arabic and Hebrew ---------------------------------------------------
+// DejaVu Sans covers Arabic and Hebrew and DejaVu Sans Mono covers Arabic, so unlike CJK and Devanagari these scripts are drawn
+// by the Latin face whenever it comes first. The tests pin what the browser does under the test fonts; RT5's :lang(ar), :lang(fa)
+// and :lang(he) stacks must follow from them.
+const AR='رصد الطيف بالتلسكوب، 12.5 km/s (VIREO)';
+const HE='מדידת הספקטרום בטלסקופ 12.5 km/s';
+/** The characters Noto Sans Arabic has (its cmap, as fc-query prints it): Arabic, and among the rest only space, ! , - . 0–9 :
+ * NBSP « » and a few spaces and marks. Noto Sans Hebrew has space, -, NBSP and Hebrew. */
+const NOTO_ARABIC=/[\u0020\u0021\u002C-\u002E\u0030-\u003A\u00A0\u00AB\u00BB\u0600-\u06FF]/u;
+const NOTO_HEBREW=/[\u0020\u002D\u00A0\u0591-\u05F4]/u;
+const rtlPage=(lang:string,body:string,style:string)=>`<!doctype html><html lang="${lang}" dir="rtl"><head><meta charset="utf-8"><style>${style}</style></head><body>${body}</body></html>`;
+
+for(const [lang,text,face,covers] of [['ar',AR,'Noto Sans Arabic',NOTO_ARABIC],['he',HE,'Noto Sans Hebrew',NOTO_HEBREW]] as const)
+ test(`${lang}: a stack that names ${face} first draws the script, its digits and its punctuation from it, Latin letters from DejaVu`,async({page})=>{
+  await page.setContent(rtlPage(lang,`<p id="t">${text}</p>`,`body{font-family:"${face}",${STACKS.sans}}`));
+  const got=byFamily(await platformFonts(page,'#t'));
+  expect(Object.keys(got).sort()).toEqual(['DejaVu Sans',face]);
+  // Every character the Noto face lacks (Latin letters, / ( )) comes from DejaVu, one glyph each; the rest is shaped by the Noto face.
+  expect(got['DejaVu Sans']).toBe([...text].filter(c=>!covers.test(c)).length);
+  expect(got[face]).toBeGreaterThan(0);
+ });
+
+test('bold Arabic and Hebrew reach the Bold files when the family is named, at 550 and 700',async({page})=>{
+ for(const weight of [550,700]){
+  await page.setContent(rtlPage('ar',`<p id="ar">${AR}</p><p id="he" lang="he">${HE}</p>`,`body{font-weight:${weight}}#ar{font-family:"Noto Sans Arabic","DejaVu Sans"}#he{font-family:"Noto Sans Hebrew","DejaVu Sans"}`));
+  for(const id of ['ar','he'])for(const f of await platformFonts(page,`#${id}`))expect(f.postScriptName,`${weight} ${id}: ${f.familyName}`).toMatch(/Bold/);
+ }
+});
+
+test('Arabic is shaped: four joined beh are narrower than four isolated ones, under Noto Sans Arabic and DejaVu Sans',async({page})=>{
+ for(const family of ['Noto Sans Arabic','DejaVu Sans']){
+  await page.setContent(rtlPage('ar','<span id="joined">بببب</span><br><span id="one">ب</span>',`body{font:100px "${family}"}span{white-space:pre}`));
+  const [joined,one]=await page.evaluate(()=>['joined','one'].map(id=>document.getElementById(id)!.getBoundingClientRect().width));
+  expect(joined,family).toBeLessThan(4*one*.8);
+  // One face draws it. Not its glyph count, which depends on the font's version: Noto Sans Arabic draws the four beh in 8 glyphs
+  // in Arch's noto-fonts and in 4 in Ubuntu 24.04's fonts-noto-core 20201225 (the CI job), DejaVu Sans in 4 (Front RTL-1 review).
+  const glyphs=byFamily(await platformFonts(page,'#joined'));
+  expect(Object.keys(glyphs),family).toEqual([family]);expect(glyphs[family],family).toBeGreaterThanOrEqual(4);
+ }
+});
+
+// (d) DejaVu draws Arabic and Hebrew under the generic families and the site's own token stacks, whatever the language: no
+// fallback happens, since the first face has the glyphs (DejaVu Sans Mono has Arabic but not Hebrew, which falls back by
+// language as (e) shows). So naming the Noto face after DejaVu does nothing either: RT5 must name it before system-ui.
+for(const [stackName,stack] of [['sans-serif','sans-serif'],['site sans',STACKS.sans],['"DejaVu Sans","Noto Sans Arabic"','"DejaVu Sans","Noto Sans Arabic"'],['monospace','monospace'],['site mono',STACKS.mono]] as const)
+ test(`characterization (d): under ${stackName}, DejaVu draws Arabic${/mono/.test(stackName)?'':' and Hebrew'} for lang ar, he and en`,async({page})=>{
+  const mono=/mono/.test(stackName),face=mono?'DejaVu Sans Mono':'DejaVu Sans';
+  for(const lang of ['ar','he','en']){
+   await page.setContent(rtlPage(lang,`<p id="ar">${AR}</p><p id="he">${HE}</p>`,`body{font-family:${stack}}`));
+   expect(Object.keys(byFamily(await platformFonts(page,'#ar'))),`${lang} Arabic`).toEqual([face]);
+   if(!mono)expect(Object.keys(byFamily(await platformFonts(page,'#he'))),`${lang} Hebrew`).toEqual([face]);
+  }
+ });
+
+// (e) Where the first face lacks the script (DejaVu Serif has neither; DejaVu Sans Mono has no Hebrew), the per-character
+// fallback follows the language through the test fontconfig's rules (ar, fa, ur → Noto Sans Arabic; he → Noto Sans Hebrew), and
+// any other language falls back to DejaVu Sans. As with CJK (c), fallback stays on the Regular file at 700.
+for(const [lang,arabic,hebrew] of [['ar','NotoSansArabic-Regular','DejaVuSans'],['fa','NotoSansArabic-Regular','DejaVuSans'],['he','DejaVuSans','NotoSansHebrew-Regular'],['en','DejaVuSans','DejaVuSans']] as const)
+ test(`characterization (e): under serif, lang=${lang} falls back to ${arabic} for Arabic and ${hebrew} for Hebrew, Regular at 700`,async({page})=>{
+  for(const weight of [400,700]){
+   await page.setContent(rtlPage(lang,'<p id="ar">رصد الطيف</p><p id="he">מדידת הספקטרום</p>',`body{font-family:serif;font-weight:${weight}}`));
+   const serif=weight===700?'DejaVuSerif-Bold':'DejaVuSerif';
+   // The space between the two words is DejaVu Serif's (the first face has it).
+   expect((await faces(page,'#ar'))[0].sort(),`${weight} Arabic`).toEqual([arabic,serif].sort());
+   expect((await faces(page,'#he'))[0].sort(),`${weight} Hebrew`).toEqual([hebrew,serif].sort());
+  }
+ });

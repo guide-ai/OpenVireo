@@ -1,9 +1,9 @@
 import {activateLocale,earlyTextRequests,noteLanguageFailure} from './active';
 import type {LocaleBundle} from './catalog';
-import {decideLocale,HTML_LANG,type UiLanguage} from './locale';
+import {decideLocale,HTML_LANG,htmlDir,type TextDirection,type UiLanguage} from './locale';
 import {LANGUAGES,languageEntry,type LanguageEntry} from './languages';
 /** Front ES0 [W]: what src/boot.ts does once per load, with the page reached through `page` so tests can run it (docs/I18N.md).
- * Decide the language, get its bundle, activate it, set <html lang> and the title. A bundle that cannot be loaded, built or
+ * Decide the language, get its bundle, activate it, set <html lang>, <html dir> (Front RTL-1) and the title. A bundle that cannot be loaded, built or
  * validated is logged and replaced by English: a broken translation never blanks the page. Text requested before this ran is
  * reported (it would have stayed English; see earlyTextRequests).
  * Front ES1: a bundle may arrive asynchronously (the Spanish chunk, src/i18n/es/index.ts). Then settleLanguage returns a
@@ -17,6 +17,9 @@ export type SettlePage=Readonly<{
  /** "View original (English)" for VIREO's menus and dialogs (decision 9): vireo() returns the original literals. */
  originals?:()=>boolean;
  setLang:(lang:string)=>void;
+ /** Front RTL-1 (RT1): sets <html dir> to the settled language's direction (ltr for every language today). Optional, so the
+  * tests that do not look at it need not pass it. */
+ setDir?:(dir:TextDirection)=>void;
  setTitle:(title:string)=>void;
  error:(message:string,detail?:unknown)=>void;
  /** Resolves after `ms` (default setTimeout); tests pass their own. */
@@ -51,6 +54,8 @@ function finish(page:SettlePage,loaded:LocaleBundle|null,wanted:UiLanguage,missi
  const early=earlyTextRequests();
  if(early)page.error(`OpenVireo: ${early} text request(s) ran before the language was settled and stayed English.`);
  page.setLang(languageEntry(language,page.registry??LANGUAGES)?.htmlLang??HTML_LANG[language]??'en');
+ // The activated language's, as for <html lang>: a right-to-left load whose chunk failed is English and ltr.
+ page.setDir?.(htmlDir(language,page.registry??LANGUAGES));
  const title=bundle?.messages['app.documentTitle'];if(title)page.setTitle(title);
  return Object.freeze({language,failed});
 }

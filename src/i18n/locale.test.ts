@@ -31,11 +31,11 @@ describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-0
  it('accepts the pseudo-locale only in the dev server and tests, never from storage',()=>{
   expect(decide({param:'qps'})).toBe('en');expect(decide({param:'qps',dev:true,registry:UNRELEASED})).toBe('qps');
   expect(decide({stored:'qps',dev:true})).toBe('en');
-  expect(HTML_LANG).toEqual({en:'en','es-419':'es-419','pt-BR':'pt-BR',qps:'en','qps-cjk':'ja','qps-deva':'hi','qps-cyrl':'ru'});
+  expect(HTML_LANG).toEqual({en:'en','es-419':'es-419','pt-BR':'pt-BR',qps:'en','qps-cjk':'ja','qps-deva':'hi','qps-cyrl':'ru','qps-rtl':'ar'});
  });
  it('shows the selector when it offers a choice: before a release only on that language\'s own preview (ES1 review 1, C3; SC8)',()=>{
   expect(selectorShown('en',UNRELEASED)).toBe(false);expect(selectorShown('es-419',UNRELEASED)).toBe(true);
-  for(const pseudo of ['qps','qps-cjk','qps-deva','qps-cyrl'])expect(selectorShown(pseudo),pseudo).toBe(false);
+  for(const pseudo of ['qps','qps-cjk','qps-deva','qps-cyrl','qps-rtl'])expect(selectorShown(pseudo),pseudo).toBe(false);
  });
  it('a language change keeps the route and carries ?lang when the choice was not stored or the address already has it',()=>{
   expect(nextAddress('https://openvireo.space/?lang=en#spectrum','es-419',false)).toBe('https://openvireo.space/?lang=es-419#spectrum');

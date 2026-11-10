@@ -25,3 +25,11 @@ export const PLANNED:readonly LanguageEntry[]=Object.freeze([
 ]);
 /** The registry with `tags` released. */
 export const releasing=(registry:readonly LanguageEntry[],...tags:string[]):readonly LanguageEntry[]=>registry.map(l=>tags.includes(l.tag)?{...l,released:true}:l);
+/** Front RTL-1 (RT1; plan front-i18n-rtl.md § 7): right-to-left languages for the direction tests only. Arabic is not in the
+ * user's order (2026-11-10: groundwork only), and Hebrew and Persian are checks, not plans. Detection ranges are the plan's: one
+ * Modern Standard Arabic for every `ar` region, `he` with the old `iw` code, `fa` (Iran and Afghanistan's Dari). */
+export const RTL:readonly LanguageEntry[]=Object.freeze([
+ Object.freeze({...entry('ar','العربية','Arabic',['ar']),direction:'rtl' as const}),
+ Object.freeze({...entry('he','עברית','Hebrew',['he','iw']),direction:'rtl' as const}),
+ Object.freeze({...entry('fa','فارسی','Persian',['fa']),direction:'rtl' as const}),
+]);
