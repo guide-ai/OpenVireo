@@ -19,7 +19,14 @@ import './LanguageChoice.css';
  * a typed letter) on the closed select changes its value and fires `change` at once, which opened the confirmation on the first
  * arrow, so a keyboard user could never reach the option after the next one. A change that follows such a key within this time is a
  * step, not a choice: the select shows it as pending, and Enter, or leaving the select, asks for it; Escape returns to the current
- * language. A pick from the open list (mouse, touch, or the keyboard inside the list, as macOS opens it) asks at once. */
+ * language. A pick from the open list (mouse, touch, or the keyboard inside the list, as macOS opens it) asks at once.
+ * Front WEBKIT-SELECT: WebKit fires `change` on a closed select only when the option differs from the one of its last `change` (or
+ * the one selected when the select last gained focus), and a value set by the page (Escape's or Cancel's return) does not reset that
+ * record. So after Escape a step back to the same option changed the value with no `change`, nothing was pending, and Tab or Enter
+ * asked nothing. A key's step is therefore also read from the select's own value (`sync`: on key up, and before Enter, Escape and
+ * leaving); Escape puts the select's value back itself (React would skip a render whose pending state ends where it began), and so
+ * does closing the dialog before it returns the focus to the select, so WebKit's record starts from the current language. Chromium
+ * and Firefox fire `change` on every step, so `sync` finds nothing to do there. */
 const STEP_MS=400;
 const STEP_KEYS=new Set(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Home','End','PageUp','PageDown']);
 function storageWorks():boolean{try{const probe='openvireo-language-probe';localStorage.setItem(probe,'1');localStorage.removeItem(probe);return true;}catch{return false;}}
@@ -43,7 +50,9 @@ export function LanguageSelect({onSave}:{onSave:()=>void}){
  useEffect(()=>{if(asked){dialog.current?.showModal();cancel.current?.focus();}},[asked]);
  /** PT0 review: a dialog opened by leaving the select (Tab) opens while the focus is between elements, so Chromium returns it to
   * the body on close, or leaves it on the dialog's button that is then removed; the focus goes back to the select instead of being lost. */
- function close(){dialog.current?.close();setAsked(null);const a=document.activeElement;if(!a||a===document.body||dialog.current?.contains(a))select.current?.focus();}
+ function close(){if(select.current)select.current.value=current;dialog.current?.close();setAsked(null);const a=document.activeElement;if(!a||a===document.body||dialog.current?.contains(a))select.current?.focus();}
+ /** A step whose `change` did not arrive (WebKit, above): the select shows an option that is neither pending nor current. */
+ function sync(){const value=select.current?.value;if(asked||value===undefined||value===(pendingRef.current??current))return;setPending(value===current?null:value);}
  function change(){
   if(!asked)return;
   let stored=false;
@@ -56,13 +65,15 @@ export function LanguageSelect({onSave}:{onSave:()=>void}){
   <label className="language-select-label" data-i18n-shell=""><span className="visually-hidden" data-testid="language-legend">{M.legend}</span>
    <select ref={select} className="language-select" value={asked??pending??current} data-testid="language-select"
     onKeyDown={e=>{
-     if(STEP_KEYS.has(e.key)||(e.key.length===1&&e.key!==' '&&!e.ctrlKey&&!e.metaKey&&!e.altKey))steppedAt.current=performance.now();
-     else if(e.key==='Enter'&&pendingRef.current!==null){e.preventDefault();ask(pendingRef.current);}
-     else if(e.key==='Escape'&&pendingRef.current!==null){e.preventDefault();e.stopPropagation();setPending(null);}
+     if(STEP_KEYS.has(e.key)||(e.key.length===1&&e.key!==' '&&!e.ctrlKey&&!e.metaKey&&!e.altKey)){steppedAt.current=performance.now();return;}
+     if(e.key==='Enter'||e.key==='Escape')sync();
+     if(e.key==='Enter'&&pendingRef.current!==null){e.preventDefault();ask(pendingRef.current);}
+     else if(e.key==='Escape'&&pendingRef.current!==null){e.preventDefault();e.stopPropagation();setPending(null);e.currentTarget.value=current;}
     }}
+    onKeyUp={sync}
     onChange={e=>{const value=e.target.value;if(value===current){setPending(null);return;}if(performance.now()-steppedAt.current<STEP_MS)setPending(value);else ask(value);}}
     onPointerDown={()=>{steppedAt.current=-Infinity;}}
-    onBlur={()=>{steppedAt.current=-Infinity;if(pendingRef.current!==null&&document.hasFocus())ask(pendingRef.current);}}>
+    onBlur={()=>{sync();steppedAt.current=-Infinity;if(pendingRef.current!==null&&document.hasFocus())ask(pendingRef.current);}}>
     {options.map(o=><option key={o.tag} value={o.tag} lang={o.htmlLang} data-testid={`language-${o.tag}`}>{optionLabel(o)}</option>)}
    </select>
   </label>

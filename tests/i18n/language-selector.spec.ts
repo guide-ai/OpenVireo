@@ -114,7 +114,9 @@ test('Front PT0: the keyboard steps across all three options without opening the
  // Escape on the select drops a pending step.
  await select.focus();await page.keyboard.press('ArrowUp');await expect(select).toHaveValue('es-419');
  await page.keyboard.press('Escape');await expect(select).toHaveValue('pt-BR');await expect(dialog).toHaveCount(0);
- // Leaving the select with a pending step asks for it.
+ // Leaving the select with a pending step asks for it. Front WEBKIT-SELECT: this step returns to the option Escape just dropped, for
+ // which WebKit fires no `change` (it compares with its last `change`, which the page's own reset does not move); the step is read
+ // from the select's value instead, so Tab asks in WebKit too.
  await select.focus();await page.keyboard.press('ArrowUp');await expect(dialog).toHaveCount(0);
  await page.keyboard.press('Tab');
  await expect(dialog).toBeVisible();await expect(dialog).toContainText(P.maps.languageChoice.reload('Español'));
