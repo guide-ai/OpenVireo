@@ -2,16 +2,16 @@ import {type Page,type Locator} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
 import {SPANISH_LOCALE,langQuery} from '../fixtures/language';
 import {layoutProblems,type LayoutOptions} from '../fixtures/layoutProblems';
+import {readFileSync} from 'node:fs';
 import {enterInstructorMode} from '../fixtures/instructor-mode';
-import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
-import originals from '../../src/i18n/es/originals.json' with {type:'json'};
-import {RADIO_ANTENNA_ES} from '../../src/i18n/es/maps/radioAntenna';
-import identical from '../../src/i18n/es/identical.json' with {type:'json'};
-import {RADIO_RECORD_SAVE_ES} from '../../src/i18n/es/maps/radioRecordSave';
+import {TRANSLATED,radioMaps,type LanguageText} from './languageText';
 // Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
 test.use({locale:SPANISH_LOCALE});
 
+// Front PT5: the spec runs for every translated language (tests/i18n/languageText.ts: its own catalog, originals and radio maps,
+// never hard-coded text). The Spanish tests keep their titles and assertions; a language before its release (pt-BR) runs the same
+// checks under its own titles in its `?lang=` preview, which beats the es-MX browser language. English and qps run once.
 // Front ES8a (docs/I18N.md): the radio telescope route (#radio-control) in Spanish in an `es-*` browser (a `?lang=es-419` preview load before ES-REL). One walk runs
 // in English, Spanish and the pseudo-locale: the route page and its scenario, the exercise menu, the scenario inputs, Radio access
 // and its timer, the Radio switch and VIREO's control panel (Tracking, Set Coordinates with the B1950.0 entry, the slew question,
@@ -24,8 +24,11 @@ test.use({locale:SPANISH_LOCALE});
 // - qps: every visible text is marked ⟦…⟧ (it goes through the catalog, a map or vireo()), with the same exceptions;
 // - views that mirror a written file (`lang="en"`, F2) are left out of both comparisons.
 // Recorded data stays English: pulsar names (B/J), the Pulsars.dat values shown in Pulsar Parameters, file names and hashes.
-type Lang='en'|'es-419'|'qps';
-const O=originals as Record<string,string>,E=en as Record<string,string>,S=es as Record<string,string>;
+type Lang='en'|'qps'|LanguageText;
+/** A test title: Spanish keeps its ES8a title; another language names itself and its preview. */
+const title=(L:LanguageText,es:string,other:string)=>L.tag==='es-419'?es:other.replaceAll('<L>',L.entry.englishName).replaceAll('<tag>',L.tag);
+const tagOf=(lang:Lang)=>typeof lang==='string'?lang:lang.tag;
+const E=en as Record<string,string>;
 /** Texts that read the same in both languages. Exact strings only: a caption left in English fails. */
 const SAME=new Set<string>([
  'VIREO','OpenVireo','SHA-256','UT','UTC','MJD','JD','MHz','K','ms','px','J2000.0','B1950.0','Pulsars.dat','Pulsars.HTL','PEpoch (MJD):','HH:MM:SS',
@@ -41,17 +44,38 @@ const SAME=new Set<string>([
 const RECORDED=/^(?:[BJ]?\d{4}[+-−]\d{2,4}[A-Z]?)$|^(?:SHA-256 )?[0-9a-f]{64}$|^[0-9a-f]{12}$|^[\w.-]+\.(?:dat|DAT|HTL|PLR|txt|TXT|json)$/;
 const NUMERIC=/^[-+−±\d\s.,:;°′″'"·×÷/()[\]–%=→eE]*\d[-+−±\d\s.,:;°′″'"·×÷/()[\]–%=→eE]*(?:\s*(?:MHz|ms|s|K|h|m|px|UT|Z|°|mJy|pc\/cm\^3|rad|×))*\s*$/;
 const ISO=/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z?(?: UT)?$/;
-const same=(text:string)=>SAME.has(text)||RECORDED.test(text)||NUMERIC.test(text)||ISO.test(text);
+/** Front PT5: texts of the walk that are the same words in another language (its identical.json or originals, with a reason
+ * each), and shared SAME entries that are Spanish words only, which that language must translate. Spanish's set is unchanged. */
+const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['OK','Longitude','Latitude','Altitude','Pulsar'])};
+const NOT_SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['Radio','Radio...','E','No','no','Hrs'])};
+/** Front PT5: the receiver's Record Save dialog also renders texts of the pulsar analysis map (`pulsar`, through
+ * createPulsarTranslator), which Portuguese translates in PT6 (E06), as ES8a waited for ES8b. Until then only these keys may read
+ * as English in pt-BR, only on that step; remove the list when PT6 merges (its test then fails if a key is still English). */
+const TODO_PT6_PULSAR_KEYS=['pulsar.rawExport.scope','pulsar.rawExport.format','pulsar.rawExport.inactive','pulsar.rawExport.inactiveNone','pulsar.rawExport.loss.heading',
+ 'pulsar.rawExport.loss.header','pulsar.rawExport.loss.headerNone','pulsar.rawExport.loss.samples','pulsar.rawExport.loss.memory','pulsar.save.how','pulsar.save.extensionRule',
+ 'pulsar.save.origin','pulsar.save.warning','pulsar.save.choose','pulsar.save.chooseAgain','pulsar.save.refusal.stale'] as const;
+const TODO_PT6_TAGS:ReadonlySet<string>=new Set(['pt-BR']);
+// Read from the English map's source (importing it here would pull in the catalog without an import attribute).
+const PULSAR_SOURCE=readFileSync(new URL('../../src/components/PulsarMessages.ts',import.meta.url),'utf8');
+const TODO_PT6=TODO_PT6_PULSAR_KEYS.map(k=>{const m=new RegExp(`'${k.replace(/\./g,'\\.')}': '((?:[^'\\\\]|\\\\.)*)'`).exec(PULSAR_SOURCE);if(!m)throw new Error(k);
+ const t=m[1].replace(/\\'/g,"'");return new RegExp(`^${t.split(/\{\w+\}/).map(p=>p.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')).join('[\\s\\S]*?')}$`);});
+const pendingPt6=(text:string,L:LanguageText)=>TODO_PT6_TAGS.has(L.tag)&&TODO_PT6.some(p=>p.test(text));
+const same=(text:string,L?:LanguageText)=>{
+ if(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false))return true;
+ if(L!==undefined&&(NOT_SAME_IN[L.tag]?.has(text)??false))return false;
+ return SAME.has(text)||RECORDED.test(text)||NUMERIC.test(text)||ISO.test(text);
+};
 const id=(page:Page|Locator,testId:string)=>page.getByTestId(testId);
 const ACCENTED:Readonly<Record<string,string>>={a:'aá',e:'eé',i:'ií',o:'oó',u:'uú',A:'AÁ',E:'EÉ',I:'IÍ',O:'OÓ',U:'UÚ'};
 const MARK='[⟦⟧·\\s]*';
 const pseudo=(text:string)=>new RegExp(`^${MARK}${[...text].map(c=>ACCENTED[c]?`[${ACCENTED[c]}]`:/\s/.test(c)?'\\s+':c.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')).join(MARK)}${MARK}$`);
 const exact=(text:string)=>new RegExp(`^\\s*${text.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&').replace(/\s+/g,'\\s+')}\\s*$`);
 /** The accessible name of a catalog key in this language. */
-const N=(lang:Lang,key:string)=>{if(!Object.hasOwn(E,key))throw new Error(key);if(lang==='en')return exact(E[key]);if(lang==='qps')return pseudo(E[key]);if(!Object.hasOwn(S,key))throw new Error(`no Spanish for ${key}`);return exact(S[key]);};
-/** vireo() of a Spanish load, as src/i18n/vireo.ts computes it (the literal when there is no original). */
+const N=(lang:Lang,key:string)=>{if(!Object.hasOwn(E,key))throw new Error(key);if(lang==='en')return exact(E[key]);if(lang==='qps')return pseudo(E[key]);const C=lang.catalog as Record<string,string>;if(!Object.hasOwn(C,key))throw new Error(`no ${lang.entry.englishName} for ${key}`);return exact(C[key]);};
+/** vireo() of a load in this language, as src/i18n/vireo.ts computes it (the literal when there is no original). */
 const normal=(text:string)=>text.replace(/&(&?)/g,(_,d:string)=>d).trim();
-const vireoEs=(text:string)=>{const key=normal(text);return Object.hasOwn(O,key)?O[key]:key;};
+const vireoOf=(L:LanguageText)=>(text:string)=>{const key=normal(text);return Object.hasOwn(L.originals,key)?L.originals[key]:key;};
+const esc=(text:string)=>text.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&');
 
 /** Visible text nodes, option texts, accessible names, titles and placeholders outside the header and outside native
  * `lang="en"` views. */
@@ -119,28 +143,31 @@ const STEPS:readonly (readonly [string,(page:Page,lang:Lang)=>Promise<void>])[]=
 async function walk(page:Page,lang:Lang,each:(step:string)=>Promise<void>){
  await page.addInitScript(()=>localStorage.setItem('openvireo.tour.v1','done'));
  await page.clock.install({time:new Date('2026-11-09T12:00:00Z')});page.setDefaultTimeout(20_000);
- await page.goto(`/${langQuery(lang)}#radio-control`);
- await expect(page.locator('html')).toHaveAttribute('lang',lang==='es-419'?'es-419':'en');
+ await page.goto(`/${langQuery(tagOf(lang))}#radio-control`);
+ await expect(page.locator('html')).toHaveAttribute('lang',typeof lang==='string'?'en':lang.entry.htmlLang);
  await expect(id(page,'radio-exercise')).toBeVisible({timeout:30_000});
  for(const [step,run] of STEPS){await test.step(step,()=>run(page,lang));await page.waitForTimeout(150);await each(step);}
 }
 
-test('the radio telescope reads differently in Spanish from English: route, control panel, options, Pulsar Parameters, clock, date and receiver',async({browser})=>{
+for(const L of TRANSLATED){
+ const C=L.catalog as Record<string,string>;
+ test(title(L,'the radio telescope reads differently in Spanish from English: route, control panel, options, Pulsar Parameters, clock, date and receiver','the radio telescope reads differently in <L> (<tag> preview) from English: route, control panel, options, Pulsar Parameters, clock, date and receiver'),async({browser})=>{
  test.setTimeout(360_000);
- const seen:Record<'en'|'es-419',Map<string,Set<string>>>={en:new Map(),'es-419':new Map()};
- for(const lang of ['en','es-419'] as const){
+ const seen:Record<'en'|'own',Map<string,Set<string>>>={en:new Map(),own:new Map()};
+ for(const lang of ['en','own'] as const){
   const page=await browser.newPage({viewport:{width:1440,height:1000}});const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
-  await walk(page,lang,async step=>{seen[lang].set(step,new Set(await texts(page)));});
-  expect(errors,lang).toEqual([]);await page.close();
+  await walk(page,lang==='en'?'en':L,async step=>{seen[lang].set(step,new Set(await texts(page)));});
+  expect(errors,lang==='en'?'en':L.tag).toEqual([]);await page.close();
  }
  const english=new Set([...seen.en.values()].flatMap(s=>[...s].map(bare)));
  const left=new Map<string,string>();// each text once, with the first step that shows it
- for(const [step,list] of seen['es-419'])for(const t of list)if(english.has(bare(t))&&!same(bare(t))&&!left.has(t))left.set(t,step);
+ for(const [step,list] of seen.own)for(const t of list)if(english.has(bare(t))&&!same(bare(t),L)&&!(step==='Record Save dialog'&&pendingPt6(bare(t),L))&&!left.has(t))left.set(t,step);
  expect([...left].map(([t,step])=>`${step}: ${t}`)).toEqual([]);
- // The scenario selectors' options are Spanish.
- const options=[...seen['es-419'].get('control panel')!].filter(t=>t.startsWith('@option:'));
- expect(options).toContain(`@option:${S['radio.env.dome.0']}`);
-});
+ // The scenario selectors' options are in the language.
+ const options=[...seen.own.get('control panel')!].filter(t=>t.startsWith('@option:'));
+ expect(options).toContain(`@option:${C['radio.env.dome.0']}`);
+ });
+}
 
 test('qps: every text of the radio walk is marked, outside identifiers and native mirrors',async({page})=>{
  test.setTimeout(300_000);await page.setViewportSize({width:1440,height:1000});
@@ -186,40 +213,45 @@ const captions=(page:Page,T:(original:string)=>string):Record<string,()=>Promise
   await expect(id(page,'receiver-record-cancel')).toHaveText(T('Cancel'));},
 });
 
+for(const L of TRANSLATED){
+ const C=L.catalog as Record<string,string>,O=L.originals,R=radioMaps(L.tag),vireoIn=vireoOf(L);
 // "View original (English)" (decision 9): with the stored option on, every VIREO caption of the walk is VIREO's English, checked
-// one by one, and no Spanish original appears anywhere; OpenVireo's own web text stays Spanish.
-test('View original (English) on: every VIREO caption in the radio walk reads in English, the web text stays Spanish',async({page})=>{
+// one by one, and no translated original appears anywhere; OpenVireo's own web text stays in the language.
+ test(title(L,'View original (English) on: every VIREO caption in the radio walk reads in English, the web text stays Spanish','View original (English) on: every VIREO caption in the radio walk reads in English, the web text stays <L>'),async({page})=>{
  test.setTimeout(300_000);await page.setViewportSize({width:1440,height:1000});
  await page.addInitScript(()=>localStorage.setItem('openvireo-vireo-originals','1'));
  const plain=(text:string)=>bare(text).replace(/(?: ›|…|\.\.\.)$/,'').trim();
- // Web text (the catalog and the radio control panel's map) and VIREO's English keys are not Spanish originals.
- const web=new Set([...Object.values(S),...Object.values(RADIO_ANTENNA_ES),...Object.keys(O),...Object.keys(identical.entries).filter(k=>k.startsWith('original:')).map(k=>k.slice(9))].map(plain));
- const spanish=new Set(Object.values(O).map(plain).filter(t=>!web.has(t)&&/[A-Za-z]{3}/.test(t)));
+ // Web text (the catalog and the radio control panel's map) and VIREO's English keys are not translated originals.
+ const web=new Set([...Object.values(C),...Object.values(R.radioAntenna),...Object.keys(O),...Object.keys(R.identical).filter(k=>k.startsWith('original:')).map(k=>k.slice(9))].map(plain));
+ const translated=new Set(Object.values(O).map(plain).filter(t=>!web.has(t)&&/[A-Za-z]{3}/.test(t)));
  const checks=captions(page,t=>normal(t));
  const left=new Map<string,string>();
- await walk(page,'es-419',async step=>{
-  for(const t of await texts(page))if(spanish.has(plain(t))&&!left.has(t))left.set(t,step);
+ await walk(page,L,async step=>{
+  for(const t of await texts(page))if(translated.has(plain(t))&&!left.has(t))left.set(t,step);
   await checks[step]?.();
-  if(step==='radio route')await expect(page.getByRole('heading',{level:1,name:N('es-419','radioRoute.title')})).toBeVisible();
-  if(step==='control panel')await expect(id(page,'radio-panel-window').locator('h3').first()).toHaveText(S['radio.panel.heading']);
-  if(step==='Record Save dialog')await expect(id(page,'receiver-record-save').locator('h3')).toHaveText(RADIO_RECORD_SAVE_ES['radioSave.heading']);
+  if(step==='radio route')await expect(page.getByRole('heading',{level:1,name:N(L,'radioRoute.title')})).toBeVisible();
+  if(step==='control panel')await expect(id(page,'radio-panel-window').locator('h3').first()).toHaveText(C['radio.panel.heading']);
+  if(step==='Record Save dialog')await expect(id(page,'receiver-record-save').locator('h3')).toHaveText(R.radioRecordSave['radioSave.heading']);
  });
  expect([...left].map(([t,step])=>`${step}: ${t}`)).toEqual([]);
-});
+ });
 
-test('Spanish: every VIREO caption in the radio walk is its Spanish original; English shows the originals unchanged',async({browser})=>{
+ test(title(L,'Spanish: every VIREO caption in the radio walk is its Spanish original; English shows the originals unchanged','<L> (<tag> preview): every VIREO caption in the radio walk is its <L> original; English shows the originals unchanged'),async({browser})=>{
  test.setTimeout(360_000);
- for(const lang of ['es-419','en'] as const){
+ for(const lang of ['own','en'] as const){
   const page=await browser.newPage({viewport:{width:1440,height:1000}});
-  const checks=captions(page,t=>lang==='en'?normal(t):vireoEs(t));
-  await walk(page,lang,async step=>{await checks[step]?.();});
+  const checks=captions(page,t=>lang==='en'?normal(t):vireoIn(t));
+  await walk(page,lang==='en'?'en':L,async step=>{await checks[step]?.();});
   await page.close();
  }
- for(const t of ['VIREO Radio Telescope Control Panel','Tracking','Receiver','Radio Simulation Options','Pulsar Parameters','Find Pulsar Data','Identify Recorded Object','Save Data Now?','Cannot Close Receiver!','Record'])expect(vireoEs(t)).not.toBe(t);
-});
+ for(const t of ['VIREO Radio Telescope Control Panel','Tracking','Receiver','Radio Simulation Options','Pulsar Parameters','Find Pulsar Data','Identify Recorded Object','Save Data Now?','Cannot Close Receiver!','Record'])expect(vireoIn(t)).not.toBe(t);
+ });
+}
 
 /** The receiver's drawn annotation and caption: only VIREO's unit words and title pieces change; numbers and names do not. */
-test('the receiver caption, the drawn annotation and a mark label translate VIREO pieces only',async({page})=>{
+for(const L of TRANSLATED){
+ const V=vireoOf(L),sec=esc(V('Sec'));
+ test(title(L,'the receiver caption, the drawn annotation and a mark label translate VIREO pieces only','<L> (<tag> preview): the receiver caption, the drawn annotation and a mark label translate VIREO pieces only'),async({page})=>{
  test.setTimeout(180_000);await page.setViewportSize({width:1440,height:1000});
  const drawn:string[]=[];
  await page.exposeFunction('__drawn',(t:string)=>{drawn.push(t);});
@@ -227,28 +259,31 @@ test('the receiver caption, the drawn annotation and a mark label translate VIRE
  const upTo='receiver',steps=STEPS.findIndex(([s])=>s===upTo);
  await page.addInitScript(()=>localStorage.setItem('openvireo.tour.v1','done'));
  await page.clock.install({time:new Date('2026-11-09T12:00:00Z')});page.setDefaultTimeout(20_000);
- await page.goto('/#radio-control');await expect(id(page,'radio-exercise')).toBeVisible({timeout:30_000});
- for(const [,run] of STEPS.slice(0,steps+1))await run(page,'es-419');
- await expect(id(page,'receiver-heading-0')).toHaveText(/^(?:Receptor 1|¡No hay ningún púlsar en el haz!|Púlsar \S+)\s+Apertura: \d+ Metros/);
+ await page.goto(`/${langQuery(L.tag)}#radio-control`);await expect(id(page,'radio-exercise')).toBeVisible({timeout:30_000});
+ for(const [,run] of STEPS.slice(0,steps+1))await run(page,L);
+ // Spanish: /^(?:Receptor 1|¡No hay ningún púlsar en el haz!|Púlsar \S+)\s+Apertura: \d+ Metros/, built from the originals.
+ await expect(id(page,'receiver-heading-0')).toHaveText(new RegExp(`^(?:${esc(V('Receiver'))} 1|${esc(V('No Pulsar in Beam!'))}|${esc(V('Pulsar'))} \\S+)\\s+${esc(V('Aperture:'))} \\d+ ${esc(V('Meters'))}`));
  // Through the capture to a placed mark: the annotation is drawn while receiving, the mark label after it.
- for(const [,run] of STEPS.slice(steps+1,STEPS.findIndex(([s])=>s==='mark placed')+1))await run(page,'es-419');
- await expect.poll(()=>drawn.some(t=>/^\d+\.\d Seg $/.test(t))).toBe(true);
+ for(const [,run] of STEPS.slice(steps+1,STEPS.findIndex(([s])=>s==='mark placed')+1))await run(page,L);
+ await expect.poll(()=>drawn.some(t=>new RegExp(`^\\d+\\.\\d ${sec} $`).test(t))).toBe(true);
  expect(drawn.some(t=>/ Sec /.test(t))).toBe(false);
  expect(drawn.some(t=>/^\d+\.\d{2} MHz {0,}$/.test(t))).toBe(true);
  // A mark's time label (RECEIVER_MARK_LITERALS ' Sec', drawn on the overlay and shown in the DOM): «Seg», never "Sec".
- await expect(id(page,'receiver-mark-label-first-0')).toContainText(/\d Seg \(/);await expect(id(page,'receiver-mark-label-first-0')).not.toContainText('Sec');
- await expect.poll(()=>drawn.some(t=>/^\s*\d+(?:\.\d+)? Seg$/.test(t))).toBe(true);
+ await expect(id(page,'receiver-mark-label-first-0')).toContainText(new RegExp(`\\d ${sec} \\(`));await expect(id(page,'receiver-mark-label-first-0')).not.toContainText('Sec');
+ await expect.poll(()=>drawn.some(t=>new RegExp(`^\\s*\\d+(?:\\.\\d+)? ${sec}$`).test(t))).toBe(true);
  expect(drawn.some(t=>/ Sec$/.test(t))).toBe(false);
-});
+ });
+}
 
 /** Front SC9: the layout check of tests/fixtures/layoutProblems.ts (no local copy), with the options that keep this spec's
  * checks: its old copy also took modal alert dialogs, checked inside the topmost one and checked dt; the fixture adds the
  * plot-text check. Run with the CI's DejaVu fonts (docs/I18N.md). */
 const LAYOUT:LayoutOptions={dialogs:'dialog[open],[role=dialog][aria-modal=true],[role=alertdialog][aria-modal=true]',topDialog:true,controls:'button,label,legend,h1,h2,h3,h4,select,input,summary,th,dt'};
-for(const width of [320,1440])test(`at ${width} px the Spanish radio telescope screens lay out without overflow, clipping or crossing`,async({page})=>{
+for(const L of TRANSLATED)for(const width of [320,1440])test(title(L,`at ${width} px the Spanish radio telescope screens lay out without overflow, clipping or crossing`,`at ${width} px the <L> radio telescope screens lay out without overflow, clipping or crossing`),async({page})=>{
  test.setTimeout(360_000);await page.setViewportSize({width,height:width===320?700:1000});
  const problems=new Map<string,string>();
- await walk(page,(process.env.ES8A_LAYOUT_LANG as Lang|undefined)??'es-419',async step=>{for(const p of await layoutProblems(page,LAYOUT))if(!problems.has(p))problems.set(p,step);
-  await page.screenshot({path:test.info().outputPath(`es-radio-${width}-${step.replace(/\W+/g,'-')}.png`),fullPage:false});});
+ // ES8A_LAYOUT_LANG=en|qps walks that reference instead (a debugging aid; the language's own test title is kept).
+ await walk(page,(process.env.ES8A_LAYOUT_LANG as 'en'|'qps'|undefined)??L,async step=>{for(const p of await layoutProblems(page,LAYOUT))if(!problems.has(p))problems.set(p,step);
+  await page.screenshot({path:test.info().outputPath(`${L.tag}-radio-${width}-${step.replace(/\W+/g,'-')}.png`),fullPage:false});});
  expect([...problems].map(([p,step])=>`${step}: ${p}`)).toEqual([]);
 });

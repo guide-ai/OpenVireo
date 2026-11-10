@@ -42,6 +42,12 @@
     "del"
    ],
    "reason": "«del Cep» is the GCVS star name (delta Cephei) given as a search example, not the Spanish word"
+  },
+  "catalog:radioReceiver.marks.selectLabel": {
+   "words": [
+    "Marca"
+   ],
+   "reason": "the noun «Marca» (the mark the pointer and keys place), not a tu-command of «marcar»; the English “Mark placed by…” is a noun phrase"
   }
  }
 }
