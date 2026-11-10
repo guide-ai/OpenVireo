@@ -13,9 +13,9 @@ const dataOf=(f:Fixture):LintData=>f.glossary?{glossary:f.glossary}:{};
 const name=(f:Fixture,which:'good'|'bad')=>`${f.profile} ${f.rule}${f.note?` (${f.note})`:''} ${which}: ${f[which]}`;
 describe('Front SC4: per-locale lint profiles',()=>{
  it('has one profile per planned language, each with the register setting of REGISTER',()=>{
-  expect(Object.keys(PROFILES)).toEqual(['ja','hi','zh-Hans','zh-Hant','ru','es-419']);
-  expect(REGISTER).toEqual({ja:'desu-masu',hi:'aap',ru:'vy',zh:'ni',es:'tu'});// decided by the user on 2026-11-09 (AGENTS.md; plan §13, §14; Spanish tú: decision 6)
-  expect(PROFILE_IDS.map(id=>PROFILES[id].register.setting)).toEqual(['desu-masu','aap','ni','ni','vy','tu']);
+  expect(Object.keys(PROFILES)).toEqual(['ja','hi','zh-Hans','zh-Hant','ru','es-419','pt-BR']);
+  expect(REGISTER).toEqual({ja:'desu-masu',hi:'aap',ru:'vy',zh:'ni',es:'tu',pt:'voce'});// decided by the user on 2026-11-09 (AGENTS.md; plan §13, §14; Spanish tú: decision 6; pt-BR plan §3.1)
+  expect(PROFILE_IDS.map(id=>PROFILES[id].register.setting)).toEqual(['desu-masu','aap','ni','ni','vy','tu','voce']);
  });
  it('declares the plural categories that Intl.PluralRules gives each language',()=>{
   for(const id of PROFILE_IDS)expect(PROFILES[id].pluralCategories,id).toEqual(pluralCategories(id));
@@ -82,7 +82,7 @@ describe('Front SC4: rule details',()=>{
   for(const id of PROFILE_IDS){
    expect(lintPair(p,PROFILES[id]).map(f=>f.rule),id).toContain('identical');
    expect(lintPair(p,PROFILES[id],{identical:{'catalog:app.name':'product name (OpenVireo)'}}),id).toEqual([]);
-   // A Latin-script profile (Spanish) has no script to look for: only equality with the English is checked (SC9).
+   // A Latin-script profile (Spanish, Brazilian Portuguese) has no script to look for: only equality with the English is checked (SC9, PT0).
    if(PROFILES[id].script)expect(lintPair(q,PROFILES[id]).map(f=>f.rule),id).toContain('script');
    else expect(lintPair(q,PROFILES[id]).map(f=>f.rule),id).not.toContain('script');
   }

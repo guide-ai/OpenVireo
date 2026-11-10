@@ -14,6 +14,13 @@ import './LanguageChoice.css';
  * load is the `?lang=` preview of one before its release), each option named by its autonym in its own `lang`, so it scales to
  * many languages and to 320 px. On a preview load nothing is stored (ES1 review 1, C2, now for every language before its
  * release): a tester's choice cannot start applying once that language is released. */
+/** Front PT0 (SC8 review: the keyboard trap): on Chromium and Firefox for Windows and Linux an arrow key (or Home, End, Page Up/Down,
+ * a typed letter) on the closed select changes its value and fires `change` at once, which opened the confirmation on the first
+ * arrow, so a keyboard user could never reach the option after the next one. A change that follows such a key within this time is a
+ * step, not a choice: the select shows it as pending, and Enter, or leaving the select, asks for it; Escape returns to the current
+ * language. A pick from the open list (mouse, touch, or the keyboard inside the list, as macOS opens it) asks at once. */
+const STEP_MS=400;
+const STEP_KEYS=new Set(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Home','End','PageUp','PageDown']);
 function storageWorks():boolean{try{const probe='openvireo-language-probe';localStorage.setItem(probe,'1');localStorage.removeItem(probe);return true;}catch{return false;}}
 /** The address to load: the same page, with `lang` set when the stored choice would not decide it. */
 export function nextAddress(href:string,next:string,stored:boolean):string{
@@ -24,11 +31,16 @@ export function nextAddress(href:string,next:string,stored:boolean):string{
 export default function LanguageChoice({onSave}:{onSave:()=>void}){
  const current=uiLanguage(),options=selectorLanguages(current),preview=current!=='en'&&!isReleased(current);
  const [asked,setAsked]=useState<string|null>(null),name=useId(),dialog=useRef<HTMLDialogElement>(null),cancel=useRef<HTMLButtonElement>(null);
+ const [pending,setPendingState]=useState<string|null>(null),pendingRef=useRef<string|null>(null),steppedAt=useRef(-Infinity),select=useRef<HTMLSelectElement>(null);
+ const setPending=(value:string|null)=>{pendingRef.current=value;setPendingState(value);};
+ function ask(value:string){setPending(null);steppedAt.current=-Infinity;if(value!==current)setAsked(value);}
  const [originals,setOriginals]=useState(()=>{try{return localStorage.getItem(VIREO_ORIGINALS_KEY)==='1';}catch{return false;}});
  const [originalsStored,setOriginalsStored]=useState(true);
  const [canStore]=useState(storageWorks);
  useEffect(()=>{if(asked){dialog.current?.showModal();cancel.current?.focus();}},[asked]);
- function close(){dialog.current?.close();setAsked(null);}
+ /** PT0 review: a dialog opened by leaving the select (Tab) opens while the focus is between elements, so Chromium returns it to
+  * the body on close, or leaves it on the dialog's button that is then removed; the focus goes back to the select instead of being lost. */
+ function close(){dialog.current?.close();setAsked(null);const a=document.activeElement;if(!a||a===document.body||dialog.current?.contains(a))select.current?.focus();}
  function change(){
   if(!asked)return;
   let stored=false;
@@ -43,7 +55,15 @@ export default function LanguageChoice({onSave}:{onSave:()=>void}){
  const label=(tag:string)=>{const o=options.find(l=>l.tag===tag);return o?optionLabel(o):tag;};
  return <div className="language-choice" data-testid="language-choice">
   <label className="language-select-label"><span className="visually-hidden" data-testid="language-legend">{M.legend}</span>
-   <select className="language-select" value={asked??current} data-testid="language-select" onChange={e=>{if(e.target.value!==current)setAsked(e.target.value);}}>
+   <select ref={select} className="language-select" value={asked??pending??current} data-testid="language-select"
+    onKeyDown={e=>{
+     if(STEP_KEYS.has(e.key)||(e.key.length===1&&e.key!==' '&&!e.ctrlKey&&!e.metaKey&&!e.altKey))steppedAt.current=performance.now();
+     else if(e.key==='Enter'&&pendingRef.current!==null){e.preventDefault();ask(pendingRef.current);}
+     else if(e.key==='Escape'&&pendingRef.current!==null){e.preventDefault();e.stopPropagation();setPending(null);}
+    }}
+    onChange={e=>{const value=e.target.value;if(value===current){setPending(null);return;}if(performance.now()-steppedAt.current<STEP_MS)setPending(value);else ask(value);}}
+    onPointerDown={()=>{steppedAt.current=-Infinity;}}
+    onBlur={()=>{steppedAt.current=-Infinity;if(pendingRef.current!==null&&document.hasFocus())ask(pendingRef.current);}}>
     {options.map(o=><option key={o.tag} value={o.tag} lang={o.htmlLang} data-testid={`language-${o.tag}`}>{optionLabel(o)}</option>)}
    </select>
   </label>

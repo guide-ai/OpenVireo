@@ -3,6 +3,7 @@ import {test,expect} from '../fixtures/area-tripwire';
 import {SPANISH_LOCALE} from '../fixtures/language';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
+import {PORTUGUESE_TEXT} from './languageText';
 
 // Front ES1 (docs/I18N.md; user decisions 1, 2, 5 and 9 of 2026-11-09): the English / Español selector at the foot of the header
 // menu, its reload confirmation, storage failure and the "View original (English)" option. Front ES-REL: Spanish is released, so
@@ -66,6 +67,63 @@ test('Front SC8: the selector lists English and Español, each named and marked 
  if(!await id(page,'language-confirm').isVisible())await select.press('Enter');
  await expect(id(page,'language-confirm')).toBeVisible();await expect(id(page,'language-cancel')).toBeFocused();
  await page.keyboard.press('Escape');await expect(id(page,'language-confirm')).toHaveCount(0);await expect(select).toHaveValue('en');
+});
+
+// Front PT0: Brazilian Portuguese is registered before its release. Only its `?lang=pt-BR` preview reaches it and offers it; a
+// pt-BR browser, a stored pt-BR and every other load show English and Español only.
+test('Front PT0: only a ?lang=pt-BR preview opens and offers Português (Brasil); a pt-BR browser and a stored pt-BR get English',async({browser})=>{
+ test.setTimeout(120_000);
+ const P=PORTUGUESE_TEXT;
+ for(const [languages,expected] of [[['pt-BR'],'en'],[['pt'],'en'],[['pt-PT'],'en'],[['en-US'],'en'],[['es-MX'],'es-419']] as const){
+  const page=await browserIn(browser,languages);
+  expect(await languageOf(page),languages.join(',')).toBe(expected);
+  await expect(id(page,'language-select').locator('option')).toHaveText(['English','Español']);
+  await page.close();
+ }
+ const stored=await browserIn(browser,['pt-BR']);await seedChoice(stored,'pt-BR');
+ expect(await languageOf(stored)).toBe('en');await stored.close();
+ const page=await browserIn(browser,['en-US']);
+ expect(await languageOf(page,'?lang=pt-BR')).toBe('pt-BR');
+ await expect(page.locator('.investigation-toolbar')).toContainText(P.catalog['project.save']);
+ const select=page.getByRole('combobox',{name:'Idioma / Language'});
+ await expect(select.locator('option')).toHaveText(['English','Español','Português (Brasil)']);await expect(select).toHaveValue('pt-BR');
+ expect(await select.locator('option').evaluateAll(o=>o.map(x=>[(x as HTMLOptionElement).value,x.getAttribute('lang')]))).toEqual([['en','en'],['es-419','es-419'],['pt-BR','pt-BR']]);
+ // A change on the preview stores nothing (SC8): the choice travels as ?lang=, and the dialog, in Portuguese, says so.
+ await choose(page,'es-419');
+ const dialog=id(page,'language-confirm');await expect(dialog).toContainText(P.maps.languageChoice.title);
+ await expect(dialog).toContainText(P.maps.languageChoice.reload('Español'));await expect(id(page,'language-preview')).toHaveText(P.maps.languageChoice.preview);
+ await Promise.all([page.waitForURL(/lang=es-419/),id(page,'language-change').click()]);
+ await expect(page.locator('html')).toHaveAttribute('lang','es-419');expect(await page.evaluate(()=>localStorage.getItem('openvireo-language'))).toBeNull();
+ await page.close();
+});
+
+test('Front PT0: the keyboard steps across all three options without opening the dialog; Enter or leaving asks, Escape returns',async({page})=>{
+ // SC8 review: on Chromium and Firefox (Windows, Linux) an arrow on the closed select fired `change` at once, so the confirmation
+ // opened on the first arrow and the option after the next one could not be reached. Now a step only marks the option pending.
+ const P=PORTUGUESE_TEXT;
+ await open(page,'?lang=pt-BR');
+ const select=page.getByRole('combobox',{name:'Idioma / Language'}),dialog=id(page,'language-confirm');
+ await select.focus();await expect(select).toBeFocused();await expect(select).toHaveValue('pt-BR');
+ for(const [key,value] of [['ArrowUp','es-419'],['ArrowUp','en'],['ArrowDown','es-419'],['ArrowDown','pt-BR'],['Home','en'],['End','pt-BR'],['ArrowUp','es-419'],['ArrowUp','en']] as const){
+  await page.keyboard.press(key);await expect(select,key).toHaveValue(value);await expect(dialog,`${key} → ${value}`).toHaveCount(0);await expect(select).toBeFocused();
+ }
+ // Enter asks for the pending option, by its own name, in the current language; Cancel returns to Portuguese.
+ await page.keyboard.press('Enter');
+ await expect(dialog).toBeVisible();await expect(dialog).toContainText(P.maps.languageChoice.reload('English'));await expect(id(page,'language-cancel')).toBeFocused();
+ await id(page,'language-cancel').click();await expect(dialog).toHaveCount(0);await expect(select).toHaveValue('pt-BR');
+ // Escape on the select drops a pending step.
+ await select.focus();await page.keyboard.press('ArrowUp');await expect(select).toHaveValue('es-419');
+ await page.keyboard.press('Escape');await expect(select).toHaveValue('pt-BR');await expect(dialog).toHaveCount(0);
+ // Leaving the select with a pending step asks for it.
+ await select.focus();await page.keyboard.press('ArrowUp');await expect(dialog).toHaveCount(0);
+ await page.keyboard.press('Tab');
+ await expect(dialog).toBeVisible();await expect(dialog).toContainText(P.maps.languageChoice.reload('Español'));
+ await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);await expect(select).toHaveValue('pt-BR');
+ // PT0 review: the dialog opened between elements; closing it never leaves the focus on the body (Chromium returned it there).
+ expect(await page.evaluate(()=>document.activeElement!==document.body&&document.activeElement!==null)).toBe(true);
+ expect(new URL(page.url()).search).toBe('?lang=pt-BR');expect(await stored(page)).toBeNull();
+ // A pick from the list (selectOption, as a mouse or touch pick) still asks at once.
+ await choose(page,'en');await expect(dialog).toBeVisible();await page.keyboard.press('Escape');await expect(select).toHaveValue('pt-BR');
 });
 
 test('Cancel keeps the page, its language and its address; nothing is stored',async({page})=>{

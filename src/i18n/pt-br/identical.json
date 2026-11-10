@@ -1,0 +1,12 @@
+{
+ "about": "Front PT0: Brazilian Portuguese strings that may equal their English source, each with a reason (plan front-i18n-pt-br.md §3.3). Keys are the lint's string ids: `catalog:<key>`, `map:<id>.<path>`, `original:<normalised original>`.",
+ "entries": {
+  "catalog:app.name": "product name (OpenVireo)",
+  "catalog:instructorMode.optionsClosedOk": "the same word in Portuguese (OK, as Windows pt-BR writes it)",
+  "map:helpMenu.ok": "the same word in Portuguese (OK, as Windows pt-BR writes it)",
+  "map:helpMenu.shortcutKey": "a key on the keyboard (?)",
+  "map:languageChoice.legend": "bilingual on purpose so either reader finds the selector (Idioma is also the Portuguese word)",
+  "original:NVO": "catalogue acronym (National Virtual Observatory), kept",
+  "original:Project CLEA": "official name kept in English (plan §3.3)"
+ }
+}

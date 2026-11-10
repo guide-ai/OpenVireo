@@ -18,6 +18,9 @@ export type Finding=Readonly<{rule:RuleId;id:string;message:string;severity:'err
  * of a word (Hindi: a vowel sign or virama continues the word). A word ending in `*` is a stem (no boundary after it). */
 export type Boundary='none'|'letters'|'letters-marks';
 export type Pattern=Readonly<{label:string;pattern:RegExp;use:string}>;
+/** Front PT0: a Pattern read at the start of each sentence of the translation, counted only when the English sentence it
+ * translates (the one at the same index when both have as many sentences, otherwise any) matches `english` at its start. */
+export type PairedPattern=Pattern&Readonly<{english:RegExp}>;
 /** A pair of marks that must balance (opener before closer). `closeAfter`/`closeBefore` restrict which closers count (the
  * Spanish ¿…? rule: a bare `?` in «?lang=» is not a closer). `english`: the English uses this pair too, so a string whose
  * English is itself unbalanced (a list item «1)») is not checked. */
@@ -40,7 +43,10 @@ export type LocaleProfile=Readonly<{
  /** Marks that never appear in this language's text, with what to use instead (wrong quote style, half-width forms…). */
  forbiddenMarks:readonly Readonly<{mark:string;use:string}>[];
  typography:readonly Pattern[];
- register:Readonly<{setting:string;patterns:readonly Pattern[]}>;
+ /** `paired` (Front PT0): verb forms that are the other register only as a command, flagged at the start of a sentence when the
+  * English sentence it translates starts with an imperative (Portuguese «Salva a investigação» is «Saves the investigation», a
+  * description, but a tu-imperative for "Save the investigation"). */
+ register:Readonly<{setting:string;patterns:readonly Pattern[];paired?:readonly PairedPattern[]}>;
  claims:readonly RegExp[];
  /** Grapheme-count ratio translation/English outside which a string is reported (not failed). */
  lengthBand:readonly [number,number];
@@ -149,7 +155,19 @@ function patternHits(rule:RuleId,p:Pair,patterns:readonly Pattern[],prefix=''):F
  return out;
 }
 /** The register the profile's setting names (profiles.ts REGISTER): forbidden pronouns and verb forms of the other register. */
-export const register=(p:Pair,profile:LocaleProfile)=>patternHits('register',p,profile.register.patterns,`register ${profile.register.setting}, `);
+export const register=(p:Pair,profile:LocaleProfile)=>[...patternHits('register',p,profile.register.patterns,`register ${profile.register.setting}, `),...pairedHits(p,profile)];
+/** Sentences: split after . ! ? : ; or a line break, each trimmed of leading quotes, brackets and list marks. */
+const sentences=(s:string)=>s.split(/(?<=[.!?:;…])[ \u00a0]+|\n+/u).map(x=>x.replace(/^[\s“‘"'(\[¿¡•–—-]+/u,'')).filter(Boolean);
+function pairedHits(p:Pair,profile:LocaleProfile):Finding[]{
+ const out:Finding[]=[],paired=profile.register.paired;if(!paired?.length)return out;
+ const own=sentences(p.text),english=sentences(p.en);
+ own.forEach((sentence,i)=>{for(const x of paired){
+  const m=x.pattern.exec(sentence);if(!m||m.index!==0)continue;
+  const source=own.length===english.length?[english[i]]:english;
+  if(source.some(e=>x.english.test(e)))out.push(finding('register',p.id,`register ${profile.register.setting}, ${x.label}: «${m[0]}», ${x.use}`,m[0]));
+ }});
+ return out;
+}
 /** Never claims to be CLEA's translation or an official one. */
 export function claim(p:Pair,profile:LocaleProfile):Finding[]{
  const m=profile.claims.map(c=>c.exec(p.text)).find(Boolean);
