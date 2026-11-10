@@ -39,17 +39,24 @@ import {RADIO_ANTENNA_MESSAGES_EN} from '../../components/RadioAntennaMessages';
 import {FINISH_SAVE_MESSAGES_EN} from '../../components/RadioFinishSaveMessages';
 import {RADIO_R1_MESSAGES_EN} from '../../components/RadioR1Messages';
 import {RADIO_SAVE_MESSAGES_EN} from '../../components/RadioRecordSaveMessages';
+import {PULSAR_MESSAGES_EN} from '../../components/PulsarMessages';
+import {SAVED_ROWS_MESSAGES_EN} from '../../components/PulsarSavedRowsMessages';
+import {LOAD_SAVE_MESSAGES_EN} from '../../components/PulsarLoadSaveMessages';
+import {OBJECT_X_GUIDE_EN,OBJECT_X_MEASURE_EN,OBJECT_X_SESSION_EN} from '../../objectx/ObjectXMessages';
 
 // Front PT0 (docs/I18N.md, "Brazilian Portuguese: the folder, lints and shell (PT0)"; plan front-i18n-pt-br.md §3.4): the
 // structural checks of the partial pt-BR bundle and every Portuguese string through the SC4 lint framework, profile pt-BR. Errors
 // fail the batch; length ratios are reported for the independent reviewer. Later PT fronts add their maps to ENGLISH_MAPS and
 // COMPLETE_MAPS, and their areas to the coverage check.
 const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,nakedEye:NAKED_EYE_MESSAGES_EN,objectXLab:OBJECT_X_LAB_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN,clusterHr:CLUSTER_HR_EN,clusterData:CLUSTER_DATA_MESSAGES_EN,
-  radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN};
+  radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN,
+  pulsar:PULSAR_MESSAGES_EN,pulsarSavedRows:SAVED_ROWS_MESSAGES_EN,pulsarLoadSave:LOAD_SAVE_MESSAGES_EN,objectXGuide:OBJECT_X_GUIDE_EN,objectXMeasure:OBJECT_X_MEASURE_EN,objectXSession:OBJECT_X_SESSION_EN};
 /** The maps translated completely (PT0's shell maps; PT1's observatory maps, the camera card the observatory shows, and polish); the others are partial until their
- * front (objectXLab PT6). PT4 completes clusterHr, clusterData and variableStars; PT5 the four radio maps. */
+ * front. PT4 completes clusterHr, clusterData and variableStars; PT5 the four radio maps; PT6 the pulsar analysis maps (pulsar,
+ * pulsarSavedRows, pulsarLoadSave) and the Object X maps (objectXLab, objectXGuide, objectXMeasure, objectXSession). */
 const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars',
-  'radioAntenna','radioFinishSave','radioR1','radioRecordSave'];
+  'radioAntenna','radioFinishSave','radioR1','radioRecordSave',
+  'pulsar','pulsarSavedRows','pulsarLoadSave','objectXLab','objectXGuide','objectXMeasure','objectXSession'];
 /** PT0's area of en.json: the shell (header, menu, home and first steps, toolbar, errors, instructor mode, document title), as ES1's. */
 const SHELL_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(app|project|session|error|instructorMode)\./.test(k)||/\.nav$/.test(k)||['demonstrationMode.banner','sky.eyebrow','sky.title','sky.subtitle','sky.about','sky.local','sky.observatory','sky.analyzer','sky.step1','sky.step1Help','sky.step2','sky.step2Help','sky.step3','sky.step3Help','spectrum.tools','classLink.cancel'].includes(k));
 /** Front PT1's area of en.json: ES2's observatory keys (the 546 keys Spanish translated in ES2: the observatory route, its
@@ -72,6 +79,9 @@ const PT4_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E04_E05_PREFIXES.test
  * Parameters and the receiver), every key of their prefixes. `plr.*` and `pulsarLab.*` are E06's (PT6). */
 const RADIO_PREFIXES=/^(radio|radioRoute|radioAccess|radioReceiver|radioSimOptions|pulsarParameters)\./;
 const PT5_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>RADIO_PREFIXES.test(k));
+/** Front PT6's area of en.json: ES8b's and ES9's keys (exercise E06, the recorded pulsar analysis route and the Pulsar guide, and
+ * E08's saved-images route), every key of their prefixes. With it every en.json key has its Portuguese. */
+const PT6_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(pulsarLab|plr|fits)\./.test(k));
 /** VIREO originals that Spanish keeps with no entry (its word equals VIREO's, and the vireo() site is one the source guard cannot
  * resolve, src/i18n/vireoSites.test.ts), but Portuguese translates: the options dialog's General tab and the Site Information
  * longitude letter E (East, «L» for Leste). tests/i18n/observatory.spec.ts checks both on screen. */
@@ -107,6 +117,11 @@ describe('Front PT0: the Brazilian Portuguese (pt-BR) bundle',()=>{
  it('Front PT5: the catalog covers the radio telescope (every key of its prefixes)',()=>{
   expect(PT5_KEYS.length).toBeGreaterThan(640);
   expect(PT5_KEYS.filter(k=>!Object.hasOwn(pt,k))).toEqual([]);
+ });
+ it('Front PT6: the catalog covers E06 and E08 (every key of their prefixes), and with them every en.json key',()=>{
+  expect(PT6_KEYS.length).toBe(137);
+  expect(PT6_KEYS.filter(k=>!Object.hasOwn(pt,k))).toEqual([]);
+  expect(Object.keys(en).filter(k=>!Object.hasOwn(pt,k))).toEqual([]);
  });
  it('every map has its English shape: the shell maps complete, the header-name maps partial',()=>{
   for(const [id,map] of Object.entries(PORTUGUESE.maps??{})){
