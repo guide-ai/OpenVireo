@@ -199,9 +199,11 @@ const STEPS:readonly (readonly [string,(page:Page,lang:Lang)=>Promise<void>,stri
  ['cuts refused',async(page,lang)=>{await measureCard(page).getByLabel(Mx(lang,X.rangeLow,m=>m.objectXMeasure.rangeLow)).fill('1e30');await mapButton(measureCard(page),lang,X.measure,m=>m.objectXMeasure.measure).click();
   await expect(measureCard(page).locator('[role=alert]')).toHaveText(Mx(lang,X.errors.range,m=>m.objectXMeasure.errors.range));}],
  ['blinking',async(page,lang)=>{await mapButton(measureCard(page),lang,X.blinkStart,m=>m.objectXMeasure.blinkStart).click();await expect(mapButton(measureCard(page),lang,X.blinkStop,m=>m.objectXMeasure.blinkStop)).toBeVisible();}],
- ['answer revealed',async(page,lang)=>{await mapButton(measureCard(page),lang,X.blinkStop,m=>m.objectXMeasure.blinkStop).click();
+ ['reveal asked',async(page,lang)=>{await mapButton(measureCard(page),lang,X.blinkStop,m=>m.objectXMeasure.blinkStop).click();
   await id(page,'objectx-answer').getByLabel(Mx(lang,LE.kinds.asteroid,m=>m.objectXLab.kinds.asteroid)).check();await lab(page).getByLabel(Mx(lang,LE.describeLabel,m=>m.objectXLab.describeLabel)).fill('It moved.');
-  await mapButton(lab(page),lang,LE.reveal,m=>m.objectXLab.reveal).click();await expect(lab(page).getByText(Mx(lang,LE.revealConfirm,m=>m.objectXLab.revealConfirm))).toBeVisible();
+  await mapButton(lab(page),lang,LE.reveal,m=>m.objectXLab.reveal).click();await expect(lab(page).getByText(Mx(lang,LE.revealConfirm,m=>m.objectXLab.revealConfirm))).toBeVisible();}],
+ // PT6 review: the answer chosen and the reveal question open, the last state before the reveal, has its own identity check.
+ ['answer revealed',async page=>{
   await lab(page).locator('fieldset .button-row button.primary-button').click();await expect(id(page,'objectx-reveal')).toBeVisible();await openAll(lab(page));}],
  ['saved images',async(page,lang)=>{await go(page,'#images');await expect(page.getByRole('heading',{level:1,name:N(lang,'fits.title')})).toBeVisible();
   await page.getByLabel(N(lang,'fits.file')).setInputFiles({name:'synthetic.fit',mimeType:'application/octet-stream',buffer:syntheticFits()});
