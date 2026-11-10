@@ -548,9 +548,8 @@
   "src/observatory/OpticalSlewMenu.tsx › OpticalSlewMenu/addEntry · head 'htl.error.' [core] ×2",
   "src/observatory/OpticalSlewMenu.tsx › OpticalSlewMenu/addEntry · t(`htl.error.${e.code}`) [core] ×2",
   "src/polish/PolishMessages.ts › POLISH_MESSAGES_EN/pulsarsHtl/error · head 'The bundled Pulsars.HTL ' [core]",
-  "src/seo/pages.ts › page · head '<!doctype html>\n<html lang=\"en\"><head><meta charset=\"UTF-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"/>' [unreached]",
   "src/seo/pages.ts › page · head '<link rel=\"stylesheet\" href=\"/labs/labs.css\"/><script type=\"application/ld+json\">' [unreached]",
-  "src/seo/pages.ts › sitemap · head '<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n' [unreached]",
+  "src/seo/pages.ts › sitemap · head '<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\" xmlns:xhtml=\"http://www.w3.org/1999/xhtml\">\n' [unreached]",
   "src/variables/VariableStarMessages.ts › VARIABLE_STARS_EN/printCurveLayout · head 'The light-curve page follows VIREO's printout in the orientation chosen here (VIREO uses the printer's orientation): in portrait the plot follows on the same page, in landscape VIREO adds \"(Screen Image Printed on Next Page)\" and prints the plot on page 2. ' [core]"
  ]
 }

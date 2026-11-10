@@ -380,6 +380,29 @@ test('Front SEO: the lab pages, sitemap and robots.txt are served with the relea
  expect([p.errors,p.console,await violations(page),p.external]).toEqual([[],[],[],[]]);
 });
 
+// Front ES-SEO: the Spanish search pages under /es/ are served like the English ones, every page names its translations
+// (hreflang), and a Spanish lab page opens the app in Spanish in an English browser under the release policy.
+test('Front ES-SEO: the Spanish pages, their preview image and the hreflang links are served with the release headers',async({page,request,baseURL})=>{
+ for(const [path,type] of [['/es/','text/html'],['/es/labs/','text/html'],['/es/labs/pulsars/','text/html'],['/og-image-es.png','image/png']] as const){
+  const r=await request.get(path);expect(r.status(),path).toBe(200);expect(r.headers()['content-type'],path).toContain(type);
+  expect(r.headers()['content-security-policy'],path).toContain("default-src 'none'");
+  if(type==='text/html')expect(r.headers()['cache-control'],path).toBe('no-cache');
+ }
+ for(const path of ['/es','/es/labs/hubble']){const r=await request.get(path,{maxRedirects:0});expect(r.status(),path).toBe(308);expect(new URL(r.headers().location,baseURL).pathname,path).toBe(`${path}/`);}
+ const alternates=(html:string)=>[...html.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)"\/>/g)].map(m=>`${m[1]} ${m[2]}`);
+ const home=['en https://openvireo.space/','es https://openvireo.space/es/','x-default https://openvireo.space/'];
+ expect(alternates(await (await request.get('/')).text())).toEqual(home);expect(alternates(await (await request.get('/es/')).text())).toEqual(home);
+ const sitemap=await (await request.get('/sitemap.xml')).text();expect(sitemap).toContain('<loc>https://openvireo.space/es/labs/pulsars/</loc>');
+ const p=await watch(page,baseURL!);
+ await page.goto('/es/labs/object-x/');await expect(page.locator('html')).toHaveAttribute('lang','es-419');
+ await expect.poll(()=>page.evaluate(()=>getComputedStyle(document.querySelector('.button')!).borderRadius)).toBe('8px');
+ await page.getByRole('link',{name:'Abrir la práctica'}).click();
+ await expect(page.locator('dialog[open]')).toContainText('En busca del Objeto X',{timeout:20_000});
+ await expect(page.locator('html')).toHaveAttribute('lang','es-419');
+ expect([p.errors,p.console,await violations(page),p.external]).toEqual([[],[],[],[]]);
+ expect(p.language[0]).toBe('core');const held=await language(page);expect([held.earlyReads,held.changes]).toEqual([0,[]]);
+});
+
 // Front ES-HELP: a translated help file is its own chunk, fetched only when the viewer opens it, under the release policy; "Ver
 // original (inglés)" then fetches VIREO's bundled file.
 test('Front ES-HELP: a ?lang=es-419 help viewer fetches only its translated help chunks and switches to the original',async({page,baseURL})=>{

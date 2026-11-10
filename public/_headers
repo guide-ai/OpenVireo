@@ -32,6 +32,9 @@
 # revalidated like the page. JSON-LD blocks are data, never run, and need no script-src entry.
 /labs/*
   Cache-Control: no-cache
+# Front ES-SEO: the Spanish home page /es/ and the Spanish lab pages /es/labs/, the same kind of page.
+/es/*
+  Cache-Control: no-cache
 /sitemap.xml
   Cache-Control: no-cache
 /robots.txt

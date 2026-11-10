@@ -11,5 +11,12 @@ export function labFromHash(hash:string):LabSlug|null{
  return m&&SLUGS.has(m[1])?m[1] as LabSlug:null;
 }
 
-export const labUrl=(slug:LabSlug)=>`/labs/${slug}/`;
+/** Front ES-SEO: the path prefix of each language's static pages, by UI language tag (English at the root, Spanish under /es/).
+ * Only languages with their own pages are listed; src/seo/languages.ts holds their texts. No text here, so the app may import it. */
+export const SEO_PATH_PREFIX:Readonly<Record<string,string>>=Object.freeze({en:'','es-419':'/es'});
+const prefixOf=(language:string)=>Object.hasOwn(SEO_PATH_PREFIX,language)?SEO_PATH_PREFIX[language]:'';
+
+export const labUrl=(slug:LabSlug,language='en')=>`${prefixOf(language)}/labs/${slug}/`;
+/** The labs index in a UI language: a language without its own pages gets the English one. */
+export const labsIndexUrl=(language='en')=>`${prefixOf(language)}/labs/`;
 export const labLink=(slug:LabSlug)=>`/#lab=${slug}`;
