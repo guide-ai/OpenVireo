@@ -36,3 +36,18 @@ describe('light-curve print page (0x52c250)',()=>{
   expect(p.find(i=>i.kind==='text'&&i.role==='page2')).toMatchObject({text:'x'.repeat(45)+' - P'});
  });
 });
+
+describe('Front ES7: the optional tr shows the print literals in the screen language',()=>{
+ it('translates the laboratory, Not Recorded, Next Page and Page 2 literals; the date, names, list lines and title stay as given',()=>{
+  const tr=(s:string)=>`«${s.trim()}»`;
+  const items=lightCurvePrintPage({orientation:'landscape',dateText:'D',listLines:['GCVS ID: del Cep'],names:['Ana'],tr});
+  const text=(role:string)=>items.filter(i=>i.kind==='text'&&i.role===role).map(i=>i.kind==='text'?i.text:'');
+  expect(text('date')).toEqual(['D«Laboratory Table Number»«(Not Recorded)»']);
+  expect(text('line')).toEqual(['GCVS ID: del Cep']);
+  expect(text('next-page')).toEqual(['«(Screen Image Printed on Next Page)»']);
+  expect(text('page2')).toEqual(['Ana«- Page 2»']);
+  expect(text('title')).toEqual([L.title]);
+  expect(lightCurvePrintPage({orientation:'landscape',dateText:'D',listLines:['x'],names:['Ana']}))
+   .toEqual(lightCurvePrintPage({orientation:'landscape',dateText:'D',listLines:['x'],names:['Ana'],tr:s=>s}));
+ });
+});

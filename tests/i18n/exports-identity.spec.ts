@@ -727,3 +727,63 @@ test('E06 pulsar analysis: native Save and its append, the export, the append fi
   return {original,nativeSave,nativeAppend,exported,appended,viewer};
  },{},page=>page.getByTestId('pulsar-analysis'),['en','qps','es-419']);
 });
+
+// Front ES7: exercise E05. Every file a student can save on the cluster HR route, in English, qps and Spanish: the whole
+// investigation after a confirmed fit (reference dataset, point exclusion, notebook), Display/Print Data's Save Text and Comma
+// Delimit (the CLEA Cluster Data listing), the saved-observation DAT written back by the HR tool, its Recorded Results list's Save
+// Text and Comma Delimit, File › Cluster Data…'s report (Save Text) and the two HTL files its hot-list items write,
+// and, on the variable-star route,
+// Save Text › As Displayed. The HR plot and the print previews are pictures, not files. The page
+// clock is fixed at NOW (the investigation's save time), so nothing is masked.
+test('E05 cluster HR: investigation, cluster listing TXT and CSV, observation DAT, Recorded Results TXT and CSV; Cluster Data TXT and HTL; variable-star TXT',async({browser,baseURL})=>{
+ test.setTimeout(240_000);
+ const id=(page:Page,testId:string)=>page.getByTestId(testId);
+ const dismiss=async(page:Page)=>{await id(page,'fi-box').getByRole('button').first().click();await expect(id(page,'fi-box')).toHaveCount(0);};
+ const DAT=(()=>{const rec=(o:string,t:number,v:number,b:number)=>{const x=(value:number)=>{const out=Buffer.alloc(10),d=Buffer.alloc(8);d.writeDoubleLE(value,0);const bits=d.readBigUInt64LE(0),sign=Number(bits>>63n),exp=Number(bits>>52n&0x7ffn),frac=bits&((1n<<52n)-1n);out.writeBigUInt64LE(1n<<63n|frac<<11n,0);out.writeUInt16LE(exp-1023+16383|sign<<15,8);return out;};
+  const r=Buffer.alloc(144);r[0]=o.length;r.write(o,1,'latin1');r.writeDoubleLE(t,16);x(b).copy(r,54);x(v).copy(r,64);r[94]=1;return r;};
+  return Buffer.concat([rec('HD 3',3,12,12.25),rec('HD 1',1,10,10.5)]);})();
+ await identical(browser,baseURL,async(page,locale)=>{
+  await open(page,locale,'cluster-database');
+  await page.locator('#cluster-database-choice').selectOption('m67');await button(page,'Load selected dataset',locale).click();
+  await expect(id(page,'cluster-reference-count')).toBeVisible({timeout:30_000});
+  const point=await page.locator('#cluster-point-choice option').nth(4).getAttribute('value');await page.locator('#cluster-point-choice').selectOption(point!);
+  await button(page,'Exclude selected point…',locale).click();await button(page,'Confirm point exclusion',locale).click();
+  await page.locator('#db-native-modulus').fill('9.5');await page.locator('#db-native-logage').fill('9.65');await page.locator('#db-native-model').selectOption('4');
+  await page.locator('#db-native-interpretation').fill('E05 note');
+  await expect(id(page,'native-preview')).toBeVisible({timeout:20_000});
+  await button(page,'Confirm chosen model fit',locale).click();await expect(id(page,'native-confirmed-age')).toBeVisible();
+  const toolbar=page.locator('.investigation-toolbar');const save=locale==='es-419'?es['project.save']:L('Save investigation');
+  const investigation=await download(page,()=>toolbar.getByRole('button',{name:save,exact:typeof save==='string'||undefined}).click());
+  await id(page,'cluster-display-data').click();await expect(id(page,'cluster-report')).toBeVisible({timeout:20_000});
+  const saveListing=async(kind:'displayed'|'csv')=>{const f=await download(page,async()=>{await id(page,'cluster-report-list-menu').click();await id(page,'cluster-report-save-menu').click();await id(page,`cluster-report-save-${kind}`).click();});await dismiss(page);return f;};
+  const listingText=await saveListing('displayed'),listingCsv=await saveListing('csv');
+  await page.locator('details > summary').filter({hasText:N(locale,en['obsHr.workspaceSummary'])}).first().click();
+  await page.getByLabel(N(locale,'Load saved observation results (DAT)')).setInputFiles({name:'night1.dat',mimeType:'application/octet-stream',buffer:DAT});
+  await button(page,'Add to current results',locale).click();
+  const observations=await download(page,()=>button(page,'Download current results (DAT)',locale).click());
+  // Display/Print Data in observation mode: VIREO's Recorded Results list (RsltsListForm1), Save Text and Comma Delimit.
+  await button(page,'Plot data from observations',locale).click();await id(page,'cnhr-display-data').click();await expect(id(page,'cnhr-results')).toBeVisible();
+  const saveResults=async(kind:'displayed'|'csv')=>{const f=await download(page,async()=>{await id(page,'cnhr-results-list-menu').click();await id(page,'cnhr-results-save-menu').click();await id(page,`cnhr-results-save-${kind}`).click();});await dismiss(page);return f;};
+  const resultsText=await saveResults('displayed'),resultsCsv=await saveResults('csv');
+  await id(page,'cnhr-results-list-menu').click();await id(page,'cnhr-results-close').click();
+  // File › Cluster Data… (#observatory): the CLEA Cluster Data report of NGC 752 (Save Text; its Comma Delimit answers VIREO's
+  // "not available" box, a row being shorter than the column positions, so no file) and the HTL files its
+  // hot-list items write: Yes in "Current Hot List not Saved!" downloads the current list (one added row), then the entire list.
+  await open(page,locale,'observatory');await page.locator('.sky-card .card-heading > button').click();
+  await id(page,'fi-file-menu').click();await id(page,'cluster-data-menu').click();await expect(id(page,'cd-dialog')).toBeVisible();
+  await id(page,'cd-file').click();await id(page,'cd-view-select').click();await id(page,'cd-study-lines').getByText('NGC 752',{exact:false}).first().dblclick();
+  await expect(id(page,'cd-study-list')).toHaveCount(0);await id(page,'cd-ok').click();await expect(id(page,'cluster-data-lines')).toBeVisible({timeout:30_000});
+  const saveField=async(kind:'displayed')=>{const f=await download(page,async()=>{await paceDownload(page);await id(page,'cluster-data-list-menu').click();await id(page,'cluster-data-save-menu').click();await id(page,`cluster-data-save-${kind}`).click();});await dismiss(page);return f;};
+  const fieldText=await saveField('displayed');
+  await id(page,'cluster-data-line-7').click();await id(page,'cluster-data-selection-menu').click();await id(page,'cluster-data-add').click();await dismiss(page);
+  const entire=async()=>{const f=await download(page,async()=>{await paceDownload(page);await id(page,'cluster-data-selection-menu').click();await id(page,'cluster-data-entire').click();await id(page,'cd-hot-unsaved-yes').click();});await dismiss(page);return f;};
+  const hotListAdded=await entire(),hotListEntire=await entire();
+  await open(page,locale,'variable-stars');
+  await expect(id(page,'variable-count')).toContainText('31,147',{timeout:20_000});
+  await id(page,'variable-name').fill('RR Lyr');await page.locator('[data-testid=variable-results] tbody button').first().click();
+  await expect(id(page,'vstar-list-window')).toBeVisible();
+  await id(page,'vstar-data-menu').click();await id(page,'vstar-save-menu').click();
+  const variableText=await download(page,()=>id(page,'vstar-save-displayed').click());
+  return {investigation,listingText,listingCsv,observations,resultsText,resultsCsv,fieldText,hotListAdded,hotListEntire,variableText};
+ },{},page=>page.getByTestId('variable-stars'),['en','qps','es-419']);
+});

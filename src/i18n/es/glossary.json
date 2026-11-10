@@ -554,7 +554,10 @@
   },
   {
    "en": "Topics...",
-   "es": "Temas..."
+   "es": "Temas...",
+   "except": {
+    "original:Show Help Topics...": "VIREO's help viewer item Show Help Topics... (the topic list), «Mostrar los temas de ayuda...»; the row names the Help menu's Topics... item."
+   }
   },
   {
    "en": "About This Exercise...",

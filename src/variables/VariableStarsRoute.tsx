@@ -10,7 +10,11 @@ import {HELP_FILES} from '../help/helpFiles';
 import {VARIABLE_STARS as M} from './VariableStarMessages';
 import LightCurveSvg from './LightCurveSvg';
 import {INITIAL_LIGHT_CURVE_MONOCHROME,lightCurvePrintFlags} from '../core/lightCurveScheme';
-import {lightCurvePrintPage,printPageSizeCss,type LightCurvePrintItem,type PrintOrientation} from '../core/lightCurvePrint';
+import {LIGHT_CURVE_PRINT_LITERALS as PL,lightCurvePrintPage,printPageSizeCss,type LightCurvePrintItem,type PrintOrientation} from '../core/lightCurvePrint';
+import {VARIABLE_STAR_FORM_LITERALS as VL} from '../core/variableStarForm';
+import {VARIABLE_FIELD_LITERALS as VFL} from '../core/variableFieldLiterals';
+import {vireo} from '../i18n/vireo';
+import NativeMirrorCaption from '../components/NativeMirrorCaption';
 import '../observatory/observatory-dialogs.css';
 import './variables.css';
 
@@ -84,7 +88,7 @@ function VariableStarsRoute({active,openRequest=null,monochromeDisplays=false,pr
  function closeList(){setMenu(null);setNotice('');setSession(closeVariableStarList);}
  function saveText(){
   if(!list)return;setMenu(null);
-  const file=variableStarSaveFileName(list.record);download(variableStarSaveText(list.lines),file);setNotice(M.saved(file));
+  const file=variableStarSaveFileName(list.record);download(variableStarSaveText(list.lines),file);setNotice(vireo(VFL.savedHead)+file+vireo(VFL.savedTail));
  }
  const drawn=useMemo<Readonly<{plot:LightCurvePlot}>|Readonly<{unavailable:LightCurveUnavailable}>|null>(()=>{if(!curve)return null;try{return {plot:lightCurvePlot(curve)};}catch(error){if(error instanceof LightCurveError)return {unavailable:error.code};throw error;}},[curve]);
  const plot=drawn&&'plot' in drawn?drawn.plot:null;
@@ -110,40 +114,41 @@ function VariableStarsRoute({active,openRequest=null,monochromeDisplays=false,pr
   </section>}
 
   {list&&<section className="card variable-window" aria-labelledby={`${id}-list`} data-testid="vstar-list-window">
-   <h2 id={`${id}-list`} ref={listHeading} tabIndex={-1}>{M.listCaption}</h2>
+   <h2 id={`${id}-list`} ref={listHeading} tabIndex={-1}>{vireo(VL.listCaption)}</h2>
    <div className="variable-menubar">
-    <div className="variable-menu" onKeyDown={e=>escapeMenu(e,dataTrigger)}><button type="button" ref={dataTrigger} aria-expanded={menu==='data'||menu==='save'} aria-controls={`${id}-data`} data-testid="vstar-data-menu" onClick={()=>setMenu(m=>m==='data'||m==='save'?null:'data')}>{M.dataMenu}</button>
-     {(menu==='data'||menu==='save')&&<div id={`${id}-data`} role="group" aria-label={M.dataMenu} className="variable-menu-list">
-      <button type="button" data-testid="vstar-display-curve" onClick={displayLightCurve}>{M.displayLightCurve}</button>
+    <div className="variable-menu" onKeyDown={e=>escapeMenu(e,dataTrigger)}><button type="button" ref={dataTrigger} aria-expanded={menu==='data'||menu==='save'} aria-controls={`${id}-data`} data-testid="vstar-data-menu" onClick={()=>setMenu(m=>m==='data'||m==='save'?null:'data')}>{vireo(VL.dataMenu)}</button>
+     {(menu==='data'||menu==='save')&&<div id={`${id}-data`} role="group" aria-label={vireo(VL.dataMenu)} className="variable-menu-list">
+      <button type="button" data-testid="vstar-display-curve" onClick={displayLightCurve}>{vireo(VL.displayLightCurve)}</button>
       <hr/>
-      <button type="button" data-testid="vstar-print" onClick={()=>{setMenu(null);setPrinting('list');}}>{M.print}</button>
-      <button type="button" aria-pressed={typeCodes} data-testid="vstar-type-codes" title={M.listTypeCodesNote} onClick={()=>setSession(toggleListTypeCodes)}>{M.listTypeCodes}</button>
+      <button type="button" data-testid="vstar-print" onClick={()=>{setMenu(null);setPrinting('list');}}>{vireo(VL.print)}</button>
+      <button type="button" aria-pressed={typeCodes} data-testid="vstar-type-codes" title={M.listTypeCodesNote} onClick={()=>setSession(toggleListTypeCodes)}>{vireo(VL.listTypeCodes)}</button>
       <hr/>
-      <button type="button" aria-expanded={menu==='save'} aria-controls={`${id}-save`} data-testid="vstar-save-menu" onClick={()=>setMenu(m=>m==='save'?'data':'save')}>{M.saveText} ›</button>
-      {menu==='save'&&<div id={`${id}-save`} role="group" aria-label={M.saveText} className="variable-submenu">
-       <button type="button" data-testid="vstar-save-displayed" onClick={saveText}>{M.asDisplayed}</button>
-       <button type="button" disabled>{M.commaDelimit}</button>
+      <button type="button" aria-expanded={menu==='save'} aria-controls={`${id}-save`} data-testid="vstar-save-menu" onClick={()=>setMenu(m=>m==='save'?'data':'save')}>{vireo(VL.saveText)} ›</button>
+      {menu==='save'&&<div id={`${id}-save`} role="group" aria-label={vireo(VL.saveText)} className="variable-submenu">
+       <button type="button" data-testid="vstar-save-displayed" onClick={saveText}>{vireo(VL.asDisplayed)}</button>
+       <button type="button" disabled>{vireo(VL.commaDelimit)}</button>
       </div>}
       <hr/>
-      <button type="button" data-testid="vstar-close" onClick={closeList}>{M.close}</button>
+      <button type="button" data-testid="vstar-close" onClick={closeList}>{vireo(VL.close)}</button>
      </div>}
     </div>
     {/* Help1Click 0x52de20: VIREO's shared help viewer over VarTypeHlp.LST (options +0xbe4), loaded at FormCreate 0x52ccbf. */}
-    <CleaHelp list={HELP_FILES['VARTYPEHLP.LST']} label={M.help} testId="vstar-help"/>
+    <CleaHelp list={HELP_FILES['VARTYPEHLP.LST']} label={vireo(VL.help)} testId="vstar-help"/>
    </div>
-   <pre className="variable-lines" data-testid="vstar-lines" tabIndex={0} aria-label={M.listCaption}>{list.lines.join('\n')}</pre>
+   <pre className="variable-lines" data-testid="vstar-lines" tabIndex={0} lang="en" aria-label={vireo(VL.listCaption)}>{list.lines.join('\n')}</pre>
+   <NativeMirrorCaption/>
    {list.riseShown&&<p className="variable-note" data-testid="vstar-rise-defaulted">{M.riseDefaultedNote}</p>}
    <p role="status" data-testid="vstar-notice">{notice}</p>
    {notice&&<p className="variable-note">{M.saveAdaptation}</p>}
   </section>}
 
   {curve&&drawn&&<section className="card variable-window" aria-labelledby={`${id}-curve`} data-testid="light-curve-window">
-   <h2 id={`${id}-curve`} ref={curveHeading} tabIndex={-1}>{M.curveCaption}</h2>
+   <h2 id={`${id}-curve`} ref={curveHeading} tabIndex={-1}>{vireo(VL.curveCaption)}</h2>
    <div className="variable-menubar">
-    <div className="variable-menu" onKeyDown={e=>escapeMenu(e,fileTrigger)}><button type="button" ref={fileTrigger} aria-expanded={menu==='file'} aria-controls={`${id}-file`} data-testid="curve-file-menu" onClick={()=>setMenu(m=>m==='file'?null:'file')}>{M.fileMenu}</button>
-     {menu==='file'&&<div id={`${id}-file`} role="group" aria-label={M.fileMenu} className="variable-menu-list">
-      <button type="button" data-testid="curve-print" onClick={printCurve}>{M.print}</button><hr/>
-      <button type="button" data-testid="curve-exit" onClick={()=>{setMenu(null);setSession(exitLightCurve);}}>{M.exit}</button>
+    <div className="variable-menu" onKeyDown={e=>escapeMenu(e,fileTrigger)}><button type="button" ref={fileTrigger} aria-expanded={menu==='file'} aria-controls={`${id}-file`} data-testid="curve-file-menu" onClick={()=>setMenu(m=>m==='file'?null:'file')}>{vireo(VL.fileMenu)}</button>
+     {menu==='file'&&<div id={`${id}-file`} role="group" aria-label={vireo(VL.fileMenu)} className="variable-menu-list">
+      <button type="button" data-testid="curve-print" onClick={printCurve}>{vireo(VL.print)}</button><hr/>
+      <button type="button" data-testid="curve-exit" onClick={()=>{setMenu(null);setSession(exitLightCurve);}}>{vireo(VL.exit)}</button>
      </div>}</div>
    </div>
    {plot&&<div className={`lc-panel${curveMonochrome?' lc-panel-mono':''}`}><LightCurveSvg plot={plot} label={M.curveLabel(curve.name)} monochrome={curveMonochrome} testId="light-curve-svg"/></div>}
@@ -152,7 +157,7 @@ function VariableStarsRoute({active,openRequest=null,monochromeDisplays=false,pr
    <p className="variable-note">{M.curveAdaptation}</p>
   </section>}
 
-  {printing==='list'&&list&&<PrintPreview caption={M.listCaption} lines={list.lines} onClose={()=>closePrint(dataTrigger)}/>}
+  {printing==='list'&&list&&<PrintPreview caption={vireo(VL.listCaption)} lines={list.lines} onClose={()=>closePrint(dataTrigger)}/>}
   {printing==='curve'&&list&&<CurvePrintPreview lines={list.lines} plot={plot} monochrome={printFlags.printMonochrome} name={curve?.name??list.record.name} onPrinted={()=>setCurveMonochrome(printFlags.displayMonochromeAfter)} onClose={()=>closePrint(fileTrigger)}/>}
  </main>;
 }
@@ -189,10 +194,11 @@ function PrintShell({caption,note,orientation,controls,children,onClose,onPrinte
 function PrintPreview({caption,lines,onClose}:{caption:string;lines:readonly string[];onClose:()=>void}){
  const [printedAt]=useState(()=>new Date().toLocaleString());// DateTimeToStr(Now) at Print; browser format [W]
  return <PrintShell caption={caption} onClose={onClose}>
-  <p className="variable-print-header" data-testid="variable-print-date">{printedAt}{M.printTable}</p>
+  <p className="variable-print-header" data-testid="variable-print-date">{printedAt}{vireo(PL.tableNumber)}{vireo(PL.notRecorded)}</p>
   <p className="variable-print-header variable-print-placeholder">{M.printStudentPlaceholder}</p>
   <p className="variable-print-header">{caption}</p>
-  <pre className="variable-lines" data-testid="variable-print-lines">{lines.join('\n')}</pre>
+  <pre className="variable-lines" lang="en" data-testid="variable-print-lines">{lines.join('\n')}</pre>
+  <NativeMirrorCaption print/>
  </PrintShell>;
 }
 
@@ -201,7 +207,7 @@ function PrintPreview({caption,lines,onClose}:{caption:string;lines:readonly str
  * follow the page's text-height steps; x 50 and x 700 become indents [W: no printer metrics]. */
 function CurvePrintPreview({lines,plot,monochrome,name,onClose,onPrinted}:{lines:readonly string[];plot:LightCurvePlot|null;monochrome:boolean;name:string;onClose:()=>void;onPrinted:()=>void}){
  const id=useId(),[printedAt]=useState(()=>new Date().toLocaleString()),[orientation,setOrientation]=useState<PrintOrientation>('portrait');
- const items=lightCurvePrintPage({orientation,dateText:printedAt,listLines:lines});
+ const items=lightCurvePrintPage({orientation,dateText:printedAt,listLines:lines,tr:vireo});
  const listItems=items.filter(i=>i.kind==='text'&&i.role==='line'),head=items.filter(i=>i.kind==='text'&&(i.role==='date'||i.role==='name'));
  const rest=items.filter(i=>!(i.kind==='text'&&(i.role==='date'||i.role==='name'||i.role==='line')));
  const gap=(from:LightCurvePrintItem|undefined,to:LightCurvePrintItem)=>({marginTop:`${from&&from.page===to.page?Math.max(0,to.yH-from.yH-1)*1.2+(to.yUnits>0?1.2:0):0}em`});
@@ -209,16 +215,17 @@ function CurvePrintPreview({lines,plot,monochrome,name,onClose,onPrinted}:{lines
   const testId=i.role==='date'?'variable-print-date':i.role==='next-page'?'variable-print-next-page':i.role==='title'?'variable-print-title':undefined;
   const placeholder=(i.role==='name'||i.role==='page2')&&i.text===''||i.role==='page2';
   return <p className={`variable-print-header${i.x===700?' variable-print-far':''}`} style={gap(prev,i)} data-testid={testId} data-role={i.role}>
-   {i.role==='date'?i.text:placeholder?<><span className="variable-print-placeholder">{M.printStudentPlaceholder}</span>{i.role==='page2'?M.printPage2:''}</>:i.text}</p>;
+   {i.role==='date'?i.text:placeholder?<><span className="variable-print-placeholder">{M.printStudentPlaceholder}</span>{i.role==='page2'?vireo(PL.page2):''}</>:i.text}</p>;
  };
  const body=(group:readonly LightCurvePrintItem[],first:LightCurvePrintItem|undefined)=>group.map((i,k)=>{const prev=k===0?first:group[k-1];
   return i.kind==='image'?<div key={k} style={gap(prev,i)}>{plot&&<LightCurveSvg plot={plot} label={M.curveLabel(name)} monochrome={monochrome} testId="variable-print-svg"/>}</div>:<div key={k}>{text(i,prev)}</div>;});
  const page2=rest.findIndex(i=>i.page===2),page1Rest=page2<0?rest:rest.slice(0,page2),page2Items=page2<0?[]:rest.slice(page2);
  const controls=<fieldset className="variable-print-orientation" data-testid="variable-print-orientation"><legend>{M.printOrientation}</legend>
   {(['portrait','landscape'] as const).map(o=><label key={o}><input type="radio" name={`${id}-orientation`} value={o} checked={orientation===o} onChange={()=>setOrientation(o)}/> {o==='portrait'?M.portrait:M.landscape}</label>)}</fieldset>;
- return <PrintShell caption={M.curveCaption} note={M.printCurveLayout(monochrome)} orientation={orientation} controls={controls} onClose={onClose} onPrinted={onPrinted}>
+ return <PrintShell caption={vireo(VL.curveCaption)} note={M.printCurveLayout(monochrome)} orientation={orientation} controls={controls} onClose={onClose} onPrinted={onPrinted}>
   {body(head,undefined)}
-  <pre className="variable-lines variable-print-indent" style={gap(head.at(-1),listItems[0]??head.at(-1)!)} data-testid="variable-print-lines">{lines.join('\n')}</pre>
+  <pre className="variable-lines variable-print-indent" lang="en" style={gap(head.at(-1),listItems[0]??head.at(-1)!)} data-testid="variable-print-lines">{lines.join('\n')}</pre>
+  <NativeMirrorCaption print/>
   {body(page1Rest,listItems.at(-1)??head.at(-1))}
   {page2Items.length>0&&<div className="variable-print-page" data-testid="variable-print-page2">{body(page2Items,undefined)}</div>}
  </PrintShell>;

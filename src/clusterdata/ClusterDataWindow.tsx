@@ -22,7 +22,10 @@ import type {Pointing} from '../core/sky';
 import type {SharedHotListHandle} from '../useSharedHotList';
 import FieldInfoListWindow,{FindDialog,MessageBox,downloadText,type FieldInfoBox} from '../observatory/FieldInfoListWindow';
 import {RADIO_HOT_LIST_SEARCH_LITERALS as SRL,RADIO_HOT_LIST_SEARCH_QUERY_MAX,foldAsciiCase,radioHotListMissText,searchRadioHotListRows} from '../core/radioHotListSearch';
-import {clusterEmptyFieldText,CLUSTER_EMPTY_FIELD_CAPTION} from '../core/clusterDialog';
+import {clusterEmptyFieldText,CLUSTER_EMPTY_FIELD_CAPTION,CLUSTER_ENTIRE_LITERALS as ENTIRE_LITERALS} from '../core/clusterDialog';
+import {HOT_LIST_PRINT_LITERALS as HP} from '../core/hotListPrint';
+import {vireo,vireoList} from '../i18n/vireo';
+import NativeMirrorCaption from '../components/NativeMirrorCaption';
 import {HelpListBox} from '../clusters/CleaHelp';
 import ClusterPrintPreview from '../clusters/ClusterPrintPreview';
 import PopupMenu,{usePopupMenu} from '../polish/PopupMenu';
@@ -35,7 +38,6 @@ import '../clusters/cluster-hr.css';
 /** The record 0x5bca0c and the list 0x53f live for the process: here, for the page session (module state). */
 let sessionRecord:ClusterDialogRecord=EMPTY_CLUSTER_RECORD;
 let sessionList:readonly ClusterStudyRecord[]|null=null,sessionSaved=true;
-const ENTIRE_LITERALS=Object.freeze({caption:'New Hot List Created',head:'All stars from cluster ',tail:' placed in Hot List'});
 type Certified=Readonly<{id:ClusterDatasetId;name:string;brightestInBank:boolean}>;
 /** The certified cluster whose dialog key equals the validated record exactly (centre and Diam; Front K census). */
 function certifiedCluster(r:ClusterDialogRecord):Certified|null{
@@ -70,7 +72,7 @@ export default function ClusterDataWindow({request,editMode,driveOn,pointing,hot
    tileSources().then(src=>queryClusterTiles({ra:record.ra,dec:record.dec,diam:record.diam,limit:record.limit,area},src.assembly,controller.signal)).then(q=>{
     if(token!==queryToken.current)return;
     // 0x53435b: the reader admitted nothing → "No Stars Found in Field!" with the rectangle.
-    if(q.readCount===0){setEmptyBox(clusterEmptyFieldText(area,record.limit));setReport({reason:M.emptyField});return;}
+    if(q.readCount===0){setEmptyBox(clusterEmptyFieldText(area,record.limit,vireo));setReport({reason:M.emptyField});return;}
     try{setReport({report:clusterRecordsReport(record.name,record.type,record.sort,record.limit,q.records),tiles:true});}catch{setReport({reason:M.loadError});}
    },(e:unknown)=>{if(token!==queryToken.current||controller.signal.aborted)return;setReport({reason:e instanceof ClusterQueryError?M.tileReason[e.code]:e instanceof GscTileError?M.tileFetch:M.loadError});});
    return;
@@ -80,7 +82,7 @@ export default function ClusterDataWindow({request,editMode,driveOn,pointing,hot
    // 0x53435b–0x534452: an empty reader result answers "No Stars Found in Field!" and leaves the previous bank in place; the
    // certificate says when an empty filtered bank is exactly that case (M1).
    if(!d.points.some(p=>Math.fround(p.v)<=Math.fround(record.limit))){
-    if(c.brightestInBank&&record.area){setEmptyBox(clusterEmptyFieldText(record.area,record.limit));setReport({reason:M.emptyField});}else setReport({reason:M.emptyUnknown});return;}
+    if(c.brightestInBank&&record.area){setEmptyBox(clusterEmptyFieldText(record.area,record.limit,vireo));setReport({reason:M.emptyField});}else setReport({reason:M.emptyUnknown});return;}
    try{setReport({report:clusterDataReport(record.name,record.type,record.sort,record.limit,d.points,detail.detail)});}catch{setReport({reason:M.loadError});}
   },()=>setReport({reason:M.loadError}));
  }
@@ -89,9 +91,9 @@ export default function ClusterDataWindow({request,editMode,driveOn,pointing,hot
  const fields=(p:Readonly<{ra:number;dec:number}>,id:string):HtlFields=>({id:id.slice(0,24),remarks:'',ra:p.ra,dec:p.dec});
  const rowId=(i:number)=>shown?shown.lines[shown.first+i].slice(0,18).replace(/\s+$/,''):'';
  function addFields(f:HtlFields,fresh:boolean,name=''):boolean{
-  if(hotList.current().read){setBox({caption:VL.confirmation,text:FM.busy});return false;}
+  if(hotList.current().read){setBox({caption:vireo(VL.confirmation),text:FM.busy});return false;}
   try{hotList.update(d=>d.read?keepHotList(d):setHotListEditor(d,fresh?addHtlRow(newHtlEditor(),f):addHtlRowRaOrdered(d.editor??newHtlEditor(),f),fresh?name:d.editor?d.name:''));return true;}
-  catch(e){setBox({caption:VL.confirmation,text:e instanceof HtlError?e.message:M.loadError});return false;}
+  catch(e){setBox({caption:vireo(VL.confirmation),text:e instanceof HtlError?e.message:M.loadError});return false;}
  }
  /** 0x592120: a modified current list asks `Current Hot List not Saved!` first (Yes saves it as a download [W]). */
  function startNew(then:()=>void){if(hotList.current().editor?.list.length){setConfirm(()=>then);return;}then();}
@@ -101,19 +103,19 @@ export default function ClusterDataWindow({request,editMode,driveOn,pointing,hot
   {report&&('report' in report&&'lines' in report.report?<FieldInfoListWindow testId="cluster-data" caption={report.report.caption} lines={report.report.lines} first={report.report.first} last={report.report.last}
     notice={<p className="fi-note" data-testid="cluster-data-source">{'tiles' in report&&report.tiles?M.reportNoteTiles:M.reportNote}</p>}
     selectionItems={[
-     {key:'add',label:FL.menu.add,onClick:i=>{const r=shown;if(!r)return;const id=rowId(i);if(addFields(fields(r.bank[i],id),false))setBox({caption:VL.confirmation,text:variableAddedText(id)});}},
-     {key:'start',label:FL.menu.start,onClick:i=>{const r=shown;if(!r)return;if(hotList.current().read){setBox({caption:VL.confirmation,text:FM.busy});return;}const id=rowId(i);startNew(()=>{if(addFields(fields(r.bank[i],id),true))setBox({caption:VL.confirmation,text:variableNewListText(id)});});}},
-     {key:'entire',label:FL.menu.entire,onClick:()=>{const r=shown;if(!r)return;if(hotList.current().read){setBox({caption:VL.confirmation,text:FM.busy});return;}startNew(()=>{const stem=clusterEntireListStem(r.stem);let e=newHtlEditor();
-      try{r.bank.forEach((p,i)=>{e=addHtlRowRaOrdered(e,fields(p,rowId(i)));});if(hotList.current().read){setBox({caption:VL.confirmation,text:FM.busy});return;}hotList.update(d=>d.read?keepHotList(d):setHotListEditor(d,e,stem+'.HTL'));}catch(x){setBox({caption:VL.confirmation,text:x instanceof HtlError?x.message:M.loadError});return;}
-      setBox({caption:ENTIRE_LITERALS.caption,text:ENTIRE_LITERALS.head+r.stem+ENTIRE_LITERALS.tail});});}},
+     {key:'add',label:vireo(FL.menu.add),onClick:i=>{const r=shown;if(!r)return;const id=rowId(i);if(addFields(fields(r.bank[i],id),false))setBox({caption:vireo(VL.confirmation),text:variableAddedText(id,vireo)});}},
+     {key:'start',label:vireo(FL.menu.start),onClick:i=>{const r=shown;if(!r)return;if(hotList.current().read){setBox({caption:vireo(VL.confirmation),text:FM.busy});return;}const id=rowId(i);startNew(()=>{if(addFields(fields(r.bank[i],id),true))setBox({caption:vireo(VL.confirmation),text:variableNewListText(id,vireo)});});}},
+     {key:'entire',label:vireo(FL.menu.entire),onClick:()=>{const r=shown;if(!r)return;if(hotList.current().read){setBox({caption:vireo(VL.confirmation),text:FM.busy});return;}startNew(()=>{const stem=clusterEntireListStem(r.stem);let e=newHtlEditor();
+      try{r.bank.forEach((p,i)=>{e=addHtlRowRaOrdered(e,fields(p,rowId(i)));});if(hotList.current().read){setBox({caption:vireo(VL.confirmation),text:FM.busy});return;}hotList.update(d=>d.read?keepHotList(d):setHotListEditor(d,e,stem+'.HTL'));}catch(x){setBox({caption:vireo(VL.confirmation),text:x instanceof HtlError?x.message:M.loadError});return;}
+      setBox({caption:vireo(ENTIRE_LITERALS.caption),text:vireo(ENTIRE_LITERALS.head)+r.stem+vireo(ENTIRE_LITERALS.tail)});});}},
     ]}
-    printStudent={!editMode} saveName={`${report.report.stem}.TXT`} csv={{disabled:false,bytes:()=>{const r=report.report;const l='lines' in r?fieldStarCsvLines(r.lines):null;return l?{bytes:variableStarSaveText(l),name:`${r.stem}.CSV`}:{caption:FL.csvTitle,text:fieldInfoReasonText('csv-row-short')};}}}
+    printStudent={!editMode} saveName={`${report.report.stem}.TXT`} csv={{disabled:false,bytes:()=>{const r=report.report;const l='lines' in r?fieldStarCsvLines(r.lines):null;return l?{bytes:variableStarSaveText(l),name:`${r.stem}.CSV`}:{caption:vireo(FL.csvTitle),text:fieldInfoReasonText('csv-row-short')};}}}
     onClose={()=>setReport(null)} box={box} onBox={setBox}/>
    :<section className="card fi-window" data-testid="cluster-data-status"><h2 className="ob-native">{M.unavailableCaption}</h2>
     <p role="status" className={'loading' in report?'fi-note':'fi-unavailable'} data-testid="cluster-data-reason">{'loading' in report?M.loading:'reason' in report?report.reason:M.spectral}</p>
-    <button type="button" className="secondary-button" onClick={()=>{queryAbort.current?.abort();queryToken.current++;setReport(null);}}>{menuCaptionText(SL.close)}</button></section>)}
+    <button type="button" className="secondary-button" onClick={()=>{queryAbort.current?.abort();queryToken.current++;setReport(null);}}>{menuCaptionText(vireo(SL.close))}</button></section>)}
   {confirm&&<UnsavedHotList onAnswer={answer}/>}
-  {emptyBox&&<MessageBox box={{caption:CLUSTER_EMPTY_FIELD_CAPTION,text:emptyBox}} onClose={()=>{setEmptyBox(null);requestAnimationFrame(focusFileMenu);}}/>}
+  {emptyBox&&<MessageBox box={{caption:vireo(CLUSTER_EMPTY_FIELD_CAPTION),text:emptyBox}} onClose={()=>{setEmptyBox(null);requestAnimationFrame(focusFileMenu);}}/>}
  </>;
 }
 
@@ -133,32 +135,32 @@ function ClusterDialog({editMode,driveOn,pointing,hotList,onOk,onCancel}:{editMo
  const D=L,F=state.fields,field=(f:ClusterDialogField,label:string,hint?:string,readOnly=false)=><label className="ob-field"><span className={f==='name'?'visually-hidden':'ob-native'}>{label}</span>
   <input data-testid={`cd-${f}`} value={F[f]} maxLength={D.maxLength[f==='diameter'?'diameter':f==='limit'?'limit':f]} title={hint} readOnly={readOnly} onChange={e=>edit(f,e.target.value)} ref={f==='name'?nameRef:undefined}/></label>;
  return <dialog ref={ref} className="ob-dialog ob-box cluster-data-dialog" aria-labelledby={`${id}-t`} data-testid="cd-dialog" onCancel={e=>{e.preventDefault();if(e.target!==e.currentTarget)return;if(menu){setMenu(false);return;}onCancel();}}>
-  <h2 id={`${id}-t`} className="ob-native">{D.caption}</h2>
+  <h2 id={`${id}-t`} className="ob-native">{vireo(D.caption)}</h2>
   <form method="dialog" onSubmit={e=>{e.preventDefault();ok();}}>
-   <fieldset><legend className="ob-native">{D.nameGroup}</legend>{field('name',D.nameGroup)}</fieldset>
-   <fieldset><legend className="ob-native">{D.center}</legend>
-    <div className="ob-row">{field('raHours',D.raHours,D.hints.raHours,coordsReadOnly)}{field('raMinutes',D.raMinutes,D.hints.raMinutes,coordsReadOnly)}{field('raSeconds',D.raSeconds,D.hints.raSeconds,coordsReadOnly)}</div>
-    <div className="ob-row">{field('decDegrees',D.decDegrees,D.hints.decDegrees,coordsReadOnly)}{field('decMinutes',D.decMinutes,D.hints.decMinutes,coordsReadOnly)}{field('decSeconds',D.decSeconds,D.hints.decSeconds,coordsReadOnly)}</div>
-    <label className="ob-check"><input type="checkbox" data-testid="cd-use-telescope" checked={state.useTelescope} disabled={!state.useTelescopeEnabled} onChange={e=>setState(s=>clusterUseTelescope(s,e.target.checked,pointing))}/>{D.useTelescope}</label>
+   <fieldset><legend className="ob-native">{vireo(D.nameGroup)}</legend>{field('name',vireo(D.nameGroup))}</fieldset>
+   <fieldset><legend className="ob-native">{vireo(D.center)}</legend>
+    <div className="ob-row">{field('raHours',vireo(D.raHours),D.hints.raHours,coordsReadOnly)}{field('raMinutes',vireo(D.raMinutes),D.hints.raMinutes,coordsReadOnly)}{field('raSeconds',vireo(D.raSeconds),D.hints.raSeconds,coordsReadOnly)}</div>
+    <div className="ob-row">{field('decDegrees',vireo(D.decDegrees),D.hints.decDegrees,coordsReadOnly)}{field('decMinutes',vireo(D.decMinutes),D.hints.decMinutes,coordsReadOnly)}{field('decSeconds',vireo(D.decSeconds),D.hints.decSeconds,coordsReadOnly)}</div>
+    <label className="ob-check"><input type="checkbox" data-testid="cd-use-telescope" checked={state.useTelescope} disabled={!state.useTelescopeEnabled} onChange={e=>setState(s=>clusterUseTelescope(s,e.target.checked,pointing))}/>{vireo(D.useTelescope)}</label>
     {!state.useTelescopeEnabled&&<p className="fi-note">{M.useTelescopeOff}</p>}
    </fieldset>
-   <div className="ob-row">{field('diameter',D.diameter)}{field('limit',D.limit)}</div>
-   <fieldset disabled={!state.groupsEnabled} data-testid="cd-type"><legend className="ob-native">{D.type}</legend>
-    {D.types.map((t,i)=><label key={t} className="ob-check"><input type="radio" name={`${id}-type`} checked={state.type===i} data-testid={`cd-type-${i}`} onChange={()=>setState(s=>({...s,type:i as 0|1}))}/>{menuCaptionText(t)}</label>)}</fieldset>
-   <fieldset disabled={!state.groupsEnabled} data-testid="cd-sort"><legend className="ob-native">{D.sort}</legend>
-    {D.sorts.map((t,i)=><label key={t} className="ob-check"><input type="radio" name={`${id}-sort`} checked={state.sort===i} data-testid={`cd-sort-${i}`} onChange={()=>setState(s=>({...s,sort:i as 0|1}))}/>{menuCaptionText(t)}</label>)}</fieldset>
+   <div className="ob-row">{field('diameter',vireo(D.diameter))}{field('limit',vireo(D.limit))}</div>
+   <fieldset disabled={!state.groupsEnabled} data-testid="cd-type"><legend className="ob-native">{vireo(D.type)}</legend>
+    {vireoList(D.types).map((t,i)=><label key={t} className="ob-check"><input type="radio" name={`${id}-type`} checked={state.type===i} data-testid={`cd-type-${i}`} onChange={()=>setState(s=>({...s,type:i as 0|1}))}/>{menuCaptionText(t)}</label>)}</fieldset>
+   <fieldset disabled={!state.groupsEnabled} data-testid="cd-sort"><legend className="ob-native">{vireo(D.sort)}</legend>
+    {vireoList(D.sorts).map((t,i)=><label key={t} className="ob-check"><input type="radio" name={`${id}-sort`} checked={state.sort===i} data-testid={`cd-sort-${i}`} onChange={()=>setState(s=>({...s,sort:i as 0|1}))}/>{menuCaptionText(t)}</label>)}</fieldset>
    {!state.groupsEnabled&&<p className="fi-note">{M.groupsDisabled}</p>}
    <div className="ob-actions">
-    <div className="fi-menu"><button type="button" ref={fileRef} className="secondary-button" aria-expanded={menu} data-testid="cd-file" onClick={()=>setMenu(m=>!m)}>{menuCaptionText(D.file)}</button>
-     {menu&&<div role="group" aria-label={menuCaptionText(D.file)} className="fi-menu-list">
-      <button type="button" data-testid="cd-view-select" onClick={()=>{setMenu(false);setList(true);}}>{menuCaptionText(D.viewSelect)}</button><hr/>
-      <button type="button" data-testid="cd-add-to-list" onClick={addToList}>{menuCaptionText(D.addToList)}</button></div>}</div>
-    <button type="button" className="secondary-button" data-testid="cd-cancel" onClick={onCancel}>{menuCaptionText(D.cancel)}</button>
-    <button type="submit" className="primary-button" data-testid="cd-ok">{menuCaptionText(D.ok)}</button>
+    <div className="fi-menu"><button type="button" ref={fileRef} className="secondary-button" aria-expanded={menu} data-testid="cd-file" onClick={()=>setMenu(m=>!m)}>{menuCaptionText(vireo(D.file))}</button>
+     {menu&&<div role="group" aria-label={menuCaptionText(vireo(D.file))} className="fi-menu-list">
+      <button type="button" data-testid="cd-view-select" onClick={()=>{setMenu(false);setList(true);}}>{menuCaptionText(vireo(D.viewSelect))}</button><hr/>
+      <button type="button" data-testid="cd-add-to-list" onClick={addToList}>{menuCaptionText(vireo(D.addToList))}</button></div>}</div>
+    <button type="button" className="secondary-button" data-testid="cd-cancel" onClick={onCancel}>{menuCaptionText(vireo(D.cancel))}</button>
+    <button type="submit" className="primary-button" data-testid="cd-ok">{menuCaptionText(vireo(D.ok))}</button>
    </div>
    <p className="fi-note">{M.menuNote}</p>
   </form>
-  {error&&<MessageBox box={{caption:D.errorCaption,text:error}} onClose={()=>{setError('');nameRef.current?.focus();}}/>}
+  {error&&<MessageBox box={{caption:vireo(D.errorCaption),text:vireo(error)}} onClose={()=>{setError('');nameRef.current?.focus();}}/>}
   {list&&<StudyList editMode={editMode} hotList={hotList} onClose={copied=>{setList(false);if(copied){setState(activate());requestAnimationFrame(()=>{nameRef.current?.focus();nameRef.current?.select();});}else fileRef.current?.focus();}}
    onData={r=>{sessionRecord={...sessionRecord,name:r.name,ra:r.ra,dec:r.dec,diam:r.diam,ebv:r.ebv??sessionRecord.ebv};}}/>}
  </dialog>;
@@ -172,7 +174,7 @@ function StudyList({editMode,hotList,onClose,onData}:{editMode:boolean;hotList:S
  const popup=usePopupMenu(),[confirm,setConfirm]=useState<(()=>void)|null>(null);
  useEffect(()=>{const el=ref.current;if(el&&!el.open)el.showModal();},[]);
  // FormShow 0x531538 loads the list only when it is empty.
- useEffect(()=>{if(records?.length)return;loadClusterDetail().then(d=>{if(!sessionList?.length)sessionList=studyRecords(d);setRecords(sessionList);},()=>setBox({caption:SL.caption,text:M.loadError}));},[records]);
+ useEffect(()=>{if(records?.length)return;loadClusterDetail().then(d=>{if(!sessionList?.length)sessionList=studyRecords(d);setRecords(sessionList);},()=>setBox({caption:vireo(SL.caption),text:M.loadError}));},[records]);
  const list=records?clusterStudyList(records,editMode):null;
  // +0x5c7 is set by left clicks and keys only (MouseUp 0x532144 / KeyUp 0x5322d4); Search moves the highlight, not it.
  const selection=list&&sel>=0&&sel<=list.last-list.first?sel:-1;
@@ -180,12 +182,12 @@ function StudyList({editMode,hotList,onClose,onData}:{editMode:boolean;hotList:S
  const close=()=>{if(!sessionSaved){setUnsaved(true);return;}onClose(copied.current);};
  function search(mode:'top'|'next'){if(!find||!list)return;const q=find.query.slice(0,RADIO_HOT_LIST_SEARCH_QUERY_MAX);setFind(null);if(!q)return;
   const r=searchRadioHotListRows(list.lines,q,find.matchCase,mode==='top'?0:index+1);
-  if(r.kind==='hit')setIndex(r.index);else setBox({caption:SRL.missCaption,text:radioHotListMissText(find.matchCase?q:foldAsciiCase(q))});}
- function hot(fresh:boolean){setMenu(null);if(!list||selection<0){setBox({caption:SL.caption,text:M.noSelection});return;}
-  if(hotList.current().read){setBox({caption:VL.confirmation,text:FM.busy});return;}
+  if(r.kind==='hit')setIndex(r.index);else setBox({caption:vireo(SRL.missCaption),text:radioHotListMissText(find.matchCase?q:foldAsciiCase(q),vireo)});}
+ function hot(fresh:boolean){setMenu(null);if(!list||selection<0){setBox({caption:vireo(SL.caption),text:M.noSelection});return;}
+  if(hotList.current().read){setBox({caption:vireo(VL.confirmation),text:FM.busy});return;}
   const r=list.records[selection],f:HtlFields={id:r.name.slice(0,24),remarks:r.comment.slice(0,40),ra:r.ra,dec:r.dec};
   const run=()=>{try{hotList.update(d=>d.read?keepHotList(d):setHotListEditor(d,fresh?addHtlRow(newHtlEditor(),f):addHtlRowRaOrdered(d.editor??newHtlEditor(),f),fresh?'':d.editor?d.name:''));}
-   catch(e){setBox({caption:VL.confirmation,text:e instanceof HtlError?e.message:M.loadError});return;}setBox({caption:VL.confirmation,text:fresh?variableNewListText(f.id):variableAddedText(f.id)});};
+   catch(e){setBox({caption:vireo(VL.confirmation),text:e instanceof HtlError?e.message:M.loadError});return;}setBox({caption:vireo(VL.confirmation),text:fresh?variableNewListText(f.id,vireo):variableAddedText(f.id,vireo)});};
   if(fresh&&hotList.current().editor?.list.length){setConfirm(()=>run);return;}
   run();}
  function answer(save:boolean){const then=confirm;setConfirm(null);if(!then)return;const doc=hotList.current();if(save&&doc.editor)downloadText(serializeHtl(doc.editor.list),doc.name||'HotList.HTL');then();}
@@ -193,41 +195,41 @@ function StudyList({editMode,hotList,onClose,onData}:{editMode:boolean;hotList:S
  const copy=(i:number)=>{if(!list||i<0)return;onData(list.records[i]);copied.current=true;close();};
  const data=()=>{setMenu(null);copy(selection);};
  return <dialog ref={ref} className="ob-dialog ob-wide cluster-list-window" aria-labelledby={`${id}-t`} data-testid="cd-study-list" onCancel={e=>{e.preventDefault();if(e.target!==e.currentTarget)return;if(menu){setMenu(null);return;}close();}}>
-  <h2 id={`${id}-t`} className="ob-native">{SL.caption}</h2>
+  <h2 id={`${id}-t`} className="ob-native">{vireo(SL.caption)}</h2>
   <div className="cluster-hr-menubar">
-   <div className="cluster-hr-menu"><button type="button" aria-expanded={menu==='list'} data-testid="cd-study-list-menu" onClick={()=>setMenu(menu==='list'?null:'list')}>{menuCaptionText(SL.list)}</button>
-    {menu==='list'&&<div role="group" aria-label={menuCaptionText(SL.list)} className="cluster-hr-menu-list">
-     <button type="button" data-testid="cd-study-search" disabled={!list} onClick={()=>{setMenu(null);setFind({query:'',matchCase:false});}}>{menuCaptionText(SL.search)}</button><hr/>
-     <button type="button" data-testid="cd-study-print" disabled={!list} onClick={()=>{setMenu(null);setPrinting(true);}}>{menuCaptionText(SL.print)}</button><hr/>
-     <button type="button" data-testid="cd-study-save" disabled={sessionSaved} onClick={()=>{setMenu(null);setBox({caption:SL.caption,text:M.saveListUnavailable});}}>{SL.saveList}</button><hr/>
-     <button type="button" data-testid="cd-study-close" onClick={()=>{setMenu(null);close();}}>{menuCaptionText(SL.close)}</button>
+   <div className="cluster-hr-menu"><button type="button" aria-expanded={menu==='list'} data-testid="cd-study-list-menu" onClick={()=>setMenu(menu==='list'?null:'list')}>{menuCaptionText(vireo(SL.list))}</button>
+    {menu==='list'&&<div role="group" aria-label={menuCaptionText(vireo(SL.list))} className="cluster-hr-menu-list">
+     <button type="button" data-testid="cd-study-search" disabled={!list} onClick={()=>{setMenu(null);setFind({query:'',matchCase:false});}}>{menuCaptionText(vireo(SL.search))}</button><hr/>
+     <button type="button" data-testid="cd-study-print" disabled={!list} onClick={()=>{setMenu(null);setPrinting(true);}}>{menuCaptionText(vireo(SL.print))}</button><hr/>
+     <button type="button" data-testid="cd-study-save" disabled={sessionSaved} onClick={()=>{setMenu(null);setBox({caption:vireo(SL.caption),text:M.saveListUnavailable});}}>{vireo(SL.saveList)}</button><hr/>
+     <button type="button" data-testid="cd-study-close" onClick={()=>{setMenu(null);close();}}>{menuCaptionText(vireo(SL.close))}</button>
     </div>}</div>
-   <div className="cluster-hr-menu"><button type="button" aria-expanded={menu==='selection'} data-testid="cd-study-selection-menu" onClick={()=>setMenu(menu==='selection'?null:'selection')}>{menuCaptionText(SL.selection)}</button>
-    {menu==='selection'&&<div role="group" aria-label={menuCaptionText(SL.selection)} className="cluster-hr-menu-list">
-     <button type="button" data-testid="cd-study-data" disabled={selection<0} onClick={data}>{menuCaptionText(SL.getData)}</button><hr/>
-     <button type="button" data-testid="cd-study-add" disabled={selection<0} onClick={()=>hot(false)}>{menuCaptionText(SL.add)}</button><hr/>
-     <button type="button" data-testid="cd-study-start" disabled={selection<0} onClick={()=>hot(true)}>{menuCaptionText(SL.start)}</button>
+   <div className="cluster-hr-menu"><button type="button" aria-expanded={menu==='selection'} data-testid="cd-study-selection-menu" onClick={()=>setMenu(menu==='selection'?null:'selection')}>{menuCaptionText(vireo(SL.selection))}</button>
+    {menu==='selection'&&<div role="group" aria-label={menuCaptionText(vireo(SL.selection))} className="cluster-hr-menu-list">
+     <button type="button" data-testid="cd-study-data" disabled={selection<0} onClick={data}>{menuCaptionText(vireo(SL.getData))}</button><hr/>
+     <button type="button" data-testid="cd-study-add" disabled={selection<0} onClick={()=>hot(false)}>{menuCaptionText(vireo(SL.add))}</button><hr/>
+     <button type="button" data-testid="cd-study-start" disabled={selection<0} onClick={()=>hot(true)}>{menuCaptionText(vireo(SL.start))}</button>
     </div>}</div>
   </div>
-  {list?<div onContextMenu={e=>{e.preventDefault();if(selection>=0)popup.open(e);}} onAuxClick={popup.auxClick}>
-    <HelpListBox rows={list.lines} selected={index} onSelect={choose} onActivate={i=>{if(list&&i>=list.first&&i<=list.last)copy(i-list.first);}} label={SL.caption} testId="cd-study-lines" columns/></div>
+  {list?<><NativeMirrorCaption/><div lang="en" onContextMenu={e=>{e.preventDefault();if(selection>=0)popup.open(e);}} onAuxClick={popup.auxClick}>
+    <HelpListBox rows={list.lines} selected={index} onSelect={choose} onActivate={i=>{if(list&&i>=list.first&&i<=list.last)copy(i-list.first);}} label={vireo(SL.caption)} testId="cd-study-lines" columns/></div></>
    :<p role="status" className="fi-note">{M.loading}</p>}
-  <PopupMenu at={popup.at} label={menuCaptionText(SL.selection)} onClose={popup.close} items={[{key:'cd-add',label:SL.add,onSelect:()=>hot(false)},{key:'cd-start',label:SL.start,onSelect:()=>hot(true)}]}/>
+  <PopupMenu at={popup.at} label={menuCaptionText(vireo(SL.selection))} onClose={popup.close} items={[{key:'cd-add',label:vireo(SL.add),onSelect:()=>hot(false)},{key:'cd-start',label:vireo(SL.start),onSelect:()=>hot(true)}]}/>
   <p className="fi-note">{M.listNote} {M.listModal}</p>{editMode&&<p className="fi-note" data-testid="cd-study-edit-note">{M.editModeColumns}</p>}
   {box&&<MessageBox box={box} onClose={()=>setBox(null)}/>}
   {confirm&&<UnsavedHotList onAnswer={answer}/>}
-  {unsaved&&<MessageBox box={{caption:SL.notSavedCaption,text:SL.notSavedText}} onClose={()=>{setUnsaved(false);onClose(copied.current);}} actions={<>
+  {unsaved&&<MessageBox box={{caption:vireo(SL.notSavedCaption),text:vireo(SL.notSavedText)}} onClose={()=>{setUnsaved(false);onClose(copied.current);}} actions={<>
    <button type="button" className="primary-button" data-testid="cd-unsaved-yes" onClick={()=>{setUnsaved(false);setSaveFailed(true);}}>{FM.yes}</button>
    <button type="button" className="secondary-button" data-testid="cd-unsaved-no" onClick={()=>{setUnsaved(false);onClose(copied.current);}}>{FM.no}</button></>}/>}
-  {saveFailed&&<MessageBox box={{caption:SL.caption,text:M.saveListUnavailable}} onClose={()=>{setSaveFailed(false);onClose(copied.current);}}/>}
+  {saveFailed&&<MessageBox box={{caption:vireo(SL.caption),text:M.saveListUnavailable}} onClose={()=>{setSaveFailed(false);onClose(copied.current);}}/>}
   {find&&<FindDialog draft={find} onDraft={setFind} onSearch={search} onCancel={()=>setFind(null)}/>}
-  {printing&&list&&<ClusterPrintPreview caption={SL.caption} note={M.printNote} onClose={()=>setPrinting(false)} testId="cd-study-print-preview"><StudyPrintBody caption={SL.caption} lines={list.lines} student={!editMode}/></ClusterPrintPreview>}
+  {printing&&list&&<ClusterPrintPreview caption={vireo(SL.caption)} note={M.printNote} onClose={()=>setPrinting(false)} testId="cd-study-print-preview"><StudyPrintBody caption={vireo(SL.caption)} lines={list.lines} student={!editMode}/></ClusterPrintPreview>}
  </dialog>;
 }
 
 /** 0x592120's question before a new hot list replaces a modified one. */
 function UnsavedHotList({onAnswer}:{onAnswer:(save:boolean)=>void}){
- return <MessageBox box={{caption:VL.unsavedCaption,text:VL.unsavedText}} onClose={()=>onAnswer(false)} actions={<>
+ return <MessageBox box={{caption:vireo(VL.unsavedCaption),text:vireo(VL.unsavedText)}} onClose={()=>onAnswer(false)} actions={<>
   <button type="button" className="primary-button" data-testid="cd-hot-unsaved-yes" onClick={()=>onAnswer(true)}>{FM.yes}</button>
   <button type="button" className="secondary-button" data-testid="cd-hot-unsaved-no" onClick={()=>onAnswer(false)}>{FM.no}</button></>}/>;
 }
@@ -237,8 +239,9 @@ function UnsavedHotList({onAnswer}:{onAnswer:(save:boolean)=>void}){
 function StudyPrintBody({caption,lines,student}:{caption:string;lines:readonly string[];student:boolean}){
  const [date]=useState(()=>new Date().toLocaleString());
  return <div data-testid="cd-study-print-body">
-  <p className="cluster-print-line">{date+(student?'     Laboratory Table Number (Not Recorded)':'')}</p>
+  <p className="cluster-print-line">{date+(student?vireo(HP.tableNumber)+vireo(HP.notRecorded):'')}</p>
   <p className="cluster-print-line cluster-print-indent">{caption}</p>
-  {lines.map((l,i)=><p key={i} className="cluster-print-line cluster-print-indent">{l||' '}</p>)}
+  <NativeMirrorCaption print/>
+  {lines.map((l,i)=><p key={i} lang="en" className="cluster-print-line cluster-print-indent">{l||' '}</p>)}
  </div>;
 }

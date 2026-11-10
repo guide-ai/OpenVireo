@@ -24,6 +24,12 @@
     "pulsar"
    ],
    "reason": "VIREO's captions Pulsar Parameters and Find Pulsar, given in English after the Spanish names"
+  },
+  "map:clusterData.useTelescopeOff": {
+   "words": [
+    "use"
+   ],
+   "reason": "the quoted VIREO caption “Use Telescope Coordinates” in English, not a Spanish imperative"
   }
  }
 }

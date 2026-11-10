@@ -30,6 +30,8 @@ import {SOUND_MESSAGES_EN} from '../../sound/SoundMessages';
 import {ENGINE_VIEW_EN} from '../../SpectrumEngineMessages';
 import {SPECTRAL_RANGE_EN} from '../../SpectralRangeMessages';
 import {WEDGE_MESSAGES_EN} from '../../components/WedgeMessages';
+import {CLUSTER_HR_EN} from '../../clusters/ClusterHrMessages';
+import {CLUSTER_DATA_MESSAGES_EN} from '../../clusterdata/ClusterDataMessages';
 import {RADIO_ANTENNA_MESSAGES_EN} from '../../components/RadioAntennaMessages';
 import {FINISH_SAVE_MESSAGES_EN} from '../../components/RadioFinishSaveMessages';
 import {RADIO_R1_MESSAGES_EN} from '../../components/RadioR1Messages';
@@ -49,6 +51,9 @@ Object.assign(ENGLISH_MAPS,{radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSa
 // Front ES8b: the pulsar analysis maps (complete).
 Object.assign(ENGLISH_MAPS,{pulsar:PULSAR_MESSAGES_EN,pulsarLoadSave:LOAD_SAVE_MESSAGES_EN,pulsarSavedRows:SAVED_ROWS_MESSAGES_EN});
 (COMPLETE_MAPS as MapId[]).push('pulsar','pulsarLoadSave','pulsarSavedRows');
+// Front ES7: the cluster HR, Cluster Data and variable-star maps (complete).
+Object.assign(ENGLISH_MAPS,{clusterHr:CLUSTER_HR_EN,clusterData:CLUSTER_DATA_MESSAGES_EN});
+(COMPLETE_MAPS as MapId[]).push('clusterHr','clusterData','variableStars');
 /** ES1's area of en.json: the shell (header, menu, home and portal, toolbar, errors, instructor mode, document title). */
 const SHELL_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(app|project|session|error|instructorMode)\./.test(k)||/\.nav$/.test(k)||['demonstrationMode.banner','sky.eyebrow','sky.title','sky.subtitle','sky.about','sky.local','sky.observatory','sky.analyzer','sky.step1','sky.step1Help','sky.step2','sky.step2Help','sky.step3','sky.step3Help','spectrum.tools','classLink.cancel'].includes(k));
 /** The string literals of a TypeScript source (escapes decoded; template literals with substitutions skipped). */

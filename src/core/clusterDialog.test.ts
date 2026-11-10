@@ -92,3 +92,11 @@ describe('empty reader result 0x53435b–0x534452 (review M1)',()=>{
   expect(certificate.clusters.filter(c=>!c.brightestRectangleRecordInBank).map(c=>c.id).sort()).toEqual(['30dor','ic4665','m67','mel111']);
  });
 });
+
+describe('Front ES7: clusterEmptyFieldText takes an optional tr for the screen language',()=>{
+ it('translates each literal and keeps the numbers and the line breaks',()=>{
+  const tr=(s:string)=>`«${s.trim()}» `;
+  expect(clusterEmptyFieldText({minimumRa:1.5,maximumRa:2.25,minimumDec:-3.125,maximumDec:4},Math.fround(5),tr))
+   .toBe('«Possible Error in Field Parameters:» \r\n\r\n«MinRA:» 1.500000\r\n«MaxRA:» 2.250000\r\n«MinDec:» -3.12500\r\n«MaxDec:» 4.00000\r\n«LimitMag:» 5.000');
+ });
+});

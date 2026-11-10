@@ -86,450 +86,100 @@
  {
   "file": "src/clusterdata/ClusterDataWindow.tsx",
   "kind": "original",
-  "value": "FL.menu.add",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "VL.confirmation",
-  "count": 6,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "FL.menu.start",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "FL.menu.entire",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "FL.csvTitle",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "SL.close",
-  "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "CLUSTER_EMPTY_FIELD_CAPTION",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
   "value": "D.maxLength[f==='diameter'?'diameter':f==='limit'?'limit':f]",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "D.caption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "D.nameGroup",
-  "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "D.center",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "D.raHours",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a numeric length or limit"
  },
  {
   "file": "src/clusterdata/ClusterDataWindow.tsx",
   "kind": "original",
   "value": "D.hints.raHours",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "D.raMinutes",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: VIREO's numeric range hint (0-23, 0.00-59.99…), no letters"
  },
  {
   "file": "src/clusterdata/ClusterDataWindow.tsx",
   "kind": "original",
   "value": "D.hints.raMinutes",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "D.raSeconds",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: VIREO's numeric range hint (0-23, 0.00-59.99…), no letters"
  },
  {
   "file": "src/clusterdata/ClusterDataWindow.tsx",
   "kind": "original",
   "value": "D.hints.raSeconds",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "D.decDegrees",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: VIREO's numeric range hint (0-23, 0.00-59.99…), no letters"
  },
  {
   "file": "src/clusterdata/ClusterDataWindow.tsx",
   "kind": "original",
   "value": "D.hints.decDegrees",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "D.decMinutes",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: VIREO's numeric range hint (0-23, 0.00-59.99…), no letters"
  },
  {
   "file": "src/clusterdata/ClusterDataWindow.tsx",
   "kind": "original",
   "value": "D.hints.decMinutes",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "D.decSeconds",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: VIREO's numeric range hint (0-23, 0.00-59.99…), no letters"
  },
  {
   "file": "src/clusterdata/ClusterDataWindow.tsx",
   "kind": "original",
   "value": "D.hints.decSeconds",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "D.useTelescope",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "D.diameter",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "D.limit",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "D.type",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "D.types.map",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "D.sort",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "D.sorts.map",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "D.file",
-  "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "D.viewSelect",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "D.addToList",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "D.cancel",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "D.ok",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "D.errorCaption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "SL.caption",
-  "count": 5,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "SL.list",
-  "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "SL.search",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "SL.print",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "SL.saveList",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "SL.selection",
-  "count": 3,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "SL.getData",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "SL.add",
-  "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "SL.start",
-  "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "SL.notSavedCaption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "SL.notSavedText",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "VL.unsavedCaption",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusterdata/ClusterDataWindow.tsx",
-  "kind": "original",
-  "value": "VL.unsavedText",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: VIREO's numeric range hint (0-23, 0.00-59.99…), no letters"
  },
  {
   "file": "src/ClusterDatabaseLab.tsx",
   "kind": "original",
   "value": "CLUSTER_DATASETS.map",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the recorded cluster names (M 44, Pleiades…), data of the 16 published clusters"
  },
  {
   "file": "src/ClusterDatabaseLab.tsx",
   "kind": "original",
   "value": "NATIVE_CLUSTER_MODELS[c.parameters.modelIndex]",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the recorded metallicity model labels ([Z=0.019, Y=0.273] (Solar Values)), as read from the contract"
  },
  {
   "file": "src/ClusterLabGuide.tsx",
   "kind": "original",
   "value": "CLUSTER_LAB_STEPS.length",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the guide step ids and their count"
  },
  {
   "file": "src/ClusterLabGuide.tsx",
   "kind": "original",
   "value": "CLUSTER_LAB_STEPS.map",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the guide step ids and their count"
  },
  {
   "file": "src/clusters/CleaHelp.tsx",
   "kind": "original",
   "value": "RADIO_HOT_LIST_SEARCH_QUERY_MAX",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusters/ObservationalDataDialog.tsx",
-  "kind": "original",
-  "value": "L.v",
-  "count": 1,
-  "reason": "identifier: the photometric band letter V: as VIREO's Observational Data caption (the same in Spanish)"
- },
- {
-  "file": "src/clusters/ObservationalDataDialog.tsx",
-  "kind": "original",
-  "value": "L.b",
-  "count": 1,
-  "reason": "identifier: the photometric band letter B: as VIREO's Observational Data caption (the same in Spanish)"
- },
- {
-  "file": "src/clusters/ObservationalDataDialog.tsx",
-  "kind": "original",
-  "value": "L.u",
-  "count": 1,
-  "reason": "identifier: the photometric band letter U: as VIREO's Observational Data caption (the same in Spanish)"
- },
- {
-  "file": "src/clusters/ObservationalDataDialog.tsx",
-  "kind": "original",
-  "value": "L.r",
-  "count": 1,
-  "reason": "identifier: the photometric band letter R: as VIREO's Observational Data caption (the same in Spanish)"
- },
- {
-  "file": "src/clusters/ObservationalDataDialog.tsx",
-  "kind": "original",
-  "value": "L.i",
-  "count": 1,
-  "reason": "identifier: the photometric band letter I: as VIREO's Observational Data caption (the same in Spanish)"
- },
- {
-  "file": "src/clusters/PossibleMemberWindow.tsx",
-  "kind": "original",
-  "value": "POSSIBLE_MEMBER_CAPTION",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusters/PossibleMemberWindow.tsx",
-  "kind": "original",
-  "value": "CLUSTER_REMOVE_CAPTION",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
- },
- {
-  "file": "src/clusters/PossibleMemberWindow.tsx",
-  "kind": "original",
-  "value": "CLUSTER_REMOVE_QUESTION",
-  "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a numeric length or limit"
  },
  {
   "file": "src/components/ClusterNativeObservationHr.tsx",
   "kind": "original",
   "value": "G.marker",
   "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a marker radius in pixels"
  },
  {
   "file": "src/components/ClusterNativeObservationHr.tsx",
   "kind": "original",
   "value": "NATIVE_CLUSTER_MODELS.map",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the recorded metallicity model labels ([Z=0.019, Y=0.273] (Solar Values)), as read from the contract"
  },
  {
   "file": "src/components/PulsarAnalysis.tsx",
@@ -991,28 +641,28 @@
   "kind": "original",
   "value": "PLEIADES_PHOTOMETER_TARGETS.length",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a numeric length or limit"
  },
  {
   "file": "src/NativeClusterAnalysis.tsx",
   "kind": "original",
   "value": "G.marker",
   "count": 2,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: a marker radius in pixels"
  },
  {
   "file": "src/NativeClusterAnalysis.tsx",
   "kind": "original",
   "value": "NATIVE_CLUSTER_MODELS.map",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the recorded metallicity model labels ([Z=0.019, Y=0.273] (Solar Values)), as read from the contract"
  },
  {
   "file": "src/NativeClusterAnalysis.tsx",
   "kind": "original",
   "value": "NATIVE_CLUSTER_MODELS[fit.modelIndex]",
   "count": 1,
-  "reason": "pending-translation: VIREO literal rendered without vireo(); its area sub-front wraps it or records why it stays English (native text mirrored in a file, or an identifier)."
+  "reason": "identifier: the recorded metallicity model labels ([Z=0.019, Y=0.273] (Solar Values)), as read from the contract"
  },
  {
   "file": "src/ObjectXLab.tsx",

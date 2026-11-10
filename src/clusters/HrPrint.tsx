@@ -1,6 +1,8 @@
 import {useEffect,useRef,useState,type RefObject} from 'react';
-import {clusterHrPrintPage,type ClusterHrPrintLine,type ClusterHrPrintOrientation} from '../core/clusterHrPrint';
+import {CLUSTER_HR_PRINT_LITERALS as PL,clusterHrPrintPage,type ClusterHrPrintLine,type ClusterHrPrintOrientation} from '../core/clusterHrPrint';
 import {CLUSTER_HR as M} from './ClusterHrMessages';
+import {CLUSTER_HR_CAPTIONS as C} from '../core/clusterHrCaptions';
+import {vireo} from '../i18n/vireo';
 import ClusterPrintPreview from './ClusterPrintPreview';
 import './cluster-hr.css';
 import {hrScheme,hrSchemeStyle} from '../core/hrScheme';
@@ -32,7 +34,7 @@ function PlotCopy({source,monochrome}:{source:RefObject<SVGSVGElement|null>;mono
  * empty: the transcribed pairs are not native records. With Record/Review rows (Front P3) the own view opens RecordedResultsWindow
  * on them instead; saved DAT records use it too (Front K2). */
 export function ObservationDataUnavailable({testId}:{testId:string}){
- return <><button type="button" className="secondary-button" disabled aria-describedby={`${testId}-reason`} data-testid={testId}>{M.displayData}</button>
+ return <><button type="button" className="secondary-button" disabled aria-describedby={`${testId}-reason`} data-testid={testId}>{vireo(C.displayData)}</button>
   <span id={`${testId}-reason`} className="cluster-hr-note" data-testid={`${testId}-reason`} data-reason="row-writer-not-recovered">{M.observationDataUnavailable}</span></>;
 }
 
@@ -41,15 +43,15 @@ export function ObservationDataUnavailable({testId}:{testId:string}){
 export default function HrPrint({trial,plot,testId,disabled=false,printMonochrome,onPrinted}:{trial:Trial|null;plot:RefObject<SVGSVGElement|null>;testId:string;disabled?:boolean;printMonochrome?:()=>boolean;onPrinted?:()=>void}){
  const [printMono,setPrintMono]=useState(true),[open,setOpen]=useState(false),[orientation,setOrientation]=useState<ClusterHrPrintOrientation>('portrait'),[date]=useState(()=>new Date().toLocaleString());
  const button=useRef<HTMLButtonElement>(null);
- const page=clusterHrPrintPage({dateText:date,zamsShown:trial?.zamsShown??false,modulusTicks:trial?.modulusTicks??0,ebvTicks:trial?.ebvTicks??0,orientation});
+ const page=clusterHrPrintPage({dateText:date,zamsShown:trial?.zamsShown??false,modulusTicks:trial?.modulusTicks??0,ebvTicks:trial?.ebvTicks??0,orientation,tr:vireo});
  const line=(l:ClusterHrPrintLine,i:number)=>{
   const style={...gapStyle(l.gap),paddingInlineStart:`${l.x/10}ch`};
   if(l.kind==='page-2')return <div key={i} className="cluster-print-page"><p className="cluster-print-line" style={{paddingInlineStart:`${l.x/10}ch`}} data-testid={`${testId}-page2`}><span className="cluster-print-placeholder">{M.printPlaceholder}</span>{l.suffix}</p></div>;
   return <p key={i} style={style} className={`cluster-print-line${l.text===null?' cluster-print-placeholder':''}`} data-kind={l.kind}>{l.text??M.printPlaceholder}</p>;
  };
  return <>
-  <button type="button" ref={button} className="secondary-button" data-testid={`${testId}-open`} disabled={disabled} onClick={()=>{setPrintMono(printMonochrome?.()??true);setOpen(true);}}>{M.hrPrint}</button>
-  {open&&<ClusterPrintPreview caption={M.hrPrintCaption} note={M.hrPrintNote} onClose={()=>{setOpen(false);requestAnimationFrame(()=>button.current?.focus());}} onPrinted={onPrinted} testId={testId}>
+  <button type="button" ref={button} className="secondary-button" data-testid={`${testId}-open`} disabled={disabled} onClick={()=>{setPrintMono(printMonochrome?.()??true);setOpen(true);}}>{vireo(C.hrPrint)}</button>
+  {open&&<ClusterPrintPreview caption={vireo(PL.caption)} note={M.hrPrintNote} onClose={()=>{setOpen(false);requestAnimationFrame(()=>button.current?.focus());}} onPrinted={onPrinted} testId={testId}>
    <fieldset className="cluster-print-chrome cluster-print-orientation"><legend>{M.hrPrintOrientation}</legend>
     {(['portrait','landscape'] as const).map(o=><label key={o}><input type="radio" name={`${testId}-orientation`} value={o} checked={orientation===o} onChange={()=>setOrientation(o)}/> {o==='portrait'?M.portrait:M.landscape}</label>)}
    </fieldset>

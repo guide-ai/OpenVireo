@@ -24,3 +24,17 @@ describe('HR Print page body 0x542fc8',()=>{
   expect(clusterHrPrintPage({...base,modulusTicks:1500,ebvTicks:250,orientation:'portrait'}).lines.slice(3,5).map(l=>l.text)).toEqual(['V - Mv = 15.00','E(B-V) = 2.50']);
  });
 });
+
+describe('Front ES7: the optional tr shows the literals in the screen language',()=>{
+ it('translates the laboratory, ZAMS, caption, Next Page and Page 2 literals; the date and the numbers stay as built',()=>{
+  const tr=(s:string)=>`«${s.trim()}»`;
+  const p=clusterHrPrintPage({dateText:'11/9/2026, 7:00:02 AM',zamsShown:true,modulusTicks:950,ebvTicks:3,orientation:'landscape',tr});
+  expect(p.lines.map(l=>[l.kind,l.text,l.suffix])).toEqual([
+   ['date','11/9/2026, 7:00:02 AM«Laboratory Table Number (Not Recorded)»',undefined],['students',null,undefined],
+   ['zams','«Fit of Zero-Age Main Sequence:»',undefined],['modulus','«V - Mv =»9.50',undefined],['ebv','«E(B-V) =»0.03',undefined],
+   ['caption','«Color-Magnitude Diagram»',undefined],['next-page','«(Screen Image Printed on Next Page)»',undefined],['page-2',null,'«- Page 2»']]);
+  // Without tr the page is the literal one (files and English unchanged).
+  expect(clusterHrPrintPage({dateText:'D',zamsShown:true,modulusTicks:950,ebvTicks:3,orientation:'landscape'}).lines.map(l=>l.text??l.suffix))
+   .toEqual(clusterHrPrintPage({dateText:'D',zamsShown:true,modulusTicks:950,ebvTicks:3,orientation:'landscape',tr:s=>s}).lines.map(l=>l.text??l.suffix));
+ });
+});

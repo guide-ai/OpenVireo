@@ -37,7 +37,6 @@
   "catalog:ownResults.sha": "a format name and the hash value (SHA-256 {sha256})",
   "original:Cursor": "the same word in Spanish (cursor)",
   "original:Angstroms": "the unit name, the same in Spanish usage (angstroms) as a plot axis caption",
-  "original:ID #:": "an identifier caption (ID and the number sign), the same in Spanish",
   "original:Dec:": "the declination abbreviation Dec, kept as in the glossary (ascensión recta [AR] / declinación [Dec])",
   "original:No": "the same word in Spanish (No)",
   "original:Min": "the minutes abbreviation, the same in Spanish (min)",
@@ -137,6 +136,24 @@
   "map:objectXMeasure.colX": "a pixel axis symbol (x)",
   "map:objectXMeasure.colY": "a pixel axis symbol (y)",
   "map:objectXMeasure.colDec": "a coordinate symbol (Dec)",
-  "map:objectXMeasure.colUt": "a time scale symbol, kept as in the rest of the Spanish (UT)"
+  "map:objectXMeasure.colUt": "a time scale symbol, kept as in the rest of the Spanish (UT)",
+  "catalog:nc.axisColor": "axis label with a symbol and a unit (B−V (mag))",
+  "catalog:db.columnEbv": "a symbol and a unit (E(B−V) (mag))",
+  "catalog:ce.inspectedInfo": "only placeholders, symbols and units",
+  "catalog:obsHr.sha": "the hash name SHA-256, same in Spanish",
+  "catalog:obsHr.blockedField.v": "the photometric band V",
+  "catalog:obsHr.blockedField.b": "the photometric band B",
+  "catalog:obsHr.blockedField.b-v": "the colour index B−V",
+  "catalog:obsHr.modulus": "a symbol expression (V − Mv)",
+  "catalog:obsHr.ebv": "a symbol (E(B−V))",
+  "catalog:obsHr.colIndex": "a column symbol (#)",
+  "catalog:obsHr.colBV": "a colour index (B − V)",
+  "catalog:obsHr.kind.magnitudes": "the word magnitudes is the same in Spanish (magnitudes)",
+  "original:V - Mv =": "a formula label of symbols (V minus Mv), the same in Spanish",
+  "original:Min:": "VIREO's abbreviation 'Min:' (minutes) is the same in Spanish",
+  "map:variableStars.typeOption": "a template of placeholders around an em dash",
+  "map:variableStars.columns.3": "a symbol and a unit (Dec (°))",
+  "map:variableStars.columns.7": "an empty header cell (the row action column)",
+  "map:variableStars.noPeriod": "an em dash for no value"
  }
 }
