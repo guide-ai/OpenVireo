@@ -101,11 +101,12 @@ describe('Spanish texts (es-419)',()=>{
   expect(SPANISH.ui.about).toContain('Este texto en español es una adaptación web hecha por OpenVireo, no un texto de CLEA.');
   expect(SPANISH.ui.about).toContain('No es el programa original ni está afiliado a Project CLEA.');
  });
- it('copy no Spanish app text into the static pages, so it stays only in its own chunks (scripts/check-i18n-dist.mjs)',()=>{
+ it('keep Spanish app text out of the English static pages (scripts/check-i18n-dist.mjs)',()=>{
   // The dist check (front SC8's) counts as text of a Spanish chunk any catalog value of 16+ characters that differs from English,
-  // any single-quoted literal of 12+ characters with a letter outside ASCII in a Spanish map file, and any such original of 8+,
-  // and fails when another file (these pages included) contains one. The pages write their own sentences; this mirrors the rule
-  // so a collision fails here first, naming the text (docs/I18N.md, "Spanish: search pages").
+  // any single-quoted literal of 12+ characters with a letter outside ASCII in a Spanish map file, and any such original of 8+.
+  // Since SC8, an .html file under the language's own `pagePath` (`es/`) may carry it, so the Spanish pages use the app's own lab
+  // names; every other page must not. This mirrors the rule so a collision fails here first, naming the text (docs/I18N.md,
+  // "Spanish: search pages").
   const outside=/(?![\x00-\x7f])\p{L}/u,maps=import.meta.glob('../i18n/es/maps/*.ts',{query:'?raw',import:'default',eager:true}) as Record<string,string>;
   const markers=[
    ...Object.entries(es).filter(([k,v])=>v!==(en as Record<string,string>)[k]&&v.length>=16).map(([,v])=>v),
@@ -113,7 +114,7 @@ describe('Spanish texts (es-419)',()=>{
    ...Object.values(originals).filter(v=>v.length>=8&&outside.test(v)),
   ];
   expect(markers.length).toBeGreaterThan(1000);
-  const found=Object.entries(PAGES).filter(([p])=>p.startsWith('/es/')).flatMap(([p,html])=>markers.filter(m=>html.includes(m)).map(m=>`${p}: ${m}`));
+  const found=Object.entries(PAGES).filter(([p])=>!p.startsWith('/es/')).flatMap(([p,html])=>markers.filter(m=>html.includes(m)).map(m=>`${p}: ${m}`));
   expect([...new Set(found)]).toEqual([]);
  });
 });
