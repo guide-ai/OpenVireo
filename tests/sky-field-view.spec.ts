@@ -51,3 +51,24 @@ test('a pointing change mid-build ends on the final field',async({page})=>{
  await expect(id(page,'sky-map')).toHaveAttribute('data-anchor','12.5,27',{timeout:30000});
  await expect(id(page,'sky-map')).toHaveAttribute('data-field','native');
 });
+// Front SKY-LABELS review [W] (docs/SKY-FIELD-VIEW.md, src/core/overlayLabels.ts): with M81 (NGC 3031, RA 9.926667 h,
+// Dec 69.066667°) pointed so its ring sits near each edge of the 2.5° finder view (280 units per degree; 4200·cos δ per hour),
+// every catalogue label's font box stays inside the sky map, at both CSS label sizes (11 and, below 520 px, 14); at the right
+// edge the M81 and M82 labels are drawn left of their rings.
+for(const width of [1280,360])test(`at ${width} px the sky-map labels stay inside the view at every edge`,async({page})=>{
+ test.setTimeout(120000);await page.setViewportSize({width,height:900});
+ await open(page);await expect(id(page,'sky-map')).toHaveAttribute('data-field','native',{timeout:30000});
+ const ring=(o:string)=>page.locator(`[data-label-id="${o}"]`).locator('xpath=preceding-sibling::*[local-name()="circle"]');
+ const outside=()=>page.getByTestId('sky-map').evaluate(svg=>{const b=svg.getBoundingClientRect(),out:string[]=[];
+  for(const t of svg.querySelectorAll<SVGTextElement>('text[data-label-id]')){const q=t.getBoundingClientRect();
+   if(q.left<b.left-1||q.right>b.right+1||q.top<b.top-1||q.bottom>b.bottom+1)out.push(`${t.textContent} (${[q.left-b.left,b.right-q.right,q.top-b.top,b.bottom-q.bottom].map(Math.round).join(', ')})`);}
+  return out;});
+ const cos=Math.cos(69.06666667*Math.PI/180);
+ for(const [ra,dec,axis,at] of [[9.92666667,69.06666667-347/280,'cy',3],[9.92666667,69.06666667+347/280,'cy',697],[9.92666667+342/(4200*cos),69.06666667,'cx',692],[9.92666667-345/(4200*cos),69.06666667,'cx',5]] as const){
+  await pointTo(page,ra.toFixed(8),dec.toFixed(8));
+  await expect.poll(async()=>Math.abs(Number(await ring('NGC3031').getAttribute(axis))-at),{timeout:30000}).toBeLessThan(1.5);
+  await expect.poll(outside,{timeout:10000}).toEqual([]);
+  if(at===692)for(const o of ['NGC3031','NGC3034'])
+   expect(Number(await page.locator(`[data-label-id="${o}"]`).getAttribute('x'))).toBeLessThan(Number(await ring(o).getAttribute('cx')));
+ }
+});
