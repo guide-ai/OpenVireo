@@ -26,13 +26,17 @@ const shellTexts=(page:Page)=>page.evaluate(regions=>{
 },SHELL);
 
 test('a Spanish preview load fetches the Spanish chunk, sets <html lang="es-419"> and the Spanish title; English never fetches it',async({page})=>{
- const requested:string[]=[];page.on('request',r=>{if(r.url().includes('/src/i18n/es/'))requested.push(r.url());});
+ // Front ES-SPLIT: the chunk is the core module virtual:openvireo-i18n/es-419 (served as /@id/__x00__openvireo-i18n/i18n-es-419-core);
+ // the whole bundle src/i18n/es/index.ts and the catalog es.json are never fetched, and the home page fetches no area module.
+ const requested:string[]=[];page.on('request',r=>{if(/\/src\/i18n\/es\/|openvireo-i18n\/i18n-/.test(r.url()))requested.push(r.url());});
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
  await open(page,'en');
  await expect(page.locator('html')).toHaveAttribute('lang','en');expect(requested).toEqual([]);
  await open(page,'es-419');
  await expect(page.locator('html')).toHaveAttribute('lang','es-419');await expect(page).toHaveTitle(es['app.documentTitle']);
- expect(requested.some(u=>u.includes('/src/i18n/es/index.ts'))).toBe(true);expect(errors).toEqual([]);
+ const language=requested.filter(u=>/openvireo-i18n\/i18n-/.test(u)).map(u=>/i18n-(es-419-[\w+-]+)/.exec(u)![1]);
+ expect(language).toEqual(['es-419-core']);
+ expect(requested.filter(u=>/\/src\/i18n\/es\/(?:index\.ts|es\.json)/.test(u))).toEqual([]);expect(errors).toEqual([]);
 });
 
 test('the shell is entirely Spanish: header, menu, home, toolbar and the first steps read differently from English',async({browser})=>{
@@ -131,11 +135,11 @@ test('at 320 px the Spanish shell lays out without horizontal overflow, with the
 });
 
 // ES1 review 1, C1 and C4: a Spanish chunk that fails or does not arrive within 10 s leaves the page in English with a
-// bilingual one-line notice; a chunk that arrives later is never activated.
+// bilingual one-line notice; a chunk that arrives later is never activated. Front ES-SPLIT: the chunk is the core module.
 const FAILURE_EN='Spanish could not be loaded; English is shown. Reload to try again.';
 const FAILURE_ES='No se pudo cargar el español; se muestra en inglés. Recarga para intentarlo de nuevo.';
 test('a Spanish chunk that fails to load shows English with the bilingual notice',async({page})=>{
- await page.route(/\/src\/i18n\/es\/index\.ts/,route=>route.abort('failed'));
+ await page.route(/openvireo-i18n\/i18n-es-419-core/,route=>route.abort('failed'));
  await page.goto('/?lang=es-419#observatory');
  await expect(page.getByRole('heading',{level:1,name:en['sky.title']})).toBeVisible({timeout:15_000});
  await expect(page.locator('html')).toHaveAttribute('lang','en');
@@ -144,7 +148,7 @@ test('a Spanish chunk that fails to load shows English with the bilingual notice
 });
 test('a Spanish chunk that does not arrive within 10 s shows English with the notice, and a late chunk changes nothing',async({page})=>{
  let release:(()=>void)|undefined;
- await page.route(/\/src\/i18n\/es\/index\.ts/,async route=>{await new Promise<void>(resolve=>{release=resolve;});await route.continue().catch(()=>{});});
+ await page.route(/openvireo-i18n\/i18n-es-419-core/,async route=>{await new Promise<void>(resolve=>{release=resolve;});await route.continue().catch(()=>{});});
  await page.clock.install();
  await page.goto('/?lang=es-419#observatory');
  await expect.poll(()=>release!==undefined).toBe(true);

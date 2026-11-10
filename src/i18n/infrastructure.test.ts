@@ -3,7 +3,7 @@ import {createHash} from 'node:crypto';
 import en from './en.json';
 const english=en;
 import baseline from '../../tests/fixtures/p01-scientific-baseline.json';
-import {activateLocale,createI18n,fixed,formatNumber,scientific,t,uiLanguage,type MessageKey} from './index';
+import {activateLocale,activeBundle,createI18n,fixed,formatNumber,scientific,t,uiLanguage,type MessageKey} from './index';
 import {lazyMessages,pickMessages,pickedMessages,resolveMessages} from './registry';
 import {MAP_IDS} from './maps';
 import {earlyTextRequests} from './active';
@@ -152,6 +152,21 @@ describe('Front ES0: settling the language of a load (src/boot.ts)',()=>{
   expect(await settleLanguage(slow)).toEqual({language:'en',failed:'es-419'});expect(waited).toEqual([LANGUAGE_TIMEOUT_MS]);expect(LANGUAGE_TIMEOUT_MS).toBe(10_000);
   deliver!({language:'es-419',messages:{}} as never);await new Promise(r=>setTimeout(r,0));
   expect(uiLanguage()).toBe('en');expect(slow.lang).toEqual(['en']);expect(languageFailure()).toBe('es-419');
+ });
+ it('Front ES-SPLIT: settles a split bundle (a core with areas) with the English fallback, keeps its areas, and View original drops only the originals',async()=>{
+  const areas={fits:()=>Promise.resolve({default:{language:'es-419' as const,area:'fits',messages:{}}})};
+  const core={language:'es-419' as const,messages:{'project.save':'Guardar investigación'},originals:{Close:'Cerrar'},areas,mapModules:{sound:['fits']},complete:false};
+  const p=page({search:'?lang=es-419',bundleFor:()=>Promise.resolve(core)});
+  expect(await settleLanguage(p)).toEqual({language:'es-419',failed:null});expect(p.errors).toEqual([]);
+  // A partial catalog is accepted even if Spanish were released: the split bundle is never complete in one module.
+  expect(t('project.save')).toBe('Guardar investigación');expect(t('sky.title')).toBe(en['sky.title']);
+  expect(activeBundle()?.areas).toBe(areas);expect(vireo('Close')).toBe('Cerrar');
+  const original=page({search:'?lang=es-419',bundleFor:()=>Promise.resolve(core),originals:()=>true});
+  expect(await settleLanguage(original)).toEqual({language:'es-419',failed:null});
+  expect(vireo('Close')).toBe('Close');expect(activeBundle()?.areas).toBe(areas);expect(t('project.save')).toBe('Guardar investigación');
+  // An unknown map id in mapModules does not validate.
+  const wrong=page({search:'?lang=es-419',bundleFor:()=>Promise.resolve({...core,mapModules:{nope:['fits']} as never})});
+  expect(await settleLanguage(wrong)).toEqual({language:'en',failed:'es-419'});
  });
  it('reports text that was requested before the language was settled (production answers it in English)',()=>{
   expect(earlyTextRequests()).toBe(0);

@@ -3,7 +3,7 @@
 import en from './en.json';
 import type {MessageParameters} from './params.generated';
 import type {UiLanguage} from './locale';
-import type {BundleMaps} from './maps';
+import type {BundleMaps,MapId} from './maps';
 export type MessageKey=keyof typeof en;
 export type PlainMessageKey={[K in MessageKey]:MessageParameters[K]extends never?K:never}[MessageKey];
 type ParameterNames<K extends MessageKey>=K extends keyof MessageParameters?MessageParameters[K]:never;
@@ -57,6 +57,23 @@ export type LocaleBundle=Readonly<{
  /** Dev-only pseudo-locale: derive a map or an original that the bundle does not list. */
  deriveMap?:<T>(english:T)=>T;
  deriveOriginal?:(text:string)=>string;
+ /** Front ES-SPLIT (docs/I18N.md): a split bundle is its language's core module; each route area's text arrives through
+  * `areas` (src/i18n/areas.ts loadArea) and is added with extendLocale. Absent for English and the pseudo-locales. */
+ areas?:Readonly<Record<string,()=>Promise<{default:LocaleAreaPart}>>>;
+ /** The areas that bring each map that is not in the core (a map in a shared module lists every area of it). */
+ mapModules?:Readonly<Partial<Record<MapId,readonly string[]>>>;
+ /** The language's catalog covers en.json (after ES-REL): a key missing from the active messages is then text read before its
+  * area arrived. */
+ complete?:boolean;
+ /** Dev server and Vitest only: the module of every key that is not in the core (the tripwire of src/i18n/index.ts t). */
+ keyModules?:Readonly<Record<string,string>>;
+}>;
+/** Front ES-SPLIT: one route area's part of a split bundle (its own text and that of its shared modules). */
+export type LocaleAreaPart=Readonly<{
+ language:Exclude<UiLanguage,'en'>;
+ area:string;
+ messages:Readonly<Partial<Record<MessageKey,string>>>;
+ maps?:BundleMaps;
 }>;
 /** The English instance; numbers are formatted with `locale` in every UI language (decision 4). */
 export const english=createI18n(en,locale);
