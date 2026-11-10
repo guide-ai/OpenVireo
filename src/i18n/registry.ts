@@ -1,4 +1,5 @@
 import {activeBundle} from './index';
+import {current,notePendingText,pendingTextRequests} from './active';
 import {completeWithEnglish,mapParity} from './parity';
 import {SPANISH_RELEASED} from './locale';
 import type {MapId,MessageMaps} from './maps';
@@ -15,13 +16,24 @@ export type {MapId,MessageMaps,Translation} from './maps';
  * lazy while a Spanish load waits for its chunk; only reading a string builds. */
 export function lazyMessages<T extends object>(build:()=>T,shape?:unknown):T{
  let built:T|undefined;
- return lazyView(()=>built??=build(),shape) as T;
+ return lazyView(()=>built??keep(build,value=>{built=value;}),shape) as T;
+}
+/** Front ES-SPLIT: builds, and keeps the result only when no read during the build found its text's area still loading
+ * (pendingTextRequests did not move), so text read too early becomes the language's once its area arrives. */
+function keep<T>(build:()=>T,store:(value:T)=>void):T{
+ const before=pendingTextRequests(),value=build();
+ if(pendingTextRequests()===before)store(value);
+ return value;
 }
 const deferred=(v:unknown)=>v!==null&&typeof v==='object';
 function lazyView(value:()=>object,shape:unknown):object{
  const parts=new Map<PropertyKey,unknown>();
  return new Proxy(Array.isArray(shape)?[]:{},{
   get:(_target,key)=>{
+   // Front ES-SPLIT review: React Refresh (dev server only) probes `$$typeof` of every capitalised module-level value when its
+   // module evaluates (`const RADIO_SAVE_TEXTS=lazyMessages(…)`). A message map is never a React type, so that probe must not build
+   // it: in a route area's module it would read text before the area arrived.
+   if(key==='$$typeof')return undefined;
    const english=shape!==undefined&&shape!==null&&typeof shape==='object'&&Object.hasOwn(shape,key)?(shape as Record<PropertyKey,unknown>)[key]:undefined;
    if(english!==undefined&&(deferred(english)||typeof english==='function')){
     if(!parts.has(key))parts.set(key,deferred(english)
@@ -59,6 +71,9 @@ export function resolveMessages<K extends MapId>(id:K,english:MessageMaps[K]):Me
   if(strict())throw new Error(message);
   console.error(message);return english;
  }
+ // Front ES-SPLIT: a map of a route area that has not arrived (or failed: then English without an error).
+ const areas=bundle.mapModules?.[id];
+ if(areas){notePendingText(current(),`map "${id}"`,areas);return english;}
  return bundle.deriveMap?bundle.deriveMap(english):english;
 }
 /** The registered map for `id`, chosen on first use (see resolveMessages). */
@@ -72,5 +87,5 @@ export const pickedMessages=():ReadonlyMap<MapId,unknown>=>registered;
  * making one reads its whole map, which must not happen while a Spanish load waits for its chunk. */
 export function lazyTranslator<F extends (...args:never[])=>unknown>(make:()=>F):F{
  let made:F|undefined;
- return ((...args:Parameters<F>)=>(made??=make())(...args)) as unknown as F;
+ return ((...args:Parameters<F>)=>(made??keep(make,value=>{made=value;}))(...args)) as unknown as F;
 }

@@ -1,4 +1,5 @@
-import {test,expect,type Browser,type Locator,type Page} from '@playwright/test';
+import {type Browser,type Locator,type Page} from '@playwright/test';
+import {test,expect} from '../fixtures/area-tripwire';
 import {readFile} from 'node:fs/promises';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';

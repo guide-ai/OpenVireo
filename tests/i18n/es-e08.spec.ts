@@ -1,4 +1,5 @@
-import {test,expect,type Page,type Locator} from '@playwright/test';
+import {type Page,type Locator} from '@playwright/test';
+import {test,expect} from '../fixtures/area-tripwire';
 import {readFile} from 'node:fs/promises';
 import {readFileSync} from 'node:fs';
 import {syntheticFits} from '../fixtures/fits';

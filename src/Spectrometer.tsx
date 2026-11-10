@@ -6,10 +6,10 @@ import { t } from './i18n';
 import { POLISH_MESSAGES as PM, SPECTROMETER_ROUTE_HREFS } from './polish/PolishMessages';
 import CleaHelp from './clusters/CleaHelp';
 import {HELP_FILES} from './help/helpFiles';
-import {lazy} from 'react';
+import {lazyArea} from './components/lazyArea';
 import {LazyBoundary} from './components/LazyBoundary';
 import type {FieldSpectrometerLink} from './FieldSpectrometer';
-const FieldSpectrometer=lazy(()=>import('./FieldSpectrometer'));
+const FieldSpectrometer=lazyArea('exposure',()=>import('./FieldSpectrometer'));// Front ES-SPLIT: its text is in the exposure area
 
 /** #spectrometer (Front P): an index of the routes where the single-slit spectrometer is used. The earlier source-profile
  * preview (M82/Coma1/Coma2, "Exposure acquisition is pending") predated those routes and was retired. The props are kept

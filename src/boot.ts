@@ -7,10 +7,15 @@
  * CSP is unchanged.
  * Front ES1 (option c of docs/I18N.md): English and the pseudo-locale settle synchronously, so English renders exactly as before.
  * Spanish loads its chunk (src/i18n/es/index.ts, fetched only for a Spanish load) and `languageReady` resolves once it is
- * active or replaced by English; src/main.tsx renders the app only then, so no text is read before activation. */
+ * active or replaced by English; src/main.tsx renders the app only then, so no text is read before activation.
+ * Front ES-SPLIT: that chunk is now the language's core module (virtual:openvireo-i18n/<tag>); each route area's text follows
+ * with its route (src/i18n/areas.ts). */
 import type {LocaleBundle} from './i18n/catalog';
 import {LANGUAGE_STORAGE_KEY,VIREO_ORIGINALS_KEY,type UiLanguage} from './i18n/locale';
 import {settleLanguage} from './i18n/settle';
+// Front ES-SPLIT: the core module of each split language, by tag (scripts/i18n-split.mjs; src/i18n/languages.json). Only the
+// loader functions are in the entry; a language's modules are fetched when it is asked for.
+import LANGUAGE_LOADERS from 'virtual:openvireo-i18n/loaders';
 // Dev server and tests only: the import is dropped from the production build with the DEV branch below
 // (scripts/check-i18n-dist.mjs checks that dist/ carries no pseudo-locale).
 import {pseudoBundle} from './i18n/pseudo';
@@ -21,8 +26,8 @@ import {isPseudoScriptLanguage,pseudoScriptBundle} from './i18n/pseudoScripts';
 function bundleFor(language:UiLanguage):LocaleBundle|null|Promise<LocaleBundle|null>{
  if(import.meta.env.DEV&&language==='qps')return pseudoBundle();
  if(import.meta.env.DEV&&isPseudoScriptLanguage(language))return pseudoScriptBundle(language);
- if(language==='es-419')return import('./i18n/es/index').then(m=>m.SPANISH);
- return null;
+ const load=Object.hasOwn(LANGUAGE_LOADERS,language)?LANGUAGE_LOADERS[language]:undefined;
+ return load?load().then(m=>m.default):null;
 }
 const settled=settleLanguage({
  search:location.search,

@@ -2,6 +2,7 @@ import {LazyBoundary} from '../components/LazyBoundary';
 import {OBSERVATORY_VIREO_CAPTIONS as OV} from './ObservatoryMessages';
 import {vireo,vireoMenuItem} from '../i18n/vireo';
 import {lazy,useContext,useEffect,useMemo,useRef,useState} from 'react';
+import {lazyArea} from '../components/lazyArea';
 import {ProgrammedSlewContext} from '../polish/programmedSlew';
 import TerminateSlewBox from '../polish/TerminateSlewBox';
 import QuestionBox from '../polish/QuestionBox';
@@ -33,7 +34,7 @@ import type {FieldInformationProps,FieldInfoRequest} from './FieldInformationMen
 import ObservatoryFileMenu from './ObservatoryFileMenu';
 const FieldInformationMenu=lazy(()=>import('./FieldInformationMenu'));
 const QsoListWindow=lazy(()=>import('./QsoListWindow'));
-const ClusterDataWindow=lazy(()=>import('../clusterdata/ClusterDataWindow'));// Front K
+const ClusterDataWindow=lazyArea('cluster',()=>import('../clusterdata/ClusterDataWindow'));// Front K; Front ES-SPLIT: its text is in the cluster area
 import {openOpticalSkyCoordsAt} from '../core/opticalSkyCoords';
 const M=OBSERVATORY_MESSAGES.skyCoords,H=OBSERVATORY_MESSAGES.hotList,E=OBSERVATORY_MESSAGES.entry;
 

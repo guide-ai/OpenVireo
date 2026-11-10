@@ -5,6 +5,8 @@
 import {test,expect,type Page} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
 import {VIZIER_POLICY} from '../../src/core/vizierNomad';
+// @ts-expect-error The planner is a plain JS script (scripts/i18n-split.mjs), as tests import scripts/audit-ui-messages.mjs.
+import {loadLanguages,planLanguage} from '../../scripts/i18n-split.mjs';
 
 const VIZIER=/^https:\/\/vizier\.(?:idia\.ac\.za|cds\.unistra\.fr|cfa\.harvard\.edu)\//;
 // The tiles and the whole file, as docs/LOCAL-RESOURCES.json records them (src/io/bundledOrbitFile.test.ts checks the loader's copy).
@@ -14,26 +16,36 @@ const MPC_TILES=MPC.tiles.map(t=>({path:t.replace(/^public/,''),sha256:manifest.
 const recorded=readFile(new URL('../fixtures/vizier/nomad-56.75+24.12-r0.01.xml',import.meta.url));
 const button=(p:Page,name:string)=>p.getByRole('button',{name,exact:true});
 
-type Problems={console:string[];errors:string[];csp:string[];external:string[]};
+type Problems={console:string[];errors:string[];csp:string[];external:string[];language:string[]};
+/** Front ES-SPLIT: the module in a language chunk's name (i18n-es-419-<module>-<hash>.js; a shared module's `+` is written `_`). */
+const LANGUAGE_CHUNK=/\/assets\/i18n-es-419-([a-z_]+)-[\w-]{8}\.js$/;
 /** Records console errors and warnings, page errors and CSP violations, and aborts every request that is not to this server. */
 async function watch(page:Page,base:string):Promise<Problems>{
- const p:Problems={console:[],errors:[],csp:[],external:[]};
+ const p:Problems={console:[],errors:[],csp:[],external:[],language:[]};
+ page.on('request',r=>{const m=LANGUAGE_CHUNK.exec(new URL(r.url()).pathname);if(m)p.language.push(m[1].replace(/_/g,'+'));});
  await page.context().route(url=>!url.href.startsWith(base),route=>{p.external.push(route.request().url());return route.abort('blockedbyclient');});
  await page.addInitScript(()=>{
   const w=window as unknown as {__csp:string[]};w.__csp=[];
   document.addEventListener('securitypolicyviolation',e=>{w.__csp.push(`${e.effectiveDirective} ${e.blockedURI}`);});
   // Front ES0 review 1: src/boot.ts must settle the UI language before any text is built. Count the writes of the active-language
   // holder (src/i18n/active.ts) and the reads that found it empty; a read before boot would show here and as boot's console error.
-  const key=Symbol.for('openvireo.i18n.active'),l=window as unknown as {__languageSets:number;__languageEarlyReads:number};let held:unknown;l.__languageSets=0;l.__languageEarlyReads=0;
-  Object.defineProperty(globalThis,key,{configurable:true,get(){if(held===undefined)l.__languageEarlyReads++;return held;},set(value){l.__languageSets++;held=value;}});
+  // Front ES-SPLIT: after the first write (boot's activation) every write is a route area's text arriving or failing: the same
+  // language, with one more area each time.
+  const key=Symbol.for('openvireo.i18n.active'),l=window as unknown as {__languageSets:number;__languageEarlyReads:number;__languageChanges:string[]};let held:{language?:string;areas?:Map<string,string>}|undefined;l.__languageSets=0;l.__languageEarlyReads=0;l.__languageChanges=[];
+  Object.defineProperty(globalThis,key,{configurable:true,get(){if(held===undefined)l.__languageEarlyReads++;return held;},set(value){
+   l.__languageSets++;
+   if(held!==undefined&&(value?.language!==held.language||(value?.areas?.size??0)!==(held.areas?.size??0)+1))l.__languageChanges.push(`${String(held.language)}>${String(value?.language)} areas ${held.areas?.size??0}>${value?.areas?.size??0}`);
+   held=value;
+  }});
  });
  page.on('console',m=>{if(m.type()==='error'||(m.type()==='warning'&&/Content.Security.Policy|Permissions.Policy|Refused to/i.test(m.text())))p.console.push(`${m.type()}: ${m.text()}`);});
  page.on('pageerror',e=>p.errors.push(e.message));
  return p;
 }
 const violations=(page:Page)=>page.evaluate(()=>(window as unknown as {__csp:string[]}).__csp);
-/** How often the active-language holder was set and read while still empty (see watch). Boot sets it once and nothing reads it first. */
-const language=(page:Page)=>page.evaluate(()=>{const l=window as unknown as {__languageSets:number;__languageEarlyReads:number};return {sets:l.__languageSets,earlyReads:l.__languageEarlyReads};});
+/** How often the active-language holder was set and read while still empty (see watch). Boot sets it once and nothing reads it
+ * first; Front ES-SPLIT: then each route area adds one write, of the same language with one more area (`changes` lists any other). */
+const language=(page:Page)=>page.evaluate(()=>{const l=window as unknown as {__languageSets:number;__languageEarlyReads:number;__languageChanges:string[]};return {sets:l.__languageSets,earlyReads:l.__languageEarlyReads,changes:l.__languageChanges};});
 
 test('the page, a hashed bundle and an original file carry the release headers',async({request,baseURL})=>{
  const page=await request.get('/');expect(page.status()).toBe(200);
@@ -110,18 +122,41 @@ for(const [hash,name] of ROUTES)test(`${name} (${hash}) opens with no policy vio
  if(hash==='#spectrum'){await page.getByText('Hubble diagram & distances',{exact:true}).click();await page.waitForLoadState('networkidle');}
  await page.waitForTimeout(500);
  expect({console:p.console,errors:p.errors,csp:await violations(page),external:p.external}).toEqual({console:[],errors:[],csp:[],external:[]});
- expect(await language(page)).toEqual({sets:1,earlyReads:0});
+ expect(await language(page)).toEqual({sets:1,earlyReads:0,changes:[]});
+ expect(p.language,'English fetches no language chunk').toEqual([]);
+});
+
+// Front ES-SPLIT: every route of the production build in a ?lang=es-419 preview: it fetches the core and exactly its area's
+// modules (scripts/i18n-split.mjs), the language is activated once and then extended once per area, and nothing logs an error
+// (a text read before its area would be answered in English and logged once the catalog is complete, after ES-REL).
+const plan=planLanguage(loadLanguages()[0]) as {modules:{name:string;shared:string[]}[]};
+const AREA_OF:Readonly<Record<string,string>>={'#classification':'classification','#cluster-database':'cluster','#photometer':'photometer','#pulsar-analysis':'pulsar',
+ '#radio-control':'radio','#lss-survey':'lss','#lss-wedge':'lss','#galaxy-exposure':'exposure','#star-exposure':'exposure','#sky-exposure':'exposure','#images':'fits',
+ '#spectrometer':'exposure'};// the field spectrometer at the default pointing
+const modulesOf=(area:string|undefined)=>{if(!area)return [];const m=plan.modules.find(x=>x.name===area)!;return [area,...m.shared].sort();};
+for(const [hash,name] of ROUTES)test(`Front ES-SPLIT: ${name} (${hash}) in Spanish fetches the core and its area only, with no error`,async({page,baseURL})=>{
+ const p=await watch(page,baseURL!);
+ await page.addInitScript(()=>localStorage.setItem('openvireo.tour.v1','done'));
+ await page.goto(`/?lang=es-419${hash}`);await page.waitForLoadState('networkidle');
+ await expect(page.locator('h1:visible, h2:visible').first()).toBeVisible();
+ await expect(page.locator('html')).toHaveAttribute('lang','es-419');
+ await expect(page.locator('[data-testid=route-error],[data-testid=site-updated],[data-testid=area-failure],[data-testid=language-failure]')).toHaveCount(0);
+ await page.waitForTimeout(500);
+ expect({console:p.console,errors:p.errors,csp:await violations(page),external:p.external}).toEqual({console:[],errors:[],csp:[],external:[]});
+ const area=AREA_OF[hash],modules=modulesOf(area);
+ expect(p.language[0]).toBe('core');expect(p.language.slice(1).sort()).toEqual(modules);
+ expect(await language(page)).toEqual({sets:area?2:1,earlyReads:0,changes:[]});
 });
 
 test('Front ES1: a ?lang=es-419 preview fetches the Spanish chunk, shows the Spanish shell and settles the language once, before any text',async({page,baseURL})=>{
- const p=await watch(page,baseURL!),chunks:string[]=[];page.on('request',r=>{if(/\/assets\/es-[\w-]+\.js$/.test(r.url()))chunks.push(r.url());});
+ const p=await watch(page,baseURL!);
  await page.goto('/?lang=es-419#observatory');await expect(page.getByRole('heading',{name:'Empieza por el cielo.'})).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.lang)).toBe('es-419');
  await expect(page).toHaveTitle('OpenVireo · Prácticas de astronomía de CLEA VIREO en tu navegador');
  await expect(page.locator('.investigation-toolbar')).toContainText('Guardar investigación');
  await expect(page.getByTestId('language-choice')).toBeVisible();
- expect(chunks).toHaveLength(1);
- expect(await language(page)).toEqual({sets:1,earlyReads:0});
+ expect(p.language).toEqual(['core']);// Front ES-SPLIT: the language's core module only
+ expect(await language(page)).toEqual({sets:1,earlyReads:0,changes:[]});
  expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);
 });
 
@@ -136,7 +171,7 @@ test('Front ES2: the observatory in a ?lang=es-419 preview opens its Slew and Fi
  await page.getByTestId('fi-file-menu').click();await expect(page.getByTestId('print-sky-menu')).toHaveText('Imprimir imagen del cielo...');
  await page.getByTestId('print-sky-menu').click();await page.keyboard.press('Escape');
  await page.waitForLoadState('networkidle');
- expect(await language(page)).toEqual({sets:1,earlyReads:0});
+ expect(await language(page)).toEqual({sets:1,earlyReads:0,changes:[]});
  expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);
 });
 
@@ -151,17 +186,17 @@ test('Front ES2: View original (English) in a ?lang=es-419 preview shows VIREO\'
  await page.getByTestId('ob-set-coordinates').click();await expect(page.getByTestId('ob-sky-coords').getByRole('heading')).toHaveText('Enter Sky Coordinates for Slew');
  await page.keyboard.press('Escape');await expect(page.locator('.sky-card .card-heading > button')).toHaveText('Cerrar la cúpula');
  await page.waitForLoadState('networkidle');
- expect(await language(page)).toEqual({sets:1,earlyReads:0});
+ expect(await language(page)).toEqual({sets:1,earlyReads:0,changes:[]});
  expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);
 });
 
-test('Front ES1: an English load (also ?lang=qps or ?lang=bogus) never fetches the Spanish chunk or the language selector',async({page,baseURL})=>{
- const p=await watch(page,baseURL!),fetched:string[]=[];page.on('request',r=>{if(/\/assets\/(es|LanguageChoice)-[\w-]+\.js$/.test(r.url()))fetched.push(r.url());});
+test('Front ES1: an English load (also ?lang=qps or ?lang=bogus) never fetches a Spanish chunk or the language selector',async({page,baseURL})=>{
+ const p=await watch(page,baseURL!),fetched:string[]=[];page.on('request',r=>{if(/\/assets\/(i18n-[\w-]+|LanguageChoice)-[\w-]+\.js$/.test(r.url()))fetched.push(r.url());});
  // ES1 review 1, C3: only ?lang=en or ?lang=es-419 shows the selector; the pseudo-locale and any other value show English without it.
  for(const query of ['','?lang=qps','?lang=bogus']){
   await page.goto(`/${query}#observatory`);await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();await page.waitForLoadState('networkidle');
   expect(fetched,query).toEqual([]);await expect(page.getByTestId('language-choice')).toHaveCount(0);await expect(page.getByTestId('language-failure')).toHaveCount(0);
-  expect(await language(page),query).toEqual({sets:1,earlyReads:0});
+  expect(await language(page),query).toEqual({sets:1,earlyReads:0,changes:[]});
  }
  expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);
 });

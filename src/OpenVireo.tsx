@@ -88,7 +88,7 @@ import {isPleiadesExerciseList,pleiadesRowIdentity,pleiadesRowMeasure,pleiadesSt
 import type * as PhotometerDomain from './core/photometerTelescope';
 import {EMPTY_HUBBLE} from './core/hubbleAnalysis';
 import {GALAXY_TARGETS} from './core/galaxyIdentity';
-import { lazy, memo, Suspense, useCallback, useEffect, useMemo, useRef, useState, type ComponentProps } from 'react';
+import { lazy, memo, Suspense, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ComponentProps } from 'react';
 import {useStableHandlers,type StableProps} from './renderStability';
 import type {WedgeWorkspace} from './core/wedgeWorkspace';
 import SpectrumInstrument,{type AnalysisController,type RadioPrepare,type SessionDelivery} from './SpectrumInstrument';
@@ -107,7 +107,8 @@ import { loadVerifiedLibrarySpectrum } from './io/spectrumFiles';
 import { formatNumber, t } from './i18n';
 import {selectorShown} from './i18n/locale';
 import {lazyMessages} from './i18n/registry';
-import {LANGUAGE_FAILURE_NOTICE,languageFailure} from './i18n/active';
+import {AREA_FAILURE_NOTICE,LANGUAGE_FAILURE_NOTICE,languageFailure} from './i18n/active';
+import {areaFailed,subscribeAreaFailures} from './i18n/areas';// Front ES-SPLIT
 import NavGroup,{automatedBrowser} from './components/NavGroup';
 import SiteTour,{scheduleFirstVisitTour,tourSeen} from './components/SiteTour';
 import PortalHeader from './components/PortalHeader';
@@ -125,27 +126,30 @@ import {buildTargetCatalog,SUPPORTED_STAR_POINT} from './core/targetCatalog';
 import {COMPILED_RESTRICT_SCOPE_ACCESS,answerScopeAward,exerciseScopeAccess,initialScopeAccess,requestScopeTime,scopeAccessOffered,scopeInstrumentUse,scopeReapplyMs,scopeReapplyTimer,scopeTelescopeChanged,scopeUseAllowed,type RequestScope,type ScopeAccessState,type ScopeBox,type ScopeInstrument} from './core/scopeAccess';// Front T5
 import ScopeAccessBox from './observatory/ScopeAccessBox';
 import {labFromHash,type LabSlug} from './seo/labSlugs';
+import {lazyArea} from './components/lazyArea';// Front ES-SPLIT
 
-const FitsImageLab=lazy(()=>import('./FitsImageLab'));
-const PulsarAnalysis=lazy(()=>import('./components/PulsarAnalysis'));
-const PulsarSavedRows=lazy(()=>import('./components/PulsarSavedRows'));
-const RadioTelescopeRoute=lazy(()=>import('./components/RadioTelescopeRoute'));
-const WedgeLab=lazy(()=>import('./components/WedgeLab'));
-const LssSurvey=lazy(()=>import('./LssSurvey'));
+const FitsImageLab=lazyArea('fits',()=>import('./FitsImageLab'));
+const PulsarAnalysis=lazyArea('pulsar',()=>import('./components/PulsarAnalysis'));
+const PulsarSavedRows=lazyArea('pulsar',()=>import('./components/PulsarSavedRows'));
+const RadioTelescopeRoute=lazyArea('radio',()=>import('./components/RadioTelescopeRoute'));
+const WedgeLab=lazyArea('lss',()=>import('./components/WedgeLab'));
+const LssSurvey=lazyArea('lss',()=>import('./LssSurvey'));
 const ObjectXLab=lazy(()=>import('./ObjectXLab'));
 const VariableStarsRoute=lazy(()=>import('./variables/VariableStarsRoute'));
-const ClusterDatabaseLab=lazy(()=>import('./ClusterDatabaseLab'));
-const ClusterNativeObservationHr=lazy(()=>import('./components/ClusterNativeObservationHr'));
-const NativeClusterAnalysis=lazy(()=>import('./NativeClusterAnalysis'));
-const Photometer=lazy(()=>import('./Photometer'));
-const ClassificationLab=lazy(()=>import('./ClassificationLab'));
-const GalaxyExposure=lazy(()=>import('./GalaxyExposure'));
+const ClusterDatabaseLab=lazyArea('cluster',()=>import('./ClusterDatabaseLab'));
+const ClusterNativeObservationHr=lazyArea('cluster',()=>import('./components/ClusterNativeObservationHr'));
+const NativeClusterAnalysis=lazyArea('cluster',()=>import('./NativeClusterAnalysis'));
+const Photometer=lazyArea('photometer',()=>import('./Photometer'));
+const ClassificationLab=lazyArea('classification',()=>import('./ClassificationLab'));
+const GalaxyExposure=lazyArea('exposure',()=>import('./GalaxyExposure'));
 
-const StarExposure=lazy(()=>import('./StarExposure'));
+const StarExposure=lazyArea('exposure',()=>import('./StarExposure'));
 const StarPoint=SUPPORTED_STAR_POINT;
-const SkyExposure=lazy(()=>import('./SkyExposure'));
+const SkyExposure=lazyArea('exposure',()=>import('./SkyExposure'));
 // Front ES1: the language selector is loaded only when it is shown (before ES-REL, only on a ?lang= preview load).
 const LanguageChoice=lazy(()=>import('./components/LanguageChoice'));
+/** The bilingual notices of a language (ES1 review 1, C1) or a route area's text (Front ES-SPLIT) that could not be loaded. */
+const failureNotice=(testId:string,notice:Readonly<{en:string;es:string}>)=><p role="status" className="card observatory-note" data-testid={testId} style={{margin:'12px 16px 0',padding:'10px 14px'}}><span lang="en">{notice.en}</span> <span lang="es">{notice.es}</span></p>;
 const languageSelector=typeof location!=='undefined'&&selectorShown(location.search);
 type Route='images'|'observatory'|'spectrum'|'spectrometer'|'sky-exposure'|'star-exposure'|'galaxy-exposure'|'classification'|'photometer'|'cluster-database'|'pulsar-analysis'|'radio-control'|'lss-wedge'|'lss-survey'|'object-x'|'variable-stars';
 // F1 (docs/I18N.md): `label` is screen text in the UI language; data uses the source identity (`id`, `sourceLabel`). The
@@ -946,7 +950,8 @@ export default function OpenVireo(){
   const projectOperationRef=useRef(projectOperation);projectOperationRef.current=projectOperation;
   const recovery=useMemo(()=>({save:()=>{void projectOperationRef.current();},busy:projectBusy}),[projectBusy]);
   const [languageFailed]=useState(languageFailure);
-  return <RecoveryContext.Provider value={recovery}><TestModeContext.Provider value={testMode}><VireoOptionsContext.Provider value={vireoOptions}><ObservationListContext.Provider value={observationListAccess}><ObservationListValue.Provider value={observationList}>{header}{/* ES1 review 1 C1: the Spanish chunk could not be used. */languageFailed&&<p role="status" className="card observatory-note" data-testid="language-failure" style={{margin:'12px 16px 0',padding:'10px 14px'}}><span lang="en">{LANGUAGE_FAILURE_NOTICE.en}</span> <span lang="es">{LANGUAGE_FAILURE_NOTICE.es}</span></p>}{tour&&<SiteTour onClose={()=>{setTour(false);requestAnimationFrame(()=>document.querySelector<HTMLElement>('[data-testid="main-help-menu"]')?.focus());}}/>}
+  const areaTextFailed=useSyncExternalStore(subscribeAreaFailures,areaFailed);
+  return <RecoveryContext.Provider value={recovery}><TestModeContext.Provider value={testMode}><VireoOptionsContext.Provider value={vireoOptions}><ObservationListContext.Provider value={observationListAccess}><ObservationListValue.Provider value={observationList}>{header}{/* ES1 review 1 C1: the Spanish chunk could not be used. */languageFailed&&failureNotice('language-failure',LANGUAGE_FAILURE_NOTICE)}{/* Front ES-SPLIT: a route area's text could not be used; that part stays English. */areaTextFailed&&failureNotice('area-failure',AREA_FAILURE_NOTICE)}{tour&&<SiteTour onClose={()=>{setTour(false);requestAnimationFrame(()=>document.querySelector<HTMLElement>('[data-testid="main-help-menu"]')?.focus());}}/>}
   {instructorGate.open&&<InstructorModeBanner demonstrationMode={demonstrationMode} onLeave={stable.leaveInstructor} inert={hostInert} leaveRef={instructorLeave}/>}{instructorAsk&&<InstructorModeConfirm onAnswer={stable.answerInstructor}/>}{scopeBoxes[0]&&<ScopeAccessBox key={scopeBoxes[0].id} box={scopeBoxes[0].box} opener={scopeBoxes[0].opener} onAnswer={answerScopeBox}/>}
   <section className="investigation-toolbar" aria-labelledby="project-toolbar-title" inert={hostInert}><div className="toolbar-row"><h2 id="project-toolbar-title">{t('project.title')}</h2><div className="sky-actions"><button className="secondary-button" disabled={projectBusy} onClick={()=>void projectOperation()}>{t('project.save')}</button><label className="project-upload" htmlFor="project-file">{t('project.restore')}<input id="project-file" type="file" accept=".json,application/json" disabled={projectBusy} onChange={e=>{const file=e.target.files?.[0];e.target.value='';if(file)void projectOperation(file);}}/></label>{projectBusy&&<button className="secondary-button" onClick={cancelProject}>{t('classLink.cancel')}</button>}</div></div><details className="toolbar-help research-notes"><summary>{SHELL.backupHelpSummary}</summary><p>{t('project.toolbarHelp')}</p></details><CloudEntry busy={projectBusy} onRestore={stable.cloudRestore} onSaveToCloud={stable.cloudSave}/>{projectBusy&&<p role="status">{t('project.busy')}</p>}{projectNotice&&<p role="status">{projectNotice}</p>}{projectError&&<p role="alert">{projectError}</p>}</section>
   <HubbleLabGuide dialogRef={labGuide} progress={labProgress} onNavigate={stable.hubbleGuide}/>
