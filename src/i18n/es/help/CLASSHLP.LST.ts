@@ -1,5 +1,6 @@
 // Front ES-HELP [W]: OpenVireo's Spanish (es-419) web adaptation of VIREO's CLASSHLP.LST. Not CLEA's text: the original bytes, hashes and
 // provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Spanish chunk.
+export const language='es-419';
 export const sourceName='CLASSHLP.LST';
 export const sourceSha256='42816959943e8d817884bd08b1f91856d4fab4450d5431ceee0f5b595c550fb0';
 export const text=`'Clasificar espectros' 'begin

@@ -1,8 +1,11 @@
 /** Front ES0 [W]: the language of one page load, decided once by src/boot.ts (docs/I18N.md). Pure: no DOM, storage or
- * navigator access here; boot passes them in. User decisions of 2026-11-09 (AGENTS.md): any `es-*` browser opens Spanish
- * (es-419) and everything else English, with a selector remembered only in that browser (1, 2); Spanish stays hidden, reachable
- * only through a `?lang=es-419` preview link, until every translation sub-front is merged (5). */
-export type UiLanguage='en'|'es-419'|'qps'|PseudoScriptLanguage;
+ * navigator access here; boot passes them in. User decisions of 2026-11-09 (AGENTS.md): a browser whose first language a released
+ * language matches opens it (any `es-*` opens Spanish, es-419) and everything else English, with a selector remembered only in that
+ * browser (1, 2); a language stays hidden, reachable only through its `?lang=<tag>` preview link, until every one of its
+ * translation sub-fronts is merged (5). Front SC8: the languages and their gates are the registry of src/i18n/languages.ts. */
+import {LANGUAGES,languageEntry,matchLanguage,type LanguageEntry} from './languages';
+/** English, a registered language's tag (src/i18n/languages.json), or a dev-only pseudo-locale. */
+export type UiLanguage='en'|'qps'|PseudoScriptLanguage|(string&{});
 // Front SC2 [dev server and tests only]: the script-stress pseudo-locales of src/i18n/pseudoScripts.ts, offered like qps. Their
 // <html lang> is the real tag of the script they stress, so :lang() rules apply. The production build drops them (import.meta.env
 // .DEV is false there); the typeof guard keeps this module loadable outside Vite, where the Playwright specs import app modules.
@@ -12,14 +15,10 @@ const PSEUDO_SCRIPT_LANG:Readonly<Record<PseudoScriptLanguage,string>>|false=typ
 export const LANGUAGE_STORAGE_KEY='openvireo-language';
 /** localStorage key of "View original (English)" for VIREO's menus and dialogs (decision 9): '1' when on. Applied at load. */
 export const VIREO_ORIGINALS_KEY='openvireo-vireo-originals';
-/** Release gate (decision 5): false until ES-REL. While false, neither the stored choice nor the browser language is used.
- * Front ES-REL (2026-11-09): every Spanish sub-front is merged, so Spanish is released: the stored choice and the first browser
- * language decide, and the selector is always shown. A later language keeps its own gate until its sub-fronts are merged
- * (front SC8 replaces this flag with a per-language `released` in a language registry). */
-export const SPANISH_RELEASED=true;
-/** `<html lang>` for each UI language. The dev-only pseudo-locale qps keeps English's tag (its text is marked English); the
- * script-stress pseudo-locales take the real tag of their script (ja, hi, ru). `satisfies` keeps every released language tagged. */
-export const HTML_LANG:Readonly<Record<UiLanguage,string>>=Object.freeze({...({en:'en','es-419':'es-419',qps:'en'} satisfies Record<Exclude<UiLanguage,PseudoScriptLanguage>,string>),...PSEUDO_SCRIPT_LANG}as Record<UiLanguage,string>);
+/** `<html lang>` for each UI language: English, each registered language's `htmlLang`, the dev-only pseudo-locale qps with
+ * English's tag (its text is marked English), and the script-stress pseudo-locales with the real tag of their script (ja, hi, ru).
+ * Front SC8: the per-language release gate that replaced Front ES-REL's SPANISH_RELEASED is each registry entry's `released`. */
+export const HTML_LANG:Readonly<Record<UiLanguage,string>>=Object.freeze(Object.fromEntries([['en','en'],...LANGUAGES.map(l=>[l.tag,l.htmlLang]),['qps','en'],...Object.entries(PSEUDO_SCRIPT_LANG||{})]));
 export type LocaleInputs=Readonly<{
  /** The `lang` link parameter of this load (not stored). */
  param:string|null;
@@ -27,21 +26,26 @@ export type LocaleInputs=Readonly<{
  stored:string|null;
  /** navigator.languages, most preferred first. */
  languages:readonly string[];
- released:boolean;
+ /** The registered languages and their release gates (src/i18n/languages.ts; tests pass their own). */
+ registry?:readonly LanguageEntry[];
  /** The pseudo-locales (`qps`, and the script-stress `qps-cjk`, `qps-deva`, `qps-cyrl`) are accepted only in the dev server and
   * tests. */
  dev:boolean;
 }>;
-const offered=(value:string|null,dev:boolean):UiLanguage|null=>value==='en'||value==='es-419'?value:dev&&value==='qps'?'qps':PSEUDO_SCRIPT_LANG&&dev&&value!==null&&Object.hasOwn(PSEUDO_SCRIPT_LANG,value)?value as PseudoScriptLanguage:null;
-/** The order is the link parameter, then (after release) the stored choice, then (after release) the first browser language:
- * `es`, `es-MX`, `es-ES`… give es-419; `['en-US','es-MX']` gives English, because only the first preference decides. */
-export function decideLocale({param,stored,languages,released,dev}:LocaleInputs):UiLanguage{
- const asked=offered(param,dev);if(asked)return asked;
- if(!released)return 'en';
- const kept=offered(stored,false);if(kept)return kept;
- return /^es(?:-|$)/i.test(languages[0]??'')?'es-419':'en';
+/** A link (`preview`) may name any registered language; a stored choice only a released one. The pseudo-locales are dev-only
+ * link values. Exact values only: `ES-419` or `es` is not a tag. */
+function offered(value:string|null,dev:boolean,preview:boolean,registry:readonly LanguageEntry[]):UiLanguage|null{
+ if(value==='en')return 'en';
+ const l=languageEntry(value,registry);if(l&&(preview||l.released))return l.tag;
+ if(dev&&value==='qps')return 'qps';
+ return PSEUDO_SCRIPT_LANG&&dev&&value!==null&&Object.hasOwn(PSEUDO_SCRIPT_LANG,value)?value as PseudoScriptLanguage:null;
 }
-/** Front ES1 [W]: the language selector is shown after the release, and before it only on a load whose `?lang=` link parameter
- * is exactly `en` or `es-419` (the preview), so the reload flow can be tested; production without it shows none and never
- * fetches it (decision 5; ES1 review 1, C3: `?lang=qps` or any other value shows none). */
-export const selectorShown=(search:string,released=SPANISH_RELEASED):boolean=>{const lang=new URLSearchParams(search).get('lang');return released||lang==='en'||lang==='es-419';};
+/** The order is the link parameter (any registered language: the preview), then the stored choice (released languages), then the
+ * first browser language (released languages: `es`, `es-MX`, `es-ES`… give es-419); `['en-US','es-MX']` gives English, because
+ * only the first preference decides, and a browser language whose match is not released gives English, never another language. */
+export function decideLocale({param,stored,languages,registry=LANGUAGES,dev}:LocaleInputs):UiLanguage{
+ const asked=offered(param,dev,true,registry);if(asked)return asked;
+ const kept=offered(stored,false,false,registry);if(kept)return kept;
+ const browser=matchLanguage(languages[0]??'',registry);
+ return browser?.released?browser.tag:'en';
+}

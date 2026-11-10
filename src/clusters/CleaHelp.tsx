@@ -6,7 +6,7 @@ import {fetchBundledClusterHelp} from '../io/bundledClusterHelp';
 import {HELP_FILES,helpFile,type HelpFileIdentity} from '../help/helpFiles';
 import {HELP_MENU} from '../help/HelpMessages';
 import {HELP_VIEWER} from '../help/HelpViewerMessages';
-import {RELATED_MARKER,helpTranslationOffered,loadHelpTranslation,type HelpView} from '../help/helpTranslation';
+import {relatedMarker,helpTranslationOffered,loadHelpTranslation,type HelpView} from '../help/helpTranslation';
 import {vireo} from '../i18n/vireo';
 import {CLUSTER_HR_CAPTIONS as C} from '../core/clusterHrCaptions';
 import {CLUSTER_HR as M} from './ClusterHrMessages';
@@ -165,7 +165,7 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
   });
  }
  function showTopic(rows:readonly HelpRow[],index:number,push:boolean,base:HelpHistory,txt:Uint8Array){
-  const body=helpTopicBody(txt,rows[index].title,RELATED_MARKER[view]);
+  const body=helpTopicBody(txt,rows[index].title,relatedMarker(view));
   if(!body){setMessage({caption:vireo(C.topicNotFoundCaption),text:vireo(C.topicNotFoundHead)+rows[index].title.replace(/^ +/,'')+vireo(C.topicNotFoundTail)});return;}
   setTopic({index,body,selected:-1});setListIndex(index);setHistory(push?helpHistoryOpen(base,index):base);setTopicMenu(false);
  }
@@ -208,7 +208,7 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
   try{
    const l=await loadList(list,next);let t=topic;
    if(topic){
-    const file=helpFile(l.rows[topic.index].file),body=file?helpTopicBody(await loadText(file,next),l.rows[topic.index].title,RELATED_MARKER[next]):null;
+    const file=helpFile(l.rows[topic.index].file),body=file?helpTopicBody(await loadText(file,next),l.rows[topic.index].title,relatedMarker(next)):null;
     if(body)t={...topic,body,selected:-1};
    }
    setLoad(l);setTopic(t);setOriginal(next==='original');setStatus('');setFallback(false);

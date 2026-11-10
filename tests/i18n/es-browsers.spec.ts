@@ -18,7 +18,7 @@ const LAYOUT={skip:'[lang=en]:not(html)',explainOverflow:true} as const;
 test('an en-US browser opens English, with the selector',async({page})=>{
  await open(page,'observatory',en['project.save']);
  await expect(page.locator('html')).toHaveAttribute('lang','en');await expect(page.getByRole('heading',{level:1,name:en['sky.title']})).toBeVisible();
- await expect(id(page,'language-en')).toBeChecked();
+ await expect(id(page,'language-select')).toHaveValue('en');
 });
 
 test.describe('in a Spanish browser',()=>{
@@ -41,11 +41,11 @@ test.describe('in a Spanish browser',()=>{
   await expect(id(page,'web-help')).toBeVisible();await expect(id(page,'web-help')).toContainText('Empieza aquí');
   await page.keyboard.press('Escape');
   // The selector: to English (stored), then back to Spanish.
-  await id(page,'language-en').check();await expect(id(page,'language-confirm')).toContainText('¿Cambiar el idioma?');
+  await id(page,'language-select').selectOption('en');await expect(id(page,'language-confirm')).toContainText('¿Cambiar el idioma?');
   await Promise.all([page.waitForEvent('load'),id(page,'language-change').click()]);
   await expect(page.locator('html')).toHaveAttribute('lang','en');await expect(page.locator('.investigation-toolbar')).toContainText(en['project.save']);
   expect(await page.evaluate(()=>localStorage.getItem('openvireo-language'))).toBe('en');
-  await id(page,'language-es-419').check();
+  await id(page,'language-select').selectOption('es-419');
   await Promise.all([page.waitForEvent('load'),id(page,'language-change').click()]);
   await expect(page.locator('html')).toHaveAttribute('lang','es-419');await expect(page.locator('.investigation-toolbar')).toContainText(es['project.save']);
   expect(errors).toEqual([]);

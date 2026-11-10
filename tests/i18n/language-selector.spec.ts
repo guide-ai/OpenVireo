@@ -8,7 +8,10 @@ import en from '../../src/i18n/en.json' with {type:'json'};
 // menu, its reload confirmation, storage failure and the "View original (English)" option. Front ES-REL: Spanish is released, so
 // the browser language decides (any es-* opens Spanish, everything else English, only the first preference counts), a stored
 // choice beats it, the `?lang=` link beats both, and the selector is shown on every load and remembers the choice in this browser.
+// Front SC8: the selector is a native <select> over the language registry (src/i18n/languages.ts): English and every released
+// language by its own name, each option in its own language.
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
+const choose=(page:Page,tag:string)=>id(page,'language-select').selectOption(tag);
 async function open(page:Page,query='',hash='observatory'){
  await page.goto(`/${query}#${hash}`);await expect(page.locator('.investigation-toolbar')).toBeVisible({timeout:15_000});
 }
@@ -30,9 +33,9 @@ test('the first browser language decides: es, es-MX, es-ES and es-419 open Spani
   const page=await browserIn(browser,languages);
   expect(await languageOf(page),languages.join(',')).toBe(expected);
   await expect(page.locator('.investigation-toolbar')).toContainText(expected==='es-419'?es['project.save']:en['project.save']);
-  // The selector is shown on every load since ES-REL, with the current language checked.
-  await expect(id(page,'language-choice')).toBeVisible();await expect(id(page,expected==='es-419'?'language-es-419':'language-en')).toBeChecked();
-  await expect(page.locator('[data-testid="language-choice"] legend')).toHaveText('Idioma / Language');
+  // The selector is shown on every load since ES-REL, with the current language selected.
+  await expect(id(page,'language-choice')).toBeVisible();await expect(id(page,'language-select')).toHaveValue(expected);
+  await expect(page.getByRole('combobox',{name:'Idioma / Language'})).toBeVisible();
   await page.close();
  }
 });
@@ -52,26 +55,39 @@ test('a stored choice beats the browser language, and a ?lang= link beats both f
  await englishBrowser.close();
 });
 
+test('Front SC8: the selector lists English and Español, each named and marked in its own language, and works from the keyboard',async({page})=>{
+ await open(page);
+ const select=page.getByRole('combobox',{name:'Idioma / Language'});
+ await expect(select.locator('option')).toHaveText(['English','Español']);
+ expect(await select.locator('option').evaluateAll(o=>o.map(x=>[(x as HTMLOptionElement).value,x.getAttribute('lang')]))).toEqual([['en','en'],['es-419','es-419']]);
+ // Keyboard: focus the select and choose with the keyboard; the confirmation opens with Cancel focused, and Escape restores English.
+ await select.focus();await expect(select).toBeFocused();
+ await select.press('ArrowDown');
+ if(!await id(page,'language-confirm').isVisible())await select.press('Enter');
+ await expect(id(page,'language-confirm')).toBeVisible();await expect(id(page,'language-cancel')).toBeFocused();
+ await page.keyboard.press('Escape');await expect(id(page,'language-confirm')).toHaveCount(0);await expect(select).toHaveValue('en');
+});
+
 test('Cancel keeps the page, its language and its address; nothing is stored',async({page})=>{
  await open(page,'','spectrum');
- await id(page,'language-es-419').check();
+ await choose(page,'es-419');
  const dialog=id(page,'language-confirm');await expect(dialog).toBeVisible();await expect(id(page,'language-cancel')).toBeFocused();
  await expect(dialog).toContainText('The page will reload in Español, on the same page of the site.');
  await expect(dialog).toContainText('Work that is only on screen is lost');await expect(dialog).toContainText('Files you saved on your computer are not affected');
  // The pre-release preview note is gone; storage works here, so nothing says the choice is not remembered.
  await expect(id(page,'language-preview')).toHaveCount(0);await expect(id(page,'language-not-remembered')).toHaveCount(0);
  await id(page,'language-cancel').click();await expect(dialog).toHaveCount(0);
- await expect(id(page,'language-en')).toBeChecked();await expect(page.locator('html')).toHaveAttribute('lang','en');
+ await expect(id(page,'language-select')).toHaveValue('en');await expect(page.locator('html')).toHaveAttribute('lang','en');
  expect(new URL(page.url()).search).toBe('');expect(new URL(page.url()).hash).toBe('#spectrum');
  expect(await stored(page)).toBeNull();
  // Escape cancels too.
- await id(page,'language-es-419').check();await expect(dialog).toBeVisible();await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);
- await expect(id(page,'language-en')).toBeChecked();expect(await stored(page)).toBeNull();
+ await choose(page,'es-419');await expect(dialog).toBeVisible();await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);
+ await expect(id(page,'language-select')).toHaveValue('en');expect(await stored(page)).toBeNull();
 });
 
 test('Save investigation in the dialog downloads the investigation; Change and reload stores the choice and opens the same page in Spanish',async({page})=>{
  await open(page,'','spectrum');
- await id(page,'language-es-419').check();
+ await choose(page,'es-419');
  const download=page.waitForEvent('download');await id(page,'language-save').click();
  expect((await download).suggestedFilename()).toMatch(/\.json$/);await expect(id(page,'language-confirm')).toBeVisible();
  await Promise.all([page.waitForEvent('load'),id(page,'language-change').click()]);
@@ -79,11 +95,11 @@ test('Save investigation in the dialog downloads the investigation; Change and r
  // The stored choice decides, so the address stays clean.
  expect(new URL(page.url()).search).toBe('');expect(new URL(page.url()).hash).toBe('#spectrum');
  await expect(page.locator('.investigation-toolbar')).toContainText(es['project.save']);
- await expect(id(page,'language-es-419')).toBeChecked();expect(await stored(page)).toBe('es-419');
+ await expect(id(page,'language-select')).toHaveValue('es-419');expect(await stored(page)).toBe('es-419');
  // It is remembered at the next load of this browser.
  expect(await languageOf(page)).toBe('es-419');
  // And back to English, with the dialog in Spanish.
- await id(page,'language-en').check();
+ await choose(page,'en');
  await expect(id(page,'language-confirm')).toContainText('¿Cambiar el idioma?');await expect(id(page,'language-confirm')).toContainText('La página se volverá a cargar en English');
  await Promise.all([page.waitForEvent('load'),id(page,'language-change').click()]);
  await expect(page.locator('html')).toHaveAttribute('lang','en');expect(await stored(page)).toBe('en');
@@ -91,14 +107,14 @@ test('Save investigation in the dialog downloads the investigation; Change and r
 
 test('a change on a ?lang= load keeps the address deciding: the link parameter is updated as well as stored',async({page})=>{
  await open(page,'?lang=en');
- await id(page,'language-es-419').check();
+ await choose(page,'es-419');
  await Promise.all([page.waitForURL(/lang=es-419/),id(page,'language-change').click()]);
  await expect(page.locator('html')).toHaveAttribute('lang','es-419');expect(await stored(page)).toBe('es-419');
 });
 
 test('when this browser cannot store anything, the change still applies through the address and both options say they are not stored',async({page})=>{
  await blockStorageWrites(page);await open(page);
- await id(page,'language-es-419').check();
+ await choose(page,'es-419');
  await expect(id(page,'language-not-remembered')).toHaveText('This browser does not let OpenVireo store the choice, so it applies to this page load only.');
  await expect(id(page,'language-preview')).toHaveCount(0);
  await Promise.all([page.waitForURL(/lang=es-419/),id(page,'language-change').click()]);

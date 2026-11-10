@@ -1,5 +1,6 @@
 import {createI18n,english,locale,type I18n,type LocaleAreaPart,type LocaleBundle} from './catalog';
-import {HTML_LANG,SPANISH_RELEASED,type UiLanguage} from './locale';
+import {HTML_LANG,type UiLanguage} from './locale';
+import {isPseudoLocale,isReleased} from './languages';
 import {MAP_IDS} from './maps';
 /** Front ES0: the language of this load, set once by src/boot.ts (docs/I18N.md). App code imports from src/i18n/index.ts. */
 /** Front ES-SPLIT: `areas` records the route areas of a split bundle that arrived ('loaded') or will not ('failed'). */
@@ -30,7 +31,9 @@ export function activateLocale(bundle:LocaleBundle|null):UiLanguage{
   // Front ES-SPLIT: a split bundle always builds with the English fallback, since its catalog is never complete in one module
   // (completeness is checked statically: src/i18n/split.test.ts item 7 and src/i18n/es/es.test.ts). Front ES-REL kept
   // `bundle.areas` here when it flipped the gate: only a whole released bundle (Vitest's src/i18n/es/index.ts) builds strictly.
-  next=Object.freeze({language:bundle.language,i18n:createI18n(bundle.messages,HTML_LANG[bundle.language],{fallback:!!bundle.areas||(bundle.language==='es-419'&&!SPANISH_RELEASED),numberLocale:locale}),bundle,areas:NO_AREAS});
+  // Front SC8: the gate is the registry's per-language `released`; a language before its release (or outside the registry: a
+  // test's stand-in) may be partial, and its missing keys stay English. The dev pseudo-locales stay strict (complete catalogs).
+  next=Object.freeze({language:bundle.language,i18n:createI18n(bundle.messages,HTML_LANG[bundle.language]??bundle.language,{fallback:!!bundle.areas||(!isReleased(bundle.language)&&!isPseudoLocale(bundle.language)),numberLocale:locale}),bundle,areas:NO_AREAS});
  }
  holder[ACTIVE]=next;return next.language;
 }
@@ -46,7 +49,7 @@ export function extendLocale(area:string,part:LocaleAreaPart):void{
  if(!active||!bundle?.areas||part?.language!==active.language||part.area!==area)throw new Error(`OpenVireo: not a part of area ${area}`);
  checkMapIds(Object.keys(part.maps??{}));
  const next:LocaleBundle=Object.freeze({...bundle,messages:{...bundle.messages,...part.messages},maps:{...bundle.maps,...part.maps}});
- holder[ACTIVE]=Object.freeze({...active,i18n:createI18n(next.messages,HTML_LANG[active.language],{fallback:true,numberLocale:locale}),bundle:next,areas:new Map([...active.areas,[area,'loaded' as const]])});
+ holder[ACTIVE]=Object.freeze({...active,i18n:createI18n(next.messages,HTML_LANG[active.language]??active.language,{fallback:true,numberLocale:locale}),bundle:next,areas:new Map([...active.areas,[area,'loaded' as const]])});
 }
 /** Front ES-SPLIT: the area's text did not arrive (an error, or LANGUAGE_TIMEOUT_MS); it stays English for this load. */
 export function markAreaFailed(area:string):void{
@@ -73,15 +76,5 @@ export function notePendingText(active:Active,what:string,areas?:readonly string
 /** The language this load asked for but could not use (its chunk failed, timed out or did not validate), or null. */
 export const languageFailure=():UiLanguage|null=>holder[FAILED]??null;
 export function noteLanguageFailure(failed:UiLanguage|null){holder[FAILED]=failed;}
-/** ES1 review 1, C1: shown when the Spanish chunk could not be used. Its own bilingual text, since the Spanish catalog is the
- * part that failed. */
-export const LANGUAGE_FAILURE_NOTICE=Object.freeze({
- en:'Spanish could not be loaded; English is shown. Reload to try again.',
- es:'No se pudo cargar el español; se muestra en inglés. Recarga para intentarlo de nuevo.',
-});
-/** Front ES-SPLIT: shown once per load when a route area's text could not be used (src/i18n/areas.ts). Its own bilingual text,
- * like LANGUAGE_FAILURE_NOTICE, since the part that failed is the translation. */
-export const AREA_FAILURE_NOTICE=Object.freeze({
- en:'Part of the Spanish text could not be loaded; that part is shown in English. Reload to try again.',
- es:'No se pudo cargar parte del texto en español; esa parte se muestra en inglés. Recarga para intentarlo de nuevo.',
-});
+// Front SC8: the notices shown when a language's chunk (ES1 review 1, C1) or a route area's text (Front ES-SPLIT) could not be used
+// are src/i18n/languages.ts failureNotice, built from each registry entry's own sentence (its catalog is the part that failed).

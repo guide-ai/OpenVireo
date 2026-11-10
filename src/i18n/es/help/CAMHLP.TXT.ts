@@ -1,5 +1,6 @@
 // Front ES-HELP [W]: OpenVireo's Spanish (es-419) web adaptation of VIREO's CAMHLP.TXT. Not CLEA's text: the original bytes, hashes and
 // provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Spanish chunk.
+export const language='es-419';
 export const sourceName='CAMHLP.TXT';
 export const sourceSha256='bf4976da1b1f976613646e10c954b95039e646f3362004cafb242da4572155b8';
 export const text=`**Fijar la exposición**

@@ -523,7 +523,7 @@
   "src/core/photometerField.ts › photometerFieldFromPopulation/id · head 'CLEA_GLX.DAT@' [core]",
   "src/core/qsoMerge.ts › decodeQsoRecord/id · head 'CLEA_QSO.DAT@' [core]",
   "src/core/wedgePlot.ts › hundredths · head '0.' [core]",
-  "src/help/helpTranslation.ts › loadHelpTranslation/load · head '../i18n/es/help/' [core]",
+  "src/help/helpTranslation.ts › loadHelpTranslation/load · head '../i18n/' [core]",
   "src/i18n/es/maps/fieldInfo.ts › FIELD_INFO_ES/editLayerCaption · head 'Modo de edición · campo del buscador leído del catálogo compacto de estrellas guía (Guide Star Catalog; el lector del catálogo del buscador de VIREO, estrellas hasta la Mag. límite del buscador, Finder Mag Limit, de 11.5): ' [unreached]",
   "src/i18n/es/maps/polish.ts › POLISH_ES/pulsarsHtl/error · head 'La lista de púlsares incluida (Pulsars.HTL) ' [unreached]",
   "src/i18n/es/maps/variableStars.ts › VARIABLE_STARS_ES/printCurveLayout · head 'La página de la curva de luz sigue la impresión de VIREO en la orientación que elijas aquí (VIREO usa la de la impresora): en vertical la gráfica sigue en la misma página; en horizontal VIREO agrega “(Imagen de pantalla impresa en la página siguiente)” [(Screen Image Printed on Next Page)] e imprime la gráfica en la página 2. ' [unreached]",

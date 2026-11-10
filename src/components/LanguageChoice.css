@@ -1,7 +1,13 @@
 /* Front ES1: the language selector at the foot of the header menu (src/components/LanguageChoice.tsx). Loaded with that lazy
-   part only, so English pages without the selector keep their stylesheet unchanged. It reuses the theme switch's look. */
+   part only. Front SC8: a native select (one row for any number of languages, keyboard, touch and screen readers for free),
+   drawn like the theme switch beside it. */
 .language-choice{display:flex;flex-direction:column;gap:6px;margin-top:var(--ov-space-2);min-width:0}
-.language-choice .theme-switch{margin:0}
+.language-select-label{display:flex;min-width:0}
+.language-choice .language-select{flex:1;width:100%;min-width:0;min-height:32px;padding:4px 10px;border:1px solid var(--ov-chrome-border);border-radius:var(--ov-radius-pill);background:rgb(255 255 255 / .04);color:var(--ov-chrome-text);font-size:var(--ov-text-xs);font-weight:600;cursor:pointer;text-overflow:ellipsis}
+.language-choice .language-select:hover{background:var(--ov-chrome-hover)}
+.language-choice .language-select:focus-visible{outline:2px solid var(--ov-chrome-focus);outline-offset:2px}
+/* The open list is drawn by the system on the page's own colours, so its options keep the page's text and surface colours. */
+.language-choice .language-select option{color:var(--ov-text);background:var(--ov-surface)}
 .language-originals{display:flex;align-items:flex-start;gap:6px;color:var(--ov-chrome-muted);font-size:var(--ov-text-xs);line-height:1.4;cursor:pointer}
 .language-originals input{margin:2px 0 0;flex:none;accent-color:var(--ov-chrome-active-bg)}
 .language-originals-note{margin:0;color:var(--ov-chrome-muted);font-size:var(--ov-text-xs);line-height:1.4}

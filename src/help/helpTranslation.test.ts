@@ -5,10 +5,11 @@ import {foldAsciiCase} from '../core/radioHotListSearch';
 import {parseSpectralLineList,spectralLineHelp} from './spectralLines';
 import {HELP_FILES,helpFile} from './helpFiles';
 import glossary from '../i18n/es/glossary.json';
-import {HelpTranslationError,RELATED_MARKER,helpTranslationBytes} from './helpTranslation';
+import {HelpTranslationError,helpTranslationBytes} from './helpTranslation';
+import {languageEntry} from '../i18n/languages';
 
 // Front ES-HELP: the Spanish web adaptation of VIREO's help files (src/i18n/es/help) against the bundled originals.
-type Module={sourceName:string;sourceSha256:string;text:string};
+type Module={language:string;sourceName:string;sourceSha256:string;text:string};
 const modules=import.meta.glob<Module>('../i18n/es/help/*.ts',{eager:true});
 const es=(key:string):Module=>modules[`../i18n/es/help/${key}.ts`];
 const latin1=(s:string)=>Uint8Array.from(s,c=>c.charCodeAt(0));
@@ -31,6 +32,7 @@ describe('the Spanish help files (Front ES-HELP)',()=>{
   expect(Object.keys(modules).length).toBe(Object.keys(HELP_FILES).length);
   for(const [key,id] of Object.entries(HELP_FILES)){
    expect(es(key),key).toBeDefined();
+   expect(es(key).language).toBe('es-419');// Front SC8
    expect(es(key).sourceName).toBe(id.name);
    expect(es(key).sourceSha256).toBe(id.sha256);
   }
@@ -60,7 +62,7 @@ describe('the Spanish help files (Front ES-HELP)',()=>{
    const ek=file.name.toUpperCase(),eb=original(ek),sb=spanish(ek);
    const ei=sectionOf(eb,r.title),si=sectionOf(sb,s[i].title);
    expect(si,`${key} row ${i} "${s[i].title}"`).toBe(ei);
-   const ebody=helpTopicBody(eb,r.title)!,sbody=helpTopicBody(sb,s[i].title,RELATED_MARKER.translation)!;
+   const ebody=helpTopicBody(eb,r.title)!,sbody=helpTopicBody(sb,s[i].title,languageEntry('es-419')!.help!.related)!;
    expect(sbody,`${key} row ${i}`).not.toBeNull();
    expect(sbody.relatedIndex>=0,`${key} row ${i} related`).toBe(ebody.relatedIndex>=0);
    const targets=(rows:typeof e,body:typeof ebody,fold?:(t:string)=>string)=>body.rows.map((_,b)=>helpLinkTarget(rows,body,b,false,fold)).filter((t):t is number=>t!==null);
@@ -108,17 +110,21 @@ describe('the search fold of the translation (a web adaptation)',()=>{
 });
 
 describe('the translation loader (review S1)',()=>{
- const id=HELP_FILES['CAMHLP.LST'],ok={sourceName:id.name,sourceSha256:id.sha256,text:'Año «x»'};
+ const id=HELP_FILES['CAMHLP.LST'],ok={language:'es-419',sourceName:id.name,sourceSha256:id.sha256,text:'Año «x»'};
  it('returns the text as Latin-1 bytes',()=>{
-  expect([...helpTranslationBytes(ok,id)]).toEqual([0x41,0xf1,0x6f,0x20,0xab,0x78,0xbb]);
+  expect([...helpTranslationBytes(ok,id,'es-419')]).toEqual([0x41,0xf1,0x6f,0x20,0xab,0x78,0xbb]);
  });
  it('refuses a module whose recorded source is another file or another SHA-256',()=>{
-  expect(()=>helpTranslationBytes({...ok,sourceSha256:'0'.repeat(64)},id)).toThrow(HelpTranslationError);
-  expect(()=>helpTranslationBytes({...ok,sourceName:'CLASSHLP.LST'},id)).toThrow(HelpTranslationError);
+  expect(()=>helpTranslationBytes({...ok,sourceSha256:'0'.repeat(64)},id,'es-419')).toThrow(HelpTranslationError);
+  expect(()=>helpTranslationBytes({...ok,sourceName:'CLASSHLP.LST'},id,'es-419')).toThrow(HelpTranslationError);
+ });
+ it('Front SC8: refuses a module of another language (each language\'s help set is its own)',()=>{
+  expect(()=>helpTranslationBytes(ok,id,'pt-BR')).toThrow(HelpTranslationError);
+  expect(()=>helpTranslationBytes({...ok,language:undefined as never},id,'es-419')).toThrow(HelpTranslationError);
  });
  it('refuses a character above U+00FF',()=>{
-  expect(()=>helpTranslationBytes({...ok,text:'Tema “x”'},id)).toThrow(HelpTranslationError);
-  expect(()=>helpTranslationBytes({...ok,text:'ü€'},id)).toThrow(HelpTranslationError);
+  expect(()=>helpTranslationBytes({...ok,text:'Tema “x”'},id,'es-419')).toThrow(HelpTranslationError);
+  expect(()=>helpTranslationBytes({...ok,text:'ü€'},id,'es-419')).toThrow(HelpTranslationError);
  });
 });
 

@@ -1,13 +1,19 @@
 // Front ES0/ES1 (docs/I18N.md): how much has Spanish, per area (the files that render each en.json key, scripts/i18n-areas.mjs),
 // per key prefix, per pickMessages map and for VIREO's literals. Reads src/i18n/es/es.json, src/i18n/es/maps/<id>.ts and
 // src/i18n/es/originals.json. Map leaves are counted by Vitest (src/i18n/es/es.test.ts checks the shell maps complete); here a
-// map counts as started when its Spanish file exists. Usage: node scripts/i18n-coverage.mjs [--areas]
+// map counts as started when its Spanish file exists. Usage: node scripts/i18n-coverage.mjs [--areas] [--lang <tag>]
+// Front SC8: `--lang <tag>` (default es-419) reports any registered language (src/i18n/languages.json) from src/i18n/<dir>/.
 import {existsSync,readdirSync,readFileSync} from 'node:fs';
 import path from 'node:path';
 import {keyAreas,ROOT as root} from './i18n-areas.mjs';
-const es=path.join(root,'src/i18n/es');
+import {languageDir,loadLanguages} from './i18n-split.mjs';
+const tag=process.argv.includes('--lang')?process.argv[process.argv.indexOf('--lang')+1]:'es-419';
+const language=loadLanguages(root).find(l=>l.tag===tag);
+if(!language){console.error(`${tag} is not in src/i18n/languages.json`);process.exit(1);}
+const es=path.join(root,languageDir(language));
 const json=(file,fallback)=>existsSync(file)?JSON.parse(readFileSync(file,'utf8')):fallback;
-const en=json(path.join(root,'src/i18n/en.json'),{}),spanish=json(path.join(es,'es.json'),{}),originals=json(path.join(es,'originals.json'),{});
+const en=json(path.join(root,'src/i18n/en.json'),{}),spanish=json(path.join(es,language.catalog),{}),originals=json(path.join(es,'originals.json'),{});
+console.log(`${language.englishName} (${tag}):`);
 const pct=(done,total)=>total?`${(100*done/total).toFixed(1)} %`:'—';
 const done=Object.keys(en).filter(k=>typeof spanish[k]==='string').length;
 console.log(`en.json: ${done}/${Object.keys(en).length} keys (${pct(done,Object.keys(en).length)})`);

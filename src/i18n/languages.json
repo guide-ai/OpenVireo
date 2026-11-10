@@ -1,1 +1,3 @@
-[{"tag":"es-419","dir":"es","catalog":"es.json","budgetFactor":1}]
+[
+{"tag":"es-419","dir":"es","catalog":"es.json","budgetFactor":1,"htmlLang":"es-419","autonym":"Español","englishName":"Spanish","match":["es"],"released":true,"help":{"related":"TEMAS RELACIONADOS"},"notices":{"language":"No se pudo cargar el español; se muestra en inglés. Recarga para intentarlo de nuevo.","area":"No se pudo cargar parte del texto en español; esa parte se muestra en inglés. Recarga para intentarlo de nuevo."}}
+]

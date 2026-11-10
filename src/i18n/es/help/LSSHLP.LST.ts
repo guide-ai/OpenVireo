@@ -1,5 +1,6 @@
 // Front ES-HELP [W]: OpenVireo's Spanish (es-419) web adaptation of VIREO's LSSHLP.LST. Not CLEA's text: the original bytes, hashes and
 // provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Spanish chunk.
+export const language='es-419';
 export const sourceName='LSSHLP.LST';
 export const sourceSha256='f4ee3de45cead6cac0ae53458c94f9927bd48248a573632787d9e6a275e05c10';
 export const text=`'Primeros pasos' 'begin'

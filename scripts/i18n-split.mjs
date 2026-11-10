@@ -20,8 +20,11 @@ export const CORE='core';
 const posix=(p)=>p.split(path.sep).join('/');
 const read=(root,rel)=>readFileSync(path.join(root,rel),'utf8');
 
-/** The UI languages with a split bundle: src/i18n/languages.json ({tag, dir, catalog, budgetFactor}). */
+/** The UI languages with a split bundle: the registry src/i18n/languages.json (typed and documented in src/i18n/languages.ts:
+ * tag, dir, catalog, budgetFactor, released, help…). */
 export const loadLanguages=(root=ROOT)=>JSON.parse(read(root,'src/i18n/languages.json'));
+/** A language's source directory, root-relative: src/i18n/<dir>, or a test fixture's own `path` (Front SC8). */
+export const languageDir=(language)=>language.path??`src/i18n/${language.dir}`;
 /** The declared route areas: the AREAS array literal of src/i18n/areas.ts (the type of lazyArea's first argument). */
 export function declaredAreas(root=ROOT){
  const m=/export const AREAS=\[([^\]]*)\]/.exec(read(root,'src/i18n/areas.ts'));
@@ -161,9 +164,9 @@ export function moduleFor(contextLists){
 export const audience=(module)=>module===CORE?null:module.split('+');
 export const visible=(module,contexts)=>module===CORE||(contexts.length>0&&contexts.every(c=>c!==CORE&&audience(module).includes(c)));
 
-/** The manifest src/i18n/<dir>/index.ts: map id -> {file, exportName} of the language's map files. */
+/** The manifest <languageDir>/index.ts: map id -> {file, exportName} of the language's map files. */
 export function languageManifest(root,dir){
- const rel=`src/i18n/${dir}/index.ts`,text=read(root,rel),program=parseSync(rel,text).program,imports=new Map(),maps={};
+ const rel=`${dir}/index.ts`,text=read(root,rel),program=parseSync(rel,text).program,imports=new Map(),maps={};
  walk(program,(node)=>{
   if(node.type==='ImportDeclaration'&&node.importKind!=='type')for(const s of node.specifiers)if(s.type==='ImportSpecifier')imports.set(s.local.name,{file:resolveImport(root,rel,node.source.value),exportName:nameOf(s.imported)});
   if(node.type==='Property'&&nameOf(node.key)==='maps'){
@@ -175,10 +178,13 @@ export function languageManifest(root,dir){
 }
 
 // ---------------------------------------------------------------------------------------------------------------------------
-/** The plan of one language (docs/I18N.md, "Spanish: the chunk split by route area"). */
+/** The plan of one language (docs/I18N.md, "Spanish: the chunk split by route area"). Front SC8: a language before its release
+ * may be partial (docs/I18N.md, SC8): an area it has no text for yet is empty and gets no chunk; a released language must cover
+ * en.json. */
 export function planLanguage(language,root=ROOT,graph=sourceGraph(root)){
- const en=JSON.parse(read(root,'src/i18n/en.json')),catalog=JSON.parse(read(root,`src/i18n/${language.dir}/${language.catalog}`));
- const originals=JSON.parse(read(root,`src/i18n/${language.dir}/originals.json`)),manifest=languageManifest(root,language.dir);
+ const dir=languageDir(language),en=JSON.parse(read(root,'src/i18n/en.json')),catalog=JSON.parse(read(root,`${dir}/${language.catalog}`));
+ const originals=JSON.parse(read(root,`${dir}/originals.json`)),manifest=languageManifest(root,dir);
+ const complete=Object.keys(en).every(k=>Object.hasOwn(catalog,k));
  const declared=declaredAreas(root),{contexts,roots,boundaries}=fileContexts(graph),problems=[];
  const ctx=(f)=>contexts.get(f)??[];
  // The i18n runtime (src/i18n/*.ts, not the language directories) is in the core: a key it names or builds stays there.
@@ -225,8 +231,9 @@ export function planLanguage(language,root=ROOT,graph=sourceGraph(root)){
  for(const a of declared)ensure(a);
  for(const [k,m] of Object.entries(keyModule))ensure(m).keys.push(k);
  for(const [id,m] of Object.entries(mapModule))ensure(m).maps.push(id);
- for(const m of modules.values()){if(m.kind!=='core'&&!m.keys.length&&!m.maps.length&&m.kind==='area'&&!sharedOf(m.name).length)problems.push(`area ${m.name} is empty`);
+ for(const m of modules.values()){if(complete&&m.kind==='area'&&!m.keys.length&&!m.maps.length&&!sharedOf(m.name).length)problems.push(`area ${m.name} is empty`);
   if(m.kind!=='core')for(const a of m.areas)if(!declared.includes(a))problems.push(`module ${m.name}: ${a} is not a declared area`);}
+ if(language.released&&!complete)problems.push(`${language.tag} is released but its catalog does not cover en.json`);
  function sharedOf(area){return [...modules.values()].filter(m=>m.kind==='shared'&&m.areas.includes(area)).map(m=>m.name).sort();}
  for(const a of declared)if(!roots.has(a))problems.push(`area ${a} has no lazyArea root`);
  for(const a of roots.keys())if(!declared.includes(a))problems.push(`lazyArea('${a}',…) names an undeclared area`);
@@ -234,11 +241,10 @@ export function planLanguage(language,root=ROOT,graph=sourceGraph(root)){
  for(const [kind,list] of [['key',renders.keys],['map',renders.maps]])for(const [item,files] of Object.entries(list)){
   const m=kind==='key'?keyModule[item]:mapModule[item];for(const f of files)if(!visible(m,ctx(f)))problems.push(`${kind} ${item} in ${m} is rendered by ${f} (${ctx(f).join(',')||'unreached'})`);}
  // Rule 5 of the static checks: no app module imports the language bundle's sources.
- for(const [f,info] of graph)if(app(f))for(const i of info.imports)if(i.target&&new RegExp(`^src/i18n/${language.dir}/(?:index\\.ts|${language.catalog.replace('.','\\.')}|maps/)`).test(i.target))problems.push(`${f} imports ${i.target}`);
- const complete=Object.keys(en).every(k=>Object.hasOwn(catalog,k));
+ for(const [f,info] of graph)if(app(f))for(const i of info.imports)if(i.target&&new RegExp(`^${dir.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}/(?:index\\.ts|${language.catalog.replace('.','\\.')}|maps/)`).test(i.target))problems.push(`${f} imports ${i.target}`);
  const mapAreas={};for(const [id,m] of Object.entries(mapModule))if(m!==CORE)mapAreas[id]=audience(m);
  return {language,en,catalog,originals:Object.keys(originals),manifest,declared,contexts,roots,boundaries,renders,keyModule,mapModule,mapAreas,
-  modules:[...modules.values()].map(m=>({...m,keys:m.keys.sort(),maps:m.maps.sort(),originals:m.kind==='core',shared:m.kind==='area'?sharedOf(m.name):[]})),complete,via,problems,graph};
+  modules:[...modules.values()].map(m=>{const shared=m.kind==='area'?sharedOf(m.name):[];return {...m,keys:m.keys.sort(),maps:m.maps.sort(),originals:m.kind==='core',shared,empty:m.kind==='area'&&!m.keys.length&&!m.maps.length&&!shared.length};}),complete,via,problems,graph};
 }
 
 // ---------------------------------------------------------------------------------------------------------------------------
@@ -271,8 +277,9 @@ export function moduleCode(plan,name,{root=ROOT,dev=false}={}){
   lines.push(`export default Object.freeze({language:${JSON.stringify(tag)},area:${JSON.stringify(name)},messages:Object.freeze(Object.assign(${messages}${parts.map(p=>`,${p}.messages`).join('')})),maps:Object.freeze(Object.assign({${maps.join(',')}}${parts.map(p=>`,${p}.maps`).join('')}))});`);
   return lines.join('\n')+'\n';
  }
- lines.push(`import originals from ${JSON.stringify(path.join(root,`src/i18n/${plan.language.dir}/originals.json`))};`);
- const areas=plan.modules.filter(m=>m.kind==='area').map(m=>`${JSON.stringify(m.name)}:()=>import(${JSON.stringify(moduleId(tag,m.name))})`);
+ lines.push(`import originals from ${JSON.stringify(path.join(root,`${languageDir(plan.language)}/originals.json`))};`);
+ // Front SC8: an empty area of a partial language resolves at once to an empty part, with no chunk.
+ const areas=plan.modules.filter(m=>m.kind==='area').map(m=>`${JSON.stringify(m.name)}:()=>${m.empty?`Promise.resolve({default:Object.freeze({language:${JSON.stringify(tag)},area:${JSON.stringify(m.name)},messages:{},maps:{}})})`:`import(${JSON.stringify(moduleId(tag,m.name))})`}`);
  const keyModules=dev?`,keyModules:Object.freeze(${JSON.stringify(Object.fromEntries(Object.entries(plan.keyModule).filter(([,m])=>m!==CORE)))})`:'';
  lines.push(`export default Object.freeze({language:${JSON.stringify(tag)},messages:Object.freeze(${messages}),maps:Object.freeze({${maps.join(',')}}),originals,areas:Object.freeze({${areas.join(',')}}),mapModules:Object.freeze(${JSON.stringify(plan.mapAreas)}),complete:${plan.complete}${keyModules}});`);
  return lines.join('\n')+'\n';
@@ -284,7 +291,7 @@ export function estimateModule(plan,name,root=ROOT){
  const module=plan.modules.find(m=>m.name===name);
  const parts=[JSON.stringify(subset(plan.catalog,module.keys))];
  for(const id of module.maps)parts.push(read(root,plan.manifest[id].file).replace(/^import type .*$/gm,''));
- if(module.originals)parts.push(read(root,`src/i18n/${plan.language.dir}/originals.json`));
+ if(module.originals)parts.push(read(root,`${languageDir(plan.language)}/originals.json`));
  const raw=Buffer.from(parts.join('\n'));return {raw:raw.length,gzip:gzipSync(raw,{level:9}).length};
 }
 
@@ -308,7 +315,7 @@ export function openVireoI18nSplit({root=ROOT}={}){
    if(id===`${RESOLVED}loaders`)return loadersCode(langs());
    for(const l of langs()){const prefix=`${RESOLVED}i18n-${l.tag}-`;if(!id.startsWith(prefix))continue;
     const p=plan(l.tag);
-    this.addWatchFile(path.join(root,`src/i18n/${l.dir}/${l.catalog}`));this.addWatchFile(path.join(root,'src/i18n/en.json'));
+    this.addWatchFile(path.join(root,`${languageDir(l)}/${l.catalog}`));this.addWatchFile(path.join(root,'src/i18n/en.json'));
     return moduleCode(p,id.slice(prefix.length),{root,dev});}
    return null;
   },

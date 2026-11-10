@@ -1,41 +1,46 @@
 import {describe,it,expect} from 'vitest';
-import {decideLocale,HTML_LANG,selectorShown,SPANISH_RELEASED,type LocaleInputs} from './locale';
+import {decideLocale,HTML_LANG,type LocaleInputs} from './locale';
+import {LANGUAGES,isReleased,selectorShown} from './languages';
 import {nextAddress} from '../components/LanguageChoice';
-const decide=(over:Partial<LocaleInputs>)=>decideLocale({param:null,stored:null,languages:['en-US'],released:true,dev:false,...over});
+import {releasing} from '../../tests/fixtures/i18n/registry';
+const decide=(over:Partial<LocaleInputs>)=>decideLocale({param:null,stored:null,languages:['en-US'],dev:false,...over});
+/** Spanish before its release: the registry as it was until ES-REL (Front SC8: a per-language gate). */
+const UNRELEASED=LANGUAGES.map(l=>l.tag==='es-419'?{...l,released:false}:l);
 describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-09)',()=>{
  it('Front ES-REL: Spanish is released, so the stored choice and the browser language decide and the selector is shown',()=>{
-  expect(SPANISH_RELEASED).toBe(true);
-  expect(selectorShown('')).toBe(true);expect(selectorShown('?lang=qps')).toBe(true);
+  expect(isReleased('es-419')).toBe(true);
+  expect(selectorShown('en')).toBe(true);expect(selectorShown('es-419')).toBe(true);
  });
  it('a gate that is still closed (a later language before its release) keeps it hidden: only the ?lang= preview reaches it',()=>{
-  for(const languages of [['es-MX'],['es'],['es-ES'],['es-419','en']])expect(decide({languages,released:false})).toBe('en');
-  expect(decide({stored:'es-419',languages:['es-MX'],released:false})).toBe('en');
-  expect(decide({param:'es-419',released:false})).toBe('es-419');
-  expect(decide({param:'en',languages:['es-MX'],released:false})).toBe('en');
+  for(const languages of [['es-MX'],['es'],['es-ES'],['es-419','en']])expect(decide({languages,registry:UNRELEASED})).toBe('en');
+  expect(decide({stored:'es-419',languages:['es-MX'],registry:UNRELEASED})).toBe('en');
+  expect(decide({param:'es-419',registry:UNRELEASED})).toBe('es-419');
+  expect(decide({param:'en',languages:['es-MX'],registry:UNRELEASED})).toBe('en');
+  // The same rules hold with Spanish released again (Front SC8's releasing helper).
+  expect(decide({languages:['es-MX'],registry:releasing(UNRELEASED,'es-419')})).toBe('es-419');
  });
  it('after ES-REL: the link parameter, then the stored choice, then the first browser language',()=>{
   for(const languages of [['es-MX'],['es'],['es-ES'],['ES-ar'],['es-419','en']])expect(decide({languages})).toBe('es-419');
-  for(const languages of [['en-US','es-MX'],['fr-FR'],['et'],['eus'],[]])expect(decide({languages})).toBe('en');
+  for(const languages of [['en-US','es-MX'],['fr-FR'],['et'],['eus'],['esp'],[]])expect(decide({languages})).toBe('en');
   expect(decide({stored:'en',languages:['es-MX']})).toBe('en');
   expect(decide({stored:'es-419',languages:['en-US']})).toBe('es-419');
   expect(decide({param:'en',stored:'es-419',languages:['es-MX']})).toBe('en');
   expect(decide({param:'es-419',stored:'en'})).toBe('es-419');
-  for(const junk of ['es','ES-419','qps','de',''])expect(decide({param:junk,stored:junk,languages:['en-US']})).toBe('en');
+  for(const junk of ['es','ES-419','qps','de','','constructor','__proto__'])expect(decide({param:junk,stored:junk,languages:['en-US']})).toBe('en');
  });
  it('accepts the pseudo-locale only in the dev server and tests, never from storage',()=>{
-  expect(decide({param:'qps'})).toBe('en');expect(decide({param:'qps',dev:true,released:false})).toBe('qps');
+  expect(decide({param:'qps'})).toBe('en');expect(decide({param:'qps',dev:true,registry:UNRELEASED})).toBe('qps');
   expect(decide({stored:'qps',dev:true})).toBe('en');
   expect(HTML_LANG).toEqual({en:'en','es-419':'es-419',qps:'en','qps-cjk':'ja','qps-deva':'hi','qps-cyrl':'ru'});
  });
- it('shows the selector before the release only for ?lang=en or ?lang=es-419 (ES1 review 1, C3)',()=>{
-  for(const search of ['?lang=en','?lang=es-419','?x=1&lang=en'])expect(selectorShown(search,false),search).toBe(true);
-  for(const search of ['','?lang=qps','?lang=bogus','?lang=','?lang=ES-419','?language=en'])expect(selectorShown(search,false),search).toBe(false);
-  expect(selectorShown('',true)).toBe(true);
+ it('shows the selector when it offers a choice: before a release only on that language\'s own preview (ES1 review 1, C3; SC8)',()=>{
+  expect(selectorShown('en',UNRELEASED)).toBe(false);expect(selectorShown('es-419',UNRELEASED)).toBe(true);
+  for(const pseudo of ['qps','qps-cjk','qps-deva','qps-cyrl'])expect(selectorShown(pseudo),pseudo).toBe(false);
  });
- it('a language change keeps the route and, before the release, always carries ?lang (the choice is not stored: C2)',()=>{
-  expect(nextAddress('https://openvireo.space/?lang=en#spectrum','es-419',false,false)).toBe('https://openvireo.space/?lang=es-419#spectrum');
-  expect(nextAddress('https://openvireo.space/#spectrum','es-419',true,true)).toBe('https://openvireo.space/#spectrum');
-  expect(nextAddress('https://openvireo.space/#spectrum','en',false,true)).toBe('https://openvireo.space/?lang=en#spectrum');
-  expect(nextAddress('https://openvireo.space/?lang=en#x','es-419',true,true)).toBe('https://openvireo.space/?lang=es-419#x');
+ it('a language change keeps the route and carries ?lang when the choice was not stored or the address already has it',()=>{
+  expect(nextAddress('https://openvireo.space/?lang=en#spectrum','es-419',false)).toBe('https://openvireo.space/?lang=es-419#spectrum');
+  expect(nextAddress('https://openvireo.space/#spectrum','es-419',true)).toBe('https://openvireo.space/#spectrum');
+  expect(nextAddress('https://openvireo.space/#spectrum','en',false)).toBe('https://openvireo.space/?lang=en#spectrum');
+  expect(nextAddress('https://openvireo.space/?lang=en#x','es-419',true)).toBe('https://openvireo.space/?lang=es-419#x');
  });
 });

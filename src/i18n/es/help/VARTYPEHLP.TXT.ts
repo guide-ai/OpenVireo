@@ -1,5 +1,6 @@
 // Front ES-HELP [W]: OpenVireo's Spanish (es-419) web adaptation of VIREO's VarTypeHlp.TXT. Not CLEA's text: the original bytes, hashes and
 // provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Spanish chunk.
+export const language='es-419';
 export const sourceName='VarTypeHlp.TXT';
 export const sourceSha256='d92f4a14aa7a2923d2921d4ab7fe90a38870e8667b7274629884b69bb6c5f445';
 export const text=`**Tipos de variables pulsantes**
