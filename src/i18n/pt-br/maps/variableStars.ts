@@ -1,6 +1,53 @@
 import type {VARIABLE_STARS_EN} from '../../../variables/VariableStarMessages';
-import type {PartialTranslation} from '../../maps';
-/** Front PT0: Brazilian Portuguese (pt-BR) for the variable stars page: only the menu name. A web adaptation by OpenVireo, not CLEA's. */
-export const VARIABLE_STARS_PT:PartialTranslation<typeof VARIABLE_STARS_EN>=Object.freeze({
+import type {Translation} from '../../maps';
+/** Front PT4: Brazilian Portuguese (pt-BR) for the variable-star page's web text. A web adaptation by OpenVireo, not CLEA's. VIREO's own
+ * captions (Variable Star Data, Simulated Light Curve, their menus and the print lines) are in src/core/variableStarForm.ts
+ * and src/core/lightCurvePrint.ts and are translated through vireo() (originals.json). */
+export const VARIABLE_STARS_PT:Translation<typeof VARIABLE_STARS_EN>=Object.freeze({
  nav:'Estrelas variáveis',
+ title:'Estrelas variáveis e curvas de luz',
+ scope:'Procure uma estrela no catálogo de estrelas variáveis do VIREO (CLEA_VStrs.dat, 31,147 registros), leia os dados de catálogo dela e exiba a curva de luz que o VIREO simula para ela.',
+ adaptation:'Adaptação web: no VIREO, estes dados são um caminho do instrutor (Modo de edição [Edit Mode]): GCVS na caixa Objeto do catálogo (Catalog Object) ou Informações do campo (Field Information) › Estrelas variáveis (Variable Stars) › Obter os dados da seleção (Get Selection Data) no painel de controle do telescópio. Os dois existem neste site com o Modo de edição ativado (Opções de simulação óptica [Optical Simulation Options]); esta página também permite que qualquer pessoa pesquise o catálogo diretamente. As janelas Dados da estrela variável (Variable Star Data) e Curva de luz simulada (Simulated Light Curve) seguem o original.',
+ guideTitle:'Como usar esta ferramenta',
+ guide:Object.freeze([
+  'Digite parte do nome de uma estrela (por exemplo, “del Cep” ou “RR Lyr”) ou escolha um tipo de variabilidade e depois pressione Abrir em uma linha.',
+  'A janela Dados da estrela variável (Variable Star Data) lista os valores do catálogo: posição, tipo, magnitude máxima, magnitude mínima (ou, depois de um “(”, a amplitude), a época do catálogo (que o VIREO desenha como o máximo de luz, embora nas binárias eclipsantes o catálogo dê um mínimo), período, tempo de subida (M-m/D) e espectro.',
+  'Escolha Dados (Data) › Exibir curva de luz (Display Light Curve) para ver 1.5 ciclo da curva de luz simulada. O VIREO desenha a época do catálogo como o máximo de luz (fase 0), seja qual for o tipo.',
+  'Use Dados (Data) › Salvar texto (Save Text) › Como exibido (As Displayed) para baixar a lista como um arquivo de texto, ou Imprimir (Print) para imprimi-la.',
+ ]),
+ guideModel:'Sobre a curva: o VIREO desenha a mesma curva em forma de cefeida para todos os tipos, construída apenas com o máximo, o mínimo, o período e o M-m/D do catálogo (50 % quando o catálogo não informa nenhum). Ela não tem ruído e não é uma observação. As binárias eclipsantes e as variáveis irregulares não se parecem de fato com isso.',
+ loading:'Carregando o catálogo de estrelas variáveis…',
+ loadError:'Não foi possível carregar o catálogo de estrelas variáveis incluído, ou ele não correspondeu ao tamanho e ao SHA-256 registrados. Recarregue a página para tentar novamente.',
+ searchTitle:'Procurar uma estrela variável',
+ nameLabel:'O nome da estrela contém',
+ typeLabel:'Tipo de variabilidade',
+ allTypes:'Todos os tipos',
+ typeOption:(type:string,count:number)=>`${type||'(em branco)'} — ${count.toLocaleString('en-US')}`,
+ results:(shown:number,total:number)=>total===0?'Nenhum registro corresponde.':shown<total?`Mostrando os primeiros ${shown} de ${total.toLocaleString('en-US')} registros correspondentes, na ordem do catálogo (ascensão reta). Restrinja a busca para ver os demais.`:`${total.toLocaleString('en-US')} registro${total===1?' correspondente':'s correspondentes'}.`,
+ columns:['ID GCVS','Tipo','AR (h)','Dec (°)','Máx.','Mín. / ampl.','Período (d)',''],
+ open:'Abrir',
+ openLabel:(name:string)=>`Abrir ${name}`,
+ noPeriod:'—',
+ listTypeCodesNote:'No VIREO, este item de menu apenas alterna a própria marca de seleção; nada mais a lê.',
+ saveAdaptation:'Adaptação web: o texto é baixado pelo seu navegador (uma linha por linha da lista, com quebras de linha do Windows) em vez de usar uma caixa de diálogo para salvar.',
+ riseDefaultedNote:'Este registro não tinha valor de M-m/D. Ao abrir a curva de luz dele, o valor passou a 50 % na memória, como o VIREO faz, então agora a lista mostra 0.50.',
+ curveLabel:(name:string)=>`Curva de luz simulada de ${name}: magnitude em função da fase, 1.5 ciclo a partir da época do catálogo.`,
+ unavailable:Object.freeze({
+  'period-zero':'Sem curva: este registro não tem período (0 dias). O VIREO divide pelo período e para com um erro de ponto flutuante depois de desenhar os eixos, então nenhum ponto da curva é desenhado.',
+  'zero-decline-fraction':'Sem curva: o M-m/D é 100 %, então a parte descendente da curva tem comprimento zero e o VIREO para com um erro de ponto flutuante antes de desenhá-la.',
+  'axis-range-zero':'Sem janela de curva de luz: os limites do eixo da magnitude mais brilhante e da mais fraca são iguais, e o VIREO divide pela diferença deles antes de mostrar a janela.',
+  'magnitude-system-empty':'O texto do sistema de magnitudes está vazio: o VIREO para de desenhar com um erro depois do eixo de magnitude, então o eixo de fase e a curva não são desenhados.',
+  'non-finite':'Sem curva: um valor deste registro está fora do que o modelo consegue calcular.',
+ }),
+ curveAdaptation:'O gráfico mantém o layout, as cores e as posições em pixels do VIREO; as fontes são diferentes.',
+ printTitle:(caption:string)=>`Imprimir — ${caption}`,
+ printHelp:'Visualização do que o VIREO coloca no papel: a data e a hora (aqui no formato do seu navegador), a linha da mesa de laboratório, as linhas do estudante e da prática digitadas no VIREO (não disponíveis neste site, então entra um texto provisório no lugar), as linhas da lista e, para a curva de luz, o gráfico. O layout da página e as fontes não são reproduzidos. O título do trabalho de impressão do VIREO não é impresso na página.',
+ printCurveLayout:(monochrome:boolean)=>`A página da curva de luz segue a impressão do VIREO na orientação escolhida aqui (o VIREO usa a da impressora): em retrato, o gráfico segue na mesma página; em paisagem, o VIREO acrescenta “(Imagem da tela impressa na próxima página)” [(Screen Image Printed on Next Page)] e imprime o gráfico na página 2. ${monochrome?'Imprimir em cores (Print in Color) está desativado, então o gráfico é impresso em preto sobre branco.':'Imprimir em cores (Print in Color) está ativado, então o gráfico é impresso com as cores da tela.'} O VIREO desenha o gráfico sobre a linha do título; aqui ele é colocado abaixo dela.`,
+ printOrientation:'Orientação da página',
+ portrait:'Retrato',
+ landscape:'Paisagem',
+ printStudentPlaceholder:'[texto do estudante e da prática digitado no VIREO: não recuperado neste site]',
+ printButton:'Imprimir…',
+ printClose:'Fechar visualização',
+ printError:'A impressão não está disponível nesta janela do navegador.',
 });

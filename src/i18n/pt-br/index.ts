@@ -20,6 +20,8 @@ import {VARIABLE_STARS_PT} from './maps/variableStars';
 import {ENGINE_VIEW_PT} from './maps/engineView';
 import {SPECTRAL_RANGE_PT} from './maps/spectralRange';
 import {WEDGE_PT} from './maps/wedge';
+import {CLUSTER_HR_PT} from './maps/clusterHr';
+import {CLUSTER_DATA_PT} from './maps/clusterData';
 /** Front PT0 [W]: the Brazilian Portuguese (pt-BR) bundle (docs/I18N.md, "Brazilian Portuguese: the folder, lints and shell
  * (PT0)"). Partial until its release (src/i18n/languages.json `released:false`): only a `?lang=pt-BR` preview reaches it, and
  * every string it lacks is English. The production build splits it by route area like Spanish (scripts/i18n-split.mjs parses
@@ -28,6 +30,6 @@ import {WEDGE_PT} from './maps/wedge';
 export const PORTUGUESE:LocaleBundle=Object.freeze({
  language:'pt-BR',
  messages,
- maps:Object.freeze({appShell:APP_SHELL_PT,camera:CAMERA_PT,fieldInfo:FIELD_INFO_PT,fieldReadDetails:FIELD_READ_DETAILS_PT,helpMenu:HELP_MENU_PT,languageChoice:LANGUAGE_CHOICE_PT,nakedEye:NAKED_EYE_PT,objectXLab:OBJECT_X_LAB_PT,observationMetadata:OBSERVATION_METADATA_PT,observatory:OBSERVATORY_PT,polish:POLISH_PT,projectLinks:PROJECT_LINKS_PT,qsoList:QSO_LIST_PT,sound:SOUND_PT,tour:TOUR_PT,variableStars:VARIABLE_STARS_PT,engineView:ENGINE_VIEW_PT,spectralRange:SPECTRAL_RANGE_PT,wedge:WEDGE_PT}),
+ maps:Object.freeze({appShell:APP_SHELL_PT,camera:CAMERA_PT,fieldInfo:FIELD_INFO_PT,fieldReadDetails:FIELD_READ_DETAILS_PT,helpMenu:HELP_MENU_PT,languageChoice:LANGUAGE_CHOICE_PT,nakedEye:NAKED_EYE_PT,objectXLab:OBJECT_X_LAB_PT,observationMetadata:OBSERVATION_METADATA_PT,observatory:OBSERVATORY_PT,polish:POLISH_PT,projectLinks:PROJECT_LINKS_PT,qsoList:QSO_LIST_PT,sound:SOUND_PT,tour:TOUR_PT,variableStars:VARIABLE_STARS_PT,engineView:ENGINE_VIEW_PT,spectralRange:SPECTRAL_RANGE_PT,wedge:WEDGE_PT,clusterHr:CLUSTER_HR_PT,clusterData:CLUSTER_DATA_PT}),
  originals,
 });

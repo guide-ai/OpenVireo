@@ -528,6 +528,50 @@
   {
    "en": "\\breadouts?\\b",
    "pt": "leitura"
+  },
+  {
+   "en": "\\bmetallicit(y|ies)\\b",
+   "pt": "metalicidade"
+  },
+  {
+   "en": "\\bsliders?\\b",
+   "pt": "controles? deslizantes?"
+  },
+  {
+   "en": "\\btrials?\\b",
+   "pt": "teste"
+  },
+  {
+   "en": "\\bpresets?\\b",
+   "pt": "predefini"
+  },
+  {
+   "en": "\\bapparent modulus\\b",
+   "pt": "m[óo]dulo aparente"
+  },
+  {
+   "en": "\\bfresh sky\\b",
+   "pt": "nov[ao]s? leituras? do c[ée]u"
+  },
+  {
+   "en": "\\bintegration series\\b",
+   "pt": "s[ée]ries? de integra[çc][ãa]o"
+  },
+  {
+   "en": "\\bzero[- ]age main sequence\\b",
+   "pt": "sequ[êe]ncia principal de idade zero"
+  },
+  {
+   "en": "\\bturn-?off\\b",
+   "pt": "ponto de sa[íi]da da sequ[êe]ncia principal"
+  },
+  {
+   "en": "\\bly\\b",
+   "pt": "anos?-luz|a\\.\\s?l\\."
+  },
+  {
+   "en": "\\bcolou?r index\\b",
+   "pt": "[íi]ndices? de cor"
   }
  ],
  "names": [
@@ -1055,7 +1099,7 @@
   },
   {
    "en": "Data from Observations",
-   "pt": "Dados das observações"
+   "pt": "Dados a partir das observações"
   },
   {
    "en": "Record/Review",
@@ -1220,6 +1264,54 @@
   {
    "en": "Time-Dependent Data",
    "pt": "Dados dependentes do tempo"
+  },
+  {
+   "en": "Load/Plot",
+   "pt": "Carregar/plotar"
+  },
+  {
+   "en": "View/Print Parameters",
+   "pt": "Ver/imprimir parâmetros"
+  },
+  {
+   "en": "Display/Print Data",
+   "pt": "Exibir/imprimir dados"
+  },
+  {
+   "en": "Select Cluster Data",
+   "pt": "Selecionar dados de aglomerados"
+  },
+  {
+   "en": "Possible Cluster Member",
+   "pt": "Possível membro do aglomerado"
+  },
+  {
+   "en": "Clusters for Study",
+   "pt": "Aglomerados para estudo"
+  },
+  {
+   "en": "Variable Star Data",
+   "pt": "Dados da estrela variável"
+  },
+  {
+   "en": "Simulated Light Curve",
+   "pt": "Curva de luz simulada"
+  },
+  {
+   "en": "Remove from HR Diagram",
+   "pt": "Remover do diagrama HR"
+  },
+  {
+   "en": "Recorded Results",
+   "pt": "Resultados registrados"
+  },
+  {
+   "en": "Telescope has Moved!",
+   "pt": "O telescópio foi movido!"
+  },
+  {
+   "en": "Reading Sky!",
+   "pt": "Leitura do céu!"
   }
  ],
  "forbidden": [
