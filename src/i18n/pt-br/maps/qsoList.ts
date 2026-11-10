@@ -12,7 +12,7 @@ export const QSO_LIST_PT:Translation<typeof QSO_LIST_MESSAGES_EN>=Object.freeze(
  noActivate:'Clicar duas vezes em uma linha não faz nada, como no VIREO; use Seleção (Selection) para adicionar um QSO à lista de objetos.',
  csvDisabled:'No VIREO, Separado por vírgulas (Comma Delimit) está desativado para esta lista.',
  modeless:'A lista continua aberta enquanto você observa; escolha Arquivo (File) › Lista de QSO (QSO List) de novo para mudar o limite ou a ordem.',
- printStudent:'Adaptação web: sem o Modo de edição (Edit Mode), o VIREO imprime o número da mesa do laboratório e os nomes dos estudantes abaixo da data; este site não registra nenhum dos dois, então imprime o “(Não registrado)” (Not Recorded) do VIREO e nenhum nome.',
+ printStudent:'Adaptação web: sem o Modo de edição (Edit Mode), o VIREO imprime o número da mesa do laboratório e os nomes dos estudantes abaixo da data; este site não registra nenhum dos dois, então imprime o “(não registrado)” (Not Recorded) do VIREO e nenhum nome.',
  fileError:(reason:string)=>`Adaptação web: a cópia incluída ${reason}.`,
  fileReasons:Object.freeze({download:'não pôde ser baixada',size:'não tem o tamanho registrado',sha256:'não corresponde ao SHA-256 registrado'}),
  objectXUnavailable:'Não é possível mostrar a lista de QSO: as posições dos alvos do Objeto X não puderam ser carregadas e, sem elas, a lista poderia revelar um alvo ainda não revelado.',

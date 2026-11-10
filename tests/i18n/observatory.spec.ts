@@ -194,7 +194,8 @@ test('the walk in English is unchanged: the native caption is absent and the VIR
 // Review 1: the Multi-Spec windows (Control, its boxes, the spectra list, a spectrum, its Information and its print) in Spanish,
 // on the exact Hubble Coma – 2 pointing with Edit Mode, as tests/multispec.spec.ts does, with a 3 s exposure on the page clock.
 async function multiSpecWalk(page:Page,lang:Lang,each:(step:string)=>Promise<void>){
- const T=(key:keyof typeof en)=>typeof lang==='string'?en[key]:lang.text(en[key]);
+ // By key, as the Spanish walk read es[key]; a language before its release falls back to the English it then shows.
+ const T=(key:keyof typeof en)=>typeof lang==='string'?en[key]:lang.catalog[key]??lang.text(en[key]);
  await page.clock.install();await open(page,lang);
  await page.locator('.sky-card .card-heading > button').click();
  if(!await page.getByRole('button',{name:T('runningClock.trackingOn'),exact:true}).isVisible())await page.getByText(T('runningClock.title'),{exact:true}).click();

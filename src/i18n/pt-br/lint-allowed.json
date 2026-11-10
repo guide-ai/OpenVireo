@@ -20,16 +20,16 @@
    "reason": "VIREO closes this quote with its untranslated tail '\".' (PHOTOMETER_RECORD_PIECES.movedTail); the opening quote must match it"
   },
   "map:polish.about.credits.0": {
-   "rules": [
-    "typography"
+   "words": [
+    "National Science Foundation"
    ],
-   "reason": "the funding agency’s proper name, National Science Foundation, kept in English as in the credits of every language"
+   "reason": "the funding agency’s proper name, National Science Foundation, kept in English as in the credits of every language (only that title-case run is allowed)"
   },
   "map:camera.citationIr": {
-   "rules": [
-    "typography"
+   "words": [
+    "Two Micron All Sky Survey"
    ],
-   "reason": "the survey’s proper name, Two Micron All Sky Survey (2MASS), kept in English as cited"
+   "reason": "the survey’s proper name, Two Micron All Sky Survey (2MASS), kept in English as cited (only that title-case run is allowed)"
   }
  }
 }
