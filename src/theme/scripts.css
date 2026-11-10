@@ -1,0 +1,210 @@
+/* Front SC3: typography for Japanese, Chinese, Hindi and Russian (plan analysis/front-plans/front-i18n-scripts.md § 2–3;
+ * docs/I18N.md, "Script groundwork: fonts, line breaking and the route walk"). Every selector is scoped by :lang(), so English
+ * and Spanish render exactly as before. src/main.tsx imports this sheet once, after base.css. System fonts only (decision Q4):
+ * nothing here loads a font. src/theme/scripts.test.ts checks the stacks, that every rule is :lang()-scoped, and that every
+ * English font-family and low line-height declaration has its override here (or a named exemption).
+ *
+ * Specificity: the later sheets (style.css, observatory.css, the lazily loaded route sheets) come after this one, so each
+ * override adds :lang() to the English selector, which outranks it by one pseudo-class. */
+
+/* ---- 1. Font stacks (plan § 2.1) -------------------------------------------------------------------------------------
+ * Latin fonts first, so Latin letters and digits keep the fonts English uses where they exist; then the script's own fonts,
+ * named by region so Han characters get the right regional glyphs (§ 2.2); then system-ui, which on a Japanese or Chinese
+ * system already is one Han design and would defeat the choice if it came first. Naming the family also reaches the Bold
+ * files (Chromium's generic fallback never does: docs/I18N.md, SC1 characterization (c)).
+ * [lang] matches <html lang> and any nested element with its own lang (the selector's autonyms), which then gets its own
+ * language's fonts; custom properties are resolved on each element, so the hard-coded stacks of § 3 follow nested text too.
+ * Russian needs no change: the Latin fonts cover Cyrillic. */
+[lang]:lang(ja){
+ --ov-font-script:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic UI","Yu Gothic",Meiryo,"Noto Sans JP","Noto Sans CJK JP";
+ --ov-font-script-mono:"Noto Sans Mono CJK JP","MS Gothic","Osaka-Mono",var(--ov-font-script);
+}
+/* Plain zh and the region tags get Simplified (the first Chinese); Traditional below wins by order. */
+[lang]:is(:lang(zh),:lang(zh-Hans),:lang(zh-CN),:lang(zh-SG)){
+ --ov-font-script:"PingFang SC","Microsoft YaHei UI","Microsoft YaHei","Noto Sans SC","Noto Sans CJK SC","Source Han Sans SC","WenQuanYi Micro Hei";
+ --ov-font-script-mono:"Noto Sans Mono CJK SC",var(--ov-font-script);
+}
+[lang]:is(:lang(zh-Hant),:lang(zh-TW),:lang(zh-HK),:lang(zh-MO)){
+ --ov-font-script:"PingFang TC","Microsoft JhengHei UI","Microsoft JhengHei","Noto Sans TC","Noto Sans CJK TC";
+ --ov-font-script-mono:"Noto Sans Mono CJK TC",var(--ov-font-script);
+}
+[lang]:lang(hi){
+ --ov-font-script:"Noto Sans Devanagari","Nirmala UI","Kohinoor Devanagari","Devanagari Sangam MN",Mangal;
+ /* No Devanagari monospace font is worth naming (plan § 2.1): mono text falls back to the proportional faces. */
+ --ov-font-script-mono:var(--ov-font-script);
+}
+/* The site's two stacks (tokens.css), with the script fonts after the Latin ones. */
+[lang]:is(:lang(ja),:lang(zh),:lang(hi)){
+ --ov-font-sans:-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",var(--ov-font-script),system-ui,sans-serif;
+ --ov-font-mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",var(--ov-font-script-mono),monospace;
+}
+/* body sets font-family:var(--ov-font-sans) once and its children inherit the resolved list, so a nested element in another
+ * script language sets it again. Zero specificity beyond :lang(): any class that sets its own family still wins. */
+:where([lang]:not(html)):is(:lang(ja),:lang(zh),:lang(hi)){font-family:var(--ov-font-sans)}
+
+/* ---- 2. Hard-coded families (plan § 2.1) ------------------------------------------------------------------------------
+ * The English sheets name dialog and native-mirror fonts directly (Tahoma, Courier New, MS Sans Serif…). Here each list is
+ * repeated with the script fallbacks inserted before system-ui or the generic family, so the English files stay untouched.
+ * scripts.test.ts fails when an English declaration changes or a new one appears without its line here. */
+#lss-field:is(:lang(ja),:lang(zh),:lang(hi)){font-family:'Courier New',Courier,var(--ov-font-script-mono),monospace}
+.cluster-native-hr-chart svg:is(:lang(ja),:lang(zh),:lang(hi)){font-family:ui-sans-serif,var(--ov-font-script),system-ui,sans-serif}
+.cluster-native-hr .cnhr-sliders output:is(:lang(ja),:lang(zh),:lang(hi)){font-family:ui-monospace,var(--ov-font-script-mono),monospace}
+.psr-mono:is(:lang(ja),:lang(zh),:lang(hi)),
+.psr code:is(:lang(ja),:lang(zh),:lang(hi)),
+.psr-raw:is(:lang(ja),:lang(zh),:lang(hi)){font-family:ui-monospace,var(--ov-font-script-mono),monospace}
+.variable-print-header:is(:lang(ja),:lang(zh),:lang(hi)){font-family:"MS Sans Serif",Arial,var(--ov-font-script),sans-serif}
+.plr-hash:is(:lang(ja),:lang(zh),:lang(hi)),
+.plr-readout output:is(:lang(ja),:lang(zh),:lang(hi)),
+.plr-factor output:is(:lang(ja),:lang(zh),:lang(hi)),
+.plr-reference output:is(:lang(ja),:lang(zh),:lang(hi)){font-family:ui-monospace,var(--ov-font-script-mono),monospace}
+.native-numeric-field output:is(:lang(ja),:lang(zh),:lang(hi)){font-family:var(--ov-font-script-mono),monospace}
+.section-title span:is(:lang(ja),:lang(zh),:lang(hi)){font-family:Georgia,var(--ov-font-script),serif}
+.camera-information-lines:is(:lang(ja),:lang(zh),:lang(hi)),
+.fi-print-header:is(:lang(ja),:lang(zh),:lang(hi)),
+.fi-print-lines:is(:lang(ja),:lang(zh),:lang(hi)),
+.ob-print-native:is(:lang(ja),:lang(zh),:lang(hi)),
+.ob-print-lines:is(:lang(ja),:lang(zh),:lang(hi)),
+.web-print-native:is(:lang(ja),:lang(zh),:lang(hi)){font-family:'Courier New',Courier,var(--ov-font-script-mono),monospace}
+.radio-control-native:is(:lang(ja),:lang(zh),:lang(hi)),
+.radio-control .antenna-manual-button:is(:lang(ja),:lang(zh),:lang(hi)){font-family:"MS Sans Serif",Tahoma,ui-sans-serif,var(--ov-font-script),sans-serif}
+.antenna-hotlist-native:is(:lang(ja),:lang(zh),:lang(hi)){font-family:ui-monospace,"Cascadia Mono",Consolas,"Liberation Mono","Courier New",var(--ov-font-script-mono),monospace}
+.cluster-print-body:is(:lang(ja),:lang(zh),:lang(hi)),
+.cluster-print-body .cluster-print-line:is(:lang(ja),:lang(zh),:lang(hi)){font-family:"MS Sans Serif",Arial,var(--ov-font-script),sans-serif}
+.obsd-field input:is(:lang(ja),:lang(zh),:lang(hi)){font-family:var(--ov-mono,monospace),var(--ov-font-script-mono)}
+.ob-native:is(:lang(ja),:lang(zh),:lang(hi)){font-family:Tahoma,Verdana,var(--ov-font-script),sans-serif}
+.ob-row-native:is(:lang(ja),:lang(zh),:lang(hi)),
+.ms-items:is(:lang(ja),:lang(zh),:lang(hi)),
+.ms-lines:is(:lang(ja),:lang(zh),:lang(hi)){font-family:"Courier New",var(--ov-font-script-mono),monospace}
+.wedge-text text:is(:lang(ja),:lang(zh),:lang(hi)){font-family:"MS Sans Serif",Arial,var(--ov-font-script),sans-serif}
+/* SVG presentation attributes (fontFamily=…) in SpectrumSavePrint.tsx and LightCurveSvg.tsx; any CSS rule outranks them. */
+svg.ob-spectrum-print-body:is(:lang(ja),:lang(zh),:lang(hi)){font-family:Courier,var(--ov-font-script-mono),monospace}
+.lc-svg [data-part=texts]:is(:lang(ja),:lang(zh),:lang(hi)){font-family:"MS Sans Serif","Microsoft Sans Serif",Tahoma,Arial,var(--ov-font-script),sans-serif}
+
+/* ---- 3. Weight, spacing and case (plan § 2.3) ---------------------------------------------------------------------------
+ * base.css turns font synthesis off and buttons use weight 550. A CJK or Devanagari system font without a bold face (Microsoft
+ * YaHei, Mangal, WenQuanYi) would then show Regular; let the browser embolden it. Style synthesis stays off (no fake italics). */
+:is(body,[lang]):is(:lang(ja),:lang(zh),:lang(hi)){font-synthesis-weight:auto}
+/* Letter-spacing and upper-casing are Latin devices: spacing apart kanji or Devanagari breaks the text, and upper case does
+ * not exist. :root raises the specificity above the English class rules. Russian keeps both. */
+:root :is(:lang(ja),:lang(zh),:lang(hi)){letter-spacing:normal;text-transform:none}
+/* The 11 px section labels of the header are too small for kanji and Devanagari. */
+.nav-group-label:is(:lang(ja),:lang(zh)){font-size:12px;line-height:1.5}
+.nav-group-label:lang(hi){font-size:13px;line-height:1.7}
+
+/* ---- 4. Line breaking (plan § 3) -------------------------------------------------------------------------------------- */
+/* No Japanese line starts with small kana, ー or closing punctuation. Chinese keeps the browser default. Never keep-all or
+ * break-all: CJK breaks between characters, and break-all would split Latin words and numbers. */
+:lang(ja){line-break:strict}
+/* Space between CJK and Latin letters or digits, where the browser supports it (a progressive enhancement). */
+[lang]:is(:lang(ja),:lang(zh)){text-autospace:normal}
+/* A word longer than its line breaks instead of running out of its box (Russian words run long; the 114 overflow-wrap:anywhere
+ * of the English sheets stay). break-word, unlike anywhere, leaves min-content sizes alone, so tables and flex rows keep
+ * their English proportions. Inherited from the root; white-space:pre and nowrap text is not affected. */
+[lang]:is(:lang(ja),:lang(zh),:lang(hi),:lang(ru)){overflow-wrap:break-word}
+/* Russian prose may hyphenate. An enhancement only: Chromium's hyphenation dictionaries may be absent (headless Linux), and
+ * the route walk must pass without them. */
+:is(p,li,dd,blockquote,figcaption):lang(ru){hyphens:auto}
+
+/* ---- 5. Line heights (plan § 3) -----------------------------------------------------------------------------------------
+ * Noto Sans CJK's natural line is 1.448 em; Devanagari ink reaches about 1.9 em (plan § 0.1). Floors: CJK 1.5 wherever English
+ * is below it; Hindi 1.7 on text and 1.5 on single-line controls. Symbols drawn at line-height 1 (✳, the dome, ?, arrows) are
+ * not script text and keep it (exemptions in scripts.test.ts). */
+/* Controls: CJK and Hindi 1.5. One selector per English selector, so each keeps its own specificity plus one. */
+:where(button,input,select,textarea):is(:lang(ja),:lang(zh),:lang(hi)),
+.portal-header nav button:is(:lang(ja),:lang(zh),:lang(hi)),
+.ob-dialog .secondary-button:is(:lang(ja),:lang(zh),:lang(hi)),
+.ob-dialog .primary-button:is(:lang(ja),:lang(zh),:lang(hi)),
+.ob-menu .secondary-button:is(:lang(ja),:lang(zh),:lang(hi)),
+.site-tour-actions .primary-button:is(:lang(ja),:lang(zh),:lang(hi)),
+.site-tour-actions .secondary-button:is(:lang(ja),:lang(zh),:lang(hi)),
+.radio-control .antenna-dialog .primary-button:is(:lang(ja),:lang(zh),:lang(hi)),
+.radio-control .antenna-dialog .secondary-button:is(:lang(ja),:lang(zh),:lang(hi)){line-height:1.5}
+/* Text below 1.5 in English: CJK 1.5, Hindi 1.7. */
+h1:is(:lang(ja),:lang(zh)),
+.antenna-hotlist-native:is(:lang(ja),:lang(zh)),
+.language-originals:is(:lang(ja),:lang(zh)),
+.language-originals-note:is(:lang(ja),:lang(zh)),
+.ob-note:is(:lang(ja),:lang(zh)),
+.fi-note:is(:lang(ja),:lang(zh)),
+.fi-status:is(:lang(ja),:lang(zh)),
+.comparison-cursor-live:is(:lang(ja),:lang(zh)){line-height:1.5}
+h1:lang(hi),
+.antenna-hotlist-native:lang(hi),
+.language-originals:lang(hi),
+.language-originals-note:lang(hi),
+.ob-note:lang(hi),
+.fi-note:lang(hi),
+.fi-status:lang(hi),
+.comparison-cursor-live:lang(hi){line-height:1.7}
+/* Text from 1.5 to 1.65 in English: Hindi 1.7 (body carries it to everything that inherits). */
+body:lang(hi),
+.radio-route-persistence:lang(hi),
+.radio-receiver-alert:lang(hi),
+.radio-receiver-notes:lang(hi),
+.radio-receiver-save ul:lang(hi),
+.ob-option-list:lang(hi),
+.camera-preparation .camera-prepare-reference dt:lang(hi),
+.camera-preparation .camera-prepare-reference dd:lang(hi),
+.antenna-modal-limit li:lang(hi),
+.antenna-notice p:lang(hi),
+.antenna-profile li:lang(hi),
+.radio-access-numeric li:lang(hi),
+.site-tour-card:lang(hi),
+.web-help-topic:lang(hi),
+.camera-information-lines:lang(hi),
+.instructor-mode-banner:lang(hi),
+.investigation-toolbar>[role=status]:lang(hi),
+.investigation-toolbar>[role=alert]:lang(hi),
+.radio-route-scenario li:lang(hi),
+.wedge-lab p:lang(hi),
+.first-steps span:lang(hi),
+.hubble-table small:lang(hi),
+.own-results-card td small:lang(hi),
+.hubble-editor small:lang(hi),
+.pending-label:lang(hi),
+.target-coordinates:lang(hi),
+.file-help:lang(hi),
+.measurement-kind:lang(hi),
+.cluster-native-hr p:lang(hi),
+.classification-program p:lang(hi),
+.native-results p:lang(hi),
+.observation-results p:lang(hi),
+.radio-control p:lang(hi),
+.camera-information-dialog dt:lang(hi),
+.camera-information-dialog p:lang(hi),
+.camera-palette-dialog p:lang(hi),
+dialog dd:lang(hi),
+footer:lang(hi),
+.page-heading p:lang(hi),
+.plot-foot:lang(hi),
+.seo-boot:lang(hi),
+.investigation-toolbar .toolbar-help p:lang(hi),
+.library-context p:lang(hi),
+.optical-compatibility p:lang(hi),
+.optical-telescope p:lang(hi),
+.telescope-motion .observatory-note:lang(hi),
+.control-note:lang(hi),
+.import-card p:lang(hi),
+.session-card p:lang(hi),
+.velocity-content p:lang(hi),
+.fits-lab p:lang(hi),
+.observatory-heading p:lang(hi),
+dialog p:lang(hi),
+.observatory-controls p:lang(hi),
+.observatory-note:lang(hi){line-height:1.7}
+
+/* ---- 6. Fixed heights that hold lines of text (plan § 3) ---------------------------------------------------------------
+ * The classification cursor read-out and the phone sidebar grow with their text instead of cutting it. */
+.comparison-cursor-live:is(:lang(ja),:lang(zh),:lang(hi),:lang(ru)){height:auto;min-height:86px}
+@media(max-width:570px){.sidebar:is(:lang(ja),:lang(zh),:lang(hi),:lang(ru)){height:auto;min-height:60px}}
+
+/* ---- 7. Long words in narrow rows ---------------------------------------------------------------------------------------
+ * Phone header: the two columns of menu buttons take their share of the width, not their longest word's. */
+@media(max-width:599.98px){
+ .nav-group-items:is(:lang(ja),:lang(zh),:lang(hi),:lang(ru)){grid-template-columns:repeat(2,minmax(0,1fr))}
+ .portal-header nav button:is(:lang(ja),:lang(zh),:lang(hi),:lang(ru)){overflow-wrap:anywhere}
+}
+/* The theme switch's three options wrap their label inside the pill instead of crossing it (at 1100 px and up English and
+ * Spanish end it with an ellipsis; a wrapped label keeps the whole word visible). */
+.theme-option:is(:lang(ja),:lang(zh),:lang(hi),:lang(ru)){min-width:0;white-space:normal;overflow-wrap:anywhere;text-align:center}
+.theme-option span:is(:lang(ja),:lang(zh),:lang(hi),:lang(ru)){min-width:0}
