@@ -49,14 +49,14 @@ const SHELL_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(app|project|sess
  * Hubble pointing hints and the hot list's Hubble reasons). The list is pinned so a lost key fails. */
 const OBSERVATORY_PREFIXES=/^(sky|optical|motion|horizon|siteClock|runningClock|scopeAccess|instrumentAccess|instrumentParameters|cameraParameters|cameraInfo|cameraPrepare|palette|testMode|optionsFile|photometerTab|htl|multispec|nativeMirror|hubblePoint)\./;
 const PT1_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>OBSERVATORY_PREFIXES.test(k)||/^hubbleHtl\.reason\./.test(k));
-/** VIREO originals that Spanish keeps with no entry (its word equals VIREO's, and the vireo() site is one the source guard cannot
- * resolve, src/i18n/vireoSites.test.ts), but Portuguese translates: the options dialog's General tab and the Site Information
- * longitude letter E (East, «L» for Leste). tests/i18n/observatory.spec.ts checks both on screen. */
 /** Front PT2's area of en.json: ES3's and ES4's keys (exercise E01, Hubble's law, and E02, large-scale structure: the two guides,
  * the galaxy, sky and star exposures, the analyser, velocities, the Hubble diagram, Observational Results of your redshifts, the
  * single-slit spectrometer at a free pointing, the LSS survey and the wedge), every key of their prefixes. */
 const E01_E02_PREFIXES=/^(continuity|lab|lssLab|hubble|velocity|ownResults|spectrum|spectrometer|galaxyExposure|skyExposure|starExposure|ssp|exposureIO|drift|skyProfiles|fieldSpec|lss|wedge)\./;
 const PT2_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E01_E02_PREFIXES.test(k));
+/** VIREO originals that Spanish keeps with no entry (its word equals VIREO's, and the vireo() site is one the source guard cannot
+ * resolve, src/i18n/vireoSites.test.ts), but Portuguese translates: the options dialog's General tab and the Site Information
+ * longitude letter E (East, «L» for Leste). tests/i18n/observatory.spec.ts checks both on screen. */
 const PT_ONLY_ORIGINALS:readonly string[]=['General','E'];
 const profile=PROFILES['pt-BR'];
 const data:LintData={glossary:glossaryFrom(glossaryJson,'pt'),identical:identical.entries,allowed:lintAllowed.entries as Readonly<Record<string,Allowance>>};

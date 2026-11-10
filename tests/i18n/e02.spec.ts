@@ -258,7 +258,8 @@ for(const L of TRANSLATED)for(const original of [false,true])test(title(L,`the L
  await page.route('**/original/hotlists/LSSFields.LST*',r=>r.abort());
  await page.goto(`/${langQuery(L.tag)}#lss-survey`);await expect(page.locator('html')).toHaveAttribute('lang',L.entry.htmlLang);
  const box=id(page,'lss-fields-error');await expect(box).toBeVisible({timeout:30_000});
- const T=(t:string)=>original?t:vireoOf(L)(t);
+ // Review: each caption must be a translated original, or a word the language keeps (SAME_IN: Portuguese OK), never the literal fallback.
+ const T=(t:string)=>original?t:Object.hasOwn(L.originals,t)?L.originals[t]!:SAME_IN[L.tag]?.has(t)?t:`No ${L.entry.englishName} original for “${t}”`;
  await expect(box.locator('strong')).toHaveText(T('File Error!'));
  await expect(box.locator('p')).toHaveText(`${T('Cannot access LSS fields file')} /original/hotlists/LSSFields.LST\n\n${L.catalog['lss.fieldsError']}`);
  await expect(box.getByRole('button')).toHaveText(T('OK'));
