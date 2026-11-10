@@ -120,6 +120,9 @@ describe('Front ES1 review 1: the lint catches what it must',()=>{
   // matched text an allowance names, so this keeps the old reach.
   const byId=new Map(pairs().map(p=>[p.id,p]));
   for(const [id,a] of Object.entries(DATA.allowed??{})){
+   // SC9 review: a whole-rule allowance (`rules`) would exempt usted, a claim or any other check, which lint-allowed.json
+   // never could; Spanish entries hold only words and placeholders.
+   expect(Object.keys(a).filter(k=>!['words','placeholders','reason'].includes(k)),`${id}: only words and placeholders`).toEqual([]);
    const p=byId.get(id);if(!p)continue;// allowances() reports it
    const raw=lintPair(p,PROFILE,{...DATA,allowed:{}});
    for(const w of a.words??[])for(const f of raw.filter(f=>f.match!==undefined&&f.match.toLocaleLowerCase('es')===w.toLocaleLowerCase('es')))expect(f.rule==='glossary'&&f.message.startsWith('forbidden «'),`${id}: «${w}» exempts ${f.rule} ${f.message}`).toBe(true);
