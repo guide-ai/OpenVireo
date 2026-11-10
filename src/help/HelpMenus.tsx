@@ -1,11 +1,13 @@
 import {useEffect,useId,useRef,useState} from 'react';
 import {menuCaptionText} from '../core/radioControl';
 import {vireo} from '../i18n/vireo';
-import CleaHelp from '../clusters/CleaHelp';
+import CleaHelp,{ViewSwitch} from '../clusters/CleaHelp';
 import {fetchBundledClusterHelp} from '../io/bundledClusterHelp';
 import {HELP_FILES} from './helpFiles';
-import {ABOUT_BOX,HELP_WEBSITES,MAIN_HELP_MENU,QUIT_QUESTION,RADIO_HELP_MENU,REMINDER_CAPTION,reminderBoxText} from './mainHelp';
+import {ABOUT_BOX,HELP_WEBSITES,MAIN_HELP_MENU,QUIT_QUESTION,RADIO_HELP_MENU,REMINDER_CAPTION,REMINDER_SELECT,reminderBoxText} from './mainHelp';
 import {HELP_MENU as M} from './HelpMessages';
+import {HELP_VIEWER} from './HelpViewerMessages';
+import {helpTranslationOffered,loadHelpTranslation,type HelpView} from './helpTranslation';
 import WebHelpDialog from './WebHelpDialog';
 import {helpKeyBlocked} from './helpShortcut';
 import {PROJECT_LINKS,PROJECT_REPO_URL,currentPage,newIssueUrl} from './projectLinks';
@@ -96,18 +98,25 @@ export function HelpMenu({kind,disabled=false,disabledReason,onSiteAbout,onTour}
 export function ExitObservatoryDialog({onClose}:{onClose:()=>void}){
  const dialog=useRef<HTMLDialogElement>(null),id=useId();
  const [state,setState]=useState<'loading'|'error'|'done'|string>('loading');
- useEffect(()=>{dialog.current?.showModal();
+ // Front ES-HELP: a Spanish load shows the translation of Reminder.obs (a web adaptation) unless the student asks for the original.
+ const offered=helpTranslationOffered(),[original,setOriginal]=useState(false),view:HelpView=offered&&!original?'translation':'original';
+ // Review S1: a translation that cannot be loaded or verified falls back to VIREO's original, with a note.
+ const [translationFailed,setTranslationFailed]=useState(false);
+ useEffect(()=>{dialog.current?.showModal();},[]);
+ useEffect(()=>{
   const abort=new AbortController();
-  fetchBundledClusterHelp(fetch,abort.signal,HELP_FILES['REMINDER.OBS']).then(b=>setState(reminderBoxText(b)),e=>{if(!(e instanceof DOMException&&e.name==='AbortError'))setState('error');});
+  setState(s=>s==='done'?s:'loading');
+  (view==='translation'?loadHelpTranslation(HELP_FILES['REMINDER.OBS']):fetchBundledClusterHelp(fetch,abort.signal,HELP_FILES['REMINDER.OBS']))
+   .then(b=>{if(!abort.signal.aborted)setState(s=>s==='done'?s:reminderBoxText(b,view==='translation'?vireo(REMINDER_SELECT):REMINDER_SELECT));},e=>{if(e instanceof DOMException&&e.name==='AbortError')return;if(view==='translation'){setTranslationFailed(true);setOriginal(true);}else setState('error');});
   return ()=>abort.abort();
- },[]);
+ },[view]);
  const quit=()=>setState('done');
  return <dialog ref={dialog} className="ob-dialog" role="alertdialog" aria-labelledby={`${id}-t`} aria-describedby={`${id}-d`} data-testid="exit-reminder" onCancel={e=>{e.preventDefault();onClose();}}>
-  <h2 id={`${id}-t`}>{REMINDER_CAPTION}</h2>
+  <h2 id={`${id}-t`}>{vireo(REMINDER_CAPTION)}</h2>
   {state==='loading'&&<p id={`${id}-d`} role="status">{M.reminderLoading}</p>}
-  {state==='error'&&<div id={`${id}-d`}><p role="alert">{M.reminderError} {M.reminderErrorQuestion}</p><p className="help-reminder-text" data-testid="exit-quit-question">{QUIT_QUESTION}</p></div>}
+  {state==='error'&&<div id={`${id}-d`}><p role="alert">{M.reminderError} {M.reminderErrorQuestion}</p><p className="help-reminder-text" data-testid="exit-quit-question">{vireo(QUIT_QUESTION)}</p></div>}
   {state==='done'&&<p id={`${id}-d`} role="status" data-testid="exit-reminder-done">{M.exitDone}</p>}
-  {state!=='loading'&&state!=='error'&&state!=='done'&&<p id={`${id}-d`} className="help-reminder-text" data-testid="exit-reminder-text">{state}</p>}
+  {state!=='loading'&&state!=='error'&&state!=='done'&&<p id={`${id}-d`} className="help-reminder-text" lang={offered&&view==='original'?'en':undefined} data-testid="exit-reminder-text">{state}</p>}
   <div className="ob-actions">
    {state==='done'?<button type="button" className="primary-button" autoFocus onClick={onClose}>{M.close}</button>
     :state==='error'?<><button type="button" className="primary-button" data-testid="exit-quit-yes" onClick={quit}>{M.yes}</button>
@@ -115,6 +124,8 @@ export function ExitObservatoryDialog({onClose}:{onClose:()=>void}){
     :<><button type="button" className="primary-button" disabled={state==='loading'} data-testid="exit-reminder-ok" onClick={quit}>{M.ok}</button>
      <button type="button" className="secondary-button" autoFocus data-testid="exit-reminder-cancel" onClick={onClose}>{M.cancel}</button></>}
   </div>
+  {translationFailed&&state!=='done'&&<p role="alert" className="fi-note" data-testid="exit-reminder-translation-error">{HELP_VIEWER.translationError}</p>}
+  {offered&&state!=='done'&&state!=='error'&&<ViewSwitch view={view} onSwitch={()=>{setTranslationFailed(false);setOriginal(o=>!o);}} testId="exit-reminder-view"/>}
   <p className="fi-note">{M.exitNote}</p>
  </dialog>;
 }

@@ -26,7 +26,7 @@ describe('Spectral Line Table (0x505390, RECOVERY.md §6)',()=>{
   expect(h.kind==='topic'&&h.rows[h.rows.length-1]).toBe(' ');
  });
  it('reports a missing section and refuses a malformed line',()=>{
-  expect(spectralLineHelp(enc('*1.00 X*\r\nx\r\n'),'Zz')).toEqual({kind:'not-found',caption:'Topic Not Found',text:'Help Topic: Zz\r\n\r\nHelp on this topic is not available at this time.'});
+  expect(spectralLineHelp(enc('*1.00 X*\r\nx\r\n'),'Zz')).toEqual({kind:'not-found',caption:'Topic Not Found',text:'Help Topic: Zz\r\n\r\nHelp on this topic is not available at this time.',title:'Zz'});
   expect(spectralLineHelp(enc('plain\r\ntext\r\n'),'A')).toEqual({kind:'topic',rows:[' * A *',' ','  plain  ','  text  ',' ']});
   expect(()=>parseSpectralLineList(enc("abc 'X' 'y.txt'\r\n"))).toThrow(SpectralLineError);
  });

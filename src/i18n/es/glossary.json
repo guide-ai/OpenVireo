@@ -66,8 +66,12 @@
    "es": "navegador"
   },
   {
-   "en": "(?<!line breaks and |for example a |accented letter, a )(?<!reachable with )\\btabs?\\b(?!,? (?:line breaks|or other|BOM))",
+   "en": "(?<!line breaks and |for example a |accented letter, a |Shift\\+)(?<!reachable with )\\btabs?\\b(?!,? (?:line breaks|or other|BOM)| and Shift\\+Tab)",
    "es": "pestaña"
+  },
+  {
+   "en": "\\bTab and Shift\\+Tab\\b",
+   "es": "Tab y Mayús\\+Tab"
   },
   {
    "en": "\\btabs?(?=,? (?:line breaks|or other|BOM))|(?<=line breaks and |for example a |accented letter, a )tabs?\\b",

@@ -326,3 +326,19 @@ test('Front SEO: the lab pages, sitemap and robots.txt are served with the relea
  await expect(page.locator('dialog[open]')).toContainText('The quest for Object X',{timeout:20_000});
  expect([p.errors,p.console,await violations(page),p.external]).toEqual([[],[],[],[]]);
 });
+
+// Front ES-HELP: a translated help file is its own chunk, fetched only when the viewer opens it, under the release policy; "Ver
+// original (inglés)" then fetches VIREO's bundled file.
+test('Front ES-HELP: a ?lang=es-419 help viewer fetches only its translated help chunks and switches to the original',async({page,baseURL})=>{
+ const p=await watch(page,baseURL!),help:string[]=[];page.on('request',r=>{const m=/\/assets\/([A-Z]+\.(?:LST|TXT|OBS|PLS|LNL))-[\w-]+\.js$/.exec(r.url());if(m)help.push(m[1]);});
+ await page.goto('/?lang=es-419#classification');
+ await page.getByTestId('class-help-open').click({timeout:20_000});
+ await expect(page.getByTestId('class-help-topics-view-label')).toHaveText('Traducción: adaptación web de OpenVireo (no es de CLEA)');
+ expect(help).toEqual(['CLASSHLP.LST']);
+ await page.getByTestId('class-help-topic-list').getByRole('option').nth(1).dblclick();
+ await expect(page.getByTestId('class-help-topic-text')).toContainText('Para cargar un espectro');
+ expect(help).toEqual(['CLASSHLP.LST','CLASSHLP.TXT']);
+ await page.getByTestId('class-help-view-switch').click();
+ await expect(page.getByTestId('class-help-topic-text')).toHaveAttribute('lang','en');
+ expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);
+});
