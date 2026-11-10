@@ -62,13 +62,15 @@ describe('#lab= links',()=>{
 });
 
 describe('sitemap and files',()=>{
- it('lists the home page, the index and each lab page as absolute addresses',()=>{
+ it('lists the home page, the index and each lab page as absolute addresses, in English and then Spanish (ES-SEO)',()=>{
   const xml=sitemap(),locs=[...xml.matchAll(/<loc>([^<]*)<\/loc>/g)].map(m=>m[1]);
-  expect(locs).toEqual(SITEMAP_PATHS.map(p=>SITE_URL+p));expect(locs).toHaveLength(2+LABS.length);
+  expect(locs).toEqual(SITEMAP_PATHS.map(p=>SITE_URL+p));expect(locs).toHaveLength(2*(2+LABS.length));
+  expect(SITEMAP_PATHS.slice(0,2+LABS.length)).toEqual(['/','/labs/',...LABS.map(l=>labUrl(l.slug))]);
  });
- it('every sitemap page except the home page is an emitted file',()=>{
+ it('every sitemap page except the English home page (the app) is an emitted file, and every emitted page is in the sitemap',()=>{
   const files=staticSeoFiles();
-  for(const p of SITEMAP_PATHS.slice(1))expect(files[`${p.slice(1)}index.html`]).toBeDefined();
+  for(const p of SITEMAP_PATHS.slice(1))expect(files[`${p.slice(1)}index.html`],p).toBeDefined();
+  expect(Object.keys(files).filter(f=>f.endsWith('.html')).map(f=>`/${f.replace(/index\.html$/,'')}`).sort()).toEqual([...SITEMAP_PATHS.slice(1)].sort());
   expect(files['sitemap.xml']).toBe(sitemap());
  });
  it('robots.txt points to the sitemap',()=>{

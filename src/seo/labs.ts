@@ -5,12 +5,10 @@
 export const SITE_URL='https://openvireo.space';
 
 import type {LabSlug} from './labSlugs.ts';
-export {labFromHash,labLink,labUrl,LAB_SLUGS,type LabSlug} from './labSlugs.ts';
+export {labFromHash,labLink,labUrl,labsIndexUrl,LAB_SLUGS,SEO_PATH_PREFIX,type LabSlug} from './labSlugs.ts';
 
-export type Lab={
- slug:LabSlug;
- /** Exercise code on the student board (docs/STUDENT-EXERCISES.md). */
- exercise:string;
+/** The texts of one lab page in one language (src/seo/labs.es.ts has the Spanish). */
+export type LabText={
  /** Short name, used in lists and links. */
  name:string;
  /** <title>, under about 65 characters. */
@@ -21,7 +19,12 @@ export type Lab={
  intro:string;
  steps:readonly string[];
  learn:readonly string[];
- /** The guide's button in the app's Guides menu. */
+};
+export type Lab=LabText&{
+ slug:LabSlug;
+ /** Exercise code on the student board (docs/STUDENT-EXERCISES.md). */
+ exercise:string;
+ /** The guide's button in the app's Guides menu (English pages only). */
  guide:string;
 };
 

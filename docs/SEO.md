@@ -93,3 +93,53 @@ subagent (Claude Opus, high effort) that did not write the code, over commit `d6
   no inline style).
 - Nits: the eyebrow reads "Lab based on a CLEA VIREO exercise"; the dev server answers `/labs` and `/labs/<slug>` with 308 like
   Pages; slugs live in `src/seo/labSlugs.ts`, so the app bundle no longer includes the page texts; the LSS title is shorter.
+
+# Front ES-SEO: Spanish search pages
+
+User decision 8 of 2026-11-09 (AGENTS.md): after the Spanish release, a Spanish home page `/es/` and the Spanish lab pages
+`/es/labs/`, with `hreflang` and a Spanish preview image. Static site only; no new external service. The language rules (how
+`/es/` opens the app, the precedence, the dist check) are in `docs/I18N.md`, "Spanish: search pages (ES-SEO)".
+
+## What changed
+
+- **One table for every language** (`src/seo/languages.ts`, `SEO_LANGUAGES`): English (the x-default, whose home page is the app)
+  and Spanish (`es-419`, prefix `/es`). Each row holds its tag, `hreflang` codes, `og:locale`, path prefix, the address that opens
+  the app in that language, the lab texts, the page and footer texts, and its preview image. `src/seo/pages.ts` renders every page
+  of every row; a later language adds a row and its texts (`src/seo/labs.<dir>.ts`), not code. Path prefixes are in
+  `src/seo/labSlugs.ts` (`SEO_PATH_PREFIX`), which the app may import (no text).
+- **Spanish pages**: `/es/` (a static home page: what OpenVireo is, «Abrir el observatorio», the seven labs as cards, how it works,
+  the credit), `/es/labs/` and `/es/labs/<slug>/` with the English slugs. `<html lang="es-419">`, Spanish titles and descriptions
+  within search-result lengths, self canonical, `og:locale` `es_LA` with `og:locale:alternate` `en_US`, the Spanish preview image,
+  Spanish JSON-LD (`WebApplication` on `/es/`, `ItemList` on the index, `LearningResource` with `inLanguage` `es-419` and
+  breadcrumbs on each lab). «Abrir la práctica» goes to `/?lang=es-419#lab=<slug>`. Texts: `src/seo/labs.es.ts` and the `es-419`
+  row; the footer says they are OpenVireo's web adaptation, not CLEA's text.
+- **hreflang** on every page pair (`/` ↔ `/es/`, `/labs/` ↔ `/es/labs/`, each lab): `en`, `es-419`, `es` (the app opens Spanish for
+  any `es-*` browser, so Spanish from Spain finds the same page) and `x-default` → the English URL. The sitemap lists all 18
+  addresses with the same alternates as `xhtml:link` entries. English pages also get `og:locale` `en_US` / `es_LA` and a visible
+  «Español» link to their Spanish version; nothing else in their HTML changed.
+- **App**: the observatory footer's labs link goes to `/es/labs/` when the app is in Spanish.
+- **Preview image** `public/og-image-es.png` (1200×630): the design of `og-image.png` with Spanish text, rendered by the new
+  `scripts/render-og-image.mjs <tag>` (Playwright's Chromium with no network, DejaVu Sans through the project's test fontconfig,
+  seeded stars, so a render is repeatable); an original drawing, no CLEA image. The English image predates the script and is not
+  re-rendered (the script refuses to overwrite it).
+- **Headers**: `/es/*` is `no-cache`, like `/labs/*` (`public/_headers`, `src/deployHeaders.test.ts`).
+
+## Tests
+
+- `src/seo/languages.test.ts`: the table (English first, prefixes, each language in `src/i18n/languages.json`, the same labs and
+  steps); Spanish lengths, uniqueness, «Reconstrucción web gratuita», the glossary lint, no claim of being CLEA's, no app text copied
+  into the pages (the dist check's markers); each Spanish page's lang, canonical, `og:*`, one `h1`, JSON-LD, links that stay Spanish
+  except the one English link; reciprocal `hreflang` on all 18 pages and the same alternates in the sitemap.
+- `src/seo/pages.test.ts`: the sitemap now lists both languages, and every emitted page is in it.
+- `tests/i18n/es-seo.spec.ts`: `/es/` opens the app in Spanish without storing a choice and English goes back (also from a Spanish
+  browser); «Abrir la práctica» opens the Spanish pulsar, Object X and cluster guides and keeps `?lang=es-419`; the dev server's
+  308 for `/es`, `/es/labs`, `/es/labs/<slug>`; the language links between page pairs; the Spanish footer link; 320 px layout.
+- `tests/release/pages-smoke.pages.ts`: the Spanish pages and image with the release headers, the 308s, `hreflang` on `/` and
+  `/es/`, the sitemap, and a Spanish lab page opening the app under the release policy in an English browser.
+
+## For the user (not done by the site)
+
+After the deploy: in Google Search Console (once the `openvireo.space` property exists, see above) submit or resubmit
+`https://openvireo.space/sitemap.xml`, and inspect `https://openvireo.space/es/` and a Spanish lab page with URL Inspection
+(«Request indexing»); Search Console reports `hreflang` problems under the page indexing report. The same in Bing Webmaster Tools if
+wanted. OpenSEO can track Spanish keywords (for example «práctica ley de Hubble», «CLEA astronomía») for a Spanish-speaking market.
