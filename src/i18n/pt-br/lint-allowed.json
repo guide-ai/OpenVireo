@@ -1,4 +1,35 @@
 {
  "about": "Front PT0: findings of the pt-BR lint (src/i18n/lint/, profile pt-BR) that are correct Portuguese in one string, each with a reason. Keys are the lint's string ids; `words` are the matched words allowed in that string only, `rules` whole rules, `placeholders` added placeholders.",
- "entries": {}
+ "entries": {
+  "original:fragment|Meter Radio Telescope": {
+   "placeholders": [
+    "{diameter}"
+   ],
+   "reason": "radioIdCaptionText places VIREO's telescope diameter where the translation holds {diameter} (Portuguese puts the number after «Radiotelescópio de»), as Spanish does"
+  },
+  "original:\" Not Found.": {
+   "rules": [
+    "quotes"
+   ],
+   "reason": "VIREO joins a straight opening quote, the search text and this tail (helpNotFoundText, the radio hot list and saved-rows Find); the closing quote must match that untranslated opening one"
+  },
+  "original:fragment|You have not recorded your current readings for \"": {
+   "rules": [
+    "quotes"
+   ],
+   "reason": "VIREO closes this quote with its untranslated tail '\".' (PHOTOMETER_RECORD_PIECES.movedTail); the opening quote must match it"
+  },
+  "map:polish.about.credits.0": {
+   "rules": [
+    "typography"
+   ],
+   "reason": "the funding agency’s proper name, National Science Foundation, kept in English as in the credits of every language"
+  },
+  "map:camera.citationIr": {
+   "rules": [
+    "typography"
+   ],
+   "reason": "the survey’s proper name, Two Micron All Sky Survey (2MASS), kept in English as cited"
+  }
+ }
 }

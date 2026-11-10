@@ -423,7 +423,7 @@
   },
   {
    "en": "\\bstandard pairs?\\b",
-   "pt": "pares? de padr"
+   "pt": "par(es)? de padr"
   },
   {
    "en": "\\braw\\b",
@@ -770,7 +770,7 @@
   },
   {
    "en": "Init",
-   "pt": "Inicializar",
+   "pt": "Preparar",
    "exact": true
   },
   {
@@ -1059,7 +1059,7 @@
   },
   {
    "en": "Pulsar Parameters",
-   "pt": "Parâmetros de pulsares"
+   "pt": "Parâmetros do pulsar"
   },
   {
    "en": "Access Pulsar List",
@@ -1104,6 +1104,46 @@
   {
    "en": "Asteroid List",
    "pt": "Lista de asteroides"
+  },
+  {
+   "en": "Spectral Range",
+   "pt": "Faixa espectral"
+  },
+  {
+   "en": "Spectrum Information",
+   "pt": "Informações do espectro"
+  },
+  {
+   "en": "View/Save Spectra",
+   "pt": "Ver/salvar espectros"
+  },
+  {
+   "en": "Select Objects",
+   "pt": "Selecionar objetos"
+  },
+  {
+   "en": "Print Selection Field",
+   "pt": "Imprimir campo de seleção"
+  },
+  {
+   "en": "Save Text",
+   "pt": "Salvar texto"
+  },
+  {
+   "en": "Comma Delimit",
+   "pt": "Separado por vírgulas"
+  },
+  {
+   "en": "Exposure Timer",
+   "pt": "Temporizador de exposição"
+  },
+  {
+   "en": "Find Text String",
+   "pt": "Localizar texto"
+  },
+  {
+   "en": "Close Multi-Spec",
+   "pt": "Fechar Multi-Spec"
   }
  ],
  "forbidden": [

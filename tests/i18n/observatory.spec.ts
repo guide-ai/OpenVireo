@@ -2,48 +2,42 @@ import {type Page} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
 import {SPANISH_LOCALE,langQuery} from '../fixtures/language';
 import {layoutProblems,type LayoutOptions} from '../fixtures/layoutProblems';
-import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
-import originals from '../../src/i18n/es/originals.json' with {type:'json'};
-import {APP_SHELL_ES} from '../../src/i18n/es/maps/appShell';
-import {CAMERA_ES} from '../../src/i18n/es/maps/camera';
-import {FIELD_INFO_ES} from '../../src/i18n/es/maps/fieldInfo';
-import {FIELD_READ_DETAILS_ES} from '../../src/i18n/es/maps/fieldReadDetails';
-import {HELP_MENU_ES} from '../../src/i18n/es/maps/helpMenu';
-import {LANGUAGE_CHOICE_ES} from '../../src/i18n/es/maps/languageChoice';
-import {NAKED_EYE_ES} from '../../src/i18n/es/maps/nakedEye';
-import {OBJECT_X_LAB_ES} from '../../src/i18n/es/maps/objectXLab';
-import {OBSERVATION_METADATA_ES} from '../../src/i18n/es/maps/observationMetadata';
-import {OBSERVATORY_ES} from '../../src/i18n/es/maps/observatory';
-import {POLISH_ES} from '../../src/i18n/es/maps/polish';
-import {PROJECT_LINKS_ES} from '../../src/i18n/es/maps/projectLinks';
-import {QSO_LIST_ES} from '../../src/i18n/es/maps/qsoList';
-import {SOUND_ES} from '../../src/i18n/es/maps/sound';
-import {TOUR_ES} from '../../src/i18n/es/maps/tour';
-import {VARIABLE_STARS_ES} from '../../src/i18n/es/maps/variableStars';
+import es from '../../src/i18n/es/es.json' with {type:'json'};
+import {TRANSLATED,type LanguageText} from './languageText';
 // Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
 test.use({locale:SPANISH_LOCALE});
 
+// Front PT1: the spec runs for every translated language (tests/i18n/languageText.ts: its own catalog, maps and originals, never
+// hard-coded text). The Spanish tests keep their titles and assertions; a language before its release (pt-BR) runs the same checks
+// under its own titles in its `?lang=` preview, which beats the es-MX browser language. English and qps run once.
 // Front ES2 (docs/I18N.md): the optical observatory, its VIREO menus and its File, Slew, Site and options dialogs in Spanish in an
 // `es-*` browser (a `?lang=es-419` preview load before ES-REL). The same walk through the observatory runs in English, Spanish and the pseudo-locale:
 // - Spanish: no visible text, accessible name or title reads the same as in English, except identifiers (SAME);
 // - qps: every visible text is marked ⟦…⟧ (it goes through the catalog, a map or vireo()), except identifiers;
 // - native views that mirror a written file (`lang="en"`, F2) are left out of both comparisons and keep a Spanish caption.
-type Lang='en'|'es-419'|'qps';
-const O=originals as Record<string,string>;
+type Lang='en'|'qps'|LanguageText;
+/** A test title: Spanish keeps its ES2 title; another language names itself and its preview. */
+const title=(L:LanguageText,es:string,other:string)=>L.tag==='es-419'?es:other.replaceAll('<L>',L.entry.englishName).replaceAll('<tag>',L.tag);
 /** Texts that are the same in both languages: VIREO's catalogue, telescope, site and camera names, units, formats and numbers.
  * Only these exact names and the catalogue designations below pass, so a VIREO caption such as "Exit Observatory" or
  * "Request 1.0 Meter Telescope" left in English fails (review 1, C4). Option texts of the visible selects are checked too. */
 const SAME=new Set(['General','No','Min','HH:MM:SS','J2000.0','B1950.0','E','S','N','mm','VIREO ·','NF, B, V, R, I','CLEA_IR1','Site CH350 003B Back-Illuminated',
  'Gettysburg College Observatory','Kitt Peak National Observatory','0.4m (16") Telescope','KPNO 0.9m (36") Telescope','KPNO 4m (158") Mayall Telescope','Dec:','B-V:','U-B:','Z:','GCVS','QSO','NVO','Project CLEA','Angstroms','?','↗','×','—','✳']);
 const IDENTIFIER=/^(?:[-+−\d\s.,:;°′″'"hmsHMS·×/()–#<>≤≥%]+|.*\b(?:NGC|PSR|HD|GSC|UM-I|CorBor|Peg|Coma|Boo)\b.*|M\d+ · .*|(?:RA|Dec|AR):\s+[-+\d].*|\d{4}-\d\d-\d\d .*UT|\d{1,2}\/\d{1,2}\/\d{4}, .*|\S+\.(?:HTL|DAT|LST|TXT|SSP|FITS))$/;
-const same=(text:string)=>SAME.has(text)||IDENTIFIER.test(text);
+/** Front PT1: VIREO's and OpenVireo's texts that are the same words in another language (its identical.json, with a reason each):
+ * Portuguese writes OK, Longitude, Latitude, Altitude, Zoom… as English does. Spanish adds none (ES2's SAME is unchanged). */
+const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['OK','Longitude:','Latitude:','Altitude:','Longitude','Latitude','Altitude','Zoom','Item','Cursor','Pulsar','Min:','Multi-Spec'])};
+/** SAME texts another language does translate: Portuguese writes the General tab «Geral» and the longitude letter E «L» (Leste). */
+const NOT_SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['General','E'])};
+const same=(text:string,L?:LanguageText)=>(L===undefined||!(NOT_SAME_IN[L.tag]?.has(text)??false))&&(SAME.has(text)||IDENTIFIER.test(text)||(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false)));
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
 
+const tagOf=(lang:Lang)=>typeof lang==='string'?lang:lang.tag;
 async function open(page:Page,lang:Lang){
  await page.addInitScript(()=>localStorage.setItem('openvireo.tour.v1','done'));
- await page.goto(`/${langQuery(lang)}#observatory`);
- await expect(page.locator('html')).toHaveAttribute('lang',lang==='es-419'?'es-419':'en');
+ await page.goto(`/${langQuery(tagOf(lang))}#observatory`);
+ await expect(page.locator('html')).toHaveAttribute('lang',typeof lang==='string'?'en':lang.entry.htmlLang);
  await expect(page.locator('.sky-card')).toBeVisible({timeout:15_000});
 }
 /** Visible text nodes, accessible names and titles outside the header and outside native `lang="en"` views, with their place. */
@@ -92,22 +86,26 @@ async function walk(page:Page,lang:Lang,each:(step:string)=>Promise<void>){
  for(const [step,run] of STEPS){await run(page);await page.waitForTimeout(250);await each(step);}
 }
 
-test('the observatory walk reads differently in Spanish from English: menus, dialogs, boxes and option names',async({browser})=>{
- test.setTimeout(240_000);
- const seen:Record<'en'|'es-419',Map<string,Set<string>>>={en:new Map(),'es-419':new Map()};
- for(const lang of ['en','es-419'] as const){
-  const page=await browser.newPage({viewport:{width:1440,height:1000}});const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
-  await walk(page,lang,async step=>{seen[lang].set(step,new Set(await texts(page)));});
-  expect(errors,lang).toEqual([]);await page.close();
- }
- const english=new Set([...seen.en.values()].flatMap(s=>[...s]));
- const left:string[]=[];
- for(const [step,list] of seen['es-419'])for(const t of list)if(english.has(t)&&!same(t.replace(/^@[a-z-]+:/,'')))left.push(`${step}: ${t}`);
- expect(left).toEqual([]);
- const spanish=[...seen['es-419'].values()].flatMap(s=>[...s]);
- // A few fixed forms of the final VIREO menu glossary, as they appear on screen.
- for(const t of [O['Optical Simulation Options'],O['Limit Slewing'],O['Restrict Scope Access'],O['Set Date/Time, ID'],O['CLEA Star Field Data'],es['sky.close']])expect(spanish.some(s=>s===t||s.startsWith(`${t} `)),t).toBe(true);
-});
+for(const L of TRANSLATED){
+ const C=L.catalog as Record<string,string>,O=L.originals;
+
+ test(title(L,'the observatory walk reads differently in Spanish from English: menus, dialogs, boxes and option names','the observatory walk reads differently in <L> (<tag> preview) from English: menus, dialogs, boxes and option names'),async({browser})=>{
+  test.setTimeout(240_000);
+  const seen:Record<'en'|'own',Map<string,Set<string>>>={en:new Map(),own:new Map()};
+  for(const lang of ['en','own'] as const){
+   const page=await browser.newPage({viewport:{width:1440,height:1000}});const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+   await walk(page,lang==='en'?'en':L,async step=>{seen[lang].set(step,new Set(await texts(page)));});
+   expect(errors,lang==='en'?'en':L.tag).toEqual([]);await page.close();
+  }
+  const english=new Set([...seen.en.values()].flatMap(s=>[...s]));
+  const left:string[]=[];
+  for(const [step,list] of seen.own)for(const t of list)if(english.has(t)&&!same(t.replace(/^@[a-z-]+:/,''),L))left.push(`${step}: ${t}`);
+  expect(left).toEqual([]);
+  const own=[...seen.own.values()].flatMap(s=>[...s]);
+  // A few fixed forms of the final VIREO menu glossary, as they appear on screen.
+  for(const t of [O['Optical Simulation Options'],O['Limit Slewing'],O['Restrict Scope Access'],O['Set Date/Time, ID'],O['CLEA Star Field Data'],C['sky.close']])expect(own.some(s=>s===t||s.startsWith(`${t} `)),t).toBe(true);
+ });
+}
 
 test('qps: every text of the observatory walk is marked, outside identifiers and native mirrors',async({page})=>{
  test.setTimeout(180_000);page.setViewportSize({width:1440,height:1000});
@@ -116,8 +114,11 @@ test('qps: every text of the observatory walk is marked, outside identifiers and
  expect([...new Set(left)]).toEqual([]);
 });
 
-test('a native list that mirrors its saved file stays English with a Spanish caption (F2)',async({page})=>{
- await open(page,'es-419');
+for(const L of TRANSLATED){
+ const C=L.catalog as Record<string,string>,O=L.originals;
+
+ test(title(L,'a native list that mirrors its saved file stays English with a Spanish caption (F2)','a native list that mirrors its saved file stays English with a <L> caption (F2)'),async({page})=>{
+ await open(page,L);
  await page.locator('.sky-card .card-heading > button').click();
  const toggle=page.locator('.portal-header .tools-toggle');if(await toggle.isVisible())await toggle.click();
  await id(page,'instructor-mode-open').click();await id(page,'instructor-mode-confirm-on').click();
@@ -125,60 +126,60 @@ test('a native list that mirrors its saved file stays English with a Spanish cap
  const yes=page.locator('[data-testid$=-yes]:visible').first();if(await yes.count())await yes.click();await id(page,'ob-options-ok').click();
  await id(page,'fi-file-menu').click();await id(page,'fi-field-information').click();await id(page,'fi-star-list').click();
  const lines=id(page,'fi-slist-lines');await expect(lines).toBeVisible({timeout:15_000});
- await expect(lines).toHaveAttribute('lang','en');await expect(id(page,'fi-slist-mirror-caption')).toHaveText(es['nativeMirror.caption']);
+ await expect(lines).toHaveAttribute('lang','en');await expect(id(page,'fi-slist-mirror-caption')).toHaveText(C['nativeMirror.caption']);
  await expect(page.locator('[data-testid=fi-slist] h2')).toHaveText(O['CLEA Star Field Data']);
 });
 
-test('View original (English): VIREO\'s own texts come back in English at the next load, OpenVireo\'s web text stays Spanish',async({page})=>{
+ test(title(L,'View original (English): VIREO\'s own texts come back in English at the next load, OpenVireo\'s web text stays Spanish','View original (English): VIREO\'s own texts come back in English at the next load, OpenVireo\'s web text stays <L>'),async({page})=>{
  const dateDialog=async()=>{
   await page.locator('.sky-card .card-heading > button').click();
   const d=page.locator('details:has([data-testid=ob-set-date])').first();if(await d.count())await d.evaluate(e=>{(e as HTMLDetailsElement).open=true;});
   await id(page,'ob-set-date').click();return id(page,'ob-date-dialog');
  };
- await open(page,'es-419');
+ await open(page,L);
  let dialog=await dateDialog();
  await expect(dialog.getByRole('heading')).toHaveText(O['Set Date/Time, ID']);await expect(dialog).toContainText(O['Universal Time (UTC)']);
  // The option is read when the page loads: set it, and the open page is unchanged until the next load.
  await page.evaluate(()=>localStorage.setItem('openvireo-vireo-originals','1'));
  await expect(dialog.getByRole('heading')).toHaveText(O['Set Date/Time, ID']);
- await page.reload();await expect(page.locator('html')).toHaveAttribute('lang','es-419');
+ await page.reload();await expect(page.locator('html')).toHaveAttribute('lang',L.entry.htmlLang);
  dialog=await dateDialog();
  await expect(dialog.getByRole('heading')).toHaveText('Set Date/Time, ID');await expect(dialog).toContainText('Universal Time (UTC)');
- await expect(page.locator('.sky-card .card-heading > button')).toHaveText(es['sky.close']);// web text: still Spanish
+ await expect(page.locator('.sky-card .card-heading > button')).toHaveText(C['sky.close']);// web text: still in the language
  await page.keyboard.press('Escape');
  await page.evaluate(()=>localStorage.removeItem('openvireo-vireo-originals'));
 });
 
 // Review 1, C1: with the option on, the whole walk shows no Spanish translation of a VIREO original (menus, buttons, boxes and
 // dialog captions included), while OpenVireo's own web text stays Spanish.
-test('View original (English) on: every VIREO name in the observatory walk reads in English, the web text stays Spanish',async({page})=>{
+ test(title(L,'View original (English) on: every VIREO name in the observatory walk reads in English, the web text stays Spanish','View original (English) on: every VIREO name in the observatory walk reads in English, the web text stays <L>'),async({page})=>{
  test.setTimeout(180_000);await page.setViewportSize({width:1440,height:1000});
  await page.addInitScript(()=>localStorage.setItem('openvireo-vireo-originals','1'));
  const bare=(text:string)=>text.replace(/^@[a-z-]+:/,'').replace(/(?: ›|…|\.\.\.)$/,'').trim();
  // OpenVireo's own Spanish (catalog and maps) and VIREO's English may coincide with a Spanish original («Minutos», «Min»).
  const leaves=(v:unknown):string[]=>typeof v==='string'?[v]:v&&typeof v==='object'?Object.values(v).flatMap(leaves):[];
- const MAPS=[APP_SHELL_ES,CAMERA_ES,FIELD_INFO_ES,FIELD_READ_DETAILS_ES,HELP_MENU_ES,LANGUAGE_CHOICE_ES,NAKED_EYE_ES,OBJECT_X_LAB_ES,OBSERVATION_METADATA_ES,OBSERVATORY_ES,POLISH_ES,PROJECT_LINKS_ES,QSO_LIST_ES,SOUND_ES,TOUR_ES,VARIABLE_STARS_ES];
- const web=new Set([...Object.values(es as Record<string,string>),...MAPS.flatMap(leaves),...Object.keys(O)].map(bare)),spanish=new Set(Object.values(O).map(bare).filter(t=>!web.has(t)));
+ const web=new Set([...Object.values(C),...L.observatoryMaps.flatMap(leaves),...Object.keys(O)].map(bare)),spanish=new Set(Object.values(O).map(bare).filter(t=>!web.has(t)));
  const left:string[]=[];
- await walk(page,'es-419',async step=>{for(const t of await texts(page))if(spanish.has(bare(t))&&!SAME.has(bare(t)))left.push(`${step}: ${t}`);});
+ await walk(page,L,async step=>{for(const t of await texts(page))if(spanish.has(bare(t))&&!SAME.has(bare(t)))left.push(`${step}: ${t}`);});
  expect([...new Set(left)]).toEqual([]);
  for(const [testId,name] of [['ob-set-coordinates','Set Coordinates…'],['ob-view-select','View/Select from List…'],['ob-add-current','Add Current Item/Position to List…'],
   ['fi-file-menu','File'],['ob-tools-menu','Tools'],['ob-set-date','Set Date/Time…'],['ob-site-parameters','Site Parameters…'],['ob-site-information','Site Information…']] as const)
   await expect(id(page,testId)).toHaveText(name);
  await expect(page.locator('.telescope-motion').getByTestId('ob-options')).toHaveText('Optical Simulation Options…');
- await expect(page.locator('.sky-card .card-heading > button')).toHaveText(es['sky.close']);
-});
+ await expect(page.locator('.sky-card .card-heading > button')).toHaveText(C['sky.close']);
+ });
+}
 
 /** Front SC9: the layout check of tests/fixtures/layoutProblems.ts (no local copy), with the options that keep this spec's
  * checks: its old copy checked every open dialog, menu and sub-menu with these controls (eachDialog); the fixture adds the
  * page's own controls and plot text. Run with the CI's DejaVu fonts (docs/I18N.md). */
 const LAYOUT:LayoutOptions={eachDialog:{dialogs:'dialog[open],[role=dialog],[role=alertdialog],[role=group].fi-menu-list,[role=group].fi-submenu,.ob-dialog',controls:'button,label,legend,h2,h3,dt,dd,small,p'}};
 
-for(const width of [320,1440])test(`at ${width} px the Spanish observatory dialogs, menus and the options dialog lay out without overflow or clipping`,async({page})=>{
+for(const L of TRANSLATED)for(const width of [320,1440])test(title(L,`at ${width} px the Spanish observatory dialogs, menus and the options dialog lay out without overflow or clipping`,`at ${width} px the <L> observatory dialogs, menus and the options dialog lay out without overflow or clipping`),async({page})=>{
  test.setTimeout(180_000);await page.setViewportSize({width,height:width===320?700:1000});
  const problems:string[]=[];
- await walk(page,'es-419',async step=>{for(const p of await layoutProblems(page,LAYOUT))problems.push(`${step}: ${p}`);
-  if(['Optical Simulation Options','File › Field Information › Star Data List','Site Parameters'].includes(step))await page.screenshot({path:test.info().outputPath(`es-observatory-${width}-${step.replace(/\W+/g,'-')}.png`)});});
+ await walk(page,L,async step=>{for(const p of await layoutProblems(page,LAYOUT))problems.push(`${step}: ${p}`);
+  if(['Optical Simulation Options','File › Field Information › Star Data List','Site Parameters'].includes(step))await page.screenshot({path:test.info().outputPath(`${L.tag}-observatory-${width}-${step.replace(/\W+/g,'-')}.png`)});});
  expect([...new Set(problems)]).toEqual([]);
 });
 
@@ -193,7 +194,7 @@ test('the walk in English is unchanged: the native caption is absent and the VIR
 // Review 1: the Multi-Spec windows (Control, its boxes, the spectra list, a spectrum, its Information and its print) in Spanish,
 // on the exact Hubble Coma – 2 pointing with Edit Mode, as tests/multispec.spec.ts does, with a 3 s exposure on the page clock.
 async function multiSpecWalk(page:Page,lang:Lang,each:(step:string)=>Promise<void>){
- const T=(key:keyof typeof en)=>lang==='es-419'?(es as Record<string,string>)[key]:en[key];
+ const T=(key:keyof typeof en)=>typeof lang==='string'?en[key]:lang.text(en[key]);
  await page.clock.install();await open(page,lang);
  await page.locator('.sky-card .card-heading > button').click();
  if(!await page.getByRole('button',{name:T('runningClock.trackingOn'),exact:true}).isVisible())await page.getByText(T('runningClock.title'),{exact:true}).click();
@@ -202,7 +203,7 @@ async function multiSpecWalk(page:Page,lang:Lang,each:(step:string)=>Promise<voi
  await page.getByText(T('sky.coordinates'),{exact:true}).click();
  await page.locator('#point-ra').fill('13.002305555555555');await page.locator('#point-dec').fill('27.9775');
  await page.getByRole('button',{name:T('sky.pointCoordinates'),exact:true}).click();await expect(id(page,'pointing-dec')).toHaveText(/^27\.97/,{timeout:30_000});
- await page.getByRole('button',{name:/^(Telescope|Telescopio) ·/}).click();
+ await page.getByRole('button',{name:/^(Telescope|Telescopio|Telescópio) ·/}).click();
  const toggle=page.locator('.portal-header .tools-toggle');if(await toggle.isVisible())await toggle.click();
  await id(page,'instructor-mode-open').click();await id(page,'instructor-mode-confirm-on').click();if(await toggle.isVisible()&&await toggle.getAttribute('aria-expanded')==='true')await toggle.click();
  await page.locator('.telescope-motion').getByTestId('ob-options').click();await id(page,'ob-options-edit-mode').check();await id(page,'ob-options-ok').click();
@@ -225,17 +226,17 @@ async function multiSpecWalk(page:Page,lang:Lang,each:(step:string)=>Promise<voi
  await id(page,'ms-spectrum').getByTestId('ms-print').click();await expect(id(page,'ms-print-preview')).toBeVisible();await each('Multi-Spec print preview');
  await id(page,'ms-print-close').click();
 }
-test('Multi-Spec in Spanish: Control, boxes, spectra list, spectrum, Information and print read differently from English',async({browser})=>{
+for(const L of TRANSLATED)test(title(L,'Multi-Spec in Spanish: Control, boxes, spectra list, spectrum, Information and print read differently from English','Multi-Spec in <L> (<tag> preview): Control, boxes, spectra list, spectrum, Information and print read differently from English'),async({browser})=>{
  test.setTimeout(300_000);
- const seen:Record<'en'|'es-419',Map<string,Set<string>>>={en:new Map(),'es-419':new Map()};
- for(const lang of ['en','es-419'] as const){
+ const seen:Record<'en'|'own',Map<string,Set<string>>>={en:new Map(),own:new Map()};
+ for(const lang of ['en','own'] as const){
   const page=await browser.newPage({viewport:{width:1440,height:1000}});const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
-  await multiSpecWalk(page,lang,async step=>{seen[lang].set(step,new Set(await texts(page)));});
-  expect(errors,lang).toEqual([]);await page.close();
+  await multiSpecWalk(page,lang==='en'?'en':L,async step=>{seen[lang].set(step,new Set(await texts(page)));});
+  expect(errors,lang==='en'?'en':L.tag).toEqual([]);await page.close();
  }
  const english=new Set([...seen.en.values()].flatMap(s=>[...s]));
  const left:string[]=[];
- for(const [step,list] of seen['es-419'])for(const t of list)if(english.has(t)&&!same(t.replace(/^@[a-z-]+:/,'')))left.push(`${step}: ${t}`);
+ for(const [step,list] of seen.own)for(const t of list)if(english.has(t)&&!same(t.replace(/^@[a-z-]+:/,''),L))left.push(`${step}: ${t}`);
  expect([...new Set(left)]).toEqual([]);
 });
 /** Front SC9: problems the fixture's plot-text check (which the old local copy did not have) found in the Multi-Spec walk at
@@ -253,12 +254,20 @@ const MULTISPEC_KNOWN=[
  skyLabel(es['sky.supportedGalaxyLabel'].replace('{id}','NGC 4874').replace('{label}','Coma – 1')),
  /^Multi-Spec Control with selections: plot text “3” outside its plot card ms-card \(/,
 ];
-for(const width of [320,1440])test(`at ${width} px the Spanish Multi-Spec windows lay out without overflow or clipping`,async({page})=>{
+/** Front PT1: MULTISPEC_KNOWN as it reads in another language: the second sky-map label is built from that language's
+ * sky.supportedGalaxyLabel (the Spanish label in an entry is replaced by the language's), so an entry removed above is removed
+ * for every language. */
+const esc=(text:string)=>text.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const knownFor=(L:LanguageText)=>{
+ const label=(C:Record<string,string>)=>C['sky.supportedGalaxyLabel'].replace('{id}','NGC 4874').replace('{label}','Coma – 1');
+ return L.tag==='es-419'?MULTISPEC_KNOWN:MULTISPEC_KNOWN.map(k=>new RegExp(k.source.split(esc(label(es))).join(esc(label(L.catalog as Record<string,string>))),k.flags));
+};
+for(const L of TRANSLATED)for(const width of [320,1440])test(title(L,`at ${width} px the Spanish Multi-Spec windows lay out without overflow or clipping`,`at ${width} px the <L> Multi-Spec windows lay out without overflow or clipping`),async({page})=>{
  test.setTimeout(240_000);await page.setViewportSize({width,height:width===320?700:1000});
- const problems:string[]=[];
- await multiSpecWalk(page,'es-419',async step=>{for(const p of await layoutProblems(page,LAYOUT))problems.push(`${step}: ${p}`);
-  if(/list|Information/.test(step))await page.screenshot({path:test.info().outputPath(`es-multispec-${width}-${step.replace(/\W+/g,'-')}.png`)});});
+ const problems:string[]=[],KNOWN=knownFor(L);
+ await multiSpecWalk(page,L,async step=>{for(const p of await layoutProblems(page,LAYOUT))problems.push(`${step}: ${p}`);
+  if(/list|Information/.test(step))await page.screenshot({path:test.info().outputPath(`${L.tag}-multispec-${width}-${step.replace(/\W+/g,'-')}.png`)});});
  const found=[...new Set(problems)];
- expect(found.filter(p=>!MULTISPEC_KNOWN.some(k=>k.test(p)))).toEqual([]);
- expect(MULTISPEC_KNOWN.filter(k=>!found.some(p=>k.test(p))).map(String),'a known problem no longer appears: remove it from MULTISPEC_KNOWN').toEqual([]);
+ expect(found.filter(p=>!KNOWN.some(k=>k.test(p)))).toEqual([]);
+ expect(KNOWN.filter(k=>!found.some(p=>k.test(p))).map(String),'a known problem no longer appears: remove it from MULTISPEC_KNOWN').toEqual([]);
 });

@@ -47,7 +47,9 @@ const LETTERS:Readonly<Record<string,RegExp>>=Object.fromEntries(TRANSLATED.map(
 const HTML_LANG:Readonly<Record<Locale,string>>={en:'en',qps:'en','es-419':'es-419','pt-BR':'pt-BR'};
 /** The accessible-name matcher of an English text in this locale: its Spanish form in es-419 (which must exist), a language before
  * its release its own form or the English the page then shows (languageText.ts `text`), else `L`. */
-const N=(locale:Locale,text:string)=>{if(locale==='pt-BR'){const t=TRANSLATED.find(x=>x.tag===locale)!;return exact(text==='Skip the tour'?t.maps.tour.skip:t.text(text));}if(locale!=='es-419')return L(text);const arrow=/ ↗$/.test(text)&&!SPANISH.has(text)?' ↗':'',spanish=SPANISH.get(arrow?text.slice(0,-2):text);if(!spanish)throw new Error(`No Spanish for “${text}”`);return exact(spanish+arrow);};
+const N=(locale:Locale,text:string)=>{if(locale==='pt-BR'){const t=TRANSLATED.find(x=>x.tag===locale)!;if(text==='Skip the tour')return exact(t.maps.tour.skip);
+ // Front PT1: a button whose English ends in “ ↗” is its catalog text plus the arrow the component adds, as for Spanish.
+ const arrow=/ ↗$/.test(text)&&t.text(text)===text?' ↗':'';return exact(t.text(arrow?text.slice(0,-2):text)+arrow);}if(locale!=='es-419')return L(text);const arrow=/ ↗$/.test(text)&&!SPANISH.has(text)?' ↗':'',spanish=SPANISH.get(arrow?text.slice(0,-2):text);if(!spanish)throw new Error(`No Spanish for “${text}”`);return exact(spanish+arrow);};
 const button=(p:Page,name:string,locale:Locale='en')=>p.getByRole('button',{name:N(locale,name)});
 const sha=(b:Buffer)=>createHash('sha256').update(b).digest('hex');
 /** A fixed instant for every Date read (timers keep running), so exports that record "now" are comparable. */
@@ -253,7 +255,7 @@ test('hot list: Save HTL file after adding a target',async({browser,baseURL})=>{
   await page.getByLabel(N(locale,'HTL right ascension · hours')).fill('23.75');await page.getByLabel(N(locale,'HTL declination · degrees')).fill('-30');
   await button(page,'Apply HTL edit',locale).click();await expect(page.locator('#htl-rows option')).toHaveCount(1);
   return {htl:await download(page,()=>button(page,'Save HTL file',locale).click())};
- },{},page=>page.locator('.htl-card'),['en','qps','es-419']);
+ },{},page=>page.locator('.htl-card'),['en','qps','es-419','pt-BR']);
 });
 
 test('options file: Save Updates writes VEO_OPTS.json',async({browser,baseURL})=>{
@@ -265,7 +267,7 @@ test('options file: Save Updates writes VEO_OPTS.json',async({browser,baseURL})=
   await page.locator('.telescope-motion').getByTestId('ob-options').click();await expect(page.getByTestId('ob-options-dialog')).toBeVisible();
   await page.getByTestId('ob-options-test-mode').check();await page.getByTestId('ob-options-show-object-id').check();
   return {options:await download(page,()=>page.getByTestId('ob-options-save').click())};
- },{},page=>page.locator('.telescope-motion'),['en','qps','es-419']);
+ },{},page=>page.locator('.telescope-motion'),['en','qps','es-419','pt-BR']);
 });
 
 // Front ES2: the observatory's File › Field Information lists (Edit Mode) and the QSO List (Virtual Observatory) write the lines
@@ -286,7 +288,7 @@ test('field information: Star Data List Save Text and Comma Delimit, QSO List Sa
   await id(page,'fi-file-menu').click();await id(page,'qso-menu').click();await page.locator('[data-testid=qso-ok],[data-testid=qso-dialog-ok]').first().click();
   await expect(id(page,'qso-list-line-2')).toBeVisible({timeout:20_000});
   return {starText,starCsv,qsoText:await save(page,'qso-list','displayed')};
- },{},page=>page.getByTestId('fi-slist'),['en','qps','es-419']);
+ },{},page=>page.getByTestId('fi-slist'),['en','qps','es-419','pt-BR']);
 });
 
 test('variable stars: Save Text › As Displayed',async({browser,baseURL})=>{
