@@ -1,0 +1,30 @@
+import type {LOAD_SAVE_MESSAGES_EN} from '../../../components/PulsarLoadSaveMessages';
+import type {Translation} from '../../maps';
+/** Front PT6: Brazilian Portuguese (pt-BR) for the Load question Yes flow. A web adaptation by OpenVireo, not CLEA's; VIREO's own captions are translated through vireo() (originals.json). */
+export const LOAD_SAVE_PT:Translation<typeof LOAD_SAVE_MESSAGES_EN>=Object.freeze({
+ 'loadSave.yes.reason':'Sim (salvar primeiro) abre o salvamento web verificado deste registro, não a caixa de diálogo Salvar original. O Sim em si não carrega nada: depois que uma cópia é lida de volta igual, você escolhe o registro a ser carregado em uma etapa separada, ou cancela e mantém os dados atuais.',
+ 'loadSave.yes.unsupported.insecure-context':'Sim (salvar primeiro) não está disponível: esta página não é um contexto seguro, que a API de arquivos do navegador exige. Não e Cancelar funcionam como antes; “Baixar captura como .PLR…” ainda deixa o registro sem salvar.',
+ 'loadSave.yes.unsupported.no-api':'Sim (salvar primeiro) não está disponível: este navegador não oferece o seletor de arquivos para salvar com arquivos graváveis (showSaveFilePicker e createWritable). Não e Cancelar funcionam como antes; “Baixar captura como .PLR…” ainda deixa o registro sem salvar.',
+ 'loadSave.saveIntro':'Aberto pelo Sim da pergunta de Carregar. Depois que uma cópia é lida de volta igual, uma etapa separada permite escolher um registro para carregar; nada é carregado automaticamente. Cancelar fecha este Salvar e não carrega nada.',
+ 'loadSave.heading':'Salvo: escolha o registro a carregar',
+ 'loadSave.verified':'O registro atual foi salvo como “{file}” ({bytes} bytes lidos de volta iguais). Ele continua sendo os dados de pulsar atuais, com suas medições e seus cursores.',
+ 'loadSave.consequence':'Nada foi carregado. Escolher registro a carregar… abre o seletor de arquivos do navegador para um arquivo .PLR; esse arquivo substitui os dados atuais somente se for admitido. Cancelar mantém o registro atual e sua cópia verificada.',
+ 'loadSave.choosing':'Aguardando o seletor de arquivos. Seu navegador pode não informar quando o seletor é cancelado: se nada acontecer, pressione Cancelar ou pressione Escolher registro a carregar… de novo.',
+ 'loadSave.choose':'Escolher registro a carregar…',
+ 'loadSave.cancel':'Cancelar',
+ 'loadSave.refused.input':'Nada aconteceu: a pergunta de Carregar não conseguiu iniciar o Salvar.',
+ 'loadSave.refused.unsupported':'Sim (salvar primeiro) não está disponível neste navegador. Não e Cancelar funcionam como antes.',
+ 'loadSave.refused.not-asking':'Nada aconteceu: a pergunta de Carregar não está mais aberta.',
+ 'loadSave.refused.not-presented':'Nada aconteceu: esta janela não apresenta os dados atuais (por exemplo, um registro chamado “No Data”), então eles não podem ser salvos daqui. Não e Cancelar funcionam como antes.',
+ 'loadSave.refused.stale':'Nada aconteceu: os dados de pulsar atuais mudaram depois que a pergunta de Carregar foi aberta. Cancele e use Carregar de novo.',
+ 'loadSave.refused.not-memory':'Nada aconteceu: os dados atuais não são mais um registro do receptor não salvo. Cancele e use Carregar de novo.',
+ 'loadSave.refused.busy':'Nada aconteceu: um registro do receptor ou outra tentativa de salvamento está usando os dados atuais. Tente novamente quando terminar.',
+ 'loadSave.refused.output':'Nada foi aberto: outra tentativa de salvamento ainda está terminando. Tente novamente quando terminar.',
+ 'loadSave.status.ready':'Escolha o registro a carregar na próxima etapa ou cancele para manter os dados atuais.',
+ 'loadSave.status.saveCancelled':'Carregamento cancelado depois que o Salvar foi fechado. Nada foi carregado; o registro atual e a lista de medições permanecem inalterados. Um arquivo escolhido na caixa de diálogo Salvar pode já ter sido criado, esvaziado ou alterado.',
+ 'loadSave.status.cancelled':'Carregamento cancelado. Nada foi carregado; o registro atual mantém sua cópia verificada, suas medições e seus cursores.',
+ 'loadSave.status.noFile':'Nenhum arquivo escolhido. Nada foi carregado; escolha de novo ou cancele.',
+ 'loadSave.status.stale':'O Carregar depois de Salvar terminou: os dados de pulsar atuais ou sua cópia verificada mudaram. Nada foi carregado.',
+ 'loadSave.status.reading':'Nada mudou: o registro escolhido ainda está sendo lido. Aguarde o fim da leitura ou pressione Cancelar leitura.',
+ 'loadSave.fileRefused':'Nada foi carregado: conclua ou cancele primeiro o Carregar depois de Salvar.',
+});

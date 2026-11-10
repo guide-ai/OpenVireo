@@ -18,7 +18,7 @@ export type LayoutOptions=Readonly<{
  dialogs?:string;
  /** Check inside the last (topmost) open dialog instead of the first (es-radio). */
  topDialog?:boolean;
- /** Name the first three elements that stick out when the page overflows (es-e06). */
+ /** Name the first three elements that stick out when the page overflows (e06). */
  explainOverflow?:boolean;
  /** Also report a control that crosses its card or dialog inside a container that scrolls sideways (es-e01, es-e02 and
   * es-e04 did; the default, from es-e03 on, leaves that to the scrolling container). */

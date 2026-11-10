@@ -125,3 +125,33 @@ export const RADIO_MAPS:Readonly<Record<string,RadioMaps>>=Object.freeze({
  'pt-BR':{radioAntenna:RADIO_ANTENNA_PT,radioRecordSave:RADIO_RECORD_SAVE_PT,identical:ptIdentical.entries},
 });
 export const radioMaps=(tag:string):RadioMaps=>{const m=RADIO_MAPS[tag];if(!m)throw new Error(`No radio maps for ${tag}`);return m;};
+// Front PT6: the maps the E06 and E08 walks read beyond the catalog and originals (tests/i18n/e06.spec.ts, e08.spec.ts), per
+// language: the pulsar analysis maps (the View original test's web text and the checks around the VIREO captions), and the Object X
+// lab, guide and measuring maps with the camera and sound maps (the buttons the E08 walk clicks, the verdict, the web text).
+import {PULSAR_ES} from '../../src/i18n/es/maps/pulsar';
+import {SAVED_ROWS_ES} from '../../src/i18n/es/maps/pulsarSavedRows';
+import {LOAD_SAVE_ES} from '../../src/i18n/es/maps/pulsarLoadSave';
+import {OBJECT_X_GUIDE_ES} from '../../src/i18n/es/maps/objectXGuide';
+import {OBJECT_X_MEASURE_ES} from '../../src/i18n/es/maps/objectXMeasure';
+import {PULSAR_PT} from '../../src/i18n/pt-br/maps/pulsar';
+import {SAVED_ROWS_PT} from '../../src/i18n/pt-br/maps/pulsarSavedRows';
+import {LOAD_SAVE_PT} from '../../src/i18n/pt-br/maps/pulsarLoadSave';
+import {OBJECT_X_GUIDE_PT} from '../../src/i18n/pt-br/maps/objectXGuide';
+import {OBJECT_X_MEASURE_PT} from '../../src/i18n/pt-br/maps/objectXMeasure';
+import type {PULSAR_MESSAGES_EN} from '../../src/components/PulsarMessages';
+import type {SAVED_ROWS_MESSAGES_EN} from '../../src/components/PulsarSavedRowsMessages';
+import type {LOAD_SAVE_MESSAGES_EN} from '../../src/components/PulsarLoadSaveMessages';
+import type {OBJECT_X_GUIDE_EN,OBJECT_X_LAB_EN,OBJECT_X_MEASURE_EN} from '../../src/objectx/ObjectXMessages';
+import type {CAMERA_MESSAGES_EN} from '../../src/camera/CameraMessages';
+export type E06Maps=Readonly<{pulsar:Translation<typeof PULSAR_MESSAGES_EN>;pulsarSavedRows:Translation<typeof SAVED_ROWS_MESSAGES_EN>;pulsarLoadSave:Translation<typeof LOAD_SAVE_MESSAGES_EN>}>;
+export const E06_MAPS:Readonly<Record<string,E06Maps>>=Object.freeze({
+ 'es-419':{pulsar:PULSAR_ES,pulsarSavedRows:SAVED_ROWS_ES,pulsarLoadSave:LOAD_SAVE_ES},
+ 'pt-BR':{pulsar:PULSAR_PT,pulsarSavedRows:SAVED_ROWS_PT,pulsarLoadSave:LOAD_SAVE_PT},
+});
+export const e06Maps=(tag:string):E06Maps=>{const m=E06_MAPS[tag];if(!m)throw new Error(`No E06 maps for ${tag}`);return m;};
+export type E08Maps=Readonly<{objectXLab:Translation<typeof OBJECT_X_LAB_EN>;objectXGuide:Translation<typeof OBJECT_X_GUIDE_EN>;objectXMeasure:Translation<typeof OBJECT_X_MEASURE_EN>;camera:Translation<typeof CAMERA_MESSAGES_EN>;sound:unknown}>;
+export const E08_MAPS:Readonly<Record<string,E08Maps>>=Object.freeze({
+ 'es-419':{objectXLab:OBJECT_X_LAB_ES,objectXGuide:OBJECT_X_GUIDE_ES,objectXMeasure:OBJECT_X_MEASURE_ES,camera:CAMERA_ES,sound:SOUND_ES},
+ 'pt-BR':{objectXLab:OBJECT_X_LAB_PT,objectXGuide:OBJECT_X_GUIDE_PT,objectXMeasure:OBJECT_X_MEASURE_PT,camera:CAMERA_PT,sound:SOUND_PT},
+});
+export const e08Maps=(tag:string):E08Maps=>{const m=E08_MAPS[tag];if(!m)throw new Error(`No E08 maps for ${tag}`);return m;};

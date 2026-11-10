@@ -48,6 +48,24 @@
     "Marca"
    ],
    "reason": "the noun «Marca» (the mark the pointer and keys place), not a tu-command of «marcar»; the English “Mark placed by…” is a noun phrase"
+  },
+  "map:objectXMeasure.colRole": {
+   "words": [
+    "Marca"
+   ],
+   "reason": "the noun «Marca» (the column of the mark's role: target or reference star), not a tu-command of «marcar»; the English “Mark” is a column heading"
+  },
+  "map:pulsar.pulsar.nativeSave.problem.reserved": {
+   "rules": [
+    "quotes"
+   ],
+   "reason": "the straight double quote is one of the characters a file name cannot contain, listed literally as in the English"
+  },
+  "map:objectXLab.imageSkipped": {
+   "rules": [
+    "typography"
+   ],
+   "reason": "the lint calls this function with its sample text «A1» as the reasons list, so each character of the sample (« and ») is printed as a reason; the real reasons are the three Portuguese phrases of the map"
   }
  }
 }

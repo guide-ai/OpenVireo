@@ -2,7 +2,6 @@ import {type Page,type Locator} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
 import {SPANISH_LOCALE,langQuery} from '../fixtures/language';
 import {layoutProblems,type LayoutOptions} from '../fixtures/layoutProblems';
-import {readFileSync} from 'node:fs';
 import {enterInstructorMode} from '../fixtures/instructor-mode';
 import en from '../../src/i18n/en.json' with {type:'json'};
 import {TRANSLATED,radioMaps,type LanguageText} from './languageText';
@@ -48,18 +47,6 @@ const ISO=/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z?(?: UT)?$/;
  * each), and shared SAME entries that are Spanish words only, which that language must translate. Spanish's set is unchanged. */
 const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['OK','Longitude','Latitude','Altitude','Pulsar'])};
 const NOT_SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['Radio','Radio...','E','No','no','Hrs'])};
-/** Front PT5: the receiver's Record Save dialog also renders texts of the pulsar analysis map (`pulsar`, through
- * createPulsarTranslator), which Portuguese translates in PT6 (E06), as ES8a waited for ES8b. Until then only these keys may read
- * as English in pt-BR, only on that step; remove the list when PT6 merges (its test then fails if a key is still English). */
-const TODO_PT6_PULSAR_KEYS=['pulsar.rawExport.scope','pulsar.rawExport.format','pulsar.rawExport.inactive','pulsar.rawExport.inactiveNone','pulsar.rawExport.loss.heading',
- 'pulsar.rawExport.loss.header','pulsar.rawExport.loss.headerNone','pulsar.rawExport.loss.samples','pulsar.rawExport.loss.memory','pulsar.save.how','pulsar.save.extensionRule',
- 'pulsar.save.origin','pulsar.save.warning','pulsar.save.choose','pulsar.save.chooseAgain','pulsar.save.refusal.stale'] as const;
-const TODO_PT6_TAGS:ReadonlySet<string>=new Set(['pt-BR']);
-// Read from the English map's source (importing it here would pull in the catalog without an import attribute).
-const PULSAR_SOURCE=readFileSync(new URL('../../src/components/PulsarMessages.ts',import.meta.url),'utf8');
-const TODO_PT6=TODO_PT6_PULSAR_KEYS.map(k=>{const m=new RegExp(`'${k.replace(/\./g,'\\.')}': '((?:[^'\\\\]|\\\\.)*)'`).exec(PULSAR_SOURCE);if(!m)throw new Error(k);
- const t=m[1].replace(/\\'/g,"'");return new RegExp(`^${t.split(/\{\w+\}/).map(p=>p.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')).join('[\\s\\S]*?')}$`);});
-const pendingPt6=(text:string,L:LanguageText)=>TODO_PT6_TAGS.has(L.tag)&&TODO_PT6.some(p=>p.test(text));
 const same=(text:string,L?:LanguageText)=>{
  if(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false))return true;
  if(L!==undefined&&(NOT_SAME_IN[L.tag]?.has(text)??false))return false;
@@ -161,7 +148,7 @@ for(const L of TRANSLATED){
  }
  const english=new Set([...seen.en.values()].flatMap(s=>[...s].map(bare)));
  const left=new Map<string,string>();// each text once, with the first step that shows it
- for(const [step,list] of seen.own)for(const t of list)if(english.has(bare(t))&&!same(bare(t),L)&&!(step==='Record Save dialog'&&pendingPt6(bare(t),L))&&!left.has(t))left.set(t,step);
+ for(const [step,list] of seen.own)for(const t of list)if(english.has(bare(t))&&!same(bare(t),L)&&!left.has(t))left.set(t,step);
  expect([...left].map(([t,step])=>`${step}: ${t}`)).toEqual([]);
  // The scenario selectors' options are in the language.
  const options=[...seen.own.get('control panel')!].filter(t=>t.startsWith('@option:'));
