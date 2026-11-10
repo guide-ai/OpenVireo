@@ -159,6 +159,41 @@ const ru:Fixture[]=[
  {profile:'ru',rule:'invisible',en:'Telescope',good:'Телескоп',bad:'Теле\u00adскоп'},
  {profile:'ru',rule:'length',en:LONG,good:'Откройте купол, чтобы начать наблюдения сегодня вечером.',bad:'Купол.'},
 ];
-export const FIXTURES:readonly Fixture[]=[...ja,...zhHans,...zhHant,...hi,...ru];
+/** Front SC9: Spanish (es-419), the rules es.test.ts used to hand-code. The Spanish profile has no script, so `script` and
+ * `leftover-english` never apply (rules.test.ts), and no quote style is forbidden (Spanish writes both “ ” and « »). */
+const PULSAR_GLOSSARY:Glossary={forbidden:[{words:['pulsar'],use:'presionar'}]};
+const es419:Fixture[]=[
+ {profile:'es-419',rule:'placeholders',en:SAVED,good:'Se guardaron {count} archivos.',bad:'Se guardaron archivos.'},
+ {profile:'es-419',rule:'placeholders',en:SAVED,good:'Se guardaron {count} archivos.',bad:'Se guardaron {count} archivos ({count}).',note:'the multiset, where es.test.ts only checked «An» present'},
+ {profile:'es-419',rule:'html',en:OPEN_DOME,good:'Abre la cúpula.',bad:'Abre la <b>cúpula</b>.'},
+ {profile:'es-419',rule:'identical',en:'Telescope',good:'Telescopio',bad:'Telescope'},
+ {profile:'es-419',rule:'glossary',en:GLOSSARY_EN,good:'Apunta el telescopio al objeto de la Lista de objetos.',bad:'Apunta el anteojo al objeto de la Lista de objetos.',glossary:{terms:[{en:'\\btelescopes?\\b',text:'telescopio'}]},note:'a required term'},
+ {profile:'es-419',rule:'glossary',en:GLOSSARY_EN,good:'Apunta el telescopio al objeto de la lista de objetos.',bad:'Apunta el telescopio al objeto de la lista.',glossary:{names:[{en:'Hot List',text:'Lista de objetos'}]},note:'a fixed name, case folded'},
+ {profile:'es-419',rule:'glossary',en:'Use the computer.',good:'Usa la computadora.',bad:'Usa el Ordenador.',glossary:{forbidden:[{words:['ordenador'],use:'computadora'}]},note:'a forbidden word, any case'},
+ {profile:'es-419',rule:'glossary',en:'Park the car, not the phone.',good:'Estaciona el automóvil, no el celular.',bad:'Estaciona el automóvil, no el móvil.',glossary:{forbidden:[{words:['móvil'],use:'celular'}]},note:'Unicode word edges: «automóvil» passes'},
+ {profile:'es-419',rule:'glossary',en:'Open Pulsar Parameters.',good:'Abre Parámetros de púlsares (Pulsar Parameters).',bad:'Abre Parámetros de púlsares (Pulsar Parameters) y pulsar el botón.',glossary:PULSAR_GLOSSARY,note:'VIREO names set aside, the verb still fails'},
+ {profile:'es-419',rule:'glossary',en:'Open Pulsar Parameters.',good:'Abre Parámetros de púlsares (Pulsar Parameters).',bad:'Abre Parámetros de púlsares (pulsar parameters).',glossary:PULSAR_GLOSSARY,note:'only the exact, case-sensitive names'},
+ {profile:'es-419',rule:'glossary',en:'Track the redshift.',good:'Sigue el corrimiento al rojo.',bad:'Sigue el desplazamiento al rojo.',glossary:{forbidden:[{pattern:'desplazamiento al rojo',use:'corrimiento al rojo'}]},note:'a forbidden pattern'},
+ {profile:'es-419',rule:'register',en:OPEN_DOME,good:'Abre la cúpula.',bad:'Abra usted la cúpula.'},
+ {profile:'es-419',rule:'register',en:'Open the dome, everyone.',good:'Abran la cúpula, todos.',bad:'Ustedes abren la cúpula.'},
+ {profile:'es-419',rule:'register',en:OPEN_DOME,good:'Abre la cúpula.',bad:'Abre la cúpula, ustedé.',note:'ASCII word edges as es.test.ts had: a letter with an accent does not hide usted'},
+ {profile:'es-419',rule:'register',en:'Open your investigation.',good:'Abra su investigación.',bad:'Abre tu investigación.',registers:{es:'usted'},note:'the register flipped to usted'},
+ {profile:'es-419',rule:'claim',en:'Translation by OpenVireo.',good:'Traducción de OpenVireo.',bad:'Traducción oficial de OpenVireo.'},
+ {profile:'es-419',rule:'claim',en:'Translation by OpenVireo.',good:'Adaptación web de OpenVireo.',bad:'Traduccion de CLEA.'},
+ {profile:'es-419',rule:'glyphs',en:'File › Save…',good:'Archivo › Guardar…',bad:'Archivo > Guardar…'},
+ {profile:'es-419',rule:'glyphs',en:'File › Save…',good:'Archivo › Guardar…',bad:'Archivo › Guardar...',note:'… is counted on its own, as es.test.ts did'},
+ {profile:'es-419',rule:'pairs',en:'Change the language?',good:'¿Cambiar el idioma?',bad:'Cambiar el idioma?'},
+ {profile:'es-419',rule:'pairs',en:'Change the language?',good:'¿Cambiar el idioma?',bad:'¿Cambiar el idioma.'},
+ {profile:'es-419',rule:'pairs',en:'Restore {file}?',good:'¿Restaurar {file}?',bad:'Restaurar {file}?',note:'a closer after a {param}'},
+ {profile:'es-419',rule:'pairs',en:'Done!',good:'¡Listo!',bad:'¡Listo.'},
+ {profile:'es-419',rule:'pairs',en:'Press ? or open ?lang=es, then confirm?',good:'Presiona la tecla ? o abre ?lang=es, ¿y confirmas?',bad:'Presiona la tecla ? o abre ?lang=es, y confirmas?',note:'a bare ? is not a closer'},
+ {profile:'es-419',rule:'pairs',en:'VIREO says “Done!”',good:'VIREO dice “Done!”',bad:'VIREO dice “Listo!”',note:'a VIREO message quoted in English keeps its marks'},
+ {profile:'es-419',rule:'typography',en:'What is this?',good:'¿Qué es esto?',bad:'¿ Qué es esto?'},
+ {profile:'es-419',rule:'digits',en:EXPOSURE,good:'Exposición: 2.5 s',bad:'Exposición: 2,5 s'},
+ {profile:'es-419',rule:'normalization',en:'Dome',good:'Cúpula',bad:'Cúpula'.normalize('NFD')},
+ {profile:'es-419',rule:'invisible',en:'Telescope',good:'Telescopio',bad:'Tele\u00adscopio'},
+ {profile:'es-419',rule:'length',en:LONG,good:'Abre la cúpula para empezar a observar esta noche.',bad:'Abre.'},
+];
+export const FIXTURES:readonly Fixture[]=[...ja,...zhHans,...zhHant,...hi,...ru,...es419];
 /** The rules each profile must have fixtures for (purity applies only where the profile checks a script mix-up). */
 export const RULES_WITH_FIXTURES:readonly RuleId[]=['placeholders','html','identical','script','leftover-english','glossary','register','claim','glyphs','pairs','quotes','typography','digits','normalization','invisible','purity','length'];

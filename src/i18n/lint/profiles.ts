@@ -8,10 +8,11 @@ import {wordSource,type Boundary,type GlyphClass,type LocaleProfile,type MarkPai
  * polite です/ます, Hindi आप, Russian lower-case «вы», Chinese (zh-Hans and zh-Hant) 你. The alternatives stay expressible
  * (plain だ/である, तुम, «ты», 您) so the fixtures prove each register pattern both ways; profileFor builds the patterns
  * from these values. */
-export type Registers=Readonly<{ja:'desu-masu'|'plain';hi:'aap'|'tum';ru:'vy'|'ty';zh:'ni'|'nin'}>;
-export const REGISTER:Registers={ja:'desu-masu',hi:'aap',ru:'vy',zh:'ni'};
-export type ProfileId='ja'|'hi'|'zh-Hans'|'zh-Hant'|'ru';
-export const PROFILE_IDS:readonly ProfileId[]=['ja','hi','zh-Hans','zh-Hant','ru'];
+export type Registers=Readonly<{ja:'desu-masu'|'plain';hi:'aap'|'tum';ru:'vy'|'ty';zh:'ni'|'nin';es:'tu'|'usted'}>;
+/** Front SC9: Spanish tú (decision 6, 2026-11-09), with usted as the expressible alternative. */
+export const REGISTER:Registers={ja:'desu-masu',hi:'aap',ru:'vy',zh:'ni',es:'tu'};
+export type ProfileId='ja'|'hi'|'zh-Hans'|'zh-Hant'|'ru'|'es-419';
+export const PROFILE_IDS:readonly ProfileId[]=['ja','hi','zh-Hans','zh-Hant','ru','es-419'];
 
 const words=(list:readonly string[],boundary:Boundary,flags='iu')=>new RegExp(list.map(w=>wordSource(w.normalize('NFC'),boundary)).join('|'),flags);
 /** VIREO's own `...` (43 originals, 22 en.json strings) and `…` count as one ellipsis; Japanese and Chinese also write `……`. */
@@ -140,9 +141,42 @@ export function profileFor(id:ProfileId,registers:Registers=REGISTER):LocaleProf
    claims:[/(?<!не|не[ \u00a0]|не является[ \u00a0])официальн\p{L}* перевод|(?<!не[ \u00a0]|не является[ \u00a0])перевод\p{L}* (?:от )?CLEA/iu],
    lengthBand:[.8,1.8],pluralCategories:['one','few','many','other'],
   };
+  case 'es-419':return spanishProfile(registers.es);
  }
 }
 /** Plural categories a key may leave out (they fall back to `other`), for the Latin-script languages to come: Spanish,
  * Portuguese and French select `many` only for exact millions. */
 export const OPTIONAL_PLURAL_CATEGORIES:Readonly<Record<string,readonly PluralCategory[]>>={es:['many'],pt:['many'],fr:['many']};
+/** Front SC9: the Spanish (es-419) profile, moved from the hand-coded checks of src/i18n/es/es.test.ts (ES1–ES-REL), which
+ * now only loads its files and runs the framework with this profile. Each value reproduces the old check or is stricter
+ * (docs/I18N.md, "the Spanish lints on the framework (SC9)"). The glossary (terms, names, forbidden words with voseo and the
+ * usted imperatives), identical.json and lint-allowed.json stay data in src/i18n/es/. */
+export const SPANISH_VIREO_PULSAR_NAMES=/(?<![\p{L}\p{N}])(?:Access Pulsar List|Plot Pulsar Positions|Pulsar (?:Analysis|Parameters|List|Identification))(?![\p{L}\p{N}])/gu;
+/** ES5: a closer that ends a question or exclamation follows a letter, digit, bracket, quote, … or a {param}, and is followed by
+ * a space, bracket, quote, punctuation or the end; a bare ? (a key, «?lang=») is not a closer. */
+const SPANISH_CLOSE_AFTER=/[\p{L}\d)»”…}]/u,SPANISH_CLOSE_BEFORE=/[\s)»”.,;:]|$/;
+function spanishRegister(setting:Registers['es']):Pattern[]{
+ return setting==='tu'
+  // es.test.ts's /\b(usted|ustedes)\b/iu, kept with its ASCII word edges (JavaScript's \b), so «ustedés» or «ñusted» still
+  // fail as they did; the glossary's forbidden words add usted, vosotros and the usted and voseo imperatives with Unicode edges.
+  ?[{label:'usted pronoun',pattern:/(?<![A-Za-z0-9_])usted(?:es)?(?![A-Za-z0-9_])/iu,use:'address the student as tú (decision 6)'}]
+  :[{label:'tú pronoun',pattern:words(['tú','ti','contigo','tu','tus','tuyo','tuya','tuyos','tuyas'],'letters'),use:'address the student as usted'}];
+}
+function spanishProfile(setting:Registers['es']):LocaleProfile{
+ return {
+  id:'es-419',name:'Spanish',script:null,boundary:'letters',caseFold:'es',
+  // As es.test.ts: each mark counted on its own (… is not merged with VIREO's ..., so a … that becomes ... still fails).
+  glyphs:['›','…','↗','▸','·','—','–','×','✳'].map(m=>({marks:[m]})),
+  pairs:[{open:'¿',close:'?',closeAfter:SPANISH_CLOSE_AFTER,closeBefore:SPANISH_CLOSE_BEFORE},{open:'¡',close:'!',closeAfter:SPANISH_CLOSE_AFTER,closeBefore:SPANISH_CLOSE_BEFORE}],
+  // Spanish writes both “ ” and « » (and VIREO's own " in quoted file formats), so no quote mark is forbidden.
+  forbiddenMarks:[],
+  // New with SC9 (the catalog had none): ¿ and ¡ are written against the first word.
+  typography:[{label:'space after ¿ or ¡',pattern:/[¿¡][ \u00a0]/u,use:'write ¿ and ¡ against the first word'}],
+  register:{setting,patterns:spanishRegister(setting)},
+  claims:[/traducci[oó]n (oficial|de CLEA)/iu],
+  lengthBand:[.7,1.6],pluralCategories:['one','many','other'],optionalPluralCategories:OPTIONAL_PLURAL_CATEGORIES.es,
+  forbiddenSetAside:SPANISH_VIREO_PULSAR_NAMES,
+ };
+}
 export const PROFILES:Readonly<Record<ProfileId,LocaleProfile>>=Object.freeze(Object.fromEntries(PROFILE_IDS.map(id=>[id,profileFor(id)])) as Record<ProfileId,LocaleProfile>);
+

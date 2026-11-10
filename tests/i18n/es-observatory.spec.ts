@@ -1,6 +1,7 @@
 import {type Page} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
 import {SPANISH_LOCALE,langQuery} from '../fixtures/language';
+import {layoutProblems,type LayoutOptions} from '../fixtures/layoutProblems';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
 import originals from '../../src/i18n/es/originals.json' with {type:'json'};
@@ -168,27 +169,15 @@ test('View original (English) on: every VIREO name in the observatory walk reads
  await expect(page.locator('.sky-card .card-heading > button')).toHaveText(es['sky.close']);
 });
 
-/** Layout problems in the open dialogs, menus and boxes: page overflow, content wider than its dialog, clipped controls and
- * dialogs or menus that leave the viewport. Run with the CI's DejaVu fonts (docs/I18N.md). */
-const layoutProblems=(page:Page)=>page.evaluate(()=>{
- const out:string[]=[],width=document.documentElement.clientWidth;
- if(document.documentElement.scrollWidth>width)out.push(`page overflows horizontally (${document.documentElement.scrollWidth} > ${width})`);
- for(const d of document.querySelectorAll<HTMLElement>('dialog[open],[role=dialog],[role=alertdialog],[role=group].fi-menu-list,[role=group].fi-submenu,.ob-dialog')){
-  if(!d.offsetParent&&getComputedStyle(d).position!=='fixed')continue;const r=d.getBoundingClientRect();if(!r.width)continue;
-  const name=d.getAttribute('data-testid')??d.className;
-  if(r.left<-.5||r.right>width+.5)out.push(`${name} leaves the viewport (${Math.round(r.left)}–${Math.round(r.right)})`);
-  if(d.scrollWidth>d.clientWidth+1&&getComputedStyle(d).overflowX!=='visible')out.push(`${name} scrolls horizontally`);
-  for(const c of d.querySelectorAll<HTMLElement>('button,label,legend,h2,h3,dt,dd,small,p')){if(!c.offsetParent)continue;
-   if(c.scrollWidth>c.clientWidth+1&&['hidden','clip'].includes(getComputedStyle(c).overflowX))out.push(`${name}: “${c.textContent?.trim().slice(0,40)}” clipped`);
-   const q=c.getBoundingClientRect();if(q.width&&(q.right>r.right+1||q.left<r.left-1)&&getComputedStyle(d).overflowX!=='visible')out.push(`${name}: “${c.textContent?.trim().slice(0,40)}” crosses its dialog`);}
- }
- return out;
-});
+/** Front SC9: the layout check of tests/fixtures/layoutProblems.ts (no local copy), with the options that keep this spec's
+ * checks: its old copy checked every open dialog, menu and sub-menu with these controls (eachDialog); the fixture adds the
+ * page's own controls and plot text. Run with the CI's DejaVu fonts (docs/I18N.md). */
+const LAYOUT:LayoutOptions={eachDialog:{dialogs:'dialog[open],[role=dialog],[role=alertdialog],[role=group].fi-menu-list,[role=group].fi-submenu,.ob-dialog',controls:'button,label,legend,h2,h3,dt,dd,small,p'}};
 
 for(const width of [320,1440])test(`at ${width} px the Spanish observatory dialogs, menus and the options dialog lay out without overflow or clipping`,async({page})=>{
  test.setTimeout(180_000);await page.setViewportSize({width,height:width===320?700:1000});
  const problems:string[]=[];
- await walk(page,'es-419',async step=>{for(const p of await layoutProblems(page))problems.push(`${step}: ${p}`);
+ await walk(page,'es-419',async step=>{for(const p of await layoutProblems(page,LAYOUT))problems.push(`${step}: ${p}`);
   if(['Optical Simulation Options','File › Field Information › Star Data List','Site Parameters'].includes(step))await page.screenshot({path:test.info().outputPath(`es-observatory-${width}-${step.replace(/\W+/g,'-')}.png`)});});
  expect([...new Set(problems)]).toEqual([]);
 });
@@ -249,10 +238,27 @@ test('Multi-Spec in Spanish: Control, boxes, spectra list, spectrum, Information
  for(const [step,list] of seen['es-419'])for(const t of list)if(english.has(t)&&!same(t.replace(/^@[a-z-]+:/,'')))left.push(`${step}: ${t}`);
  expect([...new Set(left)]).toEqual([]);
 });
+/** Front SC9: problems the fixture's plot-text check (which the old local copy did not have) found in the Multi-Spec walk at
+ * both widths, in English as well as Spanish (so not a translation problem). They are recorded, not hidden: an entry that
+ * stops appearing fails the test, so the fix removes it here. The observatory sky map (src/OpenVireo.tsx, the sky-object
+ * labels at x+13) places the Coma-1 target labels («NGC 4874 · Coma - 1», «NGC 4874 · Coma – 1 · supported galaxy») at
+ * x ≈ 705 of its 700-unit view, so the sky-clip hides them; the Multi-Spec field view (src/multispec/MultiSpecFieldOverlay.tsx,
+ * baseline y+4) cuts the top 3 px of the selection number «3» at y=4. SC9 review: one entry per label and only the walk steps
+ * where the sky map shows them, so fixing one label fails its own entry (the second label reads «… · galaxia compatible»
+ * here, sky.supportedGalaxyLabel). */
+const SKY_STEPS='Multi-Spec (?:Control with selections|spectra list|spectrum display)';
+const skyLabel=(label:string)=>new RegExp(`^${SKY_STEPS}: plot text “${label.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}” outside its plot card sky-card \\(`);
+const MULTISPEC_KNOWN=[
+ skyLabel('NGC 4874 · Coma - 1'),
+ skyLabel(es['sky.supportedGalaxyLabel'].replace('{id}','NGC 4874').replace('{label}','Coma – 1')),
+ /^Multi-Spec Control with selections: plot text “3” outside its plot card ms-card \(/,
+];
 for(const width of [320,1440])test(`at ${width} px the Spanish Multi-Spec windows lay out without overflow or clipping`,async({page})=>{
  test.setTimeout(240_000);await page.setViewportSize({width,height:width===320?700:1000});
  const problems:string[]=[];
- await multiSpecWalk(page,'es-419',async step=>{for(const p of await layoutProblems(page))problems.push(`${step}: ${p}`);
+ await multiSpecWalk(page,'es-419',async step=>{for(const p of await layoutProblems(page,LAYOUT))problems.push(`${step}: ${p}`);
   if(/list|Information/.test(step))await page.screenshot({path:test.info().outputPath(`es-multispec-${width}-${step.replace(/\W+/g,'-')}.png`)});});
- expect([...new Set(problems)]).toEqual([]);
+ const found=[...new Set(problems)];
+ expect(found.filter(p=>!MULTISPEC_KNOWN.some(k=>k.test(p)))).toEqual([]);
+ expect(MULTISPEC_KNOWN.filter(k=>!found.some(p=>k.test(p))).map(String),'a known problem no longer appears: remove it from MULTISPEC_KNOWN').toEqual([]);
 });

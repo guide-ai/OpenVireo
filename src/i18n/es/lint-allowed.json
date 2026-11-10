@@ -1,5 +1,5 @@
 {
- "about": "Front ES1 review 2: words on the glossary's forbidden lists that are correct in a given string, each with a reason. Several usted imperatives (use, guarde, cargue, abra, espere, revise, escriba) are also third-person subjunctives, and «vale» also appears in «vale la pena». Keys are the lint's string ids (`catalog:<key>`, `map:<id>.<path>`, `original:<text>`); `words` are the forbidden words allowed in that string only.",
+ "about": "Front ES1 review 2: words on the glossary's forbidden lists that are correct in a given string, each with a reason. Several usted imperatives (use, guarde, cargue, abra, espere, revise, escriba) are also third-person subjunctives, and «vale» also appears in «vale la pena». Keys are the lint's string ids (`catalog:<key>`, `map:<id>.<path>`, `original:<text>`); `words` are the forbidden words allowed in that string only. Front SC9 (the lints on src/i18n/lint/): an entry may also name `placeholders` the translation adds; `words` exempt only the glossary's forbidden words (es.test.ts checks it).",
  "entries": {
   "map:languageChoice.originalsNote": {
    "words": [
@@ -30,6 +30,12 @@
     "use"
    ],
    "reason": "the quoted VIREO caption “Use Telescope Coordinates” in English, not a Spanish imperative"
+  },
+  "original:fragment|Meter Radio Telescope": {
+   "placeholders": [
+    "{diameter}"
+   ],
+   "reason": "VIREO composes the dish diameter in front of this fragment («40 Meter Radio Telescope»); the Spanish caption puts it inside («Radiotelescopio de {diameter} metros»)"
   }
  }
 }
