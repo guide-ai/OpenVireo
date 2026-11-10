@@ -3,6 +3,8 @@ import {languageReady} from './boot';
 import './focusAfterLayout';
 import './theme/tokens.css';
 import './theme/base.css';
+// Front SC3: typography for Japanese, Chinese, Hindi and Russian; every rule is :lang()-scoped (English is unchanged).
+import './theme/scripts.css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';

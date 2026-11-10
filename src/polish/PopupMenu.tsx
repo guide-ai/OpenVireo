@@ -1,4 +1,4 @@
-import {useEffect,useRef,useState,type MouseEvent as ReactMouseEvent,type ReactNode} from 'react';
+import {useEffect,useLayoutEffect,useRef,useState,type MouseEvent as ReactMouseEvent,type ReactNode} from 'react';
 import {menuCaptionText} from '../core/radioControl';
 import './polish.css';
 
@@ -27,8 +27,19 @@ export default function PopupMenu({at,items,label,onClose,returnFocus,note}:{at:
   const outside=(e:PointerEvent)=>{if(!ref.current?.contains(e.target as Node))onClose();};
   document.addEventListener('pointerdown',outside,true);return ()=>document.removeEventListener('pointerdown',outside,true);
  },[at]);// eslint-disable-line react-hooks/exhaustive-deps
+ // Front SC3: the first placement assumes a 224 px menu and 40 px per item; longer labels (Russian) wrap and taller lines
+ // (Japanese, Hindi) grow it, so the rendered box is measured before paint and moved back inside the viewport when it sticks out.
+ // A menu that already fits keeps the first placement, so English does not move.
+ const [shift,setShift]=useState<Readonly<{dx:number;dy:number}>>({dx:0,dy:0});
+ useLayoutEffect(()=>{
+  const r=ref.current?.getBoundingClientRect();if(!r)return;
+  // The box at the first placement (this render may still carry the previous menu's shift).
+  const left=r.left-shift.dx,right=r.right-shift.dx,top=r.top-shift.dy,bottom=r.bottom-shift.dy;
+  const dx=Math.max(Math.min(0,window.innerWidth-4-right),4-left),dy=Math.max(Math.min(0,window.innerHeight-4-bottom),4-top);
+  if(dx!==shift.dx||dy!==shift.dy)setShift({dx,dy});
+ },[at,items.length]);// eslint-disable-line react-hooks/exhaustive-deps
  if(!at)return null;
- const left=Math.max(4,Math.min(at.x,window.innerWidth-224)),top=Math.max(4,Math.min(at.y,window.innerHeight-40*items.length-8));
+ const left=Math.max(4,Math.min(at.x,window.innerWidth-224))+shift.dx,top=Math.max(4,Math.min(at.y,window.innerHeight-40*items.length-8))+shift.dy;
  return <div ref={ref} role="menu" aria-label={label} className="popup-menu" data-testid="popup-menu" style={{left,top}}
   onKeyDown={e=>{
    const buttons=[...(ref.current?.querySelectorAll<HTMLButtonElement>('button:not(:disabled)')??[])],i=buttons.indexOf(document.activeElement as HTMLButtonElement);
