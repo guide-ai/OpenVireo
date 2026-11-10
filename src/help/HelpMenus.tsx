@@ -4,10 +4,10 @@ import {vireo} from '../i18n/vireo';
 import CleaHelp,{ViewSwitch} from '../clusters/CleaHelp';
 import {fetchBundledClusterHelp} from '../io/bundledClusterHelp';
 import {HELP_FILES} from './helpFiles';
-import {ABOUT_BOX,HELP_WEBSITES,MAIN_HELP_MENU,QUIT_QUESTION,RADIO_HELP_MENU,REMINDER_CAPTION,REMINDER_SELECT,reminderBoxText} from './mainHelp';
+import {ABOUT_BOX,HELP_WEBSITES,MAIN_HELP_MENU,QUIT_QUESTION,RADIO_HELP_MENU,REMINDER_CAPTION,REMINDER_SELECT,reminderBoxText,reminderBoxTextOf} from './mainHelp';
 import {HELP_MENU as M} from './HelpMessages';
 import {HELP_VIEWER} from './HelpViewerMessages';
-import {helpTranslationOffered,loadHelpTranslation,type HelpView} from './helpTranslation';
+import {useHelpSet,type HelpView} from './helpTranslation';
 import WebHelpDialog from './WebHelpDialog';
 import {helpKeyBlocked} from './helpShortcut';
 import {PROJECT_LINKS,PROJECT_REPO_URL,currentPage,newIssueUrl} from './projectLinks';
@@ -102,17 +102,19 @@ export function ExitObservatoryDialog({onClose}:{onClose:()=>void}){
  const dialog=useRef<HTMLDialogElement>(null),id=useId();
  const [state,setState]=useState<'loading'|'error'|'done'|string>('loading');
  // Front ES-HELP: a Spanish load shows the translation of Reminder.obs (a web adaptation) unless the student asks for the original.
- const offered=helpTranslationOffered(),[original,setOriginal]=useState(false),view:HelpView=offered&&!original?'translation':'original';
+ const set=useHelpSet(),offered=!!set,[original,setOriginal]=useState(false),view:HelpView=offered&&!original?'translation':'original';
  // Review S1: a translation that cannot be loaded or verified falls back to VIREO's original, with a note.
  const [translationFailed,setTranslationFailed]=useState(false);
  useEffect(()=>{dialog.current?.showModal();},[]);
  useEffect(()=>{
   const abort=new AbortController();
   setState(s=>s==='done'?s:'loading');
-  (view==='translation'?loadHelpTranslation(HELP_FILES['REMINDER.OBS']):fetchBundledClusterHelp(fetch,abort.signal,HELP_FILES['REMINDER.OBS']))
-   .then(b=>{if(!abort.signal.aborted)setState(s=>s==='done'?s:reminderBoxText(b,view==='translation'?vireo(REMINDER_SELECT):REMINDER_SELECT));},e=>{if(e instanceof DOMException&&e.name==='AbortError')return;if(view==='translation'){setTranslationFailed(true);setOriginal(true);}else setState('error');});
+  // Front SC7: the translation is Unicode text (reminderBoxTextOf), the original its verified bytes.
+  (view==='translation'&&set?set.load(HELP_FILES['REMINDER.OBS']).then(t=>reminderBoxTextOf(t,vireo(REMINDER_SELECT)))
+   :fetchBundledClusterHelp(fetch,abort.signal,HELP_FILES['REMINDER.OBS']).then(b=>reminderBoxText(b,REMINDER_SELECT)))
+   .then(text=>{if(!abort.signal.aborted)setState(s=>s==='done'?s:text);},e=>{if(e instanceof DOMException&&e.name==='AbortError')return;if(view==='translation'){setTranslationFailed(true);setOriginal(true);}else setState('error');});
   return ()=>abort.abort();
- },[view]);
+ },[view,set]);
  const quit=()=>setState('done');
  return <dialog ref={dialog} className="ob-dialog" role="alertdialog" aria-labelledby={`${id}-t`} aria-describedby={`${id}-d`} data-testid="exit-reminder" onCancel={e=>{e.preventDefault();onClose();}}>
   <h2 id={`${id}-t`}>{vireo(REMINDER_CAPTION)}</h2>

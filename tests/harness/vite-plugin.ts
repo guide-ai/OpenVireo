@@ -10,6 +10,7 @@ export const HARNESS_PAGES={
  'saved-rows':'Saved PLR rows harness (test only)',
  pulsar:'PLR analysis harness (test only)',
  wedge:'LSS wedge harness (test only)',
+ help:'Unicode help harness (test only)',
 } as const;
 export type HarnessPage=keyof typeof HARNESS_PAGES;
 export const harnessUrl=(baseURL:string,name:HarnessPage)=>`${baseURL}${HARNESS_BASE}${name}/`;

@@ -12,6 +12,12 @@
 // its release that has no marker text yet is found by its chunk name, with a warning (a released language still fails). A
 // language's own static pages (an .html file under dist/<pagePath>/, its registry entry's path: es/ for es-419) may carry that
 // language's text, never another language's; every other file, and every .js file, keeps the rule.
+// Front SC7 (docs/I18N.md, "Script groundwork: Unicode help (SC7)"): help chunks may hold Unicode text in any script; each help
+// chunk's gzip budget is scaled by its language's budgetFactor (1 for Spanish and Portuguese: their budget is unchanged).
+// Front SC7 review: the dev-only test harnesses (tests/harness, served by a Vite plugin with apply:'serve') and the test-only
+// fixture languages (tests/fixtures, such as the Unicode help stand-ins qaa-Jpan, qab-Deva, qac-Cyrl) must not reach the build
+// either: no file under dist/ may hold the harness path, a harness page title or a fixture language tag that the registry (or
+// the check's `languages`) does not hold (testOnlyMarkers).
 // Usage: node scripts/check-i18n-dist.mjs [distDir]   (default: dist)
 import {readdirSync,readFileSync,statSync} from 'node:fs';
 import {join,sep} from 'node:path';
@@ -64,6 +70,17 @@ const HELP_BUDGET={warn:25_000,fail:40_000};
 // by the chunk's own name, since OBJXHLP.LST and TOOLSHLP.LST have byte-identical originals and so one SHA-256).
 const HELP_CHUNK=/^([A-Za-z]+\.(?:LST|TXT|OBS|PLS|LNL))-[\w-]+\.js$/;
 
+/** Front SC7 review: the texts that only test code holds: the harness base path and page titles (tests/harness/vite-plugin.ts)
+ * and every fixture language tag in the local-use range qaa–qtz (`tag:'…'` in tests/fixtures). */
+export function testOnlyMarkers(root=ROOT){
+ const plugin=readFileSync(join(root,'tests','harness','vite-plugin.ts'),'utf8'),base=/HARNESS_BASE='([^']+)'/.exec(plugin);
+ if(!base)throw new Error('tests/harness/vite-plugin.ts: HARNESS_BASE not found');
+ const markers=[base[1],...[...plugin.matchAll(/:'([^']*\(test only\))'/g)].map(m=>m[1])];
+ (function walk(dir){for(const name of readdirSync(dir)){const file=join(dir,name);
+  if(statSync(file).isDirectory()){walk(file);continue;}
+  if(/\.tsx?$/.test(name))for(const m of readFileSync(file,'utf8').matchAll(/\btag:'(q[a-t][a-z]-[A-Za-z0-9-]+)'/g))markers.push(m[1]);}})(join(root,'tests','fixtures'));
+ return [...new Set(markers)];
+}
 /** Checks dist/ for the pseudo-locale and for each registered language's chunks. Returns the offenders (any one fails the
  * build), the warnings and what the report prints. `languages` and `root` default to the registry and this checkout; tests pass
  * a fixture language and a synthetic dist. */
@@ -75,6 +92,9 @@ export function checkI18nDist(dist,{root=ROOT,languages=loadLanguages(root),grap
   if(TEXT.test(name))files.push({file,name,text:readFileSync(file,'utf8')});}})(dist);
  for(const f of files)if(MARK.test(f.text))offenders.push(`${f.file}: contains the pseudo-locale mark ⟦`);
  for(const f of files)for(const name of new Set(f.text.match(PSEUDO_NAME)??[]))offenders.push(`${f.file}: names the dev-only pseudo-locale ${name}`);
+ // A fixture language that a check registers (src/i18n/distCheck.test.ts passes qaa-XA in `languages`) is allowed its own tag.
+ const testOnly=testOnlyMarkers(root).filter(m=>!languages.some(l=>l.tag===m));
+ for(const f of files)for(const m of testOnly)if(f.text.includes(m))offenders.push(`${f.file}: contains the test-only text ${JSON.stringify(m)} (a test harness or fixture language)`);
  const html=readFileSync(join(dist,'index.html'),'utf8');
  const inAssets=(f)=>f.file.startsWith(join(dist,'assets'));
 
@@ -95,7 +115,13 @@ export function checkI18nDist(dist,{root=ROOT,languages=loadLanguages(root),grap
   const found=helpByLanguage.get(l.tag),expected=l.help?helpIds.length:0,names=new Set(found.map(f=>HELP_CHUNK.exec(f.name)[1].toUpperCase()));
   if(found.length!==expected||names.size!==expected)offenders.push(`expected ${expected} ${l.tag} help chunks, one per help file${l.help?'':' (its registry entry has no help)'}; found ${found.length} for ${names.size} files`);
  }
- for(const f of helpChunks.values()){const g=gzip(f.text);if(g>HELP_BUDGET.fail)offenders.push(`${f.name}: ${kb(g)} KB gzip is over the 40 KB budget of a help chunk`);else if(g>HELP_BUDGET.warn)warnings.push(`the help chunk ${f.name} is ${kb(g)} KB gzip, over 25 KB`);}
+ // Front SC7: a help chunk's budget is scaled by its language's budgetFactor, as its other chunks' are (a help set may be Unicode
+ // text in any script; UTF-8 takes 2 or 3 bytes for a Cyrillic, Devanagari or CJK character). A chunk that names no language, or
+ // two, keeps the plain budget.
+ const helpFactor=new Map(languages.flatMap(l=>helpByLanguage.get(l.tag).map(f=>[f,l.budgetFactor??1])));
+ for(const f of helpChunks.values()){const g=gzip(f.text),factor=helpFactor.get(f)??1;
+  if(g>HELP_BUDGET.fail*factor)offenders.push(`${f.name}: ${kb(g)} KB gzip is over the ${kb(HELP_BUDGET.fail*factor)} KB budget of a help chunk`);
+  else if(g>HELP_BUDGET.warn*factor)warnings.push(`the help chunk ${f.name} is ${kb(g)} KB gzip, over ${kb(HELP_BUDGET.warn*factor)} KB`);}
 
  // The scripts index.html loads, and everything they import statically (a dynamic import(…) is not followed).
  const assets=new Map(files.filter(f=>inAssets(f)&&/\.js$/.test(f.name)).map(f=>[f.name,f]));
@@ -212,7 +238,7 @@ export function checkI18nDist(dist,{root=ROOT,languages=loadLanguages(root),grap
 
 /** The lines the build prints. */
 export function reportLines({reports,files}){
- const out=[`Build is free of the pseudo-locale (${files.length} text files searched).`];
+ const out=[`Build is free of the pseudo-locale, the test harnesses and the fixture languages (${files.length} text files searched).`];
  for(const {tag,plan,sizes,sum,help} of reports){
   out.push(`${tag}: ${sizes.size} chunks, ${kb(sum)} KB gzip in all; index.html loads none, and each holds one module's text only:`);
   for(const m of plan.modules){const s=sizes.get(m.name);out.push(s?`  ${m.name.padEnd(24)} ${kb(s.gzip).padStart(6)} KB gzip ${kb(s.raw).padStart(7)} KB raw  ${s.name}`:`  ${m.name.padEnd(24)} empty: no text yet, no chunk`);}

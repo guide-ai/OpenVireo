@@ -10,6 +10,7 @@ Some Playwright specs test a single panel's contract (timers, host API, lifted s
 | `/__harness/saved-rows/` | `tests/harness/saved-rows.tsx` | `pulsar-saved-rows` | `OPENVIREO_PULSAR_SAVED_ROWS_HARNESS_URL` |
 | `/__harness/pulsar/` | `tests/harness/pulsar.tsx` | `pulsar-analysis` | `OPENVIREO_PULSAR_HARNESS_URL` |
 | `/__harness/wedge/` | `tests/harness/wedge.tsx` | `wedge-lss`, `wedge-focus`, `wedge-prompt-focus` | `OPENVIREO_WEDGE_HARNESS_URL` |
+| `/__harness/help/` | `tests/harness/help.tsx` | `help-unicode`, `scripts/help-unicode.scripts.ts` | none (the specs use their own `baseURL`) |
 
 Host APIs and query options:
 
@@ -17,10 +18,11 @@ Host APIs and query options:
 - saved-rows: `window.__savedRows.render(props)/unmount()`, `window.__mount()`, `window.__modalLog`; `?plr=1 ?strict=1`.
 - pulsar: `window.__pulsarHarness.render(props)/unmount()` (the controller returned by `mountPulsarWorkbench`).
 - wedge: `?host=1` (host simulator with "route hidden" and "project operation" checkboxes), `?lang=es` (placeholder overrides for the message-catalog contract, not a reviewed translation).
+- help: `?set=ja|hi|ru` gives VIREO's help viewer (CAMHLP.LST) and the Exit Observatory reminder a test-only stand-in help set in Japanese, Devanagari or Cyrillic script (`tests/fixtures/help-unicode`, through `HelpSetContext`) and sets `<html lang>` to `ja`, `hi` or `ru`; without it the viewer shows VIREO's originals only (Front SC7, docs/I18N.md).
 
 ## How they are served
 
-`tests/harness/vite-plugin.ts` is a Vite plugin with `apply: 'serve'`. It only adds dev-server middleware, so `vite build` never sees it and the production bundle is unchanged (checked on 2026-10-29: the `dist/` file list and SHA-256 of all 1281 files were identical before and after). `vite preview` does not serve these pages either.
+`tests/harness/vite-plugin.ts` is a Vite plugin with `apply: 'serve'`. It only adds dev-server middleware, so `vite build` never sees it and the production bundle is unchanged (checked on 2026-10-29: the `dist/` file list and SHA-256 of all 1281 files were identical before and after). `vite preview` does not serve these pages either. Since Front SC7's review, `npm run build` also fails if any `dist/` file holds the harness path, a harness page title or a test fixture's language tag (`scripts/check-i18n-dist.mjs`, `testOnlyMarkers`).
 
 `playwright.config.ts` sets the four env vars to the pages on its own test server (`OPENVIREO_TEST_PORT`, default 5175) unless they are already set. A plain `npx playwright test` therefore runs these specs. To try a page by hand, start the dev server and open, for example, `http://127.0.0.1:5173/__harness/radio/?instant=1`.
 
