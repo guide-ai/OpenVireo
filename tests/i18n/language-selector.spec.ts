@@ -126,6 +126,15 @@ test('Front PT0: the keyboard steps across all three options without opening the
  expect(new URL(page.url()).search).toBe('?lang=pt-BR');expect(await stored(page)).toBeNull();
  // A pick from the list (selectOption, as a mouse or touch pick) still asks at once.
  await choose(page,'en');await expect(dialog).toBeVisible();await page.keyboard.press('Escape');await expect(select).toHaveValue('pt-BR');
+ // WEBKIT-SELECT review: a real mouse press on the select after Escape dropped a step, then a pick of that same option, asks for
+ // it once. Headless Chromium opens the list, where the arrow moves and Enter picks (asking at once); headless Firefox and WebKit
+ // open none, so the arrow is a step that Enter asks for (WebKit's mouse press, like focus, resets its `change` record, so
+ // `change` fires for the dropped option).
+ await select.focus();await page.keyboard.press('ArrowUp');await page.keyboard.press('Escape');await expect(select).toHaveValue('pt-BR');
+ const box=(await select.boundingBox())!;await page.mouse.click(box.x+box.width/2,box.y+box.height/2);
+ await page.keyboard.press('ArrowUp');await expect(dialog).toHaveCount(0);await page.keyboard.press('Enter');
+ await expect(dialog).toHaveCount(1);await expect(dialog).toContainText(P.maps.languageChoice.reload('Español'));
+ await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);await expect(select).toHaveValue('pt-BR');
 });
 
 test('Cancel keeps the page, its language and its address; nothing is stored',async({page})=>{
