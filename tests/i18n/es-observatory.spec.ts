@@ -238,21 +238,12 @@ test('Multi-Spec in Spanish: Control, boxes, spectra list, spectrum, Information
  for(const [step,list] of seen['es-419'])for(const t of list)if(english.has(t)&&!same(t.replace(/^@[a-z-]+:/,'')))left.push(`${step}: ${t}`);
  expect([...new Set(left)]).toEqual([]);
 });
-/** Front SC9: problems the fixture's plot-text check (which the old local copy did not have) found in the Multi-Spec walk at
- * both widths, in English as well as Spanish (so not a translation problem). They are recorded, not hidden: an entry that
- * stops appearing fails the test, so the fix removes it here. The observatory sky map (src/OpenVireo.tsx, the sky-object
- * labels at x+13) places the Coma-1 target labels («NGC 4874 · Coma - 1», «NGC 4874 · Coma – 1 · supported galaxy») at
- * x ≈ 705 of its 700-unit view, so the sky-clip hides them; the Multi-Spec field view (src/multispec/MultiSpecFieldOverlay.tsx,
- * baseline y+4) cuts the top 3 px of the selection number «3» at y=4. SC9 review: one entry per label and only the walk steps
- * where the sky map shows them, so fixing one label fails its own entry (the second label reads «… · galaxia compatible»
- * here, sky.supportedGalaxyLabel). */
-const SKY_STEPS='Multi-Spec (?:Control with selections|spectra list|spectrum display)';
-const skyLabel=(label:string)=>new RegExp(`^${SKY_STEPS}: plot text “${label.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}” outside its plot card sky-card \\(`);
-const MULTISPEC_KNOWN=[
- skyLabel('NGC 4874 · Coma - 1'),
- skyLabel(es['sky.supportedGalaxyLabel'].replace('{id}','NGC 4874').replace('{label}','Coma – 1')),
- /^Multi-Spec Control with selections: plot text “3” outside its plot card ms-card \(/,
-];
+/** Front SC9: problems the fixture's plot-text check found in the Multi-Spec walk at both widths, in English as well as Spanish,
+ * are recorded here, not hidden: an entry that stops appearing fails the test, so the fix removes it. Front SKY-LABELS fixed
+ * the two SC9 found (the Coma-1 sky-map labels past the 700-unit view, now drawn left of their ring, and the selection number
+ * «3» cut at the top of the Multi-Spec field, whose baseline is now kept inside it; src/core/overlayLabels.ts), so none is
+ * known. */
+const MULTISPEC_KNOWN:readonly RegExp[]=[];
 for(const width of [320,1440])test(`at ${width} px the Spanish Multi-Spec windows lay out without overflow or clipping`,async({page})=>{
  test.setTimeout(240_000);await page.setViewportSize({width,height:width===320?700:1000});
  const problems:string[]=[];

@@ -141,6 +141,7 @@
 .sky-crosshair{fill:none;stroke:#e4bb75;stroke-width:1}
 .sky-cardinal{fill:#708e9d;font-size:12px}
 .sky-object{cursor:pointer}
+/* SkyField (src/OpenVireo.tsx) measures these labels again when the 520 px query below changes their size. */
 .sky-object text{fill:#a6d9c8;font-size:11px;paint-order:stroke;stroke:#061a29;stroke-width:4px;stroke-linejoin:round}
 
 .dome-cover{position:absolute;inset:0;background:linear-gradient(145deg,#102c3c,#061521);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center;color:#d9e8eb}

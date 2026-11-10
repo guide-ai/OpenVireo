@@ -104,6 +104,10 @@ addresses, evidence ids and tags in `docs/MULTI-SPEC-PROVENANCE.json`. Tags: [D]
 - Save is a browser download; the native folder, base-name and overwrite dialogs are not ported. A telescope change remounts the
   instrument (VIREO disables the Telescope menu while the form is open).
 - The Edit Mode galaxy "Z:" line shows "hidden (instructor value)", as Catalog Object masks the catalogue z (no instructor login).
+- Selection numbers (Front SKY-LABELS, 2026-11-10): VIREO draws a selection's number left of its 15×15 box, right when it would
+  leave the display (0x53d6f0) [D]; its vertical placement is not recovered. The web baseline is 4 units below the selection,
+  kept between 11 (the font size) and 309 (`multiSpecNumberBaseline`, src/core/overlayLabels.ts) [W], so a selection at the top
+  or bottom edge keeps its whole number (before, a selection at y=4 lost the top 3 px of its number).
 
 ## Hidden identity (E08)
 Before the reveal, in an Object X field or any field whose area reaches within 2° of an Object X position (centre within 2° plus the mask reach, at least 0.62°): Information shows `ObjX-<ID>` only for
