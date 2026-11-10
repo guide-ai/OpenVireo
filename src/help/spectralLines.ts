@@ -13,6 +13,7 @@
  * button (rendered through vireo()). */
 export const SPECTRAL_LINE_TABLE_LITERALS=Object.freeze({menu:'Spectral Line &Table'});
 import {foldAsciiCase} from '../core/radioHotListSearch';
+import {CLUSTER_HR_CAPTIONS as C} from '../core/clusterHrCaptions';
 import {delphiFixed} from '../core/variableStars';
 
 export type SpectralLine=Readonly<{wavelength:number;name:string;file:string;row:string}>;
@@ -43,7 +44,7 @@ export function parseSpectralLineList(bytes:Uint8Array):readonly SpectralLine[]{
  }));
 }
 
-export type SpectralLineHelp=Readonly<{kind:'topic';rows:readonly string[]}|{kind:'not-found';caption:string;text:string}>;
+export type SpectralLineHelp=Readonly<{kind:'topic';rows:readonly string[]}|{kind:'not-found';caption:string;text:string;title:string}>;
 export const SPECTRAL_LINE_HELP_CAPTION='Spectral Line Help';
 /** 0x5049f0: the box shown when a line's help file is absent (caption, then head + file name + tail). Rendered through vireo()
  * (Front ES-HELP review S7). */
@@ -56,7 +57,8 @@ export function spectralLineHelp(txt:Uint8Array,name:string):SpectralLineHelp{
  let i=0;
  if(lines.length>0&&lines[0]!==''&&lines[0][0]==='*'){
   while(i<lines.length&&!(lines[i].includes('*')&&foldAsciiCase(lines[i]).includes(key)))i++;
-  if(i===lines.length)return Object.freeze({kind:'not-found',caption:'Topic Not Found',text:`Help Topic: ${title}\r\n\r\nHelp on this topic is not available at this time.`});
+  // The same box as the help viewer's (CLUSTER_HR_CAPTIONS, which the screen renders through vireo()); `title` for that.
+  if(i===lines.length)return Object.freeze({kind:'not-found',caption:C.topicNotFoundCaption,text:C.topicNotFoundHead+title+C.topicNotFoundTail,title});
   i++;
  }
  const rows=[` * ${title} *`,' '];

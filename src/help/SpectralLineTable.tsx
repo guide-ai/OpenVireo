@@ -3,6 +3,7 @@ import {menuCaptionText} from '../core/radioControl';
 import {vireo} from '../i18n/vireo';
 import {HelpListBox,ViewSwitch} from '../clusters/CleaHelp';
 import {HELP_VIEWER} from './HelpViewerMessages';
+import {CLUSTER_HR_CAPTIONS as C} from '../core/clusterHrCaptions';
 import {helpTranslationOffered,loadHelpTranslation,type HelpView} from './helpTranslation';
 import {fetchBundledClusterHelp} from '../io/bundledClusterHelp';
 import {HELP_FILES,helpFile,type HelpFileIdentity} from './helpFiles';
@@ -11,6 +12,8 @@ import './help.css';
 import '../clusters/cluster-hr.css';
 
 const M=HELP_VIEWER.spectralLines;
+/** VIREO's Topic Not Found box (0x5049f0), through vireo() as in the help viewer (ES7's CLUSTER_HR_CAPTIONS). */
+const notFound=(title:string)=>({caption:vireo(C.topicNotFoundCaption),text:vireo(C.topicNotFoundHead)+title+vireo(C.topicNotFoundTail)});
 
 type Loaded=Readonly<{lines:readonly SpectralLine[]}>;
 /** Front ES-HELP: the file's bytes in a view: the verified bundled original, or (Spanish loads) the web translation in VIREO's own format. */
@@ -54,7 +57,7 @@ export default function SpectralLineTable({testId='spl',onLineSelect,cursorWavel
   if(!file){const L=SPECTRAL_LINE_MISSING_LITERALS;setMessage({caption:vireo(L.caption),text:vireo(L.head)+line.file+vireo(L.tail)});return;}
   try{
    const h=spectralLineHelp(await fetchView(file,view),line.name);
-   if(h.kind==='topic')setHelp({name:line.name,rows:h.rows});else setMessage({caption:h.caption,text:h.text});
+   if(h.kind==='topic')setHelp({name:line.name,rows:h.rows});else setMessage(notFound(h.title));
   }catch{
    if(view!=='translation'){setMessage({caption:M.textErrorCaption,text:M.textError(file.name)});return;}
    // Review S1: the translated SPECLNS.TXT failed; the list keeps VIREO's line names, so the original is read for the same line.

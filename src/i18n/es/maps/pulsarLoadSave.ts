@@ -1,0 +1,30 @@
+import type {LOAD_SAVE_MESSAGES_EN} from '../../../components/PulsarLoadSaveMessages';
+import type {Translation} from '../../maps';
+/** Front ES8b: Spanish (es-419) for the Load question Yes flow. A web adaptation by OpenVireo, not CLEA's; VIREO's own captions are translated through vireo() (originals.json). */
+export const LOAD_SAVE_ES:Translation<typeof LOAD_SAVE_MESSAGES_EN>=Object.freeze({
+ 'loadSave.yes.reason':'Sí (guardar primero) abre el Guardar web verificado de este registro, no el cuadro de diálogo Guardar original. Sí no carga nada: cuando se lee una copia y resulta igual, eliges el registro que quieres cargar en un paso aparte, o cancelas y conservas los datos actuales.',
+ 'loadSave.yes.unsupported.insecure-context':'Sí (guardar primero) no está disponible: esta página no es un contexto seguro, que la API de archivos del navegador requiere. No y Cancelar funcionan como antes; “Descargar captura como .PLR…” deja el registro sin guardar.',
+ 'loadSave.yes.unsupported.no-api':'Sí (guardar primero) no está disponible: este navegador no ofrece el selector de archivos para guardar con archivos escribibles (showSaveFilePicker y createWritable). No y Cancelar funcionan como antes; “Descargar captura como .PLR…” deja el registro sin guardar.',
+ 'loadSave.saveIntro':'Abierto por Sí en la pregunta de Cargar. Cuando se lee una copia y resulta igual, un paso aparte te permite elegir un registro para cargar; no se carga nada automáticamente. Cancelar cierra este Guardar y no carga nada.',
+ 'loadSave.heading':'Guardado: elige el registro para cargar',
+ 'loadSave.verified':'El registro actual se guardó como “{file}” ({bytes} bytes leídos de nuevo, iguales). Siguen siendo los datos de púlsar actuales, con sus mediciones y cursores.',
+ 'loadSave.consequence':'No se ha cargado nada. Elegir registro para cargar… abre el selector de archivos de tu navegador para un archivo .PLR; ese archivo reemplaza los datos actuales solo si se admite. Cancelar conserva el registro actual y su copia verificada.',
+ 'loadSave.choosing':'Esperando el selector de archivos. Es posible que tu navegador no avise si cancelas el selector: si no ocurre nada, presiona Cancelar o presiona otra vez Elegir registro para cargar…',
+ 'loadSave.choose':'Elegir registro para cargar…',
+ 'loadSave.cancel':'Cancelar',
+ 'loadSave.refused.input':'No ocurrió nada: la pregunta de Cargar no pudo iniciar el Guardar.',
+ 'loadSave.refused.unsupported':'Sí (guardar primero) no está disponible en este navegador. No y Cancelar funcionan como antes.',
+ 'loadSave.refused.not-asking':'No ocurrió nada: la pregunta de Cargar ya no está abierta.',
+ 'loadSave.refused.not-presented':'No ocurrió nada: esta ventana no presenta los datos actuales (por ejemplo, un registro llamado “No Data”), por lo que no se pueden guardar desde aquí. No y Cancelar funcionan como antes.',
+ 'loadSave.refused.stale':'No ocurrió nada: los datos de púlsar actuales cambiaron después de abrirse la pregunta de Cargar. Cancela y usa Cargar de nuevo.',
+ 'loadSave.refused.not-memory':'No ocurrió nada: los datos actuales ya no son un registro del receptor sin guardar. Cancela y usa Cargar de nuevo.',
+ 'loadSave.refused.busy':'No ocurrió nada: un registro del receptor u otro intento de guardado está usando los datos actuales. Inténtalo de nuevo cuando termine.',
+ 'loadSave.refused.output':'No se abrió nada: otro intento de guardado aún está terminando. Inténtalo de nuevo cuando termine.',
+ 'loadSave.status.ready':'Elige el registro para cargar en el siguiente paso, o cancela para conservar los datos actuales.',
+ 'loadSave.status.saveCancelled':'Carga cancelada después de cerrar Guardar. No se cargó nada; el registro actual y la lista de mediciones no cambian. Es posible que un archivo elegido en el cuadro de diálogo Guardar ya se haya creado, vaciado o modificado.',
+ 'loadSave.status.cancelled':'Carga cancelada. No se cargó nada; el registro actual conserva su copia verificada, sus mediciones y sus cursores.',
+ 'loadSave.status.noFile':'No se eligió ningún archivo. No se cargó nada; elige de nuevo o cancela.',
+ 'loadSave.status.stale':'La carga después de guardar terminó: los datos de púlsar actuales o su copia verificada cambiaron. No se cargó nada.',
+ 'loadSave.status.reading':'No cambió nada: el registro elegido aún se está leyendo. Espera a que termine la lectura o presiona Cancelar lectura.',
+ 'loadSave.fileRefused':'No se cargó nada: termina o cancela primero la carga después de guardar.',
+});

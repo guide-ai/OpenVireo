@@ -32,10 +32,15 @@ import {SOUND_MESSAGES_EN} from '../../sound/SoundMessages';
 import {ENGINE_VIEW_EN} from '../../SpectrumEngineMessages';
 import {SPECTRAL_RANGE_EN} from '../../SpectralRangeMessages';
 import {WEDGE_MESSAGES_EN} from '../../components/WedgeMessages';
+import {CLUSTER_HR_EN} from '../../clusters/ClusterHrMessages';
+import {CLUSTER_DATA_MESSAGES_EN} from '../../clusterdata/ClusterDataMessages';
 import {RADIO_ANTENNA_MESSAGES_EN} from '../../components/RadioAntennaMessages';
 import {FINISH_SAVE_MESSAGES_EN} from '../../components/RadioFinishSaveMessages';
 import {RADIO_R1_MESSAGES_EN} from '../../components/RadioR1Messages';
 import {RADIO_SAVE_MESSAGES_EN} from '../../components/RadioRecordSaveMessages';
+import {PULSAR_MESSAGES_EN} from '../../components/PulsarMessages';
+import {LOAD_SAVE_MESSAGES_EN} from '../../components/PulsarLoadSaveMessages';
+import {SAVED_ROWS_MESSAGES_EN} from '../../components/PulsarSavedRowsMessages';
 
 // Front ES1 (docs/I18N.md; plan §3.2 and §5.3 step 1): automatic checks of every Spanish string. They fail the batch; the
 // independent reviewer agent then reads the strings in context. Length ratios outside 0.7–1.6 are reported, not failed.
@@ -45,6 +50,12 @@ const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','pr
 // Front ES8a: the radio telescope maps (complete).
 Object.assign(ENGLISH_MAPS,{radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN});
 (COMPLETE_MAPS as MapId[]).push('radioAntenna','radioFinishSave','radioR1','radioRecordSave');
+// Front ES8b: the pulsar analysis maps (complete).
+Object.assign(ENGLISH_MAPS,{pulsar:PULSAR_MESSAGES_EN,pulsarLoadSave:LOAD_SAVE_MESSAGES_EN,pulsarSavedRows:SAVED_ROWS_MESSAGES_EN});
+(COMPLETE_MAPS as MapId[]).push('pulsar','pulsarLoadSave','pulsarSavedRows');
+// Front ES7: the cluster HR, Cluster Data and variable-star maps (complete).
+Object.assign(ENGLISH_MAPS,{clusterHr:CLUSTER_HR_EN,clusterData:CLUSTER_DATA_MESSAGES_EN});
+(COMPLETE_MAPS as MapId[]).push('clusterHr','clusterData','variableStars');
 // Front ES-HELP: the help viewer's web text and OpenVireo's own help (complete).
 Object.assign(ENGLISH_MAPS,{helpViewer:HELP_VIEWER_EN,webHelp:WEB_HELP_EN});
 (COMPLETE_MAPS as MapId[]).push('helpViewer','webHelp');

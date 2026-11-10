@@ -68,6 +68,10 @@ describe('Front F3: native Save Recorded Measurements', () => {
     expect(nativeSaveAnswer(append, 'ok', folder)).toEqual({ kind: 'write', name: 'run.CSV', append: true });
     expect(nativeSaveAnswer(append, 'cancel', folder)).toEqual({ kind: 'end', unsaved: true });
     expect(PULSAR_NATIVE_SAVE_TEXT.verifyText('run.CSV', true)).toBe('Appending Data to run.CSV');
+    // Front ES8b: a screen translation touches only the fixed pieces, never the file name.
+    const tr = (piece: string) => `<${piece}>`;
+    expect(PULSAR_NATIVE_SAVE_TEXT.verifyText('The File.CSV', false, tr)).toBe('<Writing Data to >The File.CSV');
+    expect(PULSAR_NATIVE_SAVE_TEXT.existsText('Already Exists.CSV', tr)).toBe('<The File >Already Exists.CSV<' + PULSAR_NATIVE_SAVE_TEXT.existsText('', p => p).slice('The File '.length) + '>');
     expect(nativeSaveAnswer(append, 'yes', folder)).toBeNull();
   });
   it('writes the fresh header with two clock reads, then appends only the rows', () => {

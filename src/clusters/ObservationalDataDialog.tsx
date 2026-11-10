@@ -33,7 +33,7 @@ export default function ObservationalDataDialog({fields,testId,onOk,onCancel,vel
    <div className="obsd-field" data-field="vel"><label htmlFor={`${id}-vel`}>{vireo(L.vel)}</label><input id={`${id}-vel`} readOnly={!velocityEditable} title={vireo(L.velHint)} aria-describedby={`${id}-velnote`} value={velocityEditable?vel:fields.vel} onChange={velocityEditable?e=>{setVel(e.target.value);setRefused(false);}:undefined} data-testid={`${testId}-vel`}/></div>
   </div>
   <fieldset className="obsd-photometry"><legend data-testid={`${testId}-results`}>{fields.results?vireo(fields.results):''}</legend>
-   {box('v',L.v,fields.v)}{box('b',L.b,fields.b)}{box('u',L.u,fields.u)}{box('r',L.r,fields.r)}{box('i',L.i,fields.i)}
+   {box('v',vireo(L.v),fields.v)}{box('b',vireo(L.b),fields.b)}{box('u',vireo(L.u),fields.u)}{box('r',vireo(L.r),fields.r)}{box('i',vireo(L.i),fields.i)}
   </fieldset>
   <div className="obsd-field obsd-remarks"><label htmlFor={`${id}-rm`}>{vireo(L.remarks)}</label><input id={`${id}-rm`} maxLength={36} value={remarks} onChange={e=>{setRemarks(e.target.value);setRefused(false);}} data-testid={`${testId}-remarks`}/></div>
   <p id={`${id}-velnote`} className="cluster-hr-note">{velocityNote??HR.obsVelocityNote}</p>

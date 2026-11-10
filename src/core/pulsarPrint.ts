@@ -20,33 +20,36 @@ export const PULSAR_PRINT_LITERALS=Object.freeze({
  table:'     Laboratory Table Number ',notRecorded:'(Not Recorded)',parameters:'Data Parameters:',object:'Object: ',
  start:'Data Start: ',startUnit:' (Julian Day Number - 2,400,000)',aperture:'Telescope Aperture: ',apertureUnit:' (Meters)',
  points:'Number of Data Points: ',pointsUnit:' (per Receiver)',interval:'Time Interval Between Data Points: ',intervalUnit:' (MilliSeconds)',
- frequencies:'Receiver Frequency (MHz):',gains:'Receiver Gain (Relative):',receiver:(k:number)=>`Receiver ${k}: `,
+ frequencies:'Receiver Frequency (MHz):',gains:'Receiver Gain (Relative):',receiver:(k:number,tr:Tr=same)=>`${tr('Receiver ')}${k}: `,
  receiverMissing:'(Receiver Not Recorded)',file:'File Name: ',notWritten:'(Data Not Written To File)',title:'CLEA Pulsar Exercise - ',
 });
+/** A screen translation of one literal (vireo() on screen); the default leaves VIREO's English. */
+export type Tr=(literal:string)=>string;
+const same:Tr=l=>l;
 const L=PULSAR_PRINT_LITERALS,IN1='  ',IN2='    ';
 /** The text above the window image; '' is a blank line (the 2H and 4H advances). `written` is the file name a Save wrote, or null. */
-export function pulsarPrintLines(dateText:string,p:PlrProperties|null,written:string|null):readonly string[]{
- const out=[dateText+L.table+L.notRecorded,'',''];
- out.push('',IN1+L.parameters,'');
+export function pulsarPrintLines(dateText:string,p:PlrProperties|null,written:string|null,tr:Tr=same):readonly string[]{
+ const out=[dateText+tr(L.table)+tr(L.notRecorded),'',''];
+ out.push('',IN1+tr(L.parameters),'');
  const f=p?.fields;
- out.push(IN1+L.object+(f?.object??'').slice(0,40));
- out.push(IN1+L.start+(f?.start??'')+L.startUnit,IN1+L.aperture+(f?.aperture??'')+L.apertureUnit,IN1+L.points+(f?.points??'')+L.pointsUnit,IN1+L.interval+(f?.interval??'')+L.intervalUnit);
+ out.push(IN1+tr(L.object)+(f?.object??'').slice(0,40));
+ out.push(IN1+tr(L.start)+(f?.start??'')+tr(L.startUnit),IN1+tr(L.aperture)+(f?.aperture??'')+tr(L.apertureUnit),IN1+tr(L.points)+(f?.points??'')+tr(L.pointsUnit),IN1+tr(L.interval)+(f?.interval??'')+tr(L.intervalUnit));
  const receivers=p?.receivers??[];
- out.push(IN1+L.frequencies);
- for(let k=0;k<3;k++){const r=receivers[k];out.push(IN2+L.receiver(k+1)+(k===0||r?.recorded?(r?.frequency??''):L.receiverMissing));}
- out.push(IN1+L.gains);
- for(let k=0;k<3;k++){const r=receivers[k];out.push(IN2+L.receiver(k+1)+(k===0||r?.recorded?(r?.gain??''):L.receiverMissing));}
- out.push(IN1+L.file+(written??L.notWritten),'','','','');
+ out.push(IN1+tr(L.frequencies));
+ for(let k=0;k<3;k++){const r=receivers[k];out.push(IN2+L.receiver(k+1,tr)+(k===0||r?.recorded?(r?.frequency??''):tr(L.receiverMissing)));}
+ out.push(IN1+tr(L.gains));
+ for(let k=0;k<3;k++){const r=receivers[k];out.push(IN2+L.receiver(k+1,tr)+(k===0||r?.recorded?(r?.gain??''):tr(L.receiverMissing)));}
+ out.push(IN1+tr(L.file)+(written??tr(L.notWritten)),'','','','');
  return Object.freeze(out);
 }
 
 export type PulsarPrintOrientation='portrait'|'landscape';
 export const PULSAR_PRINT_PAGE_LITERALS=Object.freeze({nextPage:'(Screen Image Printed on Next Page)',page2:' - Page 2'});
 /** The page for an orientation: the text lines above the image, and for landscape the page-2 line printed before the image. */
-export function pulsarPrintPage(dateText:string,p:PlrProperties|null,written:string|null,orientation:PulsarPrintOrientation):Readonly<{lines:readonly string[];page2:readonly string[]|null}>{
- const portrait=pulsarPrintLines(dateText,p,written);
+export function pulsarPrintPage(dateText:string,p:PlrProperties|null,written:string|null,orientation:PulsarPrintOrientation,tr:Tr=same):Readonly<{lines:readonly string[];page2:readonly string[]|null}>{
+ const portrait=pulsarPrintLines(dateText,p,written,tr);
  if(orientation==='portrait')return Object.freeze({lines:portrait,page2:null});
  const x0='  ',name1='';
- const lines=[...portrait.slice(0,-4).map(l=>l===''?'':x0+l),'','',' '.repeat(28)+PULSAR_PRINT_PAGE_LITERALS.nextPage];
- return Object.freeze({lines:Object.freeze(lines),page2:Object.freeze([x0+(name1+PULSAR_PRINT_PAGE_LITERALS.page2).slice(0,49)])});
+ const lines=[...portrait.slice(0,-4).map(l=>l===''?'':x0+l),'','',' '.repeat(28)+tr(PULSAR_PRINT_PAGE_LITERALS.nextPage)];
+ return Object.freeze({lines:Object.freeze(lines),page2:Object.freeze([x0+(name1+tr(PULSAR_PRINT_PAGE_LITERALS.page2)).slice(0,49)])});
 }

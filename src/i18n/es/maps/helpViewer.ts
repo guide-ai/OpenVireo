@@ -8,6 +8,8 @@ export const HELP_VIEWER_ES:Translation<typeof HELP_VIEWER_EN>=Object.freeze({
  viewOriginal:'Ver original (inglés)',
  viewTranslation:'Ver traducción',
  translationError:'No se pudo cargar la ayuda traducida, o no coincidió con el archivo original del que se tradujo, así que se muestra la ayuda original de VIREO en inglés.',
+ helpAdaptationTranslation:(list:string)=>`La traducción al español de OpenVireo de la ayuda propia de VIREO (su índice ${list} y los archivos de texto que nombra; una adaptación web, no de CLEA), mostrada en una versión web del visor de ayuda de VIREO. No se reproducen los tamaños de ventana, las fuentes ni el pitido del sistema.`,
+ linkNoteTranslation:'Haz doble clic o presiona Enter en un título bajo «Temas relacionados» para abrirlo. Una línea en blanco ahí no hace nada en este sitio; VIREO se detiene con un error en ella.',
  searchFoldNote:'En la traducción, la búsqueda ignora los acentos y las mayúsculas, lo cual es una adaptación web. La búsqueda propia de VIREO, que se conserva en la vista original, solo ignora las mayúsculas de la A a la Z.',
  spectralLines:Object.freeze({
   listCaption:'Líneas espectrales',

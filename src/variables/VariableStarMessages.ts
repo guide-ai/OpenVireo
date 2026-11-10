@@ -1,7 +1,7 @@
 import type {LightCurveUnavailable} from '../core/lightCurve';
 import {pickMessages} from '../i18n/registry';
-/** Front V English strings (self-contained, like ObjectXMessages). Original captions and menu texts are copied from the
- * TVStarListForm1 / TLtCrvDsplyForm1 DFMs of CLEA_VEO.exe; everything else is web text. */
+/** Front V English strings (self-contained, like ObjectXMessages). Original captions and menu texts (TVStarListForm1 /
+ * TLtCrvDsplyForm1 DFMs of CLEA_VEO.exe) live in src/core/variableStarForm.ts; everything here is web text. */
 export const VARIABLE_STARS_EN=Object.freeze({
  nav:'Variable stars',
  title:'Variable stars and light curves',
@@ -28,24 +28,10 @@ export const VARIABLE_STARS_EN=Object.freeze({
  openLabel:(name:string)=>`Open ${name}`,
  noPeriod:'—',
  // TVStarListForm1
- listCaption:'Variable Star Data',
- dataMenu:'Data',
- displayLightCurve:'Display Light Curve...',
- print:'Print...',
- listTypeCodes:'List Type Codes',
  listTypeCodesNote:'In VIREO this menu item only switches its own check mark; nothing else reads it.',
- saveText:'Save Text',
- asDisplayed:'As Displayed...',
- commaDelimit:'Comma Delimit (for Spreadsheet)...',
- close:'Close',
- help:'Help',
- saved:(file:string)=>`Report Text Written to ${file}.`,
  saveAdaptation:'Web adaptation: the text is downloaded through your browser (one line per list row, Windows line endings) instead of a Save dialog.',
  riseDefaultedNote:'This record had no M-m/D value. Opening its light curve set it to 50 % in memory, as VIREO does, so the list now shows 0.50.',
  // TLtCrvDsplyForm1
- curveCaption:'Simulated Light Curve',
- fileMenu:'File',
- exit:'Exit',
  curveLabel:(name:string)=>`Simulated light curve of ${name}: magnitude against phase, 1.5 cycles from the catalog epoch.`,
  unavailable:Object.freeze<Record<LightCurveUnavailable,string>>({
   'period-zero':'No curve: this record has no period (0 days). VIREO divides by the period and stops with a floating-point error after drawing the axes, so no curve point is drawn.',
@@ -62,9 +48,7 @@ export const VARIABLE_STARS_EN=Object.freeze({
  printOrientation:'Page orientation',
  portrait:'Portrait',
  landscape:'Landscape',
- printTable:'     Laboratory Table Number (Not Recorded)',
  printStudentPlaceholder:'[student and lab text entered in VIREO: not recovered on this site]',
- printPage2:' - Page 2',
  printButton:'Print…',
  printClose:'Close preview',
  printError:'Printing is not available in this browser window.',

@@ -66,7 +66,7 @@
    "es": "navegador"
   },
   {
-   "en": "(?<!line breaks and |Shift\\+)(?<!reachable with )\\btabs?\\b(?!,? (?:line breaks|or other|BOM)| and Shift\\+Tab)",
+   "en": "(?<!line breaks and |for example a |accented letter, a |Shift\\+)(?<!reachable with )\\btabs?\\b(?!,? (?:line breaks|or other|BOM)| and Shift\\+Tab)",
    "es": "pestaña"
   },
   {
@@ -74,7 +74,7 @@
    "es": "Tab y Mayús\\+Tab"
   },
   {
-   "en": "\\btabs?(?=,? (?:line breaks|or other|BOM))|(?<=line breaks and )tabs?\\b",
+   "en": "\\btabs?(?=,? (?:line breaks|or other|BOM))|(?<=line breaks and |for example a |accented letter, a )tabs?\\b",
    "es": "tabulaci"
   },
   {
@@ -438,6 +438,10 @@
    "es": "rejillas? de extremos"
   },
   {
+   "en": "\\bdispersion measure\\b",
+   "es": "medida de dispersión"
+  },
+  {
    "en": "\\bsweeps?\\b",
    "es": "barrido"
   },
@@ -554,7 +558,10 @@
   },
   {
    "en": "Topics...",
-   "es": "Temas..."
+   "es": "Temas...",
+   "except": {
+    "original:Show Help Topics...": "VIREO's help viewer item Show Help Topics... (the topic list), «Mostrar los temas de ayuda...»; the row names the Help menu's Topics... item."
+   }
   },
   {
    "en": "About This Exercise...",
@@ -1030,6 +1037,14 @@
   {
    "en": "Program List",
    "es": "Lista de programa"
+  },
+  {
+   "en": "Pulsar guide",
+   "es": "Guía de púlsares"
+  },
+  {
+   "en": "Pulsar timing guide",
+   "es": "Guía de temporización de púlsares"
   },
   {
    "en": "Radio Astronomy of Pulsars",

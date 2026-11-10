@@ -172,10 +172,12 @@ export const HELP_PRINT_LAB_SUFFIX='     Laboratory Table Number (Not Recorded)'
  * labelled placeholder): date + laboratory line; student name 1 (others only when set); the title text itself; the
  * caption; every row. No NewPage: VIREO prints only what fits on one page. */
 export type HelpPrintLine=Readonly<{kind:'date'|'students'|'title'|'caption'|'row';text:string|null;indent:boolean}>;
-export function helpPrintPage(dateText:string,caption:string,rows:readonly string[]):readonly HelpPrintLine[]{
+/** `tr` (Front ES-HELP; the HR, list and light-curve prints do the same) translates the lab-table suffix on screen; the title
+ * prefix stays VIREO's English. Defaults to the literal. */
+export function helpPrintPage(dateText:string,caption:string,rows:readonly string[],tr:(literal:string)=>string=literal=>literal):readonly HelpPrintLine[]{
  const line=(kind:HelpPrintLine['kind'],text:string|null,indent:boolean)=>Object.freeze({kind,text,indent});
  return Object.freeze([
-  line('date',dateText+HELP_PRINT_LAB_SUFFIX,false),
+  line('date',dateText+tr(HELP_PRINT_LAB_SUFFIX),false),
   line('students',null,false),
   line('title',HELP_PRINT_TITLE_PREFIX,true),
   line('caption',caption,true),

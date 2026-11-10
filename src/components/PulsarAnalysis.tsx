@@ -28,11 +28,11 @@ import { PULSAR_DATA_NOT_WRITTEN,
 import { useSharedPulsarData, type SharedPulsarDataHandle } from '../useSharedPulsarData';
 import { createPulsarPanHold } from '../core/pulsarPanHold';
 import {
-  pulsarReviewAnswerDelete, pulsarReviewCancel, pulsarReviewConfirm, pulsarReviewDismissNotice, pulsarReviewEscape, pulsarReviewOpen, pulsarReviewRequestDelete, pulsarReviewSelect,
+  PULSAR_REVIEW_BUTTONS, PULSAR_REVIEW_LITERALS, pulsarReviewAnswerDelete, pulsarReviewCancel, pulsarReviewConfirm, pulsarReviewDismissNotice, pulsarReviewEscape, pulsarReviewOpen, pulsarReviewRequestDelete, pulsarReviewSelect,
   type PulsarReviewSession,
 } from '../core/pulsarReview';
 import {
-  pulsarReviewEditCancel, pulsarReviewEditConfirm, pulsarReviewEditDraft, pulsarReviewEditSupport, pulsarReviewEditView, pulsarReviewRequestEdit,
+  PULSAR_REVIEW_EDIT_DFM, PULSAR_REVIEW_EDIT_LITERALS, pulsarReviewEditCancel, pulsarReviewEditConfirm, pulsarReviewEditDraft, pulsarReviewEditSupport, pulsarReviewEditView, pulsarReviewRequestEdit,
   type PulsarEditorField, type PulsarReviewEditView,
 } from '../core/pulsarReviewEdit';
 import {
@@ -49,6 +49,8 @@ import {
 } from '../core/pulsarRawExport';
 import { PULSAR_SAVE_PENDING, pulsarSaveBegin, pulsarSaveRefusalNotice, type PulsarSaveNotice } from '../core/pulsarSavedCopy';
 import { browserPulsarSaveSupport, continuePulsarSave, invokePulsarSavePicker, type SaveHandle } from './pulsarSaveHost';
+import { vireo, vireoMenuItem } from '../i18n/vireo';
+import { OBSERVATORY_VIREO_CAPTIONS as OV } from '../observatory/ObservatoryMessages';
 import { createPulsarTranslator, type PulsarMessageKey, type PulsarTranslate } from './PulsarMessages';
 import {
   loadSaveAttempt, loadSaveChoiceCancelled, loadSaveChoose, loadSaveImport, loadSaveLive, loadSaveOpen, loadSaveReadLive, loadSaveReadOwned, loadSaveSelected, loadSaveVerified,
@@ -732,6 +734,8 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
   }
   const nativeBusy = useRef(false);
   const endNative = (text: string) => { setNative(null); focusAfterModal.current = nativeSaveButton.current?.disabled ? clearButton.current : nativeSaveButton.current; say(text); };
+  // The fixed pieces of VIREO's file-name messages, translated around the file name.
+  const nativeTr = (piece: string) => vireo(piece, 'fragment');
   const answerNative = (a: NativeSaveAnswer, typed?: string) => {
     const session = nativeRef.current, dialogEl = nativeDialog.current;
     if (!session || nativeBusy.current || !dialogEl?.open) return;
@@ -1221,7 +1225,7 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
           {s.dataNotice && (
             <div role="alert" className="plr-error" data-testid="pulsar-data-notice" data-kind={s.dataNotice}>
               {s.dataNotice === 'empty'
-                ? <><strong>{PULSAR_ACTIVATE_LITERALS.emptyCaption}</strong> <span data-testid="pulsar-data-notice-text">{PULSAR_ACTIVATE_LITERALS.emptyText}</span> <span className="plr-help">{t('pulsar.notice.emptyNote')}</span></>
+                ? <><strong>{vireo(PULSAR_ACTIVATE_LITERALS.emptyCaption)}</strong> <span data-testid="pulsar-data-notice-text">{vireo(PULSAR_ACTIVATE_LITERALS.emptyText)}</span> <span className="plr-help">{t('pulsar.notice.emptyNote')}</span></>
                 : <span data-testid="pulsar-data-notice-text">{t('pulsar.notice.reserved')}</span>}
               {' '}<button type="button" onClick={() => act(pulsarDismissDataNotice)} data-testid="pulsar-data-notice-dismiss">{t('pulsar.file.dismiss')}</button>
             </div>
@@ -1263,7 +1267,7 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
             <p className="plr-help">{t(fileRec ? 'pulsar.props.note' : memoryWritten ? 'pulsar.props.noteMemoryWritten' : 'pulsar.props.noteMemory')}</p>
             <dl>
               {(['object', 'start', 'aperture', 'interval', 'points', 'file'] as const).map(k => (
-                <div key={k}><dt>{t(`pulsar.props.${k}`)}</dt><dd><output data-testid={`pulsar-prop-${k}`}>{props.fields[k]}</output>
+                <div key={k}><dt>{t(`pulsar.props.${k}`)}</dt><dd><output data-testid={`pulsar-prop-${k}`}>{k === 'file' && props.fields.file === PULSAR_DATA_NOT_WRITTEN ? vireo(PULSAR_DATA_NOT_WRITTEN) : props.fields[k]}</output>
                   {k === 'file' && (fileRec || memoryWritten) && <span className="plr-help"> {t(fileRec ? 'pulsar.props.fileNote' : 'pulsar.props.fileNoteWritten')}</span>}</dd></div>
               ))}
             </dl>
@@ -1283,7 +1287,7 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
               <h3 id={`${idPrefix}tools`}>{t('pulsar.toolbar.heading')}</h3>
               <div className="plr-row">
                 <button type="button" ref={propertiesButton} onClick={openProperties} data-testid="pulsar-properties-open">{t('pulsar.toolbar.properties')}</button>
-                <button type="button" ref={printButton} onClick={() => { act(pulsarPrintWindow); setPrinting(true); }} data-testid="pulsar-print-window">{menuCaptionText(PP.menu)}</button>
+                <button type="button" ref={printButton} onClick={() => { act(pulsarPrintWindow); setPrinting(true); }} data-testid="pulsar-print-window">{menuCaptionText(vireo(PP.menu))}</button>
                 <button type="button" onClick={() => act(st => pulsarReset(st))} data-testid="pulsar-reset">{t('pulsar.toolbar.reset')}</button>
                 <button type="button" onClick={() => act(st => pulsarZoom(st, 'out'))} disabled={!s.zoomOutEnabled} data-testid="pulsar-zoom-out">{t('pulsar.toolbar.zoomOut')}</button>
                 <span>{t('pulsar.toolbar.zoom')} <output data-testid="pulsar-zoom">{readouts.zoom}</output></span>
@@ -1306,11 +1310,11 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
               </fieldset>
             </section>
 
-            {printing && <WebPrintPreview testId="pulsar-print-preview" caption={PP.caption} note={PM.pulsarPrint.note} orientation={printOrientation} pictureClass="pulsar-print-palette"
-              nextPage={pulsarPrintPage('', props, null, printOrientation).page2}
+            {printing && <WebPrintPreview testId="pulsar-print-preview" caption={vireo(PP.caption)} note={PM.pulsarPrint.note} orientation={printOrientation} pictureClass="pulsar-print-palette"
+              nextPage={pulsarPrintPage('', props, null, printOrientation, vireo).page2}
               controls={<fieldset className="variable-print-orientation" data-testid="pulsar-print-orientation"><legend>{PM.pulsarPrint.orientation}</legend>
                 {(['portrait', 'landscape'] as const).map(o => <label key={o}><input type="radio" name={`${idPrefix}print-orientation`} checked={printOrientation === o} onChange={() => setPrintOrientation(o)} data-testid={`pulsar-print-${o}`} /> {PM.pulsarPrint[o]}</label>)}</fieldset>}
-              nativeHeader={date => pulsarPrintPage(date, props, props && props.fields.file !== PULSAR_DATA_NOT_WRITTEN ? props.fields.file : null, printOrientation).lines} clone={() => panelsRef.current} onClose={() => { setPrinting(false); printButton.current?.focus(); }} />}
+              nativeHeader={date => pulsarPrintPage(date, props, props && props.fields.file !== PULSAR_DATA_NOT_WRITTEN ? props.fields.file : null, printOrientation, vireo).lines} clone={() => panelsRef.current} onClose={() => { setPrinting(false); printButton.current?.focus(); }} />}
             <div className="plr-panels" ref={panelsRef}>
               {PULSAR_PANELS.map(ch => <Panel key={ch} ch={ch} s={s} t={t} act={act} idPrefix={idPrefix} primaryAs={primaryAs} owner={pointerOwner} />)}
             </div>
@@ -1376,18 +1380,18 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
         <dialog ref={clearDialog} role="alertdialog" aria-labelledby={`${idPrefix}clear`} className="plr-modal" data-testid="pulsar-clear-dialog"
           {...dialogEvents(() => answerClear('cancel'))}>
           {s.clearPrompt === 'unsaved' ? (<>
-            <p id={`${idPrefix}clear`}><strong>{NS.clearUnsavedCaption}</strong></p>
-            <p style={{ whiteSpace: 'pre-line' }} data-testid="pulsar-clear-unsaved-text">{NS.clearUnsavedText}</p>
+            <p id={`${idPrefix}clear`}><strong>{vireo(NS.clearUnsavedCaption)}</strong></p>
+            <p style={{ whiteSpace: 'pre-line' }} data-testid="pulsar-clear-unsaved-text">{vireo(NS.clearUnsavedText)}</p>
             <div className="plr-row">
               <button type="button" onClick={() => answerClear('save')} data-testid="pulsar-clear-save">{t('pulsar.clear.save')}</button>
               <button type="button" onClick={() => answerClear('discard')} data-testid="pulsar-clear-discard">{t('pulsar.clear.discard')}</button>
-              <button type="button" ref={clearDefault} onClick={() => answerClear('cancel')} data-testid="pulsar-clear-cancel">{t('pulsar.clear.cancel')}</button>
+              <button type="button" ref={clearDefault} onClick={() => answerClear('cancel')} data-testid="pulsar-clear-cancel">{vireo(OV.cancel)}</button>
             </div>
           </>) : (<>
-            <p id={`${idPrefix}clear`}>{NS.clearConfirmText}</p>
+            <p id={`${idPrefix}clear`}>{vireo(NS.clearConfirmText)}</p>
             <div className="plr-row">
               <button type="button" onClick={() => answerClear('yes')} data-testid="pulsar-clear-yes">{t('pulsar.clear.yes')}</button>
-              <button type="button" ref={clearDefault} onClick={() => answerClear('no')} data-testid="pulsar-clear-no">{t('pulsar.clear.no')}</button>
+              <button type="button" ref={clearDefault} onClick={() => answerClear('no')} data-testid="pulsar-clear-no">{vireo(OV.no)}</button>
             </div>
           </>)}
         </dialog>
@@ -1395,14 +1399,14 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
       {s.loadPrompt && (
         <dialog ref={loadDialog} role="alertdialog" aria-labelledby={`${idPrefix}load`} aria-describedby={`${idPrefix}load-text`} className="plr-modal" data-testid="pulsar-load-dialog"
           {...dialogEvents(() => answerLoad('cancel'))}>
-          <h3 id={`${idPrefix}load`}>{PULSAR_ACTIVATE_LITERALS.loadCaption}</h3>
-          <p id={`${idPrefix}load-text`} style={{ whiteSpace: 'pre-line' }} data-testid="pulsar-load-text">{PULSAR_ACTIVATE_LITERALS.loadText}</p>
+          <h3 id={`${idPrefix}load`}>{vireo(PULSAR_ACTIVATE_LITERALS.loadCaption)}</h3>
+          <p id={`${idPrefix}load-text`} style={{ whiteSpace: 'pre-line' }} data-testid="pulsar-load-text">{vireo(PULSAR_ACTIVATE_LITERALS.loadText)}</p>
           <p className="plr-help" id={`${idPrefix}load-gated`} data-testid="pulsar-load-yes-reason" data-support={saveSupport}>
             {saveSupport === 'ok' ? ls('loadSave.yes.reason') : ls(`loadSave.yes.unsupported.${saveSupport}` as LoadSaveMessageKey)} {t('pulsar.load.webDefault')}</p>
           <div className="plr-row">
-            <button type="button" onClick={answerLoadSave} disabled={saveSupport !== 'ok'} aria-describedby={`${idPrefix}load-gated`} data-testid="pulsar-load-yes">{t('pulsar.load.yes')}</button>
-            <button type="button" onClick={() => answerLoad('no')} data-testid="pulsar-load-no">{t('pulsar.load.no')}</button>
-            <button type="button" ref={loadDefault} onClick={() => answerLoad('cancel')} data-testid="pulsar-load-cancel">{t('pulsar.load.cancel')}</button>
+            <button type="button" onClick={answerLoadSave} disabled={saveSupport !== 'ok'} aria-describedby={`${idPrefix}load-gated`} data-testid="pulsar-load-yes">{vireo(OV.yes)}</button>
+            <button type="button" onClick={() => answerLoad('no')} data-testid="pulsar-load-no">{vireo(OV.no)}</button>
+            <button type="button" ref={loadDefault} onClick={() => answerLoad('cancel')} data-testid="pulsar-load-cancel">{vireo(OV.cancel)}</button>
           </div>
           <p role="status" aria-live="polite" className="plr-status" data-testid="pulsar-load-status">{status}</p>
         </dialog>
@@ -1420,28 +1424,28 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
         const box = (caption: string, text: string, answers: readonly NativeSaveAnswer[]) => (<>
           <h3 id={`${idPrefix}native`}>{caption}</h3>
           <p style={{ whiteSpace: 'pre-line' }} data-testid="pulsar-native-text">{text}</p>
-          <div className="plr-row">{answers.map((a, i) => <button key={a} type="button" ref={i === 0 ? ref : undefined} onClick={() => answerNative(a)} data-testid={`pulsar-native-${a}`}>{t(`pulsar.nativeSave.${a}` as PulsarMessageKey)}</button>)}</div>
+          <div className="plr-row">{answers.map((a, i) => <button key={a} type="button" ref={i === 0 ? ref : undefined} onClick={() => answerNative(a)} data-testid={`pulsar-native-${a}`}>{vireo(OV[a])}</button>)}</div>
         </>);
         return (
           <dialog ref={nativeDialog} role={st.kind === 'dialog' ? undefined : 'alertdialog'} aria-labelledby={`${idPrefix}native`} className="plr-modal plr-native-save" data-testid="pulsar-native-dialog" data-step={st.kind}
             {...dialogEvents(() => answerNative('cancel'))}>
-            {st.kind === 'nothing' ? box(NS.nothingCaption, NS.nothingText, ['ok'])
-              : st.kind === 'unrecorded' ? box(NS.unrecordedCaption, NS.unrecordedText, ['yes', 'no'])
-              : st.kind === 'extension' ? box(NS.extensionCaption, NS.extensionText, ['yes', 'no', 'cancel'])
-              : st.kind === 'exists' ? box(NS.existsCaption, NS.existsText(st.name), ['yes', 'no', 'cancel'])
-              : st.kind === 'verify' ? box(NS.verifyCaption, NS.verifyText(st.name, st.append), ['ok', 'cancel'])
+            {st.kind === 'nothing' ? box(vireo(NS.nothingCaption), vireo(NS.nothingText), ['ok'])
+              : st.kind === 'unrecorded' ? box(vireo(NS.unrecordedCaption), vireo(NS.unrecordedText), ['yes', 'no'])
+              : st.kind === 'extension' ? box(vireo(NS.extensionCaption), vireo(NS.extensionText), ['yes', 'no', 'cancel'])
+              : st.kind === 'exists' ? box(vireo(NS.existsCaption), NS.existsText(st.name, nativeTr), ['yes', 'no', 'cancel'])
+              : st.kind === 'verify' ? box(vireo(NS.verifyCaption), NS.verifyText(st.name, st.append, nativeTr), ['ok', 'cancel'])
               : (
                 <form key={`${st.fileName}|${st.problem ?? ''}`} onSubmit={e => { e.preventDefault(); answerNative('ok', String(new FormData(e.currentTarget).get('name') ?? '')); }}>
-                  <h3 id={`${idPrefix}native`}>{NS.dialogTitle}</h3>
+                  <h3 id={`${idPrefix}native`}>{vireo(NS.dialogTitle)}</h3>
                   <label>{t('pulsar.nativeSave.fileName')}
                     <input name="name" ref={ref} defaultValue={st.fileName} autoComplete="off" spellCheck={false} aria-describedby={`${idPrefix}native-folder`} data-testid="pulsar-native-name" />
                   </label>
-                  <p className="plr-help">{t('pulsar.nativeSave.filter', { filter: NS.filter })}</p>
+                  <p className="plr-help">{t('pulsar.nativeSave.filter', { filter: vireo(NS.filter) })}</p>
                   <p className="plr-help" id={`${idPrefix}native-folder`} data-testid="pulsar-native-folder">{t('pulsar.nativeSave.folder', { count: nativeFolder.current.size })}</p>
                   {st.problem && <p role="alert" className="plr-error" data-testid="pulsar-native-problem">{t(`pulsar.nativeSave.problem.${st.problem}` as PulsarMessageKey)}</p>}
                   <div className="plr-row">
                     <button type="submit" data-testid="pulsar-native-save">{t('pulsar.nativeSave.save')}</button>
-                    <button type="button" onClick={() => answerNative('cancel')} data-testid="pulsar-native-cancel">{t('pulsar.nativeSave.cancel')}</button>
+                    <button type="button" onClick={() => answerNative('cancel')} data-testid="pulsar-native-cancel">{vireo(OV.cancel)}</button>
                   </div>
                 </form>)}
             {nativeError && <p role="alert" className="plr-error" data-testid="pulsar-native-error">{nativeError}</p>}
@@ -1745,7 +1749,7 @@ function Review({ findMemory, onFindMemory, session, editor, t, idPrefix, act, f
   return (
     <>
       <div ref={body} className="plr-review-body" inert={prompt !== null || editor !== null} data-testid="pulsar-review-list">
-        <h3 id={`${idPrefix}review-heading`}>{t('pulsar.review.heading')}</h3>
+        <h3 id={`${idPrefix}review-heading`}>{vireo(PULSAR_REVIEW_LITERALS.dialogCaption)}</h3>
         <p className="plr-help">{t('pulsar.review.note')}</p>
         {draft.length === 0 ? <p data-testid="pulsar-review-empty">{t('pulsar.review.empty')}</p> : (
           // WEB: the scroll region is a Tab stop, so arrow keys can scroll the wide table without moving the row radios.
@@ -1765,13 +1769,13 @@ function Review({ findMemory, onFindMemory, session, editor, t, idPrefix, act, f
         )}
         <div className="plr-row plr-review-buttons">
           <span className="plr-row">
-            <button type="button" ref={findButton} disabled={draft.length === 0} aria-describedby={`${idPrefix}review-find-note`} data-testid="pulsar-review-find" onClick={() => { setFind(savedFindOpen(findMemory)); setRefusal(null); }}>{t('pulsar.review.find')}</button>
-            <button type="button" ref={refs.edit} onClick={requestEdit} data-testid="pulsar-review-edit">{t('pulsar.review.edit')}</button>
-            <button type="button" ref={refs.remove} onClick={() => act(pulsarReviewRequestDelete)} data-testid="pulsar-review-delete">{t('pulsar.review.delete')}</button>
+            <button type="button" ref={findButton} disabled={draft.length === 0} aria-describedby={`${idPrefix}review-find-note`} data-testid="pulsar-review-find" onClick={() => { setFind(savedFindOpen(findMemory)); setRefusal(null); }}>{vireoMenuItem(PULSAR_REVIEW_BUTTONS.find)}</button>
+            <button type="button" ref={refs.edit} onClick={requestEdit} data-testid="pulsar-review-edit">{vireoMenuItem(PULSAR_REVIEW_BUTTONS.edit)}</button>
+            <button type="button" ref={refs.remove} onClick={() => act(pulsarReviewRequestDelete)} data-testid="pulsar-review-delete">{vireo(PULSAR_REVIEW_BUTTONS.delete)}</button>
           </span>
           <span className="plr-row">
-            <button type="button" onClick={() => finish(act(pulsarReviewConfirm))} data-testid="pulsar-review-ok">{t('pulsar.review.ok')}</button>
-            <button type="button" ref={refs.cancel} onClick={() => finish(act(pulsarReviewCancel))} data-testid="pulsar-review-cancel">{t('pulsar.review.cancel')}</button>
+            <button type="button" onClick={() => finish(act(pulsarReviewConfirm))} data-testid="pulsar-review-ok">{vireo(PULSAR_REVIEW_BUTTONS.ok)}</button>
+            <button type="button" ref={refs.cancel} onClick={() => finish(act(pulsarReviewCancel))} data-testid="pulsar-review-cancel">{vireo(PULSAR_REVIEW_BUTTONS.cancel)}</button>
           </span>
         </div>
         <p className="plr-help" id={`${idPrefix}review-find-note`}>{R1.findNote}</p>
@@ -1780,20 +1784,20 @@ function Review({ findMemory, onFindMemory, session, editor, t, idPrefix, act, f
       </div>
       {prompt === 'confirm-delete' && (
         <section className="plr-review-prompt" role="alertdialog" aria-labelledby={`${idPrefix}review-prompt`} aria-describedby={`${idPrefix}review-prompt-text`} data-testid="pulsar-review-confirm">
-          <h4 id={`${idPrefix}review-prompt`}>{t('pulsar.review.confirmCaption')}</h4>
-          <p id={`${idPrefix}review-prompt-text`}>{t('pulsar.review.confirmText')}</p>
+          <h4 id={`${idPrefix}review-prompt`}>{vireo(PULSAR_REVIEW_LITERALS.confirmationCaption)}</h4>
+          <p id={`${idPrefix}review-prompt-text`}>{vireo(PULSAR_REVIEW_LITERALS.confirmationText)}</p>
           <div className="plr-row">
-            <button type="button" onClick={() => act(st => pulsarReviewAnswerDelete(st, 'yes'))} data-testid="pulsar-review-yes">{t('pulsar.review.yes')}</button>
-            <button type="button" ref={refs.promptDefault} onClick={() => act(st => pulsarReviewAnswerDelete(st, 'no'))} data-testid="pulsar-review-no">{t('pulsar.review.no')}</button>
+            <button type="button" onClick={() => act(st => pulsarReviewAnswerDelete(st, 'yes'))} data-testid="pulsar-review-yes">{vireo(OV.yes)}</button>
+            <button type="button" ref={refs.promptDefault} onClick={() => act(st => pulsarReviewAnswerDelete(st, 'no'))} data-testid="pulsar-review-no">{vireo(OV.no)}</button>
           </div>
         </section>
       )}
       {(prompt === 'no-selection' || prompt === 'edit-no-selection') && (
         <section className="plr-review-prompt" role="alertdialog" aria-labelledby={`${idPrefix}review-prompt`} aria-describedby={`${idPrefix}review-prompt-text`} data-testid="pulsar-review-notice">
-          <h4 id={`${idPrefix}review-prompt`}>{t('pulsar.review.noSelectionCaption')}</h4>
-          <p id={`${idPrefix}review-prompt-text`}>{t(prompt === 'no-selection' ? 'pulsar.review.noSelectionText' : 'pulsar.review.editNoSelectionText')}</p>
+          <h4 id={`${idPrefix}review-prompt`}>{vireo(PULSAR_REVIEW_LITERALS.noSelectionCaption)}</h4>
+          <p id={`${idPrefix}review-prompt-text`}>{vireo(prompt === 'no-selection' ? PULSAR_REVIEW_LITERALS.noSelectionText : PULSAR_REVIEW_EDIT_LITERALS.noSelectionText)}</p>
           <div className="plr-row">
-            <button type="button" ref={refs.promptDefault} onClick={() => act(pulsarReviewDismissNotice)} data-testid="pulsar-review-notice-ok">{t('pulsar.review.noticeOk')}</button>
+            <button type="button" ref={refs.promptDefault} onClick={() => act(pulsarReviewDismissNotice)} data-testid="pulsar-review-notice-ok">{vireo(OV.ok)}</button>
           </div>
         </section>
       )}
@@ -1814,22 +1818,22 @@ function ReviewEditor({ view, t, idPrefix, act, comment }: ReviewEditorProps) {
   const ok = () => act(pulsarReviewEditConfirm);
   return (
     <section className="plr-review-prompt plr-review-edit" role="dialog" aria-labelledby={`${idPrefix}review-edit`} data-testid="pulsar-review-editor">
-      <h4 id={`${idPrefix}review-edit`}>{t('pulsar.reviewEdit.heading')}</h4>
+      <h4 id={`${idPrefix}review-edit`}>{vireo(PULSAR_REVIEW_EDIT_LITERALS.formCaption)}</h4>
       <p className="plr-help">{t('pulsar.reviewEdit.note')}</p>
       <fieldset className="plr-review-edit-group">
         <legend data-testid="pulsar-review-edit-object">{view.object}</legend>
         <dl>
-          <div><dt>{t('pulsar.reviewEdit.julianDate')}</dt><dd><output data-testid="pulsar-review-edit-start">{view.start}</output></dd></div>
-          <div><dt>{t('pulsar.reviewEdit.frequency')}</dt><dd><output data-testid="pulsar-review-edit-frequency">{view.frequency}</output></dd></div>
-          <div><dt>{t('pulsar.reviewEdit.gain')}</dt><dd><output data-testid="pulsar-review-edit-gain">{view.gain}</output></dd></div>
+          <div><dt>{vireo(PULSAR_REVIEW_EDIT_DFM.julianDate)}</dt><dd><output data-testid="pulsar-review-edit-start">{view.start}</output></dd></div>
+          <div><dt>{vireo(PULSAR_REVIEW_EDIT_DFM.frequency)}</dt><dd><output data-testid="pulsar-review-edit-frequency">{view.frequency}</output></dd></div>
+          <div><dt>{vireo(PULSAR_REVIEW_EDIT_DFM.gain)}</dt><dd><output data-testid="pulsar-review-edit-gain">{view.gain}</output></dd></div>
         </dl>
-        <p className="plr-review-edit-readings-label">{t('pulsar.reviewEdit.readings')}</p>
+        <p className="plr-review-edit-readings-label">{vireo(PULSAR_REVIEW_EDIT_DFM.readings)}</p>
         <div className="plr-review-edit-readings">
           {(['reference', 'vertical', 'horizontal'] as const).map(k => (
-            <label key={k}>{t(`pulsar.reviewEdit.${k}`)}<input readOnly tabIndex={-1} value={view[k]} data-testid={`pulsar-review-edit-${k}`} /></label>
+            <label key={k}>{vireo(PULSAR_REVIEW_EDIT_DFM[k])}<input readOnly tabIndex={-1} value={view[k]} data-testid={`pulsar-review-edit-${k}`} /></label>
           ))}
         </div>
-        <label>{t('pulsar.reviewEdit.comment')}
+        <label>{vireo(PULSAR_REVIEW_EDIT_DFM.comment)}
           <input ref={comment} value={view.draft} maxLength={256} aria-invalid={!view.draftValid} aria-describedby={`${idPrefix}review-edit-help`}
             onChange={e => act(st => pulsarReviewEditDraft(st, e.target.value))}
             onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); ok(); } }} data-testid="pulsar-review-edit-comment" />
@@ -1837,8 +1841,8 @@ function ReviewEditor({ view, t, idPrefix, act, comment }: ReviewEditorProps) {
         <p className="plr-help" id={`${idPrefix}review-edit-help`}>{t('pulsar.reviewEdit.commentHelp')}</p>
       </fieldset>
       <div className="plr-row">
-        <button type="button" onClick={ok} data-testid="pulsar-review-edit-ok">{t('pulsar.reviewEdit.ok')}</button>
-        <button type="button" onClick={() => act(pulsarReviewEditCancel)} data-testid="pulsar-review-edit-cancel">{t('pulsar.reviewEdit.cancel')}</button>
+        <button type="button" onClick={ok} data-testid="pulsar-review-edit-ok">{vireo(PULSAR_REVIEW_EDIT_DFM.ok)}</button>
+        <button type="button" onClick={() => act(pulsarReviewEditCancel)} data-testid="pulsar-review-edit-cancel">{vireo(PULSAR_REVIEW_EDIT_DFM.cancel)}</button>
       </div>
     </section>
   );
