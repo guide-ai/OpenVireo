@@ -26,10 +26,10 @@ export const HTML_LANG:Readonly<Record<UiLanguage,string>>=Object.freeze(Object.
 /** Front RTL-1 (RT1): `<html dir>` for each UI language, beside HTML_LANG: each registered language's `direction` (ltr when
  * absent: every language today), ltr for English and qps, and rtl for the dev-only `qps-rtl`. */
 export const HTML_DIR:Readonly<Record<UiLanguage,TextDirection>>=Object.freeze(Object.fromEntries([['en','ltr'],...LANGUAGES.map(l=>[l.tag,textDirection(l.tag)]),['qps','ltr'],...Object.keys(PSEUDO_SCRIPT_LANG||{}).map(l=>[l,PSEUDO_RTL&&PSEUDO_RTL.includes(l)?'rtl':'ltr'])]));
-/** The `<html dir>` of a load in `language`: a registered language's own `direction` (a test registry's too), else HTML_DIR,
- * else ltr. */
+/** The `<html dir>` of a load in `language`: a registered language's own `direction` (a test registry's too), else HTML_DIR's
+ * own entry (never an inherited Object property such as `constructor`), else ltr. */
 export function htmlDir(language:UiLanguage,registry:readonly LanguageEntry[]=LANGUAGES):TextDirection{
- return languageEntry(language,registry)?textDirection(language,registry):HTML_DIR[language]??'ltr';
+ return languageEntry(language,registry)?textDirection(language,registry):Object.hasOwn(HTML_DIR,language)?HTML_DIR[language]:'ltr';
 }
 export type LocaleInputs=Readonly<{
  /** The `lang` link parameter of this load (not stored). */

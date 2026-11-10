@@ -51,6 +51,7 @@ describe('Front RTL-1: <html dir>',()=>{
   expect(Object.keys(HTML_DIR).sort()).toEqual(Object.keys(HTML_LANG).sort());
   expect(HTML_DIR).toEqual({en:'ltr','es-419':'ltr','pt-BR':'ltr',qps:'ltr','qps-cjk':'ltr','qps-deva':'ltr','qps-cyrl':'ltr','qps-rtl':'rtl'});
   expect(htmlDir('ar',[...LANGUAGES,...RTL])).toBe('rtl');expect(htmlDir('ar')).toBe('ltr');expect(htmlDir('qps-rtl')).toBe('rtl');
+  for(const tag of ['','constructor','toString','__proto__','hasOwnProperty'])expect(htmlDir(tag),tag).toBe('ltr');
   // A test registry's own entry decides over HTML_DIR (a registered tag marked rtl in a fixture).
   expect(htmlDir('es-419',LANGUAGES.map(l=>({...l,direction:'rtl' as const})))).toBe('rtl');
  });

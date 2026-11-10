@@ -166,8 +166,10 @@ test('Arabic is shaped: four joined beh are narrower than four isolated ones, un
   await page.setContent(rtlPage('ar','<span id="joined">بببب</span><br><span id="one">ب</span>',`body{font:100px "${family}"}span{white-space:pre}`));
   const [joined,one]=await page.evaluate(()=>['joined','one'].map(id=>document.getElementById(id)!.getBoundingClientRect().width));
   expect(joined,family).toBeLessThan(4*one*.8);
-  // One face draws it: Noto Sans Arabic in 8 glyphs, DejaVu Sans in 4 (measured).
-  expect(byFamily(await platformFonts(page,'#joined')),family).toEqual({[family]:family==='DejaVu Sans'?4:8});
+  // One face draws it. Not its glyph count, which depends on the font's version: Noto Sans Arabic draws the four beh in 8 glyphs
+  // in Arch's noto-fonts and in 4 in Ubuntu 24.04's fonts-noto-core 20201225 (the CI job), DejaVu Sans in 4 (Front RTL-1 review).
+  const glyphs=byFamily(await platformFonts(page,'#joined'));
+  expect(Object.keys(glyphs),family).toEqual([family]);expect(glyphs[family],family).toBeGreaterThanOrEqual(4);
  }
 });
 
