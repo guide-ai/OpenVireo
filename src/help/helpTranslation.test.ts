@@ -1,12 +1,14 @@
 import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
-import {HelpListError,foldLatin1Accents,helpLinkTarget,helpTopicBody,parseHelpList} from '../core/cleaHelp';
+import {HelpListError,foldLatin1Accents,helpLinkTarget,helpTopicBody,helpTopicBodyText,parseHelpList,parseHelpListText} from '../core/cleaHelp';
+import {displayColumns} from '../core/textColumns';
 import {foldAsciiCase} from '../core/radioHotListSearch';
-import {parseSpectralLineList,spectralLineHelp} from './spectralLines';
+import {parseSpectralLineList,parseSpectralLineListText,spectralLineHelp,spectralLineHelpText} from './spectralLines';
+import {reminderBoxText,reminderBoxTextOf} from './mainHelp';
 import {HELP_FILES,helpFile} from './helpFiles';
 import glossary from '../i18n/es/glossary.json';
 import ptGlossary from '../i18n/pt-br/glossary.json';
-import {HelpTranslationError,helpTranslationBytes} from './helpTranslation';
+import {HelpTranslationError,helpTranslationText} from './helpTranslation';
 import {LANGUAGES,type LanguageEntry} from '../i18n/languages';
 import {PROFILES} from '../i18n/lint/profiles';
 
@@ -23,14 +25,16 @@ const REFUSED=['HUBHLP.LST','LSSHLP.LST'];
 const usable=LST.filter(k=>!REFUSED.includes(k));
 const headers=(text:string)=>text.split(/\r?\n/).map((l,i)=>l.length>1&&l[0]==='*'&&l.at(-1)==='*'?i:-1).filter(i=>i>=0);
 /** The index (among the file's `*...*` headers) of the section a title opens (core/cleaHelp.ts helpTopicBody's seek), or -1. */
-function sectionOf(bytes:Uint8Array,title:string):number{
- const lines=new TextDecoder('latin1').decode(bytes).split(/\r?\n/),key=foldAsciiCase(title.replace(/^ +/,''));
+function sectionOf(file:Uint8Array|string,title:string):number{
+ const lines=(typeof file==='string'?file:new TextDecoder('latin1').decode(file)).split(/\r?\n/),key=foldAsciiCase(title.replace(/^ +/,''));
  const at=lines.findIndex(l=>l.includes('*')&&foldAsciiCase(l).includes(key));
  return headers(lines.join('\n')).indexOf(at);
 }
 /** The languages that translate the help files, with the describe title each keeps (Spanish: ES-HELP's). */
 const HELP_LANGUAGES=LANGUAGES.filter((l):l is LanguageEntry&{help:{related:string}}=>!!l.help);
 const TITLES:Readonly<Record<string,string>>={'es-419':'the Spanish help files (Front ES-HELP)','pt-BR':'the Brazilian Portuguese help files (Front PT-HELP)'};
+/** Front SC7: the help sets written in Latin-1 (any script may be, now; these two are, by their own rule). */
+const LATIN1_HELP=['es-419','pt-BR'];
 it('Front PT-HELP: Spanish and Brazilian Portuguese translate the help files, each with its own marker',()=>{
  expect(HELP_LANGUAGES.map(l=>[l.tag,l.help.related])).toEqual([['es-419','TEMAS RELACIONADOS'],['pt-BR','TÓPICOS RELACIONADOS']]);
  for(const l of HELP_LANGUAGES)expect(TITLES[l.tag],l.tag).toBeDefined();
@@ -39,7 +43,8 @@ it('Front PT-HELP: Spanish and Brazilian Portuguese translate the help files, ea
 for(const L of HELP_LANGUAGES)describe(TITLES[L.tag],()=>{
  const own=Object.fromEntries(Object.entries(modules).filter(([f])=>f.startsWith(`../i18n/${L.dir}/help/`)));
  const es=(key:string):Module=>own[`../i18n/${L.dir}/help/${key}.ts`];
- const spanish=(key:string)=>latin1(es(key).text);
+ // Front SC7: the viewer reads a translation as text (the …Text parsers); `latin1` for the comparison with the byte parsers.
+ const spanish=(key:string)=>es(key).text;
  it('has a module for each bundled help file, recording the SHA-256 of the original it was translated from',()=>{
   expect(Object.keys(own).length).toBe(Object.keys(HELP_FILES).length);
   for(const [key,id] of Object.entries(HELP_FILES)){
@@ -49,50 +54,61 @@ for(const L of HELP_LANGUAGES)describe(TITLES[L.tag],()=>{
    expect(es(key).sourceSha256).toBe(id.sha256);
   }
  });
- it('fits Latin-1 and has no CR or tab',()=>{
+ it('is NFC with no CR or tab (Front SC7), and fits Latin-1 where its language writes Latin-1',()=>{
   for(const key of Object.keys(HELP_FILES)){
-   for(const c of es(key).text)expect(c.charCodeAt(0),`${key} ${c}`).toBeLessThan(256);
+   if(LATIN1_HELP.includes(L.tag))for(const c of es(key).text)expect(c.charCodeAt(0),`${key} ${c}`).toBeLessThan(256);
    expect(es(key).text,key).not.toMatch(/[\r\t]/);
+   expect(es(key).text.normalize('NFC')===es(key).text,key).toBe(true);
   }
  });
- it('keeps the two empty indexes empty and the two refused indexes refused, in both languages',()=>{
-  for(const k of ['MLTSPHLP.LST','SPLSTHLP.LST']){expect(es(k).text).toBe('');expect(parseHelpList(spanish(k))).toEqual([]);}
-  for(const k of REFUSED){expect(()=>parseHelpList(original(k))).toThrow(HelpListError);expect(()=>parseHelpList(spanish(k))).toThrow(HelpListError);}
+ if(LATIN1_HELP.includes(L.tag))it('Front SC7: the text parsers read it exactly as the byte parsers read its Latin-1 bytes',()=>{
+  for(const key of usable){
+   const t=parseHelpListText(spanish(key));expect(t,key).toEqual(parseHelpList(latin1(spanish(key))));
+   for(const r of t)if(r.kind==='topic'){const f=helpFile(r.file);if(f)expect(helpTopicBodyText(spanish(f.name.toUpperCase()),r.title,L.help.related),`${key} ${r.title}`)
+    .toEqual(helpTopicBody(latin1(spanish(f.name.toUpperCase())),r.title,L.help.related));}
+  }
+  const lines=parseSpectralLineListText(spanish('SPECLNS.LNL'));expect(lines).toEqual(parseSpectralLineList(latin1(spanish('SPECLNS.LNL'))));
+  for(const l of lines)expect(spectralLineHelpText(spanish('SPECLNS.TXT'),l.name)).toEqual(spectralLineHelp(latin1(spanish('SPECLNS.TXT')),l.name));
+  for(const k of ['REMINDER.OBS','REMINDER.PLS'])expect(reminderBoxTextOf(spanish(k),'Select')).toBe(reminderBoxText(latin1(spanish(k)),'Select'));
  });
- for(const key of usable)it(`${key}: same rows, kinds and file tokens as the original; titles fit VIREO's 65 characters`,()=>{
-  const e=parseHelpList(original(key)),s=parseHelpList(spanish(key));
+ it('keeps the two empty indexes empty and the two refused indexes refused, in both languages',()=>{
+  for(const k of ['MLTSPHLP.LST','SPLSTHLP.LST']){expect(es(k).text).toBe('');expect(parseHelpListText(spanish(k))).toEqual([]);}
+  for(const k of REFUSED){expect(()=>parseHelpList(original(k))).toThrow(HelpListError);expect(()=>parseHelpListText(spanish(k))).toThrow(HelpListError);}
+ });
+ for(const key of usable)it(`${key}: same rows, kinds and file tokens as the original; titles fit VIREO's 65 characters (display columns)`,()=>{
+  const e=parseHelpList(original(key)),s=parseHelpListText(spanish(key));
   expect(s.length).toBe(e.length);
-  e.forEach((r,i)=>{expect(s[i].kind,`row ${i}`).toBe(r.kind);expect(s[i].file,`row ${i}`).toBe(r.file);expect(s[i].title.length,`row ${i}`).toBeLessThan(66);});
+  e.forEach((r,i)=>{expect(s[i].kind,`row ${i}`).toBe(r.kind);expect(s[i].file,`row ${i}`).toBe(r.file);expect(displayColumns(s[i].title),`row ${i}`).toBeLessThan(66);});
  });
  // Every topic row opens, in each language, the section at the same position of its text file; the related-topic links of that
  // section resolve to the same rows of the index.
  for(const key of usable)it(`${key}: each topic opens the section at the same index and its related topics resolve to the same rows`,()=>{
-  const e=parseHelpList(original(key)),s=parseHelpList(spanish(key));
+  const e=parseHelpList(original(key)),s=parseHelpListText(spanish(key));
   e.forEach((r,i)=>{
    if(r.kind!=='topic')return;
    const file=helpFile(r.file);if(!file)return;
    const ek=file.name.toUpperCase(),eb=original(ek),sb=spanish(ek);
    const ei=sectionOf(eb,r.title),si=sectionOf(sb,s[i].title);
    expect(si,`${key} row ${i} "${s[i].title}"`).toBe(ei);
-   const ebody=helpTopicBody(eb,r.title)!,sbody=helpTopicBody(sb,s[i].title,L.help.related)!;
+   const ebody=helpTopicBody(eb,r.title)!,sbody=helpTopicBodyText(sb,s[i].title,L.help.related)!;
    expect(sbody,`${key} row ${i}`).not.toBeNull();
    expect(sbody.relatedIndex>=0,`${key} row ${i} related`).toBe(ebody.relatedIndex>=0);
    const targets=(rows:typeof e,body:typeof ebody,fold?:(t:string)=>string)=>body.rows.map((_,b)=>helpLinkTarget(rows,body,b,false,fold)).filter((t):t is number=>t!==null);
    expect(targets(s,sbody),`${key} row ${i} links`).toEqual(targets(e,ebody));
   });
  });
- it('wraps every text line at 72 characters or fewer, as the viewer needs (it cannot wrap a long unbroken line)',()=>{
-  for(const key of TXT)for(const l of es(key).text.split('\n'))expect(l.length,`${key}: ${l}`).toBeLessThan(73);
+ it('wraps every text line at 72 characters (display columns) or fewer, as VIREO\'s files are',()=>{
+  for(const key of TXT)for(const l of es(key).text.split('\n'))expect(displayColumns(l),`${key}: ${l}`).toBeLessThan(73);
  });
  it('has the same section headers count as the original text',()=>{
   for(const key of TXT)expect(headers(es(key).text).length,key).toBe(headers(new TextDecoder('latin1').decode(original(key))).length);
   expect(headers(es('SPECLNS.TXT').text).length).toBe(headers(new TextDecoder('latin1').decode(original('SPECLNS.TXT'))).length);
  });
  it('keeps the spectral line list and its help in step: same wavelengths and files, each line finding the same section',()=>{
-  const e=parseSpectralLineList(original('SPECLNS.LNL')),s=parseSpectralLineList(spanish('SPECLNS.LNL'));
+  const e=parseSpectralLineList(original('SPECLNS.LNL')),s=parseSpectralLineListText(spanish('SPECLNS.LNL'));
   expect(s.map(l=>[l.wavelength,l.file])).toEqual(e.map(l=>[l.wavelength,l.file]));
   e.forEach((l,i)=>{
-   const eh=spectralLineHelp(original('SPECLNS.TXT'),l.name),sh=spectralLineHelp(spanish('SPECLNS.TXT'),s[i].name);
+   const eh=spectralLineHelp(original('SPECLNS.TXT'),l.name),sh=spectralLineHelpText(spanish('SPECLNS.TXT'),s[i].name);
    expect(eh.kind).toBe('topic');expect(sh.kind,s[i].name).toBe('topic');
    expect(sectionOf(spanish('SPECLNS.TXT'),s[i].name)).toBe(sectionOf(original('SPECLNS.TXT'),l.name));
   });
@@ -100,7 +116,7 @@ for(const L of HELP_LANGUAGES)describe(TITLES[L.tag],()=>{
  it('keeps the reminders to the original line count and inside VIREO\'s 255-character lines',()=>{
   for(const k of ['REMINDER.OBS','REMINDER.PLS']){
    const e=new TextDecoder('latin1').decode(original(k)).split(/\r?\n/),s=es(k).text.split('\n');
-   expect(s.length).toBe(e.length);for(const l of s)expect(l.length).toBeLessThan(256);
+   expect(s.length).toBe(e.length);for(const l of s)expect(displayColumns(l)).toBeLessThan(256);
   }
  });
  it('names the English Related Topics marker nowhere in the translation',()=>{
@@ -123,20 +139,20 @@ describe('the search fold of the translation (a web adaptation)',()=>{
 
 describe('the translation loader (review S1)',()=>{
  const id=HELP_FILES['CAMHLP.LST'],ok={language:'es-419',sourceName:id.name,sourceSha256:id.sha256,text:'Año «x»'};
- it('returns the text as Latin-1 bytes',()=>{
-  expect([...helpTranslationBytes(ok,id,'es-419')]).toEqual([0x41,0xf1,0x6f,0x20,0xab,0x78,0xbb]);
+ it('returns the text',()=>{
+  expect(helpTranslationText(ok,id,'es-419')).toBe('Año «x»');
  });
  it('refuses a module whose recorded source is another file or another SHA-256',()=>{
-  expect(()=>helpTranslationBytes({...ok,sourceSha256:'0'.repeat(64)},id,'es-419')).toThrow(HelpTranslationError);
-  expect(()=>helpTranslationBytes({...ok,sourceName:'CLASSHLP.LST'},id,'es-419')).toThrow(HelpTranslationError);
+  expect(()=>helpTranslationText({...ok,sourceSha256:'0'.repeat(64)},id,'es-419')).toThrow(HelpTranslationError);
+  expect(()=>helpTranslationText({...ok,sourceName:'CLASSHLP.LST'},id,'es-419')).toThrow(HelpTranslationError);
  });
  it('Front SC8: refuses a module of another language (each language\'s help set is its own)',()=>{
-  expect(()=>helpTranslationBytes(ok,id,'pt-BR')).toThrow(HelpTranslationError);
-  expect(()=>helpTranslationBytes({...ok,language:undefined as never},id,'es-419')).toThrow(HelpTranslationError);
+  expect(()=>helpTranslationText(ok,id,'pt-BR')).toThrow(HelpTranslationError);
+  expect(()=>helpTranslationText({...ok,language:undefined as never},id,'es-419')).toThrow(HelpTranslationError);
  });
- it('refuses a character above U+00FF',()=>{
-  expect(()=>helpTranslationBytes({...ok,text:'Tema “x”'},id,'es-419')).toThrow(HelpTranslationError);
-  expect(()=>helpTranslationBytes({...ok,text:'ü€'},id,'es-419')).toThrow(HelpTranslationError);
+ it('Front SC7: accepts any script, but refuses a lone surrogate and text that is not NFC',()=>{
+  for(const text of ['Tema “x”','ü€','観測 𠮷','एक्सपोज\u093cर','Съёмка'])expect(helpTranslationText({...ok,text},id,'es-419')).toBe(text);
+  for(const text of ['a\ud800b','\udc00','x\ud83d','A\u030a','\u0958','e\u0301'])expect(()=>helpTranslationText({...ok,text},id,'es-419'),JSON.stringify(text)).toThrow(HelpTranslationError);
  });
 });
 

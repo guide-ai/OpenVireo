@@ -10,6 +10,7 @@ Some Playwright specs test a single panel's contract (timers, host API, lifted s
 | `/__harness/saved-rows/` | `tests/harness/saved-rows.tsx` | `pulsar-saved-rows` | `OPENVIREO_PULSAR_SAVED_ROWS_HARNESS_URL` |
 | `/__harness/pulsar/` | `tests/harness/pulsar.tsx` | `pulsar-analysis` | `OPENVIREO_PULSAR_HARNESS_URL` |
 | `/__harness/wedge/` | `tests/harness/wedge.tsx` | `wedge-lss`, `wedge-focus`, `wedge-prompt-focus` | `OPENVIREO_WEDGE_HARNESS_URL` |
+| `/__harness/help/` | `tests/harness/help.tsx` | `help-unicode`, `scripts/help-unicode.scripts.ts` | none (the specs use their own `baseURL`) |
 
 Host APIs and query options:
 
@@ -17,6 +18,7 @@ Host APIs and query options:
 - saved-rows: `window.__savedRows.render(props)/unmount()`, `window.__mount()`, `window.__modalLog`; `?plr=1 ?strict=1`.
 - pulsar: `window.__pulsarHarness.render(props)/unmount()` (the controller returned by `mountPulsarWorkbench`).
 - wedge: `?host=1` (host simulator with "route hidden" and "project operation" checkboxes), `?lang=es` (placeholder overrides for the message-catalog contract, not a reviewed translation).
+- help: `?set=ja|hi|ru` gives VIREO's help viewer (CAMHLP.LST) and the Exit Observatory reminder a test-only stand-in help set in Japanese, Devanagari or Cyrillic script (`tests/fixtures/help-unicode`, through `HelpSetContext`) and sets `<html lang>` to `ja`, `hi` or `ru`; without it the viewer shows VIREO's originals only (Front SC7, docs/I18N.md).
 
 ## How they are served
 

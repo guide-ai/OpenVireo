@@ -4,10 +4,11 @@ import {vireo} from '../i18n/vireo';
 import {HelpListBox,ViewSwitch} from '../clusters/CleaHelp';
 import {HELP_VIEWER} from './HelpViewerMessages';
 import {CLUSTER_HR_CAPTIONS as C} from '../core/clusterHrCaptions';
-import {helpTranslationOffered,loadHelpTranslation,type HelpView} from './helpTranslation';
+import {useHelpSet,type HelpSet,type HelpSource,type HelpView} from './helpTranslation';
 import {fetchBundledClusterHelp} from '../io/bundledClusterHelp';
 import {HELP_FILES,helpFile,type HelpFileIdentity} from './helpFiles';
-import {SPECTRAL_LINE_TABLE_LITERALS,SPECTRAL_LINE_HELP_CAPTION,SPECTRAL_LINE_MISSING_LITERALS,nearestSpectralLine,parseSpectralLineList,spectralLineHelp,type SpectralLine} from './spectralLines';
+import {SPECTRAL_LINE_TABLE_LITERALS,SPECTRAL_LINE_HELP_CAPTION,SPECTRAL_LINE_MISSING_LITERALS,nearestSpectralLine,parseSpectralLineList,parseSpectralLineListText,
+ spectralLineHelp,spectralLineHelpText,type SpectralLine} from './spectralLines';
 import './help.css';
 import '../clusters/cluster-hr.css';
 
@@ -16,8 +17,12 @@ const M=HELP_VIEWER.spectralLines;
 const notFound=(title:string)=>({caption:vireo(C.topicNotFoundCaption),text:vireo(C.topicNotFoundHead)+title+vireo(C.topicNotFoundTail)});
 
 type Loaded=Readonly<{lines:readonly SpectralLine[]}>;
-/** Front ES-HELP: the file's bytes in a view: the verified bundled original, or (Spanish loads) the web translation in VIREO's own format. */
-const fetchView=(id:HelpFileIdentity,view:HelpView)=>view==='translation'?loadHelpTranslation(id):fetchBundledClusterHelp(fetch,new AbortController().signal,id);
+/** Front ES-HELP: the file in a view: the verified bundled original's bytes, or the web translation in VIREO's own format (Front SC7:
+ * its Unicode text). */
+const fetchView=(id:HelpFileIdentity,view:HelpView,set:HelpSet|undefined):Promise<HelpSource>=>view!=='translation'?fetchBundledClusterHelp(fetch,new AbortController().signal,id)
+ :set?set.load(id):Promise.reject(new Error('No help translation'));
+const linesOf=(s:HelpSource)=>typeof s==='string'?parseSpectralLineListText(s):parseSpectralLineList(s);
+const lineHelpOf=(s:HelpSource,name:string)=>typeof s==='string'?spectralLineHelpText(s,name):spectralLineHelp(s,name);
 /** TSpClassify › Spectral Line Table (SpectralLineTable1Click 0x50afac): the modeless TSpLinesList and, on double click,
  * the modeless "Spectral Line Help" window (TSpLinesHelp). Pure rules: src/help/spectralLines.ts.
  * Front K2.5: a selection (ListBox1Click 0x50586c) sends the line's wavelength to the classification cursor (`onLineSelect`,
@@ -27,18 +32,18 @@ export default function SpectralLineTable({testId='spl',onLineSelect,cursorWavel
  /** The last cursor came from this list (no later inspection): the readout line is shown. */lineCursorShown?:boolean}){
  const id=useId(),opener=useRef<HTMLButtonElement>(null),rowsRef=useRef<HTMLDivElement>(null),helpHeading=useRef<HTMLHeadingElement>(null);
  const [load,setLoad]=useState<'idle'|'loading'|'error'|Loaded>('idle'),[open,setOpen]=useState(false),[index,setIndex]=useState(-1);
- const [original,setOriginal]=useState(false),offered=helpTranslationOffered(),view:HelpView=offered&&!original?'translation':'original';
+ const set=useHelpSet(),[original,setOriginal]=useState(false),offered=!!set,view:HelpView=offered&&!original?'translation':'original';
  const textLang=offered&&view==='original'?'en':undefined;
  const [help,setHelp]=useState<Readonly<{name:string;rows:readonly string[]}>|null>(null),[message,setMessage]=useState<Readonly<{caption:string;text:string}>|null>(null);
  const loaded=typeof load==='object'?load:null;
  async function show(){
   if(loaded){setOpen(true);return;}
   setLoad('loading');
-  try{setLoad({lines:parseSpectralLineList(await fetchView(HELP_FILES['SPECLNS.LNL'],view))});setOpen(true);setIndex(-1);}
+  try{setLoad({lines:linesOf(await fetchView(HELP_FILES['SPECLNS.LNL'],view,set))});setOpen(true);setIndex(-1);}
   catch{
    // Front ES-HELP review S1: a translation that cannot be loaded or verified falls back to VIREO's original, and says so.
    if(view!=='translation'){setLoad('error');return;}
-   try{setLoad({lines:parseSpectralLineList(await fetchView(HELP_FILES['SPECLNS.LNL'],'original'))});setOriginal(true);setOpen(true);setIndex(-1);
+   try{setLoad({lines:linesOf(await fetchView(HELP_FILES['SPECLNS.LNL'],'original',set))});setOriginal(true);setOpen(true);setIndex(-1);
     setMessage({caption:M.textErrorCaption,text:HELP_VIEWER.translationError});}
    catch{setLoad('error');}
   }
@@ -47,7 +52,7 @@ export default function SpectralLineTable({testId='spl',onLineSelect,cursorWavel
  async function switchView(){
   const next:HelpView=view==='translation'?'original':'translation';
   try{
-   const lines=parseSpectralLineList(await fetchView(HELP_FILES['SPECLNS.LNL'],next));
+   const lines=linesOf(await fetchView(HELP_FILES['SPECLNS.LNL'],next,set));
    setLoad({lines});setOriginal(next==='original');setHelp(null);setMessage(null);
   }catch{setMessage({caption:M.textErrorCaption,text:next==='translation'?HELP_VIEWER.translationError:M.error});}
  }
@@ -56,13 +61,13 @@ export default function SpectralLineTable({testId='spl',onLineSelect,cursorWavel
   const line=loaded.lines[i],file=helpFile(line.file);setMessage(null);
   if(!file){const L=SPECTRAL_LINE_MISSING_LITERALS;setMessage({caption:vireo(L.caption),text:vireo(L.head)+line.file+vireo(L.tail)});return;}
   try{
-   const h=spectralLineHelp(await fetchView(file,view),line.name);
+   const h=lineHelpOf(await fetchView(file,view,set),line.name);
    if(h.kind==='topic')setHelp({name:line.name,rows:h.rows});else setMessage(notFound(h.title));
   }catch{
    if(view!=='translation'){setMessage({caption:M.textErrorCaption,text:M.textError(file.name)});return;}
    // Review S1: the translated SPECLNS.TXT failed; the list keeps VIREO's line names, so the original is read for the same line.
    try{
-    const lines=parseSpectralLineList(await fetchView(HELP_FILES['SPECLNS.LNL'],'original')),h=spectralLineHelp(await fetchView(file,'original'),lines[i].name);
+    const lines=linesOf(await fetchView(HELP_FILES['SPECLNS.LNL'],'original',set)),h=lineHelpOf(await fetchView(file,'original',set),lines[i].name);
     setLoad({lines});setOriginal(true);
     if(h.kind==='topic')setHelp({name:lines[i].name,rows:h.rows});
     setMessage({caption:M.textErrorCaption,text:HELP_VIEWER.translationError});

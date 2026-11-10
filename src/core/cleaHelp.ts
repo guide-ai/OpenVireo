@@ -7,9 +7,14 @@
  * - THelpWin FormActivate 0x59f174 + section seek 0x59f84c + wrapper 0x487550/0x4875d8 → `helpTopicBody`;
  *   links 0x5a020c → `helpLinkTarget`; Back 0x5a030c / FormShow 0x59f108 → `helpHistory*`; Print Topic 0x59fe44 →
  *   `helpPrintPage`; Search Text 0x59f9fc reuses `searchRadioHotListRows` (the same TGetSrchStrDlg algorithm).
- * Text is Latin-1 (the help files are ASCII); case folding is ASCII A–Z only (LowerCase/UpperCase). */
+ * Text is Latin-1 (the help files are ASCII); case folding is ASCII A–Z only (LowerCase/UpperCase).
+ * Front SC7 [W] (docs/I18N.md, "Script groundwork: Unicode help (SC7)"): a translated help file is Unicode text, read by the
+ * `…Text` functions over the same string cores. Their limits count display columns (core/textColumns.ts), which equal the
+ * character count of Latin-1 text, so VIREO's files, read as bytes, and the Latin-1 translations keep their exact results;
+ * only a translation's over-long line wraps without a space (`wrapHelpText`). */
 import {foldAsciiCase} from './radioHotListSearch';
 import {takeQuotedToken} from './nativeTextFile';
+import {codePointColumns,cutColumns,displayColumns,graphemes} from './textColumns';
 
 export type HelpRowKind='heading'|'topic'|'separator';
 /** One HelpList record: the displayed title (indent included) and token 2 (`begin` for a heading, the topic file name for
@@ -26,11 +31,12 @@ export const HELP_WRAP_WIDTH=72;
 
 const latin1=(bytes:Uint8Array)=>{let s='';for(const b of bytes)s+=String.fromCharCode(b);return s;};
 /** Text-file lines as Readln returns them: CRLF or LF ends a line; a final line break adds no empty line. */
-function textLines(bytes:Uint8Array):string[]{
- const lines=latin1(bytes).split(/\r?\n/);
+function splitLines(text:string):string[]{
+ const lines=text.split(/\r?\n/);
  if(lines.length>0&&lines[lines.length-1]==='')lines.pop();
  return lines;
 }
+const textLines=(bytes:Uint8Array)=>splitLines(latin1(bytes));
 /** 0x4867fc with the delimiter ' ' (0x493192, 0x4931c7): the shared port. */
 const quotedToken=(line:string)=>takeQuotedToken(line,' ');
 /** HelpList load (0x493264) for an LST file. Rows follow the native order: `begin` adds a separator unless the previous
@@ -40,12 +46,21 @@ const quotedToken=(line:string)=>takeQuotedToken(line,' ');
  * native exception path deletes the invalid list file (DeleteFileA at 0x4935e1); the web never deletes anything. */
 export function parseHelpList(bytes:Uint8Array):readonly HelpRow[]{
  if(!(bytes instanceof Uint8Array)||bytes.length>HELP_LIST_LIMITS.bytes)throw new HelpListError('size');
+ return helpListRows(textLines(bytes));
+}
+/** Front SC7: `parseHelpList` for a translated LST as Unicode text (at most 65536 UTF-16 units). The 80-character line and the
+ * 65- and 71-character fields are cut at whole grapheme clusters within that many display columns. */
+export function parseHelpListText(text:string):readonly HelpRow[]{
+ if(typeof text!=='string'||text.length>HELP_LIST_LIMITS.bytes)throw new HelpListError('size');
+ return helpListRows(splitLines(text));
+}
+function helpListRows(lines:readonly string[]):readonly HelpRow[]{
  const rows:HelpRow[]=[];let indent='',separated=true;
- textLines(bytes).forEach((raw,n)=>{
-  const line=raw.slice(0,HELP_LIST_LIMITS.line);
+ lines.forEach((raw,n)=>{
+  const line=cutColumns(raw,HELP_LIST_LIMITS.line);
   if(line.trim()==='')throw new HelpListError('line',n+1);
   const [first,rest]=quotedToken(line),[second]=quotedToken(rest);
-  const title=first.slice(0,HELP_LIST_LIMITS.title),file=second.slice(0,HELP_LIST_LIMITS.file),key=foldAsciiCase(file);
+  const title=cutColumns(first,HELP_LIST_LIMITS.title),file=cutColumns(second,HELP_LIST_LIMITS.file),key=foldAsciiCase(file);
   if(key==='end'){
    indent=indent.slice(0,Math.max(0,indent.length-2));
    if(!separated){rows.push(Object.freeze({kind:'separator',title:'',file:''}));separated=true;}
@@ -53,9 +68,9 @@ export function parseHelpList(bytes:Uint8Array):readonly HelpRow[]{
   }
   if(key==='begin'){
    if(!separated)rows.push(Object.freeze({kind:'separator',title:'',file:''}));
-   rows.push(Object.freeze({kind:'heading',title:(indent+'-'+title+'-').slice(0,HELP_LIST_LIMITS.title),file}));
+   rows.push(Object.freeze({kind:'heading',title:cutColumns(indent+'-'+title+'-',HELP_LIST_LIMITS.title),file}));
    indent+='  ';
-  }else rows.push(Object.freeze({kind:'topic',title:(indent+title).slice(0,HELP_LIST_LIMITS.title),file}));
+  }else rows.push(Object.freeze({kind:'topic',title:cutColumns(indent+title,HELP_LIST_LIMITS.title),file}));
   separated=false;
  });
  return Object.freeze(rows);
@@ -74,6 +89,31 @@ function topicKey(text:string,matchCase:boolean,fold:(text:string)=>string=foldA
 export function foldLatin1Accents(text:string):string{
  if(typeof text!=='string')throw new TypeError('Invalid search text');
  return text.replace(/[ñÑ]/g,'\u0001').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\u0001/g,'ñ');
+}
+const MARK=/^\p{M}$/u,LATIN=/^\p{Script=Latin}$/u;
+/** WEB (Front SC7) [W]: the search fold of every translated help set, per script, applied to the query and the rows when "Match
+ * case" is off (a substring search, with no word segmentation). On text that holds only characters up to U+00FF it equals
+ * `foldLatin1Accents`, so the Spanish and Portuguese search is unchanged (src/core/cleaHelp.test.ts checks every such character
+ * and both help sets):
+ * - Latin: as `foldLatin1Accents`: a Latin letter's combining diacritics (U+0300–U+036F) are dropped, ñ is kept, case folded;
+ * - full-width and half-width forms (U+3000, U+FF01–U+FFEE) take their NFKC form: ＡＢＣ finds ABC, ｶﾞ finds ガ;
+ * - other scripts keep their marks (Cyrillic й, Devanagari vowel signs) and are compared in NFC; case is folded only where the
+ *   script has case (Cyrillic, Greek, embedded Latin), and ё is read as е;
+ * - Japanese katakana is read as hiragana (テレスコープ finds てれすこーぷ);
+ * - Devanagari: the nukta (U+093C, also inside क़…य़, which NFC keeps decomposed) and ZWJ/ZWNJ are ignored.
+ * The text is composed (NFC) first, so a decomposed ñ stays ñ. Han characters are compared as they are (no Simplified/Traditional
+ * conversion). Not VIREO behaviour: the original view keeps
+ * `foldAsciiCase`. */
+export function foldHelpText(text:string):string{
+ if(typeof text!=='string')throw new TypeError('Invalid search text');
+ const decomposed=text.normalize('NFC').replace(/[ñÑ]/g,'\u0001').replace(/[\u3000\uff01-\uffee]+/g,r=>r.normalize('NFKC')).normalize('NFD');
+ let out='',latin=false;
+ for(const c of decomposed){
+  if(MARK.test(c)){if(!(latin&&c>='\u0300'&&c<='\u036f'))out+=c;continue;}
+  latin=LATIN.test(c);out+=c;
+ }
+ return out.normalize('NFC').toLowerCase().replace(/ё/g,'е').replace(/[\u30a1-\u30f6\u30fd\u30fe]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60))
+  .replace(/[\u093c\u200c\u200d]/g,'').replace(/\u0001/g,'ñ');
 }
 export type HelpFindResult=Readonly<{kind:'hit';index:number}|{kind:'miss'}|{kind:'blank'}>;
 /** Find Topic / link lookup 0x493c10: the first row from `start` whose trimmed (folded) title EQUALS the trimmed (folded)
@@ -113,6 +153,41 @@ export function wrapHelpLine(text:string,width=HELP_WRAP_WIDTH):readonly string[
   out.push(piece);s=s.slice(p);
  }
 }
+/** Kinsoku (Japanese and Chinese line-breaking rules, simplified): no line starts with a closing mark, a small kana, the
+ * prolonged sound mark or a Devanagari danda, and none ends with an opening mark. */
+const NO_START=new Set([...'、。，．・：；？！ー）」』】〕〉》｝］〙〗〟’”ゝゞヽヾ々〻ぁぃぅぇぉっゃゅょゎゕゖァィゥェォッャュョヮヵヶㇰㇱㇲㇳㇴㇵㇶㇷㇸㇹㇺㇻㇼㇽㇾㇿ゠〜～।॥,.:;?!)]}%']);
+const NO_END=new Set([...'（「『【〔〈《｛［〘〖〝‘“([{']);
+const wide=(g:string|undefined)=>g!==undefined&&codePointColumns(g.codePointAt(0)!)===2;
+/** WEB (Front SC7) [W]: `wrapHelpLine` for a translated line, in display columns over grapheme clusters, never refusing. A
+ * piece ends at the last break opportunity within the width: after a space (VIREO's rule, with its run of spaces dropped when
+ * the space ends exactly at the width), or between two clusters either of which is East Asian Wide (Japanese and Chinese break
+ * between characters) unless kinsoku forbids it. With none, the line breaks at the last cluster that fits (a long Devanagari or
+ * Russian word, a CJK run that kinsoku pins), moving back while kinsoku forbids it. On Latin-1 text that `wrapHelpLine` wraps,
+ * the result is the same. */
+export function wrapHelpText(text:string,width=HELP_WRAP_WIDTH):readonly string[]{
+ if(!Number.isInteger(width)||width<2)throw new RangeError('Invalid wrap width');
+ const out:string[]=[];let g=graphemes(text);
+ for(;;){
+  const cols=g.map(displayColumns);
+  if(cols.reduce((a,b)=>a+b,0)<=width){out.push(g.join(''));return Object.freeze(out);}
+  let k=0,n=0;while(k<g.length&&n+cols[k]<=width){n+=cols[k];k++;}
+  if(k===0){k=1;n=cols[0];}
+  let p=k;
+  for(;p>0;p--){
+   if(g[p-1]===' ')break;
+   if(g[p]!==' '&&(wide(g[p-1])||wide(g[p]))&&!NO_START.has(g[p])&&!NO_END.has(g[p-1]))break;
+  }
+  let rest:number;
+  if(p>0&&g[p-1]===' '){
+   rest=p;
+   if(p===k&&n===width){while(rest<g.length&&g[rest-1]===' ')rest++;rest--;}
+  }else{
+   if(p===0){p=k;while(p>1&&(NO_START.has(g[p])||NO_END.has(g[p-1])))p--;}
+   rest=p;
+  }
+  out.push(g.slice(0,p).join(''));g=g.slice(rest);
+ }
+}
 
 export type HelpTopicBody=Readonly<{rows:readonly string[];relatedIndex:number}>;
 /** THelpWin FormActivate 0x59f174 with the section seek 0x59f84c. `title` is the row title (its leading spaces are removed
@@ -123,7 +198,16 @@ export type HelpTopicBody=Readonly<{rows:readonly string[];relatedIndex:number}>
  * no header names the topic (`Topic Not Found`). */
 export function helpTopicBody(txt:Uint8Array,title:string,relatedMarker='RELATED TOPICS'):HelpTopicBody|null{
  if(!(txt instanceof Uint8Array)||txt.length>HELP_LIST_LIMITS.bytes*4)throw new HelpListError('size');
- const lines=textLines(txt),key=foldAsciiCase(title.replace(/^ +/,''));
+ return topicBody(textLines(txt),title,relatedMarker,wrapHelpLine);
+}
+/** Front SC7: `helpTopicBody` for a translated text file as Unicode text (at most 262144 UTF-16 units): the seek is the same, a
+ * line over 72 display columns is wrapped by `wrapHelpText` (never refused), and `relatedMarker` is the language's own. */
+export function helpTopicBodyText(text:string,title:string,relatedMarker:string):HelpTopicBody|null{
+ if(typeof text!=='string'||text.length>HELP_LIST_LIMITS.bytes*4)throw new HelpListError('size');
+ return topicBody(splitLines(text),title,relatedMarker,wrapHelpText);
+}
+function topicBody(lines:readonly string[],title:string,relatedMarker:string,wrap:(line:string)=>readonly string[]):HelpTopicBody|null{
+ const key=foldAsciiCase(title.replace(/^ +/,''));
  let i=0;
  if(lines.length>0&&lines[0]!==''&&lines[0][0]==='*'){
   while(i<lines.length&&!(lines[i].includes('*')&&foldAsciiCase(lines[i]).includes(key)))i++;
@@ -134,7 +218,7 @@ export function helpTopicBody(txt:Uint8Array,title:string,relatedMarker='RELATED
  for(;i<lines.length;i++){
   const s=lines[i];
   if(s.length>0&&s[0]==='*'&&s[s.length-1]==='*')break;
-  if(s.length>HELP_WRAP_WIDTH){for(const piece of wrapHelpLine(s))rows.push(`  ${piece}  `);}
+  if(displayColumns(s)>HELP_WRAP_WIDTH){for(const piece of wrap(s))rows.push(`  ${piece}  `);}
   else{rows.push(`  ${s}  `);if(s.toUpperCase().includes(relatedMarker))relatedIndex=rows.length-1;}
  }
  rows.push(' ');

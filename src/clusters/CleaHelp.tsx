@@ -1,12 +1,12 @@
 import {useEffect,useId,useRef,useState,type KeyboardEvent,type ReactNode} from 'react';
-import {findHelpTopic,foldLatin1Accents,helpBackEnabled,helpHistoryBack,helpHistoryOpen,helpLinkTarget,helpPrintPage,helpTopicBody,
- parseHelpList,readHelpRow,type HelpHistory,type HelpRow,type HelpTopicBody} from '../core/cleaHelp';
+import {findHelpTopic,foldHelpText,helpBackEnabled,helpHistoryBack,helpHistoryOpen,helpLinkTarget,helpPrintPage,helpTopicBody,helpTopicBodyText,
+ parseHelpList,parseHelpListText,readHelpRow,type HelpHistory,type HelpRow,type HelpTopicBody} from '../core/cleaHelp';
 import {foldAsciiCase,radioHotListMissText,searchRadioHotListRows,RADIO_HOT_LIST_SEARCH_QUERY_MAX} from '../core/radioHotListSearch';
 import {fetchBundledClusterHelp} from '../io/bundledClusterHelp';
 import {HELP_FILES,helpFile,type HelpFileIdentity} from '../help/helpFiles';
 import {HELP_MENU} from '../help/HelpMessages';
 import {HELP_VIEWER} from '../help/HelpViewerMessages';
-import {relatedMarker,helpTranslationOffered,loadHelpTranslation,type HelpView} from '../help/helpTranslation';
+import {RELATED_MARKER,useHelpSet,type HelpSet,type HelpSource,type HelpView} from '../help/helpTranslation';
 import {vireo} from '../i18n/vireo';
 import {CLUSTER_HR_CAPTIONS as C} from '../core/clusterHrCaptions';
 import {CLUSTER_HR as M} from './ClusterHrMessages';
@@ -14,21 +14,25 @@ import ClusterPrintPreview from './ClusterPrintPreview';
 import './cluster-hr.css';
 
 type Loaded=Readonly<{rows:readonly HelpRow[]}>;
-const lists=new Map<string,Promise<Loaded>>(),texts=new Map<string,Promise<Uint8Array>>();
+const lists=new Map<string,Promise<Loaded>>(),texts=new Map<string,Promise<HelpSource>>();
 /** One verified fetch per file and page, shared by every view (VIREO reloads the list on each FormShow; the bytes are the
  * same). A failed fetch is forgotten so that "Try again" fetches again. */
-function cached<T>(map:Map<string,Promise<T>>,id:HelpFileIdentity,view:HelpView,then:(b:Uint8Array)=>T):Promise<T>{
- const key=`${view}:${id.name}`;
+function cached<T>(map:Map<string,Promise<T>>,id:HelpFileIdentity,view:HelpView,set:HelpSet|undefined,then:(source:HelpSource)=>T):Promise<T>{
+ const key=`${view==='translation'?set?.tag:'original'}:${id.name}`;
  let p=map.get(key);
- // Front ES-HELP: the translation (Spanish loads) is a web adaptation in src/i18n/es/help, in VIREO's own file format, parsed by the
- // same code; the original is the verified bundled file.
- if(!p){p=(view==='translation'?loadHelpTranslation(id):fetchBundledClusterHelp(fetch,new AbortController().signal,id)).then(then).catch(error=>{map.delete(key);throw error;});map.set(key,p);}
+ // Front ES-HELP: the translation is a web adaptation in src/i18n/<dir>/help, in VIREO's own file format, parsed by the same rules
+ // (Front SC7: as Unicode text); the original is the verified bundled file.
+ if(!p){p=(view!=='translation'?fetchBundledClusterHelp(fetch,new AbortController().signal,id):set?set.load(id):Promise.reject(new Error('No help translation')))
+  .then(then).catch(error=>{map.delete(key);throw error;});map.set(key,p);}
  return p;
 }
-const loadList=(id:HelpFileIdentity,view:HelpView)=>cached(lists,id,view,b=>Object.freeze({rows:parseHelpList(b)}));
-const loadText=(id:HelpFileIdentity,view:HelpView)=>cached(texts,id,view,b=>b);
-/** The search fold of a view: VIREO's A-Z rule in the original, accent-insensitive Latin-1 in the translation (web adaptation). */
-const foldOf=(view:HelpView)=>view==='translation'?foldLatin1Accents:foldAsciiCase;
+const loadList=(id:HelpFileIdentity,view:HelpView,set:HelpSet|undefined)=>cached(lists,id,view,set,s=>Object.freeze({rows:typeof s==='string'?parseHelpListText(s):parseHelpList(s)}));
+const loadText=(id:HelpFileIdentity,view:HelpView,set:HelpSet|undefined)=>cached(texts,id,view,set,s=>s);
+/** A topic's body: VIREO's rules over the original's bytes, or (Front SC7) the translation's Unicode text. */
+const topicBodyOf=(source:HelpSource,title:string,marker:string)=>typeof source==='string'?helpTopicBodyText(source,title,marker):helpTopicBody(source,title,marker);
+/** The search fold of a view: VIREO's A-Z rule in the original; in the translation the web adaptation's per-script fold (accents
+ * and case of Latin letters, case of other cased scripts, width and kana, Front SC7). */
+const foldOf=(view:HelpView)=>view==='translation'?foldHelpText:foldAsciiCase;
 
 type Message=Readonly<{caption:string;text:string}>;
 type Search=Readonly<{query:string;matchCase:boolean}>;
@@ -112,7 +116,8 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
  const [search,setSearch]=useState<Search>({query:'',matchCase:false}),[searching,setSearching]=useState<'topic'|'text'|null>(null);
  const [message,setMessage]=useState<Message|null>(null),[status,setStatus]=useState(''),[printing,setPrinting]=useState(false);
  // Front ES-HELP: a Spanish load shows the translation unless the student chose the original (per viewer, not stored).
- const [original,setOriginal]=useState(false),offered=helpTranslationOffered(),view:HelpView=offered&&!original?'translation':'original';
+ const set=useHelpSet(),[original,setOriginal]=useState(false),offered=!!set,view:HelpView=offered&&!original?'translation':'original';
+ const markerOf=(v:HelpView)=>v==='translation'&&set?set.related:RELATED_MARKER;
  const textLang=offered&&view==='original'?'en':undefined;// the original view on a Spanish page is VIREO's English
  // Review S1: the translation failed and the original is shown instead (a note in the list and topic windows, not a modal box,
  // which the list dialog opened after it would cover).
@@ -131,11 +136,11 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
  async function openHelp(){
   if(loaded){showTopics();return;}
   setLoad('loading');
-  try{setLoad(await loadList(list,view));setListOpen(true);setSearch({query:'',matchCase:false});}
+  try{setLoad(await loadList(list,view,set));setListOpen(true);setSearch({query:'',matchCase:false});}
   catch{
    // Front ES-HELP review S1: a translation that cannot be loaded, verified or parsed falls back to VIREO's original, and says so.
    if(view!=='translation'){setLoad('error');return;}
-   try{setLoad(await loadList(list,'original'));setOriginal(true);setListOpen(true);setSearch({query:'',matchCase:false});translationFailed();}
+   try{setLoad(await loadList(list,'original',set));setOriginal(true);setListOpen(true);setSearch({query:'',matchCase:false});translationFailed();}
    catch{setLoad('error');}
   }
  }
@@ -144,11 +149,11 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
   * rows), with the original index. */
  async function originalInstead(index:number,push:boolean,base:HelpHistory){
   try{
-   const l=await loadList(list,'original'),file=helpFile(l.rows[index].file);
+   const l=await loadList(list,'original',set),file=helpFile(l.rows[index].file);
    if(!file)return translationFailed();
-   const txt=await loadText(file,'original');
+   const txt=await loadText(file,'original',set);
    setLoad(l);setOriginal(true);
-   const body=helpTopicBody(txt,l.rows[index].title);
+   const body=topicBodyOf(txt,l.rows[index].title,RELATED_MARKER);
    if(body){setTopic({index,body,selected:-1});setListIndex(index);setHistory(push?helpHistoryOpen(base,index):base);setTopicMenu(false);}
    translationFailed();
   }catch{setMessage({caption:M.topicFileErrorCaption,text:M.topicFileError(list.name)});}
@@ -159,13 +164,13 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
   if(!loaded)return;
   const file=helpFile(rows[index].file);
   if(!file){setMessage({caption:vireo(C.topicFileCaption),text:vireo(C.topicFileMissingHead)+rows[index].file+vireo(C.topicFileMissingTail)});return;}
-  void loadText(file,view).then(txt=>showTopic(rows,index,push,base,txt),()=>{
+  void loadText(file,view,set).then(txt=>showTopic(rows,index,push,base,txt),()=>{
    if(view==='translation'){setListOpen(false);void originalInstead(index,push,base);}
    else setMessage({caption:M.topicFileErrorCaption,text:M.topicFileError(file.name)});
   });
  }
- function showTopic(rows:readonly HelpRow[],index:number,push:boolean,base:HelpHistory,txt:Uint8Array){
-  const body=helpTopicBody(txt,rows[index].title,relatedMarker(view));
+ function showTopic(rows:readonly HelpRow[],index:number,push:boolean,base:HelpHistory,txt:HelpSource){
+  const body=topicBodyOf(txt,rows[index].title,markerOf(view));
   if(!body){setMessage({caption:vireo(C.topicNotFoundCaption),text:vireo(C.topicNotFoundHead)+rows[index].title.replace(/^ +/,'')+vireo(C.topicNotFoundTail)});return;}
   setTopic({index,body,selected:-1});setListIndex(index);setHistory(push?helpHistoryOpen(base,index):base);setTopicMenu(false);
  }
@@ -180,7 +185,10 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
   if(r.kind==='heading'){setMessage({caption:vireo(C.headingCaption),text:r.message.replace(/^Select a Topic Under/,vireo('Select a Topic Under'))});return;}
   setListOpen(false);openTopic(loaded.rows,r.index,pushHistory);
  }
- function submitSearch(s:Search,mode:'top'|'next'){
+ function submitSearch(typed:Search,mode:'top'|'next'){
+  // Front SC7: the translation is NFC text, so a query typed in another form (a decomposed accent) is composed first ("Match case"
+  // compares exactly).
+  const s=view==='translation'?{...typed,query:typed.query.normalize('NFC')}:typed;
   setSearch(s);const kind=searching;setSearching(null);
   if(!loaded)return;
   if(kind==='topic'){
@@ -206,9 +214,9 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
   if(!loaded)return;
   const next:HelpView=view==='translation'?'original':'translation';
   try{
-   const l=await loadList(list,next);let t=topic;
+   const l=await loadList(list,next,set);let t=topic;
    if(topic){
-    const file=helpFile(l.rows[topic.index].file),body=file?helpTopicBody(await loadText(file,next),l.rows[topic.index].title,relatedMarker(next)):null;
+    const file=helpFile(l.rows[topic.index].file),body=file?topicBodyOf(await loadText(file,next,set),l.rows[topic.index].title,markerOf(next)):null;
     if(body)t={...topic,body,selected:-1};
    }
    setLoad(l);setTopic(t);setOriginal(next==='original');setStatus('');setFallback(false);

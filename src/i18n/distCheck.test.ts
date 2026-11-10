@@ -46,7 +46,7 @@ function dist(languages:readonly Language[],extra:(assets:string,html:{text:stri
  extra(assets,html);writeFileSync(path.join(out,'index.html'),html.text);
  return out;
 }
-const check=(out:string,languages:readonly Language[])=>checkI18nDist(out,{root,languages,graph}) as {offenders:string[];warnings:string[];reports:{tag:string;sizes:Map<string,unknown>}[]};
+const check=(out:string,languages:readonly Language[])=>checkI18nDist(out,{root,languages,graph}) as {offenders:string[];warnings:string[];reports:{tag:string;sizes:Map<string,unknown>;help:unknown[]}[]};
 
 describe('Front SC8: scripts/check-i18n-dist.mjs with a partial language before its release',()=>{
  it('accepts the fixture: its core and its one area are found by their texts, its empty areas have no chunk, it has no help',()=>{
@@ -128,4 +128,28 @@ describe('Front SC8: scripts/check-i18n-dist.mjs with a partial language before 
   const dot={...spanish,pagePath:'.'} as Language,dotted=check(dist([dot],at('labs/x/index.html')),[dot]).offenders;
   expect(dotted[0]).toBe('es-419: pagePath "." is not one lower-case path segment');expect(dotted[1]).toMatch(/labs\/x\/index\.html: 1 es-419 core text/);
  },180_000);
+});
+
+describe('Front SC7: scripts/check-i18n-dist.mjs with help chunks in a Unicode script',()=>{
+ const keys=Object.keys(HELP_FILES);
+ /** One help chunk per file, as Vite writes a help module (its exports minified), whose text is `text(key)`. */
+ const helpDist=(tag:string,text:(key:string)=>string)=>dist([PARTIAL],a=>{for(const key of keys)writeFileSync(path.join(a,`${key}-HHHHHHHH.js`),
+  `const e=${JSON.stringify(tag)},t=${JSON.stringify(HELP_FILES[key].name)},n="${HELP_FILES[key].sha256}",x=${JSON.stringify(text(key))};export{e as language,t as sourceName,n as sourceSha256,x as text};`);});
+ const ja=(key:string)=>`'ＣＣＤ画像の撮影' 'begin'\n**露光の開始**\n「スタート」ボタンを押すと露光を始めます。関連項目：画像の保存 (${key})\n`;
+ it('counts 38 help chunks of Japanese, Devanagari or Cyrillic text for a language with help, and passes them',()=>{
+  for(const text of [ja,(k:string)=>`एक्सपोज\u093cर लें ${k} संबंधित विषय`,(k:string)=>`Связанные темы ${k} съёмка`]){
+   const result=check(helpDist('qaa-XA',text),[{...PARTIAL,help:{related:'関連項目'}}]);
+   expect(result.offenders).toEqual([]);
+   expect(result.reports[0].help).toHaveLength(keys.length);
+  }
+ });
+ it('scales a help chunk\'s budget by its language\'s budgetFactor (Spanish and Portuguese keep 40 KB)',()=>{
+  let x=88172645;const han=()=>{x^=x<<13;x>>>=0;x^=x>>>17;x^=x<<5;x>>>=0;return String.fromCharCode(0x4e00+x%20000);};// xorshift32
+  const big=Array.from({length:21_000},han).join('');// about 45 KB gzip: incompressible Han text
+  const out=helpDist('qaa-XA',k=>k==='CAMHLP.TXT'?big:ja(k)),helped={...PARTIAL,help:{related:'関連項目'}};
+  expect(check(out,[helped]).offenders).toEqual([expect.stringMatching(/^CAMHLP\.TXT-HHHHHHHH\.js: 4\d\.\d KB gzip is over the 40\.0 KB budget of a help chunk$/)]);
+  const scaled=check(out,[{...helped,budgetFactor:1.5}]);
+  expect(scaled.offenders).toEqual([]);
+  expect(scaled.warnings).toEqual([expect.stringMatching(/^the help chunk CAMHLP\.TXT-HHHHHHHH\.js is 4\d\.\d KB gzip, over 37\.5 KB$/)]);
+ });
 });

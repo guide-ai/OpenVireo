@@ -12,6 +12,8 @@
 // its release that has no marker text yet is found by its chunk name, with a warning (a released language still fails). A
 // language's own static pages (an .html file under dist/<pagePath>/, its registry entry's path: es/ for es-419) may carry that
 // language's text, never another language's; every other file, and every .js file, keeps the rule.
+// Front SC7 (docs/I18N.md, "Script groundwork: Unicode help (SC7)"): help chunks may hold Unicode text in any script; each help
+// chunk's gzip budget is scaled by its language's budgetFactor (1 for Spanish and Portuguese: their budget is unchanged).
 // Usage: node scripts/check-i18n-dist.mjs [distDir]   (default: dist)
 import {readdirSync,readFileSync,statSync} from 'node:fs';
 import {join,sep} from 'node:path';
@@ -90,7 +92,13 @@ export function checkI18nDist(dist,{root=ROOT,languages=loadLanguages(root),grap
   const found=helpByLanguage.get(l.tag),expected=l.help?helpIds.length:0,names=new Set(found.map(f=>HELP_CHUNK.exec(f.name)[1].toUpperCase()));
   if(found.length!==expected||names.size!==expected)offenders.push(`expected ${expected} ${l.tag} help chunks, one per help file${l.help?'':' (its registry entry has no help)'}; found ${found.length} for ${names.size} files`);
  }
- for(const f of helpChunks.values()){const g=gzip(f.text);if(g>HELP_BUDGET.fail)offenders.push(`${f.name}: ${kb(g)} KB gzip is over the 40 KB budget of a help chunk`);else if(g>HELP_BUDGET.warn)warnings.push(`the help chunk ${f.name} is ${kb(g)} KB gzip, over 25 KB`);}
+ // Front SC7: a help chunk's budget is scaled by its language's budgetFactor, as its other chunks' are (a help set may be Unicode
+ // text in any script; UTF-8 takes 2 or 3 bytes for a Cyrillic, Devanagari or CJK character). A chunk that names no language, or
+ // two, keeps the plain budget.
+ const helpFactor=new Map(languages.flatMap(l=>helpByLanguage.get(l.tag).map(f=>[f,l.budgetFactor??1])));
+ for(const f of helpChunks.values()){const g=gzip(f.text),factor=helpFactor.get(f)??1;
+  if(g>HELP_BUDGET.fail*factor)offenders.push(`${f.name}: ${kb(g)} KB gzip is over the ${kb(HELP_BUDGET.fail*factor)} KB budget of a help chunk`);
+  else if(g>HELP_BUDGET.warn*factor)warnings.push(`the help chunk ${f.name} is ${kb(g)} KB gzip, over ${kb(HELP_BUDGET.warn*factor)} KB`);}
 
  // The scripts index.html loads, and everything they import statically (a dynamic import(…) is not followed).
  const assets=new Map(files.filter(f=>inAssets(f)&&/\.js$/.test(f.name)).map(f=>[f.name,f]));
