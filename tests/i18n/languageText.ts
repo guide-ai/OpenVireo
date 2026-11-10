@@ -96,3 +96,15 @@ export const E01_E02_MAPS:Readonly<Record<string,E01E02Maps>>=Object.freeze({
  'pt-BR':{engineView:ENGINE_VIEW_PT,spectralRange:SPECTRAL_RANGE_PT,wedge:WEDGE_PT,observatory:OBSERVATORY_PT,polish:POLISH_PT},
 });
 export const e01e02Maps=(tag:string):E01E02Maps=>{const m=E01_E02_MAPS[tag];if(!m)throw new Error(`No E01/E02 maps for ${tag}`);return m;};
+
+// Front PT4: the maps the E04 and E05 walks read beyond the catalog (tests/i18n/e04.spec.ts, e05.spec.ts), per language: the View
+// original test's web text (E04) and the cluster HR tools' own notes (E05). Only their text leaves are read.
+import {CLUSTER_HR_ES} from '../../src/i18n/es/maps/clusterHr';
+import {CLUSTER_HR_PT} from '../../src/i18n/pt-br/maps/clusterHr';
+import type {CLUSTER_HR_EN} from '../../src/clusters/ClusterHrMessages';
+export type E04E05Maps=Readonly<{spectralRange:unknown;observatory:unknown;polish:unknown;camera:unknown;sound:unknown;clusterHr:Translation<typeof CLUSTER_HR_EN>}>;
+export const E04_E05_MAPS:Readonly<Record<string,E04E05Maps>>=Object.freeze({
+ 'es-419':{spectralRange:SPECTRAL_RANGE_ES,observatory:OBSERVATORY_ES,polish:POLISH_ES,camera:CAMERA_ES,sound:SOUND_ES,clusterHr:CLUSTER_HR_ES},
+ 'pt-BR':{spectralRange:SPECTRAL_RANGE_PT,observatory:OBSERVATORY_PT,polish:POLISH_PT,camera:CAMERA_PT,sound:SOUND_PT,clusterHr:CLUSTER_HR_PT},
+});
+export const e04e05Maps=(tag:string):E04E05Maps=>{const m=E04_E05_MAPS[tag];if(!m)throw new Error(`No E04/E05 maps for ${tag}`);return m;};

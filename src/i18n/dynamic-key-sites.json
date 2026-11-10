@@ -530,6 +530,7 @@
   "src/i18n/index.ts › fieldReasonText/key · head 'fieldSpec.reason.' [core]",
   "src/i18n/pt-br/maps/fieldInfo.ts › FIELD_INFO_PT/editLayerCaption · head 'Modo de edição · campo do buscador lido do catálogo compacto de estrelas-guia (Guide Star Catalog; o leitor do catálogo do buscador do VIREO, estrelas até a Mag. limite do buscador, Finder Mag Limit, de 11.5): ' [unreached]",
   "src/i18n/pt-br/maps/polish.ts › POLISH_PT/pulsarsHtl/error · head 'O Pulsars.HTL incluído ' [unreached]",
+  "src/i18n/pt-br/maps/variableStars.ts › VARIABLE_STARS_PT/printCurveLayout · head 'A página da curva de luz segue a impressão do VIREO na orientação escolhida aqui (o VIREO usa a da impressora): em retrato, o gráfico segue na mesma página; em paisagem, o VIREO acrescenta “(Imagem da tela impressa na próxima página)” [(Screen Image Printed on Next Page)] e imprime o gráfico na página 2. ' [unreached]",
   "src/io/clusterComparison.ts › loadClusterDataset/promise/url · head '../../data/photometry/' [core]",
   "src/io/lssSpectrumInputs.node.ts › original · head '../../public/original/' [unreached]",
   "src/multispec/MultiSpecControl.tsx › MultiSpecControl · t(state.selecting?'multispec.ledOn':'multispec.ledOff') [core]",

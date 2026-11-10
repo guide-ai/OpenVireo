@@ -30,6 +30,18 @@
     "Two Micron All Sky Survey"
    ],
    "reason": "the survey’s proper name, Two Micron All Sky Survey (2MASS), kept in English as cited (only that title-case run is allowed)"
+  },
+  "catalog:ph.apertureReadout": {
+   "words": [
+    "factor"
+   ],
+   "reason": "the placeholder {factor} (the sky area factor’s value), not the European word; the Portuguese text says «fator»"
+  },
+  "map:variableStars.guide.0": {
+   "words": [
+    "del"
+   ],
+   "reason": "«del Cep» is the GCVS star name (delta Cephei) given as a search example, not the Spanish word"
   }
  }
 }

@@ -85,6 +85,27 @@
   "catalog:program.row": "only placeholders and a separator ({position} · {object})",
   "catalog:nativeText.choice": "only placeholders and a separator ({index} · {object})",
   "catalog:nativeResults.storage.binary32": "a Delphi type name and a bit count (Single · 32 bits)",
-  "catalog:nativeResults.storage.binary64": "a Delphi type name and a bit count (Double · 64 bits)"
+  "catalog:nativeResults.storage.binary64": "a Delphi type name and a bit count (Double · 64 bits)",
+  "catalog:ph.fixed": "the photometric band letters and the telescope name (U / B / V · {telescope}), no words",
+  "catalog:ph.seriesSecondsOption": "a parameter and a unit symbol ({seconds} s), the same in Portuguese",
+  "catalog:nc.axisColor": "axis label with a symbol and a unit (B−V (mag))",
+  "catalog:db.columnEbv": "a symbol and a unit (E(B−V) (mag))",
+  "catalog:ce.inspectedInfo": "only placeholders, symbols and units",
+  "catalog:obsHr.sha": "the hash name SHA-256, the same in Portuguese",
+  "catalog:obsHr.blockedField.v": "the photometric band V",
+  "catalog:obsHr.blockedField.b": "the photometric band B",
+  "catalog:obsHr.blockedField.b-v": "the colour index B−V",
+  "catalog:obsHr.modulus": "a symbol expression (V − Mv)",
+  "catalog:obsHr.ebv": "a symbol (E(B−V))",
+  "catalog:obsHr.colIndex": "a column symbol (#)",
+  "catalog:obsHr.colBV": "a colour index (B − V)",
+  "catalog:obsHr.colPixel": "«Pixel (x, y)»: pixel is the same word in Portuguese (as PT2 kept it), with coordinate symbols",
+  "catalog:obsHr.kind.magnitudes": "the word magnitudes is the same in Portuguese (magnitudes)",
+  "catalog:pleiadesLab.sourceFile": "a file name, its size in bytes and its SHA-256 ({name} · {bytes} bytes · SHA-256 {sha256}); «bytes» is the same in Portuguese",
+  "map:variableStars.typeOption": "a template of placeholders around an em dash",
+  "map:variableStars.columns.3": "a symbol and a unit (Dec (°))",
+  "map:variableStars.columns.7": "an empty header cell (the row action column)",
+  "map:variableStars.noPeriod": "an em dash for no value",
+  "map:clusterHr.ok": "the same word in Portuguese (OK, as Windows pt-BR writes it)"
  }
 }

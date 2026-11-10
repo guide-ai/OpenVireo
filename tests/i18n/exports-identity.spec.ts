@@ -525,14 +525,16 @@ test('the shell toolbar: Save investigation is byte-identical in English, qps, S
  for(const f of Object.values(files)){expect(f.bytes.includes('⟦')).toBe(false);for(const letters of Object.values(LETTERS))expect(f.bytes.toString('utf8')).not.toMatch(letters);}
 });
 
+/** Front PT4: the Portuguese catalog the E04 and E05 families click and check. */
+const PT_E04=TRANSLATED.find(x=>x.tag==='pt-BR')!.catalog as Readonly<Record<string,string>>;
 // Front ES6: the E04 flow (Pleiades photometry) in English, qps and Spanish: the photometer session JSON, VIREO's Record/Review rows
 // shown by Display/Print Data and written with Save Text and Comma Delimit, and the saved investigation. The page clock is paused at
 // a fixed instant before activation and only moves by runFor until the last file is written; nothing is masked (each record's JD is
-// the observatory clock's, which stands still).
+// the observatory clock's, which stands still). Front PT4: and in pt-BR (its `?lang=pt-BR` preview).
 test('E04 Pleiades photometry: photometer session, Observational Results text and CSV, investigation',async({browser,baseURL})=>{
  test.setTimeout(180_000);
  const id=(page:Page,testId:string)=>page.getByTestId(testId);
- const T=(locale:Locale,key:string)=>locale==='es-419'?exact((es as Record<string,string>)[key]):L((en as Record<string,string>)[key]);
+ const T=(locale:Locale,key:string)=>locale==='es-419'?exact((es as Record<string,string>)[key]):locale==='pt-BR'?exact(PT_E04[key]!):L((en as Record<string,string>)[key]);
  await identical(browser,baseURL,async(page,locale)=>{
   await open(page,locale,'photometer');
   const main=page.locator('.photometer-main'),press=(key:string)=>main.getByRole('button',{name:T(locale,key)}).click();
@@ -554,9 +556,11 @@ test('E04 Pleiades photometry: photometer session, Observational Results text an
    await id(page,'fi-box').getByRole('button').first().click();await expect(id(page,'fi-box')).toHaveCount(0);return f;};
   const resultsText=await list('displayed'),resultsCsv=await list('csv');
   const toolbar=page.locator('.investigation-toolbar');
-  const investigation=await download(page,()=>toolbar.getByRole('button',{name:locale==='es-419'?exact(es['project.save']):L('Save investigation')}).click());
+  const investigation=await download(page,()=>toolbar.getByRole('button',{name:locale==='es-419'?exact(es['project.save']):locale==='pt-BR'?exact(PT_E04['project.save']!):L('Save investigation')}).click());
+  // Front PT4: the flow's own screen is Portuguese in pt-BR, so the family cannot pass by comparing English with English.
+  if(locale==='pt-BR')await expect(main.getByRole('heading',{level:1})).toHaveText(PT_E04['ph.title']!);
   return {session,resultsText,resultsCsv,investigation};
- },{},page=>page.locator('.photometer-main'),['en','qps','es-419']);
+ },{},page=>page.locator('.photometer-main'),['en','qps','es-419','pt-BR']);
 });
 
 // Front ES8a: the radio telescope route is translated. From #radio-control a student captures a model-generated recording
@@ -759,7 +763,7 @@ test('E06 pulsar analysis: native Save and its append, the export, the append fi
 // Text and Comma Delimit, File › Cluster Data…'s report (Save Text) and the two HTL files its hot-list items write,
 // and, on the variable-star route,
 // Save Text › As Displayed. The HR plot and the print previews are pictures, not files. The page
-// clock is fixed at NOW (the investigation's save time), so nothing is masked.
+// clock is fixed at NOW (the investigation's save time), so nothing is masked. Front PT4: and in pt-BR (its `?lang=pt-BR` preview).
 test('E05 cluster HR: investigation, cluster listing TXT and CSV, observation DAT, Recorded Results TXT and CSV; Cluster Data TXT and HTL; variable-star TXT',async({browser,baseURL})=>{
  test.setTimeout(240_000);
  const id=(page:Page,testId:string)=>page.getByTestId(testId);
@@ -777,7 +781,9 @@ test('E05 cluster HR: investigation, cluster listing TXT and CSV, observation DA
   await page.locator('#db-native-interpretation').fill('E05 note');
   await expect(id(page,'native-preview')).toBeVisible({timeout:20_000});
   await button(page,'Confirm chosen model fit',locale).click();await expect(id(page,'native-confirmed-age')).toBeVisible();
-  const toolbar=page.locator('.investigation-toolbar');const save=locale==='es-419'?es['project.save']:L('Save investigation');
+  const toolbar=page.locator('.investigation-toolbar');const save=locale==='es-419'?es['project.save']:locale==='pt-BR'?PT_E04['project.save']!:L('Save investigation');
+  // Front PT4: the flow's own screen is Portuguese in pt-BR, so the family cannot pass by comparing English with English.
+  if(locale==='pt-BR')await expect(page.locator('main.cluster-database-lab').getByRole('heading',{level:1})).toHaveText(PT_E04['db.title']!);
   const investigation=await download(page,()=>toolbar.getByRole('button',{name:save,exact:typeof save==='string'||undefined}).click());
   await id(page,'cluster-display-data').click();await expect(id(page,'cluster-report')).toBeVisible({timeout:20_000});
   const saveListing=async(kind:'displayed'|'csv')=>{const f=await download(page,async()=>{await id(page,'cluster-report-list-menu').click();await id(page,'cluster-report-save-menu').click();await id(page,`cluster-report-save-${kind}`).click();});await dismiss(page);return f;};
@@ -810,5 +816,5 @@ test('E05 cluster HR: investigation, cluster listing TXT and CSV, observation DA
   await id(page,'vstar-data-menu').click();await id(page,'vstar-save-menu').click();
   const variableText=await download(page,()=>id(page,'vstar-save-displayed').click());
   return {investigation,listingText,listingCsv,observations,resultsText,resultsCsv,fieldText,hotListAdded,hotListEntire,variableText};
- },{},page=>page.getByTestId('variable-stars'),['en','qps','es-419']);
+ },{},page=>page.getByTestId('variable-stars'),['en','qps','es-419','pt-BR']);
 });
