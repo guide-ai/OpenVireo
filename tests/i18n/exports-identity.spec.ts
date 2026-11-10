@@ -195,6 +195,9 @@ test('Hubble analysis: Hubble CSV and the Hubble session from the original workb
  },{},page=>page.locator('.hubble-card'),['en','qps','es-419','pt-BR']);
 });
 
+/** Front PT3: the Portuguese catalog the E03 family reads (the notebook's Edit button carries its row number). */
+const PT_E03=TRANSLATED.find(x=>x.tag==='pt-BR')!.catalog as Readonly<Record<string,string>>;
+// Front PT3: and in pt-BR (its `?lang=pt-BR` preview).
 // Front ES5: every file a student can save on the E03 route, in English, qps and Spanish. The page clock is installed at NOW and
 // paused before the acquisition's one-second exposure and stays paused (only runFor moves it), so the observation notebook's
 // and the recovery copies' times and the observatory clock are the same in every run; nothing is masked.
@@ -228,7 +231,7 @@ test('E03 classification: session, CSV, width record, investigations, observatio
   const classification=await save(()=>B('Export classification CSV').click());
   const investigation=await save(()=>B('Save complete investigation').first().click());
   const notebook=await save(()=>B('Export observation notebook').click());
-  await page.getByRole('button',{name:locale==='es-419'?exact(es['obs.edit'].replace('{id}','1')):L('Edit observation result 1')}).click();await F('Observation remarks (up to 36 bytes)').fill('Edited remarks');await B('Record observation result').click();
+  await page.getByRole('button',{name:locale==='es-419'?exact(es['obs.edit'].replace('{id}','1')):locale==='pt-BR'?exact(PT_E03['obs.edit'].replace('{id}','1')):L('Edit observation result 1')}).click();await F('Observation remarks (up to 36 bytes)').fill('Edited remarks');await B('Record observation result').click();
   const editRecovery=await save(()=>B('Export edit recovery').click());
   const editedNotebook=await save(()=>B('Export observation notebook').click());
   await F('Import SP or SSP for visual classification (up to 2 MiB)').setInputFiles({name:'limited.sp',mimeType:'text/plain',buffer:Buffer.from('3900 .2\n4200 .8\n4500 .4\n')});
@@ -246,8 +249,10 @@ test('E03 classification: session, CSV, width record, investigations, observatio
   const investigationAll=await save(()=>B('Save complete investigation').first().click());
   // The edits reached their files (so the families compare an edited copy, not the input twice).
   expect(datEdited.bytes.equals(datUnchanged.bytes)).toBe(false);expect(editedNotebook.bytes.equals(notebook.bytes)).toBe(false);expect(investigationAll.bytes.equals(investigation.bytes)).toBe(false);
+  // Front PT3: the flow's own screen is Portuguese in pt-BR, so the family cannot pass by comparing English with English.
+  if(locale==='pt-BR')await expect(page.locator('.classification-main h1')).toHaveText(PT_E03['class.title']);
   return {session,classification,investigation,notebook,editRecovery,editedNotebook,datUnchanged,datEdited,txtUnchanged,nativeCsv,imported,investigationAll};
- },{},page=>page.locator('.classification-main'),['en','qps','es-419']);
+ },{},page=>page.locator('.classification-main'),['en','qps','es-419','pt-BR']);
 });
 
 test('hot list: Save HTL file after adding a target',async({browser,baseURL})=>{

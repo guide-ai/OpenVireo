@@ -512,6 +512,22 @@
   {
    "en": "\\b(?:600-)?bins?\\b",
    "pt": "can(al|ais)"
+  },
+  {
+   "en": "\\bcombined view\\b",
+   "pt": "visualiza[çc][ãa]o combinada"
+  },
+  {
+   "en": "\\bpanes?\\b",
+   "pt": "painel|painéis"
+  },
+  {
+   "en": "\\b(?:sampled|printed-coordinate|printed|intensity|unknown) traces?\\b",
+   "pt": "traçad"
+  },
+  {
+   "en": "\\breadouts?\\b",
+   "pt": "leitura"
   }
  ],
  "names": [

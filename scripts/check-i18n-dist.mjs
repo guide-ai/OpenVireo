@@ -32,6 +32,27 @@ const quoted=(v)=>{const json=JSON.stringify(v).slice(1,-1);return [json,json.re
 const LETTER_OUTSIDE_ASCII=/(?![\x00-\x7f])\p{L}/u;
 const LITERAL=/'((?:[^'\\\n]|\\.)*)'/g;
 const literalsOf=(source)=>[...source.replace(/^(?:import|export) [^\n]* from '[^']*';?$/gm,'').matchAll(LITERAL)].map(x=>x[1].replace(/\\'/g,"'"));
+// PT3 review: every string a source writes ('…', "…" and each fixed part of a `…${x}…` template, unescaped), comments skipped: the
+// texts a map file may put in its chunk, so that a marker's every occurrence there can be matched to a text of the file's module.
+const ESC={n:'\n',r:'\r',t:'\t',b:'\b',f:'\f',v:'\v','0':'\0'};
+const unescape=(raw)=>raw.replace(/\\(?:u\{([0-9a-fA-F]+)\}|u([0-9a-fA-F]{4})|x([0-9a-fA-F]{2})|\r?\n|(.))/gs,(_,cp,u,x,c)=>cp||u||x?String.fromCodePoint(parseInt(cp||u||x,16)):c===undefined?'':ESC[c]??c);
+export function stringsOf(source){const out=[],n=source.length;let i=0;const depth=[];
+ const template=()=>{let raw='';for(;i<n;i++){const c=source[i];
+   if(c==='\\'){raw+=c+source[++i];continue;}
+   if(c==='`'){i++;out.push(unescape(raw));return true;}
+   if(c==='$'&&source[i+1]==='{'){i+=2;out.push(unescape(raw));depth.push(0);return false;}
+   raw+=c;}
+  out.push(unescape(raw));return true;};
+ while(i<n){const c=source[i];
+  if(c==='/'&&source[i+1]==='/'){i=source.indexOf('\n',i);if(i===-1)break;continue;}
+  if(c==='/'&&source[i+1]==='*'){i=source.indexOf('*/',i+2);if(i===-1)break;i+=2;continue;}
+  if(c==="'"||c==='"'){let j=i+1,raw='';for(;j<n&&source[j]!==c;j++){if(source[j]==='\\'){raw+=source[j]+source[j+1];j++;}else raw+=source[j];}
+   out.push(unescape(raw));i=j+1;continue;}
+  if(c==='`'){i++;template();continue;}
+  if(depth.length&&c==='{'){depth[depth.length-1]++;i++;continue;}
+  if(depth.length&&c==='}'){if(depth[depth.length-1]===0){depth.pop();i++;template();continue;}depth[depth.length-1]--;i++;continue;}
+  i++;}
+ return out;}
 // KB gzip at level 9, multiplied by the language's budgetFactor (docs/I18N.md).
 const BUDGET={core:{warn:120_000,fail:150_000},module:{warn:60_000,fail:90_000},sum:{warn:300_000,fail:360_000}};
 const HELP_BUDGET={warn:25_000,fail:40_000};
@@ -92,7 +113,7 @@ export function checkI18nDist(dist,{root=ROOT,languages=loadLanguages(root),grap
   const texts=new Map(plan.modules.map(m=>{
    const maps=[],sources=m.maps.map(id=>readFileSync(join(root,plan.manifest[id].file),'utf8'));
    for(const source of sources)maps.push(...literalsOf(source));
-   return [m.name,{catalog:m.keys.map(k=>plan.catalog[k]),maps,originals:m.originals?originals:[],sources}];
+   return [m.name,{catalog:m.keys.map(k=>plan.catalog[k]),maps,originals:m.originals?originals:[],sources,strings:sources.flatMap(stringsOf)}];
   }));
   plans.push({language,plan,texts,all:new Set([...texts.values()].flatMap(t=>[...t.catalog,...t.maps,...t.originals]))});
  }
@@ -121,6 +142,12 @@ export function checkI18nDist(dist,{root=ROOT,languages=loadLanguages(root),grap
    const hits=new Map();for(const [name,list] of markers){const found=list.filter(m=>m.forms.some(form=>f.text.includes(form)));if(found.length)hits.set(name,found);}
    if(hits.size)holders.set(f,hits);}
   const chunkName=(name)=>`i18n-${tag}-${name.replace(/\+/g,'_')}-`;
+  // Front PT3: another language's chunk (named i18n-<tag>-<module>-) is never this language's, and in it a marker may appear only
+  // inside a longer text of that chunk's own module, as within one language below (Portuguese «Campo de velocidade» holds
+  // Spanish «Campo de velocidad»). Returns that module's text, or null for a file that is no other language's chunk.
+  const foreign=(f)=>{for(const p of plans){if(p.language===language)continue;
+   for(const [name,t] of p.texts)if(f.name.startsWith(`i18n-${p.language.tag}-${name.replace(/\+/g,'_')}-`))return [...t.catalog,...t.strings,...t.originals];}
+   return null;};
   // Each module's markers are all in one JS chunk named after it. A module of a language before its release that has no marker
   // yet (a partial catalog's short or English-equal texts) is found by its name only.
   const chunkOf=new Map();
@@ -131,7 +158,7 @@ export function checkI18nDist(dist,{root=ROOT,languages=loadLanguages(root),grap
     if(released||named.length!==1){offenders.push(`${tag} ${m.name}: no marker text to find its chunk${released?'':` (and ${named.length} chunks by its name)`}`);continue;}
     warnings.push(`${tag} ${m.name} has no marker text yet; its chunk ${named[0].name} is found by its name only`);chunkOf.set(m.name,named[0]);continue;
    }
-   const full=[...holders].filter(([,hits])=>hits.get(m.name)?.length===list.length).map(([f])=>f);
+   const full=[...holders].filter(([f,hits])=>hits.get(m.name)?.length===list.length&&foreign(f)===null).map(([f])=>f);
    if(full.length!==1||!/\.js$/.test(full[0].name)){offenders.push(`${tag} ${m.name}: expected one chunk holding all ${list.length} of its markers, found ${full.length}`);continue;}
    chunkOf.set(m.name,full[0]);
    if(!full[0].name.startsWith(chunkName(m.name)))offenders.push(`${tag} ${m.name}: its chunk is named ${full[0].name}`);
@@ -139,12 +166,17 @@ export function checkI18nDist(dist,{root=ROOT,languages=loadLanguages(root),grap
   // An empty area of a partial language has no chunk: the core resolves it inline.
   for(const m of plan.modules.filter(m=>m.empty))for(const f of assets.values())if(f.name.startsWith(chunkName(m.name)))offenders.push(`${tag} ${m.name} is empty but has the chunk ${f.name}`);
   // No language text elsewhere, and each chunk holds exactly one module: another module's marker may appear in a file only as part
-  // of a longer text of that file's own module (a short sentence inside a long one).
+  // of a longer text of that file's own module (a short sentence inside a long one). PT3 review: every occurrence of the marker in
+  // the file must lie inside an occurrence of such a longer text, so that a stray copy beside a legitimate longer text still fails.
   const languageFiles=new Set(chunkOf.values()),ownerOf=new Map([...chunkOf].map(([n,f])=>[f,n]));
-  const joined=new Map([...texts].map(([name,t])=>[name,[...t.catalog,...t.sources,...t.originals].join('\n')]));
-  for(const [f,hits] of holders){const own=ownerOf.get(f);
+  const hostsOf=new Map([...texts].map(([name,t])=>[name,[...t.catalog,...t.strings,...t.originals]]));
+  const inside=(f,m,hosts)=>{const longer=hosts.filter(h=>h.includes(m.text));if(!longer.length)return false;
+   const spans=[],at=(form,each)=>{for(let i=f.text.indexOf(form);i!==-1;i=f.text.indexOf(form,i+1))each(i,i+form.length);};
+   for(const h of longer)for(const form of quoted(h))at(form,(a,b)=>spans.push([a,b]));
+   let ok=true;for(const form of m.forms)at(form,(a,b)=>{if(!spans.some(([x,y])=>x<=a&&b<=y))ok=false;});return ok;};
+  for(const [f,hits] of holders){const own=ownerOf.get(f),hosts=own?hostsOf.get(own):foreign(f);
    for(const [name,found] of hits){if(name===own)continue;
-    const stray=found.filter(m=>!(own&&joined.get(own).includes(m.text)));
+    const stray=found.filter(m=>!(hosts!==null&&inside(f,m,hosts)));
     if(stray.length)offenders.push(`${f.file}: ${stray.length} ${tag} ${name} text(s) outside the ${name} chunk (${JSON.stringify(stray[0].text.slice(0,60))})`);}}
   // Not loaded at start: index.html neither loads nor preloads a language chunk, and its scripts' static imports reach none.
   for(const f of languageFiles){

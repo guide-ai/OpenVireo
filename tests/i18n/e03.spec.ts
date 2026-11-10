@@ -4,12 +4,14 @@ import {SPANISH_LOCALE,langQuery} from '../fixtures/language';
 import {layoutProblems,type LayoutOptions} from '../fixtures/layoutProblems';
 import {readFileSync} from 'node:fs';
 import {CLASSIFY_PROGRAM_LITERALS_RESTATED} from './classifyProgramLiterals';
-import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
-import originals from '../../src/i18n/es/originals.json' with {type:'json'};
+import {TRANSLATED,type LanguageText} from './languageText';
 // Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
 test.use({locale:SPANISH_LOCALE});
 
+// Front PT3: the spec runs for every translated language (tests/i18n/languageText.ts: its own catalog and originals, never
+// hard-coded text). The Spanish tests keep their titles and assertions; a language before its release (pt-BR) runs the same checks
+// under its own titles in its `?lang=` preview, which beats the es-MX browser language. English and qps run once.
 // Front ES5 (docs/I18N.md): exercise E03, Spectral Classification, in Spanish in an `es-*` browser (a `?lang=es-419` preview load before ES-REL). One walk through the
 // student flow runs in English, Spanish and the pseudo-locale: the classification guide, the lab (source, Program List with its
 // dialog, VIREO's No More Spectra end box, atlas and standard pairs, Standard − practice, the line table, the wavelength window,
@@ -22,10 +24,13 @@ test.use({locale:SPANISH_LOCALE});
 //   hashes, numbers with units);
 // - qps: every visible text is marked ⟦…⟧ (it goes through the catalog, a map or vireo()), with the same exceptions;
 // - views that mirror a written file (`lang="en"`, F2) are left out of both comparisons.
-type Lang='en'|'es-419'|'qps';
+type Lang='en'|'qps'|LanguageText;
+/** A test title: Spanish keeps its ES5 title; another language names itself and its preview. */
+const title=(L:LanguageText,es:string,other:string)=>L.tag==='es-419'?es:other.replaceAll('<L>',L.entry.englishName).replaceAll('<tag>',L.tag);
+const tagOf=(lang:Lang)=>typeof lang==='string'?lang:lang.tag;
 /** VIREO's Program List... and Next on List items and the No More Spectra box (CLASSIFY_PROGRAM_LITERALS, restated). */
 const P=CLASSIFY_PROGRAM_LITERALS_RESTATED;
-const O=originals as Record<string,string>,E=en as Record<string,string>,S=es as Record<string,string>;
+const E=en as Record<string,string>;
 /** Texts that read the same in both languages. Exact strings only: a caption left in English fails. */
 const SAME=new Set<string>([
  // Formats, names, symbols and units.
@@ -58,8 +63,12 @@ const DAT=readFileSync(new URL('../fixtures/observation-results-synthetic.dat',i
 const TXT=(()=>{const row=Array(240).fill(' '),put=(at:number,text:string)=>[...text].forEach((c,i)=>row[at-1+i]=c);put(1,'OWN-TEXT');put(13,'1179.125000');put(26,'05h30m12.3s');put(38,'-06°15\'30"');for(let i=0;i<3;i++)put(49+10*i,'1.25');put(79,'0.125');put(91,'Own G2V');put(104,'My original comment');
  return Buffer.from('Object ID    MJD(Days)      RA           Dec         U         B         V         Z      Spectrum     Comments\r\n'+row.join('').trimEnd()+'\r\n','latin1');})();
 const TXT_LINES=new Set(TXT.toString('latin1').split('\r\n').filter(Boolean).map(l=>l.trim()));
-const same=(text:string)=>{
+/** Front PT3: texts of the walk that are the same words in another language (its identical.json, with a reason each). Spanish
+ * adds none (ES5's SAME is unchanged). */
+const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set([])};
+const same=(text:string,L?:LanguageText)=>{
  if(TXT_LINES.has(text))return true;// the synthetic TXT's header and row, shown as read
+ if(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false))return true;
  if(SAME.has(text)||NUMERIC.test(text)||RECORDED.test(text)||STAR.test(text)||COMPOSED.test(text)||text===OWN)return true;
  let m=/^\d{1,2} · (.+)$/.exec(text);if(m&&(STAR.test(m[1])||SAME.has(m[1])))return true;// a program-list row ("10 · BD+63 137", "1 · First alias") or a TXT row choice
  m=/^(.+) · E03 own proposal$/.exec(text);if(m&&STAR.test(m[1]))return true;// a record: the star and the student's own type
@@ -72,10 +81,13 @@ const MARK='[⟦⟧·\\s]*';
 const pseudo=(text:string)=>new RegExp(`^${MARK}${[...text].map(c=>ACCENTED[c]?`[${ACCENTED[c]}]`:/\s/.test(c)?'\\s+':c.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')).join(MARK)}${MARK}$`);
 const exact=(text:string)=>new RegExp(`^\\s*${text.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&').replace(/\s+/g,'\\s+')}\\s*$`);
 const fill=(text:string,params:Readonly<Record<string,string>>)=>text.replace(/\{(\w+)\}/g,(m,k:string)=>params[k]??m);
+/** A catalog key's text in this language: its translation, or, for a language before its release, the English the page then
+ * shows (the star exposure route the walk passes through belongs to a later Portuguese front). A released language must have it. */
+const textIn=(L:LanguageText,key:string)=>{const C=L.catalog as Record<string,string>;if(Object.hasOwn(C,key))return C[key];if(L.entry.released)throw new Error(`No ${L.entry.englishName} for ${key}`);return E[key];};
 /** The accessible name of a catalog key in this language. */
-const N=(lang:Lang,key:string,params:Readonly<Record<string,string>>={})=>{if(!Object.hasOwn(E,key))throw new Error(key);if(lang==='en')return exact(fill(E[key],params));if(lang==='qps')return pseudo(fill(E[key],params));if(!Object.hasOwn(S,key))throw new Error(`No Spanish for ${key}`);return exact(fill(S[key],params));};
-/** vireo() of a Spanish load, as src/i18n/vireo.ts computes it (the literal when there is no original). */
-const vireoEs=(text:string)=>{const key=text.replace(/&(&?)/g,(_,d:string)=>d).trim();return Object.hasOwn(O,key)?O[key]:key;};
+const N=(lang:Lang,key:string,params:Readonly<Record<string,string>>={})=>{if(!Object.hasOwn(E,key))throw new Error(key);if(lang==='en')return exact(fill(E[key],params));if(lang==='qps')return pseudo(fill(E[key],params));return exact(fill(textIn(lang,key),params));};
+/** vireo() of a load in this language, as src/i18n/vireo.ts computes it (the literal when there is no original). */
+const vireoOf=(L:LanguageText)=>(text:string)=>{const key=text.replace(/&(&?)/g,(_,d:string)=>d).trim();return Object.hasOwn(L.originals,key)?L.originals[key]:key;};
 const button=(scope:Page|Locator,lang:Lang,key:string,params:Readonly<Record<string,string>>={})=>scope.getByRole('button',{name:N(lang,key,params)});
 const label=(scope:Page|Locator,lang:Lang,key:string)=>scope.getByLabel(N(lang,key));
 
@@ -166,30 +178,33 @@ const STEPS:readonly (readonly [string,(page:Page,lang:Lang)=>Promise<void>])[]=
 async function walk(page:Page,lang:Lang,each:(step:string)=>Promise<void>){
  await page.addInitScript(()=>localStorage.setItem('openvireo.tour.v1','done'));
  await page.clock.install({time:new Date('2026-11-09T12:00:00Z')});page.setDefaultTimeout(20_000);
- await page.goto(`/${langQuery(lang)}#classification`);
- await expect(page.locator('html')).toHaveAttribute('lang',lang==='es-419'?'es-419':'en');
+ await page.goto(`/${langQuery(tagOf(lang))}#classification`);
+ await expect(page.locator('html')).toHaveAttribute('lang',typeof lang==='string'?'en':lang.entry.htmlLang);
  await expect(page.locator('.portal-header nav')).toBeAttached({timeout:20_000});
  await ready(page,lang);
  for(const [step,run] of STEPS){await run(page,lang);await page.waitForTimeout(200);await each(step);}
 }
 
-test('E03 reads differently in Spanish from English: guide, Program List, comparison, displays, width, records, import and acquisition',async({browser})=>{
+for(const L of TRANSLATED){
+ const C=L.catalog as Record<string,string>;
+ test(title(L,'E03 reads differently in Spanish from English: guide, Program List, comparison, displays, width, records, import and acquisition','E03 reads differently in <L> (<tag> preview) from English: guide, Program List, comparison, displays, width, records, import and acquisition'),async({browser})=>{
  test.setTimeout(360_000);
- const seen:Record<'en'|'es-419',Map<string,Set<string>>>={en:new Map(),'es-419':new Map()};
- for(const lang of ['en','es-419'] as const){
+ const seen:Record<'en'|'own',Map<string,Set<string>>>={en:new Map(),own:new Map()};
+ for(const lang of ['en','own'] as const){
   const page=await browser.newPage({viewport:{width:1440,height:1000}});const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
-  await walk(page,lang,async step=>{seen[lang].set(step,new Set(await texts(page)));});
-  expect(errors,lang).toEqual([]);await page.close();
+  await walk(page,lang==='en'?'en':L,async step=>{seen[lang].set(step,new Set(await texts(page)));});
+  expect(errors,lang==='en'?'en':L.tag).toEqual([]);await page.close();
  }
  const english=new Set([...seen.en.values()].flatMap(s=>[...s].map(bare)));
  const left=new Map<string,string>();// each text once, with the first step that shows it
- for(const [step,list] of seen['es-419'])for(const t of list)if(english.has(bare(t))&&!same(bare(t))&&!left.has(t))left.set(t,step);
+ for(const [step,list] of seen.own)for(const t of list)if(english.has(bare(t))&&!same(bare(t),L)&&!left.has(t))left.set(t,step);
  expect([...left].map(([t,step])=>`${step}: ${t}`)).toEqual([]);
- // The rendering selector's options are Spanish; the atlas selector keeps the recorded atlas labels.
- const options=[...seen['es-419'].get('classification lab')!].filter(t=>t.startsWith('@option:'));
- for(const key of ['photo.trace','sampledTrace.option','photo.photo','combined.option','class.bracket','class.difference'])expect(options).toContain(`@option:${S[key]}`);
+ // The rendering selector's options are in the language; the atlas selector keeps the recorded atlas labels.
+ const options=[...seen.own.get('classification lab')!].filter(t=>t.startsWith('@option:'));
+ for(const key of ['photo.trace','sampledTrace.option','photo.photo','combined.option','class.bracket','class.difference'])expect(options).toContain(`@option:${C[key]}`);
  expect(options).toContain('@option:Main Sequence');
-});
+ });
+}
 
 test('qps: every text of the E03 walk is marked, outside identifiers and native mirrors',async({page})=>{
  test.setTimeout(300_000);await page.setViewportSize({width:1440,height:1000});
@@ -198,8 +213,9 @@ test('qps: every text of the E03 walk is marked, outside identifiers and native 
  expect([...left].map(([t,step])=>`${step}: ${t}`)).toEqual([]);
 });
 
-/** VIREO's captions on each step, in English (View original) or in this load's Spanish. */
-const captions=(page:Page,T:(original:string)=>string):Record<string,()=>Promise<void>>=>({
+/** VIREO's captions on each step, in English (View original) or in this load's language; `end` is the web sentence after the
+ * No More Spectra box in that load. */
+const captions=(page:Page,T:(original:string)=>string,end:string):Record<string,()=>Promise<void>>=>({
  'classification lab':async()=>{await expect(id(page,'spl-open')).toHaveText(T('Spectral Line &Table'));await expect(programButton(page,P.programList)).toHaveText(T(P.programList).replace(/\.\.\.$/,''));await expect(programButton(page,P.nextOnList)).toHaveText(T(P.nextOnList));},
  'observation results':async()=>{await expect(page.locator('#observation-dialog-title')).toHaveText(T('Observational Data'));},
  'observation edit':async()=>{await expect(page.locator('#observation-dialog-title')).toHaveText(T('Observational Data'));},
@@ -207,50 +223,52 @@ const captions=(page:Page,T:(original:string)=>string):Record<string,()=>Promise
  'imported spectrum observation':async()=>{const d=page.locator('dialog.observation-dialog');await expect(page.locator('#observation-dialog-title')).toHaveText(T('Observational Data'));
   await expect(d.locator('dt').nth(2)).toHaveText(T('Observation Time (JD)'));await expect(d.locator('dt').nth(3)).toHaveText(T('Right Ascension:'));await expect(d.locator('dt').nth(4)).toHaveText(T('Declination:'));
   await expect(d.locator('dt').nth(5)).toHaveText(T('Observed Magnitudes'));await expect(d.locator('dt').nth(6)).toHaveText(T('Redshift (Z):'));await expect(d.locator('dt').nth(7)).toHaveText(T('Velocity (V):'));},
- 'No More Spectra':async()=>{await expect(page.locator('.classification-program [role=status]')).toHaveText(`${T(P.noMoreSpectra)}. ${T(P.endOfList)} ${S['program.end']}`);},
+ 'No More Spectra':async()=>{await expect(page.locator('.classification-program [role=status]')).toHaveText(`${T(P.noMoreSpectra)}. ${T(P.endOfList)} ${end}`);},
 });
 
+for(const L of TRANSLATED){
+ const C=L.catalog as Record<string,string>,O=L.originals,vireoIn=vireoOf(L);
 // "View original (English)" (decision 9): with the stored option on, every VIREO caption of the walk is VIREO's English, checked
-// one by one, and no Spanish original appears anywhere; OpenVireo's own web text stays Spanish.
-test('View original (English) on: every VIREO caption in the E03 walk reads in English, the web text stays Spanish',async({page})=>{
+// one by one, and no translated original appears anywhere; OpenVireo's own web text stays in the language.
+ test(title(L,'View original (English) on: every VIREO caption in the E03 walk reads in English, the web text stays Spanish','View original (English) on: every VIREO caption in the E03 walk reads in English, the web text stays <L>'),async({page})=>{
  test.setTimeout(300_000);await page.setViewportSize({width:1440,height:1000});
  await page.addInitScript(()=>localStorage.setItem('openvireo-vireo-originals','1'));
  const plain=(text:string)=>bare(text).replace(/(?: ›|…|\.\.\.)$/,'').trim();
- const web=new Set([...Object.values(S),...Object.keys(O)].map(plain));
- const spanish=new Set(Object.values(O).map(plain).filter(t=>!web.has(t)&&/[A-Za-z]{3}/.test(t)));
- const checks=captions(page,t=>t.replace(/&(&?)/g,(_,d:string)=>d));
+ const web=new Set([...Object.values(C),...Object.keys(O)].map(plain));
+ const translated=new Set(Object.values(O).map(plain).filter(t=>!web.has(t)&&/[A-Za-z]{3}/.test(t)));
+ const checks=captions(page,t=>t.replace(/&(&?)/g,(_,d:string)=>d),C['program.end']);
  const left=new Map<string,string>();
- await walk(page,'es-419',async step=>{
-  for(const t of await texts(page))if(spanish.has(plain(t))&&!left.has(t))left.set(t,step);
+ await walk(page,L,async step=>{
+  for(const t of await texts(page))if(translated.has(plain(t))&&!left.has(t))left.set(t,step);
   await checks[step]?.();
-  // Web text around the VIREO captions stays Spanish.
-  if(step==='classification lab'){await expect(page.getByRole('heading',{level:1,name:N('es-419','class.title')})).toBeVisible();await expect(page.locator('#classification-program-title')).toHaveText(S['program.title']);}
-  if(step==='No More Spectra')await expect(page.locator('.classification-program [role=status]')).toContainText(S['program.end']);
-  if(step==='imported spectrum observation')await expect(page.locator('dialog.observation-dialog p').first()).toHaveText(S['obs.temporary']);
+  // Web text around the VIREO captions stays in the language.
+  if(step==='classification lab'){await expect(page.getByRole('heading',{level:1,name:N(L,'class.title')})).toBeVisible();await expect(page.locator('#classification-program-title')).toHaveText(C['program.title']);}
+  if(step==='No More Spectra')await expect(page.locator('.classification-program [role=status]')).toContainText(C['program.end']);
+  if(step==='imported spectrum observation')await expect(page.locator('dialog.observation-dialog p').first()).toHaveText(C['obs.temporary']);
  });
  expect([...left].map(([t,step])=>`${step}: ${t}`)).toEqual([]);
-});
+ });
 
-test('Spanish: every VIREO caption in the E03 walk is its Spanish original; English shows the originals unchanged',async({browser})=>{
+ test(title(L,'Spanish: every VIREO caption in the E03 walk is its Spanish original; English shows the originals unchanged','<L> (<tag> preview): every VIREO caption in the E03 walk is its <L> original; English shows the originals unchanged'),async({browser})=>{
  test.setTimeout(360_000);
- for(const lang of ['es-419','en'] as const){
+ for(const lang of ['own','en'] as const){
   const page=await browser.newPage({viewport:{width:1440,height:1000}});
-  const checks=captions(page,t=>lang==='en'?t.replace(/&(&?)/g,(_,d:string)=>d):vireoEs(t));
-  // English shows the web sentence of the end box in English.
-  if(lang==='en')checks['No More Spectra']=async()=>{await expect(page.locator('.classification-program [role=status]')).toHaveText(`${P.noMoreSpectra}. ${P.endOfList} ${E['program.end']}`);};
-  await walk(page,lang,async step=>{await checks[step]?.();});
+  const checks=captions(page,t=>lang==='en'?t.replace(/&(&?)/g,(_,d:string)=>d):vireoIn(t),lang==='en'?E['program.end']:C['program.end']);
+  await walk(page,lang==='en'?'en':L,async step=>{await checks[step]?.();});
   await page.close();
  }
- expect(vireoEs(P.programList)).not.toBe('Program List...');expect(vireoEs('Observational Data')).not.toBe('Observational Data');for(const t of ['Observation Time (JD)','Right Ascension:','Declination:','Observed Magnitudes','Redshift (Z):','Velocity (V):'])expect(vireoEs(t)).not.toBe(t);expect(vireoEs('Spectral Line &Table')).not.toBe('Spectral Line Table');expect(vireoEs(P.noMoreSpectra)).not.toBe(P.noMoreSpectra);
-});
+ expect(vireoIn(P.programList)).not.toBe('Program List...');expect(vireoIn('Observational Data')).not.toBe('Observational Data');for(const t of ['Observation Time (JD)','Right Ascension:','Declination:','Observed Magnitudes','Redshift (Z):','Velocity (V):'])expect(vireoIn(t)).not.toBe(t);expect(vireoIn('Spectral Line &Table')).not.toBe('Spectral Line Table');expect(vireoIn(P.noMoreSpectra)).not.toBe(P.noMoreSpectra);
+ });
+}
 
 /** Front SC9: the layout check of tests/fixtures/layoutProblems.ts (no local copy), with the options that keep this spec's
  * checks: its old copy was the fixture's default. Run with the CI's DejaVu fonts (docs/I18N.md). */
 const LAYOUT:LayoutOptions={};
-for(const width of [320,1440])test(`at ${width} px the Spanish E03 screens lay out without overflow, clipping or crossing`,async({page})=>{
+for(const L of TRANSLATED)for(const width of [320,1440])test(title(L,`at ${width} px the Spanish E03 screens lay out without overflow, clipping or crossing`,`at ${width} px the <L> E03 screens lay out without overflow, clipping or crossing`),async({page})=>{
  test.setTimeout(360_000);await page.setViewportSize({width,height:width===320?700:1000});
  const problems=new Map<string,string>();
- await walk(page,(process.env.ES5_LAYOUT_LANG as Lang|undefined)??'es-419',async step=>{for(const p of await layoutProblems(page,LAYOUT))if(!problems.has(p))problems.set(p,step);
-  if(/guide|lab|Program|Spectra|practice|photo|traces|range|cursor|width|review|imported|acquired/.test(step))await page.screenshot({path:test.info().outputPath(`es-e03-${width}-${step.replace(/\W+/g,'-')}.png`),fullPage:false});});
+ // ES5_LAYOUT_LANG=en|qps walks that reference instead (a debugging aid; the language's own test title is kept).
+ await walk(page,(process.env.ES5_LAYOUT_LANG as 'en'|'qps'|undefined)??L,async step=>{for(const p of await layoutProblems(page,LAYOUT))if(!problems.has(p))problems.set(p,step);
+  if(/guide|lab|Program|Spectra|practice|photo|traces|range|cursor|width|review|imported|acquired/.test(step))await page.screenshot({path:test.info().outputPath(`${L.tag}-e03-${width}-${step.replace(/\W+/g,'-')}.png`),fullPage:false});});
  expect([...problems].map(([p,step])=>`${step}: ${p}`)).toEqual([]);
 });
