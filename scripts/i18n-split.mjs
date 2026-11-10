@@ -190,14 +190,14 @@ export function planLanguage(language,root=ROOT,graph=sourceGraph(root)){
   for(const l of info.literals)if(Object.hasOwn(en,l)){if(!literalFiles.has(l))literalFiles.set(l,new Set());literalFiles.get(l).add(f);}
   for(const h of info.heads){if(!headFiles.has(h))headFiles.set(h,new Set());headFiles.get(h).add(f);}
  }
- const headList=[...headFiles.keys()].sort((a,b)=>b.length-a.length);
+ const headList=[...headFiles.keys()].sort();
  const renders={keys:{},maps:{}},keyModule={},mapModule={},via={static:0,head:0,core:0};
  for(const key of Object.keys(catalog)){
   if(!Object.hasOwn(en,key)){problems.push(`${language.catalog} has a key that en.json lacks: ${key}`);continue;}
   const files=new Set(literalFiles.get(key)??[]);
-  // Rule 2b: the longest head that matches the key; its files render the key too (the static files keep it as well).
-  const head=headList.find(h=>key.startsWith(h)&&key!==h);
-  if(head)for(const f of headFiles.get(head))files.add(f);
+  // Rule 2b: every head that matches the key; their files render the key too (the static files keep it as well). Every head,
+  // not only the longest: a shorter head in a core file (`pulsar.${…}`) may build the same key as a longer one in an area file.
+  for(const head of headList)if(key.startsWith(head)&&key!==head)for(const f of headFiles.get(head))files.add(f);
   const list=[...files].sort();renders.keys[key]=list;
   if(!list.length||list.some(runtime)){keyModule[key]=CORE;via.core++;continue;}
   via[literalFiles.has(key)?'static':'head']++;

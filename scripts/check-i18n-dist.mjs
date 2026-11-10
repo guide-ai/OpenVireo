@@ -47,10 +47,19 @@ if(!closure.size)offenders.push('index.html loads no script under /assets/');
 // Front ES1 review 1 and ES2: a minifier writes a string as "…", '…' or `…` (a template keeps real line feeds and writes CR as \r),
 // so each marker is looked for in all three forms.
 const quoted=(v)=>{const json=JSON.stringify(v).slice(1,-1);return [json,json.replace(/\\"/g,'"').replace(/'/g,"\\'"),v.replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\$\{/g,'\\${').replace(/\r/g,'\\r')];};
-const SPANISH_LETTERS=/[áéíóúñ¿¡ÁÉÍÓÚÑ]/;
+// A map literal or an original is a marker when it has a letter outside ASCII (review: any script of languages.json, not only
+// Spanish letters; a language written in ASCII alone finds its map-only modules by no marker and fails loudly, never silently)
+// and no English source names it: the single-quoted literals of src/ outside the language directories, and en.json's values.
+// Import and export-from lines are left out (their paths are not text).
+const LETTER_OUTSIDE_ASCII=/(?![\x00-\x7f])\p{L}/u;
+const LITERAL=/'((?:[^'\\\n]|\\.)*)'/g;
+const literalsOf=(source)=>[...source.replace(/^(?:import|export) [^\n]* from '[^']*';?$/gm,'').matchAll(LITERAL)].map(x=>x[1].replace(/\\'/g,"'"));
 // KB gzip at level 9, multiplied by the language's budgetFactor (docs/I18N.md).
 const BUDGET={core:{warn:120_000,fail:150_000},module:{warn:60_000,fail:90_000},sum:{warn:300_000,fail:360_000}};
 const en=JSON.parse(readFileSync(join(ROOT,'src','i18n','en.json'),'utf8')),graph=sourceGraph(ROOT),reports=[];
+const languageDirs=loadLanguages(ROOT).map(l=>`src/i18n/${l.dir}/`);
+const englishTexts=new Set(Object.values(en));
+for(const f of graph.keys())if(!languageDirs.some(d=>f.startsWith(d)))for(const v of literalsOf(readFileSync(join(ROOT,f),'utf8')))englishTexts.add(v);
 const escape=(s)=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 for(const language of loadLanguages(ROOT)){
  const plan=planLanguage(language,ROOT,graph),tag=language.tag,factor=language.budgetFactor??1;
@@ -59,16 +68,16 @@ for(const language of loadLanguages(ROOT)){
  const originals=Object.values(JSON.parse(readFileSync(join(ROOT,'src','i18n',language.dir,'originals.json'),'utf8')));
  const texts=new Map(plan.modules.map(m=>{
   const maps=[],sources=m.maps.map(id=>readFileSync(join(ROOT,plan.manifest[id].file),'utf8'));
-  for(const source of sources)for(const x of source.matchAll(/'((?:[^'\\\n]|\\.)*)'/g))maps.push(x[1].replace(/\\'/g,"'"));
+  for(const source of sources)maps.push(...literalsOf(source));
   return [m.name,{catalog:m.keys.map(k=>plan.catalog[k]),maps,originals:m.originals?originals:[],sources}];
  }));
- // Markers: catalog values that differ from English (16+ characters), map literals (12+) and originals (8+) with Spanish
- // letters. A marker of two modules is not used.
+ // Markers: catalog values that differ from English (16+ characters), map literals (12+) and originals (8+) with a letter
+ // outside ASCII that no English source names. A marker of two modules is not used.
  const candidates=new Map(),add=(v,name)=>{if(!candidates.has(v))candidates.set(v,new Set());candidates.get(v).add(name);};
  for(const m of plan.modules){const t=texts.get(m.name);
   m.keys.forEach((k,i)=>{if(t.catalog[i]!==en[k]&&t.catalog[i].length>=16)add(t.catalog[i],m.name);});
-  for(const v of t.maps)if(v.length>=12&&SPANISH_LETTERS.test(v))add(v,m.name);
-  for(const v of t.originals)if(v.length>=8&&SPANISH_LETTERS.test(v))add(v,m.name);}
+  for(const v of t.maps)if(v.length>=12&&LETTER_OUTSIDE_ASCII.test(v)&&!englishTexts.has(v))add(v,m.name);
+  for(const v of t.originals)if(v.length>=8&&LETTER_OUTSIDE_ASCII.test(v)&&!englishTexts.has(v))add(v,m.name);}
  const markers=new Map(plan.modules.map(m=>[m.name,[]]));
  for(const [v,owners] of candidates)if(owners.size===1)markers.get([...owners][0]).push({text:v,forms:quoted(v)});
  // Which files carry which module's markers (the help chunks may share phrases with the catalog, as ES-HELP recorded).
