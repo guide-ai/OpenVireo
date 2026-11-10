@@ -7,7 +7,7 @@ import {HELP_FILES} from '../help/helpFiles';
 import {LANGUAGES} from './languages';
 import es from './es/es.json';
 // @ts-expect-error Build script (plain JS), as in split.test.ts.
-import {checkI18nDist} from '../../scripts/check-i18n-dist.mjs';
+import {checkI18nDist,stringsOf} from '../../scripts/check-i18n-dist.mjs';
 // @ts-expect-error Build script (plain JS).
 import {languageDir,planLanguage,sourceGraph} from '../../scripts/i18n-split.mjs';
 // Front SC8 (docs/I18N.md, "Script groundwork: the language registry, detection and selector (SC8)"): scripts/check-i18n-dist.mjs
@@ -88,6 +88,16 @@ describe('Front SC8: scripts/check-i18n-dist.mjs with a partial language before 
   // The same marker in an English chunk still fails.
   const stray=check(dist([first,second],a=>writeFileSync(path.join(a,'index-AAAAAAAA.js'),`${readFileSync(path.join(a,'index-AAAAAAAA.js'),'utf8')}"Konservi la esploron ĉi tie";`)),[first,second]);
   expect(stray.offenders.some(o=>/index-AAAAAAAA\.js: 1 qab-XB core text\(s\) outside the core chunk/.test(o)),stray.offenders.join('\n')).toBe(true);
+  // PT3 review: the marker as a string of its own beside the longer text it is part of still fails in the other language's chunk
+  // (only an occurrence inside that longer text is allowed), and so does one in a file merely named like that chunk.
+  const beside=check(dist([first,second],a=>writeFileSync(path.join(a,'i18n-qad-XD-core-qadXDcor.js'),`${readFileSync(path.join(a,'i18n-qad-XD-core-qadXDcor.js'),'utf8')}const s="Konservi la esploron ĉi tie";`)),[first,second]);
+  expect(beside.offenders.some(o=>/i18n-qad-XD-core-qadXDcor\.js: 1 qab-XB core text\(s\) outside the core chunk/.test(o)),beside.offenders.join('\n')).toBe(true);
+  const named=check(dist([first,second],a=>writeFileSync(path.join(a,'i18n-qad-XD-core-ZZZZZZZZ.js'),'export const s="Konservi la esploron ĉi tie";')),[first,second]);
+  expect(named.offenders.some(o=>/i18n-qad-XD-core-ZZZZZZZZ\.js: 1 qab-XB core text\(s\) outside the core chunk/.test(o)),named.offenders.join('\n')).toBe(true);
+ });
+ it('reads every string a map source writes, for the texts a marker may sit inside (PT3 review)',()=>{
+  expect(stringsOf(`// it's a comment\nconst a='un \\'b\\'',b="dos \\"c\\" ç",c=\`tres \${x?'y':\`z\${w}\`} cuatro\\\`\`;/* d'e */`))
+   .toEqual(["un 'b'",'dos "c" ç','tres ','y','z','',' cuatro`']);
  });
  it('finds a module that has no marker text yet by its chunk name, with a warning, for a language before its release',()=>{
   const short=language('qac-XC',{'project.save':'Konservi la esploron ĉi tie','fits.title':'Bildo ĉi'});
