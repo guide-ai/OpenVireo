@@ -28,8 +28,6 @@ test.use({actionTimeout:15_000});
  * machine and CI (Noto Sans Devanagari, DejaVu; docs/I18N.md SC1), so it is tolerated where listed but not required. */
 type Known=Readonly<{variants:readonly PseudoScriptLanguage[];widths:readonly Width[];step:string;problem:RegExp;file:string;why:string;fontDependent?:true}>;
 const KNOWN:readonly Known[]=[
- {variants:VARIANTS,widths:[320,1440],step:'help viewer (OpenVireo)',problem:/^no pseudo marker ⟦/,file:'src/help/webHelp.ts (OpenVireo help texts)',
-  why:'Not yet in the catalog: receipted as pending-translation in src/i18n/vireo-literals.json and translated by its own help front (ES-HELP edits src/help/** now). The layout checks still run on it.'},
  {variants:['qps-cjk'],widths:[320,1440],step:'photometer',problem:/^plot text “⟦[^”]*⟧” outside its plot card pleiades-analysis \(-\d, \d+, \d+, \d+\)$/,file:'src/PleiadesAnalysis.tsx:24 (rotated y-axis title at translate(18 290))',
   why:'Rotated, the title\'s glyph box is as wide as the font\'s ascent; Noto Sans CJK\'s ascent (1.16 em) passes the 18 px offset, so the box crosses the SVG\'s left edge by 1–2 px. Needs a larger offset in the component (SC11).'},
  {variants:['qps-cjk'],widths:[320,1440],step:'photometer',problem:/^plot text “⟦[^”]*⟧” outside its plot card pleiades-analysis native-cluster \(-\d, \d+, \d+, \d+\)$/,file:'src/NativeClusterAnalysis.tsx (rotated y-axis title, same offset as PleiadesAnalysis)',
@@ -55,6 +53,31 @@ async function load(page:Page,variant:PseudoScriptLanguage,hash:string){
 async function headerTools(page:Page){
  const toggle=page.locator('.portal-header .tools-toggle');
  if(await toggle.isVisible()&&await toggle.getAttribute('aria-expanded')!=='true')await toggle.click();
+}
+/** With the dome open: adds two hot-list entries and shows the hot list. Add Current needs a pointing: point to coordinates
+ * first, as tests/front-p-polish.spec.ts does. */
+async function showHotList(page:Page,L:(english:string)=>string){
+ if(!await page.locator('#point-ra').isVisible())await page.getByText(L(en['sky.coordinates']),{exact:true}).click();
+ await page.locator('#point-ra').fill('1');await page.locator('#point-dec').fill('20');
+ await page.getByRole('button',{name:L(en['sky.pointCoordinates']),exact:true}).click();
+ for(const name of ['A','B']){
+  await page.locator('.telescope-motion').getByTestId('ob-add-current').click({timeout:15_000});await id(page,'ob-entry-id').fill(name);await id(page,'ob-entry-ok').click();
+  await id(page,'ob-info-box').getByRole('button').first().click();await expect(id(page,'ob-info-box')).toHaveCount(0);
+ }
+ await page.locator('.telescope-motion').getByTestId('ob-view-select').click();
+ await expect(id(page,'ob-hotlist-rows')).toBeVisible();
+}
+/** Opens the hot list's popup menu (src/polish/PopupMenu.tsx) with a context-menu event 2 px inside a corner of its rows (for the
+ * bottom-right, the corner nearest the viewport's, where the first placement is clamped), and returns the event's position and
+ * the rendered box. A dispatched event: a right-click there waits on the window's open animation, and the menu reads only the
+ * event's position. */
+async function openHotListPopup(page:Page,corner:'top-left'|'bottom-right'){
+ const event=await id(page,'ob-hotlist-rows').evaluate((el,corner)=>{const r=el.getBoundingClientRect();
+  const [x,y]=corner==='top-left'?[r.left+2,r.top+2]:[Math.min(r.right,innerWidth)-2,Math.min(r.bottom,innerHeight)-2];
+  el.dispatchEvent(new MouseEvent('contextmenu',{bubbles:true,cancelable:true,button:2,clientX:x,clientY:y}));return {x,y};},corner);
+ const menu=id(page,'popup-menu');await expect(menu).toBeVisible();
+ const box=await menu.evaluate(m=>{const r=m.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:innerWidth,height:innerHeight,items:m.querySelectorAll('[role=menuitem]').length};});
+ return {menu,event,box};
 }
 const LAYOUT={skip:'[lang=en]:not(html)',crossingExempt:'.popup-menu',dialogs:'dialog[open],[role=dialog][aria-modal=true],[role=alertdialog][aria-modal=true]',topDialog:true,controls:'button,label,legend,h1,h2,h3,h4,select,input,summary,th,dt',explainOverflow:true} as const;
 
@@ -87,22 +110,7 @@ for(const variant of VARIANTS)for(const width of [320,1440] as const)
   await page.keyboard.press('Escape');await expect(id(page,'ob-options-dialog')).toBeHidden();
   // A form's popup menu (src/polish/PopupMenu.tsx), opened at the bottom-right corner of the hot list's rows, where its
   // position is clamped: it must stay inside the viewport with its longer labels.
-  // Add Current needs a pointing: point to coordinates first, as tests/front-p-polish.spec.ts does.
-  if(!await page.locator('#point-ra').isVisible())await page.getByText(L(en['sky.coordinates']),{exact:true}).click();
-  await page.locator('#point-ra').fill('1');await page.locator('#point-dec').fill('20');
-  await page.getByRole('button',{name:L(en['sky.pointCoordinates']),exact:true}).click();
-  for(const name of ['A','B']){
-   await page.locator('.telescope-motion').getByTestId('ob-add-current').click({timeout:15_000});await id(page,'ob-entry-id').fill(name);await id(page,'ob-entry-ok').click();
-   await id(page,'ob-info-box').getByRole('button').first().click();await expect(id(page,'ob-info-box')).toHaveCount(0);
-  }
-  await page.locator('.telescope-motion').getByTestId('ob-view-select').click();
-  const rows=id(page,'ob-hotlist-rows');await expect(rows).toBeVisible();
-  // The context-menu event at the corner of the rows that is nearest the viewport's bottom-right (a right-click there waits on
-  // the window's open animation; the menu reads only the event's position).
-  await rows.evaluate(el=>{const r=el.getBoundingClientRect(),x=Math.min(r.right,innerWidth)-2,y=Math.min(r.bottom,innerHeight)-2;
-   el.dispatchEvent(new MouseEvent('contextmenu',{bubbles:true,cancelable:true,button:2,clientX:x,clientY:y}));});
-  const menu=id(page,'popup-menu');await expect(menu).toBeVisible();
-  const at=await menu.evaluate(m=>{const r=m.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:innerWidth,height:innerHeight};});
+  await showHotList(page,L);const {menu,box:at}=await openHotListPopup(page,'bottom-right');
   if(at.left<0||at.top<0||at.right>at.width+.5||at.bottom>at.height+.5)problems.set(`popup menu leaves the viewport (${Math.round(at.left)}–${Math.round(at.right)} × ${Math.round(at.top)}–${Math.round(at.bottom)} in ${at.width} × ${at.height})`,'popup menu');
   await check('popup menu');
   await page.keyboard.press('Escape');await expect(menu).toHaveCount(0);
@@ -251,14 +259,51 @@ test('verticalInkProblems reports cut ink and cut lines, and stays quiet on room
 });
 
 // ---- English and Spanish do not change ----------------------------------------------------------------------------------------
+for(const width of [320,1440] as const)
+test(`en at ${width} px: a popup menu that fits keeps its first placement; one that leaves the viewport is moved just inside; one taller than it scrolls`,async({page})=>{
+ await page.setViewportSize({width,height:width===320?700:1000});
+ await page.goto('/#observatory');await expect(page.locator('.investigation-toolbar')).toBeVisible({timeout:30_000});await settle(page);
+ await page.getByRole('button',{name:en['sky.open'],exact:true}).click();await showHotList(page,s=>s);
+ // The placement before SC3: a 224 px menu and 40 px per item (the hot list's menu also has a note, which that ignored).
+ // Within 1 px: the layout snaps fractional event positions.
+ const near=(got:number,want:number)=>expect(Math.abs(got-want),`${got} vs ${want}`).toBeLessThanOrEqual(1);
+ const first=(x:number,y:number,b:{width:number;height:number;items:number})=>({left:Math.max(4,Math.min(x,b.width-224)),top:Math.max(4,Math.min(y,b.height-40*b.items-8))});
+ // At the rows' top-left the menu fits: the old placement.
+ const fits=await openHotListPopup(page,'top-left'),f=first(fits.event.x,fits.event.y,fits.box);
+ expect(fits.box.right).toBeLessThanOrEqual(fits.box.width);expect(fits.box.bottom).toBeLessThanOrEqual(fits.box.height);
+ near(fits.box.left,f.left);near(fits.box.top,f.top);
+ await page.keyboard.press('Escape');await expect(fits.menu).toHaveCount(0);
+ // At the bottom-right corner: where the old placement left the viewport, the menu now ends 4 px inside it; elsewhere it is
+ // the old placement.
+ const corner=await openHotListPopup(page,'bottom-right'),c=first(corner.event.x,corner.event.y,corner.box),b=corner.box;
+ const h=b.bottom-b.top,w=b.right-b.left;
+ near(b.top,c.top+h>b.height?b.height-4-h:c.top);
+ near(b.left,c.left+w>b.width?b.width-4-w:c.left);
+ expect(b.left).toBeGreaterThanOrEqual(4);expect(b.top).toBeGreaterThanOrEqual(4);
+ await page.keyboard.press('Escape');await expect(corner.menu).toHaveCount(0);
+ // In a viewport lower than the menu: capped to the viewport, scrolling, and the keyboard brings the last item into view.
+ await page.setViewportSize({width,height:200});
+ const low=await openHotListPopup(page,'top-left');
+ near(low.box.top,4);near(low.box.bottom,low.box.height-4);
+ expect(await low.menu.evaluate(m=>m.scrollHeight>m.clientHeight)).toBe(true);
+ await page.keyboard.press('ArrowUp');await expect(id(page,'popup-slew')).not.toBeFocused();
+ const last=await low.menu.evaluate(m=>{const f=document.activeElement!.getBoundingClientRect(),r=m.getBoundingClientRect();return f.top>=r.top-1&&f.bottom<=r.bottom+1;});
+ expect(last,'the focused item is scrolled into the menu').toBe(true);
+});
+
 for(const lang of ['en','es-419'] as const)for(const width of [320,1440] as const)
 test(`${lang} at ${width} px computes the same styles with and without scripts.css, on the home page and every route`,async({page})=>{
  test.setTimeout(300_000);
  // Every element's computed values of the properties scripts.css sets, then the same after removing the sheet from the page.
- const snapshot=()=>page.evaluate(()=>{
-  const props=['font-family','font-size','line-height','letter-spacing','text-transform','font-synthesis-weight','line-break','text-autospace','overflow-wrap','hyphens','height','min-height','grid-template-columns','white-space','text-align','min-width','--ov-font-sans','--ov-font-mono','--ov-font-script'];
-  return [document.documentElement,document.body,...document.body.querySelectorAll('*')].map(e=>{const s=getComputedStyle(e);return `${e.tagName.toLowerCase()}.${typeof e.className==='string'?e.className:''} `+props.map(p=>`${p}:${s.getPropertyValue(p)}`).join(';');});
+ // The properties are read from the sheet itself before it is removed, so a new declaration is covered without a list here.
+ const declaredProps=()=>page.evaluate(()=>{
+  const sheet=[...document.querySelectorAll<HTMLStyleElement>('style[data-vite-dev-id]')].find(s=>s.dataset.viteDevId!.endsWith('/src/theme/scripts.css'))?.sheet;
+  if(!sheet)throw new Error('scripts.css is not on the page');
+  const declared=(rules:CSSRuleList):string[]=>[...rules].flatMap(r=>r instanceof CSSStyleRule?[...r.style]:r instanceof CSSGroupingRule?declared(r.cssRules):[]);
+  return [...new Set(declared(sheet.cssRules))].sort();
  });
+ const snapshot=(props:readonly string[])=>page.evaluate(props=>
+  [document.documentElement,document.body,...document.body.querySelectorAll('*')].map(e=>{const s=getComputedStyle(e);return `${e.tagName.toLowerCase()}.${typeof e.className==='string'?e.className:''} `+props.map(p=>`${p}:${s.getPropertyValue(p)}`).join(';');}),props);
  const withoutSheet=()=>page.evaluate(()=>{
   const sheet=[...document.querySelectorAll<HTMLStyleElement>('style[data-vite-dev-id]')].filter(s=>s.dataset.viteDevId!.endsWith('/src/theme/scripts.css'));
   if(sheet.length!==1)throw new Error(`scripts.css found ${sheet.length} times`);sheet[0].remove();
@@ -271,9 +316,10 @@ test(`${lang} at ${width} px computes the same styles with and without scripts.c
   await settle(page);
   if(width<600)await headerTools(page);
   // The route may still be filling in (lazy parts, loaded files): take the snapshot once two in a row agree.
-  let before=await snapshot();
-  for(let i=0;i<20;i++){await settle(page);const again=await snapshot();if(again.join('\n')===before.join('\n'))break;before=again;}
-  await withoutSheet();const after=await snapshot();
+  const props=await declaredProps();expect(props.length,props.join()).toBeGreaterThanOrEqual(15);
+  let before=await snapshot(props);
+  for(let i=0;i<20;i++){await settle(page);const again=await snapshot(props);if(again.join('\n')===before.join('\n'))break;before=again;}
+  await withoutSheet();const after=await snapshot(props);
   expect(after.length,`${lang} ${width} ${route}`).toBe(before.length);
   // Each difference as "element property:before → property:after".
   const changed=before.flatMap((v,i)=>{if(v===after[i])return [];const a=v.split(';'),b=after[i].split(';');return [a.flatMap((x,j)=>x===b[j]?[]:[`${x} → ${b[j]}`]).join(', ')];});

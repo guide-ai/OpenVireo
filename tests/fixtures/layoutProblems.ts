@@ -114,7 +114,9 @@ export const verticalInkProblems=(page:Page,options:InkOptions={})=>page.evaluat
   const el=n.parentElement;if(!el||el.closest('svg,select,option,textarea,script,style,noscript,template')||(o.skip&&el.closest(o.skip))||hiddenUp(el))continue;
   const clip=clipOf(el);if(!clip||clip.bottom.at-clip.top.at<2)continue;// nothing clips it, or a deliberately collapsed box
   const s=getComputedStyle(el);if(s.position==='absolute'&&s.clip!=='auto')continue;// visually hidden
-  ctx.font=`${s.fontStyle} ${s.fontWeight} ${s.fontSize} ${s.fontFamily}`;
+  // A font string the canvas rejects would leave the previous one in place and measure the wrong ink: say so instead.
+  ctx.font='1px __unset__';ctx.font=`${s.fontStyle} ${s.fontWeight} ${s.fontSize} ${s.fontFamily}`;
+  if(ctx.font.includes('__unset__')){const key=`font|${s.fontFamily}`;if(!seen.has(key)){seen.add(key);out.push(`${label(el)}: font not measurable by the canvas (${s.fontWeight} ${s.fontSize} ${s.fontFamily})`);}continue;}
   if('lang' in ctx)(ctx as unknown as {lang:string}).lang=(el.closest('[lang]')?.getAttribute('lang'))??'';
   const whole=ctx.measureText(text),fa=whole.fontBoundingBoxAscent,fd=whole.fontBoundingBoxDescent;
   const range=document.createRange();range.selectNodeContents(n);

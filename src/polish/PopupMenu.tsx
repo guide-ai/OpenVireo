@@ -18,6 +18,7 @@ export function usePopupMenu(){
  const auxClick=(e:ReactMouseEvent)=>{if(e.button===2)e.preventDefault();};
  return {at,open,close:()=>setAt(null),auxClick};
 }
+const FIRST_PLACEMENT=Object.freeze({dx:0,dy:0});
 export default function PopupMenu({at,items,label,onClose,returnFocus,note}:{at:PopupAt|null;items:readonly PopupMenuItem[];label:string;onClose:()=>void;returnFocus?:()=>void;note?:ReactNode}){
  const ref=useRef<HTMLDivElement>(null);
  const close=()=>{onClose();returnFocus?.();};
@@ -28,19 +29,25 @@ export default function PopupMenu({at,items,label,onClose,returnFocus,note}:{at:
   document.addEventListener('pointerdown',outside,true);return ()=>document.removeEventListener('pointerdown',outside,true);
  },[at]);// eslint-disable-line react-hooks/exhaustive-deps
  // Front SC3: the first placement assumes a 224 px menu and 40 px per item; longer labels (Russian) wrap and taller lines
- // (Japanese, Hindi) grow it, so the rendered box is measured before paint and moved back inside the viewport when it sticks out.
- // A menu that already fits keeps the first placement, so English does not move.
- const [shift,setShift]=useState<Readonly<{dx:number;dy:number}>>({dx:0,dy:0});
+ // (Japanese, Hindi) grow it, so the rendered box is measured before paint and moved back inside the viewport (4 px from the
+ // edge) only when it leaves it. A menu that fits keeps the first placement, even one that touches an edge, so English does
+ // not move (tests/scripts/routes.scripts.ts checks it at 320 and 1440 px). A menu taller than the viewport is capped to it and
+ // scrolls (focus scrolls the item into view). Closing resets the placement, so the next menu is measured at its own first one.
+ const [place,setPlace]=useState<Readonly<{dx:number;dy:number;maxHeight?:number}>>(FIRST_PLACEMENT);
  useLayoutEffect(()=>{
-  const r=ref.current?.getBoundingClientRect();if(!r)return;
-  // The box at the first placement (this render may still carry the previous menu's shift).
-  const left=r.left-shift.dx,right=r.right-shift.dx,top=r.top-shift.dy,bottom=r.bottom-shift.dy;
-  const dx=Math.max(Math.min(0,window.innerWidth-4-right),4-left),dy=Math.max(Math.min(0,window.innerHeight-4-bottom),4-top);
-  if(dx!==shift.dx||dy!==shift.dy)setShift({dx,dy});
+  const el=ref.current;
+  if(!el){if(place!==FIRST_PLACEMENT)setPlace(FIRST_PLACEMENT);return;}
+  // The box at the first placement (a menu moved while open may still carry the previous position's shift and cap), with its
+  // full height: the border box minus the visible part plus the whole scrolled content.
+  const r=el.getBoundingClientRect(),room=window.innerHeight-8,full=r.height-el.clientHeight+el.scrollHeight;
+  const maxHeight=full>room+.5?room:undefined,top=r.top-place.dy;
+  const fit=(lo:number,hi:number,size:number)=>lo<0||hi>size?Math.max(Math.min(0,size-4-hi),4-lo):0;
+  const dx=fit(r.left-place.dx,r.right-place.dx,window.innerWidth),dy=fit(top,top+Math.min(full,room),window.innerHeight);
+  if(dx!==place.dx||dy!==place.dy||maxHeight!==place.maxHeight)setPlace({dx,dy,maxHeight});
  },[at,items.length]);// eslint-disable-line react-hooks/exhaustive-deps
  if(!at)return null;
- const left=Math.max(4,Math.min(at.x,window.innerWidth-224))+shift.dx,top=Math.max(4,Math.min(at.y,window.innerHeight-40*items.length-8))+shift.dy;
- return <div ref={ref} role="menu" aria-label={label} className="popup-menu" data-testid="popup-menu" style={{left,top}}
+ const left=Math.max(4,Math.min(at.x,window.innerWidth-224))+place.dx,top=Math.max(4,Math.min(at.y,window.innerHeight-40*items.length-8))+place.dy;
+ return <div ref={ref} role="menu" aria-label={label} className="popup-menu" data-testid="popup-menu" style={place.maxHeight===undefined?{left,top}:{left,top,maxHeight:place.maxHeight,overflowY:'auto'}}
   onKeyDown={e=>{
    const buttons=[...(ref.current?.querySelectorAll<HTMLButtonElement>('button:not(:disabled)')??[])],i=buttons.indexOf(document.activeElement as HTMLButtonElement);
    if(e.key==='Escape'||e.key==='Tab'){e.preventDefault();e.stopPropagation();close();}
