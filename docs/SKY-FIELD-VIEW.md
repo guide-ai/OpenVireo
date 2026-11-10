@@ -17,7 +17,16 @@ The observatory's sky view draws VIREO's own field for the current view at any p
 ## Web adaptations [W]
 - The 312² crop is drawn on a canvas scaled to the 700-unit view; the crop origin is the current pointing's position in the loaded
   raster, rounded (the native origin's x87 rounding is not reproduced).
-- The catalogue target circles and labels stay as an overlay.
+- The catalogue target circles and labels stay as an overlay (VIREO's render 0x53a40c draws no catalogue labels; its only text
+  is the slewing message). Front SKY-LABELS (2026-11-10): a label sits right of its ring; one that would leave the 700-unit
+  view on the right is drawn left of the ring, ending 13 units before its centre, when the left has more room, so the
+  sky-clip no longer hides it, as it hid the Coma-1 labels. A label too wide for either side is kept inside the view, over
+  its ring, and a label whose ring is near the top or bottom edge moves vertically just enough for its font box to stay
+  inside. Rings within 3 units of each other (a catalogue row and its supported-galaxy target) are placed as one group, on
+  one side, by the widest label, so their labels keep a common start; masked (undrawn) rings join no group. The widths and
+  font boxes are the rendered labels' own (getComputedTextLength and getBBox, measured before paint and again when the
+  labels or the CSS font size change), so a label that fits is never moved (`skyLabelXs`, `skyLabelBaseline`,
+  src/core/overlayLabels.ts).
 - Where the field cannot be drawn exactly (the typed reasons of docs/OBJECT-INFO-FORMS.md, for example a photograph that is not
   published, `variable-time-required` or `field-polar`), the magnitude ≤ 12 preview is shown and the caption names the reason.
 - **Object X:** no field is drawn within 2° of an Object X position or the lab's hidden target, widened by max(0.62°, the field's

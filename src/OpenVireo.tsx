@@ -1,5 +1,6 @@
 import {DEFAULT_SPECTRAL_RANGE,galaxyRestoreRange,policyRange,sharedRange,type SpectralRange} from './core/spectralRange';
 import {vireo} from './i18n/vireo';
+import {skyLabelBaseline,skyLabelXs} from './core/overlayLabels';
 import {VireoOptionsContext,type VireoOptions} from './vireoOptionsContext';// Front R4c
 import HotListEditor from './HotListEditor';
 import {useSharedHotList} from './useSharedHotList';
@@ -88,7 +89,7 @@ import {isPleiadesExerciseList,pleiadesRowIdentity,pleiadesRowMeasure,pleiadesSt
 import type * as PhotometerDomain from './core/photometerTelescope';
 import {EMPTY_HUBBLE} from './core/hubbleAnalysis';
 import {GALAXY_TARGETS} from './core/galaxyIdentity';
-import { lazy, memo, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ComponentProps } from 'react';
+import { lazy, memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type ComponentProps } from 'react';
 import {useStableHandlers,type StableProps} from './renderStability';
 import type {WedgeWorkspace} from './core/wedgeWorkspace';
 import SpectrumInstrument,{type AnalysisController,type RadioPrepare,type SessionDelivery} from './SpectrumInstrument';
@@ -183,6 +184,10 @@ const coord = (n: number) => formatNumber(n,{minimumFractionDigits:5,maximumFrac
 // Front Perf: memo; its props are state and the stable setSelected.
 /** Front G5: Finder Mag Limit, options record +0x2504, compiled 11.5 (the Parameters tab is read-only on this site). */
 const SKY_FINDER_MAG_LIMIT=11.5;
+const NARROW_SKY_LABELS='(max-width:520px)';
+const narrowSkyLabels=()=>typeof matchMedia==='function'&&matchMedia(NARROW_SKY_LABELS).matches;
+type LabelBox=Readonly<{width:number;ascent:number;descent:number}>;
+function subscribeNarrowSkyLabels(change:()=>void){if(typeof matchMedia!=='function')return()=>{};const q=matchMedia(NARROW_SKY_LABELS);q.addEventListener('change',change);return()=>q.removeEventListener('change',change);}
 const SkyField=memo(function SkyField({center,mode,active,selected,onSelect,hidden=null,catalogMask,telescope,currentJd}:{center:Pointing;mode:FieldMode;active:boolean;selected:SkyObject;onSelect:(o:SkyObject)=>void;hidden?:Pointing|null;catalogMask:(p:Pointing)=>boolean;telescope:0|1|2;currentJd:()=>number}) {
   const [stars,setStars]=useState<readonly CatalogStar[]>([]),[loading,setLoading]=useState(false),[error,setError]=useState('');
   const tiles=requiredSkyTiles(center,FIELDS[mode]).join(',');
@@ -229,6 +234,24 @@ const SkyField=memo(function SkyField({center,mode,active,selected,onSelect,hidd
   const field2=FIELDS[mode];
   const points=useMemo(()=>drawn?[]:stars.filter(star=>Math.abs(star.dec-center.dec)<=field2/2).map((star,index)=>({...project(star,center,field2),magnitude:star.magnitude,index})).filter(p=>p.visible),[stars,center,field2,drawn]);
   const objects=useMemo(()=>targets.catalog.map(object=>({object,masked:catalogMask(object),...project(object,center,field2)})).filter(p=>p.visible),[center,field2,catalogMask]);
+  // Front SKY-LABELS [W]: a label that would leave the view on the right is drawn left of its ring, and one near the top or
+  // bottom moves just enough to stay inside (core/overlayLabels.ts). The boxes are the rendered labels' own (getComputedTextLength
+  // and getBBox, in view units, position-independent), measured before paint and again when the labels or the CSS font size
+  // (.sky-object text: 11, 14 below 520 px) change; the effect does not depend on the placement it feeds, so it cannot loop.
+  // Without SVG layout (jsdom) or for a label not rendered, nothing is measured and the label stays at x+13, y+4.
+  const narrowLabels=useSyncExternalStore(subscribeNarrowSkyLabels,narrowSkyLabels),labelGroup=useRef<SVGGElement>(null);
+  const [labelBoxes,setLabelBoxes]=useState<Readonly<Record<string,LabelBox>>>({});
+  useLayoutEffect(()=>{
+    const g=labelGroup.current;if(!g)return;const next:Record<string,LabelBox>={};
+    for(const el of g.querySelectorAll<SVGTextElement>('text[data-label-id]')){
+      if(typeof el.getComputedTextLength!=='function'||typeof el.getBBox!=='function')continue;
+      const width=el.getComputedTextLength(),box=el.getBBox(),base=Number(el.getAttribute('y'));
+      if(width>0&&box.height>0&&Number.isFinite(base))next[el.dataset.labelId!]={width,ascent:base-box.y,descent:box.y+box.height-base};
+    }
+    setLabelBoxes(prev=>{const ids=Object.keys(next),same=(a:LabelBox,b:LabelBox|undefined)=>!!b&&a.width===b.width&&a.ascent===b.ascent&&a.descent===b.descent;
+      return ids.length===Object.keys(prev).length&&ids.every(id=>same(next[id],prev[id]))?prev:next;});
+  },[objects,narrowLabels,active]);
+  const labelXs=useMemo(()=>skyLabelXs(objects.map(o=>({x:o.x,y:o.y,width:o.masked?0:labelBoxes[o.object.id]?.width??0})),700),[objects,labelBoxes]);
   const fieldNote=!active?null:drawn&&ready?t('sky.fieldReady',{view:t(mode==='finder'?'sky.finder':'sky.telescope'),loaded:mode==='finder'?'7.5°':'0.75°',stars:formatNumber(ready.population.stars.length),galaxies:formatNumber(ready.population.galaxies.length)})
     :field===null||(field.status==='ready'&&!drawn)?t('sky.fieldLoading')
     :field.status==='error'?t('sky.fieldPreview',{reason:fieldInfoReasonText('load-error')})
@@ -237,7 +260,7 @@ const SkyField=memo(function SkyField({center,mode,active,selected,onSelect,hidd
     <svg className="sky-map" viewBox="0 0 700 700" role="img" aria-label={t('sky.chartLabel')} data-testid="sky-map" data-field={drawn?'native':'preview'} data-anchor={drawn&&ready?`${ready.anchor.ra},${ready.anchor.dec}`:undefined}><defs><clipPath id="sky-clip"><rect width="700" height="700"/></clipPath></defs><rect width="700" height="700" fill="#061a29"/>
     {active&&ready&&<foreignObject x="0" y="0" width="700" height="700" style={{display:drawn?undefined:'none'}}><canvas ref={canvas} width={cacheSpec.viewport} height={cacheSpec.viewport} data-testid="sky-field-canvas" style={{width:'100%',height:'100%',display:'block'}}/></foreignObject>}
     <g className="sky-grid">{[175,350,525].map(n=><g key={n}><line x1={n} x2={n} y1="0" y2="700"/><line x1="0" x2="700" y1={n} y2={n}/></g>)}</g>
-    {active&&<g clipPath="url(#sky-clip)">{points.map(p=><circle key={p.index} cx={p.x} cy={p.y} r={Math.max(.7,Math.min(2.8,(13-p.magnitude)*.22))} fill="#d8eafa" opacity=".8"/>)}{/* QA1 review 1 H1: a masked catalogue object is not drawn at all; a ring would mark a galaxy target on the crosshair and a star target nearby. The mask covers every ObjectX.HTL area alike, so every target's area looks the same. */}{objects.map(({object,masked,x,y})=>masked?null:<g key={object.id} className="sky-object" onClick={()=>onSelect(object)}><circle cx={x} cy={y} r="9" fill="transparent" stroke={object.id===selected.id?'#e4bb75':'#81c8b8'} strokeWidth="1.5"/><text x={x+13} y={y+4}>{object.label}</text></g>)}</g>}
+    {active&&<g clipPath="url(#sky-clip)" ref={labelGroup}>{points.map(p=><circle key={p.index} cx={p.x} cy={p.y} r={Math.max(.7,Math.min(2.8,(13-p.magnitude)*.22))} fill="#d8eafa" opacity=".8"/>)}{/* QA1 review 1 H1: a masked catalogue object is not drawn at all; a ring would mark a galaxy target on the crosshair and a star target nearby. The mask covers every ObjectX.HTL area alike, so every target's area looks the same. */}{objects.map(({object,masked,x,y},i)=>masked?null:<g key={object.id} className="sky-object" onClick={()=>onSelect(object)}><circle cx={x} cy={y} r="9" fill="transparent" stroke={object.id===selected.id?'#e4bb75':'#81c8b8'} strokeWidth="1.5"/><text x={labelXs[i]} y={skyLabelBaseline(y,700,labelBoxes[object.id]?.ascent??0,labelBoxes[object.id]?.descent??0)} data-label-id={object.id}>{object.label}</text></g>)}</g>}
     <g className="sky-crosshair"><path d="M333 350h12m10 0h12M350 333v12m0 10v12"/><circle cx="350" cy="350" r="3"/></g><text className="sky-cardinal" x="350" y="25" textAnchor="middle">N</text><text className="sky-cardinal" x="18" y="350">E</text></svg>
     <div className="sky-caption" aria-live="polite">{error?<span role="alert">{error}</span>:loading&&!drawn?t('sky.loading'):drawn?null:t('sky.count',{count:formatNumber(points.length)})}{fieldNote&&<span data-testid="sky-field-note">{fieldNote}</span>}{drawn&&ready?.m31Notice&&<M31NoticeView/>}{!drawn&&<span>{t('sky.coverage')}</span>}</div></div>;
 });
