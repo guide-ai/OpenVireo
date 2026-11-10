@@ -41,7 +41,7 @@ const SAME=new Set<string>([
  // The observatory's eyebrow head (as on the observatory, ES2) and the note this walk types into the notebook.
  'VIREO ·','first night',
 ]);
-/** The observatory's target picker options (catalogue galaxies and the Hubble.HTL targets, as in es-observatory.spec.ts). */
+/** The observatory's target picker options (catalogue galaxies and the Hubble.HTL targets, as in observatory.spec.ts). */
 const PICKER=/^(?:M\d+ · )?NGC \d+[A-Z]?$|^(?:\d{5}|NGC \d+) · (?:UM-I|Boo|CorBor|Peg|Coma) - \d$/;
 /** A PLEIADES.HTL star label or a compact GSC name (01799-01442, N2230-01627) or a catalogue record id (N2230.DAT@144496). */
 const STAR=/^(?:\d{5}-\d{5}|N\d{4}-\d{5}|[NS]\d{4}\.DAT@\d+)$/;

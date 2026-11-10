@@ -18,7 +18,7 @@ export const CLUSTER_DATA_PT:Translation<typeof CLUSTER_DATA_MESSAGES_EN>=Object
  tileFetch:'Não foi possível carregar os blocos do catálogo deste campo. Verifique a conexão e tente novamente.',
  reportNoteTiles:'A lista é a consulta do VIREO ao catálogo de estrelas-guia (Guide Star Catalog) completo, lido dos blocos do catálogo deste site, no centro e no diâmetro da caixa de diálogo, filtrada pelo limite de magnitude. As posições e as magnitudes são as do catálogo; apenas os 16 aglomerados publicados têm comentários.',
  spectral:'Esta lista não pode ser exibida: um código espectral deste campo não tem texto recuperado.',
- editModeColumns:'Modo de edição (Edit Mode): o VIREO também lista, de cada aglomerado, a cor do ponto de desvio da sequência principal, a distância, o módulo de distância e a idade; esses valores do catálogo não são publicados neste site, então apenas E(B−V) é exibido.',
+ editModeColumns:'Modo de edição (Edit Mode): o VIREO também lista, de cada aglomerado, a cor do ponto de saída da sequência principal, a distância, o módulo de distância e a idade; esses valores do catálogo não são publicados neste site, então apenas E(B−V) é exibido.',
  saveListUnavailable:'Salvar lista (Save List) não está disponível aqui: o VIREO grava os registros completos de aglomerados, de 102 bytes, que incluem valores do catálogo que este site não publica.',
  noSelection:'Primeiro selecione a linha de um aglomerado (clique com o botão esquerdo).',
  reportNote:'A lista é a consulta do VIREO ao campo publicado do aglomerado no centro e no diâmetro da caixa de diálogo (conferida antecipadamente para dar exatamente as estrelas publicadas), filtrada pelo limite de magnitude.',

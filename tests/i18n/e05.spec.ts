@@ -85,7 +85,7 @@ const label=(scope:Page|Locator,lang:Lang,key:string)=>scope.getByLabel(N(lang,k
 
 /** Visible text nodes, option texts, accessible names, titles and placeholders outside the header and outside native
  * `lang="en"` views. */
-/** On #observatory only the Cluster Data windows and their boxes are this front's (the rest of the page is ES2's, es-observatory.spec.ts). */
+/** On #observatory only the Cluster Data windows and their boxes are this front's (the rest of the page is ES2's, observatory.spec.ts). */
 const CD_ROOTS='[data-testid=cd-dialog],[data-testid=cd-study-list],[data-testid=cluster-data],[data-testid=fi-box]';
 const texts=(page:Page,step='')=>page.evaluate(roots=>{
  const out:string[]=[];
