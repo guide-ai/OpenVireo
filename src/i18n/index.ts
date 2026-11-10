@@ -21,8 +21,11 @@ export const t:Translate=((key:MessageKey,values?:Readonly<Record<string,string|
 })as Translate;
 /** A field engine reason code in words (the field spectrometer's `fieldSpec.reason.*` text), or the code itself when it has none. */
 export function fieldReasonText(code:string):string{const key=`fieldSpec.reason.${code}`;return Object.hasOwn(en,key)?(t as Render)(key as MessageKey):code;}
-// Numbers are formatted with `locale` in every UI language (decision 4), so these stay bound to the English instance.
-export const formatNumber=english.formatNumber;
+// Numbers are formatted with `locale` in every UI language (decision 4): the decimal point and these fixed and scientific forms
+// stay bound to the English instance. Front PT-REL (user decision of 2026-11-10): formatNumber reads this load's language, since a
+// language may separate thousands its own way on screen (the registry's `thousands`: «24 000» in Portuguese); English, Spanish
+// and the pseudo-locales keep en-US's comma.
+export const formatNumber:typeof english.formatNumber=(value,options)=>current().i18n.formatNumber(value,options);
 export const fixed=english.fixed;
 export const scientific=english.scientific;
 // Decimal input syntax, source bytes, precision readouts and scientific exports

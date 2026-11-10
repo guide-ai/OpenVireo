@@ -26,6 +26,10 @@ export type LanguageEntry=Readonly<{
  /** The release gate (user decision 5 of 2026-11-09): until true, only a `?lang=<tag>` preview link reaches the language; it is
   * never detected, stored or offered, and its catalog and maps may be partial (completed with English). */
  released:boolean;
+ /** Front PT-REL (user decision of 2026-11-10, AGENTS.md): the separator between thousands on screen in this language, replacing
+  * en-US's comma in formatNumber's output («24 000» in Portuguese, U+202F). Absent: the comma, as English and Spanish keep. The
+  * decimal point never changes (decision 4), and files the site writes never pass through it. */
+ thousands?:string;
  /** The language translates VIREO's help files (all of them: src/i18n/<dir>/help/); `related` is its "RELATED TOPICS" marker. */
  help?:Readonly<{related:string}>;
  /** The language's own sentence for "<language> could not be loaded…" and "Part of the <language> text…" (src/OpenVireo.tsx). */
@@ -50,6 +54,8 @@ export function matchLanguage(tag:string,registry:readonly LanguageEntry[]=LANGU
  for(const l of registry){const m=longest(l.match,tag);if(m>length&&longest(l.except,tag)<m){best=l;length=m;}}
  return best;
 }
+/** The separator between thousands on screen for `tag` (`thousands`), or undefined for en-US's comma. */
+export const thousandsSeparator=(tag:string,registry:readonly LanguageEntry[]=LANGUAGES):string|undefined=>languageEntry(tag,registry)?.thousands;
 /** The dev-only pseudo-locales (qps, qps-cjk, qps-deva, qps-cyrl): never in the registry, never offered. */
 export const isPseudoLocale=(tag:string):boolean=>tag==='qps'||tag.startsWith('qps-');
 /** What the selector lists for a load in `current`: English, every released language, and `current` when it is a preview (a

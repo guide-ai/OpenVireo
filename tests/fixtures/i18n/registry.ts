@@ -8,11 +8,11 @@ const entry=(tag:string,autonym:string,englishName:string,match:readonly string[
  tag,dir:tag.toLowerCase(),catalog:`${tag.toLowerCase()}.json`,budgetFactor:1,htmlLang:tag,pagePath:tag.toLowerCase(),autonym,englishName,match,...(except?{except}:{}),released:false,
  notices:Object.freeze({language:`(${tag}) language notice`,area:`(${tag}) area notice`})});
 const SPANISH=LANGUAGES.find(l=>l.tag==='es-419')!;
-/** Front PT0: Brazilian Portuguese's own line of the production registry (before its release). */
+/** Front PT0: Brazilian Portuguese's own line of the production registry (released since PT-REL). */
 const PORTUGUESE=LANGUAGES.find(l=>l.tag==='pt-BR')!;
 const TRADITIONAL=['zh-Hant','zh-TW','zh-HK','zh-MO'];
 export const ZH_HANT=entry('zh-Hant','繁體中文','Chinese, Traditional',TRADITIONAL);
-/** Spanish as released, then pt-BR, French, Indonesian, Hindi, Japanese, Simplified Chinese and Russian, before their release. */
+/** Spanish and pt-BR as released, then French, Indonesian, Hindi, Japanese, Simplified Chinese and Russian, before their release. */
 export const PLANNED:readonly LanguageEntry[]=Object.freeze([
  SPANISH,
  PORTUGUESE,

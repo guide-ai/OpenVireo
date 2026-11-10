@@ -1,12 +1,13 @@
 import {type Page} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
-import {SPANISH_LOCALE} from '../fixtures/language';
+import {contextLocale} from '../fixtures/language';
 import {layoutProblems} from '../fixtures/layoutProblems';
-import es from '../../src/i18n/es/es.json' with {type:'json'};
-// Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
-test.use({locale:SPANISH_LOCALE});
+import {TRANSLATED,type LanguageText} from './languageText';
+// Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts). Front PT-REL: this file was es-narrow.spec.ts;
+// it now runs the same sweep for every released language, each in its own browser (es-MX, pt-BR), with the Spanish title unchanged.
 
-// Front ES-REL (docs/I18N.md; plan §3.5 and the ES-REL item): the full 320 px sweep in Spanish. The exercise specs (es-e01…e08,
+// Front ES-REL (docs/I18N.md; plan §3.5 and the ES-REL item): the full 320 px sweep in Spanish (and, since PT-REL, in Brazilian
+// Portuguese in a pt-BR browser). The exercise specs (es-e01…e08,
 // es-radio, es-observatory, es-help) walk each exercise's guide and VIREO dialogs at 320 and 1440 px; this sweep adds every route
 // as a student first lands on it, the header menu with the language selector and its confirmation, OpenVireo's help and the
 // About box, in an es-MX browser at 320 × 700 under the DejaVu fontconfig. Each step must be Spanish (<html lang="es-419">) and
@@ -21,10 +22,10 @@ async function settle(page:Page){
  await page.waitForLoadState('networkidle');
  await page.evaluate(async()=>{await document.fonts.ready;await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));});
 }
-async function load(page:Page,hash:string){
+async function load(page:Page,hash:string,L:LanguageText){
  // A full load each time (a change of #hash alone keeps the page and its state).
  await page.goto('about:blank');await page.goto(`/${hash?'#'+hash:''}`);
- await expect(page.locator('.investigation-toolbar')).toContainText(es['project.save'],{timeout:30_000});
+ await expect(page.locator('.investigation-toolbar')).toContainText(L.catalog['project.save'],{timeout:30_000});
  await expect(page.locator('h1:visible').first()).toBeVisible({timeout:30_000});
  await settle(page);
 }
@@ -33,31 +34,35 @@ async function openMenu(page:Page){
  if(await toggle.isVisible()&&await toggle.getAttribute('aria-expanded')!=='true')await toggle.click();
 }
 
-test('at 320 px every Spanish route, the menu with the language selector, OpenVireo\'s help and About lay out without overflow or clipping',async({page})=>{
+const title=(L:LanguageText)=>`at 320 px every ${L.tag==='es-419'?'Spanish':L.entry.englishName} route, the menu with the language selector, OpenVireo's help and About lay out without overflow or clipping`;
+for(const L of TRANSLATED.filter(l=>l.entry.released))test.describe(()=>{
+test.use({locale:contextLocale(L.tag)});
+test(title(L),async({page})=>{
  test.setTimeout(360_000);
  await page.addInitScript(()=>{try{localStorage.setItem('openvireo.tour.v1','done');}catch{/* about:blank */}});
  await page.setViewportSize({width:320,height:700});
  const problems=new Map<string,string>();
  const check=async(step:string)=>{
   await settle(page);
-  await expect(page.locator('html'),step).toHaveAttribute('lang','es-419');
+  await expect(page.locator('html'),step).toHaveAttribute('lang',L.entry.htmlLang);
   for(const p of await layoutProblems(page,LAYOUT))if(!problems.has(p))problems.set(p,step);
  };
- await load(page,'');await check('home');
- for(const r of ROUTES){await load(page,r);await check(r);}
+ await load(page,'',L);await check('home');
+ for(const r of ROUTES){await load(page,r,L);await check(r);}
  // The header menu (folded behind its button at phone width), with "View original (English)" at its foot; the selector is in the
  // page bar (Front HEADER), with its confirmation.
- await load(page,'observatory');await openMenu(page);
+ await load(page,'observatory',L);await openMenu(page);
  await id(page,'language-originals').scrollIntoViewIfNeeded();await expect(id(page,'language-originals')).toBeVisible();await check('header menu');
- await load(page,'observatory');await expect(id(page,'language-select')).toHaveValue('es-419');await check('page bar');
+ await load(page,'observatory',L);await expect(id(page,'language-select')).toHaveValue(L.tag);await check('page bar');
  await id(page,'language-select').selectOption('en');await expect(id(page,'language-confirm')).toBeVisible();await check('language confirmation');
  await id(page,'language-cancel').click();await expect(id(page,'language-confirm')).toHaveCount(0);
  // OpenVireo's own help and the About box.
- await load(page,'observatory');
+ await load(page,'observatory',L);
  await id(page,'main-help-menu').click();await id(page,'main-help-web').click();
  await expect(id(page,'web-help')).toBeVisible();await check('help viewer (OpenVireo)');
  await page.keyboard.press('Escape');await expect(id(page,'web-help')).toHaveCount(0);
  await id(page,'main-help-menu').click();await id(page,'main-help-site-about').click();
  await expect(id(page,'about-dialog')).toBeVisible();await check('About box');
  expect([...problems].map(([p,step])=>`${step}: ${p}`)).toEqual([]);
+});
 });

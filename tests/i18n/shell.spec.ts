@@ -1,23 +1,23 @@
 import {type Page} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
-import {SPANISH_LOCALE} from '../fixtures/language';
+import {SPANISH_LOCALE,contextLocale} from '../fixtures/language';
 import en from '../../src/i18n/en.json' with {type:'json'};
 import {TRANSLATED,type LanguageText} from './languageText';
-// Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts). Front PT0: the same browser opens a language
-// before its release (pt-BR) with its `?lang=` preview, which beats the browser language, and English with `?lang=en`.
+// Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts), and English with `?lang=en`. Front PT-REL:
+// Brazilian Portuguese the same way, in a pt-BR browser (the language loop's anonymous describe sets its browser locale).
 test.use({locale:SPANISH_LOCALE});
 
 // Front ES1 (docs/I18N.md): the shell in Spanish in an `es-*` browser (a `?lang=es-419` preview load before ES-REL, decision 5).
 // Front PT0: the spec runs for every translated language (tests/i18n/languageText.ts: the language's own catalog, maps and
-// originals, never hard-coded text); the Spanish tests keep their titles, and the Brazilian Portuguese preview runs the same checks
-// under its own. The untranslated check compares the same shell regions in English and in the language: no visible text, accessible
+// originals, never hard-coded text); the Spanish tests keep their titles, and Brazilian Portuguese runs the same checks under its
+// own. The untranslated check compares the same shell regions in English and in the language: no visible text, accessible
 // name or title may read the same, except the names below that are the same in every language. The selector's options are each
-// language's own name (its autonym, never translated) and a preview lists one more, so option text is left out of the comparison.
+// language's own name (its autonym, never translated), so option text is left out of the comparison.
 const SAME=new Set(['OpenVireo','✳','?','↗','×','English','Español','Idioma / Language','NVO','—']);
 const SHELL=['.portal-header','.investigation-toolbar','.observatory-heading','.first-steps'];
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
 const asVisitor=(page:Page)=>page.addInitScript(()=>{Object.defineProperty(Navigator.prototype,'webdriver',{configurable:true,get:()=>false});});
-/** A test title: Spanish keeps its ES1 title; another language names itself and its preview. */
+/** A test title: Spanish keeps its ES1 title; another language names itself and its tag. */
 const title=(L:LanguageText,es:string,other:string)=>L.tag==='es-419'?es:other.replaceAll('<L>',L.entry.englishName).replaceAll('<tag>',L.tag);
 async function open(page:Page,lang:LanguageText|'en',hash='observatory'){
  await page.goto(`/${lang==='en'?'?lang=en':lang.query}#${hash}`);
@@ -55,10 +55,10 @@ const headerProblems=(page:Page)=>page.evaluate(()=>{
  return out;
 });
 
-for(const L of TRANSLATED){
+for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const C=L.catalog,M=L.maps,O=L.originals,chunk=new RegExp(`openvireo-i18n/i18n-${L.tag}-core`);
 
- test(title(L,'a Spanish browser fetches the Spanish chunk, sets <html lang="es-419"> and the Spanish title; ?lang=en never fetches it','a ?lang=<tag> preview fetches the <L> chunk, sets <html lang="<tag>"> and the <L> title; ?lang=en never fetches it'),async({page})=>{
+ test(title(L,'a Spanish browser fetches the Spanish chunk, sets <html lang="es-419"> and the Spanish title; ?lang=en never fetches it','a <L> browser fetches the <L> chunk, sets <html lang="<tag>"> and the <L> title; ?lang=en never fetches it'),async({page})=>{
   // Front ES-SPLIT: the chunk is the core module virtual:openvireo-i18n/<tag> (served as /@id/__x00__openvireo-i18n/i18n-<tag>-core);
   // the whole bundle src/i18n/<dir>/index.ts and the catalog are never fetched, and the home page fetches no area module.
   const sources=new RegExp(`/src/i18n/${L.entry.dir}/`),whole=new RegExp(`/src/i18n/${L.entry.dir}/(?:index\\.ts|${L.entry.catalog.replace('.','\\.')})`);
@@ -73,10 +73,10 @@ for(const L of TRANSLATED){
   expect(requested.filter(u=>whole.test(u))).toEqual([]);expect(errors).toEqual([]);
  });
 
- test(title(L,'the shell is entirely Spanish: header, menu, home, toolbar and the first steps read differently from English','the shell is entirely <L> in the <tag> preview: header, menu, home, toolbar and the first steps read differently from English'),async({browser})=>{
+ test(title(L,'the shell is entirely Spanish: header, menu, home, toolbar and the first steps read differently from English','the shell is entirely <L>: header, menu, home, toolbar and the first steps read differently from English'),async({browser})=>{
   const texts:Record<'en'|'own',string[]>={en:[],own:[]};
   for(const lang of ['en','own'] as const){
-   const page=await browser.newPage({locale:SPANISH_LOCALE});await open(page,lang==='en'?'en':L);
+   const page=await browser.newPage({locale:contextLocale(L.tag)});await open(page,lang==='en'?'en':L);
    // ES-REL review 2: the selector arrives in its own chunk after first render; wait for it so both languages list the same texts.
    await expect(page.getByTestId('language-choice')).toBeVisible();texts[lang]=await shellTexts(page);await page.close();
   }
@@ -88,7 +88,7 @@ for(const L of TRANSLATED){
 
  // Front HEADER: the page bar names the current page with the sidebar's own labels, and its More button and region are named in
  // the language.
- test(title(L,'the page bar is Spanish: the place reads the Spanish section and page, More and the region are named in Spanish','the page bar is <L> in the <tag> preview: the place reads the <L> section and page, More and the region are named in <L>'),async({page})=>{
+ test(title(L,'the page bar is Spanish: the place reads the Spanish section and page, More and the region are named in Spanish','the page bar is <L>: the place reads the <L> section and page, More and the region are named in <L>'),async({page})=>{
   for(const [hash,group,key] of [['observatory','optical','sky.observatory'],['pulsar-analysis','radio','plr.nav'],['images','files','fits.nav']] as const){
    await page.goto(`/${L.query}#${hash}`);
    await expect(page.locator('.portal-header nav button[aria-current="page"]')).toHaveText(C[key],{timeout:15_000});
@@ -105,7 +105,7 @@ for(const L of TRANSLATED){
   }
  });
 
- test(title(L,'Help menu, the tour, instructor mode and the project links are Spanish','Help menu, the tour, instructor mode and the project links are <L> in the <tag> preview'),async({page})=>{
+ test(title(L,'Help menu, the tour, instructor mode and the project links are Spanish','Help menu, the tour, instructor mode and the project links are <L>'),async({page})=>{
   await asVisitor(page);await page.addInitScript(()=>localStorage.setItem('openvireo.tour.v1','done'));
   await open(page,L);
   const help=id(page,'main-help-menu');await expect(help).toHaveAccessibleName(M.helpMenu.menuName.main);await expect(help).toContainText(O.Help);
@@ -129,7 +129,7 @@ for(const L of TRANSLATED){
   await id(page,'instructor-mode-confirm-on').click();await expect(id(page,'instructor-mode-banner')).toContainText(C['instructorMode.banner.text']);
  });
 
- test(title(L,'the recovery notice of a part that cannot load is Spanish','the recovery notice of a part that cannot load is <L> in the <tag> preview'),async({page})=>{
+ test(title(L,'the recovery notice of a part that cannot load is Spanish','the recovery notice of a part that cannot load is <L>'),async({page})=>{
   await open(page,L);
   await page.route(/\/src\/ClassificationLab\.tsx/,route=>route.abort('failed'));
   await page.evaluate(()=>{location.hash='#classification';});
@@ -139,12 +139,12 @@ for(const L of TRANSLATED){
   await expect(id(page,'recovery-reload')).toHaveText(M.appShell.recovery.reload);await expect(id(page,'recovery-save')).toHaveText(M.appShell.recovery.save);
  });
 
- test(title(L,'at 1440 px the header sidebar lays out in English and in Spanish: no overlap, nothing cut off, the theme options inside their pill','at 1440 px the header sidebar lays out in English and in the <L> preview: no overlap, nothing cut off, the theme options inside their pill'),async({page})=>{
+ test(title(L,'at 1440 px the header sidebar lays out in English and in Spanish: no overlap, nothing cut off, the theme options inside their pill','at 1440 px the header sidebar lays out in English and in <L>: no overlap, nothing cut off, the theme options inside their pill'),async({page})=>{
   for(const lang of ['en',L] as const){await open(page,lang);expect(await headerProblems(page),lang==='en'?lang:lang.tag).toEqual([]);}
   await page.locator('.portal-header').screenshot({path:test.info().outputPath(`${L.tag}-shell-1440-sidebar.png`)});
  });
 
- test(title(L,'at 1440 px keyboard focus moving up the scrolled sidebar is never hidden under the pinned top row (WCAG 2.4.11), in English and in Spanish','at 1440 px keyboard focus moving up the scrolled sidebar is never hidden under the pinned top row (WCAG 2.4.11), in English and in the <L> preview'),async({page})=>{
+ test(title(L,'at 1440 px keyboard focus moving up the scrolled sidebar is never hidden under the pinned top row (WCAG 2.4.11), in English and in Spanish','at 1440 px keyboard focus moving up the scrolled sidebar is never hidden under the pinned top row (WCAG 2.4.11), in English and in <L>'),async({page})=>{
   for(const lang of ['en',L] as const){
    await open(page,lang);
    await page.locator('.portal-header nav button:visible').last().focus();
@@ -160,7 +160,7 @@ for(const L of TRANSLATED){
   }
  });
 
- test(title(L,'at 320 px the Spanish shell lays out without horizontal overflow, with the menu open','at 320 px the <L> shell (<tag> preview) lays out without horizontal overflow, with the menu open'),async({page})=>{
+ test(title(L,'at 320 px the Spanish shell lays out without horizontal overflow, with the menu open','at 320 px the <L> shell (<tag>) lays out without horizontal overflow, with the menu open'),async({page})=>{
   await page.setViewportSize({width:320,height:700});await open(page,L);
   const fits=()=>page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth);
   expect(await fits()).toBe(true);expect(await headerProblems(page)).toEqual([]);
@@ -200,7 +200,7 @@ for(const L of TRANSLATED){
   release!();await page.waitForTimeout(500);
   await expect(page.locator('html')).toHaveAttribute('lang','en');await expect(page.locator('.investigation-toolbar')).toContainText(en['project.save']);
  });
- test(title(L,'a Spanish load that works shows no failure notice','a <L> preview load that works shows no failure notice'),async({page})=>{
+ test(title(L,'a Spanish load that works shows no failure notice','a <L> load that works shows no failure notice'),async({page})=>{
   await open(page,L);await expect(id(page,'language-failure')).toHaveCount(0);
  });
-}
+});

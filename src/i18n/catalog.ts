@@ -20,6 +20,8 @@ type CatalogOptions=Readonly<{
  fallback?:boolean;
  /** Number formatting locale; it defaults to `language` for explicit instances, and is `locale` for the UI languages. */
  numberLocale?:string;
+ /** Front PT-REL: replaces the number locale's group separator in formatNumber (the registry's `thousands`, U+202F for pt-BR). */
+ thousands?:string;
 }>;
 /** Explicit instances allow later language providers without global mutation.
  * Only presentation consumes them; inputs, original labels, journals and files
@@ -28,7 +30,7 @@ type CatalogOptions=Readonly<{
 export function createI18n(messages:Readonly<Record<MessageKey,string>>,language:string,options?:CatalogOptions&Readonly<{fallback?:false}>):I18n;
 export function createI18n(messages:Readonly<Partial<Record<MessageKey,string>>>,language:string,options:CatalogOptions&Readonly<{fallback:boolean}>):I18n;
 export function createI18n(messages:Readonly<Partial<Record<MessageKey,string>>>,language:string,options:CatalogOptions={}):I18n{return build(messages,language,options);}
-function build(messages:Readonly<Partial<Record<MessageKey,string>>>,language:string,{fallback=false,numberLocale=language}:CatalogOptions){
+function build(messages:Readonly<Partial<Record<MessageKey,string>>>,language:string,{fallback=false,numberLocale=language,thousands}:CatalogOptions){
  const keys=Object.keys(en) as MessageKey[];
  if(!messages||typeof messages!=='object'||Object.keys(messages).some(k=>!Object.hasOwn(en,k))||(!fallback&&(Object.keys(messages).length!==keys.length||keys.some(k=>!Object.hasOwn(messages,k)))))throw new Error('Invalid message catalog keys');
  for(const key of keys)if(Object.hasOwn(messages,key)&&(typeof messages[key]!=='string'||parameters(messages[key]!).join('|')!==parameters(en[key]).join('|')))throw new Error(`Invalid message parameters: ${key}`);
@@ -41,7 +43,10 @@ function build(messages:Readonly<Partial<Record<MessageKey,string>>>,language:st
  const decimal=new Intl.NumberFormat(numberLocale,{minimumFractionDigits:1}).formatToParts(1.1).find(p=>p.type==='decimal')!.value;
  const fixed=(value:number,digits:number)=>value.toFixed(digits).replace('.',decimal);
  const scientific=(value:number,digits:number,trim=false)=>{const text=value.toPrecision(digits);return (trim?Number(text).toString():text).replace('.',decimal);};
- return Object.freeze({locale:language,t:translate,fixed,scientific,formatNumber:(value:number,options:Intl.NumberFormatOptions={})=>new Intl.NumberFormat(numberLocale,options).format(value)});
+ const formatNumber=thousands===undefined
+  ?(value:number,options:Intl.NumberFormatOptions={})=>new Intl.NumberFormat(numberLocale,options).format(value)
+  :(value:number,options:Intl.NumberFormatOptions={})=>new Intl.NumberFormat(numberLocale,options).formatToParts(value).map(p=>p.type==='group'?thousands:p.value).join('');
+ return Object.freeze({locale:language,t:translate,fixed,scientific,formatNumber});
 }
 export type I18n=ReturnType<typeof build>;
 /** What a non-English load registers before the app is imported (docs/I18N.md). The Spanish bundle arrives with ES1 in

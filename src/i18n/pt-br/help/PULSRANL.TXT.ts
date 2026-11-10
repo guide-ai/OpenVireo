@@ -34,7 +34,7 @@ pulsares atuais, selecione "Arquivo" (File)->"Propriedades..."
 na caixa de diálogo incluem:
 
     Identificação do objeto
-    Hora de início dos dados (número do dia juliano menos 2 400 000)
+    Hora de início dos dados (número do dia juliano menos 2 400 000)
     Abertura do telescópio (metros)
     Frequência (MHz) e ganho relativo de cada receptor registrado
     Número de pontos de dados (de cada receptor registrado)

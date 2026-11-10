@@ -49,9 +49,13 @@ const HTML_LANG:Readonly<Record<Locale,string>>={en:'en',qps:'en','es-419':'es-4
  * its release its own form or the English the page then shows (languageText.ts `text`), else `L`. */
 const N=(locale:Locale,text:string)=>{if(locale==='pt-BR'){const t=TRANSLATED.find(x=>x.tag===locale)!;if(text==='Skip the tour')return exact(t.maps.tour.skip);if(text==='Save spectrum (.SSP)')return exact((e01e02Maps(locale).observatory as typeof OBSERVATORY_ES).spectrumSave.save);
  // Front PT1: a button whose English ends in “ ↗” is its catalog text plus the arrow the component adds, as for Spanish.
- const arrow=/ ↗$/.test(text)&&t.text(text)===text?' ↗':'';return exact(t.text(arrow?text.slice(0,-2):text)+arrow);}if(locale!=='es-419')return L(text);const arrow=/ ↗$/.test(text)&&!SPANISH.has(text)?' ↗':'',spanish=SPANISH.get(arrow?text.slice(0,-2):text);if(!spanish)throw new Error(`No Spanish for “${text}”`);return exact(spanish+arrow);};
+ // Front PT-REL: a released language's `text` throws for an English text it lacks (it no longer falls back), so look first.
+ const has=(english:string)=>{try{t.text(english);return true;}catch{return false;}};
+ const arrow=/ ↗$/.test(text)&&!has(text)?' ↗':'';return exact(t.text(arrow?text.slice(0,-2):text)+arrow);}if(locale!=='es-419')return L(text);const arrow=/ ↗$/.test(text)&&!SPANISH.has(text)?' ↗':'',spanish=SPANISH.get(arrow?text.slice(0,-2):text);if(!spanish)throw new Error(`No Spanish for “${text}”`);return exact(spanish+arrow);};
 /** Front PT2: a Portuguese accessible name that starts with this English text's translation (a button whose name adds a glyph). */
 const ptStart=(english:string)=>new RegExp(`^\\s*${ptText('pt-BR').text(english).replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')}`);
+/** The variable-star catalog's 31,147 records as the screen writes them: Front PT-REL, Portuguese groups thousands with U+202F. */
+const catalogCount=(locale:Locale)=>locale==='pt-BR'?'31\u202f147':'31,147';
 const button=(p:Page,name:string,locale:Locale='en')=>p.getByRole('button',{name:N(locale,name)});
 const sha=(b:Buffer)=>createHash('sha256').update(b).digest('hex');
 /** A fixed instant for every Date read (timers keep running), so exports that record "now" are comparable. */
@@ -303,7 +307,7 @@ test('field information: Star Data List Save Text and Comma Delimit, QSO List Sa
 test('variable stars: Save Text › As Displayed',async({browser,baseURL})=>{
  await identical(browser,baseURL,async(page,locale)=>{
   await open(page,locale,'variable-stars');
-  await expect(page.getByTestId('variable-count')).toContainText('31,147',{timeout:20_000});
+  await expect(page.getByTestId('variable-count')).toContainText(catalogCount(locale),{timeout:20_000});
   await page.getByTestId('variable-name').fill('RR Lyr');await button(page,'Open RR Lyr').click();
   await expect(page.getByTestId('vstar-list-window')).toBeVisible();
   await page.getByTestId('vstar-data-menu').click();await page.getByTestId('vstar-save-menu').click();
@@ -815,7 +819,7 @@ test('E05 cluster HR: investigation, cluster listing TXT and CSV, observation DA
   const entire=async()=>{const f=await download(page,async()=>{await paceDownload(page);await id(page,'cluster-data-selection-menu').click();await id(page,'cluster-data-entire').click();await id(page,'cd-hot-unsaved-yes').click();});await dismiss(page);return f;};
   const hotListAdded=await entire(),hotListEntire=await entire();
   await open(page,locale,'variable-stars');
-  await expect(id(page,'variable-count')).toContainText('31,147',{timeout:20_000});
+  await expect(id(page,'variable-count')).toContainText(catalogCount(locale),{timeout:20_000});
   await id(page,'variable-name').fill('RR Lyr');await page.locator('[data-testid=variable-results] tbody button').first().click();
   await expect(id(page,'vstar-list-window')).toBeVisible();
   await id(page,'vstar-data-menu').click();await id(page,'vstar-save-menu').click();

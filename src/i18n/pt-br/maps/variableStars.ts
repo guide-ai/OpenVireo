@@ -3,10 +3,13 @@ import type {Translation} from '../../maps';
 /** Front PT4: Brazilian Portuguese (pt-BR) for the variable-star page's web text. A web adaptation by OpenVireo, not CLEA's. VIREO's own
  * captions (Variable Star Data, Simulated Light Curve, their menus and the print lines) are in src/core/variableStarForm.ts
  * and src/core/lightCurvePrint.ts and are translated through vireo() (originals.json). */
+/** Front PT-REL (user decision of 2026-11-10): a count grouped as Portuguese groups thousands on screen, with the registry's U+202F
+ * (src/i18n/languages.json `thousands`, the separator formatNumber uses) where the English map has en-US's comma. */
+const grouped=(n:number)=>n.toLocaleString('en-US').replace(/,/g,'\u202f');
 export const VARIABLE_STARS_PT:Translation<typeof VARIABLE_STARS_EN>=Object.freeze({
  nav:'Estrelas variáveis',
  title:'Estrelas variáveis e curvas de luz',
- scope:'Procure uma estrela no catálogo de estrelas variáveis do VIREO (CLEA_VStrs.dat, 31,147 registros), leia os dados de catálogo dela e exiba a curva de luz que o VIREO simula para ela.',
+ scope:'Procure uma estrela no catálogo de estrelas variáveis do VIREO (CLEA_VStrs.dat, 31 147 registros), leia os dados de catálogo dela e exiba a curva de luz que o VIREO simula para ela.',
  adaptation:'Adaptação web: no VIREO, estes dados são um caminho do instrutor (Modo de edição [Edit Mode]): GCVS na caixa Objeto do catálogo (Catalog Object) ou Informações do campo (Field Information) › Estrelas variáveis (Variable Stars) › Obter os dados da seleção (Get Selection Data) no painel de controle do telescópio. Os dois existem neste site com o Modo de edição ativado (Opções de simulação óptica [Optical Simulation Options]); esta página também permite que qualquer pessoa pesquise o catálogo diretamente. As janelas Dados da estrela variável (Variable Star Data) e Curva de luz simulada (Simulated Light Curve) seguem o original.',
  guideTitle:'Como usar esta ferramenta',
  guide:Object.freeze([
@@ -22,8 +25,8 @@ export const VARIABLE_STARS_PT:Translation<typeof VARIABLE_STARS_EN>=Object.free
  nameLabel:'O nome da estrela contém',
  typeLabel:'Tipo de variabilidade',
  allTypes:'Todos os tipos',
- typeOption:(type:string,count:number)=>`${type||'(em branco)'} — ${count.toLocaleString('en-US')}`,
- results:(shown:number,total:number)=>total===0?'Nenhum registro corresponde.':shown<total?`Mostrando os primeiros ${shown} de ${total.toLocaleString('en-US')} registros correspondentes, na ordem do catálogo (ascensão reta). Restrinja a busca para ver os demais.`:`${total.toLocaleString('en-US')} registro${total===1?' correspondente':'s correspondentes'}.`,
+ typeOption:(type:string,count:number)=>`${type||'(em branco)'} — ${grouped(count)}`,
+ results:(shown:number,total:number)=>total===0?'Nenhum registro corresponde.':shown<total?`Mostrando os primeiros ${shown} de ${grouped(total)} registros correspondentes, na ordem do catálogo (ascensão reta). Restrinja a busca para ver os demais.`:`${grouped(total)} registro${total===1?' correspondente':'s correspondentes'}.`,
  columns:['ID GCVS','Tipo','AR (h)','Dec (°)','Máx.','Mín. / ampl.','Período (d)',''],
  open:'Abrir',
  openLabel:(name:string)=>`Abrir ${name}`,

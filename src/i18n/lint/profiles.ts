@@ -174,6 +174,11 @@ export function profileFor(id:ProfileId,registers:Registers=REGISTER):LocaleProf
      {label:'Spanish article',pattern:/(?<![\p{L}\p{N}-])(?:los|las)(?![\p{L}\p{N}-])/iu,use:'os / as'},
      {label:'Spanish character',pattern:/[ñ¿¡]/u,use:'Portuguese has no ñ, ¿ or ¡'},
      {label:'English word',pattern:outsideGlosses(words(PT_ENGLISH,'letters')),use:'translate it (a VIREO English name goes in brackets after its Portuguese)'},
+     // Front PT-REL (user decision of 2026-11-10): Portuguese separates thousands with a narrow no-break space on screen
+     // («24 000», U+202F), never en-US's comma; the decimal point stays (decision 4, the digits rule). A Latin-1 help file, which
+     // cannot hold U+202F, uses U+00A0; an ordinary space could break the number across lines.
+     {label:'comma between thousands',pattern:/(?<![\p{L}\p{N}.,])\p{N}{1,3}(?:,\p{N}{3})+(?!\p{N})/u,use:'a narrow no-break space (U+202F): «24 000»'},
+     {label:'ordinary space between thousands',pattern:/(?<![\p{L}\p{N}.,])\p{N}{1,3}(?: \p{N}{3})+(?![\p{L}\p{N}])/u,use:'a narrow no-break space (U+202F): «24 000» (U+00A0 in a Latin-1 help file)'},
      // Sentence case: three capitalised words in a row (articles and prepositions between them allowed), outside brackets.
      {label:'title case',pattern:/(?<![\p{L}\p{N}])\p{Lu}\p{Ll}+(?:[  ]+(?:(?:d[aeo]s?|e|em|para|por|com)[  ]+)?\p{Lu}\p{Ll}+){2,}(?![^(]*\))/u,use:'sentence case (only the first word and names capitalised)'},
     ],

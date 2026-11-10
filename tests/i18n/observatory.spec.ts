@@ -1,6 +1,6 @@
 import {type Page} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
-import {SPANISH_LOCALE,langQuery} from '../fixtures/language';
+import {SPANISH_LOCALE,contextLocale,langQuery} from '../fixtures/language';
 import {layoutProblems,type LayoutOptions} from '../fixtures/layoutProblems';
 import en from '../../src/i18n/en.json' with {type:'json'};
 import es from '../../src/i18n/es/es.json' with {type:'json'};
@@ -9,15 +9,15 @@ import {TRANSLATED,type LanguageText} from './languageText';
 test.use({locale:SPANISH_LOCALE});
 
 // Front PT1: the spec runs for every translated language (tests/i18n/languageText.ts: its own catalog, maps and originals, never
-// hard-coded text). The Spanish tests keep their titles and assertions; a language before its release (pt-BR) runs the same checks
-// under its own titles in its `?lang=` preview, which beats the es-MX browser language. English and qps run once.
+// hard-coded text). The Spanish tests keep their titles and assertions; Brazilian Portuguese runs the same checks under its own titles in a pt-BR browser (Front PT-REL: an anonymous
+// describe per language sets its browser locale, tests/fixtures/language.ts contextLocale). English and qps run once.
 // Front ES2 (docs/I18N.md): the optical observatory, its VIREO menus and its File, Slew, Site and options dialogs in Spanish in an
 // `es-*` browser (a `?lang=es-419` preview load before ES-REL). The same walk through the observatory runs in English, Spanish and the pseudo-locale:
 // - Spanish: no visible text, accessible name or title reads the same as in English, except identifiers (SAME);
 // - qps: every visible text is marked ⟦…⟧ (it goes through the catalog, a map or vireo()), except identifiers;
 // - native views that mirror a written file (`lang="en"`, F2) are left out of both comparisons and keep a Spanish caption.
 type Lang='en'|'qps'|LanguageText;
-/** A test title: Spanish keeps its ES2 title; another language names itself and its preview. */
+/** A test title: Spanish keeps its ES2 title; another language names itself and its tag. */
 const title=(L:LanguageText,es:string,other:string)=>L.tag==='es-419'?es:other.replaceAll('<L>',L.entry.englishName).replaceAll('<tag>',L.tag);
 /** Texts that are the same in both languages: VIREO's catalogue, telescope, site and camera names, units, formats and numbers.
  * Only these exact names and the catalogue designations below pass, so a VIREO caption such as "Exit Observatory" or
@@ -86,10 +86,10 @@ async function walk(page:Page,lang:Lang,each:(step:string)=>Promise<void>){
  for(const [step,run] of STEPS){await run(page);await page.waitForTimeout(250);await each(step);}
 }
 
-for(const L of TRANSLATED){
+for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const C=L.catalog as Record<string,string>,O=L.originals;
 
- test(title(L,'the observatory walk reads differently in Spanish from English: menus, dialogs, boxes and option names','the observatory walk reads differently in <L> (<tag> preview) from English: menus, dialogs, boxes and option names'),async({browser})=>{
+ test(title(L,'the observatory walk reads differently in Spanish from English: menus, dialogs, boxes and option names','the observatory walk reads differently in <L> (<tag>) from English: menus, dialogs, boxes and option names'),async({browser})=>{
   test.setTimeout(240_000);
   const seen:Record<'en'|'own',Map<string,Set<string>>>={en:new Map(),own:new Map()};
   for(const lang of ['en','own'] as const){
@@ -105,7 +105,7 @@ for(const L of TRANSLATED){
   // A few fixed forms of the final VIREO menu glossary, as they appear on screen.
   for(const t of [O['Optical Simulation Options'],O['Limit Slewing'],O['Restrict Scope Access'],O['Set Date/Time, ID'],O['CLEA Star Field Data'],C['sky.close']])expect(own.some(s=>s===t||s.startsWith(`${t} `)),t).toBe(true);
  });
-}
+});
 
 test('qps: every text of the observatory walk is marked, outside identifiers and native mirrors',async({page})=>{
  test.setTimeout(180_000);page.setViewportSize({width:1440,height:1000});
@@ -114,7 +114,7 @@ test('qps: every text of the observatory walk is marked, outside identifiers and
  expect([...new Set(left)]).toEqual([]);
 });
 
-for(const L of TRANSLATED){
+for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const C=L.catalog as Record<string,string>,O=L.originals;
 
  test(title(L,'a native list that mirrors its saved file stays English with a Spanish caption (F2)','a native list that mirrors its saved file stays English with a <L> caption (F2)'),async({page})=>{
@@ -168,20 +168,20 @@ for(const L of TRANSLATED){
  await expect(page.locator('.telescope-motion').getByTestId('ob-options')).toHaveText('Optical Simulation Options…');
  await expect(page.locator('.sky-card .card-heading > button')).toHaveText(C['sky.close']);
  });
-}
+});
 
 /** Front SC9: the layout check of tests/fixtures/layoutProblems.ts (no local copy), with the options that keep this spec's
  * checks: its old copy checked every open dialog, menu and sub-menu with these controls (eachDialog); the fixture adds the
  * page's own controls and plot text. Run with the CI's DejaVu fonts (docs/I18N.md). */
 const LAYOUT:LayoutOptions={eachDialog:{dialogs:'dialog[open],[role=dialog],[role=alertdialog],[role=group].fi-menu-list,[role=group].fi-submenu,.ob-dialog',controls:'button,label,legend,h2,h3,dt,dd,small,p'}};
 
-for(const L of TRANSLATED)for(const width of [320,1440])test(title(L,`at ${width} px the Spanish observatory dialogs, menus and the options dialog lay out without overflow or clipping`,`at ${width} px the <L> observatory dialogs, menus and the options dialog lay out without overflow or clipping`),async({page})=>{
+for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const width of [320,1440])test(title(L,`at ${width} px the Spanish observatory dialogs, menus and the options dialog lay out without overflow or clipping`,`at ${width} px the <L> observatory dialogs, menus and the options dialog lay out without overflow or clipping`),async({page})=>{
  test.setTimeout(180_000);await page.setViewportSize({width,height:width===320?700:1000});
  const problems:string[]=[];
  await walk(page,L,async step=>{for(const p of await layoutProblems(page,LAYOUT))problems.push(`${step}: ${p}`);
   if(['Optical Simulation Options','File › Field Information › Star Data List','Site Parameters'].includes(step))await page.screenshot({path:test.info().outputPath(`${L.tag}-observatory-${width}-${step.replace(/\W+/g,'-')}.png`)});});
  expect([...new Set(problems)]).toEqual([]);
-});
+});});
 
 test('the walk in English is unchanged: the native caption is absent and the VIREO captions are the originals',async({page})=>{
  await open(page,'en');
@@ -227,7 +227,7 @@ async function multiSpecWalk(page:Page,lang:Lang,each:(step:string)=>Promise<voi
  await id(page,'ms-spectrum').getByTestId('ms-print').click();await expect(id(page,'ms-print-preview')).toBeVisible();await each('Multi-Spec print preview');
  await id(page,'ms-print-close').click();
 }
-for(const L of TRANSLATED)test(title(L,'Multi-Spec in Spanish: Control, boxes, spectra list, spectrum, Information and print read differently from English','Multi-Spec in <L> (<tag> preview): Control, boxes, spectra list, spectrum, Information and print read differently from English'),async({browser})=>{
+for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});test(title(L,'Multi-Spec in Spanish: Control, boxes, spectra list, spectrum, Information and print read differently from English','Multi-Spec in <L> (<tag>): Control, boxes, spectra list, spectrum, Information and print read differently from English'),async({browser})=>{
  test.setTimeout(300_000);
  const seen:Record<'en'|'own',Map<string,Set<string>>>={en:new Map(),own:new Map()};
  for(const lang of ['en','own'] as const){
@@ -239,7 +239,7 @@ for(const L of TRANSLATED)test(title(L,'Multi-Spec in Spanish: Control, boxes, s
  const left:string[]=[];
  for(const [step,list] of seen.own)for(const t of list)if(english.has(t)&&!same(t.replace(/^@[a-z-]+:/,''),L))left.push(`${step}: ${t}`);
  expect([...new Set(left)]).toEqual([]);
-});
+});});
 /** Front SC9: problems the fixture's plot-text check found in the Multi-Spec walk at both widths, in English as well as Spanish,
  * are recorded here, not hidden: an entry that stops appearing fails the test, so the fix removes it. Front SKY-LABELS fixed
  * the two SC9 found (the Coma-1 sky-map labels past the 700-unit view, now drawn left of their ring, and the selection number
@@ -254,7 +254,7 @@ const knownFor=(L:LanguageText)=>{
  const label=(C:Record<string,string>)=>C['sky.supportedGalaxyLabel'].replace('{id}','NGC 4874').replace('{label}','Coma – 1');
  return L.tag==='es-419'?MULTISPEC_KNOWN:MULTISPEC_KNOWN.map(k=>new RegExp(k.source.split(esc(label(es))).join(esc(label(L.catalog as Record<string,string>))),k.flags));
 };
-for(const L of TRANSLATED)for(const width of [320,1440])test(title(L,`at ${width} px the Spanish Multi-Spec windows lay out without overflow or clipping`,`at ${width} px the <L> Multi-Spec windows lay out without overflow or clipping`),async({page})=>{
+for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const width of [320,1440])test(title(L,`at ${width} px the Spanish Multi-Spec windows lay out without overflow or clipping`,`at ${width} px the <L> Multi-Spec windows lay out without overflow or clipping`),async({page})=>{
  test.setTimeout(240_000);await page.setViewportSize({width,height:width===320?700:1000});
  const problems:string[]=[],KNOWN=knownFor(L);
  await multiSpecWalk(page,L,async step=>{for(const p of await layoutProblems(page,LAYOUT))problems.push(`${step}: ${p}`);
@@ -262,4 +262,4 @@ for(const L of TRANSLATED)for(const width of [320,1440])test(title(L,`at ${width
  const found=[...new Set(problems)];
  expect(found.filter(p=>!KNOWN.some(k=>k.test(p)))).toEqual([]);
  expect(KNOWN.filter(k=>!found.some(p=>k.test(p))).map(String),'a known problem no longer appears: remove it from MULTISPEC_KNOWN').toEqual([]);
-});
+});});

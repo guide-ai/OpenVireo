@@ -1,6 +1,6 @@
 import {type Page,type Locator} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
-import {SPANISH_LOCALE,langQuery} from '../fixtures/language';
+import {SPANISH_LOCALE,contextLocale,langQuery} from '../fixtures/language';
 import {layoutProblems,type LayoutOptions} from '../fixtures/layoutProblems';
 import {readFile} from 'node:fs/promises';
 import {readFileSync} from 'node:fs';
@@ -11,8 +11,8 @@ import {TRANSLATED,textOf,e08Maps,type LanguageText,type E08Maps} from './langua
 test.use({locale:SPANISH_LOCALE});
 
 // Front PT6: the spec runs for every translated language (tests/i18n/languageText.ts: its own catalog, originals and Object X and
-// camera maps, never hard-coded text). The Spanish tests keep their titles and assertions; a language before its release (pt-BR)
-// runs the same checks under its own titles in its `?lang=` preview, which beats the es-MX browser language, including the hidden
+// camera maps, never hard-coded text). The Spanish tests keep their titles and assertions; Brazilian Portuguese runs the same checks under its own titles in a pt-BR browser (Front PT-REL: an anonymous
+// describe per language sets its browser locale, tests/fixtures/language.ts contextLocale), including the hidden
 // identity checks. English and qps run once.
 // Front ES9 (docs/I18N.md): exercise E08, Object X, and the CCD/IR camera in Spanish in an `es-*` browser (a `?lang=es-419` preview load before ES-REL). One walk
 // through the student flow runs in English, Spanish and the pseudo-locale: the Object X guide, the lab (ID, code, the reveal
@@ -27,7 +27,7 @@ test.use({locale:SPANISH_LOCALE});
 // - views that mirror a written file (`lang="en"`, F2: the camera information lines) are left out of both comparisons;
 // - before the reveal no ObjectX.HTL identifier or remark appears in the Object X route, its guide or the camera, in any language.
 type Lang='en'|'qps'|LanguageText;
-/** A test title: Spanish keeps its ES9 title; another language names itself and its preview. */
+/** A test title: Spanish keeps its ES9 title; another language names itself and its tag. */
 const title=(L:LanguageText,es:string,other:string)=>L.tag==='es-419'?es:other.replaceAll('<L>',L.entry.englishName).replaceAll('<tag>',L.tag);
 const tagOf=(lang:Lang)=>typeof lang==='string'?lang:lang.tag;
 const E=en as Record<string,string>;
@@ -233,9 +233,9 @@ const VERDICTS:Readonly<Record<string,readonly string[]>>={
  'es-419':['Es una estrella.','Es una galaxia.','Es un cuásar (QSO).','Es un púlsar.','Es un asteroide.'],
  'pt-BR':['É uma estrela.','É uma galáxia.','É um quasar (QSO).','É um pulsar.','É um asteroide.'],
 };
-for(const L of TRANSLATED){
+for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const LS=e08Maps(L.tag).objectXLab;
- test(title(L,'E08 reads differently in Spanish from English: guide, lab, spectrometer, camera, measuring tool, reveal and saved images','E08 reads differently in <L> (<tag> preview) from English: guide, lab, spectrometer, camera, measuring tool, reveal and saved images'),async({browser})=>{
+ test(title(L,'E08 reads differently in Spanish from English: guide, lab, spectrometer, camera, measuring tool, reveal and saved images','E08 reads differently in <L> (<tag>) from English: guide, lab, spectrometer, camera, measuring tool, reveal and saved images'),async({browser})=>{
  test.setTimeout(480_000);
  const seen:Record<'en'|'own',Map<string,Set<string>>>={en:new Map(),own:new Map()};
  for(const lang of ['en','own'] as const){
@@ -255,7 +255,7 @@ for(const L of TRANSLATED){
  expect([...seen.own.get('answer revealed')!]).toContain(LS.verdict(true,LS.kinds.asteroid,'asteroid'));
  expect(Object.entries(LS.kinds).map(([k,name])=>LS.verdict(false,name,k))).toEqual(VERDICTS[L.tag]);
  });
-}
+});
 
 test('qps: every text of the E08 walk is marked, outside identifiers and native mirrors',async({page})=>{
  test.setTimeout(420_000);await page.setViewportSize({width:1440,height:1000});
@@ -267,9 +267,9 @@ test('qps: every text of the E08 walk is marked, outside identifiers and native 
 // ES9 review: the route reads the same for every target before the reveal. With a star target and an asteroid target, the
 // lab's and the guide's texts (and the observatory's sky-view toolbar after Copy the coordinates) are equal once the object code
 // and the coordinates line are removed (the spectrometer is not prepared, so its state is the same). Front PT6: in every language.
-for(const L of TRANSLATED){
+for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const LS=e08Maps(L.tag).objectXLab,GS=e08Maps(L.tag).objectXGuide;
- test(title(L,'Spanish: before the reveal the Object X route reads the same for a star target and an asteroid target','<L> (<tag> preview): before the reveal the Object X route reads the same for a star target and an asteroid target'),async({page})=>{
+ test(title(L,'Spanish: before the reveal the Object X route reads the same for a star target and an asteroid target','<L> (<tag>): before the reveal the Object X route reads the same for a star target and an asteroid target'),async({page})=>{
  test.setTimeout(240_000);await page.setViewportSize({width:1440,height:1000});
  const body=await RECORDED_VIZIER;await page.route(CDS,route=>route.fulfill({status:200,contentType:'text/xml',body}));
  await page.addInitScript(()=>localStorage.setItem('openvireo.tour.v1','done'));
@@ -292,7 +292,7 @@ for(const L of TRANSLATED){
  expect(star).toContain(LS.scope);expect(star.join('\n')).toContain(GS.steps.measure[1]);
  expect(asteroid.filter(t=>!star.includes(t)),'only for the asteroid').toEqual([]);expect(star.filter(t=>!asteroid.includes(t)),'only for the star').toEqual([]);expect(asteroid).toEqual(star);
  });
-}
+});
 
 /** VIREO's captions on each step, in English (View original) or in this load's language. */
 const captions=(page:Page,T:(original:string)=>string):Record<string,()=>Promise<void>>=>({
@@ -306,7 +306,7 @@ const captions=(page:Page,T:(original:string)=>string):Record<string,()=>Promise
  'spectrum ready':async()=>{await expect(id(page,'objectx-spectral-range-open')).toHaveText(T('Spectral Range...'));await expect(id(page,'objectx-spectrometer-help-open')).toHaveText(T('Help'));},
 });
 
-for(const L of TRANSLATED){
+for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const S=L.catalog as Record<string,string>,O=L.originals,maps=e08Maps(L.tag),vireoIn=vireoOf(L);
 // "View original (English)" (decision 9): with the stored option on, every VIREO caption of the walk is VIREO's English, checked
 // one by one, and no translated original appears anywhere; OpenVireo's own web text stays in the language.
@@ -331,7 +331,7 @@ for(const L of TRANSLATED){
  expect([...left].map(([t,step])=>`${step}: ${t}`)).toEqual([]);
  });
 
- test(title(L,'Spanish: every VIREO caption in the E08 walk is its Spanish original; English shows the originals unchanged','<L> (<tag> preview): every VIREO caption in the E08 walk is its <L> original; English shows the originals unchanged'),async({browser})=>{
+ test(title(L,'Spanish: every VIREO caption in the E08 walk is its Spanish original; English shows the originals unchanged','<L> (<tag>): every VIREO caption in the E08 walk is its <L> original; English shows the originals unchanged'),async({browser})=>{
  test.setTimeout(480_000);
  for(const lang of ['own','en'] as const){
   const page=await browser.newPage({viewport:{width:1440,height:1000}});
@@ -341,17 +341,17 @@ for(const L of TRANSLATED){
  }
  for(const t of ['CCD Camera Parameters','Information...','Print...','Close','Spectral Range...','Help'])expect(vireoIn(t),t).not.toBe(t);
  });
-}
+});
 
 /** Front SC9: the layout check of tests/fixtures/layoutProblems.ts (no local copy), with the options that keep this spec's
  * checks: its old copy was the fixture's default. Run with the CI's DejaVu fonts (docs/I18N.md). */
 const LAYOUT:LayoutOptions={};
 /** ES9_LAYOUT_LANG=en|qps|<tag> runs the layout walk in another language (for comparison). */
 const layoutLang=(L:LanguageText):Lang=>{const v=process.env.ES9_LAYOUT_LANG;return !v?L:v==='en'||v==='qps'?v:textOf(v);};
-for(const L of TRANSLATED)for(const width of [320,1440])test(title(L,`at ${width} px the Spanish E08 screens lay out without overflow, clipping or crossing`,`at ${width} px the <L> E08 screens lay out without overflow, clipping or crossing`),async({page})=>{
+for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const width of [320,1440])test(title(L,`at ${width} px the Spanish E08 screens lay out without overflow, clipping or crossing`,`at ${width} px the <L> E08 screens lay out without overflow, clipping or crossing`),async({page})=>{
  test.setTimeout(480_000);await page.setViewportSize({width,height:width===320?700:1000});
  const problems=new Map<string,string>();
  await walk(page,layoutLang(L),async step=>{for(const p of await layoutProblems(page,LAYOUT))if(!problems.has(p))problems.set(p,step);
   await page.screenshot({path:test.info().outputPath(`${L.tag==='es-419'?'es':L.tag}-e08-${width}-${step.replace(/\W+/g,'-')}.png`),fullPage:false});});
  expect([...problems].map(([p,step])=>`${step}: ${p}`)).toEqual([]);
-});
+});});
