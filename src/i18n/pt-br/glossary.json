@@ -528,6 +528,26 @@
   {
    "en": "\\breadouts?\\b",
    "pt": "leitura"
+  },
+  {
+   "en": "\\bauditions?\\b|\\bauditioned\\b",
+   "pt": "audição|ouvi"
+  },
+  {
+   "en": "\\bradio clock\\b",
+   "pt": "relógio de rádio"
+  },
+  {
+   "en": "\\bpress[- ]and[- ]hold\\b",
+   "pt": "mant(?:er|enha|endo) pressionad|pressionamento contínuo"
+  },
+  {
+   "en": "\\bslew-timer\\b",
+   "pt": "temporizador de movimento"
+  },
+  {
+   "en": "\\breceiver monitor\\b",
+   "pt": "monitor do receptor"
   }
  ],
  "names": [
@@ -1220,6 +1240,26 @@
   {
    "en": "Time-Dependent Data",
    "pt": "Dados dependentes do tempo"
+  },
+  {
+   "en": "Radio clock scenario",
+   "pt": "Cenário do relógio de rádio"
+  },
+  {
+   "en": "Scenario inputs",
+   "pt": "Entradas do cenário"
+  },
+  {
+   "en": "Use compiled defaults",
+   "pt": "Usar padrões compilados"
+  },
+  {
+   "en": "Reset radio site",
+   "pt": "Redefinir local de rádio"
+  },
+  {
+   "en": "Start pulsar exercise",
+   "pt": "Iniciar exercício de pulsares"
   }
  ],
  "forbidden": [

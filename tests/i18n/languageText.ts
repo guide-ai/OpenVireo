@@ -96,3 +96,21 @@ export const E01_E02_MAPS:Readonly<Record<string,E01E02Maps>>=Object.freeze({
  'pt-BR':{engineView:ENGINE_VIEW_PT,spectralRange:SPECTRAL_RANGE_PT,wedge:WEDGE_PT,observatory:OBSERVATORY_PT,polish:POLISH_PT},
 });
 export const e01e02Maps=(tag:string):E01E02Maps=>{const m=E01_E02_MAPS[tag];if(!m)throw new Error(`No E01/E02 maps for ${tag}`);return m;};
+
+// Front PT5: the maps and identical texts the radio telescope walk reads beyond the catalog and originals (tests/i18n/radio.spec.ts),
+// per language: the control panel's map and the receiver's Record Save map (their text is web text in the View original test),
+// and identical.json's `original:` rows (VIREO texts kept the same in that language).
+import {RADIO_ANTENNA_ES} from '../../src/i18n/es/maps/radioAntenna';
+import {RADIO_RECORD_SAVE_ES} from '../../src/i18n/es/maps/radioRecordSave';
+import {RADIO_ANTENNA_PT} from '../../src/i18n/pt-br/maps/radioAntenna';
+import {RADIO_RECORD_SAVE_PT} from '../../src/i18n/pt-br/maps/radioRecordSave';
+import esIdentical from '../../src/i18n/es/identical.json' with {type:'json'};
+import ptIdentical from '../../src/i18n/pt-br/identical.json' with {type:'json'};
+import type {RADIO_ANTENNA_MESSAGES_EN} from '../../src/components/RadioAntennaMessages';
+import type {RADIO_SAVE_MESSAGES_EN} from '../../src/components/RadioRecordSaveMessages';
+export type RadioMaps=Readonly<{radioAntenna:Translation<typeof RADIO_ANTENNA_MESSAGES_EN>;radioRecordSave:Translation<typeof RADIO_SAVE_MESSAGES_EN>;identical:Readonly<Record<string,string>>}>;
+export const RADIO_MAPS:Readonly<Record<string,RadioMaps>>=Object.freeze({
+ 'es-419':{radioAntenna:RADIO_ANTENNA_ES,radioRecordSave:RADIO_RECORD_SAVE_ES,identical:esIdentical.entries},
+ 'pt-BR':{radioAntenna:RADIO_ANTENNA_PT,radioRecordSave:RADIO_RECORD_SAVE_PT,identical:ptIdentical.entries},
+});
+export const radioMaps=(tag:string):RadioMaps=>{const m=RADIO_MAPS[tag];if(!m)throw new Error(`No radio maps for ${tag}`);return m;};

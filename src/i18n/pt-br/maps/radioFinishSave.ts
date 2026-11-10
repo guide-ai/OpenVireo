@@ -1,0 +1,21 @@
+import type {FINISH_SAVE_MESSAGES_EN} from '../../../components/RadioFinishSaveMessages';
+import type {Translation} from '../../maps';
+/** Front PT5: Brazilian Portuguese (pt-BR) for the receiver's web Save after the finish question (R-RX17). A web adaptation by OpenVireo, not CLEA's. */
+export const RADIO_FINISH_SAVE_PT:Translation<typeof FINISH_SAVE_MESSAGES_EN>=Object.freeze({
+ "finishSave.yes.reason":"Sim abre um salvamento web deste registro, não a caixa de diálogo Salvar original: em seguida você escolhe um arquivo no navegador, e somente uma cópia lida de volta igual marca o registro como gravado e encerra esta conclusão. O Sim em si não escolhe nem grava nada.",
+ "finishSave.yes.webDefault":"Botão padrão da web: Cancelar (o padrão original é Sim).",
+ "finishSave.yes.unsupported.insecure-context":"Sim (salvar) não está disponível: esta página não é um contexto seguro, que a API de arquivos do navegador exige. Não e Cancelar funcionam como antes; a Análise de pulsares poderá baixar uma cópia .PLR depois que esta conclusão terminar.",
+ "finishSave.yes.unsupported.no-api":"Sim (salvar) não está disponível: este navegador não oferece o seletor de arquivos para salvar com arquivos graváveis (showSaveFilePicker e createWritable). Não e Cancelar funcionam como antes; a Análise de pulsares poderá baixar uma cópia .PLR depois que esta conclusão terminar.",
+ "finishSave.yes.webDefaultUnsupported":"Botão padrão da web: Cancelar (o Sim padrão original salva, e este navegador não consegue fazer isso aqui).",
+ "finishSave.heading":"Salve o novo registro (salvamento web com verificação)",
+ "finishSave.intro":"Aberta pelo Sim da pergunta de conclusão. Esta não é a caixa de diálogo Salvar original. Enquanto esta caixa de diálogo estiver aberta, o registro continua contendo os dados de pulsar atuais, então a Análise de pulsares não pode carregar, salvar nem baixar. Somente uma cópia verificada encerra a conclusão: o registro continua então sendo os dados de pulsar atuais, marcado como gravado (uma verificação naquele momento), e a Análise de pulsares não é aberta. Uma tentativa que falhou ou foi cancelada permanece aqui e pode já ter criado ou esvaziado um arquivo. Voltar retorna à pergunta de conclusão, onde Não abre a Análise de pulsares e Cancelar mantém os dados sem salvar.",
+ "finishSave.back":"Voltar à pergunta de conclusão",
+ "finishSave.pendingNote":"Enquanto uma tentativa está em andamento, Escolher e Voltar não fazem nada, e o registro continua contendo os dados. Ocultar a página do radiotelescópio ou iniciar uma operação do projeto a interrompe.",
+ "finishSave.refusal.not-ready":"O salvamento não começou e nenhum arquivo foi escolhido: a Análise de pulsares está lendo um arquivo, o registro já não contém os dados ou outra tentativa de salvamento ainda está terminando. Tente novamente quando ela terminar.",
+ "finishSave.fail.abandoned":"A tentativa de salvamento foi interrompida porque a página do radiotelescópio foi ocultada ou uma operação do projeto foi iniciada. Um arquivo escolhido pode já ter sido criado, esvaziado ou gravado em parte ou por completo; o OpenVireo não consegue restaurá-lo e não marcou o registro como gravado. O registro continua contendo os dados. Escolher e Voltar voltam a funcionar quando o fluxo do arquivo tiver sido fechado.",
+ "finishSave.busy":"Concluindo a tentativa interrompida: aguardando o fechamento do fluxo do arquivo…",
+ "finishSave.status.opened":"Caixa de diálogo Salvar aberta. Nenhum arquivo foi escolhido ainda; o registro continua contendo os dados de pulsar atuais.",
+ "finishSave.status.back":"De volta à pergunta de conclusão. A caixa de diálogo Salvar não marcou o registro como gravado; um arquivo escolhido nela pode já ter sido criado, esvaziado ou alterado.",
+ "finishSave.status.verified":"Cópia verificada salva como “{file}” ({bytes} bytes lidos de volta iguais). A conclusão terminou: o registro continua sendo os dados de pulsar atuais e foi marcado como gravado no momento da verificação; este é um resultado histórico. A Análise de pulsares não foi aberta.",
+ "finishSave.status.unavailable":"A caixa de diálogo Salvar não foi aberta: o registro já não contém os dados de pulsar atuais como esta conclusão espera. Nenhum arquivo foi escolhido; Não e Cancelar ainda respondem à pergunta.",
+});

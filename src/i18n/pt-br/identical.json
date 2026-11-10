@@ -85,6 +85,25 @@
   "catalog:program.row": "only placeholders and a separator ({position} · {object})",
   "catalog:nativeText.choice": "only placeholders and a separator ({index} · {object})",
   "catalog:nativeResults.storage.binary32": "a Delphi type name and a bit count (Single · 32 bits)",
-  "catalog:nativeResults.storage.binary64": "a Delphi type name and a bit count (Double · 64 bits)"
+  "catalog:nativeResults.storage.binary64": "a Delphi type name and a bit count (Double · 64 bits)",
+  "catalog:radio.env.dome.2": "a dome state byte value (2), a number",
+  "catalog:radioRoute.clock.utcValue": "a placeholder and the time scale UT",
+  "catalog:radioRoute.clock.longitudeLabel": "the same word in Portuguese (Longitude)",
+  "catalog:radioRoute.date.storedValue": "a placeholder in quotation marks",
+  "catalog:pulsarParameters.reference.bytes": "the same word in Portuguese (bytes)",
+  "catalog:pulsarParameters.reference.sha": "the hash name SHA-256, kept",
+  "catalog:radioAccess.values.lastOk": "the same word in Portuguese (OK, as Windows pt-BR writes it)",
+  "map:radioAntenna.antenna.menu.item": "placeholders and the menu path glyph only",
+  "map:radioAntenna.antenna.clock.ut": "the time scale UT, kept",
+  "map:radioAntenna.antenna.clock.hoursValue": "a placeholder and the unit h",
+  "map:radioAntenna.antenna.format.ra": "a coordinate format (h m s), not words",
+  "map:radioAntenna.antenna.format.dec": "a coordinate format (° ′ ″), not words",
+  "map:radioAntenna.antenna.notice.title.hot-list-empty": "a placeholder for VIREO caption text, translated through vireo() by the caller",
+  "map:radioAntenna.antenna.notice.hot-list-empty": "a placeholder for VIREO message text, translated through vireo() by the caller",
+  "map:radioAntenna.antenna.notice.title.hot-list-search-miss": "a placeholder for VIREO caption text, translated through vireo() by the caller",
+  "map:radioAntenna.antenna.notice.hot-list-search-miss": "a placeholder for VIREO message text, translated through vireo() by the caller",
+  "map:radioAntenna.antenna.hotList.item": "placeholders and the menu path glyphs only",
+  "map:radioAntenna.antenna.rateLimit.recovery.afterModal": "two placeholders joined by a space",
+  "map:radioAntenna.antenna.rateLimit.alternative.separator": "a punctuation separator"
  }
 }

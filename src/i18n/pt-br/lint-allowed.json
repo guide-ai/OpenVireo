@@ -30,6 +30,12 @@
     "Two Micron All Sky Survey"
    ],
    "reason": "the survey’s proper name, Two Micron All Sky Survey (2MASS), kept in English as cited (only that title-case run is allowed)"
+  },
+  "catalog:radioReceiver.marks.selectLabel": {
+   "words": [
+    "Marca"
+   ],
+   "reason": "the noun «Marca» (the mark the pointer and keys place), not a tu-command of «marcar»; the English “Mark placed by…” is a noun phrase"
   }
  }
 }
