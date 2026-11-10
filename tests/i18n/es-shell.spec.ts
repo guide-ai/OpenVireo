@@ -46,7 +46,9 @@ test('a Spanish browser fetches the Spanish chunk, sets <html lang="es-419"> and
 test('the shell is entirely Spanish: header, menu, home, toolbar and the first steps read differently from English',async({browser})=>{
  const texts:Record<'en'|'es-419',string[]>={en:[],'es-419':[]};
  for(const lang of ['en','es-419'] as const){
-  const page=await browser.newPage();await open(page,lang);texts[lang]=await shellTexts(page);await page.close();
+  const page=await browser.newPage();await open(page,lang);
+  // ES-REL review 2: the selector arrives in its own chunk after first render; wait for it so both languages list the same texts.
+  await expect(page.getByTestId('language-choice')).toBeVisible();texts[lang]=await shellTexts(page);await page.close();
  }
  expect(texts['es-419'].length).toBe(texts.en.length);
  const same=texts.en.map((t,i)=>t===texts['es-419'][i]&&!SAME.has(t.replace(/^@[a-z-]+:/,''))?t:null).filter(Boolean);
