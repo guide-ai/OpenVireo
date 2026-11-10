@@ -2,11 +2,19 @@ import type {LocaleBundle} from '../catalog';
 import messages from './pt-br.json';
 import originals from './originals.json';
 import {APP_SHELL_PT} from './maps/appShell';
+import {CAMERA_PT} from './maps/camera';
+import {FIELD_INFO_PT} from './maps/fieldInfo';
+import {FIELD_READ_DETAILS_PT} from './maps/fieldReadDetails';
 import {HELP_MENU_PT} from './maps/helpMenu';
 import {LANGUAGE_CHOICE_PT} from './maps/languageChoice';
+import {NAKED_EYE_PT} from './maps/nakedEye';
 import {OBJECT_X_LAB_PT} from './maps/objectXLab';
+import {OBSERVATION_METADATA_PT} from './maps/observationMetadata';
+import {OBSERVATORY_PT} from './maps/observatory';
 import {POLISH_PT} from './maps/polish';
 import {PROJECT_LINKS_PT} from './maps/projectLinks';
+import {QSO_LIST_PT} from './maps/qsoList';
+import {SOUND_PT} from './maps/sound';
 import {TOUR_PT} from './maps/tour';
 import {VARIABLE_STARS_PT} from './maps/variableStars';
 /** Front PT0 [W]: the Brazilian Portuguese (pt-BR) bundle (docs/I18N.md, "Brazilian Portuguese: the folder, lints and shell
@@ -17,6 +25,6 @@ import {VARIABLE_STARS_PT} from './maps/variableStars';
 export const PORTUGUESE:LocaleBundle=Object.freeze({
  language:'pt-BR',
  messages,
- maps:Object.freeze({appShell:APP_SHELL_PT,helpMenu:HELP_MENU_PT,languageChoice:LANGUAGE_CHOICE_PT,objectXLab:OBJECT_X_LAB_PT,polish:POLISH_PT,projectLinks:PROJECT_LINKS_PT,tour:TOUR_PT,variableStars:VARIABLE_STARS_PT}),
+ maps:Object.freeze({appShell:APP_SHELL_PT,camera:CAMERA_PT,fieldInfo:FIELD_INFO_PT,fieldReadDetails:FIELD_READ_DETAILS_PT,helpMenu:HELP_MENU_PT,languageChoice:LANGUAGE_CHOICE_PT,nakedEye:NAKED_EYE_PT,objectXLab:OBJECT_X_LAB_PT,observationMetadata:OBSERVATION_METADATA_PT,observatory:OBSERVATORY_PT,polish:POLISH_PT,projectLinks:PROJECT_LINKS_PT,qsoList:QSO_LIST_PT,sound:SOUND_PT,tour:TOUR_PT,variableStars:VARIABLE_STARS_PT}),
  originals,
 });

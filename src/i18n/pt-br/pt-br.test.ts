@@ -6,6 +6,7 @@ import glossaryJson from './glossary.json';
 import identical from './identical.json';
 import lintAllowed from './lint-allowed.json';
 import esOriginals from '../es/originals.json';
+import esIdentical from '../es/identical.json';
 import {PORTUGUESE} from './index';
 import {createI18n,type MessageKey} from '../catalog';
 import {mapParity} from '../parity';
@@ -23,16 +24,32 @@ import {POLISH_MESSAGES_EN} from '../../polish/PolishMessages';
 import {PROJECT_LINKS_EN} from '../../help/projectLinks';
 import {TOUR_EN} from '../../help/tour';
 import {VARIABLE_STARS_EN} from '../../variables/VariableStarMessages';
+import {FIELD_INFO_MESSAGES_EN,FIELD_READ_DETAILS_EN,NAKED_EYE_MESSAGES_EN} from '../../observatory/FieldInfoMessages';
+import {OBSERVATORY_MESSAGES_EN} from '../../observatory/ObservatoryMessages';
+import {QSO_LIST_MESSAGES_EN} from '../../observatory/QsoListMessages';
+import {SOUND_MESSAGES_EN} from '../../sound/SoundMessages';
+import {OBSERVATION_METADATA_EN} from '../../ObservationMetadataMessages';
+import {CAMERA_MESSAGES_EN} from '../../camera/CameraMessages';
 
 // Front PT0 (docs/I18N.md, "Brazilian Portuguese: the folder, lints and shell (PT0)"; plan front-i18n-pt-br.md §3.4): the
 // structural checks of the partial pt-BR bundle and every Portuguese string through the SC4 lint framework, profile pt-BR. Errors
 // fail the batch; length ratios are reported for the independent reviewer. Later PT fronts add their maps to ENGLISH_MAPS and
 // COMPLETE_MAPS, and their areas to the coverage check.
-const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN};
-/** The maps translated completely; the others are partial until their front (objectXLab PT6, polish PT1, variableStars PT4). */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour'];
+const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,nakedEye:NAKED_EYE_MESSAGES_EN,objectXLab:OBJECT_X_LAB_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN};
+/** The maps translated completely (PT0's shell maps; PT1's observatory maps, the camera card the observatory shows, and polish); the others are partial until their
+ * front (objectXLab PT6, variableStars PT4). */
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera'];
 /** PT0's area of en.json: the shell (header, menu, home and first steps, toolbar, errors, instructor mode, document title), as ES1's. */
 const SHELL_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(app|project|session|error|instructorMode)\./.test(k)||/\.nav$/.test(k)||['demonstrationMode.banner','sky.eyebrow','sky.title','sky.subtitle','sky.about','sky.local','sky.observatory','sky.analyzer','sky.step1','sky.step1Help','sky.step2','sky.step2Help','sky.step3','sky.step3Help','spectrum.tools','classLink.cancel'].includes(k));
+/** Front PT1's area of en.json: ES2's observatory keys (the 546 keys Spanish translated in ES2: the observatory route, its
+ * instruments' cards and the guide keys those files render) and the seven observatory keys added since (the M31 note, the
+ * Hubble pointing hints and the hot list's Hubble reasons). The list is pinned so a lost key fails. */
+const OBSERVATORY_PREFIXES=/^(sky|optical|motion|horizon|siteClock|runningClock|scopeAccess|instrumentAccess|instrumentParameters|cameraParameters|cameraInfo|cameraPrepare|palette|testMode|optionsFile|photometerTab|htl|multispec|nativeMirror|hubblePoint)\./;
+const PT1_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>OBSERVATORY_PREFIXES.test(k)||/^hubbleHtl\.reason\./.test(k));
+/** VIREO originals that Spanish keeps with no entry (its word equals VIREO's, and the vireo() site is one the source guard cannot
+ * resolve, src/i18n/vireoSites.test.ts), but Portuguese translates: the options dialog's General tab and the Site Information
+ * longitude letter E (East, «L» for Leste). tests/i18n/observatory.spec.ts checks both on screen. */
+const PT_ONLY_ORIGINALS:readonly string[]=['General','E'];
 const profile=PROFILES['pt-BR'];
 const data:LintData={glossary:glossaryFrom(glossaryJson,'pt'),identical:identical.entries,allowed:lintAllowed.entries as Readonly<Record<string,Allowance>>};
 const pairs=()=>collectPairs({catalog:pt,english:en,maps:PORTUGUESE.maps,englishMaps:ENGLISH_MAPS,originals});
@@ -49,6 +66,10 @@ describe('Front PT0: the Brazilian Portuguese (pt-BR) bundle',()=>{
   expect(SHELL_KEYS.length).toBe(130);
   expect(SHELL_KEYS.filter(k=>!Object.hasOwn(pt,k))).toEqual([]);
  });
+ it('Front PT1: the catalog covers the observatory (every key of its instruments\' prefixes)',()=>{
+  expect(PT1_KEYS.length).toBeGreaterThan(450);
+  expect(PT1_KEYS.filter(k=>!Object.hasOwn(pt,k))).toEqual([]);
+ });
  it('every map has its English shape: the shell maps complete, the header-name maps partial',()=>{
   for(const [id,map] of Object.entries(PORTUGUESE.maps??{})){
    expect(MAP_IDS,id).toContain(id);
@@ -57,8 +78,17 @@ describe('Front PT0: the Brazilian Portuguese (pt-BR) bundle',()=>{
   }
   for(const id of COMPLETE_MAPS)expect(Object.hasOwn(PORTUGUESE.maps??{},id),id).toBe(true);
  });
- it('originals are normalised keys that Spanish also translates (src/i18n/es/es.test.ts checks those against the source)',()=>{
-  for(const key of Object.keys(originals)){expect(normalizeOriginal(key),key).toBe(key);expect(Object.hasOwn(esOriginals,key),key).toBe(true);}
+ it('originals are normalised keys that Spanish also knows (src/i18n/es/es.test.ts checks those against the source)',()=>{
+  const esSame=(key:string)=>Object.hasOwn(esIdentical.entries,`original:${key}`);
+  for(const key of Object.keys(originals)){expect(normalizeOriginal(key),key).toBe(key);expect(Object.hasOwn(esOriginals,key)||esSame(key)||PT_ONLY_ORIGINALS.includes(key),key).toBe(true);}
+ });
+ it('Front PT1: every VIREO original is translated at once, or kept with an identical.json reason',()=>{
+  const english=[...Object.keys(esOriginals),...Object.keys(esIdentical.entries).filter(k=>k.startsWith('original:')).map(k=>k.slice('original:'.length))];
+  expect(english.length).toBe(762);english.push(...PT_ONLY_ORIGINALS);
+  const same=identical.entries as Record<string,string>;
+  expect(english.filter(k=>!Object.hasOwn(originals,k)&&!Object.hasOwn(same,`original:${k}`))).toEqual([]);
+  // A kept original is not also translated, and an identical.json original names a real one.
+  for(const k of Object.keys(same).filter(k=>k.startsWith('original:')).map(k=>k.slice('original:'.length)))expect(english,k).toContain(k);
  });
  it('passes every rule of the pt-BR profile with the glossary, identical.json and lint-allowed.json',()=>{
   const findings=lintPairs(pairs(),profile,data);

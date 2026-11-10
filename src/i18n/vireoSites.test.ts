@@ -3,9 +3,11 @@ import {readdirSync,readFileSync} from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {parseSync} from 'rolldown/utils';
-import originals from './originals.json';
-import identical from './identical.json';
-import {normalizeOriginal} from '../vireo';
+import esOriginals from './es/originals.json';
+import esIdentical from './es/identical.json';
+import ptOriginals from './pt-br/originals.json';
+import ptIdentical from './pt-br/identical.json';
+import {normalizeOriginal} from './vireo';
 
 // Front ES3 review (S2): vireo() is for VIREO's own literals. A web text wrapped in vireo() would stay English in Spanish, since
 // only originals.json translates it. This guard resolves every vireo(), vireoMenuItem() and vireoList() argument that is a string
@@ -13,8 +15,14 @@ import {normalizeOriginal} from '../vireo';
 // requires a Spanish original for each resolved string, or an identical.json reason (`original:<text>`) when VIREO's text is
 // already Spanish (GCVS, QSO…). Arguments built at run time (a prop, a function result) are not resolved here; their
 // literals are covered by the screen specs (tests/i18n/).
+// Front PT1: moved from src/i18n/es/ and run for every language whose VIREO originals are complete (strict): Spanish since ES3,
+// Brazilian Portuguese since PT1, which translates all of VIREO's originals at once. A later language joins once it has done so.
+const STRICT:readonly {tag:string;originals:Record<string,string>;identical:Record<string,string>}[]=[
+ {tag:'es-419',originals:esOriginals,identical:esIdentical.entries},
+ {tag:'pt-BR',originals:ptOriginals,identical:ptIdentical.entries},
+];
 type Node={type:string;[key:string]:unknown};
-const root=path.resolve(import.meta.dirname,'../../..');
+const root=path.resolve(import.meta.dirname,'../..');
 const files=(dir:string):string[]=>readdirSync(dir,{withFileTypes:true}).flatMap(d=>{const f=path.join(dir,d.name);
  return d.isDirectory()?(d.name==='i18n'?[]:files(f)):/\.tsx?$/.test(d.name)&&!/\.test\.tsx?$/.test(d.name)?[f]:[];});
 const walk=(node:unknown,visit:(n:Node)=>void):void=>{if(!node||typeof node!=='object')return;if(Array.isArray(node)){node.forEach(n=>walk(n,visit));return;}
@@ -53,10 +61,11 @@ const UNRESOLVED_SITES=140;
 const resolveModule=(base:string)=>[`${base}.ts`,`${base}/index.ts`].find(f=>{try{readFileSync(f);return true;}catch{return false;}});
 const strings=(v:unknown):string[]=>typeof v==='string'?[v]:Array.isArray(v)?v.flatMap(strings):[];
 
-describe('Front ES3 review: every literal wrapped in vireo() has a Spanish original',()=>{
- it('resolves the vireo() sites and finds each string in originals.json or identical.json',async()=>{
-  const O=originals as Record<string,string>,same=identical.entries as Record<string,string>,missing:string[]=[],unresolved:string[]=[];let resolved=0;
-  for(const site of sites()){
+const SITES=sites();
+describe('Front ES3 review (PT1: per strict language): every literal wrapped in vireo() has an original in the language',()=>{
+ for(const {tag,originals:O,identical:same} of STRICT)it(`${tag}: resolves the vireo() sites and finds each string in originals.json or identical.json`,async()=>{
+  const missing:string[]=[],unresolved:string[]=[];let resolved=0;
+  for(const site of SITES){
    let values:string[];
    if('unresolved' in site){unresolved.push(`${path.relative(root,site.file)}: ${site.expression}`);continue;}
    if('literal' in site)values=[site.literal];
