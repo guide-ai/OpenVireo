@@ -8,6 +8,7 @@ import {APP_SHELL_ES} from '../../src/i18n/es/maps/appShell';
 import {HELP_VIEWER_ES} from '../../src/i18n/es/maps/helpViewer';
 // @ts-expect-error The planner is a plain JS script (scripts/i18n-split.mjs), as tests import scripts/audit-ui-messages.mjs.
 import {loadLanguages,planLanguage} from '../../scripts/i18n-split.mjs';
+import {PORTUGUESE_TEXT} from './languageText';
 // Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
 test.use({locale:SPANISH_LOCALE});
 
@@ -15,8 +16,10 @@ test.use({locale:SPANISH_LOCALE});
 // load fetches the core module only, each area route fetches its area and shared modules once (in parallel with its own
 // JavaScript), and no text is read before its area arrives (that would throw, reach the route's error notice and log a console
 // error). An area that fails or does not arrive leaves that route in English with a bilingual notice; English fetches nothing.
-type Module={name:string;kind:string;shared:string[]};
-const plan=planLanguage(loadLanguages().find((l:{tag:string})=>l.tag==='es-419')) as {modules:Module[];keyModule:Record<string,string>;mapModule:Record<string,string>};
+type Module={name:string;kind:string;shared:string[];empty?:boolean};
+type Plan={modules:Module[];keyModule:Record<string,string>;mapModule:Record<string,string>};
+const planOf=(tag:string)=>planLanguage(loadLanguages().find((l:{tag:string})=>l.tag===tag)) as Plan;
+const plan=planOf('es-419');
 const S=es as Record<string,string>,E=en as Record<string,string>;
 /** The modules an area route fetches: the area and its shared modules. */
 const modulesOf=(area:string)=>{const m=plan.modules.find(x=>x.name===area)!;return [area,...m.shared].sort();};
@@ -40,11 +43,12 @@ const ROUTES:Route[]=[
 type Watch={language:{name:string;at:number}[];finished:Map<string,number>;problems:string[]};
 /** Records the language modules a page requests (in order, with the time), when each route module finished, console errors and
  * page errors. The tour is marked done, so nothing covers the page. */
-async function watch(page:Page):Promise<Watch>{
+async function watch(page:Page,tag='es-419',dir='es',catalog='es.json'):Promise<Watch>{
  const w:Watch={language:[],finished:new Map(),problems:[]},start=Date.now();
  await page.addInitScript(()=>{try{localStorage.setItem('openvireo.tour.v1','done');}catch{/* about:blank has no storage */}});
- const name=(r:Request)=>/openvireo-i18n\/i18n-es-419-([\w+%-]+)/.exec(decodeURIComponent(r.url()))?.[1];
- page.on('request',r=>{const n=name(r);if(n)w.language.push({name:n,at:Date.now()-start});if(/\/src\/i18n\/es\/(?:index\.ts|es\.json)/.test(r.url()))w.problems.push(`whole bundle requested: ${r.url()}`);});
+ const module=new RegExp(`openvireo-i18n/i18n-${tag}-([\\w+%-]+)`),whole=new RegExp(`/src/i18n/${dir}/(?:index\\.ts|${catalog.replace('.','\\.')})`);
+ const name=(r:Request)=>module.exec(decodeURIComponent(r.url()))?.[1];
+ page.on('request',r=>{const n=name(r);if(n)w.language.push({name:n,at:Date.now()-start});if(whole.test(r.url()))w.problems.push(`whole bundle requested: ${r.url()}`);});
  page.on('requestfinished',r=>{const path=new URL(r.url()).pathname;if(!w.finished.has(path))w.finished.set(path,Date.now()-start);});
  page.on('console',m=>{if(m.type()==='error')w.problems.push(`console: ${m.text()}`);});
  page.on('pageerror',e=>w.problems.push(`pageerror: ${e.message}`));
@@ -182,3 +186,43 @@ test('View original (English) on an area route: VIREO\'s names in English, the a
  await page.waitForLoadState('networkidle');
  expect(names(w)[0]).toBe('core');expect(names(w).slice(1).sort()).toEqual(modulesOf('classification'));expect(w.problems).toEqual([]);
 });
+
+// Front PT0 (plan front-i18n-pt-br.md §6): a language before its release is partial. Its preview (`?lang=pt-BR`, in an English
+// browser) fetches its core, and each area route only the area modules its plan gives text to; an area with no text yet is empty,
+// has no chunk and resolves at once, so its route shows English without a notice, a route error or a read before its area. With
+// PT0's shell slice every area is empty; later PT fronts fill them and this test then expects their modules.
+test.describe('a language before its release',()=>{
+ test.use({locale:'en-US'});
+ test('a partial language fetches only its core, and no chunk for an empty area',async({page})=>{
+  test.setTimeout(300_000);
+  const P=PORTUGUESE_TEXT,ptPlan=planOf(P.tag),module=(name:string)=>ptPlan.modules.find(m=>m.name===name)!;
+  const fetchedFor=(area:string)=>{const m=module(area);return m.empty?[]:[area,...m.shared].sort();};
+  const w=await watch(page,P.tag,P.entry.dir,P.entry.catalog);
+  await page.goto(`/${P.query}#observatory`);await expect(page.getByRole('heading',{level:1,name:P.catalog['sky.title']})).toBeVisible({timeout:30_000});
+  await page.waitForLoadState('networkidle');
+  expect(names(w)).toEqual(['core']);expect(w.problems).toEqual([]);
+  const C={...E,...P.catalog};
+  const ready:Record<string,(page:Page)=>Promise<void>>={
+   'pulsar-analysis':async p=>{await expect(id(p,'pulsar-analysis')).toBeVisible({timeout:30_000});},
+   'radio-control':async p=>{await expect(id(p,'radio-route')).toBeVisible({timeout:30_000});},
+   'lss-wedge':async p=>{await expect(id(p,'wedge-persistence')).toBeVisible({timeout:30_000});},
+   'sky-exposure':async p=>{await expect(p.getByRole('button',{name:C['skyExposure.startSkyExposure'],exact:true})).toBeVisible({timeout:30_000});},
+  };
+  const headingKey:Record<string,string>={classification:'class.title','cluster-database':'db.title',photometer:'ph.title','lss-survey':'lss.title','galaxy-exposure':'galaxyExposure.title','star-exposure':'starExposure.title',images:'fits.title'};
+  const empty=ptPlan.modules.filter(m=>m.kind==='area'&&m.empty).map(m=>m.name);
+  for(const r of ROUTES){
+   await page.goto('about:blank');w.language.length=0;
+   await page.goto(`/${P.query}#${r.hash}`);
+   await (ready[r.hash]??(async(p:Page)=>{await expect(p.getByRole('heading',{name:C[headingKey[r.hash]],exact:true})).toBeVisible({timeout:30_000});}))(page);
+   await page.waitForLoadState('networkidle');await noRouteError(page);
+   await expect(page.locator('html')).toHaveAttribute('lang',P.entry.htmlLang);await expect(id(page,'area-failure')).toHaveCount(0);
+   await expect(page.locator('.investigation-toolbar')).toContainText(P.catalog['project.save']);
+   const fetched=names(w);
+   expect(fetched[0],r.hash).toBe('core');
+   expect(fetched.slice(1).sort(),`${r.hash} fetched ${fetched.join(', ')}`).toEqual(fetchedFor(r.area));
+   if(empty.includes(r.area))expect(fetched.slice(1),`${r.hash}: the empty ${r.area} area has no chunk`).toEqual([]);
+  }
+  expect(w.problems).toEqual([]);
+ });
+});
+

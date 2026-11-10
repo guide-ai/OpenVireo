@@ -1,0 +1,4 @@
+{
+ "about": "Front PT0: findings of the pt-BR lint (src/i18n/lint/, profile pt-BR) that are correct Portuguese in one string, each with a reason. Keys are the lint's string ids; `words` are the matched words allowed in that string only, `rules` whole rules, `placeholders` added placeholders.",
+ "entries": {}
+}

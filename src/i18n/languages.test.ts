@@ -54,7 +54,8 @@ describe('Front SC8: the language registry (src/i18n/languages.json)',()=>{
   }
  });
  it('Spanish is released and keeps its ES-REL behaviour: es and es-* (any case), <html lang> es-419, Español in the selector',()=>{
-  expect(LANGUAGES.map(l=>[l.tag,l.released])).toEqual([['es-419',true]]);
+  // Front PT0: Brazilian Portuguese is registered before its release (a ?lang=pt-BR preview only).
+  expect(LANGUAGES.map(l=>[l.tag,l.released])).toEqual([['es-419',true],['pt-BR',false]]);
   for(const tag of ['es','es-MX','es-ES','ES-ar','es-419','es-Latn-MX'])expect(matchLanguage(tag)?.tag,tag).toBe('es-419');
   for(const tag of ['','en','en-US','esp','eus','et','fr-ES'])expect(matchLanguage(tag),tag).toBeUndefined();
   expect(HTML_LANG['es-419']).toBe('es-419');expect(isReleased('es-419')).toBe(true);expect(isReleased('en')).toBe(false);

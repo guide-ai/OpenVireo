@@ -3,15 +3,17 @@
  * all) and adds its glossary. */
 import {SIMPLIFIED_ONLY,TRADITIONAL_ONLY} from './hanVariants';
 import type {PluralCategory} from '../plural';
-import {wordSource,type Boundary,type GlyphClass,type LocaleProfile,type MarkPair,type Pattern} from './rules';
+import {wordSource,type Boundary,type GlyphClass,type LocaleProfile,type MarkPair,type PairedPattern,type Pattern} from './rules';
 /** How each language addresses the student. DECIDED by the user on 2026-11-09 (AGENTS.md; plan §13 Q1–Q3, §14): Japanese
  * polite です/ます, Hindi आप, Russian lower-case «вы», Chinese (zh-Hans and zh-Hant) 你. The alternatives stay expressible
  * (plain だ/である, तुम, «ты», 您) so the fixtures prove each register pattern both ways; profileFor builds the patterns
  * from these values. */
-export type Registers=Readonly<{ja:'desu-masu'|'plain';hi:'aap'|'tum';ru:'vy'|'ty';zh:'ni'|'nin'}>;
-export const REGISTER:Registers={ja:'desu-masu',hi:'aap',ru:'vy',zh:'ni'};
-export type ProfileId='ja'|'hi'|'zh-Hans'|'zh-Hant'|'ru';
-export const PROFILE_IDS:readonly ProfileId[]=['ja','hi','zh-Hans','zh-Hant','ru'];
+export type Registers=Readonly<{ja:'desu-masu'|'plain';hi:'aap'|'tum';ru:'vy'|'ty';zh:'ni'|'nin';pt:'voce'|'tu'}>;
+// Front PT0: Brazilian Portuguese addresses the student as «você» (AGENTS.md, 2026-11-09: each language follows the Spanish rules;
+// plan front-i18n-pt-br.md §3.1); «tu» stays expressible for the fixtures.
+export const REGISTER:Registers={ja:'desu-masu',hi:'aap',ru:'vy',zh:'ni',pt:'voce'};
+export type ProfileId='ja'|'hi'|'zh-Hans'|'zh-Hant'|'ru'|'pt-BR';
+export const PROFILE_IDS:readonly ProfileId[]=['ja','hi','zh-Hans','zh-Hant','ru','pt-BR'];
 
 const words=(list:readonly string[],boundary:Boundary,flags='iu')=>new RegExp(list.map(w=>wordSource(w.normalize('NFC'),boundary)).join('|'),flags);
 /** VIREO's own `...` (43 originals, 22 en.json strings) and `…` count as one ellipsis; Japanese and Chinese also write `……`. */
@@ -74,6 +76,31 @@ const chineseRegister=(setting:Registers['zh']):Pattern[]=>setting==='ni'
  ?[{label:'您',pattern:/您/u,use:'address the student as 你'}]
  :[{label:'你',pattern:/你/u,use:'address the student as 您'}];
 
+// Front PT0 (plan front-i18n-pt-br.md §3.4): Brazilian Portuguese. Words are matched with letter boundaries and Portuguese case
+// folding; a European form, a pre-1990 spelling, a European accent and a Spanish word left from the Spanish reference (the
+// translation batches see it as meaning context) are errors whatever the glossary says.
+const PT_EUROPEAN=['ecrã','ecrãs','ficheiro','ficheiros','utilizador','utilizadores','utilizadora','utilizadoras','rato','ratos','telemóvel','telemóveis','definições','palavra-passe','palavras-passe',
+ 'aceder','acede','acedem','aceda','acedido','equipa','equipas','facto','factos','contacto','contactos','receção','registo','registos','registar','hiperligação','hiperligações','descarregar','descarregue','premir','sítio','sítios',
+ 'acção','acções','direcção','direcções','selecção','selecções','objecto','objectos','actual','actuais','exacto','exacta','exactos','exactas','óptimo','óptima','actualizar','actualização','actualizado','factor','factores','projecto','projectos','correcto','correcta','directo','directa',
+ 'protão','protões','neutrão','neutrões','electrão','electrões','eletrão','eletrões'];
+const PT_SPANISH=['usted','ustedes','también','pantalla','pantallas','ventana','ventanas','botón','botones','archivo','archivos','cúmulo','cúmulos','estrella','estrellas','configuración','medición','mediciones','púlsar','púlsares','una','del','con','el','pero','muy','hacer','haz','elige'];
+const PT_TU=['tu','teu','tua','teus','tuas','contigo','vós','vosso','vossa','vossos','vossas','te'];
+/** Commands of the verbs this interface uses: the tu-imperative (= third person, «Salva») and the você one (subjunctive, «Salve»). */
+const PT_TU_COMMANDS=['Clica','Escolhe','Abre','Salva','Seleciona','Digita','Carrega','Fecha','Verifica','Usa','Mede','Aponta','Espera','Olha','Vê','Faz','Põe','Pressiona','Liga','Desliga','Guarda','Começa','Marca','Ativa','Lê','Escreve','Define','Volta','Recarrega','Restaura','Baixa','Tenta','Segue','Deixa'];
+const PT_VOCE_COMMANDS=['Clique','Escolha','Abra','Salve','Selecione','Digite','Carregue','Feche','Verifique','Use','Meça','Aponte','Espere','Olhe','Veja','Faça','Ponha','Pressione','Ligue','Desligue','Guarde','Comece','Marque','Ative','Leia','Escreva','Defina','Volte','Recarregue','Restaure','Baixe','Tente','Siga','Deixe'];
+/** An English sentence that starts with a bare imperative (no third-person -s): the command the Portuguese must give as você. */
+const EN_COMMAND=/^(?:click|choose|open|save|select|type|enter|load|close|check|use|measure|point|wait|look|see|do|make|put|press|turn|switch|keep|start|begin|mark|activate|read|write|set|go|pick|tick|untick|reload|restore|download|try|note|follow|leave)(?![\p{L}\p{N}])/iu;
+const startOf=(list:readonly string[])=>new RegExp(`^(?:${list.join('|')})(?![\\p{L}\\p{N}])`,'u');
+function portugueseRegister(setting:Registers['pt']):{patterns:Pattern[];paired:PairedPattern[]}{
+ return setting==='voce'
+  ?{patterns:[{label:'tu pronoun',pattern:words(PT_TU,'letters'),use:'address the student as «você» (seu, sua, você)'},
+    {label:'enclitic -te',pattern:/(?<=\p{L})-te(?![\p{L}\p{N}])/u,use:'address the student as «você» (o, lhe, a você)'},
+    {label:'formal address',pattern:/(?<![\p{L}\p{N}])(?:o senhor|a senhora|os senhores|as senhoras)(?![\p{L}\p{N}])/iu,use:'address the student as «você»'}],
+   paired:[{label:'tu-imperative',pattern:startOf(PT_TU_COMMANDS),english:EN_COMMAND,use:'use the você command (Clique, Escolha, Abra, Salve…)'}]}
+  :{patterns:[{label:'você',pattern:words(['você','vocês'],'letters'),use:'address the student as «tu»'}],
+   paired:[{label:'você-imperative',pattern:startOf(PT_VOCE_COMMANDS),english:EN_COMMAND,use:'use the tu command (Clica, Escolhe, Abre, Salva…)'}]};
+}
+
 /** The profile of one language under a register choice (REGISTER by default). */
 export function profileFor(id:ProfileId,registers:Registers=REGISTER):LocaleProfile{
  switch(id){
@@ -122,6 +149,34 @@ export function profileFor(id:ProfileId,registers:Registers=REGISTER):LocaleProf
    // Natural Hindi is short in grapheme clusters (दोनों दूरबीनों को भेजिए। is 0.54 of its English), hence the low floor.
    lengthBand:[.45,1.2],pluralCategories:['one','other'],joinerScript:/\p{sc=Deva}/u,
   };
+  case 'pt-BR':{
+   const reg=portugueseRegister(registers.pt);
+   return {
+    id,name:'Brazilian Portuguese',script:null,boundary:'letters',caseFold:'pt-BR',
+    glyphs:glyphsWith({},[{marks:['?']}]),
+    pairs:[CURLY,PARENS],
+    forbiddenMarks:[{mark:'"',use:'“ ”'}],
+    typography:[
+     // « » are not Brazilian quotes; the lint's own sample placeholders «A1» are set aside.
+     {label:'guillemets',pattern:/«(?!A\p{N}+»)|(?<!«A\p{N}+)»/u,use:'“ ” (inner ‘ ’)'},
+     {label:'European Portuguese word',pattern:words(PT_EUROPEAN,'letters'),use:'the Brazilian form (tela, arquivo, usuário, mouse, celular, configurações, senha, acessar, equipe, fato, contato, registro, baixar, pressionar, site; ação, objeto, atual, exato)'},
+     {label:'European accent',pattern:/(?<![\p{L}\p{N}])(?:astronómic|fenómen|quilómetr|electrónic|eletrónic|económic|atómic|anónim|sinónim|espectrómetr|fotómetr|cronómetr|génio)\p{L}*/iu,use:'the Brazilian accent (astronômico, fenômeno, quilômetro, eletrônico, espectrômetro, fotômetro, gênio)'},
+     {label:'«estar a» + infinitive',pattern:/(?<![\p{L}\p{N}])est(?:á|ão|ava|avam|ou|amos|ar|eja|ejam)[  ]+a[  ]+\p{L}+[aei]r(?![\p{L}\p{N}])/iu,use:'the gerund («está medindo»)'},
+     {label:'«A» + infinitive as a progress label',pattern:/^A[  ]+(?!partir|seguir)\p{L}+[aei]r(?![\p{L}\p{N}])/u,use:'the gerund («Carregando…»)'},
+     {label:'Spanish word',pattern:words(PT_SPANISH,'letters'),use:'the Portuguese word (você, também, tela, janela, botão, arquivo, aglomerado, estrela, configuração, medição, pulsar…); translate from the English, not the Spanish'},
+     // «los»/«las» only as words: Portuguese writes them as enclitics after a hyphen («salvá-las», «abri-los»).
+     {label:'Spanish article',pattern:/(?<![\p{L}\p{N}-])(?:los|las)(?![\p{L}\p{N}-])/iu,use:'os / as'},
+     {label:'Spanish character',pattern:/[ñ¿¡]/u,use:'Portuguese has no ñ, ¿ or ¡'},
+     // Sentence case: three capitalised words in a row (articles and prepositions between them allowed), outside brackets.
+     {label:'title case',pattern:/(?<![\p{L}\p{N}])\p{Lu}\p{Ll}+(?:[  ]+(?:(?:d[aeo]s?|e|em|para|por|com)[  ]+)?\p{Lu}\p{Ll}+){2,}(?![^(]*\))/u,use:'sentence case (only the first word and names capitalised)'},
+    ],
+    register:{setting:registers.pt,patterns:reg.patterns,paired:reg.paired},
+    // A claim, never its denial: «não é uma tradução oficial», «tradução não oficial» and «não é do CLEA» pass.
+    claims:[/(?<!não é (?:uma |a )?)(?<!não )(?:tradução|versão) oficial/iu,/(?<!não é (?:uma |a )?)tradução d[oa] (?:Project )?CLEA/iu,/(?:tradução|texto|versão) é d[oa] (?:Project )?CLEA/iu],
+    // First proposal (plan §3.4), calibrated on PT0's shell batch (docs/I18N.md, PT0).
+    lengthBand:[.7,1.6],pluralCategories:['one','many','other'],optionalPluralCategories:OPTIONAL_PLURAL_CATEGORIES.pt,
+   };
+  }
   case 'ru':return {
    id,name:'Russian',script:/\p{sc=Cyrl}/u,boundary:'letters',caseFold:'ru',
    // Russian adds a dash where English has none (Телескоп — инструмент…).

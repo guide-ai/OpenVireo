@@ -159,6 +159,45 @@ const ru:Fixture[]=[
  {profile:'ru',rule:'invisible',en:'Telescope',good:'Телескоп',bad:'Теле\u00adскоп'},
  {profile:'ru',rule:'length',en:LONG,good:'Откройте купол, чтобы начать наблюдения сегодня вечером.',bad:'Купол.'},
 ];
-export const FIXTURES:readonly Fixture[]=[...ja,...zhHans,...zhHant,...hi,...ru];
+// Front PT0: Brazilian Portuguese (profile pt-BR). The script and leftover-english rules read a script the language does not have
+// (Latin text cannot be told from English by its letters), and purity a script mix-up it cannot make, so they have no pt fixture.
+const ptBR:Fixture[]=[
+ {profile:'pt-BR',rule:'placeholders',en:SAVED,good:'{count} arquivos salvos.',bad:'Arquivos salvos.'},
+ {profile:'pt-BR',rule:'html',en:OPEN_DOME,good:'Abra a cúpula.',bad:'Abra a <b>cúpula</b>.'},
+ {profile:'pt-BR',rule:'identical',en:'Telescope',good:'Telescópio',bad:'Telescope'},
+ {profile:'pt-BR',rule:'glossary',en:GLOSSARY_EN,good:'Aponte o telescópio para o alvo da lista de objetos.',bad:'Aponte a luneta para o alvo da lista de objetos.',glossary:{terms:[{en:'\\btelescopes?\\b',text:'telesc[óo]pio'}],names:[{en:'Hot List',text:'lista de objetos'}],forbidden:[{words:['luneta'],use:'telescópio'}]}},
+ {profile:'pt-BR',rule:'register',en:OPEN_DOME,good:'Abra a cúpula.',bad:'Abre a cúpula.'},
+ {profile:'pt-BR',rule:'register',en:'Save the investigation. Close the window.',good:'Salve a investigação. Feche a janela.',bad:'Salve a investigação. Fecha a janela.',note:'the second sentence pairs with the second English one'},
+ {profile:'pt-BR',rule:'register',en:'Your investigation was saved.',good:'Sua investigação foi salva.',bad:'Tua investigação foi salva.'},
+ {profile:'pt-BR',rule:'register',en:'The page shows you the sky.',good:'A página mostra o céu para você.',bad:'A página mostra-te o céu.'},
+ {profile:'pt-BR',rule:'register',en:'Saves the investigation.',good:'Salva a investigação.',bad:'O senhor salva a investigação.',note:'a third-person description is no tu-imperative'},
+ {profile:'pt-BR',rule:'register',en:OPEN_DOME,good:'Abre a cúpula.',bad:'Abra a cúpula, você.',registers:{pt:'tu'},note:'the register flipped to tu'},
+ {profile:'pt-BR',rule:'claim',en:'Translation by OpenVireo.',good:'Tradução do OpenVireo.',bad:'Tradução oficial do CLEA.'},
+ {profile:'pt-BR',rule:'claim',en:'This is not an official translation.',good:'Esta não é uma tradução oficial.',bad:'Esta é uma tradução oficial.'},
+ {profile:'pt-BR',rule:'claim',en:'This text is not CLEA\'s.',good:'Este texto não é do CLEA.',bad:'Este texto é do CLEA.'},
+ {profile:'pt-BR',rule:'glyphs',en:'File › Save…',good:'Arquivo › Salvar…',bad:'Arquivo > Salvar…'},
+ {profile:'pt-BR',rule:'glyphs',en:'Save As...',good:'Salvar como...',bad:'Salvar como',note:"VIREO's ... kept"},
+ {profile:'pt-BR',rule:'pairs',en:CHOOSE_OPEN,good:'Escolha “Abrir”.',bad:'Escolha “Abrir.'},
+ {profile:'pt-BR',rule:'quotes',en:CHOOSE_OPEN,good:'Escolha “Abrir”.',bad:'Escolha "Abrir".'},
+ {profile:'pt-BR',rule:'typography',en:CHOOSE_OPEN,good:'Escolha “Abrir”.',bad:'Escolha «Abrir».'},
+ {profile:'pt-BR',rule:'typography',en:'Open the file on the screen.',good:'Abra o arquivo na tela.',bad:'Abra o ficheiro no ecrã.'},
+ {profile:'pt-BR',rule:'typography',en:'Click with the mouse.',good:'Clique com o mouse.',bad:'Clique com o rato.'},
+ {profile:'pt-BR',rule:'typography',en:'User settings',good:'Configurações do usuário',bad:'Definições do utilizador'},
+ {profile:'pt-BR',rule:'typography',en:'Open it on your phone.',good:'Abra no celular.',bad:'Abra no telemóvel.'},
+ {profile:'pt-BR',rule:'typography',en:'Select the current object.',good:'Selecione o objeto atual.',bad:'Selecione o objecto actual.'},
+ {profile:'pt-BR',rule:'typography',en:'The spectrometer is astronomical.',good:'O espectrômetro é astronômico.',bad:'O espectrómetro é astronómico.'},
+ {profile:'pt-BR',rule:'typography',en:'The telescope is measuring.',good:'O telescópio está medindo.',bad:'O telescópio está a medir.'},
+ {profile:'pt-BR',rule:'typography',en:'Loading…',good:'Carregando…',bad:'A carregar…'},
+ {profile:'pt-BR',rule:'typography',en:'Open the window.',good:'Abra a janela.',bad:'Abra la ventana.',note:'Spanish left from the reference'},
+ {profile:'pt-BR',rule:'typography',en:'Change the language?',good:'Mudar o idioma?',bad:'¿Mudar o idioma?'},
+ {profile:'pt-BR',rule:'typography',en:'Save them in the files.',good:'Salve-as nos arquivos.',bad:'Salve las en los archivos.',note:'«-las» after a hyphen is Portuguese'},
+ {profile:'pt-BR',rule:'typography',en:'Optical simulation options',good:'Opções de simulação óptica',bad:'Opções De Simulação Óptica'},
+ {profile:'pt-BR',rule:'typography',en:'Optical Simulation Options',good:'Opções de simulação óptica (Optical Simulation Options)',bad:'Opções de Simulação Óptica',note:"VIREO's English name in brackets keeps its case"},
+ {profile:'pt-BR',rule:'digits',en:EXPOSURE,good:'Exposição: 2.5 s',bad:'Exposição: 2,5 s'},
+ {profile:'pt-BR',rule:'normalization',en:'Exposure',good:'Exposição',bad:'Exposição'.normalize('NFD')},
+ {profile:'pt-BR',rule:'invisible',en:'Telescope',good:'Telescópio',bad:'Teles­cópio'},
+ {profile:'pt-BR',rule:'length',en:LONG,good:'Abra a cúpula para começar a observar hoje à noite.',bad:'Abra.'},
+];
+export const FIXTURES:readonly Fixture[]=[...ja,...zhHans,...zhHant,...hi,...ru,...ptBR];
 /** The rules each profile must have fixtures for (purity applies only where the profile checks a script mix-up). */
 export const RULES_WITH_FIXTURES:readonly RuleId[]=['placeholders','html','identical','script','leftover-english','glossary','register','claim','glyphs','pairs','quotes','typography','digits','normalization','invisible','purity','length'];

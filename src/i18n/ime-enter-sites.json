@@ -10,6 +10,7 @@
   "src/SampledFlux.tsx › SampledFlux · <input#probe-wavelength> · text field",
   "src/TelescopeMotion.tsx › TelescopeMotion · <button.secondary-button> · no text field ×2",
   "src/clusters/CleaHelp.tsx › HelpListBox/key · <ul.cluster-hr-listbox**> · no text field",
+  "src/components/LanguageChoice.tsx › LanguageChoice · <select#language-select> · no text field",
   "src/components/PulsarAnalysis.tsx › PulsarAnalysis · <input#pulsar-comment> · text field",
   "src/components/PulsarAnalysis.tsx › PulsarAnalysis · <input#pulsar-export-*> · text field",
   "src/components/PulsarAnalysis.tsx › PulsarAnalysis/panButton/onKeyDown · unbound · unbound here",

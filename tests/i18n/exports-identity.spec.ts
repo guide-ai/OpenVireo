@@ -12,6 +12,7 @@ import en from '../../src/i18n/en.json' with {type:'json'};
 import {CAMERA_ES} from '../../src/i18n/es/maps/camera';
 import {TOUR_ES} from '../../src/i18n/es/maps/tour';
 import {OBSERVATORY_ES} from '../../src/i18n/es/maps/observatory';
+import {TRANSLATED} from './languageText';
 // Front ES0 (docs/I18N.md; user decision 3, 2026-11-09): the files the site writes stay exactly as VIREO or the web contract
 // writes them, in English, whatever the screen language. Each export family is downloaded once in English and once in the
 // dev-only pseudo-locale qps (?lang=qps: every catalog, map and vireo() string marked ⟦…⟧, accented and ~35 % longer), from the
@@ -20,7 +21,10 @@ import {OBSERVATORY_ES} from '../../src/i18n/es/maps/observatory';
 // CCD camera FITS, whose screens it translates). Selectors go through `L`, which matches an English
 // accessible name in both languages (the pseudo-locale only adds marks and padding and accents vowels).
 
-type Locale='en'|'qps'|'es-419';
+// Front PT0 (plan front-i18n-pt-br.md §1.2 #15): every translated language of the registry joins as its fronts land (pt-BR from
+// PT0, its `?lang=pt-BR` preview in an en-US browser before its release, tests/fixtures/language.ts). Its text comes from its own
+// catalog (tests/i18n/languageText.ts), and its own letters must never reach a file.
+type Locale='en'|'qps'|'es-419'|'pt-BR';
 type File=Readonly<{name:string;bytes:Buffer}>;
 const ACCENTED:Readonly<Record<string,string>>={a:'aá',e:'eé',i:'ií',o:'oó',u:'uú',A:'AÁ',E:'EÉ',I:'IÍ',O:'OÓ',U:'UÚ'};
 const MARK='[⟦⟧·\\s]*';
@@ -38,8 +42,12 @@ const SPANISH=(()=>{
  return out;
 })();
 const exact=(text:string)=>new RegExp(`^\\s*${text.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&').replace(/\s+/g,'\\s+')}\\s*$`);
-/** The accessible-name matcher of an English text in this locale: its Spanish form in es-419 (which must exist), else `L`. */
-const N=(locale:Locale,text:string)=>{if(locale!=='es-419')return L(text);const arrow=/ ↗$/.test(text)&&!SPANISH.has(text)?' ↗':'',spanish=SPANISH.get(arrow?text.slice(0,-2):text);if(!spanish)throw new Error(`No Spanish for “${text}”`);return exact(spanish+arrow);};
+/** A translated language's letters that English text never has (Spanish á é í ó ú ñ ¿ ¡; Portuguese ã õ ç â ê ô à…). */
+const LETTERS:Readonly<Record<string,RegExp>>=Object.fromEntries(TRANSLATED.map(t=>[t.tag,t.letters]));
+const HTML_LANG:Readonly<Record<Locale,string>>={en:'en',qps:'en','es-419':'es-419','pt-BR':'pt-BR'};
+/** The accessible-name matcher of an English text in this locale: its Spanish form in es-419 (which must exist), a language before
+ * its release its own form or the English the page then shows (languageText.ts `text`), else `L`. */
+const N=(locale:Locale,text:string)=>{if(locale==='pt-BR'){const t=TRANSLATED.find(x=>x.tag===locale)!;return exact(text==='Skip the tour'?t.maps.tour.skip:t.text(text));}if(locale!=='es-419')return L(text);const arrow=/ ↗$/.test(text)&&!SPANISH.has(text)?' ↗':'',spanish=SPANISH.get(arrow?text.slice(0,-2):text);if(!spanish)throw new Error(`No Spanish for “${text}”`);return exact(spanish+arrow);};
 const button=(p:Page,name:string,locale:Locale='en')=>p.getByRole('button',{name:N(locale,name)});
 const sha=(b:Buffer)=>createHash('sha256').update(b).digest('hex');
 /** A fixed instant for every Date read (timers keep running), so exports that record "now" are comparable. */
@@ -48,7 +56,7 @@ const NOW=new Date('2026-11-02T15:04:05.678Z');
 async function open(page:Page,locale:Locale,hash:string,clock:'fixed'|'real'='fixed'){
  if(clock==='fixed')await page.clock.setFixedTime(NOW);
  await page.goto(`/${contextQuery(locale)}#${hash}`);
- await expect(page.locator('html')).toHaveAttribute('lang',locale==='es-419'?'es-419':'en');
+ await expect(page.locator('html')).toHaveAttribute('lang',HTML_LANG[locale]);
  if(locale==='qps')await expect.poll(()=>page.title()).toMatch(/^⟦/);
  const skip=page.getByRole('button',{name:N(locale,'Skip the tour')});// the first-visit tour (translated since ES1)
  if(await skip.isVisible().catch(()=>false))await skip.click();
@@ -70,7 +78,7 @@ async function identical(browser:Browser,baseURL:string|undefined,flow:(page:Pag
   try{
    results[locale]=await flow(page,locale);
    if(locale==='qps')await expect(scope(page),'the pseudo-locale applied to this flow').toContainText('⟦');
-   if(locale==='es-419')await expect(page.locator('html')).toHaveAttribute('lang','es-419');
+   if(LETTERS[locale])await expect(page.locator('html')).toHaveAttribute('lang',HTML_LANG[locale]);
   }finally{await context.close();}
   expect(errors,locale).toEqual([]);
  }
@@ -83,7 +91,7 @@ async function identical(browser:Browser,baseURL:string|undefined,flow:(page:Pag
   expect(qps[family].bytes.includes('⟦'),`${family}: a pseudo-locale mark reached the file`).toBe(false);
   const mask=masks[family]??((b:Buffer)=>b);
   // Spanish text in a file (checked on the compared part, so binary image data is left out).
-  if(locale==='es-419')expect(mask(qps[family].bytes).toString('utf8'),`${family}: Spanish reached the file`).not.toMatch(/[áéíóúñ¿¡]/);
+  if(LETTERS[locale])expect(mask(qps[family].bytes).toString('utf8'),`${family}: ${locale} text reached the file`).not.toMatch(LETTERS[locale]);
   if(process.env.ES0_DUMP&&sha(mask(qps[family].bytes))!==sha(mask(file.bytes))){const {writeFile}=await import('node:fs/promises');await writeFile(`${process.env.ES0_DUMP}/${family}.en`,file.bytes);await writeFile(`${process.env.ES0_DUMP}/${family}.qps`,qps[family].bytes);}
   expect(sha(mask(qps[family].bytes)),`${family}: ${file.name}`).toBe(sha(mask(file.bytes)));
  }}
@@ -486,23 +494,24 @@ test('E02 LSS survey and wedge: counts CSV, session, SSP, results CSV and TXT, i
  },{},page=>page.locator('.lss-main'),['en','qps','es-419']);
 });
 
-test('the shell toolbar: Save investigation is byte-identical in English, qps and Spanish',async({browser,baseURL})=>{
+test('the shell toolbar: Save investigation is byte-identical in English, qps, Spanish and the Brazilian Portuguese preview',async({browser,baseURL})=>{
  const files:Record<string,File>={};
- for(const locale of ['en','qps','es-419'] as const){
+ for(const locale of ['en','qps','es-419','pt-BR'] as const){
   const context=await browser.newContext({baseURL,locale:contextLocale(locale),viewport:{width:1440,height:1050}}),page=await context.newPage();page.setDefaultTimeout(20_000);
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
   try{
    await page.clock.setFixedTime(NOW);await page.goto(`/${contextQuery(locale)}#observatory`);
    const toolbar=page.locator('.investigation-toolbar');await expect(toolbar).toBeVisible({timeout:15_000});
    if(locale==='qps')await expect(toolbar,'the pseudo-locale applied').toContainText('⟦');
-   if(locale==='es-419'){await expect(page.locator('html')).toHaveAttribute('lang','es-419');await expect(toolbar).toContainText(es['project.title']);}
-   const name=locale==='es-419'?es['project.save']:L('Save investigation');
+   const own=TRANSLATED.find(t=>t.tag===locale);
+   if(own){await expect(page.locator('html')).toHaveAttribute('lang',own.entry.htmlLang);await expect(toolbar).toContainText(own.catalog['project.title']);}
+   const name=own?own.catalog['project.save']:L('Save investigation');
    files[locale]=await download(page,()=>toolbar.getByRole('button',{name,exact:typeof name==='string'||undefined}).click());
   }finally{await context.close();}
   expect(errors,locale).toEqual([]);
  }
- for(const locale of ['qps','es-419'])expect([files[locale].name,sha(files[locale].bytes)],locale).toEqual([files.en.name,sha(files.en.bytes)]);
- for(const f of Object.values(files)){expect(f.bytes.includes('⟦')).toBe(false);expect(f.bytes.toString('utf8')).not.toMatch(/[áéíóúñ¿¡]/);}
+ for(const locale of ['qps','es-419','pt-BR'])expect([files[locale].name,sha(files[locale].bytes)],locale).toEqual([files.en.name,sha(files.en.bytes)]);
+ for(const f of Object.values(files)){expect(f.bytes.includes('⟦')).toBe(false);for(const letters of Object.values(LETTERS))expect(f.bytes.toString('utf8')).not.toMatch(letters);}
 });
 
 // Front ES6: the E04 flow (Pleiades photometry) in English, qps and Spanish: the photometer session JSON, VIREO's Record/Review rows
