@@ -48,7 +48,8 @@ export type I18n=ReturnType<typeof build>;
  * src/i18n/es/; the dev-only pseudo-locale is src/i18n/pseudo.ts. */
 export type LocaleBundle=Readonly<{
  language:Exclude<UiLanguage,'en'>;
- /** Catalog text by key; missing keys fall back to English until ES-REL. */
+ /** Catalog text by key. A released language's catalog is complete (checked statically); a split module holds part of it and
+  * builds with the English fallback (src/i18n/active.ts). */
  messages:Readonly<Partial<Record<MessageKey,string>>>;
  /** `*Messages.ts` maps by their pickMessages id (src/i18n/maps.ts), each checked against its English map on first use. */
  maps?:BundleMaps;
