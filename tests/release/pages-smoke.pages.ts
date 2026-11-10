@@ -131,7 +131,8 @@ for(const [hash,name] of ROUTES)test(`${name} (${hash}) opens with no policy vio
 // (a text read before its area would be answered in English and logged once the catalog is complete, after ES-REL).
 const plan=planLanguage(loadLanguages()[0]) as {modules:{name:string;shared:string[]}[]};
 const AREA_OF:Readonly<Record<string,string>>={'#classification':'classification','#cluster-database':'cluster','#photometer':'photometer','#pulsar-analysis':'pulsar',
- '#radio-control':'radio','#lss-survey':'lss','#lss-wedge':'lss','#galaxy-exposure':'exposure','#star-exposure':'exposure','#sky-exposure':'exposure','#images':'fits'};
+ '#radio-control':'radio','#lss-survey':'lss','#lss-wedge':'lss','#galaxy-exposure':'exposure','#star-exposure':'exposure','#sky-exposure':'exposure','#images':'fits',
+ '#spectrometer':'exposure'};// the field spectrometer at the default pointing
 const modulesOf=(area:string|undefined)=>{if(!area)return [];const m=plan.modules.find(x=>x.name===area)!;return [area,...m.shared].sort();};
 for(const [hash,name] of ROUTES)test(`Front ES-SPLIT: ${name} (${hash}) in Spanish fetches the core and its area only, with no error`,async({page,baseURL})=>{
  const p=await watch(page,baseURL!);
