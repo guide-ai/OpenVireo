@@ -488,6 +488,26 @@
   {
    "en": "\\bplate constants\\b",
    "pt": "constantes de placa"
+  },
+  {
+   "en": "\\bsnapshots?\\b",
+   "pt": "instant[âa]neo"
+  },
+  {
+   "en": "\\bcombined view\\b",
+   "pt": "visualiza[çc][ãa]o combinada"
+  },
+  {
+   "en": "\\bpanes?\\b",
+   "pt": "painel|painéis"
+  },
+  {
+   "en": "\\b(?:sampled|printed-coordinate|printed|intensity|unknown) traces?\\b",
+   "pt": "traçad"
+  },
+  {
+   "en": "\\breadouts?\\b",
+   "pt": "leitura"
   }
  ],
  "names": [

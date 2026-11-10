@@ -79,6 +79,16 @@ describe('Front SC8: scripts/check-i18n-dist.mjs with a partial language before 
   const result=check(out,[PARTIAL,other]);
   expect(result.offenders).toEqual([]);expect(result.reports.map(r=>r.tag)).toEqual(['qaa-XA','qab-XB']);
  });
+ it('accepts one language\'s marker inside a longer text of another language\'s own chunk (Front PT3), and only there',()=>{
+  const first=language('qab-XB',{'project.save':'Konservi la esploron ĉi tie','sky.title':'Komencu per la ĉielo nun ĉi tie'});
+  // The second language's only text holds the whole of the first's marker: it is not taken for the first's chunk either.
+  const second=language('qad-XD',{'project.save':'Konservi la esploron ĉi tie tuj nun'});
+  const result=check(dist([first,second]),[first,second]);
+  expect(result.offenders).toEqual([]);
+  // The same marker in an English chunk still fails.
+  const stray=check(dist([first,second],a=>writeFileSync(path.join(a,'index-AAAAAAAA.js'),`${readFileSync(path.join(a,'index-AAAAAAAA.js'),'utf8')}"Konservi la esploron ĉi tie";`)),[first,second]);
+  expect(stray.offenders.some(o=>/index-AAAAAAAA\.js: 1 qab-XB core text\(s\) outside the core chunk/.test(o)),stray.offenders.join('\n')).toBe(true);
+ });
  it('finds a module that has no marker text yet by its chunk name, with a warning, for a language before its release',()=>{
   const short=language('qac-XC',{'project.save':'Konservi la esploron ĉi tie','fits.title':'Bildo ĉi'});
   const result=check(dist([short]),[short]);

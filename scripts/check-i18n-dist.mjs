@@ -121,6 +121,12 @@ export function checkI18nDist(dist,{root=ROOT,languages=loadLanguages(root),grap
    const hits=new Map();for(const [name,list] of markers){const found=list.filter(m=>m.forms.some(form=>f.text.includes(form)));if(found.length)hits.set(name,found);}
    if(hits.size)holders.set(f,hits);}
   const chunkName=(name)=>`i18n-${tag}-${name.replace(/\+/g,'_')}-`;
+  // Front PT3: another language's chunk (named i18n-<tag>-<module>-) is never this language's, and in it a marker may appear only
+  // inside a longer text of that chunk's own module, as within one language below (Portuguese «Campo de velocidade» holds
+  // Spanish «Campo de velocidad»). Returns that module's text, or null for a file that is no other language's chunk.
+  const foreign=(f)=>{for(const p of plans){if(p.language===language)continue;
+   for(const [name,t] of p.texts)if(f.name.startsWith(`i18n-${p.language.tag}-${name.replace(/\+/g,'_')}-`))return [...t.catalog,...t.sources,...t.originals].join('\n');}
+   return null;};
   // Each module's markers are all in one JS chunk named after it. A module of a language before its release that has no marker
   // yet (a partial catalog's short or English-equal texts) is found by its name only.
   const chunkOf=new Map();
@@ -131,7 +137,7 @@ export function checkI18nDist(dist,{root=ROOT,languages=loadLanguages(root),grap
     if(released||named.length!==1){offenders.push(`${tag} ${m.name}: no marker text to find its chunk${released?'':` (and ${named.length} chunks by its name)`}`);continue;}
     warnings.push(`${tag} ${m.name} has no marker text yet; its chunk ${named[0].name} is found by its name only`);chunkOf.set(m.name,named[0]);continue;
    }
-   const full=[...holders].filter(([,hits])=>hits.get(m.name)?.length===list.length).map(([f])=>f);
+   const full=[...holders].filter(([f,hits])=>hits.get(m.name)?.length===list.length&&foreign(f)===null).map(([f])=>f);
    if(full.length!==1||!/\.js$/.test(full[0].name)){offenders.push(`${tag} ${m.name}: expected one chunk holding all ${list.length} of its markers, found ${full.length}`);continue;}
    chunkOf.set(m.name,full[0]);
    if(!full[0].name.startsWith(chunkName(m.name)))offenders.push(`${tag} ${m.name}: its chunk is named ${full[0].name}`);
@@ -142,9 +148,9 @@ export function checkI18nDist(dist,{root=ROOT,languages=loadLanguages(root),grap
   // of a longer text of that file's own module (a short sentence inside a long one).
   const languageFiles=new Set(chunkOf.values()),ownerOf=new Map([...chunkOf].map(([n,f])=>[f,n]));
   const joined=new Map([...texts].map(([name,t])=>[name,[...t.catalog,...t.sources,...t.originals].join('\n')]));
-  for(const [f,hits] of holders){const own=ownerOf.get(f);
+  for(const [f,hits] of holders){const own=ownerOf.get(f),other=own?null:foreign(f);
    for(const [name,found] of hits){if(name===own)continue;
-    const stray=found.filter(m=>!(own&&joined.get(own).includes(m.text)));
+    const stray=found.filter(m=>!(own&&joined.get(own).includes(m.text))&&!(other!==null&&other.includes(m.text)));
     if(stray.length)offenders.push(`${f.file}: ${stray.length} ${tag} ${name} text(s) outside the ${name} chunk (${JSON.stringify(stray[0].text.slice(0,60))})`);}}
   // Not loaded at start: index.html neither loads nor preloads a language chunk, and its scripts' static imports reach none.
   for(const f of languageFiles){
