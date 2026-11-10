@@ -9,7 +9,7 @@ async function save(page:Page){const d=page.waitForEvent('download');await page.
 async function survey(page:Page){await clickHeaderTool(page,'LSS survey');await expect(page.getByRole('heading',{name:'Large-scale structure survey',exact:true})).toBeVisible();}
 test('E02: a typed velocity survives Save and Restore in a fresh context',async({page,browser})=>{
  test.setTimeout(180000);
- await page.clock.install();await page.goto('/');await survey(page);
+ await page.clock.install();await page.goto('/#observatory');await survey(page);
  await page.getByLabel('Survey field',{exact:true}).selectOption('1');await page.getByRole('button',{name:'Load selected list',exact:true}).click();await expect(page.getByTestId('lss-rows')).toBeVisible({timeout:30000});
  await page.getByTestId('lss-row-1').getByRole('button',{name:'Point and view',exact:true}).click();
  await page.getByRole('button',{name:'Activate spectrometer',exact:true}).click();
@@ -29,7 +29,7 @@ test('E02: a typed velocity survives Save and Restore in a fresh context',async(
  await survey(page);
  const saved=await saveOffline(page,()=>save(page));expect(JSON.parse(saved.toString()).version).toBeGreaterThanOrEqual(31);
  const context=await browser.newContext(),fresh=await context.newPage();
- await fresh.clock.install();await fresh.goto('/');
+ await fresh.clock.install();await fresh.goto('/#observatory');
  await fresh.getByLabel('Restore investigation JSON',{exact:true}).setInputFiles({name:'lss.json',mimeType:'application/json',buffer:saved});
  await expect(fresh.getByText('Session restored.',{exact:false})).toBeAttached({timeout:30000});
  await survey(fresh);await expect(fresh.getByTestId('lss-record-count')).toHaveText('1 records');
@@ -38,7 +38,7 @@ test('E02: a typed velocity survives Save and Restore in a fresh context',async(
 });
 test('E02: the same after a reload of the page itself (online save, no fake clock on restore)',async({page})=>{
  test.setTimeout(180000);
- await page.clock.install();await page.goto('/');await survey(page);
+ await page.clock.install();await page.goto('/#observatory');await survey(page);
  await page.getByLabel('Survey field',{exact:true}).selectOption('1');await page.getByRole('button',{name:'Load selected list',exact:true}).click();await expect(page.getByTestId('lss-rows')).toBeVisible({timeout:30000});
  await page.getByTestId('lss-row-1').getByRole('button',{name:'Point and view',exact:true}).click();
  await page.getByRole('button',{name:'Activate spectrometer',exact:true}).click();

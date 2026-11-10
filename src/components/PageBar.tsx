@@ -28,8 +28,8 @@ export default function PageBar({view,inert,busy,notice,error,actions,language,h
  },[]);
  return <section ref={bar} className="page-bar investigation-toolbar" aria-label={SHELL.pageBar.label} inert={inert} data-testid="page-bar">
   <div className="page-bar-row">
-   <p className="page-bar-place" data-testid="page-bar-place" data-i18n-shell=""><span className="page-bar-section">{groupLabel(page.group)}</span>{' '}
-    <svg className="page-bar-separator" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M4.5 3l3 3-3 3"/></svg>{' '}
+   <p className="page-bar-place" data-testid="page-bar-place" data-i18n-shell="">{/* Front HOME: the welcome belongs to no section, so it shows its name alone. */}{page.group&&<><span className="page-bar-section">{groupLabel(page.group)}</span>{' '}
+    <svg className="page-bar-separator" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M4.5 3l3 3-3 3"/></svg>{' '}</>}
     <strong className="page-bar-page">{page.label()}</strong></p>
    {actions}
    <div className="page-bar-tools">{language}<div className="page-bar-help" data-testid="page-bar-help">{help}</div></div>

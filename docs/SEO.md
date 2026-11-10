@@ -146,3 +146,70 @@ After the deploy: in Google Search Console (once the `openvireo.space` property 
 `https://openvireo.space/sitemap.xml`, and inspect `https://openvireo.space/es/` and a Spanish lab page with URL Inspection
 («Request indexing»); Search Console no longer reports `hreflang` (its International Targeting report was retired in 2022): URL Inspection shows the canonical Google chose, and a site audit (OpenSEO) can check the alternates. The same in Bing Webmaster Tools if
 wanted. OpenSEO can track Spanish keywords (for example «práctica ley de Hubble», «CLEA astronomía») for a Spanish-speaking market.
+
+# Front HOME: a welcome on the observatory's first screen
+
+User request, 2026-11-10: before the site is announced to the general public (curious adults and hobby learners, for example
+someone whose cosmology course uses CLEA's labs, a Windows program that today needs a virtual machine), `https://openvireo.space/`
+must say what it is. Until now `/` opened straight on the observatory, whose first screen ("Start with the sky.") never said what
+the site is, and crawlers read about 30 words before the app started. User decisions (2026-11-10): keep `/` as the app (no new HTML
+route, no redirect); then, on seeing the first layout, make the welcome its own screen instead of a block above the observatory.
+
+Workflow (REVIEW.md): plan by the coordinator (Claude Opus 5.5, high effort), with the user's design change relayed mid-front;
+implementation by a subagent (Claude Opus 5.5, medium effort); independent review pending (below).
+
+## What changed
+
+- **A welcome page** (`src/home/Welcome.tsx`), the app's page `home`: the address `/` with no hash, `#` or `#home`. An eyebrow and
+  an `h1` ("Project CLEA's VIREO astronomy labs, in your browser"), a lead, three facts (nothing to install, no Windows or virtual
+  machine, Mac/Windows/Linux/Chromebook; free with no account, work saved as files on your own computer; an unofficial
+  reconstruction that follows the recovered behaviour and labels its web adaptations), one primary button **Explore the sky** to
+  the exploration page (`#observatory`), and the seven labs as cards with a one-line summary each. A card is a `<button>` named by
+  the lab (its summary is the description) that calls the lab's entry of the one `openGuide` map in `OpenVireo.tsx`, the same
+  opener as the Guides menu button and `#lab=` (the cluster card goes to the cluster database, as its menu button does). The
+  welcome's footer repeats the observatory's credit line and "About the seven labs" link. Its text is new web text (`home.*` keys
+  in English, es-419 and pt-BR), with no wording about classes, students or teachers, and no claim of equivalence with or
+  endorsement by CLEA (review m2's rules above).
+- **Routing**: `home` joins the route table (`src/components/routePages.ts`) with no section (`group:null`): the page bar shows
+  "Welcome" alone, and no sidebar section lists it; the brand link (✳ OpenVireo) opens it (`#home`). The welcome is the default
+  only for an empty hash: `#observatory` and every other route open as before, an unknown hash still opens the observatory, and
+  `#lab=<slug>` still opens its guide over the observatory. Browser Back from `#observatory` returns to the welcome (a hash
+  change). A restore does not change the page. The route-change focus goes to the welcome's `h1` as to every page's.
+- **The exploration page** (`#observatory`, Optical observatory › Observatory) keeps its heading ("Start with the sky.", the
+  subtitle, "What works in this version"), its first steps and the telescope, unchanged.
+- **First-visit tour**: it no longer starts on load. It is scheduled the first time the visitor reaches the exploration page in a
+  load (`src/home/firstVisit.ts`, `firstVisitTourDue`), under the old conditions: not in an automated browser, not once seen, not in
+  a load that arrived through `#lab=`. Leaving within its 700 ms delay cancels it and lets the next visit there schedule it again
+  (this also survives React's development double effect). Every part the tour points at (sidebar sections, Exercise guides, first
+  steps, Save investigation, Help) is on the exploration page; its text already says "On the Observatory page", so it is unchanged.
+  Help › Tour still replays it from any page.
+- **Pre-render** (`homeBoot` in `src/seo/pages.ts`, injected by `src/i18n/html.ts`): the English welcome from the same catalog keys
+  (eyebrow, `h1`, lead, the three facts, "The seven labs" with each lab's name linking to `/labs/<slug>/` and its summary), plain
+  escaped HTML with no inline style or script; it is shown as a plain list until the app replaces it (`base.css`). The document
+  title and description are unchanged.
+- **`/es/`**: «Cómo funciona» gains two items: no Windows or virtual machine on Mac, Windows, Linux or a Chromebook; follows the
+  recovered behaviour, labels its adaptations, unofficial. Portuguese search pages remain front PT-SEO.
+
+Web presentation only (an adaptation of the site's own shell): VIREO has no welcome page; nothing about the exercises changed.
+
+## Tests
+
+- `src/seo/pages.test.ts`: the pre-render's `h1`, lead and facts once each; the seven labs in the `/labs/` order with the welcome's
+  names and summaries (each ≤ 120 characters) and their `/labs/` links; escaping; a missing key throws; no inline style, script or
+  handler; no classroom words or equivalence claims in `home.*`.
+- `src/home/firstVisit.test.ts`: the tour condition (only on `observatory`; automated, seen, `#lab=` arrival and once-per-load each
+  block it). `src/components/routePages.test.ts`: 17 pages, the welcome in no section.
+- `tests/home.spec.ts`: `/` shows the welcome (facts, seven named and described cards, the button, "Welcome" in the page bar, no
+  first steps or telescope, the cards within 1050 px at 1440 px); each card opens the same guide, at the same address, as its
+  Guides menu button; Explore the sky goes to `#observatory` and focuses its `h1`, Back returns to the welcome, the brand link opens
+  it, `#observatory` and `#home` open directly; 320 px with no horizontal scroll and one card per row; es-419 and pt-BR (preview)
+  translations; as a visitor's browser, no tour on the welcome, the tour on reaching exploration with every target visible, and no
+  tour after a `#lab=` arrival.
+- Existing specs: a spec that loaded `/` to use the observatory now loads `/#observatory` (the address the specs already use most);
+  the five that load `/` only to wait for an `h1` and then mount a test host keep `/`. `tests/seo-labs.spec.ts`: after `#lab=` is
+  cleared, a reload shows the welcome. `tests/i18n/es-seo.spec.ts`: `/`, `/?lang=en` and «Abrir el observatorio» (`/?lang=es-419`)
+  open the welcome.
+
+## Review
+
+Pending: the independent reviewer's raw findings, then the resolution, go here.

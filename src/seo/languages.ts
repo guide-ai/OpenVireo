@@ -101,6 +101,9 @@ const ES:SeoLanguage={
   note:'Gratis, sin registro y sin nada que instalar.',
   labsHeading:'Las siete prácticas',howHeading:'Cómo funciona',
   how:['Todo ocurre en tu navegador: no hay nada que instalar ni necesitas una cuenta.',
+   // Front HOME: the facts of the app's welcome (home.factInstall, home.factFaithful).
+   'No necesitas Windows ni una máquina virtual: funciona en un navegador actual en Mac, Windows, Linux o una Chromebook.',
+   'Sigue el comportamiento recuperado del programa original y señala sus adaptaciones web. Es una reconstrucción no oficial.',
    'Guardas tus investigaciones como archivos en tu propia computadora y las vuelves a cargar cuando quieras.',
    'La interfaz, las guías y la ayuda están en español. Los archivos que escribe el sitio (TXT, FITS, CSV e investigaciones guardadas) quedan en inglés, en el formato de VIREO o de OpenVireo.',
    'Puedes cambiar a inglés cuando quieras con el selector de idioma del menú.']},

@@ -5,7 +5,7 @@ import{openHeaderTools}from'./fixtures/header-tools';
 
 test('Open spectrometer from a pointed galaxy reaches the spectrometer index, which links to the real routes',async({page})=>{
   let previews=0;page.on('request',r=>{if(/\/original\/spectra\/(GLXYTMPL|NGC\d+)\.SP$/.test(r.url())&&new URL(page.url()).hash==='#spectrometer')previews++;});
-  await page.goto('/');
+  await page.goto('/#observatory');
   await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
   await page.getByLabel('Target',{exact:true}).selectOption('NGC4874');
   await page.getByRole('button',{name:'Switch to telescope view ↗',exact:true}).click();

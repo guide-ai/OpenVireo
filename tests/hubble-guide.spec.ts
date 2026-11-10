@@ -7,7 +7,7 @@ async function openGuide(page:Page){await clickHeaderTool(page,'Hubble lab guide
 async function save(page:Page){const wait=page.waitForEvent('download');await page.getByRole('button',{name:'Save session',exact:true}).click();return readFile((await(await wait).path())!);}
 test('self-guided all-supported-target investigation, input recovery, duplicates and derived progress after restore',async({page})=>{
  test.setTimeout(150000);
- const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();await page.goto('/');
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();await page.goto('/#observatory');
  let guide=await openGuide(page);await expect(guide.getByTestId('lab-progress-counts')).toContainText('Archived galaxy spectra: 0/13');await expect(guide.getByTestId('lab-original-coverage')).toContainText('13 of the 13 original Hubble.HTL targets');await expect(guide).toContainText('does not supply an expected redshift');
  // H2 review 1 M4: the guide describes the Observational Data record (typed velocity, 1 % check) and the velocity it feeds.
  await expect(guide).toContainText("Record measurement opens VIREO's Observational Data");await expect(guide).toContainText('within 1 % of c z');await expect(guide).toContainText('Velocity is the one you typed in Observational Data');

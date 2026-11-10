@@ -64,4 +64,6 @@ details.research-notes>:not(summary){color:var(--ov-text-muted);font-size:var(--
 /* Front SEO: what index.html shows inside #root until the app replaces it (crawlable text and links to /labs/). */
 .seo-boot{max-width:640px;margin:48px auto;padding:0 16px;color:var(--ov-text-muted);font:var(--ov-text-sm)/1.6 var(--ov-font-sans)}
 .seo-boot h1{color:var(--ov-text);font-size:1.4rem;margin:0 0 8px}
-.seo-boot ul{display:flex;flex-wrap:wrap;gap:4px 16px;padding:0;list-style:none}
+/* Front HOME: the facts and the labs with their summaries read as a plain list. */
+.seo-boot ul{padding-left:18px}
+.seo-boot h2{color:var(--ov-text);font-size:1.1rem;margin:16px 0 4px}

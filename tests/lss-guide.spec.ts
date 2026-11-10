@@ -7,7 +7,7 @@ async function openGuide(page:Page){await openHeaderTools(page);await page.getBy
 async function closeGuide(page:Page){await page.getByRole('dialog').getByRole('button',{name:'Close LSS guide',exact:true}).click();}
 test('E02 guide: steps check off from loading, recording, plotting, describing and saving',async({page})=>{
  test.setTimeout(120000);
- await page.clock.install();await page.goto('/');await openGuide(page);
+ await page.clock.install();await page.goto('/#observatory');await openGuide(page);
  for(const s of ['load','observe','record','repeat','wedge','describe','save'])await expect(step(page,s)).toHaveAttribute('data-done','false');
  await step(page,'load').getByRole('button',{name:'Go to the LSS survey',exact:true}).click();
  await expect(page.getByRole('heading',{name:'Large-scale structure survey',exact:true})).toBeVisible();

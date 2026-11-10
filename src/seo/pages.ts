@@ -60,10 +60,19 @@ export function homeHead(title:string,description:string):string{
  return sharedHead({key:'home',title,description})+`<script type="application/ld+json">${ldJson({'@context':'https://schema.org','@graph':[app,site]})}</script>`;
 }
 
-/** Content inside <div id="root"> before the app starts: what the site is and links to the lab pages. React replaces it. */
-export function homeBoot(description:string):string{
- return `<div class="seo-boot"><h1>${SITE_NAME}</h1><p>${esc(description)}</p><p>Loading the observatory…</p>`+
-  `<nav aria-label="Labs"><ul>${ENGLISH.labs.map(l=>`<li><a href="${labUrl(l.slug)}">${esc(l.name)}</a></li>`).join('')}</ul></nav></div>`;
+/** Front HOME: the catalog keys of the welcome's lab cards (src/home/Welcome.tsx), by lab slug, in the /labs/ order. */
+export const HOME_LAB_KEYS:Readonly<Record<SeoLab['slug'],string>>=Object.freeze({hubble:'home.hubble','large-scale-structure':'home.lss',
+ 'stellar-classification':'home.classification',pleiades:'home.pleiades','cluster-hr':'home.clusterHr',pulsars:'home.pulsars','object-x':'home.objectX'});
+
+/** Content inside <div id="root"> before the app starts: what the site is and links to the lab pages. React replaces it.
+ * Front HOME: it mirrors the observatory's welcome (src/home/Welcome.tsx) in English, from the same catalog keys: the h1, the
+ * lead, the three facts and the seven labs with their one-line summaries, each linking to its /labs/ page. */
+export function homeBoot(m:Readonly<Record<string,string>>):string{
+ const text=(key:string)=>{const v=m[key];if(typeof v!=='string')throw new Error(`homeBoot: no text for ${key}`);return esc(v);};
+ return `<div class="seo-boot"><p class="eyebrow">${text('home.eyebrow')}</p><h1>${text('home.title')}</h1><p>${text('home.lead')}</p>`+
+  `<ul aria-label="${text('home.factsLabel')}"><li>${text('home.factInstall')}</li><li>${text('home.factFree')}</li><li>${text('home.factFaithful')}</li></ul>`+
+  `<h2>${text('home.labsHeading')}</h2><nav aria-label="Labs"><ul class="labs">${ENGLISH.labs.map(l=>`<li><a href="${labUrl(l.slug)}">${text(HOME_LAB_KEYS[l.slug])}</a>: ${text(HOME_LAB_KEYS[l.slug]+'Summary')}</li>`).join('')}</ul></nav>`+
+  `<p>Loading the observatory…</p></div>`;
 }
 
 /** The links to this page in the other languages, each named in its own language. A home page that is the app (English) is

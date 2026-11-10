@@ -21,11 +21,11 @@ test('a lab page is plain HTML with its own title, and Open the lab opens that g
  await page.getByRole('link',{name:'Open the lab'}).click();
  const guide=page.locator('dialog[open]');
  await expect(guide).toBeVisible({timeout:15000});await expect(guide).toContainText('Pulsar timing guide');
- // The one-time link is gone, so a reload or a copied address shows the plain observatory.
+ // The one-time link is gone, so a reload or a copied address shows the plain address: the welcome (Front HOME).
  await expect.poll(()=>page.evaluate(()=>location.hash)).toBe('');
  await page.keyboard.press('Escape');await expect(guide).toHaveCount(0);
  await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();
- await page.reload();await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible({timeout:15000});
+ await page.reload();await expect(page.getByRole('heading',{level:1,name:"Project CLEA's VIREO astronomy labs, in your browser"})).toBeVisible({timeout:15000});
  await expect(page.locator('dialog[open]')).toHaveCount(0);
  expect(errors).toEqual([]);
 });

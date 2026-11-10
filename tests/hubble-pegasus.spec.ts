@@ -46,7 +46,7 @@ async function acquire(page:Page,t:Target,keyboard=false){
 }
 test('Hubble.HTL → exact centre → Pegasus acquisitions, then all eight targets → manual z → own Hubble fit → Save v25, fresh Restore, resume',async({page})=>{
  test.setTimeout(240000);
- const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();await page.goto('/');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();await page.goto('/#observatory');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
  await loadHubble(page);
  const sources=new Map<string,string>();
  for(const [i,t] of pegasus.entries()){if(i>0){await page.clock.resume();await clickHeaderTool(page,'Observatory');await openHotList(page);}await toGalaxy(page,t,i===1);sources.set(t.id,await acquire(page,t,i===1));}
@@ -77,7 +77,7 @@ test('Hubble.HTL → exact centre → Pegasus acquisitions, then all eight targe
  expect(errors).toEqual([]);
 });
 test('Pegasus on other telescopes: explicit notices, no switch; cancelled Hubble.HTL load keeps the current list',async({page})=>{
- const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();await page.goto('/');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await openHotList(page);
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();await page.goto('/#observatory');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await openHotList(page);
  let release=()=>{};const held=new Promise<void>(r=>{release=r;});
  await page.route('**/original/hotlists/Hubble.HTL',async route=>{await held;await route.continue().catch(()=>{});});
  await page.getByRole('button',{name:'Load original Hubble.HTL',exact:true}).click();await page.locator('.htl-card .button-row').first().locator('button').last().click();release();
@@ -95,7 +95,7 @@ test('Pegasus on other telescopes: explicit notices, no switch; cancelled Hubble
 });
 test('320 px mobile: Hubble.HTL row to the NGC 7501 acquisition by keyboard without horizontal scrolling',async({page})=>{
  test.setTimeout(60000);
- await page.setViewportSize({width:320,height:800});await page.clock.install();await page.goto('/');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await loadHubble(page);
+ await page.setViewportSize({width:320,height:800});await page.clock.install();await page.goto('/#observatory');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await loadHubble(page);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await toGalaxy(page,pegasus[1],true);await acquire(page,pegasus[1],true);await expect(page.locator('#measurement-log')).toContainText('NGC 7501');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:'test-results/hubble-pegasus-mobile.png',fullPage:true});

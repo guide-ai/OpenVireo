@@ -10,7 +10,7 @@ const witness=JSON.parse(await readFile(new URL('../src/core/variableStars.contr
 const byName=(name:string)=>witness.cases.find(c=>c.name===name)!;
 
 async function openRoute(page:Page){
- await page.goto('/');
+ await page.goto('/#observatory');
  await clickHeaderTool(page,'Variable stars');
  await expect(page).toHaveURL(/#variable-stars$/);
  await expect(page.getByRole('heading',{name:'Variable stars and light curves',level:1})).toBeVisible();

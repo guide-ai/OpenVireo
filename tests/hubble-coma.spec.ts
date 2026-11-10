@@ -34,7 +34,7 @@ async function acquire(page:Page){
 }
 test('Hubble.HTL → Coma – 1/2 engine fields → manual z → Hubble → Save (v29), fresh Restore, resume',async({page})=>{
  test.setTimeout(180000);
- const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();await page.goto('/');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();await page.goto('/#observatory');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
  await loadHubble(page);const sources:string[]=[];
  for(const [i,t] of TS.entries()){T=t;if(i>0){await page.clock.resume();await clickHeaderTool(page,'Observatory');await openHotList(page);}await toGalaxy(page);sources.push(await acquire(page));}
  await expect(page.locator('#measurement-log tbody tr')).toHaveCount(2);
@@ -57,7 +57,7 @@ test('Hubble.HTL → Coma – 1/2 engine fields → manual z → Hubble → Save
 // with the recorded crop from the independent witness (data/hubble/engine-coma-witness.json).
 test('Coma – 1 is acquirable on the KPNO 0.9 m (Front L4) and on the 4 m',async({page})=>{T=TS[0];
  test.setTimeout(180000);
- const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();await page.goto('/');
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();await page.goto('/#observatory');
  for(const scope of ['1','2']){
   if(scope==='2')await clickHeaderTool(page,'Observatory');
   await page.getByLabel('Telescope profile to inspect or select').selectOption(scope);await page.getByRole('button',{name:'Use this telescope',exact:true}).click();
@@ -78,7 +78,7 @@ test('a failing catalogue load is an explicit, retryable notice, never a substit
 });
 test('320 px: Coma – 1 row to acquisition without horizontal scrolling',async({page})=>{T=TS[0];
  test.setTimeout(60000);
- await page.setViewportSize({width:320,height:800});await page.clock.install();await page.goto('/');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await loadHubble(page);
+ await page.setViewportSize({width:320,height:800});await page.clock.install();await page.goto('/#observatory');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await loadHubble(page);
  await toGalaxy(page);await acquire(page);await expect(page.locator('#measurement-log')).toContainText(T.id);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:'test-results/hubble-coma-mobile.png',fullPage:true});
 });

@@ -39,7 +39,7 @@ async function acquire(page:Page,t:typeof targets[number],keyboard=false){
 }
 test('Hubble.HTL → exact centre → cached-pan acquisition of CorBor – 1 and – 3 → manual z → Hubble → Save, fresh Restore, resume',async({page})=>{
  test.setTimeout(120000);
- const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();await page.goto('/');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();await page.goto('/#observatory');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
  await loadHubble(page);// Front F: all 13 rows are now supported (Boötes through the general field engine), so no row is unavailable.
  await pointRow(page,5);await expect(page.getByTestId('hubble-point-card')).toHaveAttribute('data-status','available');await expect(page.getByTestId('hubble-point-unavailable')).toHaveCount(0);
  const sources:string[]=[];
@@ -62,7 +62,7 @@ test('Hubble.HTL → exact centre → cached-pan acquisition of CorBor – 1 and
  expect(errors).toEqual([]);
 });
 test('bundled Hubble.HTL failures keep the current list; cancel ignores a late result; other telescopes show an explicit notice',async({page})=>{
- const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();await page.goto('/');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await openHotList(page);
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();await page.goto('/#observatory');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await openHotList(page);
  for(const body of [Buffer.alloc(1118),Buffer.alloc(1117)]){await page.route('**/original/hotlists/Hubble.HTL',route=>route.fulfill({status:200,body}));await page.getByRole('button',{name:'Load original Hubble.HTL',exact:true}).click();await expect(page.locator('.htl-card [role="alert"]')).toContainText('Hubble.HTL could not be loaded');await expect(page.locator('#htl-rows')).toHaveCount(0);await page.unroute('**/original/hotlists/Hubble.HTL');}
  let release=()=>{};const held=new Promise<void>(r=>{release=r;});
  await page.route('**/original/hotlists/Hubble.HTL',async route=>{await held;await route.continue().catch(()=>{});});
@@ -80,7 +80,7 @@ test('bundled Hubble.HTL failures keep the current list; cancel ignores a late r
 });
 test('320 px mobile: Hubble.HTL row to CorBor – 1 acquisition without horizontal scrolling',async({page})=>{
  test.setTimeout(60000);
- await page.setViewportSize({width:320,height:800});await page.clock.install();await page.goto('/');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await loadHubble(page);
+ await page.setViewportSize({width:320,height:800});await page.clock.install();await page.goto('/#observatory');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await loadHubble(page);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await toGalaxy(page,targets[0],true);await acquire(page,targets[0],true);await expect(page.locator('#measurement-log')).toContainText('54875');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:'test-results/hubble-corbor-mobile.png',fullPage:true});

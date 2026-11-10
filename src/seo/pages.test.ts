@@ -5,7 +5,7 @@ import {LABS,LAB_SLUGS,SITE_URL,labFromHash,labUrl} from './labs';
 import en from '../i18n/en.json' with {type:'json'};
 import {OBJECT_X_LAB_EN} from '../objectx/ObjectXMessages';
 import {POLISH_MESSAGES} from '../polish/PolishMessages';
-import {LABS_INDEX_DESCRIPTION,SITEMAP_PATHS,homeBoot,homeHead,labPage,labsIndexPage,sitemap,staticSeoFiles} from './pages';
+import {HOME_LAB_KEYS,LABS_INDEX_DESCRIPTION,SITEMAP_PATHS,homeBoot,homeHead,labPage,labsIndexPage,sitemap,staticSeoFiles} from './pages';
 import {documentMessages} from '../i18n/html';
 
 const attr=(html:string,re:RegExp)=>re.exec(html)?.[1];
@@ -93,11 +93,38 @@ describe('index.html',()=>{
  it('shows crawlable text and links to every lab inside #root until the app starts',()=>{
   const root=/<div id="root">([\s\S]*?)<\/div><script/.exec(served)![1];
   for(const l of LABS)expect(root).toContain(`href="${labUrl(l.slug)}"`);
-  expect(homeBoot('x')).toContain('<h1>OpenVireo</h1>');expect(root).not.toMatch(/style=|<style|<script/);expect(homeHead('t','d')).toContain('og:title" content="t"');
+  expect(homeBoot(en)).toContain(`<h1>${en['home.title']}</h1>`);expect(root).not.toMatch(/style=|<style|<script/);expect(homeHead('t','d')).toContain('og:title" content="t"');
  });
  it('the icons and preview image it names exist',()=>{
   for(const f of ['favicon.svg','favicon.ico','apple-touch-icon.png','og-image.png'])expect(readFileSync(new URL(`../../public/${f}`,import.meta.url)).length).toBeGreaterThan(100);
   const png=readFileSync(new URL('../../public/og-image.png',import.meta.url));
   expect([png.readUInt32BE(16),png.readUInt32BE(20)]).toEqual([1200,630]);
+ });
+});
+
+// Front HOME: the pre-render mirrors the observatory's welcome (src/home/Welcome.tsx) in English, from the same catalog keys.
+describe('home pre-render (Front HOME)',()=>{
+ const boot=homeBoot(en);
+ it('says what the site is: the welcome h1, lead and three facts, once each',()=>{
+  expect(boot.match(/<h1>/g)).toHaveLength(1);
+  for(const key of ['home.title','home.lead','home.factInstall','home.factFree','home.factFaithful','home.labsHeading'] as const)expect(boot).toContain(en[key]);
+  expect(en['home.factInstall']).toMatch(/no Windows and no virtual machine/);expect(en['home.factInstall']).toMatch(/Mac, Windows, Linux or a Chromebook/);
+  expect(en['home.factFaithful']).toMatch(/^An unofficial reconstruction/);
+ });
+ it('lists the seven labs with their one-line summaries, each linking to its /labs/ page in the /labs/ order',()=>{
+  const links=[...boot.matchAll(/<li><a href="([^"]+)">([^<]+)<\/a>: ([^<]+)<\/li>/g)];
+  expect(links.map(m=>m[1])).toEqual(LABS.map(l=>labUrl(l.slug)));
+  expect(Object.keys(HOME_LAB_KEYS)).toEqual([...LAB_SLUGS]);
+  links.forEach((m,i)=>{const k=HOME_LAB_KEYS[LABS[i].slug] as keyof typeof en;expect(m[2]).toBe(en[k]);expect(m[3]).toBe(en[`${k}Summary` as keyof typeof en]);
+   expect(en[`${k}Summary` as keyof typeof en].length).toBeLessThanOrEqual(120);});
+  expect(en['home.objectXSummary']).toMatch(/star.*galaxy.*quasar.*pulsar.*asteroid/);
+ });
+ it('is plain escaped HTML with no inline style or script, and never claims to be CLEA\'s',()=>{
+  expect(boot).not.toMatch(/style=|<style|<script|on[a-z]+=/);
+  const evil=homeBoot({...en,'home.title':'<b>"x" & y</b>'});
+  expect(evil).toContain('<h1>&lt;b&gt;&quot;x&quot; &amp; y&lt;/b&gt;</h1>');
+  expect(()=>homeBoot({})).toThrow(/home\.eyebrow/);
+  const text=Object.entries(en).filter(([k])=>k.startsWith('home.')).map(([,v])=>v).join(' ');
+  expect(text).not.toMatch(/official CLEA|endorsed|equivalent|student|teacher|class(room)?\b|homework/i);
  });
 });
