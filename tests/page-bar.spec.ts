@@ -132,6 +132,9 @@ for(const width of [375,1024,1440])test(`at ${width} px the bar ${width<600?'scr
  const after=(await bar(page).boundingBox())!;
  if(width<600){expect(after.y).toBeLessThan(start.y-600);return;}
  expect(Math.abs(after.y-8)).toBeLessThan(1);expect(Math.abs(after.height-start.height)).toBeLessThan(1);
+ // With no busy, saved or error line the bar is its row plus padding and border (no empty strip under the controls).
+ const row=(await bar(page).locator('.page-bar-row').boundingBox())!;expect(after.height).toBeLessThanOrEqual(row.height+19);
+ await expect(bar(page).locator('> [role=status], > [role=alert]')).toHaveCount(0);
  // The bar paints above the content scrolled under it (its own controls are hit at their centres).
  for(const t of ['investigation-save','investigation-more','language-select','main-help-menu']){
   const b=(await id(page,t).boundingBox())!;
