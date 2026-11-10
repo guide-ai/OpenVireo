@@ -63,7 +63,7 @@ OpenVireo's main window Help (Front WebHelp and Front Onboarding, 2026-11-08 [W]
 
 VIREO's main-window Topics... (VIRMnHlp) and About... are no longer offered (user decision, 2026-11-08): the files stay bundled under the 2026-10-29 approval but no view opens them. The radio lab's Help (PULSRHLP, About This Exercise) is unchanged.
 
-The Help button is at the top of every page (Front Onboarding [W]; Front HEADER, user decision of 2026-11-10: in the page bar at the top of the content area, at its right beside the language selector, on every width; icon only below 360 px). The bar is not pinned, so on a long page Help scrolls away with it; the `?` key opens Help topics from anywhere.
+The Help button is at the top of every page (Front Onboarding [W]; Front HEADER, user decision of 2026-11-10: in the page bar at the top of the content area, at its right beside the language selector, on every width; icon only below 360 px). From 600 px up the bar is pinned at the top of the viewport (user decision of 2026-11-10, after first choosing it unpinned), so Help stays on screen; below 600 px it scrolls with the page, and the `?` key opens Help topics from anywhere.
 
 The per-window Help buttons keep VIREO's own help for that window; where the web panel differs, the panel carries its own web note.
 

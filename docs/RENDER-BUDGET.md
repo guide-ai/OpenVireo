@@ -58,7 +58,9 @@ Counts are as of the commit that set them; the Front Perf commits lower them ste
   (HelpMenu, LanguageChoiceSlot and LanguageChoice no longer render with the sidebar). Loads mount PageBar and InvestigationActions,
   and the language module now fills two slots (LanguageSelectSlot ×2 + LanguageSelect, VireoOriginalsSlot ×2 +
   VireoOriginalsOption, against LanguageChoiceSlot ×2 + LanguageChoice): observatoryLoad 97 → 102, so its budget is raised to 110;
-  classificationLoad 168 → 173, within 178. openDome stays 30; keystrokes stay 34 and analyzerKey 8.
+  classificationLoad 168 → 173, within 178. openDome stays 30; keystrokes stay 34 and analyzerKey 8. Its review confirmed the +5
+  (re-measured against main 2dbb118: 97 → 102, the two new components and the split slot) and pinned the bar from 600 px up
+  (CSS `position:sticky` and a ResizeObserver that writes the bar's height to a CSS variable, outside React): no count changed.
 
 ## Changing a budget
 - `OPENVIREO_RENDER_REPORT=1 npx playwright test tests/render-budget.spec.ts` (or `=all` for every component) prints each scenario's count, commit count and

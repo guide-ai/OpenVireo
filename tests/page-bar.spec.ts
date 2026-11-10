@@ -27,7 +27,7 @@ test('at 1440 px the bar is one row: the current page\'s section and name, Save,
   await open(page,hash);
   // The place reads the sidebar's own labels: the current page's button and its section.
   const current=page.locator('.portal-header nav button[aria-current="page"]');await expect(current).toHaveText(name);
-  await expect(id(page,'page-bar-place')).toHaveText(`${section}${name}`);
+  await expect(id(page,'page-bar-place')).toHaveText(`${section} ${name}`);
   await expect(page.locator(`.portal-header [data-nav-group] .nav-group-label`,{hasText:section})).toHaveCount(1);
  }
  await open(page);
@@ -82,9 +82,11 @@ test('Restore from the More menu opens the file picker, keeps focus on More and 
  await id(page,'investigation-more').click();await expect(id(page,'investigation-restore')).toBeDisabled();
  const cancel=bar(page).getByRole('button',{name:en['classLink.cancel'],exact:true});await expect(cancel).toBeVisible();
  await expect(bar(page)).not.toHaveAttribute('inert');
- await cancel.click();await expect(bar(page).locator('> [role=status]')).toHaveText(en['project.cancelled']);
+ // The busy line can stay until the held read ends (the analyzer's own busy state); the cancelled notice is shown at once.
+ await cancel.click();await expect(bar(page).locator('> [role=status]',{hasText:en['project.cancelled']})).toBeVisible();
  await page.evaluate(()=>(window as unknown as {releaseHeld:()=>void}).releaseHeld());
  await expect(id(page,'investigation-save')).toBeEnabled();await expect(cancel).toHaveCount(0);
+ await expect(bar(page).locator('> [role=status]')).toHaveText(en['project.cancelled']);
 });
 
 test('"What a backup includes" in the More menu shows the backup scope',async({page})=>{
@@ -121,6 +123,32 @@ for(const width of [320,375,600,1024]){
   }
  });
 }
+
+// Pinned from 600 px up (user decision, 2026-11-10, after seeing the bar); a phone keeps it in the page flow.
+for(const width of [375,1024,1440])test(`at ${width} px the bar ${width<600?'scrolls away with the page':'stays at the top of the viewport, above the content and its menus, and focus never lands under it'}`,async({page},info)=>{
+ await page.setViewportSize({width,height:800});await open(page);
+ const start=(await bar(page).boundingBox())!;
+ await page.evaluate(()=>window.scrollTo(0,700));await page.waitForFunction(()=>window.scrollY>=700);
+ const after=(await bar(page).boundingBox())!;
+ if(width<600){expect(after.y).toBeLessThan(start.y-600);return;}
+ expect(Math.abs(after.y-8)).toBeLessThan(1);expect(Math.abs(after.height-start.height)).toBeLessThan(1);
+ // The bar paints above the content scrolled under it (its own controls are hit at their centres).
+ for(const t of ['investigation-save','investigation-more','language-select','main-help-menu']){
+  const b=(await id(page,t).boundingBox())!;
+  expect(await page.evaluate(([x,y,t])=>document.elementFromPoint(x,y)?.closest(`[data-testid="${t}"]`)!==null,[b.x+b.width/2,b.y+b.height/2,t] as const),t).toBe(true);
+ }
+ // Its menus open inside the viewport, over the content.
+ await id(page,'investigation-more').click();const menu=(await id(page,'investigation-menu').boundingBox())!;
+ expect(menu.y).toBeGreaterThan(after.y);expect(menu.y+menu.height).toBeLessThanOrEqual(800);
+ const restore=(await id(page,'investigation-restore').boundingBox())!;
+ expect(await page.evaluate(([x,y])=>document.elementFromPoint(x,y)?.closest('[data-testid="investigation-restore"]')!==null,[restore.x+restore.width/2,restore.y+restore.height/2] as const)).toBe(true);
+ await page.keyboard.press('Escape');
+ // The page's scroll padding keeps a focused element below the bar (WCAG 2.4.11): the page's h1, scrolled out above, comes back under it.
+ const h1=page.locator('h1:visible').first();await h1.focus();
+ expect((await h1.boundingBox())!.y).toBeGreaterThanOrEqual(after.y+after.height);
+ await page.evaluate(()=>window.scrollTo(0,700));await page.waitForFunction(()=>window.scrollY>=700);
+ await page.screenshot({path:info.outputPath(`page-bar-pinned-${width}.png`)});
+});
 
 test('landmarks: one banner, a region named for the bar, and no heading before the page\'s h1',async({page})=>{
  for(const hash of ['observatory','spectrum','radio-control']){

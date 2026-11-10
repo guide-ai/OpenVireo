@@ -19,7 +19,7 @@ export default function InvestigationActions({busy,onSave,onRestore,onCancel}:{b
  function escape(e:KeyboardEvent){if(e.key!=='Escape'||!open)return;e.preventDefault();e.stopPropagation();setOpen(false);more.current?.focus();}
  function restore(){setOpen(false);more.current?.focus();file.current?.click();}
  return <div className="sky-actions investigation-actions" role="group" aria-labelledby="project-toolbar-title" data-testid="investigation-actions">
-  <span id="project-toolbar-title" className="visually-hidden">{t('project.title')}</span>
+  <span id="project-toolbar-title" className="visually-hidden" aria-hidden="true">{t('project.title')}</span>
   <button type="button" className="secondary-button investigation-save" data-testid="investigation-save" disabled={busy} onClick={onSave}>
    <svg className="page-bar-icon" viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" focusable="false"><path d="M10 3v9M6 8l4 4 4-4M4 16h12"/></svg>{t('project.save')}</button>
   <div className="fi-menu investigation-menu" ref={menu} onKeyDown={escape}>

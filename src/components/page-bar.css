@@ -1,7 +1,7 @@
 /* Front HEADER [W] (user decision, 2026-11-10): the page bar at the top of the content area (PageBar.tsx). One row from 600 px up
    (place left; Save, More, language and Help right), wrapping when the row is short; below 600 px the place is hidden and the
-   controls take two rows when needed. Not pinned: it scrolls with the page. Colours from the surface tokens (light and dark). The
-   `investigation-toolbar` class (kept on the bar) holds the print rule (observatory.css) and the script rules (scripts.css). */
+   controls take two rows when needed. Colours from the surface tokens (light and dark). The `investigation-toolbar` class (kept on
+   the bar) holds the print rule (observatory.css, which hides it) and the script rules (scripts.css). */
 .page-bar{position:relative;z-index:15;box-sizing:border-box;max-width:1500px;width:calc(100% - 60px);margin:16px auto 0;padding:8px 12px 8px 16px;border:1px solid var(--ov-border);border-radius:var(--ov-radius-md);background:var(--ov-surface);color:var(--ov-text);box-shadow:var(--ov-shadow-sm)}
 .page-bar-row{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;min-width:0}
 /* The current page: its section, a separator and its name. It wraps (never cut) and gives the controls their room. */
@@ -33,6 +33,16 @@
 .investigation-toolbar>[role=status],.investigation-toolbar>[role=alert]{margin:8px 0 2px;padding:8px 12px;border-radius:var(--ov-radius-sm);font-size:var(--ov-text-sm);line-height:1.5}
 .investigation-toolbar>[role=status]{background:var(--ov-success-soft);color:var(--ov-success)}
 .investigation-toolbar>[role=alert]{background:var(--ov-danger-soft);color:var(--ov-danger)}
+/* Pinned from 600 px up (user decision, 2026-11-10): 8 px below the top of the viewport, with a band of the page background above
+   and beside it (the second shadow) so content scrolling under its rounded corners does not show. Below 600 px it scrolls with the
+   page: on a phone its two rows would take a seventh of the screen. Its z-index (15) keeps it above route content, under the
+   fixed sidebar (20), the popup and member windows and the modal backdrops (20–50); its menus (30) are inside it. The page's
+   scroll padding keeps focused, anchored and scrolled-to elements below it (WCAG 2.4.11); --ov-page-bar-height comes from
+   PageBar.tsx. --ov-page-bar-offset is 0 where it is not pinned (the classification cursor read-out sticks under it). */
+@media(min-width:600px){
+ :root{--ov-page-bar-offset:calc(var(--ov-page-bar-height,3.5rem) + 8px);scroll-padding-top:calc(var(--ov-page-bar-offset) + 8px)}
+ .page-bar{position:sticky;top:8px;box-shadow:var(--ov-shadow-sm),0 -8px 0 4px var(--ov-bg)}
+}
 /* Aligned with the cards below it. */
 @media(max-width:1150px){.page-bar{width:calc(100% - 32px)}}
 @media(max-width:599.98px){

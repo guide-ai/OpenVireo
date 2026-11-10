@@ -92,7 +92,7 @@ for(const L of TRANSLATED){
   for(const [hash,group,key] of [['observatory','optical','sky.observatory'],['pulsar-analysis','radio','plr.nav'],['images','files','fits.nav']] as const){
    await page.goto(`/${L.query}#${hash}`);
    await expect(page.locator('.portal-header nav button[aria-current="page"]')).toHaveText(C[key],{timeout:15_000});
-   await expect(id(page,'page-bar-place')).toHaveText(`${M.appShell.navGroups[group]}${C[key]}`);
+   await expect(id(page,'page-bar-place')).toHaveText(`${M.appShell.navGroups[group]} ${C[key]}`);
   }
   await expect(page.getByRole('region',{name:M.appShell.pageBar.label,exact:true})).toHaveCount(1);
   await expect(id(page,'investigation-more')).toHaveAccessibleName(M.appShell.pageBar.moreName);await expect(id(page,'investigation-more')).toHaveText(M.appShell.pageBar.more);

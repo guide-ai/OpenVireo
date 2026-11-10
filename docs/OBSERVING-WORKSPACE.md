@@ -6,7 +6,7 @@ The full web investigation now includes **all five current, unarchived exposure 
 
 ## Try the feature
 
-Use **http://127.0.0.1:5173/**. The **One investigation backup** toolbar is available above every tool.
+Use **http://127.0.0.1:5173/**. The investigation backup (**Save investigation**, and **More** › **Restore investigation JSON**) is in the page bar at the top of every page.
 
 1. Open **Sky exposure**, **Activate supported sky field**, **Start sky exposure**, then **Pause exposure**. Repeat in **Star exposure**. In **Galaxy exposure**, choose each supported acquisition galaxy and acquire a segment. Leave at least one segment outside analysis. You may type a different seed without pressing **New seeded exposure**; that draft is distinct from the actual random state.
 2. Choose **Save investigation**, even while exposing. All observing clocks stop and segments deactivate before snapshotting. Only already committed intervals survive; the uncommitted wall-clock tail does not become extra counts. Download `openvireo-session.json` (version9).
