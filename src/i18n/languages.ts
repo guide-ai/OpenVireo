@@ -13,6 +13,9 @@ export type LanguageEntry=Readonly<{
  /** Multiplies the chunk budgets of scripts/check-i18n-dist.mjs (1 for Latin and Cyrillic scripts). */
  budgetFactor:number;
  htmlLang:string;
+ /** The site path of the language's own static pages (its SEO home and lab pages): dist/<pagePath>/… (`es`, later `pt-br`). Those
+  * HTML files may carry the language's text (scripts/check-i18n-dist.mjs). */
+ pagePath:string;
  /** The language's own name, shown in the selector (with `englishName` when it has no Latin letter). */
  autonym:string;
  englishName:string;

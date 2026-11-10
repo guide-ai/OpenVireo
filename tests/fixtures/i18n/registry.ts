@@ -5,7 +5,7 @@ import {LANGUAGES} from '../../../src/i18n/languages';
  * added by its own first front. The detection ranges are those of the scripts plan §7 and the pt-BR plan §4; `dir`, `catalog` and
  * the notices are stand-ins. Every language is before its release unless a test releases it. */
 const entry=(tag:string,autonym:string,englishName:string,match:readonly string[],except?:readonly string[]):LanguageEntry=>Object.freeze({
- tag,dir:tag.toLowerCase(),catalog:`${tag.toLowerCase()}.json`,budgetFactor:1,htmlLang:tag,autonym,englishName,match,...(except?{except}:{}),released:false,
+ tag,dir:tag.toLowerCase(),catalog:`${tag.toLowerCase()}.json`,budgetFactor:1,htmlLang:tag,pagePath:tag.toLowerCase(),autonym,englishName,match,...(except?{except}:{}),released:false,
  notices:Object.freeze({language:`(${tag}) language notice`,area:`(${tag}) area notice`})});
 const SPANISH=LANGUAGES.find(l=>l.tag==='es-419')!;
 const TRADITIONAL=['zh-Hant','zh-TW','zh-HK','zh-MO'];

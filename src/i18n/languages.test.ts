@@ -15,11 +15,12 @@ const ranges=(l:LanguageEntry)=>[...l.match,...(l.except??[])];
 function problems(registry:readonly LanguageEntry[]):string[]{
  const out:string[]=[],seen=new Map<string,string>();
  const unique=(what:string,values:string[])=>{const dup=values.filter((v,i)=>values.indexOf(v)!==i);if(dup.length)out.push(`${what} twice: ${dup.join(', ')}`);};
- unique('tag',registry.map(l=>l.tag));unique('dir',registry.map(l=>l.dir));
+ unique('tag',registry.map(l=>l.tag));unique('dir',registry.map(l=>l.dir));unique('pagePath',registry.map(l=>l.pagePath));
  for(const l of registry){
   if(l.tag==='en'||l.tag.startsWith('qps'))out.push(`${l.tag}: reserved tag`);
   if(Intl.getCanonicalLocales(l.htmlLang)[0]!==l.htmlLang)out.push(`${l.tag}: htmlLang ${l.htmlLang} is not a canonical BCP 47 tag`);
   if(!/^[a-z0-9-]+$/.test(l.dir))out.push(`${l.tag}: dir ${l.dir} is not lower case`);
+  if(!/^[a-z0-9-]+$/.test(l.pagePath??'')||['assets','labs','original','data'].includes(l.pagePath))out.push(`${l.tag}: pagePath ${l.pagePath} is not one lower-case segment of its own`);
   for(const [k,v] of [['autonym',l.autonym],['englishName',l.englishName],['notices.language',l.notices?.language],['notices.area',l.notices?.area]] as const)if(typeof v!=='string'||!v.trim())out.push(`${l.tag}: no ${k}`);
   if(!(l.budgetFactor>0))out.push(`${l.tag}: budgetFactor`);
   if(typeof l.released!=='boolean')out.push(`${l.tag}: released is not a boolean`);
@@ -37,7 +38,8 @@ describe('Front SC8: the language registry (src/i18n/languages.json)',()=>{
   expect(problems(PLANNED)).toEqual([]);expect(problems([...PLANNED,ZH_HANT])).toEqual([]);expect(problems([...LANGUAGES,PARTIAL])).toEqual([]);
   expect(problems([...LANGUAGES,{...PARTIAL,match:['es-MX']}])).toEqual([]);// more specific than Spanish's es: allowed
   expect(problems([...LANGUAGES,{...PARTIAL,match:['ES']}])).toEqual(['qaa-XA: range ES is also es-419\'s']);
-  expect(problems([...LANGUAGES,{...PARTIAL,tag:'es-419',dir:'es'}])).toEqual(['tag twice: es-419','dir twice: es']);
+  expect(problems([...LANGUAGES,{...PARTIAL,tag:'es-419',dir:'es',pagePath:'es'}])).toEqual(['tag twice: es-419','dir twice: es','pagePath twice: es']);
+  expect(problems([...LANGUAGES,{...PARTIAL,pagePath:'labs'}])).toEqual(['qaa-XA: pagePath labs is not one lower-case segment of its own']);
  });
  it('every language has its directory, catalog, originals and manifest; one with help has a module per help file naming it',()=>{
   for(const l of LANGUAGES){

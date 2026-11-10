@@ -4,6 +4,8 @@ import path from 'node:path';
 import {afterAll,describe,expect,it} from 'vitest';
 import {PARTIAL} from '../../tests/fixtures/i18n/partial';
 import {HELP_FILES} from '../help/helpFiles';
+import {LANGUAGES} from './languages';
+import es from './es/es.json';
 // @ts-expect-error Build script (plain JS), as in split.test.ts.
 import {checkI18nDist} from '../../scripts/check-i18n-dist.mjs';
 // @ts-expect-error Build script (plain JS).
@@ -83,4 +85,24 @@ describe('Front SC8: scripts/check-i18n-dist.mjs with a partial language before 
   expect(result.offenders).toEqual([]);
   expect(result.warnings).toEqual(['qac-XC fits has no marker text yet; its chunk i18n-qac-XC-fits-qacXCfit.js is found by its name only']);
  });
+ it('lets a language\'s own static pages (dist/<pagePath>/….html) carry its text: dist/es/ may, dist/labs/ and an English chunk may not',()=>{
+  // Spanish as registered, without its help files (this synthetic dist has none).
+  const spanish={...LANGUAGES.find(l=>l.tag==='es-419')!,help:undefined} as Language;
+  expect(spanish.pagePath).toBe('es');
+  const marker=es['project.save'],page=`<!doctype html><html lang="es-419"><h1>${marker}</h1></html>`;
+  const put=(file:string,text:string)=>(assets:string)=>{const full=path.join(path.dirname(assets),file);mkdirSync(path.dirname(full),{recursive:true});writeFileSync(full,text);};
+  const at=(file:string)=>put(file,page);
+  expect(check(dist([spanish]),[spanish]).offenders).toEqual([]);
+  expect(check(dist([spanish],at('es/x/index.html')),[spanish]).offenders).toEqual([]);
+  expect(check(dist([spanish],at('es/labs/hubble/index.html')),[spanish]).offenders).toEqual([]);
+  const labs=check(dist([spanish],at('labs/x/index.html')),[spanish]).offenders;
+  expect(labs).toHaveLength(1);expect(labs[0]).toMatch(/labs\/x\/index\.html: 1 es-419 core text\(s\) outside the core chunk/);
+  const js=check(dist([spanish],a=>writeFileSync(path.join(a,'index-AAAAAAAA.js'),`${readFileSync(path.join(a,'index-AAAAAAAA.js'),'utf8')}"${marker}";`)),[spanish]).offenders;
+  expect(js).toHaveLength(1);expect(js[0]).toMatch(/index-AAAAAAAA\.js: 1 es-419 core text\(s\) outside the core chunk/);
+  // Under its path a .js file keeps the rule, and another language's text is refused on a language's pages.
+  const script=check(dist([spanish],put('es/x.js',`"${marker}"`)),[spanish]).offenders;
+  expect(script).toHaveLength(1);expect(script[0]).toMatch(/es\/x\.js: 1 es-419 core text/);
+  const other=check(dist([spanish,PARTIAL],put('es/y/index.html','<p>Konservi la esploron ĉi tie</p>')),[spanish,PARTIAL]).offenders;
+  expect(other).toHaveLength(1);expect(other[0]).toMatch(/es\/y\/index\.html: 1 qaa-XA core text/);
+ },180_000);
 });

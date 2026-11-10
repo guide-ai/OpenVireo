@@ -9,10 +9,12 @@
 // before their release and partial. The help chunks are counted per language (38 for each language whose registry entry has
 // `help`, recognised by the `language` their module names, 0 for the others); a text that another language's sources also hold
 // is no marker (it cannot tell the two apart); an empty area of a partial language has no chunk; and a module of a language before
-// its release that has no marker text yet is found by its chunk name, with a warning (a released language still fails).
+// its release that has no marker text yet is found by its chunk name, with a warning (a released language still fails). A
+// language's own static pages (an .html file under dist/<pagePath>/, its registry entry's path: es/ for es-419) may carry that
+// language's text, never another language's; every other file, and every .js file, keeps the rule.
 // Usage: node scripts/check-i18n-dist.mjs [distDir]   (default: dist)
 import {readdirSync,readFileSync,statSync} from 'node:fs';
-import {join} from 'node:path';
+import {join,sep} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {gzipSync} from 'node:zlib';
 import {CORE,ROOT,languageDir,loadLanguages,planLanguage,sourceGraph} from './i18n-split.mjs';
@@ -108,9 +110,11 @@ export function checkI18nDist(dist,{root=ROOT,languages=loadLanguages(root),grap
    for(const v of t.originals)if(v.length>=8&&LETTER_OUTSIDE_ASCII.test(v)&&!englishTexts.has(v))add(v,m.name);}
   const markers=new Map(modules.map(m=>[m.name,[]]));
   for(const [v,owners] of candidates)if(owners.size===1)markers.get([...owners][0]).push({text:v,forms:quoted(v)});
-  // Which files carry which module's markers (the help chunks may share phrases with the catalog, as ES-HELP recorded).
+  // Which files carry which module's markers (the help chunks may share phrases with the catalog, as ES-HELP recorded; the
+  // language's own static pages, dist/<pagePath>/….html, are its text by design).
+  const ownPages=language.pagePath?join(dist,language.pagePath)+sep:null;
   const holders=new Map();
-  for(const f of files){if(helpChunks.has(f.name))continue;
+  for(const f of files){if(helpChunks.has(f.name)||(ownPages&&/\.html?$/i.test(f.name)&&f.file.startsWith(ownPages)))continue;
    const hits=new Map();for(const [name,list] of markers){const found=list.filter(m=>m.forms.some(form=>f.text.includes(form)));if(found.length)hits.set(name,found);}
    if(hits.size)holders.set(f,hits);}
   const chunkName=(name)=>`i18n-${tag}-${name.replace(/\+/g,'_')}-`;
