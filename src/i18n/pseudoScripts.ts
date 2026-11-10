@@ -2,6 +2,7 @@ import en from './en.json' with {type:'json'};
 import type {LocaleBundle,MessageKey} from './catalog';
 import type {PseudoScriptLanguage} from './locale';
 import {PSEUDO_CLOSE,PSEUDO_OPEN,pseudoMap} from './pseudo';
+import {pseudoRtl} from './pseudoRtl';
 /** Front SC2 [dev server and tests only]: three script-stress pseudo-locales beside `qps` (docs/I18N.md; plan
  * analysis/front-plans/front-i18n-scripts.md §4). Like qps, every catalog, map and vireo() string is wrapped in ⟦…⟧ and map
  * functions have their result marked only (pseudoMark), since it may carry data; `{params}`, `<tag>`-like placeholders, digits,
@@ -109,8 +110,9 @@ function cyrlWord(word:string):string{
  * of eight letters or more in six. */
 export const pseudoCyrl=(text:string):string=>marked(text,s=>s.replace(WORD,cyrlWord));
 
-/** The string transform of each script-stress pseudo-locale. */
-export const PSEUDO_SCRIPT:Readonly<Record<PseudoScriptLanguage,(text:string)=>string>>={'qps-cjk':pseudoCjk,'qps-deva':pseudoDeva,'qps-cyrl':pseudoCyrl};
+/** The string transform of each script-stress pseudo-locale. Front RTL-1 (RT2): `qps-rtl`, the right-to-left one, is
+ * src/i18n/pseudoRtl.ts; it shares this table, so the gate, the bundle and the routes it is offered on are the same. */
+export const PSEUDO_SCRIPT:Readonly<Record<PseudoScriptLanguage,(text:string)=>string>>={'qps-cjk':pseudoCjk,'qps-deva':pseudoDeva,'qps-cyrl':pseudoCyrl,'qps-rtl':pseudoRtl};
 export const isPseudoScriptLanguage=(language:string):language is PseudoScriptLanguage=>Object.hasOwn(PSEUDO_SCRIPT,language);
 /** The bundle of one script-stress pseudo-locale: the whole English catalog transformed, and maps and VIREO originals derived on
  * first use through the same mechanism as qps (src/i18n/registry.ts resolveMessages, src/i18n/vireo.ts). */

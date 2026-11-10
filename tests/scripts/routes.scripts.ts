@@ -304,10 +304,14 @@ test(`${lang} at ${width} px computes the same styles with and without scripts.c
  });
  const snapshot=(props:readonly string[])=>page.evaluate(props=>
   [document.documentElement,document.body,...document.body.querySelectorAll('*')].map(e=>{const s=getComputedStyle(e);return `${e.tagName.toLowerCase()}.${typeof e.className==='string'?e.className:''} `+props.map(p=>`${p}:${s.getPropertyValue(p)}`).join(';');}),props);
+ // Removes the sheet, keeping it on the window so that restoreSheet() can put the same node back where it was.
  const withoutSheet=()=>page.evaluate(()=>{
   const sheet=[...document.querySelectorAll<HTMLStyleElement>('style[data-vite-dev-id]')].filter(s=>s.dataset.viteDevId!.endsWith('/src/theme/scripts.css'));
-  if(sheet.length!==1)throw new Error(`scripts.css found ${sheet.length} times`);sheet[0].remove();
+  if(sheet.length!==1)throw new Error(`scripts.css found ${sheet.length} times`);
+  (window as unknown as {removedSheet:[Node,Node|null,Node]}).removedSheet=[sheet[0].parentNode!,sheet[0].nextSibling,sheet[0]];sheet[0].remove();
  });
+ const restoreSheet=()=>page.evaluate(()=>{const [parent,next,node]=(window as unknown as {removedSheet:[Node,Node|null,Node]}).removedSheet;parent.insertBefore(node,next);});
+ const same=(a:readonly string[],b:readonly string[])=>a.join('\n')===b.join('\n');
  for(const route of ['',...ROUTES]){
   await page.setViewportSize({width,height:width===320?700:1000});
   // A full load each time: a change of #hash alone would keep the page whose sheet was removed.
@@ -315,11 +319,26 @@ test(`${lang} at ${width} px computes the same styles with and without scripts.c
   await expect(page.locator('.investigation-toolbar')).toBeVisible({timeout:30_000});await expect(page.locator('h1:visible').first()).toBeVisible({timeout:30_000});
   await settle(page);
   if(width<600)await headerTools(page);
-  // The route may still be filling in (lazy parts, loaded files): take the snapshot once two in a row agree.
+  // Front RTL-1: parts of every page arrive as lazy chunks loaded in effects after the first render, and one could arrive after
+  // the snapshots below agreed, adding its elements to the second only (en at 320 px counted 1890, then 1896 without the sheet,
+  // in CI: the six elements of the Multi-Spec card, src/multispec/MultiSpecLazy.tsx, mounted in the observatory view that every
+  // route keeps). The walk waits for the shell's lazy parts (that card, the language selector and the View original option,
+  // all shown for English and Spanish on every route), and accepts a comparison only when the page with the sheet is the same
+  // before and after it (the same node put back), so any other late change retries instead of failing or passing by chance.
+  for(const part of ['ms-card','language-choice','language-originals-choice'])await expect(page.getByTestId(part),part).toHaveCount(1,{timeout:30_000});
+  // The route may still be filling in (lazy parts, loaded files): take the snapshot once two in a row agree (and fail if they
+  // never do, rather than compare a page that is still changing).
   const props=await declaredProps();expect(props.length,props.join()).toBeGreaterThanOrEqual(15);
-  let before=await snapshot(props);
-  for(let i=0;i<20;i++){await settle(page);const again=await snapshot(props);if(again.join('\n')===before.join('\n'))break;before=again;}
-  await withoutSheet();const after=await snapshot(props);
+  let before=await snapshot(props),stable=false;
+  for(let i=0;i<20&&!stable;i++){await settle(page);const again=await snapshot(props);stable=same(again,before);before=again;}
+  expect(stable,`${lang} ${width} #${route}: the page settles before the comparison`).toBe(true);
+  let after:string[]=[],bracketed=false;
+  for(let attempt=0;attempt<5&&!bracketed;attempt++){
+   await withoutSheet();after=await snapshot(props);await restoreSheet();
+   const again=await snapshot(props);bracketed=same(again,before);before=again;
+   if(!bracketed)test.info().annotations.push({type:'retried',description:`${lang} ${width} #${route}: the page changed around the comparison (attempt ${attempt+1})`});
+  }
+  expect(bracketed,`${lang} ${width} #${route}: the page with the sheet stays the same around the comparison`).toBe(true);
   expect(after.length,`${lang} ${width} ${route}`).toBe(before.length);
   // Each difference as "element property:before → property:after".
   const changed=before.flatMap((v,i)=>{if(v===after[i])return [];const a=v.split(';'),b=after[i].split(';');return [a.flatMap((x,j)=>x===b[j]?[]:[`${x} → ${b[j]}`]).join(', ')];});

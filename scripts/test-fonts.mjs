@@ -4,6 +4,7 @@
 // whatever else the machine (or the CI runner, which has IPA Gothic, WenQuanYi and Unifont from Playwright's --with-deps)
 // has installed. Nothing is downloaded or installed: a missing font fails with a typed message naming the package to install.
 //   node scripts/test-fonts.mjs                  profile "scripts": DejaVu (Latin, Cyrillic) + Noto Sans CJK + Noto Sans Devanagari
+//                                                + Noto Sans Arabic + Noto Sans Hebrew (Front RTL-1, RT3)
 //   node scripts/test-fonts.mjs --profile=dejavu the DejaVu-only fontconfig docs/I18N.md asks the Spanish layout checks to use
 //   --json                                       prints the report as JSON on stdout (the human log goes to stderr)
 // Environment: OPENVIREO_TEST_FONTS_DIR (output root), OPENVIREO_TEST_FONT_DIRS (colon-separated folders searched first).
@@ -37,7 +38,12 @@ export const PROFILES = Object.freeze({
       {family: 'Noto Sans CJK JP', files: CJK_FILES},
       {family: 'Noto Sans CJK SC', files: CJK_FILES},
       {family: 'Noto Sans CJK TC', files: CJK_FILES},
-      {family: 'Noto Sans Devanagari', files: ['NotoSansDevanagari-Regular.ttf', 'NotoSansDevanagari-Bold.ttf']}],
+      {family: 'Noto Sans Devanagari', files: ['NotoSansDevanagari-Regular.ttf', 'NotoSansDevanagari-Bold.ttf']},
+      // Front RTL-1 (RT3; plan front-i18n-rtl.md § 6.3): the non-UI Noto Sans Arabic on purpose (its 2.112 em line is the
+      // tallest Arabic metric, the worst case), and Noto Sans Hebrew. Ubuntu 24.04's fonts-noto-core ships both, Regular and
+      // Bold, in /usr/share/fonts/truetype/noto (the CI job already installs it); Arch's noto-fonts in /usr/share/fonts/noto.
+      {family: 'Noto Sans Arabic', files: ['NotoSansArabic-Regular.ttf', 'NotoSansArabic-Bold.ttf']},
+      {family: 'Noto Sans Hebrew', files: ['NotoSansHebrew-Regular.ttf', 'NotoSansHebrew-Bold.ttf']}],
     // The other faces the two CJK collections hold; fc-list shows them, and any family beyond these is an error.
     alsoListed: ['Noto Sans CJK HK', 'Noto Sans CJK KR', ...['HK', 'JP', 'KR', 'SC', 'TC'].map(r => `Noto Sans Mono CJK ${r}`)],
     // A pattern whose language contains one of these tags gets the family appended after the generic one, so fallback for
@@ -48,6 +54,12 @@ export const PROFILES = Object.freeze({
       {family: 'Noto Sans CJK SC', tags: ['zh-cn', 'zh-sg', 'zh-hans']},
       {family: 'Noto Sans CJK TC', tags: ['zh-tw', 'zh-hk', 'zh-mo', 'zh-hant']},
       {family: 'Noto Sans Devanagari', tags: ['hi']},
+      // DejaVu Sans covers Arabic and Hebrew, and DejaVu Sans Mono Arabic, so under sans-serif, system-ui, monospace and the
+      // site's token stacks DejaVu draws them whatever the language (tests/scripts/fonts.scripts.ts, characterization (d)):
+      // only a stack that names the Noto face before them reaches it. These rules decide the per-character fallback (from
+      // DejaVu Serif, or from a named face that lacks the character), which would otherwise pick DejaVu Sans.
+      {family: 'Noto Sans Arabic', tags: ['ar', 'fa', 'ur']},
+      {family: 'Noto Sans Hebrew', tags: ['he']},
     ],
   }),
 });
@@ -61,6 +73,8 @@ export const INSTALL_HINTS = Object.freeze({
   'Noto Sans CJK SC': {ubuntu: 'fonts-noto-cjk', arch: 'noto-fonts-cjk'},
   'Noto Sans CJK TC': {ubuntu: 'fonts-noto-cjk', arch: 'noto-fonts-cjk'},
   'Noto Sans Devanagari': {ubuntu: 'fonts-noto-core', arch: 'noto-fonts'},
+  'Noto Sans Arabic': {ubuntu: 'fonts-noto-core', arch: 'noto-fonts'},
+  'Noto Sans Hebrew': {ubuntu: 'fonts-noto-core', arch: 'noto-fonts'},
 });
 
 export class TestFontsError extends Error {
@@ -168,7 +182,7 @@ function fc(tool, args, confFile) {
 export const extraFamilies = (profile, listed) => [...listed].filter(f => !profile.fonts.some(p => p.family === f) && !(profile.alsoListed ?? []).includes(f)).sort();
 
 /** Checks with fc-list that each family resolves inside the private config and nothing else does, and with fc-match -s
- * that the first CJK or Devanagari face in a language's fallback order is the expected one (what Chromium's
+ * that the first CJK, Devanagari, Arabic or Hebrew face in a language's fallback order is the expected one (what Chromium's
  * per-character fallback walks). */
 export function verifyFontconfig(profile, confFile) {
   const listed = new Set(fc('fc-list', ['--format', '%{family}\n'], confFile).split('\n').flatMap(l => l.split(',')).map(s => s.trim()).filter(Boolean));
@@ -176,10 +190,10 @@ export function verifyFontconfig(profile, confFile) {
   if (unresolved.length) throw new TestFontsError('unresolved-family', `fontconfig does not list ${unresolved.join(', ')} in ${confFile}; listed: ${[...listed].sort().join(', ') || 'nothing'}.`);
   const extra = extraFamilies(profile, listed);
   if (extra.length) throw new TestFontsError('extra-family', `fontconfig lists ${extra.join(', ')} in ${confFile}, which the profile does not hold.`);
-  const checks = [];
+  const checks = [], scriptFaces = new Set(profile.langs.map(l => l.family));
   for (const {family, tags} of profile.langs) for (const tag of tags) {
     const order = fc('fc-match', ['-s', '--format', '%{family[0]}\n', `sans-serif:lang=${tag}`], confFile).split('\n').filter(Boolean);
-    const first = order.find(f => f.startsWith('Noto Sans CJK') || f === 'Noto Sans Devanagari');
+    const first = order.find(f => f.startsWith('Noto Sans CJK') || scriptFaces.has(f));
     if (order[0] !== 'DejaVu Sans' || first !== family) throw new TestFontsError('wrong-fallback', `fc-match -s sans-serif:lang=${tag} gives ${order.slice(0, 4).join(' > ')}; expected DejaVu Sans first and ${family} as the first script face.`);
     checks.push({lang: tag, first: order[0], scriptFace: first});
   }

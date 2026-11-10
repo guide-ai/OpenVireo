@@ -3,12 +3,16 @@
 import en from './en.json';
 import {english,type MessageKey,type Translate} from './catalog';
 import {activateLocale,current,notePendingText} from './active';
-import type {UiLanguage} from './locale';
+import {htmlDir,type TextDirection,type UiLanguage} from './locale';
 export {createI18n,locale,type I18n,type LocaleBundle,type MessageArgs,type MessageKey,type MessageValues,type PlainMessageKey,type Translate} from './catalog';
 export type {UiLanguage};
 export {activateLocale};
 /** The UI language of this load. */
 export const uiLanguage=():UiLanguage=>current().language;
+/** Front RTL-1 (RT1): the text direction of this load's UI language (its <html dir>), for code that places things by side
+ * (popup menus, the tour: RT6). Fixed for a whole load: a language change reloads the page. */
+export const uiDirection=():TextDirection=>htmlDir(current().language);
+export type {TextDirection};
 /** The registered non-English bundle of this load, or null for English (src/i18n/registry.ts and vireo.ts). */
 export const activeBundle=()=>current().bundle;
 type Render=(key:MessageKey,values?:Readonly<Record<string,string|number>>)=>string;

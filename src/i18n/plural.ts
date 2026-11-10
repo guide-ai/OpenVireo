@@ -15,7 +15,7 @@ export const PLURAL_ORDER:readonly PluralCategory[]=Object.freeze(['zero','one',
 export type PluralForms=Readonly<Partial<Record<PluralCategory,string>>&{other:string}>;
 const rules=new Map<string,Intl.PluralRules>();
 /** The tag whose rules apply: the language itself when the runtime supports it; English for the dev pseudo-locales (`qps`,
- * `qps-cjk`, `qps-deva`, `qps-cyrl`: English text in disguise, and `qps-cjk` is not even a valid BCP 47 tag) and for
+ * `qps-cjk`, `qps-deva`, `qps-cyrl`, `qps-rtl`: English text in disguise, and `qps-cjk` is not even a valid BCP 47 tag) and for
  * anything the runtime cannot resolve. Never throws. */
 export function pluralLanguage(language:string):string{
  if(/^qps(?:-|$)/i.test(language))return 'en';
