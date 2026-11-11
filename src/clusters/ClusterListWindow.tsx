@@ -10,13 +10,14 @@ import {CLUSTER_HR as M} from './ClusterHrMessages';
 import ClusterPrintPreview from './ClusterPrintPreview';
 import './cluster-hr.css';
 import {screenDateTime} from '../i18n/screenDate';
+import {iso} from '../i18n/bidi';
 
 /** Page body of TObjctListForm1 Print (Front O M6; TClstrListForm2 0x5451a4 keeps the user's orientation): date + laboratory
  * line, student lines (not recovered: placeholder), the caption and every list line. */
 export function ListPrintBody({caption,lines}:{caption:string;lines:readonly string[]}){
  const [date]=useState(()=>screenDateTime(new Date()));
  return <div data-testid="cluster-list-print-body">
-  <p className="cluster-print-line">{date+vireo(PL.lab)}</p>
+  <p className="cluster-print-line">{/* Front RT7: the date in its own isolate in a right-to-left load (unchanged otherwise). */iso(date)+vireo(PL.lab)}</p>
   <p className="cluster-print-line cluster-print-placeholder">{M.printPlaceholder}</p>
   <p className="cluster-print-line cluster-print-indent">{caption}</p>
   {lines.map((l,i)=><p key={i} lang="en" className="cluster-print-line cluster-print-indent">{l||' '}</p>)}

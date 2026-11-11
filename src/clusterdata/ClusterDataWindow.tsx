@@ -35,6 +35,7 @@ import '../observatory/observatory-dialogs.css';
 import '../observatory/field-info.css';
 import '../clusters/cluster-hr.css';
 import {screenDateTime} from '../i18n/screenDate';
+import {iso} from '../i18n/bidi';
 
 /** The record 0x5bca0c and the list 0x53f live for the process: here, for the page session (module state). */
 let sessionRecord:ClusterDialogRecord=EMPTY_CLUSTER_RECORD;
@@ -240,7 +241,7 @@ function UnsavedHotList({onAnswer}:{onAnswer:(save:boolean)=>void}){
 function StudyPrintBody({caption,lines,student}:{caption:string;lines:readonly string[];student:boolean}){
  const [date]=useState(()=>screenDateTime(new Date()));
  return <div data-testid="cd-study-print-body">
-  <p className="cluster-print-line">{date+(student?vireo(HP.tableNumber)+vireo(HP.notRecorded):'')}</p>
+  <p className="cluster-print-line">{/* Front RT7: the date in its own isolate in a right-to-left load (unchanged otherwise). */iso(date)+(student?vireo(HP.tableNumber)+vireo(HP.notRecorded):'')}</p>
   <p className="cluster-print-line cluster-print-indent">{caption}</p>
   <NativeMirrorCaption print/>
   {lines.map((l,i)=><p key={i} lang="en" className="cluster-print-line cluster-print-indent">{l||' '}</p>)}

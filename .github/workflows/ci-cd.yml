@@ -92,7 +92,10 @@ jobs:
     # test count in file order, which would leave every deep walk (tests/scripts/walks.scripts.ts, about three quarters of the
     # time) in one part; the parts are instead the deep walks under qps-deva, qps-cyrl and qps-rtl, and everything else (the
     # other script files and the qps-cjk walks). The two selections are complements, so no test is left out.
-    name: Script fonts (ja, zh, hi, ru) (${{ matrix.part }}/2)
+    # Front RT7: three parts, so each stays under about 15 minutes with the qps-rtl deep walks at both widths and the RTL route walk.
+    # Part 2 is still the deep walks under qps-deva, qps-cyrl and qps-rtl; part 3 the two right-to-left files (rtl-css.scripts.ts and
+    # rtl.scripts.ts, matched by file name); part 1 the complement of both.
+    name: Script fonts (ja, zh, hi, ru, rtl) (${{ matrix.part }}/3)
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     strategy:
@@ -100,9 +103,11 @@ jobs:
       matrix:
         include:
           - part: 1
-            select: '--grep-invert="under qps-(deva|cyrl|rtl) at "'
+            select: '--grep-invert="under qps-(deva|cyrl|rtl) at |rtl(-css)?\.scripts\.ts"'
           - part: 2
             select: '--grep="under qps-(deva|cyrl|rtl) at "'
+          - part: 3
+            select: '--grep="rtl(-css)?\.scripts\.ts"'
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7

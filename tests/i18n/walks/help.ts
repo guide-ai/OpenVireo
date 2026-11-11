@@ -43,7 +43,7 @@ export async function walk(page:Page,lang:Lang,each:(step:string)=>Promise<void>
  await id(page,'radio-help-menu').click();await id(page,'radio-help-menu-topics').click();
  await expect(id(page,'radio-help-topic-list').getByRole('option')).toHaveCount(lists['PULSRHLP.LST'].rows.length);await each('PULSRHLP.LST topics');
  await load(page,lang,'#observatory');
- await id(page,'fi-file-menu').click({timeout:20_000});await id(page,'ob-exit').click();await expect(id(page,'exit-reminder')).toBeVisible();await each('Exit Observatory reminder');
+ await id(page,'fi-file-menu').click({timeout:20_000});await id(page,'ob-exit').click();await expect(id(page,'exit-reminder-text')).toBeVisible();await each('Exit Observatory reminder');
  await load(page,lang,'#classification');
  await id(page,'spl-open').click();const lines=id(page,'spl-rows').getByRole('option');await expect(lines).toHaveCount(30);await each('Spectral Line Table');
  await lines.nth(2).dblclick();await expect(id(page,'spl-help')).toBeVisible();await each('Spectral Line Help');
