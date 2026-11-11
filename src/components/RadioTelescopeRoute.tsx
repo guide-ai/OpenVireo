@@ -33,6 +33,7 @@ import {vireo} from '../i18n/vireo';
 import {OBSERVATORY_VIREO_CAPTIONS as VB} from '../observatory/ObservatoryMessages';
 import type {SharedHotListHandle} from '../useSharedHotList';
 import type {SharedPulsarDataHandle} from '../useSharedPulsarData';
+import {imeComposing} from '../dialogKeyboard';
 
 /** Scenario inputs at first use: the FormCreate dome byte 0 (RC-01) and nothing supplied. The learner applies the recovered
  * compiled defaults (diameter 100, access option off) or other values explicitly, or Start pulsar exercise applies them while
@@ -494,7 +495,7 @@ function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarD
    <label htmlFor={`${id}-utc`}>{t('radioRoute.clock.utLabel')}</label>
    <input ref={utInputRef} id={`${id}-utc`} data-testid="radio-clock-utc" type="text" autoComplete="off" spellCheck={false} maxLength={RADIO_CLOCK_CONSTANTS.draftMaxLength}
     value={scenario.draftUTC} aria-describedby={`${id}-utc-help`} aria-invalid={clockOutcome==='utc-invalid'}
-    onChange={e=>apply(s=>editRadioClockDraft(s,e.target.value))} onKeyDown={e=>{if(e.key==='Enter'&&!e.repeat){e.preventDefault();apply(applyRadioClockUTC);}}}/>
+    onChange={e=>apply(s=>editRadioClockDraft(s,e.target.value))} onKeyDown={e=>{if(e.key==='Enter'&&!e.repeat&&!imeComposing(e)){e.preventDefault();apply(applyRadioClockUTC);}}}/>
    <p id={`${id}-utc-help`} className="radio-control-note">{t('radioRoute.clock.utHelp')}</p>
    <div className="button-row">
     <button type="button" className="primary-button" data-testid="radio-clock-apply" onClick={()=>apply(applyRadioClockUTC)}>{t('radioRoute.clock.apply')}</button>
@@ -594,7 +595,7 @@ function RadioDateDialogView({dialog,refusal,onEdit,onOk,onCancel,returnFocus,fa
  const onKeyDown=(e:KeyboardEvent<HTMLDivElement>)=>{
   if(blocked||ignoreHeldKey(e))return;
   if(e.key==='Escape'){e.preventDefault();onCancel();return;}
-  if(e.key==='Enter'&&(e.target as HTMLElement).tagName==='INPUT'){e.preventDefault();ok();return;}
+  if(e.key==='Enter'&&(e.target as HTMLElement).tagName==='INPUT'){if(imeComposing(e))return;e.preventDefault();ok();return;}
   trapTab(e,root.current);
  };
  const C=UT_DIALOG_CAPTIONS;

@@ -53,6 +53,7 @@ import {observationListActivate,observationListData,observationListFindOrAdd,obs
 import {observationalDataFields} from './core/clusterNativeHrSelect';
 import {observationText} from './core/observationResults';
 import {ObservationListContext,EMPTY_SHARED_OBSERVATION_LIST} from './observationListContext';
+import {keepInsideSvg} from './plotTextFit';
 /** Front D3: the session code (and the field data its validators need) is a separate chunk. It is preloaded once the page is
  * idle together with the modules Save imports lazily (review M1), so a tab that later goes offline or outlives a deployment
  * still saves; Save and Restore await the same promise. A failed load is forgotten (the next Save or Restore tries again) and reported as a loading problem (review L1). */
@@ -118,7 +119,7 @@ function Chart({ observation, z, reference, view, baseline, cursor, selectedLine
     <g clipPath="url(#plot-clip)"><polyline points={originalCurve} className="reference-curve"/>{observation && <polyline points={observedCurve} className="observed-curve"/>}
     {(reference ? references[reference].lines : []).map((line, index) => { const x = 60 + (shiftedWavelength(line.wavelength, z) - min) / (max - min) * 860; return <g key={index}><line x1={x} x2={x} y1="48" y2="306" className={selectedLine===index?'marker marker-selected':'marker'}/><text x={x + 5} y={66 + index % 2 * 23} className="marker-label">{line.label.split(' (')[0]}</text><circle cx={x} cy="52" r="3" className="marker-dot"/></g>; })}</g>
     {cursor&&<g className={cursor.final?'engine-cursor engine-cursor-final':'engine-cursor'} data-testid="engine-cursor"><line x1={toSvgX(cursor.at.x)} x2={toSvgX(cursor.at.x)} y1="56" y2="306"/>{cursor.final&&<line x1={toSvgX(cursor.at.x)-14} x2={toSvgX(cursor.at.x)+14} y1={toSvgY(cursor.at.y)} y2={toSvgY(cursor.at.y)}/>}</g>}
-    <text x="16" y="175" transform="rotate(-90 16 175)" textAnchor="middle" className="axis-label axis-label-y">{t('spectrum.displayLevel')}</text><text x="490" y="355" textAnchor="middle" className="axis-label">{t('spectrum.wavelength')}</text>
+    <text x="16" y="175" transform="rotate(-90 16 175)" textAnchor="middle" className="axis-label axis-label-y">{t('spectrum.displayLevel')}</text><g ref={keepInsideSvg}><text x="490" y="355" textAnchor="middle" className="axis-label">{t('spectrum.wavelength')}</text></g>
   </svg>;
 }
 

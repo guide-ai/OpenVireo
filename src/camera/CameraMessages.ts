@@ -1,4 +1,5 @@
 import {pickMessages} from '../i18n/registry';
+import {plural} from '../i18n/plural';
 /** Presentation strings for the CCD and IR camera windows (fronts C, C6). Pure and keyed so the coordinator can fold them into
  * en.json at merge. English default. Native captions recovered from the CCD form are marked (native). */
 export const CAMERA_MESSAGES_EN=Object.freeze({
@@ -33,6 +34,7 @@ export const CAMERA_MESSAGES_EN=Object.freeze({
  saveNativeNote:'This file uses VIREO\'s own header cards and order, for comparison with the original program. Like VIREO, with Show Object ID on (Optical Simulation Options; five guides turn it on) the object card and file name carry the name of the object nearest the image centre (never a hidden Object X target). Otherwise they use your Set Date/Time ID as ObjX-<ID> (here the ID you enter in the Object X lab), or UNKNOWN when none is set. VIREO keeps the ID exactly as typed, spaces included. VIREO writes other characters (such as accented letters) as they are; this site refuses such an ID, because FITS headers allow only plain ASCII. Like VIREO, the detector card carries the camera name from the camera options as they are when you save (characters outside plain ASCII are written as ?, because FITS headers allow only ASCII); the observer card is left empty, because this site does not collect student names. DATE is the exposure time. Like VIREO, the file has no padding after the data, so some FITS readers may refuse it. The first button gives the standard file.',
  saveIdNotAscii:'This file was not saved. FITS header cards allow only plain ASCII letters, digits and symbols, and your Object X ID has other characters (such as accented letters). Change the ID in the Object X lab, or use the standard file.',
  saveFailed:'This file could not be written, so nothing was downloaded. Your image is kept.',
+ saveDetectorAscii:'Saved. The DETECTOR card shows ? for each character of the camera\'s detector name outside plain ASCII (such as accented letters), because FITS header cards allow only ASCII.',
  statusIdle:'Ready.',
  statusNotReady:(why:string)=>`The camera needs the telescope ready: ${why}`,
  accessReason:{tracking:'turn tracking on.',moving:'wait for the telescope to stop moving.',finder:'switch to the telescope view.',dome:'open the dome.',configuration:'this telescope configuration is not available.',pointing:'point the telescope first.',ready:''} as Readonly<Record<string,string>>,
@@ -71,7 +73,7 @@ export const CAMERA_MESSAGES_EN=Object.freeze({
  detailJd:'Julian date',
  detailDraws:'Random draws',
  detailPeak:'Brightest pixel value',
- peakCount:(value:number,count:number)=>`${value} (${count} pixel${count===1?'':'s'})`,
+ peakCount:(value:number,count:number)=>`${value} (${plural('en',count,{one:`${count} pixel`,other:`${count} pixels`})})`,
  detailSkipped:'Moving objects not drawn',
  detailFieldObjects:'Field variable stars',
  fieldObjects:{

@@ -1,5 +1,6 @@
 import type {VARIABLE_STARS_EN} from '../../../variables/VariableStarMessages';
 import type {Translation} from '../../maps';
+import {plural} from '../../plural';
 /** Front PT4: Brazilian Portuguese (pt-BR) for the variable-star page's web text. A web adaptation by OpenVireo, not CLEA's. VIREO's own
  * captions (Variable Star Data, Simulated Light Curve, their menus and the print lines) are in src/core/variableStarForm.ts
  * and src/core/lightCurvePrint.ts and are translated through vireo() (originals.json). */
@@ -26,7 +27,7 @@ export const VARIABLE_STARS_PT:Translation<typeof VARIABLE_STARS_EN>=Object.free
  typeLabel:'Tipo de variabilidade',
  allTypes:'Todos os tipos',
  typeOption:(type:string,count:number)=>`${type||'(em branco)'} — ${grouped(count)}`,
- results:(shown:number,total:number)=>total===0?'Nenhum registro corresponde.':shown<total?`Mostrando os primeiros ${shown} de ${grouped(total)} registros correspondentes, na ordem do catálogo (ascensão reta). Restrinja a busca para ver os demais.`:`${grouped(total)} registro${total===1?' correspondente':'s correspondentes'}.`,
+ results:(shown:number,total:number)=>total===0?'Nenhum registro corresponde.':shown<total?`Mostrando os primeiros ${shown} de ${grouped(total)} registros correspondentes, na ordem do catálogo (ascensão reta). Restrinja a busca para ver os demais.`:plural('pt-BR',total,{one:`${grouped(total)} registro correspondente.`,other:`${grouped(total)} registros correspondentes.`}),
  columns:['ID GCVS','Tipo','AR (h)','Dec (°)','Máx.','Mín. / ampl.','Período (d)',''],
  open:'Abrir',
  openLabel:(name:string)=>`Abrir ${name}`,

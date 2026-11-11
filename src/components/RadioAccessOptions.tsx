@@ -27,6 +27,7 @@ import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeN
 import {t,type PlainMessageKey} from '../i18n';
 import {vireo,vireoList} from '../i18n/vireo';
 import {OBSERVATORY_VIREO_CAPTIONS as VB} from '../observatory/ObservatoryMessages';
+import {imeComposing} from '../dialogKeyboard';
 
 const D=RADIO_ACCESS_DFM,L=RADIO_ACCESS_LITERALS;
 /** Card status texts of user outcomes (other outcomes are shown elsewhere or not announced). */
@@ -597,7 +598,7 @@ function RadioSimulationOptionsDialog({snapshot,checked,numeric,refusal,onText,o
   if(blocked)return;
   if(ignoreHeldKey(e)){e.stopPropagation();return;}
   if(e.key==='Escape'){e.preventDefault();e.stopPropagation();onCancel();return;}
-  if(e.key==='Enter'&&(e.target as HTMLElement).tagName==='INPUT'){e.preventDefault();e.stopPropagation();ok();return;}
+  if(e.key==='Enter'&&(e.target as HTMLElement).tagName==='INPUT'){if(imeComposing(e))return;e.preventDefault();e.stopPropagation();ok();return;}
   trapTab(e,root.current);
  };
  const max=RADIO_OPTIONS_TEXT_MAX_LENGTH;

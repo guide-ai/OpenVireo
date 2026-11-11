@@ -1,5 +1,6 @@
 import type {OBSERVATORY_MESSAGES_EN} from '../../../observatory/ObservatoryMessages';
 import type {Translation} from '../../maps';
+import {plural} from '../../plural';
 /** Front ES2: Spanish (es-419) for the optical observatory dialogs. A web adaptation by OpenVireo, not CLEA's. */
 export const OBSERVATORY_ES:Translation<typeof OBSERVATORY_MESSAGES_EN>=Object.freeze({
  common:Object.freeze({ok:'Aceptar',cancel:'Cancelar'}),
@@ -90,7 +91,7 @@ export const OBSERVATORY_ES:Translation<typeof OBSERVATORY_MESSAGES_EN>=Object.f
  }),
  hotListPrint:Object.freeze({
   title:'Imprimir lista de objetos',help:'Vista previa de la lista impresa: las líneas de encabezado de VIREO, el título de la ventana y las filas tal como se muestran. Imprimir abre el cuadro de impresión del navegador solo para este informe.',
-  count:(n:number)=>`${n} fila${n===1?'':'s'}`,report:'Informe de la lista de objetos',empty:'La lista no tiene filas.',print:'Imprimir…',close:'Cerrar',
+  count:(n:number)=>plural('es-419',n,{one:`${n} fila`,other:`${n} filas`}),report:'Informe de la lista de objetos',empty:'La lista no tiene filas.',print:'Imprimir…',close:'Cerrar',
   error:'El navegador no pudo abrir la impresión. La vista previa sigue abierta; inténtalo de nuevo o ciérrala.',
   adaptation:'Como en VIREO, la primera línea es la fecha y la hora (aquí en el formato de tu navegador) y, fuera del Modo de edición (Edit Mode), “Número de mesa de laboratorio (no registrado)” [Laboratory Table Number (Not Recorded)], seguido de una línea en blanco para el nombre del estudiante: OpenVireo no tiene inicio de sesión ni número de mesa.',
  }),
@@ -103,6 +104,7 @@ export const OBSERVATORY_ES:Translation<typeof OBSERVATORY_MESSAGES_EN>=Object.f
   saved:(name:string)=>`Espectro guardado como ${name}. Conserva el JSON de la estrella para mantener las cuentas en bruto, la temporización y el RNG.`,
   savedExposure:(name:string)=>`Espectro guardado como ${name}. Conserva el JSON de la exposición para mantener las cuentas en bruto, la temporización y el RNG.`,
   saveError:'Este espectro no se puede guardar: todavía no tiene ningún canal positivo. Integra más tiempo y luego pausa y guarda.',
+  asciiLabel:'El encabezado del archivo escribe _ en lugar de cada carácter de tu ID del Objeto X que no es ASCII simple (como letras con tilde) y de cada coma, porque el encabezado .SSP de VIREO conserva ese formato; el nombre del archivo escribe - en su lugar.',
   printed:'Se abrió el cuadro de impresión solo para este espectro.',printBusy:'Se está preparando otra impresión. Ciérrala primero.',printError:'El navegador no pudo abrir la impresión.',
   printMeta:(ms:string,bins:string)=>`exposición ${ms} ms · ${bins} canales · intensidad normalizada (valores .SSP guardados)`,
   chartLabel:'Espectro adquirido normalizado, tal como se guardó',normalized:'Intensidad normalizada (0–1)',

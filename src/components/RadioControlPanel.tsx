@@ -46,6 +46,7 @@ import {HelpMenu} from '../help/HelpMenus';
 import {HELP_MENU} from '../help/HelpMessages';
 import {lazyTranslator} from '../i18n/registry';
 import {vireo} from '../i18n/vireo';
+import {imeComposing} from '../dialogKeyboard';
 
 export type RadioControlPanelProps=Readonly<{
  /** E08 Object X: label that replaces a hot-list row's identifier and remark near an unrevealed target, or null. */
@@ -719,7 +720,7 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
    <label className="radio-control-check"><input type="checkbox" data-testid="radio-env-option" checked={environment.accessOptionByte} onChange={e=>changeEnv({accessOptionByte:e.target.checked})}/>{t('radio.env.option')}</label>
    <label className="radio-control-check"><input type="checkbox" data-testid="radio-env-other" checked={environment.otherWindowItemsVisible} onChange={e=>changeEnv({otherWindowItemsVisible:e.target.checked})}/>{t('radio.env.otherWindows')}</label>
    <label htmlFor={`${id}-diameter`}>{t('radio.env.diameter')}</label>
-   <input id={`${id}-diameter`} data-testid="radio-env-diameter" type="text" inputMode="numeric" maxLength={11} value={managedDiameter?envDiameterText:draft} aria-invalid={!managedDiameter&&draftInvalid}aria-describedby={`${id}-diameter-help`} disabled={managedDiameter} onChange={e=>{setDraft(e.target.value);setDraftInvalid(false);}} onKeyDown={e=>{if(e.key==='Enter')applyDraft();}}/>
+   <input id={`${id}-diameter`} data-testid="radio-env-diameter" type="text" inputMode="numeric" maxLength={11} value={managedDiameter?envDiameterText:draft} aria-invalid={!managedDiameter&&draftInvalid}aria-describedby={`${id}-diameter-help`} disabled={managedDiameter} onChange={e=>{setDraft(e.target.value);setDraftInvalid(false);}} onKeyDown={e=>{if(e.key==='Enter'&&!imeComposing(e))applyDraft();}}/>
    <p id={`${id}-diameter-help`} className="radio-control-note">{t('radio.env.diameterHelp')}</p>
    {managedDiameter&&<p className="radio-control-note" data-testid="radio-env-diameter-managed">{t('radio.env.diameterManaged')}</p>}
    <p className="radio-control-note" data-testid="radio-env-diameter-current">{environment.dishDiameterMeters===null?t('radio.env.diameterNone'):String(environment.dishDiameterMeters)}</p>
@@ -1011,7 +1012,7 @@ function SkyCoordsDialogView({dialog,blocked,ta,limitReasons,storedB1950,onEdit,
  const onKeyDown=(e:KeyboardEvent<HTMLDivElement>)=>{
   if(blocked||ignoreHeldKey(e))return;
   if(e.key==='Escape'){e.preventDefault();onCancel();return;}
-  if(e.key==='Enter'&&(e.target as HTMLElement).tagName==='INPUT'&&(e.target as HTMLInputElement).type==='text'){e.preventDefault();ok();return;}
+  if(e.key==='Enter'&&(e.target as HTMLElement).tagName==='INPUT'&&(e.target as HTMLInputElement).type==='text'){if(imeComposing(e))return;e.preventDefault();ok();return;}
   trapTab(e,root.current);
  };
  return <div className="antenna-backdrop">

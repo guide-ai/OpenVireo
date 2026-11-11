@@ -50,6 +50,9 @@ export function objectXSpectrumFileName(label:string):string{return `${label.rep
 /** The star route's .SSP file name; Observational Data takes an acquired star's ID from it, as from a saved file (S4). */
 export function starSpectrumFileName(targetId:string):string{return `openvireo-star-${targetId.replace(/[^A-Za-z0-9_-]+/g,'_')}.ssp`;}
 export function objectXHeaderObject(label:string):string{return label.replace(/[^\x20-\x7e]|,/g,'_').trim().slice(0,24)||'UNKNOWN';}
+/** Front SC11 review: true when objectXHeaderObject writes '_' for a character the header keeps (one outside printable ASCII, or a
+ * comma, within the 24 characters written), so the Save card says so; a character cut by the 24-character limit is not reported. */
+export function objectXHeaderReplaces(label:string):boolean{return objectXHeaderObject(label)!==(label.trim().slice(0,24)||'UNKNOWN');}
 export function objectXSpectrumBytes(state:JournalState,label:string,pointing:Readonly<{ra:number;dec:number}>,minimum:number,revealed?:Readonly<{object:string;magnitude:number}>|null):Uint8Array {
  return serializeDotDecimalVireoSpectrum({object:revealed?revealed.object.slice(0,24):objectXHeaderObject(label),pointingRa:pointing.ra,pointingDec:pointing.dec,apparentMagnitude:revealed?revealed.magnitude:OBJECT_X_HEADER_MAGNITUDE,minimum,step:1000/600,counts:state.exposure.counts});
 }

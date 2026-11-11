@@ -11,6 +11,7 @@ import {OBSERVATORY_MESSAGES} from './ObservatoryMessages';
 import './observatory-dialogs.css';
 import PopupMenu,{usePopupMenu} from '../polish/PopupMenu';
 import {HOT_LIST_POPUP_LITERALS as P,POLISH_MESSAGES as PM} from '../polish/PolishMessages';
+import {imeComposing} from '../dialogKeyboard';
 const M=OBSERVATORY_MESSAGES.hotList;
 
 function useModal(ref:RefObject<HTMLDialogElement|null>,open:boolean,focus?:()=>void){
@@ -64,7 +65,7 @@ export default function OpticalHotListWindow({caption,texts,state,rows,onSelect,
    <p className="ob-note">{M.adaptation}</p>
    <dialog ref={find} className="ob-dialog" aria-labelledby={`${id}-find`} data-testid="ob-hotlist-find" onCancel={e=>{e.preventDefault();onSearchCancel();}}>
     <h2 id={`${id}-find`} className="ob-native">{vireo(L.caption)}</h2>
-    <label className="ob-field"><span>{M.query}</span><input ref={query} type="text" autoComplete="off" spellCheck={false} maxLength={RADIO_HOT_LIST_SEARCH_QUERY_MAX} data-testid="ob-hotlist-query" value={state.search.dialog?.query??''} onChange={e=>onSearchEdit(e.target.value,state.search.dialog?.matchCase??false)} onKeyDown={e=>{if(e.key==='Enter'&&!e.nativeEvent.isComposing){e.preventDefault();onSearchSubmit('top');}}}/></label>
+    <label className="ob-field"><span>{M.query}</span><input ref={query} type="text" autoComplete="off" spellCheck={false} maxLength={RADIO_HOT_LIST_SEARCH_QUERY_MAX} data-testid="ob-hotlist-query" value={state.search.dialog?.query??''} onChange={e=>onSearchEdit(e.target.value,state.search.dialog?.matchCase??false)} onKeyDown={e=>{if(e.key==='Enter'&&!imeComposing(e)){e.preventDefault();onSearchSubmit('top');}}}/></label>
     <label className="ob-check"><input type="checkbox" checked={state.search.dialog?.matchCase??false} onChange={e=>onSearchEdit(state.search.dialog?.query??'',e.target.checked)}/>{M.matchCase}</label>
     <div className="ob-actions"><button type="button" className="primary-button" onClick={()=>onSearchSubmit('top')}>{M.top}</button><button type="button" className="secondary-button" onClick={()=>onSearchSubmit('next')}>{M.next}</button><button type="button" className="secondary-button" onClick={onSearchCancel}>{M.cancel}</button></div>
    </dialog>

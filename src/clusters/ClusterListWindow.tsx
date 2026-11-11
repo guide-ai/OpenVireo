@@ -9,11 +9,12 @@ import {HelpListBox} from './CleaHelp';
 import {CLUSTER_HR as M} from './ClusterHrMessages';
 import ClusterPrintPreview from './ClusterPrintPreview';
 import './cluster-hr.css';
+import {screenDateTime} from '../i18n/screenDate';
 
 /** Page body of TObjctListForm1 Print (Front O M6; TClstrListForm2 0x5451a4 keeps the user's orientation): date + laboratory
  * line, student lines (not recovered: placeholder), the caption and every list line. */
 export function ListPrintBody({caption,lines}:{caption:string;lines:readonly string[]}){
- const [date]=useState(()=>new Date().toLocaleString());
+ const [date]=useState(()=>screenDateTime(new Date()));
  return <div data-testid="cluster-list-print-body">
   <p className="cluster-print-line">{date+vireo(PL.lab)}</p>
   <p className="cluster-print-line cluster-print-placeholder">{M.printPlaceholder}</p>

@@ -1,4 +1,5 @@
 import {pickMessages} from '../i18n/registry';
+import {plural} from '../i18n/plural';
 /** Presentation strings of the E08 Object X screens, keyed and pure so the coordinator can fold them into the shared i18n
  * catalog at merge. English default. Nothing here reveals a target's identity. */
 export type ObjectXMeasureMessages=Readonly<{
@@ -114,7 +115,7 @@ export const OBJECT_X_LAB_EN=Object.freeze({
  saveFits:(label:string)=>`Save ${label}.FIT`,
  imagesFull:(images:number,exposures:number)=>`Image limit reached (${images} images, ${exposures} exposures per investigation): new images are not added.`,
  confirmClearMarks:'Changing the images removes your marks on them. Continue?',
- imageMovers:(pairs:number)=>`${pairs} ${pairs===1?'asteroid':'asteroids'} in the field box.`,
+ imageMovers:(pairs:number)=>plural('en',pairs,{one:`${pairs} asteroid in the field box.`,other:`${pairs} asteroids in the field box.`}),
  /** QA1 review 1 H2: before the reveal the count is not shown (it would name an asteroid target after one image; VIREO's
   * ComputeMovers 0x59940c inserts the pairs silently). The same words for every target. */
  imageMoversHidden:'asteroids of the current list included (the count shows after the reveal)',

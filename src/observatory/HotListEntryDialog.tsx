@@ -4,6 +4,7 @@ import {vireo} from '../i18n/vireo';
 import {HOT_LIST_ENTRY_CAPTIONS as C,type HotListEntryDraft,type HotListEntryField} from '../core/hotListEntry';
 import {OBSERVATORY_MESSAGES} from './ObservatoryMessages';
 import './observatory-dialogs.css';
+import {imeComposing} from '../dialogKeyboard';
 const M=OBSERVATORY_MESSAGES.entry;
 
 /** Web presentation of THOVerifyDlg "Add/Edit Hot List Entry" (OB-AC-02/03): recovered labels, hints and MaxLengths; OK and
@@ -14,7 +15,7 @@ export default function HotListEntryDialog({draft,error,onEdit,onOk,onCancel,onD
  useEffect(()=>{const el=box.current;if(!el)return;if(error&&!el.open)el.showModal();else if(!error&&el.open)el.close();},[error]);
  const field=(name:HotListEntryField,label:string,numeric=true)=><label className="ob-field"><span>{label}</span>
   <input ref={name==='id'?first:undefined} type="text" inputMode={numeric?'decimal':undefined} autoComplete="off" spellCheck={false} title={vireo(C.hints[name])} maxLength={C.maxLength[name]} data-testid={`${testId}-${name}`} value={draft?.[name]??''} onChange={e=>onEdit(name,e.target.value)}
-   onKeyDown={e=>{if(e.key==='Enter'&&!e.nativeEvent.isComposing){e.preventDefault();onOk();}}}/><small>{vireo(C.hints[name])}</small></label>;
+   onKeyDown={e=>{if(e.key==='Enter'&&!imeComposing(e)){e.preventDefault();onOk();}}}/><small>{vireo(C.hints[name])}</small></label>;
  return <dialog ref={dialog} className="ob-dialog" aria-labelledby={`${id}-title`} data-testid={testId} onCancel={e=>{e.preventDefault();if(!error)onCancel();}}>
   {draft&&<>
    <h2 id={`${id}-title`} className="ob-native">{vireo(C.form)}</h2>

@@ -6,6 +6,7 @@ import {menuCaptionText} from '../core/radioControl';
 import type {OpticalSkyCoordsState} from '../core/opticalSkyCoords';
 import {OBSERVATORY_MESSAGES} from './ObservatoryMessages';
 import './observatory-dialogs.css';
+import {imeComposing} from '../dialogKeyboard';
 const M=OBSERVATORY_MESSAGES.skyCoords;
 
 /** Web presentation of the shared TSkyCoordsDlg for the optical observatory (OB-SC). Native <dialog> modal: focus starts in
@@ -18,7 +19,7 @@ export default function OpticalSkyCoordsDialog({state,onEdit,onEpoch,onOk,onCanc
  const draftPole=d?.epochIndex===1&&skyCoordsDraftTarget(d)?.conversion?.southPoleSignLost===true;
  const field=(name:SkyCoordsField,label:ReactNode,ref?:RefObject<HTMLInputElement|null>)=><label className="ob-field"><span>{label}</span>
   <input ref={ref} type="text" inputMode="decimal" autoComplete="off" spellCheck={false} maxLength={SKY_COORDS_FIELD_MAX_LENGTH} data-testid={`ob-sky-${name}`} value={d?.fields[name]??''} onChange={e=>onEdit(name,e.target.value)}
-   onKeyDown={e=>{if(e.key==='Enter'&&!e.nativeEvent.isComposing){e.preventDefault();onOk();}}}/></label>;
+   onKeyDown={e=>{if(e.key==='Enter'&&!imeComposing(e)){e.preventDefault();onOk();}}}/></label>;
  return <>
   <dialog ref={dialog} className="ob-dialog" aria-labelledby={`${id}-title`} aria-describedby={`${id}-help`} data-testid="ob-sky-coords" onCancel={e=>{e.preventDefault();if(!state.notice)onCancel();}}>
    {d&&<>

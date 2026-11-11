@@ -20,6 +20,8 @@ export type FieldInfoSelectionItem=Readonly<{key:string;label:string;onClick:(se
 export type FieldInfoBox=Readonly<{caption:string;text:string}>;
 
 import {downloadText} from './downloadText';
+import {imeComposing} from '../dialogKeyboard';
+import {screenDateTime} from '../i18n/screenDate';
 export {downloadText};
 
 /** A modeless Field Information list window (TFieldRptForm1 / TVarFldLstForm1, docs/OBJECT-INFO-FORMS.md). ListBox lines with
@@ -125,7 +127,7 @@ export function FindDialog({draft,onDraft,onSearch,onCancel}:{draft:Readonly<{qu
  useEffect(()=>{const el=ref.current;if(el&&!el.open){el.showModal();el.querySelector('input')?.focus();}},[]);
  return <dialog ref={ref} className="ob-dialog ob-box" aria-labelledby={`${id}-t`} data-testid="fi-find-dialog" onCancel={e=>{e.preventDefault();onCancel();}}>
   <h2 id={`${id}-t`} className="ob-native">{vireo(SL.caption)}</h2>
-  <label className="ob-field">{vireo(OV.find.label)}<input data-testid="fi-find-query" maxLength={RADIO_HOT_LIST_SEARCH_QUERY_MAX} value={draft.query} onChange={e=>onDraft({...draft,query:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();onSearch('top');}}}/></label>
+  <label className="ob-field">{vireo(OV.find.label)}<input data-testid="fi-find-query" maxLength={RADIO_HOT_LIST_SEARCH_QUERY_MAX} value={draft.query} onChange={e=>onDraft({...draft,query:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'&&!imeComposing(e)){e.preventDefault();onSearch('top');}}}/></label>
   <label className="ob-check"><input type="checkbox" checked={draft.matchCase} onChange={e=>onDraft({...draft,matchCase:e.target.checked})}/>{vireo(OV.find.matchCase)}</label>
   <div className="ob-actions"><button type="button" className="primary-button" data-testid="fi-find-top" onClick={()=>onSearch('top')}>{vireo(OV.find.top)}</button><button type="button" className="secondary-button" data-testid="fi-find-next" onClick={()=>onSearch('next')}>{vireo(OV.find.next)}</button><button type="button" className="secondary-button" onClick={onCancel}>{vireo(OV.cancel)}</button></div>
  </dialog>;
@@ -142,13 +144,13 @@ export function MessageBox({box,onClose,actions}:{box:FieldInfoBox;onClose:()=>v
 }
 
 /** Print… (TVarFldLstForm1 0x52ead8 / TObjctListForm1 print body 0x551b3c) as a browser print preview. The Field Information
- * forms are reachable only in Edit Mode, so they take the Edit Mode branch: DateTimeToStr(Now) (browser format [W]), the
+ * forms are reachable only in Edit Mode, so they take the Edit Mode branch: DateTimeToStr(Now) (screenDateTime, the page language [W]), the
  * caption, the lines. The QSO List (Front O2) is also reachable without Edit Mode (`student`): the date line then ends with
  * `     Laboratory Table Number (Not Recorded)`; this site records no table number or names, so the name lines are omitted [W].
  * The job title names the spooler job and is not drawn. Fonts and layout differ [W]. */
 function FieldInfoPrintPreview({caption,lines,student,onClose}:{caption:string;lines:readonly string[];student:boolean;onClose:()=>void}){
  const id=useId(),dialog=useRef<HTMLDialogElement>(null),button=useRef<HTMLButtonElement>(null),[failed,setFailed]=useState(false);
- const [printedAt]=useState(()=>new Date().toLocaleString());
+ const [printedAt]=useState(()=>screenDateTime(new Date()));
  useEffect(()=>{const el=dialog.current;if(el&&!el.open){el.showModal();button.current?.focus();}
   return ()=>{const root=document.documentElement;if(root.getAttribute('data-print-scope')===FIELD_INFO_PRINT_SCOPE)root.removeAttribute('data-print-scope');};},[]);
  function print(){

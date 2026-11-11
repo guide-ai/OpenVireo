@@ -1,5 +1,6 @@
 import type {VARIABLE_STARS_EN} from '../../../variables/VariableStarMessages';
 import type {Translation} from '../../maps';
+import {plural} from '../../plural';
 /** Front ES7: Spanish (es-419) for the variable-star page's web text. A web adaptation by OpenVireo, not CLEA's. VIREO's own
  * captions (Variable Star Data, Simulated Light Curve, their menus and the print lines) are in src/core/variableStarForm.ts
  * and src/core/lightCurvePrint.ts and are translated through vireo() (originals.json). */
@@ -23,7 +24,7 @@ export const VARIABLE_STARS_ES:Translation<typeof VARIABLE_STARS_EN>=Object.free
  typeLabel:'Tipo de variabilidad',
  allTypes:'Todos los tipos',
  typeOption:(type:string,count:number)=>`${type||'(en blanco)'} — ${count.toLocaleString('en-US')}`,
- results:(shown:number,total:number)=>total===0?'Ningún registro coincide.':shown<total?`Se muestran los primeros ${shown} de ${total.toLocaleString('en-US')} registros coincidentes, en el orden del catálogo (ascensión recta). Acota la búsqueda para ver otros.`:`${total.toLocaleString('en-US')} registro${total===1?' coincidente':'s coincidentes'}.`,
+ results:(shown:number,total:number)=>total===0?'Ningún registro coincide.':shown<total?`Se muestran los primeros ${shown} de ${total.toLocaleString('en-US')} registros coincidentes, en el orden del catálogo (ascensión recta). Acota la búsqueda para ver otros.`:plural('es-419',total,{one:`${total.toLocaleString('en-US')} registro coincidente.`,other:`${total.toLocaleString('en-US')} registros coincidentes.`}),
  columns:['ID GCVS','Tipo','AR (h)','Dec (°)','Máx.','Mín. / ampl.','Período (d)',''],
  open:'Abrir',
  openLabel:(name:string)=>`Abrir ${name}`,

@@ -4,6 +4,7 @@ import {CLOUD_MAX_BYTES} from './config';
 import {CLOUD_EN as M} from './messages';
 import type {CloudSave} from './CloudEntry';
 import './cloud.css';
+import {screenDateTime} from '../i18n/screenDate';
 
 type Props=Readonly<{busy:boolean;onRestore:(file:File)=>void;onSaveToCloud:CloudSave;signinToken:string|null}>;
 type Phase='loading'|'signed-out'|'signed-in'|'unavailable';
@@ -76,7 +77,7 @@ export default function CloudAccount({busy,onRestore,onSaveToCloud,signinToken}:
  }
  /** Front F2 (Front A point 8): one click runs Save investigation and uploads the text it would have downloaded. */
  function saveCurrent(){
-  const name=(uploadName.trim()||M.defaultName(new Date().toLocaleString())).slice(0,120);
+  const name=(uploadName.trim()||M.defaultName(screenDateTime(new Date()))).slice(0,120);
   void run(async()=>{
    let uploaded=false as boolean,failure:unknown=null;
    await onSaveToCloud(async(text,signal)=>{
@@ -145,7 +146,7 @@ export default function CloudAccount({busy,onRestore,onSaveToCloud,signinToken}:
    <h3 className="cloud-list-title">{M.listTitle} <span className="count">{M.saved(items.length)}</span></h3>
    {items.length===0?<p>{M.empty}</p>:<ul className="cloud-list" data-testid="cloud-list">{items.map(item=><li key={item.id} data-testid="cloud-item">
     <span className="cloud-item-name">{item.name}</span>
-    <span className="cloud-item-meta">{M.itemMeta(new Date(item.createdAt).toLocaleString(),formatBytes(item.sizeBytes),item.exercises)}</span>
+    <span className="cloud-item-meta">{M.itemMeta(screenDateTime(new Date(item.createdAt)),formatBytes(item.sizeBytes),item.exercises)}</span>
     <span className="cloud-item-actions">
      <button className="secondary-button" type="button" disabled={disabled} onClick={()=>restore(item)}>{M.restore}</button>
      <a className="secondary-button" href={client.downloadUrl(item.id)} download="openvireo-session.json">{M.download}</a>

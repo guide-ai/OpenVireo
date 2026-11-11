@@ -27,16 +27,9 @@ test.use({actionTimeout:15_000});
  * `fontDependent`: the problem is within 2 px of the check's threshold and depends on a font file that differs between this
  * machine and CI (Noto Sans Devanagari, DejaVu; docs/I18N.md SC1), so it is tolerated where listed but not required. */
 type Known=Readonly<{variants:readonly PseudoScriptLanguage[];widths:readonly Width[];step:string;problem:RegExp;file:string;why:string;fontDependent?:true}>;
-const KNOWN:readonly Known[]=[
- {variants:['qps-cjk'],widths:[320,1440],step:'photometer',problem:/^plot text “⟦[^”]*⟧” outside its plot card pleiades-analysis \(-\d, \d+, \d+, \d+\)$/,file:'src/PleiadesAnalysis.tsx:24 (rotated y-axis title at translate(18 290))',
-  why:'Rotated, the title\'s glyph box is as wide as the font\'s ascent; Noto Sans CJK\'s ascent (1.16 em) passes the 18 px offset, so the box crosses the SVG\'s left edge by 1–2 px. Needs a larger offset in the component (SC11).'},
- {variants:['qps-cjk'],widths:[320,1440],step:'photometer',problem:/^plot text “⟦[^”]*⟧” outside its plot card pleiades-analysis native-cluster \(-\d, \d+, \d+, \d+\)$/,file:'src/NativeClusterAnalysis.tsx (rotated y-axis title, same offset as PleiadesAnalysis)',
-  why:'Same rotated-title offset as PleiadesAnalysis.tsx; the CJK ascent box crosses the left edge by 1–2 px (SC11).'},
- {variants:['qps-deva'],widths:[320,1440],fontDependent:true,step:'spectrum',problem:/^plot text “⟦.*· Å⟧” outside its plot instrument card \(\d+, \d+, \d+, -\d+\)$/,file:'src/SpectrumInstrument.tsx (x-axis title at a fixed y)',
-  why:'Devanagari vowel signs below the baseline reach under the SVG bottom edge; the title needs a higher y or dominant-baseline in the component (SC11).'},
- {variants:['qps-deva'],widths:[320,1440],fontDependent:true,step:'classification',problem:/^plot text “⟦.*· Å⟧” outside its plot class-plot printed-trace \(\d+, \d+, \d+, -\d+\)$/,file:'src/ClassificationLab.tsx (shares the spectrum plot axis title at a fixed y)',
-  why:'Same axis title as the spectrum plot; Devanagari descenders cross the SVG bottom edge (SC11).'},
-];
+// Front SC11 fixed the four SC3 entries (the rotated y-axis titles of PleiadesAnalysis.tsx and NativeClusterAnalysis.tsx under
+// qps-cjk, the spectrum x-axis titles of SpectrumInstrument.tsx and ClassificationLab.tsx under qps-deva) with src/plotTextFit.ts.
+const KNOWN:readonly Known[]=[];
 
 async function settle(page:Page){
  await page.waitForLoadState('networkidle');
@@ -343,5 +336,30 @@ test(`${lang} at ${width} px computes the same styles with and without scripts.c
   // Each difference as "element property:before → property:after".
   const changed=before.flatMap((v,i)=>{if(v===after[i])return [];const a=v.split(';'),b=after[i].split(';');return [a.flatMap((x,j)=>x===b[j]?[]:[`${x} → ${b[j]}`]).join(', ')];});
   expect(changed,`${lang} ${width} #${route}: elements whose computed style scripts.css changed`).toEqual([]);
+ }
+});
+
+// ---- Front SC11: canvas labels (src/components/canvasLabel.ts, used by the radio receiver's two canvases) -----------------------
+test('canvas labels take the script stack of the page language and a background that covers the ink; English and Russian keep bold 13px sans-serif and the 16 px band',async({page})=>{
+ await page.goto('/#observatory');await expect(page.locator('.investigation-toolbar')).toBeVisible({timeout:30_000});
+ const out=await page.evaluate(async()=>{
+  const module='/src/components/canvasLabel.ts';// served by the dev server
+  const {canvasLabel}=await import(module) as typeof import('../../src/components/canvasLabel');
+  await document.fonts.ready;
+  const run=(lang:string,text:string)=>{
+   document.documentElement.lang=lang;
+   const c=document.createElement('canvas');c.width=400;c.height=60;document.body.append(c);
+   const ctx=c.getContext('2d')!,box=canvasLabel(ctx,text,10,20),m=ctx.measureText(text),font=ctx.font;c.remove();
+   return {font,box,inkTop:20-m.actualBoundingBoxAscent,inkBottom:20+m.actualBoundingBoxDescent,inkWidth:m.width};
+  };
+  const r={en:run('en','Pulse 12'),ru:run('ru','Импульс 12'),ja:run('ja','望遠鏡で観測 12'),hi:run('hi','दूरबीन से मापें 12')};
+  document.documentElement.lang='en';return r;
+ });
+ for(const k of ['en','ru'] as const){expect(out[k].font,k).toBe('bold 13px sans-serif');expect(out[k].box,k).toEqual({x:10,y:20,width:Math.ceil(out[k].inkWidth),height:16});}
+ expect(out.ja.font).toContain('"Noto Sans CJK JP"');expect(out.ja.font).toMatch(/^bold 13px "Hiragino Sans"/);expect(out.ja.font).toMatch(/sans-serif$/);
+ expect(out.hi.font).toMatch(/^bold 13px "Noto Sans Devanagari"/);
+ for(const k of ['ja','hi'] as const){
+  expect(out[k].box.y,`${k} covers the ink's top`).toBeLessThanOrEqual(Math.min(20,out[k].inkTop));
+  expect(out[k].box.y+out[k].box.height,`${k} covers the ink's bottom`).toBeGreaterThanOrEqual(Math.max(36,out[k].inkBottom));
  }
 });

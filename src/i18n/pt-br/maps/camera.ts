@@ -1,5 +1,6 @@
 import type {CAMERA_MESSAGES_EN} from '../../../camera/CameraMessages';
 import type {Translation} from '../../maps';
+import {plural} from '../../plural';
 /** Front PT1: Brazilian Portuguese (pt-BR) for the CCD and IR cameras (the observatory's imaging card). A web adaptation by OpenVireo, not CLEA's. */
 export const CAMERA_PT:Translation<typeof CAMERA_MESSAGES_EN>=Object.freeze({
  title:'Câmera CCD',
@@ -32,6 +33,7 @@ export const CAMERA_PT:Translation<typeof CAMERA_MESSAGES_EN>=Object.freeze({
  saveNativeNote:'Este arquivo usa os cartões de cabeçalho próprios do VIREO e a sua ordem, para comparação com o programa original. Como no VIREO, com Mostrar ID do objeto (Show Object ID) ativado (Opções de simulação óptica [Optical Simulation Options]; cinco guias o ativam), o cartão do objeto e o nome do arquivo levam o nome do objeto mais próximo do centro da imagem (nunca um alvo oculto do Objeto X). Caso contrário, usam o seu ID de Definir data/hora (Set Date/Time) como ObjX-<ID> (aqui, o ID que você digita na prática do Objeto X), ou UNKNOWN quando nenhum está definido. O VIREO mantém o ID exatamente como foi digitado, inclusive os espaços. O VIREO escreve os demais caracteres (como letras acentuadas) como estão; este site recusa um ID assim, porque os cabeçalhos FITS só permitem ASCII simples. Como no VIREO, o cartão do detector leva o nome da câmera das opções da câmera como estão quando você salva (os caracteres fora do ASCII simples são escritos como ?, porque os cabeçalhos FITS só permitem ASCII); o cartão do observador fica vazio, porque este site não coleta nomes de estudantes. DATE é a hora da exposição. Como no VIREO, o arquivo não tem preenchimento depois dos dados, então alguns leitores de FITS podem recusá-lo. O primeiro botão gera o arquivo padrão.',
  saveIdNotAscii:'Este arquivo não foi salvo. Os cartões de cabeçalho FITS só permitem letras, dígitos e símbolos ASCII simples, e o seu ID do Objeto X tem outros caracteres (como letras acentuadas). Altere o ID na prática do Objeto X ou use o arquivo padrão.',
  saveFailed:'Não foi possível gravar este arquivo, então nada foi baixado. Sua imagem foi mantida.',
+ saveDetectorAscii:'Salvo. O cartão DETECTOR mostra ? no lugar de cada caractere do nome do detector da câmera que não é ASCII simples (como letras acentuadas), porque os cartões de cabeçalho FITS só permitem ASCII.',
  statusIdle:'Pronta.',
  statusNotReady:(why:string)=>`A câmera precisa que o telescópio esteja pronto: ${why}`,
  accessReason:{tracking:'ative o acompanhamento.',moving:'aguarde o telescópio parar de se mover.',finder:'mude para a visão do telescópio.',dome:'abra a cúpula.',configuration:'esta configuração de telescópio não está disponível.',pointing:'aponte primeiro o telescópio.',ready:''},
@@ -70,7 +72,7 @@ export const CAMERA_PT:Translation<typeof CAMERA_MESSAGES_EN>=Object.freeze({
  detailJd:'Data juliana',
  detailDraws:'Números aleatórios sorteados',
  detailPeak:'Valor do pixel mais brilhante',
- peakCount:(value:number,count:number)=>`${value} (${count} pixel${count===1?'':'s'})`,
+ peakCount:(value:number,count:number)=>`${value} (${plural('pt-BR',count,{one:`${count} pixel`,other:`${count} pixels`})})`,
  detailSkipped:'Objetos em movimento não desenhados',
  detailFieldObjects:'Estrelas variáveis do campo',
  fieldObjects:{

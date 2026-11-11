@@ -1,4 +1,5 @@
 import {pickMessages} from '../i18n/registry';
+import {plural} from '../i18n/plural';
 /** Presentation catalog for the optical observatory dialogs (Front B), kept apart from the shared i18n catalog on the
  * WedgeMessages pattern so a later coordinator merge can move it. Recovered original captions live in the core modules
  * (SKY_COORDS_CAPTIONS and friends) and are never translated here; these strings are OpenVireo wording and one-line
@@ -106,7 +107,7 @@ export const OBSERVATORY_MESSAGES_EN=Object.freeze({
  }),
  hotListPrint:Object.freeze({
   title:'Print hot list',help:'Preview of the printed list: VIREO\'s header lines, the window caption and the rows as shown. Print opens the browser print dialog for this report only.',
-  count:(n:number)=>`${n} row${n===1?'':'s'}`,report:'Hot list report',empty:'The list has no rows.',print:'Print…',close:'Close',
+  count:(n:number)=>plural('en',n,{one:`${n} row`,other:`${n} rows`}),report:'Hot list report',empty:'The list has no rows.',print:'Print…',close:'Close',
   error:'The browser could not open printing. The preview stays open; try again or close it.',
   adaptation:'As in VIREO, the first line is the date and time (here in your browser\'s format) and, outside Edit Mode, "Laboratory Table Number (Not Recorded)" followed by a blank student-name line: OpenVireo has no log-in or table number.',
  }),
@@ -120,6 +121,7 @@ export const OBSERVATORY_MESSAGES_EN=Object.freeze({
   saved:(name:string)=>`Spectrum saved as ${name}. Keep the star JSON to preserve raw counts, timing and RNG.`,
   savedExposure:(name:string)=>`Spectrum saved as ${name}. Keep the exposure JSON to preserve raw counts, timing and RNG.`,
   saveError:'This spectrum cannot be saved: it has no positive bin yet. Integrate longer, then pause and save.',
+  asciiLabel:'The file header writes _ for each character of your Object X ID outside plain ASCII (such as accented letters) and for each comma, because VIREO\'s .SSP header keeps that format; the file name writes - for them.',
   printed:'Print dialog opened for this spectrum only.',printBusy:'Another print is being prepared. Close it first.',printError:'The browser could not open printing.',
   printMeta:(ms:string,bins:string)=>`exposure ${ms} ms · ${bins} bins · normalized intensity (saved .SSP values)`,
   chartLabel:'Normalized acquired spectrum as saved',normalized:'Normalized intensity (0–1)',

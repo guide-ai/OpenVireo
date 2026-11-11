@@ -11,6 +11,7 @@ import { vireo } from '../i18n/vireo';
 import NativeMirrorCaption from './NativeMirrorCaption';
 import { OBSERVATORY_VIREO_CAPTIONS as OV } from '../observatory/ObservatoryMessages';
 import { createSavedRowsTranslator, type SavedRowsMessageKey, type SavedRowsTranslate } from './PulsarSavedRowsMessages';
+import {imeComposing} from '../dialogKeyboard';
 
 /**
  * Self-contained viewer for a supplied saved PLR measurement file (docs/PULSAR-SAVED-ROWS.md). It owns its own state
@@ -348,7 +349,7 @@ function PulsarSavedRows({ translate, idPrefix = 'psr-', active = true, onModalC
             {vireo(SAVED_FIND_LITERALS.searchString)}
             <input ref={queryInput} type="text" maxLength={SAVED_FIND_MAX_QUERY} value={findDraft.text} spellCheck={false} autoComplete="off"
               aria-describedby={`${idPrefix}find-keys`} onChange={e => { setFindDraft({ ...findDraft, text: e.currentTarget.value }); setFindRefusal(null); }}
-              onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); if (!e.repeat) submitFind('top'); } }} data-testid="saved-rows-query" />
+              onKeyDown={e => { if (e.key === 'Enter' && !imeComposing(e)) { e.preventDefault(); if (!e.repeat) submitFind('top'); } }} data-testid="saved-rows-query" />
           </label>
           <label className="psr-check">
             <input type="checkbox" checked={findDraft.caseDependent} onChange={e => setFindDraft({ ...findDraft, caseDependent: e.currentTarget.checked })} data-testid="saved-rows-case" />
@@ -406,7 +407,7 @@ export function ReviewFindDialog({ draft, refusal, onDraft, onAnswer, idPrefix }
         {vireo(SAVED_FIND_LITERALS.searchString)}
         <input ref={query} type="text" maxLength={SAVED_FIND_MAX_QUERY} value={draft.text} spellCheck={false} autoComplete="off"
           onChange={e => onDraft({ ...draft, text: e.currentTarget.value })}
-          onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); if (!e.repeat) onAnswer('top'); } }} data-testid="pulsar-review-find-query" />
+          onKeyDown={e => { if (e.key === 'Enter' && !imeComposing(e)) { e.preventDefault(); if (!e.repeat) onAnswer('top'); } }} data-testid="pulsar-review-find-query" />
       </label>
       <label className="psr-check">
         <input type="checkbox" checked={draft.caseDependent} onChange={e => onDraft({ ...draft, caseDependent: e.currentTarget.checked })} data-testid="pulsar-review-find-case" />

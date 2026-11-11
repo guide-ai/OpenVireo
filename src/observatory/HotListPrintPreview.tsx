@@ -4,6 +4,7 @@ import {createPortal} from 'react-dom';
 import {hotListPrintHeader,type HotListPrintSnapshot} from '../core/hotListPrint';
 import {OBSERVATORY_MESSAGES} from './ObservatoryMessages';
 import './observatory-dialogs.css';
+import {screenDateTime} from '../i18n/screenDate';
 const M=OBSERVATORY_MESSAGES.hotListPrint;
 export const HOT_LIST_PRINT_SCOPE='hot-list';
 
@@ -12,9 +13,9 @@ export const HOT_LIST_PRINT_SCOPE='hot-list';
  * calls window.print() synchronously in the click; a throw shows an error and keeps the preview for a retry. Nothing is
  * stored and no success is claimed. The scope attribute is released on afterprint, close or unmount.
  * Front K2.3: the recovered lines above the caption (0x591098: the date, the table-number line with "(Not Recorded)" and the
- * blank student-name line when Edit Mode is off); the date is the browser's [W]. */
+ * blank student-name line when Edit Mode is off); the date is screenDateTime's, in the page language [W]. */
 export default function HotListPrintPreview({snapshot,editMode,onClose}:{snapshot:HotListPrintSnapshot;editMode:boolean;onClose:()=>void}){
- const id=useId(),dialog=useRef<HTMLDialogElement>(null),printButton=useRef<HTMLButtonElement>(null),[failed,setFailed]=useState(false),[printedAt]=useState(()=>new Date().toLocaleString());
+ const id=useId(),dialog=useRef<HTMLDialogElement>(null),printButton=useRef<HTMLButtonElement>(null),[failed,setFailed]=useState(false),[printedAt]=useState(()=>screenDateTime(new Date()));
  useEffect(()=>{const el=dialog.current;if(el&&!el.open){el.showModal();printButton.current?.focus();}
   return ()=>{const root=document.documentElement;if(root.getAttribute('data-print-scope')===HOT_LIST_PRINT_SCOPE)root.removeAttribute('data-print-scope');};},[]);
  function print(){

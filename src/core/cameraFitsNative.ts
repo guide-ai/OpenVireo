@@ -44,6 +44,8 @@ export const nativeString=(v:string)=>(("= '"+printable(v)).padEnd(11)+"'").padE
 /** [D] ShortString[40] (0x403c5c, cl = 0x28) of the record's name; [W] '?' for each code point outside printable ASCII. */
 export const NATIVE_FITS_DETECTOR_MAX=40;
 export const nativeFitsDetector=(name:string)=>Array.from(name,c=>/^[\x20-\x7e]$/.test(c)?c:'?').join('').slice(0,NATIVE_FITS_DETECTOR_MAX);
+/** Front SC11: the DETECTOR card shows a '?' that replaced a character of the name (one cut by the 40-character limit is not reported). */
+export const nativeFitsDetectorReplaces=(name:string)=>nativeFitsDetector(name)!==name.slice(0,NATIVE_FITS_DETECTOR_MAX);
 const nativeCard=(key:string,text:string)=>(key.padEnd(8)+text).slice(0,80).padEnd(80);
 /** FmtSexagesimal with ':' separators, leading spaces cut (RA digits 1, Dec digits 0). */
 export function nativeFitsSexagesimal(value:number,digits:0|1):string{return formatNativeSexagesimalDigits(value,digits,[':',':','']).trimStart();}

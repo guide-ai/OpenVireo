@@ -1,5 +1,6 @@
 import type {OBSERVATORY_MESSAGES_EN} from '../../../observatory/ObservatoryMessages';
 import type {Translation} from '../../maps';
+import {plural} from '../../plural';
 /** Front PT1: Brazilian Portuguese (pt-BR) for the optical observatory dialogs. A web adaptation by OpenVireo, not CLEA's. */
 export const OBSERVATORY_PT:Translation<typeof OBSERVATORY_MESSAGES_EN>=Object.freeze({
  common:Object.freeze({ok:'OK',cancel:'Cancelar'}),
@@ -90,7 +91,7 @@ export const OBSERVATORY_PT:Translation<typeof OBSERVATORY_MESSAGES_EN>=Object.f
  }),
  hotListPrint:Object.freeze({
   title:'Imprimir lista de objetos',help:'Prévia da lista impressa: as linhas de cabeçalho do VIREO, o título da janela e as linhas como exibidas. Imprimir abre a caixa de impressão do navegador só para este relatório.',
-  count:(n:number)=>`${n} linha${n===1?'':'s'}`,report:'Relatório da lista de objetos',empty:'A lista não tem linhas.',print:'Imprimir…',close:'Fechar',
+  count:(n:number)=>plural('pt-BR',n,{one:`${n} linha`,other:`${n} linhas`}),report:'Relatório da lista de objetos',empty:'A lista não tem linhas.',print:'Imprimir…',close:'Fechar',
   error:'O navegador não conseguiu abrir a impressão. A prévia continua aberta; tente de novo ou feche-a.',
   adaptation:'Como no VIREO, a primeira linha é a data e a hora (aqui no formato do seu navegador) e, fora do Modo de edição (Edit Mode), “Número da mesa de laboratório (não registrado)”, seguido de uma linha em branco para o nome do estudante: o OpenVireo não tem login nem número de mesa.',
  }),
@@ -103,6 +104,7 @@ export const OBSERVATORY_PT:Translation<typeof OBSERVATORY_MESSAGES_EN>=Object.f
   saved:(name:string)=>`Espectro salvo como ${name}. Guarde o JSON da estrela para preservar as contagens em bruto, a temporização e o RNG.`,
   savedExposure:(name:string)=>`Espectro salvo como ${name}. Guarde o JSON da exposição para preservar as contagens em bruto, a temporização e o RNG.`,
   saveError:'Este espectro não pode ser salvo: ainda não tem nenhum canal positivo. Integre por mais tempo e depois pause e salve.',
+  asciiLabel:'O cabeçalho do arquivo escreve _ no lugar de cada caractere do seu ID do Objeto X que não é ASCII simples (como letras acentuadas) e de cada vírgula, porque o cabeçalho .SSP do VIREO mantém esse formato; o nome do arquivo escreve - no lugar deles.',
   printed:'A caixa de impressão foi aberta só para este espectro.',printBusy:'Outra impressão está sendo preparada. Feche-a primeiro.',printError:'O navegador não conseguiu abrir a impressão.',
   printMeta:(ms:string,bins:string)=>`exposição ${ms} ms · ${bins} canais · intensidade normalizada (valores .SSP salvos)`,
   chartLabel:'Espectro adquirido normalizado, como salvo',normalized:'Intensidade normalizada (0–1)',

@@ -12,6 +12,7 @@ import {CLUSTER_HR_CAPTIONS as C} from '../core/clusterHrCaptions';
 import {CLUSTER_HR as M} from './ClusterHrMessages';
 import ClusterPrintPreview from './ClusterPrintPreview';
 import './cluster-hr.css';
+import {screenDateTime} from '../i18n/screenDate';
 
 type Loaded=Readonly<{rows:readonly HelpRow[]}>;
 const lists=new Map<string,Promise<Loaded>>(),texts=new Map<string,Promise<HelpSource>>();
@@ -264,7 +265,7 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
   {message&&<MessageBox message={message} onClose={()=>setMessage(null)}/>}
   {printing&&loaded&&topic&&(()=>{const caption=topicCaption(loaded.rows[topic.index].title);
    return <ClusterPrintPreview caption={caption} note={M.helpPrintNote} onClose={()=>{setPrinting(false);requestAnimationFrame(()=>topicHeading.current?.focus());}} testId={`${testId}-print`}>
-    {helpPrintPage(new Date().toLocaleString(),caption,topic.body.rows,vireo).map((l,i)=>l.kind==='students'
+    {helpPrintPage(screenDateTime(new Date()),caption,topic.body.rows,vireo).map((l,i)=>l.kind==='students'
      ?<p key={i} className="cluster-print-line cluster-print-placeholder">{M.printPlaceholder}</p>
      :<p key={i} className={`cluster-print-line${l.indent?' cluster-print-indent':''}`} lang={l.kind==='row'?textLang:undefined}>{l.kind==='title'?<>{l.text}<span className="cluster-print-placeholder">{M.printPlaceholder}</span></>:l.text}</p>)}
    </ClusterPrintPreview>;})()}
