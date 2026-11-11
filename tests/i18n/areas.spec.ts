@@ -255,6 +255,8 @@ test.describe('a language before its release',()=>{
   };
   const headingKey:Record<string,string>={classification:'class.title','cluster-database':'db.title',photometer:'ph.title','lss-survey':'lss.title','galaxy-exposure':'galaxyExposure.title','star-exposure':'starExposure.title',images:'fits.title'};
   const empty=frPlan.modules.filter(m=>m.kind==='area'&&m.empty).map(m=>m.name);
+  // FR1 review: pin the areas French gives text to (each FR front updates this list), so a lost or stray area fails here.
+  expect(frPlan.modules.filter(m=>m.kind==='area'&&!m.empty).map(m=>m.name).sort(),'the areas with French text').toEqual(['classification','fits','photometer']);
   expect(empty.length,'some areas are still empty').toBeGreaterThan(0);
   for(const r of ROUTES){
    await page.goto('about:blank');w.language.length=0;

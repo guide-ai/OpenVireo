@@ -48,14 +48,18 @@ const exact=(text:string)=>new RegExp(`^\\s*${text.replace(/[.*+?^${}()|[\]\\/]/
 /** A translated language's letters that English text never has (Spanish á é í ó ú ñ ¿ ¡; Portuguese ã õ ç â ê ô à…). */
 const LETTERS:Readonly<Record<string,RegExp>>={...Object.fromEntries(TRANSLATED.map(t=>[t.tag,t.letters])),...PSEUDO_LETTERS};
 const HTML_LANG:Readonly<Record<Locale,string>>={en:'en','es-419':'es-419','pt-BR':'pt-BR',fr:'fr',...PSEUDO_HTML_LANG};
-/** The accessible-name matcher of an English text in this locale: its Spanish form in es-419 (which must exist), a language before
- * its release its own form or the English the page then shows (languageText.ts `text`), else `L`. */
+/** The accessible-name matcher of an English text in this locale: its Spanish form in es-419 (which must exist), Portuguese's or
+ * French's own catalog form (which must exist; for French before its release, an identical entry), else `L`. */
 const N=(locale:Locale,text:string)=>{if(locale==='pt-BR'||locale==='fr'){const t=TRANSLATED.find(x=>x.tag===locale)!;if(text==='Skip the tour')return exact(t.maps.tour.skip);if(text==='Save spectrum (.SSP)')return exact((e01e02Maps(locale).observatory as typeof OBSERVATORY_ES).spectrumSave.save);
  // Front PT1: a button whose English ends in “ ↗” is its catalog text plus the arrow the component adds, as for Spanish.
  // Front PT-REL: a released language's `text` throws for an English text it lacks (it no longer falls back), so look first.
  // Front FR1: a language before its release falls back to the English (no throw), so an English-only answer is no translation.
  const has=(english:string)=>{try{return t.text(english)!==english;}catch{return false;}};
- const arrow=/ ↗$/.test(text)&&!has(text)?' ↗':'';return exact(t.text(arrow?text.slice(0,-2):text)+arrow);}if(locale!=='es-419')return L(text);const arrow=/ ↗$/.test(text)&&!SPANISH.has(text)?' ↗':'',spanish=SPANISH.get(arrow?text.slice(0,-2):text);if(!spanish)throw new Error(`No Spanish for “${text}”`);return exact(spanish+arrow);};
+ const arrow=/ ↗$/.test(text)&&!has(text)?' ↗':'',base=arrow?text.slice(0,-2):text;
+ // FR1 review: a family runs a language before its release only in an area it has translated, so a catalog name it lacks there is
+ // a missing translation, not the preview's English fallback: fail as for a released language (an identical entry still passes).
+ if(!t.entry.released&&!Object.entries(en).some(([k,v])=>v===base&&Object.hasOwn(t.catalog,k)))throw new Error(`No ${t.entry.englishName} for “${base}”`);
+ return exact(t.text(base)+arrow);}if(locale!=='es-419')return L(text);const arrow=/ ↗$/.test(text)&&!SPANISH.has(text)?' ↗':'',spanish=SPANISH.get(arrow?text.slice(0,-2):text);if(!spanish)throw new Error(`No Spanish for “${text}”`);return exact(spanish+arrow);};
 /** Front PT2: a Portuguese accessible name that starts with this English text's translation (a button whose name adds a glyph). */
 const ptStart=(english:string)=>new RegExp(`^\\s*${ptText('pt-BR').text(english).replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')}`);
 /** The variable-star catalog's 31,147 records as the screen writes them: Front PT-REL, Portuguese groups thousands with U+202F. */
