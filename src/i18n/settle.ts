@@ -48,7 +48,7 @@ function finish(page:SettlePage,loaded:LocaleBundle|null,wanted:UiLanguage,missi
  let bundle=loaded,language:UiLanguage,failed:UiLanguage|null=missing&&wanted!=='en'?wanted:null;
  let originals=false;try{originals=!!page.originals?.();}catch{originals=false;}
  if(bundle&&originals)bundle=Object.freeze({...bundle,originals:{},deriveOriginal:undefined});
- try{language=activateLocale(bundle);}
+ try{language=activateLocale(bundle,page.registry??LANGUAGES);}
  catch(error){page.error(FAILED,error);bundle=null;language=activateLocale(null);if(wanted!=='en')failed=wanted;}
  noteLanguageFailure(failed);
  const early=earlyTextRequests();

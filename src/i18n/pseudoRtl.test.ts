@@ -110,8 +110,10 @@ describe('Front RTL-1: qps-rtl as a UI language (dev server and tests only)',()=
   const bundle=pseudoScriptBundle('qps-rtl');
   expect(()=>createI18n(bundle.messages,'ar',{fallback:false})).not.toThrow();
   activateLocale(bundle);expect(uiLanguage()).toBe('qps-rtl');
-  expect(t('sky.pointed',{target:'M82'})).toBe(pseudoRtl(en['sky.pointed']).replace('{target}','M82'));
-  for(const key of Object.keys(en) as MessageKey[])if(en[key])expect((t as (k:MessageKey,v?:Record<string,string>)=>string)(key,Object.fromEntries([...en[key].matchAll(/\{(\w+)\}/g)].map(m=>[m[1],'x']))).startsWith(PSEUDO_OPEN)).toBe(true);
+  // Front RT4: in this right-to-left load each parameter is isolated (FSI…PDI, src/i18n/bidi.test.ts).
+  expect(t('sky.pointed',{target:'M82'})).toBe(pseudoRtl(en['sky.pointed']).replace('{target}','\u2068M82\u2069'));
+  // A text with no Arabic letter of its own ("{value}°", "CCD") is isolated left to right as a whole (U+2066 before the marker).
+  for(const key of Object.keys(en) as MessageKey[])if(en[key])expect((t as (k:MessageKey,v?:Record<string,string>)=>string)(key,Object.fromEntries([...en[key].matchAll(/\{(\w+)\}/g)].map(m=>[m[1],'x']))).replace(/^\s*\u2066/,'').startsWith(PSEUDO_OPEN)).toBe(true);
   expect(vireo('&Print Sky Image...')).toBe(pseudoRtl('&Print Sky Image...'));expect(vireoMenuItem('&File')).toBe(pseudoRtl('File')+'…');
   expect(Object.keys(maps).length).toBeGreaterThan(20);
   for(const [id,english] of pickedMessages())expect(mapParity(english,bundle.deriveMap!(english)),id).toEqual([]);
