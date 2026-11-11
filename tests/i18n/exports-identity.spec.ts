@@ -232,11 +232,13 @@ family('Hubble analysis: Hubble CSV and the Hubble session from the original wor
 
 /** Front PT3: the Portuguese catalog the E03 family reads (the notebook's Edit button carries its row number). */
 const PT_E03=TRANSLATED.find(x=>x.tag==='pt-BR')!.catalog as Readonly<Record<string,string>>;
-// Front PT3: and in pt-BR (its `?lang=pt-BR` preview).
+/** Front FR3: and the French catalog (its `?lang=fr` preview). */
+const FR_E03=TRANSLATED.find(x=>x.tag==='fr')!.catalog as Readonly<Record<string,string>>;
+// Front PT3: and in pt-BR (its `?lang=pt-BR` preview). Front FR3: and in French (its `?lang=fr` preview).
 // Front ES5: every file a student can save on the E03 route, in English, qps and Spanish. The page clock is installed at NOW and
 // paused before the acquisition's one-second exposure and stays paused (only runFor moves it), so the observation notebook's
 // and the recovery copies' times and the observatory clock are the same in every run; nothing is masked.
-family('E03 classification: session, CSV, width record, investigations, observation notebook and recoveries, DAT and TXT inspectors, imported spectrum',['en','qps','es-419','pt-BR'],async({browser,baseURL},identical)=>{
+family('E03 classification: session, CSV, width record, investigations, observation notebook and recoveries, DAT and TXT inspectors, imported spectrum',['en','qps','es-419','pt-BR','fr'],async({browser,baseURL},identical)=>{
  test.setTimeout(240_000);
  // The canonical 3-band counts layout of tests/native-csv-export.spec.ts (authored, not an original observation).
  const header='Object ID    MJD(Days)      RA           Dec    '+['U','B','V'].map(f=>'     '+f+'    ').join('')+'     Z      Spectrum     Comments';
@@ -253,8 +255,11 @@ family('E03 classification: session, CSV, width record, investigations, observat
   const skip=page.getByRole('button',{name:N(locale,'Skip the tour')});if(await skip.isVisible().catch(()=>false))await skip.click();
   await expect(B('Review classification')).toBeEnabled({timeout:30_000});
   await page.evaluate(()=>{location.hash='#star-exposure';});
-  await B('Activate supported star field').click();await page.clock.pauseAt(new Date(NOW.getTime()+600_000));
-  await B('Start star exposure').click();await page.clock.runFor(1000);await B('Pause exposure').click();await expect(page.getByTestId('star-elapsed')).toHaveText('1000 ms');
+  // Front FR3: the star exposure route is E01's (Front FR2), so before French has that area its buttons are the preview's English
+  // fallback, or French once FR2 has translated them (`text` gives either); every E03 control below must be French.
+  const E01=(name:string)=>locale==='fr'?page.getByRole('button',{name:exact(TRANSLATED.find(x=>x.tag==='fr')!.text(name))}):B(name);
+  await E01('Activate supported star field').click();await page.clock.pauseAt(new Date(NOW.getTime()+600_000));
+  await E01('Start star exposure').click();await page.clock.runFor(1000);await E01('Pause exposure').click();await expect(page.getByTestId('star-elapsed')).toHaveText('1000 ms');
   await B('Classify acquired star').click();await expect(B('Review classification')).toBeEnabled();
   await page.locator('#class-source').selectOption('practice');await expect(page.locator('main.classification-main')).toHaveAttribute('aria-busy','false');await expect(B('Review classification')).toBeEnabled();
   await F('Proposed spectral type').fill('My independent type');await F('Features and reasoning').fill('Independent reasoning retained throughout export');
@@ -266,7 +271,7 @@ family('E03 classification: session, CSV, width record, investigations, observat
   const classification=await save(()=>B('Export classification CSV').click());
   const investigation=await save(()=>B('Save complete investigation').first().click());
   const notebook=await save(()=>B('Export observation notebook').click());
-  await page.getByRole('button',{name:locale==='es-419'?exact(es['obs.edit'].replace('{id}','1')):locale==='pt-BR'?exact(PT_E03['obs.edit'].replace('{id}','1')):L('Edit observation result 1')}).click();await F('Observation remarks (up to 36 bytes)').fill('Edited remarks');await B('Record observation result').click();
+  await page.getByRole('button',{name:locale==='es-419'?exact(es['obs.edit'].replace('{id}','1')):locale==='pt-BR'?exact(PT_E03['obs.edit'].replace('{id}','1')):locale==='fr'?exact(FR_E03['obs.edit'].replace('{id}','1')):L('Edit observation result 1')}).click();await F('Observation remarks (up to 36 bytes)').fill('Edited remarks');await B('Record observation result').click();
   const editRecovery=await save(()=>B('Export edit recovery').click());
   const editedNotebook=await save(()=>B('Export observation notebook').click());
   await F('Import SP or SSP for visual classification (up to 2 MiB)').setInputFiles({name:'limited.sp',mimeType:'text/plain',buffer:Buffer.from('3900 .2\n4200 .8\n4500 .4\n')});
@@ -286,6 +291,7 @@ family('E03 classification: session, CSV, width record, investigations, observat
   expect(datEdited.bytes.equals(datUnchanged.bytes)).toBe(false);expect(editedNotebook.bytes.equals(notebook.bytes)).toBe(false);expect(investigationAll.bytes.equals(investigation.bytes)).toBe(false);
   // Front PT3: the flow's own screen is Portuguese in pt-BR, so the family cannot pass by comparing English with English.
   if(locale==='pt-BR')await expect(page.locator('.classification-main h1')).toHaveText(PT_E03['class.title']);
+  if(locale==='fr')await expect(page.locator('.classification-main h1')).toHaveText(FR_E03['class.title']);
   return {session,classification,investigation,notebook,editRecovery,editedNotebook,datUnchanged,datEdited,txtUnchanged,nativeCsv,imported,investigationAll};
  },{},page=>page.locator('.classification-main'));
 });

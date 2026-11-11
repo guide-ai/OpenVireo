@@ -233,7 +233,9 @@ test.describe('in a Brazilian Portuguese browser',()=>{
 // empty, has no chunk and resolves at once, so its route shows English without a notice, a route error or a read before its area.
 // With FR0's shell slice only `photometer` holds text (project.photometryCleared and project.photometryRestored, rendered by the
 // photometer); later FR fronts fill the others. Front FR1: the observatory's maps and keys also give text to `classification`
-// (the observationMetadata map) and `fits` (the cameraInfo.* keys the saved-image viewer shares), so five areas stay empty. FR-REL turns this back
+// (the observationMetadata map) and `fits` (the cameraInfo.* keys the saved-image viewer shares), so five areas stay empty. Front FR3:
+// E03 fills `classification` and its shared `classification+cluster` module, which the cluster routes also fetch, so `cluster`
+// is no longer empty (as for pt-BR after PT3); four areas stay empty (pulsar, radio, lss, exposure). FR-REL turns this back
 // into a released-language test (as PT-REL did).
 test.describe('a language before its release',()=>{
  test.use({locale:'en-US'});
@@ -256,7 +258,7 @@ test.describe('a language before its release',()=>{
   const headingKey:Record<string,string>={classification:'class.title','cluster-database':'db.title',photometer:'ph.title','lss-survey':'lss.title','galaxy-exposure':'galaxyExposure.title','star-exposure':'starExposure.title',images:'fits.title'};
   const empty=frPlan.modules.filter(m=>m.kind==='area'&&m.empty).map(m=>m.name);
   // FR1 review: pin the areas French gives text to (each FR front updates this list), so a lost or stray area fails here.
-  expect(frPlan.modules.filter(m=>m.kind==='area'&&!m.empty).map(m=>m.name).sort(),'the areas with French text').toEqual(['classification','fits','photometer']);
+  expect(frPlan.modules.filter(m=>m.kind==='area'&&!m.empty).map(m=>m.name).sort(),'the areas with French text').toEqual(['classification','cluster','fits','photometer']);
   expect(empty.length,'some areas are still empty').toBeGreaterThan(0);
   for(const r of ROUTES){
    await page.goto('about:blank');w.language.length=0;
