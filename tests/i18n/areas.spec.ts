@@ -235,9 +235,11 @@ test.describe('in a Brazilian Portuguese browser',()=>{
 // photometer); later FR fronts fill the others. Front FR1: the observatory's maps and keys also give text to `classification`
 // (the observationMetadata map) and `fits` (the cameraInfo.* keys the saved-image viewer shares). Front FR2 (E01 and E02) fills `exposure`
 // and `lss` (and their shared `exposure+lss` module). Front FR3: E03 fills `classification` and its shared `classification+cluster`
-// module, which the cluster routes also fetch, so `cluster` is no longer empty (as for pt-BR after PT3); two areas stay empty
-// (pulsar, radio). Front FR4 (E04 and E05) fills `photometer`, `cluster` and their shared `cluster+photometer` module (cluster's
-// own chunk now holds keys); the pinned list is unchanged. FR-REL turns this back
+// module, which the cluster routes also fetch, so `cluster` is no longer empty (as for pt-BR after PT3). Front FR4 (E04 and E05)
+// fills `photometer`, `cluster` and their shared `cluster+photometer` module (cluster's own chunk now holds keys). Front FR5 (the radio
+// telescope) fills `radio` and the shared `pulsar+radio` module (the radioR1 map, which Pulsar Analysis's File menu also shows), so
+// `pulsar` fetches that module too and no area is empty any more; each route still fetches exactly its plan's modules, and an
+// empty area (none now) would still have to fetch no chunk. FR-REL turns this back
 // into a released-language test (as PT-REL did).
 test.describe('a language before its release',()=>{
  test.use({locale:'en-US'});
@@ -260,8 +262,9 @@ test.describe('a language before its release',()=>{
   const headingKey:Record<string,string>={classification:'class.title','cluster-database':'db.title',photometer:'ph.title','lss-survey':'lss.title','galaxy-exposure':'galaxyExposure.title','star-exposure':'starExposure.title',images:'fits.title'};
   const empty=frPlan.modules.filter(m=>m.kind==='area'&&m.empty).map(m=>m.name);
   // FR1 review: pin the areas French gives text to (each FR front updates this list), so a lost or stray area fails here.
-  expect(frPlan.modules.filter(m=>m.kind==='area'&&!m.empty).map(m=>m.name).sort(),'the areas with French text').toEqual(['classification','cluster','exposure','fits','lss','photometer']);
-  expect(empty.length,'some areas are still empty').toBeGreaterThan(0);
+  expect(frPlan.modules.filter(m=>m.kind==='area'&&!m.empty).map(m=>m.name).sort(),'the areas with French text').toEqual(['classification','cluster','exposure','fits','lss','photometer','pulsar','radio']);
+  // Front FR5: no area is empty any more (the pulsar area holds only the shared pulsar+radio module until FR6).
+  expect(empty,'no area is empty after FR5').toEqual([]);
   for(const r of ROUTES){
    await page.goto('about:blank');w.language.length=0;
    await page.goto(`/${P.query}#${r.hash}`);

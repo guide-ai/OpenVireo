@@ -616,6 +616,14 @@
   {
    "en": "\\bfallbacks?\\b",
    "fr": "repli"
+  },
+  {
+   "en": "\\barcsec(?:onds?)?\\b",
+   "fr": "secondes? d[’']arc"
+  },
+  {
+   "en": "\\bhost clock\\b",
+   "fr": "horloge de l[’']ordinateur"
   }
  ],
  "names": [
@@ -1474,6 +1482,38 @@
   {
    "en": "Telescope view",
    "fr": "vue du télescope"
+  },
+  {
+   "en": "Receiver monitor",
+   "fr": "Moniteur du récepteur"
+  },
+  {
+   "en": "Radio configuration",
+   "fr": "Configuration radio"
+  },
+  {
+   "en": "pulsar exercise",
+   "fr": "TP sur les pulsars"
+  },
+  {
+   "en": "Manual marks",
+   "fr": "Repères manuels"
+  },
+  {
+   "en": "Data properties",
+   "fr": "Propriétés des données"
+  },
+  {
+   "en": "Trace audition",
+   "fr": "Écoute du tracé"
+  },
+  {
+   "en": "Telescope position",
+   "fr": "Position du télescope"
+  },
+  {
+   "en": "Radio telescope control",
+   "fr": "Commande du radiotélescope"
   }
  ],
  "forbidden": [

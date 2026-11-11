@@ -105,10 +105,10 @@ export const SPANISH_TEXT=language('es-419',es,esOriginals,{appShell:APP_SHELL_E
 export const PORTUGUESE_TEXT=language('pt-BR',pt,ptOriginals,{appShell:APP_SHELL_PT,helpMenu:HELP_MENU_PT,projectLinks:PROJECT_LINKS_PT,tour:TOUR_PT,languageChoice:LANGUAGE_CHOICE_PT},
  [APP_SHELL_PT,CAMERA_PT,FIELD_INFO_PT,FIELD_READ_DETAILS_PT,HELP_MENU_PT,LANGUAGE_CHOICE_PT,NAKED_EYE_PT,OBJECT_X_LAB_PT,OBSERVATION_METADATA_PT,OBSERVATORY_PT,POLISH_PT,PROJECT_LINKS_PT,QSO_LIST_PT,SOUND_PT,TOUR_PT,VARIABLE_STARS_PT],/[ãõçâêôàáéíóú]/i,'');
 /** Front FR0: French before its release, behind `?lang=fr` (an en-US browser: tests/fixtures/language.ts contextLocale). FR0
- * translated the shell, FR1 the observatory and all of VIREO's originals, FR2 exercises E01 and E02, FR3 exercise E03, FR4 exercises E04 and E05; FR5, FR6 and FR-HELP add their areas to `done` and
+ * translated the shell, FR1 the observatory and all of VIREO's originals, FR2 exercises E01 and E02, FR3 exercise E03, FR4 exercises E04 and E05, FR5 the radio telescope; FR6 and FR-HELP add their areas to `done` and
  * their maps below. Its letters include « » and U+202F, which English text never has. */
 export const FRENCH_TEXT=language('fr',fr,frOriginals,{appShell:APP_SHELL_FR,helpMenu:HELP_MENU_FR,projectLinks:PROJECT_LINKS_FR,tour:TOUR_FR,languageChoice:LANGUAGE_CHOICE_FR},
- [APP_SHELL_FR,CAMERA_FR,FIELD_INFO_FR,FIELD_READ_DETAILS_FR,HELP_MENU_FR,LANGUAGE_CHOICE_FR,NAKED_EYE_FR,OBJECT_X_LAB_FR,OBSERVATION_METADATA_FR,OBSERVATORY_FR,POLISH_FR,PROJECT_LINKS_FR,QSO_LIST_FR,SOUND_FR,TOUR_FR,VARIABLE_STARS_FR],/[àâæçéèêëîïôœùûüÿ«»\u202f]/i,'?lang=fr',['shell','observatory','e01','e02','e03','e04','e05']);
+ [APP_SHELL_FR,CAMERA_FR,FIELD_INFO_FR,FIELD_READ_DETAILS_FR,HELP_MENU_FR,LANGUAGE_CHOICE_FR,NAKED_EYE_FR,OBJECT_X_LAB_FR,OBSERVATION_METADATA_FR,OBSERVATORY_FR,POLISH_FR,PROJECT_LINKS_FR,QSO_LIST_FR,SOUND_FR,TOUR_FR,VARIABLE_STARS_FR],/[àâæçéèêëîïôœùûüÿ«»\u202f]/i,'?lang=fr',['shell','observatory','e01','e02','e03','e04','e05','radio']);
 /** Every translated language of the registry, in its order (a test fails if a registered language has no text here). */
 export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT]);
 /** Front FR0: the languages that run the specs of `area` (those whose `done` has it), in registry order. */
@@ -157,14 +157,19 @@ import {RADIO_ANTENNA_ES} from '../../src/i18n/es/maps/radioAntenna';
 import {RADIO_RECORD_SAVE_ES} from '../../src/i18n/es/maps/radioRecordSave';
 import {RADIO_ANTENNA_PT} from '../../src/i18n/pt-br/maps/radioAntenna';
 import {RADIO_RECORD_SAVE_PT} from '../../src/i18n/pt-br/maps/radioRecordSave';
+import {RADIO_ANTENNA_FR} from '../../src/i18n/fr/maps/radioAntenna';
+import {RADIO_RECORD_SAVE_FR} from '../../src/i18n/fr/maps/radioRecordSave';
 import esIdentical from '../../src/i18n/es/identical.json' with {type:'json'};
 import ptIdentical from '../../src/i18n/pt-br/identical.json' with {type:'json'};
+import frIdentical from '../../src/i18n/fr/identical.json' with {type:'json'};
 import type {RADIO_ANTENNA_MESSAGES_EN} from '../../src/components/RadioAntennaMessages';
 import type {RADIO_SAVE_MESSAGES_EN} from '../../src/components/RadioRecordSaveMessages';
 export type RadioMaps=Readonly<{radioAntenna:Translation<typeof RADIO_ANTENNA_MESSAGES_EN>;radioRecordSave:Translation<typeof RADIO_SAVE_MESSAGES_EN>;identical:Readonly<Record<string,string>>}>;
 export const RADIO_MAPS:Readonly<Record<string,RadioMaps>>=Object.freeze({
  'es-419':{radioAntenna:RADIO_ANTENNA_ES,radioRecordSave:RADIO_RECORD_SAVE_ES,identical:esIdentical.entries},
  'pt-BR':{radioAntenna:RADIO_ANTENNA_PT,radioRecordSave:RADIO_RECORD_SAVE_PT,identical:ptIdentical.entries},
+ // Front FR5: French (its ?lang=fr preview).
+ fr:{radioAntenna:RADIO_ANTENNA_FR,radioRecordSave:RADIO_RECORD_SAVE_FR,identical:frIdentical.entries},
 });
 export const radioMaps=(tag:string):RadioMaps=>{const m=RADIO_MAPS[tag];if(!m)throw new Error(`No radio maps for ${tag}`);return m;};
 // Front PT6: the maps the E06 and E08 walks read beyond the catalog and originals (tests/i18n/e06.spec.ts, e08.spec.ts), per

@@ -628,10 +628,10 @@ family('E04 Pleiades photometry: photometer session, Observational Results text 
 // (Record, Receive, Stop, Identify, data properties, Save No), then on the pulsar analysis downloads the raw capture (.PLR), records
 // one manual reading and runs VIREO's Save Recorded Measurements (the native text with its US-format date/time header), and finally
 // saves the whole investigation (the radio configuration, clock and capture). Every file is byte-identical in English, qps and
-// Spanish (Front PT5: and Brazilian Portuguese, whose route heading is checked so the run cannot compare English with English). The page clock is installed at a fixed instant, the lazily loaded routes render while it runs, then it is paused and only
+// Spanish (Front PT5: and Brazilian Portuguese, whose route heading is checked so the run cannot compare English with English; Front FR5: and French, the same way). The page clock is installed at a fixed instant, the lazily loaded routes render while it runs, then it is paused and only
 // runFor moves it, so the capture, the native header's date and time and the investigation's radio clock are the same in every
 // run: nothing is masked.
-family('radio telescope (ES8a): raw capture .PLR, native Save Recorded Measurements and the investigation, in English, qps, Spanish and pt-BR',['en','qps','es-419','pt-BR'],async({browser,baseURL},identical)=>{
+family('radio telescope (ES8a): raw capture .PLR, native Save Recorded Measurements and the investigation, in English, qps, Spanish, pt-BR and fr',['en','qps','es-419','pt-BR','fr'],async({browser,baseURL},identical)=>{
  test.setTimeout(240_000);
  const id=(page:Page,testId:string)=>page.getByTestId(testId);
  const flush=async(page:Page)=>{for(let i=0;i<3;i++)await page.evaluate(()=>new Promise<void>(resolve=>{const ch=new MessageChannel();ch.port1.onmessage=()=>{ch.port1.close();ch.port2.close();resolve();};ch.port2.postMessage(0);}));};
@@ -643,7 +643,7 @@ family('radio telescope (ES8a): raw capture .PLR, native Save Recorded Measureme
   await page.goto(`/${lang}#pulsar-analysis`);await expect(id(page,'pulsar-none')).toBeVisible({timeout:20_000});
   await page.goto(`/${lang}#radio-control`);await expect(id(page,'radio-exercise')).toBeVisible({timeout:20_000});
   await expect(page.locator('html')).toHaveAttribute('lang',HTML_LANG[locale]);
-  if(locale==='pt-BR')await expect(page.getByRole('heading',{level:1,name:ptText('pt-BR').catalog['radioRoute.title'],exact:true})).toBeVisible();
+  if(locale==='pt-BR'||locale==='fr')await expect(page.getByRole('heading',{level:1,name:ptText(locale).catalog['radioRoute.title'],exact:true})).toBeVisible();
   await page.clock.pauseAt(new Date('2026-10-24T00:10:00Z'));await flush(page);
   await id(page,'radio-exercise').click();await id(page,'radio-env-compiled').click();await id(page,'radio-access').click();await id(page,'radio-timer-deliver').click();
   await id(page,'radio-switch').click();await id(page,'antenna-tracking').click();await flush(page);
@@ -669,7 +669,7 @@ family('radio telescope (ES8a): raw capture .PLR, native Save Recorded Measureme
   const native=await download(page,()=>id(page,'pulsar-native-ok').click());await paceDownload(page);
   await expect(id(page,'pulsar-native-dialog')).toHaveCount(0);
   const toolbar=page.locator('.investigation-toolbar');
-  const name=locale==='es-419'?es['project.save']:locale==='pt-BR'?ptText('pt-BR').catalog['project.save']:L('Save investigation');
+  const name=locale==='es-419'?es['project.save']:locale==='pt-BR'||locale==='fr'?ptText(locale).catalog['project.save']:L('Save investigation');
   const investigation=await download(page,()=>toolbar.getByRole('button',{name,exact:typeof name==='string'||undefined}).click());
   return {plr,native,investigation};
  },{},page=>page.getByTestId('radio-route'));

@@ -31,8 +31,13 @@ export const NUMERIC=/^[-+−±\d\s.,:;°′″'"·×÷/()[\]–%=→eE]*\d[-+�
 export const ISO=/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z?(?: UT)?$/;
 /** Front PT5: texts of the walk that are the same words in another language (its identical.json or originals, with a reason
  * each), and shared SAME entries that are Spanish words only, which that language must translate. Spanish's set is unchanged. */
-export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['OK','Longitude','Latitude','Altitude','Pulsar'])};
-export const NOT_SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['Radio','Radio...','E','No','no','Hrs'])};
+export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['OK','Longitude','Latitude','Altitude','Pulsar']),
+ // Front FR5: French (identical.json: VIREO's OK, Longitude, Latitude, Altitude, Pulsar, Options, Site..., Horizon, Type and Mode
+ // are the same words in French, and the web's «Second», the second of two marks).
+ fr:new Set(['OK','Longitude','Latitude','Altitude','Pulsar','Options','Site...','Horizon','Type','Mode','Second'])};
+export const NOT_SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['Radio','Radio...','E','No','no','Hrs']),
+ // Front FR5: Spanish-only words French translates (Non, non, h, Octets); Radio, Radio... and E (Est) are the same in French.
+ fr:new Set(['No','no','Hrs','Bytes'])};
 export const same=(text:string,L?:LanguageText)=>{
  if(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false))return true;
  if(L!==undefined&&(NOT_SAME_IN[L.tag]?.has(text)??false))return false;
