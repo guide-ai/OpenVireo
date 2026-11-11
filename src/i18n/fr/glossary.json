@@ -563,7 +563,15 @@
   },
   {
    "en": "\\bturn-?off\\b",
-   "fr": "point de coude|coude|point de sortie|point de virage|turn-?off"
+   "fr": "point de retournement"
+  },
+  {
+   "en": "\\bmembership\\b",
+   "fr": "appartenance"
+  },
+  {
+   "en": "\\bdatasets?\\b",
+   "fr": "jeux? de données"
   },
   {
    "en": "\\bly\\b",

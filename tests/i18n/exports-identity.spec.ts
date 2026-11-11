@@ -65,8 +65,9 @@ const ptStart=(english:string)=>new RegExp(`^\\s*${ptText('pt-BR').text(english)
 /** Front FR2: a French accessible name that starts with this English text's catalog translation (a button whose name adds a glyph);
  * French is before its release, so the catalog must hold the key (no English fallback). */
 const frStart=(english:string)=>{const t=ptText('fr'),key=Object.entries(en).find(([k,v])=>v===english&&Object.hasOwn(t.catalog,k))?.[0];if(!key)throw new Error(`No French for “${english}”`);return new RegExp(`^\\s*${t.catalog[key]!.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')}`);};
-/** The variable-star catalog's 31,147 records as the screen writes them: Front PT-REL, Portuguese groups thousands with U+202F. */
-const catalogCount=(locale:Locale)=>locale==='pt-BR'?'31\u202f147':'31,147';
+/** The variable-star catalog's 31,147 records as the screen writes them: Front PT-REL, Portuguese groups thousands with U+202F
+ * (Front FR4: and French, whose variableStars map is complete). */
+const catalogCount=(locale:Locale)=>locale==='pt-BR'||locale==='fr'?'31\u202f147':'31,147';
 const button=(p:Page,name:string,locale:Locale='en')=>p.getByRole('button',{name:N(locale,name)});
 const sha=(b:Buffer)=>createHash('sha256').update(b).digest('hex');
 /** A fixed instant for every Date read (timers keep running), so exports that record "now" are comparable. */
@@ -582,14 +583,17 @@ for(const locale of ['qps','es-419','pt-BR','fr',...SCRIPT_PSEUDO] as const)
 
 /** Front PT4: the Portuguese catalog the E04 and E05 families click and check. */
 const PT_E04=TRANSLATED.find(x=>x.tag==='pt-BR')!.catalog as Readonly<Record<string,string>>;
+/** Front FR4: the French catalog the E04 and E05 families click and check (each key must exist: French is before its release, so
+ * a missing key would otherwise fall back to the English and pass). */
+const FR_E04=(key:string)=>{const v=(TRANSLATED.find(x=>x.tag==='fr')!.catalog as Readonly<Record<string,string>>)[key];if(v===undefined)throw new Error(`No French for ${key}`);return v;};
 // Front ES6: the E04 flow (Pleiades photometry) in English, qps and Spanish: the photometer session JSON, VIREO's Record/Review rows
 // shown by Display/Print Data and written with Save Text and Comma Delimit, and the saved investigation. The page clock is paused at
 // a fixed instant before activation and only moves by runFor until the last file is written; nothing is masked (each record's JD is
-// the observatory clock's, which stands still). Front PT4: and in pt-BR (its `?lang=pt-BR` preview).
-family('E04 Pleiades photometry: photometer session, Observational Results text and CSV, investigation',['en','qps','es-419','pt-BR'],async({browser,baseURL},identical)=>{
+// the observatory clock's, which stands still). Front PT4: and in pt-BR (its `?lang=pt-BR` preview). Front FR4: and in French (`?lang=fr`).
+family('E04 Pleiades photometry: photometer session, Observational Results text and CSV, investigation',['en','qps','es-419','pt-BR','fr'],async({browser,baseURL},identical)=>{
  test.setTimeout(180_000);
  const id=(page:Page,testId:string)=>page.getByTestId(testId);
- const T=(locale:Locale,key:string)=>locale==='es-419'?exact((es as Record<string,string>)[key]):locale==='pt-BR'?exact(PT_E04[key]!):L((en as Record<string,string>)[key]);
+ const T=(locale:Locale,key:string)=>locale==='es-419'?exact((es as Record<string,string>)[key]):locale==='pt-BR'?exact(PT_E04[key]!):locale==='fr'?exact(FR_E04(key)):L((en as Record<string,string>)[key]);
  await identical(browser,baseURL,async(page,locale)=>{
   await open(page,locale,'photometer');
   const main=page.locator('.photometer-main'),press=(key:string)=>main.getByRole('button',{name:T(locale,key)}).click();
@@ -611,9 +615,11 @@ family('E04 Pleiades photometry: photometer session, Observational Results text 
    await id(page,'fi-box').getByRole('button').first().click();await expect(id(page,'fi-box')).toHaveCount(0);return f;};
   const resultsText=await list('displayed'),resultsCsv=await list('csv');
   const toolbar=page.locator('.investigation-toolbar');
-  const investigation=await download(page,()=>toolbar.getByRole('button',{name:locale==='es-419'?exact(es['project.save']):locale==='pt-BR'?exact(PT_E04['project.save']!):L('Save investigation')}).click());
-  // Front PT4: the flow's own screen is Portuguese in pt-BR, so the family cannot pass by comparing English with English.
+  const investigation=await download(page,()=>toolbar.getByRole('button',{name:locale==='es-419'?exact(es['project.save']):locale==='pt-BR'?exact(PT_E04['project.save']!):locale==='fr'?exact(FR_E04('project.save')):L('Save investigation')}).click());
+  // Front PT4: the flow's own screen is Portuguese in pt-BR, so the family cannot pass by comparing English with English (Front FR4:
+  // and French in fr).
   if(locale==='pt-BR')await expect(main.getByRole('heading',{level:1})).toHaveText(PT_E04['ph.title']!);
+  if(locale==='fr')await expect(main.getByRole('heading',{level:1})).toHaveText(FR_E04('ph.title'));
   return {session,resultsText,resultsCsv,investigation};
  },{},page=>page.locator('.photometer-main'));
 });
@@ -824,7 +830,8 @@ family('E06 pulsar analysis: native Save and its append, the export, the append 
 // and, on the variable-star route,
 // Save Text › As Displayed. The HR plot and the print previews are pictures, not files. The page
 // clock is fixed at NOW (the investigation's save time), so nothing is masked. Front PT4: and in pt-BR (its `?lang=pt-BR` preview).
-family('E05 cluster HR: investigation, cluster listing TXT and CSV, observation DAT, Recorded Results TXT and CSV; Cluster Data TXT and HTL; variable-star TXT',['en','qps','es-419','pt-BR'],async({browser,baseURL},identical)=>{
+// Front FR4: and in French (`?lang=fr`).
+family('E05 cluster HR: investigation, cluster listing TXT and CSV, observation DAT, Recorded Results TXT and CSV; Cluster Data TXT and HTL; variable-star TXT',['en','qps','es-419','pt-BR','fr'],async({browser,baseURL},identical)=>{
  test.setTimeout(240_000);
  const id=(page:Page,testId:string)=>page.getByTestId(testId);
  const dismiss=async(page:Page)=>{await id(page,'fi-box').getByRole('button').first().click();await expect(id(page,'fi-box')).toHaveCount(0);};
@@ -841,9 +848,11 @@ family('E05 cluster HR: investigation, cluster listing TXT and CSV, observation 
   await page.locator('#db-native-interpretation').fill('E05 note');
   await expect(id(page,'native-preview')).toBeVisible({timeout:20_000});
   await button(page,'Confirm chosen model fit',locale).click();await expect(id(page,'native-confirmed-age')).toBeVisible();
-  const toolbar=page.locator('.investigation-toolbar');const save=locale==='es-419'?es['project.save']:locale==='pt-BR'?PT_E04['project.save']!:L('Save investigation');
-  // Front PT4: the flow's own screen is Portuguese in pt-BR, so the family cannot pass by comparing English with English.
+  const toolbar=page.locator('.investigation-toolbar');const save=locale==='es-419'?es['project.save']:locale==='pt-BR'?PT_E04['project.save']!:locale==='fr'?FR_E04('project.save'):L('Save investigation');
+  // Front PT4: the flow's own screen is Portuguese in pt-BR, so the family cannot pass by comparing English with English (Front FR4:
+  // and French in fr).
   if(locale==='pt-BR')await expect(page.locator('main.cluster-database-lab').getByRole('heading',{level:1})).toHaveText(PT_E04['db.title']!);
+  if(locale==='fr')await expect(page.locator('main.cluster-database-lab').getByRole('heading',{level:1})).toHaveText(FR_E04('db.title'));
   const investigation=await download(page,()=>toolbar.getByRole('button',{name:save,exact:typeof save==='string'||undefined}).click());
   await id(page,'cluster-display-data').click();await expect(id(page,'cluster-report')).toBeVisible({timeout:20_000});
   const saveListing=async(kind:'displayed'|'csv')=>{const f=await download(page,async()=>{await id(page,'cluster-report-list-menu').click();await id(page,'cluster-report-save-menu').click();await id(page,`cluster-report-save-${kind}`).click();});await dismiss(page);return f;};
