@@ -67,6 +67,9 @@ export type LocaleProfile=Readonly<{
  kanaInSentences?:boolean;
  /** ZWJ/ZWNJ are allowed only between two characters of this script (Devanagari conjunct control). */
  joinerScript?:RegExp;
+ /** Front RT8: which of ZWNJ (U+200C) and ZWJ (U+200D) `joinerScript` allows (both when absent): Persian writes only the
+  * non-joiner, inside a word (می‌کنید). */
+ joiners?:string;
 }>;
 export type GlossaryTerm=Readonly<{en:string;text:string}>;
 export type GlossaryName=Readonly<{en:string;text:string;exact?:boolean;except?:Readonly<Record<string,string>>}>;
@@ -215,10 +218,12 @@ export function quotes(p:Pair,profile:LocaleProfile):Finding[]{
  return profile.forbiddenMarks.filter(f=>p.text.includes(f.mark)).map(f=>finding('quotes',p.id,`«${f.mark}» is not used in ${profile.name}; use ${f.use}`,f.mark));
 }
 export const typography=(p:Pair,profile:LocaleProfile)=>[...patternHits('typography',p,profile.typography),...(profile.typographyCheck?.(p.text,p.en)??[]).map(x=>finding('typography',p.id,`${x.label}: «${x.match}», ${x.use}`,x.match))];
-/** Western digits and the decimal point on screen in every language (decision 4; plan §8). */
+/** Western digits and the decimal point on screen in every language (decision 4; plan §8). Front RT8 (RTL plan § 4): also never
+ * the Arabic decimal and thousands separators ٫ and ٬ (Arabic and Persian), which no file the site writes uses. */
 export function digits(p:Pair):Finding[]{
- const out:Finding[]=[],native=/(?![0-9])\p{Nd}/u.exec(p.text);
+ const out:Finding[]=[],native=/(?![0-9])\p{Nd}/u.exec(p.text),separator=/[\u066b\u066c]/u.exec(p.text);
  if(native)out.push(finding('digits',p.id,`native digit «${native[0]}»; use 0–9`,native[0]));
+ if(separator)out.push(finding('digits',p.id,`Arabic ${separator[0]==='\u066b'?'decimal':'thousands'} separator «${separator[0]}»; numbers keep the decimal point and en-US grouping`,separator[0]));
  const commas=(s:string)=>s.match(/[0-9],[0-9]/g)?.length??0;
  if(commas(p.text)>commas(p.en))out.push(finding('digits',p.id,'a decimal comma; numbers keep the decimal point as in the files'));
  return out;
@@ -231,8 +236,9 @@ export function invisible(p:Pair,profile:LocaleProfile):Finding[]{
  const out:Finding[]=[],hidden=INVISIBLE.exec(p.text);
  if(hidden)out.push(finding('invisible',p.id,`invisible or bidi control U+${hidden[0].codePointAt(0)!.toString(16).toUpperCase().padStart(4,'0')}`));
  for(let i=0;i<p.text.length;i++)if(p.text[i]==='\u200c'||p.text[i]==='\u200d'){
-  const s=profile.joinerScript;
-  if(!s||!s.test(p.text[i-1]??'')||!s.test(p.text[i+1]??''))out.push(finding('invisible',p.id,`joiner U+${p.text.charCodeAt(i).toString(16).toUpperCase()} outside a ${profile.name} conjunct`));
+  const s=profile.joinerScript,code=p.text.charCodeAt(i).toString(16).toUpperCase();
+  if(s&&!(profile.joiners??'\u200c\u200d').includes(p.text[i]))out.push(finding('invisible',p.id,`joiner U+${code} is not used in ${profile.name}`));
+  else if(!s||!s.test(p.text[i-1]??'')||!s.test(p.text[i+1]??''))out.push(finding('invisible',p.id,`joiner U+${code} outside a ${profile.name} ${profile.joiners?'word':'conjunct'}`));
  }
  return out;
 }
