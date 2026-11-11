@@ -4,10 +4,11 @@
 // with and without the sheet, on the home page and every route at 320 and 1440 px, as SC3 checks scripts.css (routes.scripts.ts).
 // (2) Under the dev-only qps-rtl: the sidebar, page bar, its menus, a dialog's close button and a form's popup menu are on the
 // mirrored side, and the tour card goes left of the sidebar; plots, the sky map, canvases, sliders, the spectrum's ◀ ▶ buttons and
-// the antenna pad (East left of West) keep English's direction. Geometric checks only; the full RTL route walk is RT7's.
+// the antenna pad (East left of West) keep English's direction, and VIREO's native hot-list rows keep their byte order. Geometric checks only; the full RTL route walk is RT7's.
 import {test,expect,type Page} from '@playwright/test';
 import en from '../../src/i18n/en.json' with {type:'json'};
 import {pseudoRtl} from '../../src/i18n/pseudoRtl';
+import {fileURLToPath} from 'node:url';
 
 const ROUTES=['observatory','spectrum','spectrometer','sky-exposure','star-exposure','galaxy-exposure','classification','photometer','cluster-database','pulsar-analysis','radio-control','lss-wedge','lss-survey','object-x','variable-stars','images'] as const;
 const id=(page:Page,t:string)=>page.getByTestId(t);
@@ -75,6 +76,12 @@ test(`${lang} at ${width} px computes the same styles with and without rtl.css, 
 type Box={left:number;right:number;top:number;bottom:number;width:number};
 const box=(page:Page,selector:string)=>page.locator(selector).first().evaluate((e):Box=>{const r=e.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width};});
 const dir=(page:Page,selector:string)=>page.locator(selector).first().evaluate(e=>getComputedStyle(e).direction);
+/** A native row's characters in screen order, left to right (spaces dropped), and the same text in byte order: equal when the
+ * row keeps its byte order. A right-to-left paragraph would move a row's leading digits (a pulsar ID, a row number) to its end. */
+const visualOrder=(page:Page,selector:string)=>page.locator(selector).first().evaluate(e=>{
+ const range=document.createRange(),chars:[string,number][]=[];
+ const walk=(n:Node)=>{if(n.nodeType===3){const t=n as Text;for(let i=0;i<t.length;i++){if(/\s/.test(t.data[i]))continue;range.setStart(t,i);range.setEnd(t,i+1);chars.push([t.data[i],range.getBoundingClientRect().left]);}}else n.childNodes.forEach(walk);};
+ walk(e);return {screen:chars.sort((a,b)=>a[1]-b[1]).map(c=>c[0]).join(''),bytes:e.textContent!.replace(/\s/g,'')};});
 
 test('qps-rtl at 1440 px: the sidebar, page bar and its menu mirror; the tour card goes left of the sidebar',async({page})=>{
  test.setTimeout(120_000);
@@ -140,6 +147,8 @@ test('qps-rtl: a form\'s popup menu opens from the pointer toward the inline end
   }
   await page.locator('.telescope-motion').getByTestId('ob-view-select').click();
   const rows=id(page,'ob-hotlist-rows');await expect(rows).toBeVisible();
+  // VIREO's native row keeps its byte order (an LTR island: it starts with the row number).
+  {const o=await visualOrder(page,'[data-testid=ob-hotlist-native-1]');expect(o.screen).toBe(o.bytes);}
   const at=await rows.evaluate(el=>{const r=el.getBoundingClientRect(),x=Math.min(r.right,innerWidth)-40,y=r.top+4;
    el.dispatchEvent(new MouseEvent('contextmenu',{bubbles:true,cancelable:true,button:2,clientX:x,clientY:y}));return {x,y};});
   const menu=id(page,'popup-menu');await expect(menu).toBeVisible();
@@ -159,7 +168,7 @@ test('qps-rtl: a form\'s popup menu opens from the pointer toward the inline end
  }
 });
 
-test('qps-rtl: plots, the sky map, canvases, sliders, the ◀ ▶ buttons and the antenna pad keep English\'s direction',async({page})=>{
+test('qps-rtl: plots, the sky map, canvases, sliders, the ◀ ▶ buttons, the antenna pad and native hot-list rows keep English\'s direction',async({page})=>{
  test.setTimeout(120_000);
  await page.setViewportSize({width:1440,height:1000});
  // The spectrum: its plot, the redshift slider and its end labels, and the pan buttons.
@@ -196,4 +205,11 @@ test('qps-rtl: plots, the sky map, canvases, sliders, the ◀ ▶ buttons and th
  if(cells.e&&cells.w)expect(cells.e.left).toBeLessThan(cells.w.left);
  // The grid itself: column 1 is the left one, as in English (a right-to-left grid would put "e" at the right).
  expect(await pad.evaluate(e=>getComputedStyle(e).gridTemplateAreas)).toBe('". n ." "e . w" ". s ."');
+ // The radio hot list's native rows keep their byte order: Pulsars.HTL's rows start with the pulsar's ID ("0320+39   3h 23m …").
+ await id(page,'antenna-tracking').click();
+ await id(page,'antenna-hotlist-file').setInputFiles(fileURLToPath(new URL('../../public/original/hotlists/Pulsars.HTL',import.meta.url)));
+ await expect(id(page,'antenna-hotlist-source')).toContainText('Pulsars.HTL');
+ await id(page,'antenna-hotlist-open').click();
+ const row=await visualOrder(page,'[data-testid=antenna-hotlist-native-1]');expect(row.bytes).toMatch(/^0320\+39/);expect(row.screen).toBe(row.bytes);
+ expect(await dir(page,'[data-testid=antenna-hotlist-native-1]')).toBe('ltr');
 });

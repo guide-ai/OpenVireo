@@ -78,7 +78,7 @@ describe('rtl.css: scope',()=>{
 const islands=OWN.filter(r=>r.decls.get('direction')==='ltr').flatMap(r=>r.selectors.flatMap(s=>{const m=/^:root\[dir=rtl\] :is\((.*)\)$/s.exec(s);return m?splitTop(m[1]):[s];}));
 describe('rtl.css: islands and flips (plan § 1, § 2.3)',()=>{
  it('keeps plots, the sky, images, canvases, sliders, the antenna pad, the pan buttons, numbers and native mirrors left to right',()=>{
-  for(const s of ['svg','canvas','pre','[lang=en]','input[type=range]','.range-labels','.photo-scroll','.fits-viewport','.native-star-frame','.em-layer','.ne-sky','.ms-field','.antenna-manual-pad','.engine-buttons','input[type=number]','input[inputmode=decimal]','input[inputmode=numeric]'])
+  for(const s of ['svg','canvas','pre','[lang=en]','input[type=range]','.range-labels','.photo-scroll','.fits-viewport','.native-star-frame','.em-layer','.ne-sky','.ms-field','.antenna-manual-pad','.engine-buttons','.ob-row-native','.antenna-hotlist-native','.ob-print-lines','.ms-items','.ms-lines','input[type=number]','input[inputmode=decimal]','input[inputmode=numeric]'])
    expect(islands,s).toContain(s);
   for(const r of OWN.filter(r=>r.decls.get('direction')==='ltr'))expect(r.decls.get('unicode-bidi'),r.selectors.join()).toBe('isolate');
   // Each island class names a part that exists, so a rename does not leave the island empty.

@@ -14,11 +14,15 @@
  * Whatever has a horizontal meaning keeps English's direction: plots, the sky map, image and canvas geometry (svg, canvas, the
  * scrolling photographic strip and image viewports, the sky and field overlays), controls tied to that geometry (range sliders and
  * their end labels, the antenna pad with East left of West as on VIREO's sky, the spectrum's ◀ ▶ pan buttons) and text that keeps
- * its byte order (native mirrors and VIREO's English originals, lang="en"; preformatted text). An island's own logical properties
- * resolve left to right too. canvas{direction:ltr} also reaches ctx.direction, whose default is "inherit", so canvas text drawn at
- * x with textAlign "start" keeps starting at x. UI icons are svg as well; they carry no text, so the rule is harmless to them. */
+ * its byte order (native mirrors and VIREO's English originals, lang="en"; preformatted text; VIREO's fixed-column native rows
+ * without lang="en": the optical and radio hot-list rows, the hot list's print lines, the Multi-Spec list and its information
+ * lines, whose rows start with digits and would otherwise be reordered by the bidi algorithm in a right-to-left paragraph).
+ * An island's own logical properties resolve left to right too. canvas{direction:ltr} also reaches ctx.direction, whose default
+ * is "inherit", so canvas text drawn at x with textAlign "start" keeps starting at x. UI icons are svg as well; they carry no
+ * text, so the rule is harmless to them. */
 :root[dir=rtl] :is(svg,canvas,pre,[lang=en],input[type=range],.range-labels,.photo-scroll,.fits-viewport,.fits-header,.native-star-frame,
- .em-layer,.ne-sky,.ms-field,.antenna-manual-pad,.engine-buttons){direction:ltr;unicode-bidi:isolate}
+ .em-layer,.ne-sky,.ms-field,.antenna-manual-pad,.engine-buttons,.ob-row-native,.antenna-hotlist-native,.ob-print-lines,.ms-items,
+ .ms-lines){direction:ltr;unicode-bidi:isolate}
 /* Numbers typed into fields keep their order and sit at the field's start side (the right) as in a right-to-left form. */
 :root[dir=rtl] :is(input[type=number],input[inputmode=decimal],input[inputmode=numeric]){direction:ltr;unicode-bidi:isolate;text-align:right}
 
