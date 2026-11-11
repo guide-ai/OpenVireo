@@ -13,7 +13,7 @@ import {INITIAL_CAMERA_PALETTE} from './core/cameraPalette';
 import {CAMERA_EXTRACTS,findCameraExtract,loadCameraCatalog,type CameraCatalogMode,type CameraCatalogSource} from './io/cameraCatalog';
 import type {AccessReason} from './core/instrumentAccess';
 import {writeCameraFits,cameraFitsFileName,type CameraFitsContext} from './core/fitsWriter';
-import {writeNativeCameraFits,nativeCameraFitsFileName,nativeCameraIdSavable} from './core/cameraFitsNative';// Front R1
+import {writeNativeCameraFits,nativeCameraFitsFileName,nativeCameraIdSavable,nativeFitsDetector,NATIVE_FITS_DETECTOR_MAX} from './core/cameraFitsNative';// Front R1
 import {cameraCurrentName,type ShownCurrentObject} from './core/currentObject';
 import {cameraCatalogReference} from './core/cameraCatalogReference';
 import type {OpticalIndex} from './core/opticalTelescope';
@@ -90,13 +90,13 @@ function CameraControl({scopeUse,objectXHidden=null,vireoId='',showObjectId=fals
  const [camera,setCamera]=useState<CameraExposureKind>('ccd'),[filter,setFilter]=useState(0),[minutes,setMinutes]=useState('0'),[seconds,setSeconds]=useState('10'),[gain,setGain]=useState(2);
  const [mode,setMode]=useState<CameraCatalogMode>('static'),[usePalette,setUsePalette]=useState(false);
  const [gate,setGate]=useState<CameraRequestGate>(createCameraRequestGate),[message,setMessage]=useState<string>(M.statusIdle),[,setWaitShown]=useState(false);
- const [image,setImage]=useState<CameraImage|null>(null),[saveError,setSaveError]=useState('');
+ const [image,setImage]=useState<CameraImage|null>(null),[saveError,setSaveError]=useState(''),[saveNotice,setSaveNotice]=useState('');
  const imageRef=useRef(image);useEffect(()=>{imageRef.current=image;},[image]);
  const testMode=useContext(TestModeContext),testModeRef=useRef(testMode);testModeRef.current=testMode;
  // Front T7: the CCD / IR tabs' records (VIREO reads env+0x2d99 / env+0x2df4 at each Go); null while this camera's are compiled.
  const {cameraParameters}=useContext(VireoOptionsContext),currentParameters=exposureCameraParameters(cameraParameters,camera);
  // RE5 review 1 L-c: a save alert belongs to the image and ID it was about; a new image or ID clears it (and a start, below).
- useEffect(()=>{setSaveError('');},[image,vireoId]);
+ useEffect(()=>{setSaveError('');setSaveNotice('');},[image,vireoId]);
  const gateRef=useRef(gate),attempt=useRef<Attempt|null>(null),timers=useRef<{observe?:number;poll?:number}>({}),canvas=useRef<HTMLCanvasElement>(null);
  const mounted=useRef(true);useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;stopTimers();attempt.current?.controller.abort();stopWorker(attempt.current);};},[]);
  function stopTimers(){if(timers.current.observe)clearInterval(timers.current.observe);if(timers.current.poll)clearInterval(timers.current.poll);timers.current={};}
@@ -195,7 +195,7 @@ function CameraControl({scopeUse,objectXHidden=null,vireoId='',showObjectId=fals
   // Front T5: each Go uses the telescope's allotment (CCD 0x512244 → 0x5122cd, IR 0x514268 → 0x5142f1); the page shows VIREO's box.
   if(scopeUse&&!scopeUse(camera)){setMessage(t('scopeAccess.instrumentRefused'));return;}
   // F3 review 1 I4: a save alert belongs to the image it was about, so a new exposure clears it when it starts.
-  setSaveError('');
+  setSaveError('');setSaveNotice('');
   const jd=currentJd(),seed=seedSource()>>>0;
   attempt.current=null;
   const transition=cameraRequestTransition(gateRef.current,{type:'start',seconds:total});
@@ -214,7 +214,7 @@ function CameraControl({scopeUse,objectXHidden=null,vireoId='',showObjectId=fals
  // not at the telescope pointing when Save is pressed: the saved image may come from an earlier pointing.
  const saveTicket=useRef(0);
  async function save(native=false){
-  if(!image)return;setSaveError('');
+  if(!image)return;setSaveError('');setSaveNotice('');
   let currentName:string|undefined;
   if(native&&showObjectId&&currentObject){
    const ticket=++saveTicket.current,shot=image;
@@ -227,7 +227,10 @@ function CameraControl({scopeUse,objectXHidden=null,vireoId='',showObjectId=fals
   if(native&&!nativeCameraIdSavable(vireoId)){setSaveError(M.saveIdNotAscii);return;}
   let bytes:Uint8Array;const context=fitsContext(image);
   // Front FITSDET: DETECTOR is the camera record's name as the options hold it now (VIREO's 0x5239f8 reads the record at the save).
-  try{bytes=native?writeNativeCameraFits(image.exposure,image.jd,vireoId||undefined,currentName,cameraParameters[image.exposure.recipe.camera].detector):writeCameraFits(image.exposure,context);}catch{setSaveError(M.saveFailed);return;}
+  const detector=cameraParameters[image.exposure.recipe.camera].detector;
+  try{bytes=native?writeNativeCameraFits(image.exposure,image.jd,vireoId||undefined,currentName,detector):writeCameraFits(image.exposure,context);}catch{setSaveError(M.saveFailed);return;}
+  // Front SC11: the DETECTOR card writes '?' for a character outside printable ASCII (nativeFitsDetector); say so instead of silently.
+  if(native&&detector!==undefined&&nativeFitsDetector(detector)!==detector.slice(0,NATIVE_FITS_DETECTOR_MAX))setSaveNotice(M.saveDetectorAscii);
   const url=URL.createObjectURL(new Blob([bytes as Uint8Array<ArrayBuffer>],{type:'application/fits'})),a=document.createElement('a');
   a.href=url;a.download=native?nativeCameraFitsFileName(vireoId||undefined,currentName):cameraFitsFileName(image.exposure,context);document.body.append(a);a.click();a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),0);
  }
@@ -270,7 +273,7 @@ function CameraControl({scopeUse,objectXHidden=null,vireoId='',showObjectId=fals
    <canvas ref={canvas} role="img" aria-label={M.imageAlt(filterName(shown.recipe.camera,shown.recipe.filterPosition),shown.recipe.seconds,shown.recipe.camera)} data-testid="camera-canvas"/>
    <figcaption>{M.displayNote}</figcaption>
    {shown.recipe.parameters&&<p className="camera-uncertified" data-testid="camera-uncertified" data-reason="uncertified-parameter">{t('cameraParameters.imageLabel',{fields:uncertifiedExposureFields(shown.recipe.parameters,shown.recipe.camera).map(u=>`${cameraParameterLabel(u)} ${cameraParameterValueText(shown.recipe.parameters!,u)}`).join(', ')})}</p>}
-   <div className="button-row"><button className="secondary-button" disabled={running} onClick={()=>void save()}>{M.save}</button><button className="secondary-button" disabled={running} onClick={()=>void save(true)} data-testid="camera-save-native" aria-describedby="camera-save-native-note">{M.saveNative}</button></div><p className="observatory-note">{M.saveNote}</p>{saveError&&<p role="alert" className="error" data-testid="camera-save-error">{saveError}</p>}<p className="observatory-note" id="camera-save-native-note">{M.saveNativeNote}</p>
+   <div className="button-row"><button className="secondary-button" disabled={running} onClick={()=>void save()}>{M.save}</button><button className="secondary-button" disabled={running} onClick={()=>void save(true)} data-testid="camera-save-native" aria-describedby="camera-save-native-note">{M.saveNative}</button></div><p className="observatory-note">{M.saveNote}</p>{saveError&&<p role="alert" className="error" data-testid="camera-save-error">{saveError}</p>}{saveNotice&&<p role="status" className="observatory-note" data-testid="camera-save-notice">{saveNotice}</p>}<p className="observatory-note" id="camera-save-native-note">{M.saveNativeNote}</p>
    <label className="camera-palette"><input type="checkbox" checked={usePalette} onChange={e=>setUsePalette(e.target.checked)}/>{M.palette}</label>
    <details><summary>{M.details}</summary><dl className="camera-details">
     <dt>{M.detailCatalog}</dt><dd data-testid="camera-detail-catalog">{image.catalogName}</dd>

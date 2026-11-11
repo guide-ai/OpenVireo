@@ -12,6 +12,7 @@ import {spectrometerDefaultFileName,spectrometerPrintLines,type SpectrometerRead
 import type {SpectrometerObject} from './SpectrometerReadout';
 import {spectrometerPrintPage,SPECTROMETER_PRINT_TEXT_HEIGHT} from '../core/spectrometerPrint';
 import './observatory-dialogs.css';
+import {screenDateTime} from '../i18n/screenDate';
 const M=OBSERVATORY_MESSAGES.spectrumSave;
 /** Temporary print scope owned by this panel; the print CSS applies only while it is set (precedent: own results 1.12). */
 export const SPECTRUM_PRINT_SCOPE='star-spectrum';
@@ -27,6 +28,8 @@ export const SPECTRUM_PRINT_SCOPE='star-spectrum';
 export type SpectrumSaveSource=Readonly<{bytes:Uint8Array|null;usable:boolean;label:string;telescopeName:string;elapsedMs:number;fileName:string;saved?:(name:string)=>string;
  /** Front H2 (sky route): print these samples when there are no SSP bytes; Save stays unavailable and `saveNote` says why. */
  printSamples?:readonly Readonly<{wavelength:number;intensity:number}>[];saveNote?:string;
+ /** Front SC11: shown beside Save when the writer replaces characters of the student's text (it did so silently before). */
+ replacementNote?:string;
  /** Front R4d: the spectrometer's current object and options (Save default name 0x50fb1c, print lines 0x510954); absent, nothing changes. */
  current?:Readonly<{object:SpectrometerObject;options:SpectrometerReadoutOptions;sky?:boolean}>;
  /** Front RE6: the exposure behind the bytes (source-plus-sky bins and totals) for VIREO's print body 0x510294. */
@@ -64,7 +67,7 @@ export function SpectrumSaveCard({source,active}:{source:SpectrumSaveSource;acti
   const root=document.documentElement;
   if(root.hasAttribute('data-print-scope')){setError(M.printBusy);return;}
   // Front H2: the spectrometer print 0x510240 starts with the shared header 0x58e860 (printSkyHeader, K2), dated when printed.
-  flushSync(()=>setPrintedAt(new Date().toLocaleString()));
+  flushSync(()=>setPrintedAt(screenDateTime(new Date())));
   root.setAttribute('data-print-scope',SPECTRUM_PRINT_SCOPE);
   const end=()=>{window.removeEventListener('afterprint',end);document.removeEventListener('pointerdown',end,true);document.removeEventListener('keydown',end,true);if(root.getAttribute('data-print-scope')===SPECTRUM_PRINT_SCOPE)root.removeAttribute('data-print-scope');if(release.current===end)release.current=null;};
   release.current=end;window.addEventListener('afterprint',end);document.addEventListener('pointerdown',end,true);document.addEventListener('keydown',end,true);
@@ -74,7 +77,7 @@ export function SpectrumSaveCard({source,active}:{source:SpectrumSaveSource;acti
  return <section className="card ob-spectrum-save" aria-labelledby="ob-spectrum-save-title" data-testid="ob-spectrum-save">
   <h2 id="ob-spectrum-save-title">{M.title}</h2><p className="observatory-note">{M.help}</p>
   <div className="ob-menu ob-print-hide"><button type="button" className="secondary-button" disabled={!usable||printOnly||!!source.saveNote||(current?.object==='pending'&&current.options.showObjectId)} data-testid="ob-spectrum-save-button" onClick={save}>{M.save}</button><button type="button" className="secondary-button" disabled={!usable} data-testid="ob-spectrum-print-button" onClick={print}>{M.print}</button></div>
-  <p className="observatory-note ob-print-hide">{M.adaptation}</p>{source.saveNote&&<p className="observatory-note ob-print-hide" data-testid="ob-spectrum-save-note">{source.saveNote}</p>}
+  <p className="observatory-note ob-print-hide">{M.adaptation}</p>{source.saveNote&&<p className="observatory-note ob-print-hide" data-testid="ob-spectrum-save-note">{source.saveNote}</p>}{source.replacementNote&&<p className="observatory-note ob-print-hide" data-testid="ob-spectrum-save-replacement">{source.replacementNote}</p>}
   <div className="ob-print-hide" aria-live="polite">{notice&&<p role="status">{notice}</p>}{error&&<p role="alert">{error}</p>}</div>
   {(bytes||printOnly)&&<figure className="ob-spectrum-print" data-testid="ob-spectrum-print"><pre className="ob-print-native" data-testid="ob-spectrum-print-header">{printSkyHeader(printedAt).join('\n')}</pre>{!page&&objectLines.length>0&&<pre className="ob-print-native" data-testid="ob-spectrum-print-object">{objectLines.join('\n')}</pre>}<figcaption><strong>{source.label}</strong> · {source.telescopeName} · {M.printMeta(formatNumber(source.elapsedMs,{useGrouping:false}),formatNumber(samples.length))}</figcaption>
    {page?<svg className="ob-spectrum-print-body" viewBox="-40 0 720 340" role="img" aria-label={M.chartLabel} data-testid="ob-spectrum-print-body" fontFamily="Courier, monospace" fontSize={SPECTROMETER_PRINT_TEXT_HEIGHT}>

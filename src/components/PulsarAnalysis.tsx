@@ -60,6 +60,7 @@ import { createLoadSaveTranslator, type LoadSaveMessageKey, type LoadSaveTransla
 import { pulsarMeasurementSummary, samePulsarMeasurementSummary, type PulsarMeasurementSummary } from '../core/pulsarLab';
 import CleaHelp from '../clusters/CleaHelp';
 import {HELP_FILES} from '../help/helpFiles';
+import {imeComposing} from '../dialogKeyboard';
 
 /**
  * `active` (default true) lets a host keep the panel mounted while hidden or busy. While inactive the
@@ -1365,7 +1366,7 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
           <label>{t('pulsar.record.comment')}
             <input ref={commentInput} value={dialog.draft} maxLength={256} aria-invalid={!dialog.draftValid} aria-describedby={`${idPrefix}comment-help`}
               onChange={e => act(st => pulsarRecordDraft(st, e.target.value))}
-              onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); finishRecord(act(st => pulsarConfirmRecord(st))); } }} data-testid="pulsar-comment" />
+              onKeyDown={e => { if (e.key === 'Enter' && !imeComposing(e)) { e.preventDefault(); finishRecord(act(st => pulsarConfirmRecord(st))); } }} data-testid="pulsar-comment" />
           </label>
           <p className="plr-help" id={`${idPrefix}comment-help`}>{t('pulsar.record.commentHelp')}</p>
           {dialog.remaining > 0 && <p>{t('pulsar.record.remaining', { count: dialog.remaining })}</p>}
@@ -1471,7 +1472,7 @@ function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', activ
                   <input id={inputId} ref={field === 'date' ? exportFirst : undefined} value={value} autoComplete="off" spellCheck={false}
                     aria-invalid={invalid} aria-describedby={invalid ? `${problemId} ${helpId}` : helpId}
                     onChange={e => editExport(field, e.target.value)}
-                    onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); requestExport(); } }} data-testid={`pulsar-export-${field}`} />
+                    onKeyDown={e => { if (e.key === 'Enter' && !imeComposing(e)) { e.preventDefault(); requestExport(); } }} data-testid={`pulsar-export-${field}`} />
                   <span className="plr-help" id={helpId}>{t(EXPORT_FIELD_HELP[field])}</span>
                   {invalid && (
                     <span className="plr-export-problem" id={problemId} data-testid={`pulsar-export-problem-${field}`}>
@@ -1836,7 +1837,7 @@ function ReviewEditor({ view, t, idPrefix, act, comment }: ReviewEditorProps) {
         <label>{vireo(PULSAR_REVIEW_EDIT_DFM.comment)}
           <input ref={comment} value={view.draft} maxLength={256} aria-invalid={!view.draftValid} aria-describedby={`${idPrefix}review-edit-help`}
             onChange={e => act(st => pulsarReviewEditDraft(st, e.target.value))}
-            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); ok(); } }} data-testid="pulsar-review-edit-comment" />
+            onKeyDown={e => { if (e.key === 'Enter' && !imeComposing(e)) { e.preventDefault(); ok(); } }} data-testid="pulsar-review-edit-comment" />
         </label>
         <p className="plr-help" id={`${idPrefix}review-edit-help`}>{t('pulsar.reviewEdit.commentHelp')}</p>
       </fieldset>

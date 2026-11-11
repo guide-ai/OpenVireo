@@ -37,7 +37,8 @@ export function ObjectXSpectrumSave({state,label,pointing,minimum,telescopeName,
  minimum:number;telescopeName:string;active:boolean;busy:boolean;saved:(name:string)=>string}){
  const ok=paused(state)&&!!pointing,bytes=useMemo(()=>ok&&state&&pointing?bytesOf(()=>objectXSpectrumBytes(state,label,pointing,minimum,revealed)):null,[state,ok,label,pointing,minimum,revealed]);
  if(!active||!state)return null;
- return <SpectrumSaveCard active={active} source={{bytes,usable:ok&&!busy,label,telescopeName,elapsedMs:state.exposure.elapsedMs,fileName:objectXSpectrumFileName(label),saved,...withCurrent(current),exposure:state.exposure,...(pointing?{pointing}:{})}}/>;
+ // Front SC11: objectXHeaderObject writes '_' for a character outside printable ASCII and for a comma (before the reveal).
+ return <SpectrumSaveCard active={active} source={{bytes,usable:ok&&!busy,label,telescopeName,elapsedMs:state.exposure.elapsedMs,fileName:objectXSpectrumFileName(label),saved,...withCurrent(current),exposure:state.exposure,...(pointing?{pointing}:{}),...(!revealed&&/[^\x20-\x7e]|,/.test(label)?{replacementNote:M.asciiLabel}:{})}}/>;
 }
 /** Front G (G4c): Save .SSP / Print for the field spectrometer at any pointing (fieldSpectrumBytes): header object = the slit's
  * record locator, pointing = the field's (policy) pointing. */

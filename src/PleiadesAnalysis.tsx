@@ -5,6 +5,7 @@ import {opticalProfile} from './core/opticalTelescope';
 import {pleiadesPoints,pleiadesDistance,validPleiadesModulus,pleiadesPointVisible,PLEIADES_STANDARDS,PLEIADES_PLOT} from './core/pleiadesAnalysis';
 import type {PhotometerState} from './core/photometer';
 import {formatNumber,t} from './i18n';
+import {keepInsideSvg} from './plotTextFit';
 const num=(v:number)=>formatNumber(v,{maximumFractionDigits:6,useGrouping:false});
 const pct=(v:number)=>formatNumber(v/100,{style:'percent',signDisplay:'exceptZero',maximumFractionDigits:6,useGrouping:false});
 const vTicks=Array.from({length:6},(_,i)=>PLEIADES_PLOT.vMin+i*(PLEIADES_PLOT.vMax-PLEIADES_PLOT.vMin)/5);
@@ -21,7 +22,7 @@ export default function PleiadesAnalysis({state,busy,onConfirm,draft,onDraft}:{d
  <defs><clipPath id="pleiades-plot-clip"><rect x="70" y="40" width="600" height="500"/></clipPath></defs>
  {vTicks.map(v=><g key={v}><line x1="70" x2="670" y1={y(v)} y2={y(v)} stroke="#dce7e1"/><text x="57" y={y(v)+5} textAnchor="end">{v}</text></g>)}
  {[-.4,0,.4,.8,1.2,1.8].map(c=><g key={c}><line x1={x(c)} x2={x(c)} y1="40" y2="540" stroke="#edf2ef"/><text x={x(c)} y="567" textAnchor="middle">{num(c)}</text></g>)}
- <path d="M70 40V540H670" fill="none" stroke="#264e44" strokeWidth="2"/><text x="370" y="603" textAnchor="middle">{t('pa.axisColor')}</text><text transform="translate(18 290) rotate(-90)" textAnchor="middle">{t('pa.axisV')}</text>
+ <path d="M70 40V540H670" fill="none" stroke="#264e44" strokeWidth="2"/><text x="370" y="603" textAnchor="middle">{t('pa.axisColor')}</text><g ref={keepInsideSvg}><text transform="translate(18 290) rotate(-90)" textAnchor="middle">{t('pa.axisV')}</text></g>
  <g clipPath="url(#pleiades-plot-clip)">{valid&&<><polyline data-testid="pleiades-overlay" points={PLEIADES_STANDARDS.map(r=>`${x(r.bMinusV)},${y(r.absoluteV+value)}`).join(' ')} stroke="#b56822" strokeWidth="2.5" fill="none" strokeDasharray="7 4"/>{PLEIADES_STANDARDS.map((r,i)=><rect key={i} x={x(r.bMinusV)-3} y={y(r.absoluteV+value)-3} width="6" height="6" fill="#b56822"/>)}</>}
  {shown.map(p=>{const coincident=shown.filter(q=>q.bMinusV===p.bMinusV&&q.v===p.v);return <g key={p.targetId} data-testid="pleiades-manual-point"><circle cx={x(p.bMinusV)} cy={y(p.v)} r="5" fill="#206252"/>{coincident[0]===p&&<text data-testid="pleiades-point-label" textAnchor={x(p.bMinusV)>620?'end':'start'} x={x(p.bMinusV)+(x(p.bMinusV)>620?-8:8)} y={y(p.v)<62?y(p.v)+20:y(p.v)-7} fill="#174a3f">{coincident.length>3?t('pa.coincident',{count:coincident.length}):coincident.map(q=>q.hotlistNumber).join(', ')}</text>}</g>;})}</g></svg></div>
  <PhotometerPlotSettings points={points} prefix="pleiades"/><p>{t('pa.legend')}</p><p>{t('pa.fitHelp')}</p>

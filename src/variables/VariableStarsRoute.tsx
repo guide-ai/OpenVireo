@@ -17,6 +17,7 @@ import {vireo} from '../i18n/vireo';
 import NativeMirrorCaption from '../components/NativeMirrorCaption';
 import '../observatory/observatory-dialogs.css';
 import './variables.css';
+import {screenDateTime} from '../i18n/screenDate';
 
 type Loaded=Readonly<{records:readonly VariableStarRecord[]}>;
 type LoadState=Readonly<{status:'loading'}|{status:'error'}|({status:'ready'}&Loaded)>;
@@ -192,7 +193,7 @@ function PrintShell({caption,note,orientation,controls,children,onClose,onPrinte
  * not recovered → placeholder; the form caption (GetText 0x45df24); the ListBox lines. The 'CLEA Exercise "VIREO …" - ' text
  * goes to Printer.Title (+0x18, read by BeginDoc 0x4430cc): the spooler job name, never drawn on the page. */
 function PrintPreview({caption,lines,onClose}:{caption:string;lines:readonly string[];onClose:()=>void}){
- const [printedAt]=useState(()=>new Date().toLocaleString());// DateTimeToStr(Now) at Print; browser format [W]
+ const [printedAt]=useState(()=>screenDateTime(new Date()));// DateTimeToStr(Now) at Print; screenDateTime, the page language [W]
  return <PrintShell caption={caption} onClose={onClose}>
   <p className="variable-print-header" data-testid="variable-print-date">{printedAt}{vireo(PL.tableNumber)}{vireo(PL.notRecorded)}</p>
   <p className="variable-print-header variable-print-placeholder">{M.printStudentPlaceholder}</p>
@@ -206,7 +207,7 @@ function PrintPreview({caption,lines,onClose}:{caption:string;lines:readonly str
  * the chosen orientation, with the window image in the print scheme (Print in Color off → black on white). Vertical gaps
  * follow the page's text-height steps; x 50 and x 700 become indents [W: no printer metrics]. */
 function CurvePrintPreview({lines,plot,monochrome,name,onClose,onPrinted}:{lines:readonly string[];plot:LightCurvePlot|null;monochrome:boolean;name:string;onClose:()=>void;onPrinted:()=>void}){
- const id=useId(),[printedAt]=useState(()=>new Date().toLocaleString()),[orientation,setOrientation]=useState<PrintOrientation>('portrait');
+ const id=useId(),[printedAt]=useState(()=>screenDateTime(new Date())),[orientation,setOrientation]=useState<PrintOrientation>('portrait');
  const items=lightCurvePrintPage({orientation,dateText:printedAt,listLines:lines,tr:vireo});
  const listItems=items.filter(i=>i.kind==='text'&&i.role==='line'),head=items.filter(i=>i.kind==='text'&&(i.role==='date'||i.role==='name'));
  const rest=items.filter(i=>!(i.kind==='text'&&(i.role==='date'||i.role==='name'||i.role==='line')));

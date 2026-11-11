@@ -34,6 +34,7 @@ import {FIELD_INFO_MESSAGES as FM} from '../observatory/FieldInfoMessages';
 import '../observatory/observatory-dialogs.css';
 import '../observatory/field-info.css';
 import '../clusters/cluster-hr.css';
+import {screenDateTime} from '../i18n/screenDate';
 
 /** The record 0x5bca0c and the list 0x53f live for the process: here, for the page session (module state). */
 let sessionRecord:ClusterDialogRecord=EMPTY_CLUSTER_RECORD;
@@ -237,7 +238,7 @@ function UnsavedHotList({onAnswer}:{onAnswer:(save:boolean)=>void}){
 /** Print body 0x531c68 (Front O M6): +0x5c6 := not Edit Mode; the laboratory table line and the student names are printed only
  * on the student branch (L5). VIREO prints landscape in Edit Mode and portrait otherwise. */
 function StudyPrintBody({caption,lines,student}:{caption:string;lines:readonly string[];student:boolean}){
- const [date]=useState(()=>new Date().toLocaleString());
+ const [date]=useState(()=>screenDateTime(new Date()));
  return <div data-testid="cd-study-print-body">
   <p className="cluster-print-line">{date+(student?vireo(HP.tableNumber)+vireo(HP.notRecorded):'')}</p>
   <p className="cluster-print-line cluster-print-indent">{caption}</p>

@@ -1,5 +1,6 @@
 import type {WEDGE_MESSAGES_EN} from '../../../components/WedgeMessages';
 import type {Translation} from '../../maps';
+import {plural} from '../../plural';
 /** Front PT2: Brazilian Portuguese (pt-BR) for the LSS wedge panel's web text. A web adaptation by OpenVireo, not CLEA's; VIREO's own
  * captions are translated through vireo() (originals.json). */
 export const WEDGE_PT:Translation<typeof WEDGE_MESSAGES_EN>=Object.freeze({
@@ -14,11 +15,11 @@ export const WEDGE_PT:Translation<typeof WEDGE_MESSAGES_EN>=Object.freeze({
  exportNote:'O CSV é um formato novo do OpenVireo, com os hashes das fontes e valores binary32 exatos; não é o formato de salvamento original do VIREO.',
  dismiss:'Fechar',
  statusEmpty:'Nenhum dado LSS carregado.',
- statusLoaded:(records:number,files:number)=>`${records} registro${records===1?'':'s'} de ${files} arquivo${files===1?'':'s'}.`,
+ statusLoaded:(records:number,files:number)=>`${plural('pt-BR',records,{one:`${records} registro`,other:`${records} registros`})} de ${plural('pt-BR',files,{one:`${files} arquivo`,other:`${files} arquivos`})}.`,
  awaitingAnswer:(caption:string)=>`Pergunta de importação aguardando sua resposta: ${caption} Carregar, plotar e as opções ficam indisponíveis até que você responda.`,
  figureLabel:'Diagrama em cunha LSS: ascensão reta de 12h a 16h, raio proporcional ao desvio para o vermelho',
- notDrawn:(n:number)=>`${n} registro${n===1?' não é plotado':'s não são plotados'} porque um campo não pôde ser lido como o original o leria (veja a tabela).`,
- outside:(n:number)=>`${n} ponto${n===1?' admitido fica':'s admitidos ficam'} fora da área de desenho de 550 × 550.`,
+ notDrawn:(n:number)=>`${plural('pt-BR',n,{one:`${n} registro não é plotado`,other:`${n} registros não são plotados`})} porque um campo não pôde ser lido como o original o leria (veja a tabela).`,
+ outside:(n:number)=>`${plural('pt-BR',n,{one:`${n} ponto admitido fica`,other:`${n} pontos admitidos ficam`})} fora da área de desenho de 550 × 550.`,
  presentationNote:'A geometria da grade, as escalas, os rótulos, os tamanhos dos pontos e os dois esquemas de cores seguem o programa recuperado; as fontes são aproximadas e o anel de seleção tracejado é próprio desta página.',
  schemeLabel:'Cores do gráfico',
  schemes:Object.freeze(['Cores originais de tela','Cores originais em preto e branco (impressão)']as const),
@@ -33,7 +34,7 @@ export const WEDGE_PT:Translation<typeof WEDGE_MESSAGES_EN>=Object.freeze({
  detailsHeading:'Registro selecionado',
  detailsNone:'Selecione uma linha ou um ponto plotado para inspecioná-lo.',
  sha256:'SHA-256',
- rowCount:(rows:number)=>`${rows} linha${rows===1?'':'s'} de dados`,
+ rowCount:(rows:number)=>plural('pt-BR',rows,{one:`${rows} linha de dados`,other:`${rows} linhas de dados`}),
  sourceColumn:Object.freeze({z:'Coluna Z',velocity:'Coluna V(km/sec)'}),
  detail:Object.freeze({redshift:'V / Z',kmPerS:'km/s',raw:'Linha salva',line:'Linha',source:'Arquivo',ra:'AR (horas)',dec:'Dec (graus, regra original)',velocity:'V binary32',z:'Z binary32',derived:'Derivado de',theta:'Ângulo a partir do raio de 12h',radius:'Raio',pixel:'Pixel (x, y)',hours:'h',degrees:'°',px:'px'}),
  derivedFrom:Object.freeze({velocity:'Coluna V (Z = V / c)',z:'Coluna Z (V = c · Z)'}),

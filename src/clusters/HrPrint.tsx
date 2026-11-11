@@ -6,6 +6,7 @@ import {vireo} from '../i18n/vireo';
 import ClusterPrintPreview from './ClusterPrintPreview';
 import './cluster-hr.css';
 import {hrScheme,hrSchemeStyle} from '../core/hrScheme';
+import {screenDateTime} from '../i18n/screenDate';
 
 type Trial=Readonly<{zamsShown:boolean;modulusTicks:number;ebvTicks:number}>;
 const gapStyle=(g:ClusterHrPrintLine['gap'])=>'h' in g?{marginTop:`${Math.max(0,g.h-1)*1.2}em`}:{marginTop:g.px>0?'2.4em':0};
@@ -41,7 +42,7 @@ export function ObservationDataUnavailable({testId}:{testId:string}){
 /** File › Print (0x542f44): the recovered page body in either orientation, then the plot. */
 /** Front R4c: `printMonochrome` is read when the preview opens (the print dialog); `onPrinted` runs on its Print… only. */
 export default function HrPrint({trial,plot,testId,disabled=false,printMonochrome,onPrinted}:{trial:Trial|null;plot:RefObject<SVGSVGElement|null>;testId:string;disabled?:boolean;printMonochrome?:()=>boolean;onPrinted?:()=>void}){
- const [printMono,setPrintMono]=useState(true),[open,setOpen]=useState(false),[orientation,setOrientation]=useState<ClusterHrPrintOrientation>('portrait'),[date]=useState(()=>new Date().toLocaleString());
+ const [printMono,setPrintMono]=useState(true),[open,setOpen]=useState(false),[orientation,setOrientation]=useState<ClusterHrPrintOrientation>('portrait'),[date]=useState(()=>screenDateTime(new Date()));
  const button=useRef<HTMLButtonElement>(null);
  const page=clusterHrPrintPage({dateText:date,zamsShown:trial?.zamsShown??false,modulusTicks:trial?.modulusTicks??0,ebvTicks:trial?.ebvTicks??0,orientation,tr:vireo});
  const line=(l:ClusterHrPrintLine,i:number)=>{

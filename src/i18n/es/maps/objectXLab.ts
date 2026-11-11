@@ -1,5 +1,6 @@
 import type {OBJECT_X_LAB_EN} from '../../../objectx/ObjectXMessages';
 import type {Translation} from '../../maps';
+import {plural} from '../../plural';
 /** Front ES1 (the header menu names) and ES9 (the rest): Spanish (es-419) for the E08 #object-x route. A web adaptation by
  * OpenVireo, not CLEA's. No string names or describes a particular target, and the same words serve every target. */
 /** The article of each answer kind, by its OBJECT_X_KINDS id: «una estrella», «una galaxia», «un cuásar», «un púlsar», «un asteroide». */
@@ -75,7 +76,7 @@ export const OBJECT_X_LAB_ES:Translation<typeof OBJECT_X_LAB_EN>=Object.freeze({
  saveFits:label=>`Guardar ${label}.FIT`,
  imagesFull:(images,exposures)=>`Se alcanzó el límite de imágenes (${images} imágenes, ${exposures} exposiciones por investigación): las imágenes nuevas no se agregan.`,
  confirmClearMarks:'Cambiar las imágenes quita tus marcas en ellas. ¿Continuar?',
- imageMovers:pairs=>`${pairs} ${pairs===1?'asteroide':'asteroides'} en el recuadro del campo.`,
+ imageMovers:pairs=>plural('es-419',pairs,{one:`${pairs} asteroide en el recuadro del campo.`,other:`${pairs} asteroides en el recuadro del campo.`}),
  imageMoversHidden:'incluye los asteroides de la lista actual (el número se muestra después de la revelación)',
  imageSkipped:reasons=>{
   const text:Readonly<Record<string,string>>={'moving-pair-off-detector':'muy fuera del detector','moving-pair-geometry':'sin movimiento medible que dibujar','moving-pair-budget':'estela demasiado grande para dibujarla'};

@@ -4,6 +4,7 @@ import type{WedgePlotStatus}from'../core/wedgePlot';
 import type{WedgeWorkspace}from'../core/wedgeWorkspace';
 import {pickMessages} from '../i18n/registry';
 import {vireo,vireoList} from '../i18n/vireo';
+import {plural} from '../i18n/plural';
 /** Presentation catalog for the LSS wedge panel, keyed and pure so a later
  * coordinator merge can move it into the shared i18n catalog. Every value is typed
  * as a plain string/function/tuple (not the English literal), so translations
@@ -89,11 +90,11 @@ export const WEDGE_MESSAGES_EN:WedgeWebMessages=Object.freeze({
  exportNote:'The CSV is a new OpenVireo format with source hashes and exact binary32 values; it is not the original VIREO save format.',
  dismiss:'Dismiss',
  statusEmpty:'No LSS data loaded.',
- statusLoaded:(records:number,files:number)=>`${records} record${records===1?'':'s'} from ${files} file${files===1?'':'s'}.`,
+ statusLoaded:(records:number,files:number)=>`${plural('en',records,{one:`${records} record`,other:`${records} records`})} from ${plural('en',files,{one:`${files} file`,other:`${files} files`})}.`,
  awaitingAnswer:(caption:string)=>`Import question waiting for your answer: ${caption} Loading, plotting and options are unavailable until it is answered.`,
  figureLabel:'LSS wedge diagram: right ascension 12h to 16h, radius proportional to redshift',
- notDrawn:(n:number)=>`${n} record${n===1?' is':'s are'} not plotted because a field could not be read as the original would (see table).`,
- outside:(n:number)=>`${n} admitted point${n===1?' lies':'s lie'} outside the 550 × 550 drawing area.`,
+ notDrawn:(n:number)=>`${plural('en',n,{one:`${n} record is`,other:`${n} records are`})} not plotted because a field could not be read as the original would (see table).`,
+ outside:(n:number)=>`${plural('en',n,{one:`${n} admitted point lies`,other:`${n} admitted points lie`})} outside the 550 × 550 drawing area.`,
  presentationNote:'Grid geometry, scales, labels, point sizes and both colour schemes follow the recovered program; fonts are approximate and the dashed selection ring is this page’s own.',
  schemeLabel:'Plot colours',
  schemes:Object.freeze(['Original display colours','Original black-and-white (print) colours']as const),
@@ -108,7 +109,7 @@ export const WEDGE_MESSAGES_EN:WedgeWebMessages=Object.freeze({
  detailsHeading:'Selected record',
  detailsNone:'Select a row or a plotted point to inspect it.',
  sha256:'SHA-256',
- rowCount:(rows:number)=>`${rows} data row${rows===1?'':'s'}`,
+ rowCount:(rows:number)=>plural('en',rows,{one:`${rows} data row`,other:`${rows} data rows`}),
  sourceColumn:Object.freeze({z:'Z column',velocity:'V(km/sec) column'}),
  detail:Object.freeze({redshift:'V / Z',kmPerS:'km/s',raw:'Saved line',line:'Line',source:'File',ra:'RA (hours)',dec:'Dec (degrees, original rule)',velocity:'V binary32',z:'Z binary32',derived:'Derived from',theta:'Angle from 12h spoke',radius:'Radius',pixel:'Pixel (x, y)',hours:'h',degrees:'°',px:'px'}),
  derivedFrom:Object.freeze({velocity:'V column (Z = V / c)',z:'Z column (V = c · Z)'}),

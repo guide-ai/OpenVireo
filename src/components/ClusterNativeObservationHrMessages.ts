@@ -1,4 +1,4 @@
-import{t}from'../i18n';
+import{pluralKey,t}from'../i18n';
 import type{StoredNumber}from'../core/nativeObservationResults';
 import {lazyMessages} from '../i18n/registry';
 import {vireo} from '../i18n/vireo';
@@ -68,13 +68,15 @@ export const CLUSTER_NATIVE_HR_MESSAGES=lazyMessages(()=>({
  outside:t("obsHr.outside"),
  limits:t("obsHr.limits"),
  reading:(name:string)=>t("obsHr.reading",{name}),
- reviewSummary:(name:string,count:number)=>t(count===1?"obsHr.reviewSummary.one":"obsHr.reviewSummary.many",{name,count}),
- replaceQuestion:(count:number)=>t(count===1?"obsHr.replaceQuestion.one":"obsHr.replaceQuestion.many",{count}),
- current:(count:number)=>t(count===1?"obsHr.current.one":"obsHr.current.many",{count}),
- chartDescription:(count:number)=>t(count===1?"obsHr.chartDescription.one":"obsHr.chartDescription.many",{count}),
- offAxes:(count:number)=>t(count===1?"obsHr.offAxes.one":"obsHr.offAxes.many",{count}),
+ reviewSummary:(name:string,count:number)=>t(pluralKey(count,{one:"obsHr.reviewSummary.one",other:"obsHr.reviewSummary.other"}),{name,count}),
+ replaceQuestion:(count:number)=>t(pluralKey(count,{one:"obsHr.replaceQuestion.one",other:"obsHr.replaceQuestion.other"}),{count}),
+ current:(count:number)=>t(pluralKey(count,{one:"obsHr.current.one",other:"obsHr.current.other"}),{count}),
+ chartDescription:(count:number)=>t(pluralKey(count,{one:"obsHr.chartDescription.one",other:"obsHr.chartDescription.other"}),{count}),
+ offAxes:(count:number)=>t(pluralKey(count,{one:"obsHr.offAxes.one",other:"obsHr.offAxes.other"}),{count}),
  blocked:(index:number,field:string)=>t("obsHr.blocked",{index,field}),
- kindWarning:(counts:number,other:number)=>t(counts===1?(other===0?"obsHr.kindWarning.one.none":other===1?"obsHr.kindWarning.one.one":"obsHr.kindWarning.one.many"):(other===0?"obsHr.kindWarning.many.none":other===1?"obsHr.kindWarning.many.one":"obsHr.kindWarning.many.many"),{counts,other}),
+ // Two counts, each with its own forms; `none` is the wording for no record of another kind (not a plural category).
+ kindWarning:(counts:number,other:number)=>t(other===0?pluralKey(counts,{one:"obsHr.kindWarning.one.none",other:"obsHr.kindWarning.other.none"})
+  :pluralKey(counts,{one:pluralKey(other,{one:"obsHr.kindWarning.one.one",other:"obsHr.kindWarning.one.other"}),other:pluralKey(other,{one:"obsHr.kindWarning.other.one",other:"obsHr.kindWarning.other.other"})}),{counts,other}),
  kind:(k:number)=>t(k===1?"obsHr.kind.magnitudes":k===0?"obsHr.kind.counts":"obsHr.kind.unknown",{k}),
 }));
 export type ClusterNativeHrMessages=typeof CLUSTER_NATIVE_HR_MESSAGES;

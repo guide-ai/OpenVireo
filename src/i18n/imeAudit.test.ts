@@ -1,4 +1,5 @@
 import {describe,expect,it} from 'vitest';
+import {imeComposing} from '../dialogKeyboard';
 import {enclosingPlaces,parseSource,pinLines,pinned,readSource,sourceFiles,sourceOf,walk,type AstNode} from './sourceScan';
 // Front SC5 (plan front-i18n-scripts.md §8 "Input"): with a Japanese, Chinese or Hindi input method, the Enter that confirms
 // a conversion arrives as a keydown with `isComposing` true (keyCode 229 in older engines). A handler that submits on that
@@ -8,19 +9,21 @@ import {enclosingPlaces,parseSource,pinLines,pinned,readSource,sourceFiles,sourc
 // components into other files; the per-language walks under the pseudo-locales remain the check in the browser.
 //
 // Status of each handler, in its pin line:
-// - `guarded`: its own source reads `isComposing` or keyCode 229;
+// - `guarded`: its own source calls `imeComposing(…)` (src/dialogKeyboard.ts, Front SC11) or reads both `isComposing` and
+//   keyCode 229;
+// - `half guarded`: it reads only one of the two (Safari's confirming Enter has isComposing false and keyCode 229);
 // - `text field`: unguarded, bound to an <input> of a text-entry type or a <textarea>;
 // - `contains text field`: unguarded, bound to an element whose JSX holds such a field (keydown bubbles up to it);
 // - `input target`: unguarded and it tests that the event target is an input (tagName 'INPUT', HTMLInputElement, a field ref);
 // - `held key only`: every Enter test is joined by && with `.repeat`, so it ignores the Enter that confirms a conversion;
 // - `no text field`: unguarded, bound only to elements that neither are nor hold a text field (buttons, canvases, lists);
 // - `unbound here`: no binding in the same file (an exported helper or a handler handed to another component).
-// Offenders are the first three.
+// Offenders are `half guarded` and the next three.
 //
-// For SC11, the guard is `e.nativeEvent.isComposing||e.keyCode===229` (both): Safari fires the Enter that confirms a
-// conversion after compositionend, with isComposing false and keyCode 229. A guard on isComposing alone counts as guarded
-// here, so SC11 reviews the existing guards too.
-const OFFENDING=new Set(['text field','contains text field','input target']);
+// The guard is `imeComposing(e)`, that is `e.nativeEvent.isComposing||e.keyCode===229` (both): Safari fires the Enter that
+// confirms a conversion after compositionend, with isComposing false and keyCode 229. SC11 guarded every offender SC5 pinned
+// and moved the four isComposing-only guards onto the helper.
+const OFFENDING=new Set(['half guarded','text field','contains text field','input target']);
 /** Input types that never take IME text. */
 const NOT_TEXT_INPUT=new Set(['checkbox','radio','button','submit','reset','range','color','file','hidden','image','date','time','datetime-local','month','week']);
 const isEnterLiteral=(n:AstNode|undefined)=>n?.type==='Literal'&&(n.value==='Enter'||n.value==='NumpadEnter');
@@ -107,7 +110,8 @@ function enterSites(file:string,text:string,program=parseSource(file,text)):stri
  return enterHandlers(program).map(h=>{
   const source=sourceOf(text,h.fn),inline=boundElements(program,h.fn,null),named=inline.length?inline:boundElements(h.scope,h.fn,handlerName(h));
   const binding=named.length?[...new Set(named.map(describeElement))].join('+'):'unbound';
-  const status=/isComposing|\b229\b/.test(source)?'guarded'
+  const status=/\bimeComposing\(/.test(source)||/isComposing/.test(source)&&/\b229\b/.test(source)?'guarded'
+   :/isComposing|\b229\b/.test(source)?'half guarded'
    :h.repeatOnly?'held key only'
    :named.some(isTextField)?'text field'
    :named.some(o=>elementOf.has(o)&&holdsTextField(elementOf.get(o)!))?'contains text field'
@@ -117,12 +121,20 @@ function enterSites(file:string,text:string,program=parseSource(file,text)):stri
  });
 }
 const PINS='src/i18n/ime-enter-sites.json';
-describe('Front SC5: IME audit of Enter handlers (fixes land per file in SC11; this front changes none)',()=>{
+describe('Front SC5: IME audit of Enter handlers (SC11 guarded the offenders)',()=>{
+ it('imeComposing reads isComposing and keyCode 229 (Safari\'s confirming Enter after compositionend)',()=>{
+  const key=(isComposing:boolean,keyCode:number)=>({nativeEvent:{isComposing} as KeyboardEvent,keyCode});
+  expect(imeComposing(key(true,229))).toBe(true);expect(imeComposing(key(true,13))).toBe(true);
+  expect(imeComposing(key(false,229))).toBe(true);expect(imeComposing(key(false,13))).toBe(false);
+ });
  it('classifies handlers: guards, text fields, containers, input targets and the rest',()=>{
   const sites=(code:string)=>enterSites('fixture.tsx',code).map(l=>l.replace(/^fixture\.tsx › /,''));
   expect(sites("export function A(){return <input id='q' onKeyDown={e=>{if(e.key==='Enter')go();}}/>;}")).toEqual(["A · <input#q> · text field"]);
-  expect(sites("export function A(){return <input id='q' onKeyDown={e=>{if(e.key==='Enter'&&!e.nativeEvent.isComposing)go();}}/>;}")).toEqual(["A · <input#q> · guarded"]);
-  expect(sites("export function A(){return <input onKeyDown={e=>{if(e.key==='Enter'&&e.keyCode!==229)go();}}/>;}")).toEqual(["A · <input> · guarded"]);
+  expect(sites("export function A(){return <input id='q' onKeyDown={e=>{if(e.key==='Enter'&&!e.nativeEvent.isComposing)go();}}/>;}")).toEqual(["A · <input#q> · half guarded"]);
+  expect(sites("export function A(){return <input onKeyDown={e=>{if(e.key==='Enter'&&e.keyCode!==229)go();}}/>;}")).toEqual(["A · <input> · half guarded"]);
+  expect(sites("export function A(){return <input onKeyDown={e=>{if(e.key==='Enter'&&!e.nativeEvent.isComposing&&e.keyCode!==229)go();}}/>;}")).toEqual(["A · <input> · guarded"]);
+  expect(sites("export function A(){return <input id='q' onKeyDown={e=>{if(e.key==='Enter'&&!imeComposing(e))go();}}/>;}")).toEqual(["A · <input#q> · guarded"]);
+  expect(sites("export function A(){const onKey=(e)=>{if(e.key==='Enter'&&e.target.tagName==='INPUT'){if(imeComposing(e))return;go();}};return <Dialog onKeyDown={onKey}><Field/></Dialog>;}")).toEqual(["A/onKey · <Dialog> · guarded"]);
   expect(sites("export function A(){return <textarea onKeyDown={e=>{if(['Enter','Escape'].includes(e.key))go();}}/>;}")).toEqual(["A · <textarea> · text field"]);
   expect(sites("export function A(){return <input type='checkbox' onKeyDown={e=>{if(e.key==='Enter')go();}}/>;}")).toEqual(["A · <input> · no text field"]);
   expect(sites("export function A(){const onKey=(e)=>{switch(e.key){case 'Enter':go();}};return <dialog data-testid='d' onKeyDown={onKey}><label>X<input type='text'/></label></dialog>;}")).toEqual(["A/onKey · <dialog#d> · contains text field"]);
