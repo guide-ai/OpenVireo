@@ -92,7 +92,7 @@ describe('Front RT8: iso() around every value of a right-to-left map function',(
    .toEqual(["iso · iso is not src/i18n/bidi.ts's",'(file) · iso() is called but not imported from src/i18n/bidi.ts']);
   expect(unisolatedMapValues('other.ts',"import {iso} from './mine';\nexport const M={count:(n:number)=>`${iso(n)} نجمة`};\n"))
    .toEqual(["(file) · iso is not src/i18n/bidi.ts's",'(file) · iso() is called but not imported from src/i18n/bidi.ts']);
-  expect(unisolatedMapValues('fill.ts',MAP_SOURCE(["fill:(n:number)=>'{n} نجمة'.replace('{n}',iso(n))"]))).toEqual([]);
+  expect(unisolatedMapValues('fill.ts',MAP_SOURCE("fill:(n:number)=>'{n} نجمة'.replace('{n}',iso(n))"))).toEqual([]);
  });
  const mapFiles=(dir:string)=>{const d=path.join(REPOSITORY_ROOT,'src/i18n',dir,'maps');return existsSync(d)?readdirSync(d).filter(f=>f.endsWith('.ts')&&!f.endsWith('.test.ts')).map(f=>path.join(d,f)):[];};
  it('holds for every registered right-to-left language (none today)',()=>{
