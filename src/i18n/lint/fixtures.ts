@@ -233,7 +233,7 @@ const ptBR:Fixture[]=[
  {profile:'pt-BR',rule:'typography',en:'Up to 1,000 measurements.',good:'Até 1\u202f000 medições.',bad:'Até 1,000 medições.',note:'thousands: U+202F, not the comma (PT-REL)'},
  {profile:'pt-BR',rule:'typography',en:'Julian Day Number − 2,400,000',good:'Número do dia juliano − 2\u202f400\u202f000',bad:'Número do dia juliano − 2 400 000',note:'thousands: U+202F, not an ordinary space (PT-REL)'},
  {profile:'pt-BR',rule:'typography',en:'RA 12 30 45.6, Dec +26 07 59 (version 1.64.1, 10 November 2026): 1,500 Å',good:'AR 12 30 45.6, Dec +26 07 59 (versão 1.64.1, 10 de novembro de 2026): 1 500 Å',bad:'AR 12 30 45.6, Dec +26 07 59 (versão 1.64.1, 10 de novembro de 2026): 1,500 Å',note:'thousands: sexagesimal coordinates, a version and a date are not groups (PT-REL review)'},
- {profile:'pt-BR',rule:'typography',en:'Exposure: 2.5 s at 1,500 Å',good:'Exposição: 2.5 s a 1\u00a0500 Å',bad:'Exposição: 2.5 s a 1,500 Å',note:'a Latin-1 help file\'s U+00A0 passes; the decimal point is not a group'},
+ {profile:'pt-BR',rule:'typography',en:'Exposure: 2.5 s at 1,500 Å',good:'Exposição: 2.5 s a 1\u202f500 Å',bad:'Exposição: 2.5 s a 1\u00a0500 Å',note:'thousands: U+202F, not U+00A0 (PT-SEO: the help files hold U+202F since SC7); the decimal point is not a group'},
  {profile:'pt-BR',rule:'digits',en:EXPOSURE,good:'Exposição: 2.5 s',bad:'Exposição: 2,5 s'},
  {profile:'pt-BR',rule:'normalization',en:'Exposure',good:'Exposição',bad:'Exposição'.normalize('NFD')},
  {profile:'pt-BR',rule:'invisible',en:'Telescope',good:'Telescópio',bad:'Teles­cópio'},

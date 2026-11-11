@@ -3,7 +3,8 @@
  * the app's #lab= links share one list. Pure string functions; src/seo/vitePlugin.ts serves and emits them. The pages have no
  * script (JSON-LD is a data block, not executed) and no inline style, so the site's Content-Security-Policy covers them.
  * Front ES-SEO: every page is rendered for every language of src/seo/languages.ts (English at the root, Spanish under /es/,
- * whose home page /es/ is a static page), with hreflang alternates, Open Graph locales and a sitemap that lists them all. */
+ * whose home page /es/ is a static page), with hreflang alternates, Open Graph locales and a sitemap that lists them all.
+ * Front PT-SEO: Brazilian Portuguese under /pt-br/ (home /pt-br/), with no change here: a row of the table. */
 import {SITE_URL,labUrl} from './labs.ts';
 import {ENGLISH,SEO_LANGUAGES,pathOf,type PageKey,type SeoLab,type SeoLanguage} from './languages.ts';
 
@@ -128,7 +129,7 @@ export function labsIndexPage(language:SeoLanguage=ENGLISH):string{
  return page({key:'labs',title:x.title,description:x.description,body,ld,language});
 }
 
-/** The static home page of a language whose home is not the app (Spanish: /es/). It opens the app in its language through
+/** The static home page of a language whose home is not the app (Spanish: /es/, Brazilian Portuguese: /pt-br/). It opens the app in its language through
  * `?lang=<tag>`, which applies to that load only (docs/I18N.md), and links the same page in the other languages. */
 export function languageHomePage(language:SeoLanguage):string{
  const h=language.home;
