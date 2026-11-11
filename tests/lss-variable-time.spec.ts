@@ -6,7 +6,7 @@ import{clickHeaderTool}from'./fixtures/header-tools';
 test('E02: the field list records its frozen JD; rows with TRUE variable stars are observable',async({page})=>{
  test.setTimeout(180000);
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
- await page.goto('/');await clickHeaderTool(page,'LSS survey');
+ await page.goto('/#observatory');await clickHeaderTool(page,'LSS survey');
  for(const [field,row] of [['8',22],['2',24]] as const){
   await page.getByLabel('Survey field',{exact:true}).selectOption(field);
   await page.getByRole('button',{name:'Load selected list',exact:true}).click();
@@ -33,7 +33,7 @@ async function loadF8(page:import('@playwright/test').Page){
 }
 test('E02: a changed observatory clock freezes a different JD',async({page})=>{
  test.setTimeout(180000);
- await page.goto('/');await loadF8(page);
+ await page.goto('/#observatory');await loadF8(page);
  const first=await page.getByTestId('lss-field-jd').textContent();
  await setDate(page,'2026/10/27');await expect(page.getByTestId('site-clock-ut')).toHaveText('2026-10-27 03:00:00 UT');
  await loadF8(page);await expect(page.getByTestId('lss-field-jd')).not.toHaveText(first!,{timeout:30000});

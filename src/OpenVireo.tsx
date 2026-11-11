@@ -121,6 +121,8 @@ import {HelpMenu as MainHelpMenu} from './help/HelpMenus';
 import {LazyBoundary,RecoveryContext} from './components/LazyBoundary';// Front REL1 review 1 M1
 import AboutDialog from './polish/AboutDialog';// Front P
 import ResultsEditorsNav from './polish/ResultsEditorsNav';// Front P
+import Welcome from './home/Welcome';
+import {FIRST_VISIT_TOUR_DELAY,firstVisitTourDue} from './home/firstVisit';// Front HOME: the welcome on the observatory's first screen
 import ClusterGuideNavButton,{openClusterGuide} from './polish/ClusterGuideNavButton';// Front P
 import ResearchNotes from './components/ResearchNotes';
 import {ObservationListContext,ObservationListValue,EMPTY_SHARED_OBSERVATION_LIST,type ObservationListAccess} from './observationListContext';// Front ONERESULTS
@@ -277,7 +279,7 @@ function M31NoticeView(){
 }
 
 export default function OpenVireo(){
-  const route=()=>location.hash==='#variable-stars'?'variable-stars' as const:location.hash==='#object-x'?'object-x' as const:location.hash==='#lss-survey'?'lss-survey' as const:location.hash==='#lss-wedge'?'lss-wedge' as const:location.hash==='#pulsar-analysis'?'pulsar-analysis' as const:location.hash==='#radio-control'?'radio-control' as const:location.hash==='#images'?'images' as const:location.hash==='#cluster-database'?'cluster-database' as const:location.hash==='#photometer'?'photometer' as const:location.hash==='#classification'?'classification' as const:location.hash==='#galaxy-exposure'?'galaxy-exposure' as const:location.hash==='#star-exposure'?'star-exposure' as const:location.hash==='#sky-exposure'?'sky-exposure' as const:location.hash==='#spectrometer'?'spectrometer' as const:['#spectrum','#measurement-log'].includes(location.hash)?'spectrum' as const:'observatory' as const;
+  const route=()=>['','#','#home'].includes(location.hash)?'home' as const:location.hash==='#variable-stars'?'variable-stars' as const:location.hash==='#object-x'?'object-x' as const:location.hash==='#lss-survey'?'lss-survey' as const:location.hash==='#lss-wedge'?'lss-wedge' as const:location.hash==='#pulsar-analysis'?'pulsar-analysis' as const:location.hash==='#radio-control'?'radio-control' as const:location.hash==='#images'?'images' as const:location.hash==='#cluster-database'?'cluster-database' as const:location.hash==='#photometer'?'photometer' as const:location.hash==='#classification'?'classification' as const:location.hash==='#galaxy-exposure'?'galaxy-exposure' as const:location.hash==='#star-exposure'?'star-exposure' as const:location.hash==='#sky-exposure'?'sky-exposure' as const:location.hash==='#spectrometer'?'spectrometer' as const:['#spectrum','#measurement-log'].includes(location.hash)?'spectrum' as const:'observatory' as const;
   const [view,setView]=useState<Route>(route),[open,setOpen]=useState(false),[mode,setMode]=useState<FieldMode>('finder'),[hasPointed,setHasPointed]=useState(false),[benchPointing,setBenchPointing]=useState<Pointing|null>(null);
   const [selected,setSelected]=useState<SkyObject>(targets.initial),[pointing,setPointing]=useState<Pointing>(targets.initial);
   const [ra,setRa]=useState(targets.initial.ra.toString()),[dec,setDec]=useState(targets.initial.dec.toString()),[notice,setNotice]=useState(''),[error,setError]=useState('');
@@ -635,8 +637,8 @@ export default function OpenVireo(){
 
   const about=useRef<HTMLDialogElement>(null),labGuide=useRef<HTMLDialogElement>(null);
   const [labProgress,setLabProgress]=useState(()=>hubbleLabProgress([],[],EMPTY_HUBBLE));
-  const imageView=useRef<HTMLDivElement>(null),observatoryView=useRef<HTMLDivElement>(null),spectrometerView=useRef<HTMLDivElement>(null),analyzerView=useRef<HTMLDivElement>(null),previousView=useRef(view);
-  useEffect(()=>{if(previousView.current===view)return;previousView.current=view;const element=({'variable-stars':variableStarsView,'object-x':objectXView,'lss-survey':lssView,'lss-wedge':wedgeView,'pulsar-analysis':pulsarView,'radio-control':radioView,images:imageView,observatory:observatoryView,spectrometer:spectrometerView,spectrum:analyzerView,'sky-exposure':skyExposureView,'star-exposure':starExposureView,'galaxy-exposure':galaxyExposureView,classification:classificationView,photometer:photometerView,'cluster-database':clusterDatabaseView}[view]).current;
+  const imageView=useRef<HTMLDivElement>(null),homeView=useRef<HTMLDivElement>(null),observatoryView=useRef<HTMLDivElement>(null),spectrometerView=useRef<HTMLDivElement>(null),analyzerView=useRef<HTMLDivElement>(null),previousView=useRef(view);
+  useEffect(()=>{if(previousView.current===view)return;previousView.current=view;const element=({'variable-stars':variableStarsView,'object-x':objectXView,'lss-survey':lssView,'lss-wedge':wedgeView,'pulsar-analysis':pulsarView,'radio-control':radioView,images:imageView,home:homeView,observatory:observatoryView,spectrometer:spectrometerView,spectrum:analyzerView,'sky-exposure':skyExposureView,'star-exposure':starExposureView,'galaxy-exposure':galaxyExposureView,classification:classificationView,photometer:photometerView,'cluster-database':clusterDatabaseView}[view]).current;
     // A tool that reopened its native modal dialog (PLR record/clear, saved-row Find) during layout owns focus there, and so
     // does a presented radio dialog or box. A pending radio dialog of a hidden route is not rendered and does not count.
     // Find can close in the same commit that reveals a pending radio box. Its observer presents the box afterwards;
@@ -937,6 +939,7 @@ export default function OpenVireo(){
   const objectXClockUtc=useCallback(()=>objectXClockRef.current(),[]);
   const stable=useStableHandlers({
    navigate,
+   explore:()=>navigate('observatory'),
    hubbleGuide:(destination:LabDestination)=>{navigate(destination==='hubble'?'spectrum':destination);if(destination==='hubble')requestAnimationFrame(()=>analyzerController.current?.openHubble());},
    pleiadesGuide:(destination:PleiadesLabDestination)=>{if(destination==='observations')openOwnHr();else navigate(destination);},
    classificationGuide:()=>navigate('classification'),
@@ -968,30 +971,43 @@ export default function OpenVireo(){
   // Front Perf: the header and nav depend only on view, hostInert and stable handlers/refs; built again only when those change.
   // Front Onboarding [W]: the first-visit tour starts by itself once per browser (not in automated browsers); Help repeats it.
   const [tour,setTour]=useState(false);
-  /** The Guides menu: each lab's guide opener, shared by its menu button and by the #lab= links of the /labs/ pages. */
+  // Front HOME review 1 (finding 1): the first-visit tour is not for a visitor who chose a lab. Every guide opener (the welcome's
+  // cards, the Guides menu, #lab= and the cluster menu button) starts its exercise through guideStart, which records that a guide
+  // was opened in this load; a #lab= arrival counts from the start, before its effect below opens the guide.
+  const guideOpened=useRef(labFromHash(location.hash)!==null),tourScheduled=useRef(false);
+  const guideStart=useCallback((code:ExerciseCode)=>{guideOpened.current=true;startExercise(code);},[startExercise]);
+  /** The Guides menu: each lab's guide opener, shared by its menu button, the welcome's card and the #lab= links of the /labs/ pages. */
   const openGuide=useMemo<Record<LabSlug,()=>void>>(()=>({
-   hubble:()=>{startExercise(4);labGuide.current?.showModal();},
-   'large-scale-structure':()=>{startExercise(5);lssGuide.current?.showModal();},
-   'object-x':()=>{startExercise(1);objectXGuide.current?.showModal();},
-   pulsars:()=>{startExercise(6);pulsarGuide.current?.showModal();},
-   pleiades:()=>{startExercise(3);pleiadesGuide.current?.showModal();},
-   'stellar-classification':()=>{startExercise(2);classificationGuide.current?.showModal();},
-   'cluster-hr':()=>openClusterGuide(stable.navigate,startExercise),
-  }),[startExercise,stable]);
-  // A visitor arriving from a /labs/ page (#lab=) gets that lab's guide instead of the first-visit tour (review 1 m4).
-  useEffect(()=>automatedBrowser()||tourSeen()||labFromHash(location.hash)?undefined:scheduleFirstVisitTour(()=>setTour(true)),[]);
+   hubble:()=>{guideStart(4);labGuide.current?.showModal();},
+   'large-scale-structure':()=>{guideStart(5);lssGuide.current?.showModal();},
+   'object-x':()=>{guideStart(1);objectXGuide.current?.showModal();},
+   pulsars:()=>{guideStart(6);pulsarGuide.current?.showModal();},
+   pleiades:()=>{guideStart(3);pleiadesGuide.current?.showModal();},
+   'stellar-classification':()=>{guideStart(2);classificationGuide.current?.showModal();},
+   'cluster-hr':()=>openClusterGuide(stable.navigate,guideStart),
+  }),[guideStart,stable]);
+  // Front HOME: the tour starts the first time the visitor reaches the exploration page, not on the welcome, and never once a guide
+  // was opened in this load (firstVisit.ts). Leaving before its timer runs (or React's development double effect) cancels it and
+  // lets the next visit there schedule it again (review 1 finding 7: decided by the timer having run, not by elapsed time).
+  useEffect(()=>{
+   if(!firstVisitTourDue({view,automated:automatedBrowser(),seen:tourSeen(),guideOpened:guideOpened.current,alreadyScheduled:tourScheduled.current}))return;
+   tourScheduled.current=true;let fired=false;
+   const cancel=scheduleFirstVisitTour(()=>setTour(true),FIRST_VISIT_TOUR_DELAY,()=>{fired=true;});
+   return()=>{cancel();if(!fired)tourScheduled.current=false;};
+  },[view]);
   // Front SEO: a /labs/ page's "Open the lab" link (#lab=<slug>) opens that lab's guide through the same opener as its Guides
-  // menu button, then leaves the plain observatory address, so a reload or a shared link does not reopen it.
+  // menu button, then leaves the observatory's own address (#observatory, Front HOME review 1 finding 2), so a reload or a shared
+  // link shows the observatory without reopening the guide.
   useEffect(()=>{
    const lab=labFromHash(location.hash);if(!lab)return;
-   history.replaceState(history.state,'',location.pathname+location.search);
+   history.replaceState(history.state,'',location.pathname+location.search+'#observatory');
    openGuide[lab]();
   },[]);
   // Front HEADER: the sidebar's page buttons come from the route table the page bar reads (routePages.ts), one markup for all.
   const navGroup=(group:RouteGroup)=><NavGroup id={group} label={SHELL.navGroups[group]} view={view} routes={routesIn(group)}>{routesIn(group).map(r=><button key={r} data-route={r} aria-current={view===r?'page':undefined} className={view===r?'active':''} onClick={()=>stable.navigate(r)}>{ROUTE_PAGES[r].label()}</button>)}</NavGroup>;
   // The slots and the Help menu are built once, so a route change or a keystroke does not render them again.
   const originalsSlot=useMemo(()=>selectorShown(uiLanguage())?<VireoOriginalsSlot/>:undefined,[]);
-  const header=useMemo(()=><PortalHeader inert={hostInert} view={view} navLabel={SHELL.toolsMenu} links={<ProjectLinks page={view}/>} originals={originalsSlot} instructor={<InstructorModeMenuItem on={instructorGate.open} onRequest={stable.askInstructor} buttonRef={instructorItem}/>} brand={<><a className="portal-brand" href="#observatory" onClick={()=>stable.navigate('observatory')}><span aria-hidden="true">✳</span> {t('app.name')}</a><span className="portal-status"><i/>{t('sky.local')}</span></>}>{navGroup('optical')}{navGroup('radio')}{navGroup('analysis')}<ResultsEditorsNav navigate={stable.navigate}/>{navGroup('files')}<NavGroup id="guides" label={SHELL.navGroups.guides} view={view} routes={[]} defaultOpen><button onClick={openGuide.hubble}>{t('lab.nav')}</button><button data-testid="lss-lab-open" onClick={openGuide['large-scale-structure']}>{t('lssLab.nav')}</button><button data-testid="objectx-lab-open" onClick={openGuide['object-x']}>{OBJECT_X_LAB.guideNav}</button><button data-testid="pulsar-lab-open" onClick={openGuide.pulsars}>{t('pulsarLab.nav')}</button><button data-testid="pleiades-lab-open" onClick={openGuide.pleiades}>{t('pleiadesLab.nav')}</button><button data-testid="classification-lab-open" onClick={openGuide['stellar-classification']}>{t('classLab.nav')}</button><ClusterGuideNavButton navigate={stable.navigate} onOpen={startExercise}/></NavGroup></PortalHeader>,[hostInert,view,stable,instructorGate.open,openGuide,originalsSlot]);
+  const header=useMemo(()=><PortalHeader inert={hostInert} view={view} navLabel={SHELL.toolsMenu} links={<ProjectLinks page={view}/>} originals={originalsSlot} instructor={<InstructorModeMenuItem on={instructorGate.open} onRequest={stable.askInstructor} buttonRef={instructorItem}/>} brand={<><a className="portal-brand" href="#home" data-route="home" aria-current={view==='home'?'page':undefined} onClick={()=>stable.navigate('home')}><span aria-hidden="true">✳</span> {t('app.name')}</a><span className="portal-status"><i/>{t('sky.local')}</span></>}>{navGroup('optical')}{navGroup('radio')}{navGroup('analysis')}<ResultsEditorsNav navigate={stable.navigate}/>{navGroup('files')}<NavGroup id="guides" label={SHELL.navGroups.guides} view={view} routes={[]} defaultOpen><button onClick={openGuide.hubble}>{t('lab.nav')}</button><button data-testid="lss-lab-open" onClick={openGuide['large-scale-structure']}>{t('lssLab.nav')}</button><button data-testid="objectx-lab-open" onClick={openGuide['object-x']}>{OBJECT_X_LAB.guideNav}</button><button data-testid="pulsar-lab-open" onClick={openGuide.pulsars}>{t('pulsarLab.nav')}</button><button data-testid="pleiades-lab-open" onClick={openGuide.pleiades}>{t('pleiadesLab.nav')}</button><button data-testid="classification-lab-open" onClick={openGuide['stellar-classification']}>{t('classLab.nav')}</button><ClusterGuideNavButton navigate={stable.navigate} onOpen={guideStart}/></NavGroup></PortalHeader>,[hostInert,view,stable,instructorGate.open,openGuide,originalsSlot]);
   // Front R4c: the options VIREO's HR form and observation results read themselves.
   const vireoOptions=useMemo<VireoOptions>(()=>({monochromeDisplays:sessionOptions.monochromeDisplays,printInColor:sessionOptions.printInColor,timeDependentData:sessionOptions.timeDependentData,
    showObjectId:sessionOptions.showObjectId,showObjectMag:sessionOptions.showObjectMag,editMode,currentObject,allowRangeChange:sessionOptions.allowUserChange,setEBmV:photometerTabOptions.setEBmV,detectSky:photometerTabOptions.detectSky,instrumentParameters,cameraParameters}),[instrumentParameters,cameraParameters,sessionOptions.monochromeDisplays,sessionOptions.printInColor,sessionOptions.timeDependentData,sessionOptions.showObjectId,sessionOptions.showObjectMag,editMode,currentObject,sessionOptions.allowUserChange,photometerTabOptions]);// R4d: the spectrometer and Multi-Spec readers
@@ -1017,6 +1033,8 @@ export default function OpenVireo(){
   <ClassificationLabGuide dialogRef={classificationGuide} progress={classificationProgress} onNavigate={stable.classificationGuide}/>
   {((view==='star-exposure'&&!compatibleStar)||(view==='galaxy-exposure'&&!compatibleGalaxy)||(view==='sky-exposure'&&!compatibleSky)||(view==='photometer'&&!compatiblePhotometer))&&<OpticalCompatibility workspace={optical} busy={projectBusy} onUseSupported={()=>applyOptical({...optical,draftIndex:0})}/>}
   {['observatory','sky-exposure','star-exposure','galaxy-exposure'].includes(view)&&<div inert={projectBusy}><RunningClock limitSlewing={opticalOptions.limitSlewing} site={siteOverrides[optical.selectedIndex]} utc={siteClock.utc} pointing={pointing} statusOnly={view!=='observatory'} access={currentAccess} state={observatoryClock.state} running={observatoryClock.running} limited={observatoryClock.limited} index={optical.selectedIndex} {...runningClockHandlers} /></div>}
+  {/* Front HOME: the welcome, the page `/` opens (no hash, or #home); "Explore the sky" goes to the observatory below. */}
+  <div inert={projectBusy} ref={homeView} hidden={view!=='home'}><main className="observatory-main"><Welcome openGuide={openGuide} onExplore={stable.explore}/><footer><span>{t('sky.attribution')}</span><a href={labsIndexUrl(uiLanguage())} target="_blank" rel="noopener noreferrer">{t('sky.labsLink')}<span className="visually-hidden"> {t('sky.labsLinkNewTab')}</span></a></footer></main></div>
   <div inert={projectBusy} ref={observatoryView} hidden={view!=='observatory'}><main className="observatory-main"><section className="observatory-heading"><div className="eyebrow">{t('sky.eyebrow')}</div><h1 tabIndex={-1}>{t('sky.title')}</h1><p>{t('sky.subtitle')}</p><button className="text-button" onClick={()=>about.current?.showModal()}>{t('sky.about')} ↗</button></section>
   <OpticalTelescope workspace={optical} busy={projectBusy} scope={scopeAccess} onRequest={requestScope} {...opticalHandlers} /><CameraControl scopeUse={scopeUse} objectXHidden={objectXHidden} vireoId={objectXId} showObjectId={sessionOptions.showObjectId} currentObject={currentObject} infraredCamera={sessionOptions.infraredCamera} active={view==='observatory'} busy={projectBusy} telescopeIndex={optical.selectedIndex} pointing={pointing} access={instrumentAccess({...nativeGate,configurationAvailable:true,pointingMatches:hasPointed})} {...cameraHandlers} extraSources={cameraExtraSources} />
   {/* Front M (Multi-Spec, instrument position 3 + Access, as recovered). virtualObservatory: exercise mode 0 "Access All Instruments" (D1); gated on Front O2's instructor Virtual Observatory option (the page's virtualObservatory state). */}

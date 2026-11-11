@@ -5,12 +5,14 @@ import {ROUTE_GROUPS,ROUTE_PAGES,routesIn,type Route} from './routePages';
 // Front HEADER: the page bar and the sidebar read one route table; every page belongs to exactly one section, in menu order.
 describe('route table',()=>{
  const all=Object.keys(ROUTE_PAGES) as Route[];
- it('maps the 16 pages once each, every one to a section that holds it',()=>{
-  expect(all).toHaveLength(16);
+ it('maps the 17 pages once each, every one but the welcome to a section that holds it',()=>{
+  expect(all).toHaveLength(17);
   const grouped=ROUTE_GROUPS.flatMap(g=>routesIn(g));
-  expect([...grouped].sort()).toEqual([...all].sort());
+  // Front HOME: the welcome (`home`) belongs to no section; the brand link opens it.
+  expect(ROUTE_PAGES.home.group).toBeNull();
+  expect([...grouped].sort()).toEqual(all.filter(r=>r!=='home').sort());
   expect(new Set(grouped).size).toBe(grouped.length);
-  for(const r of all)expect(routesIn(ROUTE_PAGES[r].group)).toContain(r);
+  for(const r of all){const g=ROUTE_PAGES[r].group;if(g)expect(routesIn(g)).toContain(r);}
  });
  it('keeps the sections and their pages in the menu order the sidebar had',()=>{
   expect(ROUTE_GROUPS).toEqual(['optical','radio','analysis','files']);

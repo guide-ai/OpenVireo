@@ -106,6 +106,9 @@ const ES:SeoLanguage={
   note:'Gratis, sin registro y sin nada que instalar.',
   labsHeading:'Las siete prácticas',howHeading:'Cómo funciona',
   how:['Todo ocurre en tu navegador: no hay nada que instalar ni necesitas una cuenta.',
+   // Front HOME: the facts of the app's welcome (home.factInstall, home.factFaithful).
+   'No necesitas Windows ni una máquina virtual: funciona en un navegador actual en Mac, Windows, Linux o una Chromebook.',
+   'Sigue el comportamiento recuperado del programa original y señala sus adaptaciones web. Es una reconstrucción no oficial.',
    'Guardas tus investigaciones como archivos en tu propia computadora y las vuelves a cargar cuando quieras.',
    'La interfaz, las guías y la ayuda están en español. Los archivos que escribe el sitio (TXT, FITS, CSV e investigaciones guardadas) quedan en inglés, en el formato de VIREO o de OpenVireo.',
    'Puedes cambiar a inglés cuando quieras con el selector de idioma del menú.']},
@@ -140,6 +143,9 @@ const PT_BR:SeoLanguage={
   note:'Gratuito, sem cadastro e sem nada a instalar.',
   labsHeading:'As sete práticas',howHeading:'Como funciona',
   how:['Tudo acontece no seu navegador: não há nada a instalar e você não precisa de uma conta.',
+   // Front HOME: the facts of the app's welcome (home.factInstall, home.factFaithful), as on /es/.
+   'Você não precisa de Windows nem de máquina virtual: funciona em um navegador moderno no Mac, Windows, Linux ou Chromebook.',
+   'Segue o comportamento recuperado do programa original e sinaliza suas adaptações para a web. É uma reconstrução não oficial.',
    'Você salva as suas investigações como arquivos no seu próprio computador e as carrega de novo quando quiser.',
    'A interface, os guias e a ajuda estão em português. Os arquivos que o site grava (TXT, FITS, CSV e investigações salvas) ficam em inglês, no formato do VIREO ou do OpenVireo.',
    'Na tela, os números usam ponto decimal, como os arquivos do VIREO, e separam os milhares com um espaço fino (24\u202f000).',

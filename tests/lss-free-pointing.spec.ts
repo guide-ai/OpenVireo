@@ -34,7 +34,7 @@ async function save(page:Page){const d=page.waitForEvent('download');await page.
 
 test('E02 free pointing: a star from the Spectrometer page is recorded in the LSS list and survives Save and Restore',async({page,browser})=>{
  test.setTimeout(240000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
- await page.goto('/');await startLssExercise(page);
+ await page.goto('/#observatory');await startLssExercise(page);
  await pointAndUse(page,'2.5125473','0.25592');
  await expect(page.getByTestId('field-spec-object')).toContainText('N0000.DAT@63282',{timeout:90000});
  await exposeAndAnalyze(page);
@@ -61,7 +61,7 @@ test('E02 free pointing: a star from the Spectrometer page is recorded in the LS
  // Save writes the v34 wrapper; a fresh page restores the record by replaying the exposure from the tiles.
  const saved=await save(page),v=JSON.parse(saved.toString());
  expect(v.version).toBe(34);expect(v.lssFree.records[0]).toMatchObject({at:1,object:'N0000-01634',remarks:'free star'});
- const context=await browser.newContext(),fresh=await context.newPage();await fresh.goto('/');
+ const context=await browser.newContext(),fresh=await context.newPage();await fresh.goto('/#observatory');
  await fresh.getByLabel('Restore investigation JSON',{exact:true}).setInputFiles({name:'lss.json',mimeType:'application/json',buffer:saved});
  await expect(fresh.getByText('Session restored.',{exact:false})).toBeAttached({timeout:90000});
  await clickHeaderTool(fresh,'LSS survey');await expect(fresh.getByTestId('lss-record-count')).toHaveText('1 records');

@@ -3,7 +3,7 @@ import{clickHeaderTool,openHeaderTools}from'./fixtures/header-tools';
 
 test('a beginner can open the sky, point to M82 and inspect original resources without technical input',async({page})=>{
   const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
-  await page.goto('/');await expect(page).toHaveTitle('OpenVireo · CLEA VIREO astronomy labs in your browser');
+  await page.goto('/#observatory');await expect(page).toHaveTitle('OpenVireo · CLEA VIREO astronomy labs in your browser');
   await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('lang','en');
   await expect(page.getByRole('button',{name:'Point telescope ↗',exact:true})).toBeDisabled();
@@ -37,7 +37,7 @@ test('a beginner can open the sky, point to M82 and inspect original resources w
 });
 
 test('coordinate validation, panning and mobile layout remain explicit',async({page})=>{
-  await page.setViewportSize({width:390,height:844});await page.goto('/');
+  await page.setViewportSize({width:390,height:844});await page.goto('/#observatory');
   // UI redesign: on phones the tools fold behind the Tools menu; open it, then the analyzer tool must be visible.
   await openHeaderTools(page);await expect(page.getByRole('button',{name:'Spectrum analyzer',exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
@@ -57,7 +57,7 @@ test('coordinate validation, panning and mobile layout remain explicit',async({p
 });
 
 test('reference access follows actual pointing and remains stable when coordinates are resubmitted',async({page})=>{
-  await page.goto('/');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
+  await page.goto('/#observatory');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
   await page.getByRole('button',{name:'Telescope · 15′',exact:true}).click();
   await page.getByLabel('Target',{exact:true}).selectOption('NGC3034');
   await clickHeaderTool(page,'Spectrum analyzer');
@@ -81,7 +81,7 @@ test('reference access follows actual pointing and remains stable when coordinat
 });
 
 test('scientific coordinate input preserves precision and browsing crosses zero hours',async({page})=>{
-  await page.goto('/');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
+  await page.goto('/#observatory');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
   await page.getByText('Enter coordinates',{exact:true}).click();
   const ra=page.getByLabel('Right ascension · hours',{exact:true}),dec=page.getByLabel('Declination · degrees',{exact:true});
   await ra.fill('23.999996');await dec.fill('0');await page.getByRole('button',{name:'Point to coordinates',exact:true}).click();
@@ -95,7 +95,7 @@ test('scientific coordinate input preserves precision and browsing crosses zero 
 test('polar fields load only the appropriate declination band within a measured byte budget',async({page})=>{
   const transfers:Promise<{url:string;bytes:number}>[]=[];
   page.on('response',response=>{if(/\/original\/sky\/\d{2}\/35\.json$/.test(response.url()))transfers.push(response.body().then(body=>({url:response.url(),bytes:body.length})));});
-  await page.goto('/');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
+  await page.goto('/#observatory');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
   await page.getByText('Enter coordinates',{exact:true}).click();
   await page.getByLabel('Right ascension · hours',{exact:true}).fill('0');
   await page.getByLabel('Declination · degrees',{exact:true}).fill('89.9');

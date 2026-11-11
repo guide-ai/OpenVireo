@@ -9,7 +9,7 @@ import{enterInstructorMode}from'./fixtures/instructor-mode';// Front T1: the opt
 // and galaxy routes (recovered writer); the native LSS results .TXT; LSS Galaxy Data only with Edit Mode.
 const WEDGE_HEADER='Object ID    MJD(Days)      RA           Dec     V(km/sec)  Comments';
 async function lss(page:Page){
- await page.clock.install();await page.goto('/');await clickHeaderTool(page,'LSS survey');
+ await page.clock.install();await page.goto('/#observatory');await clickHeaderTool(page,'LSS survey');
  await expect(page.getByRole('heading',{name:'Large-scale structure survey',exact:true})).toBeVisible();
 }
 async function load(page:Page,field:string){
@@ -99,7 +99,7 @@ test('LSS Galaxy Data appears only with Edit Mode; validation boxes; extraction 
 });
 
 test('the galaxy route saves its acquired spectrum as .SSP',async({page})=>{
- await page.clock.install();await page.goto('/');await clickHeaderTool(page,'Galaxy exposure');
+ await page.clock.install();await page.goto('/#observatory');await clickHeaderTool(page,'Galaxy exposure');
  await expect(page.getByRole('heading',{name:'Acquire a Hubble galaxy.',exact:true})).toBeVisible({timeout:LAZY_ROUTE_TIMEOUT});
  await page.getByRole('button',{name:'Activate supported galaxy field',exact:true}).click();
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));

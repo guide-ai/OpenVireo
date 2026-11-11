@@ -28,7 +28,7 @@ async function measure(page:Page,position:string){
 test('E02: field list → statuses → acquire → Record Z OK/Cancel/Escape → CSV → own records in the wedge',async({page})=>{
  test.setTimeout(180000);
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
- await page.clock.install();await page.goto('/');await clickHeaderTool(page,'LSS survey');
+ await page.clock.install();await page.goto('/#observatory');await clickHeaderTool(page,'LSS survey');
  await expect(page.getByRole('heading',{name:'Large-scale structure survey',exact:true})).toBeVisible();
  await page.clock.resume();await load(page,'1');await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
  await expect(page.locator('[data-testid^="lss-row-"]')).toHaveCount(23);

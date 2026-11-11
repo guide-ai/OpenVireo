@@ -61,7 +61,8 @@ describe('P01 complete authored presentation catalog and interpolation contract'
   // 141: Front ES1 adds src/components/LanguageChoice.tsx (the language selector and its reload dialog); its strings come from src/components/LanguageChoiceMessages.ts.
   // 142: Front ES2 adds src/components/NativeMirrorCaption.tsx (the F2 caption beside a native view); its string comes from the catalog (nativeMirror.*).
   // 144: Front HEADER adds src/components/{PageBar,InvestigationActions}.tsx (the page bar and its investigation backup); their strings come from the catalog (project.*, classLink.cancel) and src/components/AppShellMessages.ts (pageBar.*, backupHelpSummary).
-  const audit=auditUi(root);expect(audit.files.length).toBe(144);const actual=new Map<string,number>();for(const s of audit.sites){const key=JSON.stringify([s.file,s.kind,s.value]);actual.set(key,(actual.get(key)??0)+1);}
+  // 145: Front HOME adds src/home/Welcome.tsx (the welcome page); its strings come from the catalog (home.*).
+  const audit=auditUi(root);expect(audit.files.length).toBe(145);const actual=new Map<string,number>();for(const s of audit.sites){const key=JSON.stringify([s.file,s.kind,s.value]);actual.set(key,(actual.get(key)??0)+1);}
   const expected=new Map(receipts.map(r=>[JSON.stringify([r.file,r.kind,r.value]),r.count]));expect(actual).toEqual(expected);expect(receipts.every(r=>r.reason.length>30)).toBe(true);
  });
  it('sources browser title/description from the same English catalog and escapes them as text',()=>{

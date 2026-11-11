@@ -193,7 +193,7 @@ for(const L of TRANSLATED)describe(`${languageEntry(L.tag)!.englishName} pages (
    // in that language (the English home is the app, linked with ?lang=en).
    const links=attrs(html,/<a [^>]*href="([^"]*)"/g),languageLinks=others.map(l=>attrs(html,languageLink(l)));
    expect(languageLinks,path).toEqual(others.map(l=>[key==='home'&&!l.home?`/?lang=${l.tag}`:pathOf(l,key)]));
-   const own=new RegExp(`^${L.prefix}/|^/\\?lang=${L.tag}(?:#lab=[a-z-]+)?$`);
+   const own=new RegExp(`^${L.prefix}/|^/\\?lang=${L.tag}(?:#lab=[a-z-]+|#observatory)?$`);
    for(const href of links.filter(h=>!languageLinks.flat().includes(h)))expect(href,`${path} → ${href}`).toMatch(own);
   }
  });
@@ -211,7 +211,7 @@ for(const L of TRANSLATED)describe(`${languageEntry(L.tag)!.englishName} pages (
  it(`${L.prefix}/ is a static home page that opens the app in its language and lists every lab page`,()=>{
   const html=languageHomePage(L);expect(PAGES[`${L.prefix}/`]).toBe(html);
   expect(attr(html,/<title>([^<]*)<\/title>/)).toBe(L.home!.title);
-  expect(html).toContain(`<a class="button" href="/?lang=${L.tag}">${L.ui.openObservatory}</a>`);
+  expect(html).toContain(`<a class="button" href="/?lang=${L.tag}#observatory">${L.ui.openObservatory}</a>`);// Front HOME review 1: the exploration page
   for(const l of LABS)expect(html).toContain(`href="${L.prefix}/labs/${l.slug}/"`);
   expect(ld(html)[0]['@graph'][0]).toMatchObject({'@type':'WebApplication',url:`${SITE_URL}${L.prefix}/`,inLanguage:L.tag,isAccessibleForFree:true});
   expect(labsIndexPage(L)).toBe(PAGES[`${L.prefix}/labs/`]);
