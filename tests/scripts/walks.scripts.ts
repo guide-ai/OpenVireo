@@ -17,7 +17,7 @@ import {test,expect,type Page} from '@playwright/test';
 import {layoutProblems,verticalInkProblems,type LayoutOptions} from '../fixtures/layoutProblems';
 import {SCRIPT_PSEUDO,type ScriptPseudo} from '../fixtures/pseudoNames';
 import {islandProblems,ltrRunProblems,mirrorProblems,rtlIslandSelectors} from '../fixtures/bidiProblems';
-import {RTL_SITES,type RtlSite,type RtlSiteName} from '../fixtures/rtlKnown';
+import {RTL_SITES,knownProblem,type RtlSite,type RtlSiteName} from '../fixtures/rtlKnown';
 import {readFileSync} from 'node:fs';
 import * as E01 from '../i18n/walks/e01';
 import * as E02 from '../i18n/walks/e02';
@@ -59,8 +59,8 @@ const ISLANDS=rtlIslandSelectors(readFileSync(new URL('../../src/theme/rtl.css',
  * where it is expected; `fontDependent`: within 2 px of a threshold with a font file that differs between this machine and CI
  * (docs/I18N.md SC1), tolerated where listed but not required. */
 type Known=Readonly<{walks:readonly string[];variants:readonly ScriptPseudo[];widths:readonly Width[];step:string|RegExp;problem:RegExp;file:string;why:string;fontDependent?:true;
- /** Front RT7: seen or not depending on whether a lazily loaded part has rendered when the step is checked: tolerated, not required. */
- unstable?:true}>;
+ /** Front RT7 review: the run must be written literally in src (tests/fixtures/rtlKnown.ts knownProblem). */
+ literal?:true}>;
 const KNOWN:readonly Known[]=[
  {walks:['E02'],variants:['qps-cyrl'],widths:[320],step:'wedge row selected',problem:/^page overflows horizontally/,file:'src/components/Wedge.css (.wedge-details)',
   why:'The details list sizes its label column max-content, so a label never wraps: one long label (Dec (degrees, original rule) as a long Russian word) leaves the value column no room and the raw line pushes the page wider. A track that may shrink changes the English and Spanish phone layout, so it waits for the Russian front.'},
@@ -84,14 +84,17 @@ const KNOWN:readonly Known[]=[
  * per walk, widths and exact step, so each one is required where it was measured (both widths unless a width is named). */
 function RTL_KNOWN():Known[]{
  const both=[320,1440] as const;
- const at=(walk:string,widths:readonly Width[],steps:string|readonly string[],...sites:readonly RtlSiteName[]):Known[]=>
-  (typeof steps==='string'?[steps]:steps).flatMap(step=>sites.map(name=>{const site:RtlSite=RTL_SITES[name];
-   return {walks:[walk],variants:['qps-rtl'] as const,widths,step,problem:site.problem,file:site.file,why:site.why,...(site.fontDependent?{fontDependent:true as const}:{})};}));
+ const at=(walk:string,widths:readonly Width[],steps:string|RegExp|readonly string[],...sites:readonly RtlSiteName[]):Known[]=>
+  (typeof steps==='string'||steps instanceof RegExp?[steps]:steps).flatMap(step=>sites.map(name=>{const site:RtlSite=RTL_SITES[name];
+   return {walks:[walk],variants:['qps-rtl'] as const,widths,step,problem:site.problem,file:site.file,why:site.why,...(site.fontDependent?{fontDependent:true as const}:{}),...(site.literal?{literal:true as const}:{})};}));
  const topics=['OBSRVHLP','CAMHLP','HRANALHLP','PHOTOHLP','SPECHLP','MEASHLP','WDGPLTHLP','PLSANHLP','PULSRHLP'].map(f=>`${f}.LST topics`);
  return [
   ...at('E01',both,'Hubble lab guide','drawsOf','catalogLiteral'),...at('E01',both,['spectrometer route','star exposure and its SSP save'],'catalogLiteral'),
   ...at('E01',both,'spectrum analyser with the acquired galaxy','zValue','stepFactor','catalogLiteral'),
-  ...at('E02',[320],['Retain Current Data?','Confirm Deletion!'],'wedgeStatus'),...at('E02',both,['LSS lab guide','Search Results'],'txtSuffix'),
+  ...at('E02',[320],['Retain Current Data?','Confirm Deletion!'],'wedgeStatus'),...at('E02',both,'Search Results','txtSuffix'),
+  // The LSS survey (a lazily loaded part) renders its results button behind the lab guide or only once the survey opens: one
+  // entry, required at either of the two steps.
+  ...at('E02',both,/^LSS (?:lab guide|survey)$/,'txtSuffix'),
   ...at('E02',both,'exposure paused','catalogLiteral'),...at('E02',both,['wedge row selected','wedge with own records'],'wedgeData'),
   ...at('E03',both,['classification guide','classification lab','normalized sampled difference','observation DAT inspected'],'catalogLiteral'),
   ...at('E03',both,'observation DAT inspected','nativeNumbers'),
@@ -104,7 +107,7 @@ function RTL_KNOWN():Known[]{
   ...at('E05',both,'observations plotted','cnhrRow'),...at('E05',both,'trial fit','trialTable'),...at('E05',both,['variable star data','variable stars'],'variableResults'),
   ...at('E06',both,['pulsar guide','review edit'],'catalogLiteral'),...at('E06',[1440],'recording loaded','pulsarName'),
   ...at('E06',[1440],'saved file candidate','savedRowsIdentity'),...at('E06',both,'saved file in use','savedRowsIdentity'),
-  ...at('E08',both,'Object X guide','catalogLiteral'),...at('E08',both,'radio card','catalogLiteral').map(k=>({...k,unstable:true as const})),...at('E08',both,'observatory pointed','pointingDec'),
+  ...at('E08',both,['Object X guide','radio card'],'catalogLiteral'),...at('E08',both,'observatory pointed','pointingDec'),
   ...at('E08',both,'spectrum ready','objectXTicks'),...at('E08',both,'target measured','objectXMeasurements'),
   ...at('Multi-Spec',both,'Multi-Spec Control with selections','multiSpecNumber'),
   ...at('help',both,[...topics,...topics.map(t=>t.replace('topics','first topic')).filter(t=>!t.startsWith('PULSRHLP')),'CLASSHLP.LST topics','CLASSHLP.LST first topic','Spectral Line Table','Spectral Line Help'],'helpRows'),
@@ -112,9 +115,8 @@ function RTL_KNOWN():Known[]{
   ...at('help',both,['CLASSHLP.LST topics','HRANALHLP.LST topics','PULSRHLP.LST topics','SPECHLP.LST topics','OpenVireo help topic'],'catalogLiteral'),
   ...at('observatory',both,'Set Date/Time','siteClock','catalogLiteral'),...at('observatory',both,['Slew › Add Current Item/Position','Slew › Set Coordinates'],'catalogLiteral'),
   ...at('observatory',both,'Site Information and its print','siteLines'),
-  // The reminder is fetched (Reminder.obs): checked before it arrives, the step sees an empty box.
-  ...[...at('observatory',both,'File › Exit Observatory','reminder'),...at('help',both,'Exit Observatory reminder','reminder')].map(k=>({...k,unstable:true as const})),
-  ...at('radio',both,['B1950 entry','Optical Simulation Options','Set Coordinates','Set Date/Time, ID','radio route','receiver','slew question'],'catalogLiteral'),
+  ...at('observatory',both,'File › Exit Observatory','reminder'),...at('help',both,'Exit Observatory reminder','reminder'),
+  ...at('radio',both,'B1950 entry','signBeforeParam'),...at('radio',both,['Optical Simulation Options','Set Coordinates','Set Date/Time, ID','radio route','receiver','slew question'],'catalogLiteral'),
  ];
 }
 
@@ -142,7 +144,8 @@ for(const walk of WALKS)for(const variant of SCRIPT_PSEUDO)for(const width of WI
   expect(errors,'page errors').toEqual([]);
   expect([...unmarked].map(([t,step])=>`${step}: ${t}`),'texts that do not go through the catalog, a map or vireo()').toEqual([]);
   const known=KNOWN.filter(k=>k.walks.includes(walk.name)&&k.variants.includes(variant)&&k.widths.includes(width));
-  const matches=(k:Known,p:string,step:string)=>(typeof k.step==='string'?k.step===step:k.step.test(step))&&k.problem.test(p);
+  // (knownProblem: an isolate the bidi runtime wrote is never known, and a literal site's run must be written in src.)
+  const matches=(k:Known,p:string,step:string)=>(typeof k.step==='string'?k.step===step:k.step.test(step))&&knownProblem(k,p);
   expect([...problems].filter(([p,step])=>!known.some(k=>matches(k,p,step))).map(([p,step])=>`${step}: ${p}`),'layout problems not in KNOWN').toEqual([]);
-  expect(known.filter(k=>!k.fontDependent&&!k.unstable&&![...problems].some(([p,step])=>matches(k,p,step))).map(k=>`${k.step}: ${k.problem} (${k.file}) no longer appears: remove it from KNOWN`),'KNOWN problems that disappeared').toEqual([]);
+  expect(known.filter(k=>!k.fontDependent&&![...problems].some(([p,step])=>matches(k,p,step))).map(k=>`${k.step}: ${k.problem} (${k.file}) no longer appears: remove it from KNOWN`),'KNOWN problems that disappeared').toEqual([]);
  });

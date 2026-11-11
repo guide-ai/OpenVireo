@@ -45,11 +45,13 @@ export async function ltrRunProblems(page:Page,options:BidiOptions={}):Promise<B
    }
    return out;
   }
-  // Front RT7: two right-to-left readings that are correct and so not checked. A run holding RLM or ALM is a locale's own
-  // right-to-left format (ICU writes the Arabic date «10‏/11‏/2026» with RLM after each field, so it reads day first from the right);
-  // an unsigned range of two numbers joined by an en dash ("3700–4700", "1992–93") is drawn "4700–3700" and reads from 3700 to 4700
-  // right to left (plan § 3.4). A signed range ("−1–1") and a hyphenated date ("2009-06-01", drawn "01-06-2009") are still checked.
-  const RTL_FORMAT=/[\u200f\u061c]/u,RANGE=/^\d[\d.,]*–\d[\d.,]*$/u;
+  // Front RT7: two right-to-left readings that are correct and so not checked. A number or date made only of digits, the separators
+  // / . : , ، and at least one RLM or ALM is a locale's own right-to-left format (ICU writes the Arabic date «10‏/11‏/2026» with RLM
+  // after each field, so it reads day first from the right; the site writes no RLM or ALM itself, src/i18n/pseudoRtl.ts); an
+  // unsigned range of two numbers joined by an en dash ("3700–4700", "1992–93") is drawn "4700–3700" and reads from 3700 to 4700
+  // right to left (plan § 3.4). A signed range ("−1–1"), a hyphenated date ("2009-06-01", drawn "01-06-2009") and any letter or
+  // other sign beside an RLM are still checked.
+  const RTL_FORMAT=/^(?=.*[\u200f\u061c])[\p{Nd}\u200f\u061c/.:,،]+$/u,RANGE=/^\d[\d.,]*–\d[\d.,]*$/u;
   function check(node:Text,start:number,end:number,kind:'isolate'|'node'|'run'){
    const run=node.data.slice(start,end);if(!LETTER_OR_DIGIT.test(run)||RTL_FORMAT.test(run)||(kind==='run'&&RANGE.test(run)))return;
    const b=boxes(node,start,end);

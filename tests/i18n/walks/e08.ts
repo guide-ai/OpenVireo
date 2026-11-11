@@ -160,7 +160,8 @@ export const STEPS:readonly (readonly [string,(page:Page,lang:Lang)=>Promise<voi
  ['spectrum unavailable',async(page,lang)=>{await id(page,'objectx-target').selectOption(EROS_CODE);await mapButton(lab(page),lang,LE.spectrumPrepare,m=>m.objectXLab.spectrumPrepare).click();
   await expect(id(page,'objectx-spectrum-unavailable')).toBeVisible({timeout:90_000});}],
  ['clock set and asteroid list',async(page,lang)=>{await setClock(page,lang,'2009-06-01T04:00:00','2009-06-01 04:00:00');}],
- ['radio card',async(page,lang)=>{await mapButton(lab(page),lang,LE.openRadio,m=>m.objectXLab.openRadio).click();await expect(id(page,'objectx-radio-card')).toBeVisible();},'[data-testid=objectx-radio-card]'],
+ ['radio card',async(page,lang)=>{await mapButton(lab(page),lang,LE.openRadio,m=>m.objectXLab.openRadio).click();await expect(id(page,'objectx-radio-card')).toBeVisible();
+  await expect(id(page,'radio-route')).toBeVisible({timeout:30_000});},'[data-testid=objectx-radio-card]'],
  ['observatory pointed',async(page,lang)=>{await go(page,'#object-x');await mapButton(lab(page),lang,LE.pointObservatory,m=>m.objectXLab.pointObservatory).click();
   await expect(camera(page)).toBeVisible();
   const dome=page.getByRole('button',{name:typeof lang!=='string'?exact((lang.catalog as Record<string,string>)['sky.open']+' ↗'):pseudo(E['sky.open']+' ↗')});await dome.click();

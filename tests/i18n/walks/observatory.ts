@@ -59,7 +59,7 @@ export const STEPS:readonly (readonly [string,(page:Page)=>Promise<void>])[]=[
  ['Site Information and its print',async page=>{await close(page);await id(page,'ob-site-information').click();await id(page,'ob-site-info-print').click();await expect(id(page,'ob-site-info-print-preview')).toBeVisible();}],
  ['File menu and Print Sky Image',async page=>{await close(page);await close(page);await id(page,'fi-file-menu').click();await id(page,'print-sky-menu').click();}],
  ['Tools menu',async page=>{await close(page);await id(page,'ob-tools-menu').click();await expect(id(page,'hst-menu')).toBeVisible();}],
- ['File › Exit Observatory',async page=>{await close(page);await id(page,'fi-file-menu').click();await id(page,'ob-exit').click();}],
+ ['File › Exit Observatory',async page=>{await close(page);await id(page,'fi-file-menu').click();await id(page,'ob-exit').click();await expect(id(page,'exit-reminder-text')).toBeVisible();}],
  ['options closed to students',async page=>{await close(page);await page.locator('.telescope-motion').getByTestId('ob-options').click();await expect(id(page,'ob-user-options-title')).toBeVisible();}],
  ['Optical Simulation Options',async page=>{
   await close(page);const toggle=page.locator('.portal-header .tools-toggle');if(await toggle.isVisible()&&await toggle.getAttribute('aria-expanded')!=='true')await toggle.click();

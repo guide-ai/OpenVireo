@@ -11,10 +11,34 @@
 // help exists, so they run right to left); RT14, layout of long words at 320 px shared with the Russian front's entries. "artifact":
 // produced by qps-rtl itself, not by a real translation (it is kept so the walk still notices any other problem at that step).
 
+import {readdirSync,readFileSync} from 'node:fs';
+
 export type RtlOwner='RT8'|'RT12'|'RT13'|'RT14'|'artifact';
 export type RtlSite=Readonly<{problem:RegExp;file:string;owner:RtlOwner;why:string;
  /** Within 2 px of the check's threshold with a font file that may differ between this machine and CI: tolerated, not required. */
- fontDependent?:true}>;
+ fontDependent?:true;
+ /** RT7 review: the reported run must also be written literally in the source text (src, .ts/.tsx/.json, tests left out), so
+  * only a literal of the catalog or a map passes, never a value the runtime formatted or composed. */
+ literal?:true}>;
+
+let source:string|undefined;
+function sourceText():string{
+ if(source===undefined){
+  const parts:string[]=[];
+  const walk=(dir:URL)=>{for(const e of readdirSync(dir,{withFileTypes:true}))
+   if(e.isDirectory())walk(new URL(`${e.name}/`,dir));else if(/\.(?:tsx?|json)$/.test(e.name)&&!/\.test\.tsx?$/.test(e.name))parts.push(readFileSync(new URL(e.name,dir),'utf8'));};
+  walk(new URL('../../src/',import.meta.url));source=parts.join('\n');
+ }
+ return source;
+}
+/** RT7 review: whether a known site accounts for a problem. An isolate the bidi runtime wrote (“bidi isolate: …”) is never known,
+ * whatever a site's pattern says; a `literal` site also needs its run written in src. */
+export function knownProblem(site:Readonly<{problem:RegExp;literal?:true}>,problem:string):boolean{
+ if(/^bidi isolate:/.test(problem)||!site.problem.test(problem))return false;
+ if(!site.literal)return true;
+ const run=/^bidi run: “([\s\S]*)” in /.exec(problem)?.[1];
+ return run!==undefined&&sourceText().includes(run);
+}
 const num=String.raw`[-+−]?[\d.,]+`;
 const node=(text:string,where:string)=>new RegExp(String.raw`^bidi node: “${text}” in ${where}$`);
 const run=(text:string,where:string)=>new RegExp(String.raw`^bidi run: “${text}” in ${where}$`);
@@ -58,7 +82,11 @@ export const RTL_SITES={
  // sky.invalidCoordinates, obs.conversion, photo.policy, obsHr.isochrone, pulsarLab.step.point.help, radio.state.item454,
  // radioReceiver.note.silent, radioRoute.clock.utHelp, radioRoute.date.dialog.bounds, radioAccess.site.heading, starExposure.domain,
  // and src/help/webHelp.ts, src/core/pulsarReviewEdit.ts, src/ObjectXLab.tsx); the one composed exception is siteLines above.
- catalogLiteral:{problem:/^bidi run: “.*” in (?!pre\.)/,file:'src/i18n/en.json and the message maps (the key whose English holds the literal; see the comment above)',owner:'RT8',why:CATALOG},
+ catalogLiteral:{problem:/^bidi run: “.*” in (?!pre\.)/,file:'src/i18n/en.json and the message maps (the key whose English holds the literal; see the comment above)',owner:'RT8',why:CATALOG,literal:true},
+ // RT7 review: the one run the walks met that is not written in src. The radio antenna catalog writes a sign before a parameter
+ // (“…at or below about −{threshold}°”), and its translator substitutes {params} itself without the FSI…PDI that t() adds (RT4).
+ signBeforeParam:{problem:/^bidi run: “−89\.427” in p\.radio-control-note \[antenna-b1950-note\]$/,file:'src/components/RadioAntennaMessages.ts (antenna.dialog.b1950Note’s “−{threshold}°”; createRadioAntennaTranslator, and the same substitution in PulsarMessages.ts, PulsarLoadSaveMessages.ts, PulsarSavedRowsMessages.ts, RadioFinishSaveMessages.ts and RadioRecordSaveMessages.ts)',owner:'RT8',
+  why:'RT8: a sign in the catalog before a number in a parameter is one signed value split between text and data; it reads “89.427−” in a right-to-left sentence even with the parameter isolated, so the sign belongs in the parameter (the right-to-left lint flags a sign before {…}). RT12: these message translators substitute without isolating; each substitution point wraps its value in iso() (unchanged in a left-to-right load).'},
  // ---- RT13: help ----
  helpRows:{problem:/^bidi node: “.*” in li \[(?:[a-z-]+-help-topic-(?:list|text)|spl-rows|spl-help-text)\]$/,file:'src/clusters/CleaHelp.tsx, src/help/SpectralLineTable.tsx (VIREO’s English help and line-table rows)',owner:'RT13',why:HELP},
  reminder:{problem:/^bidi node: “Thank you for using CLEA's[\s\S]*” in p\.help-reminder-text \[exit-reminder-text\]$/,file:'src/help/HelpMenus.tsx (the Exit Observatory reminder, VIREO\'s Reminder.obs)',owner:'RT13',why:HELP},

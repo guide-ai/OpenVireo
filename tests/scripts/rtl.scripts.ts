@@ -20,7 +20,9 @@ import {pseudoRtl} from '../../src/i18n/pseudoRtl';
 import {layoutProblems,verticalInkProblems} from '../fixtures/layoutProblems';
 import {islandProblems,ltrRunProblems,mirrorProblems,rtlIslandSelectors} from '../fixtures/bidiProblems';
 import * as OBS from '../i18n/walks/observatory';
-import {RTL_SITES,type RtlOwner,type RtlSite,type RtlSiteName} from '../fixtures/rtlKnown';
+import {RTL_SITES,knownProblem,type RtlOwner,type RtlSite,type RtlSiteName} from '../fixtures/rtlKnown';
+import {translatedFor} from '../i18n/languageText';
+import {contextLocale} from '../fixtures/language';
 
 type Width=320|1440;
 const src=(p:string)=>readFileSync(new URL(`../../src/${p}`,import.meta.url),'utf8');
@@ -33,9 +35,9 @@ test.use({actionTimeout:15_000});
 
 /** Known problems (tests/fixtures/rtlKnown.ts names each site's file, owner and reason): one entry per width set, exact step and
  * site, each required where it was measured. The step-by-step lists are in docs/I18N.md (RT7). */
-type Known=Readonly<{widths:readonly Width[];step:string;problem:RegExp;file:string;owner:RtlOwner;why:string}>;
+type Known=Readonly<{widths:readonly Width[];step:string;problem:RegExp;file:string;owner:RtlOwner;why:string;literal?:true}>;
 const at=(widths:readonly Width[],steps:string|readonly string[],...sites:readonly RtlSiteName[]):Known[]=>
- (typeof steps==='string'?[steps]:steps).flatMap(step=>sites.map(name=>{const site:RtlSite=RTL_SITES[name];return {widths,step,problem:site.problem,file:site.file,owner:site.owner,why:site.why};}));
+ (typeof steps==='string'?[steps]:steps).flatMap(step=>sites.map(name=>{const site:RtlSite=RTL_SITES[name];return {widths,step,problem:site.problem,file:site.file,owner:site.owner,why:site.why,...(site.literal?{literal:true as const}:{})};}));
 const BOTH=[320,1440] as const;
 const KNOWN:readonly Known[]=[
  ...at(BOTH,'spectrum','zValue','stepFactor'),...at(BOTH,'star-exposure','drawsOf'),...at(BOTH,'lss-survey','txtSuffix'),...at(BOTH,'variable-stars','variableResults'),
@@ -159,7 +161,8 @@ for(const width of [320,1440] as const)
 
   expect(errors,'page errors').toEqual([]);
   const known=KNOWN.filter(k=>k.widths.includes(width));
-  const matches=(k:Known,p:string,step:string)=>k.step===step&&k.problem.test(p);
+  // (knownProblem: an isolate the bidi runtime wrote is never known, and a literal site's run must be written in src.)
+  const matches=(k:Known,p:string,step:string)=>k.step===step&&knownProblem(k,p);
   expect([...problems].filter(([p,step])=>!known.some(k=>matches(k,p,step))).map(([p,step])=>`${step}: ${p}`),'problems not in KNOWN').toEqual([]);
   expect(known.filter(k=>![...problems].some(([p,step])=>matches(k,p,step))).map(k=>`${k.step}: ${k.problem} (${k.file}) no longer appears: remove it from KNOWN`),'KNOWN problems that disappeared').toEqual([]);
  });
@@ -188,10 +191,15 @@ test('the mirror, island and language-direction checks find what they exist for,
 });
 
 test('ltrRunProblems reads a range of two numbers and a locale\'s right-to-left date as correct, and still finds a signed range and a hyphenated date',async({page})=>{
- const cases=['جاف 3700–4700 Å جاف','جاف 1992–93 جاف','10\u200f/11\u200f/2026، 10:48:21 م','جاف −1–1، جاف','جاف 2009-06-01 04:00 جاف'];
+ // (The last case: an RLM beside a hyphenated date does not make it a locale format; only digits, / . : , ، and RLM or ALM do.)
+ const cases=['جاف 3700–4700 Å جاف','جاف 1992–93 جاف','10\u200f/11\u200f/2026، 10:48:21 م','جاف −1–1، جاف','جاف 2009-06-01 04:00 جاف','جاف 2009\u200f-06-01 جاف'];
  await page.setContent(`<!doctype html><html lang="ar" dir="rtl"><body style="font:16px sans-serif;width:600px">${cases.map((c,i)=>`<p data-testid="c${i}">${c}</p>`).join('')}</body></html>`);
  const found=(await ltrRunProblems(page)).map(p=>`${/\[(c\d)\]/.exec(p.where)?.[1]} ${p.run}`);
- expect(found).toEqual(['c3 −1–1','c4 2009-06-01']);
+ expect(found).toEqual(['c3 −1–1','c4 2009-06-01','c5 2009\u200f-06-01']);
+ // And the KNOWN guard: no site, however wide its pattern, accounts for an isolate the runtime wrote; a literal site needs src.
+ expect(knownProblem({problem:/.*/},'bidi isolate: “12.5-” in p')).toBe(false);
+ expect(knownProblem(RTL_SITES.catalogLiteral,'bidi run: “−21.4” in p')).toBe(true);
+ expect(knownProblem(RTL_SITES.catalogLiteral,'bidi run: “−21.4317” in p')).toBe(false);
 });
 
 // ---- Left-to-right pages: the plot titles RT7 wraps in keepInsideSvg do not move ----------------------------------------------
@@ -201,16 +209,24 @@ test('ltrRunProblems reads a range of two numbers and a locale\'s right-to-left 
 const titleShifts=(page:Page,svg:string)=>page.locator(svg).first().evaluate(s=>[...s.querySelectorAll('text[transform^="rotate(-90"]')].map(t=>{
  const g=t.parentElement!;return g.tagName.toLowerCase()==='g'&&g.attributes.length===0?null:`${t.textContent}: ${g.tagName} ${g.getAttribute('transform')}`;}).filter(Boolean));
 for(const width of [320,1440] as const)
- test(`en, es-419, pt-BR and fr at ${width} px: the y-axis titles RT7 keeps inside their plots stay where they were`,async({page})=>{
-  test.setTimeout(240_000);
+ test(`en, es-419, pt-BR and fr at ${width} px: the y-axis titles RT7 keeps inside their plots stay where they were`,async({page,browser,baseURL})=>{
+  test.setTimeout(480_000);
   await page.setViewportSize({width,height:width===320?700:1000});
   for(const lang of ['en','es-419','pt-BR','fr']){
    await page.goto('about:blank');await page.goto(`/?lang=${lang}#spectrum`);
    await expect(page.locator('svg.spectrum').first()).toBeVisible({timeout:30_000});await settle(page);
    expect(await titleShifts(page,'svg.spectrum'),`${lang} spectrum`).toEqual([]);
   }
-  // The Multi-Spec display (the observatory walk's Multi-Spec steps, in English).
-  const shifts:string[]=[];
-  await OBS.multiSpecWalk(page,'en',async step=>{if(/spectrum display|print preview/.test(step))for(const s of ['[data-testid=ms-spectrum] svg','.ms-print-report svg'])if(await page.locator(s).count())shifts.push(...(await titleShifts(page,s)).map(x=>`${step} ${x}`));});
+  // The Multi-Spec display and its print (the observatory walk's Multi-Spec steps), in English and in every language whose
+  // observatory is translated (RT7 review: VIREO's Relative Intensity is translated there, so its length differs), each in a
+  // context of its own (the walk installs the page clock).
+  const shifts:string[]=[],seen=new Set<string>();
+  for(const lang of ['en' as const,...translatedFor('observatory')]){
+   const tag=typeof lang==='string'?lang:lang.tag,context=await browser.newContext({baseURL,locale:contextLocale(tag),viewport:{width,height:width===320?700:1000}}),p=await context.newPage();
+   await OBS.multiSpecWalk(p,lang,async step=>{if(/spectrum display|print preview/.test(step))for(const s of ['[data-testid=ms-spectrum] svg','.ms-print-report svg'])if(await p.locator(s).count()){seen.add(`${tag} ${step} ${s}`);shifts.push(...(await titleShifts(p,s)).map(x=>`${tag} ${step} ${x}`));}});
+   await context.close();
+  }
+  // Each language: the display's plot, and in the print preview both the display's and the print's.
+  expect(seen.size,[...seen].join('; ')).toBe(3*(1+translatedFor('observatory').length));
   expect(shifts).toEqual([]);
  });
