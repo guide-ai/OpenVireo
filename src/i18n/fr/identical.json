@@ -101,6 +101,22 @@
   "map:wedge.detail.hours": "a unit symbol (h)",
   "map:wedge.detail.degrees": "a unit symbol (°)",
   "map:wedge.detail.px": "a unit symbol (px)",
-  "catalog:lss.fieldOption": "the same words in French: a field-list item and its galaxy count, «({rows} galaxies)» (every LSS field lists several galaxies, so the plural is always right)"
+  "catalog:lss.fieldOption": "the same words in French: a field-list item and its galaxy count, «({rows} galaxies)» (every LSS field lists several galaxies, so the plural is always right)",
+  "catalog:radio.env.dome.2": "a dome state byte value (2), a number",
+  "catalog:radioRoute.clock.utcValue": "a placeholder and the time scale UT",
+  "catalog:radioRoute.clock.longitudeLabel": "the same word in French (Longitude)",
+  "catalog:pulsarParameters.reference.sha": "the hash name SHA-256, kept",
+  "catalog:radioReceiver.marks.second": "the same word in French: «Second» (of two marks), as «Second repère»",
+  "catalog:radioAccess.values.lastOk": "the same word in French (OK, as Windows French writes it)",
+  "map:radioAntenna.antenna.menu.item": "placeholders and the menu path glyph only",
+  "map:radioAntenna.antenna.clock.ut": "the time scale UT, kept",
+  "map:radioAntenna.antenna.clock.hoursValue": "a placeholder and the unit h",
+  "map:radioAntenna.antenna.format.dec": "a coordinate format (° ′ ″), not words",
+  "map:radioAntenna.antenna.notice.title.hot-list-empty": "a placeholder for VIREO caption text, translated through vireo() by the caller",
+  "map:radioAntenna.antenna.notice.hot-list-empty": "a placeholder for VIREO message text, translated through vireo() by the caller",
+  "map:radioAntenna.antenna.notice.title.hot-list-search-miss": "a placeholder for VIREO caption text, translated through vireo() by the caller",
+  "map:radioAntenna.antenna.notice.hot-list-search-miss": "a placeholder for VIREO message text, translated through vireo() by the caller",
+  "map:radioAntenna.antenna.hotList.item": "placeholders and the menu path glyphs only",
+  "map:radioAntenna.antenna.rateLimit.recovery.afterModal": "two placeholders joined by a space"
  }
 }
