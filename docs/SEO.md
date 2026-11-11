@@ -147,6 +147,61 @@ After the deploy: in Google Search Console (once the `openvireo.space` property 
 («Request indexing»); Search Console no longer reports `hreflang` (its International Targeting report was retired in 2022): URL Inspection shows the canonical Google chose, and a site audit (OpenSEO) can check the alternates. The same in Bing Webmaster Tools if
 wanted. OpenSEO can track Spanish keywords (for example «práctica ley de Hubble», «CLEA astronomía») for a Spanish-speaking market.
 
+# Front PT-SEO: Brazilian Portuguese search pages
+
+User decisions 8 of 2026-11-09 and of the same day on the next languages (AGENTS.md): after the Brazilian Portuguese release
+(PT-REL), its home page `/pt-br/` and lab pages `/pt-br/labs/`, with `hreflang` and a Portuguese preview image, following the
+Spanish architecture. Static site only; no new external service. The language rules are in `docs/I18N.md`, "Brazilian Portuguese:
+search pages (PT-SEO)".
+
+## What changed
+
+- **Data only.** A `pt-BR` row in `src/seo/languages.ts` (`SEO_LANGUAGES`), its lab texts in `src/seo/labs.pt-br.ts`, its prefix
+  `/pt-br` in `SEO_PATH_PREFIX` (`src/seo/labSlugs.ts`; equal to the registry's `pagePath`). `src/seo/pages.ts` and the Vite plugin
+  are unchanged: they render the row.
+- **Portuguese pages**: `/pt-br/` (static home: what OpenVireo is, «Abrir o observatório», the seven labs, how it works, the credit),
+  `/pt-br/labs/` and `/pt-br/labs/<slug>/` with the English slugs. `<html lang="pt-BR">`, Portuguese titles (≤ 65 characters) and
+  descriptions (110–160), self canonical, `og:locale` `pt_BR` with `og:locale:alternate` `en_US` and `es_LA`, Portuguese JSON-LD
+  (`WebApplication` on `/pt-br/`, `ItemList` on the index, `LearningResource` with `inLanguage` `pt-BR`, `educationalLevel` «Ensino
+  médio»/«Ensino superior» and breadcrumbs on each lab, `isBasedOn` crediting Project CLEA, Gettysburg College and the NSF as the
+  English pages do). «Abrir a prática» goes to `/?lang=pt-BR#lab=<slug>`. The lab names are the app's own pt-BR names («Classificação
+  estelar», «Fotometria das Plêiades», «Objeto X»…). The footer says the text is OpenVireo's web adaptation, not CLEA's.
+- **hreflang** on every page pair (27 pages, 9 per language): `en`, `es`, `pt-BR`, `pt` and `x-default` → English. `pt-BR` is a
+  valid Google `hreflang` (ISO 639-1 + ISO 3166-1 alpha-2) and names the Brazilian audience; `pt` is added for the same URL because
+  the app opens pt-BR for every `pt`/`pt-*` browser (pt-PT, pt-AO, pt-MZ: PT-REL), so a Portuguese searcher outside Brazil is sent to
+  the Portuguese page, not to the English x-default (as Spanish's `es` covers every `es-*`). Google accepts several `hreflang` values
+  for one URL. The sitemap lists all 27 addresses with the same five alternates. English and Spanish pages gain `og:locale:alternate`
+  `pt_BR` and a visible «Português (Brasil)» link (`hreflang`/`lang` `pt-BR`) to their Portuguese version; nothing else in their HTML
+  changed, and `index.html`'s body is untouched (only its alternates, built from the table, gain the two Portuguese links).
+- **App**: the observatory footer's labs link goes to `/pt-br/labs/` when the app is in Portuguese (`labsIndexUrl(uiLanguage())`,
+  unchanged code: the prefix table).
+- **Preview image** `public/og-image-pt-br.png` (1200×630, SHA-256 `e2cc4b78…d645d7`): the design of the other two with Portuguese
+  text, rendered by `node scripts/render-og-image.mjs pt-BR` with the project's test fontconfig; an original drawing, no CLEA image.
+  Two renders gave the same bytes.
+- **Headers**: `/pt-br/*` is `no-cache`, like `/labs/*` and `/es/*` (`public/_headers`, `src/deployHeaders.test.ts`).
+
+## Tests
+
+- `src/seo/languages.test.ts`, generalised per language: the table (registry `released` and `pagePath`, `hreflang` codes, og
+  locale and image); per language, title and description lengths and uniqueness (also across languages), the reconstruction
+  phrase, the language's **SC4 lint profile and glossary** over every page string (glossary terms and names, forbidden forms,
+  register, claims, typography, quotes, digits, NFC, invisible characters; glyph parity and the length ratio are left out, as the
+  pages are free prose), no claim of being CLEA's, the adaptation sentence and the CLEA/Gettysburg/NSF credit; the dist-marker guard
+  for **every registered language** (its markers only on its own `/<pagePath>/` pages); each page's lang, canonical, `og:*`, one
+  `h1`, JSON-LD, links that stay in the language except one link to each other language; reciprocal `hreflang` on all 27 pages and
+  the same alternates in the sitemap.
+- `tests/i18n/seo.spec.ts` (was `es-seo.spec.ts`): the same flows for every language with pages; the Spanish tests keep their titles.
+- `tests/release/pages-smoke.pages.ts`: the Portuguese pages and image with the release headers, the 308s, the five alternates on
+  `/` and each home, the sitemap, and a Portuguese lab page opening the app under the release policy (only pt-BR chunks fetched).
+
+## For the user (not done by the site)
+
+After the deploy: in Google Search Console resubmit `https://openvireo.space/sitemap.xml` (it now lists 27 addresses) and use URL
+Inspection on `https://openvireo.space/pt-br/` and one Portuguese lab page (for example `/pt-br/labs/hubble/`), then «Request
+indexing». URL Inspection shows the canonical Google chose; an OpenSEO site audit can check the alternates. The same in Bing
+Webmaster Tools if wanted. OpenSEO can track Brazilian keywords (for example «prática lei de Hubble», «CLEA astronomia», «diagrama
+HR aglomerados») with Brazil as the market.
+
 # Front HOME: a welcome on the observatory's first screen
 
 User request, 2026-11-10: before the site is announced to the general public (curious adults and hobby learners, for example
@@ -284,3 +339,11 @@ and received an inline `onExplore`. Fix by the coordinator (Claude Opus 5.5): `W
 route views, and `onExplore` is the stable handler `stable.explore`; `openGuide` was already memoised over stable callbacks. A
 language change reloads the page (`LanguageChoice.tsx`), so the memoised text cannot go stale. The budget is unchanged.
 `render-budget.spec.ts` and `home.spec.ts` pass (19/19).
+
+### Merge with PT-SEO
+
+PT-SEO (main `8d8ba01`) generalised the static pages per language and replaced `tests/i18n/es-seo.spec.ts` with the
+parameterised `tests/i18n/seo.spec.ts`. On merging, the coordinator carried HOME's expectations into the new spec and
+`src/seo/languages.test.ts` for every language (the app's plain address opens the welcome; "Open the observatory" and a lab
+link leave `#observatory`), and added the welcome's two facts (no Windows or virtual machine; the recovered behaviour and the
+unofficial reconstruction) to the Portuguese static home page `/pt-br/`, as on `/es/`.

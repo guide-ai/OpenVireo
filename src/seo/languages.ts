@@ -6,10 +6,13 @@
  * home is a static page under its prefix that links into the app with `?lang=<tag>` (that load only, never stored: the
  * precedence of docs/I18N.md is unchanged).
  *
+ * Front PT-SEO: Brazilian Portuguese (pt-BR) under /pt-br/, added as data only (its row, its texts in src/seo/labs.pt-br.ts).
+ *
  * Which languages exist here is independent of which are released in the app: a row is added by that language's SEO front,
  * after its release (src/seo/pages.test.ts checks each row's tag against src/i18n/languages.json). */
 import {LABS,type LabText} from './labs.ts';
 import {LAB_TEXT_ES} from './labs.es.ts';
+import {LAB_TEXT_PT_BR} from './labs.pt-br.ts';
 import {SEO_PATH_PREFIX,type LabSlug} from './labSlugs.ts';
 
 export type SeoLab=LabText&{slug:LabSlug;exercise:string};
@@ -19,9 +22,11 @@ export type SeoLanguage=Readonly<{
  tag:string;
  /** Its hreflang values. Google takes an ISO 639-1 language with an optional ISO 3166-1 alpha-2 region, so a UN M.49 region such
   * as es-419's is not one (ES-SEO review): Spanish is `es`, which also matches every `es-*` searcher, as the app opens Spanish for
-  * any `es-*` browser. A language whose tag is valid there lists it first (PT-SEO: `['pt-BR','pt']`). */
+  * any `es-*` browser. A language whose tag is valid there lists it first: Brazilian Portuguese is `pt-BR` and also `pt`, the
+  * same URL, because the app opens pt-BR for every `pt` and `pt-*` browser (pt-PT, pt-AO, pt-MZ…), so a Portuguese searcher
+  * outside Brazil is sent to the Portuguese page rather than to the English x-default. */
  hreflang:readonly string[];
- /** Open Graph locale (language_TERRITORY): en_US, es_LA. */
+ /** Open Graph locale (language_TERRITORY): en_US, es_LA, pt_BR. */
  ogLocale:string;
  /** Path prefix of its pages: '' for English, SEO_PATH_PREFIX for the others. */
  prefix:string;
@@ -109,8 +114,46 @@ const ES:SeoLanguage={
    'Puedes cambiar a inglés cuando quieras con el selector de idioma del menú.']},
 };
 
+const PT_BR:SeoLanguage={
+ tag:'pt-BR',hreflang:['pt-BR','pt'],ogLocale:'pt_BR',prefix:SEO_PATH_PREFIX['pt-BR'],app:'/?lang=pt-BR',
+ ogImage:'/og-image-pt-br.png',ogImageAlt:'OpenVireo: práticas de astronomia do CLEA VIREO no seu navegador, em português',
+ ogImageText:{title:'Práticas de astronomia CLEA VIREO no seu navegador',lines:['Lei de Hubble · Pulsares · Plêiades · Objeto X · e mais.','Reconstrução web gratuita e não oficial, em português. Nada a instalar.']},
+ labs:merge(LAB_TEXT_PT_BR),
+ ui:{languageName:'Português (Brasil)',siteNav:'Site',breadcrumb:'Trilha de navegação',labsCrumb:'Práticas',allLabs:'Todas as práticas',openObservatory:'Abrir o observatório',
+  labEyebrow:'Prática baseada em um exercício do CLEA VIREO',openLab:'Abrir a prática',
+  openLabNote:()=>'Abre o observatório em português com o guia desta prática. Gratuito e sem cadastro.',
+  whatYouDo:'O que você faz',whatYouLearn:'O que você aprende',otherLabs:'Outras práticas',
+  about:'O OpenVireo é uma reconstrução web gratuita e sem fins comerciais do VIREO, o observatório educacional virtual '+
+   '(Virtual Educational Observatory) do Project CLEA (Gettysburg College, com o apoio da National Science Foundation e do '+
+   'Gettysburg College). Ele se baseia no comportamento recuperado do programa original e usa os arquivos de dados originais, '+
+   'com o devido crédito. Não é o programa original nem tem vínculo com o Project CLEA. O aplicativo indica as suas adaptações web '+
+   'conhecidas. Este texto em português é uma adaptação web feita pelo OpenVireo, não um texto do CLEA.',
+  platform:'Funciona em um navegador web atual no Windows, Mac, Linux ou Chromebook. Não há nada a instalar e você não precisa de uma conta.',
+  learningResourceType:'Prática interativa',educationalLevel:['Ensino médio','Ensino superior']},
+ labsIndex:{title:'Práticas de astronomia do CLEA VIREO on-line · OpenVireo',
+  description:'Práticas do CLEA VIREO recriadas no navegador: lei de Hubble, estrutura em grande escala, espectros, Plêiades, diagramas HR de aglomerados, pulsares e Objeto X.',
+  eyebrow:'Práticas do CLEA VIREO',heading:'Práticas de astronomia no seu navegador',
+  lead:'Cada prática segue um dos exercícios para estudantes do VIREO, o observatório virtual do Project CLEA. Você observa com telescópios e instrumentos virtuais, mede os seus próprios dados e tira as suas próprias conclusões.',
+  listName:'Práticas do CLEA VIREO'},
+ home:{title:'OpenVireo: práticas de astronomia do CLEA VIREO em português',
+  description:'Reconstrução web gratuita e não oficial do observatório virtual VIREO do Project CLEA, em português: lei de Hubble, pulsares, Plêiades, Objeto X e mais.',
+  operatingSystem:'Qualquer um (funciona em um navegador web)',
+  eyebrow:'Observatório virtual em português',heading:'Práticas de astronomia do CLEA VIREO no seu navegador',
+  lead:'O OpenVireo reconstrói para a web o VIREO, o observatório virtual do Project CLEA. Você aponta telescópios virtuais, obtém espectros, mede o brilho das estrelas e registra pulsares, e com os seus próprios dados chega às suas conclusões.',
+  note:'Gratuito, sem cadastro e sem nada a instalar.',
+  labsHeading:'As sete práticas',howHeading:'Como funciona',
+  how:['Tudo acontece no seu navegador: não há nada a instalar e você não precisa de uma conta.',
+   // Front HOME: the facts of the app's welcome (home.factInstall, home.factFaithful), as on /es/.
+   'Você não precisa de Windows nem de máquina virtual: funciona em um navegador moderno no Mac, Windows, Linux ou Chromebook.',
+   'Segue o comportamento recuperado do programa original e sinaliza suas adaptações para a web. É uma reconstrução não oficial.',
+   'Você salva as suas investigações como arquivos no seu próprio computador e as carrega de novo quando quiser.',
+   'A interface, os guias e a ajuda estão em português. Os arquivos que o site grava (TXT, FITS, CSV e investigações salvas) ficam em inglês, no formato do VIREO ou do OpenVireo.',
+   'Na tela, os números usam ponto decimal, como os arquivos do VIREO, e separam os milhares com um espaço fino (24\u202f000).',
+   'Você pode mudar para o inglês quando quiser com o seletor de idioma do menu.']},
+};
+
 /** Every language with static pages, English first (the x-default). */
-export const SEO_LANGUAGES:readonly SeoLanguage[]=Object.freeze([EN,ES]);
+export const SEO_LANGUAGES:readonly SeoLanguage[]=Object.freeze([EN,ES,PT_BR]);
 export const ENGLISH=EN;
 
 /** A page, named the same in every language: the home page, the labs index or one lab. */

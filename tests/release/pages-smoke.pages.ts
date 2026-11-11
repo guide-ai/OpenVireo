@@ -426,26 +426,33 @@ test('Front SEO: the lab pages, sitemap and robots.txt are served with the relea
 });
 
 // Front ES-SEO: the Spanish search pages under /es/ are served like the English ones, every page names its translations
-// (hreflang), and a Spanish lab page opens the app in Spanish in an English browser under the release policy.
-test('Front ES-SEO: the Spanish pages, their preview image and the hreflang links are served with the release headers',async({page,request,baseURL})=>{
- for(const [path,type] of [['/es/','text/html'],['/es/labs/','text/html'],['/es/labs/pulsars/','text/html'],['/og-image-es.png','image/png']] as const){
+// (hreflang), and a Spanish lab page opens the app in Spanish in an English browser under the release policy. Front PT-SEO: the
+// same for the Brazilian Portuguese pages under /pt-br/ (the Spanish test keeps its title), and the home pages' alternates name
+// all three languages (Portuguese as pt-BR and pt).
+const SEO_SMOKE=[
+ {tag:'es-419',prefix:'/es',image:'/og-image-es.png',openLab:'Abrir la práctica',guide:'En busca del Objeto X',title:'Front ES-SEO: the Spanish pages, their preview image and the hreflang links are served with the release headers'},
+ {tag:'pt-BR',prefix:'/pt-br',image:'/og-image-pt-br.png',openLab:'Abrir a prática',guide:'Em busca do Objeto X',title:'Front PT-SEO: the Brazilian Portuguese pages, their preview image and the hreflang links are served with the release headers'},
+] as const;
+for(const L of SEO_SMOKE)test(L.title,async({page,request,baseURL})=>{
+ for(const [path,type] of [[`${L.prefix}/`,'text/html'],[`${L.prefix}/labs/`,'text/html'],[`${L.prefix}/labs/pulsars/`,'text/html'],[L.image,'image/png']] as const){
   const r=await request.get(path);expect(r.status(),path).toBe(200);expect(r.headers()['content-type'],path).toContain(type);
   expect(r.headers()['content-security-policy'],path).toContain("default-src 'none'");
   if(type==='text/html')expect(r.headers()['cache-control'],path).toBe('no-cache');
  }
- for(const path of ['/es','/es/labs/hubble']){const r=await request.get(path,{maxRedirects:0});expect(r.status(),path).toBe(308);expect(new URL(r.headers().location,baseURL).pathname,path).toBe(`${path}/`);}
+ for(const path of [L.prefix,`${L.prefix}/labs/hubble`]){const r=await request.get(path,{maxRedirects:0});expect(r.status(),path).toBe(308);expect(new URL(r.headers().location,baseURL).pathname,path).toBe(`${path}/`);}
  const alternates=(html:string)=>[...html.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)"\/>/g)].map(m=>`${m[1]} ${m[2]}`);
- const home=['en https://openvireo.space/','es https://openvireo.space/es/','x-default https://openvireo.space/'];
- expect(alternates(await (await request.get('/')).text())).toEqual(home);expect(alternates(await (await request.get('/es/')).text())).toEqual(home);
- const sitemap=await (await request.get('/sitemap.xml')).text();expect(sitemap).toContain('<loc>https://openvireo.space/es/labs/pulsars/</loc>');
+ const home=['en https://openvireo.space/','es https://openvireo.space/es/','pt-BR https://openvireo.space/pt-br/','pt https://openvireo.space/pt-br/','x-default https://openvireo.space/'];
+ expect(alternates(await (await request.get('/')).text())).toEqual(home);expect(alternates(await (await request.get(`${L.prefix}/`)).text())).toEqual(home);
+ const sitemap=await (await request.get('/sitemap.xml')).text();expect(sitemap).toContain(`<loc>https://openvireo.space${L.prefix}/labs/pulsars/</loc>`);
  const p=await watch(page,baseURL!);
- await page.goto('/es/labs/object-x/');await expect(page.locator('html')).toHaveAttribute('lang','es-419');
+ await page.goto(`${L.prefix}/labs/object-x/`);await expect(page.locator('html')).toHaveAttribute('lang',L.tag);
  await expect.poll(()=>page.evaluate(()=>getComputedStyle(document.querySelector('.button')!).borderRadius)).toBe('8px');
- await page.getByRole('link',{name:'Abrir la práctica'}).click();
- await expect(page.locator('dialog[open]')).toContainText('En busca del Objeto X',{timeout:20_000});
- await expect(page.locator('html')).toHaveAttribute('lang','es-419');
+ await page.getByRole('link',{name:L.openLab}).click();
+ await expect(page.locator('dialog[open]')).toContainText(L.guide,{timeout:20_000});
+ await expect(page.locator('html')).toHaveAttribute('lang',L.tag);
  expect([p.errors,p.console,await violations(page),p.external]).toEqual([[],[],[],[]]);
- expect(p.language[0]).toBe('core');const held=await language(page);expect([held.earlyReads,held.changes]).toEqual([0,[]]);
+ expect(p.language[0]).toBe('core');expect(new Set(p.tags)).toEqual(new Set([L.tag]));
+ const held=await language(page);expect([held.earlyReads,held.changes]).toEqual([0,[]]);
 });
 
 // Front ES-HELP: a translated help file is its own chunk, fetched only when the viewer opens it, under the release policy; "Ver

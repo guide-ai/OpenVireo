@@ -33,8 +33,14 @@ function sectionOf(file:Uint8Array|string,title:string):number{
 /** The languages that translate the help files, with the describe title each keeps (Spanish: ES-HELP's). */
 const HELP_LANGUAGES=LANGUAGES.filter((l):l is LanguageEntry&{help:{related:string}}=>!!l.help);
 const TITLES:Readonly<Record<string,string>>={'es-419':'the Spanish help files (Front ES-HELP)','pt-BR':'the Brazilian Portuguese help files (Front PT-HELP)'};
-/** Front SC7: the help sets written in Latin-1 (any script may be, now; these two are, by their own rule). */
-const LATIN1_HELP=['es-419','pt-BR'];
+/** Front SC7: the help sets written in Latin-1 (any script may be, now; these two are, by their own rule), each with the
+ * characters it may add beyond Latin-1. Front PT-SEO: Portuguese groups thousands with U+202F on screen (user decision of
+ * 2026-11-10), which Latin-1 cannot hold, so PULSRANL's «2 400 000» used U+00A0 until SC7 made translated help text; U+202F is a
+ * no-break space of one column (src/core/textColumns.ts), so the parsers treat it exactly as they treat U+00A0. */
+const LATIN1_HELP:Readonly<Record<string,string>>={'es-419':'','pt-BR':'\u202f'};
+/** A Latin-1 set's text with its added characters read as U+00A0, the Latin-1 character the parsers treat the same way. */
+const asLatin1=(s:string)=>s.replaceAll('\u202f','\u00a0');
+const viaLatin1=<T,>(value:T):T=>JSON.parse(asLatin1(JSON.stringify(value)));
 it('Front PT-HELP: Spanish and Brazilian Portuguese translate the help files, each with its own marker',()=>{
  expect(HELP_LANGUAGES.map(l=>[l.tag,l.help.related])).toEqual([['es-419','TEMAS RELACIONADOS'],['pt-BR','TÓPICOS RELACIONADOS']]);
  for(const l of HELP_LANGUAGES)expect(TITLES[l.tag],l.tag).toBeDefined();
@@ -56,20 +62,21 @@ for(const L of HELP_LANGUAGES)describe(TITLES[L.tag],()=>{
  });
  it('is NFC with no CR or tab (Front SC7), and fits Latin-1 where its language writes Latin-1',()=>{
   for(const key of Object.keys(HELP_FILES)){
-   if(LATIN1_HELP.includes(L.tag))for(const c of es(key).text)expect(c.charCodeAt(0),`${key} ${c}`).toBeLessThan(256);
+   if(Object.hasOwn(LATIN1_HELP,L.tag))for(const c of es(key).text)if(!LATIN1_HELP[L.tag].includes(c))expect(c.charCodeAt(0),`${key} ${c}`).toBeLessThan(256);
    expect(es(key).text,key).not.toMatch(/[\r\t]/);
    expect(es(key).text.normalize('NFC')===es(key).text,key).toBe(true);
   }
  });
- if(LATIN1_HELP.includes(L.tag))it('Front SC7: the text parsers read it exactly as the byte parsers read its Latin-1 bytes',()=>{
+ if(Object.hasOwn(LATIN1_HELP,L.tag))it('Front SC7: the text parsers read it exactly as the byte parsers read its Latin-1 bytes (an added character as U+00A0)',()=>{
+  const bytes=(key:string)=>latin1(asLatin1(spanish(key)));
   for(const key of usable){
-   const t=parseHelpListText(spanish(key));expect(t,key).toEqual(parseHelpList(latin1(spanish(key))));
-   for(const r of t)if(r.kind==='topic'){const f=helpFile(r.file);if(f)expect(helpTopicBodyText(spanish(f.name.toUpperCase()),r.title,L.help.related),`${key} ${r.title}`)
-    .toEqual(helpTopicBody(latin1(spanish(f.name.toUpperCase())),r.title,L.help.related));}
+   const t=parseHelpListText(spanish(key));expect(viaLatin1(t),key).toEqual(parseHelpList(bytes(key)));
+   for(const r of t)if(r.kind==='topic'){const f=helpFile(r.file);if(f)expect(viaLatin1(helpTopicBodyText(spanish(f.name.toUpperCase()),r.title,L.help.related)),`${key} ${r.title}`)
+    .toEqual(helpTopicBody(bytes(f.name.toUpperCase()),r.title,L.help.related));}
   }
-  const lines=parseSpectralLineListText(spanish('SPECLNS.LNL'));expect(lines).toEqual(parseSpectralLineList(latin1(spanish('SPECLNS.LNL'))));
-  for(const l of lines)expect(spectralLineHelpText(spanish('SPECLNS.TXT'),l.name)).toEqual(spectralLineHelp(latin1(spanish('SPECLNS.TXT')),l.name));
-  for(const k of ['REMINDER.OBS','REMINDER.PLS'])expect(reminderBoxTextOf(spanish(k),'Select')).toBe(reminderBoxText(latin1(spanish(k)),'Select'));
+  const lines=parseSpectralLineListText(spanish('SPECLNS.LNL'));expect(viaLatin1(lines)).toEqual(parseSpectralLineList(bytes('SPECLNS.LNL')));
+  for(const l of lines)expect(viaLatin1(spectralLineHelpText(spanish('SPECLNS.TXT'),l.name))).toEqual(spectralLineHelp(bytes('SPECLNS.TXT'),l.name));
+  for(const k of ['REMINDER.OBS','REMINDER.PLS'])expect(viaLatin1(reminderBoxTextOf(spanish(k),'Select'))).toBe(reminderBoxText(bytes(k),'Select'));
  });
  it('keeps the two empty indexes empty and the two refused indexes refused, in both languages',()=>{
   for(const k of ['MLTSPHLP.LST','SPLSTHLP.LST']){expect(es(k).text).toBe('');expect(parseHelpListText(spanish(k))).toEqual([]);}
@@ -185,7 +192,9 @@ describe('the Spanish help texts follow the Spanish lints (review S5)',()=>{
 // Front PT-HELP: the pt-BR profile's errors that read a text on its own (src/i18n/lint/profiles.ts: its typography patterns, the
 // você register's patterns) and the pt-BR glossary's `forbidden` patterns, over each paragraph of every Portuguese help text
 // (its wrapped lines joined). The rules that need the English pair (the tu-imperative, placeholders, glossary terms) and the
-// curly-quote rule do not apply: the Portuguese help files are Latin-1 (LATIN1_HELP above refuses “ ”), so they quote with VIREO's straight ".
+// curly-quote rule do not apply: the Portuguese help files are Latin-1 (LATIN1_HELP above refuses “ ”; it adds only U+202F), so
+// they quote with VIREO's straight ". Front PT-SEO: their thousands are U+202F like the screen's (the typography patterns now fail
+// U+00A0 between thousands too).
 // PT_ALLOWED names each permitted hit per file (the matched text), with its reason.
 const PT_ALLOWED:Record<string,{matches:string[];reason:string}>={};
 describe('the Brazilian Portuguese help texts follow the pt-BR lints',()=>{
