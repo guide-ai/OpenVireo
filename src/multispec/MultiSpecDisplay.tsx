@@ -7,6 +7,7 @@ import {t} from '../i18n';
 import {printSkyHeader} from '../core/printSkyText';
 import '../observatory/observatory-dialogs.css';
 import {screenDateTime} from '../i18n/screenDate';
+import {keepInsideSvg} from '../plotTextFit';
 
 const D=N.display;
 export const MULTISPEC_PRINT_SCOPE='multispec';
@@ -23,7 +24,7 @@ export function MultiSpecPlot({spectrum,label}:Readonly<{spectrum:MultiSpecSpect
    <line x1={x0} x2={x0+400} y1={170} y2={170}/><line x1={x0} x2={x0} y1={20} y2={170}/>
    {ticks.map(w=><g key={w}><line x1={xOf(w)} x2={xOf(w)} y1={170} y2={175}/><text x={xOf(w)} y={188} textAnchor="middle" stroke="none">{w}</text></g>)}
    <text x={x0+200} y={210} textAnchor="middle" stroke="none">{vireo(D.axisX)}</text>
-   <text x={12} y={95} textAnchor="middle" stroke="none" transform="rotate(-90 12 95)">{vireo(D.axisY)}</text>
+   <g ref={keepInsideSvg}><text x={12} y={95} textAnchor="middle" stroke="none" transform="rotate(-90 12 95)">{vireo(D.axisY)}</text></g>
    <text x={x0-4} y={24} textAnchor="end" stroke="none">{vireo(D.one)}</text><text x={x0-4} y={170} textAnchor="end" stroke="none">{vireo(D.zero)}</text>
   </g>
   <polyline points={points} fill="none" stroke="#ffff55" strokeWidth="1"/>

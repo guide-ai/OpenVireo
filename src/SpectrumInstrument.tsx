@@ -119,7 +119,7 @@ function Chart({ observation, z, reference, view, baseline, cursor, selectedLine
     <g clipPath="url(#plot-clip)"><polyline points={originalCurve} className="reference-curve"/>{observation && <polyline points={observedCurve} className="observed-curve"/>}
     {(reference ? references[reference].lines : []).map((line, index) => { const x = 60 + (shiftedWavelength(line.wavelength, z) - min) / (max - min) * 860; return <g key={index}><line x1={x} x2={x} y1="48" y2="306" className={selectedLine===index?'marker marker-selected':'marker'}/><text x={x + 5} y={66 + index % 2 * 23} className="marker-label">{line.label.split(' (')[0]}</text><circle cx={x} cy="52" r="3" className="marker-dot"/></g>; })}</g>
     {cursor&&<g className={cursor.final?'engine-cursor engine-cursor-final':'engine-cursor'} data-testid="engine-cursor"><line x1={toSvgX(cursor.at.x)} x2={toSvgX(cursor.at.x)} y1="56" y2="306"/>{cursor.final&&<line x1={toSvgX(cursor.at.x)-14} x2={toSvgX(cursor.at.x)+14} y1={toSvgY(cursor.at.y)} y2={toSvgY(cursor.at.y)}/>}</g>}
-    <text x="16" y="175" transform="rotate(-90 16 175)" textAnchor="middle" className="axis-label axis-label-y">{t('spectrum.displayLevel')}</text><g ref={keepInsideSvg}><text x="490" y="355" textAnchor="middle" className="axis-label">{t('spectrum.wavelength')}</text></g>
+    <g ref={keepInsideSvg}><text x="16" y="175" transform="rotate(-90 16 175)" textAnchor="middle" className="axis-label axis-label-y">{t('spectrum.displayLevel')}</text></g><g ref={keepInsideSvg}><text x="490" y="355" textAnchor="middle" className="axis-label">{t('spectrum.wavelength')}</text></g>
   </svg>;
 }
 

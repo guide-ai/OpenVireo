@@ -107,8 +107,9 @@ svg.ob-spectrum-print-body:is(:lang(ar),:lang(fa),:lang(he)){font-family:Courier
 /* ---- 5. Sizes and line heights for Arabic and Persian (plan § 2.3, § 6.2) ------------------------------------------------
  * Arabic below 12 px is hard to read: the English 9–11 px UI text is raised to 12 px. Not raised: SVG plot text, axis ticks
  * and code (Latin file names and numbers inside plots, whose geometry RT7 and RT12 measure). Noto Sans Arabic's natural line
- * is 2.112 em (plan § 0.1): the floors start from scripts.css's Hindi values, 1.5 on single-line controls and 1.7 on text, until
- * the RTL walk (RT7) measures them. Hebrew (1.36 em) keeps English's sizes and lines. */
+ * is 2.112 em (plan § 0.1): the floors are scripts.css's Hindi values, 1.5 on single-line controls and 1.7 on text. The RTL walk
+ * (RT7: the routes, menus, dialogs, help, tour and every exercise at 320 and 1440 px under Noto Sans Arabic) found no ink they cut
+ * but in the cursor read-out's fixed box (§ 6). Hebrew (1.36 em) keeps English's sizes and lines. */
 .class-line-table caption:is(:lang(ar),:lang(fa)),
 .class-line-table th:is(:lang(ar),:lang(fa)),
 .cnhr-label:is(:lang(ar),:lang(fa)),
@@ -206,3 +207,11 @@ footer:is(:lang(ar),:lang(fa)),
 .camera-information-lines:is(:lang(ar),:lang(fa)),
 body:is(:lang(ar),:lang(fa)),
 .seo-boot:is(:lang(ar),:lang(fa)){line-height:1.7}
+
+/* ---- 6. Fixed heights that hold lines of text (Front RT7; scripts.css § 6) -----------------------------------------------------
+ * § 5 sets the classification cursor read-out to Arabic's 1.7 line height, and its English box is a fixed 86 px: the RT7 walk found
+ * its third line cut 5 px at 320 px (E03, comparison marks). As scripts.css does for ja, zh, hi and ru, the read-out keeps room for
+ * three lines at the language's own line height (3 × 20.4 + 26 = 87.2 px), so a reading does not resize it under a held press, and
+ * the phone sidebar grows with its text. */
+.comparison-cursor-live:is(:lang(ar),:lang(fa)){height:auto;min-height:max(86px,calc(3lh + 26px))}
+@media(max-width:570px){.sidebar:is(:lang(ar),:lang(fa)){height:auto;min-height:60px}}
