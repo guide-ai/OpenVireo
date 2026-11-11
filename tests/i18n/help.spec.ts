@@ -5,6 +5,7 @@ import {readFileSync} from 'node:fs';
 import witness from '../../src/help/helpAll.witness.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
 import {TRANSLATED,helpText} from './languageText';
+import {WINDOWS} from './walks/help';
 // Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
 test.use({locale:SPANISH_LOCALE});
 
@@ -19,9 +20,6 @@ test.use({locale:SPANISH_LOCALE});
 const id=(p:Page,t:string)=>p.getByTestId(t);
 const lists=witness.lists as Record<string,{rows:string[];topics:{index:number}[]}>;
 const original=(path:string)=>readFileSync(new URL(`../../public/original/${path}`,import.meta.url),'latin1').split(/\r?\n/);
-const WINDOWS=[['#observatory','telescope-help','OBSRVHLP.LST'],['#observatory','camera-help','CAMHLP.LST'],['#cluster-database','cluster-help','HRANALHLP.LST'],
- ['#photometer','photo-help','PHOTOHLP.LST'],['#spectrometer','spectrometer-index-help','SPECHLP.LST'],['#classification','class-help','CLASSHLP.LST'],
- ['#spectrum','measure-help','MEASHLP.LST'],['#lss-wedge','wedge-help','WDGPLTHLP.LST'],['#pulsar-analysis','pulsar-analysis-help','PLSANHLP.LST']] as const;
 const escape=(s:string)=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 async function noHorizontalScroll(page:Page){
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);

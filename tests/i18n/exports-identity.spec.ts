@@ -13,6 +13,7 @@ import {CAMERA_ES} from '../../src/i18n/es/maps/camera';
 import {TOUR_ES} from '../../src/i18n/es/maps/tour';
 import {OBSERVATORY_ES} from '../../src/i18n/es/maps/observatory';
 import {TRANSLATED,e01e02Maps,e08Maps,textOf as ptText} from './languageText';
+import {PSEUDO_HTML_LANG,PSEUDO_LETTERS,SCRIPT_PSEUDO,isPseudo,pseudoName,pseudoStart,type ScriptPseudo} from '../fixtures/pseudoNames';
 // Front ES0 (docs/I18N.md; user decision 3, 2026-11-09): the files the site writes stay exactly as VIREO or the web contract
 // writes them, in English, whatever the screen language. Each export family is downloaded once in English and once in the
 // dev-only pseudo-locale qps (?lang=qps: every catalog, map and vireo() string marked ⟦…⟧, accented and ~35 % longer), from the
@@ -24,12 +25,14 @@ import {TRANSLATED,e01e02Maps,e08Maps,textOf as ptText} from './languageText';
 // Front PT0 (plan front-i18n-pt-br.md §1.2 #15): every translated language of the registry joins as its fronts land (pt-BR from
 // PT0, its `?lang=pt-BR` preview in an en-US browser before its release, tests/fixtures/language.ts). Its text comes from its own
 // catalog (tests/i18n/languageText.ts), and its own letters must never reach a file.
-type Locale='en'|'qps'|'es-419'|'pt-BR';
+// Front SC10 (docs/I18N.md "Script groundwork: exports and deep walks under the script pseudo-locales"): every family that runs in
+// qps also runs in the four dev-only script pseudo-locales (qps-cjk, qps-deva, qps-cyrl, qps-rtl; `identical` adds them), with
+// the same name, SHA-256 and no ⟦ in the file, and no letter of that script in it either. Names go through `L`, now the matcher
+// of tests/fixtures/pseudoNames.ts computed with the app's own pure transforms, which matches English, qps and every script form.
+type Locale='en'|'qps'|'es-419'|'pt-BR'|ScriptPseudo;
 type File=Readonly<{name:string;bytes:Buffer}>;
-const ACCENTED:Readonly<Record<string,string>>={a:'aá',e:'eé',i:'ií',o:'oó',u:'uú',A:'AÁ',E:'EÉ',I:'IÍ',O:'OÓ',U:'UÚ'};
-const MARK='[⟦⟧·\\s]*';
-/** An exact accessible-name matcher for English text that also matches its pseudo-localized form. */
-const L=(text:string)=>new RegExp(`^${MARK}${[...text].map(c=>ACCENTED[c]?`[${ACCENTED[c]}]`:/\s/.test(c)?'\\s+':c.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')).join(MARK)}${MARK}$`);
+/** An exact accessible-name matcher for English text that also matches its form in every pseudo-locale (Front SC10). */
+const L=(text:string)=>pseudoName(text);
 /** Front ES2: English text to its Spanish form, from the catalog and the camera map (the strings these flows click; the
  * English camera texts are listed here because the app's map module cannot load outside the page). */
 const CAMERA_EN={sourceLive:'Ask VizieR live (sends only RA, Dec and search radius; tries the IDIA mirror, then CDS)',filter:'Filter',minutes:'Minutes',seconds:'Seconds',start:'Start exposure',statusDone:'Image ready.',save:'Save image (FITS)',saveNative:'Save image (VIREO header)'} as const;
@@ -43,8 +46,8 @@ const SPANISH=(()=>{
 })();
 const exact=(text:string)=>new RegExp(`^\\s*${text.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&').replace(/\s+/g,'\\s+')}\\s*$`);
 /** A translated language's letters that English text never has (Spanish á é í ó ú ñ ¿ ¡; Portuguese ã õ ç â ê ô à…). */
-const LETTERS:Readonly<Record<string,RegExp>>=Object.fromEntries(TRANSLATED.map(t=>[t.tag,t.letters]));
-const HTML_LANG:Readonly<Record<Locale,string>>={en:'en',qps:'en','es-419':'es-419','pt-BR':'pt-BR'};
+const LETTERS:Readonly<Record<string,RegExp>>={...Object.fromEntries(TRANSLATED.map(t=>[t.tag,t.letters])),...PSEUDO_LETTERS};
+const HTML_LANG:Readonly<Record<Locale,string>>={en:'en','es-419':'es-419','pt-BR':'pt-BR',...PSEUDO_HTML_LANG};
 /** The accessible-name matcher of an English text in this locale: its Spanish form in es-419 (which must exist), a language before
  * its release its own form or the English the page then shows (languageText.ts `text`), else `L`. */
 const N=(locale:Locale,text:string)=>{if(locale==='pt-BR'){const t=TRANSLATED.find(x=>x.tag===locale)!;if(text==='Skip the tour')return exact(t.maps.tour.skip);if(text==='Save spectrum (.SSP)')return exact((e01e02Maps(locale).observatory as typeof OBSERVATORY_ES).spectrumSave.save);
@@ -65,7 +68,7 @@ async function open(page:Page,locale:Locale,hash:string,clock:'fixed'|'real'='fi
  if(clock==='fixed')await page.clock.setFixedTime(NOW);
  await page.goto(`/${contextQuery(locale)}#${hash}`);
  await expect(page.locator('html')).toHaveAttribute('lang',HTML_LANG[locale]);
- if(locale==='qps')await expect.poll(()=>page.title()).toMatch(/^⟦/);
+ if(isPseudo(locale))await expect.poll(()=>page.title()).toMatch(/^⟦/);
  const skip=page.getByRole('button',{name:N(locale,'Skip the tour')});// the first-visit tour (translated since ES1)
  if(await skip.isVisible().catch(()=>false))await skip.click();
 }
@@ -80,12 +83,14 @@ async function identical(browser:Browser,baseURL:string|undefined,flow:(page:Pag
  /** Front ES2: the families whose screens are translated also run in Spanish (es-419), and must match English the same way. */
  locales:readonly Locale[]=['en','qps']){
  const results:Partial<Record<Locale,Record<string,File>>>={};
+ // Front SC10: a family that runs in qps runs in every script pseudo-locale too.
+ locales=locales.includes('qps')?[...locales,...SCRIPT_PSEUDO]:locales;
  for(const locale of locales){
   const context=await browser.newContext({baseURL,locale:contextLocale(locale),viewport:{width:1440,height:1050}}),page=await context.newPage();page.setDefaultTimeout(20_000);
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
   try{
    results[locale]=await flow(page,locale);
-   if(locale==='qps')await expect(scope(page),'the pseudo-locale applied to this flow').toContainText('⟦');
+   if(isPseudo(locale))await expect(scope(page),'the pseudo-locale applied to this flow').toContainText('⟦');
    if(LETTERS[locale])await expect(page.locator('html')).toHaveAttribute('lang',HTML_LANG[locale]);
   }finally{await context.close();}
   expect(errors,locale).toEqual([]);
@@ -99,7 +104,11 @@ async function identical(browser:Browser,baseURL:string|undefined,flow:(page:Pag
   expect(qps[family].bytes.includes('⟦'),`${family}: a pseudo-locale mark reached the file`).toBe(false);
   const mask=masks[family]??((b:Buffer)=>b);
   // Spanish text in a file (checked on the compared part, so binary image data is left out).
-  if(LETTERS[locale])expect(mask(qps[family].bytes).toString('utf8'),`${family}: ${locale} text reached the file`).not.toMatch(LETTERS[locale]);
+  // Front SC10: a script's letters are looked for only in a file that is UTF-8 text; the bytes of a binary file (a hot list's
+  // doubles) can decode to a CJK character by chance. Binary files are still compared whole and searched for ⟦.
+  const utf8=(b:Buffer)=>{try{return new TextDecoder('utf-8',{fatal:true}).decode(b);}catch{return null;}};
+  const compared=isPseudo(locale)?utf8(mask(qps[family].bytes)):mask(qps[family].bytes).toString('utf8');
+  if(LETTERS[locale]&&compared!==null)expect(compared,`${family}: ${locale} text reached the file`).not.toMatch(LETTERS[locale]);
   if(process.env.ES0_DUMP&&sha(mask(qps[family].bytes))!==sha(mask(file.bytes))){const {writeFile}=await import('node:fs/promises');await writeFile(`${process.env.ES0_DUMP}/${family}.en`,file.bytes);await writeFile(`${process.env.ES0_DUMP}/${family}.qps`,qps[family].bytes);}
   expect(sha(mask(qps[family].bytes)),`${family}: ${file.name}`).toBe(sha(mask(file.bytes)));
  }}
@@ -142,8 +151,10 @@ test('spectrum analysis: measurement CSV, velocities CSV and the analysis sessio
   await expect(page.locator('.spectrum-route .file-identity')).toContainText('identity-vector.csv');
   await page.getByLabel(N(locale,'Object or reference')).fill('Identity vector');
   await page.getByLabel(N(locale,'z step per tick')).fill('0.015625');await button(page,'Apply step',locale).click();
-  await page.getByRole('slider').focus();await page.getByRole('slider').press('ArrowRight');
-  await page.getByRole('button',{name:locale==='es-419'?new RegExp(`^\\s*${SPANISH.get('Record measurement')}`):locale==='pt-BR'?ptStart('Record measurement'):/R[eé]c[oó]rd m[eé][aá]s[uú]r[eé]m[eé]nt/}).click();await button(page,'Save measurement',locale).click();
+  // Front SC10: ArrowUp, not ArrowRight: under qps-rtl the native range input runs right to left (before RT5 makes data sliders
+  // left-to-right islands), so ArrowRight lowers z there; ArrowUp raises it one step in every direction.
+  await page.getByRole('slider').focus();await page.getByRole('slider').press('ArrowUp');
+  await page.getByRole('button',{name:locale==='es-419'?new RegExp(`^\\s*${SPANISH.get('Record measurement')}`):locale==='pt-BR'?ptStart('Record measurement'):pseudoStart('Record measurement')}).click();await button(page,'Save measurement',locale).click();
   await expect(page.locator('#measurement-log tbody tr')).toHaveCount(1);
   const measurements=await download(page,()=>button(page,'Export CSV ↓',locale).click());
   await page.getByText(N(locale,'Velocity analysis')).click();
@@ -170,7 +181,7 @@ test('E01 measurement through Observational Data: measurement CSV, session, resu
   await page.clock.runFor(1000);await button(page,'Pause exposure',locale).first().click();await page.clock.resume();
   await button(page,'Analyze acquired galaxy',locale).click();
   await page.getByLabel(N(locale,'z step per tick')).fill('.001');await button(page,'Apply step',locale).click();await page.getByRole('slider').fill('10');
-  await page.getByRole('button',{name:locale==='es-419'?new RegExp(`^\\s*${SPANISH.get('Record measurement')}`):locale==='pt-BR'?ptStart('Record measurement'):/R[eé]c[oó]rd m[eé][aá]s[uú]r[eé]m[eé]nt/}).click();
+  await page.getByRole('button',{name:locale==='es-419'?new RegExp(`^\\s*${SPANISH.get('Record measurement')}`):locale==='pt-BR'?ptStart('Record measurement'):pseudoStart('Record measurement')}).click();
   const dialog=page.getByTestId('hubble-obsdata');await expect(dialog).toBeVisible();
   await page.getByTestId('hubble-obsdata-vel').fill('2997.92');await page.getByTestId('hubble-obsdata-sp').fill('G5');await page.getByTestId('hubble-obsdata-remarks').fill('typed, with comma');
   await page.getByTestId('hubble-obsdata-ok').click();await expect(dialog).toHaveCount(0);
@@ -384,7 +395,7 @@ test('field spectrometer: Save counts CSV and Save exposure session at a free po
   await button(page,'Open dome ↗',locale).click();
   if(!await page.locator('#point-ra').isVisible())await page.getByText(N(locale,'Enter coordinates')).click();
   await page.locator('#point-ra').fill('12.99311111111111');await page.locator('#point-dec').fill('27.959722222222222');await button(page,'Point to coordinates',locale).click();
-  await page.getByRole('button',{name:/^\s*[⟦]?\s*T[eé]l[eé]sc[oó]p[eéi]/}).first().click();
+  await page.getByRole('button',{name:new RegExp(/^\s*[⟦]?\s*T[eé]l[eé]sc[oó]p[eéi]/.source+'|'+pseudoStart('Telescope').source)}).first().click();
   if(!await button(page,'Turn tracking on',locale).isVisible())await page.getByText(N(locale,'Observatory clock & spectral tracking')).click();
   if(await button(page,'Turn tracking on',locale).isVisible())await button(page,'Turn tracking on',locale).click();
   await page.evaluate(()=>{location.hash='#spectrometer';});
@@ -418,7 +429,7 @@ test('CCD camera: Save image (FITS) and Save image (VIREO header) from the recor
   if(!await button(page,'Start observatory clock',locale).isVisible())await page.getByText(N(locale,'Observatory clock & spectral tracking')).click();
   await button(page,'Start observatory clock',locale).click();await button(page,'Turn tracking on',locale).click();
   const camera=page.getByTestId('camera-control');
-  await camera.getByLabel(locale==='es-419'?new RegExp(`^\\s*${SPANISH.get('Filter')}`):/F[ií]lt[eé]r/).selectOption('2');
+  await camera.getByLabel(locale==='es-419'?new RegExp(`^\\s*${SPANISH.get('Filter')}`):pseudoStart('Filter')).selectOption('2');
   await exposePaused(page,locale,NX,C);
   const fits=await download(page,()=>camera.getByRole('button',{name:N(locale,'Save image (FITS)')}).click());
   const native=await download(page,()=>camera.getByRole('button',{name:N(locale,'Save image (VIREO header)')}).click());
@@ -509,15 +520,15 @@ test('E02 LSS survey and wedge: counts CSV, session, SSP, results CSV and TXT, i
  },{},page=>page.locator('.lss-main'),['en','qps','es-419','pt-BR']);
 });
 
-test('the shell toolbar: Save investigation is byte-identical in English, qps, Spanish and Brazilian Portuguese',async({browser,baseURL})=>{
+test('the shell toolbar: Save investigation is byte-identical in English, qps, Spanish, Brazilian Portuguese and the script pseudo-locales',async({browser,baseURL})=>{
  const files:Record<string,File>={};
- for(const locale of ['en','qps','es-419','pt-BR'] as const){
+ for(const locale of ['en','qps','es-419','pt-BR',...SCRIPT_PSEUDO] as const){
   const context=await browser.newContext({baseURL,locale:contextLocale(locale),viewport:{width:1440,height:1050}}),page=await context.newPage();page.setDefaultTimeout(20_000);
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
   try{
    await page.clock.setFixedTime(NOW);await page.goto(`/${contextQuery(locale)}#observatory`);
    const toolbar=page.locator('.investigation-toolbar');await expect(toolbar).toBeVisible({timeout:15_000});
-   if(locale==='qps')await expect(toolbar,'the pseudo-locale applied').toContainText('⟦');
+   if(isPseudo(locale)){await expect(toolbar,'the pseudo-locale applied').toContainText('⟦');await expect(page.locator('html')).toHaveAttribute('lang',HTML_LANG[locale]);}
    const own=TRANSLATED.find(t=>t.tag===locale);
    if(own){await expect(page.locator('html')).toHaveAttribute('lang',own.entry.htmlLang);await expect(toolbar).toContainText(own.catalog['project.title']);}
    const name=own?own.catalog['project.save']:L('Save investigation');
@@ -525,7 +536,7 @@ test('the shell toolbar: Save investigation is byte-identical in English, qps, S
   }finally{await context.close();}
   expect(errors,locale).toEqual([]);
  }
- for(const locale of ['qps','es-419','pt-BR'])expect([files[locale].name,sha(files[locale].bytes)],locale).toEqual([files.en.name,sha(files.en.bytes)]);
+ for(const locale of ['qps','es-419','pt-BR',...SCRIPT_PSEUDO])expect([files[locale].name,sha(files[locale].bytes)],locale).toEqual([files.en.name,sha(files.en.bytes)]);
  for(const f of Object.values(files)){expect(f.bytes.includes('⟦')).toBe(false);for(const letters of Object.values(LETTERS))expect(f.bytes.toString('utf8')).not.toMatch(letters);}
 });
 
@@ -650,7 +661,7 @@ function clockElapsedMasked(bytes:Buffer):Buffer{
  * the image is ready (the image's JD and pointing are those of Start). */
 async function exposePaused(page:Page,locale:Locale,name:(locale:Locale,english:string,spanish:string)=>RegExp,camera:Readonly<Record<string,string>>){
  const c=page.getByTestId('camera-control');
- await c.getByLabel(locale==='es-419'||locale==='pt-BR'?new RegExp(`^\\s*${camera.sourceLive.slice(0,20)}`):/[AÁ]sk V[ií]z[ií][eé]R l[ií]v[eé]/).check();
+ await c.getByLabel(locale==='es-419'||locale==='pt-BR'?new RegExp(`^\\s*${camera.sourceLive.slice(0,20)}`):pseudoStart('Ask VizieR live')).check();
  await c.getByLabel(name(locale,CAMERA_EN.minutes,camera.minutes)).fill('0');await c.getByLabel(name(locale,CAMERA_EN.seconds,camera.seconds)).fill('1');
  await c.getByRole('button',{name:name(locale,CAMERA_EN.start,camera.start)}).click();
  const status=page.getByTestId('camera-status'),done=name(locale,CAMERA_EN.statusDone,camera.statusDone);
