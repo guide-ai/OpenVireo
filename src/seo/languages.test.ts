@@ -11,6 +11,7 @@ import {documentMessages} from '../i18n/html';
 import en from '../i18n/en.json' with {type:'json'};
 import esGlossary from '../i18n/es/glossary.json' with {type:'json'};
 import ptGlossary from '../i18n/pt-br/glossary.json' with {type:'json'};
+import {OBJECT_X_LAB_ES} from '../i18n/es/maps/objectXLab';
 import {LANGUAGES,languageEntry} from '../i18n/languages';
 import {PROFILES,type ProfileId} from '../i18n/lint/profiles';
 import {claim,describeFindings,digits,glossary,glossaryFrom,html,invisible,markPairs,normalization,placeholders,quotes,register,typography,type Finding,type Glossary,type LocaleProfile,type Pair} from '../i18n/lint/rules';
@@ -86,6 +87,12 @@ describe('the language table',()=>{
   expect(KEYS.slice(1).map(k=>pathOf(ENGLISH,k))).toEqual(['/labs/',...LABS.map(l=>labUrl(l.slug))]);
   expect([labsIndexUrl(),labsIndexUrl('en'),labsIndexUrl('es-419'),labsIndexUrl('qps'),labsIndexUrl('pt-BR'),labsIndexUrl('fr')]).toEqual(['/labs/','/labs/','/es/labs/','/labs/','/pt-br/labs/','/labs/']);
   expect([labUrl('pulsars','es-419'),labUrl('pulsars','pt-BR')]).toEqual(['/es/labs/pulsars/','/pt-br/labs/pulsars/']);
+ });
+ it('keeps the Spanish texts that tests/i18n/seo.spec.ts reads from this table equal to the literals es-seo.spec.ts asserted (PT-SEO review)',()=>{
+  expect([SPANISH.home!.title,SPANISH.home!.heading,SPANISH.ui.openObservatory,SPANISH.ui.siteNav,SPANISH.ui.openLab,SPANISH.ui.languageName,
+   SPANISH.labs[0].heading,SPANISH.labsIndex.heading,OBJECT_X_LAB_ES.title]).toEqual(['OpenVireo: prácticas de astronomía de CLEA VIREO en español',
+   'Prácticas de astronomía de CLEA VIREO, en tu navegador','Abrir el observatorio','Sitio','Abrir la práctica','Español',
+   'La ley de Hubble: la relación entre corrimiento al rojo y distancia','Prácticas de astronomía en tu navegador','En busca del Objeto X']);
  });
  it("each language's preview image exists, is 1200×630 and is its own",()=>{
   expect(new Set(SEO_LANGUAGES.map(l=>l.ogImage)).size).toBe(SEO_LANGUAGES.length);

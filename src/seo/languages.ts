@@ -122,7 +122,7 @@ const PT_BR:SeoLanguage={
   whatYouDo:'O que você faz',whatYouLearn:'O que você aprende',otherLabs:'Outras práticas',
   about:'O OpenVireo é uma reconstrução web gratuita e sem fins comerciais do VIREO, o observatório educacional virtual '+
    '(Virtual Educational Observatory) do Project CLEA (Gettysburg College, com o apoio da National Science Foundation e do '+
-   'Gettysburg College). Ele se baseia no comportamento recuperado do programa original e usa os seus arquivos de dados originais, '+
+   'Gettysburg College). Ele se baseia no comportamento recuperado do programa original e usa os arquivos de dados originais, '+
    'com o devido crédito. Não é o programa original nem tem vínculo com o Project CLEA. O aplicativo indica as suas adaptações web '+
    'conhecidas. Este texto em português é uma adaptação web feita pelo OpenVireo, não um texto do CLEA.',
   platform:'Funciona em um navegador web atual no Windows, Mac, Linux ou Chromebook. Não há nada a instalar e você não precisa de uma conta.',
@@ -142,7 +142,7 @@ const PT_BR:SeoLanguage={
   how:['Tudo acontece no seu navegador: não há nada a instalar e você não precisa de uma conta.',
    'Você salva as suas investigações como arquivos no seu próprio computador e as carrega de novo quando quiser.',
    'A interface, os guias e a ajuda estão em português. Os arquivos que o site grava (TXT, FITS, CSV e investigações salvas) ficam em inglês, no formato do VIREO ou do OpenVireo.',
-   'Na tela, os números separam os milhares com um espaço estreito (24\u202f000) e usam ponto decimal, como os arquivos do VIREO.',
+   'Na tela, os números usam ponto decimal, como os arquivos do VIREO, e separam os milhares com um espaço fino (24\u202f000).',
    'Você pode mudar para o inglês quando quiser com o seletor de idioma do menu.']},
 };
 
