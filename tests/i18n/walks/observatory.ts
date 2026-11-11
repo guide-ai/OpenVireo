@@ -19,9 +19,13 @@ export const SAME=new Set(['General','No','Min','HH:MM:SS','J2000.0','B1950.0','
 export const IDENTIFIER=/^(?:[-+−\d\s.,:;°′″'"hmsHMS·×/()–#<>≤≥%]+|.*\b(?:NGC|PSR|HD|GSC|UM-I|CorBor|Peg|Coma|Boo)\b.*|M\d+ · .*|(?:RA|Dec|AR):\s+[-+\d].*|\d{4}-\d\d-\d\d .*UT|\d{1,2}\/\d{1,2}\/\d{4}, .*|\S+\.(?:HTL|DAT|LST|TXT|SSP|FITS))$/;
 /** Front PT1: VIREO's and OpenVireo's texts that are the same words in another language (its identical.json, with a reason each):
  * Portuguese writes OK, Longitude, Latitude, Altitude, Zoom… as English does. Spanish adds none (ES2's SAME is unchanged). */
-export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['OK','Longitude:','Latitude:','Altitude:','Longitude','Latitude','Altitude','Zoom','Item','Cursor','Pulsar','Min:','Multi-Spec'])};
-/** SAME texts another language does translate: Portuguese writes the General tab «Geral» and the longitude letter E «L» (Leste). */
-export const NOT_SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['General','E'])};
+export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['OK','Longitude:','Latitude:','Altitude:','Longitude','Latitude','Altitude','Zoom','Item','Cursor','Pulsar','Min:','Multi-Spec']),
+ // Front FR1: French writes OK, Options, Longitude, Latitude, Altitude, Horizon, Minutes, Zoom, Multi-Spec… as English does
+ // (src/i18n/fr/identical.json); a label with a colon differs («Longitude :», U+202F before the colon).
+ fr:new Set(['OK','Gain (e⁻/ADU)','Pulsars','Options','Options...','Options…','Longitude','Latitude','Altitude','Horizon','Minutes','Minimum','Maximum','Confirmation','Zoom','Pulsar','Mode','Type','Style','Source','Site...','Min','CCD','IR','Multi-Spec','Classification','Portrait','Radio','Radio...'])};
+/** SAME texts another language does translate: Portuguese writes the General tab «Geral» and the longitude letter E «L» (Leste);
+ * French writes the General tab «Général» (its longitude letter E is Est, the same). */
+export const NOT_SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['General','E']),fr:new Set(['General'])};
 export const same=(text:string,L?:LanguageText)=>(L===undefined||!(NOT_SAME_IN[L.tag]?.has(text)??false))&&(SAME.has(text)||IDENTIFIER.test(text)||(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false)));
 export const id=(page:Page,testId:string)=>page.getByTestId(testId);
 
