@@ -44,7 +44,8 @@ export const useHelpSet=():HelpSet|undefined=>useContext(HelpSetContext)??regist
 export const RELATED_MARKER='RELATED TOPICS';
 /** A module's text, refused when it names another language, source file or SHA-256, is not a string, holds a lone surrogate,
  * or is not in Unicode Normalization Form C (the search fold and the seeks compare NFC text). Any script is accepted (Front SC7:
- * the former limit of U+00FF is gone; the Spanish and Portuguese texts stay Latin-1 by their own tests). */
+ * the former limit of U+00FF is gone; the Spanish and Portuguese texts stay Latin-1 by their own tests, Portuguese with U+202F
+ * between thousands since PT-SEO). */
 export function helpTranslationText(m:Module,file:HelpFileIdentity,language:string):string{
  if(m.language!==language||m.sourceName!==file.name||m.sourceSha256!==file.sha256||typeof m.text!=='string')throw new HelpTranslationError(file.name);
  if(/[\ud800-\udbff](?![\udc00-\udfff])|(?<![\ud800-\udbff])[\udc00-\udfff]/.test(m.text)||m.text.normalize('NFC')!==m.text)throw new HelpTranslationError(file.name);

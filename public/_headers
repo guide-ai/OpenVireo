@@ -35,6 +35,9 @@
 # Front ES-SEO: the Spanish home page /es/ and the Spanish lab pages /es/labs/, the same kind of page.
 /es/*
   Cache-Control: no-cache
+# Front PT-SEO: the Brazilian Portuguese home page /pt-br/ and lab pages /pt-br/labs/, the same kind of page.
+/pt-br/*
+  Cache-Control: no-cache
 /sitemap.xml
   Cache-Control: no-cache
 /robots.txt

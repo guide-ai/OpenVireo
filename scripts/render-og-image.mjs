@@ -3,6 +3,7 @@
 // stars, the language's text); no CLEA image is used. Local tool only: Playwright's Chromium renders a page built here, with
 // no network request (every request is aborted). Text is set in DejaVu Sans, so run it with the project's test fontconfig, e.g.
 //   FONTCONFIG_FILE=…/fonts.conf node scripts/render-og-image.mjs es-419            → public/og-image-es.png
+//   FONTCONFIG_FILE=…/fonts.conf node scripts/render-og-image.mjs pt-BR             → public/og-image-pt-br.png
 //   node scripts/render-og-image.mjs en /tmp/check.png                               (English, to compare with the original)
 // The English image predates this script and is not re-rendered: pass an output path for English.
 import {readFileSync,writeFileSync} from 'node:fs';
