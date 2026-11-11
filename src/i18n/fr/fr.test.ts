@@ -113,8 +113,8 @@ if(process.env.OPENVIREO_FIX_TYPOGRAPHY==='1'){
 }
 
 describe('Front FR0: the French (fr) bundle',()=>{
- it('is registered before its release: a ?lang=fr preview only, never detected or offered; thousands with U+202F from the start',()=>{
-  expect(languageEntry('fr')).toMatchObject({dir:'fr',catalog:'fr.json',htmlLang:'fr',pagePath:'fr',autonym:'Français',englishName:'French',match:['fr'],released:false,thousands:' '});
+ it('Front FR-REL: is released (detected from every fr and fr-* browser, stored, offered); thousands with U+202F since FR0',()=>{
+  expect(languageEntry('fr')).toMatchObject({dir:'fr',catalog:'fr.json',htmlLang:'fr',pagePath:'fr',autonym:'Français',englishName:'French',match:['fr'],released:true,thousands:' '});
   expect(languageEntry('fr')?.help).toBeUndefined();
   expect(FRENCH.language).toBe('fr');
   // The notices hold U+202F before «;» as a character, and the typographic apostrophe.
@@ -150,6 +150,14 @@ describe('Front FR0: the French (fr) bundle',()=>{
  it('Front FR5: the catalog covers the radio telescope (every key of its six prefixes)',()=>{
   expect(FR5_KEYS.length).toBe(646);
   expect(FR5_KEYS.filter(k=>!Object.hasOwn(fr,k))).toEqual([]);
+ });
+ it('Front FR-REL: the catalog is complete and strict: every en.json key, the same {params}, strings only, no extra key; every map complete',()=>{
+  // As Spanish's ES-REL and Portuguese's PT-REL checks: strictness lives here, since the split bundle builds each module with the
+  // English fallback.
+  expect(()=>createI18n(fr as Record<MessageKey,string>,'fr')).not.toThrow();
+  expect(Object.keys(en).filter(k=>!Object.hasOwn(fr,k))).toEqual([]);
+  for(const [id,map] of Object.entries(FRENCH.maps??{}))expect(mapParity(ENGLISH_MAPS[id as MapId],map),id).toEqual([]);
+  expect(MAP_IDS.filter(id=>!Object.hasOwn(FRENCH.maps??{},id))).toEqual([]);
  });
  it('every map has its English shape: the shell maps complete, the header-name maps partial',()=>{
   for(const [id,map] of Object.entries(FRENCH.maps??{})){

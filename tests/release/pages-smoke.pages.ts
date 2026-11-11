@@ -5,6 +5,7 @@
 import {test,expect,type Page} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
 import {VIZIER_POLICY} from '../../src/core/vizierNomad';
+import {OBJECT_X_LAB_FR} from '../../src/i18n/fr/maps/objectXLab';
 // @ts-expect-error The planner is a plain JS script (scripts/i18n-split.mjs), as tests import scripts/audit-ui-messages.mjs.
 import {loadLanguages,planLanguage} from '../../scripts/i18n-split.mjs';
 
@@ -15,6 +16,10 @@ const MPC=manifest.assembled.find(a=>a.name==='ObjX_MPC.CMO')!;
 const MPC_TILES=MPC.tiles.map(t=>({path:t.replace(/^public/,''),sha256:manifest.files.find(f=>f.path===t)!.sha256}));
 const recorded=readFile(new URL('../fixtures/vizier/nomad-56.75+24.12-r0.01.xml',import.meta.url));
 const button=(p:Page,name:string)=>p.getByRole('button',{name,exact:true});
+/** Front FR-REL: the French catalog, for the heading and title of a French home (read as the build reads it), and the Object X
+ * guide's French title (src/i18n/fr/maps/objectXLab.ts) for the French lab page's Ouvrir le TP. */
+const FRENCH_CATALOG=JSON.parse(await readFile(new URL('../../src/i18n/fr/fr.json',import.meta.url),'utf8')) as Record<string,string>;
+const FRENCH_OBJECT_X_GUIDE:string=OBJECT_X_LAB_FR.title;
 
 type Problems={console:string[];errors:string[];csp:string[];external:string[];language:string[];tags:string[]};
 const LANGUAGES=loadLanguages() as {tag:string}[];
@@ -69,8 +74,9 @@ test('the page, a hashed bundle and an original file carry the release headers',
  const whole=await request.get('/original/orbit/ObjX_MPC.CMO');
  expect([whole.status(),whole.headers()['content-type']]).toEqual([404,'text/html; charset=utf-8']);
  const notFound=await whole.text();expect(notFound).toContain('This address is not part of OpenVireo.');
- // Front ES-REL: the 404 page is bilingual; Front PT-REL: trilingual.
+ // Front ES-REL: the 404 page is bilingual; Front PT-REL: trilingual; Front FR-REL: quadrilingual.
  expect(notFound).toContain('Esta dirección no forma parte de OpenVireo.');expect(notFound).toContain('Este endereço não faz parte do OpenVireo.');
+ expect(notFound).toContain('Cette adresse ne fait pas partie d’OpenVireo.');expect(notFound).toContain('<div lang="fr">');expect(notFound).toContain('href="/?lang=fr"');
  expect(baseURL).toMatch(/^http:\/\/127\.0\.0\.1:63\d\d$/);// playwright.pages.config.ts admits only 6300–6398
 });
 
@@ -172,36 +178,44 @@ test('Front ES-REL: an es-MX browser opens Spanish without ?lang=, with the sele
 // Front PT-REL: Brazilian Portuguese is released. Every route of the production build in a pt-BR browser, with no ?lang=, fetches
 // the Portuguese core and exactly its area's modules (no area is empty for a released language), settles once, then extends once
 // per area, and logs nothing; the home shows the selector under the release CSP; and on screen Portuguese groups thousands with
-// U+202F (user decision of 2026-11-10) where English and Spanish keep the comma.
-const ptPlan=planOf('pt-BR');
-test.describe('in a Brazilian Portuguese browser (pt-BR)',()=>{
-test.use({locale:'pt-BR'});
-for(const [hash,name] of ROUTES)test(`Front PT-REL: ${name} (${hash}) in Portuguese fetches the core and its area only, with no error`,async({page,baseURL})=>{
+// U+202F (user decision of 2026-11-10) where English and Spanish keep the comma. Front FR-REL: the same for French in an fr-FR
+// browser (the Portuguese titles kept; French groups thousands with U+202F too, user decision of 2026-11-11).
+const RELEASED_SMOKE:readonly Readonly<{tag:string;locale:string;front:string;describe:string;name:string;heading:string;title:string}>[]=[
+ {tag:'pt-BR',locale:'pt-BR',front:'PT-REL',describe:'in a Brazilian Portuguese browser (pt-BR)',name:'Portuguese',heading:'Comece pelo céu.',title:'OpenVireo · Práticas de astronomia do CLEA VIREO no seu navegador'},
+ {tag:'fr',locale:'fr-FR',front:'FR-REL',describe:'in a French browser (fr-FR)',name:'French',heading:FRENCH_CATALOG['sky.title'],title:FRENCH_CATALOG['app.documentTitle']},
+];
+const OPTIONS=['English','Español','Português (Brasil)','Français'];
+for(const R of RELEASED_SMOKE){
+const plan=planOf(R.tag);
+test.describe(R.describe,()=>{
+test.use({locale:R.locale});
+for(const [hash,name] of ROUTES)test(`Front ${R.front}: ${name} (${hash}) in ${R.name} fetches the core and its area only, with no error`,async({page,baseURL})=>{
  const p=await watch(page,baseURL!);
  await page.addInitScript(()=>localStorage.setItem('openvireo.tour.v1','done'));
  await page.goto(`/${hash}`);await page.waitForLoadState('networkidle');
  await expect(page.locator('h1:visible, h2:visible').first()).toBeVisible();
- await expect(page.locator('html')).toHaveAttribute('lang','pt-BR');
+ await expect(page.locator('html')).toHaveAttribute('lang',R.tag);
  await expect(page.locator('[data-testid=route-error],[data-testid=site-updated],[data-testid=area-failure],[data-testid=language-failure]')).toHaveCount(0);
  await page.waitForTimeout(500);
  expect({console:p.console,errors:p.errors,csp:await violations(page),external:p.external}).toEqual({console:[],errors:[],csp:[],external:[]});
- const area=AREA_OF[hash],modules=modulesOf(area,ptPlan);
- expect(p.language[0]).toBe('core');expect(p.language.slice(1).sort()).toEqual(modules);expect(new Set(p.tags)).toEqual(new Set(['pt-BR']));
+ const area=AREA_OF[hash],modules=modulesOf(area,plan);
+ expect(p.language[0]).toBe('core');expect(p.language.slice(1).sort()).toEqual(modules);expect(new Set(p.tags)).toEqual(new Set([R.tag]));
  expect(await language(page)).toEqual({sets:area?2:1,earlyReads:0,changes:[]});
 });
-test('Front PT-REL: a pt-BR browser opens Portuguese without ?lang=, with the selector offering three languages, under the release CSP',async({page,baseURL})=>{
+test(R.tag==='pt-BR'?'Front PT-REL: a pt-BR browser opens Portuguese without ?lang=, with the selector offering three languages, under the release CSP':`Front ${R.front}: a ${R.locale} browser opens ${R.name} without ?lang=, with the selector offering four languages, under the release CSP`,async({page,baseURL})=>{
  const p=await watch(page,baseURL!);
- await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Comece pelo céu.'})).toBeVisible();
- expect(await page.evaluate(()=>document.documentElement.lang)).toBe('pt-BR');
- await expect(page).toHaveTitle('OpenVireo · Práticas de astronomia do CLEA VIREO no seu navegador');
- await expect(page.getByTestId('language-choice')).toBeVisible();await expect(page.getByTestId('language-select')).toHaveValue('pt-BR');
- await expect(page.getByTestId('language-select').locator('option')).toHaveText(['English','Español','Português (Brasil)']);
- await page.waitForLoadState('networkidle');expect(p.language).toEqual(['core']);expect(p.tags).toEqual(['pt-BR']);
+ await page.goto('/#observatory');await expect(page.getByRole('heading',{name:R.heading})).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.lang)).toBe(R.tag);
+ await expect(page).toHaveTitle(R.title);
+ await expect(page.getByTestId('language-choice')).toBeVisible();await expect(page.getByTestId('language-select')).toHaveValue(R.tag);
+ await expect(page.getByTestId('language-select').locator('option')).toHaveText(OPTIONS);
+ await page.waitForLoadState('networkidle');expect(p.language).toEqual(['core']);expect(p.tags).toEqual([R.tag]);
  expect(await language(page)).toEqual({sets:1,earlyReads:0,changes:[]});
  expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);
 });
 });
-for(const [locale,lang,count] of [['pt-PT','pt-BR','31\u202f147'],['pt','pt-BR','31\u202f147'],['es-MX','es-419','31,147'],['en-US','en','31,147']] as const)test(`Front PT-REL: a ${locale} browser opens ${lang}; the variable-star catalog count reads ${count.replace('\u202f','\\u202f')}`,async({browser})=>{
+}
+for(const [locale,lang,count] of [['pt-PT','pt-BR','31\u202f147'],['pt','pt-BR','31\u202f147'],['fr-CA','fr','31\u202f147'],['fr-BE','fr','31\u202f147'],['es-MX','es-419','31,147'],['en-US','en','31,147']] as const)test(`Front ${lang==='fr'?'FR-REL':'PT-REL'}: a ${locale} browser opens ${lang}; the variable-star catalog count reads ${count.replace('\u202f','\\u202f')}`,async({browser})=>{
  const page=await browser.newPage({locale});
  await page.goto('/#variable-stars');await expect(page.locator('html')).toHaveAttribute('lang',lang,{timeout:20_000});
  // The scope's literal count, and the result line's count from the map's formatter (31,147 records match an empty search).
@@ -428,10 +442,12 @@ test('Front SEO: the lab pages, sitemap and robots.txt are served with the relea
 // Front ES-SEO: the Spanish search pages under /es/ are served like the English ones, every page names its translations
 // (hreflang), and a Spanish lab page opens the app in Spanish in an English browser under the release policy. Front PT-SEO: the
 // same for the Brazilian Portuguese pages under /pt-br/ (the Spanish test keeps its title), and the home pages' alternates name
-// all three languages (Portuguese as pt-BR and pt).
+// all three languages (Portuguese as pt-BR and pt). Front FR-REL+SEO: the French pages under /fr/ too, and the alternates name
+// four languages (French as fr).
 const SEO_SMOKE=[
  {tag:'es-419',prefix:'/es',image:'/og-image-es.png',openLab:'Abrir la práctica',guide:'En busca del Objeto X',title:'Front ES-SEO: the Spanish pages, their preview image and the hreflang links are served with the release headers'},
  {tag:'pt-BR',prefix:'/pt-br',image:'/og-image-pt-br.png',openLab:'Abrir a prática',guide:'Em busca do Objeto X',title:'Front PT-SEO: the Brazilian Portuguese pages, their preview image and the hreflang links are served with the release headers'},
+ {tag:'fr',prefix:'/fr',image:'/og-image-fr.png',openLab:'Ouvrir le TP',guide:FRENCH_OBJECT_X_GUIDE,title:'Front FR-REL+SEO: the French pages, their preview image and the hreflang links are served with the release headers'},
 ] as const;
 for(const L of SEO_SMOKE)test(L.title,async({page,request,baseURL})=>{
  for(const [path,type] of [[`${L.prefix}/`,'text/html'],[`${L.prefix}/labs/`,'text/html'],[`${L.prefix}/labs/pulsars/`,'text/html'],[L.image,'image/png']] as const){
@@ -441,7 +457,7 @@ for(const L of SEO_SMOKE)test(L.title,async({page,request,baseURL})=>{
  }
  for(const path of [L.prefix,`${L.prefix}/labs/hubble`]){const r=await request.get(path,{maxRedirects:0});expect(r.status(),path).toBe(308);expect(new URL(r.headers().location,baseURL).pathname,path).toBe(`${path}/`);}
  const alternates=(html:string)=>[...html.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)"\/>/g)].map(m=>`${m[1]} ${m[2]}`);
- const home=['en https://openvireo.space/','es https://openvireo.space/es/','pt-BR https://openvireo.space/pt-br/','pt https://openvireo.space/pt-br/','x-default https://openvireo.space/'];
+ const home=['en https://openvireo.space/','es https://openvireo.space/es/','pt-BR https://openvireo.space/pt-br/','pt https://openvireo.space/pt-br/','fr https://openvireo.space/fr/','x-default https://openvireo.space/'];
  expect(alternates(await (await request.get('/')).text())).toEqual(home);expect(alternates(await (await request.get(`${L.prefix}/`)).text())).toEqual(home);
  const sitemap=await (await request.get('/sitemap.xml')).text();expect(sitemap).toContain(`<loc>https://openvireo.space${L.prefix}/labs/pulsars/</loc>`);
  const p=await watch(page,baseURL!);

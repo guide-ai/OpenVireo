@@ -4,6 +4,7 @@
 // no network request (every request is aborted). Text is set in DejaVu Sans, so run it with the project's test fontconfig, e.g.
 //   FONTCONFIG_FILE=…/fonts.conf node scripts/render-og-image.mjs es-419            → public/og-image-es.png
 //   FONTCONFIG_FILE=…/fonts.conf node scripts/render-og-image.mjs pt-BR             → public/og-image-pt-br.png
+//   FONTCONFIG_FILE=…/fonts.conf node scripts/render-og-image.mjs fr                → public/og-image-fr.png
 //   node scripts/render-og-image.mjs en /tmp/check.png                               (English, to compare with the original)
 // The English image predates this script and is not re-rendered: pass an output path for English.
 // Front RT9: the page takes the language's direction from the app's registry (src/seo/languages.ts seoDirection): a right-to-left

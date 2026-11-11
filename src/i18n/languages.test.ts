@@ -55,14 +55,14 @@ describe('Front SC8: the language registry (src/i18n/languages.json)',()=>{
  });
  it('Spanish is released and keeps its ES-REL behaviour: es and es-* (any case), <html lang> es-419, Español in the selector',()=>{
   // Front PT0 registered Brazilian Portuguese before its release (a ?lang=pt-BR preview only); Front PT-REL released it. Front FR0
-  // registered French before its release.
-  expect(LANGUAGES.map(l=>[l.tag,l.released])).toEqual([['es-419',true],['pt-BR',true],['fr',false]]);
+  // registered French before its release; Front FR-REL released it.
+  expect(LANGUAGES.map(l=>[l.tag,l.released])).toEqual([['es-419',true],['pt-BR',true],['fr',true]]);
   for(const tag of ['es','es-MX','es-ES','ES-ar','es-419','es-Latn-MX'])expect(matchLanguage(tag)?.tag,tag).toBe('es-419');
   for(const tag of ['','en','en-US','esp','eus','et','ca-ES'])expect(matchLanguage(tag),tag).toBeUndefined();
-  // Front FR0: fr-ES is French spoken in Spain, so it asks for French (registered, not yet released).
-  expect(matchLanguage('fr-ES')?.tag).toBe('fr');expect(isReleased('fr')).toBe(false);
+  // Front FR0: fr-ES is French spoken in Spain, so it asks for French (released since FR-REL).
+  expect(matchLanguage('fr-ES')?.tag).toBe('fr');expect(isReleased('fr')).toBe(true);
   expect(HTML_LANG['es-419']).toBe('es-419');expect(isReleased('es-419')).toBe(true);expect(isReleased('en')).toBe(false);
-  expect(selectorLanguages('en').map(optionLabel)).toEqual(['English','Español','Português (Brasil)']);expect(SOURCE_LANGUAGE.tag).toBe('en');
+  expect(selectorLanguages('en').map(optionLabel)).toEqual(['English','Español','Português (Brasil)','Français']);expect(SOURCE_LANGUAGE.tag).toBe('en');
   expect(failureNotice('language','es-419')).toEqual({en:'Spanish could not be loaded; English is shown. Reload to try again.',own:'No se pudo cargar el español; se muestra en inglés. Recarga para intentarlo de nuevo.',lang:'es-419'});
   expect(failureNotice('area','es-419')).toEqual({en:'Part of the Spanish text could not be loaded; that part is shown in English. Reload to try again.',own:'No se pudo cargar parte del texto en español; esa parte se muestra en inglés. Recarga para intentarlo de nuevo.',lang:'es-419'});
   expect(failureNotice('language','id')).toBeUndefined();
@@ -91,25 +91,26 @@ describe('Front SC8: detection for the languages to come (scripts plan §7, pt-B
  it('opens a language from the browser only once it is released; before that only its ?lang= preview, never storage',()=>{
   const decide=(registry:readonly LanguageEntry[],over:Partial<Parameters<typeof decideLocale>[0]>)=>decideLocale({param:null,stored:null,languages:['en-US'],dev:false,registry,...over});
   for(const [tag,expected] of TABLE){
-   expect(decide(PLANNED,{languages:[tag]}),tag).toBe(expected==='es-419'||expected==='pt-BR'?expected:'en');
+   expect(decide(PLANNED,{languages:[tag]}),tag).toBe(expected==='es-419'||expected==='pt-BR'||expected==='fr'?expected:'en');
    const all=releasing(PLANNED,...PLANNED.map(l=>l.tag));
    expect(decide(all,{languages:[tag]}),tag).toBe(expected??'en');
   }
-  expect(decide(PLANNED,{param:'fr'})).toBe('fr');expect(decide(PLANNED,{param:'FR'})).toBe('en');expect(decide(PLANNED,{param:'pt-br'})).toBe('en');
-  expect(decide(PLANNED,{stored:'fr',languages:['fr-FR']})).toBe('en');
-  expect(decide(releasing(PLANNED,'fr'),{stored:'fr'})).toBe('fr');expect(decide(PLANNED,{stored:'pt-BR'})).toBe('pt-BR');
+  // Front FR-REL: French is released, so the unreleased planned language of these rows is Indonesian (id), as PT-REL moved them to fr.
+  expect(decide(PLANNED,{param:'id'})).toBe('id');expect(decide(PLANNED,{param:'ID'})).toBe('en');expect(decide(PLANNED,{param:'pt-br'})).toBe('en');
+  expect(decide(PLANNED,{stored:'id',languages:['id-ID']})).toBe('en');
+  expect(decide(releasing(PLANNED,'id'),{stored:'id'})).toBe('id');expect(decide(PLANNED,{stored:'pt-BR'})).toBe('pt-BR');expect(decide(PLANNED,{stored:'fr'})).toBe('fr');
   // Only the first preference decides, and an unreleased first preference gives English, not the next language.
-  expect(decide(PLANNED,{languages:['fr-FR','pt-BR']})).toBe('en');expect(decide(releasing(PLANNED,'fr'),{languages:['fr-FR','pt-BR']})).toBe('fr');
-  expect(decide(PLANNED,{languages:['pt-BR','es']})).toBe('pt-BR');
+  expect(decide(PLANNED,{languages:['id-ID','pt-BR']})).toBe('en');expect(decide(releasing(PLANNED,'id'),{languages:['id-ID','pt-BR']})).toBe('id');
+  expect(decide(PLANNED,{languages:['pt-BR','es']})).toBe('pt-BR');expect(decide(PLANNED,{languages:['fr-CA','pt-BR']})).toBe('fr');
   // A Traditional-Chinese browser opens English, and the selector offers Simplified once that is released.
   const zh=releasing(PLANNED,'zh-Hans');
   expect(decide(zh,{languages:['zh-TW']})).toBe('en');expect(selectorLanguages('en',zh).map(l=>l.tag)).toContain('zh-Hans');
  });
  it('lists English, the released languages and a preview\'s own language, by autonym (with the English name outside Latin script)',()=>{
-  expect(selectorLanguages('en',PLANNED).map(l=>l.tag)).toEqual(['en','es-419','pt-BR']);
-  expect(selectorLanguages('ja',PLANNED).map(l=>l.tag)).toEqual(['en','es-419','pt-BR','ja']);
+  expect(selectorLanguages('en',PLANNED).map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr']);
+  expect(selectorLanguages('ja',PLANNED).map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','ja']);
   const all=releasing(PLANNED,...PLANNED.map(l=>l.tag));
   expect(selectorLanguages('en',[...all,ZH_HANT]).map(optionLabel)).toEqual(['English','Español','Português (Brasil)','Français','Bahasa Indonesia','हिन्दी (Hindi)','日本語 (Japanese)','简体中文 (Chinese, Simplified)','Русский (Russian)']);
-  expect(selectorShown('en',PLANNED.slice(2))).toBe(false);expect(selectorShown('fr',PLANNED.slice(2))).toBe(true);expect(selectorShown('qps-cjk',all)).toBe(false);
+  expect(selectorShown('en',PLANNED.slice(3))).toBe(false);expect(selectorShown('id',PLANNED.slice(3))).toBe(true);expect(selectorShown('qps-cjk',all)).toBe(false);
  });
 });

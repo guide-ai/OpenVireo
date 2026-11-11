@@ -9,7 +9,7 @@ import {TRANSLATED,helpText} from './languageText';
 // in Chromium; for the release it was also run with `--browser=firefox` and `--browser=webkit` (docs/I18N.md, ES-REL). An es-MX
 // browser opens Spanish (boot, the core module, a route area, a lazy dialog, the help viewer), the selector changes and stores the
 // language, an en-US browser stays English, and the Spanish home and a lab lay out at 320 px. Front PT-REL: this file was
-// es-browsers.spec.ts; each released language runs the same smoke in its own browser (es-MX, pt-BR), its text read from its own
+// es-browsers.spec.ts; each released language runs the same smoke in its own browser (es-MX, pt-BR, fr-FR since FR-REL), its text read from its own
 // sources (tests/i18n/languageText.ts), the Spanish titles unchanged.
 const id=(page:Page,t:string)=>page.getByTestId(t);
 async function open(page:Page,hash:string,save:string){

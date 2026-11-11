@@ -5,7 +5,7 @@ import {nextAddress} from '../components/LanguageChoice';
 import {releasing} from '../../tests/fixtures/i18n/registry';
 const decide=(over:Partial<LocaleInputs>)=>decideLocale({param:null,stored:null,languages:['en-US'],dev:false,...over});
 /** Spanish before its release: the registry as it was until ES-REL, with no language released (Front SC8: a per-language gate;
- * since PT-REL Portuguese is released too, so it is closed here as well). */
+ * since PT-REL Portuguese and since FR-REL French are released too, so they are closed here as well). */
 const UNRELEASED=LANGUAGES.map(l=>({...l,released:false}));
 describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-09)',()=>{
  it('Front ES-REL: Spanish is released, so the stored choice and the browser language decide and the selector is shown',()=>{
@@ -22,7 +22,7 @@ describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-0
  });
  it('after ES-REL: the link parameter, then the stored choice, then the first browser language',()=>{
   for(const languages of [['es-MX'],['es'],['es-ES'],['ES-ar'],['es-419','en']])expect(decide({languages})).toBe('es-419');
-  for(const languages of [['en-US','es-MX'],['fr-FR'],['et'],['eus'],['esp'],[]])expect(decide({languages})).toBe('en');
+  for(const languages of [['en-US','es-MX'],['de-DE'],['et'],['eus'],['esp'],[]])expect(decide({languages})).toBe('en');
   expect(decide({stored:'en',languages:['es-MX']})).toBe('en');
   expect(decide({stored:'es-419',languages:['en-US']})).toBe('es-419');
   expect(decide({param:'en',stored:'es-419',languages:['es-MX']})).toBe('en');
@@ -59,18 +59,21 @@ describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-0
   for(const languages of [['pt-BR'],['pt'],['pt-PT']])expect(decide({languages,registry:before}),languages.join(',')).toBe('en');
   expect(decide({stored:'pt-BR',languages:['pt-BR'],registry:before})).toBe('en');expect(decide({param:'pt-BR',registry:before})).toBe('pt-BR');
  });
- it('Front FR0: French is registered before its release: only ?lang=fr opens it; fr, fr-FR, fr-CA and FR-ch browsers and a stored fr get English',()=>{
-  expect(isReleased('fr')).toBe(false);
-  for(const languages of [['fr'],['fr-FR'],['fr-CA'],['FR-ch'],['fr-BE','es-MX']])expect(decide({languages}),languages.join(',')).toBe('en');
-  expect(decide({languages:['fr-FR','pt-BR']})).toBe('en');expect(decide({languages:['es-MX','fr-FR']})).toBe('es-419');
-  expect(decide({stored:'fr',languages:['fr-FR']})).toBe('en');
-  expect(decide({param:'fr',languages:['en-US']})).toBe('fr');expect(decide({param:'fr',stored:'es-419',languages:['pt-BR']})).toBe('fr');
+ it('Front FR-REL: French is released: every fr and fr-* browser (any case) opens fr; frr, fur, br and oc do not; storage is honoured',()=>{
+  expect(isReleased('fr')).toBe(true);
+  for(const languages of [['fr'],['fr-FR'],['fr-CA'],['fr-BE'],['FR-ch'],['fr-LU'],['fr-SN'],['fr-BE','es-MX']])expect(decide({languages}),languages.join(',')).toBe('fr');
+  // frr (North Frisian), fur (Friulian), br (Breton), oc (Occitan) and wa (Walloon) are other languages (plan front-i18n-fr.md §2).
+  for(const languages of [['frr'],['fur'],['br'],['oc'],['wa'],['en-US','fr-FR']])expect(decide({languages}),languages.join(',')).toBe('en');
+  expect(decide({languages:['fr-CA','pt-BR']})).toBe('fr');expect(decide({languages:['es-MX','fr-FR']})).toBe('es-419');expect(decide({languages:['pt-BR','fr-FR']})).toBe('pt-BR');
+  expect(decide({stored:'fr',languages:['en-US']})).toBe('fr');expect(decide({stored:'fr',languages:['pt-BR']})).toBe('fr');
+  expect(decide({stored:'en',languages:['fr-FR']})).toBe('en');expect(decide({stored:'es-419',languages:['fr-CA']})).toBe('es-419');
+  expect(decide({param:'fr',stored:'es-419',languages:['pt-BR']})).toBe('fr');expect(decide({param:'en',languages:['fr-FR']})).toBe('en');
+  // ?lang= takes the exact tag only; other spellings are no tag (English), while the browser language matches in any case.
   for(const junk of ['FR','fr-FR','fr-CA','fr-fr'])expect(decide({param:junk,languages:['en-US']}),junk).toBe('en');
   expect(HTML_LANG.fr).toBe('fr');expect(selectorShown('fr')).toBe(true);
-  // Once released (FR-REL), every fr and fr-* browser in any case opens it; frr (North Frisian) and fur (Friulian) do not.
-  const after=LANGUAGES.map(l=>l.tag==='fr'?{...l,released:true}:l);
-  for(const languages of [['fr'],['fr-FR'],['fr-CA'],['FR-ch'],['fr-SN']])expect(decide({languages,registry:after}),languages.join(',')).toBe('fr');
-  for(const languages of [['frr'],['fur'],['br'],['en-US','fr-FR']])expect(decide({languages,registry:after}),languages.join(',')).toBe('en');
-  expect(decide({languages:['fr-CA','pt-BR'],registry:after})).toBe('fr');expect(decide({stored:'fr',languages:['en-US'],registry:after})).toBe('fr');
+  // Before its release (FR0–FR-HELP) only ?lang=fr reached it.
+  const before=LANGUAGES.map(l=>l.tag==='fr'?{...l,released:false}:l);
+  for(const languages of [['fr'],['fr-FR'],['fr-CA']])expect(decide({languages,registry:before}),languages.join(',')).toBe('en');
+  expect(decide({stored:'fr',languages:['fr-FR'],registry:before})).toBe('en');expect(decide({param:'fr',registry:before})).toBe('fr');
  });
 });

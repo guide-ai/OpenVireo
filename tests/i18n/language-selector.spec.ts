@@ -1,6 +1,6 @@
 import {type Browser,type Page} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
-import {PORTUGUESE_LOCALE,SPANISH_LOCALE} from '../fixtures/language';
+import {FRENCH_LOCALE,PORTUGUESE_LOCALE,SPANISH_LOCALE} from '../fixtures/language';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
 import {FRENCH_TEXT,PORTUGUESE_TEXT} from './languageText';
@@ -25,12 +25,14 @@ async function browserIn(browser:Browser,languages:readonly string[]):Promise<Pa
  return page;
 }
 /** Seeds the stored choice once, before the first load of this page (later loads keep what the page stored). */
+/** Front FR-REL: the options every load offers, in registry order. */
+const FOUR=['English','Español','Português (Brasil)','Français'];
 const seedChoice=(page:Page,value:string)=>page.addInitScript(v=>{if(!sessionStorage.getItem('seeded')){localStorage.setItem('openvireo-language',v);sessionStorage.setItem('seeded','1');}},value);
 async function languageOf(page:Page,query=''){await open(page,query);return page.locator('html').getAttribute('lang');}
 
-test('the first browser language decides: es, es-MX, es-ES and es-419 open Spanish; en-US, en-US then es-MX, fr and none open English',async({browser})=>{
+test('the first browser language decides: es, es-MX, es-ES and es-419 open Spanish; en-US, en-US then es-MX, de and none open English',async({browser})=>{
  test.setTimeout(120_000);
- for(const [languages,expected] of [[['es-MX'],'es-419'],[['es'],'es-419'],[['es-ES'],'es-419'],[['es-419','en'],'es-419'],[['en-US'],'en'],[['en-US','es-MX'],'en'],[['fr-FR','es-MX'],'en'],[[],'en']] as const){
+ for(const [languages,expected] of [[['es-MX'],'es-419'],[['es'],'es-419'],[['es-ES'],'es-419'],[['es-419','en'],'es-419'],[['en-US'],'en'],[['en-US','es-MX'],'en'],[['de-DE','es-MX'],'en'],[[],'en']] as const){
   const page=await browserIn(browser,languages);
   expect(await languageOf(page),languages.join(',')).toBe(expected);
   await expect(page.locator('.investigation-toolbar')).toContainText(expected==='es-419'?es['project.save']:en['project.save']);
@@ -56,11 +58,11 @@ test('a stored choice beats the browser language, and a ?lang= link beats both f
  await englishBrowser.close();
 });
 
-test('Front SC8: the selector lists English, Español and (since PT-REL) Português (Brasil), each named and marked in its own language, and works from the keyboard',async({page})=>{
+test('Front SC8: the selector lists English, Español, (since PT-REL) Português (Brasil) and (since FR-REL) Français, each named and marked in its own language, and works from the keyboard',async({page})=>{
  await open(page);
  const select=page.getByRole('combobox',{name:'Idioma / Language'});
- await expect(select.locator('option')).toHaveText(['English','Español','Português (Brasil)']);
- expect(await select.locator('option').evaluateAll(o=>o.map(x=>[(x as HTMLOptionElement).value,x.getAttribute('lang')]))).toEqual([['en','en'],['es-419','es-419'],['pt-BR','pt-BR']]);
+ await expect(select.locator('option')).toHaveText(FOUR);
+ expect(await select.locator('option').evaluateAll(o=>o.map(x=>[(x as HTMLOptionElement).value,x.getAttribute('lang')]))).toEqual([['en','en'],['es-419','es-419'],['pt-BR','pt-BR'],['fr','fr']]);
  // Keyboard: focus the select and choose with the keyboard; the confirmation opens with Cancel focused, and Escape restores English.
  await select.focus();await expect(select).toBeFocused();
  await select.press('ArrowDown');
@@ -71,7 +73,7 @@ test('Front SC8: the selector lists English, Español and (since PT-REL) Portugu
 
 // Front PT-REL (plan front-i18n-pt-br.md §4): Brazilian Portuguese is released. Every pt and pt-* browser (any case) opens it, as
 // every es-* opens Spanish; Galician and a browser whose first language is another stay as they were; a stored choice and a
-// `?lang=` link decide as for Spanish, and every load offers English, Español and Português (Brasil).
+// `?lang=` link decide as for Spanish, and every load offers English, Español and Português (Brasil) (and Français since FR-REL).
 test('Front PT-REL: pt, pt-BR, pt-PT and PT-br browsers open Português (Brasil); the first preference decides; a stored pt-BR beats the browser',async({browser})=>{
  test.setTimeout(180_000);
  const P=PORTUGUESE_TEXT;
@@ -80,7 +82,7 @@ test('Front PT-REL: pt, pt-BR, pt-PT and PT-br browsers open Português (Brasil)
   expect(await languageOf(page),languages.join(',')).toBe(expected);
   await expect(page.locator('.investigation-toolbar')).toContainText(expected==='pt-BR'?P.catalog['project.save']:expected==='es-419'?es['project.save']:en['project.save']);
   const select=id(page,'language-select');
-  await expect(select.locator('option')).toHaveText(['English','Español','Português (Brasil)']);await expect(select).toHaveValue(expected);
+  await expect(select.locator('option')).toHaveText(FOUR);await expect(select).toHaveValue(expected);
   if(expected==='pt-BR'){await expect(page).toHaveTitle(P.catalog['app.documentTitle']);await expect(page.getByRole('combobox',{name:'Idioma / Language'})).toBeVisible();}
   await page.close();
  }
@@ -106,42 +108,51 @@ test('Front PT-REL: pt, pt-BR, pt-PT and PT-br browsers open Português (Brasil)
  await page.close();
 });
 
-// Front FR0 (plan front-i18n-fr.md §2): French is registered before its release. Only its `?lang=fr` preview reaches it and offers
-// it; fr, fr-FR, fr-CA and FR-ch browsers and a stored fr get English with English, Español and Português (Brasil) only.
-/** Review (FR0): the requests for French modules (the virtual i18n-fr-* chunks of the dev server, or src/i18n/fr/). */
-function frenchRequests(page:Page):string[]{
- const out:string[]=[];page.on('request',r=>{if(/openvireo-i18n\/i18n-fr-|\/src\/i18n\/fr\//.test(r.url()))out.push(r.url());});return out;
-}
-test('Front FR0: only a ?lang=fr preview opens and offers Français; fr, fr-FR, fr-CA and FR-ch browsers and a stored fr get English',async({browser})=>{
+// Front FR0 (plan front-i18n-fr.md §2) registered French behind its `?lang=fr` preview; Front FR-REL released it. Every fr and fr-*
+// browser (any case) opens it; frr, br and a browser whose first language is another stay as they were; a stored choice and a
+// `?lang=` link decide as for the other languages, and every load offers English, Español, Português (Brasil) and Français.
+test('Front FR-REL: fr, fr-FR, fr-CA, fr-BE and FR-ch browsers open Français; the first preference decides; a stored fr beats the browser',async({browser})=>{
  test.setTimeout(180_000);
- const F=FRENCH_TEXT;
- for(const languages of [['fr'],['fr-FR'],['fr-CA'],['FR-ch'],['fr-BE','es-MX']] as const){
-  const page=await browserIn(browser,languages);const french=frenchRequests(page);
-  expect(await languageOf(page),languages.join(',')).toBe('en');
-  await expect(id(page,'language-select').locator('option')).toHaveText(['English','Español','Português (Brasil)']);
-  expect(french,`${languages.join(',')}: no French module is fetched`).toEqual([]);
+ const F=FRENCH_TEXT,P=PORTUGUESE_TEXT;
+ for(const [languages,expected] of [[['fr'],'fr'],[['fr-FR'],'fr'],[['fr-CA'],'fr'],[['fr-BE'],'fr'],[['FR-ch'],'fr'],[['fr-SN','es-MX'],'fr'],[['en-US','fr-FR'],'en'],[['es-MX','fr-FR'],'es-419'],[['pt-BR','fr-FR'],'pt-BR'],[['frr'],'en'],[['br'],'en']] as const){
+  const page=await browserIn(browser,languages);
+  expect(await languageOf(page),languages.join(',')).toBe(expected);
+  await expect(page.locator('.investigation-toolbar')).toContainText(expected==='fr'?F.catalog['project.save']:expected==='pt-BR'?P.catalog['project.save']:expected==='es-419'?es['project.save']:en['project.save']);
+  const select=id(page,'language-select');
+  await expect(select.locator('option')).toHaveText(FOUR);await expect(select).toHaveValue(expected);
+  if(expected==='fr'){
+   await expect(page).toHaveTitle(F.catalog['app.documentTitle']);await expect(page.getByRole('combobox',{name:F.maps.languageChoice.legend})).toBeVisible();
+   expect(await select.locator('option').evaluateAll(o=>o.map(x=>[(x as HTMLOptionElement).value,x.getAttribute('lang')]))).toEqual([['en','en'],['es-419','es-419'],['pt-BR','pt-BR'],['fr','fr']]);
+  }
   await page.close();
  }
- const storedFr=await browserIn(browser,['fr-FR']);await seedChoice(storedFr,'fr');const storedFrench=frenchRequests(storedFr);
- expect(await languageOf(storedFr)).toBe('en');expect(storedFrench).toEqual([]);await storedFr.close();
- const page=await browserIn(browser,['en-US']);
- expect(await languageOf(page,'?lang=fr')).toBe('fr');
- await expect(page.locator('.investigation-toolbar')).toContainText(F.catalog['project.save']);await expect(page).toHaveTitle(F.catalog['app.documentTitle']);
- const select=page.getByRole('combobox',{name:F.maps.languageChoice.legend});
- await expect(select.locator('option')).toHaveText(['English','Español','Português (Brasil)','Français']);await expect(select).toHaveValue('fr');
- expect(await select.locator('option').evaluateAll(o=>o.map(x=>[(x as HTMLOptionElement).value,x.getAttribute('lang')]))).toEqual([['en','en'],['es-419','es-419'],['pt-BR','pt-BR'],['fr','fr']]);
- // A change on the preview stores nothing (SC8): the choice travels as ?lang=, and the dialog, in French, says so.
+ // A stored choice beats the browser both ways, and ?lang= beats both for that load only.
+ const portuguese=await browserIn(browser,['pt-BR']);await seedChoice(portuguese,'fr');
+ expect(await languageOf(portuguese)).toBe('fr');expect(await languageOf(portuguese,'?lang=pt-BR')).toBe('pt-BR');expect(await stored(portuguese)).toBe('fr');
+ await portuguese.close();
+ const french=await browserIn(browser,['fr-FR']);await seedChoice(french,'en');
+ expect(await languageOf(french)).toBe('en');await french.close();
+ // A change from French is stored (no longer a preview): the dialog is French, the page reloads at a clean address.
+ const page=await browserIn(browser,['fr-FR']);
+ await open(page,'','spectrum');
  await choose(page,'pt-BR');
  const dialog=id(page,'language-confirm');await expect(dialog).toContainText(F.maps.languageChoice.title);
- await expect(dialog).toContainText(F.maps.languageChoice.reload('Português (Brasil)'));await expect(id(page,'language-preview')).toHaveText(F.maps.languageChoice.preview);
- await Promise.all([page.waitForURL(/lang=pt-BR/),id(page,'language-change').click()]);
- await expect(page.locator('html')).toHaveAttribute('lang','pt-BR');expect(await stored(page)).toBeNull();
+ await expect(dialog).toContainText(F.maps.languageChoice.reload('Português (Brasil)'));await expect(id(page,'language-preview')).toHaveCount(0);
+ await Promise.all([page.waitForEvent('load'),id(page,'language-change').click()]);
+ await expect(page.locator('html')).toHaveAttribute('lang','pt-BR');expect(await stored(page)).toBe('pt-BR');
+ expect(new URL(page.url()).search).toBe('');expect(new URL(page.url()).hash).toBe('#spectrum');
+ // And back to French from Portuguese.
+ await choose(page,'fr');await expect(dialog).toContainText('Français');
+ await Promise.all([page.waitForEvent('load'),id(page,'language-change').click()]);
+ await expect(page.locator('html')).toHaveAttribute('lang','fr');expect(await stored(page)).toBe('fr');
  await page.close();
 });
 
-test('Front FR0: on the ?lang=fr preview the keyboard steps across all four options without opening the dialog; Enter or leaving asks, Escape returns',async({page})=>{
+test.describe('in a French browser',()=>{
+ test.use({locale:FRENCH_LOCALE});
+test('Front FR-REL: the keyboard steps across all four options without opening the dialog; Enter or leaving asks, Escape returns',async({page})=>{
  const F=FRENCH_TEXT;
- await open(page,'?lang=fr');await expect(page.locator('html')).toHaveAttribute('lang','fr');
+ await open(page);await expect(page.locator('html')).toHaveAttribute('lang','fr');
  const select=page.getByRole('combobox',{name:F.maps.languageChoice.legend}),dialog=id(page,'language-confirm');
  await select.focus();await expect(select).toBeFocused();await expect(select).toHaveValue('fr');
  for(const [key,value] of [['ArrowUp','pt-BR'],['ArrowUp','es-419'],['ArrowUp','en'],['ArrowDown','es-419'],['ArrowDown','pt-BR'],['ArrowDown','fr'],['Home','en'],['End','fr'],['ArrowUp','pt-BR']] as const){
@@ -159,12 +170,14 @@ test('Front FR0: on the ?lang=fr preview the keyboard steps across all four opti
  await expect(dialog).toBeVisible();await expect(dialog).toContainText(F.maps.languageChoice.reload('Español'));
  await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);await expect(select).toHaveValue('fr');
  expect(await page.evaluate(()=>document.activeElement!==document.body&&document.activeElement!==null)).toBe(true);
- expect(new URL(page.url()).search).toBe('?lang=fr');expect(await stored(page)).toBeNull();
+ expect(new URL(page.url()).search).toBe('');expect(await stored(page)).toBeNull();
+});
 });
 
 test.describe('in a Brazilian Portuguese browser',()=>{
  test.use({locale:PORTUGUESE_LOCALE});
-test('Front PT0: the keyboard steps across all three options without opening the dialog; Enter or leaving asks, Escape returns',async({page})=>{
+test('Front PT0: the keyboard steps across all the options without opening the dialog; Enter or leaving asks, Escape returns',async({page})=>{
+ // Front FR-REL: four options since French's release (Français last).
  // SC8 review: on Chromium and Firefox (Windows, Linux) an arrow on the closed select fired `change` at once, so the confirmation
  // opened on the first arrow and the option after the next one could not be reached. Now a step only marks the option pending.
  // Front PT-REL: in a pt-BR browser, which opens Portuguese with no `?lang=`.
@@ -172,7 +185,7 @@ test('Front PT0: the keyboard steps across all three options without opening the
  await open(page);await expect(page.locator('html')).toHaveAttribute('lang','pt-BR');
  const select=page.getByRole('combobox',{name:'Idioma / Language'}),dialog=id(page,'language-confirm');
  await select.focus();await expect(select).toBeFocused();await expect(select).toHaveValue('pt-BR');
- for(const [key,value] of [['ArrowUp','es-419'],['ArrowUp','en'],['ArrowDown','es-419'],['ArrowDown','pt-BR'],['Home','en'],['End','pt-BR'],['ArrowUp','es-419'],['ArrowUp','en']] as const){
+ for(const [key,value] of [['ArrowUp','es-419'],['ArrowUp','en'],['ArrowDown','es-419'],['ArrowDown','pt-BR'],['Home','en'],['End','fr'],['ArrowUp','pt-BR'],['ArrowUp','es-419'],['ArrowUp','en']] as const){
   await page.keyboard.press(key);await expect(select,key).toHaveValue(value);await expect(dialog,`${key} → ${value}`).toHaveCount(0);await expect(select).toBeFocused();
  }
  // Enter asks for the pending option, by its own name, in the current language; Cancel returns to Portuguese.

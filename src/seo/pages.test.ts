@@ -64,9 +64,9 @@ describe('#lab= links',()=>{
 });
 
 describe('sitemap and files',()=>{
- it('lists the home page, the index and each lab page as absolute addresses, in English, Spanish (ES-SEO) and then Brazilian Portuguese (PT-SEO)',()=>{
+ it('lists the home page, the index and each lab page as absolute addresses, in English, Spanish (ES-SEO), Brazilian Portuguese (PT-SEO) and then French (FR-REL+SEO)',()=>{
   const xml=sitemap(),locs=[...xml.matchAll(/<loc>([^<]*)<\/loc>/g)].map(m=>m[1]);
-  expect(locs).toEqual(SITEMAP_PATHS.map(p=>SITE_URL+p));expect(locs).toHaveLength(3*(2+LABS.length));
+  expect(locs).toEqual(SITEMAP_PATHS.map(p=>SITE_URL+p));expect(locs).toHaveLength(4*(2+LABS.length));
   expect(SITEMAP_PATHS.slice(0,2+LABS.length)).toEqual(['/','/labs/',...LABS.map(l=>labUrl(l.slug))]);
  });
  it('every sitemap page except the English home page (the app) is an emitted file, and every emitted page is in the sitemap',()=>{
