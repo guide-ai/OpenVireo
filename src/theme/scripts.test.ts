@@ -220,7 +220,7 @@ describe('scripts.css: breaking, spacing and the fixed heights (plan § 2.3, § 
  it('turns the two fixed text heights into min-height for every script language, the header labels at 12–13 px',()=>{
   const fixed=OWN.filter(r=>r.decls.get('height')==='auto');
   expect(fixed.map(r=>[r.media,r.selectors.join(),r.decls.get('min-height')])).toEqual([
-   ['','.comparison-cursor-live:is(:lang(ja),:lang(zh),:lang(hi),:lang(ru))','86px'],
+   ['','.comparison-cursor-live:is(:lang(ja),:lang(zh),:lang(hi),:lang(ru))','max(86px,calc(3lh + 26px))'],
    ['@media(max-width:570px)','.sidebar:is(:lang(ja),:lang(zh),:lang(hi),:lang(ru))','60px']]);
   expect(ENGLISH.find(r=>r.selectors.includes('.comparison-cursor-live'))?.decls.get('height')).toBe('86px');
   expect(ENGLISH.find(r=>r.media==='@media(max-width:570px)'&&r.selectors.includes('.sidebar'))?.decls.get('height')).toBe('60px');

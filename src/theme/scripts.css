@@ -194,8 +194,11 @@ dialog p:lang(hi),
 .observatory-note:lang(hi){line-height:1.7}
 
 /* ---- 6. Fixed heights that hold lines of text (plan § 3) ---------------------------------------------------------------
- * The classification cursor read-out and the phone sidebar grow with their text instead of cutting it. */
-.comparison-cursor-live:is(:lang(ja),:lang(zh),:lang(hi),:lang(ru)){height:auto;min-height:86px}
+ * The classification cursor read-out and the phone sidebar grow with their text instead of cutting it. The read-out keeps
+ * room for its three lines at the script's own line height (12 px padding and 1 px border above and below), as English's
+ * 86 px does: if it grew when a reading appeared, the plot under the pressed pointer would move and the held comparison
+ * cursor would cancel its reading (Hindi at 1.7: 3 × 20.4 + 26 = 87.2 px; Front SC10/SC12 review). */
+.comparison-cursor-live:is(:lang(ja),:lang(zh),:lang(hi),:lang(ru)){height:auto;min-height:max(86px,calc(3lh + 26px))}
 @media(max-width:570px){.sidebar:is(:lang(ja),:lang(zh),:lang(hi),:lang(ru)){height:auto;min-height:60px}}
 
 /* ---- 7. Long words in narrow rows ---------------------------------------------------------------------------------------

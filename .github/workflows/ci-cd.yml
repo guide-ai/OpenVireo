@@ -79,9 +79,21 @@ jobs:
     # Russian) under pinned test fonts, with their own config (playwright.scripts.config.ts). The runner is pinned to
     # ubuntu-24.04 so its font packages do not change with the ubuntu-latest image; the fonts come from the Ubuntu archive,
     # the same source Playwright's --with-deps already installs from, and scripts/test-fonts.mjs logs each file's SHA-256.
-    name: Script fonts (ja, zh, hi, ru)
+    # Front SC10/SC12 review: two parts, each with the 30-minute limit and its own font install. Playwright's --shard splits by
+    # test count in file order, which would leave every deep walk (tests/scripts/walks.scripts.ts, about three quarters of the
+    # time) in one part; the parts are instead the deep walks under qps-deva, qps-cyrl and qps-rtl, and everything else (the
+    # other script files and the qps-cjk walks). The two selections are complements, so no test is left out.
+    name: Script fonts (ja, zh, hi, ru) (${{ matrix.part }}/2)
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - part: 1
+            select: '--grep-invert="under qps-(deva|cyrl|rtl) at "'
+          - part: 2
+            select: '--grep="under qps-(deva|cyrl|rtl) at "'
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -102,12 +114,12 @@ jobs:
       - run: npm run test:test-fonts
       # Writes the private fontconfig and prints the font-hash log (a font package update shows here first).
       - run: npm run test-fonts
-      - run: npm run test:scripts -- --reporter=line
+      - run: npm run test:scripts -- --reporter=line ${{ matrix.select }}
       - name: Keep the failure evidence
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: scripts-results
+          name: scripts-results-${{ matrix.part }}
           path: test-results/
           retention-days: 7
 

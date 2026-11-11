@@ -71,8 +71,6 @@ const KNOWN:readonly Known[]=[
   why:'The rotated y-axis title (VIREO\'s Relative Intensity) crosses the SVG\'s left edge by about 1 px in the CJK stack, as the Pleiades and cluster titles did before SC11. keepInsideSvg (src/plotTextFit.ts) is the fix, left for the next script front because RT4 edits SVG text. Within 2 px: tolerated, not required.'},
  {walks:['Multi-Spec'],variants:['qps-cjk'],widths:[320,1440],step:'Multi-Spec Control with selections',problem:/^plot text “3” outside its plot card ms-card \(\d+, \d+, -2,/,file:'src/core/overlayLabels.ts (the Multi-Spec field selection numbers)',fontDependent:true,
   why:'The selection number 3 at the top of the Multi-Spec field reaches 2 px above it under the ja stack: the baseline that SKY-LABELS keeps inside the field allows for the Latin ascent, not the taller one of the CJK fallback. Within 2 px: tolerated, not required.'},
- {walks:['E03'],variants:['qps-deva'],widths:[320],step:'sampled flux refused',problem:/^walk stopped: expect\(locator\)\.toHaveCount\(expected\) failed/,file:'src/ComparisonInspectionSurface.tsx (InspectionSurface: the document scroll listener)',
-  why:'At the comparison cursor step a press on the spectrum focuses the surface and the page then scrolls by 1 px (scroll anchoring after the focus change, measured 5152 → 5151), and the surface\'s capture-phase document scroll listener cancels any press in progress, so no reading is kept. A real bug for any language whose lines reflow this way; changing the cancel rule is not a local fix. The rest of the E03 walk is not checked at this variant and width until it is fixed.'},
 ];
 
 test.describe.configure({mode:'parallel'});
