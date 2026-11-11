@@ -2,6 +2,7 @@ import {useEffect,useId,useRef,type KeyboardEvent,type RefObject} from 'react';
 import {RADIO_HOT_LIST_SEARCH_LITERALS as L,RADIO_HOT_LIST_SEARCH_QUERY_MAX,type RadioHotListSearchDraft,type RadioHotListSearchMode} from '../core/radioHotListSearch';
 import type {RadioAntennaTranslate} from './RadioAntennaMessages';
 import {vireo} from '../i18n/vireo';
+import {imeComposing} from '../dialogKeyboard';
 
 export type RadioHotListSearchDialogProps=Readonly<{
  draft:RadioHotListSearchDraft;
@@ -43,7 +44,7 @@ export default function RadioHotListSearchDialog({draft,blocked,ta,onQuery,onMat
  const onKeyDown=(e:KeyboardEvent<HTMLDivElement>)=>{
   if(blocked||ignoreHeld(e))return;
   if(e.key==='Escape'){e.preventDefault();onCancel();return;}
-  if(e.key==='Enter'&&e.target===field.current&&!e.nativeEvent.isComposing){e.preventDefault();onSubmit('top');return;}
+  if(e.key==='Enter'&&e.target===field.current&&!imeComposing(e)){e.preventDefault();onSubmit('top');return;}
   trap(e,root.current);
  };
  return <div className="antenna-backdrop">

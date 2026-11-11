@@ -1,5 +1,9 @@
 import {describe,expect,it} from 'vitest';
 import en from './en.json';
+import {WEDGE_MESSAGES_EN} from '../components/WedgeMessages';
+import {WEDGE_ES} from './es/maps/wedge';
+import {WEDGE_PT} from './pt-br/maps/wedge';
+import {OBSERVATORY_PT} from './pt-br/maps/observatory';
 import {missingPluralForms,plural,pluralCategories,pluralCategory,pluralLanguage,type PluralForms} from './plural';
 import {enclosingPlaces,parseSource,pinLines,pinned,readSource,sourceFiles,sourceOf,walk,type AstNode} from './sourceScan';
 // Front SC5 (plan front-i18n-scripts.md §6 "Plurals", §8): the helper's contract per language, and the pinned inventory of
@@ -46,6 +50,23 @@ describe('Front SC5: plural forms by CLDR category (Intl.PluralRules)',()=>{
   expect(pluralCategory('en',1.2,{maximumSignificantDigits:1})).toBe('one');// "1"
   expect(pluralCategory('en',1.2,{maximumFractionDigits:0})).toBe('one');
   expect(pluralCategory('en',1.2,{maximumSignificantDigits:2})).toBe('other');
+ });
+ it('Front SC11: Portuguese keeps the two-form rule for one and other (0 and 1.5 take the plural) and CLDR\'s many',()=>{
+  expect([0,1,2,1.5,1_000_000].map(n=>pluralCategory('pt-BR',n))).toEqual(['other','one','other','other','many']);
+  expect(pluralCategory('pt',0)).toBe('other');expect(pluralCategory('pt-PT',0)).toBe('other');
+  expect(pluralCategories('pt-BR')).toEqual(['one','many','other']);// the lint profile is unchanged
+  expect(plural('pt-BR',0,{one:'0 estrela',other:'0 estrelas'})).toBe('0 estrelas');
+ });
+ it('Front SC11: the converted maps print what the two-form choice printed, in English, Spanish and Portuguese',()=>{
+  const old=(n:number,one:string,other:string)=>n===1?one:other;
+  for(const n of [0,1,2,21,1_000_000]){
+   expect(WEDGE_MESSAGES_EN.rowCount(n)).toBe(`${n} data row${old(n,'','s')}`);
+   expect(WEDGE_MESSAGES_EN.statusLoaded(n,1)).toBe(`${n} record${old(n,'','s')} from 1 file.`);
+   expect(WEDGE_ES.rowCount(n)).toBe(`${n} fila${old(n,'','s')} de datos`);
+   expect(WEDGE_PT.rowCount(n)).toBe(`${n} linha${old(n,'','s')} de dados`);
+   expect(WEDGE_PT.notDrawn(n)).toMatch(new RegExp(`^${n} registro${old(n,' não é plotado','s não são plotados')} `));
+   expect(OBSERVATORY_PT.hotListPrint.count(n)).toBe(`${n} linha${old(n,'','s')}`);
+  }
  });
  it('lists the categories a set of forms lacks',()=>{
   expect(missingPluralForms('ru',{one:'a',other:'b'})).toEqual(['few','many']);
@@ -107,10 +128,10 @@ describe('Front SC5: pins',()=>{
  it('refuses a refresh in CI and names a list missing from the pin file',()=>{
   expect(()=>pinned(PINS,'codeSites',[],{OPENVIREO_REFRESH_PINS:'1',CI:'true'})).toThrow(/refused in CI/);
   expect(()=>pinned(PINS,'noSuchList',[],{})).toThrow(/has no "noSuchList" list/);
-  expect(pinned(PINS,'twoFormKeyFamilies',[],{})).toContain('obsHr.current ×2');
+  expect(pinned(PINS,'pluralKeyFamilies',[],{})).toContain('obsHr.current ×2');
  });
 });
-describe('Front SC5: inventory of the two-form plural sites (converted in SC11; this front changes none)',()=>{
+describe('Front SC5: inventory of the two-form plural sites (SC11 converted the Messages maps and the catalog key pairs)',()=>{
  it('recognises plural choices and leaves other comparisons with 1 alone',()=>{
   const sites=(code:string)=>pluralSites('fixture.ts',code);
   for(const code of ["const a=(n:number)=>`${n} row${n===1?'':'s'}`;","const a=(n:number)=>`${n} record${n===1?' is':'s are'} late`;","const a=(n:number)=>n===1?'píxel':'píxeles';","const a=(n:number)=>t(n===1?'x.current.one':'x.current.many',{n});","const a=(n:number,o:number)=>t(n===1?(o===0?'w.one.none':'w.one.other'):(o===0?'w.many.none':'w.many.other'));","const a=(n:number)=>n===1?t('sky.searchOne'):t('sky.searchMatches');","const a=(n:number)=>n!==1?'files':'file';","const a=(h:number)=>Math.abs(h)===1?L.hour:L.hours;","const a=(n:number)=>`${n} ${n===1?'estrella visible':'estrellas visibles'}`;"])expect(sites(code),code).toHaveLength(1);
@@ -122,9 +143,17 @@ describe('Front SC5: inventory of the two-form plural sites (converted in SC11; 
   const actual=pinLines(sourceFiles().filter(f=>!f.startsWith('src/i18n/')).flatMap(f=>{const {text,program}=readSource(f);return pluralSites(f,text,program);}));
   expect(actual).toEqual(pinned(PINS,'codeSites',actual));
  });
- it('matches the pinned list of en.json messages that print a count ({count}, {n} or {total}) and the .one/.many key families',()=>{
+ it('matches the pinned list of en.json messages that print a count ({count}, {n} or {total}) and the plural key families',()=>{
   const counted=Object.entries(en).filter(([,v])=>/\{(?:count|n|total)\}/.test(v)).map(([k])=>k).sort();
-  const families=pinLines(Object.keys(en).filter(k=>/(?:^|[.])(?:one|many)(?:[.]|$)/.test(k)).map(k=>k.replace(/[.](?:one|many)(?=[.]|$).*$/,'')));
-  expect({counted,families}).toEqual({counted:pinned(PINS,'countedMessages',counted),families:pinned(PINS,'twoFormKeyFamilies',families)});
+  // Front SC11: a family is the keys whose first CLDR-category segment (one, two, few, many, other) follows the same head, with a
+  // `one` member there (so `radioRoute.exercise.outcome.other` alone is not one). pluralKey chooses among them.
+  const head=(k:string)=>{const m=/(?:^|[.])(?:one|two|few|many|other)(?=[.]|$)/.exec(k);return m?{head:k.slice(0,m.index),category:k.slice(m.index).replace(/^[.]/,'').split('.')[0]}:null;};
+  const byHead=new Map<string,string[]>();for(const k of Object.keys(en)){const h=head(k);if(h)byHead.set(h.head,[...byHead.get(h.head)??[],h.category]);}
+  const families=[...byHead].filter(([,c])=>c.includes('one'));
+  for(const [h,c] of families)expect(c,`${h} has an other form`).toContain('other');
+  // The SC5 naming trap is gone: no English key spells "not one" as CLDR's `many`.
+  expect(Object.keys(en).filter(k=>/(?:^|[.])many(?:[.]|$)/.test(k))).toEqual([]);
+  const lines=pinLines(families.flatMap(([h,c])=>c.map(()=>h)));
+  expect({counted,families:lines}).toEqual({counted:pinned(PINS,'countedMessages',counted),families:pinned(PINS,'pluralKeyFamilies',lines)});
  });
 });

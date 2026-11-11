@@ -6,6 +6,7 @@ import {MULTISPEC_MESSAGES as N} from '../core/multiSpecFormat';
 import {t} from '../i18n';
 import {printSkyHeader} from '../core/printSkyText';
 import '../observatory/observatory-dialogs.css';
+import {screenDateTime} from '../i18n/screenDate';
 
 const D=N.display;
 export const MULTISPEC_PRINT_SCOPE='multispec';
@@ -43,7 +44,7 @@ function InformationDialog({lines,onClose}:Readonly<{lines:readonly string[];onC
  * then the plot and the core print lines. The header is dated when the preview opens. */
 function PrintPreview({caption,spectrum,lines,onClose}:Readonly<{caption:string;spectrum:MultiSpecSpectrum;lines:readonly string[];onClose:()=>void}>){
  const id=useId(),dialog=useRef<HTMLDialogElement>(null),button=useRef<HTMLButtonElement>(null),[failed,setFailed]=useState(false);
- const [printedAt]=useState(()=>new Date().toLocaleString());
+ const [printedAt]=useState(()=>screenDateTime(new Date()));
  useEffect(()=>{const d=dialog.current;if(d&&!d.open){d.showModal();button.current?.focus();}
   return()=>{const root=document.documentElement;if(root.getAttribute('data-print-scope')===MULTISPEC_PRINT_SCOPE)root.removeAttribute('data-print-scope');if(d?.open)d.close();};},[]);
  function print(){

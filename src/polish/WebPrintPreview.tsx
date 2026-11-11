@@ -3,6 +3,7 @@ import {printPageSizeCss} from '../core/lightCurvePrint';
 import {createPortal} from 'react-dom';
 import {POLISH_MESSAGES as PM} from './PolishMessages';
 import './polish.css';
+import {screenDateTime} from '../i18n/screenDate';
 
 export const WEB_PRINT_SCOPE='web-print';
 
@@ -20,7 +21,7 @@ export default function WebPrintPreview({testId,caption,header=[],note,clone,chi
   * page break and before the picture (a native landscape page 2), and a class on the picture (e.g. a print palette). */
  controls?:ReactNode;orientation?:'portrait'|'landscape';nextPage?:readonly string[]|null;pictureClass?:string}){
  const id=useId(),suffix=`-print${id.replace(/[^A-Za-z0-9_-]/g,'')}`,dialog=useRef<HTMLDialogElement>(null),button=useRef<HTMLButtonElement>(null),picture=useRef<HTMLDivElement>(null);
- const [printedAt]=useState(()=>new Date().toLocaleString()),[failed,setFailed]=useState(false),[missing,setMissing]=useState(false);
+ const [printedAt]=useState(()=>screenDateTime(new Date())),[failed,setFailed]=useState(false),[missing,setMissing]=useState(false);
  useLayoutEffect(()=>{
   const host=picture.current;if(!clone||!host)return;
   const source=clone();

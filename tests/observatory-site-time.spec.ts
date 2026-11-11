@@ -57,3 +57,18 @@ test('a Greenwich site entered with West (a zero longitude) saves and restores (
  await page.getByText('Site clock · fixed UT scenario',{exact:true}).click();await expect(page.getByTestId('ob-site-status')).toContainText('Greenwich');
  await page.getByTestId('ob-site-information').click();await expect(page.getByTestId('ob-site-info-lines')).toContainText('Longitude:    0°00\'00" E');
 });
+
+// Front SC11 (scripts plan §8 "Input"): the Enter that confirms an IME conversion (isComposing, or Safari's keyCode 229 after
+// compositionend) does not submit Set Date/Time; a plain Enter does.
+test('Set Date/Time ignores the Enter that confirms an IME conversion',async({page})=>{
+ await open(page);
+ await page.getByTestId('ob-set-date').click();
+ const date=page.getByTestId('ob-date-date');await date.fill('2026/02/30');
+ for(const [isComposing,keyCode] of [[true,229],[true,13],[false,229]] as const){
+  await date.evaluate((el,[isComposing,keyCode])=>{const e=new KeyboardEvent('keydown',{key:'Enter',code:'Enter',isComposing,bubbles:true,cancelable:true});Object.defineProperty(e,'keyCode',{get:()=>keyCode});el.dispatchEvent(e);},[isComposing,keyCode] as const);
+  // The error box is always in the page as a closed <dialog>; give a wrongly handled Enter time to open it.
+  await page.waitForTimeout(250);await expect(page.getByTestId('ob-date-error'),`isComposing ${isComposing}, keyCode ${keyCode}`).toBeHidden();
+ }
+ await date.press('Enter');
+ await expect(page.getByTestId('ob-date-error')).toContainText('The date is not valid');
+});

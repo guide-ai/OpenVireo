@@ -25,6 +25,7 @@ import {vireo} from '../i18n/vireo';
 import {OBSERVATORY_VIREO_CAPTIONS as VB} from '../observatory/ObservatoryMessages';
 import CleaHelp from '../clusters/CleaHelp';
 import {HELP_FILES} from '../help/helpFiles';
+import {imeComposing} from '../dialogKeyboard';
 
 const C=PULSAR_PARAMETERS_CAPTIONS,F=PULSAR_FIND_CAPTIONS;
 type LoadStatus=Readonly<
@@ -353,7 +354,7 @@ function PulsarParametersWindowView({win,activatedBy,fieldRefusal,headingRef,fin
  const editKey=(e:KeyboardEvent<HTMLInputElement>)=>{
   // WEB-PP-KEY-01: Enter runs Update only while it is enabled; a held Enter does nothing more.
   if(ignoreHeldKey(e))return;
-  if(e.key==='Enter'&&win.updateEnabled){e.preventDefault();onUpdate();}
+  if(e.key==='Enter'&&win.updateEnabled&&!imeComposing(e)){e.preventDefault();onUpdate();}
  };
  const derivedNotes=win.derivedIssues.map(issue=>t(`pulsarParameters.window.issue.${issue}`));
  return <div className="pulsar-params-window" role="region" aria-labelledby={`${id}-heading`} data-testid="pulsar-params-window" data-index={win.index}
@@ -436,7 +437,7 @@ function PulsarFindDialog({draft,refused,onEdit,onMode,onOk,onCancel}:Readonly<{
  const onKeyDown=(e:KeyboardEvent<HTMLDivElement>)=>{
   if(ignoreHeldKey(e))return;
   if(e.key==='Escape'){e.preventDefault();onCancel();return;}
-  if(e.key==='Enter'&&(e.target as HTMLElement).tagName==='INPUT'){e.preventDefault();onOk();return;}
+  if(e.key==='Enter'&&(e.target as HTMLElement).tagName==='INPUT'){if(imeComposing(e))return;e.preventDefault();onOk();return;}
   trapTab(e,root.current);
  };
  return <div className="antenna-backdrop">

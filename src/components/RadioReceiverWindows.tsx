@@ -52,6 +52,8 @@ import {t,type PlainMessageKey} from '../i18n';
 import {lazyMessages,lazyTranslator} from '../i18n/registry';
 import {vireo} from '../i18n/vireo';
 import {OBSERVATORY_VIREO_CAPTIONS as VB} from '../observatory/ObservatoryMessages';
+import {imeComposing} from '../dialogKeyboard';
+import {canvasLabel} from './canvasLabel';
 
 /** Host access for the route: open from the panel's Receiver button, the antenna transitions (clock reassociation), the
  * catalog lock, and two read-only views for Pulsar Parameters: the shared +0x5f7 buffer (sourceBuffer, read live; Receiver
@@ -959,7 +961,7 @@ function RecordFinishSurface({finish,support,onFull,onDraft,onIdentify,onPropert
    <label htmlFor={`${id}-name`} className="radio-control-native">{vireo(L.identifyLabel)}</label>
    <input ref={ref} id={`${id}-name`} type="text" autoComplete="off" spellCheck={false} data-testid="receiver-record-identify-input" value={finish.draft}
     aria-invalid={issue!==null||undefined} aria-describedby={`${id}-help ${id}-refusal`} maxLength={RADIO_IDENTIFY_POLICY.draftLimit}
-    onChange={e=>onDraft(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.repeat){e.preventDefault();onIdentify('ok');}}}/>
+    onChange={e=>onDraft(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.repeat&&!imeComposing(e)){e.preventDefault();onIdentify('ok');}}}/>
    <span id={`${id}-help`} className="radio-control-note">{t('radioReceiver.record.identifyHelp')}</span>
    {finish.draft===PULSAR_RESERVED_DATA_NAME&&<span className="radio-control-note" data-testid="receiver-record-identify-nodata">{t('radioReceiver.record.identifyNoData')}</span>}
    <span id={`${id}-refusal`} className="radio-control-note" role="status" aria-live="polite" data-testid="receiver-record-identify-refusal">{refusal}</span>
@@ -1120,9 +1122,8 @@ function ReceiverMarkCanvas({slot,overlay,selected,marks}:Readonly<{slot:number;
     ctx.strokeStyle=css(stroke);ctx.lineWidth=1;ctx.lineCap='square';ctx.beginPath();ctx.moveTo(pen.x+0.5,pen.y+0.5);ctx.lineTo(op.x+0.5,op.y+0.5);ctx.stroke();
     pen={x:op.x,y:op.y};
    }else if(op.kind==='text'){
-    ctx.font='bold 13px sans-serif';ctx.textBaseline='top';
-    const shown=receiverMarkScreenText(op.text,vireo),width=Math.ceil(ctx.measureText(shown).width);
-    ctx.fillStyle=css(RECEIVER_MARK_LABEL_BACKGROUND);ctx.fillRect(op.x,op.y,width,16);
+    const shown=receiverMarkScreenText(op.text,vireo),box=canvasLabel(ctx,shown,op.x,op.y);
+    ctx.fillStyle=css(RECEIVER_MARK_LABEL_BACKGROUND);ctx.fillRect(box.x,box.y,box.width,box.height);
     ctx.fillStyle=css(op.colour);ctx.fillText(shown,op.x,op.y);
    }
   }
@@ -1152,7 +1153,7 @@ function ReceiverMarks({slot,r,overlay,availability,selected,onSelect,marks}:Rea
  };
  const onKeyDown=(e:KeyboardEvent<HTMLInputElement>)=>{
   const plain=!e.altKey&&!e.ctrlKey&&!e.metaKey&&!e.shiftKey;
-  if(!plain||!['Enter','Home','End','ArrowUp','ArrowDown','Escape'].includes(e.key))return;
+  if(!plain||!['Enter','Home','End','ArrowUp','ArrowDown','Escape'].includes(e.key)||imeComposing(e))return;
   e.preventDefault();if(e.repeat)return;
   if(e.key==='Enter')place(value);
   else if(e.key==='Home')place(String(RECEIVER_MARK_WEB_POLICY.minColumn));
@@ -1215,10 +1216,9 @@ function ReceiverCanvas({slot,r,log,onPaint}:Readonly<{slot:number;r:RadioReceiv
     ctx.strokeStyle=css(stroke.current);ctx.lineWidth=1;ctx.lineCap='square';ctx.beginPath();ctx.moveTo(pen.current.x+0.5,pen.current.y+0.5);ctx.lineTo(op.x+0.5,op.y+0.5);ctx.stroke();
     pen.current={x:op.x,y:op.y};return;
    }
-   ctx.font='bold 13px sans-serif';ctx.textBaseline='top';
-   const width=Math.ceil(ctx.measureText(op.text).width);
-   ctx.fillStyle=css(RECEIVER_DISPLAY_COLOURS.background);ctx.fillRect(op.x,op.y,width,16);
-   ctx.fillStyle=css(op.colour);ctx.fillText(receiverScreenText(op.text,vireo),op.x,op.y);
+   const shown=receiverScreenText(op.text,vireo),box=canvasLabel(ctx,shown,op.x,op.y);
+   ctx.fillStyle=css(RECEIVER_DISPLAY_COLOURS.background);ctx.fillRect(box.x,box.y,box.width,box.height);
+   ctx.fillStyle=css(op.colour);ctx.fillText(shown,op.x,op.y);
   };
   const first=log.ops[0];
   if(log.dropped&&first&&first.seq>lastSeq.current+1){

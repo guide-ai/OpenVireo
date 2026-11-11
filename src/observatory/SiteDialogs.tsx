@@ -11,6 +11,7 @@ import {menuCaptionText} from '../core/radioControl';
 import {RADIO_DATE_WEB_LIMITS} from '../core/radioDateDialog';
 import {OBSERVATORY_MESSAGES} from './ObservatoryMessages';
 import './observatory-dialogs.css';
+import {imeComposing} from '../dialogKeyboard';
 const M=OBSERVATORY_MESSAGES.site;
 
 function Modal({open,label,testId,onCancel,children,wide=false}:{open:boolean;label:string;testId:string;onCancel:()=>void;children:ReactNode;wide?:boolean}){
@@ -30,7 +31,7 @@ function ErrorBox({caption,text,onClose,testId}:{caption:string;text:string;onCl
  * keeps its own modal frame. Enter in a field is OK. */
 export function StationFields({station,setStation,onOk,testId='ob-station'}:{station:StationDraft|null;setStation:Dispatch<SetStateAction<StationDraft|null>>;onOk:()=>void;testId?:string}){
  const id=useId();
- const sf=(name:StationField,label:string,maxLength?:number)=><label className="ob-field"><span>{label}</span><input type="text" autoComplete="off" spellCheck={false} maxLength={maxLength??32} title={vireo(SC.hints[name])} data-testid={`${testId}-${name}`} value={station?.[name]??''} onChange={e=>setStation(s=>s&&{...s,[name]:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();onOk();}}}/></label>;
+ const sf=(name:StationField,label:string,maxLength?:number)=><label className="ob-field"><span>{label}</span><input type="text" autoComplete="off" spellCheck={false} maxLength={maxLength??32} title={vireo(SC.hints[name])} data-testid={`${testId}-${name}`} value={station?.[name]??''} onChange={e=>setStation(s=>s&&{...s,[name]:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'&&!imeComposing(e)){e.preventDefault();onOk();}}}/></label>;
  return <>
   <div className="ob-group">{sf('name',vireo(SC.name),SC.maxLength.name)}{sf('utLocal',vireo(SC.utLocal),SC.maxLength.utLocal)}</div>
   <fieldset className="ob-group"><legend className="ob-native">{vireo(SC.longitude)}</legend>{sf('lngDeg',vireo(SC.deg))}{sf('lngMin',vireo(SC.min))}{sf('lngSec',vireo(SC.sec))}
@@ -59,9 +60,9 @@ export default function SiteDialogs({utc,site,overridden,index,limitSlewing,onAp
   <p className="observatory-note" data-testid="ob-site-status">{overridden?M.overridden(site.name):M.compiled} {M.adaptation}</p>
   <Modal open={date!==null} label={vireo(DC.form)} testId="ob-date-dialog" onCancel={()=>setDate(null)}>
    <h2 className="ob-native">{vireo(DC.form)}</h2>
-   {onApplyId&&<div className="ob-group"><label className="ob-field"><span>{vireo(DC.id)} {vireo(DC.idSource)}</span><input type="text" autoComplete="off" spellCheck={false} maxLength={OBSERVATORY_ID_MAX_LENGTH} title={vireo(DC.idHint)} data-testid="ob-date-id" value={date?.id??''} onChange={e=>{const v=e.target.value;if(observatoryIdEditable(v))setDate(d=>d&&{...d,id:v});}} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();dateOk();}}}/></label></div>}
-   <div className="ob-group"><label className="ob-field"><span>{vireo(DC.date)} ({vireo(DC.dateFormat)})</span><input type="text" maxLength={RADIO_DATE_WEB_LIMITS.fieldMaxLength} title={vireo(DC.dateHint)} data-testid="ob-date-date" value={date?.date??''} onChange={e=>setDate(d=>d&&{...d,date:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();dateOk();}}}/></label>
-    <label className="ob-field"><span>{vireo(DC.time)} ({vireo(DC.timeFormat)})</span><input type="text" maxLength={RADIO_DATE_WEB_LIMITS.fieldMaxLength} title={vireo(DC.timeHint)} data-testid="ob-date-time" value={date?.time??''} onChange={e=>setDate(d=>d&&{...d,time:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();dateOk();}}}/></label></div>
+   {onApplyId&&<div className="ob-group"><label className="ob-field"><span>{vireo(DC.id)} {vireo(DC.idSource)}</span><input type="text" autoComplete="off" spellCheck={false} maxLength={OBSERVATORY_ID_MAX_LENGTH} title={vireo(DC.idHint)} data-testid="ob-date-id" value={date?.id??''} onChange={e=>{const v=e.target.value;if(observatoryIdEditable(v))setDate(d=>d&&{...d,id:v});}} onKeyDown={e=>{if(e.key==='Enter'&&!imeComposing(e)){e.preventDefault();dateOk();}}}/></label></div>}
+   <div className="ob-group"><label className="ob-field"><span>{vireo(DC.date)} ({vireo(DC.dateFormat)})</span><input type="text" maxLength={RADIO_DATE_WEB_LIMITS.fieldMaxLength} title={vireo(DC.dateHint)} data-testid="ob-date-date" value={date?.date??''} onChange={e=>setDate(d=>d&&{...d,date:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'&&!imeComposing(e)){e.preventDefault();dateOk();}}}/></label>
+    <label className="ob-field"><span>{vireo(DC.time)} ({vireo(DC.timeFormat)})</span><input type="text" maxLength={RADIO_DATE_WEB_LIMITS.fieldMaxLength} title={vireo(DC.timeHint)} data-testid="ob-date-time" value={date?.time??''} onChange={e=>setDate(d=>d&&{...d,time:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'&&!imeComposing(e)){e.preventDefault();dateOk();}}}/></label></div>
    <p className="ob-note">{M.dateHelp}</p>
    <div className="ob-actions"><button type="button" className="primary-button" data-testid="ob-date-ok" onClick={dateOk}>{vireo(OV.ok)}</button><button type="button" className="secondary-button" onClick={()=>setDate(null)}>{vireo(OV.cancel)}</button></div>
    <ErrorBox caption={M.errorTitle} text={dateError} onClose={()=>setDateError('')} testId="ob-date-error"/>

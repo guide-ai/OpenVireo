@@ -1,5 +1,6 @@
 import type {LightCurveUnavailable} from '../core/lightCurve';
 import {pickMessages} from '../i18n/registry';
+import {plural} from '../i18n/plural';
 /** Front V English strings (self-contained, like ObjectXMessages). Original captions and menu texts (TVStarListForm1 /
  * TLtCrvDsplyForm1 DFMs of CLEA_VEO.exe) live in src/core/variableStarForm.ts; everything here is web text. */
 export const VARIABLE_STARS_EN=Object.freeze({
@@ -22,7 +23,7 @@ export const VARIABLE_STARS_EN=Object.freeze({
  typeLabel:'Variability type',
  allTypes:'All types',
  typeOption:(type:string,count:number)=>`${type||'(blank)'} — ${count.toLocaleString('en-US')}`,
- results:(shown:number,total:number)=>total===0?'No records match.':shown<total?`Showing the first ${shown} of ${total.toLocaleString('en-US')} matching records, in catalog (right ascension) order. Narrow the search to see others.`:`${total.toLocaleString('en-US')} matching record${total===1?'':'s'}.`,
+ results:(shown:number,total:number)=>total===0?'No records match.':shown<total?`Showing the first ${shown} of ${total.toLocaleString('en-US')} matching records, in catalog (right ascension) order. Narrow the search to see others.`:plural('en',total,{one:`${total.toLocaleString('en-US')} matching record.`,other:`${total.toLocaleString('en-US')} matching records.`}),
  columns:['GCVS ID','Type','RA (h)','Dec (°)','Max','Min / ampl.','Period (d)',''],
  open:'Open',
  openLabel:(name:string)=>`Open ${name}`,

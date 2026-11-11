@@ -1,26 +1,9 @@
 {
- "about": "Front SC5 (plan analysis/front-plans/front-i18n-scripts.md §6, §8): today's two-form plural sites, pinned by src/i18n/plural.test.ts. codeSites: every conditional outside src/i18n/ that chooses text by comparing a count with 1, as `file › enclosing places · test` (no line numbers; translations in src/i18n/ supply their own forms once the English site is converted). countedMessages: the en.json keys whose English prints a count ({count}, {n} or {total}); most read \"N things\" and need a count-neutral wording or plural forms in Russian. twoFormKeyFamilies: en.json key families with `.one`/`.many` members, where `many` means \"not one\" (CLDR's `other`, not CLDR's `many`). SC11 converts the sites onto src/i18n/plural.ts file by file and shrinks these lists; a merge that adds a site adds a line. Refresh: OPENVIREO_REFRESH_PINS=1 npx vitest run src/i18n/plural.test.ts, then review the git diff.",
+ "about": "Front SC5 (plan analysis/front-plans/front-i18n-scripts.md §6, §8), converted by Front SC11: plural sites, pinned by src/i18n/plural.test.ts. codeSites: every conditional outside src/i18n/ that still chooses text by comparing a count with 1, as `file › enclosing places · test` (no line numbers). SC11 moved the `*Messages.ts` maps (and their Spanish and Portuguese maps) onto plural() and the catalog pairs onto pluralKey(); the three left are not count wordings to convert: guideAvailability chooses a sentence for the one-channel state, and siteInformationLines (hour/hours) and requestDeniedText (Minute./Minutes.) are VIREO's own compiled choices between two VIREO literals [D], kept as VIREO makes them. countedMessages: the en.json keys whose English prints a count ({count}, {n} or {total}); most read \"N things\" and need a count-neutral wording or plural forms in Russian (the language fronts that need them add forms). pluralKeyFamilies: en.json key families whose members are CLDR categories (`.one`, `.other`; Russian adds `.few`/`.many` keys), chosen by pluralKey(); `obsHr.kindWarning` counts two things, with `none` for no other record. Refresh: OPENVIREO_REFRESH_PINS=1 npx vitest run src/i18n/plural.test.ts, then review the git diff.",
  "codeSites": [
-  "src/TargetPicker.tsx › TargetPicker · matches.length===1",
-  "src/camera/CameraMessages.ts › CAMERA_MESSAGES_EN/peakCount · count===1",
-  "src/components/ClusterNativeObservationHrMessages.ts › CLUSTER_NATIVE_HR_MESSAGES/chartDescription · count===1",
-  "src/components/ClusterNativeObservationHrMessages.ts › CLUSTER_NATIVE_HR_MESSAGES/current · count===1",
-  "src/components/ClusterNativeObservationHrMessages.ts › CLUSTER_NATIVE_HR_MESSAGES/kindWarning · counts===1",
-  "src/components/ClusterNativeObservationHrMessages.ts › CLUSTER_NATIVE_HR_MESSAGES/kindWarning · other===1 ×2",
-  "src/components/ClusterNativeObservationHrMessages.ts › CLUSTER_NATIVE_HR_MESSAGES/offAxes · count===1",
-  "src/components/ClusterNativeObservationHrMessages.ts › CLUSTER_NATIVE_HR_MESSAGES/replaceQuestion · count===1",
-  "src/components/ClusterNativeObservationHrMessages.ts › CLUSTER_NATIVE_HR_MESSAGES/reviewSummary · count===1",
   "src/components/PulsarAnalysis.tsx › PulsarAnalysis/guideAvailability · recordedChannels===1",
-  "src/components/WedgeMessages.ts › WEDGE_MESSAGES_EN/notDrawn · n===1",
-  "src/components/WedgeMessages.ts › WEDGE_MESSAGES_EN/outside · n===1",
-  "src/components/WedgeMessages.ts › WEDGE_MESSAGES_EN/rowCount · rows===1",
-  "src/components/WedgeMessages.ts › WEDGE_MESSAGES_EN/statusLoaded · files===1",
-  "src/components/WedgeMessages.ts › WEDGE_MESSAGES_EN/statusLoaded · records===1",
   "src/core/observatorySite.ts › siteInformationLines · Math.abs(site.utMinusLocalHours)===1",
-  "src/core/scopeAccess.ts › requestDeniedText · waitMinutes===1",
-  "src/objectx/ObjectXMessages.ts › OBJECT_X_LAB_EN/imageMovers · pairs===1",
-  "src/observatory/ObservatoryMessages.ts › OBSERVATORY_MESSAGES_EN/hotListPrint/count · n===1",
-  "src/variables/VariableStarMessages.ts › VARIABLE_STARS_EN/results · total===1"
+  "src/core/scopeAccess.ts › requestDeniedText · waitMinutes===1"
  ],
  "countedMessages": [
   "ce.count",
@@ -57,16 +40,16 @@
   "nc.manual",
   "obs.file.restored",
   "obs.records",
-  "obsHr.chartDescription.many",
   "obsHr.chartDescription.one",
-  "obsHr.current.many",
+  "obsHr.chartDescription.other",
   "obsHr.current.one",
-  "obsHr.offAxes.many",
+  "obsHr.current.other",
   "obsHr.offAxes.one",
-  "obsHr.replaceQuestion.many",
+  "obsHr.offAxes.other",
   "obsHr.replaceQuestion.one",
-  "obsHr.reviewSummary.many",
+  "obsHr.replaceQuestion.other",
   "obsHr.reviewSummary.one",
+  "obsHr.reviewSummary.other",
   "ownHr.fitSource",
   "ownHr.pairs",
   "ownResults.caption",
@@ -106,15 +89,17 @@
   "radioReceiver.window.status.moved",
   "radioReceiver.window.upLabel",
   "sky.count",
-  "sky.searchMatches",
+  "sky.searchMatches.one",
+  "sky.searchMatches.other",
   "spectrum.sampleCount"
  ],
- "twoFormKeyFamilies": [
+ "pluralKeyFamilies": [
   "obsHr.chartDescription ×2",
   "obsHr.current ×2",
   "obsHr.kindWarning ×6",
   "obsHr.offAxes ×2",
   "obsHr.replaceQuestion ×2",
-  "obsHr.reviewSummary ×2"
+  "obsHr.reviewSummary ×2",
+  "sky.searchMatches ×2"
  ]
 }

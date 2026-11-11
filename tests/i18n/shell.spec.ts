@@ -191,7 +191,9 @@ for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.ta
   let release:(()=>void)|undefined;
   await page.route(chunk,async route=>{await new Promise<void>(resolve=>{release=resolve;});await route.continue().catch(()=>{});});
   await page.clock.install();
-  await page.goto(`/${L.query}#observatory`);
+  // Front SC11: Firefox holds the load event while a dynamic import made before it is pending, so waiting for `load` here
+  // timed out there (the app itself showed English after 10 s); the test waits for the navigation to commit instead.
+  await page.goto(`/${L.query}#observatory`,{waitUntil:'commit'});
   await expect.poll(()=>release!==undefined).toBe(true);
   await expect(page.locator('.investigation-toolbar')).toHaveCount(0);// nothing renders while the chunk is awaited
   await page.clock.runFor(10_000);
