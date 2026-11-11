@@ -67,6 +67,12 @@ const FR1_GUIDE_KEYS:readonly MessageKey[]=['spectrum.licenseHelp','spectrometer
  * `classLink.open` (the star exposure's button the E01 walk shows). */
 const E01_E02_PREFIXES=/^(continuity|lab|lssLab|hubble|velocity|ownResults|spectrum|spectrometer|galaxyExposure|skyExposure|starExposure|ssp|exposureIO|drift|skyProfiles|fieldSpec|lss|wedge)\./;
 const FR2_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E01_E02_PREFIXES.test(k)||k==='classLink.open');
+/** Front FR3's area of en.json: exercise E03 as PT3 scoped it (docs/I18N.md "Brazilian Portuguese: E03 spectral classification
+ * (PT3)"): every key of the classification module and of classification+cluster, and the core keys E03 renders (the rest of
+ * classLab, class, classLink, classImport, combined, probe, continuity.restoreExposure and ssp.header); every key of their
+ * prefixes. */
+const E03_PREFIXES=/^(class|classLines|classLink|classAtlas|classImport|classLab|feature|cursor|probe|photo|combined|combinedWidth|viewport|inspection|sampledTrace|reverseTrace|sampledDiff|range|widthSource|widthCoordinates|sharedMarks|comparisonMark|paneSource|panMarks|obs|nativeResults|nativeEdit|nativeDelete|nativeList|nativeText|nativeCsv|program|programImport)\./;
+const FR3_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E03_PREFIXES.test(k)||k==='continuity.restoreExposure'||k==='ssp.header');
 /** VIREO originals that Spanish keeps with no entry (its word equals VIREO's, and the vireo() site is one the source guard cannot
  * resolve, src/i18n/vireoSites.test.ts), as for Portuguese: the options dialog's General tab («Général») and the Site Information
  * longitude letter E (Est, kept: identical.json). */
@@ -116,6 +122,10 @@ describe('Front FR0: the French (fr) bundle',()=>{
  it('Front FR2: the catalog covers E01 and E02 (every key of their prefixes, and classLink.open)',()=>{
   expect(FR2_KEYS.length).toBeGreaterThan(780);
   expect(FR2_KEYS.filter(k=>!Object.hasOwn(fr,k))).toEqual([]);
+ });
+ it('Front FR3: the catalog covers exercise E03 (every key of its prefixes, continuity.restoreExposure and ssp.header)',()=>{
+  expect(FR3_KEYS.length).toBe(771);
+  expect(FR3_KEYS.filter(k=>!Object.hasOwn(fr,k))).toEqual([]);
  });
  it('every map has its English shape: the shell maps complete, the header-name maps partial',()=>{
   for(const [id,map] of Object.entries(FRENCH.maps??{})){

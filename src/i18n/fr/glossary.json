@@ -495,7 +495,7 @@
   },
   {
    "en": "\\bsnapshots?\\b",
-   "fr": "instantan[ée]|capture"
+   "fr": "instantan[ée]"
   },
   {
    "en": "\\banaly[sz]ers?\\b",
@@ -519,7 +519,7 @@
   },
   {
    "en": "\\bpanes?\\b",
-   "fr": "panneau|volet"
+   "fr": "panneau"
   },
   {
    "en": "\\b(?:sampled|printed-coordinate|printed|intensity|unknown) traces?\\b",
@@ -596,6 +596,18 @@
   {
    "en": "\\bwedge diagrams?\\b",
    "fr": "diagrammes? en cône"
+  },
+  {
+   "en": "\\bpractices?\\b",
+   "fr": "entra[iî]nement"
+  },
+  {
+   "en": "\\bdrafts?\\b",
+   "fr": "brouillon"
+  },
+  {
+   "en": "\\bfallbacks?\\b",
+   "fr": "repli"
   }
  ],
  "names": [
