@@ -1,4 +1,101 @@
 {
  "about": "Front FR0: findings of the fr lint (src/i18n/lint/, profile fr) that are correct French in one string, each with a reason. Keys are the lint's string ids; `words` are the matched words allowed in that string only, `rules` whole rules, `placeholders` added placeholders.",
- "entries": {}
+ "entries": {
+  "original:fragment|Meter Radio Telescope": {
+   "placeholders": [
+    "{diameter}"
+   ],
+   "reason": "radioIdCaptionText places VIREO’s telescope diameter where the translation holds {diameter} (French puts the number after «Radiotélescope de»), as Spanish and Portuguese do"
+  },
+  "original:\" Not Found.": {
+   "rules": [
+    "quotes"
+   ],
+   "reason": "VIREO joins a straight opening quote, the search text and this tail (helpNotFoundText, the radio hot list and saved-rows Find); the closing quote must match that untranslated opening one"
+  },
+  "original:fragment|You have not recorded your current readings for \"": {
+   "rules": [
+    "quotes"
+   ],
+   "reason": "VIREO closes this quote with its untranslated tail ’\".’ (PHOTOMETER_RECORD_PIECES.movedTail); the opening quote must match it"
+  },
+  "map:camera.citationIr": {
+   "words": [
+    "Two Micron All Sky Survey"
+   ],
+   "reason": "the survey’s proper name, Two Micron All Sky Survey (2MASS), kept in English as cited (only that title-case run is allowed)"
+  },
+  "map:observatory.options.session.computeRedshiftVelocity": {
+   "words": [
+    "·"
+   ],
+   "reason": "the · of c·z (the speed of light times the redshift, as in the English) is a multiplication dot, not an inclusive point médian"
+  },
+  "map:observatory.options.session.computeRedshiftVelocityNote": {
+   "words": [
+    "·"
+   ],
+   "reason": "the · of c·z (the speed of light times the redshift, as in the English) is a multiplication dot, not an inclusive point médian"
+  },
+  "catalog:spectrum.observationNote": {
+   "words": [
+    "·"
+   ],
+   "reason": "the · of c·z (the speed of light times the redshift, as in the English) is a multiplication dot, not an inclusive point médian"
+  },
+  "catalog:lss.dialog.zeroZ": {
+   "words": [
+    "·"
+   ],
+   "reason": "the · of c·z (the speed of light times the redshift, as in the English) is a multiplication dot, not an inclusive point médian"
+  },
+  "catalog:lss.dialog.velocityHelp": {
+   "words": [
+    "·"
+   ],
+   "reason": "the · of c·z (the speed of light times the redshift, as in the English) is a multiplication dot, not an inclusive point médian"
+  },
+  "catalog:lss.adaptation.dialog": {
+   "words": [
+    "·"
+   ],
+   "reason": "the · of c·z (the speed of light times the redshift, as in the English) is a multiplication dot, not an inclusive point médian"
+  },
+  "catalog:lssLab.help.record": {
+   "words": [
+    "·"
+   ],
+   "reason": "the · of c·z (the speed of light times the redshift, as in the English) is a multiplication dot, not an inclusive point médian"
+  },
+  "map:clusterHr.listCaptionNote": {
+   "words": [
+    "CLUSTERS"
+   ],
+   "reason": "the file name CLUSTERS.DAT, kept as VIREO names it"
+  },
+  "map:clusterHr.obsVelocityNote": {
+   "words": [
+    "·"
+   ],
+   "reason": "the · of c·Z (the speed of light times the redshift), a multiplication dot, not a point médian (FR1’s reason)"
+  },
+  "map:pulsar.pulsar.nativeSave.problem.reserved": {
+   "rules": [
+    "quotes"
+   ],
+   "reason": "the straight double quote is one of the characters a file name cannot contain, listed literally as in the English (PT6’s reason)"
+  },
+  "map:objectXLab.imageSkipped": {
+   "rules": [
+    "typography"
+   ],
+   "reason": "the lint calls this function with its sample text «A1» as the reasons list, so each character of the sample (« and ») is printed as a reason; the real reasons are the three French phrases of the map (PT6’s reason)"
+  },
+  "map:pulsar.pulsar.nativeSave.filter": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "the label of the Windows Save dialog’s file-type list, «Type de fichier :» in Windows French; the dialog itself is the Save the glossary asks for"
+  }
+ }
 }

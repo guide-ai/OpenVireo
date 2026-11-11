@@ -106,7 +106,7 @@ import type { Sample, ShiftControl } from './core/spectrum';
 import type {LssFreeSource} from './core/lssFreeRecord';
 import { loadVerifiedLibrarySpectrum } from './io/spectrumFiles';
 import { formatNumber, t, uiLanguage } from './i18n';
-import {failureNotice as languageNotice,selectorShown} from './i18n/languages';
+import {selectorShown} from './i18n/languages';
 import {lazyMessages} from './i18n/registry';
 import {languageFailure} from './i18n/active';
 import {areaFailed,subscribeAreaFailures} from './i18n/areas';// Front ES-SPLIT
@@ -1015,7 +1015,7 @@ export default function OpenVireo({intent}:{intent?:RefObject<ShellIntent|null>}
   const pageBar=useMemo(()=><PageBar view={view} inert={hostInert} busy={projectBusy} notice={projectNotice} error={projectError} actions={investigationActions} language={languageSelect} help={helpMenu} cloud={cloudEntry}/>,[view,hostInert,projectBusy,projectNotice,projectError,investigationActions,languageSelect,helpMenu,cloudEntry]);
   const [languageFailed]=useState(languageFailure);
   const areaTextFailed=useSyncExternalStore(subscribeAreaFailures,areaFailed);
-  return <RecoveryContext.Provider value={recovery}><TestModeContext.Provider value={testMode}><VireoOptionsContext.Provider value={vireoOptions}><ObservationListContext.Provider value={observationListAccess}><ObservationListValue.Provider value={observationList}>{header}{pageBar}{/* ES1 review 1 C1: the Spanish chunk could not be used. */languageFailed&&failureNotice('language-failure',languageNotice('language',languageFailed))}{/* Front ES-SPLIT: a route area's text could not be used; that part stays English. */areaTextFailed&&failureNotice('area-failure',languageNotice('area',uiLanguage()))}{tour&&<SiteTour onClose={()=>{setTour(false);requestAnimationFrame(()=>document.querySelector<HTMLElement>('[data-testid="main-help-menu"]')?.focus());}}/>}
+  return <RecoveryContext.Provider value={recovery}><TestModeContext.Provider value={testMode}><VireoOptionsContext.Provider value={vireoOptions}><ObservationListContext.Provider value={observationListAccess}><ObservationListValue.Provider value={observationList}>{header}{pageBar}{/* ES1 review 1 C1: the Spanish chunk could not be used. */languageFailed&&failureNotice('language-failure','language',languageFailed)}{/* Front ES-SPLIT: a route area's text could not be used; that part stays English. */areaTextFailed&&failureNotice('area-failure','area',uiLanguage())}{tour&&<SiteTour onClose={()=>{setTour(false);requestAnimationFrame(()=>document.querySelector<HTMLElement>('[data-testid="main-help-menu"]')?.focus());}}/>}
   {instructorGate.open&&<InstructorModeBanner demonstrationMode={demonstrationMode} onLeave={stable.leaveInstructor} inert={hostInert} leaveRef={instructorLeave}/>}{instructorAsk&&<InstructorModeConfirm onAnswer={stable.answerInstructor}/>}{scopeBoxes[0]&&<ScopeAccessBox key={scopeBoxes[0].id} box={scopeBoxes[0].box} opener={scopeBoxes[0].opener} onAnswer={answerScopeBox}/>}
   <HubbleLabGuide dialogRef={labGuide} progress={labProgress} onNavigate={stable.hubbleGuide}/>
   <PulsarLabGuide dialogRef={pulsarGuide} progress={pulsarProgress} onNavigate={stable.navigate}/>

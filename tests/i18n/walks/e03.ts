@@ -67,8 +67,10 @@ export const pseudo=pseudoName;
 export const exact=(text:string)=>new RegExp(`^\\s*${text.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&').replace(/\s+/g,'\\s+')}\\s*$`);
 export const fill=(text:string,params:Readonly<Record<string,string>>)=>text.replace(/\{(\w+)\}/g,(m,k:string)=>params[k]??m);
 /** A catalog key's text in this language: its translation, or, for a language before its release, the English the page then
- * shows (the star exposure route the walk passes through belongs to a later Portuguese front). A released language must have it. */
-export const textIn=(L:LanguageText,key:string)=>{const C=L.catalog as Record<string,string>;if(Object.hasOwn(C,key))return C[key];if(L.entry.released)throw new Error(`No ${L.entry.englishName} for ${key}`);return E[key];};
+ * shows for the star exposure route the walk passes through (E01's, a later front). A released language must have it. FR3 review:
+ * only a `starExposure.` key may fall back, and only while the language has not done `e01`; any other key the walk names is E03's
+ * own (or the shell's), so a missing one fails instead of matching the preview's English. */
+export const textIn=(L:LanguageText,key:string)=>{const C=L.catalog as Record<string,string>;if(Object.hasOwn(C,key))return C[key];if(L.entry.released||!key.startsWith('starExposure.')||L.done.has('e01'))throw new Error(`No ${L.entry.englishName} for ${key}`);return E[key];};
 /** The accessible name of a catalog key in this language. */
 export const N=(lang:Lang,key:string,params:Readonly<Record<string,string>>={})=>{if(!Object.hasOwn(E,key))throw new Error(key);if(lang==='en')return exact(fill(E[key],params));if(isPseudo(lang))return pseudo(E[key],params);return exact(fill(textIn(lang,key),params));};
 /** vireo() of a load in this language, as src/i18n/vireo.ts computes it (the literal when there is no original). */

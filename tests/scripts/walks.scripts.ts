@@ -7,14 +7,18 @@
 // - layoutProblems() with the spec's own options (overflow, clipping, crossing, plot text) and verticalInkProblems() (glyph ink
 //   cut by a clipping box), both of tests/fixtures/layoutProblems.ts;
 // - no page error during the walk.
-// qps-cjk, qps-deva and qps-cyrl run every check at 320 and 1440 px. qps-rtl runs before the page mirrors (RT5): its walks must
-// complete with the marker, the ink check and no page error, and of layoutProblems only "clipped" (a control whose own box cuts its
-// text, whatever the side) is asserted; page overflow, leaving the viewport, crossing a card's edge and plot text depend on which
-// side things are placed and wait for RT5/RT7 (RTL_LAYOUT below). Problems found are listed in KNOWN with the file and the reason;
-// an entry that stops appearing fails, so a fix is noticed.
+// Every variant runs every check at 320 and 1440 px. Front RT7: now that RT5 mirrors the page, qps-rtl runs the whole layout check
+// too (SC12 asserted only "clipped" before mirroring), and after each step also the right-to-left checks of tests/fixtures/
+// bidiProblems.ts: the islands of src/theme/rtl.css and every [lang] element compute their direction, the sidebar, page bar, menus,
+// dialog close buttons and tour card are on the mirrored side, and text that must read left to right is drawn so (ltrRunProblems;
+// an isolate the runtime wrote is never in KNOWN). Problems found are listed in KNOWN with the file and the reason (for qps-rtl,
+// tests/fixtures/rtlKnown.ts names the site, file and owner); an entry that stops appearing fails, so a fix is noticed.
 import {test,expect,type Page} from '@playwright/test';
 import {layoutProblems,verticalInkProblems,type LayoutOptions} from '../fixtures/layoutProblems';
 import {SCRIPT_PSEUDO,type ScriptPseudo} from '../fixtures/pseudoNames';
+import {islandProblems,ltrRunProblems,mirrorProblems,rtlIslandSelectors} from '../fixtures/bidiProblems';
+import {RTL_SITES,knownProblem,type RtlSite,type RtlSiteName} from '../fixtures/rtlKnown';
+import {readFileSync} from 'node:fs';
 import * as E01 from '../i18n/walks/e01';
 import * as E02 from '../i18n/walks/e02';
 import * as E03 from '../i18n/walks/e03';
@@ -33,7 +37,7 @@ type Walk=Readonly<{name:string;timeout:number;run:(page:Page,lang:ScriptPseudo,
 /** A print preview's date and time in the page language (src/i18n/screenDate.ts screenDateTime: ja 2026/11/10 22:47:44, hi
  * 9/11/2026, 7:00:15 am, ru 10.11.2026, 22:48:09, ar 10‏/11‏/2026، 10:48:21 م), and the rest of its line. The specs' qps checks
  * exempt the same line in English's format (it is data: the time of the print, before VIREO's own title). */
-const SCREEN_DATE=/^\d{1,4}\u200f?[/.]\d{1,2}\u200f?[/.]\d{1,4}[,،]? \d{1,2}:\d\d:\d\d(?: ?(?:am|pm|ص|م))?(?:\s|$)/;
+const SCREEN_DATE=/^\u2068?\d{1,4}\u200f?[/.]\d{1,2}\u200f?[/.]\d{1,4}[,،]? \d{1,2}:\d\d:\d\d(?: ?(?:am|pm|ص|م))?(?:\s|$)/;
 const passes=(t:string)=>/[⟦⟧]/.test(t)||SCREEN_DATE.test(t.replace(/^@[a-z-]+:/,''));
 const WALKS:readonly Walk[]=[
  {name:'E01',timeout:300_000,run:E01.walk,unmarked:async page=>(await E01.texts(page)).filter(t=>!passes(t)&&!E01.same(E01.bare(t))),layout:E01.LAYOUT},
@@ -49,37 +53,79 @@ const WALKS:readonly Walk[]=[
  // The help viewers' chrome; the help files stay VIREO's English (lang="en", left out of every check) under a pseudo-locale.
  {name:'help',timeout:240_000,run:HELP.walk,unmarked:async page=>(await HELP.unmarkedHelpTexts(page)).filter(t=>!passes(t)),layout:{dialogs:'dialog[open],[role=dialog][aria-modal=true],[role=alertdialog][aria-modal=true]',topDialog:true}},
 ];
-/** qps-rtl before RT5: the layout problems asserted (a control whose own overflow cuts its text; see the header). */
-const RTL_LAYOUT=/ clipped$/;
+const ISLANDS=rtlIslandSelectors(readFileSync(new URL('../../src/theme/rtl.css',import.meta.url),'utf8'));
 
 /** Known problems, each with the file that must change and why it is not changed here. `walks`, `variants` and `widths` limit
  * where it is expected; `fontDependent`: within 2 px of a threshold with a font file that differs between this machine and CI
  * (docs/I18N.md SC1), tolerated where listed but not required. */
-type Known=Readonly<{walks:readonly string[];variants:readonly ScriptPseudo[];widths:readonly Width[];step:string|RegExp;problem:RegExp;file:string;why:string;fontDependent?:true}>;
+type Known=Readonly<{walks:readonly string[];variants:readonly ScriptPseudo[];widths:readonly Width[];step:string|RegExp;problem:RegExp;file:string;why:string;fontDependent?:true;
+ /** Front RT7 review: the run must be written literally in src (tests/fixtures/rtlKnown.ts knownProblem). */
+ literal?:true}>;
 const KNOWN:readonly Known[]=[
  {walks:['E02'],variants:['qps-cyrl'],widths:[320],step:'wedge row selected',problem:/^page overflows horizontally/,file:'src/components/Wedge.css (.wedge-details)',
   why:'The details list sizes its label column max-content, so a label never wraps: one long label (Dec (degrees, original rule) as a long Russian word) leaves the value column no room and the raw line pushes the page wider. A track that may shrink changes the English and Spanish phone layout, so it waits for the Russian front.'},
- {walks:['E06'],variants:['qps-cyrl'],widths:[320],step:'recording loaded',problem:/^page overflows horizontally|^th “.*” leaves the viewport$/,file:'src/components/PulsarAnalysis.css (.plr-props-table), PulsarAnalysis.tsx',
-  why:'The receiver properties table is not inside a sideways scroller, and an unbreakable header word (Frequency (MHz), Relative gain) widens it past 320 px. Wrapping it in .table-scroll or letting headers break changes the shared table markup; for the Russian front.'},
+ {walks:['E06'],variants:['qps-cyrl','qps-rtl'],widths:[320],step:'recording loaded',problem:/^page overflows horizontally|^th “.*” leaves the viewport$/,file:'src/components/PulsarAnalysis.css (.plr-props-table), PulsarAnalysis.tsx',
+  why:'The receiver properties table is not inside a sideways scroller, and an unbreakable header word (Frequency (MHz), Relative gain) widens it past 320 px. Wrapping it in .table-scroll or letting headers break changes the shared table markup; for the Russian front. Front RT7: qps-rtl\'s longer header word does the same (RT14 with the Russian fix).'},
  {walks:['radio'],variants:['qps-cyrl'],widths:[320],step:'Radio Simulation Options',problem:/^legend “.*” crosses its fieldset$/,file:'src/components/RadioAccessOptions.tsx, RadioControlPanel.css',
   why:'A legend (Pulsar Identification) with one unbreakable word is wider than its 320 px fieldset; legends do not wrap inside a word. Needs a break rule on the options dialog legends; for the Russian front.'},
- {walks:['radio'],variants:['qps-cyrl'],widths:[320],step:'data properties',problem:/^receiver-record-finish scrolls horizontally$/,file:'src/components/RadioReceiverWindows.css ([data-testid=receiver-record-finish])',
-  why:'The Record Data properties box scrolls sideways at 320 px: an unbreakable word in one of its rows is wider than the box. For the Russian front, with the legend above.'},
- {walks:['Multi-Spec'],variants:['qps-cjk','qps-deva','qps-cyrl'],widths:[320,1440],step:/^Multi-Spec (?:spectrum display|print preview)$/,problem:/^plot text “⟦[01]\.0⟧” outside its plot ms-(?:spectrum|print-report)/,file:'src/multispec/MultiSpecDisplay.tsx (the 1.0 and 0.0 axis labels, and the print copy)',fontDependent:true,
-  why:'A pseudo-locale artifact: VIREO\'s 1.0 and 0.0 axis labels pass through vireo(), so every pseudo-locale wraps them in ⟦ ⟧, and the end-anchored label then starts 1–4 px left of the SVG. A real translation keeps 1.0. keepInsideSvg (src/plotTextFit.ts, SC11) would move them; not applied here because the parallel front RT4 edits SVG text. Tolerated, not required.'},
- {walks:['Multi-Spec'],variants:['qps-cjk'],widths:[1440],step:/^Multi-Spec (?:spectrum display|print preview)$/,problem:/^plot text “⟦[^⟧]+⟧” outside its plot ms-(?:spectrum|print-report) \(-1,/,file:'src/multispec/MultiSpecDisplay.tsx (the rotated y-axis title)',fontDependent:true,
-  why:'The rotated y-axis title (VIREO\'s Relative Intensity) crosses the SVG\'s left edge by about 1 px in the CJK stack, as the Pleiades and cluster titles did before SC11. keepInsideSvg (src/plotTextFit.ts) is the fix, left for the next script front because RT4 edits SVG text. Within 2 px: tolerated, not required.'},
+ {walks:['radio'],variants:['qps-cyrl','qps-rtl'],widths:[320],step:'data properties',problem:/^receiver-record-finish scrolls horizontally$/,file:'src/components/RadioReceiverWindows.css ([data-testid=receiver-record-finish])',
+  why:'The Record Data properties box scrolls sideways at 320 px: an unbreakable word in one of its rows is wider than the box. For the Russian front, with the legend above. Front RT7: under qps-rtl too (RT14 with the Russian fix).'},
+ {walks:['Multi-Spec'],variants:['qps-cjk','qps-deva','qps-cyrl','qps-rtl'],widths:[320,1440],step:/^Multi-Spec (?:spectrum display|print preview)$/,problem:/^plot text “\u2066?⟦[01]\.0⟧\u2069?” outside its plot ms-(?:spectrum|print-report)/,file:'src/multispec/MultiSpecDisplay.tsx (the 1.0 and 0.0 axis labels, and the print copy)',fontDependent:true,
+  why:'A pseudo-locale artifact: VIREO\'s 1.0 and 0.0 axis labels pass through vireo(), so every pseudo-locale wraps them in ⟦ ⟧, and the end-anchored label then starts 1–4 px left of the SVG. A real translation keeps 1.0. keepInsideSvg (src/plotTextFit.ts, SC11) would move them; left, as a pseudo-locale artifact (RT7 applied it to the y-axis title only). Tolerated, not required.'},
+ // Front RT7: the rotated y-axis title's 1 px crossing under qps-cjk (SC12's tolerated entry here) is gone: MultiSpecDisplay.tsx now
+ // wraps it in keepInsideSvg, which RT7 needed for qps-rtl's 2–4 px.
  {walks:['Multi-Spec'],variants:['qps-cjk'],widths:[320,1440],step:'Multi-Spec Control with selections',problem:/^plot text “3” outside its plot card ms-card \(\d+, \d+, -2,/,file:'src/core/overlayLabels.ts (the Multi-Spec field selection numbers)',fontDependent:true,
   why:'The selection number 3 at the top of the Multi-Spec field reaches 2 px above it under the ja stack: the baseline that SKY-LABELS keeps inside the field allows for the Latin ascent, not the taller one of the CJK fallback. Within 2 px: tolerated, not required.'},
+
+ ...RTL_KNOWN(),
 ];
+
+/** Front RT7: the deep walks' expected problems under qps-rtl (tests/fixtures/rtlKnown.ts names each site, file and owner). One entry
+ * per walk, widths and exact step, so each one is required where it was measured (both widths unless a width is named). */
+function RTL_KNOWN():Known[]{
+ const both=[320,1440] as const;
+ const at=(walk:string,widths:readonly Width[],steps:string|RegExp|readonly string[],...sites:readonly RtlSiteName[]):Known[]=>
+  (typeof steps==='string'||steps instanceof RegExp?[steps]:steps).flatMap(step=>sites.map(name=>{const site:RtlSite=RTL_SITES[name];
+   return {walks:[walk],variants:['qps-rtl'] as const,widths,step,problem:site.problem,file:site.file,why:site.why,...(site.fontDependent?{fontDependent:true as const}:{}),...(site.literal?{literal:true as const}:{})};}));
+ const topics=['OBSRVHLP','CAMHLP','HRANALHLP','PHOTOHLP','SPECHLP','MEASHLP','WDGPLTHLP','PLSANHLP','PULSRHLP'].map(f=>`${f}.LST topics`);
+ return [
+  ...at('E01',both,'Hubble lab guide','drawsOf','catalogLiteral'),...at('E01',both,['spectrometer route','star exposure and its SSP save'],'catalogLiteral'),
+  ...at('E01',both,'spectrum analyser with the acquired galaxy','zValue','stepFactor','catalogLiteral'),
+  ...at('E02',[320],['Retain Current Data?','Confirm Deletion!'],'wedgeStatus'),...at('E02',both,'Search Results','txtSuffix'),
+  // The LSS survey (a lazily loaded part) renders its results button behind the lab guide or only once the survey opens: one
+  // entry, required at either of the two steps.
+  ...at('E02',both,/^LSS (?:lab guide|survey)$/,'txtSuffix'),
+  ...at('E02',both,'exposure paused','catalogLiteral'),...at('E02',both,['wedge row selected','wedge with own records'],'wedgeData'),
+  ...at('E03',both,['classification guide','classification lab','normalized sampled difference','observation DAT inspected'],'catalogLiteral'),
+  ...at('E03',both,'observation DAT inspected','nativeNumbers'),
+  ...at('E04',both,'Mayall domain explanation','domainTable'),...at('E04',both,'confirmed fit','pleiadesPercent'),
+  ...at('E04',both,['Mayall domain explanation','Pleiades guide','confirmed fit','free pointing input error','invalid shift'],'catalogLiteral'),
+  ...at('E05',both,['Add to Hot List','dataset loaded','fit confirmed','observation HR tool','own observations HR'],'catalogLiteral'),
+  ...at('E05',both,'Cluster Data report','listSelection'),...at('E05',both,'Possible Cluster Member','memberDec'),
+  ...at('E05',both,'cluster help','helpRows'),...at('E05',[320],'cluster help','helpNote'),...at('E05',both,'fit confirmed','confirmedModel'),
+  ...at('E05',both,'light curve print preview','printNote'),...at('E05',both,['observation HR tool','own observations HR'],'bvTitle'),
+  ...at('E05',both,'observations plotted','cnhrRow'),...at('E05',both,'trial fit','trialTable'),...at('E05',both,['variable star data','variable stars'],'variableResults'),
+  ...at('E06',both,['pulsar guide','review edit'],'catalogLiteral'),...at('E06',[1440],'recording loaded','pulsarName'),
+  ...at('E06',[1440],'saved file candidate','savedRowsIdentity'),...at('E06',both,'saved file in use','savedRowsIdentity'),
+  ...at('E08',both,['Object X guide','radio card'],'catalogLiteral'),...at('E08',both,'observatory pointed','pointingDec'),
+  ...at('E08',both,'spectrum ready','objectXTicks'),...at('E08',both,'target measured','objectXMeasurements'),
+  ...at('Multi-Spec',both,'Multi-Spec Control with selections','multiSpecNumber'),
+  ...at('help',both,[...topics,...topics.map(t=>t.replace('topics','first topic')).filter(t=>!t.startsWith('PULSRHLP')),'CLASSHLP.LST topics','CLASSHLP.LST first topic','Spectral Line Table','Spectral Line Help'],'helpRows'),
+  ...at('help',[320],topics,'helpNote'),...at('help',both,'MEASHLP.LST topics','zValue','stepFactor'),
+  ...at('help',both,['CLASSHLP.LST topics','HRANALHLP.LST topics','PULSRHLP.LST topics','SPECHLP.LST topics','OpenVireo help topic'],'catalogLiteral'),
+  ...at('observatory',both,'Set Date/Time','siteClock','catalogLiteral'),...at('observatory',both,['Slew › Add Current Item/Position','Slew › Set Coordinates'],'catalogLiteral'),
+  ...at('observatory',both,'Site Information and its print','siteLines'),
+  ...at('observatory',both,'File › Exit Observatory','reminder'),...at('help',both,'Exit Observatory reminder','reminder'),
+  ...at('radio',both,'B1950 entry','signBeforeParam'),...at('radio',both,['Optical Simulation Options','Set Coordinates','Set Date/Time, ID','radio route','receiver','slew question'],'catalogLiteral'),
+ ];
+}
 
 test.describe.configure({mode:'parallel'});
 // A step that cannot act fails within seconds instead of spending the whole walk's budget.
 test.use({actionTimeout:20_000});
 
-/** qps-rtl runs at 320 px only: before mirroring, its layout check is clipping, which the narrow width stresses, and its marker and
- * ink checks do not depend on the width (an 11-walk saving on the CI job). */
-const WIDTHS:Readonly<Record<ScriptPseudo,readonly Width[]>>={'qps-cjk':[320,1440],'qps-deva':[320,1440],'qps-cyrl':[320,1440],'qps-rtl':[320]};
+/** Front RT7: qps-rtl runs at both widths, as the others do (SC12 ran it at 320 px only before the page mirrored). */
+const WIDTHS:Readonly<Record<ScriptPseudo,readonly Width[]>>={'qps-cjk':[320,1440],'qps-deva':[320,1440],'qps-cyrl':[320,1440],'qps-rtl':[320,1440]};
 for(const walk of WALKS)for(const variant of SCRIPT_PSEUDO)for(const width of WIDTHS[variant])
  test(`${walk.name} under ${variant} at ${width} px: every step is marked and lays out without overflow, clipping or cut ink`,async({page})=>{
   test.setTimeout(walk.timeout);
@@ -92,13 +138,14 @@ for(const walk of WALKS)for(const variant of SCRIPT_PSEUDO)for(const width of WI
    last=step;
    await page.evaluate(()=>document.fonts.ready.then(()=>undefined));
    for(const t of await walk.unmarked(page,step,root))if(!unmarked.has(t))unmarked.set(t,step);
-   const layout=(await layoutProblems(page,walk.layout)).filter(p=>variant!=='qps-rtl'||RTL_LAYOUT.test(p));
-   for(const p of [...layout,...await verticalInkProblems(page)])if(!problems.has(p))problems.set(p,step);
+   const rtl=variant==='qps-rtl'?[...(await islandProblems(page,ISLANDS)).map(p=>`direction: ${p}`),...(await mirrorProblems(page)).map(p=>`mirror: ${p}`),...(await ltrRunProblems(page)).map(p=>`bidi ${p.kind}: “${p.run}” in ${p.where}`)]:[];
+   for(const p of [...await layoutProblems(page,walk.layout),...await verticalInkProblems(page),...rtl])if(!problems.has(p))problems.set(p,step);
   }).catch((e:unknown)=>{problems.set(`walk stopped: ${(e instanceof Error?e.message:String(e)).replace(/\u001b\[[0-9;]*m/g,'').split('\n')[0]}`,last);});
   expect(errors,'page errors').toEqual([]);
   expect([...unmarked].map(([t,step])=>`${step}: ${t}`),'texts that do not go through the catalog, a map or vireo()').toEqual([]);
   const known=KNOWN.filter(k=>k.walks.includes(walk.name)&&k.variants.includes(variant)&&k.widths.includes(width));
-  const matches=(k:Known,p:string,step:string)=>(typeof k.step==='string'?k.step===step:k.step.test(step))&&k.problem.test(p);
+  // (knownProblem: an isolate the bidi runtime wrote is never known, and a literal site's run must be written in src.)
+  const matches=(k:Known,p:string,step:string)=>(typeof k.step==='string'?k.step===step:k.step.test(step))&&knownProblem(k,p);
   expect([...problems].filter(([p,step])=>!known.some(k=>matches(k,p,step))).map(([p,step])=>`${step}: ${p}`),'layout problems not in KNOWN').toEqual([]);
   expect(known.filter(k=>!k.fontDependent&&![...problems].some(([p,step])=>matches(k,p,step))).map(k=>`${k.step}: ${k.problem} (${k.file}) no longer appears: remove it from KNOWN`),'KNOWN problems that disappeared').toEqual([]);
  });

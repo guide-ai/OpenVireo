@@ -14,6 +14,7 @@ import {LABS,type LabText} from './labs.ts';
 import {LAB_TEXT_ES} from './labs.es.ts';
 import {LAB_TEXT_PT_BR} from './labs.pt-br.ts';
 import {SEO_PATH_PREFIX,type LabSlug} from './labSlugs.ts';
+import {LANGUAGES,textDirection,type LanguageEntry,type TextDirection} from '../i18n/languages.ts';
 
 export type SeoLab=LabText&{slug:LabSlug;exercise:string};
 
@@ -158,5 +159,9 @@ export const ENGLISH=EN;
 
 /** A page, named the same in every language: the home page, the labs index or one lab. */
 export type PageKey='home'|'labs'|LabSlug;
+/** Front RT9 (plan front-i18n-rtl.md § 7): a language's text direction, from the app's registry (src/i18n/languages.json `direction`,
+ * ltr when absent; English is ltr), so the pages, their language links and the preview image follow the registry with no row of
+ * this table repeating it. `registry` is for the tests. */
+export const seoDirection=(language:Pick<SeoLanguage,'tag'>,registry:readonly LanguageEntry[]=LANGUAGES):TextDirection=>textDirection(language.tag,registry);
 /** The site path of a page in a language. English's home is the app at "/". */
 export const pathOf=(language:SeoLanguage,key:PageKey):string=>key==='home'?`${language.prefix}/`:key==='labs'?`${language.prefix}/labs/`:`${language.prefix}/labs/${key}/`;

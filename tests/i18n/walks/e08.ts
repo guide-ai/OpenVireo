@@ -49,7 +49,10 @@ export const TARGET=/^(?:M\d+ · )?NGC \d+(?: · (?:Coma|Peg) - \d)?$|^\d{5} · 
 export const ROW=/^ObjX-42-\d\d: \d{4}-\d\d-\d\d \d\d:\d\d:\d\d UT(?:, [A-Z]{1,2}, \d+ s)?$|^ObjX-42-S\d\d: \d\.\d m, \d+\.\d s$|^Cursor x \d+, y \d+$/;
 /** Front PT6: texts of the walk that are the same words in another language (its identical.json, with a reason each): the answer
  * kinds «quasar (QSO)» and «pulsar» are the IAU OAE pt-BR words. */
-export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set<string>(['quasar (QSO)','pulsar'])};
+export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set<string>(['quasar (QSO)','pulsar']),
+ // Front FR6: the same IAU OAE words in French, and the camera's Minutes, Gain (e⁻/ADU) and Source and the measuring tool's Image
+ // and Solution, the same words in French (identical.json).
+ fr:new Set<string>(['quasar (QSO)','pulsar','Minutes','Gain (e⁻/ADU)','Source','Image','Solution'])};
 export const same=(text:string,L?:LanguageText)=>{
  if(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false))return true;
  if(ROW.test(text)||TARGET.test(text)||SAME.has(text)||NUMERIC.test(text)||RECORDED.test(text))return true;
@@ -109,8 +112,8 @@ export const go=async(page:Page,hash:string)=>{await page.evaluate(h=>{location.
  *   readouts (where `hiddenName` shows) and the radio route's Object X card and hot list (`hiddenRowName`). The camera's shared
  *   text may use a kind word, and the observatory's target picker legitimately lists catalogue galaxies, so only identifiers count
  *   there (tests/object-x-path.spec.ts);
- * - a verdict sentence («Es una…», «Tu respuesta es correcta», «É uma…», «Sua resposta está certa», "It is a…", "Your answer is
- *   right") anywhere in the lab. */
+ * - a verdict sentence («Es una…», «Tu respuesta es correcta», «É uma…», «Sua resposta está certa», «C’est une…», «Votre réponse
+ *   est juste», "It is a…", "Your answer is right") anywhere in the lab. */
 export async function leaks(page:Page){
  const found=await page.evaluate(()=>{
   const read=(selector:string)=>[...document.querySelectorAll(selector)].map(n=>{const c=n.cloneNode(true) as HTMLElement;
@@ -119,7 +122,7 @@ export async function leaks(page:Page){
    shared:read('[data-testid=camera-control], .sky-view, .spec-readout, [data-testid=objectx-radio-card], [data-testid$=hot-list], [data-testid*=hotlist]')};
  });
  const word=(s:string)=>new RegExp(`(^|[^\\w])${s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}($|[^\\w])`);
- const verdict=/\bEs (?:una|un) |Tu respuesta es correcta|(?:^|[^\p{L}])É (?:uma|um) |Sua resposta está certa|\bIt is an? |Your answer is right/u;
+ const verdict=/\bEs (?:una|un) |Tu respuesta es correcta|(?:^|[^\p{L}])É (?:uma|um) |Sua resposta está certa|(?:^|[^\p{L}])C’est (?:une|un) |Votre réponse est juste|\bIt is an? |Your answer is right/u;
  return [...SECRETS.filter(s=>word(s).test(found.lab)),...IDS.filter(s=>word(s).test(found.shared)),...(verdict.test(found.labText)?[`verdict: ${verdict.exec(found.labText)![0]}`]:[])];
 }
 export async function expose(page:Page,lang:Lang){
@@ -160,7 +163,8 @@ export const STEPS:readonly (readonly [string,(page:Page,lang:Lang)=>Promise<voi
  ['spectrum unavailable',async(page,lang)=>{await id(page,'objectx-target').selectOption(EROS_CODE);await mapButton(lab(page),lang,LE.spectrumPrepare,m=>m.objectXLab.spectrumPrepare).click();
   await expect(id(page,'objectx-spectrum-unavailable')).toBeVisible({timeout:90_000});}],
  ['clock set and asteroid list',async(page,lang)=>{await setClock(page,lang,'2009-06-01T04:00:00','2009-06-01 04:00:00');}],
- ['radio card',async(page,lang)=>{await mapButton(lab(page),lang,LE.openRadio,m=>m.objectXLab.openRadio).click();await expect(id(page,'objectx-radio-card')).toBeVisible();},'[data-testid=objectx-radio-card]'],
+ ['radio card',async(page,lang)=>{await mapButton(lab(page),lang,LE.openRadio,m=>m.objectXLab.openRadio).click();await expect(id(page,'objectx-radio-card')).toBeVisible();
+  await expect(id(page,'radio-route')).toBeVisible({timeout:30_000});},'[data-testid=objectx-radio-card]'],
  ['observatory pointed',async(page,lang)=>{await go(page,'#object-x');await mapButton(lab(page),lang,LE.pointObservatory,m=>m.objectXLab.pointObservatory).click();
   await expect(camera(page)).toBeVisible();
   const dome=page.getByRole('button',{name:typeof lang!=='string'?exact((lang.catalog as Record<string,string>)['sky.open']+' ↗'):pseudo(E['sky.open']+' ↗')});await dome.click();

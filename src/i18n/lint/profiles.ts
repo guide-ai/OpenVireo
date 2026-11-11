@@ -9,13 +9,17 @@ import {wordSource,type Boundary,type GlyphClass,type LocaleProfile,type MarkPai
  * polite です/ます, Hindi आप, Russian lower-case «вы», Chinese (zh-Hans and zh-Hant) 你. The alternatives stay expressible
  * (plain だ/である, तुम, «ты», 您) so the fixtures prove each register pattern both ways; profileFor builds the patterns
  * from these values. */
-export type Registers=Readonly<{ja:'desu-masu'|'plain';hi:'aap'|'tum';ru:'vy'|'ty';zh:'ni'|'nin';es:'tu'|'usted';pt:'voce'|'tu';fr:'vous'|'tu'}>;
+export type Registers=Readonly<{ja:'desu-masu'|'plain';hi:'aap'|'tum';ru:'vy'|'ty';zh:'ni'|'nin';es:'tu'|'usted';pt:'voce'|'tu';fr:'vous'|'tu';ar:'singular'|'plural';he:'plural'|'singular';fa:'shoma'|'to'}>;
 /** Front SC9: Spanish tú (decision 6, 2026-11-09), with usted as the expressible alternative. Front PT0: Brazilian Portuguese
  * addresses the student as «você» (AGENTS.md, 2026-11-09: each language follows the Spanish rules; plan front-i18n-pt-br.md §3.1);
  * «tu» stays expressible for the fixtures. Front FR0: French addresses the student as «vous» (AGENTS.md, 2026-11-11), «tu» expressible. */
-export const REGISTER:Registers={ja:'desu-masu',hi:'aap',ru:'vy',zh:'ni',es:'tu',pt:'voce',fr:'vous'};
-export type ProfileId='ja'|'hi'|'zh-Hans'|'zh-Hant'|'ru'|'es-419'|'pt-BR'|'fr';
-export const PROFILE_IDS:readonly ProfileId[]=['ja','hi','zh-Hans','zh-Hant','ru','es-419','pt-BR','fr'];
+/** Front RT8: Arabic, if it is ever translated, addresses the student in the singular, neutral register (user, 2026-11-11: the
+ * generic imperative, اختر، اضغط, or a verbal noun, اختيار، حفظ; never the plural or a feminine-only form); «plural» stays expressible.
+ * Hebrew and Persian are checks, not plans (no Hebrew or Persian for now): their settings are the plan's proposals, the gender-neutral
+ * plural imperative (לחצו, בחרו) and the polite «شما» of Persian software, each with its alternative. */
+export const REGISTER:Registers={ja:'desu-masu',hi:'aap',ru:'vy',zh:'ni',es:'tu',pt:'voce',fr:'vous',ar:'singular',he:'plural',fa:'shoma'};
+export type ProfileId='ja'|'hi'|'zh-Hans'|'zh-Hant'|'ru'|'es-419'|'pt-BR'|'fr'|'ar'|'he'|'fa';
+export const PROFILE_IDS:readonly ProfileId[]=['ja','hi','zh-Hans','zh-Hant','ru','es-419','pt-BR','fr','ar','he','fa'];
 
 const words=(list:readonly string[],boundary:Boundary,flags='iu')=>new RegExp(list.map(w=>wordSource(w.normalize('NFC'),boundary)).join('|'),flags);
 /** VIREO's own `...` (43 originals, 22 en.json strings) and `…` count as one ellipsis; Japanese and Chinese also write `……`. */
@@ -119,8 +123,10 @@ function portugueseRegister(setting:Registers['pt']):{patterns:Pattern[];paired:
 
 // Front FR0 (plan front-i18n-fr.md §3–§4): one neutral international French. Spacing, apostrophes, quotes and thousands come from
 // the fixer's own view (frenchSpacing.ts), so the lint fails exactly what the fixer would still change; the patterns below are the
-// rest of §4.4. Words outside brackets (a VIREO English gloss) and quotes, as for Portuguese.
-const outsideFrenchGlosses=(r:RegExp)=>new RegExp(`(?:${r.source})(?![^(]*\\))(?![^“]*”)(?![^«]*»)`,r.flags);
+// rest of §4.4. Words outside brackets (a VIREO English gloss) and quotes, as for Portuguese, and (Front FR6) outside a
+// `{placeholder}` token, whose name is no word of the text («{cluster}» names the dataset; a real «cluster» beside a placeholder
+// is still caught). Every pattern passed here has the `u` flag (\p{…}).
+const outsideFrenchGlosses=(r:RegExp)=>new RegExp(`(?<!\\{[\\p{L}\\p{N}_]*)(?:${r.source})(?![\\p{L}\\p{N}_]*\\})(?![^(]*\\))(?![^“]*”)(?![^«]*»)`,r.flags);
 const FR_TU=['tu','Tu','te','Te','toi','Toi','ton','Ton','ta','Ta','tes','Tes','tien','tienne','tiens','tiennes'];
 const FR_TU_COMMANDS=['Clique','Choisis','Ouvre','Enregistre','Sélectionne','Saisis','Tape','Charge','Ferme','Vérifie','Utilise','Mesure','Pointe','Attends','Regarde','Vois','Fais','Mets','Appuie','Lis','Écris','Définis','Reviens','Recharge','Restaure','Télécharge','Essaie','Suis','Laisse','Commence','Coche','Garde','Note'];
 const FR_VOUS_COMMANDS=['Cliquez','Choisissez','Ouvrez','Enregistrez','Sélectionnez','Saisissez','Tapez','Chargez','Fermez','Vérifiez','Utilisez','Mesurez','Pointez','Attendez','Regardez','Voyez','Faites','Mettez','Appuyez','Lisez','Écrivez','Définissez','Revenez','Rechargez','Restaurez','Téléchargez','Essayez','Suivez','Laissez','Commencez','Cochez','Gardez','Notez'];
@@ -163,6 +169,113 @@ function frenchProfile(setting:Registers['fr']):LocaleProfile{
   claims:[/(?<!pas (?:une |la )?)traduction officielle/iu,/(?<!pas (?:une |la )?)traduction (?:officielle )?du (?:Project )?CLEA/iu,/(?<!pas (?:un |le )?)texte du (?:Project )?CLEA/iu],
   // First proposal (plan §4.4), calibrated on FR0's shell batch (docs/I18N.md, FR0).
   lengthBand:[.7,1.7],pluralCategories:['one','many','other'],optionalPluralCategories:OPTIONAL_PLURAL_CATEGORIES.fr,
+  // Front FR6: a {placeholder}'s name is set aside before the glossary's forbidden words too («{cluster}» names the dataset).
+  forbiddenSetAside:/\{[\p{L}\p{N}_]+\}/u,
+ };
+}
+
+// Front RT8 (plan front-i18n-rtl.md § 3.4, § 4 and the RT8 row of § 9; docs/I18N.md "RTL groundwork: RTL lint profiles and direction
+// plumbing (RT8, RT9)"): the right-to-left profiles, Arabic in full and Hebrew and Persian minimal. No ar, he or fa catalog exists
+// (groundwork only, user decision of 2026-11-10); these rules wait for one, and its first front (AR0) calibrates them. Besides each
+// language's typography they flag what a right-to-left sentence draws out of order, the catalog literals RT7's walk found under
+// qps-rtl (tests/fixtures/rtlKnown.ts catalogLiteral and signBeforeParam): a value belongs in a {param}, which t() isolates (RT4).
+const RTL_PLACEHOLDER='(?:\\{[\\p{L}\\p{N}_]+\\}|«A\\p{N}+»)';
+/** The bidi-mirrored glyphs (›, ⟦, brackets, « ») mirror by themselves; →, ▸ and ↗ do not, so a translation may point them along its
+ * reading (→ or ←, ▸ or ◂, ↗ or ↖), counted as one class. The en dash is not counted: the range rule asks for words instead. */
+const rtlGlyphs=(extra:readonly GlyphClass[])=>glyphsWith({'↗':{marks:['↗','↖']},'▸':{marks:['▸','◂']}},[{marks:['→','←']},...extra]).filter(c=>c.marks[0]!=='–');
+function rtlOrderRules(rangeInWords:string):Pattern[]{
+ return [
+  {label:'range between two values',pattern:new RegExp(`${RTL_PLACEHOLDER}[ \\u00a0]*[-–][ \\u00a0]*${RTL_PLACEHOLDER}`,'u'),use:`write it in words (${rangeInWords}): a right-to-left sentence draws «{a}–{b}» as «{b}–{a}»`},
+  {label:'sign before a value',pattern:new RegExp(`(?<![\\p{L}\\p{N}}»])[-+−±](?=${RTL_PLACEHOLDER})`,'u'),use:'put the sign in the value: «−{x}» is drawn «{x}−» in a right-to-left sentence even with {x} isolated'},
+  {label:'signed number in the text',pattern:/(?<![\p{L}\p{N}}»])[-+−±]\p{N}/u,use:'make it a {param}, which t() isolates: «−21.4» is drawn «21.4−» in a right-to-left sentence'},
+  {label:'date in the text',pattern:/\p{N}{4}-\p{N}{1,2}-\p{N}{1,2}|\p{N}{1,2}-\p{N}{1,2}-\p{N}{4}/u,use:'make it a {param}, which t() isolates: «2009-06-01» is drawn «01-06-2009» in a right-to-left sentence'},
+  {label:'ellipsis after a Latin word',pattern:/(?<=\p{sc=Latn})(?:\.\.\.|…)/u,use:'end the Latin text without it and put the ellipsis after the right-to-left text, or make the Latin a {param}: «ID…» is drawn «…ID»'},
+ ];
+}
+/** Arabic and Persian: their own comma, semicolon and question mark next to Arabic-script text, no tatweel (kashida: stretching is
+ * the font's and the style sheet's), no presentation forms (joining is the font's). ٠–٩, ۰–۹, ٫ and ٬ are the digits rule's. */
+const ARABIC_SCRIPT='\\p{scx=Arab}';
+const arabicScriptTypography=():Pattern[]=>[
+ {label:'Latin comma, semicolon or question mark in Arabic-script text',pattern:new RegExp(`(?<=${ARABIC_SCRIPT})[,;?]|[,;?](?=[ \\u00a0]*${ARABIC_SCRIPT})`,'u'),use:'، ؛ ؟'},
+ {label:'tatweel',pattern:/\u0640/u,use:'write the word without it'},
+ {label:'Arabic presentation form',pattern:/[\ufb50-\ufd3d\ufd40-\ufdfb\ufdfd-\ufdff\ufe70-\ufefe]/u,use:'type the letter itself (U+0600–U+06FF); joining is the font’s'},
+];
+/** A word of the list, with an optional attached conjunction (`prefix`, a pattern: و or ف, or Hebrew ו) before it; letters and
+ * combining marks continue a word. */
+const prefixedWords=(list:readonly string[],prefix:string)=>new RegExp(`(?<![\\p{L}\\p{M}])${prefix}?(?:${list.join('|')})(?![\\p{L}\\p{M}])`,'u');
+/** Arabic و or ف, but no و before ض: وضع (mode, position), وضعي (positional) and وضعوا (they placed) are words of their own, not
+ * و + ضع، ضعي، ضعوا (review of RT8). */
+const AR_PREFIX='(?:و(?!ض)|ف)',HE_PREFIX='ו';
+// Imperatives of the verbs this interface uses: singular (the generic form, اختر), plural (اختاروا) and feminine singular (اختاري).
+const AR_SINGULAR=['اضغط','اختر','افتح','احفظ','أغلق','انقر','استخدم','أدخل','اكتب','انتظر','حدد','انظر','تحقق','ابدأ','اقرأ','ضع','أضف','احذف'];
+const AR_PLURAL=['اضغطوا','اختاروا','افتحوا','احفظوا','أغلقوا','انقروا','استخدموا','أدخلوا','اكتبوا','انتظروا','حددوا','انظروا','تحققوا','ابدؤوا','ابدأوا','اقرؤوا','ضعوا','أضيفوا','احذفوا'];
+const AR_FEMININE=['اضغطي','اختاري','افتحي','احفظي','أغلقي','انقري','استخدمي','أدخلي','اكتبي','انتظري','حددي','انظري','تحققي','ابدئي','اقرئي','ضعي','أضيفي','احذفي'];
+function arabicRegister(setting:Registers['ar']):Pattern[]{
+ const feminine:Pattern={label:'feminine imperative',pattern:prefixedWords(AR_FEMININE,AR_PREFIX),use:'one neutral form for every student: the generic imperative (اختر) or a verbal noun (اختيار)'};
+ // «اضغط/ي», «الطالب/ة», «المعلمين/ات»: a gender slash is a slash before a feminine or plural ending. «و/أو» (and/or) and units such
+ // as «كم/ث» (km/s, the Hubble lab's) are no address (review of RT8: any one- or two-letter word after a slash flagged «كم/ث»).
+ const slash:Pattern={label:'gender slash',pattern:/(?<=\p{sc=Arab})\/\u0640?(?:ي|ة|ين|ات|ن)(?![\p{L}\p{M}])/u,use:'one neutral form (اختر, or اختيار)'};
+ return setting==='singular'
+  ?[{label:'plural pronoun',pattern:words(['أنتم','أنتن','أنتما'],'letters-marks'),use:'address the student in the singular, neutrally (a verbal noun or the generic imperative)'},
+    {label:'plural imperative',pattern:prefixedWords(AR_PLURAL,AR_PREFIX),use:'the singular imperative (اختر، اضغط) or a verbal noun (اختيار، حفظ)'},feminine,slash]
+  :[{label:'singular imperative',pattern:prefixedWords(AR_SINGULAR,AR_PREFIX),use:'the plural imperative (اختاروا، اضغطوا)'},feminine,slash];
+}
+// Unpointed, some masculine singular imperatives are also everyday words: לחץ (pressure), שמור (saved), סגור (closed), בדוק
+// (checked). They are left out (review of RT8); their feminine forms and the plural stay unambiguous.
+const HE_SINGULAR=['לחצי','בחר','בחרי','שמרי','סגרי','הקלד','הקלידי','הזן','הזיני','המתן','המתיני','בדקי','השתמש','השתמשי','הוסף','הוסיפי'];
+const HE_PLURAL=['לחצו','בחרו','שמרו','סגרו','הקלידו','הזינו','המתינו','בדקו','השתמשו','הוסיפו'];
+const hebrewRegister=(setting:Registers['he']):Pattern[]=>setting==='plural'
+ ?[{label:'singular address',pattern:words(['אתה'],'letters-marks'),use:'the gender-neutral plural (אתם, לחצו) or an infinitive (יש ללחוץ)'},
+   {label:'singular imperative',pattern:prefixedWords(HE_SINGULAR,HE_PREFIX),use:'the gender-neutral plural imperative (לחצו, בחרו)'}]
+ :[{label:'plural address',pattern:words(['אתם','אתן'],'letters-marks'),use:'the singular (אתה)'},
+   {label:'plural imperative',pattern:prefixedWords(HE_PLURAL,HE_PREFIX),use:'the singular imperative (לחץ, בחר)'}];
+const FA_TO=['تو','ترا','تورا'],FA_TO_COMMANDS=['کن','بکن','بزن','ببین','بنویس','بخوان','بگذار','بردار','بده','بگیر'];
+const FA_SHOMA_COMMANDS=['کنید','بکنید','بزنید','ببینید','بنویسید','بخوانید','بگذارید','بردارید','بدهید','بگیرید'];
+const persianRegister=(setting:Registers['fa']):Pattern[]=>setting==='shoma'
+ ?[{label:'«تو» pronoun',pattern:words(FA_TO,'letters-marks'),use:'address the student as «شما»'},{label:'«تو» imperative',pattern:words(FA_TO_COMMANDS,'letters-marks'),use:'the «شما» form (کنید، بزنید)'}]
+ :[{label:'«شما» pronoun',pattern:words(['شما'],'letters-marks'),use:'address the student as «تو»'},{label:'«شما» imperative',pattern:words(FA_SHOMA_COMMANDS,'letters-marks'),use:'the «تو» form (کن، بزن)'}];
+function arabicProfile(setting:Registers['ar']):LocaleProfile{
+ return {
+  id:'ar',name:'Arabic',script:/\p{sc=Arab}/u,boundary:'letters-marks',caseFold:null,
+  glyphs:rtlGlyphs([{marks:['?','؟']}]),
+  pairs:[pair('«','»'),CURLY,PARENS],
+  forbiddenMarks:[{mark:'"',use:'« » or “ ”'}],
+  typography:[...arabicScriptTypography(),...rtlOrderRules('من {a} إلى {b}')],
+  register:{setting,patterns:arabicRegister(setting)},
+  // A claim, never its denial: «ليست ترجمة رسمية», «ليست الترجمة الرسمية», «ترجمة غير رسمية».
+  claims:[/(?<![\p{L}\p{M}])(?<!(?:ليست|ليس)[ \u00a0]+)(?:ال)?ترجمة[ \u00a0]+(?:(?:ال)?رسمية|(?:من[ \u00a0]+)?(?:مشروع[ \u00a0]+)?CLEA)/u],
+  // First proposal (plan § 9 "Then, per RTL language": AR0 calibrates it on its first batch).
+  lengthBand:[.6,1.4],pluralCategories:['zero','one','two','few','many','other'],
+  otherScript:{label:'Persian',characters:new Map([['ی','ي'],['ک','ك']])},
+ };
+}
+function hebrewProfile(setting:Registers['he']):LocaleProfile{
+ return {
+  id:'he',name:'Hebrew',script:/\p{sc=Hebr}/u,boundary:'letters-marks',caseFold:null,
+  glyphs:rtlGlyphs([{marks:['?']}]),
+  pairs:[PARENS],
+  forbiddenMarks:[{mark:'،',use:','},{mark:'؛',use:';'},{mark:'؟',use:'?'}],
+  typography:[...rtlOrderRules('מ־{a} עד {b}'),{label:'Hebrew presentation form',pattern:/[\ufb1d-\ufb4f]/u,use:'type the letter and its points (U+0590–U+05FF)'}],
+  register:{setting,patterns:hebrewRegister(setting)},
+  // «תרגום לא רשמי» (unofficial), «אינו תרגום רשמי» and «לא התרגום הרשמי» (is not) pass; «התרגום הרשמי» (the official one) does not.
+  claims:[/(?<!(?:אינו|אינה|איננו|לא)[ \u00a0]+)(?<![\p{L}\p{M}])ה?תרגום[ \u00a0]+(?:ה?רשמי(?![\p{L}\p{M}])|(?:ה?רשמי[ \u00a0]+)?של[ \u00a0]+(?:Project[ \u00a0]+)?CLEA)/u],
+  lengthBand:[.5,1.3],pluralCategories:['one','two','other'],
+ };
+}
+function persianProfile(setting:Registers['fa']):LocaleProfile{
+ return {
+  id:'fa',name:'Persian',script:/\p{sc=Arab}/u,boundary:'letters-marks',caseFold:null,
+  glyphs:rtlGlyphs([{marks:['?','؟']}]),
+  pairs:[pair('«','»'),PARENS],
+  forbiddenMarks:[{mark:'"',use:'« »'}],
+  typography:[...arabicScriptTypography(),...rtlOrderRules('از {a} تا {b}')],
+  register:{setting,patterns:persianRegister(setting)},
+  // «ترجمه غیررسمی» (unofficial) and «… نیست» (is not) pass; ترجمهٔ and ترجمۀ (the ezafe, decomposed or precomposed) are read too.
+  claims:[/ترجم(?:ه(?:ٔ|\u200cی)?|ۀ)[ \u00a0]+(?:رسمی|(?:Project[ \u00a0]+)?CLEA)(?![ \u00a0]*نیست)/u],
+  lengthBand:[.7,1.5],pluralCategories:['one','other'],
+  otherScript:{label:'Arabic',characters:new Map([['ي','ی'],['ك','ک'],['ى','ی']])},
+  // The zero-width non-joiner belongs inside Persian words (می‌کنید, پرونده‌ها); the joiner does not.
+  joinerScript:/\p{scx=Arab}/u,joiners:'\u200c',
  };
 }
 
@@ -268,6 +381,9 @@ export function profileFor(id:ProfileId,registers:Registers=REGISTER):LocaleProf
   };
   case 'es-419':return spanishProfile(registers.es);
   case 'fr':return frenchProfile(registers.fr);
+  case 'ar':return arabicProfile(registers.ar);
+  case 'he':return hebrewProfile(registers.he);
+  case 'fa':return persianProfile(registers.fa);
  }
 }
 /** Plural categories a key may leave out (they fall back to `other`), for the Latin-script languages to come: Spanish,

@@ -171,4 +171,14 @@ describe('rtl.css: spacing, slant, sizes and line heights (plan § 2.3, § 6.2)'
   for(const [s,v] of lh)expect(Number(v),s).toBeGreaterThanOrEqual(1.5);
   for(const s of SYMBOLS)expect(english.some(e=>e.selector===s&&e.ratio===1),s).toBe(true);
  });
+ // Front RT7: the walk under qps-rtl measured these floors under Noto Sans Arabic (tests/scripts/rtl.scripts.ts, walks.scripts.ts):
+ // no ink is cut anywhere it goes but in the classification read-out, whose English box is a fixed 86 px; § 6 lets it grow.
+ it('turns the two fixed text heights into min-height for ar and fa, as scripts.css does for ja, zh, hi and ru',()=>{
+  const fixed=OWN.filter(r=>r.decls.get('height')==='auto');
+  expect(fixed.map(r=>[r.media,r.selectors.join(),r.decls.get('min-height')])).toEqual([
+   ['','.comparison-cursor-live:is(:lang(ar),:lang(fa))','max(86px,calc(3lh + 26px))'],
+   ['@media(max-width:570px)','.sidebar:is(:lang(ar),:lang(fa))','60px']]);
+  expect(ENGLISH.find(r=>r.selectors.includes('.comparison-cursor-live'))?.decls.get('height')).toBe('86px');
+  expect(ENGLISH.find(r=>r.media==='@media(max-width:570px)'&&r.selectors.includes('.sidebar'))?.decls.get('height')).toBe('60px');
+ });
 });

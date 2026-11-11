@@ -4,8 +4,8 @@
  * the welcome looks and behaves the same whichever host shows it, and swapping one host for the other changes nothing on screen.
  * Presentation only; nothing here imports the observatory or its data. */
 import {useEffect,useState,type ReactNode,type RefObject} from 'react';
-import {t,uiLanguage} from '../i18n';
-import {failureNotice as languageNotice} from '../i18n/languages';
+import {t,uiDirection,uiLanguage} from '../i18n';
+import {directionWithin,failureNotice as languageNotice} from '../i18n/languages';
 import {OBJECT_X_LAB} from '../objectx/ObjectXMessages';
 import {labsIndexUrl,type LabSlug} from '../seo/labSlugs';
 import Welcome from '../home/Welcome';
@@ -34,8 +34,14 @@ function useLanguageChoice():LanguageChoiceModule|null{
 export function LanguageSelectSlot({onSave}:{onSave:()=>void}){const m=useLanguageChoice();return m?<m.LanguageSelect onSave={onSave}/>:null;}
 export function VireoOriginalsSlot(){const m=useLanguageChoice();return m?<m.VireoOriginalsOption/>:null;}
 /** The bilingual notices of a language (ES1 review 1, C1) or a route area's text (Front ES-SPLIT) that could not be loaded, in
- * English and in that language (Front SC8: src/i18n/languages.ts failureNotice). */
-export const failureNotice=(testId:string,notice:ReturnType<typeof languageNotice>)=>notice&&<p role="status" className="card observatory-note" data-testid={testId} style={{margin:'12px 16px 0',padding:'10px 14px'}}><span lang="en">{notice.en}</span> <span lang={notice.lang}>{notice.own}</span></p>;
+ * English and in that language (Front SC8: src/i18n/languages.ts failureNotice). Front RT9: each half carries `dir` when its
+ * direction differs from the page's (a right-to-left language's sentence in the English page its failure leaves; English inside a
+ * right-to-left page whose area failed); with left-to-right languages neither half has the attribute. */
+export const failureNotice=(testId:string,kind:'language'|'area',tag:string)=>{
+ const notice=languageNotice(kind,tag);if(!notice)return notice;
+ const page=uiDirection();
+ return <p role="status" className="card observatory-note" data-testid={testId} style={{margin:'12px 16px 0',padding:'10px 14px'}}><span lang="en" dir={directionWithin('en',page)}>{notice.en}</span> <span lang={notice.lang} dir={directionWithin(tag,page)}>{notice.own}</span></p>;
+};
 
 export type SiteHeaderProps=Readonly<{
  inert:boolean;view:Route;navigate:(route:Route)=>void;openGuide:Readonly<Record<LabSlug,()=>void>>;

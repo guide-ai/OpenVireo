@@ -18,6 +18,7 @@ import NativeMirrorCaption from '../components/NativeMirrorCaption';
 import '../observatory/observatory-dialogs.css';
 import './variables.css';
 import {screenDateTime} from '../i18n/screenDate';
+import {iso} from '../i18n/bidi';
 
 type Loaded=Readonly<{records:readonly VariableStarRecord[]}>;
 type LoadState=Readonly<{status:'loading'}|{status:'error'}|({status:'ready'}&Loaded)>;
@@ -195,7 +196,7 @@ function PrintShell({caption,note,orientation,controls,children,onClose,onPrinte
 function PrintPreview({caption,lines,onClose}:{caption:string;lines:readonly string[];onClose:()=>void}){
  const [printedAt]=useState(()=>screenDateTime(new Date()));// DateTimeToStr(Now) at Print; screenDateTime, the page language [W]
  return <PrintShell caption={caption} onClose={onClose}>
-  <p className="variable-print-header" data-testid="variable-print-date">{printedAt}{vireo(PL.tableNumber)}{vireo(PL.notRecorded)}</p>
+  <p className="variable-print-header" data-testid="variable-print-date">{/* Front RT7: the date in its own isolate in a right-to-left load (unchanged otherwise). */iso(printedAt)}{vireo(PL.tableNumber)}{vireo(PL.notRecorded)}</p>
   <p className="variable-print-header variable-print-placeholder">{M.printStudentPlaceholder}</p>
   <p className="variable-print-header">{caption}</p>
   <pre className="variable-lines" lang="en" data-testid="variable-print-lines">{lines.join('\n')}</pre>

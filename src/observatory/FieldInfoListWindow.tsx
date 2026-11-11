@@ -22,6 +22,7 @@ export type FieldInfoBox=Readonly<{caption:string;text:string}>;
 import {downloadText} from './downloadText';
 import {imeComposing} from '../dialogKeyboard';
 import {screenDateTime} from '../i18n/screenDate';
+import {iso} from '../i18n/bidi';
 export {downloadText};
 
 /** A modeless Field Information list window (TFieldRptForm1 / TVarFldLstForm1, docs/OBJECT-INFO-FORMS.md). ListBox lines with
@@ -164,7 +165,7 @@ function FieldInfoPrintPreview({caption,lines,student,onClose}:{caption:string;l
  return createPortal(<dialog ref={dialog} className="ob-dialog ob-wide fi-print-root" aria-labelledby={`${id}-t`} data-testid="fi-print-preview" onCancel={e=>{e.preventDefault();onClose();}}>
   <div className="fi-print-chrome"><h2 id={`${id}-t`}>{M.printTitle}</h2><p className="fi-note">{M.printAdaptation}</p></div>
   <section className="fi-print-report" tabIndex={0} aria-label={caption}>
-   <p className="fi-print-header" data-testid="fi-print-date">{printedAt}{student?vireo(HOT_LIST_PRINT_LITERALS.tableNumber)+vireo(HOT_LIST_PRINT_LITERALS.notRecorded):''}</p>
+   <p className="fi-print-header" data-testid="fi-print-date">{/* Front RT7: the date in its own isolate in a right-to-left load (unchanged otherwise). */iso(printedAt)}{student?vireo(HOT_LIST_PRINT_LITERALS.tableNumber)+vireo(HOT_LIST_PRINT_LITERALS.notRecorded):''}</p>
    <p className="fi-print-header">{caption}</p>
    <NativeMirrorCaption/>
    <pre className="fi-print-lines" lang="en" data-testid="fi-print-lines">{lines.join('\n')}</pre>

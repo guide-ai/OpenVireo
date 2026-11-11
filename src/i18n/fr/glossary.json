@@ -31,7 +31,7 @@
   },
   {
    "en": "\\bexposures?\\b",
-   "fr": "pose|exposition"
+   "fr": "pose"
   },
   {
    "en": "\\bmeasurements?\\b",
@@ -59,7 +59,7 @@
   },
   {
    "en": "\\b(re)?load(s|ed|ing)?\\b",
-   "fr": "charg|import|ouvr"
+   "fr": "charg"
   },
   {
    "en": "\\bbrowsers?\\b",
@@ -167,11 +167,11 @@
   },
   {
    "en": "\\bcounts?\\b(?! shows after the reveal)",
-   "fr": "compt|nombre|total|effectif"
+   "fr": "compt|nombre"
   },
   {
    "en": "\\bslew(s|ed|ing)?\\b",
-   "fr": "d[ée]plac|mouvement|pointage"
+   "fr": "d[ée]plac"
   },
   {
    "en": "\\bhot lists?\\b",
@@ -183,7 +183,7 @@
   },
   {
    "en": "\\bseeing\\b",
-   "fr": "seeing|turbulence|qualit[ée] d[’']image"
+   "fr": "seeing"
   },
   {
    "en": "\\bright ascension\\b",
@@ -259,7 +259,7 @@
   },
   {
    "en": "\\bwedge plots?\\b",
-   "fr": "diagrammes? en coin"
+   "fr": "diagrammes? en cône"
   },
   {
    "en": "\\bfield of view\\b",
@@ -431,7 +431,7 @@
   },
   {
    "en": "\\bmerg(e|es|ed|ing)\\b",
-   "fr": "fusion|combin|regroup"
+   "fr": "fusion"
   },
   {
    "en": "\\bendpoint[- ]grids?\\b",
@@ -495,7 +495,7 @@
   },
   {
    "en": "\\bsnapshots?\\b",
-   "fr": "instantan[ée]|capture"
+   "fr": "instantan[ée]"
   },
   {
    "en": "\\banaly[sz]ers?\\b",
@@ -511,7 +511,7 @@
   },
   {
    "en": "\\b(?:600-)?bins?\\b",
-   "fr": "canal|canaux|intervalle|case"
+   "fr": "canal|canaux"
   },
   {
    "en": "\\bcombined view\\b",
@@ -519,7 +519,7 @@
   },
   {
    "en": "\\bpanes?\\b",
-   "fr": "panneau|volet"
+   "fr": "panneau"
   },
   {
    "en": "\\b(?:sampled|printed-coordinate|printed|intensity|unknown) traces?\\b",
@@ -563,7 +563,15 @@
   },
   {
    "en": "\\bturn-?off\\b",
-   "fr": "point de coude|coude|point de sortie|point de virage|turn-?off"
+   "fr": "point de retournement"
+  },
+  {
+   "en": "\\bmembership\\b",
+   "fr": "appartenance"
+  },
+  {
+   "en": "\\bdatasets?\\b",
+   "fr": "jeux? de données"
   },
   {
    "en": "\\bly\\b",
@@ -592,6 +600,30 @@
   {
    "en": "\\breceiver monitor\\b",
    "fr": "moniteur (?:du|de) r[ée]cepteur|surveillance (?:du|de) r[ée]cepteur"
+  },
+  {
+   "en": "\\bwedge diagrams?\\b",
+   "fr": "diagrammes? en cône"
+  },
+  {
+   "en": "\\bpractices?\\b",
+   "fr": "entra[iî]nement"
+  },
+  {
+   "en": "\\bdrafts?\\b",
+   "fr": "brouillon"
+  },
+  {
+   "en": "\\bfallbacks?\\b",
+   "fr": "repli"
+  },
+  {
+   "en": "\\barcsec(?:onds?)?\\b",
+   "fr": "secondes? d[’']arc"
+  },
+  {
+   "en": "\\bhost clock\\b",
+   "fr": "horloge de l[’']ordinateur"
   }
  ],
  "names": [
@@ -1271,7 +1303,7 @@
   },
   {
    "en": "LSS Wedge Plot",
-   "fr": "Diagramme en coin LSS"
+   "fr": "Diagramme en cône LSS"
   },
   {
    "en": "Load Saved Data",
@@ -1405,6 +1437,83 @@
   {
    "en": "Lab Table",
    "fr": "table de laboratoire"
+  },
+  {
+   "en": "Save All",
+   "fr": "Tout enregistrer"
+  },
+  {
+   "en": "Clear All",
+   "fr": "Tout effacer"
+  },
+  {
+   "en": "Telescope Display",
+   "fr": "affichage du télescope"
+  },
+  {
+   "en": "Master Receiver",
+   "fr": "récepteur principal"
+  },
+  {
+   "en": "Case Dependent",
+   "fr": "Respecter la casse"
+  },
+  {
+   "en": "Search String",
+   "fr": "Texte à rechercher"
+  },
+  {
+   "en": "Search Results",
+   "fr": "Résultats de la recherche"
+  },
+  {
+   "en": "Optical",
+   "fr": "Optique",
+   "exact": true
+  },
+  {
+   "en": "Spectral Line Help",
+   "fr": "Aide sur les raies spectrales"
+  },
+  {
+   "en": "Original hot lists",
+   "fr": "Listes d’objets d’origine"
+  },
+  {
+   "en": "Telescope view",
+   "fr": "vue du télescope"
+  },
+  {
+   "en": "Receiver monitor",
+   "fr": "Moniteur du récepteur"
+  },
+  {
+   "en": "Radio configuration",
+   "fr": "Configuration radio"
+  },
+  {
+   "en": "pulsar exercise",
+   "fr": "TP sur les pulsars"
+  },
+  {
+   "en": "Manual marks",
+   "fr": "Repères manuels"
+  },
+  {
+   "en": "Data properties",
+   "fr": "Propriétés des données"
+  },
+  {
+   "en": "Trace audition",
+   "fr": "Écoute du tracé"
+  },
+  {
+   "en": "Telescope position",
+   "fr": "Position du télescope"
+  },
+  {
+   "en": "Radio telescope control",
+   "fr": "Commande du radiotélescope"
   }
  ],
  "forbidden": [
@@ -1439,6 +1548,10 @@
     "supportent"
    ],
    "use": "pris en charge (supporter means to bear or tolerate)"
+  },
+  {
+   "fr": "(?<![\\p{L}\\p{N}])diagrammes? en coin(?![\\p{L}\\p{N}])",
+   "use": "diagramme en cône (Front FR2: the wedge plot of a redshift survey, as L’Astronomie of the Société astronomique de France names de Lapparent, Geller & Huchra’s 1986 CfA slice)"
   }
  ]
 }

@@ -20,7 +20,7 @@ export const HELP_MENU_FR:Translation<typeof HELP_MENU_EN>=Object.freeze({
  buttonNames:Object.freeze({
   'OBSRVHLP.LST':'Aide des commandes du télescope','PHOTOHLP.LST':'Aide du photomètre','CAMHLP.LST':'Aide de la caméra','SPECHLP.LST':'Aide du spectromètre',
   'CLASSHLP.LST':'Aide de la classification spectrale','MEASHLP.LST':'Aide de la mesure des spectres','HRANALHLP.LST':'Aide du diagramme HR','VARTYPEHLP.LST':'Aide des types d’étoiles variables',
-  'WDGPLTHLP.LST':'Aide du diagramme en coin','PLSANHLP.LST':'Aide de l’analyse des pulsars','PLSLSHLP.LST':'Aide des paramètres des pulsars','MLTSPHLP.LST':'Aide du spectromètre multi-objets',
+  'WDGPLTHLP.LST':'Aide du diagramme en cône','PLSANHLP.LST':'Aide de l’analyse des pulsars','PLSLSHLP.LST':'Aide des paramètres des pulsars','MLTSPHLP.LST':'Aide du spectromètre multi-objets',
   'SPLSTHLP.LST':'Aide de la liste de spectres multi-objets',
  }),
  exitNote:'VIREO affiche ce rappel quand vous quittez l’observatoire pendant un exercice, après Exécuter l’exercice (Run Exercise) ; sinon, il demande seulement si vous voulez quitter. OpenVireo n’a pas d’étape Se connecter (Log In) ni Exécuter l’exercice, de sorte que l’observatoire est toujours un exercice en cours. Dans VIREO, OK ou Oui (Yes) quitte le programme ; Annuler (Cancel) ou Non (No) le laisse ouvert.',

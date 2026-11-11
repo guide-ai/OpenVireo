@@ -6,9 +6,12 @@
 //   FONTCONFIG_FILE=…/fonts.conf node scripts/render-og-image.mjs pt-BR             → public/og-image-pt-br.png
 //   node scripts/render-og-image.mjs en /tmp/check.png                               (English, to compare with the original)
 // The English image predates this script and is not re-rendered: pass an output path for English.
+// Front RT9: the page takes the language's direction from the app's registry (src/seo/languages.ts seoDirection): a right-to-left
+// language gets <html dir="rtl">, and the blocks are placed from the inline start (inset-inline-start), so its layout mirrors; a
+// left-to-right language gets no dir attribute and the same placement as before (left: 84px).
 import {readFileSync,writeFileSync} from 'node:fs';
 import {chromium} from '@playwright/test';
-import {SEO_LANGUAGES} from '../src/seo/languages.ts';
+import {SEO_LANGUAGES,seoDirection} from '../src/seo/languages.ts';
 
 const [tag,out]=process.argv.slice(2);
 const language=SEO_LANGUAGES.find(l=>l.tag===tag);
@@ -23,16 +26,17 @@ let seed=0x0b2430;
 const random=()=>{seed=(seed+0x6d2b79f5)|0;let t=Math.imul(seed^(seed>>>15),1|seed);t=(t+Math.imul(t^(t>>>7),61|t))^t;return ((t^(t>>>14))>>>0)/4294967296;};
 const stars=Array.from({length:150},()=>{const r=random()<0.85?0.8+random()*0.6:1.4+random()*0.8;return `<circle cx="${(random()*1200).toFixed(1)}" cy="${(random()*630).toFixed(1)}" r="${r.toFixed(2)}" fill="#e7f0ee" fill-opacity="${(0.25+random()*0.6).toFixed(2)}"/>`;}).join('');
 
-const html=`<!doctype html><html lang="${language.tag}"><head><meta charset="utf-8"><style>
+const dir=seoDirection(language)==='rtl'?' dir="rtl"':'';
+const html=`<!doctype html><html lang="${language.tag}"${dir}><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 body{width:1200px;height:630px;overflow:hidden;font-family:'DejaVu Sans',sans-serif;color:#eef4f2;
  background:radial-gradient(circle at 1010px 600px,#1a5a48 0,#174a3f 180px,rgba(23,74,63,0) 330px),linear-gradient(160deg,#0b2430 0%,#0d2a33 45%,#123b3a 100%)}
 svg.sky{position:absolute;inset:0}
-.brand{position:absolute;left:84px;top:96px;display:flex;align-items:center;gap:22px;font-weight:700;font-size:40px}
+.brand{position:absolute;inset-inline-start:84px;top:96px;display:flex;align-items:center;gap:22px;font-weight:700;font-size:40px}
 .brand svg{width:84px;height:84px}
-h1{position:absolute;left:84px;top:232px;width:1040px;font-size:62px;line-height:1.13;font-weight:700;letter-spacing:.5px}
-.lines{position:absolute;left:84px;top:396px;width:1040px;font-size:29px;line-height:1.5;color:#a9bfc4}
-.site{position:absolute;left:84px;top:530px;font-size:28px;font-weight:700;color:#d6efe5}
+h1{position:absolute;inset-inline-start:84px;top:232px;width:1040px;font-size:62px;line-height:1.13;font-weight:700;letter-spacing:.5px}
+.lines{position:absolute;inset-inline-start:84px;top:396px;width:1040px;font-size:29px;line-height:1.5;color:#a9bfc4}
+.site{position:absolute;inset-inline-start:84px;top:530px;font-size:28px;font-weight:700;color:#d6efe5}
 </style></head><body><svg class="sky" width="1200" height="630">${stars}</svg>
 <div class="brand">${icon}<span>OpenVireo</span></div>
 <h1>${esc(language.ogImageText.title)}</h1>

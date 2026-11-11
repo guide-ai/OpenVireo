@@ -4,7 +4,7 @@
  * nothing more stay here: the theme switch, the project links, the language select, the Help menu's files and About this site. */
 import {memo,useMemo,useRef,useState,useSyncExternalStore} from 'react';
 import {t,uiLanguage} from '../i18n';
-import {failureNotice as languageNotice,selectorShown} from '../i18n/languages';
+import {selectorShown} from '../i18n/languages';
 import {languageFailure} from '../i18n/active';
 import {areaFailed,subscribeAreaFailures} from '../i18n/areas';
 import {failureNotice,LanguageSelectSlot,siteHeader,VireoOriginalsSlot,welcomeMain,ClusterGuideNavButton} from '../components/AppChrome';
@@ -41,7 +41,7 @@ function WelcomeShell({loading,failed,onNeed}:{loading:boolean;failed:Readonly<{
  },[onNeed]);
  const status=failed?<RouteErrorBoundary><Failed error={failed.error}/></RouteErrorBoundary>
   :loading?<p role="status" className="card observatory-note" data-testid="app-loading" style={{margin:'0 0 16px',padding:'10px 14px'}}>{t('home.loadingObservatory')}</p>:null;
- return <>{parts.header}{parts.pageBar}{languageFailed&&failureNotice('language-failure',languageNotice('language',languageFailed))}{areaTextFailed&&failureNotice('area-failure',languageNotice('area',uiLanguage()))}
+ return <>{parts.header}{parts.pageBar}{languageFailed&&failureNotice('language-failure','language',languageFailed)}{areaTextFailed&&failureNotice('area-failure','area',uiLanguage())}
   <div data-testid="welcome-shell" aria-busy={loading||undefined}>{welcomeMain({openGuide:parts.openGuide,onExplore:parts.explore,status})}</div>
   <AboutDialog dialogRef={about}/></>;
 }

@@ -23,6 +23,7 @@ test.use({locale:SPANISH_LOCALE});
 // - views that mirror a written file (`lang="en"`, F2) are left out of both comparisons.
 // Recorded data stays English: pulsar names (B/J), the Pulsars.dat values shown in Pulsar Parameters, file names and hashes.
 
+
 for(const L of translatedFor('radio'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const C=L.catalog as Record<string,string>;
  test(title(L,'the radio telescope reads differently in Spanish from English: route, control panel, options, Pulsar Parameters, clock, date and receiver','the radio telescope reads differently in <L> (<tag>) from English: route, control panel, options, Pulsar Parameters, clock, date and receiver'),async({browser})=>{
@@ -50,6 +51,10 @@ test('qps: every text of the radio walk is marked, outside identifiers and nativ
  expect([...left].map(([t,step])=>`${step}: ${t}`)).toEqual([]);
 });
 
+/** Front FR5: VIREO's English "Sec" left in a mark label. French writes VIREO's Sec as «Sec.» (FR1, a truncation with its point), which
+ * holds "Sec", so for a language whose form starts with "Sec" only a bare "Sec" (no point) is the English; other languages keep the
+ * plain substring check. */
+const englishSec=(own:string)=>own.startsWith('Sec')&&own!=='Sec'?/\bSec\b(?!\.)/:'Sec';
 /** VIREO's captions on each step, in English (View original, English) or in this load's Spanish. */
 const captions=(page:Page,T:(original:string)=>string):Record<string,()=>Promise<void>>=>({
  'radio route':async()=>{await expect(id(page,'radio-save-recorded-data')).toHaveText(`${T('&File')} ▸ ${T('Save Recorded Data...')}`);},
@@ -77,7 +82,7 @@ const captions=(page:Page,T:(original:string)=>string):Record<string,()=>Promise
   await expect(id(page,'receiver-mode-disp-0')).toHaveText(T('Stop'));},
  'Cannot Close Receiver':async()=>{const b=id(page,'receiver-close-box');await expect(b.locator('h3')).toHaveText(T('Cannot Close Receiver!'));
   await expect(id(page,'receiver-close-box-text')).toHaveText(T('Close the Lowest Receiver First, or Close the Master Receiver to Close All.'));await expect(id(page,'receiver-close-box-ok')).toHaveText(T('OK'));},
- 'mark placed':async()=>{await expect(id(page,'receiver-mark-label-first-0')).toContainText(T(' Sec').trim());await expect(id(page,'receiver-mark-label-first-0')).not.toContainText(T(' Sec').trim()==='Sec'?'Seg':'Sec');},
+ 'mark placed':async()=>{await expect(id(page,'receiver-mark-label-first-0')).toContainText(T(' Sec').trim());await expect(id(page,'receiver-mark-label-first-0')).not.toContainText(T(' Sec').trim()==='Sec'?'Seg':englishSec(T(' Sec').trim()));},
  'record armed':async()=>{await expect(id(page,'receiver-record-disp')).toHaveText(T('On'));},
  'Identify':async()=>{const f=id(page,'receiver-record-finish');await expect(f.locator('h3')).toHaveText(T('Identify Recorded Object'));await expect(f).toContainText(T('Enter/Verify Name or ID of Object'));
   await expect(id(page,'receiver-record-identify-ok')).toHaveText(T('OK'));},
@@ -143,7 +148,7 @@ for(const L of translatedFor('radio'))test.describe(()=>{test.use({locale:contex
  expect(drawn.some(t=>/ Sec /.test(t))).toBe(false);
  expect(drawn.some(t=>/^\d+\.\d{2} MHz {0,}$/.test(t))).toBe(true);
  // A mark's time label (RECEIVER_MARK_LITERALS ' Sec', drawn on the overlay and shown in the DOM): «Seg», never "Sec".
- await expect(id(page,'receiver-mark-label-first-0')).toContainText(new RegExp(`\\d ${sec} \\(`));await expect(id(page,'receiver-mark-label-first-0')).not.toContainText('Sec');
+ await expect(id(page,'receiver-mark-label-first-0')).toContainText(new RegExp(`\\d ${sec} \\(`));await expect(id(page,'receiver-mark-label-first-0')).not.toContainText(englishSec(V('Sec')));
  await expect.poll(()=>drawn.some(t=>new RegExp(`^\\s*\\d+(?:\\.\\d+)? ${sec}$`).test(t))).toBe(true);
  expect(drawn.some(t=>/ Sec$/.test(t))).toBe(false);
  });
