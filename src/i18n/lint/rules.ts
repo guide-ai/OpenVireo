@@ -43,6 +43,10 @@ export type LocaleProfile=Readonly<{
  /** Marks that never appear in this language's text, with what to use instead (wrong quote style, half-width forms…). */
  forbiddenMarks:readonly Readonly<{mark:string;use:string}>[];
  typography:readonly Pattern[];
+ /** Front FR0: a typography check that is not a pattern (French spacing reads the whole string: src/i18n/lint/frenchSpacing.ts
+  * reports what its fixer would still change, and with the English source, brackets that are no gloss of it), counted under the
+  * `typography` rule. */
+ typographyCheck?:(text:string,english:string)=>readonly Readonly<{label:string;match:string;use:string}>[];
  /** `paired` (Front PT0): verb forms that are the other register only as a command, flagged at the start of a sentence when the
   * English sentence it translates starts with an imperative (Portuguese «Salva a investigação» is «Saves the investigation», a
   * description, but a tu-imperative for "Save the investigation"). */
@@ -210,7 +214,7 @@ export function markPairs(p:Pair,profile:LocaleProfile):Finding[]{
 export function quotes(p:Pair,profile:LocaleProfile):Finding[]{
  return profile.forbiddenMarks.filter(f=>p.text.includes(f.mark)).map(f=>finding('quotes',p.id,`«${f.mark}» is not used in ${profile.name}; use ${f.use}`,f.mark));
 }
-export const typography=(p:Pair,profile:LocaleProfile)=>patternHits('typography',p,profile.typography);
+export const typography=(p:Pair,profile:LocaleProfile)=>[...patternHits('typography',p,profile.typography),...(profile.typographyCheck?.(p.text,p.en)??[]).map(x=>finding('typography',p.id,`${x.label}: «${x.match}», ${x.use}`,x.match))];
 /** Western digits and the decimal point on screen in every language (decision 4; plan §8). */
 export function digits(p:Pair):Finding[]{
  const out:Finding[]=[],native=/(?![0-9])\p{Nd}/u.exec(p.text);

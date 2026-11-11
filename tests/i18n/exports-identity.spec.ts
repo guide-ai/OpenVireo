@@ -24,7 +24,7 @@ import {TRANSLATED,e01e02Maps,e08Maps,textOf as ptText} from './languageText';
 // Front PT0 (plan front-i18n-pt-br.md §1.2 #15): every translated language of the registry joins as its fronts land (pt-BR from
 // PT0, its `?lang=pt-BR` preview in an en-US browser before its release, tests/fixtures/language.ts). Its text comes from its own
 // catalog (tests/i18n/languageText.ts), and its own letters must never reach a file.
-type Locale='en'|'qps'|'es-419'|'pt-BR';
+type Locale='en'|'qps'|'es-419'|'pt-BR'|'fr';// Front FR0: French (its ?lang=fr preview) in the toolbar Save investigation family
 type File=Readonly<{name:string;bytes:Buffer}>;
 const ACCENTED:Readonly<Record<string,string>>={a:'aá',e:'eé',i:'ií',o:'oó',u:'uú',A:'AÁ',E:'EÉ',I:'IÍ',O:'OÓ',U:'UÚ'};
 const MARK='[⟦⟧·\\s]*';
@@ -44,7 +44,7 @@ const SPANISH=(()=>{
 const exact=(text:string)=>new RegExp(`^\\s*${text.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&').replace(/\s+/g,'\\s+')}\\s*$`);
 /** A translated language's letters that English text never has (Spanish á é í ó ú ñ ¿ ¡; Portuguese ã õ ç â ê ô à…). */
 const LETTERS:Readonly<Record<string,RegExp>>=Object.fromEntries(TRANSLATED.map(t=>[t.tag,t.letters]));
-const HTML_LANG:Readonly<Record<Locale,string>>={en:'en',qps:'en','es-419':'es-419','pt-BR':'pt-BR'};
+const HTML_LANG:Readonly<Record<Locale,string>>={en:'en',qps:'en','es-419':'es-419','pt-BR':'pt-BR',fr:'fr'};
 /** The accessible-name matcher of an English text in this locale: its Spanish form in es-419 (which must exist), a language before
  * its release its own form or the English the page then shows (languageText.ts `text`), else `L`. */
 const N=(locale:Locale,text:string)=>{if(locale==='pt-BR'){const t=TRANSLATED.find(x=>x.tag===locale)!;if(text==='Skip the tour')return exact(t.maps.tour.skip);if(text==='Save spectrum (.SSP)')return exact((e01e02Maps(locale).observatory as typeof OBSERVATORY_ES).spectrumSave.save);
@@ -509,9 +509,9 @@ test('E02 LSS survey and wedge: counts CSV, session, SSP, results CSV and TXT, i
  },{},page=>page.locator('.lss-main'),['en','qps','es-419','pt-BR']);
 });
 
-test('the shell toolbar: Save investigation is byte-identical in English, qps, Spanish and Brazilian Portuguese',async({browser,baseURL})=>{
+test('the shell toolbar: Save investigation is byte-identical in English, qps, Spanish, Brazilian Portuguese and French',async({browser,baseURL})=>{
  const files:Record<string,File>={};
- for(const locale of ['en','qps','es-419','pt-BR'] as const){
+ for(const locale of ['en','qps','es-419','pt-BR','fr'] as const){
   const context=await browser.newContext({baseURL,locale:contextLocale(locale),viewport:{width:1440,height:1050}}),page=await context.newPage();page.setDefaultTimeout(20_000);
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
   try{
@@ -525,7 +525,7 @@ test('the shell toolbar: Save investigation is byte-identical in English, qps, S
   }finally{await context.close();}
   expect(errors,locale).toEqual([]);
  }
- for(const locale of ['qps','es-419','pt-BR'])expect([files[locale].name,sha(files[locale].bytes)],locale).toEqual([files.en.name,sha(files.en.bytes)]);
+ for(const locale of ['qps','es-419','pt-BR','fr'])expect([files[locale].name,sha(files[locale].bytes)],locale).toEqual([files.en.name,sha(files.en.bytes)]);
  for(const f of Object.values(files)){expect(f.bytes.includes('⟦')).toBe(false);for(const letters of Object.values(LETTERS))expect(f.bytes.toString('utf8')).not.toMatch(letters);}
 });
 

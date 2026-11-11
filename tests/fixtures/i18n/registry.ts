@@ -10,13 +10,15 @@ const entry=(tag:string,autonym:string,englishName:string,match:readonly string[
 const SPANISH=LANGUAGES.find(l=>l.tag==='es-419')!;
 /** Front PT0: Brazilian Portuguese's own line of the production registry (released since PT-REL). */
 const PORTUGUESE=LANGUAGES.find(l=>l.tag==='pt-BR')!;
+/** Front FR0: French's own line of the production registry (before its release). */
+const FRENCH=LANGUAGES.find(l=>l.tag==='fr')!;
 const TRADITIONAL=['zh-Hant','zh-TW','zh-HK','zh-MO'];
 export const ZH_HANT=entry('zh-Hant','繁體中文','Chinese, Traditional',TRADITIONAL);
 /** Spanish and pt-BR as released, then French, Indonesian, Hindi, Japanese, Simplified Chinese and Russian, before their release. */
 export const PLANNED:readonly LanguageEntry[]=Object.freeze([
  SPANISH,
  PORTUGUESE,
- entry('fr','Français','French',['fr']),
+ FRENCH,
  entry('id','Bahasa Indonesia','Indonesian',['id']),
  entry('hi','हिन्दी','Hindi',['hi']),
  entry('ja','日本語','Japanese',['ja']),

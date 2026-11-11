@@ -3,18 +3,19 @@
  * all) and adds its glossary. */
 import {SIMPLIFIED_ONLY,TRADITIONAL_ONLY} from './hanVariants';
 import type {PluralCategory} from '../plural';
+import {frenchTypographyFindings} from './frenchSpacing';
 import {wordSource,type Boundary,type GlyphClass,type LocaleProfile,type MarkPair,type PairedPattern,type Pattern} from './rules';
 /** How each language addresses the student. DECIDED by the user on 2026-11-09 (AGENTS.md; plan §13 Q1–Q3, §14): Japanese
  * polite です/ます, Hindi आप, Russian lower-case «вы», Chinese (zh-Hans and zh-Hant) 你. The alternatives stay expressible
  * (plain だ/である, तुम, «ты», 您) so the fixtures prove each register pattern both ways; profileFor builds the patterns
  * from these values. */
-export type Registers=Readonly<{ja:'desu-masu'|'plain';hi:'aap'|'tum';ru:'vy'|'ty';zh:'ni'|'nin';es:'tu'|'usted';pt:'voce'|'tu'}>;
+export type Registers=Readonly<{ja:'desu-masu'|'plain';hi:'aap'|'tum';ru:'vy'|'ty';zh:'ni'|'nin';es:'tu'|'usted';pt:'voce'|'tu';fr:'vous'|'tu'}>;
 /** Front SC9: Spanish tú (decision 6, 2026-11-09), with usted as the expressible alternative. Front PT0: Brazilian Portuguese
  * addresses the student as «você» (AGENTS.md, 2026-11-09: each language follows the Spanish rules; plan front-i18n-pt-br.md §3.1);
- * «tu» stays expressible for the fixtures. */
-export const REGISTER:Registers={ja:'desu-masu',hi:'aap',ru:'vy',zh:'ni',es:'tu',pt:'voce'};
-export type ProfileId='ja'|'hi'|'zh-Hans'|'zh-Hant'|'ru'|'es-419'|'pt-BR';
-export const PROFILE_IDS:readonly ProfileId[]=['ja','hi','zh-Hans','zh-Hant','ru','es-419','pt-BR'];
+ * «tu» stays expressible for the fixtures. Front FR0: French addresses the student as «vous» (AGENTS.md, 2026-11-11), «tu» expressible. */
+export const REGISTER:Registers={ja:'desu-masu',hi:'aap',ru:'vy',zh:'ni',es:'tu',pt:'voce',fr:'vous'};
+export type ProfileId='ja'|'hi'|'zh-Hans'|'zh-Hant'|'ru'|'es-419'|'pt-BR'|'fr';
+export const PROFILE_IDS:readonly ProfileId[]=['ja','hi','zh-Hans','zh-Hant','ru','es-419','pt-BR','fr'];
 
 const words=(list:readonly string[],boundary:Boundary,flags='iu')=>new RegExp(list.map(w=>wordSource(w.normalize('NFC'),boundary)).join('|'),flags);
 /** VIREO's own `...` (43 originals, 22 en.json strings) and `…` count as one ellipsis; Japanese and Chinese also write `……`. */
@@ -97,6 +98,15 @@ const PT_VOCE_COMMANDS=['Clique','Escolha','Abra','Salve','Selecione','Digite','
 /** An English sentence that starts with a bare imperative (no third-person -s): the command the Portuguese must give as você. */
 const EN_COMMAND=/^(?:click|choose|open|save|select|type|enter|load|close|check|use|measure|point|wait|look|see|do|make|put|press|turn|switch|keep|start|begin|mark|activate|read|write|set|go|pick|tick|untick|reload|restore|download|try|note|follow|leave)(?![\p{L}\p{N}])/iu;
 const startOf=(list:readonly string[])=>new RegExp(`^(?:${list.join('|')})(?![\\p{L}\\p{N}])`,'u');
+/** Front PT-REL's two thousands rules, shared by every language that groups thousands with `sep` on screen (pt-BR and, from FR0,
+ * French: U+202F): never en-US's comma, never an ordinary space or U+00A0. Sexagesimal values, versions and dates are no groups. */
+export function thousandsRules(sep:string):Pattern[]{
+ const shown=`«24${sep}000»`;
+ return [
+  {label:'comma between thousands',pattern:/(?<![\p{L}\p{N}.,])\p{N}{1,3}(?:,\p{N}{3})+(?!\p{N})/u,use:`a narrow no-break space (U+202F): ${shown}`},
+  {label:'ordinary space between thousands',pattern:/(?<![\p{L}\p{N}.,])\p{N}{1,3}(?:[ \u00a0]\p{N}{3})+(?![\p{L}\p{N}])/u,use:`a narrow no-break space (U+202F): ${shown}, not a space or U+00A0`},
+ ];
+}
 function portugueseRegister(setting:Registers['pt']):{patterns:Pattern[];paired:PairedPattern[]}{
  return setting==='voce'
   ?{patterns:[{label:'tu pronoun',pattern:words(PT_TU,'letters'),use:'address the student as «você» (seu, sua, você)'},
@@ -105,6 +115,55 @@ function portugueseRegister(setting:Registers['pt']):{patterns:Pattern[];paired:
    paired:[{label:'tu-imperative',pattern:startOf(PT_TU_COMMANDS),english:EN_COMMAND,use:'use the você command (Clique, Escolha, Abra, Salve…)'}]}
   :{patterns:[{label:'você',pattern:words(['você','vocês'],'letters'),use:'address the student as «tu»'}],
    paired:[{label:'você-imperative',pattern:startOf(PT_VOCE_COMMANDS),english:EN_COMMAND,use:'use the tu command (Clica, Escolhe, Abre, Salva…)'}]};
+}
+
+// Front FR0 (plan front-i18n-fr.md §3–§4): one neutral international French. Spacing, apostrophes, quotes and thousands come from
+// the fixer's own view (frenchSpacing.ts), so the lint fails exactly what the fixer would still change; the patterns below are the
+// rest of §4.4. Words outside brackets (a VIREO English gloss) and quotes, as for Portuguese.
+const outsideFrenchGlosses=(r:RegExp)=>new RegExp(`(?:${r.source})(?![^(]*\\))(?![^“]*”)(?![^«]*»)`,r.flags);
+const FR_TU=['tu','Tu','te','Te','toi','Toi','ton','Ton','ta','Ta','tes','Tes','tien','tienne','tiens','tiennes'];
+const FR_TU_COMMANDS=['Clique','Choisis','Ouvre','Enregistre','Sélectionne','Saisis','Tape','Charge','Ferme','Vérifie','Utilise','Mesure','Pointe','Attends','Regarde','Vois','Fais','Mets','Appuie','Lis','Écris','Définis','Reviens','Recharge','Restaure','Télécharge','Essaie','Suis','Laisse','Commence','Coche','Garde','Note'];
+const FR_VOUS_COMMANDS=['Cliquez','Choisissez','Ouvrez','Enregistrez','Sélectionnez','Saisissez','Tapez','Chargez','Fermez','Vérifiez','Utilisez','Mesurez','Pointez','Attendez','Regardez','Voyez','Faites','Mettez','Appuyez','Lisez','Écrivez','Définissez','Revenez','Rechargez','Restaurez','Téléchargez','Essayez','Suivez','Laissez','Commencez','Cochez','Gardez','Notez'];
+function frenchRegister(setting:Registers['fr']):{patterns:Pattern[];paired:PairedPattern[]}{
+ return setting==='vous'
+  ?{patterns:[{label:'tu pronoun',pattern:words(FR_TU,'letters','u'),use:'address the student as «vous» (vous, votre, vos)'},
+    {label:'elided t’',pattern:/(?<![\p{L}\p{N}])[tT][’'](?=\p{L})/u,use:'address the student as «vous»'}],
+   paired:[{label:'tu-imperative',pattern:startOf(FR_TU_COMMANDS),english:EN_COMMAND,use:'use the vous imperative (Cliquez, Choisissez, Ouvrez, Enregistrez…)'}]}
+  :{patterns:[{label:'vous',pattern:words(['vous','votre','vos'],'letters'),use:'address the student as «tu»'}],
+   paired:[{label:'vous-imperative',pattern:startOf(FR_VOUS_COMMANDS),english:EN_COMMAND,use:'use the tu imperative (Clique, Choisis, Ouvre…)'}]};
+}
+const FR_VOWEL_WORD='[aeiouàâäéèêëîïôöùûüœæAEIOUÀÂÄÉÈÊËÎÏÔÖÙÛÜŒÆ]\\p{L}';
+const FR_LEAKAGE=['usted','ustedes','también','você','vocês','não','archivo','archivos','arquivo','arquivos','cúmulo','cúmulos','aglomerado','aglomerados','estrella','estrellas','estrela','estrelas','pantalla','pantallas','tela','telas','medición','mediciones','medição','medições'];
+const FR_FALSE_FRIENDS=['supporté','supportée','supportés','supportées','librairie','librairies','digital','digitale','digitaux','digitales','cluster','clusters','redshift','redshifts'];
+const FR_LIGATURES=['coeur*','oeil*','oeuvre*','manoeuvre*','soeur*','noeud*','voeu*','oeuf*'];
+function frenchProfile(setting:Registers['fr']):LocaleProfile{
+ const reg=frenchRegister(setting);
+ return {
+  id:'fr',name:'French',script:null,boundary:'letters',caseFold:'fr',
+  glyphs:glyphsWith({},[{marks:['?']}]),
+  pairs:[pair('«','»'),PARENS],
+  // Straight " and the opening single quote ‘ (’ is the apostrophe); top-level “ ” are the fixer's (frenchSpacing.ts).
+  forbiddenMarks:[{mark:'"',use:'« » (inner “ ”)'},{mark:'‘',use:'« » (inner “ ”); ’ is the apostrophe'}],
+  typography:[
+   ...thousandsRules('\u202f'),
+   {label:'elision',pattern:outsideFrenchGlosses(new RegExp(`(?<![\\p{L}\\p{N}’'-])(?:[Ll]e|[Ll]a|[Dd]e|[Qq]ue|[Nn]e|[Ss]e|[Cc]e|[Jj]e|[Mm]e|[Jj]usque|[Ll]orsque|[Pp]uisque)[ \\u00a0]+(?=${FR_VOWEL_WORD})|(?<![\\p{L}\\p{N}])[Ss]i[ \\u00a0]+ils?(?![\\p{L}\\p{N}])`,'u')),use:'elide (l’objet, d’une, qu’il, s’il), or write around a placeholder'},
+   {label:'unaccented capital À',pattern:/(?:^|(?<=[.!?…][ \u00a0\u202f]+))A[ \u00a0](?=\p{Ll})/u,use:'À («À partir de», «À l’écran»)'},
+   {label:'unaccented capital É',pattern:outsideFrenchGlosses(/(?<![\p{L}\p{N}])E(?:tats?|toiles?|chelles?|crans?|tapes?|carts?|l[ée]ments?|quations?|lectrons?|missions?|poques?|tudes?|ditions?|quinoxes?|cliptiques?|clipses?)(?![\p{L}\p{N}])/u),use:'É (État, Étoile, Échelle, Écran, Étape, Élément…)'},
+   {label:'missing ligature œ',pattern:words(FR_LIGATURES,'letters'),use:'œ (cœur, œil, œuvre, manœuvre, sœur, nœud, vœu, œuf)'},
+   {label:'point médian',pattern:/(?<=\p{L})·(?=\p{L})/u,use:'epicene wording or the generic masculine (plan §3)'},
+   {label:'Spanish or Portuguese word',pattern:outsideFrenchGlosses(words(FR_LEAKAGE,'letters')),use:'translate from the English, not the Spanish or Portuguese reference'},
+   {label:'Spanish or Portuguese character',pattern:/[ñ¿¡ãõ]/u,use:'French has no ñ, ¿, ¡, ã or õ'},
+   {label:'false friend or anglicism',pattern:outsideFrenchGlosses(words(FR_FALSE_FRIENDS,'letters')),use:'pris en charge (supported), bibliothèque (library), numérique (digital), amas (cluster), décalage vers le rouge (redshift)'},
+   {label:'English word',pattern:outsideFrenchGlosses(words(PT_ENGLISH,'letters')),use:'translate it (a VIREO English name goes in brackets after its French)'},
+   {label:'title case',pattern:/(?<![\p{L}\p{N}])\p{Lu}\p{Ll}+(?:[ \u00a0]+(?:(?:de|du|des|la|le|les|et|à|en|pour|par|sur|au|aux)[ \u00a0]+)?(?:[dl]’)?\p{Lu}\p{Ll}+){2,}(?![^(]*\))/u,use:'sentence case (only the first word and names capitalised)'},
+  ],
+  typographyCheck:frenchTypographyFindings,
+  register:{setting,patterns:reg.patterns,paired:reg.paired},
+  // A claim, never its denial: «n’est pas une traduction officielle», «traduction non officielle», «ce n’est pas un texte du CLEA».
+  claims:[/(?<!pas (?:une |la )?)traduction officielle/iu,/(?<!pas (?:une |la )?)traduction (?:officielle )?du (?:Project )?CLEA/iu,/(?<!pas (?:un |le )?)texte du (?:Project )?CLEA/iu],
+  // First proposal (plan §4.4), calibrated on FR0's shell batch (docs/I18N.md, FR0).
+  lengthBand:[.7,1.7],pluralCategories:['one','many','other'],optionalPluralCategories:OPTIONAL_PLURAL_CATEGORIES.fr,
+ };
 }
 
 /** The profile of one language under a register choice (REGISTER by default). */
@@ -178,8 +237,7 @@ export function profileFor(id:ProfileId,registers:Registers=REGISTER):LocaleProf
      // («24 000», U+202F), never en-US's comma; the decimal point stays (decision 4, the digits rule). An ordinary space could
      // break the number across lines. Front PT-SEO: U+00A0 fails too, now that the help files may hold U+202F (SC7's Unicode help;
      // PULSRANL.TXT used U+00A0 until then), so the screen has one separator.
-     {label:'comma between thousands',pattern:/(?<![\p{L}\p{N}.,])\p{N}{1,3}(?:,\p{N}{3})+(?!\p{N})/u,use:'a narrow no-break space (U+202F): «24 000»'},
-     {label:'ordinary space between thousands',pattern:/(?<![\p{L}\p{N}.,])\p{N}{1,3}(?:[ \u00a0]\p{N}{3})+(?![\p{L}\p{N}])/u,use:'a narrow no-break space (U+202F): «24 000», not a space or U+00A0'},
+     ...thousandsRules('\u202f'),
      // Sentence case: three capitalised words in a row (articles and prepositions between them allowed), outside brackets.
      {label:'title case',pattern:/(?<![\p{L}\p{N}])\p{Lu}\p{Ll}+(?:[  ]+(?:(?:d[aeo]s?|e|em|para|por|com)[  ]+)?\p{Lu}\p{Ll}+){2,}(?![^(]*\))/u,use:'sentence case (only the first word and names capitalised)'},
     ],
@@ -209,6 +267,7 @@ export function profileFor(id:ProfileId,registers:Registers=REGISTER):LocaleProf
    lengthBand:[.8,1.8],pluralCategories:['one','few','many','other'],
   };
   case 'es-419':return spanishProfile(registers.es);
+  case 'fr':return frenchProfile(registers.fr);
  }
 }
 /** Plural categories a key may leave out (they fall back to `other`), for the Latin-script languages to come: Spanish,

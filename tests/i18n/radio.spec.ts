@@ -4,7 +4,7 @@ import {SPANISH_LOCALE,contextLocale,langQuery} from '../fixtures/language';
 import {layoutProblems,type LayoutOptions} from '../fixtures/layoutProblems';
 import {enterInstructorMode} from '../fixtures/instructor-mode';
 import en from '../../src/i18n/en.json' with {type:'json'};
-import {TRANSLATED,radioMaps,type LanguageText} from './languageText';
+import {translatedFor,radioMaps,type LanguageText} from './languageText';
 // Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
 test.use({locale:SPANISH_LOCALE});
 
@@ -136,7 +136,7 @@ async function walk(page:Page,lang:Lang,each:(step:string)=>Promise<void>){
  for(const [step,run] of STEPS){await test.step(step,()=>run(page,lang));await page.waitForTimeout(150);await each(step);}
 }
 
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
+for(const L of translatedFor('radio'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const C=L.catalog as Record<string,string>;
  test(title(L,'the radio telescope reads differently in Spanish from English: route, control panel, options, Pulsar Parameters, clock, date and receiver','the radio telescope reads differently in <L> (<tag>) from English: route, control panel, options, Pulsar Parameters, clock, date and receiver'),async({browser})=>{
  test.setTimeout(360_000);
@@ -200,7 +200,7 @@ const captions=(page:Page,T:(original:string)=>string):Record<string,()=>Promise
   await expect(id(page,'receiver-record-cancel')).toHaveText(T('Cancel'));},
 });
 
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
+for(const L of translatedFor('radio'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const C=L.catalog as Record<string,string>,O=L.originals,R=radioMaps(L.tag),vireoIn=vireoOf(L);
 // "View original (English)" (decision 9): with the stored option on, every VIREO caption of the walk is VIREO's English, checked
 // one by one, and no translated original appears anywhere; OpenVireo's own web text stays in the language.
@@ -236,7 +236,7 @@ for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.ta
 });
 
 /** The receiver's drawn annotation and caption: only VIREO's unit words and title pieces change; numbers and names do not. */
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
+for(const L of translatedFor('radio'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const V=vireoOf(L),sec=esc(V('Sec'));
  test(title(L,'the receiver caption, the drawn annotation and a mark label translate VIREO pieces only','<L> (<tag>): the receiver caption, the drawn annotation and a mark label translate VIREO pieces only'),async({page})=>{
  test.setTimeout(180_000);await page.setViewportSize({width:1440,height:1000});
@@ -266,7 +266,7 @@ for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.ta
  * checks: its old copy also took modal alert dialogs, checked inside the topmost one and checked dt; the fixture adds the
  * plot-text check. Run with the CI's DejaVu fonts (docs/I18N.md). */
 const LAYOUT:LayoutOptions={dialogs:'dialog[open],[role=dialog][aria-modal=true],[role=alertdialog][aria-modal=true]',topDialog:true,controls:'button,label,legend,h1,h2,h3,h4,select,input,summary,th,dt'};
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const width of [320,1440])test(title(L,`at ${width} px the Spanish radio telescope screens lay out without overflow, clipping or crossing`,`at ${width} px the <L> radio telescope screens lay out without overflow, clipping or crossing`),async({page})=>{
+for(const L of translatedFor('radio'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const width of [320,1440])test(title(L,`at ${width} px the Spanish radio telescope screens lay out without overflow, clipping or crossing`,`at ${width} px the <L> radio telescope screens lay out without overflow, clipping or crossing`),async({page})=>{
  test.setTimeout(360_000);await page.setViewportSize({width,height:width===320?700:1000});
  const problems=new Map<string,string>();
  // ES8A_LAYOUT_LANG=en|qps walks that reference instead (a debugging aid; the language's own test title is kept).

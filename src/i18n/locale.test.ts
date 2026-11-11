@@ -32,7 +32,7 @@ describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-0
  it('accepts the pseudo-locale only in the dev server and tests, never from storage',()=>{
   expect(decide({param:'qps'})).toBe('en');expect(decide({param:'qps',dev:true,registry:UNRELEASED})).toBe('qps');
   expect(decide({stored:'qps',dev:true})).toBe('en');
-  expect(HTML_LANG).toEqual({en:'en','es-419':'es-419','pt-BR':'pt-BR',qps:'en','qps-cjk':'ja','qps-deva':'hi','qps-cyrl':'ru','qps-rtl':'ar'});
+  expect(HTML_LANG).toEqual({en:'en','es-419':'es-419','pt-BR':'pt-BR',fr:'fr',qps:'en','qps-cjk':'ja','qps-deva':'hi','qps-cyrl':'ru','qps-rtl':'ar'});
  });
  it('shows the selector when it offers a choice: before a release only on that language\'s own preview (ES1 review 1, C3; SC8)',()=>{
   expect(selectorShown('en',UNRELEASED)).toBe(false);expect(selectorShown('es-419',UNRELEASED)).toBe(true);
@@ -58,5 +58,19 @@ describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-0
   const before=LANGUAGES.map(l=>l.tag==='pt-BR'?{...l,released:false}:l);
   for(const languages of [['pt-BR'],['pt'],['pt-PT']])expect(decide({languages,registry:before}),languages.join(',')).toBe('en');
   expect(decide({stored:'pt-BR',languages:['pt-BR'],registry:before})).toBe('en');expect(decide({param:'pt-BR',registry:before})).toBe('pt-BR');
+ });
+ it('Front FR0: French is registered before its release: only ?lang=fr opens it; fr, fr-FR, fr-CA and FR-ch browsers and a stored fr get English',()=>{
+  expect(isReleased('fr')).toBe(false);
+  for(const languages of [['fr'],['fr-FR'],['fr-CA'],['FR-ch'],['fr-BE','es-MX']])expect(decide({languages}),languages.join(',')).toBe('en');
+  expect(decide({languages:['fr-FR','pt-BR']})).toBe('en');expect(decide({languages:['es-MX','fr-FR']})).toBe('es-419');
+  expect(decide({stored:'fr',languages:['fr-FR']})).toBe('en');
+  expect(decide({param:'fr',languages:['en-US']})).toBe('fr');expect(decide({param:'fr',stored:'es-419',languages:['pt-BR']})).toBe('fr');
+  for(const junk of ['FR','fr-FR','fr-CA','fr-fr'])expect(decide({param:junk,languages:['en-US']}),junk).toBe('en');
+  expect(HTML_LANG.fr).toBe('fr');expect(selectorShown('fr')).toBe(true);
+  // Once released (FR-REL), every fr and fr-* browser in any case opens it; frr (North Frisian) and fur (Friulian) do not.
+  const after=LANGUAGES.map(l=>l.tag==='fr'?{...l,released:true}:l);
+  for(const languages of [['fr'],['fr-FR'],['fr-CA'],['FR-ch'],['fr-SN']])expect(decide({languages,registry:after}),languages.join(',')).toBe('fr');
+  for(const languages of [['frr'],['fur'],['br'],['en-US','fr-FR']])expect(decide({languages,registry:after}),languages.join(',')).toBe('en');
+  expect(decide({languages:['fr-CA','pt-BR'],registry:after})).toBe('fr');expect(decide({stored:'fr',languages:['en-US'],registry:after})).toBe('fr');
  });
 });

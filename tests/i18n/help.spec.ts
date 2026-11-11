@@ -4,7 +4,7 @@ import {SPANISH_LOCALE,contextLocale} from '../fixtures/language';
 import {readFileSync} from 'node:fs';
 import witness from '../../src/help/helpAll.witness.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
-import {TRANSLATED,helpText} from './languageText';
+import {translatedFor,helpText} from './languageText';
 // Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
 test.use({locale:SPANISH_LOCALE});
 
@@ -26,7 +26,7 @@ const escape=(s:string)=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 async function noHorizontalScroll(page:Page){
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
 }
-const HELP_LANGUAGES=TRANSLATED.filter(l=>l.entry.help);
+const HELP_LANGUAGES=translatedFor('help').filter(l=>l.entry.help);
 if(!HELP_LANGUAGES.some(l=>l.tag==='es-419'))throw new Error('tests/i18n/help.spec.ts: Spanish has no help files');
 
 for(const L of HELP_LANGUAGES)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
@@ -170,10 +170,33 @@ test(title('the Spectral Line Table is Spanish, with its help, and the original 
  await expect(id(page,'spl-help').getByRole('heading',{name:vireo('Spectral Line Help')})).toBeFocused();
  await expect(id(page,'spl-help-text')).toContainText(H.lineHelpText);
  await id(page,'spl-view-switch').click();
+ // FR0 CI review: the switch fetches the original before it lands (and closes the help window); a double click before that read
+ // the translation (CI saw the Spanish help, then no help at all). Wait for the original view, as the other help tests do.
+ await expect(id(page,'spl-view-label')).toHaveText(V.originalLabel);await expect(id(page,'spl-help')).toHaveCount(0);
  await expect(rows.nth(2)).toHaveText('3933.68   Ca II (K line)');
  await rows.nth(2).dblclick();
  await expect(id(page,'spl-help-text')).toContainText('First visible around A0');
  await expect(id(page,'spl-close')).toHaveText(V.spectralLines.close);
+});
+
+// FR0 CI review: a line read begun in the translation while the view switch is still fetching VIREO's original is dropped when the
+// switch lands (src/help/SpectralLineTable.tsx viewGeneration): CI showed the translated help after the switch. Both reads are
+// slowed here so the translation's arrives last, as it did there.
+test(title('a Spectral Line Help read begun before the view switch lands never shows the Spanish text after it',
+ 'a Spectral Line Help read begun before the view switch lands never shows the <L> text after it'),async({page})=>{
+ let slow=false;const translation=`/src/i18n/${L.entry.dir}/help/SPECLNS.TXT.ts`;
+ await page.route('**/original/help/SPECLNS.LNL*',async r=>{if(slow)await new Promise(f=>setTimeout(f,800));await r.continue();});
+ await page.route(`**${translation}*`,async r=>{if(slow)await new Promise(f=>setTimeout(f,2000));await r.continue();});
+ await page.goto(at('/#classification'));
+ await id(page,'spl-open').click();
+ const rows=id(page,'spl-rows').getByRole('option');await expect(rows).toHaveCount(30);
+ slow=true;const read=page.waitForResponse(r=>r.url().includes(translation));
+ await id(page,'spl-view-switch').click();await rows.nth(2).dblclick();
+ await expect(id(page,'spl-view-label')).toHaveText(V.originalLabel);
+ await read;await page.waitForTimeout(500);
+ await expect(id(page,'spl-help')).toHaveCount(0);
+ await rows.nth(2).dblclick();
+ await expect(id(page,'spl-help-text')).toContainText('First visible around A0');
 });
 
 test(title('OpenVireo\'s own help opens in Spanish','OpenVireo\'s own help opens in <L>'),async({page})=>{
