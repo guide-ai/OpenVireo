@@ -165,7 +165,7 @@ test.describe.configure({mode:'parallel'});
 // Front ES3: the E01 analyser screens are translated, so these families also run in Spanish (es-419).
 // Front PT2: the E01 and E02 families below (analyser, Observational Data, Hubble, star SSP, exposures, field spectrometer, LSS and
 // wedge) also run in Brazilian Portuguese (pt-BR; its `?lang=pt-BR` preview until PT-REL, a pt-BR browser since): same names and SHA-256 as English, no Portuguese letter in the files.
-// Front FR2: and in French (fr, its `?lang=fr` preview): same names and SHA-256 as English, no French letter, « », ’ or U+202F in the files.
+// Front FR2: and in French (fr, its `?lang=fr` preview): same names and SHA-256 as English, no French letter, « » or U+202F in the files (’ is English’s apostrophe too; the SHA-256 covers it).
 family('spectrum analysis: measurement CSV, velocities CSV and the analysis session',['en','qps','es-419','pt-BR','fr'],async({browser,baseURL},identical)=>{
  await identical(browser,baseURL,async(page,locale)=>{
   await open(page,locale,'spectrum');
