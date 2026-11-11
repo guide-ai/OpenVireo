@@ -1,7 +1,7 @@
 import {describe,expect,it} from 'vitest';
 import {existsSync,readdirSync,readFileSync} from 'node:fs';
 import path from 'node:path';
-import {PROFILES} from './profiles';
+import {PROFILES,REGISTER,profileFor} from './profiles';
 import {describeFindings,errorsOf,lintPair,pluralForms} from './rules';
 import {unisolatedMapValues} from './mapIsolates';
 import {LANGUAGES,textDirection} from '../languages';
@@ -39,6 +39,23 @@ describe('Front RT8: the right-to-left profiles',()=>{
   expect(rules('fa','می\u200cکنید')).not.toContain('invisible');expect(rules('fa','\u200cکنید')).toContain('invisible');
   expect(rules('ar','می\u200cکنید')).toContain('invisible');expect(rules('he','א\u200cב')).toContain('invisible');
  });
+ // Review of RT8: realistic interface text the first versions of the rules refused.
+ it('passes ordinary words and units the register, range and presentation rules first refused',()=>{
+  const register=(id:'ar'|'he'|'fa',text:string)=>expect(rules(id,text),`${id} ${text}`).not.toContain('register');
+  // km/s and km/s/Mpc (the Hubble lab's units) are no gender slash; وضع (mode), وضعي (positional), وضعوا (they placed) are no و + imperative.
+  for(const text of ['السرعة: {v} كم/ث','ثابت هابل بوحدة كم/ث/ميغا فرسخ فلكي','وضع المدرّس','الموضع وضعي محلي','وضعوا هذا الفهرس عام {year}.'])register('ar',text);
+  for(const text of ['اختر/ي نجمًا.','الطالب/ة','المعلمين/ات','وضعي النجم هنا ثم اضغطي «قياس».'])expect(rules('ar',text),text).toContain('register');
+  expect(errorsOf(lintPair({id:'x',en:'x',text:'وضع المدرّس'},profileFor('ar',{...REGISTER,ar:'plural'}))).map(f=>f.rule)).not.toContain('register');
+  // Unpointed Hebrew: pressure, saved, closed, checked.
+  for(const text of ['לחץ האוויר','הקובץ שמור.','המכסה סגור.','מוצר בדוק'])register('he',text);
+  // An em dash between two values is a separator, not a range; the ornate parentheses and the rial sign are no presentation forms.
+  for(const text of ['{title} — {subtitle} نجم','﴿نص﴾','المبلغ ﷼'])expect(rules('ar',text),text).not.toContain('typography');
+ });
+ it('reads the claim rule with the Hebrew article and the Persian ezafe',()=>{
+  for(const text of ['התרגום הרשמי','זה התרגום הרשמי של CLEA'])expect(rules('he',text),text).toContain('claim');
+  for(const text of ['זה לא התרגום הרשמי','תרגום לא רשמי'])expect(rules('he',text),text).not.toContain('claim');
+  for(const text of ['ترجمۀ رسمی','ترجمهٔ رسمی'])expect(rules('fa',text),text).toContain('claim');
+ });
 });
 
 const MAP_SOURCE=(body:string)=>`import {iso} from '../../bidi';\nexport const M=Object.freeze({${body}});\n`;
@@ -62,6 +79,20 @@ describe('Front RT8: iso() around every value of a right-to-left map function',(
   ].join(',')))).toEqual([
    'M/count · ${n}','M/file · +f','M/both · ${b.toUpperCase()}','M/nested/fit · +x.toFixed(1)',
   ]);
+ });
+ // Review of RT8: wrappers that met the first version of the rule without isolating anything.
+ it('is not met by iso() around the whole sentence, a local iso, or a substitution',()=>{
+  expect(unisolatedMapValues('wrap.ts',MAP_SOURCE([
+   "count:(n:number)=>iso(`${n} نجمة`)",
+   "file:(f:string,n:number)=>iso(f)+n",
+   "fill:(n:number)=>'{n} نجمة'.replace('{n}',String(n))",
+   "join:(n:number)=>'نجمة '.concat(String(n))",
+  ].join(',')))).toEqual(["M/count · iso() around right-to-left text: iso(`${n} نجمة`)",'M/file · +n',"M/fill · .replace(String(n))","M/join · .concat(String(n))"]);
+  expect(unisolatedMapValues('local.ts',"const iso=(x:unknown)=>String(x);\nexport const M={count:(n:number)=>`${iso(n)} نجمة`};\n"))
+   .toEqual(["iso · iso is not src/i18n/bidi.ts's",'(file) · iso() is called but not imported from src/i18n/bidi.ts']);
+  expect(unisolatedMapValues('other.ts',"import {iso} from './mine';\nexport const M={count:(n:number)=>`${iso(n)} نجمة`};\n"))
+   .toEqual(["(file) · iso is not src/i18n/bidi.ts's",'(file) · iso() is called but not imported from src/i18n/bidi.ts']);
+  expect(unisolatedMapValues('fill.ts',MAP_SOURCE(["fill:(n:number)=>'{n} نجمة'.replace('{n}',iso(n))"]))).toEqual([]);
  });
  const mapFiles=(dir:string)=>{const d=path.join(REPOSITORY_ROOT,'src/i18n',dir,'maps');return existsSync(d)?readdirSync(d).filter(f=>f.endsWith('.ts')&&!f.endsWith('.test.ts')).map(f=>path.join(d,f)):[];};
  it('holds for every registered right-to-left language (none today)',()=>{

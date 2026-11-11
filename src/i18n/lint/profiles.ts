@@ -181,7 +181,7 @@ const RTL_PLACEHOLDER='(?:\\{[\\p{L}\\p{N}_]+\\}|«A\\p{N}+»)';
 const rtlGlyphs=(extra:readonly GlyphClass[])=>glyphsWith({'↗':{marks:['↗','↖']},'▸':{marks:['▸','◂']}},[{marks:['→','←']},...extra]).filter(c=>c.marks[0]!=='–');
 function rtlOrderRules(rangeInWords:string):Pattern[]{
  return [
-  {label:'range between two values',pattern:new RegExp(`${RTL_PLACEHOLDER}[ \\u00a0]*[-–—][ \\u00a0]*${RTL_PLACEHOLDER}`,'u'),use:`write it in words (${rangeInWords}): a right-to-left sentence draws «{a}–{b}» as «{b}–{a}»`},
+  {label:'range between two values',pattern:new RegExp(`${RTL_PLACEHOLDER}[ \\u00a0]*[-–][ \\u00a0]*${RTL_PLACEHOLDER}`,'u'),use:`write it in words (${rangeInWords}): a right-to-left sentence draws «{a}–{b}» as «{b}–{a}»`},
   {label:'sign before a value',pattern:new RegExp(`(?<![\\p{L}\\p{N}}»])[-+−±](?=${RTL_PLACEHOLDER})`,'u'),use:'put the sign in the value: «−{x}» is drawn «{x}−» in a right-to-left sentence even with {x} isolated'},
   {label:'signed number in the text',pattern:/(?<![\p{L}\p{N}}»])[-+−±]\p{N}/u,use:'make it a {param}, which t() isolates: «−21.4» is drawn «21.4−» in a right-to-left sentence'},
   {label:'date in the text',pattern:/\p{N}{4}-\p{N}{1,2}-\p{N}{1,2}|\p{N}{1,2}-\p{N}{1,2}-\p{N}{4}/u,use:'make it a {param}, which t() isolates: «2009-06-01» is drawn «01-06-2009» in a right-to-left sentence'},
@@ -194,30 +194,37 @@ const ARABIC_SCRIPT='\\p{scx=Arab}';
 const arabicScriptTypography=():Pattern[]=>[
  {label:'Latin comma, semicolon or question mark in Arabic-script text',pattern:new RegExp(`(?<=${ARABIC_SCRIPT})[,;?]|[,;?](?=[ \\u00a0]*${ARABIC_SCRIPT})`,'u'),use:'، ؛ ؟'},
  {label:'tatweel',pattern:/\u0640/u,use:'write the word without it'},
- {label:'Arabic presentation form',pattern:/[\ufb50-\ufdff\ufe70-\ufefe]/u,use:'type the letter itself (U+0600–U+06FF); joining is the font’s'},
+ {label:'Arabic presentation form',pattern:/[\ufb50-\ufd3d\ufd40-\ufdfb\ufdfd-\ufdff\ufe70-\ufefe]/u,use:'type the letter itself (U+0600–U+06FF); joining is the font’s'},
 ];
-/** A word of the list, with an optional attached conjunction (و، ف, or Hebrew ו) before it; letters and combining marks continue a word. */
-const prefixedWords=(list:readonly string[],prefixes:string)=>new RegExp(`(?<![\\p{L}\\p{M}])[${prefixes}]?(?:${list.join('|')})(?![\\p{L}\\p{M}])`,'u');
+/** A word of the list, with an optional attached conjunction (`prefix`, a pattern: و or ف, or Hebrew ו) before it; letters and
+ * combining marks continue a word. */
+const prefixedWords=(list:readonly string[],prefix:string)=>new RegExp(`(?<![\\p{L}\\p{M}])${prefix}?(?:${list.join('|')})(?![\\p{L}\\p{M}])`,'u');
+/** Arabic و or ف, but no و before ض: وضع (mode, position), وضعي (positional) and وضعوا (they placed) are words of their own, not
+ * و + ضع، ضعي، ضعوا (review of RT8). */
+const AR_PREFIX='(?:و(?!ض)|ف)',HE_PREFIX='ו';
 // Imperatives of the verbs this interface uses: singular (the generic form, اختر), plural (اختاروا) and feminine singular (اختاري).
 const AR_SINGULAR=['اضغط','اختر','افتح','احفظ','أغلق','انقر','استخدم','أدخل','اكتب','انتظر','حدد','انظر','تحقق','ابدأ','اقرأ','ضع','أضف','احذف'];
 const AR_PLURAL=['اضغطوا','اختاروا','افتحوا','احفظوا','أغلقوا','انقروا','استخدموا','أدخلوا','اكتبوا','انتظروا','حددوا','انظروا','تحققوا','ابدؤوا','ابدأوا','اقرؤوا','ضعوا','أضيفوا','احذفوا'];
 const AR_FEMININE=['اضغطي','اختاري','افتحي','احفظي','أغلقي','انقري','استخدمي','أدخلي','اكتبي','انتظري','حددي','انظري','تحققي','ابدئي','اقرئي','ضعي','أضيفي','احذفي'];
 function arabicRegister(setting:Registers['ar']):Pattern[]{
- const feminine:Pattern={label:'feminine imperative',pattern:prefixedWords(AR_FEMININE,'وف'),use:'one neutral form for every student: the generic imperative (اختر) or a verbal noun (اختيار)'};
- // «اضغط/ي», «اختر/ي»: a gender slash; «و/أو» (and/or) is no address.
- const slash:Pattern={label:'gender slash',pattern:/(?<=\p{sc=Arab})\/(?!أو(?![\p{L}\p{M}]))\p{sc=Arab}{1,2}(?![\p{L}\p{M}])/u,use:'one neutral form (اختر, or اختيار)'};
+ const feminine:Pattern={label:'feminine imperative',pattern:prefixedWords(AR_FEMININE,AR_PREFIX),use:'one neutral form for every student: the generic imperative (اختر) or a verbal noun (اختيار)'};
+ // «اضغط/ي», «الطالب/ة», «المعلمين/ات»: a gender slash is a slash before a feminine or plural ending. «و/أو» (and/or) and units such
+ // as «كم/ث» (km/s, the Hubble lab's) are no address (review of RT8: any one- or two-letter word after a slash flagged «كم/ث»).
+ const slash:Pattern={label:'gender slash',pattern:/(?<=\p{sc=Arab})\/\u0640?(?:ي|ة|ين|ات|ن)(?![\p{L}\p{M}])/u,use:'one neutral form (اختر, or اختيار)'};
  return setting==='singular'
   ?[{label:'plural pronoun',pattern:words(['أنتم','أنتن','أنتما'],'letters-marks'),use:'address the student in the singular, neutrally (a verbal noun or the generic imperative)'},
-    {label:'plural imperative',pattern:prefixedWords(AR_PLURAL,'وف'),use:'the singular imperative (اختر، اضغط) or a verbal noun (اختيار، حفظ)'},feminine,slash]
-  :[{label:'singular imperative',pattern:prefixedWords(AR_SINGULAR,'وف'),use:'the plural imperative (اختاروا، اضغطوا)'},feminine,slash];
+    {label:'plural imperative',pattern:prefixedWords(AR_PLURAL,AR_PREFIX),use:'the singular imperative (اختر، اضغط) or a verbal noun (اختيار، حفظ)'},feminine,slash]
+  :[{label:'singular imperative',pattern:prefixedWords(AR_SINGULAR,AR_PREFIX),use:'the plural imperative (اختاروا، اضغطوا)'},feminine,slash];
 }
-const HE_SINGULAR=['לחץ','לחצי','בחר','בחרי','שמור','שמרי','סגור','סגרי','הקלד','הקלידי','הזן','הזיני','המתן','המתיני','בדוק','בדקי','השתמש','השתמשי','הוסף','הוסיפי'];
+// Unpointed, some masculine singular imperatives are also everyday words: לחץ (pressure), שמור (saved), סגור (closed), בדוק
+// (checked). They are left out (review of RT8); their feminine forms and the plural stay unambiguous.
+const HE_SINGULAR=['לחצי','בחר','בחרי','שמרי','סגרי','הקלד','הקלידי','הזן','הזיני','המתן','המתיני','בדקי','השתמש','השתמשי','הוסף','הוסיפי'];
 const HE_PLURAL=['לחצו','בחרו','שמרו','סגרו','הקלידו','הזינו','המתינו','בדקו','השתמשו','הוסיפו'];
 const hebrewRegister=(setting:Registers['he']):Pattern[]=>setting==='plural'
  ?[{label:'singular address',pattern:words(['אתה'],'letters-marks'),use:'the gender-neutral plural (אתם, לחצו) or an infinitive (יש ללחוץ)'},
-   {label:'singular imperative',pattern:prefixedWords(HE_SINGULAR,'ו'),use:'the gender-neutral plural imperative (לחצו, בחרו)'}]
+   {label:'singular imperative',pattern:prefixedWords(HE_SINGULAR,HE_PREFIX),use:'the gender-neutral plural imperative (לחצו, בחרו)'}]
  :[{label:'plural address',pattern:words(['אתם','אתן'],'letters-marks'),use:'the singular (אתה)'},
-   {label:'plural imperative',pattern:prefixedWords(HE_PLURAL,'ו'),use:'the singular imperative (לחץ, בחר)'}];
+   {label:'plural imperative',pattern:prefixedWords(HE_PLURAL,HE_PREFIX),use:'the singular imperative (לחץ, בחר)'}];
 const FA_TO=['تو','ترا','تورا'],FA_TO_COMMANDS=['کن','بکن','بزن','ببین','بنویس','بخوان','بگذار','بردار','بده','بگیر'];
 const FA_SHOMA_COMMANDS=['کنید','بکنید','بزنید','ببینید','بنویسید','بخوانید','بگذارید','بردارید','بدهید','بگیرید'];
 const persianRegister=(setting:Registers['fa']):Pattern[]=>setting==='shoma'
@@ -246,8 +253,8 @@ function hebrewProfile(setting:Registers['he']):LocaleProfile{
   forbiddenMarks:[{mark:'،',use:','},{mark:'؛',use:';'},{mark:'؟',use:'?'}],
   typography:[...rtlOrderRules('מ־{a} עד {b}'),{label:'Hebrew presentation form',pattern:/[\ufb1d-\ufb4f]/u,use:'type the letter and its points (U+0590–U+05FF)'}],
   register:{setting,patterns:hebrewRegister(setting)},
-  // «תרגום לא רשמי» (unofficial) and «אינו תרגום רשמי» (is not) pass.
-  claims:[/(?<!(?:אינו|אינה|איננו|לא)[ \u00a0]+)תרגום[ \u00a0]+רשמי|(?<!(?:אינו|אינה|איננו|לא)[ \u00a0]+)תרגום[ \u00a0]+(?:רשמי[ \u00a0]+)?של[ \u00a0]+(?:Project[ \u00a0]+)?CLEA/u],
+  // «תרגום לא רשמי» (unofficial), «אינו תרגום רשמי» and «לא התרגום הרשמי» (is not) pass; «התרגום הרשמי» (the official one) does not.
+  claims:[/(?<!(?:אינו|אינה|איננו|לא)[ \u00a0]+)(?<![\p{L}\p{M}])ה?תרגום[ \u00a0]+(?:ה?רשמי(?![\p{L}\p{M}])|(?:ה?רשמי[ \u00a0]+)?של[ \u00a0]+(?:Project[ \u00a0]+)?CLEA)/u],
   lengthBand:[.5,1.3],pluralCategories:['one','two','other'],
  };
 }
@@ -259,8 +266,8 @@ function persianProfile(setting:Registers['fa']):LocaleProfile{
   forbiddenMarks:[{mark:'"',use:'« »'}],
   typography:[...arabicScriptTypography(),...rtlOrderRules('از {a} تا {b}')],
   register:{setting,patterns:persianRegister(setting)},
-  // «ترجمه غیررسمی» (unofficial) and «… نیست» (is not) pass.
-  claims:[/ترجمه(?:ٔ|\u200cی)?[ \u00a0]+(?:رسمی|(?:Project[ \u00a0]+)?CLEA)(?![ \u00a0]*نیست)/u],
+  // «ترجمه غیررسمی» (unofficial) and «… نیست» (is not) pass; ترجمهٔ and ترجمۀ (the ezafe, decomposed or precomposed) are read too.
+  claims:[/ترجم(?:ه(?:ٔ|\u200cی)?|ۀ)[ \u00a0]+(?:رسمی|(?:Project[ \u00a0]+)?CLEA)(?![ \u00a0]*نیست)/u],
   lengthBand:[.7,1.5],pluralCategories:['one','other'],
   otherScript:{label:'Arabic',characters:new Map([['ي','ی'],['ك','ک'],['ى','ی']])},
   // The zero-width non-joiner belongs inside Persian words (می‌کنید, پرونده‌ها); the joiner does not.
