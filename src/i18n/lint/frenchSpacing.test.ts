@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest';
-import {fixFrenchTypography as fix,fixSourceLiterals,frenchTypography,frenchTypographyFindings,NNBSP as N} from './frenchSpacing';
+import {fixFrenchTypography as fix,fixSourceLiterals,frenchGlosses,frenchTypography,frenchTypographyFindings,NNBSP as N} from './frenchSpacing';
 // Front FR0 (plan front-i18n-fr.md §4): the French typography fixer is pure and idempotent, rewrites only what §4.1 names and
 // keeps every §4.2 exception; the source rewriter touches string literals only and writes characters, never escapes.
 describe('Front FR0: the French typography fixer',()=>{
@@ -28,12 +28,27 @@ describe('Front FR0: the French typography fixer',()=>{
   expect(frenchTypography('Prêt ? l\'objet').changes.map(c=>c.label)).toEqual(['typographic apostrophe ’','narrow no-break space before ; : ! ?']);
   expect(frenchTypographyFindings('1,000 mesures')).toEqual([]);expect(frenchTypographyFindings(`Prêt${N}?`)).toEqual([]);
  });
+ it('reports bracketed ASCII French as no gloss when the English source lacks it',()=>{
+  expect(frenchGlosses("Ascension droite (RA:) (Observer's Notebook) (par exemple)")).toEqual(['(RA:)',"(Observer's Notebook)"]);
+  expect(frenchTypographyFindings('Voir (RA:) et (Save  As...)','See RA: and Save As...')).toEqual([]);
+  expect(frenchTypographyFindings('Voir (Par exemple: 12)','See, for example: 12').map(x=>x.label)).toEqual(['bracketed ASCII text that is no English gloss of the source']);
+  expect(frenchTypographyFindings('Voir (Par exemple: 12)')).toEqual([]);// without a source, the fixer's view only
+ });
  it('treats a template value as a word',()=>{
   expect(fix('l\'\ue000 :',{valueMarks:/\ue000/u})).toBe(`l’\ue000${N}:`);
  });
 });
 describe('Front FR0: rewriting the string literals of a map source',()=>{
  const f=(s:string)=>fixSourceLiterals(s,(t,o)=>fix(t,o));
+ it('decodes every escape of a quoted literal, so a batch\'s \\u00a0, \\t or \\x41 is never written as letters (review, FR0)',()=>{
+  expect(f("a:'Prêt\\u00a0?'")).toBe(`a:'Prêt${N}?'`);expect(f("a:'Prêt\\u{a0}?'")).toBe(`a:'Prêt${N}?'`);
+  expect(f("a:'Fichier \\x41 ?'")).toBe(`a:'Fichier A${N}?'`);
+  expect(f("a:\"l'objet\\r\\n\\tx ?\"")).toBe(`a:"l’objet\\r\\n\\tx${N}?"`);
+  expect(f("a:'\\\\u00a0 ?'")).toBe(`a:'\\\\u00a0${N}?'`);// an escaped backslash stays one
+  expect(f("a:'ok',b:'d\\u2019accord'")).toBe("a:'ok',b:'d\\u2019accord'");// unchanged literals are left as written
+  expect(f("a:`Prêt\\u00a0? \\`x\\` ${x}`")).toBe(`a:\`Prêt${N}? \\\`x\\\` \${x}\``);
+  expect(f("a:`l\\'objet ${x}`")).toBe(`a:\`l’objet \${x}\``);
+ });
  it('fixes single-quoted, double-quoted and template literals, writing the characters literally',()=>{
   const out=f("const A=Object.freeze({title:'Prêt ?',quote:\"l'objet\",count:(n:number)=>`Étoiles : ${n}`});");
   expect(out).toBe(`const A=Object.freeze({title:'Prêt${N}?',quote:"l’objet",count:(n:number)=>\`Étoiles${N}: \${n}\`});`);

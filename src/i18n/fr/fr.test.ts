@@ -35,7 +35,7 @@ import {VARIABLE_STARS_EN} from '../../variables/VariableStarMessages';
 //
 // Fix mode (plan §4.5): `OPENVIREO_FIX_TYPOGRAPHY=1 npx vitest run src/i18n/fr/fr.test.ts` rewrites fr.json, originals.json, the
 // string literals of maps/*.ts and help/*.ts with the fixer (src/i18n/lint/frenchSpacing.ts), writing the characters literally
-// (never ` ` or `’` escapes: scripts/check-i18n-dist.mjs reads map literals as written), then checks as usual. A VIREO
+// (never `\u202f` or `\u2019` escapes: scripts/check-i18n-dist.mjs reads map literals as written), then checks as usual. A VIREO
 // `fragment|` original keeps its straight quotes (another piece of VIREO's text closes them).
 const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN};
 /** The maps translated completely; the others are partial until their front (objectXLab FR6, polish FR1, variableStars FR4). */
@@ -52,6 +52,8 @@ const fixSource=(source:string)=>fixSourceLiterals(source,(text,options)=>fixFre
 const writeJson=(file:string,value:unknown)=>writeFileSync(path.join(DIR,file),JSON.stringify(value,null,1)+'\n');
 
 if(process.env.OPENVIREO_FIX_TYPOGRAPHY==='1'){
+ // Review (FR0): refused in CI, as OPENVIREO_REFRESH_PINS is (src/i18n/sourceScan.ts): CI must check, never rewrite.
+ if(process.env.CI)throw new Error('OPENVIREO_FIX_TYPOGRAPHY=1 is refused in CI: run the fixer locally and commit the reviewed diff');
  const catalog=JSON.parse(readFileSync(path.join(DIR,'fr.json'),'utf8')) as Record<string,string>;
  writeJson('fr.json',Object.fromEntries(Object.entries(catalog).map(([k,v])=>[k,fixFrenchTypography(v)])));
  const own=JSON.parse(readFileSync(path.join(DIR,'originals.json'),'utf8')) as Record<string,string>;

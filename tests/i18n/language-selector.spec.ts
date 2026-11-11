@@ -108,17 +108,22 @@ test('Front PT-REL: pt, pt-BR, pt-PT and PT-br browsers open Português (Brasil)
 
 // Front FR0 (plan front-i18n-fr.md §2): French is registered before its release. Only its `?lang=fr` preview reaches it and offers
 // it; fr, fr-FR, fr-CA and FR-ch browsers and a stored fr get English with English, Español and Português (Brasil) only.
+/** Review (FR0): the requests for French modules (the virtual i18n-fr-* chunks of the dev server, or src/i18n/fr/). */
+function frenchRequests(page:Page):string[]{
+ const out:string[]=[];page.on('request',r=>{if(/openvireo-i18n\/i18n-fr-|\/src\/i18n\/fr\//.test(r.url()))out.push(r.url());});return out;
+}
 test('Front FR0: only a ?lang=fr preview opens and offers Français; fr, fr-FR, fr-CA and FR-ch browsers and a stored fr get English',async({browser})=>{
  test.setTimeout(180_000);
  const F=FRENCH_TEXT;
  for(const languages of [['fr'],['fr-FR'],['fr-CA'],['FR-ch'],['fr-BE','es-MX']] as const){
-  const page=await browserIn(browser,languages);
+  const page=await browserIn(browser,languages);const french=frenchRequests(page);
   expect(await languageOf(page),languages.join(',')).toBe('en');
   await expect(id(page,'language-select').locator('option')).toHaveText(['English','Español','Português (Brasil)']);
+  expect(french,`${languages.join(',')}: no French module is fetched`).toEqual([]);
   await page.close();
  }
- const storedFr=await browserIn(browser,['fr-FR']);await seedChoice(storedFr,'fr');
- expect(await languageOf(storedFr)).toBe('en');await storedFr.close();
+ const storedFr=await browserIn(browser,['fr-FR']);await seedChoice(storedFr,'fr');const storedFrench=frenchRequests(storedFr);
+ expect(await languageOf(storedFr)).toBe('en');expect(storedFrench).toEqual([]);await storedFr.close();
  const page=await browserIn(browser,['en-US']);
  expect(await languageOf(page,'?lang=fr')).toBe('fr');
  await expect(page.locator('.investigation-toolbar')).toContainText(F.catalog['project.save']);await expect(page).toHaveTitle(F.catalog['app.documentTitle']);

@@ -563,7 +563,7 @@
   },
   {
    "en": "\\bturn-?off\\b",
-   "fr": "point de sortie|point de virage|turn-?off"
+   "fr": "point de coude|coude|point de sortie|point de virage|turn-?off"
   },
   {
    "en": "\\bly\\b",
@@ -1131,7 +1131,7 @@
   },
   {
    "en": "No More Spectra",
-   "fr": "Plus de spectres"
+   "fr": "Aucun autre spectre"
   },
   {
    "en": "Spectral Line Table",
@@ -1167,7 +1167,7 @@
   },
   {
    "en": "Access Pulsar List",
-   "fr": "Accès à la liste de pulsars"
+   "fr": "Accéder à la liste de pulsars"
   },
   {
    "en": "Pulsar Identification",

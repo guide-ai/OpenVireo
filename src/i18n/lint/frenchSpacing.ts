@@ -98,9 +98,23 @@ export function frenchTypography(text:string,options:FrenchTypographyOptions={})
 }
 /** The fixed text only. */
 export const fixFrenchTypography=(text:string,options?:FrenchTypographyOptions):string=>frenchTypography(text,options).text;
-/** The lint's view (src/i18n/lint/profiles.ts, profile fr): what the fixer would still change, thousands left to their own rules. */
-export const frenchTypographyFindings=(text:string)=>frenchTypography(text).changes.filter(c=>c.label!=='thousands').map(c=>({label:c.label,match:c.match,use:'run the French typography fixer (OPENVIREO_FIX_TYPOGRAPHY=1 npx vitest run src/i18n/fr/fr.test.ts)'}));
+/** The bracketed spans the fixer keeps as VIREO English glosses («(RA:)», «(Observer's Notebook)»), brackets included. */
+export const frenchGlosses=(text:string):string[]=>[...text.matchAll(KEPT)].map(m=>m[0]).filter(m=>m.startsWith('('));
+const spaced=(s:string)=>s.replace(/\s+/gu,' ');
+/** The lint's view (src/i18n/lint/profiles.ts, profile fr): what the fixer would still change, thousands left to their own rules.
+ * Review (FR0): with the English source, a kept gloss must also be English that the source holds, so ASCII French in brackets that
+ * opens with a capital («(Par exemple: 12)») cannot pass as a gloss and escape the fixer. */
+export const frenchTypographyFindings=(text:string,english?:string)=>[
+ ...frenchTypography(text).changes.filter(c=>c.label!=='thousands').map(c=>({label:c.label,match:c.match,use:'run the French typography fixer (OPENVIREO_FIX_TYPOGRAPHY=1 npx vitest run src/i18n/fr/fr.test.ts)'})),
+ ...(english===undefined?[]:frenchGlosses(text).filter(g=>!spaced(english).includes(spaced(g.slice(1,-1)))).map(g=>({label:'bracketed ASCII text that is no English gloss of the source',match:g,use:'only VIREO\'s English from the source stays as written in brackets; write French there (with an accent or a lower-case start the fixer applies)'}))),
+];
 
+/** Control characters a quoted literal writes as escapes (a line terminator cannot stand in one). */
+const CONTROL_ESCAPES:Readonly<Record<string,string>>={'\n':'\\n','\r':'\\r','\t':'\\t','\b':'\\b','\f':'\\f','\v':'\\v','\u2028':'\\u2028','\u2029':'\\u2029'};
+const SIMPLE_ESCAPES:Readonly<Record<string,string>>={n:'\n',r:'\r',t:'\t',b:'\b',f:'\f',v:'\v','0':'\0'};
+/** The value of a quoted literal's body: every JavaScript escape (\n, \t, \uXXXX, \u{…}, \xXX, a line continuation, \' …). */
+const decodeEscapes=(raw:string)=>raw.replace(/\\(?:u\{([0-9a-fA-F]{1,6})\}|u([0-9a-fA-F]{4})|x([0-9a-fA-F]{2})|\r\n|([\s\S]))/gu,
+ (_,cp:string|undefined,u4:string|undefined,x2:string|undefined,ch:string|undefined)=>cp??u4??x2?String.fromCodePoint(parseInt((cp??u4??x2)!,16)):ch===undefined||/[\n\r\u2028\u2029]/u.test(ch)?'':SIMPLE_ESCAPES[ch]??ch);
 /** The string literals of a TypeScript map source, rewritten by `fix` (single- and double-quoted strings and template literals;
  * a template's ${…} becomes one value mark while it is fixed, and the code inside it is rewritten the same way). Comments, regular expressions, object keys ('KEY.LST':) and
  * import paths are left alone. Pure: returns the new source. */
@@ -122,15 +136,22 @@ export function fixSourceLiterals(source:string,fix:(text:string,options:FrenchT
    const raw=source.slice(i+1,k),before=prevSignificant(),after=nextSignificant(k+1);
    const isKey=(before==='{'||before===',')&&after===':',isPath=/(?:from|import\()\s*$/u.test(out);
    if(isKey||isPath||/^\.{0,2}\//u.test(raw)){out+=source.slice(i,k+1);i=k+1;continue;}
-   const decoded=raw.replace(/\\(.)/gu,(_,x:string)=>x==='n'?'\n':x);
+   const decoded=decodeEscapes(raw);
    const fixed=fix(decoded,{});
-   const encoded=fixed.replace(/\\/gu,'\\\\').replace(/\n/gu,'\\n').replace(new RegExp(c,'gu'),`\\${c}`);
+   const encoded=fixed.replace(/[\\'"\p{Cc}\u2028\u2029]/gu,x=>x==='\\'?'\\\\':x===c?`\\${c}`:x==='\''||x==='"'?x:CONTROL_ESCAPES[x]??`\\u${x.charCodeAt(0).toString(16).padStart(4,'0')}`);
    out+=c+(fixed===decoded?raw:encoded)+c;i=k+1;continue;
   }
   if(c==='`'){
    const parts:string[]=[],values:string[]=[],valuesRaw:string[]=[];let k=i+1,cur='';
    while(k<n&&source[k]!=='`'){
-    if(source[k]==='\\'){cur+=source.slice(k,k+2);k+=2;continue;}
+    if(source[k]==='\\'){
+     // A \u, \x, \' or \" escape is seen as its character (and written as one if the literal changes); `, \, $, { and control
+     // characters keep their escape.
+     const esc=/^\\(?:u\{([0-9a-fA-F]{1,6})\}|u([0-9a-fA-F]{4})|x([0-9a-fA-F]{2})|(['"]))/u.exec(source.slice(k,k+12));
+     const ch=esc?esc[4]??String.fromCodePoint(parseInt(esc[1]??esc[2]??esc[3],16)):'';
+     if(esc&&!/[`\\${}\p{Cc}]/u.test(ch)){cur+=ch;k+=esc[0].length;continue;}
+     cur+=source.slice(k,k+2);k+=2;continue;
+    }
     if(source[k]==='$'&&source[k+1]==='{'){
      let depth=1,e=k+2;while(e<n&&depth>0){if(source[e]==='{')depth++;else if(source[e]==='}')depth--;else if(source[e]==='\''||source[e]==='"'||source[e]==='`'){const q=source[e];e++;while(e<n&&source[e]!==q){if(source[e]==='\\')e++;e++;}}e++;}
      parts.push(cur);cur='';valuesRaw.push(source.slice(k,e));values.push(`\${${fixSourceLiterals(source.slice(k+2,e-1),fix)}}`);k=e;continue;

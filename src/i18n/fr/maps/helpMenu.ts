@@ -5,7 +5,7 @@ import type {Translation} from '../../maps';
 export const HELP_MENU_FR:Translation<typeof HELP_MENU_EN>=Object.freeze({
  newTab:'(s’ouvre dans un nouvel onglet)',
  noEquivalent:(original:string)=>`— VIREO ouvrait ${original}. Ce site n’existe plus et il n’y a pas de page équivalente ; aucun lien n’est donc proposé.`,
- websitesNote:'VIREO ouvrait ces pages dans une nouvelle fenêtre du navigateur. Ici, elles s’ouvrent dans un nouvel onglet uniquement lorsque vous cliquez dessus, et rien n’est envoyé. Deux des adresses de VIREO n’existent plus : 2MASS (xena.harvard.edu) ouvre la page actuelle de 2MASS de l’IRSA (NASA/IPAC), et NVO (www.us-vo.org) ouvre la page de son successeur, le NAVO de la NASA (NASA Astronomical Virtual Observatories, les observatoires virtuels astronomiques de la NASA).',
+ websitesNote:'VIREO ouvrait ces pages dans une nouvelle fenêtre du navigateur. Ici, elles s’ouvrent dans un nouvel onglet uniquement lorsque vous cliquez dessus, et rien n’est envoyé. Deux des adresses de VIREO n’existent plus : 2MASS (xena.harvard.edu) ouvre la page actuelle de 2MASS de l’IRSA (NASA/IPAC), et NVO (www.us-vo.org) ouvre la page de son successeur, le NAVO (NASA Astronomical Virtual Observatories), les observatoires virtuels astronomiques de la NASA.',
  reminderLoading:'Chargement du rappel de VIREO…',
  reminderError:'Le fichier de rappel de VIREO (Reminder.obs) n’a pas pu être chargé ou ne correspondait pas à sa taille et à son SHA-256 enregistrés.',
  ok:'OK',cancel:'Annuler',close:'Fermer',yes:'Oui',no:'Non',
@@ -23,5 +23,5 @@ export const HELP_MENU_FR:Translation<typeof HELP_MENU_EN>=Object.freeze({
   'WDGPLTHLP.LST':'Aide du diagramme en coin','PLSANHLP.LST':'Aide de l’analyse des pulsars','PLSLSHLP.LST':'Aide des paramètres des pulsars','MLTSPHLP.LST':'Aide du spectromètre multi-objets',
   'SPLSTHLP.LST':'Aide de la liste de spectres multi-objets',
  }),
- exitNote:'VIREO affiche ce rappel quand vous quittez l’observatoire pendant un exercice (après Exécuter l’exercice, Run Exercise) ; sinon, il demande seulement si vous voulez quitter. OpenVireo n’a pas d’étape Se connecter (Log In) ni Exécuter l’exercice, de sorte que l’observatoire est toujours un exercice en cours. Dans VIREO, OK ou Oui (Yes) quitte le programme ; Annuler (Cancel) ou Non (No) le laisse ouvert.',
+ exitNote:'VIREO affiche ce rappel quand vous quittez l’observatoire pendant un exercice, après Exécuter l’exercice (Run Exercise) ; sinon, il demande seulement si vous voulez quitter. OpenVireo n’a pas d’étape Se connecter (Log In) ni Exécuter l’exercice, de sorte que l’observatoire est toujours un exercice en cours. Dans VIREO, OK ou Oui (Yes) quitte le programme ; Annuler (Cancel) ou Non (No) le laisse ouvert.',
 });
