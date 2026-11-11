@@ -43,6 +43,8 @@ import {RADIO_ANTENNA_MESSAGES_EN} from '../../components/RadioAntennaMessages';
 import {FINISH_SAVE_MESSAGES_EN} from '../../components/RadioFinishSaveMessages';
 import {RADIO_R1_MESSAGES_EN} from '../../components/RadioR1Messages';
 import {RADIO_SAVE_MESSAGES_EN} from '../../components/RadioRecordSaveMessages';
+import {HELP_VIEWER_EN} from '../../help/HelpViewerMessages';
+import {WEB_HELP_EN} from '../../help/webHelp';
 
 // Front FR0 (docs/I18N.md, "French: the folder, lints and shell (FR0)"; plan front-i18n-fr.md §4, §6.2): the structural checks of
 // the partial French bundle, the French typography fixer as a no-op over every French string, and every string through the SC4
@@ -54,11 +56,13 @@ import {RADIO_SAVE_MESSAGES_EN} from '../../components/RadioRecordSaveMessages';
 // (never `\u202f` or `\u2019` escapes: scripts/check-i18n-dist.mjs reads map literals as written), then checks as usual. A VIREO
 // `fragment|` original keeps its straight quotes (another piece of VIREO's text closes them).
 const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,nakedEye:NAKED_EYE_MESSAGES_EN,objectXLab:OBJECT_X_LAB_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN,clusterHr:CLUSTER_HR_EN,clusterData:CLUSTER_DATA_MESSAGES_EN,
- radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN};
+ radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN,
+ helpViewer:HELP_VIEWER_EN,webHelp:WEB_HELP_EN};
 /** The maps translated completely (FR0's shell maps; FR1's observatory maps, the camera card the observatory shows, and polish; FR2's
- * engineView, spectralRange and wedge; FR4's clusterHr, clusterData and variableStars; FR5's four radio maps); the
+ * engineView, spectralRange and wedge; FR4's clusterHr, clusterData and variableStars; FR5's four radio maps; FR-HELP's helpViewer and webHelp); the
  * others are partial until their front (objectXLab FR6). */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars','radioAntenna','radioFinishSave','radioR1','radioRecordSave'];
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars','radioAntenna','radioFinishSave','radioR1','radioRecordSave',
+ 'helpViewer','webHelp'];
 /** FR0's area of en.json: the shell (header, menu, home and first steps, toolbar, errors, instructor mode, document title), as PT0's. */
 const SHELL_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(app|project|session|error|instructorMode)\./.test(k)||/\.nav$/.test(k)||['demonstrationMode.banner','sky.eyebrow','sky.title','sky.subtitle','sky.about','sky.local','sky.observatory','sky.analyzer','sky.step1','sky.step1Help','sky.step2','sky.step2Help','sky.step3','sky.step3Help','spectrum.tools','classLink.cancel'].includes(k));
 /** Front FR1's area of en.json: PT1's observatory keys (the observatory route, its instruments' cards and the guide keys those
@@ -115,7 +119,8 @@ if(process.env.OPENVIREO_FIX_TYPOGRAPHY==='1'){
 describe('Front FR0: the French (fr) bundle',()=>{
  it('is registered before its release: a ?lang=fr preview only, never detected or offered; thousands with U+202F from the start',()=>{
   expect(languageEntry('fr')).toMatchObject({dir:'fr',catalog:'fr.json',htmlLang:'fr',pagePath:'fr',autonym:'Français',englishName:'French',match:['fr'],released:false,thousands:' '});
-  expect(languageEntry('fr')?.help).toBeUndefined();
+  // Front FR-HELP: French translates VIREO's help files (src/i18n/fr/help, src/help/helpTranslation.test.ts).
+  expect(languageEntry('fr')?.help).toEqual({related:'RUBRIQUES CONNEXES'});
   expect(FRENCH.language).toBe('fr');
   // The notices hold U+202F before «;» as a character, and the typographic apostrophe.
   for(const notice of Object.values(languageEntry('fr')!.notices))expect(fixFrenchTypography(notice)).toBe(notice);

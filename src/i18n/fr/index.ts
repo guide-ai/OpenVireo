@@ -26,8 +26,10 @@ import {RADIO_ANTENNA_FR} from './maps/radioAntenna';
 import {RADIO_FINISH_SAVE_FR} from './maps/radioFinishSave';
 import {RADIO_R1_FR} from './maps/radioR1';
 import {RADIO_RECORD_SAVE_FR} from './maps/radioRecordSave';
+import {HELP_VIEWER_FR} from './maps/helpViewer';
+import {WEB_HELP_FR} from './maps/webHelp';
 /** Front FR0 [W]: the French (fr) bundle (docs/I18N.md, "French: the folder, lints and shell (FR0)"; Front FR1 adds the observatory
- * and all of VIREO's originals, Front FR2 exercises E01 and E02, Front FR4 exercises E04 and E05, Front FR5 the radio telescope). Partial until its release
+ * and all of VIREO's originals, Front FR2 exercises E01 and E02, Front FR4 exercises E04 and E05, Front FR5 the radio telescope, Front FR-HELP the help viewer and OpenVireo's own help; its help files are src/i18n/fr/help). Partial until its release
  * (src/i18n/languages.json `released:false`): only a `?lang=fr` preview reaches it, and every string it lacks is English. The
  * production build splits it by route area like Spanish and Portuguese (scripts/i18n-split.mjs parses this manifest); Vitest
  * imports it whole. Translations are web adaptations by OpenVireo; they never claim to be CLEA's, and CLEA's bytes, hashes and
@@ -36,6 +38,7 @@ export const FRENCH:LocaleBundle=Object.freeze({
  language:'fr',
  messages,
  maps:Object.freeze({appShell:APP_SHELL_FR,camera:CAMERA_FR,fieldInfo:FIELD_INFO_FR,fieldReadDetails:FIELD_READ_DETAILS_FR,helpMenu:HELP_MENU_FR,languageChoice:LANGUAGE_CHOICE_FR,nakedEye:NAKED_EYE_FR,objectXLab:OBJECT_X_LAB_FR,observationMetadata:OBSERVATION_METADATA_FR,observatory:OBSERVATORY_FR,polish:POLISH_FR,projectLinks:PROJECT_LINKS_FR,qsoList:QSO_LIST_FR,sound:SOUND_FR,tour:TOUR_FR,variableStars:VARIABLE_STARS_FR,engineView:ENGINE_VIEW_FR,spectralRange:SPECTRAL_RANGE_FR,wedge:WEDGE_FR,clusterHr:CLUSTER_HR_FR,clusterData:CLUSTER_DATA_FR,
-  radioAntenna:RADIO_ANTENNA_FR,radioFinishSave:RADIO_FINISH_SAVE_FR,radioR1:RADIO_R1_FR,radioRecordSave:RADIO_RECORD_SAVE_FR}),
+  radioAntenna:RADIO_ANTENNA_FR,radioFinishSave:RADIO_FINISH_SAVE_FR,radioR1:RADIO_R1_FR,radioRecordSave:RADIO_RECORD_SAVE_FR,
+  helpViewer:HELP_VIEWER_FR,webHelp:WEB_HELP_FR}),
  originals,
 });

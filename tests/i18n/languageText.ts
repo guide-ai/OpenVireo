@@ -105,10 +105,10 @@ export const SPANISH_TEXT=language('es-419',es,esOriginals,{appShell:APP_SHELL_E
 export const PORTUGUESE_TEXT=language('pt-BR',pt,ptOriginals,{appShell:APP_SHELL_PT,helpMenu:HELP_MENU_PT,projectLinks:PROJECT_LINKS_PT,tour:TOUR_PT,languageChoice:LANGUAGE_CHOICE_PT},
  [APP_SHELL_PT,CAMERA_PT,FIELD_INFO_PT,FIELD_READ_DETAILS_PT,HELP_MENU_PT,LANGUAGE_CHOICE_PT,NAKED_EYE_PT,OBJECT_X_LAB_PT,OBSERVATION_METADATA_PT,OBSERVATORY_PT,POLISH_PT,PROJECT_LINKS_PT,QSO_LIST_PT,SOUND_PT,TOUR_PT,VARIABLE_STARS_PT],/[ãõçâêôàáéíóú]/i,'');
 /** Front FR0: French before its release, behind `?lang=fr` (an en-US browser: tests/fixtures/language.ts contextLocale). FR0
- * translated the shell, FR1 the observatory and all of VIREO's originals, FR2 exercises E01 and E02, FR3 exercise E03, FR4 exercises E04 and E05, FR5 the radio telescope; FR6 and FR-HELP add their areas to `done` and
+ * translated the shell, FR1 the observatory and all of VIREO's originals, FR2 exercises E01 and E02, FR3 exercise E03, FR4 exercises E04 and E05, FR5 the radio telescope, FR-HELP the help files and help maps; FR6 adds its areas to `done` and
  * their maps below. Its letters include « » and U+202F, which English text never has. */
 export const FRENCH_TEXT=language('fr',fr,frOriginals,{appShell:APP_SHELL_FR,helpMenu:HELP_MENU_FR,projectLinks:PROJECT_LINKS_FR,tour:TOUR_FR,languageChoice:LANGUAGE_CHOICE_FR},
- [APP_SHELL_FR,CAMERA_FR,FIELD_INFO_FR,FIELD_READ_DETAILS_FR,HELP_MENU_FR,LANGUAGE_CHOICE_FR,NAKED_EYE_FR,OBJECT_X_LAB_FR,OBSERVATION_METADATA_FR,OBSERVATORY_FR,POLISH_FR,PROJECT_LINKS_FR,QSO_LIST_FR,SOUND_FR,TOUR_FR,VARIABLE_STARS_FR],/[àâæçéèêëîïôœùûüÿ«»\u202f]/i,'?lang=fr',['shell','observatory','e01','e02','e03','e04','e05','radio']);
+ [APP_SHELL_FR,CAMERA_FR,FIELD_INFO_FR,FIELD_READ_DETAILS_FR,HELP_MENU_FR,LANGUAGE_CHOICE_FR,NAKED_EYE_FR,OBJECT_X_LAB_FR,OBSERVATION_METADATA_FR,OBSERVATORY_FR,POLISH_FR,PROJECT_LINKS_FR,QSO_LIST_FR,SOUND_FR,TOUR_FR,VARIABLE_STARS_FR],/[àâæçéèêëîïôœùûüÿ«»\u202f]/i,'?lang=fr',['shell','observatory','e01','e02','e03','e04','e05','radio','help']);
 /** Every translated language of the registry, in its order (a test fails if a registered language has no text here). */
 export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT]);
 /** Front FR0: the languages that run the specs of `area` (those whose `done` has it), in registry order. */
@@ -209,6 +209,8 @@ import {HELP_VIEWER_ES} from '../../src/i18n/es/maps/helpViewer';
 import {WEB_HELP_ES} from '../../src/i18n/es/maps/webHelp';
 import {HELP_VIEWER_PT} from '../../src/i18n/pt-br/maps/helpViewer';
 import {WEB_HELP_PT} from '../../src/i18n/pt-br/maps/webHelp';
+import {HELP_VIEWER_FR} from '../../src/i18n/fr/maps/helpViewer';
+import {WEB_HELP_FR} from '../../src/i18n/fr/maps/webHelp';
 import type {HELP_VIEWER_EN} from '../../src/help/HelpViewerMessages';
 import type {WEB_HELP_EN} from '../../src/help/webHelp';
 export type HelpText=Readonly<{
@@ -224,5 +226,8 @@ export const HELP_TEXT:Readonly<Record<string,HelpText>>=Object.freeze({
   loadSpectrumText:'Para cargar un espectro',searchRow:/Medir y marcar/,searchQuery:'POSICION VERTICAL',searchHit:'posición vertical',controlsRow:/Controles/,lineHelpText:'Visible por primera vez alrededor de A0'},
  'pt-BR':{helpViewer:HELP_VIEWER_PT,webHelp:WEB_HELP_PT,pulsarFirstRow:'-Operações básicas-',reminderQuestion:'Você tem CERTEZA de que concluiu totalmente este exercício?',
   loadSpectrumText:'Para carregar um espectro',searchRow:/Medir e marcar/,searchQuery:'POSICAO VERTICAL',searchHit:'posição vertical',controlsRow:/Controles/,lineHelpText:'Visível pela primeira vez em torno de A0'},
+ // Front FR-HELP: the search query types a straight apostrophe and no accent; the translation's fold finds «c’est … verticale».
+ 'fr':{helpViewer:HELP_VIEWER_FR,webHelp:WEB_HELP_FR,pulsarFirstRow:'-Opérations de base-',reminderQuestion:'Avez-vous VRAIMENT terminé complètement cet exercice\u202f?',
+  loadSpectrumText:'Pour charger un spectre à classer',searchRow:/Mesurer et marquer/,searchQuery:"C'EST LA POSITION VERTICALE",searchHit:'c’est la position verticale',controlsRow:/Commandes/,lineHelpText:'Visible pour la première fois vers A0'},
 });
 export const helpText=(tag:string):HelpText=>{const m=HELP_TEXT[tag];if(!m)throw new Error(`No help text for ${tag}`);return m;};

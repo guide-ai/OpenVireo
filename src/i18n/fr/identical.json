@@ -141,6 +141,8 @@
   "map:radioAntenna.antenna.notice.title.hot-list-search-miss": "a placeholder for VIREO caption text, translated through vireo() by the caller",
   "map:radioAntenna.antenna.notice.hot-list-search-miss": "a placeholder for VIREO message text, translated through vireo() by the caller",
   "map:radioAntenna.antenna.hotList.item": "placeholders and the menu path glyphs only",
-  "map:radioAntenna.antenna.rateLimit.recovery.afterModal": "two placeholders joined by a space"
+  "map:radioAntenna.antenna.rateLimit.recovery.afterModal": "two placeholders joined by a space",
+  "map:helpViewer.spectralLines.ok": "the same word in French (OK, as Windows French writes it)",
+  "map:webHelp.groups.1.topics.3.title": "the same word in French (Instruments, the web help topic on the observatory's instruments)"
  }
 }
