@@ -74,8 +74,8 @@ et les autres membres de votre groupe avez accès (en lecture et en
 votre programme, et régler l’intervalle de mise à jour. (Voir les
 rubriques d’aide connexes.) Pour activer ou désactiver la fonction de
 tracé automatique, choisissez « Fichier » (File)->« Options... » dans le
-menu du diagramme en cône et cochez la case intitulée « Tracer
-automatiquement » (Auto Plot On).
+menu du diagramme en cône et cochez ou décochez la case intitulée
+« Tracer automatiquement » (Auto Plot On).
 
 Rubriques connexes :
     Définir le nom/chemin du fichier de tracé automatique

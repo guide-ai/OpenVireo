@@ -30,7 +30,7 @@ Rubriques connexes :
 
 **Définir le gain**
 Le « gain » est le nombre d’« impacts » de photons (électrons)
-sur un pixel du CCD nécessaires pour être enregistrés comme 1 unité
+sur un pixel du CCD nécessaires pour compter comme 1 unité
 dans l’image enregistrée. Vous pouvez régler le gain avec
 l’interrupteur à curseur marqué « Gain ». Normalement, vous pouvez
 laisser le gain à 1, sauf indication contraire de votre enseignant.
@@ -77,10 +77,10 @@ Pour enregistrer une image que vous venez de prendre, choisissez
 « Fichier » (File)->« Enregistrer l’image » (Save Image) dans le menu du
 panneau de commande de la caméra. Le système créera un nom de fichier,
 généralement fondé sur l’identifiant de l’objet le plus proche du
-centre du champ. Vous pouvez le changer pour un nom lié au TP que vous
-faites ou, plus généralement, qui ait plus de sens pour vous. Les
-images sont enregistrées au format FITS (extension de fichier par
-défaut « .FIT »).
+centre du champ. Vous voudrez peut-être le remplacer par un nom lié
+au TP que vous faites, ou plus parlant pour vous. Les images sont
+enregistrées au format FITS (extension de fichier par défaut
+« .FIT »).
 
     REMARQUE : si vous fermez la fenêtre de commande de la caméra ou
     commencez une nouvelle pose sans avoir enregistré l’image

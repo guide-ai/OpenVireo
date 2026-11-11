@@ -104,8 +104,9 @@ const MARK=/^\p{M}$/u,LATIN=/^\p{Script=Latin}$/u;
  * The text is composed (NFC) first, so a decomposed ñ stays ñ. Han characters are compared as they are (no Simplified/Traditional
  * conversion).
  * Front FR-HELP (plan front-i18n-fr.md §4.6): the typographic apostrophe ’ reads as ', the ligatures œ and æ as oe and ae, and
- * U+202F (French spacing before : ; ! ? and inside « ») as a space, so a typed «l'etoile» finds «L’étoile» and «noeud» finds
- * «nœud». æ is the one Latin-1 character this changes (src/core/cleaHelp.test.ts names it); no Spanish or Portuguese row holds it.
+ * U+202F (French spacing before : ; ! ? and inside « ») and U+00A0 (which French keyboards type there) as a space, so a typed
+ * «l'etoile» finds «L’étoile», «noeud» finds «nœud» and «Prêt ?» typed with either no-break space finds the help's. æ and U+00A0
+ * are the Latin-1 characters this changes (src/core/cleaHelp.test.ts names them); no Spanish or Portuguese row holds either.
  * Not VIREO behaviour: the original view keeps `foldAsciiCase`. */
 export function foldHelpText(text:string):string{
  if(typeof text!=='string')throw new TypeError('Invalid search text');
@@ -115,7 +116,7 @@ export function foldHelpText(text:string):string{
   if(MARK.test(c)){if(!(latin&&c>='\u0300'&&c<='\u036f'))out+=c;continue;}
   latin=LATIN.test(c);out+=c;
  }
- return out.normalize('NFC').toLowerCase().replace(/ё/g,'е').replace(/\u2019/g,'\'').replace(/œ/g,'oe').replace(/æ/g,'ae').replace(/\u202f/g,' ').replace(/[\u30a1-\u30f6\u30fd\u30fe]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60))
+ return out.normalize('NFC').toLowerCase().replace(/ё/g,'е').replace(/\u2019/g,'\'').replace(/œ/g,'oe').replace(/æ/g,'ae').replace(/[\u00a0\u202f]/g,' ').replace(/[\u30a1-\u30f6\u30fd\u30fe]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60))
   .replace(/[\u093c\u200c\u200d]/g,'').replace(/\u0001/g,'ñ');
 }
 export type HelpFindResult=Readonly<{kind:'hit';index:number}|{kind:'miss'}|{kind:'blank'}>;

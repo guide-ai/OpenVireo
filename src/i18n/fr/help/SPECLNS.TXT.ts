@@ -77,8 +77,8 @@ maximum vers B2
 
 Le rapport de cette raie à la raie Si II
 voisine de 4130 permet une discrimination
-fine dans cette plage.  Si à peine visible
-en B3
+fine dans cette plage.  Raie Si à peine
+visible en B3
 
 *4130.89   Si II*
 Visible de B2 à A5
@@ -118,7 +118,7 @@ peu près égales en G8
 *4226.74   Ca I*
 Visible pour la première fois vers F0.  Se
 renforce dans les étoiles K et M plus
-froides, où elle est proéminente.
+froides, où elle est très marquée.
 
 Dans les étoiles F, où les raies H I (de
 Balmer) ne changent guère d’intensité,
@@ -138,8 +138,8 @@ en B4
 *4300.00   CH & Metals (G Band)*
 Visible pour la première fois vers F5 dans
 les étoiles de la séquence principale, et
-G0 dans les supergéantes.  Elle devient
-proéminente dans les étoiles plus froides
+vers G0 dans les supergéantes.  Elle devient
+très marquée dans les étoiles plus froides
 (G, K, M).
 
 *4317.14   O II*
@@ -172,7 +172,7 @@ voisine de 4481 permet une discrimination
 vers B8-B9
 
 *4481.20   Mg II*
-Évidente de B2 à A5 ; la plus intense
+Bien visible de B2 à A5 ; la plus intense
 en A1.
 
 Le rapport de cette raie à la raie He I

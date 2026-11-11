@@ -12,7 +12,7 @@ Pour charger un spectre à classer :
     2)  Faites un choix dans le sous-menu qui apparaît :
 
         « Spectres enregistrés (*.CSP...) » (Saved Spectra (*.CSP...))
-            Choisissez dans une liste de spectres pris et enregistrés
+            Choisissez dans une liste de spectres obtenus et enregistrés
             pour être classés dans le cadre de ce TP. Pour choisir,
             double-cliquez sur le nom du fichier ou placez le curseur
             sur le nom du fichier et appuyez sur « Ouvrir » (Open).
@@ -96,7 +96,7 @@ spectrale :
     Les touches fléchées du pavé numérique (touches « 2 », « 4 », « 6 »,
     « 8 ») peuvent servir à positionner les lignes de mesure à la place
     de la souris. « Verr Num » doit être activé et « Touches souris »
-    (MouseKeys) désactivé. (Si vous utilisez « Touches souris »,
+    (MouseKeys) désactivées. (Si vous utilisez « Touches souris »,
     configurez votre système pour qu’elles soient activées lorsque
     « Verr Num » est désactivé.) Si les lignes de mesure ne sont pas
     visibles, appuyez sur la touche fléchée droite (« 6 ») : les lignes

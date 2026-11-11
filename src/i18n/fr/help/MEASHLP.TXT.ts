@@ -18,7 +18,7 @@ Vous pouvez mesurer la position et l’intensité relative de
 caractéristiques spectrales individuelles sur un spectre affiché.
 Maintenez enfoncé le bouton gauche de la souris tout en plaçant le
 curseur en croix sur la caractéristique à mesurer. La position du
-curseur s’affiche dans des affichages au bas de l’écran, convertie en
+curseur est indiquée par des affichages au bas de l’écran, convertie en
 longueur d’onde et en intensité relative. Quand vous relâchez le bouton
 de la souris, une ligne verticale apparaît à l’écran à la position de
 la longueur d’onde et une courte ligne horizontale apparaît au niveau
@@ -32,7 +32,7 @@ enfoncée (voir ci-dessous).
     Les touches fléchées du pavé numérique (touches « 2 », « 4 », « 6 »,
     « 8 ») peuvent servir à positionner les lignes de mesure à la place
     de la souris. « Verr Num » doit être activé et « Touches souris »
-    (MouseKeys) désactivé. (Si vous utilisez « Touches souris »,
+    (MouseKeys) désactivées. (Si vous utilisez « Touches souris »,
     configurez votre système pour qu’elles soient activées lorsque
     « Verr Num » est désactivé.) Si les lignes de mesure ne sont pas
     visibles, appuyez sur la touche fléchée droite (« 6 ») : les lignes
@@ -113,11 +113,11 @@ retirées de l’affichage.
 **Consigner les mesures**
 Pour consigner la valeur de z que vous avez mesurée, choisissez
 « Fichier » (File)->« Données » (Data)->« Consigner les mesures... »
-(Record Measurements...) Si vous avez mesuré avec le curseur du spectre
-de comparaison, la valeur de z de l’affichage est déjà saisie dans le
-formulaire. Si vous mesurez les raies une à une, la valeur saisie ne
-sera pas correcte et vous devrez la remplacer par votre valeur moyenne
-calculée.
+(Record Measurements...). Si vous avez mesuré avec le curseur du
+spectre de comparaison, la valeur de z de l’affichage est déjà saisie
+dans le formulaire. Si vous mesurez les raies une à une, la valeur
+saisie ne sera pas correcte et vous devrez la remplacer par votre
+valeur moyenne calculée.
 
 Lorsque vous appuyez sur « OK », les informations saisies sont placées
 dans une liste, mais ne sont pas enregistrées dans un fichier. Pour

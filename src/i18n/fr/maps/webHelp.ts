@@ -79,7 +79,7 @@ const OBSERVATORY={title:'L’observatoire',topics:[
   p('Chaque instrument a son propre bouton Aide. Il affiche l’aide de VIREO pour cet instrument, traduite, avec Voir l’original (anglais) ; là où le panneau d’OpenVireo diffère de celui de VIREO, le panneau lui-même porte une note web.'),
  ]),
  topic('Radiotélescope et pulsars',[
-  p('Radiotélescope, dans l’en-tête, ouvre le panneau de commande du radiotélescope. Démarrez avec Démarrer le TP sur les pulsars, pointez un pulsar et faites l’acquisition de son signal avec le récepteur. Le panneau a son propre menu Aide, avec l’aide radio de VIREO.'),
+  p('Radiotélescope, dans l’en-tête, ouvre le panneau de commande du radiotélescope. Commencez par Démarrer le TP sur les pulsars, pointez un pulsar et faites l’acquisition de son signal avec le récepteur. Le panneau a son propre menu Aide, avec l’aide radio de VIREO.'),
   p('Données radio ouvre l’analyse de pulsars : mesurez la période et le retard entre les fréquences avec les curseurs, sur votre acquisition ou sur un fichier .PLR enregistré. Les mesures consignées sont perdues quand vous rechargez la page, sauf si vous les enregistrez : Enregistrer l’investigation conserve votre acquisition et vos mesures confirmées (voir Enregistrer votre travail).'),
  ]),
 ]};
@@ -118,17 +118,17 @@ const SITE={title:'Utiliser le site',topics:[
   list(
    'Le menu regroupe toutes les pages en sections : Observatoire optique, Observatoire radio, Analyse, Éditeurs de résultats, Fichiers et Guides des TP. Cliquez sur le nom d’une section pour l’ouvrir ou la fermer ; la section de la page où vous êtes s’ouvre d’elle-même, et le navigateur mémorise les autres. Sur un téléphone, le menu se trouve derrière le bouton Menu.',
    'Aide est toujours en haut de la page, y compris sur un téléphone. Appuyez sur la touche ? n’importe où en dehors d’un champ de texte pour ouvrir ces rubriques d’aide ; vous pouvez désactiver cette touche ci-dessous.',
-   'Aide › Faire la visite guidée du site affiche de nouveau la visite de la première visite.',
-   'Code source et Signaler un problème, au pied du menu et dans Aide, ouvrent la page d’OpenVireo sur GitHub dans un nouvel onglet. Signaler un problème ouvre un nouveau ticket où le nom de la page où vous étiez est déjà rempli ; GitHub vous demande de vous connecter, et rien n’est envoyé avant que vous le soumettiez là-bas.',
+   'Aide › Faire la visite guidée du site relance la visite guidée proposée lors de votre première visite.',
+   'Code source et Signaler un problème, au pied du menu et dans Aide, ouvrent la page d’OpenVireo sur GitHub dans un nouvel onglet. Signaler un problème ouvre un nouveau ticket dans lequel le nom de la page où vous étiez est déjà indiqué ; GitHub vous demande de vous connecter, et rien n’est envoyé avant que vous le soumettiez là-bas.',
    'Tab et Maj+Tab passent d’une commande à l’autre ; Entrée ou Espace appuie sur un bouton.',
    'Échap ferme les menus et les boîtes de dialogue.',
-   'Les boutons de direction (télescope et radio) déplacent tant qu’ils sont maintenus avec la souris, Espace ou Entrée.',
+   'Les boutons de direction (télescope et radio) déplacent le télescope tant qu’ils sont maintenus avec la souris, Espace ou Entrée.',
    'Les curseurs de spectre se déplacent avec les touches fléchées (avec Maj, par pas plus grands) ; Entrée ou Espace applique, Échap annule.',
    'Le sélecteur de thème choisit les couleurs Système, Clair ou Sombre.'),
   'Ouvrir les rubriques d’aide avec la touche ?',
  ]),
  topic('Mode enseignant',[
-  p('Mode enseignant…, dans l’en-tête, après une confirmation, ouvre à cet onglet du navigateur les options enseignant de VIREO : Options de simulation optique… dans le menu de Déplacer le télescope et les préférences radio, qui sont fermées aux étudiants. Il n’a pas de mot de passe, n’est pas un verrou et n’affiche aucune réponse. Quitter le désactive.'),
+  p('Mode enseignant…, dans l’en-tête, après une confirmation, ouvre, dans cet onglet du navigateur, les options enseignant de VIREO : Options de simulation optique… dans le menu de Déplacer le télescope et les préférences radio, qui sont fermées aux étudiants. Il n’a pas de mot de passe, n’est pas un verrou et n’affiche aucune réponse. Quitter le désactive.'),
  ]),
  topic('L’aide d’origine de VIREO',[
   p('Les boutons Aide de chaque instrument et outil affichent l’aide de VIREO lui-même pour cette fenêtre, traduite en français comme adaptation web d’OpenVireo ; Voir l’original (anglais) affiche le texte du programme d’origine sans modification.'),

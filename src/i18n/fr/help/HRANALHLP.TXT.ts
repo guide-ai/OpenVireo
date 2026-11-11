@@ -63,7 +63,7 @@ dépendra de l’âge de l’amas. (Ajuster une isochrone après avoir placé
 la ZAMS le rendra plus clair.) Le diagramme HR de l’amas comportera
 aussi des étoiles qui ne sont pas membres de l’amas, mais dans la
 plupart des cas la séquence principale de l’amas est assez bien
-délimitée pour permettre un ajustement assez précis de la ZAMS.
+délimitée pour permettre un ajustement relativement précis de la ZAMS.
 
 Le curseur situé au bas du tracé déplace la ZAMS latéralement en
 appliquant un excès de couleur E(B-V) pour compenser l’effet de
@@ -71,7 +71,7 @@ rougissement dû à la poussière interstellaire entre l’amas et le
 Soleil. Pour simplifier l’ajustement, le logiciel fixe par défaut
 automatiquement E(B-V) à la valeur correcte pour l’amas que vous
 étudiez, et vous n’avez pas besoin de la modifier. Votre enseignant
-doit vous indiquer si cette valeur par défaut a été modifiée et si vous
+vous indiquera si cette valeur par défaut a été modifiée et si vous
 devez envisager d’ajuster E(B-V) lorsque vous ajustez la ZAMS.
 
 Rubriques connexes :
@@ -133,7 +133,7 @@ Des modèles d’isochrones sont fournis pour 6 valeurs de métallicité.
 (Voir la REMARQUE sous « Ajouter l’isochrone à l’affichage ».) En plus
 de la valeur solaire, 4 modèles de métallicité inférieure et 1 de
 métallicité supérieure sont disponibles. La plupart des amas ouverts de
-la galaxie ont des métallicités proches de la valeur solaire, et vous
+la Galaxie ont des métallicités proches de la valeur solaire, et vous
 devez toujours commencer par celle-ci. Si vous n’obtenez pas de
 correspondance satisfaisante, vous pouvez essayer de changer la
 métallicité. (Vous pouvez aussi essayer plusieurs valeurs pour voir
@@ -169,7 +169,7 @@ l’outil d’analyse du diagramme HR pour retirer de l’affichage à la fois
 la ZAMS et l’isochrone. Vous pouvez aussi les retirer séparément en
 choisissant de nouveau l’option de menu correspondante (« Outils »->
 « Séquence principale d’âge zéro » ou « Outils »->« Isochrones... »).
-Cela est probablement très utile pour retirer l’isochrone tout en
+C’est sans doute surtout utile pour retirer l’isochrone tout en
 conservant la ZAMS, surtout après le chargement d’un nouvel amas.
 
 Rubriques connexes :

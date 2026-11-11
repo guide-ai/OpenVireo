@@ -64,7 +64,7 @@ d’analyse de données :
     défilement horizontal gauche et droite pour faire varier la plage
     de données consignées affichée dans les panneaux.  La plage
     affichée (en secondes depuis le début des données) est indiquée par
-    les affichages à gauche et à droite sous les panneaux d’affichage.
+    les lectures à gauche et à droite sous les panneaux d’affichage.
 
     Vitesse de défilement (Pan Rate) - La commande de vitesse de
     défilement modifie la rapidité du défilement horizontal.
@@ -75,35 +75,35 @@ d’analyse de données :
     de zoom va de 0.125 à 8 par facteurs de 2.  (Un facteur de zoom de
     1 affiche les données exactement comme elles ont été consignées.)
     La plage affichée (en secondes depuis le début des données) est
-    indiquée par les affichages à gauche et à droite sous les panneaux
+    indiquée par les lectures à gauche et à droite sous les panneaux
     d’affichage.
 
     Réinitialiser (Reset) - Le bouton « Réinitialiser » ramène l’échelle
     verticale de tous les panneaux à 1, le facteur de zoom à 1 et la
     vitesse de défilement à 2.  Les affichages reviennent au début des
-    données, et tous les curseurs ainsi que leurs affichages sont
+    données, et tous les curseurs ainsi que leurs lectures sont
     effacés.
 
 **Effectuer des mesures**
 Vous pouvez mesurer des positions sur les panneaux d’affichage en
 appuyant puis en faisant glisser la souris.  Le bouton droit de la
 souris commande un curseur de « référence » qui apparaît à la même
-position sur les trois panneaux.  L’affichage vert sous les panneaux
+position sur les trois panneaux.  La lecture verte sous les panneaux
 donne la position du curseur de référence en secondes depuis le début
 des données.
 
 Le bouton gauche de la souris commande à la fois un curseur vertical
 et un curseur horizontal pour chaque panneau.  À droite de chaque
-panneau se trouvent les affichages des curseurs de ce panneau.  La
-position du curseur vertical (affichage de couleur cyan) est donnée en
+panneau se trouvent les lectures des curseurs de ce panneau.  La
+position du curseur vertical (lecture de couleur cyan) est donnée en
 secondes depuis le début du fichier.  La position du curseur
-horizontal (affichage de couleur magenta) est un indicateur de force
+horizontal (lecture de couleur magenta) est un indicateur d’intensité
 relative qui tient compte à la fois du facteur d’échelle verticale du
 panneau d’affichage et du gain relatif appliqué lors de la
 consignation des données (voir la rubrique d’aide « Voir les
 propriétés des données »).  Pour faire passer le bouton gauche de la
 souris du curseur vertical au curseur horizontal, ou inversement,
-pour chaque panneau, cliquez sur l’affichage correspondant.
+pour chaque panneau, cliquez sur la lecture correspondante.
 
 Agrandir l’affichage horizontalement (zoom « Avant ») peut aider à
 déterminer et à mesurer avec précision la position des impulsions.
@@ -193,7 +193,7 @@ de chargement de fichier du tableur.
 La commande « Fichier » (File)->« Imprimer l’écran... » (Print
 Screen...) du menu d’analyse de données vous permet d’imprimer à tout
 moment une image de la fenêtre d’analyse de données.  Cette image
-montre tous les curseurs à leur position actuelle et les affichages
+montre tous les curseurs à leur position actuelle et les lectures
 avec leurs valeurs actuelles.  Cette fonction utilise la fonction
 d’impression de Windows et imprime en couleur si une imprimante
 couleur est sélectionnée.  L’impression comprend les noms de connexion

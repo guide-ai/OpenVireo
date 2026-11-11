@@ -101,7 +101,7 @@ que vous avez déjà utilisé. Faites les lectures du ciel comme suit :
         dans l’image, vous pouvez augmenter la précision de vos mesures
         du ciel en augmentant la taille de l’ouverture.
 
-    2)  Accédez de nouveau aux commandes du photomètre. Si
+    2)  Accédez (ou revenez) aux commandes du photomètre. Si
         l’interrupteur « Lecture » est visible, vérifiez qu’il est sur
         « Ciel ». Si aucun interrupteur « Lecture » n’apparaît, la case
         « Objet » (Object) doit indiquer « Ciel » si le télescope est
@@ -164,7 +164,7 @@ sources ponctuelles comme suit :
         moyens du ciel » indique « PAS DE CIEL ! », vous ne pouvez pas
         faire de mesure dans cette couleur. Revenez aux commandes du
         télescope, sortez l’étoile du cercle rouge de l’ouverture, puis
-        revenez aux commandes du photomètre et lisez le ciel.)
+        revenez aux commandes du photomètre et mesurez le ciel.)
 
     4)  Réglez la durée d’intégration et le nombre d’intégrations
         voulus. (Il peut falloir procéder par tâtonnements ici ; voir
@@ -180,7 +180,7 @@ sources ponctuelles comme suit :
         Si votre S/B est inférieur à cette valeur, vous devriez
         augmenter la durée d’intégration, le nombre d’intégrations, ou
         les deux, puis faire une nouvelle lecture (ne consignez pas
-        l’ancienne). (Si votre S/B est VRAIMENT très faible, vous devrez
+        l’ancienne). (Si votre S/B est VRAIMENT faible, vous devrez
         peut-être utiliser un plus grand télescope pour obtenir une
         photométrie précise.) Si votre S/B est très élevé (> ~500), vous
         pouvez diminuer la durée d’intégration et/ou le nombre
@@ -263,9 +263,9 @@ couleur (filtre) au fur et à mesure. Attendez d’avoir mesuré l’étoile
 (ou le ciel) dans toutes les couleurs voulues. (Chaque fois que vous
 consignez des données, vous créez un enregistrement distinct, même si
 l’enregistrement ne contient les données que d’une seule couleur. Vous
-n’en aurez peut-être besoin que si vous exigez une datation très
-précise pour des études de variabilité.) Notez que les enregistrements
-sont horodatés avec la date julienne à 6 décimales (environ 0.1
+n’en aurez peut-être besoin que pour une datation très précise dans
+des études de variabilité.) Notez que les enregistrements sont
+horodatés avec la date julienne à 6 décimales (environ 0.1
 seconde). Il s’agit de l’heure à laquelle la dernière mesure que vous
 avez faite (quel que soit le filtre) s’est terminée.
 

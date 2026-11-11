@@ -19,7 +19,7 @@ Pour vous connecter à l’Observatoire virtuel éducatif (VIREO) :
     4)  Sélectionnez « OK ». Les choix de « Fichier » qui commandent
         l’exercice sont alors activés, tandis que « Se connecter... »
         est désactivé. (Vous ne pouvez pas revenir à la boîte de
-        dialogue de connexion une fois que vous l’avez terminée.)
+        dialogue de connexion une fois que vous l’avez remplie.)
 
 Les informations saisies dans la boîte de dialogue de connexion servent
 à générer les noms des fichiers de données, et apparaîtront sur les
@@ -57,14 +57,14 @@ le programme et recommencer !
 Certains exercices réalisés avec VIREO comportent des éléments qui
 dépendent du temps. Quand vous démarrez l’exercice « La quête de
 l’Objet X » (The Quest for Object X), une petite boîte apparaît pour que
-vous saisissiez la date, l’heure et l’identification de l’inconnu qui
-vous a été attribué. Veillez à les régler sur les valeurs fournies dans
-votre documentation d’exercice, ou attribuées directement par votre
-enseignant. Une fois les informations saisies et le bouton « OK »
-enfoncé, il peut y avoir une légère pause pendant que le logiciel
+vous saisissiez la date, l’heure et l’identification de l’objet
+inconnu qui vous a été attribué. Veillez à les régler sur les valeurs
+fournies dans votre documentation d’exercice, ou attribuées directement
+par votre enseignant. Une fois les informations saisies et le bouton
+« OK » enfoncé, il peut y avoir une légère pause pendant que le logiciel
 ajuste les données de l’exercice.
 
-Vous pouvez aussi devoir modifier la date et l’heure plus tard dans
+Vous devrez peut-être aussi modifier la date et l’heure plus tard dans
 certains exercices. Pour cela, fermez le panneau de commande du
 télescope (optique et/ou radio) et choisissez « Fichier » (File) ->
 « Définir la date et l’heure d’observation, l’ID... » (Set Observation
@@ -160,7 +160,7 @@ Si votre demande n’est pas acceptée :
     écoulé, vous ne pouvez pas demander de temps sur ce télescope en
     particulier. Quand le délai est écoulé, un message apparaît pour
     vous indiquer que vous pouvez présenter une nouvelle demande. Vous
-    pouvez faire tout autre chose pendant l’attente, y compris demander
+    pouvez faire toute autre chose pendant l’attente, y compris demander
     et/ou utiliser d’autres télescopes, analyser des données, etc.
 
 Rubriques connexes :
@@ -293,7 +293,7 @@ Un programme complet de traitement d’images, « SAOImage DS9 », est
 disponible avec VIREO. Pour y accéder, choisissez « Outils » (Tools) ->
 « Traitement d’images (DS9) » (Image Processing (DS9)) dans le menu du
 panneau de commande de l’observatoire. Vous pouvez utiliser DS9 pour
-visualiser les images que vous avez prises avec les caméras CDD et IR,
+visualiser les images que vous avez prises avec les caméras CCD et IR,
 et pour de nombreuses autres tâches de traitement d’images. DS9 est un
 gros programme doté de nombreuses fonctions et options. Votre
 enseignant ou votre documentation d’exercice vous donnera des
@@ -376,8 +376,8 @@ Lors du chargement de données, tenez compte de ce qui suit :
         s’ajoutent aux données chargées en mémoire. Vous devrez les
         enregistrer pour conserver l’ensemble complet.
  
-    4)  Le format du fichier à charger doit être le même que celui
-        d’écriture. Autrement dit, vous devez choisir, pour charger les
+    4)  Le format du fichier à charger doit être celui dans lequel il a
+        été écrit. Autrement dit, vous devez choisir, pour charger les
         données, le même éditeur de résultats que celui qui a servi à
         les enregistrer.
 
@@ -390,7 +390,7 @@ forme des résultats pour l’impression et la préparation de diagrammes
 et de graphiques, peuvent être facilitées par l’emploi d’un tableur. Si
 un tableur est à votre disposition, le choix « Tableur » (Spreadsheet)
 sous « Outils » (Tools) dans le menu du panneau de commande de
-l’observatoire sera en noir foncé. (Si cette entrée est grise, aucun
+l’observatoire sera en noir. (Si cette entrée est grise, aucun
 tableur n’est disponible.) Voici les étapes à suivre pour utiliser un
 tableur :
 
@@ -404,7 +404,7 @@ tableur :
         commande de l’observatoire pour accéder au tableur.
 
     4)  Chargez votre fichier de données dans le tableur (choisissez le
-        type de fichier « Texte » - qualificatif .CSV). Dans la plupart
+        type de fichier « Texte » - extension .CSV). Dans la plupart
         des cas, le tableur devrait démarrer avec vos données déjà
         chargées, ou au moins avec le bon dossier ouvert. Votre
         enseignant vous aidera pour cela et pour les autres activités
@@ -414,9 +414,9 @@ tableur :
         et imprimer les données, préparer et imprimer des diagrammes et
         des graphiques, etc., selon les indications de votre enseignant.
 
-    6)  Si on vous le demande, réécrivez le tableur terminé sous forme
-        de fichier délimité par des virgules (dans Excel, choisissez
-        « Fichier » -> « Enregistrer sous... » type CSV).
+    6)  Si on vous le demande, réenregistrez la feuille de calcul
+        terminée au format délimité par des virgules (dans Excel,
+        choisissez « Fichier » -> « Enregistrer sous... » type CSV).
 
     7)  Quittez le tableur (dans Excel, choisissez « Fichier » ->
         « Quitter »).

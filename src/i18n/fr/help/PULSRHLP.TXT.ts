@@ -30,12 +30,12 @@ l’horizon local et peut-être par d’autres limites du télescope.
     se déplacera à une vitesse déterminée par le réglage de la vitesse
     de déplacement.  Relâchez le bouton pour arrêter le déplacement.
     Pour les longs déplacements, le bouton restera enfoncé si vous
-    faites glisser le curseur hors de lui avant de relâcher le bouton de
-    la souris.  Dans ce cas, arrêtez le déplacement en appuyant sur le
-    bouton de la souris puis en le relâchant, le curseur étant placé sur
-    le bouton de déplacement actif.  REMARQUE : si le télescope est un
-    instrument de passage au méridien, les boutons « E » et « O »
-    n’apparaissent pas sur le panneau de commande.
+    faites glisser le pointeur hors de celui-ci avant de relâcher le
+    bouton de la souris.  Dans ce cas, arrêtez le déplacement en
+    appuyant sur le bouton de la souris puis en le relâchant, avec le
+    pointeur sur le bouton de déplacement actif.  REMARQUE : si le
+    télescope est un instrument de passage au méridien, les boutons
+    « E » et « O » n’apparaissent pas sur le panneau de commande.
 
     « Récepteur » (Receiver) - Appuyez sur ce bouton pour accéder au
     premier récepteur, ou récepteur « principal » (master).
@@ -127,9 +127,9 @@ aidera à identifier l’objet ou à vous rappeler pourquoi il présente un
 intérêt.  (Vous pouvez aussi modifier l’identification et la position
 pour ajouter un objet qui n’est pas actuellement dans le champ du
 télescope.)  Lorsque vous avez terminé la saisie, appuyez sur « OK »
-pour l’ajouter à la liste.  (Si vous créez une entrée erronée par
-erreur, consultez la rubrique d’aide « Retirer un objet de la « Liste
-d’objets » ».)
+pour l’ajouter à la liste.  (Si vous créez par erreur une entrée
+incorrecte, consultez la rubrique d’aide « Retirer un objet de la
+« Liste d’objets » ».)
 
 **Retirer un objet de la « Liste d’objets »**
 Pour retirer une entrée de la liste d’objets, choisissez « Déplacer »
@@ -164,7 +164,7 @@ Rubriques connexes :
     Recevoir les signaux
     Acquérir les signaux
     Mesurer les signaux reçus
-    Rubriques d’« Aide » (Help) du menu de l’outil d’analyse des
+    Rubriques d’« Aide » (Help) du menu de l’outil d’analyse de
     pulsars.
 
 **Fermer le panneau de commande du radiotélescope**
@@ -203,7 +203,7 @@ récepteurs (Align Receivers) et Volume.
     Incrément de fréquence (Frequency Increment) - Cette commande règle
     l’incrément de la commande Fréquence du récepteur.  L’incrément peut
     varier entre 0.01 et 100 MHz par facteurs de dix.  La commande
-    Incrément de fréquence apparaît sur tous les récepteurs et est
+    Fréquence du récepteur apparaît sur tous les récepteurs et est
     désactivée pendant l’acquisition.
 
     Gain vertical (Vertical Gain) - Cette commande règle l’amplification
@@ -323,7 +323,7 @@ récepteurs sera acquis, jusqu’à un maximum de 4 écrans complets (de 2 à
 l’acquisition, appuyez sur le bouton Mode pour arrêter la réception
 (mais vous n’acquerrez jamais plus que les quatre premiers écrans).
 
-Les signaux acquis peuvent être mesurés avec l’outil d’analyse des
+Les signaux acquis peuvent être mesurés avec l’outil d’analyse de
 pulsars radio, et/ou enregistrés pour une analyse ultérieure.
 
 Rubriques connexes :
@@ -371,19 +371,19 @@ Rubriques connexes :
 
 **Enregistrer les signaux reçus**
 Les signaux acquis sont conservés en mémoire vive (RAM).  Dans cet état,
-ils peuvent être transmis directement à l’outil d’analyse des données,
+ils peuvent être transmis directement à l’outil d’analyse de données,
 mais si vous ne prévoyez pas de le faire immédiatement, ou si vous avez
 besoin d’un enregistrement « permanent » pour toute autre raison, vous
 devez enregistrer ces données dans un fichier.  (Les signaux acquis en
 mémoire vive sont effacés au prochain démarrage d’une acquisition.)
 Lorsque vous terminez l’acquisition d’un signal, vous avez la
 possibilité de l’enregistrer immédiatement, ou de le transférer
-immédiatement dans la fenêtre d’analyse des données.  Si vous ne
+immédiatement dans la fenêtre d’analyse de données.  Si vous ne
 l’enregistrez pas à ce moment-là, vous pourrez le faire plus tard en
 choisissant « Fichier » (File)->« Enregistrer les données
 consignées... » (Save Recorded Data...) dans le menu de commande du
 radiotélescope, ou « Fichier »->« Enregistrer... » (Save...) dans le
-menu de l’outil d’analyse des données.
+menu de l’outil d’analyse de données.
 
 Lorsque vous choisissez d’enregistrer le fichier, un formulaire apparaît
 et vous permet de saisir ou de choisir un nom pour le fichier

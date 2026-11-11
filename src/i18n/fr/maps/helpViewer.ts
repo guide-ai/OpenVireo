@@ -10,7 +10,7 @@ export const HELP_VIEWER_FR:Translation<typeof HELP_VIEWER_EN>=Object.freeze({
  translationError:'L’aide traduite n’a pas pu être chargée, ou ne correspondait pas au fichier original dont elle est traduite ; l’aide originale de VIREO, en anglais, est donc affichée.',
  helpAdaptationTranslation:(list:string)=>`La traduction française, par OpenVireo, de l’aide de VIREO lui-même (son index ${list} et les fichiers texte qu’il désigne ; une adaptation web, ce n’est pas un texte du CLEA), affichée dans une version web de la visionneuse d’aide de VIREO. Les tailles de fenêtre, les polices et le bip du système ne sont pas reproduits.`,
  linkNoteTranslation:'Double-cliquez sur un titre placé sous la ligne « Rubriques connexes » traduite, ou appuyez sur Entrée, pour l’ouvrir. Une ligne vide à cet endroit ne fait rien ici ; VIREO s’arrête sur une erreur.',
- searchFoldNote:'Dans la traduction, la recherche ignore les accents et la casse, lit l’apostrophe typographique comme une apostrophe droite, œ et æ comme oe et ae, et l’espace fine comme une espace : c’est une adaptation web. La recherche de VIREO lui-même, conservée dans la vue originale, ignore seulement la casse de A à Z.',
+ searchFoldNote:'Dans la traduction, la recherche ignore les accents et la casse, lit l’apostrophe typographique comme une apostrophe droite, œ et æ comme oe et ae, et les espaces fines et insécables comme des espaces : c’est une adaptation web. La recherche de VIREO lui-même, conservée dans la vue originale, ignore seulement la casse de A à Z.',
  spectralLines:Object.freeze({
   listCaption:'Raies spectrales',
   rows:'Raies spectrales',helpRows:'Texte d’aide de la raie spectrale',close:'Fermer',

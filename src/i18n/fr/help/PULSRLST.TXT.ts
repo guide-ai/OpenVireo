@@ -16,7 +16,7 @@ Pour localiser un pulsar par son nom :
     o  Appuyez sur « OK ».
 
 Vous pouvez utiliser un nom partiel, à condition qu’il commence au début
-du nom.  (Exemple : cherchez « 045 », puis utilisez les boutons
+du nom.  (Exemple : recherchez « 045 », puis utilisez les boutons
 « Suivant » (Next) et « Précédent » (Prev) pour trouver celui que vous
 voulez.)  Comme les noms de pulsars sont construits à partir de leurs
 positions, vous pouvez utiliser cette technique pour trouver un pulsar

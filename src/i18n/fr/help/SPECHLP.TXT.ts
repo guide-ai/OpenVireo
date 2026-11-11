@@ -44,8 +44,8 @@ Pour imprimer le spectre actuel, choisissez « Fichier » (File)->
 dans le menu du panneau de commande du spectromètre.  Le formulaire
 standard des options d’impression de Windows apparaît.  (Votre
 enseignant peut vous donner des informations supplémentaires sur la
-configuration et l’orientation de votre impression.)  Le spectre est
-imprimé tel qu’il apparaît à l’écran, avec des informations
+configuration de l’impression et le choix de l’imprimante.)  Le spectre
+est imprimé tel qu’il apparaît à l’écran, avec des informations
 d’identification en en-tête.
 
 **Enregistrer le spectre pour l’analyse**
@@ -66,7 +66,7 @@ classification précise des étoiles, mais des valeurs plus faibles
 peuvent suffire pour certains types spectraux.  Un rapport signal sur
 bruit de seulement 10 peut suffire pour déterminer la vitesse radiale
 (z) de certaines galaxies.  Si vous n’êtes pas sûr que le spectre que
-vous obtenez soit suffisant, et que vous voulez peut-être revenir au
+vous obtenez soit suffisant, et que vous vouliez peut-être revenir au
 panneau de commande du spectromètre pour poursuivre l’intégration,
 utilisez la technique suivante :
 
