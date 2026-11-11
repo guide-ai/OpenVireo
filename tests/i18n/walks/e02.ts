@@ -40,8 +40,16 @@ export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={
  'es-419':new Set(['Observable','No']),
  // The same words in Portuguese: VIREO's OK and the wedge's Pixel (x, y).
  'pt-BR':new Set(['OK','Pixel (x, y)']),
+ // Front FR2: the same words in French (identical.json): VIREO's OK, Options..., Style, Minimum and Maximum; the survey's Action
+ // column and Observable status; the wedge's Point (6000.5) separator and Pixel (x, y).
+ fr:new Set(['OK','Options...','Style','Minimum','Maximum','Action','Observable','Point (6000.5)','Pixel (x, y)']),
 };
-export const same=(text:string,L?:LanguageText)=>SAME.has(text)||NUMERIC.test(text)||RECORDED.test(text)||GALAXY.test(text)||(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false));
+/** Front FR2: patterns of texts that are the same words in one language: French writes the field selector's option as English does,
+ * the recorded LSSFields.LST item and «({rows} galaxies)» (identical.json `catalog:lss.fieldOption`). */
+// FR2 review: the item's exact shape («Survey Field 7     14Hr 25Min   29° 00'», lssFieldsItemText, its spaces U+00A0) on one
+// line, so no other text can pass through it.
+export const SAME_PATTERN_IN:Readonly<Record<string,RegExp>>={fr:/^Survey\s+Field\s+\d\s+\d{1,2}Hr\s+\d{2}Min\s+[-+−]?\d{1,2}°\s+\d{2}'\s+\(\d{1,3}\s+galaxies\)$/};
+export const same=(text:string,L?:LanguageText)=>SAME.has(text)||NUMERIC.test(text)||RECORDED.test(text)||GALAXY.test(text)||(L!==undefined&&((SAME_IN[L.tag]?.has(text)??false)||(SAME_PATTERN_IN[L.tag]?.test(text)??false)));
 export const id=(page:Page|Locator,testId:string)=>page.getByTestId(testId);
 /** Front SC12: an English text's name in any pseudo-locale (qps and the script variants; tests/fixtures/pseudoNames.ts). */
 export const pseudo=pseudoName;

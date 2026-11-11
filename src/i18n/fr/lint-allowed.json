@@ -36,6 +36,36 @@
     "·"
    ],
    "reason": "the · of c·z (the speed of light times the redshift, as in the English) is a multiplication dot, not an inclusive point médian"
+  },
+  "catalog:spectrum.observationNote": {
+   "words": [
+    "·"
+   ],
+   "reason": "the · of c·z (the speed of light times the redshift, as in the English) is a multiplication dot, not an inclusive point médian"
+  },
+  "catalog:lss.dialog.zeroZ": {
+   "words": [
+    "·"
+   ],
+   "reason": "the · of c·z (the speed of light times the redshift, as in the English) is a multiplication dot, not an inclusive point médian"
+  },
+  "catalog:lss.dialog.velocityHelp": {
+   "words": [
+    "·"
+   ],
+   "reason": "the · of c·z (the speed of light times the redshift, as in the English) is a multiplication dot, not an inclusive point médian"
+  },
+  "catalog:lss.adaptation.dialog": {
+   "words": [
+    "·"
+   ],
+   "reason": "the · of c·z (the speed of light times the redshift, as in the English) is a multiplication dot, not an inclusive point médian"
+  },
+  "catalog:lssLab.help.record": {
+   "words": [
+    "·"
+   ],
+   "reason": "the · of c·z (the speed of light times the redshift, as in the English) is a multiplication dot, not an inclusive point médian"
   }
  }
 }
