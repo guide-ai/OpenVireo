@@ -1,6 +1,6 @@
 import {createI18n,english,locale,type I18n,type LocaleAreaPart,type LocaleBundle} from './catalog';
 import {HTML_LANG,type UiLanguage} from './locale';
-import {isPseudoLocale,isReleased} from './languages';
+import {isPseudoLocale,isReleased,thousandsSeparator} from './languages';
 import {MAP_IDS} from './maps';
 /** Front ES0: the language of this load, set once by src/boot.ts (docs/I18N.md). App code imports from src/i18n/index.ts. */
 /** Front ES-SPLIT: `areas` records the route areas of a split bundle that arrived ('loaded') or will not ('failed'). */
@@ -33,7 +33,7 @@ export function activateLocale(bundle:LocaleBundle|null):UiLanguage{
   // `bundle.areas` here when it flipped the gate: only a whole released bundle (Vitest's src/i18n/es/index.ts) builds strictly.
   // Front SC8: the gate is the registry's per-language `released`; a language before its release (or outside the registry: a
   // test's stand-in) may be partial, and its missing keys stay English. The dev pseudo-locales stay strict (complete catalogs).
-  next=Object.freeze({language:bundle.language,i18n:createI18n(bundle.messages,HTML_LANG[bundle.language]??bundle.language,{fallback:!!bundle.areas||(!isReleased(bundle.language)&&!isPseudoLocale(bundle.language)),numberLocale:locale}),bundle,areas:NO_AREAS});
+  next=Object.freeze({language:bundle.language,i18n:createI18n(bundle.messages,HTML_LANG[bundle.language]??bundle.language,{fallback:!!bundle.areas||(!isReleased(bundle.language)&&!isPseudoLocale(bundle.language)),numberLocale:locale,thousands:thousandsSeparator(bundle.language)}),bundle,areas:NO_AREAS});
  }
  holder[ACTIVE]=next;return next.language;
 }
@@ -49,7 +49,7 @@ export function extendLocale(area:string,part:LocaleAreaPart):void{
  if(!active||!bundle?.areas||part?.language!==active.language||part.area!==area)throw new Error(`OpenVireo: not a part of area ${area}`);
  checkMapIds(Object.keys(part.maps??{}));
  const next:LocaleBundle=Object.freeze({...bundle,messages:{...bundle.messages,...part.messages},maps:{...bundle.maps,...part.maps}});
- holder[ACTIVE]=Object.freeze({...active,i18n:createI18n(next.messages,HTML_LANG[active.language]??active.language,{fallback:true,numberLocale:locale}),bundle:next,areas:new Map([...active.areas,[area,'loaded' as const]])});
+ holder[ACTIVE]=Object.freeze({...active,i18n:createI18n(next.messages,HTML_LANG[active.language]??active.language,{fallback:true,numberLocale:locale,thousands:thousandsSeparator(active.language)}),bundle:next,areas:new Map([...active.areas,[area,'loaded' as const]])});
 }
 /** Front ES-SPLIT: the area's text did not arrive (an error, or LANGUAGE_TIMEOUT_MS); it stays English for this load. */
 export function markAreaFailed(area:string):void{

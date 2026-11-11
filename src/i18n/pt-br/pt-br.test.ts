@@ -8,7 +8,8 @@ import lintAllowed from './lint-allowed.json';
 import esOriginals from '../es/originals.json';
 import esIdentical from '../es/identical.json';
 import {PORTUGUESE} from './index';
-import {createI18n,type MessageKey} from '../catalog';
+import {createI18n,english,locale,type MessageKey} from '../catalog';
+import {VARIABLE_STARS_PT} from './maps/variableStars';
 import {mapParity} from '../parity';
 import {normalizeOriginal} from '../vireo';
 import {MAP_IDS,type MapId} from '../maps';
@@ -96,8 +97,8 @@ const data:LintData={glossary:glossaryFrom(glossaryJson,'pt'),identical:identica
 const pairs=()=>collectPairs({catalog:pt,english:en,maps:PORTUGUESE.maps,englishMaps:ENGLISH_MAPS,originals});
 
 describe('Front PT0: the Brazilian Portuguese (pt-BR) bundle',()=>{
- it('is registered before its release: a ?lang=pt-BR preview only, never detected or offered',()=>{
-  expect(languageEntry('pt-BR')).toMatchObject({dir:'pt-br',catalog:'pt-br.json',htmlLang:'pt-BR',pagePath:'pt-br',autonym:'Português (Brasil)',match:['pt'],released:false});
+ it('Front PT-REL: is released (detected from every pt and pt-* browser, stored, offered) and groups thousands with U+202F',()=>{
+  expect(languageEntry('pt-BR')).toMatchObject({dir:'pt-br',catalog:'pt-br.json',htmlLang:'pt-BR',pagePath:'pt-br',autonym:'Português (Brasil)',match:['pt'],released:true,thousands:'\u202f'});
   // Front PT-HELP: Portuguese translates VIREO's help files (src/i18n/pt-br/help, src/help/helpTranslation.test.ts).
   expect(languageEntry('pt-BR')?.help).toEqual({related:'TÓPICOS RELACIONADOS'});
   expect(PORTUGUESE.language).toBe('pt-BR');
@@ -128,6 +129,26 @@ describe('Front PT0: the Brazilian Portuguese (pt-BR) bundle',()=>{
   expect(PT6_KEYS.length).toBe(137);
   expect(PT6_KEYS.filter(k=>!Object.hasOwn(pt,k))).toEqual([]);
   expect(Object.keys(en).filter(k=>!Object.hasOwn(pt,k))).toEqual([]);
+ });
+ it('Front PT-REL: the catalog is complete and strict: every en.json key, the same {params}, strings only, no extra key',()=>{
+  // As Spanish's ES-REL check: strictness lives here, since the split bundle builds each module with the English fallback.
+  expect(()=>createI18n(pt as Record<MessageKey,string>,'pt-BR')).not.toThrow();
+  expect(Object.keys(en).filter(k=>!Object.hasOwn(pt,k))).toEqual([]);
+  for(const [id,map] of Object.entries(PORTUGUESE.maps??{}))expect(mapParity(ENGLISH_MAPS[id as MapId],map),id).toEqual([]);
+  expect(MAP_IDS.filter(id=>!Object.hasOwn(PORTUGUESE.maps??{},id))).toEqual([]);
+ });
+ it('Front PT-REL: numbers group thousands with U+202F on screen in Portuguese only; the decimal point and files are unchanged',()=>{
+  const ptI18n=createI18n(pt as Record<MessageKey,string>,'pt-BR',{numberLocale:locale,thousands:'\u202f'});
+  expect([24000,50000,2400000,999,1234.5,-31147].map(v=>ptI18n.formatNumber(v))).toEqual(['24\u202f000','50\u202f000','2\u202f400\u202f000','999','1\u202f234.5','-31\u202f147']);
+  expect(ptI18n.formatNumber(24000,{useGrouping:false})).toBe('24000');expect(ptI18n.formatNumber(0.25,{style:'percent'})).toBe('25%');
+  expect(ptI18n.fixed(1234.5,2)).toBe('1234.50');expect(ptI18n.scientific(12345,3)).toBe('1.23e+4');
+  expect(english.formatNumber(24000)).toBe('24,000');
+  // The variable-star map's counts (its English source used toLocaleString('en-US')).
+  expect(VARIABLE_STARS_PT.typeOption('M',31147)).toBe('M — 31\u202f147');
+  expect(VARIABLE_STARS_PT.results(200,31147)).toContain('de 31\u202f147 registros');expect(VARIABLE_STARS_PT.results(1200,1200)).toBe('1\u202f200 registros correspondentes.');
+  // No Portuguese text groups with en-US's comma (the pt-BR typography rule says so too, with the help files).
+  const texts=[...Object.values(pt),...Object.values(originals),JSON.stringify(PORTUGUESE.maps,(_,v)=>typeof v==='function'?String(v):v)];
+  expect(texts.filter(t=>/(?<![\d.,])\d{1,3}(?:,\d{3})+(?!\d)/.test(t))).toEqual([]);
  });
  it('every map has its English shape: the shell maps complete, the header-name maps partial',()=>{
   for(const [id,map] of Object.entries(PORTUGUESE.maps??{})){

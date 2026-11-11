@@ -5,10 +5,14 @@
  * suite keeps Playwright's `locale:'en-US'` from the configs. */
 import {isReleased} from '../../src/i18n/languages';
 export const SPANISH_LOCALE='es-MX';
-/** Front PT0: a browser language that opens each translated language once it is released (pt-BR from PT-REL). */
-const BROWSER_LOCALE:Readonly<Record<string,string>>={'es-419':SPANISH_LOCALE,'pt-BR':'pt-BR'};
-/** The query that opens `lang` in an es-MX browser: none for Spanish, `?lang=<lang>` for English and the pseudo-locales. */
-export const langQuery=(lang:string):string=>lang==='es-419'?'':`?lang=${lang}`;
+/** Front PT0: a browser language that opens each translated language once it is released (pt-BR since PT-REL). */
+export const PORTUGUESE_LOCALE='pt-BR';
+const BROWSER_LOCALE:Readonly<Record<string,string>>={'es-419':SPANISH_LOCALE,'pt-BR':PORTUGUESE_LOCALE};
+/** The query that opens `lang` in its own browser (contextLocale: es-MX for Spanish, pt-BR for Brazilian Portuguese): none for a
+ * released language, `?lang=<lang>` for English, the pseudo-locales and a language before its release (its preview). Front PT-REL:
+ * the language-parameterised specs run each released language's tests in that language's browser (an anonymous describe with
+ * `test.use({locale:contextLocale(L.tag)})`), so its pages open by the browser language alone, as ES-REL did for Spanish. */
+export const langQuery=(lang:string):string=>lang!=='en'&&isReleased(lang)?'':`?lang=${lang}`;
 /** For a context made for one language: its browser language (es-MX for Spanish, en-US otherwise) and the query it needs (only
  * the pseudo-locales need one). Front PT0: a language before its release (pt-BR) opens in an en-US browser with its `?lang=`
  * preview; once released, in its own browser language without a query. */

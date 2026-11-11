@@ -1,6 +1,6 @@
 import {type Page} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
-import {SPANISH_LOCALE} from '../fixtures/language';
+import {SPANISH_LOCALE,contextLocale} from '../fixtures/language';
 import {readFileSync} from 'node:fs';
 import witness from '../../src/help/helpAll.witness.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
@@ -10,8 +10,8 @@ test.use({locale:SPANISH_LOCALE});
 
 // Front PT-HELP: the spec runs for every translated language that translates the help files (tests/i18n/languageText.ts: its own
 // catalog, originals, help viewer and web help maps, and the few help-file words it looks for), never hard-coded text. The Spanish
-// tests keep their titles and assertions; a language before its release (pt-BR) runs the same checks under its own titles in its
-// `?lang=` preview, which beats the es-MX browser language.
+// tests keep their titles and assertions; Brazilian Portuguese runs the same checks under its own titles in a pt-BR browser
+// (Front PT-REL: the language loop's anonymous describe sets its browser locale, tests/fixtures/language.ts contextLocale).
 // Front ES-HELP (docs/I18N.md): VIREO's help files in Spanish in an `es-*` browser (a `?lang=es-419` preview load before ES-REL). Every window's Help opens the
 // translation (a web adaptation, labelled as such), "Ver original (inglés)" shows VIREO's exact English (the bundled file's own
 // rows and text), the translation's search ignores accents, the Spectral Line Table is Spanish, and the windows fit at 320 and
@@ -29,10 +29,10 @@ async function noHorizontalScroll(page:Page){
 const HELP_LANGUAGES=TRANSLATED.filter(l=>l.entry.help);
 if(!HELP_LANGUAGES.some(l=>l.tag==='es-419'))throw new Error('tests/i18n/help.spec.ts: Spanish has no help files');
 
-for(const L of HELP_LANGUAGES){
+for(const L of HELP_LANGUAGES)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
 /** A test title: Spanish keeps its ES-HELP title; another language names itself. */
 const title=(es:string,other:string)=>L.tag==='es-419'?es:other.replaceAll('<L>',L.entry.englishName);
-/** A route of this language: Spanish by the browser language, another language by its `?lang=` preview. */
+/** A route of this language: a released language by its browser language, a language before its release by its `?lang=` preview. */
 const at=(path:string)=>path.replace(/^\/(?=#|$)/,`/${L.query}`);
 /** A catalog key's text on this language's load (English until the area's sub-front translates it). */
 const tr=(key:keyof typeof en)=>(L.catalog as Record<string,string>)[key]??en[key];
@@ -203,4 +203,4 @@ for(const width of [320,1440])test(title(`help windows fit at ${width} px`,`<L> 
  await id(page,'spl-help').scrollIntoViewIfNeeded();
  await page.screenshot({path:`test-results/${shot}-help-${width}-lines.png`});
 });
-}
+});

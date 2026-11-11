@@ -16,13 +16,15 @@ const MPC_TILES=MPC.tiles.map(t=>({path:t.replace(/^public/,''),sha256:manifest.
 const recorded=readFile(new URL('../fixtures/vizier/nomad-56.75+24.12-r0.01.xml',import.meta.url));
 const button=(p:Page,name:string)=>p.getByRole('button',{name,exact:true});
 
-type Problems={console:string[];errors:string[];csp:string[];external:string[];language:string[]};
-/** Front ES-SPLIT: the module in a language chunk's name (i18n-es-419-<module>-<hash>.js; a shared module's `+` is written `_`). */
-const LANGUAGE_CHUNK=/\/assets\/i18n-es-419-([a-z_]+)-[\w-]{8}\.js$/;
+type Problems={console:string[];errors:string[];csp:string[];external:string[];language:string[];tags:string[]};
+const LANGUAGES=loadLanguages() as {tag:string}[];
+/** Front ES-SPLIT: the module in a language chunk's name (i18n-<tag>-<module>-<hash>.js; a shared module's `+` is written `_`).
+ * Front PT-REL: any registered language's chunk; `tags` records whose. */
+const LANGUAGE_CHUNK=new RegExp(`/assets/i18n-(${LANGUAGES.map(l=>l.tag).join('|')})-([a-z_]+)-[\\w-]{8}\\.js$`);
 /** Records console errors and warnings, page errors and CSP violations, and aborts every request that is not to this server. */
 async function watch(page:Page,base:string):Promise<Problems>{
- const p:Problems={console:[],errors:[],csp:[],external:[],language:[]};
- page.on('request',r=>{const m=LANGUAGE_CHUNK.exec(new URL(r.url()).pathname);if(m)p.language.push(m[1].replace(/_/g,'+'));});
+ const p:Problems={console:[],errors:[],csp:[],external:[],language:[],tags:[]};
+ page.on('request',r=>{const m=LANGUAGE_CHUNK.exec(new URL(r.url()).pathname);if(m){p.tags.push(m[1]);p.language.push(m[2].replace(/_/g,'+'));}});
  await page.context().route(url=>!url.href.startsWith(base),route=>{p.external.push(route.request().url());return route.abort('blockedbyclient');});
  await page.addInitScript(()=>{
   const w=window as unknown as {__csp:string[]};w.__csp=[];
@@ -67,8 +69,8 @@ test('the page, a hashed bundle and an original file carry the release headers',
  const whole=await request.get('/original/orbit/ObjX_MPC.CMO');
  expect([whole.status(),whole.headers()['content-type']]).toEqual([404,'text/html; charset=utf-8']);
  const notFound=await whole.text();expect(notFound).toContain('This address is not part of OpenVireo.');
- // Front ES-REL: the 404 page is bilingual.
- expect(notFound).toContain('Esta dirección no forma parte de OpenVireo.');
+ // Front ES-REL: the 404 page is bilingual; Front PT-REL: trilingual.
+ expect(notFound).toContain('Esta dirección no forma parte de OpenVireo.');expect(notFound).toContain('Este endereço não faz parte do OpenVireo.');
  expect(baseURL).toMatch(/^http:\/\/127\.0\.0\.1:63\d\d$/);// playwright.pages.config.ts admits only 6300–6398
 });
 
@@ -132,11 +134,13 @@ for(const [hash,name] of ROUTES)test(`${name} (${hash}) opens with no policy vio
 // (scripts/i18n-split.mjs), the language is activated once and then extended once per area, and nothing logs an error (a text
 // read before its area is answered in English and logged, since ES-REL made the catalog complete). Front ES-REL: in an es-MX
 // browser with no ?lang=, as a Spanish visitor arrives (the preview link keeps its own test below).
-const plan=planLanguage(loadLanguages().find((l:{tag:string})=>l.tag==='es-419')) as {modules:{name:string;shared:string[]}[]};
+type Plan={modules:{name:string;shared:string[];empty?:boolean}[]};
+const planOf=(tag:string)=>planLanguage(LANGUAGES.find(l=>l.tag===tag)) as Plan;
+const plan=planOf('es-419');
 const AREA_OF:Readonly<Record<string,string>>={'#classification':'classification','#cluster-database':'cluster','#photometer':'photometer','#pulsar-analysis':'pulsar',
  '#radio-control':'radio','#lss-survey':'lss','#lss-wedge':'lss','#galaxy-exposure':'exposure','#star-exposure':'exposure','#sky-exposure':'exposure','#images':'fits',
  '#spectrometer':'exposure'};// the field spectrometer at the default pointing
-const modulesOf=(area:string|undefined)=>{if(!area)return [];const m=plan.modules.find(x=>x.name===area)!;return [area,...m.shared].sort();};
+const modulesOf=(area:string|undefined,from:Plan=plan)=>{if(!area)return [];const m=from.modules.find(x=>x.name===area)!;return [area,...m.shared].sort();};
 test.describe('in a Spanish browser (es-MX)',()=>{
 test.use({locale:'es-MX'});
 for(const [hash,name] of ROUTES)test(`Front ES-SPLIT: ${name} (${hash}) in Spanish fetches the core and its area only, with no error`,async({page,baseURL})=>{
@@ -163,6 +167,47 @@ test('Front ES-REL: an es-MX browser opens Spanish without ?lang=, with the sele
  expect(await language(page)).toEqual({sets:1,earlyReads:0,changes:[]});
  expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);
 });
+});
+
+// Front PT-REL: Brazilian Portuguese is released. Every route of the production build in a pt-BR browser, with no ?lang=, fetches
+// the Portuguese core and exactly its area's modules (no area is empty for a released language), settles once, then extends once
+// per area, and logs nothing; the home shows the selector under the release CSP; and on screen Portuguese groups thousands with
+// U+202F (user decision of 2026-11-10) where English and Spanish keep the comma.
+const ptPlan=planOf('pt-BR');
+test.describe('in a Brazilian Portuguese browser (pt-BR)',()=>{
+test.use({locale:'pt-BR'});
+for(const [hash,name] of ROUTES)test(`Front PT-REL: ${name} (${hash}) in Portuguese fetches the core and its area only, with no error`,async({page,baseURL})=>{
+ const p=await watch(page,baseURL!);
+ await page.addInitScript(()=>localStorage.setItem('openvireo.tour.v1','done'));
+ await page.goto(`/${hash}`);await page.waitForLoadState('networkidle');
+ await expect(page.locator('h1:visible, h2:visible').first()).toBeVisible();
+ await expect(page.locator('html')).toHaveAttribute('lang','pt-BR');
+ await expect(page.locator('[data-testid=route-error],[data-testid=site-updated],[data-testid=area-failure],[data-testid=language-failure]')).toHaveCount(0);
+ await page.waitForTimeout(500);
+ expect({console:p.console,errors:p.errors,csp:await violations(page),external:p.external}).toEqual({console:[],errors:[],csp:[],external:[]});
+ const area=AREA_OF[hash],modules=modulesOf(area,ptPlan);
+ expect(p.language[0]).toBe('core');expect(p.language.slice(1).sort()).toEqual(modules);expect(new Set(p.tags)).toEqual(new Set(['pt-BR']));
+ expect(await language(page)).toEqual({sets:area?2:1,earlyReads:0,changes:[]});
+});
+test('Front PT-REL: a pt-BR browser opens Portuguese without ?lang=, with the selector offering three languages, under the release CSP',async({page,baseURL})=>{
+ const p=await watch(page,baseURL!);
+ await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Comece pelo céu.'})).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.lang)).toBe('pt-BR');
+ await expect(page).toHaveTitle('OpenVireo · Práticas de astronomia do CLEA VIREO no seu navegador');
+ await expect(page.getByTestId('language-choice')).toBeVisible();await expect(page.getByTestId('language-select')).toHaveValue('pt-BR');
+ await expect(page.getByTestId('language-select').locator('option')).toHaveText(['English','Español','Português (Brasil)']);
+ await page.waitForLoadState('networkidle');expect(p.language).toEqual(['core']);expect(p.tags).toEqual(['pt-BR']);
+ expect(await language(page)).toEqual({sets:1,earlyReads:0,changes:[]});
+ expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);
+});
+});
+for(const [locale,lang,count] of [['pt-PT','pt-BR','31\u202f147'],['pt','pt-BR','31\u202f147'],['es-MX','es-419','31,147'],['en-US','en','31,147']] as const)test(`Front PT-REL: a ${locale} browser opens ${lang}; the variable-star catalog count reads ${count.replace('\u202f','\\u202f')}`,async({browser})=>{
+ const page=await browser.newPage({locale});
+ await page.goto('/#variable-stars');await expect(page.locator('html')).toHaveAttribute('lang',lang,{timeout:20_000});
+ // The scope's literal count, and the result line's count from the map's formatter (31,147 records match an empty search).
+ await expect(page.locator('p:visible',{hasText:'CLEA_VStrs.dat'})).toContainText(`CLEA_VStrs.dat, ${count}`,{timeout:20_000});
+ await expect(page.getByTestId('variable-count')).toContainText(count);
+ await page.close();
 });
 
 test('Front ES1: a ?lang=es-419 preview fetches the Spanish chunk, shows the Spanish shell and settles the language once, before any text',async({page,baseURL})=>{

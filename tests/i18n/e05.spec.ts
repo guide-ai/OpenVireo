@@ -1,6 +1,6 @@
 import {type Page,type Locator} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
-import {SPANISH_LOCALE,langQuery} from '../fixtures/language';
+import {SPANISH_LOCALE,contextLocale,langQuery} from '../fixtures/language';
 import {layoutProblems,type LayoutOptions} from '../fixtures/layoutProblems';
 import {writeFileSync} from 'node:fs';
 import en from '../../src/i18n/en.json' with {type:'json'};
@@ -10,8 +10,8 @@ import {TRANSLATED,e04e05Maps,type LanguageText} from './languageText';
 test.use({locale:SPANISH_LOCALE});
 
 // Front PT4: the spec runs for every translated language (tests/i18n/languageText.ts: its own catalog, originals and maps, never
-// hard-coded text). The Spanish tests keep their titles and assertions; a language before its release (pt-BR) runs the same checks
-// under its own titles in its `?lang=` preview, which beats the es-MX browser language. English and qps run once.
+// hard-coded text). The Spanish tests keep their titles and assertions; Brazilian Portuguese runs the same checks under its own titles in a pt-BR browser (Front PT-REL: an anonymous
+// describe per language sets its browser locale, tests/fixtures/language.ts contextLocale). English and qps run once.
 
 // Front ES7 (docs/I18N.md): exercise E05, the cluster HR diagram and variable stars, in Spanish in an `es-*` browser (a `?lang=es-419` preview load before ES-REL). One
 // walk runs in English, Spanish and the pseudo-locale over the cluster guide, the reference database lab (dataset, point
@@ -23,7 +23,7 @@ test.use({locale:SPANISH_LOCALE});
 // - qps: every visible text is marked ⟦…⟧, with the same exceptions;
 // - views that mirror a written file (`lang="en"`, F2) are left out of both comparisons.
 type Lang='en'|'qps'|LanguageText;
-/** A test title: Spanish keeps its ES7 title; another language names itself and its preview. */
+/** A test title: Spanish keeps its ES7 title; another language names itself and its tag. */
 const title=(L:LanguageText,es:string,other:string)=>L.tag==='es-419'?es:other.replaceAll('<L>',L.entry.englishName).replaceAll('<tag>',L.tag);
 const tagOf=(lang:Lang)=>typeof lang==='string'?lang:lang.tag;
 const E=en as Record<string,string>;
@@ -172,8 +172,8 @@ async function walk(page:Page,lang:Lang,each:(step:string)=>Promise<void>){
  await expect(main(page)).toBeVisible({timeout:30_000});
  for(const [step,run] of STEPS){await run(page,lang);await page.waitForTimeout(200);await each(step);}
 }
-for(const L of TRANSLATED){
- test(title(L,'E05 reads differently in Spanish from English','E05 reads differently in <L> (<tag> preview) from English'),async({browser})=>{
+for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
+ test(title(L,'E05 reads differently in Spanish from English','E05 reads differently in <L> (<tag>) from English'),async({browser})=>{
  test.setTimeout(360_000);
  const seen:Record<'en'|'own',Map<string,Set<string>>>={en:new Map(),own:new Map()};
  for(const lang of ['en','own'] as const){
@@ -187,7 +187,7 @@ for(const L of TRANSLATED){
  if(process.env.E05_DUMP)writeFileSync(process.env.E05_DUMP,[...left].map(([t,step])=>`${step}: ${t}`).join('\n'));
  expect([...left].map(([t,step])=>`${step}: ${t}`)).toEqual([]);
  });
-}
+});
 
 test('qps: every text of the E05 walk is marked, outside identifiers and native mirrors',async({page})=>{
  test.setTimeout(300_000);await page.setViewportSize({width:1440,height:1000});
@@ -237,7 +237,7 @@ const captions=(page:Page,T:(original:string)=>string):Record<string,()=>Promise
 const esc=(text:string)=>text.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&');
 // "View original (English)" (decision 9): every VIREO caption of the walk is VIREO's English, checked one by one, and no Spanish
 // original appears anywhere; OpenVireo's own web text stays Spanish.
-for(const L of TRANSLATED){
+for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const C=L.catalog as Record<string,string>,O=L.originals,vireoIn=vireoOf(L),M=e04e05Maps(L.tag);
  test(title(L,'View original (English) on: every VIREO caption in the E05 walk reads in English, the web text stays Spanish','View original (English) on: every VIREO caption in the E05 walk reads in English, the web text stays <L>'),async({page})=>{
  test.setTimeout(300_000);await page.setViewportSize({width:1440,height:1000});
@@ -258,7 +258,7 @@ for(const L of TRANSLATED){
  expect([...left].map(([t,step])=>`${step}: ${t}`)).toEqual([]);
  });
 
- test(title(L,'Spanish: every VIREO caption in the E05 walk is its Spanish original; English shows the originals unchanged','<L> (<tag> preview): every VIREO caption in the E05 walk is its <L> original; English shows the originals unchanged'),async({browser})=>{
+ test(title(L,'Spanish: every VIREO caption in the E05 walk is its Spanish original; English shows the originals unchanged','<L> (<tag>): every VIREO caption in the E05 walk is its <L> original; English shows the originals unchanged'),async({browser})=>{
  test.setTimeout(360_000);
  for(const lang of ['own','en'] as const){
   const page=await browser.newPage({viewport:{width:1440,height:1000}});
@@ -268,15 +268,15 @@ for(const L of TRANSLATED){
  }
  for(const t of ['Possible Cluster Member','Item','Clusters for Study','Display/Print Data','Observational Data','Load/Plot','View/Print Parameters','Variable Star Data','Simulated Light Curve','Select Cluster Data...'])if(!(SAME_IN[L.tag]?.has(t)??false))expect(vireoIn(t),t).not.toBe(t);
  });
-}
+});
 
 /** Front SC9: the layout check of tests/fixtures/layoutProblems.ts (no local copy), with the options that keep this spec's
  * checks: its old copy was the fixture's default. Run with the CI's DejaVu fonts (docs/I18N.md). */
 const LAYOUT:LayoutOptions={};
-for(const L of TRANSLATED)for(const width of [320,1440])test(title(L,`at ${width} px the Spanish E05 screens lay out without overflow, clipping or crossing`,`at ${width} px the <L> E05 screens lay out without overflow, clipping or crossing`),async({page})=>{
+for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const width of [320,1440])test(title(L,`at ${width} px the Spanish E05 screens lay out without overflow, clipping or crossing`,`at ${width} px the <L> E05 screens lay out without overflow, clipping or crossing`),async({page})=>{
  test.setTimeout(360_000);await page.setViewportSize({width,height:width===320?700:1000});
  const problems=new Map<string,string>();
  await walk(page,L,async step=>{for(const p of await layoutProblems(page,LAYOUT))if(!problems.has(p))problems.set(p,step);
   await page.screenshot({path:test.info().outputPath(`${L.tag}-e05-${width}-${step.replace(/\W+/g,'-')}.png`),fullPage:false});});
  expect([...problems].map(([p,step])=>`${step}: ${p}`)).toEqual([]);
-});
+});});

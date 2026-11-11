@@ -1,6 +1,6 @@
 import {type Page,type Locator} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
-import {SPANISH_LOCALE,langQuery} from '../fixtures/language';
+import {SPANISH_LOCALE,contextLocale,langQuery} from '../fixtures/language';
 import {layoutProblems,type LayoutOptions} from '../fixtures/layoutProblems';
 import {HEADER,CONTROL,PLR} from '../fixtures/pulsar-saved-rows-controls';
 import en from '../../src/i18n/en.json' with {type:'json'};
@@ -13,8 +13,8 @@ import {PULSAR_ACTIVATE_LITERALS as ACTIVATE} from '../../src/core/pulsarAnalysi
 test.use({locale:SPANISH_LOCALE});
 
 // Front PT6: the spec runs for every translated language (tests/i18n/languageText.ts: its own catalog, originals and pulsar maps,
-// never hard-coded text). The Spanish tests keep their titles and assertions; a language before its release (pt-BR) runs the same
-// checks under its own titles in its `?lang=` preview, which beats the es-MX browser language. English and qps run once.
+// never hard-coded text). The Spanish tests keep their titles and assertions; Brazilian Portuguese runs the same checks under its own titles in a pt-BR browser (Front PT-REL: an anonymous
+// describe per language sets its browser locale, tests/fixtures/language.ts contextLocale). English and qps run once.
 // Front ES8b (docs/I18N.md): exercise E06, the recorded pulsar analysis, in Spanish in an `es-*` browser (a `?lang=es-419` preview load before ES-REL). One walk
 // through the student flow runs in English, Spanish and the pseudo-locale: the empty route, the Pulsar guide, the supplied saved
 // measurement file viewer (candidate, in use, Find, not found, refusal), a recording that has no rows (VIREO's "No Current Data to
@@ -31,7 +31,7 @@ test.use({locale:SPANISH_LOCALE});
 // Recorded data stays English: the pulsar name of the recording, the stored header and rows of the saved-measurement file, the
 // file names and the Review table's cells.
 type Lang='en'|'qps'|LanguageText;
-/** A test title: Spanish keeps its ES8b title; another language names itself and its preview. */
+/** A test title: Spanish keeps its ES8b title; another language names itself and its tag. */
 const title=(L:LanguageText,es:string,other:string)=>L.tag==='es-419'?es:other.replaceAll('<L>',L.entry.englishName).replaceAll('<tag>',L.tag);
 const tagOf=(lang:Lang)=>typeof lang==='string'?lang:lang.tag;
 const E=en as Record<string,string>;
@@ -156,7 +156,7 @@ async function walk(page:Page,lang:Lang,each:(step:string)=>Promise<void>,steps:
  for(const [step,run] of steps){await run(page,lang);await page.waitForTimeout(150);await each(step);}
 }
 
-for(const L of TRANSLATED)test(title(L,'E06 reads differently in Spanish from English: guide, saved file viewer, recording, controls, print, records, Review, Save, export, append and clear','E06 reads differently in <L> (<tag> preview) from English: guide, saved file viewer, recording, controls, print, records, Review, Save, export, append and clear'),async({browser})=>{
+for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});test(title(L,'E06 reads differently in Spanish from English: guide, saved file viewer, recording, controls, print, records, Review, Save, export, append and clear','E06 reads differently in <L> (<tag>) from English: guide, saved file viewer, recording, controls, print, records, Review, Save, export, append and clear'),async({browser})=>{
  test.setTimeout(360_000);
  const seen:Record<'en'|'own',Map<string,Set<string>>>={en:new Map(),own:new Map()};
  for(const lang of ['en','own'] as const){
@@ -168,7 +168,7 @@ for(const L of TRANSLATED)test(title(L,'E06 reads differently in Spanish from En
  const left=new Map<string,string>();
  for(const [step,list] of seen.own)for(const t of list)if(english.has(bare(t))&&!same(bare(t),L)&&!left.has(t))left.set(t,step);
  expect([...left].map(([t,step])=>`${step}: ${t}`)).toEqual([]);
-});
+});});
 
 test('qps: every text of the E06 walk is marked, outside recorded data',async({page})=>{
  test.setTimeout(300_000);await page.setViewportSize({width:1440,height:1000});
@@ -205,7 +205,7 @@ const captions=(page:Page,tr:(original:string,ctx?:string)=>string):Record<strin
  'clear unsaved question':async()=>{await expect(id(page,'pulsar-clear-dialog').locator('strong')).toHaveText(tr(NS.clearUnsavedCaption));await expect(id(page,'pulsar-clear-unsaved-text')).toHaveText(tr(NS.clearUnsavedText));},
  'clear confirm question':async()=>{await expect(id(page,'pulsar-clear-dialog').locator('p').first()).toHaveText(tr(NS.clearConfirmText));},
 });
-for(const L of TRANSLATED){
+for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const S=L.catalog as Record<string,string>,O=L.originals,R=e06Maps(L.tag),M=R.pulsar as Record<string,string>,vireoIn=vireoOf(L);
  test(title(L,'View original (English) on: every VIREO caption in the E06 walk reads in English, the web text stays Spanish','View original (English) on: every VIREO caption in the E06 walk reads in English, the web text stays <L>'),async({page})=>{
  test.setTimeout(300_000);await page.setViewportSize({width:1440,height:1000});
@@ -226,7 +226,7 @@ for(const L of TRANSLATED){
  expect([...left].map(([t,step])=>`${step}: ${t}`)).toEqual([]);
  });
 
- test(title(L,'Spanish: every VIREO caption in the E06 walk is its Spanish original; English shows the originals unchanged','<L> (<tag> preview): every VIREO caption in the E06 walk is its <L> original; English shows the originals unchanged'),async({browser})=>{
+ test(title(L,'Spanish: every VIREO caption in the E06 walk is its Spanish original; English shows the originals unchanged','<L> (<tag>): every VIREO caption in the E06 walk is its <L> original; English shows the originals unchanged'),async({browser})=>{
  test.setTimeout(360_000);
  for(const lang of ['own','en'] as const){
   const page=await browser.newPage({viewport:{width:1440,height:1000}});
@@ -241,7 +241,7 @@ for(const L of TRANSLATED){
  // The exists box's pieces are concatenated around the file name (Spanish keeps VIREO's straight quotes; Portuguese uses “ ”).
  expect(vireoIn(NS.existsText('',p=>p).replace(/^The File /,''),'fragment')).toContain(L.tag==='es-419'?'"Cancelar"':`“${vireoIn('Cancel')}”`);
  });
-}
+});
 
 /** Front SC9: the layout check of tests/fixtures/layoutProblems.ts (no local copy), with the options that keep this spec's
  * checks: its old copy named the elements that stick out when the page overflows. Run with the CI's DejaVu fonts
@@ -249,13 +249,13 @@ for(const L of TRANSLATED){
 const LAYOUT:LayoutOptions={explainOverflow:true};
 /** ES8B_LAYOUT_LANG=en|qps|<tag> runs the layout walk in another language (for comparison). */
 const layoutLang=(L:LanguageText):Lang=>{const v=process.env.ES8B_LAYOUT_LANG;return !v?L:v==='en'||v==='qps'?v:textOf(v);};
-for(const L of TRANSLATED)for(const width of [320,1440])test(title(L,`at ${width} px the Spanish E06 screens lay out without overflow, clipping or crossing`,`at ${width} px the <L> E06 screens lay out without overflow, clipping or crossing`),async({page})=>{
+for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const width of [320,1440])test(title(L,`at ${width} px the Spanish E06 screens lay out without overflow, clipping or crossing`,`at ${width} px the <L> E06 screens lay out without overflow, clipping or crossing`),async({page})=>{
  test.setTimeout(360_000);await page.setViewportSize({width,height:width===320?700:1000});
  const problems=new Map<string,string>();
  await walk(page,layoutLang(L),async step=>{for(const p of await layoutProblems(page,LAYOUT))if(!problems.has(p))problems.set(p,step);
   await page.screenshot({path:test.info().outputPath(`${L.tag==='es-419'?'es':L.tag}-e06-${width}-${step.replace(/\W+/g,'-')}.png`),fullPage:false});});
  expect([...problems].map(([p,step])=>`${step}: ${p}`)).toEqual([]);
-});
+});});
 
 // ---------------------------------------------------------------------------------------------------------------------------
 // A receiver capture (model data) followed into the analysis page: the raw .PLR download dialog, the verified Save dialog and
@@ -308,7 +308,7 @@ const memoryCaptions=(page:Page,tr:(original:string,ctx?:string)=>string):Record
 });
 
 // qps runs with the Spanish test only (once).
-for(const L of TRANSLATED)test(title(L,'E06 receiver capture: the raw download, verified Save and Load question read differently in Spanish; qps marks every text','E06 receiver capture: the raw download, verified Save and Load question read differently in <L> (<tag> preview)'),async({browser})=>{
+for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});test(title(L,'E06 receiver capture: the raw download, verified Save and Load question read differently in Spanish; qps marks every text','E06 receiver capture: the raw download, verified Save and Load question read differently in <L> (<tag>)'),async({browser})=>{
  test.setTimeout(420_000);
  const withQps=L.tag==='es-419',vireoIn=vireoOf(L);
  const seen:Record<'en'|'own'|'qps',Map<string,Set<string>>>={en:new Map(),own:new Map(),qps:new Map()};
@@ -325,4 +325,4 @@ for(const L of TRANSLATED)test(title(L,'E06 receiver capture: the raw download, 
  const unmarked=new Map<string,string>();
  for(const [step,list] of seen.qps)for(const t of list)if(!/[⟦⟧]/.test(t)&&!data(bare(t))&&!unmarked.has(t))unmarked.set(t,step);
  expect([...unmarked].map(([t,step])=>`qps: ${step}: ${t}`)).toEqual([]);
-});
+});});

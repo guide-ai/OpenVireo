@@ -35,8 +35,9 @@ import {OBJECT_X_SESSION_PT} from './maps/objectXSession';
 import {HELP_VIEWER_PT} from './maps/helpViewer';
 import {WEB_HELP_PT} from './maps/webHelp';
 /** Front PT0 [W]: the Brazilian Portuguese (pt-BR) bundle (docs/I18N.md, "Brazilian Portuguese: the folder, lints and shell
- * (PT0)"). Partial until its release (src/i18n/languages.json `released:false`): only a `?lang=pt-BR` preview reaches it, and
- * every string it lacks is English. The production build splits it by route area like Spanish (scripts/i18n-split.mjs parses
+ * (PT0)"). It was partial until its release (PT0–PT-HELP, behind a `?lang=pt-BR` preview); since Front PT-REL
+ * (src/i18n/languages.json `released:true`) every pt and pt-* browser opens it, and its catalog and every map are complete
+ * (src/i18n/pt-br/pt-br.test.ts). The production build splits it by route area like Spanish (scripts/i18n-split.mjs parses
  * this manifest); Vitest imports it whole. Translations are web adaptations by OpenVireo; they never claim to be CLEA's, and
  * CLEA's bytes, hashes and provenance are unchanged. */
 export const PORTUGUESE:LocaleBundle=Object.freeze({
