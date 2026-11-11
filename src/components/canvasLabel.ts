@@ -1,5 +1,5 @@
 /** Front SC11 (scripts plan §2.1): canvas text names its own font, so the page's :lang() fallbacks never reach it. Under a
- * language with a script stack (ja, zh, hi: `--ov-font-script` of src/theme/scripts.css, inherited by the canvas) that stack
+ * language with a script stack (ja, zh, hi: `--ov-font-script`, the `:lang()` script stack of the theme's scripts stylesheet, inherited by the canvas) that stack
  * comes first, so kanji, hanzi and Devanagari get the regional system face, and the label's background grows to the text's
  * ink (Devanagari reaches above and below the 16 px band). Without one (English, Spanish, Portuguese, Russian: Cyrillic is in
  * every sans-serif) the font and the 16 px band are exactly the ones before. The background is as wide as the text drawn

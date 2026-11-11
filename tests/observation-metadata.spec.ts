@@ -13,6 +13,7 @@ test('a loaded .SSP shows its file-name ID, file-time JD and header pointing; th
  await page.getByRole('button',{name:'Open observation results',exact:true}).click();
  const dialog=page.locator('.observation-dialog');await expect(dialog).toBeVisible();
  await expect(page.getByTestId('observation-object')).toHaveText('HD1234');// not the header's "Header name"
+ await expect(page.getByTestId('class-observation-id-replaced')).toHaveCount(0);
  await expect(page.getByTestId('observation-jd')).toHaveText(/^24\d{5}\.\d{6}$/);
  await expect(page.getByTestId('observation-ra')).toHaveText('12h 30m 00.00s');
  await expect(page.getByTestId('observation-dec')).toHaveText(`-02° 30' 00.0"`);
@@ -32,4 +33,14 @@ test('a spectrum classified directly from the star exposure has the header point
  await expect(page.getByTestId('observation-jd')).toHaveText('(empty)');
  await expect(page.getByTestId('observation-ra')).toHaveText(/^\d{2}h \d{2}m \d{2}\.\d{2}s$/);
  await expect(page.getByTestId('observation-dec')).toHaveText(/^[+-]\d{2}° \d{2}' \d{2}\.\d"$/);
+});
+
+// Front SC11 review: the ID shows ? for characters VIREO's results cannot hold, and Classify now says so (it was silent).
+test('a file name ID outside VIREO\'s character set shows ? and a note',async({page})=>{
+ await page.goto('/#classification');await ready(page);
+ await page.getByLabel('Import SP or SSP for visual classification (up to 2 MiB)',{exact:true}).setInputFiles({name:'star_星HD1.ssp',mimeType:'text/plain',buffer:ssp()});
+ await ready(page);
+ await expect(page.getByTestId('class-observation-id-replaced')).toContainText('shows ? in place of characters');
+ await page.getByRole('button',{name:'Open observation results',exact:true}).click();
+ await expect(page.getByTestId('observation-object')).toHaveText('?HD1');
 });

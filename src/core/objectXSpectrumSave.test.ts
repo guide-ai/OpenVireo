@@ -2,7 +2,7 @@ import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
 import {parseHtl} from './hotList';
 import {objectXDataLabel,objectXTargets} from './objectXLab';
-import {OBJECT_X_HEADER_MAGNITUDE,objectXHeaderObject,objectXSpectrumBytes,objectXSpectrumFileName,starSpectrumFileName} from './exposureSpectrum';
+import {OBJECT_X_HEADER_MAGNITUDE,objectXHeaderObject,objectXHeaderReplaces,objectXSpectrumBytes,objectXSpectrumFileName,starSpectrumFileName} from './exposureSpectrum';
 import {observationStem} from './observationMetadata';
 import {parseLegacySpectrumFile} from './legacySpectrumFile';
 import {OBJECT_X_STAR_TEMPLATES} from '../io/objectXSpectrometerInputs';
@@ -45,5 +45,9 @@ describe('Object X .SSP save',()=>{
   expect(objectXHeaderObject('ObjX-Ana, María-S01')).toBe('ObjX-Ana_ Mar_a-S01');
   expect(objectXHeaderObject('ObjX-'+'x'.repeat(40))).toHaveLength(24);
   expect(objectXHeaderObject('  ')).toBe('UNKNOWN');
+ });
+ it('Front SC11 review: reports a replacement only when the header written shows one',()=>{
+  for(const label of ['ObjX-Ana, María-S01','ObjX-a,b','ObjX-\u00e9','\u00a0ObjX-a','ObjX-a\u3000','ObjX-\u671b\u9060\u93e1','\u3000'])expect(objectXHeaderReplaces(label),label).toBe(true);
+  for(const label of ['ObjX-Ana-S01',' ObjX-a ','ObjX-'+'x'.repeat(19)+'\u00e9,','  ',''])expect(objectXHeaderReplaces(label),label).toBe(false);
  });
 });

@@ -13,7 +13,7 @@ import {INITIAL_CAMERA_PALETTE} from './core/cameraPalette';
 import {CAMERA_EXTRACTS,findCameraExtract,loadCameraCatalog,type CameraCatalogMode,type CameraCatalogSource} from './io/cameraCatalog';
 import type {AccessReason} from './core/instrumentAccess';
 import {writeCameraFits,cameraFitsFileName,type CameraFitsContext} from './core/fitsWriter';
-import {writeNativeCameraFits,nativeCameraFitsFileName,nativeCameraIdSavable,nativeFitsDetector,NATIVE_FITS_DETECTOR_MAX} from './core/cameraFitsNative';// Front R1
+import {writeNativeCameraFits,nativeCameraFitsFileName,nativeCameraIdSavable,nativeFitsDetectorReplaces} from './core/cameraFitsNative';// Front R1
 import {cameraCurrentName,type ShownCurrentObject} from './core/currentObject';
 import {cameraCatalogReference} from './core/cameraCatalogReference';
 import type {OpticalIndex} from './core/opticalTelescope';
@@ -230,7 +230,7 @@ function CameraControl({scopeUse,objectXHidden=null,vireoId='',showObjectId=fals
   const detector=cameraParameters[image.exposure.recipe.camera].detector;
   try{bytes=native?writeNativeCameraFits(image.exposure,image.jd,vireoId||undefined,currentName,detector):writeCameraFits(image.exposure,context);}catch{setSaveError(M.saveFailed);return;}
   // Front SC11: the DETECTOR card writes '?' for a character outside printable ASCII (nativeFitsDetector); say so instead of silently.
-  if(native&&detector!==undefined&&nativeFitsDetector(detector)!==detector.slice(0,NATIVE_FITS_DETECTOR_MAX))setSaveNotice(M.saveDetectorAscii);
+  if(native&&detector!==undefined&&nativeFitsDetectorReplaces(detector))setSaveNotice(M.saveDetectorAscii);
   const url=URL.createObjectURL(new Blob([bytes as Uint8Array<ArrayBuffer>],{type:'application/fits'})),a=document.createElement('a');
   a.href=url;a.download=native?nativeCameraFitsFileName(vireoId||undefined,currentName):cameraFitsFileName(image.exposure,context);document.body.append(a);a.click();a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),0);
  }

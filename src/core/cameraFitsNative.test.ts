@@ -4,7 +4,7 @@ import {composeCameraExposure} from './cameraExposure';
 import {readVizierCatalog,selectVizierCatalog,wholeSkySelection} from './vizierNomad';
 import {parseFitsImage,fitsPixel} from './fitsImage';
 import {opticalProfile} from './opticalTelescope';
-import {nativeCameraFitsCards,nativeCameraFitsFileName,nativeFitsDetector,nativeFitsSexagesimal,nativeLogical,nativeNumeric,nativeString,writeNativeCameraFits} from './cameraFitsNative';
+import {nativeCameraFitsCards,nativeCameraFitsFileName,nativeFitsDetector,nativeFitsDetectorReplaces,nativeFitsSexagesimal,nativeLogical,nativeNumeric,nativeString,writeNativeCameraFits} from './cameraFitsNative';
 
 const recorded=new Uint8Array(readFileSync(new URL('../../tests/fixtures/vizier/nomad-56.75+24.12-r0.01.xml',import.meta.url)));
 const selection=selectVizierCatalog(readVizierCatalog(recorded,{catalog:'I/297',band:'R',epochOffsetYears:0,queryBrightMagnitude:1,queryFaintMagnitude:21.5}),wholeSkySelection(21.5));
@@ -65,6 +65,9 @@ describe('native DETECTOR card',()=>{
  test('[W] non-ASCII characters are written as ?, one per character',()=>{
   expect(nativeFitsDetector('Cámara Ω1')).toBe('C?mara ?1');expect(nativeFitsDetector('star 🌟')).toBe('star ?');expect(nativeFitsDetector('a\u007fb')).toBe('a?b');
   expect(nativeFitsDetector('Y'.repeat(45))).toBe('Y'.repeat(40));
+  // Front SC11 review: the Save notice is shown exactly when a '?' replaced a character the card keeps.
+  for(const n of ['Cámara Ω1','star 🌟','a\u007fb','Y'.repeat(39)+'🌟'])expect(nativeFitsDetectorReplaces(n),n).toBe(true);
+  for(const n of ['SITe 2048 CCD','','Y'.repeat(40)+'é','a?b'])expect(nativeFitsDetectorReplaces(n),n).toBe(false);
   expect(card(nativeCameraFitsCards(exposure,jd,undefined,undefined,'Cámara'))).toMatch(/^DETECTOR= 'C\?mara  ' {11}\/ {48}$/);
  });
  test('the header length and the 2880-byte block are unchanged',()=>{
