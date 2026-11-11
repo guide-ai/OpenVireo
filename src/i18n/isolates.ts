@@ -9,7 +9,10 @@
 export const FSI='\u2068';
 /** U+2066 LEFT-TO-RIGHT ISOLATE: the content is left to right whatever it holds (English text shown in a right-to-left page). */
 export const LRI='\u2066';
-/** U+2069 POP DIRECTIONAL ISOLATE: closes FSI or LRI. */
+/** U+2067 RIGHT-TO-LEFT ISOLATE (Front RT9): the content is right to left whatever it holds (an Arabic language name inside an
+ * English sentence: «العربية (Arabic)»). */
+export const RLI='\u2067';
+/** U+2069 POP DIRECTIONAL ISOLATE: closes FSI, LRI or RLI. */
 export const PDI='\u2069';
 /** Every bidi control a string may carry: LRM, RLM, ALM, the embeddings and overrides (U+202A–E), the isolates (U+2066–9). */
 export const BIDI_CONTROLS=/[\u200e\u200f\u061c\u202a-\u202e\u2066-\u2069]/u;
@@ -47,6 +50,9 @@ export const firstStrongIsolate=(text:string):string=>isolate(FSI,text);
 /** English text inside a right-to-left page (a fallback key, map leaf or VIREO original): LRI…PDI, so "Save As…" keeps its
  * ellipsis at the right and "RA:" its colon. */
 export const ltrIsolate=(text:string):string=>isolate(LRI,text);
+/** Front RT9: text of a known direction inside a sentence of the other direction (a language's name in the reload dialog): RLI…PDI
+ * or LRI…PDI. Callers use it only when the two directions differ, so a left-to-right page naming a left-to-right language is unchanged. */
+export const directionalIsolate=(text:string,direction:'ltr'|'rtl'):string=>isolate(direction==='rtl'?RLI:LRI,text);
 
 /** A message map with its English made left to right for a right-to-left load (src/i18n/registry.ts): `strings` wraps every
  * string leaf, and every function's string result is wrapped either way (a map function returns English text with its data).

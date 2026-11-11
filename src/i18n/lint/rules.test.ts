@@ -13,9 +13,9 @@ const dataOf=(f:Fixture):LintData=>f.glossary?{glossary:f.glossary}:{};
 const name=(f:Fixture,which:'good'|'bad')=>`${f.profile} ${f.rule}${f.note?` (${f.note})`:''} ${which}: ${f[which]}`;
 describe('Front SC4: per-locale lint profiles',()=>{
  it('has one profile per planned language, each with the register setting of REGISTER',()=>{
-  expect(Object.keys(PROFILES)).toEqual(['ja','hi','zh-Hans','zh-Hant','ru','es-419','pt-BR','fr']);
-  expect(REGISTER).toEqual({ja:'desu-masu',hi:'aap',ru:'vy',zh:'ni',es:'tu',pt:'voce',fr:'vous'});// decided by the user on 2026-11-09 (AGENTS.md; plan §13, §14; Spanish tú: decision 6; pt-BR plan §3.1; French vous: FR0, AGENTS.md 2026-11-11)
-  expect(PROFILE_IDS.map(id=>PROFILES[id].register.setting)).toEqual(['desu-masu','aap','ni','ni','vy','tu','voce','vous']);
+  expect(Object.keys(PROFILES)).toEqual(['ja','hi','zh-Hans','zh-Hant','ru','es-419','pt-BR','fr','ar','he','fa']);
+  expect(REGISTER).toEqual({ja:'desu-masu',hi:'aap',ru:'vy',zh:'ni',es:'tu',pt:'voce',fr:'vous',ar:'singular',he:'plural',fa:'shoma'});// decided by the user on 2026-11-09 (AGENTS.md; plan §13, §14; Spanish tú: decision 6; pt-BR plan §3.1; French vous: FR0, AGENTS.md 2026-11-11; Arabic singular neutral: user, 2026-11-11, RT8; he and fa: proposals, no such language planned)
+  expect(PROFILE_IDS.map(id=>PROFILES[id].register.setting)).toEqual(['desu-masu','aap','ni','ni','vy','tu','voce','vous','singular','plural','shoma']);
  });
  it('declares the plural categories that Intl.PluralRules gives each language',()=>{
   for(const id of PROFILE_IDS)expect(PROFILES[id].pluralCategories,id).toEqual(pluralCategories(id));

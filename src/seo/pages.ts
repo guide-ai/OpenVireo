@@ -6,7 +6,8 @@
  * whose home page /es/ is a static page), with hreflang alternates, Open Graph locales and a sitemap that lists them all.
  * Front PT-SEO: Brazilian Portuguese under /pt-br/ (home /pt-br/), with no change here: a row of the table. */
 import {SITE_URL,labUrl} from './labs.ts';
-import {ENGLISH,SEO_LANGUAGES,pathOf,type PageKey,type SeoLab,type SeoLanguage} from './languages.ts';
+import {ENGLISH,SEO_LANGUAGES,pathOf,seoDirection,type PageKey,type SeoLab,type SeoLanguage} from './languages.ts';
+import {LANGUAGES,type LanguageEntry,type TextDirection} from '../i18n/languages.ts';
 
 export const SITE_NAME='OpenVireo';
 export const OG_IMAGE=ENGLISH.ogImage;
@@ -76,20 +77,26 @@ export function homeBoot(m:Readonly<Record<string,string>>):string{
   `<p>Loading OpenVireo…</p></div>`;
 }
 
-/** The links to this page in the other languages, each named in its own language. A home page that is the app (English) is
- * linked with `?lang=<tag>`, so a reader with a Spanish browser or stored choice who asks for English gets English there. */
-const languageLinks=(language:SeoLanguage,key:PageKey)=>SEO_LANGUAGES.filter(l=>l!==language)
- .map(l=>`<a href="${esc(key==='home'&&!l.home?`/?lang=${l.tag}`:pathOf(l,key))}" hreflang="${l.tag}" lang="${l.tag}">${esc(l.ui.languageName)}</a>`).join('');
+/** Front RT9: ` dir="…"` for an element whose direction differs from its surroundings' (`within`), and nothing otherwise, so a
+ * left-to-right page and its left-to-right links are byte-identical to the pages before right-to-left plumbing. */
+const dirAttribute=(own:TextDirection,within:TextDirection)=>own===within?'':` dir="${own}"`;
 
-function page({key,title,description,body,ld,language}:{key:PageKey;title:string;description:string;body:string;ld:unknown;language:SeoLanguage}):string{
+/** The links to this page in the other languages, each named in its own language. A home page that is the app (English) is
+ * linked with `?lang=<tag>`, so a reader with a Spanish browser or stored choice who asks for English gets English there. Front RT9:
+ * a link whose language runs the other way from the page carries its `dir` beside its `lang`. Exported for the tests. */
+export const languageLinks=(language:SeoLanguage,key:PageKey,registry:readonly LanguageEntry[]=LANGUAGES,languages:readonly SeoLanguage[]=SEO_LANGUAGES)=>languages.filter(l=>l!==language)
+ .map(l=>`<a href="${esc(key==='home'&&!l.home?`/?lang=${l.tag}`:pathOf(l,key))}" hreflang="${l.tag}" lang="${l.tag}"${dirAttribute(seoDirection(l,registry),seoDirection(language,registry))}>${esc(l.ui.languageName)}</a>`).join('');
+
+/** Front RT9: a page's `<html dir>` is written only for a right-to-left language (the document default is ltr). */
+function page({key,title,description,body,ld,language,registry}:{key:PageKey;title:string;description:string;body:string;ld:unknown;language:SeoLanguage;registry:readonly LanguageEntry[]}):string{
  const ui=language.ui;
- return `<!doctype html>\n<html lang="${language.tag}"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>`+
+ return `<!doctype html>\n<html lang="${language.tag}"${dirAttribute(seoDirection(language,registry),'ltr')}><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>`+
   `<meta name="theme-color" content="#0b2430"/><meta name="color-scheme" content="light dark"/>`+
   `<title>${esc(title)}</title><meta name="description" content="${esc(description)}"/>`+
   sharedHead({key,title,description,language})+
   `<link rel="stylesheet" href="/labs/labs.css"/><script type="application/ld+json">${ldJson(ld)}</script></head>`+
   `<body><header class="top"><a class="brand" href="${pathOf(language,'home')}"><span aria-hidden="true">✳</span> ${SITE_NAME}</a>`+
-  `<nav aria-label="${esc(ui.siteNav)}"><a href="${pathOf(language,'labs')}">${esc(ui.allLabs)}</a>${languageLinks(language,key)}<a class="open" href="${esc(openObservatoryHref(language))}">${esc(ui.openObservatory)}</a></nav></header>`+
+  `<nav aria-label="${esc(ui.siteNav)}"><a href="${pathOf(language,'labs')}">${esc(ui.allLabs)}</a>${languageLinks(language,key,registry)}<a class="open" href="${esc(openObservatoryHref(language))}">${esc(ui.openObservatory)}</a></nav></header>`+
   `<main>${body}</main>`+
   `<footer><p>${esc(ui.about)}</p><p>${esc(ui.platform)}</p></footer>`+
   `</body></html>\n`;
@@ -107,7 +114,7 @@ const crumbNav=(language:SeoLanguage,items:{name:string;path:string}[],current:s
 /** The app address that opens a lab's guide (#lab=<slug>) in this language. */
 export const openLabHref=(language:SeoLanguage,slug:SeoLab['slug'])=>`${language.app}#lab=${slug}`;
 
-export function labPage(lab:SeoLab,language:SeoLanguage=ENGLISH):string{
+export function labPage(lab:SeoLab,language:SeoLanguage=ENGLISH,registry:readonly LanguageEntry[]=LANGUAGES):string{
  const ui=language.ui,path=pathOf(language,lab.slug),home=pathOf(language,'home'),labs=pathOf(language,'labs');
  const others=language.labs.filter(l=>l.slug!==lab.slug);
  const body=crumbNav(language,[{name:SITE_NAME,path:home},{name:ui.labsCrumb,path:labs}],lab.name)+
@@ -122,7 +129,7 @@ export function labPage(lab:SeoLab,language:SeoLanguage=ENGLISH):string{
    teaches:[...lab.learn],isBasedOn:CREDIT,isPartOf:{'@type':'WebSite',name:SITE_NAME,url:SITE_URL+'/'}},
   crumbs([{name:SITE_NAME,path:home},{name:ui.labsCrumb,path:labs},{name:lab.name,path}]),
  ]};
- return page({key:lab.slug,title:lab.title,description:lab.description,body,ld,language});
+ return page({key:lab.slug,title:lab.title,description:lab.description,body,ld,language,registry});
 }
 
 export const LABS_INDEX_TITLE=ENGLISH.labsIndex.title;
@@ -130,7 +137,7 @@ export const LABS_INDEX_DESCRIPTION=ENGLISH.labsIndex.description;
 
 const cards=(language:SeoLanguage)=>`<ul class="cards">${language.labs.map(l=>`<li><a href="${pathOf(language,l.slug)}"><strong>${esc(l.name)}</strong><span>${esc(l.description)}</span></a></li>`).join('')}</ul>`;
 
-export function labsIndexPage(language:SeoLanguage=ENGLISH):string{
+export function labsIndexPage(language:SeoLanguage=ENGLISH,registry:readonly LanguageEntry[]=LANGUAGES):string{
  const x=language.labsIndex,home=pathOf(language,'home'),labs=pathOf(language,'labs');
  const body=crumbNav(language,[{name:SITE_NAME,path:home}],language.ui.labsCrumb)+
   `<p class="eyebrow">${esc(x.eyebrow)}</p><h1>${esc(x.heading)}</h1><p class="lead">${esc(x.lead)}</p>`+cards(language)+
@@ -139,12 +146,12 @@ export function labsIndexPage(language:SeoLanguage=ENGLISH):string{
   {'@type':'ItemList',name:x.listName,itemListElement:language.labs.map((l,i)=>({'@type':'ListItem',position:i+1,name:l.name,url:SITE_URL+pathOf(language,l.slug)}))},
   crumbs([{name:SITE_NAME,path:home},{name:language.ui.labsCrumb,path:labs}]),
  ]};
- return page({key:'labs',title:x.title,description:x.description,body,ld,language});
+ return page({key:'labs',title:x.title,description:x.description,body,ld,language,registry});
 }
 
 /** The static home page of a language whose home is not the app (Spanish: /es/, Brazilian Portuguese: /pt-br/). It opens the app in its language through
  * `?lang=<tag>`, which applies to that load only (docs/I18N.md), and links the same page in the other languages. */
-export function languageHomePage(language:SeoLanguage):string{
+export function languageHomePage(language:SeoLanguage,registry:readonly LanguageEntry[]=LANGUAGES):string{
  const h=language.home;
  if(!h)throw new Error(`${language.tag}: its home page is the app`);
  const body=`<p class="eyebrow">${esc(h.eyebrow)}</p><h1>${esc(h.heading)}</h1><p class="lead">${esc(h.lead)}</p>`+
@@ -156,7 +163,7 @@ export function languageHomePage(language:SeoLanguage):string{
   applicationCategory:'EducationalApplication',operatingSystem:h.operatingSystem,inLanguage:language.tag,
   isAccessibleForFree:true,offers:{'@type':'Offer',price:'0',priceCurrency:'USD'},isBasedOn:CREDIT,
  }]};
- return page({key:'home',title:h.title,description:h.description,body,ld,language});
+ return page({key:'home',title:h.title,description:h.description,body,ld,language,registry});
 }
 
 const PAGE_KEYS:readonly PageKey[]=['home','labs',...ENGLISH.labs.map(l=>l.slug)];
