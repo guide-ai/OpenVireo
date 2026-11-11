@@ -4,6 +4,7 @@ import en from './en.json';
 import type {MessageParameters} from './params.generated';
 import type {UiLanguage} from './locale';
 import type {BundleMaps,MapId} from './maps';
+import {firstStrongIsolate,hasRtlLetter,ltrIsolate} from './isolates';
 export type MessageKey=keyof typeof en;
 export type PlainMessageKey={[K in MessageKey]:MessageParameters[K]extends never?K:never}[MessageKey];
 type ParameterNames<K extends MessageKey>=K extends keyof MessageParameters?MessageParameters[K]:never;
@@ -22,6 +23,10 @@ type CatalogOptions=Readonly<{
  numberLocale?:string;
  /** Front PT-REL: replaces the number locale's group separator in formatNumber (the registry's `thousands`, U+202F for pt-BR). */
  thousands?:string;
+ /** Front RT4: a right-to-left load (src/i18n/active.ts, from the language's <html dir>). `t` then puts each parameter in
+  * FSI…PDI, and a text with no right-to-left letter of its own (a key that falls back to English among them) in LRI…PDI
+  * (src/i18n/isolates.ts). Absent or false: `t` is unchanged. */
+ rtl?:boolean;
 }>;
 /** Explicit instances allow later language providers without global mutation.
  * Only presentation consumes them; inputs, original labels, journals and files
@@ -30,7 +35,7 @@ type CatalogOptions=Readonly<{
 export function createI18n(messages:Readonly<Record<MessageKey,string>>,language:string,options?:CatalogOptions&Readonly<{fallback?:false}>):I18n;
 export function createI18n(messages:Readonly<Partial<Record<MessageKey,string>>>,language:string,options:CatalogOptions&Readonly<{fallback:boolean}>):I18n;
 export function createI18n(messages:Readonly<Partial<Record<MessageKey,string>>>,language:string,options:CatalogOptions={}):I18n{return build(messages,language,options);}
-function build(messages:Readonly<Partial<Record<MessageKey,string>>>,language:string,{fallback=false,numberLocale=language,thousands}:CatalogOptions){
+function build(messages:Readonly<Partial<Record<MessageKey,string>>>,language:string,{fallback=false,numberLocale=language,thousands,rtl=false}:CatalogOptions){
  const keys=Object.keys(en) as MessageKey[];
  if(!messages||typeof messages!=='object'||Object.keys(messages).some(k=>!Object.hasOwn(en,k))||(!fallback&&(Object.keys(messages).length!==keys.length||keys.some(k=>!Object.hasOwn(messages,k)))))throw new Error('Invalid message catalog keys');
  for(const key of keys)if(Object.hasOwn(messages,key)&&(typeof messages[key]!=='string'||parameters(messages[key]!).join('|')!==parameters(en[key]).join('|')))throw new Error(`Invalid message parameters: ${key}`);
@@ -38,7 +43,14 @@ function build(messages:Readonly<Partial<Record<MessageKey,string>>>,language:st
  const translate=((key:MessageKey,values:Readonly<Record<string,string|number>>={})=>{
   if(!Object.hasOwn(catalog,key))throw new Error('Unknown message key');
   const text=catalog[key];for(const name of parameters(text))if(!Object.hasOwn(values,name)||!['string','number'].includes(typeof values[name]))throw new Error(`Missing message parameter: ${key}.${name}`);
-  return text.replace(/\{(\w+)\}/g,(_,name:string)=>String(values[name]));
+  if(!rtl)return text.replace(/\{(\w+)\}/g,(_,name:string)=>String(values[name]));
+  // Front RT4: in a right-to-left load each value keeps its own order ("-12.5", "Hubble.HTL", an Arabic name), and a text with no
+  // right-to-left letter of its own (an English fallback, a format such as "{a}: {b}" or "{n} km/s") is left to right as a whole,
+  // so its pieces keep their order ("Save As…", "NF: NOMAD R"). A translated format whose values bring right-to-left letters is
+  // left to the right-to-left paragraph ("{name}: {value}" with an Arabic name reads name first); an English fallback never is.
+  let rtlValue=false;
+  const out=text.replace(/\{(\w+)\}/g,(_,name:string)=>{const value=String(values[name]);if(!rtlValue&&hasRtlLetter(value))rtlValue=true;return firstStrongIsolate(value);});
+  return hasRtlLetter(text.replace(/\{\w+\}/g,''))||(rtlValue&&Object.hasOwn(messages,key))?out:ltrIsolate(out);
  })as Translate;
  const decimal=new Intl.NumberFormat(numberLocale,{minimumFractionDigits:1}).formatToParts(1.1).find(p=>p.type==='decimal')!.value;
  const fixed=(value:number,digits:number)=>value.toFixed(digits).replace('.',decimal);
