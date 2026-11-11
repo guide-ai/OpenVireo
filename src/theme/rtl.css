@@ -206,3 +206,9 @@ footer:is(:lang(ar),:lang(fa)),
 .camera-information-lines:is(:lang(ar),:lang(fa)),
 body:is(:lang(ar),:lang(fa)),
 .seo-boot:is(:lang(ar),:lang(fa)){line-height:1.7}
+
+/* ---- 6. Fixed heights that hold lines of text (hotfix from Front RT7; scripts.css § 6) ------------------------------------------
+ * § 5 sets the classification cursor read-out to Arabic's 1.7 line height, and its English box is a fixed 86 px: the SC12 E03 walk
+ * under qps-rtl at 320 px found its third line cut 5 px. As scripts.css does for ja, zh, hi and ru, the read-out keeps room for
+ * three lines at the language's own line height (3 × 20.4 + 26 = 87.2 px), so a reading does not resize it under a held press. */
+.comparison-cursor-live:is(:lang(ar),:lang(fa)){height:auto;min-height:max(86px,calc(3lh + 26px))}
