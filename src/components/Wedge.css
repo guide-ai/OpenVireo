@@ -13,7 +13,7 @@
 .wedge-field input[type=file],.wedge-field select{display:block;max-width:100%}
 .wedge-actions{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
 .wedge-status{font-weight:600}
-.wedge-persistence{border-left:4px solid var(--ov-warning);background:var(--ov-warning-soft);padding:.45rem .8rem;margin:.6rem 0}
+.wedge-persistence{border-inline-start:4px solid var(--ov-warning);background:var(--ov-warning-soft);padding:.45rem .8rem;margin:.6rem 0}
 .wedge-lab[aria-disabled=true] .wedge-point-target{cursor:default}
 .wedge-lab[aria-disabled=true] .wedge-hit{pointer-events:none}
 .wedge-pre{white-space:pre-wrap}
@@ -37,8 +37,8 @@
 .wedge-details dd{margin:0;min-width:0;overflow-wrap:anywhere}
 .wedge-table-wrap{overflow-x:auto;max-width:100%;margin-top:1rem}
 .wedge-table{border-collapse:collapse;font-size:.82rem;min-width:44rem}
-.wedge-table caption{text-align:left;font-weight:600;padding:.3rem 0}
-.wedge-table th,.wedge-table td{border-bottom:1px solid var(--ov-border);padding:.25rem .5rem;text-align:left;vertical-align:top}
+.wedge-table caption{text-align:start;font-weight:600;padding:.3rem 0}
+.wedge-table th,.wedge-table td{border-bottom:1px solid var(--ov-border);padding:.25rem .5rem;text-align:start;vertical-align:top}
 .wedge-table tr.selected{background:var(--ov-danger-soft)}
 .wedge-details-block{margin-top:1rem;font-size:.85rem}
 .wedge-modal-backdrop{position:fixed;inset:0;background:var(--ov-backdrop);display:flex;align-items:center;justify-content:center;padding:1rem;z-index:50}
@@ -48,7 +48,7 @@
 .wedge-modal fieldset{border:1px solid var(--ov-border);border-radius:6px;margin:0;padding:.4rem .7rem;min-width:0}
 .wedge-modal fieldset.wedge-inner{border-color:var(--ov-border);margin-top:.3rem}
 .wedge-modal fieldset[disabled]{grid-column:1/-1;color:var(--ov-text-muted)}
-.wedge-radio{display:inline-flex;align-items:center;gap:.35rem;min-height:36px;margin-right:.8rem;font-size:.88rem}
+.wedge-radio{display:inline-flex;align-items:center;gap:.35rem;min-height:36px;margin-inline-end:.8rem;font-size:.88rem}
 .wedge-radio-row{display:flex;flex-wrap:wrap}
 .wedge-modal .wedge-actions{margin-top:1rem;justify-content:flex-end}
 @media (max-width:820px){.wedge-lab{padding:1rem}.wedge-body{grid-template-columns:minmax(0,1fr)}}

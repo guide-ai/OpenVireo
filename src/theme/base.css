@@ -27,7 +27,7 @@ button:disabled:not(.ov-own-disabled){cursor:not-allowed;opacity:1;background-co
 :where(input:not([type=checkbox],[type=radio],[type=range],[type=file],[type=color]),select,textarea){min-height:36px;padding:7px 10px;border:1px solid var(--ov-border-strong);border-radius:var(--ov-radius-sm);background:var(--ov-surface);color:var(--ov-text);max-width:100%}
 :where(input[type=checkbox],input[type=radio],input[type=range]){accent-color:var(--ov-accent)}
 :where(input[type=file]){max-width:100%;color:var(--ov-text-muted);font-size:var(--ov-text-sm)}
-:where(input[type=file])::file-selector-button{margin-right:10px;min-height:34px;padding:6px 12px;border:1px solid var(--ov-border-strong);border-radius:var(--ov-radius-sm);background:var(--ov-surface);color:var(--ov-text);font:inherit;font-weight:550;cursor:pointer}
+:where(input[type=file])::file-selector-button{margin-inline-end:10px;min-height:34px;padding:6px 12px;border:1px solid var(--ov-border-strong);border-radius:var(--ov-radius-sm);background:var(--ov-surface);color:var(--ov-text);font:inherit;font-weight:550;cursor:pointer}
 :where(input[type=file]:disabled)::file-selector-button{background:var(--ov-disabled-bg);color:var(--ov-disabled-text);cursor:not-allowed}
 :where(input[aria-invalid=true],select[aria-invalid=true]){border-color:var(--ov-danger)}
 :where(fieldset){border:1px solid var(--ov-border);border-radius:var(--ov-radius-sm);min-width:0}
@@ -52,7 +52,7 @@ button:disabled:not(.ov-own-disabled){cursor:not-allowed;opacity:1;background-co
 details.research-notes{margin-top:12px;border-top:1px solid var(--ov-border);padding:4px 0 0}
 details.research-notes>summary{display:flex;align-items:center;gap:8px;min-height:36px;padding:6px 0;color:var(--ov-text-muted);font-size:var(--ov-text-sm);font-weight:600;list-style:none}
 details.research-notes>summary::-webkit-details-marker{display:none}
-details.research-notes>summary::before{content:"";flex:none;width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform var(--ov-duration)}
+details.research-notes>summary::before{content:"";flex:none;width:7px;height:7px;/* physical: the chevron's shape; rtl.css mirrors its closed rotation */border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform var(--ov-duration)}
 details.research-notes[open]>summary::before{transform:rotate(45deg)}
 details.research-notes>summary:hover{color:var(--ov-text)}
 details.research-notes>:not(summary){color:var(--ov-text-muted);font-size:var(--ov-text-sm);line-height:1.7}
@@ -65,5 +65,5 @@ details.research-notes>:not(summary){color:var(--ov-text-muted);font-size:var(--
 .seo-boot{max-width:640px;margin:48px auto;padding:0 16px;color:var(--ov-text-muted);font:var(--ov-text-sm)/1.6 var(--ov-font-sans)}
 .seo-boot h1{color:var(--ov-text);font-size:1.4rem;margin:0 0 8px}
 /* Front HOME: the facts and the labs with their summaries read as a plain list. */
-.seo-boot ul{padding-left:18px}
+.seo-boot ul{padding-inline-start:18px}
 .seo-boot h2{color:var(--ov-text);font-size:1.1rem;margin:16px 0 4px}

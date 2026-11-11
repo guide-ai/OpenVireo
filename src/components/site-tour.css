@@ -11,7 +11,7 @@
 .site-tour-card p{margin:0 0 12px}
 .site-tour-progress{font-size:var(--ov-text-xs);font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ov-text-muted)}
 .site-tour-actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px}
-.site-tour-skip{margin-right:auto}
+.site-tour-skip{margin-inline-end:auto}
 .site-tour :focus-visible{outline:3px solid var(--ov-focus);outline-offset:2px}
 @media(prefers-reduced-motion:reduce){.site-tour-spot{transition:none}}
 .site-tour-actions button{width:auto;flex:none;margin:0}

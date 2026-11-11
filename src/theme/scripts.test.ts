@@ -1,6 +1,7 @@
 import {describe,it,expect} from 'vitest';
 import {globSync,readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
+import {GENERIC,families,rules,splitTop,unquote,withScript} from './cssRules';
 
 // Front SC3 (plan analysis/front-plans/front-i18n-scripts.md § 2 "Tests"): the :lang() typography sheet. Every rule is scoped
 // by :lang(); every language has its stack, regional and Latin-first; every English font-family and low line-height
@@ -12,41 +13,8 @@ const SRC=fileURLToPath(new URL('..',import.meta.url));
 const read=(file:string)=>readFileSync(SRC+file,'utf8');
 const SCRIPTS_SOURCE=read('theme/scripts.css'),SCRIPTS=SCRIPTS_SOURCE.replace(/\/\*[\s\S]*?\*\//g,'');
 
-type Rule=Readonly<{file:string;media:string;selectors:readonly string[];decls:ReadonlyMap<string,string>}>;
-/** Splits at top-level commas (outside parentheses and quotes). */
-function splitTop(text:string):string[]{
- const out:string[]=[];let depth=0,quote='',cur='';
- for(const c of text){
-  if(quote){cur+=c;if(c===quote)quote='';continue;}
-  if(c==='"'||c==="'"){quote=c;cur+=c;continue;}
-  if(c==='(')depth++;else if(c===')')depth--;
-  if(c===','&&depth===0){out.push(cur.trim());cur='';}else cur+=c;
- }
- if(cur.trim())out.push(cur.trim());
- return out;
-}
-/** A small CSS reader for this project's flat sheets: style rules, possibly inside @media blocks. */
-function rules(file:string,css:string):Rule[]{
- const out:Rule[]=[],media:string[]=[];let buf='';
- const text=css.replace(/\/\*[\s\S]*?\*\//g,'');
- for(let i=0;i<text.length;i++){
-  const c=text[i];
-  if(c==='{'){
-   const head=buf.trim();buf='';
-   if(head.startsWith('@')){media.push(head);continue;}
-   const end=text.indexOf('}',i),body=text.slice(i+1,end);i=end;
-   const decls=new Map<string,string>();
-   for(const d of body.split(';')){const at=d.indexOf(':');if(at>0)decls.set(d.slice(0,at).trim(),d.slice(at+1).trim());}
-   out.push({file,media:media.join(' '),selectors:splitTop(head),decls});
-  }else if(c==='}'){media.pop();buf='';}
-  else buf+=c;
- }
- return out;
-}
 const OWN=rules('theme/scripts.css',SCRIPTS);
-const ENGLISH=globSync('**/*.css',{cwd:SRC}).filter(f=>f!=='theme/scripts.css').flatMap(f=>rules(f,read(f)));
-const unquote=(s:string)=>s.replace(/^["']|["']$/g,'');
-const families=(value:string)=>splitTop(value).map(unquote);
+const ENGLISH=globSync('**/*.css',{cwd:SRC}).filter(f=>f!=='theme/scripts.css'&&f!=='theme/rtl.css').flatMap(f=>rules(f,read(f)));
 
 describe('scripts.css: scope',()=>{
  it('is imported once, from src/main.tsx, after base.css and before the English sheets',()=>{
@@ -82,7 +50,6 @@ const MONO_FONTS={ja:['Noto Sans Mono CJK JP','MS Gothic','Osaka-Mono'],'zh-Hans
 /** The rule that sets a custom property for a language, by the language tag its selector names first. */
 const varRule=(lang:string,prop:string)=>OWN.filter(r=>r.decls.has(prop)&&r.selectors.some(s=>s.includes(`:lang(${lang})`)));
 const token=(name:string)=>{const m=new RegExp(`--${name}:([^;]+);`).exec(read('theme/tokens.css'));if(!m)throw new Error(name);return splitTop(m[1]).map(unquote);};
-const GENERIC=new Set(['serif','sans-serif','monospace','cursive','fantasy','system-ui','math','emoji','fangsong']);
 const isScriptFont=(f:string)=>Object.values(SCRIPT_FONTS).some(l=>(l as readonly string[]).includes(f))||Object.values(MONO_FONTS).some(l=>(l as readonly string[]).includes(f));
 
 describe('scripts.css: stacks (plan § 2.1, § 2.2)',()=>{
@@ -123,14 +90,6 @@ describe('scripts.css: stacks (plan § 2.1, § 2.2)',()=>{
  });
 });
 
-/** The English list with the script fallback inserted before the first of system-ui and the generic families (appended when
- * there is none), as scripts.css must declare it for ja, zh and hi. */
-function withScript(english:string):string{
- const list=splitTop(english),mono=/mono|courier|consolas|cascadia/i.test(english),fallback=mono?'var(--ov-font-script-mono)':'var(--ov-font-script)';
- const at=list.findIndex(f=>GENERIC.has(unquote(f)));
- if(at<0)list.push(fallback);else list.splice(at,0,fallback);
- return list.join(',');
-}
 const SCRIPT_SUFFIX=':is(:lang(ja),:lang(zh),:lang(hi))';
 /** font-family attributes in components (SVG presentation attributes), and the CSS selector scripts.css overrides them with. */
 const TSX_FAMILIES:Readonly<Record<string,{file:string;selector:string}>>={

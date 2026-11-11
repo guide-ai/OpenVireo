@@ -12,11 +12,11 @@
 .variable-search input,.variable-search select{max-width:100%;min-width:0}
 .variable-table{overflow-x:auto;max-width:100%;max-height:26rem}
 .variable-table table{border-collapse:collapse;font-variant-numeric:tabular-nums;white-space:nowrap;font-size:var(--ov-text-sm)}
-.variable-table th,.variable-table td{padding:var(--ov-space-1) var(--ov-space-2);text-align:right;border-bottom:1px solid var(--ov-border)}
-.variable-table th:first-child,.variable-table td:nth-child(2){text-align:left}
+.variable-table th,.variable-table td{padding:var(--ov-space-1) var(--ov-space-2);text-align:end;border-bottom:1px solid var(--ov-border)}
+.variable-table th:first-child,.variable-table td:nth-child(2){text-align:start}
 .variable-table thead th{position:sticky;top:0;background:var(--ov-surface)}
 .variable-menubar{display:flex;flex-wrap:wrap;gap:var(--ov-space-1);align-items:flex-start;border-bottom:1px solid var(--ov-border);padding-bottom:var(--ov-space-1);margin-bottom:var(--ov-space-2)}
-.variable-menubar button{background:var(--ov-surface);border:1px solid transparent;border-radius:var(--ov-radius-sm);color:var(--ov-text);padding:4px 10px;font-size:var(--ov-text-sm);text-align:left}
+.variable-menubar button{background:var(--ov-surface);border:1px solid transparent;border-radius:var(--ov-radius-sm);color:var(--ov-text);padding:4px 10px;font-size:var(--ov-text-sm);text-align:start}
 .variable-menubar button:hover:not(:disabled){background:var(--ov-surface-hover)}
 .variable-menubar button[aria-expanded=true]{border-color:var(--ov-border-strong)}
 .variable-menubar button:disabled{color:var(--ov-disabled-text)}

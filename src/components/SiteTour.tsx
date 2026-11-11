@@ -2,6 +2,7 @@ import {useCallback,useEffect,useId,useLayoutEffect,useRef,useState} from 'react
 import {createPortal} from 'react-dom';
 import {TOUR,TOUR_SEEN_KEY} from '../help/tour';
 import {placeTourCard,spotBox,type Box,type Placement} from '../help/tourPlacement';
+import {uiDirection} from '../i18n';
 import './site-tour.css';
 
 /** Whether this browser has finished or skipped the tour (a per-viewer convenience; unreadable storage counts as not seen). */
@@ -46,7 +47,7 @@ export default function SiteTour({onClose}:{onClose:()=>void}){
  const measure=useCallback(()=>{
   const view=viewSize(),el=visibleTarget(step.targets),clip=el?clippedBox(el,view):null,b=clip?spotBox(clip,view):null,c=card.current;
   setBox(b);
-  if(c)setPlace(placeTourCard(b,{width:c.offsetWidth,height:c.offsetHeight},view));
+  if(c)setPlace(placeTourCard(b,{width:c.offsetWidth,height:c.offsetHeight},view,uiDirection()));
  },[step]);
  // Open before the step effect below moves focus into the card (layout effects run in order).
  useLayoutEffect(()=>{const d=dialog.current;if(d&&!d.open)d.showModal();},[]);
