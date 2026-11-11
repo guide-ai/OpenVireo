@@ -75,6 +75,12 @@ export const selectorLanguages=(current:string,registry:readonly LanguageEntry[]
 export const selectorShown=(current:string,registry:readonly LanguageEntry[]=LANGUAGES):boolean=>!isPseudoLocale(current)&&selectorLanguages(current,registry).length>1;
 /** An option's text: the autonym, followed by the English name when the autonym has no Latin letter (日本語 (Japanese)). */
 export const optionLabel=(l:Readonly<{autonym:string;englishName:string}>):string=>/\p{Script=Latin}/u.test(l.autonym)?l.autonym:`${l.autonym} (${l.englishName})`;
+/** Front RT9 (plan front-i18n-rtl.md § 7): the `dir` an element in language `tag` needs inside a page whose direction is `page`: the
+ * language's own direction when it differs (an Arabic option or notice in an English page, English inside an Arabic page), and
+ * undefined otherwise, so React writes no attribute and a left-to-right page with left-to-right languages is unchanged. */
+export const directionWithin=(tag:string,page:TextDirection,registry:readonly LanguageEntry[]=LANGUAGES):TextDirection|undefined=>{
+ const own=textDirection(tag,registry);return own===page?undefined:own;
+};
 /** The notice shown when a language's core chunk (`language`) or a route area's text (`area`) could not be used, in English and
  * in that language (its own text, since its catalog is what failed). Undefined for a tag outside the registry. */
 export function failureNotice(kind:'language'|'area',tag:string,registry:readonly LanguageEntry[]=LANGUAGES):Readonly<{en:string;own:string;lang:string}>|undefined{

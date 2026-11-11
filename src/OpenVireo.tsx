@@ -105,8 +105,8 @@ import { fieldInfoReasonText, type FieldInfoReason } from './observatory/FieldIn
 import type { Sample, ShiftControl } from './core/spectrum';
 import type {LssFreeSource} from './core/lssFreeRecord';
 import { loadVerifiedLibrarySpectrum } from './io/spectrumFiles';
-import { formatNumber, t, uiLanguage } from './i18n';
-import {failureNotice as languageNotice,selectorShown} from './i18n/languages';
+import { formatNumber, t, uiDirection, uiLanguage } from './i18n';
+import {directionWithin,failureNotice as languageNotice,selectorShown} from './i18n/languages';
 import {lazyMessages} from './i18n/registry';
 import {languageFailure} from './i18n/active';
 import {areaFailed,subscribeAreaFailures} from './i18n/areas';// Front ES-SPLIT
@@ -168,8 +168,14 @@ function useLanguageChoice():LanguageChoiceModule|null{
 function LanguageSelectSlot({onSave}:{onSave:()=>void}){const m=useLanguageChoice();return m?<m.LanguageSelect onSave={onSave}/>:null;}
 function VireoOriginalsSlot(){const m=useLanguageChoice();return m?<m.VireoOriginalsOption/>:null;}
 /** The bilingual notices of a language (ES1 review 1, C1) or a route area's text (Front ES-SPLIT) that could not be loaded, in
- * English and in that language (Front SC8: src/i18n/languages.ts failureNotice). */
-const failureNotice=(testId:string,notice:ReturnType<typeof languageNotice>)=>notice&&<p role="status" className="card observatory-note" data-testid={testId} style={{margin:'12px 16px 0',padding:'10px 14px'}}><span lang="en">{notice.en}</span> <span lang={notice.lang}>{notice.own}</span></p>;
+ * English and in that language (Front SC8: src/i18n/languages.ts failureNotice). Front RT9: each half carries `dir` when its
+ * direction differs from the page's (a right-to-left language's sentence in the English page its failure leaves; English inside a
+ * right-to-left page whose area failed); with left-to-right languages neither half has the attribute. */
+const failureNotice=(testId:string,kind:'language'|'area',tag:string)=>{
+ const notice=languageNotice(kind,tag);if(!notice)return notice;
+ const page=uiDirection();
+ return <p role="status" className="card observatory-note" data-testid={testId} style={{margin:'12px 16px 0',padding:'10px 14px'}}><span lang="en" dir={directionWithin('en',page)}>{notice.en}</span> <span lang={notice.lang} dir={directionWithin(tag,page)}>{notice.own}</span></p>;
+};
 // ES-REL review 2: the dev-only pseudo-locales (qps, qps-cjk, qps-deva, qps-cyrl) show no selector (Front SC2's contract): it
 // offers real languages only, and their layout walks stay free of it. Front SC8: shown when it offers a choice (English, the
 // released languages and a preview's own language; src/i18n/languages.ts selectorShown), decided at render, after boot settled
@@ -1023,7 +1029,7 @@ export default function OpenVireo(){
   const pageBar=useMemo(()=><PageBar view={view} inert={hostInert} busy={projectBusy} notice={projectNotice} error={projectError} actions={investigationActions} language={languageSelect} help={helpMenu} cloud={cloudEntry}/>,[view,hostInert,projectBusy,projectNotice,projectError,investigationActions,languageSelect,helpMenu,cloudEntry]);
   const [languageFailed]=useState(languageFailure);
   const areaTextFailed=useSyncExternalStore(subscribeAreaFailures,areaFailed);
-  return <RecoveryContext.Provider value={recovery}><TestModeContext.Provider value={testMode}><VireoOptionsContext.Provider value={vireoOptions}><ObservationListContext.Provider value={observationListAccess}><ObservationListValue.Provider value={observationList}>{header}{pageBar}{/* ES1 review 1 C1: the Spanish chunk could not be used. */languageFailed&&failureNotice('language-failure',languageNotice('language',languageFailed))}{/* Front ES-SPLIT: a route area's text could not be used; that part stays English. */areaTextFailed&&failureNotice('area-failure',languageNotice('area',uiLanguage()))}{tour&&<SiteTour onClose={()=>{setTour(false);requestAnimationFrame(()=>document.querySelector<HTMLElement>('[data-testid="main-help-menu"]')?.focus());}}/>}
+  return <RecoveryContext.Provider value={recovery}><TestModeContext.Provider value={testMode}><VireoOptionsContext.Provider value={vireoOptions}><ObservationListContext.Provider value={observationListAccess}><ObservationListValue.Provider value={observationList}>{header}{pageBar}{/* ES1 review 1 C1: the Spanish chunk could not be used. */languageFailed&&failureNotice('language-failure','language',languageFailed)}{/* Front ES-SPLIT: a route area's text could not be used; that part stays English. */areaTextFailed&&failureNotice('area-failure','area',uiLanguage())}{tour&&<SiteTour onClose={()=>{setTour(false);requestAnimationFrame(()=>document.querySelector<HTMLElement>('[data-testid="main-help-menu"]')?.focus());}}/>}
   {instructorGate.open&&<InstructorModeBanner demonstrationMode={demonstrationMode} onLeave={stable.leaveInstructor} inert={hostInert} leaveRef={instructorLeave}/>}{instructorAsk&&<InstructorModeConfirm onAnswer={stable.answerInstructor}/>}{scopeBoxes[0]&&<ScopeAccessBox key={scopeBoxes[0].id} box={scopeBoxes[0].box} opener={scopeBoxes[0].opener} onAnswer={answerScopeBox}/>}
   <HubbleLabGuide dialogRef={labGuide} progress={labProgress} onNavigate={stable.hubbleGuide}/>
   <PulsarLabGuide dialogRef={pulsarGuide} progress={pulsarProgress} onNavigate={stable.navigate}/>
