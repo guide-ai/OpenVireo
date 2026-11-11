@@ -105,10 +105,10 @@ export const SPANISH_TEXT=language('es-419',es,esOriginals,{appShell:APP_SHELL_E
 export const PORTUGUESE_TEXT=language('pt-BR',pt,ptOriginals,{appShell:APP_SHELL_PT,helpMenu:HELP_MENU_PT,projectLinks:PROJECT_LINKS_PT,tour:TOUR_PT,languageChoice:LANGUAGE_CHOICE_PT},
  [APP_SHELL_PT,CAMERA_PT,FIELD_INFO_PT,FIELD_READ_DETAILS_PT,HELP_MENU_PT,LANGUAGE_CHOICE_PT,NAKED_EYE_PT,OBJECT_X_LAB_PT,OBSERVATION_METADATA_PT,OBSERVATORY_PT,POLISH_PT,PROJECT_LINKS_PT,QSO_LIST_PT,SOUND_PT,TOUR_PT,VARIABLE_STARS_PT],/[ãõçâêôàáéíóú]/i,'');
 /** Front FR0: French before its release, behind `?lang=fr` (an en-US browser: tests/fixtures/language.ts contextLocale). FR0
- * translated the shell, FR1 the observatory and all of VIREO's originals, FR2 exercises E01 and E02, FR3 exercise E03; FR4–FR6 and FR-HELP add their areas to `done` and
+ * translated the shell, FR1 the observatory and all of VIREO's originals, FR2 exercises E01 and E02, FR3 exercise E03, FR4 exercises E04 and E05; FR5, FR6 and FR-HELP add their areas to `done` and
  * their maps below. Its letters include « » and U+202F, which English text never has. */
 export const FRENCH_TEXT=language('fr',fr,frOriginals,{appShell:APP_SHELL_FR,helpMenu:HELP_MENU_FR,projectLinks:PROJECT_LINKS_FR,tour:TOUR_FR,languageChoice:LANGUAGE_CHOICE_FR},
- [APP_SHELL_FR,CAMERA_FR,FIELD_INFO_FR,FIELD_READ_DETAILS_FR,HELP_MENU_FR,LANGUAGE_CHOICE_FR,NAKED_EYE_FR,OBJECT_X_LAB_FR,OBSERVATION_METADATA_FR,OBSERVATORY_FR,POLISH_FR,PROJECT_LINKS_FR,QSO_LIST_FR,SOUND_FR,TOUR_FR,VARIABLE_STARS_FR],/[àâæçéèêëîïôœùûüÿ«»\u202f]/i,'?lang=fr',['shell','observatory','e01','e02','e03']);
+ [APP_SHELL_FR,CAMERA_FR,FIELD_INFO_FR,FIELD_READ_DETAILS_FR,HELP_MENU_FR,LANGUAGE_CHOICE_FR,NAKED_EYE_FR,OBJECT_X_LAB_FR,OBSERVATION_METADATA_FR,OBSERVATORY_FR,POLISH_FR,PROJECT_LINKS_FR,QSO_LIST_FR,SOUND_FR,TOUR_FR,VARIABLE_STARS_FR],/[àâæçéèêëîïôœùûüÿ«»\u202f]/i,'?lang=fr',['shell','observatory','e01','e02','e03','e04','e05']);
 /** Every translated language of the registry, in its order (a test fails if a registered language has no text here). */
 export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT]);
 /** Front FR0: the languages that run the specs of `area` (those whose `done` has it), in registry order. */
@@ -140,11 +140,14 @@ export const e01e02Maps=(tag:string):E01E02Maps=>{const m=E01_E02_MAPS[tag];if(!
 // original test's web text (E04) and the cluster HR tools' own notes (E05). Only their text leaves are read.
 import {CLUSTER_HR_ES} from '../../src/i18n/es/maps/clusterHr';
 import {CLUSTER_HR_PT} from '../../src/i18n/pt-br/maps/clusterHr';
+import {CLUSTER_HR_FR} from '../../src/i18n/fr/maps/clusterHr';
 import type {CLUSTER_HR_EN} from '../../src/clusters/ClusterHrMessages';
 export type E04E05Maps=Readonly<{spectralRange:unknown;observatory:unknown;polish:unknown;camera:unknown;sound:unknown;clusterHr:Translation<typeof CLUSTER_HR_EN>}>;
 export const E04_E05_MAPS:Readonly<Record<string,E04E05Maps>>=Object.freeze({
  'es-419':{spectralRange:SPECTRAL_RANGE_ES,observatory:OBSERVATORY_ES,polish:POLISH_ES,camera:CAMERA_ES,sound:SOUND_ES,clusterHr:CLUSTER_HR_ES},
  'pt-BR':{spectralRange:SPECTRAL_RANGE_PT,observatory:OBSERVATORY_PT,polish:POLISH_PT,camera:CAMERA_PT,sound:SOUND_PT,clusterHr:CLUSTER_HR_PT},
+ // Front FR4: French (its ?lang=fr preview).
+ fr:{spectralRange:SPECTRAL_RANGE_FR,observatory:OBSERVATORY_FR,polish:POLISH_FR,camera:CAMERA_FR,sound:SOUND_FR,clusterHr:CLUSTER_HR_FR},
 });
 export const e04e05Maps=(tag:string):E04E05Maps=>{const m=E04_E05_MAPS[tag];if(!m)throw new Error(`No E04/E05 maps for ${tag}`);return m;};
 // Front PT5: the maps and identical texts the radio telescope walk reads beyond the catalog and originals (tests/i18n/radio.spec.ts),

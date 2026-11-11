@@ -236,7 +236,8 @@ test.describe('in a Brazilian Portuguese browser',()=>{
 // (the observationMetadata map) and `fits` (the cameraInfo.* keys the saved-image viewer shares). Front FR2 (E01 and E02) fills `exposure`
 // and `lss` (and their shared `exposure+lss` module). Front FR3: E03 fills `classification` and its shared `classification+cluster`
 // module, which the cluster routes also fetch, so `cluster` is no longer empty (as for pt-BR after PT3); two areas stay empty
-// (pulsar, radio). FR-REL turns this back
+// (pulsar, radio). Front FR4 (E04 and E05) fills `photometer`, `cluster` and their shared `cluster+photometer` module (cluster's
+// own chunk now holds keys); the pinned list is unchanged. FR-REL turns this back
 // into a released-language test (as PT-REL did).
 test.describe('a language before its release',()=>{
  test.use({locale:'en-US'});

@@ -66,6 +66,54 @@
     "·"
    ],
    "reason": "the · of c·z (the speed of light times the redshift, as in the English) is a multiplication dot, not an inclusive point médian"
+  },
+  "catalog:db.loaded": {
+   "words": [
+    "cluster"
+   ],
+   "reason": "the placeholder name {cluster} (the dataset’s cluster name), not the English word; the text says «amas»"
+  },
+  "catalog:db.catalogDraft": {
+   "words": [
+    "cluster"
+   ],
+   "reason": "the placeholder name {cluster} (the dataset’s cluster name), not the English word; the text says «amas»"
+  },
+  "catalog:db.catalogConfirmed": {
+   "words": [
+    "cluster"
+   ],
+   "reason": "the placeholder name {cluster} (the dataset’s cluster name), not the English word; the text says «amas»"
+  },
+  "catalog:db.chartDescription": {
+   "words": [
+    "cluster"
+   ],
+   "reason": "the placeholder name {cluster} (the dataset’s cluster name), not the English word; the text says «amas»"
+  },
+  "catalog:db.prefilled": {
+   "words": [
+    "cluster"
+   ],
+   "reason": "the placeholder name {cluster} (the dataset’s cluster name), not the English word; the text says «amas»"
+  },
+  "catalog:clusterLab.dataset": {
+   "words": [
+    "cluster"
+   ],
+   "reason": "the placeholder name {cluster} (the dataset’s cluster name), not the English word; the text says «amas»"
+  },
+  "map:clusterHr.listCaptionNote": {
+   "words": [
+    "CLUSTERS"
+   ],
+   "reason": "the file name CLUSTERS.DAT, kept as VIREO names it"
+  },
+  "map:clusterHr.obsVelocityNote": {
+   "words": [
+    "·"
+   ],
+   "reason": "the · of c·Z (the speed of light times the redshift), a multiplication dot, not a point médian (FR1’s reason)"
   }
  }
 }

@@ -37,6 +37,8 @@ import {CAMERA_MESSAGES_EN} from '../../camera/CameraMessages';
 import {ENGINE_VIEW_EN} from '../../SpectrumEngineMessages';
 import {SPECTRAL_RANGE_EN} from '../../SpectralRangeMessages';
 import {WEDGE_MESSAGES_EN} from '../../components/WedgeMessages';
+import {CLUSTER_HR_EN} from '../../clusters/ClusterHrMessages';
+import {CLUSTER_DATA_MESSAGES_EN} from '../../clusterdata/ClusterDataMessages';
 
 // Front FR0 (docs/I18N.md, "French: the folder, lints and shell (FR0)"; plan front-i18n-fr.md §4, §6.2): the structural checks of
 // the partial French bundle, the French typography fixer as a no-op over every French string, and every string through the SC4
@@ -47,11 +49,11 @@ import {WEDGE_MESSAGES_EN} from '../../components/WedgeMessages';
 // string literals of maps/*.ts and help/*.ts with the fixer (src/i18n/lint/frenchSpacing.ts), writing the characters literally
 // (never `\u202f` or `\u2019` escapes: scripts/check-i18n-dist.mjs reads map literals as written), then checks as usual. A VIREO
 // `fragment|` original keeps its straight quotes (another piece of VIREO's text closes them).
-const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,nakedEye:NAKED_EYE_MESSAGES_EN,objectXLab:OBJECT_X_LAB_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN};
+const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,nakedEye:NAKED_EYE_MESSAGES_EN,objectXLab:OBJECT_X_LAB_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN,clusterHr:CLUSTER_HR_EN,clusterData:CLUSTER_DATA_MESSAGES_EN};
 /** The maps translated completely (FR0's shell maps; FR1's observatory maps, the camera card the observatory shows, and polish; FR2's
- * engineView, spectralRange and wedge); the
- * others are partial until their front (objectXLab FR6, variableStars FR4). */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge'];
+ * engineView, spectralRange and wedge; FR4's clusterHr, clusterData and variableStars); the
+ * others are partial until their front (objectXLab FR6). */
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars'];
 /** FR0's area of en.json: the shell (header, menu, home and first steps, toolbar, errors, instructor mode, document title), as PT0's. */
 const SHELL_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(app|project|session|error|instructorMode)\./.test(k)||/\.nav$/.test(k)||['demonstrationMode.banner','sky.eyebrow','sky.title','sky.subtitle','sky.about','sky.local','sky.observatory','sky.analyzer','sky.step1','sky.step1Help','sky.step2','sky.step2Help','sky.step3','sky.step3Help','spectrum.tools','classLink.cancel'].includes(k));
 /** Front FR1's area of en.json: PT1's observatory keys (the observatory route, its instruments' cards and the guide keys those
@@ -73,6 +75,12 @@ const FR2_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E01_E02_PREFIXES.test
  * prefixes. */
 const E03_PREFIXES=/^(class|classLines|classLink|classAtlas|classImport|classLab|feature|cursor|probe|photo|combined|combinedWidth|viewport|inspection|sampledTrace|reverseTrace|sampledDiff|range|widthSource|widthCoordinates|sharedMarks|comparisonMark|paneSource|panMarks|obs|nativeResults|nativeEdit|nativeDelete|nativeList|nativeText|nativeCsv|program|programImport)\./;
 const FR3_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E03_PREFIXES.test(k)||k==='continuity.restoreExposure'||k==='ssp.header');
+/** Front FR4's area of en.json: exercises E04 and E05 as PT4 scoped them (docs/I18N.md "Brazilian Portuguese: E04 Pleiades and E05
+ * clusters (PT4)"): every key of the photometer route (ph), the Pleiades analysis and guide (pa, pleiadesLab), the native cluster
+ * model fit (nc), the cluster reference database, its exclusions and guide (db, ce, clusterLab), and Data from Observations and the
+ * saved-observation HR tool (ownHr, obsHr). */
+const E04_E05_PREFIXES=/^(ph|pa|pleiadesLab|nc|db|ce|clusterLab|ownHr|obsHr)\./;
+const FR4_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E04_E05_PREFIXES.test(k));
 /** VIREO originals that Spanish keeps with no entry (its word equals VIREO's, and the vireo() site is one the source guard cannot
  * resolve, src/i18n/vireoSites.test.ts), as for Portuguese: the options dialog's General tab («Général») and the Site Information
  * longitude letter E (Est, kept: identical.json). */
@@ -126,6 +134,10 @@ describe('Front FR0: the French (fr) bundle',()=>{
  it('Front FR3: the catalog covers exercise E03 (every key of its prefixes, continuity.restoreExposure and ssp.header)',()=>{
   expect(FR3_KEYS.length).toBe(771);
   expect(FR3_KEYS.filter(k=>!Object.hasOwn(fr,k))).toEqual([]);
+ });
+ it('Front FR4: the catalog covers exercises E04 and E05 (every key of their prefixes)',()=>{
+  expect(FR4_KEYS.length).toBe(649);
+  expect(FR4_KEYS.filter(k=>!Object.hasOwn(fr,k))).toEqual([]);
  });
  it('every map has its English shape: the shell maps complete, the header-name maps partial',()=>{
   for(const [id,map] of Object.entries(FRENCH.maps??{})){
