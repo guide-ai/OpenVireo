@@ -275,3 +275,12 @@ coordinator decided the resolution; the implementer (Claude Opus 5.5, medium eff
 10. No change (accepted as is).
 11. Fixed: es-419 `home.lead` says «mides el brillo de las estrellas», as /es/ does; pt-BR «Um mistério só com as coordenadas: …».
 - Info: no change in this front; lazily mounting the observatory is a separate follow-up.
+
+### After review: CI on the merged branch
+
+The full CI run on `claude/front-home` (after merging main at `dd96cc4`) failed one test: `tests/render-budget.spec.ts`, "openDome
+renders 31 components; budget 30". The hidden welcome re-rendered on every observatory state change because it was not memoised
+and received an inline `onExplore`. Fix by the coordinator (Claude Opus 5.5): `Welcome` is exported through `memo`, like the other
+route views, and `onExplore` is the stable handler `stable.explore`; `openGuide` was already memoised over stable callbacks. A
+language change reloads the page (`LanguageChoice.tsx`), so the memoised text cannot go stale. The budget is unchanged.
+`render-budget.spec.ts` and `home.spec.ts` pass (19/19).

@@ -3,6 +3,7 @@
  * for a first-time visitor, one button to the free-exploration page (`observatory`), and the seven labs as cards. A card opens
  * its guide through the same opener as its Guides menu button and the #lab= links (openGuide in OpenVireo.tsx), so there is one
  * handler per lab. Presentation only: no state of its own. src/seo/pages.ts (homeBoot) mirrors the English text for crawlers. */
+import {memo} from 'react';
 import {t} from '../i18n';
 import type {LabSlug} from '../seo/labSlugs';
 
@@ -17,7 +18,7 @@ const cards=():{slug:LabSlug;name:string;summary:string}[]=>[
  {slug:'object-x',name:t('home.objectX'),summary:t('home.objectXSummary')},
 ];
 
-export default function Welcome({openGuide,onExplore}:{openGuide:Readonly<Record<LabSlug,()=>void>>;onExplore:()=>void}){
+function Welcome({openGuide,onExplore}:{openGuide:Readonly<Record<LabSlug,()=>void>>;onExplore:()=>void}){
  return <section className="home-welcome" aria-labelledby="home-title">
   <div className="eyebrow">{t('home.eyebrow')}</div>
   <h1 id="home-title" tabIndex={-1}>{t('home.title')}</h1>
@@ -35,3 +36,7 @@ export default function Welcome({openGuide,onExplore}:{openGuide:Readonly<Record
   </ul>
  </section>;
 }
+
+/** Memoised like the other route views, so observatory state changes (opening the dome, pointing) do not re-render the
+ * hidden welcome (tests/render-budget.spec.ts). Its props are stable: openGuide is memoised and onExplore is a stable handler. */
+export default memo(Welcome);
