@@ -255,9 +255,10 @@ family('E03 classification: session, CSV, width record, investigations, observat
   const skip=page.getByRole('button',{name:N(locale,'Skip the tour')});if(await skip.isVisible().catch(()=>false))await skip.click();
   await expect(B('Review classification')).toBeEnabled({timeout:30_000});
   await page.evaluate(()=>{location.hash='#star-exposure';});
-  // Front FR3: the star exposure route is E01's (Front FR2), so before French has that area its buttons are the preview's English
-  // fallback, or French once FR2 has translated them (`text` gives either); every E03 control below must be French.
-  const E01=(name:string)=>locale==='fr'?page.getByRole('button',{name:exact(TRANSLATED.find(x=>x.tag==='fr')!.text(name))}):B(name);
+  // Front FR3: the star exposure route is E01's (Front FR2), so before French has done `e01` its buttons show the preview's English
+  // fallback; once FRENCH_TEXT.done has `e01`, they go through N like every E03 control below, which fails for a name French lacks
+  // (FR3 review: `text` alone would have let an untranslated label pass after FR2).
+  const E01=(name:string)=>locale==='fr'&&!TRANSLATED.find(x=>x.tag==='fr')!.done.has('e01')?page.getByRole('button',{name:exact(name)}):B(name);
   await E01('Activate supported star field').click();await page.clock.pauseAt(new Date(NOW.getTime()+600_000));
   await E01('Start star exposure').click();await page.clock.runFor(1000);await E01('Pause exposure').click();await expect(page.getByTestId('star-elapsed')).toHaveText('1000 ms');
   await B('Classify acquired star').click();await expect(B('Review classification')).toBeEnabled();
