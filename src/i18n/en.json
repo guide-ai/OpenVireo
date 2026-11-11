@@ -149,6 +149,7 @@
   "home.pageName": "Welcome",
   "home.explore": "Explore the sky",
   "home.exploreHint": "Open the observatory and look around freely, with no lab to follow.",
+  "home.loadingObservatory": "Loading the observatory…",
   "sky.step1": "1 · Open the dome",
   "sky.step2": "2 · Choose and point",
   "sky.step3": "3 · Explore an instrument",
