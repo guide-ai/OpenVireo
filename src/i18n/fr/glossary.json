@@ -31,7 +31,7 @@
   },
   {
    "en": "\\bexposures?\\b",
-   "fr": "pose|exposition"
+   "fr": "pose"
   },
   {
    "en": "\\bmeasurements?\\b",
@@ -59,7 +59,7 @@
   },
   {
    "en": "\\b(re)?load(s|ed|ing)?\\b",
-   "fr": "charg|import|ouvr"
+   "fr": "charg"
   },
   {
    "en": "\\bbrowsers?\\b",
@@ -167,11 +167,11 @@
   },
   {
    "en": "\\bcounts?\\b(?! shows after the reveal)",
-   "fr": "compt|nombre|total|effectif"
+   "fr": "compt|nombre"
   },
   {
    "en": "\\bslew(s|ed|ing)?\\b",
-   "fr": "d[ée]plac|mouvement|pointage"
+   "fr": "d[ée]plac"
   },
   {
    "en": "\\bhot lists?\\b",
@@ -183,7 +183,7 @@
   },
   {
    "en": "\\bseeing\\b",
-   "fr": "seeing|turbulence|qualit[ée] d[’']image"
+   "fr": "seeing"
   },
   {
    "en": "\\bright ascension\\b",
@@ -431,7 +431,7 @@
   },
   {
    "en": "\\bmerg(e|es|ed|ing)\\b",
-   "fr": "fusion|combin|regroup"
+   "fr": "fusion"
   },
   {
    "en": "\\bendpoint[- ]grids?\\b",
@@ -511,7 +511,7 @@
   },
   {
    "en": "\\b(?:600-)?bins?\\b",
-   "fr": "canal|canaux|intervalle|case"
+   "fr": "canal|canaux"
   },
   {
    "en": "\\bcombined view\\b",
@@ -1405,6 +1405,51 @@
   {
    "en": "Lab Table",
    "fr": "table de laboratoire"
+  },
+  {
+   "en": "Save All",
+   "fr": "Tout enregistrer"
+  },
+  {
+   "en": "Clear All",
+   "fr": "Tout effacer"
+  },
+  {
+   "en": "Telescope Display",
+   "fr": "affichage du télescope"
+  },
+  {
+   "en": "Master Receiver",
+   "fr": "récepteur principal"
+  },
+  {
+   "en": "Case Dependent",
+   "fr": "Respecter la casse"
+  },
+  {
+   "en": "Search String",
+   "fr": "Texte à rechercher"
+  },
+  {
+   "en": "Search Results",
+   "fr": "Résultats de la recherche"
+  },
+  {
+   "en": "Optical",
+   "fr": "Optique",
+   "exact": true
+  },
+  {
+   "en": "Spectral Line Help",
+   "fr": "Aide sur les raies spectrales"
+  },
+  {
+   "en": "Original hot lists",
+   "fr": "Listes d’objets d’origine"
+  },
+  {
+   "en": "Telescope view",
+   "fr": "vue du télescope"
   }
  ],
  "forbidden": [

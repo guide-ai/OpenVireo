@@ -7,6 +7,8 @@ import esOriginals from './es/originals.json';
 import esIdentical from './es/identical.json';
 import ptOriginals from './pt-br/originals.json';
 import ptIdentical from './pt-br/identical.json';
+import frOriginals from './fr/originals.json';
+import frIdentical from './fr/identical.json';
 import {normalizeOriginal} from './vireo';
 
 // Front ES3 review (S2): vireo() is for VIREO's own literals. A web text wrapped in vireo() would stay English in Spanish, since
@@ -16,10 +18,12 @@ import {normalizeOriginal} from './vireo';
 // already Spanish (GCVS, QSO…). Arguments built at run time (a prop, a function result) are not resolved here; their
 // literals are covered by the screen specs (tests/i18n/).
 // Front PT1: moved from src/i18n/es/ and run for every language whose VIREO originals are complete (strict): Spanish since ES3,
-// Brazilian Portuguese since PT1, which translates all of VIREO's originals at once. A later language joins once it has done so.
+// Brazilian Portuguese since PT1, which translates all of VIREO's originals at once, and French since FR1, which does the same. A
+// later language joins once it has done so.
 const STRICT:readonly {tag:string;originals:Record<string,string>;identical:Record<string,string>}[]=[
  {tag:'es-419',originals:esOriginals,identical:esIdentical.entries},
  {tag:'pt-BR',originals:ptOriginals,identical:ptIdentical.entries},
+ {tag:'fr',originals:frOriginals,identical:frIdentical.entries},
 ];
 type Node={type:string;[key:string]:unknown};
 const root=path.resolve(import.meta.dirname,'../..');

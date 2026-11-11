@@ -232,7 +232,9 @@ test.describe('in a Brazilian Portuguese browser',()=>{
 // English browser) fetches its core, and each area route only the area modules its plan gives text to; an area with no text yet is
 // empty, has no chunk and resolves at once, so its route shows English without a notice, a route error or a read before its area.
 // With FR0's shell slice only `photometer` holds text (project.photometryCleared and project.photometryRestored, rendered by the
-// photometer); later FR fronts fill the others. FR-REL turns this back into a released-language test (as PT-REL did).
+// photometer); later FR fronts fill the others. Front FR1: the observatory's maps and keys also give text to `classification`
+// (the observationMetadata map) and `fits` (the cameraInfo.* keys the saved-image viewer shares), so five areas stay empty. FR-REL turns this back
+// into a released-language test (as PT-REL did).
 test.describe('a language before its release',()=>{
  test.use({locale:'en-US'});
  test('a partial language (French) fetches only its core, and no chunk for an empty area',async({page})=>{
@@ -253,7 +255,7 @@ test.describe('a language before its release',()=>{
   };
   const headingKey:Record<string,string>={classification:'class.title','cluster-database':'db.title',photometer:'ph.title','lss-survey':'lss.title','galaxy-exposure':'galaxyExposure.title','star-exposure':'starExposure.title',images:'fits.title'};
   const empty=frPlan.modules.filter(m=>m.kind==='area'&&m.empty).map(m=>m.name);
-  expect(empty.length,'most areas are still empty').toBeGreaterThan(5);
+  expect(empty.length,'some areas are still empty').toBeGreaterThan(0);
   for(const r of ROUTES){
    await page.goto('about:blank');w.language.length=0;
    await page.goto(`/${P.query}#${r.hash}`);

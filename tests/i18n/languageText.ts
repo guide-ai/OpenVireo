@@ -45,6 +45,14 @@ import {LANGUAGE_CHOICE_FR} from '../../src/i18n/fr/maps/languageChoice';
 import {OBJECT_X_LAB_FR} from '../../src/i18n/fr/maps/objectXLab';
 import {POLISH_FR} from '../../src/i18n/fr/maps/polish';
 import {VARIABLE_STARS_FR} from '../../src/i18n/fr/maps/variableStars';
+import {CAMERA_FR} from '../../src/i18n/fr/maps/camera';
+import {FIELD_INFO_FR} from '../../src/i18n/fr/maps/fieldInfo';
+import {FIELD_READ_DETAILS_FR} from '../../src/i18n/fr/maps/fieldReadDetails';
+import {NAKED_EYE_FR} from '../../src/i18n/fr/maps/nakedEye';
+import {OBSERVATION_METADATA_FR} from '../../src/i18n/fr/maps/observationMetadata';
+import {OBSERVATORY_FR} from '../../src/i18n/fr/maps/observatory';
+import {QSO_LIST_FR} from '../../src/i18n/fr/maps/qsoList';
+import {SOUND_FR} from '../../src/i18n/fr/maps/sound';
 import {LANGUAGES,failureNotice,type LanguageEntry} from '../../src/i18n/languages';
 import type {Translation} from '../../src/i18n/maps';
 import type {APP_SHELL_MESSAGES_EN} from '../../src/components/AppShellMessages';
@@ -96,11 +104,11 @@ export const SPANISH_TEXT=language('es-419',es,esOriginals,{appShell:APP_SHELL_E
  [APP_SHELL_ES,CAMERA_ES,FIELD_INFO_ES,FIELD_READ_DETAILS_ES,HELP_MENU_ES,LANGUAGE_CHOICE_ES,NAKED_EYE_ES,OBJECT_X_LAB_ES,OBSERVATION_METADATA_ES,OBSERVATORY_ES,POLISH_ES,PROJECT_LINKS_ES,QSO_LIST_ES,SOUND_ES,TOUR_ES,VARIABLE_STARS_ES],/[áéíóúñ¿¡]/,'');
 export const PORTUGUESE_TEXT=language('pt-BR',pt,ptOriginals,{appShell:APP_SHELL_PT,helpMenu:HELP_MENU_PT,projectLinks:PROJECT_LINKS_PT,tour:TOUR_PT,languageChoice:LANGUAGE_CHOICE_PT},
  [APP_SHELL_PT,CAMERA_PT,FIELD_INFO_PT,FIELD_READ_DETAILS_PT,HELP_MENU_PT,LANGUAGE_CHOICE_PT,NAKED_EYE_PT,OBJECT_X_LAB_PT,OBSERVATION_METADATA_PT,OBSERVATORY_PT,POLISH_PT,PROJECT_LINKS_PT,QSO_LIST_PT,SOUND_PT,TOUR_PT,VARIABLE_STARS_PT],/[ãõçâêôàáéíóú]/i,'');
-/** Front FR0: French before its release, behind `?lang=fr` (an en-US browser: tests/fixtures/language.ts contextLocale). Only the
- * shell is translated; FR1–FR6 and FR-HELP add their areas to `done` and their maps below. Its letters include « » and U+202F,
- * which English text never has. */
+/** Front FR0: French before its release, behind `?lang=fr` (an en-US browser: tests/fixtures/language.ts contextLocale). FR0
+ * translated the shell, FR1 the observatory and all of VIREO's originals; FR2–FR6 and FR-HELP add their areas to `done` and
+ * their maps below. Its letters include « » and U+202F, which English text never has. */
 export const FRENCH_TEXT=language('fr',fr,frOriginals,{appShell:APP_SHELL_FR,helpMenu:HELP_MENU_FR,projectLinks:PROJECT_LINKS_FR,tour:TOUR_FR,languageChoice:LANGUAGE_CHOICE_FR},
- [APP_SHELL_FR,HELP_MENU_FR,LANGUAGE_CHOICE_FR,OBJECT_X_LAB_FR,POLISH_FR,PROJECT_LINKS_FR,TOUR_FR,VARIABLE_STARS_FR],/[àâæçéèêëîïôœùûüÿ«»\u202f]/i,'?lang=fr',['shell']);
+ [APP_SHELL_FR,CAMERA_FR,FIELD_INFO_FR,FIELD_READ_DETAILS_FR,HELP_MENU_FR,LANGUAGE_CHOICE_FR,NAKED_EYE_FR,OBJECT_X_LAB_FR,OBSERVATION_METADATA_FR,OBSERVATORY_FR,POLISH_FR,PROJECT_LINKS_FR,QSO_LIST_FR,SOUND_FR,TOUR_FR,VARIABLE_STARS_FR],/[àâæçéèêëîïôœùûüÿ«»\u202f]/i,'?lang=fr',['shell','observatory']);
 /** Every translated language of the registry, in its order (a test fails if a registered language has no text here). */
 export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT]);
 /** Front FR0: the languages that run the specs of `area` (those whose `done` has it), in registry order. */
