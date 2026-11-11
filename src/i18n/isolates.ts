@@ -20,13 +20,27 @@ const RTL_LETTER=/(?=\p{L})[\p{sc=Arabic}\p{sc=Hebrew}\p{sc=Syriac}\p{sc=Thaana}
  * "{n} km/s") is shown left to right as a whole in a right-to-left load: alone in a right-to-left paragraph its pieces would be
  * drawn in reverse order ("R NOMAD :NF", "km/s 12.5", "…Save As"). */
 export const hasRtlLetter=(text:string):boolean=>RTL_LETTER.test(text);
+/** Whether `body` is one isolate from its first character to its last (FSI, LRI or RLI and its matching PDI): the runtime's
+ * output passed on again, such as `t()` or `vireo()` text given to `t()` as a parameter. */
+function wholeIsolate(body:string):boolean{
+ const first=body.charCodeAt(0);
+ if(first<0x2066||first>0x2068||body.charCodeAt(body.length-1)!==0x2069)return false;
+ for(let i=1,depth=1;i<body.length;i++){
+  const c=body.charCodeAt(i);
+  if(c>=0x2066&&c<=0x2068)depth++;
+  else if(c===0x2069&&!--depth)return i===body.length-1;
+ }
+ return false;
+}
 /** `text` in an isolate opened by `open`, with its leading and trailing white space left outside (a head such as 'RA:  ' that
  * coordinates follow keeps its spacing in the sentence). Text with nothing but white space is returned unchanged, so an empty
- * string stays empty (falsy) and a separator stays a separator. */
+ * string stays empty (falsy) and a separator stays a separator; so is text that is already one whole isolate (an isolate that
+ * holds only another isolate draws exactly as the inner one, so the runtime never nests its own output: `t()` or `vireo()` text
+ * passed to `t()` as a parameter keeps its one isolate). */
 function isolate(open:string,text:string):string{
  const head=/^\s*/.exec(text)![0];if(head.length===text.length)return text;
- const tail=/\s*$/.exec(text)![0];
- return head+open+text.slice(head.length,text.length-tail.length)+PDI+tail;
+ const tail=/\s*$/.exec(text)![0],body=text.slice(head.length,text.length-tail.length);
+ return wholeIsolate(body)?text:head+open+body+PDI+tail;
 }
 /** A value inside right-to-left text (a `t()` parameter, a map function's data, a plot label): FSI…PDI. */
 export const firstStrongIsolate=(text:string):string=>isolate(FSI,text);

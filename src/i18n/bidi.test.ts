@@ -36,6 +36,10 @@ describe('Front RT4: the isolates (src/i18n/isolates.ts)',()=>{
   expect(firstStrongIsolate('-12.5')).toBe('\u2068-12.5\u2069');expect(ltrIsolate('Save As…')).toBe('\u2066Save As…\u2069');
   expect(ltrIsolate('  RA:  ')).toBe('  \u2066RA:\u2069  ');expect(ltrIsolate('a\r\nb ')).toBe('\u2066a\r\nb\u2069 ');
   for(const blank of ['',' ','\r\n'])expect([firstStrongIsolate(blank),ltrIsolate(blank)]).toEqual([blank,blank]);
+  // RT4 review: text that is already one whole isolate is not wrapped again; two isolates side by side, or an unbalanced PDI, are.
+  for(const whole of [`${LRI}Save As…${PDI}`,` ${FSI}نجم${PDI}  `,`${LRI}a ${FSI}-1${PDI} b${PDI}`])expect([firstStrongIsolate(whole),ltrIsolate(whole)]).toEqual([whole,whole]);
+  expect(ltrIsolate(`${FSI}a${PDI} ${FSI}b${PDI}`)).toBe(`${LRI}${FSI}a${PDI} ${FSI}b${PDI}${PDI}`);
+  expect(firstStrongIsolate(`${LRI}a${PDI}b${PDI}`)).toBe(`${FSI}${LRI}a${PDI}b${PDI}${PDI}`);
   for(const c of ['\u200e','\u200f','\u061c','\u202a','\u202e','\u2066','\u2069'])expect(BIDI_CONTROLS.test(c),c).toBe(true);
   expect(BIDI_CONTROLS.test('⟦نص⟧ -12.5 Hubble.HTL «Å»')).toBe(false);
  });
@@ -103,12 +107,18 @@ describe('Front RT4: a right-to-left load',()=>{
   expect(t('sky.pointed',{target:''})).toBe('التلسكوب موجه نحو .');expect(t('sky.pointed',{target:-12.5})).toBe(`التلسكوب موجه نحو ${FSI}-12.5${PDI}.`);
   // A translated format with no Arabic letter is left to right as a whole ("NF: NOMAD R", not "R NOMAD :NF").
   activateLocale(ar({messages:{'sky.pointed':'{target}:'} as never}),RTL);expect(t('sky.pointed',{target:'NF'})).toBe(`${LRI}${FSI}NF${PDI}:${PDI}`);
+  // RT4 review: such a format whose value brings Arabic letters is left to the right-to-left paragraph ("نجم:", read name first).
+  expect(t('sky.pointed',{target:'نجم'})).toBe(`${FSI}نجم${PDI}:`);
   activateLocale(ar(),RTL);
+  // RT4 review: runtime output passed on as a parameter keeps its one isolate (no FSI around an LRI).
+  expect(t('sky.pointed',{target:t('project.save')})).toBe(`التلسكوب موجه نحو ${LRI}Save investigation${PDI}.`);
   // An untranslated key is English: left to right as a whole, its parameters isolated inside.
   expect(t('project.save')).toBe(`${LRI}Save investigation${PDI}`);
   const key=(Object.keys(en) as MessageKey[]).find(k=>names(en[k]).length===1&&/^[A-Z]/.test(en[k])&&!en[k].startsWith('{'))!;
   const [name]=names(en[key]);
   expect(render(key,{[name]:'-12.5'})).toBe(LRI+en[key].replace(`{${name}}`,`${FSI}-12.5${PDI}`)+PDI);
+  // An English fallback stays left to right as a whole even when a value is Arabic.
+  expect(render(key,{[name]:'نجم'})).toBe(LRI+en[key].replace(`{${name}}`,`${FSI}نجم${PDI}`)+PDI);
  });
  it('vireo() isolates VIREO\'s English (untranslated, or every original under View original) and never a translation or a fragment piece',()=>{
   activateLocale(ar({originals:{CCD:'CCD',File:'ملف','Save As...':'حفظ باسم...','verb|Open':'افتح','fragment|Remove Selection #':'إزالة التحديد رقم '}}),RTL);
@@ -142,7 +152,7 @@ describe('Front RT4: a right-to-left load',()=>{
   expect(iso(-12.5)).toBe(`${FSI}-12.5${PDI}`);expect(iso('Hubble.HTL')).toBe(`${FSI}Hubble.HTL${PDI}`);expect(iso('')).toBe('');
   expect(plotText('طول الموجة · Å')).toBe(`${FSI}طول الموجة · Å${PDI}`);expect(ltrText('Star 12 moved')).toBe(`${LRI}Star 12 moved${PDI}`);
   // qps-rtl's catalog is complete and transformed: parameters isolated; a key is isolated left to right as a whole exactly when
-  // its text has no Arabic letter of its own (a format such as "{value}°", an acronym), whatever its parameters hold.
+  // neither its text (a format such as "{value}°", an acronym) nor its values have an Arabic letter (RT4 review).
   expect(t('sky.pointed',{target:'M82'})).toBe(pseudoRtl(en['sky.pointed']).replace('{target}',`${FSI}M82${PDI}`));
   expect(PSEUDO_SCRIPT['qps-rtl'](en['app.name'])).toBe(t('app.name'));
   let formats=0;
@@ -150,7 +160,7 @@ describe('Front RT4: a right-to-left load',()=>{
    if(!en[key].trim())continue;
    const values=sample(key,i),own=pseudoRtl(en[key]),shown=own.replace(/\{(\w+)\}/g,(_,n:string)=>values[n]?`${FSI}${values[n]}${PDI}`:'');
    const latin=!/\p{sc=Arabic}/u.test(own.replace(/\{\w+\}/g,''));if(latin)formats++;
-   expect(render(key,values),key).toBe(latin?ltrIsolate(shown):shown);
+   expect(render(key,values),key).toBe(latin&&!Object.values(values).some(v=>/\p{sc=Arabic}/u.test(v))?ltrIsolate(shown):shown);
   }
   expect(formats).toBeGreaterThan(20);
  });

@@ -46,9 +46,11 @@ function build(messages:Readonly<Partial<Record<MessageKey,string>>>,language:st
   if(!rtl)return text.replace(/\{(\w+)\}/g,(_,name:string)=>String(values[name]));
   // Front RT4: in a right-to-left load each value keeps its own order ("-12.5", "Hubble.HTL", an Arabic name), and a text with no
   // right-to-left letter of its own (an English fallback, a format such as "{a}: {b}" or "{n} km/s") is left to right as a whole,
-  // so its pieces keep their order ("Save As…", "NF: NOMAD R").
-  const out=text.replace(/\{(\w+)\}/g,(_,name:string)=>firstStrongIsolate(String(values[name])));
-  return hasRtlLetter(text.replace(/\{\w+\}/g,''))?out:ltrIsolate(out);
+  // so its pieces keep their order ("Save As…", "NF: NOMAD R"). A translated format whose values bring right-to-left letters is
+  // left to the right-to-left paragraph ("{name}: {value}" with an Arabic name reads name first); an English fallback never is.
+  let rtlValue=false;
+  const out=text.replace(/\{(\w+)\}/g,(_,name:string)=>{const value=String(values[name]);if(!rtlValue&&hasRtlLetter(value))rtlValue=true;return firstStrongIsolate(value);});
+  return hasRtlLetter(text.replace(/\{\w+\}/g,''))||(rtlValue&&Object.hasOwn(messages,key))?out:ltrIsolate(out);
  })as Translate;
  const decimal=new Intl.NumberFormat(numberLocale,{minimumFractionDigits:1}).formatToParts(1.1).find(p=>p.type==='decimal')!.value;
  const fixed=(value:number,digits:number)=>value.toFixed(digits).replace('.',decimal);
