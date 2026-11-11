@@ -123,8 +123,10 @@ function portugueseRegister(setting:Registers['pt']):{patterns:Pattern[];paired:
 
 // Front FR0 (plan front-i18n-fr.md §3–§4): one neutral international French. Spacing, apostrophes, quotes and thousands come from
 // the fixer's own view (frenchSpacing.ts), so the lint fails exactly what the fixer would still change; the patterns below are the
-// rest of §4.4. Words outside brackets (a VIREO English gloss) and quotes, as for Portuguese.
-const outsideFrenchGlosses=(r:RegExp)=>new RegExp(`(?:${r.source})(?![^(]*\\))(?![^“]*”)(?![^«]*»)`,r.flags);
+// rest of §4.4. Words outside brackets (a VIREO English gloss) and quotes, as for Portuguese, and (Front FR6) outside a
+// `{placeholder}` token, whose name is no word of the text («{cluster}» names the dataset; a real «cluster» beside a placeholder
+// is still caught). Every pattern passed here has the `u` flag (\p{…}).
+const outsideFrenchGlosses=(r:RegExp)=>new RegExp(`(?<!\\{[\\p{L}\\p{N}_]*)(?:${r.source})(?![\\p{L}\\p{N}_]*\\})(?![^(]*\\))(?![^“]*”)(?![^«]*»)`,r.flags);
 const FR_TU=['tu','Tu','te','Te','toi','Toi','ton','Ton','ta','Ta','tes','Tes','tien','tienne','tiens','tiennes'];
 const FR_TU_COMMANDS=['Clique','Choisis','Ouvre','Enregistre','Sélectionne','Saisis','Tape','Charge','Ferme','Vérifie','Utilise','Mesure','Pointe','Attends','Regarde','Vois','Fais','Mets','Appuie','Lis','Écris','Définis','Reviens','Recharge','Restaure','Télécharge','Essaie','Suis','Laisse','Commence','Coche','Garde','Note'];
 const FR_VOUS_COMMANDS=['Cliquez','Choisissez','Ouvrez','Enregistrez','Sélectionnez','Saisissez','Tapez','Chargez','Fermez','Vérifiez','Utilisez','Mesurez','Pointez','Attendez','Regardez','Voyez','Faites','Mettez','Appuyez','Lisez','Écrivez','Définissez','Revenez','Rechargez','Restaurez','Téléchargez','Essayez','Suivez','Laissez','Commencez','Cochez','Gardez','Notez'];
@@ -167,6 +169,8 @@ function frenchProfile(setting:Registers['fr']):LocaleProfile{
   claims:[/(?<!pas (?:une |la )?)traduction officielle/iu,/(?<!pas (?:une |la )?)traduction (?:officielle )?du (?:Project )?CLEA/iu,/(?<!pas (?:un |le )?)texte du (?:Project )?CLEA/iu],
   // First proposal (plan §4.4), calibrated on FR0's shell batch (docs/I18N.md, FR0).
   lengthBand:[.7,1.7],pluralCategories:['one','many','other'],optionalPluralCategories:OPTIONAL_PLURAL_CATEGORIES.fr,
+  // Front FR6: a {placeholder}'s name is set aside before the glossary's forbidden words too («{cluster}» names the dataset).
+  forbiddenSetAside:/\{[\p{L}\p{N}_]+\}/u,
  };
 }
 

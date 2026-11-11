@@ -23,6 +23,9 @@ export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={
  'es-419':new Set(['Bytes','Zoom','Horizontal','Panel','Vertical (s)','No']),
  // Portuguese also keeps VIREO's OK (Windows pt-BR; identical.json `original:OK`).
  'pt-BR':new Set(['Bytes','Zoom','Horizontal','Vertical (s)','OK']),
+ // Front FR6: French keeps the same words (identical.json: Zoom, Horizontal, Vertical (s), Gain, Points, VIREO's OK, Portrait and
+ // «- Page 2»); it translates Bytes («Octets») and Panel («Panneau»).
+ fr:new Set(['Zoom','Horizontal','Vertical (s)','Gain','Points','OK','Portrait','- Page 2']),
 };
 /** "Panel {n}" is the same in Spanish; Portuguese says «Painel {n}». */
 export const PANEL_IN:Readonly<Record<string,RegExp>>={'es-419':/^Panel \d$/};

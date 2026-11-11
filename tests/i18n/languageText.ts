@@ -105,10 +105,10 @@ export const SPANISH_TEXT=language('es-419',es,esOriginals,{appShell:APP_SHELL_E
 export const PORTUGUESE_TEXT=language('pt-BR',pt,ptOriginals,{appShell:APP_SHELL_PT,helpMenu:HELP_MENU_PT,projectLinks:PROJECT_LINKS_PT,tour:TOUR_PT,languageChoice:LANGUAGE_CHOICE_PT},
  [APP_SHELL_PT,CAMERA_PT,FIELD_INFO_PT,FIELD_READ_DETAILS_PT,HELP_MENU_PT,LANGUAGE_CHOICE_PT,NAKED_EYE_PT,OBJECT_X_LAB_PT,OBSERVATION_METADATA_PT,OBSERVATORY_PT,POLISH_PT,PROJECT_LINKS_PT,QSO_LIST_PT,SOUND_PT,TOUR_PT,VARIABLE_STARS_PT],/[ãõçâêôàáéíóú]/i,'');
 /** Front FR0: French before its release, behind `?lang=fr` (an en-US browser: tests/fixtures/language.ts contextLocale). FR0
- * translated the shell, FR1 the observatory and all of VIREO's originals, FR2 exercises E01 and E02, FR3 exercise E03, FR4 exercises E04 and E05, FR5 the radio telescope; FR6 and FR-HELP add their areas to `done` and
- * their maps below. Its letters include « » and U+202F, which English text never has. */
+ * translated the shell, FR1 the observatory and all of VIREO's originals, FR2 exercises E01 and E02, FR3 exercise E03, FR4 exercises E04 and E05, FR5 the radio telescope, FR6 exercises E06 and E08; FR-HELP adds its area to
+ * `done` and its maps below. Its letters include « » and U+202F, which English text never has. */
 export const FRENCH_TEXT=language('fr',fr,frOriginals,{appShell:APP_SHELL_FR,helpMenu:HELP_MENU_FR,projectLinks:PROJECT_LINKS_FR,tour:TOUR_FR,languageChoice:LANGUAGE_CHOICE_FR},
- [APP_SHELL_FR,CAMERA_FR,FIELD_INFO_FR,FIELD_READ_DETAILS_FR,HELP_MENU_FR,LANGUAGE_CHOICE_FR,NAKED_EYE_FR,OBJECT_X_LAB_FR,OBSERVATION_METADATA_FR,OBSERVATORY_FR,POLISH_FR,PROJECT_LINKS_FR,QSO_LIST_FR,SOUND_FR,TOUR_FR,VARIABLE_STARS_FR],/[àâæçéèêëîïôœùûüÿ«»\u202f]/i,'?lang=fr',['shell','observatory','e01','e02','e03','e04','e05','radio']);
+ [APP_SHELL_FR,CAMERA_FR,FIELD_INFO_FR,FIELD_READ_DETAILS_FR,HELP_MENU_FR,LANGUAGE_CHOICE_FR,NAKED_EYE_FR,OBJECT_X_LAB_FR,OBSERVATION_METADATA_FR,OBSERVATORY_FR,POLISH_FR,PROJECT_LINKS_FR,QSO_LIST_FR,SOUND_FR,TOUR_FR,VARIABLE_STARS_FR],/[àâæçéèêëîïôœùûüÿ«»\u202f]/i,'?lang=fr',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08']);
 /** Every translated language of the registry, in its order (a test fails if a registered language has no text here). */
 export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT]);
 /** Front FR0: the languages that run the specs of `area` (those whose `done` has it), in registry order. */
@@ -185,6 +185,11 @@ import {SAVED_ROWS_PT} from '../../src/i18n/pt-br/maps/pulsarSavedRows';
 import {LOAD_SAVE_PT} from '../../src/i18n/pt-br/maps/pulsarLoadSave';
 import {OBJECT_X_GUIDE_PT} from '../../src/i18n/pt-br/maps/objectXGuide';
 import {OBJECT_X_MEASURE_PT} from '../../src/i18n/pt-br/maps/objectXMeasure';
+import {PULSAR_FR} from '../../src/i18n/fr/maps/pulsar';
+import {SAVED_ROWS_FR} from '../../src/i18n/fr/maps/pulsarSavedRows';
+import {LOAD_SAVE_FR} from '../../src/i18n/fr/maps/pulsarLoadSave';
+import {OBJECT_X_GUIDE_FR} from '../../src/i18n/fr/maps/objectXGuide';
+import {OBJECT_X_MEASURE_FR} from '../../src/i18n/fr/maps/objectXMeasure';
 import type {PULSAR_MESSAGES_EN} from '../../src/components/PulsarMessages';
 import type {SAVED_ROWS_MESSAGES_EN} from '../../src/components/PulsarSavedRowsMessages';
 import type {LOAD_SAVE_MESSAGES_EN} from '../../src/components/PulsarLoadSaveMessages';
@@ -194,12 +199,16 @@ export type E06Maps=Readonly<{pulsar:Translation<typeof PULSAR_MESSAGES_EN>;puls
 export const E06_MAPS:Readonly<Record<string,E06Maps>>=Object.freeze({
  'es-419':{pulsar:PULSAR_ES,pulsarSavedRows:SAVED_ROWS_ES,pulsarLoadSave:LOAD_SAVE_ES},
  'pt-BR':{pulsar:PULSAR_PT,pulsarSavedRows:SAVED_ROWS_PT,pulsarLoadSave:LOAD_SAVE_PT},
+ // Front FR6: French (its ?lang=fr preview).
+ fr:{pulsar:PULSAR_FR,pulsarSavedRows:SAVED_ROWS_FR,pulsarLoadSave:LOAD_SAVE_FR},
 });
 export const e06Maps=(tag:string):E06Maps=>{const m=E06_MAPS[tag];if(!m)throw new Error(`No E06 maps for ${tag}`);return m;};
 export type E08Maps=Readonly<{objectXLab:Translation<typeof OBJECT_X_LAB_EN>;objectXGuide:Translation<typeof OBJECT_X_GUIDE_EN>;objectXMeasure:Translation<typeof OBJECT_X_MEASURE_EN>;camera:Translation<typeof CAMERA_MESSAGES_EN>;sound:unknown}>;
 export const E08_MAPS:Readonly<Record<string,E08Maps>>=Object.freeze({
  'es-419':{objectXLab:OBJECT_X_LAB_ES,objectXGuide:OBJECT_X_GUIDE_ES,objectXMeasure:OBJECT_X_MEASURE_ES,camera:CAMERA_ES,sound:SOUND_ES},
  'pt-BR':{objectXLab:OBJECT_X_LAB_PT,objectXGuide:OBJECT_X_GUIDE_PT,objectXMeasure:OBJECT_X_MEASURE_PT,camera:CAMERA_PT,sound:SOUND_PT},
+ // Front FR6: French (its ?lang=fr preview).
+ fr:{objectXLab:OBJECT_X_LAB_FR,objectXGuide:OBJECT_X_GUIDE_FR,objectXMeasure:OBJECT_X_MEASURE_FR,camera:CAMERA_FR,sound:SOUND_FR},
 });
 export const e08Maps=(tag:string):E08Maps=>{const m=E08_MAPS[tag];if(!m)throw new Error(`No E08 maps for ${tag}`);return m;};
 // Front PT-HELP: what the help spec (tests/i18n/help.spec.ts) reads per language beyond the catalog and originals: the help
