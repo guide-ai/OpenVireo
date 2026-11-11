@@ -70,7 +70,7 @@ export const POLISH_FR:Translation<typeof POLISH_MESSAGES_EN>=Object.freeze({
    'Les sept TP de VIREO ont un parcours web pour les étudiants : la loi de Hubble (13 galaxies), la structure à grande échelle, la classification stellaire, la photométrie des Pléiades (24 étoiles), les diagrammes HR d’amas, les pulsars et la quête de l’Objet X.',
    'Observatoire optique : coupole, télescopes, vues du chercheur et du télescope, déplacement du télescope avec la limite d’horizon facultative, listes d’objets, site et date, informations sur le champ et le catalogue, et listes d’étoiles variables et de QSO.',
    'Instruments : spectromètre et photomètre pour les cibles des TP, caméras CCD et infrarouge (interrogation du catalogue en direct), spectromètre multiobjet (Multi-Spec, sur les champs de TP inclus et dans le TP de l’Objet X) et radiotélescope avec son récepteur et l’analyse de pulsars.',
-   'Analyse : mesure et classification des spectres, ajustements de Hubble et des Pléiades, diagramme en coin LSS, vos résultats d’observation et les investigations enregistrées.',
+   'Analyse : mesure et classification des spectres, ajustements de Hubble et des Pléiades, diagramme en cône LSS, vos résultats d’observation et les investigations enregistrées.',
   ]),
   privacyTitle:'Confidentialité',
   privacy:Object.freeze([

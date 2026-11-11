@@ -34,6 +34,9 @@ import {QSO_LIST_MESSAGES_EN} from '../../observatory/QsoListMessages';
 import {SOUND_MESSAGES_EN} from '../../sound/SoundMessages';
 import {OBSERVATION_METADATA_EN} from '../../ObservationMetadataMessages';
 import {CAMERA_MESSAGES_EN} from '../../camera/CameraMessages';
+import {ENGINE_VIEW_EN} from '../../SpectrumEngineMessages';
+import {SPECTRAL_RANGE_EN} from '../../SpectralRangeMessages';
+import {WEDGE_MESSAGES_EN} from '../../components/WedgeMessages';
 
 // Front FR0 (docs/I18N.md, "French: the folder, lints and shell (FR0)"; plan front-i18n-fr.md §4, §6.2): the structural checks of
 // the partial French bundle, the French typography fixer as a no-op over every French string, and every string through the SC4
@@ -44,10 +47,11 @@ import {CAMERA_MESSAGES_EN} from '../../camera/CameraMessages';
 // string literals of maps/*.ts and help/*.ts with the fixer (src/i18n/lint/frenchSpacing.ts), writing the characters literally
 // (never `\u202f` or `\u2019` escapes: scripts/check-i18n-dist.mjs reads map literals as written), then checks as usual. A VIREO
 // `fragment|` original keeps its straight quotes (another piece of VIREO's text closes them).
-const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,nakedEye:NAKED_EYE_MESSAGES_EN,objectXLab:OBJECT_X_LAB_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN};
-/** The maps translated completely (FR0's shell maps; FR1's observatory maps, the camera card the observatory shows, and polish); the
+const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,nakedEye:NAKED_EYE_MESSAGES_EN,objectXLab:OBJECT_X_LAB_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN};
+/** The maps translated completely (FR0's shell maps; FR1's observatory maps, the camera card the observatory shows, and polish; FR2's
+ * engineView, spectralRange and wedge); the
  * others are partial until their front (objectXLab FR6, variableStars FR4). */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera'];
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge'];
 /** FR0's area of en.json: the shell (header, menu, home and first steps, toolbar, errors, instructor mode, document title), as PT0's. */
 const SHELL_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(app|project|session|error|instructorMode)\./.test(k)||/\.nav$/.test(k)||['demonstrationMode.banner','sky.eyebrow','sky.title','sky.subtitle','sky.about','sky.local','sky.observatory','sky.analyzer','sky.step1','sky.step1Help','sky.step2','sky.step2Help','sky.step3','sky.step3Help','spectrum.tools','classLink.cancel'].includes(k));
 /** Front FR1's area of en.json: PT1's observatory keys (the observatory route, its instruments' cards and the guide keys those
@@ -57,6 +61,12 @@ const FR1_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>OBSERVATORY_PREFIXES.
 /** PT1's keys outside those prefixes that the observatory files render (the classification and Pleiades guides' pointing
  * steps, the photometer card, the continuity notes the route shows): 104 keys, pinned so a lost key fails. */
 const FR1_GUIDE_KEYS:readonly MessageKey[]=['spectrum.licenseHelp','spectrometer.open','continuity.starSource','continuity.acquireFromObservatory','continuity.pointingHelp','galaxyExposure.acquireFromObservatory','galaxyExposure.pointingHelp','galaxyExposure.source','classLab.next.choose','classLab.next.compare','classLab.next.inspect','classLab.next.record','classLab.next.save','classLab.step.choose.title','classLab.step.choose.help','classLab.step.compare.title','classLab.step.compare.help','classLab.step.inspect.title','classLab.step.inspect.help','classLab.step.record.title','classLab.step.record.help','classLab.step.save.title','classLab.step.save.help','classLab.problem.load','classLab.recover.load','classLab.problem.draft','classLab.recover.draft','classLab.problem.limit','classLab.recover.limit','classLab.problem.width','classLab.recover.width','classLab.problem.import','classLab.recover.import','ph.readingOption','ph.unavailableMixed','ph.unavailableAssociation','ph.access.ready','ph.access.pointing','ph.access.dome','ph.access.finder','ph.access.moving','ph.domainLimit.Poisson-mean-bound','ph.domainLimit.all-duration-count-domain','ph.apertureReadingOption','pleiadesPoint.eyebrow','pleiadesPoint.title','pleiadesPoint.admitted','pleiadesPoint.open','pleiadesPoint.unavailable','pleiadesPoint.telescope','pleiadesPoint.checking','pleiadesPoint.help','pleiadesLab.next.list','pleiadesLab.next.point','pleiadesLab.next.activate','pleiadesLab.next.measure','pleiadesLab.next.record','pleiadesLab.next.color','pleiadesLab.next.sample','pleiadesLab.next.distance','pleiadesLab.next.save','pleiadesLab.step.list.title','pleiadesLab.step.list.help','pleiadesLab.step.point.title','pleiadesLab.step.point.help','pleiadesLab.step.activate.title','pleiadesLab.step.activate.help','pleiadesLab.step.measure.title','pleiadesLab.step.measure.help','pleiadesLab.step.record.title','pleiadesLab.step.record.help','pleiadesLab.step.color.title','pleiadesLab.step.color.help','pleiadesLab.step.sample.title','pleiadesLab.step.sample.help','pleiadesLab.step.distance.title','pleiadesLab.step.distance.help','pleiadesLab.step.save.title','pleiadesLab.step.save.help','pleiadesLab.problem.card','pleiadesLab.recover.card','pleiadesLab.problem.blocked','pleiadesLab.recover.blocked','pleiadesLab.problem.start','pleiadesLab.recover.start','pleiadesLab.problem.sky','pleiadesLab.recover.sky','pleiadesLab.problem.budget','pleiadesLab.recover.budget','notes.summary','ph.tiledReason.object-x-hidden','ph.tiledReason.field-polar','ph.tiledReason.photometer-galaxy-name','ph.tiledReason.photometer-variable','ph.tiledReason.photometer-selection','ph.tiledReason.photometer-empty','ph.tiledReason.photometer-population','ph.tiledLimit.Poisson-mean-bound','ph.tiledLimit.all-duration-count-domain','ph.tiledLimit.photometer-galaxy-sky-stamp','demonstrationMode.adaptation','ph.parametersDomain.base-count','ph.parametersDomain.timer','ph.parametersDomain.magnitude'];
+/** Front FR2's area of en.json: PT2's keys (exercise E01, Hubble's law, and E02, large-scale structure: the two guides, the Hubble
+ * diagram, velocities and own Observational Results, the analyser, the galaxy, sky and star exposures, `.SSP`, drift and sky
+ * profiles, the single-slit spectrometer at a free pointing, the LSS survey and the wedge), every key of their prefixes, and
+ * `classLink.open` (the star exposure's button the E01 walk shows). */
+const E01_E02_PREFIXES=/^(continuity|lab|lssLab|hubble|velocity|ownResults|spectrum|spectrometer|galaxyExposure|skyExposure|starExposure|ssp|exposureIO|drift|skyProfiles|fieldSpec|lss|wedge)\./;
+const FR2_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E01_E02_PREFIXES.test(k)||k==='classLink.open');
 /** VIREO originals that Spanish keeps with no entry (its word equals VIREO's, and the vireo() site is one the source guard cannot
  * resolve, src/i18n/vireoSites.test.ts), as for Portuguese: the options dialog's General tab («Général») and the Site Information
  * longitude letter E (Est, kept: identical.json). */
@@ -102,6 +112,10 @@ describe('Front FR0: the French (fr) bundle',()=>{
   // The welcome's home.* keys (Front HOME, 2026-11-10, after FR0): the observatory walk starts on the welcome page.
   const home=(Object.keys(en) as MessageKey[]).filter(k=>k.startsWith('home.'));
   expect(home.length).toBe(26);expect(home.filter(k=>!Object.hasOwn(fr,k))).toEqual([]);
+ });
+ it('Front FR2: the catalog covers E01 and E02 (every key of their prefixes, and classLink.open)',()=>{
+  expect(FR2_KEYS.length).toBeGreaterThan(780);
+  expect(FR2_KEYS.filter(k=>!Object.hasOwn(fr,k))).toEqual([]);
  });
  it('every map has its English shape: the shell maps complete, the header-name maps partial',()=>{
   for(const [id,map] of Object.entries(FRENCH.maps??{})){
