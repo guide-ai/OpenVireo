@@ -32,7 +32,7 @@ async function acquire(page:Page){
 }
 test('Hubble.HTL → UM-I – 3 cached pan → manual z → Hubble → Save (v29), fresh Restore, resume',async({page})=>{
  test.setTimeout(120000);
- const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();await page.goto('/');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();await page.goto('/#observatory');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
  await loadHubble(page);await toGalaxy(page);const source=await acquire(page);
  await expect(page.locator('#measurement-log tbody tr')).toHaveCount(1);await expect(page.locator('#measurement-log')).toContainText(T.id);
  await page.getByText('Hubble diagram & distances',{exact:true}).click();await page.getByRole('button',{name:'Add saved measurements',exact:true}).click();await page.getByLabel('Distance and summary recipe').selectOption('vireo');
@@ -50,7 +50,7 @@ test('Hubble.HTL → UM-I – 3 cached pan → manual z → Hubble → Save (v29
  expect(errors).toEqual([]);
 });
 test('UM-I – 3 on the KPNO 0.9 m is reported, never acquired, and the telescope is not switched',async({page})=>{
- const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();await page.goto('/');
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();await page.goto('/#observatory');
  await page.getByLabel('Telescope profile to inspect or select').selectOption('1');await page.getByRole('button',{name:'Use this telescope',exact:true}).click();
  await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await loadHubble(page);await pointRow(page,T.row);
  await expect(page.getByTestId('hubble-point-card')).toHaveAttribute('data-status','telescope');await expect(page.getByTestId('hubble-point-telescope')).toContainText('only on the 0.4m telescope');
@@ -61,7 +61,7 @@ test('UM-I – 3 on the KPNO 0.9 m is reported, never acquired, and the telescop
 });
 test('320 px: UM-I – 3 row to acquisition without horizontal scrolling',async({page})=>{
  test.setTimeout(60000);
- await page.setViewportSize({width:320,height:800});await page.clock.install();await page.goto('/');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await loadHubble(page);
+ await page.setViewportSize({width:320,height:800});await page.clock.install();await page.goto('/#observatory');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await loadHubble(page);
  await toGalaxy(page);await acquire(page);await expect(page.locator('#measurement-log')).toContainText(T.id);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:'test-results/hubble-umi3-mobile.png',fullPage:true});
 });

@@ -2,6 +2,7 @@ import {activeBundle} from './index';
 import {current,notePendingText,pendingTextRequests} from './active';
 import {completeWithEnglish,mapParity} from './parity';
 import {isReleased} from './languages';
+import {isolateMap} from './isolates';
 import type {MapId,MessageMaps} from './maps';
 export type {MapId,MessageMaps,Translation} from './maps';
 /** Front ES0 [W]: the `*Messages.ts` maps are chosen per load (docs/I18N.md). Each English map stays the typed source; a module
@@ -61,6 +62,10 @@ const registered=new Map<MapId,unknown>();
  * that map stays English and the problem is logged. */
 export function resolveMessages<K extends MapId>(id:K,english:MessageMaps[K]):MessageMaps[K]{
  const bundle=activeBundle();if(!bundle)return english;
+ // Front RT4: in a right-to-left load the English a map falls back to (a missing map, area or leaf, a map that did not match) is
+ // isolated left to right, and so are a derived map's function results (the pseudo-locale's English data sentences). In every
+ // other load `ltr` and `data` are the English map itself.
+ const rtl=current().rtl,ltr=()=>rtl?isolateMap(english,{strings:true}):english,data=()=>rtl?isolateMap(english,{strings:false}):english;
  if(bundle.maps&&Object.hasOwn(bundle.maps,id)){
   const own=bundle.maps[id];
   if(!mapParity(english,own).length)return own as MessageMaps[K];
@@ -68,15 +73,15 @@ export function resolveMessages<K extends MapId>(id:K,english:MessageMaps[K]):Me
   // ES-REL a Spanish map must be complete (src/i18n/es/es.test.ts checks every map id statically). Front SC8: the gate is the
   // registry's per-language `released` (src/i18n/languages.ts).
   const partial=!isReleased(bundle.language),problems=mapParity(english,own,'$',{partial});
-  if(!problems.length)return completeWithEnglish(english,own);
+  if(!problems.length)return completeWithEnglish(ltr(),own);
   const message=`OpenVireo: the ${bundle.language} map "${id}" does not match the English map (${problems.slice(0,5).join('; ')}); English is used.`;
   if(strict())throw new Error(message);
-  console.error(message);return english;
+  console.error(message);return ltr();
  }
  // Front ES-SPLIT: a map of a route area that has not arrived (or failed: then English without an error).
  const areas=bundle.mapModules?.[id];
- if(areas){notePendingText(current(),`map "${id}"`,areas);return english;}
- return bundle.deriveMap?bundle.deriveMap(english):english;
+ if(areas){notePendingText(current(),`map "${id}"`,areas);return ltr();}
+ return bundle.deriveMap?bundle.deriveMap(data()):ltr();
 }
 /** The registered map for `id`, chosen on first use (see resolveMessages). */
 export function pickMessages<K extends MapId>(id:K,english:MessageMaps[K]):MessageMaps[K]{

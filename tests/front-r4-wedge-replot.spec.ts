@@ -14,7 +14,7 @@ async function acquireAndRecord(page:Page,row:number,shift:string){
 test('LSS Record Z OK: the 0x583b20 text before the wedge was shown; afterwards a silent whole-list re-plot (0x58383c); Cancel does nothing',async({page})=>{
  test.setTimeout(180000);
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
- await page.clock.install();await page.goto('/');await clickHeaderTool(page,'LSS survey');
+ await page.clock.install();await page.goto('/#observatory');await clickHeaderTool(page,'LSS survey');
  const heading=page.getByRole('heading',{name:'Large-scale structure survey',exact:true});await expect(heading).toBeVisible();
  await page.getByLabel('Survey field',{exact:true}).selectOption('1');await page.getByRole('button',{name:'Load selected list',exact:true}).click();
  await expect(page.getByTestId('lss-rows')).toBeVisible({timeout:30000});

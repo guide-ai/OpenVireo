@@ -24,7 +24,7 @@ async function acquireAndRecord(page:Page,row:number,position:string,remarks:str
 async function survey(page:Page){await clickHeaderTool(page,'LSS survey');await expect(page.getByRole('heading',{name:'Large-scale structure survey',exact:true})).toBeVisible();}
 test('E02 Save (v30 over v27) → fresh context Restore → records replayed, description kept, observing continues',async({page,browser})=>{
  test.setTimeout(180000);
- await page.clock.install();await page.goto('/');await survey(page);await load(page,'1');
+ await page.clock.install();await page.goto('/#observatory');await survey(page);await load(page,'1');
  await acquireAndRecord(page,1,'20','first galaxy');
  await page.getByLabel('Describe the structure you see (not graded)',{exact:true}).fill('A wall near 12 h?');
  // Offline (Front F2): the replay reuses the verified CLEA_GLX.DAT, GLXYSP.LST, CLEA_QSO.DAT and GLIMAGES.LST.
@@ -32,7 +32,7 @@ test('E02 Save (v30 over v27) → fresh context Restore → records replayed, de
  expect(data.version).toBe(31);expect(data.lssNativeDialogIds).toEqual([1]);expect(data.base.version).toBe(30);expect(data.base.lssFieldJds).toHaveLength(1);expect(lssLayer(data).version).toBe(27);expect(lssLayer(data).lss.records).toHaveLength(1);expect(lssLayer(data).lss.journals).toHaveLength(1);expect(lssLayer(data).lss.journals[0].events).toMatch(/^s 100\*15 p$/);expect(lssLayer(data).lssDigestSHA256).toMatch(/^[a-f0-9]{64}$/);
  // Fresh browser context: nothing in memory, restore from the file.
  const context=await browser.newContext(),fresh=await context.newPage();const errors:string[]=[];fresh.on('pageerror',e=>errors.push(e.message));
- await fresh.clock.install();await fresh.goto('/');await restore(fresh,saved);
+ await fresh.clock.install();await fresh.goto('/#observatory');await restore(fresh,saved);
  await expect(fresh.getByText('Session restored. The current spectrum and measurement arithmetic were checked.')).toBeAttached({timeout:30000});
  await survey(fresh);await expect(fresh.getByTestId('lss-record-count')).toHaveText('1 records');
  await expect(fresh.getByTestId('lss-results')).toContainText('first galaxy');
@@ -53,7 +53,7 @@ test('E02 Save (v30 over v27) → fresh context Restore → records replayed, de
 });
 test('wedge options restore with the survey; restore drops the wedge’s own LSS points so a re-plot never duplicates them',async({page,browser})=>{
  test.setTimeout(180000);
- await page.clock.install();await page.goto('/');await survey(page);await load(page,'1');await acquireAndRecord(page,1,'20','one');
+ await page.clock.install();await page.goto('/#observatory');await survey(page);await load(page,'1');await acquireAndRecord(page,1,'20','one');
  await page.getByRole('button',{name:'Plot my records in the wedge',exact:true}).click();await expect(page.getByTestId('wedge-count')).toHaveText('Points Plotted: 1');
  await page.getByTestId('wedge-options-open').click();await page.getByTestId('wedge-grid-1').check();await page.getByTestId('wedge-size-3').check();await page.getByTestId('wedge-style-1').check();await page.getByTestId('wedge-options-ok').click();
  const saved=await save(page);expect(lssLayer(JSON.parse(saved.toString())).lss.wedgeOptions).toEqual({grid:1,pointSize:3,pointStyle:1});
@@ -62,7 +62,7 @@ test('wedge options restore with the survey; restore drops the wedge’s own LSS
  await survey(page);await page.getByRole('button',{name:'Plot my records in the wedge',exact:true}).click();await expect(page.getByTestId('wedge-count')).toHaveText('Points Plotted: 1');
  await expect(page.getByTestId('wedge-point-0')).toHaveAttribute('r','3');await expect(page.getByTestId('wedge-point-0')).toHaveClass(/filled/);
  // Fresh context: the options come back with the file.
- const context=await browser.newContext(),fresh=await context.newPage();await fresh.goto('/');await restore(fresh,saved);
+ const context=await browser.newContext(),fresh=await context.newPage();await fresh.goto('/#observatory');await restore(fresh,saved);
  await expect(fresh.getByText('Session restored. The current spectrum and measurement arithmetic were checked.')).toBeAttached({timeout:30000});
  await survey(fresh);await expect(fresh.getByTestId('lss-record-count')).toHaveText('1 records');
  await fresh.getByRole('button',{name:'Plot my records in the wedge',exact:true}).click();await expect(fresh.getByTestId('wedge-count')).toHaveText('Points Plotted: 1');
@@ -80,7 +80,7 @@ test('wedge options restore with the survey; restore drops the wedge’s own LSS
 // earlier race (the hand-over overwrote the restored options) deterministic; it does not depend on the time of day.
 test('a wedge panel that first mounts with a restore and a Plot pending applies both in order',async({page,browser})=>{
  test.setTimeout(180000);
- await page.clock.install();await page.goto('/');await survey(page);await load(page,'1');await acquireAndRecord(page,1,'20','one');
+ await page.clock.install();await page.goto('/#observatory');await survey(page);await load(page,'1');await acquireAndRecord(page,1,'20','one');
  await page.getByRole('button',{name:'Plot my records in the wedge',exact:true}).click();await expect(page.getByTestId('wedge-count')).toHaveText('Points Plotted: 1');
  await page.getByTestId('wedge-options-open').click();await page.getByTestId('wedge-grid-1').check();await page.getByTestId('wedge-size-3').check();await page.getByTestId('wedge-style-1').check();await page.getByTestId('wedge-options-ok').click();
  const saved=await save(page);
@@ -89,7 +89,7 @@ test('a wedge panel that first mounts with a restore and a Plot pending applies 
   const context=await browser.newContext();let release!:()=>void;const held=new Promise<void>(r=>{release=r;});
   await context.route(/\/src\/components\/WedgeLab\.tsx(\?|$)/,async route=>{await held;await route.continue();});
   const fresh=await context.newPage();const errors:string[]=[];fresh.on('pageerror',e=>errors.push(e.message));
-  await fresh.goto('/');await restore(fresh,saved);await expect(fresh.getByText(restored)).toBeAttached({timeout:30000});
+  await fresh.goto('/#observatory');await restore(fresh,saved);await expect(fresh.getByText(restored)).toBeAttached({timeout:30000});
   await survey(fresh);await expect(fresh.getByTestId('lss-record-count')).toHaveText('1 records');
   return {context,fresh,errors,release};
  }
@@ -121,7 +121,7 @@ test('the description refuses pasted control characters inline and Save keeps wo
 });
 test('Front L3: Record Z on an already recorded galaxy updates its row (first JD kept), and the wedge re-plot keeps one point',async({page})=>{
  test.setTimeout(180000);
- await page.clock.install();await page.goto('/');await survey(page);await load(page,'1');
+ await page.clock.install();await page.goto('/#observatory');await survey(page);await load(page,'1');
  await acquireAndRecord(page,1,'20','first');
  const results=page.getByTestId('lss-results'),cells=async()=>(await results.locator('tbody tr').first().locator('td').allInnerTexts());
  const before=await cells();

@@ -33,11 +33,11 @@ for(const S of SEO_LANGUAGES.slice(1) as SeoLanguage[]){
   await page.getByRole('link',{name:S.ui.openObservatory}).first().click();
   await expect(page.getByRole('heading',{level:1,name:C['sky.title']})).toBeVisible({timeout:15_000});
   await expect(page.locator('html')).toHaveAttribute('lang',S.tag);
-  expect(new URL(page.url()).search).toBe(lang);expect(await stored(page)).toBeNull();
+  expect(new URL(page.url()).search).toBe(lang);expect(new URL(page.url()).hash).toBe('#observatory');expect(await stored(page)).toBeNull();
   // An English browser opening the plain address afterwards still gets English (nothing was stored).
-  await page.goto('/');await expect(page.getByRole('heading',{level:1,name:en['sky.title']})).toBeVisible({timeout:15_000});
+  await page.goto('/');await expect(page.getByRole('heading',{level:1,name:en['home.title']})).toBeVisible({timeout:15_000});
   await page.goto(`${P}/`);await site(page).getByRole('link',{name:'English'}).click();
-  await expect(page.getByRole('heading',{level:1,name:en['sky.title']})).toBeVisible({timeout:15_000});
+  await expect(page.getByRole('heading',{level:1,name:en['home.title']})).toBeVisible({timeout:15_000});
   expect(new URL(page.url()).search).toBe('?lang=en');
   expect(errors).toEqual([]);
  });
@@ -45,7 +45,7 @@ for(const S of SEO_LANGUAGES.slice(1) as SeoLanguage[]){
  test(title(L,'a Spanish browser that follows English from /es/ gets English, as ?lang=en beats the browser language','a <L> browser that follows English from <p>/ gets English, as ?lang=en beats the browser language'),async({browser})=>{
   const context=await browser.newContext({locale:contextLocale(S.tag)});const page=await context.newPage();
   await page.goto(`${P}/`);await site(page).getByRole('link',{name:'English'}).click();
-  await expect(page.getByRole('heading',{level:1,name:en['sky.title']})).toBeVisible({timeout:15_000});
+  await expect(page.getByRole('heading',{level:1,name:en['home.title']})).toBeVisible({timeout:15_000});
   await expect(page.locator('html')).toHaveAttribute('lang','en');
   await context.close();
  });
@@ -58,7 +58,7 @@ for(const S of SEO_LANGUAGES.slice(1) as SeoLanguage[]){
    const dialog=page.locator('dialog[open]');
    await expect(dialog).toBeVisible({timeout:15_000});await expect(dialog).toContainText(guide);
    await expect(page.locator('html')).toHaveAttribute('lang',S.tag);
-   await expect.poll(()=>page.evaluate(()=>[location.search,location.hash])).toEqual([lang,'']);
+   await expect.poll(()=>page.evaluate(()=>[location.search,location.hash])).toEqual([lang,'#observatory']);
    expect(await stored(page)).toBeNull();
   });
 

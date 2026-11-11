@@ -35,6 +35,16 @@ import {POLISH_PT} from '../../src/i18n/pt-br/maps/polish';
 import {QSO_LIST_PT} from '../../src/i18n/pt-br/maps/qsoList';
 import {SOUND_PT} from '../../src/i18n/pt-br/maps/sound';
 import {VARIABLE_STARS_PT} from '../../src/i18n/pt-br/maps/variableStars';
+import fr from '../../src/i18n/fr/fr.json' with {type:'json'};
+import frOriginals from '../../src/i18n/fr/originals.json' with {type:'json'};
+import {APP_SHELL_FR} from '../../src/i18n/fr/maps/appShell';
+import {HELP_MENU_FR} from '../../src/i18n/fr/maps/helpMenu';
+import {PROJECT_LINKS_FR} from '../../src/i18n/fr/maps/projectLinks';
+import {TOUR_FR} from '../../src/i18n/fr/maps/tour';
+import {LANGUAGE_CHOICE_FR} from '../../src/i18n/fr/maps/languageChoice';
+import {OBJECT_X_LAB_FR} from '../../src/i18n/fr/maps/objectXLab';
+import {POLISH_FR} from '../../src/i18n/fr/maps/polish';
+import {VARIABLE_STARS_FR} from '../../src/i18n/fr/maps/variableStars';
 import {LANGUAGES,failureNotice,type LanguageEntry} from '../../src/i18n/languages';
 import type {Translation} from '../../src/i18n/maps';
 import type {APP_SHELL_MESSAGES_EN} from '../../src/components/AppShellMessages';
@@ -51,8 +61,15 @@ export type ShellMaps=Readonly<{
  appShell:Translation<typeof APP_SHELL_MESSAGES_EN>;helpMenu:Translation<typeof HELP_MENU_EN>;projectLinks:Translation<typeof PROJECT_LINKS_EN>;
  tour:Translation<typeof TOUR_EN>;languageChoice:Translation<typeof LANGUAGE_CHOICE_EN>;
 }>;
+/** Front FR0 (plan front-i18n-fr.md §1.2 #1): the areas a language-parameterised spec covers. A language runs a spec only once that
+ * spec's area is complete for it (`done`), so registering a language before its release (French) does not run the walks of areas it
+ * has not translated yet. Each front adds its area to its language's `done`. */
+export type Area='shell'|'observatory'|'e01'|'e02'|'e03'|'e04'|'e05'|'radio'|'e06'|'e08'|'help';
+export const AREAS:readonly Area[]=['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08','help'];
 export type LanguageText=Readonly<{
  tag:string;entry:LanguageEntry;
+ /** The areas whose specs this language runs (every area for a released language). */
+ done:ReadonlySet<Area>;
  /** The catalog (partial before the release) and VIREO's originals. */
  catalog:Readonly<Record<string,string>>;originals:Readonly<Record<string,string>>;
  maps:ShellMaps;
@@ -69,17 +86,25 @@ export type LanguageText=Readonly<{
  notices:Readonly<{language:ReturnType<typeof failureNotice>&{};area:ReturnType<typeof failureNotice>&{}}>;
 }>;
 const E=en as Record<string,string>;
-function language(tag:string,catalog:Record<string,string>,originals:Record<string,string>,maps:ShellMaps,observatoryMaps:readonly unknown[],letters:RegExp,query:string):LanguageText{
+function language(tag:string,catalog:Record<string,string>,originals:Record<string,string>,maps:ShellMaps,observatoryMaps:readonly unknown[],letters:RegExp,query:string,done:readonly Area[]=AREAS):LanguageText{
  const entry=LANGUAGES.find(l=>l.tag===tag)!,byEnglish=new Map(Object.entries(E).filter(([k])=>Object.hasOwn(catalog,k)).map(([k,v])=>[v,catalog[k]]));
  const text=(english:string)=>{const v=byEnglish.get(english);if(v!==undefined)return v;if(entry.released)throw new Error(`No ${entry.englishName} for “${english}”`);return english;};
- return Object.freeze({tag,entry,catalog,originals,maps,observatoryMaps,letters,query,text,notices:{language:failureNotice('language',tag)!,area:failureNotice('area',tag)!}});
+ if(entry.released&&done.length!==AREAS.length)throw new Error(`tests/i18n/languageText.ts: ${tag} is released, so every area is done`);
+ return Object.freeze({tag,entry,done:new Set(done),catalog,originals,maps,observatoryMaps,letters,query,text,notices:{language:failureNotice('language',tag)!,area:failureNotice('area',tag)!}});
 }
 export const SPANISH_TEXT=language('es-419',es,esOriginals,{appShell:APP_SHELL_ES,helpMenu:HELP_MENU_ES,projectLinks:PROJECT_LINKS_ES,tour:TOUR_ES,languageChoice:LANGUAGE_CHOICE_ES},
  [APP_SHELL_ES,CAMERA_ES,FIELD_INFO_ES,FIELD_READ_DETAILS_ES,HELP_MENU_ES,LANGUAGE_CHOICE_ES,NAKED_EYE_ES,OBJECT_X_LAB_ES,OBSERVATION_METADATA_ES,OBSERVATORY_ES,POLISH_ES,PROJECT_LINKS_ES,QSO_LIST_ES,SOUND_ES,TOUR_ES,VARIABLE_STARS_ES],/[áéíóúñ¿¡]/,'');
 export const PORTUGUESE_TEXT=language('pt-BR',pt,ptOriginals,{appShell:APP_SHELL_PT,helpMenu:HELP_MENU_PT,projectLinks:PROJECT_LINKS_PT,tour:TOUR_PT,languageChoice:LANGUAGE_CHOICE_PT},
  [APP_SHELL_PT,CAMERA_PT,FIELD_INFO_PT,FIELD_READ_DETAILS_PT,HELP_MENU_PT,LANGUAGE_CHOICE_PT,NAKED_EYE_PT,OBJECT_X_LAB_PT,OBSERVATION_METADATA_PT,OBSERVATORY_PT,POLISH_PT,PROJECT_LINKS_PT,QSO_LIST_PT,SOUND_PT,TOUR_PT,VARIABLE_STARS_PT],/[ãõçâêôàáéíóú]/i,'');
+/** Front FR0: French before its release, behind `?lang=fr` (an en-US browser: tests/fixtures/language.ts contextLocale). Only the
+ * shell is translated; FR1–FR6 and FR-HELP add their areas to `done` and their maps below. Its letters include « » and U+202F,
+ * which English text never has. */
+export const FRENCH_TEXT=language('fr',fr,frOriginals,{appShell:APP_SHELL_FR,helpMenu:HELP_MENU_FR,projectLinks:PROJECT_LINKS_FR,tour:TOUR_FR,languageChoice:LANGUAGE_CHOICE_FR},
+ [APP_SHELL_FR,HELP_MENU_FR,LANGUAGE_CHOICE_FR,OBJECT_X_LAB_FR,POLISH_FR,PROJECT_LINKS_FR,TOUR_FR,VARIABLE_STARS_FR],/[àâæçéèêëîïôœùûüÿ«»\u202f]/i,'?lang=fr',['shell']);
 /** Every translated language of the registry, in its order (a test fails if a registered language has no text here). */
-export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT]);
+export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT]);
+/** Front FR0: the languages that run the specs of `area` (those whose `done` has it), in registry order. */
+export const translatedFor=(area:Area):readonly LanguageText[]=>TRANSLATED.filter(l=>l.done.has(area));
 export const textOf=(tag:string):LanguageText=>{const t=TRANSLATED.find(l=>l.tag===tag);if(!t)throw new Error(`No test text for ${tag}`);return t;};
 if(LANGUAGES.some(l=>!TRANSLATED.some(t=>t.tag===l.tag)))throw new Error('tests/i18n/languageText.ts: a registered language has no test text');
 

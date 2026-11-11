@@ -2,7 +2,7 @@ import {type Page} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
 import {SPANISH_LOCALE,contextLocale} from '../fixtures/language';
 import {layoutProblems} from '../fixtures/layoutProblems';
-import {TRANSLATED,e04e05Maps} from './languageText';
+import {translatedFor,e04e05Maps} from './languageText';
 import {title,same,id,N,vireoOf,texts,bare,walk,LAYOUT} from './walks/e04';
 // Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
 test.use({locale:SPANISH_LOCALE});
@@ -24,7 +24,7 @@ test.use({locale:SPANISH_LOCALE});
 // - views that mirror a written file (`lang="en"`, F2) and the cluster model-fit section (`.native-cluster`, ES7's area: the
 //   photometer route also renders the own-observation HR fit) are left out of both comparisons.
 
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
+for(const L of translatedFor('e04'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const C=L.catalog as Record<string,string>;
  test(title(L,'E04 reads differently in Spanish from English: list, guide, photometer, VIREO boxes, analysis, free pointing and Mayall domain','E04 reads differently in <L> (<tag>) from English: list, guide, photometer, VIREO boxes, analysis, free pointing and Mayall domain'),async({browser})=>{
  test.setTimeout(420_000);
@@ -79,7 +79,7 @@ const captions=(page:Page,T:(original:string,context?:string)=>string):Record<st
 
 // "View original (English)" (decision 9): with the stored option on, every VIREO caption of the walk is VIREO's English, checked
 // one by one, and no Spanish original appears anywhere; OpenVireo's own web text stays Spanish.
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
+for(const L of translatedFor('e04'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const C=L.catalog as Record<string,string>,O=L.originals,vireoIn=vireoOf(L),M=e04e05Maps(L.tag);
  test(title(L,'View original (English) on: every VIREO caption in the E04 walk reads in English, the web text stays Spanish','View original (English) on: every VIREO caption in the E04 walk reads in English, the web text stays <L>'),async({page})=>{
  test.setTimeout(360_000);await page.setViewportSize({width:1440,height:1000});
@@ -116,7 +116,7 @@ for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.ta
  });
 });
 
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const width of [320,1440])test(title(L,`at ${width} px the Spanish E04 screens lay out without overflow, clipping or crossing`,`at ${width} px the <L> E04 screens lay out without overflow, clipping or crossing`),async({page})=>{
+for(const L of translatedFor('e04'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const width of [320,1440])test(title(L,`at ${width} px the Spanish E04 screens lay out without overflow, clipping or crossing`,`at ${width} px the <L> E04 screens lay out without overflow, clipping or crossing`),async({page})=>{
  test.setTimeout(420_000);await page.setViewportSize({width,height:width===320?700:1000});
  const problems=new Map<string,string>();
  // ES6_LAYOUT_LANG=en|qps walks that reference instead (a debugging aid; the language's own test title is kept).

@@ -3,7 +3,7 @@
 import en from './en.json';
 import {english,type MessageKey,type Translate} from './catalog';
 import {activateLocale,current,notePendingText} from './active';
-import {htmlDir,type TextDirection,type UiLanguage} from './locale';
+import type {TextDirection,UiLanguage} from './locale';
 import {plural,type PluralForms} from './plural';
 export {createI18n,locale,type I18n,type LocaleBundle,type MessageArgs,type MessageKey,type MessageValues,type PlainMessageKey,type Translate} from './catalog';
 export type {UiLanguage};
@@ -11,8 +11,9 @@ export {activateLocale};
 /** The UI language of this load. */
 export const uiLanguage=():UiLanguage=>current().language;
 /** Front RTL-1 (RT1): the text direction of this load's UI language (its <html dir>), for code that places things by side
- * (popup menus, the tour: RT6). Fixed for a whole load: a language change reloads the page. */
-export const uiDirection=():TextDirection=>htmlDir(current().language);
+ * (popup menus, the tour: RT6). Fixed for a whole load: a language change reloads the page. Front RT4: read from the settled
+ * load (src/i18n/active.ts `rtl`, set from the page's registry), so it always agrees with <html dir> and the bidi runtime. */
+export const uiDirection=():TextDirection=>current().rtl?'rtl':'ltr';
 export type {TextDirection};
 /** Front SC11: the catalog key of a count's plural form in this load's language (src/i18n/plural.ts), from literal keys per category
  * (`t(pluralKey(n,{one:'x.one',other:'x.other'}),{count:n})`), so the area split and the key audits still see every key. A

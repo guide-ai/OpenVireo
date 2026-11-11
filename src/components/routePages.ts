@@ -5,15 +5,18 @@ import {APP_SHELL_MESSAGES as SHELL} from './AppShellMessages';
 
 /** The site's pages (each a `#route` of the address). Front HEADER: moved here from OpenVireo.tsx, so the sidebar's page groups
  * and the page bar's "section › page" read one table and cannot drift. */
-export type Route='images'|'observatory'|'spectrum'|'spectrometer'|'sky-exposure'|'star-exposure'|'galaxy-exposure'|'classification'|'photometer'|'cluster-database'|'pulsar-analysis'|'radio-control'|'lss-wedge'|'lss-survey'|'object-x'|'variable-stars';
+export type Route='home'|'images'|'observatory'|'spectrum'|'spectrometer'|'sky-exposure'|'star-exposure'|'galaxy-exposure'|'classification'|'photometer'|'cluster-database'|'pulsar-analysis'|'radio-control'|'lss-wedge'|'lss-survey'|'object-x'|'variable-stars';
 /** The sidebar sections that hold pages, in menu order (Results Editors and Exercise guides hold none: they open tools and guides). */
 export type RouteGroup='optical'|'radio'|'analysis'|'files';
 export const ROUTE_GROUPS:readonly RouteGroup[]=Object.freeze(['optical','radio','analysis','files']);
-type RoutePage=Readonly<{group:RouteGroup;
+type RoutePage=Readonly<{
+ /** Front HOME: null for the welcome (`home`), which belongs to no section: the brand link opens it, not a sidebar button. */
+ group:RouteGroup|null;
  /** The page's name in this load's language, the same text as its sidebar button (read at render, never at module evaluation). */
  label:()=>string}>;
 /** Every page with its section and name, in menu order within each section. */
 export const ROUTE_PAGES=Object.freeze({
+ home:{group:null,label:()=>t('home.pageName')},
  observatory:{group:'optical',label:()=>t('sky.observatory')},
  spectrometer:{group:'optical',label:()=>t('spectrometer.nav')},
  'sky-exposure':{group:'optical',label:()=>t('skyExposure.nav')},

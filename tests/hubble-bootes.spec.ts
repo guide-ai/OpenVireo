@@ -33,7 +33,7 @@ async function acquire(page:Page){
 }
 test('Hubble.HTL → Boötes – 1/2 engine fields (start-time continuation) → manual z → Hubble → Save (v29), fresh Restore, resume',async({page})=>{
  test.setTimeout(180000);
- const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();await page.goto('/');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();await page.goto('/#observatory');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
  await loadHubble(page);const sources:string[]=[];
  for(const [i,t] of TS.entries()){T=t;if(i>0){await page.clock.resume();await clickHeaderTool(page,'Observatory');await openHotList(page);}await toGalaxy(page);await expect(page.getByTestId(`galaxy-continuation-adaptation-${T.id}`)).toBeVisible();await expect(page.locator(`[data-galaxy-telescope="0"] [data-galaxy-panel="${T.id}"]`).getByTestId('galaxy-catalogue-reference')).toBeAttached();sources.push(await acquire(page));}
  await expect(page.locator('#measurement-log tbody tr')).toHaveCount(2);

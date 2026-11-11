@@ -2,7 +2,7 @@ import {type Page} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
 import {SPANISH_LOCALE,contextLocale} from '../fixtures/language';
 import {layoutProblems} from '../fixtures/layoutProblems';
-import {TRANSLATED,textOf,e06Maps,type LanguageText} from './languageText';
+import {translatedFor,textOf,e06Maps,type LanguageText} from './languageText';
 import {PULSAR_REVIEW_BUTTONS,PULSAR_REVIEW_LITERALS} from '../../src/core/pulsarReview';
 import {PULSAR_REVIEW_EDIT_DFM,PULSAR_REVIEW_EDIT_LITERALS} from '../../src/core/pulsarReviewEdit';
 import {PULSAR_NATIVE_SAVE_TEXT as NS} from '../../src/core/pulsarNativeSave';
@@ -30,7 +30,7 @@ test.use({locale:SPANISH_LOCALE});
 // Recorded data stays English: the pulsar name of the recording, the stored header and rows of the saved-measurement file, the
 // file names and the Review table's cells.
 
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});test(title(L,'E06 reads differently in Spanish from English: guide, saved file viewer, recording, controls, print, records, Review, Save, export, append and clear','E06 reads differently in <L> (<tag>) from English: guide, saved file viewer, recording, controls, print, records, Review, Save, export, append and clear'),async({browser})=>{
+for(const L of translatedFor('e06'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});test(title(L,'E06 reads differently in Spanish from English: guide, saved file viewer, recording, controls, print, records, Review, Save, export, append and clear','E06 reads differently in <L> (<tag>) from English: guide, saved file viewer, recording, controls, print, records, Review, Save, export, append and clear'),async({browser})=>{
  test.setTimeout(360_000);
  const seen:Record<'en'|'own',Map<string,Set<string>>>={en:new Map(),own:new Map()};
  for(const lang of ['en','own'] as const){
@@ -79,7 +79,7 @@ const captions=(page:Page,tr:(original:string,ctx?:string)=>string):Record<strin
  'clear unsaved question':async()=>{await expect(id(page,'pulsar-clear-dialog').locator('strong')).toHaveText(tr(NS.clearUnsavedCaption));await expect(id(page,'pulsar-clear-unsaved-text')).toHaveText(tr(NS.clearUnsavedText));},
  'clear confirm question':async()=>{await expect(id(page,'pulsar-clear-dialog').locator('p').first()).toHaveText(tr(NS.clearConfirmText));},
 });
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
+for(const L of translatedFor('e06'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const S=L.catalog as Record<string,string>,O=L.originals,R=e06Maps(L.tag),M=R.pulsar as Record<string,string>,vireoIn=vireoOf(L);
  test(title(L,'View original (English) on: every VIREO caption in the E06 walk reads in English, the web text stays Spanish','View original (English) on: every VIREO caption in the E06 walk reads in English, the web text stays <L>'),async({page})=>{
  test.setTimeout(300_000);await page.setViewportSize({width:1440,height:1000});
@@ -119,7 +119,7 @@ for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.ta
 
 /** ES8B_LAYOUT_LANG=en|qps|<tag> runs the layout walk in another language (for comparison). */
 const layoutLang=(L:LanguageText):Lang=>{const v=process.env.ES8B_LAYOUT_LANG;return !v?L:v==='en'||v==='qps'?v:textOf(v);};
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const width of [320,1440])test(title(L,`at ${width} px the Spanish E06 screens lay out without overflow, clipping or crossing`,`at ${width} px the <L> E06 screens lay out without overflow, clipping or crossing`),async({page})=>{
+for(const L of translatedFor('e06'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const width of [320,1440])test(title(L,`at ${width} px the Spanish E06 screens lay out without overflow, clipping or crossing`,`at ${width} px the <L> E06 screens lay out without overflow, clipping or crossing`),async({page})=>{
  test.setTimeout(360_000);await page.setViewportSize({width,height:width===320?700:1000});
  const problems=new Map<string,string>();
  await walk(page,layoutLang(L),async step=>{for(const p of await layoutProblems(page,LAYOUT))if(!problems.has(p))problems.set(p,step);
@@ -178,7 +178,7 @@ const memoryCaptions=(page:Page,tr:(original:string,ctx?:string)=>string):Record
 });
 
 // qps runs with the Spanish test only (once).
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});test(title(L,'E06 receiver capture: the raw download, verified Save and Load question read differently in Spanish; qps marks every text','E06 receiver capture: the raw download, verified Save and Load question read differently in <L> (<tag>)'),async({browser})=>{
+for(const L of translatedFor('e06'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});test(title(L,'E06 receiver capture: the raw download, verified Save and Load question read differently in Spanish; qps marks every text','E06 receiver capture: the raw download, verified Save and Load question read differently in <L> (<tag>)'),async({browser})=>{
  test.setTimeout(420_000);
  const withQps=L.tag==='es-419',vireoIn=vireoOf(L);
  const seen:Record<'en'|'own'|'qps',Map<string,Set<string>>>={en:new Map(),own:new Map(),qps:new Map()};

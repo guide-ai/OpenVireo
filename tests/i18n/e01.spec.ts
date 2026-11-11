@@ -2,7 +2,7 @@ import {test,expect} from '../fixtures/area-tripwire';
 import {SPANISH_LOCALE,contextLocale,langQuery} from '../fixtures/language';
 import {layoutProblems} from '../fixtures/layoutProblems';
 import {enterInstructorMode} from '../fixtures/instructor-mode';
-import {TRANSLATED,e01e02Maps} from './languageText';
+import {translatedFor,e01e02Maps} from './languageText';
 import {E,title,same,id,N,button,texts,bare,tool,walk,LAYOUT} from './walks/e01';
 // Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
 test.use({locale:SPANISH_LOCALE});
@@ -20,7 +20,7 @@ test.use({locale:SPANISH_LOCALE});
 // - qps: every visible text is marked ⟦…⟧ (it goes through the catalog, a map or vireo()), with the same exceptions;
 // - views that mirror a written file (`lang="en"`, F2) are left out of both comparisons.
 
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});test(title(L,'E01 reads differently in Spanish from English: guide, exposures, analyser, Observational Data, velocities and Hubble diagram','E01 reads differently in <L> (<tag>) from English: guide, exposures, analyser, Observational Data, velocities and Hubble diagram'),async({browser})=>{
+for(const L of translatedFor('e01'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});test(title(L,'E01 reads differently in Spanish from English: guide, exposures, analyser, Observational Data, velocities and Hubble diagram','E01 reads differently in <L> (<tag>) from English: guide, exposures, analyser, Observational Data, velocities and Hubble diagram'),async({browser})=>{
  test.setTimeout(300_000);
  const seen:Record<'en'|'own',Map<string,Set<string>>>={en:new Map(),own:new Map()};
  for(const lang of ['en','own'] as const){
@@ -44,7 +44,7 @@ test('qps: every text of the E01 walk is marked, outside identifiers and native 
 // "View original (English)" (decision 9): with the stored option on, the whole walk shows no Spanish translation of a VIREO
 // original (the Observational Data dialog, the Spectral Range dialog and its warning, the engine's Zoom, the spectrometer
 // readout), while OpenVireo's own web text stays Spanish.
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});test(title(L,'View original (English) on: every VIREO name in the E01 walk reads in English, the web text stays Spanish','View original (English) on: every VIREO name in the E01 walk reads in English, the web text stays <L>'),async({page})=>{
+for(const L of translatedFor('e01'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});test(title(L,'View original (English) on: every VIREO name in the E01 walk reads in English, the web text stays Spanish','View original (English) on: every VIREO name in the E01 walk reads in English, the web text stays <L>'),async({page})=>{
  const O=L.originals,M=e01e02Maps(L.tag);
  test.setTimeout(240_000);await page.setViewportSize({width:1440,height:1000});
  await page.addInitScript(()=>localStorage.setItem('openvireo-vireo-originals','1'));
@@ -82,7 +82,7 @@ test('the E01 walk in English is unchanged: VIREO\'s captions are the originals 
  await walk(page,'en',async step=>{await checks[step]?.();await expect(page.locator('.native-mirror-caption')).toHaveCount(0);});
 });
 
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const width of [320,1440])test(title(L,`at ${width} px the Spanish E01 screens lay out without overflow, clipping or crossing`,`at ${width} px the <L> E01 screens (<tag>) lay out without overflow, clipping or crossing`),async({page})=>{
+for(const L of translatedFor('e01'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const width of [320,1440])test(title(L,`at ${width} px the Spanish E01 screens lay out without overflow, clipping or crossing`,`at ${width} px the <L> E01 screens (<tag>) lay out without overflow, clipping or crossing`),async({page})=>{
  test.setTimeout(240_000);await page.setViewportSize({width,height:width===320?700:1000});
  const problems=new Map<string,string>();
  const override=process.env.ES3_LAYOUT_LANG;await walk(page,override==='en'||override==='qps'?override:L,async step=>{for(const p of await layoutProblems(page,LAYOUT))if(!problems.has(p))problems.set(p,step);
@@ -93,7 +93,7 @@ for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.ta
 
 // Review: the spectrometer readout boxes (Show Object ID and Show Object Mag, turned on in instructor mode as an exercise menu
 // does) on the star and sky routes: Spanish captions, and VIREO's English with View original (English) at the next load.
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const original of [false,true])test(title(L,`the spectrometer readout captions ${original?'follow View original (English)':'read in Spanish'}`,`the spectrometer readout captions ${original?'follow View original (English) (<tag>)':'read in <L> (<tag>)'}`),async({page})=>{
+for(const L of translatedFor('e01'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const original of [false,true])test(title(L,`the spectrometer readout captions ${original?'follow View original (English)':'read in Spanish'}`,`the spectrometer readout captions ${original?'follow View original (English) (<tag>)':'read in <L> (<tag>)'}`),async({page})=>{
  const O=L.originals;
  test.setTimeout(120_000);await page.setViewportSize({width:1440,height:1000});
  await page.addInitScript(on=>{localStorage.setItem('openvireo.tour.v1','done');if(on)localStorage.setItem('openvireo-vireo-originals','1');else localStorage.removeItem('openvireo-vireo-originals');},original);
@@ -114,7 +114,7 @@ for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.ta
 // Review (S2): at M31 (NGC 224) the observatory's telescope view and the single-slit spectrometer show VIREO's "Image Too Large!"
 // box as a notice. Its caption and text are VIREO's (they follow View original); the adaptation line beside them is OpenVireo's
 // own text and stays Spanish either way.
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const original of [false,true])test(title(L,`the M31 notice in Spanish: VIREO's box ${original?'in English with View original':'translated'}, the web line in Spanish`,`the M31 notice in <L> (<tag>): VIREO's box ${original?'in English with View original':'translated'}, the web line in <L>`),async({page})=>{
+for(const L of translatedFor('e01'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const original of [false,true])test(title(L,`the M31 notice in Spanish: VIREO's box ${original?'in English with View original':'translated'}, the web line in Spanish`,`the M31 notice in <L> (<tag>): VIREO's box ${original?'in English with View original':'translated'}, the web line in <L>`),async({page})=>{
  const O=L.originals,M31="M31 Image Too Large to Load!\r\n\r\nSorry about that. (We're working on it.)";
  test.setTimeout(240_000);await page.setViewportSize({width:1440,height:1000});
  await page.addInitScript(on=>{localStorage.setItem('openvireo.tour.v1','done');if(on)localStorage.setItem('openvireo-vireo-originals','1');else localStorage.removeItem('openvireo-vireo-originals');},original);

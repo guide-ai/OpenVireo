@@ -3,7 +3,7 @@ import {SPANISH_LOCALE,contextLocale} from '../fixtures/language';
 import {layoutProblems} from '../fixtures/layoutProblems';
 import en from '../../src/i18n/en.json' with {type:'json'};
 import es from '../../src/i18n/es/es.json' with {type:'json'};
-import {TRANSLATED,type LanguageText} from './languageText';
+import {translatedFor,type LanguageText} from './languageText';
 import {title,SAME,same,id,open,texts,walk,LAYOUT,multiSpecWalk} from './walks/observatory';
 // Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
 test.use({locale:SPANISH_LOCALE});
@@ -17,7 +17,7 @@ test.use({locale:SPANISH_LOCALE});
 // - qps: every visible text is marked ⟦…⟧ (it goes through the catalog, a map or vireo()), except identifiers;
 // - native views that mirror a written file (`lang="en"`, F2) are left out of both comparisons and keep a Spanish caption.
 
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
+for(const L of translatedFor('observatory'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const C=L.catalog as Record<string,string>,O=L.originals;
 
  test(title(L,'the observatory walk reads differently in Spanish from English: menus, dialogs, boxes and option names','the observatory walk reads differently in <L> (<tag>) from English: menus, dialogs, boxes and option names'),async({browser})=>{
@@ -45,7 +45,7 @@ test('qps: every text of the observatory walk is marked, outside identifiers and
  expect([...new Set(left)]).toEqual([]);
 });
 
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
+for(const L of translatedFor('observatory'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const C=L.catalog as Record<string,string>,O=L.originals;
 
  test(title(L,'a native list that mirrors its saved file stays English with a Spanish caption (F2)','a native list that mirrors its saved file stays English with a <L> caption (F2)'),async({page})=>{
@@ -102,7 +102,7 @@ for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.ta
 });
 
 
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const width of [320,1440])test(title(L,`at ${width} px the Spanish observatory dialogs, menus and the options dialog lay out without overflow or clipping`,`at ${width} px the <L> observatory dialogs, menus and the options dialog lay out without overflow or clipping`),async({page})=>{
+for(const L of translatedFor('observatory'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const width of [320,1440])test(title(L,`at ${width} px the Spanish observatory dialogs, menus and the options dialog lay out without overflow or clipping`,`at ${width} px the <L> observatory dialogs, menus and the options dialog lay out without overflow or clipping`),async({page})=>{
  test.setTimeout(180_000);await page.setViewportSize({width,height:width===320?700:1000});
  const problems:string[]=[];
  await walk(page,L,async step=>{for(const p of await layoutProblems(page,LAYOUT))problems.push(`${step}: ${p}`);
@@ -118,7 +118,7 @@ test('the walk in English is unchanged: the native caption is absent and the VIR
  await expect(page.locator('.native-mirror-caption')).toHaveCount(0);
 });
 
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});test(title(L,'Multi-Spec in Spanish: Control, boxes, spectra list, spectrum, Information and print read differently from English','Multi-Spec in <L> (<tag>): Control, boxes, spectra list, spectrum, Information and print read differently from English'),async({browser})=>{
+for(const L of translatedFor('observatory'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});test(title(L,'Multi-Spec in Spanish: Control, boxes, spectra list, spectrum, Information and print read differently from English','Multi-Spec in <L> (<tag>): Control, boxes, spectra list, spectrum, Information and print read differently from English'),async({browser})=>{
  test.setTimeout(300_000);
  const seen:Record<'en'|'own',Map<string,Set<string>>>={en:new Map(),own:new Map()};
  for(const lang of ['en','own'] as const){
@@ -145,7 +145,7 @@ const knownFor=(L:LanguageText)=>{
  const label=(C:Record<string,string>)=>C['sky.supportedGalaxyLabel'].replace('{id}','NGC 4874').replace('{label}','Coma – 1');
  return L.tag==='es-419'?MULTISPEC_KNOWN:MULTISPEC_KNOWN.map(k=>new RegExp(k.source.split(esc(label(es))).join(esc(label(L.catalog as Record<string,string>))),k.flags));
 };
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const width of [320,1440])test(title(L,`at ${width} px the Spanish Multi-Spec windows lay out without overflow or clipping`,`at ${width} px the <L> Multi-Spec windows lay out without overflow or clipping`),async({page})=>{
+for(const L of translatedFor('observatory'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const width of [320,1440])test(title(L,`at ${width} px the Spanish Multi-Spec windows lay out without overflow or clipping`,`at ${width} px the <L> Multi-Spec windows lay out without overflow or clipping`),async({page})=>{
  test.setTimeout(240_000);await page.setViewportSize({width,height:width===320?700:1000});
  const problems:string[]=[],KNOWN=knownFor(L);
  await multiSpecWalk(page,L,async step=>{for(const p of await layoutProblems(page,LAYOUT))problems.push(`${step}: ${p}`);

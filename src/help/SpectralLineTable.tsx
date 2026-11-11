@@ -36,6 +36,9 @@ export default function SpectralLineTable({testId='spl',onLineSelect,cursorWavel
  const textLang=offered&&view==='original'?'en':undefined;
  const [help,setHelp]=useState<Readonly<{name:string;rows:readonly string[]}>|null>(null),[message,setMessage]=useState<Readonly<{caption:string;text:string}>|null>(null);
  const loaded=typeof load==='object'?load:null;
+ /** Review (FR0 CI): bumped when a view switch lands, so a line read begun in the other view (a double click while the switch was
+  * still fetching) is dropped instead of showing that view's text after the switch, or reopening the window the switch closed. */
+ const viewGeneration=useRef(0);
  async function show(){
   if(loaded){setOpen(true);return;}
   setLoad('loading');
@@ -53,25 +56,28 @@ export default function SpectralLineTable({testId='spl',onLineSelect,cursorWavel
   const next:HelpView=view==='translation'?'original':'translation';
   try{
    const lines=linesOf(await fetchView(HELP_FILES['SPECLNS.LNL'],next,set));
-   setLoad({lines});setOriginal(next==='original');setHelp(null);setMessage(null);
+   viewGeneration.current++;setLoad({lines});setOriginal(next==='original');setHelp(null);setMessage(null);
   }catch{setMessage({caption:M.textErrorCaption,text:next==='translation'?HELP_VIEWER.translationError:M.error});}
  }
  async function readLine(i:number){
   if(!loaded||i<0)return;
-  const line=loaded.lines[i],file=helpFile(line.file);setMessage(null);
+  const line=loaded.lines[i],file=helpFile(line.file),generation=viewGeneration.current,stale=()=>viewGeneration.current!==generation;setMessage(null);
   if(!file){const L=SPECTRAL_LINE_MISSING_LITERALS;setMessage({caption:vireo(L.caption),text:vireo(L.head)+line.file+vireo(L.tail)});return;}
   try{
-   const h=lineHelpOf(await fetchView(file,view,set),line.name);
+   const source=await fetchView(file,view,set);if(stale())return;
+   const h=lineHelpOf(source,line.name);
    if(h.kind==='topic')setHelp({name:line.name,rows:h.rows});else setMessage(notFound(h.title));
   }catch{
+   if(stale())return;
    if(view!=='translation'){setMessage({caption:M.textErrorCaption,text:M.textError(file.name)});return;}
    // Review S1: the translated SPECLNS.TXT failed; the list keeps VIREO's line names, so the original is read for the same line.
    try{
     const lines=linesOf(await fetchView(HELP_FILES['SPECLNS.LNL'],'original',set)),h=lineHelpOf(await fetchView(file,'original',set),lines[i].name);
-    setLoad({lines});setOriginal(true);
+    if(stale())return;
+    viewGeneration.current++;setLoad({lines});setOriginal(true);
     if(h.kind==='topic')setHelp({name:lines[i].name,rows:h.rows});
     setMessage({caption:M.textErrorCaption,text:HELP_VIEWER.translationError});
-   }catch{setMessage({caption:M.textErrorCaption,text:M.textError(file.name)});}
+   }catch{if(!stale())setMessage({caption:M.textErrorCaption,text:M.textError(file.name)});}
   }
  }
  /** Focus the help window when it opens or changes line; back to the list when it closes (review 1 L4). */

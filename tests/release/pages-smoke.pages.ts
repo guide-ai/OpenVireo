@@ -113,7 +113,7 @@ test('a live camera exposure goes through the policy with the recorded VizieR an
 
 // Each tool and exercise route, opened fresh: no CSP violation, console error or page error, and nothing external.
 const ROUTES:readonly (readonly [string,string])[]=[
- ['#observatory','Observatory'],['#spectrum','Hubble analysis (spectrum measuring)'],['#galaxy-exposure','Hubble galaxy exposure'],
+ ['#home','Welcome (Front HOME)'],['#observatory','Observatory'],['#spectrum','Hubble analysis (spectrum measuring)'],['#galaxy-exposure','Hubble galaxy exposure'],
  ['#lss-survey','Large-scale structure survey'],['#lss-wedge','LSS wedge plot'],['#classification','Stellar classification'],
  ['#photometer','Pleiades photometry'],['#cluster-database','Cluster HR diagrams'],['#radio-control','Radio telescope (pulsars)'],
  ['#pulsar-analysis','Pulsar analysis'],['#object-x','Object X'],['#spectrometer','Spectrometer'],['#star-exposure','Star exposure'],

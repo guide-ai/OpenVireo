@@ -2,7 +2,7 @@ import {type Page} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
 import {SPANISH_LOCALE,contextLocale,langQuery} from '../fixtures/language';
 import {layoutProblems} from '../fixtures/layoutProblems';
-import {TRANSLATED,textOf,e08Maps,type LanguageText} from './languageText';
+import {translatedFor,textOf,e08Maps,type LanguageText} from './languageText';
 import {Lang,title,CDS,RECORDED_VIZIER,STAR_CODE,EROS_CODE,same,id,exact,LE,vireoOf,mapButton,texts,bare,lab,go,walk,LAYOUT} from './walks/e08';
 // Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
 test.use({locale:SPANISH_LOCALE});
@@ -29,7 +29,7 @@ const VERDICTS:Readonly<Record<string,readonly string[]>>={
  'es-419':['Es una estrella.','Es una galaxia.','Es un cuásar (QSO).','Es un púlsar.','Es un asteroide.'],
  'pt-BR':['É uma estrela.','É uma galáxia.','É um quasar (QSO).','É um pulsar.','É um asteroide.'],
 };
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
+for(const L of translatedFor('e08'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const LS=e08Maps(L.tag).objectXLab;
  test(title(L,'E08 reads differently in Spanish from English: guide, lab, spectrometer, camera, measuring tool, reveal and saved images','E08 reads differently in <L> (<tag>) from English: guide, lab, spectrometer, camera, measuring tool, reveal and saved images'),async({browser})=>{
  test.setTimeout(480_000);
@@ -63,7 +63,7 @@ test('qps: every text of the E08 walk is marked, outside identifiers and native 
 // ES9 review: the route reads the same for every target before the reveal. With a star target and an asteroid target, the
 // lab's and the guide's texts (and the observatory's sky-view toolbar after Copy the coordinates) are equal once the object code
 // and the coordinates line are removed (the spectrometer is not prepared, so its state is the same). Front PT6: in every language.
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
+for(const L of translatedFor('e08'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const LS=e08Maps(L.tag).objectXLab,GS=e08Maps(L.tag).objectXGuide;
  test(title(L,'Spanish: before the reveal the Object X route reads the same for a star target and an asteroid target','<L> (<tag>): before the reveal the Object X route reads the same for a star target and an asteroid target'),async({page})=>{
  test.setTimeout(240_000);await page.setViewportSize({width:1440,height:1000});
@@ -102,7 +102,7 @@ const captions=(page:Page,T:(original:string)=>string):Record<string,()=>Promise
  'spectrum ready':async()=>{await expect(id(page,'objectx-spectral-range-open')).toHaveText(T('Spectral Range...'));await expect(id(page,'objectx-spectrometer-help-open')).toHaveText(T('Help'));},
 });
 
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
+for(const L of translatedFor('e08'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const S=L.catalog as Record<string,string>,O=L.originals,maps=e08Maps(L.tag),vireoIn=vireoOf(L);
 // "View original (English)" (decision 9): with the stored option on, every VIREO caption of the walk is VIREO's English, checked
 // one by one, and no translated original appears anywhere; OpenVireo's own web text stays in the language.
@@ -141,7 +141,7 @@ for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.ta
 
 /** ES9_LAYOUT_LANG=en|qps|<tag> runs the layout walk in another language (for comparison). */
 const layoutLang=(L:LanguageText):Lang=>{const v=process.env.ES9_LAYOUT_LANG;return !v?L:v==='en'||v==='qps'?v:textOf(v);};
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const width of [320,1440])test(title(L,`at ${width} px the Spanish E08 screens lay out without overflow, clipping or crossing`,`at ${width} px the <L> E08 screens lay out without overflow, clipping or crossing`),async({page})=>{
+for(const L of translatedFor('e08'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const width of [320,1440])test(title(L,`at ${width} px the Spanish E08 screens lay out without overflow, clipping or crossing`,`at ${width} px the <L> E08 screens lay out without overflow, clipping or crossing`),async({page})=>{
  test.setTimeout(480_000);await page.setViewportSize({width,height:width===320?700:1000});
  const problems=new Map<string,string>();
  await walk(page,layoutLang(L),async step=>{for(const p of await layoutProblems(page,LAYOUT))if(!problems.has(p))problems.set(p,step);
