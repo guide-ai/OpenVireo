@@ -48,13 +48,18 @@ const exact=(text:string)=>new RegExp(`^\\s*${text.replace(/[.*+?^${}()|[\]\\/]/
 /** A translated language's letters that English text never has (Spanish á é í ó ú ñ ¿ ¡; Portuguese ã õ ç â ê ô à…). */
 const LETTERS:Readonly<Record<string,RegExp>>={...Object.fromEntries(TRANSLATED.map(t=>[t.tag,t.letters])),...PSEUDO_LETTERS};
 const HTML_LANG:Readonly<Record<Locale,string>>={en:'en','es-419':'es-419','pt-BR':'pt-BR',fr:'fr',...PSEUDO_HTML_LANG};
-/** The accessible-name matcher of an English text in this locale: its Spanish form in es-419 (which must exist), a language before
- * its release its own form or the English the page then shows (languageText.ts `text`), else `L`. */
-const N=(locale:Locale,text:string)=>{if(locale==='pt-BR'){const t=TRANSLATED.find(x=>x.tag===locale)!;if(text==='Skip the tour')return exact(t.maps.tour.skip);if(text==='Save spectrum (.SSP)')return exact((e01e02Maps(locale).observatory as typeof OBSERVATORY_ES).spectrumSave.save);
+/** The accessible-name matcher of an English text in this locale: its Spanish form in es-419 (which must exist), Portuguese's or
+ * French's own catalog form (which must exist; for French before its release, an identical entry), else `L`. */
+const N=(locale:Locale,text:string)=>{if(locale==='pt-BR'||locale==='fr'){const t=TRANSLATED.find(x=>x.tag===locale)!;if(text==='Skip the tour')return exact(t.maps.tour.skip);if(text==='Save spectrum (.SSP)')return exact((e01e02Maps(locale).observatory as typeof OBSERVATORY_ES).spectrumSave.save);
  // Front PT1: a button whose English ends in “ ↗” is its catalog text plus the arrow the component adds, as for Spanish.
  // Front PT-REL: a released language's `text` throws for an English text it lacks (it no longer falls back), so look first.
- const has=(english:string)=>{try{t.text(english);return true;}catch{return false;}};
- const arrow=/ ↗$/.test(text)&&!has(text)?' ↗':'';return exact(t.text(arrow?text.slice(0,-2):text)+arrow);}if(locale!=='es-419')return L(text);const arrow=/ ↗$/.test(text)&&!SPANISH.has(text)?' ↗':'',spanish=SPANISH.get(arrow?text.slice(0,-2):text);if(!spanish)throw new Error(`No Spanish for “${text}”`);return exact(spanish+arrow);};
+ // Front FR1: a language before its release falls back to the English (no throw), so an English-only answer is no translation.
+ const has=(english:string)=>{try{return t.text(english)!==english;}catch{return false;}};
+ const arrow=/ ↗$/.test(text)&&!has(text)?' ↗':'',base=arrow?text.slice(0,-2):text;
+ // FR1 review: a family runs a language before its release only in an area it has translated, so a catalog name it lacks there is
+ // a missing translation, not the preview's English fallback: fail as for a released language (an identical entry still passes).
+ if(!t.entry.released&&!Object.entries(en).some(([k,v])=>v===base&&Object.hasOwn(t.catalog,k)))throw new Error(`No ${t.entry.englishName} for “${base}”`);
+ return exact(t.text(base)+arrow);}if(locale!=='es-419')return L(text);const arrow=/ ↗$/.test(text)&&!SPANISH.has(text)?' ↗':'',spanish=SPANISH.get(arrow?text.slice(0,-2):text);if(!spanish)throw new Error(`No Spanish for “${text}”`);return exact(spanish+arrow);};
 /** Front PT2: a Portuguese accessible name that starts with this English text's translation (a button whose name adds a glyph). */
 const ptStart=(english:string)=>new RegExp(`^\\s*${ptText('pt-BR').text(english).replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')}`);
 /** The variable-star catalog's 31,147 records as the screen writes them: Front PT-REL, Portuguese groups thousands with U+202F. */
@@ -285,7 +290,7 @@ family('E03 classification: session, CSV, width record, investigations, observat
  },{},page=>page.locator('.classification-main'));
 });
 
-family('hot list: Save HTL file after adding a target',['en','qps','es-419','pt-BR'],async({browser,baseURL},identical)=>{
+family('hot list: Save HTL file after adding a target',['en','qps','es-419','pt-BR','fr'],async({browser,baseURL},identical)=>{
  await identical(browser,baseURL,async(page,locale)=>{
   await open(page,locale,'observatory');
   await page.getByRole('heading',{name:N(locale,'Original hot lists')}).click();
@@ -297,7 +302,7 @@ family('hot list: Save HTL file after adding a target',['en','qps','es-419','pt-
  },{},page=>page.locator('.htl-card'));
 });
 
-family('options file: Save Updates writes VEO_OPTS.json',['en','qps','es-419','pt-BR'],async({browser,baseURL},identical)=>{
+family('options file: Save Updates writes VEO_OPTS.json',['en','qps','es-419','pt-BR','fr'],async({browser,baseURL},identical)=>{
  await identical(browser,baseURL,async(page,locale)=>{
   await open(page,locale,'observatory');
   await button(page,'Open dome ↗',locale).click();await page.getByLabel(N(locale,'Target')).selectOption('N0000.DAT@14428');
@@ -310,8 +315,9 @@ family('options file: Save Updates writes VEO_OPTS.json',['en','qps','es-419','p
 });
 
 // Front ES2: the observatory's File › Field Information lists (Edit Mode) and the QSO List (Virtual Observatory) write the lines
-// they show; the windows around them are translated, the files are not.
-family('field information: Star Data List Save Text and Comma Delimit, QSO List Save Text',['en','qps','es-419','pt-BR'],async({browser,baseURL},identical)=>{
+// they show; the windows around them are translated, the files are not. Front FR1: the hot list, options file and Field
+// Information families also run in French (its ?lang=fr preview).
+family('field information: Star Data List Save Text and Comma Delimit, QSO List Save Text',['en','qps','es-419','pt-BR','fr'],async({browser,baseURL},identical)=>{
  test.setTimeout(120_000);
  const id=(page:Page,testId:string)=>page.getByTestId(testId);
  const ok=async(page:Page)=>{await id(page,'fi-box').getByRole('button').first().click();await expect(id(page,'fi-box')).toHaveCount(0);};
