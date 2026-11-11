@@ -57,7 +57,7 @@ export const WEDGE_PT:Translation<typeof WEDGE_MESSAGES_EN>=Object.freeze({
   overflow:'Um valor de Z é tão grande que V = c · Z estoura; o leitor original para com um erro, então nada foi carregado.',
  }),
  atLine:(line:number)=>` (linha ${line})`,
- capacity:'Acrescentar este arquivo ultrapassaria 10 000 registros, então nada foi carregado.',
+ capacity:'Acrescentar este arquivo ultrapassaria 10 000 registros, então nada foi carregado.',
  readFailed:'O navegador não conseguiu ler o arquivo.',
  suspended:(name:string)=>`O carregamento de ${name} parou porque este painel ficou inativo; nada dele foi acrescentado e os dados atuais não mudaram. Escolha o arquivo novamente para carregá-lo.`,
  autoPlotUnavailable:'A plotagem automática (Auto Plot) de grupo precisa de um arquivo de grupo compartilhado preparado por um instrutor. Não está disponível nesta versão.',

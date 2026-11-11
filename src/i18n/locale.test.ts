@@ -4,8 +4,9 @@ import {LANGUAGES,isReleased,selectorShown} from './languages';
 import {nextAddress} from '../components/LanguageChoice';
 import {releasing} from '../../tests/fixtures/i18n/registry';
 const decide=(over:Partial<LocaleInputs>)=>decideLocale({param:null,stored:null,languages:['en-US'],dev:false,...over});
-/** Spanish before its release: the registry as it was until ES-REL (Front SC8: a per-language gate). */
-const UNRELEASED=LANGUAGES.map(l=>l.tag==='es-419'?{...l,released:false}:l);
+/** Spanish before its release: the registry as it was until ES-REL, with no language released (Front SC8: a per-language gate;
+ * since PT-REL Portuguese is released too, so it is closed here as well). */
+const UNRELEASED=LANGUAGES.map(l=>({...l,released:false}));
 describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-09)',()=>{
  it('Front ES-REL: Spanish is released, so the stored choice and the browser language decide and the selector is shown',()=>{
   expect(isReleased('es-419')).toBe(true);
@@ -43,18 +44,19 @@ describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-0
   expect(nextAddress('https://openvireo.space/#spectrum','en',false)).toBe('https://openvireo.space/?lang=en#spectrum');
   expect(nextAddress('https://openvireo.space/?lang=en#x','es-419',true)).toBe('https://openvireo.space/?lang=es-419#x');
  });
- it('Front PT0: Brazilian Portuguese before its release: only ?lang=pt-BR opens it; every pt browser and a stored pt-BR give English',()=>{
-  expect(isReleased('pt-BR')).toBe(false);
-  for(const languages of [['pt-BR'],['pt'],['pt-br'],['pt-PT'],['pt-AO'],['pt-MZ'],['PT-br','es-MX']])expect(decide({languages}),languages.join(',')).toBe('en');
-  expect(decide({languages:['gl']})).toBe('en');expect(decide({languages:['es-MX','pt-BR']})).toBe('es-419');
-  expect(decide({stored:'pt-BR',languages:['pt-BR']})).toBe('en');
-  expect(decide({param:'pt-BR',stored:'es-419',languages:['es-MX']})).toBe('pt-BR');
+ it('Front PT-REL: Brazilian Portuguese is released: every pt and pt-* browser (any case) opens pt-BR, Galician does not, storage is honoured',()=>{
+  expect(isReleased('pt-BR')).toBe(true);
+  for(const languages of [['pt-BR'],['pt'],['pt-br'],['pt-PT'],['pt-AO'],['pt-MZ'],['PT-br','es-MX']])expect(decide({languages}),languages.join(',')).toBe('pt-BR');
+  expect(decide({languages:['gl']})).toBe('en');expect(decide({languages:['es-MX','pt-BR']})).toBe('es-419');expect(decide({languages:['en-US','pt-BR']})).toBe('en');
+  expect(decide({stored:'pt-BR',languages:['en-US']})).toBe('pt-BR');expect(decide({stored:'pt-BR',languages:['es-MX']})).toBe('pt-BR');
+  expect(decide({stored:'en',languages:['pt-BR']})).toBe('en');expect(decide({stored:'es-419',languages:['pt-BR']})).toBe('es-419');
+  expect(decide({param:'pt-BR',stored:'es-419',languages:['es-MX']})).toBe('pt-BR');expect(decide({param:'en',languages:['pt-BR']})).toBe('en');
+  // ?lang= takes the exact tag only; other spellings are no tag (English), while the browser language matches in any case.
   for(const junk of ['pt','pt-br','PT-BR','pt-PT'])expect(decide({param:junk,languages:['en-US']}),junk).toBe('en');
   expect(HTML_LANG['pt-BR']).toBe('pt-BR');expect(selectorShown('pt-BR')).toBe(true);
-  // Once released (PT-REL), every pt and pt-* browser opens pt-BR (plan §4, D1), Galician does not, and storage is honoured.
-  const released=releasing(LANGUAGES,'pt-BR');
-  for(const languages of [['pt-BR'],['pt'],['pt-PT'],['pt-AO'],['PT-br','es-MX']])expect(decide({languages,registry:released}),languages.join(',')).toBe('pt-BR');
-  expect(decide({languages:['gl'],registry:released})).toBe('en');expect(decide({languages:['en-US','pt-BR'],registry:released})).toBe('en');
-  expect(decide({stored:'pt-BR',registry:released})).toBe('pt-BR');expect(decide({stored:'pt-BR',languages:['es-MX'],registry:released})).toBe('pt-BR');
+  // Before its release (PT0–PT-HELP) only ?lang=pt-BR reached it.
+  const before=LANGUAGES.map(l=>l.tag==='pt-BR'?{...l,released:false}:l);
+  for(const languages of [['pt-BR'],['pt'],['pt-PT']])expect(decide({languages,registry:before}),languages.join(',')).toBe('en');
+  expect(decide({stored:'pt-BR',languages:['pt-BR'],registry:before})).toBe('en');expect(decide({param:'pt-BR',registry:before})).toBe('pt-BR');
  });
 });

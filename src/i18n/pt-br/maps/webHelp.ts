@@ -12,7 +12,7 @@ const topic=(title:string,blocks:readonly (string|readonly string[]|{head:readon
 const START={title:'Comece aqui',topics:[
  topic('O que é o OpenVireo',[
   p('O OpenVireo é uma versão para navegador do VIREO, o Observatório virtual educacional do Project CLEA (Gettysburg College). Ele foi reconstruído a partir do comportamento recuperado do VIREO e de seus arquivos de dados originais; não é o programa do próprio CLEA.'),
-  p('Nada é instalado e não há login nem conta. Tudo roda nesta aba do navegador, e o seu trabalho fica na aba até você salvá-lo como arquivo no seu computador.'),
+  p('Nada é instalado e não há login nem conta. Tudo roda nesta aba do navegador, e o seu trabalho fica na aba até você salvá-lo como arquivo no seu computador. Na tela, os números usam ponto decimal e um espaço fino entre os milhares (por exemplo, 1.5 e 24 000); digite os decimais também com ponto. Os arquivos que o site grava ficam em inglês, como o VIREO os escreve.'),
   p('A versão 1.0 contém os sete exercícios do VIREO: a lei de Hubble, a estrutura em grande escala (LSS), a classificação estelar, a fotometria das Plêiades, os diagramas HR de aglomerados, os pulsares e a busca pelo Objeto X. Cada um tem um guia em Guias dos exercícios, no cabeçalho.'),
  ]),
  topic('Primeiros passos',[

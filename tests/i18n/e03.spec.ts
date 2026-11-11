@@ -1,6 +1,6 @@
 import {type Page,type Locator} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
-import {SPANISH_LOCALE,langQuery} from '../fixtures/language';
+import {SPANISH_LOCALE,contextLocale,langQuery} from '../fixtures/language';
 import {layoutProblems,type LayoutOptions} from '../fixtures/layoutProblems';
 import {readFileSync} from 'node:fs';
 import {CLASSIFY_PROGRAM_LITERALS_RESTATED} from './classifyProgramLiterals';
@@ -10,8 +10,8 @@ import {TRANSLATED,type LanguageText} from './languageText';
 test.use({locale:SPANISH_LOCALE});
 
 // Front PT3: the spec runs for every translated language (tests/i18n/languageText.ts: its own catalog and originals, never
-// hard-coded text). The Spanish tests keep their titles and assertions; a language before its release (pt-BR) runs the same checks
-// under its own titles in its `?lang=` preview, which beats the es-MX browser language. English and qps run once.
+// hard-coded text). The Spanish tests keep their titles and assertions; Brazilian Portuguese runs the same checks under its own titles in a pt-BR browser (Front PT-REL: an anonymous
+// describe per language sets its browser locale, tests/fixtures/language.ts contextLocale). English and qps run once.
 // Front ES5 (docs/I18N.md): exercise E03, Spectral Classification, in Spanish in an `es-*` browser (a `?lang=es-419` preview load before ES-REL). One walk through the
 // student flow runs in English, Spanish and the pseudo-locale: the classification guide, the lab (source, Program List with its
 // dialog, VIREO's No More Spectra end box, atlas and standard pairs, Standard − practice, the line table, the wavelength window,
@@ -25,7 +25,7 @@ test.use({locale:SPANISH_LOCALE});
 // - qps: every visible text is marked ⟦…⟧ (it goes through the catalog, a map or vireo()), with the same exceptions;
 // - views that mirror a written file (`lang="en"`, F2) are left out of both comparisons.
 type Lang='en'|'qps'|LanguageText;
-/** A test title: Spanish keeps its ES5 title; another language names itself and its preview. */
+/** A test title: Spanish keeps its ES5 title; another language names itself and its tag. */
 const title=(L:LanguageText,es:string,other:string)=>L.tag==='es-419'?es:other.replaceAll('<L>',L.entry.englishName).replaceAll('<tag>',L.tag);
 const tagOf=(lang:Lang)=>typeof lang==='string'?lang:lang.tag;
 /** VIREO's Program List... and Next on List items and the No More Spectra box (CLASSIFY_PROGRAM_LITERALS, restated). */
@@ -185,9 +185,9 @@ async function walk(page:Page,lang:Lang,each:(step:string)=>Promise<void>){
  for(const [step,run] of STEPS){await run(page,lang);await page.waitForTimeout(200);await each(step);}
 }
 
-for(const L of TRANSLATED){
+for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const C=L.catalog as Record<string,string>;
- test(title(L,'E03 reads differently in Spanish from English: guide, Program List, comparison, displays, width, records, import and acquisition','E03 reads differently in <L> (<tag> preview) from English: guide, Program List, comparison, displays, width, records, import and acquisition'),async({browser})=>{
+ test(title(L,'E03 reads differently in Spanish from English: guide, Program List, comparison, displays, width, records, import and acquisition','E03 reads differently in <L> (<tag>) from English: guide, Program List, comparison, displays, width, records, import and acquisition'),async({browser})=>{
  test.setTimeout(360_000);
  const seen:Record<'en'|'own',Map<string,Set<string>>>={en:new Map(),own:new Map()};
  for(const lang of ['en','own'] as const){
@@ -204,7 +204,7 @@ for(const L of TRANSLATED){
  for(const key of ['photo.trace','sampledTrace.option','photo.photo','combined.option','class.bracket','class.difference'])expect(options).toContain(`@option:${C[key]}`);
  expect(options).toContain('@option:Main Sequence');
  });
-}
+});
 
 test('qps: every text of the E03 walk is marked, outside identifiers and native mirrors',async({page})=>{
  test.setTimeout(300_000);await page.setViewportSize({width:1440,height:1000});
@@ -226,7 +226,7 @@ const captions=(page:Page,T:(original:string)=>string,end:string):Record<string,
  'No More Spectra':async()=>{await expect(page.locator('.classification-program [role=status]')).toHaveText(`${T(P.noMoreSpectra)}. ${T(P.endOfList)} ${end}`);},
 });
 
-for(const L of TRANSLATED){
+for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const C=L.catalog as Record<string,string>,O=L.originals,vireoIn=vireoOf(L);
 // "View original (English)" (decision 9): with the stored option on, every VIREO caption of the walk is VIREO's English, checked
 // one by one, and no translated original appears anywhere; OpenVireo's own web text stays in the language.
@@ -249,7 +249,7 @@ for(const L of TRANSLATED){
  expect([...left].map(([t,step])=>`${step}: ${t}`)).toEqual([]);
  });
 
- test(title(L,'Spanish: every VIREO caption in the E03 walk is its Spanish original; English shows the originals unchanged','<L> (<tag> preview): every VIREO caption in the E03 walk is its <L> original; English shows the originals unchanged'),async({browser})=>{
+ test(title(L,'Spanish: every VIREO caption in the E03 walk is its Spanish original; English shows the originals unchanged','<L> (<tag>): every VIREO caption in the E03 walk is its <L> original; English shows the originals unchanged'),async({browser})=>{
  test.setTimeout(360_000);
  for(const lang of ['own','en'] as const){
   const page=await browser.newPage({viewport:{width:1440,height:1000}});
@@ -259,16 +259,16 @@ for(const L of TRANSLATED){
  }
  expect(vireoIn(P.programList)).not.toBe('Program List...');expect(vireoIn('Observational Data')).not.toBe('Observational Data');for(const t of ['Observation Time (JD)','Right Ascension:','Declination:','Observed Magnitudes','Redshift (Z):','Velocity (V):'])expect(vireoIn(t)).not.toBe(t);expect(vireoIn('Spectral Line &Table')).not.toBe('Spectral Line Table');expect(vireoIn(P.noMoreSpectra)).not.toBe(P.noMoreSpectra);
  });
-}
+});
 
 /** Front SC9: the layout check of tests/fixtures/layoutProblems.ts (no local copy), with the options that keep this spec's
  * checks: its old copy was the fixture's default. Run with the CI's DejaVu fonts (docs/I18N.md). */
 const LAYOUT:LayoutOptions={};
-for(const L of TRANSLATED)for(const width of [320,1440])test(title(L,`at ${width} px the Spanish E03 screens lay out without overflow, clipping or crossing`,`at ${width} px the <L> E03 screens lay out without overflow, clipping or crossing`),async({page})=>{
+for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const width of [320,1440])test(title(L,`at ${width} px the Spanish E03 screens lay out without overflow, clipping or crossing`,`at ${width} px the <L> E03 screens lay out without overflow, clipping or crossing`),async({page})=>{
  test.setTimeout(360_000);await page.setViewportSize({width,height:width===320?700:1000});
  const problems=new Map<string,string>();
  // ES5_LAYOUT_LANG=en|qps walks that reference instead (a debugging aid; the language's own test title is kept).
  await walk(page,(process.env.ES5_LAYOUT_LANG as 'en'|'qps'|undefined)??L,async step=>{for(const p of await layoutProblems(page,LAYOUT))if(!problems.has(p))problems.set(p,step);
   if(/guide|lab|Program|Spectra|practice|photo|traces|range|cursor|width|review|imported|acquired/.test(step))await page.screenshot({path:test.info().outputPath(`${L.tag}-e03-${width}-${step.replace(/\W+/g,'-')}.png`),fullPage:false});});
  expect([...problems].map(([p,step])=>`${step}: ${p}`)).toEqual([]);
-});
+});});

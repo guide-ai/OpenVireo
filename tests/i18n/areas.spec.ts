@@ -1,6 +1,6 @@
 import {type Page,type Request} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
-import {SPANISH_LOCALE} from '../fixtures/language';
+import {PORTUGUESE_LOCALE,SPANISH_LOCALE} from '../fixtures/language';
 import en from '../../src/i18n/en.json' with {type:'json'};
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import {WEDGE_ES} from '../../src/i18n/es/maps/wedge';
@@ -187,13 +187,14 @@ test('View original (English) on an area route: VIREO\'s names in English, the a
  expect(names(w)[0]).toBe('core');expect(names(w).slice(1).sort()).toEqual(modulesOf('classification'));expect(w.problems).toEqual([]);
 });
 
-// Front PT0 (plan front-i18n-pt-br.md §6): a language before its release is partial. Its preview (`?lang=pt-BR`, in an English
-// browser) fetches its core, and each area route only the area modules its plan gives text to; an area with no text yet is empty,
-// has no chunk and resolves at once, so its route shows English without a notice, a route error or a read before its area. With
-// PT0's shell slice every area is empty; later PT fronts fill them and this test then expects their modules.
-test.describe('a language before its release',()=>{
- test.use({locale:'en-US'});
- test('a partial language fetches only its core, and no chunk for an empty area',async({page})=>{
+// Front PT0 (plan front-i18n-pt-br.md §6) checked here that a language before its release (its `?lang=pt-BR` preview, partial)
+// fetched only its core and no chunk for an empty area; the qaa-XA fixture of src/i18n/partialLanguage.test.ts and split.test.ts
+// keeps that case. Front PT-REL: Brazilian Portuguese is released and complete, so a pt-BR browser, with no `?lang=`, fetches its
+// core and, on each area route, exactly the area and shared modules its plan gives (no area is empty any more), with the route in
+// Portuguese, no notice, no route error and no read before its area.
+test.describe('in a Brazilian Portuguese browser',()=>{
+ test.use({locale:PORTUGUESE_LOCALE});
+ test('Brazilian Portuguese (released) fetches its core, and on each area route only that area\'s modules',async({page})=>{
   test.setTimeout(300_000);
   const P=PORTUGUESE_TEXT,ptPlan=planOf(P.tag),module=(name:string)=>ptPlan.modules.find(m=>m.name===name)!;
   const fetchedFor=(area:string)=>{const m=module(area);return m.empty?[]:[area,...m.shared].sort();};
@@ -210,6 +211,7 @@ test.describe('a language before its release',()=>{
   };
   const headingKey:Record<string,string>={classification:'class.title','cluster-database':'db.title',photometer:'ph.title','lss-survey':'lss.title','galaxy-exposure':'galaxyExposure.title','star-exposure':'starExposure.title',images:'fits.title'};
   const empty=ptPlan.modules.filter(m=>m.kind==='area'&&m.empty).map(m=>m.name);
+  expect(empty,'a released language has no empty area').toEqual([]);
   for(const r of ROUTES){
    await page.goto('about:blank');w.language.length=0;
    await page.goto(`/${P.query}#${r.hash}`);

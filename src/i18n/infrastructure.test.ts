@@ -125,6 +125,21 @@ describe('Front ES0: the dev-only pseudo-locale qps',()=>{
   expect(sha(hubbleAnalysisCsv({recipeId:'workbook',rows:workbookExampleRows()},[]))).toBe(baseline.nodeSHA256.workbook);
   expect(sha(hubbleAnalysisCsv({recipeId:'vireo',rows:workbookExampleRows()},[]))).toBe(baseline.nodeSHA256.vireo);
  });
+ it('Front PT-REL review: formatNumber reads the active language; Spanish and the pseudo-locale print what English prints, Portuguese only swaps the group separator for U+202F, and the export bytes stay',async()=>{
+  const {SPANISH}=await import('./es/index'),{PORTUGUESE}=await import('./pt-br/index');
+  const values=[0,-0.5,7,999,1000,1234.5,-31147,12345.678,2400000,98765.4321,1e-10,6.02e23,Number.NaN,Number.POSITIVE_INFINITY];
+  const options:Intl.NumberFormatOptions[]=[{},{useGrouping:false},{maximumFractionDigits:0},{minimumFractionDigits:5,maximumFractionDigits:5,useGrouping:false},{maximumFractionDigits:9},{style:'percent',maximumFractionDigits:0},{style:'percent',signDisplay:'exceptZero',maximumFractionDigits:6,useGrouping:false},{notation:'scientific',maximumFractionDigits:3,useGrouping:false},{notation:'scientific',maximumSignificantDigits:12},{notation:'compact'}];
+  const all=()=>values.flatMap(v=>options.map(o=>formatNumber(v,o)));
+  const english=all();expect(formatNumber(24000)).toBe('24,000');
+  for(const bundle of [SPANISH,pseudoBundle()]){activateLocale(bundle);expect(all(),bundle.language).toEqual(english);}
+  activateLocale(PORTUGUESE);expect(uiLanguage()).toBe('pt-BR');
+  expect(all()).toEqual(english.map(s=>s.replace(/(?<=\d),(?=\d{3})/g,' ')));
+  expect([formatNumber(24000),formatNumber(2400000),formatNumber(1234.5),formatNumber(24000,{useGrouping:false})]).toEqual(['24 000','2 400 000','1 234.5','24000']);
+  expect([fixed(12345.678,2),scientific(12345,3)]).toEqual(['12345.68','1.23e+4']);
+  const m=createMeasurement(1,'Operator <b>σ</b> {target}','retained σ.csv','a'.repeat(64),{base:.015625,position:0,factor:1,step:.001},'GLXYLNS.LST');
+  expect(sha(measurementCsv([m]))).toBe(baseline.nodeSHA256.measurement);
+  expect(sha(hubbleAnalysisCsv({recipeId:'vireo',rows:workbookExampleRows()},[]))).toBe(baseline.nodeSHA256.vireo);
+ });
 });
 describe('Front ES0: settling the language of a load (src/boot.ts)',()=>{
  it('activates the decided language and sets <html lang>; es-419 has no bundle in ES0 and stays English',()=>{
