@@ -5,7 +5,7 @@ import {layoutProblems,type LayoutOptions} from '../fixtures/layoutProblems';
 import {readFile} from 'node:fs/promises';
 import en from '../../src/i18n/en.json' with {type:'json'};
 import {enterInstructorMode} from '../fixtures/instructor-mode';
-import {TRANSLATED,e01e02Maps,type LanguageText} from './languageText';
+import {translatedFor,e01e02Maps,type LanguageText} from './languageText';
 // Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
 test.use({locale:SPANISH_LOCALE});
 
@@ -147,7 +147,7 @@ async function walk(page:Page,lang:Lang,each:(step:string)=>Promise<void>){
  for(const [step,run] of STEPS){await run(page,lang,c);await page.waitForTimeout(200);await each(step);}
 }
 
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});test(title(L,'E02 reads differently in Spanish from English: guide, survey, Measured Redshift Data, wedge and LSS Galaxy Data','E02 reads differently in <L> (<tag>) from English: guide, survey, Measured Redshift Data, wedge and LSS Galaxy Data'),async({browser})=>{
+for(const L of translatedFor('e02'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});test(title(L,'E02 reads differently in Spanish from English: guide, survey, Measured Redshift Data, wedge and LSS Galaxy Data','E02 reads differently in <L> (<tag>) from English: guide, survey, Measured Redshift Data, wedge and LSS Galaxy Data'),async({browser})=>{
  test.setTimeout(300_000);
  const seen:Record<'en'|'own',Map<string,Set<string>>>={en:new Map(),own:new Map()};
  for(const lang of ['en','own'] as const){
@@ -221,7 +221,7 @@ const captions=(page:Page,T:(original:string,context?:string)=>string):Record<st
 
 // "View original (English)" (decision 9): with the stored option on, every VIREO caption of the walk is VIREO's English, checked
 // one by one, and no Spanish original appears anywhere; OpenVireo's own web text stays Spanish.
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});test(title(L,'View original (English) on: every VIREO caption in the E02 walk reads in English, the web text stays Spanish','View original (English) on: every VIREO caption in the E02 walk reads in English, the web text stays <L>'),async({page})=>{
+for(const L of translatedFor('e02'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});test(title(L,'View original (English) on: every VIREO caption in the E02 walk reads in English, the web text stays Spanish','View original (English) on: every VIREO caption in the E02 walk reads in English, the web text stays <L>'),async({page})=>{
  const O=L.originals,M=e01e02Maps(L.tag);
  test.setTimeout(240_000);await page.setViewportSize({width:1440,height:1000});
  await page.addInitScript(()=>localStorage.setItem('openvireo-vireo-originals','1'));
@@ -242,7 +242,7 @@ for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.ta
  expect([...left].map(([t,step])=>`${step}: ${t}`)).toEqual([]);
 });});
 
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});test(title(L,'Spanish: every VIREO caption in the E02 walk is its Spanish original; English shows the originals unchanged','<L> (<tag>): every VIREO caption in the E02 walk is its <L> original; English shows the originals unchanged'),async({browser})=>{
+for(const L of translatedFor('e02'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});test(title(L,'Spanish: every VIREO caption in the E02 walk is its Spanish original; English shows the originals unchanged','<L> (<tag>): every VIREO caption in the E02 walk is its <L> original; English shows the originals unchanged'),async({browser})=>{
  test.setTimeout(300_000);
  for(const lang of [L,'en'] as const){
   const page=await browser.newPage({viewport:{width:1440,height:1000}});
@@ -253,7 +253,7 @@ for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.ta
 });});
 
 // LSSFields.LST that cannot be read: VIREO's "File Error!" box (its caption and its prefix are VIREO's, the reason is the web's).
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const original of [false,true])test(title(L,`the LSS fields file error box ${original?'follows View original (English)':'reads in Spanish'}`,`the LSS fields file error box ${original?'follows View original (English) (<tag>)':'reads in <L> (<tag>)'}`),async({page})=>{
+for(const L of translatedFor('e02'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const original of [false,true])test(title(L,`the LSS fields file error box ${original?'follows View original (English)':'reads in Spanish'}`,`the LSS fields file error box ${original?'follows View original (English) (<tag>)':'reads in <L> (<tag>)'}`),async({page})=>{
  await page.addInitScript(on=>{localStorage.setItem('openvireo.tour.v1','done');if(on)localStorage.setItem('openvireo-vireo-originals','1');},original);
  await page.route('**/original/hotlists/LSSFields.LST*',r=>r.abort());
  await page.goto(`/${langQuery(L.tag)}#lss-survey`);await expect(page.locator('html')).toHaveAttribute('lang',L.entry.htmlLang);
@@ -269,7 +269,7 @@ for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.ta
  * checks: its old copy exempted the wedge table from the crossing check and reported a crossing inside a sideways scroller
  * too. Run with the CI's DejaVu fonts (docs/I18N.md). */
 const LAYOUT:LayoutOptions={crossingExempt:'.wedge-table-wrap',crossingInScrollers:true};
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const width of [320,1440])test(title(L,`at ${width} px the Spanish E02 screens lay out without overflow, clipping or crossing`,`at ${width} px the <L> E02 screens (<tag>) lay out without overflow, clipping or crossing`),async({page})=>{
+for(const L of translatedFor('e02'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const width of [320,1440])test(title(L,`at ${width} px the Spanish E02 screens lay out without overflow, clipping or crossing`,`at ${width} px the <L> E02 screens (<tag>) lay out without overflow, clipping or crossing`),async({page})=>{
  test.setTimeout(300_000);await page.setViewportSize({width,height:width===320?700:1000});
  const problems=new Map<string,string>();
  const override=process.env.ES4_LAYOUT_LANG;await walk(page,override==='en'||override==='qps'?override:L,async step=>{for(const p of await layoutProblems(page,LAYOUT))if(!problems.has(p))problems.set(p,step);

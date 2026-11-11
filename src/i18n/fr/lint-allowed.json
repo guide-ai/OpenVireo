@@ -1,0 +1,4 @@
+{
+ "about": "Front FR0: findings of the fr lint (src/i18n/lint/, profile fr) that are correct French in one string, each with a reason. Keys are the lint's string ids; `words` are the matched words allowed in that string only, `rules` whole rules, `placeholders` added placeholders.",
+ "entries": {}
+}

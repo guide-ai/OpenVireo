@@ -2,9 +2,10 @@ import {type Page} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
 import {SPANISH_LOCALE,contextLocale} from '../fixtures/language';
 import en from '../../src/i18n/en.json' with {type:'json'};
-import {TRANSLATED,type LanguageText} from './languageText';
+import {translatedFor,type LanguageText} from './languageText';
 // Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts), and English with `?lang=en`. Front PT-REL:
-// Brazilian Portuguese the same way, in a pt-BR browser (the language loop's anonymous describe sets its browser locale).
+// Brazilian Portuguese the same way, in a pt-BR browser (the language loop's anonymous describe sets its browser locale). Front FR0:
+// French, before its release, through `?lang=fr` in an en-US browser (tests/i18n/languageText.ts: its `done` areas hold `shell`).
 test.use({locale:SPANISH_LOCALE});
 
 // Front ES1 (docs/I18N.md): the shell in Spanish in an `es-*` browser (a `?lang=es-419` preview load before ES-REL, decision 5).
@@ -18,7 +19,8 @@ const SHELL=['.portal-header','.investigation-toolbar','.observatory-heading','.
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
 const asVisitor=(page:Page)=>page.addInitScript(()=>{Object.defineProperty(Navigator.prototype,'webdriver',{configurable:true,get:()=>false});});
 /** A test title: Spanish keeps its ES1 title; another language names itself and its tag. */
-const title=(L:LanguageText,es:string,other:string)=>L.tag==='es-419'?es:other.replaceAll('<L>',L.entry.englishName).replaceAll('<tag>',L.tag);
+/** Front FR0: a language before its release opens through its `?lang=` preview in an English browser, and its titles say so. */
+const title=(L:LanguageText,es:string,other:string)=>L.tag==='es-419'?es:(L.entry.released?other:other.replace('a <L> browser fetches','a ?lang=<tag> preview fetches')).replaceAll('<L>',L.entry.englishName).replaceAll('<tag>',L.tag);
 async function open(page:Page,lang:LanguageText|'en',hash='observatory'){
  await page.goto(`/${lang==='en'?'?lang=en':lang.query}#${hash}`);
  await expect(page.getByRole('heading',{level:1,name:lang==='en'?en['sky.title']:lang.catalog['sky.title']})).toBeVisible({timeout:15_000});
@@ -55,7 +57,7 @@ const headerProblems=(page:Page)=>page.evaluate(()=>{
  return out;
 });
 
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
+for(const L of translatedFor('shell'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const C=L.catalog,M=L.maps,O=L.originals,chunk=new RegExp(`openvireo-i18n/i18n-${L.tag}-core`);
 
  test(title(L,'a Spanish browser fetches the Spanish chunk, sets <html lang="es-419"> and the Spanish title; ?lang=en never fetches it','a <L> browser fetches the <L> chunk, sets <html lang="<tag>"> and the <L> title; ?lang=en never fetches it'),async({page})=>{

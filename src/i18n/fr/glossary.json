@@ -1,0 +1,1444 @@
+{
+ "about": "Front FR0: the fr glossary (plan analysis/front-plans/front-i18n-fr.md §5) that src/i18n/fr/fr.test.ts enforces through the SC4 lint framework (src/i18n/lint/, profile fr) on every French string. Seeded from the Portuguese glossary: the same English patterns and interface names, re-targeted to French from the English (Spanish and Portuguese only as meaning context) and the IAU Office of Astronomy for Education French glossary. A term applies when its English pattern matches the English source: the French must then match the `fr` stem or pattern. Names are fixed interface names (an exact name applies only to a whole string; the name match ignores case). Forbidden here are the term forms this glossary rejects (ligne for a spectral line, cluster, redshift, supporté for supported); the language-wide rules (typography with the typographic apostrophe and guillemets, the vous register and the tu-forms it rejects, elision, Spanish and Portuguese words left from the context languages, anglicisms and false friends, claims that a translation is CLEA's or official) live in the fr profile of src/i18n/lint/profiles.ts. VIREO's own names follow the brief's decided forms (Save → Enregistrer, Record → Consigner, Find → Localiser, Search → Rechercher, Show → Afficher, Display → Affichage, Slew → Déplacer, Init/Go → Préparer/Démarrer, Scan → Faire défiler, Clear → Effacer, Reset → Réinitialiser, Hot List → liste d’objets, lab → TP). Rows for areas still in English wait for their sub-front (FR1–FR6). Translations are web adaptations by OpenVireo, never CLEA's.",
+ "terms": [
+  {
+   "en": "\\bobservator(y|ies)\\b",
+   "fr": "observatoire"
+  },
+  {
+   "en": "\\btelescopes?\\b",
+   "fr": "t[ée]lescope"
+  },
+  {
+   "en": "\\bdomes?\\b",
+   "fr": "coupole"
+  },
+  {
+   "en": "\\bspectr(um|a)\\b",
+   "fr": "spectr"
+  },
+  {
+   "en": "\\bspectrometers?\\b",
+   "fr": "spectrom[èe]tre"
+  },
+  {
+   "en": "\\bphotometers?\\b",
+   "fr": "photom[èe]tre"
+  },
+  {
+   "en": "\\bphotometry\\b",
+   "fr": "photom[ée]trie"
+  },
+  {
+   "en": "\\bexposures?\\b",
+   "fr": "pose|exposition"
+  },
+  {
+   "en": "\\bmeasurements?\\b",
+   "fr": "mesure"
+  },
+  {
+   "en": "\\binvestigations?\\b",
+   "fr": "investigation"
+  },
+  {
+   "en": "\\bfiles?\\b",
+   "fr": "fichier"
+  },
+  {
+   "en": "\\bdownload(s|ed|ing)?\\b",
+   "fr": "t[ée]l[ée]charg"
+  },
+  {
+   "en": "(?<!daylight-)\\bsav(e|es|ed|ing)\\b",
+   "fr": "enregistr"
+  },
+  {
+   "en": "\\brestor(e|es|ed|ing)\\b",
+   "fr": "restaur"
+  },
+  {
+   "en": "\\b(re)?load(s|ed|ing)?\\b",
+   "fr": "charg|import|ouvr"
+  },
+  {
+   "en": "\\bbrowsers?\\b",
+   "fr": "navigateur"
+  },
+  {
+   "en": "(?<!line breaks and |for example a |accented letter, a |Shift\\+)(?<!reachable with )\\btabs?\\b(?!,? (?:line breaks|or other|BOM)| and Shift\\+Tab)",
+   "fr": "onglet"
+  },
+  {
+   "en": "\\bTab and Shift\\+Tab\\b",
+   "fr": "Tab et Maj\\+Tab"
+  },
+  {
+   "en": "\\btabs?(?=,? (?:line breaks|or other|BOM))|(?<=line breaks and |for example a |accented letter, a )tabs?\\b",
+   "fr": "tabulation"
+  },
+  {
+   "en": "\\bremarks?\\b",
+   "fr": "remarque|commentaire|observation"
+  },
+  {
+   "en": "\\bpages?\\b",
+   "fr": "page"
+  },
+  {
+   "en": "\\bcomputers?\\b",
+   "fr": "ordinateur"
+  },
+  {
+   "en": "\\bphones?\\b",
+   "fr": "t[ée]l[ée]phone|portable|mobile"
+  },
+  {
+   "en": "\\bclick\\b",
+   "fr": "cliqu|clic"
+  },
+  {
+   "en": "\\bpress\\b",
+   "fr": "appu[iy]|press"
+  },
+  {
+   "en": "\\bmenus?\\b",
+   "fr": "menu"
+  },
+  {
+   "en": "\\bguides?\\b",
+   "fr": "guide"
+  },
+  {
+   "en": "\\bexercises?\\b",
+   "fr": "exercice|\\bTP\\b"
+  },
+  {
+   "en": "\\blabs?\\b",
+   "fr": "\\bTP\\b|travaux pratiques"
+  },
+  {
+   "en": "\\bredshifts?\\b",
+   "fr": "d[ée]calages? vers le rouge"
+  },
+  {
+   "en": "\\bpulsars?\\b",
+   "fr": "pulsar"
+  },
+  {
+   "en": "\\binstructor mode\\b",
+   "fr": "mode enseignant"
+  },
+  {
+   "en": "\\bhelp\\b",
+   "fr": "aide"
+  },
+  {
+   "en": "\\btracking\\b",
+   "fr": "suivi|poursuite"
+  },
+  {
+   "en": "\\bcatalog(ue)?s?\\b",
+   "fr": "catalogue"
+  },
+  {
+   "en": "\\bgalax(y|ies)\\b",
+   "fr": "galaxie"
+  },
+  {
+   "en": "\\bstars?\\b",
+   "fr": "[ée]toile|stellaire"
+  },
+  {
+   "en": "\\bclusters?\\b",
+   "fr": "amas"
+  },
+  {
+   "en": "\\bresults?\\b",
+   "fr": "r[ée]sultat"
+  },
+  {
+   "en": "\\bwavelengths?\\b",
+   "fr": "longueurs? d[’']onde"
+  },
+  {
+   "en": "\\bpassword\\b",
+   "fr": "mot de passe"
+  },
+  {
+   "en": "\\bcounts?\\b(?! shows after the reveal)",
+   "fr": "compt|nombre|total|effectif"
+  },
+  {
+   "en": "\\bslew(s|ed|ing)?\\b",
+   "fr": "d[ée]plac|mouvement|pointage"
+  },
+  {
+   "en": "\\bhot lists?\\b",
+   "fr": "listes? d[’']objets"
+  },
+  {
+   "en": "\\bsky background\\b",
+   "fr": "fond de ciel"
+  },
+  {
+   "en": "\\bseeing\\b",
+   "fr": "seeing|turbulence|qualit[ée] d[’']image"
+  },
+  {
+   "en": "\\bright ascension\\b",
+   "fr": "ascension droite"
+  },
+  {
+   "en": "\\bdeclinations?\\b",
+   "fr": "d[ée]clinaison"
+  },
+  {
+   "en": "\\bfilters?\\b",
+   "fr": "filtre"
+  },
+  {
+   "en": "\\bslits?\\b",
+   "fr": "fente"
+  },
+  {
+   "en": "\\blight curves?\\b",
+   "fr": "courbes? de lumi[èe]re"
+  },
+  {
+   "en": "\\bHR diagrams?\\b",
+   "fr": "diagrammes? (?:H-?R|de Hertzsprung)"
+  },
+  {
+   "en": "\\bmain sequence\\b",
+   "fr": "s[ée]quences? principales?"
+  },
+  {
+   "en": "\\bisochrones?\\b",
+   "fr": "isochrone"
+  },
+  {
+   "en": "\\bvariable stars?\\b",
+   "fr": "[ée]toiles? variables?"
+  },
+  {
+   "en": "\\bperiods?\\b",
+   "fr": "p[ée]riode"
+  },
+  {
+   "en": "\\bdispersion measure\\b",
+   "fr": "mesures? de dispersion"
+  },
+  {
+   "en": "\\bradio telescopes?\\b",
+   "fr": "radiot[ée]lescope"
+  },
+  {
+   "en": "\\breceivers?\\b",
+   "fr": "r[ée]cepteur"
+  },
+  {
+   "en": "\\bantennas?\\b",
+   "fr": "antenne"
+  },
+  {
+   "en": "\\bquasars?\\b",
+   "fr": "quasar"
+  },
+  {
+   "en": "\\basteroids?\\b",
+   "fr": "ast[ée]ro[iï]de"
+  },
+  {
+   "en": "\\bastrometry\\b",
+   "fr": "astrom[ée]trie"
+  },
+  {
+   "en": "\\blarge-scale structure\\b",
+   "fr": "structures? [àa] grande [ée]chelle"
+  },
+  {
+   "en": "\\bwedge plots?\\b",
+   "fr": "diagrammes? en coin"
+  },
+  {
+   "en": "\\bfield of view\\b",
+   "fr": "champs? de vue"
+  },
+  {
+   "en": "\\bsignal-to-noise\\b",
+   "fr": "signal.{1,8}bruit"
+  },
+  {
+   "en": "\\bequivalent widths?\\b",
+   "fr": "largeurs? [ée]quivalentes?"
+  },
+  {
+   "en": "\\bcontinuum\\b",
+   "fr": "continuum"
+  },
+  {
+   "en": "\\bspectral (type|class)(es)?\\b",
+   "fr": "(?:types?|classes?) spectra(?:l|ux|les)"
+  },
+  {
+   "en": "\\bapparent magnitudes?\\b",
+   "fr": "magnitudes? apparentes?"
+  },
+  {
+   "en": "\\babsolute magnitudes?\\b",
+   "fr": "magnitudes? absolues?"
+  },
+  {
+   "en": "\\bdistance modulus\\b",
+   "fr": "modules? de distance"
+  },
+  {
+   "en": "\\breddening\\b",
+   "fr": "rougissement"
+  },
+  {
+   "en": "\\bcolou?r excess\\b",
+   "fr": "exc[èe]s de couleur"
+  },
+  {
+   "en": "\\bHubble's law\\b",
+   "fr": "loi de Hubble"
+  },
+  {
+   "en": "\\bHubble constant\\b",
+   "fr": "constante de Hubble"
+  },
+  {
+   "en": "\\brecessional velocit(y|ies)\\b",
+   "fr": "vitesses? de r[ée]cession"
+  },
+  {
+   "en": "\\bfinding charts?\\b",
+   "fr": "cartes? (?:de rep[ée]rage|de localisation|d[’']identification)"
+  },
+  {
+   "en": "\\bfinder\\b",
+   "fr": "chercheur"
+  },
+  {
+   "en": "\\bepochs?\\b",
+   "fr": "[ée]poque"
+  },
+  {
+   "en": "\\bintegration\\b",
+   "fr": "int[ée]gration"
+  },
+  {
+   "en": "\\bCCD camera\\b",
+   "fr": "cam[ée]ras? CCD"
+  },
+  {
+   "en": "\\bIR camera\\b",
+   "fr": "cam[ée]ras? IR"
+  },
+  {
+   "en": "\\bspectral lines?\\b",
+   "fr": "raies? spectrales?"
+  },
+  {
+   "en": "\\bemission\\b",
+   "fr": "[ée]mission"
+  },
+  {
+   "en": "\\babsorption\\b",
+   "fr": "absorption"
+  },
+  {
+   "en": "\\bopen clusters?\\b",
+   "fr": "amas ouverts?"
+  },
+  {
+   "en": "\\bglobular clusters?\\b",
+   "fr": "amas globulaires?"
+  },
+  {
+   "en": "\\bsignal\\b",
+   "fr": "signal"
+  },
+  {
+   "en": "\\bexercise guide\\b|\\blab guide\\b",
+   "fr": "guide"
+  },
+  {
+   "en": "\\bapertures?\\b",
+   "fr": "ouverture"
+  },
+  {
+   "en": "\\breadings\\b",
+   "fr": "lecture|relev[ée]|mesure"
+  },
+  {
+   "en": "\\bseeded\\b",
+   "fr": "graine|initialis|germe"
+  },
+  {
+   "en": "\\bcallbacks?\\b",
+   "fr": "rappel|callback"
+  },
+  {
+   "en": "\\bzero point\\b",
+   "fr": "point z[ée]ro"
+  },
+  {
+   "en": "\\bphotons?\\b",
+   "fr": "photon"
+  },
+  {
+   "en": "\\bcolou?r[–-]magnitude\\b",
+   "fr": "couleur[–-]magnitude"
+  },
+  {
+   "en": "\\bcluster fit\\b",
+   "fr": "ajustement (?:manuel )?(?:de l|d)[’']amas"
+  },
+  {
+   "en": "\\bstandards?\\b",
+   "fr": "standard|[ée]talon"
+  },
+  {
+   "en": "\\bshoulders?\\b",
+   "fr": "[ée]paule"
+  },
+  {
+   "en": "\\bgr[ae]yscale\\b",
+   "fr": "gris"
+  },
+  {
+   "en": "\\b(?:observation )?notebook\\b",
+   "fr": "carnet"
+  },
+  {
+   "en": "\\bluminosity\\b",
+   "fr": "luminosit[ée]"
+  },
+  {
+   "en": "\\batlas(es)?\\b",
+   "fr": "atlas"
+  },
+  {
+   "en": "\\bstandard pairs?\\b",
+   "fr": "paires? (?:de |d[’'])?(?:standards?|[ée]talons?)"
+  },
+  {
+   "en": "\\braw\\b",
+   "fr": "brut"
+  },
+  {
+   "en": "\\bmerg(e|es|ed|ing)\\b",
+   "fr": "fusion|combin|regroup"
+  },
+  {
+   "en": "\\bendpoint[- ]grids?\\b",
+   "fr": "grilles? d[’']extr[ée]mit"
+  },
+  {
+   "en": "\\bdispersion measure\\b",
+   "fr": "mesures? de dispersion"
+  },
+  {
+   "en": "\\bsweeps?\\b",
+   "fr": "balayage"
+  },
+  {
+   "en": "\\bbeams?\\b",
+   "fr": "faisceau"
+  },
+  {
+   "en": "\\bseeds?\\b",
+   "fr": "graine"
+  },
+  {
+   "en": "\\btimers?\\b",
+   "fr": "minuteur|chronom[èe]tre"
+  },
+  {
+   "en": "\\baltitude limits?\\b",
+   "fr": "limites? d[’']altitude"
+  },
+  {
+   "en": "(?<!clock[/ ])\\bdrive\\b",
+   "fr": "entra[iî]nement|motoris|moteur"
+  },
+  {
+   "en": "\\bblink(s|ed|ing)?\\b",
+   "fr": "clignot"
+  },
+  {
+   "en": "\\breveal(s|ed|ing)?\\b(?! the catalog sky)",
+   "fr": "r[ée]v[éèe]l|d[ée]voil"
+  },
+  {
+   "en": "\\borbit files?\\b",
+   "fr": "fichiers? d[’']orbites?"
+  },
+  {
+   "en": "\\blimiting magnitudes?\\b",
+   "fr": "magnitudes? limites?"
+  },
+  {
+   "en": "\\breference stars?\\b",
+   "fr": "[ée]toiles? de r[ée]f[ée]rence"
+  },
+  {
+   "en": "\\bplate constants\\b",
+   "fr": "constantes? (?:de plaque|de clich[ée])"
+  },
+  {
+   "en": "(?<!All Sky )\\bsurveys?\\b",
+   "fr": "relev[ée]"
+  },
+  {
+   "en": "\\bsnapshots?\\b",
+   "fr": "instantan[ée]|capture"
+  },
+  {
+   "en": "\\banaly[sz]ers?\\b",
+   "fr": "analyseur"
+  },
+  {
+   "en": "\\btemplates?\\b",
+   "fr": "mod[èe]le|gabarit"
+  },
+  {
+   "en": "\\bjournals?\\b",
+   "fr": "journal"
+  },
+  {
+   "en": "\\b(?:600-)?bins?\\b",
+   "fr": "canal|canaux|intervalle|case"
+  },
+  {
+   "en": "\\bcombined view\\b",
+   "fr": "vue combin[ée]e"
+  },
+  {
+   "en": "\\bpanes?\\b",
+   "fr": "panneau|volet"
+  },
+  {
+   "en": "\\b(?:sampled|printed-coordinate|printed|intensity|unknown) traces?\\b",
+   "fr": "trac[ée]"
+  },
+  {
+   "en": "\\breadouts?\\b",
+   "fr": "lecture|affichage"
+  },
+  {
+   "en": "\\bmetallicit(y|ies)\\b",
+   "fr": "m[ée]tallicit[ée]"
+  },
+  {
+   "en": "\\bsliders?\\b",
+   "fr": "curseur"
+  },
+  {
+   "en": "\\btrials?\\b",
+   "fr": "essai"
+  },
+  {
+   "en": "\\bpresets?\\b",
+   "fr": "pr[ée]r[ée]gl|pr[ée]d[ée]fini|pr[ée]s[ée]lection"
+  },
+  {
+   "en": "\\bapparent modulus\\b",
+   "fr": "module apparent"
+  },
+  {
+   "en": "\\bfresh sky\\b",
+   "fr": "(?:nouvelles?|nouveaux?) (?:lectures?|mesures?|ciel)"
+  },
+  {
+   "en": "\\bintegration series\\b",
+   "fr": "s[ée]ries? d[’']int[ée]gration"
+  },
+  {
+   "en": "\\bzero[- ]age main sequence\\b",
+   "fr": "s[ée]quence principale d[’'][âa]ge z[ée]ro"
+  },
+  {
+   "en": "\\bturn-?off\\b",
+   "fr": "point de sortie|point de virage|turn-?off"
+  },
+  {
+   "en": "\\bly\\b",
+   "fr": "ann[ée]es?[- ]lumi[èe]re|a\\.\\s?l\\.|\\bal\\b"
+  },
+  {
+   "en": "\\bcolou?r index\\b",
+   "fr": "indices? de couleur"
+  },
+  {
+   "en": "\\bauditions?\\b|\\bauditioned\\b",
+   "fr": "[ée]cout|auditi"
+  },
+  {
+   "en": "\\bradio clock\\b",
+   "fr": "horloge radio"
+  },
+  {
+   "en": "\\bpress[- ]and[- ]hold\\b",
+   "fr": "maint(?:enez|enir|enu|enant)|appui (?:continu|prolong)|appuy[ée]e? longuement|pression continue"
+  },
+  {
+   "en": "\\bslew-timer\\b",
+   "fr": "minuteur de d[ée]placement"
+  },
+  {
+   "en": "\\breceiver monitor\\b",
+   "fr": "moniteur (?:du|de) r[ée]cepteur|surveillance (?:du|de) r[ée]cepteur"
+  }
+ ],
+ "names": [
+  {
+   "en": "Save investigation",
+   "fr": "Enregistrer l’investigation"
+  },
+  {
+   "en": "Restore investigation JSON",
+   "fr": "Restaurer l’investigation (JSON)"
+  },
+  {
+   "en": "Save session",
+   "fr": "Enregistrer la session"
+  },
+  {
+   "en": "Restore session",
+   "fr": "Restaurer la session"
+  },
+  {
+   "en": "Instructor mode…",
+   "fr": "Mode enseignant…"
+  },
+  {
+   "en": "Help topics…",
+   "fr": "Rubriques d’aide…"
+  },
+  {
+   "en": "Tools button",
+   "fr": "bouton Menu"
+  },
+  {
+   "en": "Optical Simulation Options",
+   "fr": "Options de simulation optique"
+  },
+  {
+   "en": "Demonstration Mode",
+   "fr": "Mode démonstration"
+  },
+  {
+   "en": "Edit Mode",
+   "fr": "Mode édition"
+  },
+  {
+   "en": "Virtual Observatory",
+   "fr": "Observatoire virtuel"
+  },
+  {
+   "en": "Test Mode",
+   "fr": "Mode test"
+  },
+  {
+   "en": "Pulsar Analysis",
+   "fr": "Analyse de pulsars"
+  },
+  {
+   "en": "Observational Data",
+   "fr": "Données d’observation"
+  },
+  {
+   "en": "Observational Results",
+   "fr": "Résultats d’observation"
+  },
+  {
+   "en": "Results Editors",
+   "fr": "Éditeurs de résultats"
+  },
+  {
+   "en": "Topics...",
+   "fr": "Rubriques...",
+   "except": {
+    "original:Show Help Topics...": "VIREO's help viewer item Show Help Topics... (the topic list), «Afficher les rubriques d’aide...»; the row names the Help menu's Topics... item."
+   }
+  },
+  {
+   "en": "About This Exercise...",
+   "fr": "À propos de cet exercice..."
+  },
+  {
+   "en": "Project CLEA",
+   "fr": "Project CLEA"
+  },
+  {
+   "en": "Gettysburg College",
+   "fr": "Gettysburg College"
+  },
+  {
+   "en": "VIREO",
+   "fr": "VIREO"
+  },
+  {
+   "en": "OpenVireo",
+   "fr": "OpenVireo"
+  },
+  {
+   "en": "CLEA",
+   "fr": "CLEA"
+  },
+  {
+   "en": "NSF",
+   "fr": "NSF"
+  },
+  {
+   "en": "GitHub",
+   "fr": "GitHub"
+  },
+  {
+   "en": "FITS",
+   "fr": "FITS"
+  },
+  {
+   "en": "CSV",
+   "fr": "CSV"
+  },
+  {
+   "en": "VizieR",
+   "fr": "VizieR"
+  },
+  {
+   "en": "NOMAD",
+   "fr": "NOMAD"
+  },
+  {
+   "en": "USNO-B1",
+   "fr": "USNO-B1"
+  },
+  {
+   "en": "GSC",
+   "fr": "GSC"
+  },
+  {
+   "en": "2MASS",
+   "fr": "2MASS"
+  },
+  {
+   "en": "SHA-256",
+   "fr": "SHA-256"
+  },
+  {
+   "en": "JSON",
+   "fr": "JSON"
+  },
+  {
+   "en": "File",
+   "fr": "Fichier",
+   "exact": true
+  },
+  {
+   "en": "Slew",
+   "fr": "Déplacer",
+   "exact": true
+  },
+  {
+   "en": "Tools",
+   "fr": "Outils",
+   "exact": true,
+   "except": {
+    "map:appShell.toolsMenu": "OpenVireo's own header menu (not VIREO's Tools menu); FR names it «Menu» in French."
+   }
+  },
+  {
+   "en": "Help",
+   "fr": "Aide",
+   "exact": true
+  },
+  {
+   "en": "Options",
+   "fr": "Options",
+   "exact": true
+  },
+  {
+   "en": "Parameters",
+   "fr": "Paramètres",
+   "exact": true
+  },
+  {
+   "en": "OK",
+   "fr": "OK",
+   "exact": true
+  },
+  {
+   "en": "Cancel",
+   "fr": "Annuler",
+   "exact": true
+  },
+  {
+   "en": "Close",
+   "fr": "Fermer",
+   "exact": true
+  },
+  {
+   "en": "Yes",
+   "fr": "Oui",
+   "exact": true
+  },
+  {
+   "en": "Reset",
+   "fr": "Réinitialiser",
+   "exact": true
+  },
+  {
+   "en": "Update",
+   "fr": "Mettre à jour",
+   "exact": true
+  },
+  {
+   "en": "List",
+   "fr": "Liste",
+   "exact": true
+  },
+  {
+   "en": "Selection",
+   "fr": "Sélection",
+   "exact": true
+  },
+  {
+   "en": "Exit",
+   "fr": "Quitter",
+   "exact": true
+  },
+  {
+   "en": "Print...",
+   "fr": "Imprimer...",
+   "exact": true
+  },
+  {
+   "en": "Search...",
+   "fr": "Rechercher...",
+   "exact": true
+  },
+  {
+   "en": "Save...",
+   "fr": "Enregistrer...",
+   "exact": true
+  },
+  {
+   "en": "Stop",
+   "fr": "Arrêter",
+   "exact": true
+  },
+  {
+   "en": "Scan",
+   "fr": "Faire défiler",
+   "exact": true
+  },
+  {
+   "en": "Telescopes",
+   "fr": "Télescopes",
+   "exact": true
+  },
+  {
+   "en": "Websites",
+   "fr": "Sites web",
+   "exact": true
+  },
+  {
+   "en": "Confirm",
+   "fr": "Confirmer",
+   "exact": true
+  },
+  {
+   "en": "Confirmation",
+   "fr": "Confirmation",
+   "exact": true
+  },
+  {
+   "en": "Display",
+   "fr": "Affichage",
+   "exact": true
+  },
+  {
+   "en": "Objects",
+   "fr": "Objets",
+   "exact": true
+  },
+  {
+   "en": "Go",
+   "fr": "Démarrer",
+   "exact": true
+  },
+  {
+   "en": "Init",
+   "fr": "Préparer",
+   "exact": true
+  },
+  {
+   "en": "Set Coordinates",
+   "fr": "Définir les coordonnées"
+  },
+  {
+   "en": "View/Select from List",
+   "fr": "Voir/sélectionner dans la liste"
+  },
+  {
+   "en": "Add Current Item/Position to List",
+   "fr": "Ajouter l’objet ou la position actuels à la liste"
+  },
+  {
+   "en": "Slew to Selection",
+   "fr": "Déplacer vers la sélection"
+  },
+  {
+   "en": "Field Information",
+   "fr": "Informations sur le champ"
+  },
+  {
+   "en": "Variable Stars",
+   "fr": "Étoiles variables"
+  },
+  {
+   "en": "QSO List",
+   "fr": "Liste de QSO"
+  },
+  {
+   "en": "CCD Camera",
+   "fr": "Caméra CCD"
+  },
+  {
+   "en": "IR Camera",
+   "fr": "Caméra IR"
+  },
+  {
+   "en": "Request Time",
+   "fr": "Demander du temps"
+  },
+  {
+   "en": "Set Date/Time",
+   "fr": "Définir la date et l’heure"
+  },
+  {
+   "en": "Site Parameters",
+   "fr": "Paramètres du site"
+  },
+  {
+   "en": "Site Information",
+   "fr": "Informations sur le site"
+  },
+  {
+   "en": "Print Sky Image",
+   "fr": "Imprimer l’image du ciel"
+  },
+  {
+   "en": "HST Image Archive",
+   "fr": "Archive d’images du HST"
+  },
+  {
+   "en": "Exit Observatory",
+   "fr": "Quitter l’observatoire"
+  },
+  {
+   "en": "Restrict Scope Access",
+   "fr": "Restreindre l’accès aux télescopes"
+  },
+  {
+   "en": "Limit Slewing",
+   "fr": "Limiter le déplacement"
+  },
+  {
+   "en": "Show Object ID",
+   "fr": "Afficher l’identifiant de l’objet"
+  },
+  {
+   "en": "Show Object Mag",
+   "fr": "Afficher la mag. de l’objet"
+  },
+  {
+   "en": "Fast Slewing",
+   "fr": "Déplacement rapide"
+  },
+  {
+   "en": "Fast Scope Change",
+   "fr": "Changement rapide de télescope"
+  },
+  {
+   "en": "Sound Effects",
+   "fr": "Effets sonores"
+  },
+  {
+   "en": "Infrared Camera",
+   "fr": "Caméra infrarouge"
+  },
+  {
+   "en": "Write Log File",
+   "fr": "Écrire le fichier journal"
+  },
+  {
+   "en": "Time-Dependent Data",
+   "fr": "Données dépendant du temps"
+  },
+  {
+   "en": "Print in Color",
+   "fr": "Imprimer en couleur"
+  },
+  {
+   "en": "Monochrome Displays",
+   "fr": "Affichages monochromes"
+  },
+  {
+   "en": "Compute Rdshft Vel.",
+   "fr": "Calculer la vit. par décalage vers le rouge"
+  },
+  {
+   "en": "Allow User Change",
+   "fr": "Autoriser la modification par l’utilisateur"
+  },
+  {
+   "en": "Set E(B-V)",
+   "fr": "Définir E(B-V)"
+  },
+  {
+   "en": "Detect Sky",
+   "fr": "Détecter le ciel"
+  },
+  {
+   "en": "Catalog Object",
+   "fr": "Objet du catalogue"
+  },
+  {
+   "en": "Field Size",
+   "fr": "Taille du champ"
+  },
+  {
+   "en": "Multi-Channel Spectrometer",
+   "fr": "Spectromètre multicanal"
+  },
+  {
+   "en": "Observation List",
+   "fr": "Liste d’observations"
+  },
+  {
+   "en": "Star Data List",
+   "fr": "Liste de données d’étoiles"
+  },
+  {
+   "en": "Naked Eye Star",
+   "fr": "Étoile à l’œil nu"
+  },
+  {
+   "en": "Get Selection Data",
+   "fr": "Obtenir les données de la sélection"
+  },
+  {
+   "en": "Add Selection to Current Hot List",
+   "fr": "Ajouter la sélection à la liste d’objets actuelle"
+  },
+  {
+   "en": "Start New Hot List with Selection",
+   "fr": "Démarrer une nouvelle liste d’objets avec la sélection"
+  },
+  {
+   "en": "Save List",
+   "fr": "Enregistrer la liste"
+  },
+  {
+   "en": "Edit Selection",
+   "fr": "Modifier la sélection"
+  },
+  {
+   "en": "Delete Selection",
+   "fr": "Supprimer la sélection"
+  },
+  {
+   "en": "Undo Edit/Delete",
+   "fr": "Annuler la modification/suppression"
+  },
+  {
+   "en": "Base Slew Rate",
+   "fr": "Vitesse de déplacement de base"
+  },
+  {
+   "en": "Horizon Limit",
+   "fr": "Limite d’horizon"
+  },
+  {
+   "en": "Finder Field",
+   "fr": "Champ du chercheur"
+  },
+  {
+   "en": "Finder Mag Limit",
+   "fr": "Mag. limite du chercheur"
+  },
+  {
+   "en": "Field Creation Factor",
+   "fr": "Facteur de création du champ"
+  },
+  {
+   "en": "Enter Sky Coordinates for Slew",
+   "fr": "Coordonnées célestes pour le déplacement du télescope"
+  },
+  {
+   "en": "Add/Edit Hot List Entry",
+   "fr": "Ajouter/modifier une entrée de la liste d’objets"
+  },
+  {
+   "en": "Camera Parameters",
+   "fr": "Paramètres de la caméra"
+  },
+  {
+   "en": "Spectra From Multi-channel Spectrometer",
+   "fr": "Spectres du spectromètre multicanal"
+  },
+  {
+   "en": "Terminate Current Slew",
+   "fr": "Interrompre le déplacement en cours"
+  },
+  {
+   "en": "Save Updates",
+   "fr": "Enregistrer les modifications"
+  },
+  {
+   "en": "Sort Options",
+   "fr": "Options de tri"
+  },
+  {
+   "en": "Scan Rate",
+   "fr": "Vitesse de défilement"
+  },
+  {
+   "en": "Chip Well Depth",
+   "fr": "Capacité du puits de la puce"
+  },
+  {
+   "en": "Dark Noise",
+   "fr": "Bruit d’obscurité"
+  },
+  {
+   "en": "Data from Observations",
+   "fr": "Données issues des observations"
+  },
+  {
+   "en": "Record/Review",
+   "fr": "Consigner/Revoir"
+  },
+  {
+   "en": "Next on List",
+   "fr": "Suivant dans la liste"
+  },
+  {
+   "en": "No More Spectra",
+   "fr": "Plus de spectres"
+  },
+  {
+   "en": "Spectral Line Table",
+   "fr": "Tableau des raies spectrales"
+  },
+  {
+   "en": "Program List",
+   "fr": "Liste du programme"
+  },
+  {
+   "en": "Pulsar guide",
+   "fr": "Guide des pulsars"
+  },
+  {
+   "en": "Pulsar timing guide",
+   "fr": "Guide de chronométrage des pulsars"
+  },
+  {
+   "en": "Radio Astronomy of Pulsars",
+   "fr": "Radioastronomie des pulsars"
+  },
+  {
+   "en": "Radio Telescope Control Panel",
+   "fr": "Panneau de commande du radiotélescope"
+  },
+  {
+   "en": "Radio Simulation Options",
+   "fr": "Options de simulation radio"
+  },
+  {
+   "en": "Pulsar Parameters",
+   "fr": "Paramètres du pulsar"
+  },
+  {
+   "en": "Access Pulsar List",
+   "fr": "Accès à la liste de pulsars"
+  },
+  {
+   "en": "Pulsar Identification",
+   "fr": "Identification du pulsar"
+  },
+  {
+   "en": "Telescope Type",
+   "fr": "Type de télescope"
+  },
+  {
+   "en": "Slew Rate",
+   "fr": "Vitesse de déplacement",
+   "except": {
+    "original:Base Slew Rate": "VIREO's Base Slew Rate is «Vitesse de déplacement de base» (FR2)",
+    "catalog:radioSimOptions.okNote": "names Base Slew Rate, «Vitesse de déplacement de base» (FR2)"
+   }
+  },
+  {
+   "en": "Find Pulsar Data",
+   "fr": "Localiser les données du pulsar"
+  },
+  {
+   "en": "Identify Recorded Object",
+   "fr": "Identifier l’objet consigné"
+  },
+  {
+   "en": "Add Channel",
+   "fr": "Ajouter un canal"
+  },
+  {
+   "en": "Antenna Aperture",
+   "fr": "Ouverture de l’antenne"
+  },
+  {
+   "en": "Sound Features",
+   "fr": "Fonctions sonores"
+  },
+  {
+   "en": "Asteroid List",
+   "fr": "Liste d’astéroïdes"
+  },
+  {
+   "en": "Spectral Range",
+   "fr": "Plage spectrale"
+  },
+  {
+   "en": "Spectrum Information",
+   "fr": "Informations sur le spectre"
+  },
+  {
+   "en": "View/Save Spectra",
+   "fr": "Voir/enregistrer les spectres"
+  },
+  {
+   "en": "Select Objects",
+   "fr": "Sélectionner des objets"
+  },
+  {
+   "en": "Print Selection Field",
+   "fr": "Imprimer le champ de sélection"
+  },
+  {
+   "en": "Save Text",
+   "fr": "Enregistrer le texte"
+  },
+  {
+   "en": "Comma Delimit",
+   "fr": "Séparé par des virgules"
+  },
+  {
+   "en": "Exposure Timer",
+   "fr": "Minuteur de pose"
+  },
+  {
+   "en": "Find Text String",
+   "fr": "Rechercher du texte"
+  },
+  {
+   "en": "Close Multi-Spec",
+   "fr": "Fermer Multi-Spec"
+  },
+  {
+   "en": "Measured Redshift Data",
+   "fr": "Données de décalage vers le rouge mesurées"
+  },
+  {
+   "en": "Record Z",
+   "fr": "Consigner z"
+  },
+  {
+   "en": "Save Data",
+   "fr": "Enregistrer les données",
+   "except": {
+    "original:Save Data in Comma-Separated Text File": "another VIREO caption (a file dialog title, «Enregistrer les données dans…»), not the Save Data button",
+    "original:Save Data Now?": "another VIREO message (a question, «Enregistrer les données maintenant ?»), not the Save Data button"
+   }
+  },
+  {
+   "en": "Plot Data",
+   "fr": "Tracer les données"
+  },
+  {
+   "en": "LSS Wedge Plot",
+   "fr": "Diagramme en coin LSS"
+  },
+  {
+   "en": "Load Saved Data",
+   "fr": "Charger les données enregistrées"
+  },
+  {
+   "en": "LSS Galaxy Data",
+   "fr": "Données de galaxies LSS"
+  },
+  {
+   "en": "Time-Dependent Data",
+   "fr": "Données dépendant du temps"
+  },
+  {
+   "en": "Load/Plot",
+   "fr": "Charger/tracer"
+  },
+  {
+   "en": "View/Print Parameters",
+   "fr": "Voir/imprimer les paramètres"
+  },
+  {
+   "en": "Display/Print Data",
+   "fr": "Afficher/imprimer les données"
+  },
+  {
+   "en": "Select Cluster Data",
+   "fr": "Sélectionner les données d’amas"
+  },
+  {
+   "en": "Possible Cluster Member",
+   "fr": "Membre possible de l’amas"
+  },
+  {
+   "en": "Clusters for Study",
+   "fr": "Amas à étudier"
+  },
+  {
+   "en": "Variable Star Data",
+   "fr": "Données de l’étoile variable"
+  },
+  {
+   "en": "Simulated Light Curve",
+   "fr": "Courbe de lumière simulée"
+  },
+  {
+   "en": "Remove from HR Diagram",
+   "fr": "Retirer du diagramme HR"
+  },
+  {
+   "en": "Recorded Results",
+   "fr": "Résultats consignés"
+  },
+  {
+   "en": "Telescope has Moved!",
+   "fr": "Le télescope a été déplacé !"
+  },
+  {
+   "en": "Reading Sky!",
+   "fr": "Lecture du ciel !"
+  },
+  {
+   "en": "Radio clock scenario",
+   "fr": "Scénario de l’horloge radio"
+  },
+  {
+   "en": "Scenario inputs",
+   "fr": "Entrées du scénario"
+  },
+  {
+   "en": "Use compiled defaults",
+   "fr": "Utiliser les valeurs par défaut compilées"
+  },
+  {
+   "en": "Reset radio site",
+   "fr": "Réinitialiser le site radio"
+  },
+  {
+   "en": "Start pulsar exercise",
+   "fr": "Démarrer le TP sur les pulsars"
+  },
+  {
+   "en": "Instructor mode",
+   "fr": "mode enseignant"
+  },
+  {
+   "en": "Clear",
+   "fr": "Effacer",
+   "exact": true
+  },
+  {
+   "en": "Find",
+   "fr": "Localiser",
+   "exact": true
+  },
+  {
+   "en": "Record",
+   "fr": "Consigner",
+   "exact": true
+  },
+  {
+   "en": "Show",
+   "fr": "Afficher",
+   "exact": true
+  },
+  {
+   "en": "Save",
+   "fr": "Enregistrer",
+   "exact": true
+  },
+  {
+   "en": "Save As",
+   "fr": "Enregistrer sous",
+   "exact": true
+  },
+  {
+   "en": "Save List...",
+   "fr": "Enregistrer la liste...",
+   "exact": true
+  },
+  {
+   "en": "Find Pulsar...",
+   "fr": "Localiser un pulsar...",
+   "exact": true
+  },
+  {
+   "en": "Print",
+   "fr": "Imprimer",
+   "exact": true
+  },
+  {
+   "en": "Lab Table",
+   "fr": "table de laboratoire"
+  }
+ ],
+ "forbidden": [
+  {
+   "fr": "(?<![\\p{L}\\p{N}])lignes? (?:spectrales?|d[’']absorption|d[’']émission|d[’']emission)",
+   "use": "raie spectrale / raie d’absorption / raie d’émission (IAU OAE fr)"
+  },
+  {
+   "words": [
+    "cluster",
+    "clusters"
+   ],
+   "use": "amas (amas d’étoiles, amas ouvert)"
+  },
+  {
+   "words": [
+    "redshift",
+    "redshifts"
+   ],
+   "use": "décalage vers le rouge"
+  },
+  {
+   "fr": "(?<![\\p{L}\\p{N}])décalages? (?:au|en|dans le) rouge|(?<![\\p{L}\\p{N}])décalages? rouge(?![\\p{L}\\p{N}])",
+   "use": "décalage vers le rouge"
+  },
+  {
+   "words": [
+    "supporté",
+    "supportée",
+    "supportés",
+    "supportées",
+    "supportent"
+   ],
+   "use": "pris en charge (supporter means to bear or tolerate)"
+  }
+ ]
+}

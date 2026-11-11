@@ -7,7 +7,9 @@ import {isReleased} from '../../src/i18n/languages';
 export const SPANISH_LOCALE='es-MX';
 /** Front PT0: a browser language that opens each translated language once it is released (pt-BR since PT-REL). */
 export const PORTUGUESE_LOCALE='pt-BR';
-const BROWSER_LOCALE:Readonly<Record<string,string>>={'es-419':SPANISH_LOCALE,'pt-BR':PORTUGUESE_LOCALE};
+/** Front FR0: the browser language that opens French once it is released (FR-REL); before, French opens with `?lang=fr`. */
+export const FRENCH_LOCALE='fr-FR';
+const BROWSER_LOCALE:Readonly<Record<string,string>>={'es-419':SPANISH_LOCALE,'pt-BR':PORTUGUESE_LOCALE,fr:FRENCH_LOCALE};
 /** The query that opens `lang` in its own browser (contextLocale: es-MX for Spanish, pt-BR for Brazilian Portuguese): none for a
  * released language, `?lang=<lang>` for English, the pseudo-locales and a language before its release (its preview). Front PT-REL:
  * the language-parameterised specs run each released language's tests in that language's browser (an anonymous describe with

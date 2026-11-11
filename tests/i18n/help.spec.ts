@@ -4,7 +4,7 @@ import {SPANISH_LOCALE,contextLocale} from '../fixtures/language';
 import {readFileSync} from 'node:fs';
 import witness from '../../src/help/helpAll.witness.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
-import {TRANSLATED,helpText} from './languageText';
+import {translatedFor,helpText} from './languageText';
 // Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
 test.use({locale:SPANISH_LOCALE});
 
@@ -26,7 +26,7 @@ const escape=(s:string)=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 async function noHorizontalScroll(page:Page){
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
 }
-const HELP_LANGUAGES=TRANSLATED.filter(l=>l.entry.help);
+const HELP_LANGUAGES=translatedFor('help').filter(l=>l.entry.help);
 if(!HELP_LANGUAGES.some(l=>l.tag==='es-419'))throw new Error('tests/i18n/help.spec.ts: Spanish has no help files');
 
 for(const L of HELP_LANGUAGES)test.describe(()=>{test.use({locale:contextLocale(L.tag)});

@@ -167,7 +167,8 @@ describe('app text in the static pages (scripts/check-i18n-dist.mjs)',()=>{
    ...Object.entries(maps).filter(([f])=>f.startsWith(`../i18n/${entry.dir}/maps/`)).flatMap(([,src])=>[...src.matchAll(/'((?:[^'\\\n]|\\.)*)'/g)].map(m=>m[1].replace(/\\'/g,"'"))).filter(v=>v.length>=12&&outside.test(v)),
    ...Object.values(originals).filter(v=>v.length>=8&&outside.test(v)),
   ];
-  expect(markers.length).toBeGreaterThan(1000);
+  // Front FR0: a language before its release holds only its first fronts' text (French's shell: about 160 markers).
+  expect(markers.length).toBeGreaterThan(entry.released?1000:100);
   const found=Object.entries(PAGES).filter(([p])=>!p.startsWith(`/${entry.pagePath}/`)).flatMap(([p,html])=>markers.filter(m=>html.includes(m)).map(m=>`${p}: ${m}`));
   expect([...new Set(found)]).toEqual([]);
  });

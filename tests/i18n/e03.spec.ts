@@ -5,7 +5,7 @@ import {layoutProblems,type LayoutOptions} from '../fixtures/layoutProblems';
 import {readFileSync} from 'node:fs';
 import {CLASSIFY_PROGRAM_LITERALS_RESTATED} from './classifyProgramLiterals';
 import en from '../../src/i18n/en.json' with {type:'json'};
-import {TRANSLATED,type LanguageText} from './languageText';
+import {translatedFor,type LanguageText} from './languageText';
 // Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
 test.use({locale:SPANISH_LOCALE});
 
@@ -185,7 +185,7 @@ async function walk(page:Page,lang:Lang,each:(step:string)=>Promise<void>){
  for(const [step,run] of STEPS){await run(page,lang);await page.waitForTimeout(200);await each(step);}
 }
 
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
+for(const L of translatedFor('e03'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const C=L.catalog as Record<string,string>;
  test(title(L,'E03 reads differently in Spanish from English: guide, Program List, comparison, displays, width, records, import and acquisition','E03 reads differently in <L> (<tag>) from English: guide, Program List, comparison, displays, width, records, import and acquisition'),async({browser})=>{
  test.setTimeout(360_000);
@@ -226,7 +226,7 @@ const captions=(page:Page,T:(original:string)=>string,end:string):Record<string,
  'No More Spectra':async()=>{await expect(page.locator('.classification-program [role=status]')).toHaveText(`${T(P.noMoreSpectra)}. ${T(P.endOfList)} ${end}`);},
 });
 
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});
+for(const L of translatedFor('e03'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const C=L.catalog as Record<string,string>,O=L.originals,vireoIn=vireoOf(L);
 // "View original (English)" (decision 9): with the stored option on, every VIREO caption of the walk is VIREO's English, checked
 // one by one, and no translated original appears anywhere; OpenVireo's own web text stays in the language.
@@ -264,7 +264,7 @@ for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.ta
 /** Front SC9: the layout check of tests/fixtures/layoutProblems.ts (no local copy), with the options that keep this spec's
  * checks: its old copy was the fixture's default. Run with the CI's DejaVu fonts (docs/I18N.md). */
 const LAYOUT:LayoutOptions={};
-for(const L of TRANSLATED)test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const width of [320,1440])test(title(L,`at ${width} px the Spanish E03 screens lay out without overflow, clipping or crossing`,`at ${width} px the <L> E03 screens lay out without overflow, clipping or crossing`),async({page})=>{
+for(const L of translatedFor('e03'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const width of [320,1440])test(title(L,`at ${width} px the Spanish E03 screens lay out without overflow, clipping or crossing`,`at ${width} px the <L> E03 screens lay out without overflow, clipping or crossing`),async({page})=>{
  test.setTimeout(360_000);await page.setViewportSize({width,height:width===320?700:1000});
  const problems=new Map<string,string>();
  // ES5_LAYOUT_LANG=en|qps walks that reference instead (a debugging aid; the language's own test title is kept).
