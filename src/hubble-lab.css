@@ -6,13 +6,13 @@
 .hubble-lab-dialog p,.hubble-lab-dialog li,.hubble-lab-dialog dd{font-size:var(--ov-text-md);line-height:1.7;color:var(--ov-text-muted)}
 .hubble-lab-dialog h3{font-size:16px;margin:18px 0 8px}
 .hubble-lab-dialog button{min-height:40px;font-size:var(--ov-text-sm);white-space:normal}
-.lab-progress{padding:12px 18px;border-left:3px solid var(--ov-accent);background:var(--ov-accent-soft);border-radius:var(--ov-radius-sm)}
+.lab-progress{padding:12px 18px;border-inline-start:3px solid var(--ov-accent);background:var(--ov-accent-soft);border-radius:var(--ov-radius-sm)}
 .lab-progress p{color:var(--ov-text)}
 .lab-progress [data-testid=lab-next]{font-weight:650;color:var(--ov-accent-text)}
-.lab-steps{padding-left:25px}
+.lab-steps{padding-inline-start:25px}
 .lab-steps>li{padding:4px 0 14px}
 .lab-steps>li::marker{color:var(--ov-accent-text);font-weight:700}
-.lab-steps ul{padding-left:20px}
+.lab-steps ul{padding-inline-start:20px}
 .lab-targets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:0;gap:12px;list-style:none}
 .lab-targets>li{padding:14px;border:1px solid var(--ov-border);border-radius:var(--ov-radius-md);background:var(--ov-surface-sunken);min-width:0}
 .lab-targets h4{margin:0 0 10px;font-size:14px}
@@ -26,15 +26,15 @@
 .hubble-lab-dialog summary{font-weight:600;cursor:pointer;min-height:32px}
 .lab-troubleshooting dt{font-weight:600;margin-top:16px}
 .lab-troubleshooting dd{margin:6px 0}
-.lab-sources ul{padding-left:20px}
+.lab-sources ul{padding-inline-start:20px}
 .lab-sources li{margin:10px 0;overflow-wrap:anywhere}/* layout audit 2026-11-08: hashes wrap at 320 px */
 .lab-sources code{overflow-wrap:anywhere;font-size:12px}
-.lab-recovery{border-left:3px solid var(--ov-warning);padding-left:12px}
+.lab-recovery{border-inline-start:3px solid var(--ov-warning);padding-inline-start:12px}
 @media(max-width:620px){.hubble-lab-dialog{width:calc(100% - 20px);padding:18px;max-height:94dvh}
  .lab-heading{flex-direction:column;gap:10px}
  .lab-targets{grid-template-columns:1fr}
  .hubble-lab-dialog p,.hubble-lab-dialog li,.hubble-lab-dialog dd{font-size:var(--ov-text-sm)}
- .lab-steps{padding-left:20px}
+ .lab-steps{padding-inline-start:20px}
 }
 .lab-progress-help{margin-top:14px}
 .lab-progress-help summary{font-size:var(--ov-text-sm);font-weight:500;min-height:24px}

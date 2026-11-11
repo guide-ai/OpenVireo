@@ -17,8 +17,8 @@
 .objectx-table,.objectx-measure .objectx-measurements-wrap{overflow-x:auto;max-width:100%}
 .objectx-table{max-height:24rem}
 .objectx-table table,.objectx-measurements{border-collapse:collapse;font-variant-numeric:tabular-nums;white-space:nowrap;font-size:var(--ov-text-sm)}
-.objectx-table th,.objectx-table td,.objectx-measurements th,.objectx-measurements td{padding:var(--ov-space-1) var(--ov-space-2);text-align:right;border-bottom:1px solid var(--ov-border)}
-.objectx-table td:first-child,.objectx-table th:first-child{text-align:left}
+.objectx-table th,.objectx-table td,.objectx-measurements th,.objectx-measurements td{padding:var(--ov-space-1) var(--ov-space-2);text-align:end;border-bottom:1px solid var(--ov-border)}
+.objectx-table td:first-child,.objectx-table th:first-child{text-align:start}
 .objectx-lab textarea{width:100%;max-width:40rem}
 .objectx-measure .fits-viewport{background:var(--ov-plot-bg);border-radius:var(--ov-radius-sm);overflow:hidden}
 .objectx-measure .fits-viewport:focus-visible{outline:2px solid var(--ov-focus);outline-offset:2px}

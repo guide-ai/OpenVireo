@@ -8,7 +8,7 @@
 .cloud-account .cloud-list li{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center}
 .cloud-account .cloud-item-name{font-weight:600;overflow-wrap:anywhere}
 .cloud-account .cloud-item-meta{opacity:.8;font-size:.9em}
-.cloud-account .cloud-item-actions{display:flex;gap:6px;margin-left:auto}
+.cloud-account .cloud-item-actions{display:flex;gap:6px;margin-inline-start:auto}
 .cloud-account a.secondary-button{text-decoration:none;display:inline-flex;align-items:center}
 .cloud-account .cloud-danger{margin-top:12px}
 .cloud-account .cloud-danger form{display:flex;flex-wrap:wrap;gap:8px;align-items:center}

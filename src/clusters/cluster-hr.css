@@ -11,7 +11,7 @@
 .cluster-hr-menubar button:focus-visible,.cluster-hr-listbox:focus-visible{outline:2px solid var(--ov-focus);outline-offset:1px}
 .cluster-hr-menu{display:flex;flex-direction:column;min-width:0}
 .cluster-hr-menu-list{display:flex;flex-direction:column;border:1px solid var(--ov-border-strong);border-radius:var(--ov-radius-sm);background:var(--ov-surface-raised);padding:var(--ov-space-1);margin-top:var(--ov-space-1);min-width:min(14rem,calc(100vw - 64px))}
-.cluster-hr-menu-list button{text-align:left}
+.cluster-hr-menu-list button{text-align:start}
 .cluster-hr-listbox{list-style:none;margin:0;padding:2px;max-height:min(28rem,60vh);overflow:auto;border:1px solid var(--ov-border);border-radius:var(--ov-radius-sm);background:var(--ov-surface-sunken);color:var(--ov-text);font-size:var(--ov-text-sm)}
 .cluster-hr-listbox li{white-space:pre;min-height:1.4em;padding:1px 6px;cursor:default;overflow:hidden;text-overflow:ellipsis}
 .cluster-hr-listbox.cluster-hr-wrap li{white-space:pre-wrap;overflow-wrap:anywhere}
@@ -32,7 +32,7 @@ html[data-print-scope=cluster-hr] .cluster-print-root::backdrop{display:none}
 html[data-print-scope=cluster-hr] .cluster-print-chrome{display:none!important}
 html[data-print-scope=cluster-hr] .cluster-print-report{border:0!important;max-height:none!important;overflow:visible!important}
 }
-.cluster-member-window{position:fixed;right:16px;bottom:16px;z-index:40;width:min(26rem,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;border:1px solid var(--ov-border-strong);border-radius:var(--ov-radius-sm);background:var(--ov-surface-raised);color:var(--ov-text);padding:var(--ov-space-2) var(--ov-space-3);box-shadow:0 8px 24px rgb(0 0 0 / .25)}
+.cluster-member-window{position:fixed;inset-inline-end:16px;bottom:16px;z-index:40;width:min(26rem,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;border:1px solid var(--ov-border-strong);border-radius:var(--ov-radius-sm);background:var(--ov-surface-raised);color:var(--ov-text);padding:var(--ov-space-2) var(--ov-space-3);box-shadow:0 8px 24px rgb(0 0 0 / .25)}
 .cluster-member-window h3{margin:0 0 var(--ov-space-1);font-size:var(--ov-text-md)}
 .cluster-member-window h3:focus-visible{outline:2px solid var(--ov-focus);outline-offset:2px}
 .cluster-member-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:var(--ov-space-1) var(--ov-space-3)}

@@ -21,7 +21,7 @@
 /* Layout audit (2026-11-08): the Properties table's column headings wrap, so it fits 320 px with wider fonts (DejaVu Sans). */
 .plr-props-table{max-width:100%}
 .plr-table.plr-props-table th,.plr-table.plr-props-table td{white-space:normal}
-.plr-table th,.plr-table td{border:1px solid var(--ov-border-strong);padding:.2rem .45rem;text-align:left;white-space:nowrap}
+.plr-table th,.plr-table td{border:1px solid var(--ov-border-strong);padding:.2rem .45rem;text-align:start;white-space:nowrap}
 .plr-scroll{max-width:100%;overflow-x:auto}
 .plr-rates{display:inline-flex;flex-wrap:wrap;gap:.5rem;border:1px solid var(--ov-border-strong);padding:.2rem .6rem;margin:0}
 .plr-rates label{display:inline-flex;gap:.25rem;align-items:center;min-height:2.5rem}
@@ -31,7 +31,7 @@
 .plr-plot{display:block;width:100%;height:auto;touch-action:none;user-select:none}
 .plr-pan{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .plr-readouts{display:grid;gap:.35rem}
-.plr-readout{display:grid;text-align:left;gap:.15rem;border:2px solid transparent;background:#1b1b1b}
+.plr-readout{display:grid;text-align:start;gap:.15rem;border:2px solid transparent;background:#1b1b1b}
 .plr-readout[aria-pressed="true"]{border-color:currentColor}
 .plr-readout output{font-family:ui-monospace,monospace;min-height:1.2em}
 .plr-readout-v{color:#00e5e5}
@@ -42,7 +42,7 @@
 .plr-reference{font-weight:600}
 .plr-reference output{font-family:ui-monospace,monospace;color:var(--ov-success)}
 .plr-status{min-height:1.3em;overflow-wrap:anywhere}
-.plr-warning{border-left:4px solid var(--ov-warning);padding:.35rem .6rem;margin:.5rem 0;font-weight:600}
+.plr-warning{border-inline-start:4px solid var(--ov-warning);padding:.35rem .6rem;margin:.5rem 0;font-weight:600}
 .plr-modal{background:Canvas;color:CanvasText;width:min(36rem,calc(100% - 2rem));max-width:none;max-height:calc(100% - 2rem);overflow:auto;border:1px solid var(--ov-border-strong);border-radius:.4rem;padding:1rem}
 .plr-modal::backdrop{background:var(--ov-backdrop)}
 .plr-modal dl>div{display:grid;grid-template-columns:minmax(8rem,14rem) minmax(0,1fr);gap:.5rem}
@@ -75,7 +75,7 @@
 .plr-export-field label{margin:0;font-weight:600}
 .plr-export-field .plr-help{margin:0}
 .plr-export-problem{overflow-wrap:anywhere;font-weight:600}
-.plr-export-field .plr-export-problem{border-left:4px solid var(--ov-danger);padding-left:.4rem}
+.plr-export-field .plr-export-problem{border-inline-start:4px solid var(--ov-danger);padding-inline-start:.4rem}
 .plr-append p,.plr-append dd{overflow-wrap:anywhere}
 .plr-append input[type="file"]{max-width:100%;min-width:0}
 .plr-save p,.plr-save-last p{overflow-wrap:anywhere}

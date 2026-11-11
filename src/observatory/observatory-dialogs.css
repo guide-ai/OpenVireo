@@ -59,12 +59,12 @@ html[data-print-scope=hot-list] .ob-print-report{border:0!important;max-height:n
 .ob-dialog .secondary-button,.ob-dialog .primary-button,.ob-menu .secondary-button{width:auto;margin:0;min-height:40px;padding:8px 14px;font-size:13px;line-height:1.2}
 .ob-dialog .primary-button{background:var(--ov-accent);color:var(--ov-accent-contrast);border:1px solid var(--ov-accent);border-radius:6px}
 .ob-dialog .ob-field small{font-size:11px;color:var(--ov-text-muted)}
-.ob-option-list{margin:4px 0 0;padding-left:1.2rem;font-size:13px;line-height:1.5;flex-basis:100%}
+.ob-option-list{margin:4px 0 0;padding-inline-start:1.2rem;font-size:13px;line-height:1.5;flex-basis:100%}
 /* Front R3: read-only option tab values. */
 .ob-values{display:grid;grid-template-columns:repeat(auto-fill,minmax(14rem,1fr));gap:.25rem 1rem;margin:0}
 .ob-values>div{display:flex;justify-content:space-between;align-items:baseline;gap:.5rem;min-width:0;font-size:13px}
 .ob-values dt{margin:0;font-weight:400;overflow-wrap:anywhere}
-.ob-values dd{margin:0;font-variant-numeric:tabular-nums;text-align:right;overflow-wrap:anywhere}
+.ob-values dd{margin:0;font-variant-numeric:tabular-nums;text-align:end;overflow-wrap:anywhere}
 .ob-parameter{display:flex;flex-direction:column;gap:.15rem;min-width:0;font-size:13px}
 .ob-parameter input{max-width:12rem;font-variant-numeric:tabular-nums}
 /* Front T7: the CCD / IR tabs' A/D spin buttons and cooling group. */

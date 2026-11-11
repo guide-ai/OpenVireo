@@ -57,9 +57,9 @@
 /* R-RX9 Radio configuration numeric section and the full Radio Simulation Options form (scoped). */
 .radio-access-numeric{min-width:0;overflow-wrap:anywhere}
 .radio-access-numeric h4{margin:10px 0 4px;font-size:14px}
-.radio-access-numeric .button-row button{white-space:normal;max-width:100%;text-align:left}
+.radio-access-numeric .button-row button{white-space:normal;max-width:100%;text-align:start}
 .radio-access-numeric dd{min-width:0;overflow-wrap:anywhere}
-.radio-access-numeric ul{margin:4px 0;padding-left:1.2em}
+.radio-access-numeric ul{margin:4px 0;padding-inline-start:1.2em}
 .radio-access-numeric li{line-height:1.5}
 .antenna-dialog.radio-options-full{width:min(100%,36rem)}
 .radio-options-full .radio-options-parameters .antenna-field{flex:1 1 9rem}
@@ -67,12 +67,12 @@
 .radio-options-full .antenna-group{min-width:0}
 .radio-options-full .antenna-group label{overflow-wrap:anywhere}
 .radio-options-failure-layer{z-index:42}
-.antenna-profile{border-color:var(--ov-warning);border-left-width:4px;background:var(--ov-warning-soft)}
-.antenna-profile ul{margin:6px 0 0;padding-left:1.2em}
+.antenna-profile{border-color:var(--ov-warning);border-inline-start-width:4px;background:var(--ov-warning-soft)}
+.antenna-profile ul{margin:6px 0 0;padding-inline-start:1.2em}
 .antenna-profile li{line-height:1.5;overflow-wrap:anywhere}
-.antenna-modal-limit>div{margin:8px 0;padding:6px 10px;border:1px solid var(--ov-warning);border-left-width:4px;border-radius:6px;background:var(--ov-warning-soft);font-size:13px}
+.antenna-modal-limit>div{margin:8px 0;padding:6px 10px;border:1px solid var(--ov-warning);border-inline-start-width:4px;border-radius:6px;background:var(--ov-warning-soft);font-size:13px}
 .antenna-modal-limit p{margin:0}
-.antenna-modal-limit ul{margin:6px 0 0;padding-left:1.2em}
+.antenna-modal-limit ul{margin:6px 0 0;padding-inline-start:1.2em}
 .antenna-modal-limit li{line-height:1.5;overflow-wrap:anywhere}
 .antenna-hotlist-menu{flex-basis:100%;display:grid;gap:4px;min-width:0}
 .antenna-hotlist-menu p{margin:0;overflow-wrap:anywhere}
@@ -103,4 +103,4 @@
 .antenna-notice[data-kind="hot-list-search-miss"]>p[id$="-body"]{white-space:pre-wrap;overflow-wrap:anywhere}
 .radio-control .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 @media (max-width:600px){.radio-control{padding:16px}.radio-control-state{grid-template-columns:1fr}.radio-control-state dd{margin-bottom:6px}.antenna-readout{grid-template-columns:1fr}}
-.radio-route{max-width:1100px}.radio-route-scenario{padding:18px 22px;margin-bottom:16px}.radio-route-scenario h2{margin:0 0 8px;font-size:16px}.radio-route-scenario ul{margin:0;padding-left:1.2em}.radio-route-scenario li{font-size:13px;line-height:1.55;margin:4px 0;overflow-wrap:anywhere}.radio-route-persistence{margin:10px 0 0;padding:8px 10px;border-left:4px solid var(--ov-warning);background:var(--ov-warning-soft);font-size:13px;line-height:1.5}
+.radio-route{max-width:1100px}.radio-route-scenario{padding:18px 22px;margin-bottom:16px}.radio-route-scenario h2{margin:0 0 8px;font-size:16px}.radio-route-scenario ul{margin:0;padding-inline-start:1.2em}.radio-route-scenario li{font-size:13px;line-height:1.55;margin:4px 0;overflow-wrap:anywhere}.radio-route-persistence{margin:10px 0 0;padding:8px 10px;border-inline-start:4px solid var(--ov-warning);background:var(--ov-warning-soft);font-size:13px;line-height:1.5}

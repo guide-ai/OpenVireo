@@ -1,0 +1,204 @@
+/* Front RT5: right-to-left groundwork (plan analysis/front-plans/front-i18n-rtl.md § 1, § 2.3, § 6.1; docs/I18N.md, "RTL groundwork:
+ * logical CSS and direction-aware placement (RT5, RT6)"). The English sheets use logical properties (margin-inline-start,
+ * inset-inline-end, text-align:start…), so the page mirrors under <html dir="rtl"> by itself; this sheet holds only what logical
+ * properties cannot say. Every selector starts at :root[dir=rtl] or is scoped by :lang(ar), :lang(fa) or :lang(he), so a
+ * left-to-right page (English, Spanish, Portuguese, French) computes exactly what it computed before; src/main.tsx imports it once,
+ * after scripts.css. System fonts only: nothing here loads a font. src/theme/rtl.test.ts checks the scope, the islands, the flips and
+ * that every English font-family, italic, small font size and low line-height has its line here; tests/scripts/rtl-css.scripts.ts
+ * checks the rendered page. The rule: mirror the page, never the data.
+ *
+ * Specificity: the later sheets (style.css, observatory.css, the lazily loaded route sheets) come after this one, so each
+ * typographic override adds :lang() to the English selector, which outranks it by one pseudo-class, as scripts.css does. */
+
+/* ---- 1. Left-to-right islands (plan § 1, § 2.3) ---------------------------------------------------------------------------
+ * Whatever has a horizontal meaning keeps English's direction: plots, the sky map, image and canvas geometry (svg, canvas, the
+ * scrolling photographic strip and image viewports, the sky and field overlays), controls tied to that geometry (range sliders and
+ * their end labels, the antenna pad with East left of West as on VIREO's sky, the spectrum's ◀ ▶ pan buttons) and text that keeps
+ * its byte order (native mirrors and VIREO's English originals, lang="en"; preformatted text). An island's own logical properties
+ * resolve left to right too. canvas{direction:ltr} also reaches ctx.direction, whose default is "inherit", so canvas text drawn at
+ * x with textAlign "start" keeps starting at x. UI icons are svg as well; they carry no text, so the rule is harmless to them. */
+:root[dir=rtl] :is(svg,canvas,pre,[lang=en],input[type=range],.range-labels,.photo-scroll,.fits-viewport,.fits-header,.native-star-frame,
+ .em-layer,.ne-sky,.ms-field,.antenna-manual-pad,.engine-buttons){direction:ltr;unicode-bidi:isolate}
+/* Numbers typed into fields keep their order and sit at the field's start side (the right) as in a right-to-left form. */
+:root[dir=rtl] :is(input[type=number],input[inputmode=decimal],input[inputmode=numeric]){direction:ltr;unicode-bidi:isolate;text-align:right}
+
+/* ---- 2. Icons that point along the line (plan § 2.3) --------------------------------------------------------------------
+ * They point to what comes next in reading order, so they turn round. Not flipped: Save (down arrow), the More and backup
+ * disclosures (down chevrons), info, </>, sun and moon, and the ◀ ▶ pan buttons (an island). */
+/* The page bar's separator between section and page (PageBar.tsx, a ">" path). */
+:root[dir=rtl] .page-bar-separator{transform:scaleX(-1)}
+/* A collapsed menu section's chevron points to its label's end (observatory.css: rotate(-90deg)). */
+:root[dir=rtl] .nav-group-toggle[aria-expanded=false] .nav-group-chevron{transform:rotate(90deg)}
+/* A closed research-notes disclosure (base.css: rotate(-45deg) of a right-and-bottom border, ">"); open stays rotate(45deg). */
+:root[dir=rtl] details.research-notes:not([open])>summary::before{transform:rotate(135deg)}
+
+/* ---- 3. Arabic, Persian and Hebrew fonts (plan § 6.1) ---------------------------------------------------------------------
+ * As scripts.css does for Japanese, Chinese and Hindi: the Latin fonts first, then the script's own, then system-ui. The script
+ * fonts must come before system-ui and the generic families: DejaVu Sans, Linux's usual sans-serif, covers Arabic and Hebrew and
+ * would draw them itself, so no fallback to Noto would happen (docs/I18N.md, RT3 characterization (d)). Windows' Segoe UI,
+ * Tahoma and Arial and Apple's SF Arabic and Geeza Pro carry the scripts; Noto Sans Arabic (UI) and Noto Sans Hebrew are the
+ * Android and Linux faces. No Arabic or Hebrew monospace font is worth naming: monospace text falls back to the proportional faces. */
+[lang]:is(:lang(ar),:lang(fa)){
+ --ov-font-script:"Segoe UI",Tahoma,"SF Arabic","Geeza Pro","Noto Sans Arabic UI","Noto Sans Arabic","Noto Naskh Arabic UI";
+ --ov-font-script-mono:var(--ov-font-script);
+}
+[lang]:lang(he){
+ --ov-font-script:"Segoe UI",Arial,"Arial Hebrew","Noto Sans Hebrew";
+ --ov-font-script-mono:var(--ov-font-script);
+}
+[lang]:is(:lang(ar),:lang(fa),:lang(he)){
+ --ov-font-sans:-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",var(--ov-font-script),system-ui,sans-serif;
+ --ov-font-mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",var(--ov-font-script-mono),monospace;
+}
+/* A nested element in one of these languages sets the family again (body resolves it once for its own language). */
+:where([lang]:not(html)):is(:lang(ar),:lang(fa),:lang(he)){font-family:var(--ov-font-sans)}
+/* The English sheets' hard-coded families (dialogs, native mirrors' neighbours, SVG presentation attributes), each repeated with
+ * the script fallback before the generic family. rtl.test.ts fails when an English list changes or appears without its line. */
+.native-numeric-field output:is(:lang(ar),:lang(fa),:lang(he)){font-family:var(--ov-font-script-mono),monospace}
+.cluster-print-body:is(:lang(ar),:lang(fa),:lang(he)),
+.cluster-print-body .cluster-print-line:is(:lang(ar),:lang(fa),:lang(he)),
+.wedge-text text:is(:lang(ar),:lang(fa),:lang(he)),
+.variable-print-header:is(:lang(ar),:lang(fa),:lang(he)){font-family:"MS Sans Serif",Arial,var(--ov-font-script),sans-serif}
+.obsd-field input:is(:lang(ar),:lang(fa),:lang(he)){font-family:var(--ov-mono,monospace),var(--ov-font-script-mono)}
+.cluster-native-hr-chart svg:is(:lang(ar),:lang(fa),:lang(he)){font-family:ui-sans-serif,var(--ov-font-script),system-ui,sans-serif}
+.cluster-native-hr .cnhr-sliders output:is(:lang(ar),:lang(fa),:lang(he)),
+.plr-hash:is(:lang(ar),:lang(fa),:lang(he)),
+.plr-readout output:is(:lang(ar),:lang(fa),:lang(he)),
+.plr-factor output:is(:lang(ar),:lang(fa),:lang(he)),
+.plr-reference output:is(:lang(ar),:lang(fa),:lang(he)),
+.psr-mono:is(:lang(ar),:lang(fa),:lang(he)),
+.psr code:is(:lang(ar),:lang(fa),:lang(he)),
+.psr-raw:is(:lang(ar),:lang(fa),:lang(he)){font-family:ui-monospace,var(--ov-font-script-mono),monospace}
+.radio-control-native:is(:lang(ar),:lang(fa),:lang(he)),
+.radio-control .antenna-manual-button:is(:lang(ar),:lang(fa),:lang(he)){font-family:"MS Sans Serif",Tahoma,ui-sans-serif,var(--ov-font-script),sans-serif}
+.antenna-hotlist-native:is(:lang(ar),:lang(fa),:lang(he)){font-family:ui-monospace,"Cascadia Mono",Consolas,"Liberation Mono","Courier New",var(--ov-font-script-mono),monospace}
+#lss-field:is(:lang(ar),:lang(fa),:lang(he)),
+.ob-print-native:is(:lang(ar),:lang(fa),:lang(he)),
+.web-print-native:is(:lang(ar),:lang(fa),:lang(he)),
+.camera-information-lines:is(:lang(ar),:lang(fa),:lang(he)){font-family:'Courier New',Courier,var(--ov-font-script-mono),monospace}
+.ms-items:is(:lang(ar),:lang(fa),:lang(he)),
+.ms-lines:is(:lang(ar),:lang(fa),:lang(he)),
+.ob-row-native:is(:lang(ar),:lang(fa),:lang(he)){font-family:"Courier New",var(--ov-font-script-mono),monospace}
+.fi-print-header:is(:lang(ar),:lang(fa),:lang(he)),
+.fi-print-lines:is(:lang(ar),:lang(fa),:lang(he)),
+.ob-print-lines:is(:lang(ar),:lang(fa),:lang(he)){font-family:"Courier New",Courier,var(--ov-font-script-mono),monospace}
+.ob-native:is(:lang(ar),:lang(fa),:lang(he)){font-family:Tahoma,Verdana,var(--ov-font-script),sans-serif}
+.section-title span:is(:lang(ar),:lang(fa),:lang(he)){font-family:Georgia,var(--ov-font-script),serif}
+svg.ob-spectrum-print-body:is(:lang(ar),:lang(fa),:lang(he)){font-family:Courier,var(--ov-font-script-mono),monospace}
+.lc-svg [data-part=texts]:is(:lang(ar),:lang(fa),:lang(he)){font-family:"MS Sans Serif","Microsoft Sans Serif",Tahoma,Arial,var(--ov-font-script),sans-serif}
+
+/* ---- 4. Spacing, case and slant (plan § 2.3) -----------------------------------------------------------------------------
+ * Letter-spacing breaks Arabic's cursive joining; upper case does not exist in these scripts. :root raises the specificity
+ * above the English class rules, as in scripts.css. */
+:root :is(:lang(ar),:lang(fa),:lang(he)){letter-spacing:normal;text-transform:none}
+/* Arabic and Hebrew have no italic, and a synthetic slant reads badly (base.css also turns synthesis off). */
+.cluster-print-placeholder:is(:lang(ar),:lang(fa),:lang(he)),
+.cluster-member-field output[data-missing]:is(:lang(ar),:lang(fa),:lang(he)),
+.psr-absent:is(:lang(ar),:lang(fa),:lang(he)),
+.objectx-unavailable:is(:lang(ar),:lang(fa),:lang(he)),
+.section-title span:is(:lang(ar),:lang(fa),:lang(he)),
+.variable-unavailable:is(:lang(ar),:lang(fa),:lang(he)),
+.variable-print-placeholder:is(:lang(ar),:lang(fa),:lang(he)){font-style:normal}
+
+/* ---- 5. Sizes and line heights for Arabic and Persian (plan § 2.3, § 6.2) ------------------------------------------------
+ * Arabic below 12 px is hard to read: the English 9–11 px UI text is raised to 12 px. Not raised: SVG plot text, axis ticks
+ * and code (Latin file names and numbers inside plots, whose geometry RT7 and RT12 measure). Noto Sans Arabic's natural line
+ * is 2.112 em (plan § 0.1): the floors start from scripts.css's Hindi values, 1.5 on single-line controls and 1.7 on text, until
+ * the RTL walk (RT7) measures them. Hebrew (1.36 em) keeps English's sizes and lines. */
+.class-line-table caption:is(:lang(ar),:lang(fa)),
+.class-line-table th:is(:lang(ar),:lang(fa)),
+.cnhr-label:is(:lang(ar),:lang(fa)),
+.hubble-content .hubble-limit:is(:lang(ar),:lang(fa)),
+.hubble-editor small:is(:lang(ar),:lang(fa)),
+.hubble-table th:is(:lang(ar),:lang(fa)),
+.hubble-table td:is(:lang(ar),:lang(fa)),
+.hubble-table small:is(:lang(ar),:lang(fa)),
+.nav-group-label:is(:lang(ar),:lang(fa)),
+.ob-dialog .ob-field small:is(:lang(ar),:lang(fa)),
+.own-results-card th:is(:lang(ar),:lang(fa)),
+.own-results-card td:is(:lang(ar),:lang(fa)),
+.own-results-card td small:is(:lang(ar),:lang(fa)),
+.native-star-frame figcaption:is(:lang(ar),:lang(fa)),
+.brand-web:is(:lang(ar),:lang(fa)),
+.sidebar-label:is(:lang(ar),:lang(fa)),
+.app-shell nav b:is(:lang(ar),:lang(fa)),
+.subtle:is(:lang(ar),:lang(fa)),
+.legend:is(:lang(ar),:lang(fa)),
+.plot-foot:is(:lang(ar),:lang(fa)),
+th:is(:lang(ar),:lang(fa)),
+.range-labels:is(:lang(ar),:lang(fa)),
+.mode-switch small:is(:lang(ar),:lang(fa)),
+.velocity-content th:is(:lang(ar),:lang(fa)){font-size:12px}
+.radio-control .antenna-dialog .primary-button:is(:lang(ar),:lang(fa)),
+.radio-control .antenna-dialog .secondary-button:is(:lang(ar),:lang(fa)),
+.site-tour-actions .primary-button:is(:lang(ar),:lang(fa)),
+.site-tour-actions .secondary-button:is(:lang(ar),:lang(fa)),
+.portal-header nav button:is(:lang(ar),:lang(fa)),
+.ob-dialog .secondary-button:is(:lang(ar),:lang(fa)),
+.ob-dialog .primary-button:is(:lang(ar),:lang(fa)),
+.ob-menu .secondary-button:is(:lang(ar),:lang(fa)),
+:where(button,input,select,textarea):is(:lang(ar),:lang(fa)){line-height:1.5}
+.comparison-cursor-live:is(:lang(ar),:lang(fa)),
+.observation-results p:is(:lang(ar),:lang(fa)),
+.native-results p:is(:lang(ar),:lang(fa)),
+.classification-program p:is(:lang(ar),:lang(fa)),
+.cluster-native-hr p:is(:lang(ar),:lang(fa)),
+.language-originals:is(:lang(ar),:lang(fa)),
+.language-originals-note:is(:lang(ar),:lang(fa)),
+.radio-control p:is(:lang(ar),:lang(fa)),
+.antenna-notice p:is(:lang(ar),:lang(fa)),
+.radio-access-numeric li:is(:lang(ar),:lang(fa)),
+.antenna-profile li:is(:lang(ar),:lang(fa)),
+.antenna-modal-limit li:is(:lang(ar),:lang(fa)),
+.antenna-hotlist-native:is(:lang(ar),:lang(fa)),
+.radio-route-scenario li:is(:lang(ar),:lang(fa)),
+.radio-route-persistence:is(:lang(ar),:lang(fa)),
+.radio-receiver-notes:is(:lang(ar),:lang(fa)),
+.radio-receiver-alert:is(:lang(ar),:lang(fa)),
+.radio-receiver-save ul:is(:lang(ar),:lang(fa)),
+.wedge-lab p:is(:lang(ar),:lang(fa)),
+.investigation-toolbar .toolbar-help p:is(:lang(ar),:lang(fa)),
+.investigation-toolbar>[role=status]:is(:lang(ar),:lang(fa)),
+.investigation-toolbar>[role=alert]:is(:lang(ar),:lang(fa)),
+.site-tour-card:is(:lang(ar),:lang(fa)),
+.web-help-topic:is(:lang(ar),:lang(fa)),
+.hubble-editor small:is(:lang(ar),:lang(fa)),
+.hubble-table small:is(:lang(ar),:lang(fa)),
+.nav-group-label:is(:lang(ar),:lang(fa)),
+.instructor-mode-banner:is(:lang(ar),:lang(fa)),
+.observatory-heading p:is(:lang(ar),:lang(fa)),
+.first-steps span:is(:lang(ar),:lang(fa)),
+.observatory-note:is(:lang(ar),:lang(fa)),
+.observatory-controls p:is(:lang(ar),:lang(fa)),
+.target-coordinates:is(:lang(ar),:lang(fa)),
+.pending-label:is(:lang(ar),:lang(fa)),
+.library-context p:is(:lang(ar),:lang(fa)),
+.optical-telescope p:is(:lang(ar),:lang(fa)),
+.optical-compatibility p:is(:lang(ar),:lang(fa)),
+.telescope-motion .observatory-note:is(:lang(ar),:lang(fa)),
+.camera-preparation .camera-prepare-reference dt:is(:lang(ar),:lang(fa)),
+.camera-preparation .camera-prepare-reference dd:is(:lang(ar),:lang(fa)),
+.fi-note:is(:lang(ar),:lang(fa)),
+.fi-status:is(:lang(ar),:lang(fa)),
+.ob-note:is(:lang(ar),:lang(fa)),
+.ob-option-list:is(:lang(ar),:lang(fa)),
+.own-results-card td small:is(:lang(ar),:lang(fa)),
+h1:is(:lang(ar),:lang(fa)),
+.control-note:is(:lang(ar),:lang(fa)),
+.import-card p:is(:lang(ar),:lang(fa)),
+.file-help:is(:lang(ar),:lang(fa)),
+dialog p:is(:lang(ar),:lang(fa)),
+dialog dd:is(:lang(ar),:lang(fa)),
+.page-heading p:is(:lang(ar),:lang(fa)),
+.plot-foot:is(:lang(ar),:lang(fa)),
+footer:is(:lang(ar),:lang(fa)),
+.session-card p:is(:lang(ar),:lang(fa)),
+.velocity-content p:is(:lang(ar),:lang(fa)),
+.measurement-kind:is(:lang(ar),:lang(fa)),
+.fits-lab p:is(:lang(ar),:lang(fa)),
+.camera-palette-dialog p:is(:lang(ar),:lang(fa)),
+.camera-information-dialog p:is(:lang(ar),:lang(fa)),
+.camera-information-dialog dt:is(:lang(ar),:lang(fa)),
+.camera-information-lines:is(:lang(ar),:lang(fa)),
+body:is(:lang(ar),:lang(fa)),
+.seo-boot:is(:lang(ar),:lang(fa)){line-height:1.7}

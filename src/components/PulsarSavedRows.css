@@ -4,7 +4,7 @@
 .psr h3{margin:1rem 0 .5rem;font-size:1.1rem}
 .psr h4{margin:.25rem 0;font-size:1rem}
 .psr-note{font-size:.9rem;opacity:.85;margin:.25rem 0}
-.psr-warning{border-left:4px solid var(--ov-warning);padding:.35rem .6rem;opacity:1;font-weight:600}
+.psr-warning{border-inline-start:4px solid var(--ov-warning);padding:.35rem .6rem;opacity:1;font-weight:600}
 .psr-row{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:.35rem 0}
 .psr button,.psr-button{min-height:2.5rem;padding:.35rem .75rem;font:inherit;cursor:pointer}
 .psr-button{display:inline-flex;flex-wrap:wrap;align-items:center;gap:.5rem;border:1px solid currentColor;border-radius:.25rem;max-width:100%}
@@ -23,8 +23,8 @@
 .psr-scroll{max-width:100%;max-height:min(24rem,60vh);overflow:auto;border:1px solid var(--ov-border-strong)}
 .psr-scroll:focus-visible{outline-offset:-3px}
 .psr-table{border-collapse:collapse;margin:0}
-.psr-table caption{text-align:left;font-size:.9rem;padding:.25rem .45rem}
-.psr-table th,.psr-table td{border:1px solid var(--ov-border-strong);padding:.2rem .45rem;text-align:left;white-space:pre}
+.psr-table caption{text-align:start;font-size:.9rem;padding:.25rem .45rem}
+.psr-table th,.psr-table td{border:1px solid var(--ov-border-strong);padding:.2rem .45rem;text-align:start;white-space:pre}
 .psr-table thead th{position:sticky;top:0;background:Canvas;color:CanvasText}
 /* Mounted in the App: the global th style would show the recovered column names in capitals ("FREQ (MHZ)"). */
 .psr-table th{text-transform:none;letter-spacing:normal;font-size:inherit;font-weight:600}

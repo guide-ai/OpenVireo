@@ -20,7 +20,7 @@ html[data-print-scope=web-print] .web-print-picture>svg,html[data-print-scope=we
 .camera-field-size-title{font-weight:600}
 .camera-field-size output{font-variant-numeric:tabular-nums;font-weight:600}
 .popup-menu{position:fixed;z-index:20;min-width:12rem;max-width:min(18rem,calc(100vw - 8px));display:flex;flex-direction:column;padding:4px;border:1px solid var(--ov-border-strong);border-radius:6px;background:var(--ov-surface);color:var(--ov-text);box-shadow:0 6px 18px rgb(0 0 0/.25)}
-.popup-menu button{justify-content:flex-start;text-align:left;border:0;background:none;padding:6px 10px;border-radius:4px;color:inherit}
+.popup-menu button{justify-content:flex-start;text-align:start;border:0;background:none;padding:6px 10px;border-radius:4px;color:inherit}
 .popup-menu button:hover:not(:disabled),.popup-menu button:focus-visible{background:var(--ov-surface-hover)}
 .popup-menu button:disabled{opacity:.55}
 .popup-menu-note{margin:4px 8px;font-size:.8rem;color:var(--ov-text-muted)}

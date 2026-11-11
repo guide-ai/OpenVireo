@@ -5,7 +5,7 @@
 /* [W] TLSSFieldsForm1 ListBox1 is Courier New bold (DFM, exe offset 0x1fcd16); the item text pads with U+00A0 so its columns align where the browser applies the font. */
 #lss-field{font-family:'Courier New',Courier,monospace;font-weight:700}
 .lss-rows{width:100%;border-collapse:collapse;font-size:.9rem}
-.lss-rows th,.lss-rows td{border-bottom:1px solid var(--line,var(--ov-border));padding:.3rem .4rem;text-align:left;vertical-align:top}
+.lss-rows th,.lss-rows td{border-bottom:1px solid var(--line,var(--ov-border));padding:.3rem .4rem;text-align:start;vertical-align:top}
 .lss-rows tr[aria-current="true"]{background:var(--highlight,var(--ov-info-soft))}
 .lss-rows[data-stale]{opacity:.45}/* a reload is in flight: the previous list (and its frozen JD) is stale */
 .lss-acquire-layout{display:grid;grid-template-columns:minmax(0,312px) minmax(0,1fr);gap:1rem}
@@ -23,7 +23,7 @@
 .lss-dialog-angles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.4rem;border:1px solid var(--line,var(--ov-border));padding:.4rem .6rem;margin:.4rem 0;min-width:0}
 .lss-dialog-angles legend{padding:0 .2rem}
 .lss-region-grid{width:100%;table-layout:fixed;border-collapse:collapse}
-.lss-region-grid th,.lss-region-grid td{padding:.2rem;min-width:0;text-align:left}
+.lss-region-grid th,.lss-region-grid td{padding:.2rem;min-width:0;text-align:start}
 .lss-region-grid input{width:100%}
 .lss-region-grid input:disabled{background:var(--ov-disabled-bg);border-color:var(--ov-disabled-border);color:var(--ov-disabled-text);border-style:dashed;cursor:not-allowed}
 .lss-region-box-text{white-space:pre-line}

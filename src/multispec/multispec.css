@@ -10,7 +10,7 @@
 .ms-menu button{min-height:40px}
 .ms-displays{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
 .ms-display{display:flex;flex-direction:column;gap:2px;font-size:12px;min-width:6.5rem}
-.ms-display output{font-family:var(--ov-font-mono,monospace);font-size:20px;background:#000;color:#ff3b30;padding:2px 8px;border-radius:4px;min-width:4.5rem;text-align:right}
+.ms-display output{font-family:var(--ov-font-mono,monospace);font-size:20px;background:#000;color:#ff3b30;padding:2px 8px;border-radius:4px;min-width:4.5rem;text-align:end}
 .ms-display output[data-colour=red]{color:#ff3b30}
 .ms-display output[data-colour=green]{color:#3ddc62}
 .ms-display output[data-colour=default]{color:#ffd60a}

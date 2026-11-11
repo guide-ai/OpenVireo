@@ -3,13 +3,13 @@
 /* ── App shell: header/sidebar ─────────────────────────────────────────────
  * Desktop (≥1100px): fixed left sidebar with grouped tools and the theme switch.
  * Narrower: a top header whose groups wrap; every tool button stays visible. */
-.portal-header{background:var(--ov-chrome-bg);color:var(--ov-chrome-text);display:flex;flex-direction:column;gap:12px;padding:14px 12px;border-right:1px solid var(--ov-chrome-border);z-index:20}
+.portal-header{background:var(--ov-chrome-bg);color:var(--ov-chrome-text);display:flex;flex-direction:column;gap:12px;padding:14px 12px;border-inline-end:1px solid var(--ov-chrome-border);z-index:20}
 .portal-top{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:2px 8px 0}
 .portal-brand{display:inline-flex;align-items:center;gap:6px;font-size:21px;letter-spacing:-.6px;font-weight:700;white-space:nowrap;color:var(--ov-chrome-text);border-radius:var(--ov-radius-sm)}
 .portal-brand>span{font-size:28px;line-height:1;color:#9acfb9}
 .portal-brand:focus-visible{outline:2px solid var(--ov-chrome-focus);outline-offset:3px}
 .portal-status{font-size:12px;color:var(--ov-chrome-muted);white-space:nowrap}
-.portal-status i{display:inline-block;width:6px;height:6px;background:#8fd3ad;border-radius:50%;margin-right:6px;vertical-align:middle}
+.portal-status i{display:inline-block;width:6px;height:6px;background:#8fd3ad;border-radius:50%;margin-inline-end:6px;vertical-align:middle}
 .portal-header nav{display:flex;flex-direction:column;gap:10px;min-width:0}
 .nav-group{display:flex;flex-direction:column;gap:2px;min-width:0}
 .nav-group-label{padding:0 10px 1px;font-size:11px;line-height:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ov-chrome-muted)}
@@ -17,12 +17,12 @@
 .portal-header nav .nav-group-toggle{display:flex;align-items:center;justify-content:space-between;gap:6px;width:100%;min-height:28px;padding:2px 0;border:0;border-radius:var(--ov-radius-sm);background:transparent;color:var(--ov-chrome-muted);font:inherit;cursor:pointer}
 .portal-header nav .nav-group-toggle:hover:not(:disabled){background:var(--ov-chrome-hover);color:var(--ov-chrome-text)}
 .portal-header nav .nav-group-toggle .nav-group-label{padding:0 10px 1px;color:inherit}
-.nav-group-chevron{flex:none;margin-right:8px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:transform var(--ov-duration,.15s)}
+.nav-group-chevron{flex:none;margin-inline-end:8px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:transform var(--ov-duration,.15s)}
 .nav-group-toggle[aria-expanded=false] .nav-group-chevron{transform:rotate(-90deg)}
 .portal-header .nav-group-items[hidden]{display:none}
 @media(prefers-reduced-motion:reduce){.nav-group-chevron{transition:none}}
 .nav-group-items{display:flex;flex-direction:column;gap:1px;min-width:0}
-.portal-header nav button{display:flex;align-items:center;justify-content:flex-start;width:100%;min-height:30px;padding:4px 10px;border:0;line-height:1.25;border-radius:var(--ov-radius-sm);background:transparent;color:var(--ov-chrome-text);font-size:var(--ov-text-sm);font-weight:500;text-align:left;white-space:normal}
+.portal-header nav button{display:flex;align-items:center;justify-content:flex-start;width:100%;min-height:30px;padding:4px 10px;border:0;line-height:1.25;border-radius:var(--ov-radius-sm);background:transparent;color:var(--ov-chrome-text);font-size:var(--ov-text-sm);font-weight:500;text-align:start;white-space:normal}
 .portal-header nav button:hover:not(:disabled){background:var(--ov-chrome-hover)}
 .portal-header nav button:focus-visible{outline:2px solid var(--ov-chrome-focus);outline-offset:-2px}
 .portal-header nav .active{background:var(--ov-chrome-active-bg);color:var(--ov-chrome-active-text);font-weight:650}
@@ -30,11 +30,11 @@
 .portal-footer{margin-top:auto;padding-top:4px}
 
 @media(min-width:1100px){
- .portal-header{position:fixed;inset:0 auto 0 0;width:var(--ov-sidebar-width);overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
- body{padding-left:var(--ov-sidebar-width)}
+ .portal-header{position:fixed;inset-block:0;inset-inline:0 auto;width:var(--ov-sidebar-width);overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+ body{padding-inline-start:var(--ov-sidebar-width)}
 }
 @media(max-width:1099.98px){
- .portal-header{border-right:0;border-bottom:1px solid var(--ov-chrome-border);display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"top theme" "nav nav";align-items:center;gap:12px 16px;padding:12px max(16px,calc((100vw - 1500px)/2))}
+ .portal-header{border-inline-end:0;border-bottom:1px solid var(--ov-chrome-border);display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"top theme" "nav nav";align-items:center;gap:12px 16px;padding:12px max(16px,calc((100vw - 1500px)/2))}
  .portal-top{grid-area:top;flex-direction:row;align-items:center;padding:0;gap:16px}
  .portal-footer{grid-area:theme;margin:0;padding:0}
  .portal-header nav{grid-area:nav;flex-direction:row;flex-wrap:wrap;gap:10px 20px}
@@ -104,7 +104,7 @@
 .observatory-heading{position:relative;padding:28px 0 20px}
 .observatory-heading h1{font-size:var(--ov-text-2xl);letter-spacing:-1px;margin:8px 0}
 .observatory-heading p{font-size:var(--ov-text-md);color:var(--ov-text-muted);max-width:760px;line-height:1.65}
-.observatory-heading>.text-button{position:absolute;right:0;top:30px}
+.observatory-heading>.text-button{position:absolute;inset-inline-end:0;top:30px}
 /* Front HOME: the welcome (src/home/Welcome.tsx), the page `/` opens: what the site is, three facts in a row, the button to the
    exploration page, and the seven labs as a grid of small cards. Small text inherits the body's line-height, so the script rules
    of src/theme/scripts.css (CJK and Hindi line heights) need no new entry; the lead uses 1.7. */
@@ -112,7 +112,7 @@
 .home-welcome h1{font-size:var(--ov-text-2xl);letter-spacing:-1px;margin:8px 0}
 .home-welcome .home-lead{font-size:var(--ov-text-md);line-height:1.7;max-width:860px;margin:0 0 14px;color:var(--ov-text)}
 .home-facts{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 18px;max-width:1100px}
-.home-facts li{font-size:var(--ov-text-sm);color:var(--ov-text-muted);padding-left:14px;border-left:3px solid var(--ov-accent-soft-border)}
+.home-facts li{font-size:var(--ov-text-sm);color:var(--ov-text-muted);padding-inline-start:14px;border-inline-start:3px solid var(--ov-accent-soft-border)}
 .home-explore{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin:20px 0 0}
 .home-explore-button{border-color:var(--ov-accent);background:var(--ov-accent);color:var(--ov-accent-contrast);font-weight:650;padding:9px 18px}
 .home-explore-button:hover:not(:disabled){background:var(--ov-accent-hover);border-color:var(--ov-accent-hover)}
@@ -121,7 +121,7 @@
 .home-labs-hint{font-size:var(--ov-text-sm);color:var(--ov-text-muted);margin:0 0 10px}
 .home-labs{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
 .home-labs li{display:flex;min-width:0}
-.home-lab{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:3px;text-align:left;white-space:normal;padding:10px 14px;border:1px solid var(--ov-border);border-radius:var(--ov-radius-md);background:var(--ov-surface);color:var(--ov-text)}
+.home-lab{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:3px;text-align:start;white-space:normal;padding:10px 14px;border:1px solid var(--ov-border);border-radius:var(--ov-radius-md);background:var(--ov-surface);color:var(--ov-text)}
 .home-lab:hover:not(:disabled){background:var(--ov-surface-hover);border-color:var(--ov-accent-soft-border)}
 .home-lab strong{font-size:var(--ov-text-md);font-weight:650;color:var(--ov-accent-text)}
 .home-lab span{font-size:var(--ov-text-sm);font-weight:400;color:var(--ov-text-muted)}
@@ -129,7 +129,7 @@
 @media(max-width:520px){.home-labs{grid-template-columns:1fr}}
 
 .first-steps{padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;list-style:none;margin:0 0 24px;counter-reset:step}
-.first-steps li{border-top:3px solid var(--ov-border);padding:12px 10px 8px 0;counter-increment:step}
+.first-steps li{border-top:3px solid var(--ov-border);padding-block:12px 8px;padding-inline:0 10px;counter-increment:step}
 .first-steps .current{border-color:var(--ov-accent)}
 .first-steps strong{font-size:var(--ov-text-md);font-weight:650;display:block;color:var(--ov-text)}
 .first-steps span{font-size:var(--ov-text-sm);line-height:1.55;color:var(--ov-text-muted);display:block;margin-top:4px}
@@ -162,7 +162,7 @@
 .field-controls{display:flex;padding:18px 22px 6px;gap:24px;flex-wrap:wrap}
 .field-controls fieldset{border:0;margin:0;padding:0}
 .field-controls legend{font-size:12px;font-weight:600;color:var(--ov-text-muted);margin-bottom:8px}
-.field-controls button{margin-right:5px;margin-bottom:5px;padding:7px 12px}
+.field-controls button{margin-inline-end:5px;margin-bottom:5px;padding:7px 12px}
 .field-controls button[aria-pressed=true]{background:var(--ov-accent-soft);border-color:var(--ov-accent-soft-border);color:var(--ov-accent-text)}
 .observatory-note{font-size:var(--ov-text-sm);color:var(--ov-text-muted);line-height:1.65}
 .sky-card>.observatory-note{margin:8px 22px 20px}
@@ -192,7 +192,7 @@
 .scope-note strong{font-size:var(--ov-text-sm);color:var(--ov-text)}
 
 .spectrum-route .analyzer-sidebar{display:none}
-.spectrum-route .app-shell main{margin-left:auto;margin-right:auto;width:100%;max-width:1560px}
+.spectrum-route .app-shell main{margin-inline-start:auto;margin-inline-end:auto;width:100%;max-width:1560px}
 .spectrum-route .app-shell{min-height:auto}
 .back-observatory{border:0;background:transparent;min-height:0;color:var(--ov-accent-text);font-size:var(--ov-text-sm);font-weight:600;margin:20px 30px 0;padding:6px 0}
 .back-observatory:hover:not(:disabled){background:transparent;text-decoration:underline}
@@ -232,9 +232,9 @@
  .pointing-readout{padding:14px}
  .pointing-readout output{font-size:18px}
  .field-controls{padding:14px 14px 6px}
- .sky-card>.observatory-note{margin-left:14px;margin-right:14px}
+ .sky-card>.observatory-note{margin-inline-start:14px;margin-inline-end:14px}
  .library-context{margin:14px 12px 0}
- .back-observatory{margin-left:12px}
+ .back-observatory{margin-inline-start:12px}
  .scope-note{padding:18px}
  .sky-object text{font-size:14px}
 }
@@ -327,13 +327,13 @@
 .camera-prepare-reference h3{margin-top:0}
 .camera-preparation .camera-prepare-reference dl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.7rem}
 .camera-preparation .camera-prepare-reference dt,.camera-preparation .camera-prepare-reference dd{margin:0;font-size:.85rem;line-height:1.5;overflow-wrap:anywhere}
-.camera-prepare-reference dd{font-variant-numeric:tabular-nums;text-align:right}
-.camera-preparation .camera-prepare-reference dd[data-camera-field=catalogs]{grid-column:1/-1;text-align:left}
+.camera-prepare-reference dd{font-variant-numeric:tabular-nums;text-align:end}
+.camera-preparation .camera-prepare-reference dd[data-camera-field=catalogs]{grid-column:1/-1;text-align:start}
 @media(max-width:650px){.camera-preparation .camera-prepare-grid{grid-template-columns:minmax(0,1fr)}}
 
 /* ── Print: app chrome is never printed ── */
 @media print{
- body{padding-left:0!important}
+ body{padding-inline-start:0!important}
  .portal-header,.investigation-toolbar,.instructor-mode-banner{display:none!important}
 }
 /* GitHub source code and Report a problem buttons at the foot of the header (ProjectLinks.tsx, user decision 2026-11-08). */
