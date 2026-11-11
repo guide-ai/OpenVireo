@@ -1,0 +1,30 @@
+import type {LOAD_SAVE_MESSAGES_EN} from '../../../components/PulsarLoadSaveMessages';
+import type {Translation} from '../../maps';
+/** Front FR6: French (fr) for the Load question Yes flow. A web adaptation by OpenVireo, not CLEA’s; VIREO’s own captions are translated through vireo() (originals.json). */
+export const LOAD_SAVE_FR:Translation<typeof LOAD_SAVE_MESSAGES_EN>=Object.freeze({
+ 'loadSave.yes.reason':'Oui (enregistrer d’abord) ouvre l’enregistrement web vérifié de cette acquisition, et non la boîte de dialogue Enregistrer (Save) d’origine. Oui ne charge rien par lui-même : une fois une copie relue à l’identique, vous choisissez l’acquisition à charger à une étape distincte, ou vous annulez et conservez les données actuelles.',
+ 'loadSave.yes.unsupported.insecure-context':'Oui (enregistrer d’abord) n’est pas disponible : cette page n’est pas un contexte sécurisé, que l’API de fichiers du navigateur exige. Non et Annuler fonctionnent comme avant ; « Télécharger la capture en .PLR… » laisse toujours l’acquisition non enregistrée.',
+ 'loadSave.yes.unsupported.no-api':'Oui (enregistrer d’abord) n’est pas disponible : ce navigateur ne propose pas le sélecteur de fichier d’enregistrement avec fichiers accessibles en écriture (showSaveFilePicker et createWritable). Non et Annuler fonctionnent comme avant ; « Télécharger la capture en .PLR… » laisse toujours l’acquisition non enregistrée.',
+ 'loadSave.saveIntro':'Ouvert par Oui à la question Charger (Load). Une fois une copie relue à l’identique, une étape distincte vous permet de choisir une acquisition à charger ; rien n’est chargé automatiquement. Annuler ferme cet enregistrement et ne charge rien.',
+ 'loadSave.heading':'Enregistrement effectué : choisissez l’acquisition à charger',
+ 'loadSave.verified':'L’acquisition actuelle a été enregistrée sous « {file} » ({bytes} octets relus à l’identique). Elle reste les données de pulsar actuelles, avec ses mesures et ses curseurs.',
+ 'loadSave.consequence':'Rien n’a été chargé. « Choisir l’acquisition à charger… » ouvre le sélecteur de fichiers de votre navigateur pour un fichier .PLR ; ce fichier ne remplace les données actuelles que s’il est admis. Annuler conserve l’acquisition actuelle et sa copie vérifiée.',
+ 'loadSave.choosing':'En attente du sélecteur de fichiers. Votre navigateur peut ne pas signaler l’annulation du sélecteur : si rien ne se passe, appuyez sur Annuler ou de nouveau sur « Choisir l’acquisition à charger… ».',
+ 'loadSave.choose':'Choisir l’acquisition à charger…',
+ 'loadSave.cancel':'Annuler',
+ 'loadSave.refused.input':'Rien ne s’est passé : la question Charger n’a pas pu lancer l’enregistrement.',
+ 'loadSave.refused.unsupported':'Oui (enregistrer d’abord) n’est pas disponible dans ce navigateur. Non et Annuler fonctionnent comme avant.',
+ 'loadSave.refused.not-asking':'Rien ne s’est passé : la question Charger n’est plus ouverte.',
+ 'loadSave.refused.not-presented':'Rien ne s’est passé : cette fenêtre ne présente pas les données actuelles (par exemple une acquisition nommée « No Data »), elles ne peuvent donc pas être enregistrées d’ici. Non et Annuler fonctionnent comme avant.',
+ 'loadSave.refused.stale':'Rien ne s’est passé : les données de pulsar actuelles ont changé après l’ouverture de la question Charger. Annulez et utilisez de nouveau Charger.',
+ 'loadSave.refused.not-memory':'Rien ne s’est passé : les données actuelles ne sont plus une acquisition du récepteur non enregistrée. Annulez et utilisez de nouveau Charger.',
+ 'loadSave.refused.busy':'Rien ne s’est passé : une acquisition du récepteur ou une autre tentative d’enregistrement utilise les données actuelles. Réessayez une fois l’opération terminée.',
+ 'loadSave.refused.output':'Rien n’a été ouvert : une autre tentative d’enregistrement est encore en cours de finalisation. Réessayez une fois l’opération terminée.',
+ 'loadSave.status.ready':'Choisissez l’acquisition à charger à l’étape suivante, ou annulez pour conserver les données actuelles.',
+ 'loadSave.status.saveCancelled':'Chargement annulé après la fermeture de l’enregistrement. Rien n’a été chargé ; l’acquisition actuelle et la liste de mesures sont inchangées. Un fichier choisi dans la boîte de dialogue Enregistrer a peut-être déjà été créé, vidé ou modifié.',
+ 'loadSave.status.cancelled':'Chargement annulé. Rien n’a été chargé ; l’acquisition actuelle conserve sa copie vérifiée, ses mesures et ses curseurs.',
+ 'loadSave.status.noFile':'Aucun fichier choisi. Rien n’a été chargé ; choisissez de nouveau ou annulez.',
+ 'loadSave.status.stale':'Le chargement après enregistrement a pris fin : les données de pulsar actuelles ou leur copie vérifiée ont changé. Rien n’a été chargé.',
+ 'loadSave.status.reading':'Rien n’a changé : l’acquisition choisie est encore en cours de lecture. Attendez la fin de la lecture ou appuyez sur Annuler la lecture.',
+ 'loadSave.fileRefused':'Rien n’a été chargé : terminez ou annulez d’abord le chargement après enregistrement.',
+});

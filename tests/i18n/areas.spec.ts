@@ -263,7 +263,8 @@ test.describe('a language before its release',()=>{
   const empty=frPlan.modules.filter(m=>m.kind==='area'&&m.empty).map(m=>m.name);
   // FR1 review: pin the areas French gives text to (each FR front updates this list), so a lost or stray area fails here.
   expect(frPlan.modules.filter(m=>m.kind==='area'&&!m.empty).map(m=>m.name).sort(),'the areas with French text').toEqual(['classification','cluster','exposure','fits','lss','photometer','pulsar','radio']);
-  // Front FR5: no area is empty any more (the pulsar area holds only the shared pulsar+radio module until FR6).
+  // Front FR5: no area is empty any more (the pulsar area held only the shared pulsar+radio module until FR6, which gives it its own
+  // text: the saved-rows and load-save maps).
   expect(empty,'no area is empty after FR5').toEqual([]);
   for(const r of ROUTES){
    await page.goto('about:blank');w.language.length=0;
