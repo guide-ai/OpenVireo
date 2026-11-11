@@ -132,7 +132,7 @@ test.describe.configure({mode:'parallel'});
 
 // Front ES3: the E01 analyser screens are translated, so these families also run in Spanish (es-419).
 // Front PT2: the E01 and E02 families below (analyser, Observational Data, Hubble, star SSP, exposures, field spectrometer, LSS and
-// wedge) also run in the Brazilian Portuguese preview (pt-BR): same names and SHA-256 as English, no Portuguese letter in the files.
+// wedge) also run in Brazilian Portuguese (pt-BR; its `?lang=pt-BR` preview until PT-REL, a pt-BR browser since): same names and SHA-256 as English, no Portuguese letter in the files.
 test('spectrum analysis: measurement CSV, velocities CSV and the analysis session',async({browser,baseURL})=>{
  await identical(browser,baseURL,async(page,locale)=>{
   await open(page,locale,'spectrum');
@@ -509,7 +509,7 @@ test('E02 LSS survey and wedge: counts CSV, session, SSP, results CSV and TXT, i
  },{},page=>page.locator('.lss-main'),['en','qps','es-419','pt-BR']);
 });
 
-test('the shell toolbar: Save investigation is byte-identical in English, qps, Spanish and the Brazilian Portuguese preview',async({browser,baseURL})=>{
+test('the shell toolbar: Save investigation is byte-identical in English, qps, Spanish and Brazilian Portuguese',async({browser,baseURL})=>{
  const files:Record<string,File>={};
  for(const locale of ['en','qps','es-419','pt-BR'] as const){
   const context=await browser.newContext({baseURL,locale:contextLocale(locale),viewport:{width:1440,height:1050}}),page=await context.newPage();page.setDefaultTimeout(20_000);
