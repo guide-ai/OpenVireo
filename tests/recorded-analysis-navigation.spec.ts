@@ -84,17 +84,19 @@ type Gate={started:number;digests:number;release?:()=>Promise<void>};
 /** Test-only page instrumentation (no product telemetry): reads of files named *slow* are held until
  * release(). release() resolves the held buffer and then acknowledges settlement: the reader's own reaction
  * was registered first, so the acknowledgment runs after its continuation; any SHA-256 digest that
- * continuation started is awaited, then the microtask queue, one scheduler message and one frame drain. */
+ * continuation started is awaited, then the microtask queue, one scheduler message and one frame drain. `digests` counts only
+ * hashes of bytes read from a held file: other SHA-256 work of the page (the hidden observatory's background check of
+ * ObjectX.HTL, for example) runs at its own times and once made the count one too high. */
 async function holdSlowReads(page:Page){
  await page.addInitScript(()=>{
   const gate:Gate={started:0,digests:0};(window as unknown as{__routeLss:Gate}).__routeLss=gate;
-  const subtle=crypto.subtle,digest=subtle.digest.bind(subtle),pending=new Set<Promise<unknown>>();
-  subtle.digest=((...args:Parameters<SubtleCrypto['digest']>)=>{gate.digests++;const p=digest(...args);pending.add(p);void p.finally(()=>pending.delete(p));return p;}) as SubtleCrypto['digest'];
+  const subtle=crypto.subtle,digest=subtle.digest.bind(subtle),pending=new Set<Promise<unknown>>(),heldBytes=new WeakSet<ArrayBufferLike>();
+  subtle.digest=((...args:Parameters<SubtleCrypto['digest']>)=>{const data=args[1];if(heldBytes.has(ArrayBuffer.isView(data)?data.buffer:data))gate.digests++;const p=digest(...args);pending.add(p);void p.finally(()=>pending.delete(p));return p;}) as SubtleCrypto['digest'];
   const original=Blob.prototype.arrayBuffer;
   Blob.prototype.arrayBuffer=function(this:Blob){
    if(!(this instanceof File)||!this.name.includes('slow'))return original.call(this);
    const self=this;gate.started++;let resolve!:(b:ArrayBuffer)=>void;const held=new Promise<ArrayBuffer>(r=>{resolve=r;});
-   gate.release=async()=>{resolve(await original.call(self));await held.then(()=>undefined);while(pending.size)await Promise.allSettled([...pending]);
+   gate.release=async()=>{const bytes=await original.call(self);heldBytes.add(bytes);resolve(bytes);await held.then(()=>undefined);while(pending.size)await Promise.allSettled([...pending]);
     await new Promise(r=>setTimeout(r,0));await new Promise(r=>{const c=new MessageChannel();c.port1.onmessage=()=>r(undefined);c.port2.postMessage(0);});await new Promise(r=>requestAnimationFrame(()=>r(undefined)));};
    return held;
   };
