@@ -53,7 +53,8 @@ test(`${lang} at ${width} px computes the same styles with and without rtl.css, 
   await load(page,lang,route);
   if(width<600){const toggle=page.locator('.portal-header .tools-toggle');if(await toggle.isVisible()&&await toggle.getAttribute('aria-expanded')!=='true')await toggle.click();}
   // The lazy shell parts (routes.scripts.ts, Front RTL-1): the Multi-Spec card, and the selector and View original option where shown.
-  await expect(id(page,'ms-card')).toHaveCount(1,{timeout:30_000});
+  // Front LAZY-OBS: the welcome ('') is the shell alone, which never loads the observatory and so has no Multi-Spec card.
+  await expect(id(page,'ms-card')).toHaveCount(route?1:0,{timeout:30_000});
   if(lang!=='fr')for(const part of ['language-choice','language-originals-choice'])await expect(id(page,part),part).toHaveCount(1,{timeout:30_000});
   expect(await page.evaluate(()=>[document.documentElement.lang,document.documentElement.dir])).toEqual([lang==='fr'?'fr':lang,'ltr']);
   const props=await declaredProps();expect(props.length,props.join()).toBeGreaterThanOrEqual(12);
