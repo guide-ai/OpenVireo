@@ -51,6 +51,9 @@ export type SeoLanguage=Readonly<{
   learningResourceType:string;educationalLevel:readonly string[];
  }>;
  labsIndex:Readonly<{title:string;description:string;eyebrow:string;heading:string;lead:string;listName:string}>;
+ /** Front LAUNCH-3: its block of the shared 404 page (src/seo/pages.ts notFoundPage): a short word for the <title>, the heading
+  * and the sentence. The links reuse ui.openObservatory and ui.allLabs. */
+ notFound:Readonly<{title:string;heading:string;text:string}>;
  /** Its static home page, or null when the home page is the app (English: index.html, src/i18n/html.ts). */
  home:Readonly<{title:string;description:string;operatingSystem:string;eyebrow:string;heading:string;lead:string;note:string;labsHeading:string;howHeading:string;how:readonly string[]}>|null;
 }>;
@@ -78,6 +81,7 @@ const EN:SeoLanguage={
   eyebrow:'CLEA VIREO labs',heading:'Astronomy labs in your browser',
   lead:"Each lab follows one of the student exercises of VIREO, Project CLEA's virtual observatory. You observe with virtual telescopes and instruments, measure your own data and draw your own conclusions.",
   listName:'CLEA VIREO labs'},
+ notFound:{title:'Not found',heading:'Page not found',text:'This address is not part of OpenVireo.'},
  home:null,
 };
 
@@ -102,6 +106,7 @@ const ES:SeoLanguage={
   eyebrow:'Prácticas de CLEA VIREO',heading:'Prácticas de astronomía en tu navegador',
   lead:'Cada práctica sigue uno de los ejercicios para estudiantes de VIREO, el observatorio virtual de Project CLEA. Observas con telescopios e instrumentos virtuales, mides tus propios datos y sacas tus propias conclusiones.',
   listName:'Prácticas de CLEA VIREO'},
+ notFound:{title:'No encontrada',heading:'Página no encontrada',text:'Esta dirección no forma parte de OpenVireo.'},
  home:{title:'OpenVireo: prácticas de astronomía de CLEA VIREO en español',
   description:'Reconstrucción web gratuita y no oficial del observatorio virtual VIREO de Project CLEA, en español: ley de Hubble, púlsares, Pléyades, Objeto X y más.',
   operatingSystem:'Cualquiera (funciona en un navegador web)',
@@ -139,6 +144,7 @@ const PT_BR:SeoLanguage={
   eyebrow:'Práticas do CLEA VIREO',heading:'Práticas de astronomia no seu navegador',
   lead:'Cada prática segue um dos exercícios para estudantes do VIREO, o observatório virtual do Project CLEA. Você observa com telescópios e instrumentos virtuais, mede os seus próprios dados e tira as suas próprias conclusões.',
   listName:'Práticas do CLEA VIREO'},
+ notFound:{title:'Não encontrada',heading:'Página não encontrada',text:'Este endereço não faz parte do OpenVireo.'},
  home:{title:'OpenVireo: práticas de astronomia do CLEA VIREO em português',
   description:'Reconstrução web gratuita e não oficial do observatório virtual VIREO do Project CLEA, em português: lei de Hubble, pulsares, Plêiades, Objeto X e mais.',
   operatingSystem:'Qualquer um (funciona em um navegador web)',
@@ -177,6 +183,7 @@ const FR:SeoLanguage={
   eyebrow:'TP de CLEA VIREO',heading:'Des TP d’astronomie dans votre navigateur',
   lead:'Chaque TP suit l’un des exercices pour étudiants de VIREO, l’observatoire virtuel du Project CLEA. Vous observez avec des télescopes et des instruments virtuels, vous mesurez vos propres données et vous tirez vos propres conclusions.',
   listName:'TP de CLEA VIREO'},
+ notFound:{title:'Introuvable',heading:'Page introuvable',text:'Cette adresse ne fait pas partie d’OpenVireo.'},
  home:{title:'OpenVireo : TP d’astronomie de CLEA VIREO en français',
   description:'Reconstruction web gratuite et non officielle de l’observatoire virtuel VIREO du Project CLEA, en français : loi de Hubble, pulsars, Pléiades, Objet X et plus.',
   operatingSystem:'Tous (fonctionne dans un navigateur web)',

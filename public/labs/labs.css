@@ -32,3 +32,9 @@ li{margin:4px 0}
 .cards strong{display:block;color:var(--accent-text);font-size:1.05rem}
 .cards span{color:var(--muted);font-size:.95rem}
 footer{max-width:760px;margin:24px auto 0;padding:16px 16px 32px;border-top:1px solid var(--border);color:var(--muted);font-size:.85rem}
+/* Front LAUNCH-3: the 404 page's blocks in the other languages (src/seo/pages.ts notFoundPage), side by side when they fit. */
+.langs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:12px;margin:32px 0 24px}
+.langs section{padding:14px 16px;border:1px solid var(--border);border-radius:10px;background:var(--surface)}
+.langs h2{margin:0 0 4px;font-size:1.1rem}
+.langs p{margin:4px 0;color:var(--muted)}
+.langs .links{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:8px}

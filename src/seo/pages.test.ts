@@ -2,12 +2,13 @@
 import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
 import {LABS,LAB_SLUGS,SITE_URL,labFromHash,labUrl} from './labs';
+import {SEO_LANGUAGES,pathOf} from './languages';
 import en from '../i18n/en.json' with {type:'json'};
 import es from '../i18n/es/es.json' with {type:'json'};
 import pt from '../i18n/pt-br/pt-br.json' with {type:'json'};
 import {OBJECT_X_LAB_EN} from '../objectx/ObjectXMessages';
 import {POLISH_MESSAGES} from '../polish/PolishMessages';
-import {HOME_LAB_KEYS,LABS_INDEX_DESCRIPTION,SITEMAP_PATHS,homeBoot,homeHead,labPage,labsIndexPage,sitemap,staticSeoFiles} from './pages';
+import {HOME_LAB_KEYS,LABS_INDEX_DESCRIPTION,SITEMAP_PATHS,homeBoot,homeHead,labPage,labsIndexPage,notFoundPage,sitemap,staticSeoFiles} from './pages';
 import {documentMessages} from '../i18n/html';
 
 const attr=(html:string,re:RegExp)=>re.exec(html)?.[1];
@@ -72,7 +73,7 @@ describe('sitemap and files',()=>{
  it('every sitemap page except the English home page (the app) is an emitted file, and every emitted page is in the sitemap',()=>{
   const files=staticSeoFiles();
   for(const p of SITEMAP_PATHS.slice(1))expect(files[`${p.slice(1)}index.html`],p).toBeDefined();
-  expect(Object.keys(files).filter(f=>f.endsWith('.html')).map(f=>`/${f.replace(/index\.html$/,'')}`).sort()).toEqual([...SITEMAP_PATHS.slice(1)].sort());
+  expect(Object.keys(files).filter(f=>f.endsWith('.html')&&f!=='404.html').map(f=>`/${f.replace(/index\.html$/,'')}`).sort()).toEqual([...SITEMAP_PATHS.slice(1)].sort());
   expect(files['sitemap.xml']).toBe(sitemap());
  });
  it('robots.txt points to the sitemap',()=>{
@@ -144,3 +145,31 @@ describe('home pre-render (Front HOME)',()=>{
   }
  });
 });
+
+describe('404 page (Front LAUNCH-3)',()=>{
+ const html=notFoundPage();
+ it('is emitted as dist/404.html, with the site stylesheet and header, no script and no inline style',()=>{
+  expect(staticSeoFiles()['404.html']).toBe(html);
+  expect(html).toContain('<link rel="stylesheet" href="/labs/labs.css"/>');expect(html).toContain('<header class="top"><a class="brand" href="/">');
+  expect(html).not.toMatch(/<script|style=|<style/);
+  expect(html).toContain('<meta name="robots" content="noindex"/>');expect(html.match(/<h1>/g)).toHaveLength(1);
+ });
+ it('says it in every language, English first, each other block under its own lang, with absolute links into that language',()=>{
+  expect(html).toMatch(/^<!doctype html>\n<html lang="en">/);
+  expect(html).toContain('<title>OpenVireo · Not found · No encontrada · Não encontrada · Introuvable</title>');
+  expect(html).toContain('<h1>Page not found</h1><p class="lead">This address is not part of OpenVireo.</p>');
+  for(const l of SEO_LANGUAGES.slice(1))expect(html).toContain(`<section lang="${l.tag}"><h2>${l.notFound.heading}</h2><p>${l.notFound.text}</p>`);
+  for(const text of ['Esta dirección no forma parte de OpenVireo.','Este endereço não faz parte do OpenVireo.','Cette adresse ne fait pas partie d’OpenVireo.'])expect(html).toContain(text);
+  for(const l of SEO_LANGUAGES){
+   expect(html).toContain(`href="${l.app.replace(/&/g,'&amp;')}#observatory">${l.ui.openObservatory}</a>`);
+   expect(html).toContain(`<a href="${pathOf(l,'labs')}">${l.ui.allLabs}</a>`);
+  }
+  // Served at any depth: every address is absolute.
+  for(const [,href] of html.matchAll(/(?:href|src)="([^"]*)"/g))expect(href.startsWith('/'),href).toBe(true);
+ });
+ it('keeps French typography (no plain space before ; : ! ?) and es/pt/fr texts free of English leftovers',()=>{
+  for(const l of SEO_LANGUAGES.slice(1))for(const t of Object.values(l.notFound))expect(t).not.toMatch(/Not found|This address/);
+  const fr=SEO_LANGUAGES.find(l=>l.tag==='fr')!;for(const t of Object.values(fr.notFound))expect(t).not.toMatch(/ [;:!?]/);
+ });
+});
+

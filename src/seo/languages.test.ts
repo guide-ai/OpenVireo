@@ -24,9 +24,10 @@ const attr=(html:string,re:RegExp)=>re.exec(html)?.[1];
 const attrs=(html:string,re:RegExp)=>[...html.matchAll(re)].map(m=>m[1]);
 const ld=(html:string)=>[...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(m=>JSON.parse(m[1]));
 const files=staticSeoFiles();
-/** Every page: the emitted static pages and index.html as Vite serves it, by site path. */
+/** Every page: the emitted static pages and index.html as Vite serves it, by site path. Front LAUNCH-3: not the 404 page, which
+ * holds every language on purpose (src/seo/pages.test.ts checks it). */
 const PAGES:Record<string,string>={'/':documentMessages(readFileSync(new URL('../../index.html',import.meta.url),'utf8')),
- ...Object.fromEntries(Object.entries(files).filter(([f])=>f.endsWith('.html')).map(([f,html])=>[`/${f.replace(/index\.html$/,'')}`,html]))};
+ ...Object.fromEntries(Object.entries(files).filter(([f])=>f.endsWith('.html')&&f!=='404.html').map(([f,html])=>[`/${f.replace(/index\.html$/,'')}`,html]))};
 const KEYS:readonly PageKey[]=['home','labs',...LABS.map(l=>l.slug)];
 const hreflangs=(html:string)=>[...html.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)"\/>/g)].map(m=>[m[1],m[2]]);
 /** The visible link to a language's version of the page, named in that language. */
