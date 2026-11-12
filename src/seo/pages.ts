@@ -167,6 +167,25 @@ export function languageHomePage(language:SeoLanguage,registry:readonly Language
  return page({key:'home',title:h.title,description:h.description,body,ld,language,registry});
 }
 
+/** Front LAUNCH-3: the 404 page Pages serves for any missing address (dist/404.html; before this front a plain file in public/).
+ * One static page in every language of the table, English first as the page's own language and each other one in a block with
+ * its `lang`: the site's header and stylesheet (/labs/labs.css, so light and dark follow the system), no script and no inline
+ * style. It may be served at any depth, so every address in it is absolute. Each block links the observatory and the labs index
+ * in its language. */
+export function notFoundPage(registry:readonly LanguageEntry[]=LANGUAGES,languages:readonly SeoLanguage[]=SEO_LANGUAGES):string{
+ const [first,...others]=languages,within=seoDirection(first,registry);
+ const links=(l:SeoLanguage,button:boolean)=>`<a${button?' class="button"':''} href="${esc(openObservatoryHref(l))}">${esc(l.ui.openObservatory)}</a> <a href="${pathOf(l,'labs')}">${esc(l.ui.allLabs)}</a>`;
+ return `<!doctype html>\n<html lang="${first.tag}"${dirAttribute(within,'ltr')}><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>`+
+  `<meta name="theme-color" content="#0b2430"/><meta name="color-scheme" content="light dark"/><meta name="robots" content="noindex"/>`+
+  `<title>${esc([SITE_NAME,...languages.map(l=>l.notFound.title)].join(' · '))}</title>`+
+  `<link rel="icon" href="/favicon.svg" type="image/svg+xml"/><link rel="stylesheet" href="/labs/labs.css"/></head>`+
+  `<body><header class="top"><a class="brand" href="/"><span aria-hidden="true">✳</span> ${SITE_NAME}</a></header>`+
+  `<main><p class="eyebrow">404</p><h1>${esc(first.notFound.heading)}</h1><p class="lead">${esc(first.notFound.text)}</p>`+
+  `<p class="cta">${links(first,true)}</p>`+
+  `<div class="langs">${others.map(l=>`<section lang="${l.tag}"${dirAttribute(seoDirection(l,registry),within)}><h2>${esc(l.notFound.heading)}</h2><p>${esc(l.notFound.text)}</p><p class="links">${links(l,false)}</p></section>`).join('')}</div>`+
+  `</main></body></html>\n`;
+}
+
 const PAGE_KEYS:readonly PageKey[]=['home','labs',...ENGLISH.labs.map(l=>l.slug)];
 /** Every page a search engine should know about, as [site path, page]: each language's pages in turn, English first. */
 const SITEMAP=SEO_LANGUAGES.flatMap(l=>PAGE_KEYS.map(k=>[pathOf(l,k),k] as const));
@@ -179,7 +198,7 @@ export function sitemap():string{
 
 /** Output files, by their path in dist/ (and in the dev server). */
 export function staticSeoFiles():Record<string,string>{
- const files:Record<string,string>={'sitemap.xml':sitemap()};
+ const files:Record<string,string>={'sitemap.xml':sitemap(),'404.html':notFoundPage()};
  for(const language of SEO_LANGUAGES){
   const dir=language.prefix?`${language.prefix.slice(1)}/`:'';
   if(language.home)files[`${dir}index.html`]=languageHomePage(language);

@@ -1,7 +1,7 @@
 // Front REL1 [W]: public/_headers (Cloudflare Pages) must match what the code needs: the inline scripts of index.html and the
 // print <style> elements by hash, the live VizieR hosts, and cache rules that never combine with each other.
 import {createHash} from 'node:crypto';
-import {readFileSync} from 'node:fs';
+import {readFileSync,readdirSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
 import {VIZIER_POLICY} from './core/vizierNomad';
 import {printPageSizeCss} from './core/lightCurvePrint';
@@ -58,5 +58,27 @@ describe('public/_headers for the static release',()=>{
   expect(header('/assets/*','Cache-Control')).toBe('public, max-age=31536000, immutable');
   for(const p of ['/original/*','/camera/*'])expect(header(p,'Cache-Control')).toBe('public, max-age=86400, stale-while-revalidate=604800');
   for(const p of ['/','/index.html','/labs/*','/es/*','/pt-br/*','/fr/*','/sitemap.xml','/robots.txt'])expect(header(p,'Cache-Control')).toBe('no-cache');
+ });
+ it('labels as text only plain-ASCII originals, with one Content-Type rule a path (Front LAUNCH-3)',()=>{
+  // Pages matches a rule as an anchored pattern whose `*` is a greedy splat; a header set by two matching rules is joined
+  // with a comma, so no file may meet two Content-Type rules.
+  const typed=all.filter(r=>r.headers.some(([n])=>n.toLowerCase()==='content-type'));
+  const pattern=(path:string)=>new RegExp(`^${path.split('*').map(s=>s.replace(/[-/\\^$*+?.()|[\]{}]/g,'\\$&')).join('.*')}$`);
+  const root=new URL('../public/',import.meta.url),files:string[]=[];
+  (function walk(dir:string){for(const e of readdirSync(new URL(dir,root),{withFileTypes:true}))e.isDirectory()?walk(`${dir}${e.name}/`):files.push(`${dir}${e.name}`);})('');
+  const labelled=files.filter(f=>{
+   const hits=typed.filter(r=>pattern(r.path).test(`/${f}`));expect(hits.length,f).toBeLessThanOrEqual(1);
+   if(hits.length)expect(hits[0].headers.find(([n])=>n.toLowerCase()==='content-type')![1],f).toBe('text/plain; charset=utf-8');
+   return hits.length===1;
+  });
+  for(const f of labelled){
+   // Printable ASCII, tab, CR and LF; a DOS end-of-file byte (0x1A) may close the file. Then utf-8 is a true charset.
+   const bytes=readFileSync(new URL(f,root)),body=bytes.at(-1)===0x1a?bytes.subarray(0,-1):bytes;
+   expect(body.every(b=>b===9||b===10||b===13||(b>=32&&b<127)),f).toBe(true);
+  }
+  // Every template, list, line list and the pulsar catalog is reached, and the binary originals are not.
+  expect(labelled.sort()).toEqual(files.filter(f=>f.startsWith('original/')&&(/\.(SP|SPI|LST|LNL|obs)$/.test(f)||f==='original/radio/Pulsars.dat')).sort());
+  expect(labelled.length).toBeGreaterThan(190);
+  for(const f of ['original/orbit/ObjX_MPC.CMO.sav','original/catalogs/CLEA_GLX.DAT','original/variables/CLEA_VStrs.dat','original/hotlists/Hubble.HTL','original/gsc/N0000/000.bin'])expect(labelled,f).not.toContain(f);
  });
 });
