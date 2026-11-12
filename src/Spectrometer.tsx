@@ -1,3 +1,4 @@
+import ResearchNotes from './components/ResearchNotes';
 import {memo,type ComponentProps} from 'react';
 import {propsEqual} from './renderStability';
 import type { Sample } from './core/spectrum';
@@ -23,7 +24,7 @@ function Spectrometer({ onReturn, field }: { field?: FieldSpectrometerLink; targ
     <section className="card spectrometer-index" aria-labelledby="spectrometer-routes"><h2 id="spectrometer-routes">{S.routesTitle}</h2>
       <ul data-testid="spectrometer-routes">{S.routes.map((r, i) => <li key={SPECTROMETER_ROUTE_HREFS[i]}><a href={SPECTROMETER_ROUTE_HREFS[i]}>{r.label}</a> — {r.help}</li>)}</ul>
       <div className="button-row"><a className="secondary-button" href="#sky-exposure">{t('skyExposure.open')}</a><a className="secondary-button" href="#star-exposure">{t('starExposure.open')}</a></div>
-      <p className="observatory-note">{S.retired}</p>
+      <ResearchNotes><p className="observatory-note">{S.retired}</p></ResearchNotes>
     </section>
     {/* Front G (G4a): the spectrometer wherever the telescope points, from the compact GSC tiles. */}
     {field&&<LazyBoundary fallback={<p>{t('sky.loading')}</p>}><FieldSpectrometer link={field}/></LazyBoundary>}

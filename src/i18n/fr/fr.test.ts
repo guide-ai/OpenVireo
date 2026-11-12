@@ -154,7 +154,7 @@ describe('Front FR0: the French (fr) bundle',()=>{
   expect(FR2_KEYS.filter(k=>!Object.hasOwn(fr,k))).toEqual([]);
  });
  it('Front FR3: the catalog covers exercise E03 (every key of its prefixes, continuity.restoreExposure and ssp.header)',()=>{
-  expect(FR3_KEYS.length).toBe(771);
+  expect(FR3_KEYS.length).toBe(772);// Front LAUNCH-2: classLab.introOptions
   expect(FR3_KEYS.filter(k=>!Object.hasOwn(fr,k))).toEqual([]);
  });
  it('Front FR4: the catalog covers exercises E04 and E05 (every key of their prefixes)',()=>{

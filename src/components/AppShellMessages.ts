@@ -7,6 +7,8 @@ export type AppShellMessageCatalog=Readonly<{
  navGroups:Readonly<{optical:string;radio:string;analysis:string;files:string;guides:string}>;
  backupHelpSummary:string;
  toolsMenu:string;
+ /** Front LAUNCH-2: the skip link, the page's first focusable control, shown on focus (src/components/PortalHeader.tsx). */
+ skipToContent:string;
  /** Front HEADER [W]: the page bar at the top of the content area (src/components/PageBar.tsx). `label` names its region; `more` is the
   * visible word of the button beside Save investigation and must start `moreName`, its accessible name (WCAG 2.5.3). */
  pageBar:Readonly<{label:string;more:string;moreName:string}>;
@@ -18,7 +20,8 @@ export const APP_SHELL_MESSAGES_EN:AppShellMessageCatalog=Object.freeze({
  theme:Object.freeze({legend:'Color theme',system:'System',light:'Light',dark:'Dark'}),
  navGroups:Object.freeze({optical:'Optical observatory',radio:'Radio observatory',analysis:'Analysis',files:'Files',guides:'Exercise guides'}),
  backupHelpSummary:'What a backup includes',
- toolsMenu:'Tools',
+ toolsMenu:'Menu',
+ skipToContent:'Skip to content',
  pageBar:Object.freeze({label:'Investigation, language and help',more:'More',moreName:'More investigation actions'}),
  recovery:Object.freeze({
   updatedTitle:'A new version of OpenVireo was published',

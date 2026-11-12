@@ -59,6 +59,11 @@ export {ClusterGuideNavButton};
 
 /** Front HOME: the welcome page's content, the page `/` opens (no hash, or #home); "Explore the sky" goes to the observatory.
  * `status` is the shell's "Loading the observatory…" line while the rest of the site is fetched (Front LAZY-OBS). */
-export function welcomeMain({openGuide,onExplore,status}:{openGuide:Readonly<Record<LabSlug,()=>void>>;onExplore:()=>void;status?:ReactNode}){
- return <main className="observatory-main">{status}<Welcome openGuide={openGuide} onExplore={onExplore}/><footer><span>{t('sky.attribution')}</span><a href={labsIndexUrl(uiLanguage())} target="_blank" rel="noopener noreferrer">{t('sky.labsLink')}<span className="visually-hidden"> {t('sky.labsLinkNewTab')}</span></a></footer></main>;
+export function welcomeMain({openGuide,onExplore,onAbout,status}:{openGuide:Readonly<Record<LabSlug,()=>void>>;onExplore:()=>void;onAbout:()=>void;status?:ReactNode}){
+ return <main className="observatory-main">{status}<Welcome openGuide={openGuide} onExplore={onExplore}/>{siteFooter(onAbout)}</main>;
+}
+/** The footer of the welcome and the observatory: the credit to Project CLEA, Gettysburg College and NSF, then Front LAUNCH-2's
+ * About & privacy (the dialog of Help › About OpenVireo and privacy) and the lab pages' link. */
+export function siteFooter(onAbout:()=>void){
+ return <footer><span>{t('sky.attribution')}</span><span className="footer-links"><button type="button" className="text-button footer-about" data-testid="footer-about" onClick={onAbout}>{t('sky.aboutPrivacy')}</button><a href={labsIndexUrl(uiLanguage())} target="_blank" rel="noopener noreferrer">{t('sky.labsLink')}<span className="visually-hidden"> {t('sky.labsLinkNewTab')}</span></a></span></footer>;
 }

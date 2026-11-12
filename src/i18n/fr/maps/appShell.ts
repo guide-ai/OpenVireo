@@ -7,6 +7,7 @@ export const APP_SHELL_FR:Translation<typeof APP_SHELL_MESSAGES_EN>=Object.freez
  navGroups:Object.freeze({optical:'Observatoire optique',radio:'Observatoire radio',analysis:'Analyse',files:'Fichiers',guides:'Guides des TP'}),
  backupHelpSummary:'Ce que contient une sauvegarde',
  toolsMenu:'Menu',// the phone menu button; "Outils" does not fit beside the brand and Help at 320 px
+ skipToContent:'Aller au contenu',
  pageBar:Object.freeze({label:'Investigation, langue et aide',more:'Plus',moreName:'Plus d’actions sur l’investigation'}),
  recovery:Object.freeze({
   updatedTitle:'Une nouvelle version d’OpenVireo a été publiée',

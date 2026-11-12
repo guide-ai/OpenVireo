@@ -1,3 +1,4 @@
+import ResearchNotes from './components/ResearchNotes';
 import {useContext,useState} from 'react';
 import {VireoOptionsContext} from './vireoOptionsContext';
 import SpectralRangeDialog from './SpectralRangeDialog';
@@ -12,7 +13,7 @@ export default function SpectralRangeRow({range,disabled,unsaved,testId,note,onA
  const [open,setOpen]=useState(false),{allowRangeChange}=useContext(VireoOptionsContext);
  return <div className="spectral-range-row"><p data-testid={testId}>{SR.current(range.minimum.toFixed(1),range.maximum.toFixed(1))}</p>
   <button type="button" className="secondary-button" disabled={disabled||!allowRangeChange} data-testid={`${testId}-open`} onClick={()=>setOpen(true)}>{menuCaptionText(vireo(SPECTRAL_RANGE_LITERALS.menu))}</button>
-  {!allowRangeChange&&<p className="observatory-note" data-testid={`${testId}-locked`}>{SR.locked}</p>}<p className="observatory-note">{note}</p>
+  {!allowRangeChange&&<p className="observatory-note" data-testid={`${testId}-locked`}>{SR.locked}</p>}<ResearchNotes><p className="observatory-note">{note}</p></ResearchNotes>
   {open&&<SpectralRangeDialog range={range} unsaved={unsaved} onApply={r=>{setOpen(false);onApply(r);}} onClose={()=>setOpen(false)}/>}
  </div>;
 }

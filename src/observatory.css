@@ -44,7 +44,7 @@
  .portal-header nav .nav-group-toggle{width:auto;justify-content:flex-start;padding:2px 0}
  .portal-header nav .nav-group-toggle .nav-group-label{padding:0 2px 1px}
 }
-/* Phones: the groups and theme switch fold behind the "Tools" disclosure button. */
+/* Phones: the groups and theme switch fold behind the "Menu" disclosure button. */
 .tools-toggle{display:none}
 .portal-panel{display:contents}
 @media(max-width:599.98px){
@@ -82,7 +82,7 @@
 /* Running clock card sits between the toolbar and the route content. */
 .running-clock{width:calc(100% - 60px);max-width:1500px;margin:16px auto 0!important}
 @media(max-width:1150px){.running-clock{width:calc(100% - 32px)}}
-@media(max-width:520px){.running-clock{width:calc(100% - 24px);padding:16px!important}}
+@media(max-width:520px){.running-clock{width:calc(100% - 24px);padding:10px 16px!important}}
 
 /* ── Observatory ── */
 .observatory-main{margin:0 auto;width:100%;max-width:1560px;padding:0 30px 28px}
@@ -105,6 +105,9 @@
 .observatory-heading h1{font-size:var(--ov-text-2xl);letter-spacing:-1px;margin:8px 0}
 .observatory-heading p{font-size:var(--ov-text-md);color:var(--ov-text-muted);max-width:760px;line-height:1.65}
 .observatory-heading>.text-button{position:absolute;inset-inline-end:0;top:30px}
+/* Front LAUNCH-2: the observatory's own heading is tighter than other pages', so the dome cover's Open dome fits the first screen. */
+.sky-heading{padding:20px 0 14px}
+.sky-heading>.text-button{top:22px}
 /* Front HOME: the welcome (src/home/Welcome.tsx), the page `/` opens: what the site is, three facts in a row, the button to the
    exploration page, and the seven labs as a grid of small cards. Small text inherits the body's line-height, so the script rules
    of src/theme/scripts.css (CJK and Hindi line heights) need no new entry; the lead uses 1.7. */
@@ -148,13 +151,15 @@
 /* SkyField (src/OpenVireo.tsx) measures these labels again when the 520 px query below changes their size. */
 .sky-object text{fill:#a6d9c8;font-size:11px;paint-order:stroke;stroke:#061a29;stroke-width:4px;stroke-linejoin:round}
 
-/* Front LAUNCH-1: the cover's content sits in the upper part of the field, so its Open dome is on the first screen at 1440 × 900. */
+/* Front LAUNCH-1: the cover's content sits in the upper part of the field, so its Open dome is on the first screen at 1440 × 900.
+ * Front LAUNCH-2: a smaller dome sign and the button before its help line keep it there at 1440 × 780 and 375 × 700 too. */
 .dome-cover{position:absolute;inset:0;background:linear-gradient(145deg,#102c3c,#061521);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:clamp(24px,5%,44px) 30px 30px;text-align:center;color:#d9e8eb}
 .dome-cover h2{font-size:26px;font-weight:550;margin:6px 0 12px;color:#e6f0f2}
 .dome-cover p{max-width:340px;color:#a9c0ca;font-size:var(--ov-text-md);line-height:1.7}
 .dome-cover .primary-button{width:auto;gap:30px;background:#c9e5d5;color:#123527;border-color:#c9e5d5;padding:11px 20px}
 .dome-cover .primary-button:hover:not(:disabled){background:#b4dac5;border-color:#b4dac5}
-.dome-icon{font-size:110px;color:#688e9a;line-height:1;border-bottom:1px solid #456776;width:145px;margin-bottom:28px}
+.dome-icon{font-size:72px;color:#688e9a;line-height:1;border-bottom:1px solid #456776;width:120px;margin-bottom:14px}
+.dome-cover p{margin:14px 0 0}
 
 .pointing-readout{display:flex;gap:32px;padding:18px 22px;border-bottom:1px solid var(--ov-border)}
 .pointing-readout span{flex:1}
@@ -231,11 +236,16 @@
  .observatory-controls{grid-template-columns:1fr}
  .sky-toolbar,.sky-caption{padding:10px 14px}
  .sky-card .card-heading{padding:16px 14px}
- .dome-cover{padding:20px}
- .dome-icon{font-size:64px;width:100px;margin-bottom:12px}
+ .dome-cover{padding:16px 20px}
+ /* Front LAUNCH-2: on a phone the dome sign and the observatory's subtitle (the three steps say the same) give their room to Open dome;
+  * the subtitle stays for screen readers. */
+ .dome-icon{display:none}
+ .sky-heading{padding:14px 0 10px}
+ .sky-heading .sky-subtitle{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+ .sky-card .card-heading>.secondary-button{white-space:nowrap}
  .dome-cover h2{font-size:22px}
- .dome-cover p{font-size:var(--ov-text-sm);margin:2px 0}
- .dome-cover .primary-button{margin-top:10px}
+ .dome-cover p{font-size:var(--ov-text-sm);margin:10px 0 0}
+ .dome-cover .primary-button{margin-top:4px}
  .pointing-readout{padding:14px}
  .pointing-readout output{font-size:18px}
  .field-controls{padding:14px 14px 6px}

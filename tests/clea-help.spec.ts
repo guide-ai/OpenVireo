@@ -101,16 +101,16 @@ test('on a phone, Help is in the top bar (outside Tools), and its help fits the 
  await page.setViewportSize({width:375,height:812});
  await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible({timeout:15000});
  await expect(id(page,'main-help-menu')).toBeVisible();
- await expect(page.getByRole('banner').getByRole('button',{name:'Tools'})).toHaveAttribute('aria-expanded','false');
+ await expect(page.getByRole('banner').getByRole('button',{name:'Menu',exact:true})).toHaveAttribute('aria-expanded','false');
  await id(page,'main-help-menu').click();await id(page,'main-help-web').click();
  const help=id(page,'web-help');await expect(help).toBeVisible();
  expect(await help.evaluate(d=>d.scrollWidth<=d.clientWidth&&d.getBoundingClientRect().right<=window.innerWidth)).toBe(true);
  await id(page,'web-help-close').click();await expect(help).toHaveCount(0);await expect(id(page,'main-help-menu')).toBeFocused();
  // With the Tools panel open, Escape in the help closes only the help (review 1 S1).
- await page.getByRole('banner').getByRole('button',{name:'Tools'}).click();
+ await page.getByRole('banner').getByRole('button',{name:'Menu',exact:true}).click();
  await id(page,'main-help-menu').click();await id(page,'main-help-web').click();await expect(help).toBeVisible();
  await page.keyboard.press('Escape');await expect(help).toHaveCount(0);await expect(id(page,'main-help-menu')).toBeFocused();
- await expect(page.getByRole('banner').getByRole('button',{name:'Tools'})).toHaveAttribute('aria-expanded','true');
+ await expect(page.getByRole('banner').getByRole('button',{name:'Menu',exact:true})).toHaveAttribute('aria-expanded','true');
 });
 
 test('main window Help: Websites; File › Exit Observatory shows VIREO\'s reminder',async({page})=>{

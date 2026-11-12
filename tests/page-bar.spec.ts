@@ -112,9 +112,9 @@ for(const width of [320,375,600,1024]){
   await expect(id(page,'investigation-save')).toHaveAccessibleName('Save investigation');
   await expect(id(page,'investigation-more')).toHaveAccessibleName('More investigation actions');
   await expect(id(page,'main-help-menu')).toHaveAccessibleName('Help menu of the observatory');
-  // Help shows only its icon below 360 px; More shows only its icon below 600 px.
+  // Help and More show only their icons below 360 px (Front LAUNCH-2: More kept its word on a phone).
   await expect(id(page,'main-help-menu').locator('.help-trigger-text')).toHaveCSS('position',width<360?'absolute':'static');
-  await expect(id(page,'investigation-more').locator('.page-bar-more-text')).toHaveCSS('position',width<600?'absolute':'static');
+  await expect(id(page,'investigation-more').locator('.page-bar-more-text')).toHaveCSS('position',width<360?'absolute':'static');
   for(const menu of ['investigation-more','main-help-menu']){
    await id(page,menu).click();const list=bar(page).locator('.fi-menu-list');await expect(list).toBeVisible();
    const r=(await list.boundingBox())!;expect(r.x).toBeGreaterThanOrEqual(0);expect(r.x+r.width).toBeLessThanOrEqual(width);

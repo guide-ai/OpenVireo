@@ -217,6 +217,7 @@ export interface MessageParameters {
   "sky.limitHelp": never;
   "sky.attribution": never;
   "sky.labsLink": never;
+  "sky.aboutPrivacy": never;
   "sky.labsLinkNewTab": never;
   "sky.referenceLoadError": never;
   "sky.libraryLoading": never;
@@ -347,6 +348,7 @@ export interface MessageParameters {
   "starExposure.title": never;
   "starExposure.eyebrow": never;
   "starExposure.intro": never;
+  "starExposure.lead": never;
   "starExposure.activated": never;
   "starExposure.started": never;
   "starExposure.restored": never;
@@ -418,6 +420,7 @@ export interface MessageParameters {
   "galaxyExposure.title": never;
   "galaxyExposure.eyebrow": never;
   "galaxyExposure.intro": "id" | "label";
+  "galaxyExposure.introDetail": never;
   "galaxyExposure.activated": never;
   "galaxyExposure.started": never;
   "galaxyExposure.restored": never;
@@ -477,6 +480,7 @@ export interface MessageParameters {
   "lab.close": never;
   "lab.return": never;
   "lab.intro": never;
+  "lab.introOptions": never;
   "lab.progress": never;
   "lab.counts": "archived" | "measured" | "rows" | "total";
   "lab.progressHelp": never;
@@ -604,6 +608,7 @@ export interface MessageParameters {
   "classLab.title": never;
   "classLab.close": never;
   "classLab.intro": never;
+  "classLab.introOptions": never;
   "classLab.adaptation": never;
   "classLab.progress": never;
   "classLab.counts": "done" | "total";
@@ -3268,6 +3273,7 @@ export interface MessageParameters {
   "lssLab.eyebrow": never;
   "lssLab.title": never;
   "lssLab.intro": never;
+  "lssLab.introOptions": never;
   "lssLab.counts": "done" | "fields" | "galaxies" | "plotted" | "records" | "total";
   "lssLab.done": never;
   "lssLab.todo": never;

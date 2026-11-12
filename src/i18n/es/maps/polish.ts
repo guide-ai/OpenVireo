@@ -64,10 +64,10 @@ export const POLISH_ES:Translation<typeof POLISH_MESSAGES_EN>=Object.freeze({
  about:Object.freeze({
   nativeNote:'El cuadro Acerca de (About) de VIREO, con sus textos tal como se leyeron del programa original (su logotipo no se incluye). El resto de esta ventana describe esta reconstrucción web.',
   siteTitle:'Este sitio',
-  site:'OpenVireo es una reconstrucción web gratuita y no comercial de VIREO de Project CLEA para estudiantes, hecha en el navegador a partir del comportamiento recuperado de VIREO y de sus archivos de datos originales. No es el programa de CLEA ni afirma ser equivalente a él; las adaptaciones web se señalan donde aparecen. La traducción al español es una adaptación web de OpenVireo; los archivos y textos de CLEA no cambian.',
+  site:'OpenVireo es una reconstrucción web gratuita y no comercial de VIREO de Project CLEA, abierta a todo el mundo, hecha en el navegador a partir del comportamiento recuperado de VIREO y de sus archivos de datos originales. No es el programa de CLEA ni afirma ser equivalente a él; las adaptaciones web se señalan donde aparecen. La traducción al español es una adaptación web de OpenVireo; los archivos y textos de CLEA no cambian.',
   worksTitle:'Qué funciona',
   works:Object.freeze([
-   'Los siete ejercicios de VIREO tienen una ruta web para estudiantes: la ley de Hubble (13 galaxias), la estructura a gran escala, la clasificación estelar, la fotometría de las Pléyades (24 estrellas), los diagramas HR de cúmulos, los púlsares y la búsqueda del Objeto X.',
+   'Los siete ejercicios de VIREO tienen una ruta web guiada: la ley de Hubble (13 galaxias), la estructura a gran escala, la clasificación estelar, la fotometría de las Pléyades (24 estrellas), los diagramas HR de cúmulos, los púlsares y la búsqueda del Objeto X.',
    'Observatorio óptico: cúpula, telescopios, vistas del buscador y del telescopio, movimiento del telescopio con el límite del horizonte opcional, listas de objetos, sitio y fecha, información del catálogo y del campo, y las listas de estrellas variables y de QSO.',
    'Instrumentos: espectrómetro y fotómetro para los objetivos de los ejercicios, cámaras CCD e infrarroja (consulta del catálogo en vivo), el espectrómetro multiobjeto (Multi-Spec, en los campos de ejercicio incluidos y en la práctica del Objeto X) y el radiotelescopio con su receptor y el análisis de púlsares.',
    'Análisis: medición y clasificación de espectros, ajustes de Hubble y de las Pléyades, el diagrama de cuña de LSS, tus resultados de observación y las investigaciones guardadas.',

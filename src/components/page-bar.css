@@ -52,8 +52,9 @@
  .page-bar-place{display:none}
  .page-bar .investigation-actions>.secondary-button,.page-bar .investigation-more{min-height:40px}
  .page-bar .investigation-more{min-width:40px;padding:6px 8px}
- .page-bar-more-text{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
  .page-bar .fi-menu{position:static}
  .page-bar .fi-menu-list{inset-inline-start:0;inset-inline-end:0;width:auto;min-width:0;max-width:none}
 }
 @media(max-width:520px){.page-bar{width:calc(100% - 24px);padding:8px 10px}}
+/* Front LAUNCH-2: More keeps its word on a phone (a bare chevron said nothing); only below 360 px, as Help, does it show the icon alone. */
+@media(max-width:359.98px){.page-bar-more-text{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}}

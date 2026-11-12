@@ -1,3 +1,4 @@
+import ResearchNotes from './components/ResearchNotes';
 import {useEffect,useId,useRef,useState} from 'react';
 import {menuCaptionText} from './core/radioControl';
 import {canPanLeft,canPanRight,moveZoomMaximum,moveZoomMinimum,resetZoomDraft,zoomDraft,zoomDraftWavelengths,type EngineWindow,type ZoomDraft} from './core/spectrumEngineView';
@@ -48,7 +49,7 @@ export default function SpectrumEngineControls({window:w,wide,readout,nearest,on
     :<span className="engine-readout-empty">{M.readoutEmpty}</span>}
   </div>
   {nearest&&<p role="status" className="engine-nearest" data-testid="engine-nearest-result">{nearest}</p>}
-  <p className="observatory-note">{wide?M.fullViewNote:M.note}</p>
+  <ResearchNotes><p className="observatory-note">{wide?M.fullViewNote:M.note}</p></ResearchNotes>
   {zooming&&<ZoomDialog window={w} onClose={close} onApply={d=>{onZoom(d);close();}}/>}
  </div>;
 }
