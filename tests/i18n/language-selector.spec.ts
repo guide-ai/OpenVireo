@@ -24,9 +24,9 @@ async function browserIn(browser:Browser,languages:readonly string[]):Promise<Pa
  await page.addInitScript(list=>{Object.defineProperty(Navigator.prototype,'languages',{get:()=>Object.freeze([...list]),configurable:true});},[...languages]);
  return page;
 }
-/** Seeds the stored choice once, before the first load of this page (later loads keep what the page stored). */
 /** Front FR-REL: the options every load offers, in registry order. */
 const FOUR=['English','Español','Português (Brasil)','Français'];
+/** Seeds the stored choice once, before the first load of this page (later loads keep what the page stored). */
 const seedChoice=(page:Page,value:string)=>page.addInitScript(v=>{if(!sessionStorage.getItem('seeded')){localStorage.setItem('openvireo-language',v);sessionStorage.setItem('seeded','1');}},value);
 async function languageOf(page:Page,query=''){await open(page,query);return page.locator('html').getAttribute('lang');}
 
