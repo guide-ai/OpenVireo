@@ -1028,6 +1028,7 @@ export interface MessageParameters {
   "runningClock.pause": never;
   "runningClock.trackingOn": never;
   "runningClock.trackingOff": never;
+  "runningClock.shortcut": never;
   "runningClock.tracked": never;
   "runningClock.untracked": never;
   "runningClock.limit": never;
@@ -3015,6 +3016,7 @@ export interface MessageParameters {
   "pleiadesLab.goObservations": never;
   "pleiadesLab.continue": never;
   "pleiadesLab.goObservatory": never;
+  "pleiadesLab.goHotList": never;
   "pleiadesLab.goPhotometer": never;
   "pleiadesLab.next.list": never;
   "pleiadesLab.next.point": never;

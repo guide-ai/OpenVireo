@@ -252,7 +252,7 @@
   "src/PleiadesLabGuide.tsx › PleiadesLabGuide · head 'pleiadesLab.problem.' [core]",
   "src/PleiadesLabGuide.tsx › PleiadesLabGuide · head 'pleiadesLab.recover.' [core]",
   "src/PleiadesLabGuide.tsx › PleiadesLabGuide · head 'pleiadesLab.step.' [core] ×2",
-  "src/PleiadesLabGuide.tsx › PleiadesLabGuide · t(STEP_DESTINATION[step]==='observatory'?'pleiadesLab.goObservatory':'pleiadesLab.) [core]",
+  "src/PleiadesLabGuide.tsx › PleiadesLabGuide · t(STEP_DESTINATION[step]==='hotlist'?'pleiadesLab.goHotList':STEP_DESTINATION[step) [core]",
   "src/PleiadesLabGuide.tsx › PleiadesLabGuide · t(`pleiadesLab.next.${progress.next}`) [core]",
   "src/PleiadesLabGuide.tsx › PleiadesLabGuide · t(`pleiadesLab.problem.${key}`) [core]",
   "src/PleiadesLabGuide.tsx › PleiadesLabGuide · t(`pleiadesLab.recover.${key}`) [core]",

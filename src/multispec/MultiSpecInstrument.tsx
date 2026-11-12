@@ -22,6 +22,7 @@ import MultiSpecDisplay,{type MultiSpecResult} from './MultiSpecDisplay';
 import {multiSpecFieldKey} from './multiSpecFields';
 import {multiSpecAccessText,multiSpecFibreMask,multiSpecNameOptions,multiSpecReasonText,type MultiSpecMaskPolicy} from './multiSpecText';
 import './multispec.css';
+import TrackingShortcut from '../observatory/TrackingShortcut';
 
 /** Front M (M3): the Multi-Spec instrument as the observatory and the Object X lab mount it. The control form is the pure reducer
  * core/multiSpec.ts; this component only presents it, feeds it whole-second ticks from a page timer (SpecTimer, Interval 1000 ms)
@@ -179,7 +180,7 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
   <div className="button-row">
    <button type="button" className="primary-button" disabled={!usable||access!=='ready'||state.open||!!parameterRefusal} onClick={()=>dispatch({type:'show'})} data-testid="ms-access">{t('multispec.access')}</button>{parameterRefusal&&<p role="status" data-testid="ms-parameters-refused" data-reason="uncertified-parameter">{parameterRefusal}</p>}
   </div>
-  <p role="status" data-testid="ms-access-status">{state.open?t('multispec.accessOpen'):access!=='ready'?multiSpecAccessText(access):''}</p>{rangeBlock&&<p role="status" data-testid="ms-range-block">{rangeBlock}</p>}
+  <p role="status" data-testid="ms-access-status">{state.open?t('multispec.accessOpen'):access!=='ready'?multiSpecAccessText(access):''}</p>{/* Front LAUNCH-1 */!state.open&&access==='tracking'&&<TrackingShortcut/>}{rangeBlock&&<p role="status" data-testid="ms-range-block">{rangeBlock}</p>}
   {state.open&&<div className="ms-body">
    <div className="ms-top">
     <MultiSpecControl blockExposure={!!parameterRefusal} state={state} dispatch={dispatch} busy={!usable} masked={mask.masked} printField={ready&&field?{pointing:field.pointing,telescope:opticalProfile(telescope).name,clone:()=>multiSpecFieldPicture(fieldWrap.current)}:null}/>

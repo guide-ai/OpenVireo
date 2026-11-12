@@ -158,7 +158,7 @@ describe('Front FR0: the French (fr) bundle',()=>{
   expect(FR3_KEYS.filter(k=>!Object.hasOwn(fr,k))).toEqual([]);
  });
  it('Front FR4: the catalog covers exercises E04 and E05 (every key of their prefixes)',()=>{
-  expect(FR4_KEYS.length).toBe(649);
+  expect(FR4_KEYS.length).toBe(650);// 650: Front LAUNCH-1 adds pleiadesLab.goHotList
   expect(FR4_KEYS.filter(k=>!Object.hasOwn(fr,k))).toEqual([]);
  });
  it('Front FR5: the catalog covers the radio telescope (every key of its six prefixes)',()=>{

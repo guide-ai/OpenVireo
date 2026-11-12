@@ -148,7 +148,8 @@
 /* SkyField (src/OpenVireo.tsx) measures these labels again when the 520 px query below changes their size. */
 .sky-object text{fill:#a6d9c8;font-size:11px;paint-order:stroke;stroke:#061a29;stroke-width:4px;stroke-linejoin:round}
 
-.dome-cover{position:absolute;inset:0;background:linear-gradient(145deg,#102c3c,#061521);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center;color:#d9e8eb}
+/* Front LAUNCH-1: the cover's content sits in the upper part of the field, so its Open dome is on the first screen at 1440 × 900. */
+.dome-cover{position:absolute;inset:0;background:linear-gradient(145deg,#102c3c,#061521);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:clamp(24px,5%,44px) 30px 30px;text-align:center;color:#d9e8eb}
 .dome-cover h2{font-size:26px;font-weight:550;margin:6px 0 12px;color:#e6f0f2}
 .dome-cover p{max-width:340px;color:#a9c0ca;font-size:var(--ov-text-md);line-height:1.7}
 .dome-cover .primary-button{width:auto;gap:30px;background:#c9e5d5;color:#123527;border-color:#c9e5d5;padding:11px 20px}
@@ -186,6 +187,10 @@
 .pending-label{font-size:12px;line-height:1.6;color:var(--ov-warning);border-top:1px solid var(--ov-border);padding-top:12px;margin-top:16px}
 .observatory-feedback p{border-radius:var(--ov-radius-sm);background:var(--ov-success-soft);padding:10px 16px;color:var(--ov-success);font-size:var(--ov-text-sm)}
 .observatory-feedback [role=alert]{color:var(--ov-danger);background:var(--ov-danger-soft)}
+/* Front LAUNCH-1: the instrument cards (telescope profiles, camera, Multi-Spec, motion, site clock) follow the sky workspace. */
+.observatory-feedback+.card{margin-top:var(--ov-space-5)}
+/* Front LAUNCH-1: "Show tracking control" (src/observatory/TrackingShortcut.tsx) under a message that asks for tracking. */
+.tracking-shortcut{display:inline-block;justify-self:start;align-self:flex-start;margin-block-end:8px}
 .scope-note{margin-top:24px;padding:22px;border:1px solid var(--ov-border);background:var(--ov-surface-sunken);border-radius:var(--ov-radius-md)}
 .scope-note h2{font-size:var(--ov-text-lg);margin:0 0 8px}
 .scope-note p{font-size:var(--ov-text-sm);line-height:1.7;max-width:1100px;color:var(--ov-text-muted)}
@@ -218,8 +223,10 @@
 }
 @media(max-width:520px){
  .observatory-main{padding:0 12px 20px}
- .first-steps{grid-template-columns:1fr;gap:0;margin-bottom:15px}
- .first-steps li{padding:9px 0}
+ /* Front LAUNCH-1: on a phone the three steps share one row, so the sky field starts higher. */
+ .first-steps{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:15px}
+ .first-steps li{padding-block:8px 0;padding-inline:0 4px}
+ .first-steps strong{font-size:var(--ov-text-sm);line-height:1.35;overflow-wrap:anywhere}
  .first-steps span{display:none}
  .observatory-controls{grid-template-columns:1fr}
  .sky-toolbar,.sky-caption{padding:10px 14px}

@@ -2,7 +2,7 @@ import {useCallback,useEffect,useId,useLayoutEffect,useRef,useState} from 'react
 import {createPortal} from 'react-dom';
 import {TOUR,TOUR_SEEN_KEY} from '../help/tour';
 import {placeTourCard,spotBox,type Box,type Placement} from '../help/tourPlacement';
-import {uiDirection} from '../i18n';
+import {t,uiDirection} from '../i18n';
 import './site-tour.css';
 
 /** Whether this browser has finished or skipped the tour (a per-viewer convenience; unreadable storage counts as not seen). */
@@ -40,7 +40,9 @@ function clippedBox(el:Element,view:{width:number;height:number}):Box|null{
 /** The first-visit tour (Front Onboarding [W]): a modal window that steps through TOUR, outlining the part of the page each step
  * is about and dimming the rest. Escape or Skip ends it; finishing or skipping marks it seen, so it does not start again by
  * itself. Rendered at the document root, outside the header. */
-export default function SiteTour({onClose}:{onClose:()=>void}){
+/** Front LAUNCH-1: `onTracking`, when given, adds "Show tracking control" to the observatory step (its text asks to turn tracking
+ * on); it ends the tour like Skip and hands over to the shell, which opens the clock bar and focuses Turn tracking on/off. */
+export default function SiteTour({onClose,onTracking}:{onClose:()=>void;onTracking?:()=>void}){
  const dialog=useRef<HTMLDialogElement>(null),card=useRef<HTMLDivElement>(null),done=useRef(false),id=useId();
  const [index,setIndex]=useState(0),[box,setBox]=useState<Box|null>(null),[place,setPlace]=useState<Placement|null>(null);
  const steps=TOUR.steps,step=steps[index],last=index===steps.length-1;
@@ -68,9 +70,9 @@ export default function SiteTour({onClose}:{onClose:()=>void}){
  },[measure]);
  // Close the modal first, so the browser restores focus before the parent moves it to Help. Once only: closing also fires
  // the dialog's close event, which ends the tour too if the browser closed it without a cancel event (review 1 N7).
- const finish=()=>{if(done.current)return;done.current=true;markTourSeen();if(dialog.current?.open)dialog.current.close();onClose();};
+ const finish=(next:()=>void=onClose)=>{if(done.current)return;done.current=true;markTourSeen();if(dialog.current?.open)dialog.current.close();next();};
  return createPortal(<dialog ref={dialog} className="site-tour" aria-labelledby={`${id}-t`} aria-describedby={`${id}-d`} data-testid="site-tour" data-step={step.id}
-  onCancel={e=>{e.preventDefault();finish();}} onClose={finish}>
+  onCancel={e=>{e.preventDefault();finish();}} onClose={()=>finish()}>
   {box?<div className="site-tour-spot" data-testid="site-tour-spot" aria-hidden="true" style={{left:box.left,top:box.top,width:box.width,height:box.height}}/>
    :<div className="site-tour-dim" aria-hidden="true"/>}
   <div ref={card} className="site-tour-card" role="group" tabIndex={-1} aria-labelledby={`${id}-p ${id}-t`} aria-describedby={`${id}-d`} data-testid="site-tour-card"
@@ -78,10 +80,11 @@ export default function SiteTour({onClose}:{onClose:()=>void}){
    <p className="site-tour-progress" id={`${id}-p`}>{TOUR.progress(index+1,steps.length)}</p>
    <h2 id={`${id}-t`}>{step.title}</h2>
    <p id={`${id}-d`}>{step.text}</p>
+   {step.id==='observatory'&&onTracking&&<button type="button" className="text-button site-tour-tracking" data-testid="site-tour-tracking" onClick={()=>finish(onTracking)}>{t('runningClock.shortcut')}</button>}
    <div className="site-tour-actions">
-    {!last&&<button type="button" className="text-button site-tour-skip" data-testid="site-tour-skip" onClick={finish}>{TOUR.skip}</button>}
+    {!last&&<button type="button" className="text-button site-tour-skip" data-testid="site-tour-skip" onClick={()=>finish()}>{TOUR.skip}</button>}
     {index>0&&<button type="button" className="secondary-button" data-testid="site-tour-back" onClick={()=>setIndex(i=>i-1)}>{TOUR.back}</button>}
-    <button type="button" className="primary-button" data-testid="site-tour-next" onClick={last?finish:()=>setIndex(i=>i+1)}>{last?TOUR.done:TOUR.next}</button>
+    <button type="button" className="primary-button" data-testid="site-tour-next" onClick={last?()=>finish():()=>setIndex(i=>i+1)}>{last?TOUR.done:TOUR.next}</button>
    </div>
   </div>
  </dialog>,document.body);

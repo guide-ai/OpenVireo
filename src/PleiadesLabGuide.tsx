@@ -6,10 +6,11 @@ import {PLEIADES_HTL} from './core/pleiadesHotList';
 import './hubble-lab.css';
 import './pulsar-lab.css';
 import './pleiades-lab.css';
-/** 'observations' opens the own-pairs Data from Observations view (phase1 item1.9); it is a link, not a counted step. */
-export type PleiadesLabDestination='observatory'|'photometer'|'observations';
+/** 'observations' opens the own-pairs Data from Observations view (phase1 item1.9); it is a link, not a counted step. 'hotlist'
+ * (Front LAUNCH-1) opens the observatory with its Original hot lists open and Load exercise list (PLEIADES.HTL) focused. */
+export type PleiadesLabDestination='observatory'|'hotlist'|'photometer'|'observations';
 /** Where each step is carried out. */
-const STEP_DESTINATION:Readonly<Record<PleiadesLabStep,PleiadesLabDestination>>={list:'observatory',point:'observatory',activate:'photometer',
+const STEP_DESTINATION:Readonly<Record<PleiadesLabStep,PleiadesLabDestination>>={list:'hotlist',point:'observatory',activate:'photometer',
  measure:'photometer',record:'photometer',color:'photometer',sample:'photometer',distance:'photometer',save:'photometer'};
 
 /** WEB-PLEIADES-GUIDE-01: the Pleiades photometry (E04) guide, with the PulsarLabGuide layout. Every mark is recomputed from the
@@ -44,7 +45,7 @@ function PleiadesLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<H
     {step==='sample'&&<p className="lab-recovery" data-testid="pleiades-lab-fit-minimum">{t('pleiadesLab.step.sample.minimum')}</p>}
     {step==='distance'&&<p data-testid="pleiades-lab-distance-formula">{t('pleiadesLab.step.distance.formula')}</p>}
     {step==='distance'&&<p>{t('pleiadesLab.step.distance.optional')}</p>}
-    <button className="secondary-button" onClick={()=>go(STEP_DESTINATION[step])}>{t(STEP_DESTINATION[step]==='observatory'?'pleiadesLab.goObservatory':'pleiadesLab.goPhotometer')}</button>
+    <button className="secondary-button" onClick={()=>go(STEP_DESTINATION[step])}>{t(STEP_DESTINATION[step]==='hotlist'?'pleiadesLab.goHotList':STEP_DESTINATION[step]==='observatory'?'pleiadesLab.goObservatory':'pleiadesLab.goPhotometer')}</button>
    </li>)}
   </ol>
   <details className="lab-troubleshooting"><summary>{t('pleiadesLab.troubleshooting')}</summary><dl>{(['card','blocked','start','sky','budget']as const).map(key=><div key={key}>
