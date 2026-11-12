@@ -58,3 +58,22 @@
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 /camera/*
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+# Front LAUNCH-3: the plain-ASCII originals whose extensions Pages does not know (spectra and classification templates, list
+# files, the spectral-line list and the pulsar catalog) are labelled text/plain, so Cloudflare compresses them on the way
+# (application/octet-stream is not on its list, docs/DEPLOY.md § 12). Only the transfer encoding changes: the browser decodes
+# it before the loaders read the bytes and check their size and SHA-256. Each path gets one Content-Type rule (a second
+# would be joined to it with a comma); src/deployHeaders.test.ts checks that every file these rules reach is ASCII text.
+# Binary originals (orbit files, catalogs, GSC tiles, hot lists) stay application/octet-stream.
+/original/*.SP
+  Content-Type: text/plain; charset=utf-8
+/original/*.SPI
+  Content-Type: text/plain; charset=utf-8
+/original/*.LST
+  Content-Type: text/plain; charset=utf-8
+/original/*.LNL
+  Content-Type: text/plain; charset=utf-8
+/original/*.obs
+  Content-Type: text/plain; charset=utf-8
+/original/radio/Pulsars.dat
+  Content-Type: text/plain; charset=utf-8
