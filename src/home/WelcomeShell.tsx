@@ -21,6 +21,9 @@ const LABS:readonly LabSlug[]=['hubble','large-scale-structure','object-x','puls
 const ignore=()=>{};
 /** Rethrows the app's failed import inside RouteErrorBoundary, so the site's own notice (site updated, with Reload) is shown. */
 function Failed({error}:{error:unknown}):never{throw error;}
+/** Review 1, finding 6: a direct load of another address whose app could not be fetched shows that notice alone, in the page's
+ * main area, not the welcome (which would name the welcome as the current page). */
+export function AppFailed({error}:{error:unknown}){return <main className="observatory-main" data-testid="app-failed"><RouteErrorBoundary><Failed error={error}/></RouteErrorBoundary></main>;}
 
 function WelcomeShell({loading,failed,onNeed}:{loading:boolean;failed:Readonly<{error:unknown}>|null;onNeed:(intent:ShellIntent)=>void}){
  const about=useRef<HTMLDialogElement>(null),instructorItem=useRef<HTMLButtonElement>(null);
@@ -35,12 +38,14 @@ function WelcomeShell({loading,failed,onNeed}:{loading:boolean;failed:Readonly<{
   const save=()=>onNeed({kind:'save'});
   const pageBar=<PageBar view="home" inert={false} busy={false} notice="" error=""
    actions={<InvestigationActions busy={false} onSave={save} onRestore={file=>onNeed({kind:'restore',file})} onCancel={ignore}/>}
-   language={selectorShown(uiLanguage())?<LanguageSelectSlot onSave={save}/>:null}
+   // Review 1, finding 4: nothing is on screen to save before the app is loaded, so the reload dialog offers no Save here.
+   language={selectorShown(uiLanguage())?<LanguageSelectSlot/>:null}
    help={<HelpMenu kind="main" onSiteAbout={()=>about.current?.showModal()} onTour={()=>onNeed({kind:'tour'})}/>} cloud={null}/>;
   return {header,pageBar,openGuide,explore:()=>onNeed({kind:'navigate',route:'observatory'})};
  },[onNeed]);
  const status=failed?<RouteErrorBoundary><Failed error={failed.error}/></RouteErrorBoundary>
-  :loading?<p role="status" className="card observatory-note" data-testid="app-loading" style={{margin:'0 0 16px',padding:'10px 14px'}}>{t('home.loadingObservatory')}</p>:null;
+  // Review 1, finding 9: the live region exists from the first render, so a screen reader announces the line when it appears.
+  :<div role="status" data-testid="app-loading-region">{loading&&<p className="card observatory-note" data-testid="app-loading" style={{margin:'0 0 16px',padding:'10px 14px'}}>{t('home.loadingObservatory')}</p>}</div>;
  return <>{parts.header}{parts.pageBar}{languageFailed&&failureNotice('language-failure','language',languageFailed)}{areaTextFailed&&failureNotice('area-failure','area',uiLanguage())}
   <div data-testid="welcome-shell" aria-busy={loading||undefined}>{welcomeMain({openGuide:parts.openGuide,onExplore:parts.explore,status})}</div>
   <AboutDialog dialogRef={about}/></>;

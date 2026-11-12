@@ -120,3 +120,102 @@ test('while the app loads the welcome says so; if it cannot be loaded, the site-
  await expect(page.getByTestId('site-updated')).toBeVisible({timeout:30000});
  await expect(page.getByTestId('recovery-reload')).toBeVisible();await expect(welcomeH1(page)).toBeVisible();
 });
+
+// Front LAZY-OBS review 1 (docs/SEO.md, "Resolution").
+const hold=async(page:Page)=>{let release=()=>{};const held=new Promise<void>(r=>{release=r;});
+ await page.route(/\/src\/OpenVireo\.tsx/,async route=>{await held;await route.continue();});return release;};
+
+test('review finding 3: Tools › Results Editors from the welcome shell still open and focus their editor',async({page})=>{
+ test.setTimeout(90000);
+ await settledWelcome(page);
+ await page.getByTestId('results-observational').click();
+ await expect(page).toHaveURL(/#spectrum$/,{timeout:30000});
+ await expect(page.locator('.own-results-card')).toHaveAttribute('open','');await expect(page.locator('.own-results-card>summary')).toBeFocused();
+ await page.goto('about:blank');await settledWelcome(page);
+ await page.getByTestId('results-pulsar').click();
+ await expect(page).toHaveURL(/#pulsar-analysis$/,{timeout:30000});
+ const pulsar=page.getByTestId('saved-rows-disclosure');
+ await expect(pulsar).toHaveAttribute('open','',{timeout:30000});await expect(pulsar.locator('summary').first()).toBeFocused();
+});
+
+test('review finding 4: the language dialog on the welcome shell offers no Save (nothing to save yet); after the app it does',async({page})=>{
+ await settledWelcome(page);
+ await page.getByTestId('language-select').selectOption('es-419');
+ const dialog=page.getByTestId('language-confirm');await expect(dialog).toBeVisible();
+ await expect(dialog.getByTestId('language-save')).toHaveCount(0);await expect(dialog.getByTestId('language-change')).toBeVisible();
+ await expect(page.getByTestId('welcome-shell')).toHaveCount(1);
+ await dialog.getByTestId('language-cancel').click();await expect(dialog).toHaveCount(0);
+ await welcome(page).getByRole('button',{name:en['home.explore'],exact:true}).click();await expect(skyH1(page)).toBeVisible({timeout:30000});
+ await page.getByTestId('language-select').selectOption('es-419');
+ await expect(page.getByTestId('language-confirm').getByTestId('language-save')).toBeVisible();
+});
+
+test('review finding 5: after a failed fetch of the app, the next click tries again',async({page})=>{
+ test.setTimeout(90000);
+ let fail=true;
+ await page.route(/\/src\/OpenVireo\.tsx/,route=>fail?route.abort('internetdisconnected'):route.continue());
+ await settledWelcome(page);
+ await welcome(page).getByRole('button',{name:en['home.explore'],exact:true}).click();
+ await expect(page.getByTestId('site-updated')).toBeVisible({timeout:30000});
+ fail=false;
+ await welcome(page).getByRole('button',{name:en['home.explore'],exact:true}).click();
+ await expect(skyH1(page)).toBeFocused({timeout:30000});await expect(page.getByTestId('site-updated')).toHaveCount(0);
+});
+
+test('review finding 6: a direct load whose app cannot be fetched shows the notice, not the welcome',async({page})=>{
+ await page.route(/\/src\/OpenVireo\.tsx/,route=>route.abort('failed'));
+ await page.goto('/#observatory');
+ await expect(page.getByTestId('site-updated')).toBeVisible({timeout:30000});
+ await expect(page.getByTestId('app-failed')).toBeVisible();
+ await expect(welcomeH1(page)).toHaveCount(0);await expect(page.locator('[aria-current="page"]')).toHaveCount(0);
+});
+
+test('review finding 8: while the app loads, intents run in order; an address reached last wins; a chosen Restore is kept',async({page})=>{
+ test.setTimeout(120000);
+ // Explore, then a lab card: the observatory, then the Pleiades guide over it.
+ let release=await hold(page);await settledWelcome(page);
+ await welcome(page).getByRole('button',{name:en['home.explore'],exact:true}).click();
+ await welcome(page).getByRole('button',{name:en['home.pleiades'],exact:true}).click();
+ release();
+ await expect(page.getByTestId('pleiades-lab-dialog')).toBeVisible({timeout:30000});await expect(page).toHaveURL(/#observatory$/);
+ // Explore, then an address typed during the load: the address wins.
+ await page.unrouteAll();await page.goto('about:blank');release=await hold(page);await settledWelcome(page);
+ await welcome(page).getByRole('button',{name:en['home.explore'],exact:true}).click();
+ await page.evaluate(()=>{location.hash='#pulsar-analysis';});
+ release();
+ await expect(page.locator('[data-route="pulsar-analysis"][aria-current="page"]').first()).toBeVisible({timeout:30000});
+ await expect(page).toHaveURL(/#pulsar-analysis$/);
+ // A Restore with its chosen file, then a click: the restore is performed.
+ await page.unrouteAll();await page.goto('about:blank');await settledWelcome(page);
+ const download=page.waitForEvent('download');await page.getByTestId('investigation-save').click();const saved=await (await download).path();
+ await page.goto('about:blank');release=await hold(page);await settledWelcome(page);
+ await page.getByTestId('investigation-more').click();
+ const chooser=page.waitForEvent('filechooser');await page.getByTestId('investigation-restore').click();await (await chooser).setFiles(saved!);
+ await welcome(page).getByRole('button',{name:en['home.explore'],exact:true}).click();
+ release();
+ await expect(page.getByText(/^Investigation restored\./).first()).toBeVisible({timeout:30000});
+});
+
+test('review finding 7: on a phone, Instructor mode from the Tools menu returns the focus to its item after Cancel',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await settledWelcome(page);
+ await page.locator('.portal-header .tools-toggle').click();
+ await page.getByTestId('instructor-mode-open').click();
+ const confirm=page.getByTestId('instructor-mode-confirm');await expect(confirm).toBeVisible({timeout:30000});
+ await confirm.getByTestId('instructor-mode-confirm-cancel').click();await expect(confirm).toHaveCount(0);
+ await expect(page.getByTestId('instructor-mode-open')).toBeFocused();
+ // A guide of the phone menu: Escape closes it and the focus goes back to its button, as from the app's own welcome.
+ await page.goto('about:blank');await settledWelcome(page);
+ await page.locator('.portal-header .tools-toggle').click();await page.getByTestId('pleiades-lab-open').click();
+ await expect(page.getByTestId('pleiades-lab-dialog')).toBeVisible({timeout:30000});
+ await page.keyboard.press('Escape');await expect(page.getByTestId('pleiades-lab-dialog')).toBeHidden();
+ await expect(page.getByTestId('pleiades-lab-open')).toBeFocused();
+});
+
+test('review finding 9: the loading line is in a live region that exists before it appears',async({page})=>{
+ const release=await hold(page);await settledWelcome(page);
+ await expect(page.getByTestId('app-loading-region')).toHaveAttribute('role','status');await expect(page.getByTestId('app-loading')).toHaveCount(0);
+ await welcome(page).getByRole('button',{name:en['home.explore'],exact:true}).click();
+ await expect(page.getByTestId('app-loading-region').getByTestId('app-loading')).toHaveText(en['home.loadingObservatory']);
+ release();await expect(skyH1(page)).toBeVisible({timeout:30000});
+});

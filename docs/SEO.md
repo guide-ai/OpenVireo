@@ -400,7 +400,7 @@ time (the shared hot list); everything else was modules the entry imported stati
   Forward, an edited hash) to another page.
 - **The one gate**: the first intent loads the app (`import('./OpenVireo')`, once per page). Until it is in, the shell stays
   mounted, marked `aria-busy`, with a status line "Loading the observatory…" (`home.loadingObservatory`, new in en, es-419 and
-  pt-BR; French has no `home.*` keys yet). The app then mounts in place of the shell and performs the intent once, through the same
+  pt-BR, and French since the merge with FR6's complete French catalog: «Chargement de l’observatoire…»). The app then mounts in place of the shell and performs the intent once, through the same
   handler its own control has (`stable.navigate`, `openGuide[lab]`, `stable.saveProject`, `stable.restoreProject(file)`,
   `stable.askInstructor`, the tour, or the address), so guides that go on to act (Pleiades: the observatory, its hot list and a
   pointing; Hubble's analyzer; the cluster guide's wait for its button), the route-change focus (the observatory's `h1`), the
@@ -412,8 +412,8 @@ time (the shared hot list); everything else was modules the entry imported stati
 Behaviour that changed: on the welcome, the first click that needs the app waits for it (about 4.5 s on the throttled network
 above, a few hundred ms on broadband; it was instantaneous because everything had been loaded upfront), with the loading line
 shown. Nothing is prefetched on idle, on purpose (mobile data). After that first load everything is as before; the welcome after
-the app is in is the app's own (no shell, no loading line). Render counts: each load counts 3 more components (`App` ×2 among them)
-(classificationLoad 173 → 176, observatoryLoad 102 → 105, within their budgets; docs/RENDER-BUDGET.md).
+the app is in is the app's own (no shell, no loading line). Render counts: each load counts 2–3 more components (`App` ×2 among them)
+(classificationLoad 173 → 175–176, observatoryLoad 102 → 104–105, varying by one between runs, within their budgets; docs/RENDER-BUDGET.md).
 
 ## Tests
 
@@ -438,3 +438,119 @@ the app is in is the app's own (no shell, no loading line). Render counts: each 
 ## Review
 
 Pending: independent review by a separate subagent (Claude Opus, high effort) that did not write the code.
+
+### Independent review 1 (raw findings)
+
+Reviewer: a separate subagent (Claude Opus 5.5, high effort) that did not write the code, over `git diff f404879..54d0631`. Checks
+run: `npx vitest run src/home/appGate.test.ts src/i18n/coverage.test.ts` (7 pass); `npm run build` (pass, with the cloud-free,
+i18n-dist and deploy-limit checks); `tests/lazy-observatory.spec.ts`, `tests/home.spec.ts` and `tests/render-budget.spec.ts` on the
+dev server, Chromium, 2 workers (25 pass); throwaway Playwright probes against `vite preview` of the build, with the CSP of
+`public/_headers` added to the document response (no CSP violation or console error on `/` or `/#observatory`), in Chromium and,
+for the direct load and Explore, Firefox (WebKit could not start here: missing system libraries). `npm run test:pages` was not run
+(no pinned wrangler in this worktree). Confirmed by running unless marked "reading".
+
+Nothing found ships a wrong numeric, a lost investigation or a CSP/hosting change. Two items block the merge itself, not the code.
+
+1. **High (merge, reading): the branch breaks `src/i18n/fr/fr.test.ts` on current main.** The base f404879 is behind origin/main,
+   where FR6 completed the French catalog: `fr.test.ts` asserts 26 `home.*` keys all present in French (`home.length` toBe 26) and
+   that every `en.json` key has its French (FR6 test). This front adds `home.loadingObservatory` to `en.json` only, so after the
+   merge both assertions fail (27 ≠ 26; missing `home.loadingObservatory`) and CI, hence the deploy, stops. docs/SEO.md's "French
+   has no `home.*` keys yet" is stale for the same reason. Needs the French string (vous-form, e.g. «Chargement de l’observatoire…»
+   with the fr typography rules) and the count 26 → 27.
+2. **High (merge, `git merge-tree` + reading): `src/OpenVireo.tsx` conflicts with RT9 on main, and the naive resolution silently
+   drops RT9.** RT9 changed the very `failureNotice` this front moved into `src/components/AppChrome.tsx`: on main it is
+   `failureNotice(testId,kind,tag)` and gives each half `dir={directionWithin(…, uiDirection())}`. The moved copy keeps the old
+   signature and no `dir`, and `src/home/WelcomeShell.tsx:44` calls it the old way. Taking this branch's side of the conflict loses
+   RT9's `dir` in both the app and the shell, and no test on main checks that `dir` (grep of tests and `*.test.ts`), so nothing would
+   catch it. Port RT9's version into AppChrome.tsx (with its `uiDirection`/`directionWithin` imports) and update both call sites.
+3. **Medium (confirmed): Tools › Results Editors from the shell lose their reveal.** `ResultsEditorsNav` (src/polish/ResultsEditorsNav.tsx:19)
+   calls `navigate(route)` and then `reveal(selector)` two frames later. On the shell `navigate` only records the intent
+   (WelcomeShell.tsx:30), the reveal runs against the shell, finds nothing and gives up; the app then only navigates. Observational
+   Results from the shell ends on `#spectrum` with `.own-results-card` closed and the focus on the h1; from the app's welcome the card
+   is open and its summary focused. Pulsar Results: `saved-rows-disclosure` closed, focus on the h1. docs/SEO.md lists the results
+   editors among the intents that "behave exactly as" in the app. The ShellIntent needs the reveal (or the reveal must wait for its
+   element).
+4. **Low–medium (confirmed): the language dialog's Save from the shell closes the dialog and loses the focus.** Choosing another
+   language on the shell opens LanguageSelect's reload dialog; its Save (`onSave`, WelcomeShell.tsx:38) is a `save` intent, so the
+   shell (and with it the dialog) unmounts; the download happens but the dialog is gone, the visitor has to choose the language again,
+   and the focus is on `<body>` (`language-save` has no counterpart in the app). In the app the dialog stays open for Change language.
+   There is nothing on the shell to save, so the shell could keep the dialog (or hide Save there).
+5. **Low (confirmed): offline or a flaky connection is reported as "A new version of OpenVireo was published", with no retry.** With the
+   network off after the welcome loaded, Explore shows the site-updated notice. `loadApp` keeps the rejected import for the page's
+   life (App.tsx:13), so a second click (or Save, any guide) silently does nothing more (hash stays empty, same notice). The
+   message predates this front for route chunks, but the front makes the first click on the welcome the common place to meet it
+   (mobile data, and an old welcome tab after any push to `main`, which CI deploys several times a day). The shell has no state to
+   lose, so a later click could retry, or the text could name both causes.
+6. **Low (confirmed): a direct load of another address whose app chunk fails shows the welcome.** `/#observatory` with the
+   `OpenVireo` chunk answering 404: the shell renders with the welcome's h1, the sidebar marks Welcome as the current page
+   (`aria-current` on `home`) while the address is `#observatory`, plus the notice. Better than a blank page, but the page claims
+   to be the welcome.
+7. **Low (confirmed): on a phone, controls in the open Tools menu lose their focus return.** The swap remounts PortalHeader with the
+   menu closed, so `findFocus` (App.tsx:27, needs client rects) cannot find the clicked control. Instructor mode… from the phone
+   menu: the app closes the menu, the dialog opens, and after Cancel the focus is on `<body>`; from the app's own welcome the menu
+   stays open and the focus returns to the Instructor mode item. The Guides buttons there (no `data-route`, so the app does not close
+   the menu for them) should behave the same way (reading).
+8. **Low (confirmed, design note): only the last intent survives.** Explore and then a Pleiades card while the app is held: only the
+   Pleiades guide opens, on the welcome (`intent.current` is overwritten, App.tsx:34). After a navigate intent, an address edited
+   during the load is overridden (Explore, then `#pulsar-analysis` typed while loading → `#observatory`). A Restore whose file was
+   chosen is dropped by any later click before the app arrives. Reasonable, but undocumented.
+9. **Nit (reading): the loading line is a `role="status"` element mounted together with its text** (WelcomeShell.tsx:43); some
+   screen readers announce only changes to a live region that already exists. `aria-busy` is set correctly and cleared on failure.
+10. **Nit (confirmed): render counts.** This review's run measured classificationLoad 175 and observatoryLoad 104 (doc: 176, 105);
+    both within budget. The +3 explanation fits; the exact numbers vary by one between runs.
+
+Checked and fine: the welcome makes 16 same-origin requests with no `OpenVireo`/`appEntry`; `/#observatory` fetches `appEntry` and the
+`OpenVireo` chunk once each (no double evaluation: `appEntry` only imports the shared boot chunk and `OpenVireo`), and the built
+entry carries the hashed absolute `/assets/appEntry-<hash>.js`; the dev path is the source module; the cloud config merges the
+base plugins. The shell's sidebar, page bar and welcome `main` are identical to the app's welcome (outerHTML with React ids
+normalised) in English and `?lang=es-419`. A Save from the shell equals a Save from the app's welcome (3216 bytes, identical after
+timestamps). Restore, the Instructor confirmation (focus back on the item after Cancel at desktop width), Help › Tour, the seven
+guide openers (the cluster one through `openGuide['cluster-hr']`, the same `openClusterGuide` as its menu button), `#lab=`, Back to
+the welcome while loading, and the first-visit tour (scheduled only when the app reaches the observatory; home.spec passes) behave
+as before. StrictMode's second effect run cannot replay an intent (the ref is cleared first). Demonstration Mode and the cloud
+build start the app at once (unit test; reading).
+
+### Resolution
+
+By the implementer (Claude Opus 5.5, medium effort), after merging origin/main into the branch. Each finding was checked against
+the code and confirmed before the fix.
+
+1. **French (fixed in the merge commit).** `home.loadingObservatory` is added to `src/i18n/fr/fr.json` (add-only, «Chargement de
+   l’observatoire…», the ellipsis as in the other `…loading` entries), and `src/i18n/fr/fr.test.ts` counts 27 `home.*` keys. The
+   stale "French has no `home.*` keys yet" above is corrected.
+2. **RT9 (fixed in the merge commit).** RT9's `failureNotice(testId,kind,tag)`, with `dir={directionWithin(…,uiDirection())}` on
+   each half, now lives in `src/components/AppChrome.tsx`. The app (main's call sites, unchanged) and `WelcomeShell.tsx` call that
+   version; `OpenVireo.tsx` no longer has its own copy.
+3. **Results Editors.** `reveal` in `src/polish/ResultsEditorsNav.tsx` no longer gives up when its disclosure is missing after two
+   frames. While the welcome shell is up, or when the route's part is not mounted yet, it waits (MutationObserver) until the
+   disclosure is shown, then opens it and focuses its summary two frames later as before. A newer reveal or 30 s cancel the wait.
+   From the app, with the disclosure already there, nothing changed.
+4. **Language dialog.** `LanguageSelect`'s `onSave` is optional. The shell passes none, so its reload dialog shows neither Save nor
+   the save note: there is nothing on screen to save before the app is loaded, and the dialog never unmounts under the visitor. The
+   app's dialog is unchanged (Save, Change and reload, Cancel).
+5. **Retry.** `loadApp` forgets a rejected import, and a click on the shell after a failure clears the notice and fetches again
+   (`attempt` re-runs the load effect). The notice's wording, which predates this front, is unchanged.
+6. **Direct load failure.** When the first load of another address cannot fetch the app, `App` renders `AppFailed`: the
+   site-updated notice in the page's `main`, with no sidebar, no welcome `h1` and nothing marked as the current page.
+7. **Phone Tools menu.** When the clicked control was in the open Tools menu and is not a page button, the app opens its menu again
+   one frame after mounting (after the header's own mount effects, StrictMode's second run included, have closed it). It then
+   focuses the control and only then performs the intents. Instructor mode… returns the focus to its item after Cancel, and a guide
+   closed with Escape returns it to its button. Page buttons still close the menu, as in the app.
+8. **Intents during the load.** Intents are queued (`queueIntent` in `src/home/appGate.ts`) and performed in order:
+   - an address change (Back, Forward, an edited hash, also while the app is loading) drops the page changes queued before it, so
+     the address reached last is the page shown;
+   - a Restore with its chosen file is never dropped: a later Restore replaces it, and nothing queued after it is kept (in the app
+     every control is inert while a restore runs);
+   - everything else is appended.
+
+   The app now registers a performer in its mount effect, and `App` calls it from its own effect, which runs after its children's,
+   once the focus is back. Explore followed by a lab card gives the observatory with the guide over it.
+9. **Live region.** The shell's `role="status"` element (`app-loading-region`) is mounted empty from the first render, and the
+   loading line appears inside it.
+10. **Render counts.** The docs give the measured counts as ranges: classificationLoad 175–176, observatoryLoad 104–105 (this run:
+    175 and 104). The budgets are unchanged.
+
+New coverage: `src/home/appGate.test.ts` (the queue rules) and seven tests in `tests/lazy-observatory.spec.ts` for findings 3–9
+(Results Editors from the shell, no Save in the shell's language dialog, retry after a failed fetch, a failed direct load,
+intents in order with an address winning and a kept Restore, the phone menu's Instructor mode and guide focus, the live region).
+

@@ -119,7 +119,7 @@ import {HelpMenu as MainHelpMenu} from './help/HelpMenus';
 import {LazyBoundary,RecoveryContext} from './components/LazyBoundary';// Front REL1 review 1 M1
 import AboutDialog from './polish/AboutDialog';// Front P
 import {failureNotice,LanguageSelectSlot,siteHeader,VireoOriginalsSlot,welcomeMain} from './components/AppChrome';// Front LAZY-OBS
-import type {ShellIntent} from './home/appGate';
+import type {ShellHandoff} from './home/appGate';
 import {FIRST_VISIT_TOUR_DELAY,firstVisitTourDue} from './home/firstVisit';// Front HOME: the welcome on the observatory's first screen
 import ClusterGuideNavButton,{openClusterGuide} from './polish/ClusterGuideNavButton';// Front P
 import ResearchNotes from './components/ResearchNotes';
@@ -257,7 +257,7 @@ function M31NoticeView(){
   return <span role="status" className="sky-m31-notice" data-testid="sky-m31-notice"><strong>{vireo(M31_NOTICE.caption)}</strong> <span style={{whiteSpace:'pre-line'}}>{vireo(M31_NOTICE.text)}</span> <small>{t('sky.m31Adaptation')}</small></span>;
 }
 
-export default function OpenVireo({intent}:{intent?:RefObject<ShellIntent|null>}={}){
+export default function OpenVireo({handoff}:{handoff?:RefObject<ShellHandoff>}={}){
   const route=()=>['','#','#home'].includes(location.hash)?'home' as const:location.hash==='#variable-stars'?'variable-stars' as const:location.hash==='#object-x'?'object-x' as const:location.hash==='#lss-survey'?'lss-survey' as const:location.hash==='#lss-wedge'?'lss-wedge' as const:location.hash==='#pulsar-analysis'?'pulsar-analysis' as const:location.hash==='#radio-control'?'radio-control' as const:location.hash==='#images'?'images' as const:location.hash==='#cluster-database'?'cluster-database' as const:location.hash==='#photometer'?'photometer' as const:location.hash==='#classification'?'classification' as const:location.hash==='#galaxy-exposure'?'galaxy-exposure' as const:location.hash==='#star-exposure'?'star-exposure' as const:location.hash==='#sky-exposure'?'sky-exposure' as const:location.hash==='#spectrometer'?'spectrometer' as const:['#spectrum','#measurement-log'].includes(location.hash)?'spectrum' as const:'observatory' as const;
   const [view,setView]=useState<Route>(route),[open,setOpen]=useState(false),[mode,setMode]=useState<FieldMode>('finder'),[hasPointed,setHasPointed]=useState(false),[benchPointing,setBenchPointing]=useState<Pointing|null>(null);
   const [selected,setSelected]=useState<SkyObject>(targets.initial),[pointing,setPointing]=useState<Pointing>(targets.initial);
@@ -982,19 +982,21 @@ export default function OpenVireo({intent}:{intent?:RefObject<ShellIntent|null>}
    history.replaceState(history.state,'',location.pathname+location.search+'#observatory');
    openGuide[lab]();
   },[]);
-  // Front LAZY-OBS: the action asked for on the welcome shell (src/home/WelcomeShell.tsx) before this app was loaded, performed once
-  // by the same handler its control has here. The ref is emptied first, so StrictMode's second effect run does nothing.
+  // Front LAZY-OBS: what was asked for on the welcome shell (src/home/WelcomeShell.tsx) before this app was loaded is performed
+  // once, in order (src/home/appGate.ts queueIntent), by the same handlers its controls have here. This mount effect registers
+  // the performer; src/App.tsx calls it from its own effect (a parent's runs after its children's), after putting the focus back
+  // on the clicked control, so a dialog opened here returns the focus there when it closes.
   useEffect(()=>{
-   const asked=intent?.current;if(!asked)return;intent.current=null;
-   switch(asked.kind){
-    case 'navigate':stable.navigate(asked.route);break;
-    case 'guide':openGuide[asked.lab]();break;
+   if(!handoff)return;
+   handoff.current.perform=asked=>{for(const one of asked)switch(one.kind){
+    case 'navigate':stable.navigate(one.route);break;
+    case 'guide':openGuide[one.lab]();break;
     case 'save':stable.saveProject();break;
-    case 'restore':stable.restoreProject(asked.file);break;
+    case 'restore':stable.restoreProject(one.file);break;
     case 'instructor':stable.askInstructor();break;
     case 'tour':setTour(true);break;
-    case 'address':if(route()!==view)setView(route());break;
-   }
+    case 'address':setView(route());break;
+   }};
   },[]);
   // The slots and the Help menu are built once, so a route change or a keystroke does not render them again.
   const originalsSlot=useMemo(()=>selectorShown(uiLanguage())?<VireoOriginalsSlot/>:undefined,[]);

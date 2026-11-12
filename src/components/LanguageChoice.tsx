@@ -50,7 +50,7 @@ export function dialogLanguageName(text:string,tag:string,page:TextDirection,reg
  * «Idioma / Language» and the autonyms, the same in every language by design) is shell text checked by language-selector.spec.ts
  * and shell.spec.ts, so it carries `data-i18n-shell`, which the translation walks of tests/i18n skip as they skip the sidebar;
  * the reload dialog is outside the label and is still walked. */
-export function LanguageSelect({onSave,registry=LANGUAGES}:{onSave:()=>void;/** tests only (Front RT9): a registry with a right-to-left language */registry?:readonly LanguageEntry[]}){
+export function LanguageSelect({onSave,registry=LANGUAGES}:{/** Save investigation; absent on the welcome shell before the app is loaded (Front LAZY-OBS), where nothing is on screen to save: the dialog then shows neither Save nor its note. */onSave?:()=>void;/** tests only (Front RT9): a registry with a right-to-left language */registry?:readonly LanguageEntry[]}){
  const current=uiLanguage(),options=selectorLanguages(current,registry),preview=current!=='en'&&!isReleased(current,registry),page=uiDirection();
  const [asked,setAsked]=useState<string|null>(null),name=useId(),dialog=useRef<HTMLDialogElement>(null),cancel=useRef<HTMLButtonElement>(null);
  const [pending,setPendingState]=useState<string|null>(null),pendingRef=useRef<string|null>(null),steppedAt=useRef(-Infinity),select=useRef<HTMLSelectElement>(null);
@@ -93,12 +93,12 @@ export function LanguageSelect({onSave,registry=LANGUAGES}:{onSave:()=>void;/** 
     <p>{M.reload(label(asked))}</p>
     <p>{M.lost}</p>
     <p>{M.kept}</p>
-    <p className="observatory-note">{M.saveNote}</p>
+    {onSave&&<p className="observatory-note">{M.saveNote}</p>}
     {preview&&<p className="observatory-note" data-testid="language-preview">{M.preview}</p>}
     {!preview&&!canStore&&<p className="observatory-note" data-testid="language-not-remembered">{M.notRemembered}</p>}
    </div>
    <div className="ob-actions">
-    <button type="button" className="secondary-button" data-testid="language-save" onClick={onSave}>{M.save}</button>
+    {onSave&&<button type="button" className="secondary-button" data-testid="language-save" onClick={onSave}>{M.save}</button>}
     <button type="button" className="primary-button" data-testid="language-change" onClick={change}>{M.change}</button>
     <button type="button" ref={cancel} className="secondary-button" data-testid="language-cancel" onClick={close}>{M.cancel}</button>
    </div>

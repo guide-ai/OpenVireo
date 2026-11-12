@@ -62,8 +62,8 @@ Counts are as of the commit that set them; the Front Perf commits lower them ste
   (re-measured against main 2dbb118: 97 → 102, the two new components and the split slot) and pinned the bar from 600 px up
   (CSS `position:sticky` and a ResizeObserver that writes the bar's height to a CSS variable, outside React): no count changed.
 - Front LAZY-OBS (docs/SEO.md): the entry's `App` now loads `OpenVireo.tsx` as a chunk of its own and renders it, so each cold
-  load counts 3 more components (`App` ×2 among them, around the app): classificationLoad 173 → 176 and
-  observatoryLoad 102 → 105, within their budgets (178, 110), which are unchanged. openDome 30, keystrokes 34, analyzerKey 8
+  load counts 2–3 more components (`App` ×2 among them, around the app; the counts vary by one between runs):
+  classificationLoad 173 → 175–176 and observatoryLoad 102 → 104–105, within their budgets (178, 110), which are unchanged. openDome 30, keystrokes 34, analyzerKey 8
   and route changes 52 are unchanged. The table above keeps the counts of the commit that set them.
 
 ## Changing a budget

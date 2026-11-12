@@ -17,6 +17,9 @@ export type ShellIntent=
  /** A hash change (Back, Forward, an edited address) to a page other than the welcome: the app reads the address itself. */
  |Readonly<{kind:'address'}>;
 
+/** What the shell hands the app (src/App.tsx): the queued intents, and the app's performer, set by its mount effect. */
+export type ShellHandoff={queue:ShellIntent[];perform?:(queue:readonly ShellIntent[])=>void};
+
 /** The welcome's own addresses (the app's route() reads them as `home`). */
 export const isWelcomeHash=(hash:string)=>hash===''||hash==='#'||hash==='#home';
 
@@ -25,4 +28,18 @@ export const isWelcomeHash=(hash:string)=>hash===''||hash==='#'||hash==='#home';
  * optional cloud build (its sign-in link and account entry belong to the app). Everything else loads the app at once. */
 export function shellFirst(load:Readonly<{hash:string;demonstrationMode:boolean;cloud:boolean}>):boolean{
  return isWelcomeHash(load.hash)&&!load.demonstrationMode&&!load.cloud;
+}
+
+/** The queue of what was asked while the app loads (review 1, finding 8), performed in order once it is in:
+ * - an address change (Back, Forward, an edited hash) drops the page changes queued before it: the address the visitor
+ *   reached last is the page the app shows;
+ * - a Restore with its chosen file is never dropped: a later Restore replaces it, and nothing queued after it is kept (in the
+ *   app every control is inert while a restore runs, so nothing can follow it there either);
+ * - everything else is appended. */
+export function queueIntent(queue:readonly ShellIntent[],next:ShellIntent):ShellIntent[]{
+ const restore=queue.find(i=>i.kind==='restore');
+ if(next.kind==='restore')return [...queue.filter(i=>i.kind!=='restore'),next];
+ if(restore)return [...queue];
+ if(next.kind==='address')return [...queue.filter(i=>i.kind!=='navigate'&&i.kind!=='address'),next];
+ return [...queue,next];
 }

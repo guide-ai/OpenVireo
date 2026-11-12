@@ -31,7 +31,7 @@ function useLanguageChoice():LanguageChoiceModule|null{
  useEffect(()=>{let live=true;(languageChoiceModule??=import('./LanguageChoice')).then(m=>{if(live)setLoaded(m);},()=>{languageChoiceModule=null;});return ()=>{live=false;};},[]);
  return loaded;
 }
-export function LanguageSelectSlot({onSave}:{onSave:()=>void}){const m=useLanguageChoice();return m?<m.LanguageSelect onSave={onSave}/>:null;}
+export function LanguageSelectSlot({onSave}:{/** Absent on the welcome shell (nothing to save yet): the dialog then offers no Save. */onSave?:()=>void}){const m=useLanguageChoice();return m?<m.LanguageSelect onSave={onSave}/>:null;}
 export function VireoOriginalsSlot(){const m=useLanguageChoice();return m?<m.VireoOriginalsOption/>:null;}
 /** The bilingual notices of a language (ES1 review 1, C1) or a route area's text (Front ES-SPLIT) that could not be loaded, in
  * English and in that language (Front SC8: src/i18n/languages.ts failureNotice). Front RT9: each half carries `dir` when its
