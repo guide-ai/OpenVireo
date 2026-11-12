@@ -1,0 +1,20 @@
+# Front LAUNCH-3 [W]: language addresses people type that are not the site's own, sent with a 301 to the page that exists
+# (docs/DEPLOY.md § 12). Cloudflare Pages applies this file from the output directory before any asset; it is not served.
+# Pages keeps the request's query string when the destination has none. src/seo/redirects.test.ts checks every line against
+# the language table (src/seo/languages.ts); tests/release/pages-smoke.pages.ts checks the answers under `wrangler pages dev`.
+# A redirect wins over an asset at the same path, so no rule may name a path the build emits.
+#
+# Portuguese: /pt and /pt/… go to the Brazilian Portuguese pages under /pt-br/, keeping the rest of the path. No rule for
+# /pt-BR: a source that differs from /pt-br/ only in case would loop if a host ever matched paths without regard to case.
+/pt /pt-br/ 301
+/pt/* /pt-br/:splat 301
+# English lives at the root: /en, /en/ and /en/labs/… drop the prefix. Never `/en/* /:splat`: /en//evil.example would make the
+# destination //evil.example, which Pages resolves as another host and answers with an open redirect (Review LAUNCH-3). Every
+# destination keeps a fixed first segment of this site before :splat.
+/en / 301
+/en/ / 301
+/en/labs /labs/ 301
+/en/labs/* /labs/:splat 301
+# Spanish: the UI tag es-419 (as in ?lang=es-419) goes to the Spanish pages under /es/.
+/es-419 /es/ 301
+/es-419/* /es/:splat 301
