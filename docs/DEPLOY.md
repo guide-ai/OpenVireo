@@ -20,7 +20,8 @@ Desde el 8 de noviembre de 2026 (decisión tuya, `AGENTS.md`), cada push a `main
   - sus SHA-256 y el del archivo completo están en `docs/LOCAL-RESOURCES.json` (`assembled[]`);
   - el navegador comprueba cada trozo y el archivo completo antes de usarlo.
 - `dist/_headers` (desde `public/_headers`) fija las cabeceras de seguridad (CSP, `nosniff`, `Referrer-Policy`, `Permissions-Policy`, `frame-ancestors 'none'`) y la caché. Pages lo aplica por sí solo.
-- El enrutado usa `#` (por ejemplo `/#object-x`), así que no hace falta ninguna regla de reescritura. `dist/404.html` hace que una dirección inexistente responda 404, en lugar de la página principal que Pages sirve por defecto.
+- El enrutado usa `#` (por ejemplo `/#object-x`), así que no hace falta ninguna regla de reescritura. `dist/404.html` hace que una dirección inexistente responda 404, en lugar de la página principal que Pages sirve por defecto. Desde LAUNCH-3 la genera `src/seo/pages.ts` (`notFoundPage`) con el aspecto de las páginas de búsqueda, en los cuatro idiomas.
+- `dist/_redirects` (desde `public/_redirects`) envía con un 301 `/pt`, `/en` y `/es-419` a las páginas que existen (§ 12).
 
 ## 1. Requisitos (una sola vez)
 
@@ -238,3 +239,101 @@ El flujo necesita dos secretos. Se guardan en el **entorno** `production` de Git
 - **Pull requests:** corren todas las pruebas pero nunca despliegan. Los de forks no tienen acceso a los secretos.
 - **Cambiar el token:** crea uno nuevo (11.1), sustituye el secreto con `gh secret set CLOUDFLARE_API_TOKEN --env production -R guide-ai/OpenVireo` y revoca el anterior en Cloudflare.
 - **Qué no corre en CI:** las pruebas del backend opcional (`worker/`, `playwright.cloud.config.ts`), porque ese backend no se despliega.
+
+## 12. Direcciones de idioma, compresión de los datos y página 404 (Front LAUNCH-3, 12 de noviembre de 2026)
+
+### 12.1 Redirecciones de idioma
+
+`public/_redirects` responde con un **301** a las direcciones de idioma que la gente escribe y que el sitio no tiene. Conserva el resto de la ruta y los parámetros:
+
+| Origen | Destino |
+| --- | --- |
+| `/pt`, `/pt/…` | `/pt-br/`, `/pt-br/…` |
+| `/en`, `/en/…` | `/`, `/…` |
+| `/es-419`, `/es-419/…` | `/es/`, `/es/…` |
+
+- Pages aplica `_redirects` antes que cualquier archivo, así que ninguna regla puede nombrar una ruta que el sitio publica. `src/seo/redirects.test.ts` lo comprueba, también sin distinguir mayúsculas.
+- No hay regla para `/pt-BR`: solo se distingue de `/pt-br/` por las mayúsculas, y si un servidor comparara rutas sin distinguirlas, la redirección se repetiría sin fin.
+- Los parámetros (`?lang=…`, `?utm_…`) se conservan cuando el destino no trae los suyos. Así lo hace el código de Pages que usa `wrangler pages dev` (`generateHandler`: `destination.search || search`). La documentación de Cloudflare no lo dice: https://developers.cloudflare.com/pages/configuration/redirects/ (consultada el 12 de noviembre de 2026).
+- `/pt/labs/hubble` (sin barra final) va a `/pt-br/labs/hubble`, y Pages añade la barra con un 308, como ya hacía con `/es` y `/fr`.
+- `npm run test:pages` comprueba las respuestas.
+- Después de desplegar, comprueba:
+  ```sh
+  curl -sI 'https://openvireo.space/pt/labs/?a=1' | grep -iE '^HTTP|^location'
+  ```
+  Lo esperado: `301` y `location: /pt-br/labs/?a=1`.
+
+### 12.2 Compresión de los archivos de datos
+
+**Qué comprime Cloudflare.** Según https://developers.cloudflare.com/speed/optimization/content/compression/ (actualizada el 17 de abril de 2026, consultada el 12 de noviembre de 2026):
+
+- Cloudflare comprime una lista fija de tipos: `text/plain`, `text/html`, `text/css`, `application/json`, `application/xml`, `application/javascript`, `application/wasm`, `image/svg+xml` y otros.
+- `application/octet-stream` no está en la lista, ni `image/bmp` ni `audio/wav`.
+- Solo comprime respuestas 200, 403 y 404 de más de unos 50 bytes. Al comprimir puede omitir `Content-Length`.
+
+El sitio publicado lo confirma (`curl` con `Accept-Encoding: br, gzip`, 12 de noviembre de 2026):
+
+- `.TXT`, `.json`, `.xml` y `.css` llegan con `content-encoding: br`.
+- `.SP`, `.LST`, `.DAT`, `.HTL`, `.CMO`, `.sav` y `.bin` llegan como `application/octet-stream`, sin comprimir.
+
+**Qué se cambió.** `public/_headers` etiqueta como `text/plain; charset=utf-8` solo los originales que son texto ASCII. Pages no reconoce su extensión:
+
+- todos los `*.SP` (plantillas de espectros y de clasificación);
+- `*.SPI`, `*.LST`, `*.LNL` y `*.obs`;
+- `radio/Pulsars.dat`.
+
+Son 194 archivos y 8 956 274 bytes. Con brotli (calidad 5) ocupan unos 2,37 MB (26 %); con gzip 6, unos 2,86 MB (32 %); con zstd 3, unos 2,82 MB (32 %). La práctica de clasificación descarga 57 plantillas `.SP` (3,19 MB), que pasan a pesar unos 0,85 MB.
+
+**Por qué es seguro:**
+
+- **Bytes y hashes.** Solo cambia la codificación de transporte. `fetch()` decodifica `Content-Encoding` antes de entregar los bytes. Los cargadores (`boundedResourceBody`, `verifiedSameOriginResource`, `verifiedSameOriginTiles`, `gscTiles`) comprueban después el tamaño exacto y el SHA-256 del manifiesto.
+- **`Content-Length`.** Sin él, o con el tamaño comprimido (menor), el límite de tamaño sigue igual: `boundedResourceBody` solo rechaza por adelantado un `Content-Length` mayor que el esperado y cuenta los bytes decodificados mientras lee.
+- **Peticiones Range.** La aplicación no usa ninguna. Los trozos del GSC y de `ObjX_MPC.CMO` son archivos enteros. Además, la especificación Fetch añade `Accept-Encoding: identity` a toda petición con `Range`.
+- **Tipo `text/html`.** Los cargadores de trozos rechazan `text/html` (el comodín de una SPA); `text/plain` no lo es. Una dirección inexistente con una de esas extensiones sigue respondiendo 404.
+- **`nosniff` y CSP.** Con `X-Content-Type-Options: nosniff`, un `text/plain` no puede ejecutarse como script ni usarse como hoja de estilo. Las peticiones son `fetch` del mismo origen (`connect-src 'self'`), así que la CSP no cambia.
+- **Una sola regla de tipo por ruta.** Si dos reglas que coinciden ponen la misma cabecera, Pages las une con una coma: https://developers.cloudflare.com/pages/configuration/headers/ (actualizada el 25 de agosto de 2026). `src/deployHeaders.test.ts` comprueba que ningún archivo recibe dos reglas de tipo y que cada archivo etiquetado es ASCII (`charset=utf-8` es entonces cierto). Una regla sustituye el tipo que Pages pondría (`headers.set` en `generateHandler`).
+- **Caché.** Las URL y los bytes no cambian. Una copia guardada con el tipo anterior sigue valiendo. Al comprimir, Cloudflare debilita el `ETag` (`W/…`), y la revalidación de un GET acepta etiquetas débiles.
+
+`npm run test:pages` comprueba, con `wrangler pages dev`:
+
+- el tipo de cada clase de archivo y su SHA-256 frente al manifiesto;
+- que los binarios siguen siendo `application/octet-stream`;
+- que la práctica de clasificación carga sus plantillas sin errores ni violaciones de la política.
+
+`wrangler pages dev` no comprime, así que la compresión en sí solo puede verse en producción:
+
+```sh
+curl -s -o /dev/null -D - -H 'Accept-Encoding: br, gzip' https://openvireo.space/original/classification/A0000001.SP | grep -iE 'content-type|content-encoding'
+```
+
+Lo esperado: `content-type: text/plain; charset=utf-8` y `content-encoding: br` (o `zstd`/`gzip`).
+
+**Qué no se cambió, y por qué.** Los originales binarios siguen como `application/octet-stream`. Son registros de Delphi con bytes nulos, no texto:
+
+- `ObjX_MPC.CMO.sav`, `CLEA_GLX.DAT`, `CLEA_VStrs.dat` y las listas `.HTL`;
+- los trozos del GSC y de `ObjX_MPC.CMO`.
+
+Etiquetarlos `text/plain` (o con un tipo binario de la lista, como `application/x-protobuf`) funcionaría técnicamente, pero declararía un tipo falso. Lo que ahorrarían (brotli 5):
+
+| Archivos | Bytes | Comprimidos |
+| --- | --- | --- |
+| `ObjX_MPC.CMO.sav` | 4 798 116 | ≈ 2,07 MB (43 %) |
+| `CLEA_GLX.DAT` | 1 420 071 | ≈ 0,66 MB (47 %) |
+| Otros binarios (catálogos, `.HTL`, `.CMO`, trozos de la órbita, `REGIONS.BIN`) | 39,2 MB | ≈ 16,1 MB |
+| Trozos del GSC | 508,7 MB | ≈ 243 MB (48 %) |
+| Fotografías `.BMP` (`image/bmp`, tipo correcto) | 6,9 MB | ≈ 2,8 MB |
+
+La forma correcta de ganar eso sería una **Compression Rule** en la zona `openvireo.space` (**Rules → Compression Rules**, disponible en el plan Free, hasta 10 reglas), por ejemplo para las extensiones `sav`, `DAT`, `dat`, `HTL`, `CMO`, `bin` y `BMP`. Pero:
+
+- la documentación (https://developers.cloudflare.com/rules/compression-rules/, actualizada el 14 de agosto de 2026) no confirma que una regla pueda comprimir un tipo fuera de la lista;
+- es un ajuste de tu cuenta de Cloudflare.
+
+Queda como decisión tuya. Si la pruebas, comprueba con el `curl` de arriba sobre `/original/orbit/ObjX_MPC.CMO.sav` y vuelve a pasar el § 8.
+
+### 12.3 Página 404
+
+- `dist/404.html` ya no es un archivo fijo de `public/`: la genera `src/seo/pages.ts` (`notFoundPage`) a partir de la tabla de idiomas (`notFound` de cada fila de `src/seo/languages.ts`).
+- Usa la cabecera y la hoja de estilo de las páginas de búsqueda (`/labs/labs.css`, con claro y oscuro según el sistema), sin script y sin estilo en línea.
+- Arriba, el bloque en inglés con su `h1`. Después, un bloque por idioma (`lang="es-419"`, `lang="pt-BR"`, `lang="fr"`), cada uno con «Abrir el observatorio» y «Todas las prácticas» en su idioma.
+- Todas las direcciones son absolutas, porque Pages la sirve a cualquier profundidad. Lleva `noindex`.
+

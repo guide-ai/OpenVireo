@@ -4,6 +4,7 @@
 // requests are answered with the recorded response tests/fixtures/vizier/nomad-56.75+24.12-r0.01.xml (CDS, 2026-10-27).
 import {test,expect,type Page} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
 import {VIZIER_POLICY} from '../../src/core/vizierNomad';
 import {OBJECT_X_LAB_FR} from '../../src/i18n/fr/maps/objectXLab';
 // @ts-expect-error The planner is a plain JS script (scripts/i18n-split.mjs), as tests import scripts/audit-ui-messages.mjs.
@@ -76,7 +77,7 @@ test('the page, a hashed bundle and an original file carry the release headers',
  const notFound=await whole.text();expect(notFound).toContain('This address is not part of OpenVireo.');
  // Front ES-REL: the 404 page is bilingual; Front PT-REL: trilingual; Front FR-REL: quadrilingual.
  expect(notFound).toContain('Esta dirección no forma parte de OpenVireo.');expect(notFound).toContain('Este endereço não faz parte do OpenVireo.');
- expect(notFound).toContain('Cette adresse ne fait pas partie d’OpenVireo.');expect(notFound).toContain('<div lang="fr">');expect(notFound).toContain('href="/?lang=fr"');
+ expect(notFound).toContain('Cette adresse ne fait pas partie d’OpenVireo.');expect(notFound).toContain('<section lang="fr">');expect(notFound).toContain('href="/?lang=fr#observatory"');
  expect(baseURL).toMatch(/^http:\/\/127\.0\.0\.1:63\d\d$/);// playwright.pages.config.ts admits only 6300–6398
 });
 
@@ -437,6 +438,66 @@ test('Front SEO: the lab pages, sitemap and robots.txt are served with the relea
  await page.getByRole('link',{name:'Open the lab'}).click();
  await expect(page.locator('dialog[open]')).toContainText('The quest for Object X',{timeout:20_000});
  expect([p.errors,p.console,await violations(page),p.external]).toEqual([[],[],[],[]]);
+});
+
+// Front LAUNCH-3: language addresses people type that are not the site's own answer 301 to the page that exists, keeping the
+// rest of the path and the query string (public/_redirects), and the language's own addresses are untouched.
+test('Front LAUNCH-3: /pt/, /en/ and /es-419/ redirect with a 301 to the Portuguese, English and Spanish pages, keeping path and query',async({request})=>{
+ for(const [from,to] of [['/pt','/pt-br/'],['/pt/','/pt-br/'],['/pt/labs/hubble/','/pt-br/labs/hubble/'],['/pt/labs/?utm_source=x&b=1','/pt-br/labs/?utm_source=x&b=1'],
+  ['/en','/'],['/en/','/'],['/en/labs/pulsars/','/labs/pulsars/'],['/en/?lang=fr','/?lang=fr'],
+  ['/es-419','/es/'],['/es-419/','/es/'],['/es-419/labs/object-x/?a=1','/es/labs/object-x/?a=1']] as const){
+  const r=await request.get(from,{maxRedirects:0});expect(r.status(),from).toBe(301);
+  const location=new URL(r.headers().location,'http://x');expect(location.pathname+location.search,from).toBe(to);
+  const page=await request.get(from);expect(page.status(),from).toBe(200);expect(page.headers()['content-type'],from).toContain('text/html');
+ }
+ // Without the trailing slash Pages adds it after the redirect (308), and the page answers.
+ const bare=await request.get('/pt/labs/hubble',{maxRedirects:0});expect([bare.status(),bare.headers().location]).toEqual([301,'/pt-br/labs/hubble']);
+ for(const path of ['/pt-br/','/es/','/fr/','/labs/']){const r=await request.get(path,{maxRedirects:0});expect(r.status(),path).toBe(200);}
+ for(const path of ['/pt-BR/','/english/']){const r=await request.get(path,{maxRedirects:0});expect(r.status(),path).toBe(404);}
+});
+
+// Front LAUNCH-3: the plain-ASCII originals are served as text/plain (so Cloudflare compresses them), byte-exact, and the binary
+// originals stay application/octet-stream; the app's loaders read the text ones under the release policy.
+test('Front LAUNCH-3: text originals are text/plain with their recorded bytes; binary originals stay octet-stream',async({page,request,baseURL})=>{
+ const sha=async(bytes:Buffer)=>createHash('sha256').update(bytes).digest('hex');
+ const recordedSha=(path:string)=>manifest.files.find(f=>f.path===`public${path}`)!.sha256;
+ for(const path of ['/original/classification/A0000001.SP','/original/spectra/jspect2/JSPEC2.SPI','/original/spectra/jspect2/A0000046.SP','/original/images/GLIMAGES.LST','/original/hotlists/LSSFields.LST','/original/help/SPECLNS.LNL','/original/help/Reminder.obs','/original/radio/Pulsars.dat']){
+  const r=await request.get(path,{headers:{'accept-encoding':'br, gzip'}});expect(r.status(),path).toBe(200);
+  expect(r.headers()['content-type'],path).toBe('text/plain; charset=utf-8');expect(r.headers()['x-content-type-options'],path).toBe('nosniff');
+  expect(r.headers()['cache-control'],path).toBe('public, max-age=86400, stale-while-revalidate=604800');
+  expect(await sha(await r.body()),path).toBe(recordedSha(path));
+ }
+ for(const path of ['/original/orbit/ObjX_MPC.CMO.sav','/original/catalogs/CLEA_GLX.DAT','/original/variables/CLEA_VStrs.dat','/original/hotlists/Hubble.HTL','/original/orbit/ObjX_MPC/000.bin']){
+  const r=await request.head(path);expect(r.status(),path).toBe(200);expect(r.headers()['content-type'],path).toBe('application/octet-stream');
+ }
+ // A missing file under a text rule still answers 404 (the 404 page then carries the rule's type, which no loader reads).
+ expect((await request.get('/original/classification/NOPE.SP')).status()).toBe(404);
+ // The classification lab loads and checks its .SP templates from these responses.
+ const p=await watch(page,baseURL!),sp:string[]=[];page.on('response',r=>{if(/\.SP$/.test(r.url()))sp.push(`${r.status()} ${r.headers()['content-type']}`);});
+ await page.goto('/#classification');await page.getByLabel('Practice object',{exact:true}).selectOption('u2');
+ await expect(page.getByRole('status').filter({hasText:'Original spectra verified.'})).toBeVisible({timeout:20_000});
+ await expect(page.getByRole('group',{name:'Original practice spectrum · HD 37767',exact:true})).toBeVisible();
+ expect(sp.length).toBeGreaterThan(0);expect(new Set(sp)).toEqual(new Set(['200 text/plain; charset=utf-8']));
+ expect([p.errors,p.console,await violations(page),p.external]).toEqual([[],[],[],[]]);
+});
+
+// Front LAUNCH-3: the 404 page wears the site's stylesheet, with no script, and reads at 320 px in light and dark.
+test('Front LAUNCH-3: the 404 page is styled by the site stylesheet, passes the policy and fits 320 px in dark mode',async({page,baseURL})=>{
+ const p=await watch(page,baseURL!);
+ for(const [width,scheme] of [[320,'dark'],[1440,'light']] as const){
+  await page.setViewportSize({width,height:900});await page.emulateMedia({colorScheme:scheme});
+  const r=await page.goto('/no/such/page');expect(r!.status()).toBe(404);
+  await expect(page.getByRole('heading',{level:1})).toHaveText('Page not found');
+  await expect.poll(()=>page.evaluate(()=>getComputedStyle(document.querySelector('.button')!).borderRadius)).toBe('8px');
+  expect(await page.evaluate(()=>getComputedStyle(document.body).backgroundColor)).toBe(scheme==='dark'?'rgb(14, 27, 33)':'rgb(244, 246, 247)');
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
+  for(const tag of ['es-419','pt-BR','fr'])await expect(page.locator(`section[lang="${tag}"] h2`)).toBeVisible();
+  expect(await page.locator('script').count()).toBe(0);
+ }
+ await page.getByRole('link',{name:'Todas las prácticas'}).click();await expect(page).toHaveURL(/\/es\/labs\/$/);
+ // The only console errors are the browser's notes of the two 404 documents themselves.
+ expect(p.console).toEqual(Array(2).fill('error: Failed to load resource: the server responded with a status of 404 (Not Found)'));
+ expect([p.errors,await violations(page),p.external]).toEqual([[],[],[]]);
 });
 
 // Front ES-SEO: the Spanish search pages under /es/ are served like the English ones, every page names its translations
