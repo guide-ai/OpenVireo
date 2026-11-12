@@ -1,0 +1,45 @@
+// Front FR-HELP 6: OpenVireo's French (fr) web adaptation of VIREO's LSSHLP.LST. Not CLEA's text: the original bytes,
+// hashes and provenance are unchanged (public/original). Loaded only by the help viewer, never with the main French chunk.
+export const language='fr';
+export const sourceName='LSSHLP.LST';
+export const sourceSha256='f4ee3de45cead6cac0ae53458c94f9927bd48248a573632787d9e6a275e05c10';
+export const text=`'Premiers pas' 'begin'
+'Se connecter' 'lsslab.txt'
+'Utiliser le télescope' 'begin'
+'Accéder à la fenêtre du télescope' 'lsslab.txt'
+'Commandes du télescope' 'lsslab.txt'
+'Utiliser le télescope' 'end'
+'Changer de télescope' 'begin'
+'Demander du temps de télescope' 'lsslab.txt'
+'Accéder aux télescopes' 'lsslab.txt'
+'Changer de télescope' 'end'
+'Changer de champ d’étoiles' 'lsslab.txt'
+'Premiers pas' 'end'
+
+'Prise de données' 'begin'
+'Utiliser le spectromètre' 'begin'
+'Accéder à la fenêtre du spectromètre' 'lsslab.txt'
+'Démarrer/reprendre le comptage' 'lsslab.txt'
+'Arrêter le comptage' 'lsslab.txt'
+'Mesurer le spectre' 'lsslab.txt'
+'Imprimer le spectre' 'lsslab.txt'
+'Utiliser le spectromètre' 'end'
+'Calculer la vitesse' 'begin'
+'Calculer à la main' 'lsslab.txt'
+'Vérifier les calculs' 'lsslab.txt'
+'Calculer la vitesse' 'end'
+'Retourner à la fenêtre du télescope' 'lsslab.txt'
+'Prise de données' 'end'
+
+'Opérations sur les données' 'begin'
+'Charger les données' 'lsslab.txt'
+'Examiner les données' 'lsslab.txt'
+'Enregistrer les données' 'lsslab.txt'
+'Imprimer les données' 'lsslab.txt'
+'Tracer les résultats' 'begin'
+'Enregistrer les résultats dans le fichier de tracé partagé' 'lsslab.txt'
+'Accéder au programme de diagramme en cône' 'lsslab.txt'
+'Tracer les résultats' 'end'
+'Utiliser le programme de tableur' 'lsslab.txt'
+'Opérations sur les données' 'end'
+`;

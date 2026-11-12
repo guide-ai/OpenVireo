@@ -477,6 +477,8 @@ for(const L of SEO_SMOKE)test(L.title,async({page,request,baseURL})=>{
 const HELP_SMOKE=[
  {tag:'es-419',title:'Front ES-HELP: a ?lang=es-419 help viewer fetches only its translated help chunks and switches to the original',label:'Traducción: adaptación web de OpenVireo (no es de CLEA)',text:'Para cargar un espectro'},
  {tag:'pt-BR',title:'Front PT-HELP: a ?lang=pt-BR help viewer fetches only its translated help chunks and switches to the original',label:'Tradução: adaptação web do OpenVireo (não é do CLEA)',text:'Para carregar um espectro'},
+ // Front FR-HELP: the French help set in its ?lang=fr preview (U+202F before the colon, as the fixer writes it).
+ {tag:'fr',title:'Front FR-HELP: a ?lang=fr help viewer fetches only its translated help chunks and switches to the original',label:'Traduction : adaptation web d’OpenVireo (ce n’est pas un texte du CLEA)',text:'Pour charger un spectre'},
 ] as const;
 for(const h of HELP_SMOKE)test(h.title,async({page,baseURL})=>{
  const p=await watch(page,baseURL!),help:string[]=[],languages:Promise<string>[]=[];

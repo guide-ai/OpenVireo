@@ -186,6 +186,11 @@ import {SAVED_ROWS_PT} from '../../src/i18n/pt-br/maps/pulsarSavedRows';
 import {LOAD_SAVE_PT} from '../../src/i18n/pt-br/maps/pulsarLoadSave';
 import {OBJECT_X_GUIDE_PT} from '../../src/i18n/pt-br/maps/objectXGuide';
 import {OBJECT_X_MEASURE_PT} from '../../src/i18n/pt-br/maps/objectXMeasure';
+import {PULSAR_FR} from '../../src/i18n/fr/maps/pulsar';
+import {SAVED_ROWS_FR} from '../../src/i18n/fr/maps/pulsarSavedRows';
+import {LOAD_SAVE_FR} from '../../src/i18n/fr/maps/pulsarLoadSave';
+import {OBJECT_X_GUIDE_FR} from '../../src/i18n/fr/maps/objectXGuide';
+import {OBJECT_X_MEASURE_FR} from '../../src/i18n/fr/maps/objectXMeasure';
 import type {PULSAR_MESSAGES_EN} from '../../src/components/PulsarMessages';
 import type {SAVED_ROWS_MESSAGES_EN} from '../../src/components/PulsarSavedRowsMessages';
 import type {LOAD_SAVE_MESSAGES_EN} from '../../src/components/PulsarLoadSaveMessages';
@@ -195,12 +200,16 @@ export type E06Maps=Readonly<{pulsar:Translation<typeof PULSAR_MESSAGES_EN>;puls
 export const E06_MAPS:Readonly<Record<string,E06Maps>>=Object.freeze({
  'es-419':{pulsar:PULSAR_ES,pulsarSavedRows:SAVED_ROWS_ES,pulsarLoadSave:LOAD_SAVE_ES},
  'pt-BR':{pulsar:PULSAR_PT,pulsarSavedRows:SAVED_ROWS_PT,pulsarLoadSave:LOAD_SAVE_PT},
+ // Front FR6: French (its ?lang=fr preview).
+ fr:{pulsar:PULSAR_FR,pulsarSavedRows:SAVED_ROWS_FR,pulsarLoadSave:LOAD_SAVE_FR},
 });
 export const e06Maps=(tag:string):E06Maps=>{const m=E06_MAPS[tag];if(!m)throw new Error(`No E06 maps for ${tag}`);return m;};
 export type E08Maps=Readonly<{objectXLab:Translation<typeof OBJECT_X_LAB_EN>;objectXGuide:Translation<typeof OBJECT_X_GUIDE_EN>;objectXMeasure:Translation<typeof OBJECT_X_MEASURE_EN>;camera:Translation<typeof CAMERA_MESSAGES_EN>;sound:unknown}>;
 export const E08_MAPS:Readonly<Record<string,E08Maps>>=Object.freeze({
  'es-419':{objectXLab:OBJECT_X_LAB_ES,objectXGuide:OBJECT_X_GUIDE_ES,objectXMeasure:OBJECT_X_MEASURE_ES,camera:CAMERA_ES,sound:SOUND_ES},
  'pt-BR':{objectXLab:OBJECT_X_LAB_PT,objectXGuide:OBJECT_X_GUIDE_PT,objectXMeasure:OBJECT_X_MEASURE_PT,camera:CAMERA_PT,sound:SOUND_PT},
+ // Front FR6: French (its ?lang=fr preview).
+ fr:{objectXLab:OBJECT_X_LAB_FR,objectXGuide:OBJECT_X_GUIDE_FR,objectXMeasure:OBJECT_X_MEASURE_FR,camera:CAMERA_FR,sound:SOUND_FR},
 });
 export const e08Maps=(tag:string):E08Maps=>{const m=E08_MAPS[tag];if(!m)throw new Error(`No E08 maps for ${tag}`);return m;};
 // Front PT-HELP: what the help spec (tests/i18n/help.spec.ts) reads per language beyond the catalog and originals: the help
@@ -210,6 +219,8 @@ import {HELP_VIEWER_ES} from '../../src/i18n/es/maps/helpViewer';
 import {WEB_HELP_ES} from '../../src/i18n/es/maps/webHelp';
 import {HELP_VIEWER_PT} from '../../src/i18n/pt-br/maps/helpViewer';
 import {WEB_HELP_PT} from '../../src/i18n/pt-br/maps/webHelp';
+import {HELP_VIEWER_FR} from '../../src/i18n/fr/maps/helpViewer';
+import {WEB_HELP_FR} from '../../src/i18n/fr/maps/webHelp';
 import type {HELP_VIEWER_EN} from '../../src/help/HelpViewerMessages';
 import type {WEB_HELP_EN} from '../../src/help/webHelp';
 export type HelpText=Readonly<{
@@ -225,5 +236,8 @@ export const HELP_TEXT:Readonly<Record<string,HelpText>>=Object.freeze({
   loadSpectrumText:'Para cargar un espectro',searchRow:/Medir y marcar/,searchQuery:'POSICION VERTICAL',searchHit:'posición vertical',controlsRow:/Controles/,lineHelpText:'Visible por primera vez alrededor de A0'},
  'pt-BR':{helpViewer:HELP_VIEWER_PT,webHelp:WEB_HELP_PT,pulsarFirstRow:'-Operações básicas-',reminderQuestion:'Você tem CERTEZA de que concluiu totalmente este exercício?',
   loadSpectrumText:'Para carregar um espectro',searchRow:/Medir e marcar/,searchQuery:'POSICAO VERTICAL',searchHit:'posição vertical',controlsRow:/Controles/,lineHelpText:'Visível pela primeira vez em torno de A0'},
+ // Front FR-HELP: the search query types a straight apostrophe and no accent; the translation's fold finds «c’est … verticale».
+ 'fr':{helpViewer:HELP_VIEWER_FR,webHelp:WEB_HELP_FR,pulsarFirstRow:'-Opérations de base-',reminderQuestion:'Avez-vous VRAIMENT terminé complètement cet exercice\u202f?',
+  loadSpectrumText:'Pour charger un spectre à classer',searchRow:/Mesurer et marquer/,searchQuery:"C'EST LA POSITION VERTICALE",searchHit:'c’est la position verticale',controlsRow:/Commandes/,lineHelpText:'Visible pour la première fois vers A0'},
 });
 export const helpText=(tag:string):HelpText=>{const m=HELP_TEXT[tag];if(!m)throw new Error(`No help text for ${tag}`);return m;};
