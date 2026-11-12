@@ -45,11 +45,12 @@ test('a lab card on the welcome loads the app, opens its guide, and the guide re
  await settledWelcome(page);expect(urls.filter(heavy)).toEqual([]);
  await welcome(page).getByRole('button',{name:en['home.pleiades'],exact:true}).click();
  const guide=page.getByTestId('pleiades-lab-dialog');await expect(guide).toBeVisible({timeout:30000});
- await guide.getByRole('button',{name:en['pleiadesLab.goObservatory'],exact:true}).first().click();
+ // Front LAUNCH-1: the list step opens Original hot lists on the observatory with Load exercise list focused.
+ await guide.getByRole('button',{name:en['pleiadesLab.goHotList'],exact:true}).click();
  await expect(page).toHaveURL(/#observatory$/);await expect(skyH1(page)).toBeVisible();
  // The Pleiades exercise list, the dome and a pointing at its first row (PLEIADES.HTL entry 1).
- await page.getByRole('heading',{name:'Original hot lists',exact:true}).click();
- await page.getByRole('button',{name:'Load exercise list (PLEIADES.HTL)',exact:true}).click();await expect(page.locator('#htl-rows option')).toHaveCount(24);
+ const load=page.getByRole('button',{name:'Load exercise list (PLEIADES.HTL)',exact:true});await expect(load).toBeFocused();
+ await load.click();await expect(page.locator('#htl-rows option')).toHaveCount(24);
  await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
  await page.locator('#htl-rows').selectOption('0');await page.getByRole('button',{name:'Point to HTL selection',exact:true}).click();
  await expect(page.getByTestId('pointing-ra')).toHaveText('3.68833');await expect(page.getByTestId('pointing-dec')).toHaveText('23.96667');

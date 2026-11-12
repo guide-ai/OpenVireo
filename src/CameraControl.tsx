@@ -27,6 +27,7 @@ import {cameraOverlayInputs,type CameraOverlayStatus} from './camera/cameraOverl
 import {cameraRegionRecord,cameraRegionSelection,type CameraRegionRecord} from './core/cameraRegion';
 import {telescopeFieldLoad,type TelescopeFieldLoad} from './observatory/telescopeField';
 import {VireoOptionsContext} from './vireoOptionsContext';
+import TrackingShortcut from './observatory/TrackingShortcut';
 import {cameraParameterExactText,cameraParameterLabel,cameraStartRefusal,cameraParameterValueText,exposureCameraParameters,uncertifiedExposureFields,type CameraParameters} from './core/cameraParameters';// Front T7
 
 /** Front T7: `readOnly` is true for an exposure made with instructor camera values: like an IR image it only reads the Object X
@@ -268,6 +269,8 @@ function CameraControl({scopeUse,objectXHidden=null,vireoId='',showObjectId=fals
    <button className="secondary-button" disabled={!running||gate.phase==='releasing'} onClick={stop}>{M.stop}</button>
   </div>
   <p role="status" aria-live="polite" data-testid="camera-status">{!ready&&!running?(busy||!active?M.statusUnavailable:M.statusNotReady(M.accessReason[access]??'')):message}</p>
+  {/* Front LAUNCH-1: "turn tracking on." offers the way to the clock bar's tracking button. */}
+  {!ready&&!running&&!busy&&active&&access==='tracking'&&<TrackingShortcut/>}
   {gate.phase==='exposing'&&<p className="camera-countdown" data-testid="camera-countdown">{M.countdown(gate.remainingSeconds,gate.requestedSeconds)}</p>}
   {shown&&image&&<figure className="camera-image">
    <canvas ref={canvas} role="img" aria-label={M.imageAlt(filterName(shown.recipe.camera,shown.recipe.filterPosition),shown.recipe.seconds,shown.recipe.camera)} data-testid="camera-canvas"/>

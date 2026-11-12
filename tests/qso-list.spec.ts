@@ -68,7 +68,8 @@ test('student path: options defaults, invalid limit, list without z or Object X 
  await page.getByTestId('qso-list-line-6').click();await expect(page.getByTestId('qso-list-selection')).toHaveText('2 / 10');
  await page.getByTestId('qso-list-selection-menu').click();await page.getByTestId('qso-list-add').click();
  await expect(page.getByTestId('fi-box-text')).toHaveText('Object WPVS 97           Added to Current Hot List.');await box(page).getByRole('button',{name:'OK'}).click();
- await page.getByTestId('ob-view-select').click();await expect(page.getByText(/WPVS 97/).first()).toBeVisible();
+ // Front LAUNCH-1: the View/Select window, not the observatory's (closed) hot-list editor, which now comes first on the page.
+ await page.getByTestId('ob-view-select').click();await expect(page.getByTestId('ob-hotlist').getByText(/WPVS 97/).first()).toBeVisible();
 });
 
 test('Edit Mode: Sort Options enabled, Z and colour columns; leaving Edit Mode resets the sort',async({page})=>{

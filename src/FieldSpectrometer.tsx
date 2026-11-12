@@ -27,6 +27,7 @@ import {fieldSpectrometerSkyReading,type SpectrometerReadoutOptions} from './cor
 import {fieldSpectrumFailure,fieldSpectrumHiddenMasked,type FieldSpectrumShown} from './io/fieldSpectrumFailure';
 import {lssFreeCountsText,lssFreeSource,type LssFreeSource} from './core/lssFreeRecord';
 import {resourceSha256} from './io/boundedResource';
+import TrackingShortcut from './observatory/TrackingShortcut';
 
 /** Front G (G4a, analysis/front-plans/front-g-gsc.md §11): VIREO's single-slit spectrometer wherever the telescope points. The
  * field is read from the compact GSC tiles; the slit takes the nearest object (0x59a0fc) and the engine's star, galaxy and QSO
@@ -168,6 +169,8 @@ export default function FieldSpectrometer({link}:{link:FieldSpectrometerLink}){
  return <section className="card field-spectrometer" aria-labelledby="field-spec-title" data-testid="field-spectrometer">
   <h2 id="field-spec-title">{t('fieldSpec.title')}</h2><p>{t('fieldSpec.help')}</p>
   <p role="status" data-testid="field-spec-access" data-access={access}>{t(`instrumentAccess.${access}`)}</p>
+  {/* Front LAUNCH-1: the clock bar is on the observatory; the shortcut opens it there. */}
+  {access==='tracking'&&<TrackingShortcut/>}
   {link.onSpectralRange&&<SpectralRangeRow range={ready?(parseFieldSpectrumPolicy(ready.policy)?.range??range):range} disabled={loading} unsaved={counts} testId="field-spec-range" note={SR.note}
    onApply={r=>{link.onSpectralRange!(r);setRestored(null);setOkToken(n=>n+1);
     // OK reinitialises the spectrometer (0x5110b0): a prepared field is prepared again on the new range (a fresh exposure).
