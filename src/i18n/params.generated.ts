@@ -150,6 +150,7 @@ export interface MessageParameters {
   "home.pageName": never;
   "home.explore": never;
   "home.exploreHint": never;
+  "home.loadingObservatory": never;
   "sky.step1": never;
   "sky.step2": never;
   "sky.step3": never;

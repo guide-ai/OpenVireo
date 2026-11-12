@@ -17,9 +17,10 @@ export function openClusterGuide(navigate:(route:'cluster-database')=>void,onOpe
  observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});
  window.addEventListener('hashchange',leave);pending=stop;
 }
-function ClusterGuideNavButton({navigate,onOpen}:{navigate:(route:'cluster-database')=>void;
- /** Front R4: VIREO's HR Diagrams menu (exercise code 7) forcing Show Object ID; a stable callback. */onOpen?:(code:7)=>void}){
- return <button data-testid="cluster-lab-nav" onClick={()=>openClusterGuide(navigate,onOpen)}>{PM.clusterGuide.nav}</button>;
+function ClusterGuideNavButton({navigate,onOpen,onClick}:{navigate:(route:'cluster-database')=>void;
+ /** Front R4: VIREO's HR Diagrams menu (exercise code 7) forcing Show Object ID; a stable callback. */onOpen?:(code:7)=>void;
+ /** Front LAZY-OBS: the welcome shell's click, which loads the app and lets it open this guide (then `navigate` is unused). */onClick?:()=>void}){
+ return <button data-testid="cluster-lab-nav" onClick={onClick??(()=>openClusterGuide(navigate,onOpen))}>{PM.clusterGuide.nav}</button>;
 }
 // Front Perf: no state of its own depends on the shell; re-render only when its props change.
 export default memo(ClusterGuideNavButton);

@@ -347,3 +347,210 @@ parameterised `tests/i18n/seo.spec.ts`. On merging, the coordinator carried HOME
 `src/seo/languages.test.ts` for every language (the app's plain address opens the welcome; "Open the observatory" and a lab
 link leave `#observatory`), and added the welcome's two facts (no Windows or virtual machine; the recovered behaviour and the
 unofficial reconstruction) to the Portuguese static home page `/pt-br/`, as on `/es/`.
+
+# Front LAZY-OBS: the welcome loads only the shell
+
+Front HOME's independent review measured that the welcome (`/`) loaded exactly what the observatory loads: the observatory view
+stayed mounted (hidden) in `OpenVireo.tsx`, and every observatory module, catalog and data module sat in the entry chunk's static
+import graph (78 `<link rel=modulepreload>` in the built `index.html`). The site is about to be announced to the general public,
+many on phones and mobile data, so the welcome should open fast and cheap. VIREO has no welcome page; this is web delivery only,
+and nothing in the exercises, their data or their numerics changed.
+
+Workflow (REVIEW.md): plan by the coordinator (Claude Opus 5.5, high effort); implementation by a subagent (Claude Opus 5.5,
+medium effort); independent review pending (below).
+
+## Baseline and mechanism
+
+Measured on a production build (`vite build`, served by `vite preview` on loopback; Chromium; requests of the page's own origin
+until the network is idle). Raw is the bytes of the files served; brotli is each file compressed at quality 5, an estimate of what
+Cloudflare sends.
+
+| Load | Before (main f404879) | After |
+|---|---|---|
+| `/` (welcome) | 121 requests, 5.13 MB raw, 1.18 MB brotli: 112 JS chunks (the entry `index` 946 kB with `OpenVireo.tsx`, `SpectrumInstrument`, `CameraControl`…; `slitThroughput` 943 kB with the Hubble fields and native regions; `photometerField` 914 kB with the Pleiades fields; the pinned galaxy and Pegasus fields), 7 CSS, `ObjectX.HTL` | 16 requests, 0.93 MB raw, 0.26 MB brotli: the HTML, the entry and the small chunks it shares with the app's entry (React DOM, the shell, help menus), the English catalog chunk, `LanguageChoice`, 3 CSS |
+| `/#observatory` | 121 requests, 5.13 MB raw, 1.18 MB brotli | 123 requests, 5.13 MB raw, 1.18 MB brotli (the same modules; with two entries the bundler splits a few shared chunks more finely) |
+
+Time until the page is usable, three cold loads each with the cache off under a throttled network (150 ms RTT, 1.6 Mbit/s down,
+uncompressed as `vite preview` serves it, so absolute times are pessimistic): the welcome's Explore button 6.52 s → 1.98 s;
+`#observatory`'s Open dome button 6.56 s → 6.50 s (no regression).
+
+Where the cost came from: the static import graph, not the hidden subtree. The welcome itself fetched only `ObjectX.HTL` at run
+time (the shared hot list); everything else was modules the entry imported statically, so mounting the observatory later inside
+`OpenVireo.tsx` would have saved almost nothing. The gate therefore sits one level up, at the module boundary:
+
+- **`src/App.tsx`** (the entry's default export, was a re-export of `OpenVireo`) decides once per load with `shellFirst`
+  (`src/home/appGate.ts`, pure): the welcome's addresses (no hash, `#`, `#home`) start on the light shell, unless the browser
+  remembers instructor mode (VIREO's Demonstration Mode opens it at page load, with its banner) or the build is the optional cloud
+  build. Every other address loads the app at once: `src/main.tsx` adds the app's own module entry (`src/appEntry.ts`: `boot`, then
+  `OpenVireo`) as a module `<script>` while the page is still loading, and waits for the app (with a language chunk, if any)
+  before the first render. A script element delays the load event and a bare dynamic `import()` does not, so the app renders
+  before the load event exactly as when it was a static import (measured: header at 260–350 ms, load at 264–358 ms on the
+  production build). The first full e2e run without this rendered the app after the load event and failed ~900 specs that act
+  right after `page.goto` (an unopened phone Tools menu, `page.clock.pauseAt` before the page existed). `scripts/app-entry-plugin.mjs`
+  emits `appEntry` as a chunk of its own in a build and writes its hashed address into `main.tsx`; on the dev server the address
+  is the source module. The script is external and same-origin, so the CSP (`script-src 'self'`) is unchanged. `OpenVireo.tsx` is
+  a chunk of its own; nothing in the shell imports it.
+- **`src/home/WelcomeShell.tsx`**: the sidebar, the page bar and the welcome with the same markup as the app, built by the shared
+  **`src/components/AppChrome.tsx`** (moved out of `OpenVireo.tsx`: `siteHeader`, `welcomeMain`, the language slots and the
+  failure notices). The screen is pixel-identical (a 1280 × 900 screenshot of the shell equals the app's welcome after
+  Explore → brand link). Controls that need nothing more work in place: the theme switch, the project links, the language select,
+  View original, the Help menu's files and About this site. Every other control reports what was asked as a `ShellIntent`: a page
+  (sidebar, Explore the sky, the results editors), a guide (the seven cards and the Guides menu, the cluster button included),
+  Save investigation, Restore investigation (with the chosen file), Instructor mode, Help › Tour, or an address change (Back,
+  Forward, an edited hash) to another page.
+- **The one gate**: the first intent loads the app (`import('./OpenVireo')`, once per page). Until it is in, the shell stays
+  mounted, marked `aria-busy`, with a status line "Loading the observatory…" (`home.loadingObservatory`, new in en, es-419 and
+  pt-BR, and French since the merge with FR6's complete French catalog: «Chargement de l’observatoire…»). The app then mounts in place of the shell and performs the intent once, through the same
+  handler its own control has (`stable.navigate`, `openGuide[lab]`, `stable.saveProject`, `stable.restoreProject(file)`,
+  `stable.askInstructor`, the tour, or the address), so guides that go on to act (Pleiades: the observatory, its hot list and a
+  pointing; Hubble's analyzer; the cluster guide's wait for its button), the route-change focus (the observatory's `h1`), the
+  first-visit tour's scheduling and the clocks behave exactly as when the app was already there. Before that, the focused control
+  is found again in the app's identical chrome (same element, test id, route and name), so the focus stays on More after a
+  restore and a guide closed with Escape returns to its card. If the import fails (an old tab after a redeploy), the shell shows
+  the site's own notice ("site updated", Reload) from `RouteErrorBoundary`, with the welcome still there.
+
+Behaviour that changed: on the welcome, the first click that needs the app waits for it (about 4.5 s on the throttled network
+above, a few hundred ms on broadband; it was instantaneous because everything had been loaded upfront), with the loading line
+shown. Nothing is prefetched on idle, on purpose (mobile data). After that first load everything is as before; the welcome after
+the app is in is the app's own (no shell, no loading line). Render counts: each load counts 2–3 more components (`App` ×2 among them)
+(classificationLoad 173 → 175–176, observatoryLoad 102 → 104–105, varying by one between runs, within their budgets; docs/RENDER-BUDGET.md).
+
+## Tests
+
+- `src/home/appGate.test.ts`: the welcome addresses; the shell only at the welcome, not with Demonstration Mode or the cloud
+  build.
+- `tests/lazy-observatory.spec.ts` (dev server): `/` requests nothing heavy (no `OpenVireo` module, no `/data/`, `/original/` or
+  `/camera/` request, no sky, spectrometer, camera or telescope module); Explore the sky then loads them, focuses "Start with the
+  sky.", and the observatory works (dome, target, point, telescope view, camera). The Pleiades card from the welcome opens its
+  guide, which reaches the observatory, loads PLEIADES.HTL, opens the dome and points at its first row. `#lab=hubble` and
+  `#spectrum` load the app at once (a direct `#spectrum` load shows its page when `page.goto` returns); Back to the welcome afterwards is the app's; a hash change from the shell loads the app.
+  Save from the shell downloads an investigation, and Restore from a fresh shell restores it with the focus on More. A guide card
+  closed with Escape gets its focus back. A held app request shows the loading line and `aria-busy`; an aborted one shows the
+  site-updated notice with Reload.
+- `tests/home.spec.ts` (16) and `tests/render-budget.spec.ts` pass unchanged; no existing spec was changed.
+- Full runs by the implementer: `npx tsc -b`; `npm test` (5696 tests: the 12 failures of a run under machine load, timeouts and
+  pins, pass when their 10 files are rerun alone, after moving the build plugin out of `src/`, where the i18n source scan read its
+  template as a dynamic key site); `npm run test:e2e --workers=4` 1763 passed, 4 failed, 5 skipped, the 4 (`app-shell` phone Tools
+  menu closing, `camera-overlay-region` galaxy overlay, `exports-identity` CCD camera under `qps`, `pleiades-analysis` full18)
+  passing alone; `npm run build` (dist, i18n and deploy-limit checks); `npm run test:pages` 77 passed (with the main checkout's
+  pinned wrangler, loopback).
+
+## Review
+
+Pending: independent review by a separate subagent (Claude Opus, high effort) that did not write the code.
+
+### Independent review 1 (raw findings)
+
+Reviewer: a separate subagent (Claude Opus 5.5, high effort) that did not write the code, over `git diff f404879..54d0631`. Checks
+run: `npx vitest run src/home/appGate.test.ts src/i18n/coverage.test.ts` (7 pass); `npm run build` (pass, with the cloud-free,
+i18n-dist and deploy-limit checks); `tests/lazy-observatory.spec.ts`, `tests/home.spec.ts` and `tests/render-budget.spec.ts` on the
+dev server, Chromium, 2 workers (25 pass); throwaway Playwright probes against `vite preview` of the build, with the CSP of
+`public/_headers` added to the document response (no CSP violation or console error on `/` or `/#observatory`), in Chromium and,
+for the direct load and Explore, Firefox (WebKit could not start here: missing system libraries). `npm run test:pages` was not run
+(no pinned wrangler in this worktree). Confirmed by running unless marked "reading".
+
+Nothing found ships a wrong numeric, a lost investigation or a CSP/hosting change. Two items block the merge itself, not the code.
+
+1. **High (merge, reading): the branch breaks `src/i18n/fr/fr.test.ts` on current main.** The base f404879 is behind origin/main,
+   where FR6 completed the French catalog: `fr.test.ts` asserts 26 `home.*` keys all present in French (`home.length` toBe 26) and
+   that every `en.json` key has its French (FR6 test). This front adds `home.loadingObservatory` to `en.json` only, so after the
+   merge both assertions fail (27 ≠ 26; missing `home.loadingObservatory`) and CI, hence the deploy, stops. docs/SEO.md's "French
+   has no `home.*` keys yet" is stale for the same reason. Needs the French string (vous-form, e.g. «Chargement de l’observatoire…»
+   with the fr typography rules) and the count 26 → 27.
+2. **High (merge, `git merge-tree` + reading): `src/OpenVireo.tsx` conflicts with RT9 on main, and the naive resolution silently
+   drops RT9.** RT9 changed the very `failureNotice` this front moved into `src/components/AppChrome.tsx`: on main it is
+   `failureNotice(testId,kind,tag)` and gives each half `dir={directionWithin(…, uiDirection())}`. The moved copy keeps the old
+   signature and no `dir`, and `src/home/WelcomeShell.tsx:44` calls it the old way. Taking this branch's side of the conflict loses
+   RT9's `dir` in both the app and the shell, and no test on main checks that `dir` (grep of tests and `*.test.ts`), so nothing would
+   catch it. Port RT9's version into AppChrome.tsx (with its `uiDirection`/`directionWithin` imports) and update both call sites.
+3. **Medium (confirmed): Tools › Results Editors from the shell lose their reveal.** `ResultsEditorsNav` (src/polish/ResultsEditorsNav.tsx:19)
+   calls `navigate(route)` and then `reveal(selector)` two frames later. On the shell `navigate` only records the intent
+   (WelcomeShell.tsx:30), the reveal runs against the shell, finds nothing and gives up; the app then only navigates. Observational
+   Results from the shell ends on `#spectrum` with `.own-results-card` closed and the focus on the h1; from the app's welcome the card
+   is open and its summary focused. Pulsar Results: `saved-rows-disclosure` closed, focus on the h1. docs/SEO.md lists the results
+   editors among the intents that "behave exactly as" in the app. The ShellIntent needs the reveal (or the reveal must wait for its
+   element).
+4. **Low–medium (confirmed): the language dialog's Save from the shell closes the dialog and loses the focus.** Choosing another
+   language on the shell opens LanguageSelect's reload dialog; its Save (`onSave`, WelcomeShell.tsx:38) is a `save` intent, so the
+   shell (and with it the dialog) unmounts; the download happens but the dialog is gone, the visitor has to choose the language again,
+   and the focus is on `<body>` (`language-save` has no counterpart in the app). In the app the dialog stays open for Change language.
+   There is nothing on the shell to save, so the shell could keep the dialog (or hide Save there).
+5. **Low (confirmed): offline or a flaky connection is reported as "A new version of OpenVireo was published", with no retry.** With the
+   network off after the welcome loaded, Explore shows the site-updated notice. `loadApp` keeps the rejected import for the page's
+   life (App.tsx:13), so a second click (or Save, any guide) silently does nothing more (hash stays empty, same notice). The
+   message predates this front for route chunks, but the front makes the first click on the welcome the common place to meet it
+   (mobile data, and an old welcome tab after any push to `main`, which CI deploys several times a day). The shell has no state to
+   lose, so a later click could retry, or the text could name both causes.
+6. **Low (confirmed): a direct load of another address whose app chunk fails shows the welcome.** `/#observatory` with the
+   `OpenVireo` chunk answering 404: the shell renders with the welcome's h1, the sidebar marks Welcome as the current page
+   (`aria-current` on `home`) while the address is `#observatory`, plus the notice. Better than a blank page, but the page claims
+   to be the welcome.
+7. **Low (confirmed): on a phone, controls in the open Tools menu lose their focus return.** The swap remounts PortalHeader with the
+   menu closed, so `findFocus` (App.tsx:27, needs client rects) cannot find the clicked control. Instructor mode… from the phone
+   menu: the app closes the menu, the dialog opens, and after Cancel the focus is on `<body>`; from the app's own welcome the menu
+   stays open and the focus returns to the Instructor mode item. The Guides buttons there (no `data-route`, so the app does not close
+   the menu for them) should behave the same way (reading).
+8. **Low (confirmed, design note): only the last intent survives.** Explore and then a Pleiades card while the app is held: only the
+   Pleiades guide opens, on the welcome (`intent.current` is overwritten, App.tsx:34). After a navigate intent, an address edited
+   during the load is overridden (Explore, then `#pulsar-analysis` typed while loading → `#observatory`). A Restore whose file was
+   chosen is dropped by any later click before the app arrives. Reasonable, but undocumented.
+9. **Nit (reading): the loading line is a `role="status"` element mounted together with its text** (WelcomeShell.tsx:43); some
+   screen readers announce only changes to a live region that already exists. `aria-busy` is set correctly and cleared on failure.
+10. **Nit (confirmed): render counts.** This review's run measured classificationLoad 175 and observatoryLoad 104 (doc: 176, 105);
+    both within budget. The +3 explanation fits; the exact numbers vary by one between runs.
+
+Checked and fine: the welcome makes 16 same-origin requests with no `OpenVireo`/`appEntry`; `/#observatory` fetches `appEntry` and the
+`OpenVireo` chunk once each (no double evaluation: `appEntry` only imports the shared boot chunk and `OpenVireo`), and the built
+entry carries the hashed absolute `/assets/appEntry-<hash>.js`; the dev path is the source module; the cloud config merges the
+base plugins. The shell's sidebar, page bar and welcome `main` are identical to the app's welcome (outerHTML with React ids
+normalised) in English and `?lang=es-419`. A Save from the shell equals a Save from the app's welcome (3216 bytes, identical after
+timestamps). Restore, the Instructor confirmation (focus back on the item after Cancel at desktop width), Help › Tour, the seven
+guide openers (the cluster one through `openGuide['cluster-hr']`, the same `openClusterGuide` as its menu button), `#lab=`, Back to
+the welcome while loading, and the first-visit tour (scheduled only when the app reaches the observatory; home.spec passes) behave
+as before. StrictMode's second effect run cannot replay an intent (the ref is cleared first). Demonstration Mode and the cloud
+build start the app at once (unit test; reading).
+
+### Resolution
+
+By the implementer (Claude Opus 5.5, medium effort), after merging origin/main into the branch. Each finding was checked against
+the code and confirmed before the fix.
+
+1. **French (fixed in the merge commit).** `home.loadingObservatory` is added to `src/i18n/fr/fr.json` (add-only, «Chargement de
+   l’observatoire…», the ellipsis as in the other `…loading` entries), and `src/i18n/fr/fr.test.ts` counts 27 `home.*` keys. The
+   stale "French has no `home.*` keys yet" above is corrected.
+2. **RT9 (fixed in the merge commit).** RT9's `failureNotice(testId,kind,tag)`, with `dir={directionWithin(…,uiDirection())}` on
+   each half, now lives in `src/components/AppChrome.tsx`. The app (main's call sites, unchanged) and `WelcomeShell.tsx` call that
+   version; `OpenVireo.tsx` no longer has its own copy.
+3. **Results Editors.** `reveal` in `src/polish/ResultsEditorsNav.tsx` no longer gives up when its disclosure is missing after two
+   frames. While the welcome shell is up, or when the route's part is not mounted yet, it waits (MutationObserver) until the
+   disclosure is shown, then opens it and focuses its summary two frames later as before. A newer reveal or 30 s cancel the wait.
+   From the app, with the disclosure already there, nothing changed.
+4. **Language dialog.** `LanguageSelect`'s `onSave` is optional. The shell passes none, so its reload dialog shows neither Save nor
+   the save note: there is nothing on screen to save before the app is loaded, and the dialog never unmounts under the visitor. The
+   app's dialog is unchanged (Save, Change and reload, Cancel).
+5. **Retry.** `loadApp` forgets a rejected import, and a click on the shell after a failure clears the notice and fetches again
+   (`attempt` re-runs the load effect). The notice's wording, which predates this front, is unchanged.
+6. **Direct load failure.** When the first load of another address cannot fetch the app, `App` renders `AppFailed`: the
+   site-updated notice in the page's `main`, with no sidebar, no welcome `h1` and nothing marked as the current page.
+7. **Phone Tools menu.** When the clicked control was in the open Tools menu and is not a page button, the app opens its menu again
+   one frame after mounting (after the header's own mount effects, StrictMode's second run included, have closed it). It then
+   focuses the control and only then performs the intents. Instructor mode… returns the focus to its item after Cancel, and a guide
+   closed with Escape returns it to its button. Page buttons still close the menu, as in the app.
+8. **Intents during the load.** Intents are queued (`queueIntent` in `src/home/appGate.ts`) and performed in order:
+   - an address change (Back, Forward, an edited hash, also while the app is loading) drops the page changes queued before it, so
+     the address reached last is the page shown;
+   - a Restore with its chosen file is never dropped: a later Restore replaces it, and nothing queued after it is kept (in the app
+     every control is inert while a restore runs);
+   - everything else is appended.
+
+   The app now registers a performer in its mount effect, and `App` calls it from its own effect, which runs after its children's,
+   once the focus is back. Explore followed by a lab card gives the observatory with the guide over it.
+9. **Live region.** The shell's `role="status"` element (`app-loading-region`) is mounted empty from the first render, and the
+   loading line appears inside it.
+10. **Render counts.** The docs give the measured counts as ranges: classificationLoad 175–176, observatoryLoad 104–105 (this run:
+    175 and 104). The budgets are unchanged.
+
+New coverage: `src/home/appGate.test.ts` (the queue rules) and seven tests in `tests/lazy-observatory.spec.ts` for findings 3–9
+(Results Editors from the shell, no Save in the shell's language dialog, retry after a failed fetch, a failed direct load,
+intents in order with an address winning and a kept Restore, the phone menu's Instructor mode and guide focus, the live region).
+

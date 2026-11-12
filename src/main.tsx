@@ -9,7 +9,7 @@ import './theme/scripts.css';
 import './theme/rtl.css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import App from './App';
+import App,{appReady} from './App';
 import {RouteErrorBoundary,watchPreloadErrors} from './components/LazyBoundary';
 import './style.css';
 import './observatory.css';
@@ -18,4 +18,9 @@ import './observatory.css';
 watchPreloadErrors();
 const start=()=>createRoot(document.getElementById('root')!).render(<StrictMode><RouteErrorBoundary><App /></RouteErrorBoundary></StrictMode>);
 // Front ES1 (docs/I18N.md, option c): English renders right away, as before; a Spanish load renders once its chunk is active.
-if(languageReady)void languageReady.then(start);else start();
+// Front LAZY-OBS: a load of any address but the welcome also waits for the app's own chunk (src/App.tsx appReady), so the
+// first render is the app, as when it was a static import; the welcome renders its light shell at once. The app's entry is
+// added as a module script while the page loads, so the load event waits for its code (a dynamic import alone does not).
+if(appReady){const s=document.createElement('script');s.type='module';s.src='__OPENVIREO_APP_ENTRY__';document.head.append(s);}
+const waits=[languageReady,appReady].filter(p=>p!==null&&p!==undefined);
+if(waits.length)void Promise.all(waits).then(start);else start();

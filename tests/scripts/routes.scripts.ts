@@ -318,7 +318,8 @@ test(`${lang} at ${width} px computes the same styles with and without scripts.c
   // route keeps). The walk waits for the shell's lazy parts (that card, the language selector and the View original option,
   // all shown for English and Spanish on every route), and accepts a comparison only when the page with the sheet is the same
   // before and after it (the same node put back), so any other late change retries instead of failing or passing by chance.
-  for(const part of ['ms-card','language-choice','language-originals-choice'])await expect(page.getByTestId(part),part).toHaveCount(1,{timeout:30_000});
+  // Front LAZY-OBS: the welcome ('') is the shell alone, which never loads the observatory and so has no Multi-Spec card.
+  for(const part of [...(route?['ms-card']:[]),'language-choice','language-originals-choice'])await expect(page.getByTestId(part),part).toHaveCount(1,{timeout:30_000});
   // The route may still be filling in (lazy parts, loaded files): take the snapshot once two in a row agree (and fail if they
   // never do, rather than compare a page that is still changing).
   const props=await declaredProps();expect(props.length,props.join()).toBeGreaterThanOrEqual(15);

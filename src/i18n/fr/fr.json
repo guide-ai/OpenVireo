@@ -149,6 +149,7 @@
  "home.pageName": "Accueil",
  "home.explore": "Explorer le ciel",
  "home.exploreHint": "Ouvrez l’observatoire et explorez librement, sans TP à suivre.",
+ "home.loadingObservatory": "Chargement de l’observatoire…",
  "sky.step1": "1 · Ouvrez la coupole",
  "sky.step2": "2 · Choisissez et pointez",
  "sky.step3": "3 · Explorez un instrument",

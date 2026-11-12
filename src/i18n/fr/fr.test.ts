@@ -144,9 +144,10 @@ describe('Front FR0: the French (fr) bundle',()=>{
   expect(FR1_KEYS.filter(k=>!Object.hasOwn(fr,k))).toEqual([]);
   expect(FR1_GUIDE_KEYS.length).toBe(104);
   expect(FR1_GUIDE_KEYS.filter(k=>!Object.hasOwn(en,k)||!Object.hasOwn(fr,k))).toEqual([]);
-  // The welcome's home.* keys (Front HOME, 2026-11-10, after FR0): the observatory walk starts on the welcome page.
+  // The welcome's home.* keys (Front HOME, 2026-11-10, after FR0): the observatory walk starts on the welcome page. 27 since Front
+  // LAZY-OBS (home.loadingObservatory, the welcome's line while the rest of the site loads).
   const home=(Object.keys(en) as MessageKey[]).filter(k=>k.startsWith('home.'));
-  expect(home.length).toBe(26);expect(home.filter(k=>!Object.hasOwn(fr,k))).toEqual([]);
+  expect(home.length).toBe(27);expect(home.filter(k=>!Object.hasOwn(fr,k))).toEqual([]);
  });
  it('Front FR2: the catalog covers E01 and E02 (every key of their prefixes, and classLink.open)',()=>{
   expect(FR2_KEYS.length).toBeGreaterThan(780);
