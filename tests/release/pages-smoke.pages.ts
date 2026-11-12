@@ -442,9 +442,9 @@ test('Front SEO: the lab pages, sitemap and robots.txt are served with the relea
 
 // Front LAUNCH-3: language addresses people type that are not the site's own answer 301 to the page that exists, keeping the
 // rest of the path and the query string (public/_redirects), and the language's own addresses are untouched.
-test('Front LAUNCH-3: /pt/, /en/ and /es-419/ redirect with a 301 to the Portuguese, English and Spanish pages, keeping path and query',async({request})=>{
+test('Front LAUNCH-3: /pt/, /en/ and /es-419/ redirect with a 301 to the Portuguese, English and Spanish pages, keeping path and query',async({request,baseURL})=>{
  for(const [from,to] of [['/pt','/pt-br/'],['/pt/','/pt-br/'],['/pt/labs/hubble/','/pt-br/labs/hubble/'],['/pt/labs/?utm_source=x&b=1','/pt-br/labs/?utm_source=x&b=1'],
-  ['/en','/'],['/en/','/'],['/en/labs/pulsars/','/labs/pulsars/'],['/en/?lang=fr','/?lang=fr'],
+  ['/en','/'],['/en/','/'],['/en/labs','/labs/'],['/en/labs/pulsars/','/labs/pulsars/'],['/en/?lang=fr','/?lang=fr'],
   ['/es-419','/es/'],['/es-419/','/es/'],['/es-419/labs/object-x/?a=1','/es/labs/object-x/?a=1']] as const){
   const r=await request.get(from,{maxRedirects:0});expect(r.status(),from).toBe(301);
   const location=new URL(r.headers().location,'http://x');expect(location.pathname+location.search,from).toBe(to);
@@ -454,6 +454,13 @@ test('Front LAUNCH-3: /pt/, /en/ and /es-419/ redirect with a 301 to the Portugu
  const bare=await request.get('/pt/labs/hubble',{maxRedirects:0});expect([bare.status(),bare.headers().location]).toEqual([301,'/pt-br/labs/hubble']);
  for(const path of ['/pt-br/','/es/','/fr/','/labs/']){const r=await request.get(path,{maxRedirects:0});expect(r.status(),path).toBe(200);}
  for(const path of ['/pt-BR/','/english/']){const r=await request.get(path,{maxRedirects:0});expect(r.status(),path).toBe(404);}
+ // Review LAUNCH-3: no rule sends a visitor to another host. /en//evil.example once answered 301 to http://evil.example/; English
+ // pages live only at / and /labs/, so other /en/ addresses answer 404, and the other prefixes keep a segment of this site.
+ for(const path of ['/en//evil.example','/en/%5Cevil.example','/en/sitemap.xml']){const r=await request.get(path,{maxRedirects:0});expect(r.status(),path).toBe(404);}
+ for(const [from,to] of [['/pt//evil.example','/pt-br//evil.example'],['/es-419//evil.example','/es//evil.example'],['/en/labs//evil.example','/labs//evil.example']] as const){
+  const r=await request.get(from,{maxRedirects:0});expect(r.status(),from).toBe(301);
+  const location=new URL(r.headers().location,baseURL);expect([location.origin,location.pathname],from).toEqual([baseURL,to]);
+ }
 });
 
 // Front LAUNCH-3: the plain-ASCII originals are served as text/plain (so Cloudflare compresses them), byte-exact, and the binary

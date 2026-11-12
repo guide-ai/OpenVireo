@@ -37,10 +37,24 @@ describe('public/_redirects',()=>{
     const page=pathOf(language,key),own=pathOf(byTag('en'),key);
     expect(redirect(alias+own),alias+own).toBe(page);
     // Without the trailing slash Pages adds it after the redirect (a lab page is a directory), so it still ends on the page.
-    if(own!=='/')expect(redirect(alias+own.slice(0,-1)),alias+own).toBe(page.slice(0,-1));
+    // Review LAUNCH-3: /en/labs goes straight to /labs/ (its own rule), the others through Pages' slash.
+    if(own!=='/')expect([page,page.slice(0,-1)],alias+own).toContain(redirect(alias+own.slice(0,-1)));
    }
   }
   expect(redirect('/pt/labs/nope/')).toBe('/pt-br/labs/nope/');// an unknown page then answers 404 at its Portuguese address
+ });
+ it('never sends a visitor to another host (Review LAUNCH-3: no open redirect)',()=>{
+  // Pages resolves the destination against the request URL, so a destination that starts with // (or /\\) is another host.
+  // Every rule's destination must keep a fixed segment of this site before its splat.
+  for(const r of RULES)expect(r.to,r.from).toMatch(/^\/(?:$|[^/\\:])/);
+  for(const r of RULES)if(r.to.includes(':splat'))expect(r.to.indexOf(':splat'),r.from).toBeGreaterThan(1);
+  for(const prefix of ['/pt/','/en/','/en/labs/','/es-419/'])for(const tail of ['/evil.example','//evil.example','\\evil.example','/\\evil.example']){
+   const to=redirect(prefix+tail);if(to===null)continue;
+   expect(new URL(to,'https://openvireo.space/x/').origin,prefix+tail).toBe('https://openvireo.space');
+   expect(to,prefix+tail).not.toMatch(/^\/[/\\]/);
+  }
+  // English pages live only at / and /labs/: other /en/ addresses are not redirected (they answer 404).
+  for(const path of ['/en//evil.example','/en/original/x','/en/sitemap.xml'])expect(redirect(path),path).toBeNull();
  });
  it('never names a served path, even matched without regard to case, so no page is hidden and no redirect loops',()=>{
   for(const r of RULES){

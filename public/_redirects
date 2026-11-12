@@ -8,9 +8,13 @@
 # /pt-BR: a source that differs from /pt-br/ only in case would loop if a host ever matched paths without regard to case.
 /pt /pt-br/ 301
 /pt/* /pt-br/:splat 301
-# English lives at the root: /en and /en/… drop the prefix.
+# English lives at the root: /en, /en/ and /en/labs/… drop the prefix. Never `/en/* /:splat`: /en//evil.example would make the
+# destination //evil.example, which Pages resolves as another host and answers with an open redirect (Review LAUNCH-3). Every
+# destination keeps a fixed first segment of this site before :splat.
 /en / 301
-/en/* /:splat 301
+/en/ / 301
+/en/labs /labs/ 301
+/en/labs/* /labs/:splat 301
 # Spanish: the UI tag es-419 (as in ?lang=es-419) goes to the Spanish pages under /es/.
 /es-419 /es/ 301
 /es-419/* /es/:splat 301

@@ -249,10 +249,11 @@ El flujo necesita dos secretos. Se guardan en el **entorno** `production` de Git
 | Origen | Destino |
 | --- | --- |
 | `/pt`, `/pt/…` | `/pt-br/`, `/pt-br/…` |
-| `/en`, `/en/…` | `/`, `/…` |
+| `/en`, `/en/`, `/en/labs`, `/en/labs/…` | `/`, `/`, `/labs/`, `/labs/…` |
 | `/es-419`, `/es-419/…` | `/es/`, `/es/…` |
 
 - Pages aplica `_redirects` antes que cualquier archivo, así que ninguna regla puede nombrar una ruta que el sitio publica. `src/seo/redirects.test.ts` lo comprueba, también sin distinguir mayúsculas.
+- Las páginas en inglés solo están en `/` y `/labs/`, así que otras direcciones `/en/…` responden 404. Nunca `/en/* /:splat`: con `/en//otro.example` el destino sería `//otro.example`, que Pages interpreta como otro dominio (redirección abierta). Cada destino conserva un primer segmento fijo de este sitio antes de `:splat`, y `src/seo/redirects.test.ts` lo comprueba.
 - No hay regla para `/pt-BR`: solo se distingue de `/pt-br/` por las mayúsculas, y si un servidor comparara rutas sin distinguirlas, la redirección se repetiría sin fin.
 - Los parámetros (`?lang=…`, `?utm_…`) se conservan cuando el destino no trae los suyos. Así lo hace el código de Pages que usa `wrangler pages dev` (`generateHandler`: `destination.search || search`). La documentación de Cloudflare no lo dice: https://developers.cloudflare.com/pages/configuration/redirects/ (consultada el 12 de noviembre de 2026).
 - `/pt/labs/hubble` (sin barra final) va a `/pt-br/labs/hubble`, y Pages añade la barra con un 308, como ya hacía con `/es` y `/fr`.
@@ -337,3 +338,11 @@ Queda como decisión tuya. Si la pruebas, comprueba con el `curl` de arriba sobr
 - Arriba, el bloque en inglés con su `h1`. Después, un bloque por idioma (`lang="es-419"`, `lang="pt-BR"`, `lang="fr"`), cada uno con «Abrir el observatorio» y «Todas las prácticas» en su idioma.
 - Todas las direcciones son absolutas, porque Pages la sirve a cualquier profundidad. Lleva `noindex`.
 
+### 12.4 Revisión LAUNCH-3 (12 de noviembre de 2026)
+
+Revisión independiente (Opus) de la rama `claude/front-launch3`.
+
+- **Corregido (alta): redirección abierta.** La regla `/en/* /:splat` enviaba `/en//evil.example` con un 301 a `http://evil.example/`, comprobado con `wrangler pages dev` (el código de Pages resuelve el destino con `new URL(to, request.url)` y no impide la doble barra inicial). Ahora el inglés se limita a `/en`, `/en/`, `/en/labs` y `/en/labs/*` (§ 12.1); `src/seo/redirects.test.ts` y `npm run test:pages` comprueban que ninguna regla lleva a otro dominio.
+- **Compresión:** todos los cargadores de los archivos etiquetados leen `response.body` con `boundedResourceBody` y comprueban tamaño y SHA-256 sobre los bytes ya decodificados; ninguno usa `.text()`, `Content-Length` como progreso ni peticiones `Range`, y no hay service worker. Los 194 archivos (8 956 274 bytes) son ASCII. Las reglas `/original/*.SP` etc. son válidas para Pages (patrón anclado, `*` codicioso, sensible a mayúsculas).
+- **Menor, sin cambio:** una dirección inexistente bajo esas reglas (por ejemplo `/original/x.SP`) recibe la página 404 con tipo `text/plain`, así que una persona vería su HTML como texto. Ningún cargador la lee.
+- **404:** correcta en los cuatro idiomas, `lang` en cada bloque, un `h1`, claro y oscuro, 320 px.
