@@ -1,0 +1,60 @@
+/** Front FR-REL+SEO [W]: the French (fr) texts of the seven lab pages under /fr/labs/ (user decision 8 of 2026-11-09 and the
+ * French decisions of 2026-11-11, AGENTS.md). Same slugs and order as src/seo/labs.ts; one neutral international French addressed
+ * with «vous» (vous-imperatives for instructions), following the fr glossary (src/i18n/fr/glossary.json, IAU OAE terms; «TP» for
+ * a lab) and the fr lint profile with its typography (U+202F before : ; ! ? and the apostrophe ’, written as characters;
+ * src/seo/languages.test.ts checks both). The lab names are the app's own French names. A web adaptation by OpenVireo of its own
+ * English pages: never CLEA's text, and it claims no equivalence with the original program. */
+import type {LabText} from './labs.ts';
+import type {LabSlug} from './labSlugs.ts';
+
+export const LAB_TEXT_FR:Readonly<Record<LabSlug,LabText>>=Object.freeze({
+ hubble:{name:'Loi de Hubble',
+  title:'TP sur la loi de Hubble en ligne (CLEA VIREO) · OpenVireo',
+  description:'Télescope et spectromètre virtuels : mesurez le décalage vers le rouge de galaxies et ajustez la loi de Hubble. Reconstruction web gratuite d’un TP CLEA VIREO.',
+  heading:'La loi de Hubble : la relation entre décalage vers le rouge et distance',
+  intro:'Pointez un télescope virtuel vers les galaxies de l’exercice d’origine de VIREO sur la loi de Hubble, obtenez leurs spectres et mesurez de combien leurs raies spectrales sont décalées. À partir de vos propres mesures, vous construisez un diagramme de Hubble et estimez le taux d’expansion de l’univers.',
+  steps:['Pointez le télescope vers chacune des treize galaxies de la liste de l’exercice d’origine et obtenez son spectre.','Alignez les raies K et H du calcium et la bande G dans l’analyseur de spectres pour mesurer chaque décalage vers le rouge.','Convertissez chaque décalage vers le rouge en vitesse de récession et associez-la à la distance de la galaxie, tirée de sa magnitude.','Tracez la vitesse en fonction de la distance, ajustez vous-même la relation de Hubble et enregistrez votre investigation.'],
+  learn:['Comment un spectre révèle le mouvement d’une galaxie.','Ce que signifie la constante de Hubble et comment on la mesure.','Pourquoi les astronomes utilisent des chandelles standard pour estimer les distances.']},
+ 'large-scale-structure':{name:'Structure à grande échelle',
+  title:'TP sur la structure à grande échelle (CLEA VIREO) · OpenVireo',
+  description:'Relevé d’une bande du ciel : mesurez le décalage vers le rouge de galaxies et tracez un diagramme en cône. Reconstruction web gratuite d’un TP CLEA VIREO.',
+  heading:'La structure à grande échelle de l’univers',
+  intro:'Choisissez l’un des neuf champs de relevé d’origine, mesurez le décalage vers le rouge d’une galaxie après l’autre et placez-les dans un diagramme en cône. Murs, filaments et vides apparaissent dans vos propres données.',
+  steps:['Choisissez un champ de relevé et un télescope.','Obtenez le spectre de chaque galaxie et consignez son décalage vers le rouge.','Placez vos propres mesures dans un diagramme en cône ascension droite–vitesse.','Décrivez les structures que vous voyez et enregistrez votre investigation.'],
+  learn:['Comment les relevés de décalages vers le rouge cartographient l’univers en trois dimensions.','Ce que sont les amas, les murs, les filaments et les vides.','Comment lire un diagramme en cône.']},
+ 'stellar-classification':{name:'Classification stellaire',
+  title:'Classer des spectres stellaires : TP CLEA VIREO · OpenVireo',
+  description:'Classez des étoiles : comparez leur spectre à des étalons, marquez les raies, mesurez une largeur équivalente. Reconstruction web gratuite d’un TP CLEA VIREO.',
+  heading:'La classification des spectres stellaires',
+  intro:'Chargez l’un des 25 spectres d’entraînement d’origine et comparez-le à un atlas d’étoiles étalons. Vous déterminez son type spectral à partir des raies que vous voyez ; rien n’est noté et aucune réponse n’est dévoilée.',
+  steps:['Chargez un spectre d’entraînement et un atlas de spectres étalons.','Comparez-le aux étalons voisins, côte à côte ou par différence.','Marquez des raies spectrales à l’aide de la table des raies et mesurez une largeur équivalente.','Consignez votre propre type spectral et votre raisonnement, puis enregistrez votre investigation.'],
+  learn:['La séquence spectrale OBAFGKM et ce qui la détermine.','Quelles raies d’absorption distinguent les étoiles chaudes des étoiles froides.','Comment comparer objectivement un spectre à des étalons.']},
+ pleiades:{name:'Photométrie des Pléiades',
+  title:'TP de photométrie des Pléiades (CLEA VIREO) · OpenVireo',
+  description:'Mesurez l’éclat B et V d’étoiles des Pléiades avec un photomètre virtuel et estimez la distance de l’amas. Reconstruction web gratuite d’un TP CLEA VIREO.',
+  heading:'Photométrie photoélectrique des Pléiades',
+  intro:'Pointez le télescope vers les 24 étoiles des Pléiades de la liste de l’exercice d’origine et mesurez chacune à travers les filtres B et V d’un photomètre virtuel. À partir de vos propres mesures, vous tracez la séquence de l’amas et estimez sa distance.',
+  steps:['Chargez la liste des Pléiades et pointez le télescope vers une étoile.','Mesurez le ciel et l’étoile à travers les filtres B et V.','Consignez vos mesures et calculez la couleur B−V de chaque étoile.','Ajustez la séquence principale à la main pour estimer la distance, puis enregistrez votre investigation.'],
+  learn:['Comment la photométrie mesure l’éclat et la couleur des étoiles.','Ce que montre un diagramme couleur–magnitude.','Comment l’ajustement de la séquence principale donne la distance d’un amas.']},
+ 'cluster-hr':{name:'Diagrammes HR d’amas',
+  title:'Diagrammes HR d’amas d’étoiles : TP CLEA VIREO · OpenVireo',
+  description:'Tracez les diagrammes HR d’amas d’étoiles, ajustez leur séquence principale et comparez-les à vos Pléiades. Reconstruction web gratuite d’un TP CLEA VIREO.',
+  heading:'Les diagrammes HR des amas d’étoiles',
+  intro:'Tracez un amas de référence de la base de données, ajustez sa séquence principale et comparez-le aux étoiles des Pléiades que vous avez mesurées vous-même dans le TP de photométrie.',
+  steps:['Choisissez un amas de référence dans la base de données et tracez son diagramme HR.','Ajustez sa séquence principale.','Placez vos propres mesures B et V des Pléiades.','Comparez vous-même les deux séquences.'],
+  learn:['Comment se construit le diagramme de Hertzsprung–Russell.','Comment les diagrammes d’amas révèlent la distance et l’âge.','Pourquoi le rougissement par la poussière déplace un amas dans le diagramme.']},
+ pulsars:{name:'Pulsars',
+  title:'TP de radioastronomie des pulsars (CLEA VIREO) · OpenVireo',
+  description:'Captez des pulsars à deux fréquences avec un radiotélescope virtuel et mesurez leur période et leur dispersion. Reconstruction web gratuite d’un TP CLEA VIREO.',
+  heading:'Radioastronomie des pulsars',
+  intro:'Dirigez un radiotélescope virtuel vers des pulsars du catalogue d’origine et captez leurs impulsions à deux radiofréquences. Le retard entre les fréquences révèle la quantité de matière interstellaire traversée par le signal.',
+  steps:['Démarrez le TP sur les pulsars et pointez le radiotélescope vers un pulsar.','Captez ses impulsions à deux fréquences différentes.','Mesurez la période et le retard entre les fréquences.','Comparez vos résultats à la mesure de dispersion et à la période, puis enregistrez votre investigation.'],
+  learn:['Ce que sont les pulsars et pourquoi ils émettent des impulsions.','Comment la dispersion retarde les signaux radio de basse fréquence.','Ce que la mesure de dispersion indique sur la distance d’un pulsar.']},
+ 'object-x':{name:'Objet X',
+  title:'Objet X : identifier un objet mystère (CLEA VIREO) · OpenVireo',
+  description:'Étoile, galaxie, quasar, pulsar ou astéroïde ? Identifiez l’Objet X d’après des images, des spectres et la radio. Reconstruction web gratuite d’un TP du CLEA.',
+  heading:'Objet X : qu’est-ce que c’est ?',
+  intro:'Vous ne recevez qu’un identifiant et des coordonnées. À l’aide d’images CCD prises à des moments différents, de spectres et du radiotélescope, vous décidez si l’objet est une étoile, une galaxie, un quasar, un pulsar ou un astéroïde.',
+  steps:['Vous recevez une cible sous la forme d’un identifiant et de coordonnées ; son identité reste cachée.','Observez-la avec la caméra CCD, le spectromètre et le radiotélescope.','Décidez de quel type d’objet il s’agit et justifiez-le par vos propres observations.','S’il s’agit d’un astéroïde, mesurez ses positions sur plusieurs images et décrivez son mouvement.'],
+  learn:['À quoi ressemblent différents types d’objets en images, en spectres et en radio.','Comment le mouvement entre les images révèle un corps du Système solaire.','Comment construire une argumentation à partir de plusieurs types d’indices.']},
+});

@@ -202,6 +202,62 @@ indexing». URL Inspection shows the canonical Google chose; an OpenSEO site aud
 Webmaster Tools if wanted. OpenSEO can track Brazilian keywords (for example «prática lei de Hubble», «CLEA astronomia», «diagrama
 HR aglomerados») with Brazil as the market.
 
+# Front FR-SEO: French search pages
+
+User decision 8 of 2026-11-09 and the French decisions of 2026-11-11 (AGENTS.md): with the French release (FR-REL, the same front,
+FR-REL+SEO), its home page `/fr/` and lab pages `/fr/labs/`, with `hreflang` and a French preview image, following PT-SEO's
+data-driven design. Static site only; no new external service. The language rules are in `docs/I18N.md`, "French: release and
+search pages (FR-REL+SEO)".
+
+## What changed
+
+- **Data only.** An `fr` row in `src/seo/languages.ts` (`SEO_LANGUAGES`), its lab texts in `src/seo/labs.fr.ts`, its prefix `/fr`
+  in `SEO_PATH_PREFIX` (`src/seo/labSlugs.ts`; equal to the registry's `pagePath`). `src/seo/pages.ts`, the Vite plugin and the
+  image renderer are unchanged: they render the row.
+- **French pages**: `/fr/` (static home: what OpenVireo is, «Ouvrir l’observatoire», the seven labs, how it works, the credit),
+  `/fr/labs/` and `/fr/labs/<slug>/` with the English slugs. `<html lang="fr">`, French titles (47–62 characters) and descriptions
+  (154–159), self canonical, `og:locale` `fr_FR` (Open Graph needs a territory; `hreflang` stays `fr`) with `og:locale:alternate`
+  `en_US`, `es_LA` and `pt_BR`, French JSON-LD (`WebApplication` on `/fr/`, `ItemList` on the index, `LearningResource` with
+  `inLanguage` `fr`, `learningResourceType` «TP interactif», `educationalLevel` «Lycée»/«Enseignement supérieur» and breadcrumbs on
+  each lab, `isBasedOn` crediting Project CLEA, Gettysburg College and the NSF as the English pages do). «Ouvrir le TP» goes to
+  `/?lang=fr#lab=<slug>`. A lab is a «TP» (decision D4 of the French plan) and the lab names are the app's own French names
+  («Classification stellaire», «Photométrie des Pléiades», «Diagrammes HR d’amas», «Objet X»…; «Pulsars» is the same word in both
+  languages). The text addresses the reader as «vous», uses U+202F before `: ; ? !` and the apostrophe ’ (written as characters by
+  the French typography fixer), and the home's «Comment ça marche» adds, as the Portuguese one does, that on screen numbers use a
+  decimal point and a thin space between thousands («24 000», U+202F). The footer says «Ce texte en français est une adaptation web
+  d’OpenVireo, pas un texte du CLEA.»
+- **hreflang** on every page pair (36 pages, 9 per language): `en`, `es`, `pt-BR`, `pt`, `fr` and `x-default` → English. `fr` alone
+  (ISO 639-1, valid for Google) names one neutral French that the app opens for every `fr`/`fr-*` browser (fr-FR, fr-CA, fr-BE,
+  fr-CH, fr-SN…: FR-REL), so every French searcher is sent to it. The sitemap lists all 36 addresses with the same six alternates.
+  English, Spanish and Portuguese pages gain `og:locale:alternate` `fr_FR` and a visible «Français» link (`hreflang`/`lang` `fr`) to
+  their French version; nothing else in their HTML changed, and `index.html`'s body is untouched (only its alternates, built from the
+  table, gain the French link).
+- **App**: the observatory footer's labs link goes to `/fr/labs/` when the app is in French (`labsIndexUrl(uiLanguage())`, the
+  prefix table, which the app bundle carries: one more entry, `fr:'/fr'`).
+- **Preview image** `public/og-image-fr.png` (1200×630, SHA-256 `6468de69…47114d`): the design of the others with French text («TP d’astronomie
+  CLEA VIREO dans votre navigateur»), rendered by `node scripts/render-og-image.mjs fr` with the project's test fontconfig; an
+  original drawing, no CLEA image. Its second line first read «…non officielle, en français. Rien à installer.», which the renderer
+  refused (two lines at 29 px); «en français» was dropped. Two renders gave the same bytes.
+- **Headers**: `/fr/*` is `no-cache`, like `/labs/*`, `/es/*` and `/pt-br/*` (`public/_headers`, `src/deployHeaders.test.ts`).
+
+## Tests
+
+- `src/seo/languages.test.ts`: French joins the per-language checks with its own rules (profile `fr`, glossary field `fr`, the French
+  claims, reconstruction phrase, adaptation and credit sentences, `fr_FR`, its image); titles may start «OpenVireo\u202f: »; a lab
+  name may equal the English one only where the rule says so (French «Pulsars»). The alternates are `en`, `es`, `pt-BR`, `pt`, `fr`,
+  `x-default` on all 36 pages and in the sitemap. `src/seo/pages.test.ts` (36 sitemap addresses) and `src/seo/direction.test.ts`
+  (the French link in the RTL-fixture pages) follow.
+- `tests/i18n/seo.spec.ts`: the same flows for French (`/fr/`, «Ouvrir le TP» on the pulsar and Object X pages, English back).
+- `tests/release/pages-smoke.pages.ts`: the French pages and image with the release headers, the 308s, the six alternates on `/` and
+  each home, the sitemap, and a French lab page opening the app under the release policy (only fr chunks fetched).
+
+## For the user (not done by the site)
+
+After the deploy: in Google Search Console resubmit `https://openvireo.space/sitemap.xml` (it now lists 36 addresses) and use URL
+Inspection on `https://openvireo.space/fr/` and one French lab page (for example `/fr/labs/hubble/`), then «Request indexing». The
+same in Bing Webmaster Tools if wanted. OpenSEO can track French keywords (for example «TP loi de Hubble», «CLEA astronomie», «TP
+diagramme HR amas») with France, Belgium, Switzerland or Canada as the market.
+
 # Front HOME: a welcome on the observatory's first screen
 
 User request, 2026-11-10: before the site is announced to the general public (curious adults and hobby learners, for example

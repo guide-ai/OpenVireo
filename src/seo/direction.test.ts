@@ -28,13 +28,13 @@ describe('Front RT9: direction in the static pages',()=>{
   const lab=SPANISH.labs[0];
   for(const page of [labPage(lab,SPANISH,SPANISH_RTL),labsIndexPage(SPANISH,SPANISH_RTL),languageHomePage(SPANISH,SPANISH_RTL)]){
    expect(htmlTag(page)).toBe('<html lang="es-419" dir="rtl">');
-   expect(links(page)).toEqual([['en','dir="ltr"'],['pt-BR','dir="ltr"']]);
+   expect(links(page)).toEqual([['en','dir="ltr"'],['pt-BR','dir="ltr"'],['fr','dir="ltr"']]);
   }
  });
  it('in a left-to-right page, only the link to the right-to-left language carries dir="rtl"',()=>{
   const page=labPage(ENGLISH.labs[0],ENGLISH,SPANISH_RTL);
   expect(htmlTag(page)).toBe('<html lang="en">');
-  expect(links(page)).toEqual([['es-419','dir="rtl"'],['pt-BR','-']]);
+  expect(links(page)).toEqual([['es-419','dir="rtl"'],['pt-BR','-'],['fr','-']]);
   expect(htmlTag(languageHomePage(PORTUGUESE,SPANISH_RTL))).toBe('<html lang="pt-BR">');
   expect(languageLinks(PORTUGUESE,'labs',SPANISH_RTL)).toContain('hreflang="es-419" lang="es-419" dir="rtl">Español</a>');
  });

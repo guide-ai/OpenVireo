@@ -35,8 +35,10 @@ import {OBJECT_X_SESSION_FR} from './maps/objectXSession';
 import {HELP_VIEWER_FR} from './maps/helpViewer';
 import {WEB_HELP_FR} from './maps/webHelp';
 /** Front FR0 [W]: the French (fr) bundle (docs/I18N.md, "French: the folder, lints and shell (FR0)"; Front FR1 adds the observatory
- * and all of VIREO's originals, Front FR2 exercises E01 and E02, Front FR4 exercises E04 and E05, Front FR5 the radio telescope, Front FR6 exercises E06 and E08). Partial until its release
- * (src/i18n/languages.json `released:false`): only a `?lang=fr` preview reaches it, and every string it lacks is English. The
+ * and all of VIREO's originals, Front FR2 exercises E01 and E02, Front FR3 exercise E03, Front FR4 exercises E04 and E05, Front FR5 the
+ * radio telescope, Front FR6 exercises E06 and E08, Front FR-HELP the help viewer and OpenVireo's own help). It was partial until its
+ * release (FR0–FR-HELP, behind a `?lang=fr` preview); since Front FR-REL (src/i18n/languages.json `released:true`) every fr and fr-*
+ * browser opens it, and its catalog and every map are complete (src/i18n/fr/fr.test.ts). The
  * production build splits it by route area like Spanish and Portuguese (scripts/i18n-split.mjs parses this manifest); Vitest
  * imports it whole. Translations are web adaptations by OpenVireo; they never claim to be CLEA's, and CLEA's bytes, hashes and
  * provenance are unchanged. */

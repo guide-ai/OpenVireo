@@ -1,6 +1,6 @@
 import {type Page,type Request} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
-import {PORTUGUESE_LOCALE,SPANISH_LOCALE} from '../fixtures/language';
+import {SPANISH_LOCALE,contextLocale} from '../fixtures/language';
 import en from '../../src/i18n/en.json' with {type:'json'};
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import {WEDGE_ES} from '../../src/i18n/es/maps/wedge';
@@ -188,15 +188,18 @@ test('View original (English) on an area route: VIREO\'s names in English, the a
 });
 
 // Front PT0 (plan front-i18n-pt-br.md §6) checked here that a language before its release (its `?lang=pt-BR` preview, partial)
-// fetched only its core and no chunk for an empty area; the qaa-XA fixture of src/i18n/partialLanguage.test.ts and split.test.ts
-// keeps that case (and Front FR0 brings it back for French, at the end of this file). Front PT-REL: Brazilian Portuguese is released and complete, so a pt-BR browser, with no `?lang=`, fetches its
-// core and, on each area route, exactly the area and shared modules its plan gives (no area is empty any more), with the route in
-// Portuguese, no notice, no route error and no read before its area.
-test.describe('in a Brazilian Portuguese browser',()=>{
- test.use({locale:PORTUGUESE_LOCALE});
- test('Brazilian Portuguese (released) fetches its core, and on each area route only that area\'s modules',async({page})=>{
+// fetched only its core and no chunk for an empty area, and Front FR0 brought that case back for French; the qaa-XA fixture of
+// src/i18n/partialLanguage.test.ts and split.test.ts keeps it. Front PT-REL: Brazilian Portuguese is released and complete, so a
+// pt-BR browser, with no `?lang=`, fetches its core and, on each area route, exactly the area and shared modules its plan gives (no
+// area is empty any more), with the route in Portuguese, no notice, no route error and no read before its area. Front FR-REL: the
+// same for French, in an fr-FR browser (the Portuguese title kept).
+const RELEASED_AREAS=[{L:PORTUGUESE_TEXT,name:'Brazilian Portuguese'},{L:FRENCH_TEXT,name:'French'}] as const;
+for(const {L:P,name} of RELEASED_AREAS)test.describe(`in a ${name} browser`,()=>{
+ test.use({locale:contextLocale(P.tag)});
+ test(`${name} (released) fetches its core, and on each area route only that area's modules`,async({page})=>{
   test.setTimeout(300_000);
-  const P=PORTUGUESE_TEXT,ptPlan=planOf(P.tag),module=(name:string)=>ptPlan.modules.find(m=>m.name===name)!;
+  const plan=planOf(P.tag),module=(name:string)=>plan.modules.find(m=>m.name===name)!;
+  expect(P.entry.released).toBe(true);expect(P.query).toBe('');
   const fetchedFor=(area:string)=>{const m=module(area);return m.empty?[]:[area,...m.shared].sort();};
   const w=await watch(page,P.tag,P.entry.dir,P.entry.catalog);
   await page.goto(`/${P.query}#observatory`);await expect(page.getByRole('heading',{level:1,name:P.catalog['sky.title']})).toBeVisible({timeout:30_000});
@@ -210,7 +213,7 @@ test.describe('in a Brazilian Portuguese browser',()=>{
    'sky-exposure':async p=>{await expect(p.getByRole('button',{name:C['skyExposure.startSkyExposure'],exact:true})).toBeVisible({timeout:30_000});},
   };
   const headingKey:Record<string,string>={classification:'class.title','cluster-database':'db.title',photometer:'ph.title','lss-survey':'lss.title','galaxy-exposure':'galaxyExposure.title','star-exposure':'starExposure.title',images:'fits.title'};
-  const empty=ptPlan.modules.filter(m=>m.kind==='area'&&m.empty).map(m=>m.name);
+  const empty=plan.modules.filter(m=>m.kind==='area'&&m.empty).map(m=>m.name);
   expect(empty,'a released language has no empty area').toEqual([]);
   for(const r of ROUTES){
    await page.goto('about:blank');w.language.length=0;
@@ -222,61 +225,6 @@ test.describe('in a Brazilian Portuguese browser',()=>{
    const fetched=names(w);
    expect(fetched[0],r.hash).toBe('core');
    expect(fetched.slice(1).sort(),`${r.hash} fetched ${fetched.join(', ')}`).toEqual(fetchedFor(r.area));
-   if(empty.includes(r.area))expect(fetched.slice(1),`${r.hash}: the empty ${r.area} area has no chunk`).toEqual([]);
-  }
-  expect(w.problems).toEqual([]);
- });
-});
-
-// Front FR0 (plan front-i18n-fr.md §1.2 #6): a language before its release is partial again. French's preview (`?lang=fr`, in an
-// English browser) fetches its core, and each area route only the area modules its plan gives text to; an area with no text yet is
-// empty, has no chunk and resolves at once, so its route shows English without a notice, a route error or a read before its area.
-// With FR0's shell slice only `photometer` holds text (project.photometryCleared and project.photometryRestored, rendered by the
-// photometer); later FR fronts fill the others. Front FR1: the observatory's maps and keys also give text to `classification`
-// (the observationMetadata map) and `fits` (the cameraInfo.* keys the saved-image viewer shares). Front FR2 (E01 and E02) fills `exposure`
-// and `lss` (and their shared `exposure+lss` module). Front FR3: E03 fills `classification` and its shared `classification+cluster`
-// module, which the cluster routes also fetch, so `cluster` is no longer empty (as for pt-BR after PT3). Front FR4 (E04 and E05)
-// fills `photometer`, `cluster` and their shared `cluster+photometer` module (cluster's own chunk now holds keys). Front FR5 (the radio
-// telescope) fills `radio` and the shared `pulsar+radio` module (the radioR1 map, which Pulsar Analysis's File menu also shows), so
-// `pulsar` fetches that module too and no area is empty any more; each route still fetches exactly its plan's modules, and an
-// empty area (none now) would still have to fetch no chunk. FR-REL turns this back
-// into a released-language test (as PT-REL did).
-test.describe('a language before its release',()=>{
- test.use({locale:'en-US'});
- test('a partial language (French) fetches only its core, and no chunk for an empty area',async({page})=>{
-  test.setTimeout(300_000);
-  const P=FRENCH_TEXT,frPlan=planOf(P.tag),module=(name:string)=>frPlan.modules.find(m=>m.name===name)!;
-  expect(P.entry.released,'FR-REL replaces this test').toBe(false);
-  const fetchedFor=(area:string)=>{const m=module(area);return m.empty?[]:[area,...m.shared].sort();};
-  const w=await watch(page,P.tag,P.entry.dir,P.entry.catalog);
-  await page.goto(`/${P.query}#observatory`);await expect(page.getByRole('heading',{level:1,name:P.catalog['sky.title']})).toBeVisible({timeout:30_000});
-  await page.waitForLoadState('networkidle');
-  expect(names(w)).toEqual(['core']);expect(w.problems).toEqual([]);
-  const C={...E,...P.catalog};
-  const ready:Record<string,(page:Page)=>Promise<void>>={
-   'pulsar-analysis':async p=>{await expect(id(p,'pulsar-analysis')).toBeVisible({timeout:30_000});},
-   'radio-control':async p=>{await expect(id(p,'radio-route')).toBeVisible({timeout:30_000});},
-   'lss-wedge':async p=>{await expect(id(p,'wedge-persistence')).toBeVisible({timeout:30_000});},
-   'sky-exposure':async p=>{await expect(p.getByRole('button',{name:C['skyExposure.startSkyExposure'],exact:true})).toBeVisible({timeout:30_000});},
-  };
-  const headingKey:Record<string,string>={classification:'class.title','cluster-database':'db.title',photometer:'ph.title','lss-survey':'lss.title','galaxy-exposure':'galaxyExposure.title','star-exposure':'starExposure.title',images:'fits.title'};
-  const empty=frPlan.modules.filter(m=>m.kind==='area'&&m.empty).map(m=>m.name);
-  // FR1 review: pin the areas French gives text to (each FR front updates this list), so a lost or stray area fails here.
-  expect(frPlan.modules.filter(m=>m.kind==='area'&&!m.empty).map(m=>m.name).sort(),'the areas with French text').toEqual(['classification','cluster','exposure','fits','lss','photometer','pulsar','radio']);
-  // Front FR5: no area is empty any more (the pulsar area held only the shared pulsar+radio module until FR6, which gives it its own
-  // text: the saved-rows and load-save maps).
-  expect(empty,'no area is empty after FR5').toEqual([]);
-  for(const r of ROUTES){
-   await page.goto('about:blank');w.language.length=0;
-   await page.goto(`/${P.query}#${r.hash}`);
-   await (ready[r.hash]??(async(p:Page)=>{await expect(p.getByRole('heading',{name:C[headingKey[r.hash]],exact:true})).toBeVisible({timeout:30_000});}))(page);
-   await page.waitForLoadState('networkidle');await noRouteError(page);
-   await expect(page.locator('html')).toHaveAttribute('lang',P.entry.htmlLang);await expect(id(page,'area-failure')).toHaveCount(0);
-   await expect(page.locator('.investigation-toolbar')).toContainText(P.catalog['project.save']);
-   const fetched=names(w);
-   expect(fetched[0],r.hash).toBe('core');
-   expect(fetched.slice(1).sort(),`${r.hash} fetched ${fetched.join(', ')}`).toEqual(fetchedFor(r.area));
-   if(empty.includes(r.area))expect(fetched.slice(1),`${r.hash}: the empty ${r.area} area has no chunk`).toEqual([]);
   }
   expect(w.problems).toEqual([]);
  });

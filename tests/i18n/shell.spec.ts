@@ -5,7 +5,7 @@ import en from '../../src/i18n/en.json' with {type:'json'};
 import {translatedFor,type LanguageText} from './languageText';
 // Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts), and English with `?lang=en`. Front PT-REL:
 // Brazilian Portuguese the same way, in a pt-BR browser (the language loop's anonymous describe sets its browser locale). Front FR0:
-// French, before its release, through `?lang=fr` in an en-US browser (tests/i18n/languageText.ts: its `done` areas hold `shell`).
+// French, before its release, through `?lang=fr` in an en-US browser; since FR-REL in an fr-FR browser, like the others.
 test.use({locale:SPANISH_LOCALE});
 
 // Front ES1 (docs/I18N.md): the shell in Spanish in an `es-*` browser (a `?lang=es-419` preview load before ES-REL, decision 5).

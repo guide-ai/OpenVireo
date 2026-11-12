@@ -7,12 +7,14 @@
  * precedence of docs/I18N.md is unchanged).
  *
  * Front PT-SEO: Brazilian Portuguese (pt-BR) under /pt-br/, added as data only (its row, its texts in src/seo/labs.pt-br.ts).
+ * Front FR-REL+SEO: French (fr) under /fr/, the same way (its row, its texts in src/seo/labs.fr.ts).
  *
  * Which languages exist here is independent of which are released in the app: a row is added by that language's SEO front,
  * after its release (src/seo/pages.test.ts checks each row's tag against src/i18n/languages.json). */
 import {LABS,type LabText} from './labs.ts';
 import {LAB_TEXT_ES} from './labs.es.ts';
 import {LAB_TEXT_PT_BR} from './labs.pt-br.ts';
+import {LAB_TEXT_FR} from './labs.fr.ts';
 import {SEO_PATH_PREFIX,type LabSlug} from './labSlugs.ts';
 import {LANGUAGES,textDirection,type LanguageEntry,type TextDirection} from '../i18n/languages.ts';
 
@@ -25,9 +27,10 @@ export type SeoLanguage=Readonly<{
   * as es-419's is not one (ES-SEO review): Spanish is `es`, which also matches every `es-*` searcher, as the app opens Spanish for
   * any `es-*` browser. A language whose tag is valid there lists it first: Brazilian Portuguese is `pt-BR` and also `pt`, the
   * same URL, because the app opens pt-BR for every `pt` and `pt-*` browser (pt-PT, pt-AO, pt-MZ…), so a Portuguese searcher
-  * outside Brazil is sent to the Portuguese page rather than to the English x-default. */
+  * outside Brazil is sent to the Portuguese page rather than to the English x-default. French is `fr` alone (one neutral French
+  * that every `fr-*` browser opens, AGENTS.md 2026-11-11), which every French searcher matches. */
  hreflang:readonly string[];
- /** Open Graph locale (language_TERRITORY): en_US, es_LA, pt_BR. */
+ /** Open Graph locale (language_TERRITORY): en_US, es_LA, pt_BR, fr_FR (Open Graph needs a territory; hreflang stays `fr`). */
  ogLocale:string;
  /** Path prefix of its pages: '' for English, SEO_PATH_PREFIX for the others. */
  prefix:string;
@@ -153,8 +156,46 @@ const PT_BR:SeoLanguage={
    'Você pode mudar para o inglês quando quiser com o seletor de idioma do menu.']},
 };
 
+const FR:SeoLanguage={
+ tag:'fr',hreflang:['fr'],ogLocale:'fr_FR',prefix:SEO_PATH_PREFIX.fr,app:'/?lang=fr',
+ ogImage:'/og-image-fr.png',ogImageAlt:'OpenVireo : TP d’astronomie de CLEA VIREO dans votre navigateur, en français',
+ ogImageText:{title:'TP d’astronomie CLEA VIREO dans votre navigateur',lines:['Loi de Hubble · Pulsars · Pléiades · Objet X · et plus encore.','Reconstruction web gratuite et non officielle. Rien à installer.']},
+ labs:merge(LAB_TEXT_FR),
+ ui:{languageName:'Français',siteNav:'Site',breadcrumb:'Fil d’Ariane',labsCrumb:'TP',allLabs:'Tous les TP',openObservatory:'Ouvrir l’observatoire',
+  labEyebrow:'TP fondé sur un exercice de CLEA VIREO',openLab:'Ouvrir le TP',
+  openLabNote:()=>'Ouvre l’observatoire en français avec le guide de ce TP. Gratuit et sans inscription.',
+  whatYouDo:'Ce que vous faites',whatYouLearn:'Ce que vous apprenez',otherLabs:'Autres TP',
+  about:'OpenVireo est une reconstruction web gratuite et non commerciale de VIREO, l’observatoire éducatif virtuel '+
+   '(Virtual Educational Observatory) du Project CLEA, au Gettysburg College, soutenu par la NSF (National Science Foundation) et par le '+
+   'Gettysburg College. Il s’appuie sur le comportement retrouvé du programme d’origine et utilise les fichiers de données '+
+   'd’origine, avec mention de leur source. Ce n’est pas le programme d’origine et il n’est pas affilié au Project CLEA. '+
+   'L’application signale ses adaptations web connues. Ce texte en français est une adaptation web d’OpenVireo, pas un texte du CLEA.',
+  platform:'Fonctionne dans un navigateur web récent sous Windows, Mac, Linux ou Chromebook. Rien à installer, aucun compte nécessaire.',
+  learningResourceType:'TP interactif',educationalLevel:['Lycée','Enseignement supérieur']},
+ labsIndex:{title:'TP d’astronomie CLEA VIREO en ligne · OpenVireo',
+  description:'Sept TP de CLEA VIREO reconstruits pour le navigateur : loi de Hubble, structure à grande échelle, spectres, Pléiades, diagrammes HR d’amas, pulsars, Objet X.',
+  eyebrow:'TP de CLEA VIREO',heading:'Des TP d’astronomie dans votre navigateur',
+  lead:'Chaque TP suit l’un des exercices pour étudiants de VIREO, l’observatoire virtuel du Project CLEA. Vous observez avec des télescopes et des instruments virtuels, vous mesurez vos propres données et vous tirez vos propres conclusions.',
+  listName:'TP de CLEA VIREO'},
+ home:{title:'OpenVireo : TP d’astronomie de CLEA VIREO en français',
+  description:'Reconstruction web gratuite et non officielle de l’observatoire virtuel VIREO du Project CLEA, en français : loi de Hubble, pulsars, Pléiades, Objet X et plus.',
+  operatingSystem:'Tous (fonctionne dans un navigateur web)',
+  eyebrow:'Observatoire virtuel en français',heading:'Les TP d’astronomie de CLEA VIREO, dans votre navigateur',
+  lead:'OpenVireo reconstruit pour le web VIREO, l’observatoire virtuel du Project CLEA. Vous pointez des télescopes virtuels, obtenez des spectres, mesurez l’éclat des étoiles et captez des pulsars, puis vous tirez vos propres conclusions de vos propres données.',
+  note:'Gratuit, sans inscription et sans rien à installer.',
+  labsHeading:'Les sept TP',howHeading:'Comment ça marche',
+  how:['Tout se passe dans votre navigateur : rien à installer, aucun compte nécessaire.',
+   // Front HOME: the facts of the app's welcome (home.factInstall, home.factFaithful), as on /es/ and /pt-br/.
+   'Pas besoin de Windows ni de machine virtuelle : il fonctionne dans un navigateur récent sur Mac, Windows, Linux ou Chromebook.',
+   'Il suit le comportement retrouvé du programme d’origine et signale ses adaptations web. C’est une reconstruction non officielle.',
+   'Vous enregistrez vos investigations dans des fichiers sur votre propre ordinateur et vous les rechargez quand vous le souhaitez.',
+   'L’interface, les guides et l’aide sont en français. Les fichiers que le site écrit (TXT, FITS, CSV et investigations enregistrées) restent en anglais, au format de VIREO ou d’OpenVireo.',
+   'À l’écran, les nombres utilisent le point décimal, comme les fichiers de VIREO, et séparent les milliers par une espace fine (24 000).',
+   'Vous pouvez passer à l’anglais à tout moment avec le sélecteur de langue en haut de la page.']},
+};
+
 /** Every language with static pages, English first (the x-default). */
-export const SEO_LANGUAGES:readonly SeoLanguage[]=Object.freeze([EN,ES,PT_BR]);
+export const SEO_LANGUAGES:readonly SeoLanguage[]=Object.freeze([EN,ES,PT_BR,FR]);
 export const ENGLISH=EN;
 
 /** A page, named the same in every language: the home page, the labs index or one lab. */
