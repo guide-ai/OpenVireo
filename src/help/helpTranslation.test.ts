@@ -8,6 +8,7 @@ import {reminderBoxText,reminderBoxTextOf} from './mainHelp';
 import {HELP_FILES,helpFile} from './helpFiles';
 import glossary from '../i18n/es/glossary.json';
 import ptGlossary from '../i18n/pt-br/glossary.json';
+import frGlossary from '../i18n/fr/glossary.json';
 import {HelpTranslationError,helpTranslationText} from './helpTranslation';
 import {LANGUAGES,type LanguageEntry} from '../i18n/languages';
 import {PROFILES} from '../i18n/lint/profiles';
@@ -32,17 +33,22 @@ function sectionOf(file:Uint8Array|string,title:string):number{
 }
 /** The languages that translate the help files, with the describe title each keeps (Spanish: ES-HELP's). */
 const HELP_LANGUAGES=LANGUAGES.filter((l):l is LanguageEntry&{help:{related:string}}=>!!l.help);
-const TITLES:Readonly<Record<string,string>>={'es-419':'the Spanish help files (Front ES-HELP)','pt-BR':'the Brazilian Portuguese help files (Front PT-HELP)'};
+const TITLES:Readonly<Record<string,string>>={'es-419':'the Spanish help files (Front ES-HELP)','pt-BR':'the Brazilian Portuguese help files (Front PT-HELP)','fr':'the French help files (Front FR-HELP)'};
 /** Front SC7: the help sets written in Latin-1 (any script may be, now; these two are, by their own rule), each with the
  * characters it may add beyond Latin-1. Front PT-SEO: Portuguese groups thousands with U+202F on screen (user decision of
  * 2026-11-10), which Latin-1 cannot hold, so PULSRANL's «2 400 000» used U+00A0 until SC7 made translated help text; U+202F is a
  * no-break space of one column (src/core/textColumns.ts), so the parsers treat it exactly as they treat U+00A0. */
-const LATIN1_HELP:Readonly<Record<string,string>>={'es-419':'','pt-BR':'\u202f'};
-/** A Latin-1 set's text with its added characters read as U+00A0, the Latin-1 character the parsers treat the same way. */
-const asLatin1=(s:string)=>s.replaceAll('\u202f','\u00a0');
+// Front FR-HELP (plan front-i18n-fr.md §4.6): French adds U+202F (before ; : ! ?, inside « », between thousands), the typographic
+// apostrophe ’ and the ligatures œ Œ, which Latin-1 lacks (« », æ and every accented French letter are Latin-1).
+const LATIN1_HELP:Readonly<Record<string,string>>={'es-419':'','pt-BR':'\u202f','fr':'\u202f\u2019\u0153\u0152'};
+/** A Latin-1 set's text with each added character read as a Latin-1 character of one column that the parsers treat the same way:
+ * U+202F as U+00A0 (a no-break space); for French, ’ as ´ and œ Œ as ø Ø, characters no French help text writes, one for one, so a
+ * line keeps its length and the 72-column wrap and the 65-column titles read the same. Plan §4.6 wrote ’→' and œ→oe: a straight '
+ * inside a title would end VIREO's quoted LST token there, and oe would lengthen a full line by a column. */
+const asLatin1=(s:string)=>s.replaceAll('\u202f','\u00a0').replaceAll('\u2019','\u00b4').replaceAll('\u0153','\u00f8').replaceAll('\u0152','\u00d8');
 const viaLatin1=<T,>(value:T):T=>JSON.parse(asLatin1(JSON.stringify(value)));
 it('Front PT-HELP: Spanish and Brazilian Portuguese translate the help files, each with its own marker',()=>{
- expect(HELP_LANGUAGES.map(l=>[l.tag,l.help.related])).toEqual([['es-419','TEMAS RELACIONADOS'],['pt-BR','TÓPICOS RELACIONADOS']]);
+ expect(HELP_LANGUAGES.map(l=>[l.tag,l.help.related])).toEqual([['es-419','TEMAS RELACIONADOS'],['pt-BR','TÓPICOS RELACIONADOS'],['fr','RUBRIQUES CONNEXES']]);
  for(const l of HELP_LANGUAGES)expect(TITLES[l.tag],l.tag).toBeDefined();
 });
 
@@ -72,7 +78,7 @@ for(const L of HELP_LANGUAGES)describe(TITLES[L.tag],()=>{
   for(const key of usable){
    const t=parseHelpListText(spanish(key));expect(viaLatin1(t),key).toEqual(parseHelpList(bytes(key)));
    for(const r of t)if(r.kind==='topic'){const f=helpFile(r.file);if(f)expect(viaLatin1(helpTopicBodyText(spanish(f.name.toUpperCase()),r.title,L.help.related)),`${key} ${r.title}`)
-    .toEqual(helpTopicBody(bytes(f.name.toUpperCase()),r.title,L.help.related));}
+    .toEqual(helpTopicBody(bytes(f.name.toUpperCase()),asLatin1(r.title),L.help.related));}
   }
   const lines=parseSpectralLineListText(spanish('SPECLNS.LNL'));expect(viaLatin1(lines)).toEqual(parseSpectralLineList(bytes('SPECLNS.LNL')));
   for(const l of lines)expect(viaLatin1(spectralLineHelpText(spanish('SPECLNS.TXT'),l.name))).toEqual(spectralLineHelp(bytes('SPECLNS.TXT'),l.name));
@@ -214,5 +220,39 @@ describe('the Brazilian Portuguese help texts follow the pt-BR lints',()=>{
  });
  it('every allowance is still needed and has a reason',()=>{
   for(const [key,a] of Object.entries(PT_ALLOWED)){expect(a.reason.length,key).toBeGreaterThan(20);for(const m of a.matches)expect(hitsOf(key).map(h=>h.match),`${key} ${m}`).toContain(m);}
+ });
+});
+
+// Front FR-HELP: the fr profile over each paragraph of every French help text (its wrapped lines joined), as for Portuguese above:
+// its typography patterns (elision, accented capitals, ligatures, Spanish/Portuguese/English words, anglicisms, title case), its
+// spacing check (the fixer's own view, src/i18n/lint/frenchSpacing.ts, given the English original so that a kept gloss must be
+// VIREO's English), the vous register's patterns and the fr glossary's `forbidden` patterns. Also: no straight " (French quotes
+// are « »), and none of the stand-ins ´ ø Ø that the byte-parser comparison above reads ’ œ Œ as.
+const FR_ALLOWED:Record<string,{matches:string[];reason:string}>={
+ 'HRANALHLP.TXT':{matches:['Cluster'],reason:'VIREO\'s English menu name in parentheses at its first mention, (Select Cluster Data)'},
+ 'PHOTOHLP.TXT':{matches:['Clusters'],reason:'VIREO\'s English exercise name in parentheses at its first mention, (Photoelectric Photometry of Clusters)'},
+};
+describe('the French help texts follow the fr lints',()=>{
+ const fr=(key:string):Module=>modules[`../i18n/fr/help/${key}.ts`];
+ const profile=PROFILES.fr;
+ const WORDS=(w:readonly string[])=>new RegExp(`(?<![\\p{L}\\p{N}])(?:${w.join('|')})(?![\\p{L}\\p{N}])`,'iu');
+ const forbidden=(frGlossary.forbidden as {fr?:string;words?:string[];use:string}[]).map(f=>({label:'glossary forbidden',pattern:f.words?WORDS(f.words):new RegExp(f.fr!,'iu'),use:f.use}));
+ const patterns=[...profile.typography,...profile.register.patterns,...forbidden];
+ const paragraphs=(text:string)=>text.split(/\n[ ]*\n/).map(p=>p.split('\n').map(l=>l.trim()).join(' ').trim()).filter(Boolean);
+ const hitsOf=(key:string)=>{
+  const english=new TextDecoder('latin1').decode(original(key)),out:{label:string;match:string;use:string}[]=[];
+  for(const para of paragraphs(fr(key).text)){
+   for(const p of patterns){const m=new RegExp(p.pattern.source,p.pattern.flags.replace('g','')).exec(para);if(m)out.push({label:p.label,match:m[0],use:p.use});}
+   if(!key.endsWith('.LST'))for(const h of profile.typographyCheck?.(para,english)??[])out.push(h);
+  }
+  return out;
+ };
+ for(const key of Object.keys(HELP_FILES))it(`${key}: no fr lint error (spacing, apostrophe, elision, register, forbidden terms)`,()=>{
+  expect(hitsOf(key).filter(h=>!FR_ALLOWED[key]?.matches.includes(h.match)).map(h=>`${h.label}: «${h.match}», use ${h.use}`)).toEqual([]);
+  if(!key.endsWith('.LST')&&key!=='SPECLNS.LNL')expect(fr(key).text,key).not.toMatch(/"/);
+  expect(fr(key).text,key).not.toMatch(/[´øØ]/);
+ });
+ it('every allowance is still needed and has a reason',()=>{
+  for(const [key,a] of Object.entries(FR_ALLOWED)){expect(a.reason.length,key).toBeGreaterThan(20);for(const m of a.matches)expect(hitsOf(key).map(h=>h.match),`${key} ${m}`).toContain(m);}
  });
 });

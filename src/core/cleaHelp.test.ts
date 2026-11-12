@@ -168,12 +168,23 @@ describe('Front SC7: Unicode help text',()=>{
   for(const l of lines)expect(spectralLineHelpText(text(sptxt),l.name)).toEqual(spectralLineHelp(sptxt,l.name));
   for(const name of ['Reminder.obs','REMINDER.PLS']){const b=originals.find(o=>o.f.name===name)!.bytes;expect(reminderBoxTextOf(text(b),REMINDER_SELECT)).toBe(reminderBoxText(b));}
  });
- it('folds Latin-1 text exactly as the Spanish and Portuguese search did (foldLatin1Accents)',()=>{
-  for(let c=0;c<256;c++){const s=String.fromCharCode(c);expect(foldHelpText(s),`U+${c.toString(16)}`).toBe(foldLatin1Accents(s));}
+ it('folds Latin-1 text exactly as the Spanish and Portuguese search did (foldLatin1Accents), but for æ and U+00A0 (Front FR-HELP)',()=>{
+  for(let c=0;c<256;c++){const s=String.fromCharCode(c);expect(foldHelpText(s),`U+${c.toString(16)}`).toBe(/[æÆ]/.test(s)?'ae':s==='\u00a0'?' ':foldLatin1Accents(s));}
   const corpus=Object.values(import.meta.glob<{text:string}>('../i18n/{es,pt-br}/help/*.ts',{eager:true})).flatMap(m=>m.text.split('\n'));
   expect(corpus.length).toBeGreaterThan(3000);
-  for(const l of corpus)expect(foldHelpText(l)).toBe(foldLatin1Accents(l));
+  expect(corpus.some(l=>/[æÆ\u00a0]/.test(l))).toBe(false);
+  // Front FR-HELP: U+202F (Portuguese thousands, «2 400 000») now reads as a space, so a typed «2 400 000» finds it.
+  for(const l of corpus)expect(foldHelpText(l)).toBe(foldLatin1Accents(l).replace(/\u202f/g,' '));
   for(const {bytes} of originals)for(const l of text(bytes).split(/\r?\n/))expect(foldHelpText(l)).toBe(foldLatin1Accents(l));
+ });
+ it('Front FR-HELP: reads the typographic apostrophe as \', œ and æ as oe and ae, and U+202F as a space (plan front-i18n-fr.md §4.6)',()=>{
+  expect(foldHelpText('L\u2019Étoile du NŒUD')).toBe('l\'etoile du noeud');
+  expect(foldHelpText('Cæsar Œil')).toBe('caesar oeil');
+  expect(foldHelpText('Prêt\u202f? 24\u202f000')).toBe('pret ? 24 000');
+  expect(foldHelpText('Prêt\u00a0?')).toBe(foldHelpText('Prêt\u202f?'));// a French keyboard's no-break space finds the help's U+202F
+  const list=[{kind:'topic' as const,title:'Accéder à l\u2019outil de classification',file:'x.txt'}];
+  expect(findHelpTopic(list,"acceder a l'outil de classification",false,0,foldHelpText)).toEqual({kind:'hit',index:0});
+  expect(findHelpTopic(list,"Accéder à l'outil de classification",true,0,foldHelpText)).toEqual({kind:'miss'});// Match case compares exactly
  });
  it('folds case only where the script has it, width and kana in Japanese, the nukta in Devanagari, and keeps Han as it is',()=>{
   expect(foldHelpText('ＣＣＤカメラを閉じる')).toBe('ccdかめらを閉じる');

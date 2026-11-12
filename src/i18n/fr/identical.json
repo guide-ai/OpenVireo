@@ -184,6 +184,8 @@
   "map:objectXLab.listColumns.7": "a note number ((3))",
   "map:objectXLab.listColumns.8": "a note number ((4))",
   "map:objectXLab.kinds.qso": "the same word in French (quasar, IAU OAE fr) with the abbreviation QSO",
-  "map:objectXLab.kinds.pulsar": "the same word in French (pulsar, IAU OAE fr)"
+  "map:objectXLab.kinds.pulsar": "the same word in French (pulsar, IAU OAE fr)",
+  "map:helpViewer.spectralLines.ok": "the same word in French (OK, as Windows French writes it)",
+  "map:webHelp.groups.1.topics.3.title": "the same word in French (Instruments, the web help topic on the observatory's instruments)"
  }
 }
