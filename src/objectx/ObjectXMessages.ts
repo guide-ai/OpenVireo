@@ -48,7 +48,7 @@ export const OBJECT_X_LAB_EN=Object.freeze({
  title:'The quest for Object X',
  scope:'You receive only an identifier and sky coordinates. Decide with the instruments whether the object is a star, a galaxy, a quasar, a pulsar or an asteroid.',
  startTitle:'1. Your object',
- idLabel:'ID # of your unknown object (from your exercise sheet, course or the guide)',
+ idLabel:'ID # of your unknown object (from your exercise sheet or course, or one you choose)',
  idHelp:'The ID only labels your saved data (ObjX-<ID>); it does not choose the object.',
  targetLabel:'Object code',targetChoose:'Choose a code…',targetRandom:'Assign me one at random',
  targetHelp:'An exercise sheet or course may give you a code; otherwise let the site assign one. Codes do not reveal what the object is.',

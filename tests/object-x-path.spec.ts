@@ -52,7 +52,7 @@ test('hidden identity, two images of the target with asteroids, measure, answer,
  await openLab(page);
  // M1: no identifier or remark in the Object X route, guide or camera before the reveal.
  expect(await leaks(page)).toEqual([]);
- await page.getByLabel('ID # of your unknown object (from your exercise sheet, course or the guide)').fill('42');
+ await page.getByLabel('ID # of your unknown object (from your exercise sheet or course, or one you choose)').fill('42');
  await page.getByTestId('objectx-target').selectOption(EROS_CODE);
  await expect(page.getByTestId('objectx-coordinates')).toHaveText('X-UZOBN — Coordinates (J2000): RA 22 43 19.26, Dec -08 02 23.6');
  await button(page,'Set the observatory clock').click();
@@ -202,7 +202,7 @@ test('Front C5W: the default bundled-extract mode images an Object X field witho
  test.setTimeout(180_000);
  const asked:string[]=[],tiles:string[]=[];page.on('request',r=>{if(CDS.test(r.url()))asked.push(r.url());if(r.url().includes('/original/gsc/'))tiles.push(r.url());});
  await openLab(page);
- await page.getByLabel('ID # of your unknown object (from your exercise sheet, course or the guide)').fill('42');
+ await page.getByLabel('ID # of your unknown object (from your exercise sheet or course, or one you choose)').fill('42');
  await page.getByTestId('objectx-target').selectOption(EROS_CODE);
  await button(page,'Set the observatory clock').click();
  await button(page,'Copy the coordinates to the observatory').click();
@@ -237,7 +237,7 @@ test('a mid-exposure repoint keeps the asteroids of the Start pointing in that i
  test.setTimeout(240_000);
  const body=await recorded;await page.route(CDS,route=>route.fulfill({status:200,contentType:'text/xml',body}));
  await openLab(page);
- await page.getByLabel('ID # of your unknown object (from your exercise sheet, course or the guide)').fill('42');
+ await page.getByLabel('ID # of your unknown object (from your exercise sheet or course, or one you choose)').fill('42');
  await page.getByTestId('objectx-target').selectOption(EROS_CODE);
  await button(page,'Set the observatory clock').click();
  await expect(page.getByTestId('objectx-list-status')).toContainText('Observable asteroids on 2009-06-01 04:00:00 UT',{timeout:20_000});
@@ -268,7 +268,7 @@ test('a mid-exposure repoint keeps the asteroids of the Start pointing in that i
 test('QA1: Eros is measurable with the default cut on 30 s images of the real star field',async({page})=>{
  test.setTimeout(300_000);
  await openLab(page);
- await page.getByLabel('ID # of your unknown object (from your exercise sheet, course or the guide)').fill('42');
+ await page.getByLabel('ID # of your unknown object (from your exercise sheet or course, or one you choose)').fill('42');
  await page.getByTestId('objectx-target').selectOption(EROS_CODE);
  await button(page,'Set the observatory clock').click();
  await expect(page.getByTestId('objectx-list-status')).toContainText('Observable asteroids on 2009-06-01 04:00:00 UT',{timeout:20_000});

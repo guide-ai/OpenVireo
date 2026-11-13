@@ -732,7 +732,7 @@ family('E08 Object X and the CCD camera: spectrum CSV and SSP, image FITS, camer
   const skip=page.getByRole('button',{name:N(locale,'Skip the tour')});if(await skip.isVisible().catch(()=>false))await skip.click();
   await expect(page.getByTestId('objectx-target').locator('option')).toHaveCount(18,{timeout:30_000});
   if(locale==='pt-BR'||locale==='fr')await expect(page.getByRole('heading',{level:1,name:LS.title,exact:true})).toBeVisible();
-  await lab.getByLabel(NX(locale,'ID # of your unknown object (from your exercise sheet, course or the guide)',LS.idLabel)).fill('42');
+  await lab.getByLabel(NX(locale,'ID # of your unknown object (from your exercise sheet or course, or one you choose)',LS.idLabel)).fill('42');
   // A kept spectrum of a star target (ObjectX.HTL row 9, not named before the reveal): 2 s of ticks with the clock paused.
   await page.getByTestId('objectx-target').selectOption('X-NTFB6');await page.getByTestId('objectx-spectrum-telescope').selectOption('2');
   await B('Place the slit on the object',LS.spectrumPrepare).click();await expect(B('Start spectrum',LS.spectrumStart)).toBeEnabled({timeout:90_000});

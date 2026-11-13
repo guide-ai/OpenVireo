@@ -11,7 +11,7 @@ export const OBJECT_X_LAB_FR:Translation<typeof OBJECT_X_LAB_EN>=Object.freeze({
  title:'La quête de l’Objet X',
  scope:'Vous recevez seulement un identifiant et des coordonnées célestes. Décidez avec les instruments si l’objet est une étoile, une galaxie, un quasar, un pulsar ou un astéroïde.',
  startTitle:'1. Votre objet',
- idLabel:'Numéro d’ID de votre objet inconnu (sur votre fiche d’exercices, dans votre cours ou dans le guide)',
+ idLabel:'Numéro d’ID de votre objet inconnu (sur votre fiche d’exercices ou dans votre cours, ou un numéro de votre choix)',
  idHelp:'L’ID sert seulement à nommer vos données enregistrées (ObjX-<ID>) ; il ne choisit pas l’objet.',
  targetLabel:'Code de l’objet',targetChoose:'Choisir un code…',targetRandom:'M’en attribuer un au hasard',
  targetHelp:'Une fiche d’exercices ou un cours peut vous donner un code ; sinon, laissez le site vous en attribuer un. Les codes ne révèlent pas ce qu’est l’objet.',

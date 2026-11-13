@@ -11,7 +11,7 @@ export const OBJECT_X_LAB_PT:Translation<typeof OBJECT_X_LAB_EN>=Object.freeze({
  title:'Em busca do Objeto X',
  scope:'Você recebe apenas um identificador e coordenadas do céu. Decida com os instrumentos se o objeto é uma estrela, uma galáxia, um quasar, um pulsar ou um asteroide.',
  startTitle:'1. Seu objeto',
- idLabel:'Nº de ID do seu objeto desconhecido (da sua folha de exercícios, do seu curso ou do guia)',
+ idLabel:'Nº de ID do seu objeto desconhecido (da sua folha de exercícios ou do seu curso, ou um de sua escolha)',
  idHelp:'O ID apenas rotula seus dados salvos (ObjX-<ID>); ele não escolhe o objeto.',
  targetLabel:'Código do objeto',targetChoose:'Escolha um código…',targetRandom:'Sortear um para mim',
  targetHelp:'Uma folha de exercícios ou um curso pode lhe dar um código; se não, deixe o site atribuir um. Os códigos não revelam o que o objeto é.',
