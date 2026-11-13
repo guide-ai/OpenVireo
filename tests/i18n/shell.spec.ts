@@ -14,7 +14,7 @@ test.use({locale:SPANISH_LOCALE});
 // own. The untranslated check compares the same shell regions in English and in the language: no visible text, accessible
 // name or title may read the same, except the names below that are the same in every language. The selector's options are each
 // language's own name (its autonym, never translated), so option text is left out of the comparison.
-const SAME=new Set(['OpenVireo','✳','?','↗','×','English','Español','Idioma / Language','NVO','—']);
+const SAME=new Set(['OpenVireo','✳','?','↗','×','English','Español','Idioma / Language','NVO','—','Menu']);// Front LAUNCH-2: the phone menu is Menu in English too
 const SHELL=['.portal-header','.investigation-toolbar','.observatory-heading','.first-steps'];
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
 const asVisitor=(page:Page)=>page.addInitScript(()=>{Object.defineProperty(Navigator.prototype,'webdriver',{configurable:true,get:()=>false});});

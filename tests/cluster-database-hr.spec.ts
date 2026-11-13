@@ -161,7 +161,8 @@ test('a notebook first created by Retry stays without the catalog E until the ex
  for(const k of['modulus','ebv','age','model']as const)await expect(b.getByLabel(labels[k],{exact:true})).toHaveValue('');
  await expect(b.getByLabel(sliders.ebv,{exact:true})).toHaveAttribute('aria-valuetext','not set');await expect(b.getByTestId('db-slider-offset')).toHaveText('0.00');await expect(b.getByLabel(labels.correction,{exact:true})).not.toBeChecked();
  await expect(b.getByTestId('cluster-reddening-source')).toContainText('manual choice');await expect(b.getByText(/notebook: the catalog E\(B−V\) =/)).toHaveCount(0);
- await expect(b.getByText('A notebook first created by Retry dataset load does not get this copy')).toBeVisible();await expect(b.getByText('A notebook first created by Retry dataset load (for example after a failed first load) gets no catalog E(B−V)')).toBeVisible();
+ // Front LAUNCH-2: the notebook policy is behind the lab's Research notes.
+ await b.locator('details.research-notes>summary').last().click();await expect(b.getByText('A notebook first created by Retry dataset load does not get this copy')).toBeVisible();await expect(b.getByText('A notebook first created by Retry dataset load (for example after a failed first load) gets no catalog E(B−V)')).toBeVisible();
  await b.getByRole('button',{name:'Use catalog E(B−V) = 0.03',exact:true}).click();await expect(b.getByLabel(labels.ebv,{exact:true})).toHaveValue('0.03');await expect(b.getByTestId('cluster-reddening-source')).toContainText(`Unapplied reddening source: original ${name}`);
  await expect(b.getByText('Catalog reddening copied into the trial. Confirm your chosen model separately.',{exact:true})).toBeVisible();await expect(b.getByLabel(labels.modulus,{exact:true})).toHaveValue('');await expect(b.getByTestId('native-confirmed-logage')).toHaveCount(0);
 });

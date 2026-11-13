@@ -1,4 +1,3 @@
-import ResearchNotes from '../components/ResearchNotes';
 import {useSpectrometerParameterGate} from '../useSpectrometerParameterGate';
 import {vireo} from '../i18n/vireo';
 import {useEffect,useId,useMemo,useReducer,useRef,useState,useContext} from 'react';
@@ -179,7 +178,7 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
 
  return <section className="card ms-card" aria-labelledby={`${id}-title`} data-testid="ms-card">
   <Heading id={`${id}-title`}>{title}</Heading>
-  {helpNotes?<ResearchNotes><p className="observatory-note">{help}</p></ResearchNotes>:<p className="observatory-note">{help}</p>}
+  {helpNotes?<details className="research-notes"><summary>{t('notes.summary')}</summary><p className="observatory-note">{help}</p></details>:<p className="observatory-note">{help}</p>}
   <div className="button-row">
    <button type="button" className="primary-button" disabled={!usable||access!=='ready'||state.open||!!parameterRefusal} onClick={()=>dispatch({type:'show'})} data-testid="ms-access">{t('multispec.access')}</button>{parameterRefusal&&<p role="status" data-testid="ms-parameters-refused" data-reason="uncertified-parameter">{parameterRefusal}</p>}
   </div>

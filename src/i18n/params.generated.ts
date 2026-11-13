@@ -394,6 +394,7 @@ export interface MessageParameters {
   "continuity.stellarRow": never;
   "continuity.analyze": never;
   "continuity.analyzeHelp": never;
+  "continuity.analyzeHelpDetail": never;
   "continuity.transferError": never;
   "continuity.supportedTarget": never;
   "continuity.starSource": never;
@@ -1297,6 +1298,7 @@ export interface MessageParameters {
   "clusterLab.eyebrow": never;
   "clusterLab.title": never;
   "clusterLab.intro": never;
+  "clusterLab.introOptions": never;
   "clusterLab.close": never;
   "clusterLab.return": never;
   "clusterLab.progress": never;

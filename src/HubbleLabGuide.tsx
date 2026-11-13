@@ -1,4 +1,3 @@
-import ResearchNotes from './components/ResearchNotes';
 import {memo,type RefObject} from 'react';
 import {sameData} from './renderStability';
 import {t,formatNumber} from './i18n';
@@ -11,7 +10,7 @@ function HubbleLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTM
  function go(destination:LabDestination){dialogRef.current?.close();onNavigate(destination);}
  return <dialog ref={dialogRef} className="hubble-lab-dialog" aria-labelledby="hubble-lab-heading" aria-describedby="hubble-lab-intro">
   <div className="lab-heading"><div><div className="eyebrow">{t('lab.eyebrow')}</div><h2 id="hubble-lab-heading">{t('lab.title')}</h2></div><button className="secondary-button" autoFocus onClick={()=>dialogRef.current?.close()}>{t('lab.close')}</button></div>
-  <p id="hubble-lab-intro">{t('lab.intro')}</p><ResearchNotes><p>{t('lab.introOptions')}</p></ResearchNotes>
+  <p id="hubble-lab-intro">{t('lab.intro')}</p><details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('lab.introOptions')}</p></details>
   <section className="lab-progress" aria-labelledby="lab-progress-heading"><h3 id="lab-progress-heading">{t('lab.progress')}</h3><p data-testid="lab-progress-counts" role="status">{t('lab.counts',{archived:progress.archived,measured:progress.measured,rows:progress.inHubble,total:progress.total})}</p><p data-testid="lab-original-coverage">{t('lab.coverage',{supported:progress.total,original:progress.original})}</p><p data-testid="lab-next">{progress.next==='interpret'?t('lab.next.interpretSupported',{supported:progress.total,original:progress.original}):t(`lab.next.${progress.next}`)}</p>{progress.duplicateTargets&&<p className="lab-recovery">{t('lab.duplicate')}</p>}<button className="secondary-button" onClick={()=>go(progress.next==='acquire'?'galaxy-exposure':progress.next==='measure'?'spectrum':'hubble')}>{t('lab.continue')}</button><details className="lab-progress-help"><summary>{t('lab.progressMeaning')}</summary><p>{t('lab.progressHelp')}</p></details></section>
   <ol className="lab-steps">
    <li><h3>{t('lab.acquireTitle')}</h3><p>{t('lab.acquireHelp')}</p><p>{t('lab.acquisitionTime')}</p><button className="secondary-button" onClick={()=>go('galaxy-exposure')}>{t('lab.goExposure')}</button></li>

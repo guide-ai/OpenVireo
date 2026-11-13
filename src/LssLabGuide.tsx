@@ -1,4 +1,3 @@
-import ResearchNotes from './components/ResearchNotes';
 import {memo,type RefObject} from 'react';
 import {sameData} from './renderStability';
 import {t} from './i18n';
@@ -13,7 +12,7 @@ function LssLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTMLDi
  const s=progress.summary,done=LSS_LAB_STEPS.filter(step=>progress.done[step]).length;
  return <dialog ref={dialogRef} className="hubble-lab-dialog" aria-labelledby="lss-lab-heading" aria-describedby="lss-lab-intro" data-testid="lss-lab">
   <div className="lab-heading"><div><div className="eyebrow">{t('lssLab.eyebrow')}</div><h2 id="lss-lab-heading">{t('lssLab.title')}</h2></div><button className="secondary-button" autoFocus onClick={()=>dialogRef.current?.close()}>{t('lssLab.close')}</button></div>
-  <p id="lss-lab-intro">{t('lssLab.intro')}</p><ResearchNotes><p>{t('lssLab.introOptions')}</p></ResearchNotes>
+  <p id="lss-lab-intro">{t('lssLab.intro')}</p><details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('lssLab.introOptions')}</p></details>
   <section className="lab-progress" aria-labelledby="lss-lab-progress"><h3 id="lss-lab-progress">{t('lssLab.progress')}</h3><p role="status" data-testid="lss-lab-counts">{t('lssLab.counts',{done,total:LSS_LAB_STEPS.length,records:s.records,galaxies:s.galaxies,fields:s.fields,plotted:s.plotted})}</p></section>
   <ol className="lab-steps">{LSS_LAB_STEPS.map(step=>{const d=STEP_DESTINATION[step];return <li key={step} data-testid={`lss-lab-step-${step}`} data-done={progress.done[step]?'true':'false'}><h3>{t(`lssLab.step.${step}`)} <span>{progress.done[step]?t('lssLab.done'):t('lssLab.todo')}</span></h3><p>{step==='repeat'?t('lssLab.help.repeat',{n:LSS_LAB_REPEAT_RECORDS}):t(`lssLab.help.${step}`)}</p>{d&&<button className="secondary-button" onClick={()=>go(d)}>{t(d==='lss-wedge'?'lssLab.goWedge':'lssLab.goSurvey')}</button>}</li>;})}</ol>
   <section><h3>{t('lssLab.interpretTitle')}</h3><ul>{(['wall','voids','fingers','limits'] as const).map(k=><li key={k}>{t(`lssLab.reflect.${k}`)}</li>)}</ul></section>

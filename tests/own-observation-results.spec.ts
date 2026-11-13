@@ -34,7 +34,7 @@ test.describe.serial('own confirmed results in Observational Results',()=>{
     const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await stubPrint(page);await page.clock.install();await page.goto('/#galaxy-exposure');
     await acquireGalaxy(page,'36747');
     // 1.11: technical exposure notes are folded; the model limit stays visible.
-    const provenance=page.getByLabel('Galaxy acquisition provenance');await expect(provenance.getByText(/browser simulation using an adapted raster/)).toBeVisible();await expect(provenance.getByText(/Committed exposure: 1000 ms/)).toBeHidden();await expect(provenance.locator('details.research-notes')).not.toHaveAttribute('open','');
+    const provenance=page.getByLabel('Galaxy acquisition provenance');await expect(provenance.getByText(/browser simulation using an adapted raster/)).toBeHidden();/* Front LAUNCH-2: in the closed Research notes */await expect(provenance.getByText(/Committed exposure: 1000 ms/)).toBeHidden();await expect(provenance.locator('details.research-notes')).not.toHaveAttribute('open','');
     await align(page,'10','My 36747 alignment');
     // Re-pinned 2026-10-30 (Front H2): a catalogue-galaxy acquisition records through VIREO's "Observational Data"
     // (RecordZ1Click mode 4 → TObsRsltsDlg1) instead of the web confirmation; Cancel and Escape still record nothing.
