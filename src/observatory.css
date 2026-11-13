@@ -242,7 +242,6 @@
  .dome-icon{display:none}
  .sky-heading{padding:14px 0 10px}
  .sky-heading .sky-subtitle{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
- .sky-card .card-heading>.secondary-button{white-space:nowrap}
  .dome-cover h2{font-size:22px}
  .dome-cover p{font-size:var(--ov-text-sm);margin:10px 0 0}
  .dome-cover .primary-button{margin-top:4px}
@@ -255,6 +254,9 @@
  .scope-note{padding:18px}
  .sky-object text{font-size:14px}
 }
+/* Front LAUNCH-2: from 360 px the card heading's Open dome stays on one line (a two-line button pushed the cover down); below 360 px a
+ * long translation may wrap it. */
+@media(min-width:360px) and (max-width:520px){.sky-card .card-heading>.secondary-button{white-space:nowrap}}
 
 /* ── Spectrometer ── */
 .spectrometer-main>.back-observatory{margin:20px 0 0}
