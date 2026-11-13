@@ -127,6 +127,7 @@ h1:is(:lang(ja),:lang(zh)),
 .ob-note:is(:lang(ja),:lang(zh)),
 .fi-note:is(:lang(ja),:lang(zh)),
 .fi-status:is(:lang(ja),:lang(zh)),
+.first-steps strong:is(:lang(ja),:lang(zh)),
 .comparison-cursor-live:is(:lang(ja),:lang(zh)){line-height:1.5}
 h1:lang(hi),
 .antenna-hotlist-native:lang(hi),
@@ -135,6 +136,7 @@ h1:lang(hi),
 .ob-note:lang(hi),
 .fi-note:lang(hi),
 .fi-status:lang(hi),
+.first-steps strong:lang(hi),
 .comparison-cursor-live:lang(hi){line-height:1.7}
 /* Text from 1.5 to 1.65 in English: Hindi 1.7 (body carries it to everything that inherits). */
 body:lang(hi),
