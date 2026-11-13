@@ -1,6 +1,6 @@
 import type{Page}from'@playwright/test';
 
-/** On phones (<600px) the header tools fold behind the "Tools" disclosure. Opens it when the toggle
+/** On phones (<600px) the header tools fold behind the "Menu" disclosure. Opens it when the toggle
  * is shown and closed; on wider screens the toggle is hidden and this does nothing. */
 export async function openHeaderTools(page:Page){
  const toggle=page.locator('.portal-header .tools-toggle');

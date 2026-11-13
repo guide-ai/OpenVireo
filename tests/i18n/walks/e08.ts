@@ -72,7 +72,7 @@ export type Pick=(m:E08Maps)=>string;
 export const Mx=(lang:Lang,english:string,pick:Pick)=>lang==='en'?exact(english):isPseudo(lang)?pseudo(english):exact(pick(e08Maps(lang.tag)));
 /** The English map strings the walk clicks or reads (restated: the app's map modules cannot load outside the page; the English
  * walk fails if one drifts from src/objectx/ObjectXMessages.ts or src/camera/CameraMessages.ts). */
-export const LE={guideNav:'Object X guide',title:'The quest for Object X',idLabel:'ID # of your unknown object (from the lab sheet or instructor)',reveal:'Reveal the identity',revealConfirm:'Reveal now? Your answer stays as it is.',
+export const LE={guideNav:'Object X guide',title:'The quest for Object X',idLabel:'ID # of your unknown object (from your exercise sheet or course, or one you choose)',reveal:'Reveal the identity',revealConfirm:'Reveal now? Your answer stays as it is.',
  dateLabel:'Observation date and time (UT)',setClock:'Set the observatory clock',dateInvalid:'Enter a date and time as YYYY-MM-DDTHH:MM:SS between 1900 and 2099.',spectrumPrepare:'Place the slit on the object',
  spectrumStart:'Start spectrum',spectrumStop:'Stop spectrum',spectrumKeep:'Keep this spectrum',openRadio:'Open the radio telescope',pointObservatory:'Copy the coordinates to the observatory',
  describeLabel:'Describe your evidence',kinds:{asteroid:'asteroid'}} as const;

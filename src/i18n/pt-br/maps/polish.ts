@@ -64,10 +64,10 @@ export const POLISH_PT:Translation<typeof POLISH_MESSAGES_EN>=Object.freeze({
  about:Object.freeze({
   nativeNote:'A caixa Sobre (About) do VIREO, com seus textos como foram lidos do programa original (o logotipo dela não está incluído). O restante desta janela descreve esta reconstrução web.',
   siteTitle:'Este site',
-  site:'O OpenVireo é uma reconstrução web gratuita e não comercial do VIREO do Project CLEA para estudantes, refeita no navegador a partir do comportamento recuperado do VIREO e de seus arquivos de dados originais. Não é o programa do CLEA e não afirma ser equivalente a ele; as adaptações web são identificadas onde aparecem. A tradução para o português do Brasil é uma adaptação web do OpenVireo; os arquivos e textos do CLEA não são alterados.',
+  site:'O OpenVireo é uma reconstrução web gratuita e não comercial do VIREO do Project CLEA, aberta a todos, refeita no navegador a partir do comportamento recuperado do VIREO e de seus arquivos de dados originais. Não é o programa do CLEA e não afirma ser equivalente a ele; as adaptações web são identificadas onde aparecem. A tradução para o português do Brasil é uma adaptação web do OpenVireo; os arquivos e textos do CLEA não são alterados.',
   worksTitle:'O que funciona',
   works:Object.freeze([
-   'Os sete exercícios do VIREO têm um caminho web para estudantes: a lei de Hubble (13 galáxias), a estrutura em grande escala, a classificação estelar, a fotometria das Plêiades (24 estrelas), os diagramas HR de aglomerados, os pulsares e a busca pelo Objeto X.',
+   'Os sete exercícios do VIREO têm um caminho web guiado: a lei de Hubble (13 galáxias), a estrutura em grande escala, a classificação estelar, a fotometria das Plêiades (24 estrelas), os diagramas HR de aglomerados, os pulsares e a busca pelo Objeto X.',
    'Observatório óptico: cúpula, telescópios, visões do buscador e do telescópio, movimento do telescópio com o limite opcional do horizonte, listas de objetos, local e data, informações do catálogo e do campo, e as listas de estrelas variáveis e de QSO.',
    'Instrumentos: espectrômetro e fotômetro para os alvos dos exercícios, câmeras CCD e infravermelha (consulta ao catálogo em tempo real), o espectrômetro multiobjeto (Multi-Spec, nos campos de exercício incluídos e na prática do Objeto X) e o radiotelescópio com seu receptor e a análise de pulsares.',
    'Análise: medição e classificação de espectros, ajustes de Hubble e das Plêiades, o diagrama em cunha de LSS, os seus resultados de observação e as investigações salvas.',

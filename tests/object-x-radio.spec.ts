@@ -48,7 +48,7 @@ async function observe(page:Page,htlId:string){
  await page.clock.install({time:new Date('2026-10-24T00:00:00Z')});
  await page.goto('/#object-x');await expect(page.getByRole('heading',{name:'The quest for Object X'})).toBeVisible();
  await expect(id(page,'objectx-target').locator('option')).toHaveCount(18);
- await page.getByLabel('ID # of your unknown object (from the lab sheet or instructor)').fill('42');
+ await page.getByLabel('ID # of your unknown object (from your exercise sheet or course, or one you choose)').fill('42');
  await id(page,'objectx-target').selectOption(objectXCode(htlId));
  // Both lazily loaded radio routes render before the fake clock pauses (as tests/radio-pulsar-timing-journey-app.spec.ts).
  await clickHeaderTool(page,'Radio data');await expect(id(page,'pulsar-none')).toBeVisible();

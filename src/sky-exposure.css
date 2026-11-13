@@ -3,3 +3,6 @@
 .native-star-frame{padding:20px;margin:0}.native-star-frame>div{position:relative;max-width:312px;margin:auto;background:#000}.native-star-frame canvas{display:block;width:100%;height:auto;image-rendering:pixelated}.native-slit{position:absolute;/* physical: the slit over the star frame image (data geometry) */left:49.68%;top:47.12%;width:.96%;height:6.09%;border:1px solid var(--ov-warning-border);box-sizing:border-box;pointer-events:none}.native-star-frame figcaption{max-width:580px;margin:12px auto 0;font-size:11px;line-height:1.8;color:var(--ov-text-muted)}
 /* Layout audit (2026-11-08): source hashes wrap instead of being cut off by the card at 320 px. */
 .sky-domain small{overflow-wrap:anywhere}
+
+/* Front LAUNCH-2: the counts card's Research notes line up with its text (the card has no padding of its own). */
+.sky-counts>details.research-notes{margin-inline:22px;padding-bottom:6px}

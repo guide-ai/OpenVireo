@@ -47,7 +47,7 @@ function WelcomeShell({loading,failed,onNeed}:{loading:boolean;failed:Readonly<{
   // Review 1, finding 9: the live region exists from the first render, so a screen reader announces the line when it appears.
   :<div role="status" data-testid="app-loading-region">{loading&&<p className="card observatory-note" data-testid="app-loading" style={{margin:'0 0 16px',padding:'10px 14px'}}>{t('home.loadingObservatory')}</p>}</div>;
  return <>{parts.header}{parts.pageBar}{languageFailed&&failureNotice('language-failure','language',languageFailed)}{areaTextFailed&&failureNotice('area-failure','area',uiLanguage())}
-  <div data-testid="welcome-shell" aria-busy={loading||undefined}>{welcomeMain({openGuide:parts.openGuide,onExplore:parts.explore,status})}</div>
+  <div data-testid="welcome-shell" aria-busy={loading||undefined}>{welcomeMain({openGuide:parts.openGuide,onExplore:parts.explore,onAbout:()=>about.current?.showModal(),status})}</div>
   <AboutDialog dialogRef={about}/></>;
 }
 export default memo(WelcomeShell);

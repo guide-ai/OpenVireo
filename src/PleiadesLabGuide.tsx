@@ -26,7 +26,7 @@ function PleiadesLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<H
   <div className="lab-heading"><div><div className="eyebrow">{t('pleiadesLab.eyebrow')}</div><h2 id="pleiades-lab-heading">{t('pleiadesLab.title')}</h2></div>
    <button className="secondary-button" autoFocus data-testid="pleiades-lab-close" onClick={()=>dialogRef.current?.close()}>{t('pleiadesLab.close')}</button></div>
   <p id="pleiades-lab-intro">{t('pleiadesLab.intro')}</p>
-  <p className="lab-recovery" data-testid="pleiades-lab-adaptation">{t('pleiadesLab.adaptation')}</p>
+  <details className="research-notes"><summary>{t('notes.summary')}</summary><p className="lab-recovery" data-testid="pleiades-lab-adaptation">{t('pleiadesLab.adaptation')}</p></details>
   <section className="lab-progress" aria-labelledby="pleiades-lab-progress-heading">
    <h3 id="pleiades-lab-progress-heading">{t('pleiadesLab.progress')}</h3>
    <p data-testid="pleiades-lab-counts" role="status">{t('pleiadesLab.counts',{done:doneCount,total:PLEIADES_LAB_COUNTED_STEPS.length})}</p>

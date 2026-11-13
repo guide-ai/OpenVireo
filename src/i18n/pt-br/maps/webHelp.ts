@@ -16,7 +16,7 @@ const START={title:'Comece aqui',topics:[
   p('A versão 1.0 contém os sete exercícios do VIREO: a lei de Hubble, a estrutura em grande escala (LSS), a classificação estelar, a fotometria das Plêiades, os diagramas HR de aglomerados, os pulsares e a busca pelo Objeto X. Cada um tem um guia em Guias dos exercícios, no cabeçalho.'),
  ]),
  topic('Primeiros passos',[
-  p('Se o seu instrutor passou um exercício, abra primeiro o guia dele: o guia lista cada etapa e leva você à página certa. Para explorar livremente:'),
+  p('Se você está fazendo um dos exercícios, para um curso ou por conta própria, abra primeiro o guia dele: o guia lista cada etapa e leva você à página certa. Para explorar livremente:'),
   steps(
    'Abra Observatório no cabeçalho (grupo Observatório óptico).',
    'Pressione Abrir cúpula.',

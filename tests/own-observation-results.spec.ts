@@ -34,7 +34,7 @@ test.describe.serial('own confirmed results in Observational Results',()=>{
     const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await stubPrint(page);await page.clock.install();await page.goto('/#galaxy-exposure');
     await acquireGalaxy(page,'36747');
     // 1.11: technical exposure notes are folded; the model limit stays visible.
-    const provenance=page.getByLabel('Galaxy acquisition provenance');await expect(provenance.getByText(/browser simulation using an adapted raster/)).toBeVisible();await expect(provenance.getByText(/Committed exposure: 1000 ms/)).toBeHidden();await expect(provenance.locator('details.research-notes')).not.toHaveAttribute('open','');
+    const provenance=page.getByLabel('Galaxy acquisition provenance');await expect(provenance.getByText(/browser simulation using an adapted raster/)).toBeHidden();/* Front LAUNCH-2: in the closed Research notes */await expect(provenance.getByText(/Committed exposure: 1000 ms/)).toBeHidden();await expect(provenance.locator('details.research-notes')).not.toHaveAttribute('open','');
     await align(page,'10','My 36747 alignment');
     // Re-pinned 2026-10-30 (Front H2): a catalogue-galaxy acquisition records through VIREO's "Observational Data"
     // (RecordZ1Click mode 4 → TObsRsltsDlg1) instead of the web confirmation; Cancel and Escape still record nothing.
@@ -67,7 +67,7 @@ test.describe.serial('own confirmed results in Observational Results',()=>{
     for(const[index,id]of[1,2,4,5].entries())await expect(results.getByTestId(`own-v-${id}`)).toHaveText((await velocity.locator('tbody tr').nth(index).locator('td').nth(3).textContent())!);
     await page.getByLabel('Your velocity · km/s',{exact:true}).fill('1234');
     await page.getByText('Hubble diagram & distances',{exact:true}).click();await page.getByRole('button',{name:'Add saved measurements',exact:true}).click();await expect(page.locator('.hubble-card').getByText(/Stellar acquisition measurements are excluded/)).toBeVisible();await expect(page.locator('.hubble-card').getByText(/Examples and working rows are kept in separate tables/)).toBeVisible();await expect(page.locator('.hubble-card').getByText(/seven significant digits/)).toBeHidden();
-    await expect(page.locator('.session-boundary')).toBeVisible();await expect(page.locator('.session-card').getByText(/Save session includes current sky\/star\/galaxy/)).toBeHidden();
+    await expect(page.locator('.session-boundary')).toBeAttached();/* Front LAUNCH-2: in the session card's Research notes */await expect(page.locator('.session-card').getByText(/Save session includes current sky\/star\/galaxy/)).toBeHidden();
     const before=await snapshot(page);saved=before.session;const session=sessionBase(JSON.parse(before.session.toString()));expect(session.measurements.map((m:{id:number})=>m.id)).toEqual([1,2,3,4,5]);
     // Read-only exports: deterministic bytes, legacy CSV cross-checks and an independent float32 calculation from the bits.
     const text1=await download(page,'Download results text',results),text2=await download(page,'Download results text',results);expect(text1.name).toBe('openvireo-own-results.txt');expect(text2.bytes).toEqual(text1.bytes);

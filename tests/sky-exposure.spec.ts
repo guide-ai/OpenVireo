@@ -26,8 +26,8 @@ test('invalid imports pause without discarding counts, hidden tabs pause and mob
 
 test('a delayed foreground callback pauses atomically and new seeded repeats are reproducible',async({page})=>{
  await page.clock.install();await page.goto('/#sky-exposure');await activate(page);await start(page);await page.clock.fastForward(1500);await expect(page.getByRole('alert')).toContainText('clock gap exceeded');await expect(page.getByTestId('sky-elapsed')).toHaveText('0 ms');await expect(page.getByTestId('sky-draws')).toHaveText('0');
- await page.getByLabel('Browser random seed (uint32)',{exact:true}).fill('4294967296');await page.getByRole('button',{name:'New seeded exposure',exact:true}).click();await expect(page.getByRole('alert')).toContainText('whole-number seed');
- await page.getByLabel('Browser random seed (uint32)',{exact:true}).fill('1');await page.getByRole('button',{name:'New seeded exposure',exact:true}).click();await activate(page);await start(page);await page.clock.runFor(1000);const first=await save(page,'Save sky counts CSV');await page.getByRole('button',{name:'New seeded exposure',exact:true}).click();await activate(page);await start(page);await page.clock.runFor(1000);expect(await save(page,'Save sky counts CSV')).toBe(first);
+ await page.getByLabel('Random seed',{exact:true}).fill('4294967296');await page.getByRole('button',{name:'New seeded exposure',exact:true}).click();await expect(page.getByRole('alert')).toContainText('whole-number seed');
+ await page.getByLabel('Random seed',{exact:true}).fill('1');await page.getByRole('button',{name:'New seeded exposure',exact:true}).click();await activate(page);await start(page);await page.clock.runFor(1000);const first=await save(page,'Save sky counts CSV');await page.getByRole('button',{name:'New seeded exposure',exact:true}).click();await activate(page);await start(page);await page.clock.runFor(1000);expect(await save(page,'Save sky counts CSV')).toBe(first);
 });
 
 test('Front H2: the sky exposure prints with VIREO\'s header; Save (.SSP) stays unavailable and says why',async({page})=>{

@@ -1,7 +1,7 @@
 import {useEffect,useId,useRef,useState} from 'react';
 import {menuCaptionText} from './core/radioControl';
 import {canPanLeft,canPanRight,moveZoomMaximum,moveZoomMinimum,resetZoomDraft,zoomDraft,zoomDraftWavelengths,type EngineWindow,type ZoomDraft} from './core/spectrumEngineView';
-import {fixed} from './i18n';
+import {fixed,t} from './i18n';
 import {ENGINE_VIEW as M,ENGINE_VIEW_LITERALS as V} from './SpectrumEngineMessages';
 import {vireo} from './i18n/vireo';
 import './spectrum-engine.css';
@@ -48,7 +48,7 @@ export default function SpectrumEngineControls({window:w,wide,readout,nearest,on
     :<span className="engine-readout-empty">{M.readoutEmpty}</span>}
   </div>
   {nearest&&<p role="status" className="engine-nearest" data-testid="engine-nearest-result">{nearest}</p>}
-  <p className="observatory-note">{wide?M.fullViewNote:M.note}</p>
+  <details className="research-notes"><summary>{t('notes.summary')}</summary><p className="observatory-note">{wide?M.fullViewNote:M.note}</p></details>
   {zooming&&<ZoomDialog window={w} onClose={close} onApply={d=>{onZoom(d);close();}}/>}
  </div>;
 }

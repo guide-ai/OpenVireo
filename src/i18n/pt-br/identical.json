@@ -3,6 +3,7 @@
  "entries": {
   "catalog:app.name": "product name (OpenVireo)",
   "catalog:instructorMode.optionsClosedOk": "the same word in Portuguese (OK, as Windows pt-BR writes it)",
+  "map:appShell.toolsMenu": "the same word in Portuguese (Menu), the phone menu button",
   "map:helpMenu.ok": "the same word in Portuguese (OK, as Windows pt-BR writes it)",
   "map:helpMenu.shortcutKey": "a key on the keyboard (?)",
   "map:languageChoice.legend": "bilingual on purpose so either reader finds the selector (Idioma is also the Portuguese word)",

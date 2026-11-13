@@ -25,7 +25,7 @@ const START:WebHelpGroup={title:'Start here',topics:[
   p('Version 1.0 contains the seven VIREO exercises: Hubble\'s law, large-scale structure (LSS), stellar classification, Pleiades photometry, cluster HR diagrams, pulsars and the Quest for Object X. Each has a guide under Exercise guides in the header.'),
  ],['getting-started','exercise-guides','from-vireo']),
  topic('getting-started','Getting started',[
-  p('If your instructor gave you an exercise, open its guide first: the guide lists every step and takes you to the right page. To explore freely:'),
+  p('If you are doing one of the exercises, for a course or on your own, open its guide first: the guide lists every step and takes you to the right page. To explore freely:'),
   steps(
    'Open Observatory in the header (Optical observatory group).',
    'Press Open dome.',

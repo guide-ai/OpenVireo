@@ -17,7 +17,7 @@ function ClassificationLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefOb
  return <dialog ref={dialogRef} className="hubble-lab-dialog pulsar-lab-dialog pleiades-lab-dialog classification-lab-dialog" aria-labelledby="classification-lab-heading" aria-describedby="classification-lab-intro" data-testid="classification-lab-dialog">
   <div className="lab-heading"><div><div className="eyebrow">{t('classLab.eyebrow')}</div><h2 id="classification-lab-heading">{t('classLab.title')}</h2></div>
    <button className="secondary-button" autoFocus data-testid="classification-lab-close" onClick={()=>dialogRef.current?.close()}>{t('classLab.close')}</button></div>
-  <p id="classification-lab-intro">{t('classLab.intro')}</p>
+  <p id="classification-lab-intro">{t('classLab.intro')}</p><details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('classLab.introOptions')}</p></details>
   <p className="lab-recovery" data-testid="classification-lab-adaptation">{t('classLab.adaptation')}</p>
   <section className="lab-progress" aria-labelledby="classification-lab-progress-heading">
    <h3 id="classification-lab-progress-heading">{t('classLab.progress')}</h3>

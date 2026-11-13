@@ -75,7 +75,7 @@ test('all 24 rows: every row is admitted since 2026-10-28; each of the 24 admitt
  let first=true;
  for(const row of PLEIADES_HOT_LIST.filter(r=>!r.admitted)){
   await pointRow(page,row.index);const card=page.getByTestId('pleiades-point-card');await expect(card).toHaveAttribute('data-admitted','false');await expect(card.getByRole('button')).toHaveCount(0);await expect(page.getByTestId('pleiades-point-unavailable')).toBeVisible();
-  await toPhotometer(page,false,()=>navPhotometer(page));if(first){await expect(page.getByTestId('photo-orchestration')).toBeVisible();first=false;}
+  await toPhotometer(page,false,()=>navPhotometer(page));if(first){await expect(page.getByTestId('photo-orchestration')).toBeAttached();first=false;}
   await expect(page.getByTestId('photo-pointed-row')).toHaveAttribute('data-pointed','blocked');await expect(activate(page)).toBeDisabled();await expect(page.getByTestId('photo-phase')).toHaveText(/Inactive/);
   // No photometer state exists yet, so nothing (no event) can be saved.
   await expect(page.getByRole('button',{name:'Save photometer session',exact:true})).toBeDisabled();await navObservatory(page);

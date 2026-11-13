@@ -40,8 +40,10 @@ const at=(widths:readonly Width[],steps:string|readonly string[],...sites:readon
  (typeof steps==='string'?[steps]:steps).flatMap(step=>sites.map(name=>{const site:RtlSite=RTL_SITES[name];return {widths,step,problem:site.problem,file:site.file,owner:site.owner,why:site.why,...(site.literal?{literal:true as const}:{})};}));
 const BOTH=[320,1440] as const;
 const KNOWN:readonly Known[]=[
- ...at(BOTH,'spectrum','zValue','stepFactor'),...at(BOTH,'star-exposure','drawsOf'),...at(BOTH,'lss-survey','txtSuffix'),...at(BOTH,'variable-stars','variableResults'),
- ...at(BOTH,['spectrometer','star-exposure','classification','photometer','radio-control','object-x'],'catalogLiteral'),
+ // Front LAUNCH-2: the star exposure's draws (drawsOf) and the catalog literals of the spectrometer, star exposure and classification
+ // moved behind closed Research notes, so the walk no longer sees them; they are not fixed (RT8/RT12 still own them).
+ ...at(BOTH,'spectrum','zValue','stepFactor'),...at(BOTH,'lss-survey','txtSuffix'),...at(BOTH,'variable-stars','variableResults'),
+ ...at(BOTH,['photometer','radio-control','object-x'],'catalogLiteral'),
  ...at(BOTH,['help viewer (VIREO topics)','help viewer (VIREO topic)'],'helpRows'),...at([320],'help viewer (VIREO topics)','helpNote'),
  ...at([320],'home','brand'),
 ];

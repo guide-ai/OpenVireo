@@ -89,14 +89,15 @@ function RTL_KNOWN():Known[]{
    return {walks:[walk],variants:['qps-rtl'] as const,widths,step,problem:site.problem,file:site.file,why:site.why,...(site.fontDependent?{fontDependent:true as const}:{}),...(site.literal?{literal:true as const}:{})};}));
  const topics=['OBSRVHLP','CAMHLP','HRANALHLP','PHOTOHLP','SPECHLP','MEASHLP','WDGPLTHLP','PLSANHLP','PULSRHLP'].map(f=>`${f}.LST topics`);
  return [
-  ...at('E01',both,'Hubble lab guide','drawsOf','catalogLiteral'),...at('E01',both,['spectrometer route','star exposure and its SSP save'],'catalogLiteral'),
+  // Front LAUNCH-2: the galaxy's slit level (drawsOf) is behind Research notes, so the walk meets it where it opens every disclosure.
+  ...at('E01',both,'Hubble lab guide','catalogLiteral'),...at('E01',both,'galaxy exposure','drawsOf'),...at('E01',both,['spectrometer route','star exposure and its SSP save'],'catalogLiteral'),
   ...at('E01',both,'spectrum analyser with the acquired galaxy','zValue','stepFactor','catalogLiteral'),
   ...at('E02',[320],['Retain Current Data?','Confirm Deletion!'],'wedgeStatus'),...at('E02',both,'Search Results','txtSuffix'),
   // The LSS survey (a lazily loaded part) renders its results button behind the lab guide or only once the survey opens: one
   // entry, required at either of the two steps.
   ...at('E02',both,/^LSS (?:lab guide|survey)$/,'txtSuffix'),
   ...at('E02',both,'exposure paused','catalogLiteral'),...at('E02',both,['wedge row selected','wedge with own records'],'wedgeData'),
-  ...at('E03',both,['classification guide','classification lab','normalized sampled difference','observation DAT inspected'],'catalogLiteral'),
+  ...at('E03',both,['classification lab','normalized sampled difference','observation DAT inspected'],'catalogLiteral'),// LAUNCH-2: the guide's catalog literal is behind Research notes
   ...at('E03',both,'observation DAT inspected','nativeNumbers'),
   ...at('E04',both,'Mayall domain explanation','domainTable'),...at('E04',both,'confirmed fit','pleiadesPercent'),
   ...at('E04',both,['Mayall domain explanation','Pleiades guide','confirmed fit','free pointing input error','invalid shift'],'catalogLiteral'),
@@ -112,7 +113,8 @@ function RTL_KNOWN():Known[]{
   ...at('Multi-Spec',both,'Multi-Spec Control with selections','multiSpecNumber'),
   ...at('help',both,[...topics,...topics.map(t=>t.replace('topics','first topic')).filter(t=>!t.startsWith('PULSRHLP')),'CLASSHLP.LST topics','CLASSHLP.LST first topic','Spectral Line Table','Spectral Line Help'],'helpRows'),
   ...at('help',[320],topics,'helpNote'),...at('help',both,'MEASHLP.LST topics','zValue','stepFactor'),
-  ...at('help',both,['CLASSHLP.LST topics','HRANALHLP.LST topics','PULSRHLP.LST topics','SPECHLP.LST topics','OpenVireo help topic'],'catalogLiteral'),
+  // Front LAUNCH-2: behind the classification and spectrometer help topics, their pages' catalog literals are behind Research notes.
+  ...at('help',both,['HRANALHLP.LST topics','PULSRHLP.LST topics','OpenVireo help topic'],'catalogLiteral'),
   ...at('observatory',both,'Set Date/Time','siteClock','catalogLiteral'),...at('observatory',both,['Slew › Add Current Item/Position','Slew › Set Coordinates'],'catalogLiteral'),
   ...at('observatory',both,'Site Information and its print','siteLines'),
   ...at('observatory',both,'File › Exit Observatory','reminder'),...at('help',both,'Exit Observatory reminder','reminder'),

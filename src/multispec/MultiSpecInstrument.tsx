@@ -37,6 +37,8 @@ import TrackingShortcut from '../observatory/TrackingShortcut';
  *    (0x53a741 → Clear Objects). The native FormShow disables tracking and the Telescope menu; here a telescope change remounts
  *    the instrument (the caller keys it by telescope). */
 export type MultiSpecInstrumentProps=Readonly<{
+ /** Front LAUNCH-2: the observatory's instrument-position note goes behind Research notes; Object X's help is an instruction and stays. */
+ helpNotes?:boolean;
  field:MultiSpecFieldRequest|null;telescope:FieldTelescope;access:AccessReason;armed:boolean;armedText:string;
  mask:MultiSpecMaskPolicy;editMode:boolean;busy:boolean;active:boolean;title:string;help:string;heading?:'h2'|'h3';
  /** Text when `field` is null (no bundled field at this position). */noFieldText:string;
@@ -54,7 +56,7 @@ function download(name:string,bytes:Uint8Array,type:string){
 /** A file name the browser and the zip writer accept (ASCII, no path separators) [W]. */
 const safeName=(s:string)=>s.replace(/[^\x20-\x7e]|[\\/:*?"<>|]/g,'_');
 
-export default function MultiSpecInstrument({field,telescope,access,armed,armedText,mask,editMode,busy,active,title,help,noFieldText,rangeBlock=null,heading:Heading='h2',spectralRange}:MultiSpecInstrumentProps){
+export default function MultiSpecInstrument({field,telescope,access,armed,armedText,mask,editMode,busy,active,title,help,helpNotes,noFieldText,rangeBlock=null,heading:Heading='h2',spectralRange}:MultiSpecInstrumentProps){
  const id=useId(),fieldWrap=useRef<HTMLDivElement>(null);
  const [state,dispatch]=useReducer(multiSpecReducer,undefined,()=>createMultiSpecState(telescope,pageSeed()));
  // Front T6: Multi-Spec reads BaseMag, SpSky, SpBase and SpTimer (0x527013, 0x52702c, 0x52727a..0x527290); instructor values refuse it.
@@ -176,7 +178,7 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
 
  return <section className="card ms-card" aria-labelledby={`${id}-title`} data-testid="ms-card">
   <Heading id={`${id}-title`}>{title}</Heading>
-  <p className="observatory-note">{help}</p>
+  {helpNotes?<details className="research-notes"><summary>{t('notes.summary')}</summary><p className="observatory-note">{help}</p></details>:<p className="observatory-note">{help}</p>}
   <div className="button-row">
    <button type="button" className="primary-button" disabled={!usable||access!=='ready'||state.open||!!parameterRefusal} onClick={()=>dispatch({type:'show'})} data-testid="ms-access">{t('multispec.access')}</button>{parameterRefusal&&<p role="status" data-testid="ms-parameters-refused" data-reason="uncertified-parameter">{parameterRefusal}</p>}
   </div>

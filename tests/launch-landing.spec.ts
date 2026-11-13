@@ -1,6 +1,10 @@
 import {test,expect,type Page} from '@playwright/test';
 import en from '../src/i18n/en.json' with {type:'json'};
+import es from '../src/i18n/es/es.json' with {type:'json'};
+import pt from '../src/i18n/pt-br/pt-br.json' with {type:'json'};
+import fr from '../src/i18n/fr/fr.json' with {type:'json'};
 import {openHeaderTools} from './fixtures/header-tools';
+import {contextLocale,langQuery} from './fixtures/language';
 
 // Front LAUNCH-1: "Explore the sky" lands on the sky. The field with Open dome and the target card come first; the telescope
 // profiles, the camera, Multi-Spec and the motion panel follow. Every "turn tracking on" message offers "Show tracking control",
@@ -36,6 +40,26 @@ for(const [width,height] of [[1440,900],[375,812]] as const){
   await expect(page.getByTestId('optical-telescope')).not.toBeInViewport();
   await button(page,`${en['sky.open']} ↗`).click();
   await expect(button(page,en['sky.close'])).toBeVisible();
+ });
+}
+
+// Front LAUNCH-2: the dome cover's large Open dome ↗ is on the first screen with real browser chrome (about 780 px of a 900 px
+// laptop screen, 700 px of a phone), in every language; the card heading's Open dome stays there too.
+for(const [lang,catalog] of [['en',en],['es-419',es],['pt-BR',pt],['fr',fr]] as const){
+ test.describe(()=>{
+  test.use({locale:contextLocale(lang)});
+  for(const [width,height] of [[1440,780],[375,700]] as const)test(`${lang}: the dome cover's Open dome ↗ fits the first screen at ${width} × ${height}`,async({page})=>{
+   test.setTimeout(90000);
+   await page.setViewportSize({width,height});
+   await page.goto(`/${langQuery(lang)}#observatory`);
+   await expect(page.getByRole('heading',{level:1,name:catalog['sky.title'],exact:true})).toBeVisible({timeout:30000});
+   expect(await page.evaluate(()=>scrollY)).toBe(0);
+   const cover=page.locator('.dome-cover').getByRole('button',{name:`${catalog['sky.open']} ↗`,exact:true});
+   await expect(cover).toBeInViewport({ratio:1});
+   await expect(page.locator('.sky-card .card-heading').getByRole('button',{name:catalog['sky.open'],exact:true})).toBeInViewport({ratio:1});
+   expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+   await cover.click();await expect(page.locator('.dome-cover')).toHaveCount(0);
+  });
  });
 }
 
