@@ -475,7 +475,7 @@
  "ssp.intensity": "La intensidad SSP está fuera del rango de normalización compatible de int32 con signo / máximo positivo (−2147483648 a 1).",
  "ssp.invalid": "SSP no compatible ({code}). Se esperaba un encabezado ASCII *SpHdr* y 600 muestras ordenadas, finitas y con punto decimal.",
  "lab.nav": "Guía de la práctica de Hubble",
- "lab.eyebrow": "INVESTIGACIÓN CON OBJETIVOS COMPATIBLES",
+ "lab.eyebrow": "LEY DE HUBBLE · GUÍA",
  "lab.title": "Tu investigación de Hubble",
  "lab.close": "Cerrar guía de la práctica de Hubble",
  "lab.return": "Volver a mi trabajo",

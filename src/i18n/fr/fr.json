@@ -475,7 +475,7 @@
  "ssp.intensity": "L’intensité du SSP est hors de la plage de normalisation prise en charge, entier signé int32 / maximum positif (−2147483648 à 1).",
  "ssp.invalid": "SSP non pris en charge ({code}). Attendu : un en-tête ASCII *SpHdr* et 600 échantillons ordonnés, finis, à point décimal.",
  "lab.nav": "Guide du TP Hubble",
- "lab.eyebrow": "INVESTIGATION AVEC CIBLES PRISES EN CHARGE",
+ "lab.eyebrow": "LOI DE HUBBLE · GUIDE",
  "lab.title": "Votre investigation Hubble",
  "lab.close": "Fermer le guide du TP Hubble",
  "lab.return": "Revenir à mon travail",

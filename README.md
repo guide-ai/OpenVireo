@@ -1,6 +1,8 @@
 # OpenVireo
 
-**Open Virtual Educational Observatory.** A React/TypeScript/Vite reconstruction of Project CLEA/VIREO based on recovered behavior. This is a bounded educational reconstruction; original runtime/x87 equivalence remains unverified.
+**The classic Project CLEA VIREO astronomy labs, rebuilt to run in your browser.** Open the dome, point a telescope, take galaxy spectra to measure Hubble's law, time pulsars with a radio telescope, photometer the Pleiades and work out what "Object X" is. It is free, needs nothing installed and works on phones: **<https://openvireo.space>**.
+
+OpenVireo (Open Virtual Educational Observatory) is an unofficial, non-commercial reconstruction, not affiliated with Project CLEA (Gettysburg College). It loads VIREO's original data files byte for byte, each checked against a recorded SHA-256, and rebuilds the program's behavior from its documentation and static analysis of its files; the original program is never run or emulated. It is a reconstruction, not the original: where VIREO's behavior is uncertain the site says so, and equivalence with the original program (including its x87 arithmetic) has not been verified. It is a static React/TypeScript/Vite site with no accounts or backend.
 
 **Status: version 1.0.** All seven VIREO exercises (Hubble, large-scale structure, stellar classification, Pleiades photometry, cluster HR diagrams, pulsars and Object X) have a guided student path with an end-to-end test ([exercise board](docs/STUDENT-EXERCISES.md)). Version 1.0 is published as a static site on Cloudflare Pages at <https://openvireo.space>: no accounts, saves on the student's computer, aggregate cookie-free visit analytics. See the [release notes](docs/RELEASE-1.0.md) and the [deployment guide](docs/DEPLOY.md) (Spanish); every push to `main` that passes CI deploys it.
 

@@ -475,7 +475,7 @@
   "ssp.intensity": "SSP intensity is outside the supported signed int32/max-positive normalization range (−2147483648 to 1).",
   "ssp.invalid": "Unsupported SSP ({code}). Expected an ASCII *SpHdr* header and 600 ordered, finite dot-decimal samples.",
   "lab.nav": "Hubble lab guide",
-  "lab.eyebrow": "SUPPORTED-TARGET INVESTIGATION",
+  "lab.eyebrow": "HUBBLE'S LAW · GUIDE",
   "lab.title": "Your Hubble investigation",
   "lab.close": "Close Hubble lab guide",
   "lab.return": "Return to my work",
