@@ -4,6 +4,9 @@
 # (the ordinary `npm run build` output). The Cloudflare API token and account ID live only as secrets of the GitHub
 # environment `production`, which only main may use (CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID); see docs/DEPLOY.md § 11.
 # Not run here: the optional backend's own tests (worker/, playwright.cloud.config.ts), since that backend is not deployed.
+# Security review of 2026-11-14: every action is pinned to a commit (the comment names its release; Dependabot,
+# .github/dependabot.yml, proposes updates), checkouts do not keep the workflow token, and the deploy job publishes the very
+# dist/ that the Pages checks tested instead of building a second time.
 name: CI/CD
 
 on:
@@ -31,8 +34,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           cache: npm
@@ -62,14 +67,16 @@ jobs:
           - {part: exports 1/2, key: exports-1, select: 'tests/i18n/exports-identity.spec.ts --shard=1/2'}
           - {part: exports 2/2, key: exports-2, select: 'tests/i18n/exports-identity.spec.ts --shard=2/2'}
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           cache: npm
       - run: npm ci --ignore-scripts
       - name: Cache the Playwright browser
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .local/browsers
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
@@ -77,7 +84,7 @@ jobs:
       - run: npx playwright test ${{ matrix.select }} --reporter=line
       - name: Keep the failure evidence
         if: failure()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: e2e-results-${{ matrix.key }}
           path: test-results/
@@ -109,14 +116,16 @@ jobs:
           - part: 3
             select: '--grep="rtl(-css)?\.scripts\.ts"'
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           cache: npm
       - run: npm ci --ignore-scripts
       - name: Cache the Playwright browser
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .local/browsers
           key: playwright-ubuntu-24.04-${{ hashFiles('package-lock.json') }}
@@ -131,7 +140,7 @@ jobs:
       - run: npm run test:scripts -- --reporter=line ${{ matrix.select }}
       - name: Keep the failure evidence
         if: failure()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: scripts-results-${{ matrix.part }}
           path: test-results/
@@ -142,8 +151,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           cache: npm
@@ -155,7 +166,7 @@ jobs:
       - run: npm ci
         working-directory: worker
       - name: Cache the Playwright browser
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .local/browsers
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
@@ -164,6 +175,17 @@ jobs:
       # on loopback (no account) and runs the release smoke tests against it.
       - run: npm run build
       - run: npm run test:pages -- --reporter=line
+      # The tested build is what gets published: the deploy job downloads this artifact (kept one day). Hidden files are
+      # included because the site serves dist/.well-known/security.txt.
+      - name: Keep the tested build for the deploy job
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: site-dist
+          path: dist/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 1
 
   deploy:
     name: Deploy to Cloudflare Pages
@@ -179,19 +201,29 @@ jobs:
       group: deploy-production
       cancel-in-progress: false
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      # The checkout is only for worker/package-lock.json (the pinned wrangler); the site is not built here.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: |
-            package-lock.json
-            worker/package-lock.json
-      - run: npm ci --ignore-scripts
-      # As docs/DEPLOY.md: the pinned wrangler 4.150.0 (and its workerd binary for the local Pages server).
+          cache-dependency-path: worker/package-lock.json
+      # As docs/DEPLOY.md: the pinned wrangler 4.150.0.
       - run: npm ci
         working-directory: worker
-      - run: npm run build
+      - name: Fetch the build the Pages checks tested
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: site-dist
+          path: dist
+      - name: Check the build arrived whole
+        run: |
+          for f in index.html 404.html _headers _redirects .well-known/security.txt; do
+            [ -s "dist/$f" ] || { echo "::error::dist/$f is missing from the tested build."; exit 1; }
+          done
+          node scripts/check-deploy-limits.mjs
       # Run from the repository root, never from worker/ (whose wrangler.jsonc is the optional backend's).
       - name: Publish dist/ to the openvireo Pages project
         env:

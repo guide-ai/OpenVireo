@@ -9,6 +9,7 @@ import ObjectXSpectrum from './ObjectXSpectrum';
 import {MultiSpecObjectXLazy} from './multispec/MultiSpecLazy';
 import {parseHtl,type HtlList} from './core/hotList';
 import {parseFitsImage,type FitsImage} from './core/fitsImage';
+import {readFitsBytes} from './io/fitsImage';
 import {formatSexagesimal,tanWcsFromCards,targetMotion,type MeasurementLog,type TanWcs} from './core/astrometryMeasure';
 import {DEFAULT_LIMITING_MAGNITUDE,movingPairs,type ObservableList} from './core/asteroidField';
 import {separationDegrees} from './core/ephemeris';
@@ -156,7 +157,8 @@ function ObjectXLab({sessionId=null,editMode=false,spectralRange=DEFAULT_SPECTRA
   setFitsError('');
   for(const file of Array.from(files??[])){
    try{
-    const bytes=new Uint8Array(await file.arrayBuffer()),fits=parseFitsImage(bytes),sha256=await resourceSha256(bytes.slice().buffer);
+    // The size is checked before the file is read: a multi-gigabyte file is refused without loading it (security review, 2026-11-14).
+    const bytes=await readFitsBytes(file),fits=parseFitsImage(bytes),sha256=await resourceSha256(bytes.slice().buffer);
     const mjd=fits.cards.find(c=>c.startsWith('MJD-OBS ='));const jd=mjd?Number(mjd.slice(10).split('/')[0])+2400000.5:NaN;
     if(!Number.isFinite(jd))throw Error('time');
     // Front T7 review 1 L1: an image the camera made with instructor values (its uncertified-parameter COMMENT card) stays out of

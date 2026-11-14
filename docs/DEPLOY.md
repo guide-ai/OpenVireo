@@ -19,7 +19,7 @@ Desde el 8 de noviembre de 2026 (decisión tuya, `AGENTS.md`), cada push a `main
   - los trozos son `original/orbit/ObjX_MPC/000.bin` a `002.bin`, de 65 536 registros cada uno;
   - sus SHA-256 y el del archivo completo están en `docs/LOCAL-RESOURCES.json` (`assembled[]`);
   - el navegador comprueba cada trozo y el archivo completo antes de usarlo.
-- `dist/_headers` (desde `public/_headers`) fija las cabeceras de seguridad (CSP, `nosniff`, `Referrer-Policy`, `Permissions-Policy`, `frame-ancestors 'none'`) y la caché. Pages lo aplica por sí solo.
+- `dist/_headers` (desde `public/_headers`) fija las cabeceras de seguridad (CSP, `Strict-Transport-Security`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`, `frame-ancestors 'none'`) y la caché. Pages lo aplica por sí solo.
 - El enrutado usa `#` (por ejemplo `/#object-x`), así que no hace falta ninguna regla de reescritura. `dist/404.html` hace que una dirección inexistente responda 404, en lugar de la página principal que Pages sirve por defecto. Desde LAUNCH-3 la genera `src/seo/pages.ts` (`notFoundPage`) con el aspecto de las páginas de búsqueda, en los cuatro idiomas.
 - `dist/_redirects` (desde `public/_redirects`) envía con un 301 `/pt`, `/en` y `/es-419` a las páginas que existen (§ 12).
 
@@ -142,7 +142,7 @@ Si al cabo de un día el panel no muestra visitas, comprueba en la consola del n
 4. Abre **Help › About OpenVireo and privacy** y comprueba el aviso de privacidad y los créditos (Project CLEA, NSF, Gettysburg College y ATNF).
 5. Comprueba las cabeceras desde una terminal:
    ```sh
-   curl -sI https://openvireo.space/ | grep -iE 'content-security-policy|x-content-type-options|referrer-policy|permissions-policy|x-frame-options|cache-control'
+   curl -sI https://openvireo.space/ | grep -iE 'content-security-policy|strict-transport-security|x-content-type-options|referrer-policy|permissions-policy|x-frame-options|cache-control'
    curl -sI https://openvireo.space/original/hotlists/Hubble.HTL | grep -i cache-control
    curl -s https://openvireo.space/ | grep -o '/assets/index-[A-Za-z0-9_-]*\.js'   # copia la ruta para el siguiente
    curl -sI https://openvireo.space/assets/index-XXXX.js | grep -i cache-control
@@ -193,7 +193,7 @@ El flujo `.github/workflows/ci-cd.yml` corre en GitHub en cada push y en cada pu
 1. **Tipos, pruebas unitarias y recursos:** `tsc`, Vitest, la comprobación de los recursos originales y de los límites de Pages.
 2. **Pruebas del navegador:** la suite completa de Playwright, repartida en 4 trabajos en paralelo.
 3. **Compilación y pruebas de Pages:** `npm run build` y `npm run test:pages`, que sirve `dist/` con `wrangler pages dev` en local (sin cuenta).
-4. **Despliegue:** solo en un push a `main`, y solo si los tres anteriores pasan. Compila de nuevo y publica `dist/` en el proyecto `openvireo` con `wrangler pages deploy … --branch=main`.
+4. **Despliegue:** solo en un push a `main`, y solo si los anteriores pasan. No compila otra vez: descarga el mismo `dist/` que probó el paso 3 (un artefacto del run, que se guarda un día) y lo publica en el proyecto `openvireo` con `wrangler pages deploy … --branch=main`.
 
 Si una prueba falla, no se despliega nada y la versión publicada sigue igual. GitHub te avisa por correo. Las evidencias del fallo quedan 7 días como artefacto del run (**Actions → el run → Artifacts**).
 
@@ -346,3 +346,24 @@ Revisión independiente (Opus) de la rama `claude/front-launch3`.
 - **Compresión:** todos los cargadores de los archivos etiquetados leen `response.body` con `boundedResourceBody` y comprueban tamaño y SHA-256 sobre los bytes ya decodificados; ninguno usa `.text()`, `Content-Length` como progreso ni peticiones `Range`, y no hay service worker. Los 194 archivos (8 956 274 bytes) son ASCII. Las reglas `/original/*.SP` etc. son válidas para Pages (patrón anclado, `*` codicioso, sensible a mayúsculas).
 - **Menor, sin cambio:** una dirección inexistente bajo esas reglas (por ejemplo `/original/x.SP`) recibe la página 404 con tipo `text/plain`, así que una persona vería su HTML como texto. Ningún cargador la lee.
 - **404:** correcta en los cuatro idiomas, `lang` en cada bloque, un `h1`, claro y oscuro, 320 px.
+
+## 13. Seguridad (revisión del 14 de noviembre de 2026)
+
+Lo que quedó en el repositorio tras la revisión:
+
+- **HTTPS estricto.** `public/_headers` envía `Strict-Transport-Security: max-age=31536000; includeSubDomains`. Un navegador que ya visitó el sitio usa solo HTTPS durante un año, también en los subdominios. No lleva `preload`: es un registro aparte y difícil de deshacer. Consecuencia: cualquier subdominio futuro de `openvireo.space` tiene que servir HTTPS.
+- **Contacto de seguridad.** `SECURITY.md` explica cómo reportar un fallo en privado, y `public/.well-known/security.txt` (RFC 9116) lo publica en `https://openvireo.space/.well-known/security.txt`. Su línea `Expires` vence el 14 de noviembre de 2027: **renuévala antes** (cambia la fecha un año adelante y despliega).
+- **CI/CD.** Las acciones de GitHub van fijadas por commit (el comentario dice la versión), los `checkout` no dejan el token en `.git/config`, y el despliegue publica el `dist/` probado (§ 11). `.github/dependabot.yml` propone una vez al mes las actualizaciones de dependencias y de acciones como pull requests agrupados; corren todas las pruebas y nunca despliegan.
+- **Lectores de datos externos.** El lector de la respuesta de VizieR recorre las etiquetas en tiempo lineal (`src/core/markupScan.ts`), y Object X › Load FITS comprueba el tamaño del archivo antes de leerlo.
+
+Lo que solo puedes hacer tú, en los paneles (la revisión lo encontró pendiente):
+
+1. **Correo del dominio (Cloudflare → DNS).** El dominio conserva los registros MX de reenvío de Namecheap (`eforward*.registrar-servers.com`) y no tiene SPF ni DMARC, así que cualquiera puede enviar correo como `@openvireo.space`. Si no usas correo en el dominio:
+   - borra los MX;
+   - añade un TXT en `openvireo.space` con `v=spf1 -all`;
+   - añade un TXT en `_dmarc.openvireo.space` con `v=DMARC1; p=reject`.
+2. **DNSSEC y CAA.** En Cloudflare, **DNS → Settings → DNSSEC → Enable**, y copia el registro DS en Namecheap (**Advanced DNS → DNSSEC**). Opcional: un registro CAA que solo permita las autoridades que usa Cloudflare.
+3. **GitHub (Settings del repositorio):**
+   - **Code security:** activa *Secret scanning*, *Push protection* y *Private vulnerability reporting* (este último es el formulario al que apunta `SECURITY.md`).
+   - **Rules → Rulesets:** una regla para `main` que bloquee el *force push* y el borrado de la rama.
+   - **Actions → General → Workflow permissions:** *Read repository contents and packages permissions*.

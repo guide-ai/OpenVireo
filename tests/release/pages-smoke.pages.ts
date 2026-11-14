@@ -60,6 +60,7 @@ test('the page, a hashed bundle and an original file carry the release headers',
  const h=page.headers(),csp=h['content-security-policy'];
  expect(csp).toContain("default-src 'none'");expect(csp).toContain("frame-ancestors 'none'");
  expect([h['x-content-type-options'],h['referrer-policy'],h['x-frame-options']]).toEqual(['nosniff','same-origin','DENY']);
+ expect(h['strict-transport-security']).toBe('max-age=31536000; includeSubDomains');
  expect(h['permissions-policy']).toContain('camera=()');expect(h['permissions-policy']).toContain('geolocation=()');
  expect(h['cache-control']).toBe('no-cache');
  const html=await page.text(),asset=/src="(\/assets\/index-[\w-]+\.js)"/.exec(html)![1];
@@ -563,3 +564,15 @@ for(const h of HELP_SMOKE)test(h.title,async({page,baseURL})=>{
  await expect(page.getByTestId('class-help-topic-text')).toHaveAttribute('lang','en');
  expect([p.console,p.errors,await violations(page),p.external]).toEqual([[],[],[],[]]);
 });
+
+// Security review of 2026-11-14: the RFC 9116 contact file is published from public/.well-known (a dot folder, which the
+// build copies and Pages serves) as plain text with the release headers.
+test('security.txt is served under /.well-known with a contact, a policy and an expiry date',async({request})=>{
+ const r=await request.get('/.well-known/security.txt');expect(r.status()).toBe(200);
+ expect(r.headers()['content-type']).toContain('text/plain');expect(r.headers()['x-content-type-options']).toBe('nosniff');
+ const body=await r.text();
+ expect(body).toMatch(/^Contact: https:\/\/github\.com\/guide-ai\/OpenVireo\/security\//m);
+ expect(body).toMatch(/^Expires: \d{4}-\d{2}-\d{2}T00:00:00Z$/m);
+ expect(body).toMatch(/^Canonical: https:\/\/openvireo\.space\/\.well-known\/security\.txt$/m);
+});
+

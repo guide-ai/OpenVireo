@@ -96,4 +96,25 @@ describe('VizieR VOTable reader',()=>{
    {catalog:'I/297',band:'R',catalogName:'NOMAD'},{catalog:'I/284',band:'I2',catalogName:'USNO-B1'}]);
   expect(vizierRouteForCamera('ir',2)).toEqual({catalog:'I/297',band:'K',catalogName:'NOMAD'});
  });
+ // Security review of 2026-11-14: a hostile answer within the size limit must not make the read quadratic. Each document
+ // below is about 2 MB of openings that never close; the regular expressions this reader used before rescanned the rest of the
+ // text for each one (200 KB took about a second, so 2 MB would take minutes). SYNTHETIC documents.
+ test('hostile markup is read in linear time',()=>{
+  const fields=nomadFields.map(f=>`<FIELD name="${f}" datatype="char"/>`).join(''),n=400_000;
+  const table=(data:string)=>`<VOTABLE version="1.4"><RESOURCE><TABLE>${fields}<DATA><TABLEDATA>${data}</TABLEDATA></DATA></TABLE></RESOURCE></VOTABLE>`;
+  const hostile:Record<string,string>={
+   'rows that never close':table('<TR>'.repeat(n)),
+   'row tags that never end':table('<TR '.repeat(n)),
+   'cells that never close':table(`<TR>${'<TD>'.repeat(n)}</TR>`),
+   'tables that never close':`<VOTABLE version="1.4">${'<TABLE>'.repeat(n)}`,
+   'table data that never closes':`<VOTABLE version="1.4"><RESOURCE><TABLE>${fields}<DATA>${'<TABLEDATA>'.repeat(n)}</DATA></TABLE></RESOURCE></VOTABLE>`,
+   'INFO tags that never end':`<VOTABLE version="1.4" ${'<INFO '.repeat(n)}`,
+   'PARAM and FIELD tags that never end':`<VOTABLE version="1.4"><RESOURCE><TABLE>${'<PARAM <FIELD '.repeat(n/2)}`,
+  };
+  for(const [name,document] of Object.entries(hostile)){
+   const started=performance.now();
+   try{readVizierCatalog(enc(document),ctx('R'));}catch(error){expect(error,name).toBeInstanceOf(VizierCatalogError);}
+   expect(performance.now()-started,name).toBeLessThan(4000);
+  }
+ },60_000);
 });

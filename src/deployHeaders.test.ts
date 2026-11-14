@@ -50,6 +50,8 @@ describe('public/_headers for the static release',()=>{
  });
  it('sets the other security headers once, for every path',()=>{
   expect(header('/*','X-Content-Type-Options')).toBe('nosniff');
+  // Security review of 2026-11-14: HTTPS only for a year, subdomains included, and never `preload` (not asked for).
+  expect(header('/*','Strict-Transport-Security')).toBe('max-age=31536000; includeSubDomains');
   expect(header('/*','Referrer-Policy')).toBe('same-origin');
   expect(header('/*','Permissions-Policy')).toMatch(/camera=\(\).*geolocation=\(\).*microphone=\(\)/);
  });
