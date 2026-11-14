@@ -186,6 +186,8 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 1
+          # Most of the bytes are binary catalogue tiles: a light compression keeps the upload quick.
+          compression-level: 1
 
   deploy:
     name: Deploy to Cloudflare Pages
