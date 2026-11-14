@@ -2,7 +2,7 @@
 
 Guía paso a paso para publicar la versión 1.0 como sitio estático en tu cuenta de Cloudflare, primero con la dirección gratuita `*.pages.dev` y, desde el 8 de noviembre de 2026, con el dominio propio `https://openvireo.space` (§ 10). Sigue la decisión del 7 de noviembre de 2026 (`AGENTS.md`):
 
-- Se publica solo el sitio estático: la salida normal de `npm run build`, sin código de la nube opcional.
+- Se publica solo el sitio estático: la salida normal de `npm run build`. No hay backend ni código de cuentas (retirado el 14 de noviembre de 2026, § 13).
 - Las investigaciones se guardan solo en el equipo del estudiante.
 - La analítica de visitas es agregada y sin cookies (Cloudflare Web Analytics).
 - No se despliegan cuentas, base de datos, correo ni Workers.
@@ -30,9 +30,9 @@ Desde el 8 de noviembre de 2026 (decisión tuya, `AGENTS.md`), cada push a `main
    ```sh
    npm ci --ignore-scripts
    ```
-3. La herramienta `wrangler` en la versión fijada: **4.150.0**, la misma que `worker/package.json`. Puedes usarla de dos formas:
+3. La herramienta `wrangler` en la versión fijada: **4.150.0**, la misma que `tools/wrangler/package.json`. Puedes usarla de dos formas:
    - con `npx wrangler@4.150.0 …`, que la descarga de npm la primera vez;
-   - o desde `worker/node_modules`, después de `cd worker && npm ci`.
+   - o desde `tools/wrangler/node_modules`, después de `cd tools/wrangler && npm ci`.
 
    Desactiva la telemetría en la terminal donde la uses:
    ```sh
@@ -74,22 +74,19 @@ git status            # sin cambios pendientes
 npm run build
 ```
 
-La compilación debe terminar con estas tres líneas:
+La compilación debe terminar con estas dos líneas:
 
 ```
-Ordinary build is free of optional-cloud code.
 Deploy limits: 2023 files, … bytes (… MiB); largest original/orbit/ObjX_MPC/000.bin, 10616832 bytes (10.1 MiB).
 Every file is under 26214400 bytes and the count is under 20000.
 ```
-
-Si `VITE_OPENVIREO_CLOUD` está definida en tu entorno, quítala (`unset VITE_OPENVIREO_CLOUD`): la versión 1.0 no incluye la nube.
 
 ## 5. Prueba local con la semántica de Pages (recomendada antes de cada despliegue)
 
 Esta prueba sirve `dist/` con `wrangler pages dev` en `127.0.0.1`, que aplica `_headers` igual que Pages. No necesita sesión ni cuenta, y la prueba bloquea toda petición que no sea local.
 
 ```sh
-(cd worker && npm ci)                        # una sola vez: wrangler 4.150.0 fijado
+(cd tools/wrangler && npm ci)                # una sola vez: wrangler 4.150.0 fijado
 npm run test:pages
 ```
 
@@ -107,7 +104,7 @@ La prueba comprueba:
 
 Despliega **fuera del horario de clase**. Una pestaña que ya estaba abierta sigue pidiendo los archivos de la versión anterior, y esos archivos dejan de existir. La parte que aún no había cargado muestra entonces el aviso "A new version of OpenVireo was published", con *Save investigation* y *Reload the page*. El estudiante debe guardar y recargar. El resto de su trabajo en esa pestaña no se pierde, pero tiene que recargar.
 
-Ejecuta el comando **desde la raíz del repositorio, nunca desde `worker/`**. En `worker/`, Wrangler leería `worker/wrangler.jsonc`, que es la configuración del backend opcional, no la de este sitio.
+Ejecuta el comando **desde la raíz del repositorio**. El proyecto no tiene archivo de configuración de Wrangler: todo va en la línea de comandos.
 
 ```sh
 npx wrangler@4.150.0 pages deploy dist --project-name=openvireo --branch=main
@@ -215,7 +212,7 @@ El flujo necesita dos secretos. Se guardan en el **entorno** `production` de Git
    6. Pulsa **Continue to summary → Create Token** y copia el token. Cloudflare solo lo muestra una vez.
 3. **Busca el ID de tu cuenta.** Está en el panel (**Workers & Pages → Account details → Account ID**) o en la salida de:
    ```sh
-   worker/node_modules/.bin/wrangler whoami
+   tools/wrangler/node_modules/.bin/wrangler whoami
    ```
 4. **Guarda los dos valores como secretos del entorno `production`.** Desde la raíz del proyecto, con `gh` autenticado:
    ```sh
@@ -238,7 +235,6 @@ El flujo necesita dos secretos. Se guardan en el **entorno** `production` de Git
 - **Volver atrás:** igual que en § 9 (rollback en el panel), o con `git revert` del commit y un push, que vuelve a desplegar la versión anterior.
 - **Pull requests:** corren todas las pruebas pero nunca despliegan. Los de forks no tienen acceso a los secretos.
 - **Cambiar el token:** crea uno nuevo (11.1), sustituye el secreto con `gh secret set CLOUDFLARE_API_TOKEN --env production -R guide-ai/OpenVireo` y revoca el anterior en Cloudflare.
-- **Qué no corre en CI:** las pruebas del backend opcional (`worker/`, `playwright.cloud.config.ts`), porque ese backend no se despliega.
 
 ## 12. Direcciones de idioma, compresión de los datos y página 404 (Front LAUNCH-3, 12 de noviembre de 2026)
 
@@ -355,6 +351,7 @@ Lo que quedó en el repositorio tras la revisión:
 - **Contacto de seguridad.** `SECURITY.md` explica cómo reportar un fallo en privado, y `public/.well-known/security.txt` (RFC 9116) lo publica en `https://openvireo.space/.well-known/security.txt`. Su línea `Expires` vence el 14 de noviembre de 2027: **renuévala antes** (cambia la fecha un año adelante y despliega).
 - **CI/CD.** Las acciones de GitHub van fijadas por commit (el comentario dice la versión), los `checkout` no dejan el token en `.git/config`, y el despliegue publica el `dist/` probado (§ 11). `.github/dependabot.yml` propone una vez al mes las actualizaciones de dependencias y de acciones como pull requests agrupados; corren todas las pruebas y nunca despliegan.
 - **Lectores de datos externos.** El lector de la respuesta de VizieR recorre las etiquetas en tiempo lineal (`src/core/markupScan.ts`), y Object X › Load FITS comprueba el tamaño del archivo antes de leerlo.
+- **Sin backend.** El código del backend opcional de cuentas (`worker/`, `src/cloud`, sus pruebas y `docs/BACKEND-LOCAL.md`) se retiró el 14 de noviembre de 2026 por decisión tuya: no se prevé inicio de sesión ni servidor. Sigue en el historial de git (último commit que lo contiene: `4c71975`). `wrangler` vive ahora en `tools/wrangler`, solo para la prueba local de Pages y el despliegue.
 
 Lo que solo puedes hacer tú, en los paneles (la revisión lo encontró pendiente):
 

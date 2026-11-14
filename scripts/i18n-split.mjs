@@ -137,7 +137,7 @@ export function sourceGraph(root=ROOT){
  return files;
 }
 /** Each file's contexts: ['core'] when src/main.tsx reaches it without crossing a lazyArea boundary, otherwise the sorted areas
- * whose roots reach it, or [] when nothing reaches it (workers, the cloud build). */
+ * whose roots reach it, or [] when nothing reaches it (workers). */
 export function fileContexts(graph,entry=ENTRY){
  const reach=(starts)=>{const seen=new Set(),todo=[...starts];while(todo.length){const f=todo.pop();if(seen.has(f)||!graph.has(f))continue;seen.add(f);todo.push(...graph.get(f).edges);}return seen;};
  const core=reach([entry]),contexts=new Map(),roots=new Map(),boundaries=[];

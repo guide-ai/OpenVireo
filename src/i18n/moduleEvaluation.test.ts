@@ -7,7 +7,7 @@ import path from 'node:path';
 // reasons and are not counted here; the Spanish Playwright specs run the dev tripwire on the whole page.
 const src=path.resolve(import.meta.dirname,'..');
 const modules:string[]=[];
-(function scan(dir:string){for(const e of readdirSync(dir,{withFileTypes:true})){const f=path.join(dir,e.name);if(e.isDirectory()){if(e.name!=='cloud')scan(f);}else if(/\.tsx?$/.test(e.name)&&!/\.test\.ts$|\.d\.ts$|[wW]orker/.test(e.name))modules.push(f);}})(src);
+(function scan(dir:string){for(const e of readdirSync(dir,{withFileTypes:true})){const f=path.join(dir,e.name);if(e.isDirectory())scan(f);else if(/\.tsx?$/.test(e.name)&&!/\.test\.ts$|\.d\.ts$|[wW]orker/.test(e.name))modules.push(f);}})(src);
 describe('Front ES1: no module reads text when it evaluates',()=>{
  it('imports every source module before the language is settled without a text read',async()=>{
   const key=Symbol.for('openvireo.i18n.active'),global=globalThis as Record<symbol,unknown>,kept=global[key],reads:string[]=[];

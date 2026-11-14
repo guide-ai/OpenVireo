@@ -5,14 +5,13 @@ import {useCallback,useEffect,useRef,useState} from 'react';
 import WelcomeShell,{AppFailed} from './home/WelcomeShell';
 import {isWelcomeHash,queueIntent,shellFirst,type ShellHandoff,type ShellIntent} from './home/appGate';
 import {readDemonstrationMode} from './io/demonstrationModeStorage';
-import {CLOUD_ENABLED} from './cloud/config';
 
 type AppModule=typeof import('./OpenVireo');
 let appModule:Promise<AppModule>|null=null;
 /** One fetch of the app for the page's life. A failed fetch is forgotten (review 1, finding 5: offline or a flaky connection),
  * so the next click on the shell tries again. */
 const loadApp=()=>appModule??=import('./OpenVireo').catch((error:unknown)=>{appModule=null;throw error;});
-const startOnShell=shellFirst({hash:location.hash,demonstrationMode:readDemonstrationMode(),cloud:CLOUD_ENABLED});
+const startOnShell=shellFirst({hash:location.hash,demonstrationMode:readDemonstrationMode()});
 let readyApp:AppModule|null=null;
 /** Started while the module graph is still evaluating, as the static import did (main.tsx also adds src/appEntry.ts as a module
  * script, so the load event waits for this code). main.tsx waits for it (with the language chunk) before the first render, so a direct load of any other address renders the app in its first commit, as before:

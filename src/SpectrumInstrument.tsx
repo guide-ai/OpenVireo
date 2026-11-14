@@ -82,10 +82,6 @@ function preloadSessionWhenIdle():()=>void{
   window.addEventListener('online',online);idle();
   return ()=>{stopped=true;cancel();done();};
 }
-/** Front F2 (Front A point 8): where a Save sends the file instead of downloading it (the optional cloud account). It receives
- * the exact text Save would download; it reports its own failures, so a failed delivery shows no analyzer error. F2 review L3: Cancel
- * (or hiding the tab) aborts `signal`, as it stops a local Save before its download: a cancelled Save is never a saved one. */
-export type SessionDelivery=(text:string,signal:AbortSignal)=>Promise<void>;
 
 /** Front ONERESULTS: why the shared Observational Results list refused a record (full, or a record the dialog cannot show). */
 const listMessage=(e:ObservationListError|null)=>t(e?.code==='limit'?'ph.nativeListFull':'ph.nativeBlocked');
@@ -123,7 +119,7 @@ function Chart({ observation, z, reference, view, baseline, cursor, selectedLine
   </svg>;
 }
 
-export type AnalysisController=Readonly<{acceptAcquisition:(observation:AcquisitionObservation)=>void;acceptImported:(source:ClassificationImport)=>void;openHubble:()=>void;saveSession:(deliver?:SessionDelivery)=>Promise<boolean>;cancelSessionOperation:()=>void;restoreSessionFile:(file:File)=>Promise<boolean>;/** G4 closure I3 */lastRestoreResources?:()=>boolean;/** Front ONERESULTS review 1 L3 */lastRestoreListLimit?:()=>boolean}>;
+export type AnalysisController=Readonly<{acceptAcquisition:(observation:AcquisitionObservation)=>void;acceptImported:(source:ClassificationImport)=>void;openHubble:()=>void;saveSession:()=>Promise<boolean>;cancelSessionOperation:()=>void;restoreSessionFile:(file:File)=>Promise<boolean>;/** G4 closure I3 */lastRestoreResources?:()=>boolean;/** Front ONERESULTS review 1 L3 */lastRestoreListLimit?:()=>boolean}>;
 /** Phase 1 item 1.5: the Radio/Pulsar part of a Save ('none': nothing to keep, the file stays v≤22). */
 export type RadioPrepare=Readonly<{kind:'none'}|{kind:'blocked';reason:RadioSaveBlock}|{kind:'ready';snapshot:RadioInvestigation;onSaved:()=>void}>;
 function SpectrumInstrument({onRecordLss,lssMode=false,onPrepareFieldSpectrum,onRestoreFieldSpectrum,onPrepareObjectX,onRestoreObjectX,onPrepareLss,onRestoreLss,onPrepareRadio,onCheckRadioRestore,onRestoreRadio,onPrepareMotion,onRestoreMotion,onPrepareObservatory,onRestoreObservatory,onPrepareClusterSelection,onRestoreClusterSelection,onPrepareClusterComparison,onRestoreClusterComparison,onPrepareClusterDatabase,onRestoreClusterDatabase,library,controllerRef,onRestoreAcquisition,onKindChange,onLabProgress,onPrepareClassification,onRestoreClassification,onArchivesChange,onSessionBusy,onClassifyAcquisition,onClassifyImported,onPreparePhotometry,onRestorePhotometry,onPrepareObserving,onRestoreObserving,onPrepareEditing,onRestoreEditing,onPrepareOptical,onRestoreOptical,active=true,currentJd,computeRedshiftVelocity=false,timeDependentData=false}: {
@@ -292,8 +288,7 @@ function SpectrumInstrument({onRecordLss,lssMode=false,onPrepareFieldSpectrum,on
     }catch{if(ticket===generation.current)setError(t('ssp.exportError'));}
     finally{if(ticket===generation.current)setBusy(false);}
   }
-  const deliveryAbort=useRef<AbortController|null>(null);
-  async function exportSession(deliver?:SessionDelivery):Promise<boolean> {
+  async function exportSession():Promise<boolean> {
     if(busy)return false;
     // Phase 1 item 1.5: an unsafe Radio/Pulsar state refuses the whole Save before any other part is prepared, and before the
     // ticket or busy change, so a refused Save never advertises a session operation (whose effects could abandon an owned write).
@@ -308,9 +303,8 @@ function SpectrumInstrument({onRecordLss,lssMode=false,onPrepareFieldSpectrum,on
       const {serializeAnalysisSession}=await saveModules();
       const saved=await serializeAnalysisSession({...(results?{observationList:results.get()}:{}),...(fieldSpectrum?{fieldSpectrum}:{}),...(objectX?{objectX}:{}),...(lss?{lss}:{}),...(radio.kind==='ready'?{radio:{snapshot:radio.snapshot,prepared:null}}:{}),...(motion?{motion}:{}),...(observatory?{observatory}:{}),...(clusterSelection?{clusterSelection}:{}),...(clusterComparison?{clusterComparison}:{}),...(clusterDatabase?{clusterDatabase}:{}),...(optical?{optical}:{}),...(editing?{editing}:{}),...(observing?{observing}:{}),...(photometry?{photometry}:{}),observation,control,stepInput,reference,wide,object,rows,hubble,...((classification=>classificationWorkspaceUsed(classification)?{classification}:{})(onPrepareClassification?.()??EMPTY_CLASSIFICATION_WORKSPACE)),...(acquisitions.length?{acquisitions}:{})});
       if(ticket!==generation.current)return false;
-      if(deliver){const delivery=new AbortController();deliveryAbort.current=delivery;try{await deliver(saved,delivery.signal);}catch{return false;}finally{if(deliveryAbort.current===delivery)deliveryAbort.current=null;}if(ticket!==generation.current)return false;}
-      else download(saved,'openvireo-session.json','application/json;charset=utf-8');
-      if(radio.kind==='ready')radio.onSaved();setNotice(deliver?'':t('session.saved'));return true;
+      download(saved,'openvireo-session.json','application/json;charset=utf-8');
+      if(radio.kind==='ready')radio.onSaved();setNotice(t('session.saved'));return true;
     } catch(e) {if(ticket===generation.current)setError(e instanceof SessionCodeLoadError?t('session.saveCodeError'):e instanceof LssSessionError?t('lss.saveError'):e instanceof ObjectXSessionError?OBJECT_X_SESSION.saveError:t('session.exportError'));return false;}
     finally {if(ticket===generation.current)setBusy(false);}
   }
@@ -367,7 +361,7 @@ function SpectrumInstrument({onRecordLss,lssMode=false,onPrepareFieldSpectrum,on
     } catch(e) {lastRestoreResources.current=e instanceof AnalysisSessionError&&e.code==='resources';lastRestoreListLimit.current=e instanceof AnalysisSessionError&&e.code==='observation-list';if(ticket===generation.current){setNotice('');setError(t(e instanceof SessionCodeLoadError?'session.restoreCodeError':lastRestoreListLimit.current?'session.observationListLimit':e instanceof AnalysisSessionError&&e.code==='resources'?'session.restoreResourcesError':'session.restoreError'));}return false;}
     finally {if(ticket===generation.current)setBusy(false);}
   }
-  function cancelSessionOperation(){deliveryAbort.current?.abort();generation.current++;setBusy(false);setError('');setNotice(t('classLink.cancelled'));}
+  function cancelSessionOperation(){generation.current++;setBusy(false);setError('');setNotice(t('classLink.cancelled'));}
   useImperativeHandle(controllerRef,()=>({acceptAcquisition,acceptImported,cancelSessionOperation,saveSession:exportSession,restoreSessionFile,lastRestoreResources:()=>lastRestoreResources.current,lastRestoreListLimit:()=>lastRestoreListLimit.current,openHubble:()=>{const element=hubbleDetails.current;if(element){element.open=true;element.querySelector('summary')?.focus();element.scrollIntoView({block:'start'});}}}),[onPrepareFieldSpectrum,onRestoreFieldSpectrum,onPrepareObjectX,onRestoreObjectX,onPrepareLss,onRestoreLss,onPrepareRadio,onCheckRadioRestore,onRestoreRadio,onPrepareMotion,onRestoreMotion,busy,acquisitions,observation,onPrepareClassification,control,stepInput,reference,wide,object,rows,hubble,onPreparePhotometry,onRestorePhotometry,onPrepareObserving,onRestoreObserving,onPrepareEditing,onRestoreEditing,velocityDraft,onPrepareOptical,onRestoreOptical,onPrepareClusterDatabase,onRestoreClusterDatabase,onPrepareClusterComparison,onRestoreClusterComparison,onPrepareClusterSelection,onRestoreClusterSelection]);
   return <div className="app-shell">
     <aside className="sidebar analyzer-sidebar"><a className="brand" href="#spectrum" aria-label={t('spectrum.home')}><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15" fill="none" stroke="currentColor"/><path d="M6 25 27 9M10 9l17 17M18 3v30M3 18h30" fill="none" stroke="currentColor"/></svg><span>{t('app.name')}<span className="brand-web"></span></span></a><div className="sidebar-label">{t('spectrum.sidebarTitle')}</div><nav aria-label={t('spectrum.tools')}><a href="#spectrum" className="nav-active"><span>◌</span> {t('spectrum.spectra')}</a><a href="#measurement-log"><span>▤</span> {t('spectrum.log')} <b>{rows.length}</b></a><button onClick={() => evidence.current?.showModal()}><span>⌘</span> {t('spectrum.evidence')}</button></nav><div className="sidebar-bottom"><span className="local-dot"/> {t('spectrum.localSession')}<span className="subtle">{t('spectrum.noServices')}</span></div></aside>

@@ -12,7 +12,7 @@ updates:
       app:
         patterns: ['*']
   - package-ecosystem: npm
-    directory: /worker
+    directory: /tools/wrangler
     schedule:
       interval: monthly
     open-pull-requests-limit: 2

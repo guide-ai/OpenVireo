@@ -1,8 +1,7 @@
 # Security policy
 
 OpenVireo is a static website (https://openvireo.space): it has no accounts and no server-side code, and everything a
-visitor saves stays in their own browser or in files they download. The optional accounts backend in `worker/` is not
-deployed.
+visitor saves stays in their own browser or in files they download.
 
 ## Reporting a vulnerability
 
@@ -22,7 +21,6 @@ about a week.
 - The site at https://openvireo.space and the code in this repository: for example a way to run script in a visitor's
   browser, a file that makes the site misbehave when a visitor opens it, or a way to change what the site serves.
 - The build and deploy pipeline (`.github/workflows/ci-cd.yml`).
-- The optional backend in `worker/`, although it is not deployed: a report before it is ever published is useful.
 
 Out of scope: Cloudflare's and GitHub's own platforms, the VizieR catalogue servers, and reports that need a visitor's
 device or browser to be compromised already.

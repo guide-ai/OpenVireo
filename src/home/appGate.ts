@@ -24,10 +24,10 @@ export type ShellHandoff={queue:ShellIntent[];perform?:(queue:readonly ShellInte
 export const isWelcomeHash=(hash:string)=>hash===''||hash==='#'||hash==='#home';
 
 /** Whether a load can start on the light welcome shell: only the welcome's address, and only when nothing at startup needs the
- * app: a browser that remembers instructor mode (VIREO's Demonstration Mode opens it at page load, with its banner) or the
- * optional cloud build (its sign-in link and account entry belong to the app). Everything else loads the app at once. */
-export function shellFirst(load:Readonly<{hash:string;demonstrationMode:boolean;cloud:boolean}>):boolean{
- return isWelcomeHash(load.hash)&&!load.demonstrationMode&&!load.cloud;
+ * app: a browser that remembers instructor mode (VIREO's Demonstration Mode opens it at page load, with its banner).
+ * Everything else loads the app at once. */
+export function shellFirst(load:Readonly<{hash:string;demonstrationMode:boolean}>):boolean{
+ return isWelcomeHash(load.hash)&&!load.demonstrationMode;
 }
 
 /** The queue of what was asked while the app loads (review 1, finding 8), performed in order once it is in:

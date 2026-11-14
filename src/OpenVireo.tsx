@@ -21,7 +21,6 @@ import {InstructorModeBanner,InstructorModeConfirm} from './components/Instructo
 import {EditModeFieldLayerLazy,NakedEyeDomeSkyLazy} from './observatory/FrontOLazy';
 import ObservatorySounds,{cueDomeSound} from './sound/ObservatorySounds';// Front C5W
 import {MultiSpecObservatoryLazy} from './multispec/MultiSpecLazy';// Front M
-import CloudEntry from './cloud/CloudEntry';// Front A (optional cloud account; off unless VITE_OPENVIREO_CLOUD=1)
 import {NO_SITE_OVERRIDES,effectiveObservatorySite,type SiteOverrides} from './core/observatorySite';
 import {COMPILED_OPTICAL_OPTIONS,COMPILED_SESSION_OPTICAL_OPTIONS,exerciseForcedOptions,type ExerciseCode,programmedSlewRateIndex,telescopeChangeClosesDome,type OpticalOptions,type SessionOpticalOptions} from './core/opticalOptions';
 import {SLEW_LIMIT_LITERALS,manualLimitText,slewLimitAllows} from './core/slewLimit';
@@ -92,7 +91,7 @@ import {GALAXY_TARGETS} from './core/galaxyIdentity';
 import { lazy, memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type ComponentProps, type RefObject } from 'react';
 import {useStableHandlers,type StableProps} from './renderStability';
 import type {WedgeWorkspace} from './core/wedgeWorkspace';
-import SpectrumInstrument,{type AnalysisController,type RadioPrepare,type SessionDelivery} from './SpectrumInstrument';
+import SpectrumInstrument,{type AnalysisController,type RadioPrepare} from './SpectrumInstrument';
 import type {StarObservation} from './io/starObservation';
 import type {GalaxyObservation} from './io/galaxyObservation';
 import Spectrometer from './Spectrometer';
@@ -593,9 +592,8 @@ export default function OpenVireo({handoff}:{handoff?:RefObject<ShellHandoff>}={
   useEffect(()=>{if(projectBusy)observatoryClock.pause();},[projectBusy]);
   function cancelProject(){projectEpoch.current++;projectRunning.current=false;setProjectLocalBusy(false);analyzerController.current?.cancelSessionOperation();classificationController.current?.cancelInvestigation();setProjectError('');setProjectNotice(t('project.cancelled'));}
   function radioBlockText(blocked:NonNullable<typeof radioBlock.current>){const reason=t(`project.radioBlock.${blocked.reason}`);return blocked.kind==='save'?t('project.radioBlocked',{reason}):t('project.radioRestoreBlocked',{reason});}
-  /** Save (no file), Restore (file) or, with `deliver`, Save to a destination other than a download (Front F2: the optional
-   * cloud account, which reports its own delivery failures). Returns whether it succeeded. */
-  async function projectOperation(file?:File,deliver?:SessionDelivery):Promise<boolean>{
+  /** Save (no file) or Restore (file). Returns whether it succeeded. */
+  async function projectOperation(file?:File):Promise<boolean>{
     if(projectRunning.current||investigationBusy)return false;
     // Phase 1 item 1.5 preflight: the latest Radio/Pulsar guards run before any epoch, running or busy change, so a refused
     // operation starts no project span whose busy effects could abandon an owned capture lease or .PLR write. A ready result
@@ -603,13 +601,12 @@ export default function OpenVireo({handoff}:{handoff?:RefObject<ShellHandoff>}={
     if(file?checkRadioRestore()!==null:prepareRadio().kind==='blocked'){const early=lastRadioBlock();if(early){setProjectNotice('');setProjectError(radioBlockText(early));return false;}}
     const id=++projectEpoch.current;projectRunning.current=true;setProjectLocalBusy(true);setProjectError('');setProjectNotice('');
     radioBlock.current=null;
-    let undelivered=false;
-    const ok=file?await analyzerController.current?.restoreSessionFile(file):await analyzerController.current?.saveSession(deliver&&(async(text,signal)=>{try{await deliver(text,signal);}catch(e){undelivered=true;throw e;}}));
+    const ok=file?await analyzerController.current?.restoreSessionFile(file):await analyzerController.current?.saveSession();
     if(id!==projectEpoch.current)return false;projectRunning.current=false;setProjectLocalBusy(false);
     const blocked=lastRadioBlock();
     if(ok){setProjectNotice(t(file?'project.restored':'project.saved'));setObjectXSaved(file?objectXPendingRestore.current:objectXCurrent.current);setLssSavedRecords(file?(lssPendingRestoreCount.current??-1):(lssCurrent.current?.records.length??-1));}
     else if(blocked)setProjectError(radioBlockText(blocked));
-    else if(!undelivered)setProjectError(t(file?(analyzerController.current?.lastRestoreResources?.()?'session.restoreResourcesError':analyzerController.current?.lastRestoreListLimit?.()?'session.observationListLimit':'project.restoreError'):'project.saveError'));
+    else setProjectError(t(file?(analyzerController.current?.lastRestoreResources?.()?'session.restoreResourcesError':analyzerController.current?.lastRestoreListLimit?.()?'session.observationListLimit':'project.restoreError'):'project.saveError'));
     return !!ok;
   }
   useEffect(()=>{const hide=()=>{if(document.visibilityState==='hidden'&&(projectRunning.current||investigationBusy))cancelProject();};document.addEventListener('visibilitychange',hide);return()=>document.removeEventListener('visibilitychange',hide);},[investigationBusy]);
@@ -935,11 +932,9 @@ export default function OpenVireo({handoff}:{handoff?:RefObject<ShellHandoff>}={
    classificationGuide:()=>navigate('classification'),
    preparePhotometerField:(p:Pointing)=>preparePhotometerField(p),
    photometerPoint:(p:Pointing):'moved'|'dome'|'limit'=>!open?'dome':limitRefuses(p)?'limit':(point(p),'moved'),
-   cloudRestore:(file:File)=>void projectOperation(file),
    saveProject:()=>void projectOperation(),
    restoreProject:(file:File)=>void projectOperation(file),
    cancelProject:()=>cancelProject(),
-   cloudSave:(deliver:SessionDelivery)=>projectOperation(undefined,deliver),
    askInstructor:()=>setInstructorAsk(true),
    answerInstructor:(on:boolean)=>{setInstructorAsk(false);if(on&&!instructorGate.open){instructorFocus.current='leave';setInstructorGate(g=>enterInstructorMode(g).state);}},
    leaveInstructor:()=>{const l=leaveInstructorMode(instructorGate);if(l.changed)instructorFocus.current='item';setInstructorGate(l.state);setEditMode(l.reset.editMode);setVirtualObservatory(l.reset.virtualObservatory);setTestMode(l.reset.testMode);},
@@ -1024,8 +1019,7 @@ export default function OpenVireo({handoff}:{handoff?:RefObject<ShellHandoff>}={
   const helpMenu=useMemo(()=><MainHelpMenu kind="main" onSiteAbout={()=>about.current?.showModal()} onTour={()=>setTour(true)}/>,[]);
   const languageSelect=useMemo(()=>selectorShown(uiLanguage())?<LanguageSelectSlot onSave={()=>{void projectOperationRef.current();}}/>:null,[]);
   const investigationActions=useMemo(()=><InvestigationActions busy={projectBusy} onSave={stable.saveProject} onRestore={stable.restoreProject} onCancel={stable.cancelProject}/>,[projectBusy,stable]);
-  const cloudEntry=useMemo(()=><CloudEntry busy={projectBusy} onRestore={stable.cloudRestore} onSaveToCloud={stable.cloudSave}/>,[projectBusy,stable]);
-  const pageBar=useMemo(()=><PageBar view={view} inert={hostInert} busy={projectBusy} notice={projectNotice} error={projectError} actions={investigationActions} language={languageSelect} help={helpMenu} cloud={cloudEntry}/>,[view,hostInert,projectBusy,projectNotice,projectError,investigationActions,languageSelect,helpMenu,cloudEntry]);
+  const pageBar=useMemo(()=><PageBar view={view} inert={hostInert} busy={projectBusy} notice={projectNotice} error={projectError} actions={investigationActions} language={languageSelect} help={helpMenu}/>,[view,hostInert,projectBusy,projectNotice,projectError,investigationActions,languageSelect,helpMenu]);
   const [languageFailed]=useState(languageFailure);
   const areaTextFailed=useSyncExternalStore(subscribeAreaFailures,areaFailed);
   return <TrackingShortcutContext.Provider value={stable.revealTracking}><RecoveryContext.Provider value={recovery}><TestModeContext.Provider value={testMode}><VireoOptionsContext.Provider value={vireoOptions}><ObservationListContext.Provider value={observationListAccess}><ObservationListValue.Provider value={observationList}>{header}{pageBar}{/* ES1 review 1 C1: the Spanish chunk could not be used. */languageFailed&&failureNotice('language-failure','language',languageFailed)}{/* Front ES-SPLIT: a route area's text could not be used; that part stays English. */areaTextFailed&&failureNotice('area-failure','area',uiLanguage())}{tour&&<SiteTour onClose={()=>{setTour(false);requestAnimationFrame(()=>document.querySelector<HTMLElement>('[data-testid="main-help-menu"]')?.focus());}} onTracking={()=>{setTour(false);stable.revealTracking();}}/>}

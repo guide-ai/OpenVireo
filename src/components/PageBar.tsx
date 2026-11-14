@@ -7,7 +7,7 @@ import './page-bar.css';
 /** Front HEADER [W] (user decision, 2026-11-10): the bar at the top of the content area, on every page. Left, the current page's
  * section and name (the sidebar's own labels, src/components/routePages.ts; from 600 px up); then the investigation backup
  * (InvestigationActions); right, the language selector and Help. It is pinned from 600 px up (below). Below it come
- * the cloud entry (absent from every deployed build) and the investigation's busy, notice and error lines, direct children as on
+ * the investigation's busy, notice and error lines, direct children as on
  * the old card. A named <section> (a region): the sidebar stays the page's one banner, and the bar holds no heading, so each
  * page's h1 is its first heading. The class `investigation-toolbar` is kept as the hook of the specs, the print rule and the
  * script rules (a rename is a separate cleanup). The bar is inert while a host-level modal is open, as the card was.
@@ -16,8 +16,8 @@ import './page-bar.css';
  * scrolls (page-bar.css). Its height, written to `--ov-page-bar-height` on <html> by a ResizeObserver (no React render), sets the
  * page's scroll padding, so focus, anchors and scrollIntoView never land under it (WCAG 2.4.11), and the classification cursor
  * read-out's own sticky offset. */
-export default function PageBar({view,inert,busy,notice,error,actions,language,help,cloud}:{view:Route;inert:boolean;busy:boolean;notice:string;error:string;
- /** InvestigationActions. */actions:ReactNode;/** The language select, when shown. */language:ReactNode;/** The main Help menu. */help:ReactNode;cloud:ReactNode}){
+export default function PageBar({view,inert,busy,notice,error,actions,language,help}:{view:Route;inert:boolean;busy:boolean;notice:string;error:string;
+ /** InvestigationActions. */actions:ReactNode;/** The language select, when shown. */language:ReactNode;/** The main Help menu. */help:ReactNode}){
  const page=ROUTE_PAGES[view],bar=useRef<HTMLElement>(null);
  useEffect(()=>{
   const el=bar.current,root=document.documentElement;
@@ -34,7 +34,6 @@ export default function PageBar({view,inert,busy,notice,error,actions,language,h
    {actions}
    <div className="page-bar-tools">{language}<div className="page-bar-help" data-testid="page-bar-help">{help}</div></div>
   </div>
-  {cloud}
   {busy&&<p role="status">{t('project.busy')}</p>}{notice&&<p role="status">{notice}</p>}{error&&<p role="alert">{error}</p>}
  </section>;
 }
