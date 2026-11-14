@@ -1,7 +1,7 @@
 // Front REL1 [W]: production smoke against the built site served with Cloudflare Pages semantics on loopback
 // (`wrangler pages dev`, which applies dist/_headers and Pages' asset routing). Separate from playwright.config.ts: the normal
 // suite never runs it. Run `npm run build` first, then `npm run test:pages` (docs/DEPLOY.md, section "Prueba local").
-// Uses the wrangler pinned in worker/package.json (npm ci in worker/); telemetry and the banner (its update check) are off,
+// Uses the wrangler pinned in tools/wrangler/package.json (npm ci in tools/wrangler/); telemetry and the banner (its update check) are off,
 // no login, no account, and nothing leaves the machine: the spec aborts every request that is not to the loopback server.
 import {existsSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
@@ -11,9 +11,9 @@ process.env.PLAYWRIGHT_BROWSERS_PATH ??= fileURLToPath(new URL('./.local/browser
 const port=Number(process.env.OPENVIREO_PAGES_PORT??6310),inspector=port+1;
 // Loopback ports 6300–6399 only (the server and its inspector on port+1); never Vite's 5173.
 if(!Number.isInteger(port)||port<6300||port>6398)throw new Error('OPENVIREO_PAGES_PORT must be 6300–6398');
-const wrangler=fileURLToPath(new URL('./worker/node_modules/wrangler/bin/wrangler.js',import.meta.url));
+const wrangler=fileURLToPath(new URL('./tools/wrangler/node_modules/wrangler/bin/wrangler.js',import.meta.url));
 if(!existsSync(fileURLToPath(new URL('./dist/index.html',import.meta.url))))throw new Error('dist/ is missing: run npm run build first.');
-if(!existsSync(wrangler))throw new Error('The pinned wrangler is missing: run npm ci in worker/.');
+if(!existsSync(wrangler))throw new Error('The pinned wrangler is missing: run npm ci in tools/wrangler/.');
 // Wrangler's local state (it keeps none for a static site, but may create the folder) goes to a git-ignored folder.
 const state=fileURLToPath(new URL('./.wrangler/state',import.meta.url));
 const baseURL=`http://127.0.0.1:${port}`;

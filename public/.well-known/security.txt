@@ -1,0 +1,10 @@
+# OpenVireo security contact (RFC 9116). The policy, in full: SECURITY.md in the repository.
+# Renew Expires before it passes (docs/DEPLOY.md § 13).
+# First choice: GitHub's private report form. If it is not available to you, open an issue that only asks for a private
+# contact, without the details.
+Contact: https://github.com/guide-ai/OpenVireo/security/advisories/new
+Contact: https://github.com/guide-ai/OpenVireo/issues/new
+Expires: 2027-11-01T00:00:00Z
+Preferred-Languages: en, es
+Canonical: https://openvireo.space/.well-known/security.txt
+Policy: https://github.com/guide-ai/OpenVireo/security/policy

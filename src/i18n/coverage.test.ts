@@ -24,6 +24,7 @@ describe('P01 complete authored presentation catalog and interpolation contract'
   for(const bad of [{...en,extra:'extra'},{...en,'sky.pointed':'{wrong}'},{...en,'sky.pointed':5}])expect(()=>createI18n(bad as typeof en,'en-US')).toThrow();const missing={...en};delete(missing as Partial<typeof en>)['sky.pointed'];expect(()=>createI18n(missing,'en-US')).toThrow();
  });
  it('keeps all remaining direct render sites confined to reviewed scientific/source-identity tokens',()=>{
+  // 146 (148 − 2, 2026-11-14): the optional cloud account was removed (user decision; AGENTS.md), and with it src/cloud/{CloudEntry,CloudAccount}.tsx. The lines below are the history of the count.
   // 127 (126 + Front G's 1): Front G adds src/FieldSpectrometer.tsx (spectrometer at the telescope pointing); its strings come from the catalog (fieldSpec.*, ph.tiled*) or FieldInfoMessages.
   // 126 (124 + Front K2's 2): Front K2 adds src/clusters/{RecordedResultsWindow,ObservationalDataDialog}.tsx (Recorded Results list, Observational Data dialog); their strings come from src/clusters/ClusterHrMessages.ts or the recovered literals in src/core/clusterNativeHrSelect.ts.
   // 124 (Front C5W's 122 + Front A's 2): Front A adds src/cloud/{CloudEntry,CloudAccount}.tsx (optional cloud account); their strings come from src/cloud/messages.ts.
@@ -64,7 +65,7 @@ describe('P01 complete authored presentation catalog and interpolation contract'
   // 145: Front HOME adds src/home/Welcome.tsx (the welcome page); its strings come from the catalog (home.*).
   // 147: Front LAZY-OBS adds src/components/AppChrome.tsx (the sidebar and welcome markup moved out of OpenVireo.tsx, shared with the shell) and src/home/WelcomeShell.tsx (the welcome before the app is loaded); their strings come from the catalog (home.*, app.*, sky.*, the guides' nav keys) and src/components/AppShellMessages.ts.
   // 148: Front LAUNCH-1 adds src/observatory/TrackingShortcut.tsx ("Show tracking control" beside a "turn tracking on" message); its string comes from the catalog (runningClock.shortcut).
-  const audit=auditUi(root);expect(audit.files.length).toBe(148);const actual=new Map<string,number>();for(const s of audit.sites){const key=JSON.stringify([s.file,s.kind,s.value]);actual.set(key,(actual.get(key)??0)+1);}
+  const audit=auditUi(root);expect(audit.files.length).toBe(146);const actual=new Map<string,number>();for(const s of audit.sites){const key=JSON.stringify([s.file,s.kind,s.value]);actual.set(key,(actual.get(key)??0)+1);}
   const expected=new Map(receipts.map(r=>[JSON.stringify([r.file,r.kind,r.value]),r.count]));expect(actual).toEqual(expected);expect(receipts.every(r=>r.reason.length>30)).toBe(true);
  });
  it('sources browser title/description from the same English catalog and escapes them as text',()=>{

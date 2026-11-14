@@ -436,8 +436,8 @@ time (the shared hot list); everything else was modules the entry imported stati
 
 - **`src/App.tsx`** (the entry's default export, was a re-export of `OpenVireo`) decides once per load with `shellFirst`
   (`src/home/appGate.ts`, pure): the welcome's addresses (no hash, `#`, `#home`) start on the light shell, unless the browser
-  remembers instructor mode (VIREO's Demonstration Mode opens it at page load, with its banner) or the build is the optional cloud
-  build. Every other address loads the app at once: `src/main.tsx` adds the app's own module entry (`src/appEntry.ts`: `boot`, then
+  remembers instructor mode (VIREO's Demonstration Mode opens it at page load, with its banner). (Until 2026-11-14 the optional
+  cloud build, since removed, also loaded the app at once.) Every other address loads the app at once: `src/main.tsx` adds the app's own module entry (`src/appEntry.ts`: `boot`, then
   `OpenVireo`) as a module `<script>` while the page is still loading, and waits for the app (with a language chunk, if any)
   before the first render. A script element delays the load event and a bare dynamic `import()` does not, so the app renders
   before the load event exactly as when it was a static import (measured: header at 260–350 ms, load at 264–358 ms on the

@@ -14,8 +14,13 @@
 #               cloudflareinsights.com (the beacon's report). CfA is approved but not queried live, so it is not listed.
 #   worker-src  'self' (hubble engine, sky field, camera, multi-spec and Object X spectrometer module workers).
 # External links (hubblesite.org, Help > Websites) are navigations in a new tab and need no entry.
+#
+# Strict-Transport-Security (security review of 2026-11-14): a browser that has visited once uses only HTTPS for
+# openvireo.space and its subdomains for a year, so a hostile network cannot intercept the first plain-HTTP request of a
+# later visit. No `preload`: that is a separate, hard-to-undo registration the user has not asked for.
 /*
   Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-Zsw1HYW5lFg+9Ue5KUtmTk4PPZXbvfd2zXC6dzEmPNY=' https://static.cloudflareinsights.com; style-src 'self' 'sha256-Qt3eEwhVZ1pvGGctp+/HYkbxkf+aIHVP/Mb6MDlwYEQ=' 'sha256-5q16RQfYDZjXxeC8pQn71mV4X7fJQh1TRbLSBPXDXsY='; img-src 'self' data:; media-src 'self' blob:; connect-src 'self' https://vizier.idia.ac.za https://vizier.cds.unistra.fr https://cloudflareinsights.com; worker-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: same-origin

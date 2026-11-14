@@ -8,6 +8,7 @@
 import {orderNativeNomadEntries,NativeNomadOrderError} from './nativeNomadOrder';
 import {cameraCatalogReference} from './cameraCatalogReference';
 import {nativeNomadCandidateInSelection,type NomadSelection} from './nativeNomadRows';
+import {cellBodies,elementBodies,firstBareElementBody,openTags} from './markupScan';
 
 export type VizierCatalogId='I/297'|'I/284';
 /** NOMAD selectors B,V,R,J,H,K (mode 0) and the USNO-B1 mode-1 labels B2,R2,I2 recovered at 0x59c5e8. */
@@ -106,10 +107,12 @@ export function readVizierCatalog(bytes:Uint8Array,context:VizierRowContext):Viz
  try{text=new TextDecoder('utf-8',{fatal:true}).decode(bytes);}catch{throw new VizierCatalogError('encoding');}
  if(!/<VOTABLE[\s>]/.test(text))throw new VizierCatalogError('not-votable');
  if(/<(BINARY2?|FITS)[\s>]/.test(text))throw new VizierCatalogError('binary');
+ // Tags are found with the linear scans of markupScan.ts, never with a regular expression over the document: a hostile
+ // answer must not be able to make the read quadratic in its length (security review of 2026-11-14).
  // INFOs are read from the whole document: VizieR writes them both before and after the RESOURCE.
  let queryStatus:string|null=null,maxTuples:number=VIZIER_POLICY.defaultMaxTuples,matches:number|null=null;
- for(const m of text.matchAll(/<INFO\b[^>]*>/g)){
-  const name=attribute(m[0],'name'),value=attribute(m[0],'value');
+ for(const tag of openTags(text,'INFO')){
+  const name=attribute(tag,'name'),value=attribute(tag,'value');
   if(name==='QUERY_STATUS')queryStatus=value;
   if(name==='MaxTuples'&&value!==null&&/^\d{1,9}$/.test(value))maxTuples=Number(value);
   if(name==='matches'&&value!==null&&/^\d{1,9}$/.test(value))matches=Number(value);
@@ -117,20 +120,21 @@ export function readVizierCatalog(bytes:Uint8Array,context:VizierRowContext):Viz
  if(queryStatus==='OVERFLOW')throw new VizierCatalogError('overflow','QUERY_STATUS');
  if(queryStatus!==null&&queryStatus!=='OK')throw new VizierCatalogError('query-status',queryStatus);
  // IVOA Simple Cone Search 1.03 signals errors with an INFO or PARAM named "Error".
- for(const m of text.matchAll(/<(?:INFO|PARAM)\b[^>]*>/g))if(attribute(m[0],'name')==='Error')throw new VizierCatalogError('query-status','Error');
- const tables=[...text.matchAll(/<TABLE\b[^>]*>([\s\S]*?)<\/TABLE>/g)];
+ for(const tag of openTags(text,'INFO','PARAM'))if(attribute(tag,'name')==='Error')throw new VizierCatalogError('query-status','Error');
+ let tableCount=0,firstTable='';
+ for(const table of elementBodies(text,'TABLE'))if(tableCount++===0)firstTable=table;
  let fieldNames:readonly string[]=[],rows:string[][]=[];
  // A usable answer has exactly one TABLE; a document without one is never read as an empty field.
- if(tables.length!==1)throw new VizierCatalogError('table-count',String(tables.length));
+ if(tableCount!==1)throw new VizierCatalogError('table-count',String(tableCount));
  {
-  const body=tables[0][1];
-  fieldNames=Object.freeze([...body.matchAll(/<FIELD\b[^>]*>/g)].map(f=>{const n=attribute(f[0],'name');if(!n)throw new VizierCatalogError('malformed','FIELD');return n;}));
+  const body=firstTable;
+  fieldNames=Object.freeze([...openTags(body,'FIELD')].map(f=>{const n=attribute(f,'name');if(!n)throw new VizierCatalogError('malformed','FIELD');return n;}));
   if(new Set(fieldNames).size!==fieldNames.length)throw new VizierCatalogError('malformed','duplicate FIELD');
-  const data=/<TABLEDATA>([\s\S]*?)<\/TABLEDATA>/.exec(body);
-  if(data){
-   for(const tr of data[1].matchAll(/<TR\b[^>]*>([\s\S]*?)<\/TR>/g)){
+  const data=firstBareElementBody(body,'TABLEDATA');
+  if(data!==null){
+   for(const tr of elementBodies(data,'TR')){
     if(rows.length>=VIZIER_POLICY.maxRows)throw new VizierCatalogError('row-limit');
-    const cells=[...tr[1].matchAll(/<TD\b[^>]*\/>|<TD\b[^>]*>([\s\S]*?)<\/TD>/g)].map(td=>{const v=decode(td[1]??'');if(v.length>VIZIER_POLICY.maxCellChars||/[<>]/.test(v))throw new VizierCatalogError('malformed','TD');return v;});
+    const cells=[...cellBodies(tr,'TD')].map(td=>{const v=decode(td);if(v.length>VIZIER_POLICY.maxCellChars||/[<>]/.test(v))throw new VizierCatalogError('malformed','TD');return v;});
     if(cells.length!==fieldNames.length)throw new VizierCatalogError('malformed',`row ${rows.length+1} cells`);
     rows.push(cells);
    }
