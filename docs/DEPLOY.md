@@ -360,7 +360,9 @@ Lo que solo puedes hacer tú, en los paneles (la revisión lo encontró pendient
    - añade un TXT en `openvireo.space` con `v=spf1 -all`;
    - añade un TXT en `_dmarc.openvireo.space` con `v=DMARC1; p=reject`.
 2. **DNSSEC y CAA.** En Cloudflare, **DNS → Settings → DNSSEC → Enable**, y copia el registro DS en Namecheap (**Advanced DNS → DNSSEC**). Opcional: un registro CAA que solo permita las autoridades que usa Cloudflare.
-3. **GitHub (Settings del repositorio):**
-   - **Code security:** activa *Secret scanning*, *Push protection* y *Private vulnerability reporting*. Este último es el formulario al que apuntan `SECURITY.md` y `security.txt`: **mientras esté apagado, ese enlace no funciona** y solo queda la vía de respaldo (abrir una issue pidiendo un contacto privado).
-   - **Rules → Rulesets:** una regla para `main` que bloquee el *force push* y el borrado de la rama.
-   - **Actions → General → Workflow permissions:** *Read repository contents and packages permissions*.
+
+**GitHub (Settings del repositorio): hecho el 16 de noviembre de 2026.** Los aplicó el coordinador con tu aprobación, por la API de GitHub. Así quedaron, por si quieres revisarlos o cambiarlos:
+
+- **Code security:** *Secret scanning*, *Push protection* y *Private vulnerability reporting* activados. Este último es el formulario al que apuntan `SECURITY.md` y `security.txt`: si se apaga, ese enlace deja de funcionar y solo queda la vía de respaldo (abrir una issue pidiendo un contacto privado). Al activarlo, *Secret scanning* no encontró ningún secreto en el historial.
+- **Rules → Rulesets:** la regla `Protect main` bloquea el *force push* y el borrado de la rama por defecto, sin excepciones. No exige pull requests ni revisiones, así que el coordinador sigue fusionando y empujando a `main` como antes.
+- **Actions → General → Workflow permissions:** *Read repository contents and packages permissions*, y las Actions no pueden aprobar pull requests. `ci-cd.yml` ya pedía solo `contents: read`.

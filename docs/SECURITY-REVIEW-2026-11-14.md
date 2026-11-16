@@ -18,7 +18,7 @@ docs/DEPLOY.md § 13.
 |---|---|
 | No `Strict-Transport-Security` header | Added in `public/_headers` (one year, subdomains, no preload) |
 | MX records without SPF or DMARC; `docs/DEPLOY.md` said the MX were deleted | User action (DEPLOY.md § 13.1) |
-| `main` unprotected, secret scanning off, write-by-default workflow token | User action (DEPLOY.md § 13.3) |
+| `main` unprotected, secret scanning off, write-by-default workflow token | Applied on 2026-11-16 with the user's approval: secret scanning and push protection on (no alerts), ruleset `Protect main` (no force-push, no deletion), read-only default workflow token (DEPLOY.md § 13) |
 | Object X › Load FITS read each file before checking its size | `readFitsBytes` checks the size first |
 | The VizieR VOTable reader was quadratic on hostile markup | Forward-only scans (`src/core/markupScan.ts`) with the same matches |
 | Deploy rebuilt instead of publishing the tested build; actions pinned by tag; no update mechanism | Tested `dist/` is published; actions pinned to commits; Dependabot |
@@ -46,7 +46,7 @@ ordinary build).
 
 | Reviewer finding | Resolution |
 |---|---|
-| The private report form the policy points to is switched off in the repository | `security.txt` keeps the form as first contact and adds a working fallback (an issue asking for a private contact, as `SECURITY.md` says); enabling the form stays a user action, now marked in DEPLOY.md § 13.3 |
+| The private report form the policy points to is switched off in the repository | `security.txt` keeps the form as first contact and adds a working fallback (an issue asking for a private contact, as `SECURITY.md` says); the form was enabled on 2026-11-16 with the user's approval (DEPLOY.md § 13) |
 | The second `Contact:` was the policy page, not a channel | Replaced by the fallback above |
 | `Expires` exactly one year away (RFC 9116 recommends less) | 2027-11-01 |
 | Re-running only the deploy job after a day fails with "artifact not found" | Documented in DEPLOY.md § 11 (use Re-run all jobs) |
