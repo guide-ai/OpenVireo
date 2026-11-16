@@ -30,8 +30,8 @@ Desde el 8 de noviembre de 2026 (decisión tuya, `AGENTS.md`), cada push a `main
    ```sh
    npm ci --ignore-scripts
    ```
-3. La herramienta `wrangler` en la versión fijada: **4.150.0**, la misma que `tools/wrangler/package.json`. Puedes usarla de dos formas:
-   - con `npx wrangler@4.150.0 …`, que la descarga de npm la primera vez;
+3. La herramienta `wrangler` en la versión fijada: **4.160.1**, la misma que `tools/wrangler/package.json`. Puedes usarla de dos formas:
+   - con `npx wrangler@4.160.1 …`, que la descarga de npm la primera vez;
    - o desde `tools/wrangler/node_modules`, después de `cd tools/wrangler && npm ci`.
 
    Desactiva la telemetría en la terminal donde la uses:
@@ -42,13 +42,13 @@ Desde el 8 de noviembre de 2026 (decisión tuya, `AGENTS.md`), cada push a `main
 ## 2. Iniciar sesión (lo haces tú)
 
 ```sh
-npx wrangler@4.150.0 login
+npx wrangler@4.160.1 login
 ```
 
 Se abre el navegador y autorizas a Wrangler en tu cuenta. Comprueba con qué cuenta entraste:
 
 ```sh
-npx wrangler@4.150.0 whoami
+npx wrangler@4.160.1 whoami
 ```
 
 No copies la salida de `whoami` en issues, documentos ni chats: muestra el correo y el identificador de la cuenta.
@@ -56,10 +56,10 @@ No copies la salida de `whoami` en issues, documentos ni chats: muestra el corre
 ## 3. Crear el proyecto de Pages (una sola vez)
 
 ```sh
-npx wrangler@4.150.0 pages project create openvireo --production-branch=main
+npx wrangler@4.160.1 pages project create openvireo --production-branch=main
 ```
 
-Con Wrangler 4.150.0, `pages project create` intenta pasar el proyecto a la nueva versión de Pages integrada en Workers, y eso falla con "Missing entry-point" sin crear nada. Añade `--force` solo en este comando para crearlo en Pages clásico, que es lo que describe esta guía. Así se creó `openvireo` el 8 de noviembre de 2026. Los comandos siguientes (`pages deploy`) ya van directos a Pages y no necesitan `--force`.
+Con Wrangler 4.150.0 (la versión fijada entonces; no se volvió a comprobar con la 4.160.1, fijada desde el 16 de noviembre de 2026), `pages project create` intenta pasar el proyecto a la nueva versión de Pages integrada en Workers, y eso falla con "Missing entry-point" sin crear nada. Añade `--force` solo en este comando para crearlo en Pages clásico, que es lo que describe esta guía. Así se creó `openvireo` el 8 de noviembre de 2026. Los comandos siguientes (`pages deploy`) ya van directos a Pages y no necesitan `--force`.
 
 El proyecto se llama siempre `openvireo`; mantén `--project-name=openvireo` en todos los comandos. La dirección pública suele ser `https://openvireo.pages.dev`. Si ese subdominio de `pages.dev` ya está ocupado, Cloudflare asigna otro (por ejemplo `https://openvireo-xyz.pages.dev`) y lo muestra al crear el proyecto y en el panel. En ese caso, cambia solo las direcciones de los pasos 8 y 9 por la que muestre Cloudflare.
 
@@ -86,7 +86,7 @@ Every file is under 26214400 bytes and the count is under 20000.
 Esta prueba sirve `dist/` con `wrangler pages dev` en `127.0.0.1`, que aplica `_headers` igual que Pages. No necesita sesión ni cuenta, y la prueba bloquea toda petición que no sea local.
 
 ```sh
-(cd tools/wrangler && npm ci)                # una sola vez: wrangler 4.150.0 fijado
+(cd tools/wrangler && npm ci)                # una sola vez: wrangler 4.160.1 fijado
 npm run test:pages
 ```
 
@@ -107,7 +107,7 @@ Despliega **fuera del horario de clase**. Una pestaña que ya estaba abierta sig
 Ejecuta el comando **desde la raíz del repositorio**. El proyecto no tiene archivo de configuración de Wrangler: todo va en la línea de comandos.
 
 ```sh
-npx wrangler@4.150.0 pages deploy dist --project-name=openvireo --branch=main
+npx wrangler@4.160.1 pages deploy dist --project-name=openvireo --branch=main
 ```
 
 - `--branch=main` publica en producción, porque `main` es la rama de producción del proyecto. Otra rama crearía una vista previa en `https://<rama>.openvireo.pages.dev`.
@@ -157,12 +157,12 @@ Cada despliegue queda guardado. Para volver al anterior:
 - **Panel:** **Workers & Pages → openvireo → Deployments**. En el despliegue bueno, abre el menú **⋯ → Rollback to this deployment**. El cambio es inmediato.
 - **Terminal:** lista los despliegues con
   ```sh
-  npx wrangler@4.150.0 pages deployment list --project-name=openvireo
+  npx wrangler@4.160.1 pages deployment list --project-name=openvireo
   ```
   Después, vuelve a desplegar desde Git la versión buena:
   ```sh
   git checkout <commit-bueno> && npm run build
-  npx wrangler@4.150.0 pages deploy dist --project-name=openvireo --branch=main
+  npx wrangler@4.160.1 pages deploy dist --project-name=openvireo --branch=main
   ```
 
 `index.html` se sirve con `no-cache`, así que los visitantes ven la versión restaurada en su siguiente visita. Igual que un despliegue, un rollback hace que las pestañas abiertas tengan que recargar: si puedes, hazlo fuera del horario de clase. Los recursos con hash de `/assets/` no chocan entre versiones.

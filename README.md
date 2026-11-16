@@ -36,7 +36,7 @@ Before a deploy, check the production build with Cloudflare Pages semantics on l
 
 ```sh
 npm run build                       # ends with the Pages limit check (scripts/check-deploy-limits.mjs)
-(cd tools/wrangler && npm ci)       # once: the pinned wrangler 4.150.0
+(cd tools/wrangler && npm ci)       # once: the pinned wrangler 4.160.1
 npm run test:pages                  # wrangler pages dev on 127.0.0.1:6310 + tests/release/pages-smoke.pages.ts
 ```
 

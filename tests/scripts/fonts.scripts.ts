@@ -79,6 +79,7 @@ test('bold text reaches the Bold files',async({page})=>{
 });
 
 // The rest characterizes this Chromium (of @playwright/test 1.64.1, Linux, under the test fonts), measured 2026-11-09 and
+// unchanged under the Chromium of 1.65.0 (CI of the update, 2026-11-14). The values were
 // stable over repeated runs. These are not the site's choices: they pin today's browser behaviour so a Chromium update that
 // changes it shows up here. Each one is a reason SC3's :lang() stacks (plan § 2.1) must name the regional family.
 

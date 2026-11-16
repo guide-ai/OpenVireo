@@ -4,6 +4,6 @@
   "version": "1.0.0",
   "description": "The pinned wrangler that serves dist/ locally for the release tests (wrangler pages dev) and publishes it to Cloudflare Pages (docs/DEPLOY.md). Kept apart from the site's own dependencies, which install without scripts.",
   "devDependencies": {
-    "wrangler": "4.150.0"
+    "wrangler": "4.160.1"
   }
 }
