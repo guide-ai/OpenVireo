@@ -187,7 +187,7 @@ const ID_KAMU=['kamu','kau','engkau','dikau','dirimu','kalian'];
 /** The enclitic -mu on the words this interface could write; never a bare `\p{L}+mu` («ilmu», «temu», «semu»). */
 const ID_MU=['datamu','layarmu','teleskopmu','filemu','pengamatanmu','investigasimu','hasilmu','catatanmu','pilihanmu','jawabanmu','untukmu','padamu','kepadamu','denganmu','darimu','milikmu','komputermu','browsermu','pengukuranmu','kerjamu'];
 /** Politeness words that the English does not say, and the -lah imperative, at the start of a sentence that commands. */
-const ID_POLITE=['Silakan','Silahkan','Mohon','Tolong'];
+const ID_POLITE=['Silakan','Silahkan','Mohon','Tolong','Sila'];
 const ID_LAH=['Kliklah','Pilihlah','Simpanlah','Bukalah','Tekanlah','Gunakanlah','Tutuplah','Ketiklah','Cobalah','Tunggulah','Lihatlah','Bacalah','Muatlah','Ukurlah','Catatlah'];
 function indonesianRegister(setting:Registers['id']):{patterns:Pattern[];paired:PairedPattern[]}{
  return setting==='anda'
@@ -199,14 +199,16 @@ function indonesianRegister(setting:Registers['id']):{patterns:Pattern[];paired:
     {label:'-lah imperative',pattern:startOf(ID_LAH),english:EN_COMMAND,use:'the base-form imperative («Klik…», «Pilih…»)'}]}
   :{patterns:[{label:'Anda',pattern:words(['anda'],'letters'),use:'address the reader as «kamu»'}],paired:[]};
 }
-const ID_JOINED=['dimana','disini','disana','disitu','diatas','dibawah','didalam','diluar','diantara','disamping','didepan','dibelakang','disebelah','kemana','kesini','kesana','kesitu','keatas','kebawah','kedalam'];
+const ID_JOINED=['diantaranya','dimana','disini','disana','disitu','diatas','dibawah','didalam','diluar','diantara','disamping','didepan','dibelakang','disebelah','kemana','kesini','kesana','kesitu','keatas','kebawah','kedalam'];
 const ID_PREFIXED=['buka','simpan','klik','pilih','tampilkan','hitung','ukur','catat','muat','gunakan','perlukan','abaikan','hapus','ubah','atur','baca','tulis','cetak','tutup','tekan','arahkan','gerakkan','pulihkan','unduh','unggah','kirim','terima'];
 const ID_KBBI:readonly (readonly [string,string])[]=[['silahkan','silakan'],['praktek*','praktik'],['analisa*','analisis, menganalisis'],['sistim*','sistem'],['obyek*','objek'],['subyek*','subjek'],['resiko*','risiko'],['ijin*','izin'],['jaman*','zaman'],
  ['kwalitas*','kualitas'],['aktifitas*','aktivitas'],['efektifitas*','efektivitas'],['frekwensi*','frekuensi'],['standarisasi*','standardisasi'],['merubah*','mengubah'],['mempengaruhi*','memengaruhi'],['mensukseskan*','menyukseskan'],
  ['menterjemahkan*','menerjemahkan'],['mengkonversi*','mengonversi'],['mengkoreksi*','mengoreksi'],['mengkonfirmasi*','mengonfirmasi'],['mengkombinasi*','mengombinasikan'],['mengkategori*','mengategorikan'],['nampak*','tampak'],
  ['tehnik*','teknik'],['sekedar*','sekadar'],['antri*','antre'],['detil*','detail'],['kordinat*','koordinat'],['jadual*','jadwal']];
 const ID_ENGLISH_SPELLING=['photometer*','photometr*','spectrum','spectra','spectrometer*','telescope*','magnitude*','galaxy','galaxies','quasar*','observatory','coordinate*','analysis'];
-const ID_MALAY=['fail','muat turun','muat naik','tetingkap','kata laluan','tetapan','padam','pelayar','butang','skrin','senarai','kemas kini','carian','pautan','tarikh','peratus','nombor','kerana','sila','cerapan','balai cerap'];
+/** Review (ID0): «padam» (lampu padam), «tarikh», «sila» (a principle) and «tetapan» (a physical constant) are also standard Indonesian:
+ * «padam» and «tarikh» are left out, «sila» is read only as a sentence-initial please (ID_POLITE), «tetapan» has its own message. */
+const ID_MALAY=['fail','muat turun','muat naik','tetingkap','kata laluan','pelayar','butang','skrin','senarai','kemas kini','carian','pautan','peratus','nombor','kerana','cerapan','balai cerap'];
 const ID_ENGLISH_WORDS=[...PT_ENGLISH,'click','save','open','cancel','select','settings'];
 /** A word with a Latin letter outside ASCII (or a combining mark): Indonesian has none. «Å» (the ångström symbol) and «Lemaître»
  * pass; VIREO's English in brackets and quoted text are set aside. */
@@ -222,7 +224,7 @@ function indonesianProfile(setting:Registers['id']):LocaleProfile{
    ...thousandsRules('\u202f'),
    {label:'guillemets',pattern:/«(?!A\p{N}+»)|(?<!«A\p{N}+)»/u,use:'“ ” (inner ‘ ’)'},
    {label:'single quotes at the top level',pattern:/‘(?![^“]*”)/u,use:'“ ” (‘ ’ only inside “ ”)'},
-   {label:'space before : ; ! ?',pattern:/(?<=[^\s])(?<!(?:tombol|tanda))[ \u00a0\u202f]+[:;!?](?=[\s)\]”’]|$)/u,use:'write the mark against the word, as in English (no space before it; «tombol ?» names the key)'},
+   {label:'space before : ; ! ?',pattern:/(?<=[^\s])(?<!(?:[Tt]ombol|[Tt]anda))[ \u00a0\u202f]+[:;!?](?=[\s)\]”’]|$)/u,use:'write the mark against the word, as in English (no space before it; «tombol ?» names the key)'},
    {label:'narrow no-break space outside a number',pattern:/(?<!\p{N})\u202f|\u202f(?!\p{N}{3}(?!\p{N}))/u,use:'U+202F only between groups of thousands («24 000»)'},
    {label:'Latin letter with a diacritic',pattern:outsideIndonesianGlosses(ID_DIACRITIC),use:'Indonesian words have no diacritics; a Spanish or French form left from the context, or a misspelling'},
    {label:'joined preposition',pattern:outsideIndonesianGlosses(words(ID_JOINED,'letters')),use:'write the preposition apart: di mana, di sini, di atas, di dalam, ke mana, ke atas…'},
@@ -232,14 +234,15 @@ function indonesianProfile(setting:Registers['id']):LocaleProfile{
    {label:'ordinal without its hyphen',pattern:/(?<![\p{L}\p{N}])ke(?:\p{N}|\{[\p{L}\p{N}_]+\})/iu,use:'«ke-2», «ke-{n}»'},
    ...ID_KBBI.map(([wrong,right]):Pattern=>({label:'non-standard spelling (KBBI)',pattern:outsideIndonesianGlosses(words([wrong],'letters')),use:`the KBBI form: ${right}`})),
    {label:'English spelling of a loanword',pattern:outsideIndonesianGlosses(words(ID_ENGLISH_SPELLING,'letters')),use:'the Indonesian spelling: fotometer, fotometri, spektrum, spektrometer, teleskop, magnitudo, galaksi, kuasar, observatorium, koordinat, analisis'},
-   {label:'Malay word',pattern:outsideIndonesianGlosses(words(ID_MALAY,'letters')),use:'the Indonesian word (file, unduh, unggah, jendela, kata sandi, pengaturan, hapus, browser, tombol, layar, daftar, perbarui, pencarian, tautan, tanggal, persen, nomor, karena, silakan, pengamatan, observatorium)'},
+   {label:'Malay word',pattern:outsideIndonesianGlosses(words(ID_MALAY,'letters')),use:'the Indonesian word (file, unduh, unggah, jendela, kata sandi, browser, tombol, layar, daftar, perbarui, pencarian, tautan, persen, nomor, karena, pengamatan, observatorium)'},
+   {label:'tetapan',pattern:outsideIndonesianGlosses(words(['tetapan'],'letters')),use:'Malay «tetapan» (settings) is «pengaturan» or «opsi»; for a physical constant this site writes «konstanta» (konstanta Hubble)'},
    {label:'English word',pattern:outsideIndonesianGlosses(words(ID_ENGLISH_WORDS,'letters')),use:'translate it (a VIREO English name goes in brackets after its Indonesian)'},
   ],
   typographyCheck:indonesianTypographyFindings,
   register:{setting,patterns:reg.patterns,paired:reg.paired},
   // A claim, never its denial: «bukan terjemahan resmi», «terjemahan tidak resmi», «bukan terjemahan CLEA», «bukan teks CLEA», and
   // «teks CLEA tidak berubah» (CLEA's texts are unchanged) pass.
-  claims:[/(?<!bukan )terjemahan resmi/iu,/(?<!bukan )terjemahan (?:resmi )?(?:dari |oleh )?(?:Project )?CLEA/iu,/(?<![\p{L}])(?:ini|adalah|merupakan|ialah) (?:sebuah |suatu )?teks (?:dari |milik )?(?:Project )?CLEA/iu],
+  claims:[/(?<!bukan(?:lah)? )terjemahan resmi/iu,/(?<!bukan(?:lah)? )terjemahan (?:resmi )?(?:dari |oleh )?(?:Project )?CLEA/iu,/(?<![\p{L}])(?:ini|adalah|merupakan|ialah) (?:sebuah |suatu )?teks (?:dari |milik )?(?:Project )?CLEA/iu],
   // First proposal (plan §4.4), calibrated on ID0's shell batch (docs/I18N.md, ID0).
   lengthBand:[.7,1.8],pluralCategories:['other'],
   forbiddenSetAside:/\{[\p{L}\p{N}_]+\}/u,

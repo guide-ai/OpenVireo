@@ -346,6 +346,8 @@ const id:Fixture[]=[
  {profile:'id',rule:'typography',en:'Optical simulation options',good:'Opsi simulasi optik',bad:'Opsi Simulasi Optik Baru',note:'title case where the English has none'},
  {profile:'id',rule:'typography',en:'Optical Simulation Options',good:'Opsi Simulasi Optik',bad:'Opsi Simulasi Optik\u202f',note:'title case kept where the English has it (a VIREO name); U+202F at the end fails'},
  {profile:'id',rule:'typography',en:'Choose "Open" and "Save".',good:'Pilih “Buka” dan “Simpan”.',bad:'Pilih "Buka" dan “Simpan”.',note:'straight quotes are the fixer’s'},
+ {profile:'id',rule:'typography',en:'The light goes out; the first principle; the ? key opens help. Settings',good:'Lampu padam; sila pertama; Tombol ? membuka bantuan. Pengaturan',bad:'Lampu padam; sila pertama; Tombol ? membuka bantuan. Tetapan',note:'review: padam, sila, a capital Tombol pass; tetapan fails'},
+ {profile:'id',rule:'claim',en:'This is not an official translation.',good:'Ini bukanlah terjemahan resmi.',bad:'Inilah terjemahan resmi.',note:'review: bukanlah'},
  {profile:'id',rule:'digits',en:EXPOSURE,good:'Eksposur: 2.5 s',bad:'Eksposur: 2,5 s'},
  {profile:'id',rule:'normalization',en:'Exposure',good:'Eksposur',bad:'Eksposur é'.normalize('NFD')},
  {profile:'id',rule:'invisible',en:'Telescope',good:'Teleskop',bad:'Teles­kop'},

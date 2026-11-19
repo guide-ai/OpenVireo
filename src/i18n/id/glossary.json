@@ -67,7 +67,7 @@
   },
   {
    "en": "(?<!line breaks and |for example a |accented letter, a |Shift\\+)(?<!reachable with )\\btabs?\\b(?!,? (?:line breaks|or other|BOM)| and Shift\\+Tab)",
-   "id": "tab"
+   "id": "(?<![\\p{L}\\p{N}])tab(?![\\p{L}])"
   },
   {
    "en": "\\bTab and Shift\\+Tab\\b",
@@ -75,7 +75,7 @@
   },
   {
    "en": "\\btabs?(?=,? (?:line breaks|or other|BOM))|(?<=line breaks and |for example a |accented letter, a )tabs?\\b",
-   "id": "tabulasi|tab"
+   "id": "tabulasi|(?<![\\p{L}\\p{N}])tab(?![\\p{L}])"
   },
   {
    "en": "\\bremarks?\\b",
@@ -499,7 +499,7 @@
   },
   {
    "en": "\\banaly[sz]ers?\\b",
-   "id": "analis"
+   "id": "penganalisis"
   },
   {
    "en": "\\btemplates?\\b",
@@ -511,7 +511,7 @@
   },
   {
    "en": "\\b(?:600-)?bins?\\b",
-   "id": "bin|kanal"
+   "id": "(?<![\\p{L}\\p{N}])bin(?![\\p{L}])|kanal"
   },
   {
    "en": "\\bcombined view\\b",
@@ -591,7 +591,7 @@
   },
   {
    "en": "\\bpress[- ]and[- ]hold\\b",
-   "id": "tahan|tekan terus"
+   "id": "tahan|nahan|tekan terus|nekan terus"
   },
   {
    "en": "\\bslew-timer\\b",
@@ -949,11 +949,11 @@
   },
   {
    "en": "Site Parameters",
-   "id": "Parameter Situs"
+   "id": "Parameter Lokasi"
   },
   {
    "en": "Site Information",
-   "id": "Informasi Situs"
+   "id": "Informasi Lokasi"
   },
   {
    "en": "Print Sky Image",
@@ -1053,7 +1053,7 @@
   },
   {
    "en": "Naked Eye Star",
-   "id": "Bintang Mata Telanjang"
+   "id": "Bintang Kasatmata"
   },
   {
    "en": "Get Selection Data",
@@ -1365,7 +1365,7 @@
   },
   {
    "en": "Reset radio site",
-   "id": "Atur ulang situs radio"
+   "id": "Atur ulang lokasi radio"
   },
   {
    "en": "Start pulsar exercise",
@@ -1521,11 +1521,8 @@
    "use": "pergeseran merah"
   },
   {
-   "words": [
-    "redshift",
-    "redshifts"
-   ],
-   "use": "pergeseran merah (redshift only in glosses)"
+   "use": "pergeseran merah (VIREO’s English «redshift» may stay only inside a bracketed gloss)",
+   "id": "(?<![\\p{L}\\p{N}])redshifts?(?![\\p{L}\\p{N}])(?![^(]*\\))"
   },
   {
    "id": "(?<![\\p{L}\\p{N}])(?:buka|simpan|muat|unggah|unduh|menyimpan|membuka|memuat) berkas(?![\\p{L}\\p{N}])|(?<![\\p{L}\\p{N}])berkas (?:orbit|teks|FITS|CSV|JSON|log|simpanan|unduhan)(?![\\p{L}\\p{N}])",

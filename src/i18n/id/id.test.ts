@@ -18,6 +18,7 @@ import {pluralCategories,pluralCategory} from '../plural';
 import {collectPairs} from '../lint/pairs';
 import {PROFILES} from '../lint/profiles';
 import {fixIndonesianSource,fixIndonesianTypography} from '../lint/indonesianTypography';
+import {fixSourceLiterals} from '../lint/frenchSpacing';
 import {describeFindings,errorsOf,glossaryFrom,lintPairs,reportsOf,type Allowance,type LintData} from '../lint/rules';
 import {APP_SHELL_MESSAGES_EN} from '../../components/AppShellMessages';
 import {HELP_MENU_EN} from '../../help/HelpMessages';
@@ -51,6 +52,9 @@ const pairs=()=>collectPairs({catalog:idCatalog,english:en,maps:INDONESIAN.maps,
 const DIR=import.meta.dirname;
 const sources=(sub:string)=>existsSync(path.join(DIR,sub))?readdirSync(path.join(DIR,sub)).filter(f=>f.endsWith('.ts')&&!f.endsWith('.test.ts')).map(f=>path.join(DIR,sub,f)):[];
 const fixOriginal=(key:string,text:string)=>fixIndonesianTypography(text,{quotes:!key.startsWith('fragment|')});
+/** Help sources keep VIREO's straight quotes (plan §4.6: Indonesian help is Latin-1, which has no “ ”): thousands only. */
+const fixHelp=(source:string)=>fixSourceLiterals(source,text=>fixIndonesianTypography(text,{quotes:false}));
+const fixFile=(file:string,source:string)=>file.includes(`${path.sep}help${path.sep}`)?fixHelp(source):fixIndonesianSource(source);
 const writeJson=(file:string,value:unknown)=>writeFileSync(path.join(DIR,file),JSON.stringify(value,null,1)+'\n');
 
 if(process.env.OPENVIREO_FIX_TYPOGRAPHY==='1'){
@@ -60,7 +64,7 @@ if(process.env.OPENVIREO_FIX_TYPOGRAPHY==='1'){
  writeJson('id.json',Object.fromEntries(Object.entries(catalog).map(([k,v])=>[k,fixIndonesianTypography(v)])));
  const own=JSON.parse(readFileSync(path.join(DIR,'originals.json'),'utf8')) as Record<string,string>;
  writeJson('originals.json',Object.fromEntries(Object.entries(own).map(([k,v])=>[k,fixOriginal(k,v)])));
- for(const file of [...sources('maps'),...sources('help')]){const before=readFileSync(file,'utf8'),after=fixIndonesianSource(before);if(after!==before)writeFileSync(file,after);}
+ for(const file of [...sources('maps'),...sources('help')]){const before=readFileSync(file,'utf8'),after=fixFile(file,before);if(after!==before)writeFileSync(file,after);}
 }
 
 describe('Front ID0: the Indonesian (id) bundle',()=>{
@@ -91,7 +95,7 @@ describe('Front ID0: the Indonesian (id) bundle',()=>{
  it('the typography fixer has nothing left to change: catalog, originals, maps and help sources',()=>{
   expect(Object.entries(idCatalog).filter(([,v])=>fixIndonesianTypography(v)!==v).map(([k])=>k)).toEqual([]);
   expect(Object.entries(originals).filter(([k,v])=>fixOriginal(k,v)!==v).map(([k])=>k)).toEqual([]);
-  for(const file of [...sources('maps'),...sources('help')]){const text=readFileSync(file,'utf8');expect(fixIndonesianSource(text)===text,path.relative(DIR,file)).toBe(true);
+  for(const file of [...sources('maps'),...sources('help')]){const text=readFileSync(file,'utf8');expect(fixFile(file,text)===text,path.relative(DIR,file)).toBe(true);
    // Characters, never escapes (PT-REL: an escaped U+202F cost a core marker in scripts/check-i18n-dist.mjs).
    expect(text,path.relative(DIR,file)).not.toMatch(/\\u(?:202[fF]|201[cdCD89]|00[aA]0)/);}
  });

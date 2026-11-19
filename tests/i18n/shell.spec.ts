@@ -20,7 +20,7 @@ const id=(page:Page,testId:string)=>page.getByTestId(testId);
 const asVisitor=(page:Page)=>page.addInitScript(()=>{Object.defineProperty(Navigator.prototype,'webdriver',{configurable:true,get:()=>false});});
 /** A test title: Spanish keeps its ES1 title; another language names itself and its tag. */
 /** Front FR0: a language before its release opens through its `?lang=` preview in an English browser, and its titles say so. */
-const title=(L:LanguageText,es:string,other:string)=>L.tag==='es-419'?es:(L.entry.released?other:other.replace('a <L> browser fetches','a ?lang=<tag> preview fetches')).replaceAll('<L>',L.entry.englishName).replaceAll('<tag>',L.tag);
+const title=(L:LanguageText,es:string,other:string)=>L.tag==='es-419'?es:(L.entry.released?other:other.replace('a <L> browser fetches','a ?lang=<tag> preview fetches')).replaceAll('a <L>',/^[AEIOU]/.test(L.entry.englishName)?'an <L>':'a <L>').replaceAll('<L>',L.entry.englishName).replaceAll('<tag>',L.tag);
 async function open(page:Page,lang:LanguageText|'en',hash='observatory'){
  await page.goto(`/${lang==='en'?'?lang=en':lang.query}#${hash}`);
  await expect(page.getByRole('heading',{level:1,name:lang==='en'?en['sky.title']:lang.catalog['sky.title']})).toBeVisible({timeout:15_000});
