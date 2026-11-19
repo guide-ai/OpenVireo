@@ -225,6 +225,7 @@ export interface MessageParameters {
   "app.name": never;
   "app.scope": never;
   "app.close": never;
+  "app.digitNotice": "digits";
   "error.decimal": "line";
   "error.finite": "line";
   "error.lineFormat": "line";

@@ -79,7 +79,7 @@ describe('Front RU0: the Russian (ru) bundle',()=>{
  it('the catalog is a valid partial catalog (en.json keys or plural forms of them, the same {params}) and covers the shell and the welcome',()=>{
   expect(()=>createI18n(catalog as Partial<Record<MessageKey,string>>,'ru',{fallback:true})).not.toThrow();
   for(const key of Object.keys(catalog))expect(Object.hasOwn(en,key)||pluralFormBase(key,en,'ru')!==null,key).toBe(true);
-  expect(SHELL_KEYS.length).toBe(130);
+  expect(SHELL_KEYS.length).toBe(131);
   expect(SHELL_KEYS.filter(k=>!Object.hasOwn(catalog,k))).toEqual([]);
   const home=(Object.keys(en) as MessageKey[]).filter(k=>k.startsWith('home.'));
   expect(home.length).toBe(27);expect(home.filter(k=>!Object.hasOwn(catalog,k))).toEqual([]);

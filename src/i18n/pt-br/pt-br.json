@@ -224,6 +224,7 @@
  "app.name": "OpenVireo",
  "app.scope": "Prévia do observatório",
  "app.close": "Fechar",
+ "app.digitNotice": "Digite os algarismos como 0–9. Aqui, algarismos como {digits} não são lidos como números.",
  "error.decimal": "Linha {line}: era esperado um número decimal com ponto.",
  "error.finite": "Linha {line}: o valor não é finito.",
  "error.lineFormat": "Lista de linhas: formato inválido na linha {line}.",

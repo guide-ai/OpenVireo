@@ -8,7 +8,7 @@ import {APP_SHELL_ES} from '../../src/i18n/es/maps/appShell';
 import {HELP_VIEWER_ES} from '../../src/i18n/es/maps/helpViewer';
 // @ts-expect-error The planner is a plain JS script (scripts/i18n-split.mjs), as tests import scripts/audit-ui-messages.mjs.
 import {loadLanguages,planLanguage} from '../../scripts/i18n-split.mjs';
-import {FRENCH_TEXT,INDONESIAN_TEXT,PORTUGUESE_TEXT,RUSSIAN_TEXT} from './languageText';
+import {FRENCH_TEXT,HINDI_TEXT,INDONESIAN_TEXT,PORTUGUESE_TEXT,RUSSIAN_TEXT} from './languageText';
 // Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
 test.use({locale:SPANISH_LOCALE});
 
@@ -235,13 +235,14 @@ for(const {L:P,name} of RELEASED_AREAS)test.describe(`in a ${name} browser`,()=>
 // area with no text yet is empty, has no chunk and resolves at once, so its route shows English without a notice, a route error or a
 // read before its area. With ID0's shell slice only `photometer` holds text (project.photometryCleared and
 // project.photometryRestored, rendered by the photometer); later ID fronts fill the others. ID-REL turns this back into a
-// released-language test (as FR-REL did).
-test.describe('a language before its release',()=>{
+// released-language test (as FR-REL did). Front HI0: Hindi's preview the same way (HI-REL moves it to RELEASED_AREAS).
+const PARTIAL=[{L:INDONESIAN_TEXT,name:'Indonesian',release:'ID-REL',areas:['photometer']},{L:HINDI_TEXT,name:'Hindi',release:'HI-REL',areas:['photometer']}] as const;
+for(const {L:P,name,release,areas} of PARTIAL)test.describe(`a language before its release (${name})`,()=>{
  test.use({locale:'en-US'});
- test('a partial language (Indonesian) fetches only its core, and no chunk for an empty area',async({page})=>{
+ test(`a partial language (${name}) fetches only its core, and no chunk for an empty area`,async({page})=>{
   test.setTimeout(300_000);
-  const P=INDONESIAN_TEXT,idPlan=planOf(P.tag),module=(name:string)=>idPlan.modules.find(m=>m.name===name)!;
-  expect(P.entry.released,'ID-REL replaces this test').toBe(false);
+  const idPlan=planOf(P.tag),module=(name:string)=>idPlan.modules.find(m=>m.name===name)!;
+  expect(P.entry.released,`${release} replaces this test`).toBe(false);
   const fetchedFor=(area:string)=>{const m=module(area);return m.empty?[]:[area,...m.shared].sort();};
   const w=await watch(page,P.tag,P.entry.dir,P.entry.catalog);
   await page.goto(`/${P.query}#observatory`);await expect(page.getByRole('heading',{level:1,name:P.catalog['sky.title']})).toBeVisible({timeout:30_000});
@@ -256,8 +257,8 @@ test.describe('a language before its release',()=>{
   };
   const headingKey:Record<string,string>={classification:'class.title','cluster-database':'db.title',photometer:'ph.title','lss-survey':'lss.title','galaxy-exposure':'galaxyExposure.title','star-exposure':'starExposure.title',images:'fits.title'};
   const empty=idPlan.modules.filter(m=>m.kind==='area'&&m.empty).map(m=>m.name);
-  // Pin the areas Indonesian gives text to (each ID front updates this list), so a lost or stray area fails here.
-  expect(idPlan.modules.filter(m=>m.kind==='area'&&!m.empty).map(m=>m.name).sort(),'the areas with Indonesian text').toEqual(['photometer']);
+  // Pin the areas the language gives text to (each of its fronts updates PARTIAL), so a lost or stray area fails here.
+  expect(idPlan.modules.filter(m=>m.kind==='area'&&!m.empty).map(m=>m.name).sort(),`the areas with ${name} text`).toEqual([...areas]);
   for(const r of ROUTES){
    await page.goto('about:blank');w.language.length=0;
    await page.goto(`/${P.query}#${r.hash}`);

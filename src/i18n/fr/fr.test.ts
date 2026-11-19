@@ -136,7 +136,7 @@ describe('Front FR0: the French (fr) bundle',()=>{
  it('the catalog is a valid partial catalog (en.json keys, the same {params}) and covers the whole shell',()=>{
   expect(()=>createI18n(fr as Partial<Record<MessageKey,string>>,'fr',{fallback:true})).not.toThrow();
   for(const key of Object.keys(fr))expect(Object.hasOwn(en,key),key).toBe(true);
-  expect(SHELL_KEYS.length).toBe(130);
+  expect(SHELL_KEYS.length).toBe(131); // 131 since Front HI0 (app.digitNotice, the digit notice)
   expect(SHELL_KEYS.filter(k=>!Object.hasOwn(fr,k))).toEqual([]);
  });
  it('Front FR1: the catalog covers the observatory (every key of its instruments\' prefixes), the guide keys it renders and the welcome',()=>{
