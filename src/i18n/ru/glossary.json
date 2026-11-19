@@ -693,7 +693,7 @@
   },
   {
    "en": "Topics...",
-   "ru": "Разделы справки...",
+   "ru": "Разделы...",
    "except": {
     "original:Show Help Topics...": "VIREO's help viewer item Show Help Topics... (the topic list), «Afficher les rubriques d’aide...»; the row names the Help menu's Topics... item."
    }
@@ -1175,7 +1175,7 @@
   },
   {
    "en": "Pulsar guide",
-   "ru": "Руководство по пульсарам"
+   "ru": "Руководство: пульсары"
   },
   {
    "en": "Pulsar timing guide",

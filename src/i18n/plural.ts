@@ -59,7 +59,7 @@ const FORM_SEGMENT=/^(?:zero|one|two|few|many)$/;
  * the form must keep), at each such segment en.json also has the `one` sibling (so the segment is a plural axis, not a word), and
  * every category named is one the language selects (`one` always exists in en.json). Two-level families work by segment
  * (`obsHr.kindWarning.few.many`, base `obsHr.kindWarning.other.other`). Returns the base, or null for any other key. A copy of
- * this rule for the build scripts is scripts/i18n-split.mjs pluralFormBase; src/i18n/split.test.ts keeps the two equal. */
+ * this rule for the build scripts is scripts/i18n-split.mjs pluralFormBase; src/i18n/pluralFamilies.test.ts keeps the two equal. */
 export function pluralFormBase(key:string,english:Readonly<Record<string,string>>,language:string):string|null{
  if(Object.hasOwn(english,key))return null;
  const parts=key.split('.'),positions=parts.flatMap((p,i)=>FORM_SEGMENT.test(p)?[i]:[]);

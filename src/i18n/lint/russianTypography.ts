@@ -5,7 +5,8 @@
  * originals.json and the map sources; scripts/check-i18n-dist.mjs reads map literals as written).
  *
  * What it does (user decisions Q1 and Q2 of 2026-11-19, plan §4.1–4.2):
- * - thousands: a comma, ordinary space or U+00A0 between digit groups becomes U+202F («24 000»);
+ * - thousands: a comma or U+00A0 between digit groups becomes U+202F («24 000»); an ordinary space is left to the lint, since it may
+ *   stand between two numbers («5 120»);
  * - quotes: straight "…" pairs and top-level “…” become «…»; quotes inside «…» become „…“ (an existing „…“ is kept);
  * - dashes: a spaced hyphen, en dash or em dash between words, or an em dash glued to letters on both sides, becomes U+00A0 + «— »
  *   (a range between numbers, «1990—2000» or «2–4», is left alone);
@@ -40,7 +41,7 @@ export function russianTypography(text:string,options:RussianTypographyOptions={
  const free=(at:number,end:number)=>{for(let i=at;i<end;i++)if(kept[i])return false;return !edits.some(e=>at<e.end&&e.at<end);};
  const add=(at:number,end:number,replacement:string,label:string)=>{if(text.slice(at,end)!==replacement&&free(at,end))edits.push({at,end,text:replacement,label});};
  // 1. Thousands (a placeholder or URL holds no group; a gloss may: «(1,000)» in a bracket is still a number on screen).
- for(const m of text.matchAll(THOUSANDS))for(let i=0;i<m[0].length;i++){const c=m[0][i],at=m.index+i;if((c===','||c===' '||c===NBSP)&&!numberKept[at])edits.push({at,end:at+1,text:NNBSP,label:'thousands'});}
+ for(const m of text.matchAll(THOUSANDS))for(let i=0;i<m[0].length;i++){const c=m[0][i],at=m.index+i;if((c===','||c===NBSP)&&!numberKept[at])edits.push({at,end:at+1,text:NNBSP,label:'thousands'});}
  // 2. Quotes, when the text's quotes balance (otherwise they are left to the lint's pair and forbidden-mark rules).
  if(options.quotes!==false){
   const marks=[...text.matchAll(/["“”„«»]/gu)].filter(m=>!kept[m.index]);
@@ -63,6 +64,7 @@ export function russianTypography(text:string,options:RussianTypographyOptions={
  for(const m of text.matchAll(DASH_SPACED)){
   const dash=m[0].trim(),before=text[m.index-1]??'',after=text[m.index+m[0].length]??'';
   if(/\p{N}/u.test(before)&&/\p{N}/u.test(after)&&dash!=='—')continue;// «2 - 4» is left to the lint (a range is written 2–4)
+  if(dash==='-'&&before==='}'&&after==='{')continue;// «{observed} - {computed}» may be a subtraction
   add(m.index,m.index+m[0].length,`${NBSP}— `,'« — » with a no-break space before');
  }
  for(const m of text.matchAll(DASH_GLUED))add(m.index,m.index+1,`${NBSP}— `,'« — » with a no-break space before');
@@ -87,5 +89,5 @@ const COUNT_NOUN=/\{(?:count|n|total)\}[  ]+(\p{sc=Cyrl}[\p{sc=Cyrl}./]*)/gu;
 /** The nouns placed right after a count in a counted message's Russian. */
 export function countBeforeNoun(text:string):string[]{
  // A neuter short participle («{n} из {total} отмечено», «выбрано», «найдено») agrees with no count and is allowed.
- return [...text.matchAll(COUNT_NOUN)].map(m=>m[1].replace(/[.]+$/u,'')).filter(w=>!COUNT_FOLLOWERS.includes(w)&&!COUNT_FOLLOWERS.includes(w.toLowerCase())&&!/^\p{Ll}+[ео]?[нт]о$/u.test(w));
+ return [...text.matchAll(COUNT_NOUN)].map(m=>m[1].replace(/[.]+$/u,'')).filter(w=>!COUNT_FOLLOWERS.includes(w)&&!COUNT_FOLLOWERS.includes(w.toLowerCase())&&!/^\p{Ll}+(?:[аея]но|[ыиуя]то)$/u.test(w));
 }

@@ -69,11 +69,19 @@ describe('Front RU0: pluralKey chooses the form the active messages hold',()=>{
   expect([w(1,1),w(1,3),w(1,7),w(3,1),w(3,3),w(5,22),w(21,11),w(2,1.5)]).toEqual(['one/one 1 1','one/few 1 3','one/many 1 7','few/one 3 1','few/few 3 3','many/few 5 22','one/many 21 11','few/other 2 1.5']);
   expect(CLUSTER_NATIVE_HR_MESSAGES.current(4)).toBe('few 4');
  });
- it('a form the messages lack falls back to other; English and Spanish choose as plural() did',()=>{
+ it('a form the messages lack falls back to other; English, Spanish and French choose as plural() did',()=>{
   activateLocale({language:'ru',messages:{'sky.searchMatches.other':'other {count}'} as never});
   expect([1,3,5].map(pick)).toEqual(['1 matching target.','other 3','other 5']);
   activateLocale(null);
   expect([1,3,1_000_000].map(pick)).toEqual(['1 matching target.','3 matching targets.','1000000 matching targets.']);
+  // Review (RU0): exact millions are CLDR `many` in Spanish and French, the one count where the new branch runs for a released
+  // language; their catalogs hold no `many` key, so `other` is chosen, as plural() did.
+  for(const language of ['es-419','fr'] as const){
+   // A partial stand-in catalog, activated as a split bundle's core (which builds with the English fallback), since a released
+   // language's whole bundle must be complete.
+   activateLocale({language,messages:{'sky.searchMatches.other':'other {count}','sky.searchMatches.one':'one {count}'} as never,areas:{}});
+   expect([1,3,1_000_000].map(pick),language).toEqual(['one 1','other 3','other 1000000']);
+  }
   expect(pluralFormKey('few',{one:'a.one.x',other:'a.other.x'})).toBe('a.few.x');
   expect(pluralFormKey('many',{one:'a.one.one',other:'a.one.other'})).toBe('a.one.many');
   expect(pluralFormKey('few',{other:'a.other'})).toBe('a.few');

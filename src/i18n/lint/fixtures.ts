@@ -158,6 +158,7 @@ const ru:Fixture[]=[
  {profile:'ru',rule:'typography',en:'Receiver ready',good:'Приёмник готов',bad:'Приемник готов',note:'Front RU0: the longer ё list (stems)'},
  {profile:'ru',rule:'typography',en:'Saved.',good:'Сохранение файла. Файл сохранён.',bad:'Файл сохранен.',note:'Front RU0: «сохранение» keeps е; the short form takes ё'},
  {profile:'ru',rule:'typography',en:'24,000 stars',good:'Звёзд: 24\u202f000',bad:'Звёзд: 24,000',note:'Front RU0: thousands with U+202F'},
+ {profile:'ru',rule:'typography',en:'It is the same star. The tank is full.',good:'Это та же звезда. Бак заполнен.',bad:'Це та сама зірка.',note:'Review (RU0): «та» and «заполнен» are Russian'},
  {profile:'ru',rule:'typography',en:'24,000 stars',good:'Звёзд: 24\u202f000',bad:'Звёзд: 24 000'},
  {profile:'ru',rule:'typography',en:'The dome is open.',good:'Купол открыт.',bad:'Купол\u202fоткрыт.',note:'Front RU0: U+202F only between thousands'},
  {profile:'ru',rule:'typography',en:'The star is bright.',good:'Звезда яркая.',bad:'Зірка яскрава.',note:'Front RU0: Ukrainian letters'},

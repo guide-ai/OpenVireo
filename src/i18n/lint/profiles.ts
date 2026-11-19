@@ -449,13 +449,13 @@ export function profileFor(id:ProfileId,registers:Registers=REGISTER):LocaleProf
     {label:'unspaced em dash',pattern:/(?<=\p{L})—|—(?=\p{L})|(?<=\p{N})—(?!\p{N})|(?<!\p{N})—(?=\p{N})/u,use:'write « — » with spaces'},
     {label:'hyphen as a dash',pattern:/[ \u00a0]-[ \u00a0]/u,use:'use « — »'},
     // Front RU0 (plan §4.4): unambiguous words only; «все»/«всё» and «звезды»/«звёзды» need context (the reviewer reads them).
-    {label:'е for ё',pattern:words(['еще','ее','нее','приемник*','объем*','звездн*','отсчет*','расчет*','учет*','счетчик*','четырех','трех','определен','включен','отключен','сохранен','заполнен'],'letters'),use:'write ё (ещё, её, приёмник, объём, звёздный, отсчёт, расчёт, учёт, трёх, определён, включён, сохранён) as the interface always does'},
+    {label:'е for ё',pattern:words(['еще','ее','нее','приемник*','объем*','звездн*','отсчет*','расчет*','учет*','счетчик*','четырех','трех','определен','включен','отключен','сохранен'],'letters'),use:'write ё (ещё, её, приёмник, объём, звёздный, отсчёт, расчёт, учёт, трёх, определён, включён, сохранён) as the interface always does'},
     {label:'Latin and Cyrillic letters in one word',pattern:/\p{sc=Cyrl}\p{sc=Latn}|\p{sc=Latn}\p{sc=Cyrl}/u,use:'retype the word in one script'},
     // Front RU0 (user decision Q1 of 2026-11-19): thousands with U+202F on screen («24 000»), as Portuguese and French.
     ...thousandsRules('\u202f'),
     {label:'narrow no-break space outside a number',pattern:/(?<!\p{N})\u202f|\u202f(?!\p{N})/u,use:'U+202F only between thousands; U+00A0 before « — », in «т. е.» and before a unit'},
     {label:'Ukrainian or Belarusian letter',pattern:/[іїєґўІЇЄҐЎ]/u,use:'Russian has no і ї є ґ ў; retype the word in Russian'},
-    {label:'Ukrainian word',pattern:words(['що','який','яка','також','та','є','це є','вони','будь ласка'],'letters'),use:'translate into Russian'},
+    {label:'Ukrainian word',pattern:words(['що','який','яка','також','вони','будь ласка'],'letters'),use:'translate into Russian'},
     // Sentence case: three capitalised Cyrillic words in a row (short prepositions between them allowed), outside brackets and
     // quotes. A proper name of three words («Нового Южного Уэльса») goes in lint-allowed.json with a reason.
     {label:'title case',pattern:/(?<![\p{L}\p{N}])(?=\p{sc=Cyrl})\p{Lu}\p{Ll}+(?:[ \u00a0]+(?:(?:и|в|на|по|с|для|из|о|об)[ \u00a0]+)?(?=\p{sc=Cyrl})\p{Lu}\p{Ll}+){2,}(?![^(]*\))(?![^«]*»)/u,use:'sentence case (only the first word, names and acronyms capitalised)'},

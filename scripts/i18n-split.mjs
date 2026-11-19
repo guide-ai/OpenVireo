@@ -32,13 +32,15 @@ export function declaredAreas(root=ROOT){
  return [...m[1].matchAll(/'([a-z][a-z0-9-]*)'/g)].map(x=>x[1]);
 }
 
-/** Front RU0: the build scripts' copy of src/i18n/plural.ts pluralFormBase (src/i18n/split.test.ts keeps the two equal): the
+/** Front RU0: the build scripts' copy of src/i18n/plural.ts pluralFormBase (src/i18n/pluralFamilies.test.ts keeps the two equal): the
  * en.json base of a catalog key that is one more plural form of an en.json family in `tag` (Russian `x.few`, `x.many`), or null. */
 export function pluralFormBase(key,en,tag){
  if(Object.hasOwn(en,key))return null;
  const parts=key.split('.'),positions=parts.flatMap((p,i)=>/^(?:zero|one|two|few|many)$/.test(p)?[i]:[]);
  if(!positions.length)return null;
- let categories;try{categories=new Intl.PluralRules(tag).resolvedOptions().pluralCategories;}catch{categories=['one','other'];}
+ // As src/i18n/plural.ts pluralLanguage: the pseudo-locales and a tag the runtime cannot resolve follow English.
+ let rules='en';try{if(!/^qps(?:-|$)/i.test(tag)&&Intl.PluralRules.supportedLocalesOf(tag).length)rules=tag;}catch{}
+ const categories=new Intl.PluralRules(rules).resolvedOptions().pluralCategories;
  const base=parts.map((p,i)=>positions.includes(i)?'other':p);
  if(!Object.hasOwn(en,base.join('.')))return null;
  for(const i of positions){

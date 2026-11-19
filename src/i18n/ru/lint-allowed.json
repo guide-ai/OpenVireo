@@ -1,4 +1,17 @@
 {
  "about": "Front RU0: findings of the ru lint (src/i18n/lint/, profile ru) that are correct Russian in one string, each with a reason. Keys are the lint's string ids; `words` are the matched words allowed in that string only, `rules` whole rules, `placeholders` added placeholders.",
- "entries": {}
+ "entries": {
+  "catalog:lab.nav": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "Review (RU0): every exercise guide in the menu reads «Руководство: <topic>», one pattern for all seven (the English says \"lab guide\" for two of them only)"
+  },
+  "catalog:pleiadesLab.nav": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "Review (RU0): every exercise guide in the menu reads «Руководство: <topic>», one pattern for all seven (the English says \"lab guide\" for two of them only)"
+  }
+ }
 }

@@ -6,7 +6,9 @@ const N='\u202f',B='\u00a0';
 const fix=(s:string)=>fixRussianTypography(s);
 describe('Front RU0: the Russian typography fixer',()=>{
  it('groups thousands with U+202F and leaves decimals, versions, dates and placeholders alone',()=>{
-  expect(fix('Расстояние 24,000 пк и 2 400 000 лет')).toBe(`Расстояние 24${N}000${B}пк и 2${N}400${N}000 лет`);
+  expect(fix('Расстояние 24,000 пк и 2,400,000 лет')).toBe(`Расстояние 24${N}000${B}пк и 2${N}400${N}000 лет`);
+  // Review (RU0): an ordinary space may stand between two numbers, so it is left to the thousands lint.
+  expect(fix('Звёзды 5 120 и 130')).toBe('Звёзды 5 120 и 130');expect(fix(`31${B}147`)).toBe(`31${N}147`);
   expect(fix('1.5 и 12,5? 3.14, версия 1.2.3, 2026-11-19, 12:30:45')).toBe('1.5 и 12,5? 3.14, версия 1.2.3, 2026-11-19, 12:30:45');
   expect(fix(`Всего ${'{count}'} записей: 31${B}147`)).toBe(`Всего {count} записей: 31${N}147`);
  });
@@ -28,6 +30,7 @@ describe('Front RU0: the Russian typography fixer',()=>{
   expect(fix('1990—2000, 2–4 и северо-запад')).toBe('1990—2000, 2–4 и северо-запад');
   expect(fix('Список:\n— первый\n— второй')).toBe('Список:\n— первый\n— второй');
   expect(fix('{name} - файл')).toBe(`{name}${B}— файл`);
+  expect(fix('{observed} - {computed}')).toBe('{observed} - {computed}');// a subtraction
  });
  it('puts U+00A0 in т. е. and between a number or placeholder and a unit symbol; «с» and «ч» stay words',()=>{
   expect(fix('т. е. и т. д.')).toBe(`т.${B}е. и т.${B}д.`);
@@ -55,5 +58,7 @@ describe('Front RU0: a noun right after a count in a counted message (plan §1.2
   expect(countBeforeNoun('{n} из {total} отмечено')).toEqual([]);
   expect(countBeforeNoun('{count} км/с и {n} Мпк')).toEqual([]);
   expect(countBeforeNoun('Строка {n}, позиция {name} файла')).toEqual([]);
+  expect(countBeforeNoun('{n} выбрано, {count} найдено, {total} взято')).toEqual([]);
+  expect(countBeforeNoun('{count} место и {n} окно')).toEqual(['место','окно']);// nouns, not participles
  });
 });

@@ -34,7 +34,8 @@ if(command==='extract'){
  for(const key of Object.keys(en).filter(matches)){
   const parts=key.split('.'),axes=parts.flatMap((p,i)=>p==='other'&&Object.hasOwn(en,parts.map((q,j)=>j===i?'one':q).join('.'))?[i]:[]);
   let keys=[parts];for(const i of axes)keys=keys.flatMap(k=>categories.map(c=>k.map((p,j)=>j===i?c:p)));
-  for(const k of keys){const id=k.join('.');if(axes.length&&!Object.hasOwn(en,id)&&!Object.hasOwn(es,id)&&pluralFormBase(id,en,language.htmlLang??tag))forms.set(id,{key,category:axes.map(i=>k[i]).join(', ')});}
+  for(const k of keys){const id=k.join('.');// Review (RU0): the first family key in en.json order is the closest English (`one.few` reads as `one.other`, not `other.other`).
+  if(axes.length&&!forms.has(id)&&!Object.hasOwn(en,id)&&!Object.hasOwn(es,id)&&pluralFormBase(id,en,language.htmlLang??tag))forms.set(id,{key,category:axes.map(i=>k[i]).join(', ')});}
  }
  const glossary=existsSync(path.join(dir,'glossary.json'))?read(path.join(dir,'glossary.json')):{about:''};
  const batch={about:`${language.englishName} (${tag}) batch for ${wanted.join(', ')}. ${glossary.about} Fill "${field}" in every item; keep {params} exactly; do not translate file names, catalogue identifiers, units or VIREO names that the glossary keeps.`,
