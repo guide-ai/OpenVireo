@@ -46,6 +46,7 @@ const ja:Fixture[]=[
  {profile:'ja',rule:'typography',en:'Choose Save (Ctrl+S).',good:'保存（Ctrl+S）を選びます。',bad:'保存 (Ctrl+S)を選びます。',note:'the fixer: full-width brackets, no space'},
  {profile:'ja',rule:'typography',en:'Saved {count} files.',good:'{count}件のファイルを保存しました。',bad:'{count} 件のファイルを保存しました。',note:'the fixer: no space after a placeholder'},
  {profile:'ja',rule:'register',en:'Please check the settings.',good:'設定を確認してください。',bad:'設定を確認させていただきます。',note:'over-polite form'},
+ {profile:'ja',rule:'register',en:'The file is saved.',good:'ファイルは保存されています。',bad:'ファイルは保存されております。',note:'humble 〜ております ending a sentence'},
  {profile:'ja',rule:'digits',en:EXPOSURE,good:'露出：2.5 s',bad:'露出：2,5 s'},
  {profile:'ja',rule:'normalization',en:'Guide',good:'ガイド',bad:'ガイド'.normalize('NFD')},
  {profile:'ja',rule:'invisible',en:'Telescope',good:'望遠鏡',bad:'望遠\u200b鏡'},

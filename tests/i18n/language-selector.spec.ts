@@ -296,14 +296,17 @@ test.describe('in a Spanish browser',()=>{
 test('Front JA0: only a ?lang=ja preview opens and offers 日本語 (Japanese); ja, ja-JP and JA-jp browsers and a stored ja get English',async({browser})=>{
  test.setTimeout(180_000);
  const J=JAPANESE_TEXT;
+ // Nothing of Japanese is fetched there: neither its sources (src/i18n/ja/) nor a chunk (i18n-ja-*).
+ const japaneseRequests=(page:Page)=>{const seen:string[]=[];page.on('request',r=>{if(/\/src\/i18n\/ja\/|i18n-ja-/.test(r.url()))seen.push(r.url());});return seen;};
  for(const languages of [['ja'],['ja-JP'],['JA-jp'],['ja-JP','es-MX']] as const){
-  const page=await browserIn(browser,languages);
+  const page=await browserIn(browser,languages),seen=japaneseRequests(page);
   expect(await languageOf(page),languages.join(',')).toBe('en');
   await expect(id(page,'language-select').locator('option')).toHaveText(FOUR);
+  await page.waitForLoadState('networkidle');expect(seen,languages.join(',')).toEqual([]);
   await page.close();
  }
- const storedJa=await browserIn(browser,['ja-JP']);await seedChoice(storedJa,'ja');
- expect(await languageOf(storedJa)).toBe('en');await storedJa.close();
+ const storedJa=await browserIn(browser,['ja-JP']);await seedChoice(storedJa,'ja');const storedSeen=japaneseRequests(storedJa);
+ expect(await languageOf(storedJa)).toBe('en');await storedJa.waitForLoadState('networkidle');expect(storedSeen).toEqual([]);await storedJa.close();
  const page=await browserIn(browser,['en-US']);
  expect(await languageOf(page,'?lang=ja')).toBe('ja');
  await expect(page.locator('.investigation-toolbar')).toContainText(J.catalog['project.save']);await expect(page).toHaveTitle(J.catalog['app.documentTitle']);

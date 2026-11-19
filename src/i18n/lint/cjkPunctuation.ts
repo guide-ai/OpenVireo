@@ -13,10 +13,11 @@
  * 2. An ASCII ( ) pair into （ ） when either bracket touches CJK text (spaces between them ignored); a lone bracket only when it
  *    touches CJK directly.
  * 3. ASCII , . : ; ? ! right after a CJK letter, a closing full-width bracket or quote, or ？ ！ into the style's full-width mark.
- *    Never VIREO's `...` (the ellipsis), a `.` before a Latin letter or digit (a file extension: «.SSP»), `:` before `/`, or `?lang=`.
+ *    Never VIREO's `...` (the ellipsis), a `.` before a Latin letter, a digit or `{` (a file extension: «.SSP», «.{ext}»), `:` before `/`,
+ *    or `?lang=`. A mark separated from CJK text by spaces is converted when it ends the text or a space or closer follows it.
  * 4. Spaces (U+0020, U+00A0) next to a full-width mark or bracket, and between a CJK letter and a Latin letter, a digit, a
- *    {placeholder} or a template value, removed (the scripts style sheet of src/theme adds the visual gap with `text-autospace`).
- * Never touched: {placeholders}, URLs, `?lang=` values, line breaks, a space next to a URL, text between two Latin characters
+ *    {placeholder}, a template value or a URL, removed (the scripts style sheet of src/theme adds the visual gap with `text-autospace`).
+ * Never touched: {placeholders}, URLs (up to a space, a CJK character or a full-width mark), `?lang=` values, line breaks, text between two Latin characters
  * («12 km/s», «Enter» stays as typed) and every glyph other than the marks above (› ↗ ▸ · — – × ✳). No `\b` or `\w`. */
 import type {TypographyChange} from './frenchSpacing';
 export type CjkStyle=Readonly<{
@@ -37,25 +38,29 @@ export type CjkPunctuationOptions=Readonly<{
  valueMarks?:RegExp;
 }>;
 const SPACE=/[  ]/u;
-/** Spans kept as they are: placeholders, URLs, ?lang= values and VIREO's `...`. */
-const URL_SPAN=/https?:\/\/[^\s」』）)、。]+/gu,KEPT=new RegExp(`\\{[\\p{L}\\p{N}_]+\\}|${URL_SPAN.source}|\\?lang=[\\p{L}\\p{N}-]*|\\.\\.\\.`,'gu');
+/** Spans kept as they are: placeholders, URLs (which end at a space, a CJK character or a full-width mark), ?lang= values and
+ * VIREO's `...`. */
+const URL_SPAN=/https?:\/\/[^\s)\p{sc=Han}\p{sc=Hira}\p{sc=Kana}ー、。，．：；？！（）「」『』“”]+/gu,KEPT=new RegExp(`\\{[\\p{L}\\p{N}_]+\\}|${URL_SPAN.source}|\\?lang=[A-Za-z0-9-]*|\\.\\.\\.`,'gu');
 const FULL_MARKS='、。，．：；？！（）〈〉《》【】〔〕';
 const ASCII_MARK:Readonly<Record<string,string>>={'.':'。',':':'：',';':'；','?':'？','!':'！'};
 
-/** `url`: inside a URL, whose neighbouring spaces stay too. */
-type Cell={c:string;kept:boolean;url?:boolean};
+type Cell={c:string;kept:boolean};
 function cellsOf(text:string):Cell[]{
  const chars=[...text],kept=Array<boolean>(chars.length).fill(false);
  const unitToCp:number[]=[];{let cp=0;for(const c of chars){for(let k=0;k<c.length;k++)unitToCp.push(cp);cp++;}}
- const url=Array<boolean>(chars.length).fill(false);
- const mark=(re:RegExp,mask:boolean[])=>{for(const m of text.matchAll(re)){const a=unitToCp[m.index],b=m.index+m[0].length>=text.length?chars.length:unitToCp[m.index+m[0].length];for(let i=a;i<b;i++)mask[i]=true;}};
- mark(KEPT,kept);mark(URL_SPAN,url);
- return chars.map((c,i)=>url[i]?{c,kept:true,url:true}:{c,kept:kept[i]});
+ for(const m of text.matchAll(KEPT)){const a=unitToCp[m.index],b=m.index+m[0].length>=text.length?chars.length:unitToCp[m.index+m[0].length];for(let i=a;i<b;i++)kept[i]=true;}
+ return chars.map((c,i)=>({c,kept:kept[i]}));
 }
 const joined=(cells:readonly Cell[])=>cells.map(x=>x.c).join('');
 
-/** The fixed text and every change made, in order. */
+/** The fixed text and every change made, in order. A pass can leave work for the next one (a space it removes puts an ASCII mark
+ * right after a bracket), so passes repeat until the text no longer changes: the result is idempotent. */
 export function cjkPunctuation(text:string,style:CjkStyle=JAPANESE_STYLE,options:CjkPunctuationOptions={}):{text:string;changes:TypographyChange[]}{
+ const changes:TypographyChange[]=[];let current=text;
+ for(let n=0;n<8;n++){const pass=cjkPass(current,style,options);if(pass.text===current)break;changes.push(...pass.changes);current=pass.text;}
+ return {text:current,changes};
+}
+function cjkPass(text:string,style:CjkStyle,options:CjkPunctuationOptions):{text:string;changes:TypographyChange[]}{
  const changes:TypographyChange[]=[],letter=new RegExp(`^${style.letter}$`,'u');
  const valueMark=options.valueMarks?new RegExp(`^(?:${options.valueMarks.source})$`,options.valueMarks.flags.replace('g','')):null;
  const isLetter=(c:string|undefined)=>!!c&&letter.test(c);
@@ -78,10 +83,11 @@ export function cjkPunctuation(text:string,style:CjkStyle=JAPANESE_STYLE,options
   if(style.quotes[0]!=='“'){
    const curly=cells.flatMap((x,i)=>!x.kept&&(x.c==='“'||x.c==='”')?[i]:[]);
    if(curly.length&&curly.length%2===0&&curly.every((i,n)=>cells[i].c===(n%2===0?'“':'”'))){
-    let depth=0;
+    let depth=0;const innerPair:boolean[]=[];
     for(let i=0;i<cells.length;i++){const c=cells[i].c;
      if(c===style.quotes[0]&&!curly.includes(i))depth++;else if(c===style.quotes[1]&&!curly.includes(i))depth=Math.max(0,depth-1);
-     else if(curly.includes(i)){const open=c==='“',pair=depth>(open?0:1)?style.innerQuotes:style.quotes;note(`${style.quotes.join(' ')} instead of “ ”`,i,context(i));cells[i]={c:open?pair[0]:pair[1],kept:false};if(pair===style.quotes)depth=open?depth+1:Math.max(0,depth-1);}}
+     else if(curly.includes(i)){const n=curly.indexOf(i),open=n%2===0;if(open)innerPair[n>>1]=depth>0;const inner=innerPair[n>>1],pair=inner?style.innerQuotes:style.quotes;
+      note(`${style.quotes.join(' ')} instead of “ ”`,i,context(i));cells[i]={c:open?pair[0]:pair[1],kept:false};if(!inner)depth=open?depth+1:Math.max(0,depth-1);}}
    }
   }
  }
@@ -96,26 +102,32 @@ export function cjkPunctuation(text:string,style:CjkStyle=JAPANESE_STYLE,options
    note('（ ） around or next to CJK text',o,context(o));cells[o]={c:'（',kept:false};cells[c]={c:'）',kept:false};}
   for(const i of lone)if(cjkSide(cells[i-1]?.c)||cjkSide(cells[i+1]?.c)){note('（ ） next to CJK text',i,context(i));cells[i]={c:cells[i].c==='('?'（':'）',kept:false};}
  }
- // 3. Marks after CJK text.
+ // 3. Marks after CJK text. A mark separated from CJK text by spaces is converted too (and the spaces go) when it ends the text or
+ // is followed by a space or a closer: «テスト , 次» → «テスト、次».
+ const gone=new Set<number>();
  for(let i=1;i<cells.length;i++){
-  const x=cells[i];if(x.kept)continue;
-  const before=cells[i-1].c;if(!isLetter(before)&&!closers.includes(before))continue;
-  const next=cells[i+1]?.c??'';let to:string|undefined;
+  const x=cells[i];if(x.kept||!(x.c===','||x.c in ASCII_MARK))continue;
+  let b=i-1;while(b>=0&&SPACE.test(cells[b].c)&&!cells[b].kept)b--;
+  const before=cells[b]?.c;if(b<0||!isLetter(before)&&!closers.includes(before))continue;
+  const next=cells[i+1]?.c??'';
+  if(b<i-1&&!(next===''||/\s/u.test(next)||closers.includes(next)||isLetter(next)&&x.c!=='?'))continue;
+  let to:string|undefined;
   if(x.c===',')to=style.comma;
-  else if(x.c==='.')to=/[\p{sc=Latn}\p{N}]/u.test(next)?undefined:'。';
+  else if(x.c==='.')to=/[\p{sc=Latn}\p{N}{]/u.test(next)?undefined:'。';
   else if(x.c===':')to=next==='/'?undefined:'：';
-  else if(x.c in ASCII_MARK)to=ASCII_MARK[x.c];
-  if(to){note(`full-width ${to} after CJK text`,i,context(i));cells[i]={c:to,kept:false};}
+  else to=ASCII_MARK[x.c];
+  if(to){note(`full-width ${to} after CJK text`,i,context(i));cells[i]={c:to,kept:false};for(let k=b+1;k<i;k++)gone.add(k);}
  }
+ if(gone.size)cells=cells.filter((_,k)=>!gone.has(k));
  // 4. Spaces. A run of spaces goes when one side is a full-width mark or bracket and the other is no line break or end, or when
- // a CJK letter meets a Latin letter, a digit, a placeholder brace or a template value; never next to a URL.
+ // a CJK letter meets a Latin letter, a digit, a placeholder brace or a template value (a URL's last letter included).
  const latinSide=(c:string|undefined)=>!!c&&(/[\p{sc=Latn}\p{N}{}]/u.test(c)||!!valueMark?.test(c));
  const out:Cell[]=[];
  for(let i=0;i<cells.length;){
   if(!SPACE.test(cells[i].c)||cells[i].kept){out.push(cells[i]);i++;continue;}
   let j=i;while(j<cells.length&&SPACE.test(cells[j].c)&&!cells[j].kept)j++;
   const a=cells[i-1],b=cells[j];
-  const drop=!!a&&!!b&&!a.url&&!b.url&&!/\s/u.test(a.c)&&!/\s/u.test(b.c)&&(isFull(a.c)||isFull(b.c)||isLetter(a.c)&&latinSide(b.c)||latinSide(a.c)&&isLetter(b.c));
+  const drop=!!a&&!!b&&!/\s/u.test(a.c)&&!/\s/u.test(b.c)&&(isFull(a.c)||isFull(b.c)||isLetter(a.c)&&latinSide(b.c)||latinSide(a.c)&&isLetter(b.c));
   if(drop)note('no space next to CJK text',i,`${a.c}${cells.slice(i,j).map(x=>x.c).join('')}${b.c}`);
   else out.push(...cells.slice(i,j));
   i=j;

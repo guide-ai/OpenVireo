@@ -297,7 +297,8 @@ export function profileFor(id:ProfileId,registers:Registers=REGISTER):LocaleProf
    register:{setting:registers.ja,patterns:japaneseRegister(registers.ja)},
    // A claim, never its denial: 非公式翻訳, 公式翻訳ではありません and CLEAによる翻訳ではありません pass.
    claims:[/(?<!非)公式(?:の)?翻訳(?!では(?:ありません|ない))|CLEA(?:の|による)(?:公式)?翻訳(?!では(?:ありません|ない))/u],
-   lengthBand:[.3,1],pluralCategories:['other'],kanaInSentences:true,
+   // Front JA0: calibrated on the shell (157 keys and 8 maps): natural Japanese ran 0.19–1.08 of the English in graphemes.
+   lengthBand:[.15,1.1],pluralCategories:['other'],kanaInSentences:true,
   };
   case 'zh-Hans':case 'zh-Hant':{
    const hans=id==='zh-Hans';

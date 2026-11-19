@@ -67,10 +67,10 @@ describe('Front SC8: the language registry (src/i18n/languages.json)',()=>{
   expect(failureNotice('language','es-419')).toEqual({en:'Spanish could not be loaded; English is shown. Reload to try again.',own:'No se pudo cargar el español; se muestra en inglés. Recarga para intentarlo de nuevo.',lang:'es-419'});
   expect(failureNotice('area','es-419')).toEqual({en:'Part of the Spanish text could not be loaded; that part is shown in English. Reload to try again.',own:'No se pudo cargar parte del texto en español; esa parte se muestra en inglés. Recarga para intentarlo de nuevo.',lang:'es-419'});
   expect(failureNotice('language','id')).toBeUndefined();
-  // Front FR0: French's notices, with U+202F before «;» (plan §2).
   // Front JA0: Japanese's notices (plan front-i18n-ja.md §2).
   expect(failureNotice('language','ja')).toEqual({en:'Japanese could not be loaded; English is shown. Reload to try again.',own:'日本語を読み込めなかったため、英語で表示しています。再読み込みしてもう一度お試しください。',lang:'ja'});
   expect(matchLanguage('ja-JP')?.tag).toBe('ja');expect(isReleased('ja')).toBe(false);
+  // Front FR0: French's notices, with U+202F before «;» (plan §2).
   expect(failureNotice('language','fr')).toEqual({en:'French could not be loaded; English is shown. Reload to try again.',own:'Impossible de charger le français\u202f; le site s’affiche en anglais. Rechargez la page pour réessayer.',lang:'fr'});
  });
 });

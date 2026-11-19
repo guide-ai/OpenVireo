@@ -1,5 +1,5 @@
 {
- "about": "Front JA0: the ja glossary (plan analysis/front-plans/front-i18n-ja.md §5) that src/i18n/ja/ja.test.ts enforces through the SC4 lint framework (src/i18n/lint/, profile ja) on every Japanese string. Seeded from the French glossary: the same English patterns and interface names, re-targeted to Japanese from the English (French only as meaning context) following the JA0 style brief. A term applies when its English pattern matches the English source: the Japanese must then match the `ja` pattern (flags iu). Matching is by plain substring, with no word boundaries, because Japanese has no spaces. Names are fixed interface names (an exact name applies only to a whole string; the name match ignores case) and must appear literally in the Japanese. Forbidden here are the term forms this glossary rejects (レッドシフト, クラスター for a star cluster, 視等級, 消光, 発光線 and 放射線 for a line, スペクトロメーター, フォトメーター, セファイド, loanwords written without the final long vowel, and あなた); the language-wide rules (typography with full-width marks and 「」, no spaces between Japanese and Latin text, the です/ます register, kanji-only Chinese forms, claims that a translation is CLEA's or official) live in the ja profile of src/i18n/lint/profiles.ts. VIREO's own names follow the brief's decided forms (Save → 保存, Record → 記録, Find → 探す, Search → 検索, Show/Display/View → 表示, Slew → 移動, Init/Go → 初期化/開始, Scan → 順に表示, Clear → クリア, Delete → 削除, Reset → リセット, Hot List → 天体リスト, lab → 実習, Object X → 天体X). Rows for areas still in English wait for their sub-front. Translations are web adaptations by OpenVireo, never CLEA's.",
+ "about": "Front JA0: the ja glossary (plan analysis/front-plans/front-i18n-ja.md §5) that src/i18n/ja/ja.test.ts enforces through the SC4 lint framework (src/i18n/lint/, profile ja) on every Japanese string. Seeded from the French glossary: the same English patterns and interface names, re-targeted to Japanese from the English (French only as meaning context) following the JA0 style brief. A term applies when its English pattern matches the English source: the Japanese must then match the `ja` pattern (flags iu). Matching is by plain substring, with no word boundaries, because Japanese has no spaces. Names are fixed interface names (an exact name applies only to a whole string; the English name is matched as written) and must appear literally in the Japanese. Forbidden here are the term forms this glossary rejects (レッドシフト, クラスター for a star cluster, 視等級, 消光, 発光線 and 放射線 for a line, スペクトロメーター, フォトメーター, ケフェイド (the IAU OAE writes セファイド), and あなた; the katakana long vowel is the ja profile's own rule); the language-wide rules (typography with full-width marks and 「」, no spaces between Japanese and Latin text, the です/ます register, kanji-only Chinese forms, claims that a translation is CLEA's or official) live in the ja profile of src/i18n/lint/profiles.ts. VIREO's own names follow the brief's decided forms (Save → 保存, Record → 記録, Find → 探す, Search → 検索, Show/Display/View → 表示, Slew → 移動, Init/Go → 初期化/開始, Scan → 順に表示, Clear → クリア, Delete → 削除, Reset → リセット, Hot List → 天体リスト, lab → 実習, Object X → 天体X). Rows for areas still in English wait for their sub-front. Translations are web adaptations by OpenVireo, never CLEA's.",
  "terms": [
   {
    "en": "\\bobservator(y|ies)\\b",
@@ -111,7 +111,7 @@
   },
   {
    "en": "\\bexercises?\\b",
-   "ja": "実習|演習"
+   "ja": "実習"
   },
   {
    "en": "\\blabs?\\b",
@@ -135,7 +135,7 @@
   },
   {
    "en": "\\btracking\\b",
-   "ja": "追尾|追跡"
+   "ja": "追尾"
   },
   {
    "en": "\\bcatalog(ue)?s?\\b",
@@ -310,7 +310,7 @@
    "ja": "ハッブル定数"
   },
   {
-   "en": "\\brecessional velocit(y|ies)\\b",
+   "en": "\\brecession(al)? velocit(y|ies)\\b",
    "ja": "後退速度"
   },
   {
@@ -436,10 +436,6 @@
   {
    "en": "\\bendpoint[- ]grids?\\b",
    "ja": "端点|終点"
-  },
-  {
-   "en": "\\bdispersion measure\\b",
-   "ja": "分散量度"
   },
   {
    "en": "\\bsweeps?\\b",
@@ -624,6 +620,62 @@
   {
    "en": "\\bhost clock\\b",
    "ja": "(?:コンピューター|端末|ホスト|システム|PC)(?:の)?時計|ホストクロック"
+  },
+  {
+   "en": "\\bcepheids?\\b",
+   "ja": "セファイド"
+  },
+  {
+   "en": "\\bblueshifts?\\b",
+   "ja": "青方偏移"
+  },
+  {
+   "en": "\\bhour angles?\\b",
+   "ja": "時角"
+  },
+  {
+   "en": "\\bsidereal time\\b",
+   "ja": "恒星時"
+  },
+  {
+   "en": "\\bjulian (date|day)s?\\b",
+   "ja": "ユリウス日"
+  },
+  {
+   "en": "\\bparallax(es)?\\b",
+   "ja": "視差"
+  },
+  {
+   "en": "\\bparsecs?\\b",
+   "ja": "パーセク"
+  },
+  {
+   "en": "\\blight[- ]years?\\b",
+   "ja": "光年"
+  },
+  {
+   "en": "\\bdoppler\\b",
+   "ja": "ドップラー"
+  },
+  {
+   "en": "\\bradial velocit(y|ies)\\b",
+   "ja": "視線速度"
+  },
+  {
+   "en": "\\bgiant branch\\b",
+   "ja": "巨星分枝"
+  },
+  {
+   "en": "\\binterstellar extinction\\b",
+   "ja": "星間減光"
+  },
+  {
+   "en": "\\bnoise\\b",
+   "ja": "ノイズ"
+  },
+  {
+   "en": "\\bspectral classification\\b",
+   "ja": "スペクトル分類"
   }
  ],
  "names": [
@@ -1092,7 +1144,7 @@
   },
   {
    "en": "Horizon Limit",
-   "ja": "地平線限界"
+   "ja": "地平線の制限"
   },
   {
    "en": "Finder Field",
@@ -1152,7 +1204,7 @@
   },
   {
    "en": "Record/Review",
-   "ja": "記録／確認"
+   "ja": "記録／見直し"
   },
   {
    "en": "Next on List",
@@ -1303,10 +1355,6 @@
    "ja": "LSS銀河データ"
   },
   {
-   "en": "Time-Dependent Data",
-   "ja": "時間依存データ"
-  },
-  {
    "en": "Load/Plot",
    "ja": "読み込み／プロット"
   },
@@ -1324,7 +1372,7 @@
   },
   {
    "en": "Possible Cluster Member",
-   "ja": "星団メンバーの可能性"
+   "ja": "星団メンバー候補"
   },
   {
    "en": "Clusters for Study",
@@ -1356,7 +1404,7 @@
   },
   {
    "en": "Radio clock scenario",
-   "ja": "電波時計シナリオ"
+   "ja": "電波の時計のシナリオ"
   },
   {
    "en": "Scenario inputs",
@@ -1503,6 +1551,37 @@
   {
    "en": "Radio telescope control",
    "ja": "電波望遠鏡の制御"
+  },
+  {
+   "en": "Preferences",
+   "ja": "環境設定"
+  },
+  {
+   "en": "Object X",
+   "ja": "天体X"
+  },
+  {
+   "en": "Show Spectrum",
+   "ja": "スペクトルを表示"
+  },
+  {
+   "en": "Observer's Notebook",
+   "ja": "観測ノート"
+  },
+  {
+   "en": "Delete",
+   "ja": "削除",
+   "exact": true
+  },
+  {
+   "en": "Edit",
+   "ja": "編集",
+   "exact": true
+  },
+  {
+   "en": "Open",
+   "ja": "開く",
+   "exact": true
   }
  ],
  "forbidden": [
@@ -1551,19 +1630,15 @@
   },
   {
    "words": [
-    "セファイド"
-   ],
-   "use": "ケフェイド (ケフェイド変光星)"
-  },
-  {
-   "ja": "ブラウザ(?!ー)|フォルダ(?!ー)|フィルタ(?!ー)|パラメータ(?!ー)|コンピュータ(?!ー)|ユーザ(?!ー)",
-   "use": "keep the final long vowel: ブラウザー, フォルダー, フィルター, パラメーター, コンピューター, ユーザー"
-  },
-  {
-   "words": [
     "あなた"
    ],
    "use": "leave the reader implicit (no second-person pronoun)"
+  },
+  {
+   "words": [
+    "ケフェイド"
+   ],
+   "use": "セファイド (IAU OAE Japanese: セファイド変光星)"
   }
  ]
 }

@@ -4,6 +4,6 @@ import type {PartialTranslation} from '../../maps';
 export const POLISH_JA:PartialTranslation<typeof POLISH_MESSAGES_EN>=Object.freeze({
  clusterGuide:Object.freeze({nav:'星団HR図ガイド'}),
  results:Object.freeze({
-  help:'VIREOの「ツール › 結果エディター」（Results Editors）です。「観測結果」は観測結果をスペクトル解析で開き、「パルサー結果」は保存したパルサー測定をパルサー解析で開きます。',
+  help:'VIREOの「ツール › 結果エディター」（Results Editors）です。「観測結果」は観測結果をスペクトル解析ツールで開き、「パルサー結果」は保存したパルサー測定をパルサー解析で開きます。',
  }),
 });
