@@ -29,7 +29,10 @@ export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new S
  // (src/i18n/id/identical.json); a label with a colon is translated («Bujur:», «Lintang:»).
  id:new Set(['OK','Zoom','Mode','Data','Pulsar','Radio','Radio...','Item','Minimum','Plot','Plot Data','Gain:','Edit...','File','Asteroid','ID #:',"Diameter ('):",'CCD','IR','Multi-Spec','Gain (e⁻/ADU)','Filter','Target','YYYY/MM/DD',
   // the camera card's catalog bands by filter: filter letters and catalog names joined as English joins them (cameraPrepare.catalogEntry)
-  'NF: NOMAD R; B: NOMAD B; V: NOMAD V; R: NOMAD R; I: USNO-B1 I2','J: NOMAD J; H: NOMAD H; K: NOMAD K'])};
+  'NF: NOMAD R; B: NOMAD B; V: NOMAD V; R: NOMAD R; I: USNO-B1 I2','J: NOMAD J; H: NOMAD H; K: NOMAD K']),
+ /** Front RU1: Russian translates every word of the walk; only the camera card's catalog bands by filter (filter letters and catalog
+  * names joined as English joins them, cameraPrepare.catalogEntry) read as English does. */
+ ru:new Set(['NF: NOMAD R; B: NOMAD B; V: NOMAD V; R: NOMAD R; I: USNO-B1 I2','J: NOMAD J; H: NOMAD H; K: NOMAD K'])};
 /** SAME texts another language does translate: Portuguese writes the General tab «Geral» and the longitude letter E «L» (Leste);
  * French writes the General tab «Général» (its longitude letter E is Est, the same). */
 /** Front ID1: Indonesian writes the General tab «Umum» and the longitude letter E «BT» (Bujur Timur). */
