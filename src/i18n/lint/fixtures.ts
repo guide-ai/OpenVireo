@@ -294,7 +294,7 @@ const fr:Fixture[]=[
  {profile:'fr',rule:'invisible',en:'Telescope',good:'Télescope',bad:'Téles\u00adcope'},
  {profile:'fr',rule:'length',en:LONG,good:'Ouvrez la coupole pour commencer à observer ce soir.',bad:'Ouvrez.'},
 ];
-/** Front ID0 (plan front-i18n-id.md §4.4): Indonesian, written in ASCII alone. ` ` is the narrow no-break space between
+/** Front ID0 (plan front-i18n-id.md §4.4): Indonesian, written in ASCII alone. `\u202f` is the narrow no-break space between
  * thousands (src/i18n/lint/indonesianTypography.ts). The passing cases hold the words the affix rules must not hit: «magnitudo semu»,
  * «ilmu», «kedalaman», «keluar», «diameter». */
 const id:Fixture[]=[
@@ -321,13 +321,13 @@ const id:Fixture[]=[
  {profile:'id',rule:'typography',en:CHOOSE_OPEN,good:'Pilih “Buka”.',bad:'Pilih «Buka».',note:'guillemets'},
  {profile:'id',rule:'typography',en:CHOOSE_OPEN,good:'Pilih “Buka ‘Data’”.',bad:'Pilih ‘Buka’.',note:'single quotes only inside “ ”'},
  {profile:'id',rule:'typography',en:'Longitude: 12',good:'Bujur: 12',bad:'Bujur : 12',note:'no space before :'},
- {profile:'id',rule:'typography',en:'Ready? Open ?lang=id at 12:30:45.',good:'Siap? Buka ?lang=id pukul 12:30:45.',bad:'Siap ? Buka ?lang=id pukul 12:30:45.',note:'?lang= and times pass'},
- {profile:'id',rule:'typography',en:'Up to 1,000 measurements.',good:'Hingga 1 000 pengukuran.',bad:'Hingga 1,000 pengukuran.',note:'thousands: U+202F, not the comma'},
- {profile:'id',rule:'typography',en:'Julian Day Number − 2,400,000',good:'Nomor hari Julian − 2 400 000',bad:'Nomor hari Julian − 2 400 000',note:'thousands: not an ordinary space'},
- {profile:'id',rule:'typography',en:'Up to 24,000 stars.',good:'Hingga 24 000 bintang.',bad:'Hingga 24.000 bintang.',note:'a period between thousands reads as a decimal on this site'},
- {profile:'id',rule:'typography',en:'B−V is 1.234 here.',good:'B−V di sini 1.234.',bad:'B−V di sini 1 234.',note:'a decimal is never grouped as thousands'},
- {profile:'id',rule:'typography',en:'RA 12 30 45.6, Dec +26 07 59 (version 1.64.1, 10 November 2026): 1,500 Å',good:'AR 12 30 45.6, Dek. +26 07 59 (versi 1.64.1, 10 November 2026): 1 500 Å',bad:'AR 12 30 45.6, Dek. +26 07 59 (versi 1.64.1, 10 November 2026): 1,500 Å',note:'sexagesimal values, a version and a date are no groups; Å passes'},
- {profile:'id',rule:'typography',en:'Ready',good:'Siap',bad:'Siap ',note:'U+202F only between thousands'},
+ {profile:'id',rule:'typography',en:'Ready? Open ?lang=id at 12:30:45, the ? key anywhere.',good:'Siap? Buka ?lang=id pukul 12:30:45, tombol ? di mana saja.',bad:'Siap ? Buka ?lang=id pukul 12:30:45, tombol ? di mana saja.',note:'?lang=, times and the key «tombol ?» pass'},
+ {profile:'id',rule:'typography',en:'Up to 1,000 measurements.',good:'Hingga 1\u202f000 pengukuran.',bad:'Hingga 1,000 pengukuran.',note:'thousands: U+202F, not the comma'},
+ {profile:'id',rule:'typography',en:'Julian Day Number − 2,400,000',good:'Nomor hari Julian − 2\u202f400\u202f000',bad:'Nomor hari Julian − 2 400 000',note:'thousands: not an ordinary space'},
+ {profile:'id',rule:'typography',en:'Up to 24,000 stars.',good:'Hingga 24\u202f000 bintang.',bad:'Hingga 24.000 bintang.',note:'a period between thousands reads as a decimal on this site'},
+ {profile:'id',rule:'typography',en:'B−V is 1.234 here.',good:'B−V di sini 1.234.',bad:'B−V di sini 1\u202f234.',note:'a decimal is never grouped as thousands'},
+ {profile:'id',rule:'typography',en:'RA 12 30 45.6, Dec +26 07 59 (version 1.64.1, 10 November 2026): 1,500 Å',good:'AR 12 30 45.6, Dek. +26 07 59 (versi 1.64.1, 10 November 2026): 1\u202f500 Å',bad:'AR 12 30 45.6, Dek. +26 07 59 (versi 1.64.1, 10 November 2026): 1,500 Å',note:'sexagesimal values, a version and a date are no groups; Å passes'},
+ {profile:'id',rule:'typography',en:'Ready',good:'Siap',bad:'Siap\u202f',note:'U+202F only between thousands'},
  {profile:'id',rule:'typography',en:'Equivalent width',good:'Lebar ekuivalen',bad:'Lebar équivalen',note:'a diacritic left from the French context'},
  {profile:'id',rule:'typography',en:'Hubble (Lemaître) law: 500 Å',good:'Hukum Hubble-Lemaître: 500 Å',bad:'Hukum Hubble: 500 Å, año',note:'Lemaître and Å pass'},
  {profile:'id',rule:'typography',en:'Where is the star on the screen?',good:'Di mana bintang di layar?',bad:'Dimana bintang di layar?',note:'joined preposition'},

@@ -18,8 +18,8 @@ export type Registers=Readonly<{ja:'desu-masu'|'plain';hi:'aap'|'tum';ru:'vy'|'t
  * generic imperative, اختر، اضغط, or a verbal noun, اختيار، حفظ; never the plural or a feminine-only form); «plural» stays expressible.
  * Hebrew and Persian are checks, not plans (no Hebrew or Persian for now): their settings are the plan's proposals, the gender-neutral
  * plural imperative (לחצו, בחרו) and the polite «شما» of Persian software, each with its alternative. */
-/** Front ID0: Indonesian addresses the reader as «Anda», always capitalised (plan front-i18n-id.md §3, question Q2); «kamu» stays
- * expressible for the fixtures. */
+/** Front ID0: Indonesian addresses the reader as «Anda», always capitalised (user decision of 2026-11-19, AGENTS.md; plan
+ * front-i18n-id.md §3); «kamu» stays expressible for the fixtures. */
 export const REGISTER:Registers={ja:'desu-masu',hi:'aap',ru:'vy',zh:'ni',es:'tu',pt:'voce',fr:'vous',ar:'singular',he:'plural',fa:'shoma',id:'anda'};
 export type ProfileId='ja'|'hi'|'zh-Hans'|'zh-Hant'|'ru'|'es-419'|'pt-BR'|'fr'|'ar'|'he'|'fa'|'id';
 export const PROFILE_IDS:readonly ProfileId[]=['ja','hi','zh-Hans','zh-Hant','ru','es-419','pt-BR','fr','ar','he','fa','id'];
@@ -194,7 +194,7 @@ function indonesianRegister(setting:Registers['id']):{patterns:Pattern[];paired:
   ?{patterns:[{label:'kamu pronoun',pattern:words(ID_KAMU,'letters'),use:'address the reader as «Anda»'},
     {label:'enclitic -mu',pattern:words(ID_MU,'letters'),use:'address the reader as «Anda» («data Anda», «untuk Anda»)'},
     {label:'lower-case anda',pattern:/(?<![\p{L}\p{N}])anda(?![\p{L}\p{N}])/u,use:'write «Anda» with a capital A (EYD V)'},
-    {label:'Saudara as a pronoun',pattern:/(?<=[\p{L}\p{N},;:)][  ]+)Saudara(?![\p{L}\p{N}])/u,use:'address the reader as «Anda»'}],
+    {label:'Saudara as a pronoun',pattern:/(?<=[\p{L}\p{N},;:)][ \u00a0]+)Saudara(?![\p{L}\p{N}])/u,use:'address the reader as «Anda»'}],
    paired:[{label:'politeness word the English does not have',pattern:startOf(ID_POLITE),english:EN_COMMAND,use:'the base-form imperative («Klik…», «Pilih…»); «silakan» only where the English says please'},
     {label:'-lah imperative',pattern:startOf(ID_LAH),english:EN_COMMAND,use:'the base-form imperative («Klik…», «Pilih…»)'}]}
   :{patterns:[{label:'Anda',pattern:words(['anda'],'letters'),use:'address the reader as «kamu»'}],paired:[]};
@@ -219,16 +219,16 @@ function indonesianProfile(setting:Registers['id']):LocaleProfile{
   pairs:[CURLY,PARENS],
   forbiddenMarks:[{mark:'"',use:'“ ” (inner ‘ ’)'}],
   typography:[
-   ...thousandsRules(' '),
+   ...thousandsRules('\u202f'),
    {label:'guillemets',pattern:/«(?!A\p{N}+»)|(?<!«A\p{N}+)»/u,use:'“ ” (inner ‘ ’)'},
    {label:'single quotes at the top level',pattern:/‘(?![^“]*”)/u,use:'“ ” (‘ ’ only inside “ ”)'},
-   {label:'space before : ; ! ?',pattern:/(?<=[^\s])[   ]+[:;!?](?=[\s)\]”’]|$)/u,use:'write the mark against the word, as in English (no space before it)'},
-   {label:'narrow no-break space outside a number',pattern:/(?<!\p{N}) | (?!\p{N}{3}(?!\p{N}))/u,use:'U+202F only between groups of thousands («24 000»)'},
+   {label:'space before : ; ! ?',pattern:/(?<=[^\s])(?<!(?:tombol|tanda))[ \u00a0\u202f]+[:;!?](?=[\s)\]”’]|$)/u,use:'write the mark against the word, as in English (no space before it; «tombol ?» names the key)'},
+   {label:'narrow no-break space outside a number',pattern:/(?<!\p{N})\u202f|\u202f(?!\p{N}{3}(?!\p{N}))/u,use:'U+202F only between groups of thousands («24 000»)'},
    {label:'Latin letter with a diacritic',pattern:outsideIndonesianGlosses(ID_DIACRITIC),use:'Indonesian words have no diacritics; a Spanish or French form left from the context, or a misspelling'},
    {label:'joined preposition',pattern:outsideIndonesianGlosses(words(ID_JOINED,'letters')),use:'write the preposition apart: di mana, di sini, di atas, di dalam, ke mana, ke atas…'},
    {label:'separated di- prefix',pattern:outsideIndonesianGlosses(new RegExp(`(?<![\\p{L}\\p{N}])di[ \\u00a0]+(?:${ID_PREFIXED.join('|')})(?![\\p{L}\\p{N}])`,'iu')),use:'write the passive prefix joined: dibuka, disimpan, diklik, dipilih…'},
-   {label:'repeated word',pattern:outsideIndonesianGlosses(/(?<![\p{L}\p{N}])(\p{L}{2,})[  ]+\1(?![\p{L}\p{N}])/iu),use:'write reduplication with a hyphen (bintang-bintang)'},
-   {label:'reduplication after a number or quantifier',pattern:outsideIndonesianGlosses(/(?<![\p{L}\p{N}])(?:\p{N}+|\{[\p{L}\p{N}_]+\}|banyak|beberapa|semua|para|sejumlah)[  ]+(\p{L}+)-\1(?![\p{L}\p{N}])/iu),use:'no reduplication after a number or a quantifier («3 bintang», «beberapa galaksi»)'},
+   {label:'repeated word',pattern:outsideIndonesianGlosses(/(?<![\p{L}\p{N}])(\p{L}{2,})[ \u00a0]+\1(?![\p{L}\p{N}])/iu),use:'write reduplication with a hyphen (bintang-bintang)'},
+   {label:'reduplication after a number or quantifier',pattern:outsideIndonesianGlosses(/(?<![\p{L}\p{N}])(?:\p{N}+|\{[\p{L}\p{N}_]+\}|banyak|beberapa|semua|para|sejumlah)[ \u00a0]+(\p{L}+)-\1(?![\p{L}\p{N}])/iu),use:'no reduplication after a number or a quantifier («3 bintang», «beberapa galaksi»)'},
    {label:'ordinal without its hyphen',pattern:/(?<![\p{L}\p{N}])ke(?:\p{N}|\{[\p{L}\p{N}_]+\})/iu,use:'«ke-2», «ke-{n}»'},
    ...ID_KBBI.map(([wrong,right]):Pattern=>({label:'non-standard spelling (KBBI)',pattern:outsideIndonesianGlosses(words([wrong],'letters')),use:`the KBBI form: ${right}`})),
    {label:'English spelling of a loanword',pattern:outsideIndonesianGlosses(words(ID_ENGLISH_SPELLING,'letters')),use:'the Indonesian spelling: fotometer, fotometri, spektrum, spektrometer, teleskop, magnitudo, galaksi, kuasar, observatorium, koordinat, analisis'},

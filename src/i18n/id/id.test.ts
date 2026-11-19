@@ -35,7 +35,7 @@ import {VARIABLE_STARS_EN} from '../../variables/VariableStarMessages';
 //
 // Fix mode (plan §4.5): `env -u CI OPENVIREO_FIX_TYPOGRAPHY=1 npx vitest run src/i18n/id/id.test.ts` rewrites id.json,
 // originals.json and the string literals of maps/*.ts and help/*.ts with the fixer (src/i18n/lint/indonesianTypography.ts: straight
-// quotes to “ ”, thousands to U+202F), writing the characters literally (never ` ` escapes: scripts/check-i18n-dist.mjs reads
+// quotes to “ ”, thousands to U+202F), writing the characters literally (never `\u202f` escapes: scripts/check-i18n-dist.mjs reads
 // map literals as written), then checks as usual; run it once more without the variable (the imports were read before the rewrite).
 // A VIREO `fragment|` original keeps its straight quotes (another piece of VIREO's text closes them).
 const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN};
@@ -65,7 +65,7 @@ if(process.env.OPENVIREO_FIX_TYPOGRAPHY==='1'){
 
 describe('Front ID0: the Indonesian (id) bundle',()=>{
  it('is registered before its release: a ?lang=id preview only, never detected or offered; thousands with U+202F from the start',()=>{
-  expect(languageEntry('id')).toMatchObject({dir:'id',catalog:'id.json',htmlLang:'id',pagePath:'id',autonym:'Bahasa Indonesia',englishName:'Indonesian',match:['id','in'],released:false,thousands:' '});
+  expect(languageEntry('id')).toMatchObject({dir:'id',catalog:'id.json',htmlLang:'id',pagePath:'id',autonym:'Bahasa Indonesia',englishName:'Indonesian',match:['id','in'],released:false,thousands:'\u202f'});
   expect(languageEntry('id')?.help).toBeUndefined();
   expect(INDONESIAN.language).toBe('id');
   // The notices are plain ASCII Indonesian the fixer leaves alone.
@@ -96,9 +96,9 @@ describe('Front ID0: the Indonesian (id) bundle',()=>{
    expect(text,path.relative(DIR,file)).not.toMatch(/\\u(?:202[fF]|201[cdCD89]|00[aA]0)/);}
  });
  it('formats numbers with U+202F between thousands and the decimal point, English unchanged; every count takes the one form `other`',()=>{
-  const sep=thousandsSeparator('id');expect(sep).toBe(' ');
+  const sep=thousandsSeparator('id');expect(sep).toBe('\u202f');
   const idI18n=createI18n(idCatalog as Partial<Record<MessageKey,string>>,'id',{fallback:true,numberLocale:locale,thousands:sep});
-  expect([24000,50000,2400000,999,1234.5,-31147,31147].map(v=>idI18n.formatNumber(v))).toEqual(['24 000','50 000','2 400 000','999','1 234.5','-31 147','31 147']);
+  expect([24000,50000,2400000,999,1234.5,-31147,31147].map(v=>idI18n.formatNumber(v))).toEqual(['24\u202f000','50\u202f000','2\u202f400\u202f000','999','1\u202f234.5','-31\u202f147','31\u202f147']);
   expect(idI18n.formatNumber(24000,{useGrouping:false})).toBe('24000');expect(idI18n.formatNumber(0.25,{style:'percent'})).toBe('25%');
   expect(english.formatNumber(24000)).toBe('24,000');
   // Plan §1.1: CLDR Indonesian has only `other` («1 bintang», «3 bintang»), like Japanese and Chinese; no English override as for pt.

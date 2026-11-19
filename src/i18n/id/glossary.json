@@ -1,5 +1,5 @@
 {
- "about": "Front ID0: the id glossary (plan analysis/front-plans/front-i18n-id.md §5) that src/i18n/id/id.test.ts enforces through the SC4 lint framework (src/i18n/lint/, profile id) on every Indonesian string. Seeded from the French glossary: the same English patterns and interface names, re-targeted to Indonesian from the English (French and Spanish only as meaning context) and the plan's §5.2–§5.3 terms (Indonesian Wikipedia, ITB/Bosscha and BRIN usage, KBBI spelling; no IAU OAE Indonesian glossary exists, so these are usage, not an official standard). A term applies when its English pattern matches the English source: the Indonesian must then match the `id` stem or pattern. Names are fixed interface names (an exact name applies only to a whole string; the name match ignores case). Forbidden here are the term forms this glossary rejects (kepunahan, klaster, geser merah, redshift outside glosses, berkas for a computer file, peramban, magnitudo tampak/absolut, tetapan Hubble, pulsa); the language-wide rules (the «Anda» register, KBBI spellings, Malay words, diacritics, di-/ke- spacing, reduplication, quotes and thousands, claims) live in the id profile of src/i18n/lint/profiles.ts. VIREO's own names follow the plan's decided forms (Save → Simpan, Record → Catat, Find → Temukan, Search → Cari, Show → Tampilkan, Display → Tampilan, Slew → Gerakkan, Init/Go → Siapkan/Mulai, Scan → Telusuri, Clear → Kosongkan, Delete → Hapus, Reset → Atur Ulang, Hot List → daftar objek, lab → praktikum, file → file, browser → browser). Rows for areas later fronts translate are reviewed by those fronts before use.",
+ "about": "Front ID0: the id glossary (plan analysis/front-plans/front-i18n-id.md §5) that src/i18n/id/id.test.ts enforces through the SC4 lint framework (src/i18n/lint/, profile id) on every Indonesian string. Seeded from the French glossary: the same English patterns and interface names, re-targeted to Indonesian from the English (French and Spanish only as meaning context) and the plan's §5.2–§5.3 terms (Indonesian Wikipedia, ITB/Bosscha and BRIN usage, KBBI spelling; no IAU OAE Indonesian glossary exists, so these are usage, not an official standard). Stems of verbs that start with p, s, t or k also list the meN- form that drops that letter (pulih|mulih: memulihkan; simpan|nyimpan: menyimpan, penyimpanan). A term applies when its English pattern matches the English source: the Indonesian must then match the `id` stem or pattern. Names are fixed interface names (an exact name applies only to a whole string; the name match ignores case). Forbidden here are the term forms this glossary rejects (kepunahan, klaster, geser merah, redshift outside glosses, berkas for a computer file, peramban, magnitudo tampak/absolut, tetapan Hubble, pulsa); the language-wide rules (the «Anda» register, KBBI spellings, Malay words, diacritics, di-/ke- spacing, reduplication, quotes and thousands, claims) live in the id profile of src/i18n/lint/profiles.ts. VIREO's own names follow the plan's decided forms (Save → Simpan, Record → Catat, Find → Temukan, Search → Cari, Show → Tampilkan, Display → Tampilan, Slew → Gerakkan, Init/Go → Siapkan/Mulai, Scan → Telusuri, Clear → Kosongkan, Delete → Hapus, Reset → Atur Ulang, Hot List → daftar objek, lab → praktikum, file → file, browser → browser). Rows for areas later fronts translate are reviewed by those fronts before use.",
  "terms": [
   {
    "en": "\\bobservator(y|ies)\\b",
@@ -51,11 +51,11 @@
   },
   {
    "en": "(?<!daylight-)\\bsav(e|es|ed|ing)\\b",
-   "id": "simpan"
+   "id": "simpan|nyimpan"
   },
   {
    "en": "\\brestor(e|es|ed|ing)\\b",
-   "id": "pulih"
+   "id": "pulih|mulih"
   },
   {
    "en": "\\b(re)?load(s|ed|ing)?\\b",
@@ -99,7 +99,7 @@
   },
   {
    "en": "\\bpress\\b",
-   "id": "tekan"
+   "id": "tekan|nekan"
   },
   {
    "en": "\\bmenus?\\b",
@@ -443,7 +443,7 @@
   },
   {
    "en": "\\bsweeps?\\b",
-   "id": "sapu"
+   "id": "sapu|nyapu"
   },
   {
    "en": "\\bbeams?\\b",
@@ -467,11 +467,11 @@
   },
   {
    "en": "\\bblink(s|ed|ing)?\\b",
-   "id": "kedip"
+   "id": "kedip|ngedip"
   },
   {
    "en": "\\breveal(s|ed|ing)?\\b(?! the catalog sky)",
-   "id": "ungkap|tampil|perlihat"
+   "id": "ungkap|tampil|nampil|perlihat"
   },
   {
    "en": "\\borbit files?\\b",
@@ -495,7 +495,7 @@
   },
   {
    "en": "\\bsnapshots?\\b",
-   "id": "cuplikan|potret"
+   "id": "cuplikan|potret|motret"
   },
   {
    "en": "\\banaly[sz]ers?\\b",
@@ -527,7 +527,7 @@
   },
   {
    "en": "\\breadouts?\\b",
-   "id": "baca|tampil"
+   "id": "baca|tampil|nampil"
   },
   {
    "en": "\\bmetallicit(y|ies)\\b",
@@ -653,7 +653,7 @@
   },
   {
    "en": "Tools button",
-   "id": "Tombol Alat"
+   "id": "tombol Menu"
   },
   {
    "en": "Optical Simulation Options",

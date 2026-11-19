@@ -3,6 +3,10 @@
  "entries": {
   "catalog:app.name": "product name (OpenVireo)",
   "original:NVO": "catalogue acronym (National Virtual Observatory), kept",
-  "original:Project CLEA": "official name kept in English (plan §5.3)"
+  "original:Project CLEA": "official name kept in English (plan §5.3)",
+  "catalog:instructorMode.optionsClosedOk": "the same word in Indonesian (OK, as Windows Indonesian writes it)",
+  "map:appShell.toolsMenu": "the same word in Indonesian (Menu), the phone menu button",
+  "map:helpMenu.ok": "the same word in Indonesian (OK, as Windows Indonesian writes it)",
+  "map:helpMenu.shortcutKey": "a key on the keyboard (?)"
  }
 }
