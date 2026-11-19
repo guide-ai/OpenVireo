@@ -40,8 +40,8 @@ export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new S
  // analyser's edition line (names), the Hubble axis (distance, a unit) and VIREO's Classification (FR1's identical original).
  fr:new Set(['OK','Zoom','v · km/s · float32','VIREO / HUBBLE','Distance · Mpc','Classification']),
  // Front ID2: the same words in Indonesian (src/i18n/id/identical.json): VIREO's OK and Zoom, the velocity column's format and the
- // analyser's edition line (names).
- id:new Set(['OK','Zoom','v · km/s · float32','VIREO / HUBBLE'])};
+ // analyser's edition line (names), and the computing words Log, No., File, Status and Bin of the analyser, Hubble and sky tables.
+ id:new Set(['OK','Zoom','v · km/s · float32','VIREO / HUBBLE','Log','No.','File','Status','Bin'])};
 /** Front PT2: Portuguese writes the measurement log's bit pattern as English does («bits 3c23d70a»; Spanish «patrón de bits»). */
 export const RECORDED_IN:Readonly<Record<string,RegExp>>={'pt-BR':/^bits [0-9a-f]{8}$/};
 export const same=(text:string,L?:LanguageText)=>SAME.has(text)||NUMERIC.test(text)||RECORDED.test(text)||(L!==undefined&&((SAME_IN[L.tag]?.has(text)??false)||(RECORDED_IN[L.tag]?.test(text)??false)));
