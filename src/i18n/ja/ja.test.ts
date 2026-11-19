@@ -77,7 +77,8 @@ describe('Front JA0: the Japanese (ja) bundle',()=>{
  it('the catalog is a valid partial catalog (en.json keys, the same {params}) and covers the whole shell and the welcome page',()=>{
   expect(()=>createI18n(ja as Partial<Record<MessageKey,string>>,'ja',{fallback:true})).not.toThrow();
   for(const key of Object.keys(ja))expect(Object.hasOwn(en,key),key).toBe(true);
-  expect(SHELL_KEYS.length).toBe(131);// 131 since Front HI0 (app.digitNotice, the shared digit notice)expect(HOME_KEYS.length).toBe(27);
+  expect(SHELL_KEYS.length).toBe(131);// 131 since Front HI0 (app.digitNotice, the shared digit notice)
+  expect(HOME_KEYS.length).toBe(27);
   expect([...SHELL_KEYS,...HOME_KEYS].filter(k=>!Object.hasOwn(ja,k))).toEqual([]);
  });
  it('every map has its English shape: the shell maps complete, the header-name maps partial',()=>{
