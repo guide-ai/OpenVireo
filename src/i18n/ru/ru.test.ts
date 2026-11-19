@@ -29,6 +29,13 @@ import {POLISH_MESSAGES_EN} from '../../polish/PolishMessages';
 import {PROJECT_LINKS_EN} from '../../help/projectLinks';
 import {TOUR_EN} from '../../help/tour';
 import {VARIABLE_STARS_EN} from '../../variables/VariableStarMessages';
+import {FIELD_INFO_MESSAGES_EN,FIELD_READ_DETAILS_EN,NAKED_EYE_MESSAGES_EN} from '../../observatory/FieldInfoMessages';
+import {OBSERVATORY_MESSAGES_EN} from '../../observatory/ObservatoryMessages';
+import {QSO_LIST_MESSAGES_EN} from '../../observatory/QsoListMessages';
+import {SOUND_MESSAGES_EN} from '../../sound/SoundMessages';
+import {OBSERVATION_METADATA_EN} from '../../ObservationMetadataMessages';
+import {CAMERA_MESSAGES_EN} from '../../camera/CameraMessages';
+import esIdentical from '../es/identical.json';
 
 // Front RU0 (docs/I18N.md, "Russian: plural families, the folder, lints and shell (RU0)"; plan front-i18n-ru.md §1.2, §4, §6.2): the
 // structural checks of the partial Russian bundle, the Russian typography fixer as a no-op over every Russian string, every string
@@ -40,9 +47,18 @@ import {VARIABLE_STARS_EN} from '../../variables/VariableStarMessages';
 // and the string literals of maps/*.ts and help/*.ts with the fixer (src/i18n/lint/russianTypography.ts), writing the characters
 // literally (never ` ` or ` ` escapes: scripts/check-i18n-dist.mjs reads map literals as written), then checks as usual.
 // A VIREO `fragment|` original keeps its straight quotes (another piece of VIREO's text closes them).
-const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN};
-/** The maps translated completely (RU0's shell maps). */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour'];
+const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,
+ camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,nakedEye:NAKED_EYE_MESSAGES_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN};
+/** The maps translated completely (RU0's shell maps; RU1's observatory maps, the camera card the observatory shows, and polish). */
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera'];
+/** Front RU1's area of en.json: FR1's and ID1's observatory keys (the instruments' prefixes and the Hubble hot-list reasons) and the
+ * 104 guide keys the observatory files render (src/i18n/fr/fr.test.ts FR1_GUIDE_KEYS, read from there so the two never drift). */
+const OBSERVATORY_PREFIXES=/^(sky|optical|motion|horizon|siteClock|runningClock|scopeAccess|instrumentAccess|instrumentParameters|cameraParameters|cameraInfo|cameraPrepare|palette|testMode|optionsFile|photometerTab|htl|multispec|nativeMirror|hubblePoint)\./;
+const RU1_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>OBSERVATORY_PREFIXES.test(k)||/^hubbleHtl\.reason\./.test(k));
+const RU1_GUIDE_KEYS=JSON.parse(`[${/const FR1_GUIDE_KEYS:readonly MessageKey\[\]=\[([^\]]*)\]/.exec(readFileSync(path.join(import.meta.dirname,'../fr/fr.test.ts'),'utf8'))![1].replace(/'/g,'"')}]`) as MessageKey[];
+/** VIREO originals that Spanish keeps with no entry (its word equals VIREO's), as for Portuguese, French and Indonesian: the options
+ * dialog's General tab («Общие») and the Site Information longitude letter E («В», восток). */
+const RU_ONLY_ORIGINALS:readonly string[]=['General','E'];
 /** RU0's area of en.json: the shell (header, menu, first steps, toolbar, errors, instructor mode, document title), as FR0's. */
 const SHELL_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(app|project|session|error|instructorMode)\./.test(k)||/\.nav$/.test(k)||['demonstrationMode.banner','sky.eyebrow','sky.title','sky.subtitle','sky.about','sky.local','sky.observatory','sky.analyzer','sky.step1','sky.step1Help','sky.step2','sky.step2Help','sky.step3','sky.step3Help','spectrum.tools','classLink.cancel'].includes(k));
 const profile=PROFILES.ru;
@@ -84,7 +100,28 @@ describe('Front RU0: the Russian (ru) bundle',()=>{
   const home=(Object.keys(en) as MessageKey[]).filter(k=>k.startsWith('home.'));
   expect(home.length).toBe(27);expect(home.filter(k=>!Object.hasOwn(catalog,k))).toEqual([]);
  });
- it('every map has its English shape: the shell maps complete, the header-name maps partial',()=>{
+ it('Front RU1: the catalog covers the observatory (every key of its instruments\' prefixes) and the guide keys it renders',()=>{
+  expect(RU1_KEYS.length).toBeGreaterThan(450);
+  expect(RU1_KEYS.filter(k=>!Object.hasOwn(catalog,k))).toEqual([]);
+  expect(RU1_GUIDE_KEYS.length).toBe(104);
+  expect(RU1_GUIDE_KEYS.filter(k=>!Object.hasOwn(en,k)||!Object.hasOwn(catalog,k))).toEqual([]);
+ });
+ it('Front RU1: every VIREO original is translated at once, or kept with an identical.json reason, never both',()=>{
+  const english=[...Object.keys(esOriginals),...Object.keys(esIdentical.entries).filter(k=>k.startsWith('original:')).map(k=>k.slice('original:'.length))];
+  expect(new Set(english).size).toBe(760);english.push(...RU_ONLY_ORIGINALS);
+  const same=identical.entries as Record<string,string>,kept=Object.keys(same).filter(k=>k.startsWith('original:')).map(k=>k.slice('original:'.length));
+  expect(english.filter(k=>!Object.hasOwn(originals,k)&&!Object.hasOwn(same,`original:${k}`))).toEqual([]);
+  for(const k of kept){expect(english,k).toContain(k);expect(Object.hasOwn(originals,k),k).toBe(false);}
+  expect((originals as Record<string,string>).E).toBe('В');expect((originals as Record<string,string>).W).toBe('З');
+ });
+ it('Front RU1 review: a VIREO `fragment|` piece keeps the join spaces the reviewed Spanish piece has at each edge (VIREO joins it with data)',()=>{
+  const edges=(v:string)=>[/^ /.test(v),/ $/.test(v)];
+  const es=esOriginals as Record<string,string>;
+  const fragments=Object.keys(originals).filter(k=>k.startsWith('fragment|')&&Object.hasOwn(es,k));
+  expect(fragments.length).toBeGreaterThan(10);
+  expect(fragments.filter(k=>edges((originals as Record<string,string>)[k]).join()!==edges(es[k]).join())).toEqual([]);
+ });
+ it('every map has its English shape: the shell and observatory maps complete, the header-name maps partial',()=>{
   for(const [id,map] of Object.entries(RUSSIAN.maps??{})){
    expect(MAP_IDS,id).toContain(id);
    const englishMap=ENGLISH_MAPS[id as MapId];expect(englishMap,`${id}: English map registered in this test`).toBeDefined();
@@ -92,8 +129,9 @@ describe('Front RU0: the Russian (ru) bundle',()=>{
   }
   for(const id of COMPLETE_MAPS)expect(Object.hasOwn(RUSSIAN.maps??{},id),id).toBe(true);
  });
- it('originals are normalised keys that Spanish also translates (src/i18n/es/es.test.ts checks those against the source)',()=>{
-  for(const key of Object.keys(originals)){expect(normalizeOriginal(key),key).toBe(key);expect(Object.hasOwn(esOriginals,key),key).toBe(true);}
+ it('originals are normalised keys that Spanish also knows (src/i18n/es/es.test.ts checks those against the source)',()=>{
+  const esSame=(key:string)=>Object.hasOwn(esIdentical.entries,`original:${key}`);
+  for(const key of Object.keys(originals)){expect(normalizeOriginal(key),key).toBe(key);expect(Object.hasOwn(esOriginals,key)||esSame(key)||RU_ONLY_ORIGINALS.includes(key),key).toBe(true);}
  });
  it('the typography fixer has nothing left to change: catalog, originals, maps and help sources',()=>{
   expect(Object.entries(catalog).filter(([,v])=>fixRussianTypography(v)!==v).map(([k])=>k)).toEqual([]);

@@ -4,6 +4,26 @@
   "catalog:app.name": "product name (OpenVireo)",
   "original:NVO": "catalogue acronym (National Virtual Observatory), kept",
   "original:Project CLEA": "official name kept in English (plan §5.3)",
-  "map:helpMenu.shortcutKey": "a key on the keyboard (?)"
+  "map:helpMenu.shortcutKey": "a key on the keyboard (?)",
+  "original:HH:MM:SS": "a format token (hours, minutes, seconds), kept as VIREO writes it",
+  "original:V - Mv =": "a formula (V − Mv), kept as VIREO writes it",
+  "original:PEpoch (MJD):": "a pulsar catalogue parameter name (ATNF PEpoch, MJD), kept as VIREO writes it",
+  "catalog:siteClock.utValue": "a time value with the UT abbreviation, as the observatory clock writes it (UT kept in Russian astronomy usage)",
+  "catalog:horizon.degrees": "a number with the degree sign",
+  "catalog:motion.rateOption": "a slew rate number with ×",
+  "catalog:htl.row": "a format of three values joined by ·",
+  "catalog:cameraPrepare.catalogEntry": "a format of a filter letter, a catalogue name and a band",
+  "catalog:cameraParameters.adUpGlyph": "an arrow glyph",
+  "catalog:cameraParameters.adDownGlyph": "an arrow glyph",
+  "map:camera.filterNames.1": "filter letter B (photometric band)",
+  "map:camera.filterNames.2": "filter letter V (photometric band)",
+  "map:camera.filterNames.3": "filter letter R (photometric band)",
+  "map:camera.filterNames.4": "filter letter I (photometric band)",
+  "map:camera.filterNamesIr.0": "filter letter J (photometric band)",
+  "map:camera.filterNamesIr.1": "filter letter H (photometric band)",
+  "map:camera.filterNamesIr.2": "filter letter K (photometric band)",
+  "map:camera.accessReason.ready": "empty: no reason when the camera is ready",
+  "map:camera.sourceWithHash": "a format: a label, SHA-256 and a hash",
+  "map:camera.rowCounts": "a format of three numbers joined by /"
  }
 }
