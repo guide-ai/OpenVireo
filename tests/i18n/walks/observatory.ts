@@ -33,7 +33,9 @@ export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new S
 /** SAME texts another language does translate: Portuguese writes the General tab «Geral» and the longitude letter E «L» (Leste);
  * French writes the General tab «Général» (its longitude letter E is Est, the same). */
 /** Front ID1: Indonesian writes the General tab «Umum» and the longitude letter E «BT» (Bujur Timur). */
-export const NOT_SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['General','E']),fr:new Set(['General']),id:new Set(['General','E'])};
+export const NOT_SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['General','E']),fr:new Set(['General']),id:new Set(['General','E']),
+ /** Front RU1: Russian writes the General tab «Общие» and the longitude letter E «В» (восток). */
+ ru:new Set(['General','E'])};
 export const same=(text:string,L?:LanguageText)=>(L===undefined||!(NOT_SAME_IN[L.tag]?.has(text)??false))&&(SAME.has(text)||IDENTIFIER.test(text)||(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false)));
 export const id=(page:Page,testId:string)=>page.getByTestId(testId);
 
@@ -111,7 +113,7 @@ export async function multiSpecWalk(page:Page,lang:Lang,each:(step:string)=>Prom
  await page.getByText(T('sky.coordinates'),{exact:true}).click();
  await page.locator('#point-ra').fill('13.002305555555555');await page.locator('#point-dec').fill('27.9775');
  await page.getByRole('button',{name:T('sky.pointCoordinates'),exact:true}).click();await expect(id(page,'pointing-dec')).toHaveText(/^27\.97/,{timeout:30_000});
- await page.getByRole('button',{name:new RegExp(/^(Telescope|Telescopio|Telescópio|Teleskop) ·/.source+'|'+pseudoStart('Telescope ·').source)}).click();
+ await page.getByRole('button',{name:new RegExp(/^(Telescope|Telescopio|Telescópio|Teleskop|Телескоп) ·/.source+'|'+pseudoStart('Telescope ·').source)}).click();
  const toggle=page.locator('.portal-header .tools-toggle');if(await toggle.isVisible())await toggle.click();
  await id(page,'instructor-mode-open').click();await id(page,'instructor-mode-confirm-on').click();if(await toggle.isVisible()&&await toggle.getAttribute('aria-expanded')==='true')await toggle.click();
  await page.locator('.telescope-motion').getByTestId('ob-options').click();await id(page,'ob-options-edit-mode').check();await id(page,'ob-options-ok').click();
