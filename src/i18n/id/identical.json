@@ -83,6 +83,14 @@
   "map:wedge.detail.velocity": "a symbol and a number format (V binary32)",
   "map:wedge.detail.z": "a symbol and a number format (Z binary32)",
   "map:wedge.detail.degrees": "a unit symbol (°)",
-  "map:wedge.detail.px": "a unit symbol (px)"
+  "map:wedge.detail.px": "a unit symbol (px)",
+  "catalog:classLines.option": "only placeholders, the unit Å and a separator ({wavelength} Å · {label})",
+  "catalog:probe.shaLabel": "the hash name (SHA-256)",
+  "catalog:photo.caption": "only placeholders and a separator ({label} · {polarity})",
+  "catalog:viewport.range": "only placeholders, the unit Å and the zoom sign ({minimum}–{maximum} Å · {zoom}×)",
+  "catalog:nativeResults.typeValue": "only placeholders and a separator ({code} · {label})",
+  "catalog:nativeResults.kindValue": "only placeholders and a separator ({kind} · {label})",
+  "catalog:program.row": "only placeholders and a separator ({position} · {object})",
+  "catalog:nativeText.choice": "only placeholders and a separator ({index} · {object})"
  }
 }
