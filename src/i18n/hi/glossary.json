@@ -55,7 +55,7 @@
   },
   {
    "en": "\\brestor(e|es|ed|ing)\\b",
-   "hi": "पुनर्स्थापित|लौटा|बहाल"
+   "hi": "पुनर्स्थापित|लौटा"
   },
   {
    "en": "\\b(re)?load(s|ed|ing)?\\b",
@@ -431,7 +431,7 @@
   },
   {
    "en": "\\bmerg(e|es|ed|ing)\\b",
-   "hi": "मर्ज|विलय"
+   "hi": "विलय"
   },
   {
    "en": "\\bendpoint[- ]grids?\\b",
@@ -538,7 +538,7 @@
    "hi": "ट्रायल"
   },
   {
-   "en": "\\bpresets?\\b(?!\\.)",
+   "en": "\\bpresets?\\b(?<!never preset)",
    "hi": "प्रीसेट"
   },
   {
@@ -647,7 +647,11 @@
   },
   {
    "en": "\\b(?:point(?:s|ed|ing)? (?:the telescope|at|to)|pointings?)\\b",
-   "hi": "इंगित|दिशा|की ओर (?:है|हैं|था)|ओर"
+   "hi": "इंगित|दिशा|की ओर (?:नहीं )?(?:है|हैं|था)"
+  },
+  {
+   "en": "\\bnoise\\b(?! ratio)",
+   "hi": "नॉइज़|शोर"
   }
  ],
  "names": [
@@ -717,7 +721,10 @@
   },
   {
    "en": "Topics...",
-   "hi": "विषय..."
+   "hi": "विषय...",
+   "except": {
+    "original:Show Help Topics...": "VIREO’s Show Help Topics... button: «सहायता विषय दिखाएँ...» keeps the ellipsis at the end of the label"
+   }
   },
   {
    "en": "About This Exercise...",
@@ -1037,7 +1044,7 @@
   },
   {
    "en": "Monochrome Displays",
-   "hi": "एकवर्णी प्रदर्शन"
+   "hi": "एकवर्णी डिस्प्ले"
   },
   {
    "en": "Compute Rdshft Vel.",
@@ -1356,7 +1363,7 @@
   },
   {
    "en": "Simulated Light Curve",
-   "hi": "सिम्युलेटेड प्रकाश वक्र"
+   "hi": "सिमुलेटेड प्रकाश वक्र"
   },
   {
    "en": "Remove from HR Diagram",

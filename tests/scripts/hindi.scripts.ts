@@ -2,8 +2,9 @@
 // (HI0)"): real Hindi, not the qps-deva stress, under the pinned test fonts of playwright.scripts.config.ts. The main suite's
 // fonts have no Devanagari face (its text checks hold, its layout checks would measure tofu), so Hindi's layout is checked here.
 // HI0 walks the shell it translated, at 320 and 1440 px: the welcome, the observatory's chrome and header menu, every tour step,
-// the language dialog, the instructor-mode confirmation and the About box. HI1 adds the observatory: the open dome with the
-// camera and Multi-Spec cards, the options dialog, Set Date/Time and the hot list with its popup menu. Each later HI front adds its
+// the language dialog, the instructor-mode confirmation and the About box. HI1 adds the observatory: the open dome, Set Date/Time,
+// Site Information, Enter Sky Coordinates for Slew, the options dialog, the hot-list entry form, the hot list with its popup menu
+// and File › Field Information › Star Data List (Edit Mode). Each later HI front adds its
 // area's routes and dialogs.
 // Each step asserts Devanagari on screen, layoutProblems() and verticalInkProblems() (tests/fixtures/layoutProblems.ts), and the
 // face that draws Devanagari (Noto Sans Devanagari: no tofu, no fallback). Geometric checks only; no pixel screenshots.
@@ -100,13 +101,22 @@ for(const width of [320,1440] as const satisfies readonly Width[])
   if(!await id(page,'ob-set-date').isVisible())await page.getByText(H.catalog['siteClock.title'],{exact:true}).click();
   await id(page,'ob-set-date').click();await expect(id(page,'ob-date-dialog')).toBeVisible();await check('Set Date/Time');
   await page.keyboard.press('Escape');await expect(id(page,'ob-date-dialog')).toBeHidden();
+  // Site Information (VIREO's list window; its latitude letter reads «उ»/«द» beside the longitude's «पू»/«प»).
+  await id(page,'ob-site-information').click();await expect(id(page,'ob-site-info-lines')).toBeVisible();
+  await expect(id(page,'ob-site-info-lines')).not.toContainText(/\d" [NS]$/m);await check('Site Information');
+  await id(page,'ob-site-info-close').click();await expect(id(page,'ob-site-info-lines')).toBeHidden();
+  // Enter Sky Coordinates for Slew.
+  await page.locator('.telescope-motion').getByTestId('ob-set-coordinates').click();await expect(id(page,'ob-sky-coords')).toBeVisible();await check('Enter Sky Coordinates for Slew');
+  await page.keyboard.press('Escape');await expect(id(page,'ob-sky-coords')).toBeHidden();
   // The options dialog, in instructor mode.
   await headerTools(page);
   await id(page,'instructor-mode-open').click();await id(page,'instructor-mode-confirm-on').click();await expect(id(page,'instructor-mode-banner')).toBeVisible();
   await closeHeaderTools(page);
   await page.locator('.telescope-motion').getByTestId('ob-options').click();await expect(id(page,'ob-options-dialog')).toBeVisible();
   await check('options dialog');
-  await page.keyboard.press('Escape');await expect(id(page,'ob-options-dialog')).toBeHidden();
+  // Edit Mode on, for the Star Data List below.
+  await id(page,'ob-options-edit-mode').check();const yes=page.locator('[data-testid$=-yes]:visible').first();if(await yes.count())await yes.click();
+  await id(page,'ob-options-ok').click();await expect(id(page,'ob-options-dialog')).toBeHidden();
   // The hot list (two entries at a coordinate pointing) and its popup menu.
   if(!await page.locator('#point-ra').isVisible())await page.getByText(H.catalog['sky.coordinates'],{exact:true}).click();
   await page.locator('#point-ra').fill('1');await page.locator('#point-dec').fill('20');
@@ -119,5 +129,9 @@ for(const width of [320,1440] as const satisfies readonly Width[])
   await id(page,'ob-hotlist-rows').evaluate(el=>{const r=el.getBoundingClientRect();el.dispatchEvent(new MouseEvent('contextmenu',{bubbles:true,cancelable:true,button:2,clientX:r.left+2,clientY:r.top+2}));});
   await expect(id(page,'popup-menu')).toBeVisible();await check('hot list popup menu');
   await page.keyboard.press('Escape');await expect(id(page,'popup-menu')).toHaveCount(0);
+  await page.keyboard.press('Escape');await expect(id(page,'ob-hotlist-rows')).toBeHidden();
+  // File › Field Information › Star Data List (Edit Mode is on).
+  await id(page,'fi-file-menu').click();await id(page,'fi-field-information').click();await id(page,'fi-star-list').click();
+  await expect(id(page,'fi-slist-lines')).toBeVisible({timeout:20_000});await check('Star Data List');
   expect([...problems].map(([p,step])=>`${step}: ${p}`),'layout problems under real Hindi').toEqual([]);
  });

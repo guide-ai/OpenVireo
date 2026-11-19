@@ -28,8 +28,8 @@ export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new S
 /** SAME texts another language does translate: Portuguese writes the General tab «Geral» and the longitude letter E «L» (Leste);
  * French writes the General tab «Général» (its longitude letter E is Est, the same). */
 export const NOT_SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['General','E']),fr:new Set(['General']),
- // Front HI1: Hindi writes General «सामान्य», No «नहीं», Min «मिनट», the longitude letter E «पू» and Angstroms «ऐंगस्ट्रॉम».
- hi:new Set(['General','No','Min','E','Angstroms'])};
+ // Front HI1: Hindi writes General «सामान्य», No «नहीं», Min «मिनट», the compass letters E «पू», N «उ» and S «द», and Angstroms «ऐंगस्ट्रॉम».
+ hi:new Set(['General','No','Min','E','N','S','Angstroms'])};
 export const same=(text:string,L?:LanguageText)=>(L===undefined||!(NOT_SAME_IN[L.tag]?.has(text)??false))&&(SAME.has(text)||IDENTIFIER.test(text)||(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false)));
 export const id=(page:Page,testId:string)=>page.getByTestId(testId);
 
