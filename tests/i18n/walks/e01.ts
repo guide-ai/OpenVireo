@@ -38,7 +38,10 @@ export const NUMERIC=/^[-+−±\d\s.,:;°′″·×/()[\]–%=]*\d[-+−±\d\s.,
 export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['OK','Zoom','v · km/s · float32']),
  // Front FR2: the same words in French (src/i18n/fr/identical.json): VIREO's OK and Zoom, the velocity column's format, the
  // analyser's edition line (names), the Hubble axis (distance, a unit) and VIREO's Classification (FR1's identical original).
- fr:new Set(['OK','Zoom','v · km/s · float32','VIREO / HUBBLE','Distance · Mpc','Classification'])};
+ fr:new Set(['OK','Zoom','v · km/s · float32','VIREO / HUBBLE','Distance · Mpc','Classification']),
+ // Front ID2: the same words in Indonesian (src/i18n/id/identical.json): VIREO's OK and Zoom, the velocity column's format and the
+ // analyser's edition line (names).
+ id:new Set(['OK','Zoom','v · km/s · float32','VIREO / HUBBLE'])};
 /** Front PT2: Portuguese writes the measurement log's bit pattern as English does («bits 3c23d70a»; Spanish «patrón de bits»). */
 export const RECORDED_IN:Readonly<Record<string,RegExp>>={'pt-BR':/^bits [0-9a-f]{8}$/};
 export const same=(text:string,L?:LanguageText)=>SAME.has(text)||NUMERIC.test(text)||RECORDED.test(text)||(L!==undefined&&((SAME_IN[L.tag]?.has(text)??false)||(RECORDED_IN[L.tag]?.test(text)??false)));
