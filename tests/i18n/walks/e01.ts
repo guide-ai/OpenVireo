@@ -111,7 +111,7 @@ export const STEPS:readonly (readonly [string,(page:Page,lang:Lang)=>Promise<voi
   await tool(page,lang,'sky.observatory');const dome=page.getByRole('button',{name:new RegExp(N(lang,'sky.open').source.replace(/\$$/,'').concat(' ↗$'))});if(await dome.isVisible())await dome.click();// the star field opened it
   if(!await page.locator('#point-ra').isVisible())await page.getByText(N(lang,'sky.coordinates')).click();
   await page.locator('#point-ra').fill('12.99311111111111');await page.locator('#point-dec').fill('27.959722222222222');await button(page,lang,'sky.pointCoordinates').click();
-  await page.getByRole('button',{name:new RegExp(/^\s*[⟦]?\s*T[eé]l[eé]sc[oó]p[eéi]/.source+'|'+pseudoStart('Telescope').source)}).first().click();
+  await page.getByRole('button',{name:new RegExp(/^\s*[⟦]?\s*(?:T[eé]l[eé]sc[oó]p[eéi]|Teleskop ·)/.source+'|'+pseudoStart('Telescope').source)}).first().click();
   if(!await button(page,lang,'runningClock.trackingOn').isVisible())await page.getByText(N(lang,'runningClock.title')).click();
   if(await button(page,lang,'runningClock.trackingOn').isVisible())await button(page,lang,'runningClock.trackingOn').click();
   await tool(page,lang,'spectrometer.nav');await expect(id(page,'field-spec-use')).toBeEnabled({timeout:60_000});await id(page,'field-spec-use').click();

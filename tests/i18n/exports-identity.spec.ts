@@ -436,7 +436,7 @@ family('field spectrometer: Save counts CSV and Save exposure session at a free 
   await button(page,'Open dome ↗',locale).click();
   if(!await page.locator('#point-ra').isVisible())await page.getByText(N(locale,'Enter coordinates')).click();
   await page.locator('#point-ra').fill('12.99311111111111');await page.locator('#point-dec').fill('27.959722222222222');await button(page,'Point to coordinates',locale).click();
-  await page.getByRole('button',{name:new RegExp(/^\s*[⟦]?\s*T[eé]l[eé]sc[oó]p[eéi]/.source+'|'+pseudoStart('Telescope').source)}).first().click();
+  await page.getByRole('button',{name:new RegExp(/^\s*[⟦]?\s*(?:T[eé]l[eé]sc[oó]p[eéi]|Teleskop ·)/.source+'|'+pseudoStart('Telescope').source)}).first().click();
   if(!await button(page,'Turn tracking on',locale).isVisible())await page.getByText(N(locale,'Observatory clock & spectral tracking')).click();
   if(await button(page,'Turn tracking on',locale).isVisible())await button(page,'Turn tracking on',locale).click();
   await page.evaluate(()=>{location.hash='#spectrometer';});
