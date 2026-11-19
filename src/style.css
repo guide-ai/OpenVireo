@@ -309,3 +309,7 @@ dialog dd{margin:0;color:var(--ov-text-muted);line-height:1.6}
 :is(#root>div>details.card,.observatory-main>details.saved-rows-disclosure)>:not(summary){margin-inline-start:20px;margin-inline-end:20px}
 .observatory-main>details.saved-rows-disclosure{width:100%}
 @media(max-width:520px){#root>div>details.card{width:calc(100% - 24px)}:is(#root>div>details.card,.observatory-main>details.saved-rows-disclosure)>summary{padding:12px 14px}:is(#root>div>details.card,.observatory-main>details.saved-rows-disclosure)>:not(summary){margin-inline-start:12px;margin-inline-end:12px}}
+/* Front HI0: the digit notice (src/components/DigitNotice.tsx), a manual popover under the field; the popover defaults
+   (centred, inset 0, Canvas colours) are reset. It never takes clicks. */
+.digit-notice{position:fixed;inset:auto;margin:0;width:max-content;height:auto;overflow:visible;padding:var(--ov-space-1) var(--ov-space-2);border:1px solid var(--ov-info);border-radius:var(--ov-radius-sm);background:var(--ov-surface-raised);color:var(--ov-text);font:inherit;font-size:var(--ov-text-sm);box-shadow:var(--ov-shadow-lg);pointer-events:none;overflow-wrap:anywhere}
+.digit-notice:empty{padding:0;border-color:transparent;background:transparent;box-shadow:none}

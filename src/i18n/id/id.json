@@ -113,6 +113,7 @@
  "app.name": "OpenVireo",
  "app.scope": "Pratinjau observatorium",
  "app.close": "Tutup",
+ "app.digitNotice": "Ketik angka sebagai 0–9. Angka seperti {digits} tidak dibaca sebagai bilangan di sini.",
  "error.decimal": "Baris {line}: diharapkan bilangan desimal dengan titik.",
  "error.finite": "Baris {line}: nilainya bukan bilangan berhingga.",
  "error.lineFormat": "Daftar garis spektrum: format tidak valid pada baris {line}.",
