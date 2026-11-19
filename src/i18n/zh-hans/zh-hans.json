@@ -43,6 +43,7 @@
  "app.name": "OpenVireo",
  "app.scope": "天文台预览版",
  "app.close": "关闭",
+ "app.digitNotice": "请用半角数字0–9输入。此处不会把{digits}这类字符当作数字读取。",
  "error.decimal": "第{line}行：需要用小数点表示的十进制数。",
  "error.finite": "第{line}行：该值不是有限数。",
  "error.lineFormat": "谱线列表：第{line}行格式无效。",

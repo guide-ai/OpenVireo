@@ -58,7 +58,8 @@ describe('Front ZH0: the Simplified Chinese (zh-Hans) bundle',()=>{
  it('the catalog is a valid partial catalog (en.json keys, the same {params}) and covers the whole shell and the welcome',()=>{
   expect(()=>createI18n(zh as Partial<Record<MessageKey,string>>,'zh-Hans',{fallback:true})).not.toThrow();
   for(const key of Object.keys(zh))expect(Object.hasOwn(en,key),key).toBe(true);
-  expect(SHELL_KEYS.length).toBe(130);expect(SHELL_KEYS.filter(k=>!Object.hasOwn(zh,k))).toEqual([]);
+  expect(SHELL_KEYS.length).toBe(131);// 131 since Front HI0 (app.digitNotice, the digit notice)
+  expect(SHELL_KEYS.filter(k=>!Object.hasOwn(zh,k))).toEqual([]);
   expect(HOME_KEYS.length).toBe(27);expect(HOME_KEYS.filter(k=>!Object.hasOwn(zh,k))).toEqual([]);
  });
  it('every map has its English shape: the shell maps complete, the header-name maps partial',()=>{

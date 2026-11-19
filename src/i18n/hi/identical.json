@@ -1,0 +1,9 @@
+{
+ "about": "Front HI0: Hindi strings that may equal their English source (or hold no Devanagari letter), each with a reason (plan front-i18n-hi.md §5.4). Keys are the lint's string ids: `catalog:<key>`, `map:<id>.<path>`, `original:<normalised original>`.",
+ "entries": {
+  "catalog:app.name": "product name (OpenVireo)",
+  "map:helpMenu.shortcutKey": "a key on the keyboard (?)",
+  "original:NVO": "catalogue acronym (National Virtual Observatory), kept",
+  "original:Project CLEA": "official name kept in English (plan §5.4)"
+ }
+}

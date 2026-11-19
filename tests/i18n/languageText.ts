@@ -63,6 +63,16 @@ import {LANGUAGE_CHOICE_ID} from '../../src/i18n/id/maps/languageChoice';
 import {OBJECT_X_LAB_ID} from '../../src/i18n/id/maps/objectXLab';
 import {POLISH_ID} from '../../src/i18n/id/maps/polish';
 import {VARIABLE_STARS_ID} from '../../src/i18n/id/maps/variableStars';
+import hi from '../../src/i18n/hi/hi.json' with {type:'json'};
+import hiOriginals from '../../src/i18n/hi/originals.json' with {type:'json'};
+import {APP_SHELL_HI} from '../../src/i18n/hi/maps/appShell';
+import {HELP_MENU_HI} from '../../src/i18n/hi/maps/helpMenu';
+import {PROJECT_LINKS_HI} from '../../src/i18n/hi/maps/projectLinks';
+import {TOUR_HI} from '../../src/i18n/hi/maps/tour';
+import {LANGUAGE_CHOICE_HI} from '../../src/i18n/hi/maps/languageChoice';
+import {OBJECT_X_LAB_HI} from '../../src/i18n/hi/maps/objectXLab';
+import {POLISH_HI} from '../../src/i18n/hi/maps/polish';
+import {VARIABLE_STARS_HI} from '../../src/i18n/hi/maps/variableStars';
 import zhHans from '../../src/i18n/zh-hans/zh-hans.json' with {type:'json'};
 import zhHansOriginals from '../../src/i18n/zh-hans/originals.json' with {type:'json'};
 import {APP_SHELL_ZH_HANS} from '../../src/i18n/zh-hans/maps/appShell';
@@ -133,13 +143,18 @@ export const FRENCH_TEXT=language('fr',fr,frOriginals,{appShell:APP_SHELL_FR,hel
  * thousands separator its text uses. */
 export const INDONESIAN_TEXT=language('id',idCatalog,idOriginals,{appShell:APP_SHELL_ID,helpMenu:HELP_MENU_ID,projectLinks:PROJECT_LINKS_ID,tour:TOUR_ID,languageChoice:LANGUAGE_CHOICE_ID},
  [APP_SHELL_ID,HELP_MENU_ID,LANGUAGE_CHOICE_ID,OBJECT_X_LAB_ID,POLISH_ID,PROJECT_LINKS_ID,TOUR_ID,VARIABLE_STARS_ID],/(?<!\p{L})(?:yang|dan|untuk|dengan|tidak|Anda|dari|pada|ini|atau)(?!\p{L})|[“”\u202f]/u,'?lang=id',['shell']);
+/** Front HI0: Hindi, behind `?lang=hi` before its release (an en-US browser with the preview query). HI0 translated the shell, so
+ * only the shell's specs run it; each HI front adds its area. Its letters are Devanagari (the danda । included), which English text
+ * never has; “ ” are not among them, since English uses them too. */
+export const HINDI_TEXT=language('hi',hi,hiOriginals,{appShell:APP_SHELL_HI,helpMenu:HELP_MENU_HI,projectLinks:PROJECT_LINKS_HI,tour:TOUR_HI,languageChoice:LANGUAGE_CHOICE_HI},
+ [APP_SHELL_HI,HELP_MENU_HI,LANGUAGE_CHOICE_HI,OBJECT_X_LAB_HI,POLISH_HI,PROJECT_LINKS_HI,TOUR_HI,VARIABLE_STARS_HI],/[\u0900-\u097f]/u,'?lang=hi',['shell']);
 /** Front ZH0: Simplified Chinese before its release, behind `?lang=zh-Hans` (an en-US browser: tests/fixtures/language.ts
  * contextLocale). Only the shell is translated; ZH1–ZH6 and ZH-HELP add their areas to `done` and their maps. Its letters are Han and
  * the full-width marks ，。、：；？！（）, which VIREO's English files and OpenVireo's exports never hold. */
 export const CHINESE_SIMPLIFIED_TEXT=language('zh-Hans',zhHans,zhHansOriginals,{appShell:APP_SHELL_ZH_HANS,helpMenu:HELP_MENU_ZH_HANS,projectLinks:PROJECT_LINKS_ZH_HANS,tour:TOUR_ZH_HANS,languageChoice:LANGUAGE_CHOICE_ZH_HANS},
  [APP_SHELL_ZH_HANS,HELP_MENU_ZH_HANS,LANGUAGE_CHOICE_ZH_HANS,PROJECT_LINKS_ZH_HANS,TOUR_ZH_HANS],/[\p{sc=Han}，。、：；？！（）]/u,'?lang=zh-Hans',['shell']);
 /** Every translated language of the registry, in its order (a test fails if a registered language has no text here). */
-export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT,INDONESIAN_TEXT,CHINESE_SIMPLIFIED_TEXT]);
+export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT,INDONESIAN_TEXT,HINDI_TEXT,CHINESE_SIMPLIFIED_TEXT]);
 /** Front FR0: the languages that run the specs of `area` (those whose `done` has it), in registry order. */
 export const translatedFor=(area:Area):readonly LanguageText[]=>TRANSLATED.filter(l=>l.done.has(area));
 export const textOf=(tag:string):LanguageText=>{const t=TRANSLATED.find(l=>l.tag===tag);if(!t)throw new Error(`No test text for ${tag}`);return t;};

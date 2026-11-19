@@ -78,7 +78,7 @@ describe('Front ID0: the Indonesian (id) bundle',()=>{
  it('the catalog is a valid partial catalog (en.json keys, the same {params}) and covers the whole shell and the welcome',()=>{
   expect(()=>createI18n(idCatalog as Partial<Record<MessageKey,string>>,'id',{fallback:true})).not.toThrow();
   for(const key of Object.keys(idCatalog))expect(Object.hasOwn(en,key),key).toBe(true);
-  expect(SHELL_KEYS.length).toBe(130);expect(HOME_KEYS.length).toBe(27);
+  expect(SHELL_KEYS.length).toBe(131);expect(HOME_KEYS.length).toBe(27);// 131 since Front HI0 (app.digitNotice, the digit notice)
   expect([...SHELL_KEYS,...HOME_KEYS].filter(k=>!Object.hasOwn(idCatalog,k))).toEqual([]);
  });
  it('every map has its English shape: the shell maps complete, the header-name maps partial',()=>{
