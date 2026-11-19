@@ -24,6 +24,12 @@
     "of"
    ],
    "reason": "the proper names Two Micron All Sky Survey and University of Massachusetts, kept in English as cited"
+  },
+  "original:Virtual Observatory mode is enabled.\r\n\r\nStudents using the Virtual Observatory are able to access some data values.\r\n\r\n(For access to all data, set \"Virtual Observatory\" AND \"Edit Mode\".)": {
+   "rules": [
+    "typography"
+   ],
+   "reason": "VIREO's option names keep their capitals: «Mode Observatorium Virtual» names the Virtual Observatory mode, as the message quotes “Observatorium Virtual” and “Mode Edit” after it"
   }
  }
 }
