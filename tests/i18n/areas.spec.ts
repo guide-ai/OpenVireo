@@ -237,7 +237,7 @@ for(const {L:P,name} of RELEASED_AREAS)test.describe(`in a ${name} browser`,()=>
 // project.photometryRestored, rendered by the photometer); Front ID1's maps and keys also give text to `classification` (the
 // observationMetadata map) and `fits` (the cameraInfo.* keys), as FR1's did; later ID fronts fill the others. ID-REL turns this back into a
 // released-language test (as FR-REL did). Front HI0: Hindi's preview the same way (HI-REL moves it to RELEASED_AREAS); Front ZH0: Simplified Chinese's (ZH-REL).
-const PARTIAL=[{L:INDONESIAN_TEXT,name:'Indonesian',release:'ID-REL',areas:['classification','fits','photometer']},{L:HINDI_TEXT,name:'Hindi',release:'HI-REL',areas:['classification','fits','photometer']},{L:CHINESE_SIMPLIFIED_TEXT,name:'Simplified Chinese',release:'ZH-REL',areas:['photometer']}] as const;
+const PARTIAL=[{L:INDONESIAN_TEXT,name:'Indonesian',release:'ID-REL',areas:['classification','exposure','fits','lss','photometer']},{L:HINDI_TEXT,name:'Hindi',release:'HI-REL',areas:['classification','fits','photometer']},{L:CHINESE_SIMPLIFIED_TEXT,name:'Simplified Chinese',release:'ZH-REL',areas:['photometer']}] as const;
 for(const {L:P,name,release,areas} of PARTIAL)test.describe(`a language before its release (${name})`,()=>{
  test.use({locale:'en-US'});
  test(`a partial language (${name}) fetches only its core, and no chunk for an empty area`,async({page})=>{
