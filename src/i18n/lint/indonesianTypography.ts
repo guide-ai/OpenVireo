@@ -54,7 +54,15 @@ const SET_ASIDE=/\([^()]*\)|\[[^\]]*\]|“[^”]*”|\{[^}]*\}/gu;
 /** A capitalised word that counts for title case; «Anda» is always capitalised (EYD V) and does not count. */
 const CAPITAL='(?!Anda(?![\\p{L}\\p{N}]))\\p{Lu}\\p{Ll}+';
 const ID_TITLE=new RegExp(`(?<![\\p{L}\\p{N}])${CAPITAL}(?:[ \\u00a0]+(?:(?:dan|di|ke|dari|untuk|yang|pada|dengan|atau)[ \\u00a0]+)?${CAPITAL}){2,}`,'u');
-const EN_TITLE=/(?<![\p{L}\p{N}])\p{Lu}[\p{L}'’]*(?:[ \u00a0]+(?:(?:of|the|and|to|in|for|a|an|on|at|by|with|from|as)[ \u00a0]+)?\p{Lu}[\p{L}'’]*){2,}/u;
+/** Review (ID1): English VIREO captions are Title Case ("No Selection!", "Time-Dependent Data", "Diameter is Invalid!"). The English
+ * reads as title case when it has a run of three capitalised words (hyphenated words count; English connectors between), or, in a
+ * caption of up to eight words, a run of two or capitalised words for at least half of its words. Prose with two capitalised words
+ * («Use Move», «Object X», «Site Parameters») does not exempt a longer string (review ID1: the looser rule let through 78 of 324
+ * mutants; this one 15 of 360). */
+const EN_CAPITAL="\\p{Lu}[\\p{L}'’-]*",EN_LINK="[ \\u00a0]+(?:(?:of|the|and|to|in|for|a|an|on|at|by|with|from|as)[ \\u00a0]+)?";
+const EN_RUN=(n:number)=>new RegExp(`(?<![\\p{L}\\p{N}])${EN_CAPITAL}(?:${EN_LINK}${EN_CAPITAL}){${n-1},}`,'u');
+const EN_RUN2=EN_RUN(2),EN_RUN3=EN_RUN(3);
+const englishTitle=(english:string)=>{if(EN_RUN3.test(english))return true;const words=english.match(/\p{L}[\p{L}'’-]*/gu)??[];if(words.length>8)return false;const caps=words.filter(w=>/^\p{Lu}/u.test(w)).length;return EN_RUN2.test(english)||(caps>=2&&caps*2>=words.length);};
 const PERIOD_GROUPS=/(?<![\p{L}\p{N}.,])\p{N}{1,3}(?:\.\p{N}{3})+(?![\p{L}\p{N}]|\.\p{N})/gu;
 const NNBSP_GROUPS=/(?<![\p{L}\p{N}.,])\p{N}{1,3}(?:\u202f\p{N}{3})+(?![\p{L}\p{N}])/gu;
 /** No digit, point or comma before a number (a template starting with this constant, not a literal holding «.», so the planner of
@@ -66,8 +74,8 @@ const FIXER_USE='run the Indonesian typography fixer (OPENVIREO_FIX_TYPOGRAPHY=1
  * - a period-grouped number («24.000») where the English groups the same digits with a comma: Indonesian habit, but the site keeps
  *   the decimal point, so «24.000» reads as twenty-four;
  * - a U+202F group («1 234») whose digits the English writes with a decimal point («1.234»): a fixer or batch misreading;
- * - title case (three capitalised words in a row outside brackets and quotes) only where the English has no such run, since a
- *   multiword VIREO menu name keeps its capitals in Indonesian as in Windows Indonesian (plan §3). */
+ * - title case (three capitalised words in a row outside brackets and quotes) only where the English is not title case itself
+ *   (englishTitle), since VIREO's captions and multiword names keep their capitals in Indonesian as in Windows Indonesian (plan §3). */
 export function indonesianTypographyFindings(text:string,english?:string):{label:string;match:string;use:string}[]{
  const out=indonesianTypography(text).changes.filter(c=>c.label!=='thousands').map(c=>({label:c.label,match:c.match,use:FIXER_USE}));
  if(english===undefined)return out;
@@ -81,6 +89,6 @@ export function indonesianTypographyFindings(text:string,english?:string):{label
  }
  const aside=(s:string)=>s.replace(SET_ASIDE,'\u0000');
  const title=ID_TITLE.exec(aside(text));
- if(title&&!EN_TITLE.test(aside(english)))out.push({label:'title case',match:title[0],use:'sentence case where the English has it (only the first word, names and «Anda» capitalised)'});
+ if(title&&!englishTitle(english))out.push({label:'title case',match:title[0],use:'sentence case where the English has it (only the first word, names and «Anda» capitalised)'});
  return out;
 }

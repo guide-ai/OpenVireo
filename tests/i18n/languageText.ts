@@ -63,6 +63,14 @@ import {LANGUAGE_CHOICE_ID} from '../../src/i18n/id/maps/languageChoice';
 import {OBJECT_X_LAB_ID} from '../../src/i18n/id/maps/objectXLab';
 import {POLISH_ID} from '../../src/i18n/id/maps/polish';
 import {VARIABLE_STARS_ID} from '../../src/i18n/id/maps/variableStars';
+import {CAMERA_ID} from '../../src/i18n/id/maps/camera';
+import {FIELD_INFO_ID} from '../../src/i18n/id/maps/fieldInfo';
+import {FIELD_READ_DETAILS_ID} from '../../src/i18n/id/maps/fieldReadDetails';
+import {NAKED_EYE_ID} from '../../src/i18n/id/maps/nakedEye';
+import {OBSERVATION_METADATA_ID} from '../../src/i18n/id/maps/observationMetadata';
+import {OBSERVATORY_ID} from '../../src/i18n/id/maps/observatory';
+import {QSO_LIST_ID} from '../../src/i18n/id/maps/qsoList';
+import {SOUND_ID} from '../../src/i18n/id/maps/sound';
 import hi from '../../src/i18n/hi/hi.json' with {type:'json'};
 import hiOriginals from '../../src/i18n/hi/originals.json' with {type:'json'};
 import {APP_SHELL_HI} from '../../src/i18n/hi/maps/appShell';
@@ -130,12 +138,12 @@ export const PORTUGUESE_TEXT=language('pt-BR',pt,ptOriginals,{appShell:APP_SHELL
  * browser with no query (tests/fixtures/language.ts contextLocale). Its letters include « » and U+202F, which English text never has. */
 export const FRENCH_TEXT=language('fr',fr,frOriginals,{appShell:APP_SHELL_FR,helpMenu:HELP_MENU_FR,projectLinks:PROJECT_LINKS_FR,tour:TOUR_FR,languageChoice:LANGUAGE_CHOICE_FR},
  [APP_SHELL_FR,CAMERA_FR,FIELD_INFO_FR,FIELD_READ_DETAILS_FR,HELP_MENU_FR,LANGUAGE_CHOICE_FR,NAKED_EYE_FR,OBJECT_X_LAB_FR,OBSERVATION_METADATA_FR,OBSERVATORY_FR,POLISH_FR,PROJECT_LINKS_FR,QSO_LIST_FR,SOUND_FR,TOUR_FR,VARIABLE_STARS_FR],/[àâæçéèêëîïôœùûüÿ«»\u202f]/i,'');
-/** Front ID0 (plan front-i18n-id.md §1.2 #2): Indonesian, behind `?lang=id` before its release; ID0 translated the shell. It is the
+/** Front ID0 (plan front-i18n-id.md §1.2 #2): Indonesian, behind `?lang=id` before its release; ID0 translated the shell, ID1 the observatory and all of VIREO's originals. It is the
  * first language written in ASCII alone, so its "letters" are words: frequent Indonesian function words that VIREO's English files and
  * the site's English exports never hold (checked over public/original and every export fixture at ID0), and the “ ” quotes and U+202F
  * thousands separator its text uses. */
 export const INDONESIAN_TEXT=language('id',idCatalog,idOriginals,{appShell:APP_SHELL_ID,helpMenu:HELP_MENU_ID,projectLinks:PROJECT_LINKS_ID,tour:TOUR_ID,languageChoice:LANGUAGE_CHOICE_ID},
- [APP_SHELL_ID,HELP_MENU_ID,LANGUAGE_CHOICE_ID,OBJECT_X_LAB_ID,POLISH_ID,PROJECT_LINKS_ID,TOUR_ID,VARIABLE_STARS_ID],/(?<!\p{L})(?:yang|dan|untuk|dengan|tidak|Anda|dari|pada|ini|atau)(?!\p{L})|[“”\u202f]/u,'?lang=id',['shell']);
+ [APP_SHELL_ID,CAMERA_ID,FIELD_INFO_ID,FIELD_READ_DETAILS_ID,HELP_MENU_ID,LANGUAGE_CHOICE_ID,NAKED_EYE_ID,OBJECT_X_LAB_ID,OBSERVATION_METADATA_ID,OBSERVATORY_ID,POLISH_ID,PROJECT_LINKS_ID,QSO_LIST_ID,SOUND_ID,TOUR_ID,VARIABLE_STARS_ID],/(?<!\p{L})(?:yang|dan|untuk|dengan|tidak|Anda|dari|pada|ini|atau)(?!\p{L})|[“”\u202f]/u,'?lang=id',['shell','observatory']);
 /** Front HI0: Hindi, behind `?lang=hi` before its release (an en-US browser with the preview query). HI0 translated the shell, so
  * only the shell's specs run it; each HI front adds its area. Its letters are Devanagari (the danda । included), which English text
  * never has; “ ” are not among them, since English uses them too. */
