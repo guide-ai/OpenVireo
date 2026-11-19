@@ -30,6 +30,12 @@
     "typography"
    ],
    "reason": "VIREO's option names keep their capitals: «Mode Observatorium Virtual» names the Virtual Observatory mode, as the message quotes “Observatorium Virtual” and “Mode Edit” after it"
+  },
+  "catalog:lss.dialog.reused": {
+   "rules": [
+    "typography"
+   ],
+   "reason": "VIREO's option name «Data Bergantung Waktu» (Time-Dependent Data, FR1's original) keeps its capitals inside a sentence"
   }
  }
 }
