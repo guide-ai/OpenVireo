@@ -12,6 +12,36 @@
     "glossary"
    ],
    "reason": "Review (RU0): every exercise guide in the menu reads «Руководство: <topic>», one pattern for all seven (the English says \"lab guide\" for two of them only)"
+  },
+  "map:camera.citation": {
+   "rules": [
+    "leftover-english"
+   ],
+   "reason": "a bibliographic citation: authors and catalogue names stay as published (Zacharias et al. 2004; Monet et al. 2003)"
+  },
+  "map:camera.citationIr": {
+   "rules": [
+    "leftover-english"
+   ],
+   "reason": "a bibliographic citation: the survey's published name (Two Micron All Sky Survey) and authors stay as published"
+  },
+  "original:\" Not Found.": {
+   "rules": [
+    "quotes"
+   ],
+   "reason": "VIREO joins this piece after a name it opens with an untranslated straight \" (another piece, VIREO's own), so the closing mark must stay a straight quote, as in pt and fr"
+  },
+  "original:fragment|You have not recorded your current readings for \"": {
+   "rules": [
+    "quotes"
+   ],
+   "reason": "VIREO closes this straight quote itself in a piece it never translates, so the opening mark must stay a straight quote, as in pt and fr"
+  },
+  "original:fragment|Meter Radio Telescope": {
+   "placeholders": [
+    "{diameter}"
+   ],
+   "reason": "Russian puts the diameter inside the name («Радиотелескоп {diameter} м»), as es, pt and fr do"
   }
  }
 }

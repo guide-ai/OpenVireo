@@ -31,13 +31,18 @@ export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new S
  // (src/i18n/id/identical.json); a label with a colon is translated («Bujur:», «Lintang:»).
  id:new Set(['OK','Zoom','Mode','Data','Pulsar','Radio','Radio...','Item','Minimum','Plot','Plot Data','Gain:','Edit...','File','Asteroid','ID #:',"Diameter ('):",'CCD','IR','Multi-Spec','Gain (e⁻/ADU)','Filter','Target','YYYY/MM/DD',
   // the camera card's catalog bands by filter: filter letters and catalog names joined as English joins them (cameraPrepare.catalogEntry)
-  'NF: NOMAD R; B: NOMAD B; V: NOMAD V; R: NOMAD R; I: USNO-B1 I2','J: NOMAD J; H: NOMAD H; K: NOMAD K'])};
+  'NF: NOMAD R; B: NOMAD B; V: NOMAD V; R: NOMAD R; I: USNO-B1 I2','J: NOMAD J; H: NOMAD H; K: NOMAD K']),
+ /** Front RU1: Russian translates every word of the walk; only the camera card's catalog bands by filter (filter letters and catalog
+  * names joined as English joins them, cameraPrepare.catalogEntry) read as English does. */
+ ru:new Set(['NF: NOMAD R; B: NOMAD B; V: NOMAD V; R: NOMAD R; I: USNO-B1 I2','J: NOMAD J; H: NOMAD H; K: NOMAD K'])};
 /** SAME texts another language does translate: Portuguese writes the General tab «Geral» and the longitude letter E «L» (Leste);
  * French writes the General tab «Général» (its longitude letter E is Est, the same). */
 /** Front ID1: Indonesian writes the General tab «Umum» and the longitude letter E «BT» (Bujur Timur). */
 export const NOT_SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['General','E']),fr:new Set(['General']),id:new Set(['General','E']),
  // Front HI1: Hindi writes General «सामान्य», No «नहीं», Min «मिनट», the compass letters E «पू», N «उ» and S «द», and Angstroms «ऐंगस्ट्रॉम».
- hi:new Set(['General','No','Min','E','N','S','Angstroms'])};
+ hi:new Set(['General','No','Min','E','N','S','Angstroms']),
+ /** Front RU1: Russian writes the General tab «Общие» and the longitude letter E «В» (восток). */
+ ru:new Set(['General','E'])};
 export const same=(text:string,L?:LanguageText)=>(L===undefined||!(NOT_SAME_IN[L.tag]?.has(text)??false))&&(SAME.has(text)||IDENTIFIER.test(text)||(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false)));
 export const id=(page:Page,testId:string)=>page.getByTestId(testId);
 
@@ -57,6 +62,7 @@ export const texts=(page:Page)=>page.evaluate(()=>{
  // The exit reminder is VIREO's Reminder.obs help file, translated with the other help files in ES-HELP.
  const skipped=(el:Element)=>el.closest('.portal-header,[data-i18n-shell],script,style,[data-testid=site-tour],[data-testid^=exit-reminder]')!==null||el.closest('[lang=en]:not(html)')!==null;
  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n:Node|null;
+ // Front RU1: two letters of any script (was [A-Za-z]{2}, which skipped every all-Cyrillic text, so a Russian walk compared nothing).
  while((n=walker.nextNode())){const t=n.textContent?.trim(),el=n.parentElement;if(t&&el&&/\p{L}{2}/u.test(t)&&!skipped(el)&&shown(el))out.push(t);}
  for(const el of document.querySelectorAll('[aria-label],[title],[placeholder]'))if(!el.closest('.portal-header,[data-i18n-shell]')&&shown(el))for(const a of ['aria-label','title','placeholder']){const v=el.getAttribute(a)?.trim();if(v&&/\p{L}{2}/u.test(v))out.push(`@${a}:${v}`);}
  return out;
@@ -117,7 +123,7 @@ export async function multiSpecWalk(page:Page,lang:Lang,each:(step:string)=>Prom
  await page.getByText(T('sky.coordinates'),{exact:true}).click();
  await page.locator('#point-ra').fill('13.002305555555555');await page.locator('#point-dec').fill('27.9775');
  await page.getByRole('button',{name:T('sky.pointCoordinates'),exact:true}).click();await expect(id(page,'pointing-dec')).toHaveText(/^27\.97/,{timeout:30_000});
- await page.getByRole('button',{name:new RegExp(/^(Telescope|Telescopio|Telescópio|Teleskop|दूरबीन) ·/.source+'|'+pseudoStart('Telescope ·').source)}).click();
+ await page.getByRole('button',{name:new RegExp(/^(Telescope|Telescopio|Telescópio|Teleskop|दूरबीन|Телескоп) ·/.source+'|'+pseudoStart('Telescope ·').source)}).click();
  const toggle=page.locator('.portal-header .tools-toggle');if(await toggle.isVisible())await toggle.click();
  await id(page,'instructor-mode-open').click();await id(page,'instructor-mode-confirm-on').click();if(await toggle.isVisible()&&await toggle.getAttribute('aria-expanded')==='true')await toggle.click();
  await page.locator('.telescope-motion').getByTestId('ob-options').click();await id(page,'ob-options-edit-mode').check();await id(page,'ob-options-ok').click();
