@@ -1,0 +1,4 @@
+{
+ "about": "Front ID0: findings of the id lint (src/i18n/lint/, profile id) that are correct Indonesian in one string, each with a reason. Keys are the lint's string ids; `words` are the matched words allowed in that string only, `rules` whole rules, `placeholders` added placeholders.",
+ "entries": {}
+}
