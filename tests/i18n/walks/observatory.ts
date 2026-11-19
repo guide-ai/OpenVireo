@@ -22,10 +22,14 @@ export const IDENTIFIER=/^(?:[-+−\d\s.,:;°′″'"hmsHMS·×/()–#<>≤≥%]
 export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['OK','Longitude:','Latitude:','Altitude:','Longitude','Latitude','Altitude','Zoom','Item','Cursor','Pulsar','Min:','Multi-Spec']),
  // Front FR1: French writes OK, Options, Longitude, Latitude, Altitude, Horizon, Minutes, Zoom, Multi-Spec… as English does
  // (src/i18n/fr/identical.json); a label with a colon differs («Longitude :», U+202F before the colon).
- fr:new Set(['OK','Gain (e⁻/ADU)','Pulsars','Options','Options...','Options…','Longitude','Latitude','Altitude','Horizon','Minutes','Minimum','Maximum','Confirmation','Zoom','Pulsar','Mode','Type','Style','Source','Site...','Min','CCD','IR','Multi-Spec','Classification','Portrait','Radio','Radio...'])};
+ fr:new Set(['OK','Gain (e⁻/ADU)','Pulsars','Options','Options...','Options…','Longitude','Latitude','Altitude','Horizon','Minutes','Minimum','Maximum','Confirmation','Zoom','Pulsar','Mode','Type','Style','Source','Site...','Min','CCD','IR','Multi-Spec','Classification','Portrait','Radio','Radio...']),
+ // Front ID1: Indonesian writes OK, Zoom, Mode, Data, Pulsar, Radio, Item, Minimum, Plot, Gain, Edit, File… as English does
+ // (src/i18n/id/identical.json); a label with a colon is translated («Bujur:», «Lintang:»).
+ id:new Set(['OK','Zoom','Mode','Data','Pulsar','Pulsars','Radio','Radio...','Item','Minimum','Min','Plot','Plot Data','Gain:','Edit...','File','Asteroid','ID #:',"Diameter ('):",'CCD','IR','Multi-Spec','Gain (e⁻/ADU)'])};
 /** SAME texts another language does translate: Portuguese writes the General tab «Geral» and the longitude letter E «L» (Leste);
  * French writes the General tab «Général» (its longitude letter E is Est, the same). */
-export const NOT_SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['General','E']),fr:new Set(['General'])};
+/** Front ID1: Indonesian writes the General tab «Umum» and the longitude letter E «BT» (Bujur Timur). */
+export const NOT_SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['General','E']),fr:new Set(['General']),id:new Set(['General','E'])};
 export const same=(text:string,L?:LanguageText)=>(L===undefined||!(NOT_SAME_IN[L.tag]?.has(text)??false))&&(SAME.has(text)||IDENTIFIER.test(text)||(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false)));
 export const id=(page:Page,testId:string)=>page.getByTestId(testId);
 

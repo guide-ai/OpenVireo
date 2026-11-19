@@ -107,7 +107,7 @@
   },
   {
    "en": "\\bguides?\\b",
-   "id": "panduan"
+   "id": "panduan|pemandu"
   },
   {
    "en": "\\bexercises?\\b",
@@ -131,7 +131,7 @@
   },
   {
    "en": "\\bhelp\\b",
-   "id": "bantuan"
+   "id": "bantu"
   },
   {
    "en": "\\btracking\\b",
@@ -693,7 +693,10 @@
   },
   {
    "en": "Topics...",
-   "id": "Topik..."
+   "id": "Topik...",
+   "except": {
+    "original:Show Help Topics...": "VIREO's help viewer item Show Help Topics... (the topic list), «Tampilkan Topik Bantuan...»; the row names the Help menu's Topics... item."
+   }
   },
   {
    "en": "About This Exercise...",
@@ -1337,7 +1340,7 @@
   },
   {
    "en": "Remove from HR Diagram",
-   "id": "Keluarkan dari Diagram H-R"
+   "id": "Keluarkan dari Diagram HR"
   },
   {
    "en": "Recorded Results",

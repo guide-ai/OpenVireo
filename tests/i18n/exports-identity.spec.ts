@@ -306,7 +306,7 @@ family('E03 classification: session, CSV, width record, investigations, observat
  },{},page=>page.locator('.classification-main'));
 });
 
-family('hot list: Save HTL file after adding a target',['en','qps','es-419','pt-BR','fr'],async({browser,baseURL},identical)=>{
+family('hot list: Save HTL file after adding a target',['en','qps','es-419','pt-BR','fr','id'],async({browser,baseURL},identical)=>{
  await identical(browser,baseURL,async(page,locale)=>{
   await open(page,locale,'observatory');
   await page.getByRole('heading',{name:N(locale,'Original hot lists')}).click();
@@ -318,7 +318,7 @@ family('hot list: Save HTL file after adding a target',['en','qps','es-419','pt-
  },{},page=>page.locator('.htl-card'));
 });
 
-family('options file: Save Updates writes VEO_OPTS.json',['en','qps','es-419','pt-BR','fr'],async({browser,baseURL},identical)=>{
+family('options file: Save Updates writes VEO_OPTS.json',['en','qps','es-419','pt-BR','fr','id'],async({browser,baseURL},identical)=>{
  await identical(browser,baseURL,async(page,locale)=>{
   await open(page,locale,'observatory');
   await button(page,'Open dome ↗',locale).click();await page.getByLabel(N(locale,'Target')).selectOption('N0000.DAT@14428');
@@ -332,8 +332,8 @@ family('options file: Save Updates writes VEO_OPTS.json',['en','qps','es-419','p
 
 // Front ES2: the observatory's File › Field Information lists (Edit Mode) and the QSO List (Virtual Observatory) write the lines
 // they show; the windows around them are translated, the files are not. Front FR1: the hot list, options file and Field
-// Information families also run in French (its ?lang=fr preview).
-family('field information: Star Data List Save Text and Comma Delimit, QSO List Save Text',['en','qps','es-419','pt-BR','fr'],async({browser,baseURL},identical)=>{
+// Information families also run in French (its ?lang=fr preview). Front ID1: and in Indonesian (its ?lang=id preview).
+family('field information: Star Data List Save Text and Comma Delimit, QSO List Save Text',['en','qps','es-419','pt-BR','fr','id'],async({browser,baseURL},identical)=>{
  test.setTimeout(120_000);
  const id=(page:Page,testId:string)=>page.getByTestId(testId);
  const ok=async(page:Page)=>{await id(page,'fi-box').getByRole('button').first().click();await expect(id(page,'fi-box')).toHaveCount(0);};

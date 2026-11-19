@@ -234,7 +234,8 @@ for(const {L:P,name} of RELEASED_AREAS)test.describe(`in a ${name} browser`,()=>
 // preview (`?lang=id`, in an English browser) fetches its core, and each area route only the area modules its plan gives text to; an
 // area with no text yet is empty, has no chunk and resolves at once, so its route shows English without a notice, a route error or a
 // read before its area. With ID0's shell slice only `photometer` holds text (project.photometryCleared and
-// project.photometryRestored, rendered by the photometer); later ID fronts fill the others. ID-REL turns this back into a
+// project.photometryRestored, rendered by the photometer); Front ID1's maps and keys also give text to `classification` (the
+// observationMetadata map) and `fits` (the cameraInfo.* keys), as FR1's did; later ID fronts fill the others. ID-REL turns this back into a
 // released-language test (as FR-REL did).
 test.describe('a language before its release',()=>{
  test.use({locale:'en-US'});
@@ -257,7 +258,7 @@ test.describe('a language before its release',()=>{
   const headingKey:Record<string,string>={classification:'class.title','cluster-database':'db.title',photometer:'ph.title','lss-survey':'lss.title','galaxy-exposure':'galaxyExposure.title','star-exposure':'starExposure.title',images:'fits.title'};
   const empty=idPlan.modules.filter(m=>m.kind==='area'&&m.empty).map(m=>m.name);
   // Pin the areas Indonesian gives text to (each ID front updates this list), so a lost or stray area fails here.
-  expect(idPlan.modules.filter(m=>m.kind==='area'&&!m.empty).map(m=>m.name).sort(),'the areas with Indonesian text').toEqual(['photometer']);
+  expect(idPlan.modules.filter(m=>m.kind==='area'&&!m.empty).map(m=>m.name).sort(),'the areas with Indonesian text').toEqual(['classification','fits','photometer']);
   for(const r of ROUTES){
    await page.goto('about:blank');w.language.length=0;
    await page.goto(`/${P.query}#${r.hash}`);
