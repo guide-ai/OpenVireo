@@ -40,7 +40,7 @@ test('ASCII digits, letters of any script and numerals that are not decimal digi
  await page.keyboard.insertText('X-12 तारा Ⅻ ½ ²');
  await expect(notice(page)).toHaveCount(0);
 });
-for(const [lang,file] of [['es-419','es/es.json'],['pt-BR','pt-br/pt-br.json'],['fr','fr/fr.json']] as const){
+for(const [lang,file] of [['es-419','es/es.json'],['pt-BR','pt-br/pt-br.json'],['fr','fr/fr.json'],['hi','hi/hi.json']] as const){
  test(`the notice speaks the page’s language: ${lang}`,async({page})=>{
   await lab(page,`?lang=${lang}`);
   const id=page.locator('[data-testid=objectx-lab] input').first();await id.fill('');await id.focus();
