@@ -70,7 +70,7 @@ export const POLISH_ID:Translation<typeof POLISH_MESSAGES_EN>=Object.freeze({
    'Ketujuh praktikum VIREO punya jalur web berpemandu: hukum Hubble (13 galaksi), struktur skala besar, klasifikasi bintang, fotometri Pleiades (24 bintang), diagram HR gugus bintang, pulsar, dan Pencarian Objek X.',
    'Observatorium optik: kubah, teleskop, tampilan pencari dan tampilan teleskop, penggerakan teleskop dengan batas cakrawala opsional, daftar objek, lokasi dan tanggal, informasi katalog dan bidang, serta daftar bintang variabel dan QSO.',
    'Instrumen: spektrometer dan fotometer untuk target praktikum, kamera CCD dan inframerah (kueri katalog langsung), spektrometer multiobjek (Multi-Spec, pada bidang praktikum yang disertakan dan di praktikum Objek X), serta teleskop radio dengan penerima dan analisis pulsarnya.',
-   'Analisis: pengukuran dan klasifikasi spektrum, penyesuaian Hubble dan Pleiades, diagram kerucut LSS, hasil pengamatan Anda, dan investigasi yang disimpan.',
+   'Analisis: pengukuran dan klasifikasi spektrum, pencocokan Hubble dan Pleiades, diagram kerucut LSS, hasil pengamatan Anda, dan investigasi yang disimpan.',
   ]),
   privacyTitle:'Privasi',
   privacy:Object.freeze([

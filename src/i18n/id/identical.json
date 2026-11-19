@@ -58,6 +58,7 @@
   "map:camera.filterNames.4": "photometric filter letter (band name), the same in every language",
   "map:camera.filterNamesIr.0": "photometric filter letter (band name), the same in every language",
   "map:camera.filterNamesIr.1": "photometric filter letter (band name), the same in every language",
-  "map:camera.filterNamesIr.2": "photometric filter letter (band name), the same in every language"
+  "map:camera.filterNamesIr.2": "photometric filter letter (band name), the same in every language",
+  "original:YYYY/MM/DD": "input format, typed as written (beside HH:MM:SS in the same dialog)"
  }
 }

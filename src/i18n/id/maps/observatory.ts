@@ -12,7 +12,7 @@ export const OBSERVATORY_ID:Translation<typeof OBSERVATORY_MESSAGES_EN>=Object.f
   openHelp:'Gerakkan (Slew) ▸ Atur Koordinat (Set Coordinates): masukkan target dalam jam/menit/detik dan derajat/menit busur/detik busur, lalu OK memulai konfirmasi gerakan terprogram.',
   help:'Masukkan koordinat J2000.0 atau B1950.0. OK memeriksa Asensio Rekta 0–24 jam dan Deklinasi −90° sampai +90°; Escape atau Batal membiarkan teleskop di posisinya.',
   arcminutes:'menit busur',arcseconds:'detik busur',
-  hotListOrigin:'Dibuka dari daftar objek: epos dikunci pada J2000.0 (seperti aslinya). Batal kembali ke daftar.',
+  hotListOrigin:'Dibuka dari daftar objek: epok dikunci pada J2000.0 (seperti aslinya). Batal kembali ke daftar.',
   b1950Note:'Masukan B1950.0 dipresesikan ke J2000.0 dengan konversi VIREO hasil pemulihan sebelum gerakan dimulai.',
   b1950Reopen:'Target tersimpan dikonversi kembali ke B1950.0 karena masukan terakhir memakai B1950.0 (perilaku asli; Batal mempertahankannya).',
   b1950Pole:'Di dekat kutub langit selatan, konversi hasil pemulihan menghasilkan deklinasi utara (keanehan asli dipertahankan).',
@@ -28,7 +28,7 @@ export const OBSERVATORY_ID:Translation<typeof OBSERVATORY_MESSAGES_EN>=Object.f
  }),
  hotList:Object.freeze({
   openHelp:'Gerakkan (Slew) ▸ Daftar Objek (Hot List) ▸ Lihat/Pilih dari Daftar (View/Select): daftar yang dibuka atau dimuat di “Daftar objek asli” di bawah, dengan urutan jendela asli (menurut asensio rekta).',
-  help:'Pilih satu baris, lalu Gerakkan ke Pilihan (Slew to Selection), atau klik dua kali baris itu. Dialog koordinat terbuka dengan epos terkunci pada J2000.0; Batal di sana kembali ke sini.',
+  help:'Pilih satu baris, lalu Gerakkan ke Pilihan (Slew to Selection), atau klik dua kali baris itu. Dialog koordinat terbuka dengan epok terkunci pada J2000.0; Batal di sana kembali ke sini.',
   menu:'Menu Daftar dan Pilihan',rows:'Baris daftar objek',search:'Cari…',print:'Cetak…',
   query:'Teks yang dicari',matchCase:'Cocokkan huruf besar/kecil',top:'Cari dari atas',next:'Temukan berikutnya',cancel:'Batal',
   noSelectionTitle:'Tidak ada pilihan',noSelection:'Tidak ada baris daftar objek yang dipilih. Pilih satu baris, lalu Gerakkan ke Pilihan (Slew to Selection); daftar tetap terbuka.',

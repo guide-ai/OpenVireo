@@ -26,7 +26,7 @@ export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new S
  fr:new Set(['OK','Gain (e⁻/ADU)','Pulsars','Options','Options...','Options…','Longitude','Latitude','Altitude','Horizon','Minutes','Minimum','Maximum','Confirmation','Zoom','Pulsar','Mode','Type','Style','Source','Site...','Min','CCD','IR','Multi-Spec','Classification','Portrait','Radio','Radio...']),
  // Front ID1: Indonesian writes OK, Zoom, Mode, Data, Pulsar, Radio, Item, Minimum, Plot, Gain, Edit, File… as English does
  // (src/i18n/id/identical.json); a label with a colon is translated («Bujur:», «Lintang:»).
- id:new Set(['OK','Zoom','Mode','Data','Pulsar','Pulsars','Radio','Radio...','Item','Minimum','Min','Plot','Plot Data','Gain:','Edit...','File','Asteroid','ID #:',"Diameter ('):",'CCD','IR','Multi-Spec','Gain (e⁻/ADU)','Filter','Target',
+ id:new Set(['OK','Zoom','Mode','Data','Pulsar','Pulsars','Radio','Radio...','Item','Minimum','Min','Plot','Plot Data','Gain:','Edit...','File','Asteroid','ID #:',"Diameter ('):",'CCD','IR','Multi-Spec','Gain (e⁻/ADU)','Filter','Target','YYYY/MM/DD',
   // the camera card's catalog bands by filter: filter letters and catalog names joined as English joins them (cameraPrepare.catalogEntry)
   'NF: NOMAD R; B: NOMAD B; V: NOMAD V; R: NOMAD R; I: USNO-B1 I2','J: NOMAD J; H: NOMAD H; K: NOMAD K'])};
 /** SAME texts another language does translate: Portuguese writes the General tab «Geral» and the longitude letter E «L» (Leste);
