@@ -646,7 +646,7 @@
    "hi": "वेब अनुकूलन"
   },
   {
-   "en": "\\b(?:point(?:s|ed|ing)? (?:the telescope|at|to)|pointings?)\\b",
+   "en": "\\b(?:(?<!plotted )point(?:s|ed|ing)? (?:the telescope|at|to)|pointings?)\\b",
    "hi": "इंगित|दिशा|की ओर (?:नहीं )?(?:है|हैं|था)"
   },
   {
