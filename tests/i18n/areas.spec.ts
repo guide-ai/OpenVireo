@@ -235,9 +235,10 @@ for(const {L:P,name} of RELEASED_AREAS)test.describe(`in a ${name} browser`,()=>
 // area with no text yet is empty, has no chunk and resolves at once, so its route shows English without a notice, a route error or a
 // read before its area. With ID0's shell slice only `photometer` holds text (project.photometryCleared and
 // project.photometryRestored, rendered by the photometer); Front ID1's maps and keys also give text to `classification` (the
-// observationMetadata map) and `fits` (the cameraInfo.* keys), as FR1's did; later ID fronts fill the others. ID-REL turns this back into a
-// released-language test (as FR-REL did). Front HI0: Hindi's preview the same way (HI-REL moves it to RELEASED_AREAS).
-const PARTIAL=[{L:INDONESIAN_TEXT,name:'Indonesian',release:'ID-REL',areas:['classification','exposure','fits','lss','photometer']},{L:HINDI_TEXT,name:'Hindi',release:'HI-REL',areas:['photometer']}] as const;
+// observationMetadata map) and `fits` (the cameraInfo.* keys), as FR1's did; later ID fronts fill the others (Front ID3: E03 fills the
+// shared classification+cluster module, which the cluster routes also fetch, so `cluster` holds text, as for French after FR3). ID-REL
+// turns this back into a released-language test (as FR-REL did). Front HI0: Hindi's preview the same way (HI-REL moves it to RELEASED_AREAS).
+const PARTIAL=[{L:INDONESIAN_TEXT,name:'Indonesian',release:'ID-REL',areas:['classification','cluster','exposure','fits','lss','photometer']},{L:HINDI_TEXT,name:'Hindi',release:'HI-REL',areas:['photometer']}] as const;
 for(const {L:P,name,release,areas} of PARTIAL)test.describe(`a language before its release (${name})`,()=>{
  test.use({locale:'en-US'});
  test(`a partial language (${name}) fetches only its core, and no chunk for an empty area`,async({page})=>{
