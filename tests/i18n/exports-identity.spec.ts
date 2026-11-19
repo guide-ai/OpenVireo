@@ -29,7 +29,9 @@ import {PSEUDO_HTML_LANG,PSEUDO_LETTERS,SCRIPT_PSEUDO,isPseudo,pseudoName,pseudo
 // qps also runs in the four dev-only script pseudo-locales (qps-cjk, qps-deva, qps-cyrl, qps-rtl; `identical` adds them), with
 // the same name, SHA-256 and no ⟦ in the file, and no letter of that script in it either. Names go through `L`, now the matcher
 // of tests/fixtures/pseudoNames.ts computed with the app's own pure transforms, which matches English, qps and every script form.
-type Locale='en'|'qps'|'es-419'|'pt-BR'|'fr'|'id'|'hi'|ScriptPseudo;// Front FR0: French (its ?lang=fr preview) in the toolbar Save investigation family; Front ID0: Indonesian and Front HI0: Hindi the same way
+// Front FR0: French (its ?lang=fr preview) in the toolbar Save investigation family; Front ID0: Indonesian, Front HI0: Hindi and
+// Front RU0: Russian the same way.
+type Locale='en'|'qps'|'es-419'|'pt-BR'|'fr'|'id'|'hi'|'ru'|ScriptPseudo;
 type File=Readonly<{name:string;bytes:Buffer}>;
 /** An exact accessible-name matcher for English text that also matches its form in every pseudo-locale (Front SC10). */
 const L=(text:string)=>pseudoName(text);
@@ -47,7 +49,7 @@ const SPANISH=(()=>{
 const exact=(text:string)=>new RegExp(`^\\s*${text.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&').replace(/\s+/g,'\\s+')}\\s*$`);
 /** A translated language's letters that English text never has (Spanish á é í ó ú ñ ¿ ¡; Portuguese ã õ ç â ê ô à…). */
 const LETTERS:Readonly<Record<string,RegExp>>={...Object.fromEntries(TRANSLATED.map(t=>[t.tag,t.letters])),...PSEUDO_LETTERS};
-const HTML_LANG:Readonly<Record<Locale,string>>={en:'en','es-419':'es-419','pt-BR':'pt-BR',fr:'fr',id:'id',hi:'hi',...PSEUDO_HTML_LANG};
+const HTML_LANG:Readonly<Record<Locale,string>>={en:'en','es-419':'es-419','pt-BR':'pt-BR',fr:'fr',id:'id',hi:'hi',ru:'ru',...PSEUDO_HTML_LANG};
 /** Front ID0 (plan front-i18n-id.md §1.2 #2): languages written in ASCII alone, whose "letters" are words (Indonesian «yang», «dan»…):
  * as for the script pseudo-locales, they are looked for only in a file that is UTF-8 text, since a binary file's bytes (an SSP's
  * floats, FITS image data) can spell a short ASCII word by chance. */
@@ -577,8 +579,8 @@ async function toolbarSave(browser:Browser,baseURL:string|undefined,locale:Local
 /** English's toolbar file, once per worker (as ENGLISH above). */
 let englishToolbar:Promise<File>|undefined;
 // Front SC10/SC12 review: one test per variant, against English's file (as `family`).
-// Front ID0: Indonesian (its ?lang=id preview) too; Front HI0: Hindi (?lang=hi) too.
-for(const locale of ['qps','es-419','pt-BR','fr','id','hi',...SCRIPT_PSEUDO] as const)
+// Front ID0: Indonesian (its ?lang=id preview) too; Front HI0: Hindi (?lang=hi) and Front RU0: Russian (?lang=ru) too.
+for(const locale of ['qps','es-419','pt-BR','fr','id','hi','ru',...SCRIPT_PSEUDO] as const)
  test(`the shell toolbar: Save investigation is byte-identical in English and ${locale} [${locale}]`,async({browser,baseURL})=>{
   englishToolbar??=toolbarSave(browser,baseURL,'en');
   const english=await englishToolbar,file=await toolbarSave(browser,baseURL,locale);
