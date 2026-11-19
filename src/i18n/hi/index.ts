@@ -9,7 +9,16 @@ import {POLISH_HI} from './maps/polish';
 import {PROJECT_LINKS_HI} from './maps/projectLinks';
 import {TOUR_HI} from './maps/tour';
 import {VARIABLE_STARS_HI} from './maps/variableStars';
-/** Front HI0: the Hindi (hi) bundle (docs/I18N.md, "Hindi: the folder, the digit notice and the shell (HI0)"). Partial until its
+import {CAMERA_HI} from './maps/camera';
+import {FIELD_INFO_HI} from './maps/fieldInfo';
+import {FIELD_READ_DETAILS_HI} from './maps/fieldReadDetails';
+import {NAKED_EYE_HI} from './maps/nakedEye';
+import {OBSERVATION_METADATA_HI} from './maps/observationMetadata';
+import {OBSERVATORY_HI} from './maps/observatory';
+import {QSO_LIST_HI} from './maps/qsoList';
+import {SOUND_HI} from './maps/sound';
+/** Front HI0: the Hindi (hi) bundle (docs/I18N.md, "Hindi: the folder, the digit notice and the shell (HI0)"; HI1 adds the
+ * observatory's maps and all of VIREO's originals). Partial until its
  * release (src/i18n/languages.json `released:false`): only a `?lang=hi` preview reaches it, and every string it lacks is English.
  * The production build splits it by route area like the other languages (scripts/i18n-split.mjs parses this manifest); Vitest
  * imports it whole. Translations are web adaptations by OpenVireo; they never claim to be CLEA's, and CLEA's bytes, hashes and
@@ -17,6 +26,6 @@ import {VARIABLE_STARS_HI} from './maps/variableStars';
 export const HINDI:LocaleBundle=Object.freeze({
  language:'hi',
  messages,
- maps:Object.freeze({appShell:APP_SHELL_HI,helpMenu:HELP_MENU_HI,languageChoice:LANGUAGE_CHOICE_HI,objectXLab:OBJECT_X_LAB_HI,polish:POLISH_HI,projectLinks:PROJECT_LINKS_HI,tour:TOUR_HI,variableStars:VARIABLE_STARS_HI}),
+ maps:Object.freeze({appShell:APP_SHELL_HI,camera:CAMERA_HI,fieldInfo:FIELD_INFO_HI,fieldReadDetails:FIELD_READ_DETAILS_HI,helpMenu:HELP_MENU_HI,languageChoice:LANGUAGE_CHOICE_HI,nakedEye:NAKED_EYE_HI,objectXLab:OBJECT_X_LAB_HI,observationMetadata:OBSERVATION_METADATA_HI,observatory:OBSERVATORY_HI,polish:POLISH_HI,projectLinks:PROJECT_LINKS_HI,qsoList:QSO_LIST_HI,sound:SOUND_HI,tour:TOUR_HI,variableStars:VARIABLE_STARS_HI}),
  originals,
 });

@@ -1,11 +1,59 @@
 {
  "about": "Front HI0: findings of the hi lint (src/i18n/lint/, profile hi) that are correct Hindi in one string, each with a reason. Keys are the lint's string ids; `words` are the matched words allowed in that string only, `rules` whole rules, `placeholders` added placeholders.",
  "entries": {
+  "map:camera.citation": {
+   "rules": [
+    "leftover-english"
+   ],
+   "reason": "a bibliographic citation (authors, et al., year) kept as published, as French keeps it"
+  },
+  "map:camera.citationIr": {
+   "rules": [
+    "leftover-english"
+   ],
+   "reason": "the survey’s published name, Two Micron All Sky Survey, in a citation"
+  },
+  "map:camera.saveNativeNote": {
+   "words": [
+    " ?"
+   ],
+   "reason": "«?» is the replacement character written into a FITS header, quoted as a character, not punctuation"
+  },
   "map:tour.steps.help.text": {
    "words": [
     " ?"
    ],
    "reason": "«? कुंजी»: ? is the name of the key to press, not punctuation"
+  },
+  "original:\" Not Found.": {
+   "rules": [
+    "quotes"
+   ],
+   "reason": "VIREO joins a straight opening quote, the search text and this tail (helpNotFoundText, the radio hot list and saved-rows Find); the closing quote must match that untranslated opening quote, as in French"
+  },
+  "original:(km/sec)": {
+   "rules": [
+    "script"
+   ],
+   "reason": "a unit symbol with no word to translate: «(km/s)», as every other velocity on screen (French and Spanish write it so too)"
+  },
+  "original:Comma Delimited Text |*.CSV": {
+   "words": [
+    "|"
+   ],
+   "reason": "the Windows file-type filter separator before the pattern *.CSV, not a danda"
+  },
+  "original:fragment|Meter Radio Telescope": {
+   "placeholders": [
+    "{diameter}"
+   ],
+   "reason": "radioIdCaptionText places VIREO’s telescope diameter where the translation holds {diameter} (Hindi puts the number before «मीटर रेडियो दूरबीन»), as Spanish and French do"
+  },
+  "original:fragment|You have not recorded your current readings for \"": {
+   "rules": [
+    "quotes"
+   ],
+   "reason": "VIREO closes this quote with its untranslated tail ’\".’ (PHOTOMETER_RECORD_PIECES.movedTail); the opening quote must match it, as in French"
   }
  }
 }
