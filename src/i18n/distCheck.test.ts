@@ -7,7 +7,7 @@ import {HELP_FILES} from '../help/helpFiles';
 import {LANGUAGES} from './languages';
 import es from './es/es.json';
 // @ts-expect-error Build script (plain JS), as in split.test.ts.
-import {checkI18nDist,stringsOf,testOnlyMarkers} from '../../scripts/check-i18n-dist.mjs';
+import {checkI18nDist,reportLines,stringsOf,testOnlyMarkers} from '../../scripts/check-i18n-dist.mjs';
 // @ts-expect-error Build script (plain JS).
 import {languageDir,planLanguage,sourceGraph} from '../../scripts/i18n-split.mjs';
 // Front SC8 (docs/I18N.md, "Script groundwork: the language registry, detection and selector (SC8)"): scripts/check-i18n-dist.mjs
@@ -127,6 +127,40 @@ describe('Front SC8: scripts/check-i18n-dist.mjs with a partial language before 
   // SC8 review: a pagePath that is not one segment exempts nothing and fails ('.' would otherwise exempt every page).
   const dot={...spanish,pagePath:'.'} as Language,dotted=check(dist([dot],at('labs/x/index.html')),[dot]).offenders;
   expect(dotted[0]).toBe('es-419: pagePath "." is not one lower-case path segment');expect(dotted[1]).toMatch(/labs\/x\/index\.html: 1 es-419 core text/);
+ },180_000);
+});
+
+describe('Front ID0: scripts/check-i18n-dist.mjs with a language written in ASCII alone',()=>{
+ /** A fixture language whose catalog holds `catalog` and whose only map is pulsarLoadSave (the maps-only `pulsar` area), with
+  * `literal` as its one text: Indonesian's case, where no map literal has a letter outside ASCII (plan front-i18n-id.md §1.2 #1). */
+ function ascii(tag:string,literal:string):Language{
+  const l=language(tag,{'project.save':'Simpan investigasi di sini'}),dir=path.join(root,l.path!);
+  mkdirSync(path.join(dir,'maps'),{recursive:true});
+  writeFileSync(path.join(dir,'maps','pulsarLoadSave.ts'),`export const LOAD_SAVE_X=Object.freeze({title:${JSON.stringify(literal).replace(/^"|"$/g,"'")}});\n`);
+  writeFileSync(path.join(dir,'index.ts'),`import {LOAD_SAVE_X} from './maps/pulsarLoadSave';\nexport const B=Object.freeze({language:'${tag}',messages:{},maps:Object.freeze({pulsarLoadSave:LOAD_SAVE_X}),originals:{}});\n`);
+  return l;
+ }
+ it('finds a maps-only module by its ASCII prose literal when it has no other marker, and says so',()=>{
+  const l=ascii('qae-XE','Muat data pulsar yang tersimpan dari file');
+  const result=check(dist([l]),[l]);
+  expect(result.offenders).toEqual([]);expect(result.warnings).toEqual([]);
+  expect([...result.reports[0].sizes.keys()]).toEqual(['core','pulsar']);
+  expect((result.reports[0] as unknown as {asciiMarked:string[]}).asciiMarked).toEqual(['pulsar']);
+  expect(reportLines(result).some((line:string)=>/^ {2}pulsar +.*\(found by its ASCII map text\)$/.test(line))).toBe(true);
+ });
+ it('fails the ASCII marker outside its chunk, and takes no literal that is not prose',()=>{
+  const l=ascii('qae-XE','Muat data pulsar yang tersimpan dari file');
+  const stray=check(dist([l],a=>writeFileSync(path.join(a,'index-AAAAAAAA.js'),`${readFileSync(path.join(a,'index-AAAAAAAA.js'),'utf8')}"Muat data pulsar yang tersimpan dari file";`)),[l]);
+  expect(stray.offenders.some(o=>/index-AAAAAAAA\.js: 1 qae-XE pulsar text\(s\) outside the pulsar chunk/.test(o)),stray.offenders.join('\n')).toBe(true);
+  // A literal that is no prose (one space) is no marker: before its release the module is found by its chunk name with a warning
+  // (a released language fails there, the rule above; a released fixture would need a complete catalog).
+  const short=ascii('qaf-XF','Muat dataPulsarTersimpan');
+  expect(check(dist([short]),[short]).warnings).toEqual(['qaf-XF pulsar has no marker text yet; its chunk i18n-qaf-XF-pulsar-qafXFpul.js is found by its name only']);
+ });
+ it('leaves every registered language\'s markers as they were: no module of es-419, pt-BR, fr or id uses the ASCII fallback',()=>{
+  const result=checkI18nDist(dist([]),{root,languages:LANGUAGES,graph}) as {reports:{tag:string;asciiMarked:string[]}[]};
+  expect(result.reports.map(r=>r.tag)).toEqual(LANGUAGES.map(l=>l.tag));
+  for(const r of result.reports)expect(r.asciiMarked,r.tag).toEqual([]);
  },180_000);
 });
 

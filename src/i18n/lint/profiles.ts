@@ -4,12 +4,13 @@
 import {SIMPLIFIED_ONLY,TRADITIONAL_ONLY} from './hanVariants';
 import type {PluralCategory} from '../plural';
 import {frenchTypographyFindings} from './frenchSpacing';
+import {indonesianTypographyFindings} from './indonesianTypography';
 import {wordSource,type Boundary,type GlyphClass,type LocaleProfile,type MarkPair,type PairedPattern,type Pattern} from './rules';
 /** How each language addresses the student. DECIDED by the user on 2026-11-09 (AGENTS.md; plan §13 Q1–Q3, §14): Japanese
  * polite です/ます, Hindi आप, Russian lower-case «вы», Chinese (zh-Hans and zh-Hant) 你. The alternatives stay expressible
  * (plain だ/である, तुम, «ты», 您) so the fixtures prove each register pattern both ways; profileFor builds the patterns
  * from these values. */
-export type Registers=Readonly<{ja:'desu-masu'|'plain';hi:'aap'|'tum';ru:'vy'|'ty';zh:'ni'|'nin';es:'tu'|'usted';pt:'voce'|'tu';fr:'vous'|'tu';ar:'singular'|'plural';he:'plural'|'singular';fa:'shoma'|'to'}>;
+export type Registers=Readonly<{ja:'desu-masu'|'plain';hi:'aap'|'tum';ru:'vy'|'ty';zh:'ni'|'nin';es:'tu'|'usted';pt:'voce'|'tu';fr:'vous'|'tu';ar:'singular'|'plural';he:'plural'|'singular';fa:'shoma'|'to';id:'anda'|'kamu'}>;
 /** Front SC9: Spanish tú (decision 6, 2026-11-09), with usted as the expressible alternative. Front PT0: Brazilian Portuguese
  * addresses the student as «você» (AGENTS.md, 2026-11-09: each language follows the Spanish rules; plan front-i18n-pt-br.md §3.1);
  * «tu» stays expressible for the fixtures. Front FR0: French addresses the student as «vous» (AGENTS.md, 2026-11-11), «tu» expressible. */
@@ -17,9 +18,11 @@ export type Registers=Readonly<{ja:'desu-masu'|'plain';hi:'aap'|'tum';ru:'vy'|'t
  * generic imperative, اختر، اضغط, or a verbal noun, اختيار، حفظ; never the plural or a feminine-only form); «plural» stays expressible.
  * Hebrew and Persian are checks, not plans (no Hebrew or Persian for now): their settings are the plan's proposals, the gender-neutral
  * plural imperative (לחצו, בחרו) and the polite «شما» of Persian software, each with its alternative. */
-export const REGISTER:Registers={ja:'desu-masu',hi:'aap',ru:'vy',zh:'ni',es:'tu',pt:'voce',fr:'vous',ar:'singular',he:'plural',fa:'shoma'};
-export type ProfileId='ja'|'hi'|'zh-Hans'|'zh-Hant'|'ru'|'es-419'|'pt-BR'|'fr'|'ar'|'he'|'fa';
-export const PROFILE_IDS:readonly ProfileId[]=['ja','hi','zh-Hans','zh-Hant','ru','es-419','pt-BR','fr','ar','he','fa'];
+/** Front ID0: Indonesian addresses the reader as «Anda», always capitalised (plan front-i18n-id.md §3, question Q2); «kamu» stays
+ * expressible for the fixtures. */
+export const REGISTER:Registers={ja:'desu-masu',hi:'aap',ru:'vy',zh:'ni',es:'tu',pt:'voce',fr:'vous',ar:'singular',he:'plural',fa:'shoma',id:'anda'};
+export type ProfileId='ja'|'hi'|'zh-Hans'|'zh-Hant'|'ru'|'es-419'|'pt-BR'|'fr'|'ar'|'he'|'fa'|'id';
+export const PROFILE_IDS:readonly ProfileId[]=['ja','hi','zh-Hans','zh-Hant','ru','es-419','pt-BR','fr','ar','he','fa','id'];
 
 const words=(list:readonly string[],boundary:Boundary,flags='iu')=>new RegExp(list.map(w=>wordSource(w.normalize('NFC'),boundary)).join('|'),flags);
 /** VIREO's own `...` (43 originals, 22 en.json strings) and `…` count as one ellipsis; Japanese and Chinese also write `……`. */
@@ -170,6 +173,75 @@ function frenchProfile(setting:Registers['fr']):LocaleProfile{
   // First proposal (plan §4.4), calibrated on FR0's shell batch (docs/I18N.md, FR0).
   lengthBand:[.7,1.7],pluralCategories:['one','many','other'],optionalPluralCategories:OPTIONAL_PLURAL_CATEGORIES.fr,
   // Front FR6: a {placeholder}'s name is set aside before the glossary's forbidden words too («{cluster}» names the dataset).
+  forbiddenSetAside:/\{[\p{L}\p{N}_]+\}/u,
+ };
+}
+
+// Front ID0 (plan front-i18n-id.md §3–§4.4): Indonesian, the first language written in ASCII alone. Quotes and thousands come from
+// the fixer's own view (indonesianTypography.ts), with the checks that need the English (period groups, decimals grouped as
+// thousands, title case only where the English has none); the patterns below are the rest of §4.4. Words are matched outside
+// brackets (a VIREO English gloss), “ ” quotes and a `{placeholder}` token, as for French. Word lists, never bare affix patterns:
+// «ilmu», «semu» (magnitudo semu), «kedalaman», «keluar» and «diameter» must pass.
+const outsideIndonesianGlosses=(r:RegExp)=>new RegExp(`(?<!\\{[\\p{L}\\p{N}_]*)(?:${r.source})(?![\\p{L}\\p{N}_]*\\})(?![^(]*\\))(?![^“]*”)`,r.flags);
+const ID_KAMU=['kamu','kau','engkau','dikau','dirimu','kalian'];
+/** The enclitic -mu on the words this interface could write; never a bare `\p{L}+mu` («ilmu», «temu», «semu»). */
+const ID_MU=['datamu','layarmu','teleskopmu','filemu','pengamatanmu','investigasimu','hasilmu','catatanmu','pilihanmu','jawabanmu','untukmu','padamu','kepadamu','denganmu','darimu','milikmu','komputermu','browsermu','pengukuranmu','kerjamu'];
+/** Politeness words that the English does not say, and the -lah imperative, at the start of a sentence that commands. */
+const ID_POLITE=['Silakan','Silahkan','Mohon','Tolong'];
+const ID_LAH=['Kliklah','Pilihlah','Simpanlah','Bukalah','Tekanlah','Gunakanlah','Tutuplah','Ketiklah','Cobalah','Tunggulah','Lihatlah','Bacalah','Muatlah','Ukurlah','Catatlah'];
+function indonesianRegister(setting:Registers['id']):{patterns:Pattern[];paired:PairedPattern[]}{
+ return setting==='anda'
+  ?{patterns:[{label:'kamu pronoun',pattern:words(ID_KAMU,'letters'),use:'address the reader as «Anda»'},
+    {label:'enclitic -mu',pattern:words(ID_MU,'letters'),use:'address the reader as «Anda» («data Anda», «untuk Anda»)'},
+    {label:'lower-case anda',pattern:/(?<![\p{L}\p{N}])anda(?![\p{L}\p{N}])/u,use:'write «Anda» with a capital A (EYD V)'},
+    {label:'Saudara as a pronoun',pattern:/(?<=[\p{L}\p{N},;:)][  ]+)Saudara(?![\p{L}\p{N}])/u,use:'address the reader as «Anda»'}],
+   paired:[{label:'politeness word the English does not have',pattern:startOf(ID_POLITE),english:EN_COMMAND,use:'the base-form imperative («Klik…», «Pilih…»); «silakan» only where the English says please'},
+    {label:'-lah imperative',pattern:startOf(ID_LAH),english:EN_COMMAND,use:'the base-form imperative («Klik…», «Pilih…»)'}]}
+  :{patterns:[{label:'Anda',pattern:words(['anda'],'letters'),use:'address the reader as «kamu»'}],paired:[]};
+}
+const ID_JOINED=['dimana','disini','disana','disitu','diatas','dibawah','didalam','diluar','diantara','disamping','didepan','dibelakang','disebelah','kemana','kesini','kesana','kesitu','keatas','kebawah','kedalam'];
+const ID_PREFIXED=['buka','simpan','klik','pilih','tampilkan','hitung','ukur','catat','muat','gunakan','perlukan','abaikan','hapus','ubah','atur','baca','tulis','cetak','tutup','tekan','arahkan','gerakkan','pulihkan','unduh','unggah','kirim','terima'];
+const ID_KBBI:readonly (readonly [string,string])[]=[['silahkan','silakan'],['praktek*','praktik'],['analisa*','analisis, menganalisis'],['sistim*','sistem'],['obyek*','objek'],['subyek*','subjek'],['resiko*','risiko'],['ijin*','izin'],['jaman*','zaman'],
+ ['kwalitas*','kualitas'],['aktifitas*','aktivitas'],['efektifitas*','efektivitas'],['frekwensi*','frekuensi'],['standarisasi*','standardisasi'],['merubah*','mengubah'],['mempengaruhi*','memengaruhi'],['mensukseskan*','menyukseskan'],
+ ['menterjemahkan*','menerjemahkan'],['mengkonversi*','mengonversi'],['mengkoreksi*','mengoreksi'],['mengkonfirmasi*','mengonfirmasi'],['mengkombinasi*','mengombinasikan'],['mengkategori*','mengategorikan'],['nampak*','tampak'],
+ ['tehnik*','teknik'],['sekedar*','sekadar'],['antri*','antre'],['detil*','detail'],['kordinat*','koordinat'],['jadual*','jadwal']];
+const ID_ENGLISH_SPELLING=['photometer*','photometr*','spectrum','spectra','spectrometer*','telescope*','magnitude*','galaxy','galaxies','quasar*','observatory','coordinate*','analysis'];
+const ID_MALAY=['fail','muat turun','muat naik','tetingkap','kata laluan','tetapan','padam','pelayar','butang','skrin','senarai','kemas kini','carian','pautan','tarikh','peratus','nombor','kerana','sila','cerapan','balai cerap'];
+const ID_ENGLISH_WORDS=[...PT_ENGLISH,'click','save','open','cancel','select','settings'];
+/** A word with a Latin letter outside ASCII (or a combining mark): Indonesian has none. «Å» (the ångström symbol) and «Lemaître»
+ * pass; VIREO's English in brackets and quoted text are set aside. */
+const ID_DIACRITIC=/(?!(?:Lemaître|Å)(?![\p{L}\p{M}]))(?<![\p{L}\p{M}])[\p{L}\p{M}]*(?:(?![A-Za-z])\p{sc=Latn}|\p{M})[\p{L}\p{M}]*/u;
+function indonesianProfile(setting:Registers['id']):LocaleProfile{
+ const reg=indonesianRegister(setting);
+ return {
+  id:'id',name:'Indonesian',script:null,boundary:'letters',caseFold:'id',
+  glyphs:glyphsWith({},[{marks:['?']}]),
+  pairs:[CURLY,PARENS],
+  forbiddenMarks:[{mark:'"',use:'“ ” (inner ‘ ’)'}],
+  typography:[
+   ...thousandsRules(' '),
+   {label:'guillemets',pattern:/«(?!A\p{N}+»)|(?<!«A\p{N}+)»/u,use:'“ ” (inner ‘ ’)'},
+   {label:'single quotes at the top level',pattern:/‘(?![^“]*”)/u,use:'“ ” (‘ ’ only inside “ ”)'},
+   {label:'space before : ; ! ?',pattern:/(?<=[^\s])[   ]+[:;!?](?=[\s)\]”’]|$)/u,use:'write the mark against the word, as in English (no space before it)'},
+   {label:'narrow no-break space outside a number',pattern:/(?<!\p{N}) | (?!\p{N}{3}(?!\p{N}))/u,use:'U+202F only between groups of thousands («24 000»)'},
+   {label:'Latin letter with a diacritic',pattern:outsideIndonesianGlosses(ID_DIACRITIC),use:'Indonesian words have no diacritics; a Spanish or French form left from the context, or a misspelling'},
+   {label:'joined preposition',pattern:outsideIndonesianGlosses(words(ID_JOINED,'letters')),use:'write the preposition apart: di mana, di sini, di atas, di dalam, ke mana, ke atas…'},
+   {label:'separated di- prefix',pattern:outsideIndonesianGlosses(new RegExp(`(?<![\\p{L}\\p{N}])di[ \\u00a0]+(?:${ID_PREFIXED.join('|')})(?![\\p{L}\\p{N}])`,'iu')),use:'write the passive prefix joined: dibuka, disimpan, diklik, dipilih…'},
+   {label:'repeated word',pattern:outsideIndonesianGlosses(/(?<![\p{L}\p{N}])(\p{L}{2,})[  ]+\1(?![\p{L}\p{N}])/iu),use:'write reduplication with a hyphen (bintang-bintang)'},
+   {label:'reduplication after a number or quantifier',pattern:outsideIndonesianGlosses(/(?<![\p{L}\p{N}])(?:\p{N}+|\{[\p{L}\p{N}_]+\}|banyak|beberapa|semua|para|sejumlah)[  ]+(\p{L}+)-\1(?![\p{L}\p{N}])/iu),use:'no reduplication after a number or a quantifier («3 bintang», «beberapa galaksi»)'},
+   {label:'ordinal without its hyphen',pattern:/(?<![\p{L}\p{N}])ke(?:\p{N}|\{[\p{L}\p{N}_]+\})/iu,use:'«ke-2», «ke-{n}»'},
+   ...ID_KBBI.map(([wrong,right]):Pattern=>({label:'non-standard spelling (KBBI)',pattern:outsideIndonesianGlosses(words([wrong],'letters')),use:`the KBBI form: ${right}`})),
+   {label:'English spelling of a loanword',pattern:outsideIndonesianGlosses(words(ID_ENGLISH_SPELLING,'letters')),use:'the Indonesian spelling: fotometer, fotometri, spektrum, spektrometer, teleskop, magnitudo, galaksi, kuasar, observatorium, koordinat, analisis'},
+   {label:'Malay word',pattern:outsideIndonesianGlosses(words(ID_MALAY,'letters')),use:'the Indonesian word (file, unduh, unggah, jendela, kata sandi, pengaturan, hapus, browser, tombol, layar, daftar, perbarui, pencarian, tautan, tanggal, persen, nomor, karena, silakan, pengamatan, observatorium)'},
+   {label:'English word',pattern:outsideIndonesianGlosses(words(ID_ENGLISH_WORDS,'letters')),use:'translate it (a VIREO English name goes in brackets after its Indonesian)'},
+  ],
+  typographyCheck:indonesianTypographyFindings,
+  register:{setting,patterns:reg.patterns,paired:reg.paired},
+  // A claim, never its denial: «bukan terjemahan resmi», «terjemahan tidak resmi», «bukan terjemahan CLEA», «bukan teks CLEA», and
+  // «teks CLEA tidak berubah» (CLEA's texts are unchanged) pass.
+  claims:[/(?<!bukan )terjemahan resmi/iu,/(?<!bukan )terjemahan (?:resmi )?(?:dari |oleh )?(?:Project )?CLEA/iu,/(?<![\p{L}])(?:ini|adalah|merupakan|ialah) (?:sebuah |suatu )?teks (?:dari |milik )?(?:Project )?CLEA/iu],
+  // First proposal (plan §4.4), calibrated on ID0's shell batch (docs/I18N.md, ID0).
+  lengthBand:[.7,1.8],pluralCategories:['other'],
   forbiddenSetAside:/\{[\p{L}\p{N}_]+\}/u,
  };
 }
@@ -381,6 +453,7 @@ export function profileFor(id:ProfileId,registers:Registers=REGISTER):LocaleProf
   };
   case 'es-419':return spanishProfile(registers.es);
   case 'fr':return frenchProfile(registers.fr);
+  case 'id':return indonesianProfile(registers.id);
   case 'ar':return arabicProfile(registers.ar);
   case 'he':return hebrewProfile(registers.he);
   case 'fa':return persianProfile(registers.fa);

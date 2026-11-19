@@ -294,6 +294,63 @@ const fr:Fixture[]=[
  {profile:'fr',rule:'invisible',en:'Telescope',good:'Télescope',bad:'Téles\u00adcope'},
  {profile:'fr',rule:'length',en:LONG,good:'Ouvrez la coupole pour commencer à observer ce soir.',bad:'Ouvrez.'},
 ];
+/** Front ID0 (plan front-i18n-id.md §4.4): Indonesian, written in ASCII alone. ` ` is the narrow no-break space between
+ * thousands (src/i18n/lint/indonesianTypography.ts). The passing cases hold the words the affix rules must not hit: «magnitudo semu»,
+ * «ilmu», «kedalaman», «keluar», «diameter». */
+const id:Fixture[]=[
+ {profile:'id',rule:'placeholders',en:SAVED,good:'{count} file disimpan.',bad:'File disimpan.'},
+ {profile:'id',rule:'html',en:OPEN_DOME,good:'Buka kubah.',bad:'Buka <b>kubah</b>.'},
+ {profile:'id',rule:'identical',en:'Telescope',good:'Teleskop',bad:'Telescope'},
+ {profile:'id',rule:'glossary',en:GLOSSARY_EN,good:'Arahkan teleskop ke target daftar objek.',bad:'Arahkan teropong ke target daftar objek.',glossary:{terms:[{en:'\\btelescopes?\\b',text:'teleskop'}],names:[{en:'Hot List',text:'daftar objek'}],forbidden:[{words:['teropong'],use:'teleskop'}]}},
+ {profile:'id',rule:'register',en:'Your investigation was saved.',good:'Investigasi Anda telah disimpan.',bad:'Investigasi kamu telah disimpan.'},
+ {profile:'id',rule:'register',en:'Your data stays in this browser.',good:'Data Anda tetap di browser ini.',bad:'Datamu tetap di browser ini.',note:'the enclitic -mu'},
+ {profile:'id',rule:'register',en:'The page shows you the sky.',good:'Halaman ini menunjukkan langit kepada Anda.',bad:'Halaman ini menunjukkan langit kepada anda.',note:'lower-case anda'},
+ {profile:'id',rule:'register',en:'The page shows you the sky.',good:'Halaman ini menunjukkan langit kepada Anda.',bad:'Halaman ini menunjukkan langit kepada Saudara.',note:'Saudara as a pronoun'},
+ {profile:'id',rule:'register',en:OPEN_DOME,good:'Buka kubah.',bad:'Silakan buka kubah.',note:'no silakan where the English has no please'},
+ {profile:'id',rule:'register',en:'Save the investigation. Click the button.',good:'Simpan investigasi. Klik tombolnya.',bad:'Simpan investigasi. Kliklah tombolnya.',note:'the -lah imperative; the second sentence pairs with the second English one'},
+ {profile:'id',rule:'register',en:'Please reload the page.',good:'Silakan muat ulang halaman.',bad:'Silakan muat ulang halaman untukmu.',note:'silakan where the English says please; -mu still fails'},
+ {profile:'id',rule:'register',en:'The apparent magnitude and the depth of field in science.',good:'Magnitudo semu dan kedalaman medan dalam ilmu pengetahuan.',bad:'Magnitudo semu dan kedalaman medan dalam ilmu pengetahuan, hasilmu.',note:'«semu», «ilmu» and «kedalaman» are no -mu'},
+ {profile:'id',rule:'register',en:OPEN_DOME,good:'Buka kubah, kamu.',bad:'Buka kubah Anda.',registers:{id:'kamu'},note:'the register flipped to kamu'},
+ {profile:'id',rule:'claim',en:'Translation by OpenVireo.',good:'Terjemahan oleh OpenVireo.',bad:'Terjemahan resmi CLEA.'},
+ {profile:'id',rule:'claim',en:'This is not an official translation.',good:'Ini bukan terjemahan resmi.',bad:'Ini terjemahan resmi.'},
+ {profile:'id',rule:'claim',en:'This text is not CLEA\'s; CLEA\'s texts are unchanged.',good:'Ini bukan teks CLEA; teks CLEA tidak berubah.',bad:'Ini adalah teks CLEA; teks CLEA tidak berubah.'},
+ {profile:'id',rule:'glyphs',en:'File › Save…',good:'File › Simpan…',bad:'File > Simpan…'},
+ {profile:'id',rule:'glyphs',en:'Save As...',good:'Simpan Sebagai...',bad:'Simpan Sebagai',note:"VIREO's ... kept"},
+ {profile:'id',rule:'pairs',en:CHOOSE_OPEN,good:'Pilih “Buka”.',bad:'Pilih “Buka.'},
+ {profile:'id',rule:'quotes',en:CHOOSE_OPEN,good:'Pilih “Buka”.',bad:'Pilih "Buka".'},
+ {profile:'id',rule:'typography',en:CHOOSE_OPEN,good:'Pilih “Buka”.',bad:'Pilih «Buka».',note:'guillemets'},
+ {profile:'id',rule:'typography',en:CHOOSE_OPEN,good:'Pilih “Buka ‘Data’”.',bad:'Pilih ‘Buka’.',note:'single quotes only inside “ ”'},
+ {profile:'id',rule:'typography',en:'Longitude: 12',good:'Bujur: 12',bad:'Bujur : 12',note:'no space before :'},
+ {profile:'id',rule:'typography',en:'Ready? Open ?lang=id at 12:30:45.',good:'Siap? Buka ?lang=id pukul 12:30:45.',bad:'Siap ? Buka ?lang=id pukul 12:30:45.',note:'?lang= and times pass'},
+ {profile:'id',rule:'typography',en:'Up to 1,000 measurements.',good:'Hingga 1 000 pengukuran.',bad:'Hingga 1,000 pengukuran.',note:'thousands: U+202F, not the comma'},
+ {profile:'id',rule:'typography',en:'Julian Day Number − 2,400,000',good:'Nomor hari Julian − 2 400 000',bad:'Nomor hari Julian − 2 400 000',note:'thousands: not an ordinary space'},
+ {profile:'id',rule:'typography',en:'Up to 24,000 stars.',good:'Hingga 24 000 bintang.',bad:'Hingga 24.000 bintang.',note:'a period between thousands reads as a decimal on this site'},
+ {profile:'id',rule:'typography',en:'B−V is 1.234 here.',good:'B−V di sini 1.234.',bad:'B−V di sini 1 234.',note:'a decimal is never grouped as thousands'},
+ {profile:'id',rule:'typography',en:'RA 12 30 45.6, Dec +26 07 59 (version 1.64.1, 10 November 2026): 1,500 Å',good:'AR 12 30 45.6, Dek. +26 07 59 (versi 1.64.1, 10 November 2026): 1 500 Å',bad:'AR 12 30 45.6, Dek. +26 07 59 (versi 1.64.1, 10 November 2026): 1,500 Å',note:'sexagesimal values, a version and a date are no groups; Å passes'},
+ {profile:'id',rule:'typography',en:'Ready',good:'Siap',bad:'Siap ',note:'U+202F only between thousands'},
+ {profile:'id',rule:'typography',en:'Equivalent width',good:'Lebar ekuivalen',bad:'Lebar équivalen',note:'a diacritic left from the French context'},
+ {profile:'id',rule:'typography',en:'Hubble (Lemaître) law: 500 Å',good:'Hukum Hubble-Lemaître: 500 Å',bad:'Hukum Hubble: 500 Å, año',note:'Lemaître and Å pass'},
+ {profile:'id',rule:'typography',en:'Where is the star on the screen?',good:'Di mana bintang di layar?',bad:'Dimana bintang di layar?',note:'joined preposition'},
+ {profile:'id',rule:'typography',en:'The depth goes out of the field.',good:'Kedalamannya keluar dari medan.',bad:'Kedalamannya keluar dari medan kedalam.',note:'«kedalaman» and «keluar» pass, «kedalam» does not'},
+ {profile:'id',rule:'typography',en:'The file was opened.',good:'File telah dibuka.',bad:'File telah di buka.',note:'separated di- prefix'},
+ {profile:'id',rule:'typography',en:'The telescope diameter is shown on the screen.',good:'Diameter teleskop ditampilkan di layar.',bad:'Diameter teleskop di tampilkan di layar.',note:'«diameter» and «di layar» pass'},
+ {profile:'id',rule:'typography',en:'Stars and stars',good:'Bintang-bintang',bad:'Bintang bintang',note:'reduplication takes a hyphen'},
+ {profile:'id',rule:'typography',en:'3 stars, several galaxies',good:'3 bintang, beberapa galaksi',bad:'3 bintang-bintang, beberapa galaksi',note:'no reduplication after a number'},
+ {profile:'id',rule:'typography',en:'The {n}th step',good:'Langkah ke-{n}',bad:'Langkah ke{n}',note:'ordinal hyphen'},
+ {profile:'id',rule:'typography',en:'Please follow the practice.',good:'Silakan ikuti praktik ini.',bad:'Silakan ikuti praktek ini.',note:'KBBI spelling'},
+ {profile:'id',rule:'typography',en:'It affects the coordinates.',good:'Hal itu memengaruhi koordinat.',bad:'Hal itu mempengaruhi kordinat.',note:'KBBI spelling'},
+ {profile:'id',rule:'typography',en:'Open the spectrum.',good:'Buka spektrum.',bad:'Buka spectrum.',note:'English spelling of a loanword'},
+ {profile:'id',rule:'typography',en:'Download the file.',good:'Unduh file.',bad:'Muat turun fail.',note:'Malay words'},
+ {profile:'id',rule:'typography',en:'Press the button on the screen.',good:'Tekan tombol di layar.',bad:'Tekan butang di skrin.',note:'Malay words'},
+ {profile:'id',rule:'typography',en:'Save the investigation to a file (Add Current Item/Position to List).',good:'Simpan investigasi ke file (Add Current Item/Position to List).',bad:'Simpan the investigation ke file.',note:'English left in the translation; brackets set aside'},
+ {profile:'id',rule:'typography',en:'Optical simulation options',good:'Opsi simulasi optik',bad:'Opsi Simulasi Optik Baru',note:'title case where the English has none'},
+ {profile:'id',rule:'typography',en:'Optical Simulation Options',good:'Opsi Simulasi Optik',bad:'Opsi Simulasi Optik\u202f',note:'title case kept where the English has it (a VIREO name); U+202F at the end fails'},
+ {profile:'id',rule:'typography',en:'Choose "Open" and "Save".',good:'Pilih “Buka” dan “Simpan”.',bad:'Pilih "Buka" dan “Simpan”.',note:'straight quotes are the fixer’s'},
+ {profile:'id',rule:'digits',en:EXPOSURE,good:'Eksposur: 2.5 s',bad:'Eksposur: 2,5 s'},
+ {profile:'id',rule:'normalization',en:'Exposure',good:'Eksposur',bad:'Eksposur é'.normalize('NFD')},
+ {profile:'id',rule:'invisible',en:'Telescope',good:'Teleskop',bad:'Teles­kop'},
+ {profile:'id',rule:'length',en:LONG,good:'Buka kubah untuk mulai mengamati malam ini.',bad:'Buka.'},
+];
 /** Front RT8 (docs/I18N.md "RTL groundwork: RTL lint profiles and direction plumbing (RT8, RT9)"): Arabic, Hebrew and Persian. No
  * such catalog exists; like every fixture here they prove the rules, in plain wording no native speaker reviewed. RANGE, SIGN and
  * DATE give the right-to-left order rules: the good strings show the fix (words, the sign inside the value, a {param}). */
@@ -393,6 +450,6 @@ const fa:Fixture[]=[
  {profile:'fa',rule:'purity',en:'Open the large file.',good:'پرونده بزرگ را باز کنید.',bad:'پرونده بزرگ را باز كنيد.',note:'Arabic ك and ي'},
  {profile:'fa',rule:'length',en:LONG,good:'گنبد را باز کنید تا رصد امشب را آغاز کنید.',bad:'باز کنید.'},
 ];
-export const FIXTURES:readonly Fixture[]=[...ja,...zhHans,...zhHant,...hi,...ru,...es419,...ptBR,...fr,...ar,...he,...fa];
+export const FIXTURES:readonly Fixture[]=[...ja,...zhHans,...zhHant,...hi,...ru,...es419,...ptBR,...fr,...ar,...he,...fa,...id];
 /** The rules each profile must have fixtures for (purity applies only where the profile checks a script mix-up). */
 export const RULES_WITH_FIXTURES:readonly RuleId[]=['placeholders','html','identical','script','leftover-english','glossary','register','claim','glyphs','pairs','quotes','typography','digits','normalization','invisible','purity','length'];

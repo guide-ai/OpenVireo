@@ -1,0 +1,1560 @@
+{
+ "about": "Front ID0: the id glossary (plan analysis/front-plans/front-i18n-id.md §5) that src/i18n/id/id.test.ts enforces through the SC4 lint framework (src/i18n/lint/, profile id) on every Indonesian string. Seeded from the French glossary: the same English patterns and interface names, re-targeted to Indonesian from the English (French and Spanish only as meaning context) and the plan's §5.2–§5.3 terms (Indonesian Wikipedia, ITB/Bosscha and BRIN usage, KBBI spelling; no IAU OAE Indonesian glossary exists, so these are usage, not an official standard). A term applies when its English pattern matches the English source: the Indonesian must then match the `id` stem or pattern. Names are fixed interface names (an exact name applies only to a whole string; the name match ignores case). Forbidden here are the term forms this glossary rejects (kepunahan, klaster, geser merah, redshift outside glosses, berkas for a computer file, peramban, magnitudo tampak/absolut, tetapan Hubble, pulsa); the language-wide rules (the «Anda» register, KBBI spellings, Malay words, diacritics, di-/ke- spacing, reduplication, quotes and thousands, claims) live in the id profile of src/i18n/lint/profiles.ts. VIREO's own names follow the plan's decided forms (Save → Simpan, Record → Catat, Find → Temukan, Search → Cari, Show → Tampilkan, Display → Tampilan, Slew → Gerakkan, Init/Go → Siapkan/Mulai, Scan → Telusuri, Clear → Kosongkan, Delete → Hapus, Reset → Atur Ulang, Hot List → daftar objek, lab → praktikum, file → file, browser → browser). Rows for areas later fronts translate are reviewed by those fronts before use.",
+ "terms": [
+  {
+   "en": "\\bobservator(y|ies)\\b",
+   "id": "observatorium"
+  },
+  {
+   "en": "\\btelescopes?\\b",
+   "id": "teleskop"
+  },
+  {
+   "en": "\\bdomes?\\b",
+   "id": "kubah"
+  },
+  {
+   "en": "\\bspectr(um|a)\\b",
+   "id": "spektr"
+  },
+  {
+   "en": "\\bspectrometers?\\b",
+   "id": "spektrometer"
+  },
+  {
+   "en": "\\bphotometers?\\b",
+   "id": "fotometer"
+  },
+  {
+   "en": "\\bphotometry\\b",
+   "id": "fotometri"
+  },
+  {
+   "en": "\\bexposures?\\b",
+   "id": "eksposur"
+  },
+  {
+   "en": "\\bmeasurements?\\b",
+   "id": "ukur"
+  },
+  {
+   "en": "\\binvestigations?\\b",
+   "id": "investigasi"
+  },
+  {
+   "en": "\\bfiles?\\b",
+   "id": "file"
+  },
+  {
+   "en": "\\bdownload(s|ed|ing)?\\b",
+   "id": "unduh"
+  },
+  {
+   "en": "(?<!daylight-)\\bsav(e|es|ed|ing)\\b",
+   "id": "simpan"
+  },
+  {
+   "en": "\\brestor(e|es|ed|ing)\\b",
+   "id": "pulih"
+  },
+  {
+   "en": "\\b(re)?load(s|ed|ing)?\\b",
+   "id": "muat"
+  },
+  {
+   "en": "\\bbrowsers?\\b",
+   "id": "browser"
+  },
+  {
+   "en": "(?<!line breaks and |for example a |accented letter, a |Shift\\+)(?<!reachable with )\\btabs?\\b(?!,? (?:line breaks|or other|BOM)| and Shift\\+Tab)",
+   "id": "tab"
+  },
+  {
+   "en": "\\bTab and Shift\\+Tab\\b",
+   "id": "Tab dan Shift\\+Tab"
+  },
+  {
+   "en": "\\btabs?(?=,? (?:line breaks|or other|BOM))|(?<=line breaks and |for example a |accented letter, a )tabs?\\b",
+   "id": "tabulasi|tab"
+  },
+  {
+   "en": "\\bremarks?\\b",
+   "id": "catatan|komentar|keterangan"
+  },
+  {
+   "en": "\\bpages?\\b",
+   "id": "halaman"
+  },
+  {
+   "en": "\\bcomputers?\\b",
+   "id": "komputer"
+  },
+  {
+   "en": "\\bphones?\\b",
+   "id": "ponsel|telepon|handphone"
+  },
+  {
+   "en": "\\bclick\\b",
+   "id": "klik"
+  },
+  {
+   "en": "\\bpress\\b",
+   "id": "tekan"
+  },
+  {
+   "en": "\\bmenus?\\b",
+   "id": "menu"
+  },
+  {
+   "en": "\\bguides?\\b",
+   "id": "panduan"
+  },
+  {
+   "en": "\\bexercises?\\b",
+   "id": "latihan|praktikum"
+  },
+  {
+   "en": "\\blabs?\\b",
+   "id": "praktikum"
+  },
+  {
+   "en": "\\bredshifts?\\b",
+   "id": "pergeseran merah"
+  },
+  {
+   "en": "\\bpulsars?\\b",
+   "id": "pulsar"
+  },
+  {
+   "en": "\\binstructor mode\\b",
+   "id": "mode instruktur"
+  },
+  {
+   "en": "\\bhelp\\b",
+   "id": "bantuan"
+  },
+  {
+   "en": "\\btracking\\b",
+   "id": "lacak|pengikut|jejak"
+  },
+  {
+   "en": "\\bcatalog(ue)?s?\\b",
+   "id": "katalog"
+  },
+  {
+   "en": "\\bgalax(y|ies)\\b",
+   "id": "galaksi"
+  },
+  {
+   "en": "\\bstars?\\b",
+   "id": "bintang"
+  },
+  {
+   "en": "\\bclusters?\\b",
+   "id": "gugus"
+  },
+  {
+   "en": "\\bresults?\\b",
+   "id": "hasil"
+  },
+  {
+   "en": "\\bwavelengths?\\b",
+   "id": "panjang gelombang"
+  },
+  {
+   "en": "\\bpassword\\b",
+   "id": "kata sandi"
+  },
+  {
+   "en": "\\bcounts?\\b(?! shows after the reveal)",
+   "id": "hitung|jumlah|cacah"
+  },
+  {
+   "en": "\\bslew(s|ed|ing)?\\b",
+   "id": "gerak"
+  },
+  {
+   "en": "\\bhot lists?\\b",
+   "id": "daftar objek"
+  },
+  {
+   "en": "\\bsky background\\b",
+   "id": "latar langit"
+  },
+  {
+   "en": "\\bseeing\\b",
+   "id": "seeing"
+  },
+  {
+   "en": "\\bright ascension\\b",
+   "id": "asensio rekta"
+  },
+  {
+   "en": "\\bdeclinations?\\b",
+   "id": "deklinasi"
+  },
+  {
+   "en": "\\bfilters?\\b",
+   "id": "filter"
+  },
+  {
+   "en": "\\bslits?\\b",
+   "id": "celah"
+  },
+  {
+   "en": "\\blight curves?\\b",
+   "id": "kurva cahaya"
+  },
+  {
+   "en": "\\bHR diagrams?\\b",
+   "id": "diagram (?:H-?R|Hertzsprung)"
+  },
+  {
+   "en": "\\bmain sequence\\b",
+   "id": "deret utama"
+  },
+  {
+   "en": "\\bisochrones?\\b",
+   "id": "isokron"
+  },
+  {
+   "en": "\\bvariable stars?\\b",
+   "id": "bintang variabel"
+  },
+  {
+   "en": "\\bperiods?\\b",
+   "id": "periode"
+  },
+  {
+   "en": "\\bdispersion measure\\b",
+   "id": "ukuran dispersi"
+  },
+  {
+   "en": "\\bradio telescopes?\\b",
+   "id": "teleskop radio"
+  },
+  {
+   "en": "\\breceivers?\\b",
+   "id": "penerima"
+  },
+  {
+   "en": "\\bantennas?\\b",
+   "id": "antena"
+  },
+  {
+   "en": "\\bquasars?\\b",
+   "id": "kuasar"
+  },
+  {
+   "en": "\\basteroids?\\b",
+   "id": "asteroid"
+  },
+  {
+   "en": "\\bastrometry\\b",
+   "id": "astrometri"
+  },
+  {
+   "en": "\\blarge-scale structure\\b",
+   "id": "struktur skala besar"
+  },
+  {
+   "en": "\\bwedge plots?\\b",
+   "id": "diagram kerucut"
+  },
+  {
+   "en": "\\bfield of view\\b",
+   "id": "bidang pandang"
+  },
+  {
+   "en": "\\bsignal-to-noise\\b",
+   "id": "sinyal.{1,12}derau"
+  },
+  {
+   "en": "\\bequivalent widths?\\b",
+   "id": "lebar ekuivalen"
+  },
+  {
+   "en": "\\bcontinuum\\b",
+   "id": "kontinum"
+  },
+  {
+   "en": "\\bspectral (type|class)(es)?\\b",
+   "id": "(?:kelas|tipe) spektrum"
+  },
+  {
+   "en": "\\bapparent magnitudes?\\b",
+   "id": "magnitudo semu"
+  },
+  {
+   "en": "\\babsolute magnitudes?\\b",
+   "id": "magnitudo mutlak"
+  },
+  {
+   "en": "\\bdistance modulus\\b",
+   "id": "modulus jarak"
+  },
+  {
+   "en": "\\breddening\\b",
+   "id": "pemerahan"
+  },
+  {
+   "en": "\\bcolou?r excess\\b",
+   "id": "ekses warna|kelebihan warna"
+  },
+  {
+   "en": "\\bHubble's law\\b",
+   "id": "hukum Hubble"
+  },
+  {
+   "en": "\\bHubble constant\\b",
+   "id": "konstanta Hubble"
+  },
+  {
+   "en": "\\brecessional velocit(y|ies)\\b",
+   "id": "kecepatan menjauh"
+  },
+  {
+   "en": "\\bfinding charts?\\b",
+   "id": "peta pencari|peta lokasi"
+  },
+  {
+   "en": "\\bfinder\\b",
+   "id": "pencari"
+  },
+  {
+   "en": "\\bepochs?\\b",
+   "id": "epos|epok"
+  },
+  {
+   "en": "\\bintegration\\b",
+   "id": "integrasi"
+  },
+  {
+   "en": "\\bCCD camera\\b",
+   "id": "kamera CCD"
+  },
+  {
+   "en": "\\bIR camera\\b",
+   "id": "kamera IR"
+  },
+  {
+   "en": "\\bspectral lines?\\b",
+   "id": "garis spektrum"
+  },
+  {
+   "en": "\\bemission\\b",
+   "id": "emisi"
+  },
+  {
+   "en": "\\babsorption\\b",
+   "id": "serapan|absorpsi"
+  },
+  {
+   "en": "\\bopen clusters?\\b",
+   "id": "gugus terbuka"
+  },
+  {
+   "en": "\\bglobular clusters?\\b",
+   "id": "gugus bola"
+  },
+  {
+   "en": "\\bsignal\\b",
+   "id": "sinyal"
+  },
+  {
+   "en": "\\bexercise guide\\b|\\blab guide\\b",
+   "id": "panduan"
+  },
+  {
+   "en": "\\bapertures?\\b",
+   "id": "apertur|bukaan"
+  },
+  {
+   "en": "\\breadings\\b",
+   "id": "baca|ukur"
+  },
+  {
+   "en": "\\bseeded\\b",
+   "id": "benih|seed"
+  },
+  {
+   "en": "\\bcallbacks?\\b",
+   "id": "callback|panggil balik|panggilan balik"
+  },
+  {
+   "en": "\\bzero point\\b",
+   "id": "titik nol"
+  },
+  {
+   "en": "\\bphotons?\\b",
+   "id": "foton"
+  },
+  {
+   "en": "\\bcolou?r[–-]magnitude\\b",
+   "id": "warna[–-]magnitudo"
+  },
+  {
+   "en": "\\bcluster fit\\b",
+   "id": "(?:penyesuaian|pencocokan|fit) (?:manual )?gugus"
+  },
+  {
+   "en": "\\bstandards?\\b",
+   "id": "standar|baku"
+  },
+  {
+   "en": "\\bshoulders?\\b",
+   "id": "bahu"
+  },
+  {
+   "en": "\\bgr[ae]yscale\\b",
+   "id": "abu-abu"
+  },
+  {
+   "en": "\\b(?:observation )?notebook\\b",
+   "id": "buku catatan"
+  },
+  {
+   "en": "\\bluminosity\\b",
+   "id": "luminositas"
+  },
+  {
+   "en": "\\batlas(es)?\\b",
+   "id": "atlas"
+  },
+  {
+   "en": "\\bstandard pairs?\\b",
+   "id": "pasangan (?:bintang )?standar"
+  },
+  {
+   "en": "\\braw\\b",
+   "id": "mentah"
+  },
+  {
+   "en": "\\bmerg(e|es|ed|ing)\\b",
+   "id": "gabung"
+  },
+  {
+   "en": "\\bendpoint[- ]grids?\\b",
+   "id": "kisi (?:titik )?ujung"
+  },
+  {
+   "en": "\\bdispersion measure\\b",
+   "id": "ukuran dispersi"
+  },
+  {
+   "en": "\\bsweeps?\\b",
+   "id": "sapu"
+  },
+  {
+   "en": "\\bbeams?\\b",
+   "id": "berkas"
+  },
+  {
+   "en": "\\bseeds?\\b",
+   "id": "benih|seed"
+  },
+  {
+   "en": "\\btimers?\\b",
+   "id": "pewaktu|timer"
+  },
+  {
+   "en": "\\baltitude limits?\\b",
+   "id": "batas ketinggian"
+  },
+  {
+   "en": "(?<!clock[/ ])\\bdrive\\b",
+   "id": "penggerak|gerak"
+  },
+  {
+   "en": "\\bblink(s|ed|ing)?\\b",
+   "id": "kedip"
+  },
+  {
+   "en": "\\breveal(s|ed|ing)?\\b(?! the catalog sky)",
+   "id": "ungkap|tampil|perlihat"
+  },
+  {
+   "en": "\\borbit files?\\b",
+   "id": "file orbit"
+  },
+  {
+   "en": "\\blimiting magnitudes?\\b",
+   "id": "magnitudo batas"
+  },
+  {
+   "en": "\\breference stars?\\b",
+   "id": "bintang acuan"
+  },
+  {
+   "en": "\\bplate constants\\b",
+   "id": "konstanta pelat"
+  },
+  {
+   "en": "(?<!All Sky )\\bsurveys?\\b",
+   "id": "survei"
+  },
+  {
+   "en": "\\bsnapshots?\\b",
+   "id": "cuplikan|potret"
+  },
+  {
+   "en": "\\banaly[sz]ers?\\b",
+   "id": "analis"
+  },
+  {
+   "en": "\\btemplates?\\b",
+   "id": "templat|template"
+  },
+  {
+   "en": "\\bjournals?\\b",
+   "id": "jurnal"
+  },
+  {
+   "en": "\\b(?:600-)?bins?\\b",
+   "id": "bin|kanal"
+  },
+  {
+   "en": "\\bcombined view\\b",
+   "id": "tampilan gabungan"
+  },
+  {
+   "en": "\\bpanes?\\b",
+   "id": "panel"
+  },
+  {
+   "en": "\\b(?:sampled|printed-coordinate|printed|intensity|unknown) traces?\\b",
+   "id": "jejak|trace"
+  },
+  {
+   "en": "\\breadouts?\\b",
+   "id": "baca|tampil"
+  },
+  {
+   "en": "\\bmetallicit(y|ies)\\b",
+   "id": "metalisitas"
+  },
+  {
+   "en": "\\bsliders?\\b",
+   "id": "penggeser|slider"
+  },
+  {
+   "en": "\\btrials?\\b",
+   "id": "percobaan|uji coba"
+  },
+  {
+   "en": "\\bpresets?\\b",
+   "id": "preset|prasetel|bawaan"
+  },
+  {
+   "en": "\\bapparent modulus\\b",
+   "id": "modulus semu"
+  },
+  {
+   "en": "\\bfresh sky\\b",
+   "id": "(?:langit|bacaan|pembacaan) baru"
+  },
+  {
+   "en": "\\bintegration series\\b",
+   "id": "(?:seri|rangkaian|deret) integrasi"
+  },
+  {
+   "en": "\\bzero[- ]age main sequence\\b",
+   "id": "deret utama usia nol"
+  },
+  {
+   "en": "\\bturn-?off\\b",
+   "id": "titik belok"
+  },
+  {
+   "en": "\\bmembership\\b",
+   "id": "keanggotaan"
+  },
+  {
+   "en": "\\bdatasets?\\b",
+   "id": "set data|kumpulan data"
+  },
+  {
+   "en": "\\bly\\b",
+   "id": "tahun cahaya|(?<![\\p{L}\\p{N}])ly(?![\\p{L}\\p{N}])"
+  },
+  {
+   "en": "\\bcolou?r index\\b",
+   "id": "indeks warna"
+  },
+  {
+   "en": "\\bauditions?\\b|\\bauditioned\\b",
+   "id": "dengar|audisi"
+  },
+  {
+   "en": "\\bradio clock\\b",
+   "id": "jam radio"
+  },
+  {
+   "en": "\\bpress[- ]and[- ]hold\\b",
+   "id": "tahan|tekan terus"
+  },
+  {
+   "en": "\\bslew-timer\\b",
+   "id": "pewaktu|timer"
+  },
+  {
+   "en": "\\breceiver monitor\\b",
+   "id": "(?:monitor|pemantau) penerima"
+  },
+  {
+   "en": "\\bwedge diagrams?\\b",
+   "id": "diagram kerucut"
+  },
+  {
+   "en": "\\bpractices?\\b",
+   "id": "latihan"
+  },
+  {
+   "en": "\\bdrafts?\\b",
+   "id": "draf"
+  },
+  {
+   "en": "\\bfallbacks?\\b",
+   "id": "cadangan|alternatif"
+  },
+  {
+   "en": "\\barcsec(?:onds?)?\\b",
+   "id": "detik busur"
+  },
+  {
+   "en": "\\bhost clock\\b",
+   "id": "jam komputer"
+  }
+ ],
+ "names": [
+  {
+   "en": "Save investigation",
+   "id": "Simpan investigasi"
+  },
+  {
+   "en": "Restore investigation JSON",
+   "id": "Pulihkan investigasi (JSON)"
+  },
+  {
+   "en": "Save session",
+   "id": "Simpan sesi"
+  },
+  {
+   "en": "Restore session",
+   "id": "Pulihkan sesi"
+  },
+  {
+   "en": "Instructor mode…",
+   "id": "Mode instruktur…"
+  },
+  {
+   "en": "Help topics…",
+   "id": "Topik bantuan…"
+  },
+  {
+   "en": "Tools button",
+   "id": "Tombol Alat"
+  },
+  {
+   "en": "Optical Simulation Options",
+   "id": "Opsi Simulasi Optik"
+  },
+  {
+   "en": "Demonstration Mode",
+   "id": "Mode Demonstrasi"
+  },
+  {
+   "en": "Edit Mode",
+   "id": "Mode Edit"
+  },
+  {
+   "en": "Virtual Observatory",
+   "id": "Observatorium Virtual"
+  },
+  {
+   "en": "Test Mode",
+   "id": "Mode Uji"
+  },
+  {
+   "en": "Pulsar Analysis",
+   "id": "Analisis Pulsar"
+  },
+  {
+   "en": "Observational Data",
+   "id": "Data Pengamatan"
+  },
+  {
+   "en": "Observational Results",
+   "id": "Hasil Pengamatan"
+  },
+  {
+   "en": "Results Editors",
+   "id": "Editor Hasil"
+  },
+  {
+   "en": "Topics...",
+   "id": "Topik..."
+  },
+  {
+   "en": "About This Exercise...",
+   "id": "Tentang Praktikum Ini..."
+  },
+  {
+   "en": "Project CLEA",
+   "id": "Project CLEA"
+  },
+  {
+   "en": "Gettysburg College",
+   "id": "Gettysburg College"
+  },
+  {
+   "en": "VIREO",
+   "id": "VIREO"
+  },
+  {
+   "en": "OpenVireo",
+   "id": "OpenVireo"
+  },
+  {
+   "en": "CLEA",
+   "id": "CLEA"
+  },
+  {
+   "en": "NSF",
+   "id": "NSF"
+  },
+  {
+   "en": "GitHub",
+   "id": "GitHub"
+  },
+  {
+   "en": "FITS",
+   "id": "FITS"
+  },
+  {
+   "en": "CSV",
+   "id": "CSV"
+  },
+  {
+   "en": "VizieR",
+   "id": "VizieR"
+  },
+  {
+   "en": "NOMAD",
+   "id": "NOMAD"
+  },
+  {
+   "en": "USNO-B1",
+   "id": "USNO-B1"
+  },
+  {
+   "en": "GSC",
+   "id": "GSC"
+  },
+  {
+   "en": "2MASS",
+   "id": "2MASS"
+  },
+  {
+   "en": "SHA-256",
+   "id": "SHA-256"
+  },
+  {
+   "en": "JSON",
+   "id": "JSON"
+  },
+  {
+   "en": "File",
+   "id": "File",
+   "exact": true
+  },
+  {
+   "en": "Slew",
+   "id": "Gerakkan",
+   "exact": true
+  },
+  {
+   "en": "Tools",
+   "id": "Alat",
+   "exact": true
+  },
+  {
+   "en": "Help",
+   "id": "Bantuan",
+   "exact": true
+  },
+  {
+   "en": "Options",
+   "id": "Opsi",
+   "exact": true
+  },
+  {
+   "en": "Parameters",
+   "id": "Parameter",
+   "exact": true
+  },
+  {
+   "en": "OK",
+   "id": "OK",
+   "exact": true
+  },
+  {
+   "en": "Cancel",
+   "id": "Batal",
+   "exact": true
+  },
+  {
+   "en": "Close",
+   "id": "Tutup",
+   "exact": true
+  },
+  {
+   "en": "Yes",
+   "id": "Ya",
+   "exact": true
+  },
+  {
+   "en": "Reset",
+   "id": "Atur Ulang",
+   "exact": true
+  },
+  {
+   "en": "Update",
+   "id": "Perbarui",
+   "exact": true
+  },
+  {
+   "en": "List",
+   "id": "Daftar",
+   "exact": true
+  },
+  {
+   "en": "Selection",
+   "id": "Pilihan",
+   "exact": true
+  },
+  {
+   "en": "Exit",
+   "id": "Keluar",
+   "exact": true
+  },
+  {
+   "en": "Print...",
+   "id": "Cetak...",
+   "exact": true
+  },
+  {
+   "en": "Search...",
+   "id": "Cari...",
+   "exact": true
+  },
+  {
+   "en": "Save...",
+   "id": "Simpan...",
+   "exact": true
+  },
+  {
+   "en": "Stop",
+   "id": "Berhenti",
+   "exact": true
+  },
+  {
+   "en": "Scan",
+   "id": "Telusuri",
+   "exact": true
+  },
+  {
+   "en": "Telescopes",
+   "id": "Teleskop",
+   "exact": true
+  },
+  {
+   "en": "Websites",
+   "id": "Situs Web",
+   "exact": true
+  },
+  {
+   "en": "Confirm",
+   "id": "Konfirmasi",
+   "exact": true
+  },
+  {
+   "en": "Confirmation",
+   "id": "Konfirmasi",
+   "exact": true
+  },
+  {
+   "en": "Display",
+   "id": "Tampilan",
+   "exact": true
+  },
+  {
+   "en": "Objects",
+   "id": "Objek",
+   "exact": true
+  },
+  {
+   "en": "Go",
+   "id": "Mulai",
+   "exact": true
+  },
+  {
+   "en": "Init",
+   "id": "Siapkan",
+   "exact": true
+  },
+  {
+   "en": "Set Coordinates",
+   "id": "Atur Koordinat"
+  },
+  {
+   "en": "View/Select from List",
+   "id": "Lihat/Pilih dari Daftar"
+  },
+  {
+   "en": "Add Current Item/Position to List",
+   "id": "Tambahkan Objek/Posisi Saat Ini ke Daftar"
+  },
+  {
+   "en": "Slew to Selection",
+   "id": "Gerakkan ke Pilihan"
+  },
+  {
+   "en": "Field Information",
+   "id": "Informasi Bidang"
+  },
+  {
+   "en": "Variable Stars",
+   "id": "Bintang Variabel"
+  },
+  {
+   "en": "QSO List",
+   "id": "Daftar QSO"
+  },
+  {
+   "en": "CCD Camera",
+   "id": "Kamera CCD"
+  },
+  {
+   "en": "IR Camera",
+   "id": "Kamera IR"
+  },
+  {
+   "en": "Request Time",
+   "id": "Minta Waktu"
+  },
+  {
+   "en": "Set Date/Time",
+   "id": "Atur Tanggal/Waktu"
+  },
+  {
+   "en": "Site Parameters",
+   "id": "Parameter Situs"
+  },
+  {
+   "en": "Site Information",
+   "id": "Informasi Situs"
+  },
+  {
+   "en": "Print Sky Image",
+   "id": "Cetak Citra Langit"
+  },
+  {
+   "en": "HST Image Archive",
+   "id": "Arsip Citra HST"
+  },
+  {
+   "en": "Exit Observatory",
+   "id": "Keluar dari Observatorium"
+  },
+  {
+   "en": "Restrict Scope Access",
+   "id": "Batasi Akses Teleskop"
+  },
+  {
+   "en": "Limit Slewing",
+   "id": "Batasi Penggerakan"
+  },
+  {
+   "en": "Show Object ID",
+   "id": "Tampilkan ID Objek"
+  },
+  {
+   "en": "Show Object Mag",
+   "id": "Tampilkan Mag. Objek"
+  },
+  {
+   "en": "Fast Slewing",
+   "id": "Penggerakan Cepat"
+  },
+  {
+   "en": "Fast Scope Change",
+   "id": "Pergantian Teleskop Cepat"
+  },
+  {
+   "en": "Sound Effects",
+   "id": "Efek Suara"
+  },
+  {
+   "en": "Infrared Camera",
+   "id": "Kamera Inframerah"
+  },
+  {
+   "en": "Write Log File",
+   "id": "Tulis File Log"
+  },
+  {
+   "en": "Time-Dependent Data",
+   "id": "Data Bergantung Waktu"
+  },
+  {
+   "en": "Print in Color",
+   "id": "Cetak Berwarna"
+  },
+  {
+   "en": "Monochrome Displays",
+   "id": "Tampilan Monokrom"
+  },
+  {
+   "en": "Compute Rdshft Vel.",
+   "id": "Hitung Kec. Pergeseran Merah"
+  },
+  {
+   "en": "Allow User Change",
+   "id": "Izinkan Perubahan oleh Pengguna"
+  },
+  {
+   "en": "Set E(B-V)",
+   "id": "Atur E(B-V)"
+  },
+  {
+   "en": "Detect Sky",
+   "id": "Deteksi Langit"
+  },
+  {
+   "en": "Catalog Object",
+   "id": "Objek Katalog"
+  },
+  {
+   "en": "Field Size",
+   "id": "Ukuran Bidang"
+  },
+  {
+   "en": "Multi-Channel Spectrometer",
+   "id": "Spektrometer Multisaluran"
+  },
+  {
+   "en": "Observation List",
+   "id": "Daftar Pengamatan"
+  },
+  {
+   "en": "Star Data List",
+   "id": "Daftar Data Bintang"
+  },
+  {
+   "en": "Naked Eye Star",
+   "id": "Bintang Mata Telanjang"
+  },
+  {
+   "en": "Get Selection Data",
+   "id": "Ambil Data Pilihan"
+  },
+  {
+   "en": "Add Selection to Current Hot List",
+   "id": "Tambahkan Pilihan ke Daftar Objek Saat Ini"
+  },
+  {
+   "en": "Start New Hot List with Selection",
+   "id": "Mulai Daftar Objek Baru dengan Pilihan"
+  },
+  {
+   "en": "Save List",
+   "id": "Simpan Daftar"
+  },
+  {
+   "en": "Edit Selection",
+   "id": "Edit Pilihan"
+  },
+  {
+   "en": "Delete Selection",
+   "id": "Hapus Pilihan"
+  },
+  {
+   "en": "Undo Edit/Delete",
+   "id": "Urungkan Edit/Hapus"
+  },
+  {
+   "en": "Base Slew Rate",
+   "id": "Kecepatan Gerak Dasar"
+  },
+  {
+   "en": "Horizon Limit",
+   "id": "Batas Cakrawala"
+  },
+  {
+   "en": "Finder Field",
+   "id": "Bidang Pencari"
+  },
+  {
+   "en": "Finder Mag Limit",
+   "id": "Batas Mag. Pencari"
+  },
+  {
+   "en": "Field Creation Factor",
+   "id": "Faktor Pembuatan Bidang"
+  },
+  {
+   "en": "Enter Sky Coordinates for Slew",
+   "id": "Masukkan Koordinat Langit untuk Gerakan"
+  },
+  {
+   "en": "Add/Edit Hot List Entry",
+   "id": "Tambah/Edit Entri Daftar Objek"
+  },
+  {
+   "en": "Camera Parameters",
+   "id": "Parameter Kamera"
+  },
+  {
+   "en": "Spectra From Multi-channel Spectrometer",
+   "id": "Spektrum dari Spektrometer Multisaluran"
+  },
+  {
+   "en": "Terminate Current Slew",
+   "id": "Hentikan Gerakan Saat Ini"
+  },
+  {
+   "en": "Save Updates",
+   "id": "Simpan Pembaruan"
+  },
+  {
+   "en": "Sort Options",
+   "id": "Opsi Pengurutan"
+  },
+  {
+   "en": "Scan Rate",
+   "id": "Kecepatan Telusur"
+  },
+  {
+   "en": "Chip Well Depth",
+   "id": "Kedalaman Sumur Chip"
+  },
+  {
+   "en": "Dark Noise",
+   "id": "Derau Gelap"
+  },
+  {
+   "en": "Data from Observations",
+   "id": "Data dari Pengamatan"
+  },
+  {
+   "en": "Record/Review",
+   "id": "Catat/Tinjau"
+  },
+  {
+   "en": "Next on List",
+   "id": "Berikutnya dalam Daftar"
+  },
+  {
+   "en": "No More Spectra",
+   "id": "Tidak Ada Spektrum Lagi"
+  },
+  {
+   "en": "Spectral Line Table",
+   "id": "Tabel Garis Spektrum"
+  },
+  {
+   "en": "Program List",
+   "id": "Daftar Program"
+  },
+  {
+   "en": "Pulsar guide",
+   "id": "Panduan pulsar"
+  },
+  {
+   "en": "Pulsar timing guide",
+   "id": "Panduan pewaktuan pulsar"
+  },
+  {
+   "en": "Radio Astronomy of Pulsars",
+   "id": "Astronomi Radio Pulsar"
+  },
+  {
+   "en": "Radio Telescope Control Panel",
+   "id": "Panel Kontrol Teleskop Radio"
+  },
+  {
+   "en": "Radio Simulation Options",
+   "id": "Opsi Simulasi Radio"
+  },
+  {
+   "en": "Pulsar Parameters",
+   "id": "Parameter Pulsar"
+  },
+  {
+   "en": "Access Pulsar List",
+   "id": "Akses Daftar Pulsar"
+  },
+  {
+   "en": "Pulsar Identification",
+   "id": "Identifikasi Pulsar"
+  },
+  {
+   "en": "Telescope Type",
+   "id": "Tipe Teleskop"
+  },
+  {
+   "en": "Slew Rate",
+   "id": "Kecepatan Gerak"
+  },
+  {
+   "en": "Find Pulsar Data",
+   "id": "Temukan Data Pulsar"
+  },
+  {
+   "en": "Identify Recorded Object",
+   "id": "Identifikasi Objek Tercatat"
+  },
+  {
+   "en": "Add Channel",
+   "id": "Tambah Saluran"
+  },
+  {
+   "en": "Antenna Aperture",
+   "id": "Apertur Antena"
+  },
+  {
+   "en": "Sound Features",
+   "id": "Fitur Suara"
+  },
+  {
+   "en": "Asteroid List",
+   "id": "Daftar Asteroid"
+  },
+  {
+   "en": "Spectral Range",
+   "id": "Rentang Spektrum"
+  },
+  {
+   "en": "Spectrum Information",
+   "id": "Informasi Spektrum"
+  },
+  {
+   "en": "View/Save Spectra",
+   "id": "Lihat/Simpan Spektrum"
+  },
+  {
+   "en": "Select Objects",
+   "id": "Pilih Objek"
+  },
+  {
+   "en": "Print Selection Field",
+   "id": "Cetak Bidang Pilihan"
+  },
+  {
+   "en": "Save Text",
+   "id": "Simpan Teks"
+  },
+  {
+   "en": "Comma Delimit",
+   "id": "Dipisahkan Koma"
+  },
+  {
+   "en": "Exposure Timer",
+   "id": "Pewaktu Eksposur"
+  },
+  {
+   "en": "Find Text String",
+   "id": "Temukan Teks"
+  },
+  {
+   "en": "Close Multi-Spec",
+   "id": "Tutup Multi-Spec"
+  },
+  {
+   "en": "Measured Redshift Data",
+   "id": "Data Pergeseran Merah Terukur"
+  },
+  {
+   "en": "Record Z",
+   "id": "Catat Z"
+  },
+  {
+   "en": "Save Data",
+   "id": "Simpan Data"
+  },
+  {
+   "en": "Plot Data",
+   "id": "Plot Data"
+  },
+  {
+   "en": "LSS Wedge Plot",
+   "id": "Diagram Kerucut LSS"
+  },
+  {
+   "en": "Load Saved Data",
+   "id": "Muat Data Tersimpan"
+  },
+  {
+   "en": "LSS Galaxy Data",
+   "id": "Data Galaksi LSS"
+  },
+  {
+   "en": "Time-Dependent Data",
+   "id": "Data Bergantung Waktu"
+  },
+  {
+   "en": "Load/Plot",
+   "id": "Muat/Plot"
+  },
+  {
+   "en": "View/Print Parameters",
+   "id": "Lihat/Cetak Parameter"
+  },
+  {
+   "en": "Display/Print Data",
+   "id": "Tampilkan/Cetak Data"
+  },
+  {
+   "en": "Select Cluster Data",
+   "id": "Pilih Data Gugus"
+  },
+  {
+   "en": "Possible Cluster Member",
+   "id": "Kemungkinan Anggota Gugus"
+  },
+  {
+   "en": "Clusters for Study",
+   "id": "Gugus untuk Dipelajari"
+  },
+  {
+   "en": "Variable Star Data",
+   "id": "Data Bintang Variabel"
+  },
+  {
+   "en": "Simulated Light Curve",
+   "id": "Kurva Cahaya Simulasi"
+  },
+  {
+   "en": "Remove from HR Diagram",
+   "id": "Keluarkan dari Diagram H-R"
+  },
+  {
+   "en": "Recorded Results",
+   "id": "Hasil Tercatat"
+  },
+  {
+   "en": "Telescope has Moved!",
+   "id": "Teleskop Telah Bergerak!"
+  },
+  {
+   "en": "Reading Sky!",
+   "id": "Membaca Langit!"
+  },
+  {
+   "en": "Radio clock scenario",
+   "id": "Skenario jam radio"
+  },
+  {
+   "en": "Scenario inputs",
+   "id": "Masukan skenario"
+  },
+  {
+   "en": "Use compiled defaults",
+   "id": "Gunakan nilai bawaan terkompilasi"
+  },
+  {
+   "en": "Reset radio site",
+   "id": "Atur ulang situs radio"
+  },
+  {
+   "en": "Start pulsar exercise",
+   "id": "Mulai praktikum pulsar"
+  },
+  {
+   "en": "Instructor mode",
+   "id": "mode instruktur"
+  },
+  {
+   "en": "Clear",
+   "id": "Kosongkan",
+   "exact": true
+  },
+  {
+   "en": "Find",
+   "id": "Temukan",
+   "exact": true
+  },
+  {
+   "en": "Record",
+   "id": "Catat",
+   "exact": true
+  },
+  {
+   "en": "Show",
+   "id": "Tampilkan",
+   "exact": true
+  },
+  {
+   "en": "Save",
+   "id": "Simpan",
+   "exact": true
+  },
+  {
+   "en": "Save As",
+   "id": "Simpan Sebagai",
+   "exact": true
+  },
+  {
+   "en": "Save List...",
+   "id": "Simpan Daftar...",
+   "exact": true
+  },
+  {
+   "en": "Find Pulsar...",
+   "id": "Temukan Pulsar...",
+   "exact": true
+  },
+  {
+   "en": "Print",
+   "id": "Cetak",
+   "exact": true
+  },
+  {
+   "en": "Lab Table",
+   "id": "meja praktikum"
+  },
+  {
+   "en": "Save All",
+   "id": "Simpan Semua"
+  },
+  {
+   "en": "Clear All",
+   "id": "Kosongkan Semua"
+  },
+  {
+   "en": "Telescope Display",
+   "id": "layar teleskop"
+  },
+  {
+   "en": "Master Receiver",
+   "id": "penerima utama"
+  },
+  {
+   "en": "Case Dependent",
+   "id": "Cocokkan Huruf Besar/Kecil"
+  },
+  {
+   "en": "Search String",
+   "id": "Teks yang Dicari"
+  },
+  {
+   "en": "Search Results",
+   "id": "Hasil Pencarian"
+  },
+  {
+   "en": "Optical",
+   "id": "Optik",
+   "exact": true
+  },
+  {
+   "en": "Spectral Line Help",
+   "id": "Bantuan Garis Spektrum"
+  },
+  {
+   "en": "Original hot lists",
+   "id": "Daftar objek asli"
+  },
+  {
+   "en": "Telescope view",
+   "id": "tampilan teleskop"
+  },
+  {
+   "en": "Receiver monitor",
+   "id": "Monitor penerima"
+  },
+  {
+   "en": "Radio configuration",
+   "id": "Konfigurasi radio"
+  },
+  {
+   "en": "pulsar exercise",
+   "id": "praktikum pulsar"
+  },
+  {
+   "en": "Manual marks",
+   "id": "Tanda manual"
+  },
+  {
+   "en": "Data properties",
+   "id": "Properti data"
+  },
+  {
+   "en": "Trace audition",
+   "id": "Dengarkan jejak"
+  },
+  {
+   "en": "Telescope position",
+   "id": "Posisi teleskop"
+  },
+  {
+   "en": "Radio telescope control",
+   "id": "Kontrol teleskop radio"
+  }
+ ],
+ "forbidden": [
+  {
+   "words": [
+    "kepunahan"
+   ],
+   "use": "ekstingsi (ekstingsi antarbintang)"
+  },
+  {
+   "words": [
+    "klaster",
+    "klaster*"
+   ],
+   "use": "gugus (gugus bintang, gugus terbuka)"
+  },
+  {
+   "id": "(?<![\\p{L}\\p{N}])geser merah(?![\\p{L}\\p{N}])",
+   "use": "pergeseran merah"
+  },
+  {
+   "words": [
+    "redshift",
+    "redshifts"
+   ],
+   "use": "pergeseran merah (redshift only in glosses)"
+  },
+  {
+   "id": "(?<![\\p{L}\\p{N}])(?:buka|simpan|muat|unggah|unduh|menyimpan|membuka|memuat) berkas(?![\\p{L}\\p{N}])|(?<![\\p{L}\\p{N}])berkas (?:orbit|teks|FITS|CSV|JSON|log|simpanan|unduhan)(?![\\p{L}\\p{N}])",
+   "use": "file (a computer file; berkas is only the radio beam)"
+  },
+  {
+   "words": [
+    "peramban",
+    "peramban*"
+   ],
+   "use": "browser"
+  },
+  {
+   "id": "(?<![\\p{L}\\p{N}])magnitudo tampak(?![\\p{L}\\p{N}])",
+   "use": "magnitudo semu"
+  },
+  {
+   "id": "(?<![\\p{L}\\p{N}])magnitudo absolut(?![\\p{L}\\p{N}])",
+   "use": "magnitudo mutlak"
+  },
+  {
+   "id": "(?<![\\p{L}\\p{N}])tetapan Hubble(?![\\p{L}\\p{N}])",
+   "use": "konstanta Hubble"
+  },
+  {
+   "words": [
+    "pulsa"
+   ],
+   "use": "denyut (pulsa is phone credit; the pulsar signal pulse is denyut)"
+  }
+ ]
+}

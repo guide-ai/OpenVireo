@@ -3,7 +3,7 @@ import {test,expect} from '../fixtures/area-tripwire';
 import {FRENCH_LOCALE,PORTUGUESE_LOCALE,SPANISH_LOCALE} from '../fixtures/language';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
-import {FRENCH_TEXT,PORTUGUESE_TEXT} from './languageText';
+import {FRENCH_TEXT,INDONESIAN_TEXT,PORTUGUESE_TEXT} from './languageText';
 
 // Front ES1 (docs/I18N.md; user decisions 1, 2, 5 and 9 of 2026-11-09): the English / Español selector at the foot of the header
 // menu, its reload confirmation, storage failure and the "View original (English)" option. Front ES-REL: Spanish is released, so
@@ -172,6 +172,63 @@ test('Front FR-REL: the keyboard steps across all four options without opening t
  expect(await page.evaluate(()=>document.activeElement!==document.body&&document.activeElement!==null)).toBe(true);
  expect(new URL(page.url()).search).toBe('');expect(await stored(page)).toBeNull();
 });
+});
+
+// Front ID0 (plan front-i18n-id.md §2): Indonesian is registered before its release, as FR0 had French. Only its `?lang=id` preview
+// reaches it and offers it; id, id-ID, ID-id and in-ID (the withdrawn code) browsers, ms-MY (Malay, never Indonesian) and a stored id
+// get English with the four released options, and fetch no Indonesian module.
+/** The requests for Indonesian modules (the virtual i18n-id-* chunks of the dev server, or src/i18n/id/). */
+function indonesianRequests(page:Page):string[]{
+ const out:string[]=[];page.on('request',r=>{if(/openvireo-i18n\/i18n-id-|\/src\/i18n\/id\//.test(r.url()))out.push(r.url());});return out;
+}
+test('Front ID0: only a ?lang=id preview opens and offers Bahasa Indonesia; id, id-ID, in-ID and ms-MY browsers and a stored id get English',async({browser})=>{
+ test.setTimeout(180_000);
+ const I=INDONESIAN_TEXT;
+ for(const languages of [['id'],['id-ID'],['ID-id'],['in-ID'],['ms-MY'],['id-ID','es-MX']] as const){
+  const page=await browserIn(browser,languages);const indonesian=indonesianRequests(page);
+  expect(await languageOf(page),languages.join(',')).toBe('en');
+  await expect(id(page,'language-select').locator('option')).toHaveText(FOUR);
+  expect(indonesian,`${languages.join(',')}: no Indonesian module is fetched`).toEqual([]);
+  await page.close();
+ }
+ const storedId=await browserIn(browser,['id-ID']);await seedChoice(storedId,'id');const storedIndonesian=indonesianRequests(storedId);
+ expect(await languageOf(storedId)).toBe('en');expect(storedIndonesian).toEqual([]);await storedId.close();
+ const page=await browserIn(browser,['en-US']);
+ expect(await languageOf(page,'?lang=id')).toBe('id');
+ await expect(page.locator('.investigation-toolbar')).toContainText(I.catalog['project.save']);await expect(page).toHaveTitle(I.catalog['app.documentTitle']);
+ const select=page.getByRole('combobox',{name:I.maps.languageChoice.legend});
+ await expect(select.locator('option')).toHaveText([...FOUR,'Bahasa Indonesia']);await expect(select).toHaveValue('id');
+ expect(await select.locator('option').evaluateAll(o=>o.map(x=>[(x as HTMLOptionElement).value,x.getAttribute('lang')]))).toEqual([['en','en'],['es-419','es-419'],['pt-BR','pt-BR'],['fr','fr'],['id','id']]);
+ // A change on the preview stores nothing (SC8): the choice travels as ?lang=, and the dialog, in Indonesian, says so.
+ await choose(page,'fr');
+ const dialog=id(page,'language-confirm');await expect(dialog).toContainText(I.maps.languageChoice.title);
+ await expect(dialog).toContainText(I.maps.languageChoice.reload('Français'));await expect(id(page,'language-preview')).toHaveText(I.maps.languageChoice.preview);
+ await Promise.all([page.waitForURL(/lang=fr/),id(page,'language-change').click()]);
+ await expect(page.locator('html')).toHaveAttribute('lang','fr');expect(await stored(page)).toBeNull();
+ await page.close();
+});
+
+test('Front ID0: on the ?lang=id preview the keyboard steps across all five options without opening the dialog; Enter or leaving asks, Escape returns',async({page})=>{
+ const I=INDONESIAN_TEXT;
+ await open(page,'?lang=id');await expect(page.locator('html')).toHaveAttribute('lang','id');
+ const select=page.getByRole('combobox',{name:I.maps.languageChoice.legend}),dialog=id(page,'language-confirm');
+ await select.focus();await expect(select).toBeFocused();await expect(select).toHaveValue('id');
+ for(const [key,value] of [['ArrowUp','fr'],['ArrowUp','pt-BR'],['ArrowUp','es-419'],['ArrowUp','en'],['ArrowDown','es-419'],['ArrowDown','pt-BR'],['ArrowDown','fr'],['ArrowDown','id'],['Home','en'],['End','id'],['ArrowUp','fr']] as const){
+  await page.keyboard.press(key);await expect(select,key).toHaveValue(value);await expect(dialog,`${key} → ${value}`).toHaveCount(0);await expect(select).toBeFocused();
+ }
+ // Enter asks for the pending option, by its own name, in Indonesian; Cancel returns to Indonesian.
+ await page.keyboard.press('Enter');
+ await expect(dialog).toBeVisible();await expect(dialog).toContainText(I.maps.languageChoice.reload('Français'));await expect(id(page,'language-cancel')).toBeFocused();
+ await id(page,'language-cancel').click();await expect(dialog).toHaveCount(0);await expect(select).toHaveValue('id');
+ // Escape on the select drops a pending step; leaving the select with a pending step asks for it.
+ await select.focus();await page.keyboard.press('Home');await expect(select).toHaveValue('en');
+ await page.keyboard.press('Escape');await expect(select).toHaveValue('id');await expect(dialog).toHaveCount(0);
+ await select.focus();await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await expect(select).toHaveValue('es-419');await expect(dialog).toHaveCount(0);
+ await page.keyboard.press('Tab');
+ await expect(dialog).toBeVisible();await expect(dialog).toContainText(I.maps.languageChoice.reload('Español'));
+ await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);await expect(select).toHaveValue('id');
+ expect(await page.evaluate(()=>document.activeElement!==document.body&&document.activeElement!==null)).toBe(true);
+ expect(new URL(page.url()).search).toBe('?lang=id');expect(await stored(page)).toBeNull();
 });
 
 test.describe('in a Brazilian Portuguese browser',()=>{
