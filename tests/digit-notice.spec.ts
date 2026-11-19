@@ -51,7 +51,7 @@ test('pasted or dropped text is read from its data transfer, and the notice goes
  await id.evaluate(el=>el.remove());
  await expect(notice(page)).toHaveCount(0);
 });
-for(const [lang,file] of [['es-419','es/es.json'],['pt-BR','pt-br/pt-br.json'],['fr','fr/fr.json'],['hi','hi/hi.json']] as const){
+for(const [lang,file] of [['es-419','es/es.json'],['pt-BR','pt-br/pt-br.json'],['fr','fr/fr.json'],['id','id/id.json'],['hi','hi/hi.json']] as const){
  test(`the notice speaks the page’s language: ${lang}`,async({page})=>{
   await lab(page,`?lang=${lang}`);
   const id=page.locator('[data-testid=objectx-lab] input').first();await id.fill('');await id.focus();
