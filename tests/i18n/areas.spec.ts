@@ -238,7 +238,7 @@ for(const {L:P,name} of RELEASED_AREAS)test.describe(`in a ${name} browser`,()=>
 // observationMetadata map) and `fits` (the cameraInfo.* keys), as FR1's did; later ID fronts fill the others (Front ID3: E03 fills the
 // shared classification+cluster module, which the cluster routes also fetch, so `cluster` holds text, as for French after FR3). ID-REL
 // turns this back into a released-language test (as FR-REL did). Front HI0: Hindi's preview the same way (HI-REL moves it to RELEASED_AREAS).
-const PARTIAL=[{L:INDONESIAN_TEXT,name:'Indonesian',release:'ID-REL',areas:['classification','cluster','exposure','fits','lss','photometer']},{L:HINDI_TEXT,name:'Hindi',release:'HI-REL',areas:['photometer']}] as const;
+const PARTIAL=[{L:INDONESIAN_TEXT,name:'Indonesian',release:'ID-REL',areas:['classification','cluster','exposure','fits','lss','photometer']},{L:HINDI_TEXT,name:'Hindi',release:'HI-REL',areas:['classification','fits','photometer']}] as const;
 for(const {L:P,name,release,areas} of PARTIAL)test.describe(`a language before its release (${name})`,()=>{
  test.use({locale:'en-US'});
  test(`a partial language (${name}) fetches only its core, and no chunk for an empty area`,async({page})=>{
@@ -301,7 +301,10 @@ test.describe('a second language before its release',()=>{
   };
   const headingKey:Record<string,string>={classification:'class.title','cluster-database':'db.title',photometer:'ph.title','lss-survey':'lss.title','galaxy-exposure':'galaxyExposure.title','star-exposure':'starExposure.title',images:'fits.title'};
   const empty=plan.modules.filter(m=>m.kind==='area'&&m.empty).map(m=>m.name);
-  expect(empty.length,'most areas are still empty').toBeGreaterThan(5);
+  // Front RU1: pin the areas Russian gives text to (each RU front updates this list), so a lost or stray area fails here: RU0's
+  // shell keys give text to `photometer` (project.photometryCleared and project.photometryRestored, rendered by the photometer), and
+  // RU1's maps and keys to `classification` (the observationMetadata map) and `fits` (the cameraInfo.* keys), as FR1's and ID1's did.
+  expect(plan.modules.filter(m=>m.kind==='area'&&!m.empty).map(m=>m.name).sort(),'the areas with Russian text').toEqual(['classification','fits','photometer']);
   for(const r of ROUTES){
    await page.goto('about:blank');w.language.length=0;
    await page.goto(`/${P.query}#${r.hash}`);
