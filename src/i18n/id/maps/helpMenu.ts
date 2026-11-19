@@ -20,8 +20,8 @@ export const HELP_MENU_ID:Translation<typeof HELP_MENU_EN>=Object.freeze({
  buttonNames:Object.freeze({
   'OBSRVHLP.LST':'Bantuan untuk kontrol teleskop','PHOTOHLP.LST':'Bantuan untuk fotometer','CAMHLP.LST':'Bantuan untuk kamera','SPECHLP.LST':'Bantuan untuk spektrometer',
   'CLASSHLP.LST':'Bantuan untuk klasifikasi spektrum','MEASHLP.LST':'Bantuan untuk pengukuran spektrum','HRANALHLP.LST':'Bantuan untuk diagram HR','VARTYPEHLP.LST':'Bantuan untuk jenis bintang variabel',
-  'WDGPLTHLP.LST':'Bantuan untuk diagram kerucut','PLSANHLP.LST':'Bantuan untuk analisis pulsar','PLSLSHLP.LST':'Bantuan untuk parameter pulsar','MLTSPHLP.LST':'Bantuan untuk spektrometer multi-objek',
-  'SPLSTHLP.LST':'Bantuan untuk daftar spektrum multi-objek',
+  'WDGPLTHLP.LST':'Bantuan untuk diagram kerucut','PLSANHLP.LST':'Bantuan untuk analisis pulsar','PLSLSHLP.LST':'Bantuan untuk parameter pulsar','MLTSPHLP.LST':'Bantuan untuk spektrometer multiobjek',
+  'SPLSTHLP.LST':'Bantuan untuk daftar spektrum multiobjek',
  }),
  exitNote:'VIREO menampilkan pengingat ini saat Anda keluar dari observatorium selama praktikum (setelah Jalankan Praktikum (Run Exercise)); jika tidak, VIREO hanya menanyakan apakah Anda ingin keluar. OpenVireo tidak memiliki langkah Masuk (Log In) atau Jalankan Praktikum, sehingga observatorium selalu berupa praktikum yang sedang berlangsung. Di VIREO, OK atau Ya (Yes) menutup program; Batal (Cancel) atau Tidak (No) membiarkannya tetap terbuka.',
 });

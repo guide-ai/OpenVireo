@@ -118,6 +118,10 @@ describe('Front SC4: rule details',()=>{
   expect(pluralForms(forms(['one','few','many','other']),['files.count'],PROFILES.ru)).toEqual([]);
   expect(describeFindings(pluralForms(forms(['one','other']),['files.count'],PROFILES.ru))).toEqual(['catalog:files.count: [plural] lacks the few form (Russian needs one, few, many, other)','catalog:files.count: [plural] lacks the many form (Russian needs one, few, many, other)']);
   expect(pluralForms(forms(['other']),['files.count'],PROFILES.ja)).toEqual([]);
+  // Front RU0: `*` marks the category segment of a two-level family's axis.
+  const two=Object.fromEntries(['one','few','many','other'].map(c=>[`w.${c}.none`,'x']));
+  expect(pluralForms(two,['w.*.none'],PROFILES.ru)).toEqual([]);
+  expect(describeFindings(pluralForms({...two,'w.few.none':undefined as never},['w.*.none'],PROFILES.ru))).toEqual(['catalog:w.*.none: [plural] lacks the few form (Russian needs one, few, many, other)']);
   expect(describeFindings(pluralForms(forms(['one','other']),['files.count'],PROFILES['zh-Hans']))).toEqual(['catalog:files.count: [plural] has a one form, which Simplified Chinese never selects']);
   expect(pluralForms(forms(['one','other']),['files.count'],PROFILES.hi)).toEqual([]);
  });

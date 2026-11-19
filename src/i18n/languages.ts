@@ -12,7 +12,8 @@ export type LanguageEntry=Readonly<{
  /** src/i18n/<dir>/: the catalog, originals.json, maps/, index.ts (the manifest) and, with `help`, help/<NAME>.ts. */
  dir:string;
  catalog:string;
- /** Multiplies the chunk budgets of scripts/check-i18n-dist.mjs (1 for Latin and Cyrillic scripts). */
+ /** Multiplies the chunk budgets of scripts/check-i18n-dist.mjs: 1 for the Latin languages; Front RU0: 1.2 for Russian, since
+  * UTF-8 takes two bytes per Cyrillic letter (plan front-i18n-ru.md §8, a proxy measured at 1.18× French in gzip). */
  budgetFactor:number;
  htmlLang:string;
  /** The site path of the language's own static pages (its SEO home and lab pages): dist/<pagePath>/… (`es`, later `pt-br`). Those

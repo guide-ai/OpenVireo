@@ -157,10 +157,15 @@ describe('Front ID0: scripts/check-i18n-dist.mjs with a language written in ASCI
   const short=ascii('qaf-XF','Muat dataPulsarTersimpan');
   expect(check(dist([short]),[short]).warnings).toEqual(['qaf-XF pulsar has no marker text yet; its chunk i18n-qaf-XF-pulsar-qafXFpul.js is found by its name only']);
  });
- it('leaves every registered language\'s markers as they were: no module of es-419, pt-BR, fr or id uses the ASCII fallback',()=>{
-  const result=checkI18nDist(dist([]),{root,languages:LANGUAGES,graph}) as {reports:{tag:string;asciiMarked:string[]}[]};
+ it('leaves every registered language\'s markers as they were: no module of es-419, pt-BR or fr uses the ASCII fallback; Indonesian only for a module of maps alone',()=>{
+  const result=checkI18nDist(dist([]),{root,languages:LANGUAGES,graph}) as {reports:{tag:string;asciiMarked:string[];plan:{modules:{name:string;keys:string[];maps:string[]}[]}}[]};
   expect(result.reports.map(r=>r.tag)).toEqual(LANGUAGES.map(l=>l.tag));
-  for(const r of result.reports)expect(r.asciiMarked,r.tag).toEqual([]);
+  for(const r of result.reports){
+   if(r.tag!=='id'){expect(r.asciiMarked,r.tag).toEqual([]);continue;}
+   // Front ID1: Indonesian's `classification` holds only the observationMetadata map (no catalog key yet), so the fallback finds it,
+   // as it was built to; a module with a catalog key always has a marker by the first rule.
+   for(const name of r.asciiMarked){const m=r.plan.modules.find(x=>x.name===name)!;expect(m.keys,`${r.tag} ${name}`).toEqual([]);expect(m.maps.length,`${r.tag} ${name}`).toBeGreaterThan(0);}
+  }
  },180_000);
 });
 
