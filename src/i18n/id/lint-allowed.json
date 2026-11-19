@@ -1,4 +1,35 @@
 {
  "about": "Front ID0: findings of the id lint (src/i18n/lint/, profile id) that are correct Indonesian in one string, each with a reason. Keys are the lint's string ids; `words` are the matched words allowed in that string only, `rules` whole rules, `placeholders` added placeholders.",
- "entries": {}
+ "entries": {
+  "original:fragment|Meter Radio Telescope": {
+   "placeholders": [
+    "{diameter}"
+   ],
+   "reason": "radioIdCaptionText places VIREO’s telescope diameter where the translation holds {diameter} (Indonesian puts the number after «Teleskop Radio»), as Spanish, Portuguese and French do"
+  },
+  "original:\" Not Found.": {
+   "rules": [
+    "quotes"
+   ],
+   "reason": "VIREO joins a straight opening quote, the search text and this tail (helpNotFoundText, the radio hot list and saved-rows Find); the closing quote must match that untranslated opening one"
+  },
+  "original:fragment|You have not recorded your current readings for \"": {
+   "rules": [
+    "quotes"
+   ],
+   "reason": "VIREO closes this quote with its untranslated tail ’\".’ (PHOTOMETER_RECORD_PIECES.movedTail); the opening quote must match it"
+  },
+  "map:camera.citationIr": {
+   "words": [
+    "of"
+   ],
+   "reason": "the proper names Two Micron All Sky Survey and University of Massachusetts, kept in English as cited"
+  },
+  "original:Virtual Observatory mode is enabled.\r\n\r\nStudents using the Virtual Observatory are able to access some data values.\r\n\r\n(For access to all data, set \"Virtual Observatory\" AND \"Edit Mode\".)": {
+   "rules": [
+    "typography"
+   ],
+   "reason": "VIREO's option names keep their capitals: «Mode Observatorium Virtual» names the Virtual Observatory mode, as the message quotes “Observatorium Virtual” and “Mode Edit” after it"
+  }
+ }
 }
