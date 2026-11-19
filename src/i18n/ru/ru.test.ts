@@ -114,6 +114,13 @@ describe('Front RU0: the Russian (ru) bundle',()=>{
   for(const k of kept){expect(english,k).toContain(k);expect(Object.hasOwn(originals,k),k).toBe(false);}
   expect((originals as Record<string,string>).E).toBe('В');expect((originals as Record<string,string>).W).toBe('З');
  });
+ it('Front RU1 review: a VIREO `fragment|` piece keeps the join spaces the reviewed Spanish piece has at each edge (VIREO joins it with data)',()=>{
+  const edges=(v:string)=>[/^ /.test(v),/ $/.test(v)];
+  const es=esOriginals as Record<string,string>;
+  const fragments=Object.keys(originals).filter(k=>k.startsWith('fragment|')&&Object.hasOwn(es,k));
+  expect(fragments.length).toBeGreaterThan(10);
+  expect(fragments.filter(k=>edges((originals as Record<string,string>)[k]).join()!==edges(es[k]).join())).toEqual([]);
+ });
  it('every map has its English shape: the shell and observatory maps complete, the header-name maps partial',()=>{
   for(const [id,map] of Object.entries(RUSSIAN.maps??{})){
    expect(MAP_IDS,id).toContain(id);
