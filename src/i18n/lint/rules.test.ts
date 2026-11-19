@@ -2,7 +2,7 @@ import {describe,expect,it} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {FIXTURES,RULES_WITH_FIXTURES,type Fixture} from './fixtures';
 import {OPTIONAL_PLURAL_CATEGORIES,PROFILE_IDS,PROFILES,REGISTER,profileFor} from './profiles';
-import {SIMPLIFIED_ONLY,TRADITIONAL_ONLY} from './hanVariants';
+import {EXCLUDED_CHARACTERS,SEED_PAIRS,SIMPLIFIED_ONLY,TRADITIONAL_ONLY} from './hanVariants';
 import {collectPairs} from './pairs';
 import {allowances,describeFindings,errorsOf,glossaryFrom,graphemeLength,lintPair,lintPairs,normalizeName,pluralForms,reportsOf,unbalanced,wordSource,type LintData,type LocaleProfile,type Pair} from './rules';
 import {pluralCategories} from '../plural';
@@ -20,9 +20,15 @@ describe('Front SC4: per-locale lint profiles',()=>{
  it('declares the plural categories that Intl.PluralRules gives each language',()=>{
   for(const id of PROFILE_IDS)expect(PROFILES[id].pluralCategories,id).toEqual(pluralCategories(id));
  });
- it('keeps the Simplified/Traditional seed table one-to-one and disjoint',()=>{
+ it('keeps the Simplified/Traditional table one-to-one and disjoint',()=>{
   expect(SIMPLIFIED_ONLY.size).toBe(TRADITIONAL_ONLY.size);expect(SIMPLIFIED_ONLY.size).toBeGreaterThan(60);
   for(const [s,t] of SIMPLIFIED_ONLY){expect(TRADITIONAL_ONLY.get(t),s).toBe(s);expect(TRADITIONAL_ONLY.has(s),s).toBe(false);expect(s).not.toBe(t);}
+  // Front ZH0: generated from the local ICU and the GB2312/Big5 sets (scripts/han-variants.mjs); SC4's 71 seed pairs stay in it, and
+  // the shared or one-to-many characters (发 后 里 干 面 台 系 只 复…) are never listed on either side.
+  expect(SIMPLIFIED_ONLY.size).toBeGreaterThan(1500);expect(SEED_PAIRS.length).toBe(142);// 71 pairs
+  for(let i=0;i<SEED_PAIRS.length;i+=2)expect(SIMPLIFIED_ONLY.get(SEED_PAIRS[i]),SEED_PAIRS[i]).toBe(SEED_PAIRS[i+1]);
+  for(const c of EXCLUDED_CHARACTERS){expect(SIMPLIFIED_ONLY.has(c),c).toBe(false);expect(TRADITIONAL_ONLY.has(c),c).toBe(false);}
+  for(const c of '发后里干面台系只复')expect(EXCLUDED_CHARACTERS,c).toContain(c);
  });
  it('uses no ASCII-only \\b or \\w in a rule (plan §6: Unicode classes only)',()=>{
   for(const file of ['rules.ts','profiles.ts']){

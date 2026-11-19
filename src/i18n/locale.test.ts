@@ -32,7 +32,7 @@ describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-0
  it('accepts the pseudo-locale only in the dev server and tests, never from storage',()=>{
   expect(decide({param:'qps'})).toBe('en');expect(decide({param:'qps',dev:true,registry:UNRELEASED})).toBe('qps');
   expect(decide({stored:'qps',dev:true})).toBe('en');
-  expect(HTML_LANG).toEqual({en:'en','es-419':'es-419','pt-BR':'pt-BR',fr:'fr',id:'id',qps:'en','qps-cjk':'ja','qps-deva':'hi','qps-cyrl':'ru','qps-rtl':'ar'});
+  expect(HTML_LANG).toEqual({en:'en','es-419':'es-419','pt-BR':'pt-BR',fr:'fr',id:'id','zh-Hans':'zh-Hans',qps:'en','qps-cjk':'ja','qps-deva':'hi','qps-cyrl':'ru','qps-rtl':'ar'});
  });
  it('shows the selector when it offers a choice: before a release only on that language\'s own preview (ES1 review 1, C3; SC8)',()=>{
   expect(selectorShown('en',UNRELEASED)).toBe(false);expect(selectorShown('es-419',UNRELEASED)).toBe(true);
@@ -89,5 +89,18 @@ describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-0
   for(const languages of [['id'],['id-ID'],['ID-id'],['in'],['in-ID']])expect(decide({languages,registry:after}),languages.join(',')).toBe('id');
   for(const languages of [['ms'],['ms-MY'],['ms-ID'],['zsm'],['jv'],['jv-ID'],['su'],['en-ID'],['en-US','id-ID']])expect(decide({languages,registry:after}),languages.join(',')).toBe('en');
   expect(decide({languages:['id-ID','pt-BR'],registry:after})).toBe('id');expect(decide({stored:'id',languages:['en-US'],registry:after})).toBe('id');
+ });
+ it('Front ZH0: Simplified Chinese is registered before its release: only ?lang=zh-Hans opens it; zh, zh-CN, zh-Hans-TW browsers and a stored zh-Hans get English',()=>{
+  expect(isReleased('zh-Hans')).toBe(false);
+  for(const languages of [['zh'],['zh-CN'],['zh-SG'],['zh-Hans-TW'],['ZH-cn','fr-FR']])expect(decide({languages}),languages.join(',')).toBe('en');
+  expect(decide({stored:'zh-Hans',languages:['zh-CN']})).toBe('en');
+  expect(decide({param:'zh-Hans',languages:['en-US']})).toBe('zh-Hans');expect(decide({param:'zh-Hans',stored:'fr',languages:['zh-TW']})).toBe('zh-Hans');
+  for(const junk of ['zh','zh-CN','zh-hans','ZH-HANS','zh-Hant'])expect(decide({param:junk,languages:['en-US']}),junk).toBe('en');
+  expect(HTML_LANG['zh-Hans']).toBe('zh-Hans');expect(selectorShown('zh-Hans')).toBe(true);
+  // Once released (ZH-REL), Simplified browsers open it; Traditional browsers keep English until zh-Hant exists (decided 2026-11-09).
+  const after=releasing(LANGUAGES,'zh-Hans');
+  for(const languages of [['zh'],['zh-CN'],['zh-SG'],['zh-MY'],['zh-Hans-TW'],['ZH-cn']])expect(decide({languages,registry:after}),languages.join(',')).toBe('zh-Hans');
+  for(const languages of [['zh-TW'],['zh-HK'],['zh-MO'],['zh-Hant'],['zh-Hant-CN'],['yue-HK'],['ja-JP'],['en-US','zh-CN']])expect(decide({languages,registry:after}),languages.join(',')).toBe('en');
+  expect(decide({stored:'zh-Hans',languages:['zh-TW'],registry:after})).toBe('zh-Hans');
  });
 });
