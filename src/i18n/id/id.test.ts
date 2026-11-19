@@ -35,6 +35,9 @@ import {QSO_LIST_MESSAGES_EN} from '../../observatory/QsoListMessages';
 import {SOUND_MESSAGES_EN} from '../../sound/SoundMessages';
 import {OBSERVATION_METADATA_EN} from '../../ObservationMetadataMessages';
 import {CAMERA_MESSAGES_EN} from '../../camera/CameraMessages';
+import {ENGINE_VIEW_EN} from '../../SpectrumEngineMessages';
+import {SPECTRAL_RANGE_EN} from '../../SpectralRangeMessages';
+import {WEDGE_MESSAGES_EN} from '../../components/WedgeMessages';
 
 // Front ID0 (docs/I18N.md, "Indonesian: the folder, lints and shell (ID0)"; plan front-i18n-id.md §4, §6.2): the structural checks
 // of the partial Indonesian bundle, the Indonesian typography fixer as a no-op over every Indonesian string, and every string through
@@ -47,10 +50,11 @@ import {CAMERA_MESSAGES_EN} from '../../camera/CameraMessages';
 // map literals as written), then checks as usual; run it once more without the variable (the imports were read before the rewrite).
 // A VIREO `fragment|` original keeps its straight quotes (another piece of VIREO's text closes them).
 const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,
- camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,nakedEye:NAKED_EYE_MESSAGES_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN};
+ camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,nakedEye:NAKED_EYE_MESSAGES_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,
+ engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN};
 /** The maps translated completely (ID0's shell maps; ID1's observatory maps, the camera card the observatory shows, and polish); the
  * others are partial until their front (objectXLab ID6, variableStars ID4). */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera'];
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge'];
 /** ID0's area of en.json: the shell (header, menu, home and first steps, toolbar, errors, instructor mode, document title), as FR0's,
  * and the welcome's home.* keys (plan §6.1: Front HOME added them after FR0, and FR1 translated them). */
 const SHELL_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(app|project|session|error|instructorMode)\./.test(k)||/\.nav$/.test(k)||['demonstrationMode.banner','sky.eyebrow','sky.title','sky.subtitle','sky.about','sky.local','sky.observatory','sky.analyzer','sky.step1','sky.step1Help','sky.step2','sky.step2Help','sky.step3','sky.step3Help','spectrum.tools','classLink.cancel'].includes(k));
@@ -62,6 +66,9 @@ const ID1_GUIDE_KEYS:readonly MessageKey[]=['spectrum.licenseHelp','spectrometer
 /** VIREO originals that Spanish keeps with no entry, as for Portuguese and French: the options dialog's General tab («Umum») and
  * the Site Information longitude letter E («BT», Bujur Timur). */
 const ID_ONLY_ORIGINALS:readonly string[]=['General','E'];
+/** Front ID2's area of en.json: FR2's (and PT2's) keys of exercises E01 and E02, every key of their prefixes, and classLink.open. */
+const E01_E02_PREFIXES=/^(continuity|lab|lssLab|hubble|velocity|ownResults|spectrum|spectrometer|galaxyExposure|skyExposure|starExposure|ssp|exposureIO|drift|skyProfiles|fieldSpec|lss|wedge)\./;
+const ID2_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E01_E02_PREFIXES.test(k)||k==='classLink.open');
 const HOME_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>k.startsWith('home.'));
 const profile=PROFILES.id;
 const data:LintData={glossary:glossaryFrom(glossaryJson,'id'),identical:identical.entries,allowed:lintAllowed.entries as Readonly<Record<string,Allowance>>};
@@ -103,6 +110,10 @@ describe('Front ID0: the Indonesian (id) bundle',()=>{
   expect(ID1_KEYS.filter(k=>!Object.hasOwn(idCatalog,k))).toEqual([]);
   expect(ID1_GUIDE_KEYS.length).toBe(104);
   expect(ID1_GUIDE_KEYS.filter(k=>!Object.hasOwn(en,k)||!Object.hasOwn(idCatalog,k))).toEqual([]);
+ });
+ it('Front ID2: the catalog covers E01 and E02 (every key of their prefixes, and classLink.open)',()=>{
+  expect(ID2_KEYS.length).toBeGreaterThan(780);
+  expect(ID2_KEYS.filter(k=>!Object.hasOwn(idCatalog,k))).toEqual([]);
  });
  it('Front ID1: every VIREO original is translated at once, or kept with an identical.json reason, never both',()=>{
   const english=[...Object.keys(esOriginals),...Object.keys(esIdentical.entries).filter(k=>k.startsWith('original:')).map(k=>k.slice('original:'.length))];
