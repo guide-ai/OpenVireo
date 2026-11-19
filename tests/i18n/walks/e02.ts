@@ -43,6 +43,8 @@ export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={
  // Front FR2: the same words in French (identical.json): VIREO's OK, Options..., Style, Minimum and Maximum; the survey's Action
  // column and Observable status; the wedge's Point (6000.5) separator and Pixel (x, y).
  fr:new Set(['OK','Options...','Style','Minimum','Maximum','Action','Observable','Point (6000.5)','Pixel (x, y)']),
+ // Front HI2: the same text in Hindi (identical.json): the wedge table's RA column, VIREO's RA abbreviation (HI1).
+ hi:new Set(['RA']),
 };
 /** Front FR2: patterns of texts that are the same words in one language: French writes the field selector's option as English does,
  * the recorded LSSFields.LST item and «({rows} galaxies)» (identical.json `catalog:lss.fieldOption`). */
