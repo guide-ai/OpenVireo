@@ -73,6 +73,14 @@ import {LANGUAGE_CHOICE_HI} from '../../src/i18n/hi/maps/languageChoice';
 import {OBJECT_X_LAB_HI} from '../../src/i18n/hi/maps/objectXLab';
 import {POLISH_HI} from '../../src/i18n/hi/maps/polish';
 import {VARIABLE_STARS_HI} from '../../src/i18n/hi/maps/variableStars';
+import {CAMERA_HI} from '../../src/i18n/hi/maps/camera';
+import {FIELD_INFO_HI} from '../../src/i18n/hi/maps/fieldInfo';
+import {FIELD_READ_DETAILS_HI} from '../../src/i18n/hi/maps/fieldReadDetails';
+import {NAKED_EYE_HI} from '../../src/i18n/hi/maps/nakedEye';
+import {OBSERVATION_METADATA_HI} from '../../src/i18n/hi/maps/observationMetadata';
+import {OBSERVATORY_HI} from '../../src/i18n/hi/maps/observatory';
+import {QSO_LIST_HI} from '../../src/i18n/hi/maps/qsoList';
+import {SOUND_HI} from '../../src/i18n/hi/maps/sound';
 import {LANGUAGES,failureNotice,type LanguageEntry} from '../../src/i18n/languages';
 import type {Translation} from '../../src/i18n/maps';
 import type {APP_SHELL_MESSAGES_EN} from '../../src/components/AppShellMessages';
@@ -137,10 +145,10 @@ export const FRENCH_TEXT=language('fr',fr,frOriginals,{appShell:APP_SHELL_FR,hel
 export const INDONESIAN_TEXT=language('id',idCatalog,idOriginals,{appShell:APP_SHELL_ID,helpMenu:HELP_MENU_ID,projectLinks:PROJECT_LINKS_ID,tour:TOUR_ID,languageChoice:LANGUAGE_CHOICE_ID},
  [APP_SHELL_ID,HELP_MENU_ID,LANGUAGE_CHOICE_ID,OBJECT_X_LAB_ID,POLISH_ID,PROJECT_LINKS_ID,TOUR_ID,VARIABLE_STARS_ID],/(?<!\p{L})(?:yang|dan|untuk|dengan|tidak|Anda|dari|pada|ini|atau)(?!\p{L})|[“”\u202f]/u,'?lang=id',['shell']);
 /** Front HI0: Hindi, behind `?lang=hi` before its release (an en-US browser with the preview query). HI0 translated the shell, so
- * only the shell's specs run it; each HI front adds its area. Its letters are Devanagari (the danda । included), which English text
+ * only the shell's specs ran it; HI1 adds the observatory and all of VIREO's originals; each HI front adds its area. Its letters are Devanagari (the danda । included), which English text
  * never has; “ ” are not among them, since English uses them too. */
 export const HINDI_TEXT=language('hi',hi,hiOriginals,{appShell:APP_SHELL_HI,helpMenu:HELP_MENU_HI,projectLinks:PROJECT_LINKS_HI,tour:TOUR_HI,languageChoice:LANGUAGE_CHOICE_HI},
- [APP_SHELL_HI,HELP_MENU_HI,LANGUAGE_CHOICE_HI,OBJECT_X_LAB_HI,POLISH_HI,PROJECT_LINKS_HI,TOUR_HI,VARIABLE_STARS_HI],/[\u0900-\u097f]/u,'?lang=hi',['shell']);
+ [APP_SHELL_HI,CAMERA_HI,FIELD_INFO_HI,FIELD_READ_DETAILS_HI,HELP_MENU_HI,LANGUAGE_CHOICE_HI,NAKED_EYE_HI,OBJECT_X_LAB_HI,OBSERVATION_METADATA_HI,OBSERVATORY_HI,POLISH_HI,PROJECT_LINKS_HI,QSO_LIST_HI,SOUND_HI,TOUR_HI,VARIABLE_STARS_HI],/[\u0900-\u097f]/u,'?lang=hi',['shell','observatory']);
 /** Every translated language of the registry, in its order (a test fails if a registered language has no text here). */
 export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT,INDONESIAN_TEXT,HINDI_TEXT]);
 /** Front FR0: the languages that run the specs of `area` (those whose `done` has it), in registry order. */

@@ -2,7 +2,9 @@
 // (HI0)"): real Hindi, not the qps-deva stress, under the pinned test fonts of playwright.scripts.config.ts. The main suite's
 // fonts have no Devanagari face (its text checks hold, its layout checks would measure tofu), so Hindi's layout is checked here.
 // HI0 walks the shell it translated, at 320 and 1440 px: the welcome, the observatory's chrome and header menu, every tour step,
-// the language dialog, the instructor-mode confirmation and the About box; each later HI front adds its area's routes and dialogs.
+// the language dialog, the instructor-mode confirmation and the About box. HI1 adds the observatory: the open dome with the
+// camera and Multi-Spec cards, the options dialog, Set Date/Time and the hot list with its popup menu. Each later HI front adds its
+// area's routes and dialogs.
 // Each step asserts Devanagari on screen, layoutProblems() and verticalInkProblems() (tests/fixtures/layoutProblems.ts), and the
 // face that draws Devanagari (Noto Sans Devanagari: no tofu, no fallback). Geometric checks only; no pixel screenshots.
 import {test,expect,type Page} from '@playwright/test';
@@ -49,7 +51,7 @@ async function closeHeaderTools(page:Page){
 }
 
 for(const width of [320,1440] as const satisfies readonly Width[])
- test(`real Hindi at ${width} px: the welcome, the observatory chrome, the header menu, the tour, the language and instructor dialogs and About lay out without overflow, clipping or cut ink, drawn by Noto Sans Devanagari`,async({page})=>{
+ test(`real Hindi at ${width} px: the welcome, the header menu, the tour, the language and instructor dialogs, About and the observatory (dome, Set Date/Time, options, hot list) lay out without overflow, clipping or cut ink, drawn by Noto Sans Devanagari`,async({page})=>{
   test.setTimeout(300_000);
   await page.setViewportSize({width,height:width===320?700:1000});
   const problems=new Map<string,string>();
@@ -91,5 +93,31 @@ for(const width of [320,1440] as const satisfies readonly Width[])
   // The About box.
   await id(page,'main-help-menu').click();await id(page,'main-help-site-about').click();
   await expect(id(page,'about-dialog')).toBeVisible();await check('About box');
+  // Front HI1: the observatory. The dome open (the camera and Multi-Spec cards among the instruments).
+  await load(page,'observatory');
+  await page.getByRole('button',{name:H.catalog['sky.open'],exact:true}).click();await check('observatory, dome open');
+  // Set Date/Time (VIREO's dialog), from the site clock.
+  if(!await id(page,'ob-set-date').isVisible())await page.getByText(H.catalog['siteClock.title'],{exact:true}).click();
+  await id(page,'ob-set-date').click();await expect(id(page,'ob-date-dialog')).toBeVisible();await check('Set Date/Time');
+  await page.keyboard.press('Escape');await expect(id(page,'ob-date-dialog')).toBeHidden();
+  // The options dialog, in instructor mode.
+  await headerTools(page);
+  await id(page,'instructor-mode-open').click();await id(page,'instructor-mode-confirm-on').click();await expect(id(page,'instructor-mode-banner')).toBeVisible();
+  await closeHeaderTools(page);
+  await page.locator('.telescope-motion').getByTestId('ob-options').click();await expect(id(page,'ob-options-dialog')).toBeVisible();
+  await check('options dialog');
+  await page.keyboard.press('Escape');await expect(id(page,'ob-options-dialog')).toBeHidden();
+  // The hot list (two entries at a coordinate pointing) and its popup menu.
+  if(!await page.locator('#point-ra').isVisible())await page.getByText(H.catalog['sky.coordinates'],{exact:true}).click();
+  await page.locator('#point-ra').fill('1');await page.locator('#point-dec').fill('20');
+  await page.getByRole('button',{name:H.catalog['sky.pointCoordinates'],exact:true}).click();
+  for(const name of ['A','B']){
+   await page.locator('.telescope-motion').getByTestId('ob-add-current').click({timeout:15_000});await id(page,'ob-entry-id').fill(name);await check('hot list entry');await id(page,'ob-entry-ok').click();
+   await id(page,'ob-info-box').getByRole('button').first().click();await expect(id(page,'ob-info-box')).toHaveCount(0);
+  }
+  await page.locator('.telescope-motion').getByTestId('ob-view-select').click();await expect(id(page,'ob-hotlist-rows')).toBeVisible();await check('hot list');
+  await id(page,'ob-hotlist-rows').evaluate(el=>{const r=el.getBoundingClientRect();el.dispatchEvent(new MouseEvent('contextmenu',{bubbles:true,cancelable:true,button:2,clientX:r.left+2,clientY:r.top+2}));});
+  await expect(id(page,'popup-menu')).toBeVisible();await check('hot list popup menu');
+  await page.keyboard.press('Escape');await expect(id(page,'popup-menu')).toHaveCount(0);
   expect([...problems].map(([p,step])=>`${step}: ${p}`),'layout problems under real Hindi').toEqual([]);
  });

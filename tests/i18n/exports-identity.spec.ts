@@ -54,7 +54,7 @@ const HTML_LANG:Readonly<Record<Locale,string>>={en:'en','es-419':'es-419','pt-B
 const ASCII_LETTERS:ReadonlySet<string>=new Set(['id']);
 /** The accessible-name matcher of an English text in this locale: its Spanish form in es-419 (which must exist), Portuguese's or
  * French's own catalog form (which must exist; for French before its release, an identical entry), else `L`. */
-const N=(locale:Locale,text:string)=>{if(locale==='pt-BR'||locale==='fr'||locale==='id'){const t=TRANSLATED.find(x=>x.tag===locale)!;if(text==='Skip the tour')return exact(t.maps.tour.skip);if(text==='Save spectrum (.SSP)')return exact((e01e02Maps(locale).observatory as typeof OBSERVATORY_ES).spectrumSave.save);
+const N=(locale:Locale,text:string)=>{if(locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'){const t=TRANSLATED.find(x=>x.tag===locale)!;if(text==='Skip the tour')return exact(t.maps.tour.skip);if(text==='Save spectrum (.SSP)')return exact((e01e02Maps(locale).observatory as typeof OBSERVATORY_ES).spectrumSave.save);
  // Front PT1: a button whose English ends in “ ↗” is its catalog text plus the arrow the component adds, as for Spanish.
  // Front PT-REL: a released language's `text` throws for an English text it lacks (it no longer falls back), so look first.
  // Front FR1: a language before its release falls back to the English (no throw), so an English-only answer is no translation.
@@ -306,7 +306,7 @@ family('E03 classification: session, CSV, width record, investigations, observat
  },{},page=>page.locator('.classification-main'));
 });
 
-family('hot list: Save HTL file after adding a target',['en','qps','es-419','pt-BR','fr'],async({browser,baseURL},identical)=>{
+family('hot list: Save HTL file after adding a target',['en','qps','es-419','pt-BR','fr','hi'],async({browser,baseURL},identical)=>{
  await identical(browser,baseURL,async(page,locale)=>{
   await open(page,locale,'observatory');
   await page.getByRole('heading',{name:N(locale,'Original hot lists')}).click();
@@ -318,7 +318,7 @@ family('hot list: Save HTL file after adding a target',['en','qps','es-419','pt-
  },{},page=>page.locator('.htl-card'));
 });
 
-family('options file: Save Updates writes VEO_OPTS.json',['en','qps','es-419','pt-BR','fr'],async({browser,baseURL},identical)=>{
+family('options file: Save Updates writes VEO_OPTS.json',['en','qps','es-419','pt-BR','fr','hi'],async({browser,baseURL},identical)=>{
  await identical(browser,baseURL,async(page,locale)=>{
   await open(page,locale,'observatory');
   await button(page,'Open dome ↗',locale).click();await page.getByLabel(N(locale,'Target')).selectOption('N0000.DAT@14428');
@@ -332,8 +332,8 @@ family('options file: Save Updates writes VEO_OPTS.json',['en','qps','es-419','p
 
 // Front ES2: the observatory's File › Field Information lists (Edit Mode) and the QSO List (Virtual Observatory) write the lines
 // they show; the windows around them are translated, the files are not. Front FR1: the hot list, options file and Field
-// Information families also run in French (its ?lang=fr preview).
-family('field information: Star Data List Save Text and Comma Delimit, QSO List Save Text',['en','qps','es-419','pt-BR','fr'],async({browser,baseURL},identical)=>{
+// Information families also run in French (its ?lang=fr preview). Front HI1: and in Hindi (?lang=hi).
+family('field information: Star Data List Save Text and Comma Delimit, QSO List Save Text',['en','qps','es-419','pt-BR','fr','hi'],async({browser,baseURL},identical)=>{
  test.setTimeout(120_000);
  const id=(page:Page,testId:string)=>page.getByTestId(testId);
  const ok=async(page:Page)=>{await id(page,'fi-box').getByRole('button').first().click();await expect(id(page,'fi-box')).toHaveCount(0);};

@@ -8,6 +8,8 @@ import esIdentical from './es/identical.json';
 import ptOriginals from './pt-br/originals.json';
 import ptIdentical from './pt-br/identical.json';
 import frOriginals from './fr/originals.json';
+import hiOriginals from './hi/originals.json';
+import hiIdentical from './hi/identical.json';
 import frIdentical from './fr/identical.json';
 import {normalizeOriginal} from './vireo';
 
@@ -24,6 +26,8 @@ const STRICT:readonly {tag:string;originals:Record<string,string>;identical:Reco
  {tag:'es-419',originals:esOriginals,identical:esIdentical.entries},
  {tag:'pt-BR',originals:ptOriginals,identical:ptIdentical.entries},
  {tag:'fr',originals:frOriginals,identical:frIdentical.entries},
+ // Front HI1: Hindi translates all of VIREO's originals at once, as FR1 did.
+ {tag:'hi',originals:hiOriginals,identical:hiIdentical.entries},
 ];
 type Node={type:string;[key:string]:unknown};
 const root=path.resolve(import.meta.dirname,'../..');
