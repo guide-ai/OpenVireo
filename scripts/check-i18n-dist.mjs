@@ -36,7 +36,8 @@ const escape=(s)=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 // so each marker is looked for in all three forms.
 const quoted=(v)=>{const json=JSON.stringify(v).slice(1,-1);return [json,json.replace(/\\"/g,'"').replace(/'/g,"\\'"),v.replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\$\{/g,'\\${').replace(/\r/g,'\\r')];};
 // A map literal or an original is a marker when it has a letter outside ASCII (review: any script of languages.json, not only
-// Spanish letters; a language written in ASCII alone finds its map-only modules by no marker and fails loudly, never silently)
+// Spanish letters; Front ID0: a module of a language written in ASCII alone that has no such marker falls back to its ASCII
+// prose literals, below, and with none fails loudly, never silently)
 // and no English source names it: the single-quoted literals of src/ outside the language directories, and en.json's values.
 // Import and export-from lines are left out (their paths are not text).
 const LETTER_OUTSIDE_ASCII=/(?![\x00-\x7f])\p{L}/u;
@@ -162,6 +163,20 @@ export function checkI18nDist(dist,{root=ROOT,languages=loadLanguages(root),grap
    for(const v of t.originals)if(v.length>=8&&LETTER_OUTSIDE_ASCII.test(v)&&!englishTexts.has(v))add(v,m.name);}
   const markers=new Map(modules.map(m=>[m.name,[]]));
   for(const [v,owners] of candidates)if(owners.size===1)markers.get([...owners][0]).push({text:v,forms:quoted(v)});
+  // Front ID0 (plan front-i18n-id.md §1.2 #1): a language written in ASCII alone (Indonesian) has no map literal or original with
+  // a letter outside ASCII, so a module whose text is only maps (pulsar, pulsar+radio) has no marker by the rule above. Only for
+  // such a module, its map literals and originals of 16+ characters with at least two spaces (prose, not a key or an identifier)
+  // that no English source and no other language's sources hold, and that no other module of the language holds, are markers.
+  // A module that has a marker by the rule above keeps exactly the markers it had, so every es, pt and fr result is unchanged.
+  const fallback=modules.filter(m=>!markers.get(m.name).length).map(m=>m.name);
+  if(fallback.length){
+   const owners=new Map(),own=(v,name)=>{if(!owners.has(v))owners.set(v,new Set());owners.get(v).add(name);};
+   for(const m of modules){const t=texts.get(m.name);for(const v of [...t.catalog,...t.maps,...t.originals])own(v,m.name);}
+   const prose=(v)=>v.length>=16&&(v.match(/ /g)?.length??0)>=2&&!englishTexts.has(v)&&!otherTexts.has(v);
+   for(const name of fallback){const t=texts.get(name);
+    for(const v of new Set([...t.maps,...t.originals]))if(prose(v)&&owners.get(v).size===1)markers.get(name).push({text:v,forms:quoted(v)});}
+  }
+  const asciiMarked=new Set(fallback.filter(name=>markers.get(name).length));
   // Which files carry which module's markers (the help chunks may share phrases with the catalog, as ES-HELP recorded; the
   // language's own static pages, dist/<pagePath>/….html, are its text by design).
   // SC8 review: one lower-case path segment only ('.', '..', 'a/b' or '' would exempt other pages; src/i18n/languages.test.ts also
@@ -231,7 +246,7 @@ export function checkI18nDist(dist,{root=ROOT,languages=loadLanguages(root),grap
   const check=(what,size,budget)=>{if(size>budget.fail*factor)offenders.push(`${tag} ${what}: ${kb(size)} KB gzip is over the ${kb(budget.fail*factor)} KB budget`);else if(size>budget.warn*factor)warnings.push(`${tag} ${what} is ${kb(size)} KB gzip, over ${kb(budget.warn*factor)} KB`);};
   for(const [name,s] of sizes)check(name===CORE?'core':name,s.gzip,name===CORE?BUDGET.core:BUDGET.module);
   const sum=[...sizes.values()].reduce((n,s)=>n+s.gzip,0);check('sum of its modules',sum,BUDGET.sum);
-  reports.push({tag,plan,sizes,sum,help:helpByLanguage.get(tag)});
+  reports.push({tag,plan,sizes,sum,help:helpByLanguage.get(tag),asciiMarked:[...asciiMarked]});
  }
  return {offenders,warnings,reports,files};
 }
@@ -239,9 +254,9 @@ export function checkI18nDist(dist,{root=ROOT,languages=loadLanguages(root),grap
 /** The lines the build prints. */
 export function reportLines({reports,files}){
  const out=[`Build is free of the pseudo-locale, the test harnesses and the fixture languages (${files.length} text files searched).`];
- for(const {tag,plan,sizes,sum,help} of reports){
+ for(const {tag,plan,sizes,sum,help,asciiMarked=[]} of reports){
   out.push(`${tag}: ${sizes.size} chunks, ${kb(sum)} KB gzip in all; index.html loads none, and each holds one module's text only:`);
-  for(const m of plan.modules){const s=sizes.get(m.name);out.push(s?`  ${m.name.padEnd(24)} ${kb(s.gzip).padStart(6)} KB gzip ${kb(s.raw).padStart(7)} KB raw  ${s.name}`:`  ${m.name.padEnd(24)} empty: no text yet, no chunk`);}
+  for(const m of plan.modules){const s=sizes.get(m.name);out.push(s?`  ${m.name.padEnd(24)} ${kb(s.gzip).padStart(6)} KB gzip ${kb(s.raw).padStart(7)} KB raw  ${s.name}${asciiMarked.includes(m.name)?'  (found by its ASCII map text)':''}`:`  ${m.name.padEnd(24)} empty: no text yet, no chunk`);}
   out.push(`  extra download per route (its area and shared modules, on top of the core): ${plan.declared.map(a=>{const m=plan.modules.find(x=>x.name===a);return `${a} ${kb([a,...m.shared].reduce((n,x)=>n+(sizes.get(x)?.gzip??0),0))}`;}).join(', ')} KB`);
   if(help.length)out.push(`${help.length} ${tag} help chunks (${kb(help.reduce((n,f)=>n+Buffer.byteLength(f.text),0))} KB raw, ${kb(help.reduce((n,f)=>n+gzip(f.text),0))} KB gzip in all) are fetched only by the help viewer.`);
  }

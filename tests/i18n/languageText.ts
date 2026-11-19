@@ -53,6 +53,16 @@ import {OBSERVATION_METADATA_FR} from '../../src/i18n/fr/maps/observationMetadat
 import {OBSERVATORY_FR} from '../../src/i18n/fr/maps/observatory';
 import {QSO_LIST_FR} from '../../src/i18n/fr/maps/qsoList';
 import {SOUND_FR} from '../../src/i18n/fr/maps/sound';
+import idCatalog from '../../src/i18n/id/id.json' with {type:'json'};
+import idOriginals from '../../src/i18n/id/originals.json' with {type:'json'};
+import {APP_SHELL_ID} from '../../src/i18n/id/maps/appShell';
+import {HELP_MENU_ID} from '../../src/i18n/id/maps/helpMenu';
+import {PROJECT_LINKS_ID} from '../../src/i18n/id/maps/projectLinks';
+import {TOUR_ID} from '../../src/i18n/id/maps/tour';
+import {LANGUAGE_CHOICE_ID} from '../../src/i18n/id/maps/languageChoice';
+import {OBJECT_X_LAB_ID} from '../../src/i18n/id/maps/objectXLab';
+import {POLISH_ID} from '../../src/i18n/id/maps/polish';
+import {VARIABLE_STARS_ID} from '../../src/i18n/id/maps/variableStars';
 import ja from '../../src/i18n/ja/ja.json' with {type:'json'};
 import jaOriginals from '../../src/i18n/ja/originals.json' with {type:'json'};
 import {APP_SHELL_JA} from '../../src/i18n/ja/maps/appShell';
@@ -120,13 +130,19 @@ export const PORTUGUESE_TEXT=language('pt-BR',pt,ptOriginals,{appShell:APP_SHELL
  * browser with no query (tests/fixtures/language.ts contextLocale). Its letters include « » and U+202F, which English text never has. */
 export const FRENCH_TEXT=language('fr',fr,frOriginals,{appShell:APP_SHELL_FR,helpMenu:HELP_MENU_FR,projectLinks:PROJECT_LINKS_FR,tour:TOUR_FR,languageChoice:LANGUAGE_CHOICE_FR},
  [APP_SHELL_FR,CAMERA_FR,FIELD_INFO_FR,FIELD_READ_DETAILS_FR,HELP_MENU_FR,LANGUAGE_CHOICE_FR,NAKED_EYE_FR,OBJECT_X_LAB_FR,OBSERVATION_METADATA_FR,OBSERVATORY_FR,POLISH_FR,PROJECT_LINKS_FR,QSO_LIST_FR,SOUND_FR,TOUR_FR,VARIABLE_STARS_FR],/[àâæçéèêëîïôœùûüÿ«»\u202f]/i,'');
+/** Front ID0 (plan front-i18n-id.md §1.2 #2): Indonesian, behind `?lang=id` before its release; ID0 translated the shell. It is the
+ * first language written in ASCII alone, so its "letters" are words: frequent Indonesian function words that VIREO's English files and
+ * the site's English exports never hold (checked over public/original and every export fixture at ID0), and the “ ” quotes and U+202F
+ * thousands separator its text uses. */
+export const INDONESIAN_TEXT=language('id',idCatalog,idOriginals,{appShell:APP_SHELL_ID,helpMenu:HELP_MENU_ID,projectLinks:PROJECT_LINKS_ID,tour:TOUR_ID,languageChoice:LANGUAGE_CHOICE_ID},
+ [APP_SHELL_ID,HELP_MENU_ID,LANGUAGE_CHOICE_ID,OBJECT_X_LAB_ID,POLISH_ID,PROJECT_LINKS_ID,TOUR_ID,VARIABLE_STARS_ID],/(?<!\p{L})(?:yang|dan|untuk|dengan|tidak|Anda|dari|pada|ini|atau)(?!\p{L})|[“”\u202f]/u,'?lang=id',['shell']);
 /** Front JA0 (plan front-i18n-ja.md §1.2 #3): Japanese, behind `?lang=ja` before its release; JA0 translated the shell, and each
  * later JA front adds its area to `done`. Its letters are kana, ー and 「」, which no English text, VIREO file or export has (Han alone
  * is not used: kana are the unambiguous Japanese signal). Its observatory maps grow with JA1. */
 export const JAPANESE_TEXT=language('ja',ja,jaOriginals,{appShell:APP_SHELL_JA,helpMenu:HELP_MENU_JA,projectLinks:PROJECT_LINKS_JA,tour:TOUR_JA,languageChoice:LANGUAGE_CHOICE_JA},
  [APP_SHELL_JA,HELP_MENU_JA,LANGUAGE_CHOICE_JA,OBJECT_X_LAB_JA,POLISH_JA,PROJECT_LINKS_JA,TOUR_JA,VARIABLE_STARS_JA],/[\p{sc=Hira}\p{sc=Kana}ー「」]/u,'?lang=ja',['shell']);
 /** Every translated language of the registry, in its order (a test fails if a registered language has no text here). */
-export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT,JAPANESE_TEXT]);
+export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT,INDONESIAN_TEXT,JAPANESE_TEXT]);
 /** Front FR0: the languages that run the specs of `area` (those whose `done` has it), in registry order. */
 export const translatedFor=(area:Area):readonly LanguageText[]=>TRANSLATED.filter(l=>l.done.has(area));
 export const textOf=(tag:string):LanguageText=>{const t=TRANSLATED.find(l=>l.tag===tag);if(!t)throw new Error(`No test text for ${tag}`);return t;};

@@ -9,9 +9,11 @@ export const SPANISH_LOCALE='es-MX';
 export const PORTUGUESE_LOCALE='pt-BR';
 /** Front FR0: the browser language that opens French once it is released (since FR-REL); before, French opened with `?lang=fr`. */
 export const FRENCH_LOCALE='fr-FR';
+/** Front ID0: the browser language that opens Indonesian once it is released (ID-REL); before, Indonesian opens with `?lang=id`. */
+export const INDONESIAN_LOCALE='id-ID';
 /** Front JA0: the browser language that opens Japanese once it is released (JA-REL); before, Japanese opens with `?lang=ja`. */
 export const JAPANESE_LOCALE='ja-JP';
-const BROWSER_LOCALE:Readonly<Record<string,string>>={'es-419':SPANISH_LOCALE,'pt-BR':PORTUGUESE_LOCALE,fr:FRENCH_LOCALE,ja:JAPANESE_LOCALE};
+const BROWSER_LOCALE:Readonly<Record<string,string>>={'es-419':SPANISH_LOCALE,'pt-BR':PORTUGUESE_LOCALE,fr:FRENCH_LOCALE,id:INDONESIAN_LOCALE,ja:JAPANESE_LOCALE};
 /** The query that opens `lang` in its own browser (contextLocale: es-MX for Spanish, pt-BR for Brazilian Portuguese, fr-FR for French): none for a
  * released language, `?lang=<lang>` for English, the pseudo-locales and a language before its release (its preview). Front PT-REL:
  * the language-parameterised specs run each released language's tests in that language's browser (an anonymous describe with
