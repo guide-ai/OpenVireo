@@ -22,7 +22,7 @@ async function settle(page:Page){
 }
 async function load(page:Page,hash:string){
  await page.goto('about:blank');await page.goto(`/${H.query}${hash?'#'+hash:''}`);
- await expect(page.locator('html')).toHaveAttribute('lang','hi');
+ await expect(page.locator('html')).toHaveAttribute('lang','hi',{timeout:30_000});
  await expect(page.locator('h1:visible').first()).toBeVisible({timeout:30_000});
  await settle(page);
 }

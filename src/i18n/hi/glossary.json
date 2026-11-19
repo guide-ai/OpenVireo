@@ -438,10 +438,6 @@
    "hi": "ग्रिड"
   },
   {
-   "en": "\\bdispersion measure\\b",
-   "hi": "परिक्षेपण माप"
-  },
-  {
    "en": "\\bsweeps?\\b",
    "hi": "स्वीप"
   },
@@ -487,7 +483,7 @@
   },
   {
    "en": "\\bplate constants\\b",
-   "hi": "प्लेट स्थिरांक"
+   "hi": "प्लेट नियतांक"
   },
   {
    "en": "(?<!All Sky )\\bsurveys?\\b",
@@ -838,7 +834,7 @@
   },
   {
    "en": "Selection",
-   "hi": "चुनाव",
+   "hi": "चयन",
    "exact": true
   },
   {
@@ -925,7 +921,7 @@
   },
   {
    "en": "Slew to Selection",
-   "hi": "चुनाव की ओर घुमाएँ"
+   "hi": "चयन की ओर घुमाएँ"
   },
   {
    "en": "Field Information",
@@ -997,7 +993,7 @@
   },
   {
    "en": "Fast Scope Change",
-   "hi": "दूरबीन तेज़ी से बदलें"
+   "hi": "तेज़ दूरबीन बदलाव"
   },
   {
    "en": "Sound Effects",
@@ -1061,19 +1057,19 @@
   },
   {
    "en": "Naked Eye Star",
-   "hi": "नग्न आँख का तारा"
+   "hi": "नंगी आँखों से दिखने वाला तारा"
   },
   {
    "en": "Get Selection Data",
-   "hi": "चुनाव का डेटा लें"
+   "hi": "चयन का डेटा लें"
   },
   {
    "en": "Add Selection to Current Hot List",
-   "hi": "चुनाव को वर्तमान वस्तु सूची में जोड़ें"
+   "hi": "चयन को वर्तमान वस्तु सूची में जोड़ें"
   },
   {
    "en": "Start New Hot List with Selection",
-   "hi": "चुनाव के साथ नई वस्तु सूची शुरू करें"
+   "hi": "चयन के साथ नई वस्तु सूची शुरू करें"
   },
   {
    "en": "Save List",
@@ -1081,11 +1077,11 @@
   },
   {
    "en": "Edit Selection",
-   "hi": "चुनाव संपादित करें"
+   "hi": "चयन संपादित करें"
   },
   {
    "en": "Delete Selection",
-   "hi": "चुनाव हटाएँ"
+   "hi": "चयन हटाएँ"
   },
   {
    "en": "Undo Edit/Delete",
@@ -1113,7 +1109,7 @@
   },
   {
    "en": "Enter Sky Coordinates for Slew",
-   "hi": "घुमाने के लिए आकाश निर्देशांक दर्ज करें"
+   "hi": "घुमाने के लिए आकाश निर्देशांक लिखें"
   },
   {
    "en": "Add/Edit Hot List Entry",
@@ -1185,7 +1181,7 @@
   },
   {
    "en": "Radio Astronomy of Pulsars",
-   "hi": "पल्सरों की रेडियो खगोल विज्ञान"
+   "hi": "पल्सरों का रेडियो खगोल विज्ञान"
   },
   {
    "en": "Radio Telescope Control Panel",
@@ -1308,10 +1304,6 @@
    "hi": "LSS आकाशगंगा डेटा"
   },
   {
-   "en": "Time-Dependent Data",
-   "hi": "समय पर निर्भर डेटा"
-  },
-  {
    "en": "Load/Plot",
    "hi": "लोड करें/प्लॉट करें"
   },
@@ -1345,7 +1337,7 @@
   },
   {
    "en": "Remove from HR Diagram",
-   "hi": "HR आरेख से हटाएँ"
+   "hi": "H-R आरेख से हटाएँ"
   },
   {
    "en": "Recorded Results",
@@ -1353,7 +1345,7 @@
   },
   {
    "en": "Telescope has Moved!",
-   "hi": "दूरबीन हिल गई है!"
+   "hi": "दूरबीन घूम गई है!"
   },
   {
    "en": "Reading Sky!",
@@ -1430,7 +1422,7 @@
   },
   {
    "en": "Lab Table",
-   "hi": "प्रयोगशाला तालिका"
+   "hi": "प्रयोगशाला की मेज़"
   },
   {
    "en": "Save All",
@@ -1543,12 +1535,6 @@
   },
   {
    "words": [
-    "हबल स्थिरांक"
-   ],
-   "use": "हबल नियतांक (Hindi Wikipedia हबल का नियम; NCERT writes नियतांक for a constant)"
-  },
-  {
-   "words": [
     "तरंगदैर्ध्य*",
     "तरंग दैर्घ्य*"
    ],
@@ -1568,6 +1554,18 @@
     "प्लेयडीज़"
    ],
    "use": "कृत्तिका, with (Pleiades) at a first mention (Hindi Wikipedia कृत्तिका तारागुच्छ)"
+  },
+  {
+   "words": [
+    "चुनाव"
+   ],
+   "use": "चयन for a selection (चुनाव reads first as an election); the verb stays चुनें"
+  },
+  {
+   "words": [
+    "स्थिरांक*"
+   ],
+   "use": "नियतांक for a constant (हबल नियतांक, प्लेट नियतांक), one form"
   }
  ]
 }

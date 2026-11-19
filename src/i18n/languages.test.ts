@@ -72,7 +72,7 @@ describe('Front SC8: the language registry (src/i18n/languages.json)',()=>{
   for(const tag of ['ms','ms-MY','ms-ID','zsm','jv','su','en-ID','ind'])expect(matchLanguage(tag),tag).toBeUndefined();
   expect(isReleased('id')).toBe(false);
   // Front HI0: Hindi is registered before its release, with its own notices and the selector label «हिन्दी (Hindi)».
-  expect(failureNotice('language','hi')).toEqual({en:'Hindi could not be loaded; English is shown. Reload to try again.',own:'हिन्दी लोड नहीं हो सकी; साइट अंग्रेज़ी में दिखाई जा रही है। फिर से कोशिश करने के लिए पेज रीलोड करें।',lang:'hi'});
+  expect(failureNotice('language','hi')).toEqual({en:'Hindi could not be loaded; English is shown. Reload to try again.',own:'हिन्दी लोड नहीं हो सकी; साइट अंग्रेज़ी में दिखाई जा रही है। फिर से कोशिश करने के लिए पेज को दोबारा लोड करें।',lang:'hi'});
   expect(isReleased('hi')).toBe(false);expect(optionLabel(LANGUAGES.find(l=>l.tag==='hi')!)).toBe('हिन्दी (Hindi)');
   expect(selectorLanguages('hi').map(optionLabel)).toEqual(['English','Español','Português (Brasil)','Français','हिन्दी (Hindi)']);
   // Front FR0: French's notices, with U+202F before «;» (plan §2).

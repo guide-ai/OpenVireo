@@ -224,7 +224,7 @@
  "app.name": "OpenVireo",
  "app.scope": "Aperçu de l’observatoire",
  "app.close": "Fermer",
- "app.digitNotice": "Saisissez les chiffres sous la forme 0–9. Ici, les chiffres comme {digits} ne sont pas lus comme des nombres.",
+ "app.digitNotice": "Saisissez les chiffres sous la forme 0–9. Ici, les chiffres tels que {digits} ne sont pas lus comme des nombres.",
  "error.decimal": "Ligne {line} : un nombre décimal avec un point est attendu.",
  "error.finite": "Ligne {line} : la valeur n’est pas finie.",
  "error.lineFormat": "Liste de raies : format non valide à la ligne {line}.",

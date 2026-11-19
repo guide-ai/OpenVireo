@@ -26,10 +26,11 @@ test('a text field inside a modal dialog: the notice is drawn above the dialog, 
  await page.keyboard.press('Tab');await expect(notice(page)).toHaveCount(0);
  await expect(date).toHaveValue('2026/02/28１');
 });
-test('a number field: what it cannot parse is read before the field drops it; clearing the field ends the notice',async({page})=>{
+test('a number field: what it cannot parse is read before the field drops it (Firefox converts and reads it: no notice); clearing the field ends the notice',async({page,browserName})=>{
  await lab(page);
  const limit=page.locator('[data-testid=objectx-lab] input[type=number]').first();await limit.focus();await limit.press('ControlOrMeta+a');
  await page.keyboard.insertText('१५');
+ if(browserName==='firefox'){await expect(limit).toHaveValue('15');await expect(notice(page)).toHaveCount(0);return;}
  await expect(notice(page)).toHaveText(english('१५'));
  await limit.press('ControlOrMeta+a');await limit.press('Backspace');await expect(notice(page)).toHaveCount(0);
  await page.keyboard.insertText('15');await expect(notice(page)).toHaveCount(0);
@@ -38,6 +39,16 @@ test('ASCII digits, letters of any script and numerals that are not decimal digi
  await lab(page);
  const id=page.locator('[data-testid=objectx-lab] input').first();await id.fill('');await id.focus();
  await page.keyboard.insertText('X-12 तारा Ⅻ ½ ²');
+ await expect(notice(page)).toHaveCount(0);
+});
+test('pasted or dropped text is read from its data transfer, and the notice goes with a field that is removed',async({page})=>{
+ await lab(page);
+ const id=page.locator('[data-testid=objectx-lab] input').first();await id.fill('');await id.focus();
+ // A synthetic paste: only its beforeinput (what the notice reads) is dispatched; the field's value is not changed by it.
+ await id.evaluate(el=>{const dt=new DataTransfer();dt.setData('text/plain','１２３');el.dispatchEvent(new InputEvent('beforeinput',{inputType:'insertFromPaste',dataTransfer:dt,bubbles:true,cancelable:true}));});
+ await expect(notice(page)).toHaveText(english('１２３'));
+ // Firefox fires no focusout when a focused field leaves the page: the notice must go with it all the same.
+ await id.evaluate(el=>el.remove());
  await expect(notice(page)).toHaveCount(0);
 });
 for(const [lang,file] of [['es-419','es/es.json'],['pt-BR','pt-br/pt-br.json'],['fr','fr/fr.json'],['hi','hi/hi.json']] as const){

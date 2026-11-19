@@ -8,7 +8,7 @@ export const APP_SHELL_HI:Translation<typeof APP_SHELL_MESSAGES_EN>=Object.freez
  backupHelpSummary:'बैकअप में क्या-क्या शामिल है',
  toolsMenu:'मेनू',
  skipToContent:'सीधे सामग्री पर जाएँ',
- pageBar:Object.freeze({label:'जाँच, भाषा और सहायता',more:'और',moreName:'जाँच की और क्रियाएँ'}),
+ pageBar:Object.freeze({label:'जाँच, भाषा और सहायता',more:'अधिक',moreName:'अधिक जाँच क्रियाएँ'}),
  recovery:Object.freeze({
   updatedTitle:'OpenVireo का नया संस्करण प्रकाशित हुआ है',
   updated:'साइट का यह हिस्सा लोड नहीं हो सका, क्योंकि यह पेज खुला होने के दौरान साइट अपडेट हो गई।',
@@ -16,7 +16,7 @@ export const APP_SHELL_HI:Translation<typeof APP_SHELL_MESSAGES_EN>=Object.freez
   error:'पेज रीलोड करने से अक्सर समस्या ठीक हो जाती है। अगर यह फिर हो, तो ध्यान दें कि उससे ठीक पहले आपने क्या किया था।',
   kept:'साइट का बाकी हिस्सा और इस टैब में आपका बाकी काम अब भी मौजूद है।',
   saveFirst:'पहले अपनी जाँच सहेजें, फिर मौजूदा संस्करण के साथ आगे बढ़ने के लिए पेज रीलोड करें।',
-  saveHow:'आगे बढ़ने के लिए पेज रीलोड करें। जो काम आपने पहले जाँच सहेजें से सहेजा था, उसे बाद में जाँच पुनर्स्थापित करें (JSON) से वापस लाया जा सकता है।',
+  saveHow:'आगे बढ़ने के लिए पेज रीलोड करें। जो काम आपने पहले “जाँच सहेजें” से सहेजा था, उसे बाद में “जाँच पुनर्स्थापित करें (JSON)” से वापस लाया जा सकता है।',
   save:'जाँच सहेजें',
   reload:'पेज रीलोड करें',
  }),

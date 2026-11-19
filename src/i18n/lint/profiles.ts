@@ -69,7 +69,7 @@ function hindiRegister(setting:Registers['hi']):Pattern[]{
 }
 /** Front HI0 (plan front-i18n-hi.md §4.2, §4.4): English loanwords that take a nukta in ज़ or फ़ (Microsoft's Hindi guide), written
  * without it. Stems (`*`) take inflections; none is a native Hindi word (फल, फिर, फूल, जो, जब keep plain फ and ज). */
-const HI_BARE_NUKTA=['फाइल*','ब्राउजर*','जूम*','फिल्टर*','फोटो*','फॉर्म*','फॉन्ट*','फील्ड*','फोल्डर*','फ्रेम*','फीचर*','फोन*','एक्सपोजर*','जीरो*','साइज*','डिफॉल्ट*','रिफ्रेश*','ऑफलाइन*','ऑफ','टर्न-ऑफ'];
+const HI_BARE_NUKTA=['फाइल*','ब्राउजर*','जूम*','फिल्टर*','फोटो*','फॉर्म*','फॉन्ट*','फील्ड*','फोल्डर*','फ्रेम*','फीचर*','फोन*','एक्सपोजर*','जीरो*','साइज*','डिफॉल्ट*','रिफ्रेश*','ऑफलाइन*','ऑफ','टर्न-ऑफ','इंटरफेस*','कॉन्फिगरेशन*','प्रोफाइल*','ओवरफ्लो*','फाइंडर*'];
 /** Pañcamākṣara where the Directorate's standard writes the anusvara (संबंध, संख्या, संपादित, संपर्क, संभव), and «हिंदी» (the UI writes
  * the language's own name one way, «हिन्दी», as CLDR and the registry do). */
 const HI_SPELLING=['सम्बन्ध*','सम्बंध*','सङ्ख्या*','सम्पादित*','सम्पर्क*','सम्भव*','सम्पूर्ण*','अन्तर*','हिंदी'];

@@ -19,7 +19,7 @@ export const HELP_MENU_HI:Translation<typeof HELP_MENU_EN>=Object.freeze({
  shortcutKey:'?',
  buttonNames:Object.freeze({
   'OBSRVHLP.LST':'दूरबीन नियंत्रणों की सहायता','PHOTOHLP.LST':'फ़ोटोमीटर की सहायता','CAMHLP.LST':'कैमरे की सहायता','SPECHLP.LST':'स्पेक्ट्रोमीटर की सहायता',
-  'CLASSHLP.LST':'स्पेक्ट्रमी वर्गीकरण की सहायता','MEASHLP.LST':'स्पेक्ट्रम मापन की सहायता','HRANALHLP.LST':'H-R आरेख की सहायता','VARTYPEHLP.LST':'परिवर्ती तारों के प्रकारों की सहायता',
+  'CLASSHLP.LST':'स्पेक्ट्रमी वर्गीकरण की सहायता','MEASHLP.LST':'स्पेक्ट्रम माप की सहायता','HRANALHLP.LST':'H-R आरेख की सहायता','VARTYPEHLP.LST':'परिवर्ती तारों के प्रकारों की सहायता',
   'WDGPLTHLP.LST':'शंकु आरेख की सहायता','PLSANHLP.LST':'पल्सर विश्लेषण की सहायता','PLSLSHLP.LST':'पल्सर पैरामीटर की सहायता','MLTSPHLP.LST':'बहु-वस्तु स्पेक्ट्रोमीटर की सहायता',
   'SPLSTHLP.LST':'बहु-वस्तु स्पेक्ट्रम सूची की सहायता',
  }),
