@@ -1,0 +1,11 @@
+{
+ "about": "Front JA0: findings of the ja lint (src/i18n/lint/, profile ja) that are correct Japanese in one string, each with a reason. Keys are the lint's string ids; `words` are the matched words allowed in that string only, `rules` whole rules, `placeholders` added placeholders.",
+ "entries": {
+  "map:helpMenu.websitesNote": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "\"Observatories\" is in the English proper name NASA Astronomical Virtual Observatories, kept as written beside NAVO"
+  }
+ }
+}

@@ -29,7 +29,7 @@ import {PSEUDO_HTML_LANG,PSEUDO_LETTERS,SCRIPT_PSEUDO,isPseudo,pseudoName,pseudo
 // qps also runs in the four dev-only script pseudo-locales (qps-cjk, qps-deva, qps-cyrl, qps-rtl; `identical` adds them), with
 // the same name, SHA-256 and no ⟦ in the file, and no letter of that script in it either. Names go through `L`, now the matcher
 // of tests/fixtures/pseudoNames.ts computed with the app's own pure transforms, which matches English, qps and every script form.
-type Locale='en'|'qps'|'es-419'|'pt-BR'|'fr'|ScriptPseudo;// Front FR0: French (its ?lang=fr preview) in the toolbar Save investigation family
+type Locale='en'|'qps'|'es-419'|'pt-BR'|'fr'|'ja'|ScriptPseudo;// Front JA0: Japanese (its ?lang=ja preview) in the toolbar Save investigation family// Front FR0: French (its ?lang=fr preview) in the toolbar Save investigation family
 type File=Readonly<{name:string;bytes:Buffer}>;
 /** An exact accessible-name matcher for English text that also matches its form in every pseudo-locale (Front SC10). */
 const L=(text:string)=>pseudoName(text);
@@ -47,7 +47,7 @@ const SPANISH=(()=>{
 const exact=(text:string)=>new RegExp(`^\\s*${text.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&').replace(/\s+/g,'\\s+')}\\s*$`);
 /** A translated language's letters that English text never has (Spanish á é í ó ú ñ ¿ ¡; Portuguese ã õ ç â ê ô à…). */
 const LETTERS:Readonly<Record<string,RegExp>>={...Object.fromEntries(TRANSLATED.map(t=>[t.tag,t.letters])),...PSEUDO_LETTERS};
-const HTML_LANG:Readonly<Record<Locale,string>>={en:'en','es-419':'es-419','pt-BR':'pt-BR',fr:'fr',...PSEUDO_HTML_LANG};
+const HTML_LANG:Readonly<Record<Locale,string>>={en:'en','es-419':'es-419','pt-BR':'pt-BR',fr:'fr',ja:'ja',...PSEUDO_HTML_LANG};
 /** The accessible-name matcher of an English text in this locale: its Spanish form in es-419 (which must exist), Portuguese's or
  * French's own catalog form (which must exist; for French before its release, an identical entry), else `L`. */
 const N=(locale:Locale,text:string)=>{if(locale==='pt-BR'||locale==='fr'){const t=TRANSLATED.find(x=>x.tag===locale)!;if(text==='Skip the tour')return exact(t.maps.tour.skip);if(text==='Save spectrum (.SSP)')return exact((e01e02Maps(locale).observatory as typeof OBSERVATORY_ES).spectrumSave.save);
@@ -573,7 +573,7 @@ async function toolbarSave(browser:Browser,baseURL:string|undefined,locale:Local
 /** English's toolbar file, once per worker (as ENGLISH above). */
 let englishToolbar:Promise<File>|undefined;
 // Front SC10/SC12 review: one test per variant, against English's file (as `family`).
-for(const locale of ['qps','es-419','pt-BR','fr',...SCRIPT_PSEUDO] as const)
+for(const locale of ['qps','es-419','pt-BR','fr','ja',...SCRIPT_PSEUDO] as const)
  test(`the shell toolbar: Save investigation is byte-identical in English and ${locale} [${locale}]`,async({browser,baseURL})=>{
   englishToolbar??=toolbarSave(browser,baseURL,'en');
   const english=await englishToolbar,file=await toolbarSave(browser,baseURL,locale);

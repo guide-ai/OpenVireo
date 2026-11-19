@@ -4,6 +4,7 @@
 import {SIMPLIFIED_ONLY,TRADITIONAL_ONLY} from './hanVariants';
 import type {PluralCategory} from '../plural';
 import {frenchTypographyFindings} from './frenchSpacing';
+import {KANA_PREFERRED_PATTERNS,LONG_VOWEL_PATTERN,OVER_POLITE_PATTERNS,japaneseTypographyFindings} from './japanese';
 import {wordSource,type Boundary,type GlyphClass,type LocaleProfile,type MarkPair,type PairedPattern,type Pattern} from './rules';
 /** How each language addresses the student. DECIDED by the user on 2026-11-09 (AGENTS.md; plan §13 Q1–Q3, §14): Japanese
  * polite です/ます, Hindi आप, Russian lower-case «вы», Chinese (zh-Hans and zh-Hant) 你. The alternatives stay expressible
@@ -50,7 +51,8 @@ function japaneseRegister(setting:Registers['ja']):Pattern[]{
  return setting==='desu-masu'
   // Plain endings: だ, past た (not ました/でした), dictionary forms in る う く ぐ つ ぬ ぶ む す (not ます/です), adjectives
   // and ない in い (not ください), volitional う (not ましょう/でしょう).
-  ?[{label:'plain-form sentence end',pattern:/(?:だ|(?<![まで]し)た|る|(?<!ょ)う|[くぐつぬぶむ]|(?<![まで])す|(?<!くださ)い)(?=。)/u,use:'end sentences in the polite です/ます form'},pronoun]
+  // Front JA0: and no over-polite form (src/i18n/lint/japanese.ts).
+  ?[{label:'plain-form sentence end',pattern:/(?:だ|(?<![まで]し)た|る|(?<!ょ)う|[くぐつぬぶむ]|(?<![まで])す|(?<!くださ)い)(?=。)/u,use:'end sentences in the polite です/ます form'},pronoun,...OVER_POLITE_PATTERNS]
   :[{label:'polite sentence end',pattern:/(?:です|ます|ました|ません|でした|でしょう|ください)(?=。)/u,use:'end sentences in the plain form'},pronoun];
 }
 function hindiRegister(setting:Registers['hi']):Pattern[]{
@@ -288,7 +290,10 @@ export function profileFor(id:ProfileId,registers:Registers=REGISTER):LocaleProf
    glyphs:glyphsWith({'…':CJK_ELLIPSIS,'·':{marks:['·','・'],extraAllowed:true}}),
    pairs:[pair('「','」'),pair('『','』'),pair('（','）'),PARENS],
    forbiddenMarks:[{mark:'"',use:'「 」'},{mark:'“',use:'「 」'},{mark:'”',use:'「 」'}],
-   typography:cjkTypography(JA_LETTER,'、。：；？！'),
+   // Front JA0 (plan front-i18n-ja.md §1.2 #1–2): kana for auxiliaries and formal nouns, the katakana long vowel, and as a check what
+   // the CJK punctuation fixer would still change and any Han character Japanese does not encode (src/i18n/lint/japanese.ts).
+   typography:[...cjkTypography(JA_LETTER,'、。：；？！'),...KANA_PREFERRED_PATTERNS,LONG_VOWEL_PATTERN],
+   typographyCheck:japaneseTypographyFindings,
    register:{setting:registers.ja,patterns:japaneseRegister(registers.ja)},
    // A claim, never its denial: 非公式翻訳, 公式翻訳ではありません and CLEAによる翻訳ではありません pass.
    claims:[/(?<!非)公式(?:の)?翻訳(?!では(?:ありません|ない))|CLEA(?:の|による)(?:公式)?翻訳(?!では(?:ありません|ない))/u],

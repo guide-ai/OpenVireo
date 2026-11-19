@@ -32,7 +32,7 @@ describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-0
  it('accepts the pseudo-locale only in the dev server and tests, never from storage',()=>{
   expect(decide({param:'qps'})).toBe('en');expect(decide({param:'qps',dev:true,registry:UNRELEASED})).toBe('qps');
   expect(decide({stored:'qps',dev:true})).toBe('en');
-  expect(HTML_LANG).toEqual({en:'en','es-419':'es-419','pt-BR':'pt-BR',fr:'fr',qps:'en','qps-cjk':'ja','qps-deva':'hi','qps-cyrl':'ru','qps-rtl':'ar'});
+  expect(HTML_LANG).toEqual({en:'en','es-419':'es-419','pt-BR':'pt-BR',fr:'fr',ja:'ja',qps:'en','qps-cjk':'ja','qps-deva':'hi','qps-cyrl':'ru','qps-rtl':'ar'});
  });
  it('shows the selector when it offers a choice: before a release only on that language\'s own preview (ES1 review 1, C3; SC8)',()=>{
   expect(selectorShown('en',UNRELEASED)).toBe(false);expect(selectorShown('es-419',UNRELEASED)).toBe(true);
@@ -75,5 +75,17 @@ describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-0
   const before=LANGUAGES.map(l=>l.tag==='fr'?{...l,released:false}:l);
   for(const languages of [['fr'],['fr-FR'],['fr-CA']])expect(decide({languages,registry:before}),languages.join(',')).toBe('en');
   expect(decide({stored:'fr',languages:['fr-FR'],registry:before})).toBe('en');expect(decide({param:'fr',registry:before})).toBe('fr');
+ });
+ it('Front JA0: Japanese is registered before its release: only ?lang=ja opens it; ja, ja-JP and JA-jp browsers and a stored ja get English',()=>{
+  expect(isReleased('ja')).toBe(false);
+  for(const languages of [['ja'],['ja-JP'],['JA-jp'],['ja-JP-u-ca-japanese'],['ja-JP','es-MX']])expect(decide({languages}),languages.join(',')).toBe('en');
+  expect(decide({languages:['es-MX','ja-JP']})).toBe('es-419');expect(decide({stored:'ja',languages:['ja-JP']})).toBe('en');
+  expect(decide({param:'ja',languages:['en-US']})).toBe('ja');expect(decide({param:'ja',stored:'fr',languages:['pt-BR']})).toBe('ja');
+  for(const junk of ['JA','ja-JP','jp','ja-jp'])expect(decide({param:junk,languages:['en-US']}),junk).toBe('en');
+  expect(HTML_LANG.ja).toBe('ja');expect(selectorShown('ja')).toBe(true);
+  // Once released (JA-REL), every ja and ja-* browser in any case opens it; jv (Javanese), ryu (Okinawan) and en-JP do not.
+  const after=LANGUAGES.map(l=>l.tag==='ja'?{...l,released:true}:l);
+  for(const languages of [['ja'],['ja-JP'],['JA-jp'],['ja-JP-u-ca-japanese']])expect(decide({languages,registry:after}),languages.join(',')).toBe('ja');
+  for(const languages of [['jv'],['ryu'],['en-JP'],['en-US','ja-JP']])expect(decide({languages,registry:after}),languages.join(',')).toBe('en');
  });
 });

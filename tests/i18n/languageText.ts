@@ -53,6 +53,16 @@ import {OBSERVATION_METADATA_FR} from '../../src/i18n/fr/maps/observationMetadat
 import {OBSERVATORY_FR} from '../../src/i18n/fr/maps/observatory';
 import {QSO_LIST_FR} from '../../src/i18n/fr/maps/qsoList';
 import {SOUND_FR} from '../../src/i18n/fr/maps/sound';
+import ja from '../../src/i18n/ja/ja.json' with {type:'json'};
+import jaOriginals from '../../src/i18n/ja/originals.json' with {type:'json'};
+import {APP_SHELL_JA} from '../../src/i18n/ja/maps/appShell';
+import {HELP_MENU_JA} from '../../src/i18n/ja/maps/helpMenu';
+import {PROJECT_LINKS_JA} from '../../src/i18n/ja/maps/projectLinks';
+import {TOUR_JA} from '../../src/i18n/ja/maps/tour';
+import {LANGUAGE_CHOICE_JA} from '../../src/i18n/ja/maps/languageChoice';
+import {OBJECT_X_LAB_JA} from '../../src/i18n/ja/maps/objectXLab';
+import {POLISH_JA} from '../../src/i18n/ja/maps/polish';
+import {VARIABLE_STARS_JA} from '../../src/i18n/ja/maps/variableStars';
 import {LANGUAGES,failureNotice,type LanguageEntry} from '../../src/i18n/languages';
 import type {Translation} from '../../src/i18n/maps';
 import type {APP_SHELL_MESSAGES_EN} from '../../src/components/AppShellMessages';
@@ -110,8 +120,13 @@ export const PORTUGUESE_TEXT=language('pt-BR',pt,ptOriginals,{appShell:APP_SHELL
  * browser with no query (tests/fixtures/language.ts contextLocale). Its letters include « » and U+202F, which English text never has. */
 export const FRENCH_TEXT=language('fr',fr,frOriginals,{appShell:APP_SHELL_FR,helpMenu:HELP_MENU_FR,projectLinks:PROJECT_LINKS_FR,tour:TOUR_FR,languageChoice:LANGUAGE_CHOICE_FR},
  [APP_SHELL_FR,CAMERA_FR,FIELD_INFO_FR,FIELD_READ_DETAILS_FR,HELP_MENU_FR,LANGUAGE_CHOICE_FR,NAKED_EYE_FR,OBJECT_X_LAB_FR,OBSERVATION_METADATA_FR,OBSERVATORY_FR,POLISH_FR,PROJECT_LINKS_FR,QSO_LIST_FR,SOUND_FR,TOUR_FR,VARIABLE_STARS_FR],/[àâæçéèêëîïôœùûüÿ«»\u202f]/i,'');
+/** Front JA0 (plan front-i18n-ja.md §1.2 #3): Japanese, behind `?lang=ja` before its release; JA0 translated the shell, and each
+ * later JA front adds its area to `done`. Its letters are kana, ー and 「」, which no English text, VIREO file or export has (Han alone
+ * is not used: kana are the unambiguous Japanese signal). Its observatory maps grow with JA1. */
+export const JAPANESE_TEXT=language('ja',ja,jaOriginals,{appShell:APP_SHELL_JA,helpMenu:HELP_MENU_JA,projectLinks:PROJECT_LINKS_JA,tour:TOUR_JA,languageChoice:LANGUAGE_CHOICE_JA},
+ [APP_SHELL_JA,HELP_MENU_JA,LANGUAGE_CHOICE_JA,OBJECT_X_LAB_JA,POLISH_JA,PROJECT_LINKS_JA,TOUR_JA,VARIABLE_STARS_JA],/[\p{sc=Hira}\p{sc=Kana}ー「」]/u,'?lang=ja',['shell']);
 /** Every translated language of the registry, in its order (a test fails if a registered language has no text here). */
-export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT]);
+export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT,JAPANESE_TEXT]);
 /** Front FR0: the languages that run the specs of `area` (those whose `done` has it), in registry order. */
 export const translatedFor=(area:Area):readonly LanguageText[]=>TRANSLATED.filter(l=>l.done.has(area));
 export const textOf=(tag:string):LanguageText=>{const t=TRANSLATED.find(l=>l.tag===tag);if(!t)throw new Error(`No test text for ${tag}`);return t;};

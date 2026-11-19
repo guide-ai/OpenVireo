@@ -56,7 +56,8 @@ describe('Front SC8: the language registry (src/i18n/languages.json)',()=>{
  it('Spanish is released and keeps its ES-REL behaviour: es and es-* (any case), <html lang> es-419, Español in the selector',()=>{
   // Front PT0 registered Brazilian Portuguese before its release (a ?lang=pt-BR preview only); Front PT-REL released it. Front FR0
   // registered French before its release; Front FR-REL released it.
-  expect(LANGUAGES.map(l=>[l.tag,l.released])).toEqual([['es-419',true],['pt-BR',true],['fr',true]]);
+  // Front JA0 registered Japanese before its release.
+  expect(LANGUAGES.map(l=>[l.tag,l.released])).toEqual([['es-419',true],['pt-BR',true],['fr',true],['ja',false]]);
   for(const tag of ['es','es-MX','es-ES','ES-ar','es-419','es-Latn-MX'])expect(matchLanguage(tag)?.tag,tag).toBe('es-419');
   for(const tag of ['','en','en-US','esp','eus','et','ca-ES'])expect(matchLanguage(tag),tag).toBeUndefined();
   // Front FR0: fr-ES is French spoken in Spain, so it asks for French (released since FR-REL).
@@ -67,6 +68,9 @@ describe('Front SC8: the language registry (src/i18n/languages.json)',()=>{
   expect(failureNotice('area','es-419')).toEqual({en:'Part of the Spanish text could not be loaded; that part is shown in English. Reload to try again.',own:'No se pudo cargar parte del texto en español; esa parte se muestra en inglés. Recarga para intentarlo de nuevo.',lang:'es-419'});
   expect(failureNotice('language','id')).toBeUndefined();
   // Front FR0: French's notices, with U+202F before «;» (plan §2).
+  // Front JA0: Japanese's notices (plan front-i18n-ja.md §2).
+  expect(failureNotice('language','ja')).toEqual({en:'Japanese could not be loaded; English is shown. Reload to try again.',own:'日本語を読み込めなかったため、英語で表示しています。再読み込みしてもう一度お試しください。',lang:'ja'});
+  expect(matchLanguage('ja-JP')?.tag).toBe('ja');expect(isReleased('ja')).toBe(false);
   expect(failureNotice('language','fr')).toEqual({en:'French could not be loaded; English is shown. Reload to try again.',own:'Impossible de charger le français\u202f; le site s’affiche en anglais. Rechargez la page pour réessayer.',lang:'fr'});
  });
 });
@@ -74,7 +78,7 @@ describe('Front SC8: detection for the languages to come (scripts plan §7, pt-B
  // [browser tag, registered language it asks for]; undefined: none (English).
  const TABLE:readonly (readonly [string,string|undefined])[]=[
   ['es','es-419'],['es-MX','es-419'],['pt','pt-BR'],['pt-BR','pt-BR'],['pt-br','pt-BR'],['pt-PT','pt-BR'],['pt-AO','pt-BR'],['gl',undefined],
-  ['fr','fr'],['fr-CA','fr'],['id','id'],['id-ID','id'],['ms',undefined],['hi','hi'],['hi-IN','hi'],['en-IN',undefined],['ja','ja'],['ja-JP','ja'],
+  ['fr','fr'],['fr-CA','fr'],['id','id'],['id-ID','id'],['ms',undefined],['hi','hi'],['hi-IN','hi'],['en-IN',undefined],['ja','ja'],['ja-JP','ja'],['JA-jp','ja'],['ja-JP-u-ca-japanese','ja'],['jv',undefined],['ryu',undefined],['en-JP',undefined],
   ['ru','ru'],['ru-RU','ru'],['uk',undefined],['be',undefined],['kk',undefined],
   ['zh-Hans','zh-Hans'],['zh-Hans-CN','zh-Hans'],['zh-Hans-TW','zh-Hans'],['zh-CN','zh-Hans'],['zh-SG','zh-Hans'],['zh-MY','zh-Hans'],['zh','zh-Hans'],['ZH-cn','zh-Hans'],
   // Traditional Chinese while zh-Hant does not exist: English (decision Q5), never Simplified automatically.
