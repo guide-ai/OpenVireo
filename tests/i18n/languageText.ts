@@ -63,6 +63,16 @@ import {LANGUAGE_CHOICE_ID} from '../../src/i18n/id/maps/languageChoice';
 import {OBJECT_X_LAB_ID} from '../../src/i18n/id/maps/objectXLab';
 import {POLISH_ID} from '../../src/i18n/id/maps/polish';
 import {VARIABLE_STARS_ID} from '../../src/i18n/id/maps/variableStars';
+import ru from '../../src/i18n/ru/ru.json' with {type:'json'};
+import ruOriginals from '../../src/i18n/ru/originals.json' with {type:'json'};
+import {APP_SHELL_RU} from '../../src/i18n/ru/maps/appShell';
+import {HELP_MENU_RU} from '../../src/i18n/ru/maps/helpMenu';
+import {PROJECT_LINKS_RU} from '../../src/i18n/ru/maps/projectLinks';
+import {TOUR_RU} from '../../src/i18n/ru/maps/tour';
+import {LANGUAGE_CHOICE_RU} from '../../src/i18n/ru/maps/languageChoice';
+import {OBJECT_X_LAB_RU} from '../../src/i18n/ru/maps/objectXLab';
+import {POLISH_RU} from '../../src/i18n/ru/maps/polish';
+import {VARIABLE_STARS_RU} from '../../src/i18n/ru/maps/variableStars';
 import {LANGUAGES,failureNotice,type LanguageEntry} from '../../src/i18n/languages';
 import type {Translation} from '../../src/i18n/maps';
 import type {APP_SHELL_MESSAGES_EN} from '../../src/components/AppShellMessages';
@@ -126,8 +136,13 @@ export const FRENCH_TEXT=language('fr',fr,frOriginals,{appShell:APP_SHELL_FR,hel
  * thousands separator its text uses. */
 export const INDONESIAN_TEXT=language('id',idCatalog,idOriginals,{appShell:APP_SHELL_ID,helpMenu:HELP_MENU_ID,projectLinks:PROJECT_LINKS_ID,tour:TOUR_ID,languageChoice:LANGUAGE_CHOICE_ID},
  [APP_SHELL_ID,HELP_MENU_ID,LANGUAGE_CHOICE_ID,OBJECT_X_LAB_ID,POLISH_ID,PROJECT_LINKS_ID,TOUR_ID,VARIABLE_STARS_ID],/(?<!\p{L})(?:yang|dan|untuk|dengan|tidak|Anda|dari|pada|ini|atau)(?!\p{L})|[“”\u202f]/u,'?lang=id',['shell']);
+/** Front RU0: Russian before its release, behind `?lang=ru` (an en-US browser: tests/fixtures/language.ts contextLocale). Only the
+ * shell is translated; RU1–RU6 and RU-HELP add their areas to `done` and their maps below. Its letters are Cyrillic, « » and U+202F,
+ * which English text never has. */
+export const RUSSIAN_TEXT=language('ru',ru,ruOriginals,{appShell:APP_SHELL_RU,helpMenu:HELP_MENU_RU,projectLinks:PROJECT_LINKS_RU,tour:TOUR_RU,languageChoice:LANGUAGE_CHOICE_RU},
+ [APP_SHELL_RU,HELP_MENU_RU,LANGUAGE_CHOICE_RU,OBJECT_X_LAB_RU,POLISH_RU,PROJECT_LINKS_RU,TOUR_RU,VARIABLE_STARS_RU],/[\p{sc=Cyrl}«»\u202f]/u,'?lang=ru',['shell']);
 /** Every translated language of the registry, in its order (a test fails if a registered language has no text here). */
-export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT,INDONESIAN_TEXT]);
+export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT,INDONESIAN_TEXT,RUSSIAN_TEXT]);
 /** Front FR0: the languages that run the specs of `area` (those whose `done` has it), in registry order. */
 export const translatedFor=(area:Area):readonly LanguageText[]=>TRANSLATED.filter(l=>l.done.has(area));
 export const textOf=(tag:string):LanguageText=>{const t=TRANSLATED.find(l=>l.tag===tag);if(!t)throw new Error(`No test text for ${tag}`);return t;};

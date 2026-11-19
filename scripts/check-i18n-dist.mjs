@@ -34,7 +34,10 @@ const gzip=(text)=>gzipSync(Buffer.from(text),{level:9}).length,kb=(n)=>(n/1000)
 const escape=(s)=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 // Front ES1 review 1 and ES2: a minifier writes a string as "…", '…' or `…` (a template keeps real line feeds and writes CR as \r),
 // so each marker is looked for in all three forms.
-const quoted=(v)=>{const json=JSON.stringify(v).slice(1,-1);return [json,json.replace(/\\"/g,'"').replace(/'/g,"\\'"),v.replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\$\{/g,'\\${').replace(/\r/g,'\\r')];};
+// Front RU0: the bundler writes U+00A0 (Russian's no-break space before « — » and inside «т. е.») as the escape \xA0, so each form is
+// also searched with it escaped (U+202F, the thousands space, is written as itself).
+const quoted=(v)=>{const json=JSON.stringify(v).slice(1,-1),forms=[json,json.replace(/\\"/g,'"').replace(/'/g,"\\'"),v.replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\$\{/g,'\\${').replace(/\r/g,'\\r')];
+ return v.includes('\u00a0')?[...forms,...forms.flatMap(f=>[f.replace(/\u00a0/g,'\\xA0'),f.replace(/\u00a0/g,'\\u00A0')])]:forms;};
 // A map literal or an original is a marker when it has a letter outside ASCII (review: any script of languages.json, not only
 // Spanish letters; Front ID0: a module of a language written in ASCII alone that has no such marker falls back to its ASCII
 // prose literals, below, and with none fails loudly, never silently)

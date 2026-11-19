@@ -122,7 +122,9 @@ describe('Front SC2: the pseudo-locales as UI languages (dev server and tests on
    expect(decide({stored:language,dev:true})).toBe('en');expect(decide({languages:[TAG[language]],dev:true})).toBe('en');
    expect(HTML_LANG[language]).toBe(TAG[language]);expect(selectorShown(language)).toBe(false);
   }
-  for(const junk of ['qps-','qps-CJK','qps-latn','ja','hi','ru','constructor','__proto__'])expect(decide({param:junk,dev:true}),junk).toBe('en');
+  // Front RU0: ru is a registered language now (its own ?lang=ru preview), so it is no junk value; ja and hi are not registered yet.
+  for(const junk of ['qps-','qps-CJK','qps-latn','ja','hi','constructor','__proto__'])expect(decide({param:junk,dev:true}),junk).toBe('en');
+  expect(decide({param:'ru',dev:true})).toBe('ru');
   expect(isPseudoScriptLanguage('qps')).toBe(false);expect(isPseudoScriptLanguage('toString')).toBe(false);
  });
  it('settle a load synchronously with <html lang> ja, hi or ru and the transformed title',()=>{

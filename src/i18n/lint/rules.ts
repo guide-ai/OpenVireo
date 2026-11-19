@@ -283,12 +283,14 @@ export function allowances(all:readonly Pair[],profile:LocaleProfile,data:LintDa
  return out;
 }
 /** Keys marked plural must have the language's categories, as `<key>.<category>` catalog entries (an optional category may be
- * left out: plural() then uses `other`), and no category the language never selects. */
+ * left out: plural() then uses `other`), and no category the language never selects. Front RU0: a key holding `*` names the
+ * category at that segment instead (`obsHr.kindWarning.*.none`, the outer axis of a two-level family). */
 export function pluralForms(catalog:Readonly<Record<string,string>>,pluralKeys:readonly string[],profile:LocaleProfile):Finding[]{
  const out:Finding[]=[],all=['zero','one','two','few','many','other'];
  for(const key of pluralKeys){
-  for(const c of profile.pluralCategories)if(!profile.optionalPluralCategories?.includes(c)&&typeof catalog[`${key}.${c}`]!=='string')out.push(finding('plural',`catalog:${key}`,`lacks the ${c} form (${profile.name} needs ${profile.pluralCategories.join(', ')})`));
-  for(const c of all)if(!profile.pluralCategories.includes(c as PluralCategory)&&Object.hasOwn(catalog,`${key}.${c}`))out.push(finding('plural',`catalog:${key}`,`has a ${c} form, which ${profile.name} never selects`));
+  const form=(c:string)=>key.includes('*')?key.replace('*',c):`${key}.${c}`;
+  for(const c of profile.pluralCategories)if(!profile.optionalPluralCategories?.includes(c)&&typeof catalog[form(c)]!=='string')out.push(finding('plural',`catalog:${key}`,`lacks the ${c} form (${profile.name} needs ${profile.pluralCategories.join(', ')})`));
+  for(const c of all)if(!profile.pluralCategories.includes(c as PluralCategory)&&Object.hasOwn(catalog,form(c)))out.push(finding('plural',`catalog:${key}`,`has a ${c} form, which ${profile.name} never selects`));
  }
  return out;
 }

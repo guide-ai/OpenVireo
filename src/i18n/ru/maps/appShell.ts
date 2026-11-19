@@ -1,0 +1,23 @@
+import type {APP_SHELL_MESSAGES_EN} from '../../../components/AppShellMessages';
+import type {Translation} from '../../maps';
+/** Front RU0: Russian (ru) for the app shell: navigation groups, theme switch, toolbar disclosure, the page bar and the recovery notice
+ * of a part of the site that cannot load. A web adaptation by OpenVireo, not CLEA's. */
+export const APP_SHELL_RU:Translation<typeof APP_SHELL_MESSAGES_EN>=Object.freeze({
+ theme:Object.freeze({legend:'Цветовая тема',system:'Системная',light:'Светлая',dark:'Тёмная'}),
+ navGroups:Object.freeze({optical:'Оптическая обсерватория',radio:'Радиообсерватория',analysis:'Анализ',files:'Файлы',guides:'Руководства к работам'}),
+ backupHelpSummary:'Что входит в резервную копию',
+ toolsMenu:'Меню',
+ skipToContent:'Перейти к содержимому',
+ pageBar:Object.freeze({label:'Исследование, язык и справка',more:'Ещё',moreName:'Ещё действия с исследованием'}),
+ recovery:Object.freeze({
+  updatedTitle:'Опубликована новая версия OpenVireo',
+  updated:'Эту часть сайта не удалось загрузить, потому что сайт обновился, пока эта страница была открыта.',
+  errorTitle:'Эта часть OpenVireo остановилась из-за ошибки',
+  error:'Обычно помогает перезагрузка страницы. Если ошибка повторится, запишите, что вы делали перед этим.',
+  kept:'Остальная часть сайта и другие ваши материалы в этой вкладке на месте.',
+  saveFirst:'Сначала сохраните исследование, затем перезагрузите страницу, чтобы продолжить с текущей версией.',
+  saveHow:'Перезагрузите страницу, чтобы продолжить. Работу, которую вы раньше сохранили кнопкой «Сохранить исследование», затем можно восстановить кнопкой «Восстановить исследование (JSON)».',
+  save:'Сохранить исследование',
+  reload:'Перезагрузить страницу',
+ }),
+});

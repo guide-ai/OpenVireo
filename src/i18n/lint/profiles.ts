@@ -5,6 +5,7 @@ import {SIMPLIFIED_ONLY,TRADITIONAL_ONLY} from './hanVariants';
 import type {PluralCategory} from '../plural';
 import {frenchTypographyFindings} from './frenchSpacing';
 import {indonesianTypographyFindings} from './indonesianTypography';
+import {russianTypographyFindings} from './russianTypography';
 import {wordSource,type Boundary,type GlyphClass,type LocaleProfile,type MarkPair,type PairedPattern,type Pattern} from './rules';
 /** How each language addresses the student. DECIDED by the user on 2026-11-09 (AGENTS.md; plan §13 Q1–Q3, §14): Japanese
  * polite です/ます, Hindi आप, Russian lower-case «вы», Chinese (zh-Hans and zh-Hant) 你. The alternatives stay expressible
@@ -438,17 +439,29 @@ export function profileFor(id:ProfileId,registers:Registers=REGISTER):LocaleProf
   }
   case 'ru':return {
    id,name:'Russian',script:/\p{sc=Cyrl}/u,boundary:'letters',caseFold:'ru',
-   // Russian adds a dash where English has none (Телескоп — инструмент…).
-   glyphs:glyphsWith({'—':{marks:['—'],extraAllowed:true}},[{marks:['?']}]),
+   // Russian adds a dash where English has none (Телескоп — инструмент…). Front RU0: the fixer turns a spaced en dash into « — »,
+   // so the en and em dashes count as one class (a range may be «2–4» or «1990—2000»).
+   glyphs:glyphsWith({'—':{marks:['—','–'],extraAllowed:true}},[{marks:['?']}]).filter(c=>!(c.marks.length===1&&c.marks[0]==='–')),
    pairs:[pair('«','»'),pair('„','“'),PARENS],
    forbiddenMarks:[{mark:'"',use:'«» (inner „“)'},{mark:'”',use:'«» (inner „“)'}],
    typography:[
-    // A range between numbers (1990—2000) is not a dash between words.
+    // A range between numbers (1990—2000) is not a dash between words. Front RU0: the fixer writes U+00A0 before « — ».
     {label:'unspaced em dash',pattern:/(?<=\p{L})—|—(?=\p{L})|(?<=\p{N})—(?!\p{N})|(?<!\p{N})—(?=\p{N})/u,use:'write « — » with spaces'},
-    {label:'hyphen as a dash',pattern:/ - /u,use:'use « — »'},
-    {label:'е for ё',pattern:words(['еще','ее','нее'],'letters'),use:'write ё (ещё, её, неё) as the interface always does'},
+    {label:'hyphen as a dash',pattern:/[ \u00a0]-[ \u00a0]/u,use:'use « — »'},
+    // Front RU0 (plan §4.4): unambiguous words only; «все»/«всё» and «звезды»/«звёзды» need context (the reviewer reads them).
+    {label:'е for ё',pattern:words(['еще','ее','нее','приемник*','объем*','звездн*','отсчет*','расчет*','учет*','счетчик*','четырех','трех','определен','включен','отключен','сохранен','заполнен'],'letters'),use:'write ё (ещё, её, приёмник, объём, звёздный, отсчёт, расчёт, учёт, трёх, определён, включён, сохранён) as the interface always does'},
     {label:'Latin and Cyrillic letters in one word',pattern:/\p{sc=Cyrl}\p{sc=Latn}|\p{sc=Latn}\p{sc=Cyrl}/u,use:'retype the word in one script'},
+    // Front RU0 (user decision Q1 of 2026-11-19): thousands with U+202F on screen («24 000»), as Portuguese and French.
+    ...thousandsRules('\u202f'),
+    {label:'narrow no-break space outside a number',pattern:/(?<!\p{N})\u202f|\u202f(?!\p{N})/u,use:'U+202F only between thousands; U+00A0 before « — », in «т. е.» and before a unit'},
+    {label:'Ukrainian or Belarusian letter',pattern:/[іїєґўІЇЄҐЎ]/u,use:'Russian has no і ї є ґ ў; retype the word in Russian'},
+    {label:'Ukrainian word',pattern:words(['що','який','яка','також','та','є','це є','вони','будь ласка'],'letters'),use:'translate into Russian'},
+    // Sentence case: three capitalised Cyrillic words in a row (short prepositions between them allowed), outside brackets and
+    // quotes. A proper name of three words («Нового Южного Уэльса») goes in lint-allowed.json with a reason.
+    {label:'title case',pattern:/(?<![\p{L}\p{N}])(?=\p{sc=Cyrl})\p{Lu}\p{Ll}+(?:[ \u00a0]+(?:(?:и|в|на|по|с|для|из|о|об)[ \u00a0]+)?(?=\p{sc=Cyrl})\p{Lu}\p{Ll}+){2,}(?![^(]*\))(?![^«]*»)/u,use:'sentence case (only the first word, names and acronyms capitalised)'},
+    {label:'Latin unit symbol',pattern:/(?<![\p{L}\p{N}/])(?:km\/s|Mpc|kpc|MHz|kHz|GHz)(?![\p{L}\p{N}])(?![^(]*\))(?![^«]*»)/u,use:'the Russian symbol (км/с, Мпк, кпк, МГц, кГц, ГГц); VIREO\'s English stays only in a bracketed gloss'},
    ],
+   typographyCheck:russianTypographyFindings,
    register:{setting:registers.ru,patterns:russianRegister(registers.ru)},
    // неофициальный (unofficial), не официальный and не является… pass.
    claims:[/(?<!не|не[ \u00a0]|не является[ \u00a0])официальн\p{L}* перевод|(?<!не[ \u00a0]|не является[ \u00a0])перевод\p{L}* (?:от )?CLEA/iu],

@@ -32,7 +32,7 @@ describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-0
  it('accepts the pseudo-locale only in the dev server and tests, never from storage',()=>{
   expect(decide({param:'qps'})).toBe('en');expect(decide({param:'qps',dev:true,registry:UNRELEASED})).toBe('qps');
   expect(decide({stored:'qps',dev:true})).toBe('en');
-  expect(HTML_LANG).toEqual({en:'en','es-419':'es-419','pt-BR':'pt-BR',fr:'fr',id:'id',qps:'en','qps-cjk':'ja','qps-deva':'hi','qps-cyrl':'ru','qps-rtl':'ar'});
+  expect(HTML_LANG).toEqual({en:'en','es-419':'es-419','pt-BR':'pt-BR',fr:'fr',id:'id',ru:'ru',qps:'en','qps-cjk':'ja','qps-deva':'hi','qps-cyrl':'ru','qps-rtl':'ar'});
  });
  it('shows the selector when it offers a choice: before a release only on that language\'s own preview (ES1 review 1, C3; SC8)',()=>{
   expect(selectorShown('en',UNRELEASED)).toBe(false);expect(selectorShown('es-419',UNRELEASED)).toBe(true);
@@ -89,5 +89,19 @@ describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-0
   for(const languages of [['id'],['id-ID'],['ID-id'],['in'],['in-ID']])expect(decide({languages,registry:after}),languages.join(',')).toBe('id');
   for(const languages of [['ms'],['ms-MY'],['ms-ID'],['zsm'],['jv'],['jv-ID'],['su'],['en-ID'],['en-US','id-ID']])expect(decide({languages,registry:after}),languages.join(',')).toBe('en');
   expect(decide({languages:['id-ID','pt-BR'],registry:after})).toBe('id');expect(decide({stored:'id',languages:['en-US'],registry:after})).toBe('id');
+ });
+ it('Front RU0: Russian is registered before its release: only ?lang=ru opens it; ru, ru-RU, ru-UA and uk browsers and a stored ru get English',()=>{
+  expect(isReleased('ru')).toBe(false);
+  for(const languages of [['ru'],['ru-RU'],['ru-UA'],['RU-ru'],['uk','ru'],['uk-UA'],['be']])expect(decide({languages}),languages.join(',')).toBe('en');
+  expect(decide({stored:'ru',languages:['ru-RU']})).toBe('en');
+  expect(decide({param:'ru',languages:['en-US']})).toBe('ru');expect(decide({param:'ru',stored:'fr',languages:['pt-BR']})).toBe('ru');
+  for(const junk of ['RU','ru-RU','ru-ru'])expect(decide({param:junk,languages:['en-US']}),junk).toBe('en');
+  expect(HTML_LANG.ru).toBe('ru');expect(selectorShown('ru')).toBe(true);
+  // Once released (RU-REL), every ru and ru-* browser in any case opens it; Ukrainian, Belarusian and Kazakh browsers do not, and
+  // only the first preference decides (a uk browser that also lists ru stays English).
+  const after=LANGUAGES.map(l=>l.tag==='ru'?{...l,released:true}:l);
+  for(const languages of [['ru'],['ru-RU'],['ru-UA'],['RU-ru'],['ru-KZ','en-US']])expect(decide({languages,registry:after}),languages.join(',')).toBe('ru');
+  for(const languages of [['uk'],['be'],['kk'],['uk','ru'],['en-US','ru']])expect(decide({languages,registry:after}),languages.join(',')).toBe('en');
+  expect(decide({stored:'ru',languages:['en-US'],registry:after})).toBe('ru');
  });
 });

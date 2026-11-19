@@ -6,7 +6,7 @@
 import {existsSync,readdirSync,readFileSync} from 'node:fs';
 import path from 'node:path';
 import {keyAreas,ROOT as root} from './i18n-areas.mjs';
-import {languageDir,loadLanguages} from './i18n-split.mjs';
+import {languageDir,loadLanguages,pluralFormBase} from './i18n-split.mjs';
 const tag=process.argv.includes('--lang')?process.argv[process.argv.indexOf('--lang')+1]:'es-419';
 const language=loadLanguages(root).find(l=>l.tag===tag);
 if(!language){console.error(`${tag} is not in src/i18n/languages.json`);process.exit(1);}
@@ -17,6 +17,14 @@ console.log(`${language.englishName} (${tag}):`);
 const pct=(done,total)=>total?`${(100*done/total).toFixed(1)} %`:'—';
 const done=Object.keys(en).filter(k=>typeof spanish[k]==='string').length;
 console.log(`en.json: ${done}/${Object.keys(en).length} keys (${pct(done,Object.keys(en).length)})`);
+// Front RU0: plural forms that en.json lacks (Russian `x.few`, `x.many`), counted against every form of the families of
+// src/i18n/plural-sites.json in this language's categories.
+const categories=new Intl.PluralRules(language.htmlLang??tag).resolvedOptions().pluralCategories;
+const heads=json(path.join(root,'src/i18n/plural-sites.json'),{pluralKeyFamilies:[]}).pluralKeyFamilies.map(f=>f.split(' ')[0]),wanted=new Set();
+for(const key of Object.keys(en))if(heads.some(h=>key.startsWith(`${h}.`))){const parts=key.split('.'),axes=parts.flatMap((p,i)=>p==='other'&&Object.hasOwn(en,parts.map((q,j)=>j===i?'one':q).join('.'))?[i]:[]);
+ let keys=[parts];for(const i of axes)keys=keys.flatMap(k=>categories.map(c=>k.map((p,j)=>j===i?c:p)));for(const k of keys)if(!Object.hasOwn(en,k.join('.')))wanted.add(k.join('.'));}
+// Spanish, Portuguese and French select `many` only for exact millions, an optional form (src/i18n/lint/profiles.ts): not listed.
+if([...wanted].some(k=>/\.(?:zero|two|few)(?:\.|$)/.test(k))){const have=[...wanted].filter(k=>typeof spanish[k]==='string'&&pluralFormBase(k,en,language.htmlLang??tag)).length;console.log(`plural forms beyond en.json: ${have}/${wanted.size} (${pct(have,wanted.size)})`);}
 const areas=new Map();for(const [key,v] of Object.entries(keyAreas(root))){const row=areas.get(v.area)??{total:0,done:0};row.total++;if(typeof spanish[key]==='string')row.done++;areas.set(v.area,row);}
 console.log('Per area (the file that renders the key, or common):');
 const rows=[...areas].sort((a,b)=>b[1].done/b[1].total-a[1].done/a[1].total||b[1].total-a[1].total);

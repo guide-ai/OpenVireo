@@ -32,6 +32,22 @@ export function declaredAreas(root=ROOT){
  return [...m[1].matchAll(/'([a-z][a-z0-9-]*)'/g)].map(x=>x[1]);
 }
 
+/** Front RU0: the build scripts' copy of src/i18n/plural.ts pluralFormBase (src/i18n/split.test.ts keeps the two equal): the
+ * en.json base of a catalog key that is one more plural form of an en.json family in `tag` (Russian `x.few`, `x.many`), or null. */
+export function pluralFormBase(key,en,tag){
+ if(Object.hasOwn(en,key))return null;
+ const parts=key.split('.'),positions=parts.flatMap((p,i)=>/^(?:zero|one|two|few|many)$/.test(p)?[i]:[]);
+ if(!positions.length)return null;
+ let categories;try{categories=new Intl.PluralRules(tag).resolvedOptions().pluralCategories;}catch{categories=['one','other'];}
+ const base=parts.map((p,i)=>positions.includes(i)?'other':p);
+ if(!Object.hasOwn(en,base.join('.')))return null;
+ for(const i of positions){
+  if(parts[i]!=='one'&&!categories.includes(parts[i]))return null;
+  if(!Object.hasOwn(en,base.map((p,j)=>j===i?'one':p).join('.')))return null;
+ }
+ return base.join('.');
+}
+
 // ---------------------------------------------------------------------------------------------------------------------------
 // Source scan, cached per file by modification time and size (the dev server re-plans after a save).
 const scans=new Map();
@@ -198,8 +214,13 @@ export function planLanguage(language,root=ROOT,graph=sourceGraph(root)){
  }
  const headList=[...headFiles.keys()].sort();
  const renders={keys:{},maps:{}},keyModule={},mapModule={},via={static:0,head:0,core:0};
+ // Front RU0: a plural form en.json lacks (Russian `x.few`) goes with its en.json base, in the base's module (after the loop).
+ const forms=new Map();
  for(const key of Object.keys(catalog)){
-  if(!Object.hasOwn(en,key)){problems.push(`${language.catalog} has a key that en.json lacks: ${key}`);continue;}
+  if(!Object.hasOwn(en,key)){const base=pluralFormBase(key,en,language.htmlLang??language.tag);
+   if(base&&Object.hasOwn(catalog,base))forms.set(key,base);
+   else problems.push(base?`${language.catalog} has the plural form ${key} without its base ${base}`:`${language.catalog} has a key that en.json lacks: ${key}`);
+   continue;}
   const files=new Set(literalFiles.get(key)??[]);
   // Rule 2b: every head that matches the key; their files render the key too (the static files keep it as well). Every head,
   // not only the longest: a shorter head in a core file (`pulsar.${…}`) may build the same key as a longer one in an area file.
@@ -209,6 +230,7 @@ export function planLanguage(language,root=ROOT,graph=sourceGraph(root)){
   via[literalFiles.has(key)?'static':'head']++;
   keyModule[key]=moduleFor(list.map(ctx));
  }
+ for(const [key,base] of forms){renders.keys[key]=renders.keys[base];keyModule[key]=keyModule[base];}
  // Maps: the files that import the picked export (following re-exports), or the defining file when the pick is used there too,
  // sits in a translator factory, or has no importer.
  const picks=new Map();for(const [f,info] of graph)for(const p of info.picks){if(!picks.has(p.id))picks.set(p.id,[]);picks.get(p.id).push({...p,file:f});}

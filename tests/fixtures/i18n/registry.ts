@@ -14,6 +14,8 @@ const PORTUGUESE=LANGUAGES.find(l=>l.tag==='pt-BR')!;
 const FRENCH=LANGUAGES.find(l=>l.tag==='fr')!;
 /** Front ID0: Indonesian's own line of the production registry (before its release; `in`, the withdrawn ISO 639 code, too). */
 const INDONESIAN=LANGUAGES.find(l=>l.tag==='id')!;
+/** Front RU0: Russian's own line of the production registry (before its release). */
+const RUSSIAN=LANGUAGES.find(l=>l.tag==='ru')!;
 const TRADITIONAL=['zh-Hant','zh-TW','zh-HK','zh-MO'];
 export const ZH_HANT=entry('zh-Hant','繁體中文','Chinese, Traditional',TRADITIONAL);
 /** Spanish, pt-BR and French as released, then Indonesian, Hindi, Japanese, Simplified Chinese and Russian, before their release. */
@@ -25,7 +27,7 @@ export const PLANNED:readonly LanguageEntry[]=Object.freeze([
  entry('hi','हिन्दी','Hindi',['hi']),
  entry('ja','日本語','Japanese',['ja']),
  entry('zh-Hans','简体中文','Chinese, Simplified',['zh-Hans','zh-CN','zh-SG','zh-MY','zh'],TRADITIONAL),
- entry('ru','Русский','Russian',['ru']),
+ RUSSIAN,
 ]);
 /** The registry with `tags` released. */
 export const releasing=(registry:readonly LanguageEntry[],...tags:string[]):readonly LanguageEntry[]=>registry.map(l=>tags.includes(l.tag)?{...l,released:true}:l);
