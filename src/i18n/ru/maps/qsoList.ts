@@ -20,6 +20,6 @@ export const QSO_LIST_RU:Translation<typeof QSO_LIST_MESSAGES_EN>=Object.freeze(
  noSelection:'Сначала выберите строку с QSO.',
  hst:Object.freeze({
   newTab:'(внешний сайт, откроется в новой вкладке)',
-  note:`Веб-адаптация: VIREO открывал ${HST_ARCHIVE.defaultUrl} («${HST_ARCHIVE.optionsLabel}» в параметрах файлов (File Options) VIREO) в окне браузера. Этой страницы больше нет; эта ссылка открывает её нынешний аналог на hubblesite.org, который NASA теперь предлагает как свою галерею изображений «Хаббла» (Hubble Images). С ней ничего не отправляется.`,
+  note:`Веб-адаптация: VIREO открывала ${HST_ARCHIVE.defaultUrl} («${HST_ARCHIVE.optionsLabel}» в параметрах файлов (File Options) VIREO) в окне браузера. Этой страницы больше нет; эта ссылка открывает её нынешний аналог на hubblesite.org, который NASA теперь предлагает как свою галерею изображений «Хаббла» (Hubble Images). С ней ничего не отправляется.`,
  }),
 });
