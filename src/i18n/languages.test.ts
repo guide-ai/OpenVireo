@@ -55,9 +55,9 @@ describe('Front SC8: the language registry (src/i18n/languages.json)',()=>{
  });
  it('Spanish is released and keeps its ES-REL behaviour: es and es-* (any case), <html lang> es-419, Español in the selector',()=>{
   // Front PT0 registered Brazilian Portuguese before its release (a ?lang=pt-BR preview only); Front PT-REL released it. Front FR0
-  // registered French before its release; Front FR-REL released it. Front ID0 registered Indonesian before its release, Front HI0 Hindi, and
-  // Front JA0 Japanese.
-  expect(LANGUAGES.map(l=>[l.tag,l.released])).toEqual([['es-419',true],['pt-BR',true],['fr',true],['id',false],['hi',false],['ja',false]]);
+  // registered French before its release; Front FR-REL released it. Front ID0 registered Indonesian before its release, Front HI0 Hindi,
+  // Front JA0 Japanese and Front RU0 Russian.
+  expect(LANGUAGES.map(l=>[l.tag,l.released])).toEqual([['es-419',true],['pt-BR',true],['fr',true],['id',false],['hi',false],['ja',false],['ru',false]]);
   for(const tag of ['es','es-MX','es-ES','ES-ar','es-419','es-Latn-MX'])expect(matchLanguage(tag)?.tag,tag).toBe('es-419');
   for(const tag of ['','en','en-US','esp','eus','et','ca-ES'])expect(matchLanguage(tag),tag).toBeUndefined();
   // Front FR0: fr-ES is French spoken in Spain, so it asks for French (released since FR-REL).
@@ -80,6 +80,9 @@ describe('Front SC8: the language registry (src/i18n/languages.json)',()=>{
   expect(failureNotice('language','ja')).toEqual({en:'Japanese could not be loaded; English is shown. Reload to try again.',own:'日本語を読み込めなかったため、英語で表示しています。再読み込みしてもう一度お試しください。',lang:'ja'});
   expect(matchLanguage('ja-JP')?.tag).toBe('ja');expect(isReleased('ja')).toBe(false);
   // Front FR0: French's notices, with U+202F before «;» (plan §2).
+  // Front RU0: Russian's notices (plan §2), and Russian is registered but not released.
+  expect(isReleased('ru')).toBe(false);expect(matchLanguage('ru-UA')?.tag).toBe('ru');expect(matchLanguage('uk')).toBeUndefined();
+  expect(failureNotice('area','ru')).toEqual({en:'Part of the Russian text could not be loaded; that part is shown in English. Reload to try again.',own:'Не удалось загрузить часть текста на русском языке; эта часть показана на английском. Перезагрузите страницу, чтобы попробовать ещё раз.',lang:'ru'});
   expect(failureNotice('language','fr')).toEqual({en:'French could not be loaded; English is shown. Reload to try again.',own:'Impossible de charger le français\u202f; le site s’affiche en anglais. Rechargez la page pour réessayer.',lang:'fr'});
  });
 });
@@ -91,6 +94,8 @@ describe('Front SC8: detection for the languages to come (scripts plan §7, pt-B
   // Front ID0 (plan front-i18n-id.md §2): the legacy code `in` opens Indonesian; Malay, Javanese, Sundanese and en-ID stay English.
   ['in','id'],['in-ID','id'],['ID-id','id'],['ms-MY',undefined],['ms-ID',undefined],['zsm',undefined],['jv',undefined],['su',undefined],['en-ID',undefined],['hi','hi'],['hi-IN','hi'],['HI-in','hi'],['hi-Latn','hi'],['en-IN',undefined],['ur',undefined],['ur-IN',undefined],['mr',undefined],['ne',undefined],['bho',undefined],['ja','ja'],['ja-JP','ja'],['JA-jp','ja'],['ja-JP-u-ca-japanese','ja'],['ryu',undefined],['en-JP',undefined],
   ['ru','ru'],['ru-RU','ru'],['uk',undefined],['be',undefined],['kk',undefined],
+  // Front RU0 (plan §2): every ru-* region asks for Russian; Ukrainian, Belarusian and the other region languages do not.
+  ['RU-ru','ru'],['ru-UA','ru'],['ru-KZ','ru'],['ru-BY','ru'],['ru-MD','ru'],['uk-UA',undefined],['be-BY',undefined],['kk-KZ',undefined],['ky',undefined],['uz',undefined],['tg',undefined],['tt',undefined],['ba',undefined],['cv',undefined],['sah',undefined],['os',undefined],['hy',undefined],['ka',undefined],['az',undefined],['ro-MD',undefined],['rue',undefined],
   ['zh-Hans','zh-Hans'],['zh-Hans-CN','zh-Hans'],['zh-Hans-TW','zh-Hans'],['zh-CN','zh-Hans'],['zh-SG','zh-Hans'],['zh-MY','zh-Hans'],['zh','zh-Hans'],['ZH-cn','zh-Hans'],
   // Traditional Chinese while zh-Hant does not exist: English (decision Q5), never Simplified automatically.
   ['zh-TW',undefined],['zh-HK',undefined],['zh-MO',undefined],['zh-Hant',undefined],['zh-Hant-CN',undefined],['ZH-tw',undefined],['zh-hant-tw',undefined],

@@ -4,7 +4,7 @@ import en from './en.json';
 import {english,type MessageKey,type Translate} from './catalog';
 import {activateLocale,current,notePendingText} from './active';
 import type {TextDirection,UiLanguage} from './locale';
-import {plural,type PluralForms} from './plural';
+import {pluralCategory,pluralFormKey,type PluralForms} from './plural';
 export {createI18n,locale,type I18n,type LocaleBundle,type MessageArgs,type MessageKey,type MessageValues,type PlainMessageKey,type Translate} from './catalog';
 export type {UiLanguage};
 export {activateLocale};
@@ -17,8 +17,15 @@ export const uiDirection=():TextDirection=>current().rtl?'rtl':'ltr';
 export type {TextDirection};
 /** Front SC11: the catalog key of a count's plural form in this load's language (src/i18n/plural.ts), from literal keys per category
  * (`t(pluralKey(n,{one:'x.one',other:'x.other'}),{count:n})`), so the area split and the key audits still see every key. A
- * category the forms leave out uses `other`. */
-export function pluralKey<K extends MessageKey>(count:number,forms:PluralForms<K>,options?:Intl.PluralRulesOptions):K{return plural(current().language,count,forms,options);}
+ * category the forms leave out uses `other`, unless (Front RU0) the active messages hold that category's key of the family
+ * (src/i18n/plural.ts pluralFormKey: Russian `x.few`, `x.many`, which en.json lacks; two-level families resolve the inner call
+ * first). English and the languages with English's categories never have such a key, so they get exactly what plural() gives. */
+export function pluralKey<K extends MessageKey>(count:number,forms:PluralForms<K>,options?:Intl.PluralRulesOptions):K{
+ const active=current(),category=pluralCategory(active.language,count,options),direct=forms[category];
+ if(direct!==undefined)return direct;
+ const form=category==='other'?null:pluralFormKey(category,forms);
+ return form!==null&&active.bundle!==null&&Object.hasOwn(active.bundle.messages,form)?form as K:forms.other;
+}
 /** The registered non-English bundle of this load, or null for English (src/i18n/registry.ts and vireo.ts). */
 export const activeBundle=()=>current().bundle;
 type Render=(key:MessageKey,values?:Readonly<Record<string,string|number>>)=>string;

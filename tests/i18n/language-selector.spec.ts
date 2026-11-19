@@ -3,7 +3,7 @@ import {test,expect} from '../fixtures/area-tripwire';
 import {FRENCH_LOCALE,PORTUGUESE_LOCALE,SPANISH_LOCALE} from '../fixtures/language';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
-import {FRENCH_TEXT,HINDI_TEXT,INDONESIAN_TEXT,JAPANESE_TEXT,PORTUGUESE_TEXT} from './languageText';
+import {FRENCH_TEXT,HINDI_TEXT,INDONESIAN_TEXT,JAPANESE_TEXT,PORTUGUESE_TEXT,RUSSIAN_TEXT} from './languageText';
 
 // Front ES1 (docs/I18N.md; user decisions 1, 2, 5 and 9 of 2026-11-09): the English / Español selector at the foot of the header
 // menu, its reload confirmation, storage failure and the "View original (English)" option. Front ES-REL: Spanish is released, so
@@ -229,6 +229,63 @@ test('Front ID0: on the ?lang=id preview the keyboard steps across all five opti
  await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);await expect(select).toHaveValue('id');
  expect(await page.evaluate(()=>document.activeElement!==document.body&&document.activeElement!==null)).toBe(true);
  expect(new URL(page.url()).search).toBe('?lang=id');expect(await stored(page)).toBeNull();
+});
+
+// Front RU0 (plan front-i18n-ru.md §2): Russian is registered before its release. Only its `?lang=ru` preview reaches it and offers
+// it, as «Русский (Russian)» (a non-Latin autonym takes its English name); ru, ru-RU, ru-UA and RU-ru browsers, a Ukrainian browser
+// and a stored ru get English with the four released options, and fetch no Russian module.
+/** The requests for Russian modules (the virtual i18n-ru-* chunks of the dev server, or src/i18n/ru/). */
+function russianRequests(page:Page):string[]{
+ const out:string[]=[];page.on('request',r=>{if(/openvireo-i18n\/i18n-ru-|\/src\/i18n\/ru\//.test(r.url()))out.push(r.url());});return out;
+}
+test('Front RU0: only a ?lang=ru preview opens and offers Русский; ru, ru-RU, ru-UA, RU-ru and uk browsers and a stored ru get English',async({browser})=>{
+ test.setTimeout(180_000);
+ const R=RUSSIAN_TEXT;
+ for(const languages of [['ru'],['ru-RU'],['ru-UA'],['RU-ru'],['uk','ru']] as const){
+  const page=await browserIn(browser,languages);const russian=russianRequests(page);
+  expect(await languageOf(page),languages.join(',')).toBe('en');
+  await expect(id(page,'language-select').locator('option')).toHaveText(FOUR);
+  expect(russian,`${languages.join(',')}: no Russian module is fetched`).toEqual([]);
+  await page.close();
+ }
+ const storedRu=await browserIn(browser,['ru-RU']);await seedChoice(storedRu,'ru');const storedRussian=russianRequests(storedRu);
+ expect(await languageOf(storedRu)).toBe('en');expect(storedRussian).toEqual([]);await storedRu.close();
+ const page=await browserIn(browser,['en-US']);
+ expect(await languageOf(page,'?lang=ru')).toBe('ru');
+ await expect(page.locator('.investigation-toolbar')).toContainText(R.catalog['project.save']);await expect(page).toHaveTitle(R.catalog['app.documentTitle']);
+ const select=page.getByRole('combobox',{name:R.maps.languageChoice.legend});
+ await expect(select.locator('option')).toHaveText([...FOUR,'Русский (Russian)']);await expect(select).toHaveValue('ru');
+ expect(await select.locator('option').evaluateAll(o=>o.map(x=>[(x as HTMLOptionElement).value,x.getAttribute('lang')]))).toEqual([['en','en'],['es-419','es-419'],['pt-BR','pt-BR'],['fr','fr'],['ru','ru']]);
+ // A change on the preview stores nothing (SC8): the choice travels as ?lang=, and the dialog, in Russian, says so.
+ await choose(page,'fr');
+ const dialog=id(page,'language-confirm');await expect(dialog).toContainText(R.maps.languageChoice.title);
+ await expect(dialog).toContainText(R.maps.languageChoice.reload('Français'));await expect(id(page,'language-preview')).toHaveText(R.maps.languageChoice.preview);
+ await Promise.all([page.waitForURL(/lang=fr/),id(page,'language-change').click()]);
+ await expect(page.locator('html')).toHaveAttribute('lang','fr');expect(await stored(page)).toBeNull();
+ await page.close();
+});
+
+test('Front RU0: on the ?lang=ru preview the keyboard steps across all five options without opening the dialog; Enter or leaving asks, Escape returns',async({page})=>{
+ const R=RUSSIAN_TEXT;
+ await open(page,'?lang=ru');await expect(page.locator('html')).toHaveAttribute('lang','ru');
+ const select=page.getByRole('combobox',{name:R.maps.languageChoice.legend}),dialog=id(page,'language-confirm');
+ await select.focus();await expect(select).toBeFocused();await expect(select).toHaveValue('ru');
+ for(const [key,value] of [['ArrowUp','fr'],['ArrowUp','pt-BR'],['ArrowUp','es-419'],['ArrowUp','en'],['ArrowDown','es-419'],['ArrowDown','pt-BR'],['ArrowDown','fr'],['ArrowDown','ru'],['Home','en'],['End','ru'],['ArrowUp','fr']] as const){
+  await page.keyboard.press(key);await expect(select,key).toHaveValue(value);await expect(dialog,`${key} → ${value}`).toHaveCount(0);await expect(select).toBeFocused();
+ }
+ // Enter asks for the pending option, by its own name, in Russian; Cancel returns to Russian.
+ await page.keyboard.press('Enter');
+ await expect(dialog).toBeVisible();await expect(dialog).toContainText(R.maps.languageChoice.reload('Français'));await expect(id(page,'language-cancel')).toBeFocused();
+ await id(page,'language-cancel').click();await expect(dialog).toHaveCount(0);await expect(select).toHaveValue('ru');
+ // Escape on the select drops a pending step; leaving the select with a pending step asks for it.
+ await select.focus();await page.keyboard.press('Home');await expect(select).toHaveValue('en');
+ await page.keyboard.press('Escape');await expect(select).toHaveValue('ru');await expect(dialog).toHaveCount(0);
+ await select.focus();await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await expect(select).toHaveValue('es-419');await expect(dialog).toHaveCount(0);
+ await page.keyboard.press('Tab');
+ await expect(dialog).toBeVisible();await expect(dialog).toContainText(R.maps.languageChoice.reload('Español'));
+ await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);await expect(select).toHaveValue('ru');
+ expect(await page.evaluate(()=>document.activeElement!==document.body&&document.activeElement!==null)).toBe(true);
+ expect(new URL(page.url()).search).toBe('?lang=ru');expect(await stored(page)).toBeNull();
 });
 
 test.describe('in a Brazilian Portuguese browser',()=>{
