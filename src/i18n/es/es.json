@@ -224,6 +224,7 @@
  "app.name": "OpenVireo",
  "app.scope": "Vista previa del observatorio",
  "app.close": "Cerrar",
+ "app.digitNotice": "Escribe los dígitos como 0–9. Aquí los dígitos como {digits} no se leen como números.",
  "error.decimal": "Línea {line}: se esperaba un número decimal con punto.",
  "error.finite": "Línea {line}: el valor no es finito.",
  "error.lineFormat": "Lista de líneas: formato no válido en la línea {line}.",

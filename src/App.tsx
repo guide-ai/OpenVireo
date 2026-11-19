@@ -5,6 +5,7 @@ import {useCallback,useEffect,useRef,useState} from 'react';
 import WelcomeShell,{AppFailed} from './home/WelcomeShell';
 import {isWelcomeHash,queueIntent,shellFirst,type ShellHandoff,type ShellIntent} from './home/appGate';
 import {readDemonstrationMode} from './io/demonstrationModeStorage';
+import DigitNotice from './components/DigitNotice';
 
 type AppModule=typeof import('./OpenVireo');
 let appModule:Promise<AppModule>|null=null;
@@ -68,7 +69,8 @@ export default function App(){
    requestAnimationFrame(()=>{findFocus(was.key)?.focus({preventScroll:true});perform();});
   });
  },[loaded]);
- if(loaded)return <loaded.default handoff={handoff}/>;
+ // Front HI0: the digit notice listens on the whole page (src/components/DigitNotice.tsx); the welcome shell has no field.
+ if(loaded)return <><loaded.default handoff={handoff}/><DigitNotice/></>;
  // A direct load of another address whose app could not be fetched: the notice alone, not a welcome (finding 6).
  if(!startOnShell&&failed&&!handoff.current.queue.length)return <AppFailed error={failed.error}/>;
  return needed&&!failed&&!handoff.current.queue.length?null:<WelcomeShell loading={needed&&!failed} failed={failed} onNeed={need}/>;

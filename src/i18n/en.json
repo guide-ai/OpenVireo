@@ -224,6 +224,7 @@
   "app.name": "OpenVireo",
   "app.scope": "Observatory preview",
   "app.close": "Close",
+  "app.digitNotice": "Type digits as 0–9. Digits such as {digits} are not read as numbers here.",
   "error.decimal": "Line {line}: expected a decimal number with a dot.",
   "error.finite": "Line {line}: the value is not finite.",
   "error.lineFormat": "Line list: invalid format on line {line}.",
