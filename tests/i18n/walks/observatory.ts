@@ -10,7 +10,8 @@ import en from '../../../src/i18n/en.json' with {type:'json'};
 // tests/scripts/walks.scripts.ts can run it under the script pseudo-locales; the spec's header describes it.
 export type Lang='en'|Pseudo|LanguageText;
 /** A test title: Spanish keeps its ES2 title; another language names itself and its tag. */
-export const title=(L:LanguageText,es:string,other:string)=>L.tag==='es-419'?es:other.replaceAll('<L>',L.entry.englishName).replaceAll('<tag>',L.tag);
+/** Front ID1: «an Indonesian» (the article follows the language name's first letter; no other title changes). */
+export const title=(L:LanguageText,es:string,other:string)=>L.tag==='es-419'?es:other.replaceAll('a <L>',/^[AEIOU]/.test(L.entry.englishName)?'an <L>':'a <L>').replaceAll('<L>',L.entry.englishName).replaceAll('<tag>',L.tag);
 /** Texts that are the same in both languages: VIREO's catalogue, telescope, site and camera names, units, formats and numbers.
  * Only these exact names and the catalogue designations below pass, so a VIREO caption such as "Exit Observatory" or
  * "Request 1.0 Meter Telescope" left in English fails (review 1, C4). Option texts of the visible selects are checked too. */
@@ -24,10 +25,17 @@ export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new S
  // (src/i18n/fr/identical.json); a label with a colon differs («Longitude :», U+202F before the colon).
  // Front HI1: Hindi keeps the standard abbreviations RA and Dec, CCD, IR, Multi-Spec, formats and symbols (src/i18n/hi/identical.json).
  hi:new Set(['NF: NOMAD R; B: NOMAD B; V: NOMAD V; R: NOMAD R; I: USNO-B1 I2','J: NOMAD J; H: NOMAD H; K: NOMAD K','RA:','RA','Dec:','CCD','IR','Multi-Spec','YYYY/MM/DD','ID #:','V - Mv =','PDot (S/S):','PEpoch (MJD):']),
- fr:new Set(['OK','Gain (e⁻/ADU)','Pulsars','Options','Options...','Options…','Longitude','Latitude','Altitude','Horizon','Minutes','Minimum','Maximum','Confirmation','Zoom','Pulsar','Mode','Type','Style','Source','Site...','Min','CCD','IR','Multi-Spec','Classification','Portrait','Radio','Radio...'])};
+ fr:new Set(['OK','Gain (e⁻/ADU)','Pulsars','Options','Options...','Options…','Longitude','Latitude','Altitude','Horizon','Minutes','Minimum','Maximum','Confirmation','Zoom','Pulsar','Mode','Type','Style','Source','Site...','Min','CCD','IR','Multi-Spec','Classification','Portrait','Radio','Radio...']),
+ // Front ID1: Indonesian writes OK, Zoom, Mode, Data, Pulsar, Radio, Item, Minimum, Plot, Gain, Edit, File… as English does (not
+ // «Pulsars»: Indonesian writes «Pulsar»; Min is SAME already)
+ // (src/i18n/id/identical.json); a label with a colon is translated («Bujur:», «Lintang:»).
+ id:new Set(['OK','Zoom','Mode','Data','Pulsar','Radio','Radio...','Item','Minimum','Plot','Plot Data','Gain:','Edit...','File','Asteroid','ID #:',"Diameter ('):",'CCD','IR','Multi-Spec','Gain (e⁻/ADU)','Filter','Target','YYYY/MM/DD',
+  // the camera card's catalog bands by filter: filter letters and catalog names joined as English joins them (cameraPrepare.catalogEntry)
+  'NF: NOMAD R; B: NOMAD B; V: NOMAD V; R: NOMAD R; I: USNO-B1 I2','J: NOMAD J; H: NOMAD H; K: NOMAD K'])};
 /** SAME texts another language does translate: Portuguese writes the General tab «Geral» and the longitude letter E «L» (Leste);
  * French writes the General tab «Général» (its longitude letter E is Est, the same). */
-export const NOT_SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['General','E']),fr:new Set(['General']),
+/** Front ID1: Indonesian writes the General tab «Umum» and the longitude letter E «BT» (Bujur Timur). */
+export const NOT_SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['General','E']),fr:new Set(['General']),id:new Set(['General','E']),
  // Front HI1: Hindi writes General «सामान्य», No «नहीं», Min «मिनट», the compass letters E «पू», N «उ» and S «द», and Angstroms «ऐंगस्ट्रॉम».
  hi:new Set(['General','No','Min','E','N','S','Angstroms'])};
 export const same=(text:string,L?:LanguageText)=>(L===undefined||!(NOT_SAME_IN[L.tag]?.has(text)??false))&&(SAME.has(text)||IDENTIFIER.test(text)||(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false)));
@@ -109,7 +117,7 @@ export async function multiSpecWalk(page:Page,lang:Lang,each:(step:string)=>Prom
  await page.getByText(T('sky.coordinates'),{exact:true}).click();
  await page.locator('#point-ra').fill('13.002305555555555');await page.locator('#point-dec').fill('27.9775');
  await page.getByRole('button',{name:T('sky.pointCoordinates'),exact:true}).click();await expect(id(page,'pointing-dec')).toHaveText(/^27\.97/,{timeout:30_000});
- await page.getByRole('button',{name:new RegExp(/^(Telescope|Telescopio|Telescópio|दूरबीन) ·/.source+'|'+pseudoStart('Telescope ·').source)}).click();
+ await page.getByRole('button',{name:new RegExp(/^(Telescope|Telescopio|Telescópio|Teleskop|दूरबीन) ·/.source+'|'+pseudoStart('Telescope ·').source)}).click();
  const toggle=page.locator('.portal-header .tools-toggle');if(await toggle.isVisible())await toggle.click();
  await id(page,'instructor-mode-open').click();await id(page,'instructor-mode-confirm-on').click();if(await toggle.isVisible()&&await toggle.getAttribute('aria-expanded')==='true')await toggle.click();
  await page.locator('.telescope-motion').getByTestId('ob-options').click();await id(page,'ob-options-edit-mode').check();await id(page,'ob-options-ok').click();

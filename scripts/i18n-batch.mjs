@@ -14,7 +14,7 @@
 import {existsSync,readFileSync,writeFileSync} from 'node:fs';
 import path from 'node:path';
 import {keyAreas,ROOT as root} from './i18n-areas.mjs';
-import {languageDir,loadLanguages} from './i18n-split.mjs';
+import {languageDir,loadLanguages,pluralFormBase} from './i18n-split.mjs';
 const read=(f)=>JSON.parse(readFileSync(f,'utf8'));
 const params=(s)=>[...new Set([...s.matchAll(/\{(\w+)\}/g)].map(m=>m[1]))].sort();
 const [command,...rest]=process.argv.slice(2);
@@ -28,22 +28,36 @@ if(command==='extract'){
  const limit=Number(option('limit','250')),en=read(path.join(root,'src/i18n/en.json')),es=read(esFile),areas=keyAreas(root);
  const matches=(key)=>wanted.some(w=>key.startsWith(w)||areas[key].files.some(f=>f.includes(w)));
  const keys=Object.keys(en).filter(k=>!Object.hasOwn(es,k)&&matches(k)).sort((a,b)=>(areas[a].files[0]??'').localeCompare(areas[b].files[0]??'')||a.localeCompare(b)).slice(0,limit);
+ // Front RU0: the plural forms en.json lacks (Russian `x.few`, `x.many`) of every family key in the area, as `plural-form` items
+ // whose `en` is the family's English with those segments at `other`, and whose `category` names the form to write.
+ const categories=new Intl.PluralRules(language.htmlLang??tag).resolvedOptions().pluralCategories,forms=new Map();
+ for(const key of Object.keys(en).filter(matches)){
+  const parts=key.split('.'),axes=parts.flatMap((p,i)=>p==='other'&&Object.hasOwn(en,parts.map((q,j)=>j===i?'one':q).join('.'))?[i]:[]);
+  let keys=[parts];for(const i of axes)keys=keys.flatMap(k=>categories.map(c=>k.map((p,j)=>j===i?c:p)));
+  for(const k of keys){const id=k.join('.');// Review (RU0): the first family key in en.json order is the closest English (`one.few` reads as `one.other`, not `other.other`).
+  if(axes.length&&!forms.has(id)&&!Object.hasOwn(en,id)&&!Object.hasOwn(es,id)&&pluralFormBase(id,en,language.htmlLang??tag))forms.set(id,{key,category:axes.map(i=>k[i]).join(', ')});}
+ }
  const glossary=existsSync(path.join(dir,'glossary.json'))?read(path.join(dir,'glossary.json')):{about:''};
  const batch={about:`${language.englishName} (${tag}) batch for ${wanted.join(', ')}. ${glossary.about} Fill "${field}" in every item; keep {params} exactly; do not translate file names, catalogue identifiers, units or VIREO names that the glossary keeps.`,
-  items:keys.map(id=>({id,en:en[id],params:params(en[id]),usedIn:areas[id].usedIn.length?areas[id].usedIn:areas[id].files,kind:'catalog',maxLengthHint:Math.ceil(en[id].length*1.35),[field]:''}))};
+  items:[...keys.map(id=>({id,en:en[id],params:params(en[id]),usedIn:areas[id].usedIn.length?areas[id].usedIn:areas[id].files,kind:'catalog',maxLengthHint:Math.ceil(en[id].length*1.35),[field]:''})),
+   ...[...forms].map(([id,{key,category}])=>({id,en:en[key],params:params(en[key]),usedIn:areas[key].usedIn.length?areas[key].usedIn:areas[key].files,kind:'plural-form',category,maxLengthHint:Math.ceil(en[key].length*1.35),[field]:''}))]};
  const out=option('out',null),text=JSON.stringify(batch,null,1)+'\n';
  if(out)writeFileSync(out,text);else process.stdout.write(text);
- console.error(`${keys.length} untranslated key(s) extracted.`);
+ console.error(`${keys.length} untranslated key(s) and ${forms.size} plural form(s) extracted.`);
 }else if(command==='merge'){
  const file=rest.find(a=>!a.startsWith('--')&&a!==tag)??fail('merge needs a batch file'),batch=read(file),en=read(path.join(root,'src/i18n/en.json')),es=read(esFile),problems=[];
  for(const item of batch.items??[]){
-  if(!Object.hasOwn(en,item.id))problems.push(`${item.id}: not an en.json key`);
+  const base=Object.hasOwn(en,item.id)?item.id:pluralFormBase(item.id,en,language.htmlLang??tag);
+  if(!base)problems.push(`${item.id}: not an en.json key or a plural form of one in ${tag}`);
   else if(typeof item[field]!=='string'||!item[field].trim())problems.push(`${item.id}: no ${language.englishName}`);
-  else if(params(item[field]).join('|')!==params(en[item.id]).join('|'))problems.push(`${item.id}: {params} differ`);
+  else if(params(item[field]).join('|')!==params(en[base]).join('|'))problems.push(`${item.id}: {params} differ`);
  }
  if(problems.length)fail(`Nothing merged:\n${problems.join('\n')}`);
  for(const item of batch.items)es[item.id]=item[field];
- const ordered=Object.fromEntries(Object.keys(en).filter(k=>Object.hasOwn(es,k)).map(k=>[k,es[k]]));
+ // Front RU0: a plural form follows its family's last key in en.json's order.
+ const byBase=new Map();for(const f of Object.keys(es).filter(f=>!Object.hasOwn(en,f)).sort()){const b=pluralFormBase(f,en,language.htmlLang??tag);if(b)byBase.set(b,[...byBase.get(b)??[],f]);}
+ const order=Object.keys(en).flatMap(k=>[k,...byBase.get(k)??[]]);
+ const ordered=Object.fromEntries(order.filter(k=>Object.hasOwn(es,k)).map(k=>[k,es[k]]));
  writeFileSync(esFile,JSON.stringify(ordered,null,1)+'\n');
  console.log(`${batch.items.length} item(s) merged into ${catalogName}. Next: npx vitest run ${path.relative(root,dir)}, then the reviewer agent.`);
 }else fail('Usage: node scripts/i18n-batch.mjs extract --area <file or key prefix>[,…] [--limit 250] [--out batch.json] [--lang <tag>] | merge batch.json [--lang <tag>]');

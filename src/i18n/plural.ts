@@ -51,3 +51,48 @@ export function plural<T extends string>(language:string,count:number,forms:Plur
 export function missingPluralForms(language:string,forms:Readonly<Partial<Record<PluralCategory,string>>>):PluralCategory[]{
  return pluralCategories(language).filter(c=>typeof forms[c]!=='string');
 }
+/** Front RU0 (plan front-i18n-ru.md §1.2 #1): the categories a key segment may name, besides `other`. */
+const FORM_SEGMENT=/^(?:zero|one|two|few|many)$/;
+/** Front RU0: a catalog key that en.json lacks but that is one more plural form of an en.json family, for a language with more
+ * categories than English (Russian «1 запись / 2 записи / 5 записей»: `x.few`, `x.many` beside en.json's `x.one`, `x.other`). The
+ * key is accepted when replacing each segment that names a category with `other` gives an en.json key (its base, whose {params}
+ * the form must keep), at each such segment en.json also has the `one` sibling (so the segment is a plural axis, not a word), and
+ * every category named is one the language selects (`one` always exists in en.json). Two-level families work by segment
+ * (`obsHr.kindWarning.few.many`, base `obsHr.kindWarning.other.other`). Returns the base, or null for any other key. A copy of
+ * this rule for the build scripts is scripts/i18n-split.mjs pluralFormBase; src/i18n/pluralFamilies.test.ts keeps the two equal. */
+export function pluralFormBase(key:string,english:Readonly<Record<string,string>>,language:string):string|null{
+ if(Object.hasOwn(english,key))return null;
+ const parts=key.split('.'),positions=parts.flatMap((p,i)=>FORM_SEGMENT.test(p)?[i]:[]);
+ if(!positions.length)return null;
+ const base=parts.map((p,i)=>positions.includes(i)?'other':p),categories=pluralCategories(language);
+ if(!Object.hasOwn(english,base.join('.')))return null;
+ for(const i of positions){
+  if(parts[i]!=='one'&&!categories.includes(parts[i] as PluralCategory))return null;
+  if(!Object.hasOwn(english,base.map((p,j)=>j===i?'one':p).join('.')))return null;
+ }
+ return base.join('.');
+}
+/** Front RU0: the key of `category` in a family of catalog keys given as literal forms (`{one:'x.one',other:'x.other'}`): the
+ * segment where the `one` and `other` keys differ (or, with no `one`, the last `other` segment) of the `other` key, renamed. Null
+ * when there is no such segment. src/i18n/index.ts pluralKey uses it only when the active messages hold the key it names. */
+export function pluralFormKey(category:PluralCategory,forms:PluralForms):string|null{
+ const other=forms.other.split('.'),one=forms.one?.split('.');
+ let i=one&&one.length===other.length?other.findIndex((p,j)=>p!==one[j]):-1;
+ if(i<0||other[i]!=='other')i=other.lastIndexOf('other');
+ return i<0?null:other.map((p,j)=>j===i?category:p).join('.');
+}
+/** Front RU0: every key of a plural family in a language, from its en.json keys: the product of the language's categories at
+ * each axis segment of the family's bases (`obsHr.kindWarning.*.*` with none on the inner axis: 4 × 5 = 20 keys in Russian). The
+ * language lint (src/i18n/<dir>/<dir>.test.ts) requires them all once the family's area is translated. */
+export function pluralFamilyKeys(head:string,english:Readonly<Record<string,string>>,language:string):string[]{
+ const categories=pluralCategories(language),out=new Set<string>();
+ for(const key of Object.keys(english)){
+  if(!key.startsWith(`${head}.`))continue;
+  const parts=key.split('.'),axes=parts.flatMap((p,i)=>p==='other'&&Object.hasOwn(english,parts.map((q,j)=>j===i?'one':q).join('.'))?[i]:[]);
+  if(!axes.length)continue;
+  let keys=[parts];
+  for(const i of axes)keys=keys.flatMap(k=>categories.map(c=>k.map((p,j)=>j===i?c:p)));
+  for(const k of keys)out.add(k.join('.'));
+ }
+ return [...out].sort();
+}

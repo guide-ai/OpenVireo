@@ -1,0 +1,1556 @@
+{
+ "about": "Front RU0: the ru glossary (plan analysis/front-plans/front-i18n-ru.md §5) that src/i18n/ru/ru.test.ts enforces through the SC4 lint framework (src/i18n/lint/, profile ru) on every Russian string. Seeded from the French glossary: the same English patterns and interface names, retargeted to Russian from the English (French and Spanish only as meaning context) and Russian astronomy textbook usage. A term applies when its English pattern matches the English source: the Russian must then match the `ru` pattern, written as stems and alternations so that every case form passes (Russian inflects). Names are fixed interface names (an exact name applies only to a whole string; the name match ignores case and is a plain substring, so a few names that inflect in running text are kept as the shortest stable stem). Forbidden are the forms this glossary rejects (кластер, магнитуда, константа Хаббла, радиальная скорость, индекс цвета, CCD-камера, «загрузить» for download, the Latin redshift); the language-wide rules live in the ru profile of src/i18n/lint/profiles.ts. VIREO's own names follow the brief's decided forms (Save → Сохранить, Record → Записать, Load → Загрузить, Open → Открыть, download → Скачать, Find → Найти, Search → Поиск, Show → Показать, Display → Отображение, Slew → Навести, Init/Go → Подготовить/Пуск, Scan → Пролистать, Clear → Очистить, Reset → Сбросить, Hot List → список объектов, lab → лабораторная работа). Translations are web adaptations by OpenVireo, never CLEA's.",
+ "terms": [
+  {
+   "en": "\\bobservator(y|ies)\\b",
+   "ru": "обсерватори"
+  },
+  {
+   "en": "\\btelescopes?\\b",
+   "ru": "телескоп"
+  },
+  {
+   "en": "\\bdomes?\\b",
+   "ru": "купол"
+  },
+  {
+   "en": "\\bspectr(um|a)\\b",
+   "ru": "спектр"
+  },
+  {
+   "en": "\\bspectrometers?\\b",
+   "ru": "спектрометр"
+  },
+  {
+   "en": "\\bphotometers?\\b",
+   "ru": "фотометр"
+  },
+  {
+   "en": "\\bphotometry\\b",
+   "ru": "фотометри"
+  },
+  {
+   "en": "\\bexposures?\\b",
+   "ru": "экспозици|выдержк"
+  },
+  {
+   "en": "\\bmeasurements?\\b",
+   "ru": "измерени"
+  },
+  {
+   "en": "\\binvestigations?\\b",
+   "ru": "исследовани"
+  },
+  {
+   "en": "\\bfiles?\\b",
+   "ru": "файл"
+  },
+  {
+   "en": "\\bdownload(s|ed|ing)?\\b",
+   "ru": "скача|скачи"
+  },
+  {
+   "en": "(?<!daylight-)\\bsav(e|es|ed|ing)\\b",
+   "ru": "сохран"
+  },
+  {
+   "en": "\\brestor(e|es|ed|ing)\\b",
+   "ru": "восстанов"
+  },
+  {
+   "en": "\\b(re)?load(s|ed|ing)?\\b",
+   "ru": "загру[зж]|обнов"
+  },
+  {
+   "en": "\\bbrowsers?\\b",
+   "ru": "браузер"
+  },
+  {
+   "en": "(?<!line breaks and |for example a |accented letter, a |Shift\\+)(?<!reachable with )\\btabs?\\b(?!,? (?:line breaks|or other|BOM)| and Shift\\+Tab)",
+   "ru": "вкладк"
+  },
+  {
+   "en": "\\bTab and Shift\\+Tab\\b",
+   "ru": "Tab и Shift\\+Tab"
+  },
+  {
+   "en": "\\btabs?(?=,? (?:line breaks|or other|BOM))|(?<=line breaks and |for example a |accented letter, a )tabs?\\b",
+   "ru": "табуляц"
+  },
+  {
+   "en": "\\bremarks?\\b",
+   "ru": "замечани|примечани|комментари|наблюден"
+  },
+  {
+   "en": "\\bpages?\\b",
+   "ru": "страниц"
+  },
+  {
+   "en": "\\bcomputers?\\b",
+   "ru": "компьютер"
+  },
+  {
+   "en": "\\bphones?\\b",
+   "ru": "телефон|смартфон|мобильн"
+  },
+  {
+   "en": "\\bclick\\b",
+   "ru": "нажм|нажим|нажат|щ[её]лк|клик"
+  },
+  {
+   "en": "\\bpress\\b",
+   "ru": "нажм|нажат|удерж"
+  },
+  {
+   "en": "\\bmenus?\\b",
+   "ru": "меню"
+  },
+  {
+   "en": "\\bguides?\\b",
+   "ru": "руководств|справочник|гид"
+  },
+  {
+   "en": "\\bexercises?\\b",
+   "ru": "работ|упражнени|задани"
+  },
+  {
+   "en": "\\blabs?\\b",
+   "ru": "лабораторн|работ"
+  },
+  {
+   "en": "\\bredshifts?\\b",
+   "ru": "красн\\p{L}* смещени"
+  },
+  {
+   "en": "\\bpulsars?\\b",
+   "ru": "пульсар"
+  },
+  {
+   "en": "\\binstructor mode\\b",
+   "ru": "режим\\p{L}* преподавателя"
+  },
+  {
+   "en": "\\bhelp\\b",
+   "ru": "справк|помощ|помо"
+  },
+  {
+   "en": "\\btracking\\b",
+   "ru": "слежени|сопровожден"
+  },
+  {
+   "en": "\\bcatalog(ue)?s?\\b",
+   "ru": "каталог"
+  },
+  {
+   "en": "\\bgalax(y|ies)\\b",
+   "ru": "галактик"
+  },
+  {
+   "en": "\\bstars?\\b",
+   "ru": "зв[её]зд|зв[её]здн"
+  },
+  {
+   "en": "\\bclusters?\\b",
+   "ru": "скоплени"
+  },
+  {
+   "en": "\\bresults?\\b",
+   "ru": "результат"
+  },
+  {
+   "en": "\\bwavelengths?\\b",
+   "ru": "длин\\p{L}* волн"
+  },
+  {
+   "en": "\\bpassword\\b",
+   "ru": "парол"
+  },
+  {
+   "en": "\\bcounts?\\b(?! shows after the reveal)",
+   "ru": "счёт|счет|счита|количеств|числ|отсч[её]т|подсч[её]т|импульс"
+  },
+  {
+   "en": "\\bslew(s|ed|ing)?\\b",
+   "ru": "навед|навест|наводи|наводк"
+  },
+  {
+   "en": "\\bhot lists?\\b",
+   "ru": "спис(?:ок|к\\p{L}*) объект"
+  },
+  {
+   "en": "\\bsky background\\b",
+   "ru": "фон\\p{L}* неба"
+  },
+  {
+   "en": "\\bseeing\\b",
+   "ru": "сиинг|качеств\\p{L}* изображени|дрожани"
+  },
+  {
+   "en": "\\bright ascension\\b",
+   "ru": "прям\\p{L}* восхождени"
+  },
+  {
+   "en": "\\bdeclinations?\\b",
+   "ru": "склонени"
+  },
+  {
+   "en": "\\bfilters?\\b",
+   "ru": "фильтр"
+  },
+  {
+   "en": "\\bslits?\\b",
+   "ru": "щел"
+  },
+  {
+   "en": "\\blight curves?\\b",
+   "ru": "крив\\p{L}* блеска"
+  },
+  {
+   "en": "\\bHR diagrams?\\b",
+   "ru": "диаграмм\\p{L}* (?:Г\\s*[–—-]\\s*Р|Герцшпрунг|ГР)"
+  },
+  {
+   "en": "\\bmain sequence\\b",
+   "ru": "главн\\p{L}* последовательност"
+  },
+  {
+   "en": "\\bisochrones?\\b",
+   "ru": "изохрон"
+  },
+  {
+   "en": "\\bvariable stars?\\b",
+   "ru": "переменн\\p{L}* зв[её]зд|зв[её]зд\\p{L}* переменн"
+  },
+  {
+   "en": "\\bperiods?\\b",
+   "ru": "период"
+  },
+  {
+   "en": "\\bdispersion measure\\b",
+   "ru": "мер\\p{L}* дисперсии"
+  },
+  {
+   "en": "\\bradio telescopes?\\b",
+   "ru": "радиотелескоп"
+  },
+  {
+   "en": "\\breceivers?\\b",
+   "ru": "при[её]мник"
+  },
+  {
+   "en": "\\bantennas?\\b",
+   "ru": "антенн"
+  },
+  {
+   "en": "\\bquasars?\\b",
+   "ru": "квазар"
+  },
+  {
+   "en": "\\basteroids?\\b",
+   "ru": "астероид"
+  },
+  {
+   "en": "\\bastrometry\\b",
+   "ru": "астрометри"
+  },
+  {
+   "en": "\\blarge-scale structure\\b",
+   "ru": "крупномасштабн\\p{L}* структур"
+  },
+  {
+   "en": "\\bwedge plots?\\b",
+   "ru": "клин|секторн\\p{L}* диаграмм"
+  },
+  {
+   "en": "\\bfield of view\\b",
+   "ru": "пол\\p{L}* зрения"
+  },
+  {
+   "en": "\\bsignal-to-noise\\b",
+   "ru": "сигнал\\p{L}*.{1,6}шум"
+  },
+  {
+   "en": "\\bequivalent widths?\\b",
+   "ru": "эквивалентн\\p{L}* ширин"
+  },
+  {
+   "en": "\\bcontinuum\\b",
+   "ru": "континуум"
+  },
+  {
+   "en": "\\bspectral (type|class)(es)?\\b",
+   "ru": "спектральн\\p{L}* (?:тип|класс)"
+  },
+  {
+   "en": "\\bapparent magnitudes?\\b",
+   "ru": "видим\\p{L}* зв[её]здн\\p{L}* величин"
+  },
+  {
+   "en": "\\babsolute magnitudes?\\b",
+   "ru": "абсолютн\\p{L}* зв[её]здн\\p{L}* величин"
+  },
+  {
+   "en": "\\bdistance modulus\\b",
+   "ru": "модул\\p{L}* расстояния"
+  },
+  {
+   "en": "\\breddening\\b",
+   "ru": "покраснени"
+  },
+  {
+   "en": "\\bcolou?r excess\\b",
+   "ru": "избыт\\p{L}* цвета"
+  },
+  {
+   "en": "\\bHubble's law\\b",
+   "ru": "закон\\p{L}* Хаббла"
+  },
+  {
+   "en": "\\bHubble constant\\b",
+   "ru": "постоянн\\p{L}* Хаббла"
+  },
+  {
+   "en": "\\brecessional velocit(y|ies)\\b",
+   "ru": "скорост\\p{L}* удаления"
+  },
+  {
+   "en": "\\bfinding charts?\\b",
+   "ru": "карт\\p{L}* (?:отождествлени|поиска)|поисков\\p{L}* карт"
+  },
+  {
+   "en": "\\bfinder\\b",
+   "ru": "искател"
+  },
+  {
+   "en": "\\bepochs?\\b",
+   "ru": "эпох"
+  },
+  {
+   "en": "\\bintegration\\b",
+   "ru": "интеграц|накоплени"
+  },
+  {
+   "en": "\\bCCD camera\\b",
+   "ru": "ПЗС[-\\s]?камер|ПЗС/ИК"
+  },
+  {
+   "en": "\\bIR camera\\b",
+   "ru": "ИК[-\\s]?камер|ПЗС/ИК"
+  },
+  {
+   "en": "\\bspectral lines?\\b",
+   "ru": "спектральн\\p{L}* лини|лини\\p{L}* спектр"
+  },
+  {
+   "en": "\\bemission\\b",
+   "ru": "эмисси"
+  },
+  {
+   "en": "\\babsorption\\b",
+   "ru": "поглощени"
+  },
+  {
+   "en": "\\bopen clusters?\\b",
+   "ru": "рассеянн\\p{L}* скоплени"
+  },
+  {
+   "en": "\\bglobular clusters?\\b",
+   "ru": "шаров\\p{L}* скоплени"
+  },
+  {
+   "en": "\\bsignal\\b",
+   "ru": "сигнал"
+  },
+  {
+   "en": "\\bexercise guide\\b|\\blab guide\\b",
+   "ru": "руководств"
+  },
+  {
+   "en": "\\bapertures?\\b",
+   "ru": "апертур"
+  },
+  {
+   "en": "\\breadings\\b",
+   "ru": "показани|отсч[её]т|измерени"
+  },
+  {
+   "en": "\\bseeded\\b",
+   "ru": "зерн|инициализ|затравк|начальн\\p{L}* значени"
+  },
+  {
+   "en": "\\bcallbacks?\\b",
+   "ru": "обратн\\p{L}* вызов|колбэк|callback"
+  },
+  {
+   "en": "\\bzero point\\b",
+   "ru": "нуль-пункт|нулев\\p{L}* точк"
+  },
+  {
+   "en": "\\bphotons?\\b",
+   "ru": "фотон"
+  },
+  {
+   "en": "\\bcolou?r[–-]magnitude\\b",
+   "ru": "(?:цвет\\p{L}*|показател\\p{L}* цвета)\\s*[–—-]\\s*(?:зв[её]здн|величин)"
+  },
+  {
+   "en": "\\bcluster fit\\b",
+   "ru": "(?:подгонк|подбор)\\p{L}*(?:\\s+\\p{L}+){0,2}\\s+скоплени"
+  },
+  {
+   "en": "\\bstandards?\\b",
+   "ru": "эталон|стандарт"
+  },
+  {
+   "en": "\\bshoulders?\\b",
+   "ru": "плеч"
+  },
+  {
+   "en": "\\bgr[ae]yscale\\b",
+   "ru": "оттенк\\p{L}* сер|градаци\\p{L}* сер|шкал\\p{L}* сер|сер\\p{L}* шкал"
+  },
+  {
+   "en": "\\b(?:observation )?notebook\\b",
+   "ru": "журнал|блокнот"
+  },
+  {
+   "en": "\\bluminosity\\b",
+   "ru": "светимост"
+  },
+  {
+   "en": "\\batlas(es)?\\b",
+   "ru": "атлас"
+  },
+  {
+   "en": "\\bstandard pairs?\\b",
+   "ru": "пар\\p{L}* (?:эталон|стандарт)|(?:эталонн|стандартн)\\p{L}* пар"
+  },
+  {
+   "en": "\\braw\\b",
+   "ru": "необработанн|сыр\\p{L}*"
+  },
+  {
+   "en": "\\bmerg(e|es|ed|ing)\\b",
+   "ru": "объедин|слия|слит|слива"
+  },
+  {
+   "en": "\\bendpoint[- ]grids?\\b",
+   "ru": "сетк\\p{L}* (?:конечн|крайн|концев)\\p{L}*"
+  },
+  {
+   "en": "\\bdispersion measure\\b",
+   "ru": "мер\\p{L}* дисперсии"
+  },
+  {
+   "en": "\\bsweeps?\\b",
+   "ru": "развёртк|развертк|проход|сканирован|прогон"
+  },
+  {
+   "en": "\\bbeams?\\b",
+   "ru": "луч|диаграмм\\p{L}* направленност"
+  },
+  {
+   "en": "\\bseeds?\\b",
+   "ru": "зерн|начальн\\p{L}* значени|затравк"
+  },
+  {
+   "en": "\\btimers?\\b",
+   "ru": "таймер|секундомер"
+  },
+  {
+   "en": "\\baltitude limits?\\b",
+   "ru": "(?:ограничени|предел|границ)\\p{L}*(?:\\s+по)?\\s+высот|предельн\\p{L}* высот"
+  },
+  {
+   "en": "(?<!clock[/ ])\\bdrive\\b",
+   "ru": "привод|двигател|мотор"
+  },
+  {
+   "en": "\\bblink(s|ed|ing)?\\b",
+   "ru": "мига|мигн|мерца"
+  },
+  {
+   "en": "\\breveal(s|ed|ing)?\\b(?! the catalog sky)",
+   "ru": "показ|раскр|откр|отобраз|узна"
+  },
+  {
+   "en": "\\borbit files?\\b",
+   "ru": "файл\\p{L}* орбит"
+  },
+  {
+   "en": "\\blimiting magnitudes?\\b",
+   "ru": "предельн\\p{L}* зв[её]здн\\p{L}* величин"
+  },
+  {
+   "en": "\\breference stars?\\b",
+   "ru": "опорн\\p{L}* зв[её]зд|зв[её]зд\\p{L}* (?:сравнения|привязки)|эталонн\\p{L}* зв[её]зд"
+  },
+  {
+   "en": "\\bplate constants\\b",
+   "ru": "(?:постоянн|констант)\\p{L}* (?:пластин|снимк|кадр)"
+  },
+  {
+   "en": "(?<!All Sky )\\bsurveys?\\b",
+   "ru": "обзор"
+  },
+  {
+   "en": "\\bsnapshots?\\b",
+   "ru": "снимок|снимк|моментальн|мгновенн|срез"
+  },
+  {
+   "en": "\\banaly[sz]ers?\\b",
+   "ru": "анализатор"
+  },
+  {
+   "en": "\\btemplates?\\b",
+   "ru": "шаблон"
+  },
+  {
+   "en": "\\bjournals?\\b",
+   "ru": "журнал"
+  },
+  {
+   "en": "\\b(?:600-)?bins?\\b",
+   "ru": "канал|бин|ячейк"
+  },
+  {
+   "en": "\\bcombined view\\b",
+   "ru": "(?:объедин|совмещ|комбинир|общ)\\p{L}*\\s+вид"
+  },
+  {
+   "en": "\\bpanes?\\b",
+   "ru": "панел|област|окн"
+  },
+  {
+   "en": "\\b(?:sampled|printed-coordinate|printed|intensity|unknown) traces?\\b",
+   "ru": "график|трасс|крив|лини"
+  },
+  {
+   "en": "\\breadouts?\\b",
+   "ru": "показани|индикатор|отсч[её]т|вывод"
+  },
+  {
+   "en": "\\bmetallicit(y|ies)\\b",
+   "ru": "металличност"
+  },
+  {
+   "en": "\\bsliders?\\b",
+   "ru": "ползун"
+  },
+  {
+   "en": "\\btrials?\\b",
+   "ru": "попытк|проб|испытани"
+  },
+  {
+   "en": "\\bpresets?\\b",
+   "ru": "предустанов|стандартн|готов|заготов"
+  },
+  {
+   "en": "\\bapparent modulus\\b",
+   "ru": "модул"
+  },
+  {
+   "en": "\\bfresh sky\\b",
+   "ru": "нов\\p{L}* (?:участ\\p{L}* неба|неб|отсч[её]т|измерени|снимк|наблюден|показани)"
+  },
+  {
+   "en": "\\bintegration series\\b",
+   "ru": "сери\\p{L}* (?:накоплени|интеграц|экспозиц)"
+  },
+  {
+   "en": "\\bzero[- ]age main sequence\\b",
+   "ru": "последовательност\\p{L}* нулев\\p{L}* возраст"
+  },
+  {
+   "en": "\\bturn-?off\\b",
+   "ru": "поворот"
+  },
+  {
+   "en": "\\bmembership\\b",
+   "ru": "принадлежност|членств"
+  },
+  {
+   "en": "\\bdatasets?\\b",
+   "ru": "набор\\p{L}* данных"
+  },
+  {
+   "en": "\\bly\\b",
+   "ru": "(?:св\\.|свет\\p{L}*)\\s?(?:лет|г[оа]д\\p{L}*|л\\.)|л\\.\\s?г\\."
+  },
+  {
+   "en": "\\bcolou?r index\\b",
+   "ru": "показател\\p{L}* цвета"
+  },
+  {
+   "en": "\\bauditions?\\b|\\bauditioned\\b",
+   "ru": "прослуш"
+  },
+  {
+   "en": "\\bradio clock\\b",
+   "ru": "радио-?час|час\\p{L}* радио"
+  },
+  {
+   "en": "\\bpress[- ]and[- ]hold\\b",
+   "ru": "удерж|зажм|зажат"
+  },
+  {
+   "en": "\\bslew-timer\\b",
+   "ru": "(?:таймер|секундомер)\\p{L}* навед"
+  },
+  {
+   "en": "\\breceiver monitor\\b",
+   "ru": "(?:монитор|индикатор)\\p{L}* при[её]мник"
+  },
+  {
+   "en": "\\bwedge diagrams?\\b",
+   "ru": "клин|секторн\\p{L}* диаграмм"
+  },
+  {
+   "en": "\\bpractices?\\b",
+   "ru": "тренировк|практик|упражн|пробн"
+  },
+  {
+   "en": "\\bdrafts?\\b",
+   "ru": "черновик"
+  },
+  {
+   "en": "\\bfallbacks?\\b",
+   "ru": "запасн|резервн|по умолчанию"
+  },
+  {
+   "en": "\\barcsec(?:onds?)?\\b",
+   "ru": "угл\\p{L}*\\s+секунд|угл\\.\\s?с|″"
+  },
+  {
+   "en": "\\bhost clock\\b",
+   "ru": "час\\p{L}*\\s+(?:компьютер|устройств|системн)|системн\\p{L}* час"
+  }
+ ],
+ "names": [
+  {
+   "en": "Save investigation",
+   "ru": "Сохранить исследование"
+  },
+  {
+   "en": "Restore investigation JSON",
+   "ru": "Восстановить исследование (JSON)"
+  },
+  {
+   "en": "Save session",
+   "ru": "Сохранить сеанс"
+  },
+  {
+   "en": "Restore session",
+   "ru": "Восстановить сеанс"
+  },
+  {
+   "en": "Instructor mode…",
+   "ru": "Режим преподавателя…"
+  },
+  {
+   "en": "Help topics…",
+   "ru": "Разделы справки…"
+  },
+  {
+   "en": "Tools button",
+   "ru": "Меню"
+  },
+  {
+   "en": "Optical Simulation Options",
+   "ru": "Параметры оптического моделирования"
+  },
+  {
+   "en": "Demonstration Mode",
+   "ru": "Демонстрационн"
+  },
+  {
+   "en": "Edit Mode",
+   "ru": "правки"
+  },
+  {
+   "en": "Virtual Observatory",
+   "ru": "виртуальн"
+  },
+  {
+   "en": "Test Mode",
+   "ru": "Тестовый режим"
+  },
+  {
+   "en": "Pulsar Analysis",
+   "ru": "Анализ пульсаров"
+  },
+  {
+   "en": "Observational Data",
+   "ru": "Данные наблюдений"
+  },
+  {
+   "en": "Observational Results",
+   "ru": "Результаты наблюдений"
+  },
+  {
+   "en": "Results Editors",
+   "ru": "Редакторы результатов"
+  },
+  {
+   "en": "Topics...",
+   "ru": "Разделы...",
+   "except": {
+    "original:Show Help Topics...": "VIREO's help viewer item Show Help Topics... (the topic list), «Afficher les rubriques d’aide...»; the row names the Help menu's Topics... item."
+   }
+  },
+  {
+   "en": "About This Exercise...",
+   "ru": "Об этой работе..."
+  },
+  {
+   "en": "Project CLEA",
+   "ru": "Project CLEA"
+  },
+  {
+   "en": "Gettysburg College",
+   "ru": "Gettysburg College"
+  },
+  {
+   "en": "VIREO",
+   "ru": "VIREO"
+  },
+  {
+   "en": "OpenVireo",
+   "ru": "OpenVireo"
+  },
+  {
+   "en": "CLEA",
+   "ru": "CLEA"
+  },
+  {
+   "en": "NSF",
+   "ru": "NSF"
+  },
+  {
+   "en": "GitHub",
+   "ru": "GitHub"
+  },
+  {
+   "en": "FITS",
+   "ru": "FITS"
+  },
+  {
+   "en": "CSV",
+   "ru": "CSV"
+  },
+  {
+   "en": "VizieR",
+   "ru": "VizieR"
+  },
+  {
+   "en": "NOMAD",
+   "ru": "NOMAD"
+  },
+  {
+   "en": "USNO-B1",
+   "ru": "USNO-B1"
+  },
+  {
+   "en": "GSC",
+   "ru": "GSC"
+  },
+  {
+   "en": "2MASS",
+   "ru": "2MASS"
+  },
+  {
+   "en": "SHA-256",
+   "ru": "SHA-256"
+  },
+  {
+   "en": "JSON",
+   "ru": "JSON"
+  },
+  {
+   "en": "File",
+   "ru": "Файл",
+   "exact": true
+  },
+  {
+   "en": "Slew",
+   "ru": "Навести",
+   "exact": true
+  },
+  {
+   "en": "Tools",
+   "ru": "Сервис",
+   "exact": true,
+   "except": {
+    "map:appShell.toolsMenu": "OpenVireo's own header menu (not VIREO's Tools menu); FR names it «Menu» in French."
+   }
+  },
+  {
+   "en": "Help",
+   "ru": "Справка",
+   "exact": true
+  },
+  {
+   "en": "Options",
+   "ru": "Параметры",
+   "exact": true
+  },
+  {
+   "en": "Parameters",
+   "ru": "Параметры",
+   "exact": true
+  },
+  {
+   "en": "OK",
+   "ru": "ОК",
+   "exact": true
+  },
+  {
+   "en": "Cancel",
+   "ru": "Отмена",
+   "exact": true
+  },
+  {
+   "en": "Close",
+   "ru": "Закрыть",
+   "exact": true
+  },
+  {
+   "en": "Yes",
+   "ru": "Да",
+   "exact": true
+  },
+  {
+   "en": "Reset",
+   "ru": "Сбросить",
+   "exact": true
+  },
+  {
+   "en": "Update",
+   "ru": "Обновить",
+   "exact": true
+  },
+  {
+   "en": "List",
+   "ru": "Список",
+   "exact": true
+  },
+  {
+   "en": "Selection",
+   "ru": "Выбор",
+   "exact": true
+  },
+  {
+   "en": "Exit",
+   "ru": "Выход",
+   "exact": true
+  },
+  {
+   "en": "Print...",
+   "ru": "Печать...",
+   "exact": true
+  },
+  {
+   "en": "Search...",
+   "ru": "Поиск...",
+   "exact": true
+  },
+  {
+   "en": "Save...",
+   "ru": "Сохранить...",
+   "exact": true
+  },
+  {
+   "en": "Stop",
+   "ru": "Остановить",
+   "exact": true
+  },
+  {
+   "en": "Scan",
+   "ru": "Пролистать",
+   "exact": true
+  },
+  {
+   "en": "Telescopes",
+   "ru": "Телескопы",
+   "exact": true
+  },
+  {
+   "en": "Websites",
+   "ru": "Сайты",
+   "exact": true
+  },
+  {
+   "en": "Confirm",
+   "ru": "Подтвердить",
+   "exact": true
+  },
+  {
+   "en": "Confirmation",
+   "ru": "Подтверждение",
+   "exact": true
+  },
+  {
+   "en": "Display",
+   "ru": "Отображение",
+   "exact": true
+  },
+  {
+   "en": "Objects",
+   "ru": "Объекты",
+   "exact": true
+  },
+  {
+   "en": "Go",
+   "ru": "Пуск",
+   "exact": true
+  },
+  {
+   "en": "Init",
+   "ru": "Подготовить",
+   "exact": true
+  },
+  {
+   "en": "Set Coordinates",
+   "ru": "Задать координаты"
+  },
+  {
+   "en": "View/Select from List",
+   "ru": "Просмотр/выбор из списка"
+  },
+  {
+   "en": "Add Current Item/Position to List",
+   "ru": "Добавить текущий объект/позицию в список"
+  },
+  {
+   "en": "Slew to Selection",
+   "ru": "Навести на выбранное"
+  },
+  {
+   "en": "Field Information",
+   "ru": "Сведения о поле"
+  },
+  {
+   "en": "Variable Stars",
+   "ru": "Переменные звёзды"
+  },
+  {
+   "en": "QSO List",
+   "ru": "Список QSO"
+  },
+  {
+   "en": "CCD Camera",
+   "ru": "ПЗС-камера"
+  },
+  {
+   "en": "IR Camera",
+   "ru": "ИК-камера"
+  },
+  {
+   "en": "Request Time",
+   "ru": "Запросить время"
+  },
+  {
+   "en": "Set Date/Time",
+   "ru": "Задать дату и время"
+  },
+  {
+   "en": "Site Parameters",
+   "ru": "Параметры пункта наблюдений"
+  },
+  {
+   "en": "Site Information",
+   "ru": "Сведения о пункте наблюдений"
+  },
+  {
+   "en": "Print Sky Image",
+   "ru": "Печать изображения неба"
+  },
+  {
+   "en": "HST Image Archive",
+   "ru": "Архив изображений HST"
+  },
+  {
+   "en": "Exit Observatory",
+   "ru": "Выйти из обсерватории"
+  },
+  {
+   "en": "Restrict Scope Access",
+   "ru": "Ограничить доступ к телескопам"
+  },
+  {
+   "en": "Limit Slewing",
+   "ru": "Ограничить наведение"
+  },
+  {
+   "en": "Show Object ID",
+   "ru": "Показать идентификатор объекта"
+  },
+  {
+   "en": "Show Object Mag",
+   "ru": "Показать зв. величину объекта"
+  },
+  {
+   "en": "Fast Slewing",
+   "ru": "Быстрое наведение"
+  },
+  {
+   "en": "Fast Scope Change",
+   "ru": "Быстрая смена телескопа"
+  },
+  {
+   "en": "Sound Effects",
+   "ru": "Звуковые эффекты"
+  },
+  {
+   "en": "Infrared Camera",
+   "ru": "Инфракрасная камера"
+  },
+  {
+   "en": "Write Log File",
+   "ru": "Вести файл журнала"
+  },
+  {
+   "en": "Time-Dependent Data",
+   "ru": "Данные, зависящие от времени"
+  },
+  {
+   "en": "Print in Color",
+   "ru": "Печать в цвете"
+  },
+  {
+   "en": "Monochrome Displays",
+   "ru": "Монохромные дисплеи"
+  },
+  {
+   "en": "Compute Rdshft Vel.",
+   "ru": "Вычислить скорость по красному смещению"
+  },
+  {
+   "en": "Allow User Change",
+   "ru": "Разрешить изменения пользователем"
+  },
+  {
+   "en": "Set E(B-V)",
+   "ru": "Задать E(B-V)"
+  },
+  {
+   "en": "Detect Sky",
+   "ru": "Определить небо"
+  },
+  {
+   "en": "Catalog Object",
+   "ru": "Объект каталога"
+  },
+  {
+   "en": "Field Size",
+   "ru": "Размер поля"
+  },
+  {
+   "en": "Multi-Channel Spectrometer",
+   "ru": "Многоканальный спектрометр"
+  },
+  {
+   "en": "Observation List",
+   "ru": "Список наблюдений"
+  },
+  {
+   "en": "Star Data List",
+   "ru": "Список данных о звёздах"
+  },
+  {
+   "en": "Naked Eye Star",
+   "ru": "Звезда, видимая невооружённым глазом"
+  },
+  {
+   "en": "Get Selection Data",
+   "ru": "Получить данные выбранного"
+  },
+  {
+   "en": "Add Selection to Current Hot List",
+   "ru": "Добавить выбранное в текущий список объектов"
+  },
+  {
+   "en": "Start New Hot List with Selection",
+   "ru": "Начать новый список объектов с выбранного"
+  },
+  {
+   "en": "Save List",
+   "ru": "Сохранить список"
+  },
+  {
+   "en": "Edit Selection",
+   "ru": "Изменить выбранное"
+  },
+  {
+   "en": "Delete Selection",
+   "ru": "Удалить выбранное"
+  },
+  {
+   "en": "Undo Edit/Delete",
+   "ru": "Отменить изменение/удаление"
+  },
+  {
+   "en": "Base Slew Rate",
+   "ru": "Базовая скорость наведения"
+  },
+  {
+   "en": "Horizon Limit",
+   "ru": "Ограничение по горизонту"
+  },
+  {
+   "en": "Finder Field",
+   "ru": "Поле искателя"
+  },
+  {
+   "en": "Finder Mag Limit",
+   "ru": "Предельная зв. величина искателя"
+  },
+  {
+   "en": "Field Creation Factor",
+   "ru": "Коэффициент создания поля"
+  },
+  {
+   "en": "Enter Sky Coordinates for Slew",
+   "ru": "Координаты неба для наведения"
+  },
+  {
+   "en": "Add/Edit Hot List Entry",
+   "ru": "Добавить/изменить запись списка объектов"
+  },
+  {
+   "en": "Camera Parameters",
+   "ru": "Параметры камеры"
+  },
+  {
+   "en": "Spectra From Multi-channel Spectrometer",
+   "ru": "Спектры многоканального спектрометра"
+  },
+  {
+   "en": "Terminate Current Slew",
+   "ru": "Прервать текущее наведение"
+  },
+  {
+   "en": "Save Updates",
+   "ru": "Сохранить изменения"
+  },
+  {
+   "en": "Sort Options",
+   "ru": "Параметры сортировки"
+  },
+  {
+   "en": "Scan Rate",
+   "ru": "Скорость пролистывания"
+  },
+  {
+   "en": "Chip Well Depth",
+   "ru": "Глубина потенциальной ямы"
+  },
+  {
+   "en": "Dark Noise",
+   "ru": "Темновой шум"
+  },
+  {
+   "en": "Data from Observations",
+   "ru": "Данные наблюдений"
+  },
+  {
+   "en": "Record/Review",
+   "ru": "Записать/просмотреть"
+  },
+  {
+   "en": "Next on List",
+   "ru": "Следующий в списке"
+  },
+  {
+   "en": "No More Spectra",
+   "ru": "Больше спектров нет"
+  },
+  {
+   "en": "Spectral Line Table",
+   "ru": "Таблица спектральных линий"
+  },
+  {
+   "en": "Program List",
+   "ru": "Список программ"
+  },
+  {
+   "en": "Pulsar guide",
+   "ru": "Руководство: пульсары"
+  },
+  {
+   "en": "Pulsar timing guide",
+   "ru": "Руководство по хронометражу пульсаров"
+  },
+  {
+   "en": "Radio Astronomy of Pulsars",
+   "ru": "Радиоастрономия пульсаров"
+  },
+  {
+   "en": "Radio Telescope Control Panel",
+   "ru": "Панель управления радиотелескопом"
+  },
+  {
+   "en": "Radio Simulation Options",
+   "ru": "Параметры радиосимуляции"
+  },
+  {
+   "en": "Pulsar Parameters",
+   "ru": "Параметры пульсара"
+  },
+  {
+   "en": "Access Pulsar List",
+   "ru": "Открыть список пульсаров"
+  },
+  {
+   "en": "Pulsar Identification",
+   "ru": "Отождествление пульсара"
+  },
+  {
+   "en": "Telescope Type",
+   "ru": "Тип телескопа"
+  },
+  {
+   "en": "Slew Rate",
+   "ru": "Скорость наведения",
+   "except": {
+    "original:Base Slew Rate": "VIREO's Base Slew Rate is «Vitesse de déplacement de base» (FR2)",
+    "catalog:radioSimOptions.okNote": "names Base Slew Rate, «Vitesse de déplacement de base» (FR2)"
+   }
+  },
+  {
+   "en": "Find Pulsar Data",
+   "ru": "Найти данные пульсара"
+  },
+  {
+   "en": "Identify Recorded Object",
+   "ru": "Определить записанный объект"
+  },
+  {
+   "en": "Add Channel",
+   "ru": "Добавить канал"
+  },
+  {
+   "en": "Antenna Aperture",
+   "ru": "Апертура антенны"
+  },
+  {
+   "en": "Sound Features",
+   "ru": "Звуковые функции"
+  },
+  {
+   "en": "Asteroid List",
+   "ru": "Список астероидов"
+  },
+  {
+   "en": "Spectral Range",
+   "ru": "Спектральный диапазон"
+  },
+  {
+   "en": "Spectrum Information",
+   "ru": "Сведения о спектре"
+  },
+  {
+   "en": "View/Save Spectra",
+   "ru": "Просмотр/сохранение спектров"
+  },
+  {
+   "en": "Select Objects",
+   "ru": "Выбрать объекты"
+  },
+  {
+   "en": "Print Selection Field",
+   "ru": "Печать поля выбора"
+  },
+  {
+   "en": "Save Text",
+   "ru": "Сохранить текст"
+  },
+  {
+   "en": "Comma Delimit",
+   "ru": "Через запятую"
+  },
+  {
+   "en": "Exposure Timer",
+   "ru": "Таймер экспозиции"
+  },
+  {
+   "en": "Find Text String",
+   "ru": "Найти текст"
+  },
+  {
+   "en": "Close Multi-Spec",
+   "ru": "Закрыть Multi-Spec"
+  },
+  {
+   "en": "Measured Redshift Data",
+   "ru": "Измеренные данные о красном смещении"
+  },
+  {
+   "en": "Record Z",
+   "ru": "Записать z"
+  },
+  {
+   "en": "Save Data",
+   "ru": "Сохранить данные",
+   "except": {
+    "original:Save Data in Comma-Separated Text File": "another VIREO caption (a file dialog title, «Enregistrer les données dans…»), not the Save Data button",
+    "original:Save Data Now?": "another VIREO message (a question, «Enregistrer les données maintenant ?»), not the Save Data button"
+   }
+  },
+  {
+   "en": "Plot Data",
+   "ru": "Построить график"
+  },
+  {
+   "en": "LSS Wedge Plot",
+   "ru": "Клиновая диаграмма LSS"
+  },
+  {
+   "en": "Load Saved Data",
+   "ru": "Загрузить сохранённые данные"
+  },
+  {
+   "en": "LSS Galaxy Data",
+   "ru": "Данные о галактиках LSS"
+  },
+  {
+   "en": "Time-Dependent Data",
+   "ru": "Данные, зависящие от времени"
+  },
+  {
+   "en": "Load/Plot",
+   "ru": "Загрузить/построить"
+  },
+  {
+   "en": "View/Print Parameters",
+   "ru": "Просмотр/печать параметров"
+  },
+  {
+   "en": "Display/Print Data",
+   "ru": "Показать/напечатать данные"
+  },
+  {
+   "en": "Select Cluster Data",
+   "ru": "Выбрать данные о скоплении"
+  },
+  {
+   "en": "Possible Cluster Member",
+   "ru": "Возможный член скопления"
+  },
+  {
+   "en": "Clusters for Study",
+   "ru": "Скопления для изучения"
+  },
+  {
+   "en": "Variable Star Data",
+   "ru": "Данные переменной звезды"
+  },
+  {
+   "en": "Simulated Light Curve",
+   "ru": "Смоделированная кривая блеска"
+  },
+  {
+   "en": "Remove from HR Diagram",
+   "ru": "Убрать с диаграммы Г — Р"
+  },
+  {
+   "en": "Recorded Results",
+   "ru": "Записанные результаты"
+  },
+  {
+   "en": "Telescope has Moved!",
+   "ru": "Телескоп сместился!"
+  },
+  {
+   "en": "Reading Sky!",
+   "ru": "Считывание неба!"
+  },
+  {
+   "en": "Radio clock scenario",
+   "ru": "Сценарий радиочасов"
+  },
+  {
+   "en": "Scenario inputs",
+   "ru": "Входные данные сценария"
+  },
+  {
+   "en": "Use compiled defaults",
+   "ru": "Использовать скомпилированные значения по умолчанию"
+  },
+  {
+   "en": "Reset radio site",
+   "ru": "Сбросить радиоплощадку"
+  },
+  {
+   "en": "Start pulsar exercise",
+   "ru": "Начать работу по пульсарам"
+  },
+  {
+   "en": "Instructor mode",
+   "ru": "преподавател"
+  },
+  {
+   "en": "Clear",
+   "ru": "Очистить",
+   "exact": true
+  },
+  {
+   "en": "Find",
+   "ru": "Найти",
+   "exact": true
+  },
+  {
+   "en": "Record",
+   "ru": "Записать",
+   "exact": true
+  },
+  {
+   "en": "Show",
+   "ru": "Показать",
+   "exact": true
+  },
+  {
+   "en": "Save",
+   "ru": "Сохранить",
+   "exact": true
+  },
+  {
+   "en": "Save As",
+   "ru": "Сохранить как",
+   "exact": true
+  },
+  {
+   "en": "Save List...",
+   "ru": "Сохранить список...",
+   "exact": true
+  },
+  {
+   "en": "Find Pulsar...",
+   "ru": "Найти пульсар...",
+   "exact": true
+  },
+  {
+   "en": "Print",
+   "ru": "Печать",
+   "exact": true
+  },
+  {
+   "en": "Lab Table",
+   "ru": "лабораторн"
+  },
+  {
+   "en": "Save All",
+   "ru": "Сохранить всё"
+  },
+  {
+   "en": "Clear All",
+   "ru": "Очистить всё"
+  },
+  {
+   "en": "Telescope Display",
+   "ru": "Дисплей телескопа"
+  },
+  {
+   "en": "Master Receiver",
+   "ru": "Главный приёмник"
+  },
+  {
+   "en": "Case Dependent",
+   "ru": "С учётом регистра"
+  },
+  {
+   "en": "Search String",
+   "ru": "Строка поиска"
+  },
+  {
+   "en": "Search Results",
+   "ru": "Результаты поиска"
+  },
+  {
+   "en": "Optical",
+   "ru": "Оптическ",
+   "exact": true
+  },
+  {
+   "en": "Spectral Line Help",
+   "ru": "Справка по спектральным линиям"
+  },
+  {
+   "en": "Original hot lists",
+   "ru": "Исходные списки объектов"
+  },
+  {
+   "en": "Telescope view",
+   "ru": "Вид телескопа"
+  },
+  {
+   "en": "Receiver monitor",
+   "ru": "Монитор приёмника"
+  },
+  {
+   "en": "Radio configuration",
+   "ru": "конфигураци"
+  },
+  {
+   "en": "pulsar exercise",
+   "ru": "работа по пульсарам"
+  },
+  {
+   "en": "Manual marks",
+   "ru": "Ручные метки"
+  },
+  {
+   "en": "Data properties",
+   "ru": "Свойства данных"
+  },
+  {
+   "en": "Trace audition",
+   "ru": "Прослушивание графика"
+  },
+  {
+   "en": "Telescope position",
+   "ru": "Положение телескопа"
+  },
+  {
+   "en": "Radio telescope control",
+   "ru": "Управление радиотелескопом"
+  }
+ ],
+ "forbidden": [
+  {
+   "ru": "(?<![\\p{L}\\p{N}])кластер\\p{L}*",
+   "use": "скопление (звёздное скопление, рассеянное скопление)"
+  },
+  {
+   "ru": "(?<![\\p{L}\\p{N}])магнитуд\\p{L}*",
+   "use": "звёздная величина"
+  },
+  {
+   "words": [
+    "redshift",
+    "redshifts"
+   ],
+   "use": "красное смещение"
+  },
+  {
+   "ru": "(?<![\\p{L}\\p{N}])констант\\p{L}* Хаббла",
+   "use": "постоянная Хаббла"
+  },
+  {
+   "ru": "(?<![\\p{L}\\p{N}])радиальн\\p{L}* скорост\\p{L}*",
+   "use": "лучевая скорость"
+  },
+  {
+   "ru": "(?<![\\p{L}\\p{N}])индекс\\p{L}* цвета",
+   "use": "показатель цвета"
+  },
+  {
+   "ru": "(?<![\\p{L}\\p{N}])CCD[-\\s]?камер\\p{L}*",
+   "use": "ПЗС-камера (ПЗС/ИК-камера)"
+  },
+  {
+   "ru": "(?<![\\p{L}\\p{N}])загрузи\\p{L}*\\s+(?:\\p{L}+\\s+)?(?:файл\\p{L}*\\s+)?(?:на|в)\\s+(?:ваш\\s+)?(?:компьютер|устройств)\\p{L}*",
+   "use": "скачать файл (скачать, не «загрузить»: загрузить означает Load)"
+  }
+ ]
+}

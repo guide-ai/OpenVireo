@@ -5,6 +5,7 @@ import type {MessageParameters} from './params.generated';
 import type {UiLanguage} from './locale';
 import type {BundleMaps,MapId} from './maps';
 import {firstStrongIsolate,hasRtlLetter,ltrIsolate} from './isolates';
+import {pluralFormBase} from './plural';
 export type MessageKey=keyof typeof en;
 export type PlainMessageKey={[K in MessageKey]:MessageParameters[K]extends never?K:never}[MessageKey];
 type ParameterNames<K extends MessageKey>=K extends keyof MessageParameters?MessageParameters[K]:never;
@@ -37,8 +38,15 @@ export function createI18n(messages:Readonly<Partial<Record<MessageKey,string>>>
 export function createI18n(messages:Readonly<Partial<Record<MessageKey,string>>>,language:string,options:CatalogOptions={}):I18n{return build(messages,language,options);}
 function build(messages:Readonly<Partial<Record<MessageKey,string>>>,language:string,{fallback=false,numberLocale=language,thousands,rtl=false}:CatalogOptions){
  const keys=Object.keys(en) as MessageKey[];
- if(!messages||typeof messages!=='object'||Object.keys(messages).some(k=>!Object.hasOwn(en,k))||(!fallback&&(Object.keys(messages).length!==keys.length||keys.some(k=>!Object.hasOwn(messages,k)))))throw new Error('Invalid message catalog keys');
+ if(!messages||typeof messages!=='object')throw new Error('Invalid message catalog keys');
+ // Front RU0: a key en.json lacks is valid only as one more plural form of an en.json family in this language (src/i18n/plural.ts
+ // pluralFormBase), with its base's {params}; English, Spanish, Portuguese and French catalogs have none.
+ const forms=new Map<string,MessageKey>();
+ for(const key of Object.keys(messages))if(!Object.hasOwn(en,key)){const base=pluralFormBase(key,en,language);if(!base)throw new Error('Invalid message catalog keys');forms.set(key,base as MessageKey);}
+ if(!fallback&&keys.some(k=>!Object.hasOwn(messages,k)))throw new Error('Invalid message catalog keys');
  for(const key of keys)if(Object.hasOwn(messages,key)&&(typeof messages[key]!=='string'||parameters(messages[key]!).join('|')!==parameters(en[key]).join('|')))throw new Error(`Invalid message parameters: ${key}`);
+ const extra=messages as Readonly<Record<string,unknown>>;
+ for(const [key,base] of forms)if(typeof extra[key]!=='string'||parameters(extra[key] as string).join('|')!==parameters(en[base]).join('|'))throw new Error(`Invalid message parameters: ${key}`);
  new Intl.NumberFormat(numberLocale);const catalog:Readonly<Record<MessageKey,string>>=Object.freeze({...en,...messages});
  const translate=((key:MessageKey,values:Readonly<Record<string,string|number>>={})=>{
   if(!Object.hasOwn(catalog,key))throw new Error('Unknown message key');
