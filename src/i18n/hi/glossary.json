@@ -55,7 +55,7 @@
   },
   {
    "en": "\\brestor(e|es|ed|ing)\\b",
-   "hi": "पुनर्स्थापित"
+   "hi": "पुनर्स्थापित|लौटा"
   },
   {
    "en": "\\b(re)?load(s|ed|ing)?\\b",
@@ -106,7 +106,7 @@
    "hi": "मेनू"
   },
   {
-   "en": "\\bguides?\\b",
+   "en": "\\bguides?\\b(?! Star)",
    "hi": "गाइड"
   },
   {
@@ -122,7 +122,7 @@
    "hi": "अभिरक्त विस्थापन"
   },
   {
-   "en": "\\bpulsars?\\b",
+   "en": "\\bpulsars?\\b(?!\\.HTL)",
    "hi": "पल्सर"
   },
   {
@@ -130,12 +130,12 @@
    "hi": "प्रशिक्षक मोड"
   },
   {
-   "en": "\\bhelp\\b",
+   "en": "(?<!not )\\bhelp\\b",
    "hi": "सहायता"
   },
   {
    "en": "\\btracking\\b",
-   "hi": "ट्रैकिंग"
+   "hi": "ट्रैक"
   },
   {
    "en": "\\bcatalog(ue)?s?\\b",
@@ -146,7 +146,7 @@
    "hi": "आकाशगंगा"
   },
   {
-   "en": "\\bstars?\\b",
+   "en": "(?<!Guide )\\bstars?\\b",
    "hi": "तार(ा|े|ों)"
   },
   {
@@ -166,8 +166,8 @@
    "hi": "पासवर्ड"
   },
   {
-   "en": "\\bcounts?\\b(?! shows after the reveal)",
-   "hi": "काउंट|गिनती"
+   "en": "\\bcounts?\\b(?! as\\b)(?! shows after the reveal)",
+   "hi": "काउंट|गिन"
   },
   {
    "en": "\\bslew(s|ed|ing)?\\b",
@@ -431,7 +431,7 @@
   },
   {
    "en": "\\bmerg(e|es|ed|ing)\\b",
-   "hi": "मर्ज"
+   "hi": "विलय"
   },
   {
    "en": "\\bendpoint[- ]grids?\\b",
@@ -538,7 +538,7 @@
    "hi": "ट्रायल"
   },
   {
-   "en": "\\bpresets?\\b",
+   "en": "\\bpresets?\\b(?<!never preset)",
    "hi": "प्रीसेट"
   },
   {
@@ -622,12 +622,36 @@
    "hi": "घड़ी"
   },
   {
-   "en": "\\bPleiades\\b",
+   "en": "\\bPleiades\\b(?!\\.HTL)",
    "hi": "कृत्तिका"
   },
   {
    "en": "\\bObject X\\b",
    "hi": "ऑब्जेक्ट X"
+  },
+  {
+   "en": "\\bTelescope view\\b",
+   "hi": "दूरबीन (?:का|के|की) दृश्य"
+  },
+  {
+   "en": "\\bOriginal hot lists\\b",
+   "hi": "मूल वस्तु सूचि(?:याँ|यों)"
+  },
+  {
+   "en": "\\bGuide Star Catalog\\b",
+   "hi": "गाइड स्टार कैटलॉग"
+  },
+  {
+   "en": "\\bweb adaptations?\\b",
+   "hi": "वेब अनुकूलन"
+  },
+  {
+   "en": "\\b(?:point(?:s|ed|ing)? (?:the telescope|at|to)|pointings?)\\b",
+   "hi": "इंगित|दिशा|की ओर (?:नहीं )?(?:है|हैं|था)"
+  },
+  {
+   "en": "\\bnoise\\b(?! ratio)",
+   "hi": "नॉइज़|शोर"
   }
  ],
  "names": [
@@ -697,7 +721,10 @@
   },
   {
    "en": "Topics...",
-   "hi": "विषय..."
+   "hi": "विषय...",
+   "except": {
+    "original:Show Help Topics...": "VIREO’s Show Help Topics... button: «सहायता विषय दिखाएँ...» keeps the ellipsis at the end of the label"
+   }
   },
   {
    "en": "About This Exercise...",
@@ -949,7 +976,7 @@
   },
   {
    "en": "Set Date/Time",
-   "hi": "तारीख़/समय तय करें"
+   "hi": "तारीख/समय तय करें"
   },
   {
    "en": "Site Parameters",
@@ -1017,7 +1044,7 @@
   },
   {
    "en": "Monochrome Displays",
-   "hi": "एकवर्णी प्रदर्शन"
+   "hi": "एकवर्णी डिस्प्ले"
   },
   {
    "en": "Compute Rdshft Vel.",
@@ -1217,7 +1244,7 @@
   },
   {
    "en": "Identify Recorded Object",
-   "hi": "दर्ज वस्तु की पहचान करें"
+   "hi": "रिकॉर्ड की गई वस्तु की पहचान करें"
   },
   {
    "en": "Add Channel",
@@ -1261,7 +1288,10 @@
   },
   {
    "en": "Comma Delimit",
-   "hi": "अल्पविराम से अलग करें"
+   "hi": "अल्पविराम से अलग करें",
+   "except": {
+    "original:Comma Delimited Text |*.CSV": "a file-type filter (Comma Delimited Text), a noun phrase, not the Comma Delimit command"
+   }
   },
   {
    "en": "Exposure Timer",
@@ -1333,7 +1363,7 @@
   },
   {
    "en": "Simulated Light Curve",
-   "hi": "सिम्युलेटेड प्रकाश वक्र"
+   "hi": "सिमुलेटेड प्रकाश वक्र"
   },
   {
    "en": "Remove from HR Diagram",
@@ -1388,7 +1418,10 @@
   {
    "en": "Record",
    "hi": "दर्ज करें",
-   "exact": true
+   "exact": true,
+   "except": {
+    "original:Record": "the radio receiver’s Record button records a signal: «रिकॉर्ड करें» (plan §5.3, a recording is रिकॉर्डिंग)"
+   }
   },
   {
    "en": "Show",
@@ -1438,7 +1471,7 @@
   },
   {
    "en": "Master Receiver",
-   "hi": "मास्टर रिसीवर"
+   "hi": "मुख्य रिसीवर"
   },
   {
    "en": "Case Dependent",
@@ -1460,14 +1493,6 @@
   {
    "en": "Spectral Line Help",
    "hi": "स्पेक्ट्रमी रेखा सहायता"
-  },
-  {
-   "en": "Original hot lists",
-   "hi": "मूल वस्तु सूचियाँ"
-  },
-  {
-   "en": "Telescope view",
-   "hi": "दूरबीन का दृश्य"
   },
   {
    "en": "Receiver monitor",
@@ -1566,6 +1591,12 @@
     "स्थिरांक*"
    ],
    "use": "नियतांक for a constant (हबल नियतांक, प्लेट नियतांक), one form"
+  },
+  {
+   "words": [
+    "मार्गदर्शक तारा कैटलॉग"
+   ],
+   "use": "गाइड स्टार कैटलॉग (Guide Star Catalog), one form of the catalogue’s name"
   }
  ]
 }

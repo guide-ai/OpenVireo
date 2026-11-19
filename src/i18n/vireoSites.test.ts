@@ -8,9 +8,13 @@ import esIdentical from './es/identical.json';
 import ptOriginals from './pt-br/originals.json';
 import ptIdentical from './pt-br/identical.json';
 import frOriginals from './fr/originals.json';
+import hiOriginals from './hi/originals.json';
+import hiIdentical from './hi/identical.json';
 import frIdentical from './fr/identical.json';
 import idOriginals from './id/originals.json';
 import idIdentical from './id/identical.json';
+import ruOriginals from './ru/originals.json';
+import ruIdentical from './ru/identical.json';
 import {normalizeOriginal} from './vireo';
 
 // Front ES3 review (S2): vireo() is for VIREO's own literals. A web text wrapped in vireo() would stay English in Spanish, since
@@ -28,6 +32,10 @@ const STRICT:readonly {tag:string;originals:Record<string,string>;identical:Reco
  {tag:'fr',originals:frOriginals,identical:frIdentical.entries},
  // Front ID1: Indonesian translates all of VIREO's originals at once, as FR1 did.
  {tag:'id',originals:idOriginals,identical:idIdentical.entries},
+ // Front HI1: Hindi translates all of VIREO's originals at once, as FR1 did.
+ {tag:'hi',originals:hiOriginals,identical:hiIdentical.entries},
+ // Front RU1: Russian translates all of VIREO's originals at once, as FR1 and ID1 did.
+ {tag:'ru',originals:ruOriginals,identical:ruIdentical.entries},
 ];
 type Node={type:string;[key:string]:unknown};
 const root=path.resolve(import.meta.dirname,'../..');

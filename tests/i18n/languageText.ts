@@ -81,6 +81,14 @@ import {LANGUAGE_CHOICE_HI} from '../../src/i18n/hi/maps/languageChoice';
 import {OBJECT_X_LAB_HI} from '../../src/i18n/hi/maps/objectXLab';
 import {POLISH_HI} from '../../src/i18n/hi/maps/polish';
 import {VARIABLE_STARS_HI} from '../../src/i18n/hi/maps/variableStars';
+import {CAMERA_HI} from '../../src/i18n/hi/maps/camera';
+import {FIELD_INFO_HI} from '../../src/i18n/hi/maps/fieldInfo';
+import {FIELD_READ_DETAILS_HI} from '../../src/i18n/hi/maps/fieldReadDetails';
+import {NAKED_EYE_HI} from '../../src/i18n/hi/maps/nakedEye';
+import {OBSERVATION_METADATA_HI} from '../../src/i18n/hi/maps/observationMetadata';
+import {OBSERVATORY_HI} from '../../src/i18n/hi/maps/observatory';
+import {QSO_LIST_HI} from '../../src/i18n/hi/maps/qsoList';
+import {SOUND_HI} from '../../src/i18n/hi/maps/sound';
 import ru from '../../src/i18n/ru/ru.json' with {type:'json'};
 import ruOriginals from '../../src/i18n/ru/originals.json' with {type:'json'};
 import {APP_SHELL_RU} from '../../src/i18n/ru/maps/appShell';
@@ -91,6 +99,14 @@ import {LANGUAGE_CHOICE_RU} from '../../src/i18n/ru/maps/languageChoice';
 import {OBJECT_X_LAB_RU} from '../../src/i18n/ru/maps/objectXLab';
 import {POLISH_RU} from '../../src/i18n/ru/maps/polish';
 import {VARIABLE_STARS_RU} from '../../src/i18n/ru/maps/variableStars';
+import {CAMERA_RU} from '../../src/i18n/ru/maps/camera';
+import {FIELD_INFO_RU} from '../../src/i18n/ru/maps/fieldInfo';
+import {FIELD_READ_DETAILS_RU} from '../../src/i18n/ru/maps/fieldReadDetails';
+import {NAKED_EYE_RU} from '../../src/i18n/ru/maps/nakedEye';
+import {OBSERVATION_METADATA_RU} from '../../src/i18n/ru/maps/observationMetadata';
+import {OBSERVATORY_RU} from '../../src/i18n/ru/maps/observatory';
+import {QSO_LIST_RU} from '../../src/i18n/ru/maps/qsoList';
+import {SOUND_RU} from '../../src/i18n/ru/maps/sound';
 import {LANGUAGES,failureNotice,type LanguageEntry} from '../../src/i18n/languages';
 import type {Translation} from '../../src/i18n/maps';
 import type {APP_SHELL_MESSAGES_EN} from '../../src/components/AppShellMessages';
@@ -155,15 +171,16 @@ export const FRENCH_TEXT=language('fr',fr,frOriginals,{appShell:APP_SHELL_FR,hel
 export const INDONESIAN_TEXT=language('id',idCatalog,idOriginals,{appShell:APP_SHELL_ID,helpMenu:HELP_MENU_ID,projectLinks:PROJECT_LINKS_ID,tour:TOUR_ID,languageChoice:LANGUAGE_CHOICE_ID},
  [APP_SHELL_ID,CAMERA_ID,FIELD_INFO_ID,FIELD_READ_DETAILS_ID,HELP_MENU_ID,LANGUAGE_CHOICE_ID,NAKED_EYE_ID,OBJECT_X_LAB_ID,OBSERVATION_METADATA_ID,OBSERVATORY_ID,POLISH_ID,PROJECT_LINKS_ID,QSO_LIST_ID,SOUND_ID,TOUR_ID,VARIABLE_STARS_ID],/(?<!\p{L})(?:yang|dan|untuk|dengan|tidak|Anda|dari|pada|ini|atau)(?!\p{L})|[“”\u202f]/u,'?lang=id',['shell','observatory','e01','e02']);
 /** Front HI0: Hindi, behind `?lang=hi` before its release (an en-US browser with the preview query). HI0 translated the shell, so
- * only the shell's specs run it; each HI front adds its area. Its letters are Devanagari (the danda । included), which English text
+ * only the shell's specs ran it; HI1 adds the observatory and all of VIREO's originals; each HI front adds its area. Its letters are Devanagari (the danda । included), which English text
  * never has; “ ” are not among them, since English uses them too. */
 export const HINDI_TEXT=language('hi',hi,hiOriginals,{appShell:APP_SHELL_HI,helpMenu:HELP_MENU_HI,projectLinks:PROJECT_LINKS_HI,tour:TOUR_HI,languageChoice:LANGUAGE_CHOICE_HI},
- [APP_SHELL_HI,HELP_MENU_HI,LANGUAGE_CHOICE_HI,OBJECT_X_LAB_HI,POLISH_HI,PROJECT_LINKS_HI,TOUR_HI,VARIABLE_STARS_HI],/[\u0900-\u097f]/u,'?lang=hi',['shell']);
+ [APP_SHELL_HI,CAMERA_HI,FIELD_INFO_HI,FIELD_READ_DETAILS_HI,HELP_MENU_HI,LANGUAGE_CHOICE_HI,NAKED_EYE_HI,OBJECT_X_LAB_HI,OBSERVATION_METADATA_HI,OBSERVATORY_HI,POLISH_HI,PROJECT_LINKS_HI,QSO_LIST_HI,SOUND_HI,TOUR_HI,VARIABLE_STARS_HI],/[\u0900-\u097f]/u,'?lang=hi',['shell','observatory']);
 /** Front RU0: Russian before its release, behind `?lang=ru` (an en-US browser: tests/fixtures/language.ts contextLocale). Only the
- * shell is translated; RU1–RU6 and RU-HELP add their areas to `done` and their maps below. Its letters are Cyrillic, « » and U+202F,
+ * shell is translated (RU0), and the observatory with all of VIREO's originals (RU1); RU2–RU6 and RU-HELP add their areas to `done` and
+ * their maps below. Its letters are Cyrillic, « » and U+202F,
  * which English text never has. */
 export const RUSSIAN_TEXT=language('ru',ru,ruOriginals,{appShell:APP_SHELL_RU,helpMenu:HELP_MENU_RU,projectLinks:PROJECT_LINKS_RU,tour:TOUR_RU,languageChoice:LANGUAGE_CHOICE_RU},
- [APP_SHELL_RU,HELP_MENU_RU,LANGUAGE_CHOICE_RU,OBJECT_X_LAB_RU,POLISH_RU,PROJECT_LINKS_RU,TOUR_RU,VARIABLE_STARS_RU],/[\p{sc=Cyrl}«»\u202f]/u,'?lang=ru',['shell']);
+ [APP_SHELL_RU,CAMERA_RU,FIELD_INFO_RU,FIELD_READ_DETAILS_RU,HELP_MENU_RU,LANGUAGE_CHOICE_RU,NAKED_EYE_RU,OBJECT_X_LAB_RU,OBSERVATION_METADATA_RU,OBSERVATORY_RU,POLISH_RU,PROJECT_LINKS_RU,QSO_LIST_RU,SOUND_RU,TOUR_RU,VARIABLE_STARS_RU],/[\p{sc=Cyrl}«»\u202f]/u,'?lang=ru',['shell','observatory']);
 /** Every translated language of the registry, in its order (a test fails if a registered language has no text here). */
 export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT,INDONESIAN_TEXT,HINDI_TEXT,RUSSIAN_TEXT]);
 /** Front FR0: the languages that run the specs of `area` (those whose `done` has it), in registry order. */

@@ -55,7 +55,7 @@
   },
   {
    "en": "\\brestor(e|es|ed|ing)\\b",
-   "ru": "восстанов"
+   "ru": "восстан"
   },
   {
    "en": "\\b(re)?load(s|ed|ing)?\\b",
@@ -95,7 +95,7 @@
   },
   {
    "en": "\\bclick\\b",
-   "ru": "нажм|нажим|нажат|щ[её]лк|клик"
+   "ru": "нажм|нажим|нажат|щ[её]лк|щелч|клик"
   },
   {
    "en": "\\bpress\\b",
@@ -106,7 +106,7 @@
    "ru": "меню"
   },
   {
-   "en": "\\bguides?\\b",
+   "en": "\\bguides?\\b(?! star)",
    "ru": "руководств|справочник|гид"
   },
   {
@@ -135,7 +135,7 @@
   },
   {
    "en": "\\btracking\\b",
-   "ru": "слежени|сопровожден"
+   "ru": "слежени|сопровожден|отслежива"
   },
   {
    "en": "\\bcatalog(ue)?s?\\b",
@@ -167,7 +167,7 @@
   },
   {
    "en": "\\bcounts?\\b(?! shows after the reveal)",
-   "ru": "счёт|счет|счита|количеств|числ|отсч[её]т|подсч[её]т|импульс"
+   "ru": "счёт|счет|счита|количеств|числ|отсч[её]т|подсч[её]т|импульс|засчит"
   },
   {
    "en": "\\bslew(s|ed|ing)?\\b",
@@ -399,7 +399,7 @@
   },
   {
    "en": "\\bstandards?\\b",
-   "ru": "эталон|стандарт"
+   "ru": "эталон|стандарт|поясн"
   },
   {
    "en": "\\bshoulders?\\b",
@@ -607,11 +607,11 @@
   },
   {
    "en": "\\bpractices?\\b",
-   "ru": "тренировк|практик|упражн|пробн"
+   "ru": "тренировк|тренировочн|практик|упражн|пробн"
   },
   {
    "en": "\\bdrafts?\\b",
-   "ru": "черновик"
+   "ru": "чернов"
   },
   {
    "en": "\\bfallbacks?\\b",
@@ -624,6 +624,66 @@
   {
    "en": "\\bhost clock\\b",
    "ru": "час\\p{L}*\\s+(?:компьютер|устройств|системн)|системн\\p{L}* час"
+  },
+  {
+   "en": "Demonstration\\ Mode",
+   "ru": "демонстрационн\\p{L}* режим"
+  },
+  {
+   "en": "Edit\\ Mode",
+   "ru": "режим\\p{L}* правки"
+  },
+  {
+   "en": "Virtual\\ Observatory",
+   "ru": "виртуальн\\p{L}* обсерватори"
+  },
+  {
+   "en": "QSO\\ List",
+   "ru": "спис\\p{L}* QSO"
+  },
+  {
+   "en": "CCD\\ Camera",
+   "ru": "ПЗС-камер"
+  },
+  {
+   "en": "IR\\ Camera",
+   "ru": "ИК-камер"
+  },
+  {
+   "en": "Set\\ Date/Time",
+   "ru": "Задать дату(?:/время| и время)"
+  },
+  {
+   "en": "Fast\\ Scope\\ Change",
+   "ru": "быстр\\p{L}* смен\\p{L}* телескоп"
+  },
+  {
+   "en": "Multi\\-Channel\\ Spectrometer",
+   "ru": "многоканальн\\p{L}* спектрометр"
+  },
+  {
+   "en": "Horizon\\ Limit",
+   "ru": "предел\\p{L}* горизонт"
+  },
+  {
+   "en": "Camera\\ Parameters",
+   "ru": "Параметры (?:ПЗС-|ИК-)?камер"
+  },
+  {
+   "en": "Measured\\ Redshift\\ Data",
+   "ru": "измеренн\\p{L}* красн\\p{L}* смещени"
+  },
+  {
+   "en": "Telescope\\ Display",
+   "ru": "изображени\\p{L}* телескоп"
+  },
+  {
+   "en": "Master\\ Receiver",
+   "ru": "основн\\p{L}* при[её]мник"
+  },
+  {
+   "en": "Spectral\\ Line\\ Help",
+   "ru": "справк\\p{L}* по спектральным линиям"
   }
  ],
  "names": [
@@ -658,18 +718,6 @@
   {
    "en": "Optical Simulation Options",
    "ru": "Параметры оптического моделирования"
-  },
-  {
-   "en": "Demonstration Mode",
-   "ru": "Демонстрационн"
-  },
-  {
-   "en": "Edit Mode",
-   "ru": "правки"
-  },
-  {
-   "en": "Virtual Observatory",
-   "ru": "виртуальн"
   },
   {
    "en": "Test Mode",
@@ -792,7 +840,10 @@
   {
    "en": "Options",
    "ru": "Параметры",
-   "exact": true
+   "exact": true,
+   "except": {
+    "original:Options": "the options dialog's group box beside «Параметры» (Parameters) is «Режимы», so the two siblings differ"
+   }
   },
   {
    "en": "Parameters",
@@ -876,7 +927,7 @@
   },
   {
    "en": "Websites",
-   "ru": "Сайты",
+   "ru": "Веб-сайты",
    "exact": true
   },
   {
@@ -934,24 +985,8 @@
    "ru": "Переменные звёзды"
   },
   {
-   "en": "QSO List",
-   "ru": "Список QSO"
-  },
-  {
-   "en": "CCD Camera",
-   "ru": "ПЗС-камера"
-  },
-  {
-   "en": "IR Camera",
-   "ru": "ИК-камера"
-  },
-  {
    "en": "Request Time",
    "ru": "Запросить время"
-  },
-  {
-   "en": "Set Date/Time",
-   "ru": "Задать дату и время"
   },
   {
    "en": "Site Parameters",
@@ -979,23 +1014,19 @@
   },
   {
    "en": "Limit Slewing",
-   "ru": "Ограничить наведение"
+   "ru": "Ограничивать наведение"
   },
   {
    "en": "Show Object ID",
-   "ru": "Показать идентификатор объекта"
+   "ru": "Показывать идентификатор объекта"
   },
   {
    "en": "Show Object Mag",
-   "ru": "Показать зв. величину объекта"
+   "ru": "Показывать зв. величину объекта"
   },
   {
    "en": "Fast Slewing",
    "ru": "Быстрое наведение"
-  },
-  {
-   "en": "Fast Scope Change",
-   "ru": "Быстрая смена телескопа"
   },
   {
    "en": "Sound Effects",
@@ -1023,7 +1054,7 @@
   },
   {
    "en": "Compute Rdshft Vel.",
-   "ru": "Вычислить скорость по красному смещению"
+   "ru": "Вычислять скорость по красному смещению"
   },
   {
    "en": "Allow User Change",
@@ -1035,7 +1066,7 @@
   },
   {
    "en": "Detect Sky",
-   "ru": "Определить небо"
+   "ru": "Определять фон неба"
   },
   {
    "en": "Catalog Object",
@@ -1044,10 +1075,6 @@
   {
    "en": "Field Size",
    "ru": "Размер поля"
-  },
-  {
-   "en": "Multi-Channel Spectrometer",
-   "ru": "Многоканальный спектрометр"
   },
   {
    "en": "Observation List",
@@ -1094,10 +1121,6 @@
    "ru": "Базовая скорость наведения"
   },
   {
-   "en": "Horizon Limit",
-   "ru": "Ограничение по горизонту"
-  },
-  {
    "en": "Finder Field",
    "ru": "Поле искателя"
   },
@@ -1111,15 +1134,11 @@
   },
   {
    "en": "Enter Sky Coordinates for Slew",
-   "ru": "Координаты неба для наведения"
+   "ru": "Введите координаты неба для наведения"
   },
   {
    "en": "Add/Edit Hot List Entry",
    "ru": "Добавить/изменить запись списка объектов"
-  },
-  {
-   "en": "Camera Parameters",
-   "ru": "Параметры камеры"
   },
   {
    "en": "Spectra From Multi-channel Spectrometer",
@@ -1143,7 +1162,7 @@
   },
   {
    "en": "Chip Well Depth",
-   "ru": "Глубина потенциальной ямы"
+   "ru": "Глубина потенциальной ямы чипа"
   },
   {
    "en": "Dark Noise",
@@ -1163,7 +1182,7 @@
   },
   {
    "en": "No More Spectra",
-   "ru": "Больше спектров нет"
+   "ru": "Больше нет спектров"
   },
   {
    "en": "Spectral Line Table",
@@ -1171,7 +1190,7 @@
   },
   {
    "en": "Program List",
-   "ru": "Список программ"
+   "ru": "Список программы"
   },
   {
    "en": "Pulsar guide",
@@ -1191,7 +1210,7 @@
   },
   {
    "en": "Radio Simulation Options",
-   "ru": "Параметры радиосимуляции"
+   "ru": "Параметры радиомоделирования"
   },
   {
    "en": "Pulsar Parameters",
@@ -1223,7 +1242,7 @@
   },
   {
    "en": "Identify Recorded Object",
-   "ru": "Определить записанный объект"
+   "ru": "Отождествить записанный объект"
   },
   {
    "en": "Add Channel",
@@ -1282,10 +1301,6 @@
    "ru": "Закрыть Multi-Spec"
   },
   {
-   "en": "Measured Redshift Data",
-   "ru": "Измеренные данные о красном смещении"
-  },
-  {
    "en": "Record Z",
    "ru": "Записать z"
   },
@@ -1331,7 +1346,7 @@
   },
   {
    "en": "Select Cluster Data",
-   "ru": "Выбрать данные о скоплении"
+   "ru": "Выбрать данные скоплений"
   },
   {
    "en": "Possible Cluster Member",
@@ -1343,7 +1358,7 @@
   },
   {
    "en": "Variable Star Data",
-   "ru": "Данные переменной звезды"
+   "ru": "Данные о переменной звезде"
   },
   {
    "en": "Simulated Light Curve",
@@ -1351,7 +1366,7 @@
   },
   {
    "en": "Remove from HR Diagram",
-   "ru": "Убрать с диаграммы Г — Р"
+   "ru": "Убрать с диаграммы Г — Р"
   },
   {
    "en": "Recorded Results",
@@ -1359,11 +1374,11 @@
   },
   {
    "en": "Telescope has Moved!",
-   "ru": "Телескоп сместился!"
+   "ru": "Телескоп сдвинулся!"
   },
   {
    "en": "Reading Sky!",
-   "ru": "Считывание неба!"
+   "ru": "Показание неба!"
   },
   {
    "en": "Radio clock scenario",
@@ -1440,19 +1455,11 @@
   },
   {
    "en": "Save All",
-   "ru": "Сохранить всё"
+   "ru": "Сохранить все"
   },
   {
    "en": "Clear All",
-   "ru": "Очистить всё"
-  },
-  {
-   "en": "Telescope Display",
-   "ru": "Дисплей телескопа"
-  },
-  {
-   "en": "Master Receiver",
-   "ru": "Главный приёмник"
+   "ru": "Очистить все"
   },
   {
    "en": "Case Dependent",
@@ -1470,10 +1477,6 @@
    "en": "Optical",
    "ru": "Оптическ",
    "exact": true
-  },
-  {
-   "en": "Spectral Line Help",
-   "ru": "Справка по спектральным линиям"
   },
   {
    "en": "Original hot lists",
