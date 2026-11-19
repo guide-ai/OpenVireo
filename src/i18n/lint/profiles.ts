@@ -69,6 +69,16 @@ function hindiRegister(setting:Registers['hi']):Pattern[]{
   ?[{label:'तुम/तू pronoun',pattern:words(tum,'letters-marks'),use:'address the student as आप'},{label:'तुम imperative',pattern:words(tumImperatives,'letters-marks'),use:'use the आप form (-इए, -एँ)'},{label:'तुम imperative in -ाओ',pattern:aoWord,use:'use the आप form (-इए, -एँ)'}]
   :[{label:'आप pronoun',pattern:words(aap,'letters-marks'),use:'address the student as तुम'},{label:'आप imperative',pattern:words(aapImperatives,'letters-marks'),use:'use the तुम form (-ओ)'}];
 }
+/** Front HI0 (plan front-i18n-hi.md §4.2, §4.4): English loanwords that take a nukta in ज़ or फ़ (Microsoft's Hindi guide), written
+ * without it. Stems (`*`) take inflections; none is a native Hindi word (फल, फिर, फूल, जो, जब keep plain फ and ज). */
+const HI_BARE_NUKTA=['फाइल*','ब्राउजर*','जूम*','फिल्टर*','फोटो*','फॉर्म*','फॉन्ट*','फील्ड*','फोल्डर*','फ्रेम*','फीचर*','फोन*','एक्सपोजर*','जीरो*','साइज*','डिफॉल्ट*','रिफ्रेश*','ऑफलाइन*','ऑफ','टर्न-ऑफ','इंटरफेस*','कॉन्फिगरेशन*','प्रोफाइल*','ओवरफ्लो*','फाइंडर*'];
+/** Pañcamākṣara where the Directorate's standard writes the anusvara (संबंध, संख्या, संपादित, संपर्क, संभव), and «हिंदी» (the UI writes
+ * the language's own name one way, «हिन्दी», as CLDR and the registry do). */
+const HI_SPELLING=['सम्बन्ध*','सम्बंध*','सङ्ख्या*','सम्पादित*','सम्पर्क*','सम्भव*','सम्पूर्ण*','अन्तर*','हिंदी'];
+/** Formal words the Microsoft Hindi guide replaces with plain ones (plan §3). */
+const HI_FORMAL=['चयन करें','चयन कीजिए','परिवर्तित करें','पुनः प्रयास करें','पुनः प्रयास','अतः','अत:'];
+/** UI verbs left in English outside a bracketed VIREO gloss or “ ” quotes. */
+const HI_ENGLISH=['click','save','open','cancel','close','select','delete','reload','download','restore'];
 function russianRegister(setting:Registers['ru']):Pattern[]{
  const ty=['ты','тебя','тебе','тобой','тобою','твой','твоя','твоё','твое','твои','твоего','твоей','твоему','твоим','твоими','твоих','твою','твоём','твоем'];
  // Singular imperatives of the verbs this interface uses; the вы form adds -те (поверни → поверните).
@@ -401,6 +411,13 @@ export function profileFor(id:ProfileId,registers:Registers=REGISTER):LocaleProf
     {label:'full stop after Devanagari',pattern:/(?<=\p{sc=Deva})(?<!(?:^|[^\p{L}\p{M}])(?:डॉ|प्रो|श्री|सं|पृ|क्र|मि))\.(?=[\s"”»)]|$)/u,use:'end the sentence with ।'},
     {label:'vertical bar as a danda',pattern:/(?<=\p{sc=Deva}[ \u00a0]?)\|/u,use:'use ।'},
     {label:'space before ।',pattern:/[ \u00a0]+।/u,use:'write । after the last word'},
+    // Front HI0 (plan §4.2, §4.4): Western , ; : ? ! with no space before them (Microsoft's Hindi guide).
+    {label:'space before punctuation',pattern:/(?<=\p{sc=Deva})[ \u00a0]+[,;:?!](?=\s|$)/u,use:'write , ; : ? ! after the last word'},
+    {label:'loanword without its nukta',pattern:words(HI_BARE_NUKTA,'letters-marks'),use:'ज़ and फ़ in English loanwords (फ़ाइल, ब्राउज़र, ज़ूम, फ़िल्टर, फ़ोटो)'},
+    {label:'nukta on क ख ग',pattern:/[क-ग]\u093c|[\u0958-\u095a]/u,use:'only ज़ and फ़ take a nukta (Microsoft Hindi guide)'},
+    {label:'spelling',pattern:words(HI_SPELLING,'letters-marks'),use:'the anusvara (संबंध, संख्या, संपादित, संपर्क, संभव, संपूर्ण, अंतर) and the language name «हिन्दी»'},
+    {label:'formal word',pattern:words(HI_FORMAL,'letters-marks'),use:'the plain word (चुनें, बदलें, फिर से कोशिश करें, इसलिए)'},
+    {label:'English word',pattern:outsideGlosses(words(HI_ENGLISH,'letters')),use:'translate it (a VIREO English name goes in brackets after its Hindi)'},
    ],
    register:{setting:registers.hi,patterns:hindiRegister(registers.hi)},
    // गैर-आधिकारिक (unofficial) and a denial with नहीं pass.

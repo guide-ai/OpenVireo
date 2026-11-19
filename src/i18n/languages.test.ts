@@ -55,9 +55,9 @@ describe('Front SC8: the language registry (src/i18n/languages.json)',()=>{
  });
  it('Spanish is released and keeps its ES-REL behaviour: es and es-* (any case), <html lang> es-419, Español in the selector',()=>{
   // Front PT0 registered Brazilian Portuguese before its release (a ?lang=pt-BR preview only); Front PT-REL released it. Front FR0
-  // registered French before its release; Front FR-REL released it. Front ID0 registered Indonesian before its release, and
+  // registered French before its release; Front FR-REL released it. Front ID0 registered Indonesian before its release, Front HI0 Hindi, and
   // Front JA0 Japanese.
-  expect(LANGUAGES.map(l=>[l.tag,l.released])).toEqual([['es-419',true],['pt-BR',true],['fr',true],['id',false],['ja',false]]);
+  expect(LANGUAGES.map(l=>[l.tag,l.released])).toEqual([['es-419',true],['pt-BR',true],['fr',true],['id',false],['hi',false],['ja',false]]);
   for(const tag of ['es','es-MX','es-ES','ES-ar','es-419','es-Latn-MX'])expect(matchLanguage(tag)?.tag,tag).toBe('es-419');
   for(const tag of ['','en','en-US','esp','eus','et','ca-ES'])expect(matchLanguage(tag),tag).toBeUndefined();
   // Front FR0: fr-ES is French spoken in Spain, so it asks for French (released since FR-REL).
@@ -66,13 +66,16 @@ describe('Front SC8: the language registry (src/i18n/languages.json)',()=>{
   expect(selectorLanguages('en').map(optionLabel)).toEqual(['English','Español','Português (Brasil)','Français']);expect(SOURCE_LANGUAGE.tag).toBe('en');
   expect(failureNotice('language','es-419')).toEqual({en:'Spanish could not be loaded; English is shown. Reload to try again.',own:'No se pudo cargar el español; se muestra en inglés. Recarga para intentarlo de nuevo.',lang:'es-419'});
   expect(failureNotice('area','es-419')).toEqual({en:'Part of the Spanish text could not be loaded; that part is shown in English. Reload to try again.',own:'No se pudo cargar parte del texto en español; esa parte se muestra en inglés. Recarga para intentarlo de nuevo.',lang:'es-419'});
-  expect(failureNotice('language','hi')).toBeUndefined();
   // Front ID0: Indonesian's notices (plan §2), and `in` (the withdrawn ISO 639 code) asks for it; Malay does not.
   expect(failureNotice('language','id')).toEqual({en:'Indonesian could not be loaded; English is shown. Reload to try again.',own:'Bahasa Indonesia tidak dapat dimuat; situs ditampilkan dalam bahasa Inggris. Muat ulang untuk mencoba lagi.',lang:'id'});
   expect(failureNotice('area','id')?.own).toBe('Sebagian teks bahasa Indonesia tidak dapat dimuat; bagian itu ditampilkan dalam bahasa Inggris. Muat ulang untuk mencoba lagi.');
   for(const tag of ['id','id-ID','ID-id','in','in-ID'])expect(matchLanguage(tag)?.tag,tag).toBe('id');
   for(const tag of ['ms','ms-MY','ms-ID','zsm','jv','su','en-ID','ind'])expect(matchLanguage(tag),tag).toBeUndefined();
   expect(isReleased('id')).toBe(false);
+  // Front HI0: Hindi is registered before its release, with its own notices and the selector label «हिन्दी (Hindi)».
+  expect(failureNotice('language','hi')).toEqual({en:'Hindi could not be loaded; English is shown. Reload to try again.',own:'हिन्दी लोड नहीं हो सकी; साइट अंग्रेज़ी में दिखाई जा रही है। फिर से कोशिश करने के लिए पेज को दोबारा लोड करें।',lang:'hi'});
+  expect(isReleased('hi')).toBe(false);expect(optionLabel(LANGUAGES.find(l=>l.tag==='hi')!)).toBe('हिन्दी (Hindi)');
+  expect(selectorLanguages('hi').map(optionLabel)).toEqual(['English','Español','Português (Brasil)','Français','हिन्दी (Hindi)']);
   // Front JA0: Japanese's notices (plan front-i18n-ja.md §2).
   expect(failureNotice('language','ja')).toEqual({en:'Japanese could not be loaded; English is shown. Reload to try again.',own:'日本語を読み込めなかったため、英語で表示しています。再読み込みしてもう一度お試しください。',lang:'ja'});
   expect(matchLanguage('ja-JP')?.tag).toBe('ja');expect(isReleased('ja')).toBe(false);
@@ -86,7 +89,7 @@ describe('Front SC8: detection for the languages to come (scripts plan §7, pt-B
   ['es','es-419'],['es-MX','es-419'],['pt','pt-BR'],['pt-BR','pt-BR'],['pt-br','pt-BR'],['pt-PT','pt-BR'],['pt-AO','pt-BR'],['gl',undefined],
   ['fr','fr'],['fr-CA','fr'],['id','id'],['id-ID','id'],['ms',undefined],
   // Front ID0 (plan front-i18n-id.md §2): the legacy code `in` opens Indonesian; Malay, Javanese, Sundanese and en-ID stay English.
-  ['in','id'],['in-ID','id'],['ID-id','id'],['ms-MY',undefined],['ms-ID',undefined],['zsm',undefined],['jv',undefined],['su',undefined],['en-ID',undefined],['hi','hi'],['hi-IN','hi'],['en-IN',undefined],['ja','ja'],['ja-JP','ja'],['JA-jp','ja'],['ja-JP-u-ca-japanese','ja'],['ryu',undefined],['en-JP',undefined],
+  ['in','id'],['in-ID','id'],['ID-id','id'],['ms-MY',undefined],['ms-ID',undefined],['zsm',undefined],['jv',undefined],['su',undefined],['en-ID',undefined],['hi','hi'],['hi-IN','hi'],['HI-in','hi'],['hi-Latn','hi'],['en-IN',undefined],['ur',undefined],['ur-IN',undefined],['mr',undefined],['ne',undefined],['bho',undefined],['ja','ja'],['ja-JP','ja'],['JA-jp','ja'],['ja-JP-u-ca-japanese','ja'],['ryu',undefined],['en-JP',undefined],
   ['ru','ru'],['ru-RU','ru'],['uk',undefined],['be',undefined],['kk',undefined],
   ['zh-Hans','zh-Hans'],['zh-Hans-CN','zh-Hans'],['zh-Hans-TW','zh-Hans'],['zh-CN','zh-Hans'],['zh-SG','zh-Hans'],['zh-MY','zh-Hans'],['zh','zh-Hans'],['ZH-cn','zh-Hans'],
   // Traditional Chinese while zh-Hant does not exist: English (decision Q5), never Simplified automatically.

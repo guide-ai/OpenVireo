@@ -32,7 +32,7 @@ describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-0
  it('accepts the pseudo-locale only in the dev server and tests, never from storage',()=>{
   expect(decide({param:'qps'})).toBe('en');expect(decide({param:'qps',dev:true,registry:UNRELEASED})).toBe('qps');
   expect(decide({stored:'qps',dev:true})).toBe('en');
-  expect(HTML_LANG).toEqual({en:'en','es-419':'es-419','pt-BR':'pt-BR',fr:'fr',id:'id',ja:'ja',qps:'en','qps-cjk':'ja','qps-deva':'hi','qps-cyrl':'ru','qps-rtl':'ar'});
+  expect(HTML_LANG).toEqual({en:'en','es-419':'es-419','pt-BR':'pt-BR',fr:'fr',id:'id',hi:'hi',ja:'ja',qps:'en','qps-cjk':'ja','qps-deva':'hi','qps-cyrl':'ru','qps-rtl':'ar'});
  });
  it('shows the selector when it offers a choice: before a release only on that language\'s own preview (ES1 review 1, C3; SC8)',()=>{
   expect(selectorShown('en',UNRELEASED)).toBe(false);expect(selectorShown('es-419',UNRELEASED)).toBe(true);
@@ -89,6 +89,19 @@ describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-0
   for(const languages of [['id'],['id-ID'],['ID-id'],['in'],['in-ID']])expect(decide({languages,registry:after}),languages.join(',')).toBe('id');
   for(const languages of [['ms'],['ms-MY'],['ms-ID'],['zsm'],['jv'],['jv-ID'],['su'],['en-ID'],['en-US','id-ID']])expect(decide({languages,registry:after}),languages.join(',')).toBe('en');
   expect(decide({languages:['id-ID','pt-BR'],registry:after})).toBe('id');expect(decide({stored:'id',languages:['en-US'],registry:after})).toBe('id');
+ });
+ it('Front HI0: Hindi is registered before its release: only ?lang=hi opens it; hi and hi-* browsers and a stored hi stay English',()=>{
+  expect(isReleased('hi')).toBe(false);expect(HTML_LANG.hi).toBe('hi');
+  expect(decide({param:'hi'})).toBe('hi');expect(decide({param:'hi',languages:['hi-IN']})).toBe('hi');
+  for(const languages of [['hi'],['hi-IN'],['HI-in'],['hi-Latn'],['en-IN'],['ur-IN'],['mr'],['ne']])expect(decide({languages}),languages.join(',')).toBe('en');
+  expect(decide({stored:'hi',languages:['hi-IN']})).toBe('en');
+  for(const junk of ['HI','hi-IN','hi-in'])expect(decide({param:junk}),junk).toBe('en');
+  expect(selectorShown('hi')).toBe(true);
+  // After HI-REL every hi and hi-* browser opens it; en-IN, Urdu, Marathi and Nepali stay English (plan §2).
+  const after=releasing(LANGUAGES,'hi');
+  for(const languages of [['hi'],['hi-IN'],['HI-in'],['hi-Latn']])expect(decide({languages,registry:after}),languages.join(',')).toBe('hi');
+  for(const languages of [['en-IN'],['ur-IN'],['mr'],['ne'],['en-IN','hi-IN']])expect(decide({languages,registry:after}),languages.join(',')).toBe('en');
+  expect(decide({stored:'hi',languages:['en-US'],registry:after})).toBe('hi');
  });
  it('Front JA0: Japanese is registered before its release: only ?lang=ja opens it; ja, ja-JP and JA-jp browsers and a stored ja get English',()=>{
   expect(isReleased('ja')).toBe(false);

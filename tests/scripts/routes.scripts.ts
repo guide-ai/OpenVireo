@@ -135,7 +135,8 @@ for(const variant of VARIANTS)for(const width of [320,1440] as const)
 // The pseudo-locales above stress every route; a real translation is checked here over the areas it has translated (its `done` in
 // tests/i18n/languageText.ts), at 320 and 1440 px, with the same layoutProblems() and verticalInkProblems(): the shell is the home
 // page, the observatory page, the header menu, the tour and the instructor-mode confirmation. Each later front adds its area's steps.
-const SCRIPT_TRANSLATIONS=translatedFor('shell').filter(L=>/^(?:ja|zh|hi|ru)/.test(L.tag));
+// Hindi has its own walk (tests/scripts/hindi.scripts.ts, Front HI0), so it is not repeated here.
+const SCRIPT_TRANSLATIONS=translatedFor('shell').filter(L=>/^(?:ja|zh|ru)/.test(L.tag));
 for(const L of SCRIPT_TRANSLATIONS)for(const width of [320,1440] as const)
  test(`${L.tag} (${L.entry.englishName}) at ${width} px: the shell lays out without overflow, clipping or cut ink`,async({page})=>{
   test.setTimeout(180_000);

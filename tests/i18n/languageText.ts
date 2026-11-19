@@ -63,6 +63,16 @@ import {LANGUAGE_CHOICE_ID} from '../../src/i18n/id/maps/languageChoice';
 import {OBJECT_X_LAB_ID} from '../../src/i18n/id/maps/objectXLab';
 import {POLISH_ID} from '../../src/i18n/id/maps/polish';
 import {VARIABLE_STARS_ID} from '../../src/i18n/id/maps/variableStars';
+import hi from '../../src/i18n/hi/hi.json' with {type:'json'};
+import hiOriginals from '../../src/i18n/hi/originals.json' with {type:'json'};
+import {APP_SHELL_HI} from '../../src/i18n/hi/maps/appShell';
+import {HELP_MENU_HI} from '../../src/i18n/hi/maps/helpMenu';
+import {PROJECT_LINKS_HI} from '../../src/i18n/hi/maps/projectLinks';
+import {TOUR_HI} from '../../src/i18n/hi/maps/tour';
+import {LANGUAGE_CHOICE_HI} from '../../src/i18n/hi/maps/languageChoice';
+import {OBJECT_X_LAB_HI} from '../../src/i18n/hi/maps/objectXLab';
+import {POLISH_HI} from '../../src/i18n/hi/maps/polish';
+import {VARIABLE_STARS_HI} from '../../src/i18n/hi/maps/variableStars';
 import ja from '../../src/i18n/ja/ja.json' with {type:'json'};
 import jaOriginals from '../../src/i18n/ja/originals.json' with {type:'json'};
 import {APP_SHELL_JA} from '../../src/i18n/ja/maps/appShell';
@@ -136,13 +146,18 @@ export const FRENCH_TEXT=language('fr',fr,frOriginals,{appShell:APP_SHELL_FR,hel
  * thousands separator its text uses. */
 export const INDONESIAN_TEXT=language('id',idCatalog,idOriginals,{appShell:APP_SHELL_ID,helpMenu:HELP_MENU_ID,projectLinks:PROJECT_LINKS_ID,tour:TOUR_ID,languageChoice:LANGUAGE_CHOICE_ID},
  [APP_SHELL_ID,HELP_MENU_ID,LANGUAGE_CHOICE_ID,OBJECT_X_LAB_ID,POLISH_ID,PROJECT_LINKS_ID,TOUR_ID,VARIABLE_STARS_ID],/(?<!\p{L})(?:yang|dan|untuk|dengan|tidak|Anda|dari|pada|ini|atau)(?!\p{L})|[“”\u202f]/u,'?lang=id',['shell']);
+/** Front HI0: Hindi, behind `?lang=hi` before its release (an en-US browser with the preview query). HI0 translated the shell, so
+ * only the shell's specs run it; each HI front adds its area. Its letters are Devanagari (the danda । included), which English text
+ * never has; “ ” are not among them, since English uses them too. */
+export const HINDI_TEXT=language('hi',hi,hiOriginals,{appShell:APP_SHELL_HI,helpMenu:HELP_MENU_HI,projectLinks:PROJECT_LINKS_HI,tour:TOUR_HI,languageChoice:LANGUAGE_CHOICE_HI},
+ [APP_SHELL_HI,HELP_MENU_HI,LANGUAGE_CHOICE_HI,OBJECT_X_LAB_HI,POLISH_HI,PROJECT_LINKS_HI,TOUR_HI,VARIABLE_STARS_HI],/[\u0900-\u097f]/u,'?lang=hi',['shell']);
 /** Front JA0 (plan front-i18n-ja.md §1.2 #3): Japanese, behind `?lang=ja` before its release; JA0 translated the shell, and each
  * later JA front adds its area to `done`. Its letters are kana, ー and 「」, which no English text, VIREO file or export has (Han alone
  * is not used: kana are the unambiguous Japanese signal). Its observatory maps grow with JA1. */
 export const JAPANESE_TEXT=language('ja',ja,jaOriginals,{appShell:APP_SHELL_JA,helpMenu:HELP_MENU_JA,projectLinks:PROJECT_LINKS_JA,tour:TOUR_JA,languageChoice:LANGUAGE_CHOICE_JA},
  [APP_SHELL_JA,HELP_MENU_JA,LANGUAGE_CHOICE_JA,OBJECT_X_LAB_JA,POLISH_JA,PROJECT_LINKS_JA,TOUR_JA,VARIABLE_STARS_JA],/[\p{sc=Hira}\p{sc=Kana}ー「」]/u,'?lang=ja',['shell']);
 /** Every translated language of the registry, in its order (a test fails if a registered language has no text here). */
-export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT,INDONESIAN_TEXT,JAPANESE_TEXT]);
+export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT,INDONESIAN_TEXT,HINDI_TEXT,JAPANESE_TEXT]);
 /** Front FR0: the languages that run the specs of `area` (those whose `done` has it), in registry order. */
 export const translatedFor=(area:Area):readonly LanguageText[]=>TRANSLATED.filter(l=>l.done.has(area));
 export const textOf=(tag:string):LanguageText=>{const t=TRANSLATED.find(l=>l.tag===tag);if(!t)throw new Error(`No test text for ${tag}`);return t;};

@@ -3,7 +3,7 @@ import {test,expect} from '../fixtures/area-tripwire';
 import {FRENCH_LOCALE,PORTUGUESE_LOCALE,SPANISH_LOCALE} from '../fixtures/language';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
-import {FRENCH_TEXT,INDONESIAN_TEXT,JAPANESE_TEXT,PORTUGUESE_TEXT} from './languageText';
+import {FRENCH_TEXT,HINDI_TEXT,INDONESIAN_TEXT,JAPANESE_TEXT,PORTUGUESE_TEXT} from './languageText';
 
 // Front ES1 (docs/I18N.md; user decisions 1, 2, 5 and 9 of 2026-11-09): the English / Español selector at the foot of the header
 // menu, its reload confirmation, storage failure and the "View original (English)" option. Front ES-REL: Spanish is released, so
@@ -345,6 +345,38 @@ test.describe('in a Spanish browser',()=>{
   await expect(page.locator('.investigation-toolbar')).toContainText(es['project.save']);
   await id(page,'language-originals').uncheck();await page.reload();await expect(id(page,'main-help-menu')).toContainText('Ayuda',{timeout:15_000});
  });
+});
+
+// Front HI0 (plan front-i18n-hi.md §2): Hindi is registered before its release. Only its `?lang=hi` preview reaches it and offers
+// it («हिन्दी (Hindi)», in its own lang); hi, hi-IN, HI-in and en-IN browsers and a stored hi get English with the released four
+// only, and an English load never requests a Hindi module or file.
+test('Front HI0: only a ?lang=hi preview opens and offers हिन्दी (Hindi); hi, hi-IN, HI-in and en-IN browsers and a stored hi get English',async({browser})=>{
+ test.setTimeout(180_000);
+ const H=HINDI_TEXT;expect(H.entry.released,'HI-REL replaces this test').toBe(false);
+ const hindiRequests:string[]=[];
+ const watchHindi=(page:Page)=>page.on('request',r=>{const u=decodeURIComponent(r.url());if(/\/src\/i18n\/hi\/|openvireo-i18n\/i18n-hi-/.test(u))hindiRequests.push(u);});
+ for(const languages of [['hi'],['hi-IN'],['HI-in'],['en-IN','hi-IN']] as const){
+  const page=await browserIn(browser,languages);watchHindi(page);
+  expect(await languageOf(page),languages.join(',')).toBe('en');
+  await expect(id(page,'language-select').locator('option')).toHaveText(FOUR);
+  await page.close();
+ }
+ const storedHi=await browserIn(browser,['hi-IN']);watchHindi(storedHi);await seedChoice(storedHi,'hi');
+ expect(await languageOf(storedHi)).toBe('en');await storedHi.close();
+ expect(hindiRequests,'an English load fetches nothing of Hindi').toEqual([]);
+ const page=await browserIn(browser,['en-US']);
+ expect(await languageOf(page,'?lang=hi')).toBe('hi');
+ await expect(page.locator('.investigation-toolbar')).toContainText(H.catalog['project.save']);await expect(page).toHaveTitle(H.catalog['app.documentTitle']);
+ const select=page.getByRole('combobox',{name:H.maps.languageChoice.legend});
+ await expect(select.locator('option')).toHaveText([...FOUR,'हिन्दी (Hindi)']);await expect(select).toHaveValue('hi');
+ expect(await select.locator('option').evaluateAll(o=>o.map(x=>[(x as HTMLOptionElement).value,x.getAttribute('lang')]))).toEqual([['en','en'],['es-419','es-419'],['pt-BR','pt-BR'],['fr','fr'],['hi','hi']]);
+ // A change on the preview stores nothing (SC8): the choice travels as ?lang=, and the dialog, in Hindi, says so.
+ await choose(page,'fr');
+ const dialog=id(page,'language-confirm');await expect(dialog).toContainText(H.maps.languageChoice.title);
+ await expect(dialog).toContainText(H.maps.languageChoice.reload('Français'));await expect(id(page,'language-preview')).toHaveText(H.maps.languageChoice.preview);
+ await Promise.all([page.waitForURL(/lang=fr/),id(page,'language-change').click()]);
+ await expect(page.locator('html')).toHaveAttribute('lang','fr');expect(await stored(page)).toBeNull();
+ await page.close();
 });
 
 // Front JA0 (plan front-i18n-ja.md §2): Japanese is registered before its release. Only its `?lang=ja` preview reaches it and offers

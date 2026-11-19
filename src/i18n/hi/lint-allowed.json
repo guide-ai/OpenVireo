@@ -1,0 +1,11 @@
+{
+ "about": "Front HI0: findings of the hi lint (src/i18n/lint/, profile hi) that are correct Hindi in one string, each with a reason. Keys are the lint's string ids; `words` are the matched words allowed in that string only, `rules` whole rules, `placeholders` added placeholders.",
+ "entries": {
+  "map:tour.steps.help.text": {
+   "words": [
+    " ?"
+   ],
+   "reason": "«? कुंजी»: ? is the name of the key to press, not punctuation"
+  }
+ }
+}

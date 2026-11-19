@@ -14,6 +14,8 @@ const PORTUGUESE=LANGUAGES.find(l=>l.tag==='pt-BR')!;
 const FRENCH=LANGUAGES.find(l=>l.tag==='fr')!;
 /** Front ID0: Indonesian's own line of the production registry (before its release; `in`, the withdrawn ISO 639 code, too). */
 const INDONESIAN=LANGUAGES.find(l=>l.tag==='id')!;
+/** Front HI0: Hindi's own line of the production registry (before its release). */
+const HINDI=LANGUAGES.find(l=>l.tag==='hi')!;
 /** Front JA0: Japanese's own line of the production registry (before its release). */
 const JAPANESE=LANGUAGES.find(l=>l.tag==='ja')!;
 const TRADITIONAL=['zh-Hant','zh-TW','zh-HK','zh-MO'];
@@ -24,7 +26,7 @@ export const PLANNED:readonly LanguageEntry[]=Object.freeze([
  PORTUGUESE,
  FRENCH,
  INDONESIAN,
- entry('hi','हिन्दी','Hindi',['hi']),
+ HINDI,
  JAPANESE,
  entry('zh-Hans','简体中文','Chinese, Simplified',['zh-Hans','zh-CN','zh-SG','zh-MY','zh'],TRADITIONAL),
  entry('ru','Русский','Russian',['ru']),

@@ -106,7 +106,7 @@ describe('Front PT0: the Brazilian Portuguese (pt-BR) bundle',()=>{
  it('the catalog is a valid partial catalog (en.json keys, the same {params}) and covers the whole shell',()=>{
   expect(()=>createI18n(pt as Partial<Record<MessageKey,string>>,'pt-BR',{fallback:true})).not.toThrow();
   for(const key of Object.keys(pt))expect(Object.hasOwn(en,key),key).toBe(true);
-  expect(SHELL_KEYS.length).toBe(130);
+  expect(SHELL_KEYS.length).toBe(131); // 131 since Front HI0 (app.digitNotice, the digit notice)
   expect(SHELL_KEYS.filter(k=>!Object.hasOwn(pt,k))).toEqual([]);
  });
  it('Front PT1: the catalog covers the observatory (every key of its instruments\' prefixes)',()=>{

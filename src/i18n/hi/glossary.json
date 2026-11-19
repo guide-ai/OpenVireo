@@ -1,0 +1,1571 @@
+{
+ "about": "Front HI0: the hi glossary (plan analysis/front-plans/front-i18n-hi.md §5) that src/i18n/hi/hi.test.ts enforces through the SC4 lint framework (src/i18n/lint/, profile hi) on every Hindi string. Seeded from the French glossary: the same English patterns and interface names, re-targeted to Hindi from the English by Sonnet batches and corrected by the HI0 implementer. A term applies when its English pattern matches the English source: the Hindi must then match the `hi` stem or pattern (case-insensitive, Unicode). Names are fixed interface names (an exact name applies only to a whole string); the Hindi must contain the `hi` text. Forbidden are the term forms this glossary rejects (टेलीस्कोप, चयन करें, मंदाकिनी and गैलेक्सी for galaxy, लाल विचलन for redshift, हबल स्थिरांक, तरंगदैर्ध्य, अनधिकृत and अनौपचारिक for unofficial, प्लीएडीज़); the language-wide rules (the danda and other typography, the आप register and the तुम forms it rejects, nukta loanwords, spelling, formal words, claims that a translation is CLEA's or official) live in the hi profile of src/i18n/lint/profiles.ts. Sources: Hindi Wikipedia (आकाशगंगा in हबल का नियम for galaxies, अभिरक्त विस्थापन, हबल नियतांक, कृत्तिका तारागुच्छ, read 2026-11-19), NCERT usage and the Microsoft Hindi style guide; no IAU OAE or current CSTT astronomy list was available, so terms are usage, not a standard. VIREO's names follow the plan's decided forms (Save सहेजें, Record दर्ज करें, Find ढूँढें, Search खोजें, Show दिखाएँ, Display प्रदर्शन, Slew घुमाएँ, Init/Go तैयार करें/शुरू करें, Scan क्रम से देखें, Clear साफ़ करें, Reset रीसेट करें, Hot List वस्तु सूची, lab प्रयोग). Rows for areas still in English wait for their sub-front (HI1–HI6) to be checked against their screens.",
+ "terms": [
+  {
+   "en": "\\bobservator(y|ies)\\b",
+   "hi": "वेधशाला"
+  },
+  {
+   "en": "\\btelescopes?\\b",
+   "hi": "दूरबीन"
+  },
+  {
+   "en": "\\bdomes?\\b",
+   "hi": "गुंबद"
+  },
+  {
+   "en": "\\bspectr(um|a)\\b",
+   "hi": "स्पेक्ट्रम"
+  },
+  {
+   "en": "\\bspectrometers?\\b",
+   "hi": "स्पेक्ट्रोमीटर"
+  },
+  {
+   "en": "\\bphotometers?\\b",
+   "hi": "फ़ोटोमीटर"
+  },
+  {
+   "en": "\\bphotometry\\b",
+   "hi": "फ़ोटोमेट्री"
+  },
+  {
+   "en": "\\bexposures?\\b",
+   "hi": "एक्सपोज़र"
+  },
+  {
+   "en": "\\bmeasurements?\\b",
+   "hi": "माप"
+  },
+  {
+   "en": "\\binvestigations?\\b",
+   "hi": "जाँच"
+  },
+  {
+   "en": "\\bfiles?\\b",
+   "hi": "फ़ाइल"
+  },
+  {
+   "en": "\\bdownload(s|ed|ing)?\\b",
+   "hi": "डाउनलोड"
+  },
+  {
+   "en": "(?<!daylight-)\\bsav(e|es|ed|ing)\\b",
+   "hi": "सहेज"
+  },
+  {
+   "en": "\\brestor(e|es|ed|ing)\\b",
+   "hi": "पुनर्स्थापित"
+  },
+  {
+   "en": "\\b(re)?load(s|ed|ing)?\\b",
+   "hi": "लोड"
+  },
+  {
+   "en": "\\bbrowsers?\\b",
+   "hi": "ब्राउज़र"
+  },
+  {
+   "en": "(?<!line breaks and |for example a |accented letter, a |Shift\\+)(?<!reachable with )\\btabs?\\b(?!,? (?:line breaks|or other|BOM)| and Shift\\+Tab)",
+   "hi": "टैब"
+  },
+  {
+   "en": "\\bTab and Shift\\+Tab\\b",
+   "hi": "Tab"
+  },
+  {
+   "en": "\\btabs?(?=,? (?:line breaks|or other|BOM))|(?<=line breaks and |for example a |accented letter, a )tabs?\\b",
+   "hi": "टैब"
+  },
+  {
+   "en": "\\bremarks?\\b",
+   "hi": "टिप्पणी"
+  },
+  {
+   "en": "\\bpages?\\b",
+   "hi": "पेज"
+  },
+  {
+   "en": "\\bcomputers?\\b",
+   "hi": "कंप्यूटर"
+  },
+  {
+   "en": "\\bphones?\\b",
+   "hi": "फ़ोन"
+  },
+  {
+   "en": "\\bclick\\b",
+   "hi": "क्लिक"
+  },
+  {
+   "en": "\\bpress\\b",
+   "hi": "दबा"
+  },
+  {
+   "en": "\\bmenus?\\b",
+   "hi": "मेनू"
+  },
+  {
+   "en": "\\bguides?\\b",
+   "hi": "गाइड"
+  },
+  {
+   "en": "\\bexercises?\\b",
+   "hi": "प्रयोग"
+  },
+  {
+   "en": "\\blabs?\\b",
+   "hi": "प्रयोग"
+  },
+  {
+   "en": "\\bredshifts?\\b",
+   "hi": "अभिरक्त विस्थापन"
+  },
+  {
+   "en": "\\bpulsars?\\b",
+   "hi": "पल्सर"
+  },
+  {
+   "en": "\\binstructor mode\\b",
+   "hi": "प्रशिक्षक मोड"
+  },
+  {
+   "en": "\\bhelp\\b",
+   "hi": "सहायता"
+  },
+  {
+   "en": "\\btracking\\b",
+   "hi": "ट्रैकिंग"
+  },
+  {
+   "en": "\\bcatalog(ue)?s?\\b",
+   "hi": "कैटलॉग"
+  },
+  {
+   "en": "\\bgalax(y|ies)\\b",
+   "hi": "आकाशगंगा"
+  },
+  {
+   "en": "\\bstars?\\b",
+   "hi": "तार(ा|े|ों)"
+  },
+  {
+   "en": "\\bclusters?\\b",
+   "hi": "गुच्छ"
+  },
+  {
+   "en": "\\bresults?\\b",
+   "hi": "परिणाम"
+  },
+  {
+   "en": "\\bwavelengths?\\b",
+   "hi": "तरंगदैर्घ्य"
+  },
+  {
+   "en": "\\bpassword\\b",
+   "hi": "पासवर्ड"
+  },
+  {
+   "en": "\\bcounts?\\b(?! shows after the reveal)",
+   "hi": "काउंट|गिनती"
+  },
+  {
+   "en": "\\bslew(s|ed|ing)?\\b",
+   "hi": "घुमा|घूम"
+  },
+  {
+   "en": "\\bhot lists?\\b",
+   "hi": "वस्तु सूच"
+  },
+  {
+   "en": "\\bsky background\\b",
+   "hi": "आकाश पृष्ठभूमि"
+  },
+  {
+   "en": "\\bseeing\\b",
+   "hi": "सीइंग"
+  },
+  {
+   "en": "\\bright ascension\\b",
+   "hi": "विषुवांश"
+  },
+  {
+   "en": "\\bdeclinations?\\b",
+   "hi": "क्रांति"
+  },
+  {
+   "en": "\\bfilters?\\b",
+   "hi": "फ़िल्टर"
+  },
+  {
+   "en": "\\bslits?\\b",
+   "hi": "झिरी"
+  },
+  {
+   "en": "\\blight curves?\\b",
+   "hi": "प्रकाश वक्र"
+  },
+  {
+   "en": "\\bHR diagrams?\\b",
+   "hi": "आरेख"
+  },
+  {
+   "en": "\\bmain sequence\\b",
+   "hi": "मुख्य अनुक्रम"
+  },
+  {
+   "en": "\\bisochrones?\\b",
+   "hi": "समकालिक वक्र"
+  },
+  {
+   "en": "\\bvariable stars?\\b",
+   "hi": "परिवर्ती तार(ा|े|ों)"
+  },
+  {
+   "en": "\\bperiods?\\b",
+   "hi": "आवर्तकाल"
+  },
+  {
+   "en": "\\bdispersion measure\\b",
+   "hi": "परिक्षेपण माप"
+  },
+  {
+   "en": "\\bradio telescopes?\\b",
+   "hi": "रेडियो दूरबीन"
+  },
+  {
+   "en": "\\breceivers?\\b",
+   "hi": "रिसीवर"
+  },
+  {
+   "en": "\\bantennas?\\b",
+   "hi": "[एऐ]ंटीना"
+  },
+  {
+   "en": "\\bquasars?\\b",
+   "hi": "क्वासर"
+  },
+  {
+   "en": "\\basteroids?\\b",
+   "hi": "क्षुद्रग्रह"
+  },
+  {
+   "en": "\\bastrometry\\b",
+   "hi": "खगोलमिति"
+  },
+  {
+   "en": "\\blarge-scale structure\\b",
+   "hi": "बृहत्\\s?पैमाने की संरचना"
+  },
+  {
+   "en": "\\bwedge plots?\\b",
+   "hi": "शंकु आरेख"
+  },
+  {
+   "en": "\\bfield of view\\b",
+   "hi": "दृश्य क्षेत्र"
+  },
+  {
+   "en": "\\bsignal-to-noise\\b",
+   "hi": "सिग्नल.{1,4}शोर"
+  },
+  {
+   "en": "\\bequivalent widths?\\b",
+   "hi": "तुल्य चौड़ाई"
+  },
+  {
+   "en": "\\bcontinuum\\b",
+   "hi": "सातत्य"
+  },
+  {
+   "en": "\\bspectral (type|class)(es)?\\b",
+   "hi": "स्पेक्ट्रमी वर्ग"
+  },
+  {
+   "en": "\\bapparent magnitudes?\\b",
+   "hi": "आभासी कांतिमान"
+  },
+  {
+   "en": "\\babsolute magnitudes?\\b",
+   "hi": "निरपेक्ष कांतिमान"
+  },
+  {
+   "en": "\\bdistance modulus\\b",
+   "hi": "दूरी मापांक"
+  },
+  {
+   "en": "\\breddening\\b",
+   "hi": "लालिमा"
+  },
+  {
+   "en": "\\bcolou?r excess\\b",
+   "hi": "वर्ण आधिक्य"
+  },
+  {
+   "en": "\\bHubble's law\\b",
+   "hi": "हबल का नियम"
+  },
+  {
+   "en": "\\bHubble constant\\b",
+   "hi": "हबल नियतांक"
+  },
+  {
+   "en": "\\brecessional velocit(y|ies)\\b",
+   "hi": "पलायन वेग"
+  },
+  {
+   "en": "\\bfinding charts?\\b",
+   "hi": "खोज मानचित्र"
+  },
+  {
+   "en": "\\bfinder\\b",
+   "hi": "फ़ाइंडर"
+  },
+  {
+   "en": "\\bepochs?\\b",
+   "hi": "युग"
+  },
+  {
+   "en": "\\bintegration\\b",
+   "hi": "इंटीग्रेशन"
+  },
+  {
+   "en": "\\bCCD camera\\b",
+   "hi": "CCD कैमरा"
+  },
+  {
+   "en": "\\bIR camera\\b",
+   "hi": "IR कैमरा"
+  },
+  {
+   "en": "\\bspectral lines?\\b",
+   "hi": "स्पेक्ट्रमी रेखा"
+  },
+  {
+   "en": "\\bemission\\b",
+   "hi": "उत्सर्जन"
+  },
+  {
+   "en": "\\babsorption\\b",
+   "hi": "अवशोषण"
+  },
+  {
+   "en": "\\bopen clusters?\\b",
+   "hi": "खुल(ा|े) तारागुच्छ"
+  },
+  {
+   "en": "\\bglobular clusters?\\b",
+   "hi": "गोलाकार तारागुच्छ"
+  },
+  {
+   "en": "\\bsignal\\b",
+   "hi": "सिग्नल"
+  },
+  {
+   "en": "\\bexercise guide\\b|\\blab guide\\b",
+   "hi": "गाइड"
+  },
+  {
+   "en": "\\bapertures?\\b",
+   "hi": "एपर्चर"
+  },
+  {
+   "en": "\\breadings\\b",
+   "hi": "रीडिंग"
+  },
+  {
+   "en": "\\bseeded\\b",
+   "hi": "सीड"
+  },
+  {
+   "en": "\\bcallbacks?\\b",
+   "hi": "कॉलबैक"
+  },
+  {
+   "en": "\\bzero point\\b",
+   "hi": "शून्य बिंदु"
+  },
+  {
+   "en": "\\bphotons?\\b",
+   "hi": "फ़ोटॉन"
+  },
+  {
+   "en": "\\bcolou?r[–-]magnitude\\b",
+   "hi": "वर्ण[–-]कांतिमान"
+  },
+  {
+   "en": "\\bcluster fit\\b",
+   "hi": "फ़िट"
+  },
+  {
+   "en": "\\bstandards?\\b",
+   "hi": "मानक"
+  },
+  {
+   "en": "\\bshoulders?\\b",
+   "hi": "कंध(ा|े|ों)"
+  },
+  {
+   "en": "\\bgr[ae]yscale\\b",
+   "hi": "ग्रे"
+  },
+  {
+   "en": "\\b(?:observation )?notebook\\b",
+   "hi": "नोटबुक"
+  },
+  {
+   "en": "\\bluminosity\\b",
+   "hi": "ज्योति"
+  },
+  {
+   "en": "\\batlas(es)?\\b",
+   "hi": "एटलस"
+  },
+  {
+   "en": "\\bstandard pairs?\\b",
+   "hi": "मानक जोड़"
+  },
+  {
+   "en": "\\braw\\b",
+   "hi": "कच्च(ा|ी|े)"
+  },
+  {
+   "en": "\\bmerg(e|es|ed|ing)\\b",
+   "hi": "मर्ज"
+  },
+  {
+   "en": "\\bendpoint[- ]grids?\\b",
+   "hi": "ग्रिड"
+  },
+  {
+   "en": "\\bsweeps?\\b",
+   "hi": "स्वीप"
+  },
+  {
+   "en": "\\bbeams?\\b",
+   "hi": "बीम"
+  },
+  {
+   "en": "\\bseeds?\\b",
+   "hi": "सीड"
+  },
+  {
+   "en": "\\btimers?\\b",
+   "hi": "टाइमर"
+  },
+  {
+   "en": "\\baltitude limits?\\b",
+   "hi": "ऊ[ँं]चाई.{0,6}सीमा"
+  },
+  {
+   "en": "(?<!clock[/ ])\\bdrive\\b",
+   "hi": "ड्राइव"
+  },
+  {
+   "en": "\\bblink(s|ed|ing)?\\b",
+   "hi": "ब्लिंक"
+  },
+  {
+   "en": "\\breveal(s|ed|ing)?\\b(?! the catalog sky)",
+   "hi": "प्रकट"
+  },
+  {
+   "en": "\\borbit files?\\b",
+   "hi": "कक्षा"
+  },
+  {
+   "en": "\\blimiting magnitudes?\\b",
+   "hi": "सीमांत कांतिमान"
+  },
+  {
+   "en": "\\breference stars?\\b",
+   "hi": "संदर्भ तार(ा|े|ों)"
+  },
+  {
+   "en": "\\bplate constants\\b",
+   "hi": "प्लेट नियतांक"
+  },
+  {
+   "en": "(?<!All Sky )\\bsurveys?\\b",
+   "hi": "सर्वेक्षण"
+  },
+  {
+   "en": "\\bsnapshots?\\b",
+   "hi": "स्नैपशॉट"
+  },
+  {
+   "en": "\\banaly[sz]ers?\\b",
+   "hi": "विश्लेषक"
+  },
+  {
+   "en": "\\btemplates?\\b",
+   "hi": "टेम्पलेट"
+  },
+  {
+   "en": "\\bjournals?\\b",
+   "hi": "जर्नल"
+  },
+  {
+   "en": "\\b(?:600-)?bins?\\b",
+   "hi": "बिन"
+  },
+  {
+   "en": "\\bcombined view\\b",
+   "hi": "संयुक्त दृश्य"
+  },
+  {
+   "en": "\\bpanes?\\b",
+   "hi": "पैन"
+  },
+  {
+   "en": "\\b(?:sampled|printed-coordinate|printed|intensity|unknown) traces?\\b",
+   "hi": "ट्रेस"
+  },
+  {
+   "en": "\\breadouts?\\b",
+   "hi": "रीडआउट"
+  },
+  {
+   "en": "\\bmetallicit(y|ies)\\b",
+   "hi": "धात्विकता"
+  },
+  {
+   "en": "\\bsliders?\\b",
+   "hi": "स्लाइडर"
+  },
+  {
+   "en": "\\btrials?\\b",
+   "hi": "ट्रायल"
+  },
+  {
+   "en": "\\bpresets?\\b",
+   "hi": "प्रीसेट"
+  },
+  {
+   "en": "\\bapparent modulus\\b",
+   "hi": "आभासी मापांक"
+  },
+  {
+   "en": "\\bfresh sky\\b",
+   "hi": "नया आकाश|नए आकाश"
+  },
+  {
+   "en": "\\bintegration series\\b",
+   "hi": "इंटीग्रेशन"
+  },
+  {
+   "en": "\\bzero[- ]age main sequence\\b",
+   "hi": "शून्य.आयु"
+  },
+  {
+   "en": "\\bturn-?off\\b",
+   "hi": "टर्न[- ]?ऑफ़"
+  },
+  {
+   "en": "\\bmembership\\b",
+   "hi": "सदस्यता"
+  },
+  {
+   "en": "\\bdatasets?\\b",
+   "hi": "डेटासेट"
+  },
+  {
+   "en": "\\bly\\b",
+   "hi": "प्रकाश[- ]वर्ष"
+  },
+  {
+   "en": "\\bcolou?r index\\b",
+   "hi": "वर्ण सूचकांक"
+  },
+  {
+   "en": "\\bauditions?\\b|\\bauditioned\\b",
+   "hi": "सुन"
+  },
+  {
+   "en": "\\bradio clock\\b",
+   "hi": "रेडियो घड़ी"
+  },
+  {
+   "en": "\\bpress[- ]and[- ]hold\\b",
+   "hi": "दबा(ए|कर|ये) रख"
+  },
+  {
+   "en": "\\bslew-timer\\b",
+   "hi": "टाइमर"
+  },
+  {
+   "en": "\\breceiver monitor\\b",
+   "hi": "मॉनिटर"
+  },
+  {
+   "en": "\\bwedge diagrams?\\b",
+   "hi": "शंकु आरेख"
+  },
+  {
+   "en": "\\bpractices?\\b",
+   "hi": "अभ्यास"
+  },
+  {
+   "en": "\\bdrafts?\\b",
+   "hi": "मसौद"
+  },
+  {
+   "en": "\\bfallbacks?\\b",
+   "hi": "वैकल्पिक"
+  },
+  {
+   "en": "\\barcsec(?:onds?)?\\b",
+   "hi": "चाप[- ]?सेकंड"
+  },
+  {
+   "en": "\\bhost clock\\b",
+   "hi": "घड़ी"
+  },
+  {
+   "en": "\\bPleiades\\b",
+   "hi": "कृत्तिका"
+  },
+  {
+   "en": "\\bObject X\\b",
+   "hi": "ऑब्जेक्ट X"
+  }
+ ],
+ "names": [
+  {
+   "en": "Save investigation",
+   "hi": "जाँच सहेजें"
+  },
+  {
+   "en": "Restore investigation JSON",
+   "hi": "जाँच पुनर्स्थापित करें (JSON)"
+  },
+  {
+   "en": "Save session",
+   "hi": "सत्र सहेजें"
+  },
+  {
+   "en": "Restore session",
+   "hi": "सत्र पुनर्स्थापित करें"
+  },
+  {
+   "en": "Instructor mode…",
+   "hi": "प्रशिक्षक मोड…"
+  },
+  {
+   "en": "Help topics…",
+   "hi": "सहायता विषय…"
+  },
+  {
+   "en": "Tools button",
+   "hi": "टूल्स बटन"
+  },
+  {
+   "en": "Optical Simulation Options",
+   "hi": "ऑप्टिकल सिमुलेशन विकल्प"
+  },
+  {
+   "en": "Demonstration Mode",
+   "hi": "प्रदर्शन मोड"
+  },
+  {
+   "en": "Edit Mode",
+   "hi": "संपादन मोड"
+  },
+  {
+   "en": "Virtual Observatory",
+   "hi": "आभासी वेधशाला"
+  },
+  {
+   "en": "Test Mode",
+   "hi": "परीक्षण मोड"
+  },
+  {
+   "en": "Pulsar Analysis",
+   "hi": "पल्सर विश्लेषण"
+  },
+  {
+   "en": "Observational Data",
+   "hi": "प्रेक्षण डेटा"
+  },
+  {
+   "en": "Observational Results",
+   "hi": "प्रेक्षण परिणाम"
+  },
+  {
+   "en": "Results Editors",
+   "hi": "परिणाम संपादक"
+  },
+  {
+   "en": "Topics...",
+   "hi": "विषय..."
+  },
+  {
+   "en": "About This Exercise...",
+   "hi": "इस प्रयोग के बारे में..."
+  },
+  {
+   "en": "Project CLEA",
+   "hi": "Project CLEA"
+  },
+  {
+   "en": "Gettysburg College",
+   "hi": "Gettysburg College"
+  },
+  {
+   "en": "VIREO",
+   "hi": "VIREO"
+  },
+  {
+   "en": "OpenVireo",
+   "hi": "OpenVireo"
+  },
+  {
+   "en": "CLEA",
+   "hi": "CLEA"
+  },
+  {
+   "en": "NSF",
+   "hi": "NSF"
+  },
+  {
+   "en": "GitHub",
+   "hi": "GitHub"
+  },
+  {
+   "en": "FITS",
+   "hi": "FITS"
+  },
+  {
+   "en": "CSV",
+   "hi": "CSV"
+  },
+  {
+   "en": "VizieR",
+   "hi": "VizieR"
+  },
+  {
+   "en": "NOMAD",
+   "hi": "NOMAD"
+  },
+  {
+   "en": "USNO-B1",
+   "hi": "USNO-B1"
+  },
+  {
+   "en": "GSC",
+   "hi": "GSC"
+  },
+  {
+   "en": "2MASS",
+   "hi": "2MASS"
+  },
+  {
+   "en": "SHA-256",
+   "hi": "SHA-256"
+  },
+  {
+   "en": "JSON",
+   "hi": "JSON"
+  },
+  {
+   "en": "File",
+   "hi": "फ़ाइल",
+   "exact": true
+  },
+  {
+   "en": "Slew",
+   "hi": "घुमाएँ",
+   "exact": true
+  },
+  {
+   "en": "Tools",
+   "hi": "टूल्स",
+   "exact": true
+  },
+  {
+   "en": "Help",
+   "hi": "सहायता",
+   "exact": true
+  },
+  {
+   "en": "Options",
+   "hi": "विकल्प",
+   "exact": true
+  },
+  {
+   "en": "Parameters",
+   "hi": "पैरामीटर",
+   "exact": true
+  },
+  {
+   "en": "OK",
+   "hi": "ठीक है",
+   "exact": true
+  },
+  {
+   "en": "Cancel",
+   "hi": "रद्द करें",
+   "exact": true
+  },
+  {
+   "en": "Close",
+   "hi": "बंद करें",
+   "exact": true
+  },
+  {
+   "en": "Yes",
+   "hi": "हाँ",
+   "exact": true
+  },
+  {
+   "en": "Reset",
+   "hi": "रीसेट करें",
+   "exact": true
+  },
+  {
+   "en": "Update",
+   "hi": "अपडेट करें",
+   "exact": true
+  },
+  {
+   "en": "List",
+   "hi": "सूची",
+   "exact": true
+  },
+  {
+   "en": "Selection",
+   "hi": "चयन",
+   "exact": true
+  },
+  {
+   "en": "Exit",
+   "hi": "बाहर निकलें",
+   "exact": true
+  },
+  {
+   "en": "Print...",
+   "hi": "प्रिंट करें...",
+   "exact": true
+  },
+  {
+   "en": "Search...",
+   "hi": "खोजें...",
+   "exact": true
+  },
+  {
+   "en": "Save...",
+   "hi": "सहेजें...",
+   "exact": true
+  },
+  {
+   "en": "Stop",
+   "hi": "रोकें",
+   "exact": true
+  },
+  {
+   "en": "Scan",
+   "hi": "क्रम से देखें",
+   "exact": true
+  },
+  {
+   "en": "Telescopes",
+   "hi": "दूरबीनें",
+   "exact": true
+  },
+  {
+   "en": "Websites",
+   "hi": "वेबसाइटें",
+   "exact": true
+  },
+  {
+   "en": "Confirm",
+   "hi": "पुष्टि करें",
+   "exact": true
+  },
+  {
+   "en": "Confirmation",
+   "hi": "पुष्टि",
+   "exact": true
+  },
+  {
+   "en": "Display",
+   "hi": "प्रदर्शन",
+   "exact": true
+  },
+  {
+   "en": "Objects",
+   "hi": "वस्तुएँ",
+   "exact": true
+  },
+  {
+   "en": "Go",
+   "hi": "शुरू करें",
+   "exact": true
+  },
+  {
+   "en": "Init",
+   "hi": "तैयार करें",
+   "exact": true
+  },
+  {
+   "en": "Set Coordinates",
+   "hi": "निर्देशांक तय करें"
+  },
+  {
+   "en": "View/Select from List",
+   "hi": "सूची से देखें/चुनें"
+  },
+  {
+   "en": "Add Current Item/Position to List",
+   "hi": "वर्तमान वस्तु/स्थिति को सूची में जोड़ें"
+  },
+  {
+   "en": "Slew to Selection",
+   "hi": "चयन की ओर घुमाएँ"
+  },
+  {
+   "en": "Field Information",
+   "hi": "क्षेत्र की जानकारी"
+  },
+  {
+   "en": "Variable Stars",
+   "hi": "परिवर्ती तारे"
+  },
+  {
+   "en": "QSO List",
+   "hi": "QSO सूची"
+  },
+  {
+   "en": "CCD Camera",
+   "hi": "CCD कैमरा"
+  },
+  {
+   "en": "IR Camera",
+   "hi": "IR कैमरा"
+  },
+  {
+   "en": "Request Time",
+   "hi": "समय का अनुरोध करें"
+  },
+  {
+   "en": "Set Date/Time",
+   "hi": "तारीख़/समय तय करें"
+  },
+  {
+   "en": "Site Parameters",
+   "hi": "स्थान के पैरामीटर"
+  },
+  {
+   "en": "Site Information",
+   "hi": "स्थान की जानकारी"
+  },
+  {
+   "en": "Print Sky Image",
+   "hi": "आकाश की छवि प्रिंट करें"
+  },
+  {
+   "en": "HST Image Archive",
+   "hi": "HST छवि संग्रह"
+  },
+  {
+   "en": "Exit Observatory",
+   "hi": "वेधशाला से बाहर निकलें"
+  },
+  {
+   "en": "Restrict Scope Access",
+   "hi": "दूरबीन की पहुँच सीमित करें"
+  },
+  {
+   "en": "Limit Slewing",
+   "hi": "घुमाव सीमित करें"
+  },
+  {
+   "en": "Show Object ID",
+   "hi": "वस्तु ID दिखाएँ"
+  },
+  {
+   "en": "Show Object Mag",
+   "hi": "वस्तु कांतिमान दिखाएँ"
+  },
+  {
+   "en": "Fast Slewing",
+   "hi": "तेज़ घुमाव"
+  },
+  {
+   "en": "Fast Scope Change",
+   "hi": "तेज़ दूरबीन बदलाव"
+  },
+  {
+   "en": "Sound Effects",
+   "hi": "ध्वनि प्रभाव"
+  },
+  {
+   "en": "Infrared Camera",
+   "hi": "अवरक्त कैमरा"
+  },
+  {
+   "en": "Write Log File",
+   "hi": "लॉग फ़ाइल लिखें"
+  },
+  {
+   "en": "Time-Dependent Data",
+   "hi": "समय पर निर्भर डेटा"
+  },
+  {
+   "en": "Print in Color",
+   "hi": "रंगीन प्रिंट करें"
+  },
+  {
+   "en": "Monochrome Displays",
+   "hi": "एकवर्णी प्रदर्शन"
+  },
+  {
+   "en": "Compute Rdshft Vel.",
+   "hi": "अभिरक्त विस्थापन वेग निकालें"
+  },
+  {
+   "en": "Allow User Change",
+   "hi": "उपयोगकर्ता को बदलने दें"
+  },
+  {
+   "en": "Set E(B-V)",
+   "hi": "E(B-V) तय करें"
+  },
+  {
+   "en": "Detect Sky",
+   "hi": "आकाश पहचानें"
+  },
+  {
+   "en": "Catalog Object",
+   "hi": "कैटलॉग वस्तु"
+  },
+  {
+   "en": "Field Size",
+   "hi": "क्षेत्र का आकार"
+  },
+  {
+   "en": "Multi-Channel Spectrometer",
+   "hi": "बहु-चैनल स्पेक्ट्रोमीटर"
+  },
+  {
+   "en": "Observation List",
+   "hi": "प्रेक्षण सूची"
+  },
+  {
+   "en": "Star Data List",
+   "hi": "तारा डेटा सूची"
+  },
+  {
+   "en": "Naked Eye Star",
+   "hi": "नंगी आँखों से दिखने वाला तारा"
+  },
+  {
+   "en": "Get Selection Data",
+   "hi": "चयन का डेटा लें"
+  },
+  {
+   "en": "Add Selection to Current Hot List",
+   "hi": "चयन को वर्तमान वस्तु सूची में जोड़ें"
+  },
+  {
+   "en": "Start New Hot List with Selection",
+   "hi": "चयन के साथ नई वस्तु सूची शुरू करें"
+  },
+  {
+   "en": "Save List",
+   "hi": "सूची सहेजें"
+  },
+  {
+   "en": "Edit Selection",
+   "hi": "चयन संपादित करें"
+  },
+  {
+   "en": "Delete Selection",
+   "hi": "चयन हटाएँ"
+  },
+  {
+   "en": "Undo Edit/Delete",
+   "hi": "संपादन/हटाना पूर्ववत करें"
+  },
+  {
+   "en": "Base Slew Rate",
+   "hi": "आधार घुमाने की गति"
+  },
+  {
+   "en": "Horizon Limit",
+   "hi": "क्षितिज सीमा"
+  },
+  {
+   "en": "Finder Field",
+   "hi": "फ़ाइंडर क्षेत्र"
+  },
+  {
+   "en": "Finder Mag Limit",
+   "hi": "फ़ाइंडर कांतिमान सीमा"
+  },
+  {
+   "en": "Field Creation Factor",
+   "hi": "क्षेत्र बनाने का गुणक"
+  },
+  {
+   "en": "Enter Sky Coordinates for Slew",
+   "hi": "घुमाने के लिए आकाश निर्देशांक लिखें"
+  },
+  {
+   "en": "Add/Edit Hot List Entry",
+   "hi": "वस्तु सूची की प्रविष्टि जोड़ें/संपादित करें"
+  },
+  {
+   "en": "Camera Parameters",
+   "hi": "कैमरा पैरामीटर"
+  },
+  {
+   "en": "Spectra From Multi-channel Spectrometer",
+   "hi": "बहु-चैनल स्पेक्ट्रोमीटर के स्पेक्ट्रम"
+  },
+  {
+   "en": "Terminate Current Slew",
+   "hi": "मौजूदा घुमाव रोकें"
+  },
+  {
+   "en": "Save Updates",
+   "hi": "अपडेट सहेजें"
+  },
+  {
+   "en": "Sort Options",
+   "hi": "क्रमबद्ध करने के विकल्प"
+  },
+  {
+   "en": "Scan Rate",
+   "hi": "क्रम की गति"
+  },
+  {
+   "en": "Chip Well Depth",
+   "hi": "चिप वेल गहराई"
+  },
+  {
+   "en": "Dark Noise",
+   "hi": "डार्क नॉइज़"
+  },
+  {
+   "en": "Data from Observations",
+   "hi": "प्रेक्षणों से डेटा"
+  },
+  {
+   "en": "Record/Review",
+   "hi": "दर्ज करें/देखें"
+  },
+  {
+   "en": "Next on List",
+   "hi": "सूची में अगला"
+  },
+  {
+   "en": "No More Spectra",
+   "hi": "और स्पेक्ट्रम नहीं"
+  },
+  {
+   "en": "Spectral Line Table",
+   "hi": "स्पेक्ट्रमी रेखा तालिका"
+  },
+  {
+   "en": "Program List",
+   "hi": "कार्यक्रम सूची"
+  },
+  {
+   "en": "Pulsar guide",
+   "hi": "पल्सर गाइड"
+  },
+  {
+   "en": "Pulsar timing guide",
+   "hi": "पल्सर टाइमिंग गाइड"
+  },
+  {
+   "en": "Radio Astronomy of Pulsars",
+   "hi": "पल्सरों का रेडियो खगोल विज्ञान"
+  },
+  {
+   "en": "Radio Telescope Control Panel",
+   "hi": "रेडियो दूरबीन नियंत्रण पैनल"
+  },
+  {
+   "en": "Radio Simulation Options",
+   "hi": "रेडियो सिमुलेशन विकल्प"
+  },
+  {
+   "en": "Pulsar Parameters",
+   "hi": "पल्सर पैरामीटर"
+  },
+  {
+   "en": "Access Pulsar List",
+   "hi": "पल्सर सूची खोलें"
+  },
+  {
+   "en": "Pulsar Identification",
+   "hi": "पल्सर पहचान"
+  },
+  {
+   "en": "Telescope Type",
+   "hi": "दूरबीन का प्रकार"
+  },
+  {
+   "en": "Slew Rate",
+   "hi": "घुमाने की गति"
+  },
+  {
+   "en": "Find Pulsar Data",
+   "hi": "पल्सर डेटा ढूँढें"
+  },
+  {
+   "en": "Identify Recorded Object",
+   "hi": "दर्ज वस्तु की पहचान करें"
+  },
+  {
+   "en": "Add Channel",
+   "hi": "चैनल जोड़ें"
+  },
+  {
+   "en": "Antenna Aperture",
+   "hi": "एंटीना एपर्चर"
+  },
+  {
+   "en": "Sound Features",
+   "hi": "ध्वनि सुविधाएँ"
+  },
+  {
+   "en": "Asteroid List",
+   "hi": "क्षुद्रग्रह सूची"
+  },
+  {
+   "en": "Spectral Range",
+   "hi": "स्पेक्ट्रमी सीमा"
+  },
+  {
+   "en": "Spectrum Information",
+   "hi": "स्पेक्ट्रम की जानकारी"
+  },
+  {
+   "en": "View/Save Spectra",
+   "hi": "स्पेक्ट्रम देखें/सहेजें"
+  },
+  {
+   "en": "Select Objects",
+   "hi": "वस्तुएँ चुनें"
+  },
+  {
+   "en": "Print Selection Field",
+   "hi": "चयन क्षेत्र प्रिंट करें"
+  },
+  {
+   "en": "Save Text",
+   "hi": "पाठ सहेजें"
+  },
+  {
+   "en": "Comma Delimit",
+   "hi": "अल्पविराम से अलग करें"
+  },
+  {
+   "en": "Exposure Timer",
+   "hi": "एक्सपोज़र टाइमर"
+  },
+  {
+   "en": "Find Text String",
+   "hi": "पाठ ढूँढें"
+  },
+  {
+   "en": "Close Multi-Spec",
+   "hi": "Multi-Spec बंद करें"
+  },
+  {
+   "en": "Measured Redshift Data",
+   "hi": "मापा गया अभिरक्त विस्थापन डेटा"
+  },
+  {
+   "en": "Record Z",
+   "hi": "z दर्ज करें"
+  },
+  {
+   "en": "Save Data",
+   "hi": "डेटा सहेजें"
+  },
+  {
+   "en": "Plot Data",
+   "hi": "डेटा प्लॉट करें"
+  },
+  {
+   "en": "LSS Wedge Plot",
+   "hi": "LSS शंकु आरेख"
+  },
+  {
+   "en": "Load Saved Data",
+   "hi": "सहेजा गया डेटा लोड करें"
+  },
+  {
+   "en": "LSS Galaxy Data",
+   "hi": "LSS आकाशगंगा डेटा"
+  },
+  {
+   "en": "Load/Plot",
+   "hi": "लोड करें/प्लॉट करें"
+  },
+  {
+   "en": "View/Print Parameters",
+   "hi": "पैरामीटर देखें/प्रिंट करें"
+  },
+  {
+   "en": "Display/Print Data",
+   "hi": "डेटा दिखाएँ/प्रिंट करें"
+  },
+  {
+   "en": "Select Cluster Data",
+   "hi": "तारागुच्छ डेटा चुनें"
+  },
+  {
+   "en": "Possible Cluster Member",
+   "hi": "तारागुच्छ का संभावित सदस्य"
+  },
+  {
+   "en": "Clusters for Study",
+   "hi": "अध्ययन के लिए तारागुच्छ"
+  },
+  {
+   "en": "Variable Star Data",
+   "hi": "परिवर्ती तारे का डेटा"
+  },
+  {
+   "en": "Simulated Light Curve",
+   "hi": "सिम्युलेटेड प्रकाश वक्र"
+  },
+  {
+   "en": "Remove from HR Diagram",
+   "hi": "H-R आरेख से हटाएँ"
+  },
+  {
+   "en": "Recorded Results",
+   "hi": "दर्ज परिणाम"
+  },
+  {
+   "en": "Telescope has Moved!",
+   "hi": "दूरबीन घूम गई है!"
+  },
+  {
+   "en": "Reading Sky!",
+   "hi": "आकाश पढ़ा जा रहा है!"
+  },
+  {
+   "en": "Radio clock scenario",
+   "hi": "रेडियो घड़ी परिदृश्य"
+  },
+  {
+   "en": "Scenario inputs",
+   "hi": "परिदृश्य के इनपुट"
+  },
+  {
+   "en": "Use compiled defaults",
+   "hi": "संकलित डिफ़ॉल्ट इस्तेमाल करें"
+  },
+  {
+   "en": "Reset radio site",
+   "hi": "रेडियो स्थान रीसेट करें"
+  },
+  {
+   "en": "Start pulsar exercise",
+   "hi": "पल्सर प्रयोग शुरू करें"
+  },
+  {
+   "en": "Instructor mode",
+   "hi": "प्रशिक्षक मोड"
+  },
+  {
+   "en": "Clear",
+   "hi": "साफ़ करें",
+   "exact": true
+  },
+  {
+   "en": "Find",
+   "hi": "ढूँढें",
+   "exact": true
+  },
+  {
+   "en": "Record",
+   "hi": "दर्ज करें",
+   "exact": true
+  },
+  {
+   "en": "Show",
+   "hi": "दिखाएँ",
+   "exact": true
+  },
+  {
+   "en": "Save",
+   "hi": "सहेजें",
+   "exact": true
+  },
+  {
+   "en": "Save As",
+   "hi": "इस रूप में सहेजें",
+   "exact": true
+  },
+  {
+   "en": "Save List...",
+   "hi": "सूची सहेजें...",
+   "exact": true
+  },
+  {
+   "en": "Find Pulsar...",
+   "hi": "पल्सर ढूँढें...",
+   "exact": true
+  },
+  {
+   "en": "Print",
+   "hi": "प्रिंट करें",
+   "exact": true
+  },
+  {
+   "en": "Lab Table",
+   "hi": "प्रयोगशाला की मेज़"
+  },
+  {
+   "en": "Save All",
+   "hi": "सब सहेजें"
+  },
+  {
+   "en": "Clear All",
+   "hi": "सब साफ़ करें"
+  },
+  {
+   "en": "Telescope Display",
+   "hi": "दूरबीन प्रदर्शन"
+  },
+  {
+   "en": "Master Receiver",
+   "hi": "मास्टर रिसीवर"
+  },
+  {
+   "en": "Case Dependent",
+   "hi": "अक्षर-भेद मानें"
+  },
+  {
+   "en": "Search String",
+   "hi": "खोजने का पाठ"
+  },
+  {
+   "en": "Search Results",
+   "hi": "खोज परिणाम"
+  },
+  {
+   "en": "Optical",
+   "hi": "ऑप्टिकल",
+   "exact": true
+  },
+  {
+   "en": "Spectral Line Help",
+   "hi": "स्पेक्ट्रमी रेखा सहायता"
+  },
+  {
+   "en": "Original hot lists",
+   "hi": "मूल वस्तु सूचियाँ"
+  },
+  {
+   "en": "Telescope view",
+   "hi": "दूरबीन का दृश्य"
+  },
+  {
+   "en": "Receiver monitor",
+   "hi": "रिसीवर मॉनिटर"
+  },
+  {
+   "en": "Radio configuration",
+   "hi": "रेडियो कॉन्फ़िगरेशन"
+  },
+  {
+   "en": "pulsar exercise",
+   "hi": "पल्सर प्रयोग"
+  },
+  {
+   "en": "Manual marks",
+   "hi": "हाथ से बने चिह्न"
+  },
+  {
+   "en": "Data properties",
+   "hi": "डेटा के गुण"
+  },
+  {
+   "en": "Trace audition",
+   "hi": "ट्रेस सुनना"
+  },
+  {
+   "en": "Telescope position",
+   "hi": "दूरबीन की स्थिति"
+  },
+  {
+   "en": "Radio telescope control",
+   "hi": "रेडियो दूरबीन नियंत्रण"
+  }
+ ],
+ "forbidden": [
+  {
+   "words": [
+    "टेलीस्कोप",
+    "टेलिस्कोप"
+   ],
+   "use": "दूरबीन (one form, plan §5.2)"
+  },
+  {
+   "words": [
+    "चयन करें",
+    "चयन करना"
+   ],
+   "use": "चुनें (plain words, Microsoft Hindi guide; plan §3)"
+  },
+  {
+   "words": [
+    "मंदाकिनी",
+    "मन्दाकिनी",
+    "गैलेक्सी"
+   ],
+   "use": "आकाशगंगा (one form for galaxy, as Hindi Wikipedia’s हबल का नियम; the Milky Way is मिल्की वे; plan §5.2)"
+  },
+  {
+   "words": [
+    "लाल विचलन",
+    "रक्त विस्थापन",
+    "रेडशिफ्ट"
+   ],
+   "use": "अभिरक्त विस्थापन, with «रेडशिफ़्ट» in brackets at a first mention (Hindi Wikipedia अभिरक्त विस्थापन)"
+  },
+  {
+   "words": [
+    "तरंगदैर्ध्य*",
+    "तरंग दैर्घ्य*"
+   ],
+   "use": "तरंगदैर्घ्य (from दीर्घ, as NCERT writes it)"
+  },
+  {
+   "words": [
+    "अनधिकृत",
+    "अनौपचारिक"
+   ],
+   "use": "गैर-आधिकारिक for unofficial (अनधिकृत is unauthorised, अनौपचारिक informal)"
+  },
+  {
+   "words": [
+    "प्लीएडीज़",
+    "प्लीएडीज",
+    "प्लेयडीज़"
+   ],
+   "use": "कृत्तिका, with (Pleiades) at a first mention (Hindi Wikipedia कृत्तिका तारागुच्छ)"
+  },
+  {
+   "words": [
+    "चुनाव"
+   ],
+   "use": "चयन for a selection (चुनाव reads first as an election); the verb stays चुनें"
+  },
+  {
+   "words": [
+    "स्थिरांक*"
+   ],
+   "use": "नियतांक for a constant (हबल नियतांक, प्लेट नियतांक), one form"
+  }
+ ]
+}

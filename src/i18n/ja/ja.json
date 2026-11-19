@@ -43,6 +43,7 @@
  "app.name": "OpenVireo",
  "app.scope": "天文台プレビュー",
  "app.close": "閉じる",
+ "app.digitNotice": "数字は半角の0–9で入力してください。{digits}のような数字は、ここでは数値として読み取られません。",
  "error.decimal": "{line}行目：小数点にドットを使った10進数が必要です。",
  "error.finite": "{line}行目：値が有限ではありません。",
  "error.lineFormat": "行リスト：{line}行目の形式が正しくありません。",
