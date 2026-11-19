@@ -20,6 +20,6 @@ export const QSO_LIST_ID:Translation<typeof QSO_LIST_MESSAGES_EN>=Object.freeze(
  noSelection:'Pilih baris QSO terlebih dahulu.',
  hst:Object.freeze({
   newTab:'(situs eksternal, terbuka di tab baru)',
-  note:`Adaptasi web: VIREO membuka ${HST_ARCHIVE.defaultUrl} (“${HST_ARCHIVE.optionsLabel}” pada Opsi File [File Options]) di jendela browser. Halaman itu sudah tidak ada; tautan ini membuka padanannya yang terkini di hubblesite.org, yang kini dilayani NASA sebagai galeri Hubble Images. Tidak ada data yang dikirim bersamanya.`,
+  note:`Adaptasi web: VIREO membuka ${HST_ARCHIVE.defaultUrl} (“${HST_ARCHIVE.optionsLabel}” pada Opsi File (File Options)) di jendela browser. Halaman itu sudah tidak ada; tautan ini membuka padanannya yang terkini di hubblesite.org, yang kini dilayani NASA sebagai galeri Hubble Images. Tidak ada data yang dikirim bersamanya.`,
  }),
 });

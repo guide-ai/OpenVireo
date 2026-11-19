@@ -26,10 +26,10 @@ export const FIELD_INFO_ID:Translation<typeof FIELD_INFO_MESSAGES_EN>=Object.fre
  startNewAdaptation:'Adaptasi web: situs ini tidak melacak apakah daftar objek telah diubah, sehingga selalu bertanya jika daftar saat ini berisi baris; Ya mengunduh daftar saat ini sebagai file .HTL sebelum diganti.',
  busy:'File daftar objek sedang dibaca; coba lagi setelah selesai.',
  unavailable:Object.freeze({
-  'field-polar':'Tidak tersedia dalam jarak sekitar 0.06° dari kutub langit: situs ini berhenti di sana [batasan web]. VIREO masih membangun bidang sampai sekitar 0.006° dari kutub, tetapi hasilnya di sana bergantung pada aritmetikanya dengan cara yang tidak direproduksi secara persis oleh situs ini.',
+  'field-polar':'Tidak tersedia dalam jarak sekitar 0.06° dari kutub langit: situs ini berhenti di sana [batas web]. VIREO masih membangun bidang sampai sekitar 0.006° dari kutub, tetapi hasilnya di sana bergantung pada aritmetikanya dengan cara yang tidak direproduksi secara persis oleh situs ini.',
   'field-tiles':'Katalog bintang untuk bidang ini tidak dapat dimuat ({reason}). Coba lagi; tidak ada yang diubah.',
   'field-unreadable':'Tidak tersedia di sini: {reason}',
-  'field-polar-finder':'Tidak tersedia dalam jarak sekitar 0.6° dari kutub langit di tampilan pencari: bidang pencari menjangkau 3.75° dari pusat, dan situs ini berhenti di tempat batas AR-nya tidak lagi terlipat ke dalam 0–24 jam [batasan web].',
+  'field-polar-finder':'Tidak tersedia dalam jarak sekitar 0.6° dari kutub langit di tampilan pencari: bidang pencari menjangkau 3.75° dari pusat, dan situs ini berhenti di tempat batas AR-nya tidak lagi terlipat ke dalam 0–24 jam [batas web].',
   'object-x-unreadable':'Tidak tersedia: daftar posisi Objek X tidak dapat dibaca, sehingga bidang ini tetap disembunyikan seandainya memuat target Objek X. Muat ulang halaman untuk mencoba lagi.',
   'object-x-hidden':'Tidak tersedia di dekat target Objek X yang belum diungkap: catatannya akan menampilkan identitasnya sebelum praktikum mengungkapkannya.',
   'asteroids-not-modelled':'Tidak tersedia: bidang ini mungkin berisi asteroid, yang tidak dimodelkan oleh mesin bidang.',

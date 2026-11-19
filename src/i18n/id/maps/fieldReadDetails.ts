@@ -11,8 +11,8 @@ export const FIELD_READ_DETAILS_ID:Translation<typeof FIELD_READ_DETAILS_EN>=Obj
  } as Record<string,string>),
  'field-unreadable':Object.freeze({
   'band-end':'di VIREO, bidang ini membaca melewati ujung sebuah pita deklinasi pada katalognya, yang memicu kesalahan masukan/keluaran dan meninggalkan daftar bintang yang tidak lengkap. Situs ini menampilkan tanpa bidang sebagai gantinya [adaptasi web].',
-  regions:'VIREO akan memperingatkan “Field Contains Too Many Regions!” dan mempertahankan 100 wilayah pertama; situs ini tidak mereproduksinya [adaptasi web].',
-  budget:'bidang ini memuat lebih banyak catatan katalog daripada yang dibaca situs ini dalam satu pita deklinasi [batasan web].',
+  regions:'VIREO akan memperingatkan “Bidang berisi terlalu banyak wilayah!” dan mempertahankan 100 wilayah pertama; situs ini tidak mereproduksinya [adaptasi web].',
+  budget:'bidang ini memuat lebih banyak catatan katalog daripada yang dibaca situs ini dalam satu pita deklinasi [batas web].',
   plan:'situs ini membaca di luar potongan katalog yang telah direncanakannya (mohon laporkan).',
   source:'file katalog yang disertakan tidak berbentuk seperti yang diharapkan (mohon laporkan).',
   input:'arah pengamatan ini bukan posisi langit yang valid.',

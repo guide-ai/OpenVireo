@@ -27,7 +27,7 @@ export const POLISH_ID:Translation<typeof POLISH_MESSAGES_EN>=Object.freeze({
   note:'Pratinjau cetak halaman daftar VIREO: tanggal dan waktu (di sini dalam format browser Anda), baris meja praktikum (tidak dicatat di situs ini), baris pelajar (kosong: tidak ada login di sini), judul jendela, dan baris-baris daftar, dalam huruf Courier. Jarak baris dan indentasi mengikuti halaman VIREO; metrik printer tidak ditiru. Judul pekerjaan cetak VIREO tidak dicetak di halaman.',
  }),
  siteInfo:Object.freeze({
-  note:'Di VIREO, jendela daftar ini menyembunyikan menu Cari (Search), Simpan Teks (Save Text), dan Edit (Edit) untuk informasi lokasi, sehingga hanya Cetak (Print) dan Tutup (Close) yang tersedia.',
+  note:'Di VIREO, jendela daftar ini menyembunyikan menu Cari (Search), Simpan Teks (Save Text), dan Edit untuk informasi lokasi, sehingga hanya Cetak (Print) dan Tutup (Close) yang tersedia.',
   printNote:'Adaptasi web: VIREO mencetak baris-baris daftar di bawah header bersamanya pada printer; di sini yang dicetak adalah tanggal, judul, dan baris-barisnya.',
  }),
  hotListEdit:Object.freeze({
@@ -55,7 +55,7 @@ export const POLISH_ID:Translation<typeof POLISH_MESSAGES_EN>=Object.freeze({
   orientation:'Orientasi halaman',portrait:'Potret',landscape:'Lanskap',
  }),
  wedgePrint:Object.freeze({
-  note:'Adaptasi web: Cetak (Print) milik VIREO mengatur skema warna kebalikan dari opsi Cetak Berwarna (Print in Color) (scheme := Env+0x2e8d XOR 1, 0x580fba–0x580fc3), sehingga mencetak hitam putih kecuali opsi itu dicentang (nonaktif dalam versi terkompilasi; Opsi Simulasi Optik [Optical Simulation Options]). Cetakan ini mengikuti opsi tersebut dan memakai tata letak cetak browser. Sorotan pilihan tidak dicetak.',
+  note:'Adaptasi web: Cetak (Print) milik VIREO mengatur skema warna kebalikan dari opsi Cetak Berwarna (Print in Color) (scheme := Env+0x2e8d XOR 1, 0x580fba–0x580fc3), sehingga mencetak hitam putih kecuali opsi itu dicentang (nonaktif dalam versi terkompilasi; Opsi Simulasi Optik (Optical Simulation Options)). Cetakan ini mengikuti opsi tersebut dan memakai tata letak cetak browser. Sorotan pilihan tidak dicetak.',
  }),
  printSky:Object.freeze({
   note:'VIREO mencetak headernya (tanggal dan waktu, di sini dalam format browser Anda; nomor meja praktikum hanya jika ada yang dicatat; lalu baris nama pelajar, kosong di sini karena OpenVireo tidak memiliki login), citra langit dengan warna terbalik dan skala 1.5, serta footer berisi pusat bidang, ukuran bidang, teleskop, dan instrumen. Adaptasi web: browser mengatur halaman dan mencetak tampilan sebagaimana ditampilkan.',
@@ -78,7 +78,7 @@ export const POLISH_ID:Translation<typeof POLISH_MESSAGES_EN>=Object.freeze({
    'Investigasi, opsi, dan hasil Anda disimpan hanya di komputer Anda: di penyimpanan browser ini atau di file yang Anda pilih untuk diunduh. Tidak ada yang diunggah.',
    'Kunjungan dihitung hanya secara agregat dan tanpa cookie (Cloudflare Web Analytics). Seperti penyedia hosting web lainnya, Cloudflare menerima data teknis setiap permintaan, seperti alamat IP Anda, untuk menyajikan halaman.',
    'Kueri katalog langsung untuk kamera CCD dan inframerah hanya mengirim koordinat langit dan radius bidang ke CDS/VizieR (atau salah satu mirror resminya). Browser Anda menghubungi server itu secara langsung, sehingga, seperti situs web mana pun, server itu melihat alamat IP Anda.',
-   'Tautan eksternal (arsip citra HST, Bantuan › Situs Web) terbuka di tab baru hanya saat Anda mengkliknya, dan tidak ada data yang dikirim bersamanya.',
+   'Tautan eksternal (arsip citra HST, Bantuan › Situs Web) terbuka di tab baru hanya saat Anda mengekliknya, dan tidak ada data yang dikirim bersamanya.',
   ]),
   creditsTitle:'Kredit',
   credits:Object.freeze([

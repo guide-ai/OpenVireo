@@ -511,7 +511,7 @@
   },
   {
    "en": "\\b(?:600-)?bins?\\b",
-   "id": "(?<![\\p{L}\\p{N}])bin(?![\\p{L}])|kanal"
+   "id": "(?<![\\p{L}\\p{N}])bin(?![\\p{L}])|kanal|saluran"
   },
   {
    "en": "\\bcombined view\\b",

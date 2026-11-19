@@ -24,13 +24,13 @@ export const CAMERA_ID:Translation<typeof CAMERA_MESSAGES_EN>=Object.freeze({
  sourceStatic:'Hanya ekstrak bawaan (tanpa jaringan)',
  sourceStaticNone:'Hanya ekstrak bawaan (tanpa jaringan). Versi ini belum memiliki ekstrak bawaan.',
  noExtractHere:'Tidak ada ekstrak bawaan yang mencakup arah ini. Pilih opsi VizieR langsung untuk mencitrakannya.',
- sourceLive:'Tanya VizieR secara langsung (hanya mengirim RA, Dek., dan radius pencarian; mencoba mirror IDIA, lalu CDS)',
+ sourceLive:'Tanya VizieR secara langsung (hanya mengirim AR, Dek., dan radius pencarian; mencoba mirror IDIA, lalu CDS)',
  start:'Mulai eksposur',
  stop:'Berhenti',
  save:'Simpan citra (FITS)',
  saveNote:'File FITS menyimpan setiap nilai piksel. Buka nanti di Citra tersimpan.',
  saveNative:'Simpan citra (header VIREO)',
- saveNativeNote:'File ini memakai kartu header dan urutan milik VIREO sendiri, untuk dibandingkan dengan program aslinya. Seperti di VIREO, jika Tampilkan ID Objek (Show Object ID) aktif (Opsi Simulasi Optik [Optical Simulation Options]; lima panduan mengaktifkannya), kartu objek dan nama file memuat nama objek yang paling dekat dengan pusat citra (tidak pernah target Objek X yang tersembunyi). Jika tidak, keduanya memakai ID Atur Tanggal/Waktu (Set Date/Time) Anda dalam bentuk ObjX-<ID> (di sini ID yang Anda masukkan di praktikum Objek X), atau UNKNOWN jika belum ada yang ditetapkan. VIREO menyimpan ID persis seperti yang diketik, termasuk spasi. VIREO menulis karakter lain (seperti huruf beraksen) apa adanya; situs ini menolak ID semacam itu, karena header FITS hanya mengizinkan ASCII biasa. Seperti di VIREO, kartu detektor memuat nama kamera dari opsi kamera sebagaimana adanya saat Anda menyimpan (karakter di luar ASCII biasa ditulis sebagai ?, karena header FITS hanya mengizinkan ASCII); kartu pengamat dibiarkan kosong, karena situs ini tidak mengumpulkan nama pelajar. DATE adalah waktu eksposur. Seperti di VIREO, file ini tidak memiliki padding setelah data, sehingga sebagian pembaca FITS mungkin menolaknya. Tombol pertama menghasilkan file standar.',
+ saveNativeNote:'File ini memakai kartu header dan urutan milik VIREO sendiri, untuk dibandingkan dengan program aslinya. Seperti di VIREO, jika Tampilkan ID Objek (Show Object ID) aktif (Opsi Simulasi Optik (Optical Simulation Options); lima panduan mengaktifkannya), kartu objek dan nama file memuat nama objek yang paling dekat dengan pusat citra (tidak pernah target Objek X yang tersembunyi). Jika tidak, keduanya memakai ID Atur Tanggal/Waktu (Set Date/Time) Anda dalam bentuk ObjX-<ID> (di sini ID yang Anda masukkan di praktikum Objek X), atau UNKNOWN jika belum ada yang ditetapkan. VIREO menyimpan ID persis seperti yang diketik, termasuk spasi. VIREO menulis karakter lain (seperti huruf beraksen) apa adanya; situs ini menolak ID semacam itu, karena header FITS hanya mengizinkan ASCII biasa. Seperti di VIREO, kartu detektor memuat nama kamera dari opsi kamera sebagaimana adanya saat Anda menyimpan (karakter di luar ASCII biasa ditulis sebagai ?, karena header FITS hanya mengizinkan ASCII); kartu pengamat dibiarkan kosong, karena situs ini tidak mengumpulkan nama pelajar. DATE adalah waktu eksposur. Seperti di VIREO, file ini tidak memiliki padding setelah data, sehingga sebagian pembaca FITS mungkin menolaknya. Tombol pertama menghasilkan file standar.',
  saveIdNotAscii:'File ini tidak disimpan. Kartu header FITS hanya mengizinkan huruf, angka, dan simbol ASCII biasa, sedangkan ID Objek X Anda memuat karakter lain (seperti huruf beraksen). Ubah ID di praktikum Objek X, atau gunakan file standar.',
  saveFailed:'File ini tidak dapat ditulis, sehingga tidak ada yang diunduh. Citra Anda tetap tersimpan.',
  saveDetectorAscii:'Tersimpan. Kartu DETECTOR menampilkan tanda ? untuk setiap karakter nama detektor kamera yang berada di luar ASCII biasa (seperti huruf beraksen), karena kartu header FITS hanya mengizinkan ASCII.',
@@ -89,7 +89,7 @@ export const CAMERA_ID:Translation<typeof CAMERA_MESSAGES_EN>=Object.freeze({
  detailRegion:'Area katalog (bidang yang dimuat)',
  region:(r:Readonly<{minimumRa:number;maximumRa:number;minimumDec:number;maximumDec:number;centreDec:number}>)=>{
   const half=0.375/(Math.cos(r.centreDec*Math.PI/180)*15);
-  const ra=r.minimumRa<0||r.maximumRa>24?'semua RA (dekat kutub)':`AR ${r.minimumRa.toFixed(4)}–${r.maximumRa.toFixed(4)} h${half>=12?' (pelipatan tunggal VIREO dekat kutub)':''}`;
+  const ra=r.minimumRa<0||r.maximumRa>24?'semua AR (dekat kutub)':`AR ${r.minimumRa.toFixed(4)}–${r.maximumRa.toFixed(4)} jam${half>=12?' (pelipatan tunggal VIREO dekat kutub)':''}`;
   const dec=r.maximumDec>90?`${r.minimumDec.toFixed(4)}° hingga kutub utara`:r.minimumDec< -90?`kutub selatan hingga ${r.maximumDec.toFixed(4)}°`:`${r.minimumDec.toFixed(4)}° hingga ${r.maximumDec.toFixed(4)}°`;
   return `${ra}, Dek. ${dec}. Seperti di VIREO, hanya bintang katalog di dalam bidang teleskop yang terakhir dimuat yang digambar.`;
  },
