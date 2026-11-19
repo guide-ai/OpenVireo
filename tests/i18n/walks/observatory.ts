@@ -23,17 +23,26 @@ export const IDENTIFIER=/^(?:[-+−\d\s.,:;°′″'"hmsHMS·×/()–#<>≤≥%]
 export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['OK','Longitude:','Latitude:','Altitude:','Longitude','Latitude','Altitude','Zoom','Item','Cursor','Pulsar','Min:','Multi-Spec']),
  // Front FR1: French writes OK, Options, Longitude, Latitude, Altitude, Horizon, Minutes, Zoom, Multi-Spec… as English does
  // (src/i18n/fr/identical.json); a label with a colon differs («Longitude :», U+202F before the colon).
+ // Front HI1: Hindi keeps the standard abbreviations RA and Dec, CCD, IR, Multi-Spec, formats and symbols (src/i18n/hi/identical.json).
+ hi:new Set(['NF: NOMAD R; B: NOMAD B; V: NOMAD V; R: NOMAD R; I: USNO-B1 I2','J: NOMAD J; H: NOMAD H; K: NOMAD K','RA:','RA','Dec:','CCD','IR','Multi-Spec','YYYY/MM/DD','ID #:','V - Mv =','PDot (S/S):','PEpoch (MJD):']),
  fr:new Set(['OK','Gain (e⁻/ADU)','Pulsars','Options','Options...','Options…','Longitude','Latitude','Altitude','Horizon','Minutes','Minimum','Maximum','Confirmation','Zoom','Pulsar','Mode','Type','Style','Source','Site...','Min','CCD','IR','Multi-Spec','Classification','Portrait','Radio','Radio...']),
  // Front ID1: Indonesian writes OK, Zoom, Mode, Data, Pulsar, Radio, Item, Minimum, Plot, Gain, Edit, File… as English does (not
  // «Pulsars»: Indonesian writes «Pulsar»; Min is SAME already)
  // (src/i18n/id/identical.json); a label with a colon is translated («Bujur:», «Lintang:»).
  id:new Set(['OK','Zoom','Mode','Data','Pulsar','Radio','Radio...','Item','Minimum','Plot','Plot Data','Gain:','Edit...','File','Asteroid','ID #:',"Diameter ('):",'CCD','IR','Multi-Spec','Gain (e⁻/ADU)','Filter','Target','YYYY/MM/DD',
   // the camera card's catalog bands by filter: filter letters and catalog names joined as English joins them (cameraPrepare.catalogEntry)
-  'NF: NOMAD R; B: NOMAD B; V: NOMAD V; R: NOMAD R; I: USNO-B1 I2','J: NOMAD J; H: NOMAD H; K: NOMAD K'])};
+  'NF: NOMAD R; B: NOMAD B; V: NOMAD V; R: NOMAD R; I: USNO-B1 I2','J: NOMAD J; H: NOMAD H; K: NOMAD K']),
+ /** Front RU1: Russian translates every word of the walk; only the camera card's catalog bands by filter (filter letters and catalog
+  * names joined as English joins them, cameraPrepare.catalogEntry) read as English does. */
+ ru:new Set(['NF: NOMAD R; B: NOMAD B; V: NOMAD V; R: NOMAD R; I: USNO-B1 I2','J: NOMAD J; H: NOMAD H; K: NOMAD K'])};
 /** SAME texts another language does translate: Portuguese writes the General tab «Geral» and the longitude letter E «L» (Leste);
  * French writes the General tab «Général» (its longitude letter E is Est, the same). */
 /** Front ID1: Indonesian writes the General tab «Umum» and the longitude letter E «BT» (Bujur Timur). */
-export const NOT_SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['General','E']),fr:new Set(['General']),id:new Set(['General','E'])};
+export const NOT_SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['General','E']),fr:new Set(['General']),id:new Set(['General','E']),
+ // Front HI1: Hindi writes General «सामान्य», No «नहीं», Min «मिनट», the compass letters E «पू», N «उ» and S «द», and Angstroms «ऐंगस्ट्रॉम».
+ hi:new Set(['General','No','Min','E','N','S','Angstroms']),
+ /** Front RU1: Russian writes the General tab «Общие» and the longitude letter E «В» (восток). */
+ ru:new Set(['General','E'])};
 export const same=(text:string,L?:LanguageText)=>(L===undefined||!(NOT_SAME_IN[L.tag]?.has(text)??false))&&(SAME.has(text)||IDENTIFIER.test(text)||(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false)));
 export const id=(page:Page,testId:string)=>page.getByTestId(testId);
 
@@ -44,15 +53,18 @@ export async function open(page:Page,lang:Lang){
  await expect(page.locator('html')).toHaveAttribute('lang',htmlLangOf(lang));
  await expect(page.locator('.sky-card')).toBeVisible({timeout:15_000});
 }
-/** Visible text nodes, accessible names and titles outside the header and outside native `lang="en"` views, with their place. */
+/** Visible text nodes, accessible names and titles outside the header and outside native `lang="en"` views, with their place.
+ * Front HI1: any two letters, not only Latin ones (a Hindi string has none; with Latin letters only, the Hindi walk saw nothing of
+ * a string written wholly in Devanagari, and a fixed name such as «ऑप्टिकल सिमुलेशन विकल्प» was never found). */
 export const texts=(page:Page)=>page.evaluate(()=>{
  const out:string[]=[];
  const shown=(el:Element)=>{for(let e:Element|null=el;e;e=e.parentElement){if((e as HTMLElement).hidden||e.getAttribute('aria-hidden')==='true')return false;const s=getComputedStyle(e);if(s.display==='none'||s.visibility==='hidden')return false;}return true;};
  // The exit reminder is VIREO's Reminder.obs help file, translated with the other help files in ES-HELP.
  const skipped=(el:Element)=>el.closest('.portal-header,[data-i18n-shell],script,style,[data-testid=site-tour],[data-testid^=exit-reminder]')!==null||el.closest('[lang=en]:not(html)')!==null;
  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n:Node|null;
- while((n=walker.nextNode())){const t=n.textContent?.trim(),el=n.parentElement;if(t&&el&&/[A-Za-z]{2}/.test(t)&&!skipped(el)&&shown(el))out.push(t);}
- for(const el of document.querySelectorAll('[aria-label],[title],[placeholder]'))if(!el.closest('.portal-header,[data-i18n-shell]')&&shown(el))for(const a of ['aria-label','title','placeholder']){const v=el.getAttribute(a)?.trim();if(v&&/[A-Za-z]{2}/.test(v))out.push(`@${a}:${v}`);}
+ // Front RU1: two letters of any script (was [A-Za-z]{2}, which skipped every all-Cyrillic text, so a Russian walk compared nothing).
+ while((n=walker.nextNode())){const t=n.textContent?.trim(),el=n.parentElement;if(t&&el&&/\p{L}{2}/u.test(t)&&!skipped(el)&&shown(el))out.push(t);}
+ for(const el of document.querySelectorAll('[aria-label],[title],[placeholder]'))if(!el.closest('.portal-header,[data-i18n-shell]')&&shown(el))for(const a of ['aria-label','title','placeholder']){const v=el.getAttribute(a)?.trim();if(v&&/\p{L}{2}/u.test(v))out.push(`@${a}:${v}`);}
  return out;
 });
 export const close=async(page:Page)=>{await page.keyboard.press('Escape');await page.waitForTimeout(150);};
@@ -111,7 +123,7 @@ export async function multiSpecWalk(page:Page,lang:Lang,each:(step:string)=>Prom
  await page.getByText(T('sky.coordinates'),{exact:true}).click();
  await page.locator('#point-ra').fill('13.002305555555555');await page.locator('#point-dec').fill('27.9775');
  await page.getByRole('button',{name:T('sky.pointCoordinates'),exact:true}).click();await expect(id(page,'pointing-dec')).toHaveText(/^27\.97/,{timeout:30_000});
- await page.getByRole('button',{name:new RegExp(/^(Telescope|Telescopio|Telescópio|Teleskop) ·/.source+'|'+pseudoStart('Telescope ·').source)}).click();
+ await page.getByRole('button',{name:new RegExp(/^(Telescope|Telescopio|Telescópio|Teleskop|दूरबीन|Телескоп) ·/.source+'|'+pseudoStart('Telescope ·').source)}).click();
  const toggle=page.locator('.portal-header .tools-toggle');if(await toggle.isVisible())await toggle.click();
  await id(page,'instructor-mode-open').click();await id(page,'instructor-mode-confirm-on').click();if(await toggle.isVisible()&&await toggle.getAttribute('aria-expanded')==='true')await toggle.click();
  await page.locator('.telescope-motion').getByTestId('ob-options').click();await id(page,'ob-options-edit-mode').check();await id(page,'ob-options-ok').click();
