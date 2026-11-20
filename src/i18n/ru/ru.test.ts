@@ -44,6 +44,10 @@ import {RADIO_ANTENNA_MESSAGES_EN} from '../../components/RadioAntennaMessages';
 import {FINISH_SAVE_MESSAGES_EN} from '../../components/RadioFinishSaveMessages';
 import {RADIO_R1_MESSAGES_EN} from '../../components/RadioR1Messages';
 import {RADIO_SAVE_MESSAGES_EN} from '../../components/RadioRecordSaveMessages';
+import {PULSAR_MESSAGES_EN} from '../../components/PulsarMessages';
+import {SAVED_ROWS_MESSAGES_EN} from '../../components/PulsarSavedRowsMessages';
+import {LOAD_SAVE_MESSAGES_EN} from '../../components/PulsarLoadSaveMessages';
+import {OBJECT_X_GUIDE_EN,OBJECT_X_MEASURE_EN,OBJECT_X_SESSION_EN} from '../../objectx/ObjectXMessages';
 import esIdentical from '../es/identical.json';
 
 // Front RU0 (docs/I18N.md, "Russian: plural families, the folder, lints and shell (RU0)"; plan front-i18n-ru.md §1.2, §4, §6.2): the
@@ -59,10 +63,12 @@ import esIdentical from '../es/identical.json';
 const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,
  camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,nakedEye:NAKED_EYE_MESSAGES_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,
  engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN,clusterHr:CLUSTER_HR_EN,clusterData:CLUSTER_DATA_MESSAGES_EN,
- radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN};
+ radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN,
+ pulsar:PULSAR_MESSAGES_EN,pulsarSavedRows:SAVED_ROWS_MESSAGES_EN,pulsarLoadSave:LOAD_SAVE_MESSAGES_EN,objectXGuide:OBJECT_X_GUIDE_EN,objectXMeasure:OBJECT_X_MEASURE_EN,objectXSession:OBJECT_X_SESSION_EN};
 /** The maps translated completely (RU0's shell maps; RU1's observatory maps, the camera card the observatory shows, and polish; RU2's
- * engineView, spectralRange and wedge; RU4's clusterHr, clusterData and variableStars; RU5's four radio maps). */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars','radioAntenna','radioFinishSave','radioR1','radioRecordSave'];
+ * engineView, spectralRange and wedge; RU4's clusterHr, clusterData and variableStars; RU5's four radio maps; RU6's pulsar, pulsarSavedRows, pulsarLoadSave and the four Object X maps); the help maps webHelp and
+ * helpViewer follow in RU-HELP. */
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars','radioAntenna','radioFinishSave','radioR1','radioRecordSave','pulsar','pulsarSavedRows','pulsarLoadSave','objectXLab','objectXGuide','objectXMeasure','objectXSession'];
 /** Front RU1's area of en.json: FR1's and ID1's observatory keys (the instruments' prefixes and the Hubble hot-list reasons) and the
  * 104 guide keys the observatory files render (src/i18n/fr/fr.test.ts FR1_GUIDE_KEYS, read from there so the two never drift). */
 const OBSERVATORY_PREFIXES=/^(sky|optical|motion|horizon|siteClock|runningClock|scopeAccess|instrumentAccess|instrumentParameters|cameraParameters|cameraInfo|cameraPrepare|palette|testMode|optionsFile|photometerTab|htl|multispec|nativeMirror|hubblePoint)\./;
@@ -83,6 +89,9 @@ const RU3_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E03_PREFIXES.test(k)|
 const E04_E05_PREFIXES=/^(ph|pa|pleiadesLab|nc|db|ce|clusterLab|ownHr|obsHr)\./;
 const RU4_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E04_E05_PREFIXES.test(k));
 /** Front RU5's area of en.json: the radio telescope, as FR5's, ID5's and HI5's. */
+/** Front RU6's area of en.json: E06 (pulsar analysis) and E08 (Object X) with the FITS camera route, FR6's prefixes. With it every
+ * en.json key has its Russian. */
+const RU6_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(pulsarLab|plr|fits)\./.test(k));
 const RU5_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(radio|radioRoute|radioAccess|radioReceiver|radioSimOptions|pulsarParameters)\./.test(k));
 /** VIREO originals that Spanish keeps with no entry (its word equals VIREO's), as for Portuguese, French and Indonesian: the options
  * dialog's General tab («Общие») and the Site Information longitude letter E («В», восток); Front RU5: the radio panel's direction
@@ -153,6 +162,11 @@ describe('Front RU0: the Russian (ru) bundle',()=>{
  it('Front RU5: the catalog covers the radio telescope (every key of its prefixes)',()=>{
   expect(RU5_KEYS.length).toBe(646);
   expect(RU5_KEYS.filter(k=>!Object.hasOwn(catalog,k))).toEqual([]);
+ });
+ it('Front RU6: the catalog covers E06 and E08 (every key of their prefixes), and with them every en.json key',()=>{
+  expect(RU6_KEYS.length).toBe(137);
+  expect(RU6_KEYS.filter(k=>!Object.hasOwn(catalog,k))).toEqual([]);
+  expect(Object.keys(en).filter(k=>!Object.hasOwn(catalog,k))).toEqual([]);
  });
  it('Front RU1: every VIREO original is translated at once, or kept with an identical.json reason, never both',()=>{
   const english=[...Object.keys(esOriginals),...Object.keys(esIdentical.entries).filter(k=>k.startsWith('original:')).map(k=>k.slice('original:'.length))];
