@@ -29,6 +29,7 @@ const VERDICTS:Readonly<Record<string,readonly string[]>>={
  'es-419':['Es una estrella.','Es una galaxia.','Es un cuásar (QSO).','Es un púlsar.','Es un asteroide.'],
  'pt-BR':['É uma estrela.','É uma galáxia.','É um quasar (QSO).','É um pulsar.','É um asteroide.'],
  fr:['C’est une étoile.','C’est une galaxie.','C’est un quasar (QSO).','C’est un pulsar.','C’est un astéroïde.'],
+ id:['Objek Anda adalah bintang.','Objek Anda adalah galaksi.','Objek Anda adalah kuasar (QSO).','Objek Anda adalah pulsar.','Objek Anda adalah asteroid.'],
 };
 for(const L of translatedFor('e08'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const LS=e08Maps(L.tag).objectXLab;

@@ -26,9 +26,11 @@ export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={
  // Front FR6: French keeps the same words (identical.json: Zoom, Horizontal, Vertical (s), Gain, Points, VIREO's OK, Portrait and
  // «- Page 2»); it translates Bytes («Octets») and Panel («Panneau»).
  fr:new Set(['Zoom','Horizontal','Vertical (s)','Gain','Points','OK','Portrait','- Page 2']),
+ // Front ID6: Indonesian keeps the same words (identical.json: Zoom, Horizontal, Gain, Panel, File, VIREO's OK and Edit...).
+ id:new Set(['Zoom','Horizontal','Gain','Gain:','Panel','File','OK','Edit…','Edit...']),
 };
 /** "Panel {n}" is the same in Spanish; Portuguese says «Painel {n}». */
-export const PANEL_IN:Readonly<Record<string,RegExp>>={'es-419':/^Panel \d$/};
+export const PANEL_IN:Readonly<Record<string,RegExp>>={'es-419':/^Panel \d$/,id:/^Panel \d$/};
 /** Both walks: data of the synthetic recording and files (names, identities, comments) shown as stored, outside the `lang="en"`
  * file mirrors that texts() skips. */
 export const DATA=new Set<string>([
