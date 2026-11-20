@@ -5,7 +5,7 @@ import {nextAddress} from '../components/LanguageChoice';
 import {releasing} from '../../tests/fixtures/i18n/registry';
 const decide=(over:Partial<LocaleInputs>)=>decideLocale({param:null,stored:null,languages:['en-US'],dev:false,...over});
 /** Spanish before its release: the registry as it was until ES-REL, with no language released (Front SC8: a per-language gate;
- * since PT-REL Portuguese and since FR-REL French are released too, so they are closed here as well). */
+ * since PT-REL Portuguese, since FR-REL French and since HI-REL Hindi are released too, so they are closed here as well). */
 const UNRELEASED=LANGUAGES.map(l=>({...l,released:false}));
 describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-09)',()=>{
  it('Front ES-REL: Spanish is released, so the stored choice and the browser language decide and the selector is shown',()=>{
@@ -90,18 +90,22 @@ describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-0
   for(const languages of [['ms'],['ms-MY'],['ms-ID'],['zsm'],['jv'],['jv-ID'],['su'],['en-ID'],['en-US','id-ID']])expect(decide({languages,registry:after}),languages.join(',')).toBe('en');
   expect(decide({languages:['id-ID','pt-BR'],registry:after})).toBe('id');expect(decide({stored:'id',languages:['en-US'],registry:after})).toBe('id');
  });
- it('Front HI0: Hindi is registered before its release: only ?lang=hi opens it; hi and hi-* browsers and a stored hi stay English',()=>{
-  expect(isReleased('hi')).toBe(false);expect(HTML_LANG.hi).toBe('hi');
-  expect(decide({param:'hi'})).toBe('hi');expect(decide({param:'hi',languages:['hi-IN']})).toBe('hi');
-  for(const languages of [['hi'],['hi-IN'],['HI-in'],['hi-Latn'],['en-IN'],['ur-IN'],['mr'],['ne']])expect(decide({languages}),languages.join(',')).toBe('en');
-  expect(decide({stored:'hi',languages:['hi-IN']})).toBe('en');
+ it('Front HI-REL: Hindi is released: every hi and hi-* browser (any case) opens hi; en-IN, Urdu, Marathi and Nepali do not; storage is honoured',()=>{
+  expect(isReleased('hi')).toBe(true);expect(HTML_LANG.hi).toBe('hi');expect(selectorShown('hi')).toBe(true);
+  for(const languages of [['hi'],['hi-IN'],['HI-in'],['hi-Latn'],['hi-IN','es-MX']])expect(decide({languages}),languages.join(',')).toBe('hi');
+  // en-IN, Urdu, Marathi, Nepali, Bhojpuri, Maithili, Awadhi, Rajasthani, Punjabi and Bengali are other languages (plan
+  // front-i18n-hi.md §2), and only the first preference decides.
+  for(const languages of [['en-IN'],['ur'],['ur-IN'],['mr'],['ne'],['bho'],['mai'],['awa'],['raj'],['pa'],['bn'],['en-IN','hi-IN']])expect(decide({languages}),languages.join(',')).toBe('en');
+  expect(decide({languages:['hi-IN','pt-BR']})).toBe('hi');expect(decide({languages:['fr-FR','hi-IN']})).toBe('fr');
+  expect(decide({stored:'hi',languages:['en-US']})).toBe('hi');expect(decide({stored:'hi',languages:['es-MX']})).toBe('hi');
+  expect(decide({stored:'en',languages:['hi-IN']})).toBe('en');expect(decide({stored:'fr',languages:['hi-IN']})).toBe('fr');
+  expect(decide({param:'hi',stored:'es-419',languages:['pt-BR']})).toBe('hi');expect(decide({param:'en',languages:['hi-IN']})).toBe('en');
+  // ?lang= takes the exact tag only; other spellings are no tag (English), while the browser language matches in any case.
   for(const junk of ['HI','hi-IN','hi-in'])expect(decide({param:junk}),junk).toBe('en');
-  expect(selectorShown('hi')).toBe(true);
-  // After HI-REL every hi and hi-* browser opens it; en-IN, Urdu, Marathi and Nepali stay English (plan §2).
-  const after=releasing(LANGUAGES,'hi');
-  for(const languages of [['hi'],['hi-IN'],['HI-in'],['hi-Latn']])expect(decide({languages,registry:after}),languages.join(',')).toBe('hi');
-  for(const languages of [['en-IN'],['ur-IN'],['mr'],['ne'],['en-IN','hi-IN']])expect(decide({languages,registry:after}),languages.join(',')).toBe('en');
-  expect(decide({stored:'hi',languages:['en-US'],registry:after})).toBe('hi');
+  // Before its release (HI0–HI-HELP) only ?lang=hi reached it.
+  const before=LANGUAGES.map(l=>l.tag==='hi'?{...l,released:false}:l);
+  for(const languages of [['hi'],['hi-IN'],['HI-in']])expect(decide({languages,registry:before}),languages.join(',')).toBe('en');
+  expect(decide({stored:'hi',languages:['hi-IN'],registry:before})).toBe('en');expect(decide({param:'hi',registry:before})).toBe('hi');
  });
  it('Front JA0: Japanese is registered before its release: only ?lang=ja opens it; ja, ja-JP and JA-jp browsers and a stored ja get English',()=>{
   expect(isReleased('ja')).toBe(false);

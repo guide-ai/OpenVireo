@@ -46,6 +46,9 @@
 # Front FR-REL+SEO: the French home page /fr/ and lab pages /fr/labs/, the same kind of page.
 /fr/*
   Cache-Control: no-cache
+# Front HI-REL+SEO: the Hindi home page /hi/ and lab pages /hi/labs/, the same kind of page.
+/hi/*
+  Cache-Control: no-cache
 /sitemap.xml
   Cache-Control: no-cache
 /robots.txt

@@ -2,7 +2,8 @@
 // prefixes, and the hreflang alternates that join every page with its translations (user decision 8 of 2026-11-09, AGENTS.md).
 // Front PT-SEO: the Spanish checks generalised per language (Brazilian Portuguese under /pt-br/): the texts through each
 // language's lint profile and glossary, the dist-marker guard for every language, and the expected alternates. Front FR-REL+SEO:
-// French under /fr/ (its profile fr, glossary field fr, hreflang fr).
+// French under /fr/ (its profile fr, glossary field fr, hreflang fr). Front HI-REL+SEO: Hindi under /hi/ (its profile hi,
+// glossary field hi, hreflang hi, og:locale hi_IN).
 import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
 import {LABS,SITE_URL,labUrl,labsIndexUrl,SEO_PATH_PREFIX} from './labs';
@@ -13,13 +14,14 @@ import en from '../i18n/en.json' with {type:'json'};
 import esGlossary from '../i18n/es/glossary.json' with {type:'json'};
 import ptGlossary from '../i18n/pt-br/glossary.json' with {type:'json'};
 import frGlossary from '../i18n/fr/glossary.json' with {type:'json'};
+import hiGlossary from '../i18n/hi/glossary.json' with {type:'json'};
 import {OBJECT_X_LAB_ES} from '../i18n/es/maps/objectXLab';
 import {LANGUAGES,languageEntry} from '../i18n/languages';
 import {PROFILES,type ProfileId} from '../i18n/lint/profiles';
 import {claim,describeFindings,digits,glossary,glossaryFrom,html,invisible,markPairs,normalization,placeholders,quotes,register,typography,type Finding,type Glossary,type LocaleProfile,type Pair} from '../i18n/lint/rules';
 
 const TRANSLATED=SEO_LANGUAGES.slice(1);
-const SPANISH=SEO_LANGUAGES.find(l=>l.tag==='es-419')!,PORTUGUESE=SEO_LANGUAGES.find(l=>l.tag==='pt-BR')!,FRENCH=SEO_LANGUAGES.find(l=>l.tag==='fr')!;
+const SPANISH=SEO_LANGUAGES.find(l=>l.tag==='es-419')!,PORTUGUESE=SEO_LANGUAGES.find(l=>l.tag==='pt-BR')!,FRENCH=SEO_LANGUAGES.find(l=>l.tag==='fr')!,HINDI=SEO_LANGUAGES.find(l=>l.tag==='hi')!;
 const attr=(html:string,re:RegExp)=>re.exec(html)?.[1];
 const attrs=(html:string,re:RegExp)=>[...html.matchAll(re)].map(m=>m[1]);
 const ld=(html:string)=>[...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(m=>JSON.parse(m[1]));
@@ -62,6 +64,12 @@ const TEXT_RULES:Readonly<Record<string,TextRules>>={
   reconstruction:'Reconstruction web gratuite',homeDescription:/^Reconstruction web gratuite et non officielle/,
   adaptation:'Ce texte en français est une adaptation web d’OpenVireo, pas un texte du CLEA.',
   notOriginal:'Ce n’est pas le programme d’origine et il n’est pas affilié au Project CLEA.',ogLocale:'fr_FR',ogImage:'/og-image-fr.png',sameName:['pulsars']},
+ // Front HI-REL+SEO: Hindi, with the hi profile (आप, «।» after Devanagari, the nukta in loanwords) and «प्रयोग» for a lab.
+ hi:{profile:'hi',glossary:glossaryFrom(hiGlossary,'hi'),
+  claims:/(?<!गैर-)आधिकारिक (?:अनुवाद|संस्करण|प्रोग्राम)|CLEA (?:का|के|की|द्वारा) (?:आधिकारिक |वेब )?(?:अनुवाद|संस्करण)|CLEA का हिन्दी पाठ/u,
+  reconstruction:'मुफ़्त वेब पुनर्निर्माण',homeDescription:/^मुफ़्त और गैर-आधिकारिक वेब पुनर्निर्माण/,
+  adaptation:'यह हिन्दी पाठ OpenVireo का वेब अनुकूलन है, CLEA का पाठ नहीं।',
+  notOriginal:'यह मूल प्रोग्राम नहीं है और Project CLEA से संबद्ध नहीं है।',ogLocale:'hi_IN',ogImage:'/og-image-hi.png'},
 };
 /** The framework's rules that read the meaning of a page text. Glyph parity and the length ratio are left out: the pages are free
  * prose written from the English, not interface strings (Spanish writes Hertzsprung-Russell with a hyphen). */
@@ -70,7 +78,7 @@ const RULES:readonly ((p:Pair,profile:LocaleProfile,data:{glossary:Glossary})=>F
 describe('the language table',()=>{
  it('has English first (the x-default, whose home page is the app) and one row per language with its own path prefix',()=>{
   expect(SEO_LANGUAGES[0]).toBe(ENGLISH);expect(ENGLISH).toMatchObject({tag:'en',prefix:'',app:'/',home:null});
-  expect(SEO_LANGUAGES.map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr']);
+  expect(SEO_LANGUAGES.map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','hi']);
   expect(Object.keys(SEO_PATH_PREFIX)).toEqual(SEO_LANGUAGES.map(l=>l.tag));
   for(const l of TRANSLATED){
    // A language gets search pages only once the app speaks it, under its registry pagePath (the dist check exempts that path).
@@ -82,9 +90,9 @@ describe('the language table',()=>{
    expect([l.ogLocale,l.ogImage]).toEqual([TEXT_RULES[l.tag].ogLocale,TEXT_RULES[l.tag].ogImage]);
   }
   // Spanish is `es` (es-419 is no hreflang region); Brazilian Portuguese is `pt-BR` and also `pt`, the same page, because the
-  // app opens pt-BR for every pt and pt-* browser; French is `fr` (ISO 639-1 alone: one French for every fr-* browser). No code
-  // names two languages.
-  expect(TRANSLATED.map(l=>l.hreflang)).toEqual([['es'],['pt-BR','pt'],['fr']]);
+  // app opens pt-BR for every pt and pt-* browser; French is `fr` (ISO 639-1 alone: one French for every fr-* browser); Hindi is
+  // `hi` (one Hindi for every hi-* browser). No code names two languages.
+  expect(TRANSLATED.map(l=>l.hreflang)).toEqual([['es'],['pt-BR','pt'],['fr'],['hi']]);
   expect(new Set(SEO_LANGUAGES.flatMap(l=>l.hreflang)).size).toBe(SEO_LANGUAGES.flatMap(l=>l.hreflang).length);
  });
  it('gives every language the seven labs with the English slugs, exercise codes and number of steps',()=>{
@@ -97,9 +105,10 @@ describe('the language table',()=>{
   expect(KEYS.map(k=>pathOf(SPANISH,k))).toEqual(['/es/','/es/labs/',...LABS.map(l=>`/es/labs/${l.slug}/`)]);
   expect(KEYS.map(k=>pathOf(PORTUGUESE,k))).toEqual(['/pt-br/','/pt-br/labs/',...LABS.map(l=>`/pt-br/labs/${l.slug}/`)]);
   expect(KEYS.map(k=>pathOf(FRENCH,k))).toEqual(['/fr/','/fr/labs/',...LABS.map(l=>`/fr/labs/${l.slug}/`)]);
+  expect(KEYS.map(k=>pathOf(HINDI,k))).toEqual(['/hi/','/hi/labs/',...LABS.map(l=>`/hi/labs/${l.slug}/`)]);
   expect(KEYS.slice(1).map(k=>pathOf(ENGLISH,k))).toEqual(['/labs/',...LABS.map(l=>labUrl(l.slug))]);
-  expect([labsIndexUrl(),labsIndexUrl('en'),labsIndexUrl('es-419'),labsIndexUrl('qps'),labsIndexUrl('pt-BR'),labsIndexUrl('fr'),labsIndexUrl('id')]).toEqual(['/labs/','/labs/','/es/labs/','/labs/','/pt-br/labs/','/fr/labs/','/labs/']);
-  expect([labUrl('pulsars','es-419'),labUrl('pulsars','pt-BR'),labUrl('pulsars','fr')]).toEqual(['/es/labs/pulsars/','/pt-br/labs/pulsars/','/fr/labs/pulsars/']);
+  expect([labsIndexUrl(),labsIndexUrl('en'),labsIndexUrl('es-419'),labsIndexUrl('qps'),labsIndexUrl('pt-BR'),labsIndexUrl('fr'),labsIndexUrl('hi'),labsIndexUrl('id')]).toEqual(['/labs/','/labs/','/es/labs/','/labs/','/pt-br/labs/','/fr/labs/','/hi/labs/','/labs/']);
+  expect([labUrl('pulsars','es-419'),labUrl('pulsars','pt-BR'),labUrl('pulsars','fr'),labUrl('pulsars','hi')]).toEqual(['/es/labs/pulsars/','/pt-br/labs/pulsars/','/fr/labs/pulsars/','/hi/labs/pulsars/']);
  });
  it('keeps the Spanish texts that tests/i18n/seo.spec.ts reads from this table equal to the literals es-seo.spec.ts asserted (PT-SEO review)',()=>{
   expect([SPANISH.home!.title,SPANISH.home!.heading,SPANISH.ui.openObservatory,SPANISH.ui.siteNav,SPANISH.ui.openLab,SPANISH.ui.languageName,
@@ -241,7 +250,7 @@ describe('English pages',()=>{
    expect(html).toMatch(/^<!doctype html>\n<html lang="en"><head>/);
    for(const l of TRANSLATED)expect(attrs(html,languageLink(l)),l.tag).toEqual([pathOf(l,key)]);
    expect(attr(html,/<meta property="og:locale" content="([^"]*)"/)).toBe('en_US');
-   expect(attrs(html,/<meta property="og:locale:alternate" content="([^"]*)"/g)).toEqual(['es_LA','pt_BR','fr_FR']);
+   expect(attrs(html,/<meta property="og:locale:alternate" content="([^"]*)"/g)).toEqual(['es_LA','pt_BR','fr_FR','hi_IN']);
    expect(attr(html,/<meta property="og:image" content="([^"]*)"/)).toBe(`${SITE_URL}/og-image.png`);
   }
  });
@@ -250,8 +259,8 @@ describe('English pages',()=>{
 describe('hreflang',()=>{
  it('every page names itself and each translation, with x-default on the English page, and the translations name it back',()=>{
   for(const key of KEYS){
-   const expected=alternates(key),[e,s,p,f]=[ENGLISH,SPANISH,PORTUGUESE,FRENCH].map(l=>SITE_URL+pathOf(l,key));
-   expect(expected).toEqual([['en',e],['es',s],['pt-BR',p],['pt',p],['fr',f],['x-default',e]]);
+   const expected=alternates(key),[e,s,p,f,h]=[ENGLISH,SPANISH,PORTUGUESE,FRENCH,HINDI].map(l=>SITE_URL+pathOf(l,key));
+   expect(expected).toEqual([['en',e],['es',s],['pt-BR',p],['pt',p],['fr',f],['hi',h],['x-default',e]]);
    for(const l of SEO_LANGUAGES){const html=PAGES[pathOf(l,key)];expect(hreflangs(html),pathOf(l,key)).toEqual(expected);}
   }
   expect(Object.keys(PAGES)).toHaveLength(SEO_LANGUAGES.length*KEYS.length);

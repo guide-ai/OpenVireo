@@ -2,9 +2,10 @@ import {type Page} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
 import {contextLocale} from '../fixtures/language';
 import {layoutProblems} from '../fixtures/layoutProblems';
-import {TRANSLATED,type LanguageText} from './languageText';
+import {LAYOUT_IN_SCRIPTS_WALK,TRANSLATED,type LanguageText} from './languageText';
 // Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts). Front PT-REL: this file was es-narrow.spec.ts;
-// it now runs the same sweep for every released language, each in its own browser (es-MX, pt-BR, and fr-FR since FR-REL), with the
+// it now runs the same sweep for every released language, each in its own browser (es-MX, pt-BR, and fr-FR since FR-REL; Hindi since HI-REL
+// has its sweep in the real-Hindi walk), with the
 // Spanish title unchanged.
 
 // Front ES-REL (docs/I18N.md; plan §3.5 and the ES-REL item): the full 320 px sweep in Spanish (and, since PT-REL, in Brazilian
@@ -36,7 +37,9 @@ async function openMenu(page:Page){
 }
 
 const title=(L:LanguageText)=>`at 320 px every ${L.tag==='es-419'?'Spanish':L.entry.englishName} route, the menu with the language selector, OpenVireo's help and About lay out without overflow or clipping`;
-for(const L of TRANSLATED.filter(l=>l.entry.released))test.describe(()=>{
+// Front HI-REL: Hindi is released, but this sweep under the main suite's fonts would measure tofu (no Devanagari face); its 320 px
+// sweep is the real-Hindi walk (tests/scripts/hindi.scripts.ts, decided at HI0).
+for(const L of TRANSLATED.filter(l=>l.entry.released&&!LAYOUT_IN_SCRIPTS_WALK.has(l.tag)))test.describe(()=>{
 test.use({locale:contextLocale(L.tag)});
 test(title(L),async({page})=>{
  test.setTimeout(360_000);

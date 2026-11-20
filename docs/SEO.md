@@ -258,6 +258,62 @@ Inspection on `https://openvireo.space/fr/` and one French lab page (for example
 same in Bing Webmaster Tools if wanted. OpenSEO can track French keywords (for example «TP loi de Hubble», «CLEA astronomie», «TP
 diagramme HR amas») with France, Belgium, Switzerland or Canada as the market.
 
+# Front HI-SEO: Hindi search pages
+
+User decision 8 of 2026-11-09 and the Hindi decisions of 2026-11-19 (AGENTS.md): with the Hindi release (HI-REL, the same front,
+HI-REL+SEO), its home page `/hi/` and lab pages `/hi/labs/`, with `hreflang` and a Hindi preview image, following FR-SEO's
+data-driven design. Static site only; no new external service. The language rules are in `docs/I18N.md`, "Hindi: release and
+search pages (HI-REL+SEO)".
+
+## What changed
+
+- **Data only.** An `hi` row in `src/seo/languages.ts` (`SEO_LANGUAGES`), its lab texts in `src/seo/labs.hi.ts`, its prefix `/hi` in
+  `SEO_PATH_PREFIX` (`src/seo/labSlugs.ts`; equal to the registry's `pagePath`). `src/seo/pages.ts`, the Vite plugin and the image
+  renderer are unchanged: they render the row.
+- **Hindi pages**: `/hi/` (static home), `/hi/labs/` and `/hi/labs/<slug>/` with the English slugs. `<html lang="hi">`, Hindi titles
+  (51–63 characters) and descriptions (146–160), self canonical, `og:locale` `hi_IN` with the other languages' locales as
+  alternates, Hindi JSON-LD (`learningResourceType` «इंटरैक्टिव प्रयोग», `educationalLevel` «हाई स्कूल»/«स्नातक स्तर»,
+  `isBasedOn` crediting Project CLEA, Gettysburg College and the NSF). «प्रयोग खोलें» goes to `/?lang=hi#lab=<slug>`. A lab is a
+  «प्रयोग», and the lab names are the app's own Hindi names («हबल का नियम», «बृहत् पैमाने की संरचना», «तारों का वर्गीकरण»,
+  «कृत्तिका (Pleiades) फ़ोटोमेट्री», «तारागुच्छों के H-R आरेख», «पल्सर», «ऑब्जेक्ट X»). The text addresses the reader as आप
+  with -एँ imperatives and ends sentences with «।»; the footer says «यह हिन्दी पाठ OpenVireo का वेब अनुकूलन है, CLEA का पाठ नहीं।»
+- **hreflang** on every page pair (45 pages, 9 per language): `en`, `es`, `pt-BR`, `pt`, `fr`, `hi` and `x-default` → English. `hi`
+  alone names the one Hindi that the app opens for every `hi`/`hi-*` browser (HI-REL). The sitemap lists all 45 addresses with the
+  same seven alternates. The other languages' pages gain `og:locale:alternate` `hi_IN` and a visible «हिन्दी» link to their Hindi
+  version; `index.html`'s body is untouched.
+- **App**: the observatory footer's labs link goes to `/hi/labs/` when the app is in Hindi (the prefix table gains `hi:'/hi'`).
+- **Preview image** `public/og-image-hi.png` (1200×630, SHA-256 `77547d02…d4870a`): the design of the others with Hindi text («आपके
+  ब्राउज़र में CLEA VIREO खगोल प्रयोग»), rendered by `node scripts/render-og-image.mjs hi` under the scripts fontconfig of `npm run
+  test-fonts` (Noto Sans Devanagari for the Hindi, DejaVu Sans for the Latin); an original drawing, no CLEA image. Two renders
+  gave the same bytes. Its second line first read «…, बिना इंस्टॉल के।», which the review found colloquial; it now reads «…, बिना
+  कुछ इंस्टॉल किए।», as the home's note does.
+- **Styles**: `public/labs/labs.css` gains three rules for `lang="hi"` (the Hindi pages and the 404 page's Hindi block), as the
+  app's `src/theme/scripts.css` does: Devanagari faces after the Latin ones, no letter-spacing or upper case on the eyebrow (Latin
+  devices that break Devanagari), and heading lines of 1.5 for the marks above and below the line. Other languages' pages are
+  unchanged.
+- **Headers**: `/hi/*` is `no-cache`, like the other languages' pages (`public/_headers`, `src/deployHeaders.test.ts`).
+- **404**: the shared page gains Hindi's block («पेज नहीं मिला», its title word «नहीं मिला»).
+
+## Tests
+
+- `src/seo/languages.test.ts`: Hindi joins the per-language checks with its own rules (profile `hi`, glossary field `hi`, Hindi
+  claims, reconstruction phrase «मुफ़्त वेब पुनर्निर्माण», home description starting «मुफ़्त और गैर-आधिकारिक वेब पुनर्निर्माण»,
+  adaptation and credit sentences, `hi_IN`, its image). `src/seo/pages.test.ts` (45 sitemap addresses, the 404 title) and
+  `src/seo/direction.test.ts` follow.
+- `tests/i18n/seo.spec.ts`: the same flows for Hindi (`/hi/`, «प्रयोग खोलें» on the pulsar and Object X pages, English back).
+- `tests/scripts/hindi.scripts.ts` (`npm run test:scripts`): `/hi/`, `/hi/labs/` and `/hi/labs/object-x/` at 320 and 1440 px under
+  Noto Sans Devanagari: no overflow, clipping or cut ink, the eyebrow without letter-spacing or upper case, the heading drawn by
+  Noto Sans Devanagari (and DejaVu for its Latin).
+- `tests/release/pages-smoke.pages.ts`: the Hindi pages and image with the release headers, the 308s, the seven alternates on `/`
+  and each home, the sitemap, and a Hindi lab page opening the app under the release policy (only hi chunks fetched).
+
+## For the user (not done by the site)
+
+After the deploy: in Google Search Console resubmit `https://openvireo.space/sitemap.xml` (it now lists 45 addresses) and use URL
+Inspection on `https://openvireo.space/hi/` and one Hindi lab page (for example `/hi/labs/hubble/`), then «Request indexing». OpenSEO
+can track Hindi keywords (for example «हबल का नियम प्रयोग», «खगोल विज्ञान प्रयोग ऑनलाइन») with India as the market; most Indian
+searchers use English (`en-IN`), which keeps the English pages.
+
 # Front HOME: a welcome on the observatory's first screen
 
 User request, 2026-11-10: before the site is announced to the general public (curious adults and hobby learners, for example

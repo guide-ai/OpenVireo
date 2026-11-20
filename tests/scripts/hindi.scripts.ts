@@ -12,6 +12,7 @@
 // face that draws Devanagari (Noto Sans Devanagari: no tofu, no fallback). Geometric checks only; no pixel screenshots.
 import {test,expect,type Page} from '@playwright/test';
 import {HINDI_TEXT as H} from '../i18n/languageText';
+import {contextLocale} from '../fixtures/language';
 import {layoutProblems,verticalInkProblems,type LayoutOptions} from '../fixtures/layoutProblems';
 import {walk as walkE01,LAYOUT as LAYOUT_E01} from '../i18n/walks/e01';
 import {walk as walkE02,LAYOUT as LAYOUT_E02} from '../i18n/walks/e02';
@@ -25,7 +26,8 @@ import {walk as walkE08,LAYOUT as LAYOUT_E08} from '../i18n/walks/e08';
 type Width=320|1440;
 const id=(page:Page,t:string)=>page.getByTestId(t);
 test.describe.configure({mode:'parallel'});
-test.use({actionTimeout:15_000});
+// Front HI-REL: Hindi is released, so it opens in an hi-IN browser with no query (H.query is empty).
+test.use({actionTimeout:15_000,locale:contextLocale('hi')});
 const LAYOUT={skip:'[lang=en]:not(html)',crossingExempt:'.popup-menu',dialogs:'dialog[open],[role=dialog][aria-modal=true],[role=alertdialog][aria-modal=true]',topDialog:true,controls:'button,label,legend,h1,h2,h3,h4,select,input,summary,th,dt',explainOverflow:true} as const;
 const DEVANAGARI=/[ऀ-ॿ]/u;
 
@@ -200,3 +202,23 @@ for(const width of [320,1440] as const satisfies readonly Width[])
   await check('exit reminder');
   expect([...problems].map(([p,step])=>`${step}: ${p}`),'layout problems under real Hindi (help)').toEqual([]);
  });
+
+// Front HI-REL+SEO: the static Hindi search pages (/hi/, /hi/labs/ and a lab page, src/seo/pages.ts with public/labs/labs.css)
+// under real Devanagari: no overflow or clipped heading or link, no cut ink, the eyebrow without letter-spacing or upper case
+// (Latin devices), and the headline drawn by Noto Sans Devanagari.
+for(const width of [320,1440] as const satisfies readonly Width[])
+test(`real Hindi at ${width} px: the search pages /hi/, /hi/labs/ and /hi/labs/object-x/ lay out without overflow, clipping or cut ink`,async({page})=>{
+ await page.setViewportSize({width,height:width===320?700:1000});
+ const problems=new Map<string,string>();
+ for(const path of ['/hi/','/hi/labs/','/hi/labs/object-x/']){
+  await page.goto(path);await expect(page.locator('html')).toHaveAttribute('lang','hi');
+  await expect(page.locator('h1')).toBeVisible();await settle(page);
+  if(!DEVANAGARI.test(await page.locator('h1').innerText()))problems.set('no Devanagari in the heading',path);
+  for(const p of await layoutProblems(page,{skip:'[lang]:not([lang=hi])',controls:'h1,h2,a,.eyebrow'}))if(!problems.has(p))problems.set(p,path);
+  for(const p of await verticalInkProblems(page))if(!problems.has(p))problems.set(p,path);
+  const eyebrow=await page.locator('.eyebrow').first().evaluate(e=>{const s=getComputedStyle(e);return [s.letterSpacing,s.textTransform];});
+  expect(eyebrow,`${path} eyebrow`).toEqual(['normal','none']);
+  expect((await platformFonts(page,'h1')).map(f=>f.familyName).filter(f=>!/^DejaVu Sans/.test(f)),`${path} h1 faces`).toEqual(['Noto Sans Devanagari']);
+ }
+ expect([...problems].map(([p,path])=>`${path}: ${p}`),'layout problems on the Hindi search pages').toEqual([]);
+});

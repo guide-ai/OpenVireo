@@ -8,6 +8,7 @@
  *
  * Front PT-SEO: Brazilian Portuguese (pt-BR) under /pt-br/, added as data only (its row, its texts in src/seo/labs.pt-br.ts).
  * Front FR-REL+SEO: French (fr) under /fr/, the same way (its row, its texts in src/seo/labs.fr.ts).
+ * Front HI-REL+SEO: Hindi (hi) under /hi/, the same way (its row, its texts in src/seo/labs.hi.ts).
  *
  * Which languages exist here is independent of which are released in the app: a row is added by that language's SEO front,
  * after its release (src/seo/pages.test.ts checks each row's tag against src/i18n/languages.json). */
@@ -15,6 +16,7 @@ import {LABS,type LabText} from './labs.ts';
 import {LAB_TEXT_ES} from './labs.es.ts';
 import {LAB_TEXT_PT_BR} from './labs.pt-br.ts';
 import {LAB_TEXT_FR} from './labs.fr.ts';
+import {LAB_TEXT_HI} from './labs.hi.ts';
 import {SEO_PATH_PREFIX,type LabSlug} from './labSlugs.ts';
 import {LANGUAGES,textDirection,type LanguageEntry,type TextDirection} from '../i18n/languages.ts';
 
@@ -28,9 +30,11 @@ export type SeoLanguage=Readonly<{
   * any `es-*` browser. A language whose tag is valid there lists it first: Brazilian Portuguese is `pt-BR` and also `pt`, the
   * same URL, because the app opens pt-BR for every `pt` and `pt-*` browser (pt-PT, pt-AO, pt-MZ…), so a Portuguese searcher
   * outside Brazil is sent to the Portuguese page rather than to the English x-default. French is `fr` alone (one neutral French
-  * that every `fr-*` browser opens, AGENTS.md 2026-11-11), which every French searcher matches. */
+  * that every `fr-*` browser opens, AGENTS.md 2026-11-11), which every French searcher matches. Hindi is `hi` alone (the app
+  * opens Hindi for every `hi` and `hi-*` browser, AGENTS.md 2026-11-19), which every Hindi searcher matches. */
  hreflang:readonly string[];
- /** Open Graph locale (language_TERRITORY): en_US, es_LA, pt_BR, fr_FR (Open Graph needs a territory; hreflang stays `fr`). */
+ /** Open Graph locale (language_TERRITORY): en_US, es_LA, pt_BR, fr_FR, hi_IN (Open Graph needs a territory; hreflang stays `fr`
+  * and `hi`). */
  ogLocale:string;
  /** Path prefix of its pages: '' for English, SEO_PATH_PREFIX for the others. */
  prefix:string;
@@ -201,8 +205,47 @@ const FR:SeoLanguage={
    'Vous pouvez passer à l’anglais à tout moment avec le sélecteur de langue en haut de la page.']},
 };
 
+const HI:SeoLanguage={
+ tag:'hi',hreflang:['hi'],ogLocale:'hi_IN',prefix:SEO_PATH_PREFIX.hi,app:'/?lang=hi',
+ ogImage:'/og-image-hi.png',ogImageAlt:'OpenVireo: आपके ब्राउज़र में CLEA VIREO के खगोल विज्ञान प्रयोग, हिन्दी में',
+ ogImageText:{title:'आपके ब्राउज़र में CLEA VIREO खगोल प्रयोग',lines:['हबल का नियम · पल्सर · कृत्तिका · ऑब्जेक्ट X · और अन्य।','मुफ़्त, गैर-आधिकारिक वेब पुनर्निर्माण, बिना कुछ इंस्टॉल किए।']},
+ labs:merge(LAB_TEXT_HI),
+ ui:{languageName:'हिन्दी',siteNav:'साइट',breadcrumb:'नेविगेशन पथ',labsCrumb:'प्रयोग',allLabs:'सभी प्रयोग',openObservatory:'वेधशाला खोलें',
+  labEyebrow:'CLEA VIREO के एक प्रयोग पर आधारित',openLab:'प्रयोग खोलें',
+  openLabNote:()=>'इस प्रयोग के गाइड के साथ वेधशाला को हिन्दी में खोलता है। मुफ़्त, बिना पंजीकरण के।',
+  whatYouDo:'क्या करना है',whatYouLearn:'क्या सीखने को मिलेगा',otherLabs:'अन्य प्रयोग',
+  about:'OpenVireo, Project CLEA की आभासी शैक्षिक वेधशाला (Virtual Educational Observatory) VIREO का मुफ़्त और गैर-व्यावसायिक '+
+   'वेब पुनर्निर्माण है। Project CLEA, Gettysburg College की परियोजना है और उसे National Science Foundation और Gettysburg College का '+
+   'सहयोग मिला। यह मूल प्रोग्राम के पुनर्प्राप्त व्यवहार पर आधारित है और मूल डेटा फ़ाइलों का श्रेय के साथ उपयोग करता है। '+
+   'यह मूल प्रोग्राम नहीं है और Project CLEA से संबद्ध नहीं है। ऐप अपने ज्ञात वेब अनुकूलनों को चिह्नित करता है। '+
+   'यह हिन्दी पाठ OpenVireo का वेब अनुकूलन है, CLEA का पाठ नहीं।',
+  platform:'Windows, Mac, Linux या Chromebook पर किसी आधुनिक वेब ब्राउज़र में चलता है। कुछ इंस्टॉल करने की ज़रूरत नहीं, कोई खाता नहीं।',
+  learningResourceType:'इंटरैक्टिव प्रयोग',educationalLevel:['हाई स्कूल','स्नातक स्तर']},
+ labsIndex:{title:'CLEA VIREO के ऑनलाइन खगोल विज्ञान प्रयोग · OpenVireo',
+  description:'ब्राउज़र के लिए फिर से बने सात CLEA VIREO प्रयोग: हबल का नियम, बृहत् पैमाने की संरचना, तारकीय स्पेक्ट्रम, कृत्तिका, तारागुच्छों के H-R आरेख, पल्सर, ऑब्जेक्ट X।',
+  eyebrow:'CLEA VIREO के प्रयोग',heading:'आपके ब्राउज़र में खगोल विज्ञान प्रयोग',
+  lead:'हर प्रयोग Project CLEA की आभासी वेधशाला VIREO के किसी एक विद्यार्थी प्रयोग पर आधारित है। आभासी दूरबीनों और उपकरणों से प्रेक्षण करें, अपना डेटा खुद मापें और अपने निष्कर्ष खुद निकालें।',
+  listName:'CLEA VIREO के प्रयोग'},
+ notFound:{title:'नहीं मिला',heading:'पेज नहीं मिला',text:'यह पता OpenVireo का हिस्सा नहीं है।'},
+ home:{title:'OpenVireo: CLEA VIREO के खगोल विज्ञान प्रयोग, हिन्दी में',
+  description:'मुफ़्त और गैर-आधिकारिक वेब पुनर्निर्माण: Project CLEA की आभासी वेधशाला VIREO, हिन्दी में। हबल का नियम, पल्सर, कृत्तिका, ऑब्जेक्ट X और भी बहुत कुछ।',
+  operatingSystem:'कोई भी (वेब ब्राउज़र में चलता है)',
+  eyebrow:'हिन्दी में आभासी वेधशाला',heading:'CLEA VIREO के खगोल विज्ञान प्रयोग, आपके ब्राउज़र में',
+  lead:'OpenVireo, Project CLEA की आभासी वेधशाला VIREO को वेब के लिए फिर से बनाता है। आभासी दूरबीनों को लक्ष्य की ओर घुमाएँ, स्पेक्ट्रम लें, तारों की चमक मापें और पल्सरों के सिग्नल रिकॉर्ड करें, फिर अपने ही डेटा से अपने निष्कर्ष तक पहुँचें।',
+  note:'मुफ़्त, बिना पंजीकरण के और बिना कुछ इंस्टॉल किए।',
+  labsHeading:'सात प्रयोग',howHeading:'यह कैसे काम करता है',
+  how:['सब कुछ आपके ब्राउज़र में होता है: कुछ इंस्टॉल करने की ज़रूरत नहीं, कोई खाता नहीं।',
+   // Front HOME: the facts of the app welcome (home.factInstall, home.factFaithful), as on /es/, /pt-br/ and /fr/.
+   'Windows या वर्चुअल मशीन की ज़रूरत नहीं: यह Mac, Windows, Linux या Chromebook पर किसी आधुनिक ब्राउज़र में चलता है।',
+   'यह मूल प्रोग्राम के पुनर्प्राप्त व्यवहार का अनुसरण करता है और अपने वेब अनुकूलनों को साफ़ बताता है। यह एक गैर-आधिकारिक पुनर्निर्माण है।',
+   'अपनी जाँचें अपने ही कंप्यूटर पर फ़ाइलों के रूप में सहेजें और जब चाहें उन्हें फिर से लोड करें।',
+   'इंटरफ़ेस, गाइड और सहायता हिन्दी में हैं। साइट जो फ़ाइलें लिखती है (TXT, FITS, CSV और सहेजी गई जाँचें), वे अंग्रेज़ी में और VIREO या OpenVireo के फ़ॉर्मेट में रहती हैं।',
+   'स्क्रीन पर संख्याएँ VIREO की फ़ाइलों की तरह दशमलव बिंदु का उपयोग करती हैं, और अंग्रेज़ी की तरह हर तीन अंकों के समूह को अल्पविराम से अलग करती हैं।',
+   'पेज के ऊपर दिए भाषा चयनकर्ता से कभी भी अंग्रेज़ी पर जाया जा सकता है।']},
+};
+
 /** Every language with static pages, English first (the x-default). */
-export const SEO_LANGUAGES:readonly SeoLanguage[]=Object.freeze([EN,ES,PT_BR,FR]);
+export const SEO_LANGUAGES:readonly SeoLanguage[]=Object.freeze([EN,ES,PT_BR,FR,HI]);
 export const ENGLISH=EN;
 
 /** A page, named the same in every language: the home page, the labs index or one lab. */
