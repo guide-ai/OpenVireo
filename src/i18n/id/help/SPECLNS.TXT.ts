@@ -39,7 +39,7 @@ sekitar B2
 
 *4030.76   Mn I*
 Bandingkan dengan garis Si II 4130
-untuk membedakan bintang F
+untuk pembedaan pada bintang F
 
 *4045.82   Fe I*
 Terlihat pada bintang F0 dan yang lebih
@@ -77,7 +77,7 @@ sekitar B2
 
 Rasio garis ini terhadap garis Si II 4130
 di dekatnya memungkinkan pembedaan yang
-halus pada rentang ini. Si baru tampak
+halus pada rentang ini. Si baru terlihat
 pada B3
 
 *4130.89   Si II*
@@ -85,7 +85,7 @@ Terlihat dari B2 sampai A5
 
 Rasio garis ini terhadap garis He I 4121
 di dekatnya memungkinkan pembedaan yang
-halus pada rentang ini. Baru tampak pada B3.
+halus pada rentang ini. Baru terlihat pada B3.
 
 Rasio garis ini terhadap garis He 4144
 di dekatnya memungkinkan pembedaan yang
@@ -133,7 +133,7 @@ pada B4
 
 *4300.00   CH & Metals (G Band)*
 Pertama kali terlihat sekitar F5 pada bintang
-deret utama, dan G0 pada maharaksasa. Garis
+deret utama, dan G0 pada maharaksasa. Pita
 ini menonjol pada bintang yang lebih dingin
 (G, K, M).
 
@@ -167,7 +167,7 @@ di dekatnya memungkinkan pembedaan sekitar
 B8-B9
 
 *4481.20   Mg II*
-Jelas pada B2-A5; paling kuat pada A1.
+Tampak jelas pada B2-A5; paling kuat pada A1.
 
 Rasio garis ini terhadap garis He I 4471
 di dekatnya memungkinkan pembedaan sekitar

@@ -6,16 +6,16 @@ export const sourceSha256='e085a513389cd65a7726260daf6607b8c277be6e6a2a46222a8fd
 export const text=`**Atur rentang panjang gelombang**
 Anda dapat mengubah rentang panjang gelombang yang dicatat oleh
 spektrometer, dalam batas maksimum 3500 sampai 7400 angstrom.
-(Instruktur Anda akan memberi tahu jika ada alasan untuk melakukannya.)
-Untuk mengubah rentang panjang gelombang, pilih "File"->"Preferensi"
-(Preferences)->"Rentang Spektrum" (Spectral Range) dari menu panel
-kontrol spektrometer.  Gunakan penggeser untuk mengubah nilai minimum
-dan/atau maksimum.  Tombol "Bawaan" (Default) mengembalikan nilai ke
-rentang optimal untuk klasifikasi spektrum.  Perhatikan bahwa spektrum
-yang sudah Anda ambil tetapi belum disimpan akan hilang saat Anda
-mengubah rentang panjang gelombang.
+(Instruktur Anda seharusnya memberi tahu jika ada alasan untuk
+melakukannya.)  Untuk mengubah rentang panjang gelombang, pilih
+"File"->"Preferensi" (Preferences)->"Rentang Spektrum" (Spectral Range)
+dari menu panel kontrol spektrometer.  Gunakan penggeser untuk mengubah
+nilai minimum dan/atau maksimum.  Tombol "Bawaan" (Default)
+mengembalikan nilai ke rentang optimal untuk klasifikasi spektrum.
+Perhatikan bahwa spektrum yang sudah Anda ambil tetapi belum disimpan
+akan hilang saat Anda mengubah rentang panjang gelombang.
 
-**Mulai/lanjutkan penghitungan**
+**Mulai/lanjutkan pencacahan**
 Tekan tombol integrasi "Mulai" (Go) pada spektrometer untuk memulai atau
 melanjutkan integrasi spektrum.  Anda akan melihat spektrum mulai
 membentuk pola yang dapat dikenali seiring cacah terkumpul di
@@ -27,7 +27,7 @@ saluran, dan rasio sinyal-derau ditampilkan di bawah grafik.
 Identifikasi objek dan magnitudo semu juga ditampilkan pada sebagian
 praktikum.
 
-**Hentikan penghitungan**
+**Hentikan pencacahan**
 Menekan tombol integrasi "Berhenti" (Stop) menjeda integrasi.  Tampilan
 digambar ulang dengan garis yang menghubungkan pembacaan saluran yang
 berdekatan agar lebih jelas.  Anda dapat berhenti dan melanjutkan
@@ -47,7 +47,7 @@ beserta informasi header pengenal.
 Spektrum yang sudah Anda ambil tidak dapat diukur atau diklasifikasikan
 kecuali jika disimpan.  Jika Anda merasa rasio sinyal-derau sudah cukup
 tinggi untuk analisis yang akurat (lihat di bawah), hentikan
-penghitungan lalu pilih "File"->"Data"->"Simpan Spektrum..." (Save
+pencacahan lalu pilih "File"->"Data"->"Simpan Spektrum..." (Save
 Spectrum...) dari menu panel kontrol spektrometer.  Nama file dibuat
 dari nama/ID objek (ekstensi .CSP).  Anda akan diminta memverifikasi
 nama file dan jalurnya.  (Pada umumnya, jangan ubah jalur kecuali
@@ -98,10 +98,10 @@ Topik terkait:
 
 **Akses alat klasifikasi**
 Untuk mengklasifikasikan spektrum, Anda harus membuka alat klasifikasi.
-Pilih "Alat"->"Alat Klasifikasi Spektrum" (Spectral Classification Tool)
-dari menu panel kontrol observatorium, maka alat klasifikasi akan
-muncul.  Anda tidak perlu membuka atau menutup panel kontrol teleskop
-sebelum membuka alat klasifikasi.
+Pilih "Alat" (Tools)->"Alat Klasifikasi Spektrum" (Spectral
+Classification Tool) dari menu panel kontrol observatorium, dan alat
+klasifikasi akan muncul.  Anda tidak perlu membuka atau menutup panel
+kontrol teleskop sebelum membuka alat klasifikasi.
 
 Topik terkait:
     Simpan spektrum untuk analisis
@@ -109,11 +109,11 @@ Topik terkait:
 
 **Akses alat pengukur spektrum**
 Untuk mengukur posisi garis spektrum guna menentukan kecepatan radial
-(Z), Anda harus membuka alat pengukur spektrum.  Pilih "Alat"->"Alat
-Pengukur Spektrum" (Spectrum Measuring Tool) dari menu panel kontrol
-observatorium, maka alat pengukur akan muncul.  Anda tidak perlu membuka
-atau menutup panel kontrol teleskop sebelum membuka alat pengukur
-spektrum.
+(Z), Anda harus membuka alat pengukur spektrum.  Pilih "Alat" (Tools)->
+"Alat Pengukur Spektrum" (Spectrum Measuring Tool) dari menu panel
+kontrol observatorium, dan alat pengukur akan muncul.  Anda tidak perlu
+membuka atau menutup panel kontrol teleskop sebelum membuka alat
+pengukur spektrum.
 
 Topik terkait:
     Simpan spektrum untuk analisis

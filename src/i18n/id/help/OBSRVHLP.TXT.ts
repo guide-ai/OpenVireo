@@ -27,7 +27,7 @@ kecil pada posisi teleskop agar objek berada di area aktif instrumen
 yang sedang dipakai.  Untuk menggerakkan teleskop ke bidang atau objek
 yang berbeda, gunakan pilihan menu "Gerakkan" (Slew).
 
-    -Akses lewat keyboard-
+    -Akses keyboard-
     Tombol panah pada keypad numerik (tombol "2","4","6","8") dapat
     dipakai untuk menggerakkan teleskop sebagai pengganti tombol gerak.
     NumLock harus "Aktif" dan MouseKeys harus "Nonaktif".  (Jika Anda
@@ -64,14 +64,13 @@ Untuk mengubah bidang pandang, geser penggeser ke "Pencari" (Finder)
 atau "Teleskop" (Telescope).  Instrumen hanya dapat diakses saat bidang
 pandang teleskop aktif.
 
-Area aktif instrumen yang dipilih digarisbawahi dengan garis merah pada
-tampilan teleskop.  Apertur fotometer ditampilkan sebagai lingkaran
-merah, sedangkan celah spektrometer ditunjukkan oleh sepasang garis
-sejajar pendek yang berdekatan.  Untuk kamera CCD dan IR, sebuah kotak
-menunjukkan ukuran bidang kamera.  (Pada beberapa kombinasi teleskop
-dan kamera, bidang kamera lebih besar daripada tampilan 15 menit busur.
-Hal ini ditandai oleh panah merah yang mengarah ke luar di tepi
-tampilan.)
+Area aktif instrumen yang dipilih diberi garis tepi merah pada tampilan
+teleskop.  Apertur fotometer ditampilkan sebagai lingkaran merah,
+sedangkan celah spektrometer ditunjukkan oleh sepasang garis sejajar
+pendek yang berdekatan.  Untuk kamera CCD dan IR, sebuah kotak
+menunjukkan ukuran bidang kamera.  (Pada beberapa kombinasi teleskop dan
+kamera, bidang kamera lebih besar daripada tampilan 15 menit busur.  Hal
+ini ditandai oleh panah merah yang mengarah ke luar di tepi tampilan.)
 
 Topik terkait:
     "Instrumen"
@@ -101,8 +100,8 @@ satu dari berikut:
     B)  Letakkan penunjuk mouse di atas posisi yang diinginkan pada
         panel penggeser lalu klik tombol kiri mouse, atau...
 
-    C)  Akses lewat keyboard: Gunakan tombol panah untuk menggeser
-        penggeser saat kontrol penggeser yang diinginkan telah dipilih.
+    C)  Akses keyboard: Gunakan tombol panah untuk menggeser penggeser
+        saat kontrol penggeser yang diinginkan telah dipilih.
         (Kontrol yang dipilih diberi garis tepi putus-putus.  Gunakan
         Tab dan Shift-Tab untuk mengubah pilihan.)
 

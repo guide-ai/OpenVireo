@@ -5,8 +5,8 @@ export const sourceName='SPECHLP.LST';
 export const sourceSha256='1b90822216661b0592e1873d6a44994cd30ec5843f5f907774ad580e0f7b4c49';
 export const text=`'Gunakan spektrometer' 'begin'
 'Atur rentang panjang gelombang' 'spechlp.txt'
-'Mulai/lanjutkan penghitungan' 'spechlp.txt'
-'Hentikan penghitungan' 'spechlp.txt'
+'Mulai/lanjutkan pencacahan' 'spechlp.txt'
+'Hentikan pencacahan' 'spechlp.txt'
 'Simpan spektrum untuk analisis' 'spechlp.txt'
 'Gunakan spektrometer' 'end'
 'Analisis spektrum' 'begin'

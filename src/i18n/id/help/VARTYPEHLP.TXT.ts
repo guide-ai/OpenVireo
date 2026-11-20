@@ -3,7 +3,7 @@
 export const language='id';
 export const sourceName='VarTypeHlp.TXT';
 export const sourceSha256='d92f4a14aa7a2923d2921d4ab7fe90a38870e8667b7274629884b69bb6c5f445';
-export const text=`**Jenis variabel berdenyut**
+export const text=`**Tipe variabel berdenyut**
 DCEP/CEP    Cepheid klasik + yang bertipe tidak pasti
 CW          Bintang W Virginis + bintang BL Herculis
 RR          Bintang RR Lyrae
@@ -17,11 +17,11 @@ L           Variabel tak teratur lambat (kadang disebut LPV)
 M           Bintang Mira (kadang disebut LPV)
 RCB         Bintang R Coronae Borealis
 
-**Jenis variabel rotasi**
+**Tipe variabel rotasi**
 
-**Jenis variabel eruptif**
+**Tipe variabel eruptif**
 
-**Jenis variabel eksplosif/katasmik**
+**Tipe variabel eksplosif/kataklismik**
 
-**Jenis variabel gerhana**
+**Tipe variabel gerhana**
 `;

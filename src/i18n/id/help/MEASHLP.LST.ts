@@ -15,7 +15,7 @@ export const text=`'Ukur spektrum' 'begin'
 'Antarmuka pengguna' 'begin'
 'Zoom dan geser spektrum' 'meashlp.txt'
 'Atur kepekaan penggeser' 'meashlp.txt'
-'Pusatkan kembali penggeser' 'meashlp.txt'
+'Pusatkan ulang penggeser' 'meashlp.txt'
 'Tutup jendela pengukuran' 'meashlp.txt'
 'Antarmuka pengguna' 'end'
 `;

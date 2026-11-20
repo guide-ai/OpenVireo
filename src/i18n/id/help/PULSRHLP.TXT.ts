@@ -33,18 +33,18 @@ oleh cakrawala setempat dan mungkin oleh batasan lain pada teleskop.
     tombol sebelum melepaskan tombol mouse.  Dalam hal ini, hentikan
     gerakan dengan menekan dan melepaskan tombol mouse sementara
     penunjuk mouse berada di atas tombol gerak yang aktif.  CATATAN:
-    jika teleskop adalah instrumen transit meridian, tombol "T" dan "B"
+    Jika teleskop adalah instrumen transit meridian, tombol "T" dan "B"
     tidak akan muncul di panel kontrol.
 
     "Penerima" (Receiver) - Tekan tombol ini untuk mengakses penerima
     pertama atau penerima utama ("master").
 
 Topik terkait:
-    Mengatur koordinat
+    Atur koordinat
     Catatan tentang penggerakan teleskop
     Menggunakan penerima
 
-**Mengatur koordinat**
+**Atur koordinat**
 Untuk memasukkan langsung koordinat pengarahan yang diinginkan bagi
 teleskop, pilih "Gerakkan" (Slew)->"Atur Koordinat..." (Set
 Coordinates...) dari menu panel kontrol teleskop radio, lalu masukkan
@@ -63,8 +63,8 @@ Bagian langit yang dapat dijangkau teleskop pada waktu tertentu
 dibatasi oleh beberapa faktor.  Pada kenyataannya, tidak ada teleskop,
 baik optik maupun radio, yang dapat "melihat" di bawah cakrawala
 setempat.  Jika dikonfigurasi demikian, teleskop dalam praktikum ini
-tidak boleh bergerak ke bawah ketinggian yang beberapa derajat di atas
-cakrawala geografis "sebenarnya".
+tidak boleh bergerak lebih rendah dari ketinggian beberapa derajat di
+atas cakrawala geografis "sebenarnya".
 
 Selain itu, banyak teleskop radio dibatasi oleh rancangannya pada
 wilayah langit tertentu di atas kepala.  Yang paling umum adalah
@@ -92,14 +92,14 @@ bergerak ke bagian langit mana pun kapan saja.  Anda akan diberi tahu
 jika hal itu berlaku.
 
 Lihat juga:
-    "Mengatur tanggal dan waktu pengamatan"
+    "Atur tanggal dan waktu pengamatan"
 
-**Memilih objek "Daftar Objek"**
+**Pilih objek di "Daftar Objek"**
 Untuk menggerakkan teleskop ke salah satu item di Daftar Objek, pilih
 "Gerakkan" (Slew)->"Daftar Objek" (Hot List)->"Lihat/Pilih dari
 Daftar..." (View/Select from List...) dari menu panel kontrol teleskop
 radio.  Saat daftar muncul, klik entri yang diinginkan untuk
-menyorotnya.  Klik "OK", dan teleskop akan bergerak ke objek itu.
+menyorotnya.  Tekan "OK", dan teleskop akan bergerak ke objek itu.
 (Perangkat lunak dapat dikonfigurasi agar hanya mengizinkan gerakan ke
 objek yang berada di atas cakrawala instrumen dan dalam jangkauan
 geraknya.)  Jika teleskop adalah instrumen transit meridian, fasilitas
@@ -108,7 +108,7 @@ geraknya.)  Jika teleskop adalah instrumen transit meridian, fasilitas
 Lihat juga:
     "Catatan tentang penggerakan teleskop"
 
-**Menambahkan objek ke "Daftar Objek"**
+**Tambahkan objek ke "Daftar Objek"**
 Anda dapat menambahkan objek menarik ke Daftar Objek agar mudah
 kembali ke objek itu nanti untuk pengamatan lanjutan.  Untuk
 menambahkan objek, arahkan teleskop dengan tepat ke objek tersebut dan
@@ -119,54 +119,54 @@ List...) dari menu panel kontrol teleskop radio.  Pada formulir yang
 muncul, Anda dapat menambahkan komentar untuk membantu mengenali objek
 itu atau alasan mengapa objek itu menarik.  (Anda juga dapat mengubah
 identifikasi dan posisi untuk menambahkan objek yang saat ini tidak
-berada di medan teleskop.)  Setelah selesai mengisi entri, klik "OK"
+berada di medan teleskop.)  Setelah selesai mengisi entri, tekan "OK"
 untuk menambahkannya ke daftar.  (Jika Anda tidak sengaja membuat
 entri yang salah, lihat topik bantuan "Menghapus objek dari "Daftar
 Objek".)
 
-**Menghapus objek dari "Daftar Objek"**
+**Hapus objek dari "Daftar Objek"**
 Untuk menghapus entri dari Daftar Objek, pilih "Gerakkan" (Slew)->
 "Daftar Objek" (Hot List)->"Lihat/Pilih dari Daftar..." (View/Select
 from List...) dari menu panel kontrol teleskop radio.  Saat daftar
-muncul, klik entri yang diinginkan untuk menyorotnya, lalu klik tombol
+muncul, klik entri yang diinginkan untuk menyorotnya, lalu tekan tombol
 "Hapus" (Delete).  Anda akan diminta mengonfirmasi penghapusan sebelum
-entri dihapus dari daftar.  Setelah selesai, Anda dapat mengeklik
+entri dihapus dari daftar.  Setelah selesai, Anda dapat menekan
 "Batal" (Cancel) untuk menutup Daftar Objek jika tidak ingin
 menggerakkan teleskop ke objek lain yang tersisa di Daftar Objek.
 
-**Mengatur tanggal dan waktu pengamatan**
+**Atur tanggal dan waktu pengamatan**
 Untuk mengatur tanggal dan waktu "saat ini" bagi teleskop, tutup panel
 kontrol teleskop radio, lalu pilih "File"->"Atur Tanggal/Waktu
 Pengamatan, ID..." (Set Observation Date/Time, ID...) dari menu panel
 kontrol observatorium.
 
 Topik terkait:
-    "Atur Tanggal & Waktu" (Set Date & Time) di menu "Bantuan" (Help)
+    "Atur tanggal & waktu" (Set Date & Time) di menu "Bantuan" (Help)
     pada panel kontrol observatorium.
 
-**Menganalisis data pulsar**
+**Analisis data pulsar**
 Untuk menganalisis data pulsar yang telah Anda ambil dan catat, pilih
 "Alat" (Tools)->"Alat Analisis Pulsar Radio" (Radio Pulsar Analysis
 Tool) dari menu panel kontrol observatorium.
 
 Topik terkait:
-    Menerima sinyal
-    Mencatat sinyal
-    Mengukur sinyal yang diterima
+    Terima sinyal
+    Catat sinyal
+    Ukur sinyal yang diterima
     Topik "Bantuan" pada menu alat analisis pulsar.
 
-**Menutup panel kontrol teleskop radio**
+**Tutup panel kontrol teleskop radio**
 Untuk menutup panel kontrol teleskop radio, pilih "File"->"Keluar"
 (Exit) dari menu, atau gunakan fitur standar Windows (Menu Sistem atau
 kotak "X") untuk menutup jendela.  Anda akan diingatkan tentang data
 yang belum disimpan dan diberi kesempatan menyimpannya sebelum
 teleskop ditutup.
 
-**Mengakses penerima**
-Untuk mengakses penerima utama ("master"), klik tombol "Penerima"
+**Akses penerima**
+Untuk mengakses penerima utama ("master"), tekan tombol "Penerima"
 (Receiver) di panel kontrol teleskop radio.  Setelah jendela penerima
 utama muncul, hingga dua saluran tambahan atau penerima sekunder
-("slave") dapat diakses dengan mengeklik tombol "Tambah Saluran" (Add
+("slave") dapat diakses dengan menekan tombol "Tambah Saluran" (Add
 Channel) di panel penerima utama.
 
 **Kontrol penerima**
@@ -212,14 +212,14 @@ Sejajarkan Penerima (Align Receivers) dan Volume dinonaktifkan.
     penerimaan maupun pencatatan.
 
     Tambah Saluran (Add Channel) - Menekan tombol ini membuka penerima
-    kedua atau penerima sekunder ("slave").  Frekuensi dan gain
+    sekunder atau penerima "slave".  Frekuensi dan gain
     vertikal penerima sekunder dapat diatur secara terpisah, sedangkan
     semua parameter dan kontrol lainnya ditentukan oleh penerima
     utama.  Paling banyak dua penerima sekunder yang dapat ditambahkan.
     Kontrol "Tambah Saluran" dinonaktifkan selama penerimaan maupun
     pencatatan.  Penerima sekunder dapat ditutup tanpa menutup penerima
     utama, tetapi ada beberapa pembatasan - lihat topik bantuan
-    "Menutup penerima".
+    "Tutup penerima".
 
     Sejajarkan Penerima (Align Receivers) - Tombol ini mengaktifkan
     ("ya") dan menonaktifkan ("tidak") penjajaran penerima.  Bila
@@ -235,16 +235,16 @@ Sejajarkan Penerima (Align Receivers) dan Volume dinonaktifkan.
     semua penerima yang terbuka mulai menampilkan sinyal yang diterima.
     Pencatatan juga dimulai jika Sakelar Catat (Record Switch) "aktif",
     dan suara terdengar jika komputer dilengkapi dengan benar dan efek
-    suara diaktifkan.  Untuk menghentikan penerimaan/pencatatan/suara,
-    tekan tombol Mode Penerima lagi untuk mengubah mode menjadi
-    "Berhenti" (Stop).  Penerimaan/pencatatan/suara kemudian akan
-    berhenti saat tampilan mencapai akhir panel yang sedang berjalan.
-    (Lihat juga topik bantuan "Mencatat sinyal".)
+    suara diaktifkan.  Untuk menghentikan penerimaan/pencatatan, tekan
+    tombol Mode Penerima lagi untuk mengubah mode menjadi "Berhenti"
+    (Stop).  Penerimaan/pencatatan/suara kemudian akan berhenti saat
+    tampilan mencapai akhir panel yang sedang berjalan.
+    (Lihat juga topik bantuan "Catat sinyal".)
 
     Sakelar Catat (Record Switch) - Tombol ini mengaktifkan dan
     menonaktifkan pencatatan sinyal.  Tombol ini hanya aktif saat mode
     penerima adalah "Berhenti" (lihat di atas).  Lihat topik bantuan
-    "Mencatat sinyal" untuk informasi selengkapnya.
+    "Catat sinyal" untuk informasi selengkapnya.
 
     Kontrol Volume (Volume Control) - Kontrol ini hanya muncul di
     penerima utama jika komputer dilengkapi dengan benar untuk
@@ -253,12 +253,12 @@ Sejajarkan Penerima (Align Receivers) dan Volume dinonaktifkan.
     penerimaan/pencatatan.  Lihat topik bantuan "Suara" untuk informasi
     selengkapnya.
 
-**Menerima sinyal**
+**Terima sinyal**
 Untuk menerima sinyal pulsar, arahkan teleskop dengan tepat ke posisi
 pulsar.  Pelacakan teleskop sebaiknya aktif.  (Jika Anda memakai
 teleskop transit meridian, lihat catatan di bawah.)  Setelah teleskop
-berhenti bergerak, akses penerima.  Untuk mulai menerima sinyal, klik
-tombol "Mode".  Untuk berhenti, klik tombol "Mode" lagi; penerimaan
+berhenti bergerak, akses penerima.  Untuk mulai menerima sinyal, tekan
+tombol "Mode".  Untuk berhenti, tekan tombol "Mode" lagi; penerimaan
 akan berhenti di akhir tampilan yang sedang berjalan.  Perhatikan bahwa
 saat sinyal sedang diterima, Anda dapat mengubah frekuensi dan gain
 vertikal secara terpisah untuk setiap penerima yang aktif.  Saat
@@ -284,18 +284,18 @@ selama waktu singkat saat pulsar berada di dalam berkas.
 Topik terkait:
     Kontrol teleskop radio
     Catatan tentang penggerakan teleskop
-    Mengakses penerima
+    Akses penerima
     Kontrol penerima
 
-**Mencatat sinyal**
+**Catat sinyal**
 Untuk mencatat sinyal yang diterima dari pulsar, lakukan dahulu
-langkah-langkah yang dijelaskan pada topik bantuan "Menerima sinyal".
+langkah-langkah yang dijelaskan pada topik bantuan "Terima sinyal".
 Setelah semua penerima diatur agar menghasilkan denyut yang jelas dan
-mudah dikenali, hentikan penerimaan, klik tombol "Catat" (Record)
+mudah dikenali, hentikan penerimaan, tekan tombol "Catat" (Record)
 untuk mengaktifkan pencatatan, lalu mulai menerima lagi.  Semua yang
 Anda lihat di layar penerima akan dicatat, hingga maksimum 4 layar
 penuh (2 hingga 64 detik, bergantung pada pengaturan Detik Horizontal).
-Untuk menghentikan pencatatan, klik tombol Mode untuk menghentikan
+Untuk menghentikan pencatatan, tekan tombol Mode untuk menghentikan
 penerimaan (tetapi yang tercatat tidak akan pernah lebih dari empat
 layar pertama).
 
@@ -303,8 +303,8 @@ Sinyal yang dicatat dapat diukur dengan alat analisis pulsar radio,
 dan/atau disimpan untuk dianalisis nanti.
 
 Topik terkait:
-    Menyimpan sinyal yang diterima
-    Menganalisis data pulsar
+    Simpan sinyal yang diterima
+    Analisis data pulsar
 
 **Suara**
 Jika komputer Anda dilengkapi dengan benar dan fitur suara perangkat
@@ -321,12 +321,12 @@ pulsar dengan periode lebih panjang dari sekitar 1/2 detik.
 Menghentikan dan memulai ulang penerima dapat menyinkronkan kembali
 suara dan video.
 
-**Mengukur sinyal yang diterima**
+**Ukur sinyal yang diterima**
 Sinyal yang diterima dapat diukur langsung pada layar penerima setelah
-penerimaan berhenti.  Klik dan seret dengan tombol kiri mouse untuk
+penerimaan berhenti.  Tekan dan seret dengan tombol kiri mouse untuk
 membuat dan memindahkan kursor vertikal di setiap layar penerima.
 Posisi kursor, dalam detik dari tepi kiri tampilan, muncul di kiri atas
-setiap layar.  Jika Anda mengklik dan menyeret dengan tombol kanan
+setiap layar.  Jika Anda menekan dan menyeret dengan tombol kanan
 mouse, Anda akan membuat dan memindahkan satu kursor "acuan" yang
 muncul di posisi yang sama pada semua layar penerima yang terbuka.
 Pembacaannya muncul di kanan atas semua layar.
@@ -337,11 +337,11 @@ akurat (dengan perbesaran dan penggeseran), dan fitur pencatatan
 pengukuran, catat data penerima dan gunakan alat analisis pulsar radio.
 
 Topik terkait:
-    Mencatat sinyal
-    Menyimpan sinyal yang diterima
-    Menganalisis data pulsar
+    Catat sinyal
+    Simpan sinyal yang diterima
+    Analisis data pulsar
 
-**Menyimpan sinyal yang diterima**
+**Simpan sinyal yang diterima**
 Sinyal yang dicatat berada di memori (RAM).  Dalam keadaan ini sinyal
 dapat diteruskan langsung ke alat analisis data, tetapi jika Anda tidak
 berencana melakukannya segera, atau memerlukan catatan "permanen" untuk
@@ -360,7 +360,7 @@ nama apa pun; program akan menyarankan nama yang dibuat dari informasi
 login Anda.  Selalu gunakan ekstensi ".PLR" pada file ini untuk
 menghindari kesulitan dan kebingungan di kemudian hari.
 
-**Menutup penerima**
+**Tutup penerima**
 Jendela penerima ditutup lewat Menu Sistem (klik kotak kecil di sudut
 kiri atas jendela penerima, lalu pilih "Tutup" (Close)) atau kotak "X"
 di sudut kanan atas jendela.  Menutup jendela penerima utama akan

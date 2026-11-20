@@ -16,7 +16,7 @@ Topik terkait:
 Gunakan penggeser berlabel "Detik" (Seconds) pada panel kontrol
 fotometer untuk mengatur durasi setiap integrasi (lama waktu cacah foton
 terkumpul saat pembacaan dilakukan).  Pilihannya berkisar dari 0.1 detik
-hingga 100 detik, dengan kelipatan 10.
+hingga 100 detik, dengan faktor 10.
 
 Topik terkait:
     Atur jumlah integrasi
@@ -237,7 +237,7 @@ Sebuah panel data akan muncul dengan informasi tentang objek, waktu
 pengamatan, dan pembacaan yang telah Anda lakukan.  Anda dapat
 memasukkan catatan atau komentar apa pun yang ingin dicatat di kotak
 berlabel "Catatan" (Remarks).  Tekan "OK" untuk mencatat semua data.
-(Anda tidak perlu mengisi kotak "Tipe Spektrum" (Sp. Type).)
+(Anda tidak perlu mengisi kotak "Tipe Sp." (Sp. Type).)
 
 Biasanya, Anda tidak perlu mencatat data untuk setiap warna (filter)
 begitu Anda mengambilnya.  Tunggu sampai Anda mengukur bintang (atau
@@ -264,8 +264,8 @@ Anda harus menyelesaikan pengukuran fotometri bintang dalam semua warna
 (filter) yang diperlukan dan mencatat hasilnya sebelum kembali ke
 jendela teleskop.  Pilih "File"->"Keluar dari Fotometer" (Exit
 Photometer) dari menu panel kontrol fotometer (atau tekan tombol "X" di
-sudut kanan atas).  Anda akan diberi peringatan dan kesempatan untuk
-membatalkan kembali jika belum mencatat semua data yang Anda ambil.
+sudut kanan atas).  Anda akan diperingatkan dan diberi kesempatan untuk
+membatalkannya jika belum mencatat semua data yang Anda ambil.
 Saat Anda kembali ke jendela teleskop, data tercatat untuk bintang yang
 Anda kerjakan ditempatkan dalam daftar di memori, tetapi tidak
 disimpan ke file.

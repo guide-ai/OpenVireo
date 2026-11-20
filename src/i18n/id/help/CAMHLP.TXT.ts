@@ -86,14 +86,14 @@ Topik terkait:
 
 **Analisis citra**
 Modul VIREO yang tersedia untuk melihat dan menganalisis citra CCD
-meliputi modul astrometri dan modul pemrosesan citra (DS9).  Setelah
+meliputi modul astrometri dan modul pengolahan citra (DS9).  Setelah
 mengambil dan menyimpan semua citra yang diperlukan, pilih
 "Alat"->(modul) dari menu panel kontrol observatorium, lalu muat citra.
 Modul analisis seharusnya mengakses direktori yang benar - ingat bahwa
 ekstensi file adalah ".FIT".
 
 Topik terkait:
-    Topik di bawah "Alat" pada menu "Bantuan" panel observatorium.
+    Topik di bawah "Alat" di menu "Bantuan" panel kontrol observatorium.
 
 **Parameter kamera**
 Untuk mengakses informasi dan parameter detektor CCD yang Anda pakai,

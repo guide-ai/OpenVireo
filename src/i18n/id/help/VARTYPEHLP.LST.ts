@@ -3,11 +3,11 @@
 export const language='id';
 export const sourceName='VarTypeHlp.LST';
 export const sourceSha256='81cc58382cc90a1d0e3eaa41d414a7df73f07b80453f1bd65d169df72fffe913';
-export const text=`'Jenis bintang variabel' 'begin
-'Jenis variabel berdenyut' 'VarTypeHlp.TXT'
-'Jenis variabel rotasi' 'VarTypeHlp.TXT'
-'Jenis variabel eruptif' 'VarTypeHlp.TXT'
-'Jenis variabel eksplosif/katasmik' 'VarTypeHlp.TXT'
-'Jenis variabel gerhana' 'VarTypeHlp.TXT'
-'Jenis bintang variabel' 'end'
+export const text=`'Tipe bintang variabel' 'begin
+'Tipe variabel berdenyut' 'VarTypeHlp.TXT'
+'Tipe variabel rotasi' 'VarTypeHlp.TXT'
+'Tipe variabel eruptif' 'VarTypeHlp.TXT'
+'Tipe variabel eksplosif/kataklismik' 'VarTypeHlp.TXT'
+'Tipe variabel gerhana' 'VarTypeHlp.TXT'
+'Tipe bintang variabel' 'end'
 `;

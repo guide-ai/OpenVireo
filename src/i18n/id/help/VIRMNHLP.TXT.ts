@@ -4,11 +4,11 @@ export const language='id';
 export const sourceName='VIRMNHLP.TXT';
 export const sourceSha256='6267cd7f2ae72562f8218b4404e566817682b75143cd67bc34fa133fe8dddebc';
 export const text=`**Masuk**
-Untuk login ke Observatorium Pendidikan Virtual (Virtual Educational
+Untuk masuk ke Observatorium Pendidikan Virtual (Virtual Educational
 Observatory, VIREO):
 
     1)  Pilih "File"->"Masuk..." (Log In...) dari menu panel kontrol
-        observatorium. Kotak dialog login akan muncul.
+        observatorium. Kotak dialog Masuk akan muncul.
 
     2)  Isi nama yang sesuai pada kolom yang tersedia.
 
@@ -17,25 +17,25 @@ Observatory, VIREO):
 
     4)  Pilih "OK". Pilihan di bawah "File" yang mengendalikan praktikum
         akan diaktifkan, sedangkan "Masuk..." akan dinonaktifkan. (Anda
-        tidak dapat kembali ke kotak dialog login setelah
+        tidak dapat kembali ke kotak dialog Masuk setelah
         menyelesaikannya.)
 
-Informasi yang diisi pada kotak dialog login dipakai untuk membuat nama
+Informasi yang diisi pada kotak dialog Masuk dipakai untuk membuat nama
 file data, dan akan muncul pada data dan cetakan yang dihasilkan oleh
 praktikum. Jika Anda tidak mengisi informasi apa pun, sebuah kotak akan
 memperingatkan hal ini saat Anda menekan "OK". Jika Anda memilih
 "Batal" (Cancel) pada kotak peringatan, Anda kembali ke kotak dialog
-login. Jika Anda memilih "OK" pada kotak peringatan, program akan
+Masuk. Jika Anda memilih "OK" pada kotak peringatan, program akan
 dilanjutkan. Dalam hal ini, data dan file yang dihasilkan akan diberi
 identitas "NoLog".
 
-Segera setelah login, pilih praktikum yang akan Anda kerjakan.
+Segera setelah masuk, pilih praktikum yang akan Anda kerjakan.
 
 Topik terkait:
-    Pilih Praktikum
+    Pilih praktikum
 
-**Pilih Praktikum**
-Setelah berhasil login, pilih "File"->"Jalankan Praktikum" (Run
+**Pilih praktikum**
+Setelah berhasil masuk, pilih "File"->"Jalankan Praktikum" (Run
 Exercise) dari menu panel kontrol observatorium, lalu pilih praktikum
 dari daftar. Layar judul praktikum yang dipilih akan ditampilkan selama
 lima detik, diikuti panel kontrol observatorium. Praktikum yang Anda
@@ -48,7 +48,7 @@ PERINGATAN: Anda tidak dapat mengubah pilihan praktikum setelah
 memilihnya. Jika Anda salah memilih, Anda harus keluar dari program dan
 memulai dari awal!
 
-**Atur Tanggal dan Waktu**
+**Atur tanggal & waktu**
 Beberapa praktikum yang dikerjakan dengan VIREO memuat unsur yang
 bergantung pada waktu. Saat Anda memulai praktikum "Pencarian
 Objek X", sebuah kotak kecil akan muncul untuk mengisi tanggal, waktu,
@@ -69,7 +69,7 @@ Observatorium Virtual yang tidak terkait praktikum tertentu, pilihan
 menu ini tersedia, tetapi Anda tidak wajib mengatur tanggal/waktu pada
 awalnya.)
 
-**Pilih Teleskop**
+**Pilih teleskop**
 Untuk mengakses teleskop, pilih "Teleskop" (Telescopes) dari menu panel
 kontrol observatorium. Bergantung pada praktikum, Anda akan memiliki
 akses ke satu atau beberapa teleskop optik dan/atau sebuah teleskop
@@ -83,9 +83,9 @@ kubah yang tertutup akan muncul di area tampilan. Untuk teleskop radio,
 sebuah gambar atau grafik lain akan muncul.
 
 Topik terkait:
-    Minta Waktu Teleskop
+    Minta waktu teleskop
 
-**Buka Kubah**
+**Buka kubah**
 Setelah memilih teleskop optik, Anda harus membuka kubah. Tekan bagian
 atas sakelar Buka/Tutup (Open/Close). Kubah akan mulai terbuka dan
 berbagai indikator akan menyala untuk menunjukkan keadaan kubah. Untuk
@@ -109,9 +109,9 @@ magnitudo. Setelah itu, Anda dapat memakai peta bintang untuk mengenali
 bintang dan rasi bintangnya.
 
 Topik terkait:
-    Ganti Teleskop Optik
+    Ganti teleskop optik
 
-**Akses Kontrol Teleskop**
+**Akses kontrol teleskop**
 Setelah kubah terbuka (atau setelah teleskop radio dipilih), tekan
 tombol yang sesuai pada panel berlabel "Panel Kontrol Teleskop"
 (Telescope Control Panel) untuk mengakses kontrol teleskop. Panel
@@ -124,7 +124,7 @@ Saat panel kontrol teleskop terbuka, citra pada panel kontrol
 observatorium akan menjadi hitam. Fitur yang diakses melalui menu panel
 kontrol observatorium tetap tersedia.
 
-**Minta Waktu Teleskop**
+**Minta waktu teleskop**
 Akses ke teleskop yang lebih besar mungkin dibatasi. Anda dapat meminta
 waktu pada teleskop yang saat ini tidak tersedia bagi Anda (pilihannya
 berwarna abu-abu). Untuk meminta waktu, pilih "Teleskop"->"Optik"
@@ -150,9 +150,9 @@ Jika permintaan Anda tidak dikabulkan:
     sebagainya.
 
 Topik terkait:
-    Pilih Teleskop
+    Pilih teleskop
 
-**Ganti Teleskop Optik**
+**Ganti teleskop optik**
 Untuk mengganti teleskop optik, pilih "Teleskop"->"Optik" dari menu
 panel kontrol observatorium, lalu buat pilihan dari daftar yang muncul.
 Jika suatu pilihan berwarna abu-abu, Anda harus meminta dan diberi waktu
@@ -168,9 +168,9 @@ Anda telah diberi sejumlah penggunaan terbatas, Anda akan diberi tahu
 sisa penggunaan Anda sebelum teleskop diakses.
 
 Topik terkait:
-    Minta Waktu Teleskop
+    Minta waktu teleskop
 
-**Alat Klasifikasi Spektrum**
+**Alat klasifikasi spektrum**
 Alat klasifikasi spektrum memungkinkan Anda mengklasifikasikan spektrum
 bintang yang Anda ambil dengan teleskop optik dan spektrometer, serta
 spektrum lain yang disertakan sebagai bagian dari praktikum klasifikasi.
@@ -186,7 +186,7 @@ Topik terkait:
     Topik di bawah "Bantuan" pada menu panel kontrol spektrometer.
     Editor Hasil
 
-**Alat Analisis Pulsar Radio**
+**Alat analisis pulsar radio**
 Alat analisis pulsar radio memungkinkan Anda menganalisis data pulsar
 yang Anda ambil dengan teleskop radio. Untuk mengakses alat analisis
 pulsar radio, pilih "Alat" (Tools)->"Alat Analisis Pulsar Radio" (Radio
@@ -200,7 +200,7 @@ Topik terkait:
     Topik di bawah "Bantuan" pada menu alat analisis pulsar.
     Editor Hasil
 
-**Alat Analisis Diagram HR**
+**Alat analisis diagram HR**
 Alat analisis diagram HR memungkinkan Anda menentukan jarak dan usia
 gugus bintang galaktik dengan mencocokkan deret utama usia nol (ZAMS)
 dan isokron teoretis pada diagram warna-magnitudo bintang gugus. Untuk
@@ -212,9 +212,9 @@ memerlukannya.
 
 Topik terkait:
     Topik di bawah "Bantuan" pada menu analisis diagram HR.
-    Editor Hasil
+    Editor hasil
 
-**Alat Pengukur Spektrum**
+**Alat pengukur spektrum**
 Alat pengukur spektrum memungkinkan Anda mengukur spektrum yang Anda
 ambil dengan teleskop optik dan spektrometer untuk menentukan kecepatan
 radial (Z) suatu objek. Untuk mengakses alat pengukur spektrum, pilih
@@ -229,7 +229,7 @@ Topik terkait:
     Topik di bawah "Bantuan" pada menu panel kontrol spektrometer.
     Editor Hasil
 
-**Alat Diagram Kerucut LSS**
+**Alat diagram kerucut LSS**
 Alat diagram kerucut LSS dipakai untuk membuat diagram kerucut sebagai
 bagian dari praktikum Struktur Skala Besar (Large-Scale Structure).
 Untuk mengakses alat diagram kerucut LSS, pilih "Alat" (Tools)->
@@ -240,10 +240,10 @@ CATATAN: Alat ini hanya tersedia untuk praktikum "Struktur Skala Besar
 Alam Semesta" (Large-Scale Structure of The Universe).
 
 Topik terkait:
-    Topik di bawah "Bantuan" pada menu diagram kerucut.
+    Topik di bawah "Bantuan" pada menu alat diagram kerucut.
     Editor Hasil
 
-**Modul Astrometri**
+**Modul astrometri**
 Modul astrometri memakai citra yang diambil dengan teleskop optik dan
 kamera CCD dan/atau inframerah (IR). Dengan modul ini Anda dapat
 menampilkan citra CCD dan IR, menampilkan/mencetak header citra (FITS),
@@ -255,11 +255,11 @@ CATATAN: Alat ini tidak tersedia untuk praktikum yang tidak
 memerlukannya.
 
 Topik terkait:
-    Pengolahan Citra (DS9)
+    Pengolahan citra (DS9)
     Topik di bawah "Bantuan" pada menu panel kontrol kamera CCD dan IR.
     Topik di bawah "Bantuan" pada menu modul astrometri.
 
-**Pengolahan Citra (DS9)**
+**Pengolahan citra (DS9)**
 Program pengolahan citra berfitur lengkap, "SAOImage DS9", tersedia
 untuk dipakai bersama VIREO. Untuk mengaksesnya, pilih "Alat"
 (Tools)->"Pengolahan Citra (DS9)" (Image Processing (DS9)) dari menu
@@ -280,7 +280,7 @@ CATATAN: Alat ini tidak tersedia untuk praktikum yang tidak
 memerlukannya.
 
 Topik terkait:
-    Modul Astrometri
+    Modul astrometri
     Topik di bawah "Bantuan" pada menu panel kontrol kamera CCD dan IR.
 
 **Editor Hasil**
@@ -312,17 +312,17 @@ Untuk mengakses editor hasil, pilih "Alat" (Tools)->"Editor Hasil"
 yang tersedia bergantung pada praktikum yang Anda kerjakan.
 
 Topik terkait:
-    Muat Data Tersimpan
+    Muat data tersimpan
     Spreadsheet
     Topik bantuan tentang penyimpanan data untuk berbagai instrumen dan
     alat.
 
-**Muat Data Tersimpan**
+**Muat data tersimpan**
 Anda dapat memuat file data yang sebelumnya dibuat dan disimpan dengan
 program ini dan salah satu editor hasil. Fitur ini memungkinkan Anda
 menghentikan praktikum dan melanjutkannya nanti dari titik terakhir,
 serta mengumpulkan data selama beberapa sesi sebagai bagian dari proyek.
-Anda dapat menunda penghitungan dan/atau pembuatan plot hasil akhir
+Anda dapat menunda perhitungan dan/atau pembuatan plot hasil akhir
 sampai semua bintang selesai diukur.
 
 Untuk memuat data tersimpan, pilih "Alat" (Tools)->"Editor Hasil"
@@ -360,13 +360,13 @@ langkah-langkah memakai spreadsheet:
         atau objek lain yang dibutuhkan.
 
     2)  Dengan editor hasil, simpan data Anda dalam format spreadsheet
-        (.CSV). Catat nama file-nya.
+        (.CSV). Catat nama file tersebut.
 
     3)  Pilih "Alat"->"Spreadsheet" dari menu panel kontrol
         observatorium untuk mengakses program spreadsheet.
 
     4)  Muat file data Anda ke spreadsheet (pilih tipe file "Text" -
-        kualifikator .CSV). Dalam kebanyakan kasus, spreadsheet sudah
+        ekstensi .CSV). Dalam kebanyakan kasus, spreadsheet sudah
         terbuka dengan data Anda yang telah dimuat, atau setidaknya
         dengan folder yang benar. Instruktur Anda akan membantu Anda
         dalam hal ini dan kegiatan spreadsheet lainnya.
@@ -384,21 +384,22 @@ langkah-langkah memakai spreadsheet:
 Topik terkait:
     Editor Hasil
 
-**Akhiri Praktikum**
+**Akhiri praktikum**
 Pilih "File"->"Keluar dari Observatorium" (Exit Observatory) dari menu
 panel kontrol observatorium untuk mengakhiri praktikum. Jika Anda telah
 menyimpan spektrum, citra CCD, data pulsar, atau daftar hasil, semuanya
-mungkin tetap berada di mesin sehingga Anda dapat memulai ulang program
-dan mengaksesnya di lain waktu. Namun, instalasi Anda mungkin tidak
-mendukung hal ini - tanyakan kepada instruktur Anda untuk memastikan.
-Agar aman, sebaiknya cetak semua hasil sebelum menutup program.
+mungkin tetap berada di komputer sehingga Anda dapat memulai ulang
+program dan mengaksesnya di lain waktu. Namun, instalasi Anda mungkin
+tidak mendukung hal ini - tanyakan kepada instruktur Anda untuk
+memastikan. Agar aman, sebaiknya cetak semua hasil sebelum menutup
+program.
 
-**Operasi Data**
+**Operasi data**
 INSTRUKTUR: Banyak fungsi data tersedia untuk membantu Anda menyiapkan
 praktikum dan menentukan jawaban yang "benar". Lihat Panduan Pengguna
 (User's Guide) untuk detailnya.
 
-**Akses Keyboard**
+**Akses keyboard**
 Akses keyboard (tanpa mouse) disediakan untuk fasilitas VIREO (lihat
 CATATAN di bawah). Fitur umum akses keyboard adalah sebagai berikut:
 
@@ -423,7 +424,7 @@ CATATAN di bawah). Fitur umum akses keyboard adalah sebagai berikut:
     -Kursor-
     Pada formulir yang memakai kursor bergerak untuk identifikasi
     dan/atau pengukuran, Anda dapat menggerakkan kursor dengan tombol
-    panah pada tombol angka numerik (tombol "2","4","6","8"). Tombol
+    panah pada papan tombol numerik (tombol "2","4","6","8"). Tombol
     ini juga dapat dipakai untuk menggerakkan teleskop. Anda harus
     mengaktifkan NumLock ("On") dan menonaktifkan MouseKeys ("Off")
     untuk memakai fitur ini. (Lihat "MouseKeys" di bawah.)
@@ -431,7 +432,7 @@ CATATAN di bawah). Fitur umum akses keyboard adalah sebagai berikut:
     -MouseKeys-
     Jika Anda memakai MouseKeys, atur sistem Anda agar MouseKeys aktif
     saat NumLock nonaktif ("Off"), untuk menghindari konflik dengan
-    pemakaian tombol panah pada tombol angka numerik (di atas). Anda
+    pemakaian tombol panah pada papan tombol numerik (di atas). Anda
     seharusnya tidak perlu memakai MouseKeys untuk akses keyboard ke
     fitur dasar VIREO (tetapi lihat CATATAN di bawah).
 

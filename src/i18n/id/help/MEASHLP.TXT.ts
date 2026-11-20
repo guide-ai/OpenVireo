@@ -5,7 +5,7 @@ export const sourceName='MEASHLP.TXT';
 export const sourceSha256='e9f20545e1ff580439f45af3fd2e9aff0b64b1cd4edab467d07e8de1813577ac';
 export const text=`**Muat spektrum untuk diukur**
 Untuk memuat spektrum yang akan diukur, pilih "File"->"Data"->"Muat
-Spektrum Tersimpan..." (Load Saved Spectrum...) dari menu alat ukur,
+Spektrum Tersimpan..." (Load Saved Spectrum...) dari menu alat pengukur,
 lalu pilih file spektrum yang akan dimuat.
 
 Topik terkait:
@@ -26,12 +26,12 @@ sebelum mencatatnya.  Anda juga dapat memindahkan garis ke ciri
 berikutnya yang ingin diukur dengan menekan dan menahan tombol panah
 (lihat di bawah).
 
-    -Akses Keyboard-
+    -Akses keyboard-
     Tombol panah pada keypad numerik (tombol "2", "4", "6", "8") dapat
     dipakai untuk memosisikan garis pengukuran sebagai pengganti
-    mouse.  NumLock harus "On" dan MouseKeys harus "Off".  (Jika Anda
-    memakai MouseKeys, atur sistem Anda agar MouseKeys aktif saat
-    NumLock "Off".)  Jika garis pengukuran tidak terlihat, tekan
+    mouse.  NumLock harus "Aktif" dan MouseKeys harus "Nonaktif".  (Jika
+    Anda memakai MouseKeys, atur sistem Anda agar MouseKeys aktif saat
+    NumLock "Nonaktif".)  Jika garis pengukuran tidak terlihat, tekan
     tombol panah kanan ("6"), dan garis akan muncul dari sisi kiri
     tampilan.
 
@@ -42,7 +42,7 @@ Lihat juga:
 
 **Muat spektrum pembanding**
 Untuk memuat spektrum pembanding, pilih "Spektrum Pembanding"
-(Comparison Spectrum)->"Pilih" (Select) dari menu alat ukur, lalu
+(Comparison Spectrum)->"Pilih" (Select) dari menu alat pengukur, lalu
 pilih satu set garis dari daftar yang muncul.  Garis pembanding akan
 muncul pada tampilan dan kontrol penggeser menjadi aktif.  Anda dapat
 memuat set garis sebanyak yang diinginkan.  Semua garis yang dipilih
@@ -66,7 +66,7 @@ Perhatikan hal berikut:
         setiap garis.  Anda harus menilai sendiri kecocokan
         keseluruhan yang terbaik.
 
-    2)  Pengukuran Anda akan lebih akurat jika spektrum di-zoom.
+    2)  Pengukuran Anda akan lebih akurat jika spektrum diperbesar.
         Namun hal ini dapat membuat semua garis tidak terlihat
         sekaligus.  (Lihat topik bantuan di bawah.)
 
@@ -83,7 +83,7 @@ Lihat juga:
     Kosongkan spektrum pembanding
     Zoom dan geser spektrum
     Atur kepekaan penggeser
-    Pusatkan kembali penggeser
+    Pusatkan ulang penggeser
     Catat pengukuran
     Ciri spektrum satu per satu
 
@@ -100,7 +100,7 @@ Lihat juga:
 **Kosongkan spektrum pembanding**
 Untuk mengosongkan spektrum pembanding dari tampilan, pilih "Spektrum
 Pembanding" (Comparison Spectrum)->"Kosongkan" (Clear) dari menu alat
-ukur.  Semua garis pembanding akan dihapus dari tampilan.
+pengukur.  Semua garis pembanding akan dihapus dari tampilan.
 
 **Catat pengukuran**
 Untuk mencatat nilai Z yang Anda ukur, pilih "File"->"Data"->"Catat
@@ -124,19 +124,19 @@ Lihat juga:
     kontrol observatorium.
 
 **Zoom dan geser spektrum**
-Untuk melakukan zoom pada spektrum yang sedang diukur, tekan tombol
-"Zoom".  Sebuah kotak dengan penggeser akan muncul untuk mengatur
-rentang panjang gelombang yang ditampilkan di jendela pengukuran.
-Penggeser mengubah panjang gelombang dalam langkah 100 Angstrom.
-Tombol "Atur Ulang" (Reset) mengembalikan tampilan ke rentang
-panjang gelombang awal (penuh).
+Untuk memperbesar spektrum yang sedang diukur, tekan tombol "Zoom".
+Sebuah kotak dengan penggeser akan muncul untuk mengatur rentang panjang
+gelombang yang ditampilkan di jendela pengukuran.  Penggeser mengubah
+panjang gelombang dalam langkah 100 Angstrom.  Tombol "Atur Ulang"
+(Reset) mengembalikan tampilan ke rentang panjang gelombang awal
+(penuh).
 
-Saat tampilan di-zoom, tombol panah geser di bawah tombol zoom
+Saat tampilan diperbesar, tombol panah geser di bawah tombol "Zoom"
 menjadi aktif.  Gunakan tombol itu untuk mengubah bagian spektrum
 yang terlihat.  Seperti penggeser, tombol itu bekerja dalam langkah
 100 Angstrom.
 
-Zoom pada spektrum memungkinkan penentuan Z yang lebih akurat, karena
+Memperbesar spektrum memungkinkan penentuan Z yang lebih akurat, karena
 piksel yang lebih halus menghasilkan ukuran langkah yang lebih kecil
 dalam penempatan garis pengukuran dan/atau spektrum pembanding.
 Kekurangannya saat mengukur dengan spektrum pembanding adalah tidak
@@ -150,23 +150,23 @@ Topik terkait:
 **Atur kepekaan penggeser**
 Sakelar "Halus" (Fine)/"Kasar" (Coarse) di atas penggeser spektrum
 pembanding mengatur kepekaan penggeser.  Gunakan pengaturan "Kasar"
-hanya saat Anda perlu menggeser spektrum pembanding sejauh mungkin.
+hanya saat Anda perlu menggeser spektrum pembanding cukup jauh.
 
 Topik terkait:
-    Pusatkan kembali penggeser
+    Pusatkan ulang penggeser
     Ukur dengan spektrum pembanding
 
-**Pusatkan kembali penggeser**
+**Pusatkan ulang penggeser**
 Jika Anda mencapai ujung penggeser spektrum pembanding dan perlu
 menggeser spektrum pembanding lebih jauh, tekan tombol kecil di
-sebelah kanan pembacaan Z untuk memusatkan kembali penggeser.
+sebelah kanan pembacaan Z untuk memusatkan ulang penggeser.
 
 Topik terkait:
     Atur kepekaan penggeser
     Ukur dengan spektrum pembanding
 
 **Tutup jendela pengukuran**
-Untuk menutup jendela alat ukur dan kembali ke panel kontrol
+Untuk menutup jendela alat pengukur dan kembali ke panel kontrol
 observatorium, pilih "File"->"Keluar dari Pengukuran Spektrum" (Exit
 Spectrum Measuring) pada menu, atau tekan kotak "X" di sudut kanan
 atas.

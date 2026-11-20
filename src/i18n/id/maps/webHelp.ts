@@ -10,12 +10,12 @@ const topic=(title:string,blocks:readonly (string|readonly string[]|{head:readon
 
 const START={title:'Mulai di sini',topics:[
  topic('Apa itu OpenVireo',[
-  p('OpenVireo adalah versi browser dari VIREO, Observatorium Virtual Edukatif milik Project CLEA (Gettysburg College). OpenVireo disusun ulang dari perilaku VIREO yang dipulihkan dan file data aslinya; ini bukan program CLEA itu sendiri.'),
-  p('Tidak ada yang perlu dipasang, dan tidak ada login maupun akun. Semuanya berjalan di tab browser ini, dan pekerjaan Anda tetap berada di tab sampai Anda menyimpannya sebagai file di komputer Anda. Di layar, angka memakai titik desimal dan spasi tipis di antara ribuan (misalnya 1.5 dan 24 000); ketik juga desimal dengan titik. File yang disimpan situs tetap dalam bahasa Inggris, seperti yang ditulis VIREO.'),
-  p('Versi 1.0 berisi tujuh praktikum VIREO: hukum Hubble, struktur skala besar (LSS), klasifikasi bintang, fotometri Pleiades, diagram HR gugus bintang, pulsar, dan pencarian Objek X. Masing-masing punya panduan di bawah Panduan praktikum pada header.'),
+  p('OpenVireo adalah versi browser dari VIREO, Observatorium Pendidikan Virtual milik Project CLEA (Gettysburg College). OpenVireo dibangun ulang dari perilaku VIREO yang dipulihkan dan file data aslinya; ini bukan program CLEA itu sendiri.'),
+  p('Tidak ada yang perlu dipasang, dan tidak ada akun maupun proses masuk. Semuanya berjalan di tab browser ini, dan pekerjaan Anda tetap berada di tab sampai Anda menyimpannya sebagai file di komputer Anda. Di layar, angka memakai titik desimal dan spasi tipis di antara ribuan (misalnya 1.5 dan 24 000); ketik juga desimal dengan titik. File yang disimpan situs tetap dalam bahasa Inggris, seperti yang ditulis VIREO.'),
+  p('Versi 1.0 berisi tujuh praktikum VIREO: hukum Hubble, struktur skala besar (LSS), klasifikasi bintang, fotometri Pleiades, diagram HR gugus bintang, pulsar, dan Pencarian Objek X. Masing-masing punya panduan di bawah Panduan praktikum pada header.'),
  ]),
  topic('Memulai',[
-  p('Jika Anda mengerjakan salah satu praktikum, untuk sebuah kuliah atau mandiri, buka panduannya lebih dahulu: panduan itu mencantumkan setiap langkah dan membawa Anda ke halaman yang tepat. Untuk menjelajah dengan bebas:'),
+  p('Jika Anda mengerjakan salah satu praktikum, untuk kursus atau secara mandiri, buka panduannya lebih dahulu: panduan itu mencantumkan setiap langkah dan membawa Anda ke halaman yang tepat. Untuk menjelajah dengan bebas:'),
   steps(
    'Buka Observatorium pada header (grup Observatorium optik).',
    'Tekan Buka kubah.',
@@ -26,13 +26,13 @@ const START={title:'Mulai di sini',topics:[
  ]),
  topic('Panduan praktikum',[
   p('Grup Panduan praktikum pada header memiliki satu tombol untuk setiap praktikum: Panduan praktikum Hubble, Panduan LSS, Panduan Objek X, Panduan pulsar, Panduan praktikum Pleiades, Panduan klasifikasi, dan Panduan diagram HR gugus bintang.'),
-  p('Sebuah panduan terbuka sebagai jendela dengan langkah bernomor. Tanda centang menandai setiap langkah yang sudah Anda selesaikan, dan sebuah tombol seperti Lanjut ke langkah berikutnya membawa Anda ke halaman untuk langkah selanjutnya. Tutup panduan kapan saja dan buka lagi dari header; kemajuan Anda tetap tersimpan selama tab tetap terbuka.'),
+  p('Sebuah panduan terbuka sebagai jendela dengan langkah bernomor. Tanda centang menandai setiap langkah yang sudah Anda selesaikan, dan sebuah tombol seperti Lanjut ke langkah berikutnya membawa Anda ke halaman untuk langkah selanjutnya. Tutup panduan kapan saja dan buka lagi dari header; kemajuan Anda dipertahankan selama tab tetap terbuka.'),
   p('Membuka sebuah panduan juga memulai praktikum itu, seperti memilih praktikum di VIREO: panduan menentukan teleskop mana yang terbuka (lihat Teleskop dan Minta Waktu) dan apakah nama serta magnitudo objek ditampilkan. Pada praktikum Objek X, identitas objek tetap tersembunyi sampai Anda mengungkapkannya.'),
  ]),
  topic('Beralih dari VIREO (Windows)',[
   p('Jika Anda mengenal program Windows, atau lembar praktikum Anda ditulis untuknya, tabel ini menunjukkan di mana setiap langkah VIREO berada di OpenVireo.'),
   {head:['Di VIREO (Windows)','Di OpenVireo'],rows:[
-   ['File › Masuk...','Tidak diperlukan: tidak ada akun maupun login. Nama pada hasil cetak tetap kosong.'],
+   ['File › Masuk...','Tidak diperlukan: tidak ada akun maupun proses masuk. Nama pada hasil cetak tetap kosong.'],
    ['File › Jalankan Praktikum','Buka panduan praktikum itu di bawah Panduan praktikum pada header.'],
    ['File › Atur Tanggal/Waktu Pengamatan, ID...','Jam lokasi › Atur Tanggal/Waktu… pada halaman Observatorium (UT). Halaman Objek X memiliki kotak tanggal dan waktunya sendiri (Atur jam observatorium); kotak ID-nya memberi label pada data tersimpan Anda.'],
    ['Teleskop › Optik','Kartu Teleskop optik pada halaman Observatorium: pilih sebuah profil, lalu Gunakan teleskop ini.'],
@@ -44,9 +44,9 @@ const START={title:'Mulai di sini',topics:[
    ['Alat › Editor Hasil','Grup Editor Hasil pada header: Hasil Pengamatan dan Hasil Pulsar.'],
    ['Muat Data Tersimpan...','Pulihkan investigasi (JSON) pada menu Tindakan di bagian atas halaman, atau tombol muat pada editor hasil tempat Anda menyimpan.'],
    ['Alat › Spreadsheet','Unduh CSV hasil, lalu buka file itu di program spreadsheet mana pun.'],
-   ['Alat › Pemrosesan Citra (DS9)','Citra kamera disimpan sebagai unduhan FITS dan dapat dibuka di bawah File › Citra tersimpan atau di penampil FITS mana pun, termasuk DS9.'],
-   ['File › Keluar dari Observatorium','Simpan pekerjaan Anda, lalu tutup tab browser. Di halaman Gerakkan teleskop, menu File memuat Keluar dari Observatorium, yang menampilkan pengingat VIREO.'],
-   ['Papan ketik: Alt, NumLock, dan MouseKeys','Tombol browser yang biasa: lihat Menu, papan ketik, dan ponsel.'],
+   ['Alat › Pengolahan Citra (DS9)','Citra kamera disimpan sebagai unduhan FITS dan dapat dibuka di bawah File › Citra tersimpan atau di penampil FITS mana pun, termasuk DS9.'],
+   ['File › Keluar dari Observatorium','Simpan pekerjaan Anda, lalu tutup tab browser. Menu File dalam Gerakkan teleskop memuat Keluar dari Observatorium, yang menampilkan pengingat VIREO.'],
+   ['Keyboard: Alt, NumLock, dan MouseKeys','Tombol browser yang biasa: lihat Menu, keyboard, dan ponsel.'],
   ]},
  ]),
 ]};
@@ -56,7 +56,7 @@ const OBSERVATORY={title:'Observatorium',topics:[
   p('Halaman Observatorium mengikuti tiga langkah: 1 · Buka kubah, 2 · Pilih dan arahkan, 3 · Jelajahi instrumen.'),
   list(
    'Buka kubah menampakkan langit dan mengaktifkan kontrol teleskop. Tampilan bidang beralih antara Pencari · 2.5° dan Teleskop · 15′.',
-   'Pilih objek mendaftar target yang disarankan, daftar praktikum Hubble, dan setiap target katalog; Cari katalog memfilter daftar (Esc mengosongkannya). Arahkan teleskop memusatkan teleskop pada pilihan Anda. Di bawah Masukkan koordinat, Arahkan ke koordinat mengarahkan teleskop ke asensio rekta dan deklinasi mana pun.',
+   'Pilih objek menampilkan target yang disarankan, daftar praktikum Hubble, dan setiap target katalog; Cari katalog memfilter daftar (Escape mengosongkannya). Arahkan teleskop memusatkan teleskop pada pilihan Anda. Di bawah Masukkan koordinat, Arahkan ke koordinat mengarahkan teleskop ke asensio rekta dan deklinasi mana pun.',
    'Gerakkan teleskop menggerakkan teleskop selama Anda menahan sebuah tombol arah (dengan mouse, Spasi, atau Enter). Menunya memiliki Atur Koordinat…, Lihat/Pilih dari Daftar… (daftar objek), dan Tambahkan Objek/Posisi Saat Ini ke Daftar….',
    'Pelacakan ada di Jam observatorium dan pelacakan spektrum: Aktifkan pelacakan mempertahankan arah teleskop selama jam berjalan. Kamera dan spektrometer menolak mengambil data selama pelacakan nonaktif.'),
  ]),
@@ -73,14 +73,14 @@ const OBSERVATORY={title:'Observatorium',topics:[
    'Spektrometer: Buka spektrometer pada halaman Observatorium, atau halaman praktikum (Eksposur bintang, Eksposur galaksi, Survei LSS, Objek X). Tombol Spektrometer pada header mencantumkan tempat setiap jenis spektrum diambil.',
    'Fotometer: Fotometri Pleiades pada header.',
    'Eksposur langit, Eksposur bintang, dan Eksposur galaksi pada header mengambil spektrum latar langit, bintang katalog yang didukung, dan galaksi Hubble.',
-   'Kamera CCD dan IR: kartu kamera pada halaman Observatorium. Mulai eksposur mengambil sebuah citra; Simpan citra (FITS) mengunduhnya. Bidang tanpa daftar bintang bawaan dapat bertanya langsung ke layanan katalog VizieR (hanya koordinat dan radius yang dikirim).',
+   'Kamera CCD dan IR: kartu kamera pada halaman Observatorium. Mulai eksposur mengambil sebuah citra; Simpan citra (FITS) mengunduhnya. Bidang tanpa daftar bintang yang disertakan dapat meminta data secara langsung dari layanan katalog VizieR (hanya koordinat dan radius yang dikirim).',
    'Multi-Spec: kartu spektrometer multiobjek pada halaman Observatorium.',
    'Teleskop radio: lihat Teleskop radio dan pulsar.'),
   p('Setiap instrumen memiliki tombol Bantuan sendiri. Tombol itu menampilkan bantuan asli VIREO untuk instrumen tersebut, diterjemahkan, dengan Lihat aslinya (bahasa Inggris); jika panel OpenVireo berbeda dari panel VIREO, panel itu sendiri memuat catatan web.'),
  ]),
  topic('Teleskop radio dan pulsar',[
-  p('Teleskop radio pada header membuka panel kontrol teleskop radio. Mulai dengan Mulai praktikum pulsar, arahkan ke sebuah pulsar, dan catat sinyalnya dengan penerima. Panel itu memiliki menu Bantuan sendiri dengan bantuan radio VIREO.'),
-  p('Data radio membuka analisis pulsar: ukur periode dan selang waktu antarfrekuensi dengan kursor, pada rekaman Anda atau pada file .PLR yang tersimpan. Pengukuran yang dicatat hilang saat Anda memuat ulang halaman kecuali Anda menyimpannya: Simpan investigasi menyimpan rekaman Anda dan pengukuran yang sudah dikonfirmasi (lihat Menyimpan pekerjaan Anda).'),
+  p('Teleskop radio pada header membuka panel kontrol teleskop radio. Awali dengan Mulai praktikum pulsar, arahkan ke sebuah pulsar, dan catat sinyalnya dengan penerima. Panel itu memiliki menu Bantuan sendiri dengan bantuan radio VIREO.'),
+  p('Data radio membuka analisis pulsar: ukur periode dan tunda antarfrekuensi dengan kursor, pada rekaman Anda atau pada file .PLR yang tersimpan. Pengukuran yang tercatat hilang saat Anda memuat ulang halaman kecuali Anda menyimpannya: Simpan investigasi menyimpan rekaman Anda dan pengukuran yang sudah dikonfirmasi (lihat Menyimpan pekerjaan Anda).'),
  ]),
 ]};
 
@@ -100,30 +100,30 @@ const ANALYSIS={title:'Analisis dan hasil',topics:[
   list(
    'Simpan investigasi (di bagian atas setiap halaman) mengunduh satu file berisi spektrum, pengukuran, dan pengaturan Anda. Pulihkan investigasi (JSON), pada menu di sebelahnya, memuat file itu lagi nanti; Isi cadangan pada menu yang sama mencantumkan persis apa yang dicakupnya.',
    'Hasil Pengamatan (pada grup Editor Hasil) membuka pergeseran merah Anda yang sudah dikonfirmasi: Unduh teks hasil, Unduh CSV hasil (untuk program spreadsheet), dan Cetak hasil.',
-   'Simpan investigasi juga menyimpan rekaman pulsar dan pengukuran pulsar Anda yang sudah dikonfirmasi. Untuk file .CSV, gunakan Simpan pengukuran yang dicatat (.CSV) pada Data radio; Hasil Pulsar membuka file yang tersimpan untuk ditinjau.',
+   'Simpan investigasi juga menyimpan rekaman pulsar dan pengukuran pulsar Anda yang sudah dikonfirmasi. Untuk file .CSV, gunakan Simpan pengukuran yang tercatat (.CSV) pada Data radio; Hasil Pulsar membuka file yang tersimpan untuk ditinjau.',
    'Citra kamera diunduh sebagai file FITS; buka di bawah File › Citra tersimpan.',
    'Daftar objek disimpan sebagai file .HTL dari editor Daftar objek asli.'),
   p('Hanya tema warna, bagian menu yang Anda biarkan terbuka, apakah Anda sudah melihat tur, apakah tombol ? membuka bantuan, Mode Demonstrasi (Demonstration Mode) milik instruktur, dan buku catatan pengamatan klasifikasi yang diingat oleh browser itu sendiri.'),
  ]),
  topic('Mencetak',[
-  p('Beberapa tombol cetak, seperti Cetak hasil dan Cetak spektrum, langsung membuka kotak dialog cetak browser Anda. Yang lain, seperti Cetak Citra Langit... dan Cetak Diagram Kerucut..., lebih dahulu menampilkan pratinjau cetak yang tombol Cetak…-nya membukanya. Kotak dialog cetak browser juga dapat menyimpan sebagai PDF.'),
+  p('Beberapa tombol cetak, seperti Cetak hasil dan Cetak spektrum, langsung membuka kotak dialog cetak browser Anda. Yang lain, seperti Cetak Citra Langit... dan Cetak Diagram Kerucut..., lebih dahulu menampilkan pratinjau cetak; tombol Cetak… di pratinjau itu membuka kotak dialog cetak. Kotak dialog cetak browser juga dapat menyimpan sebagai PDF.'),
  ]),
  topic('Menyelesaikan praktikum',[
-  p('Simpan investigasi Anda dan file hasil apa pun yang Anda perlukan untuk laporan, lalu tutup tab browser. Keluar dari Observatorium, pada menu File Gerakkan teleskop, menampilkan pengingat akhir praktikum VIREO; halaman web tidak dapat menutup dirinya sendiri, jadi Anda menutup tab itu sendiri.'),
+  p('Simpan investigasi Anda dan file hasil apa pun yang Anda perlukan untuk laporan, lalu tutup tab browser. Keluar dari Observatorium, pada menu File dalam Gerakkan teleskop, menampilkan pengingat akhir praktikum VIREO; halaman web tidak dapat menutup dirinya sendiri, jadi tutup sendiri tab itu.'),
  ]),
 ]};
 
 const SITE={title:'Menggunakan situs',topics:[
- topic('Menu, papan ketik, dan ponsel',[
+ topic('Menu, keyboard, dan ponsel',[
   list(
    'Menu mengelompokkan setiap halaman ke dalam bagian: Observatorium optik, Observatorium radio, Analisis, Editor Hasil, File, dan Panduan praktikum. Klik nama sebuah bagian untuk membuka atau menutupnya; bagian dari halaman yang sedang Anda buka terbuka sendiri, dan browser mengingat sisanya. Di ponsel, menu berada di balik tombol Menu.',
    'Bantuan selalu ada di bagian atas halaman, juga di ponsel. Tekan tombol ? di mana saja di luar kolom teks untuk membuka topik bantuan ini; Anda dapat menonaktifkan tombol itu di bawah.',
    'Bantuan › Ikuti tur situs menampilkan lagi tur kunjungan pertama.',
    'Kode sumber dan Laporkan masalah, di bagian bawah menu dan di Bantuan, membuka halaman OpenVireo di GitHub pada tab baru. Laporkan masalah memulai isu baru dengan nama halaman yang sedang Anda buka sudah terisi; GitHub meminta Anda masuk, dan tidak ada yang dikirim sampai Anda mengirimkannya di sana.',
    'Tab dan Shift+Tab berpindah antarkontrol; Enter atau Spasi menekan sebuah tombol.',
-   'Esc menutup menu dan kotak dialog.',
+   'Escape menutup menu dan kotak dialog.',
    'Tombol arah (teleskop dan radio) bergerak selama ditahan dengan mouse, Spasi, atau Enter.',
-   'Kursor spektrum bergerak dengan tombol panah (Shift untuk langkah yang lebih besar); Enter atau Spasi menerapkan, Esc membatalkan.',
+   'Kursor spektrum bergerak dengan tombol panah (Shift untuk langkah yang lebih besar); Enter atau Spasi menerapkan, Escape membatalkan.',
    'Sakelar tema memilih warna Sistem, Terang, atau Gelap.'),
   'Buka topik bantuan dengan tombol ?',
  ]),

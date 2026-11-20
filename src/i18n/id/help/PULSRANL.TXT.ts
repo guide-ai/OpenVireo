@@ -31,11 +31,11 @@ ini, pilih "File"->"Properti..." (Properties...) dari menu analisis
 data.  Properti yang ditampilkan pada kotak dialog tersebut meliputi:
 
     Identifikasi Objek
-    Waktu Awal Data (Nomor Hari Julian dikurangi 2 400 000)
+    Waktu Mulai Data (Nomor Hari Julian dikurangi 2 400 000)
     Apertur Teleskop (meter)
     Frekuensi (MHz) dan Gain Relatif untuk setiap penerima yang dicatat
     Jumlah Titik Data (untuk setiap penerima yang dicatat)
-    Interval Waktu (milidetik) antartitik data
+    Selang Waktu (msec) antartitik data
     Nama File
 
 Kotak dialog properti juga muncul otomatis saat data dimuat.  Anda tidak
@@ -58,7 +58,7 @@ Kontrol berikut berada di sisi kanan Jendela Analisis Data:
     ditunjukkan oleh pembacaan di kiri dan kanan di bawah panel
     tampilan.
 
-    Kecepatan Geser (Pan Rate) - Kontrol kecepatan geser mengatur
+    Langkah Geser (Pan Rate) - Kontrol langkah geser mengatur
     kecepatan penggeseran horizontal.
 
     Zoom Horizontal (Horizontal Zoom) - Gunakan kontrol zoom "Perbesar"
@@ -70,7 +70,7 @@ Kontrol berikut berada di sisi kanan Jendela Analisis Data:
     bawah panel tampilan.
 
     Atur Ulang (Reset) - Menekan tombol "Atur Ulang" mengembalikan skala
-    vertikal semua panel ke 1, faktor zoom ke 1, dan kecepatan geser ke
+    vertikal semua panel ke 1, faktor zoom ke 1, dan langkah geser ke
     2.  Tampilan kembali ke awal data, dan semua kursor serta pembacaan
     kursor dikosongkan.
 
@@ -98,46 +98,46 @@ menentukan dan mengukur posisi denyut dengan akurat.
 Gunakan prosedur berikut untuk mencatat pengukuran Anda:
 
     1) Lakukan pengukuran dengan memposisikan kursor seperti dijelaskan
-    pada topik Bantuan "Lakukan pengukuran".  Anda dapat melakukan
-    pengukuran di semua panel tampilan yang aktif sekaligus.
+    pada topik Bantuan "Lakukan pengukuran".  Jika mau, Anda dapat
+    melakukan pengukuran di semua panel tampilan yang aktif saat ini.
 
-    2) Pilih "Hasil"->"Catat Pengukuran Saat Ini..." (Record Current
-    Measurements...) dari menu analisis data.
+    2) Pilih "Hasil" (Results)->"Catat pengukuran saat ini..." (Record
+    Current Measurements...) dari menu analisis data.
 
     3) Serangkaian kotak dialog akan muncul, menampilkan pengukuran dan
     properti yang akan dicatat untuk setiap panel yang memiliki
-    pengukuran belum tercatat.  Anda dapat menambahkan komentar pada
-    setiap catatan pengukuran.  Pilih "OK" untuk mencatat pengukuran,
-    atau "Batal" (Cancel) untuk melewatinya untuk sementara.
+    pengukuran belum tercatat.  Jika mau, Anda dapat menambahkan
+    komentar pada setiap catatan pengukuran.  Pilih "OK" untuk mencatat
+    pengukuran, atau "Batal" (Cancel) untuk melewatinya kali ini.
 
 Setiap pengukuran yang Anda catat akan ditambahkan ke daftar pengukuran
-saat ini.  Lihat topik Bantuan "Tinjau pengukuran tercatat", "Simpan
-pengukuran tercatat", dan "Kosongkan daftar pengukuran" untuk informasi
-tentang cara menangani catatan dalam daftar ini.
+saat ini.  Lihat topik Bantuan "Tinjau pengukuran yang tercatat",
+"Simpan pengukuran yang tercatat", dan "Kosongkan daftar pengukuran"
+untuk informasi tentang cara menangani catatan dalam daftar ini.
 
-**Tinjau pengukuran tercatat**
+**Tinjau pengukuran yang tercatat**
 Anda dapat meninjau daftar pengukuran tercatat saat ini kapan saja,
-setelah Anda mulai mencatat pengukuran.  Pilih "Hasil"->"Tinjau
-Pengukuran Tercatat..." (Review Recorded Measurements...) dari menu
-analisis data.  Sebuah kotak dialog yang menampilkan semua catatan saat
-ini akan muncul.  Untuk memilih catatan tertentu, klik catatan itu
-dengan mouse.  Anda dapat mencari catatan yang memuat teks tertentu
-(pilih "Temukan..." (Find...)).  Setelah memilih sebuah catatan, Anda
-dapat melihatnya dan mengedit kolom komentar (pilih "Edit..."), atau
-menghapus catatan dari daftar (pilih "Hapus" (Delete)).
+setelah Anda mulai mencatat pengukuran.  Pilih "Hasil" (Results)->
+"Tinjau pengukuran yang tercatat..." (Review Recorded Measurements...)
+dari menu analisis data.  Sebuah kotak dialog yang menampilkan semua
+catatan saat ini akan muncul.  Untuk memilih catatan tertentu, klik
+catatan itu dengan mouse.  Anda dapat mencari catatan yang memuat teks
+tertentu (pilih "Temukan..." (Find...)).  Setelah memilih sebuah
+catatan, Anda dapat melihatnya dan mengedit kolom komentar (pilih
+"Edit..."), atau menghapus catatan dari daftar (pilih "Hapus" (Delete)).
 
-Setelah selesai meninjau catatan, pilih "OK" atau "Batal".  Perubahan
-apa pun yang Anda buat pada catatan dalam daftar (pengeditan atau
-penghapusan) akan dibuang jika Anda memilih "Batal".
+Setelah selesai meninjau catatan, pilih "OK" atau "Batal" (Cancel).
+Perubahan apa pun yang Anda buat pada catatan dalam daftar (pengeditan
+atau penghapusan) akan dibuang jika Anda memilih "Batal".
 
-**Simpan pengukuran tercatat**
+**Simpan pengukuran yang tercatat**
 Untuk menyimpan daftar pengukuran tercatat Anda saat ini ke sebuah file,
-pilih "Hasil"->"Simpan Pengukuran Tercatat..." (Save Recorded
-Measurements...) dari menu analisis data.  Tentukan nama file melalui
-kotak dialog yang muncul.  Data disimpan dalam format "nilai dipisahkan
-koma" (Comma Separated Values) yang diterima oleh program spreadsheet
-standar.  Gunakan ekstensi ".CSV" pada file apa pun yang Anda buat di
-sini.  (Lihat topik Bantuan "Akses program spreadsheet".)
+pilih "Hasil" (Results)->"Simpan pengukuran yang tercatat..." (Save
+Recorded Measurements...) dari menu analisis data.  Tentukan nama file
+melalui kotak dialog yang muncul.  Data disimpan dalam format "nilai
+dipisahkan koma" (Comma Separated Values) yang diterima oleh program
+spreadsheet standar.  Gunakan ekstensi ".CSV" pada file apa pun yang
+Anda buat di sini.  (Lihat topik Bantuan "Akses program spreadsheet".)
 
 Jika Anda memilih nama file yang sudah ada, data yang ada akan tertimpa.
 Anda akan diperingatkan dan diberi kesempatan untuk mengubah pilihan
@@ -149,15 +149,16 @@ Biasanya daftar pengukuran saat ini tetap utuh, bahkan setelah disimpan
 ke file, dan pengukuran baru ditambahkan ke dalamnya.  (Artinya Anda
 dapat menyimpan file, menambahkan pengukuran lagi, lalu menyimpan ke
 file yang sama tanpa kehilangan data.)  Jika Anda ingin membuat daftar
-pengukuran baru, tanpa catatan sebelumnya, pilih "Hasil"->"Kosongkan
-Daftar Pengukuran" (Clear Measurement List) dari menu analisis data.
+pengukuran baru, tanpa catatan sebelumnya, pilih "Hasil" (Results)->
+"Kosongkan daftar pengukuran" (Clear Measurement List) dari menu
+analisis data.
 
 **Akses program spreadsheet**
 Anda mungkin dapat membuka program spreadsheet untuk menganalisis data
-langsung dari praktikum ini.  Jika pilihannya aktif, pilih
-"Hasil"->"Spreadsheet" dari menu analisis data.  Jika Anda baru saja
+langsung dari praktikum ini.  Jika pilihannya aktif, pilih "Hasil"
+(Results)->"Spreadsheet" dari menu analisis data.  Jika Anda baru saja
 menyimpan file untuk spreadsheet (lihat topik Bantuan "Simpan pengukuran
-tercatat"), file itu akan dimuat otomatis saat program spreadsheet
+yang tercatat"), file itu akan dimuat otomatis saat program spreadsheet
 terbuka.  Jika Anda ingin memuat file ke spreadsheet sendiri, ingat
 bahwa tipe filenya adalah ".CSV".  Anda mungkin menemukannya di bawah
 judul "Text Files" pada kotak dialog pemuatan file spreadsheet.
@@ -168,7 +169,7 @@ data memungkinkan Anda mencetak citra jendela analisis data kapan saja.
 Citra ini menampilkan semua kursor pada posisi saat ini dan pembacaan
 dengan nilai saat ini.  Fitur ini memakai fasilitas cetak Windows, dan
 akan mencetak berwarna jika printer berwarna dipilih.  Hasil cetak
-mencakup nama Login untuk identifikasi, dan properti data saat ini.
+mencakup nama login untuk identifikasi, dan properti data saat ini.
 
 **Tutup jendela analisis data**
 Untuk menutup jendela analisis data dan kembali ke jendela utama, pilih

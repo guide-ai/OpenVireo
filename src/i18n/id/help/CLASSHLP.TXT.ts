@@ -84,12 +84,12 @@ Untuk mengukur panjang gelombang dan intensitas suatu ciri spektrum:
     "menyetel halus" posisi garis dengan tombol panah pada keypad
     numerik (lihat di bawah).
 
-    -Akses Keyboard-
+    -Akses keyboard-
     Tombol panah pada keypad numerik (tombol "2", "4", "6", "8") dapat
     dipakai untuk memosisikan garis pengukuran sebagai pengganti
-    mouse.  NumLock harus "On" dan MouseKeys harus "Off".  (Jika Anda
-    memakai MouseKeys, atur sistem Anda agar MouseKeys aktif saat
-    NumLock "Off".)  Jika garis pengukuran tidak terlihat, tekan
+    mouse.  NumLock harus "Aktif" dan MouseKeys harus "Nonaktif".  (Jika
+    Anda memakai MouseKeys, atur sistem Anda agar MouseKeys aktif saat
+    NumLock "Nonaktif".)  Jika garis pengukuran tidak terlihat, tekan
     tombol panah kanan ("6"), dan garis akan muncul dari sisi kiri
     tampilan.
 
@@ -103,14 +103,15 @@ Kontrol berikut terletak di sisi kanan jendela klasifikasi:
     Perbesar (Zoom In) (ujung panah atas):
         Memperbesar spektrum yang ditampilkan dengan faktor 2, hingga
         maksimum 16 kali tampilan awal.  Jika suatu ciri ditandai,
-        zoom berusaha memusatkannya pada tampilan yang diperbesar.
+        kontrol ini berusaha memusatkannya pada tampilan yang
+        diperbesar.
         Jika tidak ada garis yang ditandai, panjang gelombang di
         pusat tampilan tetap sama.
 
     Perkecil (Zoom Out) (ujung panah bawah):
         Mengurangi pembesaran spektrum yang ditampilkan dengan faktor
         2, hingga pembesaran awal (1X).  Jika suatu garis ditandai,
-        zoom berusaha menjaganya tetap di tengah tampilan.
+        kontrol ini berusaha menjaganya tetap di tengah tampilan.
 
     Panah geser (Pan Arrows) (ujung panah kiri & kanan):
         Gunakan kontrol panah kiri dan kanan untuk menelusuri
@@ -133,7 +134,7 @@ tahan tombol kiri mouse, lalu seret jendelanya.)
 
 Fitur tabel garis spektrum:
 
-    -Pelacakan Kursor-
+    -Pelacakan kursor-
         Saat tombol kiri mouse ditekan dengan kursor di mana pun di
         dalam tampilan spektrum, entri yang panjang gelombangnya
         paling dekat dengan posisi kursor disorot pada tabel garis
@@ -147,7 +148,7 @@ Fitur tabel garis spektrum:
             (Fe) tidak muncul pada bintang tipe awal, garis helium
             (He) tidak muncul pada bintang tipe akhir, dan seterusnya.
 
-    -Menandai Posisi Garis-
+    -Menandai posisi garis-
         Mengeklik tombol kiri mouse pada suatu entri di tabel garis
         spektrum menyorot entri itu, dan posisi garisnya ditandai pada
         tampilan spektrum.
@@ -201,8 +202,8 @@ mengklasifikasi spektrum bintang dengan sangat akurat dan ragu akan
 kekuatan relatif ciri-ciri penting, pengukuran lebar ekuivalen dapat
 membantu.  Untuk mengukur lebar ekuivalen suatu ciri spektrum:
 
-    1)  Zoom tampilan ke pembesaran yang memungkinkan "bahu" garis
-        terlihat jelas dan dapat ditandai.
+    1)  Perbesar tampilan hingga "bahu" garis terlihat jelas dan dapat
+        ditandai.
 
     2)  Pilih "Lebar Ekuivalen Garis..." (Line Equivalent Width...)
         dari menu klasifikasi.  Sebuah kotak akan muncul dengan
@@ -218,7 +219,7 @@ membantu.  Untuk mengukur lebar ekuivalen suatu ciri spektrum:
         bahu secara bergantian.  Posisi vertikal kursor harus
         menunjukkan tingkat kontinum di setiap sisi garis.  Jika Anda
         melakukannya dengan benar, rentang garis akan dibatasi oleh
-        kotak biru, dengan penanda posisi garis merah melewati
+        kotak biru, dengan penanda merah posisi garis melintas di
         sekitar pusatnya.  Jika ingin mengubah suatu posisi, cukup
         arahkan kursor ke posisi baru lalu klik tombol kanan lagi.
         Anda juga dapat memosisikan ulang penanda pusat garis dengan
