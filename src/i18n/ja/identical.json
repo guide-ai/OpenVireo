@@ -86,6 +86,22 @@
   "map:variableStars.columns.0": "Front JA4: the catalog name GCVS ID",
   "map:variableStars.columns.7": "Front JA4: an empty column header",
   "map:variableStars.noPeriod": "Front JA4: a dash for a missing period",
-  "map:clusterHr.ok": "Front JA4: VIREO's OK"
+  "map:clusterHr.ok": "Front JA4: VIREO's OK",
+  "catalog:radio.env.dome.2": "Front JA5: a dome-state number, as VIREO shows it",
+  "catalog:radioRoute.clock.utcValue": "Front JA5: a placeholder and the abbreviation UT",
+  "catalog:pulsarParameters.reference.sha": "Front JA5: a hash label kept in English (SHA-256)",
+  "catalog:radioAccess.values.lastOk": "Front JA5: VIREO's OK (the dialog's last result)",
+  "map:radioAntenna.antenna.menu.item": "Front JA5: placeholders and the menu-path glyph ▸ only",
+  "map:radioAntenna.antenna.clock.ut": "Front JA5: the abbreviation UT, as the panel shows it",
+  "map:radioAntenna.antenna.clock.hoursValue": "Front JA5: a placeholder and the unit symbol h",
+  "map:radioAntenna.antenna.format.ra": "Front JA5: a sexagesimal format of placeholders and the unit symbols h, m, s",
+  "map:radioAntenna.antenna.format.dec": "Front JA5: a sexagesimal format of placeholders and the symbols ° ′ ″",
+  "map:radioAntenna.antenna.notice.title.hot-list-empty": "Front JA5: a placeholder for VIREO caption text, translated through vireo() by the caller",
+  "map:radioAntenna.antenna.notice.hot-list-empty": "Front JA5: a placeholder for VIREO message text, translated through vireo() by the caller",
+  "map:radioAntenna.antenna.notice.title.hot-list-search-miss": "Front JA5: a placeholder for VIREO caption text, translated through vireo() by the caller",
+  "map:radioAntenna.antenna.notice.hot-list-search-miss": "Front JA5: a placeholder for VIREO message text, translated through vireo() by the caller",
+  "map:radioAntenna.antenna.hotList.item": "Front JA5: placeholders and the menu-path glyph ▸ only",
+  "catalog:radioAccess.menu.flagTrue": "Front JA5: Delphi's True flag value, kept as VIREO's options code writes it",
+  "catalog:radioAccess.menu.flagFalse": "Front JA5: Delphi's False flag value, kept as VIREO's options code writes it"
  }
 }

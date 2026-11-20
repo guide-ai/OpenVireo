@@ -38,7 +38,9 @@ export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new S
  // Front ID5: Indonesian (ID1's identical originals: VIREO's File, OK and Mode).
  id:new Set(['File','OK','Mode']),
  // Front HI5: Hindi (identical.json: VIREO's pulsar parameter symbol PDot (S/S):, a formula symbol).
- hi:new Set(['PDot (S/S):'])};
+ hi:new Set(['PDot (S/S):']),
+ // Front JA5: VIREO's OK and PDot (S/S): in Japanese (JA1's identical originals).
+ ja:new Set(['OK','PDot (S/S):'])};
 export const NOT_SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['Radio','Radio...','E','No','no','Hrs']),
  // Front FR5: Spanish-only words French translates (Non, non, h, Octets); Radio, Radio... and E (Est) are the same in French.
  fr:new Set(['No','no','Hrs','Bytes']),
