@@ -48,6 +48,12 @@
     "glossary"
    ],
    "reason": "Front RU4: «визуальные ориентиры» are guide lines drawn on the chart, not an exercise guide"
+  },
+  "map:radioAntenna.antenna.notice.title.question": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "Front RU5: the title of a question box, «Подтверждение», as VIREO's Confirmation caption in originals.json; «Подтвердить» is the button"
   }
  }
 }

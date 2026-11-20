@@ -40,6 +40,10 @@ import {SPECTRAL_RANGE_EN} from '../../SpectralRangeMessages';
 import {WEDGE_MESSAGES_EN} from '../../components/WedgeMessages';
 import {CLUSTER_HR_EN} from '../../clusters/ClusterHrMessages';
 import {CLUSTER_DATA_MESSAGES_EN} from '../../clusterdata/ClusterDataMessages';
+import {RADIO_ANTENNA_MESSAGES_EN} from '../../components/RadioAntennaMessages';
+import {FINISH_SAVE_MESSAGES_EN} from '../../components/RadioFinishSaveMessages';
+import {RADIO_R1_MESSAGES_EN} from '../../components/RadioR1Messages';
+import {RADIO_SAVE_MESSAGES_EN} from '../../components/RadioRecordSaveMessages';
 import esIdentical from '../es/identical.json';
 
 // Front RU0 (docs/I18N.md, "Russian: plural families, the folder, lints and shell (RU0)"; plan front-i18n-ru.md §1.2, §4, §6.2): the
@@ -54,10 +58,11 @@ import esIdentical from '../es/identical.json';
 // A VIREO `fragment|` original keeps its straight quotes (another piece of VIREO's text closes them).
 const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,
  camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,nakedEye:NAKED_EYE_MESSAGES_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,
- engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN,clusterHr:CLUSTER_HR_EN,clusterData:CLUSTER_DATA_MESSAGES_EN};
+ engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN,clusterHr:CLUSTER_HR_EN,clusterData:CLUSTER_DATA_MESSAGES_EN,
+ radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN};
 /** The maps translated completely (RU0's shell maps; RU1's observatory maps, the camera card the observatory shows, and polish; RU2's
- * engineView, spectralRange and wedge; RU4's clusterHr, clusterData and variableStars). */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars'];
+ * engineView, spectralRange and wedge; RU4's clusterHr, clusterData and variableStars; RU5's four radio maps). */
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars','radioAntenna','radioFinishSave','radioR1','radioRecordSave'];
 /** Front RU1's area of en.json: FR1's and ID1's observatory keys (the instruments' prefixes and the Hubble hot-list reasons) and the
  * 104 guide keys the observatory files render (src/i18n/fr/fr.test.ts FR1_GUIDE_KEYS, read from there so the two never drift). */
 const OBSERVATORY_PREFIXES=/^(sky|optical|motion|horizon|siteClock|runningClock|scopeAccess|instrumentAccess|instrumentParameters|cameraParameters|cameraInfo|cameraPrepare|palette|testMode|optionsFile|photometerTab|htl|multispec|nativeMirror|hubblePoint)\./;
@@ -77,9 +82,12 @@ const RU3_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E03_PREFIXES.test(k)|
  * and HI4's; the obsHr plural families gain their `.few` and `.many` forms (pinned by the plural family check below). */
 const E04_E05_PREFIXES=/^(ph|pa|pleiadesLab|nc|db|ce|clusterLab|ownHr|obsHr)\./;
 const RU4_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E04_E05_PREFIXES.test(k));
+/** Front RU5's area of en.json: the radio telescope, as FR5's, ID5's and HI5's. */
+const RU5_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(radio|radioRoute|radioAccess|radioReceiver|radioSimOptions|pulsarParameters)\./.test(k));
 /** VIREO originals that Spanish keeps with no entry (its word equals VIREO's), as for Portuguese, French and Indonesian: the options
- * dialog's General tab («Общие») and the Site Information longitude letter E («В», восток). */
-const RU_ONLY_ORIGINALS:readonly string[]=['General','E'];
+ * dialog's General tab («Общие») and the Site Information longitude letter E («В», восток); Front RU5: the radio panel's direction
+ * buttons N and S («С», «Ю»; E and W are «В» and «З», the same letters as the longitude), as Hindi's. */
+const RU_ONLY_ORIGINALS:readonly string[]=['General','E','N','S'];
 /** RU0's area of en.json: the shell (header, menu, first steps, toolbar, errors, instructor mode, document title), as FR0's. */
 const SHELL_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(app|project|session|error|instructorMode)\./.test(k)||/\.nav$/.test(k)||['demonstrationMode.banner','sky.eyebrow','sky.title','sky.subtitle','sky.about','sky.local','sky.observatory','sky.analyzer','sky.step1','sky.step1Help','sky.step2','sky.step2Help','sky.step3','sky.step3Help','spectrum.tools','classLink.cancel'].includes(k));
 const profile=PROFILES.ru;
@@ -142,13 +150,17 @@ describe('Front RU0: the Russian (ru) bundle',()=>{
   expect(obsHr.length).toBe(40);
   expect(obsHr.filter(k=>!Object.hasOwn(catalog,k))).toEqual([]);
  });
+ it('Front RU5: the catalog covers the radio telescope (every key of its prefixes)',()=>{
+  expect(RU5_KEYS.length).toBe(646);
+  expect(RU5_KEYS.filter(k=>!Object.hasOwn(catalog,k))).toEqual([]);
+ });
  it('Front RU1: every VIREO original is translated at once, or kept with an identical.json reason, never both',()=>{
   const english=[...Object.keys(esOriginals),...Object.keys(esIdentical.entries).filter(k=>k.startsWith('original:')).map(k=>k.slice('original:'.length))];
   expect(new Set(english).size).toBe(760);english.push(...RU_ONLY_ORIGINALS);
   const same=identical.entries as Record<string,string>,kept=Object.keys(same).filter(k=>k.startsWith('original:')).map(k=>k.slice('original:'.length));
   expect(english.filter(k=>!Object.hasOwn(originals,k)&&!Object.hasOwn(same,`original:${k}`))).toEqual([]);
   for(const k of kept){expect(english,k).toContain(k);expect(Object.hasOwn(originals,k),k).toBe(false);}
-  expect((originals as Record<string,string>).E).toBe('В');expect((originals as Record<string,string>).W).toBe('З');
+  expect((originals as Record<string,string>).E).toBe('В');expect((originals as Record<string,string>).W).toBe('З');expect((originals as Record<string,string>).N).toBe('С');expect((originals as Record<string,string>).S).toBe('Ю');
  });
  it('Front RU1 review: a VIREO `fragment|` piece keeps the join spaces the reviewed Spanish piece has at each edge (VIREO joins it with data)',()=>{
   const edges=(v:string)=>[/^ /.test(v),/ $/.test(v)];

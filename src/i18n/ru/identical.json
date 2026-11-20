@@ -55,6 +55,20 @@
   "catalog:obsHr.colBV": "Front RU4: the colour index symbol B − V as a column header",
   "map:variableStars.typeOption": "Front RU4: a format of parameters and a number only",
   "map:variableStars.columns.7": "Front RU4: the empty header of the action column",
-  "map:variableStars.noPeriod": "Front RU4: an em dash for no period"
+  "map:variableStars.noPeriod": "Front RU4: an em dash for no period",
+  "catalog:radio.env.dome.2": "Front RU5: a number only (the dome state value 2)",
+  "catalog:pulsarParameters.reference.sha": "Front RU5: the hash name SHA-256",
+  "catalog:radioRoute.clock.utcValue": "Front RU5: a parameter and the time scale symbol UT",
+  "catalog:radioRoute.date.storedValue": "Front RU5: a parameter in quotation marks only («{id}»)",
+  "map:radioAntenna.antenna.menu.item": "Front RU5: a format of parameters only ({menu} ▸ {item})",
+  "map:radioAntenna.antenna.clock.ut": "Front RU5: the time scale symbol UT",
+  "map:radioAntenna.antenna.format.dec": "Front RU5: a format of parameters and angle symbols only",
+  "map:radioAntenna.antenna.notice.title.hot-list-empty": "Front RU5: a parameter only (VIREO's caption, translated through vireo())",
+  "map:radioAntenna.antenna.notice.hot-list-empty": "Front RU5: a parameter only (VIREO's text, translated through vireo())",
+  "map:radioAntenna.antenna.notice.title.hot-list-search-miss": "Front RU5: a parameter only (VIREO's caption, translated through vireo())",
+  "map:radioAntenna.antenna.notice.hot-list-search-miss": "Front RU5: a parameter only (VIREO's text, translated through vireo())",
+  "map:radioAntenna.antenna.hotList.item": "Front RU5: a format of parameters only ({menu} ▸ {group} ▸ {item})",
+  "map:radioAntenna.antenna.rateLimit.recovery.afterModal": "Front RU5: a format of parameters only ({first} {recovery})",
+  "map:radioAntenna.antenna.rateLimit.alternative.separator": "Front RU5: a separator only (semicolon and space)"
  }
 }

@@ -262,6 +262,23 @@ test('modifiers: Ctrl/Alt/Meta+N start nothing and are not consumed; Shift+N hol
  await padKey(page,cdp,'keyUp','Numpad8');await advance(page,1);expect(await dec(page)).toBe(d2);// a late numeric key-up: no owner, nothing
 });
 
+// Front RU5 (user decision 2026-11-19 Q3): under a layout that types non-Latin letters (Russian ЙЦУКЕН: у, т, ы, ц on the E, N, S, W
+// keys) the panel reads the physical key's code. Chromium CDP stimulus: `key` the Cyrillic letter, `code` the physical key.
+test('Q3: under a Cyrillic layout the physical E and N keys hold their buttons; a Cyrillic letter on a non-letter key does nothing and is not consumed',async({page,browserName})=>{test.skip(browserName!=='chromium','CDP key stimulus');
+ await openRadio(page);await setupRadio(page);await trackingOn(page);await controlledClock(page);await recordKeys(page);
+ const cdp=await page.context().newCDPSession(page);
+ const cyrillic=async(type:'rawKeyDown'|'keyUp',key:string,code:string,vk:number)=>{await cdp.send('Input.dispatchKeyEvent',{type,key,code,windowsVirtualKeyCode:vk});await flushTasks(page);};
+ const n=500*K,e=500*K/15,d0=await dec(page),r0=await ra(page);
+ await tracking(page).focus();await cyrillic('rawKeyDown','т','KeyN',78);
+ await expect(pad(page,'north')).toBeFocused();await expect(pad(page,'north')).toHaveAttribute('data-held','true');
+ expect(await lastKey(page,'keydown','KeyN')).toMatchObject({key:'т',location:0,prevented:true});
+ await advance(page,1);await cyrillic('keyUp','т','KeyN',78);await notHeld(page);expect(await dec(page)).toBe(d0+n);
+ await cyrillic('rawKeyDown','У','KeyE',69);await expect(pad(page,'east')).toHaveAttribute('data-held','true');
+ await advance(page,1);await cyrillic('keyUp','у','KeyE',69);await notHeld(page);expect(await ra(page)).toBe(r0+e);
+ await cyrillic('rawKeyDown','х','BracketLeft',219);await advance(page,1);await notHeld(page);
+ expect((await lastKey(page,'keydown','BracketLeft')).prevented).toBe(false);await cyrillic('keyUp','х','BracketLeft',219);
+ expect(await dec(page)).toBe(d0+n);
+});
 test('scope: the keys do nothing in text fields, the coordinate dialog, Set Coordinates, Slew Rate, the body, the radio switch or under a foreign dialog',async({page})=>{
  await openRadio(page);await setupRadio(page);await trackingOn(page);await controlledClock(page);await recordKeys(page);
  const d0=await dec(page),r0=await ra(page);

@@ -110,7 +110,7 @@
  "Naked Eye Star": "Звезда, видимая невооружённым глазом",
  "Unable to Open Naked Eye Data File!\r\n\r\nFile Name:": "Не удалось открыть файл данных звёзд, видимых невооружённым глазом!\r\n\r\nИмя файла:",
  "Edit Mode": "Режим правки",
- "In Edit Mode \"Preferences\" is always enabled and data editing operations are enabled.": "В режиме правки пункт «Параметры» всегда доступен и разрешены операции правки данных.",
+ "In Edit Mode \"Preferences\" is always enabled and data editing operations are enabled.": "В режиме правки пункт «Настройки» всегда доступен и разрешены операции правки данных.",
  "Star Data List": "Список данных о звёздах",
  "QSO List...": "Список QSO...",
  "Tools": "Сервис",
@@ -755,5 +755,7 @@
  "Hrs": "Ч",
  "Min:": "Мин.:",
  "General": "Общие",
- "E": "В"
+ "E": "В",
+ "N": "С",
+ "S": "Ю"
 }

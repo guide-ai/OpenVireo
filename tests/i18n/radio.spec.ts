@@ -58,6 +58,16 @@ const TODO_JA6_TAGS:ReadonlySet<string>=new Set(['ja']);
 const TODO_JA6=TODO_JA6_PULSAR_KEYS.map(k=>{const m=new RegExp(`'${k.replace(/\./g,'\\.')}': '((?:[^'\\\\]|\\\\.)*)'`).exec(PULSAR_SOURCE);if(!m)throw new Error(k);
  const t=m[1].replace(/\\'/g,"'");return new RegExp(`^${t.split(/\{\w+\}/).map(p=>p.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')).join('[\\s\\S]*?')}$`);});
 const pendingJa6=(text:string,L:LanguageText)=>TODO_JA6_TAGS.has(L.tag)&&TODO_JA6.some(p=>p.test(text));
+/** Front RU5: the same for Russian, which translates the pulsar analysis map in RU6 (E06). Until then only these keys may read as
+ * English in Russian, only on the Record Save dialog step; remove the list when RU6 merges (this test then fails if a key is still
+ * English). */
+const TODO_RU6_PULSAR_KEYS=['pulsar.rawExport.scope','pulsar.rawExport.format','pulsar.rawExport.inactive','pulsar.rawExport.inactiveNone','pulsar.rawExport.loss.heading',
+ 'pulsar.rawExport.loss.header','pulsar.rawExport.loss.headerNone','pulsar.rawExport.loss.samples','pulsar.rawExport.loss.memory','pulsar.save.how','pulsar.save.extensionRule',
+ 'pulsar.save.origin','pulsar.save.warning','pulsar.save.choose','pulsar.save.chooseAgain','pulsar.save.refusal.stale'] as const;
+const TODO_RU6_TAGS:ReadonlySet<string>=new Set(['ru']);
+const TODO_RU6=TODO_RU6_PULSAR_KEYS.map(k=>{const m=new RegExp(`'${k.replace(/\./g,'\\.')}': '((?:[^'\\\\]|\\\\.)*)'`).exec(PULSAR_SOURCE);if(!m)throw new Error(k);
+ const t=m[1].replace(/\\'/g,"'");return new RegExp(`^${t.split(/\{\w+\}/).map(p=>p.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')).join('[\\s\\S]*?')}$`);});
+const pendingRu6=(text:string,L:LanguageText)=>TODO_RU6_TAGS.has(L.tag)&&TODO_RU6.some(p=>p.test(text));
 
 for(const L of translatedFor('radio'))test.describe(()=>{test.use({locale:contextLocale(L.tag)});
  const C=L.catalog as Record<string,string>;
@@ -71,7 +81,7 @@ for(const L of translatedFor('radio'))test.describe(()=>{test.use({locale:contex
  }
  const english=new Set([...seen.en.values()].flatMap(s=>[...s].map(bare)));
  const left=new Map<string,string>();// each text once, with the first step that shows it
- for(const [step,list] of seen.own)for(const t of list)if(english.has(bare(t))&&!same(bare(t),L)&&!(step==='Record Save dialog'&&pendingHi6(bare(t),L))&&!(step==='Record Save dialog'&&pendingId6(bare(t),L))&&!(step==='Record Save dialog'&&pendingJa6(bare(t),L))&&!left.has(t))left.set(t,step);
+ for(const [step,list] of seen.own)for(const t of list)if(english.has(bare(t))&&!same(bare(t),L)&&!(step==='Record Save dialog'&&pendingHi6(bare(t),L))&&!(step==='Record Save dialog'&&pendingId6(bare(t),L))&&!(step==='Record Save dialog'&&pendingJa6(bare(t),L))&&!(step==='Record Save dialog'&&pendingRu6(bare(t),L))&&!left.has(t))left.set(t,step);
  expect([...left].map(([t,step])=>`${step}: ${t}`)).toEqual([]);
  // The scenario selectors' options are in the language.
  const options=[...seen.own.get('control panel')!].filter(t=>t.startsWith('@option:'));
