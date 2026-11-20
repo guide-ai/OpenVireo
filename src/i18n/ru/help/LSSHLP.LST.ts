@@ -1,0 +1,45 @@
+// Front RU-HELP [W]: OpenVireo's Russian (ru) web adaptation of VIREO's LSSHLP.LST. Not CLEA's text: the original bytes, hashes
+// and provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Russian chunk.
+export const language='ru';
+export const sourceName='LSSHLP.LST';
+export const sourceSha256='f4ee3de45cead6cac0ae53458c94f9927bd48248a573632787d9e6a275e05c10';
+export const text=`'Начало работы' 'begin'
+'Войти' 'lsslab.txt'
+'Управление телескопом' 'begin'
+'Открыть окно телескопа' 'lsslab.txt'
+'Элементы управления телескопом' 'lsslab.txt'
+'Управление телескопом' 'end'
+'Сменить телескоп' 'begin'
+'Запросить время на телескопе' 'lsslab.txt'
+'Доступ к телескопам' 'lsslab.txt'
+'Сменить телескоп' 'end'
+'Сменить звёздное поле' 'lsslab.txt'
+'Начало работы' 'end'
+
+'Получение данных' 'begin'
+'Работа со спектрометром' 'begin'
+'Открыть окно спектрометра' 'lsslab.txt'
+'Начать/продолжить накопление' 'lsslab.txt'
+'Остановить накопление' 'lsslab.txt'
+'Измерить спектр' 'lsslab.txt'
+'Напечатать спектр' 'lsslab.txt'
+'Работа со спектрометром' 'end'
+'Вычислить скорость' 'begin'
+'Вычислить вручную' 'lsslab.txt'
+'Проверить вычисления' 'lsslab.txt'
+'Вычислить скорость' 'end'
+'Вернуться к окну телескопа' 'lsslab.txt'
+'Получение данных' 'end'
+
+'Операции с данными' 'begin'
+'Загрузить данные' 'lsslab.txt'
+'Просмотреть данные' 'lsslab.txt'
+'Сохранить данные' 'lsslab.txt'
+'Напечатать данные' 'lsslab.txt'
+'Построение результатов' 'begin'
+'Сохранить результаты в общем файле графика' 'lsslab.txt'
+'Открыть программу клиновидной диаграммы' 'lsslab.txt'
+'Построение результатов' 'end'
+'Работа с электронной таблицей' 'lsslab.txt'
+'Операции с данными' 'end'
+`;

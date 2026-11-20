@@ -226,11 +226,11 @@ export const JAPANESE_TEXT=language('ja',ja,jaOriginals,{appShell:APP_SHELL_JA,h
 export const CHINESE_SIMPLIFIED_TEXT=language('zh-Hans',zhHans,zhHansOriginals,{appShell:APP_SHELL_ZH_HANS,helpMenu:HELP_MENU_ZH_HANS,projectLinks:PROJECT_LINKS_ZH_HANS,tour:TOUR_ZH_HANS,languageChoice:LANGUAGE_CHOICE_ZH_HANS},
  [APP_SHELL_ZH_HANS,CAMERA_ZH_HANS,FIELD_INFO_ZH_HANS,FIELD_READ_DETAILS_ZH_HANS,HELP_MENU_ZH_HANS,LANGUAGE_CHOICE_ZH_HANS,NAKED_EYE_ZH_HANS,OBJECT_X_LAB_ZH_HANS,OBSERVATION_METADATA_ZH_HANS,OBSERVATORY_ZH_HANS,POLISH_ZH_HANS,PROJECT_LINKS_ZH_HANS,QSO_LIST_ZH_HANS,SOUND_ZH_HANS,TOUR_ZH_HANS,VARIABLE_STARS_ZH_HANS],/[\p{sc=Han}，。、：；？！（）]/u,'?lang=zh-Hans',['shell','observatory']);
 /** Front RU0: Russian before its release, behind `?lang=ru` (an en-US browser: tests/fixtures/language.ts contextLocale). Only the
- * shell is translated (RU0), the observatory with all of VIREO's originals (RU1), exercises E01 and E02 (RU2), exercise E03 (RU3), exercises E04 and E05 (RU4), the radio telescope (RU5), and exercises E06 and E08 (RU6); RU-HELP
- * adds its area to `done` and its maps below. Its letters are Cyrillic, « » and U+202F,
+ * shell is translated (RU0), the observatory with all of VIREO's originals (RU1), exercises E01 and E02 (RU2), exercise E03 (RU3), exercises E04 and E05 (RU4), the radio telescope (RU5), exercises E06 and E08 (RU6), and the help files and help maps (RU-HELP); RU-REL
+ * releases it. Its letters are Cyrillic, « » and U+202F,
  * which English text never has. */
 export const RUSSIAN_TEXT=language('ru',ru,ruOriginals,{appShell:APP_SHELL_RU,helpMenu:HELP_MENU_RU,projectLinks:PROJECT_LINKS_RU,tour:TOUR_RU,languageChoice:LANGUAGE_CHOICE_RU},
- [APP_SHELL_RU,CAMERA_RU,FIELD_INFO_RU,FIELD_READ_DETAILS_RU,HELP_MENU_RU,LANGUAGE_CHOICE_RU,NAKED_EYE_RU,OBJECT_X_LAB_RU,OBSERVATION_METADATA_RU,OBSERVATORY_RU,POLISH_RU,PROJECT_LINKS_RU,QSO_LIST_RU,SOUND_RU,TOUR_RU,VARIABLE_STARS_RU],/[\p{sc=Cyrl}«»\u202f]/u,'?lang=ru',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08']);
+ [APP_SHELL_RU,CAMERA_RU,FIELD_INFO_RU,FIELD_READ_DETAILS_RU,HELP_MENU_RU,LANGUAGE_CHOICE_RU,NAKED_EYE_RU,OBJECT_X_LAB_RU,OBSERVATION_METADATA_RU,OBSERVATORY_RU,POLISH_RU,PROJECT_LINKS_RU,QSO_LIST_RU,SOUND_RU,TOUR_RU,VARIABLE_STARS_RU],/[\p{sc=Cyrl}«»\u202f]/u,'?lang=ru',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08','help']);
 /** Every translated language of the registry, in its order (a test fails if a registered language has no text here). */
 export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT,INDONESIAN_TEXT,HINDI_TEXT,JAPANESE_TEXT,CHINESE_SIMPLIFIED_TEXT,RUSSIAN_TEXT]);
 /** Front FR0: the languages that run the specs of `area` (those whose `done` has it), in registry order. */
@@ -436,6 +436,8 @@ import {HELP_VIEWER_HI} from '../../src/i18n/hi/maps/helpViewer';
 import {WEB_HELP_HI} from '../../src/i18n/hi/maps/webHelp';
 import {HELP_VIEWER_JA} from '../../src/i18n/ja/maps/helpViewer';
 import {WEB_HELP_JA} from '../../src/i18n/ja/maps/webHelp';
+import {HELP_VIEWER_RU} from '../../src/i18n/ru/maps/helpViewer';
+import {WEB_HELP_RU} from '../../src/i18n/ru/maps/webHelp';
 import type {HELP_VIEWER_EN} from '../../src/help/HelpViewerMessages';
 import type {WEB_HELP_EN} from '../../src/help/webHelp';
 export type HelpText=Readonly<{
@@ -463,5 +465,8 @@ export const HELP_TEXT:Readonly<Record<string,HelpText>>=Object.freeze({
  // Front JA-HELP: the search query types the katakana «カーソル» in hiragana; the translation's fold finds it.
  ja:{helpViewer:HELP_VIEWER_JA,webHelp:WEB_HELP_JA,pulsarFirstRow:'-基本操作-',reminderQuestion:'この実習を本当にすべて終えましたか？',
   loadSpectrumText:'分類するスペクトルを読み込むには',searchRow:/スペクトルの特徴の測定／マーク/,searchQuery:'かーそるの縦位置',searchHit:'カーソルの縦位置',controlsRow:/操作部/,lineHelpText:'A0付近で初めて見られます'},
+ // Front RU-HELP: the search folds case and reads ё as е, so an upper-case query with Е finds the line with ё.
+ 'ru':{helpViewer:HELP_VIEWER_RU,webHelp:WEB_HELP_RU,pulsarFirstRow:'-Основные операции-',reminderQuestion:'Вы УВЕРЕНЫ, что полностью завершили эту работу?',
+  loadSpectrumText:'Чтобы загрузить спектр для классификации',searchRow:/Измерить и отметить спектральные особенности/,searchQuery:'КОГДА ВЫ НАВЕДЕТЕ КУРСОР',searchHit:'Когда вы наведёте курсор',controlsRow:/^ *Элементы управления$/,lineHelpText:'Впервые видна около A0'},
 });
 export const helpText=(tag:string):HelpText=>{const m=HELP_TEXT[tag];if(!m)throw new Error(`No help text for ${tag}`);return m;};
