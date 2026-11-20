@@ -9,14 +9,23 @@ import {POLISH_ZH_HANS} from './maps/polish';
 import {PROJECT_LINKS_ZH_HANS} from './maps/projectLinks';
 import {TOUR_ZH_HANS} from './maps/tour';
 import {VARIABLE_STARS_ZH_HANS} from './maps/variableStars';
+import {CAMERA_ZH_HANS} from './maps/camera';
+import {FIELD_INFO_ZH_HANS} from './maps/fieldInfo';
+import {FIELD_READ_DETAILS_ZH_HANS} from './maps/fieldReadDetails';
+import {NAKED_EYE_ZH_HANS} from './maps/nakedEye';
+import {OBSERVATION_METADATA_ZH_HANS} from './maps/observationMetadata';
+import {OBSERVATORY_ZH_HANS} from './maps/observatory';
+import {QSO_LIST_ZH_HANS} from './maps/qsoList';
+import {SOUND_ZH_HANS} from './maps/sound';
 /** Front ZH0 [W]: the Simplified Chinese (zh-Hans) bundle (docs/I18N.md, "Simplified Chinese: the folder, lints and shell (ZH0)").
  * Partial until its release (src/i18n/languages.json `released:false`): only a `?lang=zh-Hans` preview reaches it, and every string
- * it lacks is English. The production build splits it by route area like the other languages (scripts/i18n-split.mjs parses this
+ * it lacks is English. ZH0 translated the shell; ZH1 the observatory with its maps and all of VIREO's originals. The production build splits it by route area like the other languages (scripts/i18n-split.mjs parses this
  * manifest); Vitest imports it whole. Translations are web adaptations by OpenVireo; they never claim to be CLEA's, and CLEA's
  * bytes, hashes and provenance are unchanged. */
 export const CHINESE_SIMPLIFIED:LocaleBundle=Object.freeze({
  language:'zh-Hans',
  messages,
- maps:Object.freeze({appShell:APP_SHELL_ZH_HANS,helpMenu:HELP_MENU_ZH_HANS,languageChoice:LANGUAGE_CHOICE_ZH_HANS,objectXLab:OBJECT_X_LAB_ZH_HANS,polish:POLISH_ZH_HANS,projectLinks:PROJECT_LINKS_ZH_HANS,tour:TOUR_ZH_HANS,variableStars:VARIABLE_STARS_ZH_HANS}),
+ maps:Object.freeze({appShell:APP_SHELL_ZH_HANS,helpMenu:HELP_MENU_ZH_HANS,languageChoice:LANGUAGE_CHOICE_ZH_HANS,objectXLab:OBJECT_X_LAB_ZH_HANS,polish:POLISH_ZH_HANS,projectLinks:PROJECT_LINKS_ZH_HANS,tour:TOUR_ZH_HANS,variableStars:VARIABLE_STARS_ZH_HANS,
+  camera:CAMERA_ZH_HANS,fieldInfo:FIELD_INFO_ZH_HANS,fieldReadDetails:FIELD_READ_DETAILS_ZH_HANS,nakedEye:NAKED_EYE_ZH_HANS,observationMetadata:OBSERVATION_METADATA_ZH_HANS,observatory:OBSERVATORY_ZH_HANS,qsoList:QSO_LIST_ZH_HANS,sound:SOUND_ZH_HANS}),
  originals,
 });

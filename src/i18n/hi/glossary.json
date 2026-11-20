@@ -1597,6 +1597,26 @@
     "मार्गदर्शक तारा कैटलॉग"
    ],
    "use": "गाइड स्टार कैटलॉग (Guide Star Catalog), one form of the catalogue’s name"
+  },
+  {
+   "words": [
+    "हू-ब-हू"
+   ],
+   "use": "ठीक वैसा ही / ज्यों का त्यों (Front HI6 review: too colloquial for the site)"
+  },
+  {
+   "words": [
+    "ऐरो कुंजी",
+    "ऐरो कुंजियाँ",
+    "ऐरो कुंजियों"
+   ],
+   "use": "तीर कुंजी / तीर कुंजियाँ (one form, as hi.json; Front HI6 review)"
+  },
+  {
+   "words": [
+    "अखंडता जाँच"
+   ],
+   "use": "अखंडता का सत्यापन («जाँच» is only “investigation”; Front HI6 review)"
   }
  ]
 }

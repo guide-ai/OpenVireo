@@ -132,7 +132,7 @@
    "fr": "menu"
   },
   {
-   "en": "\\bguides?\\b",
+   "en": "\\bguides?\\b(?! stars?\\b)",
    "zh-Hans": "指南",
    "fr": "guide"
   },
@@ -152,7 +152,7 @@
    "fr": "d[ée]calages? vers le rouge"
   },
   {
-   "en": "\\bpulsars?\\b",
+   "en": "\\bpulsars?\\b(?!\\.HTL)",
    "zh-Hans": "脉冲星",
    "fr": "pulsar"
   },
@@ -1329,7 +1329,7 @@
   },
   {
    "en": "Base Slew Rate",
-   "zh-Hans": "基本转动速度",
+   "zh-Hans": "基准转动速度",
    "fr": "Vitesse de déplacement de base"
   },
   {
@@ -1563,7 +1563,7 @@
   },
   {
    "en": "Close Multi-Spec",
-   "zh-Hans": "关闭Multi-Spec",
+   "zh-Hans": "关闭多目标光谱仪",
    "fr": "Fermer Multi-Spec"
   },
   {
@@ -1802,7 +1802,7 @@
   },
   {
    "en": "Original hot lists",
-   "zh-Hans": "原始目标列表",
+   "zh-Hans": "原版目标列表",
    "fr": "Listes d’objets d’origine"
   },
   {

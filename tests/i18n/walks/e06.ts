@@ -26,11 +26,13 @@ export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={
  // Front FR6: French keeps the same words (identical.json: Zoom, Horizontal, Vertical (s), Gain, Points, VIREO's OK, Portrait and
  // «- Page 2»); it translates Bytes («Octets») and Panel («Panneau»).
  fr:new Set(['Zoom','Horizontal','Vertical (s)','Gain','Points','OK','Portrait','- Page 2']),
+ // Front ID6: Indonesian keeps the same words (identical.json: Zoom, Horizontal, Gain, Panel, File, VIREO's OK and Edit...).
+ id:new Set(['Zoom','Horizontal','Gain','Gain:','Panel','File','OK','Edit…','Edit...']),
  // Front JA6: Japanese keeps VIREO's OK (JA1's identical original).
  ja:new Set(['OK']),
 };
 /** "Panel {n}" is the same in Spanish; Portuguese says «Painel {n}». */
-export const PANEL_IN:Readonly<Record<string,RegExp>>={'es-419':/^Panel \d$/};
+export const PANEL_IN:Readonly<Record<string,RegExp>>={'es-419':/^Panel \d$/,id:/^Panel \d$/};
 /** Both walks: data of the synthetic recording and files (names, identities, comments) shown as stored, outside the `lang="en"`
  * file mirrors that texts() skips. */
 export const DATA=new Set<string>([
@@ -56,6 +58,8 @@ export const Nm=(lang:Lang,key:string)=>{if(isPseudo(lang))return pseudoName(E[k
 
 /** Visible text nodes, option texts, accessible names, titles and placeholders outside the header and outside native `lang="en"`
  * views and the help panel (Front ES-HELP). */
+// Front HI6: two letters of any script with any combining marks between them (was [A-Za-z]{2}, which skipped every all-Devanagari
+// text; a Devanagari vowel sign or virama is a mark), as Fronts HI2, HI4 and HI5 did for the other walks.
 export const texts=(page:Page)=>page.evaluate(()=>{
  const out:string[]=[];
  const shown=(el:Element)=>{for(let e:Element|null=el;e;e=e.parentElement){if((e as HTMLElement).hidden||e.getAttribute('aria-hidden')==='true')return false;if(e.tagName==='DETAILS'&&!(e as HTMLDetailsElement).open&&el.closest('summary')?.parentElement!==e&&e!==el)return false;if(e.tagName==='DIALOG'&&!(e as HTMLDialogElement).open)return false;const s=getComputedStyle(e);if(s.display==='none'||s.visibility==='hidden')return false;}return true;};

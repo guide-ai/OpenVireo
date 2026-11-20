@@ -60,7 +60,7 @@ const ASCII_LETTERS:ReadonlySet<string>=new Set(['id']);
 const SCRIPT_LETTERS:ReadonlySet<string>=new Set(['ru']);
 /** The accessible-name matcher of an English text in this locale: its Spanish form in es-419 (which must exist), Portuguese's or
  * French's own catalog form (which must exist; for French before its release, an identical entry), else `L`. */
-const N=(locale:Locale,text:string)=>{if(locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'||locale==='ru'){const t=TRANSLATED.find(x=>x.tag===locale)!;if(text==='Skip the tour')return exact(t.maps.tour.skip);if(text==='Save spectrum (.SSP)')return exact((e01e02Maps(locale).observatory as typeof OBSERVATORY_ES).spectrumSave.save);
+const N=(locale:Locale,text:string)=>{if(locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'||locale==='zh-Hans'||locale==='ru'){const t=TRANSLATED.find(x=>x.tag===locale)!;if(text==='Skip the tour')return exact(t.maps.tour.skip);if(text==='Save spectrum (.SSP)')return exact((e01e02Maps(locale).observatory as typeof OBSERVATORY_ES).spectrumSave.save);
  // Front PT1: a button whose English ends in “ ↗” is its catalog text plus the arrow the component adds, as for Spanish.
  // Front PT-REL: a released language's `text` throws for an English text it lacks (it no longer falls back), so look first.
  // Front FR1: a language before its release falls back to the English (no throw), so an English-only answer is no translation.
@@ -328,7 +328,7 @@ family('E03 classification: session, CSV, width record, investigations, observat
  },{},page=>page.locator('.classification-main'));
 });
 
-family('hot list: Save HTL file after adding a target',['en','qps','es-419','pt-BR','fr','id','hi','ja','ru'],async({browser,baseURL},identical)=>{
+family('hot list: Save HTL file after adding a target',['en','qps','es-419','pt-BR','fr','id','hi','ja','zh-Hans','ru'],async({browser,baseURL},identical)=>{
  await identical(browser,baseURL,async(page,locale)=>{
   await open(page,locale,'observatory');
   await page.getByRole('heading',{name:N(locale,'Original hot lists')}).click();
@@ -340,7 +340,7 @@ family('hot list: Save HTL file after adding a target',['en','qps','es-419','pt-
  },{},page=>page.locator('.htl-card'));
 });
 
-family('options file: Save Updates writes VEO_OPTS.json',['en','qps','es-419','pt-BR','fr','id','hi','ja','ru'],async({browser,baseURL},identical)=>{
+family('options file: Save Updates writes VEO_OPTS.json',['en','qps','es-419','pt-BR','fr','id','hi','ja','zh-Hans','ru'],async({browser,baseURL},identical)=>{
  await identical(browser,baseURL,async(page,locale)=>{
   await open(page,locale,'observatory');
   await button(page,'Open dome ↗',locale).click();await page.getByLabel(N(locale,'Target')).selectOption('N0000.DAT@14428');
@@ -354,8 +354,8 @@ family('options file: Save Updates writes VEO_OPTS.json',['en','qps','es-419','p
 
 // Front ES2: the observatory's File › Field Information lists (Edit Mode) and the QSO List (Virtual Observatory) write the lines
 // they show; the windows around them are translated, the files are not. Front FR1: the hot list, options file and Field
-// Information families also run in French (its ?lang=fr preview). Front ID1: and in Indonesian (its ?lang=id preview); Front HI1: and in Hindi (?lang=hi); Front JA1: and in Japanese (?lang=ja); Front RU1: and in Russian (?lang=ru).
-family('field information: Star Data List Save Text and Comma Delimit, QSO List Save Text',['en','qps','es-419','pt-BR','fr','id','hi','ja','ru'],async({browser,baseURL},identical)=>{
+// Information families also run in French (its ?lang=fr preview). Front ID1: and in Indonesian (its ?lang=id preview); Front HI1: and in Hindi (?lang=hi); Front JA1: and in Japanese (?lang=ja); Front ZH1: and in Simplified Chinese (?lang=zh-Hans); Front RU1: and in Russian (?lang=ru).
+family('field information: Star Data List Save Text and Comma Delimit, QSO List Save Text',['en','qps','es-419','pt-BR','fr','id','hi','ja','zh-Hans','ru'],async({browser,baseURL},identical)=>{
  test.setTimeout(120_000);
  const id=(page:Page,testId:string)=>page.getByTestId(testId);
  const ok=async(page:Page)=>{await id(page,'fi-box').getByRole('button').first().click();await expect(id(page,'fi-box')).toHaveCount(0);};
@@ -668,10 +668,10 @@ family('E04 Pleiades photometry: photometer session, Observational Results text 
 // (Record, Receive, Stop, Identify, data properties, Save No), then on the pulsar analysis downloads the raw capture (.PLR), records
 // one manual reading and runs VIREO's Save Recorded Measurements (the native text with its US-format date/time header), and finally
 // saves the whole investigation (the radio configuration, clock and capture). Every file is byte-identical in English, qps and
-// Spanish (Front PT5: and Brazilian Portuguese, whose route heading is checked so the run cannot compare English with English; Front FR5: and French, the same way; Front HI5: and Hindi; Front JA5: and Japanese). The page clock is installed at a fixed instant, the lazily loaded routes render while it runs, then it is paused and only
+// Spanish (Front PT5: and Brazilian Portuguese, whose route heading is checked so the run cannot compare English with English; Front FR5: and French, the same way; Front HI5: and Hindi; Front JA5: and Japanese; Front RU5: and Russian). The page clock is installed at a fixed instant, the lazily loaded routes render while it runs, then it is paused and only
 // runFor moves it, so the capture, the native header's date and time and the investigation's radio clock are the same in every
 // run: nothing is masked.
-family('radio telescope (ES8a): raw capture .PLR, native Save Recorded Measurements and the investigation, in English, qps, Spanish, pt-BR, fr, id, hi and ja',['en','qps','es-419','pt-BR','fr','id','hi','ja'],async({browser,baseURL},identical)=>{
+family('radio telescope (ES8a): raw capture .PLR, native Save Recorded Measurements and the investigation, in English, qps, Spanish, pt-BR, fr, id, hi, ja and ru',['en','qps','es-419','pt-BR','fr','id','hi','ja','ru'],async({browser,baseURL},identical)=>{
  test.setTimeout(240_000);
  const id=(page:Page,testId:string)=>page.getByTestId(testId);
  const flush=async(page:Page)=>{for(let i=0;i<3;i++)await page.evaluate(()=>new Promise<void>(resolve=>{const ch=new MessageChannel();ch.port1.onmessage=()=>{ch.port1.close();ch.port2.close();resolve();};ch.port2.postMessage(0);}));};
@@ -683,7 +683,7 @@ family('radio telescope (ES8a): raw capture .PLR, native Save Recorded Measureme
   await page.goto(`/${lang}#pulsar-analysis`);await expect(id(page,'pulsar-none')).toBeVisible({timeout:20_000});
   await page.goto(`/${lang}#radio-control`);await expect(id(page,'radio-exercise')).toBeVisible({timeout:20_000});
   await expect(page.locator('html')).toHaveAttribute('lang',HTML_LANG[locale]);
-  if(locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja')await expect(page.getByRole('heading',{level:1,name:ptText(locale).catalog['radioRoute.title'],exact:true})).toBeVisible();
+  if(locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'||locale==='ru')await expect(page.getByRole('heading',{level:1,name:ptText(locale).catalog['radioRoute.title'],exact:true})).toBeVisible();
   await page.clock.pauseAt(new Date('2026-10-24T00:10:00Z'));await flush(page);
   await id(page,'radio-exercise').click();await id(page,'radio-env-compiled').click();await id(page,'radio-access').click();await id(page,'radio-timer-deliver').click();
   await id(page,'radio-switch').click();await id(page,'antenna-tracking').click();await flush(page);
@@ -709,7 +709,7 @@ family('radio telescope (ES8a): raw capture .PLR, native Save Recorded Measureme
   const native=await download(page,()=>id(page,'pulsar-native-ok').click());await paceDownload(page);
   await expect(id(page,'pulsar-native-dialog')).toHaveCount(0);
   const toolbar=page.locator('.investigation-toolbar');
-  const name=locale==='es-419'?es['project.save']:locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'?ptText(locale).catalog['project.save']:L('Save investigation');
+  const name=locale==='es-419'?es['project.save']:locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'||locale==='ru'?ptText(locale).catalog['project.save']:L('Save investigation');
   const investigation=await download(page,()=>toolbar.getByRole('button',{name,exact:typeof name==='string'||undefined}).click());
   return {plr,native,investigation};
  },{},page=>page.getByTestId('radio-route'));
@@ -717,7 +717,7 @@ family('radio telescope (ES8a): raw capture .PLR, native Save Recorded Measureme
 
 // Front ES9: exercise E08 (Object X) and the CCD camera in English, qps and Spanish (Front PT6: and Brazilian Portuguese, whose
 // lab heading is checked, and whose investigation before the reveal must equal English's, so it names no target either; Front FR6:
-// and French, the same way). The page clock is installed at a fixed
+// and French, the same way; Front ID6: and Indonesian; Front HI6: and Hindi). The page clock is installed at a fixed
 // instant and paused before every step that records a time (the spectrum's ticks, each camera exposure); it runs only while the
 // asteroid list is computed and the spectrometer data loads, and is then paused again at a later fixed instant, and again after
 // the observatory clock is paused for the last time (Save investigation yields with setTimeout(0)), so every JD, UT
@@ -748,7 +748,7 @@ function clockElapsedMasked(bytes:Buffer):Buffer{
  * the image is ready (the image's JD and pointing are those of Start). */
 async function exposePaused(page:Page,locale:Locale,name:(locale:Locale,english:string,spanish:string)=>RegExp,camera:Readonly<Record<string,string>>){
  const c=page.getByTestId('camera-control');
- await c.getByLabel(locale==='es-419'||locale==='pt-BR'||locale==='fr'||locale==='ja'?new RegExp(`^\\s*${camera.sourceLive.slice(0,20)}`):pseudoStart('Ask VizieR live')).check();
+ await c.getByLabel(locale==='es-419'||locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'?new RegExp(`^\\s*${camera.sourceLive.slice(0,20)}`):pseudoStart('Ask VizieR live')).check();
  await c.getByLabel(name(locale,CAMERA_EN.minutes,camera.minutes)).fill('0');await c.getByLabel(name(locale,CAMERA_EN.seconds,camera.seconds)).fill('1');
  await c.getByRole('button',{name:name(locale,CAMERA_EN.start,camera.start)}).click();
  const status=page.getByTestId('camera-status'),done=name(locale,CAMERA_EN.statusDone,camera.statusDone);
@@ -756,14 +756,14 @@ async function exposePaused(page:Page,locale:Locale,name:(locale:Locale,english:
  for(const start=Date.now();Date.now()-start<90_000&&!done.test((await status.textContent())??'');){await page.clock.runFor(200);await page.waitForTimeout(20);}
  await expect(status).toHaveText(done);
 }
-family('E08 Object X and the CCD camera: spectrum CSV and SSP, image FITS, camera FITS and VIREO-header FITS, saved-image download, investigations before and after the reveal',['en','qps','es-419','pt-BR','fr','ja'],async({browser,baseURL},identical)=>{
+family('E08 Object X and the CCD camera: spectrum CSV and SSP, image FITS, camera FITS and VIREO-header FITS, saved-image download, investigations before and after the reveal',['en','qps','es-419','pt-BR','fr','id','hi','ja'],async({browser,baseURL},identical)=>{
  test.setTimeout(300_000);
  const recorded=await readFile(new URL('../fixtures/vizier/nomad-56.75+24.12-r0.01.xml',import.meta.url));
- const NX=(locale:Locale,english:string,translated:string)=>locale==='es-419'||locale==='pt-BR'||locale==='fr'||locale==='ja'?exact(translated):L(english);
+ const NX=(locale:Locale,english:string,translated:string)=>locale==='es-419'||locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'?exact(translated):L(english);
  await identical(browser,baseURL,async(page,locale)=>{
   page.setDefaultTimeout(30_000);
   // The language's Object X lab and camera maps (Spanish's for en and qps, whose names go through `L`).
-  const own=locale==='pt-BR'||locale==='fr'||locale==='ja'?locale:'es-419',LS=e08Maps(own).objectXLab,C=e08Maps(own).camera as unknown as Readonly<Record<string,string>>;
+  const own=locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'?locale:'es-419',LS=e08Maps(own).objectXLab,C=e08Maps(own).camera as unknown as Readonly<Record<string,string>>;
   const save=async(click:()=>Promise<void>)=>{await paceDownload(page);return download(page,click);};
   const lab=page.getByTestId('objectx-lab'),B=(english:string,spanish:string)=>lab.getByRole('button',{name:NX(locale,english,spanish)});
   await page.route(/vizier\.cds\.unistra\.fr|vizier\.cfa\.harvard\.edu|vizier\.idia\.ac\.za|cdsarc|unistra\.fr/,route=>route.fulfill({status:200,contentType:'text/xml',body:recorded}));
@@ -771,7 +771,7 @@ family('E08 Object X and the CCD camera: spectrum CSV and SSP, image FITS, camer
   await page.goto(`/${contextQuery(locale)}#object-x`);
   const skip=page.getByRole('button',{name:N(locale,'Skip the tour')});if(await skip.isVisible().catch(()=>false))await skip.click();
   await expect(page.getByTestId('objectx-target').locator('option')).toHaveCount(18,{timeout:30_000});
-  if(locale==='pt-BR'||locale==='fr'||locale==='ja')await expect(page.getByRole('heading',{level:1,name:LS.title,exact:true})).toBeVisible();
+  if(locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja')await expect(page.getByRole('heading',{level:1,name:LS.title,exact:true})).toBeVisible();
   await lab.getByLabel(NX(locale,'ID # of your unknown object (from your exercise sheet or course, or one you choose)',LS.idLabel)).fill('42');
   // A kept spectrum of a star target (ObjectX.HTL row 9, not named before the reveal): 2 s of ticks with the clock paused.
   await page.getByTestId('objectx-target').selectOption('X-NTFB6');await page.getByTestId('objectx-spectrum-telescope').selectOption('2');
@@ -807,7 +807,7 @@ family('E08 Object X and the CCD camera: spectrum CSV and SSP, image FITS, camer
   await page.evaluate(()=>{location.hash='#object-x';});await expect(page.getByTestId('objectx-images').locator('li')).toHaveCount(2);
   const image1=await save(()=>B('Save ObjX-42-01.FIT',LS.saveFits('ObjX-42-01')).click());
   const image2=await save(()=>B('Save ObjX-42-02.FIT',LS.saveFits('ObjX-42-02')).click());
-  const toolbar=page.locator('.investigation-toolbar'),saveInvestigation=()=>toolbar.getByRole('button',{name:locale==='es-419'?exact(es['project.save']):locale==='pt-BR'||locale==='fr'||locale==='ja'?exact(ptText(locale).catalog['project.save']!):L('Save investigation')}).click();
+  const toolbar=page.locator('.investigation-toolbar'),saveInvestigation=()=>toolbar.getByRole('button',{name:locale==='es-419'?exact(es['project.save']):locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'?exact(ptText(locale).catalog['project.save']!):L('Save investigation')}).click();
   const investigation=await save(saveInvestigation);
   // Answer, describe and reveal; the investigation keeps the answer and the reveal.
   await page.getByTestId('objectx-answer').getByLabel(NX(locale,'asteroid',LS.kinds.asteroid)).check();
@@ -828,8 +828,9 @@ family('E08 Object X and the CCD camera: spectrum CSV and SSP, image FITS, camer
 // VIREO's own Save (the written results file and the appended one, US date and time, "Table Number" line), the typed-header
 // export, the append file, the original recording bytes, the saved-measurement viewer's original file. The page clock is
 // fixed and nothing is masked. (The raw .PLR download of a model capture and the investigation that holds it are ES8a's family.)
-// Front PT6: and in pt-BR (its `?lang=pt-BR` preview), whose route heading is checked. Front FR6: and in French (`?lang=fr`), the same way.
-family('E06 pulsar analysis: native Save and its append, the export, the append file, the original recording and the viewer download',['en','qps','es-419','pt-BR','fr','ja'],async({browser,baseURL},identical)=>{
+// Front PT6: and in pt-BR (its `?lang=pt-BR` preview), whose route heading is checked. Front FR6: and in French (`?lang=fr`), the same way. Front ID6: and Indonesian (`?lang=id`).
+// Front HI6: and in Hindi (`?lang=hi`). Front JA6: and in Japanese (`?lang=ja`).
+family('E06 pulsar analysis: native Save and its append, the export, the append file, the original recording and the viewer download',['en','qps','es-419','pt-BR','fr','id','hi','ja'],async({browser,baseURL},identical)=>{
  test.setTimeout(240_000);
  const id=(page:Page,testId:string)=>page.getByTestId(testId);
  const TARGET=['"10-30-2026","3:07:42 PM"','"Table Number: "','','',HEADER].map(l=>l+'\r\n').join('')+'"PSR B0329+54",408.00,1.000,0.123456,"",5.0000E-01,49999.12345678,"older",1000,10.00,26\r\n';
@@ -839,7 +840,7 @@ family('E06 pulsar analysis: native Save and its append, the export, the append 
  };
  await identical(browser,baseURL,async(page,locale)=>{
   await open(page,locale,'pulsar-analysis');
-  if(locale==='pt-BR'||locale==='fr'||locale==='ja')await expect(page.getByRole('heading',{level:1,name:ptText(locale).catalog['plr.routeTitle'],exact:true})).toBeVisible();
+  if(locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja')await expect(page.getByRole('heading',{level:1,name:ptText(locale).catalog['plr.routeTitle'],exact:true})).toBeVisible();
   await id(page,'pulsar-file').setInputFiles({name:'synthetic-e2e.plr',mimeType:'application/octet-stream',buffer:Buffer.from(PLR,'latin1')});
   await expect(id(page,'pulsar-sha')).toHaveText(sha(Buffer.from(PLR,'latin1')));await id(page,'pulsar-properties-close').click();
   const original=await download(page,()=>id(page,'pulsar-download').click());

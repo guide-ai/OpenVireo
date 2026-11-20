@@ -501,7 +501,7 @@
  "No Current Data to Analyze": "विश्लेषण के लिए कोई मौजूदा डेटा नहीं",
  "Select \"File\"->\"Load\" from Menu to begin.": "शुरू करने के लिए मेनू से “फ़ाइल” -> “लोड करें” चुनें।",
  "You have not saved your current pulsar data!  You will lose recorded pulsar data if you load without saving.\r\n\r\nSave current data now?": "आपने अपना मौजूदा पल्सर डेटा सहेजा नहीं है! सहेजे बिना लोड करने पर दर्ज किया गया पल्सर डेटा खो जाएगा।\r\n\r\nक्या मौजूदा डेटा अभी सहेजें?",
- "Recorded Pulsar Data Not Saved!": "दर्ज किया गया पल्सर डेटा सहेजा नहीं गया!",
+ "Recorded Pulsar Data Not Saved!": "रिकॉर्ड किया गया पल्सर डेटा सहेजा नहीं गया!",
  "Nothing To Save!": "सहेजने के लिए कुछ नहीं है!",
  "No Measurements Recorded!": "कोई माप दर्ज नहीं किया गया!",
  "You have not recorded your current measurements!  You must record all measurements you want to save.\r\n\r\nDo you want to continue with the Save process?": "आपने अपने मौजूदा माप दर्ज नहीं किए हैं! जो माप सहेजना चाहते हैं, उन सभी को दर्ज करना ज़रूरी है।\r\n\r\nक्या आप सहेजने की प्रक्रिया जारी रखना चाहते हैं?",

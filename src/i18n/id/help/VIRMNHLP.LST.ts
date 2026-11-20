@@ -1,0 +1,35 @@
+// Front ID-HELP [W]: OpenVireo's Indonesian (id) web adaptation of VIREO's VIRMNHLP.LST. Not CLEA's text: the original bytes,
+// hashes and provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Indonesian chunk.
+export const language='id';
+export const sourceName='VIRMNHLP.LST';
+export const sourceSha256='db9bab876ef1d03ad8b0e96596eb47c3ca9573156a65b4bff7b49bbfac295b2a';
+export const text=`'Memulai' 'begin'
+'Masuk' 'VIRMnHlp.txt'
+'Pilih praktikum' 'VIRMnHlp.txt'
+'Atur tanggal & waktu' 'VIRMnHlp.txt'
+'Pilih teleskop' 'VIRMnHlp.txt'
+'Buka kubah' 'VIRMnHlp.txt'
+'Akses kontrol teleskop' 'VIRMnHlp.txt'
+'Akhiri praktikum' 'VIRMnHlp.txt'
+'Akses keyboard' 'VIRMnHlp.txt'
+'Memulai' 'end'
+'Ganti teleskop' 'begin'
+'Minta waktu teleskop' 'VIRMnHlp.txt'
+'Ganti teleskop optik' 'VIRMnHlp.txt'
+'Ganti teleskop' 'end'
+'Alat' 'begin'
+'Alat klasifikasi spektrum' 'VIRMnHlp.txt'
+'Alat pengukur spektrum' 'VIRMnHlp.txt'
+'Alat analisis pulsar radio' 'VIRMnHlp.txt'
+'Alat analisis diagram HR' 'VIRMnHlp.txt'
+'Alat diagram kerucut LSS' 'VIRMnHlp.txt'
+'Modul astrometri' 'VIRMnHlp.txt'
+'Pengolahan citra (DS9)' 'VIRMnHlp.txt'
+'Editor Hasil' 'VIRMnHlp.txt'
+'Muat data tersimpan' 'VIRMnHlp.txt'
+'Spreadsheet' 'VIRMnHlp.txt'
+'Alat' 'end'
+'Fungsi data' 'begin'
+'Operasi data' 'VIRMnHlp.txt'
+'Fungsi data' 'end'
+`;

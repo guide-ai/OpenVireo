@@ -114,6 +114,17 @@ import {HELP_MENU_ZH_HANS} from '../../src/i18n/zh-hans/maps/helpMenu';
 import {PROJECT_LINKS_ZH_HANS} from '../../src/i18n/zh-hans/maps/projectLinks';
 import {TOUR_ZH_HANS} from '../../src/i18n/zh-hans/maps/tour';
 import {LANGUAGE_CHOICE_ZH_HANS} from '../../src/i18n/zh-hans/maps/languageChoice';
+import {OBJECT_X_LAB_ZH_HANS} from '../../src/i18n/zh-hans/maps/objectXLab';
+import {POLISH_ZH_HANS} from '../../src/i18n/zh-hans/maps/polish';
+import {VARIABLE_STARS_ZH_HANS} from '../../src/i18n/zh-hans/maps/variableStars';
+import {CAMERA_ZH_HANS} from '../../src/i18n/zh-hans/maps/camera';
+import {FIELD_INFO_ZH_HANS} from '../../src/i18n/zh-hans/maps/fieldInfo';
+import {FIELD_READ_DETAILS_ZH_HANS} from '../../src/i18n/zh-hans/maps/fieldReadDetails';
+import {NAKED_EYE_ZH_HANS} from '../../src/i18n/zh-hans/maps/nakedEye';
+import {OBSERVATION_METADATA_ZH_HANS} from '../../src/i18n/zh-hans/maps/observationMetadata';
+import {OBSERVATORY_ZH_HANS} from '../../src/i18n/zh-hans/maps/observatory';
+import {QSO_LIST_ZH_HANS} from '../../src/i18n/zh-hans/maps/qsoList';
+import {SOUND_ZH_HANS} from '../../src/i18n/zh-hans/maps/sound';
 import ru from '../../src/i18n/ru/ru.json' with {type:'json'};
 import ruOriginals from '../../src/i18n/ru/originals.json' with {type:'json'};
 import {APP_SHELL_RU} from '../../src/i18n/ru/maps/appShell';
@@ -194,12 +205,12 @@ export const FRENCH_TEXT=language('fr',fr,frOriginals,{appShell:APP_SHELL_FR,hel
  * the site's English exports never hold (checked over public/original and every export fixture at ID0), and the “ ” quotes and U+202F
  * thousands separator its text uses. */
 export const INDONESIAN_TEXT=language('id',idCatalog,idOriginals,{appShell:APP_SHELL_ID,helpMenu:HELP_MENU_ID,projectLinks:PROJECT_LINKS_ID,tour:TOUR_ID,languageChoice:LANGUAGE_CHOICE_ID},
- [APP_SHELL_ID,CAMERA_ID,FIELD_INFO_ID,FIELD_READ_DETAILS_ID,HELP_MENU_ID,LANGUAGE_CHOICE_ID,NAKED_EYE_ID,OBJECT_X_LAB_ID,OBSERVATION_METADATA_ID,OBSERVATORY_ID,POLISH_ID,PROJECT_LINKS_ID,QSO_LIST_ID,SOUND_ID,TOUR_ID,VARIABLE_STARS_ID],/(?<!\p{L})(?:yang|dan|untuk|dengan|tidak|Anda|dari|pada|ini|atau)(?!\p{L})|[“”\u202f]/u,'?lang=id',['shell','observatory','e01','e02','e03','e04','e05','radio']);
+ [APP_SHELL_ID,CAMERA_ID,FIELD_INFO_ID,FIELD_READ_DETAILS_ID,HELP_MENU_ID,LANGUAGE_CHOICE_ID,NAKED_EYE_ID,OBJECT_X_LAB_ID,OBSERVATION_METADATA_ID,OBSERVATORY_ID,POLISH_ID,PROJECT_LINKS_ID,QSO_LIST_ID,SOUND_ID,TOUR_ID,VARIABLE_STARS_ID],/(?<!\p{L})(?:yang|dan|untuk|dengan|tidak|Anda|dari|pada|ini|atau)(?!\p{L})|[“”\u202f]/u,'?lang=id',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08','help']);
 /** Front HI0: Hindi, behind `?lang=hi` before its release (an en-US browser with the preview query). HI0 translated the shell, so
- * only the shell's specs ran it; HI1 adds the observatory and all of VIREO's originals, HI2 exercises E01 and E02, HI3 exercise E03, HI4 exercises E04 and E05, HI5 the radio telescope; each HI front adds its area. Its letters are Devanagari (the danda । included), which English text
+ * only the shell's specs ran it; HI1 adds the observatory and all of VIREO's originals, HI2 exercises E01 and E02, HI3 exercise E03, HI4 exercises E04 and E05, HI5 the radio telescope, HI6 exercises E06 and E08, HI-HELP the help files and help maps; each HI front adds its area. Its letters are Devanagari (the danda । included), which English text
  * never has; “ ” are not among them, since English uses them too. */
 export const HINDI_TEXT=language('hi',hi,hiOriginals,{appShell:APP_SHELL_HI,helpMenu:HELP_MENU_HI,projectLinks:PROJECT_LINKS_HI,tour:TOUR_HI,languageChoice:LANGUAGE_CHOICE_HI},
- [APP_SHELL_HI,CAMERA_HI,FIELD_INFO_HI,FIELD_READ_DETAILS_HI,HELP_MENU_HI,LANGUAGE_CHOICE_HI,NAKED_EYE_HI,OBJECT_X_LAB_HI,OBSERVATION_METADATA_HI,OBSERVATORY_HI,POLISH_HI,PROJECT_LINKS_HI,QSO_LIST_HI,SOUND_HI,TOUR_HI,VARIABLE_STARS_HI],/[\u0900-\u097f]/u,'?lang=hi',['shell','observatory','e01','e02','e03','e04','e05','radio']);
+ [APP_SHELL_HI,CAMERA_HI,FIELD_INFO_HI,FIELD_READ_DETAILS_HI,HELP_MENU_HI,LANGUAGE_CHOICE_HI,NAKED_EYE_HI,OBJECT_X_LAB_HI,OBSERVATION_METADATA_HI,OBSERVATORY_HI,POLISH_HI,PROJECT_LINKS_HI,QSO_LIST_HI,SOUND_HI,TOUR_HI,VARIABLE_STARS_HI],/[\u0900-\u097f]/u,'?lang=hi',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08','help']);
 /** Front JA0 (plan front-i18n-ja.md §1.2 #3): Japanese, behind `?lang=ja` before its release; JA0 translated the shell, and each
  * later JA front adds its area to `done`. Its letters are kana, ー and 「」, which no English text, VIREO file or export has (Han alone
  * is not used: kana are the unambiguous Japanese signal). JA1 adds the observatory with its maps and all of VIREO's originals, JA2
@@ -207,16 +218,17 @@ export const HINDI_TEXT=language('hi',hi,hiOriginals,{appShell:APP_SHELL_HI,help
 export const JAPANESE_TEXT=language('ja',ja,jaOriginals,{appShell:APP_SHELL_JA,helpMenu:HELP_MENU_JA,projectLinks:PROJECT_LINKS_JA,tour:TOUR_JA,languageChoice:LANGUAGE_CHOICE_JA},
  [APP_SHELL_JA,CAMERA_JA,FIELD_INFO_JA,FIELD_READ_DETAILS_JA,HELP_MENU_JA,LANGUAGE_CHOICE_JA,NAKED_EYE_JA,OBJECT_X_LAB_JA,OBSERVATION_METADATA_JA,OBSERVATORY_JA,POLISH_JA,PROJECT_LINKS_JA,QSO_LIST_JA,SOUND_JA,TOUR_JA,VARIABLE_STARS_JA],/[\p{sc=Hira}\p{sc=Kana}ー「」]/u,'?lang=ja',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08','help']);
 /** Front ZH0: Simplified Chinese before its release, behind `?lang=zh-Hans` (an en-US browser: tests/fixtures/language.ts
- * contextLocale). Only the shell is translated; ZH1–ZH6 and ZH-HELP add their areas to `done` and their maps. Its letters are Han and
+ * contextLocale). ZH0 translated the shell and ZH1 the observatory with its maps and all of VIREO's originals; ZH2–ZH6 and ZH-HELP
+ * add their areas to `done` and their maps. Its letters are Han and
  * the full-width marks ，。、：；？！（）, which VIREO's English files and OpenVireo's exports never hold. */
 export const CHINESE_SIMPLIFIED_TEXT=language('zh-Hans',zhHans,zhHansOriginals,{appShell:APP_SHELL_ZH_HANS,helpMenu:HELP_MENU_ZH_HANS,projectLinks:PROJECT_LINKS_ZH_HANS,tour:TOUR_ZH_HANS,languageChoice:LANGUAGE_CHOICE_ZH_HANS},
- [APP_SHELL_ZH_HANS,HELP_MENU_ZH_HANS,LANGUAGE_CHOICE_ZH_HANS,PROJECT_LINKS_ZH_HANS,TOUR_ZH_HANS],/[\p{sc=Han}，。、：；？！（）]/u,'?lang=zh-Hans',['shell']);
+ [APP_SHELL_ZH_HANS,CAMERA_ZH_HANS,FIELD_INFO_ZH_HANS,FIELD_READ_DETAILS_ZH_HANS,HELP_MENU_ZH_HANS,LANGUAGE_CHOICE_ZH_HANS,NAKED_EYE_ZH_HANS,OBJECT_X_LAB_ZH_HANS,OBSERVATION_METADATA_ZH_HANS,OBSERVATORY_ZH_HANS,POLISH_ZH_HANS,PROJECT_LINKS_ZH_HANS,QSO_LIST_ZH_HANS,SOUND_ZH_HANS,TOUR_ZH_HANS,VARIABLE_STARS_ZH_HANS],/[\p{sc=Han}，。、：；？！（）]/u,'?lang=zh-Hans',['shell','observatory']);
 /** Front RU0: Russian before its release, behind `?lang=ru` (an en-US browser: tests/fixtures/language.ts contextLocale). Only the
- * shell is translated (RU0), the observatory with all of VIREO's originals (RU1), exercises E01 and E02 (RU2), exercise E03 (RU3), and exercises E04 and E05 (RU4); RU5, RU6 and RU-HELP
+ * shell is translated (RU0), the observatory with all of VIREO's originals (RU1), exercises E01 and E02 (RU2), exercise E03 (RU3), exercises E04 and E05 (RU4), and the radio telescope (RU5); RU6 and RU-HELP
  * add their areas to `done` and their maps below. Its letters are Cyrillic, « » and U+202F,
  * which English text never has. */
 export const RUSSIAN_TEXT=language('ru',ru,ruOriginals,{appShell:APP_SHELL_RU,helpMenu:HELP_MENU_RU,projectLinks:PROJECT_LINKS_RU,tour:TOUR_RU,languageChoice:LANGUAGE_CHOICE_RU},
- [APP_SHELL_RU,CAMERA_RU,FIELD_INFO_RU,FIELD_READ_DETAILS_RU,HELP_MENU_RU,LANGUAGE_CHOICE_RU,NAKED_EYE_RU,OBJECT_X_LAB_RU,OBSERVATION_METADATA_RU,OBSERVATORY_RU,POLISH_RU,PROJECT_LINKS_RU,QSO_LIST_RU,SOUND_RU,TOUR_RU,VARIABLE_STARS_RU],/[\p{sc=Cyrl}«»\u202f]/u,'?lang=ru',['shell','observatory','e01','e02','e03','e04','e05']);
+ [APP_SHELL_RU,CAMERA_RU,FIELD_INFO_RU,FIELD_READ_DETAILS_RU,HELP_MENU_RU,LANGUAGE_CHOICE_RU,NAKED_EYE_RU,OBJECT_X_LAB_RU,OBSERVATION_METADATA_RU,OBSERVATORY_RU,POLISH_RU,PROJECT_LINKS_RU,QSO_LIST_RU,SOUND_RU,TOUR_RU,VARIABLE_STARS_RU],/[\p{sc=Cyrl}«»\u202f]/u,'?lang=ru',['shell','observatory','e01','e02','e03','e04','e05','radio']);
 /** Every translated language of the registry, in its order (a test fails if a registered language has no text here). */
 export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT,INDONESIAN_TEXT,HINDI_TEXT,JAPANESE_TEXT,CHINESE_SIMPLIFIED_TEXT,RUSSIAN_TEXT]);
 /** Front FR0: the languages that run the specs of `area` (those whose `done` has it), in registry order. */
@@ -311,6 +323,9 @@ import hiIdentical from '../../src/i18n/hi/identical.json' with {type:'json'};
 import {RADIO_ANTENNA_JA} from '../../src/i18n/ja/maps/radioAntenna';
 import {RADIO_RECORD_SAVE_JA} from '../../src/i18n/ja/maps/radioRecordSave';
 import jaIdentical from '../../src/i18n/ja/identical.json' with {type:'json'};
+import {RADIO_ANTENNA_RU} from '../../src/i18n/ru/maps/radioAntenna';
+import {RADIO_RECORD_SAVE_RU} from '../../src/i18n/ru/maps/radioRecordSave';
+import ruIdentical from '../../src/i18n/ru/identical.json' with {type:'json'};
 import type {RADIO_ANTENNA_MESSAGES_EN} from '../../src/components/RadioAntennaMessages';
 import type {RADIO_SAVE_MESSAGES_EN} from '../../src/components/RadioRecordSaveMessages';
 export type RadioMaps=Readonly<{radioAntenna:Translation<typeof RADIO_ANTENNA_MESSAGES_EN>;radioRecordSave:Translation<typeof RADIO_SAVE_MESSAGES_EN>;identical:Readonly<Record<string,string>>}>;
@@ -325,6 +340,8 @@ export const RADIO_MAPS:Readonly<Record<string,RadioMaps>>=Object.freeze({
  hi:{radioAntenna:RADIO_ANTENNA_HI,radioRecordSave:RADIO_RECORD_SAVE_HI,identical:hiIdentical.entries},
  // Front JA5: Japanese (its ?lang=ja preview).
  ja:{radioAntenna:RADIO_ANTENNA_JA,radioRecordSave:RADIO_RECORD_SAVE_JA,identical:jaIdentical.entries},
+ // Front RU5: Russian (its ?lang=ru preview).
+ ru:{radioAntenna:RADIO_ANTENNA_RU,radioRecordSave:RADIO_RECORD_SAVE_RU,identical:ruIdentical.entries},
 });
 export const radioMaps=(tag:string):RadioMaps=>{const m=RADIO_MAPS[tag];if(!m)throw new Error(`No radio maps for ${tag}`);return m;};
 // Front PT6: the maps the E06 and E08 walks read beyond the catalog and originals (tests/i18n/e06.spec.ts, e08.spec.ts), per
@@ -345,6 +362,16 @@ import {SAVED_ROWS_FR} from '../../src/i18n/fr/maps/pulsarSavedRows';
 import {LOAD_SAVE_FR} from '../../src/i18n/fr/maps/pulsarLoadSave';
 import {OBJECT_X_GUIDE_FR} from '../../src/i18n/fr/maps/objectXGuide';
 import {OBJECT_X_MEASURE_FR} from '../../src/i18n/fr/maps/objectXMeasure';
+import {PULSAR_ID} from '../../src/i18n/id/maps/pulsar';
+import {SAVED_ROWS_ID} from '../../src/i18n/id/maps/pulsarSavedRows';
+import {LOAD_SAVE_ID} from '../../src/i18n/id/maps/pulsarLoadSave';
+import {OBJECT_X_GUIDE_ID} from '../../src/i18n/id/maps/objectXGuide';
+import {OBJECT_X_MEASURE_ID} from '../../src/i18n/id/maps/objectXMeasure';
+import {PULSAR_HI} from '../../src/i18n/hi/maps/pulsar';
+import {SAVED_ROWS_HI} from '../../src/i18n/hi/maps/pulsarSavedRows';
+import {LOAD_SAVE_HI} from '../../src/i18n/hi/maps/pulsarLoadSave';
+import {OBJECT_X_GUIDE_HI} from '../../src/i18n/hi/maps/objectXGuide';
+import {OBJECT_X_MEASURE_HI} from '../../src/i18n/hi/maps/objectXMeasure';
 import {PULSAR_JA} from '../../src/i18n/ja/maps/pulsar';
 import {SAVED_ROWS_JA} from '../../src/i18n/ja/maps/pulsarSavedRows';
 import {LOAD_SAVE_JA} from '../../src/i18n/ja/maps/pulsarLoadSave';
@@ -361,6 +388,10 @@ export const E06_MAPS:Readonly<Record<string,E06Maps>>=Object.freeze({
  'pt-BR':{pulsar:PULSAR_PT,pulsarSavedRows:SAVED_ROWS_PT,pulsarLoadSave:LOAD_SAVE_PT},
  // Front FR6: French (its ?lang=fr preview).
  fr:{pulsar:PULSAR_FR,pulsarSavedRows:SAVED_ROWS_FR,pulsarLoadSave:LOAD_SAVE_FR},
+ // Front ID6: Indonesian (its ?lang=id preview).
+ id:{pulsar:PULSAR_ID,pulsarSavedRows:SAVED_ROWS_ID,pulsarLoadSave:LOAD_SAVE_ID},
+ // Front HI6: Hindi (its ?lang=hi preview).
+ hi:{pulsar:PULSAR_HI,pulsarSavedRows:SAVED_ROWS_HI,pulsarLoadSave:LOAD_SAVE_HI},
  // Front JA6: Japanese (its ?lang=ja preview).
  ja:{pulsar:PULSAR_JA,pulsarSavedRows:SAVED_ROWS_JA,pulsarLoadSave:LOAD_SAVE_JA},
 });
@@ -371,6 +402,10 @@ export const E08_MAPS:Readonly<Record<string,E08Maps>>=Object.freeze({
  'pt-BR':{objectXLab:OBJECT_X_LAB_PT,objectXGuide:OBJECT_X_GUIDE_PT,objectXMeasure:OBJECT_X_MEASURE_PT,camera:CAMERA_PT,sound:SOUND_PT},
  // Front FR6: French (its ?lang=fr preview).
  fr:{objectXLab:OBJECT_X_LAB_FR,objectXGuide:OBJECT_X_GUIDE_FR,objectXMeasure:OBJECT_X_MEASURE_FR,camera:CAMERA_FR,sound:SOUND_FR},
+ // Front ID6: Indonesian (its ?lang=id preview).
+ id:{objectXLab:OBJECT_X_LAB_ID,objectXGuide:OBJECT_X_GUIDE_ID,objectXMeasure:OBJECT_X_MEASURE_ID,camera:CAMERA_ID,sound:SOUND_ID},
+ // Front HI6: Hindi (its ?lang=hi preview).
+ hi:{objectXLab:OBJECT_X_LAB_HI,objectXGuide:OBJECT_X_GUIDE_HI,objectXMeasure:OBJECT_X_MEASURE_HI,camera:CAMERA_HI,sound:SOUND_HI},
  // Front JA6: Japanese (its ?lang=ja preview).
  ja:{objectXLab:OBJECT_X_LAB_JA,objectXGuide:OBJECT_X_GUIDE_JA,objectXMeasure:OBJECT_X_MEASURE_JA,camera:CAMERA_JA,sound:SOUND_JA},
 });
@@ -384,6 +419,10 @@ import {HELP_VIEWER_PT} from '../../src/i18n/pt-br/maps/helpViewer';
 import {WEB_HELP_PT} from '../../src/i18n/pt-br/maps/webHelp';
 import {HELP_VIEWER_FR} from '../../src/i18n/fr/maps/helpViewer';
 import {WEB_HELP_FR} from '../../src/i18n/fr/maps/webHelp';
+import {HELP_VIEWER_ID} from '../../src/i18n/id/maps/helpViewer';
+import {WEB_HELP_ID} from '../../src/i18n/id/maps/webHelp';
+import {HELP_VIEWER_HI} from '../../src/i18n/hi/maps/helpViewer';
+import {WEB_HELP_HI} from '../../src/i18n/hi/maps/webHelp';
 import {HELP_VIEWER_JA} from '../../src/i18n/ja/maps/helpViewer';
 import {WEB_HELP_JA} from '../../src/i18n/ja/maps/webHelp';
 import type {HELP_VIEWER_EN} from '../../src/help/HelpViewerMessages';
@@ -404,6 +443,12 @@ export const HELP_TEXT:Readonly<Record<string,HelpText>>=Object.freeze({
  // Front FR-HELP: the search query types a straight apostrophe and no accent; the translation's fold finds «c’est … verticale».
  'fr':{helpViewer:HELP_VIEWER_FR,webHelp:WEB_HELP_FR,pulsarFirstRow:'-Opérations de base-',reminderQuestion:'Avez-vous VRAIMENT terminé complètement cet exercice\u202f?',
   loadSpectrumText:'Pour charger un spectre à classer',searchRow:/Mesurer et marquer/,searchQuery:"C'EST LA POSITION VERTICALE",searchHit:'c’est la position verticale',controlsRow:/Commandes/,lineHelpText:'Visible pour la première fois vers A0'},
+ // Front ID-HELP: Indonesian has no accents, so the search is checked for case only (an upper-case query finds the lower-case line).
+ id:{helpViewer:HELP_VIEWER_ID,webHelp:WEB_HELP_ID,pulsarFirstRow:'-Operasi dasar-',reminderQuestion:'Apakah Anda YAKIN telah menyelesaikan praktikum ini sepenuhnya?',
+  loadSpectrumText:'Untuk memuat spektrum yang akan diklasifikasi',searchRow:/Ukur dan tandai/,searchQuery:'POSISI VERTIKAL',searchHit:'posisi vertikal',controlsRow:/^Kontrol$/,lineHelpText:'Pertama kali terlihat sekitar A0'},
+ // Front HI-HELP: Devanagari has no case; the search finds the row as written.
+ 'hi':{helpViewer:HELP_VIEWER_HI,webHelp:WEB_HELP_HI,pulsarFirstRow:'-मूल संचालन-',reminderQuestion:'क्या आप सचमुच निश्चित हैं कि आपने यह प्रयोग पूरी तरह समाप्त कर लिया है?',
+  loadSpectrumText:'वर्गीकरण के लिए स्पेक्ट्रम लोड करने के लिए',searchRow:/लक्षण मापें\/चिह्नित करें/,searchQuery:'कर्सर की ऊर्ध्वाधर स्थिति',searchHit:'कर्सर की ऊर्ध्वाधर स्थिति',controlsRow:/^ *नियंत्रण$/,lineHelpText:'पहली बार A0 के आसपास दिखती है'},
  // Front JA-HELP: the search query types the katakana «カーソル» in hiragana; the translation's fold finds it.
  ja:{helpViewer:HELP_VIEWER_JA,webHelp:WEB_HELP_JA,pulsarFirstRow:'-基本操作-',reminderQuestion:'この実習を本当にすべて終えましたか？',
   loadSpectrumText:'分類するスペクトルを読み込むには',searchRow:/スペクトルの特徴の測定／マーク/,searchQuery:'かーそるの縦位置',searchHit:'カーソルの縦位置',controlsRow:/操作部/,lineHelpText:'A0付近で初めて見られます'},

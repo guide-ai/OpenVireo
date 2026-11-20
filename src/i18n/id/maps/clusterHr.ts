@@ -12,7 +12,7 @@ export const CLUSTER_HR_ID:Translation<typeof CLUSTER_HR_EN>=Object.freeze({
  topicFileErrorCaption:'Kesalahan File Bantuan',
  topicFileError:(file:string)=>`File bantuan yang disertakan ${file} tidak dapat dimuat atau tidak cocok dengan ukuran dan SHA-256 yang tercatat. Coba lagi.`,
  separatorNote:'Tidak ada topik pada baris ini (VIREO berbunyi bip di sini).',
- linkNote:'Klik dua kali atau tekan Enter pada judul di bawah “Topik Terkait” (Related Topics) untuk membukanya. Baris kosong di sana tidak berfungsi di sini; VIREO berhenti dengan kesalahan pada baris itu.',
+ linkNote:'Klik ganda atau tekan Enter pada judul di bawah “Topik terkait” (Related Topics) untuk membukanya. Baris kosong di sana tidak berfungsi di sini; VIREO berhenti dengan kesalahan pada baris itu.',
  searchQuery:'Teks yang dicari',
  matchCase:'Cocokkan huruf besar/kecil',
  fromTop:'Dari atas',

@@ -29,6 +29,8 @@ const VERDICTS:Readonly<Record<string,readonly string[]>>={
  'es-419':['Es una estrella.','Es una galaxia.','Es un cuásar (QSO).','Es un púlsar.','Es un asteroide.'],
  'pt-BR':['É uma estrela.','É uma galáxia.','É um quasar (QSO).','É um pulsar.','É um asteroide.'],
  fr:['C’est une étoile.','C’est une galaxie.','C’est un quasar (QSO).','C’est un pulsar.','C’est un astéroïde.'],
+ id:['Objek Anda adalah bintang.','Objek Anda adalah galaksi.','Objek Anda adalah kuasar (QSO).','Objek Anda adalah pulsar.','Objek Anda adalah asteroid.'],
+ hi:['यह तारा है।','यह आकाशगंगा है।','यह क्वासर (QSO) है।','यह पल्सर है।','यह क्षुद्रग्रह है।'],
  // Front JA6: Japanese needs no article: the kind and です.
  ja:['恒星です。','銀河です。','クエーサー（QSO）です。','パルサーです。','小惑星です。'],
 };
@@ -75,9 +77,9 @@ for(const L of translatedFor('e08'))test.describe(()=>{test.use({locale:contextL
  await page.goto(`/${langQuery(L.tag)}#object-x`);await expect(page.locator('html')).toHaveAttribute('lang',L.entry.htmlLang);
  await expect(id(page,'objectx-target').locator('option')).toHaveCount(18,{timeout:30_000});
  await lab(page).getByLabel(exact(LS.idLabel)).fill('42');
- // The coordinates line (LS.targetCoords) starts with the same word in Spanish and Portuguese; French's «AD» is cut as Spanish's «AR»;
- // Japanese's «赤経» follows its colon with no space (Front JA6).
- const coordinates=new RegExp(`^(?:— )?${LS.targetCoords('','').replace(/[.*+?^${}()|[\]\\/]/g,'\\$&').replace(/ (?:AR|AD) ,.*$|赤経.*$/,'')}${L.tag==='ja'?'':' '}`);
+ // The coordinates line (LS.targetCoords) starts with the same word in Spanish and Portuguese; French's «AD» is cut as Spanish's «AR»,
+ // and Hindi's «RA» (kept in Latin script) the same way; Japanese's «赤経» follows its colon with no space (Front JA6).
+ const coordinates=new RegExp(`^(?:— )?${LS.targetCoords('','').replace(/[.*+?^${}()|[\]\\/]/g,'\\$&').replace(/ (?:AR|AD|RA) ,.*$|赤経.*$/,'')}${L.tag==='ja'?'':' '}`);
  const read=async(code:string)=>{
   await go(page,'#object-x');await id(page,'objectx-target').selectOption(code);await expect(id(page,'objectx-coordinates')).toContainText(code);
   await page.waitForTimeout(300);

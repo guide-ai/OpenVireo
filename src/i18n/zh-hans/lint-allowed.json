@@ -1,4 +1,23 @@
 {
  "about": "Front ZH0: findings of the zh-Hans lint (src/i18n/lint/, profile zh-Hans) that are correct Chinese in one string, each with a reason. Keys are the lint's string ids; `words` are the matched words allowed in that string only, `rules` whole rules, `placeholders` added placeholders.",
- "entries": {}
+ "entries": {
+  "original:Object: (": {
+   "rules": [
+    "typography"
+   ],
+   "reason": "VIREO closes this ASCII parenthesis itself after the selection number («天体：(3) M45»), so the opening one stays ASCII (zh-hans.test.ts ASCII_BRACKET_PIECES), as ja"
+  },
+  "original:\" Not Found.": {
+   "rules": [
+    "quotes"
+   ],
+   "reason": "VIREO joins this piece after a name it opens with an untranslated straight \", so the closing mark must stay a straight quote, as in pt, fr, hi, ja and ru"
+  },
+  "original:fragment|You have not recorded your current readings for \"": {
+   "rules": [
+    "quotes"
+   ],
+   "reason": "VIREO closes this straight quote itself in a piece it never translates, so the opening mark must stay a straight quote, as in pt, fr, hi, ja and ru"
+  }
+ }
 }
