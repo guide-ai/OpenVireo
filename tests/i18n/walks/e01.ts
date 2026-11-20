@@ -22,7 +22,7 @@ export const SAME=new Set<string>([
  // Formats, names, symbols and units.
  'VIREO','OpenVireo','SHA-256','CSV','JSON','SSP','Multi-Spec','Cursor','z','c z','V','B','U','R','I','V:','B:','U:','R:','I:','Z:','?','↗','×','—','✳','◀','▶','·','km/s','km/s/Mpc','Mpc,','ms','v/D · km/s/Mpc',
  'v = c z · c = 299792.458 km/s','D = 10^((V − M + 5) / 5) / 1,000,000 Mpc',
- // Front HI2: symbols the any-script collector now reads (the Latin-only one skipped them): the shift column's Δλ · Å.
+ // Front HI2: symbols the any-script collector now reads (the Latin-only one skipped them): the shift column's Δλ · Å (Front RU2 found the same).
  'Δλ · Å',
  // Hubble.HTL target ids and galaxy labels (source identity, F6), the original workbook's row names and the VIREO star target.
  ...GALAXIES,...TARGETS.map(([id])=>id),...TARGETS.map(([id,label])=>`${id} · ${label}`),...TARGETS.map(([id,label])=>`${label} · ${id}`),
@@ -74,6 +74,7 @@ export const texts=(page:Page)=>page.evaluate(()=>{
  const out:string[]=[];
  const shown=(el:Element)=>{for(let e:Element|null=el;e;e=e.parentElement){if((e as HTMLElement).hidden||e.getAttribute('aria-hidden')==='true')return false;if(e.tagName==='DETAILS'&&!(e as HTMLDetailsElement).open&&el.closest('summary')?.parentElement!==e&&e!==el)return false;const s=getComputedStyle(e);if(s.display==='none'||s.visibility==='hidden')return false;}return true;};
  const skipped=(el:Element)=>el.closest('.portal-header,[data-i18n-shell],script,style,[data-testid=site-tour]')!==null||el.closest('[lang=en]:not(html)')!==null;
+ // Front RU2: two letters of any script (was [A-Za-z]{2}, which skipped every all-Cyrillic text, so a Russian walk compared nothing).
  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n:Node|null;
  while((n=walker.nextNode())){const el=n.parentElement;if(!el||el.tagName==='OPTION')continue;const t=n.textContent?.trim();if(t&&/\p{L}\p{M}*\p{L}/u.test(t)&&!skipped(el)&&shown(el))out.push(t);}
  for(const select of document.querySelectorAll('select'))if(!skipped(select)&&shown(select))for(const o of select.options){const t=o.text.trim();if(t&&/\p{L}\p{M}*\p{L}/u.test(t))out.push(`@option:${t}`);}
@@ -118,7 +119,7 @@ export const STEPS:readonly (readonly [string,(page:Page,lang:Lang)=>Promise<voi
   await tool(page,lang,'sky.observatory');const dome=page.getByRole('button',{name:new RegExp(N(lang,'sky.open').source.replace(/\$$/,'').concat(' ↗$'))});if(await dome.isVisible())await dome.click();// the star field opened it
   if(!await page.locator('#point-ra').isVisible())await page.getByText(N(lang,'sky.coordinates')).click();
   await page.locator('#point-ra').fill('12.99311111111111');await page.locator('#point-dec').fill('27.959722222222222');await button(page,lang,'sky.pointCoordinates').click();
-  await page.getByRole('button',{name:new RegExp(/^\s*[⟦]?\s*(?:T[eé]l[eé]sc[oó]p[eéi]|Teleskop ·|दूरबीन ·)/.source+'|'+pseudoStart('Telescope').source)}).first().click();
+  await page.getByRole('button',{name:new RegExp(/^\s*[⟦]?\s*(?:T[eé]l[eé]sc[oó]p[eéi]|Teleskop ·|दूरबीन ·|Телескоп ·)/.source+'|'+pseudoStart('Telescope').source)}).first().click();
   if(!await button(page,lang,'runningClock.trackingOn').isVisible())await page.getByText(N(lang,'runningClock.title')).click();
   if(await button(page,lang,'runningClock.trackingOn').isVisible())await button(page,lang,'runningClock.trackingOn').click();
   await tool(page,lang,'spectrometer.nav');await expect(id(page,'field-spec-use')).toBeEnabled({timeout:60_000});await id(page,'field-spec-use').click();
