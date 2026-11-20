@@ -203,9 +203,9 @@ export const HINDI_TEXT=language('hi',hi,hiOriginals,{appShell:APP_SHELL_HI,help
 /** Front JA0 (plan front-i18n-ja.md §1.2 #3): Japanese, behind `?lang=ja` before its release; JA0 translated the shell, and each
  * later JA front adds its area to `done`. Its letters are kana, ー and 「」, which no English text, VIREO file or export has (Han alone
  * is not used: kana are the unambiguous Japanese signal). JA1 adds the observatory with its maps and all of VIREO's originals, JA2
- * exercises E01 and E02, JA3 exercise E03, JA4 exercises E04 and E05, JA5 the radio telescope, JA6 exercises E06 and E08. */
+ * exercises E01 and E02, JA3 exercise E03, JA4 exercises E04 and E05, JA5 the radio telescope, JA6 exercises E06 and E08, JA-HELP the help. */
 export const JAPANESE_TEXT=language('ja',ja,jaOriginals,{appShell:APP_SHELL_JA,helpMenu:HELP_MENU_JA,projectLinks:PROJECT_LINKS_JA,tour:TOUR_JA,languageChoice:LANGUAGE_CHOICE_JA},
- [APP_SHELL_JA,CAMERA_JA,FIELD_INFO_JA,FIELD_READ_DETAILS_JA,HELP_MENU_JA,LANGUAGE_CHOICE_JA,NAKED_EYE_JA,OBJECT_X_LAB_JA,OBSERVATION_METADATA_JA,OBSERVATORY_JA,POLISH_JA,PROJECT_LINKS_JA,QSO_LIST_JA,SOUND_JA,TOUR_JA,VARIABLE_STARS_JA],/[\p{sc=Hira}\p{sc=Kana}ー「」]/u,'?lang=ja',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08']);
+ [APP_SHELL_JA,CAMERA_JA,FIELD_INFO_JA,FIELD_READ_DETAILS_JA,HELP_MENU_JA,LANGUAGE_CHOICE_JA,NAKED_EYE_JA,OBJECT_X_LAB_JA,OBSERVATION_METADATA_JA,OBSERVATORY_JA,POLISH_JA,PROJECT_LINKS_JA,QSO_LIST_JA,SOUND_JA,TOUR_JA,VARIABLE_STARS_JA],/[\p{sc=Hira}\p{sc=Kana}ー「」]/u,'?lang=ja',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08','help']);
 /** Front ZH0: Simplified Chinese before its release, behind `?lang=zh-Hans` (an en-US browser: tests/fixtures/language.ts
  * contextLocale). Only the shell is translated; ZH1–ZH6 and ZH-HELP add their areas to `done` and their maps. Its letters are Han and
  * the full-width marks ，。、：；？！（）, which VIREO's English files and OpenVireo's exports never hold. */
@@ -384,6 +384,8 @@ import {HELP_VIEWER_PT} from '../../src/i18n/pt-br/maps/helpViewer';
 import {WEB_HELP_PT} from '../../src/i18n/pt-br/maps/webHelp';
 import {HELP_VIEWER_FR} from '../../src/i18n/fr/maps/helpViewer';
 import {WEB_HELP_FR} from '../../src/i18n/fr/maps/webHelp';
+import {HELP_VIEWER_JA} from '../../src/i18n/ja/maps/helpViewer';
+import {WEB_HELP_JA} from '../../src/i18n/ja/maps/webHelp';
 import type {HELP_VIEWER_EN} from '../../src/help/HelpViewerMessages';
 import type {WEB_HELP_EN} from '../../src/help/webHelp';
 export type HelpText=Readonly<{
@@ -402,5 +404,8 @@ export const HELP_TEXT:Readonly<Record<string,HelpText>>=Object.freeze({
  // Front FR-HELP: the search query types a straight apostrophe and no accent; the translation's fold finds «c’est … verticale».
  'fr':{helpViewer:HELP_VIEWER_FR,webHelp:WEB_HELP_FR,pulsarFirstRow:'-Opérations de base-',reminderQuestion:'Avez-vous VRAIMENT terminé complètement cet exercice\u202f?',
   loadSpectrumText:'Pour charger un spectre à classer',searchRow:/Mesurer et marquer/,searchQuery:"C'EST LA POSITION VERTICALE",searchHit:'c’est la position verticale',controlsRow:/Commandes/,lineHelpText:'Visible pour la première fois vers A0'},
+ // Front JA-HELP: the search query types the katakana «カーソル» in hiragana; the translation's fold finds it.
+ ja:{helpViewer:HELP_VIEWER_JA,webHelp:WEB_HELP_JA,pulsarFirstRow:'-基本操作-',reminderQuestion:'この実習を本当にすべて終えましたか？',
+  loadSpectrumText:'分類するスペクトルを読み込むには',searchRow:/スペクトルの特徴の測定／マーク/,searchQuery:'かーそるの縦位置',searchHit:'カーソルの縦位置',controlsRow:/操作部/,lineHelpText:'A0付近で初めて見られます'},
 });
 export const helpText=(tag:string):HelpText=>{const m=HELP_TEXT[tag];if(!m)throw new Error(`No help text for ${tag}`);return m;};
