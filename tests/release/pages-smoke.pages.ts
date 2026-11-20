@@ -550,6 +550,8 @@ const HELP_SMOKE=[
  {tag:'fr',title:'Front FR-HELP: a ?lang=fr help viewer fetches only its translated help chunks and switches to the original',label:'Traduction : adaptation web d’OpenVireo (ce n’est pas un texte du CLEA)',text:'Pour charger un spectre'},
  // Front ID-HELP: the Indonesian help set in its ?lang=id preview.
  {tag:'id',title:'Front ID-HELP: a ?lang=id help viewer fetches only its translated help chunks and switches to the original',label:'Terjemahan: adaptasi web OpenVireo (bukan teks CLEA)',text:'Untuk memuat spektrum'},
+ // Front HI-HELP: the Hindi help set in its ?lang=hi preview.
+ {tag:'hi',title:'Front HI-HELP: a ?lang=hi help viewer fetches only its translated help chunks and switches to the original',label:'अनुवाद: OpenVireo का वेब अनुकूलन (CLEA का पाठ नहीं)',text:'वर्गीकरण के लिए स्पेक्ट्रम लोड करने के लिए'},
 ] as const;
 for(const h of HELP_SMOKE)test(h.title,async({page,baseURL})=>{
  const p=await watch(page,baseURL!),help:string[]=[],languages:Promise<string>[]=[];

@@ -207,10 +207,10 @@ export const FRENCH_TEXT=language('fr',fr,frOriginals,{appShell:APP_SHELL_FR,hel
 export const INDONESIAN_TEXT=language('id',idCatalog,idOriginals,{appShell:APP_SHELL_ID,helpMenu:HELP_MENU_ID,projectLinks:PROJECT_LINKS_ID,tour:TOUR_ID,languageChoice:LANGUAGE_CHOICE_ID},
  [APP_SHELL_ID,CAMERA_ID,FIELD_INFO_ID,FIELD_READ_DETAILS_ID,HELP_MENU_ID,LANGUAGE_CHOICE_ID,NAKED_EYE_ID,OBJECT_X_LAB_ID,OBSERVATION_METADATA_ID,OBSERVATORY_ID,POLISH_ID,PROJECT_LINKS_ID,QSO_LIST_ID,SOUND_ID,TOUR_ID,VARIABLE_STARS_ID],/(?<!\p{L})(?:yang|dan|untuk|dengan|tidak|Anda|dari|pada|ini|atau)(?!\p{L})|[“”\u202f]/u,'?lang=id',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08','help']);
 /** Front HI0: Hindi, behind `?lang=hi` before its release (an en-US browser with the preview query). HI0 translated the shell, so
- * only the shell's specs ran it; HI1 adds the observatory and all of VIREO's originals, HI2 exercises E01 and E02, HI3 exercise E03, HI4 exercises E04 and E05, HI5 the radio telescope, HI6 exercises E06 and E08; each HI front adds its area. Its letters are Devanagari (the danda । included), which English text
+ * only the shell's specs ran it; HI1 adds the observatory and all of VIREO's originals, HI2 exercises E01 and E02, HI3 exercise E03, HI4 exercises E04 and E05, HI5 the radio telescope, HI6 exercises E06 and E08, HI-HELP the help files and help maps; each HI front adds its area. Its letters are Devanagari (the danda । included), which English text
  * never has; “ ” are not among them, since English uses them too. */
 export const HINDI_TEXT=language('hi',hi,hiOriginals,{appShell:APP_SHELL_HI,helpMenu:HELP_MENU_HI,projectLinks:PROJECT_LINKS_HI,tour:TOUR_HI,languageChoice:LANGUAGE_CHOICE_HI},
- [APP_SHELL_HI,CAMERA_HI,FIELD_INFO_HI,FIELD_READ_DETAILS_HI,HELP_MENU_HI,LANGUAGE_CHOICE_HI,NAKED_EYE_HI,OBJECT_X_LAB_HI,OBSERVATION_METADATA_HI,OBSERVATORY_HI,POLISH_HI,PROJECT_LINKS_HI,QSO_LIST_HI,SOUND_HI,TOUR_HI,VARIABLE_STARS_HI],/[\u0900-\u097f]/u,'?lang=hi',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08']);
+ [APP_SHELL_HI,CAMERA_HI,FIELD_INFO_HI,FIELD_READ_DETAILS_HI,HELP_MENU_HI,LANGUAGE_CHOICE_HI,NAKED_EYE_HI,OBJECT_X_LAB_HI,OBSERVATION_METADATA_HI,OBSERVATORY_HI,POLISH_HI,PROJECT_LINKS_HI,QSO_LIST_HI,SOUND_HI,TOUR_HI,VARIABLE_STARS_HI],/[\u0900-\u097f]/u,'?lang=hi',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08','help']);
 /** Front JA0 (plan front-i18n-ja.md §1.2 #3): Japanese, behind `?lang=ja` before its release; JA0 translated the shell, and each
  * later JA front adds its area to `done`. Its letters are kana, ー and 「」, which no English text, VIREO file or export has (Han alone
  * is not used: kana are the unambiguous Japanese signal). JA1 adds the observatory with its maps and all of VIREO's originals, JA2
@@ -412,6 +412,8 @@ import {HELP_VIEWER_FR} from '../../src/i18n/fr/maps/helpViewer';
 import {WEB_HELP_FR} from '../../src/i18n/fr/maps/webHelp';
 import {HELP_VIEWER_ID} from '../../src/i18n/id/maps/helpViewer';
 import {WEB_HELP_ID} from '../../src/i18n/id/maps/webHelp';
+import {HELP_VIEWER_HI} from '../../src/i18n/hi/maps/helpViewer';
+import {WEB_HELP_HI} from '../../src/i18n/hi/maps/webHelp';
 import type {HELP_VIEWER_EN} from '../../src/help/HelpViewerMessages';
 import type {WEB_HELP_EN} from '../../src/help/webHelp';
 export type HelpText=Readonly<{
@@ -433,5 +435,8 @@ export const HELP_TEXT:Readonly<Record<string,HelpText>>=Object.freeze({
  // Front ID-HELP: Indonesian has no accents, so the search is checked for case only (an upper-case query finds the lower-case line).
  id:{helpViewer:HELP_VIEWER_ID,webHelp:WEB_HELP_ID,pulsarFirstRow:'-Operasi dasar-',reminderQuestion:'Apakah Anda YAKIN telah menyelesaikan praktikum ini sepenuhnya?',
   loadSpectrumText:'Untuk memuat spektrum yang akan diklasifikasi',searchRow:/Ukur dan tandai/,searchQuery:'POSISI VERTIKAL',searchHit:'posisi vertikal',controlsRow:/^Kontrol$/,lineHelpText:'Pertama kali terlihat sekitar A0'},
+ // Front HI-HELP: Devanagari has no case; the search finds the row as written.
+ 'hi':{helpViewer:HELP_VIEWER_HI,webHelp:WEB_HELP_HI,pulsarFirstRow:'-मूल संचालन-',reminderQuestion:'क्या आप सचमुच निश्चित हैं कि आपने यह प्रयोग पूरी तरह समाप्त कर लिया है?',
+  loadSpectrumText:'वर्गीकरण के लिए स्पेक्ट्रम लोड करने के लिए',searchRow:/लक्षण मापें\/चिह्नित करें/,searchQuery:'कर्सर की ऊर्ध्वाधर स्थिति',searchHit:'कर्सर की ऊर्ध्वाधर स्थिति',controlsRow:/^ *नियंत्रण$/,lineHelpText:'पहली बार A0 के आसपास दिखती है'},
 });
 export const helpText=(tag:string):HelpText=>{const m=HELP_TEXT[tag];if(!m)throw new Error(`No help text for ${tag}`);return m;};

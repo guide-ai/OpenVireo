@@ -1,0 +1,45 @@
+// Front HI-HELP: OpenVireo's Hindi (hi) web adaptation of VIREO's LSSHLP.LST. Not CLEA's text: the original bytes,
+// hashes and provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Hindi chunk.
+export const language='hi';
+export const sourceName='LSSHLP.LST';
+export const sourceSha256='f4ee3de45cead6cac0ae53458c94f9927bd48248a573632787d9e6a275e05c10';
+export const text=`'शुरुआत' 'begin'
+'लॉग इन करें' 'lsslab.txt'
+'दूरबीन चलाएँ' 'begin'
+'दूरबीन की विंडो तक पहुँचें' 'lsslab.txt'
+'दूरबीन के नियंत्रण' 'lsslab.txt'
+'दूरबीन चलाएँ' 'end'
+'दूरबीन बदलें' 'begin'
+'दूरबीन के समय का अनुरोध करें' 'lsslab.txt'
+'दूरबीनों तक पहुँचें' 'lsslab.txt'
+'दूरबीन बदलें' 'end'
+'तारा क्षेत्र बदलें' 'lsslab.txt'
+'शुरुआत' 'end'
+
+'डेटा लेना' 'begin'
+'स्पेक्ट्रोमीटर का उपयोग करें' 'begin'
+'स्पेक्ट्रोमीटर की विंडो तक पहुँचें' 'lsslab.txt'
+'काउंट शुरू/फिर शुरू करें' 'lsslab.txt'
+'काउंट रोकें' 'lsslab.txt'
+'स्पेक्ट्रम मापें' 'lsslab.txt'
+'स्पेक्ट्रम प्रिंट करें' 'lsslab.txt'
+'स्पेक्ट्रोमीटर का उपयोग करें' 'end'
+'वेग की गणना करें' 'begin'
+'हाथ से गणना करें' 'lsslab.txt'
+'गणनाओं का मिलान करें' 'lsslab.txt'
+'वेग की गणना करें' 'end'
+'दूरबीन की विंडो पर लौटें' 'lsslab.txt'
+'डेटा लेना' 'end'
+
+'डेटा ऑपरेशन' 'begin'
+'डेटा लोड करें' 'lsslab.txt'
+'डेटा देखें' 'lsslab.txt'
+'डेटा सहेजें' 'lsslab.txt'
+'डेटा प्रिंट करें' 'lsslab.txt'
+'परिणाम प्लॉट करें' 'begin'
+'परिणाम साझा प्लॉट फ़ाइल में सहेजें' 'lsslab.txt'
+'“शंकु” आरेख प्रोग्राम तक पहुँचें' 'lsslab.txt'
+'परिणाम प्लॉट करें' 'end'
+'स्प्रेडशीट प्रोग्राम का उपयोग करें' 'lsslab.txt'
+'डेटा ऑपरेशन' 'end'
+`;

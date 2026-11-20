@@ -85,6 +85,25 @@
     "leftover-english"
    ],
    "reason": "h m s are the unit symbols of the RA field (hours, minutes, seconds), as its label «कैटलॉग RA (h m s)» shows them"
+  },
+  "map:webHelp.groups.0.topics.0.blocks.1": {
+   "rules": [
+    "glyphs",
+    "digits"
+   ],
+   "reason": "the sentence on how numbers are read (decision of 2026-11-19), which the English paragraph does not hold: the en dash of the digit range 0–9 and the examples 1.5 and 24,000 with a decimal point and an English thousands comma"
+  },
+  "map:webHelp.groups.3.topics.0.blocks.0.0": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "the English names a stale Tools button; the shell’s button reads «मेनू» (appShell toolsMenu), so the help names it as the screen shows it, as French writes «bouton Menu»"
+  },
+  "map:webHelp.groups.0.topics.3.blocks.1.rows.2.1": {
+   "rules": [
+    "glyphs"
+   ],
+   "reason": "the site clock panel’s on-screen name «स्थान की घड़ी · स्थिर UT परिदृश्य» holds a middle dot that the English’s short name «Site clock» does not"
   }
  }
 }
