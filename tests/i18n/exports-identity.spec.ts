@@ -187,7 +187,7 @@ family('spectrum analysis: measurement CSV, velocities CSV and the analysis sess
   // Front SC10: ArrowUp, not ArrowRight: under qps-rtl the native range input runs right to left (before RT5 makes data sliders
   // left-to-right islands), so ArrowRight lowers z there; ArrowUp raises it one step in every direction.
   await page.getByRole('slider').focus();await page.getByRole('slider').press('ArrowUp');
-  await page.getByRole('button',{name:locale==='es-419'?new RegExp(`^\\s*${SPANISH.get('Record measurement')}`):locale==='pt-BR'?ptStart('Record measurement'):locale==='fr'?frStart('Record measurement'):locale==='id'||locale==='hi'||locale==='ru'?catalogStart(locale,'Record measurement'):pseudoStart('Record measurement')}).click();await button(page,'Save measurement',locale).click();
+  await page.getByRole('button',{name:locale==='es-419'?new RegExp(`^\\s*${SPANISH.get('Record measurement')}`):locale==='pt-BR'?ptStart('Record measurement'):locale==='fr'?frStart('Record measurement'):locale==='id'||locale==='hi'||locale==='ja'||locale==='ru'?catalogStart(locale,'Record measurement'):pseudoStart('Record measurement')}).click();await button(page,'Save measurement',locale).click();
   await expect(page.locator('#measurement-log tbody tr')).toHaveCount(1);
   const measurements=await download(page,()=>button(page,'Export CSV ↓',locale).click());
   await page.getByText(N(locale,'Velocity analysis')).click();
@@ -214,7 +214,7 @@ family('E01 measurement through Observational Data: measurement CSV, session, re
   await page.clock.runFor(1000);await button(page,'Pause exposure',locale).first().click();await page.clock.resume();
   await button(page,'Analyze acquired galaxy',locale).click();
   await page.getByLabel(N(locale,'z step per tick')).fill('.001');await button(page,'Apply step',locale).click();await page.getByRole('slider').fill('10');
-  await page.getByRole('button',{name:locale==='es-419'?new RegExp(`^\\s*${SPANISH.get('Record measurement')}`):locale==='pt-BR'?ptStart('Record measurement'):locale==='fr'?frStart('Record measurement'):locale==='id'||locale==='hi'||locale==='ru'?catalogStart(locale,'Record measurement'):pseudoStart('Record measurement')}).click();
+  await page.getByRole('button',{name:locale==='es-419'?new RegExp(`^\\s*${SPANISH.get('Record measurement')}`):locale==='pt-BR'?ptStart('Record measurement'):locale==='fr'?frStart('Record measurement'):locale==='id'||locale==='hi'||locale==='ja'||locale==='ru'?catalogStart(locale,'Record measurement'):pseudoStart('Record measurement')}).click();
   const dialog=page.getByTestId('hubble-obsdata');await expect(dialog).toBeVisible();
   await page.getByTestId('hubble-obsdata-vel').fill('2997.92');await page.getByTestId('hubble-obsdata-sp').fill('G5');await page.getByTestId('hubble-obsdata-remarks').fill('typed, with comma');
   await page.getByTestId('hubble-obsdata-ok').click();await expect(dialog).toHaveCount(0);
@@ -446,7 +446,7 @@ family('field spectrometer: Save counts CSV and Save exposure session at a free 
   await button(page,'Open dome ↗',locale).click();
   if(!await page.locator('#point-ra').isVisible())await page.getByText(N(locale,'Enter coordinates')).click();
   await page.locator('#point-ra').fill('12.99311111111111');await page.locator('#point-dec').fill('27.959722222222222');await button(page,'Point to coordinates',locale).click();
-  await page.getByRole('button',{name:new RegExp(/^\s*[⟦]?\s*(?:T[eé]l[eé]sc[oó]p[eéi]|Teleskop ·|दूरबीन ·|Телескоп ·)/.source+'|'+pseudoStart('Telescope').source)}).first().click();
+  await page.getByRole('button',{name:new RegExp(/^\s*[⟦]?\s*(?:T[eé]l[eé]sc[oó]p[eéi]|Teleskop ·|दूरबीन ·|Телескоп ·|望遠鏡 ·)/.source+'|'+pseudoStart('Telescope').source)}).first().click();
   if(!await button(page,'Turn tracking on',locale).isVisible())await page.getByText(N(locale,'Observatory clock & spectral tracking')).click();
   if(await button(page,'Turn tracking on',locale).isVisible())await button(page,'Turn tracking on',locale).click();
   await page.evaluate(()=>{location.hash='#spectrometer';});
@@ -551,7 +551,7 @@ family('E02 LSS survey and wedge: counts CSV, session, SSP, results CSV and TXT,
   const resultsTxt=await download(page,()=>page.getByTestId('lss-results-txt').click());
   await page.locator('#lss-description').fill('One galaxy so far.');
   const toolbar=page.locator('.investigation-toolbar');
-  const investigation=await download(page,()=>toolbar.getByRole('button',{name:locale==='es-419'?exact(es['project.save']):locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ru'?exact(ptText(locale).catalog['project.save']!):L('Save investigation')}).click());
+  const investigation=await download(page,()=>toolbar.getByRole('button',{name:locale==='es-419'?exact(es['project.save']):locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'||locale==='ru'?exact(ptText(locale).catalog['project.save']!):L('Save investigation')}).click());
   await page.clock.resume();// the wedge's lazy route needs running timers; nothing written after this follows the clock (checked with --repeat-each)
   await button(page,'Plot my records in the wedge',locale).click();await expect(page.getByTestId('wedge-count')).toBeVisible({timeout:30_000});
   const wedgeCsv=await download(page,()=>page.getByTestId('wedge-export').click());
