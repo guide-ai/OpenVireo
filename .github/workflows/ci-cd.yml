@@ -53,6 +53,9 @@ jobs:
     # Front SC10/SC12 review: Playwright's --shard splits by test count in file order, so the one file of the exports identity
     # (tests/i18n/exports-identity.spec.ts: a test per export family and language, each running the family's whole flow) fell
     # in a single shard. It runs in two parts of its own; the four general shards run every other test (its path filtered out).
+    # Coordinator, 2026-11-20: with five more languages the tests/i18n specs (last in file order) filled the fourth general shard past
+    # its 60 minutes, so they run in four shards of their own (every tests/i18n file but the exports identity, matched by path in the
+    # test's title); the general shards run the rest. The three selections are complements: 1434 + 554 + 216 = 2204 tests at 469fb71.
     name: Browser tests (${{ matrix.part }})
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -60,10 +63,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - {part: 1/4, key: 1, select: '--grep-invert="exports-identity\.spec" --shard=1/4'}
-          - {part: 2/4, key: 2, select: '--grep-invert="exports-identity\.spec" --shard=2/4'}
-          - {part: 3/4, key: 3, select: '--grep-invert="exports-identity\.spec" --shard=3/4'}
-          - {part: 4/4, key: 4, select: '--grep-invert="exports-identity\.spec" --shard=4/4'}
+          - {part: 1/4, key: 1, select: '--grep-invert="exports-identity\.spec|i18n[/\\\\]" --shard=1/4'}
+          - {part: 2/4, key: 2, select: '--grep-invert="exports-identity\.spec|i18n[/\\\\]" --shard=2/4'}
+          - {part: 3/4, key: 3, select: '--grep-invert="exports-identity\.spec|i18n[/\\\\]" --shard=3/4'}
+          - {part: 4/4, key: 4, select: '--grep-invert="exports-identity\.spec|i18n[/\\\\]" --shard=4/4'}
+          - {part: i18n 1/4, key: i18n-1, select: '--grep="i18n[/\\\\]" --grep-invert="exports-identity\.spec" --shard=1/4'}
+          - {part: i18n 2/4, key: i18n-2, select: '--grep="i18n[/\\\\]" --grep-invert="exports-identity\.spec" --shard=2/4'}
+          - {part: i18n 3/4, key: i18n-3, select: '--grep="i18n[/\\\\]" --grep-invert="exports-identity\.spec" --shard=3/4'}
+          - {part: i18n 4/4, key: i18n-4, select: '--grep="i18n[/\\\\]" --grep-invert="exports-identity\.spec" --shard=4/4'}
           - {part: exports 1/2, key: exports-1, select: 'tests/i18n/exports-identity.spec.ts --shard=1/2'}
           - {part: exports 2/2, key: exports-2, select: 'tests/i18n/exports-identity.spec.ts --shard=2/2'}
     steps:
@@ -132,8 +139,8 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - name: Install the test fonts (Noto Sans CJK, Noto Sans Devanagari, DejaVu)
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends fontconfig fonts-dejavu-core fonts-dejavu-mono fonts-noto-cjk fonts-noto-core
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 update
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 install -y --no-install-recommends fontconfig fonts-dejavu-core fonts-dejavu-mono fonts-noto-cjk fonts-noto-core
       - run: npm run test:test-fonts
       # Writes the private fontconfig and prints the font-hash log (a font package update shows here first).
       - run: npm run test-fonts
