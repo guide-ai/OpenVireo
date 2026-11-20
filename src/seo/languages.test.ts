@@ -71,8 +71,8 @@ const TEXT_RULES:Readonly<Record<string,TextRules>>={
   english:t=>t.replace(/\bclusters(?=, walls, filaments and voids)/,'galaxy aggregates'),
   claims:/公式版|公式の翻訳|CLEAの翻訳|CLEA公式|公式プログラム/,
   reconstruction:'無料のWeb版',homeDescription:/^無料の非公式なWeb版/,
-  adaptation:'この日本語の文章は、OpenVireoによるWeb版の翻案で、CLEAの文章ではありません。',
-  notOriginal:'元のプログラムではなく、Project CLEAとは関係ありません。',ogLocale:'ja_JP',ogImage:'/og-image-ja.png'},
+  adaptation:'この日本語の文章は、OpenVireoがWeb向けに翻案したもので、CLEAの文章ではありません。',
+  notOriginal:'元のプログラムではなく、Project CLEAと提携しているものでもありません。',ogLocale:'ja_JP',ogImage:'/og-image-ja.png'},
 };
 /** The framework's rules that read the meaning of a page text. Glyph parity and the length ratio are left out: the pages are free
  * prose written from the English, not interface strings (Spanish writes Hertzsprung-Russell with a hyphen). */

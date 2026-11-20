@@ -277,12 +277,11 @@ search pages (JA-REL+SEO)".
   «実習を開く» goes to `/?lang=ja#lab=<slug>`. A lab is a «実習» (the ja glossary) and the lab names are the app's own Japanese names
   (`home.hubble` … `home.objectX`: ハッブルの法則, 大規模構造, 恒星のスペクトル分類, プレアデス測光, 星団のHR図, パルサー, 天体X).
   です/ます in sentences, nouns in headings, no second-person pronoun; full-width 。、：（） next to Japanese and no space between
-  Japanese and Latin text or digits (the ja lint profile and CJK fixer). The footer says «この日本語の文章は、OpenVireoによるWeb版の翻案
-  で、CLEAの文章ではありません。»; «仕組み» adds that the screen and inputs use «.» as the decimal point with half-width digits, that the
-  files the site writes stay English, and that the selector at the top switches to English.
+  Japanese and Latin text or digits (the ja lint profile and CJK fixer). The footer says «この日本語の文章は、OpenVireoがWeb向けに翻案したもので、CLEAの文章ではありません。»; «仕組み» adds that the screen and inputs use «.» as the decimal point with half-width digits, that the
+  files the site writes stay English (its own item), and that the selector at the top switches to English.
 - **Lengths in display columns** (plan front-i18n-ja.md §1.2 #7): `src/seo/languages.test.ts` now measures every language's titles
   and descriptions with `displayColumns` (a kanji or kana counts two, as a search result draws it; Latin text is unchanged, one per
-  character). Japanese titles are 41–61 columns (≤ 65), descriptions 124–154 (110–160, about 62–77 characters). The plan suggested
+  character). Japanese titles are 41–61 columns (≤ 65), descriptions 110–160 (about 70–90 characters, Latin letters counting one column). The plan suggested
   160–240 columns for CJK descriptions; the shared 110–160 band was kept, since Japanese results cut near 50 characters on phones and
   80–120 on desktops, so the whole description shows on desktop and its first sentence on phones.
 - **Titles** end « · OpenVireo» (or start «OpenVireo: » on the home) with no 「（CLEA VIREO）」 bracket: the CJK fixer drops the space

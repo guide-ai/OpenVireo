@@ -211,7 +211,7 @@ for(const [hash,name] of ROUTES)test(`Front ${R.front}: ${name} (${hash}) in ${R
  expect(p.language[0]).toBe('core');expect(p.language.slice(1).sort()).toEqual(modules);expect(new Set(p.tags)).toEqual(new Set([R.tag]));
  expect(await language(page)).toEqual({sets:area?2:1,earlyReads:0,changes:[]});
 });
-test(R.tag==='pt-BR'?'Front PT-REL: a pt-BR browser opens Portuguese without ?lang=, with the selector offering three languages, under the release CSP':`Front ${R.front}: a ${R.locale} browser opens ${R.name} without ?lang=, with the selector offering ${R.tag==='fr'?'four':'five'} languages, under the release CSP`,async({page,baseURL})=>{
+test(R.tag==='pt-BR'?'Front PT-REL: a pt-BR browser opens Portuguese without ?lang=, with the selector offering three languages, under the release CSP':`Front ${R.front}: a ${R.locale} browser opens ${R.name} without ?lang=, with the selector offering ${OPTIONS.length} languages, under the release CSP`,async({page,baseURL})=>{
  const p=await watch(page,baseURL!);
  await page.goto('/#observatory');await expect(page.getByRole('heading',{name:R.heading})).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.lang)).toBe(R.tag);

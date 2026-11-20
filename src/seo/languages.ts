@@ -206,19 +206,19 @@ const FR:SeoLanguage={
 
 const JA:SeoLanguage={
  tag:'ja',hreflang:['ja'],ogLocale:'ja_JP',prefix:SEO_PATH_PREFIX.ja,app:'/?lang=ja',
- ogImage:'/og-image-ja.png',ogImageAlt:'OpenVireo: ブラウザーで使えるCLEA VIREOの天文実習（日本語）',
+ ogImage:'/og-image-ja.png',ogImageAlt:'OpenVireo：ブラウザーで使えるCLEA VIREOの天文実習（日本語）',
  ogImageText:{title:'CLEA VIREOの天文実習をブラウザーで',lines:['ハッブルの法則 · パルサー · プレアデス星団 · 天体X · ほか','無料の非公式なWeb版です。インストールは不要です。']},
  labs:merge(LAB_TEXT_JA),
  ui:{languageName:'日本語',siteNav:'サイト',breadcrumb:'パンくずリスト',labsCrumb:'実習',allLabs:'すべての実習',openObservatory:'天文台を開く',
-  labEyebrow:'CLEA VIREOの実習に基づくWeb版の実習',openLab:'実習を開く',
+  labEyebrow:'CLEA VIREOの実習課題に基づく実習',openLab:'実習を開く',
   openLabNote:()=>'この実習のガイドを表示して、天文台を日本語で開きます。無料で、登録は不要です。',
   whatYouDo:'実習の流れ',whatYouLearn:'学べること',otherLabs:'ほかの実習',
   // The sentences the tests require: the adaptation and not-the-original sentences, and the names of CLEA and its supporters.
   about:'OpenVireoは、Project CLEAの仮想教育天文台（Virtual Educational Observatory）であるVIREOを、無料かつ非営利で再構築したWeb版です。'+
    'Project CLEAはGettysburg Collegeのプロジェクトで、National Science FoundationとGettysburg Collegeの支援を受けています。'+
    '元のプログラムの復元された動作に基づき、元のデータファイルを出典を明記して使っています。'+
-   '元のプログラムではなく、Project CLEAとは関係ありません。アプリは、把握しているWeb版の調整を明示しています。'+
-   'この日本語の文章は、OpenVireoによるWeb版の翻案で、CLEAの文章ではありません。',
+   '元のプログラムではなく、Project CLEAと提携しているものでもありません。アプリは、把握しているWeb版の調整を明示しています。'+
+   'この日本語の文章は、OpenVireoがWeb向けに翻案したもので、CLEAの文章ではありません。',
   platform:'Windows、Mac、Linux、Chromebookの最新のWebブラウザーで動作します。インストールもアカウントも不要です。',
   learningResourceType:'インタラクティブな実習',educationalLevel:['高校','大学']},
  labsIndex:{title:'CLEA VIREOの天文実習をオンラインで · OpenVireo',
@@ -231,7 +231,7 @@ const JA:SeoLanguage={
   description:'無料の非公式なWeb版として再構築した、Project CLEAの仮想天文台VIREOの日本語版です。ハッブルの法則、パルサー、プレアデス星団、天体Xなどの実習があります。',
   operatingSystem:'すべて（Webブラウザーで動作）',
   eyebrow:'日本語で使える仮想天文台',heading:'CLEA VIREOの天文実習を、ブラウザーで',
-  lead:'OpenVireoは、Project CLEAの仮想天文台VIREOをWeb向けに再構築したものです。仮想の望遠鏡を向け、スペクトルを取得し、星の明るさを測り、パルサーを記録して、自分のデータから自分で結論を導きます。',
+  lead:'OpenVireoは、Project CLEAの仮想天文台VIREOをWeb向けに再構築したものです。仮想の望遠鏡を天体に向け、スペクトルを取得し、星の明るさを測り、パルサーを記録して、自分のデータから自分で結論を導きます。',
   note:'無料で、登録もインストールも不要です。',
   labsHeading:'7つの実習',howHeading:'仕組み',
   how:['すべてブラウザーの中で動きます。インストールもアカウントも不要です。',
@@ -241,7 +241,7 @@ const JA:SeoLanguage={
    '調査は自分のコンピューターにファイルとして保存し、いつでも読み込み直せます。',
    'インターフェース、ガイド、ヘルプは日本語です。サイトが書き出すファイル（TXT、FITS、CSV、保存した調査）は、VIREOまたはOpenVireoの形式のまま英語で残ります。',
    // Japanese writes «24,000» and «1.5» as English does (no thousands setting, AGENTS.md 2026-11-19): only the decimal point and half-width digits are said.
-   '画面と入力では小数点に「.」を使い、数字は半角で入力します。サイトが保存するファイルは、VIREOと同じく英語のままです。',
+   '画面と入力では小数点に「.」を使い、数字は半角で入力します。',
    '上部の言語セレクターで、いつでも英語に切り替えられます。']},
 };
 
