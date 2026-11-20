@@ -35,6 +35,14 @@
   "map:wedge.detail.redshift": "Front RU2: symbols V / Z (velocity and redshift columns)",
   "map:wedge.detail.velocity": "Front RU2: column letter and binary format (V binary32)",
   "map:wedge.detail.z": "Front RU2: column letter and binary format (Z binary32)",
-  "map:wedge.detail.degrees": "Front RU2: the degree sign"
+  "map:wedge.detail.degrees": "Front RU2: the degree sign",
+  "catalog:classLines.option": "Front RU3: a format of parameters and a unit only ({wavelength} Å · {label})",
+  "catalog:probe.shaLabel": "Front RU3: a hash name kept in English (SHA-256)",
+  "catalog:photo.caption": "Front RU3: a format of parameters only ({label} · {polarity})",
+  "catalog:viewport.range": "Front RU3: a format of parameters, a unit and the multiplication sign only",
+  "catalog:nativeResults.typeValue": "Front RU3: a format of parameters only ({code} · {label})",
+  "catalog:nativeResults.kindValue": "Front RU3: a format of parameters only ({kind} · {label})",
+  "catalog:program.row": "Front RU3: a format of parameters only ({position} · {object})",
+  "catalog:nativeText.choice": "Front RU3: a format of parameters only ({index} · {object})"
  }
 }

@@ -251,12 +251,14 @@ const FR_E03=TRANSLATED.find(x=>x.tag==='fr')!.catalog as Readonly<Record<string
 const ID_E03=TRANSLATED.find(x=>x.tag==='id')!.catalog as Readonly<Record<string,string>>;
 /** Front HI3: and the Hindi catalog (its `?lang=hi` preview). */
 const HI_E03=TRANSLATED.find(x=>x.tag==='hi')!.catalog as Readonly<Record<string,string>>;
+/** Front RU3: and the Russian catalog (its `?lang=ru` preview). */
+const RU_E03=TRANSLATED.find(x=>x.tag==='ru')!.catalog as Readonly<Record<string,string>>;
 // Front PT3: and in pt-BR (its `?lang=pt-BR` preview). Front FR3: and in French (its `?lang=fr` preview). Front ID3: and in Indonesian
-// (its `?lang=id` preview; Indonesian has done `e01`, so the star exposure buttons go through N). Front HI3: and in Hindi (`?lang=hi`).
+// (its `?lang=id` preview; Indonesian has done `e01`, so the star exposure buttons go through N). Front HI3: and in Hindi (`?lang=hi`). Front RU3: and in Russian (`?lang=ru`).
 // Front ES5: every file a student can save on the E03 route, in English, qps and Spanish. The page clock is installed at NOW and
 // paused before the acquisition's one-second exposure and stays paused (only runFor moves it), so the observation notebook's
 // and the recovery copies' times and the observatory clock are the same in every run; nothing is masked.
-family('E03 classification: session, CSV, width record, investigations, observation notebook and recoveries, DAT and TXT inspectors, imported spectrum',['en','qps','es-419','pt-BR','fr','id','hi'],async({browser,baseURL},identical)=>{
+family('E03 classification: session, CSV, width record, investigations, observation notebook and recoveries, DAT and TXT inspectors, imported spectrum',['en','qps','es-419','pt-BR','fr','id','hi','ru'],async({browser,baseURL},identical)=>{
  test.setTimeout(240_000);
  // The canonical 3-band counts layout of tests/native-csv-export.spec.ts (authored, not an original observation).
  const header='Object ID    MJD(Days)      RA           Dec    '+['U','B','V'].map(f=>'     '+f+'    ').join('')+'     Z      Spectrum     Comments';
@@ -290,7 +292,7 @@ family('E03 classification: session, CSV, width record, investigations, observat
   const classification=await save(()=>B('Export classification CSV').click());
   const investigation=await save(()=>B('Save complete investigation').first().click());
   const notebook=await save(()=>B('Export observation notebook').click());
-  await page.getByRole('button',{name:locale==='es-419'?exact(es['obs.edit'].replace('{id}','1')):locale==='pt-BR'?exact(PT_E03['obs.edit'].replace('{id}','1')):locale==='fr'?exact(FR_E03['obs.edit'].replace('{id}','1')):locale==='id'?exact(ID_E03['obs.edit'].replace('{id}','1')):locale==='hi'?exact(HI_E03['obs.edit'].replace('{id}','1')):L('Edit observation result 1')}).click();await F('Observation remarks (up to 36 bytes)').fill('Edited remarks');await B('Record observation result').click();
+  await page.getByRole('button',{name:locale==='es-419'?exact(es['obs.edit'].replace('{id}','1')):locale==='pt-BR'?exact(PT_E03['obs.edit'].replace('{id}','1')):locale==='fr'?exact(FR_E03['obs.edit'].replace('{id}','1')):locale==='id'?exact(ID_E03['obs.edit'].replace('{id}','1')):locale==='hi'?exact(HI_E03['obs.edit'].replace('{id}','1')):locale==='ru'?exact(RU_E03['obs.edit'].replace('{id}','1')):L('Edit observation result 1')}).click();await F('Observation remarks (up to 36 bytes)').fill('Edited remarks');await B('Record observation result').click();
   const editRecovery=await save(()=>B('Export edit recovery').click());
   const editedNotebook=await save(()=>B('Export observation notebook').click());
   await F('Import SP or SSP for visual classification (up to 2 MiB)').setInputFiles({name:'limited.sp',mimeType:'text/plain',buffer:Buffer.from('3900 .2\n4200 .8\n4500 .4\n')});
@@ -313,6 +315,7 @@ family('E03 classification: session, CSV, width record, investigations, observat
   if(locale==='fr')await expect(page.locator('.classification-main h1')).toHaveText(FR_E03['class.title']);
   if(locale==='id')await expect(page.locator('.classification-main h1')).toHaveText(ID_E03['class.title']);
   if(locale==='hi')await expect(page.locator('.classification-main h1')).toHaveText(HI_E03['class.title']);
+  if(locale==='ru')await expect(page.locator('.classification-main h1')).toHaveText(RU_E03['class.title']);
   return {session,classification,investigation,notebook,editRecovery,editedNotebook,datUnchanged,datEdited,txtUnchanged,nativeCsv,imported,investigationAll};
  },{},page=>page.locator('.classification-main'));
 });
