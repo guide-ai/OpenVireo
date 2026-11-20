@@ -351,7 +351,7 @@ test.describe('a language before its release (Japanese)',()=>{
   const empty=plan.modules.filter(m=>m.kind==='area'&&m.empty).map(m=>m.name);
   // Pin the areas Japanese gives text to (each JA front updates this list), as ID0 does for Indonesian: JA0's shell keys give text
   // to `photometer`, and JA1's maps and keys to `classification` (the observationMetadata map) and `fits` (the cameraInfo.* keys).
-  expect(plan.modules.filter(m=>m.kind==='area'&&!m.empty).map(m=>m.name).sort(),'the areas with Japanese text').toEqual(['classification','fits','photometer']);
+  expect(plan.modules.filter(m=>m.kind==='area'&&!m.empty).map(m=>m.name).sort(),'the areas with Japanese text').toEqual(['classification','exposure','fits','lss','photometer']);
   for(const r of ROUTES){
    await page.goto('about:blank');w.language.length=0;
    await page.goto(`/${P.query}#${r.hash}`);

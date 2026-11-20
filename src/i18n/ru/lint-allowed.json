@@ -42,6 +42,12 @@
     "{diameter}"
    ],
    "reason": "Russian puts the diameter inside the name («Радиотелескоп {diameter} м»), as es, pt and fr do"
+  },
+  "catalog:pa.legend": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "Front RU4: «визуальные ориентиры» are guide lines drawn on the chart, not an exercise guide"
   }
  }
 }

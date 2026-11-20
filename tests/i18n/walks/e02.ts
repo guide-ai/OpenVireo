@@ -47,6 +47,8 @@ export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={
  id:new Set(['OK','Minimum','Plot Data','Status','Plot','File']),
  // Front HI2: the same text in Hindi (identical.json): the wedge table's RA column, VIREO's RA abbreviation (HI1).
  hi:new Set(['RA']),
+ // Front JA2: the same word in Japanese (identical.json): VIREO's OK.
+ ja:new Set(['OK']),
 };
 /** Front FR2: patterns of texts that are the same words in one language: French writes the field selector's option as English does,
  * the recorded LSSFields.LST item and «({rows} galaxies)» (identical.json `catalog:lss.fieldOption`). */

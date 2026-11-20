@@ -545,6 +545,7 @@
   "src/i18n/ru/maps/fieldInfo.ts › FIELD_INFO_RU/editLayerCaption · head 'Режим правки · поле искателя прочитано из компактного каталога опорных звёзд (Guide Star Catalog; читатель каталога искателя VIREO, звёзды до предельной зв. величины искателя 11.5): звёзд — ' [unreached]",
   "src/i18n/ru/maps/languageChoice.ts › LANGUAGE_CHOICE_RU/reload · head 'Страница будет перезагружена на том же месте сайта. Новый язык: ' [unreached]",
   "src/i18n/ru/maps/polish.ts › POLISH_RU/pulsarsHtl/error · head 'Встроенный список пульсаров Pulsars.HTL ' [unreached]",
+  "src/i18n/ru/maps/variableStars.ts › VARIABLE_STARS_RU/printCurveLayout · head 'Страница кривой блеска следует печати VIREO в выбранной здесь ориентации (VIREO использует ориентацию принтера): в книжной график идёт на той же странице, в альбомной VIREO добавляет «(изображение экрана напечатано на следующей странице)» и печатает график на странице 2. ' [unreached]",
   "src/i18n/zh-hans/maps/fieldInfo.ts › FIELD_INFO_ZH_HANS/editLayerCaption · head '编辑模式 · 寻星镜视场读自精简版导星星表（使用VIREO寻星镜的星表读取器，星等直至寻星镜星等极限11.5）：' [unreached]",
   "src/i18n/zh-hans/maps/polish.ts › POLISH_ZH_HANS/pulsarsHtl/error · head '内置的Pulsars.HTL' [unreached]",
   "src/io/clusterComparison.ts › loadClusterDataset/promise/url · head '../../data/photometry/' [core]",

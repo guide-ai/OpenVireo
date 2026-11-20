@@ -121,6 +121,30 @@
     "glossary"
    ],
    "reason": "signal-to-noise is S/N比, the glossary's term for the ratio (both VIREO labels show the ratio)"
+  },
+  "catalog:lab.reflect.environment": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "the Coma cluster is a galaxy cluster (かみのけ座銀河団), not a star cluster (星団)"
+  },
+  "catalog:lssLab.help.describe": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "clusters in a wedge diagram are galaxy clusters (銀河団), not star clusters (星団)"
+  },
+  "catalog:fieldSpec.internalError": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "\"trying again will not help\" is the verb, not Help (ヘルプ)"
+  },
+  "catalog:galaxyExposure.engineInvalid": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "\"trying again will not help\" is the verb, not Help (ヘルプ)"
   }
  }
 }

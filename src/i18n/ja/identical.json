@@ -42,6 +42,23 @@
   "map:fieldInfo.ok": "OK, as Windows Japanese writes it",
   "map:observatory.common.ok": "OK, as Windows Japanese writes it",
   "map:observatory.skyCoords.ok": "OK, as Windows Japanese writes it",
-  "map:polish.spectrometerIndex.routes.4.label": "instrument name (Multi-Spec), VIREO's own"
+  "map:polish.spectrometerIndex.routes.4.label": "instrument name (Multi-Spec), VIREO's own",
+  "catalog:hubble.ratioColumn": "Front JA2: a formula and units only (v/D · km/s/Mpc)",
+  "catalog:ownResults.sha": "Front JA2: a hash label kept in English (SHA-256) and its value",
+  "catalog:lss.dialog.jd": "Front JA2: the Julian date abbreviation kept as JD, as the observatory and ownResults keep it (JA1)",
+  "catalog:lss.dialog.z": "Front JA2: the redshift symbol (z)",
+  "catalog:lss.exposure.elapsed": "Front JA2: a value and the unit symbol ms",
+  "map:wedge.columns.index": "Front JA2: the number sign as a column header (#)",
+  "map:wedge.columns.velocity": "Front JA2: a symbol and its unit, V (km/s)",
+  "map:wedge.columns.z": "Front JA2: the redshift symbol (Z)",
+  "map:wedge.sha256": "Front JA2: a hash name kept in English (SHA-256)",
+  "map:wedge.detail.redshift": "Front JA2: symbols (V / Z)",
+  "map:wedge.detail.kmPerS": "Front JA2: a unit (km/s)",
+  "map:wedge.detail.velocity": "Front JA2: a symbol and a number type (V binary32)",
+  "map:wedge.detail.z": "Front JA2: a symbol and a number type (Z binary32)",
+  "map:wedge.detail.hours": "Front JA2: a unit symbol (h)",
+  "map:wedge.detail.degrees": "Front JA2: the degree sign",
+  "map:wedge.detail.px": "Front JA2: the pixel unit symbol px",
+  "catalog:velocity.column": "Front JA2: a format of symbols, units and a number type only (v · km/s · float32)"
  }
 }
