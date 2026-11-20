@@ -46,7 +46,9 @@ export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new S
  id:new Set(['OK','Zoom','v · km/s · float32','VIREO / HUBBLE','Log','No.','File','Status','Bin']),
 
  // Front HI2: the same text in Hindi (src/i18n/hi/identical.json): the velocity column's format.
- hi:new Set(['v · km/s · float32'])};
+ hi:new Set(['v · km/s · float32']),
+ // Front JA2: the same text in Japanese (src/i18n/ja/identical.json): VIREO's OK and (km/sec) (JA1), the velocity column's format.
+ ja:new Set(['OK','(km/sec)','v · km/s · float32'])};
 /** Front PT2: Portuguese writes the measurement log's bit pattern as English does («bits 3c23d70a»; Spanish «patrón de bits»). */
 export const RECORDED_IN:Readonly<Record<string,RegExp>>={'pt-BR':/^bits [0-9a-f]{8}$/};
 export const same=(text:string,L?:LanguageText)=>SAME.has(text)||NUMERIC.test(text)||RECORDED.test(text)||(L!==undefined&&((SAME_IN[L.tag]?.has(text)??false)||(RECORDED_IN[L.tag]?.test(text)??false)));
@@ -119,7 +121,7 @@ export const STEPS:readonly (readonly [string,(page:Page,lang:Lang)=>Promise<voi
   await tool(page,lang,'sky.observatory');const dome=page.getByRole('button',{name:new RegExp(N(lang,'sky.open').source.replace(/\$$/,'').concat(' ↗$'))});if(await dome.isVisible())await dome.click();// the star field opened it
   if(!await page.locator('#point-ra').isVisible())await page.getByText(N(lang,'sky.coordinates')).click();
   await page.locator('#point-ra').fill('12.99311111111111');await page.locator('#point-dec').fill('27.959722222222222');await button(page,lang,'sky.pointCoordinates').click();
-  await page.getByRole('button',{name:new RegExp(/^\s*[⟦]?\s*(?:T[eé]l[eé]sc[oó]p[eéi]|Teleskop ·|दूरबीन ·|Телескоп ·)/.source+'|'+pseudoStart('Telescope').source)}).first().click();
+  await page.getByRole('button',{name:new RegExp(/^\s*[⟦]?\s*(?:T[eé]l[eé]sc[oó]p[eéi]|Teleskop ·|दूरबीन ·|Телескоп ·|望遠鏡 ·)/.source+'|'+pseudoStart('Telescope').source)}).first().click();
   if(!await button(page,lang,'runningClock.trackingOn').isVisible())await page.getByText(N(lang,'runningClock.title')).click();
   if(await button(page,lang,'runningClock.trackingOn').isVisible())await button(page,lang,'runningClock.trackingOn').click();
   await tool(page,lang,'spectrometer.nav');await expect(id(page,'field-spec-use')).toBeEnabled({timeout:60_000});await id(page,'field-spec-use').click();
