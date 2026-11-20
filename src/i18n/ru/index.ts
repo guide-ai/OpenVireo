@@ -32,8 +32,10 @@ import {LOAD_SAVE_RU} from './maps/pulsarLoadSave';
 import {OBJECT_X_GUIDE_RU} from './maps/objectXGuide';
 import {OBJECT_X_MEASURE_RU} from './maps/objectXMeasure';
 import {OBJECT_X_SESSION_RU} from './maps/objectXSession';
+import {HELP_VIEWER_RU} from './maps/helpViewer';
+import {WEB_HELP_RU} from './maps/webHelp';
 /** Front RU0 [W]: the Russian (ru) bundle (docs/I18N.md, "Russian: plural families, the folder, lints and shell (RU0)"; Front RU1 adds the
- * observatory and all of VIREO's originals; RU2 exercises E01 and E02; RU3 exercise E03; RU4 exercises E04 and E05; RU5 the radio telescope; RU6 exercises E06 and E08). Partial until
+ * observatory and all of VIREO's originals; RU2 exercises E01 and E02; RU3 exercise E03; RU4 exercises E04 and E05; RU5 the radio telescope; RU6 exercises E06 and E08; RU-HELP the help viewer and OpenVireo’s own help, with its help files in src/i18n/ru/help). Partial until
  * its release (src/i18n/languages.json `released:false`): only a `?lang=ru` preview reaches it, and every string it lacks is English.
  * Its catalog may hold the plural forms en.json lacks (`.few`, `.many`: src/i18n/plural.ts pluralFormBase). The production build
  * splits it by route area like the other languages (scripts/i18n-split.mjs parses this manifest); Vitest imports it whole.
@@ -45,6 +47,7 @@ export const RUSSIAN:LocaleBundle=Object.freeze({
  maps:Object.freeze({appShell:APP_SHELL_RU,helpMenu:HELP_MENU_RU,languageChoice:LANGUAGE_CHOICE_RU,objectXLab:OBJECT_X_LAB_RU,polish:POLISH_RU,projectLinks:PROJECT_LINKS_RU,tour:TOUR_RU,variableStars:VARIABLE_STARS_RU,
   camera:CAMERA_RU,fieldInfo:FIELD_INFO_RU,fieldReadDetails:FIELD_READ_DETAILS_RU,nakedEye:NAKED_EYE_RU,observationMetadata:OBSERVATION_METADATA_RU,observatory:OBSERVATORY_RU,qsoList:QSO_LIST_RU,sound:SOUND_RU,
   engineView:ENGINE_VIEW_RU,spectralRange:SPECTRAL_RANGE_RU,wedge:WEDGE_RU,clusterHr:CLUSTER_HR_RU,clusterData:CLUSTER_DATA_RU,radioAntenna:RADIO_ANTENNA_RU,radioFinishSave:RADIO_FINISH_SAVE_RU,radioR1:RADIO_R1_RU,radioRecordSave:RADIO_RECORD_SAVE_RU,
-  pulsar:PULSAR_RU,pulsarSavedRows:SAVED_ROWS_RU,pulsarLoadSave:LOAD_SAVE_RU,objectXGuide:OBJECT_X_GUIDE_RU,objectXMeasure:OBJECT_X_MEASURE_RU,objectXSession:OBJECT_X_SESSION_RU}),
+  pulsar:PULSAR_RU,pulsarSavedRows:SAVED_ROWS_RU,pulsarLoadSave:LOAD_SAVE_RU,objectXGuide:OBJECT_X_GUIDE_RU,objectXMeasure:OBJECT_X_MEASURE_RU,objectXSession:OBJECT_X_SESSION_RU,
+  helpViewer:HELP_VIEWER_RU,webHelp:WEB_HELP_RU}),
  originals,
 });

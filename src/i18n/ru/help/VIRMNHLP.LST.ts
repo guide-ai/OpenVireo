@@ -1,0 +1,35 @@
+// Front RU-HELP [W]: OpenVireo's Russian (ru) web adaptation of VIREO's VIRMNHLP.LST. Not CLEA's text: the original bytes, hashes
+// and provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Russian chunk.
+export const language='ru';
+export const sourceName='VIRMNHLP.LST';
+export const sourceSha256='db9bab876ef1d03ad8b0e96596eb47c3ca9573156a65b4bff7b49bbfac295b2a';
+export const text=`'Начало работы' 'begin'
+'Войти' 'VIRMnHlp.txt'
+'Выбрать лабораторную работу' 'VIRMnHlp.txt'
+'Задать дату и время' 'VIRMnHlp.txt'
+'Выбрать телескоп' 'VIRMnHlp.txt'
+'Открыть купол' 'VIRMnHlp.txt'
+'Открыть управление телескопом' 'VIRMnHlp.txt'
+'Завершить работу' 'VIRMnHlp.txt'
+'Доступ с клавиатуры' 'VIRMnHlp.txt'
+'Начало работы' 'end'
+'Сменить телескоп' 'begin'
+'Запросить время на телескопе' 'VIRMnHlp.txt'
+'Сменить оптический телескоп' 'VIRMnHlp.txt'
+'Сменить телескоп' 'end'
+'Сервис' 'begin'
+'Инструмент спектральной классификации' 'VIRMnHlp.txt'
+'Инструмент измерения спектров' 'VIRMnHlp.txt'
+'Инструмент анализа радиопульсаров' 'VIRMnHlp.txt'
+'Инструмент анализа диаграммы Г — Р' 'VIRMnHlp.txt'
+'Инструмент клиновидной диаграммы LSS' 'VIRMnHlp.txt'
+'Модуль астрометрии' 'VIRMnHlp.txt'
+'Обработка изображений (DS9)' 'VIRMnHlp.txt'
+'Редакторы результатов' 'VIRMnHlp.txt'
+'Загрузить сохранённые данные' 'VIRMnHlp.txt'
+'Электронная таблица' 'VIRMnHlp.txt'
+'Сервис' 'end'
+'Функции данных' 'begin'
+'Операции с данными' 'VIRMnHlp.txt'
+'Функции данных' 'end'
+`;

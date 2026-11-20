@@ -102,6 +102,12 @@
     "glyphs"
    ],
    "reason": "Front RU6 review: it quotes the full labels of controls whose own label ends in an ellipsis («…» or VIREO's «...»), where the English names them in short"
+  },
+  "map:webHelp.groups.0.topics.3.blocks.1.rows.2.1": {
+   "rules": [
+    "glyphs"
+   ],
+   "reason": "Front RU-HELP: it quotes the site clock by its full on-screen name, «Часы пункта наблюдений · фиксированный сценарий всемирного времени» (siteClock.title), whose · the English short name lacks"
   }
  }
 }
