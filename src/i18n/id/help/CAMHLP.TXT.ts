@@ -42,11 +42,11 @@ Untuk mengambil eksposur dengan kamera CCD dan IR:
     1)  Atur waktu eksposur.  Waktu eksposur 1-2 menit sudah memadai
         untuk sebagian besar kegiatan.
 
-    2)  Atur filter.  Kecuali diarahkan lain secara khusus, gunakan
+    2)  Atur filter.  Kecuali ada petunjuk lain secara khusus, gunakan
         pengaturan "NF" (tanpa filter) untuk citra CCD, dan filter "J"
         untuk citra IR.
 
-    3)  Biarkan pengaturan gain di 1, kecuali diarahkan lain.
+    3)  Biarkan pengaturan gain di 1, kecuali ada petunjuk lain.
 
     4)  Tekan tombol "Mulai" (Start).  Kamera akan menjalani
         inisialisasi lalu membuka rana untuk memulai eksposur.  Tampilan

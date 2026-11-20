@@ -7,8 +7,8 @@ export const text=`**Plot data**
 Alat diagram kerucut LSS menampilkan data pergeseran merah dalam bentuk
 "diagram kerucut" dua dimensi.  Saat Anda mencatat data dari alat
 pengukur spektrum, titik-titik akan muncul otomatis pada diagram
-kerucut.  Data yang diukur oleh anggota kelompok Anda mungkin juga dapat
-ditampilkan otomatis pada diagram kerucut Anda.
+kerucut.  Data yang diukur oleh anggota lain dalam kelompok Anda
+mungkin juga dapat ditampilkan otomatis pada diagram kerucut Anda.
 
 Topik terkait:
     Muat data
@@ -98,7 +98,7 @@ file plot kelompok.  Data baru yang telah Anda ukur akan disalin ke file
 kelompok, dan data baru yang dikirim oleh anggota lain ke file kelompok
 akan disalin ke program Anda dan ditampilkan pada diagram kerucut Anda.
 Warna titik yang diplot akan menunjukkan titik mana yang Anda ukur dan
-titik mana yang diukur oleh anggota kelompok Anda.
+titik mana yang diukur oleh anggota lain dalam kelompok Anda.
 
 Topik terkait:
     Aktifkan/nonaktifkan plot otomatis

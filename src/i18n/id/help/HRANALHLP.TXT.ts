@@ -32,7 +32,7 @@ Topik terkait:
 **Muat gugus baru dari basis data**
 Memuat gugus baru dari basis data akan menggantikan titik data pada
 tampilan diagram HR.  Jika deret utama usia nol (ZAMS) dan/atau sebuah
-isokron sedang ditampilkan, keduanya tidak akan dihapus otomatis.
+isokron sedang ditampilkan, kurva itu tidak akan dihapus otomatis.
 
 Topik terkait:
     Muat data dari basis data gugus

@@ -4,12 +4,13 @@ export const language='id';
 export const sourceName='OBSRVHLP.TXT';
 export const sourceSha256='2dcae5e678d69ed80784bb2958ed856289ff04779edd19656681288846102bd7';
 export const text=`**"Pelacakan"**
-Tombol "Pelacakan" (Tracking) menyalakan pelacakan sideris yang menjaga
-teleskop tetap mengarah ke titik tertentu di langit saat Bumi berputar.
-Jika pelacakan mati, bintang-bintang akan bergeser melintasi bidang
-teleskop.  Pelacakan mati saat sebuah teleskop pertama kali diakses.
-Kontrol teleskop lainnya baru aktif jika pelacakan menyala.  Lampu
-indikator hijau menunjukkan bahwa pelacakan telah dinyalakan.
+Tombol "Pelacakan" (Tracking) mengaktifkan pelacakan sideris yang
+menjaga teleskop tetap mengarah ke titik tertentu di langit saat Bumi
+berputar.  Jika pelacakan nonaktif, bintang-bintang akan bergeser
+melintasi bidang teleskop.  Pelacakan nonaktif saat sebuah teleskop
+pertama kali diakses.  Kontrol teleskop lainnya baru dapat dipakai jika
+pelacakan aktif.  Lampu indikator hijau menunjukkan bahwa pelacakan
+telah diaktifkan.
 
 **Tombol gerak ("U","S","T","B")**
 Tombol gerak dipakai untuk menggerakkan teleskop agar mengarah ke titik
@@ -17,10 +18,10 @@ Tombol gerak dipakai untuk menggerakkan teleskop agar mengarah ke titik
 tombol yang sesuai.  Teleskop akan bergerak dengan kecepatan yang
 ditentukan oleh pengaturan "Kecepatan Gerak" (Slew Rate).  Lepaskan
 tombol untuk menghentikan gerakan.  Pada gerakan yang jauh, tombol akan
-tetap tertekan jika Anda menggeser penunjuk mouse keluar dari tombol
-sebelum melepaskan tombol mouse.  Dalam hal ini, hentikan gerakan dengan
-menekan dan melepaskan tombol mouse saat penunjuk mouse berada di atas
-tombol yang aktif.
+tetap tertekan jika Anda menggeser kursor keluar dari tombol sebelum
+melepaskan tombol mouse.  Dalam hal ini, hentikan gerakan dengan menekan
+dan melepaskan tombol mouse saat kursor berada di atas tombol yang
+aktif.
 
 Tombol gerak terutama dipakai untuk membuat perubahan yang relatif
 kecil pada posisi teleskop agar objek berada di area aktif instrumen
@@ -60,9 +61,9 @@ dan menampilkan bintang serta objek lain hingga batas magnitudo yang
 jauh lebih redup daripada pencari.  Tampilan ini dipakai untuk
 menempatkan objek bagi pengamatan dengan instrumen yang dipilih.
 
-Untuk mengubah bidang pandang, geser penggeser ke "Pencari" (Finder)
-atau "Teleskop" (Telescope).  Instrumen hanya dapat diakses saat bidang
-pandang teleskop aktif.
+Untuk mengubah bidang pandang (View), geser penggeser ke "Pencari"
+(Finder) atau "Teleskop" (Telescope).  Instrumen hanya dapat diakses
+saat bidang pandang teleskop aktif.
 
 Area aktif instrumen yang dipilih diberi garis tepi merah pada tampilan
 teleskop.  Apertur fotometer ditampilkan sebagai lingkaran merah,
@@ -93,12 +94,12 @@ sakelar penggeser agar pengguna dapat memilih satu dari beberapa
 pilihan.  Untuk membuat pilihan dengan sakelar penggeser, lakukan salah
 satu dari berikut:
 
-    A)  Letakkan penunjuk mouse di atas penggeser, tekan dan tahan, lalu
-        seret penggeser ke posisi yang diinginkan dengan tombol kiri
-        mouse, atau...
+    A)  Letakkan kursor di atas penggeser, tekan dan tahan, lalu seret
+        penggeser ke posisi yang diinginkan dengan tombol kiri mouse,
+        atau...
 
-    B)  Letakkan penunjuk mouse di atas posisi yang diinginkan pada
-        panel penggeser lalu klik tombol kiri mouse, atau...
+    B)  Letakkan kursor di atas posisi yang diinginkan pada panel
+        penggeser lalu klik tombol kiri mouse, atau...
 
     C)  Akses keyboard: Gunakan tombol panah untuk menggeser penggeser
         saat kontrol penggeser yang diinginkan telah dipilih.

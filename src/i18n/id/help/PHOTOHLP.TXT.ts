@@ -45,8 +45,8 @@ mengharuskan Anda mengubah apertur antara lain:
         apertur bawaan.
 
     2)  Bintang-bintang dalam gugus begitu berdekatan sehingga
-        diperlukan apertur yang lebih kecil untuk memisahkan masing-
-        masing bintang dan mencegah pembacaan terkontaminasi.
+        diperlukan apertur yang lebih kecil untuk memisahkan setiap
+        bintang dan mencegah pembacaan terkontaminasi.
 
     3)  Pembacaan langit dapat lebih akurat dengan waktu integrasi yang
         lebih singkat jika Anda memakai apertur yang lebih besar.  Jika
@@ -87,16 +87,17 @@ yang baru, bahkan jika Anda kembali ke teleskop yang pernah dipakai.
 Lakukan pembacaan langit sebagai berikut:
 
     1)  Dari panel kontrol teleskop, pastikan bidang pandang diatur ke
-        "Teleskop" (Telescope), lalu gunakan tombol "USTB" untuk
+        "Teleskop" (Telescope), lalu gunakan tombol "USTB" (NSEW) untuk
         mengarahkan teleskop sehingga tidak ada bintang di dalam atau
         tepat di samping lingkaran apertur merah.  Jika bingkai memiliki
         cukup langit kosong, Anda dapat meningkatkan akurasi pengukuran
         langit dengan memperbesar ukuran apertur.
 
     2)  Akses/kembali ke kontrol fotometer.  Jika sakelar "Pembacaan"
-        terlihat, pastikan sakelar itu diatur ke "Langit".  Jika tidak
-        ada sakelar "Pembacaan", kotak berlabel "Objek" (Object) harus
-        berisi "Langit" jika teleskop diarahkan dengan benar, .
+        (Reading) terlihat, pastikan sakelar itu diatur ke "Langit"
+        (Sky).  Jika tidak ada sakelar "Pembacaan", kotak berlabel
+        "Objek" (Object) harus berisi "Langit" jika teleskop diarahkan
+        dengan benar, .
 
     3)  Atur filter ke warna yang diinginkan.  (Jika pembacaan langit
         sudah dilakukan dengan filter tertentu, kotak berlabel "Langit
@@ -106,11 +107,11 @@ Lakukan pembacaan langit sebagai berikut:
  
     4)  Atur waktu integrasi ke 10 detik dan jumlah integrasi ke 5.  
 
-    5)  Tekan "Mulai" dan tunggu pembacaan muncul.  Anda akan melihat
-        cacah mentah setiap kali satu integrasi selesai.  Setelah
-        pembacaan selesai, rata-rata cacah langit untuk warna itu akan
-        muncul di kotak berlabel "Cacah Langit Rata-Rata/Detik" (Mean
-        Sky Counts/Sec).
+    5)  Tekan "Mulai" (Start) dan tunggu pembacaan muncul.  Anda akan
+        melihat cacah mentah setiap kali satu integrasi selesai.
+        Setelah pembacaan selesai, rata-rata cacah langit untuk warna
+        itu akan muncul di kotak berlabel "Cacah Langit Rata-Rata/Detik"
+        (Mean Sky Counts/Sec).
 
     6)  Ulangi untuk setiap filter yang akan Anda pakai.
 
@@ -133,8 +134,8 @@ selesai, lakukan pembacaan fotometri sumber titik sebagai berikut:
 
     1)  Dari panel kontrol teleskop, letakkan bintang kira-kira di
         tengah kotak merah pada tampilan "Pencari" (Finder).  Ubah ke
-        tampilan "Teleskop", lalu letakkan bintang tepat di tengah
-        lingkaran apertur merah.  (Apertur harus diatur ke ukuran
+        tampilan "Teleskop" (Telescope), lalu letakkan bintang tepat di
+        tengah lingkaran apertur merah.  (Apertur harus diatur ke ukuran
         bawaan.)  Jika bintang itu memiliki pendamping di dekatnya,
         pastikan pendamping itu tetap berada di luar lingkaran apertur.
         Dalam hal ini, bintang yang Anda ukur mungkin tidak berada tepat
@@ -143,34 +144,35 @@ selesai, lakukan pembacaan fotometri sumber titik sebagai berikut:
         dekatnya.
 
     2)  Kembali ke panel kontrol fotometer.  PASTIKAN sakelar
-        "Pembacaan" diatur ke "Objek".  Jika sakelar "Pembacaan" tidak
-        muncul, kotak "Objek" mungkin berisi identitas bintang atau
-        objek lain yang sedang Anda ukur.  Kotak itu tidak boleh
-        berisi "Langit".
+        "Pembacaan" (Reading) diatur ke "Objek" (Object).  Jika sakelar
+        "Pembacaan" tidak muncul, kotak "Objek" mungkin berisi identitas
+        bintang atau objek lain yang sedang Anda ukur.  Kotak itu tidak
+        boleh berisi "Langit" (Sky).
 
     3)  Atur filter ke warna yang diinginkan.  (Jika kotak "Cacah Langit
-        Rata-Rata" menunjukkan "BELUM ADA LANGIT!", Anda tidak dapat
-        mengukur pada warna itu.  Kembali ke kontrol teleskop, geser
-        bintang keluar dari lingkaran apertur merah, lalu kembali ke
-        kontrol fotometer dan baca langit.)
+        Rata-Rata" (Mean Sky Counts) menunjukkan "BELUM ADA LANGIT!" (NO
+        SKY!), Anda tidak dapat mengukur pada warna itu.  Kembali ke
+        kontrol teleskop, pindahkan bintang keluar dari lingkaran
+        apertur merah, lalu kembali ke kontrol fotometer dan baca
+        langit.)
  
     4)  Atur waktu integrasi dan jumlah integrasi yang diinginkan.
         (Mungkin perlu coba-coba di sini - lihat Langkah 5 di bawah.)
 
-    5)  Tekan tombol "Mulai" integrasi dan tunggu pembacaan muncul.
-        Anda akan melihat cacah mentah setiap kali satu integrasi
-        selesai.  Setelah pembacaan selesai, rata-rata cacah per detik,
-        rasio sinyal-derau (S/N), dan magnitudo hasil hitung akan muncul
-        di kotak berlabel.  Untuk akurasi terbaik, pembacaan Anda harus
-        mencerminkan rasio sinyal-derau 100 atau lebih.  Jika S/N lebih
-        rendah dari itu, tambah waktu integrasi, jumlah integrasi, atau
-        keduanya, lalu lakukan pembacaan baru (jangan catat pembacaan
-        yang lama).  (Jika S/N Anda SANGAT rendah, Anda mungkin perlu
-        memakai teleskop yang lebih besar untuk mendapatkan fotometri
-        yang akurat.)  Jika S/N Anda sangat tinggi (> ~500), Anda dapat
-        mengurangi waktu integrasi dan/atau jumlah integrasi pada
-        bintang berikutnya yang magnitudonya kira-kira sama untuk
-        menghemat waktu.
+    5)  Tekan tombol "Mulai" (Start) integrasi dan tunggu pembacaan
+        muncul.  Anda akan melihat cacah mentah setiap kali satu
+        integrasi selesai.  Setelah pembacaan selesai, rata-rata cacah
+        per detik, rasio sinyal-derau (S/N), dan magnitudo hasil hitung
+        akan muncul di kotak berlabel.  Untuk akurasi terbaik, pembacaan
+        Anda harus mencerminkan rasio sinyal-derau 100 atau lebih.  Jika
+        S/N lebih rendah dari itu, tambah waktu integrasi, jumlah
+        integrasi, atau keduanya, lalu lakukan pembacaan baru (jangan
+        catat pembacaan yang lama).  (Jika S/N Anda SANGAT rendah, Anda
+        mungkin perlu memakai teleskop yang lebih besar untuk
+        mendapatkan fotometri yang akurat.)  Jika S/N Anda sangat tinggi
+        (> ~500), Anda dapat mengurangi waktu integrasi dan/atau jumlah
+        integrasi pada bintang berikutnya yang magnitudonya kira-kira
+        sama untuk menghemat waktu.
 
     6)  Ulangi pembacaan untuk setiap filter yang Anda pakai.
         Perhatikan bahwa sebagian besar bintang tampak lebih redup di
@@ -180,10 +182,10 @@ selesai, lakukan pembacaan fotometri sumber titik sebagai berikut:
         integrasi dan jumlah integrasi - selalu periksa rasio
         sinyal-derau.
 
-    7)  Pilih "File"->"Data"->"Catat/Tinjau" dari menu untuk menyimpan
-        pembacaan fotometri.  JIKA ANDA KEMBALI KE TAMPILAN UTAMA TANPA
-        MENCATAT PEMBACAAN, ANDA AKAN KEHILANGANNYA DAN HARUS MENGULANGI
-        PENGUKURAN!
+    7)  Pilih "File"->"Data"->"Catat/Tinjau" (Record/Review) dari menu
+        untuk menyimpan pembacaan fotometri.  JIKA ANDA KEMBALI KE
+        TAMPILAN UTAMA TANPA MENCATAT PEMBACAAN, ANDA AKAN KEHILANGANNYA
+        DAN HARUS MENGULANGI PENGUKURAN!
 
 Topik terkait:
     Atur ukuran apertur
@@ -216,13 +218,13 @@ ini menimbulkan beberapa komplikasi:
         naik ke apertur besar.
 
     4)  Untuk menghilangkan efek bintang yang ikut masuk, Anda harus
-        mengukur magnitudo masing-masing bintang, lalu mengurangkannya
-        dari magnitudo galaksi hasil ukur.  Agar akurat, Anda perlu
-        melakukan pembacaan langit (termasuk latar galaksi) di sekitar
-        setiap bintang.  Gunakan apertur kecil untuk ini, dan Anda
-        mungkin harus melakukan set pembacaan langit tersendiri untuk
-        setiap bintang yang Anda ukur.  Ingat juga bahwa magnitudo tidak
-        dapat dijumlahkan/dikurangkan secara aljabar, tetapi harus
+        mengukur magnitudo masing-masing bintang, lalu menghilangkan
+        kontribusinya dari magnitudo galaksi hasil ukur.  Agar akurat,
+        Anda perlu melakukan pembacaan langit (termasuk latar galaksi)
+        di sekitar setiap bintang.  Gunakan apertur kecil untuk ini, dan
+        Anda mungkin harus melakukan set pembacaan langit tersendiri
+        untuk setiap bintang yang Anda ukur.  Ingat juga bahwa magnitudo
+        tidak dapat dijumlahkan/dikurangkan secara aljabar, tetapi harus
         memakai rumus magnitudo: m1 - m2 = -2.5*Log(f1/f2).
 
 Topik terkait:
@@ -232,12 +234,12 @@ Topik terkait:
 
 **Catat pembacaan**
 Untuk mencatat pengukuran fotometri yang telah Anda lakukan, pilih
-"File"->"Data"->"Catat/Tinjau" dari menu panel kontrol fotometer.
-Sebuah panel data akan muncul dengan informasi tentang objek, waktu
-pengamatan, dan pembacaan yang telah Anda lakukan.  Anda dapat
-memasukkan catatan atau komentar apa pun yang ingin dicatat di kotak
-berlabel "Catatan" (Remarks).  Tekan "OK" untuk mencatat semua data.
-(Anda tidak perlu mengisi kotak "Tipe Sp." (Sp. Type).)
+"File"->"Data"->"Catat/Tinjau" (Record/Review) dari menu panel kontrol
+fotometer.  Sebuah panel data akan muncul dengan informasi tentang
+objek, waktu pengamatan, dan pembacaan yang telah Anda lakukan.  Anda
+dapat memasukkan catatan atau komentar apa pun yang ingin dicatat di
+kotak berlabel "Catatan" (Remarks).  Tekan "OK" untuk mencatat semua
+data.  (Anda tidak perlu mengisi kotak "Tipe Sp." (Sp. Type).)
 
 Biasanya, Anda tidak perlu mencatat data untuk setiap warna (filter)
 begitu Anda mengambilnya.  Tunggu sampai Anda mengukur bintang (atau
@@ -253,8 +255,9 @@ selesai.
     CATATAN: Mencatat pembacaan dengan cara ini menyimpannya secara
     internal untuk pemrosesan lebih lanjut, tetapi TIDAK menulisnya ke
     file.  Untuk menulisnya, Anda harus kembali ke panel kontrol
-    observatorium dan memilih "Alat"->"Editor Hasil"->"Hasil Pengamatan"
-    ->"Tampilkan/Cetak/Simpan..." dari menu.
+    observatorium dan memilih "Alat" (Tools)->"Editor Hasil" (Results
+    Editors)->"Hasil Pengamatan" (Observational Results)->
+    "Tampilkan/Cetak/Simpan..." (Display/Print/Save...) dari menu.
 
 Topik terkait:
     Topik bantuan "Editor Hasil" pada menu panel kontrol observatorium.
@@ -267,7 +270,7 @@ Photometer) dari menu panel kontrol fotometer (atau tekan tombol "X" di
 sudut kanan atas).  Anda akan diperingatkan dan diberi kesempatan untuk
 membatalkannya jika belum mencatat semua data yang Anda ambil.
 Saat Anda kembali ke jendela teleskop, data tercatat untuk bintang yang
-Anda kerjakan ditempatkan dalam daftar di memori, tetapi tidak
+Anda kerjakan ditempatkan dalam daftar di memori, tetapi belum
 disimpan ke file.
 
 Topik terkait:

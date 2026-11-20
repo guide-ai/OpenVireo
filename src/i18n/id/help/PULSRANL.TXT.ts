@@ -18,8 +18,8 @@ Untuk menyimpan data pulsar saat ini, pilih "File"->"Simpan..."
 (Save...) dari menu analisis data.  Sebuah kotak dialog akan muncul
 untuk memasukkan atau memilih nama file simpanan.  Anda bebas memakai
 nama apa pun; kotak dialog akan menyarankan nama yang dibuat dari
-informasi login Anda.  Selalu gunakan ekstensi ".PLR" pada file ini agar
-tidak terjadi kesulitan dan kebingungan di kemudian hari.
+isian kotak dialog Masuk (Log In).  Selalu gunakan ekstensi ".PLR"
+pada file ini agar tidak terjadi kesulitan dan kebingungan nanti.
 
 Anda juga dapat menyimpan data pulsar saat ini dengan memilih
 "File"->"Simpan Data Tercatat..." (Save Recorded Data...) dari menu
@@ -31,7 +31,7 @@ ini, pilih "File"->"Properti..." (Properties...) dari menu analisis
 data.  Properti yang ditampilkan pada kotak dialog tersebut meliputi:
 
     Identifikasi Objek
-    Waktu Mulai Data (Nomor Hari Julian dikurangi 2 400 000)
+    Waktu Awal Data (Nomor Hari Julian dikurangi 2 400 000)
     Apertur Teleskop (meter)
     Frekuensi (MHz) dan Gain Relatif untuk setiap penerima yang dicatat
     Jumlah Titik Data (untuk setiap penerima yang dicatat)
@@ -101,7 +101,7 @@ Gunakan prosedur berikut untuk mencatat pengukuran Anda:
     pada topik Bantuan "Lakukan pengukuran".  Jika mau, Anda dapat
     melakukan pengukuran di semua panel tampilan yang aktif saat ini.
 
-    2) Pilih "Hasil" (Results)->"Catat pengukuran saat ini..." (Record
+    2) Pilih "Hasil" (Results)->"Catat Pengukuran Saat Ini..." (Record
     Current Measurements...) dari menu analisis data.
 
     3) Serangkaian kotak dialog akan muncul, menampilkan pengukuran dan
@@ -118,7 +118,7 @@ untuk informasi tentang cara menangani catatan dalam daftar ini.
 **Tinjau pengukuran yang tercatat**
 Anda dapat meninjau daftar pengukuran tercatat saat ini kapan saja,
 setelah Anda mulai mencatat pengukuran.  Pilih "Hasil" (Results)->
-"Tinjau pengukuran yang tercatat..." (Review Recorded Measurements...)
+"Tinjau Pengukuran yang Tercatat..." (Review Recorded Measurements...)
 dari menu analisis data.  Sebuah kotak dialog yang menampilkan semua
 catatan saat ini akan muncul.  Untuk memilih catatan tertentu, klik
 catatan itu dengan mouse.  Anda dapat mencari catatan yang memuat teks
@@ -132,7 +132,7 @@ atau penghapusan) akan dibuang jika Anda memilih "Batal".
 
 **Simpan pengukuran yang tercatat**
 Untuk menyimpan daftar pengukuran tercatat Anda saat ini ke sebuah file,
-pilih "Hasil" (Results)->"Simpan pengukuran yang tercatat..." (Save
+pilih "Hasil" (Results)->"Simpan Pengukuran yang Tercatat..." (Save
 Recorded Measurements...) dari menu analisis data.  Tentukan nama file
 melalui kotak dialog yang muncul.  Data disimpan dalam format "nilai
 dipisahkan koma" (Comma Separated Values) yang diterima oleh program
@@ -150,7 +150,7 @@ ke file, dan pengukuran baru ditambahkan ke dalamnya.  (Artinya Anda
 dapat menyimpan file, menambahkan pengukuran lagi, lalu menyimpan ke
 file yang sama tanpa kehilangan data.)  Jika Anda ingin membuat daftar
 pengukuran baru, tanpa catatan sebelumnya, pilih "Hasil" (Results)->
-"Kosongkan daftar pengukuran" (Clear Measurement List) dari menu
+"Kosongkan Daftar Pengukuran" (Clear Measurement List) dari menu
 analisis data.
 
 **Akses program spreadsheet**
@@ -169,7 +169,8 @@ data memungkinkan Anda mencetak citra jendela analisis data kapan saja.
 Citra ini menampilkan semua kursor pada posisi saat ini dan pembacaan
 dengan nilai saat ini.  Fitur ini memakai fasilitas cetak Windows, dan
 akan mencetak berwarna jika printer berwarna dipilih.  Hasil cetak
-mencakup nama login untuk identifikasi, dan properti data saat ini.
+mencakup nama yang diisi saat Masuk (Log In) untuk identifikasi, dan
+properti data saat ini.
 
 **Tutup jendela analisis data**
 Untuk menutup jendela analisis data dan kembali ke jendela utama, pilih

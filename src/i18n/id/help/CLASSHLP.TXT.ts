@@ -100,7 +100,7 @@ Topik terkait:
 **Kontrol**
 Kontrol berikut terletak di sisi kanan jendela klasifikasi:
 
-    Perbesar (Zoom In) (ujung panah atas):
+    Perbesar (Zoom In; ujung panah atas):
         Memperbesar spektrum yang ditampilkan dengan faktor 2, hingga
         maksimum 16 kali tampilan awal.  Jika suatu ciri ditandai,
         kontrol ini berusaha memusatkannya pada tampilan yang
@@ -108,12 +108,12 @@ Kontrol berikut terletak di sisi kanan jendela klasifikasi:
         Jika tidak ada garis yang ditandai, panjang gelombang di
         pusat tampilan tetap sama.
 
-    Perkecil (Zoom Out) (ujung panah bawah):
+    Perkecil (Zoom Out; ujung panah bawah):
         Mengurangi pembesaran spektrum yang ditampilkan dengan faktor
         2, hingga pembesaran awal (1X).  Jika suatu garis ditandai,
         kontrol ini berusaha menjaganya tetap di tengah tampilan.
 
-    Panah geser (Pan Arrows) (ujung panah kiri & kanan):
+    Panah geser (Pan Arrows; ujung panah kiri & kanan):
         Gunakan kontrol panah kiri dan kanan untuk menelusuri
         spektrum yang diperbesar.
 
@@ -182,7 +182,7 @@ tersedia melalui pilihan menu "File"->"Tampilan" (Display).
             Menampilkan spektrum sebagai plot intensitas relatif
             terhadap panjang gelombang (bawaan).
 
-        "Skala Abu-abu "Foto"" (Grayscale "Photo")
+        "Foto Skala Abu-abu" (Grayscale "Photo")
             Mengonversi intensitas relatif menjadi tingkat abu-abu
             untuk meniru citra fotografi (positif).
 
@@ -190,7 +190,7 @@ tersedia melalui pilihan menu "File"->"Tampilan" (Display).
             Menampilkan spektrum tidak dikenal dalam kedua mode.
             Satu spektrum standar ditampilkan sebagai "Foto".
 
-        "Balik Tampilan Skala Abu-abu" (Reverse Grayscale Displays)
+        "Balik Skala Abu-abu Fotografis" (Reverse Grayscale Displays)
             Membalik konversi intensitas menjadi tingkat abu-abu
             untuk meniru citra fotografi negatif.
 
@@ -241,7 +241,7 @@ Anda di kotak berlabel "Tipe Sp." (Sp. Type) pada formulir yang
 muncul.  Anda juga dapat mencatat ketidakpastian atau ciri tidak
 biasa pada spektrum di kotak "Catatan" (Remarks).  Saat Anda menekan
 "OK", informasi yang Anda masukkan ditempatkan pada sebuah daftar,
-tetapi tidak disimpan ke file.  Untuk meninjau, mencetak, dan/atau
+tetapi belum disimpan ke file.  Untuk meninjau, mencetak, dan/atau
 menyimpan hasil Anda ke file, pilih "Alat" (Tools)->"Editor Hasil"
 (Results Editors)->"Hasil Pengamatan" (Observational Results)->
 "Tampilkan/Cetak/Simpan" (Display/Print/Save) pada menu panel kontrol

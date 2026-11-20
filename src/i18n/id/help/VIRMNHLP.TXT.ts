@@ -41,8 +41,8 @@ dari daftar. Layar judul praktikum yang dipilih akan ditampilkan selama
 lima detik, diikuti panel kontrol observatorium. Praktikum yang Anda
 pilih menentukan fitur dan kemampuan VIREO yang tersedia bagi Anda.
 (Semua fitur VIREO tersedia untuk praktikum "Pencarian Objek X" (The
-Quest for Object X), dan dalam mode Observatorium Virtual yang tidak
-terkait praktikum tertentu.)
+Quest for Object X), dan dalam mode Observatorium Virtual (Virtual
+Observatory) yang tidak terkait praktikum tertentu.)
 
 PERINGATAN: Anda tidak dapat mengubah pilihan praktikum setelah
 memilihnya. Jika Anda salah memilih, Anda harus keluar dari program dan
@@ -50,13 +50,13 @@ memulai dari awal!
 
 **Atur tanggal & waktu**
 Beberapa praktikum yang dikerjakan dengan VIREO memuat unsur yang
-bergantung pada waktu. Saat Anda memulai praktikum "Pencarian
-Objek X", sebuah kotak kecil akan muncul untuk mengisi tanggal, waktu,
-dan identitas objek tak dikenal yang ditugaskan kepada Anda. Pastikan
-nilai ini sesuai dengan yang tertera pada materi praktikum Anda, atau
-yang diberikan langsung oleh instruktur Anda. Setelah Anda mengisi
-informasi dan menekan tombol "OK", mungkin ada jeda singkat selagi
-perangkat lunak menyesuaikan data untuk praktikum.
+bergantung pada waktu. Saat Anda memulai praktikum "Pencarian Objek X"
+(The Quest for Object X), sebuah kotak kecil akan muncul untuk mengisi
+tanggal, waktu, dan identitas objek tak dikenal yang ditugaskan kepada
+Anda. Pastikan nilai ini sesuai dengan yang tertera pada materi
+praktikum Anda, atau yang diberikan langsung oleh instruktur Anda.
+Setelah Anda mengisi informasi dan menekan tombol "OK", mungkin ada jeda
+singkat selagi perangkat lunak menyesuaikan data untuk praktikum.
 
 Pada tahap selanjutnya dalam beberapa praktikum, Anda mungkin juga
 perlu mengubah tanggal/waktu. Untuk itu, tutup panel kontrol teleskop
@@ -127,9 +127,9 @@ kontrol observatorium tetap tersedia.
 **Minta waktu teleskop**
 Akses ke teleskop yang lebih besar mungkin dibatasi. Anda dapat meminta
 waktu pada teleskop yang saat ini tidak tersedia bagi Anda (pilihannya
-berwarna abu-abu). Untuk meminta waktu, pilih "Teleskop"->"Optik"
-(Optical)->"Minta Waktu" (Request Time)->(pilihan teleskop) dari menu
-panel kontrol observatorium.
+berwarna abu-abu). Untuk meminta waktu, pilih "Teleskop"
+(Telescope)->"Optik" (Optical)->"Minta Waktu" (Request Time)->(pilihan
+teleskop) dari menu panel kontrol observatorium.
 
 Jika permintaan Anda dikabulkan:
     Anda akan diberi tahu jumlah penggunaan yang diberikan kepada Anda
@@ -153,10 +153,10 @@ Topik terkait:
     Pilih teleskop
 
 **Ganti teleskop optik**
-Untuk mengganti teleskop optik, pilih "Teleskop"->"Optik" dari menu
-panel kontrol observatorium, lalu buat pilihan dari daftar yang muncul.
-Jika suatu pilihan berwarna abu-abu, Anda harus meminta dan diberi waktu
-pada teleskop tersebut.
+Untuk mengganti teleskop optik, pilih "Teleskop" (Telescopes)->"Optik"
+(Optical) dari menu panel kontrol observatorium, lalu buat pilihan dari
+daftar yang muncul. Jika suatu pilihan berwarna abu-abu, Anda harus
+meminta dan diberi waktu pada teleskop tersebut.
 
 Setelah Anda memilih teleskop untuk diakses, kubah pada teleskop saat
 ini akan menutup, dan akan ada jeda selagi sistem mencoba mengakses
@@ -314,8 +314,7 @@ yang tersedia bergantung pada praktikum yang Anda kerjakan.
 Topik terkait:
     Muat data tersimpan
     Spreadsheet
-    Topik bantuan tentang penyimpanan data untuk berbagai instrumen dan
-    alat.
+    Topik bantuan penyimpanan data untuk berbagai instrumen dan alat.
 
 **Muat data tersimpan**
 Anda dapat memuat file data yang sebelumnya dibuat dan disimpan dengan
@@ -352,7 +351,7 @@ Aktivitas analisis hasil, seperti perhitungan, pemformatan hasil untuk
 dicetak, dan pembuatan bagan dan grafik, dapat dipermudah dengan
 program spreadsheet. Jika ada program spreadsheet yang dapat Anda pakai,
 pilihan "Spreadsheet" di bawah "Alat" (Tools) pada menu panel kontrol
-observatorium akan berwarna hitam pekat. (Jika entri ini berwarna
+observatorium akan berwarna hitam pekat. (Jika pilihan ini berwarna
 abu-abu, berarti tidak ada program spreadsheet yang tersedia.) Berikut
 langkah-langkah memakai spreadsheet:
 
@@ -416,7 +415,7 @@ CATATAN di bawah). Fitur umum akses keyboard adalah sebagai berikut:
     kotak teks, dan sebagainya) pada formulir mana pun dengan tombol
     "Tab" dan "Shift-Tab". (Tombol panah kadang dapat dipakai untuk ini,
     tetapi tidak berfungsi pada semua kontrol.) Kontrol yang sedang
-    dipilih ditandai dengan garis putus-putus, atau dengan perubahan
+    dipilih ditandai dengan garis titik-titik, atau dengan perubahan
     warna pada kotak teks. Setelah dipilih, tombol dapat ditekan dengan
     tombol Spasi atau tombol "Enter". Sakelar dan penggeser biasanya
     dioperasikan dengan tombol panah.
@@ -424,7 +423,7 @@ CATATAN di bawah). Fitur umum akses keyboard adalah sebagai berikut:
     -Kursor-
     Pada formulir yang memakai kursor bergerak untuk identifikasi
     dan/atau pengukuran, Anda dapat menggerakkan kursor dengan tombol
-    panah pada papan tombol numerik (tombol "2","4","6","8"). Tombol
+    panah pada keypad numerik (tombol "2","4","6","8"). Tombol
     ini juga dapat dipakai untuk menggerakkan teleskop. Anda harus
     mengaktifkan NumLock ("On") dan menonaktifkan MouseKeys ("Off")
     untuk memakai fitur ini. (Lihat "MouseKeys" di bawah.)
@@ -432,7 +431,7 @@ CATATAN di bawah). Fitur umum akses keyboard adalah sebagai berikut:
     -MouseKeys-
     Jika Anda memakai MouseKeys, atur sistem Anda agar MouseKeys aktif
     saat NumLock nonaktif ("Off"), untuk menghindari konflik dengan
-    pemakaian tombol panah pada papan tombol numerik (di atas). Anda
+    pemakaian tombol panah pada keypad numerik (di atas). Anda
     seharusnya tidak perlu memakai MouseKeys untuk akses keyboard ke
     fitur dasar VIREO (tetapi lihat CATATAN di bawah).
 

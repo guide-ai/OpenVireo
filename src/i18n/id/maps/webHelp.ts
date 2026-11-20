@@ -91,7 +91,7 @@ const ANALYSIS={title:'Analisis dan hasil',topics:[
    'Klasifikasi bintang: bandingkan sebuah spektrum dengan bintang standar atlas dan pilih tipe spektrumnya.',
    'Basis data gugus: plot diagram HR gugus bintang dan cocokkan deret utama serta isokron.',
    'Survei LSS: ambil spektrum galaksi pada bidang survei. Data LSS: plot pergeseran merah dalam diagram kerucut.',
-   'Objek X: kenali objek yang tidak dikenal dari pengenal dan koordinatnya.',
+   'Objek X: identifikasi objek tak dikenal dari pengenal dan koordinatnya.',
    'Bintang variabel: cari sebuah bintang variabel dan plot kurva cahayanya.',
    'Data radio: ukur pulsar (lihat Teleskop radio dan pulsar).'),
  ]),

@@ -4,7 +4,7 @@ import type {Translation} from '../../maps';
  * OpenVireo, not CLEA's (VIREO's missing-file box is spectralLines.ts SPECTRAL_LINE_MISSING_LITERALS, through vireo()). */
 export const HELP_VIEWER_ID:Translation<typeof HELP_VIEWER_EN>=Object.freeze({
  translationLabel:'Terjemahan: adaptasi web OpenVireo (bukan teks CLEA)',
- originalLabel:'Asli: teks bahasa Inggris VIREO yang persis',
+ originalLabel:'Asli: teks bahasa Inggris VIREO apa adanya',
  viewOriginal:'Lihat aslinya (bahasa Inggris)',
  viewTranslation:'Lihat terjemahan',
  translationError:'Bantuan terjemahan tidak dapat dimuat, atau tidak cocok dengan file asli yang diterjemahkan, sehingga bantuan asli VIREO dalam bahasa Inggris ditampilkan.',

@@ -154,7 +154,7 @@ sekitar B2
 *4471.48   He I*
 Paling kuat pada bintang B dengan maksimum
 sekitar B2
-Kekuatan He II 4541/He I 4471 merupakan
+Rasio kekuatan He II 4541/He I 4471 merupakan
 indikator tipe yang berguna antara O3-O9
 
 

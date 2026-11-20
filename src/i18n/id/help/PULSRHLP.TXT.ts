@@ -5,14 +5,14 @@ export const sourceName='PULSRHLP.TXT';
 export const sourceSha256='3a6b8e727be8340095a284ad8dbe4e075613b2d081d83e93537a901a6c8377fc';
 export const text=`**Kontrol teleskop radio**
 Tombol-tombol berikut dipakai untuk mengoperasikan teleskop radio.
-Tombol ini berada di panel kontrol teleskop.  Bergantung pada
+Tombol-tombol ini berada di panel kontrol teleskop.  Bergantung pada
 pengaturan yang dipilih instruktur Anda, penggerakan dapat dibatasi
 oleh cakrawala setempat dan mungkin oleh batasan lain pada teleskop.
 
     "Pelacakan" (Tracking) - Tombol ini mengaktifkan pelacakan
     sideris, yang membuat teleskop tetap terarah ke satu titik di
     langit selagi Bumi berputar.  Bila pelacakan nonaktif, objek langit
-    akan bergeser melintasi medan teleskop, seperti ditunjukkan oleh
+    akan bergeser melintasi bidang teleskop, seperti ditunjukkan oleh
     pembacaan asensio rekta yang terus berubah.  Pelacakan nonaktif
     saat teleskop pertama kali diakses.  CATATAN: Jika teleskop adalah
     instrumen transit meridian, tombol "Pelacakan" tidak akan muncul di
@@ -63,13 +63,13 @@ Bagian langit yang dapat dijangkau teleskop pada waktu tertentu
 dibatasi oleh beberapa faktor.  Pada kenyataannya, tidak ada teleskop,
 baik optik maupun radio, yang dapat "melihat" di bawah cakrawala
 setempat.  Jika dikonfigurasi demikian, teleskop dalam praktikum ini
-tidak boleh bergerak lebih rendah dari ketinggian beberapa derajat di
+tidak dapat bergerak lebih rendah dari ketinggian beberapa derajat di
 atas cakrawala geografis "sebenarnya".
 
 Selain itu, banyak teleskop radio dibatasi oleh rancangannya pada
 wilayah langit tertentu di atas kepala.  Yang paling umum adalah
 teleskop transit meridian, yang hanya dapat bergerak dalam deklinasi
-dan harus menunggu objek yang diamati terbawa melintasi medan
+dan harus menunggu objek yang diamati terbawa melintasi bidang
 pandang oleh rotasi Bumi.  Jenis pembatasan lain dicontohkan oleh
 piringan Arecibo 1000 kaki, yang hanya dapat diarahkan ke objek dalam
 jarak beberapa derajat dari zenit setempat.  Perangkat lunak ini dapat
@@ -119,9 +119,9 @@ List...) dari menu panel kontrol teleskop radio.  Pada formulir yang
 muncul, Anda dapat menambahkan komentar untuk membantu mengenali objek
 itu atau alasan mengapa objek itu menarik.  (Anda juga dapat mengubah
 identifikasi dan posisi untuk menambahkan objek yang saat ini tidak
-berada di medan teleskop.)  Setelah selesai mengisi entri, tekan "OK"
+berada di bidang teleskop.)  Setelah selesai mengisi entri, tekan "OK"
 untuk menambahkannya ke daftar.  (Jika Anda tidak sengaja membuat
-entri yang salah, lihat topik bantuan "Menghapus objek dari "Daftar
+entri yang salah, lihat topik bantuan "Hapus objek dari "Daftar
 Objek".)
 
 **Hapus objek dari "Daftar Objek"**
@@ -342,9 +342,9 @@ Topik terkait:
     Analisis data pulsar
 
 **Simpan sinyal yang diterima**
-Sinyal yang dicatat berada di memori (RAM).  Dalam keadaan ini sinyal
+Sinyal yang dicatat disimpan di memori (RAM).  Dalam keadaan ini sinyal
 dapat diteruskan langsung ke alat analisis data, tetapi jika Anda tidak
-berencana melakukannya segera, atau memerlukan catatan "permanen" untuk
+berencana melakukannya segera, atau memerlukan salinan "permanen" untuk
 alasan lain, simpan data ini ke sebuah file.  (Sinyal yang dicatat di
 memori akan terhapus saat pencatatan berikutnya dimulai.)  Setelah
 selesai mencatat sinyal, Anda diberi kesempatan untuk segera
@@ -356,9 +356,9 @@ menu alat analisis data.
 
 Saat Anda memilih untuk menyimpan file, sebuah formulir muncul untuk
 memasukkan atau memilih nama file yang disimpan.  Anda dapat memakai
-nama apa pun; program akan menyarankan nama yang dibuat dari informasi
-login Anda.  Selalu gunakan ekstensi ".PLR" pada file ini untuk
-menghindari kesulitan dan kebingungan di kemudian hari.
+nama apa pun; program akan menyarankan nama yang dibuat dari isian
+kotak dialog Masuk (Log In).  Selalu gunakan ekstensi ".PLR" pada
+file ini untuk menghindari kesulitan dan kebingungan di kemudian hari.
 
 **Tutup penerima**
 Jendela penerima ditutup lewat Menu Sistem (klik kotak kecil di sudut

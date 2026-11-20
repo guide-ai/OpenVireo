@@ -9,7 +9,7 @@ Spektrum Tersimpan..." (Load Saved Spectrum...) dari menu alat pengukur,
 lalu pilih file spektrum yang akan dimuat.
 
 Topik terkait:
-    "Simpan Spektrum untuk Analisis" (Save Spectrum for Analysis) pada
+    "Simpan spektrum untuk analisis" (Save Spectrum for Analysis) pada
     menu "Bantuan" (Help) spektrometer.
 
 **Ukur ciri spektrum satu per satu**
@@ -70,12 +70,12 @@ Perhatikan hal berikut:
         Namun hal ini dapat membuat semua garis tidak terlihat
         sekaligus.  (Lihat topik bantuan di bawah.)
 
-    3)  Anda mungkin merasa lebih akurat jika mengukur garis satu per
-        satu.  (Lihat topik bantuan "Ukur ciri spektrum satu per
-        satu".)  Anda dapat memakai spektrum pembanding untuk
-        mengidentifikasi garis, tetapi Anda harus mencatat hasil dan
-        menghitung rata-rata Z secara terpisah.  Nilai apa pun yang
-        muncul pada pembacaan Z tidak akan valid.
+    3)  Anda mungkin merasa mengukur garis satu per satu lebih akurat.
+        (Lihat topik bantuan "Ukur ciri spektrum satu per satu".)  Anda
+        dapat memakai spektrum pembanding untuk mengidentifikasi garis,
+        tetapi Anda harus mencatat hasil dan menghitung rata-rata Z
+        secara terpisah.  Nilai apa pun yang muncul pada pembacaan Z
+        tidak akan valid.
 
 Lihat juga:
     Muat spektrum pembanding
@@ -111,7 +111,7 @@ terisi tidak benar dan Anda harus menggantinya dengan nilai
 rata-rata hasil hitung Anda.
 
 Saat Anda menekan "OK", informasi yang Anda masukkan ditempatkan pada
-sebuah daftar, tetapi tidak disimpan ke file.  Untuk meninjau,
+sebuah daftar, tetapi belum disimpan ke file.  Untuk meninjau,
 mencetak, dan/atau menyimpan hasil Anda ke file, pilih "Alat"
 (Tools)->"Editor Hasil" (Results Editors)->"Hasil Pengamatan"
 (Observational Results)->"Tampilkan/Cetak/Simpan..."
