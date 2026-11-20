@@ -17,7 +17,7 @@ describe('Front JA0: the CJK punctuation fixer (Japanese)',()=>{
  ];
  it.each(CASES)('fixes %j',(input,expected)=>{expect(fix(input)).toBe(expected);expect(fix(expected)).toBe(expected);expect(fix(fix(input))).toBe(fix(input));});
  const KEPT=['名前を付けて保存...','保存…','スペクトル.SSP','?lang=ja','12:30:45','1.5','12 km/s','500 Å','(RA:)','Save As...','RA: 12h',
-  'ファイル › 保存','0.4 m望遠鏡','3500–7300 K','{a}、{b}','行1\n行2','Enter','(Observer\'s Notebook)','12%','保存。','ファイル.{ext}','テスト ?キー','「開く」を選びます。',' 前後の空白 ','E(B-V)を設定','E(B-V)の値','StrToInt(x)で変換'];
+  'ファイル › 保存','0.4 m望遠鏡','3500–7300 K','{a}、{b}','行1\n行2','Enter','(Observer\'s Notebook)','12%','保存。','ファイル.{ext}','テスト ?キー','「開く」を選びます。',' 前後の空白 ','E(B-V)を設定','E(B-V)の値','E(B−V)を設定','StrToInt(x)で変換'];
  it.each(KEPT)('keeps %j',text=>{expect(fix(text)).toBe(text);});
  it('leaves an odd number of straight quotes and a fragment\'s quotes alone',()=>{
   expect(fix('名前"開く')).toBe('名前"開く');expect(fix('"開く"',JAPANESE_STYLE,{quotes:false})).toBe('"開く"');

@@ -8,7 +8,7 @@ export const NAKED_EYE_JA:Translation<typeof NAKED_EYE_MESSAGES_EN>=Object.freez
  loading:'肉眼で見える星のファイルを読み込み中…',
  fileError:'肉眼で見える星のファイル（NkdEye.dat）を読み込めなかったか、記録されたサイズおよびSHA-256と一致しませんでした。',
  caption:(site:string,utc:string,count:number)=>`${site} · ${utc} UT（ドームを開いた時刻。再描画するにはドームを閉じてからもう一度開いてください）· 視野内に${count}個の星。`,
- adaptation:'Web版での調整：星は、VIREOの星のスプライトではなく、VIREOの明るさレベルに応じた円盤として描画され、ドームのシャッターは描画されません。位置、見える領域（南を向いたときに中心線のすぐ西側の多くの星が落ちるというVIREOの癖を含む）、右クリックでの選択は元のプログラムに従います。',
+ adaptation:'Web版の調整：星は、VIREOの星のスプライトではなく、VIREOの明るさレベルに応じた円盤として描画され、ドームのシャッターは描画されません。位置、見える領域（南を向いたときに中心線のすぐ西側の多くの星が落ちるというVIREOの癖を含む）、右クリックでの選択は元のプログラムに従います。',
  showAtCursor:'カーソル位置の星を表示',
  tapAdaptation:'タッチ画面向けのWeb版の調整：空をタップしてカーソル（+）を動かし、「カーソル位置の星を表示」を押してください。VIREOでは左クリックでは何も起こらないため、タップだけでは星は開きません。',
  magNote:'VIREOと同じく、V等級は入力できますが、何も保存されません。',

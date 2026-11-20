@@ -15,7 +15,7 @@ export const FIELD_READ_DETAILS_JA:Translation<typeof FIELD_READ_DETAILS_EN>=Obj
   budget:'視野に含まれるカタログの記録が、このサイトが1つの赤緯帯で読み取る数を超えています（Web版の制限）。',
   plan:'このサイトが、計画していたカタログの断片の外を読み取りました（お手数ですが報告してください）。',
   source:'同梱のカタログファイルが想定された形式ではありません（お手数ですが報告してください）。',
-  input:'この指向位置は有効な天球上の位置ではありません。',
+  input:'この指向は有効な天球上の位置ではありません。',
   evidence:'視野エンジンが、記録に矛盾を見つけました（お手数ですが報告してください）。',
  } as Record<string,string>),
 });

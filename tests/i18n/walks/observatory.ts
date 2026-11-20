@@ -34,7 +34,10 @@ export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new S
   'NF: NOMAD R; B: NOMAD B; V: NOMAD V; R: NOMAD R; I: USNO-B1 I2','J: NOMAD J; H: NOMAD H; K: NOMAD K']),
  /** Front RU1: Russian translates every word of the walk; only the camera card's catalog bands by filter (filter letters and catalog
   * names joined as English joins them, cameraPrepare.catalogEntry) read as English does. */
- ru:new Set(['NF: NOMAD R; B: NOMAD B; V: NOMAD V; R: NOMAD R; I: USNO-B1 I2','J: NOMAD J; H: NOMAD H; K: NOMAD K'])};
+ ru:new Set(['NF: NOMAD R; B: NOMAD B; V: NOMAD V; R: NOMAD R; I: USNO-B1 I2','J: NOMAD J; H: NOMAD H; K: NOMAD K']),
+ /** Front JA1: Japanese keeps OK, the instrument names CCD, IR and Multi-Spec, VIREO's formats and formula labels, and the camera
+  * card's catalog bands by filter (src/i18n/ja/identical.json). */
+ ja:new Set(['OK','CCD','IR','Multi-Spec','YYYY/MM/DD','V - Mv =','PDot (S/S):','PEpoch (MJD):','(km/sec)','NF: NOMAD R; B: NOMAD B; V: NOMAD V; R: NOMAD R; I: USNO-B1 I2','J: NOMAD J; H: NOMAD H; K: NOMAD K'])};
 /** SAME texts another language does translate: Portuguese writes the General tab «Geral» and the longitude letter E «L» (Leste);
  * French writes the General tab «Général» (its longitude letter E is Est, the same). */
 /** Front ID1: Indonesian writes the General tab «Umum» and the longitude letter E «BT» (Bujur Timur). */
@@ -42,7 +45,10 @@ export const NOT_SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':n
  // Front HI1: Hindi writes General «सामान्य», No «नहीं», Min «मिनट», the compass letters E «पू», N «उ» and S «द», and Angstroms «ऐंगस्ट्रॉम».
  hi:new Set(['General','No','Min','E','N','S','Angstroms']),
  /** Front RU1: Russian writes the General tab «Общие» and the longitude letter E «В» (восток). */
- ru:new Set(['General','E'])};
+ ru:new Set(['General','E']),
+ /** Front JA1: Japanese writes General «全般», No «いいえ», Min «分», the compass letters E «東», N «北» and S «南», and Angstroms
+  * «オングストローム». */
+ ja:new Set(['General','No','Min','E','N','S','Angstroms'])};
 export const same=(text:string,L?:LanguageText)=>(L===undefined||!(NOT_SAME_IN[L.tag]?.has(text)??false))&&(SAME.has(text)||IDENTIFIER.test(text)||(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false)));
 export const id=(page:Page,testId:string)=>page.getByTestId(testId);
 
@@ -125,7 +131,7 @@ export async function multiSpecWalk(page:Page,lang:Lang,each:(step:string)=>Prom
  await page.getByText(T('sky.coordinates'),{exact:true}).click();
  await page.locator('#point-ra').fill('13.002305555555555');await page.locator('#point-dec').fill('27.9775');
  await page.getByRole('button',{name:T('sky.pointCoordinates'),exact:true}).click();await expect(id(page,'pointing-dec')).toHaveText(/^27\.97/,{timeout:30_000});
- await page.getByRole('button',{name:new RegExp(/^(Telescope|Telescopio|Telescópio|Teleskop|दूरबीन|Телескоп) ·/.source+'|'+pseudoStart('Telescope ·').source)}).click();
+ await page.getByRole('button',{name:new RegExp(/^(Telescope|Telescopio|Telescópio|Teleskop|दूरबीन|望遠鏡|Телескоп) ·/.source+'|'+pseudoStart('Telescope ·').source)}).click();
  const toggle=page.locator('.portal-header .tools-toggle');if(await toggle.isVisible())await toggle.click();
  await id(page,'instructor-mode-open').click();await id(page,'instructor-mode-confirm-on').click();if(await toggle.isVisible()&&await toggle.getAttribute('aria-expanded')==='true')await toggle.click();
  await page.locator('.telescope-motion').getByTestId('ob-options').click();await id(page,'ob-options-edit-mode').check();await id(page,'ob-options-ok').click();

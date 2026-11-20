@@ -102,6 +102,24 @@
     "glossary"
    ],
    "reason": "VIREO's item sets both the date/time and the ID (日時とIDを設定), one verb for the two"
+  },
+  "original:Set E(B-V) to correct value for ZAMS fitting.": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "VIREO's hint asks for the correct value: «E(B-V)を正しい値に設定» (the item Set E(B-V) is «E(B-V)を設定»)"
+  },
+  "original:Signal to Noise Ratio:": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "signal-to-noise is S/N比, the glossary's term for the ratio (both VIREO labels show the ratio)"
+  },
+  "original:Signal/Noise:": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "signal-to-noise is S/N比, the glossary's term for the ratio (both VIREO labels show the ratio)"
   }
  }
 }
