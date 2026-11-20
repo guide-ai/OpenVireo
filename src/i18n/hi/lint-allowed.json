@@ -54,6 +54,12 @@
     "quotes"
    ],
    "reason": "VIREO closes this quote with its untranslated tail ’\".’ (PHOTOMETER_RECORD_PIECES.movedTail); the opening quote must match it, as in French"
+  },
+  "catalog:ph.domainCount": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "“period” here is the photometer’s integration period (अवधि), not an orbital or pulsation period (आवर्तकाल)"
   }
  }
 }

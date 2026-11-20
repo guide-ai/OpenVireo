@@ -54,7 +54,9 @@ export const CD_NAME=/^(?:NGC|IC|M|Mel|Cr|Tr|Stock|Mine) ?\d*(?: \(NGC \d+\))?$/
  * list entry dialog's button, as Windows pt-BR writes it) and the «Pixel (x, y)» column header (pixel is the same word, as PT2
  * kept it). French's (Front FR4): VIREO's Minutes, OK, Confirmation and «- Page 2» (FR1's identical originals) and the web's
  * «Distance (pc)», Portrait, Type, Pixel (x, y), Max and «Min / ampl.» (identical.json). */
-export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'es-419':new Set(['No']),'pt-BR':new Set(['Item','OK','Pixel (x, y)']),fr:new Set(['Minutes','OK','Confirmation','- Page 2','Distance (pc)','Portrait','Type','Pixel (x, y)','Max','Min / ampl.'])};
+export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'es-419':new Set(['No']),'pt-BR':new Set(['Item','OK','Pixel (x, y)']),fr:new Set(['Minutes','OK','Confirmation','- Page 2','Distance (pc)','Portrait','Type','Pixel (x, y)','Max','Min / ampl.']),
+ // Front HI4: Hindi keeps the field labels RA, RA: and ID #: and the catalog name GCVS ID in Latin script, as its other walks do.
+ hi:new Set(['ID #:','RA:','GCVS ID','RA'])};
 export const same=(text:string,step:string,L?:LanguageText)=>(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false))||CLUSTER_NAMES.has(text.replace(/^@option:/,''))||PICTURE_TEXT.test(text)||SPECTRAL.test(text)||RECORDED_ID.test(text)||(VARIABLE_STEPS.has(step)&&(GCVS_NAME.test(text)||gcvsType(text.replace(/^@option:/,''))||CURVE_TEXT.has(text)))||(step.startsWith('Cluster Data')&&CD_NAME.test(text))||PRINT_DATE.test(text)||text===EXERCISE_TITLE||SAME.has(text)||NUMERIC.test(text)||RECORDED.test(text);
 export const id=(page:Page|Locator,testId:string)=>page.getByTestId(testId);
 /** Front SC12: an English text's name in any pseudo-locale (qps and the script variants; tests/fixtures/pseudoNames.ts). */
@@ -74,16 +76,18 @@ export const label=(scope:Page|Locator,lang:Lang,key:string)=>scope.getByLabel(N
  * `lang="en"` views. */
 /** On #observatory only the Cluster Data windows and their boxes are this front's (the rest of the page is ES2's, observatory.spec.ts). */
 export const CD_ROOTS='[data-testid=cd-dialog],[data-testid=cd-study-list],[data-testid=cluster-data],[data-testid=fi-box]';
+// Front HI4: two letters of any script with any combining marks between them (was [A-Za-z]{2}, which skipped every all-Devanagari
+// text; a Devanagari vowel sign or virama is a mark, so \p{L}{2} alone would miss «ग्रे»), as Front HI2 did for E01–E03.
 export const texts=(page:Page,step='')=>page.evaluate(roots=>{
  const out:string[]=[];
  const inScope=(el:Element)=>!roots||el.closest(roots)!==null;
  const shown=(el:Element)=>{for(let e:Element|null=el;e;e=e.parentElement){if((e as HTMLElement).hidden||e.getAttribute('aria-hidden')==='true')return false;if(e.tagName==='DETAILS'&&!(e as HTMLDetailsElement).open&&el.closest('summary')?.parentElement!==e&&e!==el)return false;if(e.tagName==='DIALOG'&&!(e as HTMLDialogElement).open)return false;const s=getComputedStyle(e);if(s.display==='none'||s.visibility==='hidden')return false;}return true;};
  const skipped=(el:Element)=>!inScope(el)||el.closest('.portal-header,[data-i18n-shell],script,style,[data-testid$="-topic-list"],[data-testid$="-topic-text"],[data-testid=site-tour]')!==null||el.closest('[lang=en]:not(html)')!==null;
  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n:Node|null;
- while((n=walker.nextNode())){const el=n.parentElement;if(!el||el.tagName==='OPTION')continue;const t=n.textContent?.trim();if(t&&/[A-Za-z]{2}/.test(t)&&!skipped(el)&&shown(el))out.push(t);}
- for(const select of document.querySelectorAll('select'))if(!skipped(select)&&shown(select))for(const o of select.options){const t=o.text.trim();if(t&&/[A-Za-z]{2}/.test(t))out.push(`@option:${t}`);}
- for(const el of document.querySelectorAll('[aria-label],[title],[placeholder]'))if(!skipped(el)&&shown(el))for(const a of ['aria-label','title','placeholder']){const v=el.getAttribute(a)?.trim();if(v&&/[A-Za-z]{2}/.test(v))out.push(`@${a}:${v}`);}
- for(const t of document.querySelectorAll('svg title'))if(!skipped(t)&&t.parentElement&&shown(t.parentElement)){const v=t.textContent?.trim();if(v&&/[A-Za-z]{2}/.test(v))out.push(`@svg-title:${v}`);}
+ while((n=walker.nextNode())){const el=n.parentElement;if(!el||el.tagName==='OPTION')continue;const t=n.textContent?.trim();if(t&&/\p{L}\p{M}*\p{L}/u.test(t)&&!skipped(el)&&shown(el))out.push(t);}
+ for(const select of document.querySelectorAll('select'))if(!skipped(select)&&shown(select))for(const o of select.options){const t=o.text.trim();if(t&&/\p{L}\p{M}*\p{L}/u.test(t))out.push(`@option:${t}`);}
+ for(const el of document.querySelectorAll('[aria-label],[title],[placeholder]'))if(!skipped(el)&&shown(el))for(const a of ['aria-label','title','placeholder']){const v=el.getAttribute(a)?.trim();if(v&&/\p{L}\p{M}*\p{L}/u.test(v))out.push(`@${a}:${v}`);}
+ for(const t of document.querySelectorAll('svg title'))if(!skipped(t)&&t.parentElement&&shown(t.parentElement)){const v=t.textContent?.trim();if(v&&/\p{L}\p{M}*\p{L}/u.test(v))out.push(`@svg-title:${v}`);}
  return out;
 },step.startsWith('Cluster Data')?CD_ROOTS:'');
 export const bare=(text:string)=>text.replace(/^@[a-z-]+:/,'');

@@ -1,4 +1,55 @@
 import type {VARIABLE_STARS_EN} from '../../../variables/VariableStarMessages';
-import type {PartialTranslation} from '../../maps';
-/** Front HI0: Hindi (hi) for the header menu name of the variable-star page. A web adaptation by OpenVireo, not CLEA's. */
-export const VARIABLE_STARS_HI:PartialTranslation<typeof VARIABLE_STARS_EN>=Object.freeze({nav:'परिवर्ती तारे'});
+import type {Translation} from '../../maps';
+import {plural} from '../../plural';
+/** Front HI4: Hindi (hi) for the variable-star page’s web text (the header menu name since Front HI0). A web adaptation by OpenVireo, not CLEA’s. VIREO’s own
+ * captions (Variable Star Data, Simulated Light Curve, their menus and the print lines) are in src/core/variableStarForm.ts
+ * and src/core/lightCurvePrint.ts and are translated through vireo() (originals.json). Hindi groups thousands as English does
+ * («31,147»), so the en-US formatting of the English map is kept. */
+export const VARIABLE_STARS_HI:Translation<typeof VARIABLE_STARS_EN>=Object.freeze({
+ nav:'परिवर्ती तारे',
+ title:'परिवर्ती तारे और प्रकाश वक्र',
+ scope:'VIREO के परिवर्ती तारों के कैटलॉग (CLEA_VStrs.dat, 31,147 रिकॉर्ड) में कोई तारा खोजें, उसका कैटलॉग डेटा पढ़ें और वह प्रकाश वक्र देखें जो VIREO उसके लिए सिमुलेट करता है।',
+ adaptation:'वेब अनुकूलन: VIREO में यह डेटा प्रशिक्षक का रास्ता है (संपादन मोड [Edit Mode]): “कैटलॉग वस्तु” (Catalog Object) बॉक्स में GCVS, या दूरबीन नियंत्रण पैनल में “क्षेत्र की जानकारी” (Field Information) › “परिवर्ती तारे” (Variable Stars) › “चयन का डेटा लें” (Get Selection Data)। दोनों इस साइट पर संपादन मोड चालू होने पर मौजूद हैं (“ऑप्टिकल सिमुलेशन विकल्प” [Optical Simulation Options] में); यह पेज किसी को भी कैटलॉग सीधे खोजने भी देता है। “परिवर्ती तारे का डेटा” (Variable Star Data) और “सिमुलेटेड प्रकाश वक्र” (Simulated Light Curve) विंडो मूल का अनुसरण करती हैं।',
+ guideTitle:'इस टूल का उपयोग कैसे करें',
+ guide:Object.freeze([
+  'तारे के नाम का कोई हिस्सा लिखें (जैसे “del Cep” या “RR Lyr”) या परिवर्तनशीलता का कोई प्रकार चुनें, फिर किसी पंक्ति पर “खोलें” दबाएँ।',
+  '“परिवर्ती तारे का डेटा” (Variable Star Data) विंडो कैटलॉग के मान सूचीबद्ध करती है: स्थिति, प्रकार, अधिकतम कांतिमान, न्यूनतम कांतिमान (या “(” के बाद आयाम), कैटलॉग का युग (जिसे VIREO अधिकतम चमक के रूप में बनाता है, हालाँकि ग्रहणकारी युग्म तारों के लिए कैटलॉग न्यूनतम देता है), आवर्तकाल, चढ़ाव का समय (M-m/D) और स्पेक्ट्रम।',
+  '“डेटा” (Data) › “प्रकाश वक्र दिखाएँ” (Display Light Curve) चुनें और सिमुलेट किए गए प्रकाश वक्र के 1.5 चक्र देखें। VIREO कैटलॉग के युग को, प्रकार चाहे जो हो, अधिकतम चमक (कला 0) के रूप में बनाता है।',
+  '“डेटा” (Data) › “पाठ सहेजें” (Save Text) › “जैसा दिखाया गया है” (As Displayed) से सूची को पाठ फ़ाइल के रूप में डाउनलोड करें, या उसे प्रिंट करने के लिए “प्रिंट करें” (Print) चुनें।',
+ ]),
+ guideModel:'वक्र के बारे में: VIREO हर प्रकार के लिए एक ही सेफ़ीड जैसा वक्र बनाता है, जो केवल कैटलॉग के अधिकतम, न्यूनतम, आवर्तकाल और M-m/D से बनता है (कैटलॉग में न होने पर 50%)। उसमें शोर नहीं है और वह कोई प्रेक्षण नहीं है। ग्रहणकारी युग्म तारे और अनियमित परिवर्ती तारे वास्तव में ऐसे नहीं दिखते।',
+ loading:'परिवर्ती तारों का कैटलॉग लोड हो रहा है…',
+ loadError:'शामिल परिवर्ती तारों का कैटलॉग लोड नहीं हो सका, या वह दर्ज आकार और SHA-256 से मेल नहीं खाया। पेज को फिर से लोड करें और दोबारा कोशिश करें।',
+ searchTitle:'परिवर्ती तारा खोजें',
+ nameLabel:'तारे के नाम में यह शामिल है',
+ typeLabel:'परिवर्तनशीलता का प्रकार',
+ allTypes:'सभी प्रकार',
+ typeOption:(type:string,count:number)=>`${type||'(खाली)'} — ${count.toLocaleString('en-US')}`,
+ results:(shown:number,total:number)=>total===0?'कोई रिकॉर्ड मेल नहीं खाता।':shown<total?`मेल खाते ${total.toLocaleString('en-US')} रिकॉर्ड में से पहले ${shown} दिखाए जा रहे हैं, कैटलॉग (विषुवांश) के क्रम में। दूसरे रिकॉर्ड देखने के लिए खोज सीमित करें।`:plural('hi',total,{one:`${total.toLocaleString('en-US')} रिकॉर्ड मेल खाता है।`,other:`${total.toLocaleString('en-US')} रिकॉर्ड मेल खाते हैं।`}),
+ columns:['GCVS ID','प्रकार','RA (घंटे)','Dec (°)','अधिकतम','न्यूनतम / आयाम','आवर्तकाल (दिन)',''],
+ open:'खोलें',
+ openLabel:(name:string)=>`${name} खोलें`,
+ noPeriod:'—',
+ listTypeCodesNote:'VIREO में यह मेनू आइटम केवल अपना चेक निशान बदलता है; और कुछ उसे नहीं पढ़ता।',
+ saveAdaptation:'वेब अनुकूलन: पाठ सहेजने के डायलॉग की जगह आपके ब्राउज़र से डाउनलोड होता है (सूची की हर पंक्ति के लिए एक पंक्ति, Windows के लाइन-अंत के साथ)।',
+ riseDefaultedNote:'इस रिकॉर्ड में M-m/D का मान नहीं था। इसका प्रकाश वक्र खोलने पर VIREO की तरह वह मेमोरी में 50% हो गया, इसलिए सूची अब 0.50 दिखाती है।',
+ curveLabel:(name:string)=>`${name} का सिमुलेटेड प्रकाश वक्र: कांतिमान बनाम कला, कैटलॉग के युग से 1.5 चक्र।`,
+ unavailable:Object.freeze({
+  'period-zero':'कोई वक्र नहीं: इस रिकॉर्ड में आवर्तकाल नहीं है (0 दिन)। VIREO आवर्तकाल से भाग देता है और अक्ष बनाने के बाद फ़्लोटिंग-पॉइंट त्रुटि के साथ रुक जाता है, इसलिए वक्र का कोई बिंदु नहीं बनता।',
+  'zero-decline-fraction':'कोई वक्र नहीं: M-m/D 100% है, इसलिए वक्र के घटते हिस्से की लंबाई शून्य है और VIREO उसे बनाने से पहले फ़्लोटिंग-पॉइंट त्रुटि के साथ रुक जाता है।',
+  'axis-range-zero':'कोई प्रकाश वक्र विंडो नहीं: सबसे चमकीली और सबसे धुँधली अक्ष सीमाएँ बराबर हैं, और VIREO विंडो दिखाने से पहले उनके अंतर से भाग देता है।',
+  'magnitude-system-empty':'कांतिमान प्रणाली का पाठ खाली है: VIREO कांतिमान अक्ष के बाद त्रुटि के साथ बनाना बंद कर देता है, इसलिए कला अक्ष और वक्र नहीं बनाए जाते।',
+  'non-finite':'कोई वक्र नहीं: इस रिकॉर्ड का एक मान मॉडल की गणना की सीमा से बाहर है।',
+ }),
+ curveAdaptation:'प्लॉट VIREO का लेआउट, रंग और पिक्सेल स्थितियाँ रखता है; फ़ॉन्ट अलग हैं।',
+ printTitle:(caption:string)=>`प्रिंट — ${caption}`,
+ printHelp:'VIREO जो कागज़ पर रखता है उसका प्रिंट पूर्वावलोकन: तारीख और समय (यहाँ आपके ब्राउज़र के फ़ॉर्मेट में), प्रयोगशाला की मेज़ की पंक्ति, VIREO में लिखी गई विद्यार्थी और प्रयोग की पंक्तियाँ (इस साइट पर उपलब्ध नहीं, इसलिए उनकी जगह एक प्लेसहोल्डर है), सूची की पंक्तियाँ और, प्रकाश वक्र के लिए, प्लॉट। पेज लेआउट और फ़ॉन्ट दोहराए नहीं गए हैं। VIREO के प्रिंट जॉब का शीर्षक पेज पर प्रिंट नहीं होता।',
+ printCurveLayout:(monochrome:boolean)=>`प्रकाश वक्र का पेज VIREO के प्रिंट का अनुसरण करता है, उस ओरिएंटेशन में जो यहाँ चुना गया है (VIREO प्रिंटर का ओरिएंटेशन इस्तेमाल करता है): पोर्ट्रेट में प्लॉट उसी पेज पर आता है; लैंडस्केप में VIREO “(स्क्रीन की छवि अगले पेज पर प्रिंट हुई है)” जोड़ता है और प्लॉट पेज 2 पर प्रिंट करता है। ${monochrome?'“रंगीन प्रिंट करें” (Print in Color) बंद है, इसलिए प्लॉट सफ़ेद पर काले रंग में प्रिंट होता है।':'“रंगीन प्रिंट करें” (Print in Color) चालू है, इसलिए प्लॉट स्क्रीन के रंगों में प्रिंट होता है।'} VIREO प्लॉट को शीर्षक की पंक्ति के ऊपर बनाता है; यहाँ वह उसके नीचे रखा गया है।`,
+ printOrientation:'पेज का ओरिएंटेशन',
+ portrait:'पोर्ट्रेट',
+ landscape:'लैंडस्केप',
+ printStudentPlaceholder:'[VIREO में लिखा गया विद्यार्थी और प्रयोग का पाठ: इस साइट पर पुनर्प्राप्त नहीं]',
+ printButton:'प्रिंट करें…',
+ printClose:'पूर्वावलोकन बंद करें',
+ printError:'इस ब्राउज़र विंडो में प्रिंट करना उपलब्ध नहीं है।',
+});

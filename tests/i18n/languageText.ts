@@ -196,10 +196,10 @@ export const FRENCH_TEXT=language('fr',fr,frOriginals,{appShell:APP_SHELL_FR,hel
 export const INDONESIAN_TEXT=language('id',idCatalog,idOriginals,{appShell:APP_SHELL_ID,helpMenu:HELP_MENU_ID,projectLinks:PROJECT_LINKS_ID,tour:TOUR_ID,languageChoice:LANGUAGE_CHOICE_ID},
  [APP_SHELL_ID,CAMERA_ID,FIELD_INFO_ID,FIELD_READ_DETAILS_ID,HELP_MENU_ID,LANGUAGE_CHOICE_ID,NAKED_EYE_ID,OBJECT_X_LAB_ID,OBSERVATION_METADATA_ID,OBSERVATORY_ID,POLISH_ID,PROJECT_LINKS_ID,QSO_LIST_ID,SOUND_ID,TOUR_ID,VARIABLE_STARS_ID],/(?<!\p{L})(?:yang|dan|untuk|dengan|tidak|Anda|dari|pada|ini|atau)(?!\p{L})|[“”\u202f]/u,'?lang=id',['shell','observatory','e01','e02','e03']);
 /** Front HI0: Hindi, behind `?lang=hi` before its release (an en-US browser with the preview query). HI0 translated the shell, so
- * only the shell's specs ran it; HI1 adds the observatory and all of VIREO's originals, HI2 exercises E01 and E02, HI3 exercise E03; each HI front adds its area. Its letters are Devanagari (the danda । included), which English text
+ * only the shell's specs ran it; HI1 adds the observatory and all of VIREO's originals, HI2 exercises E01 and E02, HI3 exercise E03, HI4 exercises E04 and E05; each HI front adds its area. Its letters are Devanagari (the danda । included), which English text
  * never has; “ ” are not among them, since English uses them too. */
 export const HINDI_TEXT=language('hi',hi,hiOriginals,{appShell:APP_SHELL_HI,helpMenu:HELP_MENU_HI,projectLinks:PROJECT_LINKS_HI,tour:TOUR_HI,languageChoice:LANGUAGE_CHOICE_HI},
- [APP_SHELL_HI,CAMERA_HI,FIELD_INFO_HI,FIELD_READ_DETAILS_HI,HELP_MENU_HI,LANGUAGE_CHOICE_HI,NAKED_EYE_HI,OBJECT_X_LAB_HI,OBSERVATION_METADATA_HI,OBSERVATORY_HI,POLISH_HI,PROJECT_LINKS_HI,QSO_LIST_HI,SOUND_HI,TOUR_HI,VARIABLE_STARS_HI],/[\u0900-\u097f]/u,'?lang=hi',['shell','observatory','e01','e02','e03']);
+ [APP_SHELL_HI,CAMERA_HI,FIELD_INFO_HI,FIELD_READ_DETAILS_HI,HELP_MENU_HI,LANGUAGE_CHOICE_HI,NAKED_EYE_HI,OBJECT_X_LAB_HI,OBSERVATION_METADATA_HI,OBSERVATORY_HI,POLISH_HI,PROJECT_LINKS_HI,QSO_LIST_HI,SOUND_HI,TOUR_HI,VARIABLE_STARS_HI],/[\u0900-\u097f]/u,'?lang=hi',['shell','observatory','e01','e02','e03','e04','e05']);
 /** Front JA0 (plan front-i18n-ja.md §1.2 #3): Japanese, behind `?lang=ja` before its release; JA0 translated the shell, and each
  * later JA front adds its area to `done`. Its letters are kana, ー and 「」, which no English text, VIREO file or export has (Han alone
  * is not used: kana are the unambiguous Japanese signal). JA1 adds the observatory with its maps and all of VIREO's originals. */
@@ -263,6 +263,7 @@ export const e01e02Maps=(tag:string):E01E02Maps=>{const m=E01_E02_MAPS[tag];if(!
 import {CLUSTER_HR_ES} from '../../src/i18n/es/maps/clusterHr';
 import {CLUSTER_HR_PT} from '../../src/i18n/pt-br/maps/clusterHr';
 import {CLUSTER_HR_FR} from '../../src/i18n/fr/maps/clusterHr';
+import {CLUSTER_HR_HI} from '../../src/i18n/hi/maps/clusterHr';
 import type {CLUSTER_HR_EN} from '../../src/clusters/ClusterHrMessages';
 export type E04E05Maps=Readonly<{spectralRange:unknown;observatory:unknown;polish:unknown;camera:unknown;sound:unknown;clusterHr:Translation<typeof CLUSTER_HR_EN>}>;
 export const E04_E05_MAPS:Readonly<Record<string,E04E05Maps>>=Object.freeze({
@@ -270,6 +271,8 @@ export const E04_E05_MAPS:Readonly<Record<string,E04E05Maps>>=Object.freeze({
  'pt-BR':{spectralRange:SPECTRAL_RANGE_PT,observatory:OBSERVATORY_PT,polish:POLISH_PT,camera:CAMERA_PT,sound:SOUND_PT,clusterHr:CLUSTER_HR_PT},
  // Front FR4: French (its ?lang=fr preview).
  fr:{spectralRange:SPECTRAL_RANGE_FR,observatory:OBSERVATORY_FR,polish:POLISH_FR,camera:CAMERA_FR,sound:SOUND_FR,clusterHr:CLUSTER_HR_FR},
+ // Front HI4: Hindi (its ?lang=hi preview).
+ hi:{spectralRange:SPECTRAL_RANGE_HI,observatory:OBSERVATORY_HI,polish:POLISH_HI,camera:CAMERA_HI,sound:SOUND_HI,clusterHr:CLUSTER_HR_HI},
 });
 export const e04e05Maps=(tag:string):E04E05Maps=>{const m=E04_E05_MAPS[tag];if(!m)throw new Error(`No E04/E05 maps for ${tag}`);return m;};
 // Front PT5: the maps and identical texts the radio telescope walk reads beyond the catalog and originals (tests/i18n/radio.spec.ts),

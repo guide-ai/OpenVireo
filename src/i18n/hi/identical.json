@@ -64,6 +64,24 @@
   "catalog:nativeResults.typeValue": "a format of parameters only ({code} · {label})",
   "catalog:nativeResults.kindValue": "a format of parameters only ({kind} · {label})",
   "catalog:program.row": "a format of parameters only ({position} · {object})",
-  "catalog:nativeText.choice": "a format of parameters only ({index} · {object})"
+  "catalog:nativeText.choice": "a format of parameters only ({index} · {object})",
+  "catalog:ph.fixed": "the filter letters U / B / V and a telescope name placeholder",
+  "catalog:ph.seriesSecondsOption": "a number placeholder and the unit symbol s",
+  "catalog:nc.axisColor": "the color index B−V with the unit symbol mag",
+  "catalog:db.columnEbv": "the color excess symbol E(B−V) with the unit symbol mag",
+  "catalog:ce.inspectedInfo": "placeholders joined by the symbols B−V, V and the unit mag",
+  "catalog:obsHr.sha": "the hash name SHA-256",
+  "catalog:obsHr.blockedField.v": "the filter letter V",
+  "catalog:obsHr.blockedField.b": "the filter letter B",
+  "catalog:obsHr.blockedField.b-v": "the color index B−V",
+  "catalog:obsHr.modulus": "the distance modulus symbol V − Mv",
+  "catalog:obsHr.ebv": "the color excess symbol E(B−V)",
+  "catalog:obsHr.colIndex": "the row-number column sign #",
+  "catalog:obsHr.colBV": "the color index B − V",
+  "map:variableStars.typeOption": "a GCVS type code and a count, joined by a dash",
+  "map:variableStars.columns.0": "the catalog name GCVS ID",
+  "map:variableStars.columns.3": "the declination abbreviation Dec with the degree sign",
+  "map:variableStars.columns.7": "an empty column heading",
+  "map:variableStars.noPeriod": "a dash for no period"
  }
 }
