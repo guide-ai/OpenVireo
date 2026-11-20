@@ -36,6 +36,18 @@
     "typography"
    ],
    "reason": "VIREO's option name «Data Bergantung Waktu» (Time-Dependent Data, ID1's original) keeps its capitals inside a sentence"
+  },
+  "catalog:obs.timeDependentOff": {
+   "rules": [
+    "typography"
+   ],
+   "reason": "VIREO's option name «Data Bergantung Waktu» (Time-Dependent Data, ID1's original) keeps its capitals inside a sentence"
+  },
+  "catalog:obs.timeDependentOn": {
+   "rules": [
+    "typography"
+   ],
+   "reason": "VIREO's option name «Data Bergantung Waktu» (Time-Dependent Data, ID1's original) keeps its capitals inside a sentence"
   }
  }
 }

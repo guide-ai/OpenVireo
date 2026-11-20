@@ -55,7 +55,7 @@
   },
   {
    "en": "\\brestor(e|es|ed|ing)\\b",
-   "hi": "पुनर्स्थापित|लौटा"
+   "hi": "पुनर्स्थापित|पुनर्स्थापना|लौट"
   },
   {
    "en": "\\b(re)?load(s|ed|ing)?\\b",
@@ -79,7 +79,7 @@
   },
   {
    "en": "\\bremarks?\\b",
-   "hi": "टिप्पणी"
+   "hi": "टिप्पणी|टिप्पणियाँ|टिप्पणियों"
   },
   {
    "en": "\\bpages?\\b",
@@ -646,7 +646,7 @@
    "hi": "वेब अनुकूलन"
   },
   {
-   "en": "\\b(?:point(?:s|ed|ing)? (?:the telescope|at|to)|pointings?)\\b",
+   "en": "\\b(?:(?<!plotted )point(?:s|ed|ing)? (?:the telescope|at|to)|pointings?)\\b",
    "hi": "इंगित|दिशा|की ओर (?:नहीं )?(?:है|हैं|था)"
   },
   {

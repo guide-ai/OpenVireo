@@ -4,13 +4,17 @@
 // HI0 walks the shell it translated, at 320 and 1440 px: the welcome, the observatory's chrome and header menu, every tour step,
 // the language dialog, the instructor-mode confirmation and the About box. HI1 adds the observatory: the open dome, Set Date/Time,
 // Site Information, Enter Sky Coordinates for Slew, the options dialog, the hot-list entry form, the hot list with its popup menu
-// and File › Field Information › Star Data List (Edit Mode). Each later HI front adds its
-// area's routes and dialogs.
+// and File › Field Information › Star Data List (Edit Mode). HI2 adds the E01 and E02 walks (tests/i18n/walks/e01.ts, e02.ts:
+// the exposures, the analyser and its spectrum axes, Observational Data, the Hubble diagram, the LSS survey and the wedge), HI3 the E03 walk
+// (tests/i18n/walks/e03.ts: the classifier, its panes and dialogs), each step checked here under the real Devanagari face. Each later HI front adds its area's routes and dialogs.
 // Each step asserts Devanagari on screen, layoutProblems() and verticalInkProblems() (tests/fixtures/layoutProblems.ts), and the
 // face that draws Devanagari (Noto Sans Devanagari: no tofu, no fallback). Geometric checks only; no pixel screenshots.
 import {test,expect,type Page} from '@playwright/test';
 import {HINDI_TEXT as H} from '../i18n/languageText';
-import {layoutProblems,verticalInkProblems} from '../fixtures/layoutProblems';
+import {layoutProblems,verticalInkProblems,type LayoutOptions} from '../fixtures/layoutProblems';
+import {walk as walkE01,LAYOUT as LAYOUT_E01} from '../i18n/walks/e01';
+import {walk as walkE02,LAYOUT as LAYOUT_E02} from '../i18n/walks/e02';
+import {walk as walkE03,LAYOUT as LAYOUT_E03} from '../i18n/walks/e03';
 
 type Width=320|1440;
 const id=(page:Page,t:string)=>page.getByTestId(t);
@@ -134,4 +138,23 @@ for(const width of [320,1440] as const satisfies readonly Width[])
   await id(page,'fi-file-menu').click();await id(page,'fi-field-information').click();await id(page,'fi-star-list').click();
   await expect(id(page,'fi-slist-lines')).toBeVisible({timeout:20_000});await check('Star Data List');
   expect([...problems].map(([p,step])=>`${step}: ${p}`),'layout problems under real Hindi').toEqual([]);
+ });
+
+/** Front HI2 (HI3 adds E03): an exercise walk (tests/i18n/walks/*.ts) under real Hindi: each step's layout with the walk's own options (the
+ * header and English mirrors skipped, as there), its ink and Devanagari on screen. */
+type Walk=(page:Page,lang:typeof H,each:(step:string)=>Promise<void>)=>Promise<void>;
+const WALKS:readonly (readonly [string,Walk,LayoutOptions])[]=[['E01 (Hubble)',walkE01,LAYOUT_E01],['E02 (large-scale structure)',walkE02,LAYOUT_E02],['E03 (spectral classification)',walkE03,LAYOUT_E03]];
+for(const [name,walk,layout] of WALKS)for(const width of [320,1440] as const satisfies readonly Width[])
+ test(`real Hindi at ${width} px: the ${name} walk lays out without overflow, clipping or cut ink`,async({page})=>{
+  test.setTimeout(400_000);
+  await page.setViewportSize({width,height:width===320?700:1000});
+  const problems=new Map<string,string>();
+  await walk(page,H,async step=>{
+   await page.evaluate(async()=>{await document.fonts.ready;});
+   const text=await page.locator('main').first().innerText();
+   if(!DEVANAGARI.test(text))problems.set('no Devanagari on screen: the text shown is not Hindi',step);
+   for(const p of await layoutProblems(page,layout))if(!problems.has(p))problems.set(p,step);
+   for(const p of await verticalInkProblems(page))if(!problems.has(p))problems.set(p,step);
+  });
+  expect([...problems].map(([p,step])=>`${step}: ${p}`),`layout problems under real Hindi (${name})`).toEqual([]);
  });

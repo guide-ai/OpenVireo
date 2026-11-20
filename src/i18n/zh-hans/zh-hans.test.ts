@@ -18,6 +18,7 @@ import {pluralCategory} from '../plural';
 import {collectPairs} from '../lint/pairs';
 import {PROFILES} from '../lint/profiles';
 import {describeFindings,errorsOf,glossaryFrom,graphemeLength,lintPairs,reportsOf,type Allowance,type LintData} from '../lint/rules';
+import {cjkPunctuation,SIMPLIFIED_CHINESE_STYLE} from '../lint/cjkPunctuation';
 import {APP_SHELL_MESSAGES_EN} from '../../components/AppShellMessages';
 import {HELP_MENU_EN} from '../../help/HelpMessages';
 import {LANGUAGE_CHOICE_EN} from '../../components/LanguageChoiceMessages';
@@ -31,8 +32,8 @@ import {VARIABLE_STARS_EN} from '../../variables/VariableStarMessages';
 // structural checks of the partial Simplified Chinese bundle and every string through the SC4 lint framework, profile zh-Hans
 // (full-width punctuation next to Han, “ ” quotes, no space between Han and Latin text, 你 not 您, no Traditional character, the
 // glossary). Errors fail the batch; length ratios are reported for the independent reviewer. Later ZH fronts add their maps to
-// ENGLISH_MAPS and COMPLETE_MAPS, and their areas to the coverage checks. There is no Chinese fixer yet: the lint's typography rule
-// reports each mark to change; the CJK punctuation fixer that Front JA0 builds (shared notes, 2026-11-19) is reused once merged.
+// ENGLISH_MAPS and COMPLETE_MAPS, and their areas to the coverage checks. The CJK punctuation fixer that Front JA0 built
+// (src/i18n/lint/cjkPunctuation.ts, SIMPLIFIED_CHINESE_STYLE) must leave every string unchanged; later batches run it before the lint.
 const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN};
 /** The maps translated completely; the others are partial until their front (objectXLab ZH6, polish ZH1, variableStars ZH4). */
 const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour'];
@@ -88,6 +89,11 @@ describe('Front ZH0: the Simplified Chinese (zh-Hans) bundle',()=>{
   expect(describeFindings(errorsOf(findings))).toEqual([]);
   const reports=reportsOf(findings);
   if(reports.length)console.info(`zh-Hans reports for the reviewer (not failures):\n${describeFindings(reports).join('\n')}`);
+ });
+ it('Front JA0\'s CJK punctuation fixer, Simplified Chinese style, would change no string (VIREO originals keep their own quotes)',()=>{
+  const changed=pairs().map(p=>({id:p.id,changes:cjkPunctuation(p.text,SIMPLIFIED_CHINESE_STYLE,p.id.startsWith('original:')?{quotes:false}:{}).changes}))
+   .filter(c=>c.changes.length).map(c=>`${c.id}: ${c.changes.map(x=>`${x.label} ${x.match}`).join('; ')}`);
+  expect(changed).toEqual([]);
  });
  it('calibration (plan §6.2): the grapheme ratio of the shell strings to their English, printed for docs/I18N.md',()=>{
   const ratios=pairs().filter(p=>p.en.length>=12).map(p=>graphemeLength(p.text)/graphemeLength(p.en)).sort((a,b)=>a-b);

@@ -16,6 +16,8 @@ const FRENCH=LANGUAGES.find(l=>l.tag==='fr')!;
 const INDONESIAN=LANGUAGES.find(l=>l.tag==='id')!;
 /** Front HI0: Hindi's own line of the production registry (before its release). */
 const HINDI=LANGUAGES.find(l=>l.tag==='hi')!;
+/** Front JA0: Japanese's own line of the production registry (before its release). */
+const JAPANESE=LANGUAGES.find(l=>l.tag==='ja')!;
 /** Front ZH0: Simplified Chinese's own line of the production registry (before its release). */
 const CHINESE_SIMPLIFIED=LANGUAGES.find(l=>l.tag==='zh-Hans')!;
 /** Front RU0: Russian's own line of the production registry (before its release). */
@@ -29,7 +31,7 @@ export const PLANNED:readonly LanguageEntry[]=Object.freeze([
  FRENCH,
  INDONESIAN,
  HINDI,
- entry('ja','日本語','Japanese',['ja']),
+ JAPANESE,
  CHINESE_SIMPLIFIED,
  RUSSIAN,
 ]);

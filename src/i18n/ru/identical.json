@@ -24,6 +24,17 @@
   "map:camera.filterNamesIr.2": "filter letter K (photometric band)",
   "map:camera.accessReason.ready": "empty: no reason when the camera is ready",
   "map:camera.sourceWithHash": "a format: a label, SHA-256 and a hash",
-  "map:camera.rowCounts": "a format of three numbers joined by /"
+  "map:camera.rowCounts": "a format of three numbers joined by /",
+  "catalog:spectrum.number": "Front RU2: the Russian number sign № for No.",
+  "catalog:ownResults.sha": "Front RU2: a hash label (SHA-256) and its value",
+  "catalog:lss.dialog.jd": "Front RU2: VIREO's JD (Julian Date) column, kept as observatory and ownResults keep it",
+  "catalog:lss.dialog.z": "Front RU2: the redshift letter z",
+  "map:wedge.columns.index": "Front RU2: the Russian number sign № for No.",
+  "map:wedge.columns.z": "Front RU2: VIREO's Z column letter",
+  "map:wedge.sha256": "Front RU2: a hash label (SHA-256)",
+  "map:wedge.detail.redshift": "Front RU2: symbols V / Z (velocity and redshift columns)",
+  "map:wedge.detail.velocity": "Front RU2: column letter and binary format (V binary32)",
+  "map:wedge.detail.z": "Front RU2: column letter and binary format (Z binary32)",
+  "map:wedge.detail.degrees": "Front RU2: the degree sign"
  }
 }

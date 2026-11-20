@@ -11,6 +11,7 @@ import en from '../../src/i18n/en.json' with {type:'json'};
 import {PSEUDO_SCRIPT} from '../../src/i18n/pseudoScripts';
 import type {PseudoScriptLanguage} from '../../src/i18n/locale';
 import {layoutProblems,verticalInkProblems} from '../fixtures/layoutProblems';
+import {translatedFor} from '../i18n/languageText';
 
 type Width=320|1440;
 const VARIANTS=['qps-cjk','qps-deva','qps-cyrl'] as const satisfies readonly PseudoScriptLanguage[];
@@ -128,6 +129,35 @@ for(const variant of VARIANTS)for(const width of [320,1440] as const)
   const stale=known.filter(k=>!k.fontDependent&&![...problems].some(([p,step])=>k.step===step&&k.problem.test(p))).map(k=>`${k.step}: ${k.problem} (${k.file}) no longer appears: remove it from KNOWN`);
   expect(unexpected,'layout problems not in KNOWN').toEqual([]);
   expect(stale,'KNOWN problems that disappeared').toEqual([]);
+ });
+
+// ---- Front JA0 (plan front-i18n-ja.md §1.2 #4): the real translations of the script languages, under the same fonts ----------------
+// The pseudo-locales above stress every route; a real translation is checked here over the areas it has translated (its `done` in
+// tests/i18n/languageText.ts), at 320 and 1440 px, with the same layoutProblems() and verticalInkProblems(): the shell is the home
+// page, the observatory page, the header menu, the tour and the instructor-mode confirmation. Each later front adds its area's steps.
+// Hindi has its own walk (tests/scripts/hindi.scripts.ts, Front HI0), so it is not repeated here.
+const SCRIPT_TRANSLATIONS=translatedFor('shell').filter(L=>/^(?:ja|zh|ru)/.test(L.tag));
+for(const L of SCRIPT_TRANSLATIONS)for(const width of [320,1440] as const)
+ test(`${L.tag} (${L.entry.englishName}) at ${width} px: the shell lays out without overflow, clipping or cut ink`,async({page})=>{
+  test.setTimeout(180_000);
+  await page.setViewportSize({width,height:width===320?700:1000});
+  const problems=new Map<string,string>();
+  const check=async(step:string)=>{
+   await settle(page);
+   await expect(page.locator('html')).toHaveAttribute('lang',L.entry.htmlLang);
+   for(const p of await layoutProblems(page,LAYOUT))if(!problems.has(p))problems.set(p,step);
+   for(const p of await verticalInkProblems(page))if(!problems.has(p))problems.set(p,step);
+  };
+  const open=async(hash:string)=>{await page.goto('about:blank');await page.goto(`/${L.query}${hash?'#'+hash:''}`);
+   await expect(page.locator('.investigation-toolbar')).toBeVisible({timeout:30_000});await expect(page.locator('h1:visible').first()).toBeVisible({timeout:30_000});};
+  await page.addInitScript(()=>{try{localStorage.setItem('openvireo.tour.v1','done');}catch{/* about:blank */}});
+  await open('');await check('home');
+  await open('observatory');await expect(page.getByRole('heading',{level:1,name:L.catalog['sky.title']})).toBeVisible();await check('observatory');
+  await headerTools(page);await check('header menu');
+  await id(page,'main-help-menu').click();await id(page,'main-help-tour').click();await expect(id(page,'site-tour-card')).toBeVisible();await check('tour');
+  await id(page,'site-tour-skip').click();await expect(id(page,'site-tour')).toHaveCount(0);
+  await headerTools(page);await id(page,'instructor-mode-open').click();await expect(id(page,'instructor-mode-confirm')).toBeVisible();await check('instructor mode');
+  expect([...problems].map(([p,step])=>`${step}: ${p}`),'layout problems').toEqual([]);
  });
 
 // ---- Fonts: src/theme/scripts.css in the running app, under the test fonts -------------------------------------------------

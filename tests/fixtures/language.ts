@@ -13,11 +13,13 @@ export const FRENCH_LOCALE='fr-FR';
 export const INDONESIAN_LOCALE='id-ID';
 /** Front HI0: the browser language that opens Hindi once it is released (HI-REL); before, Hindi opens with `?lang=hi`. */
 export const HINDI_LOCALE='hi-IN';
+/** Front JA0: the browser language that opens Japanese once it is released (JA-REL); before, Japanese opens with `?lang=ja`. */
+export const JAPANESE_LOCALE='ja-JP';
 /** Front ZH0: the browser language that opens Simplified Chinese once it is released (ZH-REL); before, it opens with `?lang=zh-Hans`. */
 export const CHINESE_LOCALE='zh-CN';
 /** Front RU0: the browser language that opens Russian once it is released (RU-REL); before, Russian opens with `?lang=ru`. */
 export const RUSSIAN_LOCALE='ru-RU';
-const BROWSER_LOCALE:Readonly<Record<string,string>>={'es-419':SPANISH_LOCALE,'pt-BR':PORTUGUESE_LOCALE,fr:FRENCH_LOCALE,id:INDONESIAN_LOCALE,hi:HINDI_LOCALE,'zh-Hans':CHINESE_LOCALE,ru:RUSSIAN_LOCALE};
+const BROWSER_LOCALE:Readonly<Record<string,string>>={'es-419':SPANISH_LOCALE,'pt-BR':PORTUGUESE_LOCALE,fr:FRENCH_LOCALE,id:INDONESIAN_LOCALE,hi:HINDI_LOCALE,ja:JAPANESE_LOCALE,'zh-Hans':CHINESE_LOCALE,ru:RUSSIAN_LOCALE};
 /** The query that opens `lang` in its own browser (contextLocale: es-MX for Spanish, pt-BR for Brazilian Portuguese, fr-FR for French): none for a
  * released language, `?lang=<lang>` for English, the pseudo-locales and a language before its release (its preview). Front PT-REL:
  * the language-parameterised specs run each released language's tests in that language's browser (an anonymous describe with

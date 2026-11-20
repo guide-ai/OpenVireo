@@ -3,7 +3,7 @@ import {test,expect} from '../fixtures/area-tripwire';
 import {FRENCH_LOCALE,PORTUGUESE_LOCALE,SPANISH_LOCALE} from '../fixtures/language';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
-import {CHINESE_SIMPLIFIED_TEXT,FRENCH_TEXT,HINDI_TEXT,INDONESIAN_TEXT,PORTUGUESE_TEXT,RUSSIAN_TEXT} from './languageText';
+import {CHINESE_SIMPLIFIED_TEXT,FRENCH_TEXT,HINDI_TEXT,INDONESIAN_TEXT,JAPANESE_TEXT,PORTUGUESE_TEXT,RUSSIAN_TEXT} from './languageText';
 
 // Front ES1 (docs/I18N.md; user decisions 1, 2, 5 and 9 of 2026-11-09): the English / Español selector at the foot of the header
 // menu, its reload confirmation, storage failure and the "View original (English)" option. Front ES-REL: Spanish is released, so
@@ -465,4 +465,52 @@ test('Front HI0: only a ?lang=hi preview opens and offers हिन्दी (Hi
  await Promise.all([page.waitForURL(/lang=fr/),id(page,'language-change').click()]);
  await expect(page.locator('html')).toHaveAttribute('lang','fr');expect(await stored(page)).toBeNull();
  await page.close();
+});
+
+// Front JA0 (plan front-i18n-ja.md §2): Japanese is registered before its release. Only its `?lang=ja` preview reaches it and offers
+// it, as «日本語 (Japanese)» (a non-Latin autonym carries its English name); ja, ja-JP and JA-jp browsers and a stored ja get English
+// with the four released options only.
+test('Front JA0: only a ?lang=ja preview opens and offers 日本語 (Japanese); ja, ja-JP and JA-jp browsers and a stored ja get English',async({browser})=>{
+ test.setTimeout(180_000);
+ const J=JAPANESE_TEXT;
+ // Nothing of Japanese is fetched there: neither its sources (src/i18n/ja/) nor a chunk (i18n-ja-*).
+ const japaneseRequests=(page:Page)=>{const seen:string[]=[];page.on('request',r=>{if(/\/src\/i18n\/ja\/|i18n-ja-/.test(r.url()))seen.push(r.url());});return seen;};
+ for(const languages of [['ja'],['ja-JP'],['JA-jp'],['ja-JP','es-MX']] as const){
+  const page=await browserIn(browser,languages),seen=japaneseRequests(page);
+  expect(await languageOf(page),languages.join(',')).toBe('en');
+  await expect(id(page,'language-select').locator('option')).toHaveText(FOUR);
+  await page.waitForLoadState('networkidle');expect(seen,languages.join(',')).toEqual([]);
+  await page.close();
+ }
+ const storedJa=await browserIn(browser,['ja-JP']);await seedChoice(storedJa,'ja');const storedSeen=japaneseRequests(storedJa);
+ expect(await languageOf(storedJa)).toBe('en');await storedJa.waitForLoadState('networkidle');expect(storedSeen).toEqual([]);await storedJa.close();
+ const page=await browserIn(browser,['en-US']);
+ expect(await languageOf(page,'?lang=ja')).toBe('ja');
+ await expect(page.locator('.investigation-toolbar')).toContainText(J.catalog['project.save']);await expect(page).toHaveTitle(J.catalog['app.documentTitle']);
+ const select=page.getByRole('combobox',{name:J.maps.languageChoice.legend});
+ await expect(select.locator('option')).toHaveText([...FOUR,'日本語 (Japanese)']);await expect(select).toHaveValue('ja');
+ expect(await select.locator('option').evaluateAll(o=>o.map(x=>[(x as HTMLOptionElement).value,x.getAttribute('lang')]))).toEqual([['en','en'],['es-419','es-419'],['pt-BR','pt-BR'],['fr','fr'],['ja','ja']]);
+ // A change on the preview stores nothing (SC8): the choice travels as ?lang=, and the dialog, in Japanese, says so.
+ await choose(page,'fr');
+ const dialog=id(page,'language-confirm');await expect(dialog).toContainText(J.maps.languageChoice.title);
+ await expect(dialog).toContainText(J.maps.languageChoice.reload('Français'));await expect(id(page,'language-preview')).toHaveText(J.maps.languageChoice.preview);
+ await Promise.all([page.waitForURL(/lang=fr/),id(page,'language-change').click()]);
+ await expect(page.locator('html')).toHaveAttribute('lang','fr');expect(await stored(page)).toBeNull();
+ await page.close();
+});
+
+test('Front JA0: on the ?lang=ja preview the keyboard steps across all five options without opening the dialog; Enter asks, Escape returns',async({page})=>{
+ const J=JAPANESE_TEXT;
+ await open(page,'?lang=ja');await expect(page.locator('html')).toHaveAttribute('lang','ja');
+ const select=page.getByRole('combobox',{name:J.maps.languageChoice.legend}),dialog=id(page,'language-confirm');
+ await select.focus();await expect(select).toBeFocused();await expect(select).toHaveValue('ja');
+ for(const [key,value] of [['ArrowUp','fr'],['ArrowUp','pt-BR'],['ArrowUp','es-419'],['ArrowUp','en'],['ArrowDown','es-419'],['End','ja'],['Home','en'],['End','ja'],['ArrowUp','fr']] as const){
+  await page.keyboard.press(key);await expect(select,key).toHaveValue(value);await expect(dialog,`${key} → ${value}`).toHaveCount(0);await expect(select).toBeFocused();
+ }
+ await page.keyboard.press('Enter');
+ await expect(dialog).toBeVisible();await expect(dialog).toContainText(J.maps.languageChoice.reload('Français'));await expect(id(page,'language-cancel')).toBeFocused();
+ await id(page,'language-cancel').click();await expect(dialog).toHaveCount(0);await expect(select).toHaveValue('ja');
+ await select.focus();await page.keyboard.press('Home');await expect(select).toHaveValue('en');
+ await page.keyboard.press('Escape');await expect(select).toHaveValue('ja');await expect(dialog).toHaveCount(0);
+ expect(new URL(page.url()).search).toBe('?lang=ja');expect(await stored(page)).toBeNull();
 });
