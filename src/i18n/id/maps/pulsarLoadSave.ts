@@ -1,0 +1,30 @@
+import type {LOAD_SAVE_MESSAGES_EN} from '../../../components/PulsarLoadSaveMessages';
+import type {Translation} from '../../maps';
+/** Front ID6: Indonesian (id) for the Load question Yes flow. A web adaptation by OpenVireo, not CLEA's; VIREO's own captions are translated through vireo() (originals.json). */
+export const LOAD_SAVE_ID:Translation<typeof LOAD_SAVE_MESSAGES_EN>=Object.freeze({
+ 'loadSave.yes.reason':'Ya (simpan terlebih dahulu) membuka Simpan web terverifikasi untuk rekaman ini, bukan dialog Simpan asli. Ya tidak memuat apa pun: setelah salinan dibaca ulang dengan hasil identik, Anda memilih rekaman yang akan dimuat pada langkah terpisah, atau membatalkan dan mempertahankan data saat ini.',
+ 'loadSave.yes.unsupported.insecure-context':'Ya (simpan terlebih dahulu) tidak tersedia: halaman ini bukan konteks aman, yang diwajibkan oleh API file browser. Tidak dan Batal berfungsi seperti sebelumnya; “Unduh tangkapan sebagai .PLR…” tetap membuat rekaman belum disimpan.',
+ 'loadSave.yes.unsupported.no-api':'Ya (simpan terlebih dahulu) tidak tersedia: browser ini tidak menyediakan pemilih file simpan dengan file yang dapat ditulis (showSaveFilePicker dan createWritable). Tidak dan Batal berfungsi seperti sebelumnya; “Unduh tangkapan sebagai .PLR…” tetap membuat rekaman belum disimpan.',
+ 'loadSave.saveIntro':'Dibuka oleh Ya pada pertanyaan Muat (Load). Setelah salinan dibaca ulang dengan hasil identik, langkah terpisah memungkinkan Anda memilih rekaman yang akan dimuat; tidak ada yang dimuat secara otomatis. Batal menutup Simpan ini dan tidak memuat apa pun.',
+ 'loadSave.heading':'Tersimpan: pilih rekaman yang akan dimuat',
+ 'loadSave.verified':'Rekaman saat ini disimpan sebagai “{file}” ({bytes} byte dibaca ulang dengan hasil identik). Rekaman ini tetap menjadi data pulsar saat ini, lengkap dengan pengukuran dan kursornya.',
+ 'loadSave.consequence':'Belum ada yang dimuat. Pilih rekaman yang akan dimuat… membuka pemilih file browser Anda untuk file .PLR; file itu menggantikan data saat ini hanya jika diterima. Batal mempertahankan rekaman saat ini dan salinan terverifikasinya.',
+ 'loadSave.choosing':'Menunggu pemilih file. Browser Anda mungkin tidak melaporkan pemilih yang dibatalkan: jika tidak ada yang terjadi, tekan Batal atau tekan Pilih rekaman yang akan dimuat… lagi.',
+ 'loadSave.choose':'Pilih rekaman yang akan dimuat…',
+ 'loadSave.cancel':'Batal',
+ 'loadSave.refused.input':'Tidak ada yang terjadi: pertanyaan Muat tidak dapat memulai Simpan.',
+ 'loadSave.refused.unsupported':'Ya (simpan terlebih dahulu) tidak tersedia di browser ini. Tidak dan Batal berfungsi seperti sebelumnya.',
+ 'loadSave.refused.not-asking':'Tidak ada yang terjadi: pertanyaan Muat sudah tidak terbuka.',
+ 'loadSave.refused.not-presented':'Tidak ada yang terjadi: jendela ini tidak menyajikan data saat ini (misalnya rekaman bernama “No Data”), sehingga data tidak dapat disimpan dari sini. Tidak dan Batal berfungsi seperti sebelumnya.',
+ 'loadSave.refused.stale':'Tidak ada yang terjadi: data pulsar saat ini berubah setelah pertanyaan Muat dibuka. Batalkan, lalu gunakan Muat lagi.',
+ 'loadSave.refused.not-memory':'Tidak ada yang terjadi: data saat ini sudah bukan rekaman penerima yang belum disimpan. Batalkan, lalu gunakan Muat lagi.',
+ 'loadSave.refused.busy':'Tidak ada yang terjadi: sebuah rekaman penerima atau percobaan penyimpanan lain sedang memegang data saat ini. Coba lagi setelah selesai.',
+ 'loadSave.refused.output':'Tidak ada yang dibuka: percobaan penyimpanan lain masih diselesaikan. Coba lagi setelah selesai.',
+ 'loadSave.status.ready':'Pilih rekaman yang akan dimuat pada langkah berikutnya, atau batalkan untuk mempertahankan data saat ini.',
+ 'loadSave.status.saveCancelled':'Pemuatan dibatalkan setelah Simpan ditutup. Tidak ada yang dimuat; rekaman saat ini dan daftar pengukuran tidak berubah. File yang dipilih di dialog Simpan mungkin sudah dibuat, dikosongkan, atau diubah.',
+ 'loadSave.status.cancelled':'Pemuatan dibatalkan. Tidak ada yang dimuat; rekaman saat ini tetap memiliki salinan terverifikasi, pengukuran, dan kursornya.',
+ 'loadSave.status.noFile':'Tidak ada file yang dipilih. Tidak ada yang dimuat; pilih lagi atau batalkan.',
+ 'loadSave.status.stale':'Pemuatan setelah Simpan berakhir: data pulsar saat ini atau salinan terverifikasinya berubah. Tidak ada yang dimuat.',
+ 'loadSave.status.reading':'Tidak ada yang berubah: rekaman yang dipilih masih dibaca. Tunggu pembacaan selesai atau tekan Batalkan pembacaan.',
+ 'loadSave.fileRefused':'Tidak ada yang dimuat: selesaikan atau batalkan dulu pemuatan setelah Simpan.',
+});

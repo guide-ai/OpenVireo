@@ -44,6 +44,10 @@ import {RADIO_ANTENNA_MESSAGES_EN} from '../../components/RadioAntennaMessages';
 import {FINISH_SAVE_MESSAGES_EN} from '../../components/RadioFinishSaveMessages';
 import {RADIO_R1_MESSAGES_EN} from '../../components/RadioR1Messages';
 import {RADIO_SAVE_MESSAGES_EN} from '../../components/RadioRecordSaveMessages';
+import {PULSAR_MESSAGES_EN} from '../../components/PulsarMessages';
+import {SAVED_ROWS_MESSAGES_EN} from '../../components/PulsarSavedRowsMessages';
+import {LOAD_SAVE_MESSAGES_EN} from '../../components/PulsarLoadSaveMessages';
+import {OBJECT_X_GUIDE_EN,OBJECT_X_MEASURE_EN,OBJECT_X_SESSION_EN} from '../../objectx/ObjectXMessages';
 
 // Front ID0 (docs/I18N.md, "Indonesian: the folder, lints and shell (ID0)"; plan front-i18n-id.md §4, §6.2): the structural checks
 // of the partial Indonesian bundle, the Indonesian typography fixer as a no-op over every Indonesian string, and every string through
@@ -58,10 +62,12 @@ import {RADIO_SAVE_MESSAGES_EN} from '../../components/RadioRecordSaveMessages';
 const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,
  camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,nakedEye:NAKED_EYE_MESSAGES_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,
  engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN,clusterHr:CLUSTER_HR_EN,clusterData:CLUSTER_DATA_MESSAGES_EN,
- radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN};
+ radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN,
+ pulsar:PULSAR_MESSAGES_EN,pulsarSavedRows:SAVED_ROWS_MESSAGES_EN,pulsarLoadSave:LOAD_SAVE_MESSAGES_EN,objectXGuide:OBJECT_X_GUIDE_EN,objectXMeasure:OBJECT_X_MEASURE_EN,objectXSession:OBJECT_X_SESSION_EN};
 /** The maps translated completely (ID0's shell maps; ID1's observatory maps, the camera card the observatory shows, and polish); the
- * others are partial until their front (objectXLab ID6). */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','variableStars','clusterHr','clusterData','radioAntenna','radioFinishSave','radioR1','radioRecordSave'];
+ * others are partial until their front; ID6 completes the pulsar and Object X maps). */
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','variableStars','clusterHr','clusterData','radioAntenna','radioFinishSave','radioR1','radioRecordSave',
+ 'pulsar','pulsarSavedRows','pulsarLoadSave','objectXLab','objectXGuide','objectXMeasure','objectXSession'];
 /** ID0's area of en.json: the shell (header, menu, home and first steps, toolbar, errors, instructor mode, document title), as FR0's,
  * and the welcome's home.* keys (plan §6.1: Front HOME added them after FR0, and FR1 translated them). */
 const SHELL_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(app|project|session|error|instructorMode)\./.test(k)||/\.nav$/.test(k)||['demonstrationMode.banner','sky.eyebrow','sky.title','sky.subtitle','sky.about','sky.local','sky.observatory','sky.analyzer','sky.step1','sky.step1Help','sky.step2','sky.step2Help','sky.step3','sky.step3Help','spectrum.tools','classLink.cancel'].includes(k));
@@ -83,6 +89,9 @@ const ID3_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E03_PREFIXES.test(k)|
 /** Front ID4: E04 (Pleiades photometry) and E05 (cluster HR, variable stars): every key of FR4's nine prefixes. */
 const ID4_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(ph|pa|pleiadesLab|nc|db|ce|clusterLab|ownHr|obsHr)\./.test(k));
 /** Front ID5: the radio telescope, every key of FR5's six prefixes. */
+/** Front ID6: E06's and E08's keys (the pulsar analysis guide, the .PLR saved-rows viewer and the FITS viewer), FR6's scope: every key
+ * of pulsarLab, plr and fits (137). With them every en.json key has its Indonesian. */
+const ID6_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(pulsarLab|plr|fits)\./.test(k));
 const ID5_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(radio|radioRoute|radioAccess|radioReceiver|radioSimOptions|pulsarParameters)\./.test(k));
 const HOME_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>k.startsWith('home.'));
 const profile=PROFILES.id;
@@ -147,6 +156,11 @@ describe('Front ID0: the Indonesian (id) bundle',()=>{
  it('Front ID5: the catalog covers the radio telescope (every key of radio, radioRoute, radioAccess, radioReceiver, radioSimOptions and pulsarParameters)',()=>{
   expect(ID5_KEYS.length).toBe(646);
   expect(ID5_KEYS.filter(k=>!Object.hasOwn(idCatalog,k))).toEqual([]);
+ });
+ it('Front ID6: the catalog covers E06 and E08 (every key of pulsarLab, plr and fits), and with them every en.json key',()=>{
+  expect(ID6_KEYS.length).toBe(137);
+  expect(ID6_KEYS.filter(k=>!Object.hasOwn(idCatalog,k))).toEqual([]);
+  expect(Object.keys(en).filter(k=>!Object.hasOwn(idCatalog,k))).toEqual([]);
  });
  it('Front ID1: every VIREO original is translated at once, or kept with an identical.json reason, never both',()=>{
   const english=[...Object.keys(esOriginals),...Object.keys(esIdentical.entries).filter(k=>k.startsWith('original:')).map(k=>k.slice('original:'.length))];

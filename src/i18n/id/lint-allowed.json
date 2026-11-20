@@ -54,6 +54,25 @@
     "typography"
    ],
    "reason": "VIREO’s Telescope Type option names in their originals.json capitals («Dapat Diarahkan Penuh», «Hanya Transit»), as `obs.timeDependentOff` keeps «Data Bergantung Waktu»"
+  },
+  "map:pulsar.pulsar.nativeSave.problem.reserved": {
+   "rules": [
+    "quotes",
+    "typography"
+   ],
+   "reason": "the characters a file name cannot contain, listed literally as in the English: the straight double quote, and : and ? after a space (PT6’s and FR6’s reason)"
+  },
+  "map:objectXLab.imageSkipped": {
+   "rules": [
+    "typography"
+   ],
+   "reason": "the lint calls this function with its sample text «A1» as the reasons list, so each character of the sample (« and ») is printed as a reason; the real reasons are the three Indonesian phrases of the map (PT6’s and FR6’s reason)"
+  },
+  "map:pulsarSavedRows.savedRows.find.note": {
+   "rules": [
+    "typography"
+   ],
+   "reason": "VIREO’s option name «Cocokkan Huruf Besar/Kecil» (Case Dependent, ID1’s original) keeps its capitals inside a sentence"
   }
  }
 }

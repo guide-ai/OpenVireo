@@ -113,7 +113,7 @@ export const go=async(page:Page,hash:string)=>{await page.evaluate(h=>{location.
  *   text may use a kind word, and the observatory's target picker legitimately lists catalogue galaxies, so only identifiers count
  *   there (tests/object-x-path.spec.ts);
  * - a verdict sentence («Es una…», «Tu respuesta es correcta», «É uma…», «Sua resposta está certa», «C’est une…», «Votre réponse
- *   est juste», "It is a…", "Your answer is right") anywhere in the lab. */
+ *   est juste», «Objek Anda adalah…», «Jawaban Anda benar», "It is a…", "Your answer is right") anywhere in the lab. */
 export async function leaks(page:Page){
  const found=await page.evaluate(()=>{
   const read=(selector:string)=>[...document.querySelectorAll(selector)].map(n=>{const c=n.cloneNode(true) as HTMLElement;
@@ -122,7 +122,7 @@ export async function leaks(page:Page){
    shared:read('[data-testid=camera-control], .sky-view, .spec-readout, [data-testid=objectx-radio-card], [data-testid$=hot-list], [data-testid*=hotlist]')};
  });
  const word=(s:string)=>new RegExp(`(^|[^\\w])${s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}($|[^\\w])`);
- const verdict=/\bEs (?:una|un) |Tu respuesta es correcta|(?:^|[^\p{L}])É (?:uma|um) |Sua resposta está certa|(?:^|[^\p{L}])C’est (?:une|un) |Votre réponse est juste|\bIt is an? |Your answer is right/u;
+ const verdict=/\bEs (?:una|un) |Tu respuesta es correcta|(?:^|[^\p{L}])É (?:uma|um) |Sua resposta está certa|(?:^|[^\p{L}])C’est (?:une|un) |Votre réponse est juste|(?:^|[^\p{L}])[Oo]bjek Anda adalah |Jawaban Anda benar|\bIt is an? |Your answer is right/u;
  return [...SECRETS.filter(s=>word(s).test(found.lab)),...IDS.filter(s=>word(s).test(found.shared)),...(verdict.test(found.labText)?[`verdict: ${verdict.exec(found.labText)![0]}`]:[])];
 }
 export async function expose(page:Page,lang:Lang){
