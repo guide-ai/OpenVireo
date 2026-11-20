@@ -65,6 +65,10 @@ const JA1_GUIDE_KEYS=JSON.parse(`[${/const FR1_GUIDE_KEYS:readonly MessageKey\[\
  * prefixes, which include the shared core keys continuity.* and ssp.header, and classLink.open, the star exposure's button). */
 const E01_E02_PREFIXES=/^(continuity|lab|lssLab|hubble|velocity|ownResults|spectrum|spectrometer|galaxyExposure|skyExposure|starExposure|ssp|exposureIO|drift|skyProfiles|fieldSpec|lss|wedge)\./;
 const JA2_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E01_E02_PREFIXES.test(k)||k==='classLink.open');
+/** Front JA3's area of en.json: exercise E03 as FR3 scoped it (every key of the classification module and of classification+cluster,
+ * the observation notebook, the DAT/TXT/CSV inspectors and the Program List), with JA2's continuity.restoreExposure and ssp.header. */
+const E03_PREFIXES=/^(class|classLines|classLink|classAtlas|classImport|classLab|feature|cursor|probe|photo|combined|combinedWidth|viewport|inspection|sampledTrace|reverseTrace|sampledDiff|range|widthSource|widthCoordinates|sharedMarks|comparisonMark|paneSource|panMarks|obs|nativeResults|nativeEdit|nativeDelete|nativeList|nativeText|nativeCsv|program|programImport)\./;
+const JA3_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E03_PREFIXES.test(k)||k==='continuity.restoreExposure'||k==='ssp.header');
 /** VIREO originals that Spanish keeps with no entry, as for Hindi: the options dialog's General tab («全般») and the Site Information
  * compass letters E «東», N «北» and S «南» (W «西» is in Spanish's list). */
 const JA_ONLY_ORIGINALS:readonly string[]=['General','E','N','S'];
@@ -81,6 +85,11 @@ const fix=(text:string,options?:{quotes?:boolean;valueMarks?:RegExp})=>fixCjkPun
 /** VIREO originals whose ASCII bracket VIREO itself closes after a value (`Object: (` + number + `) `): the fixer leaves them. */
 const ASCII_BRACKET_PIECES:readonly string[]=['Object: ('];
 const fixOriginal=(key:string,text:string)=>ASCII_BRACKET_PIECES.includes(key)?text:fix(text,{quotes:!key.startsWith('fragment|')});
+/** Front JA3: field names of VIREO's files that a catalog string quotes as the file writes them (the DAT/TXT `MJD(Days)` column): the
+ * fixer keeps their ASCII brackets beside Japanese text, as a symbol's own brackets. */
+const ASCII_FIELD_NAMES:readonly string[]=['MJD(Days)'];
+const fixCatalog=(text:string)=>{const kept:string[]=[];const masked=ASCII_FIELD_NAMES.reduce((s,name)=>s.split(name).join(`\uE000${kept.push(name)-1}\uE001`),text);
+ return fix(masked).replace(/\uE000(\d+)\uE001/g,(_,i:string)=>kept[Number(i)]!);};
 const fixSource=(source:string)=>fixSourceLiterals(source,(text,options)=>fix(text,options));
 const writeJson=(file:string,value:unknown)=>writeFileSync(path.join(DIR,file),JSON.stringify(value,null,1)+'\n');
 
@@ -88,7 +97,7 @@ if(process.env.OPENVIREO_FIX_TYPOGRAPHY==='1'){
  // As FR0: refused in CI (CI must check, never rewrite).
  if(process.env.CI)throw new Error('OPENVIREO_FIX_TYPOGRAPHY=1 is refused in CI: run the fixer locally and commit the reviewed diff');
  const catalog=JSON.parse(readFileSync(path.join(DIR,'ja.json'),'utf8')) as Record<string,string>;
- writeJson('ja.json',Object.fromEntries(Object.entries(catalog).map(([k,v])=>[k,fix(v)])));
+ writeJson('ja.json',Object.fromEntries(Object.entries(catalog).map(([k,v])=>[k,fixCatalog(v)])));
  const own=JSON.parse(readFileSync(path.join(DIR,'originals.json'),'utf8')) as Record<string,string>;
  writeJson('originals.json',Object.fromEntries(Object.entries(own).map(([k,v])=>[k,fixOriginal(k,v)])));
  for(const file of [...sources('maps'),...sources('help')]){const before=readFileSync(file,'utf8'),after=fixSource(before);if(after!==before)writeFileSync(file,after);}
@@ -117,6 +126,10 @@ describe('Front JA0: the Japanese (ja) bundle',()=>{
  it('Front JA2: the catalog covers E01 and E02 (every key of their prefixes, and classLink.open)',()=>{
   expect(JA2_KEYS.length).toBeGreaterThan(780);
   expect(JA2_KEYS.filter(k=>!Object.hasOwn(ja,k))).toEqual([]);
+ });
+ it('Front JA3: the catalog covers exercise E03 (every key of its prefixes, continuity.restoreExposure and ssp.header)',()=>{
+  expect(JA3_KEYS.length).toBe(772);
+  expect(JA3_KEYS.filter(k=>!Object.hasOwn(ja,k))).toEqual([]);
  });
  it('Front JA1: every VIREO original is translated at once, or kept with an identical.json reason, never both',()=>{
   const english=[...Object.keys(esOriginals),...Object.keys(esIdentical.entries).filter(k=>k.startsWith('original:')).map(k=>k.slice('original:'.length))];
@@ -147,7 +160,7 @@ describe('Front JA0: the Japanese (ja) bundle',()=>{
   for(const key of Object.keys(originals)){expect(normalizeOriginal(key),key).toBe(key);expect(Object.hasOwn(esOriginals,key)||esSame(key)||JA_ONLY_ORIGINALS.includes(key),key).toBe(true);}
  });
  it('the CJK punctuation fixer has nothing left to change: catalog, originals, maps and help sources (characters, never escapes)',()=>{
-  expect(Object.entries(ja).filter(([,v])=>fix(v)!==v).map(([k])=>k)).toEqual([]);
+  expect(Object.entries(ja).filter(([,v])=>fixCatalog(v)!==v).map(([k])=>k)).toEqual([]);
   expect(Object.entries(originals).filter(([k,v])=>fixOriginal(k,v)!==v).map(([k])=>k)).toEqual([]);
   for(const file of [...sources('maps'),...sources('help')]){const text=readFileSync(file,'utf8');expect(fixSource(text)===text,path.relative(DIR,file)).toBe(true);
    expect(text,path.relative(DIR,file)).not.toMatch(/\\u[0-9a-fA-F]{4}/);}

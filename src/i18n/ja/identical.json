@@ -59,6 +59,14 @@
   "map:wedge.detail.hours": "Front JA2: a unit symbol (h)",
   "map:wedge.detail.degrees": "Front JA2: the degree sign",
   "map:wedge.detail.px": "Front JA2: the pixel unit symbol px",
-  "catalog:velocity.column": "Front JA2: a format of symbols, units and a number type only (v · km/s · float32)"
+  "catalog:velocity.column": "Front JA2: a format of symbols, units and a number type only (v · km/s · float32)",
+  "catalog:classLines.option": "Front JA3: a format of a placeholder, the unit symbol Å and a separator",
+  "catalog:probe.shaLabel": "Front JA3: a hash label kept in English (SHA-256)",
+  "catalog:photo.caption": "Front JA3: placeholders and a separator only",
+  "catalog:viewport.range": "Front JA3: placeholders, the unit symbol Å, an en dash and the zoom sign ×",
+  "catalog:nativeResults.typeValue": "Front JA3: placeholders and a separator only",
+  "catalog:nativeResults.kindValue": "Front JA3: placeholders and a separator only",
+  "catalog:program.row": "Front JA3: placeholders and a separator only",
+  "catalog:nativeText.choice": "Front JA3: placeholders and a separator only"
  }
 }
