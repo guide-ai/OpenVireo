@@ -916,7 +916,7 @@ function AntennaControls({antenna:a,options,ta,run,autoSlewTimer,suspended,setCo
      :<p className="radio-control-note">{ta('antenna.tracking.transit')}</p>}
     {a.trackingVisible&&<p data-testid="antenna-tracking-state">{ta(a.tracking?'antenna.tracking.on':'antenna.tracking.off')}</p>}
     {leftover
-     ?<p className="radio-control-note" data-testid="antenna-manual" data-left-disabled={leftover}>{ta('antenna.manual.stateLeftover',{caption:vireo(manualButtonCaption(a,leftover),'direction'),original:vireo(RADIO_LAB_CAPTIONS[leftover])})}</p>
+     ?<p className="radio-control-note" data-testid="antenna-manual" data-left-disabled={leftover}>{ta('antenna.manual.stateLeftover',{caption:vireo(manualButtonCaption(a,leftover),'direction'),original:vireo(RADIO_LAB_CAPTIONS[leftover],'direction')})}</p>
      :<p className="radio-control-note" data-testid="antenna-manual">{ta('antenna.manual.state',{state:onOff(a.manualButtonsEnabled)})}</p>}
     <ManualPad a={a} options={options} ta={ta} manual={manual} autoSlewTimer={autoSlewTimer} run={run} keysNoteId={`${id}-keys`}/>
     {!receiver&&<p className="radio-control-note" data-testid="antenna-receiver">{ta('antenna.receiver.state',{state:onOff(a.receiverEnabled)})} {ta('antenna.receiver.unhosted')}</p>}

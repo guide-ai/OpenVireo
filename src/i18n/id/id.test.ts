@@ -130,6 +130,12 @@ describe('Front ID0: the Indonesian (id) bundle',()=>{
   expect(ID3_KEYS.length).toBe(772);
   expect(ID3_KEYS.filter(k=>!Object.hasOwn(idCatalog,k))).toEqual([]);
  });
+ it('Front ID5: every radio direction caption and original letter is read in the `direction` context (U/S/T/B, not the longitude letters)',()=>{
+  const panel=readFileSync(path.join(DIR,'../../components/RadioControlPanel.tsx'),'utf8');
+  const sites=[...panel.matchAll(/vireo\((manualButtonCaption\((?:[^()]|\([^()]*\))*\)|RADIO_LAB_CAPTIONS\[\w+\])(,'direction')?\)/g)];
+  expect(sites.length).toBeGreaterThanOrEqual(9);
+  expect(sites.filter(m=>m[2]===undefined).map(m=>m[1])).toEqual([]);
+ });
  it('Front ID5: the catalog covers the radio telescope (every key of radio, radioRoute, radioAccess, radioReceiver, radioSimOptions and pulsarParameters)',()=>{
   expect(ID5_KEYS.length).toBe(646);
   expect(ID5_KEYS.filter(k=>!Object.hasOwn(idCatalog,k))).toEqual([]);

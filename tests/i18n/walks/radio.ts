@@ -42,7 +42,7 @@ export const NOT_SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':n
  fr:new Set(['No','no','Hrs','Bytes']),
  // Front ID5: Spanish-only words Indonesian translates (Tidak, tidak, Jam, Byte), and the direction buttons N and E, which read «U» and
  // «T» in Indonesian (the panel's `direction` captions), so an English letter left on a button fails here.
- id:new Set(['No','no','Hrs','Bytes','N','E'])};
+ id:new Set(['No','no','Hrs','Bytes','Min','N','E'])};
 export const same=(text:string,L?:LanguageText)=>{
  if(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false))return true;
  if(L!==undefined&&(NOT_SAME_IN[L.tag]?.has(text)??false))return false;
