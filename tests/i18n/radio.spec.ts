@@ -37,7 +37,6 @@ const TODO_HI6=TODO_HI6_PULSAR_KEYS.map(k=>{const m=new RegExp(`'${k.replace(/\.
  const t=m[1].replace(/\\'/g,"'");return new RegExp(`^${t.split(/\{\w+\}/).map(p=>p.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')).join('[\\s\\S]*?')}$`);});
 const pendingHi6=(text:string,L:LanguageText)=>TODO_HI6_TAGS.has(L.tag)&&TODO_HI6.some(p=>p.test(text));
 
-
 /** Front ID5: the receiver's Record Save dialog also renders texts of the pulsar analysis map (`pulsar`, through
  * createPulsarTranslator), which Indonesian translates in ID6 (E06), as FR5 waited for FR6. Until then only these keys may read as
  * English in Indonesian, only on that step; remove the list when ID6 merges (this test then fails if a key is still English). */
@@ -45,8 +44,6 @@ const TODO_ID6_PULSAR_KEYS=['pulsar.rawExport.scope','pulsar.rawExport.format','
  'pulsar.rawExport.loss.header','pulsar.rawExport.loss.headerNone','pulsar.rawExport.loss.samples','pulsar.rawExport.loss.memory','pulsar.save.how','pulsar.save.extensionRule',
  'pulsar.save.origin','pulsar.save.warning','pulsar.save.choose','pulsar.save.chooseAgain','pulsar.save.refusal.stale'] as const;
 const TODO_ID6_TAGS:ReadonlySet<string>=new Set(['id']);
-// Read from the English map's source (importing it here would pull in the catalog without an import attribute).
-const PULSAR_SOURCE=readFileSync(new URL('../../src/components/PulsarMessages.ts',import.meta.url),'utf8');
 const TODO_ID6=TODO_ID6_PULSAR_KEYS.map(k=>{const m=new RegExp(`'${k.replace(/\./g,'\\.')}': '((?:[^'\\\\]|\\\\.)*)'`).exec(PULSAR_SOURCE);if(!m)throw new Error(k);
  const t=m[1].replace(/\\'/g,"'");return new RegExp(`^${t.split(/\{\w+\}/).map(p=>p.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')).join('[\\s\\S]*?')}$`);});
 const pendingId6=(text:string,L:LanguageText)=>TODO_ID6_TAGS.has(L.tag)&&TODO_ID6.some(p=>p.test(text));
