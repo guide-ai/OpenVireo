@@ -14,7 +14,7 @@ export const VARIABLE_STARS_ID:Translation<typeof VARIABLE_STARS_EN>=Object.free
  adaptation:'Adaptasi web: di VIREO, data ini adalah jalur instruktur (Mode Edit [Edit Mode]): GCVS di kotak Objek Katalog (Catalog Object), atau Informasi Bidang (Field Information) › Bintang Variabel (Variable Stars) › Ambil Data Pilihan (Get Selection Data) di panel kontrol teleskop. Keduanya ada di situs ini dengan Mode Edit aktif (di Opsi Simulasi Optik [Optical Simulation Options]); halaman ini juga memungkinkan siapa pun mencari langsung di katalog. Jendela Data Bintang Variabel (Variable Star Data) dan Kurva Cahaya Simulasi (Simulated Light Curve) mengikuti aslinya.',
  guideTitle:'Cara memakai alat ini',
  guide:Object.freeze([
-  'Ketik sebagian nama bintang (misalnya “del Cep” atau “RR Lyr”) atau pilih jenis variabilitas, lalu tekan Buka pada satu baris.',
+  'Ketik sebagian nama bintang (misalnya “del Cep” atau “RR Lyr”) atau pilih tipe variabilitas, lalu tekan Buka pada satu baris.',
   'Jendela Data Bintang Variabel (Variable Star Data) mencantumkan nilai katalog: posisi, tipe, magnitudo maksimum, magnitudo minimum (atau, setelah tanda “(”, amplitudo), epok katalog (yang digambar VIREO sebagai cahaya maksimum, meskipun untuk bintang ganda gerhana katalog memberikan nilai minimum), periode, waktu naik (M-m/D), dan spektrum.',
   'Pilih Data › Tampilkan Kurva Cahaya (Display Light Curve) untuk melihat 1.5 siklus kurva cahaya simulasi. VIREO menggambar epok katalog sebagai cahaya maksimum (fase 0), apa pun tipenya.',
   'Gunakan Data › Simpan Teks (Save Text) › Seperti Ditampilkan (As Displayed) untuk mengunduh daftar sebagai file teks, atau Cetak (Print) untuk mencetaknya.',

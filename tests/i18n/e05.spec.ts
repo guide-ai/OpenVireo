@@ -92,9 +92,10 @@ for(const L of translatedFor('e05'))test.describe(()=>{test.use({locale:contextL
  test.setTimeout(300_000);await page.setViewportSize({width:1440,height:1000});
  await page.addInitScript(()=>localStorage.setItem('openvireo-vireo-originals','1'));
  const plain=(text:string)=>bare(text).replace(/(?: ›|…|\.\.\.)$/,'').trim();
- // Front ID4: the web maps' own text counts as web text too (Indonesian's variable-star column «Tipe» is also VIREO's Type).
- const leaves=(v:unknown):string[]=>typeof v==='string'?[v]:v&&typeof v==='object'?Object.values(v).flatMap(leaves):[];
- const web=new Set([...Object.values(C),...L.observatoryMaps.flatMap(leaves),...leaves(M.clusterHr),...Object.keys(O)].map(plain));
+ // Front ID4: web texts that are also a VIREO caption's translation in one language (Indonesian's variable-star column «Tipe»
+ // [variableStars map] is also VIREO's Type, «Tipe»), listed exactly so no other text or language loses coverage.
+ const WEB_ALSO_ORIGINAL:Readonly<Record<string,readonly string[]>>={id:['Tipe']};
+ const web=new Set([...Object.values(C),...(WEB_ALSO_ORIGINAL[L.tag]??[]),...Object.keys(O)].map(plain));
  const translated=new Set(Object.values(O).map(plain).filter(t=>!web.has(t)&&/[A-Za-z]{3}/.test(t)));
  const checks=captions(page,t=>t.replace(/&(&?)/g,(_,d:string)=>d));
  const left=new Map<string,string>();

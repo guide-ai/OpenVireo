@@ -3,7 +3,7 @@ import type {Translation} from '../../maps';
 /** Front ID4: Indonesian (id) for the File › Cluster Data... web texts (Front K). A web adaptation by OpenVireo, not CLEA’s.
  * VIREO’s own captions and messages are rendered through vireo() and originals.json, not here. */
 export const CLUSTER_DATA_ID:Translation<typeof CLUSTER_DATA_MESSAGES_EN>=Object.freeze({
- menuNote:'VIREO menampilkan File › Data Gugus... dalam mode fotometri, diagram H-R, dan semua instrumennya; situs ini tidak memiliki mode, sehingga item ini selalu ada.',
+ menuNote:'VIREO menampilkan File › Data Gugus... dalam mode fotometri, diagram HR, dan semua instrumen; situs ini tidak memiliki mode, sehingga item ini selalu ada.',
  groupsDisabled:'Tipe Daftar (Type of Listing) dan Urutkan Menurut (Sort By) adalah pengaturan instruktur (Mode Edit [Edit Mode]) di VIREO; tanpa Mode Edit, daftar adalah daftar pencarian pelajar, diurutkan menurut AR.',
  useTelescopeOff:'Gunakan Koordinat Teleskop (Use Telescope Coordinates) memerlukan kubah terbuka dan pelacakan aktif, seperti VIREO memerlukan penggerak teleskop menyala.',
  loading:'Memuat data gugus…',loadError:'Data gugus tidak dapat dimuat.',
