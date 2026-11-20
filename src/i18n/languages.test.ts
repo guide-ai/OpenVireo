@@ -55,8 +55,9 @@ describe('Front SC8: the language registry (src/i18n/languages.json)',()=>{
  });
  it('Spanish is released and keeps its ES-REL behaviour: es and es-* (any case), <html lang> es-419, Español in the selector',()=>{
   // Front PT0 registered Brazilian Portuguese before its release (a ?lang=pt-BR preview only); Front PT-REL released it. Front FR0
-  // registered French before its release; Front FR-REL released it. Front ID0 registered Indonesian before its release, Front HI0 Hindi and Front RU0 Russian.
-  expect(LANGUAGES.map(l=>[l.tag,l.released])).toEqual([['es-419',true],['pt-BR',true],['fr',true],['id',false],['hi',false],['ru',false]]);
+  // registered French before its release; Front FR-REL released it. Front ID0 registered Indonesian before its release, Front HI0 Hindi,
+  // Front JA0 Japanese and Front RU0 Russian.
+  expect(LANGUAGES.map(l=>[l.tag,l.released])).toEqual([['es-419',true],['pt-BR',true],['fr',true],['id',false],['hi',false],['ja',false],['ru',false]]);
   for(const tag of ['es','es-MX','es-ES','ES-ar','es-419','es-Latn-MX'])expect(matchLanguage(tag)?.tag,tag).toBe('es-419');
   for(const tag of ['','en','en-US','esp','eus','et','ca-ES'])expect(matchLanguage(tag),tag).toBeUndefined();
   // Front FR0: fr-ES is French spoken in Spain, so it asks for French (released since FR-REL).
@@ -75,6 +76,9 @@ describe('Front SC8: the language registry (src/i18n/languages.json)',()=>{
   expect(failureNotice('language','hi')).toEqual({en:'Hindi could not be loaded; English is shown. Reload to try again.',own:'हिन्दी लोड नहीं हो सकी; साइट अंग्रेज़ी में दिखाई जा रही है। फिर से कोशिश करने के लिए पेज को दोबारा लोड करें।',lang:'hi'});
   expect(isReleased('hi')).toBe(false);expect(optionLabel(LANGUAGES.find(l=>l.tag==='hi')!)).toBe('हिन्दी (Hindi)');
   expect(selectorLanguages('hi').map(optionLabel)).toEqual(['English','Español','Português (Brasil)','Français','हिन्दी (Hindi)']);
+  // Front JA0: Japanese's notices (plan front-i18n-ja.md §2).
+  expect(failureNotice('language','ja')).toEqual({en:'Japanese could not be loaded; English is shown. Reload to try again.',own:'日本語を読み込めなかったため、英語で表示しています。再読み込みしてもう一度お試しください。',lang:'ja'});
+  expect(matchLanguage('ja-JP')?.tag).toBe('ja');expect(isReleased('ja')).toBe(false);
   // Front FR0: French's notices, with U+202F before «;» (plan §2).
   // Front RU0: Russian's notices (plan §2), and Russian is registered but not released.
   expect(isReleased('ru')).toBe(false);expect(matchLanguage('ru-UA')?.tag).toBe('ru');expect(matchLanguage('uk')).toBeUndefined();
@@ -88,7 +92,7 @@ describe('Front SC8: detection for the languages to come (scripts plan §7, pt-B
   ['es','es-419'],['es-MX','es-419'],['pt','pt-BR'],['pt-BR','pt-BR'],['pt-br','pt-BR'],['pt-PT','pt-BR'],['pt-AO','pt-BR'],['gl',undefined],
   ['fr','fr'],['fr-CA','fr'],['id','id'],['id-ID','id'],['ms',undefined],
   // Front ID0 (plan front-i18n-id.md §2): the legacy code `in` opens Indonesian; Malay, Javanese, Sundanese and en-ID stay English.
-  ['in','id'],['in-ID','id'],['ID-id','id'],['ms-MY',undefined],['ms-ID',undefined],['zsm',undefined],['jv',undefined],['su',undefined],['en-ID',undefined],['hi','hi'],['hi-IN','hi'],['HI-in','hi'],['hi-Latn','hi'],['en-IN',undefined],['ur',undefined],['ur-IN',undefined],['mr',undefined],['ne',undefined],['bho',undefined],['ja','ja'],['ja-JP','ja'],
+  ['in','id'],['in-ID','id'],['ID-id','id'],['ms-MY',undefined],['ms-ID',undefined],['zsm',undefined],['jv',undefined],['su',undefined],['en-ID',undefined],['hi','hi'],['hi-IN','hi'],['HI-in','hi'],['hi-Latn','hi'],['en-IN',undefined],['ur',undefined],['ur-IN',undefined],['mr',undefined],['ne',undefined],['bho',undefined],['ja','ja'],['ja-JP','ja'],['JA-jp','ja'],['ja-JP-u-ca-japanese','ja'],['ryu',undefined],['en-JP',undefined],
   ['ru','ru'],['ru-RU','ru'],['uk',undefined],['be',undefined],['kk',undefined],
   // Front RU0 (plan §2): every ru-* region asks for Russian; Ukrainian, Belarusian and the other region languages do not.
   ['RU-ru','ru'],['ru-UA','ru'],['ru-KZ','ru'],['ru-BY','ru'],['ru-MD','ru'],['uk-UA',undefined],['be-BY',undefined],['kk-KZ',undefined],['ky',undefined],['uz',undefined],['tg',undefined],['tt',undefined],['ba',undefined],['cv',undefined],['sah',undefined],['os',undefined],['hy',undefined],['ka',undefined],['az',undefined],['ro-MD',undefined],['rue',undefined],

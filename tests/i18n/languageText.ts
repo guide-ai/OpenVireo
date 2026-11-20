@@ -89,6 +89,16 @@ import {OBSERVATION_METADATA_HI} from '../../src/i18n/hi/maps/observationMetadat
 import {OBSERVATORY_HI} from '../../src/i18n/hi/maps/observatory';
 import {QSO_LIST_HI} from '../../src/i18n/hi/maps/qsoList';
 import {SOUND_HI} from '../../src/i18n/hi/maps/sound';
+import ja from '../../src/i18n/ja/ja.json' with {type:'json'};
+import jaOriginals from '../../src/i18n/ja/originals.json' with {type:'json'};
+import {APP_SHELL_JA} from '../../src/i18n/ja/maps/appShell';
+import {HELP_MENU_JA} from '../../src/i18n/ja/maps/helpMenu';
+import {PROJECT_LINKS_JA} from '../../src/i18n/ja/maps/projectLinks';
+import {TOUR_JA} from '../../src/i18n/ja/maps/tour';
+import {LANGUAGE_CHOICE_JA} from '../../src/i18n/ja/maps/languageChoice';
+import {OBJECT_X_LAB_JA} from '../../src/i18n/ja/maps/objectXLab';
+import {POLISH_JA} from '../../src/i18n/ja/maps/polish';
+import {VARIABLE_STARS_JA} from '../../src/i18n/ja/maps/variableStars';
 import ru from '../../src/i18n/ru/ru.json' with {type:'json'};
 import ruOriginals from '../../src/i18n/ru/originals.json' with {type:'json'};
 import {APP_SHELL_RU} from '../../src/i18n/ru/maps/appShell';
@@ -175,6 +185,11 @@ export const INDONESIAN_TEXT=language('id',idCatalog,idOriginals,{appShell:APP_S
  * never has; “ ” are not among them, since English uses them too. */
 export const HINDI_TEXT=language('hi',hi,hiOriginals,{appShell:APP_SHELL_HI,helpMenu:HELP_MENU_HI,projectLinks:PROJECT_LINKS_HI,tour:TOUR_HI,languageChoice:LANGUAGE_CHOICE_HI},
  [APP_SHELL_HI,CAMERA_HI,FIELD_INFO_HI,FIELD_READ_DETAILS_HI,HELP_MENU_HI,LANGUAGE_CHOICE_HI,NAKED_EYE_HI,OBJECT_X_LAB_HI,OBSERVATION_METADATA_HI,OBSERVATORY_HI,POLISH_HI,PROJECT_LINKS_HI,QSO_LIST_HI,SOUND_HI,TOUR_HI,VARIABLE_STARS_HI],/[\u0900-\u097f]/u,'?lang=hi',['shell','observatory']);
+/** Front JA0 (plan front-i18n-ja.md §1.2 #3): Japanese, behind `?lang=ja` before its release; JA0 translated the shell, and each
+ * later JA front adds its area to `done`. Its letters are kana, ー and 「」, which no English text, VIREO file or export has (Han alone
+ * is not used: kana are the unambiguous Japanese signal). Its observatory maps grow with JA1. */
+export const JAPANESE_TEXT=language('ja',ja,jaOriginals,{appShell:APP_SHELL_JA,helpMenu:HELP_MENU_JA,projectLinks:PROJECT_LINKS_JA,tour:TOUR_JA,languageChoice:LANGUAGE_CHOICE_JA},
+ [APP_SHELL_JA,HELP_MENU_JA,LANGUAGE_CHOICE_JA,OBJECT_X_LAB_JA,POLISH_JA,PROJECT_LINKS_JA,TOUR_JA,VARIABLE_STARS_JA],/[\p{sc=Hira}\p{sc=Kana}ー「」]/u,'?lang=ja',['shell']);
 /** Front RU0: Russian before its release, behind `?lang=ru` (an en-US browser: tests/fixtures/language.ts contextLocale). Only the
  * shell is translated (RU0), and the observatory with all of VIREO's originals (RU1); RU2–RU6 and RU-HELP add their areas to `done` and
  * their maps below. Its letters are Cyrillic, « » and U+202F,
@@ -182,7 +197,7 @@ export const HINDI_TEXT=language('hi',hi,hiOriginals,{appShell:APP_SHELL_HI,help
 export const RUSSIAN_TEXT=language('ru',ru,ruOriginals,{appShell:APP_SHELL_RU,helpMenu:HELP_MENU_RU,projectLinks:PROJECT_LINKS_RU,tour:TOUR_RU,languageChoice:LANGUAGE_CHOICE_RU},
  [APP_SHELL_RU,CAMERA_RU,FIELD_INFO_RU,FIELD_READ_DETAILS_RU,HELP_MENU_RU,LANGUAGE_CHOICE_RU,NAKED_EYE_RU,OBJECT_X_LAB_RU,OBSERVATION_METADATA_RU,OBSERVATORY_RU,POLISH_RU,PROJECT_LINKS_RU,QSO_LIST_RU,SOUND_RU,TOUR_RU,VARIABLE_STARS_RU],/[\p{sc=Cyrl}«»\u202f]/u,'?lang=ru',['shell','observatory']);
 /** Every translated language of the registry, in its order (a test fails if a registered language has no text here). */
-export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT,INDONESIAN_TEXT,HINDI_TEXT,RUSSIAN_TEXT]);
+export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT,INDONESIAN_TEXT,HINDI_TEXT,JAPANESE_TEXT,RUSSIAN_TEXT]);
 /** Front FR0: the languages that run the specs of `area` (those whose `done` has it), in registry order. */
 export const translatedFor=(area:Area):readonly LanguageText[]=>TRANSLATED.filter(l=>l.done.has(area));
 export const textOf=(tag:string):LanguageText=>{const t=TRANSLATED.find(l=>l.tag===tag);if(!t)throw new Error(`No test text for ${tag}`);return t;};

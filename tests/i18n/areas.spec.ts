@@ -8,7 +8,7 @@ import {APP_SHELL_ES} from '../../src/i18n/es/maps/appShell';
 import {HELP_VIEWER_ES} from '../../src/i18n/es/maps/helpViewer';
 // @ts-expect-error The planner is a plain JS script (scripts/i18n-split.mjs), as tests import scripts/audit-ui-messages.mjs.
 import {loadLanguages,planLanguage} from '../../scripts/i18n-split.mjs';
-import {FRENCH_TEXT,HINDI_TEXT,INDONESIAN_TEXT,PORTUGUESE_TEXT,RUSSIAN_TEXT} from './languageText';
+import {FRENCH_TEXT,HINDI_TEXT,INDONESIAN_TEXT,JAPANESE_TEXT,PORTUGUESE_TEXT,RUSSIAN_TEXT} from './languageText';
 // Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
 test.use({locale:SPANISH_LOCALE});
 
@@ -305,6 +305,48 @@ test.describe('a second language before its release',()=>{
   // shell keys give text to `photometer` (project.photometryCleared and project.photometryRestored, rendered by the photometer), and
   // RU1's maps and keys to `classification` (the observationMetadata map) and `fits` (the cameraInfo.* keys), as FR1's and ID1's did.
   expect(plan.modules.filter(m=>m.kind==='area'&&!m.empty).map(m=>m.name).sort(),'the areas with Russian text').toEqual(['classification','fits','photometer']);
+  for(const r of ROUTES){
+   await page.goto('about:blank');w.language.length=0;
+   await page.goto(`/${P.query}#${r.hash}`);
+   await (ready[r.hash]??(async(p:Page)=>{await expect(p.getByRole('heading',{name:C[headingKey[r.hash]],exact:true})).toBeVisible({timeout:30_000});}))(page);
+   await page.waitForLoadState('networkidle');await noRouteError(page);
+   await expect(page.locator('html')).toHaveAttribute('lang',P.entry.htmlLang);await expect(id(page,'area-failure')).toHaveCount(0);
+   await expect(page.locator('.investigation-toolbar')).toContainText(P.catalog['project.save']);
+   const fetched=names(w);
+   expect(fetched[0],r.hash).toBe('core');
+   expect(fetched.slice(1).sort(),`${r.hash} fetched ${fetched.join(', ')}`).toEqual(fetchedFor(r.area));
+   if(empty.includes(r.area))expect(fetched.slice(1),`${r.hash}: the empty ${r.area} area has no chunk`).toEqual([]);
+  }
+  expect(w.problems).toEqual([]);
+ });
+});
+
+// Front JA0 (plan front-i18n-ja.md §6.2), as Front FR0 did for French: a language before its release is partial again. Japanese's
+// preview (`?lang=ja`, in an English browser) fetches its core, and each area route only the area modules its plan gives text to;
+// an area with no text yet is empty, has no chunk and resolves at once, so its route shows English without a notice, a route error
+// or a read before its area. JA-REL turns this back into a released-language test (as FR-REL did).
+test.describe('a language before its release (Japanese)',()=>{
+ test.use({locale:'en-US'});
+ test('a partial language (Japanese) fetches only its core, and no chunk for an empty area',async({page})=>{
+  test.setTimeout(300_000);
+  const P=JAPANESE_TEXT,plan=planOf(P.tag),module=(name:string)=>plan.modules.find(m=>m.name===name)!;
+  expect(P.entry.released,'JA-REL replaces this test').toBe(false);
+  const fetchedFor=(area:string)=>{const m=module(area);return m.empty?[]:[area,...m.shared].sort();};
+  const w=await watch(page,P.tag,P.entry.dir,P.entry.catalog);
+  await page.goto(`/${P.query}#observatory`);await expect(page.getByRole('heading',{level:1,name:P.catalog['sky.title']})).toBeVisible({timeout:30_000});
+  await page.waitForLoadState('networkidle');
+  expect(names(w)).toEqual(['core']);expect(w.problems).toEqual([]);
+  const C={...E,...P.catalog};
+  const ready:Record<string,(page:Page)=>Promise<void>>={
+   'pulsar-analysis':async p=>{await expect(id(p,'pulsar-analysis')).toBeVisible({timeout:30_000});},
+   'radio-control':async p=>{await expect(id(p,'radio-route')).toBeVisible({timeout:30_000});},
+   'lss-wedge':async p=>{await expect(id(p,'wedge-persistence')).toBeVisible({timeout:30_000});},
+   'sky-exposure':async p=>{await expect(p.getByRole('button',{name:C['skyExposure.startSkyExposure'],exact:true})).toBeVisible({timeout:30_000});},
+  };
+  const headingKey:Record<string,string>={classification:'class.title','cluster-database':'db.title',photometer:'ph.title','lss-survey':'lss.title','galaxy-exposure':'galaxyExposure.title','star-exposure':'starExposure.title',images:'fits.title'};
+  const empty=plan.modules.filter(m=>m.kind==='area'&&m.empty).map(m=>m.name);
+  // Pin the areas Japanese gives text to (each JA front updates this list), as ID0 does for Indonesian.
+  expect(plan.modules.filter(m=>m.kind==='area'&&!m.empty).map(m=>m.name).sort(),'the areas with Japanese text').toEqual(['photometer']);
   for(const r of ROUTES){
    await page.goto('about:blank');w.language.length=0;
    await page.goto(`/${P.query}#${r.hash}`);

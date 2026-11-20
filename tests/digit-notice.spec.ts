@@ -51,7 +51,7 @@ test('pasted or dropped text is read from its data transfer, and the notice goes
  await id.evaluate(el=>el.remove());
  await expect(notice(page)).toHaveCount(0);
 });
-for(const [lang,file] of [['es-419','es/es.json'],['pt-BR','pt-br/pt-br.json'],['fr','fr/fr.json'],['id','id/id.json'],['hi','hi/hi.json'],['ru','ru/ru.json']] as const){
+for(const [lang,file] of [['es-419','es/es.json'],['pt-BR','pt-br/pt-br.json'],['fr','fr/fr.json'],['id','id/id.json'],['hi','hi/hi.json'],['ja','ja/ja.json'],['ru','ru/ru.json']] as const){
  test(`the notice speaks the page’s language: ${lang}`,async({page})=>{
   await lab(page,`?lang=${lang}`);
   const id=page.locator('[data-testid=objectx-lab] input').first();await id.fill('');await id.focus();
@@ -59,3 +59,17 @@ for(const [lang,file] of [['es-419','es/es.json'],['pt-BR','pt-br/pt-br.json'],[
   await expect(notice(page)).toHaveText(catalog(file).replace('{digits}','٤٢'));
  });
 }
+// Front JA0 (plan front-i18n-ja.md §4.3; decision of 2026-11-09): a Japanese input method in full-width mode types ０–９. On the
+// Japanese preview the notice says, in Japanese, to type half-width 0–9, and the field keeps exactly what was typed (never converted):
+// the observatory's date field, which (unlike Object X's ASCII-only identifier) keeps any text until its own check reads it.
+test('Japanese full-width digits: the notice asks for half-width 0–9 in Japanese and the value is not converted',async({page})=>{
+ const ja=JSON.parse(readFileSync(new URL('../src/i18n/ja/ja.json',import.meta.url),'utf8')) as Record<string,string>;
+ await page.goto('/?lang=ja#observatory');await expect(page.getByRole('heading',{name:ja['sky.title'],exact:true})).toBeVisible({timeout:15_000});
+ if(!await page.getByTestId('ob-set-date').isVisible())await page.getByText('Site clock · fixed UT scenario',{exact:true}).click();
+ await page.getByTestId('ob-set-date').click();const dialog=page.getByTestId('ob-date-dialog');await expect(dialog).toBeVisible();
+ const date=page.getByTestId('ob-date-date');await date.fill('');await date.focus();
+ await page.keyboard.insertText('２０２６／０２／２８');
+ await expect(dialog.getByTestId('digit-notice')).toHaveText(catalog('ja/ja.json').replace('{digits}','２０６８'));
+ await expect(notice(page)).toContainText('半角');
+ await expect(date).toHaveValue('２０２６／０２／２８');
+});

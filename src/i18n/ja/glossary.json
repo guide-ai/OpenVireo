@@ -1,0 +1,1644 @@
+{
+ "about": "Front JA0: the ja glossary (plan analysis/front-plans/front-i18n-ja.md §5) that src/i18n/ja/ja.test.ts enforces through the SC4 lint framework (src/i18n/lint/, profile ja) on every Japanese string. Seeded from the French glossary: the same English patterns and interface names, re-targeted to Japanese from the English (French only as meaning context) following the JA0 style brief. A term applies when its English pattern matches the English source: the Japanese must then match the `ja` pattern (flags iu). Matching is by plain substring, with no word boundaries, because Japanese has no spaces. Names are fixed interface names (an exact name applies only to a whole string; the English name is matched as written) and must appear literally in the Japanese. Forbidden here are the term forms this glossary rejects (レッドシフト, クラスター for a star cluster, 視等級, 消光, 発光線 and 放射線 for a line, スペクトロメーター, フォトメーター, ケフェイド (the IAU OAE writes セファイド), and あなた; the katakana long vowel is the ja profile's own rule); the language-wide rules (typography with full-width marks and 「」, no spaces between Japanese and Latin text, the です/ます register, kanji-only Chinese forms, claims that a translation is CLEA's or official) live in the ja profile of src/i18n/lint/profiles.ts. VIREO's own names follow the brief's decided forms (Save → 保存, Record → 記録, Find → 探す, Search → 検索, Show/Display/View → 表示, Slew → 移動, Init/Go → 初期化/開始, Scan → 順に表示, Clear → クリア, Delete → 削除, Reset → リセット, Hot List → 天体リスト, lab → 実習, Object X → 天体X). Rows for areas still in English wait for their sub-front. Translations are web adaptations by OpenVireo, never CLEA's.",
+ "terms": [
+  {
+   "en": "\\bobservator(y|ies)\\b",
+   "ja": "天文台"
+  },
+  {
+   "en": "\\btelescopes?\\b",
+   "ja": "望遠鏡"
+  },
+  {
+   "en": "\\bdomes?\\b",
+   "ja": "ドーム"
+  },
+  {
+   "en": "\\bspectr(um|a)\\b",
+   "ja": "スペクトル"
+  },
+  {
+   "en": "\\bspectrometers?\\b",
+   "ja": "分光器"
+  },
+  {
+   "en": "\\bphotometers?\\b",
+   "ja": "測光器"
+  },
+  {
+   "en": "\\bphotometry\\b",
+   "ja": "測光"
+  },
+  {
+   "en": "\\bexposures?\\b",
+   "ja": "露出"
+  },
+  {
+   "en": "\\bmeasurements?\\b",
+   "ja": "測定"
+  },
+  {
+   "en": "\\binvestigations?\\b",
+   "ja": "調査"
+  },
+  {
+   "en": "\\bfiles?\\b",
+   "ja": "ファイル"
+  },
+  {
+   "en": "\\bdownload(s|ed|ing)?\\b",
+   "ja": "ダウンロード"
+  },
+  {
+   "en": "(?<!daylight-)\\bsav(e|es|ed|ing)\\b",
+   "ja": "保存"
+  },
+  {
+   "en": "\\brestor(e|es|ed|ing)\\b",
+   "ja": "復元"
+  },
+  {
+   "en": "\\b(re)?load(s|ed|ing)?\\b",
+   "ja": "読み込"
+  },
+  {
+   "en": "\\bbrowsers?\\b",
+   "ja": "ブラウザー"
+  },
+  {
+   "en": "(?<!line breaks and |for example a |accented letter, a |Shift\\+)(?<!reachable with )\\btabs?\\b(?!,? (?:line breaks|or other|BOM)| and Shift\\+Tab)",
+   "ja": "タブ"
+  },
+  {
+   "en": "\\bTab and Shift\\+Tab\\b",
+   "ja": "Tab"
+  },
+  {
+   "en": "\\btabs?(?=,? (?:line breaks|or other|BOM))|(?<=line breaks and |for example a |accented letter, a )tabs?\\b",
+   "ja": "タブ"
+  },
+  {
+   "en": "\\bremarks?\\b",
+   "ja": "備考|コメント|注記|所見"
+  },
+  {
+   "en": "\\bpages?\\b",
+   "ja": "ページ"
+  },
+  {
+   "en": "\\bcomputers?\\b",
+   "ja": "コンピューター"
+  },
+  {
+   "en": "\\bphones?\\b",
+   "ja": "スマートフォン|スマホ|電話|携帯"
+  },
+  {
+   "en": "\\bclick\\b",
+   "ja": "クリック"
+  },
+  {
+   "en": "\\bpress\\b",
+   "ja": "押(?:す|し|さ|せ)|タップ|キー"
+  },
+  {
+   "en": "\\bmenus?\\b",
+   "ja": "メニュー"
+  },
+  {
+   "en": "\\bguides?\\b",
+   "ja": "ガイド"
+  },
+  {
+   "en": "\\bexercises?\\b",
+   "ja": "実習"
+  },
+  {
+   "en": "\\blabs?\\b",
+   "ja": "実習"
+  },
+  {
+   "en": "\\bredshifts?\\b",
+   "ja": "赤方偏移"
+  },
+  {
+   "en": "\\bpulsars?\\b",
+   "ja": "パルサー"
+  },
+  {
+   "en": "\\binstructor mode\\b",
+   "ja": "講師モード"
+  },
+  {
+   "en": "\\bhelp\\b",
+   "ja": "ヘルプ"
+  },
+  {
+   "en": "\\btracking\\b",
+   "ja": "追尾"
+  },
+  {
+   "en": "\\bcatalog(ue)?s?\\b",
+   "ja": "カタログ"
+  },
+  {
+   "en": "\\bgalax(y|ies)\\b",
+   "ja": "銀河"
+  },
+  {
+   "en": "\\bstars?\\b",
+   "ja": "恒星|星"
+  },
+  {
+   "en": "\\bclusters?\\b",
+   "ja": "星団"
+  },
+  {
+   "en": "\\bresults?\\b",
+   "ja": "結果"
+  },
+  {
+   "en": "\\bwavelengths?\\b",
+   "ja": "波長"
+  },
+  {
+   "en": "\\bpassword\\b",
+   "ja": "パスワード"
+  },
+  {
+   "en": "\\bcounts?\\b(?! shows after the reveal)",
+   "ja": "カウント|件数|個数|総数|回数|数え|\\{count\\}|個|件|枚|数"
+  },
+  {
+   "en": "\\bslew(s|ed|ing)?\\b",
+   "ja": "移動"
+  },
+  {
+   "en": "\\bhot lists?\\b",
+   "ja": "天体リスト"
+  },
+  {
+   "en": "\\bsky background\\b",
+   "ja": "空の背景|背景光|スカイ"
+  },
+  {
+   "en": "\\bseeing\\b",
+   "ja": "シーイング"
+  },
+  {
+   "en": "\\bright ascension\\b",
+   "ja": "赤経"
+  },
+  {
+   "en": "\\bdeclinations?\\b",
+   "ja": "赤緯"
+  },
+  {
+   "en": "\\bfilters?\\b",
+   "ja": "フィルター"
+  },
+  {
+   "en": "\\bslits?\\b",
+   "ja": "スリット"
+  },
+  {
+   "en": "\\blight curves?\\b",
+   "ja": "光度曲線"
+  },
+  {
+   "en": "\\bHR diagrams?\\b",
+   "ja": "HR図"
+  },
+  {
+   "en": "\\bmain sequence\\b",
+   "ja": "主系列"
+  },
+  {
+   "en": "\\bisochrones?\\b",
+   "ja": "等時曲線"
+  },
+  {
+   "en": "\\bvariable stars?\\b",
+   "ja": "変光星"
+  },
+  {
+   "en": "\\bperiods?\\b",
+   "ja": "周期"
+  },
+  {
+   "en": "\\bdispersion measure\\b",
+   "ja": "分散量度"
+  },
+  {
+   "en": "\\bradio telescopes?\\b",
+   "ja": "電波望遠鏡"
+  },
+  {
+   "en": "\\breceivers?\\b",
+   "ja": "受信機"
+  },
+  {
+   "en": "\\bantennas?\\b",
+   "ja": "アンテナ"
+  },
+  {
+   "en": "\\bquasars?\\b",
+   "ja": "クエーサー"
+  },
+  {
+   "en": "\\basteroids?\\b",
+   "ja": "小惑星"
+  },
+  {
+   "en": "\\bastrometry\\b",
+   "ja": "位置天文学|アストロメトリ"
+  },
+  {
+   "en": "\\blarge-scale structure\\b",
+   "ja": "大規模構造"
+  },
+  {
+   "en": "\\bwedge plots?\\b",
+   "ja": "扇形図"
+  },
+  {
+   "en": "\\bfield of view\\b",
+   "ja": "視野"
+  },
+  {
+   "en": "\\bsignal-to-noise\\b",
+   "ja": "S/N比"
+  },
+  {
+   "en": "\\bequivalent widths?\\b",
+   "ja": "等価幅"
+  },
+  {
+   "en": "\\bcontinuum\\b",
+   "ja": "連続光"
+  },
+  {
+   "en": "\\bspectral (type|class)(es)?\\b",
+   "ja": "スペクトル(?:型|分類)"
+  },
+  {
+   "en": "\\bapparent magnitudes?\\b",
+   "ja": "見かけの等級"
+  },
+  {
+   "en": "\\babsolute magnitudes?\\b",
+   "ja": "絶対等級"
+  },
+  {
+   "en": "\\bdistance modulus\\b",
+   "ja": "距離指数"
+  },
+  {
+   "en": "\\breddening\\b",
+   "ja": "赤化"
+  },
+  {
+   "en": "\\bcolou?r excess\\b",
+   "ja": "色超過"
+  },
+  {
+   "en": "\\bHubble's law\\b",
+   "ja": "ハッブルの法則"
+  },
+  {
+   "en": "\\bHubble constant\\b",
+   "ja": "ハッブル定数"
+  },
+  {
+   "en": "\\brecession(al)? velocit(y|ies)\\b",
+   "ja": "後退速度"
+  },
+  {
+   "en": "\\bfinding charts?\\b",
+   "ja": "ファインディングチャート|位置確認図|星図|チャート"
+  },
+  {
+   "en": "\\bfinder\\b",
+   "ja": "ファインダー"
+  },
+  {
+   "en": "\\bepochs?\\b",
+   "ja": "元期|エポック"
+  },
+  {
+   "en": "\\bintegration\\b",
+   "ja": "積分|積算"
+  },
+  {
+   "en": "\\bCCD camera\\b",
+   "ja": "CCDカメラ"
+  },
+  {
+   "en": "\\bIR camera\\b",
+   "ja": "赤外線カメラ|IRカメラ"
+  },
+  {
+   "en": "\\bspectral lines?\\b",
+   "ja": "スペクトル線"
+  },
+  {
+   "en": "\\bemission\\b",
+   "ja": "輝線|放射|発光|エミッション"
+  },
+  {
+   "en": "\\babsorption\\b",
+   "ja": "吸収"
+  },
+  {
+   "en": "\\bopen clusters?\\b",
+   "ja": "散開星団"
+  },
+  {
+   "en": "\\bglobular clusters?\\b",
+   "ja": "球状星団"
+  },
+  {
+   "en": "\\bsignal\\b",
+   "ja": "信号|シグナル"
+  },
+  {
+   "en": "\\bexercise guide\\b|\\blab guide\\b",
+   "ja": "ガイド"
+  },
+  {
+   "en": "\\bapertures?\\b",
+   "ja": "口径|開口"
+  },
+  {
+   "en": "\\breadings\\b",
+   "ja": "読み取り|読み値|測定値|読取"
+  },
+  {
+   "en": "\\bseeded\\b",
+   "ja": "シード|乱数の種|初期化"
+  },
+  {
+   "en": "\\bcallbacks?\\b",
+   "ja": "コールバック"
+  },
+  {
+   "en": "\\bzero point\\b",
+   "ja": "ゼロ点|零点"
+  },
+  {
+   "en": "\\bphotons?\\b",
+   "ja": "光子|フォトン"
+  },
+  {
+   "en": "\\bcolou?r[–-]magnitude\\b",
+   "ja": "色等級|色[–-]等級"
+  },
+  {
+   "en": "\\bcluster fit\\b",
+   "ja": "フィット|フィッティング|合わせ"
+  },
+  {
+   "en": "\\bstandards?\\b",
+   "ja": "標準"
+  },
+  {
+   "en": "\\bshoulders?\\b",
+   "ja": "肩部|ショルダー"
+  },
+  {
+   "en": "\\bgr[ae]yscale\\b",
+   "ja": "グレースケール|グレー"
+  },
+  {
+   "en": "\\b(?:observation )?notebook\\b",
+   "ja": "ノート"
+  },
+  {
+   "en": "\\bluminosity\\b",
+   "ja": "光度"
+  },
+  {
+   "en": "\\batlas(es)?\\b",
+   "ja": "アトラス|星図"
+  },
+  {
+   "en": "\\bstandard pairs?\\b",
+   "ja": "標準星?(?:の)?(?:ペア|組)"
+  },
+  {
+   "en": "\\braw\\b",
+   "ja": "未加工|生(?:の|データ|値|画像)|ロー"
+  },
+  {
+   "en": "\\bmerg(e|es|ed|ing)\\b",
+   "ja": "統合|結合|マージ|合成|併合"
+  },
+  {
+   "en": "\\bendpoint[- ]grids?\\b",
+   "ja": "端点|終点"
+  },
+  {
+   "en": "\\bsweeps?\\b",
+   "ja": "掃引|スイープ"
+  },
+  {
+   "en": "\\bbeams?\\b",
+   "ja": "ビーム"
+  },
+  {
+   "en": "\\bseeds?\\b",
+   "ja": "シード"
+  },
+  {
+   "en": "\\btimers?\\b",
+   "ja": "タイマー"
+  },
+  {
+   "en": "\\baltitude limits?\\b",
+   "ja": "高度(?:の)?(?:制限|下限|上限|限界)"
+  },
+  {
+   "en": "(?<!clock[/ ])\\bdrive\\b",
+   "ja": "駆動|ドライブ|モーター"
+  },
+  {
+   "en": "\\bblink(s|ed|ing)?\\b",
+   "ja": "ブリンク"
+  },
+  {
+   "en": "\\breveal(s|ed|ing)?\\b(?! the catalog sky)",
+   "ja": "表示|明か|公開|開示"
+  },
+  {
+   "en": "\\borbit files?\\b",
+   "ja": "軌道ファイル"
+  },
+  {
+   "en": "\\blimiting magnitudes?\\b",
+   "ja": "限界等級"
+  },
+  {
+   "en": "\\breference stars?\\b",
+   "ja": "参照星|基準星"
+  },
+  {
+   "en": "\\bplate constants\\b",
+   "ja": "乾板定数|プレート定数"
+  },
+  {
+   "en": "(?<!All Sky )\\bsurveys?\\b",
+   "ja": "サーベイ"
+  },
+  {
+   "en": "\\bsnapshots?\\b",
+   "ja": "スナップショット"
+  },
+  {
+   "en": "\\banaly[sz]ers?\\b",
+   "ja": "解析|分析|アナライザー"
+  },
+  {
+   "en": "\\btemplates?\\b",
+   "ja": "テンプレート"
+  },
+  {
+   "en": "\\bjournals?\\b",
+   "ja": "ジャーナル|日誌|記録"
+  },
+  {
+   "en": "\\b(?:600-)?bins?\\b",
+   "ja": "ビン"
+  },
+  {
+   "en": "\\bcombined view\\b",
+   "ja": "統合表示|合成表示|結合表示|重ね合わせ"
+  },
+  {
+   "en": "\\bpanes?\\b",
+   "ja": "ペイン"
+  },
+  {
+   "en": "\\b(?:sampled|printed-coordinate|printed|intensity|unknown) traces?\\b",
+   "ja": "トレース|軌跡|波形|曲線"
+  },
+  {
+   "en": "\\breadouts?\\b",
+   "ja": "読み出し|読み取り|読出|表示"
+  },
+  {
+   "en": "\\bmetallicit(y|ies)\\b",
+   "ja": "金属量"
+  },
+  {
+   "en": "\\bsliders?\\b",
+   "ja": "スライダー"
+  },
+  {
+   "en": "\\btrials?\\b",
+   "ja": "試行|試し|トライアル"
+  },
+  {
+   "en": "\\bpresets?\\b",
+   "ja": "プリセット|既定|あらかじめ"
+  },
+  {
+   "en": "\\bapparent modulus\\b",
+   "ja": "見かけ"
+  },
+  {
+   "en": "\\bfresh sky\\b",
+   "ja": "新しい|新規|新たな"
+  },
+  {
+   "en": "\\bintegration series\\b",
+   "ja": "積分|積算|連続"
+  },
+  {
+   "en": "\\bzero[- ]age main sequence\\b",
+   "ja": "ゼロ年齢主系列"
+  },
+  {
+   "en": "\\bturn-?off\\b",
+   "ja": "転向点"
+  },
+  {
+   "en": "\\bmembership\\b",
+   "ja": "所属|メンバーシップ|メンバー"
+  },
+  {
+   "en": "\\bdatasets?\\b",
+   "ja": "データセット"
+  },
+  {
+   "en": "\\bly\\b",
+   "ja": "光年"
+  },
+  {
+   "en": "\\bcolou?r index\\b",
+   "ja": "色指数"
+  },
+  {
+   "en": "\\bauditions?\\b|\\bauditioned\\b",
+   "ja": "試聴|聞く|聞き|聞け|聴取"
+  },
+  {
+   "en": "\\bradio clock\\b",
+   "ja": "電波の時計"
+  },
+  {
+   "en": "\\bpress[- ]and[- ]hold\\b",
+   "ja": "押し続|長押し|押したまま"
+  },
+  {
+   "en": "\\bslew-timer\\b",
+   "ja": "移動(?:の)?タイマー"
+  },
+  {
+   "en": "\\breceiver monitor\\b",
+   "ja": "受信機モニター"
+  },
+  {
+   "en": "\\bwedge diagrams?\\b",
+   "ja": "扇形図"
+  },
+  {
+   "en": "\\bpractices?\\b",
+   "ja": "練習"
+  },
+  {
+   "en": "\\bdrafts?\\b",
+   "ja": "下書き"
+  },
+  {
+   "en": "\\bfallbacks?\\b",
+   "ja": "代替|フォールバック|予備"
+  },
+  {
+   "en": "\\barcsec(?:onds?)?\\b",
+   "ja": "秒角"
+  },
+  {
+   "en": "\\bhost clock\\b",
+   "ja": "(?:コンピューター|端末|ホスト|システム|PC)(?:の)?時計|ホストクロック"
+  },
+  {
+   "en": "\\bcepheids?\\b",
+   "ja": "セファイド"
+  },
+  {
+   "en": "\\bblueshifts?\\b",
+   "ja": "青方偏移"
+  },
+  {
+   "en": "\\bhour angles?\\b",
+   "ja": "時角"
+  },
+  {
+   "en": "\\bsidereal time\\b",
+   "ja": "恒星時"
+  },
+  {
+   "en": "\\bjulian (date|day)s?\\b",
+   "ja": "ユリウス日"
+  },
+  {
+   "en": "\\bparallax(es)?\\b",
+   "ja": "視差"
+  },
+  {
+   "en": "\\bparsecs?\\b",
+   "ja": "パーセク"
+  },
+  {
+   "en": "\\blight[- ]years?\\b",
+   "ja": "光年"
+  },
+  {
+   "en": "\\bdoppler\\b",
+   "ja": "ドップラー"
+  },
+  {
+   "en": "\\bradial velocit(y|ies)\\b",
+   "ja": "視線速度"
+  },
+  {
+   "en": "\\bgiant branch\\b",
+   "ja": "巨星分枝"
+  },
+  {
+   "en": "\\binterstellar extinction\\b",
+   "ja": "星間減光"
+  },
+  {
+   "en": "\\bnoise\\b",
+   "ja": "ノイズ"
+  },
+  {
+   "en": "\\bspectral classification\\b",
+   "ja": "スペクトル分類"
+  }
+ ],
+ "names": [
+  {
+   "en": "Save investigation",
+   "ja": "調査を保存"
+  },
+  {
+   "en": "Restore investigation JSON",
+   "ja": "調査を復元（JSON）"
+  },
+  {
+   "en": "Save session",
+   "ja": "セッションを保存"
+  },
+  {
+   "en": "Restore session",
+   "ja": "セッションを復元"
+  },
+  {
+   "en": "Instructor mode…",
+   "ja": "講師モード…"
+  },
+  {
+   "en": "Help topics…",
+   "ja": "ヘルプトピック…"
+  },
+  {
+   "en": "Tools button",
+   "ja": "「メニュー」ボタン"
+  },
+  {
+   "en": "Optical Simulation Options",
+   "ja": "光学シミュレーションオプション"
+  },
+  {
+   "en": "Demonstration Mode",
+   "ja": "デモンストレーションモード"
+  },
+  {
+   "en": "Edit Mode",
+   "ja": "編集モード"
+  },
+  {
+   "en": "Virtual Observatory",
+   "ja": "仮想天文台"
+  },
+  {
+   "en": "Test Mode",
+   "ja": "テストモード"
+  },
+  {
+   "en": "Pulsar Analysis",
+   "ja": "パルサー解析"
+  },
+  {
+   "en": "Observational Data",
+   "ja": "観測データ"
+  },
+  {
+   "en": "Observational Results",
+   "ja": "観測結果"
+  },
+  {
+   "en": "Results Editors",
+   "ja": "結果エディター"
+  },
+  {
+   "en": "Topics...",
+   "ja": "トピック...",
+   "except": {
+    "original:Show Help Topics...": "VIREO's help viewer item Show Help Topics... (the topic list), «ヘルプトピックを表示...»; the row names the Help menu's Topics... item."
+   }
+  },
+  {
+   "en": "About This Exercise...",
+   "ja": "この実習について..."
+  },
+  {
+   "en": "Project CLEA",
+   "ja": "Project CLEA"
+  },
+  {
+   "en": "Gettysburg College",
+   "ja": "Gettysburg College"
+  },
+  {
+   "en": "VIREO",
+   "ja": "VIREO"
+  },
+  {
+   "en": "OpenVireo",
+   "ja": "OpenVireo"
+  },
+  {
+   "en": "CLEA",
+   "ja": "CLEA"
+  },
+  {
+   "en": "NSF",
+   "ja": "NSF"
+  },
+  {
+   "en": "GitHub",
+   "ja": "GitHub"
+  },
+  {
+   "en": "FITS",
+   "ja": "FITS"
+  },
+  {
+   "en": "CSV",
+   "ja": "CSV"
+  },
+  {
+   "en": "VizieR",
+   "ja": "VizieR"
+  },
+  {
+   "en": "NOMAD",
+   "ja": "NOMAD"
+  },
+  {
+   "en": "USNO-B1",
+   "ja": "USNO-B1"
+  },
+  {
+   "en": "GSC",
+   "ja": "GSC"
+  },
+  {
+   "en": "2MASS",
+   "ja": "2MASS"
+  },
+  {
+   "en": "SHA-256",
+   "ja": "SHA-256"
+  },
+  {
+   "en": "JSON",
+   "ja": "JSON"
+  },
+  {
+   "en": "File",
+   "ja": "ファイル",
+   "exact": true
+  },
+  {
+   "en": "Slew",
+   "ja": "移動",
+   "exact": true
+  },
+  {
+   "en": "Tools",
+   "ja": "ツール",
+   "exact": true
+  },
+  {
+   "en": "Help",
+   "ja": "ヘルプ",
+   "exact": true
+  },
+  {
+   "en": "Options",
+   "ja": "オプション",
+   "exact": true
+  },
+  {
+   "en": "Parameters",
+   "ja": "パラメーター",
+   "exact": true
+  },
+  {
+   "en": "OK",
+   "ja": "OK",
+   "exact": true
+  },
+  {
+   "en": "Cancel",
+   "ja": "キャンセル",
+   "exact": true
+  },
+  {
+   "en": "Close",
+   "ja": "閉じる",
+   "exact": true
+  },
+  {
+   "en": "Yes",
+   "ja": "はい",
+   "exact": true
+  },
+  {
+   "en": "Reset",
+   "ja": "リセット",
+   "exact": true
+  },
+  {
+   "en": "Update",
+   "ja": "更新",
+   "exact": true
+  },
+  {
+   "en": "List",
+   "ja": "リスト",
+   "exact": true
+  },
+  {
+   "en": "Selection",
+   "ja": "選択",
+   "exact": true
+  },
+  {
+   "en": "Exit",
+   "ja": "終了",
+   "exact": true
+  },
+  {
+   "en": "Print...",
+   "ja": "印刷...",
+   "exact": true
+  },
+  {
+   "en": "Search...",
+   "ja": "検索...",
+   "exact": true
+  },
+  {
+   "en": "Save...",
+   "ja": "保存...",
+   "exact": true
+  },
+  {
+   "en": "Stop",
+   "ja": "停止",
+   "exact": true
+  },
+  {
+   "en": "Scan",
+   "ja": "順に表示",
+   "exact": true
+  },
+  {
+   "en": "Telescopes",
+   "ja": "望遠鏡",
+   "exact": true
+  },
+  {
+   "en": "Websites",
+   "ja": "ウェブサイト",
+   "exact": true
+  },
+  {
+   "en": "Confirm",
+   "ja": "確定",
+   "exact": true
+  },
+  {
+   "en": "Confirmation",
+   "ja": "確認",
+   "exact": true
+  },
+  {
+   "en": "Display",
+   "ja": "表示",
+   "exact": true
+  },
+  {
+   "en": "Objects",
+   "ja": "天体",
+   "exact": true
+  },
+  {
+   "en": "Go",
+   "ja": "開始",
+   "exact": true
+  },
+  {
+   "en": "Init",
+   "ja": "初期化",
+   "exact": true
+  },
+  {
+   "en": "Set Coordinates",
+   "ja": "座標を設定"
+  },
+  {
+   "en": "View/Select from List",
+   "ja": "リストから表示／選択"
+  },
+  {
+   "en": "Add Current Item/Position to List",
+   "ja": "現在の天体／位置をリストに追加"
+  },
+  {
+   "en": "Slew to Selection",
+   "ja": "選択位置へ移動"
+  },
+  {
+   "en": "Field Information",
+   "ja": "視野情報"
+  },
+  {
+   "en": "Variable Stars",
+   "ja": "変光星"
+  },
+  {
+   "en": "QSO List",
+   "ja": "QSOリスト"
+  },
+  {
+   "en": "CCD Camera",
+   "ja": "CCDカメラ"
+  },
+  {
+   "en": "IR Camera",
+   "ja": "赤外線カメラ"
+  },
+  {
+   "en": "Request Time",
+   "ja": "観測時間を申請"
+  },
+  {
+   "en": "Set Date/Time",
+   "ja": "日時を設定"
+  },
+  {
+   "en": "Site Parameters",
+   "ja": "観測地パラメーター"
+  },
+  {
+   "en": "Site Information",
+   "ja": "観測地情報"
+  },
+  {
+   "en": "Print Sky Image",
+   "ja": "空の画像を印刷"
+  },
+  {
+   "en": "HST Image Archive",
+   "ja": "HST画像アーカイブ"
+  },
+  {
+   "en": "Exit Observatory",
+   "ja": "天文台を終了"
+  },
+  {
+   "en": "Restrict Scope Access",
+   "ja": "望遠鏡の使用を制限"
+  },
+  {
+   "en": "Limit Slewing",
+   "ja": "移動を制限"
+  },
+  {
+   "en": "Show Object ID",
+   "ja": "天体IDを表示"
+  },
+  {
+   "en": "Show Object Mag",
+   "ja": "天体の等級を表示"
+  },
+  {
+   "en": "Fast Slewing",
+   "ja": "高速移動"
+  },
+  {
+   "en": "Fast Scope Change",
+   "ja": "望遠鏡の高速切り替え"
+  },
+  {
+   "en": "Sound Effects",
+   "ja": "効果音"
+  },
+  {
+   "en": "Infrared Camera",
+   "ja": "赤外線カメラ"
+  },
+  {
+   "en": "Write Log File",
+   "ja": "ログファイルを書き込む"
+  },
+  {
+   "en": "Time-Dependent Data",
+   "ja": "時間依存データ"
+  },
+  {
+   "en": "Print in Color",
+   "ja": "カラーで印刷"
+  },
+  {
+   "en": "Monochrome Displays",
+   "ja": "モノクロ表示"
+  },
+  {
+   "en": "Compute Rdshft Vel.",
+   "ja": "赤方偏移速度を計算"
+  },
+  {
+   "en": "Allow User Change",
+   "ja": "ユーザーによる変更を許可"
+  },
+  {
+   "en": "Set E(B-V)",
+   "ja": "E(B-V)を設定"
+  },
+  {
+   "en": "Detect Sky",
+   "ja": "空を検出"
+  },
+  {
+   "en": "Catalog Object",
+   "ja": "カタログ天体"
+  },
+  {
+   "en": "Field Size",
+   "ja": "視野サイズ"
+  },
+  {
+   "en": "Multi-Channel Spectrometer",
+   "ja": "マルチチャンネル分光器"
+  },
+  {
+   "en": "Observation List",
+   "ja": "観測リスト"
+  },
+  {
+   "en": "Star Data List",
+   "ja": "恒星データリスト"
+  },
+  {
+   "en": "Naked Eye Star",
+   "ja": "肉眼で見える星"
+  },
+  {
+   "en": "Get Selection Data",
+   "ja": "選択データを取得"
+  },
+  {
+   "en": "Add Selection to Current Hot List",
+   "ja": "選択を現在の天体リストに追加"
+  },
+  {
+   "en": "Start New Hot List with Selection",
+   "ja": "選択から新しい天体リストを開始"
+  },
+  {
+   "en": "Save List",
+   "ja": "リストを保存"
+  },
+  {
+   "en": "Edit Selection",
+   "ja": "選択を編集"
+  },
+  {
+   "en": "Delete Selection",
+   "ja": "選択を削除"
+  },
+  {
+   "en": "Undo Edit/Delete",
+   "ja": "編集／削除を元に戻す"
+  },
+  {
+   "en": "Base Slew Rate",
+   "ja": "基本移動速度"
+  },
+  {
+   "en": "Horizon Limit",
+   "ja": "地平線の制限"
+  },
+  {
+   "en": "Finder Field",
+   "ja": "ファインダー視野"
+  },
+  {
+   "en": "Finder Mag Limit",
+   "ja": "ファインダー限界等級"
+  },
+  {
+   "en": "Field Creation Factor",
+   "ja": "視野生成係数"
+  },
+  {
+   "en": "Enter Sky Coordinates for Slew",
+   "ja": "移動先の天球座標を入力"
+  },
+  {
+   "en": "Add/Edit Hot List Entry",
+   "ja": "天体リスト項目の追加／編集"
+  },
+  {
+   "en": "Camera Parameters",
+   "ja": "カメラパラメーター"
+  },
+  {
+   "en": "Spectra From Multi-channel Spectrometer",
+   "ja": "マルチチャンネル分光器のスペクトル"
+  },
+  {
+   "en": "Terminate Current Slew",
+   "ja": "現在の移動を中止"
+  },
+  {
+   "en": "Save Updates",
+   "ja": "更新を保存"
+  },
+  {
+   "en": "Sort Options",
+   "ja": "並べ替えオプション"
+  },
+  {
+   "en": "Scan Rate",
+   "ja": "表示間隔"
+  },
+  {
+   "en": "Chip Well Depth",
+   "ja": "チップのウェル深度"
+  },
+  {
+   "en": "Dark Noise",
+   "ja": "ダークノイズ"
+  },
+  {
+   "en": "Data from Observations",
+   "ja": "観測からのデータ"
+  },
+  {
+   "en": "Record/Review",
+   "ja": "記録／見直し"
+  },
+  {
+   "en": "Next on List",
+   "ja": "リストの次"
+  },
+  {
+   "en": "No More Spectra",
+   "ja": "スペクトルはこれ以上ありません"
+  },
+  {
+   "en": "Spectral Line Table",
+   "ja": "スペクトル線表"
+  },
+  {
+   "en": "Program List",
+   "ja": "プログラムリスト"
+  },
+  {
+   "en": "Pulsar guide",
+   "ja": "パルサーガイド"
+  },
+  {
+   "en": "Pulsar timing guide",
+   "ja": "パルサー計時ガイド"
+  },
+  {
+   "en": "Radio Astronomy of Pulsars",
+   "ja": "パルサーの電波天文学"
+  },
+  {
+   "en": "Radio Telescope Control Panel",
+   "ja": "電波望遠鏡コントロールパネル"
+  },
+  {
+   "en": "Radio Simulation Options",
+   "ja": "電波シミュレーションオプション"
+  },
+  {
+   "en": "Pulsar Parameters",
+   "ja": "パルサーパラメーター"
+  },
+  {
+   "en": "Access Pulsar List",
+   "ja": "パルサーリストにアクセス"
+  },
+  {
+   "en": "Pulsar Identification",
+   "ja": "パルサーの同定"
+  },
+  {
+   "en": "Telescope Type",
+   "ja": "望遠鏡の種類"
+  },
+  {
+   "en": "Slew Rate",
+   "ja": "移動速度"
+  },
+  {
+   "en": "Find Pulsar Data",
+   "ja": "パルサーデータを探す"
+  },
+  {
+   "en": "Identify Recorded Object",
+   "ja": "記録した天体を同定"
+  },
+  {
+   "en": "Add Channel",
+   "ja": "チャンネルを追加"
+  },
+  {
+   "en": "Antenna Aperture",
+   "ja": "アンテナ開口"
+  },
+  {
+   "en": "Sound Features",
+   "ja": "サウンド機能"
+  },
+  {
+   "en": "Asteroid List",
+   "ja": "小惑星リスト"
+  },
+  {
+   "en": "Spectral Range",
+   "ja": "スペクトル範囲"
+  },
+  {
+   "en": "Spectrum Information",
+   "ja": "スペクトル情報"
+  },
+  {
+   "en": "View/Save Spectra",
+   "ja": "スペクトルの表示／保存"
+  },
+  {
+   "en": "Select Objects",
+   "ja": "天体を選択"
+  },
+  {
+   "en": "Print Selection Field",
+   "ja": "選択視野を印刷"
+  },
+  {
+   "en": "Save Text",
+   "ja": "テキストを保存"
+  },
+  {
+   "en": "Comma Delimit",
+   "ja": "カンマ区切り"
+  },
+  {
+   "en": "Exposure Timer",
+   "ja": "露出タイマー"
+  },
+  {
+   "en": "Find Text String",
+   "ja": "文字列を探す"
+  },
+  {
+   "en": "Close Multi-Spec",
+   "ja": "Multi-Specを閉じる"
+  },
+  {
+   "en": "Measured Redshift Data",
+   "ja": "測定した赤方偏移データ"
+  },
+  {
+   "en": "Record Z",
+   "ja": "Zを記録"
+  },
+  {
+   "en": "Save Data",
+   "ja": "データを保存"
+  },
+  {
+   "en": "Plot Data",
+   "ja": "データをプロット"
+  },
+  {
+   "en": "LSS Wedge Plot",
+   "ja": "LSS扇形図"
+  },
+  {
+   "en": "Load Saved Data",
+   "ja": "保存したデータを読み込む"
+  },
+  {
+   "en": "LSS Galaxy Data",
+   "ja": "LSS銀河データ"
+  },
+  {
+   "en": "Load/Plot",
+   "ja": "読み込み／プロット"
+  },
+  {
+   "en": "View/Print Parameters",
+   "ja": "パラメーターの表示／印刷"
+  },
+  {
+   "en": "Display/Print Data",
+   "ja": "データの表示／印刷"
+  },
+  {
+   "en": "Select Cluster Data",
+   "ja": "星団データを選択"
+  },
+  {
+   "en": "Possible Cluster Member",
+   "ja": "星団メンバー候補"
+  },
+  {
+   "en": "Clusters for Study",
+   "ja": "研究対象の星団"
+  },
+  {
+   "en": "Variable Star Data",
+   "ja": "変光星データ"
+  },
+  {
+   "en": "Simulated Light Curve",
+   "ja": "シミュレートした光度曲線"
+  },
+  {
+   "en": "Remove from HR Diagram",
+   "ja": "HR図から削除"
+  },
+  {
+   "en": "Recorded Results",
+   "ja": "記録した結果"
+  },
+  {
+   "en": "Telescope has Moved!",
+   "ja": "望遠鏡が移動しました！"
+  },
+  {
+   "en": "Reading Sky!",
+   "ja": "空を読み取り中！"
+  },
+  {
+   "en": "Radio clock scenario",
+   "ja": "電波の時計のシナリオ"
+  },
+  {
+   "en": "Scenario inputs",
+   "ja": "シナリオ入力"
+  },
+  {
+   "en": "Use compiled defaults",
+   "ja": "コンパイル済みの既定値を使用"
+  },
+  {
+   "en": "Reset radio site",
+   "ja": "電波観測地をリセット"
+  },
+  {
+   "en": "Start pulsar exercise",
+   "ja": "パルサー実習を開始"
+  },
+  {
+   "en": "Instructor mode",
+   "ja": "講師モード"
+  },
+  {
+   "en": "Clear",
+   "ja": "クリア",
+   "exact": true
+  },
+  {
+   "en": "Find",
+   "ja": "探す",
+   "exact": true
+  },
+  {
+   "en": "Record",
+   "ja": "記録",
+   "exact": true
+  },
+  {
+   "en": "Show",
+   "ja": "表示",
+   "exact": true
+  },
+  {
+   "en": "Save",
+   "ja": "保存",
+   "exact": true
+  },
+  {
+   "en": "Save As",
+   "ja": "名前を付けて保存",
+   "exact": true
+  },
+  {
+   "en": "Save List...",
+   "ja": "リストを保存...",
+   "exact": true
+  },
+  {
+   "en": "Find Pulsar...",
+   "ja": "パルサーを探す...",
+   "exact": true
+  },
+  {
+   "en": "Print",
+   "ja": "印刷",
+   "exact": true
+  },
+  {
+   "en": "Lab Table",
+   "ja": "実習テーブル"
+  },
+  {
+   "en": "Save All",
+   "ja": "すべて保存"
+  },
+  {
+   "en": "Clear All",
+   "ja": "すべてクリア"
+  },
+  {
+   "en": "Telescope Display",
+   "ja": "望遠鏡表示"
+  },
+  {
+   "en": "Master Receiver",
+   "ja": "マスター受信機"
+  },
+  {
+   "en": "Case Dependent",
+   "ja": "大文字と小文字を区別"
+  },
+  {
+   "en": "Search String",
+   "ja": "検索文字列"
+  },
+  {
+   "en": "Search Results",
+   "ja": "検索結果"
+  },
+  {
+   "en": "Optical",
+   "ja": "光学",
+   "exact": true
+  },
+  {
+   "en": "Spectral Line Help",
+   "ja": "スペクトル線ヘルプ"
+  },
+  {
+   "en": "Original hot lists",
+   "ja": "元の天体リスト"
+  },
+  {
+   "en": "Telescope view",
+   "ja": "望遠鏡ビュー"
+  },
+  {
+   "en": "Receiver monitor",
+   "ja": "受信機モニター"
+  },
+  {
+   "en": "Radio configuration",
+   "ja": "電波の設定"
+  },
+  {
+   "en": "pulsar exercise",
+   "ja": "パルサー実習"
+  },
+  {
+   "en": "Manual marks",
+   "ja": "手動マーク"
+  },
+  {
+   "en": "Data properties",
+   "ja": "データのプロパティ"
+  },
+  {
+   "en": "Trace audition",
+   "ja": "トレースの試聴"
+  },
+  {
+   "en": "Telescope position",
+   "ja": "望遠鏡の位置"
+  },
+  {
+   "en": "Radio telescope control",
+   "ja": "電波望遠鏡の制御"
+  },
+  {
+   "en": "Preferences",
+   "ja": "環境設定"
+  },
+  {
+   "en": "Object X",
+   "ja": "天体X"
+  },
+  {
+   "en": "Show Spectrum",
+   "ja": "スペクトルを表示"
+  },
+  {
+   "en": "Observer's Notebook",
+   "ja": "観測ノート"
+  },
+  {
+   "en": "Delete",
+   "ja": "削除",
+   "exact": true
+  },
+  {
+   "en": "Edit",
+   "ja": "編集",
+   "exact": true
+  },
+  {
+   "en": "Open",
+   "ja": "開く",
+   "exact": true
+  }
+ ],
+ "forbidden": [
+  {
+   "words": [
+    "レッドシフト"
+   ],
+   "use": "赤方偏移"
+  },
+  {
+   "ja": "クラスター",
+   "use": "星団 (a star cluster is 星団, never クラスター)"
+  },
+  {
+   "words": [
+    "視等級"
+   ],
+   "use": "見かけの等級"
+  },
+  {
+   "words": [
+    "消光"
+   ],
+   "use": "減光 (interstellar extinction is 星間減光)"
+  },
+  {
+   "words": [
+    "発光線",
+    "放射線"
+   ],
+   "use": "輝線 (an emission line is 輝線)"
+  },
+  {
+   "words": [
+    "スペクトロメーター",
+    "スペクトロメータ"
+   ],
+   "use": "分光器"
+  },
+  {
+   "words": [
+    "フォトメーター",
+    "フォトメータ"
+   ],
+   "use": "測光器"
+  },
+  {
+   "words": [
+    "あなた"
+   ],
+   "use": "leave the reader implicit (no second-person pronoun)"
+  },
+  {
+   "words": [
+    "ケフェイド"
+   ],
+   "use": "セファイド (IAU OAE Japanese: セファイド変光星)"
+  }
+ ]
+}
