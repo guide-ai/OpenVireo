@@ -211,11 +211,11 @@ export const JAPANESE_TEXT=language('ja',ja,jaOriginals,{appShell:APP_SHELL_JA,h
 export const CHINESE_SIMPLIFIED_TEXT=language('zh-Hans',zhHans,zhHansOriginals,{appShell:APP_SHELL_ZH_HANS,helpMenu:HELP_MENU_ZH_HANS,projectLinks:PROJECT_LINKS_ZH_HANS,tour:TOUR_ZH_HANS,languageChoice:LANGUAGE_CHOICE_ZH_HANS},
  [APP_SHELL_ZH_HANS,HELP_MENU_ZH_HANS,LANGUAGE_CHOICE_ZH_HANS,PROJECT_LINKS_ZH_HANS,TOUR_ZH_HANS],/[\p{sc=Han}，。、：；？！（）]/u,'?lang=zh-Hans',['shell']);
 /** Front RU0: Russian before its release, behind `?lang=ru` (an en-US browser: tests/fixtures/language.ts contextLocale). Only the
- * shell is translated (RU0), the observatory with all of VIREO's originals (RU1), exercises E01 and E02 (RU2), and exercise E03 (RU3); RU4–RU6 and RU-HELP
+ * shell is translated (RU0), the observatory with all of VIREO's originals (RU1), exercises E01 and E02 (RU2), exercise E03 (RU3), and the radio telescope (RU5); RU4, RU6 and RU-HELP
  * add their areas to `done` and their maps below. Its letters are Cyrillic, « » and U+202F,
  * which English text never has. */
 export const RUSSIAN_TEXT=language('ru',ru,ruOriginals,{appShell:APP_SHELL_RU,helpMenu:HELP_MENU_RU,projectLinks:PROJECT_LINKS_RU,tour:TOUR_RU,languageChoice:LANGUAGE_CHOICE_RU},
- [APP_SHELL_RU,CAMERA_RU,FIELD_INFO_RU,FIELD_READ_DETAILS_RU,HELP_MENU_RU,LANGUAGE_CHOICE_RU,NAKED_EYE_RU,OBJECT_X_LAB_RU,OBSERVATION_METADATA_RU,OBSERVATORY_RU,POLISH_RU,PROJECT_LINKS_RU,QSO_LIST_RU,SOUND_RU,TOUR_RU,VARIABLE_STARS_RU],/[\p{sc=Cyrl}«»\u202f]/u,'?lang=ru',['shell','observatory','e01','e02','e03']);
+ [APP_SHELL_RU,CAMERA_RU,FIELD_INFO_RU,FIELD_READ_DETAILS_RU,HELP_MENU_RU,LANGUAGE_CHOICE_RU,NAKED_EYE_RU,OBJECT_X_LAB_RU,OBSERVATION_METADATA_RU,OBSERVATORY_RU,POLISH_RU,PROJECT_LINKS_RU,QSO_LIST_RU,SOUND_RU,TOUR_RU,VARIABLE_STARS_RU],/[\p{sc=Cyrl}«»\u202f]/u,'?lang=ru',['shell','observatory','e01','e02','e03','radio']);
 /** Every translated language of the registry, in its order (a test fails if a registered language has no text here). */
 export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT,INDONESIAN_TEXT,HINDI_TEXT,JAPANESE_TEXT,CHINESE_SIMPLIFIED_TEXT,RUSSIAN_TEXT]);
 /** Front FR0: the languages that run the specs of `area` (those whose `done` has it), in registry order. */
@@ -296,6 +296,9 @@ import {RADIO_ANTENNA_ID} from '../../src/i18n/id/maps/radioAntenna';
 import {RADIO_RECORD_SAVE_ID} from '../../src/i18n/id/maps/radioRecordSave';
 import idIdentical from '../../src/i18n/id/identical.json' with {type:'json'};
 import hiIdentical from '../../src/i18n/hi/identical.json' with {type:'json'};
+import {RADIO_ANTENNA_RU} from '../../src/i18n/ru/maps/radioAntenna';
+import {RADIO_RECORD_SAVE_RU} from '../../src/i18n/ru/maps/radioRecordSave';
+import ruIdentical from '../../src/i18n/ru/identical.json' with {type:'json'};
 import type {RADIO_ANTENNA_MESSAGES_EN} from '../../src/components/RadioAntennaMessages';
 import type {RADIO_SAVE_MESSAGES_EN} from '../../src/components/RadioRecordSaveMessages';
 export type RadioMaps=Readonly<{radioAntenna:Translation<typeof RADIO_ANTENNA_MESSAGES_EN>;radioRecordSave:Translation<typeof RADIO_SAVE_MESSAGES_EN>;identical:Readonly<Record<string,string>>}>;
@@ -308,6 +311,8 @@ export const RADIO_MAPS:Readonly<Record<string,RadioMaps>>=Object.freeze({
  id:{radioAntenna:RADIO_ANTENNA_ID,radioRecordSave:RADIO_RECORD_SAVE_ID,identical:idIdentical.entries},
  // Front HI5: Hindi (its ?lang=hi preview).
  hi:{radioAntenna:RADIO_ANTENNA_HI,radioRecordSave:RADIO_RECORD_SAVE_HI,identical:hiIdentical.entries},
+ // Front RU5: Russian (its ?lang=ru preview).
+ ru:{radioAntenna:RADIO_ANTENNA_RU,radioRecordSave:RADIO_RECORD_SAVE_RU,identical:ruIdentical.entries},
 });
 export const radioMaps=(tag:string):RadioMaps=>{const m=RADIO_MAPS[tag];if(!m)throw new Error(`No radio maps for ${tag}`);return m;};
 // Front PT6: the maps the E06 and E08 walks read beyond the catalog and originals (tests/i18n/e06.spec.ts, e08.spec.ts), per

@@ -72,20 +72,23 @@ export type BrowserKeyRefusal='invalid-shape'|'composition'|'modifier'|'reserved
 export type BrowserVirtualKey=Readonly<{vk:number}|{refused:BrowserKeyRefusal;vk:number|null}>;
 /** KeyboardEvent.location DOM_KEY_LOCATION_STANDARD / NUMPAD. */
 const STANDARD=0,NUMPAD=3;
-const LETTER=/^[A-Za-z]$/,FUNCTION_KEY=/^F([1-9]|1[0-2])$/,NUMPAD_DIGIT=/^Numpad([0-9])$/;
+const LETTER=/^[A-Za-z]$/,NON_LATIN_LETTER=/^(?![\p{Script=Latin}\p{Script=Common}\p{Script=Inherited}])\p{L}$/u,PHYSICAL_LETTER=/^Key([A-Z])$/,FUNCTION_KEY=/^F([1-9]|1[0-2])$/,NUMPAD_DIGIT=/^Numpad([0-9])$/;
 const MAX_IDENTITY=64;
 
 /** WEB-KEY-02 (OpenVireo assumption, not a runtime oracle): the Windows virtual key a browser key event stands for.
  * - an ASCII letter in `key` (either case, standard location, any non-empty physical `code`): VK 65 + letter index. The
  *   letter follows the layout's interpreted key; `code` is only the physical identity of a hold, not a fixed US mapping;
+ * - a single letter of a non-Latin script in `key` (Cyrillic, Greek…: the layout types no Latin letter on that key) at the standard
+ *   location: VK of the physical key's letter in `code` (KeyA…KeyZ), so a Russian layout's у, т, ы, ц on the E, N, S, W keys hold
+ *   E, N, S, W (Front RU5, user decision 2026-11-19 Q3); Latin layouts never reach this branch, so they behave exactly as before;
  * - numeric keypad with NumLock on: location 3, `code` NumpadN and `key` the same digit → VK 96 + N; location 3,
  *   `code` NumpadDecimal and `key` '.' or ',' → VK 110 (VK_DECIMAL). NumLock off gives navigation keys (ArrowUp,
  *   Delete…), which are unmapped, as their Windows VKs are outside the table;
  * - F1…F12 (`key` and `code` equal) are recognised (VK 112…123) and refused as reserved function keys;
  * - keydown only: Ctrl, Alt, Meta or AltGraph held refuses (a new hold never starts under a modifier); key releases
  *   ignore modifiers, so a release is never lost to one;
- * - composition (isComposing, Process), Dead, Unidentified, the digit row, arrows, non-Latin characters and an empty
- *   `code` are unmapped. */
+ * - composition (isComposing, Process), Dead, Unidentified, the digit row, arrows, a non-Latin letter on a key whose `code` is not
+ *   KeyA…KeyZ, other characters and an empty `code` are unmapped. */
 export function browserVirtualKey(e:BrowserKeyInput,phase:Ra19Phase):BrowserVirtualKey{
  const shapeOk=!!e&&typeof e==='object'&&typeof e.key==='string'&&typeof e.code==='string'&&e.key.length<=MAX_IDENTITY&&e.code.length<=MAX_IDENTITY
   &&Number.isInteger(e.location)&&e.location>=0&&e.location<=3&&typeof e.ctrlKey==='boolean'&&typeof e.altKey==='boolean'&&typeof e.metaKey==='boolean'
@@ -97,6 +100,7 @@ export function browserVirtualKey(e:BrowserKeyInput,phase:Ra19Phase):BrowserVirt
  const fn=FUNCTION_KEY.exec(e.key);
  if(fn&&e.code===e.key)return freeze({refused:'reserved-function-key',vk:111+Number(fn[1])});
  if(LETTER.test(e.key)&&e.location===STANDARD)return freeze({vk:e.key.toUpperCase().charCodeAt(0)});
+ if(NON_LATIN_LETTER.test(e.key)&&e.location===STANDARD){const physical=PHYSICAL_LETTER.exec(e.code);if(physical)return freeze({vk:physical[1]!.charCodeAt(0)});}
  if(e.location===NUMPAD){
   const digit=NUMPAD_DIGIT.exec(e.code);
   if(digit&&e.key===digit[1])return freeze({vk:96+Number(digit[1])});
