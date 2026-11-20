@@ -54,6 +54,10 @@ const HTML_LANG:Readonly<Record<Locale,string>>={en:'en','es-419':'es-419','pt-B
  * as for the script pseudo-locales, they are looked for only in a file that is UTF-8 text, since a binary file's bytes (an SSP's
  * floats, FITS image data) can spell a short ASCII word by chance. */
 const ASCII_LETTERS:ReadonlySet<string>=new Set(['id']);
+/** Front RU4: real languages written in a script whose letters a binary file can spell by chance: Cyrillic letters are two-byte UTF-8
+ * (D0–D3 then 80–BF), which a hot list's doubles hold now and then (E05's Cluster Data HTL does), so Russian is looked for only in
+ * a file that is UTF-8 text, as the script pseudo-locales are (Front SC10). Binary files are still compared whole. */
+const SCRIPT_LETTERS:ReadonlySet<string>=new Set(['ru']);
 /** The accessible-name matcher of an English text in this locale: its Spanish form in es-419 (which must exist), Portuguese's or
  * French's own catalog form (which must exist; for French before its release, an identical entry), else `L`. */
 const N=(locale:Locale,text:string)=>{if(locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'||locale==='ru'){const t=TRANSLATED.find(x=>x.tag===locale)!;if(text==='Skip the tour')return exact(t.maps.tour.skip);if(text==='Save spectrum (.SSP)')return exact((e01e02Maps(locale).observatory as typeof OBSERVATORY_ES).spectrumSave.save);
@@ -129,7 +133,7 @@ async function identical(title:string,locale:Exclude<Locale,'en'>,browser:Browse
   // Front SC10: a script's letters are looked for only in a file that is UTF-8 text; the bytes of a binary file (a hot list's
   // doubles) can decode to a CJK character by chance. Binary files are still compared whole and searched for ⟦.
   const utf8=(b:Buffer)=>{try{return new TextDecoder('utf-8',{fatal:true}).decode(b);}catch{return null;}};
-  const compared=isPseudo(locale)||ASCII_LETTERS.has(locale)?utf8(mask(qps[family].bytes)):mask(qps[family].bytes).toString('utf8');
+  const compared=isPseudo(locale)||ASCII_LETTERS.has(locale)||SCRIPT_LETTERS.has(locale)?utf8(mask(qps[family].bytes)):mask(qps[family].bytes).toString('utf8');
   if(LETTERS[locale]&&compared!==null)expect(compared,`${family}: ${locale} text reached the file`).not.toMatch(LETTERS[locale]);
   if(process.env.ES0_DUMP&&sha(mask(qps[family].bytes))!==sha(mask(file.bytes))){const {writeFile}=await import('node:fs/promises');await writeFile(`${process.env.ES0_DUMP}/${family}.en`,file.bytes);await writeFile(`${process.env.ES0_DUMP}/${family}.${locale}`,qps[family].bytes);}
   expect(sha(mask(qps[family].bytes)),`${family}: ${file.name}`).toBe(sha(mask(file.bytes)));
