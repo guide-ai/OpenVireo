@@ -748,7 +748,7 @@ function clockElapsedMasked(bytes:Buffer):Buffer{
  * the image is ready (the image's JD and pointing are those of Start). */
 async function exposePaused(page:Page,locale:Locale,name:(locale:Locale,english:string,spanish:string)=>RegExp,camera:Readonly<Record<string,string>>){
  const c=page.getByTestId('camera-control');
- await c.getByLabel(locale==='es-419'||locale==='pt-BR'||locale==='fr'?new RegExp(`^\\s*${camera.sourceLive.slice(0,20)}`):pseudoStart('Ask VizieR live')).check();
+ await c.getByLabel(locale==='es-419'||locale==='pt-BR'||locale==='fr'||locale==='ja'?new RegExp(`^\\s*${camera.sourceLive.slice(0,20)}`):pseudoStart('Ask VizieR live')).check();
  await c.getByLabel(name(locale,CAMERA_EN.minutes,camera.minutes)).fill('0');await c.getByLabel(name(locale,CAMERA_EN.seconds,camera.seconds)).fill('1');
  await c.getByRole('button',{name:name(locale,CAMERA_EN.start,camera.start)}).click();
  const status=page.getByTestId('camera-status'),done=name(locale,CAMERA_EN.statusDone,camera.statusDone);

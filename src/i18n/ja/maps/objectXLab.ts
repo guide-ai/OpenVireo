@@ -10,7 +10,7 @@ export const OBJECT_X_LAB_JA:Translation<typeof OBJECT_X_LAB_EN>=Object.freeze({
  idLabel:'未知の天体のID番号（実習シートや講座で指定されたもの、または自分で決めた番号）',
  idHelp:'IDは保存するデータの名前（ObjX-<ID>）に使うだけで、天体を選ぶものではありません。',
  targetLabel:'天体コード',targetChoose:'コードを選ぶ…',targetRandom:'ランダムに割り当てる',
- targetHelp:'実習シートや講座でコードが指定されている場合はそれを使い、なければサイトに割り当てさせてください。コードから天体の正体が明かされることはありません。',
+ targetHelp:'実習シートや講座でコードが指定されている場合はそれを使い、なければ「ランダムに割り当てる」でサイトに割り当ててもらってください。コードから天体の正体が明かされることはありません。',
  targetCoords:(ra,dec)=>`座標（J2000）：赤経${ra}、赤緯${dec}`,
  loadingTargets:'天体リストを読み込み中…',targetsError:'天体リストを読み込めませんでした。',
  dateLabel:'観測の日時（UT）',dateHelp:'元の実習は2009-06-01 04:00:00 UTから始まります。',
@@ -31,7 +31,7 @@ export const OBJECT_X_LAB_JA:Translation<typeof OBJECT_X_LAB_EN>=Object.freeze({
  pointObservatory:'座標を天文台にコピー',
  pointHelp:'天文台でドームを開き、「座標を入力」の「座標に向ける」を使い、「視野」で「望遠鏡」の視野を選んで、時計を始動し、「追尾」をオンにしてからCCDカメラを使ってください。',
  radioCardTitle:code=>`天体X：${code}`,
- radioCardHelp:'パルサー実習の設定を始め、「座標を設定」を開いてください。この値（J2000）が入った状態で開きます。確定して移動し、受信機を開いてください。天体Xの近くではパルサーの名前は非表示のままで、受信機には元のとおりObjXのIDが表示されます。',
+ radioCardHelp:'「パルサー実習を開始」で設定を始め、「座標を設定」を開いてください。この値（J2000）が入った状態で開きます。確定して移動し、受信機を開いてください。天体Xの近くではパルサーの名前は非表示のままで、受信機には元のとおりObjXのIDが表示されます。',
  radioCardCoordinates:(h,m,s,d,dm,ds)=>`赤経${h}時${m}分${s}秒 · 赤緯${d}°${dm}′${ds}″`,
  radioTitle:'電波望遠鏡',
  radioHelp:'パルサーは規則的なパルスを出します。電波望遠鏡のページでは、「座標を設定」が自分の天体の座標で開きます。',
@@ -75,7 +75,7 @@ export const OBJECT_X_LAB_JA:Translation<typeof OBJECT_X_LAB_EN>=Object.freeze({
  imageMovers:pairs=>`視野の枠内に小惑星が${pairs}個あります。`,
  imageMoversHidden:'現在のリストの小惑星を含みます（個数は正体を明かした後に表示されます）',
  imageSkipped:reasons=>{
-  const text:Readonly<Record<string,string>>={'moving-pair-off-detector':'検出器の大きく外側','moving-pair-geometry':'描画できる動きがない','moving-pair-budget':'尾が大きすぎて描画できない'};
+  const text:Readonly<Record<string,string>>={'moving-pair-off-detector':'検出器から大きく外れたもの','moving-pair-geometry':'描画できる動きがないもの','moving-pair-budget':'軌跡が大きすぎて描画できないもの'};
   const counts=new Map<string,number>();for(const r of reasons)counts.set(r,(counts.get(r)??0)+1);
   return `描画しなかったもの：${[...counts].map(([r,n])=>`${text[r]??r}が${n}件`).join('、')}。`;
  },
