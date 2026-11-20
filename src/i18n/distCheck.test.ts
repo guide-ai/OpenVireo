@@ -130,6 +130,15 @@ describe('Front SC8: scripts/check-i18n-dist.mjs with a partial language before 
  },180_000);
 });
 
+describe('Front ID-REL: the shared 404 page',()=>{
+ it('may hold a language\'s text inside that language\'s own <section lang>, and nowhere else on the page',()=>{
+  const page=(body:string)=>(a:string)=>writeFileSync(path.join(a,'..','404.html'),`<!doctype html><title>404</title><div class="langs">${body}</div>`);
+  const own=check(dist([PARTIAL],page('<section lang="qaa-XA"><h2>x</h2><p>Konservi la esploron ĉi tie</p></section>')),[PARTIAL]);
+  expect(own.offenders).toEqual([]);
+  const other=check(dist([PARTIAL],page('<section lang="es-419"><p>Konservi la esploron ĉi tie</p></section>')),[PARTIAL]);
+  expect(other.offenders.some(o=>/404\.html: 1 qaa-XA core text/.test(o)),other.offenders.join('\n')).toBe(true);
+ });
+});
 describe('Front ID0: scripts/check-i18n-dist.mjs with a language written in ASCII alone',()=>{
  /** A fixture language whose catalog holds `catalog` and whose only map is pulsarLoadSave (the maps-only `pulsar` area), with
   * `literal` as its one text: Indonesian's case, where no map literal has a letter outside ASCII (plan front-i18n-id.md §1.2 #1). */

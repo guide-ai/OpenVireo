@@ -192,8 +192,8 @@ test('View original (English) on an area route: VIREO\'s names in English, the a
 // the end of this file); the qaa-XA fixture of src/i18n/partialLanguage.test.ts and split.test.ts keeps it. Front PT-REL: Brazilian Portuguese is released and complete, so a
 // pt-BR browser, with no `?lang=`, fetches its core and, on each area route, exactly the area and shared modules its plan gives (no
 // area is empty any more), with the route in Portuguese, no notice, no route error and no read before its area. Front FR-REL: the
-// same for French, in an fr-FR browser (the Portuguese title kept).
-const RELEASED_AREAS=[{L:PORTUGUESE_TEXT,name:'Brazilian Portuguese'},{L:FRENCH_TEXT,name:'French'}] as const;
+// same for French, in an fr-FR browser (the Portuguese title kept). Front ID-REL: and for Indonesian, in an id-ID browser.
+const RELEASED_AREAS=[{L:PORTUGUESE_TEXT,name:'Brazilian Portuguese'},{L:FRENCH_TEXT,name:'French'},{L:INDONESIAN_TEXT,name:'Indonesian'}] as const;
 for(const {L:P,name} of RELEASED_AREAS)test.describe(`in a ${name} browser`,()=>{
  test.use({locale:contextLocale(P.tag)});
  test(`${name} (released) fetches its core, and on each area route only that area's modules`,async({page})=>{
@@ -237,11 +237,11 @@ for(const {L:P,name} of RELEASED_AREAS)test.describe(`in a ${name} browser`,()=>
 // project.photometryRestored, rendered by the photometer); Front ID1's maps and keys also give text to `classification` (the
 // observationMetadata map) and `fits` (the cameraInfo.* keys), as FR1's did; later ID fronts fill the others (Front ID3: E03 fills the
 // shared classification+cluster module, which the cluster routes also fetch, so `cluster` holds text, as for French after FR3; Front ID5: the radio keys and maps fill `radio`, and `pulsar` fetches the shared
-// pulsar+radio module, which holds the radioR1 map, as for French after FR5). ID-REL
-// turns this back into a released-language test (as FR-REL did). Front HI0: Hindi's preview the same way (HI-REL moves it to RELEASED_AREAS); Front ZH0:
+// pulsar+radio module, which holds the radioR1 map, as for French after FR5). Front
+// ID-REL turned this back into a released-language test (RELEASED_AREAS above), as FR-REL did. Front HI0: Hindi's preview the same way (HI-REL moves it to RELEASED_AREAS); Front ZH0:
 // Simplified Chinese's (ZH-REL); ZH1's maps and keys give it `classification` and `fits` text, as JA1's, and ZH2's
 // `exposure` and `lss`, as JA2's, and ZH3's E03 keys `cluster` (the shared classification+cluster module), as JA3's.
-const PARTIAL=[{L:INDONESIAN_TEXT,name:'Indonesian',release:'ID-REL',areas:['classification','cluster','exposure','fits','lss','photometer','pulsar','radio']},{L:HINDI_TEXT,name:'Hindi',release:'HI-REL',areas:['classification','cluster','exposure','fits','lss','photometer','pulsar','radio']},{L:CHINESE_SIMPLIFIED_TEXT,name:'Simplified Chinese',release:'ZH-REL',areas:['classification','cluster','exposure','fits','lss','photometer']}] as const;
+const PARTIAL=[{L:HINDI_TEXT,name:'Hindi',release:'HI-REL',areas:['classification','cluster','exposure','fits','lss','photometer','pulsar','radio']},{L:CHINESE_SIMPLIFIED_TEXT,name:'Simplified Chinese',release:'ZH-REL',areas:['classification','cluster','exposure','fits','lss','photometer']}] as const;
 for(const {L:P,name,release,areas} of PARTIAL)test.describe(`a language before its release (${name})`,()=>{
  test.use({locale:'en-US'});
  test(`a partial language (${name}) fetches only its core, and no chunk for an empty area`,async({page})=>{
