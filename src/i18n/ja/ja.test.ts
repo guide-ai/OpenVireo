@@ -113,6 +113,13 @@ const ASCII_FIELD_NAMES:readonly string[]=['MJD(Days)'];
 const fixCatalog=(text:string)=>{const kept:string[]=[];const masked=ASCII_FIELD_NAMES.reduce((s,name)=>s.split(name).join(`\uE000${kept.push(name)-1}\uE001`),text);
  return fix(masked).replace(/\uE000(\d+)\uE001/g,(_,i:string)=>kept[Number(i)]!);};
 const fixSource=(source:string)=>fixSourceLiterals(source,(text,options)=>fix(text,options));
+/** Front JA-HELP: VIREO's help files align columns with runs of spaces (VARTYPEHLP's type codes, the photometer's tables): a run of two
+ * or more spaces between two characters is a column gap the fixer keeps, so «RR          こと座RR型星» keeps its padding. */
+const COLUMN_GAP=/(?<=\S) {2,}(?=\S)/g;
+const fixHelp=(text:string,options?:{quotes?:boolean})=>{const gaps:string[]=[];
+ return fix(text.replace(COLUMN_GAP,g=>`\uE003${gaps.push(g)-1}\uE004`),options).replace(/\uE003(\d+)\uE004/g,(_,i:string)=>gaps[Number(i)]!);};
+const fixHelpSource=(source:string)=>fixSourceLiterals(source,(text,options)=>fixHelp(text,options));
+const fixAny=(file:string,source:string)=>file.includes(`${path.sep}help${path.sep}`)?fixHelpSource(source):fixSource(source);
 const writeJson=(file:string,value:unknown)=>writeFileSync(path.join(DIR,file),JSON.stringify(value,null,1)+'\n');
 
 if(process.env.OPENVIREO_FIX_TYPOGRAPHY==='1'){
@@ -122,7 +129,7 @@ if(process.env.OPENVIREO_FIX_TYPOGRAPHY==='1'){
  writeJson('ja.json',Object.fromEntries(Object.entries(catalog).map(([k,v])=>[k,fixCatalog(v)])));
  const own=JSON.parse(readFileSync(path.join(DIR,'originals.json'),'utf8')) as Record<string,string>;
  writeJson('originals.json',Object.fromEntries(Object.entries(own).map(([k,v])=>[k,fixOriginal(k,v)])));
- for(const file of [...sources('maps'),...sources('help')]){const before=readFileSync(file,'utf8'),after=fixSource(before);if(after!==before)writeFileSync(file,after);}
+ for(const file of [...sources('maps'),...sources('help')]){const before=readFileSync(file,'utf8'),after=fixAny(file,before);if(after!==before)writeFileSync(file,after);}
 }
 
 describe('Front JA0: the Japanese (ja) bundle',()=>{
@@ -197,7 +204,7 @@ describe('Front JA0: the Japanese (ja) bundle',()=>{
  it('the CJK punctuation fixer has nothing left to change: catalog, originals, maps and help sources (characters, never escapes)',()=>{
   expect(Object.entries(ja).filter(([,v])=>fixCatalog(v)!==v).map(([k])=>k)).toEqual([]);
   expect(Object.entries(originals).filter(([k,v])=>fixOriginal(k,v)!==v).map(([k])=>k)).toEqual([]);
-  for(const file of [...sources('maps'),...sources('help')]){const text=readFileSync(file,'utf8');expect(fixSource(text)===text,path.relative(DIR,file)).toBe(true);
+  for(const file of [...sources('maps'),...sources('help')]){const text=readFileSync(file,'utf8');expect(fixAny(file,text)===text,path.relative(DIR,file)).toBe(true);
    expect(text,path.relative(DIR,file)).not.toMatch(/\\u[0-9a-fA-F]{4}/);}
  });
  it('formats numbers as English does (24,000 and 1.5: what Japanese writes natively); one plural category',()=>{

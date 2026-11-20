@@ -273,7 +273,8 @@ describe('the Japanese help texts follow the ja lints',()=>{
  const paragraphs=(text:string)=>text.split(/\n[ ]*\n/).map(p=>p.split('\n').map(l=>l.trim()).filter(Boolean).reduce((a,l)=>a===''?l:a+(wide.test(a.at(-1)!)||wide.test(l[0]!)?'':' ')+l,'')).filter(Boolean);
  const hitsOf=(key:string)=>{
   const out:{label:string;match:string;use:string}[]=[];
-  for(const para of paragraphs(ja(key).text))for(const p of patterns){const m=new RegExp(p.pattern.source,p.pattern.flags.replace('g','')).exec(para);if(m)out.push({label:p.label,match:m[0],use:p.use});}
+  // A run of two or more spaces between two characters is a column gap of VIREO's tables (as the fixer keeps it, ja.test.ts).
+  for(const para of paragraphs(ja(key).text).map(p=>p.replace(/(?<=\S) {2,}(?=\S)/g,'\u3000')))for(const p of patterns){const m=new RegExp(p.pattern.source,p.pattern.flags.replace('g','')).exec(para);if(m)out.push({label:p.label,match:m[0],use:p.use});}
   return out;
  };
  for(const key of Object.keys(HELP_FILES))it(`${key}: no ja lint error (full-width marks, spacing, kana, register, forbidden terms)`,()=>{
