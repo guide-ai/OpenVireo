@@ -5,7 +5,7 @@ import type {Translation} from '../../maps';
  * sky.view › sky.telescope: Поле зрения › Телескоп · 15′, motion.selected: Навести на выбранный объект, project.save: Сохранить
  * исследование) and of this route's own button (OBJECT_X_LAB_RU.setClock: Установить часы обсерватории). */
 export const OBJECT_X_GUIDE_RU:Translation<typeof OBJECT_X_GUIDE_EN>=Object.freeze({
- eyebrow:'Руководство к работе E08',title:'В поисках Объекта X',
+ eyebrow:'Руководство к работе E08',title:'Поиск Объекта X',
  intro:'Вы получаете только идентификатор и координаты. С помощью приборов решите, какого типа этот объект, затем раскройте его. Шаги обновляются по ходу работы; до раскрытия ничто не оценивает ваш ответ.',
  counts:(done,total,images)=>`Шагов выполнено: ${done} из ${total} · изображений вашего объекта: ${images}`,
  done:'(выполнено)',todo:'(предстоит)',
