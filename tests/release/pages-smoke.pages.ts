@@ -548,6 +548,8 @@ const HELP_SMOKE=[
  {tag:'pt-BR',title:'Front PT-HELP: a ?lang=pt-BR help viewer fetches only its translated help chunks and switches to the original',label:'Tradução: adaptação web do OpenVireo (não é do CLEA)',text:'Para carregar um espectro'},
  // Front FR-HELP: the French help set in its ?lang=fr preview (U+202F before the colon, as the fixer writes it).
  {tag:'fr',title:'Front FR-HELP: a ?lang=fr help viewer fetches only its translated help chunks and switches to the original',label:'Traduction : adaptation web d’OpenVireo (ce n’est pas un texte du CLEA)',text:'Pour charger un spectre'},
+ // Front ID-HELP: the Indonesian help set in its ?lang=id preview.
+ {tag:'id',title:'Front ID-HELP: a ?lang=id help viewer fetches only its translated help chunks and switches to the original',label:'Terjemahan: adaptasi web OpenVireo (bukan teks CLEA)',text:'Untuk memuat spektrum'},
 ] as const;
 for(const h of HELP_SMOKE)test(h.title,async({page,baseURL})=>{
  const p=await watch(page,baseURL!),help:string[]=[],languages:Promise<string>[]=[];

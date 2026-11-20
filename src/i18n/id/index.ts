@@ -32,6 +32,8 @@ import {LOAD_SAVE_ID} from './maps/pulsarLoadSave';
 import {OBJECT_X_GUIDE_ID} from './maps/objectXGuide';
 import {OBJECT_X_MEASURE_ID} from './maps/objectXMeasure';
 import {OBJECT_X_SESSION_ID} from './maps/objectXSession';
+import {HELP_VIEWER_ID} from './maps/helpViewer';
+import {WEB_HELP_ID} from './maps/webHelp';
 /** Front ID0 [W]: the Indonesian (id) bundle (docs/I18N.md, "Indonesian: the folder, lints and shell (ID0)"; plan
  * analysis/front-plans/front-i18n-id.md). Partial until its release (ID0–ID-HELP, behind a `?lang=id` preview): ID0 translates the
  * shell, the welcome and the header menu names, ID1 the observatory and all of VIREO's originals, ID2 exercises E01 and E02, ID3 exercise E03, ID4 exercises E04 and E05, ID5 the radio telescope, ID6 exercises E06 and E08; later ID fronts add the observatory, the exercises, the radio telescope and the
@@ -45,6 +47,7 @@ export const INDONESIAN:LocaleBundle=Object.freeze({
   camera:CAMERA_ID,fieldInfo:FIELD_INFO_ID,fieldReadDetails:FIELD_READ_DETAILS_ID,nakedEye:NAKED_EYE_ID,observationMetadata:OBSERVATION_METADATA_ID,observatory:OBSERVATORY_ID,qsoList:QSO_LIST_ID,sound:SOUND_ID,
   engineView:ENGINE_VIEW_ID,spectralRange:SPECTRAL_RANGE_ID,wedge:WEDGE_ID,clusterHr:CLUSTER_HR_ID,clusterData:CLUSTER_DATA_ID,
   radioAntenna:RADIO_ANTENNA_ID,radioFinishSave:RADIO_FINISH_SAVE_ID,radioR1:RADIO_R1_ID,radioRecordSave:RADIO_RECORD_SAVE_ID,
-  pulsar:PULSAR_ID,pulsarSavedRows:SAVED_ROWS_ID,pulsarLoadSave:LOAD_SAVE_ID,objectXGuide:OBJECT_X_GUIDE_ID,objectXMeasure:OBJECT_X_MEASURE_ID,objectXSession:OBJECT_X_SESSION_ID}),
+  pulsar:PULSAR_ID,pulsarSavedRows:SAVED_ROWS_ID,pulsarLoadSave:LOAD_SAVE_ID,objectXGuide:OBJECT_X_GUIDE_ID,objectXMeasure:OBJECT_X_MEASURE_ID,objectXSession:OBJECT_X_SESSION_ID,
+  helpViewer:HELP_VIEWER_ID,webHelp:WEB_HELP_ID}),
  originals,
 });

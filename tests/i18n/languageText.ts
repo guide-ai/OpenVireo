@@ -205,7 +205,7 @@ export const FRENCH_TEXT=language('fr',fr,frOriginals,{appShell:APP_SHELL_FR,hel
  * the site's English exports never hold (checked over public/original and every export fixture at ID0), and the “ ” quotes and U+202F
  * thousands separator its text uses. */
 export const INDONESIAN_TEXT=language('id',idCatalog,idOriginals,{appShell:APP_SHELL_ID,helpMenu:HELP_MENU_ID,projectLinks:PROJECT_LINKS_ID,tour:TOUR_ID,languageChoice:LANGUAGE_CHOICE_ID},
- [APP_SHELL_ID,CAMERA_ID,FIELD_INFO_ID,FIELD_READ_DETAILS_ID,HELP_MENU_ID,LANGUAGE_CHOICE_ID,NAKED_EYE_ID,OBJECT_X_LAB_ID,OBSERVATION_METADATA_ID,OBSERVATORY_ID,POLISH_ID,PROJECT_LINKS_ID,QSO_LIST_ID,SOUND_ID,TOUR_ID,VARIABLE_STARS_ID],/(?<!\p{L})(?:yang|dan|untuk|dengan|tidak|Anda|dari|pada|ini|atau)(?!\p{L})|[“”\u202f]/u,'?lang=id',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08']);
+ [APP_SHELL_ID,CAMERA_ID,FIELD_INFO_ID,FIELD_READ_DETAILS_ID,HELP_MENU_ID,LANGUAGE_CHOICE_ID,NAKED_EYE_ID,OBJECT_X_LAB_ID,OBSERVATION_METADATA_ID,OBSERVATORY_ID,POLISH_ID,PROJECT_LINKS_ID,QSO_LIST_ID,SOUND_ID,TOUR_ID,VARIABLE_STARS_ID],/(?<!\p{L})(?:yang|dan|untuk|dengan|tidak|Anda|dari|pada|ini|atau)(?!\p{L})|[“”\u202f]/u,'?lang=id',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08','help']);
 /** Front HI0: Hindi, behind `?lang=hi` before its release (an en-US browser with the preview query). HI0 translated the shell, so
  * only the shell's specs ran it; HI1 adds the observatory and all of VIREO's originals, HI2 exercises E01 and E02, HI3 exercise E03, HI4 exercises E04 and E05, HI5 the radio telescope; each HI front adds its area. Its letters are Devanagari (the danda । included), which English text
  * never has; “ ” are not among them, since English uses them too. */
@@ -401,6 +401,8 @@ import {HELP_VIEWER_PT} from '../../src/i18n/pt-br/maps/helpViewer';
 import {WEB_HELP_PT} from '../../src/i18n/pt-br/maps/webHelp';
 import {HELP_VIEWER_FR} from '../../src/i18n/fr/maps/helpViewer';
 import {WEB_HELP_FR} from '../../src/i18n/fr/maps/webHelp';
+import {HELP_VIEWER_ID} from '../../src/i18n/id/maps/helpViewer';
+import {WEB_HELP_ID} from '../../src/i18n/id/maps/webHelp';
 import type {HELP_VIEWER_EN} from '../../src/help/HelpViewerMessages';
 import type {WEB_HELP_EN} from '../../src/help/webHelp';
 export type HelpText=Readonly<{
@@ -419,5 +421,8 @@ export const HELP_TEXT:Readonly<Record<string,HelpText>>=Object.freeze({
  // Front FR-HELP: the search query types a straight apostrophe and no accent; the translation's fold finds «c’est … verticale».
  'fr':{helpViewer:HELP_VIEWER_FR,webHelp:WEB_HELP_FR,pulsarFirstRow:'-Opérations de base-',reminderQuestion:'Avez-vous VRAIMENT terminé complètement cet exercice\u202f?',
   loadSpectrumText:'Pour charger un spectre à classer',searchRow:/Mesurer et marquer/,searchQuery:"C'EST LA POSITION VERTICALE",searchHit:'c’est la position verticale',controlsRow:/Commandes/,lineHelpText:'Visible pour la première fois vers A0'},
+ // Front ID-HELP: Indonesian has no accents, so the search is checked for case only (an upper-case query finds the lower-case line).
+ id:{helpViewer:HELP_VIEWER_ID,webHelp:WEB_HELP_ID,pulsarFirstRow:'-Operasi dasar-',reminderQuestion:'Apakah Anda YAKIN telah menyelesaikan praktikum ini sepenuhnya?',
+  loadSpectrumText:'Untuk memuat spektrum yang akan diklasifikasi',searchRow:/Ukur dan tandai/,searchQuery:'POSISI VERTIKAL',searchHit:'posisi vertikal',controlsRow:/^Kontrol$/,lineHelpText:'Pertama kali terlihat sekitar A0'},
 });
 export const helpText=(tag:string):HelpText=>{const m=HELP_TEXT[tag];if(!m)throw new Error(`No help text for ${tag}`);return m;};

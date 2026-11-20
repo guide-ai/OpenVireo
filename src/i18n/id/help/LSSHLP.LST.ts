@@ -1,0 +1,45 @@
+// Front ID-HELP [W]: OpenVireo's Indonesian (id) web adaptation of VIREO's LSSHLP.LST. Not CLEA's text: the original bytes,
+// hashes and provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Indonesian chunk.
+export const language='id';
+export const sourceName='LSSHLP.LST';
+export const sourceSha256='f4ee3de45cead6cac0ae53458c94f9927bd48248a573632787d9e6a275e05c10';
+export const text=`'Memulai' 'begin'
+'Masuk' 'lsslab.txt'
+'Operasikan teleskop' 'begin'
+'Akses jendela teleskop' 'lsslab.txt'
+'Kontrol teleskop' 'lsslab.txt'
+'Operasikan teleskop' 'end'
+'Ganti teleskop' 'begin'
+'Minta waktu teleskop' 'lsslab.txt'
+'Akses teleskop' 'lsslab.txt'
+'Ganti teleskop' 'end'
+'Ganti bidang bintang' 'lsslab.txt'
+'Memulai' 'end'
+
+'Akuisisi data' 'begin'
+'Gunakan spektrometer' 'begin'
+'Akses jendela spektrometer' 'lsslab.txt'
+'Mulai/lanjutkan pencacahan' 'lsslab.txt'
+'Hentikan pencacahan' 'lsslab.txt'
+'Ukur spektrum' 'lsslab.txt'
+'Cetak spektrum' 'lsslab.txt'
+'Gunakan spektrometer' 'end'
+'Hitung kecepatan' 'begin'
+'Hitung manual' 'lsslab.txt'
+'Verifikasi perhitungan' 'lsslab.txt'
+'Hitung kecepatan' 'end'
+'Kembali ke jendela teleskop' 'lsslab.txt'
+'Akuisisi data' 'end'
+
+'Operasi data' 'begin'
+'Muat data' 'lsslab.txt'
+'Tinjau data' 'lsslab.txt'
+'Simpan data' 'lsslab.txt'
+'Cetak data' 'lsslab.txt'
+'Plot hasil' 'begin'
+'Simpan hasil di file plot bersama' 'lsslab.txt'
+'Akses program diagram "kerucut"' 'lsslab.txt'
+'Plot hasil' 'end'
+'Gunakan program spreadsheet' 'lsslab.txt'
+'Operasi data' 'end'
+`;

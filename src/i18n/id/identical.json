@@ -179,6 +179,7 @@
   "map:pulsar.pulsar.outcome.review-selected": "an intentionally empty status",
   "map:pulsar.pulsar.outcome.review-edit-draft": "an intentionally empty status",
   "map:pulsar.pulsar.outcome.notice-closed": "an intentionally empty status",
-  "map:pulsar.pulsar.outcome.load-allowed": "an intentionally empty status"
+  "map:pulsar.pulsar.outcome.load-allowed": "an intentionally empty status",
+  "map:helpViewer.spectralLines.ok": "VIREO’s OK, the same in Windows Indonesian"
  }
 }
