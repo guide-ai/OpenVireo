@@ -176,11 +176,11 @@ export const INDONESIAN_TEXT=language('id',idCatalog,idOriginals,{appShell:APP_S
 export const HINDI_TEXT=language('hi',hi,hiOriginals,{appShell:APP_SHELL_HI,helpMenu:HELP_MENU_HI,projectLinks:PROJECT_LINKS_HI,tour:TOUR_HI,languageChoice:LANGUAGE_CHOICE_HI},
  [APP_SHELL_HI,CAMERA_HI,FIELD_INFO_HI,FIELD_READ_DETAILS_HI,HELP_MENU_HI,LANGUAGE_CHOICE_HI,NAKED_EYE_HI,OBJECT_X_LAB_HI,OBSERVATION_METADATA_HI,OBSERVATORY_HI,POLISH_HI,PROJECT_LINKS_HI,QSO_LIST_HI,SOUND_HI,TOUR_HI,VARIABLE_STARS_HI],/[\u0900-\u097f]/u,'?lang=hi',['shell','observatory']);
 /** Front RU0: Russian before its release, behind `?lang=ru` (an en-US browser: tests/fixtures/language.ts contextLocale). Only the
- * shell is translated (RU0), and the observatory with all of VIREO's originals (RU1); RU2–RU6 and RU-HELP add their areas to `done` and
- * their maps below. Its letters are Cyrillic, « » and U+202F,
+ * shell is translated (RU0), the observatory with all of VIREO's originals (RU1), and exercises E01 and E02 (RU2); RU3–RU6 and RU-HELP
+ * add their areas to `done` and their maps below. Its letters are Cyrillic, « » and U+202F,
  * which English text never has. */
 export const RUSSIAN_TEXT=language('ru',ru,ruOriginals,{appShell:APP_SHELL_RU,helpMenu:HELP_MENU_RU,projectLinks:PROJECT_LINKS_RU,tour:TOUR_RU,languageChoice:LANGUAGE_CHOICE_RU},
- [APP_SHELL_RU,CAMERA_RU,FIELD_INFO_RU,FIELD_READ_DETAILS_RU,HELP_MENU_RU,LANGUAGE_CHOICE_RU,NAKED_EYE_RU,OBJECT_X_LAB_RU,OBSERVATION_METADATA_RU,OBSERVATORY_RU,POLISH_RU,PROJECT_LINKS_RU,QSO_LIST_RU,SOUND_RU,TOUR_RU,VARIABLE_STARS_RU],/[\p{sc=Cyrl}«»\u202f]/u,'?lang=ru',['shell','observatory']);
+ [APP_SHELL_RU,CAMERA_RU,FIELD_INFO_RU,FIELD_READ_DETAILS_RU,HELP_MENU_RU,LANGUAGE_CHOICE_RU,NAKED_EYE_RU,OBJECT_X_LAB_RU,OBSERVATION_METADATA_RU,OBSERVATORY_RU,POLISH_RU,PROJECT_LINKS_RU,QSO_LIST_RU,SOUND_RU,TOUR_RU,VARIABLE_STARS_RU],/[\p{sc=Cyrl}«»\u202f]/u,'?lang=ru',['shell','observatory','e01','e02']);
 /** Every translated language of the registry, in its order (a test fails if a registered language has no text here). */
 export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT,INDONESIAN_TEXT,HINDI_TEXT,RUSSIAN_TEXT]);
 /** Front FR0: the languages that run the specs of `area` (those whose `done` has it), in registry order. */
@@ -199,12 +199,17 @@ import {WEDGE_PT} from '../../src/i18n/pt-br/maps/wedge';
 import {ENGINE_VIEW_FR} from '../../src/i18n/fr/maps/engineView';
 import {SPECTRAL_RANGE_FR} from '../../src/i18n/fr/maps/spectralRange';
 import {WEDGE_FR} from '../../src/i18n/fr/maps/wedge';
+import {ENGINE_VIEW_RU} from '../../src/i18n/ru/maps/engineView';
+import {SPECTRAL_RANGE_RU} from '../../src/i18n/ru/maps/spectralRange';
+import {WEDGE_RU} from '../../src/i18n/ru/maps/wedge';
 export type E01E02Maps=Readonly<{engineView:unknown;spectralRange:unknown;wedge:unknown;observatory:unknown;polish:unknown}>;
 export const E01_E02_MAPS:Readonly<Record<string,E01E02Maps>>=Object.freeze({
  'es-419':{engineView:ENGINE_VIEW_ES,spectralRange:SPECTRAL_RANGE_ES,wedge:WEDGE_ES,observatory:OBSERVATORY_ES,polish:POLISH_ES},
  'pt-BR':{engineView:ENGINE_VIEW_PT,spectralRange:SPECTRAL_RANGE_PT,wedge:WEDGE_PT,observatory:OBSERVATORY_PT,polish:POLISH_PT},
  // Front FR2: French (its ?lang=fr preview).
  fr:{engineView:ENGINE_VIEW_FR,spectralRange:SPECTRAL_RANGE_FR,wedge:WEDGE_FR,observatory:OBSERVATORY_FR,polish:POLISH_FR},
+ // Front RU2: Russian (its ?lang=ru preview).
+ ru:{engineView:ENGINE_VIEW_RU,spectralRange:SPECTRAL_RANGE_RU,wedge:WEDGE_RU,observatory:OBSERVATORY_RU,polish:POLISH_RU},
 });
 export const e01e02Maps=(tag:string):E01E02Maps=>{const m=E01_E02_MAPS[tag];if(!m)throw new Error(`No E01/E02 maps for ${tag}`);return m;};
 
