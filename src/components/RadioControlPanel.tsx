@@ -797,7 +797,7 @@ const manualLimitText=(refusal:RadioLabManualRefusal|RadioLabManualTickRefusal,a
  return ta(
   left?'antenna.manual.limit.manual-unavailable-leftover':refusal==='manual-unavailable'&&(a.slewing||a.slewTimerEnabled)?'antenna.manual.limit.manual-unavailable-slew':`antenna.manual.limit.${refusal}` as RadioAntennaMessageKey,
   {rate:String(a.rate),dec:RADIO_MANUAL_WEB_DOMAIN.decStepLimitDegrees,ra:RADIO_MANUAL_WEB_DOMAIN.raStepLimitHours,
-   caption:left?vireo(manualButtonCaption(a,left)):'',original:left?vireo(RADIO_LAB_CAPTIONS[left]):''});
+   caption:left?vireo(manualButtonCaption(a,left),'direction'):'',original:left?vireo(RADIO_LAB_CAPTIONS[left],'direction'):''});
 };
 /** The N/S/E/W pad: DOM in DFM TabOrder (N 1, S 2, E 3, W 4), laid out as the DFM cross (N top, E left, W right, S bottom).
  * WEB-MANUAL-01/02: pointer, touch or Space/Enter on the focused button hold it; a click alone does nothing. WEB-KEY-03:
@@ -808,15 +808,15 @@ function ManualPad({a,options,ta,manual,autoSlewTimer,run,keysNoteId}:Readonly<{
  const directions=MANUAL_DIRECTIONS.filter(d=>d==='north'||d==='south'||a.eastWestVisible);
  const refusal=(d:ManualDirection)=>valid?radioLabManualRefusal(a,options,d):null;
  const limits=held?[]:[...new Set(directions.map(refusal).filter((r):r is RadioLabManualRefusal=>r!==null&&MANUAL_LIMIT_REFUSALS.has(r)))];
- const heldCaption=held&&vireo(manualButtonCaption(a,held)),left=leftoverButton(a),keys=manual.keys;
+ const heldCaption=held&&vireo(manualButtonCaption(a,held),'direction'),left=leftoverButton(a),keys=manual.keys;
  return <div className="antenna-manual" role="group" aria-labelledby={`${id}-heading`}>
   <span id={`${id}-heading`} className="antenna-label">{ta('antenna.manual.heading')}</span>
   <div className="antenna-manual-pad">
    {directions.map(d=>{
-    const caption=vireo(manualButtonCaption(a,d)),isHeld=held===d,enabled=isHeld||(valid&&manualButtonEnabled(a,d)&&refusal(d)===null);
+    const caption=vireo(manualButtonCaption(a,d),'direction'),isHeld=held===d,enabled=isHeld||(valid&&manualButtonEnabled(a,d)&&refusal(d)===null);
     return <button key={d} ref={el=>{keys.buttons.current[d]=el;}} type="button" className={`antenna-manual-button antenna-manual-${d}`} data-testid={`antenna-manual-${d}`} data-held={isHeld||undefined}
      data-antenna-key-scope="" data-left-disabled={left===d||undefined}
-     aria-label={ta('antenna.manual.button',{caption,original:vireo(RADIO_LAB_CAPTIONS[d])})} aria-describedby={`${id}-hint ${keysNoteId}${left===d?` ${id}-leftover`:''}`} disabled={!enabled}
+     aria-label={ta('antenna.manual.button',{caption,original:vireo(RADIO_LAB_CAPTIONS[d],'direction')})} aria-describedby={`${id}-hint ${keysNoteId}${left===d?` ${id}-leftover`:''}`} disabled={!enabled}
      onPointerDown={e=>{
       const owner=manual.input({type:'pointer-down',pointerId:e.pointerId,button:e.button,direction:d});
       // Capture only for the accepted owner, so its release is seen wherever it happens.
@@ -832,7 +832,7 @@ function ManualPad({a,options,ta,manual,autoSlewTimer,run,keysNoteId}:Readonly<{
   <p id={`${id}-hint`} className="radio-control-note">{ta('antenna.manual.hint',{interval:RADIO_LAB_CONSTANTS.manualTimerIntervalMs})}</p>
   <p id={keysNoteId} className="radio-control-note" data-testid="antenna-manual-keys">{ta('antenna.manual.keys')}</p>
   {heldCaption&&<p data-testid="antenna-manual-held">{ta('antenna.manual.held',{caption:heldCaption})}</p>}
-  {left&&<p id={`${id}-leftover`} className="radio-control-note" data-testid="antenna-manual-leftover" data-direction={left}>{ta('antenna.manual.leftover',{caption:vireo(manualButtonCaption(a,left)),original:vireo(RADIO_LAB_CAPTIONS[left])})}</p>}
+  {left&&<p id={`${id}-leftover`} className="radio-control-note" data-testid="antenna-manual-leftover" data-direction={left}>{ta('antenna.manual.leftover',{caption:vireo(manualButtonCaption(a,left),'direction'),original:vireo(RADIO_LAB_CAPTIONS[left],'direction')})}</p>}
   {a.poleReversed&&<p className="radio-control-note" data-testid="antenna-pole">{ta('antenna.manual.pole')}</p>}
   {limits.length>0&&<div className="antenna-modal-limit" data-testid="antenna-manual-limit"><div><p>{ta('antenna.manual.limit.lead')}</p><ul>{limits.map(r=><li key={r} data-refusal={r}>{manualLimitText(r,a,ta)}</li>)}</ul></div></div>}
   {manual.cancel&&!held&&<p className="radio-control-note" data-testid="antenna-manual-cancelled" data-reason={manual.cancel}>{ta(`antenna.manual.cancel.${manual.cancel}`)}</p>}
@@ -916,7 +916,7 @@ function AntennaControls({antenna:a,options,ta,run,autoSlewTimer,suspended,setCo
      :<p className="radio-control-note">{ta('antenna.tracking.transit')}</p>}
     {a.trackingVisible&&<p data-testid="antenna-tracking-state">{ta(a.tracking?'antenna.tracking.on':'antenna.tracking.off')}</p>}
     {leftover
-     ?<p className="radio-control-note" data-testid="antenna-manual" data-left-disabled={leftover}>{ta('antenna.manual.stateLeftover',{caption:vireo(manualButtonCaption(a,leftover)),original:vireo(RADIO_LAB_CAPTIONS[leftover])})}</p>
+     ?<p className="radio-control-note" data-testid="antenna-manual" data-left-disabled={leftover}>{ta('antenna.manual.stateLeftover',{caption:vireo(manualButtonCaption(a,leftover),'direction'),original:vireo(RADIO_LAB_CAPTIONS[leftover],'direction')})}</p>
      :<p className="radio-control-note" data-testid="antenna-manual">{ta('antenna.manual.state',{state:onOff(a.manualButtonsEnabled)})}</p>}
     <ManualPad a={a} options={options} ta={ta} manual={manual} autoSlewTimer={autoSlewTimer} run={run} keysNoteId={`${id}-keys`}/>
     {!receiver&&<p className="radio-control-note" data-testid="antenna-receiver">{ta('antenna.receiver.state',{state:onOff(a.receiverEnabled)})} {ta('antenna.receiver.unhosted')}</p>}
@@ -939,7 +939,7 @@ function AntennaControls({antenna:a,options,ta,run,autoSlewTimer,suspended,setCo
    <section className="radio-control-block" aria-labelledby={`${id}-motion`}>
     <h4 id={`${id}-motion`}>{ta('antenna.status.heading')}</h4>
     <p data-testid="antenna-motion" data-manual={a.manualPress||undefined}>{a.manualPress
-     ?ta('antenna.status.manual',{caption:vireo(manualButtonCaption(a,heldManualDirection(a)!)),interval:RADIO_LAB_CONSTANTS.manualTimerIntervalMs})
+     ?ta('antenna.status.manual',{caption:vireo(manualButtonCaption(a,heldManualDirection(a)!),'direction'),interval:RADIO_LAB_CONSTANTS.manualTimerIntervalMs})
      :ta(a.status==='slewing'?'antenna.status.slewing':a.status==='slewing-ra'?'antenna.status.slewingRa':'antenna.status.none')}</p>
     {a.slewing&&<p className="radio-control-note" data-testid="antenna-ticks">{ta('antenna.status.ticks',{ticks:a.slewTicks})}</p>}
     {a.slewTimerEnabled&&suspended&&<p className="radio-control-note" data-testid="antenna-suspended">{ta(suspended==='rate-unsupported'?'antenna.status.suspendedRate':'antenna.status.suspended')}</p>}

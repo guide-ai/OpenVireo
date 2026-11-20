@@ -189,12 +189,12 @@ export const PORTUGUESE_TEXT=language('pt-BR',pt,ptOriginals,{appShell:APP_SHELL
  * browser with no query (tests/fixtures/language.ts contextLocale). Its letters include « » and U+202F, which English text never has. */
 export const FRENCH_TEXT=language('fr',fr,frOriginals,{appShell:APP_SHELL_FR,helpMenu:HELP_MENU_FR,projectLinks:PROJECT_LINKS_FR,tour:TOUR_FR,languageChoice:LANGUAGE_CHOICE_FR},
  [APP_SHELL_FR,CAMERA_FR,FIELD_INFO_FR,FIELD_READ_DETAILS_FR,HELP_MENU_FR,LANGUAGE_CHOICE_FR,NAKED_EYE_FR,OBJECT_X_LAB_FR,OBSERVATION_METADATA_FR,OBSERVATORY_FR,POLISH_FR,PROJECT_LINKS_FR,QSO_LIST_FR,SOUND_FR,TOUR_FR,VARIABLE_STARS_FR],/[àâæçéèêëîïôœùûüÿ«»\u202f]/i,'');
-/** Front ID0 (plan front-i18n-id.md §1.2 #2): Indonesian, behind `?lang=id` before its release; ID0 translated the shell, ID1 the observatory and all of VIREO's originals, ID2 exercises E01 and E02, ID3 exercise E03, ID4 exercises E04 and E05. It is the
+/** Front ID0 (plan front-i18n-id.md §1.2 #2): Indonesian, behind `?lang=id` before its release; ID0 translated the shell, ID1 the observatory and all of VIREO's originals, ID2 exercises E01 and E02, ID3 exercise E03, ID4 exercises E04 and E05, ID5 the radio telescope. It is the
  * first language written in ASCII alone, so its "letters" are words: frequent Indonesian function words that VIREO's English files and
  * the site's English exports never hold (checked over public/original and every export fixture at ID0), and the “ ” quotes and U+202F
  * thousands separator its text uses. */
 export const INDONESIAN_TEXT=language('id',idCatalog,idOriginals,{appShell:APP_SHELL_ID,helpMenu:HELP_MENU_ID,projectLinks:PROJECT_LINKS_ID,tour:TOUR_ID,languageChoice:LANGUAGE_CHOICE_ID},
- [APP_SHELL_ID,CAMERA_ID,FIELD_INFO_ID,FIELD_READ_DETAILS_ID,HELP_MENU_ID,LANGUAGE_CHOICE_ID,NAKED_EYE_ID,OBJECT_X_LAB_ID,OBSERVATION_METADATA_ID,OBSERVATORY_ID,POLISH_ID,PROJECT_LINKS_ID,QSO_LIST_ID,SOUND_ID,TOUR_ID,VARIABLE_STARS_ID],/(?<!\p{L})(?:yang|dan|untuk|dengan|tidak|Anda|dari|pada|ini|atau)(?!\p{L})|[“”\u202f]/u,'?lang=id',['shell','observatory','e01','e02','e03','e04','e05']);
+ [APP_SHELL_ID,CAMERA_ID,FIELD_INFO_ID,FIELD_READ_DETAILS_ID,HELP_MENU_ID,LANGUAGE_CHOICE_ID,NAKED_EYE_ID,OBJECT_X_LAB_ID,OBSERVATION_METADATA_ID,OBSERVATORY_ID,POLISH_ID,PROJECT_LINKS_ID,QSO_LIST_ID,SOUND_ID,TOUR_ID,VARIABLE_STARS_ID],/(?<!\p{L})(?:yang|dan|untuk|dengan|tidak|Anda|dari|pada|ini|atau)(?!\p{L})|[“”\u202f]/u,'?lang=id',['shell','observatory','e01','e02','e03','e04','e05','radio']);
 /** Front HI0: Hindi, behind `?lang=hi` before its release (an en-US browser with the preview query). HI0 translated the shell, so
  * only the shell's specs ran it; HI1 adds the observatory and all of VIREO's originals, HI2 exercises E01 and E02, HI3 exercise E03, HI4 exercises E04 and E05, HI5 the radio telescope; each HI front adds its area. Its letters are Devanagari (the danda । included), which English text
  * never has; “ ” are not among them, since English uses them too. */
@@ -292,6 +292,9 @@ import {RADIO_RECORD_SAVE_HI} from '../../src/i18n/hi/maps/radioRecordSave';
 import esIdentical from '../../src/i18n/es/identical.json' with {type:'json'};
 import ptIdentical from '../../src/i18n/pt-br/identical.json' with {type:'json'};
 import frIdentical from '../../src/i18n/fr/identical.json' with {type:'json'};
+import {RADIO_ANTENNA_ID} from '../../src/i18n/id/maps/radioAntenna';
+import {RADIO_RECORD_SAVE_ID} from '../../src/i18n/id/maps/radioRecordSave';
+import idIdentical from '../../src/i18n/id/identical.json' with {type:'json'};
 import hiIdentical from '../../src/i18n/hi/identical.json' with {type:'json'};
 import type {RADIO_ANTENNA_MESSAGES_EN} from '../../src/components/RadioAntennaMessages';
 import type {RADIO_SAVE_MESSAGES_EN} from '../../src/components/RadioRecordSaveMessages';
@@ -301,6 +304,8 @@ export const RADIO_MAPS:Readonly<Record<string,RadioMaps>>=Object.freeze({
  'pt-BR':{radioAntenna:RADIO_ANTENNA_PT,radioRecordSave:RADIO_RECORD_SAVE_PT,identical:ptIdentical.entries},
  // Front FR5: French (its ?lang=fr preview).
  fr:{radioAntenna:RADIO_ANTENNA_FR,radioRecordSave:RADIO_RECORD_SAVE_FR,identical:frIdentical.entries},
+ // Front ID5: Indonesian (its ?lang=id preview).
+ id:{radioAntenna:RADIO_ANTENNA_ID,radioRecordSave:RADIO_RECORD_SAVE_ID,identical:idIdentical.entries},
  // Front HI5: Hindi (its ?lang=hi preview).
  hi:{radioAntenna:RADIO_ANTENNA_HI,radioRecordSave:RADIO_RECORD_SAVE_HI,identical:hiIdentical.entries},
 });
