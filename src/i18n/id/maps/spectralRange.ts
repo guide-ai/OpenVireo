@@ -1,0 +1,14 @@
+import type {SPECTRAL_RANGE_EN} from '../../../SpectralRangeMessages';
+import type {Translation} from '../../maps';
+/** Front ID2: Indonesian (id) for the spectrometer range web strings (Front S). A web adaptation by OpenVireo, not CLEA’s. */
+export const SPECTRAL_RANGE_ID:Translation<typeof SPECTRAL_RANGE_EN>=Object.freeze({
+ current:(min:string,max:string)=>`Rentang spektrometer: ${min}–${max} Å (600 bin).`,
+ note:'Seperti di VIREO, OK memulai eksposur baru pada rentang baru (eksposur yang sedang berjalan dibuang); Batal (Cancel) mempertahankan rentang, dan Bawaan (Default) memulihkan 3700–4700 Å. Di luar cakupan templat (di bawah 3510 Å), sumber tidak memberikan cacah, seperti di VIREO. Seperti di VIREO, rentang adalah satu pengaturan yang dipakai bersama oleh jalur spektrometer bintang, langit, galaksi Hubble, LSS, Objek X, dan bidang, serta oleh Klasifikasi; eksposur yang sudah ada mempertahankan rentang saat diambil [W], dan memulihkan file sesi menjadikan rentangnya sebagai rentang saat ini [W]. Setiap rentang pada dialog dapat dipakai untuk spektrum bintang, galaksi, QSO, dan langit pada jalur-jalur ini dan pada Multi-Spec; galaksi yang spektrumnya tidak mencapai suatu rentang, atau sumber yang terlalu terang pada rentang itu untuk teleskop, akan menyatakannya. Objek X hanya menerima rentang yang membuat setiap targetnya berperilaku seperti pada 3700–4700 Å [W].',
+ objectXNote:'Seperti di VIREO, OK memulai spektrometer lagi pada rentang baru (spektrum yang belum disimpan dibuang); Batal (Cancel) mempertahankan rentang, dan Bawaan (Default) memulihkan 3700–4700 Å. Rentang adalah satu pengaturan yang dipakai bersama jalur spektrometer lainnya. Pada versi web ini, Objek X hanya menerima rentang yang membuat setiap target Objek X dapat diamati persis seperti pada 3700–4700 Å; rentang lain memberikan pesan yang sama untuk setiap target [W].',
+ skyNote:'Sumber langit tidak bergantung pada rentang (cabang langit VIREO di 0x50df64 dan Mulai (Go) di 0x50f4da tidak membaca rentang apa pun), sehingga hanya panjang gelombang 600 bin yang berubah.',
+ notWitnessed:'Rentang spektrum ini tidak dapat dipakai di sini pada versi web ini; atur rentang kembali ke 3700–4700 Å (Bawaan) untuk mengamati.',
+ multiSpecRange:(min:string,max:string)=>`Multi-Spec membaca rentang spektrometer (${min}–${max} Å), yang tidak dapat dipakai di sini pada versi web ini; atur kembali ke 3700–4700 Å untuk mengambil spektrum.`,
+ unavailable:'Rentang ini tidak dapat diamati untuk bintang ini pada versi web ini.',
+ slider:(edge:string)=>`Penggeser ${edge}`,
+ locked:'Rentang Spektrum... (Spectral Range) dinonaktifkan: Izinkan Perubahan oleh Pengguna (Allow User Change) tidak dicentang di Opsi Simulasi Optik (Optical Simulation Options), tab Spektrometer, seperti di VIREO. Opsi tersebut terbuka dalam mode instruktur.',
+});

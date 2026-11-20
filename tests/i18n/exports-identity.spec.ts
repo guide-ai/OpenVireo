@@ -70,7 +70,7 @@ const N=(locale:Locale,text:string)=>{if(locale==='pt-BR'||locale==='fr'||locale
 const ptStart=(english:string)=>new RegExp(`^\\s*${ptText('pt-BR').text(english).replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')}`);
 /** Front FR2: a French accessible name that starts with this English text's catalog translation (a button whose name adds a glyph);
  * French is before its release, so the catalog must hold the key (no English fallback). */
-/** Front ID2/HI2: the same for any language before its release (French since FR2, Indonesian since ID2, Hindi since HI2). */
+/** Front ID2: the same for any language before its release (French since FR2, Indonesian since ID2, Hindi since HI2). */
 const catalogStart=(tag:string,english:string)=>{const t=ptText(tag),key=Object.entries(en).find(([k,v])=>v===english&&Object.hasOwn(t.catalog,k))?.[0];if(!key)throw new Error(`No catalog text for “${english}”`);return new RegExp(`^\\s*${t.catalog[key]!.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')}`);};
 const frStart=(english:string)=>catalogStart('fr',english);
 /** The variable-star catalog's 31,147 records as the screen writes them: Front PT-REL, Portuguese groups thousands with U+202F
@@ -175,7 +175,7 @@ test.describe.configure({mode:'parallel'});
 // Front PT2: the E01 and E02 families below (analyser, Observational Data, Hubble, star SSP, exposures, field spectrometer, LSS and
 // wedge) also run in Brazilian Portuguese (pt-BR; its `?lang=pt-BR` preview until PT-REL, a pt-BR browser since): same names and SHA-256 as English, no Portuguese letter in the files.
 // Front FR2: and in French (fr, its `?lang=fr` preview): same names and SHA-256 as English, no French letter, « » or U+202F in the files (’ is English’s apostrophe too; the SHA-256 covers it).
-family('spectrum analysis: measurement CSV, velocities CSV and the analysis session',['en','qps','es-419','pt-BR','fr','hi'],async({browser,baseURL},identical)=>{
+family('spectrum analysis: measurement CSV, velocities CSV and the analysis session',['en','qps','es-419','pt-BR','fr','id','hi'],async({browser,baseURL},identical)=>{
  await identical(browser,baseURL,async(page,locale)=>{
   await open(page,locale,'spectrum');
   await page.getByLabel(N(locale,'Import spectrum')).setInputFiles({name:'identity-vector.csv',mimeType:'text/csv',buffer:SPECTRUM});
@@ -187,7 +187,7 @@ family('spectrum analysis: measurement CSV, velocities CSV and the analysis sess
   // Front SC10: ArrowUp, not ArrowRight: under qps-rtl the native range input runs right to left (before RT5 makes data sliders
   // left-to-right islands), so ArrowRight lowers z there; ArrowUp raises it one step in every direction.
   await page.getByRole('slider').focus();await page.getByRole('slider').press('ArrowUp');
-  await page.getByRole('button',{name:locale==='es-419'?new RegExp(`^\\s*${SPANISH.get('Record measurement')}`):locale==='pt-BR'?ptStart('Record measurement'):locale==='fr'?frStart('Record measurement'):locale==='hi'?catalogStart('hi','Record measurement'):pseudoStart('Record measurement')}).click();await button(page,'Save measurement',locale).click();
+  await page.getByRole('button',{name:locale==='es-419'?new RegExp(`^\\s*${SPANISH.get('Record measurement')}`):locale==='pt-BR'?ptStart('Record measurement'):locale==='fr'?frStart('Record measurement'):locale==='id'?catalogStart('id','Record measurement'):locale==='hi'?catalogStart('hi','Record measurement'):pseudoStart('Record measurement')}).click();await button(page,'Save measurement',locale).click();
   await expect(page.locator('#measurement-log tbody tr')).toHaveCount(1);
   const measurements=await download(page,()=>button(page,'Export CSV ↓',locale).click());
   await page.getByText(N(locale,'Velocity analysis')).click();
@@ -201,7 +201,7 @@ family('spectrum analysis: measurement CSV, velocities CSV and the analysis sess
 // remarks) writes the measurement CSV and analysis session, the own Observational Results text and CSV, the acquired SSP and the
 // analysis spectrum. One second of exposure on the page clock from a fixed instant; only the observatory clock's elapsed time and
 // the record's JD are masked (observatoryTimeMasked, recordJdTextMasked, recordJdCsvMasked), because they follow real time.
-family('E01 measurement through Observational Data: measurement CSV, session, results text/CSV, acquired SSP and analysis spectrum',['en','qps','es-419','pt-BR','fr','hi'],async({browser,baseURL},identical)=>{
+family('E01 measurement through Observational Data: measurement CSV, session, results text/CSV, acquired SSP and analysis spectrum',['en','qps','es-419','pt-BR','fr','id','hi'],async({browser,baseURL},identical)=>{
  test.setTimeout(180_000);
  await identical(browser,baseURL,async(page,locale)=>{
   page.setDefaultTimeout(30_000);
@@ -214,7 +214,7 @@ family('E01 measurement through Observational Data: measurement CSV, session, re
   await page.clock.runFor(1000);await button(page,'Pause exposure',locale).first().click();await page.clock.resume();
   await button(page,'Analyze acquired galaxy',locale).click();
   await page.getByLabel(N(locale,'z step per tick')).fill('.001');await button(page,'Apply step',locale).click();await page.getByRole('slider').fill('10');
-  await page.getByRole('button',{name:locale==='es-419'?new RegExp(`^\\s*${SPANISH.get('Record measurement')}`):locale==='pt-BR'?ptStart('Record measurement'):locale==='fr'?frStart('Record measurement'):locale==='hi'?catalogStart('hi','Record measurement'):pseudoStart('Record measurement')}).click();
+  await page.getByRole('button',{name:locale==='es-419'?new RegExp(`^\\s*${SPANISH.get('Record measurement')}`):locale==='pt-BR'?ptStart('Record measurement'):locale==='fr'?frStart('Record measurement'):locale==='id'?catalogStart('id','Record measurement'):locale==='hi'?catalogStart('hi','Record measurement'):pseudoStart('Record measurement')}).click();
   const dialog=page.getByTestId('hubble-obsdata');await expect(dialog).toBeVisible();
   await page.getByTestId('hubble-obsdata-vel').fill('2997.92');await page.getByTestId('hubble-obsdata-sp').fill('G5');await page.getByTestId('hubble-obsdata-remarks').fill('typed, with comma');
   await page.getByTestId('hubble-obsdata-ok').click();await expect(dialog).toHaveCount(0);
@@ -230,7 +230,7 @@ family('E01 measurement through Observational Data: measurement CSV, session, re
  },{session:observatoryTimeMasked,resultsText:recordJdTextMasked,resultsCsv:recordJdCsvMasked},page=>page.locator('.spectrum-route'));
 });
 
-family('Hubble analysis: Hubble CSV and the Hubble session from the original workbook example',['en','qps','es-419','pt-BR','fr','hi'],async({browser,baseURL},identical)=>{
+family('Hubble analysis: Hubble CSV and the Hubble session from the original workbook example',['en','qps','es-419','pt-BR','fr','id','hi'],async({browser,baseURL},identical)=>{
  await identical(browser,baseURL,async(page,locale)=>{
   await open(page,locale,'spectrum');
   await page.getByText(N(locale,'Hubble diagram & distances')).click();
@@ -383,7 +383,7 @@ family('pulsar analysis: the results CSV of two recorded measurements',['en','qp
  },{},page=>page.getByTestId('pulsar-analysis'));
 });
 
-family('star spectrometer: Save spectrum (.SSP) of a paused exposure',['en','qps','es-419','pt-BR','fr','hi'],async({browser,baseURL},identical)=>{
+family('star spectrometer: Save spectrum (.SSP) of a paused exposure',['en','qps','es-419','pt-BR','fr','id','hi'],async({browser,baseURL},identical)=>{
  await identical(browser,baseURL,async(page,locale)=>{
   await page.clock.install({time:NOW});
   await page.goto(`/${contextQuery(locale)}#spectrometer`);
@@ -398,7 +398,7 @@ family('star spectrometer: Save spectrum (.SSP) of a paused exposure',['en','qps
 
 // Front ES3: the galaxy, sky and star exposure routes of E01 write counts CSV and session JSON files; their screens are
 // translated, the files are not. Each exposure runs one second on the page clock from a fixed instant.
-family('E01 exposures: galaxy, sky and star counts CSV and session JSON',['en','qps','es-419','pt-BR','fr','hi'],async({browser,baseURL},identical)=>{
+family('E01 exposures: galaxy, sky and star counts CSV and session JSON',['en','qps','es-419','pt-BR','fr','id','hi'],async({browser,baseURL},identical)=>{
  test.setTimeout(120_000);
  const run=async(page:Page,locale:Locale,activate:string,start:string)=>{
   await button(page,activate,locale).click();
@@ -426,7 +426,7 @@ family('E01 exposures: galaxy, sky and star counts CSV and session JSON',['en','
 
 // Front ES3: the single-slit spectrometer at a free pointing (the spectrometer route) writes a counts CSV and an exposure
 // session; NGC 4874 (Coma – 1) is pointed exactly, as tests/field-spectrometer.spec.ts does, and exposed one second on the page clock.
-family('field spectrometer: Save counts CSV and Save exposure session at a free pointing',['en','qps','es-419','pt-BR','fr','hi'],async({browser,baseURL},identical)=>{
+family('field spectrometer: Save counts CSV and Save exposure session at a free pointing',['en','qps','es-419','pt-BR','fr','id','hi'],async({browser,baseURL},identical)=>{
  test.setTimeout(400_000);
  await identical(browser,baseURL,async(page,locale)=>{
   page.setDefaultTimeout(90_000);
@@ -436,7 +436,7 @@ family('field spectrometer: Save counts CSV and Save exposure session at a free 
   await button(page,'Open dome ↗',locale).click();
   if(!await page.locator('#point-ra').isVisible())await page.getByText(N(locale,'Enter coordinates')).click();
   await page.locator('#point-ra').fill('12.99311111111111');await page.locator('#point-dec').fill('27.959722222222222');await button(page,'Point to coordinates',locale).click();
-  await page.getByRole('button',{name:new RegExp(/^\s*[⟦]?\s*(?:T[eé]l[eé]sc[oó]p[eéi]|दूरबीन ·)/.source+'|'+pseudoStart('Telescope').source)}).first().click();
+  await page.getByRole('button',{name:new RegExp(/^\s*[⟦]?\s*(?:T[eé]l[eé]sc[oó]p[eéi]|Teleskop ·|दूरबीन ·)/.source+'|'+pseudoStart('Telescope').source)}).first().click();
   if(!await button(page,'Turn tracking on',locale).isVisible())await page.getByText(N(locale,'Observatory clock & spectral tracking')).click();
   if(await button(page,'Turn tracking on',locale).isVisible())await button(page,'Turn tracking on',locale).click();
   await page.evaluate(()=>{location.hash='#spectrometer';});
@@ -515,7 +515,7 @@ family('radio telescope: Download capture as .PLR of a model-generated recording
 // Edit Mode (an instructor option), LSS Galaxy Data writes LSS_Galaxy_Data.TXT. The page clock is paused at a fixed instant
 // before the exposure and only moves by runFor until the investigation is saved; the wedge and LSS Galaxy Data files written after
 // it resumes record no time (the region rows take the observatory clock's JD, which stands still), so nothing is masked.
-family('E02 LSS survey and wedge: counts CSV, session, SSP, results CSV and TXT, investigation, wedge CSV and LSS Galaxy Data TXT',['en','qps','es-419','pt-BR','fr','hi'],async({browser,baseURL},identical)=>{
+family('E02 LSS survey and wedge: counts CSV, session, SSP, results CSV and TXT, investigation, wedge CSV and LSS Galaxy Data TXT',['en','qps','es-419','pt-BR','fr','id','hi'],async({browser,baseURL},identical)=>{
  test.setTimeout(240_000);
  await identical(browser,baseURL,async(page,locale)=>{
   page.setDefaultTimeout(30_000);
@@ -541,7 +541,7 @@ family('E02 LSS survey and wedge: counts CSV, session, SSP, results CSV and TXT,
   const resultsTxt=await download(page,()=>page.getByTestId('lss-results-txt').click());
   await page.locator('#lss-description').fill('One galaxy so far.');
   const toolbar=page.locator('.investigation-toolbar');
-  const investigation=await download(page,()=>toolbar.getByRole('button',{name:locale==='es-419'?exact(es['project.save']):locale==='pt-BR'||locale==='fr'||locale==='hi'?exact(ptText(locale).catalog['project.save']!):L('Save investigation')}).click());
+  const investigation=await download(page,()=>toolbar.getByRole('button',{name:locale==='es-419'?exact(es['project.save']):locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'?exact(ptText(locale).catalog['project.save']!):L('Save investigation')}).click());
   await page.clock.resume();// the wedge's lazy route needs running timers; nothing written after this follows the clock (checked with --repeat-each)
   await button(page,'Plot my records in the wedge',locale).click();await expect(page.getByTestId('wedge-count')).toBeVisible({timeout:30_000});
   const wedgeCsv=await download(page,()=>page.getByTestId('wedge-export').click());
