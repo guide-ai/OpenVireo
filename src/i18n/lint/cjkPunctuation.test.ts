@@ -13,11 +13,11 @@ describe('Front JA0: the CJK punctuation fixer (Japanese)',()=>{
   ['{count} 件の結果','{count}件の結果'],['OpenVireo の調査','OpenVireoの調査'],['30 秒','30秒'],['Enter キー','Enterキー'],['CCD カメラ','CCDカメラ'],
   ['保存 。','保存。'],['テスト , 次','テスト、次'],['テスト .','テスト。'],['テスト (abc) .','テスト（abc）。'],['「テスト」 .','「テスト」。'],
   ['「a“b”c」','「a『b』c」'],['https://example.comを開き, 次に','https://example.comを開き、次に'],['https://openvireo.space/?lang=ja を開く','https://openvireo.space/?lang=jaを開く'],
-  ['?lang=jaを開く, 次','?lang=jaを開く、次'],['「 開く 」','「開く」'],['（ 例 ）','（例）'],['保存、 次へ','保存、次へ'],['1)最初','1）最初'],
+  ['?lang=jaを開く, 次','?lang=jaを開く、次'],['色指数(B-V)を測ります','色指数（B-V）を測ります'],['E(赤化)を設定','E（赤化）を設定'],['NOMAD (Zacharias)の','NOMAD（Zacharias）の'],['天体ID(Show Object ID)を表示','天体ID（Show Object ID）を表示'],['QSO(Quasar)は','QSO（Quasar）は'],['「 開く 」','「開く」'],['（ 例 ）','（例）'],['保存、 次へ','保存、次へ'],['1)最初','1）最初'],
  ];
  it.each(CASES)('fixes %j',(input,expected)=>{expect(fix(input)).toBe(expected);expect(fix(expected)).toBe(expected);expect(fix(fix(input))).toBe(fix(input));});
  const KEPT=['名前を付けて保存...','保存…','スペクトル.SSP','?lang=ja','12:30:45','1.5','12 km/s','500 Å','(RA:)','Save As...','RA: 12h',
-  'ファイル › 保存','0.4 m望遠鏡','3500–7300 K','{a}、{b}','行1\n行2','Enter','(Observer\'s Notebook)','12%','保存。','ファイル.{ext}','テスト ?キー','「開く」を選びます。',' 前後の空白 '];
+  'ファイル › 保存','0.4 m望遠鏡','3500–7300 K','{a}、{b}','行1\n行2','Enter','(Observer\'s Notebook)','12%','保存。','ファイル.{ext}','テスト ?キー','「開く」を選びます。',' 前後の空白 ','E(B-V)を設定','E(B-V)の値','E(B−V)を設定','「見かけの等級（V）」（App. Mag (V)）','（App. Mag (V)）を','「仮想天文台（全観測装置）」（Virtual Observatory (All Instruments)）','StrToInt(x)で変換'];
  it.each(KEPT)('keeps %j',text=>{expect(fix(text)).toBe(text);});
  it('leaves an odd number of straight quotes and a fragment\'s quotes alone',()=>{
   expect(fix('名前"開く')).toBe('名前"開く');expect(fix('"開く"',JAPANESE_STYLE,{quotes:false})).toBe('"開く"');

@@ -65,7 +65,8 @@ for(const [lang,file] of [['es-419','es/es.json'],['pt-BR','pt-br/pt-br.json'],[
 test('Japanese full-width digits: the notice asks for half-width 0–9 in Japanese and the value is not converted',async({page})=>{
  const ja=JSON.parse(readFileSync(new URL('../src/i18n/ja/ja.json',import.meta.url),'utf8')) as Record<string,string>;
  await page.goto('/?lang=ja#observatory');await expect(page.getByRole('heading',{name:ja['sky.title'],exact:true})).toBeVisible({timeout:15_000});
- if(!await page.getByTestId('ob-set-date').isVisible())await page.getByText('Site clock · fixed UT scenario',{exact:true}).click();
+ // Front JA1: the site clock's caption is Japanese since the observatory is.
+ if(!await page.getByTestId('ob-set-date').isVisible())await page.getByText(ja['siteClock.title'],{exact:true}).click();
  await page.getByTestId('ob-set-date').click();const dialog=page.getByTestId('ob-date-dialog');await expect(dialog).toBeVisible();
  const date=page.getByTestId('ob-date-date');await date.fill('');await date.focus();
  await page.keyboard.insertText('２０２６／０２／２８');
