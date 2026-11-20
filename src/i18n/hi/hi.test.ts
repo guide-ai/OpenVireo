@@ -36,14 +36,19 @@ import {SPECTRAL_RANGE_EN} from '../../SpectralRangeMessages';
 import {WEDGE_MESSAGES_EN} from '../../components/WedgeMessages';
 import {CLUSTER_HR_EN} from '../../clusters/ClusterHrMessages';
 import {CLUSTER_DATA_MESSAGES_EN} from '../../clusterdata/ClusterDataMessages';
+import {RADIO_ANTENNA_MESSAGES_EN} from '../../components/RadioAntennaMessages';
+import {FINISH_SAVE_MESSAGES_EN} from '../../components/RadioFinishSaveMessages';
+import {RADIO_R1_MESSAGES_EN} from '../../components/RadioR1Messages';
+import {RADIO_SAVE_MESSAGES_EN} from '../../components/RadioRecordSaveMessages';
 
 // Front HI0 (docs/I18N.md, "Hindi: the folder, the digit notice and the shell (HI0)"; plan front-i18n-hi.md §4, §6.2): the
 // structural checks of the partial Hindi bundle and every Hindi string through the SC4 lint framework, profile hi. Errors fail the
 // batch; length ratios are reported for the independent reviewer. Later HI fronts add their maps to ENGLISH_MAPS and COMPLETE_MAPS,
 // and their areas to the coverage checks.
-const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,nakedEye:NAKED_EYE_MESSAGES_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN,clusterHr:CLUSTER_HR_EN,clusterData:CLUSTER_DATA_MESSAGES_EN};
-/** The maps translated completely: HI0's shell maps; HI1's observatory maps, the camera card and polish; HI2's engineView, spectralRange and wedge; HI4's clusterHr, clusterData and variableStars. */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars'];
+const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,nakedEye:NAKED_EYE_MESSAGES_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN,clusterHr:CLUSTER_HR_EN,clusterData:CLUSTER_DATA_MESSAGES_EN,
+ radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN};
+/** The maps translated completely: HI0's shell maps; HI1's observatory maps, the camera card and polish; HI2's engineView, spectralRange and wedge; HI4's clusterHr, clusterData and variableStars; HI5's four radio maps. */
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars','radioAntenna','radioFinishSave','radioR1','radioRecordSave'];
 /** HI0's area of en.json: the shell (header, menu, first steps, toolbar, errors, instructor mode, document title), as FR0's and
  * PT0's, and the welcome's home.* keys (Front HOME, after FR0). */
 const SHELL_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(app|project|session|error|instructorMode)\./.test(k)||/\.nav$/.test(k)||['demonstrationMode.banner','sky.eyebrow','sky.title','sky.subtitle','sky.about','sky.local','sky.observatory','sky.analyzer','sky.step1','sky.step1Help','sky.step2','sky.step2Help','sky.step3','sky.step3Help','spectrum.tools','classLink.cancel'].includes(k));
@@ -65,6 +70,8 @@ const E03_PREFIXES=/^(class|classLines|classLink|classAtlas|classImport|classLab
 /** HI4's area: exercises E04 (Pleiades photometry) and E05 (cluster H-R diagrams and variable stars), as FR4's. */
 const E04_E05_PREFIXES=/^(ph|pa|pleiadesLab|nc|db|ce|clusterLab|ownHr|obsHr)\./;
 const HI4_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E04_E05_PREFIXES.test(k));
+/** HI5's area: the radio telescope, as FR5's. */
+const HI5_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(radio|radioRoute|radioAccess|radioReceiver|radioSimOptions|pulsarParameters)\./.test(k));
 const HI3_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E03_PREFIXES.test(k)||k==='continuity.restoreExposure'||k==='ssp.header');
 /** PT1's keys outside those prefixes that the observatory files render (the classification and Pleiades guides' pointing
  * steps, the photometer card, the continuity notes the route shows): 104 keys, pinned so a lost key fails. */
@@ -91,7 +98,7 @@ describe('Front HI0: the Hindi (hi) bundle',()=>{
   for(const key of Object.keys(hi))expect(Object.hasOwn(en,key),key).toBe(true);
   expect(SHELL_KEYS.length).toBe(131);expect(HOME_KEYS.length).toBe(27);
   expect([...SHELL_KEYS,...HOME_KEYS,...FOOTER_KEYS].filter(k=>!Object.hasOwn(hi,k))).toEqual([]);
-  expect(Object.keys(hi).length).toBe(new Set([...SHELL_KEYS,...HOME_KEYS,...FOOTER_KEYS,...HI1_KEYS,...HI1_GUIDE_KEYS,...HI2_KEYS,...HI3_KEYS,...HI4_KEYS]).size);
+  expect(Object.keys(hi).length).toBe(new Set([...SHELL_KEYS,...HOME_KEYS,...FOOTER_KEYS,...HI1_KEYS,...HI1_GUIDE_KEYS,...HI2_KEYS,...HI3_KEYS,...HI4_KEYS,...HI5_KEYS]).size);
  });
  it('Front HI1: the catalog covers the observatory (every key of its instruments\' prefixes) and the guide keys it renders',()=>{
   expect(HI1_KEYS.length).toBeGreaterThan(450);
@@ -110,6 +117,10 @@ describe('Front HI0: the Hindi (hi) bundle',()=>{
  it('Front HI4: the catalog covers exercises E04 and E05 (every key of their prefixes)',()=>{
   expect(HI4_KEYS.length).toBe(651);
   expect(HI4_KEYS.filter(k=>!Object.hasOwn(hi,k))).toEqual([]);
+ });
+ it('Front HI5: the catalog covers the radio telescope (every key of its prefixes)',()=>{
+  expect(HI5_KEYS.length).toBe(646);
+  expect(HI5_KEYS.filter(k=>!Object.hasOwn(hi,k))).toEqual([]);
  });
  it('every map has its English shape: the shell maps complete, the header-name maps partial',()=>{
   for(const [id,map] of Object.entries(HINDI.maps??{})){
