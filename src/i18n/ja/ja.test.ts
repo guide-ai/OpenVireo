@@ -85,6 +85,11 @@ const fix=(text:string,options?:{quotes?:boolean;valueMarks?:RegExp})=>fixCjkPun
 /** VIREO originals whose ASCII bracket VIREO itself closes after a value (`Object: (` + number + `) `): the fixer leaves them. */
 const ASCII_BRACKET_PIECES:readonly string[]=['Object: ('];
 const fixOriginal=(key:string,text:string)=>ASCII_BRACKET_PIECES.includes(key)?text:fix(text,{quotes:!key.startsWith('fragment|')});
+/** Front JA3: field names of VIREO's files that a catalog string quotes as the file writes them (the DAT/TXT `MJD(Days)` column): the
+ * fixer keeps their ASCII brackets beside Japanese text, as a symbol's own brackets. */
+const ASCII_FIELD_NAMES:readonly string[]=['MJD(Days)'];
+const fixCatalog=(text:string)=>{const kept:string[]=[];const masked=ASCII_FIELD_NAMES.reduce((s,name)=>s.split(name).join(`\uE000${kept.push(name)-1}\uE001`),text);
+ return fix(masked).replace(/\uE000(\d+)\uE001/g,(_,i:string)=>kept[Number(i)]!);};
 const fixSource=(source:string)=>fixSourceLiterals(source,(text,options)=>fix(text,options));
 const writeJson=(file:string,value:unknown)=>writeFileSync(path.join(DIR,file),JSON.stringify(value,null,1)+'\n');
 
@@ -92,7 +97,7 @@ if(process.env.OPENVIREO_FIX_TYPOGRAPHY==='1'){
  // As FR0: refused in CI (CI must check, never rewrite).
  if(process.env.CI)throw new Error('OPENVIREO_FIX_TYPOGRAPHY=1 is refused in CI: run the fixer locally and commit the reviewed diff');
  const catalog=JSON.parse(readFileSync(path.join(DIR,'ja.json'),'utf8')) as Record<string,string>;
- writeJson('ja.json',Object.fromEntries(Object.entries(catalog).map(([k,v])=>[k,fix(v)])));
+ writeJson('ja.json',Object.fromEntries(Object.entries(catalog).map(([k,v])=>[k,fixCatalog(v)])));
  const own=JSON.parse(readFileSync(path.join(DIR,'originals.json'),'utf8')) as Record<string,string>;
  writeJson('originals.json',Object.fromEntries(Object.entries(own).map(([k,v])=>[k,fixOriginal(k,v)])));
  for(const file of [...sources('maps'),...sources('help')]){const before=readFileSync(file,'utf8'),after=fixSource(before);if(after!==before)writeFileSync(file,after);}
@@ -155,7 +160,7 @@ describe('Front JA0: the Japanese (ja) bundle',()=>{
   for(const key of Object.keys(originals)){expect(normalizeOriginal(key),key).toBe(key);expect(Object.hasOwn(esOriginals,key)||esSame(key)||JA_ONLY_ORIGINALS.includes(key),key).toBe(true);}
  });
  it('the CJK punctuation fixer has nothing left to change: catalog, originals, maps and help sources (characters, never escapes)',()=>{
-  expect(Object.entries(ja).filter(([,v])=>fix(v)!==v).map(([k])=>k)).toEqual([]);
+  expect(Object.entries(ja).filter(([,v])=>fixCatalog(v)!==v).map(([k])=>k)).toEqual([]);
   expect(Object.entries(originals).filter(([k,v])=>fixOriginal(k,v)!==v).map(([k])=>k)).toEqual([]);
   for(const file of [...sources('maps'),...sources('help')]){const text=readFileSync(file,'utf8');expect(fixSource(text)===text,path.relative(DIR,file)).toBe(true);
    expect(text,path.relative(DIR,file)).not.toMatch(/\\u[0-9a-fA-F]{4}/);}
