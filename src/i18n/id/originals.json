@@ -737,5 +737,8 @@
  "Hrs": "Jam",
  "Min:": "Menit:",
  "General": "Umum",
- "E": "BT"
+ "E": "BT",
+ "direction|N": "U",
+ "direction|E": "T",
+ "direction|W": "B"
 }

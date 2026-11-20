@@ -34,10 +34,15 @@ export const ISO=/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z?(?: UT)?$/;
 export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['OK','Longitude','Latitude','Altitude','Pulsar']),
  // Front FR5: French (identical.json: VIREO's OK, Longitude, Latitude, Altitude, Pulsar, Options, Site..., Horizon, Type and Mode
  // are the same words in French, and the web's «Second», the second of two marks).
- fr:new Set(['OK','Longitude','Latitude','Altitude','Pulsar','Options','Site...','Horizon','Type','Mode','Second'])};
+ fr:new Set(['OK','Longitude','Latitude','Altitude','Pulsar','Options','Site...','Horizon','Type','Mode','Second']),
+ // Front ID5: Indonesian (ID1's identical originals: VIREO's File, OK and Mode).
+ id:new Set(['File','OK','Mode'])};
 export const NOT_SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set(['Radio','Radio...','E','No','no','Hrs']),
  // Front FR5: Spanish-only words French translates (Non, non, h, Octets); Radio, Radio... and E (Est) are the same in French.
- fr:new Set(['No','no','Hrs','Bytes'])};
+ fr:new Set(['No','no','Hrs','Bytes']),
+ // Front ID5: Spanish-only words Indonesian translates (Tidak, tidak, Jam, Byte), and the direction buttons N and E, which read «U» and
+ // «T» in Indonesian (the panel's `direction` captions), so an English letter left on a button fails here.
+ id:new Set(['No','no','Hrs','Bytes','N','E'])};
 export const same=(text:string,L?:LanguageText)=>{
  if(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false))return true;
  if(L!==undefined&&(NOT_SAME_IN[L.tag]?.has(text)??false))return false;

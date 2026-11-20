@@ -38,6 +38,10 @@ import {CAMERA_MESSAGES_EN} from '../../camera/CameraMessages';
 import {ENGINE_VIEW_EN} from '../../SpectrumEngineMessages';
 import {SPECTRAL_RANGE_EN} from '../../SpectralRangeMessages';
 import {WEDGE_MESSAGES_EN} from '../../components/WedgeMessages';
+import {RADIO_ANTENNA_MESSAGES_EN} from '../../components/RadioAntennaMessages';
+import {FINISH_SAVE_MESSAGES_EN} from '../../components/RadioFinishSaveMessages';
+import {RADIO_R1_MESSAGES_EN} from '../../components/RadioR1Messages';
+import {RADIO_SAVE_MESSAGES_EN} from '../../components/RadioRecordSaveMessages';
 
 // Front ID0 (docs/I18N.md, "Indonesian: the folder, lints and shell (ID0)"; plan front-i18n-id.md §4, §6.2): the structural checks
 // of the partial Indonesian bundle, the Indonesian typography fixer as a no-op over every Indonesian string, and every string through
@@ -51,10 +55,11 @@ import {WEDGE_MESSAGES_EN} from '../../components/WedgeMessages';
 // A VIREO `fragment|` original keeps its straight quotes (another piece of VIREO's text closes them).
 const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,
  camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,nakedEye:NAKED_EYE_MESSAGES_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,
- engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN};
+ engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN,
+ radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN};
 /** The maps translated completely (ID0's shell maps; ID1's observatory maps, the camera card the observatory shows, and polish); the
  * others are partial until their front (objectXLab ID6, variableStars ID4). */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge'];
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','radioAntenna','radioFinishSave','radioR1','radioRecordSave'];
 /** ID0's area of en.json: the shell (header, menu, home and first steps, toolbar, errors, instructor mode, document title), as FR0's,
  * and the welcome's home.* keys (plan §6.1: Front HOME added them after FR0, and FR1 translated them). */
 const SHELL_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(app|project|session|error|instructorMode)\./.test(k)||/\.nav$/.test(k)||['demonstrationMode.banner','sky.eyebrow','sky.title','sky.subtitle','sky.about','sky.local','sky.observatory','sky.analyzer','sky.step1','sky.step1Help','sky.step2','sky.step2Help','sky.step3','sky.step3Help','spectrum.tools','classLink.cancel'].includes(k));
@@ -65,7 +70,7 @@ const ID1_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>OBSERVATORY_PREFIXES.
 const ID1_GUIDE_KEYS:readonly MessageKey[]=['spectrum.licenseHelp','spectrometer.open','continuity.starSource','continuity.acquireFromObservatory','continuity.pointingHelp','galaxyExposure.acquireFromObservatory','galaxyExposure.pointingHelp','galaxyExposure.source','classLab.next.choose','classLab.next.compare','classLab.next.inspect','classLab.next.record','classLab.next.save','classLab.step.choose.title','classLab.step.choose.help','classLab.step.compare.title','classLab.step.compare.help','classLab.step.inspect.title','classLab.step.inspect.help','classLab.step.record.title','classLab.step.record.help','classLab.step.save.title','classLab.step.save.help','classLab.problem.load','classLab.recover.load','classLab.problem.draft','classLab.recover.draft','classLab.problem.limit','classLab.recover.limit','classLab.problem.width','classLab.recover.width','classLab.problem.import','classLab.recover.import','ph.readingOption','ph.unavailableMixed','ph.unavailableAssociation','ph.access.ready','ph.access.pointing','ph.access.dome','ph.access.finder','ph.access.moving','ph.domainLimit.Poisson-mean-bound','ph.domainLimit.all-duration-count-domain','ph.apertureReadingOption','pleiadesPoint.eyebrow','pleiadesPoint.title','pleiadesPoint.admitted','pleiadesPoint.open','pleiadesPoint.unavailable','pleiadesPoint.telescope','pleiadesPoint.checking','pleiadesPoint.help','pleiadesLab.next.list','pleiadesLab.next.point','pleiadesLab.next.activate','pleiadesLab.next.measure','pleiadesLab.next.record','pleiadesLab.next.color','pleiadesLab.next.sample','pleiadesLab.next.distance','pleiadesLab.next.save','pleiadesLab.step.list.title','pleiadesLab.step.list.help','pleiadesLab.step.point.title','pleiadesLab.step.point.help','pleiadesLab.step.activate.title','pleiadesLab.step.activate.help','pleiadesLab.step.measure.title','pleiadesLab.step.measure.help','pleiadesLab.step.record.title','pleiadesLab.step.record.help','pleiadesLab.step.color.title','pleiadesLab.step.color.help','pleiadesLab.step.sample.title','pleiadesLab.step.sample.help','pleiadesLab.step.distance.title','pleiadesLab.step.distance.help','pleiadesLab.step.save.title','pleiadesLab.step.save.help','pleiadesLab.problem.card','pleiadesLab.recover.card','pleiadesLab.problem.blocked','pleiadesLab.recover.blocked','pleiadesLab.problem.start','pleiadesLab.recover.start','pleiadesLab.problem.sky','pleiadesLab.recover.sky','pleiadesLab.problem.budget','pleiadesLab.recover.budget','notes.summary','ph.tiledReason.object-x-hidden','ph.tiledReason.field-polar','ph.tiledReason.photometer-galaxy-name','ph.tiledReason.photometer-variable','ph.tiledReason.photometer-selection','ph.tiledReason.photometer-empty','ph.tiledReason.photometer-population','ph.tiledLimit.Poisson-mean-bound','ph.tiledLimit.all-duration-count-domain','ph.tiledLimit.photometer-galaxy-sky-stamp','demonstrationMode.adaptation','ph.parametersDomain.base-count','ph.parametersDomain.timer','ph.parametersDomain.magnitude'];
 /** VIREO originals that Spanish keeps with no entry, as for Portuguese and French: the options dialog's General tab («Umum») and
  * the Site Information longitude letter E («BT», Bujur Timur). */
-const ID_ONLY_ORIGINALS:readonly string[]=['General','E'];
+const ID_ONLY_ORIGINALS:readonly string[]=['General','E','direction|N','direction|E','direction|W'];
 /** Front ID2's area of en.json: FR2's (and PT2's) keys of exercises E01 and E02, every key of their prefixes, and classLink.open. */
 const E01_E02_PREFIXES=/^(continuity|lab|lssLab|hubble|velocity|ownResults|spectrum|spectrometer|galaxyExposure|skyExposure|starExposure|ssp|exposureIO|drift|skyProfiles|fieldSpec|lss|wedge)\./;
 const ID2_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E01_E02_PREFIXES.test(k)||k==='classLink.open');
@@ -73,6 +78,8 @@ const ID2_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E01_E02_PREFIXES.test
  * classification+cluster, and the core keys E03 renders (continuity.restoreExposure and ssp.header). */
 const E03_PREFIXES=/^(class|classLines|classLink|classAtlas|classImport|classLab|feature|cursor|probe|photo|combined|combinedWidth|viewport|inspection|sampledTrace|reverseTrace|sampledDiff|range|widthSource|widthCoordinates|sharedMarks|comparisonMark|paneSource|panMarks|obs|nativeResults|nativeEdit|nativeDelete|nativeList|nativeText|nativeCsv|program|programImport)\./;
 const ID3_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E03_PREFIXES.test(k)||k==='continuity.restoreExposure'||k==='ssp.header');
+/** Front ID5: the radio telescope, every key of FR5's six prefixes. */
+const ID5_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(radio|radioRoute|radioAccess|radioReceiver|radioSimOptions|pulsarParameters)\./.test(k));
 const HOME_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>k.startsWith('home.'));
 const profile=PROFILES.id;
 const data:LintData={glossary:glossaryFrom(glossaryJson,'id'),identical:identical.entries,allowed:lintAllowed.entries as Readonly<Record<string,Allowance>>};
@@ -123,6 +130,10 @@ describe('Front ID0: the Indonesian (id) bundle',()=>{
   expect(ID3_KEYS.length).toBe(772);
   expect(ID3_KEYS.filter(k=>!Object.hasOwn(idCatalog,k))).toEqual([]);
  });
+ it('Front ID5: the catalog covers the radio telescope (every key of radio, radioRoute, radioAccess, radioReceiver, radioSimOptions and pulsarParameters)',()=>{
+  expect(ID5_KEYS.length).toBe(646);
+  expect(ID5_KEYS.filter(k=>!Object.hasOwn(idCatalog,k))).toEqual([]);
+ });
  it('Front ID1: every VIREO original is translated at once, or kept with an identical.json reason, never both',()=>{
   const english=[...Object.keys(esOriginals),...Object.keys(esIdentical.entries).filter(k=>k.startsWith('original:')).map(k=>k.slice('original:'.length))];
   expect(new Set(english).size).toBe(760);english.push(...ID_ONLY_ORIGINALS);
@@ -130,6 +141,9 @@ describe('Front ID0: the Indonesian (id) bundle',()=>{
   expect(english.filter(k=>!Object.hasOwn(originals,k)&&!Object.hasOwn(same,`original:${k}`))).toEqual([]);
   for(const k of kept){expect(english,k).toContain(k);expect(Object.hasOwn(originals,k),k).toBe(false);}
   expect((originals as Record<string,string>).E).toBe('BT');expect((originals as Record<string,string>).W).toBe('BB');
+  // Front ID5: the radio panel's direction buttons read their captions in the `direction` context (vireo(caption,'direction')): U, S, T, B
+  // (Utara, Selatan, Timur, Barat), while the Site Information longitude letters stay «BT»/«BB».
+  expect([(originals as Record<string,string>)['direction|N'],(originals as Record<string,string>)['direction|E'],(originals as Record<string,string>)['direction|W']]).toEqual(['U','T','B']);
  });
  it('every map has its English shape: the shell and observatory maps complete, the header-name maps partial',()=>{
   for(const [id,map] of Object.entries(INDONESIAN.maps??{})){
