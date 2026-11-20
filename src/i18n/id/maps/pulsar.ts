@@ -1,6 +1,6 @@
 import type {PULSAR_MESSAGES_EN} from '../../../components/PulsarMessages';
 import type {Translation} from '../../maps';
-/** Front ID6: Indonesian (id) for the pulsar data analysis (E06) and the receiver's Record Save texts. A web adaptation by OpenVireo, not CLEA's. */
+/** Front ID6: Indonesian (id) for the pulsar data analysis (E06) and the receiver’s Record Save texts. A web adaptation by OpenVireo, not CLEA’s. */
 export const PULSAR_ID:Translation<typeof PULSAR_MESSAGES_EN>=Object.freeze({
  'pulsar.title':'Analisis data pulsar radio (data rekaman)',
  'pulsar.scope':'Menganalisis rekaman .PLR yang diberikan, atau rekaman penerima yang dibuat di tab ini (dihasilkan model, bukan pengamatan). Penerimaan sinyal, derau penerima, katalog pulsar, serta rumus periode atau dispersi bukan bagian dari jendela ini.',

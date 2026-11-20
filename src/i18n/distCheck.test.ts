@@ -157,6 +157,10 @@ describe('Front ID0: scripts/check-i18n-dist.mjs with a language written in ASCI
   const short=ascii('qaf-XF','Muat dataPulsarTersimpan');
   expect(check(dist([short]),[short]).warnings).toEqual(['qaf-XF pulsar has no marker text yet; its chunk i18n-qaf-XF-pulsar-qafXFpul.js is found by its name only']);
  });
+ it('Front ID6: takes no ASCII literal that holds a backslash escape (the source writes \\\\, the bundler a different form)',()=>{
+  const l=ascii('qag-XG','Nama file tidak boleh berisi \\\\ atau titik dua');
+  expect(check(dist([l]),[l]).warnings).toEqual(['qag-XG pulsar has no marker text yet; its chunk i18n-qag-XG-pulsar-qagXGpul.js is found by its name only']);
+ });
  it('leaves every registered language\'s markers as they were: no module of es-419, pt-BR or fr uses the ASCII fallback; Indonesian only for a module of maps alone',()=>{
   const result=checkI18nDist(dist([]),{root,languages:LANGUAGES,graph}) as {reports:{tag:string;asciiMarked:string[];plan:{modules:{name:string;keys:string[];maps:string[]}[]}}[]};
   expect(result.reports.map(r=>r.tag)).toEqual(LANGUAGES.map(l=>l.tag));

@@ -175,7 +175,9 @@ export function checkI18nDist(dist,{root=ROOT,languages=loadLanguages(root),grap
   if(fallback.length){
    const owners=new Map(),own=(v,name)=>{if(!owners.has(v))owners.set(v,new Set());owners.get(v).add(name);};
    for(const m of modules){const t=texts.get(m.name);for(const v of [...t.catalog,...t.maps,...t.originals])own(v,m.name);}
-   const prose=(v)=>v.length>=16&&(v.match(/ /g)?.length??0)>=2&&!englishTexts.has(v)&&!otherTexts.has(v);
+   // Front ID6: a literal holding a backslash escape (`pulsar.nativeSave.problem.reserved` lists \\) is left out: literalsOf reads the
+   // escape as written, not as the string the bundler writes, so it would never be found.
+   const prose=(v)=>v.length>=16&&(v.match(/ /g)?.length??0)>=2&&!v.includes('\\')&&!englishTexts.has(v)&&!otherTexts.has(v);
    for(const name of fallback){const t=texts.get(name);
     for(const v of new Set([...t.maps,...t.originals]))if(prose(v)&&owners.get(v).size===1)markers.get(name).push({text:v,forms:quoted(v)});}
   }
