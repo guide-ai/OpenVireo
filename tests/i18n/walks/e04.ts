@@ -38,7 +38,9 @@ export const NUMERIC=/^[-+−±\d\s.,:;°′″'"·×/()[\]–%=→≈hms]*\d[-+
 /** Front PT4: texts of the walk that are the same words in one language (its identical.json, with a reason each): Spanish's No
  * (VIREO's No button, ES6's SAME), Portuguese's OK (VIREO's OK button, as Windows pt-BR writes it). French's (Front FR4): the
  * observatory's Minutes and Gain (e⁻/ADU), OK, and the confirmed fit's «Distance (pc)». */
-export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'es-419':new Set(['No']),'pt-BR':new Set(['OK']),fr:new Set(['Minutes','Gain (e⁻/ADU)','OK','Distance (pc)'])};
+export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'es-419':new Set(['No']),'pt-BR':new Set(['OK']),fr:new Set(['Minutes','Gain (e⁻/ADU)','OK','Distance (pc)']),
+ // Front ID4: Indonesian's Target and Filter (identical.json), VIREO's File and OK (ID1's identical originals) and the observatory's Gain (e⁻/ADU).
+ id:new Set(['Target','Filter','Gain (e⁻/ADU)','File','OK'])};
 export const same=(text:string,L?:LanguageText)=>(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false))||SAME.has(text)||NUMERIC.test(text)||RECORDED.test(text)||STAR.test(text)||PICKER.test(text);
 export const id=(page:Page|Locator,testId:string)=>page.getByTestId(testId);
 /** Front SC12: an English text's name in any pseudo-locale (qps and the script variants; tests/fixtures/pseudoNames.ts). */

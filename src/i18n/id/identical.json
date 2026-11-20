@@ -109,6 +109,27 @@
   "map:radioAntenna.antenna.notice.hot-list-search-miss": "a placeholder (VIREO’s text through vireo())",
   "map:radioAntenna.antenna.hotList.item": "placeholders and the menu-path arrows",
   "map:radioAntenna.antenna.rateLimit.recovery.afterModal": "two placeholders joined by a space",
-  "map:radioAntenna.antenna.rateLimit.alternative.separator": "a list separator (semicolon and space)"
+  "map:radioAntenna.antenna.rateLimit.alternative.separator": "a list separator (semicolon and space)",
+  "catalog:ph.fixed": "band letters and a placeholder (U / B / V · {telescope})",
+  "catalog:ph.band": "the same word in Indonesian (filter)",
+  "catalog:ph.targetColumn": "the same word in Indonesian (target)",
+  "catalog:ph.seriesSecondsOption": "a placeholder and the SI symbol s",
+  "catalog:nc.axisColor": "a colour index symbol and its unit (B−V, mag)",
+  "catalog:db.columnEbv": "the reddening symbol and its unit (E(B−V), mag)",
+  "catalog:ce.inspectedInfo": "placeholders, band symbols and the unit mag",
+  "catalog:obsHr.sha": "hash name (SHA-256)",
+  "catalog:obsHr.blockedField.v": "band letter (V)",
+  "catalog:obsHr.blockedField.b": "band letter (B)",
+  "catalog:obsHr.blockedField.b-v": "colour index symbol (B−V)",
+  "catalog:obsHr.modulus": "distance-modulus symbols (V − Mv)",
+  "catalog:obsHr.ebv": "reddening symbol (E(B−V))",
+  "catalog:obsHr.colIndex": "column symbol (#)",
+  "catalog:obsHr.colBV": "colour index symbol (B − V)",
+  "catalog:obsHr.colStatus": "the same word in Indonesian (status)",
+  "map:variableStars.typeOption": "a GCVS type code and a count (placeholder format)",
+  "map:variableStars.columns.5": "GCVS minimum or amplitude column, abbreviations kept (Min / ampl.)",
+  "map:variableStars.columns.7": "the empty header of the action column",
+  "map:variableStars.noPeriod": "the em dash for no period",
+  "map:clusterHr.ok": "the same word in Indonesian (OK, as Windows Indonesian writes it)"
  }
 }

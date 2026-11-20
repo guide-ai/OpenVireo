@@ -20,13 +20,15 @@ import {SOUND_ID} from './maps/sound';
 import {ENGINE_VIEW_ID} from './maps/engineView';
 import {SPECTRAL_RANGE_ID} from './maps/spectralRange';
 import {WEDGE_ID} from './maps/wedge';
+import {CLUSTER_HR_ID} from './maps/clusterHr';
+import {CLUSTER_DATA_ID} from './maps/clusterData';
 import {RADIO_ANTENNA_ID} from './maps/radioAntenna';
 import {RADIO_FINISH_SAVE_ID} from './maps/radioFinishSave';
 import {RADIO_R1_ID} from './maps/radioR1';
 import {RADIO_RECORD_SAVE_ID} from './maps/radioRecordSave';
 /** Front ID0 [W]: the Indonesian (id) bundle (docs/I18N.md, "Indonesian: the folder, lints and shell (ID0)"; plan
  * analysis/front-plans/front-i18n-id.md). Partial until its release (ID0–ID-HELP, behind a `?lang=id` preview): ID0 translates the
- * shell, the welcome and the header menu names, ID1 the observatory and all of VIREO's originals, ID2 exercises E01 and E02, ID3 exercise E03, ID5 the radio telescope; later ID fronts add the observatory, the exercises, the radio telescope and the
+ * shell, the welcome and the header menu names, ID1 the observatory and all of VIREO's originals, ID2 exercises E01 and E02, ID3 exercise E03, ID4 exercises E04 and E05, ID5 the radio telescope; later ID fronts add the observatory, the exercises, the radio telescope and the
  * help. The production build splits it by route area like the other languages (scripts/i18n-split.mjs parses this manifest);
  * Vitest imports it whole. Translations are web adaptations by OpenVireo; they never claim to be CLEA's, and CLEA's bytes, hashes
  * and provenance are unchanged. */
@@ -35,7 +37,7 @@ export const INDONESIAN:LocaleBundle=Object.freeze({
  messages,
  maps:Object.freeze({appShell:APP_SHELL_ID,helpMenu:HELP_MENU_ID,languageChoice:LANGUAGE_CHOICE_ID,objectXLab:OBJECT_X_LAB_ID,polish:POLISH_ID,projectLinks:PROJECT_LINKS_ID,tour:TOUR_ID,variableStars:VARIABLE_STARS_ID,
   camera:CAMERA_ID,fieldInfo:FIELD_INFO_ID,fieldReadDetails:FIELD_READ_DETAILS_ID,nakedEye:NAKED_EYE_ID,observationMetadata:OBSERVATION_METADATA_ID,observatory:OBSERVATORY_ID,qsoList:QSO_LIST_ID,sound:SOUND_ID,
-  engineView:ENGINE_VIEW_ID,spectralRange:SPECTRAL_RANGE_ID,wedge:WEDGE_ID,
+  engineView:ENGINE_VIEW_ID,spectralRange:SPECTRAL_RANGE_ID,wedge:WEDGE_ID,clusterHr:CLUSTER_HR_ID,clusterData:CLUSTER_DATA_ID,
   radioAntenna:RADIO_ANTENNA_ID,radioFinishSave:RADIO_FINISH_SAVE_ID,radioR1:RADIO_R1_ID,radioRecordSave:RADIO_RECORD_SAVE_ID}),
  originals,
 });

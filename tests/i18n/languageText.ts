@@ -174,12 +174,12 @@ export const PORTUGUESE_TEXT=language('pt-BR',pt,ptOriginals,{appShell:APP_SHELL
  * browser with no query (tests/fixtures/language.ts contextLocale). Its letters include « » and U+202F, which English text never has. */
 export const FRENCH_TEXT=language('fr',fr,frOriginals,{appShell:APP_SHELL_FR,helpMenu:HELP_MENU_FR,projectLinks:PROJECT_LINKS_FR,tour:TOUR_FR,languageChoice:LANGUAGE_CHOICE_FR},
  [APP_SHELL_FR,CAMERA_FR,FIELD_INFO_FR,FIELD_READ_DETAILS_FR,HELP_MENU_FR,LANGUAGE_CHOICE_FR,NAKED_EYE_FR,OBJECT_X_LAB_FR,OBSERVATION_METADATA_FR,OBSERVATORY_FR,POLISH_FR,PROJECT_LINKS_FR,QSO_LIST_FR,SOUND_FR,TOUR_FR,VARIABLE_STARS_FR],/[àâæçéèêëîïôœùûüÿ«»\u202f]/i,'');
-/** Front ID0 (plan front-i18n-id.md §1.2 #2): Indonesian, behind `?lang=id` before its release; ID0 translated the shell, ID1 the observatory and all of VIREO's originals, ID2 exercises E01 and E02, ID3 exercise E03, ID5 the radio telescope. It is the
+/** Front ID0 (plan front-i18n-id.md §1.2 #2): Indonesian, behind `?lang=id` before its release; ID0 translated the shell, ID1 the observatory and all of VIREO's originals, ID2 exercises E01 and E02, ID3 exercise E03, ID4 exercises E04 and E05, ID5 the radio telescope. It is the
  * first language written in ASCII alone, so its "letters" are words: frequent Indonesian function words that VIREO's English files and
  * the site's English exports never hold (checked over public/original and every export fixture at ID0), and the “ ” quotes and U+202F
  * thousands separator its text uses. */
 export const INDONESIAN_TEXT=language('id',idCatalog,idOriginals,{appShell:APP_SHELL_ID,helpMenu:HELP_MENU_ID,projectLinks:PROJECT_LINKS_ID,tour:TOUR_ID,languageChoice:LANGUAGE_CHOICE_ID},
- [APP_SHELL_ID,CAMERA_ID,FIELD_INFO_ID,FIELD_READ_DETAILS_ID,HELP_MENU_ID,LANGUAGE_CHOICE_ID,NAKED_EYE_ID,OBJECT_X_LAB_ID,OBSERVATION_METADATA_ID,OBSERVATORY_ID,POLISH_ID,PROJECT_LINKS_ID,QSO_LIST_ID,SOUND_ID,TOUR_ID,VARIABLE_STARS_ID],/(?<!\p{L})(?:yang|dan|untuk|dengan|tidak|Anda|dari|pada|ini|atau)(?!\p{L})|[“”\u202f]/u,'?lang=id',['shell','observatory','e01','e02','e03','radio']);
+ [APP_SHELL_ID,CAMERA_ID,FIELD_INFO_ID,FIELD_READ_DETAILS_ID,HELP_MENU_ID,LANGUAGE_CHOICE_ID,NAKED_EYE_ID,OBJECT_X_LAB_ID,OBSERVATION_METADATA_ID,OBSERVATORY_ID,POLISH_ID,PROJECT_LINKS_ID,QSO_LIST_ID,SOUND_ID,TOUR_ID,VARIABLE_STARS_ID],/(?<!\p{L})(?:yang|dan|untuk|dengan|tidak|Anda|dari|pada|ini|atau)(?!\p{L})|[“”\u202f]/u,'?lang=id',['shell','observatory','e01','e02','e03','e04','e05','radio']);
 /** Front HI0: Hindi, behind `?lang=hi` before its release (an en-US browser with the preview query). HI0 translated the shell, so
  * only the shell's specs ran it; HI1 adds the observatory and all of VIREO's originals, HI2 exercises E01 and E02, HI3 exercise E03; each HI front adds its area. Its letters are Devanagari (the danda । included), which English text
  * never has; “ ” are not among them, since English uses them too. */
@@ -243,6 +243,7 @@ export const e01e02Maps=(tag:string):E01E02Maps=>{const m=E01_E02_MAPS[tag];if(!
 import {CLUSTER_HR_ES} from '../../src/i18n/es/maps/clusterHr';
 import {CLUSTER_HR_PT} from '../../src/i18n/pt-br/maps/clusterHr';
 import {CLUSTER_HR_FR} from '../../src/i18n/fr/maps/clusterHr';
+import {CLUSTER_HR_ID} from '../../src/i18n/id/maps/clusterHr';
 import type {CLUSTER_HR_EN} from '../../src/clusters/ClusterHrMessages';
 export type E04E05Maps=Readonly<{spectralRange:unknown;observatory:unknown;polish:unknown;camera:unknown;sound:unknown;clusterHr:Translation<typeof CLUSTER_HR_EN>}>;
 export const E04_E05_MAPS:Readonly<Record<string,E04E05Maps>>=Object.freeze({
@@ -250,6 +251,8 @@ export const E04_E05_MAPS:Readonly<Record<string,E04E05Maps>>=Object.freeze({
  'pt-BR':{spectralRange:SPECTRAL_RANGE_PT,observatory:OBSERVATORY_PT,polish:POLISH_PT,camera:CAMERA_PT,sound:SOUND_PT,clusterHr:CLUSTER_HR_PT},
  // Front FR4: French (its ?lang=fr preview).
  fr:{spectralRange:SPECTRAL_RANGE_FR,observatory:OBSERVATORY_FR,polish:POLISH_FR,camera:CAMERA_FR,sound:SOUND_FR,clusterHr:CLUSTER_HR_FR},
+ // Front ID4: Indonesian (its ?lang=id preview).
+ id:{spectralRange:SPECTRAL_RANGE_ID,observatory:OBSERVATORY_ID,polish:POLISH_ID,camera:CAMERA_ID,sound:SOUND_ID,clusterHr:CLUSTER_HR_ID},
 });
 export const e04e05Maps=(tag:string):E04E05Maps=>{const m=E04_E05_MAPS[tag];if(!m)throw new Error(`No E04/E05 maps for ${tag}`);return m;};
 // Front PT5: the maps and identical texts the radio telescope walk reads beyond the catalog and originals (tests/i18n/radio.spec.ts),

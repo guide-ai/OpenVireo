@@ -38,6 +38,8 @@ import {CAMERA_MESSAGES_EN} from '../../camera/CameraMessages';
 import {ENGINE_VIEW_EN} from '../../SpectrumEngineMessages';
 import {SPECTRAL_RANGE_EN} from '../../SpectralRangeMessages';
 import {WEDGE_MESSAGES_EN} from '../../components/WedgeMessages';
+import {CLUSTER_HR_EN} from '../../clusters/ClusterHrMessages';
+import {CLUSTER_DATA_MESSAGES_EN} from '../../clusterdata/ClusterDataMessages';
 import {RADIO_ANTENNA_MESSAGES_EN} from '../../components/RadioAntennaMessages';
 import {FINISH_SAVE_MESSAGES_EN} from '../../components/RadioFinishSaveMessages';
 import {RADIO_R1_MESSAGES_EN} from '../../components/RadioR1Messages';
@@ -55,11 +57,11 @@ import {RADIO_SAVE_MESSAGES_EN} from '../../components/RadioRecordSaveMessages';
 // A VIREO `fragment|` original keeps its straight quotes (another piece of VIREO's text closes them).
 const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,
  camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,nakedEye:NAKED_EYE_MESSAGES_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,
- engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN,
+ engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN,clusterHr:CLUSTER_HR_EN,clusterData:CLUSTER_DATA_MESSAGES_EN,
  radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN};
 /** The maps translated completely (ID0's shell maps; ID1's observatory maps, the camera card the observatory shows, and polish); the
- * others are partial until their front (objectXLab ID6, variableStars ID4). */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','radioAntenna','radioFinishSave','radioR1','radioRecordSave'];
+ * others are partial until their front (objectXLab ID6). */
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','variableStars','clusterHr','clusterData','radioAntenna','radioFinishSave','radioR1','radioRecordSave'];
 /** ID0's area of en.json: the shell (header, menu, home and first steps, toolbar, errors, instructor mode, document title), as FR0's,
  * and the welcome's home.* keys (plan §6.1: Front HOME added them after FR0, and FR1 translated them). */
 const SHELL_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(app|project|session|error|instructorMode)\./.test(k)||/\.nav$/.test(k)||['demonstrationMode.banner','sky.eyebrow','sky.title','sky.subtitle','sky.about','sky.local','sky.observatory','sky.analyzer','sky.step1','sky.step1Help','sky.step2','sky.step2Help','sky.step3','sky.step3Help','spectrum.tools','classLink.cancel'].includes(k));
@@ -78,6 +80,8 @@ const ID2_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E01_E02_PREFIXES.test
  * classification+cluster, and the core keys E03 renders (continuity.restoreExposure and ssp.header). */
 const E03_PREFIXES=/^(class|classLines|classLink|classAtlas|classImport|classLab|feature|cursor|probe|photo|combined|combinedWidth|viewport|inspection|sampledTrace|reverseTrace|sampledDiff|range|widthSource|widthCoordinates|sharedMarks|comparisonMark|paneSource|panMarks|obs|nativeResults|nativeEdit|nativeDelete|nativeList|nativeText|nativeCsv|program|programImport)\./;
 const ID3_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E03_PREFIXES.test(k)||k==='continuity.restoreExposure'||k==='ssp.header');
+/** Front ID4: E04 (Pleiades photometry) and E05 (cluster HR, variable stars): every key of FR4's nine prefixes. */
+const ID4_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(ph|pa|pleiadesLab|nc|db|ce|clusterLab|ownHr|obsHr)\./.test(k));
 /** Front ID5: the radio telescope, every key of FR5's six prefixes. */
 const ID5_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(radio|radioRoute|radioAccess|radioReceiver|radioSimOptions|pulsarParameters)\./.test(k));
 const HOME_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>k.startsWith('home.'));
@@ -129,6 +133,10 @@ describe('Front ID0: the Indonesian (id) bundle',()=>{
  it('Front ID3: the catalog covers E03 (every key of its prefixes, continuity.restoreExposure and ssp.header)',()=>{
   expect(ID3_KEYS.length).toBe(772);
   expect(ID3_KEYS.filter(k=>!Object.hasOwn(idCatalog,k))).toEqual([]);
+ });
+ it('Front ID4: the catalog covers E04 and E05 (every key of ph, pa, pleiadesLab, nc, db, ce, clusterLab, ownHr and obsHr)',()=>{
+  expect(ID4_KEYS.length).toBe(651);
+  expect(ID4_KEYS.filter(k=>!Object.hasOwn(idCatalog,k))).toEqual([]);
  });
  it('Front ID5: every radio direction caption and original letter is read in the `direction` context (U/S/T/B, not the longitude letters)',()=>{
   const panel=readFileSync(path.join(DIR,'../../components/RadioControlPanel.tsx'),'utf8');
