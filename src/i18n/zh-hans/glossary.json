@@ -1,0 +1,1965 @@
+{
+ "about": "Front ZH0: the zh-Hans glossary (plan analysis/front-plans/front-i18n-zh.md §5) that src/i18n/zh-hans/zh-hans.test.ts enforces through the SC4 lint framework (profile zh-Hans) on every Simplified Chinese string. Seeded from the French glossary's English patterns and names, re-targeted to Simplified Chinese from the English (French only as meaning context), with terms from the IAU Office of Astronomy for Education glossary and the China-VO astronomy dictionary (the national committee's 《天文学名词》, whose mainland terms win over outreach usage). A term applies when its English pattern matches the English source: the Chinese must then match the zh-Hans pattern (no word boundaries in Chinese). Names are fixed interface names (an exact name applies only to a whole string). Forbidden are the term forms this glossary rejects (您, 群集/集团 for a star cluster, 红位移, 文档 for a file, Traditional or Taiwan forms, 调查 for investigation). VIREO's own names follow the decided forms: Save 保存, Save As 另存为, Record 记录, Find 查找, Search 搜索, Show 显示, Display 显示, Slew 转动, Init/Go 初始化/开始, Scan 浏览, Clear 清除, Reset 重置, Hot List 目标列表, investigation 探究, tour 导览, lab 实验, Instructor mode 讲师模式, Demonstration Mode 演示模式, Observer's Notebook 观测者笔记本. Rows for areas still in English wait for their sub-front. Translations are web adaptations by OpenVireo, never CLEA's.",
+ "terms": [
+  {
+   "en": "\\bobservator(y|ies)\\b",
+   "zh-Hans": "天文台",
+   "fr": "observatoire"
+  },
+  {
+   "en": "\\btelescopes?\\b",
+   "zh-Hans": "望远镜",
+   "fr": "t[ée]lescope"
+  },
+  {
+   "en": "\\bdomes?\\b",
+   "zh-Hans": "圆顶",
+   "fr": "coupole"
+  },
+  {
+   "en": "\\bspectr(um|a)\\b",
+   "zh-Hans": "光谱",
+   "fr": "spectr"
+  },
+  {
+   "en": "\\bspectrometers?\\b",
+   "zh-Hans": "光谱仪",
+   "fr": "spectrom[èe]tre"
+  },
+  {
+   "en": "\\bphotometers?\\b",
+   "zh-Hans": "光度计",
+   "fr": "photom[èe]tre"
+  },
+  {
+   "en": "\\bphotometry\\b",
+   "zh-Hans": "测光",
+   "fr": "photom[ée]trie"
+  },
+  {
+   "en": "\\bexposures?\\b",
+   "zh-Hans": "曝光",
+   "fr": "pose"
+  },
+  {
+   "en": "\\bmeasurements?\\b",
+   "zh-Hans": "测量",
+   "fr": "mesure"
+  },
+  {
+   "en": "\\binvestigations?\\b",
+   "zh-Hans": "探究",
+   "fr": "investigation"
+  },
+  {
+   "en": "\\bfiles?\\b",
+   "zh-Hans": "文件",
+   "fr": "fichier"
+  },
+  {
+   "en": "\\bdownload(s|ed|ing)?\\b",
+   "zh-Hans": "下载",
+   "fr": "t[ée]l[ée]charg"
+  },
+  {
+   "en": "(?<!daylight-)\\bsav(e|es|ed|ing)\\b",
+   "zh-Hans": "保存|存为|存储",
+   "fr": "enregistr"
+  },
+  {
+   "en": "\\brestor(e|es|ed|ing)\\b",
+   "zh-Hans": "恢复",
+   "fr": "restaur"
+  },
+  {
+   "en": "\\b(re)?load(s|ed|ing)?\\b",
+   "zh-Hans": "载入|刷新",
+   "fr": "charg"
+  },
+  {
+   "en": "\\bbrowsers?\\b",
+   "zh-Hans": "浏览器",
+   "fr": "navigateur"
+  },
+  {
+   "en": "(?<!line breaks and |for example a |accented letter, a |Shift\\+)(?<!reachable with )\\btabs?\\b(?!,? (?:line breaks|or other|BOM)| and Shift\\+Tab)",
+   "zh-Hans": "标签页",
+   "fr": "onglet"
+  },
+  {
+   "en": "\\bTab and Shift\\+Tab\\b",
+   "zh-Hans": "Tab",
+   "fr": "Tab et Maj\\+Tab"
+  },
+  {
+   "en": "\\btabs?(?=,? (?:line breaks|or other|BOM))|(?<=line breaks and |for example a |accented letter, a )tabs?\\b",
+   "zh-Hans": "制表符|制表",
+   "fr": "tabulation"
+  },
+  {
+   "en": "\\bremarks?\\b",
+   "zh-Hans": "备注|注释|评语",
+   "fr": "remarque|commentaire|observation"
+  },
+  {
+   "en": "\\bpages?\\b",
+   "zh-Hans": "页",
+   "fr": "page"
+  },
+  {
+   "en": "\\bcomputers?\\b",
+   "zh-Hans": "电脑|计算机",
+   "fr": "ordinateur"
+  },
+  {
+   "en": "\\bphones?\\b",
+   "zh-Hans": "手机|电话",
+   "fr": "t[ée]l[ée]phone|portable|mobile"
+  },
+  {
+   "en": "\\bclick\\b",
+   "zh-Hans": "点击|单击",
+   "fr": "cliqu|clic"
+  },
+  {
+   "en": "\\bpress\\b",
+   "zh-Hans": "按",
+   "fr": "appu[iy]|press"
+  },
+  {
+   "en": "\\bmenus?\\b",
+   "zh-Hans": "菜单",
+   "fr": "menu"
+  },
+  {
+   "en": "\\bguides?\\b",
+   "zh-Hans": "指南",
+   "fr": "guide"
+  },
+  {
+   "en": "\\bexercises?\\b",
+   "zh-Hans": "实验",
+   "fr": "exercice|\\bTP\\b"
+  },
+  {
+   "en": "\\blabs?\\b",
+   "zh-Hans": "实验",
+   "fr": "\\bTP\\b|travaux pratiques"
+  },
+  {
+   "en": "\\bredshifts?\\b",
+   "zh-Hans": "红移",
+   "fr": "d[ée]calages? vers le rouge"
+  },
+  {
+   "en": "\\bpulsars?\\b",
+   "zh-Hans": "脉冲星",
+   "fr": "pulsar"
+  },
+  {
+   "en": "\\binstructor mode\\b",
+   "zh-Hans": "讲师模式",
+   "fr": "mode enseignant"
+  },
+  {
+   "en": "\\bhelp\\b",
+   "zh-Hans": "帮助",
+   "fr": "aide"
+  },
+  {
+   "en": "\\btracking\\b",
+   "zh-Hans": "跟踪|追踪",
+   "fr": "suivi|poursuite"
+  },
+  {
+   "en": "\\bcatalog(ue)?s?\\b",
+   "zh-Hans": "星表|目录",
+   "fr": "catalogue"
+  },
+  {
+   "en": "\\bgalax(y|ies)\\b",
+   "zh-Hans": "星系",
+   "fr": "galaxie"
+  },
+  {
+   "en": "\\bstars?\\b",
+   "zh-Hans": "星",
+   "fr": "[ée]toile|stellaire"
+  },
+  {
+   "en": "\\bclusters?\\b",
+   "zh-Hans": "星团",
+   "fr": "amas"
+  },
+  {
+   "en": "\\bresults?\\b",
+   "zh-Hans": "结果",
+   "fr": "r[ée]sultat"
+  },
+  {
+   "en": "\\bwavelengths?\\b",
+   "zh-Hans": "波长",
+   "fr": "longueurs? d[’']onde"
+  },
+  {
+   "en": "\\bpassword\\b",
+   "zh-Hans": "密码",
+   "fr": "mot de passe"
+  },
+  {
+   "en": "\\bslew(s|ed|ing)?\\b",
+   "zh-Hans": "转动",
+   "fr": "d[ée]plac"
+  },
+  {
+   "en": "\\bhot lists?\\b",
+   "zh-Hans": "目标列表",
+   "fr": "listes? d[’']objets"
+  },
+  {
+   "en": "\\bsky background\\b",
+   "zh-Hans": "天空背景",
+   "fr": "fond de ciel"
+  },
+  {
+   "en": "\\bseeing\\b",
+   "zh-Hans": "视宁度",
+   "fr": "seeing"
+  },
+  {
+   "en": "\\bright ascension\\b",
+   "zh-Hans": "赤经",
+   "fr": "ascension droite"
+  },
+  {
+   "en": "\\bdeclinations?\\b",
+   "zh-Hans": "赤纬",
+   "fr": "d[ée]clinaison"
+  },
+  {
+   "en": "\\bslits?\\b",
+   "zh-Hans": "狭缝",
+   "fr": "fente"
+  },
+  {
+   "en": "\\blight curves?\\b",
+   "zh-Hans": "光变曲线",
+   "fr": "courbes? de lumi[èe]re"
+  },
+  {
+   "en": "\\bHR diagrams?\\b",
+   "zh-Hans": "赫罗图|H-R图|HR图",
+   "fr": "diagrammes? (?:H-?R|de Hertzsprung)"
+  },
+  {
+   "en": "\\bmain sequence\\b",
+   "zh-Hans": "主序",
+   "fr": "s[ée]quences? principales?"
+  },
+  {
+   "en": "\\bisochrones?\\b",
+   "zh-Hans": "等龄线",
+   "fr": "isochrone"
+  },
+  {
+   "en": "\\bvariable stars?\\b",
+   "zh-Hans": "变星",
+   "fr": "[ée]toiles? variables?"
+  },
+  {
+   "en": "\\bperiods?\\b",
+   "zh-Hans": "周期",
+   "fr": "p[ée]riode"
+  },
+  {
+   "en": "\\bdispersion measure\\b",
+   "zh-Hans": "色散量",
+   "fr": "mesures? de dispersion"
+  },
+  {
+   "en": "\\bradio telescopes?\\b",
+   "zh-Hans": "射电望远镜",
+   "fr": "radiot[ée]lescope"
+  },
+  {
+   "en": "\\breceivers?\\b",
+   "zh-Hans": "接收机",
+   "fr": "r[ée]cepteur"
+  },
+  {
+   "en": "\\bantennas?\\b",
+   "zh-Hans": "天线",
+   "fr": "antenne"
+  },
+  {
+   "en": "\\bquasars?\\b",
+   "zh-Hans": "类星体",
+   "fr": "quasar"
+  },
+  {
+   "en": "\\basteroids?\\b",
+   "zh-Hans": "小行星",
+   "fr": "ast[ée]ro[iï]de"
+  },
+  {
+   "en": "\\bastrometry\\b",
+   "zh-Hans": "天体测量",
+   "fr": "astrom[ée]trie"
+  },
+  {
+   "en": "\\blarge-scale structure\\b",
+   "zh-Hans": "大尺度结构",
+   "fr": "structures? [àa] grande [ée]chelle"
+  },
+  {
+   "en": "\\bwedge plots?\\b",
+   "zh-Hans": "楔形图",
+   "fr": "diagrammes? en cône"
+  },
+  {
+   "en": "\\bfield of view\\b",
+   "zh-Hans": "视场",
+   "fr": "champs? de vue"
+  },
+  {
+   "en": "\\bsignal-to-noise\\b",
+   "zh-Hans": "信噪比",
+   "fr": "signal.{1,8}bruit"
+  },
+  {
+   "en": "\\bequivalent widths?\\b",
+   "zh-Hans": "等值宽度",
+   "fr": "largeurs? [ée]quivalentes?"
+  },
+  {
+   "en": "\\bcontinuum\\b",
+   "zh-Hans": "连续谱",
+   "fr": "continuum"
+  },
+  {
+   "en": "\\bspectral (type|class)(es)?\\b",
+   "zh-Hans": "光谱型|光谱类型",
+   "fr": "(?:types?|classes?) spectra(?:l|ux|les)"
+  },
+  {
+   "en": "\\bapparent magnitudes?\\b",
+   "zh-Hans": "视星等",
+   "fr": "magnitudes? apparentes?"
+  },
+  {
+   "en": "\\babsolute magnitudes?\\b",
+   "zh-Hans": "绝对星等",
+   "fr": "magnitudes? absolues?"
+  },
+  {
+   "en": "\\bdistance modulus\\b",
+   "zh-Hans": "距离模数",
+   "fr": "modules? de distance"
+  },
+  {
+   "en": "\\breddening\\b",
+   "zh-Hans": "红化",
+   "fr": "rougissement"
+  },
+  {
+   "en": "\\bcolou?r excess\\b",
+   "zh-Hans": "色余",
+   "fr": "exc[èe]s de couleur"
+  },
+  {
+   "en": "\\bHubble's law\\b",
+   "zh-Hans": "哈勃定律",
+   "fr": "loi de Hubble"
+  },
+  {
+   "en": "\\bHubble constant\\b",
+   "zh-Hans": "哈勃常数",
+   "fr": "constante de Hubble"
+  },
+  {
+   "en": "\\brecessional velocit(y|ies)\\b",
+   "zh-Hans": "退行速度",
+   "fr": "vitesses? de r[ée]cession"
+  },
+  {
+   "en": "\\bfinding charts?\\b",
+   "zh-Hans": "证认图|寻星图",
+   "fr": "cartes? (?:de rep[ée]rage|de localisation|d[’']identification)"
+  },
+  {
+   "en": "\\bfinder\\b",
+   "zh-Hans": "寻星镜",
+   "fr": "chercheur"
+  },
+  {
+   "en": "\\bepochs?\\b",
+   "zh-Hans": "历元",
+   "fr": "[ée]poque"
+  },
+  {
+   "en": "\\bintegration\\b",
+   "zh-Hans": "积分",
+   "fr": "int[ée]gration"
+  },
+  {
+   "en": "\\bCCD camera\\b",
+   "zh-Hans": "CCD相机",
+   "fr": "cam[ée]ras? CCD"
+  },
+  {
+   "en": "\\bIR camera\\b",
+   "zh-Hans": "IR相机|红外相机",
+   "fr": "cam[ée]ras? IR"
+  },
+  {
+   "en": "\\bspectral lines?\\b",
+   "zh-Hans": "谱线",
+   "fr": "raies? spectrales?"
+  },
+  {
+   "en": "\\bemission\\b",
+   "zh-Hans": "发射",
+   "fr": "[ée]mission"
+  },
+  {
+   "en": "\\babsorption\\b",
+   "zh-Hans": "吸收",
+   "fr": "absorption"
+  },
+  {
+   "en": "\\bopen clusters?\\b",
+   "zh-Hans": "疏散星团",
+   "fr": "amas ouverts?"
+  },
+  {
+   "en": "\\bglobular clusters?\\b",
+   "zh-Hans": "球状星团",
+   "fr": "amas globulaires?"
+  },
+  {
+   "en": "\\bsignal\\b",
+   "zh-Hans": "信号|信噪比",
+   "fr": "signal"
+  },
+  {
+   "en": "\\bexercise guide\\b|\\blab guide\\b",
+   "zh-Hans": "指南",
+   "fr": "guide"
+  },
+  {
+   "en": "\\bapertures?\\b",
+   "zh-Hans": "口径|孔径",
+   "fr": "ouverture"
+  },
+  {
+   "en": "\\breadings\\b",
+   "zh-Hans": "读数",
+   "fr": "lecture|relev[ée]|mesure"
+  },
+  {
+   "en": "\\bseeded\\b",
+   "zh-Hans": "种子",
+   "fr": "graine|initialis|germe"
+  },
+  {
+   "en": "\\bcallbacks?\\b",
+   "zh-Hans": "回调",
+   "fr": "rappel|callback"
+  },
+  {
+   "en": "\\bzero point\\b",
+   "zh-Hans": "零点",
+   "fr": "point z[ée]ro"
+  },
+  {
+   "en": "\\bphotons?\\b",
+   "zh-Hans": "光子",
+   "fr": "photon"
+  },
+  {
+   "en": "\\bcolou?r[–-]magnitude\\b",
+   "zh-Hans": "色.{0,2}星等|颜色.{0,2}星等",
+   "fr": "couleur[–-]magnitude"
+  },
+  {
+   "en": "\\bcluster fit\\b",
+   "zh-Hans": "星团拟合",
+   "fr": "ajustement (?:manuel )?(?:de l|d)[’']amas"
+  },
+  {
+   "en": "\\bstandards?\\b",
+   "zh-Hans": "标准",
+   "fr": "standard|[ée]talon"
+  },
+  {
+   "en": "\\bshoulders?\\b",
+   "zh-Hans": "肩",
+   "fr": "[ée]paule"
+  },
+  {
+   "en": "\\bgr[ae]yscale\\b",
+   "zh-Hans": "灰度",
+   "fr": "gris"
+  },
+  {
+   "en": "\\b(?:observation )?notebook\\b",
+   "zh-Hans": "笔记本|笔记",
+   "fr": "carnet"
+  },
+  {
+   "en": "\\bluminosity\\b",
+   "zh-Hans": "光度",
+   "fr": "luminosit[ée]"
+  },
+  {
+   "en": "\\batlas(es)?\\b",
+   "zh-Hans": "星图集|图集|星图",
+   "fr": "atlas"
+  },
+  {
+   "en": "\\bstandard pairs?\\b",
+   "zh-Hans": "标准星对|标准对|标准星",
+   "fr": "paires? (?:de |d[’'])?(?:standards?|[ée]talons?)"
+  },
+  {
+   "en": "\\braw\\b",
+   "zh-Hans": "原始",
+   "fr": "brut"
+  },
+  {
+   "en": "\\bmerg(e|es|ed|ing)\\b",
+   "zh-Hans": "合并",
+   "fr": "fusion"
+  },
+  {
+   "en": "\\bendpoint[- ]grids?\\b",
+   "zh-Hans": "端点网格",
+   "fr": "grilles? d[’']extr[ée]mit"
+  },
+  {
+   "en": "\\bsweeps?\\b",
+   "zh-Hans": "扫描|扫掠",
+   "fr": "balayage"
+  },
+  {
+   "en": "\\bbeams?\\b",
+   "zh-Hans": "波束",
+   "fr": "faisceau"
+  },
+  {
+   "en": "\\bseeds?\\b",
+   "zh-Hans": "种子",
+   "fr": "graine"
+  },
+  {
+   "en": "\\btimers?\\b",
+   "zh-Hans": "计时器",
+   "fr": "minuteur|chronom[èe]tre"
+  },
+  {
+   "en": "\\baltitude limits?\\b",
+   "zh-Hans": "高度限制",
+   "fr": "limites? d[’']altitude"
+  },
+  {
+   "en": "(?<!clock[/ ])\\bdrive\\b",
+   "zh-Hans": "驱动|传动|电机",
+   "fr": "entra[iî]nement|motoris|moteur"
+  },
+  {
+   "en": "\\bblink(s|ed|ing)?\\b",
+   "zh-Hans": "闪视|闪烁",
+   "fr": "clignot"
+  },
+  {
+   "en": "\\breveal(s|ed|ing)?\\b(?! the catalog sky)",
+   "zh-Hans": "揭晓|揭示|显示|公布",
+   "fr": "r[ée]v[éèe]l|d[ée]voil"
+  },
+  {
+   "en": "\\borbit files?\\b",
+   "zh-Hans": "轨道文件",
+   "fr": "fichiers? d[’']orbites?"
+  },
+  {
+   "en": "\\blimiting magnitudes?\\b",
+   "zh-Hans": "极限星等",
+   "fr": "magnitudes? limites?"
+  },
+  {
+   "en": "\\breference stars?\\b",
+   "zh-Hans": "参考星",
+   "fr": "[ée]toiles? de r[ée]f[ée]rence"
+  },
+  {
+   "en": "\\bplate constants\\b",
+   "zh-Hans": "底片常数",
+   "fr": "constantes? (?:de plaque|de clich[ée])"
+  },
+  {
+   "en": "(?<!All Sky )\\bsurveys?\\b",
+   "zh-Hans": "巡天",
+   "fr": "relev[ée]"
+  },
+  {
+   "en": "\\bsnapshots?\\b",
+   "zh-Hans": "快照",
+   "fr": "instantan[ée]"
+  },
+  {
+   "en": "\\banaly[sz]ers?\\b",
+   "zh-Hans": "分析器|分析仪",
+   "fr": "analyseur"
+  },
+  {
+   "en": "\\btemplates?\\b",
+   "zh-Hans": "模板",
+   "fr": "mod[èe]le|gabarit"
+  },
+  {
+   "en": "\\bjournals?\\b",
+   "zh-Hans": "日志",
+   "fr": "journal"
+  },
+  {
+   "en": "\\bcombined view\\b",
+   "zh-Hans": "合并视图|组合视图",
+   "fr": "vue combin[ée]e"
+  },
+  {
+   "en": "\\bpanes?\\b",
+   "zh-Hans": "窗格|面板",
+   "fr": "panneau"
+  },
+  {
+   "en": "\\b(?:sampled|printed-coordinate|printed|intensity|unknown) traces?\\b",
+   "zh-Hans": "曲线|轨迹|迹线",
+   "fr": "trac[ée]"
+  },
+  {
+   "en": "\\breadouts?\\b",
+   "zh-Hans": "读数|读出|显示",
+   "fr": "lecture|affichage"
+  },
+  {
+   "en": "\\bmetallicit(y|ies)\\b",
+   "zh-Hans": "金属丰度",
+   "fr": "m[ée]tallicit[ée]"
+  },
+  {
+   "en": "\\bsliders?\\b",
+   "zh-Hans": "滑块",
+   "fr": "curseur"
+  },
+  {
+   "en": "\\btrials?\\b",
+   "zh-Hans": "试验|尝试",
+   "fr": "essai"
+  },
+  {
+   "en": "\\bpresets?\\b",
+   "zh-Hans": "预设",
+   "fr": "pr[ée]r[ée]gl|pr[ée]d[ée]fini|pr[ée]s[ée]lection"
+  },
+  {
+   "en": "\\bapparent modulus\\b",
+   "zh-Hans": "视模数",
+   "fr": "module apparent"
+  },
+  {
+   "en": "\\bintegration series\\b",
+   "zh-Hans": "积分序列|积分系列",
+   "fr": "s[ée]ries? d[’']int[ée]gration"
+  },
+  {
+   "en": "\\bzero[- ]age main sequence\\b",
+   "zh-Hans": "零龄主序",
+   "fr": "s[ée]quence principale d[’'][âa]ge z[ée]ro"
+  },
+  {
+   "en": "\\bturn-?off\\b",
+   "zh-Hans": "拐点|转折点",
+   "fr": "point de retournement"
+  },
+  {
+   "en": "\\bmembership\\b",
+   "zh-Hans": "成员|隶属",
+   "fr": "appartenance"
+  },
+  {
+   "en": "\\bdatasets?\\b",
+   "zh-Hans": "数据集",
+   "fr": "jeux? de données"
+  },
+  {
+   "en": "\\bly\\b",
+   "zh-Hans": "光年",
+   "fr": "ann[ée]es?[- ]lumi[èe]re|a\\.\\s?l\\.|\\bal\\b"
+  },
+  {
+   "en": "\\bcolou?r index\\b",
+   "zh-Hans": "色指数",
+   "fr": "indices? de couleur"
+  },
+  {
+   "en": "\\bauditions?\\b|\\bauditioned\\b",
+   "zh-Hans": "试听",
+   "fr": "[ée]cout|auditi"
+  },
+  {
+   "en": "\\bradio clock\\b",
+   "zh-Hans": "射电时钟",
+   "fr": "horloge radio"
+  },
+  {
+   "en": "\\bpress[- ]and[- ]hold\\b",
+   "zh-Hans": "长按|按住",
+   "fr": "maint(?:enez|enir|enu|enant)|appui (?:continu|prolong)|appuy[ée]e? longuement|pression continue"
+  },
+  {
+   "en": "\\bslew-timer\\b",
+   "zh-Hans": "转动计时器",
+   "fr": "minuteur de d[ée]placement"
+  },
+  {
+   "en": "\\breceiver monitor\\b",
+   "zh-Hans": "接收机监视器|接收机监控",
+   "fr": "moniteur (?:du|de) r[ée]cepteur|surveillance (?:du|de) r[ée]cepteur"
+  },
+  {
+   "en": "\\bwedge diagrams?\\b",
+   "zh-Hans": "楔形图",
+   "fr": "diagrammes? en cône"
+  },
+  {
+   "en": "\\bpractices?\\b",
+   "zh-Hans": "练习",
+   "fr": "entra[iî]nement"
+  },
+  {
+   "en": "\\bdrafts?\\b",
+   "zh-Hans": "草稿",
+   "fr": "brouillon"
+  },
+  {
+   "en": "\\bfallbacks?\\b",
+   "zh-Hans": "回退|后备",
+   "fr": "repli"
+  },
+  {
+   "en": "\\barcsec(?:onds?)?\\b",
+   "zh-Hans": "角秒",
+   "fr": "secondes? d[’']arc"
+  },
+  {
+   "en": "\\bhost clock\\b",
+   "zh-Hans": "主机时钟|计算机时钟|电脑时钟",
+   "fr": "horloge de l[’']ordinateur"
+  }
+ ],
+ "names": [
+  {
+   "en": "Save investigation",
+   "zh-Hans": "保存探究",
+   "fr": "Enregistrer l’investigation"
+  },
+  {
+   "en": "Restore investigation JSON",
+   "zh-Hans": "恢复探究（JSON）",
+   "fr": "Restaurer l’investigation (JSON)"
+  },
+  {
+   "en": "Save session",
+   "zh-Hans": "保存会话",
+   "fr": "Enregistrer la session"
+  },
+  {
+   "en": "Restore session",
+   "zh-Hans": "恢复会话",
+   "fr": "Restaurer la session"
+  },
+  {
+   "en": "Instructor mode…",
+   "zh-Hans": "讲师模式…",
+   "fr": "Mode enseignant…"
+  },
+  {
+   "en": "Help topics…",
+   "zh-Hans": "帮助主题…",
+   "fr": "Rubriques d’aide…"
+  },
+  {
+   "en": "Tools button",
+   "zh-Hans": "“菜单”按钮",
+   "fr": "bouton Menu"
+  },
+  {
+   "en": "Optical Simulation Options",
+   "zh-Hans": "光学模拟选项",
+   "fr": "Options de simulation optique"
+  },
+  {
+   "en": "Demonstration Mode",
+   "zh-Hans": "演示模式",
+   "fr": "Mode démonstration"
+  },
+  {
+   "en": "Edit Mode",
+   "zh-Hans": "编辑模式",
+   "fr": "Mode édition"
+  },
+  {
+   "en": "Virtual Observatory",
+   "zh-Hans": "虚拟天文台",
+   "fr": "Observatoire virtuel"
+  },
+  {
+   "en": "Test Mode",
+   "zh-Hans": "测试模式",
+   "fr": "Mode test"
+  },
+  {
+   "en": "Pulsar Analysis",
+   "zh-Hans": "脉冲星分析",
+   "fr": "Analyse de pulsars"
+  },
+  {
+   "en": "Observational Data",
+   "zh-Hans": "观测数据",
+   "fr": "Données d’observation"
+  },
+  {
+   "en": "Observational Results",
+   "zh-Hans": "观测结果",
+   "fr": "Résultats d’observation"
+  },
+  {
+   "en": "Results Editors",
+   "zh-Hans": "结果编辑器",
+   "fr": "Éditeurs de résultats"
+  },
+  {
+   "en": "Topics...",
+   "zh-Hans": "主题...",
+   "fr": "Rubriques...",
+   "except": {
+    "original:Show Help Topics...": "VIREO's help viewer item Show Help Topics... (the topic list), «Afficher les rubriques d’aide...»; the row names the Help menu's Topics... item."
+   }
+  },
+  {
+   "en": "About This Exercise...",
+   "zh-Hans": "关于本实验...",
+   "fr": "À propos de cet exercice..."
+  },
+  {
+   "en": "Project CLEA",
+   "zh-Hans": "Project CLEA",
+   "fr": "Project CLEA"
+  },
+  {
+   "en": "Gettysburg College",
+   "zh-Hans": "Gettysburg College",
+   "fr": "Gettysburg College"
+  },
+  {
+   "en": "VIREO",
+   "zh-Hans": "VIREO",
+   "fr": "VIREO"
+  },
+  {
+   "en": "OpenVireo",
+   "zh-Hans": "OpenVireo",
+   "fr": "OpenVireo"
+  },
+  {
+   "en": "CLEA",
+   "zh-Hans": "CLEA",
+   "fr": "CLEA"
+  },
+  {
+   "en": "NSF",
+   "zh-Hans": "NSF",
+   "fr": "NSF"
+  },
+  {
+   "en": "GitHub",
+   "zh-Hans": "GitHub",
+   "fr": "GitHub"
+  },
+  {
+   "en": "FITS",
+   "zh-Hans": "FITS",
+   "fr": "FITS"
+  },
+  {
+   "en": "CSV",
+   "zh-Hans": "CSV",
+   "fr": "CSV"
+  },
+  {
+   "en": "VizieR",
+   "zh-Hans": "VizieR",
+   "fr": "VizieR"
+  },
+  {
+   "en": "NOMAD",
+   "zh-Hans": "NOMAD",
+   "fr": "NOMAD"
+  },
+  {
+   "en": "USNO-B1",
+   "zh-Hans": "USNO-B1",
+   "fr": "USNO-B1"
+  },
+  {
+   "en": "GSC",
+   "zh-Hans": "GSC",
+   "fr": "GSC"
+  },
+  {
+   "en": "2MASS",
+   "zh-Hans": "2MASS",
+   "fr": "2MASS"
+  },
+  {
+   "en": "SHA-256",
+   "zh-Hans": "SHA-256",
+   "fr": "SHA-256"
+  },
+  {
+   "en": "JSON",
+   "zh-Hans": "JSON",
+   "fr": "JSON"
+  },
+  {
+   "en": "File",
+   "zh-Hans": "文件",
+   "fr": "Fichier",
+   "exact": true
+  },
+  {
+   "en": "Slew",
+   "zh-Hans": "转动",
+   "fr": "Déplacer",
+   "exact": true
+  },
+  {
+   "en": "Tools",
+   "zh-Hans": "工具",
+   "fr": "Outils",
+   "exact": true,
+   "except": {
+    "map:appShell.toolsMenu": "OpenVireo's own header menu (not VIREO's Tools menu); FR names it «Menu» in French."
+   }
+  },
+  {
+   "en": "Help",
+   "zh-Hans": "帮助",
+   "fr": "Aide",
+   "exact": true
+  },
+  {
+   "en": "Options",
+   "zh-Hans": "选项",
+   "fr": "Options",
+   "exact": true
+  },
+  {
+   "en": "Parameters",
+   "zh-Hans": "参数",
+   "fr": "Paramètres",
+   "exact": true
+  },
+  {
+   "en": "OK",
+   "zh-Hans": "确定",
+   "fr": "OK",
+   "exact": true
+  },
+  {
+   "en": "Cancel",
+   "zh-Hans": "取消",
+   "fr": "Annuler",
+   "exact": true
+  },
+  {
+   "en": "Close",
+   "zh-Hans": "关闭",
+   "fr": "Fermer",
+   "exact": true
+  },
+  {
+   "en": "Yes",
+   "zh-Hans": "是",
+   "fr": "Oui",
+   "exact": true
+  },
+  {
+   "en": "Reset",
+   "zh-Hans": "重置",
+   "fr": "Réinitialiser",
+   "exact": true
+  },
+  {
+   "en": "Update",
+   "zh-Hans": "更新",
+   "fr": "Mettre à jour",
+   "exact": true
+  },
+  {
+   "en": "List",
+   "zh-Hans": "列表",
+   "fr": "Liste",
+   "exact": true
+  },
+  {
+   "en": "Selection",
+   "zh-Hans": "选择",
+   "fr": "Sélection",
+   "exact": true
+  },
+  {
+   "en": "Exit",
+   "zh-Hans": "退出",
+   "fr": "Quitter",
+   "exact": true
+  },
+  {
+   "en": "Print...",
+   "zh-Hans": "打印...",
+   "fr": "Imprimer...",
+   "exact": true
+  },
+  {
+   "en": "Search...",
+   "zh-Hans": "搜索...",
+   "fr": "Rechercher...",
+   "exact": true
+  },
+  {
+   "en": "Save...",
+   "zh-Hans": "保存...",
+   "fr": "Enregistrer...",
+   "exact": true
+  },
+  {
+   "en": "Stop",
+   "zh-Hans": "停止",
+   "fr": "Arrêter",
+   "exact": true
+  },
+  {
+   "en": "Scan",
+   "zh-Hans": "浏览",
+   "fr": "Faire défiler",
+   "exact": true
+  },
+  {
+   "en": "Telescopes",
+   "zh-Hans": "望远镜",
+   "fr": "Télescopes",
+   "exact": true
+  },
+  {
+   "en": "Websites",
+   "zh-Hans": "网站",
+   "fr": "Sites web",
+   "exact": true
+  },
+  {
+   "en": "Confirm",
+   "zh-Hans": "确认",
+   "fr": "Confirmer",
+   "exact": true
+  },
+  {
+   "en": "Confirmation",
+   "zh-Hans": "确认",
+   "fr": "Confirmation",
+   "exact": true
+  },
+  {
+   "en": "Display",
+   "zh-Hans": "显示",
+   "fr": "Affichage",
+   "exact": true
+  },
+  {
+   "en": "Objects",
+   "zh-Hans": "天体",
+   "fr": "Objets",
+   "exact": true
+  },
+  {
+   "en": "Go",
+   "zh-Hans": "开始",
+   "fr": "Démarrer",
+   "exact": true
+  },
+  {
+   "en": "Init",
+   "zh-Hans": "初始化",
+   "fr": "Préparer",
+   "exact": true
+  },
+  {
+   "en": "Set Coordinates",
+   "zh-Hans": "设置坐标",
+   "fr": "Définir les coordonnées"
+  },
+  {
+   "en": "View/Select from List",
+   "zh-Hans": "从列表查看/选择",
+   "fr": "Voir/sélectionner dans la liste"
+  },
+  {
+   "en": "Add Current Item/Position to List",
+   "zh-Hans": "将当前项目/位置添加到列表",
+   "fr": "Ajouter l’objet ou la position actuels à la liste"
+  },
+  {
+   "en": "Slew to Selection",
+   "zh-Hans": "转动到所选对象",
+   "fr": "Déplacer vers la sélection"
+  },
+  {
+   "en": "Field Information",
+   "zh-Hans": "视场信息",
+   "fr": "Informations sur le champ"
+  },
+  {
+   "en": "Variable Stars",
+   "zh-Hans": "变星",
+   "fr": "Étoiles variables"
+  },
+  {
+   "en": "QSO List",
+   "zh-Hans": "QSO列表",
+   "fr": "Liste de QSO"
+  },
+  {
+   "en": "CCD Camera",
+   "zh-Hans": "CCD相机",
+   "fr": "Caméra CCD"
+  },
+  {
+   "en": "IR Camera",
+   "zh-Hans": "IR相机",
+   "fr": "Caméra IR"
+  },
+  {
+   "en": "Request Time",
+   "zh-Hans": "申请观测时间",
+   "fr": "Demander du temps"
+  },
+  {
+   "en": "Set Date/Time",
+   "zh-Hans": "设置日期/时间",
+   "fr": "Définir la date et l’heure"
+  },
+  {
+   "en": "Site Parameters",
+   "zh-Hans": "站点参数",
+   "fr": "Paramètres du site"
+  },
+  {
+   "en": "Site Information",
+   "zh-Hans": "站点信息",
+   "fr": "Informations sur le site"
+  },
+  {
+   "en": "Print Sky Image",
+   "zh-Hans": "打印天空图像",
+   "fr": "Imprimer l’image du ciel"
+  },
+  {
+   "en": "HST Image Archive",
+   "zh-Hans": "HST图像档案",
+   "fr": "Archive d’images du HST"
+  },
+  {
+   "en": "Exit Observatory",
+   "zh-Hans": "退出天文台",
+   "fr": "Quitter l’observatoire"
+  },
+  {
+   "en": "Restrict Scope Access",
+   "zh-Hans": "限制望远镜使用",
+   "fr": "Restreindre l’accès aux télescopes"
+  },
+  {
+   "en": "Limit Slewing",
+   "zh-Hans": "限制转动",
+   "fr": "Limiter le déplacement"
+  },
+  {
+   "en": "Show Object ID",
+   "zh-Hans": "显示天体编号",
+   "fr": "Afficher l’identifiant de l’objet"
+  },
+  {
+   "en": "Show Object Mag",
+   "zh-Hans": "显示天体星等",
+   "fr": "Afficher la mag. de l’objet"
+  },
+  {
+   "en": "Fast Slewing",
+   "zh-Hans": "快速转动",
+   "fr": "Déplacement rapide"
+  },
+  {
+   "en": "Fast Scope Change",
+   "zh-Hans": "快速切换望远镜",
+   "fr": "Changement rapide de télescope"
+  },
+  {
+   "en": "Sound Effects",
+   "zh-Hans": "音效",
+   "fr": "Effets sonores"
+  },
+  {
+   "en": "Infrared Camera",
+   "zh-Hans": "红外相机",
+   "fr": "Caméra infrarouge"
+  },
+  {
+   "en": "Write Log File",
+   "zh-Hans": "写入日志文件",
+   "fr": "Écrire le fichier journal"
+  },
+  {
+   "en": "Time-Dependent Data",
+   "zh-Hans": "随时间变化的数据",
+   "fr": "Données dépendant du temps"
+  },
+  {
+   "en": "Print in Color",
+   "zh-Hans": "彩色打印",
+   "fr": "Imprimer en couleur"
+  },
+  {
+   "en": "Monochrome Displays",
+   "zh-Hans": "单色显示器",
+   "fr": "Affichages monochromes"
+  },
+  {
+   "en": "Compute Rdshft Vel.",
+   "zh-Hans": "计算红移速度",
+   "fr": "Calculer la vit. par décalage vers le rouge"
+  },
+  {
+   "en": "Allow User Change",
+   "zh-Hans": "允许用户更改",
+   "fr": "Autoriser la modification par l’utilisateur"
+  },
+  {
+   "en": "Set E(B-V)",
+   "zh-Hans": "设置E(B-V)",
+   "fr": "Définir E(B-V)"
+  },
+  {
+   "en": "Detect Sky",
+   "zh-Hans": "检测天空",
+   "fr": "Détecter le ciel"
+  },
+  {
+   "en": "Catalog Object",
+   "zh-Hans": "星表天体",
+   "fr": "Objet du catalogue"
+  },
+  {
+   "en": "Field Size",
+   "zh-Hans": "视场大小",
+   "fr": "Taille du champ"
+  },
+  {
+   "en": "Multi-Channel Spectrometer",
+   "zh-Hans": "多通道光谱仪",
+   "fr": "Spectromètre multicanal"
+  },
+  {
+   "en": "Observation List",
+   "zh-Hans": "观测列表",
+   "fr": "Liste d’observations"
+  },
+  {
+   "en": "Star Data List",
+   "zh-Hans": "恒星数据列表",
+   "fr": "Liste de données d’étoiles"
+  },
+  {
+   "en": "Naked Eye Star",
+   "zh-Hans": "肉眼可见恒星",
+   "fr": "Étoile à l’œil nu"
+  },
+  {
+   "en": "Get Selection Data",
+   "zh-Hans": "获取所选数据",
+   "fr": "Obtenir les données de la sélection"
+  },
+  {
+   "en": "Add Selection to Current Hot List",
+   "zh-Hans": "将所选对象添加到当前目标列表",
+   "fr": "Ajouter la sélection à la liste d’objets actuelle"
+  },
+  {
+   "en": "Start New Hot List with Selection",
+   "zh-Hans": "以所选对象新建目标列表",
+   "fr": "Démarrer une nouvelle liste d’objets avec la sélection"
+  },
+  {
+   "en": "Save List",
+   "zh-Hans": "保存列表",
+   "fr": "Enregistrer la liste"
+  },
+  {
+   "en": "Edit Selection",
+   "zh-Hans": "编辑所选对象",
+   "fr": "Modifier la sélection"
+  },
+  {
+   "en": "Delete Selection",
+   "zh-Hans": "删除所选对象",
+   "fr": "Supprimer la sélection"
+  },
+  {
+   "en": "Undo Edit/Delete",
+   "zh-Hans": "撤销编辑/删除",
+   "fr": "Annuler la modification/suppression"
+  },
+  {
+   "en": "Base Slew Rate",
+   "zh-Hans": "基本转动速度",
+   "fr": "Vitesse de déplacement de base"
+  },
+  {
+   "en": "Horizon Limit",
+   "zh-Hans": "地平线限制",
+   "fr": "Limite d’horizon"
+  },
+  {
+   "en": "Finder Field",
+   "zh-Hans": "寻星镜视场",
+   "fr": "Champ du chercheur"
+  },
+  {
+   "en": "Finder Mag Limit",
+   "zh-Hans": "寻星镜星等极限",
+   "fr": "Mag. limite du chercheur"
+  },
+  {
+   "en": "Field Creation Factor",
+   "zh-Hans": "视场生成系数",
+   "fr": "Facteur de création du champ"
+  },
+  {
+   "en": "Enter Sky Coordinates for Slew",
+   "zh-Hans": "输入转动的天球坐标",
+   "fr": "Coordonnées célestes pour le déplacement du télescope"
+  },
+  {
+   "en": "Add/Edit Hot List Entry",
+   "zh-Hans": "添加/编辑目标列表条目",
+   "fr": "Ajouter/modifier une entrée de la liste d’objets"
+  },
+  {
+   "en": "Camera Parameters",
+   "zh-Hans": "相机参数",
+   "fr": "Paramètres de la caméra"
+  },
+  {
+   "en": "Spectra From Multi-channel Spectrometer",
+   "zh-Hans": "多通道光谱仪光谱",
+   "fr": "Spectres du spectromètre multicanal"
+  },
+  {
+   "en": "Terminate Current Slew",
+   "zh-Hans": "终止当前转动",
+   "fr": "Interrompre le déplacement en cours"
+  },
+  {
+   "en": "Save Updates",
+   "zh-Hans": "保存更新",
+   "fr": "Enregistrer les modifications"
+  },
+  {
+   "en": "Sort Options",
+   "zh-Hans": "排序选项",
+   "fr": "Options de tri"
+  },
+  {
+   "en": "Scan Rate",
+   "zh-Hans": "浏览速度",
+   "fr": "Vitesse de défilement"
+  },
+  {
+   "en": "Chip Well Depth",
+   "zh-Hans": "芯片阱深",
+   "fr": "Capacité du puits de la puce"
+  },
+  {
+   "en": "Dark Noise",
+   "zh-Hans": "暗噪声",
+   "fr": "Bruit d’obscurité"
+  },
+  {
+   "en": "Data from Observations",
+   "zh-Hans": "来自观测的数据",
+   "fr": "Données issues des observations"
+  },
+  {
+   "en": "Record/Review",
+   "zh-Hans": "记录/回看",
+   "fr": "Consigner/Revoir"
+  },
+  {
+   "en": "Next on List",
+   "zh-Hans": "列表中的下一个",
+   "fr": "Suivant dans la liste"
+  },
+  {
+   "en": "No More Spectra",
+   "zh-Hans": "没有更多光谱",
+   "fr": "Aucun autre spectre"
+  },
+  {
+   "en": "Spectral Line Table",
+   "zh-Hans": "谱线表",
+   "fr": "Tableau des raies spectrales"
+  },
+  {
+   "en": "Program List",
+   "zh-Hans": "观测程序列表",
+   "fr": "Liste du programme"
+  },
+  {
+   "en": "Pulsar guide",
+   "zh-Hans": "脉冲星指南",
+   "fr": "Guide des pulsars"
+  },
+  {
+   "en": "Pulsar timing guide",
+   "zh-Hans": "脉冲星计时指南",
+   "fr": "Guide de chronométrage des pulsars"
+  },
+  {
+   "en": "Radio Astronomy of Pulsars",
+   "zh-Hans": "脉冲星射电天文学",
+   "fr": "Radioastronomie des pulsars"
+  },
+  {
+   "en": "Radio Telescope Control Panel",
+   "zh-Hans": "射电望远镜控制面板",
+   "fr": "Panneau de commande du radiotélescope"
+  },
+  {
+   "en": "Radio Simulation Options",
+   "zh-Hans": "射电模拟选项",
+   "fr": "Options de simulation radio"
+  },
+  {
+   "en": "Pulsar Parameters",
+   "zh-Hans": "脉冲星参数",
+   "fr": "Paramètres du pulsar"
+  },
+  {
+   "en": "Access Pulsar List",
+   "zh-Hans": "访问脉冲星列表",
+   "fr": "Accéder à la liste de pulsars"
+  },
+  {
+   "en": "Pulsar Identification",
+   "zh-Hans": "脉冲星证认",
+   "fr": "Identification du pulsar"
+  },
+  {
+   "en": "Telescope Type",
+   "zh-Hans": "望远镜类型",
+   "fr": "Type de télescope"
+  },
+  {
+   "en": "Slew Rate",
+   "zh-Hans": "转动速度",
+   "fr": "Vitesse de déplacement",
+   "except": {
+    "original:Base Slew Rate": "VIREO's Base Slew Rate is «Vitesse de déplacement de base» (FR2)",
+    "catalog:radioSimOptions.okNote": "names Base Slew Rate, «Vitesse de déplacement de base» (FR2)"
+   }
+  },
+  {
+   "en": "Find Pulsar Data",
+   "zh-Hans": "查找脉冲星数据",
+   "fr": "Localiser les données du pulsar"
+  },
+  {
+   "en": "Identify Recorded Object",
+   "zh-Hans": "识别已记录的天体",
+   "fr": "Identifier l’objet consigné"
+  },
+  {
+   "en": "Add Channel",
+   "zh-Hans": "添加通道",
+   "fr": "Ajouter un canal"
+  },
+  {
+   "en": "Antenna Aperture",
+   "zh-Hans": "天线口径",
+   "fr": "Ouverture de l’antenne"
+  },
+  {
+   "en": "Sound Features",
+   "zh-Hans": "声音功能",
+   "fr": "Fonctions sonores"
+  },
+  {
+   "en": "Asteroid List",
+   "zh-Hans": "小行星列表",
+   "fr": "Liste d’astéroïdes"
+  },
+  {
+   "en": "Spectral Range",
+   "zh-Hans": "光谱范围",
+   "fr": "Plage spectrale"
+  },
+  {
+   "en": "Spectrum Information",
+   "zh-Hans": "光谱信息",
+   "fr": "Informations sur le spectre"
+  },
+  {
+   "en": "View/Save Spectra",
+   "zh-Hans": "查看/保存光谱",
+   "fr": "Voir/enregistrer les spectres"
+  },
+  {
+   "en": "Select Objects",
+   "zh-Hans": "选择天体",
+   "fr": "Sélectionner des objets"
+  },
+  {
+   "en": "Print Selection Field",
+   "zh-Hans": "打印选择视场",
+   "fr": "Imprimer le champ de sélection"
+  },
+  {
+   "en": "Save Text",
+   "zh-Hans": "保存文本",
+   "fr": "Enregistrer le texte"
+  },
+  {
+   "en": "Comma Delimit",
+   "zh-Hans": "逗号分隔",
+   "fr": "Séparé par des virgules"
+  },
+  {
+   "en": "Exposure Timer",
+   "zh-Hans": "曝光计时器",
+   "fr": "Minuteur de pose"
+  },
+  {
+   "en": "Find Text String",
+   "zh-Hans": "查找文本",
+   "fr": "Rechercher du texte"
+  },
+  {
+   "en": "Close Multi-Spec",
+   "zh-Hans": "关闭Multi-Spec",
+   "fr": "Fermer Multi-Spec"
+  },
+  {
+   "en": "Measured Redshift Data",
+   "zh-Hans": "测得的红移数据",
+   "fr": "Données de décalage vers le rouge mesurées"
+  },
+  {
+   "en": "Record Z",
+   "zh-Hans": "记录z",
+   "fr": "Consigner z"
+  },
+  {
+   "en": "Save Data",
+   "zh-Hans": "保存数据",
+   "fr": "Enregistrer les données",
+   "except": {
+    "original:Save Data in Comma-Separated Text File": "another VIREO caption (a file dialog title, «Enregistrer les données dans…»), not the Save Data button",
+    "original:Save Data Now?": "another VIREO message (a question, «Enregistrer les données maintenant ?»), not the Save Data button"
+   }
+  },
+  {
+   "en": "Plot Data",
+   "zh-Hans": "绘制数据",
+   "fr": "Tracer les données"
+  },
+  {
+   "en": "LSS Wedge Plot",
+   "zh-Hans": "LSS楔形图",
+   "fr": "Diagramme en cône LSS"
+  },
+  {
+   "en": "Load Saved Data",
+   "zh-Hans": "载入已保存数据",
+   "fr": "Charger les données enregistrées"
+  },
+  {
+   "en": "LSS Galaxy Data",
+   "zh-Hans": "LSS星系数据",
+   "fr": "Données de galaxies LSS"
+  },
+  {
+   "en": "Load/Plot",
+   "zh-Hans": "载入/绘图",
+   "fr": "Charger/tracer"
+  },
+  {
+   "en": "View/Print Parameters",
+   "zh-Hans": "查看/打印参数",
+   "fr": "Voir/imprimer les paramètres"
+  },
+  {
+   "en": "Display/Print Data",
+   "zh-Hans": "显示/打印数据",
+   "fr": "Afficher/imprimer les données"
+  },
+  {
+   "en": "Select Cluster Data",
+   "zh-Hans": "选择星团数据",
+   "fr": "Sélectionner les données d’amas"
+  },
+  {
+   "en": "Possible Cluster Member",
+   "zh-Hans": "可能的星团成员",
+   "fr": "Membre possible de l’amas"
+  },
+  {
+   "en": "Clusters for Study",
+   "zh-Hans": "供研究的星团",
+   "fr": "Amas à étudier"
+  },
+  {
+   "en": "Variable Star Data",
+   "zh-Hans": "变星数据",
+   "fr": "Données de l’étoile variable"
+  },
+  {
+   "en": "Simulated Light Curve",
+   "zh-Hans": "模拟光变曲线",
+   "fr": "Courbe de lumière simulée"
+  },
+  {
+   "en": "Remove from HR Diagram",
+   "zh-Hans": "从赫罗图中移除",
+   "fr": "Retirer du diagramme HR"
+  },
+  {
+   "en": "Recorded Results",
+   "zh-Hans": "已记录的结果",
+   "fr": "Résultats consignés"
+  },
+  {
+   "en": "Telescope has Moved!",
+   "zh-Hans": "望远镜已移动！",
+   "fr": "Le télescope a été déplacé !"
+  },
+  {
+   "en": "Reading Sky!",
+   "zh-Hans": "正在读取天空！",
+   "fr": "Lecture du ciel !"
+  },
+  {
+   "en": "Radio clock scenario",
+   "zh-Hans": "射电时钟场景",
+   "fr": "Scénario de l’horloge radio"
+  },
+  {
+   "en": "Scenario inputs",
+   "zh-Hans": "场景输入",
+   "fr": "Entrées du scénario"
+  },
+  {
+   "en": "Use compiled defaults",
+   "zh-Hans": "使用编译的默认值",
+   "fr": "Utiliser les valeurs par défaut compilées"
+  },
+  {
+   "en": "Reset radio site",
+   "zh-Hans": "重置射电站点",
+   "fr": "Réinitialiser le site radio"
+  },
+  {
+   "en": "Start pulsar exercise",
+   "zh-Hans": "开始脉冲星实验",
+   "fr": "Démarrer le TP sur les pulsars"
+  },
+  {
+   "en": "Instructor mode",
+   "zh-Hans": "讲师模式",
+   "fr": "mode enseignant"
+  },
+  {
+   "en": "Clear",
+   "zh-Hans": "清除",
+   "fr": "Effacer",
+   "exact": true
+  },
+  {
+   "en": "Find",
+   "zh-Hans": "查找",
+   "fr": "Localiser",
+   "exact": true
+  },
+  {
+   "en": "Record",
+   "zh-Hans": "记录",
+   "fr": "Consigner",
+   "exact": true
+  },
+  {
+   "en": "Show",
+   "zh-Hans": "显示",
+   "fr": "Afficher",
+   "exact": true
+  },
+  {
+   "en": "Save",
+   "zh-Hans": "保存",
+   "fr": "Enregistrer",
+   "exact": true
+  },
+  {
+   "en": "Save As",
+   "zh-Hans": "另存为",
+   "fr": "Enregistrer sous",
+   "exact": true
+  },
+  {
+   "en": "Save List...",
+   "zh-Hans": "保存列表...",
+   "fr": "Enregistrer la liste...",
+   "exact": true
+  },
+  {
+   "en": "Find Pulsar...",
+   "zh-Hans": "查找脉冲星...",
+   "fr": "Localiser un pulsar...",
+   "exact": true
+  },
+  {
+   "en": "Print",
+   "zh-Hans": "打印",
+   "fr": "Imprimer",
+   "exact": true
+  },
+  {
+   "en": "Lab Table",
+   "zh-Hans": "实验台",
+   "fr": "table de laboratoire"
+  },
+  {
+   "en": "Save All",
+   "zh-Hans": "全部保存",
+   "fr": "Tout enregistrer"
+  },
+  {
+   "en": "Clear All",
+   "zh-Hans": "全部清除",
+   "fr": "Tout effacer"
+  },
+  {
+   "en": "Telescope Display",
+   "zh-Hans": "望远镜显示",
+   "fr": "affichage du télescope"
+  },
+  {
+   "en": "Master Receiver",
+   "zh-Hans": "主接收机",
+   "fr": "récepteur principal"
+  },
+  {
+   "en": "Case Dependent",
+   "zh-Hans": "区分大小写",
+   "fr": "Respecter la casse"
+  },
+  {
+   "en": "Search String",
+   "zh-Hans": "搜索文本",
+   "fr": "Texte à rechercher"
+  },
+  {
+   "en": "Search Results",
+   "zh-Hans": "搜索结果",
+   "fr": "Résultats de la recherche"
+  },
+  {
+   "en": "Optical",
+   "zh-Hans": "光学",
+   "fr": "Optique",
+   "exact": true
+  },
+  {
+   "en": "Spectral Line Help",
+   "zh-Hans": "谱线帮助",
+   "fr": "Aide sur les raies spectrales"
+  },
+  {
+   "en": "Original hot lists",
+   "zh-Hans": "原始目标列表",
+   "fr": "Listes d’objets d’origine"
+  },
+  {
+   "en": "Telescope view",
+   "zh-Hans": "望远镜视图",
+   "fr": "vue du télescope"
+  },
+  {
+   "en": "Receiver monitor",
+   "zh-Hans": "接收机监视器",
+   "fr": "Moniteur du récepteur"
+  },
+  {
+   "en": "Radio configuration",
+   "zh-Hans": "射电配置",
+   "fr": "Configuration radio"
+  },
+  {
+   "en": "pulsar exercise",
+   "zh-Hans": "脉冲星实验",
+   "fr": "TP sur les pulsars"
+  },
+  {
+   "en": "Manual marks",
+   "zh-Hans": "手动标记",
+   "fr": "Repères manuels"
+  },
+  {
+   "en": "Data properties",
+   "zh-Hans": "数据属性",
+   "fr": "Propriétés des données"
+  },
+  {
+   "en": "Trace audition",
+   "zh-Hans": "曲线试听",
+   "fr": "Écoute du tracé"
+  },
+  {
+   "en": "Telescope position",
+   "zh-Hans": "望远镜位置",
+   "fr": "Position du télescope"
+  },
+  {
+   "en": "Radio telescope control",
+   "zh-Hans": "射电望远镜控制",
+   "fr": "Commande du radiotélescope"
+  }
+ ],
+ "forbidden": [
+  {
+   "words": [
+    "您"
+   ],
+   "use": "你 (decided register)"
+  },
+  {
+   "words": [
+    "群集",
+    "集团"
+   ],
+   "use": "星团 for a star cluster"
+  },
+  {
+   "words": [
+    "红位移"
+   ],
+   "use": "红移"
+  },
+  {
+   "words": [
+    "文档"
+   ],
+   "use": "文件 for a file"
+  },
+  {
+   "words": [
+    "射電",
+    "哈伯"
+   ],
+   "use": "射电 / 哈勃 (Traditional or Taiwan forms in Simplified text)"
+  },
+  {
+   "words": [
+    "调查"
+   ],
+   "use": "探究 for a saved investigation (调查 reads as a survey or official inquiry)"
+  },
+  {
+   "words": [
+    "檔案",
+    "儲存",
+    "軟體",
+    "資料",
+    "滑鼠"
+   ],
+   "use": "文件, 保存, 软件, 数据, 鼠标 (Taiwan or Traditional forms)"
+  },
+  {
+   "words": [
+    "脈衝星",
+    "波霎"
+   ],
+   "use": "脉冲星"
+  },
+  {
+   "words": [
+    "视相度"
+   ],
+   "use": "视宁度 (Taiwan form)"
+  },
+  {
+   "words": [
+    "分光仪"
+   ],
+   "use": "光谱仪"
+  },
+  {
+   "words": [
+    "小惑星"
+   ],
+   "use": "小行星 (Japanese form)"
+  },
+  {
+   "words": [
+    "教师模式"
+   ],
+   "use": "讲师模式 for Instructor mode (general-public audience, not a classroom)"
+  },
+  {
+   "words": [
+    "谱线条"
+   ],
+   "use": "谱线"
+  },
+  {
+   "words": [
+    "加载"
+   ],
+   "use": "载入 for Load and loading (plan §5.3: one verb on screen)"
+  }
+ ],
+ "dropped": [
+  {
+   "en": "\\bcounts?\\b(?! shows after the reveal)",
+   "why": "Count is a noun or verb meaning number, tally or counting (数量, 计数, 计, 次数) depending on the sentence; no single term fits every context."
+  },
+  {
+   "en": "\\bfilters?\\b",
+   "why": "Filter is an optical filter (滤光片) in the cameras but a list or table filter (筛选, 过滤) elsewhere; one Chinese term would be wrong in one of them."
+  },
+  {
+   "en": "\\b(?:600-)?bins?\\b",
+   "why": "Bin is a spectrum channel, histogram bin or sample slot (通道, 分箱, 区间) depending on the sentence; no single term fits every context."
+  },
+  {
+   "en": "\\bfresh sky\\b",
+   "why": "The French row has no stable single target: the English phrase is rendered in context as new readings, new measurements or a new sky; one Chinese term would force a wrong word."
+  }
+ ]
+}

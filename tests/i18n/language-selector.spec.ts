@@ -3,7 +3,7 @@ import {test,expect} from '../fixtures/area-tripwire';
 import {FRENCH_LOCALE,PORTUGUESE_LOCALE,SPANISH_LOCALE} from '../fixtures/language';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
-import {FRENCH_TEXT,HINDI_TEXT,INDONESIAN_TEXT,JAPANESE_TEXT,PORTUGUESE_TEXT,RUSSIAN_TEXT} from './languageText';
+import {CHINESE_SIMPLIFIED_TEXT,FRENCH_TEXT,HINDI_TEXT,INDONESIAN_TEXT,JAPANESE_TEXT,PORTUGUESE_TEXT,RUSSIAN_TEXT} from './languageText';
 
 // Front ES1 (docs/I18N.md; user decisions 1, 2, 5 and 9 of 2026-11-09): the English / Español selector at the foot of the header
 // menu, its reload confirmation, storage failure and the "View original (English)" option. Front ES-REL: Spanish is released, so
@@ -145,6 +145,37 @@ test('Front FR-REL: fr, fr-FR, fr-CA, fr-BE and FR-ch browsers open Français; t
  await choose(page,'fr');await expect(dialog).toContainText('Français');
  await Promise.all([page.waitForEvent('load'),id(page,'language-change').click()]);
  await expect(page.locator('html')).toHaveAttribute('lang','fr');expect(await stored(page)).toBe('fr');
+ await page.close();
+});
+
+// Front ZH0 (plan front-i18n-zh.md §2): Simplified Chinese is registered before its release. Only its `?lang=zh-Hans` preview reaches
+// it and offers it; zh, zh-CN, zh-SG, zh-Hans-TW and zh-TW browsers and a stored zh-Hans get English with the four released options.
+test('Front ZH0: only a ?lang=zh-Hans preview opens and offers 简体中文; zh, zh-CN, zh-SG, zh-Hans-TW and zh-TW browsers and a stored zh-Hans get English',async({browser})=>{
+ test.setTimeout(180_000);
+ const Z=CHINESE_SIMPLIFIED_TEXT;
+ for(const languages of [['zh'],['zh-CN'],['zh-SG'],['zh-Hans-TW'],['zh-TW'],['zh-CN','fr-FR']] as const){
+  const page=await browserIn(browser,languages);
+  const requests:string[]=[];page.on('request',r=>{if(/i18n-zh-Hans|\/zh-hans\//.test(r.url()))requests.push(r.url());});
+  expect(await languageOf(page),languages.join(',')).toBe('en');
+  await expect(id(page,'language-select').locator('option')).toHaveText(FOUR);
+  expect(requests,`${languages.join(',')}: no Chinese module is fetched`).toEqual([]);
+  await page.close();
+ }
+ const storedZh=await browserIn(browser,['zh-CN']);await seedChoice(storedZh,'zh-Hans');
+ const storedRequests:string[]=[];storedZh.on('request',r=>{if(/i18n-zh-Hans|\/zh-hans\//.test(r.url()))storedRequests.push(r.url());});
+ expect(await languageOf(storedZh)).toBe('en');expect(storedRequests,'a stored zh-Hans fetches no Chinese module').toEqual([]);await storedZh.close();
+ const page=await browserIn(browser,['en-US']);
+ expect(await languageOf(page,'?lang=zh-Hans')).toBe('zh-Hans');
+ await expect(page.locator('.investigation-toolbar')).toContainText(Z.catalog['project.save']);await expect(page).toHaveTitle(Z.catalog['app.documentTitle']);
+ const select=page.getByRole('combobox',{name:Z.maps.languageChoice.legend});
+ await expect(select.locator('option')).toHaveText([...FOUR,'简体中文 (Simplified Chinese)']);await expect(select).toHaveValue('zh-Hans');
+ expect(await select.locator('option').evaluateAll(o=>o.map(x=>[(x as HTMLOptionElement).value,x.getAttribute('lang')]))).toEqual([['en','en'],['es-419','es-419'],['pt-BR','pt-BR'],['fr','fr'],['zh-Hans','zh-Hans']]);
+ // A change on the preview stores nothing (SC8): the choice travels as ?lang=, and the dialog, in Chinese, says so.
+ await choose(page,'fr');
+ const dialog=id(page,'language-confirm');await expect(dialog).toContainText(Z.maps.languageChoice.title);
+ await expect(dialog).toContainText(Z.maps.languageChoice.reload('Français'));await expect(id(page,'language-preview')).toHaveText(Z.maps.languageChoice.preview);
+ await Promise.all([page.waitForURL(/lang=fr/),id(page,'language-change').click()]);
+ await expect(page.locator('html')).toHaveAttribute('lang','fr');expect(await stored(page)).toBeNull();
  await page.close();
 });
 

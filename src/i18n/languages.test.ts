@@ -56,8 +56,8 @@ describe('Front SC8: the language registry (src/i18n/languages.json)',()=>{
  it('Spanish is released and keeps its ES-REL behaviour: es and es-* (any case), <html lang> es-419, Español in the selector',()=>{
   // Front PT0 registered Brazilian Portuguese before its release (a ?lang=pt-BR preview only); Front PT-REL released it. Front FR0
   // registered French before its release; Front FR-REL released it. Front ID0 registered Indonesian before its release, Front HI0 Hindi,
-  // Front JA0 Japanese and Front RU0 Russian.
-  expect(LANGUAGES.map(l=>[l.tag,l.released])).toEqual([['es-419',true],['pt-BR',true],['fr',true],['id',false],['hi',false],['ja',false],['ru',false]]);
+  // Front JA0 Japanese, Front ZH0 Simplified Chinese and Front RU0 Russian (each a ?lang= preview only).
+  expect(LANGUAGES.map(l=>[l.tag,l.released])).toEqual([['es-419',true],['pt-BR',true],['fr',true],['id',false],['hi',false],['ja',false],['zh-Hans',false],['ru',false]]);
   for(const tag of ['es','es-MX','es-ES','ES-ar','es-419','es-Latn-MX'])expect(matchLanguage(tag)?.tag,tag).toBe('es-419');
   for(const tag of ['','en','en-US','esp','eus','et','ca-ES'])expect(matchLanguage(tag),tag).toBeUndefined();
   // Front FR0: fr-ES is French spoken in Spain, so it asks for French (released since FR-REL).
@@ -84,6 +84,8 @@ describe('Front SC8: the language registry (src/i18n/languages.json)',()=>{
   expect(isReleased('ru')).toBe(false);expect(matchLanguage('ru-UA')?.tag).toBe('ru');expect(matchLanguage('uk')).toBeUndefined();
   expect(failureNotice('area','ru')).toEqual({en:'Part of the Russian text could not be loaded; that part is shown in English. Reload to try again.',own:'Не удалось загрузить часть текста на русском языке; эта часть показана на английском. Перезагрузите страницу, чтобы попробовать ещё раз.',lang:'ru'});
   expect(failureNotice('language','fr')).toEqual({en:'French could not be loaded; English is shown. Reload to try again.',own:'Impossible de charger le français\u202f; le site s’affiche en anglais. Rechargez la page pour réessayer.',lang:'fr'});
+  // Front ZH0: Simplified Chinese's notices (plan front-i18n-zh.md §2).
+  expect(failureNotice('language','zh-Hans')).toEqual({en:'Simplified Chinese could not be loaded; English is shown. Reload to try again.',own:'无法载入简体中文；已改为显示英文。请刷新页面重试。',lang:'zh-Hans'});
  });
 });
 describe('Front SC8: detection for the languages to come (scripts plan §7, pt-BR plan §4)',()=>{
@@ -130,7 +132,7 @@ describe('Front SC8: detection for the languages to come (scripts plan §7, pt-B
   expect(selectorLanguages('en',PLANNED).map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr']);
   expect(selectorLanguages('ja',PLANNED).map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','ja']);
   const all=releasing(PLANNED,...PLANNED.map(l=>l.tag));
-  expect(selectorLanguages('en',[...all,ZH_HANT]).map(optionLabel)).toEqual(['English','Español','Português (Brasil)','Français','Bahasa Indonesia','हिन्दी (Hindi)','日本語 (Japanese)','简体中文 (Chinese, Simplified)','Русский (Russian)']);
+  expect(selectorLanguages('en',[...all,ZH_HANT]).map(optionLabel)).toEqual(['English','Español','Português (Brasil)','Français','Bahasa Indonesia','हिन्दी (Hindi)','日本語 (Japanese)','简体中文 (Simplified Chinese)','Русский (Russian)']);
   expect(selectorShown('en',PLANNED.slice(3))).toBe(false);expect(selectorShown('id',PLANNED.slice(3))).toBe(true);expect(selectorShown('qps-cjk',all)).toBe(false);
  });
 });

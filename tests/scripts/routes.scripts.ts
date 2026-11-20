@@ -200,7 +200,9 @@ test('each script language gets its stack, its regional face and the Bold file; 
   await probe(page,lang,SCRIPT_TEXT[lang]);
   const family=await page.locator('#sc3-p').evaluate(e=>getComputedStyle(e).fontFamily);
   // Latin fonts first, then the script's own, then system-ui (scripts.css § 1; the exact lists are in scripts.test.ts).
-  expect(family,lang).toMatch(new RegExp(`^-apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", .*"${FACE[lang]}".*, system-ui, sans-serif$`));
+  // Front ZH0: Chinese puts its local() marks face first (scripts.css; only “ ” ‘ ’ … — · reach it).
+  const marks=lang==='zh-Hans'?'"OpenVireo CJK Marks SC", ':lang==='zh-Hant'?'"OpenVireo CJK Marks TC", ':'';
+  expect(family,lang).toMatch(new RegExp(`^${marks}-apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", .*"${FACE[lang]}".*, system-ui, sans-serif$`));
   for(const [sel,face,bold] of [['#sc3-p',FACE[lang],false],['#sc3-b',FACE[lang],true],['#sc3-c',MONO_FACE[lang],false],['#sc3-n',FACE[lang],false]] as const){
    const fonts=await platformFonts(page,sel);
    const script=fonts.filter(f=>f.familyName!=='DejaVu Sans'&&f.familyName!=='DejaVu Sans Mono');
@@ -215,6 +217,60 @@ test('each script language gets its stack, its regional face and the Bold file; 
  expect(await page.locator('#sc3-c').evaluate(e=>getComputedStyle(e).fontFamily)).toBe(englishMono);
  expect((await platformFonts(page,'#sc3-p')).map(f=>f.familyName)).toEqual(['DejaVu Sans']);
  expect(await tokenStack(page,'--ov-font-script')).toBe('');
+});
+
+// Front ZH0 (plan front-i18n-zh.md §6.2): the shell in real Simplified Chinese (its ?lang=zh-Hans preview; ZH0 translates only the
+// shell), at 320 and 1440 px: the home page, the observatory route with the header menu, the tour's first step and OpenVireo's help
+// viewer, with no layout problem or cut ink, and Han text drawn by Noto Sans CJK SC alone (never the JP or TC face, never a missing
+// glyph). Later ZH fronts add their routes; ZH-REL moves the real language into the full walk.
+for(const width of [320,1440] as const)
+test(`zh-Hans at ${width} px: the translated shell lays out without overflow, clipping or cut ink, in the Simplified Chinese face`,async({page})=>{
+ test.setTimeout(180_000);
+ await page.setViewportSize({width,height:width===320?700:1000});
+ const problems:string[]=[];
+ const check=async(step:string)=>{
+  await settle(page);
+  await expect(page.locator('html')).toHaveAttribute('lang','zh-Hans');
+  for(const p of [...await layoutProblems(page,LAYOUT),...await verticalInkProblems(page)])problems.push(`${step}: ${p}`);
+ };
+ const go=async(hash:string)=>{await page.goto('about:blank');await page.goto(`/?lang=zh-Hans${hash?'#'+hash:''}`);await expect(page.locator('.investigation-toolbar')).toBeVisible({timeout:30_000});await expect(page.locator('h1:visible').first()).toBeVisible({timeout:30_000});};
+ await go('');await check('home');
+ await go('observatory');await headerTools(page);await check('header menu');
+ // DevTools reports the faces of a node's own text: tag the route's heading (从天空开始。).
+ await page.locator('h1:visible').first().evaluate(h=>{h.id='zh0-heading';});
+ const fonts=await platformFonts(page,'#zh0-heading');
+ expect(fonts.filter(f=>f.familyName.startsWith('Noto Sans CJK')).map(f=>f.familyName),'the heading').toEqual(['Noto Sans CJK SC']);
+ expect(fonts.reduce((n,f)=>n+f.glyphCount,0)).toBeGreaterThan(4);
+ await id(page,'main-help-menu').click();await id(page,'main-help-web').click();
+ await expect(id(page,'web-help')).toBeVisible();await check('help viewer (OpenVireo)');
+ expect(problems).toEqual([]);
+});
+
+// Front ZH0 (plan front-i18n-zh.md §1.2 #3): in Chinese the quotes, ellipsis, dash and middle dot come from the variant's own CJK
+// face through scripts.css's local() marks faces (full width), Regular in text and Bold in a button. The test fonts hold none of
+// the Latin fonts that start the stack (Segoe UI, Arial… where installed draw “ ” narrow), so each probe puts DejaVu Sans right
+// after the marks face: with var(--ov-font-marks) the marks still come from the CJK face, without it from DejaVu.
+test('Front ZH0: Chinese “ ” ‘ ’ …… —— · come from the regional CJK face through the local() marks face, Regular and Bold',async({page})=>{
+ await page.goto('/#observatory');await expect(page.locator('.investigation-toolbar')).toBeVisible({timeout:30_000});
+ for(const [lang,text] of [['zh-Hans','“”‘’……——·'],['zh-Hant','“”‘’……——·']] as const){
+  await probe(page,lang,text);
+  for(const [marks,expected] of [[true,FACE[lang]],[false,'DejaVu Sans']] as const){
+   await page.evaluate(m=>{for(const id of ['sc3-p','sc3-b'])document.getElementById(id)!.style.fontFamily=`${m?'var(--ov-font-marks),':''}"DejaVu Sans",var(--ov-font-script)`;},marks);
+   await page.evaluate(()=>document.fonts.ready);
+   for(const [sel,bold] of [['#sc3-p',false],['#sc3-b',true]] as const){
+    const fonts=await platformFonts(page,sel);
+    expect([...new Set(fonts.map(f=>f.familyName))],`${lang} ${sel} marks ${marks}`).toEqual([expected]);
+    if(marks)for(const f of fonts)expect(f.postScriptName,`${lang} ${sel}`).toMatch(bold?/-Bold$/:/-Regular$/);
+   }
+  }
+ }
+ // ZH0 review: English nested in Chinese (a mirror view, a notice's English half) does not take the marks face, while a nested
+ // Chinese element does.
+ await probe(page,'zh-Hans','用',`<span id="zh0-en" lang="en">VIREO’s “test”…</span><span id="zh0-zh" lang="zh-Hans">“光”</span>`);
+ expect(await page.locator('#zh0-en').evaluate(e=>getComputedStyle(e).fontFamily)).not.toContain('OpenVireo CJK Marks');
+ expect(await page.locator('#zh0-zh').evaluate(e=>getComputedStyle(e).fontFamily)).toMatch(/^"OpenVireo CJK Marks SC", /);
+ // Japanese has no marks face (its own front decides): the variable is unset.
+ await probe(page,'ja','“光”');expect(await page.locator('#sc3-p').evaluate(e=>getComputedStyle(e).getPropertyValue('--ov-font-marks'))).toBe('');
 });
 
 test('nested text in another language gets its own language\'s face: autonyms on an English and on a Japanese page',async({page})=>{

@@ -23,10 +23,12 @@
 [lang]:is(:lang(zh),:lang(zh-Hans),:lang(zh-CN),:lang(zh-SG)){
  --ov-font-script:"PingFang SC","Microsoft YaHei UI","Microsoft YaHei","Noto Sans SC","Noto Sans CJK SC","Source Han Sans SC","WenQuanYi Micro Hei";
  --ov-font-script-mono:"Noto Sans Mono CJK SC",var(--ov-font-script);
+ --ov-font-marks:"OpenVireo CJK Marks SC";
 }
 [lang]:is(:lang(zh-Hant),:lang(zh-TW),:lang(zh-HK),:lang(zh-MO)){
  --ov-font-script:"PingFang TC","Microsoft JhengHei UI","Microsoft JhengHei","Noto Sans TC","Noto Sans CJK TC";
  --ov-font-script-mono:"Noto Sans Mono CJK TC",var(--ov-font-script);
+ --ov-font-marks:"OpenVireo CJK Marks TC";
 }
 [lang]:lang(hi){
  --ov-font-script:"Noto Sans Devanagari","Nirmala UI","Kohinoor Devanagari","Devanagari Sangam MN",Mangal;
@@ -38,6 +40,23 @@
  --ov-font-sans:-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",var(--ov-font-script),system-ui,sans-serif;
  --ov-font-mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",var(--ov-font-script-mono),monospace;
 }
+/* Front ZH0 (plan front-i18n-zh.md §1.2 #3): Chinese text expects full-width quotes, ellipsis, dash and middle dot, but the Latin
+ * fonts first in the stack hold those characters too, so “ ” … — · came out narrow and proportional (SC1 measurement). Each
+ * variant's marks face below names only installed system fonts through local() (nothing is fetched: decision Q4, and the
+ * production CSP's default-src 'none' does not block local(), checked in Chromium and Firefox) and covers only those characters
+ * (unicode-range), so it goes first: every other character falls through to the stack as before. A system without any of the
+ * named fonts skips the face and keeps the narrow marks. */
+@font-face{font-family:"OpenVireo CJK Marks SC";font-weight:400;src:local("PingFang SC"),local("PingFangSC-Regular"),local("Microsoft YaHei"),local("MicrosoftYaHei"),local("Noto Sans CJK SC"),local("NotoSansCJKsc-Regular"),local("Source Han Sans SC"),local("SourceHanSansSC-Regular");unicode-range:U+00B7,U+2014,U+2018-2019,U+201C-201D,U+2026}
+@font-face{font-family:"OpenVireo CJK Marks SC";font-weight:700;src:local("PingFang SC Semibold"),local("PingFangSC-Semibold"),local("Microsoft YaHei Bold"),local("MicrosoftYaHei-Bold"),local("Noto Sans CJK SC Bold"),local("NotoSansCJKsc-Bold"),local("Source Han Sans SC Bold"),local("SourceHanSansSC-Bold");unicode-range:U+00B7,U+2014,U+2018-2019,U+201C-201D,U+2026}
+@font-face{font-family:"OpenVireo CJK Marks TC";font-weight:400;src:local("PingFang TC"),local("PingFangTC-Regular"),local("Microsoft JhengHei"),local("MicrosoftJhengHeiRegular"),local("Noto Sans CJK TC"),local("NotoSansCJKtc-Regular"),local("Source Han Sans TC"),local("SourceHanSansTC-Regular");unicode-range:U+00B7,U+2014,U+2018-2019,U+201C-201D,U+2026}
+@font-face{font-family:"OpenVireo CJK Marks TC";font-weight:700;src:local("PingFang TC Semibold"),local("PingFangTC-Semibold"),local("Microsoft JhengHei Bold"),local("MicrosoftJhengHeiBold"),local("Noto Sans CJK TC Bold"),local("NotoSansCJKtc-Bold"),local("Source Han Sans TC Bold"),local("SourceHanSansTC-Bold");unicode-range:U+00B7,U+2014,U+2018-2019,U+201C-201D,U+2026}
+[lang]:lang(zh){
+ --ov-font-sans:var(--ov-font-marks),-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",var(--ov-font-script),system-ui,sans-serif;
+}
+/* Text in another language nested in Chinese (a VIREO mirror view or the English half of a notice, lang="en") would inherit the
+ * resolved family with the marks face first: it gets the stack back without it, at zero specificity, so a nested Chinese, Japanese
+ * or Hindi element (the rule above :where) and any class that sets its own family still win (ZH0 review). */
+:where([lang]:lang(zh) [lang]){font-family:-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",var(--ov-font-script),system-ui,sans-serif}
 /* body sets font-family:var(--ov-font-sans) once and its children inherit the resolved list, so a nested element in another
  * script language sets it again. Zero specificity beyond :lang(): any class that sets its own family still wins. */
 :where([lang]:not(html)):is(:lang(ja),:lang(zh),:lang(hi)){font-family:var(--ov-font-sans)}

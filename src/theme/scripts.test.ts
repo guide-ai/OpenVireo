@@ -35,7 +35,15 @@ describe('scripts.css: scope',()=>{
   expect(SCRIPTS).not.toMatch(/!important/);
  });
  it('loads no font and adds no resource (system fonts only, decision Q4)',()=>{
-  expect(SCRIPTS).not.toMatch(/@font-face|@import|url\(/i);
+  expect(SCRIPTS).not.toMatch(/@import|url\(/i);
+  // Front ZH0: the Chinese marks faces name installed fonts by local() only (nothing is fetched), for a few marks.
+  const faces=[...SCRIPTS.matchAll(/@font-face\{([^}]*)\}/g)].map(m=>m[1]);
+  expect(faces.length).toBe(4);
+  for(const f of faces){
+   expect(f).toMatch(/font-family:"OpenVireo CJK Marks (?:SC|TC)"/);
+   const src=/src:([^;]+);/.exec(f)![1];expect(splitTop(src).every(x=>/^local\("[^"]+"\)$/.test(x)),src).toBe(true);
+   expect(f).toContain('unicode-range:U+00B7,U+2014,U+2018-2019,U+201C-201D,U+2026');
+  }
  });
 });
 
@@ -72,7 +80,15 @@ describe('scripts.css: stacks (plan § 2.1, § 2.2)',()=>{
   expect(hans).toBeGreaterThanOrEqual(0);expect(hant).toBeGreaterThan(hans);
  });
  it('keeps the Latin fonts first: the token stacks, script fonts inserted before system-ui and the generic family',()=>{
-  const [r,...more]=OWN.filter(r=>r.decls.has('--ov-font-sans'));expect(more).toEqual([]);
+  // Front ZH0: one more rule for Chinese puts its marks face (var(--ov-font-marks), set per variant) before the same stack.
+  const [r,zh,...more]=OWN.filter(r=>r.decls.has('--ov-font-sans'));expect(more).toEqual([]);
+  expect(zh.selectors).toEqual(['[lang]:lang(zh)']);
+  expect(families(zh.decls.get('--ov-font-sans')!)).toEqual(['var(--ov-font-marks)',...families(r.decls.get('--ov-font-sans')!)]);
+  expect(varRule('zh-Hans','--ov-font-marks').map(x=>x.decls.get('--ov-font-marks'))).toEqual(['"OpenVireo CJK Marks SC"']);
+  expect(varRule('zh-Hant','--ov-font-marks').map(x=>x.decls.get('--ov-font-marks'))).toEqual(['"OpenVireo CJK Marks TC"']);
+  // ZH0 review: other-language text nested in Chinese gets the same stack without the marks face, at zero specificity.
+  const back=OWN.filter(x=>x.selectors.includes(':where([lang]:lang(zh) [lang])'));
+  expect(back.map(x=>families(x.decls.get('font-family')!))).toEqual([families(r.decls.get('--ov-font-sans')!)]);
   for(const lang of ['ja','zh','hi'])expect(r.selectors.join(),lang).toContain(`:lang(${lang})`);
   const latinSans=token('ov-font-sans').filter(f=>!GENERIC.has(f));
   expect(families(r.decls.get('--ov-font-sans')!)).toEqual([...latinSans,'var(--ov-font-script)','system-ui','sans-serif']);

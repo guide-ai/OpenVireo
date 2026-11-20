@@ -8,7 +8,7 @@ import {APP_SHELL_ES} from '../../src/i18n/es/maps/appShell';
 import {HELP_VIEWER_ES} from '../../src/i18n/es/maps/helpViewer';
 // @ts-expect-error The planner is a plain JS script (scripts/i18n-split.mjs), as tests import scripts/audit-ui-messages.mjs.
 import {loadLanguages,planLanguage} from '../../scripts/i18n-split.mjs';
-import {FRENCH_TEXT,HINDI_TEXT,INDONESIAN_TEXT,JAPANESE_TEXT,PORTUGUESE_TEXT,RUSSIAN_TEXT} from './languageText';
+import {CHINESE_SIMPLIFIED_TEXT,FRENCH_TEXT,HINDI_TEXT,INDONESIAN_TEXT,JAPANESE_TEXT,PORTUGUESE_TEXT,RUSSIAN_TEXT} from './languageText';
 // Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
 test.use({locale:SPANISH_LOCALE});
 
@@ -237,8 +237,9 @@ for(const {L:P,name} of RELEASED_AREAS)test.describe(`in a ${name} browser`,()=>
 // project.photometryRestored, rendered by the photometer); Front ID1's maps and keys also give text to `classification` (the
 // observationMetadata map) and `fits` (the cameraInfo.* keys), as FR1's did; later ID fronts fill the others (Front ID3: E03 fills the
 // shared classification+cluster module, which the cluster routes also fetch, so `cluster` holds text, as for French after FR3). ID-REL
-// turns this back into a released-language test (as FR-REL did). Front HI0: Hindi's preview the same way (HI-REL moves it to RELEASED_AREAS).
-const PARTIAL=[{L:INDONESIAN_TEXT,name:'Indonesian',release:'ID-REL',areas:['classification','cluster','exposure','fits','lss','photometer']},{L:HINDI_TEXT,name:'Hindi',release:'HI-REL',areas:['classification','cluster','exposure','fits','lss','photometer']}] as const;
+// turns this back into a released-language test (as FR-REL did). Front HI0: Hindi's preview the same way (HI-REL moves it to RELEASED_AREAS); Front ZH0:
+// Simplified Chinese's (ZH-REL).
+const PARTIAL=[{L:INDONESIAN_TEXT,name:'Indonesian',release:'ID-REL',areas:['classification','cluster','exposure','fits','lss','photometer']},{L:HINDI_TEXT,name:'Hindi',release:'HI-REL',areas:['classification','cluster','exposure','fits','lss','photometer']},{L:CHINESE_SIMPLIFIED_TEXT,name:'Simplified Chinese',release:'ZH-REL',areas:['photometer']}] as const;
 for(const {L:P,name,release,areas} of PARTIAL)test.describe(`a language before its release (${name})`,()=>{
  test.use({locale:'en-US'});
  test(`a partial language (${name}) fetches only its core, and no chunk for an empty area`,async({page})=>{

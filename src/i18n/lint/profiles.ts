@@ -398,7 +398,9 @@ export function profileFor(id:ProfileId,registers:Registers=REGISTER):LocaleProf
     register:{setting:registers.zh,patterns:chineseRegister(registers.zh)},
     // 非官方翻译 (unofficial) and 不是…翻译 (is not) pass.
     claims:[hans?/(?<!非|不是|不是CLEA的?)官方翻译|(?<!不是)CLEA(?:的)?(?:官方)?翻译/u:/(?<!非|不是|不是CLEA的?)官方翻譯|(?<!不是)CLEA(?:的)?(?:官方)?翻譯/u],
-    lengthBand:[.3,1],pluralCategories:['other'],
+    // Front ZH0 calibration (231 shell strings of 12+ characters): grapheme ratio p10 0.24, median 0.33, p90 0.47, so the band is
+    // 0.15–0.8 (SC4's 0.3–1 reported a third of correct strings). Below or above it a reviewer reads the string.
+    lengthBand:[.15,.8],pluralCategories:['other'],
     otherScript:hans?{label:'Traditional',characters:TRADITIONAL_ONLY}:{label:'Simplified',characters:SIMPLIFIED_ONLY},
    };
   }

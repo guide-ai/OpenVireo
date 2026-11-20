@@ -99,6 +99,13 @@ import {LANGUAGE_CHOICE_JA} from '../../src/i18n/ja/maps/languageChoice';
 import {OBJECT_X_LAB_JA} from '../../src/i18n/ja/maps/objectXLab';
 import {POLISH_JA} from '../../src/i18n/ja/maps/polish';
 import {VARIABLE_STARS_JA} from '../../src/i18n/ja/maps/variableStars';
+import zhHans from '../../src/i18n/zh-hans/zh-hans.json' with {type:'json'};
+import zhHansOriginals from '../../src/i18n/zh-hans/originals.json' with {type:'json'};
+import {APP_SHELL_ZH_HANS} from '../../src/i18n/zh-hans/maps/appShell';
+import {HELP_MENU_ZH_HANS} from '../../src/i18n/zh-hans/maps/helpMenu';
+import {PROJECT_LINKS_ZH_HANS} from '../../src/i18n/zh-hans/maps/projectLinks';
+import {TOUR_ZH_HANS} from '../../src/i18n/zh-hans/maps/tour';
+import {LANGUAGE_CHOICE_ZH_HANS} from '../../src/i18n/zh-hans/maps/languageChoice';
 import ru from '../../src/i18n/ru/ru.json' with {type:'json'};
 import ruOriginals from '../../src/i18n/ru/originals.json' with {type:'json'};
 import {APP_SHELL_RU} from '../../src/i18n/ru/maps/appShell';
@@ -190,6 +197,11 @@ export const HINDI_TEXT=language('hi',hi,hiOriginals,{appShell:APP_SHELL_HI,help
  * is not used: kana are the unambiguous Japanese signal). Its observatory maps grow with JA1. */
 export const JAPANESE_TEXT=language('ja',ja,jaOriginals,{appShell:APP_SHELL_JA,helpMenu:HELP_MENU_JA,projectLinks:PROJECT_LINKS_JA,tour:TOUR_JA,languageChoice:LANGUAGE_CHOICE_JA},
  [APP_SHELL_JA,HELP_MENU_JA,LANGUAGE_CHOICE_JA,OBJECT_X_LAB_JA,POLISH_JA,PROJECT_LINKS_JA,TOUR_JA,VARIABLE_STARS_JA],/[\p{sc=Hira}\p{sc=Kana}ー「」]/u,'?lang=ja',['shell']);
+/** Front ZH0: Simplified Chinese before its release, behind `?lang=zh-Hans` (an en-US browser: tests/fixtures/language.ts
+ * contextLocale). Only the shell is translated; ZH1–ZH6 and ZH-HELP add their areas to `done` and their maps. Its letters are Han and
+ * the full-width marks ，。、：；？！（）, which VIREO's English files and OpenVireo's exports never hold. */
+export const CHINESE_SIMPLIFIED_TEXT=language('zh-Hans',zhHans,zhHansOriginals,{appShell:APP_SHELL_ZH_HANS,helpMenu:HELP_MENU_ZH_HANS,projectLinks:PROJECT_LINKS_ZH_HANS,tour:TOUR_ZH_HANS,languageChoice:LANGUAGE_CHOICE_ZH_HANS},
+ [APP_SHELL_ZH_HANS,HELP_MENU_ZH_HANS,LANGUAGE_CHOICE_ZH_HANS,PROJECT_LINKS_ZH_HANS,TOUR_ZH_HANS],/[\p{sc=Han}，。、：；？！（）]/u,'?lang=zh-Hans',['shell']);
 /** Front RU0: Russian before its release, behind `?lang=ru` (an en-US browser: tests/fixtures/language.ts contextLocale). Only the
  * shell is translated (RU0), the observatory with all of VIREO's originals (RU1), and exercises E01 and E02 (RU2); RU3–RU6 and RU-HELP
  * add their areas to `done` and their maps below. Its letters are Cyrillic, « » and U+202F,
@@ -197,7 +209,7 @@ export const JAPANESE_TEXT=language('ja',ja,jaOriginals,{appShell:APP_SHELL_JA,h
 export const RUSSIAN_TEXT=language('ru',ru,ruOriginals,{appShell:APP_SHELL_RU,helpMenu:HELP_MENU_RU,projectLinks:PROJECT_LINKS_RU,tour:TOUR_RU,languageChoice:LANGUAGE_CHOICE_RU},
  [APP_SHELL_RU,CAMERA_RU,FIELD_INFO_RU,FIELD_READ_DETAILS_RU,HELP_MENU_RU,LANGUAGE_CHOICE_RU,NAKED_EYE_RU,OBJECT_X_LAB_RU,OBSERVATION_METADATA_RU,OBSERVATORY_RU,POLISH_RU,PROJECT_LINKS_RU,QSO_LIST_RU,SOUND_RU,TOUR_RU,VARIABLE_STARS_RU],/[\p{sc=Cyrl}«»\u202f]/u,'?lang=ru',['shell','observatory','e01','e02']);
 /** Every translated language of the registry, in its order (a test fails if a registered language has no text here). */
-export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT,INDONESIAN_TEXT,HINDI_TEXT,JAPANESE_TEXT,RUSSIAN_TEXT]);
+export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT,INDONESIAN_TEXT,HINDI_TEXT,JAPANESE_TEXT,CHINESE_SIMPLIFIED_TEXT,RUSSIAN_TEXT]);
 /** Front FR0: the languages that run the specs of `area` (those whose `done` has it), in registry order. */
 export const translatedFor=(area:Area):readonly LanguageText[]=>TRANSLATED.filter(l=>l.done.has(area));
 export const textOf=(tag:string):LanguageText=>{const t=TRANSLATED.find(l=>l.tag===tag);if(!t)throw new Error(`No test text for ${tag}`);return t;};
