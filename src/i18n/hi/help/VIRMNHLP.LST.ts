@@ -1,0 +1,35 @@
+// Front HI-HELP: OpenVireo's Hindi (hi) web adaptation of VIREO's VIRMNHLP.LST. Not CLEA's text: the original bytes,
+// hashes and provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Hindi chunk.
+export const language='hi';
+export const sourceName='VIRMNHLP.LST';
+export const sourceSha256='db9bab876ef1d03ad8b0e96596eb47c3ca9573156a65b4bff7b49bbfac295b2a';
+export const text=`'शुरुआत' 'begin'
+'लॉग इन करें' 'VIRMnHlp.txt'
+'प्रयोग चुनें' 'VIRMnHlp.txt'
+'तारीख और समय तय करें' 'VIRMnHlp.txt'
+'दूरबीन चुनें' 'VIRMnHlp.txt'
+'गुंबद खोलें' 'VIRMnHlp.txt'
+'दूरबीन नियंत्रण तक पहुँचें' 'VIRMnHlp.txt'
+'प्रयोग समाप्त करें' 'VIRMnHlp.txt'
+'कीबोर्ड से पहुँच' 'VIRMnHlp.txt'
+'शुरुआत' 'end'
+'दूरबीन बदलें' 'begin'
+'दूरबीन के समय का अनुरोध करें' 'VIRMnHlp.txt'
+'ऑप्टिकल दूरबीन बदलें' 'VIRMnHlp.txt'
+'दूरबीन बदलें' 'end'
+'टूल्स' 'begin'
+'स्पेक्ट्रमी वर्गीकरण टूल' 'VIRMnHlp.txt'
+'स्पेक्ट्रम माप टूल' 'VIRMnHlp.txt'
+'रेडियो पल्सर विश्लेषण टूल' 'VIRMnHlp.txt'
+'H-R आरेख विश्लेषण टूल' 'VIRMnHlp.txt'
+'LSS शंकु आरेख टूल' 'VIRMnHlp.txt'
+'खगोलमिति मॉड्यूल' 'VIRMnHlp.txt'
+'चित्र प्रोसेसिंग (DS9)' 'VIRMnHlp.txt'
+'परिणाम संपादक' 'VIRMnHlp.txt'
+'सहेजा गया डेटा लोड करें' 'VIRMnHlp.txt'
+'स्प्रेडशीट' 'VIRMnHlp.txt'
+'टूल्स' 'end'
+'डेटा फ़ंक्शन' 'begin'
+'डेटा ऑपरेशन' 'VIRMnHlp.txt'
+'डेटा फ़ंक्शन' 'end'
+`;

@@ -6,7 +6,8 @@
 // Site Information, Enter Sky Coordinates for Slew, the options dialog, the hot-list entry form, the hot list with its popup menu
 // and File › Field Information › Star Data List (Edit Mode). HI2 adds the E01 and E02 walks (tests/i18n/walks/e01.ts, e02.ts:
 // the exposures, the analyser and its spectrum axes, Observational Data, the Hubble diagram, the LSS survey and the wedge), HI3 the E03 walk
-// (tests/i18n/walks/e03.ts: the classifier, its panes and dialogs), each step checked here under the real Devanagari face. Each later HI front adds its area's routes and dialogs.
+// (tests/i18n/walks/e03.ts: the classifier, its panes and dialogs), each step checked here under the real Devanagari face. HI-HELP adds VIREO's
+// help viewer with the Hindi help set: the topic list, a wrapped topic, its print preview and the Exit Observatory reminder. Each later HI front adds its area's routes and dialogs.
 // Each step asserts Devanagari on screen, layoutProblems() and verticalInkProblems() (tests/fixtures/layoutProblems.ts), and the
 // face that draws Devanagari (Noto Sans Devanagari: no tofu, no fallback). Geometric checks only; no pixel screenshots.
 import {test,expect,type Page} from '@playwright/test';
@@ -162,4 +163,38 @@ for(const [name,walk,layout] of WALKS)for(const width of [320,1440] as const sat
    for(const p of await verticalInkProblems(page))if(!problems.has(p))problems.set(p,step);
   });
   expect([...problems].map(([p,step])=>`${step}: ${p}`),`layout problems under real Hindi (${name})`).toEqual([]);
+ });
+
+/** Front HI-HELP: VIREO's help viewer with the real Hindi help set (src/i18n/hi/help), as SC7's help-unicode walk does for the
+ * test-only Devanagari stand-in: the classification tool's topic list, a topic whose long lines the viewer wraps, its print
+ * preview, and File › Exit Observatory's reminder, each under the real Devanagari face. */
+for(const width of [320,1440] as const satisfies readonly Width[])
+ test(`real Hindi at ${width} px: the help viewer's topic list, a wrapped topic, its print preview and the reminder lay out without overflow, clipping or cut ink`,async({page})=>{
+  test.setTimeout(240_000);
+  await page.setViewportSize({width,height:width===320?700:1000});
+  const problems=new Map<string,string>();
+  const check=async(step:string)=>{
+   await settle(page);
+   const text=await page.locator('body').innerText();
+   if(!DEVANAGARI.test(text))problems.set('no Devanagari on screen: the text shown is not Hindi',step);
+   for(const p of await layoutProblems(page,LAYOUT))if(!problems.has(p))problems.set(p,step);
+   for(const p of await verticalInkProblems(page))if(!problems.has(p))problems.set(p,step);
+  };
+  await load(page,'classification');
+  await id(page,'class-help-open').click({timeout:20_000});
+  await expect(id(page,'class-help-topic-list').getByRole('option',{name:/स्पेक्ट्रम लोड करें/}).first()).toBeVisible({timeout:20_000});
+  await check('topic list');
+  // «स्पेक्ट्रमी लक्षण मापें/चिह्नित करें»: the longest topic, with an indented note.
+  await id(page,'class-help-topic-list').getByRole('option',{name:/लक्षण मापें\/चिह्नित करें/}).dblclick();
+  await expect(id(page,'class-help-window')).toBeVisible();
+  await check('topic');
+  await id(page,'class-help-topic-menu').click();await id(page,'class-help-print-topic').click();
+  await expect(id(page,'class-help-print')).toBeVisible();
+  await check('print preview');
+  await page.keyboard.press('Escape');
+  await load(page,'observatory');
+  await id(page,'fi-file-menu').click({timeout:20_000});await id(page,'ob-exit').click();
+  await expect(id(page,'exit-reminder-text')).toBeVisible();
+  await check('exit reminder');
+  expect([...problems].map(([p,step])=>`${step}: ${p}`),'layout problems under real Hindi (help)').toEqual([]);
  });

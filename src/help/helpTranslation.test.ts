@@ -9,6 +9,7 @@ import {HELP_FILES,helpFile} from './helpFiles';
 import glossary from '../i18n/es/glossary.json';
 import ptGlossary from '../i18n/pt-br/glossary.json';
 import frGlossary from '../i18n/fr/glossary.json';
+import hiGlossary from '../i18n/hi/glossary.json';
 import {HelpTranslationError,helpTranslationText} from './helpTranslation';
 import {LANGUAGES,type LanguageEntry} from '../i18n/languages';
 import {PROFILES} from '../i18n/lint/profiles';
@@ -33,7 +34,7 @@ function sectionOf(file:Uint8Array|string,title:string):number{
 }
 /** The languages that translate the help files, with the describe title each keeps (Spanish: ES-HELP's). */
 const HELP_LANGUAGES=LANGUAGES.filter((l):l is LanguageEntry&{help:{related:string}}=>!!l.help);
-const TITLES:Readonly<Record<string,string>>={'es-419':'the Spanish help files (Front ES-HELP)','pt-BR':'the Brazilian Portuguese help files (Front PT-HELP)','fr':'the French help files (Front FR-HELP)'};
+const TITLES:Readonly<Record<string,string>>={'es-419':'the Spanish help files (Front ES-HELP)','pt-BR':'the Brazilian Portuguese help files (Front PT-HELP)','fr':'the French help files (Front FR-HELP)','hi':'the Hindi help files (Front HI-HELP)'};
 /** Front SC7: the help sets written in Latin-1 (any script may be, now; these two are, by their own rule), each with the
  * characters it may add beyond Latin-1. Front PT-SEO: Portuguese groups thousands with U+202F on screen (user decision of
  * 2026-11-10), which Latin-1 cannot hold, so PULSRANL's «2 400 000» used U+00A0 until SC7 made translated help text; U+202F is a
@@ -48,7 +49,7 @@ const LATIN1_HELP:Readonly<Record<string,string>>={'es-419':'','pt-BR':'\u202f',
 const asLatin1=(s:string)=>s.replaceAll('\u202f','\u00a0').replaceAll('\u2019','\u00b4').replaceAll('\u0153','\u00f8').replaceAll('\u0152','\u00d8');
 const viaLatin1=<T,>(value:T):T=>JSON.parse(asLatin1(JSON.stringify(value)));
 it('Front PT-HELP: Spanish and Brazilian Portuguese translate the help files, each with its own marker',()=>{
- expect(HELP_LANGUAGES.map(l=>[l.tag,l.help.related])).toEqual([['es-419','TEMAS RELACIONADOS'],['pt-BR','TÓPICOS RELACIONADOS'],['fr','RUBRIQUES CONNEXES']]);
+ expect(HELP_LANGUAGES.map(l=>[l.tag,l.help.related])).toEqual([['es-419','TEMAS RELACIONADOS'],['pt-BR','TÓPICOS RELACIONADOS'],['fr','RUBRIQUES CONNEXES'],['hi','संबंधित विषय']]);
  for(const l of HELP_LANGUAGES)expect(TITLES[l.tag],l.tag).toBeDefined();
 });
 
@@ -254,5 +255,33 @@ describe('the French help texts follow the fr lints',()=>{
  });
  it('every allowance is still needed and has a reason',()=>{
   for(const [key,a] of Object.entries(FR_ALLOWED)){expect(a.reason.length,key).toBeGreaterThan(20);for(const m of a.matches)expect(hitsOf(key).map(h=>h.match),`${key} ${m}`).toContain(m);}
+ });
+});
+
+// Front HI-HELP (plan front-i18n-hi.md §4.6): the Hindi help set is Unicode text (Devanagari), so the Latin-1 checks above do not
+// apply; the structure checks run as for every language. Each paragraph of every Hindi help text runs the hi profile's typography
+// patterns (the danda after Devanagari, no space before । or , ; : ? !, nukta loanwords and only ज़ फ़ with a nukta, spelling, plain words,
+// English words outside a VIREO English gloss in brackets), its आप register patterns and the glossary's `forbidden` terms; a TXT file
+// holds no straight `"` (VIREO's quotes are “ ”) and no Devanagari digit (decision of 2026-11-19: digits are Western 0–9).
+const HI_ALLOWED:Record<string,{matches:string[];reason:string}>={};
+describe('the Hindi help texts follow the hi lints',()=>{
+ const hi=(key:string):Module=>modules[`../i18n/hi/help/${key}.ts`];
+ const profile=PROFILES.hi;
+ const WORDS=(w:readonly string[])=>new RegExp(`(?<![\\p{L}\\p{M}\\p{N}])(?:${w.join('|')})(?![\\p{L}\\p{M}\\p{N}])`,'iu');
+ const forbidden=(hiGlossary.forbidden as {hi?:string;words?:string[];use:string}[]).map(f=>({label:'glossary forbidden',pattern:f.words?WORDS(f.words):new RegExp(f.hi!,'iu'),use:f.use}));
+ const patterns=[...profile.typography,...profile.register.patterns,...forbidden];
+ const paragraphs=(text:string)=>text.split(/\n[ ]*\n/).map(p=>p.split('\n').map(l=>l.trim()).join(' ').trim()).filter(Boolean);
+ const hitsOf=(key:string)=>{
+  const out:{label:string;match:string;use:string}[]=[];
+  for(const para of paragraphs(hi(key).text))for(const p of patterns){const m=new RegExp(p.pattern.source,p.pattern.flags.replace('g','')).exec(para);if(m)out.push({label:p.label,match:m[0],use:p.use});}
+  return out;
+ };
+ for(const key of Object.keys(HELP_FILES))it(`${key}: no hi lint error (danda, spacing, nukta, spelling, plain words, register, forbidden terms)`,()=>{
+  expect(hitsOf(key).filter(h=>!HI_ALLOWED[key]?.matches.includes(h.match)).map(h=>`${h.label}: «${h.match}», use ${h.use}`)).toEqual([]);
+  if(!key.endsWith('.LST')&&key!=='SPECLNS.LNL')expect(hi(key).text,key).not.toMatch(/"/);
+  expect(hi(key).text,key).not.toMatch(/[०-९]/);
+ });
+ it('every allowance is still needed and has a reason',()=>{
+  for(const [key,a] of Object.entries(HI_ALLOWED)){expect(a.reason.length,key).toBeGreaterThan(20);for(const m of a.matches)expect(hitsOf(key).map(h=>h.match),`${key} ${m}`).toContain(m);}
  });
 });

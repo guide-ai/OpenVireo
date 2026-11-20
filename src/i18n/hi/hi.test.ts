@@ -40,15 +40,19 @@ import {RADIO_ANTENNA_MESSAGES_EN} from '../../components/RadioAntennaMessages';
 import {FINISH_SAVE_MESSAGES_EN} from '../../components/RadioFinishSaveMessages';
 import {RADIO_R1_MESSAGES_EN} from '../../components/RadioR1Messages';
 import {RADIO_SAVE_MESSAGES_EN} from '../../components/RadioRecordSaveMessages';
+import {HELP_VIEWER_EN} from '../../help/HelpViewerMessages';
+import {WEB_HELP_EN} from '../../help/webHelp';
 
 // Front HI0 (docs/I18N.md, "Hindi: the folder, the digit notice and the shell (HI0)"; plan front-i18n-hi.md §4, §6.2): the
 // structural checks of the partial Hindi bundle and every Hindi string through the SC4 lint framework, profile hi. Errors fail the
 // batch; length ratios are reported for the independent reviewer. Later HI fronts add their maps to ENGLISH_MAPS and COMPLETE_MAPS,
 // and their areas to the coverage checks.
 const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,nakedEye:NAKED_EYE_MESSAGES_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN,clusterHr:CLUSTER_HR_EN,clusterData:CLUSTER_DATA_MESSAGES_EN,
- radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN};
-/** The maps translated completely: HI0's shell maps; HI1's observatory maps, the camera card and polish; HI2's engineView, spectralRange and wedge; HI4's clusterHr, clusterData and variableStars; HI5's four radio maps. */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars','radioAntenna','radioFinishSave','radioR1','radioRecordSave'];
+ radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN,
+ helpViewer:HELP_VIEWER_EN,webHelp:WEB_HELP_EN};
+/** The maps translated completely: HI0's shell maps; HI1's observatory maps, the camera card and polish; HI2's engineView, spectralRange and wedge; HI4's clusterHr, clusterData and variableStars; HI5's four radio maps; HI-HELP's helpViewer and webHelp. */
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars','radioAntenna','radioFinishSave','radioR1','radioRecordSave',
+ 'helpViewer','webHelp'];
 /** HI0's area of en.json: the shell (header, menu, first steps, toolbar, errors, instructor mode, document title), as FR0's and
  * PT0's, and the welcome's home.* keys (Front HOME, after FR0). */
 const SHELL_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(app|project|session|error|instructorMode)\./.test(k)||/\.nav$/.test(k)||['demonstrationMode.banner','sky.eyebrow','sky.title','sky.subtitle','sky.about','sky.local','sky.observatory','sky.analyzer','sky.step1','sky.step1Help','sky.step2','sky.step2Help','sky.step3','sky.step3Help','spectrum.tools','classLink.cancel'].includes(k));
@@ -89,7 +93,8 @@ describe('Front HI0: the Hindi (hi) bundle',()=>{
  it('is registered unreleased (only a ?lang=hi preview reaches it), with the en-US thousands comma (user decision Q1, 2026-11-19)',()=>{
   expect(languageEntry('hi')).toMatchObject({dir:'hi',catalog:'hi.json',htmlLang:'hi',pagePath:'hi',autonym:'हिन्दी',englishName:'Hindi',match:['hi'],released:false});
   expect(languageEntry('hi')?.thousands).toBeUndefined();
-  expect(languageEntry('hi')?.help).toBeUndefined();
+  // Front HI-HELP: Hindi translates VIREO's help files, with its related-topics marker.
+  expect(languageEntry('hi')?.help).toEqual({related:'संबंधित विषय'});
   expect(HINDI.language).toBe('hi');
   for(const notice of Object.values(languageEntry('hi')!.notices)){expect(notice).toMatch(/।$/u);expect(notice.normalize('NFC')).toBe(notice);}
  });
