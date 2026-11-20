@@ -44,7 +44,7 @@ function cjkTypography(cjk:string,fullWidth:string):Pattern[]{
  return [
   {label:'ASCII punctuation after a CJK character',pattern:new RegExp(`(?<=${cjk})(?:[,:;?!]|\\.(?!\\.\\.|[A-Za-z0-9{]))`,'u'),use:`use the full-width form (${fullWidth})`},
   // Front JA1: a symbol's own brackets (E(B-V)を設定: right after an ASCII letter or digit, ASCII inside) stay ASCII, as the fixer keeps them.
-  {label:'ASCII parenthesis next to CJK text',pattern:new RegExp(`(?<=${cjk})[()]|(?<![A-Za-z0-9]\\([ -'*-~\u2212]*)\\)(?=${cjk})|\\((?=${cjk})`,'u'),use:'use （ ）'},
+  {label:'ASCII parenthesis next to CJK text',pattern:new RegExp(`(?<=${cjk})[()]|(?<![A-Za-z0-9]\\((?:[!-~\u2212]{1,3}|[!-~\u2212]*[^A-Za-z()\\s][!-~\u2212]*))\\)(?=${cjk})|\\((?=${cjk})`,'u'),use:'use （ ）'},
   {label:'full-width Latin letter or digit',pattern:/[\uff10-\uff19\uff21-\uff3a\uff41-\uff5a]/u,use:'use ASCII letters and digits'},
   {label:'half-width katakana or punctuation',pattern:/[\uff61-\uff9f]/u,use:'use the full-width form'},
   {label:'space between CJK and Latin text or a digit',pattern:new RegExp(`(?<=${cjk})[ \\u00a0]+(?=[\\p{sc=Latn}\\p{N}{«])|(?<=[\\p{sc=Latn}\\p{N}}»])[ \\u00a0]+(?=${cjk})`,'u'),use:'write them together'},

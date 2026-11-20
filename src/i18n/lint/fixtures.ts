@@ -39,6 +39,8 @@ const ja:Fixture[]=[
  {profile:'ja',rule:'typography',en:'Camera',good:'カメラ',bad:'ｶﾒﾗ'},
  {profile:'ja',rule:'typography',en:'Telescope (1.0 m)',good:'望遠鏡（1.0 m）',bad:'望遠鏡(1.0 m)'},
  {profile:'ja',rule:'typography',en:'Set E(B-V)',good:'E(B-V)を設定',bad:'色指数(B-V)を設定',note:'Front JA1: a symbol\'s own brackets stay ASCII'},
+ {profile:'ja',rule:'typography',en:'Show Object ID',good:'天体ID（Show Object ID）を表示',bad:'天体ID(Show Object ID)を表示',note:'Front JA1 review: an English gloss is no symbol'},
+ {profile:'ja',rule:'typography',en:'QSO (quasar)',good:'QSO（クエーサー）は',bad:'QSO(Quasar)は',note:'Front JA1 review: a word in brackets is no symbol'},
  // Front JA0 (plan front-i18n-ja.md §1.2 #1–2): the Japanese style rules and the CJK punctuation fixer's check.
  {profile:'ja',rule:'typography',en:'Click OK.',good:'OKをクリックしてください。',bad:'OKをクリックして下さい。',note:'kana for the auxiliary ください'},
  {profile:'ja',rule:'typography',en:'You can save it.',good:'保存することができます。',bad:'保存する事が出来ます。',note:'kana for the formal noun こと and できる'},

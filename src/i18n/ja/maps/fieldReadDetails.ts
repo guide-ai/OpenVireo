@@ -11,7 +11,7 @@ export const FIELD_READ_DETAILS_JA:Translation<typeof FIELD_READ_DETAILS_EN>=Obj
  } as Record<string,string>),
  'field-unreadable':Object.freeze({
   'band-end':'VIREOでは、この視野はカタログの赤緯帯の末尾を越えて読み取るため、入出力エラーが発生し、星のリストが不完全なままになります。このサイトでは代わりに視野を表示しません（Web版の調整）。',
-  regions:'VIREOは「Field Contains Too Many Regions!」と警告し、最初の100領域を残しますが、このサイトはこれを再現しません（Web版の調整）。',
+  regions:'VIREOは「視野に含まれる領域が多すぎます！」（Field Contains Too Many Regions!）と警告し、最初の100領域を残しますが、このサイトはこれを再現しません（Web版の調整）。',
   budget:'視野に含まれるカタログの記録が、このサイトが1つの赤緯帯で読み取る数を超えています（Web版の制限）。',
   plan:'このサイトが、計画していたカタログの断片の外を読み取りました（お手数ですが報告してください）。',
   source:'同梱のカタログファイルが想定された形式ではありません（お手数ですが報告してください）。',

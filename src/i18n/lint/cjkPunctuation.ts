@@ -12,7 +12,8 @@
  *    “…” pairs too. An odd number of straight quotes, or a VIREO `fragment|` original (`quotes:false`), is left alone.
  * 2. An ASCII ( ) pair into （ ） when either bracket touches CJK text (spaces between them ignored); a lone bracket only when it
  *    touches CJK directly. Never a symbol's own brackets (Front JA1): a pair right after an ASCII letter or digit with only ASCII (and
- *    the minus sign −) inside, as in E(B-V), E(B−V) or StrToInt(x), stays ASCII («E(B-V)を設定»).
+ *    the minus sign −; no space, and short or not all letters) inside, as in E(B-V), E(B−V) or StrToInt(x), stays ASCII («E(B-V)を設定»); so does the parenthetical that ends
+ *    an English name inside a full-width gloss («（App. Mag (V)）», «（Virtual Observatory (All Instruments)）»: VIREO's names as written).
  * 3. ASCII , . : ; ? ! right after a CJK letter, a closing full-width bracket or quote, or ？ ！ into the style's full-width mark.
  *    Never VIREO's `...` (the ellipsis), a `.` before a Latin letter, a digit or `{` (a file extension: «.SSP», «.{ext}»), `:` before `/`,
  *    or `?lang=`. A mark separated from CJK text by spaces is converted when it ends the text or a space or closer follows it.
@@ -99,7 +100,10 @@ function cjkPass(text:string,style:CjkStyle,options:CjkPunctuationOptions):{text
   const stack:number[]=[],pairs:[number,number][]=[],lone:number[]=[];
   cells.forEach((x,i)=>{if(x.kept)return;if(x.c==='(')stack.push(i);else if(x.c===')'){const o=stack.pop();if(o===undefined)lone.push(i);else pairs.push([o,i]);}});
   lone.push(...stack);
-  const symbol=(o:number,c:number)=>/^[A-Za-z0-9]$/.test(cells[o-1]?.c??'')&&cells.slice(o+1,c).every(x=>/^[\x20-\x7e\u2212]$/.test(x.c));
+  // A symbol's content: no space, and short (V, x) or not all letters (B-V, B−V): «天体ID(Show Object ID)», «QSO(Quasar)» are glosses.
+  const ascii=(o:number,c:number)=>{const t=cells.slice(o+1,c).map(x=>x.c).join('');return /^[\x21-\x7e\u2212]+$/.test(t)&&(t.length<=3||/[^A-Za-z]/.test(t));},alnum=(c:string|undefined)=>/^[A-Za-z0-9.]$/.test(c??'');
+  const inGloss=(o:number,c:number)=>cells[o-1]?.c===' '&&alnum(cells[o-2]?.c)&&cells[c+1]?.c==='）'&&cells.slice(o+1,c).every(x=>/^[\x20-\x7e]$/.test(x.c));
+  const symbol=(o:number,c:number)=>alnum(cells[o-1]?.c)&&ascii(o,c)||inGloss(o,c);
   for(const [o,c] of pairs)if(!symbol(o,c)&&(cjkSide(near(o,-1))||cjkSide(near(o,1))||cjkSide(near(c,-1))||cjkSide(near(c,1)))){
    note('（ ） around or next to CJK text',o,context(o));cells[o]={c:'（',kept:false};cells[c]={c:'）',kept:false};}
   for(const i of lone)if(cjkSide(cells[i-1]?.c)||cjkSide(cells[i+1]?.c)){note('（ ） next to CJK text',i,context(i));cells[i]={c:cells[i].c==='('?'（':'）',kept:false};}

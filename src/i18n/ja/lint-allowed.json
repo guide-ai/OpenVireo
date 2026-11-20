@@ -39,9 +39,10 @@
   },
   "original:to": {
    "rules": [
-    "script"
+    "script",
+    "glyphs"
    ],
-   "reason": "the wave dash 〜 Japanese writes between the two ends of a range («1h 2m 3s 〜4h 5m 6s»); VIREO joins it between two coordinates"
+   "reason": "the en dash Japanese writes between the two ends of a range («1h 2m 3s –4h 5m 6s»; plan §4.1: no wave dash); VIREO joins it between two coordinates"
   },
   "map:camera.citationIr": {
    "rules": [
