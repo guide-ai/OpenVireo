@@ -55,6 +55,8 @@ export const CD_NAME=/^(?:NGC|IC|M|Mel|Cr|Tr|Stock|Mine) ?\d*(?: \(NGC \d+\))?$/
  * kept it). French's (Front FR4): VIREO's Minutes, OK, Confirmation and «- Page 2» (FR1's identical originals) and the web's
  * «Distance (pc)», Portrait, Type, Pixel (x, y), Max and «Min / ampl.» (identical.json). */
 export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'es-419':new Set(['No']),'pt-BR':new Set(['Item','OK','Pixel (x, y)']),fr:new Set(['Minutes','OK','Confirmation','- Page 2','Distance (pc)','Portrait','Type','Pixel (x, y)','Max','Min / ampl.']),
+ // Front ID4: VIREO's Item, ID #:, OK, Data, File and Diameter ('): (ID1's identical originals) and the web's Status and «Min / ampl.» (identical.json).
+ id:new Set(['Item','ID #:','OK','Data','File',"Diameter ('):",'Status','Min / ampl.']),
  // Front HI4: Hindi keeps the field labels RA, RA: and ID #: and the catalog name GCVS ID in Latin script, as its other walks do.
  hi:new Set(['ID #:','RA:','GCVS ID','RA'])};
 export const same=(text:string,step:string,L?:LanguageText)=>(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false))||CLUSTER_NAMES.has(text.replace(/^@option:/,''))||PICTURE_TEXT.test(text)||SPECTRAL.test(text)||RECORDED_ID.test(text)||(VARIABLE_STEPS.has(step)&&(GCVS_NAME.test(text)||gcvsType(text.replace(/^@option:/,''))||CURVE_TEXT.has(text)))||(step.startsWith('Cluster Data')&&CD_NAME.test(text))||PRINT_DATE.test(text)||text===EXERCISE_TITLE||SAME.has(text)||NUMERIC.test(text)||RECORDED.test(text);

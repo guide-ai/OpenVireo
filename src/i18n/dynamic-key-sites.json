@@ -535,6 +535,7 @@
   "src/i18n/hi/maps/polish.ts › POLISH_HI/pulsarsHtl/error · head 'शामिल Pulsars.HTL फ़ाइल ' [unreached]",
   "src/i18n/id/maps/fieldInfo.ts › FIELD_INFO_ID/editLayerCaption · head 'Mode Edit · bidang pencari dibaca dari katalog bintang pemandu ringkas (Guide Star Catalog) (pembaca katalog pencari milik VIREO, bintang sampai Batas Mag. Pencari 11.5): ' [unreached]",
   "src/i18n/id/maps/polish.ts › POLISH_ID/pulsarsHtl/error · head 'Pulsars.HTL yang disertakan ' [unreached]",
+  "src/i18n/id/maps/variableStars.ts › VARIABLE_STARS_ID/printCurveLayout · head 'Halaman kurva cahaya mengikuti cetakan VIREO dalam orientasi yang dipilih di sini (VIREO memakai orientasi printer): dalam potret, plot menyusul pada halaman yang sama; dalam lanskap, VIREO menambahkan “(Citra Layar Dicetak di Halaman Berikutnya)” dan mencetak plot di halaman 2. ' [unreached]",
   "src/i18n/index.ts › fieldReasonText/key · head 'fieldSpec.reason.' [core]",
   "src/i18n/ja/maps/fieldInfo.ts › FIELD_INFO_JA/editLayerCaption · head '編集モード · ファインダーの視野を、コンパクトなガイド星カタログ（Guide Star Catalog）から読み込みました（VIREOのファインダー用カタログリーダーで、ファインダー限界等級（Finder Mag Limit）11.5までの星）：' [unreached]",
   "src/i18n/ja/maps/polish.ts › POLISH_JA/pulsarsHtl/error · head '同梱のPulsars.HTLは' [unreached]",
