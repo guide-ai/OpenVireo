@@ -305,8 +305,9 @@ test.describe('a second language before its release',()=>{
   // Front RU1: pin the areas Russian gives text to (each RU front updates this list), so a lost or stray area fails here: RU0's
   // shell keys give text to `photometer` (project.photometryCleared and project.photometryRestored, rendered by the photometer), and
   // RU1's maps and keys to `classification` (the observationMetadata map) and `fits` (the cameraInfo.* keys), as FR1's and ID1's did;
-  // RU2's E01 and E02 keys to `exposure` and `lss` (and their shared module), as FR2's did.
-  expect(plan.modules.filter(m=>m.kind==='area'&&!m.empty).map(m=>m.name).sort(),'the areas with Russian text').toEqual(['classification','exposure','fits','lss','photometer']);
+  // RU2's E01 and E02 keys to `exposure` and `lss` (and their shared module), as FR2's did; RU3's E03 keys fill the shared
+  // classification+cluster module, which the cluster routes also fetch, so `cluster` holds text, as for French after FR3.
+  expect(plan.modules.filter(m=>m.kind==='area'&&!m.empty).map(m=>m.name).sort(),'the areas with Russian text').toEqual(['classification','cluster','exposure','fits','lss','photometer']);
   for(const r of ROUTES){
    await page.goto('about:blank');w.language.length=0;
    await page.goto(`/${P.query}#${r.hash}`);

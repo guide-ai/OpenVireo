@@ -66,6 +66,11 @@ const RU1_GUIDE_KEYS=JSON.parse(`[${/const FR1_GUIDE_KEYS:readonly MessageKey\[\
  * survey and the wedge), every key of their prefixes, and `classLink.open`; RU2 owns the shared `continuity.*` keys (plan §6.2). */
 const E01_E02_PREFIXES=/^(continuity|lab|lssLab|hubble|velocity|ownResults|spectrum|spectrometer|galaxyExposure|skyExposure|starExposure|ssp|exposureIO|drift|skyProfiles|fieldSpec|lss|wedge)\./;
 const RU2_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E01_E02_PREFIXES.test(k)||k==='classLink.open');
+/** Front RU3's area of en.json: exercise E03 (spectral classification) as PT3, FR3 and HI3 scoped it: every key of the classification
+ * module and of classification+cluster, and the core keys E03 renders; continuity.restoreExposure and ssp.header, which E03 also
+ * renders, are RU2's (their prefixes are E01/E02's). */
+const E03_PREFIXES=/^(class|classLines|classLink|classAtlas|classImport|classLab|feature|cursor|probe|photo|combined|combinedWidth|viewport|inspection|sampledTrace|reverseTrace|sampledDiff|range|widthSource|widthCoordinates|sharedMarks|comparisonMark|paneSource|panMarks|obs|nativeResults|nativeEdit|nativeDelete|nativeList|nativeText|nativeCsv|program|programImport)\./;
+const RU3_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E03_PREFIXES.test(k)||k==='continuity.restoreExposure'||k==='ssp.header');
 /** VIREO originals that Spanish keeps with no entry (its word equals VIREO's), as for Portuguese, French and Indonesian: the options
  * dialog's General tab («Общие») and the Site Information longitude letter E («В», восток). */
 const RU_ONLY_ORIGINALS:readonly string[]=['General','E'];
@@ -119,6 +124,10 @@ describe('Front RU0: the Russian (ru) bundle',()=>{
  it('Front RU2: the catalog covers E01 and E02 (every key of their prefixes, and classLink.open)',()=>{
   expect(RU2_KEYS.length).toBeGreaterThan(780);
   expect(RU2_KEYS.filter(k=>!Object.hasOwn(catalog,k))).toEqual([]);
+ });
+ it('Front RU3: the catalog covers exercise E03 (every key of its prefixes, continuity.restoreExposure and ssp.header)',()=>{
+  expect(RU3_KEYS.length).toBe(772);
+  expect(RU3_KEYS.filter(k=>!Object.hasOwn(catalog,k))).toEqual([]);
  });
  it('Front RU1: every VIREO original is translated at once, or kept with an identical.json reason, never both',()=>{
   const english=[...Object.keys(esOriginals),...Object.keys(esIdentical.entries).filter(k=>k.startsWith('original:')).map(k=>k.slice('original:'.length))];

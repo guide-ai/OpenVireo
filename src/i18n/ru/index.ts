@@ -21,7 +21,7 @@ import {ENGINE_VIEW_RU} from './maps/engineView';
 import {SPECTRAL_RANGE_RU} from './maps/spectralRange';
 import {WEDGE_RU} from './maps/wedge';
 /** Front RU0 [W]: the Russian (ru) bundle (docs/I18N.md, "Russian: plural families, the folder, lints and shell (RU0)"; Front RU1 adds the
- * observatory and all of VIREO's originals; RU2 exercises E01 and E02). Partial until
+ * observatory and all of VIREO's originals; RU2 exercises E01 and E02; RU3 exercise E03). Partial until
  * its release (src/i18n/languages.json `released:false`): only a `?lang=ru` preview reaches it, and every string it lacks is English.
  * Its catalog may hold the plural forms en.json lacks (`.few`, `.many`: src/i18n/plural.ts pluralFormBase). The production build
  * splits it by route area like the other languages (scripts/i18n-split.mjs parses this manifest); Vitest imports it whole.
