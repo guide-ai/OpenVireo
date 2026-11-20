@@ -119,12 +119,20 @@ if(process.env.OPENVIREO_FIX_TYPOGRAPHY==='1'){
 }
 
 describe('Front ID0: the Indonesian (id) bundle',()=>{
- it('is registered before its release: a ?lang=id preview only, never detected or offered; thousands with U+202F from the start',()=>{
-  expect(languageEntry('id')).toMatchObject({dir:'id',catalog:'id.json',htmlLang:'id',pagePath:'id',autonym:'Bahasa Indonesia',englishName:'Indonesian',match:['id','in'],released:false,thousands:'\u202f'});
+ it('Front ID-REL: is released (detected from every id and id-* browser and the legacy in, in-*, stored, offered); thousands with U+202F since ID0',()=>{
+  expect(languageEntry('id')).toMatchObject({dir:'id',catalog:'id.json',htmlLang:'id',pagePath:'id',autonym:'Bahasa Indonesia',englishName:'Indonesian',match:['id','in'],released:true,thousands:'\u202f'});
   expect(languageEntry('id')?.help).toEqual({related:'TOPIK TERKAIT'}); // Front ID-HELP
   expect(INDONESIAN.language).toBe('id');
   // The notices are plain ASCII Indonesian the fixer leaves alone.
   for(const notice of Object.values(languageEntry('id')!.notices)){expect(fixIndonesianTypography(notice)).toBe(notice);expect(notice).toMatch(/^[\x20-\x7e]+$/);}
+ });
+ it('Front ID-REL: the catalog is complete and strict: every en.json key, the same {params}, strings only, no extra key; every map complete',()=>{
+  // As Spanish's, Portuguese's and French's release checks: strictness lives here, since the split bundle builds each module with the
+  // English fallback.
+  expect(()=>createI18n(idCatalog as Record<MessageKey,string>,'id')).not.toThrow();
+  expect(Object.keys(en).filter(k=>!Object.hasOwn(idCatalog,k))).toEqual([]);
+  for(const [id,map] of Object.entries(INDONESIAN.maps??{}))expect(mapParity(ENGLISH_MAPS[id as MapId],map),id).toEqual([]);
+  expect(MAP_IDS.filter(id=>!Object.hasOwn(INDONESIAN.maps??{},id))).toEqual([]);
  });
  it('the catalog is a valid partial catalog (en.json keys, the same {params}) and covers the whole shell and the welcome',()=>{
   expect(()=>createI18n(idCatalog as Partial<Record<MessageKey,string>>,'id',{fallback:true})).not.toThrow();
