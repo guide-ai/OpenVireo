@@ -54,7 +54,9 @@ export const CD_NAME=/^(?:NGC|IC|M|Mel|Cr|Tr|Stock|Mine) ?\d*(?: \(NGC \d+\))?$/
  * list entry dialog's button, as Windows pt-BR writes it) and the «Pixel (x, y)» column header (pixel is the same word, as PT2
  * kept it). French's (Front FR4): VIREO's Minutes, OK, Confirmation and «- Page 2» (FR1's identical originals) and the web's
  * «Distance (pc)», Portrait, Type, Pixel (x, y), Max and «Min / ampl.» (identical.json). */
-export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'es-419':new Set(['No']),'pt-BR':new Set(['Item','OK','Pixel (x, y)']),fr:new Set(['Minutes','OK','Confirmation','- Page 2','Distance (pc)','Portrait','Type','Pixel (x, y)','Max','Min / ampl.'])};
+export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'es-419':new Set(['No']),'pt-BR':new Set(['Item','OK','Pixel (x, y)']),fr:new Set(['Minutes','OK','Confirmation','- Page 2','Distance (pc)','Portrait','Type','Pixel (x, y)','Max','Min / ampl.']),
+ // Front ID4: VIREO's Item, ID #:, OK, Data, File and Diameter ('): (ID1's identical originals) and the web's Status and «Min / ampl.» (identical.json).
+ id:new Set(['Item','ID #:','OK','Data','File',"Diameter ('):",'Status','Min / ampl.'])};
 export const same=(text:string,step:string,L?:LanguageText)=>(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false))||CLUSTER_NAMES.has(text.replace(/^@option:/,''))||PICTURE_TEXT.test(text)||SPECTRAL.test(text)||RECORDED_ID.test(text)||(VARIABLE_STEPS.has(step)&&(GCVS_NAME.test(text)||gcvsType(text.replace(/^@option:/,''))||CURVE_TEXT.has(text)))||(step.startsWith('Cluster Data')&&CD_NAME.test(text))||PRINT_DATE.test(text)||text===EXERCISE_TITLE||SAME.has(text)||NUMERIC.test(text)||RECORDED.test(text);
 export const id=(page:Page|Locator,testId:string)=>page.getByTestId(testId);
 /** Front SC12: an English text's name in any pseudo-locale (qps and the script variants; tests/fixtures/pseudoNames.ts). */
