@@ -1,0 +1,35 @@
+// Front JA-HELP [W]: OpenVireo's Japanese (ja) web adaptation of VIREO's VIRMNHLP.LST. Not CLEA's text: the original bytes,
+// hashes and provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Japanese chunk.
+export const language='ja';
+export const sourceName='VIRMNHLP.LST';
+export const sourceSha256='db9bab876ef1d03ad8b0e96596eb47c3ca9573156a65b4bff7b49bbfac295b2a';
+export const text=`'はじめに' 'begin'
+'ログイン' 'VIRMnHlp.txt'
+'実習を選択' 'VIRMnHlp.txt'
+'日時を設定' 'VIRMnHlp.txt'
+'望遠鏡を選択' 'VIRMnHlp.txt'
+'ドームを開く' 'VIRMnHlp.txt'
+'望遠鏡コントロールパネルを開く' 'VIRMnHlp.txt'
+'実習を終了' 'VIRMnHlp.txt'
+'キーボード操作' 'VIRMnHlp.txt'
+'はじめに' 'end'
+'望遠鏡の変更' 'begin'
+'望遠鏡の観測時間を申請' 'VIRMnHlp.txt'
+'光学望遠鏡の変更' 'VIRMnHlp.txt'
+'望遠鏡の変更' 'end'
+'ツール' 'begin'
+'スペクトル分類ツール' 'VIRMnHlp.txt'
+'スペクトル測定ツール' 'VIRMnHlp.txt'
+'電波パルサー解析ツール' 'VIRMnHlp.txt'
+'HR図解析ツール' 'VIRMnHlp.txt'
+'LSS扇形図ツール' 'VIRMnHlp.txt'
+'位置天文モジュール' 'VIRMnHlp.txt'
+'画像処理（DS9）' 'VIRMnHlp.txt'
+'結果エディター' 'VIRMnHlp.txt'
+'保存したデータを読み込む' 'VIRMnHlp.txt'
+'表計算ソフト' 'VIRMnHlp.txt'
+'ツール' 'end'
+'データ機能' 'begin'
+'データ操作' 'VIRMnHlp.txt'
+'データ機能' 'end'
+`;

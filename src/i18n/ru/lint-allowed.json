@@ -54,6 +54,54 @@
     "glossary"
    ],
    "reason": "Front RU5: the title of a question box, «Подтверждение», as VIREO's Confirmation caption in originals.json; «Подтвердить» is the button"
+  },
+  "map:pulsar.pulsar.nativeSave.problem.reserved": {
+   "rules": [
+    "quotes"
+   ],
+   "reason": "Front RU6: the straight quote is one of the reserved file-name characters the string lists, written as itself"
+  },
+  "map:pulsar.pulsar.review.seq": {
+   "rules": [
+    "script"
+   ],
+   "reason": "Front RU6: the column symbol «№», which Russian writes for \"number\" (the saved-rows viewer's number column uses it too)"
+  },
+  "map:pulsarSavedRows.savedRows.rows.number": {
+   "rules": [
+    "script"
+   ],
+   "reason": "Front RU6: the column symbol «№», as the pulsar review table writes it"
+  },
+  "catalog:plr.savedRows.help": {
+   "rules": [
+    "glyphs"
+   ],
+   "reason": "Front RU6 review: it quotes the full labels of controls whose own label ends in an ellipsis («…» or VIREO's «...»), where the English names them in short"
+  },
+  "catalog:pulsarLab.step.period.help": {
+   "rules": [
+    "glyphs"
+   ],
+   "reason": "Front RU6 review: it quotes the full labels of controls whose own label ends in an ellipsis («…» or VIREO's «...»), where the English names them in short"
+  },
+  "catalog:pulsarLab.step.delay.help": {
+   "rules": [
+    "glyphs"
+   ],
+   "reason": "Front RU6 review: it quotes the full labels of controls whose own label ends in an ellipsis («…» or VIREO's «...»), where the English names them in short"
+  },
+  "map:pulsar.pulsar.guide.record": {
+   "rules": [
+    "glyphs"
+   ],
+   "reason": "Front RU6 review: it quotes the full labels of controls whose own label ends in an ellipsis («…» or VIREO's «...»), where the English names them in short"
+  },
+  "map:pulsar.pulsar.nativeSave.note": {
+   "rules": [
+    "glyphs"
+   ],
+   "reason": "Front RU6 review: it quotes the full labels of controls whose own label ends in an ellipsis («…» or VIREO's «...»), where the English names them in short"
   }
  }
 }

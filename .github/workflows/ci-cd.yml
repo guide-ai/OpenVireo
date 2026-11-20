@@ -137,10 +137,22 @@ jobs:
           path: .local/browsers
           key: playwright-ubuntu-24.04-${{ hashFiles('package-lock.json') }}
       - run: npx playwright install --with-deps chromium
+      # Coordinator, 2026-11-20: the Ubuntu mirror twice served fonts-noto-cjk (75 MB) so slowly that a part spent its 30 minutes in
+      # this step. The packages apt downloads from the Ubuntu archive are kept in an Actions cache and reused while their versions
+      # match (apt downloads again whatever changed), and the step stops after 10 minutes instead of using up the part.
+      - name: Cache the test-font packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/apt-test-fonts
+          key: apt-test-fonts-ubuntu-24.04-v1
       - name: Install the test fonts (Noto Sans CJK, Noto Sans Devanagari, DejaVu)
+        timeout-minutes: 10
         run: |
+          mkdir -p ~/apt-test-fonts/partial
           sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 update
-          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 install -y --no-install-recommends fontconfig fonts-dejavu-core fonts-dejavu-mono fonts-noto-cjk fonts-noto-core
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Dir::Cache::archives="$HOME/apt-test-fonts" install -y --no-install-recommends fontconfig fonts-dejavu-core fonts-dejavu-mono fonts-noto-cjk fonts-noto-core
+          sudo rm -f ~/apt-test-fonts/lock
+          sudo chown -R "$(id -u):$(id -g)" ~/apt-test-fonts
       - run: npm run test:test-fonts
       # Writes the private fontconfig and prints the font-hash log (a font package update shows here first).
       - run: npm run test-fonts

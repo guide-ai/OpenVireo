@@ -214,9 +214,9 @@ export const HINDI_TEXT=language('hi',hi,hiOriginals,{appShell:APP_SHELL_HI,help
 /** Front JA0 (plan front-i18n-ja.md §1.2 #3): Japanese, behind `?lang=ja` before its release; JA0 translated the shell, and each
  * later JA front adds its area to `done`. Its letters are kana, ー and 「」, which no English text, VIREO file or export has (Han alone
  * is not used: kana are the unambiguous Japanese signal). JA1 adds the observatory with its maps and all of VIREO's originals, JA2
- * exercises E01 and E02, JA3 exercise E03, JA4 exercises E04 and E05, JA5 the radio telescope, JA6 exercises E06 and E08. */
+ * exercises E01 and E02, JA3 exercise E03, JA4 exercises E04 and E05, JA5 the radio telescope, JA6 exercises E06 and E08, JA-HELP the help. */
 export const JAPANESE_TEXT=language('ja',ja,jaOriginals,{appShell:APP_SHELL_JA,helpMenu:HELP_MENU_JA,projectLinks:PROJECT_LINKS_JA,tour:TOUR_JA,languageChoice:LANGUAGE_CHOICE_JA},
- [APP_SHELL_JA,CAMERA_JA,FIELD_INFO_JA,FIELD_READ_DETAILS_JA,HELP_MENU_JA,LANGUAGE_CHOICE_JA,NAKED_EYE_JA,OBJECT_X_LAB_JA,OBSERVATION_METADATA_JA,OBSERVATORY_JA,POLISH_JA,PROJECT_LINKS_JA,QSO_LIST_JA,SOUND_JA,TOUR_JA,VARIABLE_STARS_JA],/[\p{sc=Hira}\p{sc=Kana}ー「」]/u,'?lang=ja',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08']);
+ [APP_SHELL_JA,CAMERA_JA,FIELD_INFO_JA,FIELD_READ_DETAILS_JA,HELP_MENU_JA,LANGUAGE_CHOICE_JA,NAKED_EYE_JA,OBJECT_X_LAB_JA,OBSERVATION_METADATA_JA,OBSERVATORY_JA,POLISH_JA,PROJECT_LINKS_JA,QSO_LIST_JA,SOUND_JA,TOUR_JA,VARIABLE_STARS_JA],/[\p{sc=Hira}\p{sc=Kana}ー「」]/u,'?lang=ja',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08','help']);
 /** Front ZH0: Simplified Chinese before its release, behind `?lang=zh-Hans` (an en-US browser: tests/fixtures/language.ts
  * contextLocale). ZH0 translated the shell, ZH1 the observatory with its maps and all of VIREO's originals, ZH2 exercises E01 and E02, ZH3 exercise E03; ZH4–ZH6 and ZH-HELP
  * add their areas to `done` and their maps. Its letters are Han and
@@ -224,11 +224,11 @@ export const JAPANESE_TEXT=language('ja',ja,jaOriginals,{appShell:APP_SHELL_JA,h
 export const CHINESE_SIMPLIFIED_TEXT=language('zh-Hans',zhHans,zhHansOriginals,{appShell:APP_SHELL_ZH_HANS,helpMenu:HELP_MENU_ZH_HANS,projectLinks:PROJECT_LINKS_ZH_HANS,tour:TOUR_ZH_HANS,languageChoice:LANGUAGE_CHOICE_ZH_HANS},
  [APP_SHELL_ZH_HANS,CAMERA_ZH_HANS,FIELD_INFO_ZH_HANS,FIELD_READ_DETAILS_ZH_HANS,HELP_MENU_ZH_HANS,LANGUAGE_CHOICE_ZH_HANS,NAKED_EYE_ZH_HANS,OBJECT_X_LAB_ZH_HANS,OBSERVATION_METADATA_ZH_HANS,OBSERVATORY_ZH_HANS,POLISH_ZH_HANS,PROJECT_LINKS_ZH_HANS,QSO_LIST_ZH_HANS,SOUND_ZH_HANS,TOUR_ZH_HANS,VARIABLE_STARS_ZH_HANS],/[\p{sc=Han}，。、：；？！（）]/u,'?lang=zh-Hans',['shell','observatory','e01','e02','e03']);
 /** Front RU0: Russian before its release, behind `?lang=ru` (an en-US browser: tests/fixtures/language.ts contextLocale). Only the
- * shell is translated (RU0), the observatory with all of VIREO's originals (RU1), exercises E01 and E02 (RU2), exercise E03 (RU3), exercises E04 and E05 (RU4), and the radio telescope (RU5); RU6 and RU-HELP
- * add their areas to `done` and their maps below. Its letters are Cyrillic, « » and U+202F,
+ * shell is translated (RU0), the observatory with all of VIREO's originals (RU1), exercises E01 and E02 (RU2), exercise E03 (RU3), exercises E04 and E05 (RU4), the radio telescope (RU5), and exercises E06 and E08 (RU6); RU-HELP
+ * adds its area to `done` and its maps below. Its letters are Cyrillic, « » and U+202F,
  * which English text never has. */
 export const RUSSIAN_TEXT=language('ru',ru,ruOriginals,{appShell:APP_SHELL_RU,helpMenu:HELP_MENU_RU,projectLinks:PROJECT_LINKS_RU,tour:TOUR_RU,languageChoice:LANGUAGE_CHOICE_RU},
- [APP_SHELL_RU,CAMERA_RU,FIELD_INFO_RU,FIELD_READ_DETAILS_RU,HELP_MENU_RU,LANGUAGE_CHOICE_RU,NAKED_EYE_RU,OBJECT_X_LAB_RU,OBSERVATION_METADATA_RU,OBSERVATORY_RU,POLISH_RU,PROJECT_LINKS_RU,QSO_LIST_RU,SOUND_RU,TOUR_RU,VARIABLE_STARS_RU],/[\p{sc=Cyrl}«»\u202f]/u,'?lang=ru',['shell','observatory','e01','e02','e03','e04','e05','radio']);
+ [APP_SHELL_RU,CAMERA_RU,FIELD_INFO_RU,FIELD_READ_DETAILS_RU,HELP_MENU_RU,LANGUAGE_CHOICE_RU,NAKED_EYE_RU,OBJECT_X_LAB_RU,OBSERVATION_METADATA_RU,OBSERVATORY_RU,POLISH_RU,PROJECT_LINKS_RU,QSO_LIST_RU,SOUND_RU,TOUR_RU,VARIABLE_STARS_RU],/[\p{sc=Cyrl}«»\u202f]/u,'?lang=ru',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08']);
 /** Every translated language of the registry, in its order (a test fails if a registered language has no text here). */
 export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT,INDONESIAN_TEXT,HINDI_TEXT,JAPANESE_TEXT,CHINESE_SIMPLIFIED_TEXT,RUSSIAN_TEXT]);
 /** Front FR0: the languages that run the specs of `area` (those whose `done` has it), in registry order. */
@@ -382,6 +382,11 @@ import {SAVED_ROWS_JA} from '../../src/i18n/ja/maps/pulsarSavedRows';
 import {LOAD_SAVE_JA} from '../../src/i18n/ja/maps/pulsarLoadSave';
 import {OBJECT_X_GUIDE_JA} from '../../src/i18n/ja/maps/objectXGuide';
 import {OBJECT_X_MEASURE_JA} from '../../src/i18n/ja/maps/objectXMeasure';
+import {PULSAR_RU} from '../../src/i18n/ru/maps/pulsar';
+import {SAVED_ROWS_RU} from '../../src/i18n/ru/maps/pulsarSavedRows';
+import {LOAD_SAVE_RU} from '../../src/i18n/ru/maps/pulsarLoadSave';
+import {OBJECT_X_GUIDE_RU} from '../../src/i18n/ru/maps/objectXGuide';
+import {OBJECT_X_MEASURE_RU} from '../../src/i18n/ru/maps/objectXMeasure';
 import type {PULSAR_MESSAGES_EN} from '../../src/components/PulsarMessages';
 import type {SAVED_ROWS_MESSAGES_EN} from '../../src/components/PulsarSavedRowsMessages';
 import type {LOAD_SAVE_MESSAGES_EN} from '../../src/components/PulsarLoadSaveMessages';
@@ -399,6 +404,8 @@ export const E06_MAPS:Readonly<Record<string,E06Maps>>=Object.freeze({
  hi:{pulsar:PULSAR_HI,pulsarSavedRows:SAVED_ROWS_HI,pulsarLoadSave:LOAD_SAVE_HI},
  // Front JA6: Japanese (its ?lang=ja preview).
  ja:{pulsar:PULSAR_JA,pulsarSavedRows:SAVED_ROWS_JA,pulsarLoadSave:LOAD_SAVE_JA},
+ // Front RU6: Russian (its ?lang=ru preview).
+ ru:{pulsar:PULSAR_RU,pulsarSavedRows:SAVED_ROWS_RU,pulsarLoadSave:LOAD_SAVE_RU},
 });
 export const e06Maps=(tag:string):E06Maps=>{const m=E06_MAPS[tag];if(!m)throw new Error(`No E06 maps for ${tag}`);return m;};
 export type E08Maps=Readonly<{objectXLab:Translation<typeof OBJECT_X_LAB_EN>;objectXGuide:Translation<typeof OBJECT_X_GUIDE_EN>;objectXMeasure:Translation<typeof OBJECT_X_MEASURE_EN>;camera:Translation<typeof CAMERA_MESSAGES_EN>;sound:unknown}>;
@@ -413,6 +420,8 @@ export const E08_MAPS:Readonly<Record<string,E08Maps>>=Object.freeze({
  hi:{objectXLab:OBJECT_X_LAB_HI,objectXGuide:OBJECT_X_GUIDE_HI,objectXMeasure:OBJECT_X_MEASURE_HI,camera:CAMERA_HI,sound:SOUND_HI},
  // Front JA6: Japanese (its ?lang=ja preview).
  ja:{objectXLab:OBJECT_X_LAB_JA,objectXGuide:OBJECT_X_GUIDE_JA,objectXMeasure:OBJECT_X_MEASURE_JA,camera:CAMERA_JA,sound:SOUND_JA},
+ // Front RU6: Russian (its ?lang=ru preview).
+ ru:{objectXLab:OBJECT_X_LAB_RU,objectXGuide:OBJECT_X_GUIDE_RU,objectXMeasure:OBJECT_X_MEASURE_RU,camera:CAMERA_RU,sound:SOUND_RU},
 });
 export const e08Maps=(tag:string):E08Maps=>{const m=E08_MAPS[tag];if(!m)throw new Error(`No E08 maps for ${tag}`);return m;};
 // Front PT-HELP: what the help spec (tests/i18n/help.spec.ts) reads per language beyond the catalog and originals: the help
@@ -428,6 +437,8 @@ import {HELP_VIEWER_ID} from '../../src/i18n/id/maps/helpViewer';
 import {WEB_HELP_ID} from '../../src/i18n/id/maps/webHelp';
 import {HELP_VIEWER_HI} from '../../src/i18n/hi/maps/helpViewer';
 import {WEB_HELP_HI} from '../../src/i18n/hi/maps/webHelp';
+import {HELP_VIEWER_JA} from '../../src/i18n/ja/maps/helpViewer';
+import {WEB_HELP_JA} from '../../src/i18n/ja/maps/webHelp';
 import type {HELP_VIEWER_EN} from '../../src/help/HelpViewerMessages';
 import type {WEB_HELP_EN} from '../../src/help/webHelp';
 export type HelpText=Readonly<{
@@ -452,5 +463,8 @@ export const HELP_TEXT:Readonly<Record<string,HelpText>>=Object.freeze({
  // Front HI-HELP: Devanagari has no case; the search finds the row as written.
  'hi':{helpViewer:HELP_VIEWER_HI,webHelp:WEB_HELP_HI,pulsarFirstRow:'-मूल संचालन-',reminderQuestion:'क्या आप सचमुच निश्चित हैं कि आपने यह प्रयोग पूरी तरह समाप्त कर लिया है?',
   loadSpectrumText:'वर्गीकरण के लिए स्पेक्ट्रम लोड करने के लिए',searchRow:/लक्षण मापें\/चिह्नित करें/,searchQuery:'कर्सर की ऊर्ध्वाधर स्थिति',searchHit:'कर्सर की ऊर्ध्वाधर स्थिति',controlsRow:/^ *नियंत्रण$/,lineHelpText:'पहली बार A0 के आसपास दिखती है'},
+ // Front JA-HELP: the search query types the katakana «カーソル» in hiragana; the translation's fold finds it.
+ ja:{helpViewer:HELP_VIEWER_JA,webHelp:WEB_HELP_JA,pulsarFirstRow:'-基本操作-',reminderQuestion:'この実習を本当にすべて終えましたか？',
+  loadSpectrumText:'分類するスペクトルを読み込むには',searchRow:/スペクトルの特徴の測定／マーク/,searchQuery:'かーそるの縦位置',searchHit:'カーソルの縦位置',controlsRow:/操作部/,lineHelpText:'A0付近で初めて見られます'},
 });
 export const helpText=(tag:string):HelpText=>{const m=HELP_TEXT[tag];if(!m)throw new Error(`No help text for ${tag}`);return m;};

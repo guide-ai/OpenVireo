@@ -48,6 +48,8 @@ import {PULSAR_MESSAGES_EN} from '../../components/PulsarMessages';
 import {SAVED_ROWS_MESSAGES_EN} from '../../components/PulsarSavedRowsMessages';
 import {LOAD_SAVE_MESSAGES_EN} from '../../components/PulsarLoadSaveMessages';
 import {OBJECT_X_GUIDE_EN,OBJECT_X_MEASURE_EN,OBJECT_X_SESSION_EN} from '../../objectx/ObjectXMessages';
+import {HELP_VIEWER_EN} from '../../help/HelpViewerMessages';
+import {WEB_HELP_EN} from '../../help/webHelp';
 import esIdentical from '../es/identical.json';
 
 // Front JA0 (docs/I18N.md, "Japanese: the folder, lints and shell (JA0)"; plan front-i18n-ja.md §1.2, §6.2): the structural checks
@@ -63,11 +65,12 @@ const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_E
  camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,nakedEye:NAKED_EYE_MESSAGES_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,
  engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN,clusterHr:CLUSTER_HR_EN,clusterData:CLUSTER_DATA_MESSAGES_EN,
  radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN,
- pulsar:PULSAR_MESSAGES_EN,pulsarSavedRows:SAVED_ROWS_MESSAGES_EN,pulsarLoadSave:LOAD_SAVE_MESSAGES_EN,objectXGuide:OBJECT_X_GUIDE_EN,objectXMeasure:OBJECT_X_MEASURE_EN,objectXSession:OBJECT_X_SESSION_EN};
+ pulsar:PULSAR_MESSAGES_EN,pulsarSavedRows:SAVED_ROWS_MESSAGES_EN,pulsarLoadSave:LOAD_SAVE_MESSAGES_EN,objectXGuide:OBJECT_X_GUIDE_EN,objectXMeasure:OBJECT_X_MEASURE_EN,objectXSession:OBJECT_X_SESSION_EN,
+ helpViewer:HELP_VIEWER_EN,webHelp:WEB_HELP_EN};
 /** The maps translated completely (JA0's shell maps; JA1's observatory maps, the camera card the observatory shows, and polish; JA2's
  * engineView, spectralRange and wedge; JA4's clusterHr, clusterData and variableStars; JA5's four radio maps; JA6's pulsar, pulsarSavedRows, pulsarLoadSave and the four Object X maps); the
- * help maps webHelp and helpViewer follow in JA-HELP. */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars','radioAntenna','radioFinishSave','radioR1','radioRecordSave','pulsar','pulsarSavedRows','pulsarLoadSave','objectXLab','objectXGuide','objectXMeasure','objectXSession'];
+ * help maps webHelp and helpViewer came with JA-HELP: every Japanese map is complete. */
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars','radioAntenna','radioFinishSave','radioR1','radioRecordSave','pulsar','pulsarSavedRows','pulsarLoadSave','objectXLab','objectXGuide','objectXMeasure','objectXSession','helpViewer','webHelp'];
 /** Front JA1's area of en.json: FR1's observatory keys (the instruments' prefixes and the Hubble hot-list reasons) and the 104 guide
  * keys the observatory files render (src/i18n/fr/fr.test.ts FR1_GUIDE_KEYS, read from there so the two never drift), as RU1's. */
 const OBSERVATORY_PREFIXES=/^(sky|optical|motion|horizon|siteClock|runningClock|scopeAccess|instrumentAccess|instrumentParameters|cameraParameters|cameraInfo|cameraPrepare|palette|testMode|optionsFile|photometerTab|htl|multispec|nativeMirror|hubblePoint)\./;
@@ -110,6 +113,13 @@ const ASCII_FIELD_NAMES:readonly string[]=['MJD(Days)'];
 const fixCatalog=(text:string)=>{const kept:string[]=[];const masked=ASCII_FIELD_NAMES.reduce((s,name)=>s.split(name).join(`\uE000${kept.push(name)-1}\uE001`),text);
  return fix(masked).replace(/\uE000(\d+)\uE001/g,(_,i:string)=>kept[Number(i)]!);};
 const fixSource=(source:string)=>fixSourceLiterals(source,(text,options)=>fix(text,options));
+/** Front JA-HELP: VIREO's help files align columns with runs of spaces (VARTYPEHLP's type codes, the photometer's tables): a run of two
+ * or more spaces between two characters is a column gap the fixer keeps, so «RR          こと座RR型星» keeps its padding. */
+const COLUMN_GAP=/(?<=\S) {2,}(?=\S)/g;
+const fixHelp=(text:string,options?:{quotes?:boolean})=>{const gaps:string[]=[];
+ return fix(text.replace(COLUMN_GAP,g=>`\uE003${gaps.push(g)-1}\uE004`),options).replace(/\uE003(\d+)\uE004/g,(_,i:string)=>gaps[Number(i)]!);};
+const fixHelpSource=(source:string)=>fixSourceLiterals(source,(text,options)=>fixHelp(text,options));
+const fixAny=(file:string,source:string)=>file.includes(`${path.sep}help${path.sep}`)?fixHelpSource(source):fixSource(source);
 const writeJson=(file:string,value:unknown)=>writeFileSync(path.join(DIR,file),JSON.stringify(value,null,1)+'\n');
 
 if(process.env.OPENVIREO_FIX_TYPOGRAPHY==='1'){
@@ -119,13 +129,13 @@ if(process.env.OPENVIREO_FIX_TYPOGRAPHY==='1'){
  writeJson('ja.json',Object.fromEntries(Object.entries(catalog).map(([k,v])=>[k,fixCatalog(v)])));
  const own=JSON.parse(readFileSync(path.join(DIR,'originals.json'),'utf8')) as Record<string,string>;
  writeJson('originals.json',Object.fromEntries(Object.entries(own).map(([k,v])=>[k,fixOriginal(k,v)])));
- for(const file of [...sources('maps'),...sources('help')]){const before=readFileSync(file,'utf8'),after=fixSource(before);if(after!==before)writeFileSync(file,after);}
+ for(const file of [...sources('maps'),...sources('help')]){const before=readFileSync(file,'utf8'),after=fixAny(file,before);if(after!==before)writeFileSync(file,after);}
 }
 
 describe('Front JA0: the Japanese (ja) bundle',()=>{
  it('is registered before its release: a ?lang=ja preview only, never detected or offered; no thousands field (24,000 as English)',()=>{
   expect(languageEntry('ja')).toMatchObject({dir:'ja',catalog:'ja.json',htmlLang:'ja',pagePath:'ja',autonym:'日本語',englishName:'Japanese',match:['ja'],released:false});
-  expect(languageEntry('ja')?.thousands).toBeUndefined();expect(languageEntry('ja')?.help).toBeUndefined();
+  expect(languageEntry('ja')?.thousands).toBeUndefined();expect(languageEntry('ja')?.help).toEqual({related:'関連項目'});// Front JA-HELP
   expect(JAPANESE.language).toBe('ja');
   for(const notice of Object.values(languageEntry('ja')!.notices))expect(fix(notice)).toBe(notice);
  });
@@ -194,7 +204,7 @@ describe('Front JA0: the Japanese (ja) bundle',()=>{
  it('the CJK punctuation fixer has nothing left to change: catalog, originals, maps and help sources (characters, never escapes)',()=>{
   expect(Object.entries(ja).filter(([,v])=>fixCatalog(v)!==v).map(([k])=>k)).toEqual([]);
   expect(Object.entries(originals).filter(([k,v])=>fixOriginal(k,v)!==v).map(([k])=>k)).toEqual([]);
-  for(const file of [...sources('maps'),...sources('help')]){const text=readFileSync(file,'utf8');expect(fixSource(text)===text,path.relative(DIR,file)).toBe(true);
+  for(const file of [...sources('maps'),...sources('help')]){const text=readFileSync(file,'utf8');expect(fixAny(file,text)===text,path.relative(DIR,file)).toBe(true);
    expect(text,path.relative(DIR,file)).not.toMatch(/\\u[0-9a-fA-F]{4}/);}
  });
  it('formats numbers as English does (24,000 and 1.5: what Japanese writes natively); one plural category',()=>{
