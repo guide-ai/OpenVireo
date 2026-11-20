@@ -12,6 +12,7 @@ import {PSEUDO_SCRIPT} from '../../src/i18n/pseudoScripts';
 import type {PseudoScriptLanguage} from '../../src/i18n/locale';
 import {layoutProblems,verticalInkProblems} from '../fixtures/layoutProblems';
 import {translatedFor,JAPANESE_TEXT,type Area} from '../i18n/languageText';
+import {contextLocale} from '../fixtures/language';
 import type {LayoutOptions} from '../fixtures/layoutProblems';
 import * as E01 from '../i18n/walks/e01';
 import * as E02 from '../i18n/walks/e02';
@@ -146,8 +147,10 @@ for(const variant of VARIANTS)for(const width of [320,1440] as const)
 // tests/i18n/languageText.ts), at 320 and 1440 px, with the same layoutProblems() and verticalInkProblems(): the shell is the home
 // page, the observatory page, the header menu, the tour and the instructor-mode confirmation. Each later front adds its area's steps.
 // Hindi has its own walk (tests/scripts/hindi.scripts.ts, Front HI0), so it is not repeated here.
+// Front JA-REL: a released language opens by its browser language alone (tests/fixtures/language.ts contextLocale: ja-JP), and also
+// walks the 16 routes (plan front-i18n-ja.md, JA-REL: "routes.scripts.ts ja over every route").
 const SCRIPT_TRANSLATIONS=translatedFor('shell').filter(L=>/^(?:ja|zh|ru)/.test(L.tag));
-for(const L of SCRIPT_TRANSLATIONS)for(const width of [320,1440] as const)
+for(const L of SCRIPT_TRANSLATIONS)test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const width of [320,1440] as const)
  test(`${L.tag} (${L.entry.englishName}) at ${width} px: the shell lays out without overflow, clipping or cut ink`,async({page})=>{
   test.setTimeout(180_000);
   await page.setViewportSize({width,height:width===320?700:1000});
@@ -162,6 +165,7 @@ for(const L of SCRIPT_TRANSLATIONS)for(const width of [320,1440] as const)
    await expect(page.locator('.investigation-toolbar')).toBeVisible({timeout:30_000});await expect(page.locator('h1:visible').first()).toBeVisible({timeout:30_000});};
   await page.addInitScript(()=>{try{localStorage.setItem('openvireo.tour.v1','done');}catch{/* about:blank */}});
   await open('');await check('home');
+  if(L.entry.released)for(const r of ROUTES.filter(r=>r!=='observatory')){await open(r);await check(r);}
   await open('observatory');await expect(page.getByRole('heading',{level:1,name:L.catalog['sky.title']})).toBeVisible();await check('observatory');
   await headerTools(page);await check('header menu');
   await id(page,'main-help-menu').click();await id(page,'main-help-tour').click();await expect(id(page,'site-tour-card')).toBeVisible();await check('tour');
@@ -169,6 +173,7 @@ for(const L of SCRIPT_TRANSLATIONS)for(const width of [320,1440] as const)
   await headerTools(page);await id(page,'instructor-mode-open').click();await expect(id(page,'instructor-mode-confirm')).toBeVisible();await check('instructor mode');
   expect([...problems].map(([p,step])=>`${step}: ${p}`),'layout problems').toEqual([]);
  });
+});
 
 // Front JA2 (plan front-i18n-ja.md §6.2, "the real-ja scripts walk covers the area"; JA3 adds E03, JA4 E04 and E05, JA5 the radio telescope, JA6 E06 and E08, JA-HELP the help windows): each exercise walk Japanese has
 // translated (its `done`), the same function its language-parameterised spec runs (tests/i18n/walks/), under real Japanese and the CJK
@@ -180,6 +185,7 @@ const JA_WALKS:readonly (readonly [Area,string,ExerciseWalk,LayoutOptions])[]=[[
  ['radio','radio telescope',RADIO.walk,RADIO.LAYOUT],
  ['e06','E06 (pulsar analysis)',(page,lang,each)=>E06.walk(page,lang,each),E06.LAYOUT],['e08','E08 (Object X)',(page,lang,each)=>E08.walk(page,lang,step=>each(step)),E08.LAYOUT],
  ['help','help windows',(page,lang,each)=>HELP.walk(page,lang,each),{dialogs:'dialog[open],[role=dialog][aria-modal=true],[role=alertdialog][aria-modal=true]',topDialog:true}]];
+test.describe(()=>{test.use({locale:contextLocale('ja')});// Front JA-REL: a ja-JP browser, no ?lang=
 for(const [area,name,walk,layout] of JA_WALKS.filter(([area])=>JAPANESE_TEXT.done.has(area)))for(const width of [320,1440] as const)
  test(`real Japanese at ${width} px: the ${name} walk lays out without overflow, clipping or cut ink (${area})`,async({page})=>{
   test.setTimeout(400_000);
@@ -193,6 +199,7 @@ for(const [area,name,walk,layout] of JA_WALKS.filter(([area])=>JAPANESE_TEXT.don
   });
   expect([...problems].map(([p,step])=>`${step}: ${p}`),`layout problems under real Japanese (${name})`).toEqual([]);
  });
+});
 
 // ---- Fonts: src/theme/scripts.css in the running app, under the test fonts -------------------------------------------------
 type PlatformFont={familyName:string;postScriptName:string;glyphCount:number};

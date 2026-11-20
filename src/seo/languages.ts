@@ -8,6 +8,7 @@
  *
  * Front PT-SEO: Brazilian Portuguese (pt-BR) under /pt-br/, added as data only (its row, its texts in src/seo/labs.pt-br.ts).
  * Front FR-REL+SEO: French (fr) under /fr/, the same way (its row, its texts in src/seo/labs.fr.ts).
+ * Front JA-REL+SEO: Japanese (ja) under /ja/, the same way (its row, its texts in src/seo/labs.ja.ts).
  *
  * Which languages exist here is independent of which are released in the app: a row is added by that language's SEO front,
  * after its release (src/seo/pages.test.ts checks each row's tag against src/i18n/languages.json). */
@@ -15,6 +16,7 @@ import {LABS,type LabText} from './labs.ts';
 import {LAB_TEXT_ES} from './labs.es.ts';
 import {LAB_TEXT_PT_BR} from './labs.pt-br.ts';
 import {LAB_TEXT_FR} from './labs.fr.ts';
+import {LAB_TEXT_JA} from './labs.ja.ts';
 import {SEO_PATH_PREFIX,type LabSlug} from './labSlugs.ts';
 import {LANGUAGES,textDirection,type LanguageEntry,type TextDirection} from '../i18n/languages.ts';
 
@@ -28,9 +30,10 @@ export type SeoLanguage=Readonly<{
   * any `es-*` browser. A language whose tag is valid there lists it first: Brazilian Portuguese is `pt-BR` and also `pt`, the
   * same URL, because the app opens pt-BR for every `pt` and `pt-*` browser (pt-PT, pt-AO, pt-MZ…), so a Portuguese searcher
   * outside Brazil is sent to the Portuguese page rather than to the English x-default. French is `fr` alone (one neutral French
-  * that every `fr-*` browser opens, AGENTS.md 2026-11-11), which every French searcher matches. */
+  * that every `fr-*` browser opens, AGENTS.md 2026-11-11), which every French searcher matches. Japanese is `ja` alone, the same
+  * way (one Japanese that every `ja-*` browser opens, AGENTS.md 2026-11-19). */
  hreflang:readonly string[];
- /** Open Graph locale (language_TERRITORY): en_US, es_LA, pt_BR, fr_FR (Open Graph needs a territory; hreflang stays `fr`). */
+ /** Open Graph locale (language_TERRITORY): en_US, es_LA, pt_BR, fr_FR, ja_JP (Open Graph needs a territory; hreflang stays `fr`, `ja`). */
  ogLocale:string;
  /** Path prefix of its pages: '' for English, SEO_PATH_PREFIX for the others. */
  prefix:string;
@@ -201,8 +204,49 @@ const FR:SeoLanguage={
    'Vous pouvez passer à l’anglais à tout moment avec le sélecteur de langue en haut de la page.']},
 };
 
+const JA:SeoLanguage={
+ tag:'ja',hreflang:['ja'],ogLocale:'ja_JP',prefix:SEO_PATH_PREFIX.ja,app:'/?lang=ja',
+ ogImage:'/og-image-ja.png',ogImageAlt:'OpenVireo: ブラウザーで使えるCLEA VIREOの天文実習（日本語）',
+ ogImageText:{title:'CLEA VIREOの天文実習をブラウザーで',lines:['ハッブルの法則 · パルサー · プレアデス星団 · 天体X · ほか','無料の非公式なWeb版です。インストールは不要です。']},
+ labs:merge(LAB_TEXT_JA),
+ ui:{languageName:'日本語',siteNav:'サイト',breadcrumb:'パンくずリスト',labsCrumb:'実習',allLabs:'すべての実習',openObservatory:'天文台を開く',
+  labEyebrow:'CLEA VIREOの実習に基づくWeb版の実習',openLab:'実習を開く',
+  openLabNote:()=>'この実習のガイドを表示して、天文台を日本語で開きます。無料で、登録は不要です。',
+  whatYouDo:'実習の流れ',whatYouLearn:'学べること',otherLabs:'ほかの実習',
+  // The sentences the tests require: the adaptation and not-the-original sentences, and the names of CLEA and its supporters.
+  about:'OpenVireoは、Project CLEAの仮想教育天文台（Virtual Educational Observatory）であるVIREOを、無料かつ非営利で再構築したWeb版です。'+
+   'Project CLEAはGettysburg Collegeのプロジェクトで、National Science FoundationとGettysburg Collegeの支援を受けています。'+
+   '元のプログラムの復元された動作に基づき、元のデータファイルを出典を明記して使っています。'+
+   '元のプログラムではなく、Project CLEAとは関係ありません。アプリは、把握しているWeb版の調整を明示しています。'+
+   'この日本語の文章は、OpenVireoによるWeb版の翻案で、CLEAの文章ではありません。',
+  platform:'Windows、Mac、Linux、Chromebookの最新のWebブラウザーで動作します。インストールもアカウントも不要です。',
+  learningResourceType:'インタラクティブな実習',educationalLevel:['高校','大学']},
+ labsIndex:{title:'CLEA VIREOの天文実習をオンラインで · OpenVireo',
+  description:'ハッブルの法則、大規模構造、恒星のスペクトル、プレアデス星団、星団のHR図、パルサー、天体Xの7つのCLEA VIREO実習を、ブラウザー向けに再構築しました。',
+  eyebrow:'CLEA VIREOの実習',heading:'ブラウザーで取り組む天文実習',
+  lead:'各実習は、Project CLEAの仮想天文台VIREOの実習課題の1つに沿っています。仮想の望遠鏡と観測装置で観測し、自分でデータを測って、自分で結論を出します。',
+  listName:'CLEA VIREOの実習'},
+ notFound:{title:'見つかりません',heading:'ページが見つかりません',text:'このアドレスはOpenVireoのサイトにはありません。'},
+ home:{title:'OpenVireo: CLEA VIREOの天文実習を日本語で',
+  description:'無料の非公式なWeb版として再構築した、Project CLEAの仮想天文台VIREOの日本語版です。ハッブルの法則、パルサー、プレアデス星団、天体Xなどの実習があります。',
+  operatingSystem:'すべて（Webブラウザーで動作）',
+  eyebrow:'日本語で使える仮想天文台',heading:'CLEA VIREOの天文実習を、ブラウザーで',
+  lead:'OpenVireoは、Project CLEAの仮想天文台VIREOをWeb向けに再構築したものです。仮想の望遠鏡を向け、スペクトルを取得し、星の明るさを測り、パルサーを記録して、自分のデータから自分で結論を導きます。',
+  note:'無料で、登録もインストールも不要です。',
+  labsHeading:'7つの実習',howHeading:'仕組み',
+  how:['すべてブラウザーの中で動きます。インストールもアカウントも不要です。',
+   // Front HOME: the facts of the app's welcome (home.factInstall, home.factFaithful), as on /es/, /pt-br/ and /fr/.
+   'Windowsや仮想マシンは必要ありません。Mac、Windows、Linux、Chromebookの最新のブラウザーで動作します。',
+   '元のプログラムの復元された動作に従い、Web版の調整を明示しています。非公式の再構築です。',
+   '調査は自分のコンピューターにファイルとして保存し、いつでも読み込み直せます。',
+   'インターフェース、ガイド、ヘルプは日本語です。サイトが書き出すファイル（TXT、FITS、CSV、保存した調査）は、VIREOまたはOpenVireoの形式のまま英語で残ります。',
+   // Japanese writes «24,000» and «1.5» as English does (no thousands setting, AGENTS.md 2026-11-19): only the decimal point and half-width digits are said.
+   '画面と入力では小数点に「.」を使い、数字は半角で入力します。サイトが保存するファイルは、VIREOと同じく英語のままです。',
+   '上部の言語セレクターで、いつでも英語に切り替えられます。']},
+};
+
 /** Every language with static pages, English first (the x-default). */
-export const SEO_LANGUAGES:readonly SeoLanguage[]=Object.freeze([EN,ES,PT_BR,FR]);
+export const SEO_LANGUAGES:readonly SeoLanguage[]=Object.freeze([EN,ES,PT_BR,FR,JA]);
 export const ENGLISH=EN;
 
 /** A page, named the same in every language: the home page, the labs index or one lab. */

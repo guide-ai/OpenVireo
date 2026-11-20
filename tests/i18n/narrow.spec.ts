@@ -4,7 +4,7 @@ import {contextLocale} from '../fixtures/language';
 import {layoutProblems} from '../fixtures/layoutProblems';
 import {TRANSLATED,type LanguageText} from './languageText';
 // Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts). Front PT-REL: this file was es-narrow.spec.ts;
-// it now runs the same sweep for every released language, each in its own browser (es-MX, pt-BR, and fr-FR since FR-REL), with the
+// it now runs the same sweep for every released language, each in its own browser (es-MX, pt-BR, fr-FR since FR-REL and ja-JP since JA-REL), with the
 // Spanish title unchanged.
 
 // Front ES-REL (docs/I18N.md; plan §3.5 and the ES-REL item): the full 320 px sweep in Spanish (and, since PT-REL, in Brazilian
