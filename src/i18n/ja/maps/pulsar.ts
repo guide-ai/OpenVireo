@@ -252,7 +252,7 @@ export const PULSAR_JA:Translation<typeof PULSAR_MESSAGES_EN>=Object.freeze({
  'pulsar.nativeSave.folder':'このウィンドウでこの保存が書いたファイル：{count}個。拡張子のない名前には.CSVが付きます。',
  'pulsar.nativeSave.problem.empty':'ファイル名を入力してください。',
  'pulsar.nativeSave.problem.text':'ファイル名には、印字可能なASCIIの文字、数字、記号だけを使ってください。',
- 'pulsar.nativeSave.problem.reserved':'ファイル名には \\ / : * ? " < > | を含められません。',
+ 'pulsar.nativeSave.problem.reserved':"ファイル名には \\ / : * ? \" < > | を含められません。",
  'pulsar.nativeSave.problem.length':'ファイル名が長すぎます（最大255文字）。',
  'pulsar.nativeSave.save':'保存',
  'pulsar.nativeSave.cancelled':'何も保存されませんでした。',
