@@ -65,6 +65,10 @@ const JA1_GUIDE_KEYS=JSON.parse(`[${/const FR1_GUIDE_KEYS:readonly MessageKey\[\
  * prefixes, which include the shared core keys continuity.* and ssp.header, and classLink.open, the star exposure's button). */
 const E01_E02_PREFIXES=/^(continuity|lab|lssLab|hubble|velocity|ownResults|spectrum|spectrometer|galaxyExposure|skyExposure|starExposure|ssp|exposureIO|drift|skyProfiles|fieldSpec|lss|wedge)\./;
 const JA2_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E01_E02_PREFIXES.test(k)||k==='classLink.open');
+/** Front JA3's area of en.json: exercise E03 as FR3 scoped it (every key of the classification module and of classification+cluster,
+ * the observation notebook, the DAT/TXT/CSV inspectors and the Program List), with JA2's continuity.restoreExposure and ssp.header. */
+const E03_PREFIXES=/^(class|classLines|classLink|classAtlas|classImport|classLab|feature|cursor|probe|photo|combined|combinedWidth|viewport|inspection|sampledTrace|reverseTrace|sampledDiff|range|widthSource|widthCoordinates|sharedMarks|comparisonMark|paneSource|panMarks|obs|nativeResults|nativeEdit|nativeDelete|nativeList|nativeText|nativeCsv|program|programImport)\./;
+const JA3_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E03_PREFIXES.test(k)||k==='continuity.restoreExposure'||k==='ssp.header');
 /** VIREO originals that Spanish keeps with no entry, as for Hindi: the options dialog's General tab («全般») and the Site Information
  * compass letters E «東», N «北» and S «南» (W «西» is in Spanish's list). */
 const JA_ONLY_ORIGINALS:readonly string[]=['General','E','N','S'];
@@ -117,6 +121,10 @@ describe('Front JA0: the Japanese (ja) bundle',()=>{
  it('Front JA2: the catalog covers E01 and E02 (every key of their prefixes, and classLink.open)',()=>{
   expect(JA2_KEYS.length).toBeGreaterThan(780);
   expect(JA2_KEYS.filter(k=>!Object.hasOwn(ja,k))).toEqual([]);
+ });
+ it('Front JA3: the catalog covers exercise E03 (every key of its prefixes, continuity.restoreExposure and ssp.header)',()=>{
+  expect(JA3_KEYS.length).toBe(772);
+  expect(JA3_KEYS.filter(k=>!Object.hasOwn(ja,k))).toEqual([]);
  });
  it('Front JA1: every VIREO original is translated at once, or kept with an identical.json reason, never both',()=>{
   const english=[...Object.keys(esOriginals),...Object.keys(esIdentical.entries).filter(k=>k.startsWith('original:')).map(k=>k.slice('original:'.length))];
