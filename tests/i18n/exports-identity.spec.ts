@@ -175,7 +175,7 @@ test.describe.configure({mode:'parallel'});
 // Front PT2: the E01 and E02 families below (analyser, Observational Data, Hubble, star SSP, exposures, field spectrometer, LSS and
 // wedge) also run in Brazilian Portuguese (pt-BR; its `?lang=pt-BR` preview until PT-REL, a pt-BR browser since): same names and SHA-256 as English, no Portuguese letter in the files.
 // Front FR2: and in French (fr, its `?lang=fr` preview): same names and SHA-256 as English, no French letter, « » or U+202F in the files (’ is English’s apostrophe too; the SHA-256 covers it).
-family('spectrum analysis: measurement CSV, velocities CSV and the analysis session',['en','qps','es-419','pt-BR','fr','id','hi','ru'],async({browser,baseURL},identical)=>{
+family('spectrum analysis: measurement CSV, velocities CSV and the analysis session',['en','qps','es-419','pt-BR','fr','id','hi','ja','ru'],async({browser,baseURL},identical)=>{
  await identical(browser,baseURL,async(page,locale)=>{
   await open(page,locale,'spectrum');
   await page.getByLabel(N(locale,'Import spectrum')).setInputFiles({name:'identity-vector.csv',mimeType:'text/csv',buffer:SPECTRUM});
@@ -201,7 +201,7 @@ family('spectrum analysis: measurement CSV, velocities CSV and the analysis sess
 // remarks) writes the measurement CSV and analysis session, the own Observational Results text and CSV, the acquired SSP and the
 // analysis spectrum. One second of exposure on the page clock from a fixed instant; only the observatory clock's elapsed time and
 // the record's JD are masked (observatoryTimeMasked, recordJdTextMasked, recordJdCsvMasked), because they follow real time.
-family('E01 measurement through Observational Data: measurement CSV, session, results text/CSV, acquired SSP and analysis spectrum',['en','qps','es-419','pt-BR','fr','id','hi','ru'],async({browser,baseURL},identical)=>{
+family('E01 measurement through Observational Data: measurement CSV, session, results text/CSV, acquired SSP and analysis spectrum',['en','qps','es-419','pt-BR','fr','id','hi','ja','ru'],async({browser,baseURL},identical)=>{
  test.setTimeout(180_000);
  await identical(browser,baseURL,async(page,locale)=>{
   page.setDefaultTimeout(30_000);
@@ -230,7 +230,7 @@ family('E01 measurement through Observational Data: measurement CSV, session, re
  },{session:observatoryTimeMasked,resultsText:recordJdTextMasked,resultsCsv:recordJdCsvMasked},page=>page.locator('.spectrum-route'));
 });
 
-family('Hubble analysis: Hubble CSV and the Hubble session from the original workbook example',['en','qps','es-419','pt-BR','fr','id','hi','ru'],async({browser,baseURL},identical)=>{
+family('Hubble analysis: Hubble CSV and the Hubble session from the original workbook example',['en','qps','es-419','pt-BR','fr','id','hi','ja','ru'],async({browser,baseURL},identical)=>{
  await identical(browser,baseURL,async(page,locale)=>{
   await open(page,locale,'spectrum');
   await page.getByText(N(locale,'Hubble diagram & distances')).click();
@@ -393,7 +393,7 @@ family('pulsar analysis: the results CSV of two recorded measurements',['en','qp
  },{},page=>page.getByTestId('pulsar-analysis'));
 });
 
-family('star spectrometer: Save spectrum (.SSP) of a paused exposure',['en','qps','es-419','pt-BR','fr','id','hi','ru'],async({browser,baseURL},identical)=>{
+family('star spectrometer: Save spectrum (.SSP) of a paused exposure',['en','qps','es-419','pt-BR','fr','id','hi','ja','ru'],async({browser,baseURL},identical)=>{
  await identical(browser,baseURL,async(page,locale)=>{
   await page.clock.install({time:NOW});
   await page.goto(`/${contextQuery(locale)}#spectrometer`);
@@ -408,7 +408,7 @@ family('star spectrometer: Save spectrum (.SSP) of a paused exposure',['en','qps
 
 // Front ES3: the galaxy, sky and star exposure routes of E01 write counts CSV and session JSON files; their screens are
 // translated, the files are not. Each exposure runs one second on the page clock from a fixed instant.
-family('E01 exposures: galaxy, sky and star counts CSV and session JSON',['en','qps','es-419','pt-BR','fr','id','hi','ru'],async({browser,baseURL},identical)=>{
+family('E01 exposures: galaxy, sky and star counts CSV and session JSON',['en','qps','es-419','pt-BR','fr','id','hi','ja','ru'],async({browser,baseURL},identical)=>{
  test.setTimeout(120_000);
  const run=async(page:Page,locale:Locale,activate:string,start:string)=>{
   await button(page,activate,locale).click();
@@ -436,7 +436,7 @@ family('E01 exposures: galaxy, sky and star counts CSV and session JSON',['en','
 
 // Front ES3: the single-slit spectrometer at a free pointing (the spectrometer route) writes a counts CSV and an exposure
 // session; NGC 4874 (Coma – 1) is pointed exactly, as tests/field-spectrometer.spec.ts does, and exposed one second on the page clock.
-family('field spectrometer: Save counts CSV and Save exposure session at a free pointing',['en','qps','es-419','pt-BR','fr','id','hi','ru'],async({browser,baseURL},identical)=>{
+family('field spectrometer: Save counts CSV and Save exposure session at a free pointing',['en','qps','es-419','pt-BR','fr','id','hi','ja','ru'],async({browser,baseURL},identical)=>{
  test.setTimeout(400_000);
  await identical(browser,baseURL,async(page,locale)=>{
   page.setDefaultTimeout(90_000);
@@ -525,7 +525,7 @@ family('radio telescope: Download capture as .PLR of a model-generated recording
 // Edit Mode (an instructor option), LSS Galaxy Data writes LSS_Galaxy_Data.TXT. The page clock is paused at a fixed instant
 // before the exposure and only moves by runFor until the investigation is saved; the wedge and LSS Galaxy Data files written after
 // it resumes record no time (the region rows take the observatory clock's JD, which stands still), so nothing is masked.
-family('E02 LSS survey and wedge: counts CSV, session, SSP, results CSV and TXT, investigation, wedge CSV and LSS Galaxy Data TXT',['en','qps','es-419','pt-BR','fr','id','hi','ru'],async({browser,baseURL},identical)=>{
+family('E02 LSS survey and wedge: counts CSV, session, SSP, results CSV and TXT, investigation, wedge CSV and LSS Galaxy Data TXT',['en','qps','es-419','pt-BR','fr','id','hi','ja','ru'],async({browser,baseURL},identical)=>{
  test.setTimeout(240_000);
  await identical(browser,baseURL,async(page,locale)=>{
   page.setDefaultTimeout(30_000);

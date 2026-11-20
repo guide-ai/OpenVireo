@@ -35,6 +35,9 @@ import {QSO_LIST_MESSAGES_EN} from '../../observatory/QsoListMessages';
 import {SOUND_MESSAGES_EN} from '../../sound/SoundMessages';
 import {OBSERVATION_METADATA_EN} from '../../ObservationMetadataMessages';
 import {CAMERA_MESSAGES_EN} from '../../camera/CameraMessages';
+import {ENGINE_VIEW_EN} from '../../SpectrumEngineMessages';
+import {SPECTRAL_RANGE_EN} from '../../SpectralRangeMessages';
+import {WEDGE_MESSAGES_EN} from '../../components/WedgeMessages';
 import esIdentical from '../es/identical.json';
 
 // Front JA0 (docs/I18N.md, "Japanese: the folder, lints and shell (JA0)"; plan front-i18n-ja.md §1.2, §6.2): the structural checks
@@ -47,15 +50,21 @@ import esIdentical from '../es/identical.json';
 // originals.json, the string literals of maps/*.ts and help/*.ts with the fixer (src/i18n/lint/cjkPunctuation.ts), writing the
 // characters literally, then checks as usual. A VIREO `fragment|` original keeps its straight quotes (another piece closes them).
 const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,
- camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,nakedEye:NAKED_EYE_MESSAGES_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN};
-/** The maps translated completely (JA0's shell maps; JA1's observatory maps, the camera card the observatory shows, and polish); the
+ camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,nakedEye:NAKED_EYE_MESSAGES_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,
+ engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN};
+/** The maps translated completely (JA0's shell maps; JA1's observatory maps, the camera card the observatory shows, and polish; JA2's
+ * engineView, spectralRange and wedge); the
  * others hold only their header-menu names until their front (variableStars JA4, objectXLab JA6). */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera'];
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge'];
 /** Front JA1's area of en.json: FR1's observatory keys (the instruments' prefixes and the Hubble hot-list reasons) and the 104 guide
  * keys the observatory files render (src/i18n/fr/fr.test.ts FR1_GUIDE_KEYS, read from there so the two never drift), as RU1's. */
 const OBSERVATORY_PREFIXES=/^(sky|optical|motion|horizon|siteClock|runningClock|scopeAccess|instrumentAccess|instrumentParameters|cameraParameters|cameraInfo|cameraPrepare|palette|testMode|optionsFile|photometerTab|htl|multispec|nativeMirror|hubblePoint)\./;
 const JA1_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>OBSERVATORY_PREFIXES.test(k)||/^hubbleHtl\.reason\./.test(k));
 const JA1_GUIDE_KEYS=JSON.parse(`[${/const FR1_GUIDE_KEYS:readonly MessageKey\[\]=\[([^\]]*)\]/.exec(readFileSync(path.join(import.meta.dirname,'../fr/fr.test.ts'),'utf8'))![1].replace(/'/g,'"')}]`) as MessageKey[];
+/** Front JA2's area of en.json: exercises E01 (Hubble's law) and E02 (large-scale structure) as FR2 scoped them (every key of their
+ * prefixes, which include the shared core keys continuity.* and ssp.header, and classLink.open, the star exposure's button). */
+const E01_E02_PREFIXES=/^(continuity|lab|lssLab|hubble|velocity|ownResults|spectrum|spectrometer|galaxyExposure|skyExposure|starExposure|ssp|exposureIO|drift|skyProfiles|fieldSpec|lss|wedge)\./;
+const JA2_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E01_E02_PREFIXES.test(k)||k==='classLink.open');
 /** VIREO originals that Spanish keeps with no entry, as for Hindi: the options dialog's General tab («全般») and the Site Information
  * compass letters E «東», N «北» and S «南» (W «西» is in Spanish's list). */
 const JA_ONLY_ORIGINALS:readonly string[]=['General','E','N','S'];
@@ -104,6 +113,10 @@ describe('Front JA0: the Japanese (ja) bundle',()=>{
   expect(JA1_KEYS.filter(k=>!Object.hasOwn(ja,k))).toEqual([]);
   expect(JA1_GUIDE_KEYS.length).toBe(104);
   expect(JA1_GUIDE_KEYS.filter(k=>!Object.hasOwn(en,k)||!Object.hasOwn(ja,k))).toEqual([]);
+ });
+ it('Front JA2: the catalog covers E01 and E02 (every key of their prefixes, and classLink.open)',()=>{
+  expect(JA2_KEYS.length).toBeGreaterThan(780);
+  expect(JA2_KEYS.filter(k=>!Object.hasOwn(ja,k))).toEqual([]);
  });
  it('Front JA1: every VIREO original is translated at once, or kept with an identical.json reason, never both',()=>{
   const english=[...Object.keys(esOriginals),...Object.keys(esIdentical.entries).filter(k=>k.startsWith('original:')).map(k=>k.slice('original:'.length))];

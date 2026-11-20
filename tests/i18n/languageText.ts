@@ -202,9 +202,10 @@ export const HINDI_TEXT=language('hi',hi,hiOriginals,{appShell:APP_SHELL_HI,help
  [APP_SHELL_HI,CAMERA_HI,FIELD_INFO_HI,FIELD_READ_DETAILS_HI,HELP_MENU_HI,LANGUAGE_CHOICE_HI,NAKED_EYE_HI,OBJECT_X_LAB_HI,OBSERVATION_METADATA_HI,OBSERVATORY_HI,POLISH_HI,PROJECT_LINKS_HI,QSO_LIST_HI,SOUND_HI,TOUR_HI,VARIABLE_STARS_HI],/[\u0900-\u097f]/u,'?lang=hi',['shell','observatory','e01','e02','e03','e04','e05','radio']);
 /** Front JA0 (plan front-i18n-ja.md §1.2 #3): Japanese, behind `?lang=ja` before its release; JA0 translated the shell, and each
  * later JA front adds its area to `done`. Its letters are kana, ー and 「」, which no English text, VIREO file or export has (Han alone
- * is not used: kana are the unambiguous Japanese signal). JA1 adds the observatory with its maps and all of VIREO's originals. */
+ * is not used: kana are the unambiguous Japanese signal). JA1 adds the observatory with its maps and all of VIREO's originals, JA2
+ * exercises E01 and E02. */
 export const JAPANESE_TEXT=language('ja',ja,jaOriginals,{appShell:APP_SHELL_JA,helpMenu:HELP_MENU_JA,projectLinks:PROJECT_LINKS_JA,tour:TOUR_JA,languageChoice:LANGUAGE_CHOICE_JA},
- [APP_SHELL_JA,CAMERA_JA,FIELD_INFO_JA,FIELD_READ_DETAILS_JA,HELP_MENU_JA,LANGUAGE_CHOICE_JA,NAKED_EYE_JA,OBJECT_X_LAB_JA,OBSERVATION_METADATA_JA,OBSERVATORY_JA,POLISH_JA,PROJECT_LINKS_JA,QSO_LIST_JA,SOUND_JA,TOUR_JA,VARIABLE_STARS_JA],/[\p{sc=Hira}\p{sc=Kana}ー「」]/u,'?lang=ja',['shell','observatory']);
+ [APP_SHELL_JA,CAMERA_JA,FIELD_INFO_JA,FIELD_READ_DETAILS_JA,HELP_MENU_JA,LANGUAGE_CHOICE_JA,NAKED_EYE_JA,OBJECT_X_LAB_JA,OBSERVATION_METADATA_JA,OBSERVATORY_JA,POLISH_JA,PROJECT_LINKS_JA,QSO_LIST_JA,SOUND_JA,TOUR_JA,VARIABLE_STARS_JA],/[\p{sc=Hira}\p{sc=Kana}ー「」]/u,'?lang=ja',['shell','observatory','e01','e02']);
 /** Front ZH0: Simplified Chinese before its release, behind `?lang=zh-Hans` (an en-US browser: tests/fixtures/language.ts
  * contextLocale). Only the shell is translated; ZH1–ZH6 and ZH-HELP add their areas to `done` and their maps. Its letters are Han and
  * the full-width marks ，。、：；？！（）, which VIREO's English files and OpenVireo's exports never hold. */
@@ -243,6 +244,9 @@ import {WEDGE_HI} from '../../src/i18n/hi/maps/wedge';
 import {ENGINE_VIEW_RU} from '../../src/i18n/ru/maps/engineView';
 import {SPECTRAL_RANGE_RU} from '../../src/i18n/ru/maps/spectralRange';
 import {WEDGE_RU} from '../../src/i18n/ru/maps/wedge';
+import {ENGINE_VIEW_JA} from '../../src/i18n/ja/maps/engineView';
+import {SPECTRAL_RANGE_JA} from '../../src/i18n/ja/maps/spectralRange';
+import {WEDGE_JA} from '../../src/i18n/ja/maps/wedge';
 export type E01E02Maps=Readonly<{engineView:unknown;spectralRange:unknown;wedge:unknown;observatory:unknown;polish:unknown}>;
 export const E01_E02_MAPS:Readonly<Record<string,E01E02Maps>>=Object.freeze({
  'es-419':{engineView:ENGINE_VIEW_ES,spectralRange:SPECTRAL_RANGE_ES,wedge:WEDGE_ES,observatory:OBSERVATORY_ES,polish:POLISH_ES},
@@ -255,6 +259,8 @@ export const E01_E02_MAPS:Readonly<Record<string,E01E02Maps>>=Object.freeze({
  hi:{engineView:ENGINE_VIEW_HI,spectralRange:SPECTRAL_RANGE_HI,wedge:WEDGE_HI,observatory:OBSERVATORY_HI,polish:POLISH_HI},
  // Front RU2: Russian (its ?lang=ru preview).
  ru:{engineView:ENGINE_VIEW_RU,spectralRange:SPECTRAL_RANGE_RU,wedge:WEDGE_RU,observatory:OBSERVATORY_RU,polish:POLISH_RU},
+ // Front JA2: Japanese (its ?lang=ja preview).
+ ja:{engineView:ENGINE_VIEW_JA,spectralRange:SPECTRAL_RANGE_JA,wedge:WEDGE_JA,observatory:OBSERVATORY_JA,polish:POLISH_JA},
 });
 export const e01e02Maps=(tag:string):E01E02Maps=>{const m=E01_E02_MAPS[tag];if(!m)throw new Error(`No E01/E02 maps for ${tag}`);return m;};
 
