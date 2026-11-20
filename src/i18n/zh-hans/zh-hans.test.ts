@@ -67,6 +67,11 @@ const ZH1_GUIDE_KEYS=JSON.parse(`[${/const FR1_GUIDE_KEYS:readonly MessageKey\[\
  * their prefixes, which include the shared core keys continuity.* and ssp.header, and classLink.open, the star exposure's button). */
 const E01_E02_PREFIXES=/^(continuity|lab|lssLab|hubble|velocity|ownResults|spectrum|spectrometer|galaxyExposure|skyExposure|starExposure|ssp|exposureIO|drift|skyProfiles|fieldSpec|lss|wedge)\./;
 const ZH2_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E01_E02_PREFIXES.test(k)||k==='classLink.open');
+/** Front ZH3's area of en.json: exercise E03 as FR3 and JA3 scoped it (every key of the classification module and of
+ * classification+cluster, the observation notebook, the DAT/TXT/CSV inspectors and the Program List), with ZH2's
+ * continuity.restoreExposure and ssp.header. */
+const E03_PREFIXES=/^(class|classLines|classLink|classAtlas|classImport|classLab|feature|cursor|probe|photo|combined|combinedWidth|viewport|inspection|sampledTrace|reverseTrace|sampledDiff|range|widthSource|widthCoordinates|sharedMarks|comparisonMark|paneSource|panMarks|obs|nativeResults|nativeEdit|nativeDelete|nativeList|nativeText|nativeCsv|program|programImport)\./;
+const ZH3_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E03_PREFIXES.test(k)||k==='continuity.restoreExposure'||k==='ssp.header');
 /** VIREO originals that Spanish keeps with no entry, as for Hindi and Japanese: the options dialog's General tab («常规») and the
  * Site Information compass letters E «东», N «北» and S «南» (W «西» is in Spanish's list). */
 const ZH_ONLY_ORIGINALS:readonly string[]=['General','E','N','S'];
@@ -82,6 +87,11 @@ const fix=(text:string,options?:{quotes?:boolean;valueMarks?:RegExp})=>fixCjkPun
 /** VIREO originals whose ASCII bracket VIREO itself closes after a value (`Object: (` + number + `) `): the fixer leaves them, as ja. */
 const ASCII_BRACKET_PIECES:readonly string[]=['Object: ('];
 const fixOriginal=(key:string,text:string)=>ASCII_BRACKET_PIECES.includes(key)?text:fix(text,{quotes:!key.startsWith('fragment|')});
+/** Front ZH3, as JA3: field names of VIREO's files that a catalog string quotes as the file writes them (the DAT/TXT `MJD(Days)`
+ * column): the fixer keeps their ASCII brackets beside Chinese text, as a symbol's own brackets. */
+const ASCII_FIELD_NAMES:readonly string[]=['MJD(Days)'];
+const fixCatalog=(text:string)=>{const kept:string[]=[];const masked=ASCII_FIELD_NAMES.reduce((s,name)=>s.split(name).join(`\uE000${kept.push(name)-1}\uE001`),text);
+ return fix(masked).replace(/\uE000(\d+)\uE001/g,(_,i:string)=>kept[Number(i)]!);};
 const fixSource=(source:string)=>fixSourceLiterals(source,(text,options)=>fix(text,options));
 const writeJson=(file:string,value:unknown)=>writeFileSync(path.join(DIR,file),JSON.stringify(value,null,1)+'\n');
 
@@ -89,7 +99,7 @@ if(process.env.OPENVIREO_FIX_TYPOGRAPHY==='1'){
  // As FR0 and JA0: refused in CI (CI must check, never rewrite).
  if(process.env.CI)throw new Error('OPENVIREO_FIX_TYPOGRAPHY=1 is refused in CI: run the fixer locally and commit the reviewed diff');
  const catalog=JSON.parse(readFileSync(path.join(DIR,'zh-hans.json'),'utf8')) as Record<string,string>;
- writeJson('zh-hans.json',Object.fromEntries(Object.entries(catalog).map(([k,v])=>[k,fix(v)])));
+ writeJson('zh-hans.json',Object.fromEntries(Object.entries(catalog).map(([k,v])=>[k,fixCatalog(v)])));
  const own=JSON.parse(readFileSync(path.join(DIR,'originals.json'),'utf8')) as Record<string,string>;
  writeJson('originals.json',Object.fromEntries(Object.entries(own).map(([k,v])=>[k,fixOriginal(k,v)])));
  for(const file of [...sources('maps'),...sources('help')]){const before=readFileSync(file,'utf8'),after=fixSource(before);if(after!==before)writeFileSync(file,after);}
@@ -121,6 +131,10 @@ describe('Front ZH0: the Simplified Chinese (zh-Hans) bundle',()=>{
  it('Front ZH2: the catalog covers E01 and E02 (every key of their prefixes, and classLink.open)',()=>{
   expect(ZH2_KEYS.length).toBeGreaterThan(780);
   expect(ZH2_KEYS.filter(k=>!Object.hasOwn(zh,k))).toEqual([]);
+ });
+ it('Front ZH3: the catalog covers E03 (every key of its prefixes, with continuity.restoreExposure and ssp.header)',()=>{
+  expect(ZH3_KEYS.length).toBe(772);
+  expect(ZH3_KEYS.filter(k=>!Object.hasOwn(zh,k))).toEqual([]);
  });
  it('Front ZH1: every VIREO original is translated at once, or kept with an identical.json reason, never both',()=>{
   const english=[...Object.keys(esOriginals),...Object.keys(esIdentical.entries).filter(k=>k.startsWith('original:')).map(k=>k.slice('original:'.length))];
@@ -167,7 +181,7 @@ describe('Front ZH0: the Simplified Chinese (zh-Hans) bundle',()=>{
   if(reports.length)console.info(`zh-Hans reports for the reviewer (not failures):\n${describeFindings(reports).join('\n')}`);
  });
  it('the CJK punctuation fixer (Simplified Chinese style) has nothing left to change: catalog, originals, maps and help sources',()=>{
-  expect(Object.entries(zh).filter(([,v])=>fix(v)!==v).map(([k])=>k)).toEqual([]);
+  expect(Object.entries(zh).filter(([,v])=>fixCatalog(v)!==v).map(([k])=>k)).toEqual([]);
   expect(Object.entries(originals).filter(([k,v])=>fixOriginal(k,v)!==v).map(([k])=>k)).toEqual([]);
   for(const file of [...sources('maps'),...sources('help')]){const text=readFileSync(file,'utf8');expect(fixSource(text)===text,path.relative(DIR,file)).toBe(true);}
  });

@@ -48,6 +48,14 @@
   "map:wedge.detail.velocity": "Front ZH2: a symbol and a number type (V binary32)",
   "map:wedge.detail.z": "Front ZH2: a symbol and a number type (Z binary32)",
   "map:wedge.detail.degrees": "Front ZH2: the degree sign",
-  "map:wedge.detail.px": "Front ZH2: the pixel unit symbol px"
+  "map:wedge.detail.px": "Front ZH2: the pixel unit symbol px",
+  "catalog:classLines.option": "Front ZH3: a format of a placeholder, the unit symbol Å and a separator",
+  "catalog:probe.shaLabel": "Front ZH3: a hash label kept in English (SHA-256)",
+  "catalog:photo.caption": "Front ZH3: placeholders and a separator only",
+  "catalog:viewport.range": "Front ZH3: placeholders, the unit symbol Å, an en dash and the zoom sign ×",
+  "catalog:nativeResults.typeValue": "Front ZH3: placeholders and a separator only",
+  "catalog:nativeResults.kindValue": "Front ZH3: placeholders and a separator only",
+  "catalog:program.row": "Front ZH3: placeholders and a separator only",
+  "catalog:nativeText.choice": "Front ZH3: placeholders and a separator only"
  }
 }
