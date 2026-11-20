@@ -287,8 +287,8 @@ PT-SEO's data-driven design as FR-SEO did. Static site only; no new external ser
   alternates. English, Spanish, Portuguese and French pages gain `og:locale:alternate` `id_ID` and a visible «Bahasa Indonesia» link
   (`hreflang`/`lang` `id`); `index.html`'s body is untouched (only its alternates, built from the table, gain the Indonesian link).
 - **App**: the observatory footer's labs link goes to `/id/labs/` when the app is in Indonesian (the prefix table gains `id:'/id'`).
-- **Preview image** `public/og-image-id.png` (1200×630, 280,754 bytes, SHA-256 `9828fffc…58ed332`): the design of the others with
-  Indonesian text («Praktikum astronomi CLEA VIREO di browser Anda»), rendered by `node scripts/render-og-image.mjs id` with the
+- **Preview image** `public/og-image-id.png` (1200×630, 279,971 bytes, SHA-256 `556893c3…94271dc3`): the design of the others with
+  Indonesian text («Praktikum astronomi CLEA VIREO di browser Anda», with a no-break space keeping «CLEA VIREO» on one line), rendered by `node scripts/render-og-image.mjs id` with the
   project's test fontconfig; an original drawing, no CLEA image. Two renders gave the same bytes.
 - **Headers**: `/id/*` is `no-cache`, like `/labs/*`, `/es/*`, `/pt-br/*` and `/fr/*` (`public/_headers`, `src/deployHeaders.test.ts`).
 

@@ -110,7 +110,7 @@ test('Front PT-REL: pt, pt-BR, pt-PT and PT-br browsers open Português (Brasil)
 
 // Front FR0 (plan front-i18n-fr.md §2) registered French behind its `?lang=fr` preview; Front FR-REL released it. Every fr and fr-*
 // browser (any case) opens it; frr, br and a browser whose first language is another stay as they were; a stored choice and a
-// `?lang=` link decide as for the other languages, and every load offers English, Español, Português (Brasil) and Français.
+// `?lang=` link decide as for the other languages, and every load offers English, Español, Português (Brasil) and Français (and, since ID-REL, Bahasa Indonesia).
 test('Front FR-REL: fr, fr-FR, fr-CA, fr-BE and FR-ch browsers open Français; the first preference decides; a stored fr beats the browser',async({browser})=>{
  test.setTimeout(180_000);
  const F=FRENCH_TEXT,P=PORTUGUESE_TEXT;
@@ -320,7 +320,7 @@ test('Front RU0: on the ?lang=ru preview the keyboard steps across all six optio
  // Escape on the select drops a pending step; leaving the select with a pending step asks for it.
  await select.focus();await page.keyboard.press('Home');await expect(select).toHaveValue('en');
  await page.keyboard.press('Escape');await expect(select).toHaveValue('ru');await expect(dialog).toHaveCount(0);
- await select.focus();await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await expect(select).toHaveValue('es-419');await expect(dialog).toHaveCount(0);
+ await select.focus();await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await expect(select).toHaveValue('es-419');await expect(dialog).toHaveCount(0);
  await page.keyboard.press('Tab');
  await expect(dialog).toBeVisible();await expect(dialog).toContainText(R.maps.languageChoice.reload('Español'));
  await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);await expect(select).toHaveValue('ru');

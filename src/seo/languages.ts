@@ -209,14 +209,14 @@ const FR:SeoLanguage={
 const ID:SeoLanguage={
  tag:'id',hreflang:['id'],ogLocale:'id_ID',prefix:SEO_PATH_PREFIX.id,app:'/?lang=id',
  ogImage:'/og-image-id.png',ogImageAlt:'OpenVireo: praktikum astronomi CLEA VIREO di browser Anda, dalam bahasa Indonesia',
- ogImageText:{title:'Praktikum astronomi CLEA VIREO di browser Anda',lines:['Hukum Hubble · Pulsar · Pleiades · Objek X · dan lainnya.','Rekonstruksi web gratis dan tidak resmi. Tanpa instalasi.']},
+ ogImageText:{title:'Praktikum astronomi CLEA\u00a0VIREO di browser Anda',lines:['Hukum Hubble · Pulsar · Pleiades · Objek X · dan lainnya.','Rekonstruksi web gratis dan tidak resmi. Tanpa instalasi.']},
  labs:merge(LAB_TEXT_ID),
  ui:{languageName:'Bahasa Indonesia',siteNav:'Situs',breadcrumb:'Jejak navigasi',labsCrumb:'Praktikum',allLabs:'Semua praktikum',openObservatory:'Buka observatorium',
   labEyebrow:'Praktikum berdasarkan latihan CLEA VIREO',openLab:'Buka praktikum',
   openLabNote:()=>'Membuka observatorium dalam bahasa Indonesia dengan panduan praktikum ini. Gratis, tanpa pendaftaran.',
   whatYouDo:'Yang Anda lakukan',whatYouLearn:'Yang Anda pelajari',otherLabs:'Praktikum lainnya',
   about:'OpenVireo adalah rekonstruksi web gratis dan nonkomersial dari VIREO, observatorium pendidikan virtual (Virtual Educational '+
-   'Observatory) milik Project CLEA di Gettysburg College, yang didukung oleh NSF (National Science Foundation) dan Gettysburg College. '+
+   'Observatory) milik Project CLEA di Gettysburg College. Project CLEA didukung oleh NSF (National Science Foundation) dan Gettysburg College. '+
    'OpenVireo didasarkan pada perilaku program asli yang berhasil dipulihkan dan memakai file data asli dengan mencantumkan sumbernya. '+
    'OpenVireo bukan program asli dan tidak berafiliasi dengan Project CLEA. Aplikasi ini menandai adaptasi webnya yang sudah diketahui. '+
    'Teks berbahasa Indonesia ini adalah adaptasi web OpenVireo, bukan teks CLEA.',
