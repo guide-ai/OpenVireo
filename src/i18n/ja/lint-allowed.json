@@ -259,6 +259,24 @@
     "glossary"
    ],
    "reason": "the window is VIREO's Radio Telescope Control Panel («電波望遠鏡コントロールパネル»); the glossary's Radio telescope control is the page"
+  },
+  "map:objectXLab.spectrumInvalid": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "\"trying again will not help\" is the verb, not Help (ヘルプ)"
+  },
+  "map:pulsar.pulsar.nativeSave.problem.reserved": {
+   "rules": [
+    "quotes"
+   ],
+   "reason": "the straight quote is one of the reserved file-name characters the string lists, written as itself"
+  },
+  "map:objectXLab.imageRowPlain": {
+   "rules": [
+    "script"
+   ],
+   "reason": "a placeholder label, a full-width colon and the time scale UT only"
   }
  }
 }

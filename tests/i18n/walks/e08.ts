@@ -122,7 +122,7 @@ export async function leaks(page:Page){
    shared:read('[data-testid=camera-control], .sky-view, .spec-readout, [data-testid=objectx-radio-card], [data-testid$=hot-list], [data-testid*=hotlist]')};
  });
  const word=(s:string)=>new RegExp(`(^|[^\\w])${s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}($|[^\\w])`);
- const verdict=/\bEs (?:una|un) |Tu respuesta es correcta|(?:^|[^\p{L}])É (?:uma|um) |Sua resposta está certa|(?:^|[^\p{L}])C’est (?:une|un) |Votre réponse est juste|\bIt is an? |Your answer is right/u;
+ const verdict=/\bEs (?:una|un) |Tu respuesta es correcta|(?:^|[^\p{L}])É (?:uma|um) |Sua resposta está certa|(?:^|[^\p{L}])C’est (?:une|un) |Votre réponse est juste|正解です。|(?:^|[^\p{L}])(?:恒星|銀河|クエーサー（QSO）|パルサー|小惑星)です。|\bIt is an? |Your answer is right/u;
  return [...SECRETS.filter(s=>word(s).test(found.lab)),...IDS.filter(s=>word(s).test(found.shared)),...(verdict.test(found.labText)?[`verdict: ${verdict.exec(found.labText)![0]}`]:[])];
 }
 export async function expose(page:Page,lang:Lang){
