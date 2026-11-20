@@ -35,11 +35,13 @@ import {OBJECT_X_SESSION_ID} from './maps/objectXSession';
 import {HELP_VIEWER_ID} from './maps/helpViewer';
 import {WEB_HELP_ID} from './maps/webHelp';
 /** Front ID0 [W]: the Indonesian (id) bundle (docs/I18N.md, "Indonesian: the folder, lints and shell (ID0)"; plan
- * analysis/front-plans/front-i18n-id.md). Partial until its release (ID0–ID-HELP, behind a `?lang=id` preview): ID0 translates the
- * shell, the welcome and the header menu names, ID1 the observatory and all of VIREO's originals, ID2 exercises E01 and E02, ID3 exercise E03, ID4 exercises E04 and E05, ID5 the radio telescope, ID6 exercises E06 and E08; later ID fronts add the observatory, the exercises, the radio telescope and the
- * help. The production build splits it by route area like the other languages (scripts/i18n-split.mjs parses this manifest);
- * Vitest imports it whole. Translations are web adaptations by OpenVireo; they never claim to be CLEA's, and CLEA's bytes, hashes
- * and provenance are unchanged. */
+ * analysis/front-plans/front-i18n-id.md). ID0 translated the shell, the welcome and the header menu names, ID1 the observatory and all
+ * of VIREO's originals, ID2 exercises E01 and E02, ID3 exercise E03, ID4 exercises E04 and E05, ID5 the radio telescope, ID6 exercises
+ * E06 and E08, ID-HELP the help viewer and OpenVireo's own help. It was partial until its release (ID0–ID-HELP, behind a `?lang=id`
+ * preview); since Front ID-REL (src/i18n/languages.json `released:true`) every id and id-* browser and the withdrawn in, in-* open it,
+ * and its catalog and every map are complete (src/i18n/id/id.test.ts). The production build splits it by route area like the other
+ * languages (scripts/i18n-split.mjs parses this manifest); Vitest imports it whole. Translations are web adaptations by OpenVireo;
+ * they never claim to be CLEA's, and CLEA's bytes, hashes and provenance are unchanged. */
 export const INDONESIAN:LocaleBundle=Object.freeze({
  language:'id',
  messages,

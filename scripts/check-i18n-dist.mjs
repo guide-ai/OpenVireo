@@ -189,8 +189,12 @@ export function checkI18nDist(dist,{root=ROOT,languages=loadLanguages(root),grap
   if(language.pagePath!==undefined&&!/^[a-z0-9-]+$/.test(language.pagePath))offenders.push(`${tag}: pagePath ${JSON.stringify(language.pagePath)} is not one lower-case path segment`);
   const ownPages=/^[a-z0-9-]+$/.test(language.pagePath??'')?join(dist,language.pagePath)+sep:null;
   const holders=new Map();
+  // Front ID-REL: the shared 404 page (dist/404.html, src/seo/pages.ts notFoundPage) holds one `<section lang="<tag>">` block per
+  // language with static pages by design; the language's own block is its text, so only the rest of the page is searched.
+  const own404=new RegExp(`<section lang="${escape(tag)}"[^>]*>[\\s\\S]*?</section>`,'g');
   for(const f of files){if(helpChunks.has(f.name)||(ownPages&&/\.html?$/i.test(f.name)&&f.file.startsWith(ownPages)))continue;
-   const hits=new Map();for(const [name,list] of markers){const found=list.filter(m=>m.forms.some(form=>f.text.includes(form)));if(found.length)hits.set(name,found);}
+   const text=f.file===join(dist,'404.html')?f.text.replace(own404,''):f.text;
+   const hits=new Map();for(const [name,list] of markers){const found=list.filter(m=>m.forms.some(form=>text.includes(form)));if(found.length)hits.set(name,found);}
    if(hits.size)holders.set(f,hits);}
   const chunkName=(name)=>`i18n-${tag}-${name.replace(/\+/g,'_')}-`;
   // Front PT3: another language's chunk (named i18n-<tag>-<module>-) is never this language's, and in it a marker may appear only
