@@ -420,9 +420,9 @@ test(`${lang} at ${width} px computes the same styles with and without scripts.c
   return [...new Set(declared(sheet.cssRules))].sort();
  });
  const snapshot=(props:readonly string[])=>page.evaluate(props=>
-  // Front RU-REL: only the page's own language. Text marked as another language keeps the styles scripts.css gives that language
-  // on purpose (the selector's «Русский (Russian)» option, lang="ru", on every page since Russian's release).
-  [document.documentElement,document.body,...document.body.querySelectorAll('*')].filter(e=>(e.closest('[lang]')?.getAttribute('lang')??document.documentElement.lang)===document.documentElement.lang).map(e=>{const s=getComputedStyle(e);return `${e.tagName.toLowerCase()}.${typeof e.className==='string'?e.className:''} `+props.map(p=>`${p}:${s.getPropertyValue(p)}`).join(';');}),props);
+  // Front RU-REL: leaves out only nested text in a language scripts.css styles on purpose (ru, hi, ja, zh: the selector's «Русский
+  // (Russian)» option, lang="ru", is on every page since Russian's release); every other element, nested [lang] ones included, stays.
+  [document.documentElement,document.body,...document.body.querySelectorAll('*')].filter(e=>{const l=e.closest('[lang]');return !(l&&l!==document.documentElement&&l.matches(':lang(ru),:lang(hi),:lang(ja),:lang(zh)'));}).map(e=>{const s=getComputedStyle(e);return `${e.tagName.toLowerCase()}.${typeof e.className==='string'?e.className:''} `+props.map(p=>`${p}:${s.getPropertyValue(p)}`).join(';');}),props);
  // Removes the sheet, keeping it on the window so that restoreSheet() can put the same node back where it was.
  const withoutSheet=()=>page.evaluate(()=>{
   const sheet=[...document.querySelectorAll<HTMLStyleElement>('style[data-vite-dev-id]')].filter(s=>s.dataset.viteDevId!.endsWith('/src/theme/scripts.css'));
