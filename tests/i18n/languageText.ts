@@ -114,6 +114,17 @@ import {HELP_MENU_ZH_HANS} from '../../src/i18n/zh-hans/maps/helpMenu';
 import {PROJECT_LINKS_ZH_HANS} from '../../src/i18n/zh-hans/maps/projectLinks';
 import {TOUR_ZH_HANS} from '../../src/i18n/zh-hans/maps/tour';
 import {LANGUAGE_CHOICE_ZH_HANS} from '../../src/i18n/zh-hans/maps/languageChoice';
+import {OBJECT_X_LAB_ZH_HANS} from '../../src/i18n/zh-hans/maps/objectXLab';
+import {POLISH_ZH_HANS} from '../../src/i18n/zh-hans/maps/polish';
+import {VARIABLE_STARS_ZH_HANS} from '../../src/i18n/zh-hans/maps/variableStars';
+import {CAMERA_ZH_HANS} from '../../src/i18n/zh-hans/maps/camera';
+import {FIELD_INFO_ZH_HANS} from '../../src/i18n/zh-hans/maps/fieldInfo';
+import {FIELD_READ_DETAILS_ZH_HANS} from '../../src/i18n/zh-hans/maps/fieldReadDetails';
+import {NAKED_EYE_ZH_HANS} from '../../src/i18n/zh-hans/maps/nakedEye';
+import {OBSERVATION_METADATA_ZH_HANS} from '../../src/i18n/zh-hans/maps/observationMetadata';
+import {OBSERVATORY_ZH_HANS} from '../../src/i18n/zh-hans/maps/observatory';
+import {QSO_LIST_ZH_HANS} from '../../src/i18n/zh-hans/maps/qsoList';
+import {SOUND_ZH_HANS} from '../../src/i18n/zh-hans/maps/sound';
 import ru from '../../src/i18n/ru/ru.json' with {type:'json'};
 import ruOriginals from '../../src/i18n/ru/originals.json' with {type:'json'};
 import {APP_SHELL_RU} from '../../src/i18n/ru/maps/appShell';
@@ -206,10 +217,11 @@ export const HINDI_TEXT=language('hi',hi,hiOriginals,{appShell:APP_SHELL_HI,help
 export const JAPANESE_TEXT=language('ja',ja,jaOriginals,{appShell:APP_SHELL_JA,helpMenu:HELP_MENU_JA,projectLinks:PROJECT_LINKS_JA,tour:TOUR_JA,languageChoice:LANGUAGE_CHOICE_JA},
  [APP_SHELL_JA,CAMERA_JA,FIELD_INFO_JA,FIELD_READ_DETAILS_JA,HELP_MENU_JA,LANGUAGE_CHOICE_JA,NAKED_EYE_JA,OBJECT_X_LAB_JA,OBSERVATION_METADATA_JA,OBSERVATORY_JA,POLISH_JA,PROJECT_LINKS_JA,QSO_LIST_JA,SOUND_JA,TOUR_JA,VARIABLE_STARS_JA],/[\p{sc=Hira}\p{sc=Kana}ー「」]/u,'?lang=ja',['shell','observatory']);
 /** Front ZH0: Simplified Chinese before its release, behind `?lang=zh-Hans` (an en-US browser: tests/fixtures/language.ts
- * contextLocale). Only the shell is translated; ZH1–ZH6 and ZH-HELP add their areas to `done` and their maps. Its letters are Han and
+ * contextLocale). ZH0 translated the shell and ZH1 the observatory with its maps and all of VIREO's originals; ZH2–ZH6 and ZH-HELP
+ * add their areas to `done` and their maps. Its letters are Han and
  * the full-width marks ，。、：；？！（）, which VIREO's English files and OpenVireo's exports never hold. */
 export const CHINESE_SIMPLIFIED_TEXT=language('zh-Hans',zhHans,zhHansOriginals,{appShell:APP_SHELL_ZH_HANS,helpMenu:HELP_MENU_ZH_HANS,projectLinks:PROJECT_LINKS_ZH_HANS,tour:TOUR_ZH_HANS,languageChoice:LANGUAGE_CHOICE_ZH_HANS},
- [APP_SHELL_ZH_HANS,HELP_MENU_ZH_HANS,LANGUAGE_CHOICE_ZH_HANS,PROJECT_LINKS_ZH_HANS,TOUR_ZH_HANS],/[\p{sc=Han}，。、：；？！（）]/u,'?lang=zh-Hans',['shell']);
+ [APP_SHELL_ZH_HANS,CAMERA_ZH_HANS,FIELD_INFO_ZH_HANS,FIELD_READ_DETAILS_ZH_HANS,HELP_MENU_ZH_HANS,LANGUAGE_CHOICE_ZH_HANS,NAKED_EYE_ZH_HANS,OBJECT_X_LAB_ZH_HANS,OBSERVATION_METADATA_ZH_HANS,OBSERVATORY_ZH_HANS,POLISH_ZH_HANS,PROJECT_LINKS_ZH_HANS,QSO_LIST_ZH_HANS,SOUND_ZH_HANS,TOUR_ZH_HANS,VARIABLE_STARS_ZH_HANS],/[\p{sc=Han}，。、：；？！（）]/u,'?lang=zh-Hans',['shell','observatory']);
 /** Front RU0: Russian before its release, behind `?lang=ru` (an en-US browser: tests/fixtures/language.ts contextLocale). Only the
  * shell is translated (RU0), the observatory with all of VIREO's originals (RU1), exercises E01 and E02 (RU2), and exercise E03 (RU3); RU4–RU6 and RU-HELP
  * add their areas to `done` and their maps below. Its letters are Cyrillic, « » and U+202F,
