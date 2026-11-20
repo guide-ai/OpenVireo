@@ -69,6 +69,10 @@ const ID_ONLY_ORIGINALS:readonly string[]=['General','E'];
 /** Front ID2's area of en.json: FR2's (and PT2's) keys of exercises E01 and E02, every key of their prefixes, and classLink.open. */
 const E01_E02_PREFIXES=/^(continuity|lab|lssLab|hubble|velocity|ownResults|spectrum|spectrometer|galaxyExposure|skyExposure|starExposure|ssp|exposureIO|drift|skyProfiles|fieldSpec|lss|wedge)\./;
 const ID2_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E01_E02_PREFIXES.test(k)||k==='classLink.open');
+/** Front ID3's area of en.json: FR3's (and PT3's) keys of exercise E03, every key of the classification module and of
+ * classification+cluster, and the core keys E03 renders (continuity.restoreExposure and ssp.header). */
+const E03_PREFIXES=/^(class|classLines|classLink|classAtlas|classImport|classLab|feature|cursor|probe|photo|combined|combinedWidth|viewport|inspection|sampledTrace|reverseTrace|sampledDiff|range|widthSource|widthCoordinates|sharedMarks|comparisonMark|paneSource|panMarks|obs|nativeResults|nativeEdit|nativeDelete|nativeList|nativeText|nativeCsv|program|programImport)\./;
+const ID3_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E03_PREFIXES.test(k)||k==='continuity.restoreExposure'||k==='ssp.header');
 const HOME_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>k.startsWith('home.'));
 const profile=PROFILES.id;
 const data:LintData={glossary:glossaryFrom(glossaryJson,'id'),identical:identical.entries,allowed:lintAllowed.entries as Readonly<Record<string,Allowance>>};
@@ -114,6 +118,10 @@ describe('Front ID0: the Indonesian (id) bundle',()=>{
  it('Front ID2: the catalog covers E01 and E02 (every key of their prefixes, and classLink.open)',()=>{
   expect(ID2_KEYS.length).toBeGreaterThan(780);
   expect(ID2_KEYS.filter(k=>!Object.hasOwn(idCatalog,k))).toEqual([]);
+ });
+ it('Front ID3: the catalog covers E03 (every key of its prefixes, continuity.restoreExposure and ssp.header)',()=>{
+  expect(ID3_KEYS.length).toBe(772);
+  expect(ID3_KEYS.filter(k=>!Object.hasOwn(idCatalog,k))).toEqual([]);
  });
  it('Front ID1: every VIREO original is translated at once, or kept with an identical.json reason, never both',()=>{
   const english=[...Object.keys(esOriginals),...Object.keys(esIdentical.entries).filter(k=>k.startsWith('original:')).map(k=>k.slice('original:'.length))];
