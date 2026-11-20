@@ -324,7 +324,6 @@ describe('the Hindi help texts follow the hi lints',()=>{
 // patterns and the glossary's `forbidden` terms; each TXT paragraph also runs the Russian typography fixer's view (U+00A0 before
 // « — » and a unit, « » quotes). A TXT file holds no straight `"` and no ” (Russian quotes are « » with „ “ inside).
 const RU_ALLOWED:Record<string,{matches:string[];reason:string}>={
- 'CLASSHLP.TXT':{matches:[' - '],reason:'VIREO\'s English caption «Show Difference (Std - Unkn)», quoted in brackets after its Russian, keeps its own hyphen'},
 };
 describe('the Russian help texts follow the ru lints',()=>{
  const ru=(key:string):Module=>modules[`../i18n/ru/help/${key}.ts`];

@@ -5,7 +5,7 @@ export const sourceName='VIRMNHLP.LST';
 export const sourceSha256='db9bab876ef1d03ad8b0e96596eb47c3ca9573156a65b4bff7b49bbfac295b2a';
 export const text=`'Начало работы' 'begin'
 'Войти' 'VIRMnHlp.txt'
-'Выбор лабораторной работы' 'VIRMnHlp.txt'
+'Выбрать лабораторную работу' 'VIRMnHlp.txt'
 'Задать дату и время' 'VIRMnHlp.txt'
 'Выбрать телескоп' 'VIRMnHlp.txt'
 'Открыть купол' 'VIRMnHlp.txt'

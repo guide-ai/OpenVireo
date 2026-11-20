@@ -5,7 +5,7 @@ export const sourceName='CLASSHLP.LST';
 export const sourceSha256='42816959943e8d817884bd08b1f91856d4fab4450d5431ceee0f5b595c550fb0';
 export const text=`'Классификация спектров' 'begin
 'Загрузить спектр' 'classhlp.txt'
-'Загрузить стандартные спектры' 'classhlp.txt'
+'Загрузить эталонные спектры' 'classhlp.txt'
 'Таблица спектральных линий и справка' 'classhlp.txt'
 'Измерить и отметить спектральные особенности' 'classhlp.txt'
 'Измерить эквивалентные ширины' 'classhlp.txt'
