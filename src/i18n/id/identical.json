@@ -130,6 +130,7 @@
   "map:variableStars.columns.5": "GCVS minimum or amplitude column, abbreviations kept (Min / ampl.)",
   "map:variableStars.columns.7": "the empty header of the action column",
   "map:variableStars.noPeriod": "the em dash for no period",
-  "map:clusterHr.ok": "the same word in Indonesian (OK, as Windows Indonesian writes it)"
+  "map:clusterHr.ok": "the same word in Indonesian (OK, as Windows Indonesian writes it)",
+  "map:helpViewer.spectralLines.ok": "VIREO’s OK, the same in Windows Indonesian"
  }
 }

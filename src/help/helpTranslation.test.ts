@@ -9,6 +9,7 @@ import {HELP_FILES,helpFile} from './helpFiles';
 import glossary from '../i18n/es/glossary.json';
 import ptGlossary from '../i18n/pt-br/glossary.json';
 import frGlossary from '../i18n/fr/glossary.json';
+import idGlossary from '../i18n/id/glossary.json';
 import {HelpTranslationError,helpTranslationText} from './helpTranslation';
 import {LANGUAGES,type LanguageEntry} from '../i18n/languages';
 import {PROFILES} from '../i18n/lint/profiles';
@@ -33,14 +34,14 @@ function sectionOf(file:Uint8Array|string,title:string):number{
 }
 /** The languages that translate the help files, with the describe title each keeps (Spanish: ES-HELP's). */
 const HELP_LANGUAGES=LANGUAGES.filter((l):l is LanguageEntry&{help:{related:string}}=>!!l.help);
-const TITLES:Readonly<Record<string,string>>={'es-419':'the Spanish help files (Front ES-HELP)','pt-BR':'the Brazilian Portuguese help files (Front PT-HELP)','fr':'the French help files (Front FR-HELP)'};
+const TITLES:Readonly<Record<string,string>>={'es-419':'the Spanish help files (Front ES-HELP)','pt-BR':'the Brazilian Portuguese help files (Front PT-HELP)','fr':'the French help files (Front FR-HELP)','id':'the Indonesian help files (Front ID-HELP)'};
 /** Front SC7: the help sets written in Latin-1 (any script may be, now; these two are, by their own rule), each with the
  * characters it may add beyond Latin-1. Front PT-SEO: Portuguese groups thousands with U+202F on screen (user decision of
  * 2026-11-10), which Latin-1 cannot hold, so PULSRANL's «2 400 000» used U+00A0 until SC7 made translated help text; U+202F is a
  * no-break space of one column (src/core/textColumns.ts), so the parsers treat it exactly as they treat U+00A0. */
 // Front FR-HELP (plan front-i18n-fr.md §4.6): French adds U+202F (before ; : ! ?, inside « », between thousands), the typographic
 // apostrophe ’ and the ligatures œ Œ, which Latin-1 lacks (« », æ and every accented French letter are Latin-1).
-const LATIN1_HELP:Readonly<Record<string,string>>={'es-419':'','pt-BR':'\u202f','fr':'\u202f\u2019\u0153\u0152'};
+const LATIN1_HELP:Readonly<Record<string,string>>={'es-419':'','pt-BR':'\u202f','fr':'\u202f\u2019\u0153\u0152','id':'\u202f'};
 /** A Latin-1 set's text with each added character read as a Latin-1 character of one column that the parsers treat the same way:
  * U+202F as U+00A0 (a no-break space); for French, ’ as ´ and œ Œ as ø Ø, characters no French help text writes, one for one, so a
  * line keeps its length and the 72-column wrap and the 65-column titles read the same. Plan §4.6 wrote ’→' and œ→oe: a straight '
@@ -48,7 +49,7 @@ const LATIN1_HELP:Readonly<Record<string,string>>={'es-419':'','pt-BR':'\u202f',
 const asLatin1=(s:string)=>s.replaceAll('\u202f','\u00a0').replaceAll('\u2019','\u00b4').replaceAll('\u0153','\u00f8').replaceAll('\u0152','\u00d8');
 const viaLatin1=<T,>(value:T):T=>JSON.parse(asLatin1(JSON.stringify(value)));
 it('Front PT-HELP: Spanish and Brazilian Portuguese translate the help files, each with its own marker',()=>{
- expect(HELP_LANGUAGES.map(l=>[l.tag,l.help.related])).toEqual([['es-419','TEMAS RELACIONADOS'],['pt-BR','TÓPICOS RELACIONADOS'],['fr','RUBRIQUES CONNEXES']]);
+ expect(HELP_LANGUAGES.map(l=>[l.tag,l.help.related])).toEqual([['es-419','TEMAS RELACIONADOS'],['pt-BR','TÓPICOS RELACIONADOS'],['fr','RUBRIQUES CONNEXES'],['id','TOPIK TERKAIT']]);
  for(const l of HELP_LANGUAGES)expect(TITLES[l.tag],l.tag).toBeDefined();
 });
 
@@ -254,5 +255,36 @@ describe('the French help texts follow the fr lints',()=>{
  });
  it('every allowance is still needed and has a reason',()=>{
   for(const [key,a] of Object.entries(FR_ALLOWED)){expect(a.reason.length,key).toBeGreaterThan(20);for(const m of a.matches)expect(hitsOf(key).map(h=>h.match),`${key} ${m}`).toContain(m);}
+ });
+});
+
+// Front ID-HELP (plan front-i18n-id.md §4.6): the id profile over each paragraph of every Indonesian help text, as for French above:
+// its typography patterns (spelling, prepositions, Malay and English words, diacritics, thousands), the TXT files' view of the fixer
+// with the English original (a period between thousands, a decimal grouped, title case where the English has none) less its quote
+// change, the «Anda» register's patterns and the id glossary's `forbidden` words and patterns. The Indonesian help set is ASCII plus
+// U+202F (LATIN1_HELP above), so it quotes with VIREO's straight " and holds no “ ” ‘ ’ « » or … (none of them is Latin-1 but «»;
+// the screen's “ ” would come from a straight pair, which the help keeps).
+const ID_ALLOWED:Record<string,{matches:string[];reason:string}>={};
+describe('the Indonesian help texts follow the id lints',()=>{
+ const id=(key:string):Module=>modules[`../i18n/id/help/${key}.ts`];
+ const profile=PROFILES.id;
+ const WORDS=(w:readonly string[])=>new RegExp(`(?<![\\p{L}\\p{N}])(?:${w.map(x=>x.replace(/\*$/u,'\\p{L}*')).join('|')})(?![\\p{L}\\p{N}])`,'iu');
+ const forbidden=(idGlossary.forbidden as {id?:string;words?:string[];use:string}[]).map(f=>({label:'glossary forbidden',pattern:f.words?WORDS(f.words):new RegExp(f.id!,'iu'),use:f.use}));
+ const patterns=[...profile.typography,...profile.register.patterns,...forbidden];
+ const paragraphs=(text:string)=>text.split(/\n[ ]*\n/).map(p=>p.split('\n').map(l=>l.trim()).join(' ').trim()).filter(Boolean);
+ const hitsOf=(key:string)=>{
+  const english=new TextDecoder('latin1').decode(original(key)),out:{label:string;match:string;use:string}[]=[];
+  for(const para of paragraphs(id(key).text)){
+   for(const p of patterns){const m=new RegExp(p.pattern.source,p.pattern.flags.replace('g','')).exec(para);if(m)out.push({label:p.label,match:m[0],use:p.use});}
+   if(!key.endsWith('.LST')&&key!=='SPECLNS.LNL')for(const h of profile.typographyCheck?.(para,english)??[])if(!/quotes/u.test(h.label))out.push(h);
+  }
+  return out;
+ };
+ for(const key of Object.keys(HELP_FILES))it(`${key}: no id lint error (spelling, register, Malay or English word, forbidden terms)`,()=>{
+  expect(hitsOf(key).filter(h=>!ID_ALLOWED[key]?.matches.includes(h.match)).map(h=>`${h.label}: «${h.match}», use ${h.use}`)).toEqual([]);
+  expect(id(key).text,key).not.toMatch(/[^\n\x20-\x7e\u202f]/u);
+ });
+ it('every allowance is still needed and has a reason',()=>{
+  for(const [key,a] of Object.entries(ID_ALLOWED)){expect(a.reason.length,key).toBeGreaterThan(20);for(const m of a.matches)expect(hitsOf(key).map(h=>h.match),`${key} ${m}`).toContain(m);}
  });
 });

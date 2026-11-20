@@ -44,6 +44,8 @@ import {RADIO_ANTENNA_MESSAGES_EN} from '../../components/RadioAntennaMessages';
 import {FINISH_SAVE_MESSAGES_EN} from '../../components/RadioFinishSaveMessages';
 import {RADIO_R1_MESSAGES_EN} from '../../components/RadioR1Messages';
 import {RADIO_SAVE_MESSAGES_EN} from '../../components/RadioRecordSaveMessages';
+import {HELP_VIEWER_EN} from '../../help/HelpViewerMessages';
+import {WEB_HELP_EN} from '../../help/webHelp';
 
 // Front ID0 (docs/I18N.md, "Indonesian: the folder, lints and shell (ID0)"; plan front-i18n-id.md §4, §6.2): the structural checks
 // of the partial Indonesian bundle, the Indonesian typography fixer as a no-op over every Indonesian string, and every string through
@@ -58,10 +60,12 @@ import {RADIO_SAVE_MESSAGES_EN} from '../../components/RadioRecordSaveMessages';
 const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,
  camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,nakedEye:NAKED_EYE_MESSAGES_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,
  engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN,clusterHr:CLUSTER_HR_EN,clusterData:CLUSTER_DATA_MESSAGES_EN,
- radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN};
+ radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN,
+ helpViewer:HELP_VIEWER_EN,webHelp:WEB_HELP_EN};
 /** The maps translated completely (ID0's shell maps; ID1's observatory maps, the camera card the observatory shows, and polish); the
  * others are partial until their front (objectXLab ID6). */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','variableStars','clusterHr','clusterData','radioAntenna','radioFinishSave','radioR1','radioRecordSave'];
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','variableStars','clusterHr','clusterData','radioAntenna','radioFinishSave','radioR1','radioRecordSave',
+ 'helpViewer','webHelp'];
 /** ID0's area of en.json: the shell (header, menu, home and first steps, toolbar, errors, instructor mode, document title), as FR0's,
  * and the welcome's home.* keys (plan §6.1: Front HOME added them after FR0, and FR1 translated them). */
 const SHELL_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(app|project|session|error|instructorMode)\./.test(k)||/\.nav$/.test(k)||['demonstrationMode.banner','sky.eyebrow','sky.title','sky.subtitle','sky.about','sky.local','sky.observatory','sky.analyzer','sky.step1','sky.step1Help','sky.step2','sky.step2Help','sky.step3','sky.step3Help','spectrum.tools','classLink.cancel'].includes(k));
@@ -109,7 +113,7 @@ if(process.env.OPENVIREO_FIX_TYPOGRAPHY==='1'){
 describe('Front ID0: the Indonesian (id) bundle',()=>{
  it('is registered before its release: a ?lang=id preview only, never detected or offered; thousands with U+202F from the start',()=>{
   expect(languageEntry('id')).toMatchObject({dir:'id',catalog:'id.json',htmlLang:'id',pagePath:'id',autonym:'Bahasa Indonesia',englishName:'Indonesian',match:['id','in'],released:false,thousands:'\u202f'});
-  expect(languageEntry('id')?.help).toBeUndefined();
+  expect(languageEntry('id')?.help).toEqual({related:'TOPIK TERKAIT'}); // Front ID-HELP
   expect(INDONESIAN.language).toBe('id');
   // The notices are plain ASCII Indonesian the fixer leaves alone.
   for(const notice of Object.values(languageEntry('id')!.notices)){expect(fixIndonesianTypography(notice)).toBe(notice);expect(notice).toMatch(/^[\x20-\x7e]+$/);}
