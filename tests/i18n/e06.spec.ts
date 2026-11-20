@@ -116,7 +116,7 @@ for(const L of translatedFor('e06'))test.describe(()=>{test.use({locale:contextL
   'Find Record Containing...','Begin Search:','Print Window...','Analyze Pulsar Data','Data Parameters:','Receiver Gain (Relative):','(Data Not Written To File)','(Receiver Not Recorded)','File Name:','(Screen Image Printed on Next Page)'].filter(t=>!keptOriginal.has(t)))expect(vireoIn(t),t).not.toBe(plain(t).trim());
  for(const [t,ctx] of [['The File ','fragment'],['Writing Data to ','fragment'],['Appending Data to ','fragment']] as const)expect(vireoIn(t,ctx),t).not.toBe(t.trim());
  // The exists box's pieces are concatenated around the file name (Spanish keeps VIREO's straight quotes; Portuguese uses “ ”, French « »).
- expect(vireoIn(NS.existsText('',p=>p).replace(/^The File /,''),'fragment')).toContain(L.tag==='es-419'?'"Cancelar"':L.tag==='fr'?`«\u202f${vireoIn('Cancel')}\u202f»`:`“${vireoIn('Cancel')}”`);
+ expect(vireoIn(NS.existsText('',p=>p).replace(/^The File /,''),'fragment')).toContain(L.tag==='es-419'?'"Cancelar"':L.tag==='fr'?`«\u202f${vireoIn('Cancel')}\u202f»`:L.tag==='ja'?`「${vireoIn('Cancel')}」`:`“${vireoIn('Cancel')}”`);
  });
 });
 

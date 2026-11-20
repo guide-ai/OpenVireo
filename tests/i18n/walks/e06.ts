@@ -28,6 +28,8 @@ export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={
  fr:new Set(['Zoom','Horizontal','Vertical (s)','Gain','Points','OK','Portrait','- Page 2']),
  // Front ID6: Indonesian keeps the same words (identical.json: Zoom, Horizontal, Gain, Panel, File, VIREO's OK and Edit...).
  id:new Set(['Zoom','Horizontal','Gain','Gain:','Panel','File','OK','Edit…','Edit...']),
+ // Front JA6: Japanese keeps VIREO's OK (JA1's identical original).
+ ja:new Set(['OK']),
 };
 /** "Panel {n}" is the same in Spanish; Portuguese says «Painel {n}». */
 export const PANEL_IN:Readonly<Record<string,RegExp>>={'es-419':/^Panel \d$/,id:/^Panel \d$/};
@@ -63,6 +65,8 @@ export const texts=(page:Page)=>page.evaluate(()=>{
  const shown=(el:Element)=>{for(let e:Element|null=el;e;e=e.parentElement){if((e as HTMLElement).hidden||e.getAttribute('aria-hidden')==='true')return false;if(e.tagName==='DETAILS'&&!(e as HTMLDetailsElement).open&&el.closest('summary')?.parentElement!==e&&e!==el)return false;if(e.tagName==='DIALOG'&&!(e as HTMLDialogElement).open)return false;const s=getComputedStyle(e);if(s.display==='none'||s.visibility==='hidden')return false;}return true;};
  const skipped=(el:Element)=>el.closest('.portal-header,[data-i18n-shell],script,style,[data-testid=site-tour],[data-testid=pulsar-analysis-help]')!==null||el.closest('[lang=en]:not(html)')!==null;
  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n:Node|null;
+ // Front JA6: two letters of any script with any combining marks between them (was [A-Za-z]{2}, which skipped every all-Japanese
+ // text), as HI2 did for the E01–E05 walks; the Latin languages collect the same texts as before.
  while((n=walker.nextNode())){const el=n.parentElement;if(!el||el.tagName==='OPTION')continue;const t=n.textContent?.trim();if(t&&/\p{L}\p{M}*\p{L}/u.test(t)&&!skipped(el)&&shown(el))out.push(t);}
  for(const select of document.querySelectorAll('select'))if(!skipped(select)&&shown(select))for(const o of select.options){const t=o.text.trim();if(t&&/\p{L}\p{M}*\p{L}/u.test(t))out.push(`@option:${t}`);}
  for(const el of document.querySelectorAll('[aria-label],[title],[placeholder]'))if(!skipped(el)&&shown(el))for(const a of ['aria-label','title','placeholder']){const v=el.getAttribute(a)?.trim();if(v&&/\p{L}\p{M}*\p{L}/u.test(v))out.push(`@${a}:${v}`);}

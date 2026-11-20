@@ -102,6 +102,8 @@ export const texts=(page:Page,root='body')=>page.evaluate(root=>{
  const skipped=(el:Element)=>el.closest('.portal-header,[data-i18n-shell],script,style,[data-testid=site-tour]')!==null||el.closest('[lang=en]:not(html)')!==null;
  for(const scope of document.querySelectorAll(root)){
   const walker=document.createTreeWalker(scope,NodeFilter.SHOW_TEXT);let n:Node|null;
+ // Front JA6: two letters of any script with any combining marks between them (was [A-Za-z]{2}, which skipped every all-Japanese
+ // text), as HI2 did for the E01–E05 walks; the Latin languages collect the same texts as before.
   while((n=walker.nextNode())){const el=n.parentElement;if(!el||el.tagName==='OPTION')continue;const t=n.textContent?.trim();if(t&&/\p{L}\p{M}*\p{L}/u.test(t)&&!skipped(el)&&shown(el))out.push(t);}
   for(const select of scope.querySelectorAll('select'))if(!skipped(select)&&shown(select))for(const o of select.options){const t=o.text.trim();if(t&&/\p{L}\p{M}*\p{L}/u.test(t))out.push(`@option:${t}`);}
   for(const el of [scope,...scope.querySelectorAll('[aria-label],[title],[placeholder]')])if(!skipped(el)&&shown(el))for(const a of ['aria-label','title','placeholder']){const v=el.getAttribute(a)?.trim();if(v&&/\p{L}\p{M}*\p{L}/u.test(v))out.push(`@${a}:${v}`);}
@@ -132,7 +134,7 @@ export async function leaks(page:Page){
    shared:read('[data-testid=camera-control], .sky-view, .spec-readout, [data-testid=objectx-radio-card], [data-testid$=hot-list], [data-testid*=hotlist]')};
  });
  const word=(s:string)=>new RegExp(`(^|[^\\w])${s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}($|[^\\w])`);
- const verdict=/\bEs (?:una|un) |Tu respuesta es correcta|(?:^|[^\p{L}])É (?:uma|um) |Sua resposta está certa|(?:^|[^\p{L}])C’est (?:une|un) |Votre réponse est juste|(?:^|[^\p{L}])[Oo]bjek Anda adalah |Jawaban Anda benar|यह (?:तारा|आकाशगंगा|क्वासर \(QSO\)|पल्सर|क्षुद्रग्रह) है|आपका उत्तर सही है|\bIt is an? |Your answer is right/u;
+ const verdict=/\bEs (?:una|un) |Tu respuesta es correcta|(?:^|[^\p{L}])É (?:uma|um) |Sua resposta está certa|(?:^|[^\p{L}])C’est (?:une|un) |Votre réponse est juste|(?:^|[^\p{L}])[Oo]bjek Anda adalah |Jawaban Anda benar|यह (?:तारा|आकाशगंगा|क्वासर \(QSO\)|पल्सर|क्षुद्रग्रह) है|आपका उत्तर सही है|正解です。|(?:^|[^\p{L}])(?:恒星|銀河|クエーサー（QSO）|パルサー|小惑星)です。|\bIt is an? |Your answer is right/u;
  return [...SECRETS.filter(s=>word(s).test(found.lab)),...IDS.filter(s=>word(s).test(found.shared)),...(verdict.test(found.labText)?[`verdict: ${verdict.exec(found.labText)![0]}`]:[])];
 }
 export async function expose(page:Page,lang:Lang){

@@ -214,9 +214,9 @@ export const HINDI_TEXT=language('hi',hi,hiOriginals,{appShell:APP_SHELL_HI,help
 /** Front JA0 (plan front-i18n-ja.md §1.2 #3): Japanese, behind `?lang=ja` before its release; JA0 translated the shell, and each
  * later JA front adds its area to `done`. Its letters are kana, ー and 「」, which no English text, VIREO file or export has (Han alone
  * is not used: kana are the unambiguous Japanese signal). JA1 adds the observatory with its maps and all of VIREO's originals, JA2
- * exercises E01 and E02, JA3 exercise E03, JA4 exercises E04 and E05, JA5 the radio telescope. */
+ * exercises E01 and E02, JA3 exercise E03, JA4 exercises E04 and E05, JA5 the radio telescope, JA6 exercises E06 and E08. */
 export const JAPANESE_TEXT=language('ja',ja,jaOriginals,{appShell:APP_SHELL_JA,helpMenu:HELP_MENU_JA,projectLinks:PROJECT_LINKS_JA,tour:TOUR_JA,languageChoice:LANGUAGE_CHOICE_JA},
- [APP_SHELL_JA,CAMERA_JA,FIELD_INFO_JA,FIELD_READ_DETAILS_JA,HELP_MENU_JA,LANGUAGE_CHOICE_JA,NAKED_EYE_JA,OBJECT_X_LAB_JA,OBSERVATION_METADATA_JA,OBSERVATORY_JA,POLISH_JA,PROJECT_LINKS_JA,QSO_LIST_JA,SOUND_JA,TOUR_JA,VARIABLE_STARS_JA],/[\p{sc=Hira}\p{sc=Kana}ー「」]/u,'?lang=ja',['shell','observatory','e01','e02','e03','e04','e05','radio']);
+ [APP_SHELL_JA,CAMERA_JA,FIELD_INFO_JA,FIELD_READ_DETAILS_JA,HELP_MENU_JA,LANGUAGE_CHOICE_JA,NAKED_EYE_JA,OBJECT_X_LAB_JA,OBSERVATION_METADATA_JA,OBSERVATORY_JA,POLISH_JA,PROJECT_LINKS_JA,QSO_LIST_JA,SOUND_JA,TOUR_JA,VARIABLE_STARS_JA],/[\p{sc=Hira}\p{sc=Kana}ー「」]/u,'?lang=ja',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08']);
 /** Front ZH0: Simplified Chinese before its release, behind `?lang=zh-Hans` (an en-US browser: tests/fixtures/language.ts
  * contextLocale). ZH0 translated the shell and ZH1 the observatory with its maps and all of VIREO's originals; ZH2–ZH6 and ZH-HELP
  * add their areas to `done` and their maps. Its letters are Han and
@@ -372,6 +372,11 @@ import {SAVED_ROWS_HI} from '../../src/i18n/hi/maps/pulsarSavedRows';
 import {LOAD_SAVE_HI} from '../../src/i18n/hi/maps/pulsarLoadSave';
 import {OBJECT_X_GUIDE_HI} from '../../src/i18n/hi/maps/objectXGuide';
 import {OBJECT_X_MEASURE_HI} from '../../src/i18n/hi/maps/objectXMeasure';
+import {PULSAR_JA} from '../../src/i18n/ja/maps/pulsar';
+import {SAVED_ROWS_JA} from '../../src/i18n/ja/maps/pulsarSavedRows';
+import {LOAD_SAVE_JA} from '../../src/i18n/ja/maps/pulsarLoadSave';
+import {OBJECT_X_GUIDE_JA} from '../../src/i18n/ja/maps/objectXGuide';
+import {OBJECT_X_MEASURE_JA} from '../../src/i18n/ja/maps/objectXMeasure';
 import type {PULSAR_MESSAGES_EN} from '../../src/components/PulsarMessages';
 import type {SAVED_ROWS_MESSAGES_EN} from '../../src/components/PulsarSavedRowsMessages';
 import type {LOAD_SAVE_MESSAGES_EN} from '../../src/components/PulsarLoadSaveMessages';
@@ -387,6 +392,8 @@ export const E06_MAPS:Readonly<Record<string,E06Maps>>=Object.freeze({
  id:{pulsar:PULSAR_ID,pulsarSavedRows:SAVED_ROWS_ID,pulsarLoadSave:LOAD_SAVE_ID},
  // Front HI6: Hindi (its ?lang=hi preview).
  hi:{pulsar:PULSAR_HI,pulsarSavedRows:SAVED_ROWS_HI,pulsarLoadSave:LOAD_SAVE_HI},
+ // Front JA6: Japanese (its ?lang=ja preview).
+ ja:{pulsar:PULSAR_JA,pulsarSavedRows:SAVED_ROWS_JA,pulsarLoadSave:LOAD_SAVE_JA},
 });
 export const e06Maps=(tag:string):E06Maps=>{const m=E06_MAPS[tag];if(!m)throw new Error(`No E06 maps for ${tag}`);return m;};
 export type E08Maps=Readonly<{objectXLab:Translation<typeof OBJECT_X_LAB_EN>;objectXGuide:Translation<typeof OBJECT_X_GUIDE_EN>;objectXMeasure:Translation<typeof OBJECT_X_MEASURE_EN>;camera:Translation<typeof CAMERA_MESSAGES_EN>;sound:unknown}>;
@@ -399,6 +406,8 @@ export const E08_MAPS:Readonly<Record<string,E08Maps>>=Object.freeze({
  id:{objectXLab:OBJECT_X_LAB_ID,objectXGuide:OBJECT_X_GUIDE_ID,objectXMeasure:OBJECT_X_MEASURE_ID,camera:CAMERA_ID,sound:SOUND_ID},
  // Front HI6: Hindi (its ?lang=hi preview).
  hi:{objectXLab:OBJECT_X_LAB_HI,objectXGuide:OBJECT_X_GUIDE_HI,objectXMeasure:OBJECT_X_MEASURE_HI,camera:CAMERA_HI,sound:SOUND_HI},
+ // Front JA6: Japanese (its ?lang=ja preview).
+ ja:{objectXLab:OBJECT_X_LAB_JA,objectXGuide:OBJECT_X_GUIDE_JA,objectXMeasure:OBJECT_X_MEASURE_JA,camera:CAMERA_JA,sound:SOUND_JA},
 });
 export const e08Maps=(tag:string):E08Maps=>{const m=E08_MAPS[tag];if(!m)throw new Error(`No E08 maps for ${tag}`);return m;};
 // Front PT-HELP: what the help spec (tests/i18n/help.spec.ts) reads per language beyond the catalog and originals: the help
