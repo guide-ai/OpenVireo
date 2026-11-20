@@ -72,6 +72,19 @@
     "typography"
    ],
    "reason": "|x| are absolute-value bars in a formula, not dandas"
+  },
+  "map:pulsar.pulsar.nativeSave.problem.reserved": {
+   "rules": [
+    "quotes",
+    "typography"
+   ],
+   "reason": "the straight double quote and the vertical bar are among the characters a file name cannot contain, listed literally as in the English (PT6’s and FR6’s reason)"
+  },
+  "map:objectXMeasure.refInvalid": {
+   "rules": [
+    "leftover-english"
+   ],
+   "reason": "h m s are the unit symbols of the RA field (hours, minutes, seconds), as its label «कैटलॉग RA (h m s)» shows them"
   }
  }
 }
