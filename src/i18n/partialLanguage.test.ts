@@ -32,9 +32,9 @@ describe('Front SC8: a partial language before its release (test fixture qaa-XA)
   // Without its registry entry the tag is no language at all.
   expect(decideLocale({param:'qaa-XA',stored:null,languages:['en-US'],dev:false})).toBe('en');
   // The released languages (Spanish, Brazilian Portuguese since PT-REL and French since FR-REL) are offered; the fixture only on its own preview.
-  expect(selectorLanguages('en',REGISTRY).map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr']);
-  expect(selectorLanguages('es-419',REGISTRY).map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr']);
-  expect(selectorLanguages('qaa-XA',REGISTRY).map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','qaa-XA']);
+  expect(selectorLanguages('en',REGISTRY).map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','id']);
+  expect(selectorLanguages('es-419',REGISTRY).map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','id']);
+  expect(selectorLanguages('qaa-XA',REGISTRY).map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','id','qaa-XA']);
   expect(selectorShown('qaa-XA',REGISTRY)).toBe(true);
  });
  it('settles a ?lang=qaa-XA load: <html lang> and the title from its registry entry and catalog, its partial catalog completed with English',()=>{

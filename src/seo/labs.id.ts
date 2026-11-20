@@ -1,0 +1,60 @@
+/** Front ID-REL+SEO [W]: the Indonesian (id) texts of the seven lab pages under /id/labs/ (user decision 8 of 2026-11-09 and the
+ * Indonesian decisions of 2026-11-19, AGENTS.md). Same slugs and order as src/seo/labs.ts; one standard Indonesian addressing the
+ * reader as «Anda», always capitalised (base-form imperatives for instructions), following the id glossary
+ * (src/i18n/id/glossary.json; «praktikum» for a lab), KBBI spelling and the id lint profile (src/seo/languages.test.ts checks both).
+ * The lab names are the app's own Indonesian names. A web adaptation by OpenVireo of its own English pages: never CLEA's text, and
+ * it claims no equivalence with the original program. */
+import type {LabText} from './labs.ts';
+import type {LabSlug} from './labSlugs.ts';
+
+export const LAB_TEXT_ID:Readonly<Record<LabSlug,LabText>>=Object.freeze({
+ hubble:{name:'Hukum Hubble',
+  title:'Praktikum hukum Hubble online (CLEA VIREO) · OpenVireo',
+  description:'Ukur pergeseran merah galaksi dengan teleskop dan spektrometer virtual, lalu cocokkan sendiri hukum Hubble. Rekonstruksi web gratis praktikum CLEA VIREO.',
+  heading:'Hukum Hubble: hubungan antara pergeseran merah dan jarak',
+  intro:'Arahkan teleskop virtual ke galaksi dari latihan Hubble asli VIREO, ambil spektrumnya, dan ukur seberapa jauh garis spektrumnya bergeser. Dari hasil pengukuran Anda sendiri, Anda membuat diagram Hubble dan memperkirakan laju pengembangan alam semesta.',
+  steps:['Arahkan teleskop ke setiap galaksi dari ketiga belas galaksi dalam daftar latihan asli, lalu ambil spektrumnya.','Sejajarkan garis K dan H kalsium serta pita G di penganalisis spektrum untuk mengukur setiap pergeseran merah.','Ubah setiap pergeseran merah menjadi kecepatan menjauh dan padukan dengan jarak galaksi yang diperoleh dari magnitudonya.','Buat grafik kecepatan terhadap jarak, cocokkan sendiri hubungan Hubble, lalu simpan investigasi Anda.'],
+  learn:['Bagaimana spektrum mengungkap gerak sebuah galaksi.','Apa arti konstanta Hubble dan bagaimana cara mengukurnya.','Mengapa astronom memakai lilin standar untuk memperkirakan jarak.']},
+ 'large-scale-structure':{name:'Struktur skala besar',
+  title:'Praktikum struktur skala besar (CLEA VIREO) · OpenVireo',
+  description:'Lakukan survei sejalur langit, ukur pergeseran merah banyak galaksi, dan buat diagram kerucut jaring kosmik. Rekonstruksi web gratis praktikum LSS CLEA VIREO.',
+  heading:'Struktur skala besar alam semesta',
+  intro:'Pilih salah satu dari sembilan bidang survei asli, ukur pergeseran merah galaksi demi galaksi, lalu petakan semuanya dalam diagram kerucut. Dinding, filamen, dan rongga muncul dalam data Anda sendiri.',
+  steps:['Pilih bidang survei dan teleskop.','Ambil spektrum setiap galaksi dan catat pergeseran merahnya.','Petakan catatan Anda sendiri dalam diagram kerucut asensio rekta–kecepatan.','Jelaskan struktur yang Anda lihat dan simpan investigasi Anda.'],
+  learn:['Bagaimana survei pergeseran merah memetakan alam semesta dalam tiga dimensi.','Apa itu gugus, dinding, filamen, dan rongga.','Cara membaca diagram kerucut.']},
+ 'stellar-classification':{name:'Klasifikasi bintang',
+  title:'Praktikum klasifikasi spektrum bintang (CLEA VIREO) · OpenVireo',
+  description:'Klasifikasikan bintang: bandingkan spektrumnya dengan bintang standar, tandai garis, dan ukur lebar ekuivalen. Rekonstruksi web gratis praktikum CLEA VIREO.',
+  heading:'Klasifikasi spektrum bintang',
+  intro:'Muat salah satu dari 25 spektrum latihan asli dan bandingkan dengan atlas bintang standar. Anda menentukan kelas spektrumnya dari garis yang Anda lihat; tidak ada penilaian dan tidak ada jawaban yang dibocorkan.',
+  steps:['Muat spektrum latihan dan atlas spektrum standar.','Bandingkan dengan spektrum standar di dekatnya, berdampingan atau sebagai selisih.','Tandai garis spektrum dari tabel garis dan ukur lebar ekuivalen.','Catat kelas spektrum dan alasan Anda sendiri, lalu simpan investigasi Anda.'],
+  learn:['Deret spektrum OBAFGKM dan apa yang menentukannya.','Garis serapan mana yang menandai bintang panas dan bintang dingin.','Cara membandingkan spektrum dengan spektrum standar secara objektif.']},
+ pleiades:{name:'Fotometri Pleiades',
+  title:'Praktikum fotometri Pleiades (CLEA VIREO) · OpenVireo',
+  description:'Ukur kecerahan B dan V bintang Pleiades dengan fotometer virtual, lalu perkirakan jarak gugusnya. Rekonstruksi web gratis dari sebuah praktikum CLEA VIREO.',
+  heading:'Fotometri fotoelektrik Pleiades',
+  intro:'Arahkan teleskop ke 24 bintang Pleiades dalam daftar latihan asli dan ukur masing-masing melalui filter B dan V dengan fotometer virtual. Dari hasil pembacaan Anda sendiri, Anda memetakan deret gugus dan memperkirakan jaraknya.',
+  steps:['Muat daftar Pleiades dan arahkan teleskop ke sebuah bintang.','Ukur langit dan bintang melalui filter B dan V.','Catat hasil pembacaan Anda dan hitung warna B−V setiap bintang.','Cocokkan deret utama secara manual untuk memperkirakan jarak, lalu simpan investigasi Anda.'],
+  learn:['Bagaimana fotometri mengukur kecerahan dan warna bintang.','Apa yang ditunjukkan diagram warna–magnitudo.','Bagaimana pencocokan deret utama memberikan jarak sebuah gugus.']},
+ 'cluster-hr':{name:'Diagram HR gugus bintang',
+  title:'Praktikum diagram HR gugus bintang (CLEA VIREO) · OpenVireo',
+  description:'Buat diagram HR gugus bintang, cocokkan deret utamanya, dan bandingkan dengan data Pleiades Anda sendiri. Rekonstruksi web gratis praktikum CLEA VIREO.',
+  heading:'Diagram Hertzsprung–Russell gugus bintang',
+  intro:'Petakan gugus acuan dari basis data, cocokkan deret utamanya, lalu bandingkan dengan bintang Pleiades yang Anda ukur sendiri di praktikum fotometri.',
+  steps:['Pilih gugus acuan dari basis data dan buat diagram HR-nya.','Cocokkan deret utamanya.','Petakan hasil pengukuran B dan V Pleiades Anda sendiri.','Bandingkan sendiri kedua deret tersebut.'],
+  learn:['Bagaimana diagram Hertzsprung–Russell dibuat.','Bagaimana diagram gugus mengungkap jarak dan usia.','Mengapa pemerahan oleh debu menggeser posisi gugus dalam diagram.']},
+ pulsars:{name:'Pulsar',
+  title:'Praktikum astronomi radio pulsar (CLEA VIREO) · OpenVireo',
+  description:'Rekam sinyal pulsar pada dua frekuensi dengan teleskop radio virtual, lalu ukur periode dan dispersinya. Rekonstruksi web gratis praktikum pulsar CLEA VIREO.',
+  heading:'Astronomi radio pulsar',
+  intro:'Arahkan teleskop radio virtual ke pulsar dari katalog asli dan rekam denyutnya pada dua frekuensi radio. Selisih waktu tiba antara kedua frekuensi mengungkap seberapa banyak materi antarbintang yang dilintasi sinyal.',
+  steps:['Mulai praktikum pulsar dan arahkan teleskop radio ke sebuah pulsar.','Rekam denyutnya pada dua frekuensi yang berbeda.','Ukur periode dan selisih waktu antara kedua frekuensi.','Bandingkan hasil Anda dengan ukuran dispersi dan periodenya, lalu simpan investigasi Anda.'],
+  learn:['Apa itu pulsar dan mengapa pulsar berdenyut.','Bagaimana dispersi memperlambat sinyal radio berfrekuensi rendah.','Bagaimana ukuran dispersi memberi petunjuk tentang jarak sebuah pulsar.']},
+ 'object-x':{name:'Objek X',
+  title:'Objek X: identifikasi objek misterius (CLEA VIREO) · OpenVireo',
+  description:'Bintang, galaksi, kuasar, pulsar, atau asteroid? Kenali Objek X dari koordinatnya saja lewat citra, spektrum, dan radio. Rekonstruksi web gratis praktikum CLEA.',
+  heading:'Objek X: apa sebenarnya objek ini?',
+  intro:'Anda hanya menerima sebuah pengenal dan koordinat. Dengan citra CCD yang diambil pada waktu berbeda, spektrum, dan teleskop radio, Anda memutuskan apakah objek itu bintang, galaksi, kuasar, pulsar, atau asteroid.',
+  steps:['Terima sebuah target berupa pengenal dan koordinat; identitasnya tetap tersembunyi.','Amati target itu dengan kamera CCD, spektrometer, dan teleskop radio.','Tentukan jenis objeknya dan dukung kesimpulan itu dengan pengamatan Anda sendiri.','Jika objek itu asteroid, ukur posisinya pada beberapa citra dan jelaskan geraknya.'],
+  learn:['Bagaimana berbagai jenis objek tampak pada citra, spektrum, dan radio.','Bagaimana gerak di antara citra mengungkap benda Tata Surya.','Cara menyusun argumen dari beberapa jenis bukti.']},
+});
