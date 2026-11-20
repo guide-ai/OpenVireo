@@ -59,7 +59,7 @@ describe('public/_headers for the static release',()=>{
   expect(header('/*','Cache-Control')).toBeUndefined();// rules combine: a Cache-Control here would merge into every path
   expect(header('/assets/*','Cache-Control')).toBe('public, max-age=31536000, immutable');
   for(const p of ['/original/*','/camera/*'])expect(header(p,'Cache-Control')).toBe('public, max-age=86400, stale-while-revalidate=604800');
-  for(const p of ['/','/index.html','/labs/*','/es/*','/pt-br/*','/fr/*','/sitemap.xml','/robots.txt'])expect(header(p,'Cache-Control')).toBe('no-cache');
+  for(const p of ['/','/index.html','/labs/*','/es/*','/pt-br/*','/fr/*','/id/*','/sitemap.xml','/robots.txt'])expect(header(p,'Cache-Control')).toBe('no-cache');
  });
  it('labels as text only plain-ASCII originals, with one Content-Type rule a path (Front LAUNCH-3)',()=>{
   // Pages matches a rule as an anchored pattern whose `*` is a greedy splat; a header set by two matching rules is joined

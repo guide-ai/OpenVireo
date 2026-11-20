@@ -8,6 +8,7 @@
  *
  * Front PT-SEO: Brazilian Portuguese (pt-BR) under /pt-br/, added as data only (its row, its texts in src/seo/labs.pt-br.ts).
  * Front FR-REL+SEO: French (fr) under /fr/, the same way (its row, its texts in src/seo/labs.fr.ts).
+ * Front ID-REL+SEO: Indonesian (id) under /id/, the same way (its row, its texts in src/seo/labs.id.ts).
  *
  * Which languages exist here is independent of which are released in the app: a row is added by that language's SEO front,
  * after its release (src/seo/pages.test.ts checks each row's tag against src/i18n/languages.json). */
@@ -15,6 +16,7 @@ import {LABS,type LabText} from './labs.ts';
 import {LAB_TEXT_ES} from './labs.es.ts';
 import {LAB_TEXT_PT_BR} from './labs.pt-br.ts';
 import {LAB_TEXT_FR} from './labs.fr.ts';
+import {LAB_TEXT_ID} from './labs.id.ts';
 import {SEO_PATH_PREFIX,type LabSlug} from './labSlugs.ts';
 import {LANGUAGES,textDirection,type LanguageEntry,type TextDirection} from '../i18n/languages.ts';
 
@@ -28,9 +30,12 @@ export type SeoLanguage=Readonly<{
   * any `es-*` browser. A language whose tag is valid there lists it first: Brazilian Portuguese is `pt-BR` and also `pt`, the
   * same URL, because the app opens pt-BR for every `pt` and `pt-*` browser (pt-PT, pt-AO, pt-MZ…), so a Portuguese searcher
   * outside Brazil is sent to the Portuguese page rather than to the English x-default. French is `fr` alone (one neutral French
-  * that every `fr-*` browser opens, AGENTS.md 2026-11-11), which every French searcher matches. */
+  * that every `fr-*` browser opens, AGENTS.md 2026-11-11), which every French searcher matches. Indonesian is `id` alone (one
+  * standard Indonesian that every `id-*` browser opens, and the withdrawn `in`/`in-*` too, AGENTS.md 2026-11-19), which every
+  * Indonesian searcher matches; Malay (`ms`) is another language and stays on the English x-default. */
  hreflang:readonly string[];
- /** Open Graph locale (language_TERRITORY): en_US, es_LA, pt_BR, fr_FR (Open Graph needs a territory; hreflang stays `fr`). */
+ /** Open Graph locale (language_TERRITORY): en_US, es_LA, pt_BR, fr_FR, id_ID (Open Graph needs a territory; hreflang stays `fr`,
+  * `id`). */
  ogLocale:string;
  /** Path prefix of its pages: '' for English, SEO_PATH_PREFIX for the others. */
  prefix:string;
@@ -201,8 +206,47 @@ const FR:SeoLanguage={
    'Vous pouvez passer à l’anglais à tout moment avec le sélecteur de langue en haut de la page.']},
 };
 
+const ID:SeoLanguage={
+ tag:'id',hreflang:['id'],ogLocale:'id_ID',prefix:SEO_PATH_PREFIX.id,app:'/?lang=id',
+ ogImage:'/og-image-id.png',ogImageAlt:'OpenVireo: praktikum astronomi CLEA VIREO di browser Anda, dalam bahasa Indonesia',
+ ogImageText:{title:'Praktikum astronomi CLEA\u00a0VIREO di browser Anda',lines:['Hukum Hubble · Pulsar · Pleiades · Objek X · dan lainnya.','Rekonstruksi web gratis dan tidak resmi. Tanpa instalasi.']},
+ labs:merge(LAB_TEXT_ID),
+ ui:{languageName:'Bahasa Indonesia',siteNav:'Situs',breadcrumb:'Jejak navigasi',labsCrumb:'Praktikum',allLabs:'Semua praktikum',openObservatory:'Buka observatorium',
+  labEyebrow:'Praktikum berdasarkan latihan CLEA VIREO',openLab:'Buka praktikum',
+  openLabNote:()=>'Membuka observatorium dalam bahasa Indonesia dengan panduan praktikum ini. Gratis, tanpa pendaftaran.',
+  whatYouDo:'Yang Anda lakukan',whatYouLearn:'Yang Anda pelajari',otherLabs:'Praktikum lainnya',
+  about:'OpenVireo adalah rekonstruksi web gratis dan nonkomersial dari VIREO, observatorium pendidikan virtual (Virtual Educational '+
+   'Observatory) milik Project CLEA di Gettysburg College. Project CLEA didukung oleh NSF (National Science Foundation) dan Gettysburg College. '+
+   'OpenVireo didasarkan pada perilaku program asli yang berhasil dipulihkan dan memakai file data asli dengan mencantumkan sumbernya. '+
+   'OpenVireo bukan program asli dan tidak berafiliasi dengan Project CLEA. Aplikasi ini menandai adaptasi webnya yang sudah diketahui. '+
+   'Teks berbahasa Indonesia ini adalah adaptasi web OpenVireo, bukan teks CLEA.',
+  platform:'Berjalan di browser web modern pada Windows, Mac, Linux, atau Chromebook. Tidak perlu memasang apa pun dan tidak perlu akun.',
+  learningResourceType:'Praktikum interaktif',educationalLevel:['Sekolah menengah atas','Perguruan tinggi']},
+ labsIndex:{title:'Praktikum astronomi CLEA VIREO online · OpenVireo',
+  description:'Tujuh praktikum CLEA VIREO yang dibangun ulang untuk browser: hukum Hubble, struktur skala besar, spektrum bintang, Pleiades, diagram HR gugus, pulsar, Objek X.',
+  eyebrow:'Praktikum CLEA VIREO',heading:'Praktikum astronomi di browser Anda',
+  lead:'Setiap praktikum mengikuti salah satu latihan siswa VIREO, observatorium virtual milik Project CLEA. Anda mengamati dengan teleskop dan instrumen virtual, mengukur data Anda sendiri, dan menarik kesimpulan Anda sendiri.',
+  listName:'Praktikum CLEA VIREO'},
+ notFound:{title:'Tidak ditemukan',heading:'Halaman tidak ditemukan',text:'Alamat ini bukan bagian dari OpenVireo.'},
+ home:{title:'OpenVireo: praktikum astronomi CLEA VIREO dalam bahasa Indonesia',
+  description:'Rekonstruksi web gratis dan tidak resmi dari observatorium virtual VIREO milik Project CLEA: hukum Hubble, pulsar, Pleiades, Objek X, dan lainnya.',
+  operatingSystem:'Apa saja (berjalan di browser web)',
+  eyebrow:'Observatorium virtual dalam bahasa Indonesia',heading:'Praktikum astronomi CLEA VIREO di browser Anda',
+  lead:'OpenVireo membangun ulang VIREO, observatorium virtual milik Project CLEA, untuk web. Anda mengarahkan teleskop virtual, mengambil spektrum, mengukur kecerahan bintang, dan merekam sinyal pulsar, lalu menarik kesimpulan sendiri dari data Anda sendiri.',
+  note:'Gratis, tanpa pendaftaran, dan tanpa perlu memasang apa pun.',
+  labsHeading:'Tujuh praktikum',howHeading:'Cara kerja',
+  how:['Semuanya berlangsung di browser Anda: tidak perlu memasang apa pun dan tidak perlu akun.',
+   // Front HOME: the facts of the app's welcome (home.factInstall, home.factFaithful), as on /es/, /pt-br/ and /fr/.
+   'Anda tidak memerlukan Windows atau mesin virtual: OpenVireo berjalan di browser modern pada Mac, Windows, Linux, atau Chromebook.',
+   'OpenVireo mengikuti perilaku program asli yang berhasil dipulihkan dan menandai adaptasi webnya. Ini adalah rekonstruksi tidak resmi.',
+   'Anda menyimpan investigasi sebagai file di komputer Anda sendiri dan dapat memuatnya kembali kapan saja.',
+   'Antarmuka, panduan, dan bantuan tersedia dalam bahasa Indonesia. File yang ditulis situs (TXT, FITS, CSV, dan investigasi tersimpan) tetap dalam bahasa Inggris, dalam format VIREO atau OpenVireo.',
+   'Di layar, angka memakai titik desimal, seperti file VIREO, dan memisahkan ribuan dengan spasi tipis (24 000).',
+   'Anda dapat beralih ke bahasa Inggris kapan saja dengan pemilih bahasa di bagian atas halaman.']},
+};
+
 /** Every language with static pages, English first (the x-default). */
-export const SEO_LANGUAGES:readonly SeoLanguage[]=Object.freeze([EN,ES,PT_BR,FR]);
+export const SEO_LANGUAGES:readonly SeoLanguage[]=Object.freeze([EN,ES,PT_BR,FR,ID]);
 export const ENGLISH=EN;
 
 /** A page, named the same in every language: the home page, the labs index or one lab. */
