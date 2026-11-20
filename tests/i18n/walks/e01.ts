@@ -22,6 +22,8 @@ export const SAME=new Set<string>([
  // Formats, names, symbols and units.
  'VIREO','OpenVireo','SHA-256','CSV','JSON','SSP','Multi-Spec','Cursor','z','c z','V','B','U','R','I','V:','B:','U:','R:','I:','Z:','?','↗','×','—','✳','◀','▶','·','km/s','km/s/Mpc','Mpc,','ms','v/D · km/s/Mpc',
  'v = c z · c = 299792.458 km/s','D = 10^((V − M + 5) / 5) / 1,000,000 Mpc',
+ // Front HI2: symbols the any-script collector now reads (the Latin-only one skipped them): the shift column's Δλ · Å.
+ 'Δλ · Å',
  // Hubble.HTL target ids and galaxy labels (source identity, F6), the original workbook's row names and the VIREO star target.
  ...GALAXIES,...TARGETS.map(([id])=>id),...TARGETS.map(([id,label])=>`${id} · ${label}`),...TARGETS.map(([id,label])=>`${label} · ${id}`),
  'UM-I - 1','UM-I - 2','UM-I - 3','Coma-1','Coma-2','Boo-1','Boo-2','CB-1','CB-2','CB-3','Peg-1','Peg-2','Peg-3','N0000.DAT@14428','catalog-galaxy-acquisition',
