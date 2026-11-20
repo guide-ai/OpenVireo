@@ -4,7 +4,7 @@ import type {Translation} from '../../maps';
  * captions are translated through vireo() (originals.json). */
 export const WEDGE_ZH_HANS:Translation<typeof WEDGE_MESSAGES_EN>=Object.freeze({
  intro:'载入VIREO大尺度结构实验保存为文本文件的红移数据，然后把它绘制在原版楔形图上。数据保持保存时的原样：这里不会测量、估算或补全任何内容。',
- persistenceNote:'“保存探究”会保留你从LSS巡天中绘制的记录的选项；“恢复”之后，请从巡天中重新绘制你的记录。你在这里载入的文件、图本身以及所选内容不包含在“保存探究”中；重新载入或关闭页面时它们会被丢弃。你保存的.TXT文件不会被更改，可以再次载入。',
+ persistenceNote:'“保存探究”会保留你从LSS巡天中绘制的记录的选项；“恢复探究（JSON）”之后，请从巡天中重新绘制你的记录。你在这里载入的文件、图本身以及所选内容不包含在“保存探究”中；重新载入或关闭页面时它们会被丢弃。你保存的.TXT文件不会被更改，可以再次载入。',
  loadLabel:'载入已保存的LSS数据（.TXT）…',
  loadHelp:'选择一个从VIREO的LSS实验保存的.TXT文件（表头以“Object ID”开头）。其他实验的文件不兼容。',
  separatorLabel:'文件使用的小数分隔符',
@@ -27,7 +27,7 @@ export const WEDGE_ZH_HANS:Translation<typeof WEDGE_MESSAGES_EN>=Object.freeze({
  columns:Object.freeze({index:'#',object:'天体编号',mjd:'保存的MJD(Days)',ra:'赤经',dec:'赤纬',velocity:'V (km/s)',z:'Z',comment:'备注',status:'绘制'}),
  selectRow:(id:string,i:number)=>`选择第${i}条记录${id?`（${id}）`:''}`,
  plotStatus:Object.freeze({plotted:'已绘制','outside-client':'在绘图区域之外','excluded-ra':'未绘制：赤经','excluded-redshift':'未绘制：V/Z'}),
- boundary:'舍入恰好居中：像素不确定',
+ boundary:'舍入恰为中间值：像素不确定',
  fieldStatus:Object.freeze({'native-zero-fill':'空字段（原版存为0）',unadmitted:'此处不接纳这种写法'}),
  signLost:'原版会丢掉“−0°”的负号。',
  detailsHeading:'所选记录',
@@ -35,7 +35,7 @@ export const WEDGE_ZH_HANS:Translation<typeof WEDGE_MESSAGES_EN>=Object.freeze({
  sha256:'SHA-256',
  rowCount:(rows:number)=>`${rows}行数据`,
  sourceColumn:Object.freeze({z:'Z列',velocity:'V(km/sec)列'}),
- detail:Object.freeze({redshift:'V / Z',kmPerS:'km/s',raw:'保存的行',line:'行',source:'文件',ra:'赤经（时）',dec:'赤纬（度，原版规则）',velocity:'V binary32',z:'Z binary32',derived:'推导自',theta:'与12时辐条的夹角',radius:'半径',pixel:'像素（x, y）',hours:'时',degrees:'°',px:'px'}),
+ detail:Object.freeze({redshift:'V / Z',kmPerS:'km/s',raw:'保存的行',line:'行',source:'文件',ra:'赤经（h）',dec:'赤纬（度，原版规则）',velocity:'V binary32',z:'Z binary32',derived:'推导自',theta:'与12时辐条的夹角',radius:'半径',pixel:'像素（x, y）',hours:'h',degrees:'°',px:'px'}),
  derivedFrom:Object.freeze({velocity:'V列（Z = V / c）',z:'Z列（V = c · Z）'}),
  sourcesHeading:'已载入的文件',
  sourceAction:Object.freeze({first:'已载入',add:'已添加',replace:'已替换当前数据'}),
@@ -45,7 +45,7 @@ export const WEDGE_ZH_HANS:Translation<typeof WEDGE_MESSAGES_EN>=Object.freeze({
   '已涵盖：LSS“载入已保存数据”的文本读取器、楔形图网格（速度、红移（z）、无网格）、1–5的点大小、空心/实心点、“绘制数据”，以及添加/清除的提示。',
   '不可用：小组自动绘图（需要讲师准备的共享文件）。原版保存格式（VIREO的.TXT结果文件）由LSS巡天中的“保存数据”写出，这里的“载入已保存数据”可以将其读回。测量时的实时绘图：在LSS巡天中点击“记录z”的“确定”之后，本次会话中已经打开的楔形图会用你的全部记录重绘，且不会被置于前台，这与VIREO在楔形图可见时的做法一致。“打印楔形图”是网页打印；与VIREO一样，除非勾选“彩色打印”选项（光学模拟选项，编译时关闭），否则按黑白打印。',
   'MJD列保持保存时的原样。原版会用载入它的那次会话的日期补全一个前缀，而这里无从得知，因此不会计算任何MJD值。',
-  'V和Z以单精度数存储，并用程序的c = 299792.458 km/s推导；角度和像素的舍入使用此浏览器的算术，罕见的恰好居中情况会被标出，而不是断言结果。',
+  'V和Z以单精度数存储，并用程序的c = 299792.458 km/s推导；角度和像素的舍入使用此浏览器的算术，罕见的中间值情况会被标出，而不是断言结果。',
  ]),
  unsupported:Object.freeze({
   size:'文件超过了本页可接受的大小（512 KiB）。',

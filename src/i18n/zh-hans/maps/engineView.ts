@@ -10,6 +10,6 @@ export const ENGINE_VIEW_ZH_HANS:Translation<typeof ENGINE_VIEW_EN>=Object.freez
  nearestFound:(label:string,shifted:string)=>`最近的比较谱线：${label}，位于${shifted} Å。`,
  plotHelp:'光谱图。拖动或使用方向键移动光标；右键点击或按N键可查看最近的比较谱线。',
  window:(min:string,max:string)=>`窗口${min}–${max} Å`,
- fullViewNote:'“完整”和“H/K”视图是网页预设；“缩放”和方向键作用于普通视图。',
- note:'与VIREO一样，“缩放”从已载入光谱的起点开始，以100 Å为步长选择窗口，并先把z控件并入其基准（与“重新居中”相同）；方向键每次将窗口移动100 Å，移出两端的距离可能不足100 Å；读数显示的是光标所在位置的观测波长和光标在图轴上的高度，而不是光谱的值。',
+ fullViewNote:'“完整视图”和“H / K视图”是网页预设；“缩放”和方向键作用于普通视图。',
+ note:'与VIREO一样，“缩放”从已载入光谱的起点开始，以100 Å为步长选择窗口，并先把z控件并入其基准（与“重新居中控件”相同）；方向键每次将窗口移动100 Å，并可能越过光谱两端，但越过不足100 Å；读数显示的是光标所在位置的观测波长和光标在图轴上的高度，而不是光谱的值。',
 });

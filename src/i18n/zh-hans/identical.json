@@ -56,6 +56,7 @@
   "catalog:nativeResults.typeValue": "Front ZH3: placeholders and a separator only",
   "catalog:nativeResults.kindValue": "Front ZH3: placeholders and a separator only",
   "catalog:program.row": "Front ZH3: placeholders and a separator only",
-  "catalog:nativeText.choice": "Front ZH3: placeholders and a separator only"
+  "catalog:nativeText.choice": "Front ZH3: placeholders and a separator only",
+  "map:wedge.detail.hours": "Front ZH2: the hour unit symbol h, which the wedge joins after a space and a number (赤经（h）)"
  }
 }
