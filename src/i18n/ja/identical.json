@@ -71,7 +71,6 @@
   "catalog:ph.fixed": "Front JA4: filter letters, a separator and a placeholder",
   "catalog:ph.seriesSecondsOption": "Front JA4: a placeholder and the unit symbol s",
   "catalog:nc.axisColor": "Front JA4: a colour-index symbol and its unit, B−V (mag)",
-  "catalog:db.columnLogAge": "Front JA4: a formula label, log10(age/yr)",
   "catalog:db.columnEbv": "Front JA4: a colour-excess symbol and its unit, E(B−V) (mag)",
   "catalog:obsHr.sha": "Front JA4: a hash label kept in English (SHA-256)",
   "catalog:obsHr.blockedField.v": "Front JA4: the magnitude symbol V",

@@ -187,6 +187,12 @@
     "glossary"
    ],
    "reason": "\"period\" is the photometer's integration period (期間), not an orbital or pulsation period (周期)"
+  },
+  "catalog:obsHr.chartTitle": {
+   "rules": [
+    "glyphs"
+   ],
+   "reason": "\"colour–magnitude diagram\" is the single word 色等級図 (the decided form), which drops the English en dash"
   }
  }
 }

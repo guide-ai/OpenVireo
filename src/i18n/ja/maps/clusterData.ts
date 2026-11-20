@@ -5,7 +5,7 @@ import type {Translation} from '../../maps';
 export const CLUSTER_DATA_JA:Translation<typeof CLUSTER_DATA_MESSAGES_EN>=Object.freeze({
  menuNote:'VIREOでは、測光、HR図、全観測装置の各モードで「ファイル」（File）›「星団データ...」が表示されます。このサイトにはモードがないため、常に表示されます。',
  groupsDisabled:'「リストの種類」（Type of Listing）と「並べ替え」（Sort By）は、VIREOでは講師向けの設定（「編集モード」［Edit Mode］）です。編集モードでない場合、リストは学生向けの探索用リストで、赤経順に並びます。',
- useTelescopeOff:'「望遠鏡の座標を使用」（Use Telescope Coordinates）には、VIREOが望遠鏡の駆動をオンにする必要があるのと同様に、ドームが開いていて追尾がオンになっている必要があります。',
+ useTelescopeOff:'「望遠鏡の座標を使用」（Use Telescope Coordinates）には、VIREOで望遠鏡の駆動がオンである必要があるのと同様に、ドームが開いていて追尾がオンになっている必要があります。',
  loading:'星団データを読み込んでいます…',loadError:'星団データを読み込めませんでした。',
  unavailableCaption:'星団データ',
  tileReason:Object.freeze({
