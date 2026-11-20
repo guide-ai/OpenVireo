@@ -67,6 +67,26 @@
   "catalog:nativeResults.typeValue": "Front JA3: placeholders and a separator only",
   "catalog:nativeResults.kindValue": "Front JA3: placeholders and a separator only",
   "catalog:program.row": "Front JA3: placeholders and a separator only",
-  "catalog:nativeText.choice": "Front JA3: placeholders and a separator only"
+  "catalog:nativeText.choice": "Front JA3: placeholders and a separator only",
+  "catalog:ph.fixed": "Front JA4: filter letters, a separator and a placeholder",
+  "catalog:ph.seriesSecondsOption": "Front JA4: a placeholder and the unit symbol s",
+  "catalog:nc.axisColor": "Front JA4: a colour-index symbol and its unit, B−V (mag)",
+  "catalog:db.columnLogAge": "Front JA4: a formula label, log10(age/yr)",
+  "catalog:db.columnEbv": "Front JA4: a colour-excess symbol and its unit, E(B−V) (mag)",
+  "catalog:obsHr.sha": "Front JA4: a hash label kept in English (SHA-256)",
+  "catalog:obsHr.blockedField.v": "Front JA4: the magnitude symbol V",
+  "catalog:obsHr.blockedField.b": "Front JA4: the magnitude symbol B",
+  "catalog:obsHr.blockedField.b-v": "Front JA4: the colour-index symbol B−V",
+  "catalog:obsHr.modulus": "Front JA4: the distance-modulus symbol V − Mv",
+  "catalog:obsHr.ebv": "Front JA4: the colour-excess symbol E(B−V)",
+  "catalog:obsHr.logAge": "Front JA4: a formula label, log(age/yr)",
+  "catalog:obsHr.colIndex": "Front JA4: the number sign as a column header (#)",
+  "catalog:obsHr.colBV": "Front JA4: the colour-index symbol B − V",
+  "catalog:ce.inspectedInfo": "Front JA4: placeholders, symbols (B−V, V) and the unit mag only",
+  "map:variableStars.typeOption": "Front JA4: a placeholder, a separator and a number",
+  "map:variableStars.columns.0": "Front JA4: the catalog name GCVS ID",
+  "map:variableStars.columns.7": "Front JA4: an empty column header",
+  "map:variableStars.noPeriod": "Front JA4: a dash for a missing period",
+  "map:clusterHr.ok": "Front JA4: VIREO's OK"
  }
 }
