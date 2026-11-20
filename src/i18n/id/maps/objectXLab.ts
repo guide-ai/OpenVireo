@@ -40,7 +40,7 @@ export const OBJECT_X_LAB_ID:Translation<typeof OBJECT_X_LAB_EN>=Object.freeze({
  openRadio:'Buka teleskop radio',
  spectrumTitle:'Spektrometer',
  spectrumHelp:'Bintang, galaksi, dan kuasar dibedakan lewat spektrumnya.',
- spectrumAdaptation:'Adaptasi web: spektrometer diarahkan ke koordinat katalog objek Anda (bidang dan celahnya adalah bidang teleskop asli di posisi itu); intervalnya adalah rentang spektrometer halaman ini (bawaan 3700–4700 Å); hanya rentang yang membuat setiap target Objek X berperilaku seperti pada rentang bawaan yang ditawarkan, dan sama untuk setiap target.',
+ spectrumAdaptation:'Adaptasi web: spektrometer diarahkan ke koordinat katalog objek Anda (bidang dan celahnya adalah bidang teleskop asli di posisi itu); intervalnya adalah rentang spektrometer halaman ini (bawaan 3700–4700 Å); yang ditawarkan hanya rentang yang membuat setiap target Objek X berperilaku seperti pada rentang bawaan, sama untuk setiap target.',
  spectrumNeedTarget:'Pilih target terlebih dahulu.',
  spectrumTelescope:'Teleskop',
  spectrumTelescopes:Object.freeze(['0.4 m','0.9 m','4.0 m']),
