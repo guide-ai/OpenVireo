@@ -13,7 +13,7 @@ export const TOUR_ZH_HANS:Translation<typeof TOUR_EN>=Object.freeze({
   guides:Object.freeze({title:'要做实验？先看它的指南',
    text:'每个实验都有一份指南，列出每一步，勾选你已完成的内容，并带你前往正确的页面。'}),
   observatory:Object.freeze({title:'或者自由探索天空',
-   text:'在“天文台”页面：打开圆顶，选择一个天体并指向望远镜。然后开启跟踪，再使用一台仪器。'}),
+   text:'在“天文台”页面：打开圆顶，选择一个天体，并让望远镜指向它。然后开启跟踪，再使用一台仪器。'}),
   save:Object.freeze({title:'把你的工作保存为文件',
    text:'在你保存之前，你的工作只存在于此浏览器标签页中。每个页面顶部的“保存探究”会下载一个文件；旁边菜单中的“恢复探究（JSON）”可在以后重新载入它。'}),
   help:Object.freeze({title:'帮助随时都在',

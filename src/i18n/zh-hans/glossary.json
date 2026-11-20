@@ -132,7 +132,7 @@
    "fr": "menu"
   },
   {
-   "en": "\\bguides?\\b(?! [Ss]tar [Cc]atalog)",
+   "en": "\\bguides?\\b(?! stars?\\b)",
    "zh-Hans": "指南",
    "fr": "guide"
   },
@@ -1802,7 +1802,7 @@
   },
   {
    "en": "Original hot lists",
-   "zh-Hans": "原始目标列表",
+   "zh-Hans": "原版目标列表",
    "fr": "Listes d’objets d’origine"
   },
   {

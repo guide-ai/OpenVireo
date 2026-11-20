@@ -4,7 +4,8 @@
  * hanzi for Traditional (Taiwan). A character outside the set is a Japanese form (図 対 駅…), a rare variant or the other script's
  * form, all of which a model leaves by habit; lint-allowed.json may accept one in one string with a reason. The sets are built on
  * first use by decoding every double-byte code of the runtime's own WHATWG decoders, as scripts/han-variants.mjs does (GBK rows
- * 0xB0–0xF7; Big5 0xA440–0xC67E and 0xC940–0xF9D5, the HKSCS extensions left out): nothing is downloaded or bundled. */
+ * 0xB0–0xF7; Big5 lead bytes 0xA4–0xC6 and 0xC9–0xF9, which also hold the seven ETEN hanzi at 0xF9D6–0xF9DC; the HKSCS extensions
+ * are left out): nothing is downloaded or bundled. */
 import {cjkPunctuationFindings,SIMPLIFIED_CHINESE_STYLE,TRADITIONAL_CHINESE_STYLE,type CjkStyle} from './cjkPunctuation';
 
 type Variant='zh-Hans'|'zh-Hant';

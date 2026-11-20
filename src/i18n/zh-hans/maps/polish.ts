@@ -31,11 +31,11 @@ export const POLISH_ZH_HANS:Translation<typeof POLISH_MESSAGES_EN>=Object.freeze
   printNote:'网页改编：VIREO会在打印机上把列表各行打印在共用的页眉之下；这里打印的是日期、标题和列表各行。',
  }),
  hotListEdit:Object.freeze({
-  note:'“编辑”、“删除”和“撤销”会更改共用的目标列表，与“原始目标列表”编辑器一样；“撤销”只会撤销在此处最近一次的“编辑”或“删除”。',
+  note:'“编辑”、“删除”和“撤销”会更改共用的目标列表，与“原版目标列表”编辑器一样；“撤销”只会撤销在此处最近一次的“编辑”或“删除”。',
   deleteNote:'网页改编：该行会从共用列表中移除；“撤销”会把它放回文件中原来的位置（VIREO按赤经重新插入）。',
  }),
  hotListPopup:Object.freeze({
-  note:'“编辑”、“删除”和“撤销”位于本页的“原始目标列表”编辑器中。',
+  note:'“编辑”、“删除”和“撤销”位于本页的“原版目标列表”编辑器中。',
  }),
  cameraFieldSize:Object.freeze({
   note:'针对当前应用的望远镜，与VIREO在相机打开时显示的一致（此处保留两位小数）。',
@@ -64,7 +64,7 @@ export const POLISH_ZH_HANS:Translation<typeof POLISH_MESSAGES_EN>=Object.freeze
  about:Object.freeze({
   nativeNote:'VIREO的“关于”对话框，文字取自原程序（不含其标志）。本窗口的其余部分介绍这个网页重建版。',
   siteTitle:'本站',
-  site:'OpenVireo是对Project CLEA的VIREO的免费、非商业网页重建，向所有人开放，依据VIREO恢复出的行为和原始数据文件在浏览器中重新构建。它不是CLEA的程序，也不声称与其等同；网页改编之处都会在出现的地方标明。',
+  site:'OpenVireo是对Project CLEA的VIREO的免费、非商业网页重建，向所有人开放，依据VIREO复原的行为和原版数据文件在浏览器中重新构建。它不是CLEA的程序，也不声称与其等同；网页改编之处都会在出现的地方标明。',
   worksTitle:'可用功能',
   works:Object.freeze([
    'VIREO的七个实验都有引导式的网页路径：哈勃定律（13个星系）、大尺度结构、恒星分类、昴星团测光（24颗恒星）、星团赫罗图、脉冲星，以及探寻天体X。',
@@ -84,7 +84,7 @@ export const POLISH_ZH_HANS:Translation<typeof POLISH_MESSAGES_EN>=Object.freeze
   credits:Object.freeze([
    'Project CLEA，Gettysburg College：VIREO及其数据文件的原作者。由美国国家科学基金会（National Science Foundation）和Gettysburg College提供支持。',
    '脉冲星数据：很可能源自ATNF脉冲星星表（Manchester, Hobbs, Teoh & Hobbs 2005）；这一来源并不确定。',
-   '相机星表：CDS/VizieR（doi:10.26093/cds/vizier）；NOMAD（Zacharias et al. 2004）；USNO-B1.0（Monet et al. 2003）；经由NOMAD提供的2MASS（Skrutskie et al. 2006）。',
+   '相机星表：CDS/VizieR（doi:10.26093/cds/vizier）；NOMAD（Zacharias等，2004）；USNO-B1.0（Monet等，2003）；经由NOMAD提供的2MASS（Skrutskie等，2006）。',
    '星场：随VIREO提供的导星星表（Guide Star Catalog）的有限子集。',
   ]),
  }),
