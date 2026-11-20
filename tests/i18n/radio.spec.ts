@@ -24,18 +24,8 @@ test.use({locale:SPANISH_LOCALE});
 // - views that mirror a written file (`lang="en"`, F2) are left out of both comparisons.
 // Recorded data stays English: pulsar names (B/J), the Pulsars.dat values shown in Pulsar Parameters, file names and hashes.
 
-/** Front HI5 (as FR5 did before FR6): the receiver's Record Save dialog also renders texts of the pulsar analysis map (`pulsar`,
- * through createPulsarTranslator), which Hindi translates in HI6 (E06). Until then only these keys may read as English in Hindi, only
- * on that step; remove the list when HI6 merges (this test then fails if a key is still English). */
-const TODO_HI6_PULSAR_KEYS=['pulsar.rawExport.scope','pulsar.rawExport.format','pulsar.rawExport.inactive','pulsar.rawExport.inactiveNone','pulsar.rawExport.loss.heading',
- 'pulsar.rawExport.loss.header','pulsar.rawExport.loss.headerNone','pulsar.rawExport.loss.samples','pulsar.rawExport.loss.memory','pulsar.save.how','pulsar.save.extensionRule',
- 'pulsar.save.origin','pulsar.save.warning','pulsar.save.choose','pulsar.save.chooseAgain','pulsar.save.refusal.stale'] as const;
-const TODO_HI6_TAGS:ReadonlySet<string>=new Set(['hi']);
 // Read from the English map's source (importing it here would pull in the catalog without an import attribute).
 const PULSAR_SOURCE=readFileSync(new URL('../../src/components/PulsarMessages.ts',import.meta.url),'utf8');
-const TODO_HI6=TODO_HI6_PULSAR_KEYS.map(k=>{const m=new RegExp(`'${k.replace(/\./g,'\\.')}': '((?:[^'\\\\]|\\\\.)*)'`).exec(PULSAR_SOURCE);if(!m)throw new Error(k);
- const t=m[1].replace(/\\'/g,"'");return new RegExp(`^${t.split(/\{\w+\}/).map(p=>p.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')).join('[\\s\\S]*?')}$`);});
-const pendingHi6=(text:string,L:LanguageText)=>TODO_HI6_TAGS.has(L.tag)&&TODO_HI6.some(p=>p.test(text));
 
 
 /** Front JA5: the receiver's Record Save dialog also renders texts of the pulsar analysis map (`pulsar`), which Japanese translates in
@@ -71,7 +61,7 @@ for(const L of translatedFor('radio'))test.describe(()=>{test.use({locale:contex
  }
  const english=new Set([...seen.en.values()].flatMap(s=>[...s].map(bare)));
  const left=new Map<string,string>();// each text once, with the first step that shows it
- for(const [step,list] of seen.own)for(const t of list)if(english.has(bare(t))&&!same(bare(t),L)&&!(step==='Record Save dialog'&&pendingHi6(bare(t),L))&&!(step==='Record Save dialog'&&pendingJa6(bare(t),L))&&!(step==='Record Save dialog'&&pendingRu6(bare(t),L))&&!left.has(t))left.set(t,step);
+ for(const [step,list] of seen.own)for(const t of list)if(english.has(bare(t))&&!same(bare(t),L)&&!(step==='Record Save dialog'&&pendingJa6(bare(t),L))&&!(step==='Record Save dialog'&&pendingRu6(bare(t),L))&&!left.has(t))left.set(t,step);
  expect([...left].map(([t,step])=>`${step}: ${t}`)).toEqual([]);
  // The scenario selectors' options are in the language.
  const options=[...seen.own.get('control panel')!].filter(t=>t.startsWith('@option:'));

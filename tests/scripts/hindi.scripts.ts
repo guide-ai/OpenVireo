@@ -18,6 +18,8 @@ import {walk as walkE03,LAYOUT as LAYOUT_E03} from '../i18n/walks/e03';
 import {walk as walkE04,LAYOUT as LAYOUT_E04} from '../i18n/walks/e04';
 import {walk as walkE05,LAYOUT as LAYOUT_E05} from '../i18n/walks/e05';
 import {walk as walkRadio,LAYOUT as LAYOUT_RADIO} from '../i18n/walks/radio';
+import {walk as walkE06,LAYOUT as LAYOUT_E06} from '../i18n/walks/e06';
+import {walk as walkE08,LAYOUT as LAYOUT_E08} from '../i18n/walks/e08';
 
 type Width=320|1440;
 const id=(page:Page,t:string)=>page.getByTestId(t);
@@ -143,12 +145,12 @@ for(const width of [320,1440] as const satisfies readonly Width[])
   expect([...problems].map(([p,step])=>`${step}: ${p}`),'layout problems under real Hindi').toEqual([]);
  });
 
-/** Front HI2 (HI3 adds E03, HI4 E04 and E05, HI5 the radio telescope): an exercise walk (tests/i18n/walks/*.ts) under real Hindi: each step's layout with the walk's own options (the
+/** Front HI2 (HI3 adds E03, HI4 E04 and E05, HI5 the radio telescope, HI6 E06 and E08): an exercise walk (tests/i18n/walks/*.ts) under real Hindi: each step's layout with the walk's own options (the
  * header and English mirrors skipped, as there), its ink and Devanagari on screen. */
 type Walk=(page:Page,lang:typeof H,each:(step:string)=>Promise<void>)=>Promise<void>;
 const WALKS:readonly (readonly [string,Walk,LayoutOptions])[]=[['E01 (Hubble)',walkE01,LAYOUT_E01],['E02 (large-scale structure)',walkE02,LAYOUT_E02],['E03 (spectral classification)',walkE03,LAYOUT_E03],
  ['E04 (Pleiades photometry)',walkE04,LAYOUT_E04],['E05 (cluster H-R diagrams and variable stars)',walkE05,LAYOUT_E05],
- ['radio telescope',walkRadio,LAYOUT_RADIO]];
+ ['radio telescope',walkRadio,LAYOUT_RADIO],['E06 (pulsar analysis)',walkE06,LAYOUT_E06],['E08 (Object X)',walkE08 as Walk,LAYOUT_E08]];
 for(const [name,walk,layout] of WALKS)for(const width of [320,1440] as const satisfies readonly Width[])
  test(`real Hindi at ${width} px: the ${name} walk lays out without overflow, clipping or cut ink`,async({page})=>{
   test.setTimeout(400_000);

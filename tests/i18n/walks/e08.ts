@@ -55,9 +55,14 @@ export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new S
  fr:new Set<string>(['quasar (QSO)','pulsar','Minutes','Gain (e⁻/ADU)','Source','Image','Solution']),
  // Front ID6: the answer kinds «pulsar» and «asteroid» and the camera's Target, Filter, Gain (e⁻/ADU) and File, the same words in
  // Indonesian (identical.json and ID1's identical originals).
- id:new Set<string>(['pulsar','asteroid','Target','Filter','Gain (e⁻/ADU)','File'])};
+ id:new Set<string>(['pulsar','asteroid','Target','Filter','Gain (e⁻/ADU)','File']),
+ // Front HI6: Hindi keeps the field labels RA, Dec and UT in Latin script (identical.json), as everywhere in Hindi.
+ hi:new Set<string>(['RA','Dec','UT'])};
+/** Front HI6: the radio card's coordinates in Hindi keep the labels RA and Dec and their unit symbols, so they read as English's. */
+const SAME_PATTERN_IN:Readonly<Record<string,RegExp>>={hi:/^RA \d+ h \d+ m [\d.]+ s · Dec [-+]?\d+° \d+′ [\d.]+″$/};
 export const same=(text:string,L?:LanguageText)=>{
  if(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false))return true;
+ if(L!==undefined&&(SAME_PATTERN_IN[L.tag]?.test(text)??false))return true;
  if(ROW.test(text)||TARGET.test(text)||SAME.has(text)||NUMERIC.test(text)||RECORDED.test(text))return true;
  let m=/^(.+): (.+)$/.exec(text);if(m&&RECORDED.test(m[1])&&NUMERIC.test(m[2]))return true;// "ObjX-42-S01: 4.0 m, 2.0 s"
  m=/^(.+) · (.+)$/.exec(text);return !!m&&(SAME.has(m[1])||RECORDED.test(m[1]))&&(SAME.has(m[2])||RECORDED.test(m[2])||NUMERIC.test(m[2]));
@@ -89,16 +94,18 @@ export const mapButton=(scope:Page|Locator,lang:Lang,english:string,pick:Pick)=>
 
 /** Visible text nodes, option texts, accessible names, titles and placeholders inside `root`, outside the header and outside
  * native `lang="en"` views. */
+// Front HI6: two letters of any script with any combining marks between them (was [A-Za-z]{2}, which skipped every all-Devanagari
+// text; a Devanagari vowel sign or virama is a mark), as Fronts HI2, HI4 and HI5 did for the other walks.
 export const texts=(page:Page,root='body')=>page.evaluate(root=>{
  const out:string[]=[];
  const shown=(el:Element)=>{for(let e:Element|null=el;e;e=e.parentElement){if((e as HTMLElement).hidden||e.getAttribute('aria-hidden')==='true')return false;if(e.tagName==='DETAILS'&&!(e as HTMLDetailsElement).open&&el.closest('summary')?.parentElement!==e&&e!==el)return false;if(e.tagName==='DIALOG'&&!(e as HTMLDialogElement).open)return false;const s=getComputedStyle(e);if(s.display==='none'||s.visibility==='hidden')return false;}return true;};
  const skipped=(el:Element)=>el.closest('.portal-header,[data-i18n-shell],script,style,[data-testid=site-tour]')!==null||el.closest('[lang=en]:not(html)')!==null;
  for(const scope of document.querySelectorAll(root)){
   const walker=document.createTreeWalker(scope,NodeFilter.SHOW_TEXT);let n:Node|null;
-  while((n=walker.nextNode())){const el=n.parentElement;if(!el||el.tagName==='OPTION')continue;const t=n.textContent?.trim();if(t&&/[A-Za-z]{2}/.test(t)&&!skipped(el)&&shown(el))out.push(t);}
-  for(const select of scope.querySelectorAll('select'))if(!skipped(select)&&shown(select))for(const o of select.options){const t=o.text.trim();if(t&&/[A-Za-z]{2}/.test(t))out.push(`@option:${t}`);}
-  for(const el of [scope,...scope.querySelectorAll('[aria-label],[title],[placeholder]')])if(!skipped(el)&&shown(el))for(const a of ['aria-label','title','placeholder']){const v=el.getAttribute(a)?.trim();if(v&&/[A-Za-z]{2}/.test(v))out.push(`@${a}:${v}`);}
-  for(const t of scope.querySelectorAll('svg title'))if(!skipped(t)&&t.parentElement&&shown(t.parentElement)){const v=t.textContent?.trim();if(v&&/[A-Za-z]{2}/.test(v))out.push(`@svg-title:${v}`);}
+  while((n=walker.nextNode())){const el=n.parentElement;if(!el||el.tagName==='OPTION')continue;const t=n.textContent?.trim();if(t&&/\p{L}\p{M}*\p{L}/u.test(t)&&!skipped(el)&&shown(el))out.push(t);}
+  for(const select of scope.querySelectorAll('select'))if(!skipped(select)&&shown(select))for(const o of select.options){const t=o.text.trim();if(t&&/\p{L}\p{M}*\p{L}/u.test(t))out.push(`@option:${t}`);}
+  for(const el of [scope,...scope.querySelectorAll('[aria-label],[title],[placeholder]')])if(!skipped(el)&&shown(el))for(const a of ['aria-label','title','placeholder']){const v=el.getAttribute(a)?.trim();if(v&&/\p{L}\p{M}*\p{L}/u.test(v))out.push(`@${a}:${v}`);}
+  for(const t of scope.querySelectorAll('svg title'))if(!skipped(t)&&t.parentElement&&shown(t.parentElement)){const v=t.textContent?.trim();if(v&&/\p{L}\p{M}*\p{L}/u.test(v))out.push(`@svg-title:${v}`);}
  }
  return out;
 },root);
@@ -116,7 +123,7 @@ export const go=async(page:Page,hash:string)=>{await page.evaluate(h=>{location.
  *   text may use a kind word, and the observatory's target picker legitimately lists catalogue galaxies, so only identifiers count
  *   there (tests/object-x-path.spec.ts);
  * - a verdict sentence («Es una…», «Tu respuesta es correcta», «É uma…», «Sua resposta está certa», «C’est une…», «Votre réponse
- *   est juste», «Objek Anda adalah…», «Jawaban Anda benar», "It is a…", "Your answer is right") anywhere in the lab. */
+ *   est juste», «Objek Anda adalah…», «Jawaban Anda benar», «यह … है», «आपका उत्तर सही है», "It is a…", "Your answer is right") anywhere in the lab. */
 export async function leaks(page:Page){
  const found=await page.evaluate(()=>{
   const read=(selector:string)=>[...document.querySelectorAll(selector)].map(n=>{const c=n.cloneNode(true) as HTMLElement;
@@ -125,7 +132,7 @@ export async function leaks(page:Page){
    shared:read('[data-testid=camera-control], .sky-view, .spec-readout, [data-testid=objectx-radio-card], [data-testid$=hot-list], [data-testid*=hotlist]')};
  });
  const word=(s:string)=>new RegExp(`(^|[^\\w])${s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}($|[^\\w])`);
- const verdict=/\bEs (?:una|un) |Tu respuesta es correcta|(?:^|[^\p{L}])É (?:uma|um) |Sua resposta está certa|(?:^|[^\p{L}])C’est (?:une|un) |Votre réponse est juste|(?:^|[^\p{L}])[Oo]bjek Anda adalah |Jawaban Anda benar|\bIt is an? |Your answer is right/u;
+ const verdict=/\bEs (?:una|un) |Tu respuesta es correcta|(?:^|[^\p{L}])É (?:uma|um) |Sua resposta está certa|(?:^|[^\p{L}])C’est (?:une|un) |Votre réponse est juste|(?:^|[^\p{L}])[Oo]bjek Anda adalah |Jawaban Anda benar|यह (?:तारा|आकाशगंगा|क्वासर \(QSO\)|पल्सर|क्षुद्रग्रह) है|आपका उत्तर सही है|\bIt is an? |Your answer is right/u;
  return [...SECRETS.filter(s=>word(s).test(found.lab)),...IDS.filter(s=>word(s).test(found.shared)),...(verdict.test(found.labText)?[`verdict: ${verdict.exec(found.labText)![0]}`]:[])];
 }
 export async function expose(page:Page,lang:Lang){
