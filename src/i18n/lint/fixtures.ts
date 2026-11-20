@@ -33,10 +33,12 @@ const ja:Fixture[]=[
  {profile:'ja',rule:'pairs',en:CHOOSE_OPEN,good:'「開く」を選びます。',bad:'「開くを選びます。'},
  {profile:'ja',rule:'quotes',en:CHOOSE_OPEN,good:'「開く」を選びます。',bad:'“開く”を選びます。'},
  {profile:'ja',rule:'typography',en:'The dome is open.',good:'ドームが開いています。',bad:'ドームが開いています.'},
+ {profile:'ja',rule:'typography',en:'Save the spectrum as a .SSP file.',good:'スペクトルを.SSPファイルとして保存します。',bad:'スペクトルを保存します.',note:'Front JA1: a dot before an ASCII letter is a file extension'},
  {profile:'ja',rule:'typography',en:'Exposure 30 s',good:'露出30 s',bad:'露出 30 s'},
  {profile:'ja',rule:'typography',en:'Exposure 30 s',good:'露出30秒',bad:'露出３０秒'},
  {profile:'ja',rule:'typography',en:'Camera',good:'カメラ',bad:'ｶﾒﾗ'},
  {profile:'ja',rule:'typography',en:'Telescope (1.0 m)',good:'望遠鏡（1.0 m）',bad:'望遠鏡(1.0 m)'},
+ {profile:'ja',rule:'typography',en:'Set E(B-V)',good:'E(B-V)を設定',bad:'色指数(B-V)を設定',note:'Front JA1: a symbol\'s own brackets stay ASCII'},
  // Front JA0 (plan front-i18n-ja.md §1.2 #1–2): the Japanese style rules and the CJK punctuation fixer's check.
  {profile:'ja',rule:'typography',en:'Click OK.',good:'OKをクリックしてください。',bad:'OKをクリックして下さい。',note:'kana for the auxiliary ください'},
  {profile:'ja',rule:'typography',en:'You can save it.',good:'保存することができます。',bad:'保存する事が出来ます。',note:'kana for the formal noun こと and できる'},

@@ -346,8 +346,9 @@ test.describe('a language before its release (Japanese)',()=>{
   };
   const headingKey:Record<string,string>={classification:'class.title','cluster-database':'db.title',photometer:'ph.title','lss-survey':'lss.title','galaxy-exposure':'galaxyExposure.title','star-exposure':'starExposure.title',images:'fits.title'};
   const empty=plan.modules.filter(m=>m.kind==='area'&&m.empty).map(m=>m.name);
-  // Pin the areas Japanese gives text to (each JA front updates this list), as ID0 does for Indonesian.
-  expect(plan.modules.filter(m=>m.kind==='area'&&!m.empty).map(m=>m.name).sort(),'the areas with Japanese text').toEqual(['photometer']);
+  // Pin the areas Japanese gives text to (each JA front updates this list), as ID0 does for Indonesian: JA0's shell keys give text
+  // to `photometer`, and JA1's maps and keys to `classification` (the observationMetadata map) and `fits` (the cameraInfo.* keys).
+  expect(plan.modules.filter(m=>m.kind==='area'&&!m.empty).map(m=>m.name).sort(),'the areas with Japanese text').toEqual(['classification','fits','photometer']);
   for(const r of ROUTES){
    await page.goto('about:blank');w.language.length=0;
    await page.goto(`/${P.query}#${r.hash}`);

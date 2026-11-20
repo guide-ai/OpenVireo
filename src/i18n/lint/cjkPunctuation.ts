@@ -11,7 +11,8 @@
  * 1. Straight "…" pairs into the style's quotes (the inner pair inside an open quote), and, where the style's quotes are 「」, top-level
  *    “…” pairs too. An odd number of straight quotes, or a VIREO `fragment|` original (`quotes:false`), is left alone.
  * 2. An ASCII ( ) pair into （ ） when either bracket touches CJK text (spaces between them ignored); a lone bracket only when it
- *    touches CJK directly.
+ *    touches CJK directly. Never a symbol's own brackets (Front JA1): a pair right after an ASCII letter or digit with only ASCII
+ *    inside, as in E(B-V) or StrToInt(x), stays ASCII («E(B-V)を設定»).
  * 3. ASCII , . : ; ? ! right after a CJK letter, a closing full-width bracket or quote, or ？ ！ into the style's full-width mark.
  *    Never VIREO's `...` (the ellipsis), a `.` before a Latin letter, a digit or `{` (a file extension: «.SSP», «.{ext}»), `:` before `/`,
  *    or `?lang=`. A mark separated from CJK text by spaces is converted when it ends the text or a space or closer follows it.
@@ -98,7 +99,8 @@ function cjkPass(text:string,style:CjkStyle,options:CjkPunctuationOptions):{text
   const stack:number[]=[],pairs:[number,number][]=[],lone:number[]=[];
   cells.forEach((x,i)=>{if(x.kept)return;if(x.c==='(')stack.push(i);else if(x.c===')'){const o=stack.pop();if(o===undefined)lone.push(i);else pairs.push([o,i]);}});
   lone.push(...stack);
-  for(const [o,c] of pairs)if(cjkSide(near(o,-1))||cjkSide(near(o,1))||cjkSide(near(c,-1))||cjkSide(near(c,1))){
+  const symbol=(o:number,c:number)=>/^[A-Za-z0-9]$/.test(cells[o-1]?.c??'')&&cells.slice(o+1,c).every(x=>/^[\x20-\x7e]$/.test(x.c));
+  for(const [o,c] of pairs)if(!symbol(o,c)&&(cjkSide(near(o,-1))||cjkSide(near(o,1))||cjkSide(near(c,-1))||cjkSide(near(c,1)))){
    note('（ ） around or next to CJK text',o,context(o));cells[o]={c:'（',kept:false};cells[c]={c:'）',kept:false};}
   for(const i of lone)if(cjkSide(cells[i-1]?.c)||cjkSide(cells[i+1]?.c)){note('（ ） next to CJK text',i,context(i));cells[i]={c:cells[i].c==='('?'（':'）',kept:false};}
  }

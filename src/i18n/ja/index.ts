@@ -9,6 +9,14 @@ import {POLISH_JA} from './maps/polish';
 import {PROJECT_LINKS_JA} from './maps/projectLinks';
 import {TOUR_JA} from './maps/tour';
 import {VARIABLE_STARS_JA} from './maps/variableStars';
+import {CAMERA_JA} from './maps/camera';
+import {FIELD_INFO_JA} from './maps/fieldInfo';
+import {FIELD_READ_DETAILS_JA} from './maps/fieldReadDetails';
+import {NAKED_EYE_JA} from './maps/nakedEye';
+import {OBSERVATION_METADATA_JA} from './maps/observationMetadata';
+import {OBSERVATORY_JA} from './maps/observatory';
+import {QSO_LIST_JA} from './maps/qsoList';
+import {SOUND_JA} from './maps/sound';
 /** Front JA0 [W]: the Japanese (ja) bundle (docs/I18N.md, "Japanese: the folder, lints and shell (JA0)"; plan
  * analysis/front-plans/front-i18n-ja.md). Partial until its release, behind a `?lang=ja` preview: JA0 translates the shell, and the
  * later JA fronts the observatory with all of VIREO's originals (JA1), the exercises (JA2–JA6) and the help (JA-HELP). The
@@ -18,6 +26,7 @@ import {VARIABLE_STARS_JA} from './maps/variableStars';
 export const JAPANESE:LocaleBundle=Object.freeze({
  language:'ja',
  messages,
- maps:Object.freeze({appShell:APP_SHELL_JA,helpMenu:HELP_MENU_JA,languageChoice:LANGUAGE_CHOICE_JA,objectXLab:OBJECT_X_LAB_JA,polish:POLISH_JA,projectLinks:PROJECT_LINKS_JA,tour:TOUR_JA,variableStars:VARIABLE_STARS_JA}),
+ maps:Object.freeze({appShell:APP_SHELL_JA,helpMenu:HELP_MENU_JA,languageChoice:LANGUAGE_CHOICE_JA,objectXLab:OBJECT_X_LAB_JA,polish:POLISH_JA,projectLinks:PROJECT_LINKS_JA,tour:TOUR_JA,variableStars:VARIABLE_STARS_JA,
+  camera:CAMERA_JA,fieldInfo:FIELD_INFO_JA,fieldReadDetails:FIELD_READ_DETAILS_JA,nakedEye:NAKED_EYE_JA,observationMetadata:OBSERVATION_METADATA_JA,observatory:OBSERVATORY_JA,qsoList:QSO_LIST_JA,sound:SOUND_JA}),
  originals,
 });

@@ -99,6 +99,14 @@ import {LANGUAGE_CHOICE_JA} from '../../src/i18n/ja/maps/languageChoice';
 import {OBJECT_X_LAB_JA} from '../../src/i18n/ja/maps/objectXLab';
 import {POLISH_JA} from '../../src/i18n/ja/maps/polish';
 import {VARIABLE_STARS_JA} from '../../src/i18n/ja/maps/variableStars';
+import {CAMERA_JA} from '../../src/i18n/ja/maps/camera';
+import {FIELD_INFO_JA} from '../../src/i18n/ja/maps/fieldInfo';
+import {FIELD_READ_DETAILS_JA} from '../../src/i18n/ja/maps/fieldReadDetails';
+import {NAKED_EYE_JA} from '../../src/i18n/ja/maps/nakedEye';
+import {OBSERVATION_METADATA_JA} from '../../src/i18n/ja/maps/observationMetadata';
+import {OBSERVATORY_JA} from '../../src/i18n/ja/maps/observatory';
+import {QSO_LIST_JA} from '../../src/i18n/ja/maps/qsoList';
+import {SOUND_JA} from '../../src/i18n/ja/maps/sound';
 import ru from '../../src/i18n/ru/ru.json' with {type:'json'};
 import ruOriginals from '../../src/i18n/ru/originals.json' with {type:'json'};
 import {APP_SHELL_RU} from '../../src/i18n/ru/maps/appShell';
@@ -187,9 +195,9 @@ export const HINDI_TEXT=language('hi',hi,hiOriginals,{appShell:APP_SHELL_HI,help
  [APP_SHELL_HI,CAMERA_HI,FIELD_INFO_HI,FIELD_READ_DETAILS_HI,HELP_MENU_HI,LANGUAGE_CHOICE_HI,NAKED_EYE_HI,OBJECT_X_LAB_HI,OBSERVATION_METADATA_HI,OBSERVATORY_HI,POLISH_HI,PROJECT_LINKS_HI,QSO_LIST_HI,SOUND_HI,TOUR_HI,VARIABLE_STARS_HI],/[\u0900-\u097f]/u,'?lang=hi',['shell','observatory','e01','e02','e03']);
 /** Front JA0 (plan front-i18n-ja.md §1.2 #3): Japanese, behind `?lang=ja` before its release; JA0 translated the shell, and each
  * later JA front adds its area to `done`. Its letters are kana, ー and 「」, which no English text, VIREO file or export has (Han alone
- * is not used: kana are the unambiguous Japanese signal). Its observatory maps grow with JA1. */
+ * is not used: kana are the unambiguous Japanese signal). JA1 adds the observatory with its maps and all of VIREO's originals. */
 export const JAPANESE_TEXT=language('ja',ja,jaOriginals,{appShell:APP_SHELL_JA,helpMenu:HELP_MENU_JA,projectLinks:PROJECT_LINKS_JA,tour:TOUR_JA,languageChoice:LANGUAGE_CHOICE_JA},
- [APP_SHELL_JA,HELP_MENU_JA,LANGUAGE_CHOICE_JA,OBJECT_X_LAB_JA,POLISH_JA,PROJECT_LINKS_JA,TOUR_JA,VARIABLE_STARS_JA],/[\p{sc=Hira}\p{sc=Kana}ー「」]/u,'?lang=ja',['shell']);
+ [APP_SHELL_JA,CAMERA_JA,FIELD_INFO_JA,FIELD_READ_DETAILS_JA,HELP_MENU_JA,LANGUAGE_CHOICE_JA,NAKED_EYE_JA,OBJECT_X_LAB_JA,OBSERVATION_METADATA_JA,OBSERVATORY_JA,POLISH_JA,PROJECT_LINKS_JA,QSO_LIST_JA,SOUND_JA,TOUR_JA,VARIABLE_STARS_JA],/[\p{sc=Hira}\p{sc=Kana}ー「」]/u,'?lang=ja',['shell','observatory']);
 /** Front RU0: Russian before its release, behind `?lang=ru` (an en-US browser: tests/fixtures/language.ts contextLocale). Only the
  * shell is translated (RU0), the observatory with all of VIREO's originals (RU1), and exercises E01 and E02 (RU2); RU3–RU6 and RU-HELP
  * add their areas to `done` and their maps below. Its letters are Cyrillic, « » and U+202F,

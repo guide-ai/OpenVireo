@@ -6,6 +6,102 @@
     "glossary"
    ],
    "reason": "\"Observatories\" is in the English proper name NASA Astronomical Virtual Observatories, kept as written beside NAVO"
+  },
+  "original:\" Not Found.": {
+   "rules": [
+    "quotes"
+   ],
+   "reason": "VIREO joins this piece after a name it opens with an untranslated straight \", so the closing mark must stay a straight quote, as in pt, fr, hi and ru"
+  },
+  "original:fragment|You have not recorded your current readings for \"": {
+   "rules": [
+    "quotes"
+   ],
+   "reason": "VIREO closes this straight quote itself in a piece it never translates, so the opening mark must stay a straight quote, as in pt, fr, hi and ru"
+  },
+  "original:fragment|Meter Radio Telescope": {
+   "placeholders": [
+    "{diameter}"
+   ],
+   "reason": "Japanese puts the diameter inside the name («{diameter}メートル電波望遠鏡»), as es, pt, fr and ru do"
+  },
+  "original:Object: (": {
+   "rules": [
+    "typography"
+   ],
+   "reason": "VIREO closes this ASCII parenthesis itself after the selection number («天体：(3) M45»), so the opening one stays ASCII (ja.test.ts ASCII_BRACKET_PIECES)"
+  },
+  "original:Ok": {
+   "rules": [
+    "script"
+   ],
+   "reason": "OK, as Windows Japanese writes it (VIREO wrote this button Ok)"
+  },
+  "original:to": {
+   "rules": [
+    "script"
+   ],
+   "reason": "the wave dash 〜 Japanese writes between the two ends of a range («1h 2m 3s 〜4h 5m 6s»); VIREO joins it between two coordinates"
+  },
+  "map:camera.citationIr": {
+   "rules": [
+    "leftover-english"
+   ],
+   "reason": "a bibliographic citation: the survey's published name (Two Micron All Sky Survey) and authors stay as published"
+  },
+  "catalog:multispec.fieldInternal": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "\"trying again will not help\" is the verb, not Help (ヘルプ)"
+  },
+  "catalog:instrumentParameters.spectrometerNote": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "\"signal-to-noise\" is S/N比, the glossary's term for the ratio"
+  },
+  "catalog:pleiadesPoint.help": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "\"counts\" is the verb (is accepted: 対象になります), not detector counts"
+  },
+  "map:observatory.entry.help": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "\"counts as north\" is the verb (is treated as: 扱われます), not detector counts"
+  },
+  "map:observatory.entry.adaptation": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "VIREO's own kind words (Star/Galaxy/QSO) as the HTL file writes them in Comments, kept as written"
+  },
+  "map:polish.pulsarsHtl.button": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "the bundled file name Pulsars.HTL, kept as written"
+  },
+  "map:polish.pulsarsHtl.error": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "the bundled file name Pulsars.HTL, kept as written"
+  },
+  "original:pointStyle|Open": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "a plot point style (open circle, 白抜き), not the Open command (開く)"
+  },
+  "original:Set Date/Time, ID": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "VIREO's item sets both the date/time and the ID (日時とIDを設定), one verb for the two"
   }
  }
 }
