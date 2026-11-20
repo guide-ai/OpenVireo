@@ -668,10 +668,10 @@ family('E04 Pleiades photometry: photometer session, Observational Results text 
 // (Record, Receive, Stop, Identify, data properties, Save No), then on the pulsar analysis downloads the raw capture (.PLR), records
 // one manual reading and runs VIREO's Save Recorded Measurements (the native text with its US-format date/time header), and finally
 // saves the whole investigation (the radio configuration, clock and capture). Every file is byte-identical in English, qps and
-// Spanish (Front PT5: and Brazilian Portuguese, whose route heading is checked so the run cannot compare English with English; Front FR5: and French, the same way; Front HI5: and Hindi). The page clock is installed at a fixed instant, the lazily loaded routes render while it runs, then it is paused and only
+// Spanish (Front PT5: and Brazilian Portuguese, whose route heading is checked so the run cannot compare English with English; Front FR5: and French, the same way; Front HI5: and Hindi; Front JA5: and Japanese). The page clock is installed at a fixed instant, the lazily loaded routes render while it runs, then it is paused and only
 // runFor moves it, so the capture, the native header's date and time and the investigation's radio clock are the same in every
 // run: nothing is masked.
-family('radio telescope (ES8a): raw capture .PLR, native Save Recorded Measurements and the investigation, in English, qps, Spanish, pt-BR, fr, id and hi',['en','qps','es-419','pt-BR','fr','id','hi','ja'],async({browser,baseURL},identical)=>{
+family('radio telescope (ES8a): raw capture .PLR, native Save Recorded Measurements and the investigation, in English, qps, Spanish, pt-BR, fr, id, hi and ja',['en','qps','es-419','pt-BR','fr','id','hi','ja'],async({browser,baseURL},identical)=>{
  test.setTimeout(240_000);
  const id=(page:Page,testId:string)=>page.getByTestId(testId);
  const flush=async(page:Page)=>{for(let i=0;i<3;i++)await page.evaluate(()=>new Promise<void>(resolve=>{const ch=new MessageChannel();ch.port1.onmessage=()=>{ch.port1.close();ch.port2.close();resolve();};ch.port2.postMessage(0);}));};

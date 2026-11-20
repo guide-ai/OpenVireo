@@ -100,6 +100,8 @@
   "map:radioAntenna.antenna.notice.hot-list-empty": "Front JA5: a placeholder for VIREO message text, translated through vireo() by the caller",
   "map:radioAntenna.antenna.notice.title.hot-list-search-miss": "Front JA5: a placeholder for VIREO caption text, translated through vireo() by the caller",
   "map:radioAntenna.antenna.notice.hot-list-search-miss": "Front JA5: a placeholder for VIREO message text, translated through vireo() by the caller",
-  "map:radioAntenna.antenna.hotList.item": "Front JA5: placeholders and the menu-path glyph ▸ only"
+  "map:radioAntenna.antenna.hotList.item": "Front JA5: placeholders and the menu-path glyph ▸ only",
+  "catalog:radioAccess.menu.flagTrue": "Front JA5: Delphi's True flag value, kept as VIREO's options code writes it",
+  "catalog:radioAccess.menu.flagFalse": "Front JA5: Delphi's False flag value, kept as VIREO's options code writes it"
  }
 }
