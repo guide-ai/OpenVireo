@@ -193,6 +193,72 @@
     "glyphs"
    ],
    "reason": "\"colour–magnitude diagram\" is the single word 色等級図 (the decided form), which drops the English en dash"
+  },
+  "catalog:radio.panel.heading": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "the window is VIREO's Radio Telescope Control Panel, whose original reads «電波望遠鏡コントロールパネル»; the glossary's Radio telescope control is the page"
+  },
+  "catalog:radioRoute.clock.outcome.utc-dialog-applied": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "VIREO's menu item Set Date/Time, ID reads «日時とIDを設定» (its original)"
+  },
+  "catalog:radioRoute.date.outcome.cancelled": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "VIREO's menu item Set Date/Time, ID reads «日時とIDを設定» (its original)"
+  },
+  "catalog:radioRoute.date.storedValue": {
+   "rules": [
+    "script"
+   ],
+   "reason": "a placeholder in Japanese quotation marks only"
+  },
+  "catalog:pulsarParameters.reference.recorded": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "\"Pulsars\" here is the file name Pulsars.dat, kept as written"
+  },
+  "catalog:pulsarParameters.reference.bundled": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "\"Pulsars\" here is the file name Pulsars.dat, kept as written"
+  },
+  "catalog:pulsarParameters.reference.bundledHelp": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "\"Pulsars\" here is the file name Pulsars.dat, kept as written"
+  },
+  "map:radioAntenna.antenna.rateLimit.recovery.afterModal": {
+   "rules": [
+    "script"
+   ],
+   "reason": "two placeholders joined with no space, as Japanese writes two sentences"
+  },
+  "map:radioAntenna.antenna.rateLimit.alternative.separator": {
+   "rules": [
+    "script"
+   ],
+   "reason": "the full-width semicolon that separates Japanese list items"
+  },
+  "map:radioAntenna.antenna.rateLimit.recovery.hiddenNoMaximum": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "\"will not help\" is the verb (役に立たない), not Help (ヘルプ)"
+  },
+  "map:radioAntenna.antenna.outcome.activated": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "the window is VIREO's Radio Telescope Control Panel («電波望遠鏡コントロールパネル»); the glossary's Radio telescope control is the page"
   }
  }
 }

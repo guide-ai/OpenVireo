@@ -203,9 +203,9 @@ export const HINDI_TEXT=language('hi',hi,hiOriginals,{appShell:APP_SHELL_HI,help
 /** Front JA0 (plan front-i18n-ja.md §1.2 #3): Japanese, behind `?lang=ja` before its release; JA0 translated the shell, and each
  * later JA front adds its area to `done`. Its letters are kana, ー and 「」, which no English text, VIREO file or export has (Han alone
  * is not used: kana are the unambiguous Japanese signal). JA1 adds the observatory with its maps and all of VIREO's originals, JA2
- * exercises E01 and E02, JA3 exercise E03, JA4 exercises E04 and E05. */
+ * exercises E01 and E02, JA3 exercise E03, JA4 exercises E04 and E05, JA5 the radio telescope. */
 export const JAPANESE_TEXT=language('ja',ja,jaOriginals,{appShell:APP_SHELL_JA,helpMenu:HELP_MENU_JA,projectLinks:PROJECT_LINKS_JA,tour:TOUR_JA,languageChoice:LANGUAGE_CHOICE_JA},
- [APP_SHELL_JA,CAMERA_JA,FIELD_INFO_JA,FIELD_READ_DETAILS_JA,HELP_MENU_JA,LANGUAGE_CHOICE_JA,NAKED_EYE_JA,OBJECT_X_LAB_JA,OBSERVATION_METADATA_JA,OBSERVATORY_JA,POLISH_JA,PROJECT_LINKS_JA,QSO_LIST_JA,SOUND_JA,TOUR_JA,VARIABLE_STARS_JA],/[\p{sc=Hira}\p{sc=Kana}ー「」]/u,'?lang=ja',['shell','observatory','e01','e02','e03','e04','e05']);
+ [APP_SHELL_JA,CAMERA_JA,FIELD_INFO_JA,FIELD_READ_DETAILS_JA,HELP_MENU_JA,LANGUAGE_CHOICE_JA,NAKED_EYE_JA,OBJECT_X_LAB_JA,OBSERVATION_METADATA_JA,OBSERVATORY_JA,POLISH_JA,PROJECT_LINKS_JA,QSO_LIST_JA,SOUND_JA,TOUR_JA,VARIABLE_STARS_JA],/[\p{sc=Hira}\p{sc=Kana}ー「」]/u,'?lang=ja',['shell','observatory','e01','e02','e03','e04','e05','radio']);
 /** Front ZH0: Simplified Chinese before its release, behind `?lang=zh-Hans` (an en-US browser: tests/fixtures/language.ts
  * contextLocale). Only the shell is translated; ZH1–ZH6 and ZH-HELP add their areas to `done` and their maps. Its letters are Han and
  * the full-width marks ，。、：；？！（）, which VIREO's English files and OpenVireo's exports never hold. */
@@ -308,6 +308,9 @@ import {RADIO_ANTENNA_ID} from '../../src/i18n/id/maps/radioAntenna';
 import {RADIO_RECORD_SAVE_ID} from '../../src/i18n/id/maps/radioRecordSave';
 import idIdentical from '../../src/i18n/id/identical.json' with {type:'json'};
 import hiIdentical from '../../src/i18n/hi/identical.json' with {type:'json'};
+import {RADIO_ANTENNA_JA} from '../../src/i18n/ja/maps/radioAntenna';
+import {RADIO_RECORD_SAVE_JA} from '../../src/i18n/ja/maps/radioRecordSave';
+import jaIdentical from '../../src/i18n/ja/identical.json' with {type:'json'};
 import type {RADIO_ANTENNA_MESSAGES_EN} from '../../src/components/RadioAntennaMessages';
 import type {RADIO_SAVE_MESSAGES_EN} from '../../src/components/RadioRecordSaveMessages';
 export type RadioMaps=Readonly<{radioAntenna:Translation<typeof RADIO_ANTENNA_MESSAGES_EN>;radioRecordSave:Translation<typeof RADIO_SAVE_MESSAGES_EN>;identical:Readonly<Record<string,string>>}>;
@@ -320,6 +323,8 @@ export const RADIO_MAPS:Readonly<Record<string,RadioMaps>>=Object.freeze({
  id:{radioAntenna:RADIO_ANTENNA_ID,radioRecordSave:RADIO_RECORD_SAVE_ID,identical:idIdentical.entries},
  // Front HI5: Hindi (its ?lang=hi preview).
  hi:{radioAntenna:RADIO_ANTENNA_HI,radioRecordSave:RADIO_RECORD_SAVE_HI,identical:hiIdentical.entries},
+ // Front JA5: Japanese (its ?lang=ja preview).
+ ja:{radioAntenna:RADIO_ANTENNA_JA,radioRecordSave:RADIO_RECORD_SAVE_JA,identical:jaIdentical.entries},
 });
 export const radioMaps=(tag:string):RadioMaps=>{const m=RADIO_MAPS[tag];if(!m)throw new Error(`No radio maps for ${tag}`);return m;};
 // Front PT6: the maps the E06 and E08 walks read beyond the catalog and originals (tests/i18n/e06.spec.ts, e08.spec.ts), per

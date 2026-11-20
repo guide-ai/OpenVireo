@@ -40,6 +40,10 @@ import {SPECTRAL_RANGE_EN} from '../../SpectralRangeMessages';
 import {WEDGE_MESSAGES_EN} from '../../components/WedgeMessages';
 import {CLUSTER_HR_EN} from '../../clusters/ClusterHrMessages';
 import {CLUSTER_DATA_MESSAGES_EN} from '../../clusterdata/ClusterDataMessages';
+import {RADIO_ANTENNA_MESSAGES_EN} from '../../components/RadioAntennaMessages';
+import {FINISH_SAVE_MESSAGES_EN} from '../../components/RadioFinishSaveMessages';
+import {RADIO_R1_MESSAGES_EN} from '../../components/RadioR1Messages';
+import {RADIO_SAVE_MESSAGES_EN} from '../../components/RadioRecordSaveMessages';
 import esIdentical from '../es/identical.json';
 
 // Front JA0 (docs/I18N.md, "Japanese: the folder, lints and shell (JA0)"; plan front-i18n-ja.md §1.2, §6.2): the structural checks
@@ -53,11 +57,12 @@ import esIdentical from '../es/identical.json';
 // characters literally, then checks as usual. A VIREO `fragment|` original keeps its straight quotes (another piece closes them).
 const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,
  camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,nakedEye:NAKED_EYE_MESSAGES_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,
- engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN,clusterHr:CLUSTER_HR_EN,clusterData:CLUSTER_DATA_MESSAGES_EN};
+ engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN,clusterHr:CLUSTER_HR_EN,clusterData:CLUSTER_DATA_MESSAGES_EN,
+ radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN};
 /** The maps translated completely (JA0's shell maps; JA1's observatory maps, the camera card the observatory shows, and polish; JA2's
- * engineView, spectralRange and wedge; JA4's clusterHr, clusterData and variableStars); the
+ * engineView, spectralRange and wedge; JA4's clusterHr, clusterData and variableStars; JA5's four radio maps); the
  * others hold only their header-menu names until their front (objectXLab JA6). */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars'];
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars','radioAntenna','radioFinishSave','radioR1','radioRecordSave'];
 /** Front JA1's area of en.json: FR1's observatory keys (the instruments' prefixes and the Hubble hot-list reasons) and the 104 guide
  * keys the observatory files render (src/i18n/fr/fr.test.ts FR1_GUIDE_KEYS, read from there so the two never drift), as RU1's. */
 const OBSERVATORY_PREFIXES=/^(sky|optical|motion|horizon|siteClock|runningClock|scopeAccess|instrumentAccess|instrumentParameters|cameraParameters|cameraInfo|cameraPrepare|palette|testMode|optionsFile|photometerTab|htl|multispec|nativeMirror|hubblePoint)\./;
@@ -72,6 +77,8 @@ const JA2_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E01_E02_PREFIXES.test
 const E03_PREFIXES=/^(class|classLines|classLink|classAtlas|classImport|classLab|feature|cursor|probe|photo|combined|combinedWidth|viewport|inspection|sampledTrace|reverseTrace|sampledDiff|range|widthSource|widthCoordinates|sharedMarks|comparisonMark|paneSource|panMarks|obs|nativeResults|nativeEdit|nativeDelete|nativeList|nativeText|nativeCsv|program|programImport)\./;
 /** Front JA4's area of en.json: exercises E04 (Pleiades photometry) and E05 (cluster HR diagrams and variable stars), FR4's prefixes. */
 const JA4_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(ph|pa|pleiadesLab|nc|db|ce|clusterLab|ownHr|obsHr)\./.test(k));
+/** Front JA5's area of en.json: the radio telescope, FR5's prefixes. */
+const JA5_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(radio|radioRoute|radioAccess|radioReceiver|radioSimOptions|pulsarParameters)\./.test(k));
 const JA3_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E03_PREFIXES.test(k)||k==='continuity.restoreExposure'||k==='ssp.header');
 /** VIREO originals that Spanish keeps with no entry, as for Hindi: the options dialog's General tab («全般») and the Site Information
  * compass letters E «東», N «北» and S «南» (W «西» is in Spanish's list). */
@@ -138,6 +145,10 @@ describe('Front JA0: the Japanese (ja) bundle',()=>{
  it('Front JA4: the catalog covers E04 and E05 (every key of their prefixes)',()=>{
   expect(JA4_KEYS.length).toBe(651);
   expect(JA4_KEYS.filter(k=>!Object.hasOwn(ja,k))).toEqual([]);
+ });
+ it('Front JA5: the catalog covers the radio telescope (every key of its prefixes)',()=>{
+  expect(JA5_KEYS.length).toBe(646);
+  expect(JA5_KEYS.filter(k=>!Object.hasOwn(ja,k))).toEqual([]);
  });
  it('Front JA1: every VIREO original is translated at once, or kept with an identical.json reason, never both',()=>{
   const english=[...Object.keys(esOriginals),...Object.keys(esIdentical.entries).filter(k=>k.startsWith('original:')).map(k=>k.slice('original:'.length))];
