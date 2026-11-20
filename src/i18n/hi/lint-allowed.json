@@ -60,6 +60,18 @@
     "glossary"
    ],
    "reason": "“period” here is the photometer’s integration period (अवधि), not an orbital or pulsation period (आवर्तकाल)"
+  },
+  "map:radioAntenna.antenna.notice.ra-unsupported.cancellation": {
+   "rules": [
+    "typography"
+   ],
+   "reason": "|x| are absolute-value bars in a formula, not dandas"
+  },
+  "map:radioAntenna.antenna.notice.dec-unsupported.cancellation": {
+   "rules": [
+    "typography"
+   ],
+   "reason": "|x| are absolute-value bars in a formula, not dandas"
   }
  }
 }

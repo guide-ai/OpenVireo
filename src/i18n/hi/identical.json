@@ -82,6 +82,23 @@
   "map:variableStars.columns.0": "the catalog name GCVS ID",
   "map:variableStars.columns.3": "the declination abbreviation Dec with the degree sign",
   "map:variableStars.columns.7": "an empty column heading",
-  "map:variableStars.noPeriod": "a dash for no period"
+  "map:variableStars.noPeriod": "a dash for no period",
+  "catalog:radio.env.dome.2": "the dome choice number 2, a figure only",
+  "catalog:radioRoute.clock.utcValue": "a time placeholder and the time scale UT",
+  "catalog:radioRoute.date.storedValue": "a placeholder in quotation marks",
+  "catalog:pulsarParameters.reference.sha": "the hash name SHA-256",
+  "map:radioAntenna.antenna.menu.item": "placeholders and the menu path glyph only",
+  "map:radioAntenna.antenna.clock.ut": "the time scale UT, kept",
+  "map:radioAntenna.antenna.clock.hoursValue": "a placeholder and the unit h",
+  "map:radioAntenna.antenna.format.ra": "a coordinate format (h m s), not words",
+  "map:radioAntenna.antenna.format.dec": "a coordinate format (° ′ ″), not words",
+  "map:radioAntenna.antenna.notice.title.hot-list-empty": "a placeholder for VIREO caption text, translated through vireo() by the caller",
+  "map:radioAntenna.antenna.notice.hot-list-empty": "a placeholder for VIREO message text, translated through vireo() by the caller",
+  "map:radioAntenna.antenna.notice.title.hot-list-search-miss": "a placeholder for VIREO caption text, translated through vireo() by the caller",
+  "map:radioAntenna.antenna.notice.hot-list-search-miss": "a placeholder for VIREO message text, translated through vireo() by the caller",
+  "map:radioAntenna.antenna.hotList.item": "placeholders and the menu path glyphs only",
+  "map:radioAntenna.antenna.hotList.row": "placeholders with the field labels RA and Dec and their units, as the hot list shows them",
+  "map:radioAntenna.antenna.rateLimit.recovery.afterModal": "two placeholders joined by a space",
+  "map:radioAntenna.antenna.rateLimit.alternative.separator": "a list separator"
  }
 }

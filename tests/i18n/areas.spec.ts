@@ -238,7 +238,7 @@ for(const {L:P,name} of RELEASED_AREAS)test.describe(`in a ${name} browser`,()=>
 // observationMetadata map) and `fits` (the cameraInfo.* keys), as FR1's did; later ID fronts fill the others (Front ID3: E03 fills the
 // shared classification+cluster module, which the cluster routes also fetch, so `cluster` holds text, as for French after FR3). ID-REL
 // turns this back into a released-language test (as FR-REL did). Front HI0: Hindi's preview the same way (HI-REL moves it to RELEASED_AREAS).
-const PARTIAL=[{L:INDONESIAN_TEXT,name:'Indonesian',release:'ID-REL',areas:['classification','cluster','exposure','fits','lss','photometer']},{L:HINDI_TEXT,name:'Hindi',release:'HI-REL',areas:['classification','cluster','exposure','fits','lss','photometer']}] as const;
+const PARTIAL=[{L:INDONESIAN_TEXT,name:'Indonesian',release:'ID-REL',areas:['classification','cluster','exposure','fits','lss','photometer']},{L:HINDI_TEXT,name:'Hindi',release:'HI-REL',areas:['classification','cluster','exposure','fits','lss','photometer','pulsar','radio']}] as const;
 for(const {L:P,name,release,areas} of PARTIAL)test.describe(`a language before its release (${name})`,()=>{
  test.use({locale:'en-US'});
  test(`a partial language (${name}) fetches only its core, and no chunk for an empty area`,async({page})=>{
