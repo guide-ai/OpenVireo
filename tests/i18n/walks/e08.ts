@@ -52,7 +52,10 @@ export const ROW=/^ObjX-42-\d\d: \d{4}-\d\d-\d\d \d\d:\d\d:\d\d UT(?:, [A-Z]{1,2
 export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new Set<string>(['quasar (QSO)','pulsar']),
  // Front FR6: the same IAU OAE words in French, and the camera's Minutes, Gain (e⁻/ADU) and Source and the measuring tool's Image
  // and Solution, the same words in French (identical.json).
- fr:new Set<string>(['quasar (QSO)','pulsar','Minutes','Gain (e⁻/ADU)','Source','Image','Solution'])};
+ fr:new Set<string>(['quasar (QSO)','pulsar','Minutes','Gain (e⁻/ADU)','Source','Image','Solution']),
+ // Front ID6: the answer kinds «pulsar» and «asteroid» and the camera's Target, Filter, Gain (e⁻/ADU) and File, the same words in
+ // Indonesian (identical.json and ID1's identical originals).
+ id:new Set<string>(['pulsar','asteroid','Target','Filter','Gain (e⁻/ADU)','File'])};
 export const same=(text:string,L?:LanguageText)=>{
  if(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false))return true;
  if(ROW.test(text)||TARGET.test(text)||SAME.has(text)||NUMERIC.test(text)||RECORDED.test(text))return true;

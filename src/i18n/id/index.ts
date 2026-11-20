@@ -34,7 +34,7 @@ import {OBJECT_X_MEASURE_ID} from './maps/objectXMeasure';
 import {OBJECT_X_SESSION_ID} from './maps/objectXSession';
 /** Front ID0 [W]: the Indonesian (id) bundle (docs/I18N.md, "Indonesian: the folder, lints and shell (ID0)"; plan
  * analysis/front-plans/front-i18n-id.md). Partial until its release (ID0–ID-HELP, behind a `?lang=id` preview): ID0 translates the
- * shell, the welcome and the header menu names, ID1 the observatory and all of VIREO's originals, ID2 exercises E01 and E02, ID3 exercise E03, ID4 exercises E04 and E05, ID5 the radio telescope; later ID fronts add the observatory, the exercises, the radio telescope and the
+ * shell, the welcome and the header menu names, ID1 the observatory and all of VIREO's originals, ID2 exercises E01 and E02, ID3 exercise E03, ID4 exercises E04 and E05, ID5 the radio telescope, ID6 exercises E06 and E08; later ID fronts add the observatory, the exercises, the radio telescope and the
  * help. The production build splits it by route area like the other languages (scripts/i18n-split.mjs parses this manifest);
  * Vitest imports it whole. Translations are web adaptations by OpenVireo; they never claim to be CLEA's, and CLEA's bytes, hashes
  * and provenance are unchanged. */

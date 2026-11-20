@@ -2,7 +2,7 @@ import {type Page} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
 import {SPANISH_LOCALE,contextLocale} from '../fixtures/language';
 import {layoutProblems} from '../fixtures/layoutProblems';
-import {translatedFor,textOf,e06Maps,type LanguageText} from './languageText';
+import {translatedFor,textOf,e06Maps,radioMaps,type LanguageText} from './languageText';
 import {PULSAR_REVIEW_BUTTONS,PULSAR_REVIEW_LITERALS} from '../../src/core/pulsarReview';
 import {PULSAR_REVIEW_EDIT_DFM,PULSAR_REVIEW_EDIT_LITERALS} from '../../src/core/pulsarReviewEdit';
 import {PULSAR_NATIVE_SAVE_TEXT as NS} from '../../src/core/pulsarNativeSave';
@@ -108,9 +108,12 @@ for(const L of translatedFor('e06'))test.describe(()=>{test.use({locale:contextL
   await walk(page,lang==='en'?'en':L,async step=>{await checks[step]?.();});
   await page.close();
  }
+ // Front ID6: a VIREO caption the language keeps the same (its identical.json `original:` row, such as Indonesian's «Edit...») is not
+ // expected to change.
+ const keptOriginal=new Set(Object.keys(radioMaps(L.tag).identical).filter(k=>k.startsWith('original:')).map(k=>k.slice('original:'.length)));
  for(const t of [ACTIVATE.emptyCaption,ACTIVATE.emptyText,ACTIVATE.loadCaption,ACTIVATE.loadText,NS.nothingText,NS.nothingCaption,NS.unrecordedText,NS.unrecordedCaption,NS.dialogTitle,NS.filter,NS.extensionText,NS.extensionCaption,NS.existsCaption,NS.verifyCaption,NS.clearUnsavedText,NS.clearUnsavedCaption,NS.clearConfirmText,
   ...Object.values(PULSAR_REVIEW_LITERALS),...Object.values(PULSAR_REVIEW_BUTTONS).filter(t=>t!=='Cancel'),...Object.values(PULSAR_REVIEW_EDIT_LITERALS),...Object.values(PULSAR_REVIEW_EDIT_DFM).filter(t=>t!=='Cancel'&&t!=='OK'),
-  'Find Record Containing...','Begin Search:','Print Window...','Analyze Pulsar Data','Data Parameters:','Receiver Gain (Relative):','(Data Not Written To File)','(Receiver Not Recorded)','File Name:','(Screen Image Printed on Next Page)'])expect(vireoIn(t),t).not.toBe(plain(t).trim());
+  'Find Record Containing...','Begin Search:','Print Window...','Analyze Pulsar Data','Data Parameters:','Receiver Gain (Relative):','(Data Not Written To File)','(Receiver Not Recorded)','File Name:','(Screen Image Printed on Next Page)'].filter(t=>!keptOriginal.has(t)))expect(vireoIn(t),t).not.toBe(plain(t).trim());
  for(const [t,ctx] of [['The File ','fragment'],['Writing Data to ','fragment'],['Appending Data to ','fragment']] as const)expect(vireoIn(t,ctx),t).not.toBe(t.trim());
  // The exists box's pieces are concatenated around the file name (Spanish keeps VIREO's straight quotes; Portuguese uses “ ”, French « »).
  expect(vireoIn(NS.existsText('',p=>p).replace(/^The File /,''),'fragment')).toContain(L.tag==='es-419'?'"Cancelar"':L.tag==='fr'?`«\u202f${vireoIn('Cancel')}\u202f»`:`“${vireoIn('Cancel')}”`);
