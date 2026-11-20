@@ -5,7 +5,7 @@ import {nextAddress} from '../components/LanguageChoice';
 import {releasing} from '../../tests/fixtures/i18n/registry';
 const decide=(over:Partial<LocaleInputs>)=>decideLocale({param:null,stored:null,languages:['en-US'],dev:false,...over});
 /** Spanish before its release: the registry as it was until ES-REL, with no language released (Front SC8: a per-language gate;
- * since PT-REL Portuguese and since FR-REL French are released too, so they are closed here as well). */
+ * since PT-REL Portuguese, since FR-REL French and since ID-REL Indonesian are released too, so they are closed here as well). */
 const UNRELEASED=LANGUAGES.map(l=>({...l,released:false}));
 describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-09)',()=>{
  it('Front ES-REL: Spanish is released, so the stored choice and the browser language decide and the selector is shown',()=>{
@@ -76,19 +76,21 @@ describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-0
   for(const languages of [['fr'],['fr-FR'],['fr-CA']])expect(decide({languages,registry:before}),languages.join(',')).toBe('en');
   expect(decide({stored:'fr',languages:['fr-FR'],registry:before})).toBe('en');expect(decide({param:'fr',registry:before})).toBe('fr');
  });
- it('Front ID0: Indonesian is registered before its release: only ?lang=id opens it; id, id-ID, in-ID browsers and a stored id get English',()=>{
-  expect(isReleased('id')).toBe(false);
-  for(const languages of [['id'],['id-ID'],['ID-id'],['in'],['in-ID'],['id-ID','es-MX']])expect(decide({languages}),languages.join(',')).toBe('en');
-  expect(decide({languages:['es-MX','id-ID']})).toBe('es-419');expect(decide({stored:'id',languages:['id-ID']})).toBe('en');
-  expect(decide({param:'id',languages:['en-US']})).toBe('id');expect(decide({param:'id',stored:'fr',languages:['pt-BR']})).toBe('id');
+ it('Front ID-REL: Indonesian is released: every id and id-* browser and the legacy in, in-* (any case) open id; Malay, Javanese, Sundanese and en-ID do not; storage is honoured',()=>{
+  expect(isReleased('id')).toBe(true);
+  for(const languages of [['id'],['id-ID'],['ID-id'],['in'],['in-ID'],['id-ID','es-MX']])expect(decide({languages}),languages.join(',')).toBe('id');
+  for(const languages of [['ms'],['ms-MY'],['ms-ID'],['zsm'],['jv'],['jv-ID'],['su'],['en-ID'],['en-US','id-ID']])expect(decide({languages}),languages.join(',')).toBe('en');
+  expect(decide({languages:['id-ID','pt-BR']})).toBe('id');expect(decide({languages:['es-MX','id-ID']})).toBe('es-419');expect(decide({languages:['fr-FR','id-ID']})).toBe('fr');
+  expect(decide({stored:'id',languages:['en-US']})).toBe('id');expect(decide({stored:'id',languages:['fr-FR']})).toBe('id');
+  expect(decide({stored:'en',languages:['id-ID']})).toBe('en');expect(decide({stored:'pt-BR',languages:['in-ID']})).toBe('pt-BR');
+  expect(decide({param:'id',stored:'fr',languages:['pt-BR']})).toBe('id');expect(decide({param:'en',languages:['id-ID']})).toBe('en');
   // ?lang= takes the exact tag only: `in` (the withdrawn code), ID and id-ID are no tag.
   for(const junk of ['ID','id-ID','in','in-ID','Id'])expect(decide({param:junk,languages:['en-US']}),junk).toBe('en');
   expect(HTML_LANG.id).toBe('id');expect(selectorShown('id')).toBe(true);
-  // Once released (ID-REL), id, id-* and the legacy in, in-* browsers open it, in any case; Malay, Javanese, Sundanese and en-ID do not.
-  const after=releasing(LANGUAGES,'id');
-  for(const languages of [['id'],['id-ID'],['ID-id'],['in'],['in-ID']])expect(decide({languages,registry:after}),languages.join(',')).toBe('id');
-  for(const languages of [['ms'],['ms-MY'],['ms-ID'],['zsm'],['jv'],['jv-ID'],['su'],['en-ID'],['en-US','id-ID']])expect(decide({languages,registry:after}),languages.join(',')).toBe('en');
-  expect(decide({languages:['id-ID','pt-BR'],registry:after})).toBe('id');expect(decide({stored:'id',languages:['en-US'],registry:after})).toBe('id');
+  // Before its release (ID0–ID-HELP) only ?lang=id reached it.
+  const before=LANGUAGES.map(l=>l.tag==='id'?{...l,released:false}:l);
+  for(const languages of [['id'],['id-ID'],['in-ID']])expect(decide({languages,registry:before}),languages.join(',')).toBe('en');
+  expect(decide({stored:'id',languages:['id-ID'],registry:before})).toBe('en');expect(decide({param:'id',registry:before})).toBe('id');
  });
  it('Front HI0: Hindi is registered before its release: only ?lang=hi opens it; hi and hi-* browsers and a stored hi stay English',()=>{
   expect(isReleased('hi')).toBe(false);expect(HTML_LANG.hi).toBe('hi');

@@ -258,10 +258,63 @@ Inspection on `https://openvireo.space/fr/` and one French lab page (for example
 same in Bing Webmaster Tools if wanted. OpenSEO can track French keywords (for example «TP loi de Hubble», «CLEA astronomie», «TP
 diagramme HR amas») with France, Belgium, Switzerland or Canada as the market.
 
+# Front ID-SEO: Indonesian search pages
+
+User decision 8 of 2026-11-09 and the Indonesian decisions of 2026-11-19 (AGENTS.md): with the Indonesian release (ID-REL, the same
+front, ID-REL+SEO), its home page `/id/` and lab pages `/id/labs/`, with `hreflang` and an Indonesian preview image, following
+PT-SEO's data-driven design as FR-SEO did. Static site only; no new external service. The language rules are in `docs/I18N.md`,
+"Indonesian: release and search pages (ID-REL+SEO)".
+
+## What changed
+
+- **Data only.** An `id` row in `src/seo/languages.ts` (`SEO_LANGUAGES`), its lab texts in `src/seo/labs.id.ts`, its prefix `/id`
+  in `SEO_PATH_PREFIX` (`src/seo/labSlugs.ts`; equal to the registry's `pagePath`). `src/seo/pages.ts`, the Vite plugin and the
+  image renderer are unchanged: they render the row.
+- **Indonesian pages**: `/id/` (static home: what OpenVireo is, «Buka observatorium», the seven labs, «Cara kerja», the credit),
+  `/id/labs/` and `/id/labs/<slug>/` with the English slugs. `<html lang="id">`, Indonesian titles (49–64 characters) and
+  descriptions (146–160), self canonical, `og:locale` `id_ID` with `og:locale:alternate` `en_US`, `es_LA`, `pt_BR` and `fr_FR`,
+  Indonesian JSON-LD (`learningResourceType` «Praktikum interaktif», `educationalLevel` «Sekolah menengah atas»/«Perguruan tinggi»,
+  `isBasedOn` crediting Project CLEA, Gettysburg College and the NSF). «Buka praktikum» goes to `/?lang=id#lab=<slug>`. A lab is a
+  «praktikum» (the app's word) and the lab names are the app's own Indonesian names («Hukum Hubble», «Struktur skala besar»,
+  «Klasifikasi bintang», «Fotometri Pleiades», «Diagram HR gugus bintang», «Pulsar», «Objek X»). The text addresses the reader as
+  «Anda» with base-form imperatives, uses the glossary's terms («pergeseran merah», «diagram kerucut», «lebar ekuivalen», «deret
+  utama», «denyut», never «pulsa»), and the home's «Cara kerja» adds that on screen numbers use a decimal point and a thin space
+  between thousands («24 000», U+202F). The footer says «Teks berbahasa Indonesia ini adalah adaptasi web OpenVireo, bukan teks
+  CLEA.» «online» follows the app's own welcome rather than KBBI's «daring».
+- **hreflang** on every page pair (45 pages, 9 per language): `en`, `es`, `pt-BR`, `pt`, `fr`, `id` and `x-default` → English. `id`
+  alone names the one standard Indonesian that the app opens for every `id`/`id-*` browser and the withdrawn `in`/`in-*` (ID-REL);
+  Malay searchers keep the English x-default, as Malay browsers keep English. The sitemap lists all 45 addresses with the same seven
+  alternates. English, Spanish, Portuguese and French pages gain `og:locale:alternate` `id_ID` and a visible «Bahasa Indonesia» link
+  (`hreflang`/`lang` `id`); `index.html`'s body is untouched (only its alternates, built from the table, gain the Indonesian link).
+- **App**: the observatory footer's labs link goes to `/id/labs/` when the app is in Indonesian (the prefix table gains `id:'/id'`).
+- **Preview image** `public/og-image-id.png` (1200×630, 279,971 bytes, SHA-256 `556893c3…94271dc3`): the design of the others with
+  Indonesian text («Praktikum astronomi CLEA VIREO di browser Anda», with a no-break space keeping «CLEA VIREO» on one line), rendered by `node scripts/render-og-image.mjs id` with the
+  project's test fontconfig; an original drawing, no CLEA image. Two renders gave the same bytes.
+- **Headers**: `/id/*` is `no-cache`, like `/labs/*`, `/es/*`, `/pt-br/*` and `/fr/*` (`public/_headers`, `src/deployHeaders.test.ts`).
+
+## Tests
+
+- `src/seo/languages.test.ts`: Indonesian joins the per-language checks with its own rules (profile `id`, glossary field `id`, the
+  Indonesian claims «versi resmi», «terjemahan resmi», «program resmi», the reconstruction phrase «Rekonstruksi web gratis», the
+  adaptation and credit sentences, `id_ID`, its image); no rule needed an explicit Indonesian case. The alternates are `en`, `es`,
+  `pt-BR`, `pt`, `fr`, `id`, `x-default` on all 45 pages and in the sitemap; the unreleased-language fallback of `labsIndexUrl` is
+  checked with Hindi. `src/seo/pages.test.ts` (45 sitemap addresses, the five-language 404) and `src/seo/direction.test.ts` (the
+  Indonesian link in the RTL-fixture pages) follow.
+- `tests/i18n/seo.spec.ts`: the same flows for Indonesian (`/id/`, «Buka praktikum» on the pulsar and Object X pages, English back).
+- `tests/release/pages-smoke.pages.ts`: the Indonesian pages and image with the release headers, the 308s, the seven alternates on
+  `/` and each home, the sitemap, and an Indonesian lab page opening the app under the release policy (only id chunks fetched).
+
+## For the user (not done by the site)
+
+After the deploy: in Google Search Console resubmit `https://openvireo.space/sitemap.xml` (it now lists 45 addresses) and use URL
+Inspection on `https://openvireo.space/id/` and one Indonesian lab page (for example `/id/labs/hubble/`), then «Request indexing».
+The same in Bing Webmaster Tools if wanted. OpenSEO can track Indonesian keywords (for example «praktikum hukum Hubble», «CLEA
+astronomi», «diagram HR gugus bintang») with Indonesia as the market.
+
 # Front JA-SEO: Japanese search pages
 
 User decision 8 of 2026-11-09 and the Japanese decisions of 2026-11-19 (AGENTS.md): with the Japanese release (JA-REL, the same
-front, JA-REL+SEO), its home page `/ja/` and lab pages `/ja/labs/`, with `hreflang` and a Japanese preview image, following FR-SEO's
+front, JA-REL+SEO), its home page `/ja/` and lab pages `/ja/labs/`, with `hreflang` and a Japanese preview image, following FR-SEO's and ID-SEO's
 data-driven design. Static site only; no new external service. The language rules are in `docs/I18N.md`, "Japanese: release and
 search pages (JA-REL+SEO)".
 
@@ -289,8 +342,8 @@ search pages (JA-REL+SEO)".
 - **Glossary**: the ja glossary requires 星団 where the English says "clusters"; in the large-scale-structure item "What clusters,
   walls, filaments and voids are" those are galaxy clusters (銀河団), so the ja rule's `english` hook hides that one word from the
   glossary check, with a comment in the test.
-- **hreflang** on every page pair (45 pages, 9 per language): `en`, `es`, `pt-BR`, `pt`, `fr`, `ja` and `x-default` → English. `ja`
-  names the one Japanese that every `ja`/`ja-*` browser opens (JA-REL). The sitemap lists all 45 addresses with the same seven
+- **hreflang** on every page pair (54 pages, 9 per language): `en`, `es`, `pt-BR`, `pt`, `fr`, `id`, `ja` and `x-default` → English. `ja`
+  names the one Japanese that every `ja`/`ja-*` browser opens (JA-REL). The sitemap lists all 54 addresses with the same eight
   alternates; the other languages' pages gain `og:locale:alternate` `ja_JP` and a visible «日本語» link (`hreflang`/`lang` `ja`).
 - **App**: the observatory footer's labs link goes to `/ja/labs/` when the app is in Japanese (the prefix table gains `ja:'/ja'`).
 - **Preview image** `public/og-image-ja.png` (1200×630, SHA-256 `de28983f…b073c6`): the design of the others with Japanese text
@@ -298,7 +351,7 @@ search pages (JA-REL+SEO)".
   (`~/.cache/openvireo-test-fonts/scripts/fonts.conf`: Noto Sans CJK JP from the Ubuntu archive, OFL; the image ships no font file).
   The renderer's heading now has `word-break:auto-phrase`, which breaks Japanese between phrases (the first render split ブラウ|ザー)
   and leaves other languages as they were (the French image re-renders byte-identical). Two renders gave the same bytes.
-- **Headers**: `/ja/*` is `no-cache`, like `/labs/*`, `/es/*`, `/pt-br/*` and `/fr/*` (`public/_headers`, `src/deployHeaders.test.ts`).
+- **Headers**: `/ja/*` is `no-cache`, like `/labs/*`, `/es/*`, `/pt-br/*`, `/fr/*` and `/id/*` (`public/_headers`, `src/deployHeaders.test.ts`).
 - **404**: the shared 404 page gains a `<section lang="ja">` («ページが見つかりません», «このアドレスはOpenVireoのサイトにはありません。»,
   «天文台を開く» to `/?lang=ja#observatory`), and its title ends « · 見つかりません».
 
@@ -306,15 +359,15 @@ search pages (JA-REL+SEO)".
 
 - `src/seo/languages.test.ts`: Japanese joins the per-language checks with its own rules (profile `ja`, glossary field `ja`, the
   Japanese claims, reconstruction phrase, adaptation and credit sentences, `ja_JP`, its image); lengths in display columns for every
-  language. `src/seo/pages.test.ts` (45 sitemap addresses, the five-language 404) and `src/seo/direction.test.ts` (the Japanese link
+  language. `src/seo/pages.test.ts` (54 sitemap addresses, the six-language 404) and `src/seo/direction.test.ts` (the Japanese link
   in the RTL-fixture pages) follow.
 - `tests/i18n/seo.spec.ts`: the same flows for Japanese (`/ja/`, «実習を開く» on the pulsar and Object X pages, English back).
-- `tests/release/pages-smoke.pages.ts`: the Japanese pages and image with the release headers, the 308s, the seven alternates on `/`
+- `tests/release/pages-smoke.pages.ts`: the Japanese pages and image with the release headers, the 308s, the eight alternates on `/`
   and each home, the sitemap, the 404's Japanese section, and a Japanese lab page opening the app under the release policy.
 
 ## For the user (not done by the site)
 
-After the deploy: in Google Search Console resubmit `https://openvireo.space/sitemap.xml` (it now lists 45 addresses) and use URL
+After the deploy: in Google Search Console resubmit `https://openvireo.space/sitemap.xml` (it now lists 54 addresses) and use URL
 Inspection on `https://openvireo.space/ja/` and one Japanese lab page (for example `/ja/labs/hubble/`), then «Request indexing».
 OpenSEO can track Japanese keywords (for example «ハッブルの法則 実習», «CLEA 天文», «HR図 星団 実習») with Japan as the market.
 
