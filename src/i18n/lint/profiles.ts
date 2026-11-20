@@ -3,6 +3,7 @@
  * all) and adds its glossary. */
 import {SIMPLIFIED_ONLY,TRADITIONAL_ONLY} from './hanVariants';
 import type {PluralCategory} from '../plural';
+import {chineseTypographyFindings} from './chinese';
 import {frenchTypographyFindings} from './frenchSpacing';
 import {indonesianTypographyFindings} from './indonesianTypography';
 import {KANA_PREFERRED_PATTERNS,LONG_VOWEL_PATTERN,OVER_POLITE_PATTERNS,japaneseTypographyFindings} from './japanese';
@@ -398,6 +399,9 @@ export function profileFor(id:ProfileId,registers:Registers=REGISTER):LocaleProf
     pairs:hans?[CURLY,pair('《','》'),pair('（','）'),PARENS]:[pair('「','」'),pair('『','』'),pair('《','》'),pair('（','）'),PARENS],
     forbiddenMarks:hans?[{mark:'"',use:'“ ”'},{mark:'「',use:'“'},{mark:'」',use:'”'},{mark:'『',use:'‘'},{mark:'』',use:'’'}]:[{mark:'"',use:'「 」'},{mark:'“',use:'「'},{mark:'”',use:'」'}],
     typography:cjkTypography(HAN,'，。、：；？！'),
+    // Front ZH1: as Japanese's, what the CJK punctuation fixer would still change in the variant's style, and any Han character
+    // outside the variant's standard set (GB2312 / Big5; src/i18n/lint/chinese.ts).
+    typographyCheck:chineseTypographyFindings(id),
     register:{setting:registers.zh,patterns:chineseRegister(registers.zh)},
     // 非官方翻译 (unofficial) and 不是…翻译 (is not) pass.
     claims:[hans?/(?<!非|不是|不是CLEA的?)官方翻译|(?<!不是)CLEA(?:的)?(?:官方)?翻译/u:/(?<!非|不是|不是CLEA的?)官方翻譯|(?<!不是)CLEA(?:的)?(?:官方)?翻譯/u],

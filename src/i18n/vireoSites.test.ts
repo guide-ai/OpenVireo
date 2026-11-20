@@ -15,6 +15,8 @@ import idOriginals from './id/originals.json';
 import idIdentical from './id/identical.json';
 import jaOriginals from './ja/originals.json';
 import jaIdentical from './ja/identical.json';
+import zhHansOriginals from './zh-hans/originals.json';
+import zhHansIdentical from './zh-hans/identical.json';
 import ruOriginals from './ru/originals.json';
 import ruIdentical from './ru/identical.json';
 import {normalizeOriginal} from './vireo';
@@ -38,6 +40,8 @@ const STRICT:readonly {tag:string;originals:Record<string,string>;identical:Reco
  {tag:'hi',originals:hiOriginals,identical:hiIdentical.entries},
  // Front JA1: Japanese translates all of VIREO's originals at once, as FR1 did.
  {tag:'ja',originals:jaOriginals,identical:jaIdentical.entries},
+ // Front ZH1: Simplified Chinese translates all of VIREO's originals at once, as FR1 did.
+ {tag:'zh-Hans',originals:zhHansOriginals,identical:zhHansIdentical.entries},
  // Front RU1: Russian translates all of VIREO's originals at once, as FR1 and ID1 did.
  {tag:'ru',originals:ruOriginals,identical:ruIdentical.entries},
 ];
