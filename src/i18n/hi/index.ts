@@ -21,7 +21,7 @@ import {ENGINE_VIEW_HI} from './maps/engineView';
 import {SPECTRAL_RANGE_HI} from './maps/spectralRange';
 import {WEDGE_HI} from './maps/wedge';
 /** Front HI0: the Hindi (hi) bundle (docs/I18N.md, "Hindi: the folder, the digit notice and the shell (HI0)"; HI1 adds the
- * observatory's maps and all of VIREO's originals, HI2 exercises E01 and E02). Partial until its
+ * observatory's maps and all of VIREO's originals, HI2 exercises E01 and E02, HI3 exercise E03). Partial until its
  * release (src/i18n/languages.json `released:false`): only a `?lang=hi` preview reaches it, and every string it lacks is English.
  * The production build splits it by route area like the other languages (scripts/i18n-split.mjs parses this manifest); Vitest
  * imports it whole. Translations are web adaptations by OpenVireo; they never claim to be CLEA's, and CLEA's bytes, hashes and

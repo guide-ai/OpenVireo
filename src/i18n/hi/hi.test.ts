@@ -56,6 +56,11 @@ const HI1_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>OBSERVATORY_PREFIXES.
  * their prefixes, which include the shared core keys continuity.* and ssp.header, and classLink.open, the star exposure's button). */
 const E01_E02_PREFIXES=/^(continuity|lab|lssLab|hubble|velocity|ownResults|spectrum|spectrometer|galaxyExposure|skyExposure|starExposure|ssp|exposureIO|drift|skyProfiles|fieldSpec|lss|wedge)\./;
 const HI2_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E01_E02_PREFIXES.test(k)||k==='classLink.open');
+/** Front HI3's area of en.json: exercise E03 (spectral classification) as PT3 and FR3 scoped it: every key of the classification
+ * module and of classification+cluster, and the core keys E03 renders (the rest of classLab, class, classLink, classImport, combined,
+ * probe); continuity.restoreExposure and ssp.header, which E03 also renders, are HI2's (their prefixes are E01/E02's). */
+const E03_PREFIXES=/^(class|classLines|classLink|classAtlas|classImport|classLab|feature|cursor|probe|photo|combined|combinedWidth|viewport|inspection|sampledTrace|reverseTrace|sampledDiff|range|widthSource|widthCoordinates|sharedMarks|comparisonMark|paneSource|panMarks|obs|nativeResults|nativeEdit|nativeDelete|nativeList|nativeText|nativeCsv|program|programImport)\./;
+const HI3_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E03_PREFIXES.test(k)||k==='continuity.restoreExposure'||k==='ssp.header');
 /** PT1's keys outside those prefixes that the observatory files render (the classification and Pleiades guides' pointing
  * steps, the photometer card, the continuity notes the route shows): 104 keys, pinned so a lost key fails. */
 const HI1_GUIDE_KEYS:readonly MessageKey[]=['spectrum.licenseHelp','spectrometer.open','continuity.starSource','continuity.acquireFromObservatory','continuity.pointingHelp','galaxyExposure.acquireFromObservatory','galaxyExposure.pointingHelp','galaxyExposure.source','classLab.next.choose','classLab.next.compare','classLab.next.inspect','classLab.next.record','classLab.next.save','classLab.step.choose.title','classLab.step.choose.help','classLab.step.compare.title','classLab.step.compare.help','classLab.step.inspect.title','classLab.step.inspect.help','classLab.step.record.title','classLab.step.record.help','classLab.step.save.title','classLab.step.save.help','classLab.problem.load','classLab.recover.load','classLab.problem.draft','classLab.recover.draft','classLab.problem.limit','classLab.recover.limit','classLab.problem.width','classLab.recover.width','classLab.problem.import','classLab.recover.import','ph.readingOption','ph.unavailableMixed','ph.unavailableAssociation','ph.access.ready','ph.access.pointing','ph.access.dome','ph.access.finder','ph.access.moving','ph.domainLimit.Poisson-mean-bound','ph.domainLimit.all-duration-count-domain','ph.apertureReadingOption','pleiadesPoint.eyebrow','pleiadesPoint.title','pleiadesPoint.admitted','pleiadesPoint.open','pleiadesPoint.unavailable','pleiadesPoint.telescope','pleiadesPoint.checking','pleiadesPoint.help','pleiadesLab.next.list','pleiadesLab.next.point','pleiadesLab.next.activate','pleiadesLab.next.measure','pleiadesLab.next.record','pleiadesLab.next.color','pleiadesLab.next.sample','pleiadesLab.next.distance','pleiadesLab.next.save','pleiadesLab.step.list.title','pleiadesLab.step.list.help','pleiadesLab.step.point.title','pleiadesLab.step.point.help','pleiadesLab.step.activate.title','pleiadesLab.step.activate.help','pleiadesLab.step.measure.title','pleiadesLab.step.measure.help','pleiadesLab.step.record.title','pleiadesLab.step.record.help','pleiadesLab.step.color.title','pleiadesLab.step.color.help','pleiadesLab.step.sample.title','pleiadesLab.step.sample.help','pleiadesLab.step.distance.title','pleiadesLab.step.distance.help','pleiadesLab.step.save.title','pleiadesLab.step.save.help','pleiadesLab.problem.card','pleiadesLab.recover.card','pleiadesLab.problem.blocked','pleiadesLab.recover.blocked','pleiadesLab.problem.start','pleiadesLab.recover.start','pleiadesLab.problem.sky','pleiadesLab.recover.sky','pleiadesLab.problem.budget','pleiadesLab.recover.budget','notes.summary','ph.tiledReason.object-x-hidden','ph.tiledReason.field-polar','ph.tiledReason.photometer-galaxy-name','ph.tiledReason.photometer-variable','ph.tiledReason.photometer-selection','ph.tiledReason.photometer-empty','ph.tiledReason.photometer-population','ph.tiledLimit.Poisson-mean-bound','ph.tiledLimit.all-duration-count-domain','ph.tiledLimit.photometer-galaxy-sky-stamp','demonstrationMode.adaptation','ph.parametersDomain.base-count','ph.parametersDomain.timer','ph.parametersDomain.magnitude'];
@@ -81,7 +86,7 @@ describe('Front HI0: the Hindi (hi) bundle',()=>{
   for(const key of Object.keys(hi))expect(Object.hasOwn(en,key),key).toBe(true);
   expect(SHELL_KEYS.length).toBe(131);expect(HOME_KEYS.length).toBe(27);
   expect([...SHELL_KEYS,...HOME_KEYS,...FOOTER_KEYS].filter(k=>!Object.hasOwn(hi,k))).toEqual([]);
-  expect(Object.keys(hi).length).toBe(new Set([...SHELL_KEYS,...HOME_KEYS,...FOOTER_KEYS,...HI1_KEYS,...HI1_GUIDE_KEYS,...HI2_KEYS]).size);
+  expect(Object.keys(hi).length).toBe(new Set([...SHELL_KEYS,...HOME_KEYS,...FOOTER_KEYS,...HI1_KEYS,...HI1_GUIDE_KEYS,...HI2_KEYS,...HI3_KEYS]).size);
  });
  it('Front HI1: the catalog covers the observatory (every key of its instruments\' prefixes) and the guide keys it renders',()=>{
   expect(HI1_KEYS.length).toBeGreaterThan(450);
@@ -92,6 +97,10 @@ describe('Front HI0: the Hindi (hi) bundle',()=>{
  it('Front HI2: the catalog covers E01 and E02 (every key of their prefixes, and classLink.open)',()=>{
   expect(HI2_KEYS.length).toBeGreaterThan(780);
   expect(HI2_KEYS.filter(k=>!Object.hasOwn(hi,k))).toEqual([]);
+ });
+ it('Front HI3: the catalog covers exercise E03 (every key of its prefixes, continuity.restoreExposure and ssp.header)',()=>{
+  expect(HI3_KEYS.length).toBe(772);
+  expect(HI3_KEYS.filter(k=>!Object.hasOwn(hi,k))).toEqual([]);
  });
  it('every map has its English shape: the shell maps complete, the header-name maps partial',()=>{
   for(const [id,map] of Object.entries(HINDI.maps??{})){

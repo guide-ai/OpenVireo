@@ -56,6 +56,14 @@
   "map:wedge.detail.z": "a symbol and a number type (Z binary32)",
   "map:wedge.detail.degrees": "the degree sign",
   "map:wedge.detail.px": "the pixel unit symbol px",
-  "catalog:hubble.ratioColumn": "a ratio of symbols and its unit (v/D · km/s/Mpc)"
+  "catalog:hubble.ratioColumn": "a ratio of symbols and its unit (v/D · km/s/Mpc)",
+  "catalog:classLines.option": "a format of parameters and a unit only ({wavelength} Å · {label})",
+  "catalog:probe.shaLabel": "a hash name kept in English (SHA-256)",
+  "catalog:photo.caption": "a format of parameters only ({label} · {polarity})",
+  "catalog:viewport.range": "a format of parameters, a unit and the multiplication sign only",
+  "catalog:nativeResults.typeValue": "a format of parameters only ({code} · {label})",
+  "catalog:nativeResults.kindValue": "a format of parameters only ({kind} · {label})",
+  "catalog:program.row": "a format of parameters only ({position} · {object})",
+  "catalog:nativeText.choice": "a format of parameters only ({index} · {object})"
  }
 }
