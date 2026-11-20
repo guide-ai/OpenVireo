@@ -106,7 +106,7 @@
    "hi": "मेनू"
   },
   {
-   "en": "\\bguides?\\b(?! Star)",
+   "en": "(?<!visual )\\bguides?\\b(?! Star)",
    "hi": "गाइड"
   },
   {
@@ -646,7 +646,7 @@
    "hi": "वेब अनुकूलन"
   },
   {
-   "en": "\\b(?:(?<!plotted )point(?:s|ed|ing)? (?:the telescope|at|to)|pointings?)\\b",
+   "en": "\\b(?:(?<!plotted |clip )point(?:s|ed|ing)? (?:the telescope|at|to(?! inspect))|pointings?)\\b",
    "hi": "इंगित|दिशा|की ओर (?:नहीं )?(?:है|हैं|था)"
   },
   {
