@@ -133,6 +133,7 @@
   "map:pulsarSavedRows.savedRows.lineEnding.LF": "Front JA6: the file’s own line-ending name (LF)",
   "map:objectXMeasure.colX": "Front JA6: a pixel axis symbol (x)",
   "map:objectXMeasure.colY": "Front JA6: a pixel axis symbol (y)",
-  "map:objectXMeasure.colUt": "Front JA6: a time scale symbol (UT)"
+  "map:objectXMeasure.colUt": "Front JA6: a time scale symbol (UT)",
+  "map:helpViewer.spectralLines.ok": "Front JA-HELP: VIREO's OK, the same in Windows Japanese"
  }
 }
