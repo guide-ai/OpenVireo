@@ -1,0 +1,45 @@
+// Front JA-HELP [W]: OpenVireo's Japanese (ja) web adaptation of VIREO's LSSHLP.LST. Not CLEA's text: the original bytes,
+// hashes and provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Japanese chunk.
+export const language='ja';
+export const sourceName='LSSHLP.LST';
+export const sourceSha256='f4ee3de45cead6cac0ae53458c94f9927bd48248a573632787d9e6a275e05c10';
+export const text=`'はじめに' 'begin'
+'ログイン' 'lsslab.txt'
+'望遠鏡を操作' 'begin'
+'望遠鏡ウィンドウを開く' 'lsslab.txt'
+'望遠鏡の操作部' 'lsslab.txt'
+'望遠鏡を操作' 'end'
+'望遠鏡の変更' 'begin'
+'望遠鏡の観測時間を申請' 'lsslab.txt'
+'望遠鏡の利用' 'lsslab.txt'
+'望遠鏡の変更' 'end'
+'星野の変更' 'lsslab.txt'
+'はじめに' 'end'
+
+'データの取得' 'begin'
+'分光器の使用' 'begin'
+'分光器ウィンドウを開く' 'lsslab.txt'
+'カウントの開始／再開' 'lsslab.txt'
+'カウントの停止' 'lsslab.txt'
+'スペクトルの測定' 'lsslab.txt'
+'スペクトルを印刷' 'lsslab.txt'
+'分光器の使用' 'end'
+'速度の計算' 'begin'
+'手計算' 'lsslab.txt'
+'計算の検証' 'lsslab.txt'
+'速度の計算' 'end'
+'望遠鏡ウィンドウに戻る' 'lsslab.txt'
+'データの取得' 'end'
+
+'データ操作' 'begin'
+'データを読み込む' 'lsslab.txt'
+'データを見直す' 'lsslab.txt'
+'データを保存' 'lsslab.txt'
+'データを印刷' 'lsslab.txt'
+'結果のプロット' 'begin'
+'結果を共有プロットファイルに保存' 'lsslab.txt'
+'「扇形図」プロットプログラムを開く' 'lsslab.txt'
+'結果のプロット' 'end'
+'表計算ソフトの使用' 'lsslab.txt'
+'データ操作' 'end'
+`;
