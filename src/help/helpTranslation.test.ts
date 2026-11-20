@@ -11,6 +11,7 @@ import ptGlossary from '../i18n/pt-br/glossary.json';
 import frGlossary from '../i18n/fr/glossary.json';
 import idGlossary from '../i18n/id/glossary.json';
 import hiGlossary from '../i18n/hi/glossary.json';
+import ruGlossary from '../i18n/ru/glossary.json';
 import {HelpTranslationError,helpTranslationText} from './helpTranslation';
 import {LANGUAGES,type LanguageEntry} from '../i18n/languages';
 import {PROFILES} from '../i18n/lint/profiles';
@@ -35,7 +36,7 @@ function sectionOf(file:Uint8Array|string,title:string):number{
 }
 /** The languages that translate the help files, with the describe title each keeps (Spanish: ES-HELP's). */
 const HELP_LANGUAGES=LANGUAGES.filter((l):l is LanguageEntry&{help:{related:string}}=>!!l.help);
-const TITLES:Readonly<Record<string,string>>={'es-419':'the Spanish help files (Front ES-HELP)','pt-BR':'the Brazilian Portuguese help files (Front PT-HELP)','fr':'the French help files (Front FR-HELP)','id':'the Indonesian help files (Front ID-HELP)','hi':'the Hindi help files (Front HI-HELP)'};
+const TITLES:Readonly<Record<string,string>>={'es-419':'the Spanish help files (Front ES-HELP)','pt-BR':'the Brazilian Portuguese help files (Front PT-HELP)','fr':'the French help files (Front FR-HELP)','id':'the Indonesian help files (Front ID-HELP)','hi':'the Hindi help files (Front HI-HELP)','ru':'the Russian help files (Front RU-HELP)'};
 /** Front SC7: the help sets written in Latin-1 (any script may be, now; these two are, by their own rule), each with the
  * characters it may add beyond Latin-1. Front PT-SEO: Portuguese groups thousands with U+202F on screen (user decision of
  * 2026-11-10), which Latin-1 cannot hold, so PULSRANL's «2 400 000» used U+00A0 until SC7 made translated help text; U+202F is a
@@ -50,7 +51,7 @@ const LATIN1_HELP:Readonly<Record<string,string>>={'es-419':'','pt-BR':'\u202f',
 const asLatin1=(s:string)=>s.replaceAll('\u202f','\u00a0').replaceAll('\u2019','\u00b4').replaceAll('\u0153','\u00f8').replaceAll('\u0152','\u00d8');
 const viaLatin1=<T,>(value:T):T=>JSON.parse(asLatin1(JSON.stringify(value)));
 it('Front PT-HELP: Spanish and Brazilian Portuguese translate the help files, each with its own marker',()=>{
- expect(HELP_LANGUAGES.map(l=>[l.tag,l.help.related])).toEqual([['es-419','TEMAS RELACIONADOS'],['pt-BR','TÓPICOS RELACIONADOS'],['fr','RUBRIQUES CONNEXES'],['id','TOPIK TERKAIT'],['hi','संबंधित विषय']]);
+ expect(HELP_LANGUAGES.map(l=>[l.tag,l.help.related])).toEqual([['es-419','TEMAS RELACIONADOS'],['pt-BR','TÓPICOS RELACIONADOS'],['fr','RUBRIQUES CONNEXES'],['id','TOPIK TERKAIT'],['hi','संबंधित विषय'],['ru','СВЯЗАННЫЕ ТЕМЫ']]);
  for(const l of HELP_LANGUAGES)expect(TITLES[l.tag],l.tag).toBeDefined();
 });
 
@@ -314,5 +315,37 @@ describe('the Hindi help texts follow the hi lints',()=>{
  });
  it('every allowance is still needed and has a reason',()=>{
   for(const [key,a] of Object.entries(HI_ALLOWED)){expect(a.reason.length,key).toBeGreaterThan(20);for(const m of a.matches)expect(hitsOf(key).map(h=>h.match),`${key} ${m}`).toContain(m);}
+ });
+});
+
+// Front RU-HELP (plan front-i18n-ru.md §6.2): the Russian help set is Unicode text (Cyrillic), so the Latin-1 checks above do not
+// apply; the structure checks run as for every language. Each paragraph of every Russian help text runs the ru profile's typography
+// patterns (dashes, ё in unambiguous words, mixed scripts, U+202F thousands, sentence case, Cyrillic unit symbols), its «вы» register
+// patterns and the glossary's `forbidden` terms; each TXT paragraph also runs the Russian typography fixer's view (U+00A0 before
+// « — » and a unit, « » quotes). A TXT file holds no straight `"` and no ” (Russian quotes are « » with „ “ inside).
+const RU_ALLOWED:Record<string,{matches:string[];reason:string}>={
+ 'CLASSHLP.TXT':{matches:[' - '],reason:'VIREO\'s English caption «Show Difference (Std - Unkn)», quoted in brackets after its Russian, keeps its own hyphen'},
+};
+describe('the Russian help texts follow the ru lints',()=>{
+ const ru=(key:string):Module=>modules[`../i18n/ru/help/${key}.ts`];
+ const profile=PROFILES.ru;
+ const WORDS=(w:readonly string[])=>new RegExp(`(?<![\\p{L}\\p{N}])(?:${w.join('|')})(?![\\p{L}\\p{N}])`,'iu');
+ const forbidden=(ruGlossary.forbidden as {ru?:string;words?:string[];use:string}[]).map(f=>({label:'glossary forbidden',pattern:f.words?WORDS(f.words):new RegExp(f.ru!,'iu'),use:f.use}));
+ const patterns=[...profile.typography,...profile.register.patterns,...forbidden];
+ const paragraphs=(text:string)=>text.split(/\n[ ]*\n/).map(p=>p.split('\n').map(l=>l.trim()).join(' ').trim()).filter(Boolean);
+ const hitsOf=(key:string)=>{
+  const english=new TextDecoder('latin1').decode(original(key)),out:{label:string;match:string;use:string}[]=[];
+  for(const para of paragraphs(ru(key).text)){
+   for(const p of patterns){const m=new RegExp(p.pattern.source,p.pattern.flags.replace('g','')).exec(para);if(m)out.push({label:p.label,match:m[0],use:p.use});}
+   if(!key.endsWith('.LST')&&key!=='SPECLNS.LNL')for(const h of profile.typographyCheck?.(para,english)??[])out.push(h);
+  }
+  return out;
+ };
+ for(const key of Object.keys(HELP_FILES))it(`${key}: no ru lint error (dashes, ё, scripts, thousands, sentence case, units, register, forbidden terms)`,()=>{
+  expect(hitsOf(key).filter(h=>!RU_ALLOWED[key]?.matches.includes(h.match)).map(h=>`${h.label}: «${h.match}», use ${h.use}`)).toEqual([]);
+  if(!key.endsWith('.LST')&&key!=='SPECLNS.LNL')expect(ru(key).text,key).not.toMatch(/["”]/);
+ });
+ it('every allowance is still needed and has a reason',()=>{
+  for(const [key,a] of Object.entries(RU_ALLOWED)){expect(a.reason.length,key).toBeGreaterThan(20);for(const m of a.matches)expect(hitsOf(key).map(h=>h.match),`${key} ${m}`).toContain(m);}
  });
 });

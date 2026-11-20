@@ -54,6 +54,12 @@
     "glossary"
    ],
    "reason": "Front RU5: the title of a question box, «Подтверждение», as VIREO's Confirmation caption in originals.json; «Подтвердить» is the button"
+  },
+  "map:webHelp.groups.0.topics.3.blocks.1.rows.2.1": {
+   "rules": [
+    "glyphs"
+   ],
+   "reason": "Front RU-HELP: it quotes the site clock by its full on-screen name, «Часы пункта наблюдений · фиксированный сценарий всемирного времени» (siteClock.title), whose · the English short name lacks"
   }
  }
 }

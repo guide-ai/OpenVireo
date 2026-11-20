@@ -44,6 +44,8 @@ import {RADIO_ANTENNA_MESSAGES_EN} from '../../components/RadioAntennaMessages';
 import {FINISH_SAVE_MESSAGES_EN} from '../../components/RadioFinishSaveMessages';
 import {RADIO_R1_MESSAGES_EN} from '../../components/RadioR1Messages';
 import {RADIO_SAVE_MESSAGES_EN} from '../../components/RadioRecordSaveMessages';
+import {HELP_VIEWER_EN} from '../../help/HelpViewerMessages';
+import {WEB_HELP_EN} from '../../help/webHelp';
 import esIdentical from '../es/identical.json';
 
 // Front RU0 (docs/I18N.md, "Russian: plural families, the folder, lints and shell (RU0)"; plan front-i18n-ru.md §1.2, §4, §6.2): the
@@ -59,10 +61,11 @@ import esIdentical from '../es/identical.json';
 const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,
  camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,nakedEye:NAKED_EYE_MESSAGES_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,
  engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN,clusterHr:CLUSTER_HR_EN,clusterData:CLUSTER_DATA_MESSAGES_EN,
- radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN};
+ radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN,
+ helpViewer:HELP_VIEWER_EN,webHelp:WEB_HELP_EN};
 /** The maps translated completely (RU0's shell maps; RU1's observatory maps, the camera card the observatory shows, and polish; RU2's
- * engineView, spectralRange and wedge; RU4's clusterHr, clusterData and variableStars; RU5's four radio maps). */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars','radioAntenna','radioFinishSave','radioR1','radioRecordSave'];
+ * engineView, spectralRange and wedge; RU4's clusterHr, clusterData and variableStars; RU5's four radio maps; RU-HELP's helpViewer and webHelp). */
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars','radioAntenna','radioFinishSave','radioR1','radioRecordSave','helpViewer','webHelp'];
 /** Front RU1's area of en.json: FR1's and ID1's observatory keys (the instruments' prefixes and the Hubble hot-list reasons) and the
  * 104 guide keys the observatory files render (src/i18n/fr/fr.test.ts FR1_GUIDE_KEYS, read from there so the two never drift). */
 const OBSERVATORY_PREFIXES=/^(sky|optical|motion|horizon|siteClock|runningClock|scopeAccess|instrumentAccess|instrumentParameters|cameraParameters|cameraInfo|cameraPrepare|palette|testMode|optionsFile|photometerTab|htl|multispec|nativeMirror|hubblePoint)\./;
@@ -117,7 +120,8 @@ if(process.env.OPENVIREO_FIX_TYPOGRAPHY==='1'){
 describe('Front RU0: the Russian (ru) bundle',()=>{
  it('is registered before its release: a ?lang=ru preview only, never detected or offered; thousands with U+202F from the start',()=>{
   expect(languageEntry('ru')).toMatchObject({dir:'ru',catalog:'ru.json',budgetFactor:1.2,htmlLang:'ru',pagePath:'ru',autonym:'Русский',englishName:'Russian',match:['ru'],released:false,thousands:' '});
-  expect(languageEntry('ru')?.help).toBeUndefined();
+  // Front RU-HELP: Russian translates VIREO's help files, with its related-topics marker («Связанные темы:»).
+  expect(languageEntry('ru')?.help).toEqual({related:'СВЯЗАННЫЕ ТЕМЫ'});
   expect(RUSSIAN.language).toBe('ru');
   for(const notice of Object.values(languageEntry('ru')!.notices)){expect(fixRussianTypography(notice)).toBe(notice);expect(notice).toMatch(/ещё/);}
  });
