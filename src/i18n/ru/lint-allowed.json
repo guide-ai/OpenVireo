@@ -72,6 +72,36 @@
     "script"
    ],
    "reason": "Front RU6: the column symbol «№», as the pulsar review table writes it"
+  },
+  "catalog:plr.savedRows.help": {
+   "rules": [
+    "glyphs"
+   ],
+   "reason": "Front RU6 review: it quotes the full labels of controls whose own label ends in an ellipsis («…» or VIREO's «...»), where the English names them in short"
+  },
+  "catalog:pulsarLab.step.period.help": {
+   "rules": [
+    "glyphs"
+   ],
+   "reason": "Front RU6 review: it quotes the full labels of controls whose own label ends in an ellipsis («…» or VIREO's «...»), where the English names them in short"
+  },
+  "catalog:pulsarLab.step.delay.help": {
+   "rules": [
+    "glyphs"
+   ],
+   "reason": "Front RU6 review: it quotes the full labels of controls whose own label ends in an ellipsis («…» or VIREO's «...»), where the English names them in short"
+  },
+  "map:pulsar.pulsar.guide.record": {
+   "rules": [
+    "glyphs"
+   ],
+   "reason": "Front RU6 review: it quotes the full labels of controls whose own label ends in an ellipsis («…» or VIREO's «...»), where the English names them in short"
+  },
+  "map:pulsar.pulsar.nativeSave.note": {
+   "rules": [
+    "glyphs"
+   ],
+   "reason": "Front RU6 review: it quotes the full labels of controls whose own label ends in an ellipsis («…» or VIREO's «...»), where the English names them in short"
   }
  }
 }
