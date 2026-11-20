@@ -44,7 +44,10 @@ export const NOT_SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':n
  fr:new Set(['No','no','Hrs','Bytes']),
  // Front ID5: Spanish-only words Indonesian translates (Tidak, tidak, Jam, Byte), and the direction buttons N and E, which read «U» and
  // «T» in Indonesian (the panel's `direction` captions), so an English letter left on a button fails here.
- id:new Set(['No','no','Hrs','Bytes','Min','N','E'])};
+ id:new Set(['No','no','Hrs','Bytes','Min','N','E']),
+ // Front RU5: Russian translates every shared same-in-Spanish word (Радио, Радио..., Нет, нет, Мин., Ч, Байты) and the direction
+ // buttons N, S and E («С», «Ю», «В», originals.json), so an English letter or word left there fails the walk.
+ ru:new Set(['Radio','Radio...','N','S','E','No','no','Min','Hrs','Bytes'])};
 export const same=(text:string,L?:LanguageText)=>{
  if(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false))return true;
  if(L!==undefined&&(NOT_SAME_IN[L.tag]?.has(text)??false))return false;

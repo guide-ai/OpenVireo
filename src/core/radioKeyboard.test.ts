@@ -89,15 +89,16 @@ describe('WEB-KEY-02 DOM key → Windows virtual key (browser assumption)',()=>{
   expect(mapped).toBe(52);
  });
  it('Front RU5 (Q3): a non-Latin letter reads the physical key; Latin layouts are unchanged',()=>{
-  // Russian ЙЦУКЕН: the E, N, S and W keys type у, т, ы, ц (Shift: У, Т, Ы, Ц); Greek: ε on KeyE.
-  for(const [key,code,vk] of [['у','KeyE',69],['т','KeyN',78],['ы','KeyS',83],['ц','KeyW',87],['У','KeyE',69],['Ц','KeyW',87],['ε','KeyE',69],['ф','KeyA',65]] as const)
+  // Russian ЙЦУКЕН: the E, N, S and W keys type у, т, ы, ц (Shift: У, Т, Ы, Ц); Greek: ε on KeyE; Hindi InScript: the vowel signs
+  // ा, े, ै (combining marks of the Devanagari script) on E, S, W and ल on N.
+  for(const [key,code,vk] of [['у','KeyE',69],['т','KeyN',78],['ы','KeyS',83],['ц','KeyW',87],['У','KeyE',69],['Ц','KeyW',87],['ε','KeyE',69],['ф','KeyA',65],['ा','KeyE',69],['ल','KeyN',78],['े','KeyS',83],['ै','KeyW',87]] as const)
    expect(browserVirtualKey(k(key,code),'down'),`${key} ${code}`).toEqual({vk});
   expect(browserVirtualKey(k('у','KeyE'),'up')).toEqual({vk:69});
   expect(browserTableKey(k('у','KeyE'),'down',false)).toEqual({kind:'decoded',vk:69,admitted:true,dispatch:ra19Dispatch(69,'down',false)});
   const unmapped={refused:'unmapped',vk:null};
   // A non-Latin letter on a key that is not a letter key, on the keypad, or a non-letter; Latin non-ASCII letters (é on AZERTY's
   // Digit2, ñ on Semicolon, the Turkish dotless ı on KeyI) and letters of no script (µ, the micro sign) never read the physical key.
-  for(const e of [k('х','BracketLeft'),k('ж','Semicolon'),k('у','KeyE',{location:3}),k('у',''),k('é','Digit2'),k('ñ','Semicolon'),k('ı','KeyI'),k('ö','KeyO'),k('µ','KeyM'),k('ª','KeyA'),k('ё','Backquote'),k('2','Digit2'),k('уу','KeyE')])
+  for(const e of [k('х','BracketLeft'),k('ж','Semicolon'),k('у','KeyE',{location:3}),k('у',''),k('é','Digit2'),k('ñ','Semicolon'),k('ı','KeyI'),k('ö','KeyO'),k('µ','KeyM'),k('ª','KeyA'),k('\u0301','KeyE'),k('ё','Backquote'),k('2','Digit2'),k('уу','KeyE')])
    expect(browserVirtualKey(e,'down'),`${e.key} ${e.code}`).toEqual(unmapped);
   expect(browserVirtualKey(k('у','KeyE',{ctrlKey:true}),'down')).toEqual({refused:'modifier',vk:null});
   expect(browserVirtualKey(k('у','KeyE',{isComposing:true}),'down')).toEqual({refused:'composition',vk:null});

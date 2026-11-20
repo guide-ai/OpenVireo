@@ -72,15 +72,16 @@ export type BrowserKeyRefusal='invalid-shape'|'composition'|'modifier'|'reserved
 export type BrowserVirtualKey=Readonly<{vk:number}|{refused:BrowserKeyRefusal;vk:number|null}>;
 /** KeyboardEvent.location DOM_KEY_LOCATION_STANDARD / NUMPAD. */
 const STANDARD=0,NUMPAD=3;
-const LETTER=/^[A-Za-z]$/,NON_LATIN_LETTER=/^(?![\p{Script=Latin}\p{Script=Common}\p{Script=Inherited}])\p{L}$/u,PHYSICAL_LETTER=/^Key([A-Z])$/,FUNCTION_KEY=/^F([1-9]|1[0-2])$/,NUMPAD_DIGIT=/^Numpad([0-9])$/;
+const LETTER=/^[A-Za-z]$/,NON_LATIN_LETTER=/^(?![\p{Script=Latin}\p{Script=Common}\p{Script=Inherited}])[\p{L}\p{M}]$/u,PHYSICAL_LETTER=/^Key([A-Z])$/,FUNCTION_KEY=/^F([1-9]|1[0-2])$/,NUMPAD_DIGIT=/^Numpad([0-9])$/;
 const MAX_IDENTITY=64;
 
 /** WEB-KEY-02 (OpenVireo assumption, not a runtime oracle): the Windows virtual key a browser key event stands for.
  * - an ASCII letter in `key` (either case, standard location, any non-empty physical `code`): VK 65 + letter index. The
  *   letter follows the layout's interpreted key; `code` is only the physical identity of a hold, not a fixed US mapping;
- * - a single letter of a non-Latin script in `key` (Cyrillic, Greek…: the layout types no Latin letter on that key) at the standard
- *   location: VK of the physical key's letter in `code` (KeyA…KeyZ), so a Russian layout's у, т, ы, ц on the E, N, S, W keys hold
- *   E, N, S, W (Front RU5, user decision 2026-11-19 Q3); Latin layouts never reach this branch, so they behave exactly as before;
+ * - a single letter or script-specific mark of a non-Latin script in `key` (Cyrillic, Greek, Devanagari…: the layout types no
+ *   Latin letter on that key; Hindi InScript types the vowel signs ा, े, ै on E, S, W) at the standard location: VK of the physical
+ *   key's letter in `code` (KeyA…KeyZ), so a Russian layout's у, т, ы, ц on the E, N, S, W keys hold E, N, S, W (Front RU5, user
+ *   decision 2026-11-19 Q3); Latin layouts and generic combining marks (Script=Inherited) never reach this branch;
  * - numeric keypad with NumLock on: location 3, `code` NumpadN and `key` the same digit → VK 96 + N; location 3,
  *   `code` NumpadDecimal and `key` '.' or ',' → VK 110 (VK_DECIMAL). NumLock off gives navigation keys (ArrowUp,
  *   Delete…), which are unmapped, as their Windows VKs are outside the table;
