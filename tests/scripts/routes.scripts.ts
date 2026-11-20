@@ -405,7 +405,8 @@ test(`en at ${width} px: a popup menu that fits keeps its first placement; one t
 });
 
 // Front FR-REL: French joins the walk (plan front-i18n-fr.md §6.2).
-for(const lang of ['en','es-419','pt-BR','fr'] as const)for(const width of [320,1440] as const)
+// Front ID-REL: Indonesian joins the walk.
+for(const lang of ['en','es-419','pt-BR','fr','id'] as const)for(const width of [320,1440] as const)
 test(`${lang} at ${width} px computes the same styles with and without scripts.css, on the home page and every route`,async({page})=>{
  test.setTimeout(300_000);
  // Every element's computed values of the properties scripts.css sets, then the same after removing the sheet from the page.

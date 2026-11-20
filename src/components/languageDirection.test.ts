@@ -23,7 +23,7 @@ describe('Front RT9: the direction of an element in another language',()=>{
  it('directionWithin: the language\'s own direction only where it differs from the page\'s',()=>{
   for(const tag of ['en',...LANGUAGES.map(l=>l.tag)])expect(directionWithin(tag,'ltr'),tag).toBeUndefined();
   for(const l of RTL){expect(directionWithin(l.tag,'ltr',WITH_RTL),l.tag).toBe('rtl');expect(directionWithin(l.tag,'rtl',WITH_RTL),l.tag).toBeUndefined();}
-  for(const tag of ['en','es-419','pt-BR','fr','hi'])expect(directionWithin(tag,'rtl',WITH_RTL),tag).toBe('ltr');
+  for(const tag of ['en','es-419','pt-BR','fr','id','hi'])expect(directionWithin(tag,'rtl',WITH_RTL),tag).toBe('ltr');
  });
  it('dialogLanguageName isolates a name only when it runs the other way from the page',()=>{
   expect(dialogLanguageName('Español','es-419','ltr')).toBe('Español');

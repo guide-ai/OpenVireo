@@ -24,8 +24,8 @@ const CHINESE_SIMPLIFIED=LANGUAGES.find(l=>l.tag==='zh-Hans')!;
 const RUSSIAN=LANGUAGES.find(l=>l.tag==='ru')!;
 const TRADITIONAL=['zh-Hant','zh-TW','zh-HK','zh-MO'];
 export const ZH_HANT=entry('zh-Hant','繁體中文','Chinese, Traditional',TRADITIONAL);
-/** Spanish, pt-BR, French and (since HI-REL) Hindi as released; Indonesian, Japanese, Simplified Chinese and Russian before their
- * release. */
+/** Spanish, pt-BR, French, Indonesian (since ID-REL) and Hindi (since HI-REL) as released, then Japanese, Simplified Chinese and
+ * Russian, before their release. */
 export const PLANNED:readonly LanguageEntry[]=Object.freeze([
  SPANISH,
  PORTUGUESE,

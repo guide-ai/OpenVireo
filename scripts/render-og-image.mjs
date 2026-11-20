@@ -5,6 +5,7 @@
 //   FONTCONFIG_FILE=…/fonts.conf node scripts/render-og-image.mjs es-419            → public/og-image-es.png
 //   FONTCONFIG_FILE=…/fonts.conf node scripts/render-og-image.mjs pt-BR             → public/og-image-pt-br.png
 //   FONTCONFIG_FILE=…/fonts.conf node scripts/render-og-image.mjs fr                → public/og-image-fr.png
+//   FONTCONFIG_FILE=…/fonts.conf node scripts/render-og-image.mjs id                → public/og-image-id.png
 //   FONTCONFIG_FILE=…/scripts/fonts.conf node scripts/render-og-image.mjs hi        → public/og-image-hi.png (Front HI-REL+SEO:
 //   the scripts fontconfig of `npm run test-fonts`, whose Noto Sans Devanagari draws the Hindi; DejaVu Sans keeps the Latin)
 //   node scripts/render-og-image.mjs en /tmp/check.png                               (English, to compare with the original)
