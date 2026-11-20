@@ -37,9 +37,10 @@ for(const L of translatedFor('e02'))test.describe(()=>{test.use({locale:contextL
  const options=[...seen.own.get('field list loaded')!].filter(t=>t.startsWith('@option:'));
  expect(options.length).toBeGreaterThanOrEqual(10);
  const around=L.catalog['lss.fieldOption']!.replace('{item}','').replace(/[.*+?^${}()|[\]\\/]/g,'\\$&').replace('\\{rows\\}','\\d+');
- // Front RU2: the noun may also come before the count (Russian's count-neutral «(галактик: {rows})»).
- const noun=/\((?:\{rows\}\s(\S+)|(\S+?):?\s\{rows\})\)$/.exec(L.catalog['lss.fieldOption']!)!,galaxies=(noun[1]??noun[2])!.slice(0,5);
- const counted=options.filter(o=>new RegExp(`\\d ${galaxies}|\\(${galaxies}`).test(o));expect(counted.length).toBeGreaterThanOrEqual(1);
+ // Front RU2: the noun may also come before the count (Russian's count-neutral «(галактик: {rows})»). Front JA2: Japanese brackets
+ // it full-width with no space, «（{rows}個の銀河）».
+ const noun=/[(（](?:\{rows\}\s?(\S+?)|(\S+?):?\s\{rows\})[)）]$/.exec(L.catalog['lss.fieldOption']!)!,galaxies=(noun[1]??noun[2])!.slice(0,5);
+ const counted=options.filter(o=>new RegExp(`\\d ?${galaxies}|[(（]${galaxies}`).test(o));expect(counted.length).toBeGreaterThanOrEqual(1);
  for(const o of counted)expect(o).toMatch(new RegExp(`${around}$`));
 });});
 
