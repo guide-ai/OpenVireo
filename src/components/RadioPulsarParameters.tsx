@@ -474,7 +474,7 @@ function PulsarNoticeBox({notice,onDismiss}:Readonly<{notice:PulsarParametersNot
   if(e.key==='Escape'||e.key==='Enter'){e.preventDefault();onDismiss();return;}
   trapTab(e,root.current);
  };
- const body=notice.kind==='not-found'?t('pulsarParameters.notice.notFound.body',{query:notice.query,type:vireo(notice.mode===2?F.j2000:F.b1950)})
+ const body=notice.kind==='not-found'?t('pulsarParameters.notice.notFound.body',{query:notice.query,type:notice.mode===2?vireo(F.j2000):vireo(F.b1950)})
   :t(`pulsarParameters.notice.update.${notice.field}`,{text:notice.text});
  return <div className="antenna-backdrop antenna-backdrop-top">
   <div ref={root} role="alertdialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-body`} className="antenna-dialog antenna-notice" data-testid="pulsar-params-notice"

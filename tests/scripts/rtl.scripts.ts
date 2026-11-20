@@ -207,7 +207,8 @@ test('ltrRunProblems reads a range of two numbers and a locale\'s right-to-left 
 // ---- Left-to-right pages: the plot titles RT7 wraps in keepInsideSvg do not move ----------------------------------------------
 // src/plotTextFit.ts moves a title only when it crosses its plot by more than half a pixel. RT7 wraps the spectrum's rotated y-axis
 // title (SpectrumInstrument.tsx) and the Multi-Spec spectrum's (MultiSpecDisplay.tsx), which crossed the left edge under Noto Sans
-// Arabic; in English, Spanish, Portuguese and French they fit, so their wrapper carries no transform and nothing moves.
+// Arabic; in English, Spanish, Portuguese and French they fit, so their wrapper carries no transform and nothing moves. A CJK
+// language's Multi-Spec title may move right by up to 2 px (Noto Sans CJK's taller ascent; see the exemption below).
 const titleShifts=(page:Page,svg:string)=>page.locator(svg).first().evaluate(s=>[...s.querySelectorAll('text[transform^="rotate(-90"]')].map(t=>{
  const g=t.parentElement!;return g.tagName.toLowerCase()==='g'&&g.attributes.length===0?null:`${t.textContent}: ${g.tagName} ${g.getAttribute('transform')}`;}).filter(Boolean));
 for(const width of [320,1440] as const)
@@ -230,5 +231,11 @@ for(const width of [320,1440] as const)
   }
   // Each language: the display's plot, and in the print preview both the display's and the print's.
   expect(seen.size,[...seen].join('; ')).toBe(3*(1+translatedFor('observatory').length));
-  expect(shifts).toEqual([]);
+  // Front JA1 CI fix: a CJK language's rotated title is as wide as Noto Sans CJK's ascent plus descent (src/plotTextFit.ts: 1.16 em
+  // of ascent passes the title's 18-unit offset), so under the CI fonts the Multi-Spec «強度» crosses the plot's left edge by about
+  // 1 px and keepInsideSvg moves it right, as it exists to do (SC11). Only for Japanese and Chinese, and only that move: right,
+  // by at most 2 px, never vertical; every other language, and any other move, still fails.
+  const cjkMove=(s:string)=>/^(?:ja|zh-Hans|zh-Hant) Multi-Spec (?:spectrum display|print preview) [^:]+: g translate\((\d+(?:\.\d+)?) 0\)$/.exec(s);
+  const moved=shifts.filter(s=>{const m=cjkMove(s);return m!==null&&+m[1]!>0&&+m[1]!<=2;});
+  expect(shifts.filter(s=>!moved.includes(s))).toEqual([]);
  });

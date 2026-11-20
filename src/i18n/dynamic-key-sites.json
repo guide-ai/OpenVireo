@@ -545,6 +545,7 @@
   "src/i18n/ru/maps/fieldInfo.ts › FIELD_INFO_RU/editLayerCaption · head 'Режим правки · поле искателя прочитано из компактного каталога опорных звёзд (Guide Star Catalog; читатель каталога искателя VIREO, звёзды до предельной зв. величины искателя 11.5): звёзд — ' [unreached]",
   "src/i18n/ru/maps/languageChoice.ts › LANGUAGE_CHOICE_RU/reload · head 'Страница будет перезагружена на том же месте сайта. Новый язык: ' [unreached]",
   "src/i18n/ru/maps/polish.ts › POLISH_RU/pulsarsHtl/error · head 'Встроенный список пульсаров Pulsars.HTL ' [unreached]",
+  "src/i18n/ru/maps/variableStars.ts › VARIABLE_STARS_RU/printCurveLayout · head 'Страница кривой блеска следует печати VIREO в выбранной здесь ориентации (VIREO использует ориентацию принтера): в книжной график идёт на той же странице, в альбомной VIREO добавляет «(изображение экрана напечатано на следующей странице)» и печатает график на странице 2. ' [unreached]",
   "src/io/clusterComparison.ts › loadClusterDataset/promise/url · head '../../data/photometry/' [core]",
   "src/io/lssSpectrumInputs.node.ts › original · head '../../public/original/' [unreached]",
   "src/multispec/MultiSpecControl.tsx › MultiSpecControl · t(state.selecting?'multispec.ledOn':'multispec.ledOff') [core]",

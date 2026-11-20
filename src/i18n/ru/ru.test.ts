@@ -38,6 +38,8 @@ import {CAMERA_MESSAGES_EN} from '../../camera/CameraMessages';
 import {ENGINE_VIEW_EN} from '../../SpectrumEngineMessages';
 import {SPECTRAL_RANGE_EN} from '../../SpectralRangeMessages';
 import {WEDGE_MESSAGES_EN} from '../../components/WedgeMessages';
+import {CLUSTER_HR_EN} from '../../clusters/ClusterHrMessages';
+import {CLUSTER_DATA_MESSAGES_EN} from '../../clusterdata/ClusterDataMessages';
 import {RADIO_ANTENNA_MESSAGES_EN} from '../../components/RadioAntennaMessages';
 import {FINISH_SAVE_MESSAGES_EN} from '../../components/RadioFinishSaveMessages';
 import {RADIO_R1_MESSAGES_EN} from '../../components/RadioR1Messages';
@@ -56,11 +58,11 @@ import esIdentical from '../es/identical.json';
 // A VIREO `fragment|` original keeps its straight quotes (another piece of VIREO's text closes them).
 const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,
  camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,nakedEye:NAKED_EYE_MESSAGES_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,
- engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN,
+ engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN,clusterHr:CLUSTER_HR_EN,clusterData:CLUSTER_DATA_MESSAGES_EN,
  radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN};
 /** The maps translated completely (RU0's shell maps; RU1's observatory maps, the camera card the observatory shows, and polish; RU2's
- * engineView, spectralRange and wedge; RU5's four radio maps). */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','radioAntenna','radioFinishSave','radioR1','radioRecordSave'];
+ * engineView, spectralRange and wedge; RU4's clusterHr, clusterData and variableStars; RU5's four radio maps). */
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars','radioAntenna','radioFinishSave','radioR1','radioRecordSave'];
 /** Front RU1's area of en.json: FR1's and ID1's observatory keys (the instruments' prefixes and the Hubble hot-list reasons) and the
  * 104 guide keys the observatory files render (src/i18n/fr/fr.test.ts FR1_GUIDE_KEYS, read from there so the two never drift). */
 const OBSERVATORY_PREFIXES=/^(sky|optical|motion|horizon|siteClock|runningClock|scopeAccess|instrumentAccess|instrumentParameters|cameraParameters|cameraInfo|cameraPrepare|palette|testMode|optionsFile|photometerTab|htl|multispec|nativeMirror|hubblePoint)\./;
@@ -76,6 +78,10 @@ const RU2_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E01_E02_PREFIXES.test
  * renders, are RU2's (their prefixes are E01/E02's). */
 const E03_PREFIXES=/^(class|classLines|classLink|classAtlas|classImport|classLab|feature|cursor|probe|photo|combined|combinedWidth|viewport|inspection|sampledTrace|reverseTrace|sampledDiff|range|widthSource|widthCoordinates|sharedMarks|comparisonMark|paneSource|panMarks|obs|nativeResults|nativeEdit|nativeDelete|nativeList|nativeText|nativeCsv|program|programImport)\./;
 const RU3_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E03_PREFIXES.test(k)||k==='continuity.restoreExposure'||k==='ssp.header');
+/** Front RU4's area of en.json: exercises E04 (Pleiades photometry) and E05 (cluster H-R diagrams and variable stars), as FR4's, ID4's
+ * and HI4's; the obsHr plural families gain their `.few` and `.many` forms (pinned by the plural family check below). */
+const E04_E05_PREFIXES=/^(ph|pa|pleiadesLab|nc|db|ce|clusterLab|ownHr|obsHr)\./;
+const RU4_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E04_E05_PREFIXES.test(k));
 /** Front RU5's area of en.json: the radio telescope, as FR5's, ID5's and HI5's. */
 const RU5_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(radio|radioRoute|radioAccess|radioReceiver|radioSimOptions|pulsarParameters)\./.test(k));
 /** VIREO originals that Spanish keeps with no entry (its word equals VIREO's), as for Portuguese, French and Indonesian: the options
@@ -136,6 +142,13 @@ describe('Front RU0: the Russian (ru) bundle',()=>{
  it('Front RU3: the catalog covers exercise E03 (every key of its prefixes, continuity.restoreExposure and ssp.header)',()=>{
   expect(RU3_KEYS.length).toBe(772);
   expect(RU3_KEYS.filter(k=>!Object.hasOwn(catalog,k))).toEqual([]);
+ });
+ it('Front RU4: the catalog covers exercises E04 and E05 (every key of their prefixes and all four forms of the obsHr families)',()=>{
+  expect(RU4_KEYS.length).toBe(651);
+  expect(RU4_KEYS.filter(k=>!Object.hasOwn(catalog,k))).toEqual([]);
+  const obsHr=FAMILIES.filter(h=>h.startsWith('obsHr.')).flatMap(h=>pluralFamilyKeys(h,en,'ru'));
+  expect(obsHr.length).toBe(40);
+  expect(obsHr.filter(k=>!Object.hasOwn(catalog,k))).toEqual([]);
  });
  it('Front RU5: the catalog covers the radio telescope (every key of its prefixes)',()=>{
   expect(RU5_KEYS.length).toBe(646);
