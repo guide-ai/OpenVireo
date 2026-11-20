@@ -51,7 +51,7 @@ const LATIN1_HELP:Readonly<Record<string,string>>={'es-419':'','pt-BR':'\u202f',
 const asLatin1=(s:string)=>s.replaceAll('\u202f','\u00a0').replaceAll('\u2019','\u00b4').replaceAll('\u0153','\u00f8').replaceAll('\u0152','\u00d8');
 const viaLatin1=<T,>(value:T):T=>JSON.parse(asLatin1(JSON.stringify(value)));
 it('Front PT-HELP: Spanish and Brazilian Portuguese translate the help files, each with its own marker',()=>{
- expect(HELP_LANGUAGES.map(l=>[l.tag,l.help.related])).toEqual([['es-419','TEMAS RELACIONADOS'],['pt-BR','TÓPICOS RELACIONADOS'],['fr','RUBRIQUES CONNEXES'],['id','TOPIK TERKAIT'],['hi','संबंधित विषय',['ja','関連項目']]);
+ expect(HELP_LANGUAGES.map(l=>[l.tag,l.help.related])).toEqual([['es-419','TEMAS RELACIONADOS'],['pt-BR','TÓPICOS RELACIONADOS'],['fr','RUBRIQUES CONNEXES'],['id','TOPIK TERKAIT'],['hi','संबंधित विषय'],['ja','関連項目']]);
  for(const l of HELP_LANGUAGES)expect(TITLES[l.tag],l.tag).toBeDefined();
 });
 
