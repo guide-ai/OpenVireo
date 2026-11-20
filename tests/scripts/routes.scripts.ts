@@ -18,6 +18,7 @@ import * as E02 from '../i18n/walks/e02';
 import * as E03 from '../i18n/walks/e03';
 import * as E04 from '../i18n/walks/e04';
 import * as E05 from '../i18n/walks/e05';
+import * as RADIO from '../i18n/walks/radio';
 
 type Width=320|1440;
 const VARIANTS=['qps-cjk','qps-deva','qps-cyrl'] as const satisfies readonly PseudoScriptLanguage[];
@@ -166,13 +167,14 @@ for(const L of SCRIPT_TRANSLATIONS)for(const width of [320,1440] as const)
   expect([...problems].map(([p,step])=>`${step}: ${p}`),'layout problems').toEqual([]);
  });
 
-// Front JA2 (plan front-i18n-ja.md §6.2, "the real-ja scripts walk covers the area"; JA3 adds E03, JA4 E04 and E05): each exercise walk Japanese has
+// Front JA2 (plan front-i18n-ja.md §6.2, "the real-ja scripts walk covers the area"; JA3 adds E03, JA4 E04 and E05, JA5 the radio telescope): each exercise walk Japanese has
 // translated (its `done`), the same function its language-parameterised spec runs (tests/i18n/walks/), under real Japanese and the CJK
 // test fonts at 320 and 1440 px: after each step kana on screen, layoutProblems() with the walk's own options and verticalInkProblems().
 type ExerciseWalk=(page:Page,lang:typeof JAPANESE_TEXT,each:(step:string)=>Promise<void>)=>Promise<void>;
 const JA_WALKS:readonly (readonly [Area,string,ExerciseWalk,LayoutOptions])[]=[['e01','E01 (Hubble)',E01.walk,E01.LAYOUT],
  ['e02','E02 (large-scale structure)',E02.walk,E02.LAYOUT],['e03','E03 (spectral classification)',E03.walk,E03.LAYOUT],
- ['e04','E04 (Pleiades photometry)',E04.walk,E04.LAYOUT],['e05','E05 (cluster H-R diagrams and variable stars)',E05.walk,E05.LAYOUT]];
+ ['e04','E04 (Pleiades photometry)',E04.walk,E04.LAYOUT],['e05','E05 (cluster H-R diagrams and variable stars)',E05.walk,E05.LAYOUT],
+ ['radio','radio telescope',RADIO.walk,RADIO.LAYOUT]];
 for(const [area,name,walk,layout] of JA_WALKS.filter(([area])=>JAPANESE_TEXT.done.has(area)))for(const width of [320,1440] as const)
  test(`real Japanese at ${width} px: the ${name} walk lays out without overflow, clipping or cut ink (${area})`,async({page})=>{
   test.setTimeout(400_000);
