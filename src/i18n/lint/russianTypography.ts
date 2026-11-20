@@ -17,8 +17,9 @@ import type {FrenchTypographyOptions,TypographyChange} from './frenchSpacing';
 export const NNBSP=' ';
 export const NBSP=' ';
 export type RussianTypographyOptions=FrenchTypographyOptions;
-/** Spans kept as they are: placeholders, the lint's samples, URLs, ?lang= values and VIREO's English glosses (ASCII in brackets). */
-const KEPT=/\{[\p{L}\p{N}_]+\}|«A\p{N}+»|https?:\/\/[^\s»)]+|\?lang=[\p{L}\p{N}-]*|\([\x20-\x27\x2a-\x7e]*\)/gu;
+/** Spans kept as they are: placeholders, the lint's samples, URLs, ?lang= values, VIREO's English glosses (ASCII in brackets) and
+ * (Front RU2 review) the Hubble.HTL target labels, whose en dash is part of the name the selector shows («CorBor – 1», «UM-I – 3»). */
+const KEPT=/(?:UM-I|CorBor|Peg|Coma|Boo)[ \u00a0]–[ \u00a0]\p{N}|\{[\p{L}\p{N}_]+\}|«A\p{N}+»|https?:\/\/[^\s»)]+|\?lang=[\p{L}\p{N}-]*|\([\x20-\x27\x2a-\x7e]*\)/gu;
 const THOUSANDS=/(?<![\p{L}\p{N}.,])\p{N}{1,3}(?:[,  ]\p{N}{3})+(?![\p{L}\p{N}])/gu;
 /** Unit symbols that take a no-break space after a number (multi-letter only: «с» and «ч» are also words). */
 const UNITS=['км/с','км','Мпк','кпк','пк','МГц','кГц','ГГц','Гц','мс','мкс','нм','мкм','мин','угл. с','угл. мин','мм','см','кэВ','эВ','Ян','мЯн','мкЯн'];

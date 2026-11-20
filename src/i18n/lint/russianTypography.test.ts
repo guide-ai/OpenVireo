@@ -32,6 +32,10 @@ describe('Front RU0: the Russian typography fixer',()=>{
   expect(fix('{name} - файл')).toBe(`{name}${B}— файл`);
   expect(fix('{observed} - {computed}')).toBe('{observed} - {computed}');// a subtraction
  });
+ it('Front RU2 review: keeps the en dash of the Hubble.HTL target labels («CorBor – 1», «UM-I – 3»), and still dashes words',()=>{
+  expect(fix('Поле CorBor – 2 и UM-I – 3; Coma – 1/2 и Boo – 1/2.')).toBe('Поле CorBor – 2 и UM-I – 3; Coma – 1/2 и Boo – 1/2.');
+  expect(fix('Поле – проверенное.')).toBe(`Поле${B}— проверенное.`);
+ });
  it('puts U+00A0 in т. е. and between a number or placeholder and a unit symbol; «с» and «ч» stay words',()=>{
   expect(fix('т. е. и т. д.')).toBe(`т.${B}е. и т.${B}д.`);
   expect(fix('скорость 300 км/с, {distance} Мпк, 1420 МГц')).toBe(`скорость 300${B}км/с, {distance}${B}Мпк, 1420${B}МГц`);
