@@ -48,6 +48,7 @@
   "map:wedge.detail.velocity": "Front ZH2: a symbol and a number type (V binary32)",
   "map:wedge.detail.z": "Front ZH2: a symbol and a number type (Z binary32)",
   "map:wedge.detail.degrees": "Front ZH2: the degree sign",
-  "map:wedge.detail.px": "Front ZH2: the pixel unit symbol px"
+  "map:wedge.detail.px": "Front ZH2: the pixel unit symbol px",
+  "map:wedge.detail.hours": "Front ZH2: the hour unit symbol h, which the wedge joins after a space and a number (赤经（h）)"
  }
 }

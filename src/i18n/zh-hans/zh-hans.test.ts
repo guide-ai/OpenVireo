@@ -119,7 +119,7 @@ describe('Front ZH0: the Simplified Chinese (zh-Hans) bundle',()=>{
   expect(ZH1_GUIDE_KEYS.filter(k=>!Object.hasOwn(en,k)||!Object.hasOwn(zh,k))).toEqual([]);
  });
  it('Front ZH2: the catalog covers E01 and E02 (every key of their prefixes, and classLink.open)',()=>{
-  expect(ZH2_KEYS.length).toBeGreaterThan(780);
+  expect(ZH2_KEYS.length).toBe(803);
   expect(ZH2_KEYS.filter(k=>!Object.hasOwn(zh,k))).toEqual([]);
  });
  it('Front ZH1: every VIREO original is translated at once, or kept with an identical.json reason, never both',()=>{
