@@ -126,12 +126,22 @@ if(process.env.OPENVIREO_FIX_TYPOGRAPHY==='1'){
 }
 
 describe('Front RU0: the Russian (ru) bundle',()=>{
- it('is registered before its release: a ?lang=ru preview only, never detected or offered; thousands with U+202F from the start',()=>{
-  expect(languageEntry('ru')).toMatchObject({dir:'ru',catalog:'ru.json',budgetFactor:1.2,htmlLang:'ru',pagePath:'ru',autonym:'Русский',englishName:'Russian',match:['ru'],released:false,thousands:' '});
+ it('Front RU-REL: is released (detected from every ru and ru-* browser, stored, offered); thousands with U+202F since RU0',()=>{
+  expect(languageEntry('ru')).toMatchObject({dir:'ru',catalog:'ru.json',budgetFactor:1.2,htmlLang:'ru',pagePath:'ru',autonym:'Русский',englishName:'Russian',match:['ru'],released:true,thousands:' '});
   // Front RU-HELP: Russian translates VIREO's help files, with its related-topics marker («Связанные темы:»).
   expect(languageEntry('ru')?.help).toEqual({related:'СВЯЗАННЫЕ ТЕМЫ'});
   expect(RUSSIAN.language).toBe('ru');
   for(const notice of Object.values(languageEntry('ru')!.notices)){expect(fixRussianTypography(notice)).toBe(notice);expect(notice).toMatch(/ещё/);}
+ });
+ it('Front RU-REL: the catalog is complete and strict: every en.json key, the same {params}, strings only, extra keys only Russian plural forms; every map complete',()=>{
+  // As the earlier releases' checks: strictness lives here, since the split bundle builds each module with the English fallback.
+  // Russian alone may add keys en.json lacks: a family's `.few` and `.many` forms (src/i18n/plural.ts pluralFormBase), which
+  // createI18n accepts only with their base's {params}.
+  expect(()=>createI18n(catalog as Record<MessageKey,string>,'ru')).not.toThrow();
+  expect(Object.keys(en).filter(k=>!Object.hasOwn(catalog,k))).toEqual([]);
+  for(const key of Object.keys(catalog))if(!Object.hasOwn(en,key))expect(pluralFormBase(key,en,'ru'),key).not.toBeNull();
+  for(const [id,map] of Object.entries(RUSSIAN.maps??{}))expect(mapParity(ENGLISH_MAPS[id as MapId],map),id).toEqual([]);
+  expect(MAP_IDS.filter(id=>!Object.hasOwn(RUSSIAN.maps??{},id))).toEqual([]);
  });
  it('the catalog is a valid partial catalog (en.json keys or plural forms of them, the same {params}) and covers the shell and the welcome',()=>{
   expect(()=>createI18n(catalog as Partial<Record<MessageKey,string>>,'ru',{fallback:true})).not.toThrow();

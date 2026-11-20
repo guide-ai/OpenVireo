@@ -158,7 +158,8 @@ for(const L of SCRIPT_TRANSLATIONS)for(const width of [320,1440] as const)
    for(const p of await layoutProblems(page,LAYOUT))if(!problems.has(p))problems.set(p,step);
    for(const p of await verticalInkProblems(page))if(!problems.has(p))problems.set(p,step);
   };
-  const open=async(hash:string)=>{await page.goto('about:blank');await page.goto(`/${L.query}${hash?'#'+hash:''}`);
+  // Front RU-REL: a released language (Russian) has no preview query, and this config's browser is en-US: its ?lang= link opens it.
+  const open=async(hash:string)=>{await page.goto('about:blank');await page.goto(`/${L.query||`?lang=${L.tag}`}${hash?'#'+hash:''}`);
    await expect(page.locator('.investigation-toolbar')).toBeVisible({timeout:30_000});await expect(page.locator('h1:visible').first()).toBeVisible({timeout:30_000});};
   await page.addInitScript(()=>{try{localStorage.setItem('openvireo.tour.v1','done');}catch{/* about:blank */}});
   await open('');await check('home');
@@ -405,7 +406,8 @@ test(`en at ${width} px: a popup menu that fits keeps its first placement; one t
 });
 
 // Front FR-REL: French joins the walk (plan front-i18n-fr.md §6.2).
-// Front ID-REL: Indonesian joins the walk.
+// Front ID-REL: Indonesian joins the walk. Russian does not (Front RU-REL): scripts.css styles a Russian page on purpose (its
+// :lang(ru) rules), so the real Russian translation is checked by the layout walk of the script languages above instead.
 for(const lang of ['en','es-419','pt-BR','fr','id'] as const)for(const width of [320,1440] as const)
 test(`${lang} at ${width} px computes the same styles with and without scripts.css, on the home page and every route`,async({page})=>{
  test.setTimeout(300_000);
@@ -418,7 +420,9 @@ test(`${lang} at ${width} px computes the same styles with and without scripts.c
   return [...new Set(declared(sheet.cssRules))].sort();
  });
  const snapshot=(props:readonly string[])=>page.evaluate(props=>
-  [document.documentElement,document.body,...document.body.querySelectorAll('*')].map(e=>{const s=getComputedStyle(e);return `${e.tagName.toLowerCase()}.${typeof e.className==='string'?e.className:''} `+props.map(p=>`${p}:${s.getPropertyValue(p)}`).join(';');}),props);
+  // Front RU-REL: only the page's own language. Text marked as another language keeps the styles scripts.css gives that language
+  // on purpose (the selector's «Русский (Russian)» option, lang="ru", on every page since Russian's release).
+  [document.documentElement,document.body,...document.body.querySelectorAll('*')].filter(e=>(e.closest('[lang]')?.getAttribute('lang')??document.documentElement.lang)===document.documentElement.lang).map(e=>{const s=getComputedStyle(e);return `${e.tagName.toLowerCase()}.${typeof e.className==='string'?e.className:''} `+props.map(p=>`${p}:${s.getPropertyValue(p)}`).join(';');}),props);
  // Removes the sheet, keeping it on the window so that restoreSheet() can put the same node back where it was.
  const withoutSheet=()=>page.evaluate(()=>{
   const sheet=[...document.querySelectorAll<HTMLStyleElement>('style[data-vite-dev-id]')].filter(s=>s.dataset.viteDevId!.endsWith('/src/theme/scripts.css'));

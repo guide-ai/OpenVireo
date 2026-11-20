@@ -5,7 +5,8 @@ import {nextAddress} from '../components/LanguageChoice';
 import {releasing} from '../../tests/fixtures/i18n/registry';
 const decide=(over:Partial<LocaleInputs>)=>decideLocale({param:null,stored:null,languages:['en-US'],dev:false,...over});
 /** Spanish before its release: the registry as it was until ES-REL, with no language released (Front SC8: a per-language gate;
- * since PT-REL Portuguese, since FR-REL French and since ID-REL Indonesian are released too, so they are closed here as well). */
+ * since PT-REL Portuguese, since FR-REL French, since ID-REL Indonesian and since RU-REL Russian are released too, so they are
+ * closed here as well). */
 const UNRELEASED=LANGUAGES.map(l=>({...l,released:false}));
 describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-09)',()=>{
  it('Front ES-REL: Spanish is released, so the stored choice and the browser language decide and the selector is shown',()=>{
@@ -130,18 +131,21 @@ describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-0
   for(const languages of [['zh-TW'],['zh-HK'],['zh-MO'],['zh-Hant'],['zh-Hant-CN'],['yue-HK'],['ja-JP'],['en-US','zh-CN']])expect(decide({languages,registry:after}),languages.join(',')).toBe('en');
   expect(decide({stored:'zh-Hans',languages:['zh-TW'],registry:after})).toBe('zh-Hans');
  });
- it('Front RU0: Russian is registered before its release: only ?lang=ru opens it; ru, ru-RU, ru-UA and uk browsers and a stored ru get English',()=>{
-  expect(isReleased('ru')).toBe(false);
-  for(const languages of [['ru'],['ru-RU'],['ru-UA'],['RU-ru'],['uk','ru'],['uk-UA'],['be']])expect(decide({languages}),languages.join(',')).toBe('en');
-  expect(decide({stored:'ru',languages:['ru-RU']})).toBe('en');
-  expect(decide({param:'ru',languages:['en-US']})).toBe('ru');expect(decide({param:'ru',stored:'fr',languages:['pt-BR']})).toBe('ru');
+ it('Front RU-REL: Russian is released: every ru and ru-* browser (any case) opens ru; Ukrainian, Belarusian, Kazakh and the other region languages do not; storage is honoured',()=>{
+  expect(isReleased('ru')).toBe(true);
+  for(const languages of [['ru'],['ru-RU'],['ru-UA'],['RU-ru'],['ru-KZ'],['ru-BY'],['ru-MD'],['ru-KZ','en-US'],['ru-RU','uk-UA']])expect(decide({languages}),languages.join(',')).toBe('ru');
+  // Only the first preference decides: a Ukrainian browser that also lists Russian stays English.
+  for(const languages of [['uk'],['uk-UA'],['be'],['be-BY'],['kk'],['kk-KZ'],['ky'],['uz'],['tg'],['tt'],['ba'],['cv'],['sah'],['os'],['hy'],['ka'],['az'],['ro-MD'],['rue'],['uk','ru'],['en-US','ru']])expect(decide({languages}),languages.join(',')).toBe('en');
+  expect(decide({languages:['es-MX','ru-RU']})).toBe('es-419');expect(decide({languages:['id-ID','ru-RU']})).toBe('id');
+  expect(decide({stored:'ru',languages:['en-US']})).toBe('ru');expect(decide({stored:'ru',languages:['uk-UA']})).toBe('ru');
+  expect(decide({stored:'en',languages:['ru-RU']})).toBe('en');expect(decide({stored:'fr',languages:['ru-RU']})).toBe('fr');
+  expect(decide({param:'ru',stored:'fr',languages:['pt-BR']})).toBe('ru');expect(decide({param:'en',languages:['ru-RU']})).toBe('en');
+  // ?lang= takes the exact tag only.
   for(const junk of ['RU','ru-RU','ru-ru'])expect(decide({param:junk,languages:['en-US']}),junk).toBe('en');
   expect(HTML_LANG.ru).toBe('ru');expect(selectorShown('ru')).toBe(true);
-  // Once released (RU-REL), every ru and ru-* browser in any case opens it; Ukrainian, Belarusian and Kazakh browsers do not, and
-  // only the first preference decides (a uk browser that also lists ru stays English).
-  const after=LANGUAGES.map(l=>l.tag==='ru'?{...l,released:true}:l);
-  for(const languages of [['ru'],['ru-RU'],['ru-UA'],['RU-ru'],['ru-KZ','en-US']])expect(decide({languages,registry:after}),languages.join(',')).toBe('ru');
-  for(const languages of [['uk'],['be'],['kk'],['uk','ru'],['en-US','ru']])expect(decide({languages,registry:after}),languages.join(',')).toBe('en');
-  expect(decide({stored:'ru',languages:['en-US'],registry:after})).toBe('ru');
+  // Before its release (RU0–RU-HELP) only ?lang=ru reached it.
+  const before=LANGUAGES.map(l=>l.tag==='ru'?{...l,released:false}:l);
+  for(const languages of [['ru'],['ru-RU'],['ru-UA'],['RU-ru']])expect(decide({languages,registry:before}),languages.join(',')).toBe('en');
+  expect(decide({stored:'ru',languages:['ru-RU'],registry:before})).toBe('en');expect(decide({param:'ru',registry:before})).toBe('ru');
  });
 });
