@@ -63,8 +63,10 @@ export const texts=(page:Page)=>page.evaluate(()=>{
  const skipped=(el:Element)=>el.closest('.portal-header,[data-i18n-shell],script,style,[data-testid=site-tour],[data-testid^=exit-reminder]')!==null||el.closest('[lang=en]:not(html)')!==null;
  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n:Node|null;
  // Front RU1: two letters of any script (was [A-Za-z]{2}, which skipped every all-Cyrillic text, so a Russian walk compared nothing).
- while((n=walker.nextNode())){const t=n.textContent?.trim(),el=n.parentElement;if(t&&el&&/\p{L}{2}/u.test(t)&&!skipped(el)&&shown(el))out.push(t);}
- for(const el of document.querySelectorAll('[aria-label],[title],[placeholder]'))if(!el.closest('.portal-header,[data-i18n-shell]')&&shown(el))for(const a of ['aria-label','title','placeholder']){const v=el.getAttribute(a)?.trim();if(v&&/\p{L}{2}/u.test(v))out.push(`@${a}:${v}`);}
+ // Front HI2: with any combining marks between them: a Devanagari vowel sign, virama or nukta is a mark, not a letter, so «ग्रे» or
+ // «फ़ोटो» has no two adjacent letters and \p{L}{2} skipped it.
+ while((n=walker.nextNode())){const t=n.textContent?.trim(),el=n.parentElement;if(t&&el&&/\p{L}\p{M}*\p{L}/u.test(t)&&!skipped(el)&&shown(el))out.push(t);}
+ for(const el of document.querySelectorAll('[aria-label],[title],[placeholder]'))if(!el.closest('.portal-header,[data-i18n-shell]')&&shown(el))for(const a of ['aria-label','title','placeholder']){const v=el.getAttribute(a)?.trim();if(v&&/\p{L}\p{M}*\p{L}/u.test(v))out.push(`@${a}:${v}`);}
  return out;
 });
 export const close=async(page:Page)=>{await page.keyboard.press('Escape');await page.waitForTimeout(150);};

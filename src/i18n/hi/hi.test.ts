@@ -31,14 +31,17 @@ import {QSO_LIST_MESSAGES_EN} from '../../observatory/QsoListMessages';
 import {SOUND_MESSAGES_EN} from '../../sound/SoundMessages';
 import {OBSERVATION_METADATA_EN} from '../../ObservationMetadataMessages';
 import {CAMERA_MESSAGES_EN} from '../../camera/CameraMessages';
+import {ENGINE_VIEW_EN} from '../../SpectrumEngineMessages';
+import {SPECTRAL_RANGE_EN} from '../../SpectralRangeMessages';
+import {WEDGE_MESSAGES_EN} from '../../components/WedgeMessages';
 
 // Front HI0 (docs/I18N.md, "Hindi: the folder, the digit notice and the shell (HI0)"; plan front-i18n-hi.md §4, §6.2): the
 // structural checks of the partial Hindi bundle and every Hindi string through the SC4 lint framework, profile hi. Errors fail the
 // batch; length ratios are reported for the independent reviewer. Later HI fronts add their maps to ENGLISH_MAPS and COMPLETE_MAPS,
 // and their areas to the coverage checks.
-const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,nakedEye:NAKED_EYE_MESSAGES_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN};
-/** The maps translated completely: HI0's shell maps; HI1's observatory maps, the camera card and polish. */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera'];
+const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,nakedEye:NAKED_EYE_MESSAGES_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN};
+/** The maps translated completely: HI0's shell maps; HI1's observatory maps, the camera card and polish; HI2's engineView, spectralRange and wedge. */
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge'];
 /** HI0's area of en.json: the shell (header, menu, first steps, toolbar, errors, instructor mode, document title), as FR0's and
  * PT0's, and the welcome's home.* keys (Front HOME, after FR0). */
 const SHELL_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(app|project|session|error|instructorMode)\./.test(k)||/\.nav$/.test(k)||['demonstrationMode.banner','sky.eyebrow','sky.title','sky.subtitle','sky.about','sky.local','sky.observatory','sky.analyzer','sky.step1','sky.step1Help','sky.step2','sky.step2Help','sky.step3','sky.step3Help','spectrum.tools','classLink.cancel'].includes(k));
@@ -49,6 +52,10 @@ const FOOTER_KEYS:readonly MessageKey[]=['sky.attribution','sky.labsLink','sky.a
  * files render; docs/I18N.md "Brazilian Portuguese: the observatory and VIREO's names (PT1)"), every key of their prefixes. */
 const OBSERVATORY_PREFIXES=/^(sky|optical|motion|horizon|siteClock|runningClock|scopeAccess|instrumentAccess|instrumentParameters|cameraParameters|cameraInfo|cameraPrepare|palette|testMode|optionsFile|photometerTab|htl|multispec|nativeMirror|hubblePoint)\./;
 const HI1_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>OBSERVATORY_PREFIXES.test(k)||/^hubbleHtl\.reason\./.test(k));
+/** Front HI2's area of en.json: exercises E01 (Hubble's law) and E02 (large-scale structure) as PT2 and FR2 scoped them (every key of
+ * their prefixes, which include the shared core keys continuity.* and ssp.header, and classLink.open, the star exposure's button). */
+const E01_E02_PREFIXES=/^(continuity|lab|lssLab|hubble|velocity|ownResults|spectrum|spectrometer|galaxyExposure|skyExposure|starExposure|ssp|exposureIO|drift|skyProfiles|fieldSpec|lss|wedge)\./;
+const HI2_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E01_E02_PREFIXES.test(k)||k==='classLink.open');
 /** PT1's keys outside those prefixes that the observatory files render (the classification and Pleiades guides' pointing
  * steps, the photometer card, the continuity notes the route shows): 104 keys, pinned so a lost key fails. */
 const HI1_GUIDE_KEYS:readonly MessageKey[]=['spectrum.licenseHelp','spectrometer.open','continuity.starSource','continuity.acquireFromObservatory','continuity.pointingHelp','galaxyExposure.acquireFromObservatory','galaxyExposure.pointingHelp','galaxyExposure.source','classLab.next.choose','classLab.next.compare','classLab.next.inspect','classLab.next.record','classLab.next.save','classLab.step.choose.title','classLab.step.choose.help','classLab.step.compare.title','classLab.step.compare.help','classLab.step.inspect.title','classLab.step.inspect.help','classLab.step.record.title','classLab.step.record.help','classLab.step.save.title','classLab.step.save.help','classLab.problem.load','classLab.recover.load','classLab.problem.draft','classLab.recover.draft','classLab.problem.limit','classLab.recover.limit','classLab.problem.width','classLab.recover.width','classLab.problem.import','classLab.recover.import','ph.readingOption','ph.unavailableMixed','ph.unavailableAssociation','ph.access.ready','ph.access.pointing','ph.access.dome','ph.access.finder','ph.access.moving','ph.domainLimit.Poisson-mean-bound','ph.domainLimit.all-duration-count-domain','ph.apertureReadingOption','pleiadesPoint.eyebrow','pleiadesPoint.title','pleiadesPoint.admitted','pleiadesPoint.open','pleiadesPoint.unavailable','pleiadesPoint.telescope','pleiadesPoint.checking','pleiadesPoint.help','pleiadesLab.next.list','pleiadesLab.next.point','pleiadesLab.next.activate','pleiadesLab.next.measure','pleiadesLab.next.record','pleiadesLab.next.color','pleiadesLab.next.sample','pleiadesLab.next.distance','pleiadesLab.next.save','pleiadesLab.step.list.title','pleiadesLab.step.list.help','pleiadesLab.step.point.title','pleiadesLab.step.point.help','pleiadesLab.step.activate.title','pleiadesLab.step.activate.help','pleiadesLab.step.measure.title','pleiadesLab.step.measure.help','pleiadesLab.step.record.title','pleiadesLab.step.record.help','pleiadesLab.step.color.title','pleiadesLab.step.color.help','pleiadesLab.step.sample.title','pleiadesLab.step.sample.help','pleiadesLab.step.distance.title','pleiadesLab.step.distance.help','pleiadesLab.step.save.title','pleiadesLab.step.save.help','pleiadesLab.problem.card','pleiadesLab.recover.card','pleiadesLab.problem.blocked','pleiadesLab.recover.blocked','pleiadesLab.problem.start','pleiadesLab.recover.start','pleiadesLab.problem.sky','pleiadesLab.recover.sky','pleiadesLab.problem.budget','pleiadesLab.recover.budget','notes.summary','ph.tiledReason.object-x-hidden','ph.tiledReason.field-polar','ph.tiledReason.photometer-galaxy-name','ph.tiledReason.photometer-variable','ph.tiledReason.photometer-selection','ph.tiledReason.photometer-empty','ph.tiledReason.photometer-population','ph.tiledLimit.Poisson-mean-bound','ph.tiledLimit.all-duration-count-domain','ph.tiledLimit.photometer-galaxy-sky-stamp','demonstrationMode.adaptation','ph.parametersDomain.base-count','ph.parametersDomain.timer','ph.parametersDomain.magnitude'];
@@ -74,13 +81,17 @@ describe('Front HI0: the Hindi (hi) bundle',()=>{
   for(const key of Object.keys(hi))expect(Object.hasOwn(en,key),key).toBe(true);
   expect(SHELL_KEYS.length).toBe(131);expect(HOME_KEYS.length).toBe(27);
   expect([...SHELL_KEYS,...HOME_KEYS,...FOOTER_KEYS].filter(k=>!Object.hasOwn(hi,k))).toEqual([]);
-  expect(Object.keys(hi).length).toBe(new Set([...SHELL_KEYS,...HOME_KEYS,...FOOTER_KEYS,...HI1_KEYS,...HI1_GUIDE_KEYS]).size);
+  expect(Object.keys(hi).length).toBe(new Set([...SHELL_KEYS,...HOME_KEYS,...FOOTER_KEYS,...HI1_KEYS,...HI1_GUIDE_KEYS,...HI2_KEYS]).size);
  });
  it('Front HI1: the catalog covers the observatory (every key of its instruments\' prefixes) and the guide keys it renders',()=>{
   expect(HI1_KEYS.length).toBeGreaterThan(450);
   expect(HI1_KEYS.filter(k=>!Object.hasOwn(hi,k))).toEqual([]);
   expect(HI1_GUIDE_KEYS.length).toBe(104);
   expect(HI1_GUIDE_KEYS.filter(k=>!Object.hasOwn(en,k)||!Object.hasOwn(hi,k))).toEqual([]);
+ });
+ it('Front HI2: the catalog covers E01 and E02 (every key of their prefixes, and classLink.open)',()=>{
+  expect(HI2_KEYS.length).toBeGreaterThan(780);
+  expect(HI2_KEYS.filter(k=>!Object.hasOwn(hi,k))).toEqual([]);
  });
  it('every map has its English shape: the shell maps complete, the header-name maps partial',()=>{
   for(const [id,map] of Object.entries(HINDI.maps??{})){

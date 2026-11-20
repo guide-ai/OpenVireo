@@ -22,6 +22,8 @@ export const SAME=new Set<string>([
  // Formats, names, symbols and units.
  'VIREO','OpenVireo','SHA-256','CSV','JSON','SSP','Multi-Spec','Cursor','z','c z','V','B','U','R','I','V:','B:','U:','R:','I:','Z:','?','↗','×','—','✳','◀','▶','·','km/s','km/s/Mpc','Mpc,','ms','v/D · km/s/Mpc',
  'v = c z · c = 299792.458 km/s','D = 10^((V − M + 5) / 5) / 1,000,000 Mpc',
+ // Front HI2: symbols the any-script collector now reads (the Latin-only one skipped them): the shift column's Δλ · Å.
+ 'Δλ · Å',
  // Hubble.HTL target ids and galaxy labels (source identity, F6), the original workbook's row names and the VIREO star target.
  ...GALAXIES,...TARGETS.map(([id])=>id),...TARGETS.map(([id,label])=>`${id} · ${label}`),...TARGETS.map(([id,label])=>`${label} · ${id}`),
  'UM-I - 1','UM-I - 2','UM-I - 3','Coma-1','Coma-2','Boo-1','Boo-2','CB-1','CB-2','CB-3','Peg-1','Peg-2','Peg-3','N0000.DAT@14428','catalog-galaxy-acquisition',
@@ -41,7 +43,10 @@ export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new S
  fr:new Set(['OK','Zoom','v · km/s · float32','VIREO / HUBBLE','Distance · Mpc','Classification']),
  // Front ID2: the same words in Indonesian (src/i18n/id/identical.json): VIREO's OK and Zoom, the velocity column's format and the
  // analyser's edition line (names), and the computing words Log, No., File, Status and Bin of the analyser, Hubble and sky tables.
- id:new Set(['OK','Zoom','v · km/s · float32','VIREO / HUBBLE','Log','No.','File','Status','Bin'])};
+ id:new Set(['OK','Zoom','v · km/s · float32','VIREO / HUBBLE','Log','No.','File','Status','Bin']),
+
+ // Front HI2: the same text in Hindi (src/i18n/hi/identical.json): the velocity column's format.
+ hi:new Set(['v · km/s · float32'])};
 /** Front PT2: Portuguese writes the measurement log's bit pattern as English does («bits 3c23d70a»; Spanish «patrón de bits»). */
 export const RECORDED_IN:Readonly<Record<string,RegExp>>={'pt-BR':/^bits [0-9a-f]{8}$/};
 export const same=(text:string,L?:LanguageText)=>SAME.has(text)||NUMERIC.test(text)||RECORDED.test(text)||(L!==undefined&&((SAME_IN[L.tag]?.has(text)??false)||(RECORDED_IN[L.tag]?.test(text)??false)));
@@ -63,14 +68,16 @@ export async function open(page:Page,lang:Lang,hash='galaxy-exposure'){
 }
 /** Visible text nodes, option texts, accessible names, titles and placeholders outside the header and outside native
  * `lang="en"` views. */
+// Front HI2: two letters of any script with any combining marks between them (was [A-Za-z]{2}, which skipped every all-Devanagari
+// text, as RU1 found for the observatory; a Devanagari vowel sign or virama is a mark, so \p{L}{2} alone would miss «ग्रे»).
 export const texts=(page:Page)=>page.evaluate(()=>{
  const out:string[]=[];
  const shown=(el:Element)=>{for(let e:Element|null=el;e;e=e.parentElement){if((e as HTMLElement).hidden||e.getAttribute('aria-hidden')==='true')return false;if(e.tagName==='DETAILS'&&!(e as HTMLDetailsElement).open&&el.closest('summary')?.parentElement!==e&&e!==el)return false;const s=getComputedStyle(e);if(s.display==='none'||s.visibility==='hidden')return false;}return true;};
  const skipped=(el:Element)=>el.closest('.portal-header,[data-i18n-shell],script,style,[data-testid=site-tour]')!==null||el.closest('[lang=en]:not(html)')!==null;
  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n:Node|null;
- while((n=walker.nextNode())){const el=n.parentElement;if(!el||el.tagName==='OPTION')continue;const t=n.textContent?.trim();if(t&&/[A-Za-z]{2}/.test(t)&&!skipped(el)&&shown(el))out.push(t);}
- for(const select of document.querySelectorAll('select'))if(!skipped(select)&&shown(select))for(const o of select.options){const t=o.text.trim();if(t&&/[A-Za-z]{2}/.test(t))out.push(`@option:${t}`);}
- for(const el of document.querySelectorAll('[aria-label],[title],[placeholder]'))if(!skipped(el)&&shown(el))for(const a of ['aria-label','title','placeholder']){const v=el.getAttribute(a)?.trim();if(v&&/[A-Za-z]{2}/.test(v))out.push(`@${a}:${v}`);}
+ while((n=walker.nextNode())){const el=n.parentElement;if(!el||el.tagName==='OPTION')continue;const t=n.textContent?.trim();if(t&&/\p{L}\p{M}*\p{L}/u.test(t)&&!skipped(el)&&shown(el))out.push(t);}
+ for(const select of document.querySelectorAll('select'))if(!skipped(select)&&shown(select))for(const o of select.options){const t=o.text.trim();if(t&&/\p{L}\p{M}*\p{L}/u.test(t))out.push(`@option:${t}`);}
+ for(const el of document.querySelectorAll('[aria-label],[title],[placeholder]'))if(!skipped(el)&&shown(el))for(const a of ['aria-label','title','placeholder']){const v=el.getAttribute(a)?.trim();if(v&&/\p{L}\p{M}*\p{L}/u.test(v))out.push(`@${a}:${v}`);}
  return out;
 });
 export const bare=(text:string)=>text.replace(/^@[a-z-]+:/,'');
@@ -111,7 +118,7 @@ export const STEPS:readonly (readonly [string,(page:Page,lang:Lang)=>Promise<voi
   await tool(page,lang,'sky.observatory');const dome=page.getByRole('button',{name:new RegExp(N(lang,'sky.open').source.replace(/\$$/,'').concat(' ↗$'))});if(await dome.isVisible())await dome.click();// the star field opened it
   if(!await page.locator('#point-ra').isVisible())await page.getByText(N(lang,'sky.coordinates')).click();
   await page.locator('#point-ra').fill('12.99311111111111');await page.locator('#point-dec').fill('27.959722222222222');await button(page,lang,'sky.pointCoordinates').click();
-  await page.getByRole('button',{name:new RegExp(/^\s*[⟦]?\s*(?:T[eé]l[eé]sc[oó]p[eéi]|Teleskop ·)/.source+'|'+pseudoStart('Telescope').source)}).first().click();
+  await page.getByRole('button',{name:new RegExp(/^\s*[⟦]?\s*(?:T[eé]l[eé]sc[oó]p[eéi]|Teleskop ·|दूरबीन ·)/.source+'|'+pseudoStart('Telescope').source)}).first().click();
   if(!await button(page,lang,'runningClock.trackingOn').isVisible())await page.getByText(N(lang,'runningClock.title')).click();
   if(await button(page,lang,'runningClock.trackingOn').isVisible())await button(page,lang,'runningClock.trackingOn').click();
   await tool(page,lang,'spectrometer.nav');await expect(id(page,'field-spec-use')).toBeEnabled({timeout:60_000});await id(page,'field-spec-use').click();
