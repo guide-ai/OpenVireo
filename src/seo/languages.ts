@@ -11,6 +11,7 @@
  * Front ID-REL+SEO: Indonesian (id) under /id/, the same way (its row, its texts in src/seo/labs.id.ts).
  * Front HI-REL+SEO: Hindi (hi) under /hi/, the same way (its row, its texts in src/seo/labs.hi.ts).
  * Front JA-REL+SEO: Japanese (ja) under /ja/, the same way (its row, its texts in src/seo/labs.ja.ts).
+ * Front RU-REL+SEO: Russian (ru) under /ru/, the same way (its row, its texts in src/seo/labs.ru.ts).
  *
  * Which languages exist here is independent of which are released in the app: a row is added by that language's SEO front,
  * after its release (src/seo/pages.test.ts checks each row's tag against src/i18n/languages.json). */
@@ -21,6 +22,7 @@ import {LAB_TEXT_FR} from './labs.fr.ts';
 import {LAB_TEXT_ID} from './labs.id.ts';
 import {LAB_TEXT_HI} from './labs.hi.ts';
 import {LAB_TEXT_JA} from './labs.ja.ts';
+import {LAB_TEXT_RU} from './labs.ru.ts';
 import {SEO_PATH_PREFIX,type LabSlug} from './labSlugs.ts';
 import {LANGUAGES,textDirection,type LanguageEntry,type TextDirection} from '../i18n/languages.ts';
 
@@ -38,10 +40,12 @@ export type SeoLanguage=Readonly<{
   * standard Indonesian that every `id-*` browser opens, and the withdrawn `in`/`in-*` too, AGENTS.md 2026-11-19), which every
   * Indonesian searcher matches; Malay (`ms`) is another language and stays on the English x-default. Hindi is `hi`
   * alone (the app opens Hindi for every `hi` and `hi-*` browser, AGENTS.md 2026-11-19), which every Hindi searcher matches.
-  * Japanese is `ja` alone, the same way (one Japanese that every `ja-*` browser opens, AGENTS.md 2026-11-19). */
+  * Japanese is `ja` alone, the same way (one Japanese that every `ja-*` browser opens, AGENTS.md 2026-11-19). Russian is `ru`
+  * alone (one Russian that every `ru-*` browser opens, AGENTS.md 2026-11-19); Ukrainian, Belarusian and Kazakh searchers keep the
+  * English x-default, as those browsers keep English. */
  hreflang:readonly string[];
- /** Open Graph locale (language_TERRITORY): en_US, es_LA, pt_BR, fr_FR, id_ID, hi_IN, ja_JP (Open Graph needs a territory;
-  * hreflang stays `fr`, `id`, `hi`, `ja`). */
+ /** Open Graph locale (language_TERRITORY): en_US, es_LA, pt_BR, fr_FR, id_ID, hi_IN, ja_JP, ru_RU (Open Graph needs a territory;
+  * hreflang stays `fr`, `id`, `hi`, `ja`, `ru`). */
  ogLocale:string;
  /** Path prefix of its pages: '' for English, SEO_PATH_PREFIX for the others. */
  prefix:string;
@@ -331,8 +335,49 @@ const JA:SeoLanguage={
    '上部の言語セレクターで、いつでも英語に切り替えられます。']},
 };
 
+const RU:SeoLanguage={
+ tag:'ru',hreflang:['ru'],ogLocale:'ru_RU',prefix:SEO_PATH_PREFIX.ru,app:'/?lang=ru',
+ ogImage:'/og-image-ru.png',ogImageAlt:'OpenVireo: астрономические работы CLEA VIREO в вашем браузере, на русском языке',
+ ogImageText:{title:'Работы по астрономии CLEA\u00a0VIREO в\u00a0браузере',lines:['Закон Хаббла · Пульсары · Плеяды · Объект X · и не только.','Бесплатная неофициальная веб-реконструкция. Без установки.']},
+ labs:merge(LAB_TEXT_RU),
+ ui:{languageName:'Русский',siteNav:'Сайт',breadcrumb:'Навигационная цепочка',labsCrumb:'Лабораторные работы',allLabs:'Все лабораторные работы',openObservatory:'Открыть обсерваторию',
+  labEyebrow:'Лабораторная работа по заданию CLEA VIREO',openLab:'Открыть работу',
+  openLabNote:()=>'Открывает обсерваторию на русском языке с руководством к этой работе. Бесплатно и без регистрации.',
+  whatYouDo:'Что вы делаете',whatYouLearn:'Чему вы научитесь',otherLabs:'Другие лабораторные работы',
+  about:'OpenVireo\u00a0— бесплатная некоммерческая веб-реконструкция VIREO, виртуальной образовательной обсерватории (Virtual Educational '+
+   'Observatory) Project CLEA в Gettysburg College. Project CLEA поддерживают NSF (National Science Foundation) и Gettysburg College. '+
+   'OpenVireo опирается на восстановленное поведение оригинальной программы и использует исходные файлы данных с указанием их источника. '+
+   'OpenVireo не является оригинальной программой и не связана с Project CLEA. Приложение помечает свои известные веб-адаптации. '+
+   'Этот текст на русском языке\u00a0— веб-адаптация OpenVireo, а не текст CLEA.',
+  platform:'Работает в современном веб-браузере на Windows, Mac, Linux или Chromebook. Ничего не нужно устанавливать, учётная запись не нужна.',
+  learningResourceType:'Интерактивная лабораторная работа',educationalLevel:['Старшая школа','Высшее образование']},
+ labsIndex:{title:'Лабораторные работы по астрономии CLEA VIREO онлайн · OpenVireo',
+  description:'Семь лабораторных работ CLEA VIREO для браузера: закон Хаббла, крупномасштабная структура, спектры звёзд, Плеяды, диаграммы Г\u00a0— Р скоплений, пульсары, Объект X.',
+  eyebrow:'Лабораторные работы CLEA VIREO',heading:'Лабораторные работы по астрономии в вашем браузере',
+  lead:'Каждая работа следует одному из учебных заданий VIREO, виртуальной обсерватории Project CLEA. Вы наблюдаете с помощью виртуальных телескопов и приборов, получаете собственные данные и делаете собственные выводы.',
+  listName:'Лабораторные работы CLEA VIREO'},
+ notFound:{title:'Не найдена',heading:'Страница не найдена',text:'Этот адрес не относится к OpenVireo.'},
+ home:{title:'OpenVireo: астрономические работы CLEA VIREO на русском языке',
+  description:'Бесплатная неофициальная веб-реконструкция виртуальной обсерватории VIREO от Project CLEA на русском языке: закон Хаббла, пульсары, Плеяды, Объект X и другие.',
+  operatingSystem:'Любая (работает в веб-браузере)',
+  eyebrow:'Виртуальная обсерватория на русском языке',heading:'Астрономические работы CLEA VIREO в вашем браузере',
+  lead:'OpenVireo воссоздаёт в браузере VIREO, виртуальную обсерваторию Project CLEA. Вы наводите виртуальные телескопы, снимаете спектры, измеряете блеск звёзд и записываете пульсары, а затем делаете собственные выводы по собственным данным.',
+  note:'Бесплатно, без регистрации и без установки.',
+  labsHeading:'Семь лабораторных работ',howHeading:'Как это работает',
+  how:['Всё происходит в вашем браузере: ничего не нужно устанавливать, учётная запись не нужна.',
+   // Front HOME: the facts of the app's welcome (home.factInstall, home.factFaithful), as on /es/, /pt-br/, /fr/ and /id/.
+   'Вам не нужны ни Windows, ни виртуальная машина: OpenVireo работает в современном браузере на Mac, Windows, Linux или Chromebook.',
+   'OpenVireo следует восстановленному поведению оригинальной программы и помечает свои веб-адаптации. Это неофициальная реконструкция.',
+   'Вы сохраняете свои исследования в файлы на своём компьютере и можете снова загрузить их в любой момент.',
+   'Интерфейс, руководства и справка\u00a0— на русском языке; файлы TXT, FITS, CSV и сохранённые исследования записываются в формате VIREO или OpenVireo.',
+   // Plan front-i18n-ru.md §4.1 (the user's decision Q1 of 2026-11-19): the numbers sentence, with U+202F in «24 000».
+   'На экране в числах используется десятичная точка, а разряды разделяются узким пробелом (например, 1.5 и 24\u202f000); дробные числа вводите тоже с точкой. Файлы, которые сохраняет сайт, остаются на английском, как их записывает VIREO.',
+   'Переключиться на английский можно в любой момент: выбор языка находится вверху страницы.']},
+};
+
+
 /** Every language with static pages, English first (the x-default). */
-export const SEO_LANGUAGES:readonly SeoLanguage[]=Object.freeze([EN,ES,PT_BR,FR,ID,HI,JA]);
+export const SEO_LANGUAGES:readonly SeoLanguage[]=Object.freeze([EN,ES,PT_BR,FR,ID,HI,JA,RU]);
 export const ENGLISH=EN;
 
 /** A page, named the same in every language: the home page, the labs index or one lab. */

@@ -120,8 +120,9 @@ describe('Front SC2: the pseudo-locales as UI languages (dev server and tests on
    expect(isPseudoScriptLanguage(language)).toBe(true);
    expect(decide({param:language,dev:true})).toBe(language);expect(decide({param:language})).toBe('en');
    expect(decide({stored:language,dev:true})).toBe('en');
-   // A browser in the pseudo-locale's own language never opens the pseudo-locale: English, or that language once it is released
-   // (an hi browser opens Hindi since HI-REL and a ja browser Japanese since JA-REL, not qps-deva or qps-cjk).
+   // A browser in the pseudo-locale's script language never gets the pseudo-locale: English, or that language once it is released
+   // (Hindi since HI-REL, Japanese since JA-REL, Russian since RU-REL: an hi browser opens Hindi, a ja browser Japanese, a ru
+   // browser Russian, not qps-deva, qps-cjk or qps-cyrl).
    expect(decide({languages:[TAG[language]],dev:true})).toBe(isReleased(TAG[language])?TAG[language]:'en');
    expect(HTML_LANG[language]).toBe(TAG[language]);expect(selectorShown(language)).toBe(false);
   }

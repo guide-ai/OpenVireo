@@ -125,7 +125,7 @@ describe('Front ES0: the dev-only pseudo-locale qps',()=>{
   expect(sha(hubbleAnalysisCsv({recipeId:'workbook',rows:workbookExampleRows()},[]))).toBe(baseline.nodeSHA256.workbook);
   expect(sha(hubbleAnalysisCsv({recipeId:'vireo',rows:workbookExampleRows()},[]))).toBe(baseline.nodeSHA256.vireo);
  });
- it('Front PT-REL review: formatNumber reads the active language; Spanish and the pseudo-locale print what English prints, Portuguese, (FR-REL) French and (ID-REL) Indonesian only swap the group separator for U+202F, (HI-REL) Hindi prints what English prints, and the export bytes stay',async()=>{
+  it('Front PT-REL review: formatNumber reads the active language; Spanish and the pseudo-locale print what English prints, Portuguese, (FR-REL) French, (ID-REL) Indonesian and (RU-REL) Russian only swap the group separator for U+202F, (HI-REL) Hindi prints what English prints, and the export bytes stay',async()=>{
   const {SPANISH}=await import('./es/index'),{PORTUGUESE}=await import('./pt-br/index');
   const values=[0,-0.5,7,999,1000,1234.5,-31147,12345.678,2400000,98765.4321,1e-10,6.02e23,Number.NaN,Number.POSITIVE_INFINITY];
   const options:Intl.NumberFormatOptions[]=[{},{useGrouping:false},{maximumFractionDigits:0},{minimumFractionDigits:5,maximumFractionDigits:5,useGrouping:false},{maximumFractionDigits:9},{style:'percent',maximumFractionDigits:0},{style:'percent',signDisplay:'exceptZero',maximumFractionDigits:6,useGrouping:false},{notation:'scientific',maximumFractionDigits:3,useGrouping:false},{notation:'scientific',maximumSignificantDigits:12},{notation:'compact'}];
@@ -150,6 +150,11 @@ describe('Front ES0: the dev-only pseudo-locale qps',()=>{
   const {HINDI}=await import('./hi/index');
   activateLocale(HINDI);expect(uiLanguage()).toBe('hi');expect(all()).toEqual(english);
   expect([formatNumber(24000),formatNumber(2400000),formatNumber(31147)]).toEqual(['24,000','2,400,000','31,147']);
+  // Front RU-REL (the user's decision of 2026-11-19): Russian groups as Portuguese, French and Indonesian do, with U+202F.
+  const {RUSSIAN}=await import('./ru/index');
+  activateLocale(RUSSIAN);expect(uiLanguage()).toBe('ru');
+  expect(all()).toEqual(english.map(s=>s.replace(/(?<=\d),(?=\d{3})/g,'\u202f')));
+  expect([formatNumber(24000),formatNumber(2400000),formatNumber(1234.5),formatNumber(24000,{useGrouping:false})]).toEqual(['24\u202f000','2\u202f400\u202f000','1\u202f234.5','24000']);
   expect([fixed(12345.678,2),scientific(12345,3)]).toEqual(['12345.68','1.23e+4']);
   const m=createMeasurement(1,'Operator <b>σ</b> {target}','retained σ.csv','a'.repeat(64),{base:.015625,position:0,factor:1,step:.001},'GLXYLNS.LST');
   expect(sha(measurementCsv([m]))).toBe(baseline.nodeSHA256.measurement);

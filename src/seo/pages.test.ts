@@ -65,9 +65,9 @@ describe('#lab= links',()=>{
 });
 
 describe('sitemap and files',()=>{
- it('lists the home page, the index and each lab page as absolute addresses, in English, Spanish (ES-SEO), Brazilian Portuguese (PT-SEO), French (FR-REL+SEO), Indonesian (ID-REL+SEO), Hindi (HI-REL+SEO) and then Japanese (JA-REL+SEO)',()=>{
+ it('lists the home page, the index and each lab page as absolute addresses, in English, Spanish (ES-SEO), Brazilian Portuguese (PT-SEO), French (FR-REL+SEO), Indonesian (ID-REL+SEO), Hindi (HI-REL+SEO), Japanese (JA-REL+SEO) and then Russian (RU-REL+SEO)',()=>{
   const xml=sitemap(),locs=[...xml.matchAll(/<loc>([^<]*)<\/loc>/g)].map(m=>m[1]);
-  expect(locs).toEqual(SITEMAP_PATHS.map(p=>SITE_URL+p));expect(locs).toHaveLength(7*(2+LABS.length));
+  expect(locs).toEqual(SITEMAP_PATHS.map(p=>SITE_URL+p));expect(locs).toHaveLength(8*(2+LABS.length));
   expect(SITEMAP_PATHS.slice(0,2+LABS.length)).toEqual(['/','/labs/',...LABS.map(l=>labUrl(l.slug))]);
  });
  it('every sitemap page except the English home page (the app) is an emitted file, and every emitted page is in the sitemap',()=>{
@@ -156,10 +156,10 @@ describe('404 page (Front LAUNCH-3)',()=>{
  });
  it('says it in every language, English first, each other block under its own lang, with absolute links into that language',()=>{
   expect(html).toMatch(/^<!doctype html>\n<html lang="en">/);
-  expect(html).toContain('<title>OpenVireo · Not found · No encontrada · Não encontrada · Introuvable · Tidak ditemukan · नहीं मिला · 見つかりません</title>');
+  expect(html).toContain('<title>OpenVireo · Not found · No encontrada · Não encontrada · Introuvable · Tidak ditemukan · नहीं मिला · 見つかりません · Не найдена</title>');
   expect(html).toContain('<h1>Page not found</h1><p class="lead">This address is not part of OpenVireo.</p>');
   for(const l of SEO_LANGUAGES.slice(1))expect(html).toContain(`<section lang="${l.tag}"><h2>${l.notFound.heading}</h2><p>${l.notFound.text}</p>`);
-  for(const text of ['Esta dirección no forma parte de OpenVireo.','Este endereço não faz parte do OpenVireo.','Cette adresse ne fait pas partie d’OpenVireo.','Alamat ini bukan bagian dari OpenVireo.','यह पता OpenVireo का हिस्सा नहीं है।','このアドレスはOpenVireoのサイトにはありません。'])expect(html).toContain(text);
+  for(const text of ['Esta dirección no forma parte de OpenVireo.','Este endereço não faz parte do OpenVireo.','Cette adresse ne fait pas partie d’OpenVireo.','Alamat ini bukan bagian dari OpenVireo.','यह पता OpenVireo का हिस्सा नहीं है।','このアドレスはOpenVireoのサイトにはありません。','Этот адрес не относится к OpenVireo.'])expect(html).toContain(text);
   for(const l of SEO_LANGUAGES){
    expect(html).toContain(`href="${l.app.replace(/&/g,'&amp;')}#observatory">${l.ui.openObservatory}</a>`);
    expect(html).toContain(`<a href="${pathOf(l,'labs')}">${l.ui.allLabs}</a>`);
@@ -167,7 +167,7 @@ describe('404 page (Front LAUNCH-3)',()=>{
   // Served at any depth: every address is absolute.
   for(const [,href] of html.matchAll(/(?:href|src)="([^"]*)"/g))expect(href.startsWith('/'),href).toBe(true);
  });
- it('keeps French typography (no plain space before ; : ! ?) and es/pt/fr/id/hi texts free of English leftovers',()=>{
+ it('keeps French typography (no plain space before ; : ! ?) and es/pt/fr/id/hi/ru texts free of English leftovers',()=>{
   for(const l of SEO_LANGUAGES.slice(1))for(const t of Object.values(l.notFound))expect(t).not.toMatch(/Not found|This address/);
   const fr=SEO_LANGUAGES.find(l=>l.tag==='fr')!;for(const t of Object.values(fr.notFound))expect(t).not.toMatch(/ [;:!?]/);
  });
