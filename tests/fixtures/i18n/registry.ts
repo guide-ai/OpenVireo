@@ -14,7 +14,7 @@ const PORTUGUESE=LANGUAGES.find(l=>l.tag==='pt-BR')!;
 const FRENCH=LANGUAGES.find(l=>l.tag==='fr')!;
 /** Front ID0: Indonesian's own line of the production registry (released since ID-REL; `in`, the withdrawn ISO 639 code, too). */
 const INDONESIAN=LANGUAGES.find(l=>l.tag==='id')!;
-/** Front HI0: Hindi's own line of the production registry (before its release). */
+/** Front HI0: Hindi's own line of the production registry (released since HI-REL). */
 const HINDI=LANGUAGES.find(l=>l.tag==='hi')!;
 /** Front JA0: Japanese's own line of the production registry (released since JA-REL). */
 const JAPANESE=LANGUAGES.find(l=>l.tag==='ja')!;
@@ -24,8 +24,8 @@ const CHINESE_SIMPLIFIED=LANGUAGES.find(l=>l.tag==='zh-Hans')!;
 const RUSSIAN=LANGUAGES.find(l=>l.tag==='ru')!;
 const TRADITIONAL=['zh-Hant','zh-TW','zh-HK','zh-MO'];
 export const ZH_HANT=entry('zh-Hant','繁體中文','Chinese, Traditional',TRADITIONAL);
-/** Spanish, pt-BR, French and Indonesian (since ID-REL) as released, then Hindi before its release, Japanese released (JA-REL),
- * then Simplified Chinese before its release and Russian released (RU-REL), in registry order (Russian last). */
+/** Spanish, pt-BR, French, Indonesian (since ID-REL), Hindi (since HI-REL) and Japanese (since JA-REL) as released, then
+ * Simplified Chinese before its release and Russian released (RU-REL), in registry order (Russian last). */
 export const PLANNED:readonly LanguageEntry[]=Object.freeze([
  SPANISH,
  PORTUGUESE,

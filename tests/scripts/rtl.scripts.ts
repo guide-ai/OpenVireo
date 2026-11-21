@@ -239,3 +239,17 @@ for(const width of [320,1440] as const)
   const moved=shifts.filter(s=>{const m=cjkMove(s);return m!==null&&+m[1]!>0&&+m[1]!<=2;});
   expect(shifts.filter(s=>!moved.includes(s))).toEqual([]);
  });
+// Front HI-REL: Hindi, released and left to right, with Noto Sans Devanagari. The spectrum's y-axis title fits at 1440 px; at 320 px
+// its rotated Devanagari (the face's taller ascent, as for CJK above) crosses the plot's left edge by about 2 px, so keepInsideSvg
+// moves it right by that much (measured 2.207 px), its designed move. A title may only move right, by at most 3 px; never left or
+// by more. (Its Multi-Spec titles are in the walk above, since its observatory is translated.)
+for(const width of [320,1440] as const)
+ test(`hi at ${width} px: the spectrum y-axis title RT7 keeps inside its plot moves at most 3 px right`,async({page})=>{
+  await page.setViewportSize({width,height:width===320?700:1000});
+  await page.goto('about:blank');await page.goto('/?lang=hi#spectrum');
+  await expect(page.locator('html')).toHaveAttribute('lang','hi');
+  await expect(page.locator('svg.spectrum').first()).toBeVisible({timeout:30_000});await settle(page);
+  const shifts=(await titleShifts(page,'svg.spectrum')).filter((t):t is string=>t!==null);
+  const small=shifts.filter(t=>{const m=/: g translate\((\d+(?:\.\d+)?) 0\)$/.exec(t);return m!==null&&+m[1]>0&&+m[1]<=3;});
+  expect(shifts.filter(t=>!small.includes(t)),'hi spectrum').toEqual([]);
+ });

@@ -97,13 +97,22 @@ const pairs=()=>collectPairs({catalog:hi,english:en,maps:HINDI.maps,englishMaps:
 const strings=()=>[...Object.values(hi),...Object.values(originals),...pairs().map(p=>p.text)];
 
 describe('Front HI0: the Hindi (hi) bundle',()=>{
- it('is registered unreleased (only a ?lang=hi preview reaches it), with the en-US thousands comma (user decision Q1, 2026-11-19)',()=>{
-  expect(languageEntry('hi')).toMatchObject({dir:'hi',catalog:'hi.json',htmlLang:'hi',pagePath:'hi',autonym:'हिन्दी',englishName:'Hindi',match:['hi'],released:false});
+ it('Front HI-REL: is released (detected from every hi and hi-* browser, stored, offered), with the en-US thousands comma (user decision Q1, 2026-11-19)',()=>{
+  expect(languageEntry('hi')).toMatchObject({dir:'hi',catalog:'hi.json',htmlLang:'hi',pagePath:'hi',autonym:'हिन्दी',englishName:'Hindi',match:['hi'],released:true});
   expect(languageEntry('hi')?.thousands).toBeUndefined();
   // Front HI-HELP: Hindi translates VIREO's help files, with its related-topics marker.
   expect(languageEntry('hi')?.help).toEqual({related:'संबंधित विषय'});
   expect(HINDI.language).toBe('hi');
   for(const notice of Object.values(languageEntry('hi')!.notices)){expect(notice).toMatch(/।$/u);expect(notice.normalize('NFC')).toBe(notice);}
+ });
+ it('Front HI-REL: the catalog is complete and strict: every en.json key, the same {params}, strings only, no extra key; every map complete',()=>{
+  // As the ES-REL, PT-REL and FR-REL checks: strictness lives here, since the split bundle builds each module with the English
+  // fallback.
+  expect(()=>createI18n(hi as Record<MessageKey,string>,'hi')).not.toThrow();
+  expect(Object.keys(en).filter(k=>!Object.hasOwn(hi,k))).toEqual([]);
+  for(const [id,map] of Object.entries(HINDI.maps??{}))expect(mapParity(ENGLISH_MAPS[id as MapId],map),id).toEqual([]);
+  expect(MAP_IDS.filter(id=>!Object.hasOwn(HINDI.maps??{},id))).toEqual([]);
+  expect(MAP_IDS.filter(id=>!Object.hasOwn(ENGLISH_MAPS,id)),'every map is compared with its English').toEqual([]);
  });
  it('the catalog is a valid partial catalog (en.json keys, the same {params}) and covers the whole shell, the welcome and the footer',()=>{
   expect(()=>createI18n(hi as Partial<Record<MessageKey,string>>,'hi',{fallback:true})).not.toThrow();
