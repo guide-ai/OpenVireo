@@ -57,6 +57,23 @@
   "catalog:nativeResults.kindValue": "Front ZH3: placeholders and a separator only",
   "catalog:program.row": "Front ZH3: placeholders and a separator only",
   "catalog:nativeText.choice": "Front ZH3: placeholders and a separator only",
-  "map:wedge.detail.hours": "Front ZH2: the hour unit symbol h, which the wedge joins after a space and a number (赤经（h）)"
+  "map:wedge.detail.hours": "Front ZH2: the hour unit symbol h, which the wedge joins after a space and a number (赤经（h）)",
+  "catalog:ph.fixed": "Front ZH4: filter letters, a separator and a placeholder",
+  "catalog:ph.seriesSecondsOption": "Front ZH4: a placeholder and the unit symbol s",
+  "catalog:nc.axisColor": "Front ZH4: a colour-index symbol and its unit, B−V (mag)",
+  "catalog:obsHr.sha": "Front ZH4: a hash label kept in English (SHA-256)",
+  "catalog:obsHr.blockedField.v": "Front ZH4: the magnitude symbol V",
+  "catalog:obsHr.blockedField.b": "Front ZH4: the magnitude symbol B",
+  "catalog:obsHr.blockedField.b-v": "Front ZH4: the colour-index symbol B−V",
+  "catalog:obsHr.modulus": "Front ZH4: the distance-modulus symbol V − Mv",
+  "catalog:obsHr.ebv": "Front ZH4: the colour-excess symbol E(B−V)",
+  "catalog:obsHr.colIndex": "Front ZH4: the number sign as a column header (#)",
+  "catalog:obsHr.colBV": "Front ZH4: the colour-index symbol B − V",
+  "catalog:db.columnEbv": "Front ZH4: a colour-excess symbol and its unit, E(B−V) (mag)",
+  "catalog:ce.inspectedInfo": "Front ZH4: placeholders, symbols (B−V, V) and the unit mag only",
+  "map:variableStars.columns.0": "Front ZH4: the catalog name GCVS ID",
+  "map:variableStars.columns.7": "Front ZH4: an empty column header",
+  "map:variableStars.noPeriod": "Front ZH4: a dash for a missing period",
+  "map:variableStars.typeOption": "Front ZH4: a placeholder, a separator and a number (the type is VIREO's GCVS code; the blank-type label stays as VIREO's list shows it)"
  }
 }
