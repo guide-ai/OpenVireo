@@ -31,7 +31,7 @@ export const SAME=new Set<string>([
 export const GALAXY=/^(?:\d{5}[+-]\d{4}|(?:NGC|IC|UGC|CGCG|MCG|MRK|KUG)\s?\d[\d+-]*(?:\s?[A-Z\d-]{1,4})?|A\d[\d+-]*)$/;
 /** A hash (with or without its SHA-256 label), a binary32 bit pattern, the print date (en-US numbers in every language), a saved .TXT line (the wedge's Saved line), a field list file name
  * or the saved file's header. */
-export const RECORDED=/^(?:SHA-256 )?[0-9a-f]{64}$|^[0-9a-f]{8}$|^\d{1,2}\/\d{1,2}\/\d{4}, \d{1,2}:\d\d:\d\d [AP]M$|^\S.{10}\s+\d{4}\.\d{6}\s+\d+h\d\dm\d\d\.\ds|^LSS_Field0\d\.HTL$|^Object ID +MJD\(Days\)/;
+export const RECORDED=/^(?:SHA-256 )?[0-9a-f]{64}$|^[0-9a-f]{8}$|^\d{1,2}\/\d{1,2}\/\d{4}, \d{1,2}:\d\d:\d\d\s?[AaPp][Mm]$|^\S.{10}\s+\d{4}\.\d{6}\s+\d+h\d\dm\d\d\.\ds|^LSS_Field0\d\.HTL$|^Object ID +MJD\(Days\)/;
 /** A number with its unit or symbol, and nothing else that could be a word. */
 export const NUMERIC=/^[-+−±\d\s.,:;°′″'"·×/()[\]–%=→hms]*\d[-+−±\d\s.,:;°′″'"·×/()[\]–%=→hms]*(?:\s*(?:Å|km\/s|Mpc|ms|mag|h|s|m|JD|z|px|°))*\s*$/;
 /** Texts that are the same words in one language (its identical.json, with a reason each). */
