@@ -959,7 +959,7 @@
  "error.fileDownload": "No se pudo descargar el recurso del espectro.",
  "error.fileDigest": "El espectro no coincide con su SHA-256 esperado.",
  "app.documentTitle": "OpenVireo · Prácticas de astronomía de CLEA VIREO y simulador de telescopio",
- "app.description": "Reconstrucción web libre y no oficial de VIREO, de Project CLEA: prácticas de astronomía con telescopios simulados sobre la ley de Hubble, los púlsares, las Pléyades, el Objeto X y más.",
+ "app.description": "Reconstrucción web libre y no oficial de VIREO, de Project CLEA: prácticas de astronomía sobre la ley de Hubble, los púlsares, las Pléyades, el Objeto X y más, con telescopios simulados.",
  "project.title": "Una copia de seguridad de la investigación",
  "project.help": "Guarda juntos tu espectro actual, las mediciones, los datos de Hubble, el trabajo de clasificación y la fotometría confirmada. La fotometría se reproduce desde su semilla y sus eventos originales acotados; tus entradas siguen siendo manuales.",
  "project.save": "Guardar investigación",

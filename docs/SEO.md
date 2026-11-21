@@ -948,3 +948,6 @@ Each finding was checked against the source before the fix.
   description is now two sentences, and the lab names follow a colon.
 - 10 fixed by dropping the second 的 («Project CLEA的VIREO非官方免费网页重建版»), which keeps VIREO as Project CLEA's.
 - 11 fixed («sobre»), and the same preposition in Portuguese, French and Indonesian.
+
+Second look by the same reviewer over `54ce3142`: ship. Its one remaining nit is applied: in Spanish, Portuguese, French and
+Indonesian the telescopes close the sentence (as in Russian), so the topics cannot be read as describing the telescopes.
