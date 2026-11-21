@@ -53,6 +53,8 @@ test('the first browser language decides: es, es-MX, es-ES and es-419 open Spani
 });
 
 test('a stored choice beats the browser language, and a ?lang= link beats both for that load only',async({browser})=>{
+ // Six full loads in two browsers: 30 s is too tight on a loaded runner (RU-REL CI), as for the browser-language test above.
+ test.setTimeout(60_000);
  const spanishBrowser=await browserIn(browser,[SPANISH_LOCALE]);await seedChoice(spanishBrowser,'en');
  expect(await languageOf(spanishBrowser)).toBe('en');
  expect(await languageOf(spanishBrowser,'?lang=es-419')).toBe('es-419');expect(await stored(spanishBrowser)).toBe('en');

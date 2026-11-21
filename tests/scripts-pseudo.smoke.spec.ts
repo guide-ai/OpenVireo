@@ -24,5 +24,14 @@ test('English is unchanged beside the script pseudo-locales',async({page})=>{
  await page.goto('/#observatory');await expect(page.locator('.investigation-toolbar')).toBeVisible({timeout:15_000});
  await expect(page.locator('html')).toHaveAttribute('lang','en');await expect(page.locator('html')).toHaveAttribute('dir','ltr');
  await expect(page).toHaveTitle(en['app.documentTitle']);
- expect(await page.locator('body').innerText()).not.toMatch(/⟦|[\p{sc=Han}\p{sc=Devanagari}\p{sc=Cyrillic}\p{sc=Arabic}]/u);
+ // Released languages appear in the (lazily loaded) selector under their own autonym and `lang` («日本語 (Japanese)», «Русский
+ // (Russian)»): wait for it, then read the page without the text of elements in another language, so the check neither races the selector nor
+ // fails once a non-Latin language is released (JA-REL, RU-REL).
+ await expect(page.getByTestId('language-choice')).toBeVisible({timeout:15_000});
+ const text=await page.evaluate(()=>{
+  const other=[...document.body.querySelectorAll<HTMLElement>('[lang]')].filter(e=>!/^en(?:-|$)/i.test(e.lang)).map(e=>e.textContent??'').filter(Boolean);
+  return other.reduce((t,label)=>t.split(label).join(''),document.body.innerText);
+ });
+ expect(text).toContain('Observatory');
+ expect(text).not.toMatch(/⟦|[\p{sc=Han}\p{sc=Devanagari}\p{sc=Cyrillic}\p{sc=Arabic}]/u);
 });
