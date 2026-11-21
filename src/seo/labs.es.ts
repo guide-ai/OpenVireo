@@ -21,7 +21,7 @@ export const LAB_TEXT_ES:Readonly<Record<LabSlug,LabText>>=Object.freeze({
   steps:['Elige un campo de sondeo y un telescopio.','Toma el espectro de cada galaxia y registra su corrimiento al rojo.','Grafica tus propios registros en un diagrama de cuña de ascensión recta y velocidad.','Describe las estructuras que ves y guarda tu investigación.'],
   learn:['Cómo los sondeos de corrimiento al rojo cartografían el universo en tres dimensiones.','Qué son los cúmulos, las paredes, los filamentos y los vacíos.','Cómo se lee un diagrama de cuña.']},
  'stellar-classification':{name:'Clasificación estelar',
-  title:'Clasificar espectros estelares: práctica CLEA VIREO · OpenVireo',
+  title:'Clasificación espectral de estrellas: práctica CLEA · OpenVireo',
   description:'Clasifica estrellas: compara sus espectros con estándares, marca líneas y mide anchos equivalentes. Reconstrucción web gratuita de una práctica de CLEA VIREO.',
   heading:'La clasificación de los espectros estelares',
   intro:'Carga uno de los 25 espectros de práctica originales y compáralo con un atlas de estrellas estándar. Tú decides su tipo espectral a partir de las líneas que ves; no hay calificación ni se revela ninguna respuesta.',

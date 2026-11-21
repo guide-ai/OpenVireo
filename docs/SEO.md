@@ -841,3 +841,66 @@ New coverage: `src/home/appGate.test.ts` (the queue rules) and seven tests in `t
 (Results Editors from the shell, no Save in the shell's language dialog, retry after a failed fetch, a failed direct load,
 intents in order with an address winning and a kept Restore, the phone menu's Instructor mode and guide focus, the live region).
 
+
+# Front SEO-TITLES: generic search terms in four English titles
+
+User request, 2026-11-21, after the first Search Console data: the site is indexed and already appears for "clea vireo"
+(average position 4.5) and "clea astronomy" (10), but those searches are rare. Titles and descriptions only; no page, route or
+behaviour changes.
+
+## Why
+
+Keyword research through OpenSEO (DataForSEO, United States, English, 2026-11-21) gave monthly searches and difficulty (0–100):
+
+| Search | Monthly | Difficulty |
+|---|---|---|
+| astronomy lab | 720 | 10 |
+| astronomy simulation | 720 | 32 |
+| astronomy simulator | 590 | 53 |
+| telescope simulator | 480 | 9 |
+| naap labs | 390 | 6 |
+| spectral classification of stars | 260 | 7 |
+| hr diagram simulator, hr diagram interactive, hr diagram simulation, hr diagram lab | 40 each | 0 |
+| pulsar simulation | 40 | 0 |
+| hubble's law lab | 20 | 0 |
+| project clea, clea labs | 20 each | 16–17 |
+| clea vireo, clea astronomy | 10 each | n/a, 17 |
+
+"virtual observatory" (60 500) and "clea" (12 100) mean other things and are not targets. Only English in the United States was
+researched; no other language or country. The first front's goal (first result for CLEA, VIREO and each lab name) stays: every
+changed title still names CLEA, and each page's heading keeps the lab's own name.
+
+## What changed
+
+| Page | Before | After |
+|---|---|---|
+| `/` title (`app.documentTitle`) | OpenVireo · CLEA VIREO astronomy labs in your browser | OpenVireo · CLEA VIREO astronomy labs, telescope simulator |
+| `/labs/` title | CLEA VIREO astronomy labs online · OpenVireo | Astronomy simulation labs online (CLEA VIREO) · OpenVireo |
+| `/labs/stellar-classification/` title | Classification of stellar spectra lab (CLEA VIREO) · OpenVireo | Spectral classification of stars lab (CLEA) · OpenVireo |
+| `/labs/cluster-hr/` title | HR diagrams of star clusters lab (CLEA VIREO) · OpenVireo | Interactive HR diagram lab: star clusters (CLEA) · OpenVireo |
+
+The four descriptions follow their titles: the home page says "astronomy labs with a simulated telescope", the index "Seven CLEA
+VIREO astronomy simulations rebuilt for the browser", the classification page "Learn spectral classification of stars" and the
+cluster page "Plot interactive HR diagrams of star clusters". Each still says the site is a free web reconstruction, and the
+home page still starts with "Unofficial". The other five lab pages are unchanged: the research gave no better term for them.
+The words are descriptions of what the web does (the observatory simulates its telescopes and instruments; the cluster tool
+plots catalogue data the visitor can fit by hand): the cluster page says "interactive", not "simulator".
+
+The preview image and its text (`ogImageText`, `ogImageAlt`) are unchanged.
+
+## Translations that follow the English
+
+The translation lints require a translation to carry the glossary term of each word its English has, so the new English words
+("telescope", "labs" in the home description; "stars" and "spectral classification" in the classification title) changed these
+texts, as web adaptations of the new English (no keyword research was done for them):
+
+- `app.documentTitle` and `app.description` in Spanish, Brazilian Portuguese, French, Indonesian, Hindi, Japanese, Russian and
+  Simplified Chinese (the app's tab title and description in that language; each language's static home page under
+  `src/seo/languages.ts` has its own title and is unchanged).
+- The classification page: its Spanish title («Clasificación espectral de estrellas: práctica CLEA · OpenVireo»), its Hindi
+  title and its Japanese title and description.
+
+## Tests
+
+`src/seo` and `src/i18n` unit tests (lengths, uniqueness across languages, the reconstruction sentence, every language's lint
+profile and glossary); `tests/p01.spec.ts` and `tests/observatory.spec.ts` expect the new tab title.
