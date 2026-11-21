@@ -888,6 +888,24 @@ plots catalogue data the visitor can fit by hand): the cluster page says "intera
 
 The preview image and its text (`ogImageText`, `ogImageAlt`) are unchanged.
 
+## Visible text
+
+User request, 2026-11-21: the phrases the titles name were barely in the pages' own text (the live pages said "telescope
+simulator", "astronomy simulation" and "spectral classification" nowhere). One clause per page now carries them. Headings are
+unchanged, so each page keeps the lab's own name as its `h1`.
+
+| Page | Text | Added |
+|---|---|---|
+| `/` (welcome and crawlable text) | `home.lead` | "…Project CLEA's virtual observatory: a telescope simulator with seven astronomy labs." |
+| `/labs/` | `labsIndex.lead` | "Each lab is an astronomy simulation that follows one of the student exercises…" |
+| `/labs/stellar-classification/` | `intro` | "Try the spectral classification of stars yourself: load one of the 25…" |
+| `/labs/cluster-hr/` | `intro` | "Work on an interactive HR diagram: plot a reference cluster…" |
+
+The same clause is added to `home.lead` in the eight translated catalogs (the app's welcome in that language) and to the labs
+index lead and the two intros of the seven languages with search pages, each with that language's existing terms (for example
+«diagrama H-R», «diagramme HR», «HR図», «диаграмма Г — Р»). Each language's static home page (`home.lead` in
+`src/seo/languages.ts`) is unchanged.
+
 ## Translations that follow the English
 
 The translation lints require a translation to carry the glossary term of each word its English has, so the new English words

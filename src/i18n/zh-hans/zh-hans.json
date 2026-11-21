@@ -125,7 +125,7 @@
  "sky.local": "网页重建版 · 并非原版VIREO",
  "home.eyebrow": "免费在线天文实验",
  "home.title": "Project CLEA的VIREO天文实验，为你的浏览器重新打造",
- "home.lead": "OpenVireo是对Project CLEA的虚拟天文台VIREO的非官方网页重建。操控虚拟望远镜，拍摄光谱，测量星光，记录脉冲星，然后依据你自己的数据得出你自己的结论。",
+ "home.lead": "OpenVireo是对Project CLEA的虚拟天文台VIREO的非官方网页重建：一个包含七个天文实验的望远镜模拟器。操控虚拟望远镜，拍摄光谱，测量星光，记录脉冲星，然后依据你自己的数据得出你自己的结论。",
  "home.factsLabel": "关于OpenVireo",
  "home.factInstall": "无需安装：不用Windows，也不用虚拟机。在Mac、Windows、Linux或Chromebook的现代浏览器中即可运行。",
  "home.factFree": "免费，无需账号。你的工作会以文件形式保存在你自己的电脑上。",
