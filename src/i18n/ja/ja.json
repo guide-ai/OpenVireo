@@ -125,7 +125,7 @@
  "sky.local": "ウェブ再構築版 · 元のVIREOではありません",
  "home.eyebrow": "無料のオンライン天文実習",
  "home.title": "Project CLEAのVIREO天文実習を、ブラウザー向けに再構築",
- "home.lead": "OpenVireoは、Project CLEAの仮想天文台VIREOを再現した非公式のWeb版です。7つの天文実習ができる望遠鏡シミュレーターです。仮想望遠鏡を天体に向け、スペクトルを取得し、星の光を測り、パルサーを記録して、自分のデータから自分で結論を導きます。",
+ "home.lead": "OpenVireoは、Project CLEAの仮想天文台VIREOを再現した非公式のWeb版で、7つの天文実習ができる望遠鏡シミュレーターです。仮想望遠鏡を天体に向け、スペクトルを取得し、星の光を測り、パルサーを記録して、自分のデータから自分で結論を導きます。",
  "home.factsLabel": "OpenVireoについて",
  "home.factInstall": "インストールは不要です。Windowsも仮想マシンも必要ありません。Mac、Windows、Linux、Chromebookの最新のブラウザーで動きます。",
  "home.factFree": "無料で、アカウントも不要です。作業内容は、お使いのコンピューター上のファイルとして保存されます。",

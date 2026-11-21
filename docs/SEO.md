@@ -906,6 +906,10 @@ index lead and the two intros of the seven languages with search pages, each wit
 «diagrama H-R», «diagramme HR», «HR図», «диаграмма Г — Р»). Each language's static home page (`home.lead` in
 `src/seo/languages.ts`) is unchanged.
 
+Third pass by the same reviewer, over `e3814963`: ship. Its optional wording changes are applied: the Japanese welcome joins
+its two sentences, the Russian classification intro says «Попробуйте сами выполнить…», and the Spanish one «Prueba por tu
+cuenta…».
+
 ## Translations that follow the English
 
 The translation lints require a translation to carry the glossary term of each word its English has, so the new English words

@@ -24,7 +24,7 @@ export const LAB_TEXT_ES:Readonly<Record<LabSlug,LabText>>=Object.freeze({
   title:'Clasificación espectral de estrellas: práctica CLEA · OpenVireo',
   description:'Clasifica estrellas: compara sus espectros con estándares, marca líneas y mide anchos equivalentes. Reconstrucción web gratuita de una práctica de CLEA VIREO.',
   heading:'La clasificación de los espectros estelares',
-  intro:'Practica la clasificación espectral de estrellas: carga uno de los 25 espectros de práctica originales y compáralo con un atlas de estrellas estándar. Tú decides su tipo espectral a partir de las líneas que ves; no hay calificación ni se revela ninguna respuesta.',
+  intro:'Prueba por tu cuenta la clasificación espectral de estrellas: carga uno de los 25 espectros de práctica originales y compáralo con un atlas de estrellas estándar. Tú decides su tipo espectral a partir de las líneas que ves; no hay calificación ni se revela ninguna respuesta.',
   steps:['Carga un espectro de práctica y un atlas de espectros estándar.','Compáralo con los estándares vecinos, lado a lado o como diferencia.','Marca líneas espectrales con la tabla de líneas y mide un ancho equivalente.','Registra tu propio tipo espectral y tu razonamiento, y guarda tu investigación.'],
   learn:['La secuencia espectral OBAFGKM y qué la determina.','Qué líneas de absorción distinguen a las estrellas calientes de las frías.','Cómo comparar un espectro con estándares de forma objetiva.']},
  pleiades:{name:'Fotometría de las Pléyades',
