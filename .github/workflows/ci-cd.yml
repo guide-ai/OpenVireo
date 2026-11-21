@@ -109,15 +109,20 @@ jobs:
     # Front RT7: three parts, so each stays under about 15 minutes with the qps-rtl deep walks at both widths and the RTL route walk.
     # Part 2 is still the deep walks under qps-deva, qps-cyrl and qps-rtl; part 3 the two right-to-left files (rtl-css.scripts.ts and
     # rtl.scripts.ts, matched by file name); part 1 the complement of both.
-    name: Script fonts (ja, zh, hi, ru, rtl) (${{ matrix.part }}/3)
+    # Coordinator, 2026-11-21: the complement holds each released non-Latin language's route walk (ja since JA-REL, hi and zh to
+    # come) and reached 25-30 minutes, so it runs as two Playwright shards of the same selection (parts 1 and 4), and every part
+    # has 40 minutes so a slow runner does not cancel it.
+    name: Script fonts (ja, zh, hi, ru, rtl) (${{ matrix.part }}/4)
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 40
     strategy:
       fail-fast: false
       matrix:
         include:
           - part: 1
-            select: '--grep-invert="under qps-(deva|cyrl|rtl) at |rtl(-css)?\.scripts\.ts"'
+            select: '--grep-invert="under qps-(deva|cyrl|rtl) at |rtl(-css)?\.scripts\.ts" --shard=1/2'
+          - part: 4
+            select: '--grep-invert="under qps-(deva|cyrl|rtl) at |rtl(-css)?\.scripts\.ts" --shard=2/2'
           - part: 2
             select: '--grep="under qps-(deva|cyrl|rtl) at "'
           - part: 3
