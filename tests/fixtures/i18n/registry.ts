@@ -16,7 +16,7 @@ const FRENCH=LANGUAGES.find(l=>l.tag==='fr')!;
 const INDONESIAN=LANGUAGES.find(l=>l.tag==='id')!;
 /** Front HI0: Hindi's own line of the production registry (released since HI-REL). */
 const HINDI=LANGUAGES.find(l=>l.tag==='hi')!;
-/** Front JA0: Japanese's own line of the production registry (before its release). */
+/** Front JA0: Japanese's own line of the production registry (released since JA-REL). */
 const JAPANESE=LANGUAGES.find(l=>l.tag==='ja')!;
 /** Front ZH0: Simplified Chinese's own line of the production registry (before its release). */
 const CHINESE_SIMPLIFIED=LANGUAGES.find(l=>l.tag==='zh-Hans')!;
@@ -24,8 +24,8 @@ const CHINESE_SIMPLIFIED=LANGUAGES.find(l=>l.tag==='zh-Hans')!;
 const RUSSIAN=LANGUAGES.find(l=>l.tag==='ru')!;
 const TRADITIONAL=['zh-Hant','zh-TW','zh-HK','zh-MO'];
 export const ZH_HANT=entry('zh-Hant','繁體中文','Chinese, Traditional',TRADITIONAL);
-/** Spanish, pt-BR, French, Indonesian (since ID-REL) and Hindi (since HI-REL) as released, then Japanese, Simplified Chinese and
- * Russian, before their release. */
+/** Spanish, pt-BR, French, Indonesian (since ID-REL), Hindi (since HI-REL) and Japanese (since JA-REL) as released, then
+ * Simplified Chinese and Russian, before their release. */
 export const PLANNED:readonly LanguageEntry[]=Object.freeze([
  SPANISH,
  PORTUGUESE,

@@ -56,14 +56,14 @@ describe('Front SC8: the language registry (src/i18n/languages.json)',()=>{
  it('Spanish is released and keeps its ES-REL behaviour: es and es-* (any case), <html lang> es-419, Español in the selector',()=>{
   // Front PT0 registered Brazilian Portuguese before its release (a ?lang=pt-BR preview only); Front PT-REL released it. Front FR0
   // registered French before its release; Front FR-REL released it. Front ID0 registered Indonesian before its release; Front ID-REL released it. Front HI0 registered Hindi;
-  // Front HI-REL released it. Front JA0 registered Japanese, Front ZH0 Simplified Chinese and Front RU0 Russian (each a ?lang= preview only).
-  expect(LANGUAGES.map(l=>[l.tag,l.released])).toEqual([['es-419',true],['pt-BR',true],['fr',true],['id',true],['hi',true],['ja',false],['zh-Hans',false],['ru',false]]);
+  // Front HI-REL released it. Front JA0 registered Japanese (released by Front JA-REL), Front ZH0 Simplified Chinese and Front RU0 Russian (each a ?lang= preview only).
+  expect(LANGUAGES.map(l=>[l.tag,l.released])).toEqual([['es-419',true],['pt-BR',true],['fr',true],['id',true],['hi',true],['ja',true],['zh-Hans',false],['ru',false]]);
   for(const tag of ['es','es-MX','es-ES','ES-ar','es-419','es-Latn-MX'])expect(matchLanguage(tag)?.tag,tag).toBe('es-419');
   for(const tag of ['','en','en-US','esp','eus','et','ca-ES'])expect(matchLanguage(tag),tag).toBeUndefined();
   // Front FR0: fr-ES is French spoken in Spain, so it asks for French (released since FR-REL).
   expect(matchLanguage('fr-ES')?.tag).toBe('fr');expect(isReleased('fr')).toBe(true);
   expect(HTML_LANG['es-419']).toBe('es-419');expect(isReleased('es-419')).toBe(true);expect(isReleased('en')).toBe(false);
-  expect(selectorLanguages('en').map(optionLabel)).toEqual(['English','Español','Português (Brasil)','Français','Bahasa Indonesia','हिन्दी (Hindi)']);expect(SOURCE_LANGUAGE.tag).toBe('en');
+  expect(selectorLanguages('en').map(optionLabel)).toEqual(['English','Español','Português (Brasil)','Français','Bahasa Indonesia','हिन्दी (Hindi)','日本語 (Japanese)']);expect(SOURCE_LANGUAGE.tag).toBe('en');
   expect(failureNotice('language','es-419')).toEqual({en:'Spanish could not be loaded; English is shown. Reload to try again.',own:'No se pudo cargar el español; se muestra en inglés. Recarga para intentarlo de nuevo.',lang:'es-419'});
   expect(failureNotice('area','es-419')).toEqual({en:'Part of the Spanish text could not be loaded; that part is shown in English. Reload to try again.',own:'No se pudo cargar parte del texto en español; esa parte se muestra en inglés. Recarga para intentarlo de nuevo.',lang:'es-419'});
   // Front ID0: Indonesian's notices (plan §2), and `in` (the withdrawn ISO 639 code) asks for it; Malay does not.
@@ -75,10 +75,10 @@ describe('Front SC8: the language registry (src/i18n/languages.json)',()=>{
   // Front HI0: Hindi is registered with its own notices and the selector label «हिन्दी (Hindi)»; Front HI-REL released it.
   expect(failureNotice('language','hi')).toEqual({en:'Hindi could not be loaded; English is shown. Reload to try again.',own:'हिन्दी लोड नहीं हो सकी; साइट अंग्रेज़ी में दिखाई जा रही है। फिर से कोशिश करने के लिए पेज को दोबारा लोड करें।',lang:'hi'});
   expect(isReleased('hi')).toBe(true);expect(optionLabel(LANGUAGES.find(l=>l.tag==='hi')!)).toBe('हिन्दी (Hindi)');
-  expect(selectorLanguages('hi').map(optionLabel)).toEqual(['English','Español','Português (Brasil)','Français','Bahasa Indonesia','हिन्दी (Hindi)']);
+  expect(selectorLanguages('hi').map(optionLabel)).toEqual(['English','Español','Português (Brasil)','Français','Bahasa Indonesia','हिन्दी (Hindi)','日本語 (Japanese)']);// registry order; Japanese released since JA-REL
   // Front JA0: Japanese's notices (plan front-i18n-ja.md §2).
   expect(failureNotice('language','ja')).toEqual({en:'Japanese could not be loaded; English is shown. Reload to try again.',own:'日本語を読み込めなかったため、英語で表示しています。再読み込みしてもう一度お試しください。',lang:'ja'});
-  expect(matchLanguage('ja-JP')?.tag).toBe('ja');expect(isReleased('ja')).toBe(false);
+  expect(matchLanguage('ja-JP')?.tag).toBe('ja');expect(isReleased('ja')).toBe(true);// released since Front JA-REL
   // Front FR0: French's notices, with U+202F before «;» (plan §2).
   // Front RU0: Russian's notices (plan §2), and Russian is registered but not released.
   expect(isReleased('ru')).toBe(false);expect(matchLanguage('ru-UA')?.tag).toBe('ru');expect(matchLanguage('uk')).toBeUndefined();
@@ -113,19 +113,21 @@ describe('Front SC8: detection for the languages to come (scripts plan §7, pt-B
  it('opens a language from the browser only once it is released; before that only its ?lang= preview, never storage',()=>{
   const decide=(registry:readonly LanguageEntry[],over:Partial<Parameters<typeof decideLocale>[0]>)=>decideLocale({param:null,stored:null,languages:['en-US'],dev:false,registry,...over});
   for(const [tag,expected] of TABLE){
-   expect(decide(PLANNED,{languages:[tag]}),tag).toBe(expected==='es-419'||expected==='pt-BR'||expected==='fr'||expected==='id'||expected==='hi'?expected:'en');
+   expect(decide(PLANNED,{languages:[tag]}),tag).toBe(expected==='es-419'||expected==='pt-BR'||expected==='fr'||expected==='id'||expected==='hi'||expected==='ja'?expected:'en');
    const all=releasing(PLANNED,...PLANNED.map(l=>l.tag));
    expect(decide(all,{languages:[tag]}),tag).toBe(expected??'en');
   }
   // Front FR-REL: French is released, so the unreleased planned language of these rows was Indonesian (id), as PT-REL moved them to
-  // fr; Front ID-REL released Indonesian and Front HI-REL Hindi, so they use Japanese (ja), the next language in the order.
-  expect(decide(PLANNED,{param:'ja'})).toBe('ja');expect(decide(PLANNED,{param:'JA'})).toBe('en');expect(decide(PLANNED,{param:'pt-br'})).toBe('en');
-  expect(decide(PLANNED,{stored:'ja',languages:['ja-JP']})).toBe('en');
-  expect(decide(releasing(PLANNED,'ja'),{stored:'ja'})).toBe('ja');expect(decide(PLANNED,{stored:'pt-BR'})).toBe('pt-BR');expect(decide(PLANNED,{stored:'fr'})).toBe('fr');
+  // fr; Front ID-REL released Indonesian, Front HI-REL Hindi and Front JA-REL Japanese, so they use Simplified Chinese (zh-Hans), the next
+  // language in the order.
+  expect(decide(PLANNED,{param:'zh-Hans'})).toBe('zh-Hans');expect(decide(PLANNED,{param:'ZH-HANS'})).toBe('en');expect(decide(PLANNED,{param:'pt-br'})).toBe('en');
+  expect(decide(PLANNED,{stored:'zh-Hans',languages:['zh-CN']})).toBe('en');
+  expect(decide(releasing(PLANNED,'zh-Hans'),{stored:'zh-Hans'})).toBe('zh-Hans');expect(decide(PLANNED,{stored:'pt-BR'})).toBe('pt-BR');expect(decide(PLANNED,{stored:'fr'})).toBe('fr');
   expect(decide(PLANNED,{stored:'id'})).toBe('id');expect(decide(PLANNED,{languages:['id-ID']})).toBe('id');expect(decide(PLANNED,{languages:['in-ID']})).toBe('id');
   expect(decide(PLANNED,{stored:'hi',languages:['en-US']})).toBe('hi');expect(decide(PLANNED,{languages:['hi-IN']})).toBe('hi');
+  expect(decide(PLANNED,{stored:'ja',languages:['en-US']})).toBe('ja');expect(decide(PLANNED,{languages:['ja-JP']})).toBe('ja');
   // Only the first preference decides, and an unreleased first preference gives English, not the next language.
-  expect(decide(PLANNED,{languages:['ja-JP','pt-BR']})).toBe('en');expect(decide(releasing(PLANNED,'ja'),{languages:['ja-JP','pt-BR']})).toBe('ja');
+  expect(decide(PLANNED,{languages:['zh-CN','pt-BR']})).toBe('en');expect(decide(releasing(PLANNED,'zh-Hans'),{languages:['zh-CN','pt-BR']})).toBe('zh-Hans');
   expect(decide(PLANNED,{languages:['pt-BR','es']})).toBe('pt-BR');expect(decide(PLANNED,{languages:['fr-CA','pt-BR']})).toBe('fr');
   expect(decide(PLANNED,{languages:['hi-IN','pt-BR']})).toBe('hi');expect(decide(PLANNED,{languages:['en-IN','hi-IN']})).toBe('en');
   // A Traditional-Chinese browser opens English, and the selector offers Simplified once that is released.
@@ -133,12 +135,13 @@ describe('Front SC8: detection for the languages to come (scripts plan §7, pt-B
   expect(decide(zh,{languages:['zh-TW']})).toBe('en');expect(selectorLanguages('en',zh).map(l=>l.tag)).toContain('zh-Hans');
  });
  it('lists English, the released languages and a preview\'s own language, by autonym (with the English name outside Latin script)',()=>{
-  expect(selectorLanguages('en',PLANNED).map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','id','hi']);
-  expect(selectorLanguages('ja',PLANNED).map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','id','hi','ja']);
+  expect(selectorLanguages('en',PLANNED).map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','id','hi','ja']);
+  // Front JA-REL: Japanese is released, so the preview's own language here is Russian, still a ?lang= preview.
+  expect(selectorLanguages('ru',PLANNED).map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','id','hi','ja','ru']);
   const all=releasing(PLANNED,...PLANNED.map(l=>l.tag));
   expect(selectorLanguages('en',[...all,ZH_HANT]).map(optionLabel)).toEqual(['English','Español','Português (Brasil)','Français','Bahasa Indonesia','हिन्दी (Hindi)','日本語 (Japanese)','简体中文 (Simplified Chinese)','Русский (Russian)']);
-  // Front HI-REL: the languages still before their release (Indonesian and Hindi are released, so they are left out).
-  const unreleased=PLANNED.filter(l=>!l.released);
-  expect(selectorShown('en',unreleased)).toBe(false);expect(selectorShown('ja',unreleased)).toBe(true);expect(selectorShown('qps-cjk',all)).toBe(false);
+  // Only unreleased languages (Indonesian since ID-REL, Hindi since HI-REL and Japanese since JA-REL are released): English alone shows no selector; a preview shows it.
+  const unreleased=PLANNED.filter(l=>!l.released);expect(unreleased.map(l=>l.tag)).toEqual(['zh-Hans','ru']);
+  expect(selectorShown('en',unreleased)).toBe(false);expect(selectorShown('ru',unreleased)).toBe(true);expect(selectorShown('qps-cjk',all)).toBe(false);
  });
 });

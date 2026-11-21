@@ -367,6 +367,68 @@ Inspection on `https://openvireo.space/hi/` and one Hindi lab page (for example 
 can track Hindi keywords (for example «हबल का नियम प्रयोग», «खगोल विज्ञान प्रयोग ऑनलाइन») with India as the market; most Indian
 searchers use English (`en-IN`), which keeps the English pages.
 
+# Front JA-SEO: Japanese search pages
+
+Merged after HI-REL+SEO, so the counts below include Hindi's pages (seven languages, Japanese after Hindi in registry order).
+
+User decision 8 of 2026-11-09 and the Japanese decisions of 2026-11-19 (AGENTS.md): with the Japanese release (JA-REL, the same
+front, JA-REL+SEO), its home page `/ja/` and lab pages `/ja/labs/`, with `hreflang` and a Japanese preview image, following FR-SEO's and ID-SEO's
+data-driven design. Static site only; no new external service. The language rules are in `docs/I18N.md`, "Japanese: release and
+search pages (JA-REL+SEO)".
+
+## What changed
+
+- **Data only.** A `ja` row in `src/seo/languages.ts` (`SEO_LANGUAGES`), its lab texts in `src/seo/labs.ja.ts`, its prefix `/ja`
+  in `SEO_PATH_PREFIX` (`src/seo/labSlugs.ts`; equal to the registry's `pagePath`). `src/seo/pages.ts` and the Vite plugin are
+  unchanged: they render the row.
+- **Japanese pages**: `/ja/` (static home: what OpenVireo is, «天文台を開く», the seven labs, «仕組み», the credit), `/ja/labs/` and
+  `/ja/labs/<slug>/` with the English slugs. `<html lang="ja">`, Japanese titles and descriptions, self canonical, `og:locale`
+  `ja_JP` with the other languages' `og:locale:alternate`, Japanese JSON-LD (`learningResourceType` «インタラクティブな実習»,
+  `educationalLevel` «高校»/«大学», `isBasedOn` crediting Project CLEA, Gettysburg College and the NSF as the English pages do).
+  «実習を開く» goes to `/?lang=ja#lab=<slug>`. A lab is a «実習» (the ja glossary) and the lab names are the app's own Japanese names
+  (`home.hubble` … `home.objectX`: ハッブルの法則, 大規模構造, 恒星のスペクトル分類, プレアデス測光, 星団のHR図, パルサー, 天体X).
+  です/ます in sentences, nouns in headings, no second-person pronoun; full-width 。、：（） next to Japanese and no space between
+  Japanese and Latin text or digits (the ja lint profile and CJK fixer). The footer says «この日本語の文章は、OpenVireoがWeb向けに翻案したもので、CLEAの文章ではありません。»; «仕組み» adds that the screen and inputs use «.» as the decimal point with half-width digits, that the
+  files the site writes stay English (its own item), and that the selector at the top switches to English.
+- **Lengths in display columns** (plan front-i18n-ja.md §1.2 #7): `src/seo/languages.test.ts` now measures every language's titles
+  and descriptions with `displayColumns` (a kanji or kana counts two, as a search result draws it; Latin text is unchanged, one per
+  character). Japanese titles are 41–61 columns (≤ 65), descriptions 110–160 (about 70–90 characters, Latin letters counting one column). The plan suggested
+  160–240 columns for CJK descriptions; the shared 110–160 band was kept, since Japanese results cut near 50 characters on phones and
+  80–120 on desktops, so the whole description shows on desktop and its first sentence on phones.
+- **Titles** end « · OpenVireo» (or start «OpenVireo: » on the home) with no 「（CLEA VIREO）」 bracket: the CJK fixer drops the space
+  beside a full-width bracket, so «CLEA VIREO» is part of the phrase instead («…を学ぶCLEA VIREOの実習 · OpenVireo»).
+- **Glossary**: the ja glossary requires 星団 where the English says "clusters"; in the large-scale-structure item "What clusters,
+  walls, filaments and voids are" those are galaxy clusters (銀河団), so the ja rule's `english` hook hides that one word from the
+  glossary check, with a comment in the test.
+- **hreflang** on every page pair (63 pages, 9 per language): `en`, `es`, `pt-BR`, `pt`, `fr`, `id`, `hi`, `ja` and `x-default` → English. `ja`
+  names the one Japanese that every `ja`/`ja-*` browser opens (JA-REL). The sitemap lists all 63 addresses with the same nine
+  alternates; the other languages' pages gain `og:locale:alternate` `ja_JP` and a visible «日本語» link (`hreflang`/`lang` `ja`).
+- **App**: the observatory footer's labs link goes to `/ja/labs/` when the app is in Japanese (the prefix table gains `ja:'/ja'`).
+- **Preview image** `public/og-image-ja.png` (1200×630, SHA-256 `de28983f…b073c6`): the design of the others with Japanese text
+  («CLEA VIREOの天文実習をブラウザーで»), rendered by `node scripts/render-og-image.mjs ja` under the CJK test fontconfig
+  (`~/.cache/openvireo-test-fonts/scripts/fonts.conf`: Noto Sans CJK JP from the Ubuntu archive, OFL; the image ships no font file).
+  The renderer's heading now has `word-break:auto-phrase`, which breaks Japanese between phrases (the first render split ブラウ|ザー)
+  and leaves other languages as they were (the French image re-renders byte-identical). Two renders gave the same bytes.
+- **Headers**: `/ja/*` is `no-cache`, like `/labs/*`, `/es/*`, `/pt-br/*`, `/fr/*`, `/id/*` and `/hi/*` (`public/_headers`, `src/deployHeaders.test.ts`).
+- **404**: the shared 404 page gains a `<section lang="ja">` («ページが見つかりません», «このアドレスはOpenVireoのサイトにはありません。»,
+  «天文台を開く» to `/?lang=ja#observatory`), and its title ends « · 見つかりません».
+
+## Tests
+
+- `src/seo/languages.test.ts`: Japanese joins the per-language checks with its own rules (profile `ja`, glossary field `ja`, the
+  Japanese claims, reconstruction phrase, adaptation and credit sentences, `ja_JP`, its image); lengths in display columns for every
+  language. `src/seo/pages.test.ts` (63 sitemap addresses, the seven-language 404) and `src/seo/direction.test.ts` (the Japanese link
+  in the RTL-fixture pages) follow.
+- `tests/i18n/seo.spec.ts`: the same flows for Japanese (`/ja/`, «実習を開く» on the pulsar and Object X pages, English back).
+- `tests/release/pages-smoke.pages.ts`: the Japanese pages and image with the release headers, the 308s, the nine alternates on `/`
+  and each home, the sitemap, the 404's Japanese section, and a Japanese lab page opening the app under the release policy.
+
+## For the user (not done by the site)
+
+After the deploy: in Google Search Console resubmit `https://openvireo.space/sitemap.xml` (it now lists 63 addresses) and use URL
+Inspection on `https://openvireo.space/ja/` and one Japanese lab page (for example `/ja/labs/hubble/`), then «Request indexing».
+OpenSEO can track Japanese keywords (for example «ハッブルの法則 実習», «CLEA 天文», «HR図 星団 実習») with Japan as the market.
+
 # Front HOME: a welcome on the observatory's first screen
 
 User request, 2026-11-10: before the site is announced to the general public (curious adults and hobby learners, for example

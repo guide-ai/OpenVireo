@@ -31,10 +31,10 @@ describe('Front SC8: a partial language before its release (test fixture qaa-XA)
   expect(decide({stored:'qaa-XA'})).toBe('en');expect(decide({stored:'qaa-XA',languages:['es-MX']})).toBe('es-419');
   // Without its registry entry the tag is no language at all.
   expect(decideLocale({param:'qaa-XA',stored:null,languages:['en-US'],dev:false})).toBe('en');
-  // The released languages (Spanish, Brazilian Portuguese since PT-REL, French since FR-REL, Indonesian since ID-REL and Hindi since HI-REL) are offered; the fixture only on its own preview.
-  expect(selectorLanguages('en',REGISTRY).map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','id','hi']);
-  expect(selectorLanguages('es-419',REGISTRY).map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','id','hi']);
-  expect(selectorLanguages('qaa-XA',REGISTRY).map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','id','hi','qaa-XA']);
+  // The released languages (Spanish, Brazilian Portuguese since PT-REL, French since FR-REL, Indonesian since ID-REL, Hindi since HI-REL and Japanese since JA-REL) are offered; the fixture only on its own preview.
+  expect(selectorLanguages('en',REGISTRY).map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','id','hi','ja']);
+  expect(selectorLanguages('es-419',REGISTRY).map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','id','hi','ja']);
+  expect(selectorLanguages('qaa-XA',REGISTRY).map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','id','hi','ja','qaa-XA']);
   expect(selectorShown('qaa-XA',REGISTRY)).toBe(true);
  });
  it('settles a ?lang=qaa-XA load: <html lang> and the title from its registry entry and catalog, its partial catalog completed with English',()=>{
