@@ -133,8 +133,8 @@ if(process.env.OPENVIREO_FIX_TYPOGRAPHY==='1'){
 }
 
 describe('Front JA0: the Japanese (ja) bundle',()=>{
- it('is registered before its release: a ?lang=ja preview only, never detected or offered; no thousands field (24,000 as English)',()=>{
-  expect(languageEntry('ja')).toMatchObject({dir:'ja',catalog:'ja.json',htmlLang:'ja',pagePath:'ja',autonym:'日本語',englishName:'Japanese',match:['ja'],released:false});
+ it('Front JA-REL: is released (detected from every ja and ja-* browser, stored, offered); no thousands field (24,000 as English)',()=>{
+  expect(languageEntry('ja')).toMatchObject({dir:'ja',catalog:'ja.json',htmlLang:'ja',pagePath:'ja',autonym:'日本語',englishName:'Japanese',match:['ja'],released:true});
   expect(languageEntry('ja')?.thousands).toBeUndefined();expect(languageEntry('ja')?.help).toEqual({related:'関連項目'});// Front JA-HELP
   expect(JAPANESE.language).toBe('ja');
   for(const notice of Object.values(languageEntry('ja')!.notices))expect(fix(notice)).toBe(notice);
@@ -188,6 +188,13 @@ describe('Front JA0: the Japanese (ja) bundle',()=>{
   const fragments=Object.keys(own).filter(k=>k.startsWith('fragment|'));
   expect(fragments.length).toBeGreaterThan(10);
   expect(fragments.filter(k=>/^\s|\s$/.test(own[k]))).toEqual([]);
+ });
+ it('Front JA-REL: the catalog is complete and strict: every en.json key, the same {params}, strings only, no extra key; every map complete',()=>{
+  // As ES-REL, PT-REL and FR-REL: strictness lives here, since the split bundle builds each module with the English fallback.
+  expect(()=>createI18n(ja as Record<MessageKey,string>,'ja')).not.toThrow();
+  expect(Object.keys(en).filter(k=>!Object.hasOwn(ja,k))).toEqual([]);
+  for(const [id,map] of Object.entries(JAPANESE.maps??{}))expect(mapParity(ENGLISH_MAPS[id as MapId],map),id).toEqual([]);
+  expect(MAP_IDS.filter(id=>!Object.hasOwn(JAPANESE.maps??{},id))).toEqual([]);
  });
  it('every map has its English shape: the shell and observatory maps complete, the header-name maps partial',()=>{
   for(const [id,map] of Object.entries(JAPANESE.maps??{})){

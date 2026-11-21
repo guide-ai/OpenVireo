@@ -105,17 +105,21 @@ describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-0
   for(const languages of [['en-IN'],['ur-IN'],['mr'],['ne'],['en-IN','hi-IN']])expect(decide({languages,registry:after}),languages.join(',')).toBe('en');
   expect(decide({stored:'hi',languages:['en-US'],registry:after})).toBe('hi');
  });
- it('Front JA0: Japanese is registered before its release: only ?lang=ja opens it; ja, ja-JP and JA-jp browsers and a stored ja get English',()=>{
-  expect(isReleased('ja')).toBe(false);
-  for(const languages of [['ja'],['ja-JP'],['JA-jp'],['ja-JP-u-ca-japanese'],['ja-JP','es-MX']])expect(decide({languages}),languages.join(',')).toBe('en');
-  expect(decide({languages:['es-MX','ja-JP']})).toBe('es-419');expect(decide({stored:'ja',languages:['ja-JP']})).toBe('en');
+ it('Front JA-REL: Japanese is released: every ja and ja-* browser (any case) opens ja; jv, ryu and en-JP do not; storage is honoured',()=>{
+  expect(isReleased('ja')).toBe(true);
+  for(const languages of [['ja'],['ja-JP'],['JA-jp'],['ja-JP-u-ca-japanese'],['ja-JP','es-MX']])expect(decide({languages}),languages.join(',')).toBe('ja');
+  // jv (Javanese), ryu (Okinawan) and en-JP (English in Japan) are not Japanese (plan front-i18n-ja.md §2).
+  for(const languages of [['jv'],['ryu'],['en-JP'],['en-US','ja-JP']])expect(decide({languages}),languages.join(',')).toBe('en');
+  expect(decide({languages:['es-MX','ja-JP']})).toBe('es-419');expect(decide({stored:'ja',languages:['en-US']})).toBe('ja');
+  expect(decide({stored:'en',languages:['ja-JP']})).toBe('en');
   expect(decide({param:'ja',languages:['en-US']})).toBe('ja');expect(decide({param:'ja',stored:'fr',languages:['pt-BR']})).toBe('ja');
+  // ?lang= takes the exact tag only; other spellings are no tag, so the browser decides.
   for(const junk of ['JA','ja-JP','jp','ja-jp'])expect(decide({param:junk,languages:['en-US']}),junk).toBe('en');
   expect(HTML_LANG.ja).toBe('ja');expect(selectorShown('ja')).toBe(true);
-  // Once released (JA-REL), every ja and ja-* browser in any case opens it; jv (Javanese), ryu (Okinawan) and en-JP do not.
-  const after=LANGUAGES.map(l=>l.tag==='ja'?{...l,released:true}:l);
-  for(const languages of [['ja'],['ja-JP'],['JA-jp'],['ja-JP-u-ca-japanese']])expect(decide({languages,registry:after}),languages.join(',')).toBe('ja');
-  for(const languages of [['jv'],['ryu'],['en-JP'],['en-US','ja-JP']])expect(decide({languages,registry:after}),languages.join(',')).toBe('en');
+  // Before its release (JA0–JA-HELP) only ?lang=ja reached it.
+  const before=LANGUAGES.map(l=>l.tag==='ja'?{...l,released:false}:l);
+  for(const languages of [['ja'],['ja-JP'],['JA-jp']])expect(decide({languages,registry:before}),languages.join(',')).toBe('en');
+  expect(decide({stored:'ja',languages:['ja-JP'],registry:before})).toBe('en');expect(decide({param:'ja',registry:before})).toBe('ja');
  });
  it('Front ZH0: Simplified Chinese is registered before its release: only ?lang=zh-Hans opens it; zh, zh-CN, zh-Hans-TW browsers and a stored zh-Hans get English',()=>{
   expect(isReleased('zh-Hans')).toBe(false);
@@ -127,7 +131,7 @@ describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-0
   // Once released (ZH-REL), Simplified browsers open it; Traditional browsers keep English until zh-Hant exists (decided 2026-11-09).
   const after=releasing(LANGUAGES,'zh-Hans');
   for(const languages of [['zh'],['zh-CN'],['zh-SG'],['zh-MY'],['zh-Hans-TW'],['ZH-cn']])expect(decide({languages,registry:after}),languages.join(',')).toBe('zh-Hans');
-  for(const languages of [['zh-TW'],['zh-HK'],['zh-MO'],['zh-Hant'],['zh-Hant-CN'],['yue-HK'],['ja-JP'],['en-US','zh-CN']])expect(decide({languages,registry:after}),languages.join(',')).toBe('en');
+  for(const languages of [['zh-TW'],['zh-HK'],['zh-MO'],['zh-Hant'],['zh-Hant-CN'],['yue-HK'],['ko-KR'],['en-US','zh-CN']])expect(decide({languages,registry:after}),languages.join(',')).toBe('en');
   expect(decide({stored:'zh-Hans',languages:['zh-TW'],registry:after})).toBe('zh-Hans');
  });
  it('Front RU0: Russian is registered before its release: only ?lang=ru opens it; ru, ru-RU, ru-UA and uk browsers and a stored ru get English',()=>{
