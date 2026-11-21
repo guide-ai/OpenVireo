@@ -35,8 +35,10 @@ import {OBJECT_X_SESSION_JA} from './maps/objectXSession';
 import {HELP_VIEWER_JA} from './maps/helpViewer';
 import {WEB_HELP_JA} from './maps/webHelp';
 /** Front JA0 [W]: the Japanese (ja) bundle (docs/I18N.md, "Japanese: the folder, lints and shell (JA0)"; plan
- * analysis/front-plans/front-i18n-ja.md). Partial until its release, behind a `?lang=ja` preview: JA0 translates the shell, and the
- * later JA fronts the observatory with all of VIREO's originals (JA1), the exercises (JA2–JA6) and the help (JA-HELP). The
+ * analysis/front-plans/front-i18n-ja.md). It was partial until its release, behind a `?lang=ja` preview: JA0 translated the shell,
+ * and the later JA fronts the observatory with all of VIREO's originals (JA1), the exercises (JA2–JA6) and the help (JA-HELP). Since
+ * Front JA-REL (src/i18n/languages.json `released:true`) every ja and ja-* browser opens it, and its catalog and every map are
+ * complete (src/i18n/ja/ja.test.ts). The
  * production build splits it by route area like the other languages (scripts/i18n-split.mjs parses this manifest); Vitest imports it
  * whole. Translations are web adaptations by OpenVireo; they never claim to be CLEA's, and CLEA's bytes, hashes and provenance are
  * unchanged. */

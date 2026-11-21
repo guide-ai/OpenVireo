@@ -12,6 +12,7 @@ import {PSEUDO_SCRIPT} from '../../src/i18n/pseudoScripts';
 import type {PseudoScriptLanguage} from '../../src/i18n/locale';
 import {layoutProblems,verticalInkProblems} from '../fixtures/layoutProblems';
 import {translatedFor,JAPANESE_TEXT,CHINESE_SIMPLIFIED_TEXT,type Area} from '../i18n/languageText';
+import {contextLocale} from '../fixtures/language';
 import type {LayoutOptions} from '../fixtures/layoutProblems';
 import * as E01 from '../i18n/walks/e01';
 import * as E02 from '../i18n/walks/e02';
@@ -146,8 +147,10 @@ for(const variant of VARIANTS)for(const width of [320,1440] as const)
 // tests/i18n/languageText.ts), at 320 and 1440 px, with the same layoutProblems() and verticalInkProblems(): the shell is the home
 // page, the observatory page, the header menu, the tour and the instructor-mode confirmation. Each later front adds its area's steps.
 // Hindi has its own walk (tests/scripts/hindi.scripts.ts, Front HI0), so it is not repeated here.
+// Front JA-REL: a released language opens by its browser language alone (tests/fixtures/language.ts contextLocale: ja-JP), and also
+// walks the 16 routes (plan front-i18n-ja.md, JA-REL: "routes.scripts.ts ja over every route").
 const SCRIPT_TRANSLATIONS=translatedFor('shell').filter(L=>/^(?:ja|zh|ru)/.test(L.tag));
-for(const L of SCRIPT_TRANSLATIONS)for(const width of [320,1440] as const)
+for(const L of SCRIPT_TRANSLATIONS)test.describe(()=>{test.use({locale:contextLocale(L.tag)});for(const width of [320,1440] as const)
  test(`${L.tag} (${L.entry.englishName}) at ${width} px: the shell lays out without overflow, clipping or cut ink`,async({page})=>{
   test.setTimeout(180_000);
   await page.setViewportSize({width,height:width===320?700:1000});
@@ -162,6 +165,7 @@ for(const L of SCRIPT_TRANSLATIONS)for(const width of [320,1440] as const)
    await expect(page.locator('.investigation-toolbar')).toBeVisible({timeout:30_000});await expect(page.locator('h1:visible').first()).toBeVisible({timeout:30_000});};
   await page.addInitScript(()=>{try{localStorage.setItem('openvireo.tour.v1','done');}catch{/* about:blank */}});
   await open('');await check('home');
+  if(L.entry.released)for(const r of ROUTES.filter(r=>r!=='observatory')){await open(r);await check(r);}
   await open('observatory');await expect(page.getByRole('heading',{level:1,name:L.catalog['sky.title']})).toBeVisible();await check('observatory');
   await headerTools(page);await check('header menu');
   await id(page,'main-help-menu').click();await id(page,'main-help-tour').click();await expect(id(page,'site-tour-card')).toBeVisible();await check('tour');
@@ -169,6 +173,7 @@ for(const L of SCRIPT_TRANSLATIONS)for(const width of [320,1440] as const)
   await headerTools(page);await id(page,'instructor-mode-open').click();await expect(id(page,'instructor-mode-confirm')).toBeVisible();await check('instructor mode');
   expect([...problems].map(([p,step])=>`${step}: ${p}`),'layout problems').toEqual([]);
  });
+});
 
 // Front JA2 (plan front-i18n-ja.md §6.2, "the real-ja scripts walk covers the area"; JA3 adds E03, JA4 E04 and E05, JA5 the radio telescope, JA6 E06 and E08, JA-HELP the help windows): each exercise walk Japanese has
 // translated (its `done`), the same function its language-parameterised spec runs (tests/i18n/walks/), under real Japanese and the CJK
@@ -183,7 +188,7 @@ const EXERCISE_WALKS:readonly (readonly [Area,string,ExerciseWalk,LayoutOptions]
 // Front ZH2: the same walks under real Simplified Chinese (ZH2 adds E01 and E02; each ZH front its area), with Han on screen.
 const REAL_SCRIPT_LANGUAGES=[{L:JAPANESE_TEXT,name:'Japanese',letters:/[\p{sc=Hira}\p{sc=Kana}]/u,missing:'no kana on screen: the text shown is not Japanese'},
  {L:CHINESE_SIMPLIFIED_TEXT,name:'Simplified Chinese',letters:/\p{sc=Han}/u,missing:'no Han on screen: the text shown is not Chinese'}] as const;
-for(const {L,name:language,letters,missing} of REAL_SCRIPT_LANGUAGES)
+for(const {L,name:language,letters,missing} of REAL_SCRIPT_LANGUAGES)test.describe(()=>{test.use({locale:contextLocale(L.tag)});// Front JA-REL: a ja-JP browser, no ?lang= (an unreleased language: en-US with its ?lang= preview)
 for(const [area,name,walk,layout] of EXERCISE_WALKS.filter(([area])=>L.done.has(area)))for(const width of [320,1440] as const)
  test(`real ${language} at ${width} px: the ${name} walk lays out without overflow, clipping or cut ink (${area})`,async({page})=>{
   test.setTimeout(400_000);
@@ -197,6 +202,7 @@ for(const [area,name,walk,layout] of EXERCISE_WALKS.filter(([area])=>L.done.has(
   });
   expect([...problems].map(([p,step])=>`${step}: ${p}`),`layout problems under real ${language} (${name})`).toEqual([]);
  });
+});
 
 // ---- Fonts: src/theme/scripts.css in the running app, under the test fonts -------------------------------------------------
 type PlatformFont={familyName:string;postScriptName:string;glyphCount:number};
@@ -421,8 +427,11 @@ test(`${lang} at ${width} px computes the same styles with and without scripts.c
   const declared=(rules:CSSRuleList):string[]=>[...rules].flatMap(r=>r instanceof CSSStyleRule?[...r.style]:r instanceof CSSGroupingRule?declared(r.cssRules):[]);
   return [...new Set(declared(sheet.cssRules))].sort();
  });
+ // Front JA-REL: once a script language is released, every page's language selector holds its option in that language
+ // (<option lang="ja">日本語 (Japanese)</option>), which scripts.css is meant to style; such an element is listed by its language
+ // only, and the walk checks below that it is a selector option and nothing else.
  const snapshot=(props:readonly string[])=>page.evaluate(props=>
-  [document.documentElement,document.body,...document.body.querySelectorAll('*')].map(e=>{const s=getComputedStyle(e);return `${e.tagName.toLowerCase()}.${typeof e.className==='string'?e.className:''} `+props.map(p=>`${p}:${s.getPropertyValue(p)}`).join(';');}),props);
+  [document.documentElement,document.body,...document.body.querySelectorAll('*')].map(e=>{const own=e.closest('[lang]')?.getAttribute('lang')??'';if(/^(?:ja|zh|hi)\b/.test(own))return `script-language ${own} ${e.tagName.toLowerCase()}${e.closest('[data-testid=language-select]')?' in the language selector':''}`;const s=getComputedStyle(e);return `${e.tagName.toLowerCase()}.${typeof e.className==='string'?e.className:''} `+props.map(p=>`${p}:${s.getPropertyValue(p)}`).join(';');}),props);
  // Removes the sheet, keeping it on the window so that restoreSheet() can put the same node back where it was.
  const withoutSheet=()=>page.evaluate(()=>{
   const sheet=[...document.querySelectorAll<HTMLStyleElement>('style[data-vite-dev-id]')].filter(s=>s.dataset.viteDevId!.endsWith('/src/theme/scripts.css'));
@@ -463,6 +472,8 @@ test(`${lang} at ${width} px computes the same styles with and without scripts.c
   // Each difference as "element property:before → property:after".
   const changed=before.flatMap((v,i)=>{if(v===after[i])return [];const a=v.split(';'),b=after[i].split(';');return [a.flatMap((x,j)=>x===b[j]?[]:[`${x} → ${b[j]}`]).join(', ')];});
   expect(changed,`${lang} ${width} #${route}: elements whose computed style scripts.css changed`).toEqual([]);
+  const script=before.filter(v=>v.startsWith('script-language '));
+  expect(script.filter(v=>!v.endsWith(' option in the language selector')),`${lang} ${width} #${route}: script-language elements outside the selector`).toEqual([]);
  }
 });
 

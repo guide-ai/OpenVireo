@@ -119,7 +119,8 @@ describe('Front SC2: the pseudo-locales as UI languages (dev server and tests on
   for(const language of LANGUAGES){
    expect(isPseudoScriptLanguage(language)).toBe(true);
    expect(decide({param:language,dev:true})).toBe(language);expect(decide({param:language})).toBe('en');
-   expect(decide({stored:language,dev:true})).toBe('en');expect(decide({languages:[TAG[language]],dev:true})).toBe('en');
+   expect(decide({stored:language,dev:true})).toBe('en');// A browser in the pseudo-locale's script language opens that language once released (Japanese since JA-REL), never the pseudo-locale.
+   expect(decide({languages:[TAG[language]],dev:true})).toBe(language==='qps-cjk'?'ja':'en');
    expect(HTML_LANG[language]).toBe(TAG[language]);expect(selectorShown(language)).toBe(false);
   }
   // Front HI0, Front JA0 and Front RU0: `hi`, `ja` and `ru` are registered languages now, so their ?lang= values are previews, not junk.
