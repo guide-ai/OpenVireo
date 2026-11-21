@@ -23,7 +23,7 @@ export const VARIABLE_STARS_ZH_HANS:Translation<typeof VARIABLE_STARS_EN>=Object
  nameLabel:'星名包含',
  typeLabel:'变光类型',
  allTypes:'所有类型',
- typeOption:(type:string,count:number)=>`${type||'(blank)'} — ${grouped(count)}`,
+ typeOption:(type:string,count:number)=>`${type||'（空白）'} — ${grouped(count)}`,
  results:(shown:number,total:number)=>total===0?'没有匹配的记录。':shown<total?`在${grouped(total)}条匹配的记录中，按星表（赤经）顺序显示前${shown}条。请缩小搜索范围以查看其他记录。`:`共${grouped(total)}条匹配的记录。`,
  columns:['GCVS ID','类型','赤经（h）','赤纬（°）','极大','极小／振幅','周期（天）',''],
  open:'打开',
