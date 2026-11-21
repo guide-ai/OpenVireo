@@ -177,7 +177,7 @@ export type LanguageText=Readonly<{
  /** Letters of this language that English text never has: one in a written file means the screen language reached it. */
  letters:RegExp;
  /** The query that opens this language in its own browser (tests/fixtures/language.ts contextLocale): none for a released language
-  * (Spanish since ES-REL, Brazilian Portuguese since PT-REL, French since FR-REL). */
+  * (Spanish since ES-REL, Brazilian Portuguese since PT-REL, French since FR-REL, Japanese since JA-REL). */
  query:string;
  /** An English catalog text in this language: its translation, or the English itself where a partial language has none. */
  text:(english:string)=>string;
@@ -216,9 +216,10 @@ export const HINDI_TEXT=language('hi',hi,hiOriginals,{appShell:APP_SHELL_HI,help
 /** Front JA0 (plan front-i18n-ja.md §1.2 #3): Japanese, behind `?lang=ja` before its release; JA0 translated the shell, and each
  * later JA front adds its area to `done`. Its letters are kana, ー and 「」, which no English text, VIREO file or export has (Han alone
  * is not used: kana are the unambiguous Japanese signal). JA1 adds the observatory with its maps and all of VIREO's originals, JA2
- * exercises E01 and E02, JA3 exercise E03, JA4 exercises E04 and E05, JA5 the radio telescope, JA6 exercises E06 and E08, JA-HELP the help. */
+ * exercises E01 and E02, JA3 exercise E03, JA4 exercises E04 and E05, JA5 the radio telescope, JA6 exercises E06 and E08, JA-HELP the help. Front JA-REL: released, so every area is done and its specs open Japanese
+ * in a ja-JP browser with no query (tests/fixtures/language.ts contextLocale). */
 export const JAPANESE_TEXT=language('ja',ja,jaOriginals,{appShell:APP_SHELL_JA,helpMenu:HELP_MENU_JA,projectLinks:PROJECT_LINKS_JA,tour:TOUR_JA,languageChoice:LANGUAGE_CHOICE_JA},
- [APP_SHELL_JA,CAMERA_JA,FIELD_INFO_JA,FIELD_READ_DETAILS_JA,HELP_MENU_JA,LANGUAGE_CHOICE_JA,NAKED_EYE_JA,OBJECT_X_LAB_JA,OBSERVATION_METADATA_JA,OBSERVATORY_JA,POLISH_JA,PROJECT_LINKS_JA,QSO_LIST_JA,SOUND_JA,TOUR_JA,VARIABLE_STARS_JA],/[\p{sc=Hira}\p{sc=Kana}ー「」]/u,'?lang=ja',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08','help']);
+ [APP_SHELL_JA,CAMERA_JA,FIELD_INFO_JA,FIELD_READ_DETAILS_JA,HELP_MENU_JA,LANGUAGE_CHOICE_JA,NAKED_EYE_JA,OBJECT_X_LAB_JA,OBSERVATION_METADATA_JA,OBSERVATORY_JA,POLISH_JA,PROJECT_LINKS_JA,QSO_LIST_JA,SOUND_JA,TOUR_JA,VARIABLE_STARS_JA],/[\p{sc=Hira}\p{sc=Kana}ー「」]/u,'',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08','help']);
 /** Front ZH0: Simplified Chinese before its release, behind `?lang=zh-Hans` (an en-US browser: tests/fixtures/language.ts
  * contextLocale). ZH0 translated the shell and ZH1 the observatory with its maps and all of VIREO's originals; ZH2–ZH6 and ZH-HELP
  * add their areas to `done` and their maps. Its letters are Han and

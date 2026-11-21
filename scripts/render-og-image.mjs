@@ -6,9 +6,12 @@
 //   FONTCONFIG_FILE=…/fonts.conf node scripts/render-og-image.mjs pt-BR             → public/og-image-pt-br.png
 //   FONTCONFIG_FILE=…/fonts.conf node scripts/render-og-image.mjs fr                → public/og-image-fr.png
 //   FONTCONFIG_FILE=…/fonts.conf node scripts/render-og-image.mjs id                → public/og-image-id.png
+//   FONTCONFIG_FILE=…/scripts/fonts.conf node scripts/render-og-image.mjs ja        → public/og-image-ja.png (the CJK test fonts)
 //   FONTCONFIG_FILE=…/fonts.conf node scripts/render-og-image.mjs ru                → public/og-image-ru.png
 //   node scripts/render-og-image.mjs en /tmp/check.png                               (English, to compare with the original)
 // The English image predates this script and is not re-rendered: pass an output path for English.
+// Front JA-REL+SEO: the heading breaks Japanese between phrases (word-break:auto-phrase, which acts only on lang="ja"), never
+// inside a word such as ブラウザー; other languages break as before.
 // Front RT9: the page takes the language's direction from the app's registry (src/seo/languages.ts seoDirection): a right-to-left
 // language gets <html dir="rtl">, and the blocks are placed from the inline start (inset-inline-start), so its layout mirrors; a
 // left-to-right language gets no dir attribute and the same placement as before (left: 84px).
@@ -37,7 +40,7 @@ body{width:1200px;height:630px;overflow:hidden;font-family:'DejaVu Sans',sans-se
 svg.sky{position:absolute;inset:0}
 .brand{position:absolute;inset-inline-start:84px;top:96px;display:flex;align-items:center;gap:22px;font-weight:700;font-size:40px}
 .brand svg{width:84px;height:84px}
-h1{position:absolute;inset-inline-start:84px;top:232px;width:1040px;font-size:62px;line-height:1.13;font-weight:700;letter-spacing:.5px}
+h1{position:absolute;inset-inline-start:84px;top:232px;width:1040px;font-size:62px;line-height:1.13;font-weight:700;letter-spacing:.5px;word-break:auto-phrase}
 .lines{position:absolute;inset-inline-start:84px;top:396px;width:1040px;font-size:29px;line-height:1.5;color:#a9bfc4}
 .site{position:absolute;inset-inline-start:84px;top:530px;font-size:28px;font-weight:700;color:#d6efe5}
 </style></head><body><svg class="sky" width="1200" height="630">${stars}</svg>
