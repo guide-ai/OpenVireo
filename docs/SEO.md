@@ -874,15 +874,15 @@ changed title still names CLEA, and each page's heading keeps the lab's own name
 
 | Page | Before | After |
 |---|---|---|
-| `/` title (`app.documentTitle`) | OpenVireo · CLEA VIREO astronomy labs in your browser | OpenVireo · CLEA VIREO astronomy labs, telescope simulator |
+| `/` title (`app.documentTitle`) | OpenVireo · CLEA VIREO astronomy labs in your browser | OpenVireo · CLEA VIREO astronomy labs & telescope simulator |
 | `/labs/` title | CLEA VIREO astronomy labs online · OpenVireo | Astronomy simulation labs online (CLEA VIREO) · OpenVireo |
 | `/labs/stellar-classification/` title | Classification of stellar spectra lab (CLEA VIREO) · OpenVireo | Spectral classification of stars lab (CLEA) · OpenVireo |
 | `/labs/cluster-hr/` title | HR diagrams of star clusters lab (CLEA VIREO) · OpenVireo | Interactive HR diagram lab: star clusters (CLEA) · OpenVireo |
 
-The four descriptions follow their titles: the home page says "astronomy labs with a simulated telescope", the index "Seven CLEA
+The four descriptions follow their titles: the home page says "astronomy labs with simulated telescopes", the index "Seven CLEA
 VIREO astronomy simulations rebuilt for the browser", the classification page "Learn spectral classification of stars" and the
-cluster page "Plot interactive HR diagrams of star clusters". Each still says the site is a free web reconstruction, and the
-home page still starts with "Unofficial". The other five lab pages are unchanged: the research gave no better term for them.
+cluster page "Plot interactive HR diagrams of star clusters". The home page and the two lab pages still say the site is a free web reconstruction (the home page still starts with
+"Unofficial"), and the index still says "rebuilt for the browser". The other five lab pages are unchanged: the research gave no better term for them.
 The words are descriptions of what the web does (the observatory simulates its telescopes and instruments; the cluster tool
 plots catalogue data the visitor can fit by hand): the cluster page says "interactive", not "simulator".
 
@@ -903,4 +903,48 @@ texts, as web adaptations of the new English (no keyword research was done for t
 ## Tests
 
 `src/seo` and `src/i18n` unit tests (lengths, uniqueness across languages, the reconstruction sentence, every language's lint
-profile and glossary); `tests/p01.spec.ts` and `tests/observatory.spec.ts` expect the new tab title.
+profile and glossary). `src/i18n/coverage.test.ts` compares the served title and description with their escaped text, since the
+title now has an ampersand. `tests/p01.spec.ts`, `tests/observatory.spec.ts` and `tests/project-naming.spec.ts` expect the new
+tab title (p01 also the new description), and `tests/release/pages-smoke.pages.ts` reads the Spanish and Portuguese tab titles
+from their catalogs, as it already did for the later languages.
+
+## Review
+
+Workflow (REVIEW.md): plan and implementation by the session that ran the research (Claude Fable 5.2); independent review 1 by a
+separate subagent (Claude Opus, high effort) that did not write the change, over commit `b04ff865`.
+
+### Review 1 findings (raw summary)
+
+Verdict: do not ship as is.
+
+1. Blocker: `tests/p01.spec.ts` still expected the old meta description.
+2. Blocker: `tests/project-naming.spec.ts` still expected the old tab title.
+3. Blocker: `tests/release/pages-smoke.pages.ts` still expected the old Spanish (two places) and Portuguese tab titles.
+4. Should fix: the Russian description read as "a telescope modelled after Hubble's law".
+5. Should fix: this section said every description keeps "free web reconstruction" (the index says "rebuilt") and listed only two
+   of the changed specs.
+6. Nit: "astronomy labs, telescope simulator" read like a keyword list; "a simulated telescope" is singular although the
+   observatory has several telescopes.
+7. Nit: calling all seven labs "astronomy simulations" is a mild stretch, acceptable because CLEA calls its labs simulations.
+8. Nit: two titles say "(CLEA)" without VIREO and one no longer holds the lab's own name; headings and descriptions keep them.
+9. Nit: the Hindi description made Hubble's law "an example of an experiment".
+10. Nit: the Chinese description had a double 的.
+11. Nit: Spanish «para la ley de Hubble» reads better as «sobre la ley de Hubble».
+12. Fine: the Japanese texts, the Hindi and Spanish classification titles, French typography, Portuguese and Indonesian; leaving
+    the preview-image text and each language's static home title unchanged.
+
+### Resolution
+
+Each finding was checked against the source before the fix.
+
+- 1–3 fixed: the three specs expect the new texts; the release smoke test reads the Spanish and Portuguese titles from their
+  catalogs.
+- 4 fixed with the reviewer's word order, in the plural («…и многому другому со смоделированными телескопами»).
+- 5 fixed in this section.
+- 6 fixed: the title is "OpenVireo · CLEA VIREO astronomy labs & telescope simulator" (59 characters) and the description says
+  "simulated telescopes"; the translations say "and" and use the plural where the language marks it.
+- 7 and 8 kept as they are, for the reasons the reviewer gives.
+- 9 fixed differently from the suggestion, which the Hindi glossary lint rejects (it needs «हबल का नियम» unchanged): the
+  description is now two sentences, and the lab names follow a colon.
+- 10 fixed by dropping the second 的 («Project CLEA的VIREO非官方免费网页重建版»), which keeps VIREO as Project CLEA's.
+- 11 fixed («sobre»), and the same preposition in Portuguese, French and Indonesian.

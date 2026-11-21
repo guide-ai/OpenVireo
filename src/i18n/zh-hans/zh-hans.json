@@ -866,7 +866,7 @@
  "error.fileDownload": "无法下载该光谱资源。",
  "error.fileDigest": "该光谱与预期的SHA-256不符。",
  "app.documentTitle": "OpenVireo · CLEA VIREO天文实验与望远镜模拟器",
- "app.description": "Project CLEA的VIREO的非官方免费网页重建版：用模拟望远镜完成哈勃定律、脉冲星、昴星团、天体X等天文实验。",
+ "app.description": "Project CLEA的VIREO非官方免费网页重建版：用模拟望远镜完成哈勃定律、脉冲星、昴星团、天体X等天文实验。",
  "project.title": "探究整体备份",
  "project.help": "将当前的光谱、测量、哈勃实验的输入、分类工作和已确认的测光一并保存。测光会依据其原始的有界种子和事件重放，你的输入仍保持手动。",
  "project.save": "保存探究",
