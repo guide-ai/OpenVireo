@@ -32,6 +32,23 @@
   "map:camera.filterNamesIr.2": "filter letter (K), an infrared band",
   "map:camera.accessReason.ready": "empty: no reason is shown when the camera is ready",
   "map:camera.sourceWithHash": "a source label and a SHA-256 prefix joined with ·, no words",
-  "map:camera.rowCounts": "three counts joined with /, no words"
+  "map:camera.rowCounts": "three counts joined with /, no words",
+  "catalog:hubble.ratioColumn": "Front ZH2: a formula and units only (v/D · km/s/Mpc)",
+  "catalog:ownResults.sha": "Front ZH2: a hash label kept in English (SHA-256) and its value",
+  "catalog:lss.dialog.jd": "Front ZH2: the Julian date abbreviation kept as JD, as the observatory keeps it (ZH1)",
+  "catalog:lss.dialog.z": "Front ZH2: the redshift symbol (z)",
+  "catalog:lss.exposure.elapsed": "Front ZH2: a value and the unit symbol ms",
+  "catalog:velocity.column": "Front ZH2: a format of symbols, units and a number type only (v · km/s · float32)",
+  "map:wedge.columns.index": "Front ZH2: the number sign as a column header (#)",
+  "map:wedge.columns.velocity": "Front ZH2: a symbol and its unit, V (km/s)",
+  "map:wedge.columns.z": "Front ZH2: the redshift symbol (Z)",
+  "map:wedge.sha256": "Front ZH2: a hash name kept in English (SHA-256)",
+  "map:wedge.detail.redshift": "Front ZH2: symbols (V / Z)",
+  "map:wedge.detail.kmPerS": "Front ZH2: a unit (km/s)",
+  "map:wedge.detail.velocity": "Front ZH2: a symbol and a number type (V binary32)",
+  "map:wedge.detail.z": "Front ZH2: a symbol and a number type (Z binary32)",
+  "map:wedge.detail.degrees": "Front ZH2: the degree sign",
+  "map:wedge.detail.px": "Front ZH2: the pixel unit symbol px",
+  "map:wedge.detail.hours": "Front ZH2: the hour unit symbol h, which the wedge joins after a space and a number (赤经（h）)"
  }
 }

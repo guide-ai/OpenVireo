@@ -11,7 +11,7 @@ import en from '../../src/i18n/en.json' with {type:'json'};
 import {PSEUDO_SCRIPT} from '../../src/i18n/pseudoScripts';
 import type {PseudoScriptLanguage} from '../../src/i18n/locale';
 import {layoutProblems,verticalInkProblems} from '../fixtures/layoutProblems';
-import {translatedFor,JAPANESE_TEXT,type Area} from '../i18n/languageText';
+import {translatedFor,JAPANESE_TEXT,CHINESE_SIMPLIFIED_TEXT,type Area} from '../i18n/languageText';
 import {contextLocale} from '../fixtures/language';
 import type {LayoutOptions} from '../fixtures/layoutProblems';
 import * as E01 from '../i18n/walks/e01';
@@ -179,25 +179,28 @@ for(const L of SCRIPT_TRANSLATIONS)test.describe(()=>{test.use({locale:contextLo
 // translated (its `done`), the same function its language-parameterised spec runs (tests/i18n/walks/), under real Japanese and the CJK
 // test fonts at 320 and 1440 px: after each step kana on screen, layoutProblems() with the walk's own options and verticalInkProblems().
 type ExerciseWalk=(page:Page,lang:typeof JAPANESE_TEXT,each:(step:string)=>Promise<void>)=>Promise<void>;
-const JA_WALKS:readonly (readonly [Area,string,ExerciseWalk,LayoutOptions])[]=[['e01','E01 (Hubble)',E01.walk,E01.LAYOUT],
+const EXERCISE_WALKS:readonly (readonly [Area,string,ExerciseWalk,LayoutOptions])[]=[['e01','E01 (Hubble)',E01.walk,E01.LAYOUT],
  ['e02','E02 (large-scale structure)',E02.walk,E02.LAYOUT],['e03','E03 (spectral classification)',E03.walk,E03.LAYOUT],
  ['e04','E04 (Pleiades photometry)',E04.walk,E04.LAYOUT],['e05','E05 (cluster H-R diagrams and variable stars)',E05.walk,E05.LAYOUT],
  ['radio','radio telescope',RADIO.walk,RADIO.LAYOUT],
  ['e06','E06 (pulsar analysis)',(page,lang,each)=>E06.walk(page,lang,each),E06.LAYOUT],['e08','E08 (Object X)',(page,lang,each)=>E08.walk(page,lang,step=>each(step)),E08.LAYOUT],
  ['help','help windows',(page,lang,each)=>HELP.walk(page,lang,each),{dialogs:'dialog[open],[role=dialog][aria-modal=true],[role=alertdialog][aria-modal=true]',topDialog:true}]];
-test.describe(()=>{test.use({locale:contextLocale('ja')});// Front JA-REL: a ja-JP browser, no ?lang=
-for(const [area,name,walk,layout] of JA_WALKS.filter(([area])=>JAPANESE_TEXT.done.has(area)))for(const width of [320,1440] as const)
- test(`real Japanese at ${width} px: the ${name} walk lays out without overflow, clipping or cut ink (${area})`,async({page})=>{
+// Front ZH2: the same walks under real Simplified Chinese (ZH2 adds E01 and E02; each ZH front its area), with Han on screen.
+const REAL_SCRIPT_LANGUAGES=[{L:JAPANESE_TEXT,name:'Japanese',letters:/[\p{sc=Hira}\p{sc=Kana}]/u,missing:'no kana on screen: the text shown is not Japanese'},
+ {L:CHINESE_SIMPLIFIED_TEXT,name:'Simplified Chinese',letters:/\p{sc=Han}/u,missing:'no Han on screen: the text shown is not Chinese'}] as const;
+for(const {L,name:language,letters,missing} of REAL_SCRIPT_LANGUAGES)test.describe(()=>{test.use({locale:contextLocale(L.tag)});// Front JA-REL: a ja-JP browser, no ?lang= (an unreleased language: en-US with its ?lang= preview)
+for(const [area,name,walk,layout] of EXERCISE_WALKS.filter(([area])=>L.done.has(area)))for(const width of [320,1440] as const)
+ test(`real ${language} at ${width} px: the ${name} walk lays out without overflow, clipping or cut ink (${area})`,async({page})=>{
   test.setTimeout(400_000);
   await page.setViewportSize({width,height:width===320?700:1000});
   const problems=new Map<string,string>();
-  await walk(page,JAPANESE_TEXT,async step=>{
+  await walk(page,L,async step=>{
    await page.evaluate(async()=>{await document.fonts.ready;});
-   if(!/[\p{sc=Hira}\p{sc=Kana}]/u.test(await page.locator('main').first().innerText()))problems.set('no kana on screen: the text shown is not Japanese',step);
+   if(!letters.test(await page.locator('main').first().innerText()))problems.set(missing,step);
    for(const p of await layoutProblems(page,layout))if(!problems.has(p))problems.set(p,step);
    for(const p of await verticalInkProblems(page))if(!problems.has(p))problems.set(p,step);
   });
-  expect([...problems].map(([p,step])=>`${step}: ${p}`),`layout problems under real Japanese (${name})`).toEqual([]);
+  expect([...problems].map(([p,step])=>`${step}: ${p}`),`layout problems under real ${language} (${name})`).toEqual([]);
  });
 });
 

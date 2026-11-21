@@ -241,8 +241,9 @@ for(const {L:P,name} of RELEASED_AREAS)test.describe(`in a ${name} browser`,()=>
 // shared classification+cluster module, which the cluster routes also fetch, so `cluster` holds text, as for French after FR3; Front ID5: the radio keys and maps fill `radio`, and `pulsar` fetches the shared
 // pulsar+radio module, which holds the radioR1 map, as for French after FR5). Front
 // ID-REL turned this back into a released-language test (RELEASED_AREAS above), as FR-REL did. Front HI0: Hindi's preview the same way (Front HI-REL moved it to RELEASED_AREAS); Front ZH0:
-// Simplified Chinese's (ZH-REL); ZH1's maps and keys give it `classification` and `fits` text, as JA1's.
-const PARTIAL=[{L:CHINESE_SIMPLIFIED_TEXT,name:'Simplified Chinese',release:'ZH-REL',areas:['classification','fits','photometer']}] as const;
+// Simplified Chinese's (ZH-REL); ZH1's maps and keys give it `classification` and `fits` text, as JA1's, and ZH2's
+// `exposure` and `lss`, as JA2's.
+const PARTIAL=[{L:CHINESE_SIMPLIFIED_TEXT,name:'Simplified Chinese',release:'ZH-REL',areas:['classification','exposure','fits','lss','photometer']}] as const;
 for(const {L:P,name,release,areas} of PARTIAL)test.describe(`a language before its release (${name})`,()=>{
  test.use({locale:'en-US'});
  test(`a partial language (${name}) fetches only its core, and no chunk for an empty area`,async({page})=>{

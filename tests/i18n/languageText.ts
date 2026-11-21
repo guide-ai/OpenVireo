@@ -223,11 +223,11 @@ export const HINDI_TEXT=language('hi',hi,hiOriginals,{appShell:APP_SHELL_HI,help
 export const JAPANESE_TEXT=language('ja',ja,jaOriginals,{appShell:APP_SHELL_JA,helpMenu:HELP_MENU_JA,projectLinks:PROJECT_LINKS_JA,tour:TOUR_JA,languageChoice:LANGUAGE_CHOICE_JA},
  [APP_SHELL_JA,CAMERA_JA,FIELD_INFO_JA,FIELD_READ_DETAILS_JA,HELP_MENU_JA,LANGUAGE_CHOICE_JA,NAKED_EYE_JA,OBJECT_X_LAB_JA,OBSERVATION_METADATA_JA,OBSERVATORY_JA,POLISH_JA,PROJECT_LINKS_JA,QSO_LIST_JA,SOUND_JA,TOUR_JA,VARIABLE_STARS_JA],/[\p{sc=Hira}\p{sc=Kana}ー「」]/u,'',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08','help']);
 /** Front ZH0: Simplified Chinese before its release, behind `?lang=zh-Hans` (an en-US browser: tests/fixtures/language.ts
- * contextLocale). ZH0 translated the shell and ZH1 the observatory with its maps and all of VIREO's originals; ZH2–ZH6 and ZH-HELP
+ * contextLocale). ZH0 translated the shell, ZH1 the observatory with its maps and all of VIREO's originals, ZH2 exercises E01 and E02; ZH3–ZH6 and ZH-HELP
  * add their areas to `done` and their maps. Its letters are Han and
  * the full-width marks ，。、：；？！（）, which VIREO's English files and OpenVireo's exports never hold. */
 export const CHINESE_SIMPLIFIED_TEXT=language('zh-Hans',zhHans,zhHansOriginals,{appShell:APP_SHELL_ZH_HANS,helpMenu:HELP_MENU_ZH_HANS,projectLinks:PROJECT_LINKS_ZH_HANS,tour:TOUR_ZH_HANS,languageChoice:LANGUAGE_CHOICE_ZH_HANS},
- [APP_SHELL_ZH_HANS,CAMERA_ZH_HANS,FIELD_INFO_ZH_HANS,FIELD_READ_DETAILS_ZH_HANS,HELP_MENU_ZH_HANS,LANGUAGE_CHOICE_ZH_HANS,NAKED_EYE_ZH_HANS,OBJECT_X_LAB_ZH_HANS,OBSERVATION_METADATA_ZH_HANS,OBSERVATORY_ZH_HANS,POLISH_ZH_HANS,PROJECT_LINKS_ZH_HANS,QSO_LIST_ZH_HANS,SOUND_ZH_HANS,TOUR_ZH_HANS,VARIABLE_STARS_ZH_HANS],/[\p{sc=Han}，。、：；？！（）]/u,'?lang=zh-Hans',['shell','observatory']);
+ [APP_SHELL_ZH_HANS,CAMERA_ZH_HANS,FIELD_INFO_ZH_HANS,FIELD_READ_DETAILS_ZH_HANS,HELP_MENU_ZH_HANS,LANGUAGE_CHOICE_ZH_HANS,NAKED_EYE_ZH_HANS,OBJECT_X_LAB_ZH_HANS,OBSERVATION_METADATA_ZH_HANS,OBSERVATORY_ZH_HANS,POLISH_ZH_HANS,PROJECT_LINKS_ZH_HANS,QSO_LIST_ZH_HANS,SOUND_ZH_HANS,TOUR_ZH_HANS,VARIABLE_STARS_ZH_HANS],/[\p{sc=Han}，。、：；？！（）]/u,'?lang=zh-Hans',['shell','observatory','e01','e02']);
 /** Front RU0: Russian, behind `?lang=ru` before its release (an en-US browser): RU0 translated the shell, RU1 the observatory with
  * all of VIREO's originals, RU2 exercises E01 and E02, RU3 exercise E03, RU4 exercises E04 and E05, RU5 the radio telescope, RU6
  * exercises E06 and E08, and RU-HELP the help files and help maps. Front RU-REL: released, so every area is done and its specs open
@@ -269,6 +269,9 @@ import {WEDGE_RU} from '../../src/i18n/ru/maps/wedge';
 import {ENGINE_VIEW_JA} from '../../src/i18n/ja/maps/engineView';
 import {SPECTRAL_RANGE_JA} from '../../src/i18n/ja/maps/spectralRange';
 import {WEDGE_JA} from '../../src/i18n/ja/maps/wedge';
+import {ENGINE_VIEW_ZH_HANS} from '../../src/i18n/zh-hans/maps/engineView';
+import {SPECTRAL_RANGE_ZH_HANS} from '../../src/i18n/zh-hans/maps/spectralRange';
+import {WEDGE_ZH_HANS} from '../../src/i18n/zh-hans/maps/wedge';
 export type E01E02Maps=Readonly<{engineView:unknown;spectralRange:unknown;wedge:unknown;observatory:unknown;polish:unknown}>;
 export const E01_E02_MAPS:Readonly<Record<string,E01E02Maps>>=Object.freeze({
  'es-419':{engineView:ENGINE_VIEW_ES,spectralRange:SPECTRAL_RANGE_ES,wedge:WEDGE_ES,observatory:OBSERVATORY_ES,polish:POLISH_ES},
@@ -283,6 +286,8 @@ export const E01_E02_MAPS:Readonly<Record<string,E01E02Maps>>=Object.freeze({
  ru:{engineView:ENGINE_VIEW_RU,spectralRange:SPECTRAL_RANGE_RU,wedge:WEDGE_RU,observatory:OBSERVATORY_RU,polish:POLISH_RU},
  // Front JA2: Japanese (its ?lang=ja preview).
  ja:{engineView:ENGINE_VIEW_JA,spectralRange:SPECTRAL_RANGE_JA,wedge:WEDGE_JA,observatory:OBSERVATORY_JA,polish:POLISH_JA},
+ // Front ZH2: Simplified Chinese (its ?lang=zh-Hans preview).
+ 'zh-Hans':{engineView:ENGINE_VIEW_ZH_HANS,spectralRange:SPECTRAL_RANGE_ZH_HANS,wedge:WEDGE_ZH_HANS,observatory:OBSERVATORY_ZH_HANS,polish:POLISH_ZH_HANS},
 });
 export const e01e02Maps=(tag:string):E01E02Maps=>{const m=E01_E02_MAPS[tag];if(!m)throw new Error(`No E01/E02 maps for ${tag}`);return m;};
 
