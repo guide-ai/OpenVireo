@@ -27,7 +27,7 @@ export const SAME=new Set<string>([
 export const RECORDED=/^(?:SHA-256 )?[0-9a-f]{64}$|^[0-9a-f]{12}$/;
 /** The print previews' date line as the browser formats it (DateTimeToStr(Now) [W]), and the CLEA exercise title VIREO prints
  * above the light curve (a proper name, core/lightCurvePrint.ts). */
-export const PRINT_DATE=/^\d{1,2}\/\d{1,2}\/\d{4}, \d{1,2}:\d{2}:\d{2}\s?[AP]M$/;
+export const PRINT_DATE=/^\d{1,2}\/\d{1,2}\/\d{4}, \d{1,2}:\d{2}:\d{2}\s?[AaPp][Mm]$/; // CI Chromium writes Hindi (hi) «pm» in lower case
 export const EXERCISE_TITLE='CLEA Exercise "VIREO - The VIRtual Educational Observatory"';
 export const NUMERIC=/^[-+−±\d\s.,:;°′″'"·×÷/()[\]–%=→e*]*\d[-+−±\d\s.,:;°′″'"·×÷/()[\]–%=→e*]*(?:\s*(?:mag|pc|Myr|d|h|px|Å))*\s*$/;
 /** The cluster names with their catalog suffix, exactly as the contract records them (the dataset selector's options). */
