@@ -424,8 +424,11 @@ test(`${lang} at ${width} px computes the same styles with and without scripts.c
   const declared=(rules:CSSRuleList):string[]=>[...rules].flatMap(r=>r instanceof CSSStyleRule?[...r.style]:r instanceof CSSGroupingRule?declared(r.cssRules):[]);
   return [...new Set(declared(sheet.cssRules))].sort();
  });
+ // Front JA-REL: once a script language is released, every page's language selector holds its option in that language
+ // (<option lang="ja">日本語 (Japanese)</option>), which scripts.css is meant to style; such an element is listed by its language
+ // only, and the walk checks below that it is a selector option and nothing else.
  const snapshot=(props:readonly string[])=>page.evaluate(props=>
-  [document.documentElement,document.body,...document.body.querySelectorAll('*')].map(e=>{const s=getComputedStyle(e);return `${e.tagName.toLowerCase()}.${typeof e.className==='string'?e.className:''} `+props.map(p=>`${p}:${s.getPropertyValue(p)}`).join(';');}),props);
+  [document.documentElement,document.body,...document.body.querySelectorAll('*')].map(e=>{const own=e.closest('[lang]')?.getAttribute('lang')??'';if(/^(?:ja|zh|hi)\b/.test(own))return `script-language ${own} ${e.tagName.toLowerCase()}${e.closest('[data-testid=language-select]')?' in the language selector':''}`;const s=getComputedStyle(e);return `${e.tagName.toLowerCase()}.${typeof e.className==='string'?e.className:''} `+props.map(p=>`${p}:${s.getPropertyValue(p)}`).join(';');}),props);
  // Removes the sheet, keeping it on the window so that restoreSheet() can put the same node back where it was.
  const withoutSheet=()=>page.evaluate(()=>{
   const sheet=[...document.querySelectorAll<HTMLStyleElement>('style[data-vite-dev-id]')].filter(s=>s.dataset.viteDevId!.endsWith('/src/theme/scripts.css'));
@@ -466,6 +469,8 @@ test(`${lang} at ${width} px computes the same styles with and without scripts.c
   // Each difference as "element property:before → property:after".
   const changed=before.flatMap((v,i)=>{if(v===after[i])return [];const a=v.split(';'),b=after[i].split(';');return [a.flatMap((x,j)=>x===b[j]?[]:[`${x} → ${b[j]}`]).join(', ')];});
   expect(changed,`${lang} ${width} #${route}: elements whose computed style scripts.css changed`).toEqual([]);
+  const script=before.filter(v=>v.startsWith('script-language '));
+  expect(script.filter(v=>!v.endsWith(' option in the language selector')),`${lang} ${width} #${route}: script-language elements outside the selector`).toEqual([]);
  }
 });
 
