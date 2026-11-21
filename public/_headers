@@ -52,6 +52,9 @@
 # Front JA-REL+SEO: the Japanese home page /ja/ and lab pages /ja/labs/, the same kind of page.
 /ja/*
   Cache-Control: no-cache
+# Front RU-REL+SEO: the Russian home page /ru/ and lab pages /ru/labs/, the same kind of page.
+/ru/*
+  Cache-Control: no-cache
 /sitemap.xml
   Cache-Control: no-cache
 /robots.txt

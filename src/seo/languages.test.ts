@@ -6,6 +6,7 @@
 // glossary field id, hreflang id).
 // Front JA-REL+SEO: Japanese under /ja/ (profile ja, glossary field ja, hreflang ja), and title and description lengths
 // measured in display columns (a kanji takes two, as in a result).
+// Front RU-REL+SEO: Russian under /ru/ (its profile ru, glossary field ru, hreflang ru).
 import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
 import {LABS,SITE_URL,labUrl,labsIndexUrl,SEO_PATH_PREFIX} from './labs';
@@ -18,6 +19,7 @@ import ptGlossary from '../i18n/pt-br/glossary.json' with {type:'json'};
 import frGlossary from '../i18n/fr/glossary.json' with {type:'json'};
 import idGlossary from '../i18n/id/glossary.json' with {type:'json'};
 import jaGlossary from '../i18n/ja/glossary.json' with {type:'json'};
+import ruGlossary from '../i18n/ru/glossary.json' with {type:'json'};
 import {OBJECT_X_LAB_ES} from '../i18n/es/maps/objectXLab';
 import {LANGUAGES,languageEntry} from '../i18n/languages';
 import {PROFILES,type ProfileId} from '../i18n/lint/profiles';
@@ -25,7 +27,7 @@ import {displayColumns} from '../core/textColumns';
 import {claim,describeFindings,digits,glossary,glossaryFrom,html,invisible,markPairs,normalization,placeholders,quotes,register,typography,type Finding,type Glossary,type LocaleProfile,type Pair} from '../i18n/lint/rules';
 
 const TRANSLATED=SEO_LANGUAGES.slice(1);
-const SPANISH=SEO_LANGUAGES.find(l=>l.tag==='es-419')!,PORTUGUESE=SEO_LANGUAGES.find(l=>l.tag==='pt-BR')!,FRENCH=SEO_LANGUAGES.find(l=>l.tag==='fr')!,INDONESIAN=SEO_LANGUAGES.find(l=>l.tag==='id')!,JAPANESE=SEO_LANGUAGES.find(l=>l.tag==='ja')!;
+const SPANISH=SEO_LANGUAGES.find(l=>l.tag==='es-419')!,PORTUGUESE=SEO_LANGUAGES.find(l=>l.tag==='pt-BR')!,FRENCH=SEO_LANGUAGES.find(l=>l.tag==='fr')!,INDONESIAN=SEO_LANGUAGES.find(l=>l.tag==='id')!,JAPANESE=SEO_LANGUAGES.find(l=>l.tag==='ja')!,RUSSIAN=SEO_LANGUAGES.find(l=>l.tag==='ru')!;
 const attr=(html:string,re:RegExp)=>re.exec(html)?.[1];
 const attrs=(html:string,re:RegExp)=>[...html.matchAll(re)].map(m=>m[1]);
 const ld=(html:string)=>[...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(m=>JSON.parse(m[1]));
@@ -82,6 +84,14 @@ const TEXT_RULES:Readonly<Record<string,TextRules>>={
   reconstruction:'無料のWeb版',homeDescription:/^無料の非公式なWeb版/,
   adaptation:'この日本語の文章は、OpenVireoがWeb向けに翻案したもので、CLEAの文章ではありません。',
   notOriginal:'元のプログラムではなく、Project CLEAと提携しているものでもありません。',ogLocale:'ja_JP',ogImage:'/og-image-ja.png'},
+ // Front RU-REL+SEO: Russian, lower-case «вы», «лабораторная работа» (or «работа») for a lab, the ru glossary's terms, ё and « — ».
+ // "star cluster" may read «скопление» where the context is clear (the app's own «Диаграммы Г — Р скоплений»), as for Spanish.
+ ru:{profile:'ru',glossary:glossaryFrom(ruGlossary,'ru'),
+  english:t=>t.replace(/\bstar clusters?\b/gi,'cluster'),
+  claims:/(?<!не|не[ \u00a0])официальн\p{L}* (?:верси|перевод|программ)|(?:верси|перевод)\p{L}* (?:от )?(?:Project )?CLEA/iu,
+  reconstruction:'Бесплатная веб-реконструкция',homeDescription:/^Бесплатная неофициальная веб-реконструкция/,
+  adaptation:'Этот текст на русском языке\u00a0— веб-адаптация OpenVireo, а не текст CLEA.',
+  notOriginal:'OpenVireo не является оригинальной программой и не связана с Project CLEA.',ogLocale:'ru_RU',ogImage:'/og-image-ru.png'},
 };
 /** The framework's rules that read the meaning of a page text. Glyph parity and the length ratio are left out: the pages are free
  * prose written from the English, not interface strings (Spanish writes Hertzsprung-Russell with a hyphen). */
@@ -90,7 +100,7 @@ const RULES:readonly ((p:Pair,profile:LocaleProfile,data:{glossary:Glossary})=>F
 describe('the language table',()=>{
  it('has English first (the x-default, whose home page is the app) and one row per language with its own path prefix',()=>{
   expect(SEO_LANGUAGES[0]).toBe(ENGLISH);expect(ENGLISH).toMatchObject({tag:'en',prefix:'',app:'/',home:null});
-  expect(SEO_LANGUAGES.map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','id','ja']);
+  expect(SEO_LANGUAGES.map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','id','ja','ru']);
   expect(Object.keys(SEO_PATH_PREFIX)).toEqual(SEO_LANGUAGES.map(l=>l.tag));
   for(const l of TRANSLATED){
    // A language gets search pages only once the app speaks it, under its registry pagePath (the dist check exempts that path).
@@ -103,9 +113,9 @@ describe('the language table',()=>{
   }
   // Spanish is `es` (es-419 is no hreflang region); Brazilian Portuguese is `pt-BR` and also `pt`, the same page, because the
   // app opens pt-BR for every pt and pt-* browser; French is `fr` (ISO 639-1 alone: one French for every fr-* browser); Indonesian is
-  // `id` (one Indonesian for every id-*, in and in-* browser). Japanese is `ja` the same way.
-  // No code names two languages.
-  expect(TRANSLATED.map(l=>l.hreflang)).toEqual([['es'],['pt-BR','pt'],['fr'],['id'],['ja']]);
+  // `id` (one Indonesian for every id-*, in and in-* browser). Japanese is `ja` the same way, and Russian `ru` (one Russian for every
+  // ru-* browser). No code names two languages.
+  expect(TRANSLATED.map(l=>l.hreflang)).toEqual([['es'],['pt-BR','pt'],['fr'],['id'],['ja'],['ru']]);
   expect(new Set(SEO_LANGUAGES.flatMap(l=>l.hreflang)).size).toBe(SEO_LANGUAGES.flatMap(l=>l.hreflang).length);
  });
  it('gives every language the seven labs with the English slugs, exercise codes and number of steps',()=>{
@@ -119,9 +129,10 @@ describe('the language table',()=>{
   expect(KEYS.map(k=>pathOf(PORTUGUESE,k))).toEqual(['/pt-br/','/pt-br/labs/',...LABS.map(l=>`/pt-br/labs/${l.slug}/`)]);
   expect(KEYS.map(k=>pathOf(FRENCH,k))).toEqual(['/fr/','/fr/labs/',...LABS.map(l=>`/fr/labs/${l.slug}/`)]);
   expect(KEYS.map(k=>pathOf(INDONESIAN,k))).toEqual(['/id/','/id/labs/',...LABS.map(l=>`/id/labs/${l.slug}/`)]);
+  expect(KEYS.map(k=>pathOf(RUSSIAN,k))).toEqual(['/ru/','/ru/labs/',...LABS.map(l=>`/ru/labs/${l.slug}/`)]);
   expect(KEYS.slice(1).map(k=>pathOf(ENGLISH,k))).toEqual(['/labs/',...LABS.map(l=>labUrl(l.slug))]);
-  expect([labsIndexUrl(),labsIndexUrl('en'),labsIndexUrl('es-419'),labsIndexUrl('qps'),labsIndexUrl('pt-BR'),labsIndexUrl('fr'),labsIndexUrl('id'),labsIndexUrl('hi')]).toEqual(['/labs/','/labs/','/es/labs/','/labs/','/pt-br/labs/','/fr/labs/','/id/labs/','/labs/']);
-  expect([labUrl('pulsars','es-419'),labUrl('pulsars','pt-BR'),labUrl('pulsars','fr'),labUrl('pulsars','id')]).toEqual(['/es/labs/pulsars/','/pt-br/labs/pulsars/','/fr/labs/pulsars/','/id/labs/pulsars/']);
+  expect([labsIndexUrl(),labsIndexUrl('en'),labsIndexUrl('es-419'),labsIndexUrl('qps'),labsIndexUrl('pt-BR'),labsIndexUrl('fr'),labsIndexUrl('id'),labsIndexUrl('ru'),labsIndexUrl('hi')]).toEqual(['/labs/','/labs/','/es/labs/','/labs/','/pt-br/labs/','/fr/labs/','/id/labs/','/ru/labs/','/labs/']);
+  expect([labUrl('pulsars','es-419'),labUrl('pulsars','pt-BR'),labUrl('pulsars','fr'),labUrl('pulsars','id'),labUrl('pulsars','ru')]).toEqual(['/es/labs/pulsars/','/pt-br/labs/pulsars/','/fr/labs/pulsars/','/id/labs/pulsars/','/ru/labs/pulsars/']);
   expect(KEYS.map(k=>pathOf(JAPANESE,k))).toEqual(['/ja/','/ja/labs/',...LABS.map(l=>`/ja/labs/${l.slug}/`)]);
   expect([labsIndexUrl('ja'),labUrl('pulsars','ja')]).toEqual(['/ja/labs/','/ja/labs/pulsars/']);
  });
@@ -266,7 +277,7 @@ describe('English pages',()=>{
    expect(html).toMatch(/^<!doctype html>\n<html lang="en"><head>/);
    for(const l of TRANSLATED)expect(attrs(html,languageLink(l)),l.tag).toEqual([pathOf(l,key)]);
    expect(attr(html,/<meta property="og:locale" content="([^"]*)"/)).toBe('en_US');
-   expect(attrs(html,/<meta property="og:locale:alternate" content="([^"]*)"/g)).toEqual(['es_LA','pt_BR','fr_FR','id_ID','ja_JP']);
+   expect(attrs(html,/<meta property="og:locale:alternate" content="([^"]*)"/g)).toEqual(['es_LA','pt_BR','fr_FR','id_ID','ja_JP','ru_RU']);
    expect(attr(html,/<meta property="og:image" content="([^"]*)"/)).toBe(`${SITE_URL}/og-image.png`);
   }
  });
@@ -275,8 +286,8 @@ describe('English pages',()=>{
 describe('hreflang',()=>{
  it('every page names itself and each translation, with x-default on the English page, and the translations name it back',()=>{
   for(const key of KEYS){
-   const expected=alternates(key),[e,s,p,f,i,j]=[ENGLISH,SPANISH,PORTUGUESE,FRENCH,INDONESIAN,JAPANESE].map(l=>SITE_URL+pathOf(l,key));
-   expect(expected).toEqual([['en',e],['es',s],['pt-BR',p],['pt',p],['fr',f],['id',i],['ja',j],['x-default',e]]);
+   const expected=alternates(key),[e,s,p,f,i,j,r]=[ENGLISH,SPANISH,PORTUGUESE,FRENCH,INDONESIAN,JAPANESE,RUSSIAN].map(l=>SITE_URL+pathOf(l,key));
+   expect(expected).toEqual([['en',e],['es',s],['pt-BR',p],['pt',p],['fr',f],['id',i],['ja',j],['ru',r],['x-default',e]]);
    for(const l of SEO_LANGUAGES){const html=PAGES[pathOf(l,key)];expect(hreflangs(html),pathOf(l,key)).toEqual(expected);}
   }
   expect(Object.keys(PAGES)).toHaveLength(SEO_LANGUAGES.length*KEYS.length);
