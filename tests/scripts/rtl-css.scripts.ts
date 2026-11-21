@@ -28,7 +28,7 @@ async function load(page:Page,lang:string,hash:string){
 
 // ---- (1) Left-to-right pages do not see rtl.css -----------------------------------------------------------------------------
 const SHEET='/src/theme/rtl.css';
-for(const lang of ['en','es-419','pt-BR','fr'] as const)for(const width of [320,1440] as const)
+for(const lang of ['en','es-419','pt-BR','fr','hi'] as const)for(const width of [320,1440] as const)
 test(`${lang} at ${width} px computes the same styles with and without rtl.css, on the home page and every route`,async({page})=>{
  test.setTimeout(300_000);
  const declaredProps=()=>page.evaluate(sheetId=>{

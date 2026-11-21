@@ -35,9 +35,9 @@ import {OBJECT_X_SESSION_HI} from './maps/objectXSession';
 import {HELP_VIEWER_HI} from './maps/helpViewer';
 import {WEB_HELP_HI} from './maps/webHelp';
 /** Front HI0: the Hindi (hi) bundle (docs/I18N.md, "Hindi: the folder, the digit notice and the shell (HI0)"; HI1 adds the
- * observatory's maps and all of VIREO's originals, HI2 exercises E01 and E02, HI3 exercise E03, HI4 exercises E04 and E05, HI5 the radio telescope, HI6 exercises E06 and E08, HI-HELP the help viewer and OpenVireo's own help; its help files are src/i18n/hi/help). Partial until its
- * release (src/i18n/languages.json `released:false`): only a `?lang=hi` preview reaches it, and every string it lacks is English.
- * The production build splits it by route area like the other languages (scripts/i18n-split.mjs parses this manifest); Vitest
+ * observatory's maps and all of VIREO's originals, HI2 exercises E01 and E02, HI3 exercise E03, HI4 exercises E04 and E05, HI5 the radio telescope, HI6 exercises E06 and E08, HI-HELP the help viewer and OpenVireo's own help; its help files are src/i18n/hi/help). It was partial until its
+ * release (HI0–HI-HELP, behind a `?lang=hi` preview); since Front HI-REL (src/i18n/languages.json `released:true`) every hi and
+ * hi-* browser opens it, and its catalog and every map are complete (src/i18n/hi/hi.test.ts). The production build splits it by route area like the other languages (scripts/i18n-split.mjs parses this manifest); Vitest
  * imports it whole. Translations are web adaptations by OpenVireo; they never claim to be CLEA's, and CLEA's bytes, hashes and
  * provenance are unchanged. */
 export const HINDI:LocaleBundle=Object.freeze({

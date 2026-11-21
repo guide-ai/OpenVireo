@@ -177,7 +177,7 @@ export type LanguageText=Readonly<{
  /** Letters of this language that English text never has: one in a written file means the screen language reached it. */
  letters:RegExp;
  /** The query that opens this language in its own browser (tests/fixtures/language.ts contextLocale): none for a released language
-  * (Spanish since ES-REL, Brazilian Portuguese since PT-REL, French since FR-REL, Japanese since JA-REL). */
+  * (Spanish since ES-REL, Brazilian Portuguese since PT-REL, French since FR-REL, Hindi since HI-REL, Japanese since JA-REL). */
  query:string;
  /** An English catalog text in this language: its translation, or the English itself where a partial language has none. */
  text:(english:string)=>string;
@@ -208,11 +208,13 @@ export const FRENCH_TEXT=language('fr',fr,frOriginals,{appShell:APP_SHELL_FR,hel
  * thousands separator its text uses. */
 export const INDONESIAN_TEXT=language('id',idCatalog,idOriginals,{appShell:APP_SHELL_ID,helpMenu:HELP_MENU_ID,projectLinks:PROJECT_LINKS_ID,tour:TOUR_ID,languageChoice:LANGUAGE_CHOICE_ID},
  [APP_SHELL_ID,CAMERA_ID,FIELD_INFO_ID,FIELD_READ_DETAILS_ID,HELP_MENU_ID,LANGUAGE_CHOICE_ID,NAKED_EYE_ID,OBJECT_X_LAB_ID,OBSERVATION_METADATA_ID,OBSERVATORY_ID,POLISH_ID,PROJECT_LINKS_ID,QSO_LIST_ID,SOUND_ID,TOUR_ID,VARIABLE_STARS_ID],/(?<!\p{L})(?:yang|dan|untuk|dengan|tidak|Anda|dari|pada|ini|atau)(?!\p{L})|[“”\u202f]/u,'');
-/** Front HI0: Hindi, behind `?lang=hi` before its release (an en-US browser with the preview query). HI0 translated the shell, so
- * only the shell's specs ran it; HI1 adds the observatory and all of VIREO's originals, HI2 exercises E01 and E02, HI3 exercise E03, HI4 exercises E04 and E05, HI5 the radio telescope, HI6 exercises E06 and E08, HI-HELP the help files and help maps; each HI front adds its area. Its letters are Devanagari (the danda । included), which English text
- * never has; “ ” are not among them, since English uses them too. */
+/** Front HI0: Hindi, behind `?lang=hi` before its release. HI0 translated the shell, HI1 the observatory and all of VIREO's
+ * originals, HI2 exercises E01 and E02, HI3 exercise E03, HI4 exercises E04 and E05, HI5 the radio telescope, HI6 exercises E06 and
+ * E08, HI-HELP the help files and help maps. Front HI-REL: released, so every area is done and its specs open Hindi in an hi-IN
+ * browser with no query (tests/fixtures/language.ts contextLocale). Its letters are Devanagari (the danda । included), which
+ * English text never has; “ ” are not among them, since English uses them too. */
 export const HINDI_TEXT=language('hi',hi,hiOriginals,{appShell:APP_SHELL_HI,helpMenu:HELP_MENU_HI,projectLinks:PROJECT_LINKS_HI,tour:TOUR_HI,languageChoice:LANGUAGE_CHOICE_HI},
- [APP_SHELL_HI,CAMERA_HI,FIELD_INFO_HI,FIELD_READ_DETAILS_HI,HELP_MENU_HI,LANGUAGE_CHOICE_HI,NAKED_EYE_HI,OBJECT_X_LAB_HI,OBSERVATION_METADATA_HI,OBSERVATORY_HI,POLISH_HI,PROJECT_LINKS_HI,QSO_LIST_HI,SOUND_HI,TOUR_HI,VARIABLE_STARS_HI],/[\u0900-\u097f]/u,'?lang=hi',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08','help']);
+ [APP_SHELL_HI,CAMERA_HI,FIELD_INFO_HI,FIELD_READ_DETAILS_HI,HELP_MENU_HI,LANGUAGE_CHOICE_HI,NAKED_EYE_HI,OBJECT_X_LAB_HI,OBSERVATION_METADATA_HI,OBSERVATORY_HI,POLISH_HI,PROJECT_LINKS_HI,QSO_LIST_HI,SOUND_HI,TOUR_HI,VARIABLE_STARS_HI],/[\u0900-\u097f]/u,'');
 /** Front JA0 (plan front-i18n-ja.md §1.2 #3): Japanese, behind `?lang=ja` before its release; JA0 translated the shell, and each
  * later JA front adds its area to `done`. Its letters are kana, ー and 「」, which no English text, VIREO file or export has (Han alone
  * is not used: kana are the unambiguous Japanese signal). JA1 adds the observatory with its maps and all of VIREO's originals, JA2
@@ -233,6 +235,10 @@ export const CHINESE_SIMPLIFIED_TEXT=language('zh-Hans',zhHans,zhHansOriginals,{
  * which English text never has. */
 export const RUSSIAN_TEXT=language('ru',ru,ruOriginals,{appShell:APP_SHELL_RU,helpMenu:HELP_MENU_RU,projectLinks:PROJECT_LINKS_RU,tour:TOUR_RU,languageChoice:LANGUAGE_CHOICE_RU},
  [APP_SHELL_RU,CAMERA_RU,FIELD_INFO_RU,FIELD_READ_DETAILS_RU,HELP_MENU_RU,LANGUAGE_CHOICE_RU,NAKED_EYE_RU,OBJECT_X_LAB_RU,OBSERVATION_METADATA_RU,OBSERVATORY_RU,POLISH_RU,PROJECT_LINKS_RU,QSO_LIST_RU,SOUND_RU,TOUR_RU,VARIABLE_STARS_RU],/[\p{sc=Cyrl}«»\u202f]/u,'');
+/** Front HI-REL (docs/I18N.md, HI0's real-Hindi walk): released languages whose script has no face in the main suite's fonts, so a
+ * layout check there would measure tofu. Their 320 px layout is measured by their real-script walk under the scripts fonts
+ * (`npm run test:scripts`, tests/scripts/hindi.scripts.ts for Hindi); narrow.spec.ts and the browsers smoke skip their sweep. */
+export const LAYOUT_IN_SCRIPTS_WALK:ReadonlySet<string>=new Set(['hi']);
 /** Every translated language of the registry, in its order (a test fails if a registered language has no text here). */
 export const TRANSLATED:readonly LanguageText[]=Object.freeze([SPANISH_TEXT,PORTUGUESE_TEXT,FRENCH_TEXT,INDONESIAN_TEXT,HINDI_TEXT,JAPANESE_TEXT,CHINESE_SIMPLIFIED_TEXT,RUSSIAN_TEXT]);
 /** Front FR0: the languages that run the specs of `area` (those whose `done` has it), in registry order. */

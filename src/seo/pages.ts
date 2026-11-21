@@ -5,7 +5,7 @@
  * Front ES-SEO: every page is rendered for every language of src/seo/languages.ts (English at the root, Spanish under /es/,
  * whose home page /es/ is a static page), with hreflang alternates, Open Graph locales and a sitemap that lists them all.
  * Front PT-SEO: Brazilian Portuguese under /pt-br/ (home /pt-br/), with no change here: a row of the table. Front FR-REL+SEO:
- * French under /fr/ (home /fr/), the same way. Front JA-REL+SEO: Japanese under /ja/ (home /ja/). */
+ * French under /fr/ (home /fr/), the same way. Front HI-REL+SEO: Hindi under /hi/ (home /hi/), the same way. Front JA-REL+SEO: Japanese under /ja/ (home /ja/). */
 import {SITE_URL,labUrl} from './labs.ts';
 import {ENGLISH,SEO_LANGUAGES,pathOf,seoDirection,type PageKey,type SeoLab,type SeoLanguage} from './languages.ts';
 import {LANGUAGES,type LanguageEntry,type TextDirection} from '../i18n/languages.ts';
@@ -150,7 +150,7 @@ export function labsIndexPage(language:SeoLanguage=ENGLISH,registry:readonly Lan
  return page({key:'labs',title:x.title,description:x.description,body,ld,language,registry});
 }
 
-/** The static home page of a language whose home is not the app (Spanish: /es/, Brazilian Portuguese: /pt-br/, French: /fr/, Japanese: /ja/). It opens the app in its language through
+/** The static home page of a language whose home is not the app (Spanish: /es/, Brazilian Portuguese: /pt-br/, French: /fr/, Hindi: /hi/, Japanese: /ja/). It opens the app in its language through
  * `?lang=<tag>`, which applies to that load only (docs/I18N.md), and links the same page in the other languages. */
 export function languageHomePage(language:SeoLanguage,registry:readonly LanguageEntry[]=LANGUAGES):string{
  const h=language.home;

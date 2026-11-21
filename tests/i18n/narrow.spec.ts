@@ -2,9 +2,10 @@ import {type Page} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
 import {contextLocale} from '../fixtures/language';
 import {layoutProblems} from '../fixtures/layoutProblems';
-import {TRANSLATED,type LanguageText} from './languageText';
+import {LAYOUT_IN_SCRIPTS_WALK,TRANSLATED,type LanguageText} from './languageText';
 // Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts). Front PT-REL: this file was es-narrow.spec.ts;
-// it now runs the same sweep for every released language, each in its own browser (es-MX, pt-BR, fr-FR since FR-REL and ja-JP since JA-REL), with the
+// it now runs the same sweep for every released language, each in its own browser (es-MX, pt-BR, fr-FR since FR-REL and ja-JP since JA-REL; Hindi since
+// HI-REL has its sweep in the real-Hindi walk), with the
 // Spanish title unchanged. Japanese needs the CJK test fonts (plan front-i18n-ja.md §1.2 #4): under the DejaVu-only fontconfig its
 // text is tofu and the 320 px boxes are measured wrongly, so run it locally with FONTCONFIG_FILE=~/.cache/openvireo-test-fonts/
 // scripts/fonts.conf (CI installs those fonts).
@@ -38,7 +39,9 @@ async function openMenu(page:Page){
 }
 
 const title=(L:LanguageText)=>`at 320 px every ${L.tag==='es-419'?'Spanish':L.entry.englishName} route, the menu with the language selector, OpenVireo's help and About lay out without overflow or clipping`;
-for(const L of TRANSLATED.filter(l=>l.entry.released))test.describe(()=>{
+// Front HI-REL: Hindi is released, but this sweep under the main suite's fonts would measure tofu (no Devanagari face); its 320 px
+// sweep is the real-Hindi walk (tests/scripts/hindi.scripts.ts, decided at HI0).
+for(const L of TRANSLATED.filter(l=>l.entry.released&&!LAYOUT_IN_SCRIPTS_WALK.has(l.tag)))test.describe(()=>{
 test.use({locale:contextLocale(L.tag)});
 test(title(L),async({page})=>{
  test.setTimeout(360_000);

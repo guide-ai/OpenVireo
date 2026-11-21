@@ -3,7 +3,8 @@
 // Front PT-SEO: the Spanish checks generalised per language (Brazilian Portuguese under /pt-br/): the texts through each
 // language's lint profile and glossary, the dist-marker guard for every language, and the expected alternates. Front FR-REL+SEO:
 // French under /fr/ (its profile fr, glossary field fr, hreflang fr). Front ID-REL+SEO: Indonesian under /id/ (its profile id,
-// glossary field id, hreflang id).
+// glossary field id, hreflang id). Front HI-REL+SEO: Hindi under /hi/ (its profile hi,
+// glossary field hi, hreflang hi, og:locale hi_IN).
 // Front JA-REL+SEO: Japanese under /ja/ (profile ja, glossary field ja, hreflang ja), and title and description lengths
 // measured in display columns (a kanji takes two, as in a result).
 // Front RU-REL+SEO: Russian under /ru/ (its profile ru, glossary field ru, hreflang ru).
@@ -18,6 +19,7 @@ import esGlossary from '../i18n/es/glossary.json' with {type:'json'};
 import ptGlossary from '../i18n/pt-br/glossary.json' with {type:'json'};
 import frGlossary from '../i18n/fr/glossary.json' with {type:'json'};
 import idGlossary from '../i18n/id/glossary.json' with {type:'json'};
+import hiGlossary from '../i18n/hi/glossary.json' with {type:'json'};
 import jaGlossary from '../i18n/ja/glossary.json' with {type:'json'};
 import ruGlossary from '../i18n/ru/glossary.json' with {type:'json'};
 import {OBJECT_X_LAB_ES} from '../i18n/es/maps/objectXLab';
@@ -27,7 +29,7 @@ import {displayColumns} from '../core/textColumns';
 import {claim,describeFindings,digits,glossary,glossaryFrom,html,invisible,markPairs,normalization,placeholders,quotes,register,typography,type Finding,type Glossary,type LocaleProfile,type Pair} from '../i18n/lint/rules';
 
 const TRANSLATED=SEO_LANGUAGES.slice(1);
-const SPANISH=SEO_LANGUAGES.find(l=>l.tag==='es-419')!,PORTUGUESE=SEO_LANGUAGES.find(l=>l.tag==='pt-BR')!,FRENCH=SEO_LANGUAGES.find(l=>l.tag==='fr')!,INDONESIAN=SEO_LANGUAGES.find(l=>l.tag==='id')!,JAPANESE=SEO_LANGUAGES.find(l=>l.tag==='ja')!,RUSSIAN=SEO_LANGUAGES.find(l=>l.tag==='ru')!;
+const SPANISH=SEO_LANGUAGES.find(l=>l.tag==='es-419')!,PORTUGUESE=SEO_LANGUAGES.find(l=>l.tag==='pt-BR')!,FRENCH=SEO_LANGUAGES.find(l=>l.tag==='fr')!,INDONESIAN=SEO_LANGUAGES.find(l=>l.tag==='id')!,HINDI=SEO_LANGUAGES.find(l=>l.tag==='hi')!,JAPANESE=SEO_LANGUAGES.find(l=>l.tag==='ja')!,RUSSIAN=SEO_LANGUAGES.find(l=>l.tag==='ru')!;
 const attr=(html:string,re:RegExp)=>re.exec(html)?.[1];
 const attrs=(html:string,re:RegExp)=>[...html.matchAll(re)].map(m=>m[1]);
 const ld=(html:string)=>[...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(m=>JSON.parse(m[1]));
@@ -76,6 +78,12 @@ const TEXT_RULES:Readonly<Record<string,TextRules>>={
   reconstruction:'Rekonstruksi web gratis',homeDescription:/^Rekonstruksi web gratis dan tidak resmi/,
   adaptation:'Teks berbahasa Indonesia ini adalah adaptasi web OpenVireo, bukan teks CLEA.',
   notOriginal:'OpenVireo bukan program asli dan tidak berafiliasi dengan Project CLEA.',ogLocale:'id_ID',ogImage:'/og-image-id.png'},
+ // Front HI-REL+SEO: Hindi, with the hi profile (आप, «।» after Devanagari, the nukta in loanwords) and «प्रयोग» for a lab.
+ hi:{profile:'hi',glossary:glossaryFrom(hiGlossary,'hi'),
+  claims:/(?<!गैर-)आधिकारिक (?:अनुवाद|संस्करण|प्रोग्राम)|CLEA (?:का|के|की|द्वारा) (?:आधिकारिक |वेब )?(?:अनुवाद|संस्करण)|CLEA का हिन्दी पाठ/u,
+  reconstruction:'मुफ़्त वेब पुनर्निर्माण',homeDescription:/^मुफ़्त और गैर-आधिकारिक वेब पुनर्निर्माण/,
+  adaptation:'यह हिन्दी पाठ OpenVireo का वेब अनुकूलन है, CLEA का पाठ नहीं।',
+  notOriginal:'यह मूल प्रोग्राम नहीं है और Project CLEA से संबद्ध नहीं है।',ogLocale:'hi_IN',ogImage:'/og-image-hi.png'},
  // Front JA-REL+SEO: Japanese, with the ja profile (です/ます, full-width marks, no space between Japanese and Latin text) and «実習»
  // for a lab. A galaxy cluster is 銀河団, never the glossary's 星団 (a star cluster), so that one English «clusters» is not matched.
  ja:{profile:'ja',glossary:glossaryFrom(jaGlossary,'ja'),
@@ -100,7 +108,7 @@ const RULES:readonly ((p:Pair,profile:LocaleProfile,data:{glossary:Glossary})=>F
 describe('the language table',()=>{
  it('has English first (the x-default, whose home page is the app) and one row per language with its own path prefix',()=>{
   expect(SEO_LANGUAGES[0]).toBe(ENGLISH);expect(ENGLISH).toMatchObject({tag:'en',prefix:'',app:'/',home:null});
-  expect(SEO_LANGUAGES.map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','id','ja','ru']);
+  expect(SEO_LANGUAGES.map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','id','hi','ja','ru']);
   expect(Object.keys(SEO_PATH_PREFIX)).toEqual(SEO_LANGUAGES.map(l=>l.tag));
   for(const l of TRANSLATED){
    // A language gets search pages only once the app speaks it, under its registry pagePath (the dist check exempts that path).
@@ -113,9 +121,9 @@ describe('the language table',()=>{
   }
   // Spanish is `es` (es-419 is no hreflang region); Brazilian Portuguese is `pt-BR` and also `pt`, the same page, because the
   // app opens pt-BR for every pt and pt-* browser; French is `fr` (ISO 639-1 alone: one French for every fr-* browser); Indonesian is
-  // `id` (one Indonesian for every id-*, in and in-* browser). Japanese is `ja` the same way, and Russian `ru` (one Russian for every
-  // ru-* browser). No code names two languages.
-  expect(TRANSLATED.map(l=>l.hreflang)).toEqual([['es'],['pt-BR','pt'],['fr'],['id'],['ja'],['ru']]);
+  // `id` (one Indonesian for every id-*, in and in-* browser). Hindi is `hi` (one Hindi for every hi-* browser), Japanese `ja`
+  // the same way, and Russian `ru` (one Russian for every ru-* browser). No code names two languages.
+  expect(TRANSLATED.map(l=>l.hreflang)).toEqual([['es'],['pt-BR','pt'],['fr'],['id'],['hi'],['ja'],['ru']]);
   expect(new Set(SEO_LANGUAGES.flatMap(l=>l.hreflang)).size).toBe(SEO_LANGUAGES.flatMap(l=>l.hreflang).length);
  });
  it('gives every language the seven labs with the English slugs, exercise codes and number of steps',()=>{
@@ -129,10 +137,11 @@ describe('the language table',()=>{
   expect(KEYS.map(k=>pathOf(PORTUGUESE,k))).toEqual(['/pt-br/','/pt-br/labs/',...LABS.map(l=>`/pt-br/labs/${l.slug}/`)]);
   expect(KEYS.map(k=>pathOf(FRENCH,k))).toEqual(['/fr/','/fr/labs/',...LABS.map(l=>`/fr/labs/${l.slug}/`)]);
   expect(KEYS.map(k=>pathOf(INDONESIAN,k))).toEqual(['/id/','/id/labs/',...LABS.map(l=>`/id/labs/${l.slug}/`)]);
+  expect(KEYS.map(k=>pathOf(HINDI,k))).toEqual(['/hi/','/hi/labs/',...LABS.map(l=>`/hi/labs/${l.slug}/`)]);
   expect(KEYS.map(k=>pathOf(RUSSIAN,k))).toEqual(['/ru/','/ru/labs/',...LABS.map(l=>`/ru/labs/${l.slug}/`)]);
   expect(KEYS.slice(1).map(k=>pathOf(ENGLISH,k))).toEqual(['/labs/',...LABS.map(l=>labUrl(l.slug))]);
-  expect([labsIndexUrl(),labsIndexUrl('en'),labsIndexUrl('es-419'),labsIndexUrl('qps'),labsIndexUrl('pt-BR'),labsIndexUrl('fr'),labsIndexUrl('id'),labsIndexUrl('ru'),labsIndexUrl('hi')]).toEqual(['/labs/','/labs/','/es/labs/','/labs/','/pt-br/labs/','/fr/labs/','/id/labs/','/ru/labs/','/labs/']);
-  expect([labUrl('pulsars','es-419'),labUrl('pulsars','pt-BR'),labUrl('pulsars','fr'),labUrl('pulsars','id'),labUrl('pulsars','ru')]).toEqual(['/es/labs/pulsars/','/pt-br/labs/pulsars/','/fr/labs/pulsars/','/id/labs/pulsars/','/ru/labs/pulsars/']);
+  expect([labsIndexUrl(),labsIndexUrl('en'),labsIndexUrl('es-419'),labsIndexUrl('qps'),labsIndexUrl('pt-BR'),labsIndexUrl('fr'),labsIndexUrl('id'),labsIndexUrl('hi'),labsIndexUrl('ru')]).toEqual(['/labs/','/labs/','/es/labs/','/labs/','/pt-br/labs/','/fr/labs/','/id/labs/','/hi/labs/','/ru/labs/']);
+  expect([labUrl('pulsars','es-419'),labUrl('pulsars','pt-BR'),labUrl('pulsars','fr'),labUrl('pulsars','id'),labUrl('pulsars','hi'),labUrl('pulsars','ru')]).toEqual(['/es/labs/pulsars/','/pt-br/labs/pulsars/','/fr/labs/pulsars/','/id/labs/pulsars/','/hi/labs/pulsars/','/ru/labs/pulsars/']);
   expect(KEYS.map(k=>pathOf(JAPANESE,k))).toEqual(['/ja/','/ja/labs/',...LABS.map(l=>`/ja/labs/${l.slug}/`)]);
   expect([labsIndexUrl('ja'),labUrl('pulsars','ja')]).toEqual(['/ja/labs/','/ja/labs/pulsars/']);
  });
@@ -277,7 +286,7 @@ describe('English pages',()=>{
    expect(html).toMatch(/^<!doctype html>\n<html lang="en"><head>/);
    for(const l of TRANSLATED)expect(attrs(html,languageLink(l)),l.tag).toEqual([pathOf(l,key)]);
    expect(attr(html,/<meta property="og:locale" content="([^"]*)"/)).toBe('en_US');
-   expect(attrs(html,/<meta property="og:locale:alternate" content="([^"]*)"/g)).toEqual(['es_LA','pt_BR','fr_FR','id_ID','ja_JP','ru_RU']);
+   expect(attrs(html,/<meta property="og:locale:alternate" content="([^"]*)"/g)).toEqual(['es_LA','pt_BR','fr_FR','id_ID','hi_IN','ja_JP','ru_RU']);
    expect(attr(html,/<meta property="og:image" content="([^"]*)"/)).toBe(`${SITE_URL}/og-image.png`);
   }
  });
@@ -286,8 +295,8 @@ describe('English pages',()=>{
 describe('hreflang',()=>{
  it('every page names itself and each translation, with x-default on the English page, and the translations name it back',()=>{
   for(const key of KEYS){
-   const expected=alternates(key),[e,s,p,f,i,j,r]=[ENGLISH,SPANISH,PORTUGUESE,FRENCH,INDONESIAN,JAPANESE,RUSSIAN].map(l=>SITE_URL+pathOf(l,key));
-   expect(expected).toEqual([['en',e],['es',s],['pt-BR',p],['pt',p],['fr',f],['id',i],['ja',j],['ru',r],['x-default',e]]);
+   const expected=alternates(key),[e,s,p,f,i,h,j,r]=[ENGLISH,SPANISH,PORTUGUESE,FRENCH,INDONESIAN,HINDI,JAPANESE,RUSSIAN].map(l=>SITE_URL+pathOf(l,key));
+   expect(expected).toEqual([['en',e],['es',s],['pt-BR',p],['pt',p],['fr',f],['id',i],['hi',h],['ja',j],['ru',r],['x-default',e]]);
    for(const l of SEO_LANGUAGES){const html=PAGES[pathOf(l,key)];expect(hreflangs(html),pathOf(l,key)).toEqual(expected);}
   }
   expect(Object.keys(PAGES)).toHaveLength(SEO_LANGUAGES.length*KEYS.length);
