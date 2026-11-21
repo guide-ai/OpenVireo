@@ -3,13 +3,13 @@ import {test,expect} from '../fixtures/area-tripwire';
 import {contextLocale} from '../fixtures/language';
 import {layoutProblems} from '../fixtures/layoutProblems';
 import en from '../../src/i18n/en.json' with {type:'json'};
-import {TRANSLATED,helpText} from './languageText';
+import {LAYOUT_IN_SCRIPTS_WALK,TRANSLATED,helpText} from './languageText';
 
 // Front ES-REL (plan, ES-REL item: "a WebKit and Firefox smoke"): the released language path in any engine. The suite runs it
 // in Chromium; for the release it was also run with `--browser=firefox` and `--browser=webkit` (docs/I18N.md, ES-REL). An es-MX
 // browser opens Spanish (boot, the core module, a route area, a lazy dialog, the help viewer), the selector changes and stores the
 // language, an en-US browser stays English, and the Spanish home and a lab lay out at 320 px. Front PT-REL: this file was
-// es-browsers.spec.ts; each released language runs the same smoke in its own browser (es-MX, pt-BR, fr-FR since FR-REL, ja-JP since JA-REL), its text read from its own
+// es-browsers.spec.ts; each released language runs the same smoke in its own browser (es-MX, pt-BR, fr-FR since FR-REL, hi-IN since HI-REL, ja-JP since JA-REL), its text read from its own
 // sources (tests/i18n/languageText.ts), the Spanish titles unchanged.
 const id=(page:Page,t:string)=>page.getByTestId(t);
 async function open(page:Page,hash:string,save:string){
@@ -54,7 +54,8 @@ test.describe(`in a ${name} browser`,()=>{
   await expect(page.locator('html')).toHaveAttribute('lang',L.entry.htmlLang);await expect(page.locator('.investigation-toolbar')).toContainText(C['project.save']);
   expect(errors).toEqual([]);
  });
- test(`at 320 px the ${name} home and the classification lab lay out without overflow or clipping`,async({page})=>{
+ // Front HI-REL: a language whose script the main suite cannot draw (Hindi) has this check in its real-script walk.
+ if(!LAYOUT_IN_SCRIPTS_WALK.has(L.tag))test(`at 320 px the ${name} home and the classification lab lay out without overflow or clipping`,async({page})=>{
   await page.addInitScript(()=>{try{localStorage.setItem('openvireo.tour.v1','done');}catch{/* about:blank */}});
   await page.setViewportSize({width:320,height:700});
   const problems:string[]=[];
