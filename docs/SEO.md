@@ -365,11 +365,67 @@ search pages (JA-REL+SEO)".
 - `tests/release/pages-smoke.pages.ts`: the Japanese pages and image with the release headers, the 308s, the eight alternates on `/`
   and each home, the sitemap, the 404's Japanese section, and a Japanese lab page opening the app under the release policy.
 
+# Front RU-SEO: Russian search pages
+
+User decision 8 of 2026-11-09 and the Russian decisions of 2026-11-19 (AGENTS.md): with the Russian release (RU-REL, the same front,
+RU-REL+SEO), its home page `/ru/` and lab pages `/ru/labs/`, with `hreflang` and a Russian preview image, following PT-SEO's
+data-driven design as FR-SEO and ID-SEO did. Static site only; no new external service. The language rules are in `docs/I18N.md`,
+"Russian: release and search pages (RU-REL+SEO)".
+
+## What changed
+
+- **Data only.** A `ru` row in `src/seo/languages.ts` (`SEO_LANGUAGES`), its lab texts in `src/seo/labs.ru.ts`, its prefix `/ru`
+  in `SEO_PATH_PREFIX` (`src/seo/labSlugs.ts`; equal to the registry's `pagePath`). `src/seo/pages.ts`, the Vite plugin and the
+  image renderer are unchanged: they render the row.
+- **Russian pages**: `/ru/` (static home: what OpenVireo is, «Открыть обсерваторию», the seven labs, «Как это работает», the
+  credit), `/ru/labs/` and `/ru/labs/<slug>/` with the English slugs. `<html lang="ru">`, Russian titles (48–63 characters) and
+  descriptions (149–160), self canonical, `og:locale` `ru_RU` with `og:locale:alternate` `en_US`, `es_LA`, `pt_BR`, `fr_FR`,
+  `id_ID` and `ja_JP`, Russian JSON-LD (`learningResourceType` «Интерактивная лабораторная работа», `educationalLevel` «Старшая школа»/«Высшее
+  образование», `isBasedOn` crediting Project CLEA, Gettysburg College and the NSF). «Открыть работу» goes to `/?lang=ru#lab=<slug>`.
+  A lab is a «лабораторная работа», shortened to «работа» (the app's word since RU0), and the lab names are the app's own Russian
+  names from its welcome («Закон Хаббла», «Крупномасштабная структура», «Классификация звёзд», «Фотометрия Плеяд», «Диаграммы
+  Г — Р скоплений», «Пульсары», «Объект X»; the Object X guide the lab page opens is «Поиск Объекта X»). The text addresses the
+  reader as lower-case «вы» with вы-imperatives («Измерьте», «Наведите», «Запишите»), writes ё, sentence case and « — » with a
+  no-break space before it, and uses the glossary's terms («красное смещение», «клиновидная диаграмма», «эквивалентная ширина»,
+  «главная последовательность», «мера дисперсии», «ПЗС-камера», «скопление», never «кластер»). The home's «Как это работает» carries
+  the plan's numbers sentence (§4.1): the decimal point on screen and a narrow space between thousands («24 000», U+202F), decimals
+  typed with a point, and files the site writes staying English as VIREO writes them. The footer says «Этот текст на русском языке —
+  веб-адаптация OpenVireo, а не текст CLEA.»
+- **hreflang** on every page pair (63 pages, 9 per language): `en`, `es`, `pt-BR`, `pt`, `fr`, `id`, `ja`, `ru` and
+  `x-default` → English (`ja` since JA-REL+SEO, merged first). `ru` alone names the one Russian that the app opens for every `ru`/`ru-*` browser (RU-REL); Ukrainian, Belarusian and
+  Kazakh searchers keep the English x-default, as those browsers keep English. The sitemap lists all 63 addresses with the same
+  nine alternates. English, Spanish, Portuguese, French, Indonesian and Japanese pages gain `og:locale:alternate` `ru_RU` and a visible
+  «Русский» link (`hreflang`/`lang` `ru`); `index.html`'s body is untouched (only its alternates, built from the table, gain the
+  Russian link).
+- **App**: the observatory footer's labs link goes to `/ru/labs/` when the app is in Russian (the prefix table gains `ru:'/ru'`).
+- **Preview image** `public/og-image-ru.png` (1200×630, 282,495 bytes, SHA-256 `c3204bbb…86726261`): the design of the others with
+  Russian text («Работы по астрономии CLEA VIREO в браузере», with no-break spaces keeping «CLEA VIREO» and «в браузере» together;
+  the title fits two lines only without «вашем»), rendered by `node scripts/render-og-image.mjs ru` with the project's test
+  fontconfig (DejaVu, which has Cyrillic); an original drawing, no CLEA image. Two renders gave the same bytes.
+- **Headers**: `/ru/*` is `no-cache`, like `/labs/*`, `/es/*`, `/pt-br/*`, `/fr/*`, `/id/*` and `/ja/*`
+  (`public/_headers`, `src/deployHeaders.test.ts`).
+
+## Tests
+
+- `src/seo/languages.test.ts`: Russian joins the per-language checks with its own rules (profile `ru`, glossary field `ru`, the
+  Russian claims «официальная версия», «официальный перевод», «перевод CLEA», the reconstruction phrase «Бесплатная
+  веб-реконструкция», the adaptation and credit sentences, `ru_RU`, its image). As for Spanish, "star cluster" is matched as
+  "cluster" (the app's «Диаграммы Г — Р скоплений» reads «скопление» alone where the context is clear). The alternates are `en`,
+  `es`, `pt-BR`, `pt`, `fr`, `id`, `ja`, `ru`, `x-default` on all 63 pages and in the sitemap. `src/seo/pages.test.ts` (63 sitemap
+  addresses, the seven-language 404) and `src/seo/direction.test.ts` (the Russian link in the RTL-fixture pages) follow.
+- `tests/i18n/seo.spec.ts`: the same flows for Russian (`/ru/`, «Открыть работу» on the pulsar and Object X pages, English back).
+- `tests/release/pages-smoke.pages.ts`: the Russian pages and image with the release headers, the 308s, the nine alternates on
+  `/` and each home, the sitemap, and a Russian lab page opening the app under the release policy (only ru chunks fetched).
+
 ## For the user (not done by the site)
 
-After the deploy: in Google Search Console resubmit `https://openvireo.space/sitemap.xml` (it now lists 54 addresses) and use URL
-Inspection on `https://openvireo.space/ja/` and one Japanese lab page (for example `/ja/labs/hubble/`), then «Request indexing».
-OpenSEO can track Japanese keywords (for example «ハッブルの法則 実習», «CLEA 天文», «HR図 星団 実習») with Japan as the market.
+After the deploy: in Google Search Console resubmit `https://openvireo.space/sitemap.xml` (it now lists 63 addresses) and use URL
+Inspection on `https://openvireo.space/ja/` and `https://openvireo.space/ru/` and one lab page of each (for example
+`/ja/labs/hubble/`, `/ru/labs/hubble/`), then «Request indexing». The same in Bing Webmaster Tools if wanted; Yandex Webmaster is
+the main Russian-language search console, and adding the site there would be a new external service that needs the user's own
+decision. OpenSEO can track Japanese keywords (for example «ハッブルの法則 実習», «CLEA 天文», «HR図 星団 実習») with Japan as the
+market, and Russian keywords (for example «закон Хаббла лабораторная работа», «CLEA астрономия», «диаграмма Герцшпрунга — Рассела
+скопления») with Russia as the market.
 
 # Front HOME: a welcome on the observatory's first screen
 

@@ -7,6 +7,7 @@
 //   FONTCONFIG_FILE=…/fonts.conf node scripts/render-og-image.mjs fr                → public/og-image-fr.png
 //   FONTCONFIG_FILE=…/fonts.conf node scripts/render-og-image.mjs id                → public/og-image-id.png
 //   FONTCONFIG_FILE=…/scripts/fonts.conf node scripts/render-og-image.mjs ja        → public/og-image-ja.png (the CJK test fonts)
+//   FONTCONFIG_FILE=…/fonts.conf node scripts/render-og-image.mjs ru                → public/og-image-ru.png
 //   node scripts/render-og-image.mjs en /tmp/check.png                               (English, to compare with the original)
 // The English image predates this script and is not re-rendered: pass an output path for English.
 // Front JA-REL+SEO: the heading breaks Japanese between phrases (word-break:auto-phrase, which acts only on lang="ja"), never

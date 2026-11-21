@@ -54,23 +54,25 @@ describe('Front RU0: which added keys a catalog accepts',()=>{
  });
 });
 describe('Front RU0: pluralKey chooses the form the active messages hold',()=>{
+ // Front RU-REL: Russian is released, so its whole bundle builds strictly; these partial stand-in catalogs are activated as a split
+ // bundle's core (`areas`), which builds with the English fallback, as the Spanish and French stand-ins below are.
  const pick=(n:number)=>t(pluralKey(n,{one:'sky.searchMatches.one',other:'sky.searchMatches.other'}),{count:n});
  it('Russian: one (1, 21, 101), few (2–4, 22), many (0, 5–20, 25, 111), other (fractions)',()=>{
-  activateLocale({language:'ru',messages:RU_FORMS as never});
+  activateLocale({language:'ru',messages:RU_FORMS as never,areas:{}});
   expect([1,21,101].map(pick)).toEqual(['Найдена 1 цель (1).','Найдена 21 цель (1).','Найдена 101 цель (1).']);
   expect([2,3,4,22].map(pick).every(s=>s.endsWith('(few).'))).toBe(true);
   expect([0,5,11,12,20,25,111].map(pick).every(s=>s.endsWith('(many).'))).toBe(true);
   expect(pick(1.5)).toBe('Найдено 1.5 цели (other).');
  });
  it('a two-level family resolves each count by its own segment (obsHr.kindWarning: 4 × 5 forms)',()=>{
-  activateLocale({language:'ru',messages:RU_FORMS as never});
+  activateLocale({language:'ru',messages:RU_FORMS as never,areas:{}});
   const w=CLUSTER_NATIVE_HR_MESSAGES.kindWarning;
   expect([w(1,0),w(3,0),w(5,0),w(1.5,0)]).toEqual(['one/none 1','few/none 3','many/none 5','other/none 1.5']);
   expect([w(1,1),w(1,3),w(1,7),w(3,1),w(3,3),w(5,22),w(21,11),w(2,1.5)]).toEqual(['one/one 1 1','one/few 1 3','one/many 1 7','few/one 3 1','few/few 3 3','many/few 5 22','one/many 21 11','few/other 2 1.5']);
   expect(CLUSTER_NATIVE_HR_MESSAGES.current(4)).toBe('few 4');
  });
  it('a form the messages lack falls back to other; English, Spanish and French choose as plural() did',()=>{
-  activateLocale({language:'ru',messages:{'sky.searchMatches.other':'other {count}'} as never});
+  activateLocale({language:'ru',messages:{'sky.searchMatches.other':'other {count}'} as never,areas:{}});
   expect([1,3,5].map(pick)).toEqual(['1 matching target.','other 3','other 5']);
   activateLocale(null);
   expect([1,3,1_000_000].map(pick)).toEqual(['1 matching target.','3 matching targets.','1000000 matching targets.']);
