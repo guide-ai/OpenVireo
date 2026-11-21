@@ -412,7 +412,9 @@ test(`en at ${width} px: a popup menu that fits keeps its first placement; one t
 });
 
 // Front FR-REL: French joins the walk (plan front-i18n-fr.md §6.2).
-// Front ID-REL: Indonesian joins the walk.
+// Front ID-REL: Indonesian joins the walk. Russian does not (Front RU-REL): scripts.css styles a Russian page on purpose (its
+// :lang(ru) rules), so the real Russian translation is checked by the layout walk of the script languages above instead, and the
+// selector's «Русский (Russian)» option is listed by its language like 日本語's (Front JA-REL's rule, below).
 for(const lang of ['en','es-419','pt-BR','fr','id'] as const)for(const width of [320,1440] as const)
 test(`${lang} at ${width} px computes the same styles with and without scripts.css, on the home page and every route`,async({page})=>{
  test.setTimeout(300_000);
@@ -428,7 +430,7 @@ test(`${lang} at ${width} px computes the same styles with and without scripts.c
  // (<option lang="ja">日本語 (Japanese)</option>), which scripts.css is meant to style; such an element is listed by its language
  // only, and the walk checks below that it is a selector option and nothing else.
  const snapshot=(props:readonly string[])=>page.evaluate(props=>
-  [document.documentElement,document.body,...document.body.querySelectorAll('*')].map(e=>{const own=e.closest('[lang]')?.getAttribute('lang')??'';if(/^(?:ja|zh|hi)\b/.test(own))return `script-language ${own} ${e.tagName.toLowerCase()}${e.closest('[data-testid=language-select]')?' in the language selector':''}`;const s=getComputedStyle(e);return `${e.tagName.toLowerCase()}.${typeof e.className==='string'?e.className:''} `+props.map(p=>`${p}:${s.getPropertyValue(p)}`).join(';');}),props);
+  [document.documentElement,document.body,...document.body.querySelectorAll('*')].map(e=>{const own=e.closest('[lang]')?.getAttribute('lang')??'';if(/^(?:ja|zh|hi|ru)\b/.test(own))return `script-language ${own} ${e.tagName.toLowerCase()}${e.closest('[data-testid=language-select]')?' in the language selector':''}`;const s=getComputedStyle(e);return `${e.tagName.toLowerCase()}.${typeof e.className==='string'?e.className:''} `+props.map(p=>`${p}:${s.getPropertyValue(p)}`).join(';');}),props);
  // Removes the sheet, keeping it on the window so that restoreSheet() can put the same node back where it was.
  const withoutSheet=()=>page.evaluate(()=>{
   const sheet=[...document.querySelectorAll<HTMLStyleElement>('style[data-vite-dev-id]')].filter(s=>s.dataset.viteDevId!.endsWith('/src/theme/scripts.css'));
