@@ -355,11 +355,10 @@ Lo que quedó en el repositorio tras la revisión:
 
 Lo que solo puedes hacer tú, en los paneles (la revisión lo encontró pendiente):
 
-1. **Correo del dominio (Cloudflare → DNS).** El dominio conserva los registros MX de reenvío de Namecheap (`eforward*.registrar-servers.com`) y no tiene SPF ni DMARC, así que cualquiera puede enviar correo como `@openvireo.space`. Si no usas correo en el dominio:
-   - borra los MX;
-   - añade un TXT en `openvireo.space` con `v=spf1 -all`;
-   - añade un TXT en `_dmarc.openvireo.space` con `v=DMARC1; p=reject`.
-2. **DNSSEC y CAA.** En Cloudflare, **DNS → Settings → DNSSEC → Enable**, y copia el registro DS en Namecheap (**Advanced DNS → DNSSEC**). Opcional: un registro CAA que solo permita las autoridades que usa Cloudflare.
+1. **Correo del dominio (Cloudflare → DNS): hecho el 21 de noviembre de 2026.** A petición tuya, el coordinador borró en el panel los cuatro MX de reenvío de Namecheap (`eforward2…5.registrar-servers.com`, que ya no funcionaban fuera del DNS de Namecheap) y añadió un TXT en `openvireo.space` con `v=spf1 -all` y otro en `_dmarc.openvireo.space` con `v=DMARC1; p=reject`. El dominio no envía ni recibe correo; si algún día lo usa, hay que cambiar esos dos registros y añadir los MX del proveedor. El TXT `google-site-verification` es el de Search Console y no se toca.
+2. **HSTS en `www` (Cloudflare → SSL/TLS → Edge Certificates): hecho el 21 de noviembre de 2026.** La redirección de `www.openvireo.space` la responde una regla de la zona y no pasa por `public/_headers`, así que no llevaba la cabecera. HSTS quedó activado en la zona con los mismos valores que el archivo (12 meses, subdominios incluidos, sin `preload`, *No-Sniff* apagado): `https://www.openvireo.space` ya la envía en su 301 y `https://openvireo.space` la sigue enviando una sola vez. Si cambias el valor, cámbialo en los dos sitios.
+3. **Verificación en dos pasos de la cuenta de Cloudflare.** *My Profile → Authentication*. Esa cuenta controla el DNS y el proyecto de Pages.
+4. **DNSSEC y CAA.** En Cloudflare, **DNS → Settings → DNSSEC → Enable**, y copia el registro DS en Namecheap (**Advanced DNS → DNSSEC**). Opcional: un registro CAA que solo permita las autoridades que usa Cloudflare.
 
 **GitHub (Settings del repositorio): hecho el 16 de noviembre de 2026.** Los aplicó el coordinador con tu aprobación, por la API de GitHub. Así quedaron, por si quieres revisarlos o cambiarlos:
 
