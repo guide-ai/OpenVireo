@@ -56,8 +56,9 @@ const HTML_LANG:Readonly<Record<Locale,string>>={en:'en','es-419':'es-419','pt-B
 const ASCII_LETTERS:ReadonlySet<string>=new Set(['id']);
 /** Front RU4: real languages written in a script whose letters a binary file can spell by chance: Cyrillic letters are two-byte UTF-8
  * (D0–D3 then 80–BF), which a hot list's doubles hold now and then (E05's Cluster Data HTL does), so Russian is looked for only in
- * a file that is UTF-8 text, as the script pseudo-locales are (Front SC10). Binary files are still compared whole. */
-const SCRIPT_LETTERS:ReadonlySet<string>=new Set(['ru']);
+ * a file that is UTF-8 text, as the script pseudo-locales are (Front SC10). Binary files are still compared whole. Front ZH4: Simplified
+ * Chinese too, since a Han character is a three-byte sequence (E4–E9 then two 80–BF) that E05's observation DAT spells by chance. */
+const SCRIPT_LETTERS:ReadonlySet<string>=new Set(['ru','zh-Hans']);
 /** The accessible-name matcher of an English text in this locale: its Spanish form in es-419 (which must exist), Portuguese's or
  * French's own catalog form (which must exist; for French before its release, an identical entry), else `L`. */
 const N=(locale:Locale,text:string)=>{if(locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'||locale==='zh-Hans'||locale==='ru'){const t=TRANSLATED.find(x=>x.tag===locale)!;if(text==='Skip the tour')return exact(t.maps.tour.skip);if(text==='Save spectrum (.SSP)')return exact((e01e02Maps(locale).observatory as typeof OBSERVATORY_ES).spectrumSave.save);
