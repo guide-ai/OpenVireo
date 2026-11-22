@@ -2602,6 +2602,24 @@
     "精靈圖"
    ],
    "use": "圖示 or sprite圖 (Taiwan)"
+  },
+  {
+   "words": [
+    "校驗"
+   ],
+   "use": "驗證 (Taiwan)"
+  },
+  {
+   "words": [
+    "上下文"
+   ],
+   "use": "脈絡 (context)"
+  },
+  {
+   "words": [
+    "牆上時間"
+   ],
+   "use": "實際時間 (wall-clock time)"
   }
  ],
  "dropped": [
