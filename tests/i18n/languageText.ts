@@ -223,11 +223,11 @@ export const HINDI_TEXT=language('hi',hi,hiOriginals,{appShell:APP_SHELL_HI,help
 export const JAPANESE_TEXT=language('ja',ja,jaOriginals,{appShell:APP_SHELL_JA,helpMenu:HELP_MENU_JA,projectLinks:PROJECT_LINKS_JA,tour:TOUR_JA,languageChoice:LANGUAGE_CHOICE_JA},
  [APP_SHELL_JA,CAMERA_JA,FIELD_INFO_JA,FIELD_READ_DETAILS_JA,HELP_MENU_JA,LANGUAGE_CHOICE_JA,NAKED_EYE_JA,OBJECT_X_LAB_JA,OBSERVATION_METADATA_JA,OBSERVATORY_JA,POLISH_JA,PROJECT_LINKS_JA,QSO_LIST_JA,SOUND_JA,TOUR_JA,VARIABLE_STARS_JA],/[\p{sc=Hira}\p{sc=Kana}ー「」]/u,'',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08','help']);
 /** Front ZH0: Simplified Chinese before its release, behind `?lang=zh-Hans` (an en-US browser: tests/fixtures/language.ts
- * contextLocale). ZH0 translated the shell, ZH1 the observatory with its maps and all of VIREO's originals, ZH2 exercises E01 and E02, ZH3 exercise E03; ZH4–ZH6 and ZH-HELP
+ * contextLocale). ZH0 translated the shell, ZH1 the observatory with its maps and all of VIREO's originals, ZH2 exercises E01 and E02, ZH3 exercise E03, ZH4 exercises E04 and E05; ZH5, ZH6 and ZH-HELP
  * add their areas to `done` and their maps. Its letters are Han and
  * the full-width marks ，。、：；？！（）, which VIREO's English files and OpenVireo's exports never hold. */
 export const CHINESE_SIMPLIFIED_TEXT=language('zh-Hans',zhHans,zhHansOriginals,{appShell:APP_SHELL_ZH_HANS,helpMenu:HELP_MENU_ZH_HANS,projectLinks:PROJECT_LINKS_ZH_HANS,tour:TOUR_ZH_HANS,languageChoice:LANGUAGE_CHOICE_ZH_HANS},
- [APP_SHELL_ZH_HANS,CAMERA_ZH_HANS,FIELD_INFO_ZH_HANS,FIELD_READ_DETAILS_ZH_HANS,HELP_MENU_ZH_HANS,LANGUAGE_CHOICE_ZH_HANS,NAKED_EYE_ZH_HANS,OBJECT_X_LAB_ZH_HANS,OBSERVATION_METADATA_ZH_HANS,OBSERVATORY_ZH_HANS,POLISH_ZH_HANS,PROJECT_LINKS_ZH_HANS,QSO_LIST_ZH_HANS,SOUND_ZH_HANS,TOUR_ZH_HANS,VARIABLE_STARS_ZH_HANS],/[\p{sc=Han}，。、：；？！（）]/u,'?lang=zh-Hans',['shell','observatory','e01','e02','e03']);
+ [APP_SHELL_ZH_HANS,CAMERA_ZH_HANS,FIELD_INFO_ZH_HANS,FIELD_READ_DETAILS_ZH_HANS,HELP_MENU_ZH_HANS,LANGUAGE_CHOICE_ZH_HANS,NAKED_EYE_ZH_HANS,OBJECT_X_LAB_ZH_HANS,OBSERVATION_METADATA_ZH_HANS,OBSERVATORY_ZH_HANS,POLISH_ZH_HANS,PROJECT_LINKS_ZH_HANS,QSO_LIST_ZH_HANS,SOUND_ZH_HANS,TOUR_ZH_HANS,VARIABLE_STARS_ZH_HANS],/[\p{sc=Han}，。、：；？！（）]/u,'?lang=zh-Hans',['shell','observatory','e01','e02','e03','e04','e05']);
 /** Front RU0: Russian, behind `?lang=ru` before its release (an en-US browser): RU0 translated the shell, RU1 the observatory with
  * all of VIREO's originals, RU2 exercises E01 and E02, RU3 exercise E03, RU4 exercises E04 and E05, RU5 the radio telescope, RU6
  * exercises E06 and E08, and RU-HELP the help files and help maps. Front RU-REL: released, so every area is done and its specs open
@@ -300,6 +300,7 @@ import {CLUSTER_HR_ID} from '../../src/i18n/id/maps/clusterHr';
 import {CLUSTER_HR_HI} from '../../src/i18n/hi/maps/clusterHr';
 import {CLUSTER_HR_RU} from '../../src/i18n/ru/maps/clusterHr';
 import {CLUSTER_HR_JA} from '../../src/i18n/ja/maps/clusterHr';
+import {CLUSTER_HR_ZH_HANS} from '../../src/i18n/zh-hans/maps/clusterHr';
 import type {CLUSTER_HR_EN} from '../../src/clusters/ClusterHrMessages';
 export type E04E05Maps=Readonly<{spectralRange:unknown;observatory:unknown;polish:unknown;camera:unknown;sound:unknown;clusterHr:Translation<typeof CLUSTER_HR_EN>}>;
 export const E04_E05_MAPS:Readonly<Record<string,E04E05Maps>>=Object.freeze({
@@ -315,6 +316,8 @@ export const E04_E05_MAPS:Readonly<Record<string,E04E05Maps>>=Object.freeze({
  ru:{spectralRange:SPECTRAL_RANGE_RU,observatory:OBSERVATORY_RU,polish:POLISH_RU,camera:CAMERA_RU,sound:SOUND_RU,clusterHr:CLUSTER_HR_RU},
  // Front JA4: Japanese (its ?lang=ja preview).
  ja:{spectralRange:SPECTRAL_RANGE_JA,observatory:OBSERVATORY_JA,polish:POLISH_JA,camera:CAMERA_JA,sound:SOUND_JA,clusterHr:CLUSTER_HR_JA},
+ // Front ZH4: Simplified Chinese (its ?lang=zh-Hans preview).
+ 'zh-Hans':{spectralRange:SPECTRAL_RANGE_ZH_HANS,observatory:OBSERVATORY_ZH_HANS,polish:POLISH_ZH_HANS,camera:CAMERA_ZH_HANS,sound:SOUND_ZH_HANS,clusterHr:CLUSTER_HR_ZH_HANS},
 });
 export const e04e05Maps=(tag:string):E04E05Maps=>{const m=E04_E05_MAPS[tag];if(!m)throw new Error(`No E04/E05 maps for ${tag}`);return m;};
 // Front PT5: the maps and identical texts the radio telescope walk reads beyond the catalog and originals (tests/i18n/radio.spec.ts),
