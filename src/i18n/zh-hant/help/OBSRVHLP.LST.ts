@@ -5,7 +5,7 @@ export const sourceName='OBSRVHLP.LST';
 export const sourceSha256='916b1453d6d99ab0a81091140790814e4c99a4c3800a6194a70f076ee5982a3a';
 export const text=`'望遠鏡控制項' 'begin'
 '「追蹤」' 'obsrvhlp.txt'
-'轉動按鈕（「北」「南」「東」「西」）' 'obsrvhlp.txt'
+'轉動按鈕（「北」、「南」、「東」、「西」）' 'obsrvhlp.txt'
 '「轉動速度」' 'obsrvhlp.txt'
 '「檢視」' 'obsrvhlp.txt'
 '「儀器」' 'obsrvhlp.txt'

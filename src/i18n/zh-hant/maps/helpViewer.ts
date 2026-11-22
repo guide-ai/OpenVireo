@@ -7,9 +7,9 @@ export const HELP_VIEWER_ZH_HANT:Translation<typeof HELP_VIEWER_EN>=Object.freez
  viewOriginal:'檢視原文（英文）',
  viewTranslation:'檢視譯文',
  translationError:'無法載入翻譯後的說明，或它與翻譯所依據的原始檔案不一致，因此顯示的是VIREO的英文原版說明。',
- helpAdaptationTranslation:(list:string)=>`這是OpenVireo對VIREO自帶說明的翻譯（其索引${list}以及索引所指向的文字檔；屬於網頁改編，不是CLEA的文本），顯示在VIREO說明檢視器的網頁版中。視窗大小、字型和系統提示音沒有重現。`,
- linkNoteTranslation:'在譯文中，按兩下「相關主題：」那一行下面的標題，或選取後按Enter鍵，即可開啟該主題。那裡的空白行在這裡不會有任何反應（VIREO會因此報錯並停止）。',
- searchFoldNote:'在譯文中搜尋時，全形和半形、拉丁字母的重音符號以及大小寫都不加區分（網頁改編）；不能用拼音或注音找出漢字，也不能用簡體字找出繁體字。原文檢視中保留的VIREO自帶搜尋，只忽略A到Z的大小寫。',
+ helpAdaptationTranslation:(list:string)=>`這是OpenVireo對VIREO內建說明的翻譯（其索引${list}以及索引所指向的文字檔；屬於網頁改編，不是CLEA的文本），顯示在VIREO說明檢視器的網頁版中。視窗大小、字型和系統提示音沒有重現。`,
+ linkNoteTranslation:'在譯文中，按兩下「相關主題：」那一行下面的標題，或選取後按Enter鍵，即可開啟該主題。那裡的空白行在這裡不會有任何反應（在VIREO中則會顯示錯誤並停止）。',
+ searchFoldNote:'在譯文中搜尋時，全形和半形、拉丁字母的重音符號以及大小寫都不加區分（網頁改編）；不能用拼音或注音找出漢字，也不能用簡體字找出繁體字。原文檢視中保留的VIREO內建搜尋，只忽略A到Z的大小寫。',
  spectralLines:Object.freeze({
   listCaption:'譜線',
   rows:'譜線',helpRows:'譜線說明文字',close:'關閉',

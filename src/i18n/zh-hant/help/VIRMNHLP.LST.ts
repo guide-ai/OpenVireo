@@ -6,7 +6,7 @@ export const sourceSha256='db9bab876ef1d03ad8b0e96596eb47c3ca9573156a65b4bff7b49
 export const text=`'入門' 'begin'
 '登入' 'VIRMnHlp.txt'
 '選擇實驗' 'VIRMnHlp.txt'
-'設定日期／時間' 'VIRMnHlp.txt'
+'設定日期和時間' 'VIRMnHlp.txt'
 '選擇望遠鏡' 'VIRMnHlp.txt'
 '開啟圓頂' 'VIRMnHlp.txt'
 '開啟望遠鏡控制' 'VIRMnHlp.txt'

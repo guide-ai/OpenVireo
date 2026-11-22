@@ -5,7 +5,7 @@ export const sourceName='OBXMNHLP.LST';
 export const sourceSha256='62d1c620cb3d2155e4790de4e194fd34ba524a6d90aa1168a3c2d87842bd6e9f';
 export const text=`'入門' 'begin'
 '登入' 'ObXMnHlp.txt'
-'設定日期／時間' 'ObXMnHlp.txt'
+'設定日期和時間' 'ObXMnHlp.txt'
 '選擇望遠鏡' 'ObXMnHlp.txt'
 '開啟圓頂' 'ObXMnHlp.txt'
 '開啟望遠鏡控制' 'ObXMnHlp.txt'

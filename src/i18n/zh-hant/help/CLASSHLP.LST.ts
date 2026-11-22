@@ -9,7 +9,7 @@ export const text=`'光譜分類' 'begin
 '譜線表與說明' 'classhlp.txt'
 '測量／標記光譜特徵' 'classhlp.txt'
 '測量等值寬度' 'classhlp.txt'
-'儲存、檢視、分析結果' 'classhlp.txt'
+'儲存、查閱、分析結果' 'classhlp.txt'
 '光譜分類' 'end'
 '使用者介面' 'begin'
 '控制項' 'classhlp.txt'
