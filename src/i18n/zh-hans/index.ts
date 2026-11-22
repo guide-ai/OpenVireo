@@ -36,7 +36,7 @@ import {HELP_VIEWER_ZH_HANS} from './maps/helpViewer';
 import {WEB_HELP_ZH_HANS} from './maps/webHelp';
 /** Front ZH0 [W]: the Simplified Chinese (zh-Hans) bundle (docs/I18N.md, "Simplified Chinese: the folder, lints and shell (ZH0)").
  * Partial until its release (src/i18n/languages.json `released:false`): only a `?lang=zh-Hans` preview reaches it, and every string
- * it lacks is English. ZH0 translated the shell; ZH1 the observatory with its maps and all of VIREO's originals; ZH2 exercises E01 and E02; ZH3 exercise E03; ZH4 exercises E04 and E05; ZH5 the radio telescope; ZH6 exercises E06 and E08. The production build splits it by route area like the other languages (scripts/i18n-split.mjs parses this
+ * it lacks is English. ZH0 translated the shell; ZH1 the observatory with its maps and all of VIREO's originals; ZH2 exercises E01 and E02; ZH3 exercise E03; ZH4 exercises E04 and E05; ZH5 the radio telescope; ZH6 exercises E06 and E08; ZH-HELP the help files and the help maps. The production build splits it by route area like the other languages (scripts/i18n-split.mjs parses this
  * manifest); Vitest imports it whole. Translations are web adaptations by OpenVireo; they never claim to be CLEA's, and CLEA's
  * bytes, hashes and provenance are unchanged. */
 export const CHINESE_SIMPLIFIED:LocaleBundle=Object.freeze({

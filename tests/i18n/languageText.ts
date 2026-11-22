@@ -223,8 +223,8 @@ export const HINDI_TEXT=language('hi',hi,hiOriginals,{appShell:APP_SHELL_HI,help
 export const JAPANESE_TEXT=language('ja',ja,jaOriginals,{appShell:APP_SHELL_JA,helpMenu:HELP_MENU_JA,projectLinks:PROJECT_LINKS_JA,tour:TOUR_JA,languageChoice:LANGUAGE_CHOICE_JA},
  [APP_SHELL_JA,CAMERA_JA,FIELD_INFO_JA,FIELD_READ_DETAILS_JA,HELP_MENU_JA,LANGUAGE_CHOICE_JA,NAKED_EYE_JA,OBJECT_X_LAB_JA,OBSERVATION_METADATA_JA,OBSERVATORY_JA,POLISH_JA,PROJECT_LINKS_JA,QSO_LIST_JA,SOUND_JA,TOUR_JA,VARIABLE_STARS_JA],/[\p{sc=Hira}\p{sc=Kana}ー「」]/u,'',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08','help']);
 /** Front ZH0: Simplified Chinese before its release, behind `?lang=zh-Hans` (an en-US browser: tests/fixtures/language.ts
- * contextLocale). ZH0 translated the shell, ZH1 the observatory with its maps and all of VIREO's originals, ZH2 exercises E01 and E02, ZH3 exercise E03, ZH4 exercises E04 and E05, ZH5 the radio telescope, ZH6 exercises E06 and E08; ZH-HELP
- * add their areas to `done` and their maps. Its letters are Han and
+ * contextLocale). ZH0 translated the shell, ZH1 the observatory with its maps and all of VIREO's originals, ZH2 exercises E01 and E02, ZH3 exercise E03, ZH4 exercises E04 and E05, ZH5 the radio telescope, ZH6 exercises E06 and E08, ZH-HELP the help files and the help maps;
+ * each adds its area to `done` and its maps. Its letters are Han and
  * the full-width marks ，。、：；？！（）, which VIREO's English files and OpenVireo's exports never hold. */
 export const CHINESE_SIMPLIFIED_TEXT=language('zh-Hans',zhHans,zhHansOriginals,{appShell:APP_SHELL_ZH_HANS,helpMenu:HELP_MENU_ZH_HANS,projectLinks:PROJECT_LINKS_ZH_HANS,tour:TOUR_ZH_HANS,languageChoice:LANGUAGE_CHOICE_ZH_HANS},
  [APP_SHELL_ZH_HANS,CAMERA_ZH_HANS,FIELD_INFO_ZH_HANS,FIELD_READ_DETAILS_ZH_HANS,HELP_MENU_ZH_HANS,LANGUAGE_CHOICE_ZH_HANS,NAKED_EYE_ZH_HANS,OBJECT_X_LAB_ZH_HANS,OBSERVATION_METADATA_ZH_HANS,OBSERVATORY_ZH_HANS,POLISH_ZH_HANS,PROJECT_LINKS_ZH_HANS,QSO_LIST_ZH_HANS,SOUND_ZH_HANS,TOUR_ZH_HANS,VARIABLE_STARS_ZH_HANS],/[\p{sc=Han}，。、：；？！（）]/u,'?lang=zh-Hans',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08','help']);
