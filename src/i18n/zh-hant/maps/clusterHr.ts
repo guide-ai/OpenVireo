@@ -36,7 +36,7 @@ export const CLUSTER_HR_ZH_HANT:Translation<typeof CLUSTER_HR_EN>=Object.freeze(
  memberRemoved:'已從赫羅圖中移除。可用「還原所有已排除的點」將其還原。',
  memberAlreadyRemoved:'這顆恆星已從圖中移除。',
  rightClickNote:'與VIREO一樣，在圖上對一顆恆星按一下滑鼠右鍵（觸控螢幕上則長按），即可開啟「可能的星團成員」。使用鍵盤時，選擇下方的一筆記錄，再按「可能的星團成員…」。',
- observationDataUnavailable:'「顯示／列印資料」列出的是光度計的「記錄／查閱」加入其結果清單（「已記錄的結果」）的記錄；目前還沒有。你抄錄的資料對不屬於這類記錄：用「記錄／查閱」記錄一次讀數，或把已儲存的觀測作為DAT檔案載入。',
+ observationDataUnavailable:'「顯示／列印資料」列出的是光度計的「記錄／查閱」加入其結果清單（「已記錄的結果」）的記錄；目前還沒有。你抄錄的配對不屬於這類記錄：用「記錄／查閱」記錄一次讀數，或把已儲存的觀測作為DAT檔案載入。',
  recordedResultsNote:'這是VIREO為已載入記錄提供的「已記錄的結果」清單：一列標頭，之後每筆記錄一列，每列都由VIREO的列寫入程式（0x5486a8）按VIREO的預設選項（星等、R和I）寫出。VIREO在讀取資料時寫出此清單；這裡則會隨清單的每次變動而更新（網頁）。',
  recordedResultsBlocked:(row:number,why:string)=>`「顯示／列印資料」無法列出第${row}筆記錄：${why}VIREO在此處會報錯停止。`,
  recordedResultsBlock:{value:'某個儲存的數字不是有限值。','spectral-code':'其光譜型代碼無法格式化。',text:'其名稱或備註含有控制字元。'} as Readonly<Record<'value'|'spectral-code'|'text',string>>,

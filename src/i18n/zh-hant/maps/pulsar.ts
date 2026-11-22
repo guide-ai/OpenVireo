@@ -247,7 +247,7 @@ export const PULSAR_ZH_HANT:Translation<typeof PULSAR_MESSAGES_EN>=Object.freeze
  'pulsar.results.save':'儲存已記錄的測量（.CSV）',
  'pulsar.nativeSave.note':'在VIREO的提問之後，「儲存」會寫入VIREO自己的結果檔案：日期和時間、一行「Table Number」、欄標題列，以及每一筆已記錄的測量。日期和時間採用美國格式（例如10-30-2026和3:07:42 PM）；VIREO使用電腦的地區格式。瀏覽器無法查看你的資料夾，所以「已存在」和「附加」只認得本視窗開啟期間由此「儲存」寫入的檔案；每次儲存都會下載整個檔案。若要向你電腦上的檔案加入列，請使用下方的「附加」。之後與VIREO一樣，清單被標記為已儲存，「記錄」和「儲存」變為不可用，待處理的讀數被清除（測量予以保留）。',
  'pulsar.nativeSave.unavailable':'現在無法儲存：請關閉所有開啟的對話方塊，並等待資料載入完成。',
- 'pulsar.nativeSave.fileName':'檔名',
+ 'pulsar.nativeSave.fileName':'檔案名稱',
  'pulsar.nativeSave.filter':'儲存類型：{filter}',
  'pulsar.nativeSave.folder':'此「儲存」在本視窗中寫入的檔案：{count}個。沒有副檔名的名稱會加上.CSV。',
  'pulsar.nativeSave.problem.empty':'請輸入檔名。',
