@@ -1,0 +1,45 @@
+// Front ZH-HELP [W]: OpenVireo's Simplified Chinese (zh-Hans) web adaptation of VIREO's LSSHLP.LST. Not CLEA's text: the original bytes,
+// hashes and provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Simplified Chinese chunk.
+export const language='zh-Hans';
+export const sourceName='LSSHLP.LST';
+export const sourceSha256='f4ee3de45cead6cac0ae53458c94f9927bd48248a573632787d9e6a275e05c10';
+export const text=`'入门' 'begin'
+'登录' 'lsslab.txt'
+'操作望远镜' 'begin'
+'打开望远镜窗口' 'lsslab.txt'
+'望远镜控件' 'lsslab.txt'
+'操作望远镜' 'end'
+'更换望远镜' 'begin'
+'申请望远镜时间' 'lsslab.txt'
+'访问各望远镜' 'lsslab.txt'
+'更换望远镜' 'end'
+'更换星场' 'lsslab.txt'
+'入门' 'end'
+
+'采集数据' 'begin'
+'使用光谱仪' 'begin'
+'打开光谱仪窗口' 'lsslab.txt'
+'开始/继续计数' 'lsslab.txt'
+'停止计数' 'lsslab.txt'
+'测量光谱' 'lsslab.txt'
+'打印光谱' 'lsslab.txt'
+'使用光谱仪' 'end'
+'计算速度' 'begin'
+'手工计算' 'lsslab.txt'
+'核对计算' 'lsslab.txt'
+'计算速度' 'end'
+'返回望远镜窗口' 'lsslab.txt'
+'采集数据' 'end'
+
+'数据操作' 'begin'
+'载入数据' 'lsslab.txt'
+'查看数据' 'lsslab.txt'
+'保存数据' 'lsslab.txt'
+'打印数据' 'lsslab.txt'
+'绘制结果' 'begin'
+'将结果保存到共享绘图文件' 'lsslab.txt'
+'打开“楔形图”程序' 'lsslab.txt'
+'绘制结果' 'end'
+'使用电子表格程序' 'lsslab.txt'
+'数据操作' 'end'
+`;

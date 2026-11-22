@@ -49,6 +49,8 @@ import {PULSAR_MESSAGES_EN} from '../../components/PulsarMessages';
 import {SAVED_ROWS_MESSAGES_EN} from '../../components/PulsarSavedRowsMessages';
 import {LOAD_SAVE_MESSAGES_EN} from '../../components/PulsarLoadSaveMessages';
 import {OBJECT_X_GUIDE_EN,OBJECT_X_MEASURE_EN,OBJECT_X_SESSION_EN} from '../../objectx/ObjectXMessages';
+import {HELP_VIEWER_EN} from '../../help/HelpViewerMessages';
+import {WEB_HELP_EN} from '../../help/webHelp';
 
 // Front ZH0 (docs/I18N.md, "Simplified Chinese: the folder, lints and shell (ZH0)"; plan front-i18n-zh.md §1.2, §6.2): the
 // structural checks of the partial Simplified Chinese bundle and every string through the SC4 lint framework, profile zh-Hans
@@ -65,11 +67,12 @@ const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_E
  camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,nakedEye:NAKED_EYE_MESSAGES_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,
  engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN,clusterHr:CLUSTER_HR_EN,clusterData:CLUSTER_DATA_MESSAGES_EN,
  radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN,
- pulsar:PULSAR_MESSAGES_EN,pulsarSavedRows:SAVED_ROWS_MESSAGES_EN,pulsarLoadSave:LOAD_SAVE_MESSAGES_EN,objectXGuide:OBJECT_X_GUIDE_EN,objectXMeasure:OBJECT_X_MEASURE_EN,objectXSession:OBJECT_X_SESSION_EN};
+ pulsar:PULSAR_MESSAGES_EN,pulsarSavedRows:SAVED_ROWS_MESSAGES_EN,pulsarLoadSave:LOAD_SAVE_MESSAGES_EN,objectXGuide:OBJECT_X_GUIDE_EN,objectXMeasure:OBJECT_X_MEASURE_EN,objectXSession:OBJECT_X_SESSION_EN,
+ helpViewer:HELP_VIEWER_EN,webHelp:WEB_HELP_EN};
 /** The maps translated completely (ZH0's shell maps; ZH1's observatory maps, the camera card the observatory shows, and polish; ZH2's
  * engineView, spectralRange and wedge; ZH4's clusterHr, clusterData and variableStars; ZH5's four radio maps; ZH6's pulsar, pulsarSavedRows, pulsarLoadSave and the four Object X maps); the
- * help maps webHelp and helpViewer follow in ZH-HELP. */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars','radioAntenna','radioFinishSave','radioR1','radioRecordSave','pulsar','pulsarSavedRows','pulsarLoadSave','objectXLab','objectXGuide','objectXMeasure','objectXSession'];
+ * help maps webHelp and helpViewer came with ZH-HELP: every Simplified Chinese map is complete. */
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars','radioAntenna','radioFinishSave','radioR1','radioRecordSave','pulsar','pulsarSavedRows','pulsarLoadSave','objectXLab','objectXGuide','objectXMeasure','objectXSession','helpViewer','webHelp'];
 /** Front ZH1's area of en.json: FR1's observatory keys (the instruments' prefixes and the Hubble hot-list reasons) and the 104 guide
  * keys the observatory files render (src/i18n/fr/fr.test.ts FR1_GUIDE_KEYS, read from there so the two never drift), as JA1's. */
 const OBSERVATORY_PREFIXES=/^(sky|optical|motion|horizon|siteClock|runningClock|scopeAccess|instrumentAccess|instrumentParameters|cameraParameters|cameraInfo|cameraPrepare|palette|testMode|optionsFile|photometerTab|htl|multispec|nativeMirror|hubblePoint)\./;
@@ -112,6 +115,13 @@ const ASCII_FIELD_NAMES:readonly string[]=['MJD(Days)'];
 const fixCatalog=(text:string)=>{const kept:string[]=[];const masked=ASCII_FIELD_NAMES.reduce((s,name)=>s.split(name).join(`\uE000${kept.push(name)-1}\uE001`),text);
  return fix(masked).replace(/\uE000(\d+)\uE001/g,(_,i:string)=>kept[Number(i)]!);};
 const fixSource=(source:string)=>fixSourceLiterals(source,(text,options)=>fix(text,options));
+/** Front ZH-HELP, as JA-HELP: a run of two or more spaces between two characters is a column gap of VIREO's help tables, which the
+ * fixer keeps (it would otherwise drop the spaces between Han and Latin text). */
+const COLUMN_GAP=/(?<=\S) {2,}(?=\S)/g;
+const fixHelp=(text:string,options?:{quotes?:boolean})=>{const gaps:string[]=[];
+ return fix(text.replace(COLUMN_GAP,g=>`\uE003${gaps.push(g)-1}\uE004`),options).replace(/\uE003(\d+)\uE004/g,(_,i:string)=>gaps[Number(i)]!);};
+const fixHelpSource=(source:string)=>fixSourceLiterals(source,(text,options)=>fixHelp(text,options));
+const fixAny=(file:string,source:string)=>file.includes(`${path.sep}help${path.sep}`)?fixHelpSource(source):fixSource(source);
 const writeJson=(file:string,value:unknown)=>writeFileSync(path.join(DIR,file),JSON.stringify(value,null,1)+'\n');
 
 if(process.env.OPENVIREO_FIX_TYPOGRAPHY==='1'){
@@ -121,14 +131,14 @@ if(process.env.OPENVIREO_FIX_TYPOGRAPHY==='1'){
  writeJson('zh-hans.json',Object.fromEntries(Object.entries(catalog).map(([k,v])=>[k,fixCatalog(v)])));
  const own=JSON.parse(readFileSync(path.join(DIR,'originals.json'),'utf8')) as Record<string,string>;
  writeJson('originals.json',Object.fromEntries(Object.entries(own).map(([k,v])=>[k,fixOriginal(k,v)])));
- for(const file of [...sources('maps'),...sources('help')]){const before=readFileSync(file,'utf8'),after=fixSource(before);if(after!==before)writeFileSync(file,after);}
+ for(const file of [...sources('maps'),...sources('help')]){const before=readFileSync(file,'utf8'),after=fixAny(file,before);if(after!==before)writeFileSync(file,after);}
 }
 
 describe('Front ZH0: the Simplified Chinese (zh-Hans) bundle',()=>{
  it('is registered before its release: a ?lang=zh-Hans preview only, never detected or offered; comma thousands as en-US',()=>{
   expect(languageEntry('zh-Hans')).toMatchObject({dir:'zh-hans',catalog:'zh-hans.json',budgetFactor:1.4,htmlLang:'zh-Hans',pagePath:'zh-hans',autonym:'简体中文',englishName:'Simplified Chinese',
    match:['zh-Hans','zh-CN','zh-SG','zh-MY','zh'],except:['zh-Hant','zh-TW','zh-HK','zh-MO'],released:false});
-  expect(languageEntry('zh-Hans')?.thousands).toBeUndefined();expect(languageEntry('zh-Hans')?.help).toBeUndefined();
+  expect(languageEntry('zh-Hans')?.thousands).toBeUndefined();expect(languageEntry('zh-Hans')?.help).toEqual({related:'相关主题'});// Front ZH-HELP
   expect(CHINESE_SIMPLIFIED.language).toBe('zh-Hans');
   // The notices pass the profile too (full-width marks, no Traditional character).
   const notices=Object.entries(languageEntry('zh-Hans')!.notices).map(([k,text])=>({id:`notice:${k}`,en:k==='language'?'Simplified Chinese could not be loaded; English is shown. Reload to try again.':'Part of the Simplified Chinese text could not be loaded; that part is shown in English. Reload to try again.',text}));
@@ -215,7 +225,7 @@ describe('Front ZH0: the Simplified Chinese (zh-Hans) bundle',()=>{
  it('the CJK punctuation fixer (Simplified Chinese style) has nothing left to change: catalog, originals, maps and help sources',()=>{
   expect(Object.entries(zh).filter(([,v])=>fixCatalog(v)!==v).map(([k])=>k)).toEqual([]);
   expect(Object.entries(originals).filter(([k,v])=>fixOriginal(k,v)!==v).map(([k])=>k)).toEqual([]);
-  for(const file of [...sources('maps'),...sources('help')]){const text=readFileSync(file,'utf8');expect(fixSource(text)===text,path.relative(DIR,file)).toBe(true);}
+  for(const file of [...sources('maps'),...sources('help')]){const text=readFileSync(file,'utf8');expect(fixAny(file,text)===text,path.relative(DIR,file)).toBe(true);}
  });
  it('Front ZH1: builds GB2312\'s 6,763 hanzi from the runtime\'s GBK decoder (no download) for the out-of-set check',()=>{
   const set=chineseHanzi('zh-Hans');
