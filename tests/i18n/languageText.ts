@@ -223,11 +223,11 @@ export const HINDI_TEXT=language('hi',hi,hiOriginals,{appShell:APP_SHELL_HI,help
 export const JAPANESE_TEXT=language('ja',ja,jaOriginals,{appShell:APP_SHELL_JA,helpMenu:HELP_MENU_JA,projectLinks:PROJECT_LINKS_JA,tour:TOUR_JA,languageChoice:LANGUAGE_CHOICE_JA},
  [APP_SHELL_JA,CAMERA_JA,FIELD_INFO_JA,FIELD_READ_DETAILS_JA,HELP_MENU_JA,LANGUAGE_CHOICE_JA,NAKED_EYE_JA,OBJECT_X_LAB_JA,OBSERVATION_METADATA_JA,OBSERVATORY_JA,POLISH_JA,PROJECT_LINKS_JA,QSO_LIST_JA,SOUND_JA,TOUR_JA,VARIABLE_STARS_JA],/[\p{sc=Hira}\p{sc=Kana}ー「」]/u,'',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08','help']);
 /** Front ZH0: Simplified Chinese before its release, behind `?lang=zh-Hans` (an en-US browser: tests/fixtures/language.ts
- * contextLocale). ZH0 translated the shell, ZH1 the observatory with its maps and all of VIREO's originals, ZH2 exercises E01 and E02, ZH3 exercise E03, ZH4 exercises E04 and E05, ZH5 the radio telescope; ZH6 and ZH-HELP
+ * contextLocale). ZH0 translated the shell, ZH1 the observatory with its maps and all of VIREO's originals, ZH2 exercises E01 and E02, ZH3 exercise E03, ZH4 exercises E04 and E05, ZH5 the radio telescope, ZH6 exercises E06 and E08; ZH-HELP
  * add their areas to `done` and their maps. Its letters are Han and
  * the full-width marks ，。、：；？！（）, which VIREO's English files and OpenVireo's exports never hold. */
 export const CHINESE_SIMPLIFIED_TEXT=language('zh-Hans',zhHans,zhHansOriginals,{appShell:APP_SHELL_ZH_HANS,helpMenu:HELP_MENU_ZH_HANS,projectLinks:PROJECT_LINKS_ZH_HANS,tour:TOUR_ZH_HANS,languageChoice:LANGUAGE_CHOICE_ZH_HANS},
- [APP_SHELL_ZH_HANS,CAMERA_ZH_HANS,FIELD_INFO_ZH_HANS,FIELD_READ_DETAILS_ZH_HANS,HELP_MENU_ZH_HANS,LANGUAGE_CHOICE_ZH_HANS,NAKED_EYE_ZH_HANS,OBJECT_X_LAB_ZH_HANS,OBSERVATION_METADATA_ZH_HANS,OBSERVATORY_ZH_HANS,POLISH_ZH_HANS,PROJECT_LINKS_ZH_HANS,QSO_LIST_ZH_HANS,SOUND_ZH_HANS,TOUR_ZH_HANS,VARIABLE_STARS_ZH_HANS],/[\p{sc=Han}，。、：；？！（）]/u,'?lang=zh-Hans',['shell','observatory','e01','e02','e03','e04','e05','radio']);
+ [APP_SHELL_ZH_HANS,CAMERA_ZH_HANS,FIELD_INFO_ZH_HANS,FIELD_READ_DETAILS_ZH_HANS,HELP_MENU_ZH_HANS,LANGUAGE_CHOICE_ZH_HANS,NAKED_EYE_ZH_HANS,OBJECT_X_LAB_ZH_HANS,OBSERVATION_METADATA_ZH_HANS,OBSERVATORY_ZH_HANS,POLISH_ZH_HANS,PROJECT_LINKS_ZH_HANS,QSO_LIST_ZH_HANS,SOUND_ZH_HANS,TOUR_ZH_HANS,VARIABLE_STARS_ZH_HANS],/[\p{sc=Han}，。、：；？！（）]/u,'?lang=zh-Hans',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08']);
 /** Front RU0: Russian, behind `?lang=ru` before its release (an en-US browser): RU0 translated the shell, RU1 the observatory with
  * all of VIREO's originals, RU2 exercises E01 and E02, RU3 exercise E03, RU4 exercises E04 and E05, RU5 the radio telescope, RU6
  * exercises E06 and E08, and RU-HELP the help files and help maps. Front RU-REL: released, so every area is done and its specs open
@@ -400,6 +400,11 @@ import {SAVED_ROWS_JA} from '../../src/i18n/ja/maps/pulsarSavedRows';
 import {LOAD_SAVE_JA} from '../../src/i18n/ja/maps/pulsarLoadSave';
 import {OBJECT_X_GUIDE_JA} from '../../src/i18n/ja/maps/objectXGuide';
 import {OBJECT_X_MEASURE_JA} from '../../src/i18n/ja/maps/objectXMeasure';
+import {PULSAR_ZH_HANS} from '../../src/i18n/zh-hans/maps/pulsar';
+import {SAVED_ROWS_ZH_HANS} from '../../src/i18n/zh-hans/maps/pulsarSavedRows';
+import {LOAD_SAVE_ZH_HANS} from '../../src/i18n/zh-hans/maps/pulsarLoadSave';
+import {OBJECT_X_GUIDE_ZH_HANS} from '../../src/i18n/zh-hans/maps/objectXGuide';
+import {OBJECT_X_MEASURE_ZH_HANS} from '../../src/i18n/zh-hans/maps/objectXMeasure';
 import {PULSAR_RU} from '../../src/i18n/ru/maps/pulsar';
 import {SAVED_ROWS_RU} from '../../src/i18n/ru/maps/pulsarSavedRows';
 import {LOAD_SAVE_RU} from '../../src/i18n/ru/maps/pulsarLoadSave';
@@ -422,6 +427,8 @@ export const E06_MAPS:Readonly<Record<string,E06Maps>>=Object.freeze({
  hi:{pulsar:PULSAR_HI,pulsarSavedRows:SAVED_ROWS_HI,pulsarLoadSave:LOAD_SAVE_HI},
  // Front JA6: Japanese (its ?lang=ja preview).
  ja:{pulsar:PULSAR_JA,pulsarSavedRows:SAVED_ROWS_JA,pulsarLoadSave:LOAD_SAVE_JA},
+ // Front ZH6: Simplified Chinese (its ?lang=zh-Hans preview).
+ 'zh-Hans':{pulsar:PULSAR_ZH_HANS,pulsarSavedRows:SAVED_ROWS_ZH_HANS,pulsarLoadSave:LOAD_SAVE_ZH_HANS},
  // Front RU6: Russian (its ?lang=ru preview).
  ru:{pulsar:PULSAR_RU,pulsarSavedRows:SAVED_ROWS_RU,pulsarLoadSave:LOAD_SAVE_RU},
 });
@@ -438,6 +445,8 @@ export const E08_MAPS:Readonly<Record<string,E08Maps>>=Object.freeze({
  hi:{objectXLab:OBJECT_X_LAB_HI,objectXGuide:OBJECT_X_GUIDE_HI,objectXMeasure:OBJECT_X_MEASURE_HI,camera:CAMERA_HI,sound:SOUND_HI},
  // Front JA6: Japanese (its ?lang=ja preview).
  ja:{objectXLab:OBJECT_X_LAB_JA,objectXGuide:OBJECT_X_GUIDE_JA,objectXMeasure:OBJECT_X_MEASURE_JA,camera:CAMERA_JA,sound:SOUND_JA},
+ // Front ZH6: Simplified Chinese (its ?lang=zh-Hans preview).
+ 'zh-Hans':{objectXLab:OBJECT_X_LAB_ZH_HANS,objectXGuide:OBJECT_X_GUIDE_ZH_HANS,objectXMeasure:OBJECT_X_MEASURE_ZH_HANS,camera:CAMERA_ZH_HANS,sound:SOUND_ZH_HANS},
  // Front RU6: Russian (its ?lang=ru preview).
  ru:{objectXLab:OBJECT_X_LAB_RU,objectXGuide:OBJECT_X_GUIDE_RU,objectXMeasure:OBJECT_X_MEASURE_RU,camera:CAMERA_RU,sound:SOUND_RU},
 });

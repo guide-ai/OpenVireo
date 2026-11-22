@@ -1,0 +1,30 @@
+import type {LOAD_SAVE_MESSAGES_EN} from '../../../components/PulsarLoadSaveMessages';
+import type {Translation} from '../../maps';
+/** Front ZH6: Simplified Chinese (zh-Hans) for the Load question Yes flow. A web adaptation by OpenVireo, not CLEA’s; VIREO’s own captions are translated through vireo() (originals.json). */
+export const LOAD_SAVE_ZH_HANS:Translation<typeof LOAD_SAVE_MESSAGES_EN>=Object.freeze({
+ 'loadSave.yes.reason':'“是”（先保存）打开的是针对此接收数据的带验证网页保存，而不是原版的“保存”对话框。“是”本身不会载入任何内容：待副本读回并确认一致后，你再在单独的一步中选择要载入的接收数据，也可以取消并保留当前数据。',
+ 'loadSave.yes.unsupported.insecure-context':'“是”（先保存）不可用：此页面不是安全上下文，而浏览器的文件API要求安全上下文。“否”和“取消”照常可用；“将接收数据下载为.PLR…”仍会使该接收数据处于未保存状态。',
+ 'loadSave.yes.unsupported.no-api':'“是”（先保存）不可用：此浏览器不提供可写文件的保存文件选择器（showSaveFilePicker和createWritable）。“否”和“取消”照常可用；“将接收数据下载为.PLR…”仍会使该接收数据处于未保存状态。',
+ 'loadSave.saveIntro':'由载入提问中的“是”打开。待副本读回并确认一致后，你可以在单独的一步中选择要载入的接收数据；不会自动载入任何内容。“取消”会关闭此保存并且不载入任何内容。',
+ 'loadSave.heading':'已保存：选择要载入的接收数据',
+ 'loadSave.verified':'当前接收数据已保存为“{file}”（读回{bytes}字节，确认一致）。它仍是当前的脉冲星数据，带有其测量和光标。',
+ 'loadSave.consequence':'尚未载入任何内容。“选择要载入的接收数据…”会打开浏览器的文件选择器，用于选择.PLR文件；只有该文件被接纳时，它才会替换当前数据。“取消”会保留当前接收数据及其已验证的副本。',
+ 'loadSave.choosing':'正在等待文件选择器。你的浏览器可能不会报告选择器已被取消：如果没有任何反应，请按“取消”，或再次按“选择要载入的接收数据…”。',
+ 'loadSave.choose':'选择要载入的接收数据…',
+ 'loadSave.cancel':'取消',
+ 'loadSave.refused.input':'没有任何变化：载入提问无法启动保存。',
+ 'loadSave.refused.unsupported':'“是”（先保存）在此浏览器中不可用。“否”和“取消”照常可用。',
+ 'loadSave.refused.not-asking':'没有任何变化：载入提问已不再打开。',
+ 'loadSave.refused.not-presented':'没有任何变化：此窗口没有呈现当前数据（例如名为“No Data”的接收数据），因此无法从这里保存。“否”和“取消”照常可用。',
+ 'loadSave.refused.stale':'没有任何变化：载入提问打开之后，当前的脉冲星数据已发生变化。请取消，然后重新使用“载入”。',
+ 'loadSave.refused.not-memory':'没有任何变化：当前数据已不再是未保存的接收机接收数据。请取消，然后重新使用“载入”。',
+ 'loadSave.refused.busy':'没有任何变化：有一次接收机接收数据或另一次保存尝试正占用当前数据。请在其完成后重试。',
+ 'loadSave.refused.output':'没有打开任何内容：另一次保存尝试仍在收尾。请在其完成后重试。',
+ 'loadSave.status.ready':'请在下一步选择要载入的接收数据，或取消以保留当前数据。',
+ 'loadSave.status.saveCancelled':'保存被关闭后，载入已取消。没有载入任何内容；当前接收数据和测量列表不变。你在保存对话框中选择的文件可能已被创建、清空或更改。',
+ 'loadSave.status.cancelled':'已取消载入。没有载入任何内容；当前接收数据保留其已验证的副本、测量和光标。',
+ 'loadSave.status.noFile':'未选择文件。没有载入任何内容；请重新选择或取消。',
+ 'loadSave.status.stale':'保存后的载入已结束：当前的脉冲星数据或其已验证的副本发生了变化。没有载入任何内容。',
+ 'loadSave.status.reading':'没有任何变化：所选的接收数据仍在读取中。请等待读取完成，或按“取消读取”。',
+ 'loadSave.fileRefused':'没有载入任何内容：请先完成或取消保存后的载入。',
+});

@@ -54,6 +54,18 @@
     "script"
    ],
    "reason": "the full-width semicolon that separates Chinese list items, as ja"
+  },
+  "map:objectXLab.imageRowPlain": {
+   "rules": [
+    "script"
+   ],
+   "reason": "a placeholder label, a full-width colon and the time scale UT only, as ja"
+  },
+  "map:pulsar.pulsar.nativeSave.problem.reserved": {
+   "rules": [
+    "quotes"
+   ],
+   "reason": "the straight quote is one of the reserved file-name characters the string lists, written as itself (as ja)"
   }
  }
 }
