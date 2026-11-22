@@ -1,0 +1,61 @@
+/** Front ZH-REL+SEO [W]: the Simplified Chinese (zh-Hans) texts of the seven lab pages under /zh-hans/labs/ (user decision 8 of
+ * 2026-11-09 and the Chinese decisions of 2026-11-19, AGENTS.md; plan analysis/front-plans/front-i18n-zh.md §6.2). Same slugs and
+ * order as src/seo/labs.ts; the reader is addressed as 你, following the zh-Hans glossary (src/i18n/zh-hans/glossary.json; «实验»
+ * for a lab, «探究» for an investigation) and the zh-Hans lint profile with its typography (full-width ，。、：；？！（） next to Han,
+ * no space between Han and Latin text or digits; src/seo/languages.test.ts checks both). The lab names are the app's own Chinese
+ * names (home.hubble … home.objectX of src/i18n/zh-hans/zh-hans.json). A web adaptation by OpenVireo of its own English pages:
+ * never CLEA's text, and it claims no equivalence with the original program. */
+import type {LabText} from './labs.ts';
+import type {LabSlug} from './labSlugs.ts';
+
+export const LAB_TEXT_ZH_HANS:Readonly<Record<LabSlug,LabText>>=Object.freeze({
+ hubble:{name:'哈勃定律',
+  title:'在线学习哈勃定律的CLEA VIREO实验 · OpenVireo',
+  description:'用虚拟望远镜和光谱仪测量星系的红移，再根据你自己的数据亲手拟合哈勃定律。这是CLEA VIREO哈勃定律实验的免费网页重建版。',
+  heading:'哈勃定律：红移与距离的关系',
+  intro:'将虚拟望远镜对准原版VIREO哈勃实验中的星系，拍摄它们的光谱，并测量谱线移动了多少。你将根据自己的测量绘制哈勃图，并估算宇宙的膨胀速率。',
+  steps:['将望远镜逐一对准原版实验列表中的十三个星系，拍摄每个星系的光谱。','在光谱分析器中对齐钙的K线、H线和G带，测量每个星系的红移。','把每个红移换算成退行速度，并与由星等推算出的星系距离结合起来。','绘制速度与距离的关系图，亲手拟合哈勃关系，并保存你的探究。'],
+  learn:['光谱如何揭示星系的运动。','哈勃常数的含义，以及如何测量它。','天文学家为什么用标准烛光来估算距离。']},
+ 'large-scale-structure':{name:'大尺度结构',
+  title:'探索宇宙大尺度结构的CLEA VIREO实验 · OpenVireo',
+  description:'对一条天区带进行巡天，测量大量星系的红移，并在楔形图上绘出宇宙网。这是CLEA VIREO大尺度结构实验的免费网页重建版。',
+  heading:'宇宙的大尺度结构',
+  intro:'从九个原版巡天视场中选择一个，逐个测量星系的红移，并把它们绘制在楔形图上。墙、纤维状结构和空洞会在你自己的数据中显现出来。',
+  steps:['选择一个巡天视场和一台望远镜。','拍摄每个星系的光谱，并记录它的红移。','把你自己的记录绘制在赤经–速度楔形图上。','描述你看到的结构，并保存你的探究。'],
+  learn:['红移巡天如何在三维空间中绘制宇宙地图。','什么是星系团、墙、纤维状结构和空洞。','如何阅读楔形图。']},
+ 'stellar-classification':{name:'恒星分类',
+  title:'学习恒星光谱分类的CLEA实验 · OpenVireo',
+  description:'学习恒星的光谱分类：将光谱与标准星比较，标记谱线，测量等值宽度，自己判定光谱型。这是一个CLEA VIREO实验的免费网页重建版。',
+  heading:'恒星光谱的分类',
+  intro:'亲自尝试恒星的光谱分类：载入25条原版练习光谱之一，并将它与标准星的星图集比较。你根据看到的谱线自己判定它的光谱型；不评分，也不会直接给出答案。',
+  steps:['载入一条练习光谱和一套标准光谱星图集。','将它与相邻的标准星并排比较，或以差值方式比较。','从谱线表中标记谱线，并测量等值宽度。','记录你自己判定的光谱型及理由，然后保存你的探究。'],
+  learn:['OBAFGKM光谱序列及其成因。','哪些吸收线标志着高温星和低温星。','如何客观地将光谱与标准星比较。']},
+ pleiades:{name:'昴星团测光',
+  title:'昴星团测光的CLEA VIREO实验 · OpenVireo',
+  description:'用虚拟光度计分别测量昴星团中恒星的B、V亮度，并估算这个星团离我们有多远。这是一个CLEA VIREO实验的免费网页重建版。',
+  heading:'昴星团的光电测光',
+  intro:'将望远镜对准原版实验列表中的24颗昴星团恒星，用虚拟光度计分别透过B、V滤光片测量每一颗。你将根据自己的读数绘制星团序列，并估算它的距离。',
+  steps:['载入昴星团列表，将望远镜对准一颗恒星。','透过B、V滤光片测量天空和恒星。','记录你的读数，并算出每颗恒星的B−V色指数。','手动拟合主序以估算距离，并保存你的探究。'],
+  learn:['测光如何测量恒星的亮度和颜色。','颜色–星等图能告诉我们什么。','主序拟合如何给出星团的距离。']},
+ 'cluster-hr':{name:'星团赫罗图',
+  title:'绘制星团交互式赫罗图的CLEA实验 · OpenVireo',
+  description:'绘制星团的交互式赫罗图，拟合它们的主序，并与你自己测得的昴星团数据比较。这是一个CLEA VIREO实验的免费网页重建版。',
+  heading:'星团的赫罗图',
+  intro:'使用交互式赫罗图：从数据库中选取一个参考星团并绘图，拟合它的主序，再与你在测光实验中亲自测量的昴星团恒星比较。',
+  steps:['从数据库中选择一个参考星团，绘制它的赫罗图。','拟合它的主序。','绘制你自己测得的昴星团B、V测量值。','亲自比较这两条序列。'],
+  learn:['赫茨普龙–罗素图（赫罗图）是如何构建的。','星团的图如何揭示距离和年龄。','为什么尘埃造成的红化会使星团在图中移动。']},
+ pulsars:{name:'脉冲星',
+  title:'脉冲星射电天文学的CLEA VIREO实验 · OpenVireo',
+  description:'用虚拟射电望远镜在两个频率上记录脉冲星的脉冲，并测量它们的周期和色散。这是CLEA VIREO脉冲星实验的免费网页重建版。',
+  heading:'脉冲星射电天文学',
+  intro:'将虚拟射电望远镜转向原版星表中的脉冲星，在两个射电频率上记录它们的脉冲。不同频率之间的延迟揭示了信号穿过了多少星际物质。',
+  steps:['开始脉冲星实验，将射电望远镜对准一颗脉冲星。','在两个不同的频率上记录它的脉冲。','测量周期以及两个频率之间的延迟。','将你的结果与色散量和周期比较，并保存你的探究。'],
+  learn:['什么是脉冲星，以及它们为什么会发出脉冲。','色散如何使低频射电信号延迟。','色散量如何提示脉冲星的距离。']},
+ 'object-x':{name:'天体X',
+  title:'天体X：辨认神秘天体的CLEA VIREO实验 · OpenVireo',
+  description:'仅凭坐标，利用图像、光谱和射电判断天体X是恒星、星系、类星体、脉冲星还是小行星。这是一个CLEA实验的免费网页重建版。',
+  heading:'天体X：它是什么？',
+  intro:'你只会得到一个编号和坐标。利用在不同时间拍摄的CCD图像、光谱和射电望远镜，判断这个天体是恒星、星系、类星体、脉冲星还是小行星。',
+  steps:['接收一个只有编号和坐标的目标；它的身份保持隐藏。','用CCD相机、光谱仪和射电望远镜观测它。','判断它是哪一类天体，并用你自己的观测作出论证。','如果是小行星，就在多张图像上测量它的位置，并描述它的运动。'],
+  learn:['不同种类的天体在图像、光谱和射电中是什么样子。','图像之间的运动如何揭示一个太阳系天体。','如何根据多种证据构建论证。']},
+});

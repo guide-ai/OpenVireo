@@ -135,9 +135,9 @@ if(process.env.OPENVIREO_FIX_TYPOGRAPHY==='1'){
 }
 
 describe('Front ZH0: the Simplified Chinese (zh-Hans) bundle',()=>{
- it('is registered before its release: a ?lang=zh-Hans preview only, never detected or offered; comma thousands as en-US',()=>{
+ it('Front ZH-REL: is released (detected from Simplified browsers, never Traditional ones; stored, offered); comma thousands as en-US',()=>{
   expect(languageEntry('zh-Hans')).toMatchObject({dir:'zh-hans',catalog:'zh-hans.json',budgetFactor:1.4,htmlLang:'zh-Hans',pagePath:'zh-hans',autonym:'简体中文',englishName:'Simplified Chinese',
-   match:['zh-Hans','zh-CN','zh-SG','zh-MY','zh'],except:['zh-Hant','zh-TW','zh-HK','zh-MO'],released:false});
+   match:['zh-Hans','zh-CN','zh-SG','zh-MY','zh'],except:['zh-Hant','zh-TW','zh-HK','zh-MO'],released:true});
   expect(languageEntry('zh-Hans')?.thousands).toBeUndefined();expect(languageEntry('zh-Hans')?.help).toEqual({related:'相关主题'});// Front ZH-HELP
   expect(CHINESE_SIMPLIFIED.language).toBe('zh-Hans');
   // The notices pass the profile too (full-width marks, no Traditional character).
@@ -177,6 +177,14 @@ describe('Front ZH0: the Simplified Chinese (zh-Hans) bundle',()=>{
   expect(ZH6_KEYS.length).toBe(137);
   expect(ZH6_KEYS.filter(k=>!Object.hasOwn(zh,k))).toEqual([]);
   expect(Object.keys(en).filter(k=>!Object.hasOwn(zh,k))).toEqual([]);
+ });
+ it('Front ZH-REL: the catalog is complete and strict: every en.json key, the same {params}, strings only, no extra key; every map complete',()=>{
+  // As the earlier releases' checks: strictness lives here, since the split bundle builds each module with the English fallback.
+  expect(()=>createI18n(zh as Record<MessageKey,string>,'zh-Hans')).not.toThrow();
+  expect(Object.keys(en).filter(k=>!Object.hasOwn(zh,k))).toEqual([]);
+  expect(Object.keys(zh).filter(k=>!Object.hasOwn(en,k))).toEqual([]);
+  for(const [id,map] of Object.entries(CHINESE_SIMPLIFIED.maps??{}))expect(mapParity(ENGLISH_MAPS[id as MapId],map),id).toEqual([]);
+  expect(MAP_IDS.filter(id=>!Object.hasOwn(CHINESE_SIMPLIFIED.maps??{},id))).toEqual([]);
  });
  it('Front ZH1: every VIREO original is translated at once, or kept with an identical.json reason, never both',()=>{
   const english=[...Object.keys(esOriginals),...Object.keys(esIdentical.entries).filter(k=>k.startsWith('original:')).map(k=>k.slice('original:'.length))];

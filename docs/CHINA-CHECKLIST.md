@@ -8,6 +8,13 @@ sections start closed unless they hold the current page or were left open (`src/
 see them all open), so the steps say to open a section first when its buttons are not shown. Not checked: the WeChat warning
 wording (item 6) and the browser developer-tools labels in English and Chinese, which are general knowledge of those products.
 
+Front ZH-REL (2026-11-21): Simplified Chinese is released, so a tester whose browser or phone is set to Simplified Chinese now
+gets the site in Chinese. Items 1–5 keep the English names, so their links carry `?lang=en` (English for that load only, nothing
+stored); item 7 (new) checks the Chinese interface itself, as the plan's §10 asked: a zh-CN browser opens Chinese, the selector
+shows 简体中文, the help viewer is Chinese, and one screenshot of mixed Chinese and Latin text answers the spacing question (plan
+§4.2); item 6 also asks whether WeChat's built-in browser shows Chinese. The Chinese names quoted in item 7 are the catalog's
+(`sky.title`, the Help caption and the help menu's «帮助主题…»), not walked in a mainland browser.
+
 ## For the site owner (English)
 
 **What this is.** A 15–20 minute check that a friend in mainland China can do on a phone or a computer, without installing
@@ -60,17 +67,19 @@ Thank you for helping! This takes about 15–20 minutes on a phone or a computer
   "Huawei phone + Huawei Browser", "Windows PC + Edge").
 - 如果浏览器有“无痕模式”或“隐私模式”，请用它打开，这样测到的是第一次访问的速度。
   If your browser has a private or incognito mode, use it, so you measure a first visit.
-- 网站目前只有英文界面（还没有中文）。下面的按钮名称都按网站上显示的英文写出来了，照着找就行。**请不要用浏览器的“翻译网页”功能**，否则按钮名称会变。
-  The site is in English for now (there is no Chinese version yet). The button names below are written exactly as the site
-  shows them. **Please don't use the browser's "translate page" feature**, because it changes the button names.
+- 网站现在有简体中文界面，中文浏览器会自动显示中文。为了方便对照，第 1–5 步请用英文界面：请用下面给出的地址打开（地址末尾的 **?lang=en** 只对这一次打开有效，不会改变你的设置）。下面的按钮名称都按网站上显示的英文写出来了，照着找就行。第 7 步再看中文界面。**请不要用浏览器的“翻译网页”功能**，否则按钮名称会变。
+  The site now has a Simplified Chinese interface, which a Chinese browser shows on its own. To make the names easy to match,
+  please do items 1–5 in English: open the addresses given below (the **?lang=en** at the end applies to that visit only and
+  changes no setting). The button names below are written exactly as the site shows them in English. Item 7 looks at the Chinese
+  interface. **Please don't use the browser's "translate page" feature**, because it changes the button names.
 - 准备一个计时工具（另一部手机、电脑上的时钟都行）。只要大概的秒数就行。
   Have a way to time things ready (another phone or a clock is fine; rough seconds are all we need).
 
 **1. 网站能打开吗？/ Does the site open?**
 
-1a. 开始计时，同时打开 **https://openvireo.space** 。等到页面上出现大标题 **“Start with the sky.”**，或者出现一个写着 **“Welcome to OpenVireo”** 的小窗口，就停表，记下秒数。如果出现这个小窗口，点 **“Skip the tour”** 关掉它。
+1a. 开始计时，同时打开 **https://openvireo.space/?lang=en** 。等到页面上出现大标题 **“Start with the sky.”**，或者出现一个写着 **“Welcome to OpenVireo”** 的小窗口，就停表，记下秒数。如果出现这个小窗口，点 **“Skip the tour”** 关掉它。
 如果 60 秒后页面还是空白或报错，请写下“打不开”，并把屏幕上的错误文字抄下来（或截图，截图前注意不要带上个人信息）。
-Start timing as you open **https://openvireo.space**. Stop when the big title **"Start with the sky."** appears, or a
+Start timing as you open **https://openvireo.space/?lang=en**. Stop when the big title **"Start with the sky."** appears, or a
 small box titled **"Welcome to OpenVireo"**. Write down the seconds. If that box appears, tap **"Skip the tour"** to close it.
 If the page is still blank or shows an error after 60 seconds, write "does not open" and copy the error text (or take a
 screenshot; don't include any personal information in it).
@@ -83,7 +92,7 @@ After the page appears, does the browser's loading bar or spinner keep going? If
 2a. 打开“恒星光谱分类”练习：
 - 手机：点右上角的 **“Tools”**，在 **“ANALYSIS”** 下面点 **“Stellar classification”**（如果 “ANALYSIS” 下面没有按钮，先点一下 “ANALYSIS” 展开）。
 - 电脑：在页面左侧的菜单里（窗口较窄时在页面上方）点 **“ANALYSIS”**，再点 **“Stellar classification”**（如果下面没有按钮，先点一下 “ANALYSIS” 展开）。
-- 找不到的话，也可以直接打开 **https://openvireo.space/#classification** 。
+- 找不到的话，也可以直接打开 **https://openvireo.space/?lang=en#classification** 。
 
 从点击开始计时，等到出现这一行字：**“Original spectra verified. Your classification remains manual.”**，并且能看到几张光谱曲线图，停表记下秒数。
 
@@ -92,7 +101,7 @@ Open the stellar classification exercise:
   "ANALYSIS", tap "ANALYSIS" first to open it).
 - Computer: in the menu on the left of the page (at the top when the window is narrow) click **"ANALYSIS"**, then **"Stellar
   classification"** (if no buttons show under it, click "ANALYSIS" first to open it).
-- If you can't find it, open **https://openvireo.space/#classification** directly.
+- If you can't find it, open **https://openvireo.space/?lang=en#classification** directly.
 
 Time from your tap until the line **"Original spectra verified. Your classification remains manual."** appears together with
 several spectrum graphs.
@@ -103,11 +112,11 @@ Scroll down and tap **"Next standard"**. The title of the top graph should chang
 
 **3. 星空图能加载吗？/ Does the sky map load?**
 
-3a. 回到天文台页面：手机点 **“Tools”**，在 **“OPTICAL OBSERVATORY”** 下面点 **“Observatory”**（没有的话先点 “OPTICAL OBSERVATORY” 展开）；电脑在左侧菜单的同一位置点。（也可以重新打开 https://openvireo.space 。）
+3a. 回到天文台页面：手机点 **“Tools”**，在 **“OPTICAL OBSERVATORY”** 下面点 **“Observatory”**（没有的话先点 “OPTICAL OBSERVATORY” 展开）；电脑在左侧菜单的同一位置点。（也可以重新打开 https://openvireo.space/?lang=en 。）
 往下滑，找到写着 **“The dome is closed”** 的深色方框，点 **“Open dome ↗”**，开始计时。等到方框里出现星点图，并且图下方出现类似这样的一行字就停表：**“VIREO’s Finder · 2.5° view, drawn as VIREO draws it from its loaded 7.5° field (1,426 stars and 7 galaxies).”**（数字可能略有不同。）
 Go back to the observatory page: on a phone tap **"Tools"**, then under **"OPTICAL OBSERVATORY"** tap **"Observatory"** (if it
 isn't shown, tap "OPTICAL OBSERVATORY" first to open it); on a computer click the same place in the menu on the left (or reopen
-https://openvireo.space). Scroll down to the dark box that says **"The dome is closed"** and tap **"Open dome ↗"**; start
+https://openvireo.space/?lang=en). Scroll down to the dark box that says **"The dome is closed"** and tap **"Open dome ↗"**; start
 timing. Stop when a star map appears with a line under it like **"VIREO’s Finder · 2.5° view, drawn as VIREO draws it from its
 loaded 7.5° field (1,426 stars and 7 galaxies)."** (the numbers may differ a little).
 
@@ -154,10 +163,29 @@ During the whole test, did anything stay blank, keep spinning, ignore your taps,
 
 **6.（可选）在微信里打开 / (Optional) Open it inside WeChat**
 
-把 https://openvireo.space 发给“文件传输助手”，在微信里点开。能正常打开吗？还是微信提示“非微信官方网页，请确认是否继续访问”或“如需浏览，请长按网址复制后使用浏览器访问”之类的警告，或者直接打不开？
+把 https://openvireo.space 发给“文件传输助手”，在微信里点开。能正常打开吗？还是微信提示“非微信官方网页，请确认是否继续访问”或“如需浏览，请长按网址复制后使用浏览器访问”之类的警告，或者直接打不开？如果能打开，界面是中文还是英文？
 Send https://openvireo.space to yourself in WeChat (File Transfer) and tap it there. Does it open normally, does WeChat show a
 warning (such as "this is not an official WeChat page, continue?", or asking you to copy the link into a browser), or is it
-blocked?
+blocked? If it opens, is the interface in Chinese or in English?
+
+**7. 中文界面 / The Chinese interface**
+
+7a. 关掉之前的页面，直接打开 **https://openvireo.space**（这次不带 ?lang=en）。如果你的浏览器或手机系统语言是简体中文，页面应该直接显示中文，大标题是 **“从天空开始。”**。是中文吗？如果是英文，请写下浏览器（或手机）设置的语言。
+Close the earlier page and open **https://openvireo.space** (this time without ?lang=en). If your browser or phone is set to
+Simplified Chinese, the page should be in Chinese, with the big title **"从天空开始。"**. Is it in Chinese? If it is in English,
+write down the language your browser (or phone) is set to.
+
+7b. 页面顶部的语言选择框里显示的是 **“简体中文 (Simplified Chinese)”** 吗？
+Does the language box at the top of the page show **"简体中文 (Simplified Chinese)"**?
+
+7c. 点页面顶部的 **“帮助”**，再点 **“帮助主题…”**。帮助窗口里的文字是中文吗？能正常打开某一个主题吗？
+Tap **"帮助"** (Help) at the top of the page, then **"帮助主题…"** (Help topics…). Is the help text in Chinese, and does a topic
+open?
+
+7d. （可选）截一张图，要有中文和英文字母或数字混在一起的地方（例如帮助窗口，或“恒星分类”练习的页面），截图前注意不要带上个人信息。中文和英文字母、数字之间看起来正常吗？有没有多出来的空格，或者挤在一起看不清？
+(Optional) Take one screenshot of a place where Chinese is mixed with Latin letters or digits (for example the help window, or the
+stellar classification page); don't include any personal information. Does the spacing between Chinese and Latin letters or
+digits look normal, or is there an odd gap, or are they crowded together?
 
 ### 如果你愿意：电脑浏览器的开发者工具 / If you are comfortable with it: the browser's developer tools
 
@@ -205,7 +233,11 @@ VPN 已关闭 / VPN off: 是 / 否 (yes / no)
 4b 内置星表：出现 Image ready.（秒，或抄下出现的那句话）/ Bundled catalog: Image ready. (seconds, or copy the sentence shown):
 4c 在线查询：结果和秒数（Image ready. / 抄下 No image was made. 那句 / 卡住）/ Live query: result and seconds (Image ready. / the "No image was made." sentence / stuck):
 5 卡住或空白的地方 / Anything stuck or blank:
-6 微信里打开（可选）/ Opened in WeChat (optional): 正常 / 有警告 / 打不开 (normal / warning / blocked)
+6 微信里打开（可选）/ Opened in WeChat (optional): 正常 / 有警告 / 打不开 (normal / warning / blocked)；中文 / 英文 (Chinese / English)
+7a 不带 ?lang=en 打开时是中文 / Chinese without ?lang=en: 是 / 否（浏览器语言 / browser language: ）
+7b 语言框显示“简体中文 (Simplified Chinese)” / Language box shows 简体中文: 是 / 否
+7c 帮助是中文，主题能打开 / Help in Chinese, a topic opens: 是 / 否
+7d 中英文混排看起来正常（可附截图）/ Mixed Chinese and Latin text looks right (screenshot optional): 是 / 否，说明 / notes:
 
 开发者工具（可选）/ Developer tools (optional):
   DOMContentLoaded / Load / Finish:

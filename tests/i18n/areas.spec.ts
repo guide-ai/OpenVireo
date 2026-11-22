@@ -194,8 +194,9 @@ test('View original (English) on an area route: VIREO\'s names in English, the a
 // area is empty any more), with the route in Portuguese, no notice, no route error and no read before its area. Front FR-REL: the
 // same for French, in an fr-FR browser (the Portuguese title kept). Front ID-REL: and for Indonesian, in an id-ID browser; Front
 // HI-REL: for Hindi, in an hi-IN browser. Front JA-REL: and Japanese in a ja-JP browser; Front RU-REL: and Russian in a ru-RU
-// browser (their JA0 and RU0 partial-language tests are gone; Simplified Chinese keeps its own, PARTIAL below).
-const RELEASED_AREAS=[{L:PORTUGUESE_TEXT,name:'Brazilian Portuguese'},{L:FRENCH_TEXT,name:'French'},{L:INDONESIAN_TEXT,name:'Indonesian'},{L:HINDI_TEXT,name:'Hindi'},{L:JAPANESE_TEXT,name:'Japanese'},{L:RUSSIAN_TEXT,name:'Russian'}] as const;
+// browser (their JA0 and RU0 partial-language tests are gone). Front ZH-REL: and Simplified Chinese in a zh-CN browser (its ZH0
+// partial-language test is gone too, so no registered language is partial; the qaa-XA fixture keeps that case).
+const RELEASED_AREAS=[{L:PORTUGUESE_TEXT,name:'Brazilian Portuguese'},{L:FRENCH_TEXT,name:'French'},{L:INDONESIAN_TEXT,name:'Indonesian'},{L:HINDI_TEXT,name:'Hindi'},{L:JAPANESE_TEXT,name:'Japanese'},{L:CHINESE_SIMPLIFIED_TEXT,name:'Simplified Chinese'},{L:RUSSIAN_TEXT,name:'Russian'}] as const;
 for(const {L:P,name} of RELEASED_AREAS)test.describe(`in a ${name} browser`,()=>{
  test.use({locale:contextLocale(P.tag)});
  test(`${name} (released) fetches its core, and on each area route only that area's modules`,async({page})=>{
@@ -232,57 +233,7 @@ for(const {L:P,name} of RELEASED_AREAS)test.describe(`in a ${name} browser`,()=>
  });
 });
 
-// Front ID0 (plan front-i18n-id.md §1.2 #6): a language before its release is partial again, as FR0 had it for French. Indonesian's
-// preview (`?lang=id`, in an English browser) fetches its core, and each area route only the area modules its plan gives text to; an
-// area with no text yet is empty, has no chunk and resolves at once, so its route shows English without a notice, a route error or a
-// read before its area. With ID0's shell slice only `photometer` holds text (project.photometryCleared and
-// project.photometryRestored, rendered by the photometer); Front ID1's maps and keys also give text to `classification` (the
-// observationMetadata map) and `fits` (the cameraInfo.* keys), as FR1's did; later ID fronts fill the others (Front ID3: E03 fills the
-// shared classification+cluster module, which the cluster routes also fetch, so `cluster` holds text, as for French after FR3; Front ID5: the radio keys and maps fill `radio`, and `pulsar` fetches the shared
-// pulsar+radio module, which holds the radioR1 map, as for French after FR5). Front
-// ID-REL turned this back into a released-language test (RELEASED_AREAS above), as FR-REL did. Front HI0: Hindi's preview the same way (Front HI-REL moved it to RELEASED_AREAS); Front ZH0:
-// Simplified Chinese's (ZH-REL); ZH1's maps and keys give it `classification` and `fits` text, as JA1's, and ZH2's
-// `exposure` and `lss`, as JA2's, and ZH3's E03 keys `cluster` (the shared classification+cluster module), as JA3's, and ZH5's radio keys `pulsar` and `radio` (the
-// shared pulsar+radio module), as JA5's.
-const PARTIAL=[{L:CHINESE_SIMPLIFIED_TEXT,name:'Simplified Chinese',release:'ZH-REL',areas:['classification','cluster','exposure','fits','lss','photometer','pulsar','radio']}] as const;
-for(const {L:P,name,release,areas} of PARTIAL)test.describe(`a language before its release (${name})`,()=>{
- test.use({locale:'en-US'});
- test(`a partial language (${name}) fetches only its core, and no chunk for an empty area`,async({page})=>{
-  test.setTimeout(300_000);
-  const idPlan=planOf(P.tag),module=(name:string)=>idPlan.modules.find(m=>m.name===name)!;
-  expect(P.entry.released,`${release} replaces this test`).toBe(false);
-  const fetchedFor=(area:string)=>{const m=module(area);return m.empty?[]:[area,...m.shared].sort();};
-  const w=await watch(page,P.tag,P.entry.dir,P.entry.catalog);
-  await page.goto(`/${P.query}#observatory`);await expect(page.getByRole('heading',{level:1,name:P.catalog['sky.title']})).toBeVisible({timeout:30_000});
-  await page.waitForLoadState('networkidle');
-  expect(names(w)).toEqual(['core']);expect(w.problems).toEqual([]);
-  const C={...E,...P.catalog};
-  const ready:Record<string,(page:Page)=>Promise<void>>={
-   'pulsar-analysis':async p=>{await expect(id(p,'pulsar-analysis')).toBeVisible({timeout:30_000});},
-   'radio-control':async p=>{await expect(id(p,'radio-route')).toBeVisible({timeout:30_000});},
-   'lss-wedge':async p=>{await expect(id(p,'wedge-persistence')).toBeVisible({timeout:30_000});},
-   'sky-exposure':async p=>{await expect(p.getByRole('button',{name:C['skyExposure.startSkyExposure'],exact:true})).toBeVisible({timeout:30_000});},
-  };
-  const headingKey:Record<string,string>={classification:'class.title','cluster-database':'db.title',photometer:'ph.title','lss-survey':'lss.title','galaxy-exposure':'galaxyExposure.title','star-exposure':'starExposure.title',images:'fits.title'};
-  const empty=idPlan.modules.filter(m=>m.kind==='area'&&m.empty).map(m=>m.name);
-  // Pin the areas the language gives text to (each of its fronts updates PARTIAL), so a lost or stray area fails here.
-  expect(idPlan.modules.filter(m=>m.kind==='area'&&!m.empty).map(m=>m.name).sort(),`the areas with ${name} text`).toEqual([...areas]);
-  for(const r of ROUTES){
-   await page.goto('about:blank');w.language.length=0;
-   await page.goto(`/${P.query}#${r.hash}`);
-   await (ready[r.hash]??(async(p:Page)=>{await expect(p.getByRole('heading',{name:C[headingKey[r.hash]],exact:true})).toBeVisible({timeout:30_000});}))(page);
-   await page.waitForLoadState('networkidle');await noRouteError(page);
-   await expect(page.locator('html')).toHaveAttribute('lang',P.entry.htmlLang);await expect(id(page,'area-failure')).toHaveCount(0);
-   await expect(page.locator('.investigation-toolbar')).toContainText(P.catalog['project.save']);
-   const fetched=names(w);
-   expect(fetched[0],r.hash).toBe('core');
-   expect(fetched.slice(1).sort(),`${r.hash} fetched ${fetched.join(', ')}`).toEqual(fetchedFor(r.area));
-   if(empty.includes(r.area))expect(fetched.slice(1),`${r.hash}: the empty ${r.area} area has no chunk`).toEqual([]);
-  }
-  expect(w.problems).toEqual([]);
- });
-});
-
-// Front RU0 (plan front-i18n-ru.md §1.2 #5) and Front JA0 (plan front-i18n-ja.md §6.2) checked here that the Russian and Japanese
-// previews, partial, fetched only their core and no chunk for an empty area; RU-REL and JA-REL turned them back into released-language
-// tests (RELEASED_AREAS above), as FR-REL and ID-REL did.
+// Front ID0 (plan front-i18n-id.md §1.2 #6), Front HI0, Front JA0 (plan front-i18n-ja.md §6.2), Front RU0 (plan front-i18n-ru.md
+// §1.2 #5) and Front ZH0 checked here that each preview, partial, fetched only its core and no chunk for an empty area; ID-REL,
+// HI-REL, JA-REL, RU-REL and ZH-REL turned them back into released-language tests (RELEASED_AREAS above), as FR-REL did. Every
+// registered language is released now; the qaa-XA fixture of src/i18n/partialLanguage.test.ts and split.test.ts keeps the case.
