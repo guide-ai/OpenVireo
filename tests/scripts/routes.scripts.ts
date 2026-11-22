@@ -11,7 +11,7 @@ import en from '../../src/i18n/en.json' with {type:'json'};
 import {PSEUDO_SCRIPT} from '../../src/i18n/pseudoScripts';
 import type {PseudoScriptLanguage} from '../../src/i18n/locale';
 import {layoutProblems,verticalInkProblems} from '../fixtures/layoutProblems';
-import {translatedFor,JAPANESE_TEXT,CHINESE_SIMPLIFIED_TEXT,type Area} from '../i18n/languageText';
+import {translatedFor,JAPANESE_TEXT,CHINESE_SIMPLIFIED_TEXT,CHINESE_TRADITIONAL_TEXT,type Area} from '../i18n/languageText';
 import {contextLocale} from '../fixtures/language';
 import type {LayoutOptions} from '../fixtures/layoutProblems';
 import * as E01 from '../i18n/walks/e01';
@@ -187,7 +187,9 @@ const EXERCISE_WALKS:readonly (readonly [Area,string,ExerciseWalk,LayoutOptions]
  ['help','help windows',(page,lang,each)=>HELP.walk(page,lang,each),{dialogs:'dialog[open],[role=dialog][aria-modal=true],[role=alertdialog][aria-modal=true]',topDialog:true}]];
 // Front ZH2: the same walks under real Simplified Chinese (ZH2 adds E01 and E02; each ZH front its area), with Han on screen.
 const REAL_SCRIPT_LANGUAGES=[{L:JAPANESE_TEXT,name:'Japanese',letters:/[\p{sc=Hira}\p{sc=Kana}]/u,missing:'no kana on screen: the text shown is not Japanese'},
- {L:CHINESE_SIMPLIFIED_TEXT,name:'Simplified Chinese',letters:/\p{sc=Han}/u,missing:'no Han on screen: the text shown is not Chinese'}] as const;
+ {L:CHINESE_SIMPLIFIED_TEXT,name:'Simplified Chinese',letters:/\p{sc=Han}/u,missing:'no Han on screen: the text shown is not Chinese'},
+ // Front ZT1: and real Traditional Chinese (its ?lang=zh-Hant preview; each ZT front adds its areas).
+ {L:CHINESE_TRADITIONAL_TEXT,name:'Traditional Chinese',letters:/\p{sc=Han}/u,missing:'no Han on screen: the text shown is not Chinese'}] as const;
 for(const {L,name:language,letters,missing} of REAL_SCRIPT_LANGUAGES)test.describe(()=>{test.use({locale:contextLocale(L.tag)});// Front JA-REL: a ja-JP browser, no ?lang= (an unreleased language: en-US with its ?lang= preview)
 for(const [area,name,walk,layout] of EXERCISE_WALKS.filter(([area])=>L.done.has(area)))for(const width of [320,1440] as const)
  test(`real ${language} at ${width} px: the ${name} walk lays out without overflow, clipping or cut ink (${area})`,async({page})=>{

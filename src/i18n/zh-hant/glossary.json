@@ -63,7 +63,7 @@
   },
   {
    "en": "\\bfiles?\\b",
-   "zh-Hant": "檔案",
+   "zh-Hant": "檔案|檔",
    "zh-Hans": "文件",
    "fr": "fichier"
   },
@@ -195,7 +195,7 @@
   },
   {
    "en": "\\bhelp\\b",
-   "zh-Hant": "說明",
+   "zh-Hant": "說明|幫助",
    "zh-Hans": "帮助",
    "fr": "aide"
   },
@@ -1755,7 +1755,7 @@
   },
   {
    "en": "Pulsar Identification",
-   "zh-Hant": "脈衝星證認",
+   "zh-Hant": "脈衝星辨認",
    "zh-Hans": "脉冲星证认",
    "fr": "Identification du pulsar"
   },
@@ -1783,7 +1783,7 @@
   },
   {
    "en": "Identify Recorded Object",
-   "zh-Hant": "辨識已記錄的天體",
+   "zh-Hant": "辨認已記錄的天體",
    "zh-Hans": "识别已记录的天体",
    "fr": "Identifier l’objet consigné"
   },
@@ -1837,7 +1837,7 @@
   },
   {
    "en": "Print Selection Field",
-   "zh-Hant": "列印所選視野",
+   "zh-Hant": "列印選擇視野",
    "zh-Hans": "打印选择视场",
    "fr": "Imprimer le champ de sélection"
   },
@@ -2572,6 +2572,54 @@
     "分辨率"
    ],
    "use": "解析度 (Taiwan)"
+  },
+  {
+   "words": [
+    "歸一化"
+   ],
+   "use": "正規化 (Taiwan; normalized spectra)"
+  },
+  {
+   "words": [
+    "檔頭"
+   ],
+   "use": "標頭 (one form for a file header)"
+  },
+  {
+   "words": [
+    "備援"
+   ],
+   "use": "備用 for fallback (decided)"
+  },
+  {
+   "words": [
+    "撤銷"
+   ],
+   "use": "復原 for undo (Taiwan)"
+  },
+  {
+   "words": [
+    "精靈圖"
+   ],
+   "use": "圖示 or sprite圖 (Taiwan)"
+  },
+  {
+   "words": [
+    "校驗"
+   ],
+   "use": "驗證 (Taiwan)"
+  },
+  {
+   "words": [
+    "上下文"
+   ],
+   "use": "脈絡 (context)"
+  },
+  {
+   "words": [
+    "牆上時間"
+   ],
+   "use": "實際時間 (wall-clock time)"
   }
  ],
  "dropped": [

@@ -50,7 +50,9 @@ export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new S
  // Front JA2: the same text in Japanese (src/i18n/ja/identical.json): VIREO's OK and (km/sec) (JA1), the velocity column's format.
  ja:new Set(['OK','(km/sec)','v · km/s · float32']),
  // Front ZH2: the same text in Simplified Chinese (src/i18n/zh-hans/identical.json): VIREO's (km/sec) (ZH1), the velocity column's format.
- 'zh-Hans':new Set(['(km/sec)','v · km/s · float32'])};
+ 'zh-Hans':new Set(['(km/sec)','v · km/s · float32']),
+ // Front ZT1: the same in Traditional Chinese.
+ 'zh-Hant':new Set(['(km/sec)','v · km/s · float32'])};
 /** Front PT2: Portuguese writes the measurement log's bit pattern as English does («bits 3c23d70a»; Spanish «patrón de bits»). */
 export const RECORDED_IN:Readonly<Record<string,RegExp>>={'pt-BR':/^bits [0-9a-f]{8}$/};
 export const same=(text:string,L?:LanguageText)=>SAME.has(text)||NUMERIC.test(text)||RECORDED.test(text)||(L!==undefined&&((SAME_IN[L.tag]?.has(text)??false)||(RECORDED_IN[L.tag]?.test(text)??false)));

@@ -132,6 +132,20 @@ import {HELP_MENU_ZH_HANT} from '../../src/i18n/zh-hant/maps/helpMenu';
 import {PROJECT_LINKS_ZH_HANT} from '../../src/i18n/zh-hant/maps/projectLinks';
 import {TOUR_ZH_HANT} from '../../src/i18n/zh-hant/maps/tour';
 import {LANGUAGE_CHOICE_ZH_HANT} from '../../src/i18n/zh-hant/maps/languageChoice';
+import {CAMERA_ZH_HANT} from '../../src/i18n/zh-hant/maps/camera';
+import {FIELD_INFO_ZH_HANT} from '../../src/i18n/zh-hant/maps/fieldInfo';
+import {FIELD_READ_DETAILS_ZH_HANT} from '../../src/i18n/zh-hant/maps/fieldReadDetails';
+import {NAKED_EYE_ZH_HANT} from '../../src/i18n/zh-hant/maps/nakedEye';
+import {OBSERVATION_METADATA_ZH_HANT} from '../../src/i18n/zh-hant/maps/observationMetadata';
+import {OBSERVATORY_ZH_HANT} from '../../src/i18n/zh-hant/maps/observatory';
+import {QSO_LIST_ZH_HANT} from '../../src/i18n/zh-hant/maps/qsoList';
+import {SOUND_ZH_HANT} from '../../src/i18n/zh-hant/maps/sound';
+import {OBJECT_X_LAB_ZH_HANT} from '../../src/i18n/zh-hant/maps/objectXLab';
+import {POLISH_ZH_HANT} from '../../src/i18n/zh-hant/maps/polish';
+import {VARIABLE_STARS_ZH_HANT} from '../../src/i18n/zh-hant/maps/variableStars';
+import {ENGINE_VIEW_ZH_HANT} from '../../src/i18n/zh-hant/maps/engineView';
+import {SPECTRAL_RANGE_ZH_HANT} from '../../src/i18n/zh-hant/maps/spectralRange';
+import {WEDGE_ZH_HANT} from '../../src/i18n/zh-hant/maps/wedge';
 import ru from '../../src/i18n/ru/ru.json' with {type:'json'};
 import ruOriginals from '../../src/i18n/ru/originals.json' with {type:'json'};
 import {APP_SHELL_RU} from '../../src/i18n/ru/maps/appShell';
@@ -237,10 +251,11 @@ export const JAPANESE_TEXT=language('ja',ja,jaOriginals,{appShell:APP_SHELL_JA,h
 export const CHINESE_SIMPLIFIED_TEXT=language('zh-Hans',zhHans,zhHansOriginals,{appShell:APP_SHELL_ZH_HANS,helpMenu:HELP_MENU_ZH_HANS,projectLinks:PROJECT_LINKS_ZH_HANS,tour:TOUR_ZH_HANS,languageChoice:LANGUAGE_CHOICE_ZH_HANS},
  [APP_SHELL_ZH_HANS,CAMERA_ZH_HANS,FIELD_INFO_ZH_HANS,FIELD_READ_DETAILS_ZH_HANS,HELP_MENU_ZH_HANS,LANGUAGE_CHOICE_ZH_HANS,NAKED_EYE_ZH_HANS,OBJECT_X_LAB_ZH_HANS,OBSERVATION_METADATA_ZH_HANS,OBSERVATORY_ZH_HANS,POLISH_ZH_HANS,PROJECT_LINKS_ZH_HANS,QSO_LIST_ZH_HANS,SOUND_ZH_HANS,TOUR_ZH_HANS,VARIABLE_STARS_ZH_HANS],/[\p{sc=Han}，。、：；？！（）]/u,'');
 /** Front ZT0: Traditional Chinese (Taiwan) before its release, behind `?lang=zh-Hant` (an en-US browser: tests/fixtures/language.ts
- * contextLocale). Only the shell is translated; ZT1, ZT2 and ZT-HELP add their areas to `done` and their maps. Its letters are Han and
+ * contextLocale). ZT0 translated the shell, ZT1 the observatory with its maps, all of VIREO's originals and exercises E01–E03; ZT2 and
+ * ZT-HELP add their areas to `done` and their maps. Its letters are Han and
  * the full-width marks ，。、：；？！「」（）, which VIREO's English files and OpenVireo's exports never hold. */
 export const CHINESE_TRADITIONAL_TEXT=language('zh-Hant',zhHant,zhHantOriginals,{appShell:APP_SHELL_ZH_HANT,helpMenu:HELP_MENU_ZH_HANT,projectLinks:PROJECT_LINKS_ZH_HANT,tour:TOUR_ZH_HANT,languageChoice:LANGUAGE_CHOICE_ZH_HANT},
- [APP_SHELL_ZH_HANT,HELP_MENU_ZH_HANT,LANGUAGE_CHOICE_ZH_HANT,PROJECT_LINKS_ZH_HANT,TOUR_ZH_HANT],/[\p{sc=Han}，。、：；？！「」（）]/u,'?lang=zh-Hant',['shell']);
+ [APP_SHELL_ZH_HANT,CAMERA_ZH_HANT,FIELD_INFO_ZH_HANT,FIELD_READ_DETAILS_ZH_HANT,HELP_MENU_ZH_HANT,LANGUAGE_CHOICE_ZH_HANT,NAKED_EYE_ZH_HANT,OBJECT_X_LAB_ZH_HANT,OBSERVATION_METADATA_ZH_HANT,OBSERVATORY_ZH_HANT,POLISH_ZH_HANT,PROJECT_LINKS_ZH_HANT,QSO_LIST_ZH_HANT,SOUND_ZH_HANT,TOUR_ZH_HANT,VARIABLE_STARS_ZH_HANT],/[\p{sc=Han}，。、：；？！「」（）]/u,'?lang=zh-Hant',['shell','observatory','e01','e02','e03']);
 /** Front RU0: Russian, behind `?lang=ru` before its release (an en-US browser): RU0 translated the shell, RU1 the observatory with
  * all of VIREO's originals, RU2 exercises E01 and E02, RU3 exercise E03, RU4 exercises E04 and E05, RU5 the radio telescope, RU6
  * exercises E06 and E08, and RU-HELP the help files and help maps. Front RU-REL: released, so every area is done and its specs open
@@ -301,6 +316,8 @@ export const E01_E02_MAPS:Readonly<Record<string,E01E02Maps>>=Object.freeze({
  ja:{engineView:ENGINE_VIEW_JA,spectralRange:SPECTRAL_RANGE_JA,wedge:WEDGE_JA,observatory:OBSERVATORY_JA,polish:POLISH_JA},
  // Front ZH2: Simplified Chinese (its ?lang=zh-Hans preview).
  'zh-Hans':{engineView:ENGINE_VIEW_ZH_HANS,spectralRange:SPECTRAL_RANGE_ZH_HANS,wedge:WEDGE_ZH_HANS,observatory:OBSERVATORY_ZH_HANS,polish:POLISH_ZH_HANS},
+ // Front ZT1: Traditional Chinese (its ?lang=zh-Hant preview).
+ 'zh-Hant':{engineView:ENGINE_VIEW_ZH_HANT,spectralRange:SPECTRAL_RANGE_ZH_HANT,wedge:WEDGE_ZH_HANT,observatory:OBSERVATORY_ZH_HANT,polish:POLISH_ZH_HANT},
 });
 export const e01e02Maps=(tag:string):E01E02Maps=>{const m=E01_E02_MAPS[tag];if(!m)throw new Error(`No E01/E02 maps for ${tag}`);return m;};
 
