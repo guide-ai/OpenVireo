@@ -7,9 +7,9 @@ export const TOUR_ZH_HANT:Translation<typeof TOUR_EN>=Object.freeze({
  next:'下一步',back:'上一步',skip:'略過導覽',done:'開始探索',
  steps:Object.freeze({
   welcome:Object.freeze({title:'歡迎使用OpenVireo',
-   text:'OpenVireo是一個用於天文學實驗的虛擬天文台，基於Project CLEA的VIREO在瀏覽器中重建。這個簡短的導覽會告訴你各項功能在哪裡，不到一分鐘就能看完。'}),
+   text:'OpenVireo是一個用於天文學實驗的虛擬天文台，以Project CLEA的VIREO為本，在瀏覽器中重建而成。這個簡短的導覽會告訴你各項功能在哪裡，不到一分鐘就能看完。'}),
   sections:Object.freeze({title:'所有頁面都在選單裡',
-   text:'頁面按分區歸類：光學和電波天文台、分析工具、結果和檔案。按一下分區名稱即可展開或收合。在手機上，選單位於「選單」按鈕後面。'}),
+   text:'頁面依分區歸類：光學和電波天文台、分析工具、結果和檔案。按一下分區名稱即可展開或收合。在手機上，選單收在「選單」按鈕後面。'}),
   guides:Object.freeze({title:'要做實驗？先看它的指南',
    text:'每個實驗都有一份指南，列出每一步，勾選你已完成的內容，並帶你前往正確的頁面。'}),
   observatory:Object.freeze({title:'或者自由探索天空',

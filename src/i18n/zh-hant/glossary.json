@@ -99,7 +99,7 @@
   },
   {
    "en": "(?<!line breaks and |for example a |accented letter, a |Shift\\+)(?<!reachable with )\\btabs?\\b(?!,? (?:line breaks|or other|BOM)| and Shift\\+Tab)",
-   "zh-Hant": "分頁|標籤頁",
+   "zh-Hant": "分頁",
    "zh-Hans": "标签页",
    "fr": "onglet"
   },
@@ -111,7 +111,7 @@
   },
   {
    "en": "\\btabs?(?=,? (?:line breaks|or other|BOM))|(?<=line breaks and |for example a |accented letter, a )tabs?\\b",
-   "zh-Hant": "定位字元|跳格字元|Tab 字元",
+   "zh-Hant": "定位字元|跳格字元|Tab字元",
    "zh-Hans": "制表符|制表",
    "fr": "tabulation"
   },
@@ -267,7 +267,7 @@
   },
   {
    "en": "\\bseeing\\b",
-   "zh-Hant": "視相度|視寧度",
+   "zh-Hant": "視相度",
    "zh-Hans": "视宁度",
    "fr": "seeing"
   },
@@ -435,7 +435,7 @@
   },
   {
    "en": "\\bcolou?r excess\\b",
-   "zh-Hant": "色餘",
+   "zh-Hant": "色超|色餘",
    "zh-Hans": "色余",
    "fr": "exc[èe]s de couleur"
   },
@@ -471,7 +471,7 @@
   },
   {
    "en": "\\bepochs?\\b",
-   "zh-Hant": "曆元|歷元",
+   "zh-Hant": "曆元",
    "zh-Hans": "历元",
    "fr": "[ée]poque"
   },
@@ -489,7 +489,7 @@
   },
   {
    "en": "\\bIR camera\\b",
-   "zh-Hant": "IR相機|紅外線相機|紅外相機",
+   "zh-Hant": "IR相機|紅外線相機",
    "zh-Hans": "IR相机|红外相机",
    "fr": "cam[ée]ras? IR"
   },
@@ -555,7 +555,7 @@
   },
   {
    "en": "\\bcallbacks?\\b",
-   "zh-Hant": "回呼|回調",
+   "zh-Hant": "回呼",
    "zh-Hans": "回调",
    "fr": "rappel|callback"
   },
@@ -777,7 +777,7 @@
   },
   {
    "en": "\\bsliders?\\b",
-   "zh-Hant": "滑桿|滑塊",
+   "zh-Hant": "滑桿",
    "zh-Hans": "滑块",
    "fr": "curseur"
   },
@@ -891,7 +891,7 @@
   },
   {
    "en": "\\bfallbacks?\\b",
-   "zh-Hant": "回退|備用",
+   "zh-Hant": "備用|備援|後援",
    "zh-Hans": "回退|后备",
    "fr": "repli"
   },
@@ -1383,13 +1383,13 @@
   },
   {
    "en": "Site Parameters",
-   "zh-Hant": "站點參數",
+   "zh-Hant": "觀測站參數",
    "zh-Hans": "站点参数",
    "fr": "Paramètres du site"
   },
   {
    "en": "Site Information",
-   "zh-Hant": "站點資訊",
+   "zh-Hant": "觀測站資訊",
    "zh-Hans": "站点信息",
    "fr": "Informations sur le site"
   },
@@ -1683,7 +1683,7 @@
   },
   {
    "en": "Record/Review",
-   "zh-Hant": "記錄／回看",
+   "zh-Hant": "記錄／查閱",
    "zh-Hans": "记录/回看",
    "fr": "Consigner/Revoir"
   },
@@ -1837,7 +1837,7 @@
   },
   {
    "en": "Print Selection Field",
-   "zh-Hant": "列印選擇視野",
+   "zh-Hant": "列印所選視野",
    "zh-Hans": "打印选择视场",
    "fr": "Imprimer le champ de sélection"
   },
@@ -2009,7 +2009,7 @@
   },
   {
    "en": "Reset radio site",
-   "zh-Hant": "重設電波站點",
+   "zh-Hant": "重設電波觀測站",
    "zh-Hans": "重置射电站点",
    "fr": "Réinitialiser le site radio"
   },
@@ -2433,6 +2433,145 @@
     "另存為"
    ],
    "use": "另存新檔 (Taiwan)"
+  },
+  {
+   "words": [
+    "芯片"
+   ],
+   "use": "晶片 (Taiwan)"
+  },
+  {
+   "words": [
+    "文件夾"
+   ],
+   "use": "資料夾 (Taiwan)"
+  },
+  {
+   "words": [
+    "視圖"
+   ],
+   "use": "檢視 or 畫面 (Taiwan)"
+  },
+  {
+   "words": [
+    "服務器"
+   ],
+   "use": "伺服器 (Taiwan)"
+  },
+  {
+   "words": [
+    "緩存"
+   ],
+   "use": "快取 (Taiwan)"
+  },
+  {
+   "words": [
+    "內存"
+   ],
+   "use": "記憶體 (Taiwan)"
+  },
+  {
+   "words": [
+    "硬盤"
+   ],
+   "use": "硬碟 (Taiwan)"
+  },
+  {
+   "words": [
+    "激活"
+   ],
+   "use": "啟用 (Taiwan)"
+  },
+  {
+   "words": [
+    "對話框"
+   ],
+   "use": "對話方塊 (Taiwan)"
+  },
+  {
+   "words": [
+    "圖標"
+   ],
+   "use": "圖示 (Taiwan)"
+  },
+  {
+   "words": [
+    "賬號",
+    "賬戶"
+   ],
+   "use": "帳號／帳戶 (Taiwan)"
+  },
+  {
+   "words": [
+    "坐標"
+   ],
+   "use": "座標 (Ministry of Education form)"
+  },
+  {
+   "words": [
+    "噪聲"
+   ],
+   "use": "雜訊 (Taiwan; zh-Hans 噪声, e.g. 讀出雜訊, 暗雜訊)"
+  },
+  {
+   "words": [
+    "視寧度"
+   ],
+   "use": "視相度 (Taiwan)"
+  },
+  {
+   "words": [
+    "標籤頁"
+   ],
+   "use": "分頁 for a browser tab (Taiwan)"
+  },
+  {
+   "words": [
+    "回調"
+   ],
+   "use": "回呼 (Taiwan)"
+  },
+  {
+   "words": [
+    "滑塊"
+   ],
+   "use": "滑桿 (Taiwan)"
+  },
+  {
+   "words": [
+    "粘貼"
+   ],
+   "use": "貼上 (Taiwan)"
+  },
+  {
+   "words": [
+    "全屏"
+   ],
+   "use": "全螢幕 (Taiwan)"
+  },
+  {
+   "words": [
+    "實時"
+   ],
+   "use": "即時 (Taiwan)"
+  },
+  {
+   "words": [
+    "回看"
+   ],
+   "use": "查閱／檢閱 (Taiwan)"
+  },
+  {
+   "words": [
+    "創建"
+   ],
+   "use": "建立 (Taiwan)"
+  },
+  {
+   "words": [
+    "分辨率"
+   ],
+   "use": "解析度 (Taiwan)"
   }
  ],
  "dropped": [
