@@ -42,7 +42,7 @@ export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'es-419':new 
  // Front ID4: Indonesian's Target and Filter (identical.json), VIREO's File and OK (ID1's identical originals) and the observatory's Gain (e⁻/ADU).
  id:new Set(['Target','Filter','Gain (e⁻/ADU)','File','OK']),
  // Front JA4: VIREO's OK and (km/sec) in Japanese (JA1's identical originals).
- ja:new Set(['OK','(km/sec)']),'zh-Hans':new Set(['(km/sec)'])};
+ ja:new Set(['OK','(km/sec)']),'zh-Hans':new Set(['(km/sec)']),'zh-Hant':new Set(['(km/sec)'])};
 export const same=(text:string,L?:LanguageText)=>(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false))||SAME.has(text)||NUMERIC.test(text)||RECORDED.test(text)||STAR.test(text)||PICKER.test(text);
 export const id=(page:Page|Locator,testId:string)=>page.getByTestId(testId);
 /** Front SC12: an English text's name in any pseudo-locale (qps and the script variants; tests/fixtures/pseudoNames.ts). */

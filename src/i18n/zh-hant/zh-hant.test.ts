@@ -42,6 +42,16 @@ import {CAMERA_MESSAGES_EN} from '../../camera/CameraMessages';
 import {ENGINE_VIEW_EN} from '../../SpectrumEngineMessages';
 import {SPECTRAL_RANGE_EN} from '../../SpectralRangeMessages';
 import {WEDGE_MESSAGES_EN} from '../../components/WedgeMessages';
+import {CLUSTER_HR_EN} from '../../clusters/ClusterHrMessages';
+import {CLUSTER_DATA_MESSAGES_EN} from '../../clusterdata/ClusterDataMessages';
+import {RADIO_ANTENNA_MESSAGES_EN} from '../../components/RadioAntennaMessages';
+import {FINISH_SAVE_MESSAGES_EN} from '../../components/RadioFinishSaveMessages';
+import {RADIO_R1_MESSAGES_EN} from '../../components/RadioR1Messages';
+import {RADIO_SAVE_MESSAGES_EN} from '../../components/RadioRecordSaveMessages';
+import {PULSAR_MESSAGES_EN} from '../../components/PulsarMessages';
+import {SAVED_ROWS_MESSAGES_EN} from '../../components/PulsarSavedRowsMessages';
+import {LOAD_SAVE_MESSAGES_EN} from '../../components/PulsarLoadSaveMessages';
+import {OBJECT_X_GUIDE_EN,OBJECT_X_MEASURE_EN,OBJECT_X_SESSION_EN} from '../../objectx/ObjectXMessages';
 
 // Front ZT0 (docs/I18N.md, "Traditional Chinese: the folder, lints and shell (ZT0)"; plan front-i18n-zh.md §1.2 #7–#8, §6.3): the
 // structural checks of the partial Traditional Chinese bundle and every string through the SC4 lint framework, profile zh-Hant
@@ -54,11 +64,13 @@ import {WEDGE_MESSAGES_EN} from '../../components/WedgeMessages';
 // Chinese style (「」 and 『』), writing the characters literally, then checks as usual.
 const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,
  camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,nakedEye:NAKED_EYE_MESSAGES_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,
- engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN};
+ engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN,clusterHr:CLUSTER_HR_EN,clusterData:CLUSTER_DATA_MESSAGES_EN,
+ radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN,
+ pulsar:PULSAR_MESSAGES_EN,pulsarSavedRows:SAVED_ROWS_MESSAGES_EN,pulsarLoadSave:LOAD_SAVE_MESSAGES_EN,objectXGuide:OBJECT_X_GUIDE_EN,objectXMeasure:OBJECT_X_MEASURE_EN,objectXSession:OBJECT_X_SESSION_EN};
 /** The maps translated completely (ZT0's shell maps; ZT1's observatory maps, the camera card, polish, engineView, spectralRange and
- * wedge); objectXLab and variableStars hold only their menu names until ZT2. */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge'];
-/** ZT2's area of en.json (the zh-Hans fronts ZH4–ZH6: E04, E05, the radio telescope, E06, E08); ZT1 covers every other key. */
+ * wedge; ZT2's cluster, variable-star, radio, pulsar and Object X maps): every map but the help maps, which ZT-HELP adds. */
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars','radioAntenna','radioFinishSave','radioR1','radioRecordSave','pulsar','pulsarSavedRows','pulsarLoadSave','objectXLab','objectXGuide','objectXMeasure','objectXSession'];
+/** ZT2's area of en.json (the zh-Hans fronts ZH4–ZH6: E04, E05, the radio telescope, E06, E08); ZT1 covered every other key. */
 const ZT2_PREFIXES=/^(ph|pa|pleiadesLab|nc|db|ce|clusterLab|ownHr|obsHr|radio|radioRoute|radioAccess|radioReceiver|radioSimOptions|pulsarParameters|pulsarLab|plr|fits)\./;
 /** ZT0's area of en.json: the shell (header, menu, first steps, toolbar, errors, instructor mode, document title), as ZH0's. */
 const SHELL_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(app|project|session|error|instructorMode)\./.test(k)||/\.nav$/.test(k)||['demonstrationMode.banner','sky.eyebrow','sky.title','sky.subtitle','sky.about','sky.local','sky.observatory','sky.analyzer','sky.step1','sky.step1Help','sky.step2','sky.step2Help','sky.step3','sky.step3Help','spectrum.tools','classLink.cancel'].includes(k));
@@ -113,12 +125,11 @@ describe('Front ZT0: the Traditional Chinese (zh-Hant) bundle',()=>{
   // Adapted, not converted (user decision of 2026-11-19): every key it holds is also in the reviewed zh-Hans catalog it adapts.
   expect(Object.keys(zh).filter(k=>!Object.hasOwn(zhHans,k))).toEqual([]);
  });
- it('Front ZT1: the catalog covers every key outside ZT2\'s areas (the observatory, VIREO\'s names, E01, E02 and E03), and no ZT2 key yet',()=>{
-  const zt1=(Object.keys(en) as MessageKey[]).filter(k=>!ZT2_PREFIXES.test(k));
-  expect(zt1.length).toBe(2172);
-  expect(zt1.filter(k=>!Object.hasOwn(zh,k))).toEqual([]);
-  // ZT0's shell holds the menu names of ZT2's areas (radio.nav, ph.nav…); nothing else of ZT2 yet.
-  expect(Object.keys(zh).filter(k=>ZT2_PREFIXES.test(k)&&!SHELL_KEYS.includes(k as MessageKey))).toEqual([]);
+ it('Front ZT1 and ZT2: the catalog covers every en.json key (ZT1 the observatory, VIREO\'s names and E01–E03; ZT2 E04, E05, the radio telescope, E06 and E08), and no other key',()=>{
+  const zt2=(Object.keys(en) as MessageKey[]).filter(k=>ZT2_PREFIXES.test(k));
+  expect(zt2.length).toBe(1434);
+  expect(Object.keys(en).filter(k=>!Object.hasOwn(zh,k))).toEqual([]);
+  expect(Object.keys(zh).filter(k=>!Object.hasOwn(en,k))).toEqual([]);
  });
  it('every map has its English shape: the shell maps complete, the header-name maps partial',()=>{
   for(const [id,map] of Object.entries(CHINESE_TRADITIONAL.maps??{})){
