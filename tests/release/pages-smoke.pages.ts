@@ -613,6 +613,8 @@ const HELP_SMOKE=[
  {tag:'ja',title:'Front JA-HELP: a ?lang=ja help viewer fetches only its translated help chunks and switches to the original',label:'翻訳：OpenVireoによるWeb版の翻訳（CLEAの文章ではありません）',text:'分類するスペクトルを読み込むには'},
  // Front ZH-HELP: the Simplified Chinese help set in its ?lang=zh-Hans preview.
  {tag:'zh-Hans',title:'Front ZH-HELP: a ?lang=zh-Hans help viewer fetches only its translated help chunks and switches to the original',label:'翻译：OpenVireo的网页改编译文（不是CLEA的文本）',text:'要载入待分类的光谱'},
+ // Front ZT-HELP: the Traditional Chinese help set in its ?lang=zh-Hant preview.
+ {tag:'zh-Hant',title:'Front ZT-HELP: a ?lang=zh-Hant help viewer fetches only its translated help chunks and switches to the original',label:'翻譯：OpenVireo的網頁改編譯文（不是CLEA的文本）',text:'要載入供分類的光譜'},
  // Front RU-HELP: the Russian help set in its ?lang=ru preview.
  {tag:'ru',title:'Front RU-HELP: a ?lang=ru help viewer fetches only its translated help chunks and switches to the original',label:'Перевод: веб-адаптация OpenVireo (не текст CLEA)',text:'Чтобы загрузить спектр для классификации'},
 ] as const;

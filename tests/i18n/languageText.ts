@@ -261,10 +261,10 @@ export const CHINESE_SIMPLIFIED_TEXT=language('zh-Hans',zhHans,zhHansOriginals,{
  [APP_SHELL_ZH_HANS,CAMERA_ZH_HANS,FIELD_INFO_ZH_HANS,FIELD_READ_DETAILS_ZH_HANS,HELP_MENU_ZH_HANS,LANGUAGE_CHOICE_ZH_HANS,NAKED_EYE_ZH_HANS,OBJECT_X_LAB_ZH_HANS,OBSERVATION_METADATA_ZH_HANS,OBSERVATORY_ZH_HANS,POLISH_ZH_HANS,PROJECT_LINKS_ZH_HANS,QSO_LIST_ZH_HANS,SOUND_ZH_HANS,TOUR_ZH_HANS,VARIABLE_STARS_ZH_HANS],/[\p{sc=Han}，。、：；？！（）]/u,'');
 /** Front ZT0: Traditional Chinese (Taiwan) before its release, behind `?lang=zh-Hant` (an en-US browser: tests/fixtures/language.ts
  * contextLocale). ZT0 translated the shell, ZT1 the observatory with its maps, all of VIREO's originals and exercises E01–E03, ZT2
- * exercises E04, E05, E06 and E08 and the radio telescope; ZT-HELP adds the help to `done` and its maps. Its letters are Han and
+ * exercises E04, E05, E06 and E08 and the radio telescope, ZT-HELP the help files and the help maps; each adds its area to `done`. Its letters are Han and
  * the full-width marks ，。、：；？！「」（）, which VIREO's English files and OpenVireo's exports never hold. */
 export const CHINESE_TRADITIONAL_TEXT=language('zh-Hant',zhHant,zhHantOriginals,{appShell:APP_SHELL_ZH_HANT,helpMenu:HELP_MENU_ZH_HANT,projectLinks:PROJECT_LINKS_ZH_HANT,tour:TOUR_ZH_HANT,languageChoice:LANGUAGE_CHOICE_ZH_HANT},
- [APP_SHELL_ZH_HANT,CAMERA_ZH_HANT,FIELD_INFO_ZH_HANT,FIELD_READ_DETAILS_ZH_HANT,HELP_MENU_ZH_HANT,LANGUAGE_CHOICE_ZH_HANT,NAKED_EYE_ZH_HANT,OBJECT_X_LAB_ZH_HANT,OBSERVATION_METADATA_ZH_HANT,OBSERVATORY_ZH_HANT,POLISH_ZH_HANT,PROJECT_LINKS_ZH_HANT,QSO_LIST_ZH_HANT,SOUND_ZH_HANT,TOUR_ZH_HANT,VARIABLE_STARS_ZH_HANT],/[\p{sc=Han}，。、：；？！「」（）]/u,'?lang=zh-Hant',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08']);
+ [APP_SHELL_ZH_HANT,CAMERA_ZH_HANT,FIELD_INFO_ZH_HANT,FIELD_READ_DETAILS_ZH_HANT,HELP_MENU_ZH_HANT,LANGUAGE_CHOICE_ZH_HANT,NAKED_EYE_ZH_HANT,OBJECT_X_LAB_ZH_HANT,OBSERVATION_METADATA_ZH_HANT,OBSERVATORY_ZH_HANT,POLISH_ZH_HANT,PROJECT_LINKS_ZH_HANT,QSO_LIST_ZH_HANT,SOUND_ZH_HANT,TOUR_ZH_HANT,VARIABLE_STARS_ZH_HANT],/[\p{sc=Han}，。、：；？！「」（）]/u,'?lang=zh-Hant',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08','help']);
 /** Front RU0: Russian, behind `?lang=ru` before its release (an en-US browser): RU0 translated the shell, RU1 the observatory with
  * all of VIREO's originals, RU2 exercises E01 and E02, RU3 exercise E03, RU4 exercises E04 and E05, RU5 the radio telescope, RU6
  * exercises E06 and E08, and RU-HELP the help files and help maps. Front RU-REL: released, so every area is done and its specs open
@@ -515,6 +515,8 @@ import {HELP_VIEWER_JA} from '../../src/i18n/ja/maps/helpViewer';
 import {WEB_HELP_JA} from '../../src/i18n/ja/maps/webHelp';
 import {HELP_VIEWER_ZH_HANS} from '../../src/i18n/zh-hans/maps/helpViewer';
 import {WEB_HELP_ZH_HANS} from '../../src/i18n/zh-hans/maps/webHelp';
+import {HELP_VIEWER_ZH_HANT} from '../../src/i18n/zh-hant/maps/helpViewer';
+import {WEB_HELP_ZH_HANT} from '../../src/i18n/zh-hant/maps/webHelp';
 import {HELP_VIEWER_RU} from '../../src/i18n/ru/maps/helpViewer';
 import {WEB_HELP_RU} from '../../src/i18n/ru/maps/webHelp';
 import type {HELP_VIEWER_EN} from '../../src/help/HelpViewerMessages';
@@ -547,6 +549,9 @@ export const HELP_TEXT:Readonly<Record<string,HelpText>>=Object.freeze({
  // Front ZH-HELP: the search query types the Latin letter full-width and lower-case («ｙ»); the translation's fold (NFKC, case) finds «Y».
  'zh-Hans':{helpViewer:HELP_VIEWER_ZH_HANS,webHelp:WEB_HELP_ZH_HANS,pulsarFirstRow:'-基本操作-',reminderQuestion:'你真的确定已经完全完成本实验了吗？',
   loadSpectrumText:'要载入待分类的光谱',searchRow:/测量\/标记光谱特征/,searchQuery:'垂直位置（ｙ坐标）',searchHit:'光标的垂直位置（Y坐标）',controlsRow:/^ *控件$/,lineHelpText:'约在A0处开始可见'},
+ // Front ZT-HELP: as ZH-HELP, the query types the Latin letter full-width and lower-case («ｙ»); the fold (NFKC, case) finds «Y».
+ 'zh-Hant':{helpViewer:HELP_VIEWER_ZH_HANT,webHelp:WEB_HELP_ZH_HANT,pulsarFirstRow:'-基本操作-',reminderQuestion:'你真的確定已經完全完成本實驗了嗎？',
+  loadSpectrumText:'要載入供分類的光譜',searchRow:/測量／標記光譜特徵/,searchQuery:'垂直位置（ｙ座標）',searchHit:'游標的垂直位置（Y座標）',controlsRow:/^ *控制項$/,lineHelpText:'約在A0處開始可見'},
  // Front RU-HELP: the search folds case and reads ё as е, so an upper-case query with Е finds the line with ё.
  'ru':{helpViewer:HELP_VIEWER_RU,webHelp:WEB_HELP_RU,pulsarFirstRow:'-Основные операции-',reminderQuestion:'Вы УВЕРЕНЫ, что полностью завершили эту работу?',
   loadSpectrumText:'Чтобы загрузить спектр для классификации',searchRow:/Измерить и отметить спектральные особенности/,searchQuery:'КОГДА ВЫ НАВЕДЕТЕ КУРСОР',searchHit:'Когда вы наведёте курсор',controlsRow:/^ *Элементы управления$/,lineHelpText:'Впервые видна около A0'},

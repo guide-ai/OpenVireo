@@ -13,6 +13,7 @@ import idGlossary from '../i18n/id/glossary.json';
 import hiGlossary from '../i18n/hi/glossary.json';
 import jaGlossary from '../i18n/ja/glossary.json';
 import zhHansGlossary from '../i18n/zh-hans/glossary.json';
+import zhHantGlossary from '../i18n/zh-hant/glossary.json';
 import ruGlossary from '../i18n/ru/glossary.json';
 import {HelpTranslationError,helpTranslationText} from './helpTranslation';
 import {LANGUAGES,type LanguageEntry} from '../i18n/languages';
@@ -38,7 +39,7 @@ function sectionOf(file:Uint8Array|string,title:string):number{
 }
 /** The languages that translate the help files, with the describe title each keeps (Spanish: ES-HELP's). */
 const HELP_LANGUAGES=LANGUAGES.filter((l):l is LanguageEntry&{help:{related:string}}=>!!l.help);
-const TITLES:Readonly<Record<string,string>>={'es-419':'the Spanish help files (Front ES-HELP)','pt-BR':'the Brazilian Portuguese help files (Front PT-HELP)','fr':'the French help files (Front FR-HELP)','id':'the Indonesian help files (Front ID-HELP)','hi':'the Hindi help files (Front HI-HELP)','ja':'the Japanese help files (Front JA-HELP)','zh-Hans':'the Simplified Chinese help files (Front ZH-HELP)','ru':'the Russian help files (Front RU-HELP)'};
+const TITLES:Readonly<Record<string,string>>={'es-419':'the Spanish help files (Front ES-HELP)','pt-BR':'the Brazilian Portuguese help files (Front PT-HELP)','fr':'the French help files (Front FR-HELP)','id':'the Indonesian help files (Front ID-HELP)','hi':'the Hindi help files (Front HI-HELP)','ja':'the Japanese help files (Front JA-HELP)','zh-Hans':'the Simplified Chinese help files (Front ZH-HELP)','zh-Hant':'the Traditional Chinese help files (Front ZT-HELP)','ru':'the Russian help files (Front RU-HELP)'};
 /** Front SC7: the help sets written in Latin-1 (any script may be, now; these two are, by their own rule), each with the
  * characters it may add beyond Latin-1. Front PT-SEO: Portuguese groups thousands with U+202F on screen (user decision of
  * 2026-11-10), which Latin-1 cannot hold, so PULSRANL's «2 400 000» used U+00A0 until SC7 made translated help text; U+202F is a
@@ -53,7 +54,7 @@ const LATIN1_HELP:Readonly<Record<string,string>>={'es-419':'','pt-BR':'\u202f',
 const asLatin1=(s:string)=>s.replaceAll('\u202f','\u00a0').replaceAll('\u2019','\u00b4').replaceAll('\u0153','\u00f8').replaceAll('\u0152','\u00d8');
 const viaLatin1=<T,>(value:T):T=>JSON.parse(asLatin1(JSON.stringify(value)));
 it('Front PT-HELP: Spanish and Brazilian Portuguese translate the help files, each with its own marker',()=>{
- expect(HELP_LANGUAGES.map(l=>[l.tag,l.help.related])).toEqual([['es-419','TEMAS RELACIONADOS'],['pt-BR','TÓPICOS RELACIONADOS'],['fr','RUBRIQUES CONNEXES'],['id','TOPIK TERKAIT'],['hi','संबंधित विषय'],['ja','関連項目'],['zh-Hans','相关主题'],['ru','СВЯЗАННЫЕ ТЕМЫ']]);
+ expect(HELP_LANGUAGES.map(l=>[l.tag,l.help.related])).toEqual([['es-419','TEMAS RELACIONADOS'],['pt-BR','TÓPICOS RELACIONADOS'],['fr','RUBRIQUES CONNEXES'],['id','TOPIK TERKAIT'],['hi','संबंधित विषय'],['ja','関連項目'],['zh-Hans','相关主题'],['zh-Hant','相關主題'],['ru','СВЯЗАННЫЕ ТЕМЫ']]);
  for(const l of HELP_LANGUAGES)expect(TITLES[l.tag],l.tag).toBeDefined();
 });
 
@@ -378,6 +379,39 @@ describe('the Simplified Chinese help texts follow the zh-Hans lints',()=>{
  });
  it('every allowance is still needed and has a reason',()=>{
   for(const [key,a] of Object.entries(ZH_HANS_ALLOWED)){expect(a.reason.length,key).toBeGreaterThan(20);for(const m of a.matches)expect(hitsOf(key).map(h=>h.match),`${key} ${m}`).toContain(m);}
+ });
+});
+
+// Front ZT-HELP (plan front-i18n-zh.md §6.3), as ZH-HELP: each paragraph of every Traditional Chinese help text through the zh-Hant profile's typography
+// (full-width ，。、：；？！ next to Han, no space between Han and Latin text), its check (what the CJK punctuation fixer would still
+// change, any Han character outside Big5), its 你 register and the zh-Hant glossary's `forbidden` (Chinese has no word boundary, so
+// a forbidden word matches anywhere, as Japanese). A wrapped line joins the next with no space when either side is wide (Han, full-width
+// marks; the corner quotes 「」『』 are full-width marks), as ZH-HELP;
+// a column gap of VIREO's tables reads as one ideographic space. Also no straight " in a text file and no full-width digit.
+const ZH_HANT_ALLOWED:Record<string,{matches:string[];reason:string}>={};
+describe('the Traditional Chinese help texts follow the zh-Hant lints',()=>{
+ const zh=(key:string):Module=>modules[`../i18n/zh-hant/help/${key}.ts`];
+ const profile=PROFILES['zh-Hant'];
+ const WORDS=(w:readonly string[])=>new RegExp(`(?:${w.join('|')})`,'u');
+ const forbidden=(zhHantGlossary.forbidden as {words:string[];use:string}[]).map(f=>({label:'glossary forbidden',pattern:WORDS(f.words),use:f.use}));
+ const patterns=[...profile.typography,...profile.register.patterns,...forbidden];
+ const wide=/[\p{sc=Han}\u300c-\u300f\u3000-\u303f\uff01-\uff60]/u;
+ const paragraphs=(text:string)=>text.split(/\n[ ]*\n/).map(p=>p.split('\n').map(l=>l.trim()).filter(Boolean).reduce((a,l)=>a===''?l:a+(wide.test(a.at(-1)!)||wide.test(l[0]!)?'':' ')+l,'')).filter(Boolean);
+ const hitsOf=(key:string)=>{
+  const out:{label:string;match:string;use:string}[]=[];
+  for(const para of paragraphs(zh(key).text).map(p=>p.replace(/(?<=\S) {2,}(?=\S)/g,'\u3000'))){
+   for(const p of patterns){const m=new RegExp(p.pattern.source,p.pattern.flags.replace('g','')).exec(para);if(m)out.push({label:p.label,match:m[0],use:p.use});}
+   for(const h of profile.typographyCheck?.(para,'')??[])out.push(h);
+  }
+  return out;
+ };
+ for(const key of Object.keys(HELP_FILES))it(`${key}: no zh-Hant lint error (full-width marks, spacing, Big5 characters, register, forbidden terms)`,()=>{
+  expect(hitsOf(key).filter(h=>!ZH_HANT_ALLOWED[key]?.matches.includes(h.match)).map(h=>`${h.label}: «${h.match}», use ${h.use}`)).toEqual([]);
+  if(!key.endsWith('.LST')&&key!=='SPECLNS.LNL')expect(zh(key).text,key).not.toMatch(/"/);
+  expect(zh(key).text,key).not.toMatch(/[０-９]/);
+ });
+ it('every allowance is still needed and has a reason',()=>{
+  for(const [key,a] of Object.entries(ZH_HANT_ALLOWED)){expect(a.reason.length,key).toBeGreaterThan(20);for(const m of a.matches)expect(hitsOf(key).map(h=>h.match),`${key} ${m}`).toContain(m);}
  });
 });
 

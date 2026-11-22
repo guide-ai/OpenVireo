@@ -1,0 +1,45 @@
+// Front ZT-HELP [W]: OpenVireo's Traditional Chinese (zh-Hant, Taiwan) web adaptation of VIREO's LSSHLP.LST. Not CLEA's text: the original bytes,
+// hashes and provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Traditional Chinese chunk.
+export const language='zh-Hant';
+export const sourceName='LSSHLP.LST';
+export const sourceSha256='f4ee3de45cead6cac0ae53458c94f9927bd48248a573632787d9e6a275e05c10';
+export const text=`'入門' 'begin'
+'登入' 'lsslab.txt'
+'操作望遠鏡' 'begin'
+'開啟望遠鏡視窗' 'lsslab.txt'
+'望遠鏡控制項' 'lsslab.txt'
+'操作望遠鏡' 'end'
+'更換望遠鏡' 'begin'
+'申請望遠鏡時間' 'lsslab.txt'
+'存取各望遠鏡' 'lsslab.txt'
+'更換望遠鏡' 'end'
+'更換星場' 'lsslab.txt'
+'入門' 'end'
+
+'擷取資料' 'begin'
+'使用光譜儀' 'begin'
+'開啟光譜儀視窗' 'lsslab.txt'
+'開始／繼續計數' 'lsslab.txt'
+'停止計數' 'lsslab.txt'
+'測量光譜' 'lsslab.txt'
+'列印光譜' 'lsslab.txt'
+'使用光譜儀' 'end'
+'計算速度' 'begin'
+'手動計算' 'lsslab.txt'
+'驗證計算' 'lsslab.txt'
+'計算速度' 'end'
+'返回望遠鏡視窗' 'lsslab.txt'
+'擷取資料' 'end'
+
+'資料操作' 'begin'
+'載入資料' 'lsslab.txt'
+'檢視資料' 'lsslab.txt'
+'儲存資料' 'lsslab.txt'
+'列印資料' 'lsslab.txt'
+'繪製結果' 'begin'
+'將結果儲存到共用繪圖檔案' 'lsslab.txt'
+'開啟「楔形圖」程式' 'lsslab.txt'
+'繪製結果' 'end'
+'使用試算表程式' 'lsslab.txt'
+'資料操作' 'end'
+`;
