@@ -17,12 +17,12 @@ export const POLISH_ZH_HANT:Translation<typeof POLISH_MESSAGES_EN>=Object.freeze
    Object.freeze({label:'天體X',help:'天體X各目標的光譜。'}),
    Object.freeze({label:'多目標光譜儀',help:'天文台中的多目標光譜儀卡片，用於內建的實驗視野（天體X實驗中也可使用）。'}),
    Object.freeze({label:'光譜分析器',help:'測量譜線位移並記錄紅移。'}),
-   Object.freeze({label:'分類',help:'對照標準星光譜為恆星光譜分類。'}),
+   Object.freeze({label:'恆星分類',help:'對照標準星光譜為恆星光譜分類。'}),
   ]),
-  retired:'在擷取功能出現之前，本頁曾顯示備用光源輪廓（M82、Coma1、Coma2）的預覽。它已於2026-10-29停用，由上述路徑取代。',
+  retired:'在擷取功能出現之前，本頁曾顯示預先準備的光源輪廓（M82、Coma1、Coma2）的預覽。它已於2026-10-29停用，由上述路徑取代。',
  }),
  clusterGuide:Object.freeze({nav:'星團赫羅圖指南'}),
- multiSpecPrint:Object.freeze({unavailable:'無法使用「列印所選視野」（Print Selection Field）：此處沒有顯示多目標光譜儀視野。'}),
+ multiSpecPrint:Object.freeze({unavailable:'無法使用「列印選擇視野」（Print Selection Field）：此處沒有顯示多目標光譜儀視野。'}),
  infoListPrint:Object.freeze({
   note:'VIREO清單頁面的列印預覽：日期和時間（此處採用你的瀏覽器的格式）、實驗檯編號行（本站不記錄）、學生姓名行（留空：這裡沒有登入）、視窗標題和清單各行，使用Courier字型。行距和縮排沿用VIREO的頁面；不重現印表機的度量。VIREO的列印工作標題不會列印在頁面上。',
  }),
@@ -32,7 +32,7 @@ export const POLISH_ZH_HANT:Translation<typeof POLISH_MESSAGES_EN>=Object.freeze
  }),
  hotListEdit:Object.freeze({
   note:'「編輯」、「刪除」和「復原」會更改共用的目標清單，與「原版目標清單」編輯器一樣；「復原」只會復原在此處最近一次的「編輯」或「刪除」。',
-  deleteNote:'網頁改編：該行會從共用清單中移除；「復原」會把它放回檔案中原來的位置（VIREO按赤經重新插入）。',
+  deleteNote:'網頁改編：該列會從共用清單中移除；「復原」會把它放回檔案中原來的位置（VIREO按赤經重新插入）。',
  }),
  hotListPopup:Object.freeze({
   note:'「編輯」、「刪除」和「復原」位於本頁的「原版目標清單」編輯器中。',
@@ -62,11 +62,11 @@ export const POLISH_ZH_HANT:Translation<typeof POLISH_MESSAGES_EN>=Object.freeze
  about:Object.freeze({
   nativeNote:'VIREO的「關於」對話方塊，文字取自原程式（不含其標誌）。本視窗的其餘部分介紹這個網頁重建版。',
   siteTitle:'本站',
-  site:'OpenVireo是對Project CLEA的VIREO的免費、非商業網頁重建，向所有人開放，依據VIREO還原的行為和原版資料檔案在瀏覽器中重新建構。它不是CLEA的程式，也不聲稱與其等同；網頁改編之處都會在出現的地方標明。',
+  site:'OpenVireo是對Project CLEA的VIREO的免費、非商業網頁重建，向所有人開放，依據VIREO復原的行為和原版資料檔案在瀏覽器中重新建構。它不是CLEA的程式，也不聲稱與其等價；網頁改編之處都會在出現的地方標明。',
   worksTitle:'可用功能',
   works:Object.freeze([
    'VIREO的七個實驗都有引導式的網頁路徑：哈伯定律（13個星系）、大尺度結構、恆星分類、昴宿星團測光（24顆恆星）、星團赫羅圖、脈衝星，以及探尋天體X。',
-   '光學天文台：圓頂、望遠鏡、尋星鏡和望遠鏡檢視、可選地平限制的轉動、目標清單、觀測站和日期、星表和視野資訊、變星清單和類星體清單。',
+   '光學天文台：圓頂、望遠鏡、尋星鏡和望遠鏡檢視、帶可選地平線限制的轉動、目標清單、觀測站和日期、星表和視野資訊、變星清單和QSO清單。',
    '儀器：針對實驗目標的光譜儀和光度計、CCD相機和紅外線相機（即時查詢星表）、多目標光譜儀（用於內建的實驗視野和天體X實驗），以及帶接收機和脈衝星分析的電波望遠鏡。',
    '分析：光譜測量和分類、哈伯擬合和昴宿星團擬合、LSS楔形圖、你的觀測結果，以及已儲存的探究。',
   ]),

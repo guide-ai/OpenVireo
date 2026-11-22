@@ -3,7 +3,7 @@ import type {Translation} from '../../maps';
 /** Front ZT1: Traditional Chinese (zh-Hant, Taiwan) for the Field Information and Edit Mode web texts (Front O forms), adapted from the reviewed zh-Hans with the English as the source. A web adaptation by OpenVireo, not CLEA's. */
 export const FIELD_INFO_ZH_HANT:Translation<typeof FIELD_INFO_MESSAGES_EN>=Object.freeze({
  editModeLabel:'編輯模式（講師，VIREO）',
- editModeAdaptation:'網頁改編：在VIREO中，編輯模式（Edit Mode）是講師選項，需透過講師登入或示範模式（Demonstration Mode）才能使用。在這裡，這些選項只在講師模式（示範模式的網頁形式，無需密碼）下才會開啟；此核取方塊預設關閉，頁面不會儲存它（只有「儲存更新」（Save Updates）會把它寫入你自行保管的選項檔案），「結束」會將其關閉。它只會啟用望遠鏡檢視中的按一下功能（「星表天體」（Catalog Object），其中星系紅移已隱藏，因為那是實驗答案）以及「檔案 › 視野資訊」（Field Information）；它的其他作用（目標清單的編輯與儲存、其他列印版面）未實作。',
+ editModeAdaptation:'網頁改編：在VIREO中，編輯模式（Edit Mode）是講師選項，需透過講師登入或示範模式（Demonstration Mode）才能使用。在這裡，這些選項只在講師模式（示範模式的網頁形式，無需密碼）下才會開啟；此核取方塊預設關閉，頁面不會儲存它（只有「儲存更新」（Save Updates）會把它寫入你自行保管的選項檔案），「離開」會將其關閉。它只會啟用望遠鏡檢視中的按一下功能（「星表天體」（Catalog Object），其中星系紅移已隱藏，因為那是實驗答案）以及「檔案 › 視野資訊」（Field Information）；它的其他作用（目標清單的編輯與儲存、其他列印版面）未實作。',
  guideTitle:'使用方法（講師）',
  guide:Object.freeze([
   '將望遠鏡指向任意位置並切換到望遠鏡檢視：檢視隨即顯示完整的星表視野，內建的實驗資料包在各自的指向處讀取，其他位置則讀取精簡版導星星表（Guide Star Catalog）的分塊。按一下任一天體即可開啟「星表天體」及其星表數值。',
@@ -13,7 +13,7 @@ export const FIELD_INFO_ZH_HANT:Translation<typeof FIELD_INFO_MESSAGES_EN>=Objec
  ]),
  menuHelp:'講師工具（編輯模式）：目前視野中天體的清單。關閉編輯模式後再關閉「光學模擬選項」，即可再次隱藏它們。',
  printAdaptation:'網頁改編：「列印」會開啟頁面主體的列印預覽（日期和時間採用瀏覽器的格式，並包含視窗標題和清單）。印表機的頁面版面和字型有所不同。',
- saveAdaptation:'網頁改編：「儲存文字」會將清單下載為文字檔案（每列對應一列資料，CRLF，Latin-1），而不是彈出儲存對話方塊；下載檔名為網頁選擇。',
+ saveAdaptation:'網頁改編：「儲存文字」會將清單下載為文字檔案（每一列寫成一行，CRLF，Latin-1），而不是彈出儲存對話方塊；下載檔名為網頁選擇。',
  modelessNote:'望遠鏡移動時，此清單保持開啟；要針對新視野重新整理它，請從選單中重新開啟。',
  editLayerLabel:'望遠鏡檢視，編輯模式：按一下一個天體，或用方向鍵移動游標（按住Shift可加大步幅）後按Enter，即可開啟「星表天體」。',
  editLayerCaption:(pack:string,stars:number,galaxies:number,finder=false)=>finder?`編輯模式 · 尋星鏡視野讀自精簡版導星星表（使用VIREO尋星鏡的星表讀取器，星等直至尋星鏡星等極限11.5）：${stars}顆星，已載入的7.5°視野中有${galaxies}個星系（檢視顯示其中央2.5°）。繪製樣式為網頁選擇。`:`編輯模式 · ${pack==='gsc-tiles'?'讀自精簡版導星星表的視野':`已認證視野${pack}`}：${stars}顆恆星和QSO，已載入的0.75°視野中有${galaxies}個星系（檢視顯示其中央15′）。繪製樣式為網頁選擇。`,

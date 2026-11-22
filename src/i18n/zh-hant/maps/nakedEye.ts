@@ -8,7 +8,7 @@ export const NAKED_EYE_ZH_HANT:Translation<typeof NAKED_EYE_MESSAGES_EN>=Object.
  loading:'正在載入肉眼可見恆星檔案……',
  fileError:'無法載入肉眼可見恆星檔案（NkdEye.dat），或其與記錄的大小和SHA-256不符。',
  caption:(site:string,utc:string,count:number)=>`${site} · ${utc} UT（圓頂開啟的時刻；關閉後重新開啟圓頂即可重繪）· 視野內共${count}顆星。`,
- adaptation:'網頁改編：星星依VIREO的亮度等級繪製為圓盤，而不是它的星點精靈圖，圓頂的活門也不繪製。位置、可見區域（包括VIREO的一個怪異之處：朝南時，中線以西一點的許多星會被丟掉）以及按一下右鍵拾取，都與原版一致。',
+ adaptation:'網頁改編：星星依VIREO的亮度等級繪製為圓盤，而不是它的星點圖示，圓頂天窗也不繪製。位置、可見區域（包括VIREO的一個怪異之處：朝南時，中線以西一點的許多星會被丟掉）以及按一下右鍵選取，都與原版一致。',
  showAtCursor:'顯示游標處的星',
  tapAdaptation:'針對觸控螢幕的網頁改編：輕點天空移動游標（+），再按「顯示游標處的星」。僅輕點不會開啟該星，因為在VIREO中按一下左鍵什麼也不會發生。',
  magNote:'與VIREO一樣，可以輸入V星等，但不會儲存任何內容。',
