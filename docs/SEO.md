@@ -489,6 +489,67 @@ decision. OpenSEO can track Japanese keywords (for example «ハッブルの法�
 market, and Russian keywords (for example «закон Хаббла лабораторная работа», «CLEA астрономия», «диаграмма Герцшпрунга — Рассела
 скопления») with Russia as the market.
 
+# Front ZH-SEO: Simplified Chinese search pages
+
+User decision 8 of 2026-11-09 and the Chinese decisions of 2026-11-19 (AGENTS.md): with the Simplified Chinese release (ZH-REL, the
+same front, ZH-REL+SEO), its home page `/zh-hans/` and lab pages `/zh-hans/labs/`, with `hreflang` and a Chinese preview image,
+following PT-SEO's data-driven design as the other languages did. Static site only; no new external service (Baidu is not targeted:
+Baidu's webmaster tools would be one). The language rules are in `docs/I18N.md`, "Simplified Chinese: release and search pages
+(ZH-REL+SEO)".
+
+## What changed
+
+- **Data only.** A `zh-Hans` row in `src/seo/languages.ts` (`SEO_LANGUAGES`, between Japanese and Russian, in registry order), its
+  lab texts in `src/seo/labs.zh-hans.ts`, its prefix `/zh-hans` in `SEO_PATH_PREFIX` (`src/seo/labSlugs.ts`; equal to the
+  registry's `pagePath`). `src/seo/pages.ts`, the Vite plugin and the image renderer are unchanged: they render the row.
+- **Chinese pages**: `/zh-hans/` (static home: what OpenVireo is, «打开天文台», the seven labs, «使用方式», the credit),
+  `/zh-hans/labs/` and `/zh-hans/labs/<slug>/` with the English slugs. `<html lang="zh-Hans">`, Chinese titles (38–47 display
+  columns, a Han character counting two) and descriptions (112–120), self canonical, `og:locale` `zh_CN`, Chinese JSON-LD
+  (`learningResourceType` «交互式实验», `educationalLevel` «高中»/«大学本科», `isBasedOn` crediting Project CLEA, Gettysburg College and
+  the NSF). «打开实验» goes to `/?lang=zh-Hans#lab=<slug>`. A lab is a «实验» and an investigation a «探究» (the app's words since
+  ZH0), and the lab names are the app's own Chinese names from its welcome («哈勃定律», «大尺度结构», «恒星分类», «昴星团测光»,
+  «星团赫罗图», «脉冲星», «天体X»). The text addresses the reader as 你, writes full-width ，。、：；？！（） next to Han with no space
+  between Han and Latin text or digits, and uses the glossary's terms («红移», «楔形图», «等值宽度», «主序», «色散量», «CCD相机»,
+  «光谱分析器»). The home's «使用方式» carries the numbers sentence: the decimal point on screen and in typed input, half-width digits
+  (Chinese writes «24,000» as English, so no thousands sentence), and files the site writes staying English. The footer says
+  «本页中文文本是OpenVireo的网页改编，不是CLEA的文本。» (the plan's footer, without the spaces around OpenVireo that the CJK
+  typography forbids).
+- **hreflang** on every page pair (81 pages, 9 per language): `en`, `es`, `pt-BR`, `pt`, `fr`, `id`, `hi`, `ja`, `zh-Hans`, `ru` and
+  `x-default` → English. `zh-Hans` is a script subtag, which Google's hreflang guide names for Simplified Chinese (checked on
+  2026-11-21; it also derives the Simplified script from `zh-CN`, `zh-SG` and the like); the table's format check now admits an
+  ISO 15924 script between language and region. Traditional searchers (`zh-TW`, `zh-HK`, `zh-MO`) keep the English x-default, as
+  those browsers keep English until zh-Hant exists. The sitemap lists all 81 addresses with the same alternates. Every other
+  language's pages gain `og:locale:alternate` `zh_CN` and a visible «简体中文» link (`hreflang`/`lang` `zh-Hans`).
+- **App**: the observatory footer's labs link goes to `/zh-hans/labs/` when the app is in Simplified Chinese (the prefix table gains
+  `'zh-Hans':'/zh-hans'`).
+- **404 page**: an eighth `<section>` (the ninth language, after the English block), «找不到页面 · 此地址不属于OpenVireo。», under `lang="zh-Hans"`, linking `/?lang=zh-Hans#observatory`
+  («打开天文台»), and «未找到» in the title.
+- **Preview image** `public/og-image-zh-hans.png` (1200×630, 276,670 bytes, SHA-256 `546fa792…b3e3ae9`): the design of the others
+  with Chinese text («浏览器中的CLEA VIREO天文实验», shortened from «在浏览器中进行…» because that title broke inside «天文实验» at 1040
+  px), rendered by `node scripts/render-og-image.mjs zh-Hans` with the scripts fontconfig (Noto Sans CJK SC for `lang="zh-Hans"`);
+  an original drawing, no CLEA image. Two renders gave the same bytes.
+- **Headers**: `/zh-hans/*` is `no-cache`, like the other language prefixes (`public/_headers`, `src/deployHeaders.test.ts`).
+
+## Tests
+
+- `src/seo/languages.test.ts`: Simplified Chinese joins the per-language checks with its own rules (profile `zh-Hans`, glossary field
+  `zh-Hans`, the claims «官方翻译», «官方版本», «CLEA的翻译» and the like, never «非官方», the reconstruction phrase «免费网页重建版»,
+  the home's «免费、非官方的网页重建版», the adaptation and credit sentences, `zh_CN`, its image). `src/seo/pages.test.ts` (81 sitemap
+  addresses, the nine-language 404) and `src/seo/direction.test.ts` (the Chinese link in the RTL-fixture pages) follow.
+- `tests/i18n/seo.spec.ts`: the same flows for Simplified Chinese (`/zh-hans/`, «打开实验» on the pulsar and Object X pages, English
+  back).
+- `tests/release/pages-smoke.pages.ts`: the Chinese pages and image with the release headers, the 308s, the alternates on `/` and
+  each home, the sitemap, the 404's Chinese section, and a Chinese lab page opening the app under the release policy.
+
+## For the user (not done by the site)
+
+After the deploy: in Google Search Console resubmit `https://openvireo.space/sitemap.xml` (it now lists 81 addresses) and use URL
+Inspection on `https://openvireo.space/zh-hans/` and one Chinese lab page (for example `/zh-hans/labs/hubble/`), then «Request
+indexing». Google is not reachable from mainland China without a VPN, so Chinese search there runs on Baidu (and Bing, which serves
+the mainland); adding the site to Baidu's webmaster tools would be a new external service that needs the user's own decision.
+OpenSEO can track Simplified Chinese keywords (for example «哈勃定律 实验», «CLEA 天文», «赫罗图 星团 实验») with Singapore and Malaysia,
+where Simplified Chinese is written, as markets, since mainland Google results are not available.
+
 # Front HOME: a welcome on the observatory's first screen
 
 User request, 2026-11-10: before the site is announced to the general public (curious adults and hobby learners, for example
