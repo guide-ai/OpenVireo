@@ -31,7 +31,7 @@ import {PSEUDO_HTML_LANG,PSEUDO_LETTERS,SCRIPT_PSEUDO,isPseudo,pseudoName,pseudo
 // of tests/fixtures/pseudoNames.ts computed with the app's own pure transforms, which matches English, qps and every script form.
 // Front FR0: French (its ?lang=fr preview) in the toolbar Save investigation family; Front ID0: Indonesian, Front HI0: Hindi,
 // Front JA0: Japanese, Front ZH0: Simplified Chinese and Front RU0: Russian the same way.
-type Locale='en'|'qps'|'es-419'|'pt-BR'|'fr'|'id'|'hi'|'ja'|'zh-Hans'|'ru'|ScriptPseudo;
+type Locale='en'|'qps'|'es-419'|'pt-BR'|'fr'|'id'|'hi'|'ja'|'zh-Hans'|'zh-Hant'|'ru'|ScriptPseudo;
 type File=Readonly<{name:string;bytes:Buffer}>;
 /** An exact accessible-name matcher for English text that also matches its form in every pseudo-locale (Front SC10). */
 const L=(text:string)=>pseudoName(text);
@@ -49,7 +49,7 @@ const SPANISH=(()=>{
 const exact=(text:string)=>new RegExp(`^\\s*${text.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&').replace(/\s+/g,'\\s+')}\\s*$`);
 /** A translated language's letters that English text never has (Spanish á é í ó ú ñ ¿ ¡; Portuguese ã õ ç â ê ô à…). */
 const LETTERS:Readonly<Record<string,RegExp>>={...Object.fromEntries(TRANSLATED.map(t=>[t.tag,t.letters])),...PSEUDO_LETTERS};
-const HTML_LANG:Readonly<Record<Locale,string>>={en:'en','es-419':'es-419','pt-BR':'pt-BR',fr:'fr',id:'id',hi:'hi',ja:'ja','zh-Hans':'zh-Hans',ru:'ru',...PSEUDO_HTML_LANG};
+const HTML_LANG:Readonly<Record<Locale,string>>={en:'en','es-419':'es-419','pt-BR':'pt-BR',fr:'fr',id:'id',hi:'hi',ja:'ja','zh-Hans':'zh-Hans','zh-Hant':'zh-Hant',ru:'ru',...PSEUDO_HTML_LANG};
 /** Front ID0 (plan front-i18n-id.md §1.2 #2): languages written in ASCII alone, whose "letters" are words (Indonesian «yang», «dan»…):
  * as for the script pseudo-locales, they are looked for only in a file that is UTF-8 text, since a binary file's bytes (an SSP's
  * floats, FITS image data) can spell a short ASCII word by chance. */
@@ -57,11 +57,12 @@ const ASCII_LETTERS:ReadonlySet<string>=new Set(['id']);
 /** Front RU4: real languages written in a script whose letters a binary file can spell by chance: Cyrillic letters are two-byte UTF-8
  * (D0–D3 then 80–BF), which a hot list's doubles hold now and then (E05's Cluster Data HTL does), so Russian is looked for only in
  * a file that is UTF-8 text, as the script pseudo-locales are (Front SC10). Binary files are still compared whole. Front ZH4: Simplified
- * Chinese too, since a Han character is a three-byte sequence (E4–E9 then two 80–BF) that E05's observation DAT spells by chance. */
-const SCRIPT_LETTERS:ReadonlySet<string>=new Set(['ru','zh-Hans']);
+ * Chinese too, since a Han character is a three-byte sequence (E4–E9 then two 80–BF) that E05's observation DAT spells by chance;
+ * Front ZT0: and Traditional Chinese. */
+const SCRIPT_LETTERS:ReadonlySet<string>=new Set(['ru','zh-Hans','zh-Hant']);
 /** The accessible-name matcher of an English text in this locale: its Spanish form in es-419 (which must exist), Portuguese's or
  * French's own catalog form (which must exist; for French before its release, an identical entry), else `L`. */
-const N=(locale:Locale,text:string)=>{if(locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'||locale==='zh-Hans'||locale==='ru'){const t=TRANSLATED.find(x=>x.tag===locale)!;if(text==='Skip the tour')return exact(t.maps.tour.skip);if(text==='Save spectrum (.SSP)')return exact((e01e02Maps(locale).observatory as typeof OBSERVATORY_ES).spectrumSave.save);
+const N=(locale:Locale,text:string)=>{if(locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'||locale==='zh-Hans'||locale==='zh-Hant'||locale==='ru'){const t=TRANSLATED.find(x=>x.tag===locale)!;if(text==='Skip the tour')return exact(t.maps.tour.skip);if(text==='Save spectrum (.SSP)')return exact((e01e02Maps(locale).observatory as typeof OBSERVATORY_ES).spectrumSave.save);
  // Front PT1: a button whose English ends in “ ↗” is its catalog text plus the arrow the component adds, as for Spanish.
  // Front PT-REL: a released language's `text` throws for an English text it lacks (it no longer falls back), so look first.
  // Front FR1: a language before its release falls back to the English (no throw), so an English-only answer is no translation.
@@ -603,8 +604,8 @@ async function toolbarSave(browser:Browser,baseURL:string|undefined,locale:Local
 /** English's toolbar file, once per worker (as ENGLISH above). */
 let englishToolbar:Promise<File>|undefined;
 // Front SC10/SC12 review: one test per variant, against English's file (as `family`).
-// Front ID0: Indonesian (its ?lang=id preview) too; Front HI0: Hindi (?lang=hi), Front JA0: Japanese (?lang=ja), Front ZH0: Simplified Chinese (?lang=zh-Hans) and Front RU0: Russian (?lang=ru) too.
-for(const locale of ['qps','es-419','pt-BR','fr','id','hi','ja','zh-Hans','ru',...SCRIPT_PSEUDO] as const)
+// Front ID0: Indonesian (its ?lang=id preview) too; Front HI0: Hindi (?lang=hi), Front JA0: Japanese (?lang=ja), Front ZH0: Simplified Chinese (?lang=zh-Hans), Front ZT0: Traditional Chinese (?lang=zh-Hant) and Front RU0: Russian (?lang=ru) too.
+for(const locale of ['qps','es-419','pt-BR','fr','id','hi','ja','zh-Hans','zh-Hant','ru',...SCRIPT_PSEUDO] as const)
  test(`the shell toolbar: Save investigation is byte-identical in English and ${locale} [${locale}]`,async({browser,baseURL})=>{
   englishToolbar??=toolbarSave(browser,baseURL,'en');
   const english=await englishToolbar,file=await toolbarSave(browser,baseURL,locale);

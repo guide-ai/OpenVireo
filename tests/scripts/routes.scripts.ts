@@ -267,23 +267,24 @@ test('each script language gets its stack, its regional face and the Bold file; 
 // shell), at 320 and 1440 px: the home page, the observatory route with the header menu, the tour's first step and OpenVireo's help
 // viewer, with no layout problem or cut ink, and Han text drawn by Noto Sans CJK SC alone (never the JP or TC face, never a missing
 // glyph). Later ZH fronts added their routes; since ZH-REL the real language also walks every route in the shell walk above (a zh-CN browser).
-for(const width of [320,1440] as const)
-test(`zh-Hans at ${width} px: the translated shell lays out without overflow, clipping or cut ink, in the Simplified Chinese face`,async({page})=>{
+// Front ZT0: the same for Traditional Chinese (its ?lang=zh-Hant preview, the shell only), drawn by Noto Sans CJK TC alone.
+for(const [lang,variant,face] of [['zh-Hans','Simplified','Noto Sans CJK SC'],['zh-Hant','Traditional','Noto Sans CJK TC']] as const)for(const width of [320,1440] as const)
+test(`${lang} at ${width} px: the translated shell lays out without overflow, clipping or cut ink, in the ${variant} Chinese face`,async({page})=>{
  test.setTimeout(180_000);
  await page.setViewportSize({width,height:width===320?700:1000});
  const problems:string[]=[];
  const check=async(step:string)=>{
   await settle(page);
-  await expect(page.locator('html')).toHaveAttribute('lang','zh-Hans');
+  await expect(page.locator('html')).toHaveAttribute('lang',lang);
   for(const p of [...await layoutProblems(page,LAYOUT),...await verticalInkProblems(page)])problems.push(`${step}: ${p}`);
  };
- const go=async(hash:string)=>{await page.goto('about:blank');await page.goto(`/?lang=zh-Hans${hash?'#'+hash:''}`);await expect(page.locator('.investigation-toolbar')).toBeVisible({timeout:30_000});await expect(page.locator('h1:visible').first()).toBeVisible({timeout:30_000});};
+ const go=async(hash:string)=>{await page.goto('about:blank');await page.goto(`/?lang=${lang}${hash?'#'+hash:''}`);await expect(page.locator('.investigation-toolbar')).toBeVisible({timeout:30_000});await expect(page.locator('h1:visible').first()).toBeVisible({timeout:30_000});};
  await go('');await check('home');
  await go('observatory');await headerTools(page);await check('header menu');
- // DevTools reports the faces of a node's own text: tag the route's heading (从天空开始。).
+ // DevTools reports the faces of a node's own text: tag the route's heading (从天空开始。 or its Traditional form).
  await page.locator('h1:visible').first().evaluate(h=>{h.id='zh0-heading';});
  const fonts=await platformFonts(page,'#zh0-heading');
- expect(fonts.filter(f=>f.familyName.startsWith('Noto Sans CJK')).map(f=>f.familyName),'the heading').toEqual(['Noto Sans CJK SC']);
+ expect(fonts.filter(f=>f.familyName.startsWith('Noto Sans CJK')).map(f=>f.familyName),'the heading').toEqual([face]);
  expect(fonts.reduce((n,f)=>n+f.glyphCount,0)).toBeGreaterThan(4);
  await id(page,'main-help-menu').click();await id(page,'main-help-web').click();
  await expect(id(page,'web-help')).toBeVisible();await check('help viewer (OpenVireo)');
