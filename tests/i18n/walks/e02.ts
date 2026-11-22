@@ -56,7 +56,9 @@ export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={
 // line, so no other text can pass through it.
 // Front HI-REL: in an hi-IN browser the English page dates the wedge print by the browser locale and the Hindi page by its screen
 // language (decision 9 of 2026-11-09); CLDR's Hindi date-time is «9/11/2026, 7:00:20 am» (Latin digits and am/pm), so both read alike.
-export const SAME_PATTERN_IN:Readonly<Record<string,RegExp>>={fr:/^Survey\s+Field\s+\d\s+\d{1,2}Hr\s+\d{2}Min\s+[-+−]?\d{1,2}°\s+\d{2}'\s+\(\d{1,3}\s+galaxies\)$/,hi:/^\d{1,2}\/\d{1,2}\/\d{4}, \d{1,2}:\d{2}:\d{2} [ap]m$/};
+// Front ZT-REL: the same in a zh-TW browser, whose CLDR date-time «2026/11/9 上午7:00:11» (上午/下午) is both pages' print date; a
+// zh-CN browser's «2026/11/9 07:00:11» is NUMERIC already.
+export const SAME_PATTERN_IN:Readonly<Record<string,RegExp>>={fr:/^Survey\s+Field\s+\d\s+\d{1,2}Hr\s+\d{2}Min\s+[-+−]?\d{1,2}°\s+\d{2}'\s+\(\d{1,3}\s+galaxies\)$/,hi:/^\d{1,2}\/\d{1,2}\/\d{4}, \d{1,2}:\d{2}:\d{2} [ap]m$/,'zh-Hant':/^\d{4}\/\d{1,2}\/\d{1,2} [上下]午\d{1,2}:\d{2}:\d{2}$/};
 export const same=(text:string,L?:LanguageText)=>SAME.has(text)||NUMERIC.test(text)||RECORDED.test(text)||GALAXY.test(text)||(L!==undefined&&((SAME_IN[L.tag]?.has(text)??false)||(SAME_PATTERN_IN[L.tag]?.test(text)??false)));
 export const id=(page:Page|Locator,testId:string)=>page.getByTestId(testId);
 /** Front SC12: an English text's name in any pseudo-locale (qps and the script variants; tests/fixtures/pseudoNames.ts). */

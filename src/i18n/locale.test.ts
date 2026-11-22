@@ -129,14 +129,15 @@ describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-0
  it('Front ZH-REL: Simplified Chinese is released: zh, zh-CN, zh-SG, zh-MY and zh-Hans-* browsers (any case) open zh-Hans; Traditional browsers do not; storage is honoured',()=>{
   expect(isReleased('zh-Hans')).toBe(true);
   for(const languages of [['zh'],['zh-CN'],['zh-SG'],['zh-MY'],['zh-Hans'],['zh-Hans-TW'],['ZH-cn'],['zh-CN','en-US']])expect(decide({languages}),languages.join(',')).toBe('zh-Hans');
-  // Traditional browsers keep English until zh-Hant exists (decided 2026-11-09); Cantonese, Korean and a browser whose first
-  // language is another stay as they were (only the first preference decides).
-  for(const languages of [['zh-TW'],['zh-HK'],['zh-MO'],['zh-Hant'],['zh-Hant-CN'],['ZH-tw'],['yue-HK'],['ko-KR'],['en-US','zh-CN'],['zh-TW','zh-CN']])expect(decide({languages}),languages.join(',')).toBe('en');
+  // Traditional browsers kept English until zh-Hant existed (decided 2026-11-09); since ZT-REL they open Traditional Chinese (the
+  // test below). Cantonese, Korean and a browser whose first language is another stay as they were (only the first preference decides).
+  for(const languages of [['zh-TW'],['zh-HK'],['zh-MO'],['zh-Hant'],['zh-Hant-CN'],['ZH-tw'],['zh-TW','zh-CN']])expect(decide({languages}),languages.join(',')).not.toBe('zh-Hans');
+  for(const languages of [['yue-HK'],['ko-KR'],['en-US','zh-CN']])expect(decide({languages}),languages.join(',')).toBe('en');
   expect(decide({languages:['es-MX','zh-CN']})).toBe('es-419');expect(decide({languages:['ja-JP','zh-CN']})).toBe('ja');
   expect(decide({stored:'zh-Hans',languages:['en-US']})).toBe('zh-Hans');expect(decide({stored:'zh-Hans',languages:['zh-TW']})).toBe('zh-Hans');
   expect(decide({stored:'en',languages:['zh-CN']})).toBe('en');expect(decide({stored:'fr',languages:['zh-CN']})).toBe('fr');
   expect(decide({param:'zh-Hans',stored:'fr',languages:['zh-TW']})).toBe('zh-Hans');expect(decide({param:'en',languages:['zh-CN']})).toBe('en');
-  // ?lang= takes the exact tag only (zh-Hant is Traditional Chinese's own preview since Front ZT0, below).
+  // ?lang= takes the exact tag only (zh-Hant is Traditional Chinese's own tag, released since Front ZT-REL, below).
   for(const junk of ['zh','zh-CN','zh-hans','ZH-HANS'])expect(decide({param:junk,languages:['en-US']}),junk).toBe('en');
   expect(HTML_LANG['zh-Hans']).toBe('zh-Hans');expect(selectorShown('zh-Hans')).toBe(true);
   // Before its release (ZH0–ZH-HELP) only ?lang=zh-Hans reached it.
@@ -144,20 +145,25 @@ describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-0
   for(const languages of [['zh'],['zh-CN'],['zh-SG'],['zh-Hans-TW']])expect(decide({languages,registry:before}),languages.join(',')).toBe('en');
   expect(decide({stored:'zh-Hans',languages:['zh-CN'],registry:before})).toBe('en');expect(decide({param:'zh-Hans',registry:before})).toBe('zh-Hans');
  });
- it('Front ZT0: Traditional Chinese is registered before its release: only ?lang=zh-Hant opens it; zh-TW, zh-HK, zh-MO and zh-Hant browsers and a stored zh-Hant get English',()=>{
-  expect(isReleased('zh-Hant')).toBe(false);
-  for(const languages of [['zh-TW'],['zh-HK'],['zh-MO'],['zh-Hant'],['zh-Hant-CN'],['ZH-tw'],['zh-TW','zh-CN']])expect(decide({languages}),languages.join(',')).toBe('en');
-  // Simplified browsers keep Simplified Chinese (zh-Hans-TW too: the script subtag beats the region).
-  for(const languages of [['zh'],['zh-CN'],['zh-Hans-TW']])expect(decide({languages}),languages.join(',')).toBe('zh-Hans');
-  expect(decide({stored:'zh-Hant',languages:['zh-TW']})).toBe('en');
-  expect(decide({param:'zh-Hant',languages:['en-US']})).toBe('zh-Hant');expect(decide({param:'zh-Hant',stored:'fr',languages:['zh-CN']})).toBe('zh-Hant');
+ it('Front ZT-REL: Traditional Chinese is released: zh-TW, zh-HK, zh-MO, zh-Hant and zh-Hant-* browsers (any case) open zh-Hant; Simplified browsers do not; storage is honoured',()=>{
+  expect(isReleased('zh-Hant')).toBe(true);
+  // Every Traditional browser, Hong Kong and Macau included (user decision of 2026-11-19).
+  for(const languages of [['zh-TW'],['zh-HK'],['zh-MO'],['zh-Hant'],['zh-Hant-CN'],['zh-Hant-TW'],['ZH-tw'],['zh-hant-hk'],['zh-TW','en-US'],['zh-TW','zh-CN']])expect(decide({languages}),languages.join(',')).toBe('zh-Hant');
+  // Simplified browsers keep Simplified Chinese (zh-Hans-TW too: the script subtag beats the region); Cantonese, Korean and a
+  // browser whose first language is another stay as they were (only the first preference decides).
+  for(const languages of [['zh'],['zh-CN'],['zh-SG'],['zh-MY'],['zh-Hans-TW'],['zh-Hans-HK'],['zh-CN','zh-TW']])expect(decide({languages}),languages.join(',')).toBe('zh-Hans');
+  for(const languages of [['yue'],['yue-HK'],['ko-KR'],['en-US','zh-TW'],['en-HK']])expect(decide({languages}),languages.join(',')).toBe('en');
+  expect(decide({languages:['ja-JP','zh-TW']})).toBe('ja');
+  expect(decide({stored:'zh-Hant',languages:['en-US']})).toBe('zh-Hant');expect(decide({stored:'zh-Hant',languages:['zh-CN']})).toBe('zh-Hant');
+  expect(decide({stored:'zh-Hans',languages:['zh-TW']})).toBe('zh-Hans');expect(decide({stored:'en',languages:['zh-TW']})).toBe('en');
+  expect(decide({param:'zh-Hant',stored:'fr',languages:['zh-CN']})).toBe('zh-Hant');expect(decide({param:'en',languages:['zh-TW']})).toBe('en');
+  // ?lang= takes the exact tag only.
   for(const junk of ['zh-hant','ZH-HANT','zh-TW','zh-HK'])expect(decide({param:junk,languages:['en-US']}),junk).toBe('en');
   expect(HTML_LANG['zh-Hant']).toBe('zh-Hant');expect(selectorShown('zh-Hant')).toBe(true);
-  // Once released (ZT-REL), every Traditional browser opens it, Hong Kong and Macau included (user decision of 2026-11-19).
-  const after=releasing(LANGUAGES,'zh-Hant');
-  for(const languages of [['zh-TW'],['zh-HK'],['zh-MO'],['zh-Hant'],['zh-Hant-CN'],['ZH-tw']])expect(decide({languages,registry:after}),languages.join(',')).toBe('zh-Hant');
-  for(const languages of [['zh'],['zh-CN'],['zh-SG'],['zh-Hans-TW'],['yue-HK'],['en-US','zh-TW']])expect(decide({languages,registry:after}),languages.join(',')).not.toBe('zh-Hant');
-  expect(decide({stored:'zh-Hant',languages:['zh-CN'],registry:after})).toBe('zh-Hant');
+  // Before its release (ZT0–ZT-HELP) only ?lang=zh-Hant reached it.
+  const before=LANGUAGES.map(l=>l.tag==='zh-Hant'?{...l,released:false}:l);
+  for(const languages of [['zh-TW'],['zh-HK'],['zh-MO'],['zh-Hant']])expect(decide({languages,registry:before}),languages.join(',')).toBe('en');
+  expect(decide({stored:'zh-Hant',languages:['zh-TW'],registry:before})).toBe('en');expect(decide({param:'zh-Hant',registry:before})).toBe('zh-Hant');
  });
  it('Front RU-REL: Russian is released: every ru and ru-* browser (any case) opens ru; Ukrainian, Belarusian, Kazakh and the other region languages do not; storage is honoured',()=>{
   expect(isReleased('ru')).toBe(true);

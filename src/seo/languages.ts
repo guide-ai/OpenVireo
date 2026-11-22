@@ -13,6 +13,7 @@
  * Front JA-REL+SEO: Japanese (ja) under /ja/, the same way (its row, its texts in src/seo/labs.ja.ts).
  * Front RU-REL+SEO: Russian (ru) under /ru/, the same way (its row, its texts in src/seo/labs.ru.ts).
  * Front ZH-REL+SEO: Simplified Chinese (zh-Hans) under /zh-hans/, the same way (its row, its texts in src/seo/labs.zh-hans.ts).
+ * Front ZT-REL+SEO: Traditional Chinese (zh-Hant) under /zh-hant/, the same way (its row, its texts in src/seo/labs.zh-hant.ts).
  *
  * Which languages exist here is independent of which are released in the app: a row is added by that language's SEO front,
  * after its release (src/seo/pages.test.ts checks each row's tag against src/i18n/languages.json). */
@@ -24,6 +25,7 @@ import {LAB_TEXT_ID} from './labs.id.ts';
 import {LAB_TEXT_HI} from './labs.hi.ts';
 import {LAB_TEXT_JA} from './labs.ja.ts';
 import {LAB_TEXT_ZH_HANS} from './labs.zh-hans.ts';
+import {LAB_TEXT_ZH_HANT} from './labs.zh-hant.ts';
 import {LAB_TEXT_RU} from './labs.ru.ts';
 import {SEO_PATH_PREFIX,type LabSlug} from './labSlugs.ts';
 import {LANGUAGES,textDirection,type LanguageEntry,type TextDirection} from '../i18n/languages.ts';
@@ -46,11 +48,11 @@ export type SeoLanguage=Readonly<{
   * alone (one Russian that every `ru-*` browser opens, AGENTS.md 2026-11-19); Ukrainian, Belarusian and Kazakh searchers keep the
   * English x-default, as those browsers keep English. Simplified Chinese is `zh-Hans` alone, a script subtag Google's hreflang
   * guide names for it (checked on 2026-11-21): the app opens it for every Simplified browser (zh, zh-CN, zh-SG, zh-MY, zh-Hans-*),
-  * and Google derives the Simplified script from those regions; Traditional searchers (zh-TW, zh-HK, zh-MO) keep the English
-  * x-default, as those browsers keep English until zh-Hant exists. */
+  * and Google derives the Simplified script from those regions. Traditional Chinese is `zh-Hant` alone, the same way (Front
+  * ZT-REL+SEO): the app opens it for every zh-Hant, zh-TW, zh-HK and zh-MO browser (AGENTS.md 2026-11-19 and 2026-11-21). */
  hreflang:readonly string[];
- /** Open Graph locale (language_TERRITORY): en_US, es_LA, pt_BR, fr_FR, id_ID, hi_IN, ja_JP, zh_CN, ru_RU (Open Graph needs a
-  * territory; hreflang stays `fr`, `id`, `hi`, `ja`, `zh-Hans`, `ru`). */
+ /** Open Graph locale (language_TERRITORY): en_US, es_LA, pt_BR, fr_FR, id_ID, hi_IN, ja_JP, zh_CN, zh_TW, ru_RU (Open Graph needs
+  * a territory; hreflang stays `fr`, `id`, `hi`, `ja`, `zh-Hans`, `zh-Hant`, `ru`). */
  ogLocale:string;
  /** Path prefix of its pages: '' for English, SEO_PATH_PREFIX for the others. */
  prefix:string;
@@ -383,6 +385,49 @@ const ZH_HANS:SeoLanguage={
    '你随时可以通过页面顶部的语言选择器切换到英文。']},
 };
 
+const ZH_HANT:SeoLanguage={
+ tag:'zh-Hant',hreflang:['zh-Hant'],ogLocale:'zh_TW',prefix:SEO_PATH_PREFIX['zh-Hant'],app:'/?lang=zh-Hant',
+ ogImage:'/og-image-zh-hant.png',ogImageAlt:'OpenVireo：在瀏覽器中進行CLEA VIREO天文實驗（繁體中文）',
+ ogImageText:{title:'瀏覽器中的CLEA VIREO天文實驗',lines:['哈伯定律 · 脈衝星 · 昴宿星團 · 天體X · 更多實驗','免費、非官方的網頁重建版，不用安裝。']},
+ labs:merge(LAB_TEXT_ZH_HANT),
+ ui:{languageName:'繁體中文',siteNav:'網站',breadcrumb:'導覽路徑',labsCrumb:'實驗',allLabs:'全部實驗',openObservatory:'開啟天文台',
+  labEyebrow:'改編自CLEA VIREO的一項實驗',openLab:'開啟實驗',
+  openLabNote:()=>'以繁體中文開啟天文台，並顯示本實驗的指南。免費，不用註冊。',
+  whatYouDo:'實驗步驟',whatYouLearn:'你將學到',otherLabs:'其他實驗',
+  // The sentences the tests require: the adaptation (the plan's footer) and not-the-original sentences, and the names of CLEA and
+  // its supporters.
+  about:'OpenVireo是對Project CLEA的虛擬教育天文台（Virtual Educational Observatory）VIREO的免費、非商業網頁重建。'+
+   'Project CLEA是Gettysburg College的計畫，獲得National Science Foundation和Gettysburg College的支持。'+
+   'OpenVireo以從原版程式復原出的行為為基礎，並在註明來源的前提下使用原版資料檔案。'+
+   '它不是原版程式，也與Project CLEA沒有隸屬關係。本應用程式會標明已知的網頁改編之處。'+
+   '本頁的繁體中文文字是OpenVireo的網頁改編，不是CLEA的文本。',
+  platform:'可在Windows、Mac、Linux或Chromebook上的現代網頁瀏覽器中執行。不用安裝，也不需要帳號。',
+  learningResourceType:'互動式實驗',educationalLevel:['高中','大學']},
+ labsIndex:{title:'CLEA VIREO天文模擬實驗線上版 · OpenVireo',
+  description:'七個為瀏覽器重建的CLEA VIREO天文模擬實驗：哈伯定律、大尺度結構、恆星光譜、昴宿星團、星團赫羅圖、脈衝星和天體X，全部免費。',
+  eyebrow:'CLEA VIREO實驗',heading:'在瀏覽器中進行的天文實驗',
+  lead:'每個實驗都是一個天文模擬，對應Project CLEA的虛擬天文台VIREO中的一項學生實驗。你用虛擬望遠鏡和儀器觀測，測量你自己的資料，並得出你自己的結論。',
+  listName:'CLEA VIREO實驗'},
+ notFound:{title:'找不到網頁',heading:'找不到網頁',text:'此網址不屬於OpenVireo。'},
+ home:{title:'OpenVireo: CLEA VIREO天文實驗（繁體中文）',
+  description:'免費、非官方的網頁重建版：以繁體中文呈現Project CLEA的虛擬天文台VIREO，包括哈伯定律、脈衝星、昴宿星團和天體X等實驗。',
+  operatingSystem:'任何作業系統（在網頁瀏覽器中執行）',
+  eyebrow:'繁體中文版虛擬天文台',heading:'CLEA VIREO天文實驗，就在你的瀏覽器中',
+  lead:'OpenVireo在瀏覽器中重建了Project CLEA的虛擬天文台VIREO。你可以操控虛擬望遠鏡、拍攝光譜、測量星光、記錄脈衝星，然後依據你自己的資料得出你自己的結論。',
+  note:'免費，不用註冊，也不用安裝。',
+  labsHeading:'七個實驗',howHeading:'使用方式',
+  how:['一切都在你的瀏覽器中進行：不用安裝，也不需要帳號。',
+   // Front HOME: the facts of the app's welcome (home.factInstall, home.factFaithful), as on the other languages' home pages.
+   '不需要Windows，也不需要虛擬機器：OpenVireo可在Mac、Windows、Linux或Chromebook的現代瀏覽器中執行。',
+   'OpenVireo遵循從原版程式復原出的行為，並標明其網頁改編之處。這是一個非官方的重建版。',
+   '你可以把探究儲存為自己電腦上的檔案，並隨時重新載入。',
+   '介面、指南和說明均為繁體中文；網站產生的檔案（TXT、FITS、CSV和已儲存的探究）保持VIREO或OpenVireo的格式，仍為英文。',
+   // Traditional Chinese writes «24,000» and «1.5» as English does (no thousands setting, AGENTS.md 2026-11-21): only the decimal
+   // point and half-width digits are said.
+   '螢幕上和輸入時都用小數點「.」表示小數（例如1.5），數字請用半形輸入。',
+   '你隨時可以透過頁面頂端的語言選擇器切換到英文。']},
+};
+
 const RU:SeoLanguage={
  tag:'ru',hreflang:['ru'],ogLocale:'ru_RU',prefix:SEO_PATH_PREFIX.ru,app:'/?lang=ru',
  ogImage:'/og-image-ru.png',ogImageAlt:'OpenVireo: астрономические работы CLEA VIREO в вашем браузере, на русском языке',
@@ -425,7 +470,7 @@ const RU:SeoLanguage={
 
 
 /** Every language with static pages, English first (the x-default). */
-export const SEO_LANGUAGES:readonly SeoLanguage[]=Object.freeze([EN,ES,PT_BR,FR,ID,HI,JA,ZH_HANS,RU]);
+export const SEO_LANGUAGES:readonly SeoLanguage[]=Object.freeze([EN,ES,PT_BR,FR,ID,HI,JA,ZH_HANS,ZH_HANT,RU]);
 export const ENGLISH=EN;
 
 /** A page, named the same in every language: the home page, the labs index or one lab. */

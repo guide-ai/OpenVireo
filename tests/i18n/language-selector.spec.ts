@@ -1,6 +1,6 @@
 import {type Browser,type Page} from '@playwright/test';
 import {test,expect} from '../fixtures/area-tripwire';
-import {CHINESE_LOCALE,FRENCH_LOCALE,INDONESIAN_LOCALE,JAPANESE_LOCALE,PORTUGUESE_LOCALE,RUSSIAN_LOCALE,SPANISH_LOCALE} from '../fixtures/language';
+import {CHINESE_LOCALE,TRADITIONAL_CHINESE_LOCALE,FRENCH_LOCALE,INDONESIAN_LOCALE,JAPANESE_LOCALE,PORTUGUESE_LOCALE,RUSSIAN_LOCALE,SPANISH_LOCALE} from '../fixtures/language';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
 import {CHINESE_SIMPLIFIED_TEXT,CHINESE_TRADITIONAL_TEXT,FRENCH_TEXT,HINDI_TEXT,INDONESIAN_TEXT,JAPANESE_TEXT,PORTUGUESE_TEXT,RUSSIAN_TEXT} from './languageText';
@@ -25,17 +25,12 @@ async function browserIn(browser:Browser,languages:readonly string[]):Promise<Pa
  return page;
 }
 /** Front FR-REL: the options every load offers, in registry order (Front ID-REL: Bahasa Indonesia; Front HI-REL: हिन्दी (Hindi);
- * Front JA-REL: 日本語 (Japanese); Front ZH-REL: 简体中文 (Simplified Chinese); Front RU-REL: Русский last). Front ZT0's Traditional
- * Chinese preview adds its own option (withPreview below). */
-const RELEASED_OPTIONS=['English','Español','Português (Brasil)','Français','Bahasa Indonesia','हिन्दी (Hindi)','日本語 (Japanese)','简体中文 (Simplified Chinese)','Русский (Russian)'];
+ * Front JA-REL: 日本語 (Japanese); Front ZH-REL: 简体中文 (Simplified Chinese); Front ZT-REL: 繁體中文 (Traditional Chinese); Front
+ * RU-REL: Русский last). Front ZT0's preview helpers (withPreview) and its preview test went with ZT-REL: no registered language is a
+ * preview now; a new language's first front brings them back, as areas.spec.ts's partial-language test. */
+const RELEASED_OPTIONS=['English','Español','Português (Brasil)','Français','Bahasa Indonesia','हिन्दी (Hindi)','日本語 (Japanese)','简体中文 (Simplified Chinese)','繁體中文 (Traditional Chinese)','Русский (Russian)'];
 /** The released options with their values and `lang`, in registry order. */
-const RELEASED_LANGS=[['en','en'],['es-419','es-419'],['pt-BR','pt-BR'],['fr','fr'],['id','id'],['hi','hi'],['ja','ja'],['zh-Hans','zh-Hans'],['ru','ru']];
-/** Front ZT0: a preview's options: the released ones with the preview's own placed in registry order (Traditional Chinese between
- * 简体中文 and Русский). */
-const REGISTRY_ORDER=['en','es-419','pt-BR','fr','id','hi','ja','zh-Hans','zh-Hant','ru'];
-const previewAt=(tag:string)=>RELEASED_LANGS.filter(([t])=>REGISTRY_ORDER.indexOf(t)<REGISTRY_ORDER.indexOf(tag)).length;
-const withPreview=(label:string,tag:string)=>[...RELEASED_OPTIONS.slice(0,previewAt(tag)),label,...RELEASED_OPTIONS.slice(previewAt(tag))];
-const withPreviewLang=(tag:string)=>[...RELEASED_LANGS.slice(0,previewAt(tag)),[tag,tag],...RELEASED_LANGS.slice(previewAt(tag))];
+const RELEASED_LANGS=[['en','en'],['es-419','es-419'],['pt-BR','pt-BR'],['fr','fr'],['id','id'],['hi','hi'],['ja','ja'],['zh-Hans','zh-Hans'],['zh-Hant','zh-Hant'],['ru','ru']];
 /** Seeds the stored choice once, before the first load of this page (later loads keep what the page stored). */
 const seedChoice=(page:Page,value:string)=>page.addInitScript(v=>{if(!sessionStorage.getItem('seeded')){localStorage.setItem('openvireo-language',v);sessionStorage.setItem('seeded','1');}},value);
 async function languageOf(page:Page,query=''){await open(page,query);return page.locator('html').getAttribute('lang');}
@@ -70,7 +65,7 @@ test('a stored choice beats the browser language, and a ?lang= link beats both f
  await englishBrowser.close();
 });
 
-test('Front SC8: the selector lists English, Español, (since PT-REL) Português (Brasil), (since FR-REL) Français, (since ID-REL) Bahasa Indonesia, (since HI-REL) हिन्दी (Hindi), (since JA-REL) 日本語 (Japanese), (since ZH-REL) 简体中文 (Simplified Chinese) and (since RU-REL) Русский, each named and marked in its own language, and works from the keyboard',async({page})=>{
+test('Front SC8: the selector lists English, Español, (since PT-REL) Português (Brasil), (since FR-REL) Français, (since ID-REL) Bahasa Indonesia, (since HI-REL) हिन्दी (Hindi), (since JA-REL) 日本語 (Japanese), (since ZH-REL) 简体中文 (Simplified Chinese), (since ZT-REL) 繁體中文 (Traditional Chinese) and (since RU-REL) Русский, each named and marked in its own language, and works from the keyboard',async({page})=>{
  await open(page);
  const select=page.getByRole('combobox',{name:'Idioma / Language'});
  await expect(select.locator('option')).toHaveText(RELEASED_OPTIONS);
@@ -163,20 +158,20 @@ test('Front FR-REL: fr, fr-FR, fr-CA, fr-BE and FR-ch browsers open Français; t
 
 // Front ZH0 (plan front-i18n-zh.md §2) registered Simplified Chinese before its release: only its `?lang=zh-Hans` preview reached it.
 // Front ZH-REL released it: zh, zh-CN, zh-SG, zh-MY, ZH-cn and zh-Hans-* browsers open it, as «简体中文 (Simplified Chinese)» in the
-// selector (a non-Latin autonym takes its English name); Traditional browsers (zh-TW, zh-HK, zh-MO, zh-Hant) keep English until
-// zh-Hant exists, with 简体中文 offered (decided 2026-11-09), and fetch no Chinese module; Cantonese and Korean stay English; only
-// the first preference decides; a stored choice beats the browser both ways.
+// selector (a non-Latin autonym takes its English name); Traditional browsers (zh-TW, zh-HK, zh-MO, zh-Hant) kept English until
+// zh-Hant existed, with 简体中文 offered (decided 2026-11-09), and since ZT-REL open Traditional Chinese; neither fetches a Simplified
+// module; Cantonese and Korean stay English; only the first preference decides; a stored choice beats the browser both ways.
 /** The requests for Simplified Chinese modules (the virtual i18n-zh-Hans-* chunks of the dev server, or src/i18n/zh-hans/). */
 function chineseRequests(page:Page):string[]{
  const out:string[]=[];page.on('request',r=>{if(/openvireo-i18n\/i18n-zh-Hans-|\/src\/i18n\/zh-hans\//.test(r.url()))out.push(r.url());});return out;
 }
-test('Front ZH-REL: zh, zh-CN, zh-SG, zh-MY, ZH-cn and zh-Hans-TW browsers open 简体中文; zh-TW, zh-HK, zh-MO and yue-HK do not; the first preference decides; a stored zh-Hans beats the browser',async({browser})=>{
+test('Front ZH-REL: zh, zh-CN, zh-SG, zh-MY, ZH-cn and zh-Hans-TW browsers open 简体中文; zh-TW, zh-HK, zh-MO (繁體中文 since ZT-REL) and yue-HK do not; the first preference decides; a stored zh-Hans beats the browser',async({browser})=>{
  test.setTimeout(240_000);
- const Z=CHINESE_SIMPLIFIED_TEXT,F=FRENCH_TEXT,J=JAPANESE_TEXT;
- for(const [languages,expected] of [[['zh'],'zh-Hans'],[['zh-CN'],'zh-Hans'],[['zh-SG'],'zh-Hans'],[['zh-MY'],'zh-Hans'],[['ZH-cn'],'zh-Hans'],[['zh-Hans-TW'],'zh-Hans'],[['zh-CN','en-US'],'zh-Hans'],[['en-US','zh-CN'],'en'],[['zh-TW','zh-CN'],'en'],[['ja-JP','zh-CN'],'ja'],[['fr-FR','zh-CN'],'fr'],[['zh-TW'],'en'],[['zh-HK'],'en'],[['zh-MO'],'en'],[['zh-Hant'],'en'],[['yue-HK'],'en'],[['ko-KR'],'en']] as const){
+ const Z=CHINESE_SIMPLIFIED_TEXT,T=CHINESE_TRADITIONAL_TEXT,F=FRENCH_TEXT,J=JAPANESE_TEXT;
+ for(const [languages,expected] of [[['zh'],'zh-Hans'],[['zh-CN'],'zh-Hans'],[['zh-SG'],'zh-Hans'],[['zh-MY'],'zh-Hans'],[['ZH-cn'],'zh-Hans'],[['zh-Hans-TW'],'zh-Hans'],[['zh-CN','en-US'],'zh-Hans'],[['en-US','zh-CN'],'en'],[['zh-TW','zh-CN'],'zh-Hant'],[['ja-JP','zh-CN'],'ja'],[['fr-FR','zh-CN'],'fr'],[['zh-TW'],'zh-Hant'],[['zh-HK'],'zh-Hant'],[['zh-MO'],'zh-Hant'],[['zh-Hant'],'zh-Hant'],[['yue-HK'],'en'],[['ko-KR'],'en']] as const){
   const page=await browserIn(browser,languages);const chinese=chineseRequests(page);
   expect(await languageOf(page),languages.join(',')).toBe(expected);
-  await expect(page.locator('.investigation-toolbar')).toContainText(expected==='zh-Hans'?Z.catalog['project.save']:expected==='fr'?F.catalog['project.save']:expected==='ja'?J.catalog['project.save']:en['project.save']);
+  await expect(page.locator('.investigation-toolbar')).toContainText(expected==='zh-Hans'?Z.catalog['project.save']:expected==='zh-Hant'?T.catalog['project.save']:expected==='fr'?F.catalog['project.save']:expected==='ja'?J.catalog['project.save']:en['project.save']);
   const select=id(page,'language-select');
   await expect(select.locator('option')).toHaveText(RELEASED_OPTIONS);await expect(select).toHaveValue(expected);
   if(expected==='zh-Hans'){
@@ -210,34 +205,49 @@ test('Front ZH-REL: zh, zh-CN, zh-SG, zh-MY, ZH-cn and zh-Hans-TW browsers open 
  await page.close();
 });
 
-// Front ZT0 (plan front-i18n-zh.md §2, §6.3): Traditional Chinese is registered before its release. Only its `?lang=zh-Hant` preview
-// reaches it and offers it; zh-TW, zh-HK, zh-MO and zh-Hant browsers and a stored zh-Hant get English with the released options and
-// fetch no Traditional module, while zh-CN keeps Simplified Chinese; the preview offers 繁體中文 between 简体中文 and Русский.
-test('Front ZT0: only a ?lang=zh-Hant preview opens and offers 繁體中文; zh-TW, zh-HK, zh-MO and zh-Hant browsers and a stored zh-Hant get English',async({browser})=>{
- test.setTimeout(180_000);
- const T=CHINESE_TRADITIONAL_TEXT;
- const traditional=(page:Page)=>{const out:string[]=[];page.on('request',r=>{if(/i18n-zh-Hant|\/zh-hant\//.test(r.url()))out.push(r.url());});return out;};
- for(const languages of [['zh-TW'],['zh-HK'],['zh-MO'],['zh-Hant'],['zh-Hant-CN'],['zh-TW','zh-CN']] as const){
-  const page=await browserIn(browser,languages);const requests=traditional(page);
-  expect(await languageOf(page),languages.join(',')).toBe('en');
-  await expect(id(page,'language-select').locator('option')).toHaveText(RELEASED_OPTIONS);
-  expect(requests,`${languages.join(',')}: no Traditional Chinese module is fetched`).toEqual([]);
+// Front ZT0 (plan front-i18n-zh.md §2, §6.3) registered Traditional Chinese before its release: only its `?lang=zh-Hant` preview
+// reached it. Front ZT-REL released it (user decisions of 2026-11-19): zh-TW, zh-HK, zh-MO, zh-Hant and zh-Hant-* browsers open it, as
+// «繁體中文 (Traditional Chinese)» between 简体中文 and Русский, and fetch no Simplified module; a script subtag beats the region
+// (zh-Hans-TW is Simplified); Cantonese stays English; only the first preference decides; a stored choice beats the browser both ways.
+/** The requests for Traditional Chinese modules (the virtual i18n-zh-Hant-* chunks of the dev server, or src/i18n/zh-hant/). */
+function traditionalRequests(page:Page):string[]{
+ const out:string[]=[];page.on('request',r=>{if(/openvireo-i18n\/i18n-zh-Hant-|\/src\/i18n\/zh-hant\//.test(r.url()))out.push(r.url());});return out;
+}
+test('Front ZT-REL: zh-TW, zh-HK, zh-MO, zh-Hant and zh-Hant-CN browsers open 繁體中文; zh-CN, zh-Hans-TW and yue-HK do not; the first preference decides; a stored zh-Hant beats the browser',async({browser})=>{
+ test.setTimeout(240_000);
+ const T=CHINESE_TRADITIONAL_TEXT,Z=CHINESE_SIMPLIFIED_TEXT;
+ for(const [languages,expected] of [[['zh-TW'],'zh-Hant'],[['zh-HK'],'zh-Hant'],[['zh-MO'],'zh-Hant'],[['zh-Hant'],'zh-Hant'],[['zh-Hant-CN'],'zh-Hant'],[['ZH-tw'],'zh-Hant'],[['zh-TW','en-US'],'zh-Hant'],[['zh-CN'],'zh-Hans'],[['zh-Hans-TW'],'zh-Hans'],[['en-US','zh-TW'],'en'],[['yue-HK'],'en']] as const){
+  const page=await browserIn(browser,languages);const traditional=traditionalRequests(page);
+  expect(await languageOf(page),languages.join(',')).toBe(expected);
+  await expect(page.locator('.investigation-toolbar')).toContainText(expected==='zh-Hant'?T.catalog['project.save']:expected==='zh-Hans'?Z.catalog['project.save']:en['project.save']);
+  const select=id(page,'language-select');
+  await expect(select.locator('option')).toHaveText(RELEASED_OPTIONS);await expect(select).toHaveValue(expected);
+  if(expected==='zh-Hant'){
+   await expect(page).toHaveTitle(T.catalog['app.documentTitle']);await expect(page.getByRole('combobox',{name:T.maps.languageChoice.legend})).toBeVisible();
+   expect(await select.locator('option').evaluateAll(o=>o.map(x=>[(x as HTMLOptionElement).value,x.getAttribute('lang')]))).toEqual(RELEASED_LANGS);
+  }else expect(traditional,`${languages.join(',')}: no Traditional Chinese module is fetched`).toEqual([]);
   await page.close();
  }
- const storedHant=await browserIn(browser,['zh-TW']);await seedChoice(storedHant,'zh-Hant');const storedRequests=traditional(storedHant);
- expect(await languageOf(storedHant)).toBe('en');expect(storedRequests,'a stored zh-Hant fetches no Traditional module').toEqual([]);await storedHant.close();
- const page=await browserIn(browser,['en-US']);
- expect(await languageOf(page,'?lang=zh-Hant')).toBe('zh-Hant');
- await expect(page.locator('.investigation-toolbar')).toContainText(T.catalog['project.save']);await expect(page).toHaveTitle(T.catalog['app.documentTitle']);
- const select=page.getByRole('combobox',{name:T.maps.languageChoice.legend});
- await expect(select.locator('option')).toHaveText(withPreview('繁體中文 (Traditional Chinese)','zh-Hant'));await expect(select).toHaveValue('zh-Hant');
- expect(await select.locator('option').evaluateAll(o=>o.map(x=>[(x as HTMLOptionElement).value,x.getAttribute('lang')]))).toEqual(withPreviewLang('zh-Hant'));
- // A change on the preview stores nothing (SC8): the choice travels as ?lang=, and the dialog, in Traditional Chinese, says so.
+ // A stored choice beats the browser both ways (a stored zh-Hant opens it in a Simplified browser too), and ?lang= beats both for
+ // that load only.
+ const simplified=await browserIn(browser,['zh-CN']);await seedChoice(simplified,'zh-Hant');
+ expect(await languageOf(simplified)).toBe('zh-Hant');expect(await languageOf(simplified,'?lang=zh-Hans')).toBe('zh-Hans');expect(await stored(simplified)).toBe('zh-Hant');
+ await simplified.close();
+ const taiwan=await browserIn(browser,['zh-TW']);await seedChoice(taiwan,'en');
+ expect(await languageOf(taiwan)).toBe('en');await taiwan.close();
+ // A change from Traditional Chinese is stored (no longer a preview): the dialog is Chinese, the page reloads at a clean address.
+ const page=await browserIn(browser,['zh-TW']);
+ await open(page,'','spectrum');
  await choose(page,'fr');
  const dialog=id(page,'language-confirm');await expect(dialog).toContainText(T.maps.languageChoice.title);
- await expect(dialog).toContainText(T.maps.languageChoice.reload('Français'));await expect(id(page,'language-preview')).toHaveText(T.maps.languageChoice.preview);
- await Promise.all([page.waitForURL(/lang=fr/),id(page,'language-change').click()]);
- await expect(page.locator('html')).toHaveAttribute('lang','fr');expect(await stored(page)).toBeNull();
+ await expect(dialog).toContainText(T.maps.languageChoice.reload('Français'));await expect(id(page,'language-preview')).toHaveCount(0);
+ await Promise.all([page.waitForEvent('load'),id(page,'language-change').click()]);
+ await expect(page.locator('html')).toHaveAttribute('lang','fr');expect(await stored(page)).toBe('fr');
+ expect(new URL(page.url()).search).toBe('');expect(new URL(page.url()).hash).toBe('#spectrum');
+ // And back to Traditional Chinese from French.
+ await choose(page,'zh-Hant');await expect(dialog).toContainText('繁體中文');
+ await Promise.all([page.waitForEvent('load'),id(page,'language-change').click()]);
+ await expect(page.locator('html')).toHaveAttribute('lang','zh-Hant');expect(await stored(page)).toBe('zh-Hant');
  await page.close();
 });
 
@@ -248,7 +258,7 @@ test('Front ZH-REL: the keyboard steps across all the options without opening th
  await open(page);await expect(page.locator('html')).toHaveAttribute('lang','zh-Hans');
  const select=page.getByRole('combobox',{name:Z.maps.languageChoice.legend}),dialog=id(page,'language-confirm');
  await select.focus();await expect(select).toBeFocused();await expect(select).toHaveValue('zh-Hans');
- for(const [key,value] of [['ArrowUp','ja'],['ArrowUp','hi'],['ArrowUp','id'],['ArrowUp','fr'],['ArrowUp','pt-BR'],['ArrowUp','es-419'],['ArrowUp','en'],['ArrowDown','es-419'],['End','ru'],['ArrowUp','zh-Hans'],['Home','en'],['End','ru'],['ArrowUp','zh-Hans'],['ArrowUp','ja'],['ArrowUp','hi'],['ArrowUp','id'],['ArrowUp','fr']] as const){
+ for(const [key,value] of [['ArrowUp','ja'],['ArrowUp','hi'],['ArrowUp','id'],['ArrowUp','fr'],['ArrowUp','pt-BR'],['ArrowUp','es-419'],['ArrowUp','en'],['ArrowDown','es-419'],['End','ru'],['ArrowUp','zh-Hant'],['ArrowUp','zh-Hans'],['Home','en'],['End','ru'],['ArrowUp','zh-Hant'],['ArrowUp','zh-Hans'],['ArrowUp','ja'],['ArrowUp','hi'],['ArrowUp','id'],['ArrowUp','fr']] as const){
   await page.keyboard.press(key);await expect(select,key).toHaveValue(value);await expect(dialog,`${key} → ${value}`).toHaveCount(0);await expect(select).toBeFocused();
  }
  await page.keyboard.press('Enter');
@@ -260,6 +270,25 @@ test('Front ZH-REL: the keyboard steps across all the options without opening th
 });
 });
 
+test.describe('in a Traditional Chinese browser',()=>{
+ test.use({locale:TRADITIONAL_CHINESE_LOCALE});
+test('Front ZT-REL: the keyboard steps across all the options without opening the dialog; Enter asks, Escape returns',async({page})=>{
+ const T=CHINESE_TRADITIONAL_TEXT;
+ await open(page);await expect(page.locator('html')).toHaveAttribute('lang','zh-Hant');
+ const select=page.getByRole('combobox',{name:T.maps.languageChoice.legend}),dialog=id(page,'language-confirm');
+ await select.focus();await expect(select).toBeFocused();await expect(select).toHaveValue('zh-Hant');
+ for(const [key,value] of [['ArrowUp','zh-Hans'],['ArrowUp','ja'],['ArrowUp','hi'],['ArrowUp','id'],['ArrowUp','fr'],['ArrowUp','pt-BR'],['ArrowUp','es-419'],['ArrowUp','en'],['ArrowDown','es-419'],['End','ru'],['ArrowUp','zh-Hant'],['Home','en'],['End','ru'],['ArrowUp','zh-Hant'],['ArrowUp','zh-Hans'],['ArrowUp','ja'],['ArrowUp','hi'],['ArrowUp','id'],['ArrowUp','fr']] as const){
+  await page.keyboard.press(key);await expect(select,key).toHaveValue(value);await expect(dialog,`${key} → ${value}`).toHaveCount(0);await expect(select).toBeFocused();
+ }
+ await page.keyboard.press('Enter');
+ await expect(dialog).toBeVisible();await expect(dialog).toContainText(T.maps.languageChoice.reload('Français'));await expect(id(page,'language-cancel')).toBeFocused();
+ await id(page,'language-cancel').click();await expect(dialog).toHaveCount(0);await expect(select).toHaveValue('zh-Hant');
+ await select.focus();await page.keyboard.press('Home');await expect(select).toHaveValue('en');
+ await page.keyboard.press('Escape');await expect(select).toHaveValue('zh-Hant');await expect(dialog).toHaveCount(0);
+ expect(new URL(page.url()).search).toBe('');expect(await stored(page)).toBeNull();
+});
+});
+
 test.describe('in a French browser',()=>{
  test.use({locale:FRENCH_LOCALE});
 test('Front FR-REL: the keyboard steps across all the options without opening the dialog; Enter or leaving asks, Escape returns',async({page})=>{
@@ -267,7 +296,7 @@ test('Front FR-REL: the keyboard steps across all the options without opening th
  await open(page);await expect(page.locator('html')).toHaveAttribute('lang','fr');
  const select=page.getByRole('combobox',{name:F.maps.languageChoice.legend}),dialog=id(page,'language-confirm');
  await select.focus();await expect(select).toBeFocused();await expect(select).toHaveValue('fr');
- for(const [key,value] of [['ArrowUp','pt-BR'],['ArrowUp','es-419'],['ArrowUp','en'],['ArrowDown','es-419'],['ArrowDown','pt-BR'],['ArrowDown','fr'],['ArrowDown','id'],['ArrowDown','hi'],['ArrowDown','ja'],['ArrowDown','zh-Hans'],['ArrowDown','ru'],['Home','en'],['End','ru'],['ArrowUp','zh-Hans'],['ArrowUp','ja'],['ArrowUp','hi'],['ArrowUp','id'],['ArrowUp','fr'],['ArrowUp','pt-BR']] as const){
+ for(const [key,value] of [['ArrowUp','pt-BR'],['ArrowUp','es-419'],['ArrowUp','en'],['ArrowDown','es-419'],['ArrowDown','pt-BR'],['ArrowDown','fr'],['ArrowDown','id'],['ArrowDown','hi'],['ArrowDown','ja'],['ArrowDown','zh-Hans'],['ArrowDown','zh-Hant'],['ArrowDown','ru'],['Home','en'],['End','ru'],['ArrowUp','zh-Hant'],['ArrowUp','zh-Hans'],['ArrowUp','ja'],['ArrowUp','hi'],['ArrowUp','id'],['ArrowUp','fr'],['ArrowUp','pt-BR']] as const){
   await page.keyboard.press(key);await expect(select,key).toHaveValue(value);await expect(dialog,`${key} → ${value}`).toHaveCount(0);await expect(select).toBeFocused();
  }
  // Enter asks for the pending option, by its own name, in French; Cancel returns to French.
@@ -333,7 +362,7 @@ test('Front ID-REL: the keyboard steps across all the options without opening th
  await open(page);await expect(page.locator('html')).toHaveAttribute('lang','id');
  const select=page.getByRole('combobox',{name:I.maps.languageChoice.legend}),dialog=id(page,'language-confirm');
  await select.focus();await expect(select).toBeFocused();await expect(select).toHaveValue('id');
- for(const [key,value] of [['ArrowUp','fr'],['ArrowUp','pt-BR'],['ArrowUp','es-419'],['ArrowUp','en'],['ArrowDown','es-419'],['ArrowDown','pt-BR'],['ArrowDown','fr'],['ArrowDown','id'],['ArrowDown','hi'],['ArrowDown','ja'],['ArrowDown','zh-Hans'],['ArrowDown','ru'],['Home','en'],['End','ru'],['ArrowUp','zh-Hans'],['ArrowUp','ja'],['ArrowUp','hi'],['ArrowUp','id'],['ArrowUp','fr']] as const){
+ for(const [key,value] of [['ArrowUp','fr'],['ArrowUp','pt-BR'],['ArrowUp','es-419'],['ArrowUp','en'],['ArrowDown','es-419'],['ArrowDown','pt-BR'],['ArrowDown','fr'],['ArrowDown','id'],['ArrowDown','hi'],['ArrowDown','ja'],['ArrowDown','zh-Hans'],['ArrowDown','zh-Hant'],['ArrowDown','ru'],['Home','en'],['End','ru'],['ArrowUp','zh-Hant'],['ArrowUp','zh-Hans'],['ArrowUp','ja'],['ArrowUp','hi'],['ArrowUp','id'],['ArrowUp','fr']] as const){
   await page.keyboard.press(key);await expect(select,key).toHaveValue(value);await expect(dialog,`${key} → ${value}`).toHaveCount(0);await expect(select).toBeFocused();
  }
  // Enter asks for the pending option, by its own name, in Indonesian; Cancel returns to Indonesian.
@@ -404,7 +433,7 @@ test('Front RU-REL: the keyboard steps across all the options without opening th
  await open(page);await expect(page.locator('html')).toHaveAttribute('lang','ru');
  const select=page.getByRole('combobox',{name:R.maps.languageChoice.legend}),dialog=id(page,'language-confirm');
  await select.focus();await expect(select).toBeFocused();await expect(select).toHaveValue('ru');
- for(const [key,value] of [['ArrowUp','zh-Hans'],['ArrowUp','ja'],['ArrowUp','hi'],['ArrowUp','id'],['ArrowUp','fr'],['ArrowUp','pt-BR'],['ArrowUp','es-419'],['ArrowUp','en'],['ArrowDown','es-419'],['ArrowDown','pt-BR'],['ArrowDown','fr'],['ArrowDown','id'],['ArrowDown','hi'],['ArrowDown','ja'],['ArrowDown','zh-Hans'],['ArrowDown','ru'],['Home','en'],['End','ru'],['ArrowUp','zh-Hans'],['ArrowUp','ja'],['ArrowUp','hi'],['ArrowUp','id'],['ArrowUp','fr']] as const){
+ for(const [key,value] of [['ArrowUp','zh-Hant'],['ArrowUp','zh-Hans'],['ArrowUp','ja'],['ArrowUp','hi'],['ArrowUp','id'],['ArrowUp','fr'],['ArrowUp','pt-BR'],['ArrowUp','es-419'],['ArrowUp','en'],['ArrowDown','es-419'],['ArrowDown','pt-BR'],['ArrowDown','fr'],['ArrowDown','id'],['ArrowDown','hi'],['ArrowDown','ja'],['ArrowDown','zh-Hans'],['ArrowDown','zh-Hant'],['ArrowDown','ru'],['Home','en'],['End','ru'],['ArrowUp','zh-Hant'],['ArrowUp','zh-Hans'],['ArrowUp','ja'],['ArrowUp','hi'],['ArrowUp','id'],['ArrowUp','fr']] as const){
   await page.keyboard.press(key);await expect(select,key).toHaveValue(value);await expect(dialog,`${key} → ${value}`).toHaveCount(0);await expect(select).toBeFocused();
  }
  // Enter asks for the pending option, by its own name, in Russian; Cancel returns to Russian.
@@ -414,7 +443,7 @@ test('Front RU-REL: the keyboard steps across all the options without opening th
  // Escape on the select drops a pending step; leaving the select with a pending step asks for it.
  await select.focus();await page.keyboard.press('Home');await expect(select).toHaveValue('en');
  await page.keyboard.press('Escape');await expect(select).toHaveValue('ru');await expect(dialog).toHaveCount(0);
- await select.focus();await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await expect(select).toHaveValue('es-419');await expect(dialog).toHaveCount(0);
+ await select.focus();await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await expect(select).toHaveValue('es-419');await expect(dialog).toHaveCount(0);
  await page.keyboard.press('Tab');
  await expect(dialog).toBeVisible();await expect(dialog).toContainText(R.maps.languageChoice.reload('Español'));
  await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);await expect(select).toHaveValue('ru');
@@ -428,7 +457,7 @@ test.describe('in a Brazilian Portuguese browser',()=>{
 test('Front PT0: the keyboard steps across all the options without opening the dialog; Enter or leaving asks, Escape returns',async({page})=>{
  // Front FR-REL: four options since French's release; Front ID-REL: five (Bahasa Indonesia); Front HI-REL: six (हिन्दी (Hindi));
  // Front JA-REL: seven (日本語 (Japanese)); Front RU-REL: eight (Русский last); Front ZH-REL: nine (简体中文 (Simplified Chinese)
- // before Русский).
+ // before Русский); Front ZT-REL: ten (繁體中文 (Traditional Chinese) between 简体中文 and Русский).
  // SC8 review: on Chromium and Firefox (Windows, Linux) an arrow on the closed select fired `change` at once, so the confirmation
  // opened on the first arrow and the option after the next one could not be reached. Now a step only marks the option pending.
  // Front PT-REL: in a pt-BR browser, which opens Portuguese with no `?lang=`.
@@ -436,7 +465,7 @@ test('Front PT0: the keyboard steps across all the options without opening the d
  await open(page);await expect(page.locator('html')).toHaveAttribute('lang','pt-BR');
  const select=page.getByRole('combobox',{name:'Idioma / Language'}),dialog=id(page,'language-confirm');
  await select.focus();await expect(select).toBeFocused();await expect(select).toHaveValue('pt-BR');
- for(const [key,value] of [['ArrowUp','es-419'],['ArrowUp','en'],['ArrowDown','es-419'],['ArrowDown','pt-BR'],['Home','en'],['End','ru'],['ArrowUp','zh-Hans'],['ArrowUp','ja'],['ArrowUp','hi'],['ArrowUp','id'],['ArrowUp','fr'],['ArrowUp','pt-BR'],['ArrowUp','es-419'],['ArrowUp','en']] as const){
+ for(const [key,value] of [['ArrowUp','es-419'],['ArrowUp','en'],['ArrowDown','es-419'],['ArrowDown','pt-BR'],['Home','en'],['End','ru'],['ArrowUp','zh-Hant'],['ArrowUp','zh-Hans'],['ArrowUp','ja'],['ArrowUp','hi'],['ArrowUp','id'],['ArrowUp','fr'],['ArrowUp','pt-BR'],['ArrowUp','es-419'],['ArrowUp','en']] as const){
   await page.keyboard.press(key);await expect(select,key).toHaveValue(value);await expect(dialog,`${key} → ${value}`).toHaveCount(0);await expect(select).toBeFocused();
  }
  // Enter asks for the pending option, by its own name, in the current language; Cancel returns to Portuguese.
@@ -629,7 +658,7 @@ test('Front JA-REL: the keyboard steps across all the options without opening th
  await open(page);await expect(page.locator('html')).toHaveAttribute('lang','ja');
  const select=page.getByRole('combobox',{name:J.maps.languageChoice.legend}),dialog=id(page,'language-confirm');
  await select.focus();await expect(select).toBeFocused();await expect(select).toHaveValue('ja');
- for(const [key,value] of [['ArrowUp','hi'],['ArrowUp','id'],['ArrowUp','fr'],['ArrowUp','pt-BR'],['ArrowUp','es-419'],['ArrowUp','en'],['ArrowDown','es-419'],['End','ru'],['Home','en'],['End','ru'],['ArrowUp','zh-Hans'],['ArrowUp','ja'],['ArrowUp','hi'],['ArrowUp','id'],['ArrowUp','fr']] as const){
+ for(const [key,value] of [['ArrowUp','hi'],['ArrowUp','id'],['ArrowUp','fr'],['ArrowUp','pt-BR'],['ArrowUp','es-419'],['ArrowUp','en'],['ArrowDown','es-419'],['End','ru'],['Home','en'],['End','ru'],['ArrowUp','zh-Hant'],['ArrowUp','zh-Hans'],['ArrowUp','ja'],['ArrowUp','hi'],['ArrowUp','id'],['ArrowUp','fr']] as const){
   await page.keyboard.press(key);await expect(select,key).toHaveValue(value);await expect(dialog,`${key} → ${value}`).toHaveCount(0);await expect(select).toBeFocused();
  }
  await page.keyboard.press('Enter');

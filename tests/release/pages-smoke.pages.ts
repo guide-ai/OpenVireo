@@ -11,6 +11,7 @@ import {OBJECT_X_LAB_ID} from '../../src/i18n/id/maps/objectXLab';
 import {OBJECT_X_LAB_HI} from '../../src/i18n/hi/maps/objectXLab';
 import {OBJECT_X_LAB_JA} from '../../src/i18n/ja/maps/objectXLab';
 import {OBJECT_X_LAB_ZH_HANS} from '../../src/i18n/zh-hans/maps/objectXLab';
+import {OBJECT_X_LAB_ZH_HANT} from '../../src/i18n/zh-hant/maps/objectXLab';
 import {OBJECT_X_LAB_RU} from '../../src/i18n/ru/maps/objectXLab';
 import {SEO_LANGUAGES} from '../../src/seo/languages';
 // @ts-expect-error The planner is a plain JS script (scripts/i18n-split.mjs), as tests import scripts/audit-ui-messages.mjs.
@@ -42,6 +43,9 @@ const JAPANESE_OBJECT_X_GUIDE:string=OBJECT_X_LAB_JA.title;
 /** Front ZH-REL: the same for Simplified Chinese (src/i18n/zh-hans/zh-hans.json, src/i18n/zh-hans/maps/objectXLab.ts). */
 const CHINESE_CATALOG=JSON.parse(await readFile(new URL('../../src/i18n/zh-hans/zh-hans.json',import.meta.url),'utf8')) as Record<string,string>;
 const CHINESE_SEO=SEO_LANGUAGES.find(l=>l.tag==='zh-Hans')!;
+/** Front ZT-REL: the same for Traditional Chinese (src/i18n/zh-hant/zh-hant.json, src/i18n/zh-hant/maps/objectXLab.ts). */
+const TRADITIONAL_CATALOG=JSON.parse(await readFile(new URL('../../src/i18n/zh-hant/zh-hant.json',import.meta.url),'utf8')) as Record<string,string>;
+const TRADITIONAL_SEO=SEO_LANGUAGES.find(l=>l.tag==='zh-Hant')!;
 /** Front RU-REL: the same for Russian. */
 const RUSSIAN_CATALOG=JSON.parse(await readFile(new URL('../../src/i18n/ru/ru.json',import.meta.url),'utf8')) as Record<string,string>;
 const RUSSIAN_OBJECT_X_GUIDE:string=OBJECT_X_LAB_RU.title;
@@ -101,13 +105,14 @@ test('the page, a hashed bundle and an original file carry the release headers',
  expect([whole.status(),whole.headers()['content-type']]).toEqual([404,'text/html; charset=utf-8']);
  const notFound=await whole.text();expect(notFound).toContain('This address is not part of OpenVireo.');
  // Front ES-REL: the 404 page is bilingual; Front PT-REL: trilingual; Front FR-REL: quadrilingual; Front ID-REL: five languages; Front HI-REL: six; Front JA-REL: seven;
- // Front RU-REL: eight; Front ZH-REL: nine.
+ // Front RU-REL: eight; Front ZH-REL: nine; Front ZT-REL: ten.
  expect(notFound).toContain('Esta dirección no forma parte de OpenVireo.');expect(notFound).toContain('Este endereço não faz parte do OpenVireo.');
  expect(notFound).toContain('Cette adresse ne fait pas partie d’OpenVireo.');expect(notFound).toContain('<section lang="fr">');expect(notFound).toContain('href="/?lang=fr#observatory"');
  expect(notFound).toContain('Alamat ini bukan bagian dari OpenVireo.');expect(notFound).toContain('<section lang="id">');expect(notFound).toContain('href="/?lang=id#observatory"');
  expect(notFound).toContain(HINDI_SEO.notFound.text);expect(notFound).toContain('<section lang="hi">');expect(notFound).toContain('href="/?lang=hi#observatory"');
  expect(notFound).toContain('このアドレスはOpenVireoのサイトにはありません。');expect(notFound).toContain('<section lang="ja">');expect(notFound).toContain('href="/?lang=ja#observatory"');
  expect(notFound).toContain(CHINESE_SEO.notFound.text);expect(notFound).toContain('<section lang="zh-Hans">');expect(notFound).toContain('href="/?lang=zh-Hans#observatory">打开天文台</a>');
+ expect(notFound).toContain(TRADITIONAL_SEO.notFound.text);expect(notFound).toContain('<section lang="zh-Hant">');expect(notFound).toContain('href="/?lang=zh-Hant#observatory">開啟天文台</a>');
  expect(notFound).toContain('Этот адрес не относится к OpenVireo.');expect(notFound).toContain('<section lang="ru">');expect(notFound).toContain('href="/?lang=ru#observatory">Открыть обсерваторию</a>');
  expect(baseURL).toMatch(/^http:\/\/127\.0\.0\.1:63\d\d$/);// playwright.pages.config.ts admits only 6300–6398
 });
@@ -216,6 +221,7 @@ test('Front ES-REL: an es-MX browser opens Spanish without ?lang=, with the sele
 // browser (Hindi groups thousands with a comma as English does, user decision of 2026-11-19). Front JA-REL: and Japanese in a
 // ja-JP browser (Japanese groups thousands with a comma, as English, AGENTS.md 2026-11-19). Front RU-REL: and Russian in a ru-RU
 // browser (U+202F too, user decision of 2026-11-19). Front ZH-REL: and Simplified Chinese in a zh-CN browser (a comma, as English).
+// Front ZT-REL: and Traditional Chinese in a zh-TW browser (a comma too).
 const RELEASED_SMOKE:readonly Readonly<{tag:string;locale:string;front:string;describe:string;name:string;heading:string;title:string}>[]=[
  {tag:'pt-BR',locale:'pt-BR',front:'PT-REL',describe:'in a Brazilian Portuguese browser (pt-BR)',name:'Portuguese',heading:'Comece pelo céu.',title:PORTUGUESE_CATALOG['app.documentTitle']},
  {tag:'fr',locale:'fr-FR',front:'FR-REL',describe:'in a French browser (fr-FR)',name:'French',heading:FRENCH_CATALOG['sky.title'],title:FRENCH_CATALOG['app.documentTitle']},
@@ -223,9 +229,10 @@ const RELEASED_SMOKE:readonly Readonly<{tag:string;locale:string;front:string;de
  {tag:'hi',locale:'hi-IN',front:'HI-REL',describe:'in a Hindi browser (hi-IN)',name:'Hindi',heading:HINDI_CATALOG['sky.title'],title:HINDI_CATALOG['app.documentTitle']},
  {tag:'ja',locale:'ja-JP',front:'JA-REL',describe:'in a Japanese browser (ja-JP)',name:'Japanese',heading:JAPANESE_CATALOG['sky.title'],title:JAPANESE_CATALOG['app.documentTitle']},
  {tag:'zh-Hans',locale:'zh-CN',front:'ZH-REL',describe:'in a Simplified Chinese browser (zh-CN)',name:'Simplified Chinese',heading:CHINESE_CATALOG['sky.title'],title:CHINESE_CATALOG['app.documentTitle']},
+ {tag:'zh-Hant',locale:'zh-TW',front:'ZT-REL',describe:'in a Traditional Chinese browser (zh-TW)',name:'Traditional Chinese',heading:TRADITIONAL_CATALOG['sky.title'],title:TRADITIONAL_CATALOG['app.documentTitle']},
  {tag:'ru',locale:'ru-RU',front:'RU-REL',describe:'in a Russian browser (ru-RU)',name:'Russian',heading:RUSSIAN_CATALOG['sky.title'],title:RUSSIAN_CATALOG['app.documentTitle']},
 ];
-const OPTIONS=['English','Español','Português (Brasil)','Français','Bahasa Indonesia','हिन्दी (Hindi)','日本語 (Japanese)','简体中文 (Simplified Chinese)','Русский (Russian)'];
+const OPTIONS=['English','Español','Português (Brasil)','Français','Bahasa Indonesia','हिन्दी (Hindi)','日本語 (Japanese)','简体中文 (Simplified Chinese)','繁體中文 (Traditional Chinese)','Русский (Russian)'];
 for(const R of RELEASED_SMOKE){
 const plan=planOf(R.tag);
 test.describe(R.describe,()=>{
@@ -256,13 +263,14 @@ test(R.tag==='pt-BR'?'Front PT-REL: a pt-BR browser opens Portuguese without ?la
 });
 });
 }
-for(const [locale,lang,count] of [['pt-PT','pt-BR','31\u202f147'],['pt','pt-BR','31\u202f147'],['fr-CA','fr','31\u202f147'],['fr-BE','fr','31\u202f147'],['id-ID','id','31\u202f147'],['in-ID','id','31\u202f147'],['hi-IN','hi','31,147'],['hi','hi','31,147'],['ru-RU','ru','31\u202f147'],['ru-UA','ru','31\u202f147'],['uk-UA','en','31,147'],['zh-CN','zh-Hans','31,147'],['zh-SG','zh-Hans','31,147'],['zh','zh-Hans','31,147'],['zh-TW','en','31,147'],['zh-HK','en','31,147'],['es-MX','es-419','31,147'],['en-US','en','31,147']] as const)test(`Front ${lang==='fr'?'FR-REL':lang==='id'?'ID-REL':lang==='hi'?'HI-REL':lang==='ru'||locale==='uk-UA'?'RU-REL':lang==='zh-Hans'||locale.startsWith('zh')?'ZH-REL':'PT-REL'}: a ${locale} browser opens ${lang}; the variable-star catalog count reads ${count.replace('\u202f','\\u202f')}`,async({browser})=>{
+for(const [locale,lang,count] of [['pt-PT','pt-BR','31\u202f147'],['pt','pt-BR','31\u202f147'],['fr-CA','fr','31\u202f147'],['fr-BE','fr','31\u202f147'],['id-ID','id','31\u202f147'],['in-ID','id','31\u202f147'],['hi-IN','hi','31,147'],['hi','hi','31,147'],['ru-RU','ru','31\u202f147'],['ru-UA','ru','31\u202f147'],['uk-UA','en','31,147'],['zh-CN','zh-Hans','31,147'],['zh-SG','zh-Hans','31,147'],['zh','zh-Hans','31,147'],['zh-TW','zh-Hant','31,147'],['zh-HK','zh-Hant','31,147'],['zh-MO','zh-Hant','31,147'],['es-MX','es-419','31,147'],['en-US','en','31,147']] as const)test(`Front ${lang==='fr'?'FR-REL':lang==='id'?'ID-REL':lang==='hi'?'HI-REL':lang==='ru'||locale==='uk-UA'?'RU-REL':lang==='zh-Hant'?'ZT-REL':lang==='zh-Hans'?'ZH-REL':'PT-REL'}: a ${locale} browser opens ${lang}; the variable-star catalog count reads ${count.replace('\u202f','\\u202f')}`,async({browser})=>{
  const page=await browser.newPage({locale});
  await page.goto('/#variable-stars');await expect(page.locator('html')).toHaveAttribute('lang',lang,{timeout:20_000});
  // The scope's literal count, and the result line's count from the map's formatter (31,147 records match an empty search).
  // Front RU-REL: Russian words the count count-neutrally («CLEA_VStrs.dat, записей: 31 147»).
- // Front ZH-REL: Chinese writes the full-width comma and the measure word («CLEA_VStrs.dat，31,147条记录»).
- await expect(page.locator('p:visible',{hasText:'CLEA_VStrs.dat'})).toContainText(lang==='zh-Hans'?`CLEA_VStrs.dat，${count}条记录`:`CLEA_VStrs.dat, ${lang==='ru'?'записей: ':''}${count}`,{timeout:20_000});
+ // Front ZH-REL: Chinese writes the full-width comma and the measure word («CLEA_VStrs.dat，31,147条记录»); Front ZT-REL: Traditional
+ // Chinese the same with its own measure word («CLEA_VStrs.dat，31,147筆記錄»).
+ await expect(page.locator('p:visible',{hasText:'CLEA_VStrs.dat'})).toContainText(lang==='zh-Hans'?`CLEA_VStrs.dat，${count}条记录`:lang==='zh-Hant'?`CLEA_VStrs.dat，${count}筆記錄`:`CLEA_VStrs.dat, ${lang==='ru'?'записей: ':''}${count}`,{timeout:20_000});
  await expect(page.getByTestId('variable-count')).toContainText(count);
  await page.close();
 });
@@ -548,7 +556,7 @@ test('Front LAUNCH-3: the 404 page is styled by the site stylesheet, passes the 
   await expect.poll(()=>page.evaluate(()=>getComputedStyle(document.querySelector('.button')!).borderRadius)).toBe('8px');
   expect(await page.evaluate(()=>getComputedStyle(document.body).backgroundColor)).toBe(scheme==='dark'?'rgb(14, 27, 33)':'rgb(244, 246, 247)');
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
-  for(const tag of ['es-419','pt-BR','fr','id','hi','ja','zh-Hans','ru'])await expect(page.locator(`section[lang="${tag}"] h2`)).toBeVisible();
+  for(const tag of ['es-419','pt-BR','fr','id','hi','ja','zh-Hans','zh-Hant','ru'])await expect(page.locator(`section[lang="${tag}"] h2`)).toBeVisible();
   expect(await page.locator('script').count()).toBe(0);
  }
  await page.getByRole('link',{name:'Todas las prácticas'}).click();await expect(page).toHaveURL(/\/es\/labs\/$/);
@@ -564,7 +572,8 @@ test('Front LAUNCH-3: the 404 page is styled by the site stylesheet, passes the 
 // four languages (French as fr). Front ID-REL+SEO: the Indonesian pages under /id/, and five languages (Indonesian as id). Front HI-REL+SEO: the Hindi pages under /hi/, and six
 // languages (Hindi as hi). Front JA-REL+SEO: the Japanese pages under /ja/, and seven languages (Japanese as ja). Front RU-REL+SEO:
 // the Russian pages under /ru/, and eight languages (Russian as ru). Front ZH-REL+SEO: the Simplified Chinese pages under /zh-hans/,
-// and nine languages (Simplified Chinese as zh-Hans).
+// and nine languages (Simplified Chinese as zh-Hans). Front ZT-REL+SEO: the Traditional Chinese pages under /zh-hant/, and ten
+// languages (Traditional Chinese as zh-Hant).
 const SEO_SMOKE=[
  {tag:'es-419',prefix:'/es',image:'/og-image-es.png',openLab:'Abrir la práctica',guide:'En busca del Objeto X',title:'Front ES-SEO: the Spanish pages, their preview image and the hreflang links are served with the release headers'},
  {tag:'pt-BR',prefix:'/pt-br',image:'/og-image-pt-br.png',openLab:'Abrir a prática',guide:'Em busca do Objeto X',title:'Front PT-SEO: the Brazilian Portuguese pages, their preview image and the hreflang links are served with the release headers'},
@@ -573,6 +582,7 @@ const SEO_SMOKE=[
  {tag:'hi',prefix:'/hi',image:'/og-image-hi.png',openLab:HINDI_SEO.ui.openLab,guide:OBJECT_X_LAB_HI.title,title:'Front HI-REL+SEO: the Hindi pages, their preview image and the hreflang links are served with the release headers'},
  {tag:'ja',prefix:'/ja',image:'/og-image-ja.png',openLab:'実習を開く',guide:JAPANESE_OBJECT_X_GUIDE,title:'Front JA-REL+SEO: the Japanese pages, their preview image and the hreflang links are served with the release headers'},
  {tag:'zh-Hans',prefix:'/zh-hans',image:'/og-image-zh-hans.png',openLab:CHINESE_SEO.ui.openLab,guide:OBJECT_X_LAB_ZH_HANS.title,title:'Front ZH-REL+SEO: the Simplified Chinese pages, their preview image and the hreflang links are served with the release headers'},
+ {tag:'zh-Hant',prefix:'/zh-hant',image:'/og-image-zh-hant.png',openLab:TRADITIONAL_SEO.ui.openLab,guide:OBJECT_X_LAB_ZH_HANT.title,title:'Front ZT-REL+SEO: the Traditional Chinese pages, their preview image and the hreflang links are served with the release headers'},
  {tag:'ru',prefix:'/ru',image:'/og-image-ru.png',openLab:'Открыть работу',guide:RUSSIAN_OBJECT_X_GUIDE,title:'Front RU-REL+SEO: the Russian pages, their preview image and the hreflang links are served with the release headers'},
 ] as const;
 for(const L of SEO_SMOKE)test(L.title,async({page,request,baseURL})=>{
@@ -583,7 +593,7 @@ for(const L of SEO_SMOKE)test(L.title,async({page,request,baseURL})=>{
  }
  for(const path of [L.prefix,`${L.prefix}/labs/hubble`]){const r=await request.get(path,{maxRedirects:0});expect(r.status(),path).toBe(308);expect(new URL(r.headers().location,baseURL).pathname,path).toBe(`${path}/`);}
  const alternates=(html:string)=>[...html.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)"\/>/g)].map(m=>`${m[1]} ${m[2]}`);
- const home=['en https://openvireo.space/','es https://openvireo.space/es/','pt-BR https://openvireo.space/pt-br/','pt https://openvireo.space/pt-br/','fr https://openvireo.space/fr/','id https://openvireo.space/id/','hi https://openvireo.space/hi/','ja https://openvireo.space/ja/','zh-Hans https://openvireo.space/zh-hans/','ru https://openvireo.space/ru/','x-default https://openvireo.space/'];
+ const home=['en https://openvireo.space/','es https://openvireo.space/es/','pt-BR https://openvireo.space/pt-br/','pt https://openvireo.space/pt-br/','fr https://openvireo.space/fr/','id https://openvireo.space/id/','hi https://openvireo.space/hi/','ja https://openvireo.space/ja/','zh-Hans https://openvireo.space/zh-hans/','zh-Hant https://openvireo.space/zh-hant/','ru https://openvireo.space/ru/','x-default https://openvireo.space/'];
  expect(alternates(await (await request.get('/')).text())).toEqual(home);expect(alternates(await (await request.get(`${L.prefix}/`)).text())).toEqual(home);
  const sitemap=await (await request.get('/sitemap.xml')).text();expect(sitemap).toContain(`<loc>https://openvireo.space${L.prefix}/labs/pulsars/</loc>`);
  const p=await watch(page,baseURL!);
@@ -613,7 +623,7 @@ const HELP_SMOKE=[
  {tag:'ja',title:'Front JA-HELP: a ?lang=ja help viewer fetches only its translated help chunks and switches to the original',label:'翻訳：OpenVireoによるWeb版の翻訳（CLEAの文章ではありません）',text:'分類するスペクトルを読み込むには'},
  // Front ZH-HELP: the Simplified Chinese help set in its ?lang=zh-Hans preview.
  {tag:'zh-Hans',title:'Front ZH-HELP: a ?lang=zh-Hans help viewer fetches only its translated help chunks and switches to the original',label:'翻译：OpenVireo的网页改编译文（不是CLEA的文本）',text:'要载入待分类的光谱'},
- // Front ZT-HELP: the Traditional Chinese help set in its ?lang=zh-Hant preview.
+ // Front ZT-HELP: the Traditional Chinese help set (its ?lang=zh-Hant link, released since ZT-REL).
  {tag:'zh-Hant',title:'Front ZT-HELP: a ?lang=zh-Hant help viewer fetches only its translated help chunks and switches to the original',label:'翻譯：OpenVireo的網頁改編譯文（不是CLEA的文本）',text:'要載入供分類的光譜'},
  // Front RU-HELP: the Russian help set in its ?lang=ru preview.
  {tag:'ru',title:'Front RU-HELP: a ?lang=ru help viewer fetches only its translated help chunks and switches to the original',label:'Перевод: веб-адаптация OpenVireo (не текст CLEA)',text:'Чтобы загрузить спектр для классификации'},

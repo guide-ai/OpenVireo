@@ -517,8 +517,8 @@ Baidu's webmaster tools would be one). The language rules are in `docs/I18N.md`,
 - **hreflang** on every page pair (81 pages, 9 per language): `en`, `es`, `pt-BR`, `pt`, `fr`, `id`, `hi`, `ja`, `zh-Hans`, `ru` and
   `x-default` → English. `zh-Hans` is a script subtag, which Google's hreflang guide names for Simplified Chinese (checked on
   2026-11-21; it also derives the Simplified script from `zh-CN`, `zh-SG` and the like); the table's format check now admits an
-  ISO 15924 script between language and region. Traditional searchers (`zh-TW`, `zh-HK`, `zh-MO`) keep the English x-default, as
-  those browsers keep English until zh-Hant exists. The sitemap lists all 81 addresses with the same alternates. Every other
+  ISO 15924 script between language and region. Traditional searchers (`zh-TW`, `zh-HK`, `zh-MO`) kept the English x-default, as
+  those browsers kept English until zh-Hant existed (until ZT-REL+SEO). The sitemap lists all 81 addresses with the same alternates. Every other
   language's pages gain `og:locale:alternate` `zh_CN` and a visible «简体中文» link (`hreflang`/`lang` `zh-Hans`).
 - **App**: the observatory footer's labs link goes to `/zh-hans/labs/` when the app is in Simplified Chinese (the prefix table gains
   `'zh-Hans':'/zh-hans'`).
@@ -549,6 +549,58 @@ indexing». Google is not reachable from mainland China without a VPN, so Chines
 the mainland); adding the site to Baidu's webmaster tools would be a new external service that needs the user's own decision.
 OpenSEO can track Simplified Chinese keywords (for example «哈勃定律 实验», «CLEA 天文», «赫罗图 星团 实验») with Singapore and Malaysia,
 where Simplified Chinese is written, as markets, since mainland Google results are not available.
+
+# Front ZT-SEO: Traditional Chinese search pages
+
+User decision 8 of 2026-11-09 and the Chinese decisions of 2026-11-19 (AGENTS.md): with the Traditional Chinese release (ZT-REL, the
+same front, ZT-REL+SEO), its home page `/zh-hant/` and lab pages `/zh-hant/labs/`, with `hreflang` and a Traditional Chinese preview
+image, the same data-driven way as ZH-SEO. Static site only; no new external service. The language rules are in `docs/I18N.md`,
+"Traditional Chinese: release and search pages (ZT-REL+SEO)".
+
+## What changed
+
+- **Data only.** A `zh-Hant` row in `src/seo/languages.ts` (`SEO_LANGUAGES`, between Simplified Chinese and Russian, in registry
+  order), its lab texts in `src/seo/labs.zh-hant.ts`, its prefix `/zh-hant` in `SEO_PATH_PREFIX` (`src/seo/labSlugs.ts`; equal to the
+  registry's `pagePath`). `src/seo/pages.ts`, the Vite plugin and the image renderer are unchanged.
+- **Traditional Chinese pages**: `/zh-hant/` (static home: what OpenVireo is, «開啟天文台», the seven labs, «使用方式», the credit),
+  `/zh-hant/labs/` and `/zh-hant/labs/<slug>/` with the English slugs. `<html lang="zh-Hant">`, self canonical, `og:locale`
+  `zh_TW`, JSON-LD in Traditional Chinese (`learningResourceType` «互動式實驗», `educationalLevel` «高中»/«大學»). «開啟實驗» goes to
+  `/?lang=zh-Hant#lab=<slug>`. Adapted by Opus from the Simplified Chinese pages with OpenVireo's English pages as the source, to
+  Taiwan's standard (user decision of 2026-11-19): 你, 「」 quotes, Taiwan vocabulary («線上», «資料», «程式», «執行», «網址»,
+  «不用安裝»), the zh-Hant glossary's terms («哈伯定律», «紅移», «楔形圖», «等值寬度», «主序», «色散量», «CCD相機», «光譜分析器», «電波望遠鏡»)
+  and the app's own lab names («哈伯定律», «大尺度結構», «恆星分類», «昴宿星團測光», «星團赫羅圖», «脈衝星», «天體X»). Object X's
+  identifier is «識別碼», as E08 writes it. The home's «使用方式» carries the numbers sentence (decimal point, half-width digits;
+  Traditional Chinese writes «24,000» as English) and files staying English. The footer says «本頁的繁體中文文字是OpenVireo的網頁改編，
+  不是CLEA的文本。».
+- **hreflang** on every page pair (90 pages, 9 per language): `en`, `es`, `pt-BR`, `pt`, `fr`, `id`, `hi`, `ja`, `zh-Hans`,
+  `zh-Hant`, `ru` and `x-default` → English. `zh-Hant` is the script subtag Google's hreflang guide names for Traditional Chinese
+  (ZH-SEO checked it); the app opens it for zh-TW, zh-HK, zh-MO and zh-Hant-* browsers, so Traditional searchers no longer fall to
+  the English x-default. The sitemap lists all 90 addresses. Every other language's pages gain `og:locale:alternate` `zh_TW` and a
+  visible «繁體中文» link (`hreflang`/`lang` `zh-Hant`).
+- **App**: the observatory footer's labs link goes to `/zh-hant/labs/` when the app is in Traditional Chinese.
+- **404 page**: a ninth `<section>` (the tenth language), «找不到網頁 · 此網址不屬於OpenVireo。», under `lang="zh-Hant"`, linking
+  `/?lang=zh-Hant#observatory` («開啟天文台»), and «找不到網頁» in the title.
+- **Preview image** `public/og-image-zh-hant.png` (1200×630): the design of the others with «瀏覽器中的CLEA VIREO天文實驗», rendered by
+  `node scripts/render-og-image.mjs zh-Hant` (276,066 bytes, SHA-256 `3fe2ca9c…0d854`) with the scripts fontconfig (Noto Sans CJK TC for `lang="zh-Hant"`); an original drawing,
+  no CLEA image.
+- **Headers**: `/zh-hant/*` is `no-cache`, like the other language prefixes (`public/_headers`, `src/deployHeaders.test.ts`).
+
+## Tests
+
+- `src/seo/languages.test.ts`: Traditional Chinese joins the per-language checks with its own rules (profile `zh-Hant`, glossary field
+  `zh-Hant` with its Taiwan-vocabulary `forbidden` list, the claims «官方翻譯», «官方版本», «CLEA的翻譯» and the like, never «非官方», the
+  reconstruction phrase «免費網頁重建版», the home's «免費、非官方的網頁重建版», the adaptation and credit sentences, `zh_TW`, its image).
+  `src/seo/pages.test.ts` (90 sitemap addresses, the ten-language 404) and `src/seo/direction.test.ts` follow.
+- `tests/i18n/seo.spec.ts`: the same flows for Traditional Chinese (`/zh-hant/`, «開啟實驗» on the pulsar and Object X pages, English back).
+- `tests/release/pages-smoke.pages.ts`: the Traditional Chinese pages and image with the release headers, the 308s, the alternates on
+  `/` and each home, the sitemap, the 404's section, and a lab page opening the app under the release policy.
+
+## For the user (not done by the site)
+
+After the deploy: in Google Search Console resubmit `https://openvireo.space/sitemap.xml` (it now lists 90 addresses) and use URL
+Inspection on `https://openvireo.space/zh-hant/` and one lab page (for example `/zh-hant/labs/hubble/`), then «Request indexing».
+OpenSEO can track Traditional Chinese keywords (for example «哈伯定律 實驗», «赫羅圖 星團», «CLEA 天文») with Taiwan and Hong Kong as
+markets.
 
 # Front HOME: a welcome on the observatory's first screen
 

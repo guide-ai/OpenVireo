@@ -11,6 +11,8 @@
 //   FONTCONFIG_FILE=…/scripts/fonts.conf node scripts/render-og-image.mjs ja        → public/og-image-ja.png (the CJK test fonts)
 //   FONTCONFIG_FILE=…/scripts/fonts.conf node scripts/render-og-image.mjs zh-Hans   → public/og-image-zh-hans.png (the CJK test fonts:
 //   Noto Sans CJK SC for lang="zh-Hans")
+//   FONTCONFIG_FILE=…/scripts/fonts.conf node scripts/render-og-image.mjs zh-Hant   → public/og-image-zh-hant.png (the CJK test fonts:
+//   Noto Sans CJK TC for lang="zh-Hant")
 //   FONTCONFIG_FILE=…/fonts.conf node scripts/render-og-image.mjs ru                → public/og-image-ru.png
 //   node scripts/render-og-image.mjs en /tmp/check.png                               (English, to compare with the original)
 // The English image predates this script and is not re-rendered: pass an output path for English.

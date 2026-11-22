@@ -28,6 +28,9 @@ export const RECORDED=/^(?:SHA-256 )?[0-9a-f]{64}$|^[0-9a-f]{12}$/;
 /** The print previews' date line as the browser formats it (DateTimeToStr(Now) [W]), and the CLEA exercise title VIREO prints
  * above the light curve (a proper name, core/lightCurvePrint.ts). */
 export const PRINT_DATE=/^\d{1,2}\/\d{1,2}\/\d{4}, \d{1,2}:\d{2}:\d{2}\s?[AaPp][Mm]$/; // CI Chromium writes Hindi (hi) «pm» in lower case
+/** Front ZT-REL: the same date in a zh-TW browser (CLDR «2026/11/9 上午7:00:16», 上午/下午), on the English and the Traditional Chinese
+ * page alike; a zh-CN browser's «2026/11/9 07:00:16» is NUMERIC already. */
+export const PRINT_DATE_ZH_TW=/^\d{4}\/\d{1,2}\/\d{1,2} [上下]午\d{1,2}:\d{2}:\d{2}$/;
 export const EXERCISE_TITLE='CLEA Exercise "VIREO - The VIRtual Educational Observatory"';
 export const NUMERIC=/^[-+−±\d\s.,:;°′″'"·×÷/()[\]–%=→e*]*\d[-+−±\d\s.,:;°′″'"·×÷/()[\]–%=→e*]*(?:\s*(?:mag|pc|Myr|d|h|px|Å))*\s*$/;
 /** The cluster names with their catalog suffix, exactly as the contract records them (the dataset selector's options). */
@@ -61,7 +64,7 @@ export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'es-419':new 
  hi:new Set(['ID #:','RA:','GCVS ID','RA']),
  // Front JA4: VIREO's OK and (km/sec) (JA1's identical originals) and the catalog name GCVS ID (identical.json).
  ja:new Set(['OK','(km/sec)','GCVS ID']),'zh-Hans':new Set(['(km/sec)','GCVS ID']),'zh-Hant':new Set(['(km/sec)','GCVS ID'])};
-export const same=(text:string,step:string,L?:LanguageText)=>(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false))||CLUSTER_NAMES.has(text.replace(/^@option:/,''))||PICTURE_TEXT.test(text)||SPECTRAL.test(text)||RECORDED_ID.test(text)||(VARIABLE_STEPS.has(step)&&(GCVS_NAME.test(text)||gcvsType(text.replace(/^@option:/,''))||CURVE_TEXT.has(text)))||(step.startsWith('Cluster Data')&&CD_NAME.test(text))||PRINT_DATE.test(text)||text===EXERCISE_TITLE||SAME.has(text)||NUMERIC.test(text)||RECORDED.test(text);
+export const same=(text:string,step:string,L?:LanguageText)=>(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false))||CLUSTER_NAMES.has(text.replace(/^@option:/,''))||PICTURE_TEXT.test(text)||SPECTRAL.test(text)||RECORDED_ID.test(text)||(VARIABLE_STEPS.has(step)&&(GCVS_NAME.test(text)||gcvsType(text.replace(/^@option:/,''))||CURVE_TEXT.has(text)))||(step.startsWith('Cluster Data')&&CD_NAME.test(text))||PRINT_DATE.test(text)||(L?.tag==='zh-Hant'&&PRINT_DATE_ZH_TW.test(text))||text===EXERCISE_TITLE||SAME.has(text)||NUMERIC.test(text)||RECORDED.test(text);
 export const id=(page:Page|Locator,testId:string)=>page.getByTestId(testId);
 /** Front SC12: an English text's name in any pseudo-locale (qps and the script variants; tests/fixtures/pseudoNames.ts). */
 export const pseudo=pseudoName;

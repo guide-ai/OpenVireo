@@ -115,9 +115,9 @@ if(process.env.OPENVIREO_FIX_TYPOGRAPHY==='1'){
 }
 
 describe('Front ZT0: the Traditional Chinese (zh-Hant) bundle',()=>{
- it('is registered before its release: a ?lang=zh-Hant preview only, never detected or offered; comma thousands as en-US',()=>{
+ it('Front ZT-REL: is released (detected from Traditional browsers, Hong Kong and Macau included, never Simplified ones; stored, offered); comma thousands as en-US',()=>{
   expect(languageEntry('zh-Hant')).toMatchObject({dir:'zh-hant',catalog:'zh-hant.json',budgetFactor:1.4,htmlLang:'zh-Hant',pagePath:'zh-hant',autonym:'繁體中文',englishName:'Traditional Chinese',
-   match:['zh-Hant','zh-TW','zh-HK','zh-MO'],released:false});
+   match:['zh-Hant','zh-TW','zh-HK','zh-MO'],released:true});
   expect(languageEntry('zh-Hant')?.except).toBeUndefined();
   expect(languageEntry('zh-Hant')?.thousands).toBeUndefined();expect(languageEntry('zh-Hant')?.help).toEqual({related:'相關主題'});// Front ZT-HELP
   expect(CHINESE_TRADITIONAL.language).toBe('zh-Hant');
@@ -140,6 +140,14 @@ describe('Front ZT0: the Traditional Chinese (zh-Hant) bundle',()=>{
   expect(zt2.length).toBe(1434);
   expect(Object.keys(en).filter(k=>!Object.hasOwn(zh,k))).toEqual([]);
   expect(Object.keys(zh).filter(k=>!Object.hasOwn(en,k))).toEqual([]);
+ });
+ it('Front ZT-REL: the catalog is complete and strict: every en.json key, the same {params}, strings only, no extra key; every map complete',()=>{
+  // As the earlier releases' checks: strictness lives here, since the split bundle builds each module with the English fallback.
+  expect(()=>createI18n(zh as Record<MessageKey,string>,'zh-Hant')).not.toThrow();
+  expect(Object.keys(en).filter(k=>!Object.hasOwn(zh,k))).toEqual([]);
+  expect(Object.keys(zh).filter(k=>!Object.hasOwn(en,k))).toEqual([]);
+  for(const [id,map] of Object.entries(CHINESE_TRADITIONAL.maps??{}))expect(mapParity(ENGLISH_MAPS[id as MapId],map),id).toEqual([]);
+  expect(MAP_IDS.filter(id=>!Object.hasOwn(CHINESE_TRADITIONAL.maps??{},id))).toEqual([]);
  });
  it('every map has its English shape: the shell maps complete, the header-name maps partial',()=>{
   for(const [id,map] of Object.entries(CHINESE_TRADITIONAL.maps??{})){
