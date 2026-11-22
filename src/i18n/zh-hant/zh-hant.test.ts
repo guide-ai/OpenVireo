@@ -32,6 +32,8 @@ import {OBJECT_X_LAB_EN} from '../../objectx/ObjectXMessages';
 import {POLISH_MESSAGES_EN} from '../../polish/PolishMessages';
 import {PROJECT_LINKS_EN} from '../../help/projectLinks';
 import {TOUR_EN} from '../../help/tour';
+import {HELP_VIEWER_EN} from '../../help/HelpViewerMessages';
+import {WEB_HELP_EN} from '../../help/webHelp';
 import {VARIABLE_STARS_EN} from '../../variables/VariableStarMessages';
 import {FIELD_INFO_MESSAGES_EN,FIELD_READ_DETAILS_EN,NAKED_EYE_MESSAGES_EN} from '../../observatory/FieldInfoMessages';
 import {OBSERVATORY_MESSAGES_EN} from '../../observatory/ObservatoryMessages';
@@ -66,10 +68,11 @@ const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_E
  camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,nakedEye:NAKED_EYE_MESSAGES_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,
  engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN,clusterHr:CLUSTER_HR_EN,clusterData:CLUSTER_DATA_MESSAGES_EN,
  radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN,
- pulsar:PULSAR_MESSAGES_EN,pulsarSavedRows:SAVED_ROWS_MESSAGES_EN,pulsarLoadSave:LOAD_SAVE_MESSAGES_EN,objectXGuide:OBJECT_X_GUIDE_EN,objectXMeasure:OBJECT_X_MEASURE_EN,objectXSession:OBJECT_X_SESSION_EN};
+ pulsar:PULSAR_MESSAGES_EN,pulsarSavedRows:SAVED_ROWS_MESSAGES_EN,pulsarLoadSave:LOAD_SAVE_MESSAGES_EN,objectXGuide:OBJECT_X_GUIDE_EN,objectXMeasure:OBJECT_X_MEASURE_EN,objectXSession:OBJECT_X_SESSION_EN,
+ helpViewer:HELP_VIEWER_EN,webHelp:WEB_HELP_EN};
 /** The maps translated completely (ZT0's shell maps; ZT1's observatory maps, the camera card, polish, engineView, spectralRange and
- * wedge; ZT2's cluster, variable-star, radio, pulsar and Object X maps): every map but the help maps, which ZT-HELP adds. */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars','radioAntenna','radioFinishSave','radioR1','radioRecordSave','pulsar','pulsarSavedRows','pulsarLoadSave','objectXLab','objectXGuide','objectXMeasure','objectXSession'];
+ * wedge; ZT2's cluster, variable-star, radio, pulsar and Object X maps): and ZT-HELP's help maps webHelp and helpViewer: every Traditional Chinese map is complete. */
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars','radioAntenna','radioFinishSave','radioR1','radioRecordSave','pulsar','pulsarSavedRows','pulsarLoadSave','objectXLab','objectXGuide','objectXMeasure','objectXSession','helpViewer','webHelp'];
 /** ZT2's area of en.json (the zh-Hans fronts ZH4–ZH6: E04, E05, the radio telescope, E06, E08); ZT1 covered every other key. */
 const ZT2_PREFIXES=/^(ph|pa|pleiadesLab|nc|db|ce|clusterLab|ownHr|obsHr|radio|radioRoute|radioAccess|radioReceiver|radioSimOptions|pulsarParameters|pulsarLab|plr|fits)\./;
 /** ZT0's area of en.json: the shell (header, menu, first steps, toolbar, errors, instructor mode, document title), as ZH0's. */
@@ -92,6 +95,13 @@ const fixCatalog=(text:string)=>{const kept:string[]=[];const masked=ASCII_FIELD
 /** As zh-Hans: the four originals that Spanish keeps identical but Chinese translates (VIREO's General, and the E, N, S buttons). */
 const ZH_ONLY_ORIGINALS:readonly string[]=['General','E','N','S'];
 const fixSource=(source:string)=>fixSourceLiterals(source,(text,options)=>fix(text,options));
+/** Front ZT-HELP, as ZH-HELP: a run of two or more spaces between two characters is a column gap of VIREO's help tables, which the
+ * fixer keeps (it would otherwise drop the spaces between Han and Latin text). */
+const COLUMN_GAP=/(?<=\S) {2,}(?=\S)/g;
+const fixHelp=(text:string,options?:{quotes?:boolean})=>{const gaps:string[]=[];
+ return fix(text.replace(COLUMN_GAP,g=>`\uE003${gaps.push(g)-1}\uE004`),options).replace(/\uE003(\d+)\uE004/g,(_,i:string)=>gaps[Number(i)]!);};
+const fixHelpSource=(source:string)=>fixSourceLiterals(source,(text,options)=>fixHelp(text,options));
+const fixAny=(file:string,source:string)=>file.includes(`${path.sep}help${path.sep}`)?fixHelpSource(source):fixSource(source);
 const writeJson=(file:string,value:unknown)=>writeFileSync(path.join(DIR,file),JSON.stringify(value,null,1)+'\n');
 
 if(process.env.OPENVIREO_FIX_TYPOGRAPHY==='1'){
@@ -101,7 +111,7 @@ if(process.env.OPENVIREO_FIX_TYPOGRAPHY==='1'){
  writeJson('zh-hant.json',Object.fromEntries(Object.entries(catalog).map(([k,v])=>[k,fixCatalog(v)])));
  const own=JSON.parse(readFileSync(path.join(DIR,'originals.json'),'utf8')) as Record<string,string>;
  writeJson('originals.json',Object.fromEntries(Object.entries(own).map(([k,v])=>[k,fixOriginal(k,v)])));
- for(const file of [...sources('maps'),...sources('help')]){const before=readFileSync(file,'utf8'),after=fixSource(before);if(after!==before)writeFileSync(file,after);}
+ for(const file of [...sources('maps'),...sources('help')]){const before=readFileSync(file,'utf8'),after=fixAny(file,before);if(after!==before)writeFileSync(file,after);}
 }
 
 describe('Front ZT0: the Traditional Chinese (zh-Hant) bundle',()=>{
@@ -109,7 +119,7 @@ describe('Front ZT0: the Traditional Chinese (zh-Hant) bundle',()=>{
   expect(languageEntry('zh-Hant')).toMatchObject({dir:'zh-hant',catalog:'zh-hant.json',budgetFactor:1.4,htmlLang:'zh-Hant',pagePath:'zh-hant',autonym:'繁體中文',englishName:'Traditional Chinese',
    match:['zh-Hant','zh-TW','zh-HK','zh-MO'],released:false});
   expect(languageEntry('zh-Hant')?.except).toBeUndefined();
-  expect(languageEntry('zh-Hant')?.thousands).toBeUndefined();expect(languageEntry('zh-Hant')?.help).toBeUndefined();
+  expect(languageEntry('zh-Hant')?.thousands).toBeUndefined();expect(languageEntry('zh-Hant')?.help).toEqual({related:'相關主題'});// Front ZT-HELP
   expect(CHINESE_TRADITIONAL.language).toBe('zh-Hant');
   // The notices pass the profile too (full-width marks, no Simplified character, Taiwan wording: 載入, 重新整理).
   const notices=Object.entries(languageEntry('zh-Hant')!.notices).map(([k,text])=>({id:`notice:${k}`,en:k==='language'?'Traditional Chinese could not be loaded; English is shown. Reload to try again.':'Part of the Traditional Chinese text could not be loaded; that part is shown in English. Reload to try again.',text}));
@@ -180,7 +190,7 @@ describe('Front ZT0: the Traditional Chinese (zh-Hant) bundle',()=>{
  it('the CJK punctuation fixer (Traditional Chinese style, 「」) has nothing left to change: catalog, originals, maps and help sources',()=>{
   expect(Object.entries(zh).filter(([,v])=>fixCatalog(v)!==v).map(([k])=>k)).toEqual([]);
   expect(Object.entries(originals).filter(([k,v])=>fixOriginal(k,v)!==v).map(([k])=>k)).toEqual([]);
-  for(const file of [...sources('maps'),...sources('help')]){const text=readFileSync(file,'utf8');expect(fixSource(text)===text,path.relative(DIR,file)).toBe(true);}
+  for(const file of [...sources('maps'),...sources('help')]){const text=readFileSync(file,'utf8');expect(fixAny(file,text)===text,path.relative(DIR,file)).toBe(true);}
  });
  it('the glossary: every term, name and forbidden form is Traditional (no Simplified-only character), and the Taiwan-vocabulary rule is in force',()=>{
   const g=glossaryJson as {terms:{'zh-Hant':string}[];names:{'zh-Hant':string}[];forbidden:{words?:string[]}[]};
