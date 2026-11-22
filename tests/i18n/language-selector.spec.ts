@@ -26,7 +26,8 @@ async function browserIn(browser:Browser,languages:readonly string[]):Promise<Pa
 }
 /** Front FR-REL: the options every load offers, in registry order (Front ID-REL: Bahasa Indonesia; Front HI-REL: हिन्दी (Hindi);
  * Front JA-REL: 日本語 (Japanese); Front ZH-REL: 简体中文 (Simplified Chinese); Front ZT-REL: 繁體中文 (Traditional Chinese); Front
- * RU-REL: Русский last). Front ZT0's preview helpers (withPreview) went with ZT-REL: no registered language is a preview now. */
+ * RU-REL: Русский last). Front ZT0's preview helpers (withPreview) and its preview test went with ZT-REL: no registered language is a
+ * preview now; a new language's first front brings them back, as areas.spec.ts's partial-language test. */
 const RELEASED_OPTIONS=['English','Español','Português (Brasil)','Français','Bahasa Indonesia','हिन्दी (Hindi)','日本語 (Japanese)','简体中文 (Simplified Chinese)','繁體中文 (Traditional Chinese)','Русский (Russian)'];
 /** The released options with their values and `lang`, in registry order. */
 const RELEASED_LANGS=[['en','en'],['es-419','es-419'],['pt-BR','pt-BR'],['fr','fr'],['id','id'],['hi','hi'],['ja','ja'],['zh-Hans','zh-Hans'],['zh-Hant','zh-Hant'],['ru','ru']];
@@ -442,7 +443,7 @@ test('Front RU-REL: the keyboard steps across all the options without opening th
  // Escape on the select drops a pending step; leaving the select with a pending step asks for it.
  await select.focus();await page.keyboard.press('Home');await expect(select).toHaveValue('en');
  await page.keyboard.press('Escape');await expect(select).toHaveValue('ru');await expect(dialog).toHaveCount(0);
- await select.focus();await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await expect(select).toHaveValue('es-419');await expect(dialog).toHaveCount(0);
+ await select.focus();await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await expect(select).toHaveValue('es-419');await expect(dialog).toHaveCount(0);
  await page.keyboard.press('Tab');
  await expect(dialog).toBeVisible();await expect(dialog).toContainText(R.maps.languageChoice.reload('Español'));
  await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);await expect(select).toHaveValue('ru');

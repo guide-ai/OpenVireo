@@ -124,7 +124,8 @@ describe('Front SC8: detection for the languages to come (scripts plan §7, pt-B
  it('opens a language from the browser only once it is released; before that only its ?lang= preview, never storage',()=>{
   const decide=(registry:readonly LanguageEntry[],over:Partial<Parameters<typeof decideLocale>[0]>)=>decideLocale({param:null,stored:null,languages:['en-US'],dev:false,registry,...over});
   for(const [tag,expected] of TABLE){
-   // Front ZT-REL: every planned language is released, so the browser opens the language it asks for.
+   // Front ZT-REL: every planned language is released, so the browser opens the language it asks for; the `releasing` row below
+   // asserts the same until a new language's first front adds one before its release.
    expect(decide(PLANNED,{languages:[tag]}),tag).toBe(expected??'en');
    const all=releasing(PLANNED,...PLANNED.map(l=>l.tag));
    expect(decide(all,{languages:[tag]}),tag).toBe(expected??'en');

@@ -421,7 +421,7 @@ const ZH_HANT:SeoLanguage={
    '不需要Windows，也不需要虛擬機器：OpenVireo可在Mac、Windows、Linux或Chromebook的現代瀏覽器中執行。',
    'OpenVireo遵循從原版程式復原出的行為，並標明其網頁改編之處。這是一個非官方的重建版。',
    '你可以把探究儲存為自己電腦上的檔案，並隨時重新載入。',
-   '介面、指南和說明均為繁體中文；網站寫出的檔案（TXT、FITS、CSV和已儲存的探究）保持VIREO或OpenVireo的格式，仍為英文。',
+   '介面、指南和說明均為繁體中文；網站產生的檔案（TXT、FITS、CSV和已儲存的探究）保持VIREO或OpenVireo的格式，仍為英文。',
    // Traditional Chinese writes «24,000» and «1.5» as English does (no thousands setting, AGENTS.md 2026-11-21): only the decimal
    // point and half-width digits are said.
    '螢幕上和輸入時都用小數點「.」表示小數（例如1.5），數字請用半形輸入。',

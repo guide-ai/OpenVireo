@@ -137,7 +137,7 @@ describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-0
   expect(decide({stored:'zh-Hans',languages:['en-US']})).toBe('zh-Hans');expect(decide({stored:'zh-Hans',languages:['zh-TW']})).toBe('zh-Hans');
   expect(decide({stored:'en',languages:['zh-CN']})).toBe('en');expect(decide({stored:'fr',languages:['zh-CN']})).toBe('fr');
   expect(decide({param:'zh-Hans',stored:'fr',languages:['zh-TW']})).toBe('zh-Hans');expect(decide({param:'en',languages:['zh-CN']})).toBe('en');
-  // ?lang= takes the exact tag only (zh-Hant is Traditional Chinese's own preview since Front ZT0, below).
+  // ?lang= takes the exact tag only (zh-Hant is Traditional Chinese's own tag, released since Front ZT-REL, below).
   for(const junk of ['zh','zh-CN','zh-hans','ZH-HANS'])expect(decide({param:junk,languages:['en-US']}),junk).toBe('en');
   expect(HTML_LANG['zh-Hans']).toBe('zh-Hans');expect(selectorShown('zh-Hans')).toBe(true);
   // Before its release (ZH0–ZH-HELP) only ?lang=zh-Hans reached it.
