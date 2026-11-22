@@ -58,6 +58,9 @@
 # Front ZH-REL+SEO: the Simplified Chinese home page /zh-hans/ and lab pages /zh-hans/labs/, the same kind of page.
 /zh-hans/*
   Cache-Control: no-cache
+# Front ZT-REL+SEO: the Traditional Chinese home page /zh-hant/ and lab pages /zh-hant/labs/, the same kind of page.
+/zh-hant/*
+  Cache-Control: no-cache
 # Front RU-REL+SEO: the Russian home page /ru/ and lab pages /ru/labs/, the same kind of page.
 /ru/*
   Cache-Control: no-cache

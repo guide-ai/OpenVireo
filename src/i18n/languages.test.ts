@@ -4,7 +4,7 @@ import {describe,expect,it} from 'vitest';
 import {HELP_FILES} from '../help/helpFiles';
 import {LANGUAGES,SOURCE_LANGUAGE,failureNotice,isReleased,matchLanguage,optionLabel,selectorLanguages,selectorShown,type LanguageEntry} from './languages';
 import {decideLocale,HTML_LANG} from './locale';
-import {PLANNED,ZH_HANT,releasing} from '../../tests/fixtures/i18n/registry';
+import {PLANNED,ZH_HANT_PREVIEW,releasing} from '../../tests/fixtures/i18n/registry';
 import {PARTIAL} from '../../tests/fixtures/i18n/partial';
 // Front SC8 (docs/I18N.md, "Script groundwork: the language registry, detection and selector (SC8)"): the registry
 // src/i18n/languages.json and the rules of src/i18n/languages.ts. The registry of every language the user has ordered
@@ -57,14 +57,14 @@ describe('Front SC8: the language registry (src/i18n/languages.json)',()=>{
   // Front PT0 registered Brazilian Portuguese before its release (a ?lang=pt-BR preview only); Front PT-REL released it. Front FR0
   // registered French before its release; Front FR-REL released it. Front ID0 registered Indonesian before its release; Front ID-REL released it. Front HI0 registered Hindi;
   // Front HI-REL released it. Front JA0 registered Japanese (released by Front JA-REL), Front ZH0 Simplified Chinese (released by
-  // Front ZH-REL), Front ZT0 Traditional Chinese (a ?lang= preview only) and Front RU0 Russian (released by Front RU-REL).
-  expect(LANGUAGES.map(l=>[l.tag,l.released])).toEqual([['es-419',true],['pt-BR',true],['fr',true],['id',true],['hi',true],['ja',true],['zh-Hans',true],['zh-Hant',false],['ru',true]]);
+  // Front ZH-REL), Front ZT0 Traditional Chinese (released by Front ZT-REL) and Front RU0 Russian (released by Front RU-REL).
+  expect(LANGUAGES.map(l=>[l.tag,l.released])).toEqual([['es-419',true],['pt-BR',true],['fr',true],['id',true],['hi',true],['ja',true],['zh-Hans',true],['zh-Hant',true],['ru',true]]);
   for(const tag of ['es','es-MX','es-ES','ES-ar','es-419','es-Latn-MX'])expect(matchLanguage(tag)?.tag,tag).toBe('es-419');
   for(const tag of ['','en','en-US','esp','eus','et','ca-ES'])expect(matchLanguage(tag),tag).toBeUndefined();
   // Front FR0: fr-ES is French spoken in Spain, so it asks for French (released since FR-REL).
   expect(matchLanguage('fr-ES')?.tag).toBe('fr');expect(isReleased('fr')).toBe(true);
   expect(HTML_LANG['es-419']).toBe('es-419');expect(isReleased('es-419')).toBe(true);expect(isReleased('en')).toBe(false);
-  expect(selectorLanguages('en').map(optionLabel)).toEqual(['English','Español','Português (Brasil)','Français','Bahasa Indonesia','हिन्दी (Hindi)','日本語 (Japanese)','简体中文 (Simplified Chinese)','Русский (Russian)']);expect(SOURCE_LANGUAGE.tag).toBe('en');
+  expect(selectorLanguages('en').map(optionLabel)).toEqual(['English','Español','Português (Brasil)','Français','Bahasa Indonesia','हिन्दी (Hindi)','日本語 (Japanese)','简体中文 (Simplified Chinese)','繁體中文 (Traditional Chinese)','Русский (Russian)']);expect(SOURCE_LANGUAGE.tag).toBe('en');
   expect(failureNotice('language','es-419')).toEqual({en:'Spanish could not be loaded; English is shown. Reload to try again.',own:'No se pudo cargar el español; se muestra en inglés. Recarga para intentarlo de nuevo.',lang:'es-419'});
   expect(failureNotice('area','es-419')).toEqual({en:'Part of the Spanish text could not be loaded; that part is shown in English. Reload to try again.',own:'No se pudo cargar parte del texto en español; esa parte se muestra en inglés. Recarga para intentarlo de nuevo.',lang:'es-419'});
   // Front ID0: Indonesian's notices (plan §2), and `in` (the withdrawn ISO 639 code) asks for it; Malay does not.
@@ -76,7 +76,7 @@ describe('Front SC8: the language registry (src/i18n/languages.json)',()=>{
   // Front HI0: Hindi is registered with its own notices and the selector label «हिन्दी (Hindi)»; Front HI-REL released it.
   expect(failureNotice('language','hi')).toEqual({en:'Hindi could not be loaded; English is shown. Reload to try again.',own:'हिन्दी लोड नहीं हो सकी; साइट अंग्रेज़ी में दिखाई जा रही है। फिर से कोशिश करने के लिए पेज को दोबारा लोड करें।',lang:'hi'});
   expect(isReleased('hi')).toBe(true);expect(optionLabel(LANGUAGES.find(l=>l.tag==='hi')!)).toBe('हिन्दी (Hindi)');
-  expect(selectorLanguages('hi').map(optionLabel)).toEqual(['English','Español','Português (Brasil)','Français','Bahasa Indonesia','हिन्दी (Hindi)','日本語 (Japanese)','简体中文 (Simplified Chinese)','Русский (Russian)']);// registry order; Japanese released since JA-REL, Simplified Chinese since ZH-REL, Russian since RU-REL
+  expect(selectorLanguages('hi').map(optionLabel)).toEqual(['English','Español','Português (Brasil)','Français','Bahasa Indonesia','हिन्दी (Hindi)','日本語 (Japanese)','简体中文 (Simplified Chinese)','繁體中文 (Traditional Chinese)','Русский (Russian)']);// registry order; Japanese released since JA-REL, Simplified Chinese since ZH-REL, Traditional Chinese since ZT-REL, Russian since RU-REL
   // Front JA0: Japanese's notices (plan front-i18n-ja.md §2).
   expect(failureNotice('language','ja')).toEqual({en:'Japanese could not be loaded; English is shown. Reload to try again.',own:'日本語を読み込めなかったため、英語で表示しています。再読み込みしてもう一度お試しください。',lang:'ja'});
   expect(matchLanguage('ja-JP')?.tag).toBe('ja');expect(isReleased('ja')).toBe(true);// released since Front JA-REL
@@ -90,12 +90,12 @@ describe('Front SC8: the language registry (src/i18n/languages.json)',()=>{
   expect(failureNotice('language','zh-Hans')).toEqual({en:'Simplified Chinese could not be loaded; English is shown. Reload to try again.',own:'无法载入简体中文；已改为显示英文。请刷新页面重试。',lang:'zh-Hans'});
   expect(isReleased('zh-Hans')).toBe(true);expect(optionLabel(LANGUAGES.find(l=>l.tag==='zh-Hans')!)).toBe('简体中文 (Simplified Chinese)');
   expect(matchLanguage('zh-CN')?.tag).toBe('zh-Hans');
-  // Front ZT0: Traditional Chinese is registered before its release (Taiwan standard, user decision of 2026-11-19), with its own
-  // notices and the selector label «繁體中文 (Traditional Chinese)»; zh-TW, zh-HK, zh-MO and zh-Hant ask for it, a script subtag beating
-  // the region (zh-Hans-TW is Simplified, zh-Hant-CN Traditional).
+  // Front ZT0: Traditional Chinese is registered (Taiwan standard, user decision of 2026-11-19), with its own notices and the selector
+  // label «繁體中文 (Traditional Chinese)»; zh-TW, zh-HK, zh-MO and zh-Hant ask for it, a script subtag beating the region (zh-Hans-TW
+  // is Simplified, zh-Hant-CN Traditional). Front ZT-REL released it.
   expect(failureNotice('language','zh-Hant')).toEqual({en:'Traditional Chinese could not be loaded; English is shown. Reload to try again.',own:'無法載入繁體中文；已改為顯示英文。請重新整理頁面再試一次。',lang:'zh-Hant'});
   expect(failureNotice('area','zh-Hant')?.own).toBe('部分繁體中文文字無法載入；該部分以英文顯示。請重新整理頁面再試一次。');
-  expect(isReleased('zh-Hant')).toBe(false);expect(optionLabel(LANGUAGES.find(l=>l.tag==='zh-Hant')!)).toBe('繁體中文 (Traditional Chinese)');
+  expect(isReleased('zh-Hant')).toBe(true);expect(optionLabel(LANGUAGES.find(l=>l.tag==='zh-Hant')!)).toBe('繁體中文 (Traditional Chinese)');
   for(const tag of ['zh-TW','zh-HK','zh-MO','zh-Hant','zh-Hant-CN','ZH-tw'])expect(matchLanguage(tag)?.tag,tag).toBe('zh-Hant');
   for(const tag of ['zh','zh-CN','zh-Hans-TW'])expect(matchLanguage(tag)?.tag,tag).toBe('zh-Hans');
  });
@@ -111,7 +111,7 @@ describe('Front SC8: detection for the languages to come (scripts plan §7, pt-B
   // Front RU0 (plan §2): every ru-* region asks for Russian; Ukrainian, Belarusian and the other region languages do not.
   ['RU-ru','ru'],['ru-UA','ru'],['ru-KZ','ru'],['ru-BY','ru'],['ru-MD','ru'],['uk-UA',undefined],['be-BY',undefined],['kk-KZ',undefined],['ky',undefined],['uz',undefined],['tg',undefined],['tt',undefined],['ba',undefined],['cv',undefined],['sah',undefined],['os',undefined],['hy',undefined],['ka',undefined],['az',undefined],['ro-MD',undefined],['rue',undefined],
   ['zh-Hans','zh-Hans'],['zh-Hans-CN','zh-Hans'],['zh-Hans-TW','zh-Hans'],['zh-CN','zh-Hans'],['zh-SG','zh-Hans'],['zh-MY','zh-Hans'],['zh','zh-Hans'],['ZH-cn','zh-Hans'],
-  // Traditional Chinese: zh-Hant (Front ZT0's line; before its release these browsers get English, decision Q5, never Simplified).
+  // Traditional Chinese: zh-Hant (Front ZT0's line, released by ZT-REL; before, these browsers got English, decision Q5, never Simplified).
   ['zh-TW','zh-Hant'],['zh-HK','zh-Hant'],['zh-MO','zh-Hant'],['zh-Hant','zh-Hant'],['zh-Hant-CN','zh-Hant'],['ZH-tw','zh-Hant'],['zh-hant-tw','zh-Hant'],['yue',undefined],['yue-HK',undefined],
   ['en-US',undefined],['',undefined],
  ];
@@ -124,14 +124,16 @@ describe('Front SC8: detection for the languages to come (scripts plan §7, pt-B
  it('opens a language from the browser only once it is released; before that only its ?lang= preview, never storage',()=>{
   const decide=(registry:readonly LanguageEntry[],over:Partial<Parameters<typeof decideLocale>[0]>)=>decideLocale({param:null,stored:null,languages:['en-US'],dev:false,registry,...over});
   for(const [tag,expected] of TABLE){
-   expect(decide(PLANNED,{languages:[tag]}),tag).toBe(expected==='es-419'||expected==='pt-BR'||expected==='fr'||expected==='id'||expected==='hi'||expected==='ja'||expected==='zh-Hans'||expected==='ru'?expected:'en');
+   // Front ZT-REL: every planned language is released, so the browser opens the language it asks for.
+   expect(decide(PLANNED,{languages:[tag]}),tag).toBe(expected??'en');
    const all=releasing(PLANNED,...PLANNED.map(l=>l.tag));
    expect(decide(all,{languages:[tag]}),tag).toBe(expected??'en');
   }
   // Front FR-REL: French is released, so the unreleased planned language of these rows was Indonesian (id), as PT-REL moved them to
   // fr; Front ID-REL released Indonesian, Front HI-REL Hindi, Front JA-REL Japanese, Front RU-REL Russian and Front ZH-REL
-  // Simplified Chinese, so these rows use Traditional Chinese (Front ZT0's line, ZH_HANT), the only language still unreleased.
-  const hant=PLANNED;
+  // Simplified Chinese, so these rows used Traditional Chinese (Front ZT0's line), the last language unreleased; since Front ZT-REL
+  // released it too, they use its line as it was before (the fixture's ZH_HANT_PREVIEW, released:false).
+  const hant=PLANNED.map(l=>l.tag==='zh-Hant'?ZH_HANT_PREVIEW:l);
   expect(decide(hant,{param:'zh-Hant'})).toBe('zh-Hant');expect(decide(hant,{param:'ZH-HANT'})).toBe('en');expect(decide(PLANNED,{param:'pt-br'})).toBe('en');
   expect(decide(hant,{stored:'zh-Hant',languages:['zh-TW']})).toBe('en');
   expect(decide(releasing(hant,'zh-Hant'),{stored:'zh-Hant'})).toBe('zh-Hant');expect(decide(PLANNED,{stored:'pt-BR'})).toBe('pt-BR');expect(decide(PLANNED,{stored:'fr'})).toBe('fr');
@@ -146,20 +148,24 @@ describe('Front SC8: detection for the languages to come (scripts plan §7, pt-B
   expect(decide(PLANNED,{languages:['zh-CN','pt-BR']})).toBe('zh-Hans');
   expect(decide(PLANNED,{languages:['pt-BR','es']})).toBe('pt-BR');expect(decide(PLANNED,{languages:['fr-CA','pt-BR']})).toBe('fr');
   expect(decide(PLANNED,{languages:['hi-IN','pt-BR']})).toBe('hi');expect(decide(PLANNED,{languages:['en-IN','hi-IN']})).toBe('en');
-  // A Traditional-Chinese browser opens English while zh-Hant is unreleased, and the selector offers Simplified, released since
-  // ZH-REL (decided 2026-11-09).
-  expect(ZH_HANT.released).toBe(false);
-  expect(decide(PLANNED,{languages:['zh-TW']})).toBe('en');expect(selectorLanguages('en',PLANNED).map(l=>l.tag)).toContain('zh-Hans');
+  // Before ZT-REL a Traditional-Chinese browser opened English, and the selector offered Simplified (decided 2026-11-09); since
+  // ZT-REL it opens Traditional Chinese, and a script subtag still beats the region.
+  expect(decide(hant,{languages:['zh-TW']})).toBe('en');expect(selectorLanguages('en',hant).map(l=>l.tag)).toContain('zh-Hans');
+  for(const tag of ['zh-TW','zh-HK','zh-MO','zh-Hant','zh-Hant-CN'])expect(decide(PLANNED,{languages:[tag]}),tag).toBe('zh-Hant');
+  expect(decide(PLANNED,{languages:['zh-Hans-TW']})).toBe('zh-Hans');
  });
  it('lists English, the released languages and a preview\'s own language, by autonym (with the English name outside Latin script)',()=>{
-  expect(selectorLanguages('en',PLANNED).map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','id','hi','ja','zh-Hans','ru']);
-  // Front ZH-REL: Simplified Chinese is released, so the preview's own language here is Traditional Chinese (ZT0), placed in
-  // registry order between 简体中文 and Русский.
-  expect(selectorLanguages('zh-Hant',PLANNED).map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','id','hi','ja','zh-Hans','zh-Hant','ru']);
+  expect(selectorLanguages('en',PLANNED).map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','id','hi','ja','zh-Hans','zh-Hant','ru']);
+  // Front ZT-REL: every planned language is released, so the preview's own language here is Traditional Chinese as it was before
+  // its release (ZH_HANT_PREVIEW), placed in registry order between 简体中文 and Русский; English alone lists it no more.
+  const hant=PLANNED.map(l=>l.tag==='zh-Hant'?ZH_HANT_PREVIEW:l);
+  expect(selectorLanguages('en',hant).map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','id','hi','ja','zh-Hans','ru']);
+  expect(selectorLanguages('zh-Hant',hant).map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','id','hi','ja','zh-Hans','zh-Hant','ru']);
   const all=releasing(PLANNED,...PLANNED.map(l=>l.tag));
   expect(selectorLanguages('en',all).map(optionLabel)).toEqual(['English','Español','Português (Brasil)','Français','Bahasa Indonesia','हिन्दी (Hindi)','日本語 (Japanese)','简体中文 (Simplified Chinese)','繁體中文 (Traditional Chinese)','Русский (Russian)']);
-  // Only unreleased languages (Traditional Chinese alone since ZH-REL): English alone shows no selector; a preview shows it.
-  const unreleased=PLANNED.filter(l=>!l.released);expect(unreleased.map(l=>l.tag)).toEqual(['zh-Hant']);
+  // Only unreleased languages (none since ZT-REL, so Traditional Chinese as it was before): English alone shows no selector; a
+  // preview shows it.
+  expect(PLANNED.filter(l=>!l.released)).toEqual([]);const unreleased=[ZH_HANT_PREVIEW];
   expect(selectorShown('en',unreleased)).toBe(false);expect(selectorShown('zh-Hant',unreleased)).toBe(true);expect(selectorShown('qps-cjk',all)).toBe(false);
  });
 });

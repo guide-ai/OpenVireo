@@ -10,6 +10,7 @@ import {OBJECT_X_LAB_ID} from '../../src/i18n/id/maps/objectXLab';
 import {OBJECT_X_LAB_HI} from '../../src/i18n/hi/maps/objectXLab';
 import {OBJECT_X_LAB_JA} from '../../src/i18n/ja/maps/objectXLab';
 import {OBJECT_X_LAB_ZH_HANS} from '../../src/i18n/zh-hans/maps/objectXLab';
+import {OBJECT_X_LAB_ZH_HANT} from '../../src/i18n/zh-hant/maps/objectXLab';
 import {OBJECT_X_LAB_RU} from '../../src/i18n/ru/maps/objectXLab';
 import {textOf,type LanguageText} from './languageText';
 
@@ -20,9 +21,10 @@ import {textOf,type LanguageText} from './languageText';
 // every language with search pages (src/seo/languages.ts), its texts read from that table and the language's sources; the
 // Spanish tests keep their titles, and Brazilian Portuguese (/pt-br/) runs the same checks under its own. Front FR-REL+SEO: and
 // French (/fr/). Front ID-REL+SEO: and Indonesian (/id/); Front HI-REL+SEO: and Hindi (/hi/). Front JA-REL+SEO: and Japanese (/ja/).
-// Front RU-REL+SEO: and Russian (/ru/). Front ZH-REL+SEO: and Simplified Chinese (/zh-hans/).
+// Front RU-REL+SEO: and Russian (/ru/). Front ZH-REL+SEO: and Simplified Chinese (/zh-hans/). Front ZT-REL+SEO: and Traditional
+// Chinese (/zh-hant/).
 const stored=(page:import('@playwright/test').Page)=>page.evaluate(key=>{try{return localStorage.getItem(key);}catch{return 'unreadable';}},LANGUAGE_STORAGE_KEY);
-const OBJECT_X_GUIDE:Readonly<Record<string,string>>={'es-419':OBJECT_X_LAB_ES.title,'pt-BR':OBJECT_X_LAB_PT.title,fr:OBJECT_X_LAB_FR.title,id:OBJECT_X_LAB_ID.title,hi:OBJECT_X_LAB_HI.title,ja:OBJECT_X_LAB_JA.title,'zh-Hans':OBJECT_X_LAB_ZH_HANS.title,ru:OBJECT_X_LAB_RU.title};
+const OBJECT_X_GUIDE:Readonly<Record<string,string>>={'es-419':OBJECT_X_LAB_ES.title,'pt-BR':OBJECT_X_LAB_PT.title,fr:OBJECT_X_LAB_FR.title,id:OBJECT_X_LAB_ID.title,hi:OBJECT_X_LAB_HI.title,ja:OBJECT_X_LAB_JA.title,'zh-Hans':OBJECT_X_LAB_ZH_HANS.title,'zh-Hant':OBJECT_X_LAB_ZH_HANT.title,ru:OBJECT_X_LAB_RU.title};
 /** A test title: Spanish keeps its ES-SEO title; another language names itself and its prefix. */
 const title=(L:LanguageText,es:string,other:string)=>L.tag==='es-419'?es:other.replaceAll('<L>',L.entry.englishName).replaceAll('<p>',SEO_LANGUAGES.find(s=>s.tag===L.tag)!.prefix);
 

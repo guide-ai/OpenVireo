@@ -22,10 +22,13 @@ const JAPANESE=LANGUAGES.find(l=>l.tag==='ja')!;
 const CHINESE_SIMPLIFIED=LANGUAGES.find(l=>l.tag==='zh-Hans')!;
 /** Front RU0: Russian's own line of the production registry (released since RU-REL). */
 const RUSSIAN=LANGUAGES.find(l=>l.tag==='ru')!;
-/** Front ZT0: Traditional Chinese's own line of the production registry (before its release; it replaced SC8's stand-in). */
+/** Front ZT0: Traditional Chinese's own line of the production registry (it replaced SC8's stand-in; released since ZT-REL). */
 export const ZH_HANT=LANGUAGES.find(l=>l.tag==='zh-Hant')!;
-/** Spanish, pt-BR, French, Indonesian (since ID-REL), Hindi (since HI-REL), Japanese (since JA-REL) and Simplified Chinese (since
- * ZH-REL) released, Traditional Chinese (ZT0) before its release, and Russian (since RU-REL) released, in registry order. */
+/** Front ZT-REL: every language of the production registry is released, so the preview tests (a ?lang= tag that opens a language
+ * the browser and storage do not) use Traditional Chinese as it was before its release: its own line, `released:false`. */
+export const ZH_HANT_PREVIEW:LanguageEntry=Object.freeze({...ZH_HANT,released:false});
+/** Spanish, pt-BR, French, Indonesian (since ID-REL), Hindi (since HI-REL), Japanese (since JA-REL), Simplified Chinese (since
+ * ZH-REL), Traditional Chinese (since ZT-REL) and Russian (since RU-REL), all released, in registry order. */
 export const PLANNED:readonly LanguageEntry[]=Object.freeze([
  SPANISH,
  PORTUGUESE,

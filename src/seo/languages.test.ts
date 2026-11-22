@@ -9,6 +9,7 @@
 // measured in display columns (a kanji takes two, as in a result).
 // Front RU-REL+SEO: Russian under /ru/ (its profile ru, glossary field ru, hreflang ru).
 // Front ZH-REL+SEO: Simplified Chinese under /zh-hans/ (its profile zh-Hans, glossary field zh-Hans, hreflang zh-Hans, og:locale zh_CN).
+// Front ZT-REL+SEO: Traditional Chinese under /zh-hant/ (its profile zh-Hant, glossary field zh-Hant, hreflang zh-Hant, og:locale zh_TW).
 import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
 import {LABS,SITE_URL,labUrl,labsIndexUrl,SEO_PATH_PREFIX} from './labs';
@@ -23,6 +24,7 @@ import idGlossary from '../i18n/id/glossary.json' with {type:'json'};
 import hiGlossary from '../i18n/hi/glossary.json' with {type:'json'};
 import jaGlossary from '../i18n/ja/glossary.json' with {type:'json'};
 import zhHansGlossary from '../i18n/zh-hans/glossary.json' with {type:'json'};
+import zhHantGlossary from '../i18n/zh-hant/glossary.json' with {type:'json'};
 import ruGlossary from '../i18n/ru/glossary.json' with {type:'json'};
 import {OBJECT_X_LAB_ES} from '../i18n/es/maps/objectXLab';
 import {LANGUAGES,languageEntry} from '../i18n/languages';
@@ -31,7 +33,7 @@ import {displayColumns} from '../core/textColumns';
 import {claim,describeFindings,digits,glossary,glossaryFrom,html,invisible,markPairs,normalization,placeholders,quotes,register,typography,type Finding,type Glossary,type LocaleProfile,type Pair} from '../i18n/lint/rules';
 
 const TRANSLATED=SEO_LANGUAGES.slice(1);
-const SPANISH=SEO_LANGUAGES.find(l=>l.tag==='es-419')!,PORTUGUESE=SEO_LANGUAGES.find(l=>l.tag==='pt-BR')!,FRENCH=SEO_LANGUAGES.find(l=>l.tag==='fr')!,INDONESIAN=SEO_LANGUAGES.find(l=>l.tag==='id')!,HINDI=SEO_LANGUAGES.find(l=>l.tag==='hi')!,JAPANESE=SEO_LANGUAGES.find(l=>l.tag==='ja')!,CHINESE=SEO_LANGUAGES.find(l=>l.tag==='zh-Hans')!,RUSSIAN=SEO_LANGUAGES.find(l=>l.tag==='ru')!;
+const SPANISH=SEO_LANGUAGES.find(l=>l.tag==='es-419')!,PORTUGUESE=SEO_LANGUAGES.find(l=>l.tag==='pt-BR')!,FRENCH=SEO_LANGUAGES.find(l=>l.tag==='fr')!,INDONESIAN=SEO_LANGUAGES.find(l=>l.tag==='id')!,HINDI=SEO_LANGUAGES.find(l=>l.tag==='hi')!,JAPANESE=SEO_LANGUAGES.find(l=>l.tag==='ja')!,CHINESE=SEO_LANGUAGES.find(l=>l.tag==='zh-Hans')!,TRADITIONAL=SEO_LANGUAGES.find(l=>l.tag==='zh-Hant')!,RUSSIAN=SEO_LANGUAGES.find(l=>l.tag==='ru')!;
 const attr=(html:string,re:RegExp)=>re.exec(html)?.[1];
 const attrs=(html:string,re:RegExp)=>[...html.matchAll(re)].map(m=>m[1]);
 const ld=(html:string)=>[...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(m=>JSON.parse(m[1]));
@@ -103,6 +105,13 @@ const TEXT_RULES:Readonly<Record<string,TextRules>>={
   reconstruction:'免费网页重建版',homeDescription:/^免费、非官方的网页重建版/,
   adaptation:'本页中文文本是OpenVireo的网页改编，不是CLEA的文本。',
   notOriginal:'它不是原版程序，也与Project CLEA没有隶属关系。',ogLocale:'zh_CN',ogImage:'/og-image-zh-hans.png'},
+ // Front ZT-REL+SEO: Traditional Chinese (Taiwan), 你, «實驗» for a lab, the zh-Hant glossary's terms (its Taiwan-vocabulary
+ // `forbidden` list among them) and the CJK typography with 「」 quotes.
+ 'zh-Hant':{profile:'zh-Hant',glossary:glossaryFrom(zhHantGlossary,'zh-Hant'),
+  claims:/(?<!非)官方(?:翻譯|版本?|程式|網站)|CLEA(?:的)?(?:官方)?(?:翻譯|譯文)/,
+  reconstruction:'免費網頁重建版',homeDescription:/^免費、非官方的網頁重建版/,
+  adaptation:'本頁的繁體中文文字是OpenVireo的網頁改編，不是CLEA的文本。',
+  notOriginal:'它不是原版程式，也與Project CLEA沒有隸屬關係。',ogLocale:'zh_TW',ogImage:'/og-image-zh-hant.png'},
  ru:{profile:'ru',glossary:glossaryFrom(ruGlossary,'ru'),
   english:t=>t.replace(/\bstar clusters?\b/gi,'cluster'),
   claims:/(?<!не|не[ \u00a0])официальн\p{L}* (?:верси|перевод|программ)|(?:верси|перевод)\p{L}* (?:от )?(?:Project )?CLEA/iu,
@@ -117,7 +126,7 @@ const RULES:readonly ((p:Pair,profile:LocaleProfile,data:{glossary:Glossary})=>F
 describe('the language table',()=>{
  it('has English first (the x-default, whose home page is the app) and one row per language with its own path prefix',()=>{
   expect(SEO_LANGUAGES[0]).toBe(ENGLISH);expect(ENGLISH).toMatchObject({tag:'en',prefix:'',app:'/',home:null});
-  expect(SEO_LANGUAGES.map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','id','hi','ja','zh-Hans','ru']);
+  expect(SEO_LANGUAGES.map(l=>l.tag)).toEqual(['en','es-419','pt-BR','fr','id','hi','ja','zh-Hans','zh-Hant','ru']);
   expect(Object.keys(SEO_PATH_PREFIX)).toEqual(SEO_LANGUAGES.map(l=>l.tag));
   for(const l of TRANSLATED){
    // A language gets search pages only once the app speaks it, under its registry pagePath (the dist check exempts that path).
@@ -133,7 +142,7 @@ describe('the language table',()=>{
   // app opens pt-BR for every pt and pt-* browser; French is `fr` (ISO 639-1 alone: one French for every fr-* browser); Indonesian is
   // `id` (one Indonesian for every id-*, in and in-* browser). Hindi is `hi` (one Hindi for every hi-* browser), Japanese `ja`
   // the same way, and Russian `ru` (one Russian for every ru-* browser). No code names two languages.
-  expect(TRANSLATED.map(l=>l.hreflang)).toEqual([['es'],['pt-BR','pt'],['fr'],['id'],['hi'],['ja'],['zh-Hans'],['ru']]);
+  expect(TRANSLATED.map(l=>l.hreflang)).toEqual([['es'],['pt-BR','pt'],['fr'],['id'],['hi'],['ja'],['zh-Hans'],['zh-Hant'],['ru']]);
   expect(new Set(SEO_LANGUAGES.flatMap(l=>l.hreflang)).size).toBe(SEO_LANGUAGES.flatMap(l=>l.hreflang).length);
  });
  it('gives every language the seven labs with the English slugs, exercise codes and number of steps',()=>{
@@ -156,6 +165,8 @@ describe('the language table',()=>{
   expect([labsIndexUrl('ja'),labUrl('pulsars','ja')]).toEqual(['/ja/labs/','/ja/labs/pulsars/']);
   expect(KEYS.map(k=>pathOf(CHINESE,k))).toEqual(['/zh-hans/','/zh-hans/labs/',...LABS.map(l=>`/zh-hans/labs/${l.slug}/`)]);
   expect([labsIndexUrl('zh-Hans'),labUrl('pulsars','zh-Hans')]).toEqual(['/zh-hans/labs/','/zh-hans/labs/pulsars/']);
+  expect(KEYS.map(k=>pathOf(TRADITIONAL,k))).toEqual(['/zh-hant/','/zh-hant/labs/',...LABS.map(l=>`/zh-hant/labs/${l.slug}/`)]);
+  expect([labsIndexUrl('zh-Hant'),labUrl('pulsars','zh-Hant')]).toEqual(['/zh-hant/labs/','/zh-hant/labs/pulsars/']);
  });
  it('keeps the Spanish texts that tests/i18n/seo.spec.ts reads from this table equal to the literals es-seo.spec.ts asserted (PT-SEO review)',()=>{
   expect([SPANISH.home!.title,SPANISH.home!.heading,SPANISH.ui.openObservatory,SPANISH.ui.siteNav,SPANISH.ui.openLab,SPANISH.ui.languageName,
@@ -298,7 +309,7 @@ describe('English pages',()=>{
    expect(html).toMatch(/^<!doctype html>\n<html lang="en"><head>/);
    for(const l of TRANSLATED)expect(attrs(html,languageLink(l)),l.tag).toEqual([pathOf(l,key)]);
    expect(attr(html,/<meta property="og:locale" content="([^"]*)"/)).toBe('en_US');
-   expect(attrs(html,/<meta property="og:locale:alternate" content="([^"]*)"/g)).toEqual(['es_LA','pt_BR','fr_FR','id_ID','hi_IN','ja_JP','zh_CN','ru_RU']);
+   expect(attrs(html,/<meta property="og:locale:alternate" content="([^"]*)"/g)).toEqual(['es_LA','pt_BR','fr_FR','id_ID','hi_IN','ja_JP','zh_CN','zh_TW','ru_RU']);
    expect(attr(html,/<meta property="og:image" content="([^"]*)"/)).toBe(`${SITE_URL}/og-image.png`);
   }
  });
@@ -307,8 +318,8 @@ describe('English pages',()=>{
 describe('hreflang',()=>{
  it('every page names itself and each translation, with x-default on the English page, and the translations name it back',()=>{
   for(const key of KEYS){
-   const expected=alternates(key),[e,s,p,f,i,h,j,z,r]=[ENGLISH,SPANISH,PORTUGUESE,FRENCH,INDONESIAN,HINDI,JAPANESE,CHINESE,RUSSIAN].map(l=>SITE_URL+pathOf(l,key));
-   expect(expected).toEqual([['en',e],['es',s],['pt-BR',p],['pt',p],['fr',f],['id',i],['hi',h],['ja',j],['zh-Hans',z],['ru',r],['x-default',e]]);
+   const expected=alternates(key),[e,s,p,f,i,h,j,z,t,r]=[ENGLISH,SPANISH,PORTUGUESE,FRENCH,INDONESIAN,HINDI,JAPANESE,CHINESE,TRADITIONAL,RUSSIAN].map(l=>SITE_URL+pathOf(l,key));
+   expect(expected).toEqual([['en',e],['es',s],['pt-BR',p],['pt',p],['fr',f],['id',i],['hi',h],['ja',j],['zh-Hans',z],['zh-Hant',t],['ru',r],['x-default',e]]);
    for(const l of SEO_LANGUAGES){const html=PAGES[pathOf(l,key)];expect(hreflangs(html),pathOf(l,key)).toEqual(expected);}
   }
   expect(Object.keys(PAGES)).toHaveLength(SEO_LANGUAGES.length*KEYS.length);

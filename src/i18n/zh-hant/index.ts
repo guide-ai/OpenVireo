@@ -36,12 +36,13 @@ import {HELP_VIEWER_ZH_HANT} from './maps/helpViewer';
 import {WEB_HELP_ZH_HANT} from './maps/webHelp';
 /** Front ZT0 [W]: the Traditional Chinese (zh-Hant, Taiwan) bundle (docs/I18N.md, "Traditional Chinese: the folder, lints and shell
  * (ZT0)"; plan analysis/front-plans/front-i18n-zh.md §6.3). Adapted from the reviewed Simplified Chinese with the English as the source
- * of truth (user decision of 2026-11-19), to Taiwan's standard. Partial until its release (src/i18n/languages.json `released:false`):
- * only a `?lang=zh-Hant` preview reaches it, and every string it lacks is English. ZT0 translated the shell, ZT1 the observatory
- * with its maps, all of VIREO's originals and exercises E01–E03, ZT2 exercises E04, E05, E06 and E08 and the radio telescope; ZT-HELP
- * the help files and the help maps. The production build splits it by route area like the other languages (scripts/i18n-split.mjs parses this manifest);
- * Vitest imports it whole. Translations are web adaptations by OpenVireo; they never claim to be CLEA's, and CLEA's bytes, hashes
- * and provenance are unchanged. */
+ * of truth (user decision of 2026-11-19), to Taiwan's standard. ZT0 translated the shell, ZT1 the observatory with its maps, all of
+ * VIREO's originals and exercises E01–E03, ZT2 exercises E04, E05, E06 and E08 and the radio telescope; ZT-HELP the help files and the
+ * help maps. It was partial until its release (ZT0–ZT-HELP, behind a `?lang=zh-Hant` preview); since Front ZT-REL
+ * (src/i18n/languages.json `released:true`) every Traditional Chinese browser (zh-TW, zh-HK, zh-MO, zh-Hant-*) opens it, Simplified ones
+ * not, and its catalog and every map are complete (src/i18n/zh-hant/zh-hant.test.ts). The production build splits it by route area
+ * like the other languages (scripts/i18n-split.mjs parses this manifest); Vitest imports it whole. Translations are web adaptations by
+ * OpenVireo; they never claim to be CLEA's, and CLEA's bytes, hashes and provenance are unchanged. */
 export const CHINESE_TRADITIONAL:LocaleBundle=Object.freeze({
  language:'zh-Hant',
  messages,

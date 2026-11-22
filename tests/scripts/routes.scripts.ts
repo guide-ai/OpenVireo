@@ -188,7 +188,7 @@ const EXERCISE_WALKS:readonly (readonly [Area,string,ExerciseWalk,LayoutOptions]
 // Front ZH2: the same walks under real Simplified Chinese (ZH2 adds E01 and E02; each ZH front its area), with Han on screen.
 const REAL_SCRIPT_LANGUAGES=[{L:JAPANESE_TEXT,name:'Japanese',letters:/[\p{sc=Hira}\p{sc=Kana}]/u,missing:'no kana on screen: the text shown is not Japanese'},
  {L:CHINESE_SIMPLIFIED_TEXT,name:'Simplified Chinese',letters:/\p{sc=Han}/u,missing:'no Han on screen: the text shown is not Chinese'},
- // Front ZT1: and real Traditional Chinese (its ?lang=zh-Hant preview; each ZT front adds its areas).
+ // Front ZT1: and real Traditional Chinese (a zh-TW browser since ZT-REL; before, its ?lang=zh-Hant preview with each ZT front's areas).
  {L:CHINESE_TRADITIONAL_TEXT,name:'Traditional Chinese',letters:/\p{sc=Han}/u,missing:'no Han on screen: the text shown is not Chinese'}] as const;
 for(const {L,name:language,letters,missing} of REAL_SCRIPT_LANGUAGES)test.describe(()=>{test.use({locale:contextLocale(L.tag)});// Front JA-REL: a ja-JP browser, no ?lang= (an unreleased language: en-US with its ?lang= preview)
 for(const [area,name,walk,layout] of EXERCISE_WALKS.filter(([area])=>L.done.has(area)))for(const width of [320,1440] as const)
@@ -269,7 +269,8 @@ test('each script language gets its stack, its regional face and the Bold file; 
 // shell), at 320 and 1440 px: the home page, the observatory route with the header menu, the tour's first step and OpenVireo's help
 // viewer, with no layout problem or cut ink, and Han text drawn by Noto Sans CJK SC alone (never the JP or TC face, never a missing
 // glyph). Later ZH fronts added their routes; since ZH-REL the real language also walks every route in the shell walk above (a zh-CN browser).
-// Front ZT0: the same for Traditional Chinese (its ?lang=zh-Hant preview, the shell only), drawn by Noto Sans CJK TC alone.
+// Front ZT0: the same for Traditional Chinese (the shell only), drawn by Noto Sans CJK TC alone; since ZT-REL the real language also
+// walks every route in the shell walk above (a zh-TW browser).
 for(const [lang,variant,face] of [['zh-Hans','Simplified','Noto Sans CJK SC'],['zh-Hant','Traditional','Noto Sans CJK TC']] as const)for(const width of [320,1440] as const)
 test(`${lang} at ${width} px: the translated shell lays out without overflow, clipping or cut ink, in the ${variant} Chinese face`,async({page})=>{
  test.setTimeout(180_000);
