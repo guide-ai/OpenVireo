@@ -63,7 +63,7 @@
   },
   {
    "en": "\\bfiles?\\b",
-   "zh-Hant": "檔案",
+   "zh-Hant": "檔案|檔",
    "zh-Hans": "文件",
    "fr": "fichier"
   },
@@ -195,7 +195,7 @@
   },
   {
    "en": "\\bhelp\\b",
-   "zh-Hant": "說明",
+   "zh-Hant": "說明|幫助",
    "zh-Hans": "帮助",
    "fr": "aide"
   },

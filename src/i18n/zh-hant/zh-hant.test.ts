@@ -8,6 +8,8 @@ import glossaryJson from './glossary.json';
 import identical from './identical.json';
 import lintAllowed from './lint-allowed.json';
 import esOriginals from '../es/originals.json';
+import esIdentical from '../es/identical.json';
+import zhHansOriginals from '../zh-hans/originals.json';
 import zhHans from '../zh-hans/zh-hans.json';
 import {CHINESE_TRADITIONAL} from './index';
 import {createI18n,english,locale,type MessageKey} from '../catalog';
@@ -31,6 +33,15 @@ import {POLISH_MESSAGES_EN} from '../../polish/PolishMessages';
 import {PROJECT_LINKS_EN} from '../../help/projectLinks';
 import {TOUR_EN} from '../../help/tour';
 import {VARIABLE_STARS_EN} from '../../variables/VariableStarMessages';
+import {FIELD_INFO_MESSAGES_EN,FIELD_READ_DETAILS_EN,NAKED_EYE_MESSAGES_EN} from '../../observatory/FieldInfoMessages';
+import {OBSERVATORY_MESSAGES_EN} from '../../observatory/ObservatoryMessages';
+import {QSO_LIST_MESSAGES_EN} from '../../observatory/QsoListMessages';
+import {SOUND_MESSAGES_EN} from '../../sound/SoundMessages';
+import {OBSERVATION_METADATA_EN} from '../../ObservationMetadataMessages';
+import {CAMERA_MESSAGES_EN} from '../../camera/CameraMessages';
+import {ENGINE_VIEW_EN} from '../../SpectrumEngineMessages';
+import {SPECTRAL_RANGE_EN} from '../../SpectralRangeMessages';
+import {WEDGE_MESSAGES_EN} from '../../components/WedgeMessages';
 
 // Front ZT0 (docs/I18N.md, "Traditional Chinese: the folder, lints and shell (ZT0)"; plan front-i18n-zh.md §1.2 #7–#8, §6.3): the
 // structural checks of the partial Traditional Chinese bundle and every string through the SC4 lint framework, profile zh-Hant
@@ -41,9 +52,14 @@ import {VARIABLE_STARS_EN} from '../../variables/VariableStarMessages';
 // Fix mode (as zh-hans.test.ts): `env -u CI OPENVIREO_FIX_TYPOGRAPHY=1 npx vitest run src/i18n/zh-hant/zh-hant.test.ts` rewrites
 // zh-hant.json, originals.json and the string literals of maps/*.ts and help/*.ts with the CJK punctuation fixer in its Traditional
 // Chinese style (「」 and 『』), writing the characters literally, then checks as usual.
-const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN};
-/** The maps translated completely; the others hold only their menu names until their front (objectXLab, polish, variableStars). */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour'];
+const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,
+ camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,nakedEye:NAKED_EYE_MESSAGES_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,
+ engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN};
+/** The maps translated completely (ZT0's shell maps; ZT1's observatory maps, the camera card, polish, engineView, spectralRange and
+ * wedge); objectXLab and variableStars hold only their menu names until ZT2. */
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge'];
+/** ZT2's area of en.json (the zh-Hans fronts ZH4–ZH6: E04, E05, the radio telescope, E06, E08); ZT1 covers every other key. */
+const ZT2_PREFIXES=/^(ph|pa|pleiadesLab|nc|db|ce|clusterLab|ownHr|obsHr|radio|radioRoute|radioAccess|radioReceiver|radioSimOptions|pulsarParameters|pulsarLab|plr|fits)\./;
 /** ZT0's area of en.json: the shell (header, menu, first steps, toolbar, errors, instructor mode, document title), as ZH0's. */
 const SHELL_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(app|project|session|error|instructorMode)\./.test(k)||/\.nav$/.test(k)||['demonstrationMode.banner','sky.eyebrow','sky.title','sky.subtitle','sky.about','sky.local','sky.observatory','sky.analyzer','sky.step1','sky.step1Help','sky.step2','sky.step2Help','sky.step3','sky.step3Help','spectrum.tools','classLink.cancel'].includes(k));
 const HOME_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>k.startsWith('home.'));
@@ -53,7 +69,16 @@ const pairs=()=>collectPairs({catalog:zh,english:en,maps:CHINESE_TRADITIONAL.map
 const DIR=import.meta.dirname;
 const sources=(sub:string)=>existsSync(path.join(DIR,sub))?readdirSync(path.join(DIR,sub)).filter(f=>f.endsWith('.ts')&&!f.endsWith('.test.ts')).map(f=>path.join(DIR,sub,f)):[];
 const fix=(text:string,options?:{quotes?:boolean;valueMarks?:RegExp})=>fixCjkPunctuation(text,TRADITIONAL_CHINESE_STYLE,options);
-const fixOriginal=(key:string,text:string)=>fix(text,{quotes:!key.startsWith('fragment|')});
+/** VIREO originals whose ASCII bracket VIREO itself closes after a value (`Object: (` + number + `) `): the fixer leaves them, as zh-Hans. */
+const ASCII_BRACKET_PIECES:readonly string[]=['Object: ('];
+const fixOriginal=(key:string,text:string)=>ASCII_BRACKET_PIECES.includes(key)?text:fix(text,{quotes:!key.startsWith('fragment|')});
+/** As zh-Hans (ZH3): field names of VIREO's files that a catalog string quotes as the file writes them (`MJD(Days)`): the fixer keeps
+ * their ASCII brackets beside Chinese text. */
+const ASCII_FIELD_NAMES:readonly string[]=['MJD(Days)'];
+const fixCatalog=(text:string)=>{const kept:string[]=[];const masked=ASCII_FIELD_NAMES.reduce((t,name)=>t.split(name).join(`\uE000${kept.push(name)-1}\uE001`),text);
+ return fix(masked).replace(/\uE000(\d+)\uE001/g,(_,i:string)=>kept[Number(i)]!);};
+/** As zh-Hans: the four originals that Spanish keeps identical but Chinese translates (VIREO's General, and the E, N, S buttons). */
+const ZH_ONLY_ORIGINALS:readonly string[]=['General','E','N','S'];
 const fixSource=(source:string)=>fixSourceLiterals(source,(text,options)=>fix(text,options));
 const writeJson=(file:string,value:unknown)=>writeFileSync(path.join(DIR,file),JSON.stringify(value,null,1)+'\n');
 
@@ -61,7 +86,7 @@ if(process.env.OPENVIREO_FIX_TYPOGRAPHY==='1'){
  // As FR0, JA0 and ZH0: refused in CI (CI must check, never rewrite).
  if(process.env.CI)throw new Error('OPENVIREO_FIX_TYPOGRAPHY=1 is refused in CI: run the fixer locally and commit the reviewed diff');
  const catalog=JSON.parse(readFileSync(path.join(DIR,'zh-hant.json'),'utf8')) as Record<string,string>;
- writeJson('zh-hant.json',Object.fromEntries(Object.entries(catalog).map(([k,v])=>[k,fix(v)])));
+ writeJson('zh-hant.json',Object.fromEntries(Object.entries(catalog).map(([k,v])=>[k,fixCatalog(v)])));
  const own=JSON.parse(readFileSync(path.join(DIR,'originals.json'),'utf8')) as Record<string,string>;
  writeJson('originals.json',Object.fromEntries(Object.entries(own).map(([k,v])=>[k,fixOriginal(k,v)])));
  for(const file of [...sources('maps'),...sources('help')]){const before=readFileSync(file,'utf8'),after=fixSource(before);if(after!==before)writeFileSync(file,after);}
@@ -76,7 +101,7 @@ describe('Front ZT0: the Traditional Chinese (zh-Hant) bundle',()=>{
   expect(CHINESE_TRADITIONAL.language).toBe('zh-Hant');
   // The notices pass the profile too (full-width marks, no Simplified character, Taiwan wording: 載入, 重新整理).
   const notices=Object.entries(languageEntry('zh-Hant')!.notices).map(([k,text])=>({id:`notice:${k}`,en:k==='language'?'Traditional Chinese could not be loaded; English is shown. Reload to try again.':'Part of the Traditional Chinese text could not be loaded; that part is shown in English. Reload to try again.',text}));
-  expect(describeFindings(errorsOf(lintPairs(notices,profile,data)))).toEqual([]);
+  expect(describeFindings(errorsOf(lintPairs(notices,profile,{glossary:data.glossary})))).toEqual([]);
   for(const n of notices)expect(fix(n.text),n.id).toBe(n.text);
  });
  it('the catalog is a valid partial catalog (en.json keys, the same {params}) and covers the whole shell and the welcome',()=>{
@@ -88,6 +113,13 @@ describe('Front ZT0: the Traditional Chinese (zh-Hant) bundle',()=>{
   // Adapted, not converted (user decision of 2026-11-19): every key it holds is also in the reviewed zh-Hans catalog it adapts.
   expect(Object.keys(zh).filter(k=>!Object.hasOwn(zhHans,k))).toEqual([]);
  });
+ it('Front ZT1: the catalog covers every key outside ZT2\'s areas (the observatory, VIREO\'s names, E01, E02 and E03), and no ZT2 key yet',()=>{
+  const zt1=(Object.keys(en) as MessageKey[]).filter(k=>!ZT2_PREFIXES.test(k));
+  expect(zt1.length).toBe(2172);
+  expect(zt1.filter(k=>!Object.hasOwn(zh,k))).toEqual([]);
+  // ZT0's shell holds the menu names of ZT2's areas (radio.nav, ph.nav…); nothing else of ZT2 yet.
+  expect(Object.keys(zh).filter(k=>ZT2_PREFIXES.test(k)&&!SHELL_KEYS.includes(k as MessageKey))).toEqual([]);
+ });
  it('every map has its English shape: the shell maps complete, the header-name maps partial',()=>{
   for(const [id,map] of Object.entries(CHINESE_TRADITIONAL.maps??{})){
    expect(MAP_IDS,id).toContain(id);
@@ -96,8 +128,27 @@ describe('Front ZT0: the Traditional Chinese (zh-Hant) bundle',()=>{
   }
   for(const id of COMPLETE_MAPS)expect(Object.hasOwn(CHINESE_TRADITIONAL.maps??{},id),id).toBe(true);
  });
- it('originals are normalised keys that Spanish also translates (src/i18n/es/es.test.ts checks those against the source)',()=>{
-  for(const key of Object.keys(originals)){expect(normalizeOriginal(key),key).toBe(key);expect(Object.hasOwn(esOriginals,key),key).toBe(true);}
+ it('originals are normalised keys that Spanish also knows (src/i18n/es/es.test.ts checks those against the source)',()=>{
+  const esSame=(key:string)=>Object.hasOwn(esIdentical.entries,`original:${key}`);
+  for(const key of Object.keys(originals)){expect(normalizeOriginal(key),key).toBe(key);expect(Object.hasOwn(esOriginals,key)||esSame(key)||ZH_ONLY_ORIGINALS.includes(key),key).toBe(true);}
+ });
+ it('Front ZT1: every VIREO original is translated at once, or kept with an identical.json reason, never both (as zh-Hans)',()=>{
+  const english=[...Object.keys(esOriginals),...Object.keys(esIdentical.entries).filter(k=>k.startsWith('original:')).map(k=>k.slice('original:'.length))];
+  expect(new Set(english).size).toBe(760);english.push(...ZH_ONLY_ORIGINALS);
+  const same=identical.entries as Record<string,string>,kept=Object.keys(same).filter(k=>k.startsWith('original:')).map(k=>k.slice('original:'.length));
+  expect(english.filter(k=>!Object.hasOwn(originals,k)&&!Object.hasOwn(same,`original:${k}`))).toEqual([]);
+  for(const k of kept){expect(english,k).toContain(k);expect(Object.hasOwn(originals,k),k).toBe(false);}
+  const own=originals as Record<string,string>;
+  expect([own.N,own.S,own.E,own.W]).toEqual(['北','南','東','西']);
+  // The same originals as the reviewed zh-Hans it adapts: adapted, never dropped or added.
+  expect(Object.keys(own).sort()).toEqual(Object.keys(zhHansOriginals).sort());
+ });
+ it('Front ZT1: a VIREO original keeps its line breaks, and a `fragment|` piece has no edge space (Chinese joins a value with no space)',()=>{
+  const own=originals as Record<string,string>,breaks=(v:string)=>(v.match(/\r\n/g)??[]).length;
+  expect(Object.keys(own).filter(k=>breaks(own[k])!==breaks(k.replace(/^fragment\|/,'')))).toEqual([]);
+  const fragments=Object.keys(own).filter(k=>k.startsWith('fragment|'));
+  expect(fragments.length).toBeGreaterThan(10);
+  expect(fragments.filter(k=>/^\s|\s$/.test(own[k]))).toEqual([]);
  });
  it('map and help sources write their characters literally, never as \\u escapes (scripts/check-i18n-dist.mjs reads them as written)',()=>{
   for(const file of [...sources('maps'),...sources('help')])expect(readFileSync(file,'utf8'),path.relative(DIR,file)).not.toMatch(/\\u[0-9a-fA-F]{4}/);
@@ -116,7 +167,7 @@ describe('Front ZT0: the Traditional Chinese (zh-Hant) bundle',()=>{
   if(reports.length)console.info(`zh-Hant reports for the reviewer (not failures):\n${describeFindings(reports).join('\n')}`);
  });
  it('the CJK punctuation fixer (Traditional Chinese style, 「」) has nothing left to change: catalog, originals, maps and help sources',()=>{
-  expect(Object.entries(zh).filter(([,v])=>fix(v)!==v).map(([k])=>k)).toEqual([]);
+  expect(Object.entries(zh).filter(([,v])=>fixCatalog(v)!==v).map(([k])=>k)).toEqual([]);
   expect(Object.entries(originals).filter(([k,v])=>fixOriginal(k,v)!==v).map(([k])=>k)).toEqual([]);
   for(const file of [...sources('maps'),...sources('help')]){const text=readFileSync(file,'utf8');expect(fixSource(text)===text,path.relative(DIR,file)).toBe(true);}
  });

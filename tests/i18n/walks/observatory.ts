@@ -40,7 +40,9 @@ export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':new S
  ja:new Set(['OK','CCD','IR','Multi-Spec','YYYY/MM/DD','V - Mv =','PDot (S/S):','PEpoch (MJD):','(km/sec)','NF: NOMAD R; B: NOMAD B; V: NOMAD V; R: NOMAD R; I: USNO-B1 I2','J: NOMAD J; H: NOMAD H; K: NOMAD K']),
  /** Front ZH1: Simplified Chinese keeps the instrument names CCD and IR, VIREO's formats and formula labels, and the camera card's
   * catalog bands by filter (src/i18n/zh-hans/identical.json); it translates OK «确定» and Multi-Spec «多目标光谱仪». */
- 'zh-Hans':new Set(['CCD','IR','YYYY/MM/DD','V - Mv =','PDot (S/S):','PEpoch (MJD):','(km/sec)','NF: NOMAD R; B: NOMAD B; V: NOMAD V; R: NOMAD R; I: USNO-B1 I2','J: NOMAD J; H: NOMAD H; K: NOMAD K'])};
+ 'zh-Hans':new Set(['CCD','IR','YYYY/MM/DD','V - Mv =','PDot (S/S):','PEpoch (MJD):','(km/sec)','NF: NOMAD R; B: NOMAD B; V: NOMAD V; R: NOMAD R; I: USNO-B1 I2','J: NOMAD J; H: NOMAD H; K: NOMAD K']),
+ /** Front ZT1: Traditional Chinese keeps the same texts as Simplified Chinese (src/i18n/zh-hant/identical.json). */
+ 'zh-Hant':new Set(['CCD','IR','YYYY/MM/DD','V - Mv =','PDot (S/S):','PEpoch (MJD):','(km/sec)','NF: NOMAD R; B: NOMAD B; V: NOMAD V; R: NOMAD R; I: USNO-B1 I2','J: NOMAD J; H: NOMAD H; K: NOMAD K'])};
 /** SAME texts another language does translate: Portuguese writes the General tab «Geral» and the longitude letter E «L» (Leste);
  * French writes the General tab «Général» (its longitude letter E is Est, the same). */
 /** Front ID1: Indonesian writes the General tab «Umum» and the longitude letter E «BT» (Bujur Timur). */
@@ -53,7 +55,9 @@ export const NOT_SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'pt-BR':n
   * «オングストローム». */
  ja:new Set(['General','No','Min','E','N','S','Angstroms']),
  /** Front ZH1: Simplified Chinese writes General «常规», No «否», Min «分», the compass letters E «东», N «北» and S «南», and Angstroms «埃». */
- 'zh-Hans':new Set(['General','No','Min','E','N','S','Angstroms'])};
+ 'zh-Hans':new Set(['General','No','Min','E','N','S','Angstroms']),
+ /** Front ZT1: Traditional Chinese writes them too (General, 否, 分, 東, 北, 南, 埃). */
+ 'zh-Hant':new Set(['General','No','Min','E','N','S','Angstroms'])};
 export const same=(text:string,L?:LanguageText)=>(L===undefined||!(NOT_SAME_IN[L.tag]?.has(text)??false))&&(SAME.has(text)||IDENTIFIER.test(text)||(L!==undefined&&(SAME_IN[L.tag]?.has(text)??false)));
 export const id=(page:Page,testId:string)=>page.getByTestId(testId);
 
