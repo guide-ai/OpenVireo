@@ -35,6 +35,8 @@ const VERDICTS:Readonly<Record<string,readonly string[]>>={
  ja:['恒星です。','銀河です。','クエーサー（QSO）です。','パルサーです。','小惑星です。'],
  // Front ZH6: Chinese needs no article either: «这是一» with the kind's measure word (个 for a galaxy or a quasar, 颗 otherwise).
  'zh-Hans':['这是一颗恒星。','这是一个星系。','这是一个类星体（QSO）。','这是一颗脉冲星。','这是一颗小行星。'],
+ // Front ZT2: Traditional Chinese the same way, in its own characters.
+ 'zh-Hant':['這是一顆恆星。','這是一個星系。','這是一個類星體（QSO）。','這是一顆脈衝星。','這是一顆小行星。'],
  // Front RU6: Russian needs no article either: «Это» and the kind in the nominative.
  ru:['Это звезда.','Это галактика.','Это квазар (QSO).','Это пульсар.','Это астероид.'],
 };
@@ -83,7 +85,7 @@ for(const L of translatedFor('e08'))test.describe(()=>{test.use({locale:contextL
  await lab(page).getByLabel(exact(LS.idLabel)).fill('42');
  // The coordinates line (LS.targetCoords) starts with the same word in Spanish and Portuguese; French's «AD» is cut as Spanish's «AR»,
  // and Hindi's «RA» (kept in Latin script) the same way; Japanese's «赤経» follows its colon with no space (Front JA6); Russian's «П. в.» like the Latin ones (Front RU6).
- const coordinates=new RegExp(`^(?:— )?${LS.targetCoords('','').replace(/[.*+?^${}()|[\]\\/]/g,'\\$&').replace(/ (?:AR|AD|RA|П\\\. в\\\.) ,.*$|赤経.*$|赤经.*$/,'')}${L.tag==='ja'||L.tag==='zh-Hans'?'':' '}`);
+ const coordinates=new RegExp(`^(?:— )?${LS.targetCoords('','').replace(/[.*+?^${}()|[\]\\/]/g,'\\$&').replace(/ (?:AR|AD|RA|П\\\. в\\\.) ,.*$|赤経.*$|赤经.*$|赤經.*$/,'')}${L.tag==='ja'||L.tag.startsWith('zh')?'':' '}`);
  const read=async(code:string)=>{
   await go(page,'#object-x');await id(page,'objectx-target').selectOption(code);await expect(id(page,'objectx-coordinates')).toContainText(code);
   await page.waitForTimeout(300);

@@ -240,8 +240,9 @@ for(const {L:P,name} of RELEASED_AREAS)test.describe(`in a ${name} browser`,()=>
 // of src/i18n/partialLanguage.test.ts and split.test.ts held it, at unit level). ZT0's shell keys give zh-Hant text to `photometer`
 // alone (project.photometryCleared and project.photometryRestored), as ZH0's did; ZT1's observatory maps and keys add `classification`
 // and `fits`, its E01 and E02 keys `exposure` and `lss`, its E03 keys `cluster` (the shared classification+cluster module), as ZH1–ZH3
-// did; ZT2 fills the others, and ZT-REL turns this into a released-language test.
-const PARTIAL=[{L:CHINESE_TRADITIONAL_TEXT,name:'Traditional Chinese',release:'ZT-REL',areas:['classification','cluster','exposure','fits','lss','photometer']}] as const;
+// did; ZT2's radio keys and maps add `pulsar` and `radio` (the shared pulsar+radio module), as ZH5 did, and ZT-REL turns this into a
+// released-language test.
+const PARTIAL=[{L:CHINESE_TRADITIONAL_TEXT,name:'Traditional Chinese',release:'ZT-REL',areas:['classification','cluster','exposure','fits','lss','photometer','pulsar','radio']}] as const;
 for(const {L:P,name,release,areas} of PARTIAL)test.describe(`a language before its release (${name})`,()=>{
  test.use({locale:'en-US'});
  test(`a partial language (${name}) fetches only its core, and no chunk for an empty area`,async({page})=>{

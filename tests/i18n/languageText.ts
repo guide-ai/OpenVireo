@@ -132,6 +132,15 @@ import {HELP_MENU_ZH_HANT} from '../../src/i18n/zh-hant/maps/helpMenu';
 import {PROJECT_LINKS_ZH_HANT} from '../../src/i18n/zh-hant/maps/projectLinks';
 import {TOUR_ZH_HANT} from '../../src/i18n/zh-hant/maps/tour';
 import {LANGUAGE_CHOICE_ZH_HANT} from '../../src/i18n/zh-hant/maps/languageChoice';
+import zhHantIdentical from '../../src/i18n/zh-hant/identical.json' with {type:'json'};
+import {CLUSTER_HR_ZH_HANT} from '../../src/i18n/zh-hant/maps/clusterHr';
+import {RADIO_ANTENNA_ZH_HANT} from '../../src/i18n/zh-hant/maps/radioAntenna';
+import {RADIO_RECORD_SAVE_ZH_HANT} from '../../src/i18n/zh-hant/maps/radioRecordSave';
+import {PULSAR_ZH_HANT} from '../../src/i18n/zh-hant/maps/pulsar';
+import {SAVED_ROWS_ZH_HANT} from '../../src/i18n/zh-hant/maps/pulsarSavedRows';
+import {LOAD_SAVE_ZH_HANT} from '../../src/i18n/zh-hant/maps/pulsarLoadSave';
+import {OBJECT_X_GUIDE_ZH_HANT} from '../../src/i18n/zh-hant/maps/objectXGuide';
+import {OBJECT_X_MEASURE_ZH_HANT} from '../../src/i18n/zh-hant/maps/objectXMeasure';
 import {CAMERA_ZH_HANT} from '../../src/i18n/zh-hant/maps/camera';
 import {FIELD_INFO_ZH_HANT} from '../../src/i18n/zh-hant/maps/fieldInfo';
 import {FIELD_READ_DETAILS_ZH_HANT} from '../../src/i18n/zh-hant/maps/fieldReadDetails';
@@ -251,11 +260,11 @@ export const JAPANESE_TEXT=language('ja',ja,jaOriginals,{appShell:APP_SHELL_JA,h
 export const CHINESE_SIMPLIFIED_TEXT=language('zh-Hans',zhHans,zhHansOriginals,{appShell:APP_SHELL_ZH_HANS,helpMenu:HELP_MENU_ZH_HANS,projectLinks:PROJECT_LINKS_ZH_HANS,tour:TOUR_ZH_HANS,languageChoice:LANGUAGE_CHOICE_ZH_HANS},
  [APP_SHELL_ZH_HANS,CAMERA_ZH_HANS,FIELD_INFO_ZH_HANS,FIELD_READ_DETAILS_ZH_HANS,HELP_MENU_ZH_HANS,LANGUAGE_CHOICE_ZH_HANS,NAKED_EYE_ZH_HANS,OBJECT_X_LAB_ZH_HANS,OBSERVATION_METADATA_ZH_HANS,OBSERVATORY_ZH_HANS,POLISH_ZH_HANS,PROJECT_LINKS_ZH_HANS,QSO_LIST_ZH_HANS,SOUND_ZH_HANS,TOUR_ZH_HANS,VARIABLE_STARS_ZH_HANS],/[\p{sc=Han}，。、：；？！（）]/u,'');
 /** Front ZT0: Traditional Chinese (Taiwan) before its release, behind `?lang=zh-Hant` (an en-US browser: tests/fixtures/language.ts
- * contextLocale). ZT0 translated the shell, ZT1 the observatory with its maps, all of VIREO's originals and exercises E01–E03; ZT2 and
- * ZT-HELP add their areas to `done` and their maps. Its letters are Han and
+ * contextLocale). ZT0 translated the shell, ZT1 the observatory with its maps, all of VIREO's originals and exercises E01–E03, ZT2
+ * exercises E04, E05, E06 and E08 and the radio telescope; ZT-HELP adds the help to `done` and its maps. Its letters are Han and
  * the full-width marks ，。、：；？！「」（）, which VIREO's English files and OpenVireo's exports never hold. */
 export const CHINESE_TRADITIONAL_TEXT=language('zh-Hant',zhHant,zhHantOriginals,{appShell:APP_SHELL_ZH_HANT,helpMenu:HELP_MENU_ZH_HANT,projectLinks:PROJECT_LINKS_ZH_HANT,tour:TOUR_ZH_HANT,languageChoice:LANGUAGE_CHOICE_ZH_HANT},
- [APP_SHELL_ZH_HANT,CAMERA_ZH_HANT,FIELD_INFO_ZH_HANT,FIELD_READ_DETAILS_ZH_HANT,HELP_MENU_ZH_HANT,LANGUAGE_CHOICE_ZH_HANT,NAKED_EYE_ZH_HANT,OBJECT_X_LAB_ZH_HANT,OBSERVATION_METADATA_ZH_HANT,OBSERVATORY_ZH_HANT,POLISH_ZH_HANT,PROJECT_LINKS_ZH_HANT,QSO_LIST_ZH_HANT,SOUND_ZH_HANT,TOUR_ZH_HANT,VARIABLE_STARS_ZH_HANT],/[\p{sc=Han}，。、：；？！「」（）]/u,'?lang=zh-Hant',['shell','observatory','e01','e02','e03']);
+ [APP_SHELL_ZH_HANT,CAMERA_ZH_HANT,FIELD_INFO_ZH_HANT,FIELD_READ_DETAILS_ZH_HANT,HELP_MENU_ZH_HANT,LANGUAGE_CHOICE_ZH_HANT,NAKED_EYE_ZH_HANT,OBJECT_X_LAB_ZH_HANT,OBSERVATION_METADATA_ZH_HANT,OBSERVATORY_ZH_HANT,POLISH_ZH_HANT,PROJECT_LINKS_ZH_HANT,QSO_LIST_ZH_HANT,SOUND_ZH_HANT,TOUR_ZH_HANT,VARIABLE_STARS_ZH_HANT],/[\p{sc=Han}，。、：；？！「」（）]/u,'?lang=zh-Hant',['shell','observatory','e01','e02','e03','e04','e05','radio','e06','e08']);
 /** Front RU0: Russian, behind `?lang=ru` before its release (an en-US browser): RU0 translated the shell, RU1 the observatory with
  * all of VIREO's originals, RU2 exercises E01 and E02, RU3 exercise E03, RU4 exercises E04 and E05, RU5 the radio telescope, RU6
  * exercises E06 and E08, and RU-HELP the help files and help maps. Front RU-REL: released, so every area is done and its specs open
@@ -348,6 +357,8 @@ export const E04_E05_MAPS:Readonly<Record<string,E04E05Maps>>=Object.freeze({
  ja:{spectralRange:SPECTRAL_RANGE_JA,observatory:OBSERVATORY_JA,polish:POLISH_JA,camera:CAMERA_JA,sound:SOUND_JA,clusterHr:CLUSTER_HR_JA},
  // Front ZH4: Simplified Chinese (its ?lang=zh-Hans preview).
  'zh-Hans':{spectralRange:SPECTRAL_RANGE_ZH_HANS,observatory:OBSERVATORY_ZH_HANS,polish:POLISH_ZH_HANS,camera:CAMERA_ZH_HANS,sound:SOUND_ZH_HANS,clusterHr:CLUSTER_HR_ZH_HANS},
+ // Front ZT2: Traditional Chinese (its ?lang=zh-Hant preview).
+ 'zh-Hant':{spectralRange:SPECTRAL_RANGE_ZH_HANT,observatory:OBSERVATORY_ZH_HANT,polish:POLISH_ZH_HANT,camera:CAMERA_ZH_HANT,sound:SOUND_ZH_HANT,clusterHr:CLUSTER_HR_ZH_HANT},
 });
 export const e04e05Maps=(tag:string):E04E05Maps=>{const m=E04_E05_MAPS[tag];if(!m)throw new Error(`No E04/E05 maps for ${tag}`);return m;};
 // Front PT5: the maps and identical texts the radio telescope walk reads beyond the catalog and originals (tests/i18n/radio.spec.ts),
@@ -393,6 +404,8 @@ export const RADIO_MAPS:Readonly<Record<string,RadioMaps>>=Object.freeze({
  ja:{radioAntenna:RADIO_ANTENNA_JA,radioRecordSave:RADIO_RECORD_SAVE_JA,identical:jaIdentical.entries},
  // Front ZH5: Simplified Chinese (its ?lang=zh-Hans preview).
  'zh-Hans':{radioAntenna:RADIO_ANTENNA_ZH_HANS,radioRecordSave:RADIO_RECORD_SAVE_ZH_HANS,identical:zhHansIdentical.entries},
+ // Front ZT2: Traditional Chinese (its ?lang=zh-Hant preview).
+ 'zh-Hant':{radioAntenna:RADIO_ANTENNA_ZH_HANT,radioRecordSave:RADIO_RECORD_SAVE_ZH_HANT,identical:zhHantIdentical.entries},
  // Front RU5: Russian (its ?lang=ru preview).
  ru:{radioAntenna:RADIO_ANTENNA_RU,radioRecordSave:RADIO_RECORD_SAVE_RU,identical:ruIdentical.entries},
 });
@@ -459,6 +472,8 @@ export const E06_MAPS:Readonly<Record<string,E06Maps>>=Object.freeze({
  ja:{pulsar:PULSAR_JA,pulsarSavedRows:SAVED_ROWS_JA,pulsarLoadSave:LOAD_SAVE_JA},
  // Front ZH6: Simplified Chinese (its ?lang=zh-Hans preview).
  'zh-Hans':{pulsar:PULSAR_ZH_HANS,pulsarSavedRows:SAVED_ROWS_ZH_HANS,pulsarLoadSave:LOAD_SAVE_ZH_HANS},
+ // Front ZT2: Traditional Chinese (its ?lang=zh-Hant preview).
+ 'zh-Hant':{pulsar:PULSAR_ZH_HANT,pulsarSavedRows:SAVED_ROWS_ZH_HANT,pulsarLoadSave:LOAD_SAVE_ZH_HANT},
  // Front RU6: Russian (its ?lang=ru preview).
  ru:{pulsar:PULSAR_RU,pulsarSavedRows:SAVED_ROWS_RU,pulsarLoadSave:LOAD_SAVE_RU},
 });
@@ -477,6 +492,8 @@ export const E08_MAPS:Readonly<Record<string,E08Maps>>=Object.freeze({
  ja:{objectXLab:OBJECT_X_LAB_JA,objectXGuide:OBJECT_X_GUIDE_JA,objectXMeasure:OBJECT_X_MEASURE_JA,camera:CAMERA_JA,sound:SOUND_JA},
  // Front ZH6: Simplified Chinese (its ?lang=zh-Hans preview).
  'zh-Hans':{objectXLab:OBJECT_X_LAB_ZH_HANS,objectXGuide:OBJECT_X_GUIDE_ZH_HANS,objectXMeasure:OBJECT_X_MEASURE_ZH_HANS,camera:CAMERA_ZH_HANS,sound:SOUND_ZH_HANS},
+ // Front ZT2: Traditional Chinese (its ?lang=zh-Hant preview).
+ 'zh-Hant':{objectXLab:OBJECT_X_LAB_ZH_HANT,objectXGuide:OBJECT_X_GUIDE_ZH_HANT,objectXMeasure:OBJECT_X_MEASURE_ZH_HANT,camera:CAMERA_ZH_HANT,sound:SOUND_ZH_HANT},
  // Front RU6: Russian (its ?lang=ru preview).
  ru:{objectXLab:OBJECT_X_LAB_RU,objectXGuide:OBJECT_X_GUIDE_RU,objectXMeasure:OBJECT_X_MEASURE_RU,camera:CAMERA_RU,sound:SOUND_RU},
 });

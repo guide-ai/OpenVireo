@@ -631,15 +631,17 @@ const RU_E04=(key:string)=>{const v=(TRANSLATED.find(x=>x.tag==='ru')!.catalog a
 const JA_E04=(key:string)=>{const v=(TRANSLATED.find(x=>x.tag==='ja')!.catalog as Readonly<Record<string,string>>)[key];if(v===undefined)throw new Error(`No Japanese for ${key}`);return v;};
 /** Front ZH4: and the Simplified Chinese catalog (its `?lang=zh-Hans` preview). */
 const ZH_E04=(key:string)=>{const v=(TRANSLATED.find(x=>x.tag==='zh-Hans')!.catalog as Readonly<Record<string,string>>)[key];if(v===undefined)throw new Error(`No Simplified Chinese for ${key}`);return v;};
+/** Front ZT2: and the Traditional Chinese catalog (its `?lang=zh-Hant` preview). */
+const ZT_E04=(key:string)=>{const v=(TRANSLATED.find(x=>x.tag==='zh-Hant')!.catalog as Readonly<Record<string,string>>)[key];if(v===undefined)throw new Error(`No Traditional Chinese for ${key}`);return v;};
 // Front ES6: the E04 flow (Pleiades photometry) in English, qps and Spanish: the photometer session JSON, VIREO's Record/Review rows
 // shown by Display/Print Data and written with Save Text and Comma Delimit, and the saved investigation. The page clock is paused at
 // a fixed instant before activation and only moves by runFor until the last file is written; nothing is masked (each record's JD is
 // the observatory clock's, which stands still). Front PT4: and in pt-BR (its `?lang=pt-BR` preview). Front FR4: and in French (`?lang=fr`).
 // Front ID4: and in Indonesian (`?lang=id`). Front HI4: and in Hindi (`?lang=hi`). Front RU4: and in Russian (`?lang=ru`).
-family('E04 Pleiades photometry: photometer session, Observational Results text and CSV, investigation',['en','qps','es-419','pt-BR','fr','id','hi','ja','zh-Hans','ru'],async({browser,baseURL},identical)=>{
+family('E04 Pleiades photometry: photometer session, Observational Results text and CSV, investigation',['en','qps','es-419','pt-BR','fr','id','hi','ja','zh-Hans','zh-Hant','ru'],async({browser,baseURL},identical)=>{
  test.setTimeout(180_000);
  const id=(page:Page,testId:string)=>page.getByTestId(testId);
- const T=(locale:Locale,key:string)=>locale==='es-419'?exact((es as Record<string,string>)[key]):locale==='pt-BR'?exact(PT_E04[key]!):locale==='fr'?exact(FR_E04(key)):locale==='id'?exact(ID_E04(key)):locale==='hi'?exact(HI_E04(key)):locale==='ru'?exact(RU_E04(key)):locale==='ja'?exact(JA_E04(key)):locale==='zh-Hans'?exact(ZH_E04(key)):L((en as Record<string,string>)[key]);
+ const T=(locale:Locale,key:string)=>locale==='es-419'?exact((es as Record<string,string>)[key]):locale==='pt-BR'?exact(PT_E04[key]!):locale==='fr'?exact(FR_E04(key)):locale==='id'?exact(ID_E04(key)):locale==='hi'?exact(HI_E04(key)):locale==='ru'?exact(RU_E04(key)):locale==='ja'?exact(JA_E04(key)):locale==='zh-Hans'?exact(ZH_E04(key)):locale==='zh-Hant'?exact(ZT_E04(key)):L((en as Record<string,string>)[key]);
  await identical(browser,baseURL,async(page,locale)=>{
   await open(page,locale,'photometer');
   const main=page.locator('.photometer-main'),press=(key:string)=>main.getByRole('button',{name:T(locale,key)}).click();
@@ -661,7 +663,7 @@ family('E04 Pleiades photometry: photometer session, Observational Results text 
    await id(page,'fi-box').getByRole('button').first().click();await expect(id(page,'fi-box')).toHaveCount(0);return f;};
   const resultsText=await list('displayed'),resultsCsv=await list('csv');
   const toolbar=page.locator('.investigation-toolbar');
-  const investigation=await download(page,()=>toolbar.getByRole('button',{name:locale==='es-419'?exact(es['project.save']):locale==='pt-BR'?exact(PT_E04['project.save']!):locale==='fr'?exact(FR_E04('project.save')):locale==='id'?exact(ID_E04('project.save')):locale==='hi'?exact(HI_E04('project.save')):locale==='ru'?exact(RU_E04('project.save')):locale==='ja'?exact(JA_E04('project.save')):locale==='zh-Hans'?exact(ZH_E04('project.save')):L('Save investigation')}).click());
+  const investigation=await download(page,()=>toolbar.getByRole('button',{name:locale==='es-419'?exact(es['project.save']):locale==='pt-BR'?exact(PT_E04['project.save']!):locale==='fr'?exact(FR_E04('project.save')):locale==='id'?exact(ID_E04('project.save')):locale==='hi'?exact(HI_E04('project.save')):locale==='ru'?exact(RU_E04('project.save')):locale==='ja'?exact(JA_E04('project.save')):locale==='zh-Hans'?exact(ZH_E04('project.save')):locale==='zh-Hant'?exact(ZT_E04('project.save')):L('Save investigation')}).click());
   // Front PT4: the flow's own screen is Portuguese in pt-BR, so the family cannot pass by comparing English with English (Front FR4:
   // and French in fr).
   if(locale==='pt-BR')await expect(main.getByRole('heading',{level:1})).toHaveText(PT_E04['ph.title']!);
@@ -671,6 +673,7 @@ family('E04 Pleiades photometry: photometer session, Observational Results text 
   if(locale==='ru')await expect(main.getByRole('heading',{level:1})).toHaveText(RU_E04('ph.title'));
   if(locale==='ja')await expect(main.getByRole('heading',{level:1})).toHaveText(JA_E04('ph.title'));
   if(locale==='zh-Hans')await expect(main.getByRole('heading',{level:1})).toHaveText(ZH_E04('ph.title'));
+  if(locale==='zh-Hant')await expect(main.getByRole('heading',{level:1})).toHaveText(ZT_E04('ph.title'));
   return {session,resultsText,resultsCsv,investigation};
  },{},page=>page.locator('.photometer-main'));
 });
@@ -682,7 +685,7 @@ family('E04 Pleiades photometry: photometer session, Observational Results text 
 // Spanish (Front PT5: and Brazilian Portuguese, whose route heading is checked so the run cannot compare English with English; Front FR5: and French, the same way; Front HI5: and Hindi; Front JA5: and Japanese; Front RU5: and Russian). The page clock is installed at a fixed instant, the lazily loaded routes render while it runs, then it is paused and only
 // runFor moves it, so the capture, the native header's date and time and the investigation's radio clock are the same in every
 // run: nothing is masked.
-family('radio telescope (ES8a): raw capture .PLR, native Save Recorded Measurements and the investigation, in English, qps, Spanish, pt-BR, fr, id, hi, ja, zh-Hans and ru',['en','qps','es-419','pt-BR','fr','id','hi','ja','zh-Hans','ru'],async({browser,baseURL},identical)=>{
+family('radio telescope (ES8a): raw capture .PLR, native Save Recorded Measurements and the investigation, in English, qps, Spanish, pt-BR, fr, id, hi, ja, zh-Hans, zh-Hant and ru',['en','qps','es-419','pt-BR','fr','id','hi','ja','zh-Hans','zh-Hant','ru'],async({browser,baseURL},identical)=>{
  test.setTimeout(240_000);
  const id=(page:Page,testId:string)=>page.getByTestId(testId);
  const flush=async(page:Page)=>{for(let i=0;i<3;i++)await page.evaluate(()=>new Promise<void>(resolve=>{const ch=new MessageChannel();ch.port1.onmessage=()=>{ch.port1.close();ch.port2.close();resolve();};ch.port2.postMessage(0);}));};
@@ -694,7 +697,7 @@ family('radio telescope (ES8a): raw capture .PLR, native Save Recorded Measureme
   await page.goto(`/${lang}#pulsar-analysis`);await expect(id(page,'pulsar-none')).toBeVisible({timeout:20_000});
   await page.goto(`/${lang}#radio-control`);await expect(id(page,'radio-exercise')).toBeVisible({timeout:20_000});
   await expect(page.locator('html')).toHaveAttribute('lang',HTML_LANG[locale]);
-  if(locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'||locale==='zh-Hans'||locale==='ru')await expect(page.getByRole('heading',{level:1,name:ptText(locale).catalog['radioRoute.title'],exact:true})).toBeVisible();
+  if(locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'||locale==='zh-Hans'||locale==='zh-Hant'||locale==='ru')await expect(page.getByRole('heading',{level:1,name:ptText(locale).catalog['radioRoute.title'],exact:true})).toBeVisible();
   await page.clock.pauseAt(new Date('2026-10-24T00:10:00Z'));await flush(page);
   await id(page,'radio-exercise').click();await id(page,'radio-env-compiled').click();await id(page,'radio-access').click();await id(page,'radio-timer-deliver').click();
   await id(page,'radio-switch').click();await id(page,'antenna-tracking').click();await flush(page);
@@ -720,7 +723,7 @@ family('radio telescope (ES8a): raw capture .PLR, native Save Recorded Measureme
   const native=await download(page,()=>id(page,'pulsar-native-ok').click());await paceDownload(page);
   await expect(id(page,'pulsar-native-dialog')).toHaveCount(0);
   const toolbar=page.locator('.investigation-toolbar');
-  const name=locale==='es-419'?es['project.save']:locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'||locale==='zh-Hans'||locale==='ru'?ptText(locale).catalog['project.save']:L('Save investigation');
+  const name=locale==='es-419'?es['project.save']:locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'||locale==='zh-Hans'||locale==='zh-Hant'||locale==='ru'?ptText(locale).catalog['project.save']:L('Save investigation');
   const investigation=await download(page,()=>toolbar.getByRole('button',{name,exact:typeof name==='string'||undefined}).click());
   return {plr,native,investigation};
  },{},page=>page.getByTestId('radio-route'));
@@ -759,7 +762,7 @@ function clockElapsedMasked(bytes:Buffer):Buffer{
  * the image is ready (the image's JD and pointing are those of Start). */
 async function exposePaused(page:Page,locale:Locale,name:(locale:Locale,english:string,spanish:string)=>RegExp,camera:Readonly<Record<string,string>>){
  const c=page.getByTestId('camera-control');
- await c.getByLabel(locale==='es-419'||locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'||locale==='zh-Hans'||locale==='ru'?new RegExp(`^\\s*${camera.sourceLive.slice(0,20)}`):pseudoStart('Ask VizieR live')).check();
+ await c.getByLabel(locale==='es-419'||locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'||locale==='zh-Hans'||locale==='zh-Hant'||locale==='ru'?new RegExp(`^\\s*${camera.sourceLive.slice(0,20)}`):pseudoStart('Ask VizieR live')).check();
  await c.getByLabel(name(locale,CAMERA_EN.minutes,camera.minutes)).fill('0');await c.getByLabel(name(locale,CAMERA_EN.seconds,camera.seconds)).fill('1');
  await c.getByRole('button',{name:name(locale,CAMERA_EN.start,camera.start)}).click();
  const status=page.getByTestId('camera-status'),done=name(locale,CAMERA_EN.statusDone,camera.statusDone);
@@ -767,14 +770,14 @@ async function exposePaused(page:Page,locale:Locale,name:(locale:Locale,english:
  for(const start=Date.now();Date.now()-start<90_000&&!done.test((await status.textContent())??'');){await page.clock.runFor(200);await page.waitForTimeout(20);}
  await expect(status).toHaveText(done);
 }
-family('E08 Object X and the CCD camera: spectrum CSV and SSP, image FITS, camera FITS and VIREO-header FITS, saved-image download, investigations before and after the reveal',['en','qps','es-419','pt-BR','fr','id','hi','ja','zh-Hans','ru'],async({browser,baseURL},identical)=>{
+family('E08 Object X and the CCD camera: spectrum CSV and SSP, image FITS, camera FITS and VIREO-header FITS, saved-image download, investigations before and after the reveal',['en','qps','es-419','pt-BR','fr','id','hi','ja','zh-Hans','zh-Hant','ru'],async({browser,baseURL},identical)=>{
  test.setTimeout(300_000);
  const recorded=await readFile(new URL('../fixtures/vizier/nomad-56.75+24.12-r0.01.xml',import.meta.url));
- const NX=(locale:Locale,english:string,translated:string)=>locale==='es-419'||locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'||locale==='zh-Hans'||locale==='ru'?exact(translated):L(english);
+ const NX=(locale:Locale,english:string,translated:string)=>locale==='es-419'||locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'||locale==='zh-Hans'||locale==='zh-Hant'||locale==='ru'?exact(translated):L(english);
  await identical(browser,baseURL,async(page,locale)=>{
   page.setDefaultTimeout(30_000);
   // The language's Object X lab and camera maps (Spanish's for en and qps, whose names go through `L`).
-  const own=locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'||locale==='zh-Hans'||locale==='ru'?locale:'es-419',LS=e08Maps(own).objectXLab,C=e08Maps(own).camera as unknown as Readonly<Record<string,string>>;
+  const own=locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'||locale==='zh-Hans'||locale==='zh-Hant'||locale==='ru'?locale:'es-419',LS=e08Maps(own).objectXLab,C=e08Maps(own).camera as unknown as Readonly<Record<string,string>>;
   const save=async(click:()=>Promise<void>)=>{await paceDownload(page);return download(page,click);};
   const lab=page.getByTestId('objectx-lab'),B=(english:string,spanish:string)=>lab.getByRole('button',{name:NX(locale,english,spanish)});
   await page.route(/vizier\.cds\.unistra\.fr|vizier\.cfa\.harvard\.edu|vizier\.idia\.ac\.za|cdsarc|unistra\.fr/,route=>route.fulfill({status:200,contentType:'text/xml',body:recorded}));
@@ -782,7 +785,7 @@ family('E08 Object X and the CCD camera: spectrum CSV and SSP, image FITS, camer
   await page.goto(`/${contextQuery(locale)}#object-x`);
   const skip=page.getByRole('button',{name:N(locale,'Skip the tour')});if(await skip.isVisible().catch(()=>false))await skip.click();
   await expect(page.getByTestId('objectx-target').locator('option')).toHaveCount(18,{timeout:30_000});
-  if(locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'||locale==='zh-Hans'||locale==='ru')await expect(page.getByRole('heading',{level:1,name:LS.title,exact:true})).toBeVisible();
+  if(locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'||locale==='zh-Hans'||locale==='zh-Hant'||locale==='ru')await expect(page.getByRole('heading',{level:1,name:LS.title,exact:true})).toBeVisible();
   await lab.getByLabel(NX(locale,'ID # of your unknown object (from your exercise sheet or course, or one you choose)',LS.idLabel)).fill('42');
   // A kept spectrum of a star target (ObjectX.HTL row 9, not named before the reveal): 2 s of ticks with the clock paused.
   await page.getByTestId('objectx-target').selectOption('X-NTFB6');await page.getByTestId('objectx-spectrum-telescope').selectOption('2');
@@ -841,7 +844,7 @@ family('E08 Object X and the CCD camera: spectrum CSV and SSP, image FITS, camer
 // fixed and nothing is masked. (The raw .PLR download of a model capture and the investigation that holds it are ES8a's family.)
 // Front PT6: and in pt-BR (its `?lang=pt-BR` preview), whose route heading is checked. Front FR6: and in French (`?lang=fr`), the same way. Front ID6: and Indonesian (`?lang=id`).
 // Front HI6: and in Hindi (`?lang=hi`). Front JA6: and in Japanese (`?lang=ja`). Front RU6: and in Russian (`?lang=ru`).
-family('E06 pulsar analysis: native Save and its append, the export, the append file, the original recording and the viewer download',['en','qps','es-419','pt-BR','fr','id','hi','ja','zh-Hans','ru'],async({browser,baseURL},identical)=>{
+family('E06 pulsar analysis: native Save and its append, the export, the append file, the original recording and the viewer download',['en','qps','es-419','pt-BR','fr','id','hi','ja','zh-Hans','zh-Hant','ru'],async({browser,baseURL},identical)=>{
  test.setTimeout(240_000);
  const id=(page:Page,testId:string)=>page.getByTestId(testId);
  const TARGET=['"10-30-2026","3:07:42 PM"','"Table Number: "','','',HEADER].map(l=>l+'\r\n').join('')+'"PSR B0329+54",408.00,1.000,0.123456,"",5.0000E-01,49999.12345678,"older",1000,10.00,26\r\n';
@@ -851,7 +854,7 @@ family('E06 pulsar analysis: native Save and its append, the export, the append 
  };
  await identical(browser,baseURL,async(page,locale)=>{
   await open(page,locale,'pulsar-analysis');
-  if(locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'||locale==='zh-Hans'||locale==='ru')await expect(page.getByRole('heading',{level:1,name:ptText(locale).catalog['plr.routeTitle'],exact:true})).toBeVisible();
+  if(locale==='pt-BR'||locale==='fr'||locale==='id'||locale==='hi'||locale==='ja'||locale==='zh-Hans'||locale==='zh-Hant'||locale==='ru')await expect(page.getByRole('heading',{level:1,name:ptText(locale).catalog['plr.routeTitle'],exact:true})).toBeVisible();
   await id(page,'pulsar-file').setInputFiles({name:'synthetic-e2e.plr',mimeType:'application/octet-stream',buffer:Buffer.from(PLR,'latin1')});
   await expect(id(page,'pulsar-sha')).toHaveText(sha(Buffer.from(PLR,'latin1')));await id(page,'pulsar-properties-close').click();
   const original=await download(page,()=>id(page,'pulsar-download').click());
@@ -885,7 +888,7 @@ family('E06 pulsar analysis: native Save and its append, the export, the append 
 // clock is fixed at NOW (the investigation's save time), so nothing is masked. Front PT4: and in pt-BR (its `?lang=pt-BR` preview).
 // Front FR4: and in French (`?lang=fr`). Front ID4: and in Indonesian (`?lang=id`). Front HI4: and in Hindi (`?lang=hi`).
 // Front RU4: and in Russian (`?lang=ru`).
-family('E05 cluster HR: investigation, cluster listing TXT and CSV, observation DAT, Recorded Results TXT and CSV; Cluster Data TXT and HTL; variable-star TXT',['en','qps','es-419','pt-BR','fr','id','hi','ja','zh-Hans','ru'],async({browser,baseURL},identical)=>{
+family('E05 cluster HR: investigation, cluster listing TXT and CSV, observation DAT, Recorded Results TXT and CSV; Cluster Data TXT and HTL; variable-star TXT',['en','qps','es-419','pt-BR','fr','id','hi','ja','zh-Hans','zh-Hant','ru'],async({browser,baseURL},identical)=>{
  test.setTimeout(240_000);
  const id=(page:Page,testId:string)=>page.getByTestId(testId);
  const dismiss=async(page:Page)=>{await id(page,'fi-box').getByRole('button').first().click();await expect(id(page,'fi-box')).toHaveCount(0);};
@@ -902,7 +905,7 @@ family('E05 cluster HR: investigation, cluster listing TXT and CSV, observation 
   await page.locator('#db-native-interpretation').fill('E05 note');
   await expect(id(page,'native-preview')).toBeVisible({timeout:20_000});
   await button(page,'Confirm chosen model fit',locale).click();await expect(id(page,'native-confirmed-age')).toBeVisible();
-  const toolbar=page.locator('.investigation-toolbar');const save=locale==='es-419'?es['project.save']:locale==='pt-BR'?PT_E04['project.save']!:locale==='fr'?FR_E04('project.save'):locale==='id'?ID_E04('project.save'):locale==='hi'?HI_E04('project.save'):locale==='ru'?RU_E04('project.save'):locale==='ja'?JA_E04('project.save'):locale==='zh-Hans'?ZH_E04('project.save'):L('Save investigation');
+  const toolbar=page.locator('.investigation-toolbar');const save=locale==='es-419'?es['project.save']:locale==='pt-BR'?PT_E04['project.save']!:locale==='fr'?FR_E04('project.save'):locale==='id'?ID_E04('project.save'):locale==='hi'?HI_E04('project.save'):locale==='ru'?RU_E04('project.save'):locale==='ja'?JA_E04('project.save'):locale==='zh-Hans'?ZH_E04('project.save'):locale==='zh-Hant'?ZT_E04('project.save'):L('Save investigation');
   // Front PT4: the flow's own screen is Portuguese in pt-BR, so the family cannot pass by comparing English with English (Front FR4:
   // and French in fr).
   if(locale==='pt-BR')await expect(page.locator('main.cluster-database-lab').getByRole('heading',{level:1})).toHaveText(PT_E04['db.title']!);
@@ -912,6 +915,7 @@ family('E05 cluster HR: investigation, cluster listing TXT and CSV, observation 
   if(locale==='ru')await expect(page.locator('main.cluster-database-lab').getByRole('heading',{level:1})).toHaveText(RU_E04('db.title'));
   if(locale==='ja')await expect(page.locator('main.cluster-database-lab').getByRole('heading',{level:1})).toHaveText(JA_E04('db.title'));
   if(locale==='zh-Hans')await expect(page.locator('main.cluster-database-lab').getByRole('heading',{level:1})).toHaveText(ZH_E04('db.title'));
+  if(locale==='zh-Hant')await expect(page.locator('main.cluster-database-lab').getByRole('heading',{level:1})).toHaveText(ZT_E04('db.title'));
   const investigation=await download(page,()=>toolbar.getByRole('button',{name:save,exact:typeof save==='string'||undefined}).click());
   await id(page,'cluster-display-data').click();await expect(id(page,'cluster-report')).toBeVisible({timeout:20_000});
   const saveListing=async(kind:'displayed'|'csv')=>{const f=await download(page,async()=>{await id(page,'cluster-report-list-menu').click();await id(page,'cluster-report-save-menu').click();await id(page,`cluster-report-save-${kind}`).click();});await dismiss(page);return f;};

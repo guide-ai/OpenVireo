@@ -30,6 +30,42 @@
     "typography"
    ],
    "reason": "VIREO's DAT/TXT field name MJD(Days) is quoted as the file writes it, with its ASCII brackets (zh-hans.test.ts ASCII_FIELD_NAMES), as ja"
+  },
+  "catalog:pa.legend": {
+   "rules": [
+    "glossary"
+   ],
+   "reason": "\"visual guides\" are drawing aids (辅助线), not a lab guide (指南), as ja"
+  },
+  "catalog:radioRoute.date.storedValue": {
+   "rules": [
+    "script"
+   ],
+   "reason": "Front ZT2: a placeholder in Traditional Chinese quotation marks only (as zh-Hans and ja)"
+  },
+  "map:radioAntenna.antenna.rateLimit.recovery.afterModal": {
+   "rules": [
+    "script"
+   ],
+   "reason": "two placeholders joined with no space, as Chinese writes two sentences, as ja"
+  },
+  "map:radioAntenna.antenna.rateLimit.alternative.separator": {
+   "rules": [
+    "script"
+   ],
+   "reason": "the full-width semicolon that separates Chinese list items, as ja"
+  },
+  "map:objectXLab.imageRowPlain": {
+   "rules": [
+    "script"
+   ],
+   "reason": "a placeholder label, a full-width colon and the time scale UT only, as ja"
+  },
+  "map:pulsar.pulsar.nativeSave.problem.reserved": {
+   "rules": [
+    "quotes"
+   ],
+   "reason": "the straight quote is one of the reserved file-name characters the string lists, written as itself (as ja)"
   }
  }
 }
