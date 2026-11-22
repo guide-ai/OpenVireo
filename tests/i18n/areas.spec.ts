@@ -195,7 +195,7 @@ test('View original (English) on an area route: VIREO\'s names in English, the a
 // same for French, in an fr-FR browser (the Portuguese title kept). Front ID-REL: and for Indonesian, in an id-ID browser; Front
 // HI-REL: for Hindi, in an hi-IN browser. Front JA-REL: and Japanese in a ja-JP browser; Front RU-REL: and Russian in a ru-RU
 // browser (their JA0 and RU0 partial-language tests are gone). Front ZH-REL: and Simplified Chinese in a zh-CN browser (its ZH0
-// partial-language test is gone too, so no registered language is partial; the qaa-XA fixture keeps that case).
+// partial-language test is gone too, so no registered language is partial; the qaa-XA fixture keeps that case at unit level).
 const RELEASED_AREAS=[{L:PORTUGUESE_TEXT,name:'Brazilian Portuguese'},{L:FRENCH_TEXT,name:'French'},{L:INDONESIAN_TEXT,name:'Indonesian'},{L:HINDI_TEXT,name:'Hindi'},{L:JAPANESE_TEXT,name:'Japanese'},{L:CHINESE_SIMPLIFIED_TEXT,name:'Simplified Chinese'},{L:RUSSIAN_TEXT,name:'Russian'}] as const;
 for(const {L:P,name} of RELEASED_AREAS)test.describe(`in a ${name} browser`,()=>{
  test.use({locale:contextLocale(P.tag)});
@@ -236,4 +236,5 @@ for(const {L:P,name} of RELEASED_AREAS)test.describe(`in a ${name} browser`,()=>
 // Front ID0 (plan front-i18n-id.md §1.2 #6), Front HI0, Front JA0 (plan front-i18n-ja.md §6.2), Front RU0 (plan front-i18n-ru.md
 // §1.2 #5) and Front ZH0 checked here that each preview, partial, fetched only its core and no chunk for an empty area; ID-REL,
 // HI-REL, JA-REL, RU-REL and ZH-REL turned them back into released-language tests (RELEASED_AREAS above), as FR-REL did. Every
-// registered language is released now; the qaa-XA fixture of src/i18n/partialLanguage.test.ts and split.test.ts keeps the case.
+// registered language is released now; the qaa-XA fixture of src/i18n/partialLanguage.test.ts and split.test.ts keeps the case at unit level; ZT0's zh-Hant
+// preview brings this browser test back.

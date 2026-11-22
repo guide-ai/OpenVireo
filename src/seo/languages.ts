@@ -346,14 +346,14 @@ const ZH_HANS:SeoLanguage={
  ogImageText:{title:'浏览器中的CLEA VIREO天文实验',lines:['哈勃定律 · 脉冲星 · 昴星团 · 天体X · 更多实验','免费、非官方的网页重建版，无需安装。']},
  labs:merge(LAB_TEXT_ZH_HANS),
  ui:{languageName:'简体中文',siteNav:'网站',breadcrumb:'面包屑导航',labsCrumb:'实验',allLabs:'全部实验',openObservatory:'打开天文台',
-  labEyebrow:'依据CLEA VIREO实验题目改编的实验',openLab:'打开实验',
+  labEyebrow:'改编自CLEA VIREO的一项实验',openLab:'打开实验',
   openLabNote:()=>'以简体中文打开天文台，并显示本实验的指南。免费，无需注册。',
   whatYouDo:'实验步骤',whatYouLearn:'你将学到',otherLabs:'其他实验',
   // The sentences the tests require: the adaptation (the plan's footer) and not-the-original sentences, and the names of CLEA and
   // its supporters.
   about:'OpenVireo是对Project CLEA的虚拟教育天文台（Virtual Educational Observatory）VIREO的免费、非商业网页重建。'+
    'Project CLEA是Gettysburg College的项目，得到National Science Foundation和Gettysburg College的支持。'+
-   'OpenVireo依据原版程序复原的行为，并在注明来源的前提下使用原版数据文件。'+
+   'OpenVireo以从原版程序复原的行为为基础，并在注明来源的前提下使用原版数据文件。'+
    '它不是原版程序，也与Project CLEA没有隶属关系。本应用会标明已知的网页改编之处。'+
    '本页中文文本是OpenVireo的网页改编，不是CLEA的文本。',
   platform:'可在Windows、Mac、Linux或Chromebook上的现代网页浏览器中运行。无需安装，也无需账号。',
@@ -374,7 +374,7 @@ const ZH_HANS:SeoLanguage={
   how:['一切都在你的浏览器中进行：无需安装，也无需账号。',
    // Front HOME: the facts of the app's welcome (home.factInstall, home.factFaithful), as on the other languages' home pages.
    '无需Windows，也无需虚拟机：OpenVireo可在Mac、Windows、Linux或Chromebook的现代浏览器中运行。',
-   'OpenVireo遵循原版程序复原的行为，并标明其网页改编之处。这是一个非官方的重建版。',
+   'OpenVireo遵循从原版程序复原的行为，并标明其网页改编之处。这是一个非官方的重建版。',
    '你可以把探究保存为自己电脑上的文件，并随时重新载入。',
    '界面、指南和帮助均为简体中文；网站写出的文件（TXT、FITS、CSV和已保存的探究）保持VIREO或OpenVireo的格式，仍为英文。',
    // Chinese writes «24,000» and «1.5» as English does (no thousands setting, AGENTS.md 2026-11-19): only the decimal point and

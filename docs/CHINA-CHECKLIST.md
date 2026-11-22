@@ -13,7 +13,7 @@ gets the site in Chinese. Items 1–5 keep the English names, so their links car
 stored); item 7 (new) checks the Chinese interface itself, as the plan's §10 asked: a zh-CN browser opens Chinese, the selector
 shows 简体中文, the help viewer is Chinese, and one screenshot of mixed Chinese and Latin text answers the spacing question (plan
 §4.2); item 6 also asks whether WeChat's built-in browser shows Chinese. The Chinese names quoted in item 7 are the catalog's
-(`sky.title`, the Help caption and the help menu's «帮助主题…»), not walked in a mainland browser.
+(`home.title`, the tour's title and Skip button, the Help caption and the help menu's «帮助主题…»), not walked in a mainland browser.
 
 ## For the site owner (English)
 
@@ -77,9 +77,9 @@ Thank you for helping! This takes about 15–20 minutes on a phone or a computer
 
 **1. 网站能打开吗？/ Does the site open?**
 
-1a. 开始计时，同时打开 **https://openvireo.space/?lang=en** 。等到页面上出现大标题 **“Start with the sky.”**，或者出现一个写着 **“Welcome to OpenVireo”** 的小窗口，就停表，记下秒数。如果出现这个小窗口，点 **“Skip the tour”** 关掉它。
+1a. 开始计时，同时打开 **https://openvireo.space/?lang=en** 。等到页面上出现大标题 **“Project CLEA's VIREO astronomy labs, rebuilt for your browser”**，或者出现一个写着 **“Welcome to OpenVireo”** 的小窗口，就停表，记下秒数。如果出现这个小窗口，点 **“Skip the tour”** 关掉它。
 如果 60 秒后页面还是空白或报错，请写下“打不开”，并把屏幕上的错误文字抄下来（或截图，截图前注意不要带上个人信息）。
-Start timing as you open **https://openvireo.space/?lang=en**. Stop when the big title **"Start with the sky."** appears, or a
+Start timing as you open **https://openvireo.space/?lang=en**. Stop when the big title **"Project CLEA's VIREO astronomy labs, rebuilt for your browser"** appears, or a
 small box titled **"Welcome to OpenVireo"**. Write down the seconds. If that box appears, tap **"Skip the tour"** to close it.
 If the page is still blank or shows an error after 60 seconds, write "does not open" and copy the error text (or take a
 screenshot; don't include any personal information in it).
@@ -90,14 +90,14 @@ After the page appears, does the browser's loading bar or spinner keep going? If
 **2. 一个练习能打开、能用吗？/ Does one exercise open and work?**
 
 2a. 打开“恒星光谱分类”练习：
-- 手机：点右上角的 **“Tools”**，在 **“ANALYSIS”** 下面点 **“Stellar classification”**（如果 “ANALYSIS” 下面没有按钮，先点一下 “ANALYSIS” 展开）。
+- 手机：点右上角的 **“Menu”**，在 **“ANALYSIS”** 下面点 **“Stellar classification”**（如果 “ANALYSIS” 下面没有按钮，先点一下 “ANALYSIS” 展开）。
 - 电脑：在页面左侧的菜单里（窗口较窄时在页面上方）点 **“ANALYSIS”**，再点 **“Stellar classification”**（如果下面没有按钮，先点一下 “ANALYSIS” 展开）。
 - 找不到的话，也可以直接打开 **https://openvireo.space/?lang=en#classification** 。
 
 从点击开始计时，等到出现这一行字：**“Original spectra verified. Your classification remains manual.”**，并且能看到几张光谱曲线图，停表记下秒数。
 
 Open the stellar classification exercise:
-- Phone: tap **"Tools"** at the top right, then under **"ANALYSIS"** tap **"Stellar classification"** (if no buttons show under
+- Phone: tap **"Menu"** at the top right, then under **"ANALYSIS"** tap **"Stellar classification"** (if no buttons show under
   "ANALYSIS", tap "ANALYSIS" first to open it).
 - Computer: in the menu on the left of the page (at the top when the window is narrow) click **"ANALYSIS"**, then **"Stellar
   classification"** (if no buttons show under it, click "ANALYSIS" first to open it).
@@ -112,11 +112,11 @@ Scroll down and tap **"Next standard"**. The title of the top graph should chang
 
 **3. 星空图能加载吗？/ Does the sky map load?**
 
-3a. 回到天文台页面：手机点 **“Tools”**，在 **“OPTICAL OBSERVATORY”** 下面点 **“Observatory”**（没有的话先点 “OPTICAL OBSERVATORY” 展开）；电脑在左侧菜单的同一位置点。（也可以重新打开 https://openvireo.space/?lang=en 。）
+3a. 回到天文台页面：手机点 **“Menu”**，在 **“OPTICAL OBSERVATORY”** 下面点 **“Observatory”**（没有的话先点 “OPTICAL OBSERVATORY” 展开）；电脑在左侧菜单的同一位置点。（也可以重新打开 https://openvireo.space/?lang=en#observatory 。）
 往下滑，找到写着 **“The dome is closed”** 的深色方框，点 **“Open dome ↗”**，开始计时。等到方框里出现星点图，并且图下方出现类似这样的一行字就停表：**“VIREO’s Finder · 2.5° view, drawn as VIREO draws it from its loaded 7.5° field (1,426 stars and 7 galaxies).”**（数字可能略有不同。）
-Go back to the observatory page: on a phone tap **"Tools"**, then under **"OPTICAL OBSERVATORY"** tap **"Observatory"** (if it
+Go back to the observatory page: on a phone tap **"Menu"**, then under **"OPTICAL OBSERVATORY"** tap **"Observatory"** (if it
 isn't shown, tap "OPTICAL OBSERVATORY" first to open it); on a computer click the same place in the menu on the left (or reopen
-https://openvireo.space/?lang=en). Scroll down to the dark box that says **"The dome is closed"** and tap **"Open dome ↗"**; start
+https://openvireo.space/?lang=en#observatory). Scroll down to the dark box that says **"The dome is closed"** and tap **"Open dome ↗"**; start
 timing. Stop when a star map appears with a line under it like **"VIREO’s Finder · 2.5° view, drawn as VIREO draws it from its
 loaded 7.5° field (1,426 stars and 7 galaxies)."** (the numbers may differ a little).
 
@@ -170,9 +170,10 @@ blocked? If it opens, is the interface in Chinese or in English?
 
 **7. 中文界面 / The Chinese interface**
 
-7a. 关掉之前的页面，直接打开 **https://openvireo.space**（这次不带 ?lang=en）。如果你的浏览器或手机系统语言是简体中文，页面应该直接显示中文，大标题是 **“从天空开始。”**。是中文吗？如果是英文，请写下浏览器（或手机）设置的语言。
+7a. 关掉之前的页面，直接打开 **https://openvireo.space**（这次不带 ?lang=en）。如果你的浏览器或手机系统语言是简体中文，页面应该直接显示中文，大标题是 **“Project CLEA的VIREO天文实验，为你的浏览器重新打造”**（如果先出现一个写着 **“欢迎使用OpenVireo”** 的小窗口，点 **“跳过导览”** 关掉它）。是中文吗？如果是英文，请写下浏览器（或手机）设置的语言。
 Close the earlier page and open **https://openvireo.space** (this time without ?lang=en). If your browser or phone is set to
-Simplified Chinese, the page should be in Chinese, with the big title **"从天空开始。"**. Is it in Chinese? If it is in English,
+Simplified Chinese, the page should be in Chinese, with the big title **"Project CLEA的VIREO天文实验，为你的浏览器重新打造"** (if a
+small box titled **"欢迎使用OpenVireo"** appears first, tap **"跳过导览"** to close it). Is it in Chinese? If it is in English,
 write down the language your browser (or phone) is set to.
 
 7b. 页面顶部的语言选择框里显示的是 **“简体中文 (Simplified Chinese)”** 吗？

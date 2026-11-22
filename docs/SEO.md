@@ -522,7 +522,7 @@ Baidu's webmaster tools would be one). The language rules are in `docs/I18N.md`,
   language's pages gain `og:locale:alternate` `zh_CN` and a visible «简体中文» link (`hreflang`/`lang` `zh-Hans`).
 - **App**: the observatory footer's labs link goes to `/zh-hans/labs/` when the app is in Simplified Chinese (the prefix table gains
   `'zh-Hans':'/zh-hans'`).
-- **404 page**: a ninth section, «找不到页面 · 此地址不属于OpenVireo。», under `lang="zh-Hans"`, linking `/?lang=zh-Hans#observatory`
+- **404 page**: an eighth `<section>` (the ninth language, after the English block), «找不到页面 · 此地址不属于OpenVireo。», under `lang="zh-Hans"`, linking `/?lang=zh-Hans#observatory`
   («打开天文台»), and «未找到» in the title.
 - **Preview image** `public/og-image-zh-hans.png` (1200×630, 276,670 bytes, SHA-256 `546fa792…b3e3ae9`): the design of the others
   with Chinese text («浏览器中的CLEA VIREO天文实验», shortened from «在浏览器中进行…» because that title broke inside «天文实验» at 1040

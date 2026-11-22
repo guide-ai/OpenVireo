@@ -266,7 +266,7 @@ test('each script language gets its stack, its regional face and the Bold file; 
 // Front ZH0 (plan front-i18n-zh.md §6.2): the shell in real Simplified Chinese (its ?lang=zh-Hans preview; ZH0 translates only the
 // shell), at 320 and 1440 px: the home page, the observatory route with the header menu, the tour's first step and OpenVireo's help
 // viewer, with no layout problem or cut ink, and Han text drawn by Noto Sans CJK SC alone (never the JP or TC face, never a missing
-// glyph). Later ZH fronts add their routes; ZH-REL moves the real language into the full walk.
+// glyph). Later ZH fronts added their routes; since ZH-REL the real language also walks every route in the shell walk above (a zh-CN browser).
 for(const width of [320,1440] as const)
 test(`zh-Hans at ${width} px: the translated shell lays out without overflow, clipping or cut ink, in the Simplified Chinese face`,async({page})=>{
  test.setTimeout(180_000);
