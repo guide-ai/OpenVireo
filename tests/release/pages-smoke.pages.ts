@@ -24,6 +24,8 @@ const recorded=readFile(new URL('../fixtures/vizier/nomad-56.75+24.12-r0.01.xml'
 const button=(p:Page,name:string)=>p.getByRole('button',{name,exact:true});
 /** Front FR-REL: the French catalog, for the heading and title of a French home (read as the build reads it), and the Object X
  * guide's French title (src/i18n/fr/maps/objectXLab.ts) for the French lab page's Ouvrir le TP. */
+const SPANISH_CATALOG=JSON.parse(await readFile(new URL('../../src/i18n/es/es.json',import.meta.url),'utf8')) as Record<string,string>;
+const PORTUGUESE_CATALOG=JSON.parse(await readFile(new URL('../../src/i18n/pt-br/pt-br.json',import.meta.url),'utf8')) as Record<string,string>;
 const FRENCH_CATALOG=JSON.parse(await readFile(new URL('../../src/i18n/fr/fr.json',import.meta.url),'utf8')) as Record<string,string>;
 const FRENCH_OBJECT_X_GUIDE:string=OBJECT_X_LAB_FR.title;
 /** Front ID-REL: the same for Indonesian. */
@@ -192,7 +194,7 @@ test('Front ES-REL: an es-MX browser opens Spanish without ?lang=, with the sele
  const p=await watch(page,baseURL!);
  await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Empieza por el cielo.'})).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.lang)).toBe('es-419');
- await expect(page).toHaveTitle('OpenVireo · Prácticas de astronomía de CLEA VIREO en tu navegador');
+ await expect(page).toHaveTitle(SPANISH_CATALOG['app.documentTitle']);
  await expect(page.getByTestId('language-choice')).toBeVisible();await expect(page.getByTestId('language-select')).toHaveValue('es-419');
  await page.waitForLoadState('networkidle');expect(p.language).toEqual(['core']);
  expect(await language(page)).toEqual({sets:1,earlyReads:0,changes:[]});
@@ -210,7 +212,7 @@ test('Front ES-REL: an es-MX browser opens Spanish without ?lang=, with the sele
 // ja-JP browser (Japanese groups thousands with a comma, as English, AGENTS.md 2026-11-19). Front RU-REL: and Russian in a ru-RU
 // browser (U+202F too, user decision of 2026-11-19).
 const RELEASED_SMOKE:readonly Readonly<{tag:string;locale:string;front:string;describe:string;name:string;heading:string;title:string}>[]=[
- {tag:'pt-BR',locale:'pt-BR',front:'PT-REL',describe:'in a Brazilian Portuguese browser (pt-BR)',name:'Portuguese',heading:'Comece pelo céu.',title:'OpenVireo · Práticas de astronomia do CLEA VIREO no seu navegador'},
+ {tag:'pt-BR',locale:'pt-BR',front:'PT-REL',describe:'in a Brazilian Portuguese browser (pt-BR)',name:'Portuguese',heading:'Comece pelo céu.',title:PORTUGUESE_CATALOG['app.documentTitle']},
  {tag:'fr',locale:'fr-FR',front:'FR-REL',describe:'in a French browser (fr-FR)',name:'French',heading:FRENCH_CATALOG['sky.title'],title:FRENCH_CATALOG['app.documentTitle']},
  {tag:'id',locale:'id-ID',front:'ID-REL',describe:'in an Indonesian browser (id-ID)',name:'Indonesian',heading:INDONESIAN_CATALOG['sky.title'],title:INDONESIAN_CATALOG['app.documentTitle']},
  {tag:'hi',locale:'hi-IN',front:'HI-REL',describe:'in a Hindi browser (hi-IN)',name:'Hindi',heading:HINDI_CATALOG['sky.title'],title:HINDI_CATALOG['app.documentTitle']},
@@ -270,7 +272,7 @@ test('Front ES1: a ?lang=es-419 preview fetches the Spanish chunk, shows the Spa
  const p=await watch(page,baseURL!);
  await page.goto('/?lang=es-419#observatory');await expect(page.getByRole('heading',{name:'Empieza por el cielo.'})).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.lang)).toBe('es-419');
- await expect(page).toHaveTitle('OpenVireo · Prácticas de astronomía de CLEA VIREO en tu navegador');
+ await expect(page).toHaveTitle(SPANISH_CATALOG['app.documentTitle']);
  await expect(page.locator('.investigation-toolbar')).toContainText('Guardar investigación');
  await expect(page.getByTestId('language-choice')).toBeVisible();
  expect(p.language).toEqual(['core']);// Front ES-SPLIT: the language's core module only

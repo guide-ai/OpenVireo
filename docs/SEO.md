@@ -841,3 +841,135 @@ New coverage: `src/home/appGate.test.ts` (the queue rules) and seven tests in `t
 (Results Editors from the shell, no Save in the shell's language dialog, retry after a failed fetch, a failed direct load,
 intents in order with an address winning and a kept Restore, the phone menu's Instructor mode and guide focus, the live region).
 
+
+# Front SEO-TITLES: generic search terms in four English titles
+
+User request, 2026-11-21, after the first Search Console data: the site is indexed and already appears for "clea vireo"
+(average position 4.5) and "clea astronomy" (10), but those searches are rare. Titles and descriptions only; no page, route or
+behaviour changes.
+
+## Why
+
+Keyword research through OpenSEO (DataForSEO, United States, English, 2026-11-21) gave monthly searches and difficulty (0–100):
+
+| Search | Monthly | Difficulty |
+|---|---|---|
+| astronomy lab | 720 | 10 |
+| astronomy simulation | 720 | 32 |
+| astronomy simulator | 590 | 53 |
+| telescope simulator | 480 | 9 |
+| naap labs | 390 | 6 |
+| spectral classification of stars | 260 | 7 |
+| hr diagram simulator, hr diagram interactive, hr diagram simulation, hr diagram lab | 40 each | 0 |
+| pulsar simulation | 40 | 0 |
+| hubble's law lab | 20 | 0 |
+| project clea, clea labs | 20 each | 16–17 |
+| clea vireo, clea astronomy | 10 each | n/a, 17 |
+
+"virtual observatory" (60 500) and "clea" (12 100) mean other things and are not targets. Only English in the United States was
+researched; no other language or country. The first front's goal (first result for CLEA, VIREO and each lab name) stays: every
+changed title still names CLEA, and each page's heading keeps the lab's own name.
+
+## What changed
+
+| Page | Before | After |
+|---|---|---|
+| `/` title (`app.documentTitle`) | OpenVireo · CLEA VIREO astronomy labs in your browser | OpenVireo · CLEA VIREO astronomy labs & telescope simulator |
+| `/labs/` title | CLEA VIREO astronomy labs online · OpenVireo | Astronomy simulation labs online (CLEA VIREO) · OpenVireo |
+| `/labs/stellar-classification/` title | Classification of stellar spectra lab (CLEA VIREO) · OpenVireo | Spectral classification of stars lab (CLEA) · OpenVireo |
+| `/labs/cluster-hr/` title | HR diagrams of star clusters lab (CLEA VIREO) · OpenVireo | Interactive HR diagram lab: star clusters (CLEA) · OpenVireo |
+
+The four descriptions follow their titles: the home page says "astronomy labs with simulated telescopes", the index "Seven CLEA
+VIREO astronomy simulations rebuilt for the browser", the classification page "Learn spectral classification of stars" and the
+cluster page "Plot interactive HR diagrams of star clusters". The home page and the two lab pages still say the site is a free web reconstruction (the home page still starts with
+"Unofficial"), and the index still says "rebuilt for the browser". The other five lab pages are unchanged: the research gave no better term for them.
+The words are descriptions of what the web does (the observatory simulates its telescopes and instruments; the cluster tool
+plots catalogue data the visitor can fit by hand): the cluster page says "interactive", not "simulator".
+
+The preview image and its text (`ogImageText`, `ogImageAlt`) are unchanged.
+
+## Visible text
+
+User request, 2026-11-21: the phrases the titles name were barely in the pages' own text (the live pages said "telescope
+simulator", "astronomy simulation" and "spectral classification" nowhere). One clause per page now carries them. Headings are
+unchanged, so each page keeps the lab's own name as its `h1`.
+
+| Page | Text | Added |
+|---|---|---|
+| `/` (welcome and crawlable text) | `home.lead` | "…Project CLEA's virtual observatory: a telescope simulator with seven astronomy labs." |
+| `/labs/` | `labsIndex.lead` | "Each lab is an astronomy simulation that follows one of the student exercises…" |
+| `/labs/stellar-classification/` | `intro` | "Try the spectral classification of stars yourself: load one of the 25…" |
+| `/labs/cluster-hr/` | `intro` | "Work on an interactive HR diagram: plot a reference cluster…" |
+
+The same clause is added to `home.lead` in the eight translated catalogs (the app's welcome in that language) and to the labs
+index lead and the two intros of the seven languages with search pages, each with that language's existing terms (for example
+«diagrama H-R», «diagramme HR», «HR図», «диаграмма Г — Р»). Each language's static home page (`home.lead` in
+`src/seo/languages.ts`) is unchanged.
+
+Third pass by the same reviewer, over `e3814963`: ship. Its optional wording changes are applied: the Japanese welcome joins
+its two sentences, the Russian classification intro says «Попробуйте сами выполнить…», and the Spanish one «Prueba por tu
+cuenta…».
+
+## Translations that follow the English
+
+The translation lints require a translation to carry the glossary term of each word its English has, so the new English words
+("telescope", "labs" in the home description; "stars" and "spectral classification" in the classification title) changed these
+texts, as web adaptations of the new English (no keyword research was done for them):
+
+- `app.documentTitle` and `app.description` in Spanish, Brazilian Portuguese, French, Indonesian, Hindi, Japanese, Russian and
+  Simplified Chinese (the app's tab title and description in that language; each language's static home page under
+  `src/seo/languages.ts` has its own title and is unchanged).
+- The classification page: its Spanish title («Clasificación espectral de estrellas: práctica CLEA · OpenVireo»), its Hindi
+  title and its Japanese title and description.
+
+## Tests
+
+`src/seo` and `src/i18n` unit tests (lengths, uniqueness across languages, the reconstruction sentence, every language's lint
+profile and glossary). `src/i18n/coverage.test.ts` compares the served title and description with their escaped text, since the
+title now has an ampersand. `tests/p01.spec.ts`, `tests/observatory.spec.ts` and `tests/project-naming.spec.ts` expect the new
+tab title (p01 also the new description), and `tests/release/pages-smoke.pages.ts` reads the Spanish and Portuguese tab titles
+from their catalogs, as it already did for the later languages.
+
+## Review
+
+Workflow (REVIEW.md): plan and implementation by the session that ran the research (Claude Fable 5.2); independent review 1 by a
+separate subagent (Claude Opus, high effort) that did not write the change, over commit `b04ff865`.
+
+### Review 1 findings (raw summary)
+
+Verdict: do not ship as is.
+
+1. Blocker: `tests/p01.spec.ts` still expected the old meta description.
+2. Blocker: `tests/project-naming.spec.ts` still expected the old tab title.
+3. Blocker: `tests/release/pages-smoke.pages.ts` still expected the old Spanish (two places) and Portuguese tab titles.
+4. Should fix: the Russian description read as "a telescope modelled after Hubble's law".
+5. Should fix: this section said every description keeps "free web reconstruction" (the index says "rebuilt") and listed only two
+   of the changed specs.
+6. Nit: "astronomy labs, telescope simulator" read like a keyword list; "a simulated telescope" is singular although the
+   observatory has several telescopes.
+7. Nit: calling all seven labs "astronomy simulations" is a mild stretch, acceptable because CLEA calls its labs simulations.
+8. Nit: two titles say "(CLEA)" without VIREO and one no longer holds the lab's own name; headings and descriptions keep them.
+9. Nit: the Hindi description made Hubble's law "an example of an experiment".
+10. Nit: the Chinese description had a double 的.
+11. Nit: Spanish «para la ley de Hubble» reads better as «sobre la ley de Hubble».
+12. Fine: the Japanese texts, the Hindi and Spanish classification titles, French typography, Portuguese and Indonesian; leaving
+    the preview-image text and each language's static home title unchanged.
+
+### Resolution
+
+Each finding was checked against the source before the fix.
+
+- 1–3 fixed: the three specs expect the new texts; the release smoke test reads the Spanish and Portuguese titles from their
+  catalogs.
+- 4 fixed with the reviewer's word order, in the plural («…и многому другому со смоделированными телескопами»).
+- 5 fixed in this section.
+- 6 fixed: the title is "OpenVireo · CLEA VIREO astronomy labs & telescope simulator" (59 characters) and the description says
+  "simulated telescopes"; the translations say "and" and use the plural where the language marks it.
+- 7 and 8 kept as they are, for the reasons the reviewer gives.
+- 9 fixed differently from the suggestion, which the Hindi glossary lint rejects (it needs «हबल का नियम» unchanged): the
+  description is now two sentences, and the lab names follow a colon.
+- 10 fixed by dropping the second 的 («Project CLEA的VIREO非官方免费网页重建版»), which keeps VIREO as Project CLEA's.
+- 11 fixed («sobre»), and the same preposition in Portuguese, French and Indonesian.
+
+Second look by the same reviewer over `54ce3142`: ship. Its one remaining nit is applied: in Spanish, Portuguese, French and
+Indonesian the telescopes close the sentence (as in Russian), so the topics cannot be read as describing the telescopes.
