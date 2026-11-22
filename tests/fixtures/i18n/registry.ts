@@ -22,10 +22,10 @@ const JAPANESE=LANGUAGES.find(l=>l.tag==='ja')!;
 const CHINESE_SIMPLIFIED=LANGUAGES.find(l=>l.tag==='zh-Hans')!;
 /** Front RU0: Russian's own line of the production registry (released since RU-REL). */
 const RUSSIAN=LANGUAGES.find(l=>l.tag==='ru')!;
-const TRADITIONAL=['zh-Hant','zh-TW','zh-HK','zh-MO'];
-export const ZH_HANT=entry('zh-Hant','繁體中文','Chinese, Traditional',TRADITIONAL);
-/** Spanish, pt-BR, French, Indonesian (since ID-REL), Hindi (since HI-REL), Japanese (since JA-REL), Simplified Chinese (since
- * ZH-REL) and Russian (since RU-REL), all released, in registry order (Russian last). */
+/** Front ZT0: Traditional Chinese's own line of the production registry (before its release; it replaced SC8's stand-in). */
+export const ZH_HANT=LANGUAGES.find(l=>l.tag==='zh-Hant')!;
+/** Spanish, pt-BR, French, Indonesian (since ID-REL), Hindi (since HI-REL), Japanese (since JA-REL) and Simplified Chinese (since
+ * ZH-REL) released, Traditional Chinese (ZT0) before its release, and Russian (since RU-REL) released, in registry order. */
 export const PLANNED:readonly LanguageEntry[]=Object.freeze([
  SPANISH,
  PORTUGUESE,
@@ -34,6 +34,7 @@ export const PLANNED:readonly LanguageEntry[]=Object.freeze([
  HINDI,
  JAPANESE,
  CHINESE_SIMPLIFIED,
+ ZH_HANT,
  RUSSIAN,
 ]);
 /** The registry with `tags` released. */

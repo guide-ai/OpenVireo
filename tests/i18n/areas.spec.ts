@@ -8,7 +8,7 @@ import {APP_SHELL_ES} from '../../src/i18n/es/maps/appShell';
 import {HELP_VIEWER_ES} from '../../src/i18n/es/maps/helpViewer';
 // @ts-expect-error The planner is a plain JS script (scripts/i18n-split.mjs), as tests import scripts/audit-ui-messages.mjs.
 import {loadLanguages,planLanguage} from '../../scripts/i18n-split.mjs';
-import {CHINESE_SIMPLIFIED_TEXT,FRENCH_TEXT,HINDI_TEXT,INDONESIAN_TEXT,JAPANESE_TEXT,PORTUGUESE_TEXT,RUSSIAN_TEXT} from './languageText';
+import {CHINESE_SIMPLIFIED_TEXT,CHINESE_TRADITIONAL_TEXT,FRENCH_TEXT,HINDI_TEXT,INDONESIAN_TEXT,JAPANESE_TEXT,PORTUGUESE_TEXT,RUSSIAN_TEXT} from './languageText';
 // Front ES-REL: Spanish by the browser language alone (tests/fixtures/language.ts).
 test.use({locale:SPANISH_LOCALE});
 
@@ -235,6 +235,46 @@ for(const {L:P,name} of RELEASED_AREAS)test.describe(`in a ${name} browser`,()=>
 
 // Front ID0 (plan front-i18n-id.md §1.2 #6), Front HI0, Front JA0 (plan front-i18n-ja.md §6.2), Front RU0 (plan front-i18n-ru.md
 // §1.2 #5) and Front ZH0 checked here that each preview, partial, fetched only its core and no chunk for an empty area; ID-REL,
-// HI-REL, JA-REL, RU-REL and ZH-REL turned them back into released-language tests (RELEASED_AREAS above), as FR-REL did. Every
-// registered language is released now; the qaa-XA fixture of src/i18n/partialLanguage.test.ts and split.test.ts keeps the case at unit level; ZT0's zh-Hant
-// preview brings this browser test back.
+// HI-REL, JA-REL, RU-REL and ZH-REL turned them back into released-language tests (RELEASED_AREAS above), as FR-REL did. Front ZT0
+// brings the case back for Traditional Chinese, the one language before its release (between ZH-REL and ZT0 only the qaa-XA fixture
+// of src/i18n/partialLanguage.test.ts and split.test.ts held it, at unit level). ZT0's shell keys give zh-Hant text to `photometer`
+// alone (project.photometryCleared and project.photometryRestored), as ZH0's did; ZT1 and ZT2 fill the others, and ZT-REL turns this
+// into a released-language test.
+const PARTIAL=[{L:CHINESE_TRADITIONAL_TEXT,name:'Traditional Chinese',release:'ZT-REL',areas:['photometer']}] as const;
+for(const {L:P,name,release,areas} of PARTIAL)test.describe(`a language before its release (${name})`,()=>{
+ test.use({locale:'en-US'});
+ test(`a partial language (${name}) fetches only its core, and no chunk for an empty area`,async({page})=>{
+  test.setTimeout(300_000);
+  const idPlan=planOf(P.tag),module=(name:string)=>idPlan.modules.find(m=>m.name===name)!;
+  expect(P.entry.released,`${release} replaces this test`).toBe(false);
+  const fetchedFor=(area:string)=>{const m=module(area);return m.empty?[]:[area,...m.shared].sort();};
+  const w=await watch(page,P.tag,P.entry.dir,P.entry.catalog);
+  await page.goto(`/${P.query}#observatory`);await expect(page.getByRole('heading',{level:1,name:P.catalog['sky.title']})).toBeVisible({timeout:30_000});
+  await page.waitForLoadState('networkidle');
+  expect(names(w)).toEqual(['core']);expect(w.problems).toEqual([]);
+  const C={...E,...P.catalog};
+  const ready:Record<string,(page:Page)=>Promise<void>>={
+   'pulsar-analysis':async p=>{await expect(id(p,'pulsar-analysis')).toBeVisible({timeout:30_000});},
+   'radio-control':async p=>{await expect(id(p,'radio-route')).toBeVisible({timeout:30_000});},
+   'lss-wedge':async p=>{await expect(id(p,'wedge-persistence')).toBeVisible({timeout:30_000});},
+   'sky-exposure':async p=>{await expect(p.getByRole('button',{name:C['skyExposure.startSkyExposure'],exact:true})).toBeVisible({timeout:30_000});},
+  };
+  const headingKey:Record<string,string>={classification:'class.title','cluster-database':'db.title',photometer:'ph.title','lss-survey':'lss.title','galaxy-exposure':'galaxyExposure.title','star-exposure':'starExposure.title',images:'fits.title'};
+  const empty=idPlan.modules.filter(m=>m.kind==='area'&&m.empty).map(m=>m.name);
+  // Pin the areas the language gives text to (each of its fronts updates PARTIAL), so a lost or stray area fails here.
+  expect(idPlan.modules.filter(m=>m.kind==='area'&&!m.empty).map(m=>m.name).sort(),`the areas with ${name} text`).toEqual([...areas]);
+  for(const r of ROUTES){
+   await page.goto('about:blank');w.language.length=0;
+   await page.goto(`/${P.query}#${r.hash}`);
+   await (ready[r.hash]??(async(p:Page)=>{await expect(p.getByRole('heading',{name:C[headingKey[r.hash]],exact:true})).toBeVisible({timeout:30_000});}))(page);
+   await page.waitForLoadState('networkidle');await noRouteError(page);
+   await expect(page.locator('html')).toHaveAttribute('lang',P.entry.htmlLang);await expect(id(page,'area-failure')).toHaveCount(0);
+   await expect(page.locator('.investigation-toolbar')).toContainText(P.catalog['project.save']);
+   const fetched=names(w);
+   expect(fetched[0],r.hash).toBe('core');
+   expect(fetched.slice(1).sort(),`${r.hash} fetched ${fetched.join(', ')}`).toEqual(fetchedFor(r.area));
+   if(empty.includes(r.area))expect(fetched.slice(1),`${r.hash}: the empty ${r.area} area has no chunk`).toEqual([]);
+  }
+  expect(w.problems).toEqual([]);
+ });
+});

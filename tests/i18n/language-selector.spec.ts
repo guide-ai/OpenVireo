@@ -3,7 +3,7 @@ import {test,expect} from '../fixtures/area-tripwire';
 import {CHINESE_LOCALE,FRENCH_LOCALE,INDONESIAN_LOCALE,JAPANESE_LOCALE,PORTUGUESE_LOCALE,RUSSIAN_LOCALE,SPANISH_LOCALE} from '../fixtures/language';
 import es from '../../src/i18n/es/es.json' with {type:'json'};
 import en from '../../src/i18n/en.json' with {type:'json'};
-import {CHINESE_SIMPLIFIED_TEXT,FRENCH_TEXT,HINDI_TEXT,INDONESIAN_TEXT,JAPANESE_TEXT,PORTUGUESE_TEXT,RUSSIAN_TEXT} from './languageText';
+import {CHINESE_SIMPLIFIED_TEXT,CHINESE_TRADITIONAL_TEXT,FRENCH_TEXT,HINDI_TEXT,INDONESIAN_TEXT,JAPANESE_TEXT,PORTUGUESE_TEXT,RUSSIAN_TEXT} from './languageText';
 
 // Front ES1 (docs/I18N.md; user decisions 1, 2, 5 and 9 of 2026-11-09): the English / Español selector at the foot of the header
 // menu, its reload confirmation, storage failure and the "View original (English)" option. Front ES-REL: Spanish is released, so
@@ -25,11 +25,17 @@ async function browserIn(browser:Browser,languages:readonly string[]):Promise<Pa
  return page;
 }
 /** Front FR-REL: the options every load offers, in registry order (Front ID-REL: Bahasa Indonesia; Front HI-REL: हिन्दी (Hindi);
- * Front JA-REL: 日本語 (Japanese); Front ZH-REL: 简体中文 (Simplified Chinese); Front RU-REL: Русский last). Since ZH-REL every
- * registered language is released, so no preview adds an option of its own. */
+ * Front JA-REL: 日本語 (Japanese); Front ZH-REL: 简体中文 (Simplified Chinese); Front RU-REL: Русский last). Front ZT0's Traditional
+ * Chinese preview adds its own option (withPreview below). */
 const RELEASED_OPTIONS=['English','Español','Português (Brasil)','Français','Bahasa Indonesia','हिन्दी (Hindi)','日本語 (Japanese)','简体中文 (Simplified Chinese)','Русский (Russian)'];
 /** The released options with their values and `lang`, in registry order. */
 const RELEASED_LANGS=[['en','en'],['es-419','es-419'],['pt-BR','pt-BR'],['fr','fr'],['id','id'],['hi','hi'],['ja','ja'],['zh-Hans','zh-Hans'],['ru','ru']];
+/** Front ZT0: a preview's options: the released ones with the preview's own placed in registry order (Traditional Chinese between
+ * 简体中文 and Русский). */
+const REGISTRY_ORDER=['en','es-419','pt-BR','fr','id','hi','ja','zh-Hans','zh-Hant','ru'];
+const previewAt=(tag:string)=>RELEASED_LANGS.filter(([t])=>REGISTRY_ORDER.indexOf(t)<REGISTRY_ORDER.indexOf(tag)).length;
+const withPreview=(label:string,tag:string)=>[...RELEASED_OPTIONS.slice(0,previewAt(tag)),label,...RELEASED_OPTIONS.slice(previewAt(tag))];
+const withPreviewLang=(tag:string)=>[...RELEASED_LANGS.slice(0,previewAt(tag)),[tag,tag],...RELEASED_LANGS.slice(previewAt(tag))];
 /** Seeds the stored choice once, before the first load of this page (later loads keep what the page stored). */
 const seedChoice=(page:Page,value:string)=>page.addInitScript(v=>{if(!sessionStorage.getItem('seeded')){localStorage.setItem('openvireo-language',v);sessionStorage.setItem('seeded','1');}},value);
 async function languageOf(page:Page,query=''){await open(page,query);return page.locator('html').getAttribute('lang');}
@@ -201,6 +207,37 @@ test('Front ZH-REL: zh, zh-CN, zh-SG, zh-MY, ZH-cn and zh-Hans-TW browsers open 
  await choose(page,'zh-Hans');await expect(dialog).toContainText('简体中文');
  await Promise.all([page.waitForEvent('load'),id(page,'language-change').click()]);
  await expect(page.locator('html')).toHaveAttribute('lang','zh-Hans');expect(await stored(page)).toBe('zh-Hans');
+ await page.close();
+});
+
+// Front ZT0 (plan front-i18n-zh.md §2, §6.3): Traditional Chinese is registered before its release. Only its `?lang=zh-Hant` preview
+// reaches it and offers it; zh-TW, zh-HK, zh-MO and zh-Hant browsers and a stored zh-Hant get English with the released options and
+// fetch no Traditional module, while zh-CN keeps Simplified Chinese; the preview offers 繁體中文 between 简体中文 and Русский.
+test('Front ZT0: only a ?lang=zh-Hant preview opens and offers 繁體中文; zh-TW, zh-HK, zh-MO and zh-Hant browsers and a stored zh-Hant get English',async({browser})=>{
+ test.setTimeout(180_000);
+ const T=CHINESE_TRADITIONAL_TEXT;
+ const traditional=(page:Page)=>{const out:string[]=[];page.on('request',r=>{if(/i18n-zh-Hant|\/zh-hant\//.test(r.url()))out.push(r.url());});return out;};
+ for(const languages of [['zh-TW'],['zh-HK'],['zh-MO'],['zh-Hant'],['zh-Hant-CN'],['zh-TW','zh-CN']] as const){
+  const page=await browserIn(browser,languages);const requests=traditional(page);
+  expect(await languageOf(page),languages.join(',')).toBe('en');
+  await expect(id(page,'language-select').locator('option')).toHaveText(RELEASED_OPTIONS);
+  expect(requests,`${languages.join(',')}: no Traditional Chinese module is fetched`).toEqual([]);
+  await page.close();
+ }
+ const storedHant=await browserIn(browser,['zh-TW']);await seedChoice(storedHant,'zh-Hant');const storedRequests=traditional(storedHant);
+ expect(await languageOf(storedHant)).toBe('en');expect(storedRequests,'a stored zh-Hant fetches no Traditional module').toEqual([]);await storedHant.close();
+ const page=await browserIn(browser,['en-US']);
+ expect(await languageOf(page,'?lang=zh-Hant')).toBe('zh-Hant');
+ await expect(page.locator('.investigation-toolbar')).toContainText(T.catalog['project.save']);await expect(page).toHaveTitle(T.catalog['app.documentTitle']);
+ const select=page.getByRole('combobox',{name:T.maps.languageChoice.legend});
+ await expect(select.locator('option')).toHaveText(withPreview('繁體中文 (Traditional Chinese)','zh-Hant'));await expect(select).toHaveValue('zh-Hant');
+ expect(await select.locator('option').evaluateAll(o=>o.map(x=>[(x as HTMLOptionElement).value,x.getAttribute('lang')]))).toEqual(withPreviewLang('zh-Hant'));
+ // A change on the preview stores nothing (SC8): the choice travels as ?lang=, and the dialog, in Traditional Chinese, says so.
+ await choose(page,'fr');
+ const dialog=id(page,'language-confirm');await expect(dialog).toContainText(T.maps.languageChoice.title);
+ await expect(dialog).toContainText(T.maps.languageChoice.reload('Français'));await expect(id(page,'language-preview')).toHaveText(T.maps.languageChoice.preview);
+ await Promise.all([page.waitForURL(/lang=fr/),id(page,'language-change').click()]);
+ await expect(page.locator('html')).toHaveAttribute('lang','fr');expect(await stored(page)).toBeNull();
  await page.close();
 });
 

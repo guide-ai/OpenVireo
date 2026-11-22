@@ -1,0 +1,4 @@
+{
+ "about": "Front ZT0: findings of the zh-Hant lint (src/i18n/lint/, profile zh-Hant) that are correct Chinese in one string, each with a reason. Keys are the lint's string ids; `words` are the matched words allowed in that string only, `rules` whole rules, `placeholders` added placeholders.",
+ "entries": {}
+}

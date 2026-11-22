@@ -33,7 +33,7 @@ describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-0
  it('accepts the pseudo-locale only in the dev server and tests, never from storage',()=>{
   expect(decide({param:'qps'})).toBe('en');expect(decide({param:'qps',dev:true,registry:UNRELEASED})).toBe('qps');
   expect(decide({stored:'qps',dev:true})).toBe('en');
-  expect(HTML_LANG).toEqual({en:'en','es-419':'es-419','pt-BR':'pt-BR',fr:'fr',id:'id',hi:'hi',ja:'ja','zh-Hans':'zh-Hans',ru:'ru',qps:'en','qps-cjk':'ja','qps-deva':'hi','qps-cyrl':'ru','qps-rtl':'ar'});
+  expect(HTML_LANG).toEqual({en:'en','es-419':'es-419','pt-BR':'pt-BR',fr:'fr',id:'id',hi:'hi',ja:'ja','zh-Hans':'zh-Hans','zh-Hant':'zh-Hant',ru:'ru',qps:'en','qps-cjk':'ja','qps-deva':'hi','qps-cyrl':'ru','qps-rtl':'ar'});
  });
  it('shows the selector when it offers a choice: before a release only on that language\'s own preview (ES1 review 1, C3; SC8)',()=>{
   expect(selectorShown('en',UNRELEASED)).toBe(false);expect(selectorShown('es-419',UNRELEASED)).toBe(true);
@@ -136,13 +136,28 @@ describe('Front ES0: the language of one load (user decisions 1 and 5, 2026-11-0
   expect(decide({stored:'zh-Hans',languages:['en-US']})).toBe('zh-Hans');expect(decide({stored:'zh-Hans',languages:['zh-TW']})).toBe('zh-Hans');
   expect(decide({stored:'en',languages:['zh-CN']})).toBe('en');expect(decide({stored:'fr',languages:['zh-CN']})).toBe('fr');
   expect(decide({param:'zh-Hans',stored:'fr',languages:['zh-TW']})).toBe('zh-Hans');expect(decide({param:'en',languages:['zh-CN']})).toBe('en');
-  // ?lang= takes the exact tag only.
-  for(const junk of ['zh','zh-CN','zh-hans','ZH-HANS','zh-Hant'])expect(decide({param:junk,languages:['en-US']}),junk).toBe('en');
+  // ?lang= takes the exact tag only (zh-Hant is Traditional Chinese's own preview since Front ZT0, below).
+  for(const junk of ['zh','zh-CN','zh-hans','ZH-HANS'])expect(decide({param:junk,languages:['en-US']}),junk).toBe('en');
   expect(HTML_LANG['zh-Hans']).toBe('zh-Hans');expect(selectorShown('zh-Hans')).toBe(true);
   // Before its release (ZH0–ZH-HELP) only ?lang=zh-Hans reached it.
   const before=LANGUAGES.map(l=>l.tag==='zh-Hans'?{...l,released:false}:l);
   for(const languages of [['zh'],['zh-CN'],['zh-SG'],['zh-Hans-TW']])expect(decide({languages,registry:before}),languages.join(',')).toBe('en');
   expect(decide({stored:'zh-Hans',languages:['zh-CN'],registry:before})).toBe('en');expect(decide({param:'zh-Hans',registry:before})).toBe('zh-Hans');
+ });
+ it('Front ZT0: Traditional Chinese is registered before its release: only ?lang=zh-Hant opens it; zh-TW, zh-HK, zh-MO and zh-Hant browsers and a stored zh-Hant get English',()=>{
+  expect(isReleased('zh-Hant')).toBe(false);
+  for(const languages of [['zh-TW'],['zh-HK'],['zh-MO'],['zh-Hant'],['zh-Hant-CN'],['ZH-tw'],['zh-TW','zh-CN']])expect(decide({languages}),languages.join(',')).toBe('en');
+  // Simplified browsers keep Simplified Chinese (zh-Hans-TW too: the script subtag beats the region).
+  for(const languages of [['zh'],['zh-CN'],['zh-Hans-TW']])expect(decide({languages}),languages.join(',')).toBe('zh-Hans');
+  expect(decide({stored:'zh-Hant',languages:['zh-TW']})).toBe('en');
+  expect(decide({param:'zh-Hant',languages:['en-US']})).toBe('zh-Hant');expect(decide({param:'zh-Hant',stored:'fr',languages:['zh-CN']})).toBe('zh-Hant');
+  for(const junk of ['zh-hant','ZH-HANT','zh-TW','zh-HK'])expect(decide({param:junk,languages:['en-US']}),junk).toBe('en');
+  expect(HTML_LANG['zh-Hant']).toBe('zh-Hant');expect(selectorShown('zh-Hant')).toBe(true);
+  // Once released (ZT-REL), every Traditional browser opens it, Hong Kong and Macau included (user decision of 2026-11-19).
+  const after=releasing(LANGUAGES,'zh-Hant');
+  for(const languages of [['zh-TW'],['zh-HK'],['zh-MO'],['zh-Hant'],['zh-Hant-CN'],['ZH-tw']])expect(decide({languages,registry:after}),languages.join(',')).toBe('zh-Hant');
+  for(const languages of [['zh'],['zh-CN'],['zh-SG'],['zh-Hans-TW'],['yue-HK'],['en-US','zh-TW']])expect(decide({languages,registry:after}),languages.join(',')).not.toBe('zh-Hant');
+  expect(decide({stored:'zh-Hant',languages:['zh-CN'],registry:after})).toBe('zh-Hant');
  });
  it('Front RU-REL: Russian is released: every ru and ru-* browser (any case) opens ru; Ukrainian, Belarusian, Kazakh and the other region languages do not; storage is honoured',()=>{
   expect(isReleased('ru')).toBe(true);
