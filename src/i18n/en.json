@@ -1343,7 +1343,7 @@
   "ownHr.loading": "Loading your observation HR view…",
   "ownHr.title": "HR diagram from your own Pleiades observations",
   "ownHr.intro": "Your confirmed B/V pairs, read live from your photometer notebook, on the fixed native HR axes. Choose a trial reddening, apparent modulus, age and metallicity yourself; no optimizer, catalog answer or grade is used.",
-  "ownHr.adaptation": "Adaptation: this view plots your confirmed photometer notebook pairs directly. The photometer’s Record/Review step also writes your readings as observation records, as the original does; Display/Print Data here lists them, and “Plot my photometer records” in the saved-observations workspace plots them.",
+  "ownHr.adaptation": "Adaptation: this view plots your confirmed photometer notebook pairs directly. The photometer’s Record/Review step also writes your readings as observation records, as the original does; Display/Print Data here lists them, and “Plot my observation records” in the saved-observations workspace plots them.",
   "ownHr.source": "Source: Pleiades exercise · your confirmed B/V pairs from the current photometer notebook. Catalog and acquired magnitudes are never used.",
   "ownHr.pairs": "Your confirmed pairs: {count} of {total} admitted stars.",
   "ownHr.minimum": "A model fit can be confirmed with two or more pairs. That technical minimum is not the full exercise sample.",
