@@ -1,0 +1,35 @@
+// Front ZH-HELP [W]: OpenVireo's Simplified Chinese (zh-Hans) web adaptation of VIREO's VIRMNHLP.LST. Not CLEA's text: the original bytes,
+// hashes and provenance are unchanged (public/original). Loaded only by the help viewer, never with the main Simplified Chinese chunk.
+export const language='zh-Hans';
+export const sourceName='VIRMNHLP.LST';
+export const sourceSha256='db9bab876ef1d03ad8b0e96596eb47c3ca9573156a65b4bff7b49bbfac295b2a';
+export const text=`'入门' 'begin'
+'登录' 'VIRMnHlp.txt'
+'选择实验' 'VIRMnHlp.txt'
+'设置日期和时间' 'VIRMnHlp.txt'
+'选择望远镜' 'VIRMnHlp.txt'
+'打开圆顶' 'VIRMnHlp.txt'
+'打开望远镜控制' 'VIRMnHlp.txt'
+'结束实验' 'VIRMnHlp.txt'
+'键盘操作' 'VIRMnHlp.txt'
+'入门' 'end'
+'更换望远镜' 'begin'
+'申请望远镜时间' 'VIRMnHlp.txt'
+'更换光学望远镜' 'VIRMnHlp.txt'
+'更换望远镜' 'end'
+'工具' 'begin'
+'光谱分类工具' 'VIRMnHlp.txt'
+'光谱测量工具' 'VIRMnHlp.txt'
+'射电脉冲星分析工具' 'VIRMnHlp.txt'
+'赫罗图分析工具' 'VIRMnHlp.txt'
+'LSS楔形图工具' 'VIRMnHlp.txt'
+'天体测量模块' 'VIRMnHlp.txt'
+'图像处理（DS9）' 'VIRMnHlp.txt'
+'结果编辑器' 'VIRMnHlp.txt'
+'载入已保存数据' 'VIRMnHlp.txt'
+'电子表格' 'VIRMnHlp.txt'
+'工具' 'end'
+'数据功能' 'begin'
+'数据操作' 'VIRMnHlp.txt'
+'数据功能' 'end'
+`;
