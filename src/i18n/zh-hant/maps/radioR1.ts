@@ -4,7 +4,7 @@ import type {Translation} from '../../maps';
  * vireo() (originals.json). */
 export const RADIO_R1_ZH_HANT:Translation<typeof RADIO_R1_MESSAGES_EN>=Object.freeze({
  saveDataNote:'VIREO的「檔案 ▸ 儲存已記錄的資料...」（SvRcData1Click 0x567f70）執行與脈衝星分析中「儲存」相同的儲存；存在已記錄的資料時可用。在這裡它會開啟脈衝星分析，由其經過驗證的儲存寫入記錄資料（網頁改編）。',
- optionEffectsTitle:'VIREO的這些設定有什麼作用（按內建值顯示，此處不可編輯）：',
+ optionEffectsTitle:'VIREO的這些設定有什麼作用（按其編譯值顯示，此處不可編輯）：',
  optionEffects:Object.freeze([
   '繪製脈衝星位置（Plot Pulsar Positions，關）：在電波天圖上繪製星表中的脈衝星。',
   '寫入目標清單檔（Write Hot List File，關）：顯示「轉動 ▸ 目標清單 ▸ 儲存更新後的清單...」。',

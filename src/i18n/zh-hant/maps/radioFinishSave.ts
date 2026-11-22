@@ -5,10 +5,10 @@ import type {Translation} from '../../maps';
 export const RADIO_FINISH_SAVE_ZH_HANT:Translation<typeof FINISH_SAVE_MESSAGES_EN>=Object.freeze({
  'finishSave.yes.reason':'選擇「是」會開啟這份記錄資料的網頁版儲存，而不是原版的「儲存」對話方塊：隨後你在瀏覽器中選擇一個檔案，只有讀回後確認完全一致的副本，才會把記錄資料標記為已寫入，並完成本次結束流程。「是」本身不選擇也不寫入任何內容。',
  'finishSave.yes.webDefault':'網頁預設按鈕：「取消」（原版預設為「是」）。',
- 'finishSave.yes.unsupported.insecure-context':'「是」（儲存）無法使用：此頁面不是安全環境，而瀏覽器的檔案API需要安全環境。「否」和「取消」照常可用；本次結束流程結束後，仍可在「脈衝星分析」中下載「.PLR」副本。',
- 'finishSave.yes.unsupported.no-api':'「是」（儲存）無法使用：此瀏覽器不提供可寫入檔案的儲存檔案選擇器（showSaveFilePicker和createWritable）。「否」和「取消」照常可用；本次結束流程結束後，仍可在「脈衝星分析」中下載「.PLR」副本。',
+ 'finishSave.yes.unsupported.insecure-context':'「是」（儲存）無法使用：此頁面不是安全環境，而瀏覽器的檔案API需要安全環境。「否」和「取消」照常可用；本次結束流程結束後，仍可在「脈衝星分析」中下載.PLR副本。',
+ 'finishSave.yes.unsupported.no-api':'「是」（儲存）無法使用：此瀏覽器不提供可寫入檔案的儲存檔案選擇器（showSaveFilePicker和createWritable）。「否」和「取消」照常可用；本次結束流程結束後，仍可在「脈衝星分析」中下載.PLR副本。',
  'finishSave.yes.webDefaultUnsupported':'網頁預設按鈕：「取消」（原版預設的「是」會執行儲存，而此瀏覽器在這裡無法儲存）。',
- 'finishSave.heading':'儲存新的記錄資料（帶驗證的網頁版儲存）',
+ 'finishSave.heading':'儲存新的記錄資料（附驗證的網頁版儲存）',
  'finishSave.intro':'由結束問題中的「是」開啟。這不是原版的「儲存」對話方塊。此對話方塊開啟期間，記錄資料仍佔用著目前的脈衝星資料，因此「脈衝星分析」無法載入、儲存或下載。只有經過驗證的副本才能結束這次流程：隨後記錄資料仍是目前的脈衝星資料，並被標記為已寫入（這是當時的一次檢查），且不會開啟「脈衝星分析」。失敗或已取消的嘗試會停留在這裡，並且可能已經建立或清空了某個檔案。「返回」會回到結束問題，在那裡選擇「否」會開啟「脈衝星分析」，選擇「取消」則讓資料保持未儲存。',
  'finishSave.back':'返回結束問題',
  'finishSave.pendingNote':'嘗試進行期間，「選擇」和「返回」不起作用，記錄資料仍佔用著脈衝星資料。隱藏「電波望遠鏡」頁面或開始專案操作會使其停止。',

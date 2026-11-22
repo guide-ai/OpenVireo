@@ -4,7 +4,7 @@ import type {Translation} from '../../maps';
 export const SAVED_ROWS_ZH_HANT:Translation<typeof SAVED_ROWS_MESSAGES_EN>=Object.freeze({
  'savedRows.title':'已儲存的脈衝星測量（你提供的檔案）',
  'savedRows.scope':'以從脈衝星分析的「儲存」寫入程式復原出的配置開啟你提供的測量檔案，並把復原出的「查閱」尋找原樣套用到其中的各列。此檢視器是網頁新增的功能；尚未確認原版是否有重新載入這種配置的指令。',
- 'savedRows.separate':'這是一個獨立的暫時工作區。它不會改變目前的接收資料、其游標、等待記錄的測量以及已記錄的測量清單，其中的列也不能編輯、記錄或儲存。這些列只保留在此瀏覽器分頁中：「儲存探究」不包含它們，重新整理頁面後此檢視器會被清空。',
+ 'savedRows.separate':'這是一個獨立的暫時工作區。它不會改變目前的記錄資料、其游標、等待記錄的測量以及已記錄的測量清單，其中的列也不能編輯、記錄或儲存。這些列只保留在此瀏覽器分頁中：「儲存探究」不包含它們，重新整理頁面後此檢視器會被清空。',
  'savedRows.authenticity':'通過這些檢查的檔案具有預期的格式，但這並不表示它是由CLEA寫出的。',
  'savedRows.file.heading':'測量檔案',
  'savedRows.file.choose':'選擇已儲存的測量檔案',

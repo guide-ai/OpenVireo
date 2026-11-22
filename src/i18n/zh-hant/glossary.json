@@ -2620,6 +2620,36 @@
     "牆上時間"
    ],
    "use": "實際時間 (wall-clock time)"
+  },
+  {
+   "words": [
+    "資料對"
+   ],
+   "use": "配對 for B/V data pairs (counted with 組)"
+  },
+  {
+   "words": [
+    "帕松"
+   ],
+   "use": "卜瓦松 (Taiwan) for Poisson"
+  },
+  {
+   "words": [
+    "錄製資料"
+   ],
+   "use": "記錄資料 for a radio recording (decided)"
+  },
+  {
+   "words": [
+    "接收資料"
+   ],
+   "use": "記錄資料 for a recording, 擷取資料 for a capture (decided)"
+  },
+  {
+   "words": [
+    "多天體光譜儀"
+   ],
+   "use": "多目標光譜儀 (Multi-Spec)"
   }
  ],
  "dropped": [
