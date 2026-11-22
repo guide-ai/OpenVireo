@@ -42,6 +42,18 @@
     "glossary"
    ],
    "reason": "\"period\" is the photometer's integration period (时段), not an orbital or pulsation period (周期), as ja"
+  },
+  "map:radioAntenna.antenna.rateLimit.recovery.afterModal": {
+   "rules": [
+    "script"
+   ],
+   "reason": "two placeholders joined with no space, as Chinese writes two sentences, as ja"
+  },
+  "map:radioAntenna.antenna.rateLimit.alternative.separator": {
+   "rules": [
+    "script"
+   ],
+   "reason": "the full-width semicolon that separates Chinese list items, as ja"
   }
  }
 }

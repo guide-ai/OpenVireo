@@ -41,6 +41,10 @@ import {SPECTRAL_RANGE_EN} from '../../SpectralRangeMessages';
 import {WEDGE_MESSAGES_EN} from '../../components/WedgeMessages';
 import {CLUSTER_HR_EN} from '../../clusters/ClusterHrMessages';
 import {CLUSTER_DATA_MESSAGES_EN} from '../../clusterdata/ClusterDataMessages';
+import {RADIO_ANTENNA_MESSAGES_EN} from '../../components/RadioAntennaMessages';
+import {FINISH_SAVE_MESSAGES_EN} from '../../components/RadioFinishSaveMessages';
+import {RADIO_R1_MESSAGES_EN} from '../../components/RadioR1Messages';
+import {RADIO_SAVE_MESSAGES_EN} from '../../components/RadioRecordSaveMessages';
 
 // Front ZH0 (docs/I18N.md, "Simplified Chinese: the folder, lints and shell (ZH0)"; plan front-i18n-zh.md §1.2, §6.2): the
 // structural checks of the partial Simplified Chinese bundle and every string through the SC4 lint framework, profile zh-Hans
@@ -55,11 +59,12 @@ import {CLUSTER_DATA_MESSAGES_EN} from '../../clusterdata/ClusterDataMessages';
 // then checks as usual. A VIREO `fragment|` original keeps its straight quotes (another piece or the program closes them).
 const ENGLISH_MAPS:Partial<Record<MapId,unknown>>={appShell:APP_SHELL_MESSAGES_EN,helpMenu:HELP_MENU_EN,languageChoice:LANGUAGE_CHOICE_EN,objectXLab:OBJECT_X_LAB_EN,polish:POLISH_MESSAGES_EN,projectLinks:PROJECT_LINKS_EN,tour:TOUR_EN,variableStars:VARIABLE_STARS_EN,
  camera:CAMERA_MESSAGES_EN,fieldInfo:FIELD_INFO_MESSAGES_EN,fieldReadDetails:FIELD_READ_DETAILS_EN,nakedEye:NAKED_EYE_MESSAGES_EN,observationMetadata:OBSERVATION_METADATA_EN,observatory:OBSERVATORY_MESSAGES_EN,qsoList:QSO_LIST_MESSAGES_EN,sound:SOUND_MESSAGES_EN,
- engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN,clusterHr:CLUSTER_HR_EN,clusterData:CLUSTER_DATA_MESSAGES_EN};
+ engineView:ENGINE_VIEW_EN,spectralRange:SPECTRAL_RANGE_EN,wedge:WEDGE_MESSAGES_EN,clusterHr:CLUSTER_HR_EN,clusterData:CLUSTER_DATA_MESSAGES_EN,
+ radioAntenna:RADIO_ANTENNA_MESSAGES_EN,radioFinishSave:FINISH_SAVE_MESSAGES_EN,radioR1:RADIO_R1_MESSAGES_EN,radioRecordSave:RADIO_SAVE_MESSAGES_EN};
 /** The maps translated completely (ZH0's shell maps; ZH1's observatory maps, the camera card the observatory shows, and polish; ZH2's
- * engineView, spectralRange and wedge; ZH4's clusterHr, clusterData and variableStars); the
+ * engineView, spectralRange and wedge; ZH4's clusterHr, clusterData and variableStars; ZH5's four radio maps); the
  * others hold only their header-menu names until their front (objectXLab ZH6). */
-const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars'];
+const COMPLETE_MAPS:readonly MapId[]=['appShell','helpMenu','languageChoice','projectLinks','tour','observatory','fieldInfo','fieldReadDetails','nakedEye','polish','qsoList','sound','observationMetadata','camera','engineView','spectralRange','wedge','clusterHr','clusterData','variableStars','radioAntenna','radioFinishSave','radioR1','radioRecordSave'];
 /** Front ZH1's area of en.json: FR1's observatory keys (the instruments' prefixes and the Hubble hot-list reasons) and the 104 guide
  * keys the observatory files render (src/i18n/fr/fr.test.ts FR1_GUIDE_KEYS, read from there so the two never drift), as JA1's. */
 const OBSERVATORY_PREFIXES=/^(sky|optical|motion|horizon|siteClock|runningClock|scopeAccess|instrumentAccess|instrumentParameters|cameraParameters|cameraInfo|cameraPrepare|palette|testMode|optionsFile|photometerTab|htl|multispec|nativeMirror|hubblePoint)\./;
@@ -76,6 +81,8 @@ const E03_PREFIXES=/^(class|classLines|classLink|classAtlas|classImport|classLab
 const ZH3_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E03_PREFIXES.test(k)||k==='continuity.restoreExposure'||k==='ssp.header');
 /** Front ZH4's area of en.json: exercises E04 (Pleiades photometry) and E05 (cluster HR diagrams and variable stars), FR4's and JA4's prefixes. */
 const ZH4_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(ph|pa|pleiadesLab|nc|db|ce|clusterLab|ownHr|obsHr)\./.test(k));
+/** Front ZH5's area of en.json: the radio telescope, FR5's and JA5's prefixes. */
+const ZH5_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(radio|radioRoute|radioAccess|radioReceiver|radioSimOptions|pulsarParameters)\./.test(k));
 /** VIREO originals that Spanish keeps with no entry, as for Hindi and Japanese: the options dialog's General tab («常规») and the
  * Site Information compass letters E «东», N «北» and S «南» (W «西» is in Spanish's list). */
 const ZH_ONLY_ORIGINALS:readonly string[]=['General','E','N','S'];
@@ -143,6 +150,10 @@ describe('Front ZH0: the Simplified Chinese (zh-Hans) bundle',()=>{
  it('Front ZH4: the catalog covers E04 and E05 (every key of their prefixes)',()=>{
   expect(ZH4_KEYS.length).toBe(651);
   expect(ZH4_KEYS.filter(k=>!Object.hasOwn(zh,k))).toEqual([]);
+ });
+ it('Front ZH5: the catalog covers the radio telescope (every key of its prefixes)',()=>{
+  expect(ZH5_KEYS.length).toBe(646);
+  expect(ZH5_KEYS.filter(k=>!Object.hasOwn(zh,k))).toEqual([]);
  });
  it('Front ZH1: every VIREO original is translated at once, or kept with an identical.json reason, never both',()=>{
   const english=[...Object.keys(esOriginals),...Object.keys(esIdentical.entries).filter(k=>k.startsWith('original:')).map(k=>k.slice('original:'.length))];
