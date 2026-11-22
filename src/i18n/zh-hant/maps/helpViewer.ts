@@ -1,6 +1,6 @@
 import type {HELP_VIEWER_EN} from '../../../help/HelpViewerMessages';
 import type {Translation} from '../../maps';
-/** Front ZT-HELP: Traditional Chinese (zh-Hant, Taiwan) for the help viewer's language switch and the Spectral Line Table window, adapted from the reviewed zh-Hans with the English as the source. A web adaptation by OpenVireo, not CLEA's (VIREO's missing-file box is spectralLines.ts SPECTRAL_LINE_MISSING_LITERALS, through vireo()). */
+/** Front ZT-HELP: Traditional Chinese (zh-Hant, Taiwan) for the help viewer’s language switch and the Spectral Line Table window, adapted from the reviewed zh-Hans with the English as the source. A web adaptation by OpenVireo, not CLEA’s (VIREO’s missing-file box is spectralLines.ts SPECTRAL_LINE_MISSING_LITERALS, through vireo()). */
 export const HELP_VIEWER_ZH_HANT:Translation<typeof HELP_VIEWER_EN>=Object.freeze({
  translationLabel:'翻譯：OpenVireo的網頁改編譯文（不是CLEA的文本）',
  originalLabel:'原文：VIREO的英文原文，原樣顯示',

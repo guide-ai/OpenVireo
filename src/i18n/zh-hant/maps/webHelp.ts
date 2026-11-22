@@ -1,8 +1,8 @@
 import type {WEB_HELP_EN} from '../../../help/webHelp';
 import type {Translation} from '../../maps';
-/** Front ZT-HELP: Traditional Chinese (zh-Hant, Taiwan) for OpenVireo's own help topics (說明 › 說明主題…), adapted from the reviewed zh-Hans with the English as the source. The labels quoted from OpenVireo's screen
- * are the Chinese ones the interface already shows; VIREO's own menu names come from originals.json. A web adaptation by OpenVireo,
- * not CLEA's. Text only: the topic ids, block kinds and related links are the English source's (webHelp.ts). */
+/** Front ZT-HELP: Traditional Chinese (zh-Hant, Taiwan) for OpenVireo’s own help topics (說明 › 說明主題…), adapted from the reviewed zh-Hans with the English as the source. The labels quoted from OpenVireo’s screen
+ * are the Chinese ones the interface already shows; VIREO’s own menu names come from originals.json. A web adaptation by OpenVireo,
+ * not CLEA’s. Text only: the topic ids, block kinds and related links are the English source’s (webHelp.ts). */
 const p=(text:string)=>text;
 const steps=(...items:string[])=>items;
 const list=(...items:string[])=>items;
